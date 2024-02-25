@@ -7,6 +7,7 @@
 #include <utility>
 
 #include "base/metrics/histogram_base.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/time/default_tick_clock.h"
 
@@ -23,6 +24,11 @@ MediaSessionUmaHelper::~MediaSessionUmaHelper()
 void MediaSessionUmaHelper::RecordSessionSuspended(
     MediaSessionSuspendedSource source) const {
   UMA_HISTOGRAM_ENUMERATION("Media.Session.Suspended", source);
+}
+
+void MediaSessionUmaHelper::RecordEnterPictureInPicture(
+    EnterPictureInPictureType type) const {
+  base::UmaHistogramEnumeration("Media.Session.EnterPictureInPicture", type);
 }
 
 void MediaSessionUmaHelper::OnSessionActive() {

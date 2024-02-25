@@ -1,0 +1,132 @@
+[
+  {
+    "os": [
+      "win",
+      "linux",
+      "mac",
+      "android",
+      "chromeos_ash",
+      "chromeos_lacros",
+      "fuchsia"
+    ],
+    "policy_pref_mapping_tests": [
+      {
+        "policies": {},
+        "prefs": {
+          "sync.apps": {
+            "default_value": false
+          },
+          "sync.autofill": {
+            "default_value": false
+          },
+          "sync.bookmarks": {
+            "default_value": false
+          },
+          "sync.extensions": {
+            "default_value": false
+          },
+          "sync.passwords": {
+            "default_value": false
+          },
+          "sync.preferences": {
+            "default_value": false
+          },
+          "sync.reading_list": {
+            "default_value": false
+          },
+          "sync.saved_tab_groups": {
+            "default_value": false
+          },
+          "sync.tabs": {
+            "default_value": false
+          },
+          "sync.themes": {
+            "default_value": false
+          },
+          "sync.typed_urls": {
+            "default_value": false
+          }
+        }
+      },
+      {
+        "policies": {
+          "SyncTypesListDisabled": [
+            "apps",
+            "autofill",
+            "bookmarks",
+            "extensions",
+            "passwords",
+            "preferences",
+            "readingList",
+            "savedTabGroups",
+            "tabs",
+            "themes",
+            "typedUrls"
+          ]
+        },
+        "prefs": {
+          "sync.apps": {
+            "value": false
+          },
+          "sync.autofill": {
+            "value": false
+          },
+          "sync.bookmarks": {
+            "value": false
+          },
+          "sync.extensions": {
+            "value": false
+          },
+          "sync.passwords": {
+            "value": false
+          },
+          "sync.preferences": {
+            "value": false
+          },
+          "sync.reading_list": {
+            "value": false
+          },
+          "sync.saved_tab_groups": {
+            "value": false
+          },
+          "sync.tabs": {
+            "value": false
+          },
+          "sync.themes": {
+            "value": false
+          },
+          "sync.typed_urls": {
+            "value": false
+          }
+        }
+      }
+    ]
+  },
+  {
+    "os": [
+      "chromeos_ash"
+    ],
+    "policy_pref_mapping_tests": [
+      {
+        "policies": {
+          "SyncTypesListDisabled": [
+            "apps",
+            "preferences",
+            "wifiConfigurations"
+          ]
+        },
+        "prefs": {
+          "sync.os_apps": {
+            "value": false
+          },
+          "sync.os_preferences": {
+            "value": false
+          },
+          "sync.wifi_configurations": {
+            "value": false
+          }
+        }
+      }
+    ]
+  }
+]

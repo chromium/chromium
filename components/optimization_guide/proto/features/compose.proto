@@ -1,0 +1,134 @@
+// Copyright 2023 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = "proto3";
+
+option optimize_for = LITE_RUNTIME;
+option java_package = "org.chromium.components.optimization_guide.features.proto";
+
+option java_outer_classname = "ComposeProto";
+
+package optimization_guide.proto;
+
+import "components/optimization_guide/proto/features/common_quality_data.proto";
+
+// ComposeFeatureLoggingData is the wrapper containing of ModelExecution
+// request, response and quality data for one compose execution run.
+message ComposeLoggingData {
+  // Model request data contains the compose request sent to the model execution
+  // server.
+  ComposeRequest request_data = 1;
+
+  // Model response data contains the compose response sent from the model
+  // execution server.
+  ComposeResponse response_data = 2;
+
+  // Model quality data contains the compose result quality data from the user.
+  ComposeQuality quality_data = 3;
+}
+
+//  User selected tone. Here the UNSPECIFIED entry is used to specify the tone
+//  is
+// unaltered or 'default'.
+enum ComposeTone {
+  COMPOSE_UNSPECIFIED_TONE = 0;
+  COMPOSE_FORMAL = 1;
+  COMPOSE_INFORMAL = 2;
+}
+
+//  User selected length. Here the UNSPECIFIED entry is used to specify the
+// tone is unaltered or 'default'.
+enum ComposeLength {
+  COMPOSE_UNSPECIFIED_LENGTH = 0;
+  COMPOSE_SHORTER = 1;
+  COMPOSE_LONGER = 2;
+}
+
+// Stores the metadata associated with a single call to the model execution.
+// This excludes any explicit user input.
+message ComposePageMetadata {
+  // URL of the page the input field is on.
+  string page_url = 1;
+  // The title of the page the input field is on.
+  string page_title = 2;
+  // The innerText of the page the input field is on. This is temporary. We do
+  // not intend to send inner text in the long run.
+  string page_inner_text = 3;
+  // The offset into the inner text of the selected input field.
+  uint64 page_inner_text_offset = 4;
+}
+
+// The final status of the feature.
+enum FinalStatus {
+  // The dialog was not closed, and a subsequent model request should be
+  // logged.
+  STATUS_UNSPECIFIED = 0;
+  // The user inserted this response into the page.
+  STATUS_INSERTED = 1;
+  // User pressed 'X'.
+  STATUS_ABANDONED = 2;
+  // This case includes: close tab, starting new session, navigation, etc.
+  STATUS_FINISHED_WITHOUT_INSERT = 3;
+}
+
+// Stores all data associated with a single call to the model execution run for
+// compose.
+message ComposeRequest {
+  reserved 1, 2, 4, 5, 6;
+
+  message GenerateParams {
+    // User written input text.
+    string user_input = 1;
+  }
+  message RewriteParams {
+    // A previously received ComposeResponse response_text, which will be
+    // rewritten.
+    string previous_response = 1;
+    // Rewrite with one of the below modifiers.
+    oneof modifier {
+      ComposeTone tone = 2;
+      ComposeLength length = 3;
+      bool regenerate = 4;
+    }
+  }
+  oneof request_params {
+    GenerateParams generate_params = 7;
+    RewriteParams rewrite_params = 8;
+  }
+
+  // Contains information scraped from the page.
+  ComposePageMetadata page_metadata = 3;
+}
+
+// Stores the response text from the model execution run.
+message ComposeResponse {
+  string output = 1;
+}
+
+// A helper message to store the int64 high and uint64 low bits of an int128
+// since protos do not natively handle int128. The underlying value is split
+// into a `low` uint64 holding the low bits, and `high` int64 holding the bits
+// beyond what an int64 can hold.
+message Int128 {
+  uint64 high = 1;
+  uint64 low = 2;
+}
+
+// Any data collected on the client outside of the model request and response.
+// This includes user feedback, and metrics about feature usage.
+// Next Id: 8
+message ComposeQuality {
+  reserved 3;
+  FinalStatus final_status = 1;
+  UserFeedback user_feedback = 2;
+  // How long the user had to wait before seeing the model response.
+  int64 request_latency_ms = 4;
+  // How much was the text modified before commit only valid iff
+  // final_status = INSERTED.
+  int64 edit_distance = 5;
+  // A unique ID for each compose session.
+  Int128 session_id = 6;
+  // Was this request generated via an edit action.
+  bool was_generated_via_edit = 7;
+}

@@ -41,7 +41,7 @@ bool ChromeExtensionOptionsGuestDelegate::HandleContextMenu(
 
 content::WebContents* ChromeExtensionOptionsGuestDelegate::OpenURLInNewTab(
     const content::OpenURLParams& params) {
-  Browser* browser = chrome::FindBrowserWithWebContents(
+  Browser* browser = chrome::FindBrowserWithTab(
       extension_options_guest()->embedder_web_contents());
   return browser->OpenURL(params);
 }

@@ -7,6 +7,7 @@
 #include <codecvt>
 #include <map>
 #include <memory>
+#include <optional>
 #include <ostream>
 #include <string>
 #include <tuple>
@@ -35,10 +36,9 @@
 #include "chrome/browser/web_applications/web_app.h"
 #include "chrome/browser/web_applications/web_app_icon_generator.h"
 #include "chrome/browser/web_applications/web_app_icon_manager.h"
-#include "chrome/browser/web_applications/web_app_id.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
+#include "components/webapps/common/web_app_id.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "third_party/skia/include/core/SkColor.h"
 
@@ -130,7 +130,7 @@ std::vector<std::wstring> GetFileExtensionsForProgId(
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 // Performs a blocking read of app icons from the disk.
 SkColor IconManagerReadIconTopLeftColorForSize(WebAppIconManager& icon_manager,
-                                               const AppId& app_id,
+                                               const webapps::AppId& app_id,
                                                SquareSizePx size_px) {
   SkColor result = SK_ColorTRANSPARENT;
   if (!icon_manager.HasIcons(app_id, IconPurpose::ANY, {size_px})) {
@@ -208,7 +208,7 @@ OsIntegrationTestOverrideImpl::OverrideForTesting(
 
 bool OsIntegrationTestOverrideImpl::SimulateDeleteShortcutsByUser(
     Profile* profile,
-    const AppId& app_id,
+    const webapps::AppId& app_id,
     const std::string& app_name) {
 #if BUILDFLAG(IS_WIN)
   base::FilePath desktop_shortcut_path =
@@ -276,7 +276,7 @@ bool OsIntegrationTestOverrideImpl::DeleteDesktopDirOnLinux() {
 
 bool OsIntegrationTestOverrideImpl::IsRunOnOsLoginEnabled(
     Profile* profile,
-    const AppId& app_id,
+    const webapps::AppId& app_id,
     const std::string& app_name) {
 #if BUILDFLAG(IS_LINUX)
   std::string shortcut_filename =
@@ -299,7 +299,7 @@ bool OsIntegrationTestOverrideImpl::IsRunOnOsLoginEnabled(
 
 bool OsIntegrationTestOverrideImpl::IsFileExtensionHandled(
     Profile* profile,
-    const AppId& app_id,
+    const webapps::AppId& app_id,
     std::string app_name,
     std::string file_extension) {
   base::ScopedAllowBlockingForTesting allow_blocking;
@@ -364,37 +364,37 @@ bool OsIntegrationTestOverrideImpl::IsFileExtensionHandled(
   return is_file_handled;
 }
 
-absl::optional<SkColor>
+std::optional<SkColor>
 OsIntegrationTestOverrideImpl::GetShortcutIconTopLeftColor(
     Profile* profile,
     base::FilePath shortcut_dir,
-    const AppId& app_id,
+    const webapps::AppId& app_id,
     const std::string& app_name,
     SquareSizePx size_px) {
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
   base::FilePath shortcut_path =
       GetShortcutPath(profile, shortcut_dir, app_id, app_name);
   if (!base::PathExists(shortcut_path)) {
-    return absl::nullopt;
+    return std::nullopt;
   }
   return GetIconTopLeftColorFromShortcutFile(shortcut_path);
 #elif BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
   WebAppProvider* provider = WebAppProvider::GetForLocalAppsUnchecked(profile);
   if (!provider) {
-    return absl::nullopt;
+    return std::nullopt;
   }
   return IconManagerReadIconTopLeftColorForSize(provider->icon_manager(),
                                                 app_id, size_px);
 #else
   NOTREACHED() << "Not implemented on Fuchsia";
-  return absl::nullopt;
+  return std::nullopt;
 #endif
 }
 
 base::FilePath OsIntegrationTestOverrideImpl::GetShortcutPath(
     Profile* profile,
     base::FilePath shortcut_dir,
-    const AppId& app_id,
+    const webapps::AppId& app_id,
     const std::string& app_name) {
 #if BUILDFLAG(IS_WIN)
   base::FileEnumerator enumerator(shortcut_dir, false,
@@ -441,7 +441,7 @@ base::FilePath OsIntegrationTestOverrideImpl::GetShortcutPath(
 
 bool OsIntegrationTestOverrideImpl::IsShortcutCreated(
     Profile* profile,
-    const AppId& app_id,
+    const webapps::AppId& app_id,
     const std::string& app_name) {
 #if BUILDFLAG(IS_WIN)
   base::FilePath desktop_shortcut_path =
@@ -495,7 +495,7 @@ bool OsIntegrationTestOverrideImpl::IsShortcutsMenuRegisteredForApp(
 
 base::expected<bool, std::string>
 OsIntegrationTestOverrideImpl::IsUninstallRegisteredWithOs(
-    const AppId& app_id,
+    const webapps::AppId& app_id,
     const std::string& app_name,
     Profile* profile) {
   constexpr wchar_t kUninstallRegistryKey[] =
@@ -656,7 +656,7 @@ const base::FilePath& OsIntegrationTestOverrideImpl::applications_dir() {
 #endif  // BUILDFLAG(IS_LINUX)
 
 void OsIntegrationTestOverrideImpl::RegisterProtocolSchemes(
-    const AppId& app_id,
+    const webapps::AppId& app_id,
     std::vector<std::string> protocols) {
   protocol_scheme_registrations_.emplace_back(app_id, std::move(protocols));
 }
@@ -790,17 +790,17 @@ SkColor OsIntegrationTestOverrideImpl::GetIconTopLeftColorFromShortcutFile(
   base::apple::ScopedCFTypeRef<CFURLRef> url =
       base::apple::FilePathToCFURL(icon_path);
   base::apple::ScopedCFTypeRef<CGImageSourceRef> source(
-      CGImageSourceCreateWithURL(url, nullptr));
+      CGImageSourceCreateWithURL(url.get(), nullptr));
   if (!source) {
     return 0;
   }
   // Get the first icon in the .icns file (index 0)
   base::apple::ScopedCFTypeRef<CGImageRef> cg_image(
-      CGImageSourceCreateImageAtIndex(source, 0, empty_dict));
+      CGImageSourceCreateImageAtIndex(source.get(), 0, empty_dict.get()));
   if (!cg_image) {
     return 0;
   }
-  SkBitmap bitmap = skia::CGImageToSkBitmap(cg_image);
+  SkBitmap bitmap = skia::CGImageToSkBitmap(cg_image.get());
   if (bitmap.empty()) {
     return 0;
   }

@@ -21,7 +21,10 @@
 #include "chrome/browser/ash/drive/file_system_util.h"
 #include "chrome/browser/ash/login/login_pref_names.h"
 #include "chrome/browser/ash/login/onboarding_user_activity_counter.h"
+#include "chrome/browser/ash/login/oobe_metrics_helper.h"
 #include "chrome/browser/ash/login/oobe_quick_start/oobe_quick_start_pref_names.h"
+#include "chrome/browser/ash/login/ui/login_display_host.h"
+#include "chrome/browser/ash/login/ui/login_display_host_common.h"
 #include "chrome/browser/ash/policy/core/browser_policy_connector_ash.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/browser_process_platform_part.h"
@@ -99,6 +102,7 @@ void CreateOobeCompleteFlagFile() {
 void StartupUtils::RegisterPrefs(PrefRegistrySimple* registry) {
   registry->RegisterBooleanPref(prefs::kOobeComplete, false);
   registry->RegisterStringPref(prefs::kOobeScreenPending, "");
+  registry->RegisterTimePref(prefs::kOobeStartTime, base::Time());
   registry->RegisterIntegerPref(::prefs::kDeviceRegistered, -1);
   registry->RegisterBooleanPref(::prefs::kEnrollmentRecoveryRequired, false);
   registry->RegisterStringPref(::prefs::kInitialLocale, "en-US");
@@ -148,7 +152,7 @@ void StartupUtils::RegisterOobeProfilePrefs(PrefRegistrySimple* registry) {
     registry->RegisterListPref(prefs::kChoobeCompletedScreens);
   }
 
-  if (drive::util::IsOobeDrivePinningEnabled()) {
+  if (drive::util::IsOobeDrivePinningScreenEnabled()) {
     registry->RegisterBooleanPref(prefs::kOobeDrivePinningEnabledDeferred,
                                   false);
   }
@@ -243,6 +247,12 @@ void StartupUtils::ClearSpecificOobePrefs() {
 // static
 void StartupUtils::MarkDeviceRegistered(base::OnceClosure done_callback) {
   SaveIntegerPreferenceForced(::prefs::kDeviceRegistered, 1);
+
+  auto* host = LoginDisplayHost::default_host();
+  if (host) {
+    host->GetOobeMetricsHelper()->RecordDeviceRegistered();
+  }
+
   ClearSpecificOobePrefs();
   if (done_callback.is_null()) {
     base::ThreadPool::PostTask(

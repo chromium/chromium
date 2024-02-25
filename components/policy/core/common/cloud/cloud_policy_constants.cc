@@ -27,6 +27,7 @@ const char kParamOAuthToken[] = "oauth_token";
 const char kParamPlatform[] = "platform";
 const char kParamRequest[] = "request";
 const char kParamRetry[] = "retry";
+const char kParamProfileID[] = "profileid";
 
 // Policy constants used in authorization header.
 const char kAuthHeader[] = "Authorization";
@@ -34,6 +35,9 @@ const char kServiceTokenAuthHeaderPrefix[] = "GoogleLogin auth=";
 const char kDMTokenAuthHeaderPrefix[] = "GoogleDMToken token=";
 const char kEnrollmentTokenAuthHeaderPrefix[] = "GoogleEnrollmentToken token=";
 const char kOAuthTokenHeaderPrefix[] = "OAuth";
+const char kOidcAuthHeaderPrefix[] = "GoogleDM3PAuth";
+const char kOidcAuthTokenHeaderPrefix[] = " oauth_token=";
+const char kOidcIdTokenHeaderPrefix[] = " id_token=";
 
 // String constants for the device and app type we report to the server.
 const char kValueAppType[] = "Chrome";
@@ -44,6 +48,7 @@ const char kValueRequestPsmHasDeviceState[] = "enterprise_psm_check";
 const char kValueCheckUserAccount[] = "check_user_account";
 const char kValueRequestPolicy[] = "policy";
 const char kValueRequestRegister[] = "register";
+const char kValueRequestRegisterProfile[] = "register_profile";
 const char kValueRequestApiAuthorization[] = "api_authorization";
 const char kValueRequestUnregister[] = "unregister";
 const char kValueRequestUploadCertificate[] = "cert_upload";
@@ -96,6 +101,12 @@ const char kChromeMachineLevelUserCloudPolicyIOSType[] =
 const char kChromeMachineLevelExtensionCloudPolicyType[] =
     "google/chrome/machine-level-extension";
 const char kChromeRemoteCommandPolicyType[] = "google/chromeos/remotecommand";
+
+const char kChromeAshUserRemoteCommandType[] = "google/ash/user/remotecommand";
+const char kChromeDeviceRemoteCommandType[] = "google/ash/device/remotecommand";
+const char kChromeBrowserRemoteCommandType[] =
+    "google/chrome/browser/remotecommand";
+const char kChromeUserRemoteCommandType[] = "google/chrome/user/remotecommand";
 
 const char kChromeMachineLevelUserCloudPolicyTypeBase64[] =
     "Z29vZ2xlL2Nocm9tZS9tYWNoaW5lLWxldmVsLXVzZXI=";

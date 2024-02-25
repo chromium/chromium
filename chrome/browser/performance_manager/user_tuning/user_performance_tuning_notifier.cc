@@ -67,21 +67,6 @@ void UserPerformanceTuningNotifier::OnTypeChanged(const PageNode* page_node,
   }
 }
 
-void UserPerformanceTuningNotifier::OnLoadingStateChanged(
-    const PageNode* page_node,
-    PageNode::LoadingState previous_state) {
-  if (features::kMemoryUsageInHovercardsUpdateTrigger.Get() ==
-          features::MemoryUsageInHovercardsUpdateTrigger::kNavigation &&
-      page_node->GetType() == PageType::kTab &&
-      page_node->GetLoadingState() == PageNode::LoadingState::kLoadedIdle) {
-    auto* metrics_decorator =
-        page_node->GetGraph()
-            ->GetRegisteredObjectAs<
-                performance_manager::ProcessMetricsDecorator>();
-    metrics_decorator->RequestImmediateMetrics();
-  }
-}
-
 void UserPerformanceTuningNotifier::OnProcessMemoryMetricsAvailable(
     const SystemNode* system_node) {
   uint64_t total_rss = 0;
@@ -106,8 +91,6 @@ void UserPerformanceTuningNotifier::OnProcessMemoryMetricsAvailable(
     proxies_and_pmf.emplace_back(page_node->GetContentsProxy(),
                                  page_node->EstimatePrivateFootprintSize());
   }
-
-  receiver_->NotifyMemoryMetricsRefreshed(std::move(proxies_and_pmf));
 }
 
 void UserPerformanceTuningNotifier::MaybeAddTabAndNotify(

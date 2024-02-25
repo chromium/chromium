@@ -1,0 +1,98 @@
+# Copyright 2023 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/features.gni")
+
+source_set("system_cpu") {
+  sources = [
+    "cpu_probe.cc",
+    "cpu_probe.h",
+    "cpu_sample.h",
+  ]
+
+  configs += [ "//build/config/compiler:wexit_time_destructors" ]
+
+  deps = [ "//base" ]
+
+  libs = []
+
+  if (is_linux || is_chromeos) {
+    sources += [
+      "core_times.cc",
+      "core_times.h",
+      "cpu_probe_linux.cc",
+      "cpu_probe_linux.h",
+      "procfs_stat_cpu_parser.cc",
+      "procfs_stat_cpu_parser.h",
+    ]
+  }
+
+  if (is_mac) {
+    sources += [
+      "core_times.cc",
+      "core_times.h",
+      "cpu_probe_mac.cc",
+      "cpu_probe_mac.h",
+      "host_processor_info_scanner.cc",
+      "host_processor_info_scanner.h",
+    ]
+  }
+
+  if (is_win) {
+    sources += [
+      "cpu_probe_win.cc",
+      "cpu_probe_win.h",
+    ]
+
+    libs += [ "pdh.lib" ]
+  }
+}
+
+source_set("unit_tests") {
+  testonly = true
+
+  sources = [ "cpu_probe_unittest.cc" ]
+
+  deps = [
+    ":system_cpu",
+    ":test_support",
+    "//base/test:test_support",
+    "//testing/gmock",
+  ]
+
+  if (is_linux || is_chromeos) {
+    sources += [
+      "core_times_unittest.cc",
+      "cpu_probe_linux_unittest.cc",
+      "procfs_stat_cpu_parser_unittest.cc",
+    ]
+  }
+
+  if (is_mac) {
+    sources += [
+      "core_times_unittest.cc",
+      "cpu_probe_mac_unittest.cc",
+    ]
+  }
+
+  if (is_win) {
+    sources += [ "cpu_probe_win_unittest.cc" ]
+  }
+}
+
+source_set("test_support") {
+  testonly = true
+
+  sources = [
+    "pressure_test_support.cc",
+    "pressure_test_support.h",
+  ]
+
+  deps = [
+    ":system_cpu",
+    "//base",
+    "//base/test:test_support",
+    "//testing/gtest",
+  ]
+}

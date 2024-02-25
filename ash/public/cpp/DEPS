@@ -9,10 +9,12 @@ include_rules = [
   "+components/language/core/browser",
   "+components/tab_groups",
   "+components/sync_device_info",
+  "+components/user_manager",
   "+services/data_decoder/public",
   "+services/device/public",
   "+skia/public/mojom",
   "+ui/chromeos/styles",
+  "+ui/display",
 ]
 
 specific_include_rules = {

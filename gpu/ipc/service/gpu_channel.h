@@ -11,6 +11,7 @@
 #include <memory>
 #include <string>
 
+#include <optional>
 #include "base/containers/flat_map.h"
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
@@ -33,7 +34,6 @@
 #include "ipc/ipc_sync_channel.h"
 #include "mojo/public/cpp/bindings/generic_pending_associated_receiver.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/gpu_extra_info.h"
 #include "ui/gfx/native_widget_types.h"
@@ -48,6 +48,7 @@ namespace gpu {
 class DCOMPTexture;
 class GpuChannelManager;
 class GpuChannelMessageFilter;
+class GpuMemoryBufferFactory;
 class ImageDecodeAcceleratorWorker;
 class Scheduler;
 class SharedImageStub;
@@ -74,14 +75,15 @@ class GPU_IPC_SERVICE_EXPORT GpuChannel : public IPC::Listener,
       int32_t client_id,
       uint64_t client_tracing_id,
       bool is_gpu_host,
-      ImageDecodeAcceleratorWorker* image_decode_accelerator_worker);
+      ImageDecodeAcceleratorWorker* image_decode_accelerator_worker,
+      const gfx::GpuExtraInfo& gpu_extra_info,
+      gpu::GpuMemoryBufferFactory* gpu_memory_buffer_factory);
 
   // Init() sets up the underlying IPC channel.  Use a separate method because
   // we don't want to do that in tests.
   void Init(IPC::ChannelHandle channel_handle,
             base::WaitableEvent* shutdown_event);
 
-  void SetGpuExtraInfo(const gfx::GpuExtraInfo& gpu_extra_info);
   void InitForTesting(IPC::Channel* channel);
 
   base::WeakPtr<GpuChannel> AsWeakPtr();
@@ -137,7 +139,7 @@ class GPU_IPC_SERVICE_EXPORT GpuChannel : public IPC::Listener,
   // Called to remove a listener for a particular message routing ID.
   void RemoveRoute(int32_t route_id);
 
-  absl::optional<gpu::GpuDiskCacheHandle> GetCacheHandleForType(
+  std::optional<gpu::GpuDiskCacheHandle> GetCacheHandleForType(
       gpu::GpuDiskCacheType type);
   void RegisterCacheHandle(const gpu::GpuDiskCacheHandle& handle);
   void CacheBlob(gpu::GpuDiskCacheType type,
@@ -228,12 +230,14 @@ class GPU_IPC_SERVICE_EXPORT GpuChannel : public IPC::Listener,
              int32_t client_id,
              uint64_t client_tracing_id,
              bool is_gpu_host,
-             ImageDecodeAcceleratorWorker* image_decode_accelerator_worker);
+             ImageDecodeAcceleratorWorker* image_decode_accelerator_worker,
+             const gfx::GpuExtraInfo& gpu_extra_info,
+             gpu::GpuMemoryBufferFactory* gpu_memory_buffer_factory);
 
   void OnDestroyCommandBuffer(int32_t route_id);
 
   // Message handlers for control messages.
-  bool CreateSharedImageStub();
+  bool CreateSharedImageStub(const gfx::GpuExtraInfo& gpu_extra_info);
 
   std::unique_ptr<IPC::SyncChannel> sync_channel_;  // nullptr in tests.
   raw_ptr<IPC::Sender>

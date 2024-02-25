@@ -17,6 +17,8 @@
 #include "ash/test/ash_test_base.h"
 #include "ash/wm/collision_detection/collision_detection_utils.h"
 #include "ash/wm/desks/desk_button/desk_button.h"
+#include "ash/wm/desks/desk_button/desk_button_container.h"
+#include "ash/wm/desks/desk_button/desk_switch_button.h"
 #include "ash/wm/desks/desks_test_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
@@ -58,9 +60,8 @@ class ShelfTooltipManagerTest : public AshTestBase {
   }
 
  protected:
-  raw_ptr<ShelfView, DanglingUntriaged | ExperimentalAsh> shelf_view_;
-  raw_ptr<ShelfTooltipManager, DanglingUntriaged | ExperimentalAsh>
-      tooltip_manager_;
+  raw_ptr<ShelfView, DanglingUntriaged> shelf_view_;
+  raw_ptr<ShelfTooltipManager, DanglingUntriaged> tooltip_manager_;
   std::unique_ptr<ShelfViewTestAPI> test_api_;
 };
 
@@ -342,17 +343,11 @@ TEST_P(ShelfTooltipManagerDeskButtonTest, TooltipPositioning) {
     ASSERT_EQ(target_view_bounds.top_center(), tooltip_bounds.bottom_center());
   };
 
-  auto* desk_button_view =
-      GetPrimaryShelf()->desk_button_widget()->GetDeskButton();
-
-  if (GetParam() != ShelfAlignment::kBottom) {
-    GetEventGenerator()->MoveMouseTo(
-        desk_button_view->GetBoundsInScreen().CenterPoint());
-  }
-
-  validate_tooltip_bounds(desk_button_view);
-  validate_tooltip_bounds(desk_button_view->prev_desk_button());
-  validate_tooltip_bounds(desk_button_view->next_desk_button());
+  auto* desk_button_container =
+      GetPrimaryShelf()->desk_button_widget()->GetDeskButtonContainer();
+  validate_tooltip_bounds(desk_button_container->desk_button());
+  validate_tooltip_bounds(desk_button_container->prev_desk_button());
+  validate_tooltip_bounds(desk_button_container->next_desk_button());
 }
 
 }  // namespace ash

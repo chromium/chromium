@@ -4,7 +4,7 @@
 
 #include "components/feature_engagement/internal/never_condition_validator.h"
 
-#include "third_party/abseil-cpp/absl/types/optional.h"
+#include <optional>
 
 namespace feature_engagement {
 
@@ -20,7 +20,7 @@ ConditionValidator::Result NeverConditionValidator::MeetsConditions(
     const AvailabilityModel& availability_model,
     const DisplayLockController& display_lock_controller,
     const Configuration* configuration,
-    uint32_t current_day) const {
+    const TimeProvider& time_provider) const {
   return ConditionValidator::Result(false);
 }
 
@@ -32,11 +32,13 @@ void NeverConditionValidator::NotifyIsShowing(
 void NeverConditionValidator::NotifyDismissed(const base::Feature& feature) {}
 
 void NeverConditionValidator::SetPriorityNotification(
-    const absl::optional<std::string>& feature) {}
+    const std::optional<std::string>& feature) {}
 
-absl::optional<std::string>
+std::optional<std::string>
 NeverConditionValidator::GetPendingPriorityNotification() {
-  return absl::nullopt;
+  return std::nullopt;
 }
+
+void NeverConditionValidator::ResetSession() {}
 
 }  // namespace feature_engagement

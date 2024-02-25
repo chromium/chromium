@@ -5,13 +5,13 @@
 #include "chrome/browser/sharing/sharing_service.h"
 
 #include <memory>
+#include <optional>
 #include <vector>
 
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/test/task_environment.h"
 #include "base/uuid.h"
-#include "chrome/browser/sharing/fake_device_info.h"
 #include "chrome/browser/sharing/features.h"
 #include "chrome/browser/sharing/mock_sharing_device_source.h"
 #include "chrome/browser/sharing/mock_sharing_message_sender.h"
@@ -37,17 +37,22 @@
 #include "crypto/ec_private_key.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace {
 
-const char kP256dh[] = "p256dh";
-const char kAuthSecret[] = "auth_secret";
-const char kVapidFcmToken[] = "vapid_fcm_token";
-const char kSharingFcmToken[] = "sharing_fcm_token";
 const char kDeviceName[] = "other_name";
 const char kAuthorizedEntity[] = "authorized_entity";
 constexpr base::TimeDelta kTimeout = base::Seconds(15);
+
+SharingTargetDeviceInfo CreateFakeSharingTargetDeviceInfo(
+    const std::string& guid,
+    const std::string& client_name) {
+  return SharingTargetDeviceInfo(guid, client_name,
+                                 SharingDevicePlatform::kUnknown,
+                                 /*pulse_interval=*/base::TimeDelta(),
+                                 syncer::DeviceInfo::FormFactor::kUnknown,
+                                 /*last_updated_timestamp=*/base::Time());
+}
 
 class MockInstanceIDDriver : public instance_id::InstanceIDDriver {
  public:
@@ -162,11 +167,11 @@ class SharingServiceTest : public testing::Test {
   void OnMessageSent(
       SharingSendMessageResult result,
       std::unique_ptr<chrome_browser_sharing::ResponseMessage> response) {
-    send_message_result_ = absl::make_optional(result);
+    send_message_result_ = std::make_optional(result);
     send_message_response_ = std::move(response);
   }
 
-  const absl::optional<SharingSendMessageResult>& send_message_result() {
+  const std::optional<SharingSendMessageResult>& send_message_result() {
     return send_message_result_;
   }
 
@@ -179,14 +184,6 @@ class SharingServiceTest : public testing::Test {
   }
 
  protected:
-  static syncer::DeviceInfo::SharingInfo CreateSharingInfo() {
-    return syncer::DeviceInfo::SharingInfo(
-        {kVapidFcmToken, kP256dh, kAuthSecret},
-        {kSharingFcmToken, kP256dh, kAuthSecret},
-        std::set<sync_pb::SharingSpecificFields::EnabledFeatures>{
-            sync_pb::SharingSpecificFields::CLICK_TO_CALL_V2});
-  }
-
   // Lazily initialized so we can test the constructor.
   SharingService* GetSharingService() {
     if (!sharing_service_) {
@@ -227,7 +224,7 @@ class SharingServiceTest : public testing::Test {
   bool device_candidates_initialized_ = false;
 
  private:
-  absl::optional<SharingSendMessageResult> send_message_result_;
+  std::optional<SharingSendMessageResult> send_message_result_;
   std::unique_ptr<chrome_browser_sharing::ResponseMessage>
       send_message_response_;
 };
@@ -245,11 +242,9 @@ TEST_F(SharingServiceTest, GetDeviceCandidates_Empty) {
   EXPECT_CALL(*device_source_, GetDeviceCandidates(::testing::_))
       .WillOnce(
           [](sync_pb::SharingSpecificFields::EnabledFeatures required_feature)
-              -> std::vector<std::unique_ptr<syncer::DeviceInfo>> {
-            return {};
-          });
+              -> std::vector<SharingTargetDeviceInfo> { return {}; });
 
-  std::vector<std::unique_ptr<syncer::DeviceInfo>> candidates =
+  std::vector<SharingTargetDeviceInfo> candidates =
       GetSharingService()->GetDeviceCandidates(
           sync_pb::SharingSpecificFields::CLICK_TO_CALL_V2);
   EXPECT_TRUE(candidates.empty());
@@ -258,16 +253,15 @@ TEST_F(SharingServiceTest, GetDeviceCandidates_Empty) {
 TEST_F(SharingServiceTest, GetDeviceCandidates_Tracked) {
   EXPECT_CALL(*device_source_, GetDeviceCandidates(::testing::_))
       .WillOnce(
-          [](sync_pb::SharingSpecificFields::EnabledFeatures required_feature)
-              -> std::vector<std::unique_ptr<syncer::DeviceInfo>> {
-            std::vector<std::unique_ptr<syncer::DeviceInfo>> device_candidates;
-            device_candidates.push_back(CreateFakeDeviceInfo(
-                base::Uuid::GenerateRandomV4().AsLowercaseString(), kDeviceName,
-                CreateSharingInfo()));
+          [](sync_pb::SharingSpecificFields::EnabledFeatures required_feature) {
+            std::vector<SharingTargetDeviceInfo> device_candidates;
+            device_candidates.push_back(CreateFakeSharingTargetDeviceInfo(
+                base::Uuid::GenerateRandomV4().AsLowercaseString(),
+                kDeviceName));
             return device_candidates;
           });
 
-  std::vector<std::unique_ptr<syncer::DeviceInfo>> candidates =
+  std::vector<SharingTargetDeviceInfo> candidates =
       GetSharingService()->GetDeviceCandidates(
           sync_pb::SharingSpecificFields::CLICK_TO_CALL_V2);
 
@@ -275,13 +269,12 @@ TEST_F(SharingServiceTest, GetDeviceCandidates_Tracked) {
 }
 
 TEST_F(SharingServiceTest, SendMessageToDeviceSuccess) {
-  std::unique_ptr<syncer::DeviceInfo> device_info =
-      CreateFakeDeviceInfo(base::Uuid::GenerateRandomV4().AsLowercaseString(),
-                           kDeviceName, CreateSharingInfo());
+  SharingTargetDeviceInfo device_info = CreateFakeSharingTargetDeviceInfo(
+      base::Uuid::GenerateRandomV4().AsLowercaseString(), kDeviceName);
 
   chrome_browser_sharing::ResponseMessage expected_response_message;
 
-  auto run_callback = [&](const syncer::DeviceInfo& device_info,
+  auto run_callback = [&](const SharingTargetDeviceInfo& device_info,
                           base::TimeDelta response_timeout,
                           chrome_browser_sharing::SharingMessage message,
                           SharingMessageSender::DelegateType delegate_type,
@@ -300,7 +293,7 @@ TEST_F(SharingServiceTest, SendMessageToDeviceSuccess) {
       .WillByDefault(testing::Invoke(run_callback));
 
   GetSharingService()->SendMessageToDevice(
-      *device_info.get(), kTimeout, chrome_browser_sharing::SharingMessage(),
+      device_info, kTimeout, chrome_browser_sharing::SharingMessage(),
       base::BindOnce(&SharingServiceTest::OnMessageSent,
                      base::Unretained(this)));
 
@@ -523,13 +516,14 @@ TEST_F(SharingServiceTest, StartListeningToFCMAtConstructor) {
 TEST_F(SharingServiceTest, GetDeviceByGuid) {
   std::string guid = base::Uuid::GenerateRandomV4().AsLowercaseString();
   EXPECT_CALL(*device_source_, GetDeviceByGuid(guid))
-      .WillOnce(
-          [](const std::string& guid) -> std::unique_ptr<syncer::DeviceInfo> {
-            return CreateFakeDeviceInfo(guid, "Dell Computer sno one");
-          });
+      .WillOnce([](const std::string& guid)
+                    -> std::optional<SharingTargetDeviceInfo> {
+        return CreateFakeSharingTargetDeviceInfo(guid, "Dell Computer sno one");
+      });
 
-  std::unique_ptr<syncer::DeviceInfo> device_info =
+  std::optional<SharingTargetDeviceInfo> device_info =
       GetSharingService()->GetDeviceByGuid(guid);
+  ASSERT_TRUE(device_info.has_value());
   EXPECT_EQ("Dell Computer sno one", device_info->client_name());
 }
 

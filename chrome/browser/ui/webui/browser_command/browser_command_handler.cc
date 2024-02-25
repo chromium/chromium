@@ -17,6 +17,7 @@
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/chrome_pages.h"
 #include "chrome/browser/ui/tabs/tab_group_model.h"
+#include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/user_education/user_education_service.h"
 #include "chrome/browser/user_education/user_education_service_factory.h"
 #include "chrome/common/chrome_features.h"
@@ -92,7 +93,7 @@ void BrowserCommandHandler::CanExecuteCommand(
                                 can_execute);
       break;
     case Command::kStartTabGroupTutorial:
-      can_execute = !!GetTutorialService() && BrowserSupportsTabGroups();
+      can_execute = TutorialServiceExists() && BrowserSupportsTabGroups();
       break;
     case Command::kOpenPasswordManager:
       can_execute = true;
@@ -104,12 +105,18 @@ void BrowserCommandHandler::CanExecuteCommand(
       can_execute = true;
       break;
     case Command::kOpenNTPAndStartCustomizeChromeTutorial:
-      can_execute = !!GetTutorialService() &&
+      can_execute = TutorialServiceExists() &&
                     BrowserSupportsCustomizeChromeSidePanel() &&
                     DefaultSearchProviderIsGoogle();
       break;
     case Command::kStartPasswordManagerTutorial:
-      can_execute = !!GetTutorialService();
+      can_execute = TutorialServiceExists();
+      break;
+    case Command::kStartSavedTabGroupTutorial:
+      can_execute = TutorialServiceExists() && BrowserSupportsSavedTabGroups();
+      break;
+    case Command::kOpenAISettings:
+      can_execute = true;
       break;
   }
   std::move(callback).Run(can_execute);
@@ -176,10 +183,16 @@ void BrowserCommandHandler::ExecuteCommandWithDisposition(
                     disposition);
       break;
     case Command::kOpenNTPAndStartCustomizeChromeTutorial:
-      OpenNTPAndStartCustomizeChromeTutorial(disposition);
+      OpenNTPAndStartCustomizeChromeTutorial();
       break;
     case Command::kStartPasswordManagerTutorial:
       StartPasswordManagerTutorial();
+      break;
+    case Command::kStartSavedTabGroupTutorial:
+      StartSavedTabGroupTutorial();
+      break;
+    case Command::kOpenAISettings:
+      OpenAISettings();
       break;
     default:
       NOTREACHED() << "Unspecified behavior for command " << id;
@@ -187,15 +200,24 @@ void BrowserCommandHandler::ExecuteCommandWithDisposition(
   }
 }
 
-user_education::TutorialService* BrowserCommandHandler::GetTutorialService() {
-  auto* service = UserEducationServiceFactory::GetForBrowserContext(profile_);
-  return service ? &service->tutorial_service() : nullptr;
+void BrowserCommandHandler::OnTutorialStarted(
+    user_education::TutorialIdentifier tutorial_id,
+    user_education::TutorialService* tutorial_service) {
+  if (tutorial_service) {
+    tutorial_service->LogStartedFromWhatsNewPage(
+        tutorial_id, tutorial_service->IsRunningTutorial(tutorial_id));
+  }
 }
 
-ui::ElementContext BrowserCommandHandler::GetUiElementContext() {
-  return chrome::FindBrowserWithProfile(profile_)
-      ->window()
-      ->GetElementContext();
+void BrowserCommandHandler::StartTutorial(StartTutorialInPage::Params params) {
+  auto* browser = chrome::FindBrowserWithProfile(profile_);
+  StartTutorialInPage::Start(browser, std::move(params));
+}
+
+bool BrowserCommandHandler::TutorialServiceExists() {
+  auto* service = UserEducationServiceFactory::GetForBrowserContext(profile_);
+  auto* tutorial_service = service ? &service->tutorial_service() : nullptr;
+  return !!tutorial_service;
 }
 
 bool BrowserCommandHandler::BrowserSupportsTabGroups() {
@@ -204,26 +226,15 @@ bool BrowserCommandHandler::BrowserSupportsTabGroups() {
 }
 
 void BrowserCommandHandler::StartTabGroupTutorial() {
-  user_education::TutorialService* tutorial_service = GetTutorialService();
+  auto* tutorial_id = kTabGroupTutorialId;
 
-  // Should never happen since we return false in CanExecuteCommand(), but
-  // avoid a browser crash anyway.
-  if (!tutorial_service)
-    return;
-
-  const ui::ElementContext context = GetUiElementContext();
-  if (!context)
-    return;
-
-  if (!BrowserSupportsTabGroups()) {
-    return;
+  if (BrowserSupportsTabGroups()) {
+    StartTutorialInPage::Params params;
+    params.tutorial_id = tutorial_id;
+    params.callback = base::BindOnce(&BrowserCommandHandler::OnTutorialStarted,
+                                     base::Unretained(this), tutorial_id);
+    StartTutorial(std::move(params));
   }
-
-  user_education::TutorialIdentifier tutorial_id = kTabGroupTutorialId;
-
-  tutorial_service->StartTutorial(tutorial_id, context);
-  tutorial_service->LogStartedFromWhatsNewPage(
-      tutorial_id, tutorial_service->IsRunningTutorial());
 }
 
 void BrowserCommandHandler::NavigateToEnhancedProtectionSetting() {
@@ -236,6 +247,11 @@ void BrowserCommandHandler::OpenPasswordManager() {
   chrome::ShowPasswordManager(chrome::FindBrowserWithProfile(profile_));
 }
 
+void BrowserCommandHandler::OpenAISettings() {
+  chrome::ShowSettingsSubPage(chrome::FindBrowserWithProfile(profile_),
+                              chrome::kExperimentalAISettingsSubPage);
+}
+
 bool BrowserCommandHandler::BrowserSupportsCustomizeChromeSidePanel() {
   return base::FeatureList::IsEnabled(features::kCustomizeChromeSidePanel);
 }
@@ -244,58 +260,47 @@ bool BrowserCommandHandler::DefaultSearchProviderIsGoogle() {
   return search::DefaultSearchProviderIsGoogle(profile_);
 }
 
-void BrowserCommandHandler::OpenNTPAndStartCustomizeChromeTutorial(
-    WindowOpenDisposition disposition) {
-  user_education::TutorialService* tutorial_service = GetTutorialService();
+bool BrowserCommandHandler::BrowserSupportsSavedTabGroups() {
+  Browser* browser = chrome::FindBrowserWithProfile(profile_);
 
-  // Should never happen since we return false in CanExecuteCommand(), but
-  // avoid a browser crash anyway.
-  if (!tutorial_service) {
-    return;
+  // Duplicated from chrome/browser/ui/views/bookmarks/bookmark_bar_view.cc
+  // Which cannot be included here
+  return base::FeatureList::IsEnabled(features::kTabGroupsSave) &&
+         browser->profile()->IsRegularProfile();
+}
+
+void BrowserCommandHandler::OpenNTPAndStartCustomizeChromeTutorial() {
+  auto* tutorial_id = kSidePanelCustomizeChromeTutorialId;
+
+  if (BrowserSupportsCustomizeChromeSidePanel() &&
+      DefaultSearchProviderIsGoogle()) {
+    StartTutorialInPage::Params params;
+    params.tutorial_id = tutorial_id;
+    params.callback = base::BindOnce(&BrowserCommandHandler::OnTutorialStarted,
+                                     base::Unretained(this), tutorial_id);
+    params.target_url = GURL(chrome::kChromeUINewTabPageURL);
+    StartTutorial(std::move(params));
   }
-
-  const ui::ElementContext context = GetUiElementContext();
-  if (!context) {
-    return;
-  }
-
-  if (!BrowserSupportsCustomizeChromeSidePanel()) {
-    return;
-  }
-
-  if (!DefaultSearchProviderIsGoogle()) {
-    return;
-  }
-
-  user_education::TutorialIdentifier tutorial_id =
-      kSidePanelCustomizeChromeTutorialId;
-
-  tutorial_service->StartTutorial(tutorial_id, context);
-  tutorial_service->LogStartedFromWhatsNewPage(
-      tutorial_id, tutorial_service->IsRunningTutorial());
-
-  NavigateToURL(GURL(chrome::kChromeUINewTabPageURL), disposition);
 }
 
 void BrowserCommandHandler::StartPasswordManagerTutorial() {
-  user_education::TutorialService* tutorial_service = GetTutorialService();
+  auto* tutorial_id = kPasswordManagerTutorialId;
 
-  // Should never happen since we return false in CanExecuteCommand(), but
-  // avoid a browser crash anyway.
-  if (!tutorial_service) {
-    return;
-  }
+  StartTutorialInPage::Params params;
+  params.tutorial_id = tutorial_id;
+  params.callback = base::BindOnce(&BrowserCommandHandler::OnTutorialStarted,
+                                   base::Unretained(this), tutorial_id);
+  StartTutorial(std::move(params));
+}
 
-  const ui::ElementContext context = GetUiElementContext();
-  if (!context) {
-    return;
-  }
+void BrowserCommandHandler::StartSavedTabGroupTutorial() {
+  auto* tutorial_id = kSavedTabGroupTutorialId;
 
-  user_education::TutorialIdentifier tutorial_id = kPasswordManagerTutorialId;
-
-  tutorial_service->StartTutorial(tutorial_id, context);
-  tutorial_service->LogStartedFromWhatsNewPage(
-      tutorial_id, tutorial_service->IsRunningTutorial());
+  StartTutorialInPage::Params params;
+  params.tutorial_id = tutorial_id;
+  params.callback = base::BindOnce(&BrowserCommandHandler::OnTutorialStarted,
+                                   base::Unretained(this), tutorial_id);
+  StartTutorial(std::move(params));
 }
 
 void BrowserCommandHandler::OpenFeedbackForm() {

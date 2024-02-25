@@ -132,7 +132,7 @@ interface ScopedAccessPermission {};
 
 // Similar to |video_capture.mojom.VideoFrameHandler| but depends on simplified
 // structures.
-// Next min method ID: 12
+// Next min method ID: 14
 [Stable, Uuid="590ab36a-9162-4c9d-8429-1753108825ea"]
 interface VideoFrameHandler {
   [MinVersion=3]
@@ -140,8 +140,12 @@ interface VideoFrameHandler {
 
   OnNewBuffer@0(int32 buffer_id, VideoBufferHandle buffer_handle);
 
-  OnFrameReadyInBuffer@1(ReadyFrameInBuffer buffer,
-                         array<ReadyFrameInBuffer> scaled_buffers);
+  // Deprecated in favor of OnFrameReadyInBuffer() without `scaled_buffers`.
+  // TODO(https://crbug.com/1496825): Delete when safe to do so.
+  DEPRECATED_OnFrameReadyInBuffer@1(ReadyFrameInBuffer buffer,
+                                    array<ReadyFrameInBuffer> scaled_buffers);
+  [MinVersion=13]
+  OnFrameReadyInBuffer@13(ReadyFrameInBuffer buffer);
 
   OnBufferRetired@2(int32 buffer_id);
 
@@ -149,8 +153,12 @@ interface VideoFrameHandler {
 
   OnFrameDropped@4(media.mojom.VideoCaptureFrameDropReason reason);
 
+  // Deprecated in favor of OnNewSubCaptureTargetVersion.
   [MinVersion=2]
-  OnNewCropVersion@10(uint32 crop_version);
+  DEPRECATED_OnNewCropVersion@10(uint32 crop_version);
+
+  [MinVersion=4]
+  OnNewSubCaptureTargetVersion@12(uint32 sub_capture_target_version);
 
   [MinVersion=1]
   OnFrameWithEmptyRegionCapture@9();

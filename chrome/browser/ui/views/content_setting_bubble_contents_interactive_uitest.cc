@@ -42,7 +42,7 @@ class ContentSettingBubbleContentsInteractiveTest
         BrowserView::GetBrowserViewForBrowser(browser())->GetLocationBarView();
     return **base::ranges::find(
         location_bar_view->GetContentSettingViewsForTest(), image_type,
-        &ContentSettingImageView::GetTypeForTesting);
+        &ContentSettingImageView::GetType);
   }
 
   content::test::PrerenderTestHelper* prerender_helper() {

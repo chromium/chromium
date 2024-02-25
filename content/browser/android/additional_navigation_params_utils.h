@@ -15,7 +15,7 @@
 
 namespace content {
 
-absl::optional<blink::LocalFrameToken>
+std::optional<blink::LocalFrameToken>
 GetInitiatorFrameTokenFromJavaAdditionalNavigationParams(
     JNIEnv* env,
     const base::android::JavaParamRef<jobject>& j_object);
@@ -24,7 +24,7 @@ int GetInitiatorProcessIdFromJavaAdditionalNavigationParams(
     JNIEnv* env,
     const base::android::JavaParamRef<jobject>& j_object);
 
-absl::optional<blink::AttributionSrcToken>
+std::optional<blink::AttributionSrcToken>
 GetAttributionSrcTokenFromJavaAdditionalNavigationParams(
     JNIEnv* env,
     const base::android::JavaParamRef<jobject>& j_object);

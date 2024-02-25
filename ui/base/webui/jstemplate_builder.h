@@ -28,14 +28,6 @@ COMPONENT_EXPORT(UI_BASE)
 std::string GetI18nTemplateHtml(base::StringPiece html_template,
                                 const base::Value::Dict& json);
 
-// A helper function that generates a string of HTML to be loaded.  The
-// string includes the HTML and the javascript code necessary to generate the
-// full page with support for both i18n Templates and JsTemplates.
-COMPONENT_EXPORT(UI_BASE)
-std::string GetTemplatesHtml(base::StringPiece html_template,
-                             const base::Value::Dict& json,
-                             base::StringPiece template_id);
-
 // Assigns the given json data into |loadTimeData|, without a <script> tag.
 COMPONENT_EXPORT(UI_BASE)
 void AppendJsonJS(const base::Value::Dict& json,

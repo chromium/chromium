@@ -11,6 +11,7 @@ build_webui("build") {
     "logs/policy_logs.html",
     "policy.html",
     "policy.css",
+    "policy_shared_vars.css",
     "test/policy_test.html",
   ]
 

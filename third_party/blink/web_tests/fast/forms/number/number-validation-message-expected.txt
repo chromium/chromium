@@ -17,6 +17,8 @@ PASS testIt("10", "50", "100") is "Value must be greater than or equal to 50."
 PASS testIt("10", "50", "100") is "Value must be greater than or equal to ٥٠."
 Step mismatch
 PASS testIt("55", "0", "100", "10") is "Please enter a valid value. The two nearest valid values are 50 and 60."
+Range invalid
+PASS testIt("10", "100", "50") is "Minimum value (100) must be less than the maximum value (50)."
 PASS successfullyParsed is true
 
 TEST COMPLETE

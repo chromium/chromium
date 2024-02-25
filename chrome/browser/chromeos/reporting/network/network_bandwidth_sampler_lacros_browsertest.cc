@@ -54,7 +54,7 @@ void SetupUserDeviceAffiliation() {
       std::move(profile_policy_data));
 
   ::crosapi::mojom::BrowserInitParamsPtr init_params =
-      ::crosapi::mojom::BrowserInitParams::New();
+      chromeos::BrowserInitParams::GetForTests()->Clone();
   init_params->device_properties = crosapi::mojom::DeviceProperties::New();
   init_params->device_properties->device_dm_token = kFakeDMToken;
   init_params->device_properties->device_affiliation_ids = {kAffiliationId};
@@ -114,11 +114,6 @@ class NetworkBandwidthSamplerBrowserTest : public InProcessBrowserTest {
     InProcessBrowserTest::CreatedBrowserMainParts(browser_parts);
   }
 
-  void TearDownInProcessBrowserTestFixture() override {
-    ::chromeos::BrowserInitParams::SetInitParamsForTests(nullptr);
-    InProcessBrowserTest::TearDownInProcessBrowserTestFixture();
-  }
-
   void UpdateDownloadSpeedKbps(int64_t download_speed_kbps) {
     g_browser_process->network_quality_tracker()
         ->ReportRTTsAndThroughputForTesting(base::Milliseconds(100),
@@ -164,7 +159,7 @@ IN_PROC_BROWSER_TEST_F(NetworkBandwidthSamplerBrowserTest,
       base::BindRepeating(&IsNetworkBandwidthTelemetry));
   test::MockClock::Get().Advance(
       metrics::kDefaultNetworkTelemetryCollectionRate);
-  EXPECT_FALSE(missive_observer.HasNewEnqueuedRecords());
+  EXPECT_FALSE(missive_observer.HasNewEnqueuedRecord());
 }
 
 }  // namespace

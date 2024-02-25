@@ -15,11 +15,13 @@ import androidx.annotation.VisibleForTesting;
 import androidx.core.content.res.ResourcesCompat;
 
 import org.chromium.base.supplier.Supplier;
-import org.chromium.chrome.browser.WebContentsFactory;
+import org.chromium.base.version_info.VersionInfo;
 import org.chromium.chrome.browser.compositor.bottombar.OverlayPanel.PanelState;
 import org.chromium.chrome.browser.content.ContentUtils;
+import org.chromium.chrome.browser.content.WebContentsFactory;
 import org.chromium.chrome.browser.contextualsearch.ContextualSearchManagementDelegate;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.SheetState;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetObserver;
@@ -28,7 +30,6 @@ import org.chromium.components.embedder_support.view.ContentView;
 import org.chromium.components.thinwebview.ThinWebView;
 import org.chromium.components.thinwebview.ThinWebViewConstraints;
 import org.chromium.components.thinwebview.ThinWebViewFactory;
-import org.chromium.components.version_info.VersionInfo;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.ui.base.IntentRequestTracker;
@@ -70,8 +71,11 @@ public class ContextualSearchPanelCoordinator implements ContextualSearchPanelIn
      * @param tabHeightSupplier The {@link Supplier} for the tab height.
      * @param intentRequestTracker The {@link IntentRequestTracker} of the current activity.
      */
-    public ContextualSearchPanelCoordinator(Context context, WindowAndroid windowAndroid,
-            BottomSheetController bottomSheetController, Supplier<Integer> tabHeightSupplier,
+    public ContextualSearchPanelCoordinator(
+            Context context,
+            WindowAndroid windowAndroid,
+            BottomSheetController bottomSheetController,
+            Supplier<Integer> tabHeightSupplier,
             IntentRequestTracker intentRequestTracker) {
         mContext = context;
         mWindowAndroid = windowAndroid;
@@ -80,21 +84,28 @@ public class ContextualSearchPanelCoordinator implements ContextualSearchPanelIn
         mTabHeightSupplier = tabHeightSupplier;
 
         final Resources resources = mContext.getResources();
-        mToolbarHeightPx = resources.getDimensionPixelSize(
-                org.chromium.chrome.R.dimen.sheet_tab_toolbar_height);
-        mFullHeightFraction = ResourcesCompat.getFloat(resources,
-                org.chromium.chrome.R.dimen.contextual_search_sheet_full_height_fraction);
+        mToolbarHeightPx =
+                resources.getDimensionPixelSize(
+                        org.chromium.chrome.R.dimen.sheet_tab_toolbar_height);
+        mFullHeightFraction =
+                ResourcesCompat.getFloat(
+                        resources,
+                        org.chromium.chrome.R.dimen.contextual_search_sheet_full_height_fraction);
         mIntentRequestTracker = intentRequestTracker;
     }
 
     private void createWebContents() {
-        final Profile profile = Profile.getLastUsedRegularProfile();
+        final Profile profile = ProfileManager.getLastUsedRegularProfile();
         mWebContents = WebContentsFactory.createWebContents(profile, false, false);
         mWebContentView = ContentView.createContentView(mContext, null, mWebContents);
         final ViewAndroidDelegate delegate =
                 ViewAndroidDelegate.createBasicDelegate(mWebContentView);
-        mWebContents.initialize(VersionInfo.getProductVersion(), delegate, mWebContentView,
-                mWindowAndroid, WebContents.createDefaultInternalsHolder());
+        mWebContents.initialize(
+                VersionInfo.getProductVersion(),
+                delegate,
+                mWebContentView,
+                mWindowAndroid,
+                WebContents.createDefaultInternalsHolder());
         ContentUtils.setUserAgentOverride(mWebContents, /* overrideInNewTabs= */ false);
     }
 
@@ -117,10 +128,14 @@ public class ContextualSearchPanelCoordinator implements ContextualSearchPanelIn
         }
 
         final int maxHeight = (int) (mTabHeightSupplier.get() * mFullHeightFraction);
-        mThinWebView = ThinWebViewFactory.create(
-                mContext, new ThinWebViewConstraints(), mIntentRequestTracker);
-        mThinWebView.getView().setLayoutParams(new FrameLayout.LayoutParams(
-                ViewGroup.LayoutParams.MATCH_PARENT, maxHeight - mToolbarHeightPx));
+        mThinWebView =
+                ThinWebViewFactory.create(
+                        mContext, new ThinWebViewConstraints(), mIntentRequestTracker);
+        mThinWebView
+                .getView()
+                .setLayoutParams(
+                        new FrameLayout.LayoutParams(
+                                ViewGroup.LayoutParams.MATCH_PARENT, maxHeight - mToolbarHeightPx));
         mThinWebView.attachWebContents(mWebContents, mWebContentView, null);
 
         mSheetContentView = new FrameLayout(mContext);
@@ -162,13 +177,22 @@ public class ContextualSearchPanelCoordinator implements ContextualSearchPanelIn
 
     @VisibleForTesting
     @Override
-    public void onSearchTermResolved(String searchTerm, String thumbnailUrl, String quickActionUri,
-            int quickActionCategory, int cardTagEnum, @Nullable List<String> inBarRelatedSearches) {
-    }
+    public void onSearchTermResolved(
+            String searchTerm,
+            String thumbnailUrl,
+            String quickActionUri,
+            int quickActionCategory,
+            int cardTagEnum,
+            @Nullable List<String> inBarRelatedSearches) {}
 
     @Override
-    public void onSearchTermResolved(String searchTerm, @Nullable String pronunciation,
-            String thumbnailUrl, String quickActionUri, int quickActionCategory, int cardTagEnum,
+    public void onSearchTermResolved(
+            String searchTerm,
+            @Nullable String pronunciation,
+            String thumbnailUrl,
+            String quickActionUri,
+            int quickActionCategory,
+            int cardTagEnum,
             @Nullable List<String> inBarRelatedSearches) {}
 
     @Override
@@ -223,20 +247,23 @@ public class ContextualSearchPanelCoordinator implements ContextualSearchPanelIn
         if (mWebContents == null) {
             createWebContents();
             createSheetContent();
-            mBottomSheetObserver = new EmptyBottomSheetObserver() {
-                @Override
-                public void onSheetOpened(int reason) {
-                    mManagementDelegate.getOverlayContentDelegate().onVisibilityChanged(true);
-                }
+            mBottomSheetObserver =
+                    new EmptyBottomSheetObserver() {
+                        @Override
+                        public void onSheetOpened(int reason) {
+                            mManagementDelegate
+                                    .getOverlayContentDelegate()
+                                    .onVisibilityChanged(true);
+                        }
 
-                @Override
-                public void onSheetStateChanged(int newState, int reason) {
-                    if (newState == SheetState.HIDDEN) {
-                        mIsActive = false;
-                        destroyWebContents();
-                    }
-                }
-            };
+                        @Override
+                        public void onSheetStateChanged(int newState, int reason) {
+                            if (newState == SheetState.HIDDEN) {
+                                mIsActive = false;
+                                destroyWebContents();
+                            }
+                        }
+                    };
             // TODO(sinansahin): It's not guaranteed that we'll be observing the BottomSheet with
             // the contents we provide. We should probably use the return value from
             // BottomSheetController#requestShowContent to decide whether we want to observe the

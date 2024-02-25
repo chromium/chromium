@@ -15,7 +15,7 @@
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
-#include "base/metrics/histogram_macros.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/task/bind_post_task.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/task/task_traits.h"
@@ -96,6 +96,17 @@ constexpr base::TimeDelta kCheckDelay = base::Minutes(5);
 static_assert(kCheckDelay > kStartupDelay,
               "Must allow time for pre-provisioning to run first");
 
+// These are reported to UMA server. Do not renumber or reuse values.
+enum class ProvisioningResult {
+  kSuccess = 0,
+  kFailedWhileOnline = 1,
+  kFailedWhileOffline = 2,
+  kMaxValue = kFailedWhileOffline,
+};
+
+void ReportProvisioningResultUMA(ProvisioningResult result) {
+  base::UmaHistogramEnumeration("Media.EME.MediaDrm.Provisioning", result);
+}
 // When unable to get an origin ID, only attempt to pre-provision more if
 // pre-provision is called within |kExpirationDelta| of the time of this
 // failure. This is not needed on devices that support per-application
@@ -186,7 +197,7 @@ bool CanPreProvision(bool is_per_application_provisioning_supported,
   if (!token_value)
     return false;
 
-  absl::optional<base::Time> expiration_time = base::ValueToTime(*token_value);
+  std::optional<base::Time> expiration_time = base::ValueToTime(*token_value);
   if (!expiration_time) {
     RemoveExpirableToken(origin_id_dict);
     return false;
@@ -316,7 +327,7 @@ class MediaDrmProvisionHelper {
     const bool success = L1_success || L3_success;
     LOG_IF(WARNING, !success) << "Failed to provision origin ID";
     std::move(complete_callback_)
-        .Run(success ? absl::make_optional(origin_id_) : absl::nullopt);
+        .Run(success ? std::make_optional(origin_id_) : std::nullopt);
     delete this;
   }
 
@@ -347,7 +358,7 @@ void StartProvisioning(
 
   if (!pending_shared_url_loader_factory) {
     // No fetcher available, so don't bother trying to provision.
-    std::move(callback).Run(absl::nullopt);
+    std::move(callback).Run(std::nullopt);
     return;
   }
 
@@ -459,7 +470,7 @@ MediaDrmOriginIdManager::~MediaDrmOriginIdManager() {
   // Reject any pending requests.
   while (!pending_provisioned_origin_id_cbs_.empty()) {
     std::move(pending_provisioned_origin_id_cbs_.front())
-        .Run(GetOriginIdStatus::kFailure, absl::nullopt);
+        .Run(GetOriginIdStatus::kFailure, std::nullopt);
     pending_provisioned_origin_id_cbs_.pop();
   }
 }
@@ -609,14 +620,20 @@ void MediaDrmOriginIdManager::OriginIdProvisioned(
 
   if (!origin_id) {
     // Unable to provision an origin ID, most likely due to being unable to
-    // connect to a provisioning server. Set up a NetworkObserver to detect when
-    // we're connected to a network so that we can try again. If there is
-    // already a NetworkObserver and provisioning has failed multiple times,
-    // stop watching for network changes.
+    // connect to a provisioning server or a failure in the MediaDrm code. Set
+    // up a NetworkObserver to detect when we're connected to a network so that
+    // we can try again. If there is already a NetworkObserver and provisioning
+    // has failed multiple times, stop watching for network changes.
     if (!network_observer_)
       network_observer_ = std::make_unique<NetworkObserver>(this);
     else if (network_observer_->MaxAttemptsExceeded())
       network_observer_.reset();
+
+    // Log the failure for tracking purposes.
+    ReportProvisioningResultUMA(
+        content::GetNetworkConnectionTracker()->IsOffline()
+            ? ProvisioningResult::kFailedWhileOffline
+            : ProvisioningResult::kFailedWhileOnline);
 
     if (!pending_provisioned_origin_id_cbs_.empty()) {
       // This failure results from a user request (as opposed to
@@ -633,7 +650,7 @@ void MediaDrmOriginIdManager::OriginIdProvisioned(
       pending_requests.swap(pending_provisioned_origin_id_cbs_);
       while (!pending_requests.empty()) {
         std::move(pending_requests.front())
-            .Run(GetOriginIdStatus::kFailure, absl::nullopt);
+            .Run(GetOriginIdStatus::kFailure, std::nullopt);
         pending_requests.pop();
       }
     }
@@ -642,9 +659,11 @@ void MediaDrmOriginIdManager::OriginIdProvisioned(
     return;
   }
 
-  // Success, for at least one level. Pass |origin_id| to the first requestor if
-  // somebody is waiting for it. Otherwise add it to the list of available
-  // origin IDs in the preference.
+  // Success, for at least one level. Log the success.
+  ReportProvisioningResultUMA(ProvisioningResult::kSuccess);
+
+  // Pass |origin_id| to the first requestor if somebody is waiting for it.
+  // Otherwise add it to the list of available origin IDs in the preference.
   if (!pending_provisioned_origin_id_cbs_.empty()) {
     std::move(pending_provisioned_origin_id_cbs_.front())
         .Run(GetOriginIdStatus::kSuccessWithNewlyProvisionedOriginId,
@@ -691,11 +710,11 @@ void MediaDrmOriginIdManager::RecordCountOfPreprovisionedOriginIds() {
   int available_origin_ids = CountAvailableOriginIds(pref);
 
   if (IsPerApplicationProvisioningSupported()) {
-    UMA_HISTOGRAM_EXACT_LINEAR(
+    base::UmaHistogramExactLinear(
         "Media.EME.MediaDrm.PreprovisionedOriginId.PerAppProvisioningDevice",
         available_origin_ids, kUMAMaxPreProvisionedOriginIds);
   } else {
-    UMA_HISTOGRAM_EXACT_LINEAR(
+    base::UmaHistogramExactLinear(
         "Media.EME.MediaDrm.PreprovisionedOriginId.NonPerAppProvisioningDevice",
         available_origin_ids, kUMAMaxPreProvisionedOriginIds);
   }

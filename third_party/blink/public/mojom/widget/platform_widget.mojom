@@ -90,13 +90,6 @@ interface Widget {
   // surface etc.).
   ForceRedraw() => ();
 
-  // Setup the input channel for this widget. If the widget is a frame,
-  // then it can also obtain a FrameWidgetInputHandler from the
-  // WidgetInputHandler interface.
-  GetWidgetInputHandler(
-    pending_receiver<blink.mojom.WidgetInputHandler> request,
-    pending_remote<blink.mojom.WidgetInputHandlerHost> host);
-
   // Update the visual properties of the widget.
   UpdateVisualProperties(VisualProperties visual_properties);
 
@@ -126,5 +119,20 @@ interface Widget {
   // WasShown or RequestSuccessfulPresentationTimeForNextFrame. If there are
   // none this will do nothing.
   CancelSuccessfulPresentationTimeRequest();
+
+  // Setup the RenderInputRouter mojo connections.
+  SetupRenderInputRouterConnections(
+    pending_receiver<blink.mojom.RenderInputRouterClient> client);
 };
 
+// Implemented in Blink, this interface defines input-specific methods that will
+// be invoked from the BrowserMain thread. In future, VizCompositor thread will
+// also setup this interface.
+interface RenderInputRouterClient {
+  // Setup the input channel for this widget. If the widget is a frame, then it
+  // can also obtain a FrameWidgetInputHandler from the WidgetInputHandler
+  // interface.
+  GetWidgetInputHandler(
+      pending_receiver<blink.mojom.WidgetInputHandler> request,
+      pending_remote<blink.mojom.WidgetInputHandlerHost> host);
+};

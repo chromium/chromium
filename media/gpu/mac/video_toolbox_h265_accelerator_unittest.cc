@@ -53,8 +53,9 @@ class VideoToolboxH265AcceleratorTest : public testing::Test {
   ~VideoToolboxH265AcceleratorTest() override = default;
 
  protected:
-  MOCK_METHOD2(OnDecode,
+  MOCK_METHOD3(OnDecode,
                void(base::apple::ScopedCFTypeRef<CMSampleBufferRef>,
+                    VideoToolboxDecompressionSessionMetadata,
                     scoped_refptr<CodecPicture>));
   MOCK_METHOD1(OnOutput, void(scoped_refptr<CodecPicture>));
 
@@ -91,11 +92,11 @@ TEST_F(VideoToolboxH265AcceleratorTest, DecodeOne) {
 
   // Save the resulting sample.
   base::apple::ScopedCFTypeRef<CMSampleBufferRef> sample;
-  EXPECT_CALL(*this, OnDecode(_, _)).WillOnce(SaveArg<0>(&sample));
+  EXPECT_CALL(*this, OnDecode(_, _, _)).WillOnce(SaveArg<0>(&sample));
   accelerator_->SubmitDecode(pic);
 
   // Verify sample.
-  CMBlockBufferRef buf = CMSampleBufferGetDataBuffer(sample);
+  CMBlockBufferRef buf = CMSampleBufferGetDataBuffer(sample.get());
   std::vector<uint8_t> data(CMBlockBufferGetDataLength(buf));
   CMBlockBufferCopyDataBytes(buf, 0, CMBlockBufferGetDataLength(buf),
                              data.data());
@@ -131,7 +132,7 @@ TEST_F(VideoToolboxH265AcceleratorTest, DecodeTwo) {
 
   // Save the resulting sample.
   base::apple::ScopedCFTypeRef<CMSampleBufferRef> sample0;
-  EXPECT_CALL(*this, OnDecode(_, _)).WillOnce(SaveArg<0>(&sample0));
+  EXPECT_CALL(*this, OnDecode(_, _, _)).WillOnce(SaveArg<0>(&sample0));
   accelerator_->SubmitDecode(pic0);
 
   // Second frame.
@@ -147,12 +148,12 @@ TEST_F(VideoToolboxH265AcceleratorTest, DecodeTwo) {
 
   // Save the resulting sample.
   base::apple::ScopedCFTypeRef<CMSampleBufferRef> sample1;
-  EXPECT_CALL(*this, OnDecode(_, _)).WillOnce(SaveArg<0>(&sample1));
+  EXPECT_CALL(*this, OnDecode(_, _, _)).WillOnce(SaveArg<0>(&sample1));
   accelerator_->SubmitDecode(pic1);
 
   // The two samples should have the same configuration.
-  EXPECT_EQ(CMSampleBufferGetFormatDescription(sample0),
-            CMSampleBufferGetFormatDescription(sample1));
+  EXPECT_EQ(CMSampleBufferGetFormatDescription(sample0.get()),
+            CMSampleBufferGetFormatDescription(sample1.get()));
 }
 
 TEST_F(VideoToolboxH265AcceleratorTest, DecodeTwo_Reset) {
@@ -178,7 +179,7 @@ TEST_F(VideoToolboxH265AcceleratorTest, DecodeTwo_Reset) {
 
   // Save the resulting sample.
   base::apple::ScopedCFTypeRef<CMSampleBufferRef> sample0;
-  EXPECT_CALL(*this, OnDecode(_, _)).WillOnce(SaveArg<0>(&sample0));
+  EXPECT_CALL(*this, OnDecode(_, _, _)).WillOnce(SaveArg<0>(&sample0));
   accelerator_->SubmitDecode(pic0);
 
   // Reset.
@@ -197,12 +198,14 @@ TEST_F(VideoToolboxH265AcceleratorTest, DecodeTwo_Reset) {
 
   // Save the resulting sample.
   base::apple::ScopedCFTypeRef<CMSampleBufferRef> sample1;
-  EXPECT_CALL(*this, OnDecode(_, _)).WillOnce(SaveArg<0>(&sample1));
+  EXPECT_CALL(*this, OnDecode(_, _, _)).WillOnce(SaveArg<0>(&sample1));
   accelerator_->SubmitDecode(pic1);
 
-  // The two samples should have different configurations.
-  EXPECT_NE(CMSampleBufferGetFormatDescription(sample0),
-            CMSampleBufferGetFormatDescription(sample1));
+  // The accelerator should have made a new configuration. (Technically it
+  // should be fine to reuse the old one because the parameter sets did not
+  // change.)
+  EXPECT_NE(CMSampleBufferGetFormatDescription(sample0.get()),
+            CMSampleBufferGetFormatDescription(sample1.get()));
 }
 
 TEST_F(VideoToolboxH265AcceleratorTest, DecodeTwo_ConfigChange) {
@@ -228,7 +231,7 @@ TEST_F(VideoToolboxH265AcceleratorTest, DecodeTwo_ConfigChange) {
 
   // Save the resulting sample.
   base::apple::ScopedCFTypeRef<CMSampleBufferRef> sample0;
-  EXPECT_CALL(*this, OnDecode(_, _)).WillOnce(SaveArg<0>(&sample0));
+  EXPECT_CALL(*this, OnDecode(_, _, _)).WillOnce(SaveArg<0>(&sample0));
   accelerator_->SubmitDecode(pic0);
 
   // Second frame.
@@ -244,12 +247,12 @@ TEST_F(VideoToolboxH265AcceleratorTest, DecodeTwo_ConfigChange) {
 
   // Save the resulting sample.
   base::apple::ScopedCFTypeRef<CMSampleBufferRef> sample1;
-  EXPECT_CALL(*this, OnDecode(_, _)).WillOnce(SaveArg<0>(&sample1));
+  EXPECT_CALL(*this, OnDecode(_, _, _)).WillOnce(SaveArg<0>(&sample1));
   accelerator_->SubmitDecode(pic1);
 
-  // The two samples should have different configurations.
-  EXPECT_NE(CMSampleBufferGetFormatDescription(sample0),
-            CMSampleBufferGetFormatDescription(sample1));
+  // The two samples should still have the same configurations.
+  EXPECT_EQ(CMSampleBufferGetFormatDescription(sample0.get()),
+            CMSampleBufferGetFormatDescription(sample1.get()));
 }
 
 }  // namespace media

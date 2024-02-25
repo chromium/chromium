@@ -89,7 +89,12 @@ cast_receiver::Status RuntimeServiceImpl::Start() {
                              base::BindRepeating(
                                  &RuntimeServiceImpl::HandleStopMetricsRecorder,
                                  weak_factory_.GetWeakPtr())));
-  grpc_server_->Start(runtime_service_endpoint_);
+
+  auto status = grpc_server_->Start(runtime_service_endpoint_);
+  // Browser runtime must crash if the runtime service failed to start to avoid
+  // the process to dangle without any proper connection to the Cast Core.
+  CHECK(status.ok()) << "Failed to start runtime service: status="
+                     << status.error_message();
 
   LOG(INFO) << "Runtime service started";
   return cast_receiver::OkStatus();

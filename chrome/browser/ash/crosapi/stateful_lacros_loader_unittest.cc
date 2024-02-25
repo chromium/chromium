@@ -5,6 +5,7 @@
 #include "chrome/browser/ash/crosapi/stateful_lacros_loader.h"
 
 #include <memory>
+#include <string_view>
 
 #include "base/auto_reset.h"
 #include "base/files/file_path.h"
@@ -71,7 +72,7 @@ class StatefulLacrosLoaderTest : public testing::Test {
 
 TEST_F(StatefulLacrosLoaderTest, LoadStatefulLacros) {
   std::u16string lacros_component_name =
-      base::UTF8ToUTF16(base::StringPiece(kLacrosComponentName));
+      base::UTF8ToUTF16(std::string_view(kLacrosComponentName));
   EXPECT_CALL(mock_component_update_service_, GetComponents())
       .WillOnce(Return(std::vector<component_updater::ComponentInfo>{
           {kLacrosComponentId, "", lacros_component_name, version, ""}}));
@@ -80,7 +81,25 @@ TEST_F(StatefulLacrosLoaderTest, LoadStatefulLacros) {
   // completed before verifying the version.
   base::test::TestFuture<base::Version, const base::FilePath&> future;
   stateful_lacros_loader_->Load(
-      future.GetCallback<base::Version, const base::FilePath&>());
+      future.GetCallback<base::Version, const base::FilePath&>(),
+      /*forced=*/false);
+  EXPECT_EQ(version, future.Get<0>());
+}
+
+TEST_F(StatefulLacrosLoaderTest, LoadStatefulLacrosSelectedByPolicy) {
+  std::u16string lacros_component_name =
+      base::UTF8ToUTF16(std::string_view(kLacrosComponentName));
+  EXPECT_CALL(mock_component_update_service_, GetComponents())
+      .WillOnce(Return(std::vector<component_updater::ComponentInfo>{
+          {kLacrosComponentId, "", lacros_component_name, version, ""}}));
+
+  // Set stateful lacros-chrome version. Wait until the version calculation is
+  // completed before verifying the version.
+  base::test::TestFuture<base::Version, const base::FilePath&> future;
+  // Load stateful lacros-chrome as enforced by a policy.
+  stateful_lacros_loader_->Load(
+      future.GetCallback<base::Version, const base::FilePath&>(),
+      /*forced=*/true);
   EXPECT_EQ(version, future.Get<0>());
 }
 

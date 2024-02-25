@@ -5,7 +5,6 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_DOM_CHILD_NODE_PART_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_DOM_CHILD_NODE_PART_H_
 
-#include "third_party/blink/renderer/bindings/core/v8/v8_part_init.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_union_node_string_trustedscript.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/dom/container_node.h"
@@ -18,6 +17,9 @@
 #include "third_party/blink/renderer/platform/heap/member.h"
 
 namespace blink {
+
+class PartInit;
+class PartRootCloneOptions;
 
 // Implementation of the ChildNodePart class, which is part of the DOM Parts
 // API. A ChildNodePart stores a reference to a range of nodes within the
@@ -43,30 +45,35 @@ class CORE_EXPORT ChildNodePart : public Part, public PartRoot {
   ChildNodePart(PartRoot& root,
                 Node& previous_sibling,
                 Node& next_sibling,
-                const Vector<String> metadata);
+                Vector<String> metadata);
   ChildNodePart(const ChildNodePart&) = delete;
   ~ChildNodePart() override = default;
 
   void Trace(Visitor* visitor) const override;
   bool IsValid() const override;
   Node* NodeToSortBy() const override;
-  Part* ClonePart(NodeCloningData&) const override;
+  Part* ClonePart(NodeCloningData&, Node&) const override;
   PartRoot* GetAsPartRoot() const override {
     return const_cast<ChildNodePart*>(this);
   }
 
   Document& GetDocument() const override;
   bool IsDocumentPartRoot() const override { return false; }
-  Node* FirstIncludedChildNode() const override { return previous_sibling_; }
-  Node* LastIncludedChildNode() const override { return next_sibling_; }
+  Node* FirstIncludedChildNode() const override {
+    return previous_sibling_.Get();
+  }
+  Node* LastIncludedChildNode() const override { return next_sibling_.Get(); }
 
   // ChildNodePart API
   void disconnect() override;
-  PartRootUnion* clone(ExceptionState& exception_state);
+  PartRootUnion* clone(ExceptionState& exception_state) {
+    return clone(nullptr, exception_state);
+  }
+  PartRootUnion* clone(PartRootCloneOptions*, ExceptionState&);
   ContainerNode* rootContainer() const override;
   ContainerNode* parentNode() const { return previous_sibling_->parentNode(); }
-  Node* previousSibling() const { return previous_sibling_; }
-  Node* nextSibling() const { return next_sibling_; }
+  Node* previousSibling() const { return previous_sibling_.Get(); }
+  Node* nextSibling() const { return next_sibling_.Get(); }
   void setNextSibling(Node& next_sibling);
   HeapVector<Member<Node>> children() const;
   void replaceChildren(
@@ -84,6 +91,38 @@ class CORE_EXPORT ChildNodePart : public Part, public PartRoot {
   Member<Node> previous_sibling_;
   Member<Node> next_sibling_;
 };
+
+// A ChildNodePart is valid if:
+//  1. The base |Part| is valid (it has a |root|).
+//  2. previous_sibling_ and next_sibling_ are non-null.
+//  3. previous_sibling_ and next_sibling_ have the same (non-null) parent.
+//  4. previous_sibling_ comes strictly before next_sibling_ in the tree.
+inline bool ChildNodePart::IsValid() const {
+  if (!Part::IsValid()) {
+    return false;
+  }
+  if (!previous_sibling_ || !next_sibling_) {
+    return false;
+  }
+  ContainerNode* parent = parentNode();
+  if (!parent) {
+    return false;
+  }
+  if (next_sibling_->parentNode() != parent) {
+    return false;
+  }
+  if (previous_sibling_ == next_sibling_) {
+    return false;
+  }
+  Node* left = previous_sibling_.Get();
+  do {
+    left = left->nextSibling();
+    if (left == next_sibling_) {
+      return true;
+    }
+  } while (left);
+  return false;
+}
 
 }  // namespace blink
 

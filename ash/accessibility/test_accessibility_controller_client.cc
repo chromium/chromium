@@ -6,7 +6,7 @@
 
 #include <utility>
 
-#include "ash/public/cpp/accessibility_controller.h"
+#include "ash/accessibility/accessibility_controller.h"
 #include "base/time/time.h"
 #include "ui/gfx/geometry/point_f.h"
 
@@ -71,7 +71,8 @@ void TestAccessibilityControllerClient::RequestSelectToSpeakStateChange() {
 }
 
 void TestAccessibilityControllerClient::
-    RequestAutoclickScrollableBoundsForPoint(gfx::Point& point_in_screen) {}
+    RequestAutoclickScrollableBoundsForPoint(
+        const gfx::Point& point_in_screen) {}
 
 void TestAccessibilityControllerClient::MagnifierBoundsChanged(
     const gfx::Rect& bounds_in_screen) {}
@@ -93,9 +94,9 @@ std::string TestAccessibilityControllerClient::GetDictationDefaultLocale(
   return "";
 }
 
-absl::optional<Sound>
+std::optional<Sound>
 TestAccessibilityControllerClient::GetPlayedEarconAndReset() {
-  return std::exchange(sound_key_, absl::nullopt);
+  return std::exchange(sound_key_, std::nullopt);
 }
 
 }  // namespace ash

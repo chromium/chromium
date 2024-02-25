@@ -14,7 +14,6 @@
 #include "base/android/jni_string.h"
 #include "base/containers/contains.h"
 #include "base/logging.h"
-#include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
 #include "media/base/android/media_codec_bridge.h"
 #include "media/base/android/media_jni_headers/CodecProfileLevelList_jni.h"
@@ -171,12 +170,6 @@ std::string MediaCodecUtil::CodecToAndroidMimeType(VideoCodec codec) {
 }
 
 // static
-bool MediaCodecUtil::PlatformSupportsCbcsEncryption(int sdk) {
-  JNIEnv* env = AttachCurrentThread();
-  return Java_MediaCodecUtil_platformSupportsCbcsEncryption(env, sdk);
-}
-
-// static
 std::set<int> MediaCodecUtil::GetEncoderColorFormats(
     const std::string& mime_type) {
   std::set<int> color_formats;
@@ -240,6 +233,13 @@ bool MediaCodecUtil::IsHEVCDecoderAvailable() {
 #endif
 
 // static
+bool MediaCodecUtil::IsAACEncoderAvailable() {
+  // We only support AAC encoding on android Q+, due to our use of the NDK.
+  return base::android::BuildInfo::GetInstance()->sdk_int() >=
+         base::android::SDK_VERSION_Q;
+}
+
+// static
 bool MediaCodecUtil::IsSurfaceViewOutputSupported() {
   // Disable SurfaceView output for the Samsung Galaxy S3; it does not work
   // well enough for even 360p24 H264 playback.  http://crbug.com/602870.
@@ -286,9 +286,9 @@ bool MediaCodecUtil::IsPassthroughAudioFormat(AudioCodec codec) {
 }
 
 // static
-absl::optional<gfx::Size> MediaCodecUtil::LookupCodedSizeAlignment(
-    base::StringPiece name,
-    absl::optional<int> host_sdk_int) {
+std::optional<gfx::Size> MediaCodecUtil::LookupCodedSizeAlignment(
+    std::string_view name,
+    std::optional<int> host_sdk_int) {
   // Below we build a map of codec names to coded size alignments. We do this on
   // a best effort basis to avoid glitches during a coded size change.
   //
@@ -359,7 +359,7 @@ absl::optional<gfx::Size> MediaCodecUtil::LookupCodedSizeAlignment(
     }
   }
 
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 // static

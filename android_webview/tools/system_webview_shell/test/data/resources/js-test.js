@@ -9,7 +9,7 @@ debug = function debug(msg)
 
 description = function description(msg, quiet)
 {
-    console.log(msg);
+    awConsole.log(msg);
 };
 
 finishJSTest = function finishJSTest() {

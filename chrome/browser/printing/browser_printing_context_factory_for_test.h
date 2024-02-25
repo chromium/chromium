@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_PRINTING_BROWSER_PRINTING_CONTEXT_FACTORY_FOR_TEST_H_
 
 #include <memory>
+#include <optional>
 #include <string>
 
 #include "build/build_config.h"
@@ -24,11 +25,13 @@ class BrowserPrintingContextFactoryForTest
 
   std::unique_ptr<PrintingContext> CreatePrintingContext(
       PrintingContext::Delegate* delegate,
-      bool skip_system_calls) override;
+      PrintingContext::ProcessBehavior process_behavior) override;
 
   void SetPrinterNameForSubsequentContexts(const std::string& printer_name);
+  void SetFailedErrorOnUpdatePrinterSettings();
   void SetCancelErrorOnNewDocument(bool cause_errors);
   void SetFailedErrorOnNewDocument(bool cause_errors);
+  void SetJobIdOnNewDocument(int job_id);
   void SetAccessDeniedErrorOnNewDocument(bool cause_errors);
 #if BUILDFLAG(IS_WIN)
   void SetAccessDeniedErrorOnRenderPage(bool cause_errors);
@@ -45,9 +48,11 @@ class BrowserPrintingContextFactoryForTest
 
  private:
   std::string printer_name_;
+  bool failed_error_for_update_printer_settings_ = false;
   bool cancels_in_new_document_ = false;
   bool failed_error_for_new_document_ = false;
   bool access_denied_errors_for_new_document_ = false;
+  std::optional<int> new_document_job_id_;
 #if BUILDFLAG(IS_WIN)
   bool access_denied_errors_for_render_page_ = false;
   uint32_t failed_error_for_render_page_number_ = 0;

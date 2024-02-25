@@ -1,0 +1,34 @@
+<!--
+@WAIT-FOR:done
+-->
+<main>
+  <div role="treeitem" id="root">
+    <div role="group" id="container"></div>
+    <div role="treeitem" id="child">
+      <p id="inner">
+        <mark>
+          cats
+        </mark>
+      </p>
+    </div>
+  </div>
+</main>
+
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+  // Force the first serialization.
+  requestAnimationFrame(() => {
+    requestAnimationFrame(() => {
+      // Mark the descendant dirty.
+      document.querySelector('mark').ariaLive = 'polite';
+      // Causing a reparenting on an ancestor of the change.
+      document.querySelector('#container').setAttribute('aria-owns', 'child');
+      requestAnimationFrame(() => {
+        requestAnimationFrame(() => {
+          document.title = 'done';
+        });
+      });
+    });
+  });
+});
+</script>

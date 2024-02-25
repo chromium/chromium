@@ -1,7 +1,7 @@
 <style include="cr-icons cr-shared-style">
   :host {
     --grid-gap: 8px;
-    height: 410px;
+    height: 432px;
   }
 
   :host([images-enabled_]) {
@@ -39,7 +39,7 @@
   }
 
   :host([images-enabled_]:not([show-related-searches])) #layout {
-    grid-template: repeat(6, 1fr) / repeat(2, 1fr)
+    grid-template: repeat(6, 1fr) / repeat(2, 1fr);
   }
 
   :host([images-enabled_]) #layout {
@@ -51,7 +51,7 @@
   }
 
   :host([format='wide']:not([show-related-searches])) #layout {
-    grid-template: repeat(1, 1fr) / repeat(4, 1fr)
+    grid-template: repeat(1, 1fr) / repeat(4, 1fr);
   }
 
   history-clusters-header-v2 {
@@ -103,53 +103,13 @@
     grid-row: 1;
   }
 
-  .related-search:hover {
-    background: var(--color-new-tab-page-module-item-background-hovered);
-  }
-
-  .related-search:active {
-    background-color: var(--color-new-tab-page-active-background);
-  }
-
-  :host-context(.focus-outline-visible) .related-search:focus,
-  .related-search:focus-visible {
-    box-shadow: var(--ntp-focus-shadow);
-    outline: none;
-  }
-
-  #first-related-search {
-    border-radius: var(--ntp-module-item-border-radius)
-        var(--ntp-module-item-border-radius) 0 0;
-  }
-
-  #related-searches-divider {
-    border-bottom: 1px solid
-        var(--color-new-tab-page-module-background);
-    left: 16px;
-    position: absolute;
-    right: 16px;
-    top: 50%;
-  }
-
-  :host-context(.focus-outline-visible)
-  #first-related-search:focus + #related-searches-divider,
-  #first-related-search:focus-visible + #related-searches-divider {
-    border: none;
-  }
-
-  #last-related-search {
-    border-radius: 0 0 var(--ntp-module-item-border-radius)
-        var(--ntp-module-item-border-radius);
-  }
-
   #related-searches {
     background: var(--color-new-tab-page-module-item-background);
     border-radius: var(--ntp-module-item-border-radius);
-    display: grid;
-    grid-auto-flow: row;
+    display: flex;
+    flex-direction: column;
     grid-column: 1 / 3;
     grid-row: 6 / 8;
-    position: relative;
     width: 100%;
   }
 
@@ -158,11 +118,20 @@
   }
 
   :host([format='wide']) #related-searches {
-    display: grid;
-    grid-auto-flow: row;
     grid-column: 1 / 3;
     grid-row: 3 / 5;
     width: 100%;
+  }
+
+  .related-search {
+    flex-grow: 1;
+  }
+
+  #related-searches-divider {
+    background-color: var(--color-new-tab-page-module-element-divider);
+    border: none;
+    height: 1px;
+    margin: 0 16px;
   }
 </style>
 <div id="layout">
@@ -172,35 +141,39 @@
       on-done-button-click="onDoneButtonClick_"
       on-info-button-click="onInfoButtonClick_"
       on-show-all-button-click="onShowAllButtonClick_"
-      cluster-label="[[computeLabel_()]]"
+      on-suggest-click="recordClick_"
+      cluster-label="[[computeUnquotedClusterLabel_(cluster)]]"
+      normalized-url="[[cluster.visits.0.normalizedUrl]]"
       format$="[[format]]"
       show-related-searches$="[[showRelatedSearches]]">
   </history-clusters-header-v2>
   <ntp-history-clusters-visit-tile id="first-tile"
-      visit="[[cluster.visits.1]]" on-click="onVisitTileClick_"
-      on-aux-click="onVisitTileClick_" format="[[format]]"
-      show-related-searches$="[[showRelatedSearches]]"
+      visit="[[cluster.visits.1]]" discount="[[discounts.1]]"
+      on-click="onVisitTileClick_" on-aux-click="onVisitTileClick_"
+      format="[[format]]" show-related-searches$="[[showRelatedSearches]]"
       images-enabled="[[imagesEnabled_]]">
   </ntp-history-clusters-visit-tile>
   <template is="dom-if" if="[[shouldShowCartTile_(cart)]]" restamp>
     <ntp-history-clusters-cart-tile-v2
         id="last-tile" cart="[[cart]]"
-        on-click="onCartTileClick_" on-aux-click="onCartTileClick_"
-        format="[[format]]" show-related-searches$="[[showRelatedSearches]]">
+        on-click="recordClick_" on-aux-click="recordClick_"
+        format="[[format]]" show-related-searches$="[[showRelatedSearches]]"
+        images-enabled="[[imagesEnabled_]]">
     </ntp-history-clusters-cart-tile-v2>
   </template>
   <template is="dom-if" if="[[!shouldShowCartTile_(cart)]]" restamp>
     <ntp-history-clusters-visit-tile id="last-tile"
-        visit="[[cluster.visits.2]]" on-click="onVisitTileClick_"
-        on-aux-click="onVisitTileClick_" format="[[format]]"
-        show-related-searches$="[[showRelatedSearches]]"
+        visit="[[cluster.visits.2]]" discount="[[discounts.2]]"
+        on-click="onVisitTileClick_" on-aux-click="onVisitTileClick_"
+        format="[[format]]" show-related-searches$="[[showRelatedSearches]]"
         images-enabled="[[imagesEnabled_]]">
     </ntp-history-clusters-visit-tile>
   </template>
   <div id="related-searches" hidden="[[!showRelatedSearches]]">
     <ntp-history-clusters-suggest-tile-v2 id="first-related-search"
         class="related-search" related-search="[[cluster.relatedSearches.0]]"
-        on-click="onSuggestTileClick_" on-aux-click="onSuggestTileClick_">
+        on-click="onSuggestTileClick_" on-aux-click="onSuggestTileClick_"
+        is-first="true">
     </ntp-history-clusters-suggest-tile-v2>
     <div id="related-searches-divider"></div>
     <ntp-history-clusters-suggest-tile-v2 id="last-related-search"
@@ -211,7 +184,7 @@
 </div>
 <cr-lazy-render id="infoDialogRender">
   <template>
-    <ntp-info-dialog inner-h-t-m-l="[[i18nAdvanced('modulesJourneysInfo')]]">
+    <ntp-info-dialog inner-h-t-m-l="[[getInfo_(discounts)]]">
     </ntp-info-dialog>
   </template>
 </cr-lazy-render>

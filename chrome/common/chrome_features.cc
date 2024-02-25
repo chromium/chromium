@@ -33,12 +33,6 @@ BASE_FEATURE(kAdaptiveScreenBrightnessLogging,
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-BASE_FEATURE(kAppManagementAppDetails,
-             "AppManagementAppDetails",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
 BASE_FEATURE(kAppDeduplicationServiceFondue,
              "AppDeduplicationServiceFondue",
              base::FEATURE_DISABLED_BY_DEFAULT);
@@ -64,24 +58,27 @@ BASE_FEATURE(kAppShimNewCloseBehavior,
              "AppShimNewCloseBehavior",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// When enabled, app shims try to launch chrome silently if chrome isn't already
+// running, rather than have chrome launch visibly with a new tab/profile
+// selector.
+// https://crbug.com/1205537
+BASE_FEATURE(kAppShimLaunchChromeSilently,
+             "AppShimLaunchChromeSilently",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 // When enabled, notifications coming from PWAs will be displayed via their app
 // shim processes, rather than directly by chrome.
 // https://crbug.com/938661
 BASE_FEATURE(kAppShimNotificationAttribution,
              "AppShimNotificationAttribution",
              base::FEATURE_DISABLED_BY_DEFAULT);
-#endif  // BUILDFLAG(IS_MAC)
 
-// Enables the built-in DNS resolver.
-BASE_FEATURE(kAsyncDns,
-             "AsyncDns",
-#if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_ANDROID) || \
-    BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX)
-             base::FEATURE_ENABLED_BY_DEFAULT
-#else
-             base::FEATURE_DISABLED_BY_DEFAULT
-#endif
-);
+// When enabled, app shims used by PWAs will be signed with an ad-hoc signature
+// https://crbug.com/40276068
+BASE_FEATURE(kUseAdHocSigningForWebAppShims,
+             "UseAdHocSigningForWebAppShims",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+#endif  // BUILDFLAG(IS_MAC)
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
     BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_FUCHSIA)
@@ -110,6 +107,24 @@ BASE_FEATURE(kBackgroundModeAllowRestart,
              "BackgroundModeAllowRestart",
              base::FEATURE_DISABLED_BY_DEFAULT);
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
+
+#if BUILDFLAG(IS_CHROMEOS)
+BASE_FEATURE(kQuickOfficeForceFileDownload,
+             "QuickOfficeForceFileDownload",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+#endif  // BUILDFLAG(IS_CHROMEOS)
+
+#if BUILDFLAG(IS_ANDROID)
+// Enable boarding pass detector on Chrome Android.
+BASE_FEATURE(kBoardingPassDetector,
+             "BoardingPassDetector",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+const char kBoardingPassDetectorUrlParamName[] = "boarding_pass_detector_urls";
+const base::FeatureParam<std::string> kBoardingPassDetectorUrlParam(
+    &kBoardingPassDetector,
+    kBoardingPassDetectorUrlParamName,
+    "");
+#endif  // BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 // Enable Borealis on Chrome OS.
@@ -170,12 +185,6 @@ BASE_FEATURE(kCrostiniArcSideload,
              "CrostiniArcSideload",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-// Enables the new UI for browser created shortcut backed by web app system
-// on Chrome OS.
-BASE_FEATURE(kCrosWebAppShortcutUiUpdate,
-             "CrosWebAppShortcutUiUpdate",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 // Enables distributed model for TPM1.2, i.e., using tpm_managerd and
 // attestationd.
 BASE_FEATURE(kCryptohomeDistributedModel,
@@ -220,7 +229,17 @@ BASE_FEATURE(kDMServerOAuthForChildUser,
              base::FEATURE_ENABLED_BY_DEFAULT);
 #endif
 
+BASE_FEATURE(kEnableWatermarkView,
+             "EnableWatermarkView",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 #if !BUILDFLAG(IS_ANDROID)
+// Enables migration of apps that are loaded erroneously but installed
+// correctly by policy in the web app system.
+BASE_FEATURE(kMigrateErrorLoadedPolicyApps,
+             "MigrateErrorLoadedPolicyApps",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 // Whether to allow installed-by-default web apps to be installed or not.
 BASE_FEATURE(kPreinstalledWebAppInstallation,
              "DefaultWebAppInstallation",
@@ -260,10 +279,20 @@ BASE_FEATURE(kDesktopTaskManagerEndProcessDisabledForExtension,
              base::FEATURE_DISABLED_BY_DEFAULT);
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
-// Generates customised default offline page that is shown when web app is
-// offline if no custom page is provided by developer.
-BASE_FEATURE(kPWAsDefaultOfflinePage,
-             "PWAsDefaultOfflinePage",
+// Controls the enablement of structured metrics on Windows, Linux, and Mac.
+BASE_FEATURE(kChromeStructuredMetrics,
+             "ChromeStructuredMetrics",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+// Kill switch for Controlled Frame. This is enabled by default but is only
+// tested to ensure it's enabled before proceeding with the rest of the feature
+// checks like testing for IWA support or Kiosk mode. If this feature flag is
+// disabled, such as via Finch, then Controlled Frame will no longer be
+// available in IWA or Kiosk mode.
+// See https://github.com/WICG/controlled-frame/blob/main/README.md for more
+// info.
+BASE_FEATURE(kControlledFrame,
+             "ControlledFrame",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 // When installing default installed PWAs, we wait for service workers
@@ -291,7 +320,8 @@ BASE_FEATURE(kDesktopPWAsEnforceWebAppSettingsPolicy,
 // Enables or disables Desktop PWAs to be auto-started on OS login.
 BASE_FEATURE(kDesktopPWAsRunOnOsLogin,
              "DesktopPWAsRunOnOsLogin",
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
+    BUILDFLAG(IS_CHROMEOS)
              base::FEATURE_ENABLED_BY_DEFAULT
 #else
              base::FEATURE_DISABLED_BY_DEFAULT
@@ -301,7 +331,12 @@ BASE_FEATURE(kDesktopPWAsRunOnOsLogin,
 // If enabled, allow-listed PWAs cannot be closed manually by the user.
 BASE_FEATURE(kDesktopPWAsPreventClose,
              "DesktopPWAsPreventClose",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+#if BUILDFLAG(IS_CHROMEOS)
+             base::FEATURE_ENABLED_BY_DEFAULT
+#else
+             base::FEATURE_DISABLED_BY_DEFAULT
+#endif
+);
 
 // Runs diagnostics during start up to measure how broken web app icons are to
 // feed into metrics.
@@ -309,14 +344,19 @@ BASE_FEATURE(kDesktopPWAsIconHealthChecks,
              "DesktopPWAsIconHealthChecks",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+BASE_FEATURE(kDesktopPWAsLinkCapturing,
+             "DesktopPWAsLinkCapturing",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+const base::FeatureParam<bool> kLinksCapturedByDefault{
+    &kDesktopPWAsLinkCapturing, "on_by_default", true};
+
+const base::FeatureParam<int> kLinkCapturingIPHGuardrailStorageDuration{
+    &kDesktopPWAsLinkCapturing, "link_capturing_guardrail_storage_duration",
+    kTotalDaysToStoreLinkCapturingIPHGuardrails};
+
 // Adds a user settings that allows PWAs to be opened with a tab strip.
 BASE_FEATURE(kDesktopPWAsTabStripSettings,
              "DesktopPWAsTabStripSettings",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
-// Adds support for web bundles, making web apps able to be launched offline.
-BASE_FEATURE(kDesktopPWAsWebBundles,
-             "DesktopPWAsWebBundles",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
@@ -327,21 +367,11 @@ BASE_FEATURE(kDesktopPWAsWebBundles,
 BASE_FEATURE(kChromeAppsDeprecation,
              "ChromeAppsDeprecation",
              base::FEATURE_ENABLED_BY_DEFAULT);
-// Controls whether force installed and preinstalled apps should be exempt from
-// deprecation.
-BASE_FEATURE(kKeepForceInstalledPreinstalledApps,
-             "KeepForceInstalledPreinstalledApps",
+BASE_FEATURE(kShortcutsNotApps,
+             "ShortcutsNotApps",
              base::FEATURE_DISABLED_BY_DEFAULT);
-// Controls if the 'launch anyways' button is shown.
-const base::FeatureParam<bool> kChromeAppsDeprecationHideLaunchAnyways{
-    &kChromeAppsDeprecation, "HideLaunchAnyways", true};
-
-// Enables user link capturing on desktop platforms, i.e. Windows, Mac
-// Linux amd Fuchsia.
-BASE_FEATURE(kDesktopPWAsLinkCapturing,
-             "DesktopPWAsLinkCapturing",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-#endif
+#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) ||
+        // BUILDFLAG(IS_FUCHSIA)
 
 // Enables notification permission revocation for origins that may send
 // disruptive notifications.
@@ -366,13 +396,13 @@ const base::FeatureParam<bool> kDnsOverHttpsFallbackParam{&kDnsOverHttps,
                                                           "Fallback", true};
 
 // Sets whether the DoH setting is displayed in the settings UI.
-const base::FeatureParam<bool> kDnsOverHttpsShowUiParam {
-  &kDnsOverHttps, "ShowUi",
+const base::FeatureParam<bool> kDnsOverHttpsShowUiParam{&kDnsOverHttps,
+                                                        "ShowUi",
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_MAC) || \
     BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_LINUX)
-      true
+                                                        true
 #else
-      false
+                                                        false
 #endif
 };
 
@@ -382,18 +412,6 @@ const base::FeatureParam<bool> kDnsOverHttpsShowUiParam {
 // addresses of insecure resolvers in the discovered configuration.
 const base::FeatureParam<std::string> kDnsOverHttpsTemplatesParam{
     &kDnsOverHttps, "Templates", ""};
-
-#if BUILDFLAG(IS_ANDROID)
-// Enable loading native libraries earlier in startup on Android.
-BASE_FEATURE(kEarlyLibraryLoad,
-             "EarlyLibraryLoad",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-#endif
-
-// Enable the restricted web APIs for high-trusted apps.
-BASE_FEATURE(kEnableRestrictedWebApis,
-             "EnableRestrictedWebApis",
-             base::FEATURE_ENABLED_BY_DEFAULT);
 
 #if !BUILDFLAG(IS_ANDROID)
 // Enable WebHID on extension service workers.
@@ -405,11 +423,33 @@ BASE_FEATURE(kEnableWebHidOnExtensionServiceWorker,
 // Enable WebUSB on extension service workers.
 BASE_FEATURE(kEnableWebUsbOnExtensionServiceWorker,
              "EnableWebUsbOnExtensionServiceWorker",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
+// When enabled, resource requests will be evaluated against the Network
+// Service's block list for NetworkContexts that are not associated with an Off
+// the Record session. The block list is populated by the MaskedDomainList, so
+// "MaskedDomainList" will need to also be enabled for the block list to have
+// any contents.
+BASE_FEATURE(kEnableNetworkServiceResourceBlockList,
+             "EnableNetworkServiceResourceBlockList",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Enable extended descriptions for key settings in Chrome settings.
-BASE_FEATURE(kExtendedSettingsDescriptions,
-             "ExtendedSettingsDescriptions",
+// When enabled, resource requests will be evaluated against the Network
+// Service's block list for NetworkContexts that are associated with an Off the
+// Record session. The block list is populated by the MaskedDomainList, so
+// "MaskedDomainList" will need to also be enabled for the block list to have
+// any contents.
+BASE_FEATURE(kEnableNetworkServiceResourceBlockListInOtrSessions,
+             "EnableNetworkServiceResourceBlockListInOtrSessions",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+// When enabled, resource requests will be evaluated against the Network
+// Service's block list if the setting to block all third party cookies is
+// enabled. The block list is populated by the MaskedDomainList, so
+// "MaskedDomainList" will need to also be enabled for the block list to have
+// any contents.
+BASE_FEATURE(kEnableNetworkServiceResourceBlockListIfThirdPartyCookiesBlocked,
+             "EnableNetworkServiceResourceBlockListIfThirdPartyCookiesBlocked",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 #if !BUILDFLAG(IS_ANDROID)
@@ -420,13 +460,6 @@ BASE_FEATURE(kExtensionDeferredIndividualSettings,
              base::FEATURE_ENABLED_BY_DEFAULT);
 #endif
 
-// If enabled, this feature's |kExternalInstallDefaultButtonKey| field trial
-// parameter value controls which |ExternalInstallBubbleAlert| button is the
-// default.
-BASE_FEATURE(kExternalExtensionDefaultButtonControl,
-             "ExternalExtensionDefaultButtonControl",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 BASE_FEATURE(kFileTransferEnterpriseConnector,
              "FileTransferEnterpriseConnector",
@@ -434,7 +467,7 @@ BASE_FEATURE(kFileTransferEnterpriseConnector,
 
 BASE_FEATURE(kFileTransferEnterpriseConnectorUI,
              "FileTransferEnterpriseConnectorUI",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 #endif
 
 #if BUILDFLAG(ENABLE_PLUGINS)
@@ -445,6 +478,12 @@ BASE_FEATURE(kFlashDeprecationWarning,
              base::FEATURE_ENABLED_BY_DEFAULT);
 #endif
 
+#if BUILDFLAG(IS_CHROMEOS)
+BASE_FEATURE(kForcedAppRelaunchOnPlaceholderUpdate,
+             "ForcedAppRelaunchOnPlaceholderUpdate",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+#endif  // BUILDFLAG(IS_CHROMEOS)
+
 // Controls whether the GeoLanguage system is enabled. GeoLanguage uses IP-based
 // coarse geolocation to provide an estimate (for use by other Chrome features
 // such as Translate) of the local/regional language(s) corresponding to the
@@ -453,15 +492,27 @@ BASE_FEATURE(kFlashDeprecationWarning,
 // of languages.
 BASE_FEATURE(kGeoLanguage, "GeoLanguage", base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Enables or disables the Privacy Guide v3 update of the Privacy Guide feature
-// in Chrome Settings.
-BASE_FEATURE(kPrivacyGuide3,
-             "PrivacyGuide3",
+// Defines if the linked services setting is eligible to be shown in Chrome
+// settings.
+BASE_FEATURE(kLinkedServicesSetting,
+             "LinkedServicesSetting",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 #if BUILDFLAG(IS_ANDROID)
 BASE_FEATURE(kPrivacyGuideAndroid3,
              "PrivacyGuideAndroid3",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+#endif
+
+#if BUILDFLAG(IS_ANDROID)
+BASE_FEATURE(kPrivacyGuidePreloadAndroid,
+             "PrivacyGuidePreloadAndroid",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+#endif
+
+#if !BUILDFLAG(IS_ANDROID)
+BASE_FEATURE(kCbdTimeframeRequired,
+             "CbdTimeframeRequired",
              base::FEATURE_DISABLED_BY_DEFAULT);
 #endif
 
@@ -502,6 +553,27 @@ BASE_FEATURE(kHaTSDesktopDevToolsIssuesCSP,
              "HaTSDesktopDevToolsIssuesCSP",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Enables or disables the Happiness Tracking System for Chrome extensions page.
+BASE_FEATURE(kHappinessTrackingSurveysExtensionsSafetyHub,
+             "HappinessTrackingSurveysExtensionsSafetyHub",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+const base::FeatureParam<ExtensionsSafetyHubHaTSArms>::Option survey_arms[] = {
+    {ExtensionsSafetyHubHaTSArms::kReviewPanelNotShown, "0"},
+    {ExtensionsSafetyHubHaTSArms::kReviewPanelShown, "1"},
+    {ExtensionsSafetyHubHaTSArms::kReviewPanelInteraction, "2"}};
+const base::FeatureParam<base::TimeDelta>
+    kHappinessTrackingSurveysExtensionsSafetyHubTime{
+        &kHappinessTrackingSurveysExtensionsSafetyHub, "settings-time",
+        base::Seconds(15)};
+extern const base::FeatureParam<std::string>
+    kHappinessTrackingSurveysExtensionsSafetyHubTriggerId{
+        &kHappinessTrackingSurveysExtensionsSafetyHub,
+        "extension-page-trigger-id", ""};
+extern const base::FeatureParam<ExtensionsSafetyHubHaTSArms>
+    kHappinessTrackingSurveysExtensionsSurveyArm{
+        &kHappinessTrackingSurveysExtensionsSafetyHub, "extension-survey-arm",
+        ExtensionsSafetyHubHaTSArms::kReviewPanelNotShown, &survey_arms};
+
 // Enables or disables the Happiness Tracking System for Desktop Privacy Guide.
 BASE_FEATURE(kHappinessTrackingSurveysForDesktopPrivacyGuide,
              "HappinessTrackingSurveysForDesktopPrivacyGuide",
@@ -509,16 +581,6 @@ BASE_FEATURE(kHappinessTrackingSurveysForDesktopPrivacyGuide,
 const base::FeatureParam<base::TimeDelta>
     kHappinessTrackingSurveysForDesktopPrivacyGuideTime{
         &kHappinessTrackingSurveysForDesktopPrivacyGuide, "settings-time",
-        base::Seconds(20)};
-
-// Enables or disables the Happiness Tracking System for Desktop Privacy
-// Sandbox.
-BASE_FEATURE(kHappinessTrackingSurveysForDesktopPrivacySandbox,
-             "HappinessTrackingSurveysForDesktopPrivacySandbox",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-const base::FeatureParam<base::TimeDelta>
-    kHappinessTrackingSurveysForDesktopPrivacySandboxTime{
-        &kHappinessTrackingSurveysForDesktopPrivacySandbox, "settings-time",
         base::Seconds(20)};
 
 // Enables or disables the Happiness Tracking System for Desktop Chrome
@@ -532,10 +594,6 @@ BASE_FEATURE(kHappinessTrackingSurveysForDesktopSettings,
 BASE_FEATURE(kHappinessTrackingSurveysForDesktopSettingsPrivacy,
              "HappinessTrackingSurveysForDesktopSettingsPrivacy",
              base::FEATURE_DISABLED_BY_DEFAULT);
-const base::FeatureParam<bool>
-    kHappinessTrackingSurveysForDesktopSettingsPrivacyNoSandbox{
-        &kHappinessTrackingSurveysForDesktopSettingsPrivacy, "no-sandbox",
-        false};
 const base::FeatureParam<bool>
     kHappinessTrackingSurveysForDesktopSettingsPrivacyNoGuide{
         &kHappinessTrackingSurveysForDesktopSettingsPrivacy, "no-guide", false};
@@ -552,6 +610,11 @@ BASE_FEATURE(kHappinessTrackingSurveysForDesktopNtpModules,
 
 BASE_FEATURE(kHappinessTrackingSurveysForNtpPhotosOptOut,
              "HappinessTrackingSurveysForrNtpPhotosOptOut",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+// Enables or disables the Happiness Tracking System for Wallpaper Search.
+BASE_FEATURE(kHappinessTrackingSurveysForWallpaperSearch,
+             "HappinessTrackingSurveysForWallpaperSearch",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Enables or disables the Happiness Tracking System for Chrome What's New.
@@ -593,6 +656,35 @@ const base::FeatureParam<base::TimeDelta>
         &kHappinessTrackingSurveysForDesktopM1AdMeasurementSubpage,
         "settings-time", base::Seconds(20)};
 
+// Enables or disables the Happiness Tracking System for Chrome security page.
+BASE_FEATURE(kHappinessTrackingSurveysForSecurityPage,
+             "HappinessTrackingSurveysForSecurityPage",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+const base::FeatureParam<base::TimeDelta>
+    kHappinessTrackingSurveysForSecurityPageTime{
+        &kHappinessTrackingSurveysForSecurityPage, "security-page-time",
+        base::Seconds(15)};
+extern const base::FeatureParam<std::string>
+    kHappinessTrackingSurveysForSecurityPageTriggerId{
+        &kHappinessTrackingSurveysForSecurityPage, "security-page-trigger-id",
+        ""};
+extern const base::FeatureParam<bool>
+    kHappinessTrackingSurveysForSecurityPageRequireInteraction{
+        &kHappinessTrackingSurveysForSecurityPage,
+        "security-page-require-interaction", false};
+
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+// Enables or disables the Happiness Tracking System for the Get the most out of
+// Chrome page.
+BASE_FEATURE(kHappinessTrackingSurveysGetMostChrome,
+             "HappinessTrackingSurveysGetMostChrome",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+const base::FeatureParam<base::TimeDelta>
+    kHappinessTrackingSurveysGetMostChromeTime{
+        &kHappinessTrackingSurveysGetMostChrome, "get-most-chrome-time",
+        base::Seconds(15)};
+#endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
+
 #endif  // !BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -631,14 +723,6 @@ BASE_FEATURE(kHappinessTrackingSystemPerformance,
 BASE_FEATURE(kHappinessTrackingSystemOnboarding,
              "HappinessTrackingOnboardingExperience",
              base::FEATURE_DISABLED_BY_DEFAULT);
-// Enables or disables the Happiness Tracking System for Unlock.
-BASE_FEATURE(kHappinessTrackingSystemUnlock,
-             "HappinessTrackingUnlock",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-// Enables or disables the Happiness Tracking System for Smart Lock.
-BASE_FEATURE(kHappinessTrackingSystemSmartLock,
-             "HappinessTrackingSmartLock",
-             base::FEATURE_DISABLED_BY_DEFAULT);
 // Enables or disables the Happiness Tracking System for ARC Games survey.
 BASE_FEATURE(kHappinessTrackingSystemArcGames,
              "HappinessTrackingArcGames",
@@ -646,6 +730,10 @@ BASE_FEATURE(kHappinessTrackingSystemArcGames,
 // Enables or disables the Happiness Tracking System for Audio survey.
 BASE_FEATURE(kHappinessTrackingSystemAudio,
              "HappinessTrackingAudio",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+// Enables or disables the Happiness Tracking System for Bluetooth Audio survey.
+BASE_FEATURE(kHappinessTrackingSystemBluetoothAudio,
+             "HappinessTrackingBluetoothAudio",
              base::FEATURE_DISABLED_BY_DEFAULT);
 // Enables the Happiness Tracking System for Personalization Avatar survey.
 BASE_FEATURE(kHappinessTrackingPersonalizationAvatar,
@@ -712,8 +800,13 @@ BASE_FEATURE(kHttpsFirstModeV2ForTypicallySecureUsers,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Enables automatically upgrading main frame navigations to HTTPS.
-BASE_FEATURE(kHttpsUpgrades,
-             "HttpsUpgrades",
+BASE_FEATURE(kHttpsUpgrades, "HttpsUpgrades", base::FEATURE_ENABLED_BY_DEFAULT);
+
+// Enables HTTPS-First Mode by default in Incognito Mode, changing the binary
+// opt-in to HTTPS-First Mode with a tri-state setting (HFM everywhere, HFM in
+// Incognito, or no HFM) with HFM-in-Incognito the new default setting.
+BASE_FEATURE(kHttpsFirstModeIncognito,
+             "HttpsFirstModeIncognito",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 #if BUILDFLAG(IS_MAC)
@@ -736,6 +829,13 @@ BASE_FEATURE(kImmersiveFullscreenTabs,
 BASE_FEATURE(kImmersiveFullscreenPWAs,
              "ImmersiveFullscreenPWAs",
              base::FEATURE_ENABLED_BY_DEFAULT);
+
+// Changes how Chrome responds to accessibility activation signals on macOS
+// Sonoma, to avoid unnecessary changes to the screen reader state.
+BASE_FEATURE(kSonomaAccessibilityActivationRefinements,
+             "SonomaAccessibilityActivationRefinements",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -787,15 +887,15 @@ BASE_FEATURE(kIsolatedWebAppDevMode,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 #if BUILDFLAG(IS_CHROMEOS)
-BASE_FEATURE(kKioskEnableAppService,
-             "KioskEnableAppService",
-             base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kKioskEnableSystemWebApps,
+             "KioskEnableSystemWebApps",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
 // When enabled, allows other features to use the k-Anonymity Service.
 BASE_FEATURE(kKAnonymityService,
              "KAnonymityService",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Origin to use for requests to the k-Anonymity Auth server to get trust
 // tokens.
@@ -805,7 +905,8 @@ constexpr base::FeatureParam<std::string> kKAnonymityServiceAuthServer{
 
 // Origin to use as a relay for OHTTP requests to the k-Anonymity Join server.
 constexpr base::FeatureParam<std::string> kKAnonymityServiceJoinRelayServer{
-    &kKAnonymityService, "KAnonymityServiceJoinRelayServer", ""};
+    &kKAnonymityService, "KAnonymityServiceJoinRelayServer",
+    "https://google-ohttp-relay-join.fastly-edge.com/"};
 
 // Origin to use to notify the k-Anonymity Join server of group membership.
 constexpr base::FeatureParam<std::string> kKAnonymityServiceJoinServer{
@@ -819,7 +920,8 @@ constexpr base::FeatureParam<base::TimeDelta> kKAnonymityServiceJoinInterval{
 
 // Origin to use as a relay for OHTTP requests to the k-Anonymity Query server.
 constexpr base::FeatureParam<std::string> kKAnonymityServiceQueryRelayServer{
-    &kKAnonymityService, "KAnonymityServiceQueryRelayServer", ""};
+    &kKAnonymityService, "KAnonymityServiceQueryRelayServer",
+    "https://google-ohttp-relay-query.fastly-edge.com/"};
 
 // Origin to use to request k-anonymity status from the k-Anonymity Query
 // server.
@@ -836,13 +938,20 @@ constexpr base::FeatureParam<base::TimeDelta> kKAnonymityServiceQueryInterval{
 // Query k-anonymity servers.
 BASE_FEATURE(kKAnonymityServiceOHTTPRequests,
              "KAnonymityServiceOHTTPRequests",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // When enabled, the k-Anonymity Service can use a persistent storage to cache
 // public keys.
 BASE_FEATURE(kKAnonymityServiceStorage,
              "KAnonymityServiceStorage",
              base::FEATURE_ENABLED_BY_DEFAULT);
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+// Place Lacros's browser components in a location shared across users.
+BASE_FEATURE(kLacrosSharedComponentsDir,
+             "LacrosSharedComponentsDir",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 #if BUILDFLAG(IS_LINUX) && !BUILDFLAG(IS_CHROMEOS)
 BASE_FEATURE(kLinuxLowMemoryMonitor,
@@ -884,13 +993,6 @@ BASE_FEATURE(kShowHiddenNetworkToggle,
              base::FEATURE_ENABLED_BY_DEFAULT);
 #endif
 
-#if BUILDFLAG(IS_ANDROID)
-// Enables the new design of metrics settings.
-BASE_FEATURE(kMetricsSettingsAndroid,
-             "MetricsSettingsAndroid",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-#endif
-
 BASE_FEATURE(kMoveWebApp,
              "MoveWebApp",
              base::FeatureState::FEATURE_DISABLED_BY_DEFAULT);
@@ -929,7 +1031,7 @@ BASE_FEATURE(kNewMacNotificationAPI,
 // Enables new UX for files policy restrictions on ChromeOS.
 BASE_FEATURE(kNewFilesPolicyUX,
              "NewFilesPolicyUX",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
 // When kNoReferrers is enabled, most HTTP requests will provide empty
@@ -943,6 +1045,15 @@ BASE_FEATURE(kNotificationDurationLongForRequireInteraction,
              "NotificationDurationLongForRequireInteraction",
              base::FEATURE_DISABLED_BY_DEFAULT);
 #endif  // BUILDFLAG(IS_WIN)
+
+#if BUILDFLAG(IS_ANDROID)
+BASE_FEATURE(kOfflineContentOnNetError,
+             "OfflineContentOnNetError",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kOfflineAutoFetch,
+             "OfflineAutoFetch",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+#endif  // BUILDFLAG(IS_ANDROID)
 
 #if !BUILDFLAG(IS_ANDROID)
 BASE_FEATURE(kOnConnectNative,
@@ -961,11 +1072,16 @@ BASE_FEATURE(kOobeMarketingDoubleOptInCountriesSupported,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 #if BUILDFLAG(IS_ANDROID)
-// Enables or disabled the OOM intervention.
+// Enables or disables the OOM intervention.
 BASE_FEATURE(kOomIntervention,
              "OomIntervention",
              base::FEATURE_ENABLED_BY_DEFAULT);
 #endif
+
+// Enables or disables the page content opt-in and setting.
+BASE_FEATURE(kPageContentOptIn,
+             "PageContentOptIn",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 // Enables usage of Parent Access Code in the login flow for reauth and add
@@ -980,30 +1096,6 @@ BASE_FEATURE(kParentAccessCodeForOnlineLogin,
 BASE_FEATURE(kPermissionAuditing,
              "PermissionAuditing",
              base::FEATURE_DISABLED_BY_DEFAULT);
-
-// Enables using the prediction service for permission prompts. We will keep
-// this feature in order to allow us to update the holdback chance via finch.
-BASE_FEATURE(kPermissionPredictions,
-             "PermissionPredictions",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
-// The holdback chance is 30% but it can also be configured/updated
-// through finch if needed.
-const base::FeatureParam<double> kPermissionPredictionsHoldbackChance(
-    &kPermissionPredictions,
-    "holdback_chance",
-    0.3);
-
-// Enables using the prediction service for geolocation permission prompts.
-BASE_FEATURE(kPermissionGeolocationPredictions,
-             "PermissionGeolocationPredictions",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
-const base::FeatureParam<double>
-    kPermissionGeolocationPredictionsHoldbackChance(
-        &kPermissionGeolocationPredictions,
-        "holdback_chance",
-        0.3);
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 // Enable support for "Plugin VMs" on Chrome OS.
@@ -1020,16 +1112,11 @@ BASE_FEATURE(kPrerenderFallbackToPreconnect,
 BASE_FEATURE(kPrintPreviewSetupAssistance,
              "PrintPreviewSetupAssistance",
              base::FEATURE_ENABLED_BY_DEFAULT);
-#endif
-
-BASE_FEATURE(kPrivacyGuideAndroid,
-             "PrivacyGuideAndroid",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
-#if BUILDFLAG(IS_ANDROID)
-BASE_FEATURE(kPrivacyGuideAndroidPostMVP,
-             "PrivacyGuideAndroidPostMVP",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+// Enables the observing of local printers to provide UI surfaces with live
+// updates.
+BASE_FEATURE(kLocalPrinterObserving,
+             "LocalPrinterObserving",
+             base::FEATURE_ENABLED_BY_DEFAULT);
 #endif
 
 // Enables or disables push subscriptions keeping Chrome running in the
@@ -1066,11 +1153,12 @@ BASE_FEATURE(kRemoveSupervisedUsersOnStartup,
              base::FEATURE_DISABLED_BY_DEFAULT);
 #endif
 
-#if !BUILDFLAG(IS_ANDROID)
+#if BUILDFLAG(ENABLE_EXTENSIONS)
 // Enables extensions module in Safety Check.
 BASE_FEATURE(kSafetyCheckExtensions,
              "SafetyCheckExtensions",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
+#endif
 
 // Enables notification permission module in Safety Check.
 BASE_FEATURE(kSafetyCheckNotificationPermissions,
@@ -1092,7 +1180,6 @@ BASE_FEATURE(kSafetyHub, "SafetyHub", base::FEATURE_DISABLED_BY_DEFAULT);
 // Time between automated runs of the password check.
 const base::FeatureParam<base::TimeDelta> kBackgroundPasswordCheckInterval{
     &kSafetyHub, "background-password-check-interval", base::Days(10)};
-#endif  // !BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 // Enable support for multiple scheduler configurations.
@@ -1154,6 +1241,13 @@ BASE_FEATURE(kSitePerProcess,
 #endif
 );
 
+#if BUILDFLAG(IS_CHROMEOS)
+// Enables the SkyVault (cloud-first) changes, some of which are also controlled
+// by policies: removing local storage, saving downloads and screen captures to
+// the cloud, and related UX changes, primarily in the Files App.
+BASE_FEATURE(kSkyVault, "SkyVault", base::FEATURE_DISABLED_BY_DEFAULT);
+#endif  // BUILDFLAG(IS_CHROMEOS)
+
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 // Enables or disables SmartDim on Chrome OS.
 BASE_FEATURE(kSmartDim, "SmartDim", base::FEATURE_DISABLED_BY_DEFAULT);
@@ -1178,7 +1272,7 @@ BASE_FEATURE(kTPMFirmwareUpdate,
 #if !BUILDFLAG(IS_ANDROID)
 // Enables the demo version of the Support Tool. The tool will be available in
 // chrome://support-tool. See go/support-tool-v1-design for more details.
-BASE_FEATURE(kSupportTool, "SupportTool", base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kSupportTool, "SupportTool", base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Enables the Support Tool to include a screenshot in the exported support tool
 // packet.
@@ -1214,7 +1308,54 @@ BASE_FEATURE(kTreatUnsafeDownloadsAsActive,
 // Show warnings on downloads not delivered over HTTPS.
 BASE_FEATURE(kInsecureDownloadWarnings,
              "InsecureDownloadWarnings",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
+// TrackingProtectionSentimentSurvey
+#if !BUILDFLAG(IS_ANDROID)
+
+BASE_FEATURE(kTrackingProtectionSentimentSurvey,
+             "TrackingProtectionSentimentSurvey",
              base::FEATURE_DISABLED_BY_DEFAULT);
+
+extern const base::FeatureParam<double>
+    kTrackingProtectionSentimentSurveyImmediateOverDelayedProbability{
+        &kTrackingProtectionSentimentSurvey,
+        "tracking-protection-immediate-over-delayed-probability", 0.5};
+
+extern const base::FeatureParam<double>
+    kTrackingProtectionSentimentSurveyControlImmediateProbability{
+        &kTrackingProtectionSentimentSurvey,
+        "tracking-protection-control-immediate-probability", 0.0};
+extern const base::FeatureParam<double>
+    kTrackingProtectionSentimentSurveyTreatmentImmediateProbability{
+        &kTrackingProtectionSentimentSurvey,
+        "tracking-protection-treatment-immediate-probability", 0.0};
+extern const base::FeatureParam<double>
+    kTrackingProtectionSentimentSurveyControlDelayedProbability{
+        &kTrackingProtectionSentimentSurvey,
+        "tracking-protection-control-delayed-probability", 0.0};
+extern const base::FeatureParam<double>
+    kTrackingProtectionSentimentSurveyTreatmentDelayedProbability{
+        &kTrackingProtectionSentimentSurvey,
+        "tracking-protection-treatment-delayed-probability", 0.0};
+
+extern const base::FeatureParam<std::string>
+    kTrackingProtectionSentimentSurveyControlImmediateTriggerId{
+        &kTrackingProtectionSentimentSurvey,
+        "tracking-protection-control-immediate-trigger-id", ""};
+extern const base::FeatureParam<std::string>
+    kTrackingProtectionSentimentSurveyTreatmentImmediateTriggerId{
+        &kTrackingProtectionSentimentSurvey,
+        "tracking-protection-treatment-immediate-trigger-id", ""};
+extern const base::FeatureParam<std::string>
+    kTrackingProtectionSentimentSurveyControlDelayedTriggerId{
+        &kTrackingProtectionSentimentSurvey,
+        "tracking-protection-control-delayed-trigger-id", ""};
+extern const base::FeatureParam<std::string>
+    kTrackingProtectionSentimentSurveyTreatmentDelayedTriggerId{
+        &kTrackingProtectionSentimentSurvey,
+        "tracking-protection-treatment-delayed-trigger-id", ""};
+#endif
 
 // TrustSafetySentimentSurvey
 #if !BUILDFLAG(IS_ANDROID)
@@ -1249,30 +1390,6 @@ const base::FeatureParam<double>
     kTrustSafetySentimentSurveyTransactionsProbability{
         &kTrustSafetySentimentSurvey, "transactions-probability", 0.05};
 const base::FeatureParam<double>
-    kTrustSafetySentimentSurveyPrivacySandbox3ConsentAcceptProbability{
-        &kTrustSafetySentimentSurvey,
-        "privacy-sandbox-3-consent-accept-probability", 0.1};
-const base::FeatureParam<double>
-    kTrustSafetySentimentSurveyPrivacySandbox3ConsentDeclineProbability{
-        &kTrustSafetySentimentSurvey,
-        "privacy-sandbox-3-consent-decline-probability", 0.5};
-const base::FeatureParam<double>
-    kTrustSafetySentimentSurveyPrivacySandbox3NoticeDismissProbability{
-        &kTrustSafetySentimentSurvey,
-        "privacy-sandbox-3-notice-dismiss-probability", 0.5};
-const base::FeatureParam<double>
-    kTrustSafetySentimentSurveyPrivacySandbox3NoticeOkProbability{
-        &kTrustSafetySentimentSurvey, "privacy-sandbox-3-notice-ok-probability",
-        0.05};
-const base::FeatureParam<double>
-    kTrustSafetySentimentSurveyPrivacySandbox3NoticeSettingsProbability{
-        &kTrustSafetySentimentSurvey,
-        "privacy-sandbox-3-notice-settings-probability", 0.8};
-const base::FeatureParam<double>
-    kTrustSafetySentimentSurveyPrivacySandbox3NoticeLearnMoreProbability{
-        &kTrustSafetySentimentSurvey,
-        "privacy-sandbox-3-notice-learn-more-probability", 0.2};
-const base::FeatureParam<double>
     kTrustSafetySentimentSurveyPrivacySandbox4ConsentAcceptProbability{
         &kTrustSafetySentimentSurvey,
         "privacy-sandbox-4-consent-accept-probability", 0.0};
@@ -1299,30 +1416,6 @@ const base::FeatureParam<std::string>
 extern const base::FeatureParam<std::string>
     kTrustSafetySentimentSurveyTransactionsTriggerId{
         &kTrustSafetySentimentSurvey, "transactions-trigger-id", ""};
-extern const base::FeatureParam<std::string>
-    kTrustSafetySentimentSurveyPrivacySandbox3ConsentAcceptTriggerId{
-        &kTrustSafetySentimentSurvey,
-        "privacy-sandbox-3-consent-accept-trigger-id", ""};
-extern const base::FeatureParam<std::string>
-    kTrustSafetySentimentSurveyPrivacySandbox3ConsentDeclineTriggerId{
-        &kTrustSafetySentimentSurvey,
-        "privacy-sandbox-3-consent-decline-trigger-id", ""};
-extern const base::FeatureParam<std::string>
-    kTrustSafetySentimentSurveyPrivacySandbox3NoticeDismissTriggerId{
-        &kTrustSafetySentimentSurvey,
-        "privacy-sandbox-3-notice-dismiss-trigger-id", ""};
-extern const base::FeatureParam<std::string>
-    kTrustSafetySentimentSurveyPrivacySandbox3NoticeOkTriggerId{
-        &kTrustSafetySentimentSurvey, "privacy-sandbox-3-notice-ok-trigger-id",
-        ""};
-extern const base::FeatureParam<std::string>
-    kTrustSafetySentimentSurveyPrivacySandbox3NoticeSettingsTriggerId{
-        &kTrustSafetySentimentSurvey,
-        "privacy-sandbox-3-notice-settings-trigger-id", ""};
-extern const base::FeatureParam<std::string>
-    kTrustSafetySentimentSurveyPrivacySandbox3NoticeLearnMoreTriggerId{
-        &kTrustSafetySentimentSurvey,
-        "privacy-sandbox-3-notice-learn-more-trigger-id", ""};
 extern const base::FeatureParam<std::string>
     kTrustSafetySentimentSurveyPrivacySandbox4ConsentAcceptTriggerId{
         &kTrustSafetySentimentSurvey,
@@ -1398,8 +1491,15 @@ const base::FeatureParam<double>
     kTrustSafetySentimentSurveyV2ControlGroupProbability{
         &kTrustSafetySentimentSurveyV2, "control-group-probability", 0.0};
 const base::FeatureParam<double>
+    kTrustSafetySentimentSurveyV2DownloadWarningUIProbability{
+        &kTrustSafetySentimentSurveyV2, "download-warning-ui-probability", 0.0};
+const base::FeatureParam<double>
     kTrustSafetySentimentSurveyV2PasswordCheckProbability{
         &kTrustSafetySentimentSurveyV2, "password-check-probability", 0.0};
+const base::FeatureParam<double>
+    kTrustSafetySentimentSurveyV2PasswordProtectionUIProbability{
+        &kTrustSafetySentimentSurveyV2, "password-protection-ui-probability",
+        0.0};
 const base::FeatureParam<double>
     kTrustSafetySentimentSurveyV2SafetyCheckProbability{
         &kTrustSafetySentimentSurveyV2, "safety-check-probability", 0.0};
@@ -1425,6 +1525,10 @@ const base::FeatureParam<double>
     kTrustSafetySentimentSurveyV2PrivacySandbox4NoticeSettingsProbability{
         &kTrustSafetySentimentSurveyV2,
         "privacy-sandbox-4-notice-settings-probability", 0.0};
+const base::FeatureParam<double>
+    kTrustSafetySentimentSurveyV2SafeBrowsingInterstitialProbability{
+        &kTrustSafetySentimentSurveyV2,
+        "safe-browsing-interstitial-probability", 0.0};
 // The HaTS trigger IDs, which determine which survey is delivered from the HaTS
 // backend.
 const base::FeatureParam<std::string>
@@ -1433,9 +1537,16 @@ const base::FeatureParam<std::string>
 const base::FeatureParam<std::string>
     kTrustSafetySentimentSurveyV2ControlGroupTriggerId{
         &kTrustSafetySentimentSurveyV2, "control-group-trigger-id", ""};
+extern const base::FeatureParam<std::string>
+    kTrustSafetySentimentSurveyV2DownloadWarningUITriggerId{
+        &kTrustSafetySentimentSurveyV2, "download-warning-ui-trigger-id", ""};
 const base::FeatureParam<std::string>
     kTrustSafetySentimentSurveyV2PasswordCheckTriggerId{
         &kTrustSafetySentimentSurveyV2, "password-check-trigger-id", ""};
+extern const base::FeatureParam<std::string>
+    kTrustSafetySentimentSurveyV2PasswordProtectionUITriggerId{
+        &kTrustSafetySentimentSurveyV2, "password-protection-ui-trigger-id",
+        ""};
 const base::FeatureParam<std::string>
     kTrustSafetySentimentSurveyV2SafetyCheckTriggerId{
         &kTrustSafetySentimentSurveyV2, "safety-check-trigger-id", ""};
@@ -1461,6 +1572,10 @@ extern const base::FeatureParam<std::string>
     kTrustSafetySentimentSurveyV2PrivacySandbox4NoticeSettingsTriggerId{
         &kTrustSafetySentimentSurveyV2,
         "privacy-sandbox-4-notice-settings-trigger-id", ""};
+extern const base::FeatureParam<std::string>
+    kTrustSafetySentimentSurveyV2SafeBrowsingInterstitialTriggerId{
+        &kTrustSafetySentimentSurveyV2, "safe-browsing-interstitial-trigger-id",
+        ""};
 // The time the user must have the Trusted Surface bubble open to be considered.
 // Alternatively the user can interact with the bubble, in which case this time
 // is irrelevant.
@@ -1473,7 +1588,7 @@ const base::FeatureParam<base::TimeDelta>
 #if BUILDFLAG(IS_MAC)
 BASE_FEATURE(kUseChromiumUpdater,
              "UseChromiumUpdater",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -1508,36 +1623,23 @@ BASE_FEATURE(kWebAppSyncGeneratedIconRetroactiveFix,
 BASE_FEATURE(kWebAppSyncGeneratedIconUpdateFix,
              "WebAppSyncGeneratedIconUpdateFix",
              base::FEATURE_ENABLED_BY_DEFAULT);
+
+BASE_FEATURE(kWebAppUniversalInstall,
+             "WebAppUniversalInstall",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 #endif  // !BUILDFLAG(IS_ANDROID)
 
 BASE_FEATURE(kWebAppManifestPolicyAppIdentityUpdate,
              "WebAppManifestPolicyAppIdentityUpdate",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-// When this feature flag is enabled together with the LacrosAvailability
-// policy, the Chrome app Kiosk session uses Lacros-chrome as the web browser to
-// launch Chrome apps. When disabled, the Ash-chrome will be used instead.
-BASE_FEATURE(kChromeKioskEnableLacros,
-             "ChromeKioskEnableLacros",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
-// When this feature flag is enabled together with the LacrosAvailability
-// policy, the web (PWA) Kiosk session uses Lacros-chrome as the web browser to
-// launch web (PWA) applications. When disabled, the Ash-chrome will be used
-// instead.
-BASE_FEATURE(kWebKioskEnableLacros,
-             "WebKioskEnableLacros",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-
 #if BUILDFLAG(IS_CHROMEOS)
-// Enables Isolated context APIs (Coralfish/IWA APIs) in web kiosk sessions.
+// Enables Isolated Web App context APIs in web kiosk sessions.
 // When enabled, Web App (PWA) kiosk session passes an isolated context check,
 // which makes blink expose IWA APIs to be used by the web app.
 BASE_FEATURE(kWebKioskEnableIwaApis,
              "WebKioskEnableIwaApis",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 #endif
 
 #if !BUILDFLAG(IS_ANDROID)
@@ -1570,6 +1672,7 @@ BASE_FEATURE(kWebShare, "WebShare", base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kUmaStorageDimensions,
              "UmaStorageDimensions",
              base::FEATURE_DISABLED_BY_DEFAULT);
+// TODO(b/319045572): Remove this feature flag.
 // Allow a Wilco DTC (diagnostics and telemetry controller) on Chrome OS.
 // More info about the project may be found here:
 // https://docs.google.com/document/d/18Ijj8YlC8Q3EWRzLspIi2dGxg4vIBVe5sJgMPt9SWYo

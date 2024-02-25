@@ -5,13 +5,14 @@
 #include "extensions/components/native_app_window/native_app_window_views.h"
 
 #include "base/functional/bind.h"
-#include "base/observer_list.h"
+#include "base/observer_list_types.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_widget_host.h"
 #include "content/public/browser/render_widget_host_view.h"
 #include "content/public/browser/web_contents.h"
 #include "extensions/browser/app_window/app_window.h"
-#include "extensions/common/draggable_region.h"
+#include "extensions/common/mojom/app_window.mojom.h"
+#include "services/service_manager/public/cpp/interface_provider.h"
 #include "third_party/skia/include/core/SkRegion.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/views/controls/webview/webview.h"
@@ -58,6 +59,8 @@ void NativeAppWindowViews::Init(
 
   SetCanMinimize(!app_window_->show_on_lock_screen());
   SetCanMaximize(GetCanMaximizeWindow());
+  // Intentionally the same as maximize.
+  SetCanFullscreen(GetCanMaximizeWindow());
   SetCanResize(GetCanResizeWindow());
 
   widget_ = new views::Widget;
@@ -69,7 +72,7 @@ void NativeAppWindowViews::Init(
 
 NativeAppWindowViews::~NativeAppWindowViews() {
   web_view_->SetWebContents(nullptr);
-  CHECK(!IsInObserverList());
+  CHECK(!views::WidgetObserver::IsInObserverList());
 }
 
 void NativeAppWindowViews::OnCanHaveAlphaEnabledChanged() {
@@ -269,6 +272,13 @@ void NativeAppWindowViews::RenderFrameCreated(
     // initialize it with black background color.
     render_frame_host->GetView()->SetBackgroundColor(SK_ColorBLACK);
   }
+
+  if (frameless_) {
+    mojo::Remote<extensions::mojom::AppWindow> app_window;
+    render_frame_host->GetRemoteInterfaces()->GetInterface(
+        app_window.BindNewPipeAndPassReceiver());
+    app_window->SetSupportsAppRegion(true);
+  }
 }
 
 // views::View implementation.
@@ -311,7 +321,7 @@ void NativeAppWindowViews::UpdateWindowTitle() {
 }
 
 void NativeAppWindowViews::UpdateDraggableRegions(
-    const std::vector<extensions::DraggableRegion>& regions) {
+    const std::vector<extensions::mojom::DraggableRegionPtr>& regions) {
   // Draggable region is not supported for non-frameless window.
   if (!frameless_)
     return;
@@ -380,12 +390,14 @@ void NativeAppWindowViews::SetContentSizeConstraints(
   size_constraints_.set_minimum_size(min_size);
   size_constraints_.set_maximum_size(max_size);
   SetCanMaximize(GetCanMaximizeWindow());
+  // Intentionally the same as maximize.
+  SetCanFullscreen(GetCanMaximizeWindow());
   SetCanResize(GetCanResizeWindow());
   widget_->OnSizeConstraintsChanged();
 }
 
 bool NativeAppWindowViews::CanHaveAlphaEnabled() const {
-  return widget_->IsTranslucentWindowOpacitySupported();
+  return views::Widget::IsWindowCompositingSupported();
 }
 
 void NativeAppWindowViews::SetVisibleOnAllWorkspaces(bool always_visible) {
@@ -419,6 +431,8 @@ void NativeAppWindowViews::RemoveObserver(
 
 void NativeAppWindowViews::OnWidgetHasHitTestMaskChanged() {
   SetCanMaximize(GetCanMaximizeWindow());
+  // Intentionally the same as maximize.
+  SetCanFullscreen(GetCanMaximizeWindow());
   SetCanResize(GetCanResizeWindow());
 }
 
@@ -437,7 +451,7 @@ bool NativeAppWindowViews::GetCanMaximizeWindow() const {
          !WidgetHasHitTestMask();
 }
 
-BEGIN_METADATA(NativeAppWindowViews, views::WidgetDelegateView)
+BEGIN_METADATA(NativeAppWindowViews)
 ADD_READONLY_PROPERTY_METADATA(bool, CanMaximizeWindow)
 ADD_READONLY_PROPERTY_METADATA(bool, CanResizeWindow)
 END_METADATA

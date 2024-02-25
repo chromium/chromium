@@ -60,14 +60,14 @@ class SecureChannelErrorTolerantBleAdvertisementImplTest
         fake_synchronizer_->GetAdvertisementData(command_index);
 
     // First, verify that the service UUID list is correct.
-    absl::optional<device::BluetoothAdvertisement::UUIDList> service_uuids =
+    std::optional<device::BluetoothAdvertisement::UUIDList> service_uuids =
         data.service_uuids();
     ASSERT_TRUE(service_uuids);
     EXPECT_EQ(1u, service_uuids->size());
     EXPECT_EQ(kAdvertisingServiceUuid, service_uuids->at(0));
 
     // Then, verify that the service data is correct.
-    absl::optional<device::BluetoothAdvertisement::ServiceData> service_data =
+    std::optional<device::BluetoothAdvertisement::ServiceData> service_data =
         data.service_data();
     ASSERT_TRUE(service_data);
     EXPECT_EQ(1u, service_data->size());
@@ -125,8 +125,7 @@ class SecureChannelErrorTolerantBleAdvertisementImplTest
 
   std::unique_ptr<FakeBleSynchronizer> fake_synchronizer_;
 
-  raw_ptr<device::MockBluetoothAdvertisement,
-          DanglingUntriaged | ExperimentalAsh>
+  raw_ptr<device::MockBluetoothAdvertisement, DanglingUntriaged>
       fake_advertisement_;
 
   bool stopped_callback_called_;

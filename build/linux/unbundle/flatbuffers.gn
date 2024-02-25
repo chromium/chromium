@@ -1,0 +1,34 @@
+import("//build/shim_headers.gni")
+
+
+config("flatbuffers_config") {
+  include_dirs = [ "src/include" ]
+
+  # Required to prevent static initialization of locale
+  # in util.cpp
+  defines = [ "FLATBUFFERS_LOCALE_INDEPENDENT=0" ]
+}
+
+shim_headers("flatbuffers_shim") {
+  root_path = "src/include"
+  headers = [
+    "flatbuffers/base.h",
+    "flatbuffers/flatbuffers.h",
+    "flatbuffers/stl_emulation.h",
+    "flatbuffers/flexbuffers.h",
+    "flatbuffers/util.h",
+  ]
+}
+
+source_set("flatbuffers") {
+  deps = [ ":flatbuffers_shim" ]
+  libs = [ "flatbuffers" ]
+  public_configs = [ ":flatbuffers_config" ]
+}
+
+copy("flatc") {
+  sources = [ "/usr/bin/flatc" ]
+  outputs = [ "$root_out_dir/flatc" ]
+}
+
+source_set("flatbuffers_unittests") {}

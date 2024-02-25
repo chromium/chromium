@@ -1,0 +1,82 @@
+[
+  {
+    "can_be_recommended": true,
+    "os": [
+      "chromeos_ash"
+    ],
+    "policy_pref_mapping_tests": [
+      {
+        "note": "default value",
+        "policies": {},
+        "prefs": {
+          "ash.docked_magnifier.enabled": {
+            "default_value": false
+          },
+          "settings.a11y.screen_magnifier": {
+            "default_value": false
+          }
+        }
+      },
+      {
+        "note": "value MagnifierType::kDisabled",
+        "policies": {
+          "ScreenMagnifierType": 0
+        },
+        "prefs": {
+          "ash.docked_magnifier.enabled": {
+            "value": false
+          },
+          "settings.a11y.screen_magnifier": {
+            "value": false
+          }
+        }
+      },
+      {
+        "note": "value MagnifierType::kFull",
+        "policies": {
+          "ScreenMagnifierType": 1
+        },
+        "prefs": {
+          "ash.docked_magnifier.enabled": {
+            "check_for_recommended": false,
+            "note": "Another controller is overriding this value with the same user value, causing it to be marked as user controller and not recommended",
+            "value": false
+          },
+          "settings.a11y.screen_magnifier": {
+            "value": true
+          }
+        }
+      },
+      {
+        "note": "value MagnifierType::kDocked",
+        "policies": {
+          "ScreenMagnifierType": 2
+        },
+        "prefs": {
+          "ash.docked_magnifier.enabled": {
+            "value": true
+          },
+          "settings.a11y.screen_magnifier": {
+            "check_for_recommended": false,
+            "note": "Another controller is overriding this value with the same user value, causing it to be marked as user controller and not recommended",
+            "value": false
+          }
+        }
+      },
+      {
+        "note": "value out-of-range is ignored",
+        "policies": {
+          "ScreenMagnifierType": 3
+        },
+        "prefs": {
+          "ash.docked_magnifier.enabled": {
+            "default_value": false
+          },
+          "settings.a11y.screen_magnifier": {
+            "default_value": false
+          }
+        }
+      }
+    ]
+  }
+]

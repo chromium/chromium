@@ -14,8 +14,6 @@ source_set("ios") {
     "//components/image_fetcher/core",
     "//ios/web",
     "//net",
-    "//third_party/libwebp:libwebp_dec",
-    "//third_party/libwebp:libwebp_webp",
     "//ui/gfx",
   ]
 }

@@ -1,4 +1,4 @@
-(async function(testRunner) {
+(async function(/** @type {import('test_runner').TestRunner} */ testRunner) {
   var {page, session, dp} = await testRunner.startHTML(`<div id='inliner' style='color: red;'></div>`, 'Verify that CSS.setStyleSheetText works for inline styles.');
 
   var CSSHelper = await testRunner.loadScript('../resources/css-helper.js');

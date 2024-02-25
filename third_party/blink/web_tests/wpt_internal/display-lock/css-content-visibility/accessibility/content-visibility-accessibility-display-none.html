@@ -27,22 +27,22 @@
 
 <script>
 test(() => {
-  assert_true(accessibilityController.accessibleElementById('target').isIgnored, 'first check');
+  assert_equals(undefined, accessibilityController.accessibleElementById('target'), 'first check');
 
   // Toggle display:none and make sure the results are still as expected.
   displaynone.classList.remove('displaynone');
   assert_false(accessibilityController.accessibleElementById('target').isIgnored, 'removed display:none');
   displaynone.classList.add('displaynone');
-  assert_true(accessibilityController.accessibleElementById('target').isIgnored, 're-added display:none');
+  assert_equals(undefined, accessibilityController.accessibleElementById('target'), 're-added display:none');
 
   // Toggle content-visibility:auto and make sure the results are still as expected.
   cvauto.classList.remove('cvauto');
-  assert_true(accessibilityController.accessibleElementById('target').isIgnored, 'removed content-visibility:auto');
+  assert_equals(undefined, accessibilityController.accessibleElementById('target'), 'removed content-visibility:auto');
   cvauto.classList.add('cvauto');
-  assert_true(accessibilityController.accessibleElementById('target').isIgnored, 're-added content-visibility:auto');
+  assert_equals(undefined, accessibilityController.accessibleElementById('target'), 're-added content-visibility:auto');
 
   // Scroll the content out of the viewport and make sure the results are still as expected.
   spacer.classList.remove('displaynone');
-  assert_true(accessibilityController.accessibleElementById('target').isIgnored, 're-added content-visibility:auto');
+  assert_equals(undefined, accessibilityController.accessibleElementById('target'), 're-added content-visibility:auto');
 }, `Verifies that display:none elements can't have children in the accessibility tree due to content-visibility:auto.`);
 </script>

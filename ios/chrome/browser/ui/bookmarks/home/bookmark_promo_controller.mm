@@ -16,10 +16,12 @@
 #import "components/sync/service/sync_service.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
-#import "ios/chrome/browser/signin/authentication_service_factory.h"
-#import "ios/chrome/browser/signin/chrome_account_manager_service_factory.h"
-#import "ios/chrome/browser/signin/identity_manager_factory.h"
-#import "ios/chrome/browser/sync/sync_service_factory.h"
+#import "ios/chrome/browser/shared/public/features/features.h"
+#import "ios/chrome/browser/signin/model/authentication_service_factory.h"
+#import "ios/chrome/browser/signin/model/chrome_account_manager_service_factory.h"
+#import "ios/chrome/browser/signin/model/identity_manager_factory.h"
+#import "ios/chrome/browser/sync/model/sync_service_factory.h"
+#import "ios/chrome/browser/ui/authentication/account_settings_presenter.h"
 #import "ios/chrome/browser/ui/authentication/cells/signin_promo_view_configurator.h"
 #import "ios/chrome/browser/ui/authentication/cells/signin_promo_view_consumer.h"
 #import "ios/chrome/browser/ui/authentication/signin_promo_view_mediator.h"
@@ -41,8 +43,9 @@
 - (instancetype)initWithBrowser:(Browser*)browser
                     syncService:(syncer::SyncService*)syncService
                        delegate:(id<BookmarkPromoControllerDelegate>)delegate
-                      presenter:(id<SigninPresenter>)presenter
-             baseViewController:(UIViewController*)baseViewController {
+                signinPresenter:(id<SigninPresenter>)signinPresenter
+       accountSettingsPresenter:
+           (id<AccountSettingsPresenter>)accountSettingsPresenter {
   DCHECK(browser);
   self = [super init];
   if (self) {
@@ -62,13 +65,11 @@
                           syncService:syncService
                           accessPoint:signin_metrics::AccessPoint::
                                           ACCESS_POINT_BOOKMARK_MANAGER
-                            presenter:presenter
-                   baseViewController:baseViewController];
+                      signinPresenter:signinPresenter
+             accountSettingsPresenter:accountSettingsPresenter];
     _signinPromoViewMediator.consumer = self;
-    if (base::FeatureList::IsEnabled(syncer::kEnableBookmarksAccountStorage)) {
-      _signinPromoViewMediator.dataTypeToWaitForInitialSync =
-          syncer::ModelType::BOOKMARKS;
-    }
+    _signinPromoViewMediator.dataTypeToWaitForInitialSync =
+        syncer::ModelType::BOOKMARKS;
     [self updateShouldShowSigninPromo];
   }
   return self;
@@ -99,69 +100,81 @@
       _browser->GetBrowserState()->GetOriginalChromeBrowserState();
   AuthenticationService* authenticationService =
       AuthenticationServiceFactory::GetForBrowserState(browserState);
+  signin::IdentityManager* identityManager =
+      IdentityManagerFactory::GetForBrowserState(browserState);
+  syncer::SyncService* syncService =
+      SyncServiceFactory::GetForBrowserState(browserState);
+
+  std::optional<SigninPromoAction> signinPromoAction;
+  if (!identityManager->HasPrimaryAccount(signin::ConsentLevel::kSignin)) {
+    PrefService* prefs = browserState->GetPrefs();
+    const std::string lastSignedInGaiaId =
+        prefs->GetString(prefs::kGoogleServicesLastSyncingGaiaId);
+    if (lastSignedInGaiaId.empty() ||
+        base::FeatureList::IsEnabled(kEnableBatchUploadFromBookmarksManager)) {
+      signinPromoAction = SigninPromoAction::kInstantSignin;
+    } else {
+      // If the last signed-in user did not remove data during sign-out, don't
+      // show the signin promo if kEnableBatchUploadFromBookmarksManager is not
+      // enabled.
+      self.shouldShowSigninPromo = NO;
+      return;
+    }
+  } else if (identityManager->HasPrimaryAccount(signin::ConsentLevel::kSync)) {
+    // TODO(crbug.com/40066949): Simplify once kSync becomes unreachable or is
+    // deleted from the codebase. See ConsentLevel::kSync documentation for
+    // details.
+    // If the user is already syncing, the promo should not be visible.
+    self.shouldShowSigninPromo = NO;
+    return;
+  } else if (!base::FeatureList::IsEnabled(
+                 syncer::kReplaceSyncPromosWithSignInPromos) &&
+             !bookmark_utils_ios::IsAccountBookmarkStorageOptedIn(
+                 syncService)) {
+    // The user signed in, but not opted into syncing bookmarks - show sync
+    // promo.
+    signinPromoAction = SigninPromoAction::kSync;
+  } else if (base::FeatureList::IsEnabled(
+                 syncer::kReplaceSyncPromosWithSignInPromos) &&
+             base::FeatureList::IsEnabled(kEnableReviewAccountSettingsPromo) &&
+             !bookmark_utils_ios::IsAccountBookmarkStorageOptedIn(
+                 syncService)) {
+    if (self.shouldShowSigninPromo &&
+        _signinPromoViewMediator.signinPromoAction !=
+            SigninPromoAction::kReviewAccountSettings) {
+      // The promo was visible with another action. `shouldShowSigninPromo`
+      // needs to be toggled first to reflect this change.
+      self.shouldShowSigninPromo = NO;
+    }
+    // The user signed in, but not opted into account bookmarks storage - show
+    // review account settings promo.
+    signinPromoAction = SigninPromoAction::kReviewAccountSettings;
+  } else if (self.signinPromoViewMediator.showSpinner) {
+    // The user is opted into syncing bookmarks, but the first sync is not
+    // finished yet - keep the promo visible with the same action to show the
+    // spinner.
+    signinPromoAction = SigninPromoAction::kInstantSignin;
+  } else {
+    // The user is opted into syncing bookmarks and the first sync is done -
+    // hide the promo.
+    self.shouldShowSigninPromo = NO;
+    return;
+  }
+
+  CHECK(signinPromoAction.has_value());
   if (![SigninPromoViewMediator
           shouldDisplaySigninPromoViewWithAccessPoint:
               signin_metrics::AccessPoint::ACCESS_POINT_BOOKMARK_MANAGER
+                                    signinPromoAction:signinPromoAction.value()
                                 authenticationService:authenticationService
                                           prefService:browserState
                                                           ->GetPrefs()]) {
     self.shouldShowSigninPromo = NO;
     return;
   }
-  signin::IdentityManager* identityManager =
-      IdentityManagerFactory::GetForBrowserState(browserState);
-  if (!identityManager->HasPrimaryAccount(signin::ConsentLevel::kSignin)) {
-    if (base::FeatureList::IsEnabled(syncer::kEnableBookmarksAccountStorage)) {
-      PrefService* prefs = browserState->GetPrefs();
-      const std::string lastSignedInGaiaId =
-          prefs->GetString(prefs::kGoogleServicesLastGaiaId);
-      // If the last signed-in user did not remove data during sign-out, don't
-      // show the signin promo.
-      if (lastSignedInGaiaId.empty()) {
-        self.shouldShowSigninPromo = YES;
-        _signinPromoViewMediator.signinPromoAction =
-            SigninPromoAction::kInstantSignin;
-      } else {
-        self.shouldShowSigninPromo = NO;
-      }
-    } else {
-      // If the user is not signed in, the promo should be visible.
-      self.shouldShowSigninPromo = YES;
-      _signinPromoViewMediator.signinPromoAction = SigninPromoAction::kSync;
-    }
-    return;
-  }
-  // TODO(crbug.com/1462552): Simplify once kSync becomes unreachable or is
-  // deleted from the codebase. See ConsentLevel::kSync documentation for
-  // details.
-  if (identityManager->HasPrimaryAccount(signin::ConsentLevel::kSync)) {
-    // If the user is already syncing, the promo should not be visible.
-    self.shouldShowSigninPromo = NO;
-    return;
-  }
-  syncer::SyncService* syncService =
-      SyncServiceFactory::GetForBrowserState(browserState);
-  if (!base::FeatureList::IsEnabled(
-          syncer::kReplaceSyncPromosWithSignInPromos) &&
-      !bookmark_utils_ios::IsAccountBookmarkStorageOptedIn(syncService)) {
-    // The user signed in, but not opted into syncing bookmarks - show sync
-    // promo.
-    self.shouldShowSigninPromo = YES;
-    _signinPromoViewMediator.signinPromoAction = SigninPromoAction::kSync;
-    return;
-  }
 
-  if (self.signinPromoViewMediator.showSpinner) {
-    // The user is opted into syncing bookmarks, but the first sync is not
-    // finished yet - keep the promo visible to show the spinner.
-    self.shouldShowSigninPromo = YES;
-    _signinPromoViewMediator.signinPromoAction =
-        SigninPromoAction::kInstantSignin;
-    return;
-  }
-  // The user is opted into syncing bookmarks and the first sync is done - hide
-  // the promo.
-  self.shouldShowSigninPromo = NO;
+  _signinPromoViewMediator.signinPromoAction = signinPromoAction.value();
+  self.shouldShowSigninPromo = YES;
 }
 
 #pragma mark - IdentityManagerObserverBridgeDelegate
@@ -169,17 +182,10 @@
 // Called when a user changes the syncing state.
 - (void)onPrimaryAccountChanged:
     (const signin::PrimaryAccountChangeEvent&)event {
-  if (base::FeatureList::IsEnabled(syncer::kEnableBookmarksAccountStorage)) {
-    // The account storage promo is not shown if the user is signed-in, so
-    // events with sign-in consent level should be captured and handled.
-    [self handlePrimaryAccountChange:event
-                        consentLevel:signin::ConsentLevel::kSignin];
-  } else {
-    // TODO(crbug.com/1462552): This instance of signin::ConsentLevel::kSync
-    // should be removed once `kEnableBookmarksAccountStorage` launches.
-    [self handlePrimaryAccountChange:event
-                        consentLevel:signin::ConsentLevel::kSync];
-  }
+  // The account storage promo is not shown if the user is signed-in, so
+  // events with sign-in consent level should be captured and handled.
+  [self handlePrimaryAccountChange:event
+                      consentLevel:signin::ConsentLevel::kSignin];
 }
 
 #pragma mark - SigninPromoViewConsumer

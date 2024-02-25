@@ -24,14 +24,6 @@ namespace media {
 
 std::string CAPTURE_EXPORT MacFourCCToString(OSType fourcc);
 
-// Returns a dictionary of capture devices with friendly name and unique id.
-// VideoCaptureDeviceApple should call this function to fetch the list of
-// devices available in the system; this method returns the list of device names
-// that have to be used with -[VideoCaptureDeviceAVFoundation
-// setCaptureDevice:].
-NSDictionary<NSString*, DeviceNameAndTransportType*>*
-GetVideoCaptureDeviceNames();
-
 // Extracts |base_address| and |length| out of a SampleBuffer. Returns true on
 // success and false if we failed to retrieve the information due to OS call
 // error return, or unexpected output parameters.
@@ -43,7 +35,7 @@ gfx::Size CAPTURE_EXPORT GetPixelBufferSize(CVPixelBufferRef pixel_buffer);
 gfx::Size CAPTURE_EXPORT GetSampleBufferSize(CMSampleBufferRef sample_buffer);
 
 #if BUILDFLAG(IS_IOS)
-absl::optional<int> MaybeGetVideoRotation(
+std::optional<int> MaybeGetVideoRotation(
     UIDeviceOrientation orientation,
     AVCaptureDevicePosition camera_position);
 #endif

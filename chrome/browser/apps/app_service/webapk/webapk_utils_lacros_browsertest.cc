@@ -24,7 +24,7 @@ IN_PROC_BROWSER_TEST_F(WebApkUtilsBrowserTest, GetWebApk) {
       https_server()->GetURL("/web_share_target/charts.json");
   const GURL expected_action_url =
       https_server()->GetURL("/web_share_target/share.html");
-  const web_app::AppId app_id =
+  const webapps::AppId app_id =
       web_app::InstallWebAppFromManifest(browser(), start_url);
 
   base::test::TestFuture<crosapi::mojom::WebApkCreationParamsPtr> future;

@@ -7,6 +7,7 @@
 
 #include <memory>
 #include <string>
+#include <string_view>
 
 #include "base/files/file_descriptor_watcher_posix.h"
 #include "base/files/scoped_file.h"
@@ -35,7 +36,7 @@ class SystemTracer {
       base::RepeatingCallback<void(Status status, std::string trace_data)>;
 
   // Start system tracing for categories in |categories| (comma separated).
-  virtual void StartTracing(base::StringPiece categories,
+  virtual void StartTracing(std::string_view categories,
                             StartTracingCallback callback) = 0;
 
   // Stop system tracing.

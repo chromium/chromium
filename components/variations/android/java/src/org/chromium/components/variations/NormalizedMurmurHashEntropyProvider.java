@@ -17,9 +17,7 @@ public final class NormalizedMurmurHashEntropyProvider {
     private final int mEntropyValue;
     private final int mEntropyRange;
 
-    /**
-     * Initializes the entropy provider with the value and the range of the low entropy source.
-     */
+    /** Initializes the entropy provider with the value and the range of the low entropy source. */
     public NormalizedMurmurHashEntropyProvider(int entropyValue, int entropyRange) {
         mEntropyValue = entropyValue;
         mEntropyRange = entropyRange;

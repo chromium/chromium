@@ -49,6 +49,16 @@ class ASH_EXPORT KeyboardPrefHandlerImpl : public KeyboardPrefHandler {
   void InitializeWithDefaultKeyboardSettings(
       const mojom::KeyboardPolicies& keyboard_policies,
       mojom::Keyboard* keyboard) override;
+
+  void UpdateDefaultChromeOSKeyboardSettings(
+      PrefService* pref_service,
+      const mojom::KeyboardPolicies& keyboard_policies,
+      const mojom::Keyboard& keyboard) override;
+
+  void UpdateDefaultNonChromeOSKeyboardSettings(
+      PrefService* pref_service,
+      const mojom::KeyboardPolicies& keyboard_policies,
+      const mojom::Keyboard& keyboard) override;
 };
 
 }  // namespace ash

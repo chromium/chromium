@@ -31,6 +31,22 @@ class BLINK_EXPORT WebV8Features {
 
   static void EnableMojoJSFileSystemAccessHelper(v8::Local<v8::Context>, bool);
 
+  // A static protected memory bool is used to track if MojoJS has been properly
+  // enabled for a render frame in the current process. This method is used to
+  // update that bool, indicating that MojoJS is allowed to be enabled for any
+  // render frame in the process.
+  static void AllowMojoJSForProcess();
+
+  // Method use to validate the value of isMojoJSEnabled() for the context in
+  // tests.
+  static bool IsMojoJSEnabledForTesting(v8::Local<v8::Context>);
+
+  // Testing method that enables mojo JS on the ContextFeatureSettings while
+  // bypassing the protected memory bool check. This is used to validate later
+  // stage protected memory check code paths.
+  static void EnableMojoJSWithoutSecurityChecksForTesting(
+      v8::Local<v8::Context>);
+
  private:
   WebV8Features() = delete;
 };

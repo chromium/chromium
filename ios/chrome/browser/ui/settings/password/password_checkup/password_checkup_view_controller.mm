@@ -9,9 +9,9 @@
 #import "base/strings/string_number_conversions.h"
 #import "components/google/core/common/google_util.h"
 #import "components/strings/grit/components_strings.h"
-#import "ios/chrome/browser/net/crurl.h"
-#import "ios/chrome/browser/passwords/password_checkup_metrics.h"
-#import "ios/chrome/browser/passwords/password_checkup_utils.h"
+#import "ios/chrome/browser/net/model/crurl.h"
+#import "ios/chrome/browser/passwords/model/password_checkup_metrics.h"
+#import "ios/chrome/browser/passwords/model/password_checkup_utils.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_text_item.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
@@ -420,7 +420,6 @@ void SetUpTrailingIconAndAccessoryType(
   [self updatePasswordCheckupTimestampDetailText];
 }
 
-// TODO(crbug.com/1453276): Make the coordinator present the alert instead.
 - (void)showErrorDialogWithMessage:(NSString*)message {
   NSString* title = l10n_util::GetNSString(
       IDS_IOS_PASSWORD_CHECKUP_HOMEPAGE_ERROR_DIALOG_TITLE);
@@ -433,8 +432,6 @@ void SetUpTrailingIconAndAccessoryType(
       [UIAlertAction actionWithTitle:l10n_util::GetNSString(IDS_OK)
                                style:UIAlertActionStyleDefault
                              handler:nil];
-  // TODO(crbug.com/1453276): Once fixed, setting the accessibilityIdentifier
-  // will no longer be neeeded since it will be handled by the AlertCoordinator.
   okAction.accessibilityIdentifier =
       [l10n_util::GetNSString(IDS_OK) stringByAppendingString:@"AlertAction"];
   [alert addAction:okAction];
@@ -453,14 +450,20 @@ void SetUpTrailingIconAndAccessoryType(
       static_cast<ItemType>([model itemTypeForIndexPath:indexPath]);
   switch (itemType) {
     case ItemTypeCompromisedPasswords:
+      base::RecordAction(
+          base::UserMetricsAction("MobilePasswordIssuesCompromisedOpen"));
       [self showPasswordIssuesWithWarningType:WarningType::
                                                   kCompromisedPasswordsWarning];
       break;
     case ItemTypeReusedPasswords:
+      base::RecordAction(
+          base::UserMetricsAction("MobilePasswordIssuesReusedOpen"));
       [self showPasswordIssuesWithWarningType:WarningType::
                                                   kReusedPasswordsWarning];
       break;
     case ItemTypeWeakPasswords:
+      base::RecordAction(
+          base::UserMetricsAction("MobilePasswordIssuesWeakOpen"));
       [self
           showPasswordIssuesWithWarningType:WarningType::kWeakPasswordsWarning];
       break;

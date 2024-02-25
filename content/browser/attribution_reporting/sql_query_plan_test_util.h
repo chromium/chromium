@@ -6,13 +6,13 @@
 #define CONTENT_BROWSER_ATTRIBUTION_REPORTING_SQL_QUERY_PLAN_TEST_UTIL_H_
 
 #include <iosfwd>
+#include <optional>
 #include <string>
 #include <vector>
 
 #include "base/files/file_path.h"
 #include "base/types/expected.h"
 #include "testing/gmock/include/gmock/gmock.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace content {
 
@@ -54,6 +54,7 @@ enum class SqlFullScanReason {
 class SqlQueryPlanExplainer {
  public:
   enum class Error {
+    kCommandFailed,
     kInvalidOutput,
     kMissingFullScanAnnotation,
     kExtraneousFullScanAnnotation,
@@ -69,7 +70,7 @@ class SqlQueryPlanExplainer {
   // when they do.
   base::expected<SqlQueryPlan, Error> GetPlan(
       std::string query,
-      absl::optional<SqlFullScanReason> full_scan_reason = absl::nullopt);
+      std::optional<SqlFullScanReason> full_scan_reason = std::nullopt);
 
  private:
   const base::FilePath db_path_;

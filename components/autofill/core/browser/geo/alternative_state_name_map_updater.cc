@@ -9,7 +9,6 @@
 #include <vector>
 
 #include "base/containers/contains.h"
-#include "base/containers/cxx20_erase.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
@@ -55,8 +54,9 @@ std::string LoadDataFromFile(const base::FilePath& file) {
 AlternativeStateNameMapUpdater::AlternativeStateNameMapUpdater(
     PrefService* local_state,
     PersonalDataManager* personal_data_manager)
-    : personal_data_manager_(personal_data_manager),
-      local_state_(local_state) {}
+    : personal_data_manager_(personal_data_manager), local_state_(local_state) {
+  pdm_observer_.Observe(personal_data_manager_);
+}
 
 AlternativeStateNameMapUpdater::~AlternativeStateNameMapUpdater() = default;
 
@@ -77,11 +77,8 @@ bool AlternativeStateNameMapUpdater::ContainsState(
       });
 }
 
-void AlternativeStateNameMapUpdater::OnPersonalDataFinishedProfileTasks() {
-  if (base::FeatureList::IsEnabled(
-          features::kAutofillUseAlternativeStateNameMap)) {
-    PopulateAlternativeStateNameMap();
-  }
+void AlternativeStateNameMapUpdater::OnPersonalDataChanged() {
+  PopulateAlternativeStateNameMap();
 }
 
 void AlternativeStateNameMapUpdater::PopulateAlternativeStateNameMap(
@@ -92,11 +89,9 @@ void AlternativeStateNameMapUpdater::PopulateAlternativeStateNameMap(
 
   CountryToStateNamesListMapping country_to_state_names_map;
   for (AutofillProfile* profile : profiles) {
-    const AutofillType country_code_type(HtmlFieldType::kCountryCode,
-                                         HtmlFieldMode::kNone);
-    const AlternativeStateNameMap::CountryCode country(
-        base::UTF16ToUTF8(profile->GetInfo(
-            country_code_type, personal_data_manager_->app_locale())));
+    const AlternativeStateNameMap::CountryCode country(base::UTF16ToUTF8(
+        profile->GetInfo(AutofillType(HtmlFieldType::kCountryCode),
+                         personal_data_manager_->app_locale())));
 
     const AlternativeStateNameMap::StateName state_name(
         profile->GetInfo(AutofillType(ADDRESS_HOME_STATE),
@@ -141,7 +136,7 @@ void AlternativeStateNameMapUpdater::LoadStatesData(
       CountryDataMap::GetInstance()->country_codes();
 
   // Remove all invalid country names.
-  base::EraseIf(country_to_state_names_map,
+  std::erase_if(country_to_state_names_map,
                 [&country_codes](
                     const CountryToStateNamesListMapping::value_type& entry) {
                   return !base::Contains(country_codes, entry.first.value());

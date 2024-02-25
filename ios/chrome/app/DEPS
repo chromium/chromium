@@ -9,6 +9,7 @@ include_rules = [
   "+components/crash/core/app",
   "+components/crash/core/common",
   "+components/download/public/background_service/background_download_service.h",
+  "+components/enterprise/idle",
   "+components/favicon_base",
   "+components/favicon/core",
   "+components/feature_engagement",
@@ -29,7 +30,6 @@ include_rules = [
   "+components/signin/internal",
   "+components/signin/public/identity_manager/identity_manager.h",
   "+components/suggestions",
-  "+components/sync/base",
   "+components/sync/service",
   "+components/ukm/ios",
   "+components/unified_consent",
@@ -38,7 +38,7 @@ include_rules = [
   "+components/version_info",
   "+components/web_resource",
   "+ios/chrome/browser",
-  "+ios/chrome/browser/feature_engagement",
+  "+ios/chrome/browser/feature_engagement/model",
   "+components/signin/public/identity_manager",
   "+ios/components/cookie_util",
   "+ios/components/webui",
@@ -52,11 +52,15 @@ include_rules = [
   "+components/grit",
   "+components/strings",
   "+ios/chrome/grit",
+
+  # Use ios/chrome/browser/ui/authentication/signin_earl_grey.h instead
+  "-ios/chrome/browser/ui/authentication/signin_earl_grey_app_interface.h",
 ]
 
 specific_include_rules = {
   ".*test\.mm": [
     "+components/previous_session_info/previous_session_info_private.h",
     "+components/sync_preferences",
+    "+components/open_from_clipboard",
   ],
 }

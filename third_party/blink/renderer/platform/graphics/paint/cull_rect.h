@@ -6,8 +6,8 @@
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_GRAPHICS_PAINT_CULL_RECT_H_
 
 #include <limits>
+#include <optional>
 
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/renderer/platform/geometry/infinite_int_rect.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
@@ -54,7 +54,7 @@ class PLATFORM_EXPORT CullRect {
   bool ApplyPaintProperties(const PropertyTreeState& root,
                             const PropertyTreeState& source,
                             const PropertyTreeState& destination,
-                            const absl::optional<CullRect>& old_cull_rect,
+                            const std::optional<CullRect>& old_cull_rect,
                             bool disable_expansion);
 
   const gfx::Rect& Rect() const { return rect_; }
@@ -67,8 +67,8 @@ class PLATFORM_EXPORT CullRect {
  private:
   friend class CullRectTest;
 
-  // Returns whether the cull rect is expanded.
-  bool ApplyScrollTranslation(
+  // Returns whether the cull rect is expanded along x and y axes.
+  std::pair<bool, bool> ApplyScrollTranslation(
       const TransformPaintPropertyNode& root_transform,
       const TransformPaintPropertyNode& scroll_translation,
       bool disable_expansion);
@@ -80,8 +80,9 @@ class PLATFORM_EXPORT CullRect {
       const PropertyTreeState& source,
       const PropertyTreeState& destination);
 
-  bool ChangedEnough(const CullRect& old_cull_rect,
-                     const absl::optional<gfx::Rect>& expansion_bounds) const;
+  bool ChangedEnough(const std::pair<bool, bool>& expanded,
+                     const CullRect& old_cull_rect,
+                     const std::optional<gfx::Rect>& expansion_bounds) const;
 
   gfx::Rect rect_;
 };

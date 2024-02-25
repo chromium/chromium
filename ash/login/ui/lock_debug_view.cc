@@ -7,19 +7,25 @@
 #include <algorithm>
 #include <map>
 #include <memory>
+#include <optional>
 #include <utility>
 
 #include "ash/constants/ash_pref_names.h"
+#include "ash/curtain/remote_maintenance_curtain_view.h"
+#include "ash/curtain/security_curtain_controller.h"
 #include "ash/detachable_base/detachable_base_pairing_status.h"
 #include "ash/ime/ime_controller_impl.h"
 #include "ash/login/login_screen_controller.h"
+#include "ash/login/ui/local_authentication_request_controller_impl.h"
 #include "ash/login/ui/lock_contents_view.h"
+#include "ash/login/ui/lock_contents_view_test_api.h"
 #include "ash/login/ui/lock_screen.h"
 #include "ash/login/ui/login_data_dispatcher.h"
 #include "ash/login/ui/login_detachable_base_model.h"
 #include "ash/login/ui/non_accessible_view.h"
 #include "ash/login/ui/views_utils.h"
 #include "ash/public/cpp/kiosk_app_menu.h"
+#include "ash/public/cpp/login/local_authentication_request_controller.h"
 #include "ash/public/cpp/login_types.h"
 #include "ash/public/cpp/smartlock_state.h"
 #include "ash/public/cpp/style/dark_light_mode_controller.h"
@@ -34,10 +40,13 @@
 #include "base/memory/raw_ptr.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
+#include "chromeos/ash/components/login/auth/public/user_context.h"
+#include "components/account_id/account_id.h"
 #include "components/user_manager/known_user.h"
 #include "components/user_manager/multi_user/multi_user_sign_in_policy.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/ime/ash/ime_keyboard.h"
+#include "ui/chromeos/resources/grit/ui_chromeos_resources.h"
+#include "ui/gfx/image/image_skia.h"
 #include "ui/views/controls/button/md_text_button.h"
 #include "ui/views/controls/scroll_view.h"
 #include "ui/views/controls/scrollbar/overlay_scroll_bar.h"
@@ -67,6 +76,8 @@ constexpr const char kDebugEnterpriseInfo[] = "Asset ID: 1111";
 constexpr const char kDebugBluetoothName[] = "Bluetooth adapter";
 
 constexpr const char kDebugKioskAppId[] = "asdf1234";
+const AccountId kDebugKioskAppAccountId =
+    AccountId::FromUserEmail("fake@email.com");
 constexpr const char16_t kDebugKioskAppName[] = u"Test App Name";
 
 constexpr const char kDebugDefaultLocaleCode[] = "en-GB";
@@ -109,7 +120,7 @@ struct UserMetadata {
   bool enable_tap_to_unlock = false;
   bool enable_challenge_response = false;  // Smart Card
   bool enable_auth = true;
-  user_manager::UserType type = user_manager::USER_TYPE_REGULAR;
+  user_manager::UserType type = user_manager::UserType::kRegular;
   SmartLockState smart_lock_state = SmartLockState::kInactive;
   FingerprintState fingerprint_state = FingerprintState::UNAVAILABLE;
   DebugAuthEnabledState auth_enable_state = DebugAuthEnabledState::kAuthEnabled;
@@ -137,7 +148,7 @@ LoginUserInfo PopulateUserData(const LoginUserInfo& user,
   LoginUserInfo result = user;
   result.basic_user_info.type = type;
 
-  bool is_public_account = type == user_manager::USER_TYPE_PUBLIC_ACCOUNT;
+  bool is_public_account = type == user_manager::UserType::kPublicAccount;
   // Set debug user names and email. Useful for the stub user, which does not
   // have a name  and email set.
   result.basic_user_info.display_name =
@@ -172,6 +183,10 @@ LoginUserInfo PopulateUserData(const LoginUserInfo& user,
   }
 
   return result;
+}
+
+std::unique_ptr<views::View> CreateCurtainOverlay() {
+  return std::make_unique<ash::curtain::RemoteMaintenanceCurtainView>();
 }
 
 }  // namespace
@@ -371,6 +386,21 @@ class LockDebugView::DebugDataDispatcherTransformer
         debug_user->account_id, debug_user->enable_tap_to_unlock);
   }
 
+  // Activates authentication request dialog for the user at |user_index|.
+  void AuthRequestForUserIndex(size_t user_index) {
+    DCHECK(user_index >= 0 && user_index < debug_users_.size());
+    UserMetadata* debug_user = &debug_users_[user_index];
+    const AccountId account_id = debug_user->account_id;
+
+    std::unique_ptr<ash::UserContext> user_context =
+        std::make_unique<ash::UserContext>(user_manager::UserType::kRegular,
+                                           account_id);
+
+    Shell::Get()->local_authentication_request_controller()->ShowWidget(
+        base::BindOnce([](bool bla, std::unique_ptr<UserContext> ctx) {}),
+        std::move(user_context));
+  }
+
   // Cycles fingerprint state for the user at |user_index|.
   void CycleFingerprintStateForUserIndex(size_t user_index) {
     DCHECK(user_index >= 0 && user_index < debug_users_.size());
@@ -400,22 +430,23 @@ class LockDebugView::DebugDataDispatcherTransformer
   // Toggles force online sign-in for the user at |user_index|.
   void ToggleForceOnlineSignInForUserIndex(size_t user_index) {
     DCHECK(user_index >= 0 && user_index < debug_users_.size());
-    lock_debug_view_->lock()->ToggleForceOnlineSignInForUserForDebug(
+    LockContentsViewTestApi lock_test_api(lock_debug_view_->lock());
+    lock_test_api.ToggleForceOnlineSignInForUser(
         debug_users_[user_index].account_id);
   }
 
   // Enables or disables user management for the user at |user_index|.
   void ToggleManagementForUserIndex(size_t user_index) {
     DCHECK(user_index >= 0 && user_index < debug_users_.size());
-    lock_debug_view_->lock()->ToggleManagementForUserForDebug(
-        debug_users_[user_index].account_id);
+    LockContentsViewTestApi lock_test_api(lock_debug_view_->lock());
+    lock_test_api.ToggleManagementForUser(debug_users_[user_index].account_id);
   }
 
   // Toggles TPM disabled message for the user at |user_index|.
   void ToggleDisableTpmForUserIndex(size_t user_index) {
     DCHECK(user_index >= 0 && user_index < debug_users_.size());
-    lock_debug_view_->lock()->ToggleDisableTpmForUserForDebug(
-        debug_users_[user_index].account_id);
+    LockContentsViewTestApi lock_test_api(lock_debug_view_->lock());
+    lock_test_api.ToggleDisableTpmForUser(debug_users_[user_index].account_id);
   }
 
   // Cycles disabled auth message for the user at |user_index|.
@@ -458,9 +489,10 @@ class LockDebugView::DebugDataDispatcherTransformer
     }
 
     debug_dispatcher_.EnableAuthForUser(debug_user->account_id);
-    lock_debug_view_->lock()->SetMultiUserSignInPolicyForUserForDebug(
+    LockContentsViewTestApi lock_test_api(lock_debug_view_->lock());
+    lock_test_api.SetMultiUserSignInPolicyForUser(
         debug_users_[user_index].account_id, multi_user_sign_in_policy);
-    lock_debug_view_->lock()->UndoForceOnlineSignInForUserForDebug(
+    lock_test_api.UndoForceOnlineSignInForUser(
         debug_users_[user_index].account_id);
 
     switch (debug_user->auth_enable_state) {
@@ -478,7 +510,7 @@ class LockDebugView::DebugDataDispatcherTransformer
         break;
       case DebugAuthEnabledState::kMultiUserPolicyPrimaryOnly:
       case DebugAuthEnabledState::kMultiUserPolicyNotAllowed:
-        lock_debug_view_->lock()->SetMultiUserSignInPolicyForUserForDebug(
+        lock_test_api.SetMultiUserSignInPolicyForUser(
             debug_users_[user_index].account_id, multi_user_sign_in_policy);
         break;
       case DebugAuthEnabledState::kForceOnlineSignIn:
@@ -494,9 +526,9 @@ class LockDebugView::DebugDataDispatcherTransformer
     DCHECK(user_index >= 0 && user_index < debug_users_.size());
     UserMetadata& user = debug_users_[user_index];
     // Swap the type between regular and public account.
-    user.type = user.type == user_manager::USER_TYPE_REGULAR
-                    ? user_manager::USER_TYPE_PUBLIC_ACCOUNT
-                    : user_manager::USER_TYPE_REGULAR;
+    user.type = user.type == user_manager::UserType::kRegular
+                    ? user_manager::UserType::kPublicAccount
+                    : user_manager::UserType::kRegular;
 
     std::vector<LoginUserInfo> users = BuildUserList(debug_users_.size());
     // Update display name and email in debug users.
@@ -515,10 +547,9 @@ class LockDebugView::DebugDataDispatcherTransformer
   }
 
   void AddKioskApp(ShelfWidget* shelf_widget) {
-    KioskAppMenuEntry menu_item;
-    menu_item.app_id = kDebugKioskAppId;
-    menu_item.name = kDebugKioskAppName;
-    kiosk_apps_.push_back(std::move(menu_item));
+    kiosk_apps_.emplace_back(KioskAppMenuEntry::AppType::kChromeApp,
+                             kDebugKioskAppAccountId, kDebugKioskAppId,
+                             kDebugKioskAppName, gfx::ImageSkia());
     shelf_widget->GetLoginShelfView()->SetKioskApps(kiosk_apps_);
   }
 
@@ -605,7 +636,7 @@ class LockDebugView::DebugDataDispatcherTransformer
   // The debug overlay UI takes ground-truth data from |root_dispatcher_|,
   // applies a series of transformations to it, and exposes it to the UI via
   // |debug_dispatcher_|.
-  raw_ptr<LoginDataDispatcher, ExperimentalAsh> root_dispatcher_;  // Unowned.
+  raw_ptr<LoginDataDispatcher> root_dispatcher_;  // Unowned.
   LoginDataDispatcher debug_dispatcher_;
 
   // Original set of users from |root_dispatcher_|.
@@ -627,7 +658,7 @@ class LockDebugView::DebugDataDispatcherTransformer
   // In such a case, we want to bypass the event handling mechanism and do
   // direct calls to the lock screen. We need either an instance of
   // LockDebugView or LockContentsView in order to do so.
-  const raw_ptr<LockDebugView, ExperimentalAsh> lock_debug_view_;
+  const raw_ptr<LockDebugView> lock_debug_view_;
 };
 
 // In-memory wrapper around LoginDetachableBaseModel used by lock UI.
@@ -721,7 +752,7 @@ class LockDebugView::DebugLoginDetachableBaseModel
 
   // Clears all in-memory pairing state.
   void ClearDebugPairingState() {
-    pairing_status_ = absl::nullopt;
+    pairing_status_ = std::nullopt;
     base_id_ = kNullBaseId;
     last_used_bases_.clear();
 
@@ -759,7 +790,7 @@ class LockDebugView::DebugLoginDetachableBaseModel
 
  private:
   // In-memory detachable base pairing state.
-  absl::optional<DetachableBasePairingStatus> pairing_status_;
+  std::optional<DetachableBasePairingStatus> pairing_status_;
   int base_id_ = kNullBaseId;
   // Maps user account to the last used detachable base ID (base ID being the
   // base's index in kDebugDetachableBases array).
@@ -891,6 +922,12 @@ LockDebugView::LockDebugView(mojom::TrayActionState initial_note_action_state,
                 base::Unretained(this)),
             managed_sessions_container);
 
+  AddButton("Show security curtain screen",
+            base::BindRepeating(
+                &LockDebugView::ShowSecurityCurtainScreenButtonPressed,
+                base::Unretained(this)),
+            kiosk_container);
+
   global_action_detachable_base_group_ = add_horizontal_container();
   UpdateDetachableBaseColumn();
 
@@ -906,17 +943,17 @@ LockDebugView::LockDebugView(mojom::TrayActionState initial_note_action_state,
         views::ScrollView::CreateScrollViewWithBorder();
     scroll->SetPreferredSize(gfx::Size(600, height));
     scroll->SetContents(base::WrapUnique(content));
-    scroll->SetBackgroundColor(absl::nullopt);
-    scroll->SetVerticalScrollBar(
-        std::make_unique<views::OverlayScrollBar>(false));
-    scroll->SetHorizontalScrollBar(
-        std::make_unique<views::OverlayScrollBar>(true));
+    scroll->SetBackgroundColor(std::nullopt);
+    scroll->SetVerticalScrollBar(std::make_unique<views::OverlayScrollBar>(
+        views::ScrollBar::Orientation::kVertical));
+    scroll->SetHorizontalScrollBar(std::make_unique<views::OverlayScrollBar>(
+        views::ScrollBar::Orientation::kHorizontal));
     return scroll;
   };
   container_->AddChildView(make_scroll(global_action_view_container_, 110));
   container_->AddChildView(make_scroll(per_user_action_view_container_, 100));
 
-  Layout();
+  DeprecatedLayoutImmediately();
 }
 
 LockDebugView::~LockDebugView() {
@@ -925,18 +962,18 @@ LockDebugView::~LockDebugView() {
   delete lock_;
 }
 
-void LockDebugView::Layout() {
+void LockDebugView::Layout(PassKey) {
   global_action_view_container_->SizeToPreferredSize();
   per_user_action_view_container_->SizeToPreferredSize();
 
-  views::View::Layout();
+  LayoutSuperclass<views::View>(this);
 
   lock_->SetBoundsRect(GetLocalBounds());
   container_->SetPosition(gfx::Point());
   container_->SizeToPreferredSize();
 
   for (views::View* child : container_->children()) {
-    child->Layout();
+    child->DeprecatedLayoutImmediately();
   }
 }
 
@@ -949,7 +986,7 @@ void LockDebugView::AddOrRemoveUsersButtonPressed(int delta) {
   debug_data_dispatcher_->SetUserCount(
       std::max(0, debug_data_dispatcher_->GetUserCount() + delta));
   UpdatePerUserActionContainer();
-  Layout();
+  DeprecatedLayoutImmediately();
 }
 
 void LockDebugView::AddSystemInfoButtonPressed() {
@@ -992,7 +1029,7 @@ void LockDebugView::ToggleAuthButtonPressed() {
   force_fail_auth_ = get_next_auth_state(force_fail_auth_);
   global_action_toggle_auth_->SetText(
       base::ASCIIToUTF16(get_auth_label(force_fail_auth_)));
-  Layout();
+  DeprecatedLayoutImmediately();
   Shell::Get()
       ->login_screen_controller()
       ->set_force_fail_auth_for_debug_overlay(force_fail_auth_);
@@ -1021,7 +1058,7 @@ void LockDebugView::ToggleDebugDetachableBaseButtonPressed() {
         DebugLoginDetachableBaseModel::kNullBaseId);
   }
   UpdateDetachableBaseColumn();
-  Layout();
+  DeprecatedLayoutImmediately();
 }
 
 void LockDebugView::CycleDetachableBaseStatusButtonPressed() {
@@ -1030,7 +1067,7 @@ void LockDebugView::CycleDetachableBaseStatusButtonPressed() {
       debug_detachable_base_model_->NextBaseId());
   UpdatePerUserActionContainer();
   UpdateDetachableBaseColumn();
-  Layout();
+  DeprecatedLayoutImmediately();
 }
 
 void LockDebugView::CycleDetachableBaseIdButtonPressed() {
@@ -1038,7 +1075,7 @@ void LockDebugView::CycleDetachableBaseIdButtonPressed() {
       DetachableBasePairingStatus::kAuthenticated,
       debug_detachable_base_model_->NextBaseId());
   UpdateDetachableBaseColumn();
-  Layout();
+  DeprecatedLayoutImmediately();
 }
 
 void LockDebugView::ToggleWarningBannerButtonPressed() {
@@ -1055,6 +1092,16 @@ void LockDebugView::ToggleManagedSessionDisclosureButtonPressed() {
       is_managed_session_disclosure_shown_);
 }
 
+void LockDebugView::ShowSecurityCurtainScreenButtonPressed() {
+  auto& controller = ash::Shell::Get()->security_curtain_controller();
+
+  // We don't support toggling this on and off, since once you are in the
+  // curtain screen there is no way to leave it (by design).
+  ash::curtain::SecurityCurtainController::InitParams params{
+      /*curtain_factory=*/base::BindRepeating(CreateCurtainOverlay)};
+  controller.Enable(params);
+}
+
 void LockDebugView::UseDetachableBaseButtonPressed(int index) {
   debug_detachable_base_model_->SetBaseLastUsedForUser(
       debug_data_dispatcher_->GetAccountIdForUserIndex(index));
@@ -1063,10 +1110,11 @@ void LockDebugView::UseDetachableBaseButtonPressed(int index) {
 void LockDebugView::TogglePublicAccountButtonPressed(int index) {
   debug_data_dispatcher_->TogglePublicAccountForUserIndex(index);
   UpdatePerUserActionContainer();
-  Layout();
+  DeprecatedLayoutImmediately();
 }
 
 void LockDebugView::CycleAuthErrorMessage() {
+  LockContentsViewTestApi lock_test_api(lock_);
   switch (next_auth_error_type_) {
     case AuthErrorType::kFirstUnlockFailed:
       next_auth_error_type_ = AuthErrorType::kFirstUnlockFailedCapsLockOn;
@@ -1075,25 +1123,25 @@ void LockDebugView::CycleAuthErrorMessage() {
       debug_detachable_base_model_->SetPairingState(
           DetachableBasePairingStatus::kNone,
           DebugLoginDetachableBaseModel::kNullBaseId);
-      lock_->ShowAuthErrorMessageForDebug(1 /*unlock_attempt*/);
+      lock_test_api.ShowAuthErrorBubble(1);
       return;
     case AuthErrorType::kFirstUnlockFailedCapsLockOn:
       next_auth_error_type_ = AuthErrorType::kSecondUnlockFailed;
       Shell::Get()->ime_controller()->UpdateCapsLockState(
           true /*caps_enabled*/);
-      lock_->ShowAuthErrorMessageForDebug(1 /*unlock_attempt*/);
+      lock_test_api.ShowAuthErrorBubble(1);
       return;
     case AuthErrorType::kSecondUnlockFailed:
       next_auth_error_type_ = AuthErrorType::kSecondUnlockFailedCapsLockOn;
       Shell::Get()->ime_controller()->UpdateCapsLockState(
           false /*caps_enabled*/);
-      lock_->ShowAuthErrorMessageForDebug(2 /*unlock_attempt*/);
+      lock_test_api.ShowAuthErrorBubble(2);
       return;
     case AuthErrorType::kSecondUnlockFailedCapsLockOn:
       next_auth_error_type_ = AuthErrorType::kDetachableBaseFailed;
       Shell::Get()->ime_controller()->UpdateCapsLockState(
           true /*caps_enabled*/);
-      lock_->ShowAuthErrorMessageForDebug(2 /*unlock_attempt*/);
+      lock_test_api.ShowAuthErrorBubble(2);
       return;
     case AuthErrorType::kDetachableBaseFailed:
       next_auth_error_type_ = AuthErrorType::kFirstUnlockFailed;
@@ -1201,6 +1249,12 @@ void LockDebugView::UpdatePerUserActionContainer() {
                             base::Unretained(debug_data_dispatcher_.get()), i),
         row);
 
+    AddButton("Show local authentication request",
+              base::BindRepeating(
+                  &DebugDataDispatcherTransformer::AuthRequestForUserIndex,
+                  base::Unretained(debug_data_dispatcher_.get()), i),
+              row);
+
     if (debug_detachable_base_model_->debugging_pairing_state() &&
         debug_detachable_base_model_->GetPairingStatus() ==
             DetachableBasePairingStatus::kAuthenticated) {
@@ -1224,7 +1278,7 @@ void LockDebugView::UpdatePerUserActionContainer() {
 
 void LockDebugView::UpdatePerUserActionContainerAndLayout() {
   UpdatePerUserActionContainer();
-  Layout();
+  DeprecatedLayoutImmediately();
 }
 
 void LockDebugView::UpdateDetachableBaseColumn() {

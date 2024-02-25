@@ -55,11 +55,12 @@ class CastMediaNotificationItem
       media_session::mojom::MediaSessionAction action) override;
   void SeekTo(base::TimeDelta time) override;
   void Dismiss() override;
-  media_message_center::SourceType SourceType() override;
   void SetVolume(float volume) override;
   void SetMute(bool mute) override;
   bool RequestMediaRemoting() override;
-  absl::optional<base::UnguessableToken> GetSourceId() const override;
+  media_message_center::Source GetSource() const override;
+  media_message_center::SourceType GetSourceType() const override;
+  std::optional<base::UnguessableToken> GetSourceId() const override;
 
   // media_router::mojom::MediaStatusObserver:
   void OnMediaStatusUpdated(
@@ -68,8 +69,7 @@ class CastMediaNotificationItem
   void OnRouteUpdated(const media_router::MediaRoute& route);
 
   // Stops the cast session and logs UMA about the stop cast action.
-  virtual void StopCasting(
-      global_media_controls::GlobalMediaControlsEntryPoint entry_point);
+  virtual void StopCasting();
 
   // Returns a pending remote bound to |this|. This should not be called more
   // than once per instance.

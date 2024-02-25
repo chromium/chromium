@@ -2,15 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {assert} from 'chrome://resources/js/assert_ts.js';
+import {assert} from 'chrome://resources/js/assert.js';
 
-import {AcceleratorConfigurationProvider, AcceleratorConfigurationProviderRemote, AcceleratorResultData, AcceleratorsUpdatedObserverRemote} from '../mojom-webui/ash/webui/shortcut_customization_ui/mojom/shortcut_customization.mojom-webui.js';
+import {AcceleratorConfigurationProvider, AcceleratorConfigurationProviderRemote, AcceleratorResultData, AcceleratorsUpdatedObserverRemote, EditDialogCompletedActions, PolicyUpdatedObserverRemote, Subactions, UserAction} from '../mojom-webui/shortcut_customization.mojom-webui.js';
 
 import {fakeAcceleratorConfig, fakeLayoutInfo} from './fake_data.js';
 import {FakeShortcutProvider} from './fake_shortcut_provider.js';
-import {Accelerator, AcceleratorSource, MojoAcceleratorConfig, MojoLayoutInfo, ShortcutProviderInterface} from './shortcut_types.js';
-
-
+import {Accelerator, AcceleratorCategory, AcceleratorSource, MojoAcceleratorConfig, MojoLayoutInfo, ShortcutProviderInterface} from './shortcut_types.js';
 
 /**
  * @fileoverview
@@ -82,6 +80,11 @@ export class ShortcutProviderWrapper implements ShortcutProviderInterface {
     return this.remote.isMutable(source);
   }
 
+  isCustomizationAllowedByPolicy():
+      Promise<{isCustomizationAllowedByPolicy: boolean}> {
+    return this.remote.isCustomizationAllowedByPolicy();
+  }
+
   hasLauncherButton(): Promise<{hasLauncherButton: boolean}> {
     return this.remote.hasLauncherButton();
   }
@@ -109,6 +112,10 @@ export class ShortcutProviderWrapper implements ShortcutProviderInterface {
     return this.remote.addObserver(observer);
   }
 
+  addPolicyObserver(observer: PolicyUpdatedObserverRemote): void {
+    return this.remote.addPolicyObserver(observer);
+  }
+
   restoreDefault(source: AcceleratorSource, actionId: number):
       Promise<{result: AcceleratorResultData}> {
     return this.remote.restoreDefault(source, actionId);
@@ -133,6 +140,23 @@ export class ShortcutProviderWrapper implements ShortcutProviderInterface {
   getDefaultAcceleratorsForId(action: number):
       Promise<{accelerators: Accelerator[]}> {
     return this.remote.getDefaultAcceleratorsForId(action);
+  }
+
+  recordUserAction(userAction: UserAction): void {
+    this.remote.recordUserAction(userAction);
+  }
+
+  recordMainCategoryNavigation(category: AcceleratorCategory): void {
+    this.remote.recordMainCategoryNavigation(category);
+  }
+
+  recordEditDialogCompletedActions(completed_actions:
+                                       EditDialogCompletedActions): void {
+    this.remote.recordEditDialogCompletedActions(completed_actions);
+  }
+
+  recordAddOrEditSubactions(isAdd: boolean, subactions: Subactions): void {
+    this.remote.recordAddOrEditSubactions(isAdd, subactions);
   }
 }
 

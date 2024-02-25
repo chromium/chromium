@@ -35,12 +35,7 @@ class MODULES_EXPORT PrivateAggregation final : public ScriptWrappable {
     explicit OperationState(ContextLifecycleNotifier* notifier)
         : private_aggregation_host(notifier) {}
 
-    // Defaults to debug mode being disabled.
-    mojom::blink::DebugModeDetails debug_mode_details;
-
-    // Pending contributions
-    Vector<mojom::blink::AggregatableReportHistogramContributionPtr>
-        private_aggregation_contributions;
+    bool enable_debug_mode_called = false;
 
     // No need to be associated as message ordering (relative to shared storage
     // operations) is unimportant.
@@ -76,9 +71,11 @@ class MODULES_EXPORT PrivateAggregation final : public ScriptWrappable {
   void OnWorkletDestroyed();
 
  private:
-  void EnsureUseCountersAreRecorded();
+  void EnsureGeneralUseCountersAreRecorded();
+  void EnsureEnableDebugModeUseCounterIsRecorded();
 
-  bool has_recorded_use_counters_ = false;
+  bool has_recorded_general_use_counters_ = false;
+  bool has_recorded_enable_debug_mode_use_counter_ = false;
 
   Member<SharedStorageWorkletGlobalScope> global_scope_;
   HeapHashMap<int64_t,

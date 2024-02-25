@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ash/app_restore/arc_app_queue_restore_handler.h"
 
+#include <list>
 #include <utility>
 #include <vector>
 
@@ -11,7 +12,6 @@
 #include "ash/components/arc/metrics/arc_metrics_constants.h"
 #include "ash/shell.h"
 #include "base/containers/contains.h"
-#include "base/containers/cxx20_erase.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/metrics/histogram_functions.h"
@@ -105,7 +105,7 @@ ArcAppQueueRestoreHandler::ArcAppQueueRestoreHandler() {
 
   auto* manager = GetSchedulerConfigurationManager();
   if (manager) {
-    absl::optional<std::pair<bool, size_t>> scheduler_configuration =
+    std::optional<std::pair<bool, size_t>> scheduler_configuration =
         manager->GetLastReply();
     if (scheduler_configuration) {
       // Logical CPU core number should consider system HyperThread status.
@@ -366,9 +366,9 @@ void ArcAppQueueRestoreHandler::AddWindows(const std::string& app_id) {
   DCHECK(it != handler_->restore_data()->app_id_to_launch_list().end());
   const auto& launch_list = it->second;
   for (const auto& [window_id, app_restore_data] : launch_list) {
-    if (app_restore_data->activation_index.has_value()) {
-      windows_[app_restore_data->activation_index.value()] = {app_id,
-                                                              window_id};
+    if (app_restore_data->window_info.activation_index.has_value()) {
+      windows_[app_restore_data->window_info.activation_index.value()] = {
+          app_id, window_id};
     } else {
       no_stack_windows_.push_back({app_id, window_id});
     }
@@ -494,7 +494,7 @@ void ArcAppQueueRestoreHandler::PrepareAppLaunching(const std::string& app_id) {
 
 void ArcAppQueueRestoreHandler::OnMemoryPressure(
     ResourcedClient::PressureLevel level,
-    uint64_t reclaim_target_kb) {
+    memory_pressure::ReclaimTarget) {
   pressure_level_ = level;
 }
 
@@ -574,7 +574,7 @@ void ArcAppQueueRestoreHandler::MaybeLaunchApp() {
     const WindowInfo info = *it;
     LaunchAppWindow(info.app_id, info.window_id);
     MaybeReStartTimer(kAppLaunchDelay);
-    base::Erase(pending_windows_, info);
+    std::erase(pending_windows_, info);
     return;
   }
 
@@ -603,7 +603,7 @@ void ArcAppQueueRestoreHandler::MaybeLaunchApp() {
     const WindowInfo info = *it;
     LaunchAppWindow(info.app_id, info.window_id);
     MaybeReStartTimer(kAppLaunchDelay);
-    base::Erase(no_stack_windows_, info);
+    std::erase(no_stack_windows_, info);
   }
 }
 

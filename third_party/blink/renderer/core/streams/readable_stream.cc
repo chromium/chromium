@@ -67,7 +67,7 @@ class ReadableStream::PullAlgorithm final : public StreamAlgorithm {
     DCHECK_EQ(argc, 0);
     DCHECK(controller_);
     ExceptionState exception_state(script_state->GetIsolate(),
-                                   ExceptionState::kUnknownContext, "", "");
+                                   ExceptionContextType::kUnknown, "", "");
     ScriptPromise promise;
     if (script_state->ContextIsValid()) {
       // This is needed because the realm of the underlying source can be
@@ -115,7 +115,7 @@ class ReadableStream::CancelAlgorithm final : public StreamAlgorithm {
                              v8::Local<v8::Value> argv[]) override {
     DCHECK_EQ(argc, 1);
     ExceptionState exception_state(script_state->GetIsolate(),
-                                   ExceptionState::kUnknownContext, "", "");
+                                   ExceptionContextType::kUnknown, "", "");
     ScriptPromise promise;
     if (script_state->ContextIsValid()) {
       // This is needed because the realm of the underlying source can be
@@ -195,8 +195,9 @@ ReadableStream* ReadableStream::CreateWithCountQueueingStrategy(
     AllowPerChunkTransferring allow_per_chunk_transferring,
     std::unique_ptr<ReadableStreamTransferringOptimizer> optimizer) {
   auto* isolate = script_state->GetIsolate();
-  ExceptionState exception_state(isolate, ExceptionState::kConstructionContext,
-                                 "ReadableStream");
+  ExceptionState exception_state(
+      isolate, ExceptionContextType::kConstructorOperationInvoke,
+      "ReadableStream");
   v8::MicrotasksScope microtasks_scope(
       isolate, ToMicrotaskQueue(script_state),
       v8::MicrotasksScope::kDoNotRunMicrotasks);
@@ -220,16 +221,17 @@ void ReadableStream::InitWithCountQueueingStrategy(
     AllowPerChunkTransferring allow_per_chunk_transferring,
     std::unique_ptr<ReadableStreamTransferringOptimizer> optimizer,
     ExceptionState& exception_state) {
-  auto* isolate = script_state->GetIsolate();
+  Initialize(this);
+  auto* controller =
+      MakeGarbageCollected<ReadableStreamDefaultController>(script_state);
 
-  auto strategy = CreateTrivialQueuingStrategy(isolate, high_water_mark);
-
-  v8::Local<v8::Value> underlying_source_v8 =
-      ToV8Traits<UnderlyingSourceBase>::ToV8(script_state, underlying_source)
-          .ToLocalChecked();
-
-  InitInternal(script_state, ScriptValue(isolate, underlying_source_v8),
-               strategy, true, exception_state);
+  ReadableStreamDefaultController::SetUp(
+      script_state, this, controller,
+      MakeGarbageCollected<UnderlyingStartAlgorithm>(underlying_source,
+                                                     controller),
+      MakeGarbageCollected<UnderlyingPullAlgorithm>(underlying_source),
+      MakeGarbageCollected<UnderlyingCancelAlgorithm>(underlying_source),
+      high_water_mark, CreateDefaultSizeAlgorithm(), exception_state);
 
   allow_per_chunk_transferring_ = allow_per_chunk_transferring;
   transferring_optimizer_ = std::move(optimizer);
@@ -492,8 +494,8 @@ ReadableStream* ReadableStream::pipeThrough(ScriptState* script_state,
   // 4. Let promise be ! ReadableStreamPipeTo(this, transform["writable"],
   //    options["preventClose"], options["preventAbort"],
   //    options["preventCancel"], signal).
-  ScriptPromise promise =
-      PipeTo(script_state, this, writable_stream, pipe_options);
+  ScriptPromise promise = PipeTo(script_state, this, writable_stream,
+                                 pipe_options, exception_state);
 
   // 5. Set promise.[[PromiseIsHandled]] to true.
   promise.MarkAsHandled();
@@ -534,7 +536,7 @@ ScriptPromise ReadableStream::pipeTo(ScriptState* script_state,
   // 4. Return ! ReadableStreamPipeTo(this, destination,
   //    options["preventClose"], options["preventAbort"],
   //    options["preventCancel"], signal).
-  return PipeTo(script_state, this, destination, pipe_options);
+  return PipeTo(script_state, this, destination, pipe_options, exception_state);
 }
 
 HeapVector<Member<ReadableStream>> ReadableStream::tee(
@@ -716,11 +718,7 @@ void ReadableStream::Tee(ScriptState* script_state,
                          bool clone_for_branch2,
                          ExceptionState& exception_state) {
   auto* engine = MakeGarbageCollected<TeeEngine>();
-  engine->Start(
-      script_state, this,
-      clone_for_branch2 &&
-          RuntimeEnabledFeatures::ReadableStreamTeeCloneForBranch2Enabled(),
-      exception_state);
+  engine->Start(script_state, this, clone_for_branch2, exception_state);
   if (exception_state.HadException()) {
     return;
   }
@@ -825,8 +823,8 @@ void ReadableStream::Serialize(ScriptState* script_state,
 
   // 7. Let promise be ! ReadableStreamPipeTo(value, writable, false, false,
   //    false).
-  auto promise =
-      PipeTo(script_state, this, writable, MakeGarbageCollected<PipeOptions>());
+  auto promise = PipeTo(script_state, this, writable,
+                        MakeGarbageCollected<PipeOptions>(), exception_state);
 
   // 8. Set promise.[[PromiseIsHandled]] to true.
   promise.MarkAsHandled();
@@ -867,9 +865,10 @@ ReadableStream* ReadableStream::Deserialize(
 ScriptPromise ReadableStream::PipeTo(ScriptState* script_state,
                                      ReadableStream* readable,
                                      WritableStream* destination,
-                                     PipeOptions* pipe_options) {
+                                     PipeOptions* pipe_options,
+                                     ExceptionState& exception_state) {
   auto* engine = MakeGarbageCollected<PipeToEngine>(script_state, pipe_options);
-  return engine->Start(readable, destination);
+  return engine->Start(readable, destination, exception_state);
 }
 
 v8::Local<v8::Value> ReadableStream::GetStoredError(
@@ -1082,7 +1081,8 @@ void ReadableStream::Error(ScriptState* script_state,
 void ReadableStream::FulfillReadIntoRequest(ScriptState* script_state,
                                             ReadableStream* stream,
                                             DOMArrayBufferView* chunk,
-                                            bool done) {
+                                            bool done,
+                                            ExceptionState& exception_state) {
   // https://streams.spec.whatwg.org/#readable-stream-fulfill-read-into-request
   // 1. Assert: ! ReadableStreamHasBYOBReader(stream) is true.
   DCHECK(HasBYOBReader(stream));
@@ -1100,14 +1100,15 @@ void ReadableStream::FulfillReadIntoRequest(ScriptState* script_state,
     read_into_request->CloseSteps(script_state, chunk);
   } else {
     // 7. Otherwise, perform readIntoRequest’s chunk steps, given chunk.
-    read_into_request->ChunkSteps(script_state, chunk);
+    read_into_request->ChunkSteps(script_state, chunk, exception_state);
   }
 }
 
 void ReadableStream::FulfillReadRequest(ScriptState* script_state,
                                         ReadableStream* stream,
                                         v8::Local<v8::Value> chunk,
-                                        bool done) {
+                                        bool done,
+                                        ExceptionState& exception_state) {
   // https://streams.spec.whatwg.org/#readable-stream-fulfill-read-request
   // 1. Assert: ! ReadableStreamHasDefaultReader(stream) is true.
   DCHECK(HasDefaultReader(stream));
@@ -1131,7 +1132,7 @@ void ReadableStream::FulfillReadRequest(ScriptState* script_state,
     read_request->CloseSteps(script_state);
   } else {
     // 7. Otherwise, perform readRequest’s chunk steps, given chunk.
-    read_request->ChunkSteps(script_state, chunk);
+    read_request->ChunkSteps(script_state, chunk, exception_state);
   }
 }
 

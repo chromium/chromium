@@ -2,9 +2,6 @@ include_rules = [
   "+media/capture/mojom/image_capture.mojom-blink.h",
   "+media/capture/mojom/image_capture.mojom-blink-forward.h",
 
-  # TODO(crbug.com/1198375): Remove this temporary exception after migration.
-  "+base/task/bind_post_task.h",
-
   "+cc/paint/skia_paint_canvas.h",
   "+media",
   "+skia/ext/legacy_display_globals.h",

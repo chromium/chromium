@@ -23,7 +23,11 @@
 
 #include <stddef.h>
 
+#include <string_view>
+
+#include "base/containers/span.h"
 #include "base/hash/md5.h"
+#include "base/strings/string_number_conversions.h"
 
 namespace {
 
@@ -168,7 +172,7 @@ void MD5Init(MD5Context* context) {
  * Update context to reflect the concatenation of another buffer full
  * of bytes.
  */
-void MD5Update(MD5Context* context, const StringPiece& data) {
+void MD5Update(MD5Context* context, std::string_view data) {
   struct Context* ctx = reinterpret_cast<struct Context*>(context);
   const uint8_t* buf = reinterpret_cast<const uint8_t*>(data.data());
   size_t len = data.size();
@@ -262,29 +266,25 @@ void MD5Final(MD5Digest* digest, MD5Context* context) {
 }
 
 std::string MD5DigestToBase16(const MD5Digest& digest) {
-  static char const zEncode[] = "0123456789abcdef";
-
   std::string ret;
-  ret.resize(32);
-
-  for (size_t i = 0, j = 0; i < 16; i++, j += 2) {
-    uint8_t a = digest.a[i];
-    ret[j] = zEncode[(a >> 4) & 0xf];
-    ret[j + 1] = zEncode[a & 0xf];
+  ret.reserve(32);
+  for (uint8_t byte : digest.a) {
+    base::AppendHexEncodedByte(byte, ret, false);
   }
   return ret;
 }
 
-void MD5Sum(const void* data, size_t length, MD5Digest* digest) {
+void MD5Sum(span<const uint8_t> data, MD5Digest* digest) {
   MD5Context ctx;
   MD5Init(&ctx);
-  MD5Update(&ctx, StringPiece(reinterpret_cast<const char*>(data), length));
+  span<const char> chars = as_chars(data);
+  MD5Update(&ctx, std::string_view(chars.data(), chars.size()));
   MD5Final(digest, &ctx);
 }
 
-std::string MD5String(const StringPiece& str) {
+std::string MD5String(std::string_view str) {
   MD5Digest digest;
-  MD5Sum(str.data(), str.length(), &digest);
+  MD5Sum(as_byte_span(str), &digest);
   return MD5DigestToBase16(digest);
 }
 

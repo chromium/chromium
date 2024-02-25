@@ -86,7 +86,7 @@ RTCDtlsTransport::getRemoteCertificates() const {
 }
 
 RTCIceTransport* RTCDtlsTransport::iceTransport() const {
-  return ice_transport_;
+  return ice_transport_.Get();
 }
 
 webrtc::DtlsTransportInterface* RTCDtlsTransport::native_transport() {

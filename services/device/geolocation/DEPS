@@ -6,6 +6,7 @@ include_rules = [
   "+components/location",
   "+dbus",
   "+net/base",
+  "+net/http/http_status_code.h",
   "+net/traffic_annotation",
   "+services/network/public/cpp",
   "+services/network/public/mojom",

@@ -17,6 +17,7 @@
 #include "extensions/browser/extension_prefs_helper.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extension_util.h"
+#include "extensions/common/extension_id.h"
 #include "extensions/common/manifest_handlers/incognito_info.h"
 #include "extensions/common/permissions/permissions_data.h"
 
@@ -38,7 +39,7 @@ constexpr char kLevelOfControlKey[] = "levelOfControl";
 
 using LevelOfControlGetter =
     base::RepeatingCallback<const char*(Profile*,
-                                        const std::string& extension_id,
+                                        const ExtensionId& extension_id,
                                         const std::string& browser_pref,
                                         bool incognito)>;
 
@@ -54,11 +55,10 @@ PrefService* GetProfilePrefService(Profile* profile, bool incognito) {
   return profile->GetPrefs();
 }
 
-const char* GetLevelOfControl(
-    Profile* profile,
-    const std::string& extension_id,
-    const std::string& browser_pref,
-    bool incognito) {
+const char* GetLevelOfControl(Profile* profile,
+                              const ExtensionId& extension_id,
+                              const std::string& browser_pref,
+                              bool incognito) {
   PrefService* prefs = GetProfilePrefService(profile, incognito);
   bool from_incognito = false;
   bool* from_incognito_ptr = incognito ? &from_incognito : nullptr;
@@ -163,7 +163,7 @@ void DispatchEventToExtensionsWithAshControlState(
 const char* GetLevelOfControlWithAshControlState(
     crosapi::mojom::PrefControlState control_state,
     Profile* profile,
-    const std::string& extension_id,
+    const ExtensionId& extension_id,
     const std::string& browser_pref,
     bool incognito) {
   switch (control_state) {

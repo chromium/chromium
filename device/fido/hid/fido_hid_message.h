@@ -9,6 +9,7 @@
 #include <stdint.h>
 
 #include <memory>
+#include <optional>
 #include <vector>
 
 #include "base/component_export.h"
@@ -17,7 +18,6 @@
 #include "base/containers/span.h"
 #include "device/fido/fido_constants.h"
 #include "device/fido/hid/fido_hid_packet.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace device {
 
@@ -26,13 +26,13 @@ namespace device {
 class COMPONENT_EXPORT(DEVICE_FIDO) FidoHidMessage {
  public:
   // Static functions to create CTAP/U2F HID commands.
-  static absl::optional<FidoHidMessage> Create(uint32_t channel_id,
-                                               FidoHidDeviceCommand cmd,
-                                               size_t max_report_size,
-                                               base::span<const uint8_t> data);
+  static std::optional<FidoHidMessage> Create(uint32_t channel_id,
+                                              FidoHidDeviceCommand cmd,
+                                              size_t max_report_size,
+                                              base::span<const uint8_t> data);
 
   // Reconstruct a message from serialized message data.
-  static absl::optional<FidoHidMessage> CreateFromSerializedData(
+  static std::optional<FidoHidMessage> CreateFromSerializedData(
       base::span<const uint8_t> serialized_data);
 
   FidoHidMessage(FidoHidMessage&& that);

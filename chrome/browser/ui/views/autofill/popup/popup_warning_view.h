@@ -17,9 +17,9 @@ namespace autofill {
 
 // A row which contains a warning message. It cannot be selected.
 class PopupWarningView : public views::View {
- public:
-  METADATA_HEADER(PopupWarningView);
+  METADATA_HEADER(PopupWarningView, views::View)
 
+ public:
   explicit PopupWarningView(const Suggestion& suggestion);
   ~PopupWarningView() override;
 

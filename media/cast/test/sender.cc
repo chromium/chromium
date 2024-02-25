@@ -76,10 +76,11 @@ void UpdateCastTransportStatus(
   VLOG(1) << "Transport status: " << status;
 }
 
-void QuitLoopOnInitializationResult(media::cast::OperationalStatus result) {
+void QuitLoopOnInitializationResult(base::OnceClosure quit_closure,
+                                    media::cast::OperationalStatus result) {
   CHECK(result == media::cast::STATUS_INITIALIZED)
       << "Cast sender uninitialized";
-  base::RunLoop::QuitCurrentWhenIdleDeprecated();
+  std::move(quit_closure).Run();
 }
 
 net::IPEndPoint CreateUDPAddress(const std::string& ip_str, uint16_t port) {
@@ -290,21 +291,32 @@ int main(int argc, char** argv) {
   // CastSender initialization.
   std::unique_ptr<media::cast::CastSender> cast_sender =
       media::cast::CastSender::Create(cast_environment, transport_sender.get());
-  io_task_executor.task_runner()->PostTask(
-      FROM_HERE,
-      base::BindOnce(&media::cast::CastSender::InitializeVideo,
-                     base::Unretained(cast_sender.get()),
-                     fake_media_source->get_video_config(),
-                     std::make_unique<media::MockVideoEncoderMetricsProvider>(),
-                     base::BindRepeating(&QuitLoopOnInitializationResult),
-                     base::DoNothing()));
-  base::RunLoop().Run();  // Wait for video initialization.
-  io_task_executor.task_runner()->PostTask(
-      FROM_HERE,
-      base::BindOnce(&media::cast::CastSender::InitializeAudio,
-                     base::Unretained(cast_sender.get()), audio_config,
-                     base::BindRepeating(&QuitLoopOnInitializationResult)));
-  base::RunLoop().Run();  // Wait for audio initialization.
+  {
+    base::RunLoop loop;
+
+    io_task_executor.task_runner()->PostTask(
+        FROM_HERE,
+        base::BindOnce(
+            &media::cast::CastSender::InitializeVideo,
+            base::Unretained(cast_sender.get()),
+            fake_media_source->get_video_config(),
+            std::make_unique<media::MockVideoEncoderMetricsProvider>(),
+            base::BindRepeating(&QuitLoopOnInitializationResult,
+                                loop.QuitWhenIdleClosure()),
+            base::DoNothing()));
+    loop.Run();  // Wait for video initialization.
+  }
+  {
+    base::RunLoop loop;
+
+    io_task_executor.task_runner()->PostTask(
+        FROM_HERE,
+        base::BindOnce(&media::cast::CastSender::InitializeAudio,
+                       base::Unretained(cast_sender.get()), audio_config,
+                       base::BindRepeating(&QuitLoopOnInitializationResult,
+                                           loop.QuitWhenIdleClosure())));
+    loop.Run();  // Wait for audio initialization.
+  }
 
   fake_media_source->Start(cast_sender->audio_frame_input(),
                            cast_sender->video_frame_input());

@@ -11,7 +11,6 @@
 #include "base/files/scoped_temp_dir.h"
 #include "base/memory/raw_ptr.h"
 #include "base/test/scoped_running_on_chromeos.h"
-#include "base/test/task_environment.h"
 #include "chrome/browser/ash/app_list/search/test/test_search_controller.h"
 #include "chrome/browser/ash/file_manager/path_util.h"
 #include "chrome/browser/ash/file_suggest/file_suggest_keyed_service_factory.h"
@@ -102,12 +101,12 @@ class ZeroStateFileProviderTest : public testing::Test {
   content::BrowserTaskEnvironment task_environment_;
 
   std::unique_ptr<TestingProfileManager> testing_profile_manager_;
-  raw_ptr<TestingProfile, ExperimentalAsh> profile_ = nullptr;
+  raw_ptr<TestingProfile> profile_ = nullptr;
   base::ScopedTempDir temp_dir_;
   base::FilePath downloads_folder_;
 
   TestSearchController search_controller_;
-  raw_ptr<ZeroStateFileProvider, ExperimentalAsh> provider_ = nullptr;
+  raw_ptr<ZeroStateFileProvider> provider_ = nullptr;
 };
 
 TEST_F(ZeroStateFileProviderTest, NoResultsWithQuery) {

@@ -10,8 +10,7 @@
 #include "chrome/common/extensions/api/file_system_provider_internal.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
 
-namespace ash {
-namespace file_system_provider {
+namespace ash::file_system_provider {
 
 // Holds a parsed value returned by a file system provider. Each accessor can
 // return nullptr in case the requested value type is not available. It is used
@@ -133,7 +132,6 @@ class RequestValue {
       data_;
 };
 
-}  // namespace file_system_provider
-}  // namespace ash
+}  // namespace ash::file_system_provider
 
 #endif  // CHROME_BROWSER_ASH_FILE_SYSTEM_PROVIDER_REQUEST_VALUE_H_

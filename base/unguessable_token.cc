@@ -33,25 +33,36 @@ const UnguessableToken& UnguessableToken::Null() {
 }
 
 // static
-absl::optional<UnguessableToken> UnguessableToken::Deserialize(uint64_t high,
-                                                               uint64_t low) {
+std::optional<UnguessableToken> UnguessableToken::Deserialize(uint64_t high,
+                                                              uint64_t low) {
   // Receiving a zeroed out UnguessableToken from another process means that it
   // was never initialized via Create(). Since this method might also be used to
   // create an UnguessableToken from data on disk, we will handle this case more
   // gracefully since data could have been corrupted.
   if (high == 0 && low == 0) {
-    return absl::nullopt;
+    return std::nullopt;
   }
   return UnguessableToken(Token{high, low});
 }
 
-bool UnguessableToken::operator==(const UnguessableToken& other) const {
+// static
+std::optional<UnguessableToken> UnguessableToken::DeserializeFromString(
+    StringPiece string_representation) {
+  auto token = Token::FromString(string_representation);
+  // A zeroed out token means that it's not initialized via Create().
+  if (!token.has_value() || token.value().is_zero()) {
+    return std::nullopt;
+  }
+  return UnguessableToken(token.value());
+}
+
+bool operator==(const UnguessableToken& lhs, const UnguessableToken& rhs) {
 #if BUILDFLAG(IS_NACL)
   // BoringSSL is unavailable for NaCl builds so it remains timing dependent.
-  return token_ == other.token_;
+  return lhs.token_ == rhs.token_;
 #else
-  auto bytes = token_.AsBytes();
-  auto other_bytes = other.token_.AsBytes();
+  auto bytes = lhs.token_.AsBytes();
+  auto other_bytes = rhs.token_.AsBytes();
   return CRYPTO_memcmp(bytes.data(), other_bytes.data(), bytes.size()) == 0;
 #endif
 }

@@ -125,7 +125,7 @@ TEST(RedirectUtilTest, UpdateHttpRequest) {
 
     RedirectUtil::UpdateHttpRequest(
         original_url, test.original_method, redirect_info,
-        absl::nullopt /* removed_headers */, modified_headers, &request_headers,
+        std::nullopt /* removed_headers */, modified_headers, &request_headers,
         &should_clear_upload);
     EXPECT_EQ(test.expected_should_clear_upload, should_clear_upload);
 
@@ -258,13 +258,13 @@ TEST(RedirectUtilTest, RemovedHeaders) {
   }
 }
 
-// Test with removed_headers = absl::nullopt.
+// Test with removed_headers = std::nullopt.
 TEST(RedirectUtilTest, RemovedHeadersNullOpt) {
   HttpRequestHeaders initial_headers, final_headers;
   initial_headers.SetHeader("A", "0");
   final_headers.SetHeader("A", "0");
-  absl::optional<std::vector<std::string>> removed_headers(absl::nullopt);
-  absl::optional<HttpRequestHeaders> modified_headers(absl::in_place);
+  std::optional<std::vector<std::string>> removed_headers(std::nullopt);
+  std::optional<HttpRequestHeaders> modified_headers(std::in_place);
   bool should_clear_upload(false);  // unused.
 
   RedirectUtil::UpdateHttpRequest(GURL(),         // original_url
@@ -278,13 +278,13 @@ TEST(RedirectUtilTest, RemovedHeadersNullOpt) {
   EXPECT_EQ(initial_headers.ToString(), final_headers.ToString());
 }
 
-// Test with modified_headers = absl::nullopt.
+// Test with modified_headers = std::nullopt.
 TEST(RedirectUtilTest, ModifyHeadersNullopt) {
   HttpRequestHeaders initial_headers, final_headers;
   initial_headers.SetHeader("A", "0");
   final_headers.SetHeader("A", "0");
-  absl::optional<std::vector<std::string>> removed_headers(absl::in_place);
-  absl::optional<HttpRequestHeaders> modified_headers(absl::nullopt);
+  std::optional<std::vector<std::string>> removed_headers(std::in_place);
+  std::optional<HttpRequestHeaders> modified_headers(std::nullopt);
   bool should_clear_upload(false);  // unused.
 
   RedirectUtil::UpdateHttpRequest(GURL(),         // original_url

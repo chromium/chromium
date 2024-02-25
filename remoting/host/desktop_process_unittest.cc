@@ -388,7 +388,7 @@ TEST_F(DesktopProcessTest, StartSessionAgent) {
 
 // Run the desktop process and ask it to crash.
 TEST_F(DesktopProcessTest, DeathTest) {
-  testing::GTEST_FLAG(death_test_style) = "threadsafe";
+  GTEST_FLAG_SET(death_test_style, "threadsafe");
 
   EXPECT_DEATH(RunDeathTest(), "");
 }

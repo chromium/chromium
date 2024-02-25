@@ -31,11 +31,11 @@ REGISTER_OP("TFSentencepieceDetokenizeOp")
     .Output("output: string")
     .SetShapeFn([](tensorflow::shape_inference::InferenceContext* c) {
       shape_inference::ShapeHandle unused;
-      TF_RETURN_IF_ERROR(c->WithRank(c->input(1), 1, &unused));
-      TF_RETURN_IF_ERROR(c->WithRank(c->input(2), 1, &unused));
+      TF_TFLITE_RETURN_IF_ERROR(c->WithRank(c->input(1), 1, &unused));
+      TF_TFLITE_RETURN_IF_ERROR(c->WithRank(c->input(2), 1, &unused));
 
       shape_inference::DimensionHandle dim;
-      TF_RETURN_IF_ERROR(c->Subtract(c->NumElements(c->input(2)), 1, &dim));
+      TF_TFLITE_RETURN_IF_ERROR(c->Subtract(c->NumElements(c->input(2)), 1, &dim));
       c->set_output(0, c->Vector(dim));
       return OkStatus();
     });
@@ -73,7 +73,8 @@ class TFSentencepieceDetokenizerOp : public tensorflow::OpKernel {
           ctx,
           res.type ==
               tflite::ops::custom::sentencepiece::DecoderResultType::SUCCESS,
-          tensorflow::Status(tensorflow::error::INTERNAL,
+          tensorflow::Status(static_cast<tensorflow::errors::Code>(
+                                 tensorflow::error::INTERNAL),
                              "Sentencepiece conversion failed"));
       output_flat(i) = res.decoded;
     }

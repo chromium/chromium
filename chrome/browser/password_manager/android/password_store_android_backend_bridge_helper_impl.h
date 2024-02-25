@@ -19,7 +19,8 @@ namespace password_manager {
 class PasswordStoreAndroidBackendBridgeHelperImpl
     : public PasswordStoreAndroidBackendBridgeHelper {
  public:
-  PasswordStoreAndroidBackendBridgeHelperImpl();
+  explicit PasswordStoreAndroidBackendBridgeHelperImpl(
+      password_manager::IsAccountStore is_account_store);
   PasswordStoreAndroidBackendBridgeHelperImpl(
       base::PassKey<class PasswordStoreAndroidBackendBridgeHelperImplTest>,
       std::unique_ptr<PasswordStoreAndroidBackendReceiverBridge>
@@ -39,20 +40,24 @@ class PasswordStoreAndroidBackendBridgeHelperImpl
 
   // PasswordStoreAndroidBackendBridgeHelper implementation
   bool CanUseGetAffiliatedPasswordsAPI() override;
+  bool CanUseGetAllLoginsWithBrandingInfoAPI() override;
+  bool CanRemoveUnenrollment() override;
   void SetConsumer(base::WeakPtr<Consumer> consumer) override;
-  [[nodiscard]] JobId GetAllLogins(Account account) override;
-  [[nodiscard]] JobId GetAutofillableLogins(Account account) override;
+  [[nodiscard]] JobId GetAllLogins(std::string account) override;
+  [[nodiscard]] JobId GetAllLoginsWithBrandingInfo(
+      std::string account) override;
+  [[nodiscard]] JobId GetAutofillableLogins(std::string account) override;
   [[nodiscard]] JobId GetLoginsForSignonRealm(const std::string& signon_realm,
-                                              Account account) override;
+                                              std::string account) override;
   [[nodiscard]] JobId GetAffiliatedLoginsForSignonRealm(
       const std::string& signon_realm,
-      Account account) override;
+      std::string account) override;
   [[nodiscard]] JobId AddLogin(const password_manager::PasswordForm& form,
-                               Account account) override;
+                               std::string account) override;
   [[nodiscard]] JobId UpdateLogin(const password_manager::PasswordForm& form,
-                                  Account account) override;
+                                  std::string account) override;
   [[nodiscard]] JobId RemoveLogin(const password_manager::PasswordForm& form,
-                                  Account account) override;
+                                  std::string account) override;
 
  private:
   JobId GetNextJobId();

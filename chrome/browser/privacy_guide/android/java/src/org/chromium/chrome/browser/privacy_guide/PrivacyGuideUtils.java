@@ -28,34 +28,31 @@ import java.util.Set;
  * PrivacyGuideFragment.FragmentType}s.
  */
 class PrivacyGuideUtils {
-    static boolean isMsbbEnabled() {
-        return UnifiedConsentServiceBridge.isUrlKeyedAnonymizedDataCollectionEnabled(
-                Profile.getLastUsedRegularProfile());
+    static boolean isMsbbEnabled(Profile profile) {
+        return UnifiedConsentServiceBridge.isUrlKeyedAnonymizedDataCollectionEnabled(profile);
     }
 
-    static boolean isHistorySyncEnabled() {
-        Set<Integer> syncTypes = SyncServiceFactory.get().getSelectedTypes();
+    static boolean isHistorySyncEnabled(Profile profile) {
+        Set<Integer> syncTypes = SyncServiceFactory.getForProfile(profile).getSelectedTypes();
         return syncTypes.contains(UserSelectableType.HISTORY);
     }
 
-    static boolean isUserSignedIn() {
-        IdentityManager identityManager = IdentityServicesProvider.get().getIdentityManager(
-                Profile.getLastUsedRegularProfile());
+    static boolean isUserSignedIn(Profile profile) {
+        IdentityManager identityManager =
+                IdentityServicesProvider.get().getIdentityManager(profile);
         return identityManager.hasPrimaryAccount(ConsentLevel.SIGNIN);
     }
 
-    static boolean isSearchSuggestionsEnabled() {
-        return UserPrefs.get(Profile.getLastUsedRegularProfile())
-                .getBoolean(Pref.SEARCH_SUGGEST_ENABLED);
+    static boolean isSearchSuggestionsEnabled(Profile profile) {
+        return UserPrefs.get(profile).getBoolean(Pref.SEARCH_SUGGEST_ENABLED);
     }
 
     static @SafeBrowsingState int getSafeBrowsingState() {
         return SafeBrowsingBridge.getSafeBrowsingState();
     }
 
-    static @CookieControlsMode int getCookieControlsMode() {
-        return UserPrefs.get(Profile.getLastUsedRegularProfile())
-                .getInteger(PrefNames.COOKIE_CONTROLS_MODE);
+    static @CookieControlsMode int getCookieControlsMode(Profile profile) {
+        return UserPrefs.get(profile).getInteger(PrefNames.COOKIE_CONTROLS_MODE);
     }
 
     /**

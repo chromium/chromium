@@ -9,6 +9,7 @@
 #include <map>
 #include <memory>
 #include <string>
+#include <string_view>
 #include <vector>
 
 #include "base/component_export.h"
@@ -19,6 +20,10 @@
 
 namespace ash {
 namespace input_method {
+
+// Map from language code to associated input method IDs, etc.
+using LanguageCodeToIdsMap =
+    std::multimap<std::string, std::string, std::less<>>;
 
 class InputMethodDelegate;
 
@@ -59,9 +64,12 @@ class COMPONENT_EXPORT(UI_BASE_IME_ASH) InputMethodUtil {
   // The retured input method IDs are sorted by populalirty per
   // chromeos/platform/assets/input_methods/allowlist.txt.
   bool GetInputMethodIdsFromLanguageCode(
-      const std::string& language_code,
+      std::string_view language_code,
       InputMethodType type,
       std::vector<std::string>* out_input_method_ids) const;
+
+  std::vector<std::string> GetInputMethodIdsFromHandwritingLanguage(
+      std::string_view handwriting_language);
 
   // Gets the input method IDs suitable for the first user login, based on
   // the given language code (UI language), and the descriptor of the
@@ -88,14 +96,15 @@ class COMPONENT_EXPORT(UI_BASE_IME_ASH) InputMethodUtil {
   //    m17n:vi_telex -> _comp_ime_...vkd_vi_telex
   //  - ChromiumOS input method ID to ChromeOS one, or vice versa, e.g.
   //    _comp_ime_xxxxxx...xkb:us::eng -> _comp_ime_yyyyyy...xkb:us::eng
-  std::string MigrateInputMethod(const std::string& input_method_id);
+  static std::string GetMigratedInputMethod(const std::string& input_method_id);
 
   // Migrates the input method IDs.
   // Returns true if the given input method id list is modified,
   // returns false otherwise.
   // This method should not be removed because it's required to transfer XKB
   // input method ID from VPD into extension-based XKB input method ID.
-  bool MigrateInputMethods(std::vector<std::string>* input_method_ids);
+  static bool GetMigratedInputMethodIDs(
+      std::vector<std::string>* input_method_ids);
 
   // Updates the internal cache of hardware layouts.
   void UpdateHardwareLayoutCache();
@@ -117,8 +126,8 @@ class COMPONENT_EXPORT(UI_BASE_IME_ASH) InputMethodUtil {
   const std::vector<std::string>& GetHardwareLoginInputMethodIds();
 
   // Returns the localized display name for the given input method.
-  std::string GetLocalizedDisplayName(
-      const InputMethodDescriptor& descriptor) const;
+  static std::string GetLocalizedDisplayName(
+      const InputMethodDescriptor& descriptor);
 
   // Returns true if given input method can be used to input login data.
   bool IsLoginKeyboard(const std::string& input_method_id) const;
@@ -149,11 +158,11 @@ class COMPONENT_EXPORT(UI_BASE_IME_ASH) InputMethodUtil {
 
  protected:
   // protected: for unit testing as well.
-  bool GetInputMethodIdsFromLanguageCodeInternal(
-      const std::multimap<std::string, std::string>& language_code_to_ids,
-      const std::string& normalized_language_code,
+  static bool GetInputMethodIdsFromLanguageCodeInternal(
+      const LanguageCodeToIdsMap& language_code_to_ids,
+      std::string_view normalized_language_code,
       InputMethodType type,
-      std::vector<std::string>* out_input_method_ids) const;
+      std::vector<std::string>* out_input_method_ids);
 
  private:
   // Get long name of the given input method. |short_name| is to specify whether
@@ -163,16 +172,14 @@ class COMPONENT_EXPORT(UI_BASE_IME_ASH) InputMethodUtil {
       const InputMethodDescriptor& input_method,
       bool short_name) const;
 
-  // Map from language code to associated input method IDs, etc.
-  using LanguageCodeToIdsMap = std::multimap<std::string, std::string>;
-
   LanguageCodeToIdsMap language_code_to_ids_;
+  LanguageCodeToIdsMap handwriting_language_to_ids_;
   InputMethodIdToDescriptorMap id_to_descriptor_;
 
   using EnglishToIDMap = base::flat_map<std::string, int>;
   EnglishToIDMap english_to_resource_id_;
 
-  raw_ptr<InputMethodDelegate, ExperimentalAsh> delegate_;
+  raw_ptr<InputMethodDelegate> delegate_;
 
   base::ThreadChecker thread_checker_;
   std::vector<std::string> hardware_layouts_;

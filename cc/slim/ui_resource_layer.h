@@ -11,11 +11,6 @@
 #include "cc/slim/layer.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/gfx/geometry/point_f.h"
-#include "ui/gfx/geometry/rect_f.h"
-
-namespace cc {
-class UIResourceLayer;
-}
 
 namespace cc::slim {
 
@@ -50,7 +45,7 @@ class COMPONENT_EXPORT(CC_SLIM) UIResourceLayer : public Layer {
  protected:
   FRIEND_TEST_ALL_PREFIXES(SlimLayerTest, UIResourceLayerProperties);
 
-  explicit UIResourceLayer(scoped_refptr<cc::UIResourceLayer> cc_layer);
+  UIResourceLayer();
   ~UIResourceLayer() override;
 
   cc::UIResourceId resource_id() const { return resource_id_; }
@@ -68,7 +63,6 @@ class COMPONENT_EXPORT(CC_SLIM) UIResourceLayer : public Layer {
                    float opacity) override;
 
  private:
-  cc::UIResourceLayer* cc_layer() const;
   void RefreshResource();
   void SetUIResourceIdInternal(cc::UIResourceId resource_id);
 

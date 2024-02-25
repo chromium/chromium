@@ -32,6 +32,7 @@ extern const char kTestSegmentationKey1[];
 extern const char kTestSegmentationKey2[];
 extern const char kTestSegmentationKey3[];
 extern const char kTestSegmentationKey4[];
+extern const char kTestProfileId[];
 
 // Wrapper around SegmentationPlatformServiceImpl for testing. Holds and manages
 // a single platform instance.

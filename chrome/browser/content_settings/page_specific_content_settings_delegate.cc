@@ -16,7 +16,6 @@
 #include "chrome/browser/picture_in_picture/picture_in_picture_window_manager.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/chrome_switches.h"
-#include "chrome/common/pref_names.h"
 #include "chrome/common/renderer_configuration.mojom.h"
 #include "components/content_settings/browser/page_specific_content_settings.h"
 #include "components/content_settings/core/common/content_settings_utils.h"
@@ -62,22 +61,23 @@ PageSpecificContentSettingsDelegate::FromWebContents(
 void PageSpecificContentSettingsDelegate::OnIsCapturingVideoChanged(
     content::WebContents* web_contents,
     bool is_capturing_video) {
-  PageSpecificContentSettings* pscs = PageSpecificContentSettings::GetForFrame(
-      web_contents->GetPrimaryMainFrame());
-
-  if (pscs == nullptr) {
-    // There are cases, e.g. MPArch, where there is no active instance of
-    // PageSpecificContentSettings for a frame.
-    return;
-  }
-
-  pscs->OnCapturingStateChanged(ContentSettingsType::MEDIASTREAM_CAMERA,
-                                is_capturing_video);
+  OnCapturingStateChanged(web_contents, ContentSettingsType::MEDIASTREAM_CAMERA,
+                          is_capturing_video);
 }
 
 void PageSpecificContentSettingsDelegate::OnIsCapturingAudioChanged(
     content::WebContents* web_contents,
     bool is_capturing_audio) {
+  OnCapturingStateChanged(web_contents, ContentSettingsType::MEDIASTREAM_MIC,
+                          is_capturing_audio);
+}
+
+void PageSpecificContentSettingsDelegate::OnCapturingStateChanged(
+    content::WebContents* web_contents,
+    ContentSettingsType type,
+    bool is_capturing) {
+  DCHECK(web_contents);
+
   PageSpecificContentSettings* pscs = PageSpecificContentSettings::GetForFrame(
       web_contents->GetPrimaryMainFrame());
 
@@ -87,8 +87,13 @@ void PageSpecificContentSettingsDelegate::OnIsCapturingAudioChanged(
     return;
   }
 
-  pscs->OnCapturingStateChanged(ContentSettingsType::MEDIASTREAM_MIC,
-                                is_capturing_audio);
+  pscs->OnCapturingStateChanged(type, is_capturing);
+
+  content::WebContents* pip_web_contents =
+      PictureInPictureWindowManager::GetInstance()->GetChildWebContents();
+  if (pip_web_contents && pip_web_contents != web_contents) {
+    OnCapturingStateChanged(pip_web_contents, type, is_capturing);
+  }
 }
 
 void PageSpecificContentSettingsDelegate::UpdateLocationBar() {
@@ -199,43 +204,10 @@ void PageSpecificContentSettingsDelegate::SetDefaultRendererContentSettingRules(
   }
 }
 
-std::vector<storage::FileSystemType>
-PageSpecificContentSettingsDelegate::GetAdditionalFileSystemTypes() {
-  return browsing_data_file_system_util::GetAdditionalFileSystemTypes();
-}
-
 browsing_data::CookieHelper::IsDeletionDisabledCallback
 PageSpecificContentSettingsDelegate::GetIsDeletionDisabledCallback() {
   return CookiesTreeModel::GetCookieDeletionDisabledCallback(
       Profile::FromBrowserContext(web_contents()->GetBrowserContext()));
-}
-
-bool PageSpecificContentSettingsDelegate::IsMicrophoneCameraStateChanged(
-    PageSpecificContentSettings::MicrophoneCameraState microphone_camera_state,
-    const std::string& media_stream_selected_audio_device,
-    const std::string& media_stream_selected_video_device) {
-  PrefService* prefs = GetPrefs();
-  scoped_refptr<MediaStreamCaptureIndicator> media_indicator =
-      MediaCaptureDevicesDispatcher::GetInstance()
-          ->GetMediaStreamCaptureIndicator();
-
-  if (microphone_camera_state.Has(
-          PageSpecificContentSettings::kMicrophoneAccessed) &&
-      prefs->GetString(prefs::kDefaultAudioCaptureDevice) !=
-          media_stream_selected_audio_device &&
-      media_indicator->IsCapturingAudio(web_contents())) {
-    return true;
-  }
-
-  if (microphone_camera_state.Has(
-          PageSpecificContentSettings::kCameraAccessed) &&
-      prefs->GetString(prefs::kDefaultVideoCaptureDevice) !=
-          media_stream_selected_video_device &&
-      media_indicator->IsCapturingVideo(web_contents())) {
-    return true;
-  }
-
-  return false;
 }
 
 PageSpecificContentSettings::MicrophoneCameraState
@@ -293,7 +265,7 @@ void PageSpecificContentSettingsDelegate::OnContentAllowed(
   if (grant_time.is_null())
     return;
   permissions::PermissionUmaUtil::RecordTimeElapsedBetweenGrantAndUse(
-      type, base::Time::Now() - grant_time);
+      type, base::Time::Now() - grant_time, setting_info.source);
   permissions::PermissionUmaUtil::RecordPermissionUsage(
       type, web_contents()->GetBrowserContext(), web_contents(),
       web_contents()->GetLastCommittedURL());

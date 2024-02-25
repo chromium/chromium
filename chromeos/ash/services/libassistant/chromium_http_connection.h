@@ -9,6 +9,7 @@
 
 #include <memory>
 #include <string>
+#include <string_view>
 #include <vector>
 
 #include "base/memory/raw_ptr.h"
@@ -63,7 +64,7 @@ class ChromiumHttpConnection
   void StartReading(mojo::ScopedDataPipeProducerHandle pipe) override;
 
   // network::SimpleURLLoaderStreamConsumer implementation:
-  void OnDataReceived(base::StringPiece string_piece,
+  void OnDataReceived(std::string_view string_piece,
                       base::OnceClosure resume) override;
   void OnComplete(bool success) override;
   void OnRetry(base::OnceClosure start_retry) override;
@@ -95,7 +96,7 @@ class ChromiumHttpConnection
       const GURL& final_url,
       const network::mojom::URLResponseHead& response_header);
 
-  const raw_ptr<Delegate, ExperimentalAsh> delegate_;
+  const raw_ptr<Delegate> delegate_;
   scoped_refptr<base::SequencedTaskRunner> task_runner_;
   State state_ = State::NEW;
   bool has_last_chunk_ = false;

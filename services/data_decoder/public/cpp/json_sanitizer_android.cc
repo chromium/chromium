@@ -43,7 +43,7 @@ void JsonSanitizer::Sanitize(const std::string& json, Callback callback) {
     return;
   }
 
-  JNIEnv* env = base::android::AttachCurrentThread();
+  JNIEnv* env = jni_zero::AttachCurrentThread();
   base::android::ScopedJavaLocalRef<jstring> json_java =
       base::android::ConvertUTF8ToJavaString(env, json);
 

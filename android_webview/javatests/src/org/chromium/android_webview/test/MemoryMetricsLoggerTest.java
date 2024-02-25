@@ -9,31 +9,36 @@ import static org.chromium.android_webview.test.OnlyRunIn.ProcessMode.SINGLE_PRO
 
 import androidx.test.filters.SmallTest;
 
+import org.jni_zero.JNINamespace;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.junit.runners.Parameterized;
+import org.junit.runners.Parameterized.UseParametersRunnerFactory;
 
 import org.chromium.android_webview.test.util.MemoryMetricsLoggerUtilsJni;
-import org.chromium.base.annotations.JNINamespace;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.HistogramWatcher;
 
-/**
- * Tests for memory_metrics_logger.cc.
- */
+/** Tests for memory_metrics_logger.cc. */
 @JNINamespace("android_webview")
-@RunWith(AwJUnit4ClassRunner.class)
-public class MemoryMetricsLoggerTest {
-    @Rule
-    public AwActivityTestRule mActivityTestRule = new AwActivityTestRule();
+@RunWith(Parameterized.class)
+@UseParametersRunnerFactory(AwJUnit4ClassRunnerWithParameters.Factory.class)
+public class MemoryMetricsLoggerTest extends AwParameterizedTest {
+    @Rule public AwActivityTestRule mActivityTestRule;
 
     private HistogramWatcher mHistogramExpectationBrowser;
     private HistogramWatcher mHistogramExpectationRendererMulti;
     private HistogramWatcher mHistogramExpectationRendererSingle;
     private HistogramWatcher mHistogramExpectationTotal;
+
+    public MemoryMetricsLoggerTest(AwSettingsMutation param) {
+        this.mActivityTestRule = new AwActivityTestRule(param.getMutation());
+    }
+
     @Before
     public void setUp() throws Exception {
         mHistogramExpectationBrowser =
@@ -59,8 +64,10 @@ public class MemoryMetricsLoggerTest {
         AwTestContainerView testContainerView =
                 mActivityTestRule.createAwTestContainerViewOnMainSync(contentsClient);
 
-        mActivityTestRule.loadUrlSync(testContainerView.getAwContents(),
-                contentsClient.getOnPageFinishedHelper(), "about:blank");
+        mActivityTestRule.loadUrlSync(
+                testContainerView.getAwContents(),
+                contentsClient.getOnPageFinishedHelper(),
+                "about:blank");
         Assert.assertTrue(MemoryMetricsLoggerUtilsJni.get().forceRecordHistograms());
     }
 

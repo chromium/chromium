@@ -120,7 +120,7 @@ class MODULES_EXPORT CanvasRenderingContext2DState final
   }
   const String& UnparsedCSSFilter() const { return unparsed_css_filter_; }
   void SetCanvasFilter(CanvasFilter* filter_value);
-  CanvasFilter* GetCanvasFilter() const { return canvas_filter_; }
+  CanvasFilter* GetCanvasFilter() const { return canvas_filter_.Get(); }
   sk_sp<PaintFilter> GetFilter(Element*,
                                gfx::Size canvas_size,
                                CanvasRenderingContext2D*);
@@ -135,12 +135,6 @@ class MODULES_EXPORT CanvasRenderingContext2DState final
 
   void ClearResolvedFilter();
   void ValidateFilterState() const;
-
-  void SetLayerFilter(sk_sp<PaintFilter> filter) {
-    layer_filter_ = std::move(filter);
-  }
-  sk_sp<PaintFilter> GetLayerFilter() const { return layer_filter_; }
-  bool HasLayerFilter() const { return layer_filter_ != nullptr; }
 
   void SetStrokeColor(Color color) {
     if (stroke_style_.SetColor(color)) {
@@ -346,7 +340,6 @@ class MODULES_EXPORT CanvasRenderingContext2DState final
   String unparsed_css_filter_;
   Member<const CSSValue> css_filter_value_;
   sk_sp<PaintFilter> resolved_filter_;
-  sk_sp<PaintFilter> layer_filter_;
 
   // Text state.
   TextAlign text_align_;

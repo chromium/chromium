@@ -1,0 +1,2329 @@
+<!--
+Copyright 2023 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<!--
+
+This file describes the enumerations referenced by entries in histograms.xml for
+this directory. Some enums may instead be listed in the central enums.xml file
+at src/tools/metrics/histograms/enums.xml when multiple files use them.
+
+For best practices on writing enumerations descriptions, see
+https://chromium.googlesource.com/chromium/src.git/+/HEAD/tools/metrics/histograms/README.md#Enum-Histograms
+
+Please follow the instructions in the OWNERS file in this directory to find a
+reviewer. If no OWNERS file exists, please consider signing up at
+go/reviewing-metrics (Googlers only), as all subdirectories are expected to
+have an OWNERS file. As a last resort you can send the CL to
+chromium-metrics-reviews@google.com.
+-->
+
+<histogram-configuration>
+
+<!-- Enum types -->
+
+<enums>
+
+<enum name="ApplySubCaptureTargetResult">
+  <int value="0" label="Ok"/>
+  <int value="1" label="TimedOut"/>
+  <int value="2" label="InvalidFormat"/>
+  <int value="3" label="RejectedWithErrorGeneric"/>
+  <int value="4" label="RejectedWithUnsupportedCaptureDevice"/>
+  <int value="5" label="RejectedWithNotImplemented"/>
+  <int value="6" label="NonIncreasingVersion"/>
+  <int value="7" label="InvalidTarget"/>
+  <int value="8" label="UnsupportedPlatform"/>
+</enum>
+
+<enum name="AudioCaptureDeviceError">
+  <int value="0" label="No error"/>
+  <int value="1" label="Error during stream creation"/>
+  <int value="2" label="Error during active capture"/>
+</enum>
+
+<enum name="AudioCaptureStartupResult">
+  <int value="0" label="OK"/>
+  <int value="1" label="Failed to create stream"/>
+  <int value="2" label="Failed to open stream"/>
+  <int value="3" label="Never received any data"/>
+  <int value="4" label="No data received and capture stopped within 500ms"/>
+</enum>
+
+<enum name="AudioDeviceConnectionStatus">
+  <int value="0" label="Disconnected"/>
+  <int value="1" label="Connecting"/>
+  <int value="2" label="Connected"/>
+  <int value="3" label="Disconnecting"/>
+</enum>
+
+<enum name="AudioGlitchResult">
+  <int value="0" label="No audio glitches"/>
+  <int value="1" label="Audio glitches"/>
+</enum>
+
+<enum name="AudioOutputDeviceMixerManagerStreamCreation">
+  <int value="0" label="Unmixable stream"/>
+  <int value="1" label="Fallback to unmixable stream"/>
+  <int value="2" label="Using new mixer"/>
+  <int value="3" label="Using existing mixer"/>
+</enum>
+
+<enum name="AudioOutputDeviceMixerMixedPlaybackStatus">
+  <int value="0" label="Ok"/>
+  <int value="1" label="Failed to open rendering stream"/>
+  <int value="2" label="Error during rendering"/>
+</enum>
+
+<enum name="AudioOutputDeviceMixerStreamStatus">
+  <int value="0" label="Ok"/>
+  <int value="1" label="Failed to open independent rendering stream"/>
+  <int value="2" label="Error during independent rendering"/>
+  <int value="3" label="Failed to start mixed playback"/>
+  <int value="4" label="Error during mixed playback"/>
+</enum>
+
+<enum name="AudioOutputProxyStreamFormat">
+  <int value="0" label="Bitstream"/>
+  <int value="1" label="Linear PCM"/>
+  <int value="2" label="Low latency PCM"/>
+  <int value="3" label="Low latency PCM fall back to Fake"/>
+  <int value="4" label="Fake"/>
+</enum>
+
+<enum name="AudioOutputResamplerLowLatencyOpenStreamResult">
+  <int value="0" label="Creation of low latency stream failed"/>
+  <int value="1" label="Fallback to fake stream succeeded"/>
+  <int value="2" label="Fallback to linear stream succeeded"/>
+  <int value="3" label="Creation of low latency stream succeeded"/>
+  <int value="4" label="Subsequent creation of fake stream failed"/>
+  <int value="5" label="Subsequent creation of fake stream succeeded"/>
+  <int value="6" label="Subsequent creation of linear stream failed"/>
+  <int value="7" label="Subsequent creation of linear stream succeeded"/>
+  <int value="8" label="Subsequent creation of low latency stream failed"/>
+  <int value="9" label="Subsequent creation of low latency stream succeeded"/>
+</enum>
+
+<enum name="AudioOutputStreamCreationResult">
+  <int value="0" label="OK"/>
+  <int value="1" label="Failed to create stream"/>
+  <int value="2" label="Failed to open stream"/>
+</enum>
+
+<enum name="AudioRenderDeviceError">
+  <int value="0" label="No error"/>
+  <int value="1" label="Error during stream creation"/>
+  <int value="2" label="Error during active rendering"/>
+</enum>
+
+<enum name="AudioStreamFormatRelatedInitError">
+  <int value="0" label="Unsupported format"/>
+  <int value="1" label="Unsupported format when conversion was used"/>
+  <int value="2" label="Invalid argument"/>
+  <int value="3" label="Invalid argument when conversion was used"/>
+</enum>
+
+<enum name="AudioStreamOpenResult">
+  <int value="0" label="OK"/>
+  <int value="1" label="CREATE_INSTANCE"/>
+  <int value="2" label="NO_ENDPOINT"/>
+  <int value="3" label="NO_STATE"/>
+  <int value="4" label="DEVICE_NOT_ACTIVE"/>
+  <int value="5" label="ACTIVATION_FAILED"/>
+  <int value="6" label="FORMAT_NOT_SUPPORTED"/>
+  <int value="7" label="AUDIO_CLIENT_INIT_FAILED"/>
+  <int value="8" label="GET_BUFFER_SIZE_FAILED"/>
+  <int value="9" label="LOOPBACK_ACTIVATE_FAILED"/>
+  <int value="10" label="LOOPBACK_INIT_FAILED"/>
+  <int value="11" label="SET_EVENT_HANDLE"/>
+  <int value="12" label="NO_CAPTURE_CLIENT"/>
+  <int value="13" label="NO_AUDIO_VOLUME"/>
+  <int value="14" label="OK_WITH_RESAMPLING"/>
+</enum>
+
+<enum name="AudioThreadStatus">
+  <int value="0" label="None"/>
+  <int value="1" label="Started"/>
+  <int value="2" label="Hung"/>
+  <int value="3" label="Recovered"/>
+</enum>
+
+<enum name="AutoplaySource">
+  <int value="0" label="autoplay attribute"/>
+  <int value="1" label="play() method"/>
+  <int value="2" label="dual source"/>
+</enum>
+
+<enum name="AVDAFrameInformation">
+  <int value="0" label="Non Overlay Insecure"/>
+  <int value="1" label="Non Overlay L3"/>
+  <int value="2" label="Overlay L3"/>
+  <int value="3" label="Overlay L1"/>
+  <int value="4" label="Overlay Insecure Player-element Fullscreen"/>
+  <int value="5" label="Overlay Insecure Non-player-element Fullscreen"/>
+</enum>
+
+<enum name="BlacklistedVideoCaptureDeviceNames">
+  <int value="0" label="Google GTalk Camera Adapter"/>
+  <int value="1" label="IP Camera"/>
+  <int value="2" label="Cyberlink YouCam Webcam Splitter"/>
+  <int value="3" label="EpocCam Smartphone Wireless Camera"/>
+</enum>
+
+<enum name="BooleanAfterPowerOrDisplayChange">
+  <int value="0" label="Not After Power or Display Change"/>
+  <int value="1" label="After Power or Display Change"/>
+</enum>
+
+<enum name="BooleanConnectionError">
+  <int value="0" label="Connected"/>
+  <int value="1" label="Connection error happened"/>
+</enum>
+
+<enum name="BooleanDidFallBack">
+  <int value="0" label="Did not fall back"/>
+  <int value="1" label="Did fall back"/>
+</enum>
+
+<enum name="BooleanEncryptedEvent">
+  <int value="0" label="Media player instance"/>
+  <int value="1" label="Encrypted event fired"/>
+</enum>
+
+<enum name="BooleanFocused">
+  <int value="0" label="Unfocused"/>
+  <int value="1" label="Focused"/>
+</enum>
+
+<enum name="BooleanFrameAsOverlay">
+  <int value="0" label="Frame was not allow_overlay"/>
+  <int value="1" label="Frame was allow_overlay"/>
+</enum>
+
+<enum name="BooleanHasPlayed">
+  <int value="0" label="Never played"/>
+  <int value="1" label="Played"/>
+</enum>
+
+<enum name="BooleanIsRepeat">
+  <int value="0" label="First"/>
+  <int value="1" label="Repeat"/>
+</enum>
+
+<enum name="BooleanMissingCallbacks">
+  <int value="0" label="No missing callbacks"/>
+  <int value="1" label="Had missing callbacks"/>
+</enum>
+
+<enum name="BreakoutBoxUsage">
+  <int value="0" label="ReadableVideo"/>
+  <int value="1" label="ReadableVideoWorker"/>
+  <int value="2" label="ReadableAudio"/>
+  <int value="3" label="ReadableAudioWorker"/>
+  <int value="4" label="WritableVideo"/>
+  <int value="5" label="WritableVideoWorker"/>
+  <int value="6" label="WritableAudio"/>
+  <int value="7" label="WritableAudioWorker"/>
+  <int value="8" label="ReadableControlVideo"/>
+  <int value="9" label="WritableControlVideo"/>
+</enum>
+
+<enum name="CallbackTimeoutStatus">
+  <int value="0" label="Create"/>
+  <int value="1" label="Timeout"/>
+  <int value="2" label="Destructed Before Timeout"/>
+</enum>
+
+<enum name="CastStreamingFrameDropReason">
+  <int value="0" label="Frame was not dropped"/>
+  <int value="1" label="Too many frames in flight"/>
+  <int value="2" label="Burst threshold exceeded"/>
+  <int value="3" label="In flight duration too high"/>
+  <int value="4" label="Payload too large"/>
+  <int value="5" label="Reached Frame ID span limit"/>
+  <int value="6" label="In flight duration too high (after encoding)"/>
+</enum>
+
+<enum name="CdmHostVerificationStatus">
+  <int value="0" label="Not Called"/>
+  <int value="1" label="Success"/>
+  <int value="2" label="CDM Load Failed"/>
+  <int value="3" label="Get Function Failed"/>
+  <int value="4" label="Init Verification Failed"/>
+</enum>
+
+<enum name="CdmInfoStatus">
+  <int value="0" label="Uninitialized"/>
+  <int value="1" label="Enabled"/>
+  <int value="2" label="CommandLineOverridden"/>
+  <int value="3" label="HardwareSecureDecryptionDisabled"/>
+  <int value="4" label="AcceleratedVideoDecodeDisabled"/>
+  <int value="5" label="GpuFeatureDisabled"/>
+  <int value="6" label="GpuCompositionDisabled"/>
+  <int value="7" label="DisabledByPref"/>
+  <int value="8" label="DisabledOnError"/>
+  <int value="9" label="DisabledBySoftwareEmulatedGpu"/>
+</enum>
+
+<enum name="CdmKeyStatusMix">
+  <int value="0" label="kAllUsable"/>
+  <int value="1" label="kAllInternalError"/>
+  <int value="2" label="kAllExpired"/>
+  <int value="3" label="kAllOutputRestricted"/>
+  <int value="4" label="kAllOutputDownscaled"/>
+  <int value="5" label="kAllKeyStatusPending"/>
+  <int value="6" label="kAllReleased"/>
+  <int value="7" label="kEmpty"/>
+  <int value="8" label="kMixedWithUsable"/>
+  <int value="9" label="kMixedWithoutUsable"/>
+</enum>
+
+<enum name="CdmLoadResult">
+  <int value="0" label="Success"/>
+  <int value="1" label="CDM file missing"/>
+  <int value="2" label="CDM file exists but load failed"/>
+  <int value="3" label="CDM loaded but entry point missing"/>
+</enum>
+
+<enum name="CdmPromiseResult">
+  <int value="0" label="Success"/>
+  <int value="1" label="NotSupportedError"/>
+  <int value="2" label="InvalidStateError"/>
+  <int value="3" label="TypeError"/>
+  <int value="4" label="QuotaExceededError"/>
+  <int value="5" label="UnknownError (deprecated)"/>
+  <int value="6" label="ClientError (deprecated)"/>
+  <int value="7" label="OutputError (deprecated)"/>
+  <int value="8" label="SessionNotFound"/>
+  <int value="9" label="SessionAlreadyExists"/>
+</enum>
+
+<enum name="CdmStorageOpenError">
+  <int value="0" label="kInvalidBucket"/>
+  <int value="1" label="kNoFileSpecified"/>
+  <int value="2" label="kDatabaseOpenError"/>
+  <int value="3" label="kDatabaseRazeError"/>
+  <int value="4" label="kSQLExecutionError"/>
+</enum>
+
+<enum name="CdmStorageStatus">
+  <int value="0" label="Success"/>
+  <int value="1" label="In Use"/>
+  <int value="2" label="Failure"/>
+</enum>
+
+<enum name="ConditionalFocusDecision">
+  <int value="0" label="kExplicitFocusCapturedSurface"/>
+  <int value="1" label="kExplicitNoFocusChange"/>
+  <int value="2" label="kMicrotaskClosedWindow"/>
+  <int value="3" label="kBrowserSideTimerClosedWindow"/>
+</enum>
+
+<enum name="ContentTypeParseableResult">
+  <int value="0" label="IsSupported returned and MIME type parseable"/>
+  <int value="1" label="MayBeSupported returned and MIME type parseable"/>
+  <int value="2" label="IsNotSupported returned and MIME type parseable"/>
+  <int value="3"
+      label="IsSupported returned and MIME type not parseable (should fail)"/>
+  <int value="4"
+      label="MayBeSupported returned and MIME type not parseable (should
+             fail)"/>
+  <int value="5"
+      label="IsNotSupported returned and MIME type not parseable (acceptable)"/>
+</enum>
+
+<enum name="ContextResult">
+  <int value="0" label="Success"/>
+  <int value="1" label="TransientFailure"/>
+  <int value="2" label="FatalFailure"/>
+  <int value="3" label="SurfaceFailure"/>
+</enum>
+
+<enum name="CoreAudioDispatchOverrideInitResult">
+  <summary>
+    The result of trying to initialize the CoreAudio dispatch override hotfix.
+    See media/audio/mac/coreaudio_dispatch_override.cc.
+  </summary>
+  <int value="0" label="Not supported"/>
+  <int value="1" label="Initialized successfully"/>
+  <int value="2" label="dyld_dynamic_interpose not found"/>
+  <int value="3" label="dlopen of CoreAudio failed"/>
+  <int value="4" label="Symbol lookup in CoreAudio failed"/>
+  <int value="5" label="dladdr call failed"/>
+</enum>
+
+<enum name="CoreAudioDispatchOverrideLookupEvent">
+  <summary>
+    The types of lookup events that the CoreAudio dispatch override hotfix can
+    emit. See media/audio/mac/coreaudio_dispatch_override.cc.
+  </summary>
+  <int value="0" label="Lookup performed but didn't find ResumeIO/PauseIO"/>
+  <int value="1" label="ResumeIO callsite found"/>
+  <int value="2" label="PauseIO callsite found"/>
+</enum>
+
+<enum name="CrasInputStreamOpenSuccess">
+  <int value="0" label="Success: Stream opened as indented."/>
+  <int value="1" label="Error: Stream already opened."/>
+  <int value="2" label="Error: Unsupported audio frequency."/>
+  <int value="3" label="Error: Unsupported audio format."/>
+  <int value="4" label="Error: CRAS client creation failed."/>
+  <int value="5" label="Error: Cannot connect to CRAS client."/>
+  <int value="6" label="Error: Cannot run CRAS client."/>
+  <int value="7" label="Error: Cannot synchronize data."/>
+  <int value="8" label="Error: Cannot find loopback device."/>
+</enum>
+
+<enum name="CrasInputStreamStartSuccess">
+  <int value="0" label="Success: Stream started as indented."/>
+  <int value="1" label="Error: Creating stream parameters failed."/>
+  <int value="2" label="Error: Setting up stream parameters failed."/>
+  <int value="3" label="Error: Setting up channel layout failed."/>
+  <int value="4" label="Error: Adding stream failed."/>
+</enum>
+
+<enum name="CrasUnifiedStreamOpenSuccess">
+  <int value="0" label="Success: Stream opened as indented."/>
+  <int value="1" label="Error: Audio frequency not supported."/>
+  <int value="2" label="Error: Cannot create CRAS client."/>
+  <int value="3" label="Error: Cannot connect to CRAS client."/>
+  <int value="4" label="Error: Cannot run CRAS client."/>
+</enum>
+
+<enum name="CrasUnifiedStreamStartSuccess">
+  <int value="0" label="Success: Stream started as indented."/>
+  <int value="1" label="Error: Creating of stream parameters failed."/>
+  <int value="2" label="Error: Setting up stream parameters failed."/>
+  <int value="3" label="Error: Setting up channel layout failed."/>
+  <int value="4" label="Error: Adding stream failed."/>
+</enum>
+
+<enum name="CrosBeamformingDeviceState">
+  <int value="0" label="Default enabled"/>
+  <int value="1" label="User enabled"/>
+  <int value="2" label="Default disabled"/>
+  <int value="3" label="User disabled"/>
+</enum>
+
+<enum name="CrosCdmType">
+  <int value="0" label="Chrome CDM"/>
+  <int value="1" label="Platform CDM"/>
+</enum>
+
+<enum name="DesktopCaptureImplementationAndType">
+  <int value="0" label="NoImplementationTypeNone"/>
+  <int value="1" label="NoImplementationTypeScreen"/>
+  <int value="2" label="NoImplementationTypeWindow"/>
+  <int value="3" label="NoImplementationTypeWebContents"/>
+  <int value="4" label="ScreenCaptureDeviceAndroidTypeNone"/>
+  <int value="5" label="ScreenCaptureDeviceAndroidTypeScreen"/>
+  <int value="6" label="ScreenCaptureDeviceAndroidTypeWindow"/>
+  <int value="7" label="ScreenCaptureDeviceAndroidTypeWebContents"/>
+  <int value="8" label="ScreenCaptureKitDeviceMacTypeNone"/>
+  <int value="9" label="ScreenCaptureKitDeviceMacTypeScreen"/>
+  <int value="10" label="ScreenCaptureKitDeviceMacTypeWindow"/>
+  <int value="11" label="ScreenCaptureKitDeviceMacTypeWebContents"/>
+  <int value="12" label="DesktopCaptureDeviceMacTypeNone"/>
+  <int value="13" label="DesktopCaptureDeviceMacTypeScreen"/>
+  <int value="14" label="DesktopCaptureDeviceMacTypeWindow"/>
+  <int value="15" label="DesktopCaptureDeviceMacTypeWebContents"/>
+  <int value="16" label="LegacyDesktopCaptureDeviceTypeNone"/>
+  <int value="17" label="LegacyDesktopCaptureDeviceTypeScreen"/>
+  <int value="18" label="LegacyDesktopCaptureDeviceTypeWindow"/>
+  <int value="19" label="LegacyDesktopCaptureDeviceTypeWebContents"/>
+</enum>
+
+<enum name="DeviceEnumerationResult">
+  <int value="0" label="Success"/>
+  <int value="1" label="Unknown error"/>
+  <int value="2" label="Error - Video Capturer Service crashed"/>
+</enum>
+
+<enum name="DisplayCapturePolicyResult">
+  <int value="0" label="kDisallowed"/>
+  <int value="1" label="kAllowed"/>
+</enum>
+
+<enum name="DocumentPictureInPictureCloseReason">
+  <int value="0" label="Other"/>
+  <int value="1" label="Back to Tab"/>
+  <int value="2" label="Close"/>
+</enum>
+
+<enum name="DXVALifetimeProgression">
+  <int value="0" label="kInitializeStarted">
+    A decoder has started the initialization step.
+  </int>
+  <int value="1" label="kDX11InitializeSucceeded">
+    A decoder has completed the initialization step for DX11 successfully.
+  </int>
+  <int value="2" label="kDX11PlaybackFailedBeforeFirstFrame">
+    A decoder failed DX11 playback without sending a frame to the client.
+  </int>
+  <int value="3" label="kDX11PlaybackFailedAfterFirstFrame">
+    A decoder failed DX11 playback after sending a frame to the client.
+  </int>
+  <int value="4" label="kDX11PlaybackSucceeded">
+    A decoder has finished playing with DX11.
+  </int>
+  <int value="5" label="kDX9InitializeSucceeded">
+    A decoder has completed the initialization step for DX9 successfully.
+  </int>
+  <int value="6" label="kDX9PlaybackFailedBeforeFirstFrame">
+    A decoder failed DX9 playback without sending a frame to the client.
+  </int>
+  <int value="7" label="kDX9PlaybackFailedAfterFirstFrame">
+    A decoder failed DX9 playback after sending a frame to the client.
+  </int>
+  <int value="8" label="kDX9PlaybackSucceeded">
+    A decoder has finished playing with DX9.
+  </int>
+</enum>
+
+<enum name="EmeSessionType">
+  <int value="0" label="Unknown"/>
+  <int value="1" label="Temporary"/>
+  <int value="2" label="Persistent License"/>
+  <int value="3" label="Persistent Usage Record"/>
+</enum>
+
+<enum name="EnumerateDevicesResult">
+  <int value="0" label="OK"/>
+  <int value="1" label="Unknown error"/>
+  <int value="2" label="Error - Capturer Service crashed"/>
+  <int value="3" label="Error - MediaDevicesDispatcherHost disconnected"/>
+  <int value="4" label="No result within timout"/>
+</enum>
+
+<enum name="FFmpegCodecHashes">
+  <int value="-2140893972" label="bfi"/>
+  <int value="-2126016986" label="vp3"/>
+  <int value="-2112225664" label="pcm_s32be"/>
+  <int value="-2100141199" label="loco"/>
+  <int value="-2095396703" label="v408"/>
+  <int value="-2093680186" label="amv"/>
+  <int value="-2089660750" label="h263"/>
+  <int value="-2087604036" label="adpcm_ima_smjpeg"/>
+  <int value="-2077566827" label="musepack8"/>
+  <int value="-2057234831" label="8svx_exp"/>
+  <int value="-2039593792" label="targa"/>
+  <int value="-2026984418" label="dirac"/>
+  <int value="-2024394607" label="adpcm_ima_ws"/>
+  <int value="-2022450851" label="sunrast"/>
+  <int value="-2013419814" label="dsd_lsbf_planar"/>
+  <int value="-2002502337" label="tiff"/>
+  <int value="-1978772551" label="dvaudio"/>
+  <int value="-1956356936" label="wmavoice"/>
+  <int value="-1936051434" label="h261"/>
+  <int value="-1935659465" label="text"/>
+  <int value="-1929182263" label="rl2"/>
+  <int value="-1920776714" label="a64_multi5"/>
+  <int value="-1920272933" label="mlp"/>
+  <int value="-1913457333" label="smackvideo"/>
+  <int value="-1910182388" label="dds"/>
+  <int value="-1909815814" label="xma2"/>
+  <int value="-1900731082" label="scte_35"/>
+  <int value="-1877492821" label="ws_vqa"/>
+  <int value="-1868061100" label="avrp"/>
+  <int value="-1866047250" label="brender_pix_deprecated"/>
+  <int value="-1861192281" label="c93"/>
+  <int value="-1859416370" label="mts2"/>
+  <int value="-1855199147" label="adpcm_yamaha"/>
+  <int value="-1854941320" label="tgq"/>
+  <int value="-1848915146" label="adpcm_ima_iss"/>
+  <int value="-1847740489" label="flac"/>
+  <int value="-1847405305" label="qdmc"/>
+  <int value="-1837462345" label="bmv_video"/>
+  <int value="-1787878546" label="adpcm_afc"/>
+  <int value="-1782518388" label="adpcm_vima_deprecated"/>
+  <int value="-1769822834" label="vmdaudio"/>
+  <int value="-1754427880" label="frwu"/>
+  <int value="-1746405263" label="none"/>
+  <int value="-1746190470" label="adpcm_ima_amv"/>
+  <int value="-1742178896" label="cinepak"/>
+  <int value="-1722959117" label="cook"/>
+  <int value="-1704969006" label="pcm_f24le"/>
+  <int value="-1694324852" label="adpcm_ima_rad"/>
+  <int value="-1653946850" label="mp3on4"/>
+  <int value="-1638592334" label="msmpeg4v3"/>
+  <int value="-1625425962" label="dpx"/>
+  <int value="-1620040130" label="vp6"/>
+  <int value="-1596796424" label="pcm_f32le"/>
+  <int value="-1580836816" label="cdxl"/>
+  <int value="-1578877775" label="twinvq"/>
+  <int value="-1570048110" label="mace3"/>
+  <int value="-1558356361" label="paf_audio"/>
+  <int value="-1546633359" label="dss_sp"/>
+  <int value="-1538621442" label="tak"/>
+  <int value="-1535770868" label="mov_text"/>
+  <int value="-1532420090" label="dvb_teletext"/>
+  <int value="-1518326441" label="cpia"/>
+  <int value="-1516599706" label="stl"/>
+  <int value="-1510953689" label="ulti"/>
+  <int value="-1495077719" label="wavesynth"/>
+  <int value="-1493473944" label="mp1"/>
+  <int value="-1488471023" label="aac_latm"/>
+  <int value="-1471896197" label="adpcm_4xm"/>
+  <int value="-1471717594" label="atrac3al"/>
+  <int value="-1458812472" label="vble"/>
+  <int value="-1452408746" label="bin_data"/>
+  <int value="-1437754593" label="tqi"/>
+  <int value="-1400052876" label="fits"/>
+  <int value="-1398094744" label="brender_pix"/>
+  <int value="-1396201900" label="lagarith"/>
+  <int value="-1394735166" label="s302m"/>
+  <int value="-1382236305" label="truemotion2rt"/>
+  <int value="-1369341195" label="atrac9"/>
+  <int value="-1366158780" label="mvc2"/>
+  <int value="-1351352498" label="srgc"/>
+  <int value="-1346295474" label="dfa"/>
+  <int value="-1335819014" label="adpcm_ea_r3"/>
+  <int value="-1333697928" label="rv10"/>
+  <int value="-1328796639" label="pcm_s32le_planar_deprecated"/>
+  <int value="-1326344691" label="wmalossless"/>
+  <int value="-1308771510" label="atrac3pal"/>
+  <int value="-1276285619" label="subviewer1"/>
+  <int value="-1267322736" label="evrc"/>
+  <int value="-1253653962" label="cljr"/>
+  <int value="-1249151864" label="westwood_snd1"/>
+  <int value="-1234201101" label="xan_dpcm"/>
+  <int value="-1228141376" label="aic"/>
+  <int value="-1217250068" label="pcm_u24le"/>
+  <int value="-1216801956" label="kmvc"/>
+  <int value="-1216327014" label="ansi"/>
+  <int value="-1212214965" label="svq3"/>
+  <int value="-1205406239" label="mpeg4"/>
+  <int value="-1192008277" label="flashsv"/>
+  <int value="-1181422407" label="gif"/>
+  <int value="-1156009526" label="wmv1"/>
+  <int value="-1153001952" label="eia_608"/>
+  <int value="-1150003992" label="nellymoser"/>
+  <int value="-1147304270" label="pgm"/>
+  <int value="-1146321910" label="adpcm_sbpro_4"/>
+  <int value="-1124358604" label="qdraw"/>
+  <int value="-1094512964" label="hevc"/>
+  <int value="-1088817241" label="dst"/>
+  <int value="-1082894560" label="y41p"/>
+  <int value="-1069291012" label="roq"/>
+  <int value="-1055791926" label="wmv2"/>
+  <int value="-1055192910" label="adpcm_ima_dat4"/>
+  <int value="-1052495685" label="adpcm_ea_xas"/>
+  <int value="-1050536726" label="fic"/>
+  <int value="-1050267191" label="theora"/>
+  <int value="-1047975380" label="aura"/>
+  <int value="-1038298513" label="iac"/>
+  <int value="-1033247386" label="pcm_u24be"/>
+  <int value="-1030939519" label="bitpacked"/>
+  <int value="-1030131048" label="ra_288"/>
+  <int value="-1011667768" label="sgirle"/>
+  <int value="-1010059925" label="cdgraphics"/>
+  <int value="-993429906" label="webp_deprecated"/>
+  <int value="-991743010" label="pictor"/>
+  <int value="-986254855" label="qtrle"/>
+  <int value="-984524901" label="wmapro"/>
+  <int value="-982785322" label="roq_dpcm"/>
+  <int value="-967736249" label="idf"/>
+  <int value="-963536204" label="tmv"/>
+  <int value="-961342190" label="truespeech"/>
+  <int value="-955936385" label="qdm2"/>
+  <int value="-937993216" label="cyuv"/>
+  <int value="-919523138" label="dolby_e"/>
+  <int value="-908137771" label="mss2"/>
+  <int value="-898663359" label="paf_video"/>
+  <int value="-891450332" label="qcelp"/>
+  <int value="-881893142" label="paf_video_deprecated"/>
+  <int value="-878761755" label="alac"/>
+  <int value="-872951009" label="vp7"/>
+  <int value="-870965910" label="mszh"/>
+  <int value="-868148645" label="ttf"/>
+  <int value="-853586131" label="eac3"/>
+  <int value="-839127813" label="adpcm_adx"/>
+  <int value="-820705472" label="timed_id3"/>
+  <int value="-816209197" label="vima_deprecated"/>
+  <int value="-815578090" label="ssa"/>
+  <int value="-804708185" label="vb"/>
+  <int value="-799004205" label="thp"/>
+  <int value="-792737437" label="mjpeg"/>
+  <int value="-781332453" label="xbm"/>
+  <int value="-780629337" label="adpcm_ima_oki"/>
+  <int value="-777478450" label="iff_byterun1"/>
+  <int value="-776406198" label="hdmv_pgs_subtitle"/>
+  <int value="-775674438" label="cfhd"/>
+  <int value="-773314651" label="adpcm_thp_le"/>
+  <int value="-755809410" label="xface"/>
+  <int value="-750906124" label="sonic"/>
+  <int value="-746782512" label="nuv"/>
+  <int value="-728484627" label="vp6f"/>
+  <int value="-711076000" label="ilbc"/>
+  <int value="-693682032" label="png"/>
+  <int value="-686461436" label="m101"/>
+  <int value="-680421267" label="xpm"/>
+  <int value="-665301881" label="kgv1"/>
+  <int value="-651841063" label="musepack7"/>
+  <int value="-644671397" label="pcm_s16le"/>
+  <int value="-644168765" label="dvvideo"/>
+  <int value="-630356729" label="paf_audio_deprecated"/>
+  <int value="-624149477" label="mad"/>
+  <int value="-606142900" label="microdvd"/>
+  <int value="-605150423" label="jacosub"/>
+  <int value="-600721750" label="pcm_s16le_planar"/>
+  <int value="-597857853" label="fraps"/>
+  <int value="-594775425" label="tdsc"/>
+  <int value="-583421433" label="pcm_zork"/>
+  <int value="-573567800" label="ffvhuff"/>
+  <int value="-558754697" label="dxtory"/>
+  <int value="-547412719" label="a64_multi"/>
+  <int value="-530757209" label="iff_ilbm"/>
+  <int value="-522844891" label="tta"/>
+  <int value="-515467965" label="yop"/>
+  <int value="-483644003" label="mvc1"/>
+  <int value="-478544739" label="mxpeg"/>
+  <int value="-469833042" label="sgi"/>
+  <int value="-462654404" label="pbm"/>
+  <int value="-458233175" label="rscc"/>
+  <int value="-450113811" label="vp8"/>
+  <int value="-449164482" label="smv"/>
+  <int value="-443982307" label="pcm_s64be"/>
+  <int value="-434097103" label="8svx_fib"/>
+  <int value="-431043877" label="rv30"/>
+  <int value="-418117523" label="exr_deprecated"/>
+  <int value="-414733739" label="hevc_deprecated"/>
+  <int value="-411871512" label="4xm"/>
+  <int value="-351638235" label="mace6"/>
+  <int value="-335532805" label="v308"/>
+  <int value="-331242415" label="interplayacm"/>
+  <int value="-321063470" label="cavs"/>
+  <int value="-312812574" label="dsicinaudio"/>
+  <int value="-307750814" label="codec2"/>
+  <int value="-305868762" label="ptx"/>
+  <int value="-302658824" label="dxa"/>
+  <int value="-302292845" label="atrac1"/>
+  <int value="-268375107" label="indeo2"/>
+  <int value="-262604522" label="qpeg"/>
+  <int value="-259187129" label="interplay_dpcm"/>
+  <int value="-235507784" label="mscc"/>
+  <int value="-235472313" label="pjs"/>
+  <int value="-197551526" label="vp7_deprecated"/>
+  <int value="-195649673" label="mmvideo"/>
+  <int value="-194494447" label="sanm"/>
+  <int value="-179123055" label="hnm4video"/>
+  <int value="-178584929" label="adpcm_aica"/>
+  <int value="-166593824" label="bintext"/>
+  <int value="-153142813" label="adpcm_ima_qt"/>
+  <int value="-135875472" label="pcm_s24le_planar"/>
+  <int value="-108909529" label="adpcm_ea"/>
+  <int value="-97649057" label="scpr"/>
+  <int value="-96441857" label="escape124"/>
+  <int value="-92926716" label="indeo3"/>
+  <int value="-92742166" label="adpcm_swf"/>
+  <int value="-85419673" label="dvb_subtitle"/>
+  <int value="-83742388" label="metasound"/>
+  <int value="-81607027" label="speex"/>
+  <int value="-65839877" label="amr_nb"/>
+  <int value="-50131597" label="avui"/>
+  <int value="-41854216" label="msrle"/>
+  <int value="-35300163" label="pam"/>
+  <int value="-30500564" label="rv20"/>
+  <int value="-27780731" label="h263i"/>
+  <int value="-23682808" label="mjpegb"/>
+  <int value="-21755362" label="adpcm_sbpro_3"/>
+  <int value="-19624220" label="msmpeg4v1"/>
+  <int value="123753" label="bethsoftvid"/>
+  <int value="5678717" label="adpcm_vima"/>
+  <int value="6153938" label="ffv1"/>
+  <int value="20173491" label="gdv"/>
+  <int value="60024993" label="sol_dpcm"/>
+  <int value="73149662" label="escape130_deprecated"/>
+  <int value="76029796" label="mss1"/>
+  <int value="86453097" label="utvideo"/>
+  <int value="87186225" label="vmdvideo"/>
+  <int value="95607943" label="alias_pix"/>
+  <int value="98199414" label="wmv3image"/>
+  <int value="113741725" label="shorten"/>
+  <int value="132664538" label="gsm_ms"/>
+  <int value="136569655" label="adpcm_ima_ea_eacs"/>
+  <int value="146059120" label="adpcm_ima_dk3"/>
+  <int value="173919536" label="dsd_msbf_planar"/>
+  <int value="174382442" label="g729"/>
+  <int value="180797897" label="xsub"/>
+  <int value="197903705" label="yuv4"/>
+  <int value="197942357" label="mdec"/>
+  <int value="212901544" label="pcm_f64le"/>
+  <int value="227190580" label="adpcm_ea_r1"/>
+  <int value="231296785" label="jpegls"/>
+  <int value="242042871" label="vc1image"/>
+  <int value="250226160" label="pcm_s8"/>
+  <int value="254320798" label="pcm_dvd"/>
+  <int value="265862349" label="binkaudio_rdft"/>
+  <int value="278236230" label="webp"/>
+  <int value="284053917" label="sp5x"/>
+  <int value="287849834" label="msvideo1"/>
+  <int value="294769071" label="pcm_s16be_planar"/>
+  <int value="296667069" label="pcm_s64le"/>
+  <int value="308682247" label="aptx"/>
+  <int value="309105352" label="bmp"/>
+  <int value="309392554" label="dsd_msbf"/>
+  <int value="311400023" label="zlib"/>
+  <int value="317095520" label="adpcm_ima_apc"/>
+  <int value="342736256" label="avrn"/>
+  <int value="343186566" label="rpza"/>
+  <int value="347789448" label="vplayer"/>
+  <int value="373372875" label="pcm_f16le"/>
+  <int value="396111544" label="otf"/>
+  <int value="407654794" label="aptx_hd"/>
+  <int value="412600562" label="pcm_u16be"/>
+  <int value="429618670" label="jv"/>
+  <int value="441761537" label="indeo4"/>
+  <int value="445373194" label="tiertexseqvideo"/>
+  <int value="453915988" label="adpcm_ima_ea_sead"/>
+  <int value="461173543" label="smackaudio"/>
+  <int value="463008496" label="dvd_subtitle"/>
+  <int value="465125740" label="realtext"/>
+  <int value="486681814" label="8bps"/>
+  <int value="489448448" label="vc1"/>
+  <int value="491790310" label="vcr1"/>
+  <int value="500576677" label="hap"/>
+  <int value="503945275" label="motionpixels"/>
+  <int value="525499602" label="vmnc"/>
+  <int value="536845270" label="av1"/>
+  <int value="539341854" label="magicyuv"/>
+  <int value="548057626" label="sdx2_dpcm"/>
+  <int value="552661632" label="adpcm_xa"/>
+  <int value="553940120" label="adpcm_psx"/>
+  <int value="558339021" label="jpeg2000"/>
+  <int value="563328753" label="4gv"/>
+  <int value="565711017" label="pcm_s24le"/>
+  <int value="567624278" label="asv2"/>
+  <int value="573633387" label="pcm_f64be"/>
+  <int value="579930439" label="cmv"/>
+  <int value="580364763" label="txd"/>
+  <int value="588676310" label="pcm_s8_planar"/>
+  <int value="602113129" label="xma1"/>
+  <int value="603287142" label="mpl2"/>
+  <int value="610300309" label="v210x"/>
+  <int value="634747673" label="avs"/>
+  <int value="640012049" label="adpcm_ms"/>
+  <int value="648238710" label="xan_wc3"/>
+  <int value="695230495" label="aura2"/>
+  <int value="722738593" label="escape130"/>
+  <int value="724570383" label="rawvideo"/>
+  <int value="726397522" label="wmv3"/>
+  <int value="746742638" label="truehd"/>
+  <int value="747771882" label="dts"/>
+  <int value="753949422" label="indeo5"/>
+  <int value="763718334" label="ttml"/>
+  <int value="776942197" label="ylc"/>
+  <int value="781916095" label="ayuv"/>
+  <int value="789960893" label="bmv_audio"/>
+  <int value="802192292" label="adpcm_ima_dk4"/>
+  <int value="814609554" label="ralf"/>
+  <int value="816220395" label="apng"/>
+  <int value="820788836" label="subviewer"/>
+  <int value="855521935" label="smvjpeg"/>
+  <int value="856849194" label="tgv"/>
+  <int value="865955000" label="smc"/>
+  <int value="903853106" label="012v"/>
+  <int value="913577987" label="wmav2"/>
+  <int value="930537867" label="clearvideo"/>
+  <int value="944040689" label="ppm"/>
+  <int value="944980366" label="idcin"/>
+  <int value="946455966" label="aasc"/>
+  <int value="948849813" label="adpcm_ima_wav"/>
+  <int value="949116467" label="binkvideo"/>
+  <int value="949591507" label="vp9"/>
+  <int value="972771007" label="mpeg2video"/>
+  <int value="973601133" label="hq_hqa"/>
+  <int value="981942659" label="opus"/>
+  <int value="997031855" label="truemotion2"/>
+  <int value="997190932" label="atrac3p"/>
+  <int value="997732996" label="xwd"/>
+  <int value="1001166722" label="xan_wc4"/>
+  <int value="1008492983" label="msmpeg4v2"/>
+  <int value="1020187009" label="rv40"/>
+  <int value="1022607787" label="ape"/>
+  <int value="1033850553" label="snow"/>
+  <int value="1034034342" label="sipr"/>
+  <int value="1041617024" label="tak_deprecated"/>
+  <int value="1049882649" label="binkaudio_dct"/>
+  <int value="1053922807" label="g723_1"/>
+  <int value="1066477861" label="vorbis"/>
+  <int value="1077386855" label="cscd"/>
+  <int value="1098721511" label="g2m"/>
+  <int value="1127772984" label="imc"/>
+  <int value="1138712147" label="ac3"/>
+  <int value="1139877352" label="dnxhd"/>
+  <int value="1158772651" label="anm"/>
+  <int value="1165132763" label="opus_deprecated"/>
+  <int value="1185344399" label="svg"/>
+  <int value="1194572884" label="g2m_deprecated"/>
+  <int value="1210249397" label="avc"/>
+  <int value="1213003867" label="hdmv_text_subtitle"/>
+  <int value="1236695157" label="pcm_s32le_planar"/>
+  <int value="1244283551" label="mpeg1video"/>
+  <int value="1246598929" label="flic"/>
+  <int value="1251286213" label="dxv"/>
+  <int value="1258259575" label="pcm_lxf"/>
+  <int value="1271374381" label="wmav1"/>
+  <int value="1278764780" label="gremlin_dpcm"/>
+  <int value="1294385179" label="mp3"/>
+  <int value="1299068647" label="truemotion1"/>
+  <int value="1310993795" label="zerocodec"/>
+  <int value="1311566537" label="flv1"/>
+  <int value="1312943731" label="zmbv"/>
+  <int value="1313131096" label="h264"/>
+  <int value="1318324895" label="pcm_bluray"/>
+  <int value="1333708519" label="pcm_u8"/>
+  <int value="1366148173" label="adpcm_g726le"/>
+  <int value="1375054610" label="aac"/>
+  <int value="1395029615" label="adpcm_ea_maxis_xa"/>
+  <int value="1397947482" label="dsd_lsbf"/>
+  <int value="1411832541" label="pcm_f32be"/>
+  <int value="1413182900" label="dvd_nav_packet"/>
+  <int value="1456197148" label="fmvc"/>
+  <int value="1462568683" label="srt"/>
+  <int value="1467359000" label="msa1"/>
+  <int value="1468951708" label="comfortnoise"/>
+  <int value="1469210692" label="mp2"/>
+  <int value="1483758205" label="celt"/>
+  <int value="1502256638" label="vp5"/>
+  <int value="1525492969" label="asv1"/>
+  <int value="1526182480" label="klv"/>
+  <int value="1535518292" label="pcm_s24le_planar_deprecated"/>
+  <int value="1536086449" label="pcx"/>
+  <int value="1550758811" label="mpegvideo_xvmc_deprecated"/>
+  <int value="1565855078" label="adpcm_ea_r2"/>
+  <int value="1567457517" label="adpcm_g722"/>
+  <int value="1571821879" label="dsicinvideo"/>
+  <int value="1578202877" label="h263p"/>
+  <int value="1587938373" label="sbc"/>
+  <int value="1603330014" label="r10k"/>
+  <int value="1622843532" label="adpcm_sbpro_2"/>
+  <int value="1626738193" label="mp3adu"/>
+  <int value="1636940385" label="targa_y216"/>
+  <int value="1647791075" label="adpcm_g726"/>
+  <int value="1651871844" label="svq1"/>
+  <int value="1656834662" label="voxware_deprecated"/>
+  <int value="1671488988" label="adpcm_ct"/>
+  <int value="1681362983" label="webvtt"/>
+  <int value="1681507854" label="exr"/>
+  <int value="1704161151" label="pcm_u32be"/>
+  <int value="1724507916" label="ra_144"/>
+  <int value="1729587546" label="pgmyuv"/>
+  <int value="1730373804" label="pcm_alaw"/>
+  <int value="1739261970" label="pixlet"/>
+  <int value="1741236466" label="subrip"/>
+  <int value="1768130043" label="wrapped_avframe"/>
+  <int value="1771307928" label="flashsv2"/>
+  <int value="1789213623" label="wavpack"/>
+  <int value="1804125128" label="pcm_s24be"/>
+  <int value="1813293157" label="hqx"/>
+  <int value="1818519290" label="sonicls"/>
+  <int value="1822179743" label="pcm_s24daud"/>
+  <int value="1823608208" label="pcm_mulaw"/>
+  <int value="1827051583" label="adpcm_thp"/>
+  <int value="1834381325" label="adpcm_dtk"/>
+  <int value="1854844146" label="tscc"/>
+  <int value="1890319788" label="mp4als"/>
+  <int value="1896040704" label="cllc"/>
+  <int value="1913299765" label="vixl"/>
+  <int value="1947892273" label="prores"/>
+  <int value="1951984033" label="v210"/>
+  <int value="1961440145" label="vp6a"/>
+  <int value="1965599083" label="sami"/>
+  <int value="1980641302" label="daala"/>
+  <int value="1981484138" label="pcm_u32le"/>
+  <int value="1991949075" label="sheervideo"/>
+  <int value="1997862473" label="interplayvideo"/>
+  <int value="2002251246" label="tscc2"/>
+  <int value="2005720882" label="atrac3"/>
+  <int value="2026594607" label="ass"/>
+  <int value="2032395845" label="pcm_u16le"/>
+  <int value="2041774878" label="huffyuv"/>
+  <int value="2047102762" label="sanm_deprecated"/>
+  <int value="2049828371" label="screenpresso"/>
+  <int value="2053719989" label="r210"/>
+  <int value="2071582326" label="xbin"/>
+  <int value="2080470405" label="speedhq"/>
+  <int value="2080704511" label="pcm_s16be"/>
+  <int value="2084073402" label="ljpeg"/>
+  <int value="2086226415" label="pcm_s32le"/>
+  <int value="2086394367" label="gsm"/>
+  <int value="2100540076" label="amr_wb"/>
+  <int value="2118960502" label="mimic"/>
+  <int value="2128505640" label="wnv1"/>
+  <int value="2134847163" label="adpcm_mtaf"/>
+  <int value="2142093799" label="psd"/>
+  <int value="2146164868" label="v410"/>
+</enum>
+
+<enum name="GenericEnum">
+  <summary>Generic enums where the label is just the raw number</summary>
+  <int value="0" label="Enum placerholder. See crbug/1179826"/>
+</enum>
+
+<enum name="GetDeviceInfosResult">
+  <int value="0" label="SuccessNoRetry"/>
+  <int value="1" label="FailureNoRetry"/>
+  <int value="2" label="SucessAfterRetry"/>
+  <int value="3" label="FailureAfterRetry"/>
+</enum>
+
+<enum name="GetDisplayMediaBooleanConstraint">
+  <int value="0" label="Not specified"/>
+  <int value="1" label="True"/>
+  <int value="2" label="False"/>
+</enum>
+
+<enum name="GetDisplayMediaConstraintsDisplaySurface">
+  <int value="0" label="Not specified"/>
+  <int value="1" label="Tab"/>
+  <int value="2" label="Window"/>
+  <int value="3" label="Monitor"/>
+</enum>
+
+<enum name="GetDisplayMediaIncludeExcludeConstraint">
+  <int value="0" label="Not specified"/>
+  <int value="1" label="Include"/>
+  <int value="2" label="Exclude"/>
+</enum>
+
+<enum name="GetDisplayMediaTransientActivation">
+  <int value="0" label="Present"/>
+  <int value="1" label="Missing"/>
+  <int value="2" label="MissingButFeatureDisabled"/>
+  <int value="3" label="MissingButPolicyOverrides"/>
+</enum>
+
+<enum name="GetOriginIdResult">
+  <int value="0" label="Success with pre-provisioned origin ID"/>
+  <int value="1" label="Success with newly provisioned origin ID"/>
+  <int value="2" label="Success with unprovisioned origin ID"/>
+  <int value="3"
+      label="Failed on device that supports per-application provisioning"/>
+  <int value="4"
+      label="Failed on device that doesn't support per-application
+             provisioning"/>
+  <int value="5"
+      label="Failed as no factory associated with the profile found"/>
+</enum>
+
+<enum name="GlobalMediaControlsCastMode">
+  <int value="0" label="Presentation"/>
+  <int value="1" label="Remote Playback"/>
+  <int value="2" label="Tab Mirroring"/>
+</enum>
+
+<enum name="GlobalMediaControlsDismissReason">
+  <int value="0" label="User dismissed notification"/>
+  <int value="1" label="Inactive timeout"/>
+  <int value="2" label="Tab closed"/>
+  <int value="3" label="Media session stopped"/>
+</enum>
+
+<enum name="GlobalMediaControlsEntryPoint">
+  <int value="0" label="Toolbar icon"/>
+  <int value="1" label="Presentation API"/>
+  <int value="2" label="ChromeOS system tray"/>
+  <int value="3" label="ChromeOS quick settings mini player"/>
+  <int value="4" label="ChromeOS quick settings mini player (Cast button)"/>
+</enum>
+
+<enum name="HighlightedTabDiscardStatus">
+  <int value="0" label="NoTabsHighlighted"/>
+  <int value="1" label="AllHighlightedTabsNonDiscarded"/>
+  <int value="2" label="DiscardedTabHighlightedAtLeastOnce"/>
+</enum>
+
+<enum name="ImageCaptureOutcome">
+  <int value="0" label="Succeeded using video stream"/>
+  <int value="1" label="Succeeded using photo stream"/>
+  <int value="2" label="Failed using video stream"/>
+  <int value="3" label="Failed using photo stream"/>
+</enum>
+
+<enum name="MakeAudioInputStreamStatus">
+  <int value="0" label="Success"/>
+  <int value="1" label="Error: Had switch fail-audio-stream-creation"/>
+  <int value="2" label="Error: Invalid params"/>
+  <int value="3" label="Error: Excessive input streams"/>
+  <int value="4" label="Error: Failed to create a stream object"/>
+</enum>
+
+<enum name="MediaAutoPictureInPicturePromptResult">
+  <int value="0" label="Ignored"/>
+  <int value="1" label="Block"/>
+  <int value="2" label="Allow on every visit"/>
+  <int value="3" label="Allow this time"/>
+</enum>
+
+<enum name="MediaContainers">
+  <int value="0" label="Unknown"/>
+  <int value="1" label="AAC (Advanced Audio Coding)"/>
+  <int value="2" label="AC-3"/>
+  <int value="3" label="AIFF (Audio Interchange File Format)"/>
+  <int value="4" label="AMR (Adaptive Multi-Rate Audio)"/>
+  <int value="5" label="APE (Monkey's Audio)"/>
+  <int value="6" label="ASF (Advanced / Active Streaming Format)"/>
+  <int value="7" label="SSA (SubStation Alpha) subtitle"/>
+  <int value="8" label="AVI (Audio Video Interleaved)"/>
+  <int value="9" label="Bink"/>
+  <int value="10" label="CAF (Apple Core Audio Format)"/>
+  <int value="11" label="DTS"/>
+  <int value="12" label="DTS-HD"/>
+  <int value="13" label="DV (Digital Video)"/>
+  <int value="14" label="DXA"/>
+  <int value="15" label="Enhanced AC-3"/>
+  <int value="16" label="FLAC (Free Lossless Audio Codec)"/>
+  <int value="17" label="FLV (Flash Video)"/>
+  <int value="18" label="GSM (Global System for Mobile Audio)"/>
+  <int value="19" label="H.261"/>
+  <int value="20" label="H.263"/>
+  <int value="21" label="H.264"/>
+  <int value="22" label="HLS (Apple HTTP Live Streaming PlayList)"/>
+  <int value="23" label="Berkeley/IRCAM/CARL Sound Format"/>
+  <int value="24" label="MJPEG video"/>
+  <int value="25" label="QuickTime / MOV / MPEG4"/>
+  <int value="26" label="MP3 (MPEG audio layer 2/3)"/>
+  <int value="27" label="MPEG-2 Program Stream"/>
+  <int value="28" label="MPEG-2 Transport Stream"/>
+  <int value="29" label="MPEG-4 Bitstream"/>
+  <int value="30" label="Ogg"/>
+  <int value="31" label="RM (RealMedia)"/>
+  <int value="32" label="SRT (SubRip subtitle)"/>
+  <int value="33" label="SWF (ShockWave Flash)"/>
+  <int value="34" label="VC-1"/>
+  <int value="35" label="WAV / WAVE (Waveform Audio)"/>
+  <int value="36" label="Matroska / WebM"/>
+  <int value="37" label="WTV (Windows Television)"/>
+  <int value="38" label="DASH"/>
+  <int value="39" label="SmoothStream"/>
+</enum>
+
+<enum name="MediaControlsCTREvent">
+  <int value="0" label="Displayed"/>
+  <int value="1" label="Interacted"/>
+</enum>
+
+<enum name="MediaControlsPlaybackSpeed">
+  <int value="0" label="0.25"/>
+  <int value="1" label="0.5"/>
+  <int value="2" label="0.75"/>
+  <int value="3" label="1"/>
+  <int value="4" label="1.25"/>
+  <int value="5" label="1.5"/>
+  <int value="6" label="1.75"/>
+  <int value="7" label="2"/>
+</enum>
+
+<enum name="MediaDrmProvisioningResult">
+  <int value="0" label="Success"/>
+  <int value="1" label="FailedWhileOnline"/>
+  <int value="2" label="FailedWhileOffline"/>
+</enum>
+
+<enum name="MediaEncryptionScheme">
+  <int value="0" label="CENC"/>
+  <int value="1" label="CBCS"/>
+</enum>
+
+<enum name="MediaFoundationRendererErrorReason">
+  <int value="0" label="Unknown"/>
+  <int value="1" label="CdmProxyReceivedInInvalidState"/>
+  <int value="2" label="FailedToSetSourceOnMediaEngine"/>
+  <int value="3" label="SetCurrentTimeError"/>
+  <int value="4" label="FailedToPlay"/>
+  <int value="5" label="OnPlaybackError"/>
+  <int value="6" label="OnDCompSurfaceReceivedError (deprecated)"/>
+  <int value="7" label="OnDCompSurfaceHandleSetError"/>
+  <int value="8" label="OnConnectionError"/>
+  <int value="9" label="FailedToSetDCompMode"/>
+  <int value="10" label="FailedToGetDCompSurface"/>
+  <int value="11" label="FailedToDuplicateHandle"/>
+  <int value="12" label="FailedToCreateMediaEngine"/>
+  <int value="13" label="FailedToCreateDCompTextureWrapper"/>
+  <int value="14" label="FailedToInitDCompTextureWrapper"/>
+  <int value="15" label="FailedToSetPlaybackRate"/>
+  <int value="16" label="FailedToGetMediaEngineEx"/>
+</enum>
+
+<enum name="MediaGalleriesUsageType">
+  <int value="0" label="Gallery added from permission dialog"/>
+  <int value="1" label="Gallery permission added from permission dialog"/>
+  <int value="2" label="Gallery permission removed from permission dialog"/>
+  <int value="3" label="GetMediaFileSystems API invocations"/>
+  <int value="4" label="Profiles With API Usage (corrected in M35)"/>
+  <int value="5" label="Dialog shown"/>
+  <int value="6" label="Dialog permissions saved"/>
+  <int value="7" label="Gallery added from WebUI"/>
+  <int value="8" label="Gallery removed from WebUI"/>
+  <int value="9" label="Preferences initialized"/>
+  <int value="10" label="Preferences initialization failed"/>
+  <int value="11"
+      label="GetAllMediaFileSystemMetadata API invocations (obsolete)"/>
+  <int value="12" label="GetMetadata API invocations"/>
+  <int value="13" label="AddUserSelectedFolder API invocations"/>
+  <int value="14" label="StartMediaScan API invocations (obsolete)"/>
+  <int value="15" label="CancelMediaScan API invocations (obsolete)"/>
+  <int value="16" label="AddScanResults API invocations (obsolete)"/>
+  <int value="17" label="A media scan completed (obsolete)"/>
+  <int value="18" label="AddScanResults dialog cancelled (obsolete)"/>
+  <int value="19" label="AddScanResults dialog accepted (obsolete)"/>
+  <int value="20"
+      label="Gallery removed from AddScanResults dialog (obsolete)"/>
+  <int value="21" label="Gallery removed from permission dialog"/>
+  <int value="22"
+      label="DropPermissionForMediaFileSystem API invocations (obsolete)"/>
+  <int value="23" label="GetAllGalleryWatch API invocations (obsolete)"/>
+  <int value="24" label="RemoveAllGalleryWatch API invocations (obsolete)"/>
+  <int value="25" label="iTunes file system used this session"/>
+  <int value="26" label="Picasa file system used this session"/>
+  <int value="27" label="iPhoto file system used this session (obsolete)"/>
+</enum>
+
+<enum name="MediaHardwareKeyAction">
+  <int value="0" label="Play"/>
+  <int value="1" label="Pause"/>
+  <int value="2" label="Stop"/>
+  <int value="3" label="Next Track"/>
+  <int value="4" label="Previous Track"/>
+  <int value="5" label="Play/Pause"/>
+</enum>
+
+<enum name="MediaIoctlRequests">
+  <int value="0" label="MEDIA_IOC_DEVICE_INFO"/>
+  <int value="1" label="MEDIA_IOC_REQUEST_ALLOC"/>
+  <int value="2" label="MEDIA_REQUEST_IOC_QUEUE"/>
+  <int value="3" label="MEDIA_REQUEST_IOC_REINIT"/>
+</enum>
+
+<enum name="MediaLauncherActivityMediaType">
+  <int value="0" label="Audio"/>
+  <int value="1" label="Image"/>
+  <int value="2" label="Video"/>
+  <int value="3" label="Unknown"/>
+</enum>
+
+<enum name="MediaLicenseStorageHostOpenError">
+  <int value="0" label="InvalidBucket"/>
+  <int value="1" label="kNoFileSpecified"/>
+  <int value="2" label="kInvalidFileName"/>
+  <int value="3" label="kDatabaseOpenError"/>
+  <int value="4" label="kBucketNotFound"/>
+  <int value="5" label="kDatabaseRazeError"/>
+  <int value="6" label="kSQLExecutionError"/>
+  <int value="7" label="kBucketLocatorError"/>
+</enum>
+
+<enum name="MediaLoadType">
+  <int value="0" label="URL"/>
+  <int value="1" label="MediaSource"/>
+  <int value="2" label="MediaStream"/>
+</enum>
+
+<enum name="MediaNotificationDisplayPage">
+  <int value="0" label="Unknown"/>
+  <int value="1" label="Quick settings media view"/>
+  <int value="2" label="Quick settings media detailed view"/>
+  <int value="3" label="System shelf media detailed view"/>
+  <int value="4" label="Lock screen media view"/>
+</enum>
+
+<enum name="MediaNotificationSource">
+  <int value="0" label="Unknown"/>
+  <int value="1" label="Web"/>
+  <int value="2" label="Assistant"/>
+  <int value="3" label="Arc"/>
+  <int value="4" label="Local Cast session"/>
+  <int value="5" label="Non-local Cast session"/>
+</enum>
+
+<enum name="MediaOutputProtectionStatus">
+  <int value="0" label="Queried"/>
+  <int value="1" label="No external link"/>
+  <int value="2" label="All external links protected"/>
+</enum>
+
+<enum name="MediaPlayerExitStatus">
+  <int value="0" label="No errors"/>
+  <int value="1" label="Has errors"/>
+</enum>
+
+<enum name="MediaPlayerWatchTimeType">
+  <int value="0" label="Non-HLS"/>
+  <int value="1" label="HLS audio-only"/>
+  <int value="2" label="HLS video"/>
+</enum>
+
+<enum name="MediaRecorderCodec">
+  <int value="0" label="Unknown"/>
+  <int value="1" label="VP8_sw"/>
+  <int value="2" label="VP8_hw"/>
+  <int value="3" label="VP9_sw"/>
+  <int value="4" label="VP9_hw"/>
+  <int value="5" label="H264_sw"/>
+  <int value="6" label="H264_hw"/>
+</enum>
+
+<enum name="MediaRecorderVEAUsed">
+  <int value="0" label="Not used"/>
+  <int value="1" label="Used"/>
+</enum>
+
+<enum name="MediaRouteProviderResult">
+  <int value="0" label="UnknownError"/>
+  <int value="1" label="Ok"/>
+  <int value="2" label="TimedOut"/>
+  <int value="3" label="RouteNotFound"/>
+  <int value="4" label="SinkNotFound"/>
+  <int value="5" label="InvalidOrigin"/>
+  <int value="6" label="OffTheRecordMismatch (Deprecated 14-Feb-2022)"/>
+  <int value="7" label="NoSupportedProvider"/>
+  <int value="8" label="Cancelled"/>
+  <int value="9" label="RouteAlreadyExists"/>
+  <int value="10" label="DesktopPickerFailed"/>
+  <int value="11" label="RouteAlreadyTerminated"/>
+  <int value="12" label="RedundantRequest"/>
+  <int value="13" label="UserNotAllowed"/>
+  <int value="14" label="NotificationDisabled"/>
+</enum>
+
+<enum name="MediaRouterAndroidDialogAction">
+  <int value="0" label="kTerminateRoute"/>
+  <int value="1" label="kStartRoute"/>
+</enum>
+
+<enum name="MediaRouterAndroidDialogType">
+  <int value="0" label="RouteController"/>
+  <int value="1" label="RouteChooser"/>
+</enum>
+
+<enum name="MediaRouterCastChannelError">
+  <int value="0" label="Unknown"/>
+  <int value="1" label="Authentication"/>
+  <int value="2" label="Connect"/>
+  <int value="3" label="General Certificate"/>
+  <int value="4" label="Certificate timing"/>
+  <int value="5" label="Network"/>
+  <int value="6" label="Connect Timeout"/>
+  <int value="7" label="Ping Timeout"/>
+</enum>
+
+<enum name="MediaRouterCastFeedbackEvent">
+  <int value="0" label="Dialog opened"/>
+  <int value="1" label="Sending"/>
+  <int value="2" label="Resending"/>
+  <int value="3" label="Feedback sent"/>
+  <int value="4" label="Too many retries"/>
+</enum>
+
+<enum name="MediaRouterCastSinkSource">
+  <int value="0" label="NetworkCache"/>
+  <int value="1" label="mDNS"/>
+  <int value="2" label="DIAL"/>
+  <int value="3" label="Connection retry"/>
+  <int value="4" label="First by mDNS, then by DIAL"/>
+  <int value="5" label="First by DIAL, then by mDNS"/>
+  <int value="6" label="Connection retry on error"/>
+  <int value="7" label="Added by access code"/>
+</enum>
+
+<enum name="MediaRouterDeviceDescriptionParsingResult">
+  <int value="0" label="Success"/>
+  <int value="1" label="Invalid XML"/>
+  <int value="2" label="Failed to read UDN"/>
+  <int value="3" label="Failed to read friendly name"/>
+  <int value="4" label="Failed to read model name"/>
+  <int value="5" label="Failed to read device type"/>
+  <int value="6" label="Missing unique ID"/>
+  <int value="7" label="Missing name"/>
+  <int value="8" label="Missing app URL"/>
+  <int value="9" label="Invalid app URL"/>
+  <int value="10" label="Utility process error"/>
+</enum>
+
+<enum name="MediaRouterDialCreateRouteResult">
+  <int value="0" label="Success"/>
+  <int value="1" label="Sink not found"/>
+  <int value="2" label="App info not found"/>
+  <int value="3" label="App launch failed"/>
+  <int value="4" label="Unsupported source"/>
+  <int value="5" label="Route already exists"/>
+</enum>
+
+<enum name="MediaRouterDialFetchAppInfoResult">
+  <int value="0" label="Success"/>
+  <int value="1" label="(Deprecated) Not found"/>
+  <int value="2" label="Network error"/>
+  <int value="3" label="Parse error"/>
+  <int value="4" label="HTTP error"/>
+</enum>
+
+<enum name="MediaRouterDialogActivationLocation">
+  <int value="0" label="Toolbar"/>
+  <int value="1" label="Overflow Menu"/>
+  <int value="2" label="Contextual Menu"/>
+  <int value="3" label="Page"/>
+  <int value="4" label="App Menu"/>
+  <int value="5" label="System Tray"/>
+  <int value="6" label="Sharing Hub"/>
+</enum>
+
+<enum name="MediaRouterDialogActivationLocationAndCastMode">
+  <int value="0" label="Pinned toolbar icon and presentation"/>
+  <int value="1" label="Pinned toolbar icon and tab mirroring"/>
+  <int value="2" label="Pinned toolbar icon and desktop mirroring"/>
+  <int value="3" label="(Obsolete) Pinned toolbar icon and local file"/>
+  <int value="4" label="Ephemeral icon and presentation"/>
+  <int value="5" label="Ephemeral icon and tab mirroring"/>
+  <int value="6" label="Ephemeral icon and desktop mirroring"/>
+  <int value="7" label="(Obsolete) Ephemeral icon and local file"/>
+  <int value="8" label="Context menu and presentation"/>
+  <int value="9" label="Context menu and tab mirroring"/>
+  <int value="10" label="Context menu and desktop mirroring"/>
+  <int value="11" label="(Obsolete) Context menu and local file"/>
+  <int value="12" label="Page and presentation"/>
+  <int value="13" label="Page and tab mirroring"/>
+  <int value="14" label="Page and desktop mirroring"/>
+  <int value="15" label="(Obsolete) Page and local file"/>
+  <int value="16" label="App menu and presentation"/>
+  <int value="17" label="App menu and tab mirroring"/>
+  <int value="18" label="App menu and desktop mirroring"/>
+  <int value="19" label="(Obsolete) App menu and local file"/>
+  <int value="20" label="Sharing Hub and presentation"/>
+  <int value="21" label="Sharing Hub and tab mirroring"/>
+  <int value="22" label="Sharing Hub and desktop mirroring"/>
+  <int value="23" label="Pinned toolbar icon and remote playback"/>
+  <int value="24" label="Ephemeral icon and remote playback"/>
+  <int value="25" label="Context menu and remote playback"/>
+  <int value="26" label="Page and remote playback"/>
+  <int value="27" label="App menu and remote playback"/>
+  <int value="28" label="Sharing Hub and remote playback"/>
+</enum>
+
+<enum name="MediaRouterIconState">
+  <int value="0" label="Ephemeral"/>
+  <int value="1" label="Pinned"/>
+</enum>
+
+<enum name="MediaRouterResponseReceiverAppType">
+  <int value="0" label="Other"/>
+  <int value="1" label="Web"/>
+  <int value="2" label="Android Tv"/>
+</enum>
+
+<enum name="MediaRouterSourceTypes">
+  <int value="1" label="App"/>
+  <int value="2" label="Tab"/>
+  <int value="4" label="Desktop"/>
+  <int value="8" label="Local Media"/>
+</enum>
+
+<enum name="MediaRouterUserPromptWhenLaunchingCast">
+  <int value="0" label="Total prompts"/>
+  <int value="1" label="User rejects cast request"/>
+</enum>
+
+<enum name="MediaSessionActionSource">
+  <int value="0" label="Media Notification"/>
+  <int value="1" label="MediaSession (Android)"/>
+  <int value="2" label="Headset Unplugged"/>
+</enum>
+
+<enum name="MediaSessionEnterPictureInPictureType">
+  <int value="0" label="Default Handler"/>
+  <int value="1" label="Registered Manual"/>
+  <int value="2" label="Registered Automatic"/>
+</enum>
+
+<enum name="MediaSessionSuspendedSource">
+  <int value="0" label="System Transient"/>
+  <int value="1" label="System Permanent"/>
+  <int value="2" label="UI"/>
+  <int value="3" label="CONTENT"/>
+  <int value="4" label="System Transient Duck"/>
+</enum>
+
+<enum name="MediaSinkType">
+  <int value="0" label="Cast"/>
+  <int value="1" label="Cast Audio Group"/>
+  <int value="2" label="Cast Audio"/>
+  <int value="3" label="Meeting"/>
+  <int value="4" label="Hangout"/>
+  <int value="5" label="Cast for Education"/>
+  <int value="6" label="Wired Display"/>
+  <int value="7" label="Generic"/>
+</enum>
+
+<enum name="MediaSourceExecutionContext">
+  <int value="0" label="Window"/>
+  <int value="1" label="Dedicated Worker"/>
+  <int value="2" label="Shared Worker"/>
+</enum>
+
+<enum name="MediaStatus">
+  <int value="-30002" label="AMEDIA_IMGREADER_MAX_IMAGES_ACQUIRED"/>
+  <int value="-30001" label="AMEDIA_IMGREADER_NO_BUFFER_AVAILABLE"/>
+  <int value="-10004" label="AMEDIA_ERROR_INVALID_PARAMETER"/>
+  <int value="-10000" label="AMEDIA_ERROR_UNKNOWN"/>
+  <int value="0" label="AMEDIA_OK"/>
+</enum>
+
+<enum name="MediaUiGetDisplayMediaBasicFlowUserInteraction">
+  <int value="0" label="kDialogDismissed"/>
+  <int value="1" label="kUserCancelled"/>
+  <int value="2" label="kUserSelectedScreen"/>
+  <int value="3" label="kUserSelectedWindow"/>
+  <int value="4" label="kUserSelectedOtherTab"/>
+  <int value="5" label="kUserSelectedThisTab"/>
+</enum>
+
+<enum name="MediaUiGetDisplayMediaPreferCurrentTabFlowUserInteraction">
+  <int value="0" label="kDialogDismissed"/>
+  <int value="1" label="kUserCancelled"/>
+  <int value="2" label="kUserSelectedScreen"/>
+  <int value="3" label="kUserSelectedWindow"/>
+  <int value="4" label="kUserSelectedOtherTab"/>
+  <int value="5" label="kUserSelectedThisTabAsGenericTab"/>
+  <int value="6" label="kUserSelectedThisTab"/>
+</enum>
+
+<enum name="MediaVideoHeight">
+  <int value="0" label="~360 or lower"/>
+  <int value="1" label="~480"/>
+  <int value="2" label="~720"/>
+  <int value="3" label="~1080"/>
+  <int value="4" label="~1440"/>
+  <int value="5" label="~2160 or higher"/>
+</enum>
+
+<enum name="MicrophoneMuteResult">
+  <int value="0" label="Muted"/>
+  <int value="1" label="Not muted"/>
+</enum>
+
+<enum name="MidiSendReceiveUsage">
+  <int value="0" label="No transaction"/>
+  <int value="1" label="Sent"/>
+  <int value="2" label="Received"/>
+  <int value="3" label="Sent and received"/>
+</enum>
+
+<enum name="MidiUsage">
+  <int value="0" label="Instantiated"/>
+  <int value="1" label="Instantiated on unsupported platforms"/>
+  <int value="2" label="Session is started"/>
+  <int value="3" label="Session is ended"/>
+  <int value="4" label="Initialized"/>
+  <int value="5" label="Input port is added"/>
+  <int value="6" label="Output port is added"/>
+  <int value="7" label="Error occurred on calling platform APIs"/>
+</enum>
+
+<enum name="MimeTypeOfHlsManifest">
+  <summary>
+    Captures the MIME type of the HTTP response that carried an HLS manifest.
+  </summary>
+  <int value="0" label="Other MIME type"/>
+  <int value="1" label="application/dash+xml"/>
+  <int value="2" label="application/ogg"/>
+  <int value="3" label="application/mpegurl"/>
+  <int value="4" label="application/vnd.apple.mpegurl"/>
+  <int value="5" label="application/x-mpegurl"/>
+  <int value="6" label="audio/mpegurl"/>
+  <int value="7" label="audio/x-mpegurl"/>
+  <int value="8" label="audio/*"/>
+  <int value="9" label="image/*"/>
+  <int value="10" label="video/*"/>
+  <int value="11" label="text/vtt"/>
+</enum>
+
+<enum name="MirroringServiceErrorType">
+  <int value="0" label="ANSWER_TIME_OUT"/>
+  <int value="1" label="ANSWER_NOT_OK"/>
+  <int value="2" label="ANSWER_MISMATCHED_CAST_MODE"/>
+  <int value="3" label="ANSWER_MISMATCHED_SSRC_LENGTH"/>
+  <int value="4" label="ANSWER_SELECT_MULTIPLE_AUDIO"/>
+  <int value="5" label="ANSWER_SELECT_MULTIPLE_VIDEO"/>
+  <int value="6" label="ANSWER_SELECT_INVALID_INDEX"/>
+  <int value="7" label="ANSWER_NO_AUDIO_OR_VIDEO"/>
+  <int value="8" label="AUDIO_CAPTURE_ERROR"/>
+  <int value="9" label="VIDEO_CAPTURE_ERROR"/>
+  <int value="10" label="RTP_STREAM_ERROR"/>
+  <int value="11" label="ENCODING_ERROR"/>
+  <int value="12" label="CAST_TRANSPORT_ERROR"/>
+  <int value="13" label="OPENSCREEN_SESSION_ERROR"/>
+</enum>
+
+<enum name="MirrorType">
+  <int value="0" label="Tab"/>
+  <int value="1" label="Desktop"/>
+  <int value="2" label="Offscreen Tab"/>
+</enum>
+
+<enum name="MjpegDecodeAcceleratorErrorCode">
+  <int value="0" label="NO_ERRORS"/>
+  <int value="1" label="INVALID_ARGUMENT"/>
+  <int value="2" label="UNREADABLE_INPUT"/>
+  <int value="3" label="PARSE_JPEG_FAILED"/>
+  <int value="4" label="UNSUPPORTED_JPEG"/>
+  <int value="5" label="PLATFORM_FAILURE"/>
+</enum>
+
+<enum name="MSECodec">
+  <int value="0" label="(Unknown)"/>
+  <int value="1" label="VP8"/>
+  <int value="2" label="VP9"/>
+  <int value="3" label="Vorbis"/>
+  <int value="4" label="H.264"/>
+  <int value="5" label="MPEG2 AAC"/>
+  <int value="6" label="MPEG4 AAC"/>
+  <int value="7" label="EAC3"/>
+  <int value="8" label="MP3"/>
+  <int value="9" label="OPUS"/>
+  <int value="10" label="HEVC"/>
+  <int value="11" label="AC3"/>
+  <int value="12" label="DOLBYVISION"/>
+  <int value="13" label="FLAC"/>
+  <int value="14" label="AV1"/>
+  <int value="15" label="MPEG_H_AUDIO"/>
+</enum>
+
+<enum name="OSStatus_Audio">
+  <int value="-1852797029" label="IllegalOperationError_ActiveStream"/>
+  <int value="-560947818" label="kAudioHardwareBadObjectError_ActiveStream"/>
+  <int value="-10879" label="kAudioUnitErr_InvalidProperty"/>
+  <int value="-10878" label="kAudioUnitErr_InvalidParameter"/>
+  <int value="-10877" label="kAudioUnitErr_InvalidElement"/>
+  <int value="-10876" label="kAudioUnitErr_NoConnection"/>
+  <int value="-10875" label="kAudioUnitErr_FailedInitialization"/>
+  <int value="-10874" label="kAudioUnitErr_TooManyFramesToProcess"/>
+  <int value="-10873" label="kAudioUnitErr_IllegalInstrument"/>
+  <int value="-10872" label="kAudioUnitErr_InstrumentTypeNotFound"/>
+  <int value="-10871" label="kAudioUnitErr_InvalidFile"/>
+  <int value="-10870" label="kAudioUnitErr_UnknownFileType"/>
+  <int value="-10869" label="kAudioUnitErr_FileNotSpecified"/>
+  <int value="-10868" label="kAudioUnitErr_FormatNotSupported"/>
+  <int value="-10867" label="kAudioUnitErr_Uninitialized"/>
+  <int value="-10866" label="kAudioUnitErr_InvalidScope"/>
+  <int value="-10865" label="kAudioUnitErr_PropertyNotWritable"/>
+  <int value="-10864" label="kAUGraphErr_InvalidAudioUnit"/>
+  <int value="-10863" label="Err_CannotDoInCurrentContext"/>
+  <int value="-10862" label="kAUGraphErr_OutputNodeErr"/>
+  <int value="10862" label="kAUGraphErr_OutputNodeErr_ActiveStream"/>
+  <int value="10863" label="Err_CannotDoInCurrentContext_ActiveStream"/>
+  <int value="10864" label="kAUGraphErr_InvalidAudioUnit_ActiveStream"/>
+  <int value="10865" label="kAudioUnitErr_PropertyNotWritable_ActiveStream"/>
+  <int value="10866" label="kAudioUnitErr_InvalidScope_ActiveStream"/>
+  <int value="10867" label="kAudioUnitErr_Uninitialized_ActiveStream"/>
+  <int value="10868" label="kAudioUnitErr_FormatNotSupported_ActiveStream"/>
+  <int value="10869" label="kAudioUnitErr_FileNotSpecified_ActiveStream"/>
+  <int value="10870" label="kAudioUnitErr_UnknownFileType_ActiveStream"/>
+  <int value="10871" label="kAudioUnitErr_InvalidFile_ActiveStream"/>
+  <int value="10872" label="kAudioUnitErr_InstrumentTypeNotFound_ActiveStream"/>
+  <int value="10873" label="kAudioUnitErr_IllegalInstrument_ActiveStream"/>
+  <int value="10874" label="kAudioUnitErr_TooManyFramesToProcess_ActiveStream"/>
+  <int value="10875" label="kAudioUnitErr_FailedInitialization_ActiveStream"/>
+  <int value="10876" label="kAudioUnitErr_NoConnection_ActiveStream"/>
+  <int value="10877" label="kAudioUnitErr_InvalidElement_ActiveStream"/>
+  <int value="10878" label="kAudioUnitErr_InvalidParameter_ActiveStream"/>
+  <int value="10879" label="kAudioUnitErr_InvalidProperty_ActiveStream"/>
+  <int value="560947818" label="kAudioHardwareBadObjectError"/>
+  <int value="1852797029" label="IllegalOperationError"/>
+</enum>
+
+<enum name="OutputDeviceStatus">
+  <int value="0" label="Ok"/>
+  <int value="1" label="Not found"/>
+  <int value="2" label="Not authorized"/>
+  <int value="3" label="Authorization timed out"/>
+  <int value="4" label="Internal error"/>
+</enum>
+
+<enum name="OutputFormat">
+  <int value="0" label="Unset format state"/>
+  <int value="1" label="I420, 3 R8 GMBs"/>
+  <int value="2" label="Single NV12 GMB"/>
+  <int value="3" label="Dual NV12, one R8 and one RG88 GMBs"/>
+  <int value="4" label="XR30, 10:10:10:2 BGRX in one GMB"/>
+  <int value="5" label="XB30, 10:10:10:2 RGBX in one GMB"/>
+  <int value="6" label="RGBA, 8:8:8:8 RGBA in one GMB"/>
+  <int value="7" label="BGRA, 8:8:8:8 BGRA in one GMB"/>
+  <int value="8" label="P010, one P010 GMB"/>
+  <int value="9" label="YV12, one YV12 GMB"/>
+</enum>
+
+<enum name="PepperVideoDecoderHardwareAccelerationBehavior">
+  <int value="0" label="kOther"/>
+  <int value="1" label="kHardwareDecoderOnlyWithoutMojoVideoDecoder"/>
+  <int value="2"
+      label="kHardwareDecoderWithoutMojoVideoDecoderAndThenSoftwareDecoder"/>
+  <int value="3" label="kHardwareDecoderOnlyWithMojoVideoDecoder"/>
+  <int value="4"
+      label="kHardwareDecoderWithMojoVideoDecoderAndThenSoftwareDecoder"/>
+  <int value="5" label="kSoftwareDecoderOnly"/>
+</enum>
+
+<enum name="PresentationUrlBySink">
+  <int value="0" label="Unknown"/>
+  <int value="1" label="https:-like URL to Chromecast"/>
+  <int value="2" label="https:-like URL to Extension"/>
+  <int value="3" label="https:-like URL to Wired Display"/>
+  <int value="4" label="cast: URL to Chromecast"/>
+  <int value="5" label="cast-dial: URL to DIAL"/>
+</enum>
+
+<enum name="PresentationUrlType">
+  <int value="0" label="Other"/>
+  <int value="1" label="Cast"/>
+  <int value="2" label="CastDial"/>
+  <int value="3" label="CastLegacy"/>
+  <int value="4" label="Dial"/>
+  <int value="5" label="Http"/>
+  <int value="6" label="Https"/>
+  <int value="7" label="RemotePlayback"/>
+</enum>
+
+<enum name="ProduceTargetFunctionResult">
+  <int value="0" label="PromiseProduced"/>
+  <int value="1" label="GenericError"/>
+  <int value="2" label="InvalidContext"/>
+  <int value="3" label="DuplicateCallBeforePromiseResolution"/>
+  <int value="4" label="DuplicateCallAfterPromiseResolution"/>
+  <int value="5" label="ElementAndMediaDevicesNotInSameExecutionContext"/>
+</enum>
+
+<enum name="ProduceTargetPromiseResult">
+  <int value="0" label="PromiseResolved"/>
+  <int value="1" label="PromiseRejected"/>
+</enum>
+
+<enum name="QuotaError">
+  <int value="0" label="None"/>
+  <int value="1" label="Unknown Error"/>
+  <int value="2" label="Database Error"/>
+  <int value="3" label="Not Found Error"/>
+  <int value="4" label="Entry Exists Error"/>
+  <int value="5" label="File Operation Error"/>
+  <int value="6" label="Invalid Expiration Error"/>
+  <int value="7" label="Quota Exceeded Error"/>
+  <int value="8" label="Database Disabled">
+    The database failed to bootstrap.
+  </int>
+  <int value="9" label="Storage key error">
+    Deserialization failed on a storage key.
+  </int>
+</enum>
+
+<enum name="RemotingCompatibility">
+  <int value="0" label="Compatible"/>
+  <int value="1" label="Incompatible, no audio nor video"/>
+  <int value="2" label="Incompatible, encrypted video"/>
+  <int value="3" label="Incompatible video codec"/>
+  <int value="4" label="Incompatible, encrypted audio"/>
+  <int value="5" label="Incompatible audio codec"/>
+  <int value="6" label="Incompatible, disabled by page"/>
+  <int value="7" label="Incompatible, duration below threshold"/>
+</enum>
+
+<enum name="RemotingStartFailReason">
+  <int value="0" label="Cannot start multiple sessions"/>
+  <int value="1" label="Route terminated"/>
+  <int value="2" label="Invalid ANSWER message"/>
+  <int value="3" label="Remoting not permitted from the dialog"/>
+</enum>
+
+<enum name="RemotingStartTrigger">
+  <int value="0" label="Unknown start trigger"/>
+  <int value="1" label="Entered fullscreen"/>
+  <int value="2" label="Became dominant content"/>
+  <int value="3" label="Re-allowed by page"/>
+  <int value="4" label="Sink available"/>
+  <int value="5" label="Play command"/>
+  <int value="6" label="Supported audio codec"/>
+  <int value="7" label="Supported video codec"/>
+  <int value="8" label="Supported audio and video codec"/>
+  <int value="9" label="CDM ready"/>
+</enum>
+
+<enum name="RemotingStopTrigger">
+  <int value="0" label="Unknown stop trigger"/>
+  <int value="1" label="Route terminated"/>
+  <int value="2" label="Media element destroyed"/>
+  <int value="3" label="Exited fullscreen"/>
+  <int value="4" label="Became auxiliary content"/>
+  <int value="5" label="Disallowed by page"/>
+  <int value="6" label="Start race"/>
+  <int value="7" label="Unsupported audio codec"/>
+  <int value="8" label="Unsupported video codec"/>
+  <int value="9" label="Unsupported audio and video codec"/>
+  <int value="10" label="Decryption/CDM error"/>
+  <int value="11" label="Receiver initialize failed"/>
+  <int value="12" label="Receiver pipeline error"/>
+  <int value="13" label="Frame drop rate high"/>
+  <int value="14" label="Pacing too slowly"/>
+  <int value="15" label="Peers out-of-sync"/>
+  <int value="16" label="RPC invalid"/>
+  <int value="17" label="Data pipe create error"/>
+  <int value="18" label="Mojo disconnection"/>
+  <int value="19" label="Message send failure"/>
+  <int value="20" label="Data send failure"/>
+  <int value="21" label="Unexpected failure"/>
+  <int value="22" label="Service gone"/>
+  <int value="23" label="Disabled by user"/>
+  <int value="24" label="Data pipe write error"/>
+</enum>
+
+<enum name="RemotingTrackConfiguration">
+  <int value="0" label="None"/>
+  <int value="1" label="Audio only"/>
+  <int value="2" label="Video only"/>
+  <int value="3" label="Audio and video"/>
+</enum>
+
+<enum name="RemotingVideoPixelRateSupport">
+  <int value="0"
+      label="Supported; pixels-per-second is equivalent to at most 1080p
+             30fps"/>
+  <int value="1"
+      label="Supported; equivalent to more than 1080p 30fps and at most 2160p
+             30fps"/>
+  <int value="2"
+      label="Not supported; equivalent to more than 1080p 30fps and at most
+             2160p 30fps"/>
+  <int value="3" label="Not supported; equivalent to more than 2160p 30fps"/>
+</enum>
+
+<enum name="RequestMediaKeySystemAccessStatus">
+  <int value="0" label="Requested"/>
+  <int value="1" label="Supported"/>
+</enum>
+
+<enum name="ResolutionComparison">
+  <int value="0" label="Requested width larger than capture"/>
+  <int value="1" label="Requested width smaller than capture"/>
+  <int value="2" label="Requested height larger than capture"/>
+  <int value="3" label="Requested height smaller than capture"/>
+  <int value="4" label="Requested resolution equals capture"/>
+  <int value="5" label="Requested width and height larger than capture"/>
+  <int value="6"
+      label="Requested width smaller, and height larger than capture"/>
+  <int value="7"
+      label="Requested width larger and height smaller than capture"/>
+  <int value="8" label="Requested width and height smaller than capture"/>
+</enum>
+
+<enum name="RTCVideoDecoderFallbackReason">
+  <int value="0" label="SpatialLayers"/>
+  <int value="1" label="ConsecutivePendingBufferOverflow"/>
+  <int value="2" label="ReinitializationFailed"/>
+  <int value="3" label="PreviousErrorOnDecode"/>
+  <int value="4" label="PreviousErrorOnRegisterCallback"/>
+  <int value="5" label="ConsecutivePendingBufferOverflowDuringInit"/>
+  <int value="6" label="ParseErrorOnResolutionCheck"/>
+  <int value="7" label="TooManyInstancesAndSmallResolution"/>
+</enum>
+
+<enum name="ScreenCaptureKitFullscreenModuleMode">
+  <int value="0" label="Unsupported"/>
+  <int value="1" label="PowerPoint"/>
+  <int value="2" label="OpenOffice Impress"/>
+  <int value="3" label="Keynote"/>
+  <int value="4" label="LibreOffice"/>
+</enum>
+
+<enum name="SelectedTabDiscardStatus">
+  <int value="0" label="NonDiscarded"/>
+  <int value="1" label="Discarded"/>
+</enum>
+
+<enum name="SmoothVolatility">
+  <int value="0" label="Prediction stays at NotSmooth after update"/>
+  <int value="1"
+      label="Prediction changes from Smooth to NotSmooth after update"/>
+  <int value="2"
+      label="Prediction changes from NotSmooth to Smooth after update"/>
+  <int value="3" label="Prediction stays at Smooth after update"/>
+</enum>
+
+<enum name="SystemMediaCapturePermission">
+  <int value="0" label="Not determined"/>
+  <int value="1" label="Restricted"/>
+  <int value="2" label="Denied"/>
+  <int value="3" label="Allowed"/>
+</enum>
+
+<enum name="URLSchemeForHistogram">
+  <int value="0" label="kUnknown"/>
+  <int value="1" label="kMissing"/>
+  <int value="2" label="kHttp"/>
+  <int value="3" label="kHttps"/>
+  <int value="4" label="kFtp"/>
+  <int value="5" label="kChromeExtension"/>
+  <int value="6" label="kJavascript"/>
+  <int value="7" label="kFile"/>
+  <int value="8" label="kBlob"/>
+  <int value="9" label="kData"/>
+  <int value="10" label="kFileSystem"/>
+  <int value="11" label="kChrome"/>
+  <int value="12" label="kContent"/>
+  <int value="13" label="kContentId"/>
+</enum>
+
+<enum name="UserMediaRequestResult">
+  <int value="0" label="Ok"/>
+  <int value="1" label="TimedOut"/>
+  <int value="2" label="Security Error"/>
+  <int value="3" label="Invalid Constraints"/>
+  <int value="4" label="OverConstrained Error"/>
+  <int value="5" label="Context Destroyed"/>
+  <int value="6" label="Not Allowed Error"/>
+  <int value="7" label="Not Found Error"/>
+  <int value="8" label="Abort Error"/>
+  <int value="9" label="Not Readable Error"/>
+  <int value="10" label="Not Supported Error"/>
+  <int value="11" label="Insecure Context"/>
+  <int value="12" label="Invalid State Error"/>
+</enum>
+
+<enum name="V4l2VideoDecoderFunctions">
+  <int value="0" label="InitializeBackend()"/>
+  <int value="1" label="SetupInputFormat()"/>
+  <int value="2" label="SetupOutputFormat()"/>
+  <int value="3" label="StartStreamV4L2Queue()"/>
+  <int value="4" label="StopStreamV4L2Queue()"/>
+  <int value="5" label="Other V4l2VideoDecoder function"/>
+</enum>
+
+<enum name="VaapiFunctions">
+  <int value="0" label="vaBeginPicture()"/>
+  <int value="1" label="vaCreateBuffer()"/>
+  <int value="2" label="vaCreateConfig()"/>
+  <int value="3" label="vaCreateContext()"/>
+  <int value="4" label="vaCreateImage()"/>
+  <int value="5" label="vaCreateSurfaces() (allocate mode)"/>
+  <int value="6" label="vaCreateSurfaces() (import mode)"/>
+  <int value="7" label="vaDestroyBuffer()"/>
+  <int value="8" label="vaDestroyConfig()"/>
+  <int value="9" label="vaDestroyContext()"/>
+  <int value="10" label="vaDestroySurfaces()"/>
+  <int value="11" label="vaEndPicture()"/>
+  <int value="12" label="vaExportSurfaceHandle()"/>
+  <int value="13" label="vaGetConfigAttributes()"/>
+  <int value="14" label="vaPutImage()"/>
+  <int value="15" label="vaPutSurface()"/>
+  <int value="16" label="vaQueryConfigAttributes()"/>
+  <int value="17" label="vaQueryImageFormats()"/>
+  <int value="18" label="vaQuerySurfaceAttributes()"/>
+  <int value="19" label="vaQueryVideoProcPipelineCaps()"/>
+  <int value="20" label="vaRenderPicture() (|pending_va_buffers_|)"/>
+  <int value="21" label="vaRenderPicture() using VPP"/>
+  <int value="22" label="vaSyncSurface()"/>
+  <int value="23" label="vaTerminate()"/>
+  <int value="24" label="vaUnmapBuffer()"/>
+  <int value="25" label="vaCreateProtectedSession()"/>
+  <int value="26" label="vaDestroyProtectedSession()"/>
+  <int value="27" label="vaAttachProtectedSession()"/>
+  <int value="28" label="vaDetachProtectedSession()"/>
+  <int value="29" label="vaProtectedSessionHwUpdate() (deprecated)"/>
+  <int value="30" label="kVAProtectedSessionExecute()"/>
+  <int value="31" label="Other VA functions"/>
+</enum>
+
+<enum name="VAJEAEncoderResult">
+  <int value="0" label="VAAPI_SUCCESS"/>
+  <int value="1" label="VAAPI_ERROR"/>
+</enum>
+
+<enum name="VideoCaptureApi">
+  <int value="0" label="UNKNOWN">UNKNOWN</int>
+  <int value="1" label="LINUX_V4L2_SINGLE_PLANE">LINUX_V4L2_SINGLE_PLANE</int>
+  <int value="2" label="WIN_MEDIA_FOUNDATION">WIN_MEDIA_FOUNDATION</int>
+  <int value="3" label="WIN_MEDIA_FOUNDATION_SENSOR">
+    WIN_MEDIA_FOUNDATION_SENSOR
+  </int>
+  <int value="4" label="WIN_DIRECT_SHOW">WIN_DIRECT_SHOW</int>
+  <int value="5" label="MACOSX_AVFOUNDATION">MACOSX_AVFOUNDATION</int>
+  <int value="6" label="MACOSX_DECKLINK">MACOSX_DECKLINK</int>
+  <int value="7" label="ANDROID_API1">ANDROID_API1</int>
+  <int value="8" label="ANDROID_API2_LEGACY">ANDROID_API2_LEGACY</int>
+  <int value="9" label="ANDROID_API2_FULL">ANDROID_API2_FULL</int>
+  <int value="10" label="ANDROID_API2_LIMITED">ANDROID_API2_LIMITED</int>
+  <int value="11" label="FUCHSIA_CAMERA3">FUCHSIA_CAMERA3</int>
+  <int value="12" label="VIRTUAL_DEVICE">VIRTUAL_DEVICE</int>
+</enum>
+
+<enum name="VideoCaptureError">
+  <int value="0" label="kNone"/>
+  <int value="1"
+      label="kVideoCaptureControllerInvalidOrUnsupportedVideoCaptureParametersRequested"/>
+  <int value="2" label="kVideoCaptureControllerIsAlreadyInErrorState"/>
+  <int value="3" label="kVideoCaptureManagerDeviceConnectionLost"/>
+  <int value="4" label="kFrameSinkVideoCaptureDeviceAleradyEndedOnFatalError"/>
+  <int value="5" label="kFrameSinkVideoCaptureDeviceEncounteredFatalError"/>
+  <int value="6" label="kV4L2FailedToOpenV4L2DeviceDriverFile"/>
+  <int value="7" label="kV4L2ThisIsNotAV4L2VideoCaptureDevice"/>
+  <int value="8" label="kV4L2FailedToFindASupportedCameraFormat"/>
+  <int value="9" label="kV4L2FailedToSetVideoCaptureFormat"/>
+  <int value="10" label="kV4L2UnsupportedPixelFormat"/>
+  <int value="11" label="kV4L2FailedToSetCameraFramerate"/>
+  <int value="12" label="kV4L2ErrorRequestingMmapBuffers"/>
+  <int value="13" label="kV4L2AllocateBufferFailed"/>
+  <int value="14" label="kV4L2VidiocStreamonFailed"/>
+  <int value="15" label="kV4L2VidiocStreamoffFailed"/>
+  <int value="16" label="kV4L2FailedToVidiocReqbufsWithCount0"/>
+  <int value="17" label="kV4L2PollFailed"/>
+  <int value="18" label="kV4L2MultipleContinuousTimeoutsWhileReadPolling"/>
+  <int value="19" label="kV4L2FailedToDequeueCaptureBuffer"/>
+  <int value="20" label="kV4L2FailedToEnqueueCaptureBuffer"/>
+  <int value="21" label="kSingleClientVideoCaptureHostLostConnectionToDevice"/>
+  <int value="22" label="kSingleClientVideoCaptureDeviceLaunchAborted"/>
+  <int value="23" label="kDesktopCaptureDeivceWebrtcDesktopCapturerHasFailed"/>
+  <int value="24" label="kFileVideoCaptureDeviceCouldNotOpenVideoFile"/>
+  <int value="25"
+      label="kDeviceCaptureLinuxFailedToCreateVideoCaptureDelegate"/>
+  <int value="26" label="kErrorFakeDeviceIntentionallyEmittingErrorEvent"/>
+  <int value="27" label="kDeviceClientTooManyFramesDropped"/>
+  <int value="28" label="kDeviceClientTooManyFramesDroppedY16"/>
+  <int value="29"
+      label="kDeviceMediaToMojoAdapterEncounteredUnsupportedBufferType"/>
+  <int value="30"
+      label="kVideoCaptureManagerProcessDeviceStartQueueDeviceInfoNotFound"/>
+  <int value="31" label="kInProcessDeviceLauncherFailedToCreateDeviceInstance"/>
+  <int value="32"
+      label="kServiceDeviceLauncherLostConnectionToDeviceFactoryDuringDeviceStart"/>
+  <int value="33"
+      label="kServiceDeviceLauncherServiceRespondedWithDeviceNotFound"/>
+  <int value="34"
+      label="kServiceDeviceLauncherConnectionLostWhileWaitingForCallback"/>
+  <int value="35" label="kIntentionalErrorRaisedByUnitTest"/>
+  <int value="36" label="kCrosHalV3FailedToStartDeviceThread"/>
+  <int value="37" label="kCrosHalV3DeviceDelegateMojoConnectionError"/>
+  <int value="38" label="kCrosHalV3DeviceDelegateFailedToGetCameraInfo"/>
+  <int value="39" label="kCrosHalV3DeviceDelegateMissingSensorOrientationInfo"/>
+  <int value="40" label="kCrosHalV3DeviceDelegateFailedToOpenCameraDevice"/>
+  <int value="41"
+      label="kCrosHalV3DeviceDelegateFailedToInitializeCameraDevice"/>
+  <int value="42" label="kCrosHalV3DeviceDelegateFailedToConfigureStreams"/>
+  <int value="43"
+      label="kCrosHalV3DeviceDelegateWrongNumberOfStreamsConfigured"/>
+  <int value="44"
+      label="kCrosHalV3DeviceDelegateFailedToGetDefaultRequestSettings"/>
+  <int value="45" label="kCrosHalV3BufferManagerHalRequestedTooManyBuffers"/>
+  <int value="46" label="kCrosHalV3BufferManagerFailedToCreateGpuMemoryBuffer"/>
+  <int value="47" label="kCrosHalV3BufferManagerFailedToMapGpuMemoryBuffer"/>
+  <int value="48" label="kCrosHalV3BufferManagerUnsupportedVideoPixelFormat"/>
+  <int value="49" label="kCrosHalV3BufferManagerFailedToDupFd"/>
+  <int value="50" label="kCrosHalV3BufferManagerFailedToWrapGpuMemoryHandle"/>
+  <int value="51" label="kCrosHalV3BufferManagerFailedToRegisterBuffer"/>
+  <int value="52" label="kCrosHalV3BufferManagerProcessCaptureRequestFailed"/>
+  <int value="53" label="kCrosHalV3BufferManagerInvalidPendingResultId"/>
+  <int value="54"
+      label="kCrosHalV3BufferManagerReceivedDuplicatedPartialMetadata"/>
+  <int value="55"
+      label="kCrosHalV3BufferManagerIncorrectNumberOfOutputBuffersReceived"/>
+  <int value="56"
+      label="kCrosHalV3BufferManagerInvalidTypeOfOutputBuffersReceived"/>
+  <int value="57"
+      label="kCrosHalV3BufferManagerReceivedMultipleResultBuffersForFrame"/>
+  <int value="58"
+      label="kCrosHalV3BufferManagerUnknownStreamInCamera3NotifyMsg"/>
+  <int value="59" label="kCrosHalV3BufferManagerReceivedInvalidShutterTime"/>
+  <int value="60" label="kCrosHalV3BufferManagerFatalDeviceError"/>
+  <int value="61" label="kCrosHalV3BufferManagerReceivedFrameIsOutOfOrder"/>
+  <int value="62" label="kCrosHalV3BufferManagerFailedToUnwrapReleaseFenceFd"/>
+  <int value="63"
+      label="kCrosHalV3BufferManagerSyncWaitOnReleaseFenceTimedOut"/>
+  <int value="64" label="kCrosHalV3BufferManagerInvalidJpegBlob"/>
+  <int value="65" label="kAndroidFailedToAllocate"/>
+  <int value="66" label="kAndroidFailedToStartCapture"/>
+  <int value="67" label="kAndroidFailedToStopCapture"/>
+  <int value="68" label="kAndroidApi1CameraErrorCallbackReceived"/>
+  <int value="69" label="kAndroidApi2CameraDeviceErrorReceived"/>
+  <int value="70" label="kAndroidApi2CaptureSessionConfigureFailed"/>
+  <int value="71" label="kAndroidApi2ImageReaderUnexpectedImageFormat"/>
+  <int value="72" label="kAndroidApi2ImageReaderSizeDidNotMatchImageSize"/>
+  <int value="73" label="kAndroidApi2ErrorRestartingPreview"/>
+  <int value="74" label="kAndroidScreenCaptureUnsupportedFormat"/>
+  <int value="75" label="kAndroidScreenCaptureFailedToStartCaptureMachine"/>
+  <int value="76" label="kAndroidScreenCaptureTheUserDeniedScreenCapture"/>
+  <int value="77" label="kAndroidScreenCaptureFailedToStartScreenCapture"/>
+  <int value="78" label="kWinDirectShowCantGetCaptureFormatSettings"/>
+  <int value="79" label="kWinDirectShowFailedToGetNumberOfCapabilities"/>
+  <int value="80" label="kWinDirectShowFailedToGetCaptureDeviceCapabilities"/>
+  <int value="81" label="kWinDirectShowFailedToSetCaptureDeviceOutputFormat"/>
+  <int value="82" label="kWinDirectShowFailedToConnectTheCaptureGraph"/>
+  <int value="83" label="kWinDirectShowFailedToPauseTheCaptureDevice"/>
+  <int value="84" label="kWinDirectShowFailedToStartTheCaptureDevice"/>
+  <int value="85" label="kWinDirectShowFailedToStopTheCaptureGraph"/>
+  <int value="86" label="kWinMediaFoundationEngineIsNull"/>
+  <int value="87" label="kWinMediaFoundationEngineGetSourceFailed"/>
+  <int value="88" label="kWinMediaFoundationFillPhotoCapabilitiesFailed"/>
+  <int value="89" label="kWinMediaFoundationFillVideoCapabilitiesFailed"/>
+  <int value="90" label="kWinMediaFoundationNoVideoCapabilityFound"/>
+  <int value="91" label="kWinMediaFoundationGetAvailableDeviceMediaTypeFailed"/>
+  <int value="92" label="kWinMediaFoundationSetCurrentDeviceMediaTypeFailed"/>
+  <int value="93" label="kWinMediaFoundationEngineGetSinkFailed"/>
+  <int value="94"
+      label="kWinMediaFoundationSinkQueryCapturePreviewInterfaceFailed"/>
+  <int value="95" label="kWinMediaFoundationSinkRemoveAllStreamsFailed"/>
+  <int value="96" label="kWinMediaFoundationCreateSinkVideoMediaTypeFailed"/>
+  <int value="97" label="kWinMediaFoundationConvertToVideoSinkMediaTypeFailed"/>
+  <int value="98" label="kWinMediaFoundationSinkAddStreamFailed"/>
+  <int value="99" label="kWinMediaFoundationSinkSetSampleCallbackFailed"/>
+  <int value="100" label="kWinMediaFoundationEngineStartPreviewFailed"/>
+  <int value="101" label="kWinMediaFoundationGetMediaEventStatusFailed"/>
+  <int value="102" label="kMacSetCaptureDeviceFailed"/>
+  <int value="103" label="kMacCouldNotStartCaptureDevice"/>
+  <int value="104" label="kMacReceivedFrameWithUnexpectedResolution"/>
+  <int value="105" label="kMacUpdateCaptureResolutionFailed"/>
+  <int value="106" label="kMacDeckLinkDeviceIdNotFoundInTheSystem"/>
+  <int value="107" label="kMacDeckLinkErrorQueryingInputInterface"/>
+  <int value="108" label="kMacDeckLinkErrorCreatingDisplayModeIterator"/>
+  <int value="109" label="kMacDeckLinkCouldNotFindADisplayMode"/>
+  <int value="110" label="kMacDeckLinkCouldNotSelectTheVideoFormatWeLike"/>
+  <int value="111" label="kMacDeckLinkCouldNotStartCapturing"/>
+  <int value="112" label="kMacDeckLinkUnsupportedPixelFormat"/>
+  <int value="113"
+      label="kMacAvFoundationReceivedAVCaptureSessionRuntimeErrorNotification"/>
+  <int value="114" label="kAndroidApi2ErrorConfiguringCamera"/>
+  <int value="115" label="kCrosHalV3DeviceDelegateFailedToFlush"/>
+  <int value="116" label="kFuchsiaCameraDeviceDisconnected"/>
+  <int value="117" label="kFuchsiaCameraStreamDisconnected"/>
+  <int value="118" label="kFuchsiaSysmemDidNotSetImageFormat"/>
+  <int value="119" label="kFuchsiaSysmemInvalidBufferIndex"/>
+  <int value="120" label="kFuchsiaSysmemInvalidBufferSize"/>
+  <int value="121" label="kFuchsiaUnsupportedPixelFormat"/>
+  <int value="122" label="kFuchsiaFailedToMapSysmemBuffer"/>
+  <int value="123" label="kCrosHalV3DeviceContextDuplicatedClient"/>
+  <int value="124" label="kDesktopCaptureDeviceMacFailedStreamCreate"/>
+  <int value="125" label="kDesktopCaptureDeviceMacFailedStreamStart"/>
+  <int value="126" label="kCrosHalV3BufferManagerFailedToReserveBuffers"/>
+  <int value="127" label="kWinMediaFoundationSystemPermissionDenied"/>
+  <int value="128" label="kVideoCaptureImplTimedOutOnStart"/>
+  <int value="129"
+      label="kLacrosVideoCaptureDeviceProxyAlreadyEndedOnFatalError"/>
+  <int value="130" label="kLacrosVideoCaptureDeviceProxyEncounteredFatalError"/>
+  <int value="131" label="kScreenCaptureKitFailedGetShareableContent"/>
+  <int value="132" label="kScreenCaptureKitFailedAddStreamOutput"/>
+  <int value="133" label="kScreenCaptureKitFailedStartCapture"/>
+  <int value="134" label="kScreenCaptureKitFailedStopCapture"/>
+  <int value="135" label="kScreenCaptureKitStreamError"/>
+  <int value="136" label="kScreenCaptureKitFailedToFindSCDisplay"/>
+  <int value="137" label="kVideoCaptureControllerUnsupportedPixelFormat"/>
+  <int value="138" label="kVideoCaptureControllerInvalid"/>
+  <int value="139"
+      label="kVideoCaptureDeviceFactoryChromeOSCreateDeviceFailed"/>
+  <int value="140" label="kVideoCaptureDeviceAlreadyReleased"/>
+  <int value="141" label="kVideoCaptureSystemDeviceIdNotFound"/>
+  <int value="142" label="kVideoCaptureDeviceFactoryWinUnknownError"/>
+  <int value="143" label="kWinMediaFoundationDeviceInitializationFailed"/>
+  <int value="144" label="kWinMediaFoundationSourceCreationFailed"/>
+  <int value="145" label="kWinDirectShowDeviceFilterCreationFailed"/>
+  <int value="146" label="kWinDirectShowDeviceInitializationFailed"/>
+  <int value="147" label="kVideoCaptureDeviceFactorySecondCreateDenied"/>
+  <int value="148" label="kScreenCaptureKitResetStreamError"/>
+  <int value="149" label="kWinMediaFoundationCameraBusy"/>
+</enum>
+
+<enum name="VideoCaptureFrameDropReason">
+  <int value="0" label="kNone"/>
+  <int value="1" label="kDeviceClientFrameHasInvalidFormat"/>
+  <int value="2" label="kDeviceClientFailedToReserveBufferFromBufferPool"/>
+  <int value="3" label="kDeviceClientLibyuvConvertToI420Failed"/>
+  <int value="4" label="kV4L2BufferErrorFlagWasSet"/>
+  <int value="5" label="kV4L2InvalidNumberOfBytesInBuffer"/>
+  <int value="6" label="kAndroidThrottling"/>
+  <int value="7" label="kAndroidGetByteArrayElementsFailed"/>
+  <int value="8" label="kAndroidApi1UnexpectedDataLength"/>
+  <int value="9" label="kAndroidApi2AcquiredImageIsNull"/>
+  <int value="10" label="kWinDirectShowUnexpectedSampleLength"/>
+  <int value="11"
+      label="kWinDirectShowFailedToGetMemoryPointerFromMediaSample"/>
+  <int value="12" label="kWinMediaFoundationReceivedSampleIsNull"/>
+  <int value="13" label="kWinMediaFoundationLockingBufferDelieveredNullptr"/>
+  <int value="14" label="kWinMediaFoundationGetBufferByIndexReturnedNull"/>
+  <int value="15" label="kBufferPoolMaxBufferCountExceeded"/>
+  <int value="16" label="kBufferPoolBufferAllocationFailed"/>
+  <int value="17" label="kVideoCaptureImplNotInStartedState"/>
+  <int value="18" label="kVideoCaptureImplFailedToWrapDataAsMediaVideoFrame"/>
+  <int value="19" label="kVideoTrackAdapterHasNoResolutionAdapters"/>
+  <int value="20" label="kResolutionAdapterFrameIsNotValid"/>
+  <int value="21" label="kResolutionAdapterWrappingFrameForCroppingFailed"/>
+  <int value="22"
+      label="kResolutionAdapterTimestampTooCloseToPrevious_DEPRECATED"/>
+  <int value="23" label="kResolutionAdapterFrameRateIsHigherThanRequested"/>
+  <int value="24" label="kResolutionAdapterHasNoCallbacks"/>
+  <int value="25"
+      label="kVideoTrackFrameDelivererNotEnabledReplacingWithBlackFrame"/>
+  <int value="26" label="kRendererSinkFrameDelivererIsNotStarted"/>
+  <int value="27" label="kCropVersionNotCurrent_DEPRECATED"/>
+  <int value="28" label="kGpuMemoryBufferMapFailed"/>
+  <int value="29" label="kSubCaptureTargetVersionNotCurrent"/>
+</enum>
+
+<enum name="VideoCaptureServiceEvent">
+  <int value="0" label="Browser is using legacy video capture stack"/>
+  <int value="1" label="Browser connecting to video capture service"/>
+  <int value="2" label="Video capture service started"/>
+  <int value="3"
+      label="Video capture service shutting down because last client
+             disconnected"/>
+  <int value="4" label="Video capture service lost connection to Browser"/>
+  <int value="5" label="Browser lost connection to video capture service"/>
+  <int value="6" label="Browser closing connection to video capture service"/>
+  <int value="7"
+      label="Browser closing connection to video capture service after
+             enumerating devices only"/>
+  <int value="8"
+      label="Browser closing connection to video capture service after video
+             capture session"/>
+  <int value="9" label="Video capture service timeout canceled"/>
+</enum>
+
+<enum name="VideoCaptureStartOutcome">
+  <int value="0" label="kStarted"/>
+  <int value="1" label="kTimedout"/>
+  <int value="2" label="kFailed"/>
+</enum>
+
+<enum name="VideoCaptureWinBackendUsed">
+  <int value="0" label="Using DirectShow as default"/>
+  <int value="1" label="Using MediaFoundation as default"/>
+  <int value="2" label="Using DirectShow as fallback"/>
+</enum>
+
+<enum name="VideoFrameStorageType">
+  <int value="0" label="Invalid"/>
+  <int value="1" label="Unknown"/>
+  <int value="2" label="External, non owned memory"/>
+  <int value="3" label="Internal, owned memory"/>
+  <int value="4" label="Read-only shared memory region"/>
+  <int value="5" label="Dmabuf file descriptor"/>
+  <int value="6" label="GpuMemoryBuffer"/>
+</enum>
+
+<enum name="VideoPixelFormatUnion">
+  <int value="0" label="UNKNOWN"/>
+  <int value="1" label="I420"/>
+  <int value="2" label="YV12"/>
+  <int value="3" label="I422"/>
+  <int value="4" label="YV12A"/>
+  <int value="5" label="YV24"/>
+  <int value="6" label="NV12"/>
+  <int value="7" label="NV21"/>
+  <int value="8" label="UYVY"/>
+  <int value="9" label="YUY2"/>
+  <int value="10" label="ARGB"/>
+  <int value="11" label="XRGB"/>
+  <int value="12" label="RGB24"/>
+  <int value="13" label="RGB32 (Deprecated in M77)"/>
+  <int value="14" label="MJPEG"/>
+  <int value="15" label="MT21 (Deprecated in M78)"/>
+  <int value="16" label="YUV420P9"/>
+  <int value="17" label="YUV420P10"/>
+  <int value="18" label="YUV422P9"/>
+  <int value="19" label="YUV422P10"/>
+  <int value="20" label="YUV444P9"/>
+  <int value="21" label="YUV444P10"/>
+  <int value="22" label="YUV420P12"/>
+  <int value="23" label="YUV422P12"/>
+  <int value="24" label="YUV444P12"/>
+  <int value="25" label="Y8 (Deprecated in M65)"/>
+  <int value="26" label="Y16"/>
+  <int value="27" label="ABGR"/>
+  <int value="28" label="XBGR"/>
+  <int value="29" label="P016LE"/>
+  <int value="30" label="XR30"/>
+  <int value="31" label="XB30"/>
+  <int value="32" label="BGRA"/>
+  <int value="33" label="RGBAF16"/>
+  <int value="34" label="I422A"/>
+  <int value="35" label="I444A"/>
+  <int value="36" label="YUV420AP10"/>
+  <int value="37" label="YUV422AP10"/>
+  <int value="38" label="YUV444AP10"/>
+  <int value="39" label="NV12A"/>
+</enum>
+
+<enum name="VideoResolutionDesignation">
+  <int value="0" label="Unknown"/>
+  <int value="1" label="QQVGA (160x120)"/>
+  <int value="2" label="HQVGA (240x160)"/>
+  <int value="3" label="QVGA (320x240)"/>
+  <int value="4" label="WQVGA (432x240)"/>
+  <int value="5" label="HVGA (480x320)"/>
+  <int value="6" label="VGA (640x480)"/>
+  <int value="7" label="WVGA (720x480)"/>
+  <int value="8" label="WSVGA (1024x576)"/>
+  <int value="9" label="SVGA (800x600)"/>
+  <int value="10" label="SXGA- (1280x960)"/>
+  <int value="11" label="UXGA (1600x1200)"/>
+  <int value="12" label="QXGA (2048x1536)"/>
+  <int value="13" label="QCIF (176x144)"/>
+  <int value="14" label="CIF (352x288)"/>
+  <int value="15" label="NHD (640x360)"/>
+  <int value="16" label="QHD (960x540)"/>
+  <int value="17" label="HD Fullscreen (960x720)"/>
+  <int value="18" label="HD (1280x720)"/>
+  <int value="19" label="HD_PLUS (1600x900)"/>
+  <int value="20" label="FHD (1920x1080)"/>
+  <int value="21" label="WQHD (2560x1440)"/>
+  <int value="22" label="QHD+ (3200x1800)"/>
+  <int value="23" label="4K UHD (3840x2160)"/>
+  <int value="24" label="DCI 4K (4096x2160)"/>
+  <int value="25" label="5K (5120x2880)"/>
+  <int value="26" label="8K UHD (7680x4320)"/>
+  <int value="27" label="160x90"/>
+  <int value="28" label="320x176"/>
+  <int value="29" label="320x180"/>
+  <int value="30" label="480x270"/>
+  <int value="31" label="544x288"/>
+  <int value="32" label="752x416"/>
+  <int value="33" label="864x480"/>
+  <int value="34" label="800x448"/>
+  <int value="35" label="960x544"/>
+  <int value="36" label="1184x656"/>
+  <int value="37" label="1392x768"/>
+  <int value="38" label="1504x832"/>
+  <int value="39" label="1600x896"/>
+  <int value="40" label="1712x960"/>
+  <int value="41" label="1792x1008"/>
+  <int value="42" label="2592x1944"/>
+</enum>
+
+<enum name="VidiocIoctlRequests">
+  <int value="0" label="VIDIOC_G_FMT"/>
+  <int value="1" label="VIDIOC_S_FMT"/>
+  <int value="2" label="VIDIOC_G_SELECTION"/>
+  <int value="3" label="VIDIOC_EXPBUF"/>
+  <int value="4" label="VIDIOC_REQBUFS"/>
+  <int value="5" label="VIDIOC_QUERYBUF"/>
+  <int value="6" label="VIDIOC_QBUF"/>
+  <int value="7" label="VIDIOC_DQBUF"/>
+  <int value="8" label="VIDIOC_STREAMON"/>
+  <int value="9" label="VIDIOC_STREAMOFF"/>
+  <int value="10" label="VIDIOC_S_EXT_CTRLS"/>
+</enum>
+
+<enum name="VTVDASessionFailureType">
+  <int value="0" label="Successfully Initialized"/>
+  <int value="1" label="Platform Error"/>
+  <int value="2" label="Invalid Stream"/>
+  <int value="3" label="Unsupported Stream Parameters"/>
+  <int value="4" label="Decode Error"/>
+  <int value="5" label="Unsupported Stream"/>
+</enum>
+
+<enum name="WebMediaPlayerWatchTimeType">
+  <int value="0" label="RendererImplFactory"/>
+  <int value="1" label="MojoRendererFactory"/>
+  <int value="2" label="MediaPlayerRendererClientFactory"/>
+  <int value="3" label="CourierRendererFactory"/>
+  <int value="4" label="FlingingRendererClientFactory"/>
+</enum>
+
+</enums>
+
+</histogram-configuration>

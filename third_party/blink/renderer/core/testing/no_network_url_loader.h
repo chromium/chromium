@@ -22,30 +22,30 @@ class NoNetworkURLLoader : public URLLoader {
   NoNetworkURLLoader& operator=(const NoNetworkURLLoader&) = delete;
 
   // URLLoader member functions:
-  void LoadSynchronously(
-      std::unique_ptr<network::ResourceRequest> request,
-      scoped_refptr<WebURLRequestExtraData> url_request_extra_data,
-      bool pass_response_pipe_to_client,
-      bool no_mime_sniffing,
-      base::TimeDelta timeout_interval,
-      URLLoaderClient* client,
-      WebURLResponse& response,
-      absl::optional<WebURLError>&,
-      scoped_refptr<SharedBuffer>&,
-      int64_t& encoded_data_length,
-      uint64_t& encoded_body_length,
-      scoped_refptr<BlobDataHandle>& downloaded_blob,
-      std::unique_ptr<blink::ResourceLoadInfoNotifierWrapper>
-          resource_load_info_notifier_wrapper) override {
+  void LoadSynchronously(std::unique_ptr<network::ResourceRequest> request,
+                         scoped_refptr<const SecurityOrigin> top_frame_origin,
+                         bool download_to_blob,
+                         bool no_mime_sniffing,
+                         base::TimeDelta timeout_interval,
+                         URLLoaderClient* client,
+                         WebURLResponse& response,
+                         std::optional<WebURLError>&,
+                         scoped_refptr<SharedBuffer>&,
+                         int64_t& encoded_data_length,
+                         uint64_t& encoded_body_length,
+                         scoped_refptr<BlobDataHandle>& downloaded_blob,
+                         std::unique_ptr<blink::ResourceLoadInfoNotifierWrapper>
+                             resource_load_info_notifier_wrapper) override {
     // Nothing should call this in our test.
     NOTREACHED();
   }
   void LoadAsynchronously(
       std::unique_ptr<network::ResourceRequest> request,
-      scoped_refptr<WebURLRequestExtraData> url_request_extra_data,
+      scoped_refptr<const SecurityOrigin> top_frame_origin,
       bool no_mime_sniffing,
       std::unique_ptr<blink::ResourceLoadInfoNotifierWrapper>
           resource_load_info_notifier_wrapper,
+      CodeCacheHost* code_cache_host,
       URLLoaderClient* client) override {
     // We simply never call back, simulating load times that are larger
     // than the test runtime.

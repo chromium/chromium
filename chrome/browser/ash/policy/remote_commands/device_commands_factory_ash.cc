@@ -8,7 +8,8 @@
 
 #include "base/notreached.h"
 #include "chrome/browser/ash/policy/core/device_cloud_policy_manager_ash.h"
-#include "chrome/browser/ash/policy/remote_commands/device_command_fetch_crd_availability_info_job.h"
+#include "chrome/browser/ash/policy/remote_commands/crd/device_command_fetch_crd_availability_info_job.h"
+#include "chrome/browser/ash/policy/remote_commands/crd/device_command_start_crd_session_job.h"
 #include "chrome/browser/ash/policy/remote_commands/device_command_fetch_status_job.h"
 #include "chrome/browser/ash/policy/remote_commands/device_command_fetch_support_packet_job.h"
 #include "chrome/browser/ash/policy/remote_commands/device_command_get_available_routines_job.h"
@@ -20,7 +21,6 @@
 #include "chrome/browser/ash/policy/remote_commands/device_command_run_routine_job.h"
 #include "chrome/browser/ash/policy/remote_commands/device_command_screenshot_job.h"
 #include "chrome/browser/ash/policy/remote_commands/device_command_set_volume_job.h"
-#include "chrome/browser/ash/policy/remote_commands/device_command_start_crd_session_job.h"
 #include "chrome/browser/ash/policy/remote_commands/device_command_wipe_users_job.h"
 #include "chrome/browser/ash/policy/remote_commands/fake_screenshot_delegate.h"
 #include "chrome/browser/ash/policy/remote_commands/screenshot_delegate.h"

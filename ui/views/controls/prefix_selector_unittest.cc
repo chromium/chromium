@@ -32,9 +32,9 @@ class TestPrefixDelegate : public View, public PrefixDelegate {
 
   size_t GetRowCount() override { return rows_.size(); }
 
-  absl::optional<size_t> GetSelectedRow() override { return selected_row_; }
+  std::optional<size_t> GetSelectedRow() override { return selected_row_; }
 
-  void SetSelectedRow(absl::optional<size_t> row) override {
+  void SetSelectedRow(std::optional<size_t> row) override {
     selected_row_ = row;
   }
 
@@ -42,7 +42,7 @@ class TestPrefixDelegate : public View, public PrefixDelegate {
 
  private:
   std::vector<std::u16string> rows_;
-  absl::optional<size_t> selected_row_ = 0;
+  std::optional<size_t> selected_row_ = 0;
 };
 
 class PrefixSelectorTest : public ViewsTestBase {

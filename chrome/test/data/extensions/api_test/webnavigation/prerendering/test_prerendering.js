@@ -194,7 +194,7 @@ ready.then(async function() {
 
       if (!inServiceWorker) {
         expectedEvents.push(
-          // TODO(crbug.com/1349987): Remove this expectation when the crbug
+          // TODO(crbug.com/373579): Remove this expectation when the crbug
           // is fixed.
           {
             label: 'onCommitted-2-activation-callback',

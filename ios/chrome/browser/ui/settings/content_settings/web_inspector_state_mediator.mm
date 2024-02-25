@@ -5,10 +5,10 @@
 #import "ios/chrome/browser/ui/settings/content_settings/web_inspector_state_mediator.h"
 
 #import "components/prefs/pref_service.h"
+#import "ios/chrome/browser/shared/model/prefs/pref_backed_boolean.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
+#import "ios/chrome/browser/shared/model/utils/observable_boolean.h"
 #import "ios/chrome/browser/ui/settings/content_settings/web_inspector_state_consumer.h"
-#import "ios/chrome/browser/ui/settings/utils/observable_boolean.h"
-#import "ios/chrome/browser/ui/settings/utils/pref_backed_boolean.h"
 
 @interface WebInspectorStateMediator () <BooleanObserver>
 

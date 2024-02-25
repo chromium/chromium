@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_WEB_APPLICATIONS_APP_SERVICE_WEB_APPS_H_
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -16,7 +17,7 @@
 #include "chrome/browser/apps/app_service/launch_result_type.h"
 #include "chrome/browser/apps/app_service/publishers/app_publisher.h"
 #include "chrome/browser/web_applications/app_service/web_app_publisher_helper.h"
-#include "chrome/browser/web_applications/web_app_id.h"
+#include "chrome/browser/web_applications/web_app_command_scheduler.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
 #include "components/services/app_service/public/cpp/app_launch_util.h"
 #include "components/services/app_service/public/cpp/app_types.h"
@@ -24,7 +25,7 @@
 #include "components/services/app_service/public/cpp/intent.h"
 #include "components/services/app_service/public/cpp/menu.h"
 #include "components/services/app_service/public/cpp/permission.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
+#include "components/webapps/common/web_app_id.h"
 #include "ui/base/resource/resource_scale_factor.h"
 #include "url/gurl.h"
 
@@ -49,9 +50,8 @@ class WebApp;
 class WebAppProvider;
 
 // An app publisher (in the App Service sense) of Web Apps.
-class WebApps : public apps::AppPublisher,
-                public WebAppPublisherHelper::Delegate,
-                public base::SupportsWeakPtr<WebApps> {
+class WebApps final : public apps::AppPublisher,
+                      public WebAppPublisherHelper::Delegate {
  public:
   explicit WebApps(apps::AppServiceProxy* proxy);
   WebApps(const WebApps&) = delete;
@@ -61,7 +61,7 @@ class WebApps : public apps::AppPublisher,
   virtual void Shutdown();
 
  protected:
-  const WebApp* GetWebApp(const AppId& app_id) const;
+  const WebApp* GetWebApp(const webapps::AppId& app_id) const;
 
   Profile* profile() const { return profile_; }
   WebAppProvider* provider() const { return provider_; }
@@ -119,6 +119,8 @@ class WebApps : public apps::AppPublisher,
       base::OnceCallback<void(apps::MenuItems)> callback) override;
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
+  void UpdateAppSize(const std::string& app_id) override;
+
   void SetWindowMode(const std::string& app_id,
                      apps::WindowMode window_mode) override;
 
@@ -129,8 +131,8 @@ class WebApps : public apps::AppPublisher,
   void PublishWebApp(apps::AppPtr app) override;
   void ModifyWebAppCapabilityAccess(
       const std::string& app_id,
-      absl::optional<bool> accessing_camera,
-      absl::optional<bool> accessing_microphone) override;
+      std::optional<bool> accessing_camera,
+      std::optional<bool> accessing_microphone) override;
 
   std::vector<apps::AppPtr> CreateWebApps();
   void InitWebApps();
@@ -166,10 +168,11 @@ class WebApps : public apps::AppPublisher,
   bool is_ready_ = false;
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  const raw_ptr<apps::InstanceRegistry, ExperimentalAsh> instance_registry_;
+  const raw_ptr<apps::InstanceRegistry> instance_registry_;
 #endif
 
   WebAppPublisherHelper publisher_helper_;
+  base::WeakPtrFactory<WebApps> weak_ptr_factory_{this};
 };
 
 }  // namespace web_app

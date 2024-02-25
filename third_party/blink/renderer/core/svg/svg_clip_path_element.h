@@ -22,15 +22,12 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_SVG_SVG_CLIP_PATH_ELEMENT_H_
 
 #include "third_party/blink/renderer/core/svg/svg_animated_enumeration.h"
-#include "third_party/blink/renderer/core/svg/svg_graphics_element.h"
+#include "third_party/blink/renderer/core/svg/svg_transformable_element.h"
 #include "third_party/blink/renderer/core/svg/svg_unit_types.h"
-#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 
 namespace blink {
 
-class LayoutObject;
-
-class SVGClipPathElement final : public SVGGraphicsElement {
+class SVGClipPathElement final : public SVGTransformableElement {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
@@ -40,11 +37,11 @@ class SVGClipPathElement final : public SVGGraphicsElement {
     return clip_path_units_.Get();
   }
 
-  bool SupportsFocus() const override { return false; }
-
   void Trace(Visitor*) const override;
 
  private:
+  bool SupportsFocus(UpdateBehavior) const override { return false; }
+
   void SvgAttributeChanged(const SvgAttributeChangedParams&) override;
   void ChildrenChanged(const ChildrenChange&) override;
 

@@ -41,12 +41,13 @@ std::unique_ptr<ImageProcessor> CreateVaapiImageProcessorWithInputCandidates(
     const std::vector<PixelLayoutCandidate>& input_candidates,
     const gfx::Rect& input_visible_rect,
     const gfx::Size& output_size,
+    VideoFrame::StorageType output_storage_type,
     scoped_refptr<base::SequencedTaskRunner> client_task_runner,
     ImageProcessorFactory::PickFormatCB out_format_picker,
     ImageProcessor::ErrorCB error_cb) {
   std::vector<Fourcc> vpp_supported_formats =
       VaapiWrapper::GetVppSupportedFormats();
-  absl::optional<PixelLayoutCandidate> chosen_input_candidate;
+  std::optional<PixelLayoutCandidate> chosen_input_candidate;
   for (const auto& input_candidate : input_candidates) {
     if (base::Contains(vpp_supported_formats, input_candidate.fourcc) &&
         VaapiWrapper::IsVppResolutionAllowed(input_candidate.size)) {
@@ -75,8 +76,7 @@ std::unique_ptr<ImageProcessor> CreateVaapiImageProcessorWithInputCandidates(
       {VideoFrame::STORAGE_GPU_MEMORY_BUFFER});
   ImageProcessor::PortConfig output_config(
       /*fourcc=*/*chosen_output_format, /*size=*/output_size, /*planes=*/{},
-      /*visible_rect=*/gfx::Rect(output_size),
-      {VideoFrame::STORAGE_GPU_MEMORY_BUFFER});
+      /*visible_rect=*/gfx::Rect(output_size), {output_storage_type});
   return ImageProcessor::Create(
       base::BindRepeating(&VaapiImageProcessorBackend::Create), input_config,
       output_config, ImageProcessor::OutputMode::IMPORT, std::move(error_cb),
@@ -88,6 +88,7 @@ std::unique_ptr<ImageProcessor> CreateVaapiImageProcessorWithInputCandidates(
 std::unique_ptr<ImageProcessor> CreateV4L2ImageProcessorWithInputCandidates(
     const std::vector<PixelLayoutCandidate>& input_candidates,
     const gfx::Rect& visible_rect,
+    VideoFrame::StorageType output_storage_type,
     size_t num_buffers,
     scoped_refptr<base::SequencedTaskRunner> client_task_runner,
     ImageProcessorFactory::PickFormatCB out_format_picker,
@@ -106,7 +107,7 @@ std::unique_ptr<ImageProcessor> CreateV4L2ImageProcessorWithInputCandidates(
   }
 
   const auto output_fourcc = out_format_picker.Run(
-      /*candidates=*/supported_fourccs, /*preferred_fourcc=*/absl::nullopt);
+      /*candidates=*/supported_fourccs, /*preferred_fourcc=*/std::nullopt);
   if (!output_fourcc) {
 #if DCHECK_IS_ON()
     std::string output_fourccs_string;
@@ -156,9 +157,9 @@ std::unique_ptr<ImageProcessor> CreateV4L2ImageProcessorWithInputCandidates(
 
     return v4l2_vda_helpers::CreateImageProcessor(
         input_fourcc, *output_fourcc, input_size, output_size, visible_rect,
-        VideoFrame::StorageType::STORAGE_GPU_MEMORY_BUFFER, num_buffers,
-        new V4L2Device(), ImageProcessor::OutputMode::IMPORT,
-        std::move(client_task_runner), std::move(error_cb));
+        output_storage_type, num_buffers, new V4L2Device(),
+        ImageProcessor::OutputMode::IMPORT, std::move(client_task_runner),
+        std::move(error_cb));
   }
   return nullptr;
 }
@@ -167,32 +168,41 @@ std::unique_ptr<ImageProcessor> CreateLibYUVImageProcessorWithInputCandidates(
     const std::vector<PixelLayoutCandidate>& input_candidates,
     const gfx::Rect& input_visible_rect,
     const gfx::Size& output_size,
+    VideoFrame::StorageType output_storage_type,
     scoped_refptr<base::SequencedTaskRunner> client_task_runner,
     ImageProcessorFactory::PickFormatCB out_format_picker,
     ImageProcessor::ErrorCB error_cb) {
-  if (input_candidates.size() != 1)
+  if (input_candidates.empty())
     return nullptr;
 
-  if (input_candidates[0].fourcc != Fourcc(Fourcc::MM21) &&
-      input_candidates[0].fourcc != Fourcc(Fourcc::MT2T)) {
+  auto iter = base::ranges::find_if(
+    input_candidates,
+    [](const PixelLayoutCandidate& candidate) {
+      return !LibYUVImageProcessorBackend::GetSupportedOutputFormats(
+          candidate.fourcc).empty();
+    });
+
+  if (iter == input_candidates.end())
     return nullptr;
-  }
+
+  const auto matched_candidate = *iter;
 
   std::vector<Fourcc> supported_output_formats =
       LibYUVImageProcessorBackend::GetSupportedOutputFormats(
-          input_candidates[0].fourcc);
+          matched_candidate.fourcc);
+
   auto output_format =
-      out_format_picker.Run(supported_output_formats, absl::nullopt);
+      out_format_picker.Run(supported_output_formats, std::nullopt);
 
   if (!output_format)
     return nullptr;
 
   ImageProcessor::PortConfig input_config(
-      input_candidates[0].fourcc, input_candidates[0].size, /*planes=*/{},
+      matched_candidate.fourcc, matched_candidate.size, /*planes=*/{},
       input_visible_rect, {VideoFrame::STORAGE_DMABUFS});
   ImageProcessor::PortConfig output_config(
       *output_format, output_size, /*planes=*/{}, gfx::Rect(output_size),
-      {VideoFrame::STORAGE_GPU_MEMORY_BUFFER});
+      {output_storage_type});
   return ImageProcessor::Create(
       base::BindRepeating(&LibYUVImageProcessorBackend::Create), input_config,
       output_config, ImageProcessor::OutputMode::IMPORT, std::move(error_cb),
@@ -204,21 +214,24 @@ std::unique_ptr<ImageProcessor> CreateGLImageProcessorWithInputCandidates(
     const std::vector<PixelLayoutCandidate>& input_candidates,
     const gfx::Rect& input_visible_rect,
     const gfx::Size& output_size,
+    VideoFrame::StorageType output_storage_type,
     scoped_refptr<base::SequencedTaskRunner> client_task_runner,
     ImageProcessorFactory::PickFormatCB out_format_picker,
     ImageProcessor::ErrorCB error_cb) {
   if (input_candidates.size() != 1)
     return nullptr;
 
-  if (input_candidates[0].fourcc != Fourcc(Fourcc::MM21))
+  if (input_candidates[0].fourcc != Fourcc(Fourcc::MM21) &&
+      input_candidates[0].fourcc != Fourcc(Fourcc::NV12)) {
     return nullptr;
+  }
 
   ImageProcessor::PortConfig input_config(
-      Fourcc(Fourcc::MM21), input_candidates[0].size, /*planes=*/{},
+      input_candidates[0].fourcc, input_candidates[0].size, /*planes=*/{},
       input_visible_rect, {VideoFrame::STORAGE_DMABUFS});
   ImageProcessor::PortConfig output_config(
       Fourcc(Fourcc::NV12), output_size, /*planes=*/{}, gfx::Rect(output_size),
-      {VideoFrame::STORAGE_GPU_MEMORY_BUFFER});
+      {output_storage_type});
 
   if (!GLImageProcessorBackend::IsSupported(input_config, output_config)) {
     return nullptr;
@@ -238,31 +251,38 @@ std::unique_ptr<ImageProcessor> CreateGLImageProcessorWithInputCandidates(
 std::unique_ptr<ImageProcessor> ImageProcessorFactory::Create(
     const ImageProcessor::PortConfig& input_config,
     const ImageProcessor::PortConfig& output_config,
-    ImageProcessor::OutputMode output_mode,
     size_t num_buffers,
-    scoped_refptr<base::SequencedTaskRunner> client_task_runner,
-    ImageProcessor::ErrorCB error_cb) {
-  std::vector<ImageProcessor::CreateBackendCB> create_funcs;
-#if BUILDFLAG(USE_VAAPI)
-  create_funcs.push_back(
-      base::BindRepeating(&VaapiImageProcessorBackend::Create));
-#elif BUILDFLAG(USE_V4L2_CODEC)
-  create_funcs.push_back(base::BindRepeating(&V4L2ImageProcessorBackend::Create,
-                                             base::MakeRefCounted<V4L2Device>(),
-                                             num_buffers));
-#endif
-  create_funcs.push_back(
-      base::BindRepeating(&LibYUVImageProcessorBackend::Create));
+    ImageProcessor::ErrorCB error_cb,
+    scoped_refptr<base::SequencedTaskRunner> client_task_runner) {
+  CHECK(input_config.fourcc != Fourcc());
+  CHECK(output_config.fourcc != Fourcc());
 
-  std::unique_ptr<ImageProcessor> image_processor;
-  for (auto& create_func : create_funcs) {
-    image_processor = ImageProcessor::Create(
-        std::move(create_func), input_config, output_config, output_mode,
-        error_cb, client_task_runner);
-    if (image_processor)
-      return image_processor;
-  }
-  return nullptr;
+  std::vector<ImageProcessor::CreateBackendCB> create_funcs = {
+#if BUILDFLAG(USE_VAAPI)
+      base::BindRepeating(&VaapiImageProcessorBackend::Create),
+#elif BUILDFLAG(USE_V4L2_CODEC)
+      base::BindRepeating(&V4L2ImageProcessorBackend::Create,
+                          base::MakeRefCounted<V4L2Device>(), num_buffers),
+#endif
+      base::BindRepeating(&LibYUVImageProcessorBackend::Create)};
+
+#if defined(ARCH_CPU_ARM_FAMILY)
+    if (base::FeatureList::IsEnabled(media::kUseGLForScaling)) {
+      create_funcs.insert(
+          create_funcs.begin(),
+          base::BindRepeating(&GLImageProcessorBackend::Create));
+    }
+#endif  // defined(ARCH_CPU_ARM_FAMILY)
+
+    for (auto& create_func : create_funcs) {
+      std::unique_ptr<ImageProcessor> image_processor = ImageProcessor::Create(
+          std::move(create_func), input_config, output_config,
+          ImageProcessor::OutputMode::IMPORT, error_cb, client_task_runner);
+      if (image_processor) {
+        return image_processor;
+      }
+    }
+    return nullptr;
 }
 
 // static
@@ -271,45 +291,46 @@ ImageProcessorFactory::CreateWithInputCandidates(
     const std::vector<PixelLayoutCandidate>& input_candidates,
     const gfx::Rect& input_visible_rect,
     const gfx::Size& output_size,
+    VideoFrame::StorageType output_storage_type,
     size_t num_buffers,
     scoped_refptr<base::SequencedTaskRunner> client_task_runner,
     PickFormatCB out_format_picker,
     ImageProcessor::ErrorCB error_cb) {
 #if BUILDFLAG(USE_VAAPI)
   auto processor = CreateVaapiImageProcessorWithInputCandidates(
-      input_candidates, input_visible_rect, output_size, client_task_runner,
-      out_format_picker, error_cb);
+      input_candidates, input_visible_rect, output_size, output_storage_type,
+      client_task_runner, out_format_picker, error_cb);
   if (processor)
     return processor;
 #elif BUILDFLAG(USE_V4L2_CODEC)
 #if defined(ARCH_CPU_ARM_FAMILY)
-  if (base::FeatureList::IsEnabled(media::kPreferGLImageProcessor)) {
+
+  if (base::FeatureList::IsEnabled(media::kPreferGLImageProcessor) ||
+      base::FeatureList::IsEnabled(media::kUseGLForScaling)) {
     auto processor = CreateGLImageProcessorWithInputCandidates(
-        input_candidates, input_visible_rect, output_size, client_task_runner,
-        out_format_picker, error_cb);
+        input_candidates, input_visible_rect, output_size, output_storage_type,
+        client_task_runner, out_format_picker, error_cb);
     if (processor)
       return processor;
   }
 #endif  // defined(ARCH_CPU_ARM_FAMILY)
 
-    auto processor = CreateLibYUVImageProcessorWithInputCandidates(
-        input_candidates, input_visible_rect, output_size, client_task_runner,
-        out_format_picker, error_cb);
-    if (processor)
-      return processor;
+  auto processor = CreateLibYUVImageProcessorWithInputCandidates(
+      input_candidates, input_visible_rect, output_size, output_storage_type,
+      client_task_runner, out_format_picker, error_cb);
+  if (processor) {
+    return processor;
+  }
 
-    processor = CreateV4L2ImageProcessorWithInputCandidates(
-        input_candidates, input_visible_rect, num_buffers, client_task_runner,
-        out_format_picker, error_cb);
-    if (processor)
-      return processor;
+  processor = CreateV4L2ImageProcessorWithInputCandidates(
+      input_candidates, input_visible_rect, output_storage_type, num_buffers,
+      client_task_runner, out_format_picker, error_cb);
+  if (processor) {
+    return processor;
+  }
 
 #endif
 
-  // TODO(crbug.com/1004727): Implement LibYUVImageProcessorBackend. When doing
-  // so, we must keep in mind that it might not be desirable to fallback to
-  // libyuv if the hardware image processor fails (e.g., in the case of
-  // protected content).
   return nullptr;
 }
 
@@ -324,7 +345,8 @@ ImageProcessorFactory::CreateLibYUVImageProcessorWithInputCandidatesForTesting(
     PickFormatCB out_format_picker,
     ImageProcessor::ErrorCB error_cb) {
   return CreateLibYUVImageProcessorWithInputCandidates(
-      input_candidates, input_visible_rect, output_size, client_task_runner,
+      input_candidates, input_visible_rect, output_size,
+      VideoFrame::STORAGE_GPU_MEMORY_BUFFER, client_task_runner,
       out_format_picker, error_cb);
 }
 
@@ -339,7 +361,8 @@ ImageProcessorFactory::CreateGLImageProcessorWithInputCandidatesForTesting(
     ImageProcessor::ErrorCB error_cb) {
 #if defined(ARCH_CPU_ARM_FAMILY)
   return CreateGLImageProcessorWithInputCandidates(
-      input_candidates, input_visible_rect, output_size, client_task_runner,
+      input_candidates, input_visible_rect, output_size,
+      VideoFrame::STORAGE_GPU_MEMORY_BUFFER, client_task_runner,
       out_format_picker, error_cb);
 #else
   return nullptr;

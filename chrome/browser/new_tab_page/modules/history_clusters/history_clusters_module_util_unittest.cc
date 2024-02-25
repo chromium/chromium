@@ -4,7 +4,9 @@
 
 #include "chrome/browser/new_tab_page/modules/history_clusters/history_clusters_module_util.h"
 
+#include "base/containers/contains.h"
 #include "components/history_clusters/core/clustering_test_utils.h"
+#include "components/search/ntp_features.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -13,6 +15,19 @@ namespace {
 using ::testing::ElementsAre;
 
 using HistoryClustersModuleUtilTest = testing::Test;
+
+TEST(HistoryClustersModuleUtilTest, GetDefaultCategories) {
+  constexpr size_t kSampleCategoryCount = 3;
+  std::array<std::string_view, kSampleCategoryCount> sample_categories{"a", "b",
+                                                                       "c"};
+  auto categories_set = GetCategories(
+      ntp_features::kNtpHistoryClustersModuleCategoriesBlocklistParam,
+      {sample_categories.cbegin(), kSampleCategoryCount});
+  ASSERT_EQ(kSampleCategoryCount, categories_set.size());
+  for (auto category : sample_categories) {
+    ASSERT_TRUE(base::Contains(categories_set, category));
+  }
+}
 
 TEST(HistoryClustersModuleUtilTest, RecencyOnly) {
   history::Cluster cluster1;
@@ -38,11 +53,11 @@ TEST(HistoryClustersModuleUtilTest, RecencyOnly) {
   visit4.content_annotations.has_url_keyed_image = true;
   visit4.visit_row.is_known_to_sync = true;
   cluster1.visits = {history_clusters::testing::CreateClusterVisit(
-                         visit, /*normalized_url=*/absl::nullopt, 0.1),
+                         visit, /*normalized_url=*/std::nullopt, 0.1),
                      history_clusters::testing::CreateClusterVisit(
-                         visit2, /*normalized_url=*/absl::nullopt, 1.0),
+                         visit2, /*normalized_url=*/std::nullopt, 1.0),
                      history_clusters::testing::CreateClusterVisit(
-                         visit4, /*normalized_url=*/absl::nullopt, 0.3)};
+                         visit4, /*normalized_url=*/std::nullopt, 0.3)};
 
   history::Cluster cluster2 = cluster1;
   // Make the visit time before the first cluster and the first visit have a
@@ -91,11 +106,11 @@ TEST(HistoryClustersModuleUtilTest, WithCategoryBoosting) {
   visit4.content_annotations.has_url_keyed_image = true;
   visit4.visit_row.is_known_to_sync = true;
   cluster1.visits = {history_clusters::testing::CreateClusterVisit(
-                         visit, /*normalized_url=*/absl::nullopt, 0.0),
+                         visit, /*normalized_url=*/std::nullopt, 0.0),
                      history_clusters::testing::CreateClusterVisit(
-                         visit2, /*normalized_url=*/absl::nullopt, 1.0),
+                         visit2, /*normalized_url=*/std::nullopt, 1.0),
                      history_clusters::testing::CreateClusterVisit(
-                         visit4, /*normalized_url=*/absl::nullopt, 0.3)};
+                         visit4, /*normalized_url=*/std::nullopt, 0.3)};
 
   history::Cluster cluster2;
   cluster2.cluster_id = 2;
@@ -120,11 +135,11 @@ TEST(HistoryClustersModuleUtilTest, WithCategoryBoosting) {
   c2_visit4.content_annotations.has_url_keyed_image = true;
   c2_visit4.visit_row.is_known_to_sync = true;
   cluster2.visits = {history_clusters::testing::CreateClusterVisit(
-                         c2_visit, /*normalized_url=*/absl::nullopt, 0.8),
+                         c2_visit, /*normalized_url=*/std::nullopt, 0.8),
                      history_clusters::testing::CreateClusterVisit(
-                         c2_visit2, /*normalized_url=*/absl::nullopt, 1.0),
+                         c2_visit2, /*normalized_url=*/std::nullopt, 1.0),
                      history_clusters::testing::CreateClusterVisit(
-                         c2_visit4, /*normalized_url=*/absl::nullopt, 0.6)};
+                         c2_visit4, /*normalized_url=*/std::nullopt, 0.6)};
 
   history::Cluster cluster3 = cluster2;
   cluster3.cluster_id = 3;

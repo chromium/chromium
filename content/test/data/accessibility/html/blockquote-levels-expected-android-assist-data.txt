@@ -1,0 +1,7 @@
+WebView textSize:16.0 style:0 htmlInfo:[{htmlTag="#document"}, {display=""}]
+++View textSize:16.0 style:0 htmlInfo:[{htmlTag="blockquote"}, {display="block"}]
+++++TextView text:"Top level" textSize:16.0 style:0 htmlInfo:[{htmlTag=""}, {display=""}]
+++++View textSize:16.0 style:0 htmlInfo:[{htmlTag="blockquote"}, {display="block"}]
+++++++TextView text:"Sub" textSize:16.0 style:0 htmlInfo:[{htmlTag=""}, {display=""}]
+++++++View textSize:16.0 style:0 htmlInfo:[{htmlTag="blockquote"}, {display="block"}]
+++++++++TextView text:"Sub-sub" textSize:16.0 style:0 htmlInfo:[{htmlTag=""}, {display=""}]

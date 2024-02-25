@@ -3,13 +3,14 @@
 // found in the LICENSE file.
 
 #include "components/permissions/permission_ui_selector.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
+
+#include <optional>
 
 namespace permissions {
 
 // static
 bool PermissionUiSelector::ShouldSuppressAnimation(
-    absl::optional<QuietUiReason> reason) {
+    std::optional<QuietUiReason> reason) {
   if (!reason)
     return true;
 
@@ -27,8 +28,8 @@ bool PermissionUiSelector::ShouldSuppressAnimation(
 }
 
 PermissionUiSelector::Decision::Decision(
-    absl::optional<QuietUiReason> quiet_ui_reason,
-    absl::optional<WarningReason> warning_reason)
+    std::optional<QuietUiReason> quiet_ui_reason,
+    std::optional<WarningReason> warning_reason)
     : quiet_ui_reason(quiet_ui_reason), warning_reason(warning_reason) {}
 PermissionUiSelector::Decision::~Decision() = default;
 
@@ -42,13 +43,13 @@ PermissionUiSelector::Decision::UseNormalUiAndShowNoWarning() {
   return Decision(UseNormalUi(), ShowNoWarning());
 }
 
-absl::optional<PermissionUmaUtil::PredictionGrantLikelihood>
+std::optional<PermissionUmaUtil::PredictionGrantLikelihood>
 PermissionUiSelector::PredictedGrantLikelihoodForUKM() {
-  return absl::nullopt;
+  return std::nullopt;
 }
 
-absl::optional<bool> PermissionUiSelector::WasSelectorDecisionHeldback() {
-  return absl::nullopt;
+std::optional<bool> PermissionUiSelector::WasSelectorDecisionHeldback() {
+  return std::nullopt;
 }
 
 }  // namespace permissions

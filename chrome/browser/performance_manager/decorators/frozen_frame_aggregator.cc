@@ -109,7 +109,7 @@ class FrozenDataImpl : public FrozenFrameAggregator::Data,
 };
 
 bool IsFrozen(const FrameNodeImpl* frame_node) {
-  return frame_node->lifecycle_state() == LifecycleState::kFrozen;
+  return frame_node->GetLifecycleState() == LifecycleState::kFrozen;
 }
 
 }  // namespace
@@ -130,7 +130,7 @@ void FrozenFrameAggregator::OnBeforeFrameNodeRemoved(
 
 void FrozenFrameAggregator::OnIsCurrentChanged(const FrameNode* frame_node) {
   auto* frame_impl = FrameNodeImpl::FromNode(frame_node);
-  int32_t current_frame_delta = frame_impl->is_current() ? 1 : -1;
+  int32_t current_frame_delta = frame_impl->IsCurrent() ? 1 : -1;
   int32_t frozen_frame_delta = IsFrozen(frame_impl) ? current_frame_delta : 0;
   UpdateFrameCounts(frame_impl, current_frame_delta, frozen_frame_delta);
 }
@@ -138,8 +138,9 @@ void FrozenFrameAggregator::OnIsCurrentChanged(const FrameNode* frame_node) {
 void FrozenFrameAggregator::OnFrameLifecycleStateChanged(
     const FrameNode* frame_node) {
   auto* frame_impl = FrameNodeImpl::FromNode(frame_node);
-  if (!frame_impl->is_current())
+  if (!frame_impl->IsCurrent()) {
     return;
+  }
   int32_t frozen_frame_delta = IsFrozen(frame_impl) ? 1 : -1;
   UpdateFrameCounts(frame_impl, 0, frozen_frame_delta);
 }
@@ -157,7 +158,7 @@ void FrozenFrameAggregator::OnTakenFromGraph(Graph* graph) {
 
 void FrozenFrameAggregator::OnPageNodeAdded(const PageNode* page_node) {
   auto* page_impl = PageNodeImpl::FromNode(page_node);
-  DCHECK_EQ(LifecycleState::kRunning, page_impl->lifecycle_state());
+  DCHECK_EQ(LifecycleState::kRunning, page_impl->GetLifecycleState());
   FrozenDataImpl::GetOrCreate(page_impl);
 }
 
@@ -205,7 +206,7 @@ void FrozenFrameAggregator::AddOrRemoveFrame(FrameNodeImpl* frame_node,
                                              int32_t delta) {
   int32_t current_frame_delta = 0;
   int32_t frozen_frame_delta = 0;
-  if (frame_node->is_current()) {
+  if (frame_node->IsCurrent()) {
     current_frame_delta = delta;
     if (IsFrozen(frame_node))
       frozen_frame_delta = delta;
@@ -228,7 +229,7 @@ void FrozenFrameAggregator::UpdateFrameCounts(FrameNodeImpl* frame_node,
   auto* process_data = FrozenDataImpl::GetOrCreate(process_node);
 
   // We should only have frames attached to renderer processes.
-  DCHECK_EQ(content::PROCESS_TYPE_RENDERER, process_node->process_type());
+  DCHECK_EQ(content::PROCESS_TYPE_RENDERER, process_node->GetProcessType());
 
   // Set the page lifecycle state based on the state of the frame tree.
   if (page_data->ChangeFrameCounts(current_frame_delta, frozen_frame_delta)) {

@@ -1,0 +1,75 @@
+diff --git a/third_party/maldoca/src/maldoca/base/BUILD.bazel b/third_party/maldoca/src/maldoca/base/BUILD.bazel
+index 3f63d2adaf9a2..46c3c087e68b3 100644
+--- a/third_party/maldoca/src/maldoca/base/BUILD.bazel
++++ b/third_party/maldoca/src/maldoca/base/BUILD.bazel
+@@ -94,6 +94,7 @@ cc_library(
+         ":logging",
+         ":status",
+         "@com_google_absl//absl/status",
++        "@com_google_absl//absl/strings",
+     ],
+ )
+ 
+diff --git a/third_party/maldoca/src/maldoca/base/get_runfiles_dir.cc b/third_party/maldoca/src/maldoca/base/get_runfiles_dir.cc
+index 73943a3a23cf0..6723bb129193f 100644
+--- a/third_party/maldoca/src/maldoca/base/get_runfiles_dir.cc
++++ b/third_party/maldoca/src/maldoca/base/get_runfiles_dir.cc
+@@ -15,6 +15,7 @@
+ #include "maldoca/base/get_runfiles_dir.h"
+ 
+ #include "absl/status/status.h"
++#include "absl/strings/str_cat.h"
+ #include "maldoca/base/logging.h"
+ #include "maldoca/base/status_macros.h"
+ 
+diff --git a/third_party/maldoca/src/maldoca/service/BUILD.bazel b/third_party/maldoca/src/maldoca/service/BUILD.bazel
+index 8791c783f55d5..7edf003b98f57 100644
+--- a/third_party/maldoca/src/maldoca/service/BUILD.bazel
++++ b/third_party/maldoca/src/maldoca/service/BUILD.bazel
+@@ -236,10 +236,18 @@ cc_library(
+             ":processing_component",
+             "//maldoca/pdf_parser:adobe_api_mapper",
+             "//maldoca/pdf_parser:pdfium_processor",
++            "@com_google_absl//absl/status",
++            "@com_google_absl//absl/status:statusor",
++            "@com_google_absl//absl/strings",
++            "@com_google_absl//absl/strings:string_view",
+         ],
+         "//:chrome_build": [
+             ":office_processing_component",
+             ":processing_component",
++            "@com_google_absl//absl/status",
++            "@com_google_absl//absl/status:statusor",
++            "@com_google_absl//absl/strings",
++            "@com_google_absl//absl/strings:string_view",
+         ],
+     }),
+ )
+diff --git a/third_party/maldoca/src/maldoca/service/common/processing_component_factory.cc b/third_party/maldoca/src/maldoca/service/common/processing_component_factory.cc
+index b92ee20ea13bb..7dca60d9602ce 100644
+--- a/third_party/maldoca/src/maldoca/service/common/processing_component_factory.cc
++++ b/third_party/maldoca/src/maldoca/service/common/processing_component_factory.cc
+@@ -14,6 +14,10 @@
+ 
+ #include "maldoca/service/common/processing_component_factory.h"
+ 
++#include "absl/status/status.h"
++#include "absl/status/statusor.h"
++#include "absl/strings/str_cat.h"
++#include "absl/strings/string_view.h"
+ #include "maldoca/service/common/office_processing_component.h"
+ 
+ #ifndef MALDOCA_CHROME
+diff --git a/third_party/maldoca/src/maldoca/service/common/processing_component_factory.h b/third_party/maldoca/src/maldoca/service/common/processing_component_factory.h
+index a6d9e11998367..70d8e3d966f80 100644
+--- a/third_party/maldoca/src/maldoca/service/common/processing_component_factory.h
++++ b/third_party/maldoca/src/maldoca/service/common/processing_component_factory.h
+@@ -22,6 +22,8 @@
+ #include "maldoca/pdf_parser/pdfium_processor.h"
+ #endif
+ 
++#include "absl/status/statusor.h"
++#include "absl/strings/string_view.h"
+ #include "maldoca/service/common/processing_component.h"
+ 
+ namespace maldoca {

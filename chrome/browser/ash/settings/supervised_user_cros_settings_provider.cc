@@ -4,9 +4,10 @@
 
 #include "chrome/browser/ash/settings/supervised_user_cros_settings_provider.h"
 
+#include <string_view>
+
 #include "base/check.h"
 #include "base/containers/contains.h"
-#include "base/strings/string_piece.h"
 #include "base/values.h"
 #include "chromeos/ash/components/settings/cros_settings_names.h"
 #include "components/account_id/account_id.h"
@@ -29,7 +30,7 @@ SupervisedUserCrosSettingsProvider::~SupervisedUserCrosSettingsProvider() =
     default;
 
 const base::Value* SupervisedUserCrosSettingsProvider::Get(
-    base::StringPiece path) const {
+    std::string_view path) const {
   DCHECK(HandlesSetting(path));
   auto iter = child_user_restrictions_.find(path);
   return &(iter->second);
@@ -42,7 +43,7 @@ SupervisedUserCrosSettingsProvider::PrepareTrustedValues(
 }
 
 bool SupervisedUserCrosSettingsProvider::HandlesSetting(
-    base::StringPiece path) const {
+    std::string_view path) const {
   if (!user_manager::UserManager::IsInitialized())
     return false;
   auto* user_manager = user_manager::UserManager::Get();

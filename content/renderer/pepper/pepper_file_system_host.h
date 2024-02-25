@@ -10,6 +10,7 @@
 #include <string>
 
 #include "base/files/file.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "ppapi/c/pp_file_info.h"
@@ -23,9 +24,7 @@ namespace content {
 
 class RendererPpapiHost;
 
-class PepperFileSystemHost
-    : public ppapi::host::ResourceHost,
-      public base::SupportsWeakPtr<PepperFileSystemHost> {
+class PepperFileSystemHost final : public ppapi::host::ResourceHost {
  public:
   // Creates a new PepperFileSystemHost for a file system of a given |type|. The
   // host will not be connected to any specific file system, and will need to
@@ -59,6 +58,10 @@ class PepperFileSystemHost
   bool IsOpened() const { return opened_; }
   GURL GetRootUrl() const { return root_url_; }
 
+  base::WeakPtr<PepperFileSystemHost> AsWeakPtr() {
+    return weak_ptr_factory_.GetWeakPtr();
+  }
+
  private:
   // Callback for OpenFileSystem.
   void DidOpenFileSystem(const std::string& name_unused,
@@ -75,7 +78,7 @@ class PepperFileSystemHost
 
   blink::mojom::FileSystemManager* GetFileSystemManager();
 
-  RendererPpapiHost* renderer_ppapi_host_;
+  raw_ptr<RendererPpapiHost> renderer_ppapi_host_;
   ppapi::host::ReplyMessageContext reply_context_;
 
   PP_FileSystemType type_;
@@ -83,6 +86,8 @@ class PepperFileSystemHost
   GURL root_url_;
   bool called_open_;  // whether open has been called.
   mojo::Remote<blink::mojom::FileSystemManager> file_system_manager_remote_;
+
+  base::WeakPtrFactory<PepperFileSystemHost> weak_ptr_factory_{this};
 };
 
 }  // namespace content

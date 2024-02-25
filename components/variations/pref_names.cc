@@ -113,6 +113,10 @@ const char kVariationsSafeSeedLocale[] = "variations_safe_seed_locale";
 // The milestone with which the "safe" seed was fetched.
 const char kVariationsSafeSeedMilestone[] = "variations_safe_seed_milestone";
 
+// The seed that is used to randomize the limited entropy synthetic trial.
+const char kVariationsLimitedEntropySyntheticTrialSeed[] =
+    "variations_limited_entropy_synthetic_trial_seed";
+
 // A saved copy of |kVariationsPermanentConsistencyCountry|. The saved value is
 // the most recent value that was successfully used by the VariationsService for
 // evaluating permanent consistency studies.
@@ -139,6 +143,19 @@ const char kVariationsSeedDate[] = "variations_seed_date";
 
 // Digital signature of the binary variations seed data, base64-encoded.
 const char kVariationsSeedSignature[] = "variations_seed_signature";
+
+// Stores the list of field trials forced by field-trial-internals.
+const char kVariationsForcedFieldTrials[] = "variations_forced_field_trials";
+
+// The expiration time for all forced field trials.
+// See components/variations/field_trial_internals_utils.h for more detail.
+const char kVariationsForcedTrialExpiration[] =
+    "variations_forced_trial_expiration";
+
+// Number of Chrome starts which have occurred after forcing field trials.
+// Forced trials are automatically stopped after a few Chrome starts,
+// See components/variations/field_trial_internals_utils.h for more detail.
+const char kVariationsForcedTrialStarts[] = "variations_forced_trial_starts";
 
 }  // namespace prefs
 }  // namespace variations

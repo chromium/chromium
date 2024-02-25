@@ -14,8 +14,8 @@ import {ActivationStateType, CrosNetworkConfigRemote, InhibitReason, SecurityTyp
 import {ConnectionStateType, NetworkType, OncSource, PortalState} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/network_types.mojom-webui.js';
 import {keyDownOn} from 'chrome://resources/polymer/v3_0/iron-test-helpers/mock-interactions.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import {FakeNetworkConfig} from 'chrome://test/chromeos/fake_network_config_mojom.js';
-import {FakeESimManagerRemote} from 'chrome://test/cr_components/chromeos/cellular_setup/fake_esim_manager_remote.js';
+import {FakeNetworkConfig} from 'chrome://webui-test/chromeos/fake_network_config_mojom.js';
+import {FakeESimManagerRemote} from 'chrome://webui-test/cr_components/chromeos/cellular_setup/fake_esim_manager_remote.js';
 import {eventToPromise} from 'chrome://webui-test/test_util.js';
 
 suite('NetworkListItemTest', function() {
@@ -47,14 +47,16 @@ suite('NetworkListItemTest', function() {
     flush();
   }
 
-  function initCellularNetwork(iccid, eid, simLocked, name) {
+  function initCellularNetwork(iccid, eid, simLocked, simLockType, name) {
     const properties = OncMojo.getDefaultManagedProperties(
         NetworkType.kCellular, 'cellular', name);
     properties.typeProperties.cellular.iccid = iccid;
     properties.typeProperties.cellular.eid = eid;
     properties.typeProperties.cellular.simLocked = simLocked;
     mojoApi_.setManagedPropertiesForTest(properties);
-    return OncMojo.managedPropertiesToNetworkState(properties);
+    const networkState = OncMojo.managedPropertiesToNetworkState(properties);
+    networkState.typeState.cellular.simLockType = simLockType;
+    return networkState;
   }
 
   function setEventListeners() {
@@ -163,7 +165,8 @@ suite('NetworkListItemTest', function() {
     const euicc = eSimManagerRemote.addEuiccForTest(/*numProfiles=*/ 1);
     const providerName = 'provider1';
     listItem.item = initCellularNetwork(
-        /*iccid=*/ '1', /*eid=*/ '1', /*simlock=*/ false, 'nickname');
+        /*iccid=*/ '1', /*eid=*/ '1', /*simlock=*/ false, /*simlocktype*/ '',
+        'nickname');
     await flushAsync();
     assertEquals(
         listItem.i18n('networkListItemTitle', 'nickname', providerName),
@@ -172,7 +175,8 @@ suite('NetworkListItemTest', function() {
     // Change eSIM network's name to the same as provider name, verifies that
     // the title only show the network name.
     listItem.item = initCellularNetwork(
-        /*iccid=*/ '1', /*eid=*/ '1', /*simlock=*/ false, providerName);
+        /*iccid=*/ '1', /*eid=*/ '1', /*simlock=*/ false, /*simlocktype*/ '',
+        providerName);
     await flushAsync();
     assertEquals(providerName, getTitle());
   });
@@ -190,7 +194,7 @@ suite('NetworkListItemTest', function() {
     const badName = '<script>alert("Bad Name");</script>';
     listItem.item = initCellularNetwork(
         /*iccid=*/ '1', /*eid=*/ '1', /*simlock=*/ false,
-        /*name=*/ badName);
+        /*simlocktype*/ '', /*name=*/ badName);
     await flushAsync();
     assertTrue(!!listItem);
     assertTrue(getTitle().startsWith(badName));
@@ -661,6 +665,46 @@ suite('NetworkListItemTest', function() {
         listItem.i18n('networkListItemUpdatedCellularSimCardLocked');
 
     listItem.item = initCellularNetwork(iccid, eid, /*simlocked=*/ true);
+
+    await flushAsync();
+    const sublabel = listItem.$$('#sublabel');
+    assertTrue(!!sublabel);
+    assertEquals(networkStateLockedText, sublabel.textContent.trim());
+  });
+
+  test(
+      'Show carrier locked sublabel when cellular network is carrier locked',
+      async () => {
+        loadTimeData.overrideValues({
+          'isUserLoggedIn': true,
+          'isCellularCarrierLockEnabled': true,
+        });
+        init();
+        const iccid = '11111111111111111111';
+        const eid = '1';
+        eSimManagerRemote.addEuiccForTest(/*numProfiles=*/ 1);
+        const networkStateLockedText =
+            listItem.i18n('networkListItemUpdatedCellularSimCardCarrierLocked');
+        listItem.item = initCellularNetwork(
+            iccid, eid, /*simlocked=*/ true, /*simlocktype*/ 'network-pin');
+
+        await flushAsync();
+        const sublabel = listItem.$$('#sublabel');
+        assertTrue(!!sublabel);
+        assertEquals(networkStateLockedText, sublabel.textContent.trim());
+      });
+
+  test('Show sim locked sublabel when carrier lock is disabled', async () => {
+    loadTimeData.overrideValues(
+        {'isUserLoggedIn': true, 'isCellularCarrierLockEnabled': false});
+    init();
+    const iccid = '11111111111111111111';
+    const eid = '1';
+    eSimManagerRemote.addEuiccForTest(/*numProfiles=*/ 1);
+    const networkStateLockedText =
+        listItem.i18n('networkListItemUpdatedCellularSimCardLocked');
+    listItem.item = initCellularNetwork(
+        iccid, eid, /*simlocked=*/ true, /*simlocktype*/ 'network-pin');
 
     await flushAsync();
     const sublabel = listItem.$$('#sublabel');

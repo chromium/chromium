@@ -1,9 +1,7 @@
 This is a testharness.js-based test.
-FAIL innerHTML in XHTML: getting while the document is in an invalid state assert_throws_dom: getting element with ":" in its local name function "function() {
-    document.documentElement.innerHTML;
-  }" did not throw
-FAIL innerHTML in XHTML: getting while the document is in an invalid state 1 assert_throws_dom: Getting a Text node whose data contains characters that are not matched by the XML Char production function "function() {
-    document.getElementsByTagName("title")[0].innerHTML;
-  }" did not throw
+[FAIL] innerHTML in XHTML: getting while the document is in an invalid state
+  assert_throws_dom: getting element with ":" in its local name function "function() {\n    document.documentElement.innerHTML;\n  }" did not throw
+[FAIL] innerHTML in XHTML: getting while the document is in an invalid state 1
+  assert_throws_dom: Getting a Text node whose data contains characters that are not matched by the XML Char production function "function() {\n    document.getElementsByTagName("title")[0].innerHTML;\n  }" did not throw
 Harness: the test ran to completion.
 

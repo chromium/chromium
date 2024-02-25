@@ -5,6 +5,7 @@
 #include "components/send_tab_to_self/send_tab_to_self_bridge.h"
 
 #include <algorithm>
+#include <optional>
 
 #include "base/check_op.h"
 #include "base/containers/cxx20_erase_vector.h"
@@ -30,7 +31,6 @@
 #include "components/sync/model/mutable_data_batch.h"
 #include "components/sync/protocol/model_type_state.pb.h"
 #include "components/sync_device_info/local_device_info_util.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace send_tab_to_self {
 
@@ -59,7 +59,7 @@ std::unique_ptr<syncer::EntityData> CopyToEntityData(
 
 // Parses the content of |record_list| into |*initial_data|. The output
 // parameter is first for binding purposes.
-absl::optional<syncer::ModelError> ParseLocalEntriesOnBackendSequence(
+std::optional<syncer::ModelError> ParseLocalEntriesOnBackendSequence(
     base::Time now,
     std::map<std::string, std::unique_ptr<SendTabToSelfEntry>>* entries,
     std::string* local_personalizable_device_name,
@@ -82,7 +82,7 @@ absl::optional<syncer::ModelError> ParseLocalEntriesOnBackendSequence(
     }
   }
 
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 }  // namespace
@@ -124,7 +124,7 @@ SendTabToSelfBridge::CreateMetadataChangeList() {
   return ModelTypeStore::WriteBatch::CreateMetadataChangeList();
 }
 
-absl::optional<syncer::ModelError> SendTabToSelfBridge::MergeFullSyncData(
+std::optional<syncer::ModelError> SendTabToSelfBridge::MergeFullSyncData(
     std::unique_ptr<syncer::MetadataChangeList> metadata_change_list,
     syncer::EntityChangeList entity_data) {
   DCHECK(entries_.empty());
@@ -132,7 +132,7 @@ absl::optional<syncer::ModelError> SendTabToSelfBridge::MergeFullSyncData(
                                      std::move(entity_data));
 }
 
-absl::optional<syncer::ModelError>
+std::optional<syncer::ModelError>
 SendTabToSelfBridge::ApplyIncrementalSyncChanges(
     std::unique_ptr<syncer::MetadataChangeList> metadata_change_list,
     syncer::EntityChangeList entity_changes) {
@@ -201,7 +201,7 @@ SendTabToSelfBridge::ApplyIncrementalSyncChanges(
   NotifyRemoteSendTabToSelfEntryAdded(added);
   NotifyRemoteSendTabToSelfEntryOpened(opened);
 
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 void SendTabToSelfBridge::GetData(StorageKeyList storage_keys,
@@ -513,7 +513,7 @@ void SendTabToSelfBridge::NotifySendTabToSelfModelLoaded() {
 }
 
 void SendTabToSelfBridge::OnStoreCreated(
-    const absl::optional<syncer::ModelError>& error,
+    const std::optional<syncer::ModelError>& error,
     std::unique_ptr<syncer::ModelTypeStore> store) {
   if (error) {
     change_processor()->ReportError(*error);
@@ -539,7 +539,7 @@ void SendTabToSelfBridge::OnStoreCreated(
 void SendTabToSelfBridge::OnReadAllData(
     std::unique_ptr<SendTabToSelfEntries> initial_entries,
     std::unique_ptr<std::string> local_device_name,
-    const absl::optional<syncer::ModelError>& error) {
+    const std::optional<syncer::ModelError>& error) {
   DCHECK(initial_entries);
   DCHECK(local_device_name);
 
@@ -556,7 +556,7 @@ void SendTabToSelfBridge::OnReadAllData(
 }
 
 void SendTabToSelfBridge::OnReadAllMetadata(
-    const absl::optional<syncer::ModelError>& error,
+    const std::optional<syncer::ModelError>& error,
     std::unique_ptr<syncer::MetadataBatch> metadata_batch) {
   TRACE_EVENT0("ui", "SendTabToSelfBridge::OnReadAllMetadata");
   if (error) {
@@ -570,7 +570,7 @@ void SendTabToSelfBridge::OnReadAllMetadata(
 }
 
 void SendTabToSelfBridge::OnCommit(
-    const absl::optional<syncer::ModelError>& error) {
+    const std::optional<syncer::ModelError>& error) {
   if (error) {
     change_processor()->ReportError(*error);
   }
@@ -616,13 +616,13 @@ void SendTabToSelfBridge::ComputeTargetDeviceInfoSortedList() {
     return;
   }
 
-  std::vector<std::unique_ptr<syncer::DeviceInfo>> all_devices =
+  std::vector<const syncer::DeviceInfo*> all_devices =
       device_info_tracker_->GetAllDeviceInfo();
 
   // Sort the DeviceInfo vector so the most recently modified devices are first.
   std::stable_sort(all_devices.begin(), all_devices.end(),
-                   [](const std::unique_ptr<syncer::DeviceInfo>& device1,
-                      const std::unique_ptr<syncer::DeviceInfo>& device2) {
+                   [](const syncer::DeviceInfo* device1,
+                      const syncer::DeviceInfo* device2) {
                      return device1->last_updated_timestamp() >
                             device2->last_updated_timestamp();
                    });
@@ -630,7 +630,7 @@ void SendTabToSelfBridge::ComputeTargetDeviceInfoSortedList() {
   target_device_info_sorted_list_.clear();
   std::set<std::string> unique_device_names;
   std::unordered_map<std::string, int> short_names_counter;
-  for (const auto& device : all_devices) {
+  for (const syncer::DeviceInfo* device : all_devices) {
     // If the current device is considered expired for our purposes, stop here
     // since the next devices in the vector are at least as expired than this
     // one.
@@ -651,7 +651,7 @@ void SendTabToSelfBridge::ComputeTargetDeviceInfoSortedList() {
       continue;
     }
 
-    SharingDeviceNames device_names = GetSharingDeviceNames(device.get());
+    SharingDeviceNames device_names = GetSharingDeviceNames(device);
 
     // Don't include this device if it has the same name as the local device.
     if (device_names.full_name == local_device_name_) {

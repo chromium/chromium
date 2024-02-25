@@ -1,0 +1,7 @@
+This is a testharness.js-based test.
+Harness Error. harness_status.status = 1 , harness_status.message = Test named 'cookieStore.subscribe without url in option' specified 2 'cleanup' functions, and 1 failed.
+[PASS NOTRUN] cookieStore.subscribe with invalid url path in option
+[PASS NOTRUN] cookieStore.subscribe is idempotent
+[PASS NOTRUN] CookieStore.unsubscribe is idempotent
+Harness: the test ran to completion.
+

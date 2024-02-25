@@ -7,7 +7,6 @@ import {ElementsTestRunner} from 'elements_test_runner';
 
 (async function() {
   TestRunner.addResult(`Verifies that property value editing triggers style update in rendering engine.\n`);
-  await TestRunner.loadLegacyModule('elements');
   await TestRunner.showPanel('elements');
   await TestRunner.loadHTML(`
       <div id="inspected" style="font-size: 19px"></div>
@@ -17,7 +16,7 @@ import {ElementsTestRunner} from 'elements_test_runner';
 
   function testEmulateKeypress() {
     var treeElement = ElementsTestRunner.getMatchedStylePropertyTreeItem('font-size');
-    treeElement.startEditing(treeElement.valueElement);
+    treeElement.startEditingValue();
     var selection = treeElement.valueElement.getComponentSelection();
     var range = selection.getRangeAt(0);
     var newRange = document.createRange();

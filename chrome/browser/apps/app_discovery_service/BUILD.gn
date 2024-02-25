@@ -1,0 +1,90 @@
+# Copyright 2023 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/chromeos/ui_mode.gni")
+
+# App Discovery Service is Ash-only.
+assert(is_chromeos_ash)
+
+source_set("app_discovery_service") {
+  sources = [
+    "almanac_fetcher.cc",
+    "almanac_fetcher.h",
+    "app_discovery_service.cc",
+    "app_discovery_service.h",
+    "app_discovery_service_factory.cc",
+    "app_discovery_service_factory.h",
+    "app_discovery_util.h",
+    "app_fetcher_manager.cc",
+    "app_fetcher_manager.h",
+    "game_extras.cc",
+    "game_extras.h",
+    "game_fetcher.cc",
+    "game_fetcher.h",
+    "launcher_app_almanac_connector.cc",
+    "launcher_app_almanac_connector.h",
+    "play_extras.cc",
+    "play_extras.h",
+    "recommended_arc_app_fetcher.cc",
+    "recommended_arc_app_fetcher.h",
+    "result.cc",
+    "result.h",
+    "test_fetcher.cc",
+    "test_fetcher.h",
+  ]
+
+  deps = [
+    "//base",
+    "//chrome/browser/apps/almanac_api_client",
+    "//chrome/browser/apps/app_discovery_service/almanac_api:proto",
+    "//chrome/browser/apps/app_discovery_service/recommended_arc_apps",
+    "//chrome/browser/apps/app_provisioning_service",
+    "//chrome/browser/profiles:profile",
+    "//chromeos/constants",
+    "//components/country_codes",
+    "//components/keyed_service/core",
+    "//components/language/core/browser",
+    "//components/pref_registry",
+    "//components/prefs",
+    "//content/public/browser",
+    "//google_apis",
+    "//services/data_decoder/public/cpp",
+    "//services/network/public/cpp",
+    "//ui/base",
+    "//ui/gfx",
+    "//url",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+
+  sources = [
+    "almanac_fetcher_unittest.cc",
+    "app_discovery_service_unittest.cc",
+    "game_fetcher_unittest.cc",
+    "launcher_app_almanac_connector_unittest.cc",
+    "recommended_arc_app_fetcher_unittest.cc",
+  ]
+
+  deps = [
+    ":app_discovery_service",
+    "//base",
+    "//base/test:proto_test_support",
+    "//base/test:test_support",
+    "//chrome/browser/apps/almanac_api_client:test_support",
+    "//chrome/browser/apps/app_discovery_service/almanac_api:launcher_app_descriptor",
+    "//chrome/browser/apps/app_discovery_service/almanac_api:proto",
+    "//chrome/browser/apps/app_discovery_service/recommended_arc_apps:unit_tests",
+    "//chrome/browser/apps/app_provisioning_service/proto",
+    "//chrome/browser/profiles:profile",
+    "//chrome/browser/web_applications:web_applications_test_support",
+    "//chrome/common:constants",
+    "//chrome/test:test_support",
+    "//content/test:test_support",
+    "//testing/gtest",
+  ]
+
+  data = [ "$root_gen_dir/chrome/browser/apps/app_discovery_service/almanac_api/launcher_app.descriptor" ]
+}

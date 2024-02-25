@@ -5,10 +5,10 @@
 #ifndef UI_MESSAGE_CENTER_MESSAGE_CENTER_OBSERVER_H_
 #define UI_MESSAGE_CENTER_MESSAGE_CENTER_OBSERVER_H_
 
+#include <optional>
 #include <string>
 
 #include "base/observer_list_types.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/message_center/message_center_export.h"
 #include "ui/message_center/message_center_types.h"
 
@@ -40,8 +40,8 @@ class MESSAGE_CENTER_EXPORT MessageCenterObserver
   // an input field associated with the button.
   virtual void OnNotificationClicked(
       const std::string& notification_id,
-      const absl::optional<int>& button_index,
-      const absl::optional<std::u16string>& reply) {}
+      const std::optional<int>& button_index,
+      const std::optional<std::u16string>& reply) {}
 
   // Called when notification settings button is clicked. The |handled| argument
   // indicates whether the notification delegate already handled the operation.

@@ -114,16 +114,16 @@ class CORE_EXPORT FontFace : public ScriptWrappable,
   void setSizeAdjust(ExecutionContext*, const String&, ExceptionState&);
 
   String status() const;
-  ScriptPromise loaded(ScriptState* script_state) {
+  ScriptPromiseTyped<FontFace> loaded(ScriptState* script_state) {
     return FontStatusPromise(script_state);
   }
 
-  ScriptPromise load(ScriptState*);
+  ScriptPromiseTyped<FontFace> load(ScriptState*);
 
   LoadStatusType LoadStatus() const { return status_; }
   void SetLoadStatus(LoadStatusType);
   void SetError(DOMException* = nullptr);
-  DOMException* GetError() const { return error_; }
+  DOMException* GetError() const { return error_.Get(); }
   FontSelectionCapabilities GetFontSelectionCapabilities() const;
   CSSFontFace* CssFontFace() { return css_font_face_.Get(); }
   size_t ApproximateBlankCharacterCount() const;
@@ -154,12 +154,12 @@ class CORE_EXPORT FontFace : public ScriptWrappable,
   }
   FontMetricsOverride GetFontMetricsOverride() const;
 
-  bool HasSizeAdjust() const { return size_adjust_; }
+  bool HasSizeAdjust() const { return size_adjust_ != nullptr; }
   float GetSizeAdjust() const;
 
   Document* GetDocument() const;
 
-  const StyleRuleFontFace* GetStyleRule() const { return style_rule_; }
+  const StyleRuleFontFace* GetStyleRule() const { return style_rule_.Get(); }
   bool IsUserStyle() const { return is_user_style_; }
 
  private:
@@ -185,11 +185,10 @@ class CORE_EXPORT FontFace : public ScriptWrappable,
   bool SetPropertyFromStyle(const CSSPropertyValueSet&, AtRuleDescriptorID);
   bool SetPropertyValue(const CSSValue*, AtRuleDescriptorID);
   void SetFamilyValue(const CSSFontFamilyValue&);
-  ScriptPromise FontStatusPromise(ScriptState*);
+  ScriptPromiseTyped<FontFace> FontStatusPromise(ScriptState*);
   void RunCallbacks();
 
-  using LoadedProperty =
-      ScriptPromiseProperty<Member<FontFace>, Member<DOMException>>;
+  using LoadedProperty = ScriptPromiseProperty<FontFace, DOMException>;
 
   HeapVector<Member<LoadFontCallback>> callbacks_;
   AtomicString family_;

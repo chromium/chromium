@@ -145,7 +145,7 @@ void TetherControllerImpl::AttemptTurningOnTethering() {
   multidevice_setup_client_->SetFeatureEnabledState(
       Feature::kInstantTethering,
       /*enabled=*/true,
-      /*auth_token=*/absl::nullopt,
+      /*auth_token=*/std::nullopt,
       base::BindOnce(&TetherControllerImpl::OnSetFeatureEnabled,
                      weak_ptr_factory_.GetWeakPtr()));
 }

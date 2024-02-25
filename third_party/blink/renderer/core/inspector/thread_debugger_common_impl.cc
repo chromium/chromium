@@ -51,7 +51,7 @@
 #include "third_party/blink/renderer/platform/bindings/v8_dom_wrapper.h"
 #include "third_party/blink/renderer/platform/scheduler/public/thread_scheduler.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
-
+#include "third_party/blink/renderer/platform/wtf/text/string_hash.h"
 namespace blink {
 
 ThreadDebuggerCommonImpl::ThreadDebuggerCommonImpl(v8::Isolate* isolate)
@@ -187,6 +187,7 @@ v8::Local<v8::Object> SerializeNodeToV8Object(
   static const char kBackendNodeId[] = "backendNodeId";
   static const char kChildren[] = "children";
   static const char kChildNodeCount[] = "childNodeCount";
+  static const char kLoaderId[] = "loaderId";
   static const char kLocalName[] = "localName";
   static const char kNamespaceURI[] = "namespaceURI";
   static const char kNode[] = "node";
@@ -197,8 +198,8 @@ v8::Local<v8::Object> SerializeNodeToV8Object(
   static const char kShadowRootOpen[] = "open";
   static const char kShadowRootClosed[] = "closed";
 
-  Vector<v8::Local<v8::Name>> serialized_value_keys;
-  Vector<v8::Local<v8::Value>> serialized_value_values;
+  v8::LocalVector<v8::Name> serialized_value_keys(isolate);
+  v8::LocalVector<v8::Value> serialized_value_values(isolate);
   serialized_value_keys.push_back(V8String(isolate, kNodeType));
   serialized_value_values.push_back(
       v8::Number::New(isolate, node->getNodeType()));
@@ -212,9 +213,13 @@ v8::Local<v8::Object> SerializeNodeToV8Object(
   serialized_value_values.push_back(
       v8::Number::New(isolate, node->CountChildren()));
 
-  DOMNodeId backend_node_id = DOMNodeIds::IdForNode(node);
+  DOMNodeId backend_node_id = node->GetDomNodeId();
   serialized_value_keys.push_back(V8String(isolate, kBackendNodeId));
   serialized_value_values.push_back(v8::Number::New(isolate, backend_node_id));
+
+  serialized_value_keys.push_back(V8String(isolate, kLoaderId));
+  serialized_value_values.push_back(V8String(
+      isolate, IdentifiersFactory::LoaderId(node->GetDocument().Loader())));
 
   if (node->IsAttributeNode()) {
     Attr* attribute = To<Attr>(node);
@@ -224,8 +229,12 @@ v8::Local<v8::Object> SerializeNodeToV8Object(
         V8String(isolate, attribute->localName()));
 
     serialized_value_keys.push_back(V8String(isolate, kNamespaceURI));
-    serialized_value_values.push_back(
-        V8String(isolate, attribute->namespaceURI()));
+    if (attribute->namespaceURI().IsNull()) {
+      serialized_value_values.push_back(v8::Null(isolate));
+    } else {
+      serialized_value_values.push_back(
+          V8String(isolate, attribute->namespaceURI()));
+    }
   }
 
   if (node->IsElementNode()) {
@@ -252,8 +261,8 @@ v8::Local<v8::Object> SerializeNodeToV8Object(
     serialized_value_values.push_back(
         V8String(isolate, element->namespaceURI()));
 
-    Vector<v8::Local<v8::Name>> node_attributes_keys;
-    Vector<v8::Local<v8::Value>> node_attributes_values;
+    v8::LocalVector<v8::Name> node_attributes_keys(isolate);
+    v8::LocalVector<v8::Value> node_attributes_values(isolate);
 
     for (const Attribute& attribute : element->Attributes()) {
       node_attributes_keys.push_back(
@@ -281,13 +290,13 @@ v8::Local<v8::Object> SerializeNodeToV8Object(
     if (include_shadow_tree == kNone) {
       include_children = false;
     } else if (include_shadow_tree == kOpen &&
-               shadow_root->GetType() != ShadowRootType::kOpen) {
+               shadow_root->GetMode() != ShadowRootMode::kOpen) {
       include_children = false;
     }
 
     serialized_value_keys.push_back(V8String(isolate, kShadowRootMode));
     serialized_value_values.push_back(
-        V8String(isolate, shadow_root->GetType() == ShadowRootType::kOpen
+        V8String(isolate, shadow_root->GetMode() == ShadowRootMode::kOpen
                               ? kShadowRootOpen
                               : kShadowRootClosed));
   }
@@ -318,8 +327,8 @@ v8::Local<v8::Object> SerializeNodeToV8Object(
       isolate, v8::Null(isolate), serialized_value_keys.data(),
       serialized_value_values.data(), serialized_value_keys.size());
 
-  Vector<v8::Local<v8::Name>> result_keys;
-  Vector<v8::Local<v8::Value>> result_values;
+  v8::LocalVector<v8::Name> result_keys(isolate);
+  v8::LocalVector<v8::Value> result_values(isolate);
 
   result_keys.push_back(TypeStringKey(isolate));
   result_values.push_back(V8String(isolate, kNode));
@@ -389,25 +398,24 @@ std::unique_ptr<v8_inspector::DeepSerializedValue> DeepSerializeNodeList(
 
 std::unique_ptr<v8_inspector::DeepSerializedValue> DeepSerializeNode(
     Node* node,
-    v8::Isolate* isolate_,
+    v8::Isolate* isolate,
     int max_node_depth,
     ShadowTreeSerialization include_shadow_tree) {
   v8::Local<v8::Object> node_v8_object = SerializeNodeToV8Object(
-      node, isolate_, max_node_depth, include_shadow_tree);
+      node, isolate, max_node_depth, include_shadow_tree);
 
   v8::Local<v8::Value> value_v8_object =
-      node_v8_object
-          ->Get(isolate_->GetCurrentContext(), ValueStringKey(isolate_))
+      node_v8_object->Get(isolate->GetCurrentContext(), ValueStringKey(isolate))
           .ToLocalChecked();
 
   // Safely get `type` from object value.
-  v8::MaybeLocal<v8::Value> maybe_type_v8_value = node_v8_object->Get(
-      isolate_->GetCurrentContext(), TypeStringKey(isolate_));
+  v8::MaybeLocal<v8::Value> maybe_type_v8_value =
+      node_v8_object->Get(isolate->GetCurrentContext(), TypeStringKey(isolate));
   DCHECK(!maybe_type_v8_value.IsEmpty());
   v8::Local<v8::Value> type_v8_value = maybe_type_v8_value.ToLocalChecked();
   DCHECK(type_v8_value->IsString());
   v8::Local<v8::String> type_v8_string = type_v8_value.As<v8::String>();
-  String type_string = ToCoreString(type_v8_string);
+  String type_string = ToCoreString(isolate, type_v8_string);
   StringView type_string_view = StringView(type_string);
   std::unique_ptr<v8_inspector::StringBuffer> type_string_buffer =
       ToV8InspectorStringBuffer(type_string_view);
@@ -421,8 +429,8 @@ std::unique_ptr<v8_inspector::DeepSerializedValue> DeepSerializeWindow(
     v8::Isolate* isolate) {
   static const char kContextParameterName[] = "context";
 
-  Vector<v8::Local<v8::Name>> keys;
-  Vector<v8::Local<v8::Value>> values;
+  v8::LocalVector<v8::Name> keys(isolate);
+  v8::LocalVector<v8::Value> values(isolate);
 
   keys.push_back(V8String(isolate, kContextParameterName));
   values.push_back(
@@ -473,8 +481,8 @@ bool ReadAdditionalSerializationParameters(
                    " should be of type string."));
         return false;
       }
-      String include_shadow_tree_string =
-          ToCoreString(include_shadow_tree_value.As<v8::String>());
+      String include_shadow_tree_string = ToCoreString(
+          context->GetIsolate(), include_shadow_tree_value.As<v8::String>());
 
       if (include_shadow_tree_string == kIncludeShadowTreeValueNone) {
         include_shadow_tree = ShadowTreeSerialization::kNone;
@@ -646,7 +654,7 @@ ThreadDebuggerCommonImpl::descriptionForValueSubtype(
 }
 
 double ThreadDebuggerCommonImpl::currentTimeMS() {
-  return base::Time::Now().ToDoubleT() * 1000.0;
+  return base::Time::Now().InMillisecondsFSinceUnixEpoch();
 }
 
 bool ThreadDebuggerCommonImpl::isInspectableHeapObject(
@@ -782,17 +790,20 @@ void ThreadDebuggerCommonImpl::installAdditionalCommandLineAPI(
 static Vector<String> NormalizeEventTypes(
     const v8::FunctionCallbackInfo<v8::Value>& info) {
   Vector<String> types;
+  v8::Isolate* isolate = info.GetIsolate();
   if (info.Length() > 1 && info[1]->IsString())
-    types.push_back(ToCoreString(info[1].As<v8::String>()));
+    types.push_back(ToCoreString(isolate, info[1].As<v8::String>()));
   if (info.Length() > 1 && info[1]->IsArray()) {
     v8::Local<v8::Array> types_array = v8::Local<v8::Array>::Cast(info[1]);
     for (wtf_size_t i = 0; i < types_array->Length(); ++i) {
       v8::Local<v8::Value> type_value;
-      if (!types_array->Get(info.GetIsolate()->GetCurrentContext(), i)
+      if (!types_array->Get(isolate->GetCurrentContext(), i)
                .ToLocal(&type_value) ||
-          !type_value->IsString())
+          !type_value->IsString()) {
         continue;
-      types.push_back(ToCoreString(v8::Local<v8::String>::Cast(type_value)));
+      }
+      types.push_back(
+          ToCoreString(isolate, v8::Local<v8::String>::Cast(type_value)));
     }
   }
   if (info.Length() == 1)
@@ -962,24 +973,27 @@ void ThreadDebuggerCommonImpl::GetEventListenersCallback(
   callback_info.GetReturnValue().Set(result);
 }
 
+static uint64_t GetTraceId(ThreadDebuggerCommonImpl* this_thread_debugger,
+                           const v8_inspector::StringView& title_view) {
+  WTF::String title = ToCoreString(title_view);
+  unsigned title_hash = WTF::GetHash(title);
+  return title_hash ^ (reinterpret_cast<uintptr_t>(this_thread_debugger));
+}
+
 void ThreadDebuggerCommonImpl::consoleTime(
-    const v8_inspector::StringView& title) {
-  // TODO(dgozman): we can save on a copy here if trace macro would take a
-  // pointer with length.
+    const v8_inspector::StringView& title_view) {
   TRACE_EVENT_COPY_NESTABLE_ASYNC_BEGIN0(
-      "blink.console", ToCoreString(title).Utf8().c_str(),
-      TRACE_ID_WITH_SCOPE(ToCoreString(title).Utf8().c_str(),
-                          TRACE_ID_LOCAL(this)));
+      "blink.console", ToCoreString(title_view).Utf8().c_str(),
+      TRACE_ID_WITH_SCOPE("console.time",
+                          TRACE_ID_LOCAL(GetTraceId(this, title_view))));
 }
 
 void ThreadDebuggerCommonImpl::consoleTimeEnd(
-    const v8_inspector::StringView& title) {
-  // TODO(dgozman): we can save on a copy here if trace macro would take a
-  // pointer with length.
+    const v8_inspector::StringView& title_view) {
   TRACE_EVENT_COPY_NESTABLE_ASYNC_END0(
-      "blink.console", ToCoreString(title).Utf8().c_str(),
-      TRACE_ID_WITH_SCOPE(ToCoreString(title).Utf8().c_str(),
-                          TRACE_ID_LOCAL(this)));
+      "blink.console", ToCoreString(title_view).Utf8().c_str(),
+      TRACE_ID_WITH_SCOPE("console.time",
+                          TRACE_ID_LOCAL(GetTraceId(this, title_view))));
 }
 
 void ThreadDebuggerCommonImpl::consoleTimeStamp(

@@ -159,7 +159,8 @@ class TreeSynchronizerTest : public testing::Test {
 
  protected:
   TreeSynchronizerTest()
-      : animation_host_(AnimationHost::CreateForTesting(ThreadInstance::MAIN)) {
+      : animation_host_(
+            AnimationHost::CreateForTesting(ThreadInstance::kMain)) {
     LayerTreeSettings settings;
     ResetLayerTreeHost(settings);
   }

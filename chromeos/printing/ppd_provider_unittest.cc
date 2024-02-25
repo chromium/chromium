@@ -30,19 +30,25 @@
 #include "chromeos/printing/ppd_metadata_manager.h"
 #include "chromeos/printing/printer_config_cache.h"
 #include "chromeos/printing/printer_configuration.h"
+#include "chromeos/printing/remote_ppd_fetcher.h"
 #include "testing/gmock/include/gmock/gmock-matchers.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "url/gurl.h"
 
 namespace chromeos {
 
 namespace {
 
 using PrinterDiscoveryType = PrinterSearchData::PrinterDiscoveryType;
+using ::testing::_;
 using ::testing::AllOf;
 using ::testing::Eq;
 using ::testing::Field;
+using ::testing::Invoke;
 using ::testing::StrEq;
 using ::testing::UnorderedElementsAre;
+using ::testing::WithArg;
 
 // A pseudo-ppd that should get cupsFilter lines extracted from it.
 const char kCupsFilterPpdContents[] = R"(
@@ -83,16 +89,22 @@ const char kDefaultManufacturersJson[] = R"({
   }
 })";
 
+struct MockRemotePpdFetcher : RemotePpdFetcher {
+  MOCK_METHOD(void,
+              Fetch,
+              (const GURL& url, FetchCallback cb),
+              (const, override));
+};
+
 // Unowned raw pointers to helper classes composed into the
 // PpdProvider at construct time. Used throughout to activate testing
 // codepaths.
 struct PpdProviderComposedMembers {
-  raw_ptr<FakePrinterConfigCache, DanglingUntriaged | ExperimentalAsh>
-      config_cache = nullptr;
-  raw_ptr<FakePrinterConfigCache, DanglingUntriaged | ExperimentalAsh>
-      manager_config_cache = nullptr;
-  raw_ptr<PpdMetadataManager, DanglingUntriaged | ExperimentalAsh>
-      metadata_manager = nullptr;
+  raw_ptr<FakePrinterConfigCache, DanglingUntriaged> config_cache = nullptr;
+  raw_ptr<FakePrinterConfigCache, DanglingUntriaged> manager_config_cache =
+      nullptr;
+  raw_ptr<PpdMetadataManager, DanglingUntriaged> metadata_manager = nullptr;
+  raw_ptr<MockRemotePpdFetcher, DanglingUntriaged> remote_ppd_fetcher = nullptr;
 };
 
 class PpdProviderTest : public ::testing::Test {
@@ -176,8 +188,12 @@ class PpdProviderTest : public ::testing::Test {
     auto config_cache = std::make_unique<FakePrinterConfigCache>();
     provider_backdoor_.config_cache = config_cache.get();
 
+    auto remote_ppd_fetcher = std::make_unique<MockRemotePpdFetcher>();
+    provider_backdoor_.remote_ppd_fetcher = remote_ppd_fetcher.get();
+
     return PpdProvider::Create(base::Version("40.8.6753.09"), ppd_cache_,
-                               std::move(manager), std::move(config_cache));
+                               std::move(manager), std::move(config_cache),
+                               std::move(remote_ppd_fetcher));
   }
 
   // Fills the fake Chrome OS Printing serving root with content.
@@ -249,6 +265,26 @@ class PpdProviderTest : public ::testing::Test {
   // Discard the result of a ResolvePpd() call.
   void DiscardResolvePpd(PpdProvider::CallbackResultCode code,
                          const std::string& contents) {}
+
+  void MockRemotePpdFetchResult(const std::string& url, std::string content) {
+    auto invoke_callback_with_content =
+        [content](RemotePpdFetcher::FetchCallback cb) {
+          std::move(cb).Run(RemotePpdFetcher::FetchResultCode::kSuccess,
+                            std::move(content));
+        };
+    EXPECT_CALL(*provider_backdoor_.remote_ppd_fetcher, Fetch(GURL(url), _))
+        .WillOnce(Invoke(WithArg<1>(invoke_callback_with_content)));
+  }
+
+  void MockRemotePpdFetchResult(const std::string& url,
+                                RemotePpdFetcher::FetchResultCode code) {
+    auto invoke_callback_with_content =
+        [code](RemotePpdFetcher::FetchCallback cb) {
+          std::move(cb).Run(code, std::string());
+        };
+    EXPECT_CALL(*provider_backdoor_.remote_ppd_fetcher, Fetch(GURL(url), _))
+        .WillOnce(Invoke(WithArg<1>(invoke_callback_with_content)));
+  }
 
   // Calls the ResolveManufacturer() method of the |provider| and
   // waits for its completion. Ignores the returned string values and
@@ -821,29 +857,6 @@ TEST_F(PpdProviderTest, ResolveServerKeyPpd) {
                 Field(&CapturedResolvePpdResults::ppd_contents, StrEq("c")))));
 }
 
-// Test that we *don't* resolve a ppd URL over non-file schemes.  It's not clear
-// whether we'll want to do this in the long term, but for now this is
-// disallowed because we're not sure we completely understand the security
-// implications.
-TEST_F(PpdProviderTest, ResolveUserSuppliedUrlPpdFromNetworkFails) {
-  auto provider =
-      CreateProvider({"en", PpdCacheRunLocation::kInBackgroundThreads,
-                      PropagateLocaleToMetadataManager::kDoPropagate});
-  StartFakePpdServer();
-
-  Printer::PpdReference ref;
-  // PpdProvider::ResolvePpd() shall fail if a user-supplied PPD URL
-  // does not begin with the "file://" scheme.
-  ref.user_supplied_ppd_url = "nonfilescheme://unused";
-  provider->ResolvePpd(ref, base::BindOnce(&PpdProviderTest::CaptureResolvePpd,
-                                           base::Unretained(this)));
-  task_environment_.RunUntilIdle();
-
-  ASSERT_EQ(1UL, captured_resolve_ppd_.size());
-  EXPECT_EQ(PpdProvider::INTERNAL_ERROR, captured_resolve_ppd_[0].code);
-  EXPECT_TRUE(captured_resolve_ppd_[0].ppd_contents.empty());
-}
-
 // Test a successful ppd resolution from a user_supplied_url field when
 // reading from a file.  Note we shouldn't need the server to be up
 // to do this successfully, as we should be able to do this offline.
@@ -1184,6 +1197,77 @@ TEST_F(PpdProviderTest, GenericZebraPpdResolution) {
 
   EXPECT_EQ(PpdProvider::SUCCESS, captured_resolve_ppd_references_[0].code);
   EXPECT_EQ(PpdProvider::NOT_FOUND, captured_resolve_ppd_references_[1].code);
+}
+
+TEST_F(PpdProviderTest, RemotePpdFetchedFromUrlIfAvailable) {
+  auto provider =
+      CreateProvider({"en", PpdCacheRunLocation::kOnTestThread,
+                      PropagateLocaleToMetadataManager::kDoPropagate});
+  Printer::PpdReference ref;
+  ref.user_supplied_ppd_url = "https://ppd-url";
+  ppd_cache_->StoreForTesting(PpdProvider::PpdReferenceToCacheKey(ref),
+                              "cached-content", base::TimeDelta());
+  MockRemotePpdFetchResult("https://ppd-url", "ppd-content");
+
+  provider->ResolvePpd(ref, base::BindOnce(&PpdProviderTest::CaptureResolvePpd,
+                                           base::Unretained(this)));
+  task_environment_.RunUntilIdle();
+
+  ASSERT_EQ(1UL, captured_resolve_ppd_.size());
+  EXPECT_EQ(PpdProvider::SUCCESS, captured_resolve_ppd_[0].code);
+  EXPECT_EQ(captured_resolve_ppd_[0].ppd_contents, "ppd-content");
+}
+
+TEST_F(PpdProviderTest, RemotePpdResolveUsesCacheIfFetchFails) {
+  auto provider =
+      CreateProvider({"en", PpdCacheRunLocation::kOnTestThread,
+                      PropagateLocaleToMetadataManager::kDoPropagate});
+  Printer::PpdReference ref;
+  ref.user_supplied_ppd_url = "https://ppd-url";
+  ppd_cache_->StoreForTesting(PpdProvider::PpdReferenceToCacheKey(ref),
+                              "cached-content", base::TimeDelta());
+  MockRemotePpdFetchResult("https://ppd-url",
+                           RemotePpdFetcher::FetchResultCode::kNetworkError);
+
+  provider->ResolvePpd(ref, base::BindOnce(&PpdProviderTest::CaptureResolvePpd,
+                                           base::Unretained(this)));
+  task_environment_.RunUntilIdle();
+
+  ASSERT_EQ(1UL, captured_resolve_ppd_.size());
+  EXPECT_EQ(PpdProvider::SUCCESS, captured_resolve_ppd_[0].code);
+  EXPECT_EQ(captured_resolve_ppd_[0].ppd_contents, "cached-content");
+}
+
+TEST_F(PpdProviderTest, RemotePpdResolveFailureResultsInServerError) {
+  auto provider =
+      CreateProvider({"en", PpdCacheRunLocation::kInBackgroundThreads,
+                      PropagateLocaleToMetadataManager::kDoPropagate});
+  Printer::PpdReference ref;
+  ref.user_supplied_ppd_url = "https://ppd-url";
+  MockRemotePpdFetchResult("https://ppd-url",
+                           RemotePpdFetcher::FetchResultCode::kNetworkError);
+
+  provider->ResolvePpd(ref, base::BindOnce(&PpdProviderTest::CaptureResolvePpd,
+                                           base::Unretained(this)));
+  task_environment_.RunUntilIdle();
+
+  ASSERT_EQ(1UL, captured_resolve_ppd_.size());
+  EXPECT_EQ(PpdProvider::SERVER_ERROR, captured_resolve_ppd_[0].code);
+  EXPECT_TRUE(captured_resolve_ppd_[0].ppd_contents.empty());
+}
+
+// Test that PPD result codes have the expected names.
+TEST_F(PpdProviderTest, ResultCodeNames) {
+  EXPECT_EQ(PpdProvider::CallbackResultCodeName(PpdProvider::SUCCESS),
+            "SUCCESS");
+  EXPECT_EQ(PpdProvider::CallbackResultCodeName(PpdProvider::NOT_FOUND),
+            "NOT_FOUND");
+  EXPECT_EQ(PpdProvider::CallbackResultCodeName(PpdProvider::SERVER_ERROR),
+            "SERVER_ERROR");
+  EXPECT_EQ(PpdProvider::CallbackResultCodeName(PpdProvider::INTERNAL_ERROR),
+            "INTERNAL_ERROR");
+  EXPECT_EQ(PpdProvider::CallbackResultCodeName(PpdProvider::PPD_TOO_LARGE),
+            "PPD_TOO_LARGE");
 }
 
 }  // namespace

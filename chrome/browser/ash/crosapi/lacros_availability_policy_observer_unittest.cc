@@ -6,6 +6,7 @@
 
 #include <memory>
 #include <string>
+#include <string_view>
 #include <vector>
 
 #include "base/json/json_reader.h"
@@ -44,12 +45,11 @@ class LacrosAvailabilityPolicyObserverTest : public testing::Test {
 
   void SetUp() override {
     ash::SessionManagerClient::InitializeFake();
+    fake_user_manager_.Reset(std::make_unique<ash::FakeChromeUserManager>());
     profile_manager_ = std::make_unique<TestingProfileManager>(
         TestingBrowserProcess::GetGlobal());
     // Add primary user.
-    auto* user_manager = static_cast<ash::FakeChromeUserManager*>(
-        user_manager::UserManager::Get());
-    test_user_ = user_manager->AddPublicAccountUser(
+    test_user_ = fake_user_manager_->AddPublicAccountUser(
         AccountId::FromUserEmailGaiaId("test@test.com", "test_user"));
 
     ASSERT_TRUE(profile_manager_->SetUp());
@@ -60,6 +60,7 @@ class LacrosAvailabilityPolicyObserverTest : public testing::Test {
   }
 
   void TearDown() override {
+    primary_profile_ = nullptr;
     profile_manager_->DeleteAllTestingProfiles();
     profile_manager_.reset();
     ash::SessionManagerClient::Shutdown();
@@ -67,11 +68,9 @@ class LacrosAvailabilityPolicyObserverTest : public testing::Test {
 
   void CreatePrimaryProfile() {
     if (!primary_profile_) {
-      auto* user_manager = static_cast<ash::FakeChromeUserManager*>(
-          user_manager::UserManager::Get());
-      user_manager->LoginUser(test_user_->GetAccountId(),
-                              /*set_profile_created_flags=*/true);
-      user_manager->SwitchActiveUser(test_user_->GetAccountId());
+      fake_user_manager_->LoginUser(test_user_->GetAccountId(),
+                                    /*set_profile_created_flags=*/true);
+      fake_user_manager_->SwitchActiveUser(test_user_->GetAccountId());
       primary_profile_ = profile_manager_->CreateTestingProfile("test-profile");
     }
   }
@@ -88,9 +87,9 @@ class LacrosAvailabilityPolicyObserverTest : public testing::Test {
         base::StringPrintf("--%s=", chromeos::switches::kFeatureFlags);
     for (const std::string& flag : flags) {
       if (base::StartsWith(flag, prefix)) {
-        base::StringPiece flag_value(flag);
+        std::string_view flag_value(flag);
         flag_value.remove_prefix(prefix.size());
-        absl::optional<base::Value> parsed = base::JSONReader::Read(flag_value);
+        std::optional<base::Value> parsed = base::JSONReader::Read(flag_value);
         std::vector<std::string> result;
         if (parsed && parsed->is_list()) {
           for (const auto& element : parsed->GetList()) {
@@ -110,12 +109,11 @@ class LacrosAvailabilityPolicyObserverTest : public testing::Test {
   }
 
   content::BrowserTaskEnvironment task_environment_;
-  user_manager::ScopedUserManager scoped_user_manager_{
-      std::make_unique<user_manager::FakeUserManager>()};
+  user_manager::TypedScopedUserManager<ash::FakeChromeUserManager>
+      fake_user_manager_;
   std::unique_ptr<TestingProfileManager> profile_manager_;
-  raw_ptr<user_manager::User, ExperimentalAsh> test_user_ = nullptr;
-  raw_ptr<TestingProfile, DanglingUntriaged | ExperimentalAsh>
-      primary_profile_ = nullptr;
+  raw_ptr<user_manager::User> test_user_ = nullptr;
+  raw_ptr<TestingProfile> primary_profile_ = nullptr;
 };
 
 using ash::standalone_browser::LacrosAvailability;

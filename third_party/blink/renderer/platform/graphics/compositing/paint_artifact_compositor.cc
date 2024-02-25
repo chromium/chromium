@@ -11,6 +11,7 @@
 #include "base/logging.h"
 #include "base/ranges/algorithm.h"
 #include "cc/base/features.h"
+#include "cc/layers/solid_color_scrollbar_layer.h"
 #include "cc/paint/display_item_list.h"
 #include "cc/paint/paint_flags.h"
 #include "cc/trees/effect_node.h"
@@ -150,14 +151,19 @@ std::unique_ptr<JSONObject> PaintArtifactCompositor::GetLayersAsJSON(
 }
 
 const TransformPaintPropertyNode&
-PaintArtifactCompositor::NearestScrollTranslationForLayer(
+PaintArtifactCompositor::ScrollTranslationStateForLayer(
     const PendingLayer& pending_layer) {
-  if (pending_layer.GetCompositingType() == PendingLayer::kScrollHitTestLayer)
+  if (pending_layer.GetCompositingType() == PendingLayer::kScrollHitTestLayer) {
     return pending_layer.ScrollTranslationForScrollHitTestLayer();
+  }
 
-  return pending_layer.GetPropertyTreeState()
-      .Transform()
-      .NearestScrollTranslationNode();
+  // When HitTestOpaqueness is enabled, use the correct scroll state for fixed
+  // position content, so scrolls on fixed content is correctly handled on the
+  // compositor if the fixed content is opaque to hit test.
+  const auto& transform = pending_layer.GetPropertyTreeState().Transform();
+  return RuntimeEnabledFeatures::HitTestOpaquenessEnabled()
+             ? transform.ScrollTranslationState()
+             : transform.NearestScrollTranslationNode();
 }
 
 bool PaintArtifactCompositor::NeedsCompositedScrolling(
@@ -169,22 +175,19 @@ bool PaintArtifactCompositor::NeedsCompositedScrolling(
   if (scroll_translation.HasDirectCompositingReasons()) {
     return true;
   }
-  if (RuntimeEnabledFeatures::CompositeScrollAfterPaintEnabled()) {
-    auto it = painted_scroll_translations_.find(&scroll_translation);
-    if (it == painted_scroll_translations_.end()) {
-      // Negative z-index scrolling contents in a non-stacking-context scroller
-      // appear earlier than the ScrollHitTest of the scroller, and this
-      // method can be called before ComputeNeedsCompositedScrolling() for the
-      // ScrollHitTest. If LCD-text is strongly preferred, here we assume the
-      // scroller is not composited. Even if later the scroller is found to
-      // have an opaque background and composited, not compositing the negative
-      // z-index contents won't cause any problem because they (with possible
-      // wrong rendering) are obscured by the opaque background.
-      return lcd_text_preference_ != LCDTextPreference::kStronglyPreferred;
-    }
-    return it->value;
+  auto it = painted_scroll_translations_.find(&scroll_translation);
+  if (it == painted_scroll_translations_.end()) {
+    // Negative z-index scrolling contents in a non-stacking-context scroller
+    // appear earlier than the ScrollHitTest of the scroller, and this
+    // method can be called before ComputeNeedsCompositedScrolling() for the
+    // ScrollHitTest. If LCD-text is strongly preferred, here we assume the
+    // scroller is not composited. Even if later the scroller is found to
+    // have an opaque background and composited, not compositing the negative
+    // z-index contents won't cause any problem because they (with possible
+    // wrong rendering) are obscured by the opaque background.
+    return lcd_text_preference_ != LCDTextPreference::kStronglyPreferred;
   }
-  return false;
+  return it->value;
 }
 
 bool PaintArtifactCompositor::ComputeNeedsCompositedScrolling(
@@ -200,10 +203,6 @@ bool PaintArtifactCompositor::ComputeNeedsCompositedScrolling(
   // This function should be called before scroll_translation is inserted into
   // painted_scroll_translations_.
   DCHECK(!painted_scroll_translations_.Contains(&scroll_translation));
-
-  if (!RuntimeEnabledFeatures::CompositeScrollAfterPaintEnabled()) {
-    return scroll_translation.HasDirectCompositingReasons();
-  }
 
   if (scroll_translation.HasDirectCompositingReasons()) {
     return true;
@@ -362,9 +361,8 @@ bool NeedsFullUpdateAfterPaintingChunk(
 
   // Solid color status change requires full update to change the cc::Layer
   // type.
-  if (RuntimeEnabledFeatures::SolidColorLayersEnabled() &&
-      previous.background_color.is_solid_color !=
-          repainted.background_color.is_solid_color) {
+  if (previous.background_color.is_solid_color !=
+      repainted.background_color.is_solid_color) {
     return true;
   }
 
@@ -463,7 +461,7 @@ bool PaintArtifactCompositor::DecompositeEffect(
   auto is_composited_scroll = [this](const TransformPaintPropertyNode& t) {
     return NeedsCompositedScrolling(t);
   };
-  absl::optional<PropertyTreeState> upcast_state = group_state.CanUpcastWith(
+  std::optional<PropertyTreeState> upcast_state = group_state.CanUpcastWith(
       layer.GetPropertyTreeState(), is_composited_scroll);
   if (!upcast_state)
     return false;
@@ -761,8 +759,8 @@ void PaintArtifactCompositor::UpdateCompositorViewportProperties(
     cc::LayerTreeHost* layer_tree_host) {
   // The inner and outer viewports' existence is linked. That is, either they're
   // both null or they both exist.
-  CHECK_EQ(static_cast<bool>(properties.outer_scroll_translation),
-           static_cast<bool>(properties.inner_scroll_translation));
+  CHECK_EQ(static_cast<bool>(properties.outer_scroll_translation.get()),
+           static_cast<bool>(properties.inner_scroll_translation.get()));
   CHECK(!properties.outer_clip ||
         static_cast<bool>(properties.inner_scroll_translation));
 
@@ -805,14 +803,9 @@ void PaintArtifactCompositor::Update(
     scoped_refptr<const PaintArtifact> artifact,
     const ViewportProperties& viewport_properties,
     const Vector<const TransformPaintPropertyNode*>& scroll_translation_nodes,
-    const Vector<const TransformPaintPropertyNode*>& anchor_position_scrollers,
     Vector<std::unique_ptr<cc::ViewTransitionRequest>> transition_requests) {
-  const bool unification_enabled =
-      base::FeatureList::IsEnabled(features::kScrollUnification);
   // See: |UpdateRepaintedLayers| for repaint updates.
   DCHECK(needs_update_);
-  DCHECK(scroll_translation_nodes.empty() || unification_enabled);
-  DCHECK(anchor_position_scrollers.empty() || !unification_enabled);
   DCHECK(root_layer_);
 
   TRACE_EVENT0("blink", "PaintArtifactCompositor::Update");
@@ -875,6 +868,7 @@ void PaintArtifactCompositor::Update(
     // We need additional bookkeeping for backdrop-filter mask.
     if (effect.RequiresCompositingForBackdropFilterMask() &&
         effect.CcNodeId(g_s_property_tree_sequence_number) == effect_id) {
+      CHECK(pending_layer.GetContentLayerClient());
       static_cast<cc::PictureLayer&>(layer).SetIsBackdropFilterMask(true);
       layer.SetElementId(effect.GetCompositorElementId());
       auto& effect_tree = host->property_trees()->effect_tree_mutable();
@@ -883,13 +877,9 @@ void PaintArtifactCompositor::Update(
           effect.GetCompositorElementId();
     }
 
-    // The compositor scroll node is not directly stored in the property tree
-    // state but can be created via the scroll offset translation node.
-    const auto& scroll_translation =
-        NearestScrollTranslationForLayer(pending_layer);
     int scroll_id =
         property_tree_manager.EnsureCompositorScrollAndTransformNode(
-            scroll_translation);
+            ScrollTranslationStateForLayer(pending_layer));
 
     layer_list_builder.Add(&layer);
 
@@ -913,27 +903,18 @@ void PaintArtifactCompositor::Update(
     }
   }
 
-  if (unification_enabled) {
-    // We want to create a cc::TransformNode only if the scroller is painted.
-    // This avoids violating an assumption in CompositorAnimations that an
-    // element has property nodes for either all or none of its animating
-    // properties (see crbug.com/1385575).
-    // However, we want to create a cc::ScrollNode regardless of whether the
-    // scroller is painted. This ensures that scroll offset animations aren't
-    // affected by becoming unpainted.
-    for (auto* node : scroll_translation_nodes) {
-      property_tree_manager.EnsureCompositorScrollNode(*node);
-    }
-    for (auto* node : painted_scroll_translations_.Keys()) {
-      property_tree_manager.EnsureCompositorScrollAndTransformNode(*node);
-    }
-  } else {
-    // Anchor positioning requires all relevant scroll containers to have their
-    // cc::TransformNode and cc::ScrollNode, so that compositor can update the
-    // translation correctly.
-    for (auto* node : anchor_position_scrollers) {
-      property_tree_manager.EnsureCompositorScrollAndTransformNode(*node);
-    }
+  // We want to create a cc::TransformNode only if the scroller is painted.
+  // This avoids violating an assumption in CompositorAnimations that an
+  // element has property nodes for either all or none of its animating
+  // properties (see crbug.com/1385575).
+  // However, we want to create a cc::ScrollNode regardless of whether the
+  // scroller is painted. This ensures that scroll offset animations aren't
+  // affected by becoming unpainted.
+  for (auto* node : scroll_translation_nodes) {
+    property_tree_manager.EnsureCompositorScrollNode(*node);
+  }
+  for (auto* node : painted_scroll_translations_.Keys()) {
+    property_tree_manager.EnsureCompositorScrollAndTransformNode(*node);
   }
 
   root_layer_->layer_tree_host()->RegisterSelection(layer_selection);
@@ -967,13 +948,11 @@ void PaintArtifactCompositor::Update(
 
   g_s_property_tree_sequence_number++;
 
-  if (RuntimeEnabledFeatures::SimplifiedClearPropertyTreeChangeEnabled()) {
-    // For information about |sequence_number|, see:
-    // PaintPropertyNode::changed_sequence_number_|;
-    for (auto& chunk : artifact->PaintChunks()) {
-      chunk.properties.GetPropertyTreeState().ClearChangedToRoot(
-          g_s_property_tree_sequence_number);
-    }
+  // For information about |sequence_number|, see:
+  // PaintPropertyNode::changed_sequence_number_|;
+  for (auto& chunk : artifact->PaintChunks()) {
+    chunk.properties.GetPropertyTreeState().ClearChangedToRoot(
+        g_s_property_tree_sequence_number);
   }
 
   DVLOG(2) << "PaintArtifactCompositor::Update() done\n"
@@ -1040,10 +1019,6 @@ bool PaintArtifactCompositor::DirectlyUpdateCompositedOpacityValue(
 
 bool PaintArtifactCompositor::DirectlyUpdateScrollOffsetTransform(
     const TransformPaintPropertyNode& transform) {
-  // We can only directly-update compositor values if all content associated
-  // with the node is known to be composited.
-  DCHECK(RuntimeEnabledFeatures::CompositeScrollAfterPaintEnabled() ||
-         transform.HasDirectCompositingReasons());
   if (CanDirectlyUpdateProperties()) {
     return PropertyTreeManager::DirectlyUpdateScrollOffsetTransform(
         *root_layer_->layer_tree_host(), transform);
@@ -1095,9 +1070,6 @@ bool PaintArtifactCompositor::DirectlySetScrollOffset(
 
 uint32_t PaintArtifactCompositor::GetMainThreadScrollingReasons(
     const ScrollPaintPropertyNode& scroll) const {
-  if (!RuntimeEnabledFeatures::CompositeScrollAfterPaintEnabled()) {
-    return scroll.GetMainThreadScrollingReasons();
-  }
   CHECK(root_layer_);
   if (!root_layer_->layer_tree_host()) {
     return 0;
@@ -1108,7 +1080,6 @@ uint32_t PaintArtifactCompositor::GetMainThreadScrollingReasons(
 
 bool PaintArtifactCompositor::UsesCompositedScrolling(
     const ScrollPaintPropertyNode& scroll) const {
-  DCHECK(RuntimeEnabledFeatures::CompositeScrollAfterPaintEnabled());
   CHECK(root_layer_);
   if (!root_layer_->layer_tree_host()) {
     return false;
@@ -1226,12 +1197,10 @@ CompositingReasons PaintArtifactCompositor::GetCompositingReasons(
   auto composited_ancestor = [this](const TransformPaintPropertyNode& transform)
       -> const TransformPaintPropertyNode* {
     const auto* ancestor = transform.NearestDirectlyCompositedAncestor();
-    if (RuntimeEnabledFeatures::CompositeScrollAfterPaintEnabled()) {
-      const auto& scroll_translation = transform.NearestScrollTranslationNode();
-      if (NeedsCompositedScrolling(scroll_translation) &&
-          (!ancestor || ancestor->IsAncestorOf(scroll_translation))) {
-        return &scroll_translation;
-      }
+    const auto& scroll_translation = transform.NearestScrollTranslationNode();
+    if (NeedsCompositedScrolling(scroll_translation) &&
+        (!ancestor || ancestor->IsAncestorOf(scroll_translation))) {
+      return &scroll_translation;
     }
     return ancestor;
   };
@@ -1293,34 +1262,6 @@ Vector<cc::Layer*> PaintArtifactCompositor::SynthesizedClipLayersForTesting()
   return synthesized_clip_layers;
 }
 
-void PaintArtifactCompositor::ClearPropertyTreeChangedState() {
-  CHECK(!RuntimeEnabledFeatures::SimplifiedClearPropertyTreeChangeEnabled());
-  // For information about |sequence_number|, see:
-  // PaintPropertyNode::changed_sequence_number_|;
-  static int changed_sequence_number = 1;
-
-  for (auto& layer : pending_layers_) {
-    // The chunks ref-counted property tree state keeps the |layer|'s non-ref
-    // property tree pointers alive and all chunk property tree states should
-    // be descendants of the |layer|'s. Therefore, we can just CHECK that the
-    // first chunk's references are keeping the |layer|'s property tree state
-    // alive.
-    CHECK(!layer.Chunks().IsEmpty());
-    const auto& layer_state = layer.GetPropertyTreeState();
-    const auto& first_chunk_state =
-        layer.Chunks()[0].properties.GetPropertyTreeState();
-    CHECK(layer_state.Transform().IsAncestorOf(first_chunk_state.Transform()));
-    CHECK(layer_state.Clip().IsAncestorOf(first_chunk_state.Clip()));
-    CHECK(layer_state.Effect().IsAncestorOf(first_chunk_state.Effect()));
-
-    for (auto& chunk : layer.Chunks()) {
-      chunk.properties.GetPropertyTreeState().ClearChangedToRoot(
-          changed_sequence_number);
-    }
-  }
-  changed_sequence_number++;
-}
-
 size_t PaintArtifactCompositor::ApproximateUnsharedMemoryUsage() const {
   size_t result = sizeof(*this) + synthesized_clip_cache_.CapacityInBytes() +
                   pending_layers_.CapacityInBytes();
@@ -1338,14 +1279,34 @@ size_t PaintArtifactCompositor::ApproximateUnsharedMemoryUsage() const {
 
 bool PaintArtifactCompositor::SetScrollbarNeedsDisplay(
     CompositorElementId element_id) {
-  for (auto& pending_layer : pending_layers_) {
-    if (pending_layer.GetCompositingType() == PendingLayer::kScrollbarLayer &&
-        pending_layer.CcLayer().element_id() == element_id) {
-      pending_layer.CcLayer().SetNeedsDisplay();
+  DCHECK(root_layer_);
+  CHECK(ScrollbarDisplayItem::IsScrollbarElementId(element_id));
+  if (cc::LayerTreeHost* host = root_layer_->layer_tree_host()) {
+    if (cc::Layer* layer = host->LayerByElementId(element_id)) {
+      layer->SetNeedsDisplay();
       return true;
     }
   }
-  // The scrollbar isn't correctly composited.
+  // The scrollbar isn't currently composited.
+  return false;
+}
+
+bool PaintArtifactCompositor::SetScrollbarSolidColor(
+    CompositorElementId element_id,
+    SkColor4f color) {
+  DCHECK(root_layer_);
+  CHECK(ScrollbarDisplayItem::IsScrollbarElementId(element_id));
+  if (cc::LayerTreeHost* host = root_layer_->layer_tree_host()) {
+    if (cc::Layer* layer = host->LayerByElementId(element_id)) {
+      if (static_cast<cc::ScrollbarLayerBase*>(layer)
+              ->GetScrollbarLayerType() ==
+          cc::ScrollbarLayerBase::kSolidColor) {
+        static_cast<cc::SolidColorScrollbarLayer*>(layer)->SetColor(color);
+        return true;
+      }
+    }
+  }
+  // The scrollbar isn't currently composited.
   return false;
 }
 

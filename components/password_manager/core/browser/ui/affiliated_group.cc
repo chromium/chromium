@@ -1,4 +1,4 @@
-// Copyright 2022 The Chromium Authors. All rights reserved.
+// Copyright 2022 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -15,8 +15,9 @@ constexpr char kFavicon[] = "favicon.ico";
 }  // namespace
 
 AffiliatedGroup::AffiliatedGroup() = default;
-AffiliatedGroup::AffiliatedGroup(std::vector<CredentialUIEntry> credentials,
-                                 const FacetBrandingInfo& branding)
+AffiliatedGroup::AffiliatedGroup(
+    std::vector<CredentialUIEntry> credentials,
+    const affiliations::FacetBrandingInfo& branding)
     : branding_info_(branding), credential_groups_(std::move(credentials)) {}
 AffiliatedGroup::AffiliatedGroup(const AffiliatedGroup& other) = default;
 AffiliatedGroup::AffiliatedGroup(AffiliatedGroup&& other) = default;

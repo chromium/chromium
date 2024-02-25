@@ -1819,6 +1819,29 @@ message DeviceChargingSoundsProto {
   optional bool enabled = 1;
 }
 
+message DeviceSwitchFunctionKeysBehaviorEnabledProto {
+  optional bool enabled = 1;
+}
+
+message DeviceFlexHwDataForProductImprovementEnabledProto {
+  // Enable sending hardware data specifically for product improvement on
+  // managed ChromeOS Flex devices.
+  optional bool enabled = 1 [default = true];
+}
+
+// Mirrors ExtendedFkeysModifier from the extended_fkeys_modifier.mojom
+message OBSOLETE_ExtendedFkeysModifierProto {
+  enum OBSOLETE_ExtendedFkeysModifier {
+    OBSOLETE_DISABLED = 0;  // Default value for the F11/F12 settings.
+    OBSOLETE_ALT = 1;
+    OBSOLETE_SHIFT = 2;
+    OBSOLETE_CTRL_SHIFT = 3;
+  }
+
+  optional OBSOLETE_ExtendedFkeysModifier OBSOLETE_modifier = 1
+      [default = OBSOLETE_DISABLED];
+}
+
 message ChromeDeviceSettingsProto {
   reserved 61, 71, 90;
   optional DevicePolicyRefreshRateProto device_policy_refresh_rate = 1;
@@ -2023,4 +2046,23 @@ message ChromeDeviceSettingsProto {
   optional DeviceChargingSoundsProto device_charging_sounds = 150;
   optional StringListPolicyProto device_authentication_url_blocklist = 151;
   optional StringListPolicyProto device_authentication_url_allowlist = 152;
+  optional DeviceSwitchFunctionKeysBehaviorEnabledProto
+      device_switch_function_keys_behavior_enabled = 153;
+  optional StringListPolicyProto device_dlc_predownload_list = 154;
+  optional BooleanPolicyProto device_ephemeral_network_policies_enabled = 155;
+  optional OBSOLETE_ExtendedFkeysModifierProto extended_fkeys_modifier = 156
+      [deprecated = true];
+  optional DeviceFlexHwDataForProductImprovementEnabledProto
+      device_flex_hw_data_for_product_improvement_enabled = 157;
+  // New rules for device policies (see
+  // go/device-policy-generation-future-proofing):
+  // * All device policies should use common types (see
+  //   policy_common_definitions.proto).
+  // * Field names should be the policy name (no underscores).
+  // * Field ID should be the policy ID.
+  optional BooleanPolicyProto DeviceHardwareVideoDecodingEnabled = 1185;
+  optional BooleanPolicyProto DeviceLoginScreenTouchVirtualKeyboardEnabled =
+      1194;
+  optional BooleanPolicyProto DeviceExtendedAutoUpdateEnabled = 1195;
+  optional StringPolicyProto DeviceWeeklyScheduledSuspend = 1196;
 }

@@ -1,5 +1,6 @@
 caption: Control the new behavior for event dispatching on disabled form controls
 default: null
+deprecated: true
 desc: |2-
   Event dispatching on disabled form controls is being changed in chromium in order to improve compatibility with other browsers and to improve developer experience.
 
@@ -18,8 +19,6 @@ example_value: true
 features:
   dynamic_refresh: true
   per_profile: true
-future_on:
-- fuchsia
 items:
 - caption: New event dispatching on disabled form controls behavior will be used.
   value: true

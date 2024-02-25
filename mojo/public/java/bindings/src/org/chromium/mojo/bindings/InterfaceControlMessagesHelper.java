@@ -4,7 +4,6 @@
 
 package org.chromium.mojo.bindings;
 
-import org.chromium.mojo.bindings.Callbacks.Callback1;
 import org.chromium.mojo.bindings.Interface.Manager;
 import org.chromium.mojo.bindings.Interface.Proxy;
 import org.chromium.mojo.bindings.interfacecontrol.InterfaceControlMessagesConstants;
@@ -23,14 +22,22 @@ import org.chromium.mojo.system.Core;
  */
 public class InterfaceControlMessagesHelper {
     /**
+     * Callback interface for the async response to {@link
+     * InterfaceControlMessagesHelper#sendRunMessage}.
+     */
+    interface SendRunMessageCallback {
+        public void call(RunResponseMessageParams params);
+    }
+
+    /**
      * MessageReceiver that forwards a message containing a {@link RunResponseMessageParams} to a
      * callback.
      */
-    private static class RunResponseForwardToCallback
-            extends SideEffectFreeCloseable implements MessageReceiver {
-        private final Callback1<RunResponseMessageParams> mCallback;
+    private static class RunResponseForwardToCallback extends SideEffectFreeCloseable
+            implements MessageReceiver {
+        private final SendRunMessageCallback mCallback;
 
-        RunResponseForwardToCallback(Callback1<RunResponseMessageParams> callback) {
+        RunResponseForwardToCallback(SendRunMessageCallback callback) {
             mCallback = callback;
         }
 
@@ -46,30 +53,34 @@ public class InterfaceControlMessagesHelper {
         }
     }
 
-    /**
-     * Sends the given run message through the receiver, registering the callback.
-     */
-    public static void sendRunMessage(Core core, MessageReceiverWithResponder receiver,
-            RunMessageParams params, Callback1<RunResponseMessageParams> callback) {
-        Message message = params.serializeWithHeader(
-                core, new MessageHeader(InterfaceControlMessagesConstants.RUN_MESSAGE_ID,
-                        MessageHeader.MESSAGE_EXPECTS_RESPONSE_FLAG, 0));
+    /** Sends the given run message through the receiver, registering the callback. */
+    public static void sendRunMessage(
+            Core core,
+            MessageReceiverWithResponder receiver,
+            RunMessageParams params,
+            SendRunMessageCallback callback) {
+        Message message =
+                params.serializeWithHeader(
+                        core,
+                        new MessageHeader(
+                                InterfaceControlMessagesConstants.RUN_MESSAGE_ID,
+                                MessageHeader.MESSAGE_EXPECTS_RESPONSE_FLAG,
+                                0));
         receiver.acceptWithResponder(message, new RunResponseForwardToCallback(callback));
     }
 
-    /**
-     * Sends the given run or close pipe message through the receiver.
-     */
+    /** Sends the given run or close pipe message through the receiver. */
     public static void sendRunOrClosePipeMessage(
             Core core, MessageReceiverWithResponder receiver, RunOrClosePipeMessageParams params) {
-        Message message = params.serializeWithHeader(core,
-                new MessageHeader(InterfaceControlMessagesConstants.RUN_OR_CLOSE_PIPE_MESSAGE_ID));
+        Message message =
+                params.serializeWithHeader(
+                        core,
+                        new MessageHeader(
+                                InterfaceControlMessagesConstants.RUN_OR_CLOSE_PIPE_MESSAGE_ID));
         receiver.accept(message);
     }
 
-    /**
-     * Handles a received run message.
-     */
+    /** Handles a received run message. */
     public static <I extends Interface, P extends Proxy> boolean handleRun(
             Core core, Manager<I, P> manager, ServiceMessage message, MessageReceiver responder) {
         Message payload = message.getPayload();
@@ -83,10 +94,13 @@ public class InterfaceControlMessagesHelper {
             response.output = null;
         }
 
-        return responder.accept(response.serializeWithHeader(
-                core, new MessageHeader(InterfaceControlMessagesConstants.RUN_MESSAGE_ID,
-                        MessageHeader.MESSAGE_IS_RESPONSE_FLAG,
-                        message.getHeader().getRequestId())));
+        return responder.accept(
+                response.serializeWithHeader(
+                        core,
+                        new MessageHeader(
+                                InterfaceControlMessagesConstants.RUN_MESSAGE_ID,
+                                MessageHeader.MESSAGE_IS_RESPONSE_FLAG,
+                                message.getHeader().getRequestId())));
     }
 
     /**

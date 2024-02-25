@@ -13,13 +13,13 @@ import androidx.annotation.Nullable;
 import androidx.core.provider.FontRequest;
 import androidx.core.provider.FontsContractCompat;
 
-/**
- * Wrapper around the {@link FontsContractCompat} static API to allow for mocking in tests.
- */
+/** Wrapper around the {@link FontsContractCompat} static API to allow for mocking in tests. */
 public class FontsContractWrapper {
     @NonNull
-    FontsContractCompat.FontFamilyResult fetchFonts(@NonNull Context context,
-            @Nullable CancellationSignal cancellationSignal, @NonNull FontRequest request)
+    FontsContractCompat.FontFamilyResult fetchFonts(
+            @NonNull Context context,
+            @Nullable CancellationSignal cancellationSignal,
+            @NonNull FontRequest request)
             throws NameNotFoundException {
         return FontsContractCompat.fetchFonts(context, cancellationSignal, request);
     }

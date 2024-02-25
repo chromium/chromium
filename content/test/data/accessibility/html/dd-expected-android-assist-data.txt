@@ -1,0 +1,6 @@
+WebView textSize:16.0 style:0 htmlInfo:[{htmlTag="#document"}, {display=""}]
+++ListView textSize:16.0 style:0 htmlInfo:[{htmlTag="dl"}, {display="block"}]
+++++View textSize:16.0 style:0 htmlInfo:[{htmlTag="dt"}, {display="block"}]
+++++++TextView text:"Coffee" textSize:16.0 style:0 htmlInfo:[{htmlTag=""}, {display=""}]
+++++View textSize:16.0 style:0 htmlInfo:[{htmlTag="dd"}, {display="block"}]
+++++++TextView text:"Black hot drink" textSize:16.0 style:0 htmlInfo:[{htmlTag=""}, {display=""}]

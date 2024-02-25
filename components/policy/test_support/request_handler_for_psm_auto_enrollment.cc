@@ -58,7 +58,7 @@ const RlweTestData::TestCase* FindQueryTestCase(
 std::unique_ptr<RlweTestData>
 RequestHandlerForPsmAutoEnrollment::LoadTestData() {
   base::FilePath src_root_dir;
-  CHECK(base::PathService::Get(base::DIR_SOURCE_ROOT, &src_root_dir));
+  CHECK(base::PathService::Get(base::DIR_SRC_TEST_DATA_ROOT, &src_root_dir));
   const base::FilePath path_to_test_data =
       src_root_dir.AppendASCII("third_party")
           .AppendASCII("private_membership")

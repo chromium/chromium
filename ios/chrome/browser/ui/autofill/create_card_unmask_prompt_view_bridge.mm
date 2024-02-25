@@ -4,6 +4,7 @@
 
 #import "ios/chrome/browser/ui/autofill/create_card_unmask_prompt_view_bridge.h"
 
+#import "components/autofill/core/browser/personal_data_manager.h"
 #import "components/autofill/core/browser/ui/payments/card_unmask_prompt_controller.h"
 #import "ios/chrome/browser/ui/autofill/card_unmask_prompt_view_bridge.h"
 
@@ -11,9 +12,10 @@ namespace autofill {
 
 CardUnmaskPromptView* CreateCardUnmaskPromptViewBridge(
     CardUnmaskPromptController* unmask_controller,
-    UIViewController* base_view_controller) {
-  return new CardUnmaskPromptViewBridge(unmask_controller,
-                                        base_view_controller);
+    UIViewController* base_view_controller,
+    PersonalDataManager* personal_data_manager) {
+  return new CardUnmaskPromptViewBridge(unmask_controller, base_view_controller,
+                                        personal_data_manager);
 }
 
 }  // namespace autofill

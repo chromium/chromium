@@ -37,6 +37,8 @@ import org.chromium.base.test.util.Feature;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.night_mode.ChromeNightModeTestUtils;
 import org.chromium.chrome.browser.pwd_migration.PasswordMigrationWarningProperties.ScreenType;
+import org.chromium.chrome.browser.pwd_migration.PasswordMigrationWarningView.OnSheetClosedCallback;
+import org.chromium.chrome.test.ChromeJUnit4RunnerDelegate;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.util.ChromeRenderTestRule;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
@@ -55,19 +57,22 @@ import java.util.List;
  * standard.
  */
 @RunWith(ParameterizedRunner.class)
+@ParameterAnnotations.UseRunnerDelegate(ChromeJUnit4RunnerDelegate.class)
 @Batch(Batch.PER_CLASS)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 public class PasswordMigrationWarningRenderTest {
     @ParameterAnnotations.ClassParameter
     private static List<ParameterSet> sClassParams =
-            Arrays.asList(new ParameterSet().value(false, false).name("Default"),
+            Arrays.asList(
+                    new ParameterSet().value(false, false).name("Default"),
                     new ParameterSet().value(false, true).name("RTL"),
                     new ParameterSet().value(true, false).name("NightMode"));
 
-    @Mock
-    private Callback<Integer> mDismissCallback;
-    @Mock
-    private PasswordMigrationWarningOnClickHandler mOnClickHandler;
+    @Mock private Callback<Integer> mDismissCallback;
+    @Mock private PasswordMigrationWarningOnClickHandler mOnClickHandler;
+    // This callback should never be called as part of the render tests.
+    private OnSheetClosedCallback mOnEmptySheetClosedCallback =
+            (reason, setFragmentWasCalled) -> fail();
     private BottomSheetController mBottomSheetController;
     private PasswordMigrationWarningView mView;
     private PropertyModel mModel;
@@ -97,17 +102,28 @@ public class PasswordMigrationWarningRenderTest {
     public void setUp() throws InterruptedException {
         MockitoAnnotations.initMocks(this);
         mActivityTestRule.startMainActivityOnBlankPage();
-        mBottomSheetController = mActivityTestRule.getActivity()
-                                         .getRootUiCoordinatorForTesting()
-                                         .getBottomSheetController();
-        runOnUiThreadBlocking(() -> {
-            mModel = PasswordMigrationWarningProperties.createDefaultModel(
-                    () -> {}, mDismissCallback, mOnClickHandler);
-            mView = new PasswordMigrationWarningView(mActivityTestRule.getActivity(),
-                    mBottomSheetController, () -> {}, (Throwable exception) -> fail());
-            PropertyModelChangeProcessor.create(mModel, mView,
-                    PasswordMigrationWarningViewBinder::bindPasswordMigrationWarningView);
-        });
+        mBottomSheetController =
+                mActivityTestRule
+                        .getActivity()
+                        .getRootUiCoordinatorForTesting()
+                        .getBottomSheetController();
+        runOnUiThreadBlocking(
+                () -> {
+                    mModel =
+                            PasswordMigrationWarningProperties.createDefaultModel(
+                                    () -> {}, mDismissCallback, mOnClickHandler);
+                    mView =
+                            new PasswordMigrationWarningView(
+                                    mActivityTestRule.getActivity(),
+                                    mBottomSheetController,
+                                    () -> {},
+                                    (Throwable exception) -> fail(),
+                                    mOnEmptySheetClosedCallback);
+                    PropertyModelChangeProcessor.create(
+                            mModel,
+                            mView,
+                            PasswordMigrationWarningViewBinder::bindPasswordMigrationWarningView);
+                });
     }
 
     @After
@@ -118,9 +134,10 @@ public class PasswordMigrationWarningRenderTest {
         } catch (Exception e) {
             // Activity was already closed (e.g. due to last test tearing down the suite).
         }
-        runOnUiThreadBlocking(() -> {
-            ChromeNightModeTestUtils.tearDownNightModeAfterChromeActivityDestroyed();
-        });
+        runOnUiThreadBlocking(
+                () -> {
+                    ChromeNightModeTestUtils.tearDownNightModeAfterChromeActivityDestroyed();
+                });
     }
 
     @Test
@@ -132,9 +149,11 @@ public class PasswordMigrationWarningRenderTest {
         BottomSheetTestSupport.waitForOpen(mBottomSheetController);
         runOnUiThreadBlocking(() -> mModel.set(CURRENT_SCREEN, ScreenType.INTRO_SCREEN));
         // The test waits for the fragment containing the button to be attached.
-        pollUiThread(()
-                             -> mActivityTestRule.getActivity().findViewById(
-                                     R.id.password_migration_more_options_button));
+        pollUiThread(
+                () ->
+                        mActivityTestRule
+                                .getActivity()
+                                .findViewById(R.id.password_migration_more_options_button));
 
         View bottomSheetView =
                 mActivityTestRule.getActivity().findViewById(R.id.pwd_migration_warning_sheet);
@@ -151,10 +170,12 @@ public class PasswordMigrationWarningRenderTest {
         BottomSheetTestSupport.waitForOpen(mBottomSheetController);
         runOnUiThreadBlocking(() -> mModel.set(CURRENT_SCREEN, ScreenType.OPTIONS_SCREEN));
         // The test waits for the fragment containing the button to be attached.
-        pollUiThread(()
-                             -> mActivityTestRule.getActivity().findViewById(
-                                        R.id.password_migration_cancel_button)
-                        != null);
+        pollUiThread(
+                () ->
+                        mActivityTestRule
+                                        .getActivity()
+                                        .findViewById(R.id.password_migration_cancel_button)
+                                != null);
 
         View bottomSheetView =
                 mActivityTestRule.getActivity().findViewById(R.id.pwd_migration_warning_sheet);

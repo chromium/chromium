@@ -40,7 +40,9 @@ static constexpr char kFirstLoginFlowHistogramFailureName[] =
 
 class AppPreloadServiceBrowserTest : public InProcessBrowserTest {
  public:
-  AppPreloadServiceBrowserTest() {
+  AppPreloadServiceBrowserTest()
+      : startup_check_resetter_(
+            AppPreloadService::DisablePreloadsOnStartupForTesting()) {
     feature_list_.InitWithFeatures(
         {/*enabled_features=*/features::kAppPreloadService},
         /*disabled_features=*/{});
@@ -48,10 +50,6 @@ class AppPreloadServiceBrowserTest : public InProcessBrowserTest {
   }
 
   void SetUpOnMainThread() override {
-    // Note that App Preload Service runs as part of browser startup, so the
-    // browser test SetUp() method will trigger a call to APS before any test
-    // code runs. This call will fail as the EmbeddedTestServer will not be
-    // started.
     InProcessBrowserTest::SetUpOnMainThread();
 
     https_server_.RegisterRequestHandler(base::BindRepeating(
@@ -129,7 +127,8 @@ class AppPreloadServiceBrowserTest : public InProcessBrowserTest {
   base::test::ScopedFeatureList feature_list_;
   net::EmbeddedTestServer https_server_;
   std::map<std::string, std::string> manifest_responses_;
-  absl::optional<proto::AppPreloadListResponse> apps_proto_;
+  std::optional<proto::AppPreloadListResponse> apps_proto_;
+  base::AutoReset<bool> startup_check_resetter_;
 };
 
 IN_PROC_BROWSER_TEST_F(AppPreloadServiceBrowserTest, OemWebAppInstall) {
@@ -174,7 +173,7 @@ IN_PROC_BROWSER_TEST_F(AppPreloadServiceBrowserTest, OemWebAppInstall) {
   histograms.ExpectTotalCount(kFirstLoginFlowHistogramFailureName, 0);
 }
 
-IN_PROC_BROWSER_TEST_F(AppPreloadServiceBrowserTest, IgnoreDefaultAppInstall) {
+IN_PROC_BROWSER_TEST_F(AppPreloadServiceBrowserTest, DefaultAppInstall) {
   proto::AppPreloadListResponse response;
   auto* app = response.add_apps_to_install();
   app->set_name("Peanut Types");
@@ -187,19 +186,27 @@ IN_PROC_BROWSER_TEST_F(AppPreloadServiceBrowserTest, IgnoreDefaultAppInstall) {
   app->mutable_web_extras()->set_original_manifest_url(
       "https://peanuttypes.com/app");
 
+  const std::string kManifest = AddIconToManifest(R"({
+    "name": "Example App",
+    "start_url": "/app",
+    "icons": $1
+  })");
+
+  SetManifestResponse(kDefaultManifestUrl, kManifest);
   SetAppProvisioningResponse(response);
-  // No call to SetManifestResponse, so if installation was attempted, it would
-  // fail.
 
   base::test::TestFuture<bool> result;
   auto* service = AppPreloadService::Get(profile());
   service->StartFirstLoginFlowForTesting(result.GetCallback());
   ASSERT_TRUE(result.Get());
 
-  auto app_id = web_app::GenerateAppId(absl::nullopt,
-                                       GURL("https://peanuttypes.com/app"));
-  bool found = app_registry_cache().ForOneApp(app_id, [](const AppUpdate&) {});
-  ASSERT_FALSE(found);
+  auto app_id =
+      web_app::GenerateAppId(std::nullopt, GURL("https://peanuttypes.com/app"));
+  bool found =
+      app_registry_cache().ForOneApp(app_id, [](const AppUpdate& update) {
+        EXPECT_EQ(update.InstallReason(), InstallReason::kDefault);
+      });
+  ASSERT_TRUE(found);
 }
 
 IN_PROC_BROWSER_TEST_F(AppPreloadServiceBrowserTest, IgnoreTestAppInstall) {
@@ -315,7 +322,7 @@ IN_PROC_BROWSER_TEST_F(AppPreloadServiceBrowserTest, InstallMultipleOemApps) {
   ASSERT_TRUE(result.Get());
 
   auto app_id1 =
-      web_app::GenerateAppId(absl::nullopt, GURL("https://www.foo.com/"));
+      web_app::GenerateAppId(std::nullopt, GURL("https://www.foo.com/"));
   bool found =
       app_registry_cache().ForOneApp(app_id1, [](const AppUpdate& update) {
         EXPECT_EQ(update.Name(), "Foo");
@@ -324,7 +331,7 @@ IN_PROC_BROWSER_TEST_F(AppPreloadServiceBrowserTest, InstallMultipleOemApps) {
   ASSERT_TRUE(found);
 
   auto app_id2 =
-      web_app::GenerateAppId(absl::nullopt, GURL("https://www.bar.com/"));
+      web_app::GenerateAppId(std::nullopt, GURL("https://www.bar.com/"));
   found = app_registry_cache().ForOneApp(app_id2, [](const AppUpdate& update) {
     EXPECT_EQ(update.Name(), "Bar");
     EXPECT_EQ(update.InstallReason(), InstallReason::kOem);
@@ -395,12 +402,12 @@ IN_PROC_BROWSER_TEST_F(AppPreloadServiceBrowserTest, RetryFailedApps) {
 
   // Both apps should now be installed.
   auto app_id1 =
-      web_app::GenerateAppId(absl::nullopt, GURL("https://www.foo.com/"));
+      web_app::GenerateAppId(std::nullopt, GURL("https://www.foo.com/"));
   bool found = app_registry_cache().ForOneApp(app_id1, [](const AppUpdate&) {});
   ASSERT_TRUE(found);
 
   auto app_id2 =
-      web_app::GenerateAppId(absl::nullopt, GURL("https://www.bar.com/"));
+      web_app::GenerateAppId(std::nullopt, GURL("https://www.bar.com/"));
   found = app_registry_cache().ForOneApp(app_id2, [](const AppUpdate&) {});
   ASSERT_TRUE(found);
 
@@ -452,8 +459,8 @@ IN_PROC_BROWSER_TEST_F(AppPreloadServiceWithTestAppsBrowserTest,
   service->StartFirstLoginFlowForTesting(result.GetCallback());
   ASSERT_TRUE(result.Get());
 
-  auto app_id = web_app::GenerateAppId(absl::nullopt,
-                                       GURL("https://peanuttypes.com/app"));
+  auto app_id =
+      web_app::GenerateAppId(std::nullopt, GURL("https://peanuttypes.com/app"));
   bool found = app_registry_cache().ForOneApp(app_id, [](const AppUpdate&) {});
   ASSERT_TRUE(found);
 }

@@ -4,13 +4,25 @@
 
 package org.chromium.chrome.browser.ui.edge_to_edge;
 
+
+import org.chromium.base.lifetime.Destroyable;
+
 /**
- * Control drawing using the Android Edge to Edge Feature.
- * This allows drawing under Android System Bars.
+ * Control drawing using the Android Edge to Edge Feature. This allows drawing under Android System
+ * Bars.
  */
-public interface EdgeToEdgeController {
+public interface EdgeToEdgeController extends Destroyable, EdgeToEdgeSupplier {
     /**
-     * Enables drawing underneath one or more of the Android System Bars, e.g. the Navigation Bar.
+     * @return the inset in DPs needed for the bottom UI to adjust views to draw below the Bottom
+     *     Nav Bar. Returns 0 when Edge To Edge is not enabled or when the controller is drawing the
+     *     page ToNormal.
      */
-    void drawUnderSystemBars();
+    int getBottomInset();
+
+    /**
+     * By "active", it means the activity has set the decor to fit system windows.
+     *
+     * @return True if edge to edge is active now.
+     */
+    boolean isEdgeToEdgeActive();
 }

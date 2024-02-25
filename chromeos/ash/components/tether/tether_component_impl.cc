@@ -83,28 +83,23 @@ std::unique_ptr<TetherComponent> TetherComponentImpl::Factory::Create(
     NotificationPresenter* notification_presenter,
     GmsCoreNotificationsStateTrackerImpl* gms_core_notifications_state_tracker,
     PrefService* pref_service,
-    NetworkStateHandler* network_state_handler,
-    TechnologyStateController* technology_state_controller,
-    ManagedNetworkConfigurationHandler* managed_network_configuration_handler,
+    NetworkHandler* network_handler,
     NetworkConnect* network_connect,
-    NetworkConnectionHandler* network_connection_handler,
     scoped_refptr<device::BluetoothAdapter> adapter,
     session_manager::SessionManager* session_manager) {
   if (factory_instance_) {
     return factory_instance_->CreateInstance(
         device_sync_client, secure_channel_client, tether_host_fetcher,
         notification_presenter, gms_core_notifications_state_tracker,
-        pref_service, network_state_handler,
-        managed_network_configuration_handler, network_connect,
-        network_connection_handler, adapter, session_manager);
+        pref_service, network_handler, network_connect, adapter,
+        session_manager);
   }
 
   return base::WrapUnique(new TetherComponentImpl(
       device_sync_client, secure_channel_client, tether_host_fetcher,
       notification_presenter, gms_core_notifications_state_tracker,
-      pref_service, network_state_handler, technology_state_controller,
-      managed_network_configuration_handler, network_connect,
-      network_connection_handler, adapter, session_manager));
+      pref_service, network_handler, network_connect, adapter,
+      session_manager));
 }
 
 // static
@@ -128,11 +123,8 @@ TetherComponentImpl::TetherComponentImpl(
     NotificationPresenter* notification_presenter,
     GmsCoreNotificationsStateTrackerImpl* gms_core_notifications_state_tracker,
     PrefService* pref_service,
-    NetworkStateHandler* network_state_handler,
-    TechnologyStateController* technology_state_controller,
-    ManagedNetworkConfigurationHandler* managed_network_configuration_handler,
+    NetworkHandler* network_handler,
     NetworkConnect* network_connect,
-    NetworkConnectionHandler* network_connection_handler,
     scoped_refptr<device::BluetoothAdapter> adapter,
     session_manager::SessionManager* session_manager)
     : asynchronous_shutdown_object_container_(
@@ -140,9 +132,9 @@ TetherComponentImpl::TetherComponentImpl(
               device_sync_client,
               secure_channel_client,
               tether_host_fetcher,
-              network_state_handler,
-              managed_network_configuration_handler,
-              network_connection_handler,
+              network_handler->network_state_handler(),
+              network_handler->managed_network_configuration_handler(),
+              network_handler->network_connection_handler(),
               pref_service)),
       synchronous_shutdown_object_container_(
           SynchronousShutdownObjectContainerImpl::Factory::Create(
@@ -150,15 +142,13 @@ TetherComponentImpl::TetherComponentImpl(
               notification_presenter,
               gms_core_notifications_state_tracker,
               pref_service,
-              network_state_handler,
-              technology_state_controller,
+              network_handler,
               network_connect,
-              network_connection_handler,
               session_manager,
               device_sync_client,
               secure_channel_client)),
       crash_recovery_manager_(CrashRecoveryManagerImpl::Factory::Create(
-          network_state_handler,
+          network_handler->network_state_handler(),
           synchronous_shutdown_object_container_->active_host(),
           synchronous_shutdown_object_container_->host_scan_cache())) {
   crash_recovery_manager_->RestorePreCrashStateIfNecessary(
@@ -173,15 +163,17 @@ void TetherComponentImpl::RequestShutdown(
   has_shutdown_been_requested_ = true;
 
   // If shutdown has already happened, there is nothing else to do.
-  if (status() != TetherComponent::Status::ACTIVE)
+  if (status() != TetherComponent::Status::ACTIVE) {
     return;
+  }
 
   shutdown_reason_ = shutdown_reason;
 
   // If crash recovery has not yet completed, wait for it to complete before
   // continuing.
-  if (crash_recovery_manager_)
+  if (crash_recovery_manager_) {
     return;
+  }
 
   InitiateShutdown();
 }

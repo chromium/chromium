@@ -20,6 +20,7 @@
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/mediastream/media_stream_component_impl.h"
 #include "third_party/blink/renderer/platform/testing/io_task_runner_testing_platform_support.h"
+#include "third_party/blink/renderer/platform/testing/task_environment.h"
 
 using testing::_;
 
@@ -41,7 +42,8 @@ class MockLocalMediaStreamVideoSource : public blink::MediaStreamVideoSource {
   void StartSourceImpl(
       VideoCaptureDeliverFrameCB frame_callback,
       EncodedVideoFrameCB encoded_frame_callback,
-      VideoCaptureCropVersionCB crop_version_callback) override {}
+      VideoCaptureSubCaptureTargetVersionCB sub_capture_target_version_callback,
+      VideoCaptureNotifyFrameDroppedCB frame_dropped_callback) override {}
 
   void StopSourceImpl() override {}
 
@@ -56,6 +58,7 @@ class MediaStreamSetTest : public testing::Test {
  protected:
   // Required as persistent member to prevent the garbage collector from
   // removing the object before the test ended.
+  test::TaskEnvironment task_environment_;
   Persistent<MediaStreamSet> media_stream_set_;
   ScopedTestingPlatformSupport<IOTaskRunnerTestingPlatformSupport> platform_;
 };

@@ -15,6 +15,9 @@
 namespace content {
 class InterestGroupManagerImpl;
 
+// Maximum number of IDs to send in a single query call. Public for testing.
+constexpr size_t kQueryBatchSizeLimit = 1000;
+
 // Returns true if the k-anonymity data indicates that the k-anonymity key
 // `data.key` should be considered k-anonymous at time `now`. To be k-anonymous
 // `data.is_k_anonymous` must be true and `data.last_updated` must be less than
@@ -30,16 +33,20 @@ IsKAnonymous(const StorageInterestGroup::KAnonymityData& data,
 // interest group updates.
 class CONTENT_EXPORT InterestGroupKAnonymityManager {
  public:
+  using GetKAnonymityServiceDelegateCallback =
+      base::RepeatingCallback<KAnonymityServiceDelegate*()>;
+
   InterestGroupKAnonymityManager(
       InterestGroupManagerImpl* interest_group_manager,
-      KAnonymityServiceDelegate* k_anonymity_service);
+      GetKAnonymityServiceDelegateCallback k_anonymity_service_callback);
   ~InterestGroupKAnonymityManager();
 
   // Requests the k-anonymity status of elements of the interest group that
-  // haven't been updated in 24 hours or more. Results are passed to
-  // interest_group_manater_->UpdateKAnonymity.
+  // haven't been updated in 24 hours or more (querying the database first to
+  // get the applicable k-anon keys). Results are passed to
+  // interest_group_manager_->UpdateKAnonymity.
   void QueryKAnonymityForInterestGroup(
-      const StorageInterestGroup& storage_group);
+      const blink::InterestGroupKey& interest_group_key);
 
   // Notify the k-anonymity service that these ad keys won an auction.
   // Internally this calls RegisterIDAsJoined().
@@ -61,18 +68,24 @@ class CONTENT_EXPORT InterestGroupKAnonymityManager {
   // If the last reported time is too long ago, calls JoinSet() on the
   // k-anonymity service.
   void OnGotLastReportedTime(std::string key,
-                             absl::optional<base::Time> last_update_time);
+                             std::optional<base::Time> last_update_time);
 
   // Callback from k-anonymity service JoinSet(). Updates the LastReported time
   // for key in the database, regardless of status (fail close).
   void JoinSetCallback(std::string key, bool status);
+
+  // Requests the k-anonymity status of elements of `k_anon_data` that
+  // haven't been updated in 24 hours or more. Results are passed to
+  // interest_group_manager_->UpdateKAnonymity.
+  void QueryKAnonymityData(
+      const std::vector<StorageInterestGroup::KAnonymityData>& k_anon_data);
 
   // An unowned pointer to the InterestGroupManagerImpl that owns this
   // InterestGroupUpdateManager. Used as an intermediary to talk to the
   // database.
   raw_ptr<InterestGroupManagerImpl> interest_group_manager_;
 
-  raw_ptr<KAnonymityServiceDelegate> k_anonymity_service_;
+  GetKAnonymityServiceDelegateCallback k_anonymity_service_callback_;
 
   // We keep track of joins in progress because the joins that haven't completed
   // are still marked as eligible but it would be incorrect to join them

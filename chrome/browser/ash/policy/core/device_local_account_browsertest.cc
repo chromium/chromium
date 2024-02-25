@@ -65,7 +65,6 @@
 #include "chrome/browser/ash/login/test/webview_content_extractor.h"
 #include "chrome/browser/ash/login/ui/login_display_host.h"
 #include "chrome/browser/ash/login/users/avatar/user_image_manager_test_util.h"
-#include "chrome/browser/ash/login/users/chrome_user_manager.h"
 #include "chrome/browser/ash/login/users/chrome_user_manager_impl.h"
 #include "chrome/browser/ash/login/wizard_controller.h"
 #include "chrome/browser/ash/policy/core/browser_policy_connector_ash.h"
@@ -86,6 +85,7 @@
 #include "chrome/browser/extensions/updater/extension_cache_impl.h"
 #include "chrome/browser/extensions/updater/local_extension_cache.h"
 #include "chrome/browser/lifetime/application_lifetime.h"
+#include "chrome/browser/metrics/chrome_metrics_service_accessor.h"
 #include "chrome/browser/net/profile_network_context_service.h"
 #include "chrome/browser/net/profile_network_context_service_test_utils.h"
 #include "chrome/browser/policy/networking/device_network_configuration_updater_ash.h"
@@ -103,17 +103,20 @@
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/webui/ash/login/oobe_ui.h"
 #include "chrome/browser/ui/webui/ash/login/terms_of_service_screen_handler.h"
+#include "chrome/browser/unified_consent/unified_consent_service_factory.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/common/chrome_paths.h"
 #include "chrome/common/extensions/extension_constants.h"
 #include "chrome/common/pref_names.h"
-#include "chrome/grit/chromium_strings.h"
+#include "chrome/grit/branded_strings.h"
 #include "chrome/grit/generated_resources.h"
 #include "chromeos/ash/components/dbus/session_manager/fake_session_manager_client.h"
 #include "chromeos/ash/components/login/auth/public/user_context.h"
 #include "chromeos/ash/components/network/policy_certificate_provider.h"
 #include "chromeos/ash/components/settings/timezone_settings.h"
+#include "chromeos/components/mgs/managed_guest_session_utils.h"
 #include "components/crx_file/crx_verifier.h"
+#include "components/metrics_services_manager/metrics_services_manager.h"
 #include "components/policy/core/common/cloud/cloud_policy_constants.h"
 #include "components/policy/core/common/cloud/cloud_policy_core.h"
 #include "components/policy/core/common/cloud/cloud_policy_store.h"
@@ -122,12 +125,15 @@
 #include "components/policy/core/common/policy_map.h"
 #include "components/policy/core/common/policy_namespace.h"
 #include "components/policy/core/common/policy_service.h"
+#include "components/policy/core/common/policy_types.h"
 #include "components/policy/policy_constants.h"
 #include "components/policy/proto/chrome_device_policy.pb.h"
 #include "components/prefs/pref_service.h"
 #include "components/prefs/scoped_user_pref_update.h"
 #include "components/session_manager/core/session_manager.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
+#include "components/ukm/ukm_test_helper.h"
+#include "components/unified_consent/unified_consent_service.h"
 #include "components/user_manager/user.h"
 #include "components/user_manager/user_manager.h"
 #include "components/user_manager/user_type.h"
@@ -150,6 +156,8 @@
 #include "net/test/embedded_test_server/http_request.h"
 #include "net/test/embedded_test_server/http_response.h"
 #include "third_party/icu/source/common/unicode/locid.h"
+#include "third_party/metrics_proto/ukm/entry.pb.h"
+#include "third_party/metrics_proto/ukm/report.pb.h"
 #include "ui/base/ime/ash/extension_ime_util.h"
 #include "ui/base/ime/ash/input_method_descriptor.h"
 #include "ui/base/ime/ash/input_method_manager.h"
@@ -370,7 +378,8 @@ const base::Value* RefreshAndWaitForPolicies(
   PolicyChangeRegistrar policy_registrar(policy_service, ns);
   TestFuture<const base::Value*, const base::Value*> future;
   policy_registrar.Observe("string", future.GetRepeatingCallback());
-  policy_service->RefreshPolicies(base::OnceClosure());
+  policy_service->RefreshPolicies(base::OnceClosure(),
+                                  PolicyFetchReason::kTest);
   return std::get<1>(future.Take());
 }
 
@@ -385,6 +394,20 @@ DeviceLocalAccountPolicyBroker* GetDeviceLocalAccountPolicyBroker(
 bool IsFullManagementDisclosureNeeded(AccountId account) {
   auto* broker = GetDeviceLocalAccountPolicyBroker(account);
   return ash::login::IsFullManagementDisclosureNeeded(broker);
+}
+
+ukm::UkmService* GetUkmService() {
+  return g_browser_process->GetMetricsServicesManager()->GetUkmService();
+}
+
+void EnableUrlKeyedAnonymizedDataCollection(Profile* profile) {
+  unified_consent::UnifiedConsentService* consent_service =
+      UnifiedConsentServiceFactory::GetForProfile(profile);
+  if (consent_service) {
+    consent_service->SetUrlKeyedAnonymizedDataCollectionEnabled(true);
+    g_browser_process->GetMetricsServicesManager()->UpdateUploadPermissions(
+        true);
+  }
 }
 
 }  // namespace
@@ -577,7 +600,7 @@ class DeviceLocalAccountTest : public DevicePolicyCrosBrowserTest,
     ASSERT_TRUE(user) << " account " << account_id.GetUserEmail()
                       << " not found";
     EXPECT_EQ(account_id, user->GetAccountId());
-    EXPECT_EQ(user_manager::USER_TYPE_PUBLIC_ACCOUNT, user->GetType());
+    EXPECT_EQ(user_manager::UserType::kPublicAccount, user->GetType());
   }
 
   void SetSystemTimezoneAutomaticDetectionPolicy(
@@ -599,8 +622,7 @@ class DeviceLocalAccountTest : public DevicePolicyCrosBrowserTest,
                                 &extension_cache_root_dir)) {
       ADD_FAILURE();
     }
-    return extension_cache_root_dir.Append(
-        base::HexEncode(account_id.c_str(), account_id.size()));
+    return extension_cache_root_dir.Append(base::HexEncode(account_id));
   }
 
   base::FilePath GetCacheCRXFilePath(const std::string& id,
@@ -665,7 +687,7 @@ class DeviceLocalAccountTest : public DevicePolicyCrosBrowserTest,
     auto* controller = ash::ExistingUserController::current_controller();
     ASSERT_TRUE(controller);
 
-    ash::UserContext user_context(user_manager::USER_TYPE_PUBLIC_ACCOUNT,
+    ash::UserContext user_context(user_manager::UserType::kPublicAccount,
                                   account_id_1_);
     user_context.SetPublicSessionLocale(locale);
     user_context.SetPublicSessionInputMethod(input_method);
@@ -834,7 +856,7 @@ class ExtensionInstallObserver : public ProfileManagerObserver,
     registry_->AddObserver(this);
   }
 
-  raw_ptr<extensions::ExtensionRegistry, ExperimentalAsh> registry_;
+  raw_ptr<extensions::ExtensionRegistry> registry_;
   base::RunLoop run_loop_;
   base::ScopedObservation<ProfileManager, ProfileManagerObserver>
       profile_manager_observer_{this};
@@ -951,7 +973,7 @@ IN_PROC_BROWSER_TEST_F(DeviceLocalAccountTest, DisplayName) {
   DeviceLocalAccountPolicyBroker* broker =
       GetDeviceLocalAccountPolicyBroker(account_id_1_);
   ASSERT_TRUE(broker);
-  broker->core()->client()->FetchPolicy();
+  broker->core()->client()->FetchPolicy(PolicyFetchReason::kTest);
   WaitForDisplayName(account_id_1_.GetUserEmail(), kDisplayName2);
 
   // Verify that the new display name is shown in the UI.
@@ -1008,7 +1030,8 @@ IN_PROC_BROWSER_TEST_F(DeviceLocalAccountTest, AccountListChange) {
       em::DeviceLocalAccountInfoProto::ACCOUNT_TYPE_PUBLIC_SESSION);
 
   policy_test_server_mixin_.UpdateDevicePolicy(policy);
-  g_browser_process->policy_service()->RefreshPolicies(base::OnceClosure());
+  g_browser_process->policy_service()->RefreshPolicies(
+      base::OnceClosure(), PolicyFetchReason::kTest);
 
   // Make sure the second device-local account disappears.
   base::RunLoop().RunUntilIdle();
@@ -1502,7 +1525,7 @@ IN_PROC_BROWSER_TEST_F(DeviceLocalAccountTest, UserAvatarImage) {
   const base::Value::Dict* image_properties =
       images_pref.FindDict(account_id_1_.GetUserEmail());
   ASSERT_TRUE(image_properties);
-  absl::optional<int> image_index = image_properties->FindInt("index");
+  std::optional<int> image_index = image_properties->FindInt("index");
   const std::string* image_path = image_properties->FindString("path");
   ASSERT_TRUE(image_index.has_value());
   ASSERT_TRUE(image_path);
@@ -1551,15 +1574,15 @@ IN_PROC_BROWSER_TEST_F(DeviceLocalAccountTest, LastWindowClosedLogoutReminder) {
   installer->set_creation_flags(extensions::Extension::FROM_WEBSTORE);
 
   {
-    TestFuture<const absl::optional<CrxInstallError>&> installer_done_future;
+    TestFuture<const std::optional<CrxInstallError>&> installer_done_future;
     installer->AddInstallerCallback(installer_done_future.GetCallback());
 
     base::FilePath test_dir;
     ASSERT_TRUE(base::PathService::Get(chrome::DIR_TEST_DATA, &test_dir));
     installer->InstallCrx(test_dir.Append(kPackagedAppCRXPath));
 
-    const absl::optional<CrxInstallError>& error = installer_done_future.Get();
-    EXPECT_THAT(error, testing::Eq(absl::nullopt));
+    const std::optional<CrxInstallError>& error = installer_done_future.Get();
+    EXPECT_THAT(error, testing::Eq(std::nullopt));
   }
 
   const extensions::Extension* app = installer->extension();
@@ -1742,7 +1765,7 @@ IN_PROC_BROWSER_TEST_F(DeviceLocalAccountTest, ManagedSessionTimezoneChange) {
   const user_manager::User* user =
       user_manager::UserManager::Get()->FindUser(account_id_1_);
   ASSERT_TRUE(user);
-  ASSERT_EQ(user->GetType(), user_manager::USER_TYPE_PUBLIC_ACCOUNT);
+  ASSERT_EQ(user->GetType(), user_manager::UserType::kPublicAccount);
 
   std::u16string timezone_id1(u"America/Los_Angeles");
   std::string timezone_id2("Europe/Berlin");
@@ -1853,7 +1876,7 @@ IN_PROC_BROWSER_TEST_F(DeviceLocalAccountTest, MultipleRecommendedLocales) {
   DeviceLocalAccountPolicyBroker* broker =
       GetDeviceLocalAccountPolicyBroker(account_id_1_);
   ASSERT_TRUE(broker);
-  broker->core()->client()->FetchPolicy();
+  broker->core()->client()->FetchPolicy(PolicyFetchReason::kTest);
   WaitForPublicSessionLocalesChange(account_id_1_);
 
   // Verify that the new list of locales is shown in the UI.
@@ -1876,7 +1899,7 @@ IN_PROC_BROWSER_TEST_F(DeviceLocalAccountTest, MultipleRecommendedLocales) {
   SetRecommendedLocales(kRecommendedLocales1, std::size(kRecommendedLocales1));
 
   UploadAndInstallDeviceLocalAccountPolicy();
-  broker->core()->client()->FetchPolicy();
+  broker->core()->client()->FetchPolicy(PolicyFetchReason::kTest);
   WaitForPublicSessionLocalesChange(account_id_1_);
 
   // Verify that the manually selected locale is still selected.
@@ -2258,7 +2281,7 @@ IN_PROC_BROWSER_TEST_F(DeviceLocalAccountTest, SessionLengthLimit) {
     DeviceLocalAccountPolicyBroker* broker =
         GetDeviceLocalAccountPolicyBroker(account_id_1_);
     ASSERT_TRUE(broker);
-    broker->core()->client()->FetchPolicy();
+    broker->core()->client()->FetchPolicy(PolicyFetchReason::kTest);
   }
   // Ensure the SessionLengthLimit is updated.
   LocalStateValueWaiter(prefs::kSessionLengthLimit, base::Value(kTwoHoursInMs))
@@ -2826,6 +2849,54 @@ IN_PROC_BROWSER_TEST_F(DeviceLocalAccountTest, WebAppsInPublicSession) {
   EXPECT_TRUE(web_app::WebAppProvider::GetForTest(profile));
 }
 
+// TODO(b/307518336): move UKM tests to
+// chrome/browser/metrics/ukm_browsertest.cc.
+class DeviceLocalAccountUkmTest : public DeviceLocalAccountTest {
+ public:
+  void SetChromeMetricsEnabled(bool value) {
+    chrome_metrics_enabled_ = value;
+    ChromeMetricsServiceAccessor::SetMetricsAndCrashReportingForTesting(
+        &chrome_metrics_enabled_);
+  }
+
+ private:
+  bool chrome_metrics_enabled_;
+};
+
+IN_PROC_BROWSER_TEST_F(DeviceLocalAccountUkmTest, PRE_ReportUkmOnShutdown) {
+  ukm::UkmTestHelper ukm_test_helper(GetUkmService());
+  SetChromeMetricsEnabled(true);
+
+  // Setup managed guest session.
+  AddPublicSessionToDevicePolicy(kAccountId1);
+  UploadAndInstallDeviceLocalAccountPolicy();
+  WaitForPolicy();
+  ASSERT_NO_FATAL_FAILURE(StartLogin(std::string(), std::string()));
+  WaitForSessionStart();
+  ASSERT_TRUE(chromeos::IsManagedGuestSession());
+
+  EnableUrlKeyedAnonymizedDataCollection(GetProfileForTest());
+  EXPECT_TRUE(ukm_test_helper.IsRecordingEnabled());
+
+  // A browser is opened by default in MGS.
+  EXPECT_EQ(1U, BrowserList::GetInstance()->size());
+
+  // Delete all UKM to check metrics reported during the shutdown.
+  ukm_test_helper.PurgeData();
+  EXPECT_FALSE(ukm_test_helper.HasUnsentLogs());
+}
+
+IN_PROC_BROWSER_TEST_F(DeviceLocalAccountUkmTest, ReportUkmOnShutdown) {
+  ukm::UkmTestHelper ukm_test_helper(GetUkmService());
+  SetChromeMetricsEnabled(true);
+
+  // Check metrics from the previous managed guest session.
+  ASSERT_TRUE(ukm_test_helper.HasUnsentLogs());
+  std::unique_ptr<ukm::Report> report = ukm_test_helper.GetUkmReport();
+  ASSERT_EQ(1, report->sources_size());
+  EXPECT_EQ(ukm::SourceType::APP_ID, report->sources().Get(0).type());
+}
+
 class AmbientAuthenticationManagedGuestSessionTest
     : public DeviceLocalAccountTest,
       public testing::WithParamInterface<net::AmbientAuthAllowedProfileTypes> {
@@ -2882,9 +2953,9 @@ IN_PROC_BROWSER_TEST_P(AmbientAuthenticationManagedGuestSessionTest,
 INSTANTIATE_TEST_SUITE_P(
     AmbientAuthAllPolicyValuesTest,
     AmbientAuthenticationManagedGuestSessionTest,
-    testing::Values(net::AmbientAuthAllowedProfileTypes::REGULAR_ONLY,
-                    net::AmbientAuthAllowedProfileTypes::INCOGNITO_AND_REGULAR,
-                    net::AmbientAuthAllowedProfileTypes::GUEST_AND_REGULAR,
-                    net::AmbientAuthAllowedProfileTypes::ALL));
+    testing::Values(net::AmbientAuthAllowedProfileTypes::kRegularOnly,
+                    net::AmbientAuthAllowedProfileTypes::kIncognitoAndRegular,
+                    net::AmbientAuthAllowedProfileTypes::kGuestAndRegular,
+                    net::AmbientAuthAllowedProfileTypes::kAll));
 
 }  // namespace policy

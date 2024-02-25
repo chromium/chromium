@@ -13,6 +13,8 @@
 #include "base/task/single_thread_task_runner.h"
 #include "mojo/public/cpp/system/data_pipe.h"
 #include "third_party/blink/public/mojom/script/script_type.mojom-blink-forward.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_compile_hints_consumer.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_local_compile_hints_consumer.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/html/parser/text_resource_decoder.h"
 #include "third_party/blink/renderer/core/script/script_scheduling_type.h"
@@ -44,7 +46,7 @@ class CORE_EXPORT ScriptStreamer : public GarbageCollected<ScriptStreamer> {
     kAlreadyLoaded,  // DEPRECATED
     kNotHTTP,
     kRevalidate,
-    kContextNotValid,  // DEPRECATED
+    kContextNotValid,
     kEncodingNotSupported,
     kThreadBusy,  // DEPRECATED
     kV8CannotStream,
@@ -147,6 +149,11 @@ class CORE_EXPORT ResourceScriptStreamer final : public ScriptStreamer {
   const String& ScriptURLString() const { return script_url_string_; }
   uint64_t ScriptResourceIdentifier() const {
     return script_resource_identifier_;
+  }
+
+  v8_compile_hints::V8LocalCompileHintsConsumer*
+  GetV8LocalCompileHintsConsumer() const {
+    return local_compile_hints_consumer_.get();
   }
 
  private:
@@ -266,6 +273,15 @@ class CORE_EXPORT ResourceScriptStreamer final : public ScriptStreamer {
   v8::ScriptCompiler::StreamedSource::Encoding encoding_;
 
   v8::ScriptType script_type_;
+
+  // For transmitting crowdsourced compile hints to V8 while streaming.
+  std::unique_ptr<v8_compile_hints::V8CrowdsourcedCompileHintsConsumer::
+                      DataAndScriptNameHash>
+      crowdsourced_compile_hint_callback_data_;
+
+  // For transmitting local compile hints to V8 while streaming.
+  std::unique_ptr<v8_compile_hints::V8LocalCompileHintsConsumer>
+      local_compile_hints_consumer_;
 };
 
 // BackgroundInlineScriptStreamer allows parsing and compiling inline scripts in
@@ -275,6 +291,7 @@ class CORE_EXPORT BackgroundInlineScriptStreamer final
     : public WTF::ThreadSafeRefCounted<BackgroundInlineScriptStreamer> {
  public:
   BackgroundInlineScriptStreamer(
+      v8::Isolate* isolate,
       const String& text,
       v8::ScriptCompiler::CompileOptions compile_options);
 

@@ -5,12 +5,14 @@
 #ifndef ASH_SYSTEM_MEDIA_UNIFIED_MEDIA_CONTROLS_VIEW_H_
 #define ASH_SYSTEM_MEDIA_UNIFIED_MEDIA_CONTROLS_VIEW_H_
 
+#include <optional>
+
 #include "ash/ash_export.h"
 #include "ash/style/icon_button.h"
 #include "base/containers/flat_set.h"
 #include "base/memory/raw_ptr.h"
 #include "services/media_session/public/mojom/media_session.mojom.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
+#include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/controls/button/button.h"
 
 namespace gfx {
@@ -28,12 +30,14 @@ class UnifiedMediaControlsController;
 
 // Media controls view displayed in quick settings.
 class ASH_EXPORT UnifiedMediaControlsView : public views::Button {
+  METADATA_HEADER(UnifiedMediaControlsView, views::Button)
+
  public:
   explicit UnifiedMediaControlsView(UnifiedMediaControlsController* controller);
   ~UnifiedMediaControlsView() override = default;
 
   void SetIsPlaying(bool playing);
-  void SetArtwork(absl::optional<gfx::ImageSkia> artwork);
+  void SetArtwork(std::optional<gfx::ImageSkia> artwork);
   void SetTitle(const std::u16string& title);
   void SetArtist(const std::u16string& artist);
   void UpdateActionButtonAvailability(
@@ -56,6 +60,8 @@ class ASH_EXPORT UnifiedMediaControlsView : public views::Button {
   friend class UnifiedMediaControlsControllerTest;
 
   class MediaActionButton : public IconButton {
+    METADATA_HEADER(MediaActionButton, IconButton)
+
    public:
     MediaActionButton(UnifiedMediaControlsController* controller,
                       media_session::mojom::MediaSessionAction action,
@@ -75,15 +81,15 @@ class ASH_EXPORT UnifiedMediaControlsView : public views::Button {
 
   SkPath GetArtworkClipPath();
 
-  const raw_ptr<UnifiedMediaControlsController, ExperimentalAsh> controller_ =
+  const raw_ptr<UnifiedMediaControlsController, DanglingUntriaged> controller_ =
       nullptr;
 
-  raw_ptr<views::ImageView, ExperimentalAsh> artwork_view_ = nullptr;
-  raw_ptr<views::ImageView, ExperimentalAsh> drop_down_icon_ = nullptr;
-  raw_ptr<views::Label, ExperimentalAsh> title_label_ = nullptr;
-  raw_ptr<views::Label, ExperimentalAsh> artist_label_ = nullptr;
-  raw_ptr<MediaActionButton, ExperimentalAsh> play_pause_button_ = nullptr;
-  raw_ptr<views::View, ExperimentalAsh> button_row_ = nullptr;
+  raw_ptr<views::ImageView> artwork_view_ = nullptr;
+  raw_ptr<views::ImageView> drop_down_icon_ = nullptr;
+  raw_ptr<views::Label> title_label_ = nullptr;
+  raw_ptr<views::Label> artist_label_ = nullptr;
+  raw_ptr<MediaActionButton> play_pause_button_ = nullptr;
+  raw_ptr<views::View> button_row_ = nullptr;
 
   bool is_in_empty_state_ = false;
 };

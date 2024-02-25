@@ -46,16 +46,23 @@ class TabSessionSource : public InputDelegate {
 
   // InputDelegate impl:
   void Process(const proto::CustomInput& input,
-               const FeatureProcessorState& feature_processor_state,
+               FeatureProcessorState& feature_processor_state,
                ProcessedCallback callback) override;
+
+  // Returns a bucketized value, with bucket in exponent of 2. The value is on original units
+  // with reduced accuracy. `max_buckets` has a limit  of 64 given value is 64 bits.
+  static float BucketizeExp(int64_t value, int max_buckets);
+
+  // Returns a bucketized value, with linear buckets of size 1. The value is on original units
+  // with reduced accuracy.
+  static float BucketizeLinear(int64_t value, int max_buckets);
 
  protected:
   // Adds info about local tabs, to be implemented by the chrome layer which
   // knows about local tabs.
-  virtual void AddLocalTabInfo(
-      const TabFetcher::Tab& tab,
-      const FeatureProcessorState& feature_processor_state,
-      Tensor& inputs);
+  virtual void AddLocalTabInfo(const TabFetcher::Tab& tab,
+                               FeatureProcessorState& feature_processor_state,
+                               Tensor& inputs);
 
  private:
   void AddTabInfo(const sessions::SessionTab* session_tab, Tensor& inputs);

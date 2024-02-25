@@ -6,6 +6,7 @@
 #define CHROMEOS_ASH_COMPONENTS_ATTESTATION_ATTESTATION_FLOW_H_
 
 #include <memory>
+#include <optional>
 #include <string>
 
 #include "base/component_export.h"
@@ -17,7 +18,6 @@
 #include "chromeos/ash/components/dbus/attestation/interface.pb.h"
 #include "chromeos/ash/components/dbus/constants/attestation_constants.h"
 #include "chromeos/dbus/common/dbus_method_call_status.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
 #include "third_party/cros_system_api/dbus/service_constants.h"
 
@@ -136,7 +136,7 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_ATTESTATION) AttestationFlow {
       bool force_new_key,
       ::attestation::KeyType key_crypto_type,
       const std::string& key_name,
-      const absl::optional<CertProfileSpecificData>& profile_specific_data,
+      const std::optional<CertProfileSpecificData>& profile_specific_data,
       CertificateCallback callback);
 
  protected:
@@ -158,10 +158,14 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_ATTESTATION) AttestationFlow {
   // Reports success if enrollment is complete and otherwise starts the process.
   //
   // Parameters
+  //   certificate_profile - Specifies what kind of certificate should be
+  //                         requested from the CA.
   //   callback - Called with the success or failure of the enrollment.
   //   result - Result of `GetStatus()`, which contains `enrolled` field.
-  void OnEnrollmentCheckComplete(EnrollCallback callback,
-                                 const ::attestation::GetStatusReply& reply);
+  void OnEnrollmentCheckComplete(
+      AttestationCertificateProfile certificate_profile,
+      EnrollCallback callback,
+      const ::attestation::GetStatusReply& reply);
 
   // Asynchronously requests attestation features.
   //
@@ -256,7 +260,7 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_ATTESTATION) AttestationFlow {
       bool generate_new_key,
       ::attestation::KeyType key_crypto_type,
       const std::string& key_name,
-      const absl::optional<CertProfileSpecificData>& profile_specific_data,
+      const std::optional<CertProfileSpecificData>& profile_specific_data,
       CertificateCallback callback,
       EnrollState enroll_state);
 
@@ -282,7 +286,7 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_ATTESTATION) AttestationFlow {
       ::attestation::KeyType key_crypto_type,
       const std::string& key_name,
       AttestationKeyType key_type,
-      const absl::optional<CertProfileSpecificData>& profile_specific_data,
+      const std::optional<CertProfileSpecificData>& profile_specific_data,
       CertificateCallback callback,
       const ::attestation::GetKeyInfoReply& reply);
 
@@ -331,8 +335,7 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_ATTESTATION) AttestationFlow {
       CertificateCallback callback,
       const ::attestation::FinishCertificateRequestReply& reply);
 
-  raw_ptr<AttestationClient, DanglingUntriaged | ExperimentalAsh>
-      attestation_client_;
+  raw_ptr<AttestationClient, DanglingUntriaged> attestation_client_;
   std::unique_ptr<ServerProxy> server_proxy_;
 
   base::TimeDelta ready_timeout_;

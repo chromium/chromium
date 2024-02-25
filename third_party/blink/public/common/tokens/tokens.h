@@ -123,20 +123,18 @@ using ExecutionContextToken = MultiToken<LocalFrameToken,
                                          SharedStorageWorkletToken,
                                          ShadowRealmToken>;
 
-// Identifies a blink::PortalContents / blink::HTMLPortalElement in the
-// renderer process, and a content::Portal in the browser process.
-using PortalToken = base::TokenType<class PortalTokenTypeMarker>;
-
 // Identifies a v8::Context / blink::ScriptState.
 using V8ContextToken = base::TokenType<class V8ContextTokenTypeMarker>;
 
 // Identifies possible contexts used for WebGPU. Used in cross-process mojo
 // interfaces for isolation key coordination.
 // TODO(dawn:549) Might be able to eventually swap this out to use
-//     ExecutionContextToken from above whif DocumentToken gets encapsulated
+//     ExecutionContextToken from above with DocumentToken gets encapsulated
 //     there later on.
-using WebGPUExecutionContextToken =
-    MultiToken<DocumentToken, DedicatedWorkerToken>;
+using WebGPUExecutionContextToken = MultiToken<DocumentToken,
+                                               DedicatedWorkerToken,
+                                               SharedWorkerToken,
+                                               ServiceWorkerToken>;
 
 }  // namespace blink
 

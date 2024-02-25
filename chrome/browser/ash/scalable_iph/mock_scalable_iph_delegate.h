@@ -46,6 +46,7 @@ class MockScalableIphDelegate : public scalable_iph::ScalableIphDelegate {
   // use a real object as `ScalableIphDelegateImpl` works as a fake easily for
   // now and it's an easy way to increases test coverage.
   void SetDelegate(std::unique_ptr<scalable_iph::ScalableIphDelegate> delegate);
+  scalable_iph::ScalableIphDelegate* fake_delegate() { return delegate_.get(); }
   void FakeObservers();
   void FakeClientAgeInDays();
   void FakeShowBubble();

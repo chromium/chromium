@@ -14,7 +14,7 @@ namespace gcm {
 class GCM_EXPORT GCMUnregistrationRequestHandler :
     public UnregistrationRequest::CustomRequestHandler {
  public:
-  GCMUnregistrationRequestHandler(const std::string& app_id);
+  explicit GCMUnregistrationRequestHandler(const std::string& app_id);
 
   GCMUnregistrationRequestHandler(const GCMUnregistrationRequestHandler&) =
       delete;
@@ -27,7 +27,6 @@ class GCM_EXPORT GCMUnregistrationRequestHandler :
   void BuildRequestBody(std::string* body) override;
   UnregistrationRequest::Status ParseResponse(
       const std::string& response) override;
-  void ReportUMAs(UnregistrationRequest::Status status) override;
 
  private:
   std::string app_id_;

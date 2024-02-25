@@ -29,21 +29,24 @@
 #import "components/sync_sessions/open_tabs_ui_delegate.h"
 #import "components/sync_sessions/session_sync_service.h"
 #import "ios/chrome/app/tests_hook.h"
-#import "ios/chrome/browser/drag_and_drop/drag_item_util.h"
-#import "ios/chrome/browser/drag_and_drop/table_view_url_drag_drop_handler.h"
-#import "ios/chrome/browser/metrics/new_tab_page_uma.h"
-#import "ios/chrome/browser/net/crurl.h"
-#import "ios/chrome/browser/search_engines/template_url_service_factory.h"
+#import "ios/chrome/browser/drag_and_drop/model/drag_item_util.h"
+#import "ios/chrome/browser/drag_and_drop/model/table_view_url_drag_drop_handler.h"
+#import "ios/chrome/browser/metrics/model/new_tab_page_uma.h"
+#import "ios/chrome/browser/net/model/crurl.h"
+#import "ios/chrome/browser/ntp/model/new_tab_page_util.h"
+#import "ios/chrome/browser/search_engines/model/template_url_service_factory.h"
 #import "ios/chrome/browser/sessions/live_tab_context_browser_agent.h"
 #import "ios/chrome/browser/sessions/session_util.h"
-#import "ios/chrome/browser/settings/sync/utils/sync_presenter.h"
-#import "ios/chrome/browser/settings/sync/utils/sync_util.h"
+#import "ios/chrome/browser/settings/model/sync/utils/sync_presenter.h"
+#import "ios/chrome/browser/settings/model/sync/utils/sync_util.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
+#import "ios/chrome/browser/shared/model/url/chrome_url_constants.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_opener.h"
 #import "ios/chrome/browser/shared/public/commands/application_commands.h"
 #import "ios/chrome/browser/shared/public/commands/open_new_tab_command.h"
+#import "ios/chrome/browser/shared/public/commands/settings_commands.h"
 #import "ios/chrome/browser/shared/public/commands/show_signin_command.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
@@ -56,26 +59,27 @@
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_text_header_footer_item.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_text_item.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_url_item.h"
-#import "ios/chrome/browser/shared/ui/table_view/chrome_table_view_styler.h"
+#import "ios/chrome/browser/shared/ui/table_view/legacy_chrome_table_view_styler.h"
 #import "ios/chrome/browser/shared/ui/table_view/table_view_favicon_data_source.h"
 #import "ios/chrome/browser/shared/ui/table_view/table_view_utils.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
-#import "ios/chrome/browser/signin/authentication_service.h"
-#import "ios/chrome/browser/signin/authentication_service_factory.h"
-#import "ios/chrome/browser/signin/chrome_account_manager_service_factory.h"
-#import "ios/chrome/browser/sync/enterprise_utils.h"
-#import "ios/chrome/browser/sync/session_sync_service_factory.h"
-#import "ios/chrome/browser/sync/sync_observer_bridge.h"
-#import "ios/chrome/browser/sync/sync_service_factory.h"
-#import "ios/chrome/browser/synced_sessions/distant_session.h"
-#import "ios/chrome/browser/synced_sessions/distant_tab.h"
-#import "ios/chrome/browser/synced_sessions/synced_sessions.h"
-#import "ios/chrome/browser/tabs_search/tabs_search_service.h"
-#import "ios/chrome/browser/tabs_search/tabs_search_service_factory.h"
+#import "ios/chrome/browser/signin/model/authentication_service.h"
+#import "ios/chrome/browser/signin/model/authentication_service_factory.h"
+#import "ios/chrome/browser/signin/model/chrome_account_manager_service_factory.h"
+#import "ios/chrome/browser/sync/model/enterprise_utils.h"
+#import "ios/chrome/browser/sync/model/session_sync_service_factory.h"
+#import "ios/chrome/browser/sync/model/sync_observer_bridge.h"
+#import "ios/chrome/browser/sync/model/sync_service_factory.h"
+#import "ios/chrome/browser/synced_sessions/model/distant_session.h"
+#import "ios/chrome/browser/synced_sessions/model/distant_tab.h"
+#import "ios/chrome/browser/synced_sessions/model/synced_sessions.h"
+#import "ios/chrome/browser/tabs_search/model/tabs_search_service.h"
+#import "ios/chrome/browser/tabs_search/model/tabs_search_service_factory.h"
 #import "ios/chrome/browser/ui/authentication/cells/signin_promo_view_configurator.h"
 #import "ios/chrome/browser/ui/authentication/cells/signin_promo_view_consumer.h"
 #import "ios/chrome/browser/ui/authentication/cells/table_view_signin_promo_item.h"
 #import "ios/chrome/browser/ui/authentication/enterprise/enterprise_utils.h"
+#import "ios/chrome/browser/ui/authentication/history_sync/history_sync_coordinator.h"
 #import "ios/chrome/browser/ui/authentication/signin/signin_utils.h"
 #import "ios/chrome/browser/ui/authentication/signin_presenter.h"
 #import "ios/chrome/browser/ui/authentication/signin_promo_view_mediator.h"
@@ -85,14 +89,14 @@
 #import "ios/chrome/browser/ui/recent_tabs/recent_tabs_presentation_delegate.h"
 #import "ios/chrome/browser/ui/recent_tabs/recent_tabs_table_view_controller_delegate.h"
 #import "ios/chrome/browser/ui/recent_tabs/recent_tabs_table_view_controller_ui_delegate.h"
-#import "ios/chrome/browser/url_loading/url_loading_browser_agent.h"
-#import "ios/chrome/browser/url_loading/url_loading_params.h"
-#import "ios/chrome/browser/url_loading/url_loading_util.h"
+#import "ios/chrome/browser/url_loading/model/url_loading_browser_agent.h"
+#import "ios/chrome/browser/url_loading/model/url_loading_params.h"
+#import "ios/chrome/browser/url_loading/model/url_loading_util.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/favicon/favicon_attributes.h"
 #import "ios/chrome/common/ui/favicon/favicon_view.h"
 #import "ios/chrome/common/ui/table_view/table_view_cells_constants.h"
-#import "ios/chrome/grit/ios_chromium_strings.h"
+#import "ios/chrome/grit/ios_branded_strings.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ios/public/provider/chrome/browser/modals/modals_api.h"
 #import "ios/web/public/web_state.h"
@@ -112,7 +116,6 @@ typedef NS_ENUM(NSInteger, SectionIdentifier) {
 typedef NS_ENUM(NSInteger, ItemType) {
   ItemTypeRecentlyClosedHeader = kItemTypeEnumZero,
   ItemTypeRecentlyClosed,
-  ItemTypeOtherDevicesHeader,
   ItemTypeOtherDevicesSyncOff,
   ItemTypeOtherDevicesNoSessions,
   ItemTypeOtherDevicesSignedOut,
@@ -121,7 +124,6 @@ typedef NS_ENUM(NSInteger, ItemType) {
   ItemTypeSessionHeader,
   ItemTypeSessionTabData,
   ItemTypeShowFullHistory,
-  ItemTypeSigninDisabled,
   ItemTypeSuggestedActionsHeader,
   ItemTypeSuggestedActionSearchOpenTabs,
   ItemTypeSuggestedActionSearchWeb,
@@ -175,6 +177,7 @@ typedef std::pair<SessionID, TableViewURLItem*> RecentlyClosedTableViewItemPair;
 @property(nonatomic, assign) sessions::TabRestoreService* tabRestoreService;
 // The sync state.
 @property(nonatomic, assign) SessionsSyncUserState sessionState;
+// Mediator in charge of inviting the user to sign-in with a Google account.
 @property(nonatomic, strong) SigninPromoViewMediator* signinPromoViewMediator;
 // The browser state used for many operations, derived from the one provided by
 // `self.browser`.
@@ -187,7 +190,7 @@ typedef std::pair<SessionID, TableViewURLItem*> RecentlyClosedTableViewItemPair;
 @property(nonatomic, strong) TableViewURLDragDropHandler* dragDropHandler;
 @end
 
-@implementation RecentTabsTableViewController : ChromeTableViewController
+@implementation RecentTabsTableViewController
 
 #pragma mark - Public Interface
 
@@ -281,7 +284,9 @@ typedef std::pair<SessionID, TableViewURLItem*> RecentlyClosedTableViewItemPair;
   }
 
   if (self.syncService->GetUserSettings()->IsTypeManagedByPolicy(
-          syncer::UserSelectableType::kTabs)) {
+          syncer::UserSelectableType::kTabs) ||
+      self.syncService->GetUserSettings()->IsTypeManagedByPolicy(
+          syncer::UserSelectableType::kHistory)) {
     // Return YES if the data type is disabled by the SyncTypesListDisabled
     // policy.
     return YES;
@@ -294,6 +299,14 @@ typedef std::pair<SessionID, TableViewURLItem*> RecentlyClosedTableViewItemPair;
   // Return NO is sign-in is disabled by the BrowserSignin policy.
   return authService->GetServiceStatus() ==
          AuthenticationService::ServiceStatus::SigninDisabledByPolicy;
+}
+
+- (BOOL)isScrolledToTop {
+  return IsScrollViewScrolledToTop(self.tableView);
+}
+
+- (BOOL)isScrolledToBottom {
+  return IsScrollViewScrolledToBottom(self.tableView);
 }
 
 #pragma mark - SyncObserverModelBridge
@@ -731,17 +744,12 @@ typedef std::pair<SessionID, TableViewURLItem*> RecentlyClosedTableViewItemPair;
                           syncService:self.syncService
                           accessPoint:signin_metrics::AccessPoint::
                                           ACCESS_POINT_RECENT_TABS
-                            presenter:self
-                   baseViewController:self];
+                      signinPresenter:self
+             accountSettingsPresenter:nil];
     if (base::FeatureList::IsEnabled(
             syncer::kReplaceSyncPromosWithSignInPromos)) {
-      ChromeAccountManagerService* accountManagerService =
-          ChromeAccountManagerServiceFactory::GetForBrowserState(
-              self.browserState);
       self.signinPromoViewMediator.signinPromoAction =
-          accountManagerService->HasIdentities()
-              ? SigninPromoAction::kSigninSheet
-              : SigninPromoAction::kInstantSignin;
+          SigninPromoAction::kSigninWithNoDefaultIdentity;
     }
     self.signinPromoViewMediator.consumer = self;
   }
@@ -1223,10 +1231,8 @@ typedef std::pair<SessionID, TableViewURLItem*> RecentlyClosedTableViewItemPair;
       itemTypeSelected == ItemTypeSessionTabData) {
     [self loadFaviconForCell:cell indexPath:indexPath];
   }
-  // ItemTypeOtherDevicesNoSessions and ItemTypeSigninDisabled should not be
-  // selectable.
-  if (itemTypeSelected == ItemTypeOtherDevicesNoSessions ||
-      itemTypeSelected == ItemTypeSigninDisabled) {
+  // ItemTypeOtherDevicesNoSessions should not be selectable.
+  if (itemTypeSelected == ItemTypeOtherDevicesNoSessions) {
     cell.selectionStyle = UITableViewCellSelectionStyleNone;
   }
   // Set button action method for ItemTypeOtherDevicesSyncOff.
@@ -1234,7 +1240,7 @@ typedef std::pair<SessionID, TableViewURLItem*> RecentlyClosedTableViewItemPair;
     TableViewIllustratedCell* illustratedCell =
         base::apple::ObjCCastStrict<TableViewIllustratedCell>(cell);
     [illustratedCell.button addTarget:self
-                               action:@selector(updateSyncState)
+                               action:@selector(didTapPromoActionButton)
                      forControlEvents:UIControlEventTouchUpInside];
     illustratedCell.button.accessibilityIdentifier =
         kRecentTabsTabSyncOffButtonAccessibilityIdentifier;
@@ -1342,14 +1348,12 @@ typedef std::pair<SessionID, TableViewURLItem*> RecentlyClosedTableViewItemPair;
     }
 
     case ItemTypeRecentlyClosedHeader:
-    case ItemTypeOtherDevicesHeader:
     case ItemTypeOtherDevicesSyncOff:
     case ItemTypeOtherDevicesNoSessions:
     case ItemTypeOtherDevicesSigninPromo:
     case ItemTypeOtherDevicesSyncInProgressHeader:
     case ItemTypeSessionHeader:
     case ItemTypeShowFullHistory:
-    case ItemTypeSigninDisabled:
       break;
   }
   return nil;
@@ -1554,17 +1558,24 @@ typedef std::pair<SessionID, TableViewURLItem*> RecentlyClosedTableViewItemPair;
           "MobileRecentTabManagerTabFromOtherDeviceOpenedSearchResult"));
       self.searchTerms = @"";
     }
-    new_tab_page_uma::RecordAction(
-        self.isIncognito, self.webStateList->GetActiveWebState(),
+    web::WebState* currentWebState = self.webStateList->GetActiveWebState();
+    bool is_ntp = currentWebState &&
+                  currentWebState->GetVisibleURL() == kChromeUINewTabURL;
+    new_tab_page_uma::RecordNTPAction(
+        self.isIncognito, is_ntp,
         new_tab_page_uma::ACTION_OPENED_FOREIGN_SESSION);
     std::unique_ptr<web::WebState> web_state =
         session_util::CreateWebStateWithNavigationEntries(
             self.browserState, toLoad->current_navigation_index,
             toLoad->navigations);
-    self.webStateList->InsertWebState(
-        self.webStateList->count(), std::move(web_state),
-        (WebStateList::INSERT_FORCE_INDEX | WebStateList::INSERT_ACTIVATE),
-        WebStateOpener());
+    if (IsNTPWithoutHistory(currentWebState)) {
+      self.webStateList->ReplaceWebStateAt(self.webStateList->active_index(),
+                                           std::move(web_state));
+    } else {
+      self.webStateList->InsertWebState(
+          std::move(web_state),
+          WebStateList::InsertionParams::Automatic().Activate());
+    }
   }
   [self.presentationDelegate showActiveRegularTabFromRecentTabs];
 }
@@ -1588,11 +1599,18 @@ typedef std::pair<SessionID, TableViewURLItem*> RecentlyClosedTableViewItemPair;
     base::RecordAction(base::UserMetricsAction(
         "MobileRecentTabManagerRecentTabOpenedSearchResult"));
   }
-  new_tab_page_uma::RecordAction(
-      self.isIncognito, self.webStateList->GetActiveWebState(),
+  web::WebState* activeWebState = self.webStateList->GetActiveWebState();
+  bool is_ntp =
+      activeWebState && activeWebState->GetVisibleURL() == kChromeUINewTabURL;
+  new_tab_page_uma::RecordNTPAction(
+      self.isIncognito, is_ntp,
       new_tab_page_uma::ACTION_OPENED_RECENTLY_CLOSED_ENTRY);
 
-  RestoreTab(entry_id, WindowOpenDisposition::NEW_FOREGROUND_TAB, self.browser);
+  WindowOpenDisposition disposition =
+      IsNTPWithoutHistory(self.webStateList->GetActiveWebState())
+          ? WindowOpenDisposition::CURRENT_TAB
+          : WindowOpenDisposition::NEW_FOREGROUND_TAB;
+  RestoreTab(entry_id, disposition, self.browser);
   [self.presentationDelegate showActiveRegularTabFromRecentTabs];
 }
 
@@ -1630,9 +1648,8 @@ typedef std::pair<SessionID, TableViewURLItem*> RecentlyClosedTableViewItemPair;
   web::WebState* webStatePtr = webState.get();
 
   self.webStateList->InsertWebState(
-      self.webStateList->count(), std::move(webState),
-      (WebStateList::INSERT_FORCE_INDEX | WebStateList::INSERT_ACTIVATE),
-      WebStateOpener());
+      std::move(webState),
+      WebStateList::InsertionParams::Automatic().Activate());
   webStatePtr->OpenURL(web::WebState::OpenURLParams(
       searchUrl, web::Referrer(), WindowOpenDisposition::CURRENT_TAB,
       ui::PAGE_TRANSITION_GENERATED, /*is_renderer_initiated=*/false));
@@ -1770,44 +1787,53 @@ typedef std::pair<SessionID, TableViewURLItem*> RecentlyClosedTableViewItemPair;
 #pragma mark - SyncPresenter
 
 - (void)showPrimaryAccountReauth {
-  [self.handler showSignin:[[ShowSigninCommand alloc]
-                               initWithOperation:AuthenticationOperation::
-                                                     kPrimaryAccountReauth
-                                     accessPoint:signin_metrics::AccessPoint::
-                                                     ACCESS_POINT_RECENT_TABS]
-        baseViewController:self];
+  [self.applicationHandler
+              showSignin:[[ShowSigninCommand alloc]
+                             initWithOperation:AuthenticationOperation::
+                                                   kPrimaryAccountReauth
+                                   accessPoint:signin_metrics::AccessPoint::
+                                                   ACCESS_POINT_RECENT_TABS]
+      baseViewController:self];
 }
 
 - (void)showSyncPassphraseSettings {
-  [self.handler showSyncPassphraseSettingsFromViewController:self];
+  [self.settingsHandler showSyncPassphraseSettingsFromViewController:self];
 }
 
 - (void)showGoogleServicesSettings {
-  [self.handler showGoogleServicesSettingsFromViewController:self];
+  [self.settingsHandler showGoogleServicesSettingsFromViewController:self];
 }
 
 - (void)showAccountSettings {
-  [self.handler showAccountsSettingsFromViewController:self];
+  [self.settingsHandler showAccountsSettingsFromViewController:self
+                                          skipIfUINotAvailable:NO];
 }
 
 - (void)showTrustedVaultReauthForFetchKeysWithTrigger:
     (syncer::TrustedVaultUserActionTriggerForUMA)trigger {
-  [self.handler showTrustedVaultReauthForFetchKeysFromViewController:self
-                                                             trigger:trigger];
+  [self.applicationHandler
+      showTrustedVaultReauthForFetchKeysFromViewController:self
+                                                   trigger:trigger
+                                               accessPoint:
+                                                   signin_metrics::AccessPoint::
+                                                       ACCESS_POINT_RECENT_TABS];
 }
 
 - (void)showTrustedVaultReauthForDegradedRecoverabilityWithTrigger:
     (syncer::TrustedVaultUserActionTriggerForUMA)trigger {
-  [self.handler
+  [self.applicationHandler
       showTrustedVaultReauthForDegradedRecoverabilityFromViewController:self
-                                                                trigger:
-                                                                    trigger];
+                                                                trigger:trigger
+                                                            accessPoint:
+                                                                signin_metrics::
+                                                                    AccessPoint::
+                                                                        ACCESS_POINT_RECENT_TABS];
 }
 
 #pragma mark - SigninPresenter
 
 - (void)showSignin:(ShowSigninCommand*)command {
-  [self.handler showSignin:command baseViewController:self];
+  [self.applicationHandler showSignin:command baseViewController:self];
 }
 
 #pragma mark - UIAdaptivePresentationControllerDelegate
@@ -1851,7 +1877,7 @@ typedef std::pair<SessionID, TableViewURLItem*> RecentlyClosedTableViewItemPair;
 
 #pragma mark - Private Helpers
 
-- (void)updateSyncState {
+- (void)didTapPromoActionButton {
   syncer::SyncService* const syncService = self.syncService;
   if (!syncService) {
     return;
@@ -1860,33 +1886,43 @@ typedef std::pair<SessionID, TableViewURLItem*> RecentlyClosedTableViewItemPair;
       syncService->GetUserActionableError();
   if (error == syncer::SyncService::UserActionableError::kSignInNeedsUpdate) {
     [self showPrimaryAccountReauth];
+  } else if ([self shouldShowHistorySyncOnPromoAction]) {
+    [self.presentationDelegate showHistorySyncOptInAfterDedicatedSignIn:NO];
   } else if (ShouldShowSyncSettings(error)) {
-    [self showSyncSettingsOrHistoryOptIn];
+    [self.settingsHandler showSyncSettingsFromViewController:self];
   } else if (error ==
              syncer::SyncService::UserActionableError::kNeedsPassphrase) {
     [self showSyncPassphraseSettings];
   }
 }
 
-// Show the History Sync Opt-In screen if the sync-related UI is disabled, and
-// the account is not syncing. Otherwise, show the sync settings screen.
-- (void)showSyncSettingsOrHistoryOptIn {
-  // TODO(crbug.com/1462326): This logic should be moved outside of the
-  // ViewController.
-  BOOL isSyncUIDisabled =
-      base::FeatureList::IsEnabled(syncer::kReplaceSyncPromosWithSignInPromos);
+// Returns YES if the History Sync Opt-In should be shown when the promo action
+// button is tapped.
+// TODO(crbug.com/1462326): This logic should be moved outside of the
+// ViewController.
+- (BOOL)shouldShowHistorySyncOnPromoAction {
+  if (!base::FeatureList::IsEnabled(
+          syncer::kReplaceSyncPromosWithSignInPromos)) {
+    return NO;
+  }
   AuthenticationService* authenticationService =
       AuthenticationServiceFactory::GetForBrowserState(_browserState);
   // TODO(crbug.com/1466884): Delete the usage of ConsentLevel::kSync after
   // Phase 2 on iOS is launched. See ConsentLevel::kSync documentation for
   // details.
-  BOOL hasSyncingAccount =
-      authenticationService->HasPrimaryIdentity(signin::ConsentLevel::kSync);
-  if (!isSyncUIDisabled || hasSyncingAccount) {
-    [self.handler showSyncSettingsFromViewController:self];
-  } else {
-    [self.presentationDelegate showHistorySyncOptInAfterDedicatedSignIn:NO];
+  if (authenticationService->HasPrimaryIdentity(signin::ConsentLevel::kSync)) {
+    return NO;
   }
+  // Check if History Sync Opt-In should be skipped.
+  // In case it's not necessary to show the history opt-in, but the promo action
+  // button is still available, sync errors should be checked to show the
+  // correct screen to handle the error (ex. passphrase screen).
+  HistorySyncSkipReason skipReason = [HistorySyncCoordinator
+      getHistorySyncOptInSkipReason:self.syncService
+              authenticationService:authenticationService
+                        prefService:_browserState->GetPrefs()
+              isHistorySyncOptional:NO];
+  return skipReason == HistorySyncSkipReason::kNone;
 }
 
 @end

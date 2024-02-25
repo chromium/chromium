@@ -10,7 +10,7 @@
     // state
     void save(); // push state on state stack
     [RaisesException] void restore(); // pop state stack if top state was pushed by save, and restore state
-    [RuntimeEnabled=Canvas2dLayers, CallWith=ScriptState, RaisesException] void beginLayer(optional BeginLayerOptions options = {}); // push state on state stack and creates bitmap for subsequent draw ops
+    [MeasureAs=Canvas2DLayers, RuntimeEnabled=Canvas2dLayers, CallWith=ScriptState, RaisesException] void beginLayer(optional BeginLayerOptions options = {}); // push state on state stack and creates bitmap for subsequent draw ops
     [RuntimeEnabled=Canvas2dLayers, RaisesException] void endLayer(); // pop state stack if top state was pushed by beginLayer, restore state and draw the bitmap
     // Clear the canvas and reset the path
     void reset();
@@ -73,6 +73,14 @@
     [RaisesException] void drawImage(CanvasImageSource image, unrestricted double x, unrestricted double y, unrestricted double width, unrestricted double height);
     [RaisesException] void drawImage(CanvasImageSource image, unrestricted double sx, unrestricted double sy, unrestricted double sw, unrestricted double sh, unrestricted double dx, unrestricted double dy, unrestricted double dw, unrestricted double dh);
 
+    // triangle mesh API
+    [RuntimeEnabled=Canvas2dMesh, RaisesException] Mesh2DVertexBuffer createMesh2DVertexBuffer(Float32Array buffer);
+    [RuntimeEnabled=Canvas2dMesh, RaisesException] Mesh2DUVBuffer createMesh2DUVBuffer(Float32Array buffer);
+    [RuntimeEnabled=Canvas2dMesh, RaisesException] Mesh2DIndexBuffer createMesh2DIndexBuffer(Uint16Array buffer);
+    [RuntimeEnabled=Canvas2dMesh, HighEntropy, RaisesException] void drawMesh(Mesh2DVertexBuffer vertex_buffer,
+                                                                              Mesh2DUVBuffer uv_buffer,
+                                                                              Mesh2DIndexBuffer index_buffer,
+                                                                              CanvasImageSource image);
     // FIXME: factor out to CanvasDrawingStyles
     // line caps/joins
     attribute unrestricted double lineWidth; // (default 1)

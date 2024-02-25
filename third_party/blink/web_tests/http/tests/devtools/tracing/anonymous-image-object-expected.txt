@@ -1,4 +1,0 @@
-Tests the Timeline instrumentation does not crash the renderer upon encountering an anonymous image render object
-
-DONE
-

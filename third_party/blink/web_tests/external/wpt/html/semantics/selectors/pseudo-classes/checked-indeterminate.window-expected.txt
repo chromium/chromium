@@ -1,0 +1,5 @@
+This is a testharness.js-based test.
+[FAIL] An element can be :checked and :indeterminate at the same time
+  assert_true: expected true got false
+Harness: the test ran to completion.
+

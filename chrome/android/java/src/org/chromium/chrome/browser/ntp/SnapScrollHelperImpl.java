@@ -14,10 +14,9 @@ import androidx.annotation.VisibleForTesting;
 
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.feed.SnapScrollHelper;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 
-/**
- * This class handles snap scroll for the search box on a {@link NewTabPage}.
- */
+/** This class handles snap scroll for the search box on a {@link NewTabPage}. */
 public class SnapScrollHelperImpl implements SnapScrollHelper {
     private static final long SNAP_SCROLL_DELAY_MS = 30;
 
@@ -27,6 +26,7 @@ public class SnapScrollHelperImpl implements SnapScrollHelper {
     private final Runnable mUpdateSearchBoxOnScrollRunnable;
     private final int mToolbarHeight;
     private final int mSearchBoxTransitionLength;
+    private final int mSearchBoxTransitionLengthOffset;
 
     private View mView;
     private boolean mPendingSnapScroll;
@@ -44,10 +44,16 @@ public class SnapScrollHelperImpl implements SnapScrollHelper {
         mUpdateSearchBoxOnScrollRunnable = mNewTabPageLayout::updateSearchBoxOnScroll;
 
         Resources res = newTabPageLayout.getResources();
-        mToolbarHeight = res.getDimensionPixelSize(R.dimen.toolbar_height_no_shadow)
-                + res.getDimensionPixelSize(R.dimen.toolbar_progress_bar_height);
+        mToolbarHeight =
+                res.getDimensionPixelSize(R.dimen.toolbar_height_no_shadow)
+                        + res.getDimensionPixelSize(R.dimen.toolbar_progress_bar_height);
         mSearchBoxTransitionLength =
                 res.getDimensionPixelSize(R.dimen.ntp_search_box_transition_length);
+        mSearchBoxTransitionLengthOffset =
+                ChromeFeatureList.sSurfacePolish.isEnabled()
+                        ? res.getDimensionPixelSize(
+                                R.dimen.ntp_search_box_transition_length_polish_offset)
+                        : 0;
     }
 
     /** @param view The view on which this class needs to handle snap scroll. */
@@ -63,18 +69,19 @@ public class SnapScrollHelperImpl implements SnapScrollHelper {
         mView = view;
 
         @SuppressLint("ClickableViewAccessibility")
-        View.OnTouchListener onTouchListener = (v, event) -> {
-            mView.removeCallbacks(mSnapScrollRunnable);
+        View.OnTouchListener onTouchListener =
+                (v, event) -> {
+                    mView.removeCallbacks(mSnapScrollRunnable);
 
-            if (event.getActionMasked() == MotionEvent.ACTION_CANCEL
-                    || event.getActionMasked() == MotionEvent.ACTION_UP) {
-                mPendingSnapScroll = true;
-                mView.postDelayed(mSnapScrollRunnable, SNAP_SCROLL_DELAY_MS);
-            } else {
-                mPendingSnapScroll = false;
-            }
-            return false;
-        };
+                    if (event.getActionMasked() == MotionEvent.ACTION_CANCEL
+                            || event.getActionMasked() == MotionEvent.ACTION_UP) {
+                        mPendingSnapScroll = true;
+                        mView.postDelayed(mSnapScrollRunnable, SNAP_SCROLL_DELAY_MS);
+                    } else {
+                        mPendingSnapScroll = false;
+                    }
+                    return false;
+                };
         mView.setOnTouchListener(onTouchListener);
     }
 
@@ -112,15 +119,18 @@ public class SnapScrollHelperImpl implements SnapScrollHelper {
     @VisibleForTesting
     @Override
     public int calculateSnapPosition(int scrollPosition) {
-        if (mManager.isLocationBarShownInNTP()) {
+        if (mManager.isLocationBarShownInNtp()) {
             // Snap scroll to prevent only part of the toolbar from showing.
             scrollPosition = calculateSnapPositionForRegion(scrollPosition, 0, mToolbarHeight);
 
             // Snap scroll to prevent resting in the middle of the omnibox transition.
             View fakeBox = mNewTabPageLayout.getSearchBoxView();
             int fakeBoxUpperBound = fakeBox.getTop() + fakeBox.getPaddingTop();
-            scrollPosition = calculateSnapPositionForRegion(scrollPosition,
-                    fakeBoxUpperBound - mSearchBoxTransitionLength, fakeBoxUpperBound);
+            scrollPosition =
+                    calculateSnapPositionForRegion(
+                            scrollPosition,
+                            fakeBoxUpperBound - mSearchBoxTransitionLength,
+                            fakeBoxUpperBound + mSearchBoxTransitionLengthOffset);
         }
 
         return scrollPosition;

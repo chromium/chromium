@@ -5,10 +5,10 @@
 #import "ios/chrome/browser/ui/sharing/activity_services/activity_service_coordinator.h"
 
 #import "components/bookmarks/browser/bookmark_model.h"
+#import "ios/chrome/browser/bookmarks/model/account_bookmark_model_factory.h"
 #import "ios/chrome/browser/bookmarks/model/local_or_syncable_bookmark_model_factory.h"
-#import "ios/chrome/browser/reading_list/reading_list_browser_agent.h"
+#import "ios/chrome/browser/reading_list/model/reading_list_browser_agent.h"
 #import "ios/chrome/browser/shared/coordinator/default_browser_promo/non_modal_default_browser_promo_scheduler_scene_agent.h"
-#import "ios/chrome/browser/shared/coordinator/scene/scene_state_browser_agent.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
@@ -31,9 +31,9 @@
 #import "ios/chrome/browser/ui/sharing/activity_services/data/share_to_data_builder.h"
 #import "ios/chrome/browser/ui/sharing/sharing_params.h"
 #import "ios/chrome/browser/ui/sharing/sharing_positioner.h"
-#import "ios/chrome/browser/web/web_navigation_browser_agent.h"
+#import "ios/chrome/browser/web/model/web_navigation_browser_agent.h"
 #import "ios/web/public/web_state.h"
-#import "net/base/mac/url_conversions.h"
+#import "net/base/apple/url_conversions.h"
 #import "url/gurl.h"
 
 #import <LinkPresentation/LinkPresentation.h>
@@ -93,27 +93,29 @@ constexpr CGFloat kAppIconPointSize = 80;
 
   ChromeBrowserState* browserState = self.browser->GetBrowserState();
   self.incognito = browserState->IsOffTheRecord();
-  bookmarks::BookmarkModel* bookmarkModel =
+  bookmarks::BookmarkModel* localOrSyncableBookmarkModel =
       ios::LocalOrSyncableBookmarkModelFactory::GetForBrowserState(
           browserState);
+  bookmarks::BookmarkModel* accountBookmarkModel =
+      ios::AccountBookmarkModelFactory::GetForBrowserState(browserState);
   id<BookmarksCommands> bookmarksHandler = HandlerForProtocol(
       self.browser->GetCommandDispatcher(), BookmarksCommands);
   WebNavigationBrowserAgent* agent =
       WebNavigationBrowserAgent::FromBrowser(self.browser);
   ReadingListBrowserAgent* readingListBrowserAgent =
       ReadingListBrowserAgent::FromBrowser(self.browser);
-  self.mediator =
-      [[ActivityServiceMediator alloc] initWithHandler:self.handler
-                                      bookmarksHandler:bookmarksHandler
-                                   qrGenerationHandler:self.scopedHandler
-                                           prefService:browserState->GetPrefs()
-                                         bookmarkModel:bookmarkModel
-                                    baseViewController:self.baseViewController
-                                       navigationAgent:agent
-                               readingListBrowserAgent:readingListBrowserAgent];
+  self.mediator = [[ActivityServiceMediator alloc]
+                   initWithHandler:self.handler
+                  bookmarksHandler:bookmarksHandler
+               qrGenerationHandler:self.scopedHandler
+                       prefService:browserState->GetPrefs()
+      localOrSyncableBookmarkModel:localOrSyncableBookmarkModel
+              accountBookmarkModel:accountBookmarkModel
+                baseViewController:self.baseViewController
+                   navigationAgent:agent
+           readingListBrowserAgent:readingListBrowserAgent];
 
-  SceneState* sceneState =
-      SceneStateBrowserAgent::FromBrowser(self.browser)->GetSceneState();
+  SceneState* sceneState = self.browser->GetSceneState();
   self.mediator.promoScheduler = [NonModalDefaultBrowserPromoSchedulerSceneAgent
       agentFromScene:sceneState];
 
@@ -401,8 +403,8 @@ constexpr CGFloat kAppIconPointSize = 80;
 
 - (NSItemProvider*)appIconProvider {
 #if BUILDFLAG(IOS_USE_BRANDED_SYMBOLS)
-  UIImage* image = MakeSymbolMulticolor(
-      CustomSymbolWithPointSize(kChromeSymbol, kAppIconPointSize));
+  UIImage* image = MakeSymbolMulticolor(CustomSymbolWithPointSize(
+      kMulticolorChromeballSymbol, kAppIconPointSize));
 #else
   UIImage* image = DefaultSymbolTemplateWithPointSize(kDefaultBrowserSymbol,
                                                       kAppIconPointSize);

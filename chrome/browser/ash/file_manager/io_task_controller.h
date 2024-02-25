@@ -62,6 +62,9 @@ class IOTaskController {
   // Aborts a task from the queue.
   void CompleteWithError(IOTaskId task_id, PolicyError policy_error);
 
+  // The `ProgressStatus` of each task in the queue.
+  std::vector<std::reference_wrapper<const ProgressStatus>> TaskStatuses();
+
   // For tests only; returns the current wake lock counter. This counter is
   // incremented by 1 for every time we get a wake lock and decremented every
   // time we release it.

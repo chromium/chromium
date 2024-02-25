@@ -7,8 +7,8 @@
 #import <Foundation/Foundation.h>
 
 #import "base/metrics/histogram_functions.h"
-#import "ios/chrome/browser/download/download_manager_metric_names.h"
-#import "ios/chrome/browser/download/external_app_util.h"
+#import "ios/chrome/browser/download/model/download_manager_metric_names.h"
+#import "ios/chrome/browser/download/model/external_app_util.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/web/public/download/download_task.h"
 #import "net/base/net_errors.h"

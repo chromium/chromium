@@ -5,6 +5,7 @@
 #include "ui/base/ime/ash/ime_keyboard.h"
 
 #include "base/containers/contains.h"
+#include "base/functional/callback.h"
 #include "base/metrics/user_metrics.h"
 #include "base/metrics/user_metrics_action.h"
 
@@ -48,7 +49,13 @@ void ImeKeyboard::RemoveObserver(Observer* observer) {
   observers_.RemoveObserver(observer);
 }
 
-bool ImeKeyboard::SetCurrentKeyboardLayoutByName(
+void ImeKeyboard::SetCurrentKeyboardLayoutByName(
+    const std::string& layout_name,
+    base::OnceCallback<void(bool)> callback) {
+  std::move(callback).Run(SetCurrentKeyboardLayoutByNameImpl(layout_name));
+}
+
+bool ImeKeyboard::SetCurrentKeyboardLayoutByNameImpl(
     const std::string& layout_name) {
   // Only notify on keyboard layout change.
   if (last_layout_ == layout_name) {

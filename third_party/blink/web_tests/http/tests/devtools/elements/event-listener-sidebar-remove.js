@@ -9,7 +9,6 @@ import * as Common from 'devtools/core/common/common.js';
 
 (async function() {
   TestRunner.addResult(`Tests removing event listeners in the Elements sidebar panel.\n`);
-  await TestRunner.loadLegacyModule('elements');
   await TestRunner.showPanel('elements');
   await TestRunner.loadHTML(`
       <button id="node">Inspect Me</button>
@@ -31,7 +30,7 @@ import * as Common from 'devtools/core/common/common.js';
       setupEventListeners();
   `);
 
-  Common.Settings.settingForTest('showEventListenersForAncestors').set(false);
+  Common.Settings.settingForTest('show-event-listeners-for-ancestors').set(false);
 
 
   function step1() {

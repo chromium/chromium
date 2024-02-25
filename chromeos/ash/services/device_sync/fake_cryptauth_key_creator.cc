@@ -17,7 +17,7 @@ FakeCryptAuthKeyCreator::~FakeCryptAuthKeyCreator() = default;
 void FakeCryptAuthKeyCreator::CreateKeys(
     const base::flat_map<CryptAuthKeyBundle::Name, CreateKeyData>&
         keys_to_create,
-    const absl::optional<CryptAuthKey>& server_ephemeral_dh,
+    const std::optional<CryptAuthKey>& server_ephemeral_dh,
     CreateKeysCallback create_keys_callback) {
   DCHECK(!keys_to_create.empty());
   DCHECK(keys_to_create_.empty());

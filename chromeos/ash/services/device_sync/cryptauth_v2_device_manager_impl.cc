@@ -119,7 +119,7 @@ CryptAuthV2DeviceManagerImpl::GetSyncedDevices() const {
 
 void CryptAuthV2DeviceManagerImpl::ForceDeviceSyncNow(
     const cryptauthv2::ClientMetadata::InvocationReason& invocation_reason,
-    const absl::optional<std::string>& session_id) {
+    const std::optional<std::string>& session_id) {
   scheduler_->RequestDeviceSync(invocation_reason, session_id);
 }
 
@@ -143,12 +143,12 @@ CryptAuthV2DeviceManagerImpl::GetDeviceSyncerGroupPrivateKeyStatus() const {
   return device_syncer_->group_private_key_status();
 }
 
-absl::optional<base::Time> CryptAuthV2DeviceManagerImpl::GetLastDeviceSyncTime()
+std::optional<base::Time> CryptAuthV2DeviceManagerImpl::GetLastDeviceSyncTime()
     const {
   return scheduler_->GetLastSuccessfulDeviceSyncTime();
 }
 
-absl::optional<base::TimeDelta>
+std::optional<base::TimeDelta>
 CryptAuthV2DeviceManagerImpl::GetTimeToNextAttempt() const {
   return scheduler_->GetTimeToNextDeviceSyncRequest();
 }
@@ -184,8 +184,8 @@ void CryptAuthV2DeviceManagerImpl::OnDeviceSyncRequested(
 }
 
 void CryptAuthV2DeviceManagerImpl::OnResyncMessage(
-    const absl::optional<std::string>& session_id,
-    const absl::optional<CryptAuthFeatureType>& feature_type) {
+    const std::optional<std::string>& session_id,
+    const std::optional<CryptAuthFeatureType>& feature_type) {
   PA_LOG(VERBOSE) << "Received GCM message to re-sync devices (session ID: "
                   << session_id.value_or("[No session ID]") << ").";
 
@@ -226,7 +226,7 @@ void CryptAuthV2DeviceManagerImpl::OnDeviceSyncFinished(
 
   scheduler_->HandleDeviceSyncResult(device_sync_result);
 
-  absl::optional<base::TimeDelta> time_to_next_attempt = GetTimeToNextAttempt();
+  std::optional<base::TimeDelta> time_to_next_attempt = GetTimeToNextAttempt();
   if (time_to_next_attempt) {
     PA_LOG(INFO) << "Time until next DeviceSync attempt: "
                  << *time_to_next_attempt << ".";

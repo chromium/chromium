@@ -4,13 +4,18 @@
 
 #include "third_party/blink/renderer/core/html/parser/html_parser_idioms.h"
 
+#include <vector>
+
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/renderer/platform/testing/task_environment.h"
+#include "third_party/blink/renderer/platform/wtf/wtf_size_t.h"
 
 namespace blink {
 
 namespace {
 
 TEST(HTMLParserIdiomsTest, ParseHTMLInteger) {
+  test::TaskEnvironment task_environment;
   int value = 0;
 
   EXPECT_TRUE(ParseHTMLInteger("2147483646", value));
@@ -33,6 +38,7 @@ TEST(HTMLParserIdiomsTest, ParseHTMLInteger) {
 }
 
 TEST(HTMLParserIdiomsTest, ParseHTMLNonNegativeInteger) {
+  test::TaskEnvironment task_environment;
   unsigned value = 0;
 
   EXPECT_TRUE(ParseHTMLNonNegativeInteger("0", value));
@@ -66,8 +72,75 @@ TEST(HTMLParserIdiomsTest, ParseHTMLNonNegativeInteger) {
 }
 
 TEST(HTMLParserIdiomsTest, ParseHTMLListOfFloatingPointNumbers_null) {
+  test::TaskEnvironment task_environment;
   Vector<double> numbers = ParseHTMLListOfFloatingPointNumbers(g_null_atom);
   EXPECT_EQ(0u, numbers.size());
+}
+
+struct SplitOnWhitespaceTestCase {
+  const char* input;
+  std::vector<const char*> expected;
+};
+
+class SplitOnWhitespaceTest
+    : public testing::Test,
+      public ::testing::WithParamInterface<SplitOnWhitespaceTestCase> {
+ public:
+  static const SplitOnWhitespaceTestCase test_cases[];
+};
+
+const SplitOnWhitespaceTestCase SplitOnWhitespaceTest::test_cases[] = {
+    {"", {}},
+    {" ", {}},
+    {"  ", {}},
+    {" \t ", {}},
+    {" \t\t ", {}},
+    {"\r\n\r\n", {}},
+    {"a", {"a"}},
+    {"abc", {"abc"}},
+    {"  a  ", {"a"}},
+    {" abc", {"abc"}},
+    {"  abc", {"abc"}},
+    {"\tabc", {"abc"}},
+    {"\t abc", {"abc"}},
+    {"abc\n", {"abc"}},
+    {"abc \r\n", {"abc"}},
+    {" \tabc\n", {"abc"}},
+    {"abc\v", {"abc\v"}},
+    {"abc def", {"abc", "def"}},
+    {"abc  def", {"abc", "def"}},
+    {"abc\ndef", {"abc", "def"}},
+    {"\tabc\ndef\t", {"abc", "def"}},
+    {"  abc\ndef ghi", {"abc", "def", "ghi"}},
+};
+
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    SplitOnWhitespaceTest,
+    ::testing::ValuesIn(SplitOnWhitespaceTest::test_cases));
+
+TEST_P(SplitOnWhitespaceTest, SplitOnASCIIWhitespace) {
+  const SplitOnWhitespaceTestCase test_case = GetParam();
+  Vector<String> output = SplitOnASCIIWhitespace(test_case.input);
+  EXPECT_EQ(output.size(), test_case.expected.size());
+  for (wtf_size_t i = 0; i < output.size(); ++i) {
+    EXPECT_EQ(output[i], test_case.expected[i]);
+  }
+}
+
+TEST_P(SplitOnWhitespaceTest, UTF16SplitOnASCIIWhitespace) {
+  const SplitOnWhitespaceTestCase test_case = GetParam();
+  String input8 = test_case.input;
+  String input16 =
+      String::Make16BitFrom8BitSource(input8.Characters8(), input8.length());
+  Vector<String> output = SplitOnASCIIWhitespace(input16);
+  EXPECT_EQ(output.size(), test_case.expected.size());
+  for (wtf_size_t i = 0; i < output.size(); ++i) {
+    String output8 = test_case.expected[i];
+    String output16 = String::Make16BitFrom8BitSource(output8.Characters8(),
+                                                      output8.length());
+    EXPECT_EQ(output[i], output16);
+  }
 }
 
 }  // namespace

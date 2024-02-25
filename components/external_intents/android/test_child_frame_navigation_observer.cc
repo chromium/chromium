@@ -53,7 +53,20 @@ void JNI_TestChildFrameNavigationObserver_CreateAndAttachToNativeWebContents(
 
 void TestChildFrameNavigationObserver::DidFinishNavigation(
     NavigationHandle* navigation_handle) {
+  if (navigation_handle->IsInPrimaryMainFrame()) {
+    return;
+  }
   external_intents::Java_TestChildFrameNavigationObserver_didFinishNavigation(
+      AttachCurrentThread(), java_test_observer_,
+      navigation_handle->GetJavaNavigationHandle());
+}
+
+void TestChildFrameNavigationObserver::DidStartNavigation(
+    NavigationHandle* navigation_handle) {
+  if (navigation_handle->IsInPrimaryMainFrame()) {
+    return;
+  }
+  external_intents::Java_TestChildFrameNavigationObserver_didStartNavigation(
       AttachCurrentThread(), java_test_observer_,
       navigation_handle->GetJavaNavigationHandle());
 }

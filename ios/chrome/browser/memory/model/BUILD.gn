@@ -1,0 +1,29 @@
+# Copyright 2016 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/buildflag_header.gni")
+import("//ios/build/chrome_build.gni")
+
+buildflag_header("features") {
+  header = "features.h"
+  flags = [ "IOS_ENABLE_MEMORY_DEBUGGING=$ios_enable_memory_debugging" ]
+}
+
+source_set("model") {
+  sources = [
+    "memory_debugger.h",
+    "memory_debugger.mm",
+    "memory_debugger_manager.h",
+    "memory_debugger_manager.mm",
+    "memory_metrics.cc",
+    "memory_metrics.h",
+  ]
+  deps = [
+    "//base",
+    "//components/prefs",
+    "//ios/chrome/browser/shared/model/prefs:pref_names",
+    "//ios/chrome/browser/shared/ui/util",
+    "//ios/chrome/common/ui/util",
+  ]
+}

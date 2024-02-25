@@ -15,3 +15,10 @@ message EchoRequest {
 message EchoResponse {
   string text = 1;
 }
+
+// Message with the same fields as the valid stream body, but with the wrong
+// wire type.
+message InvalidStreamBody {
+  int32 messages = 1;
+  int64 status = 2;
+}

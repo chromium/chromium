@@ -22,13 +22,34 @@ chromium-metrics-reviews@google.com.
 
 <histograms>
 
+<histogram name="Chrome.AppMenu.MenuHostInitToNextFramePresented" units="ms"
+    expires_after="2024-11-06">
+  <owner>temao@chromium.org</owner>
+  <owner>robliao@chromium.org</owner>
+  <summary>
+    Records time from when Widget::Show() is called to when the first frame is
+    presented for the App Menu. It's logged every time the app menu opens.
+  </summary>
+</histogram>
+
 <histogram name="Chrome.BuildState.BuildStateUpdateType"
-    enum="BuildStateUpdateType" expires_after="2024-03-30">
+    enum="BuildStateUpdateType" expires_after="2024-08-04">
   <owner>ajgo@chromium.org</owner>
   <owner>anunoy@chromium.org</owner>
   <summary>
     Result of polling for the installed version of Chrome. Logged once at
     startup then approximately every two hours.
+  </summary>
+</histogram>
+
+<histogram name="Chrome.Frame.MouseDownCaptionHitTestInReservedGrabHandleSpace"
+    enum="Boolean" expires_after="2024-07-28">
+  <owner>robliao@chromium.org</owner>
+  <owner>pkasting@chromium.org</owner>
+  <summary>
+    Recorded only for Windows on every primary button mouse down determined to
+    be in the caption area of Chrome. True if the primary button mouse down was
+    in the reserved grab handle space, false otherwise.
   </summary>
 </histogram>
 
@@ -45,7 +66,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Chrome.KAnonymityService.JoinSet.Action"
-    enum="KAnonymityServiceJoinSetAction" expires_after="2024-02-04">
+    enum="KAnonymityServiceJoinSetAction" expires_after="2024-06-30">
   <owner>behamilton@google.com</owner>
   <owner>pauljensen@chromium.org</owner>
   <summary>
@@ -69,7 +90,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Chrome.KAnonymityService.QuerySet.Action"
-    enum="KAnonymityServiceQuerySetAction" expires_after="2024-02-11">
+    enum="KAnonymityServiceQuerySetAction" expires_after="2024-06-30">
   <owner>behamilton@google.com</owner>
   <owner>pauljensen@chromium.org</owner>
   <summary>
@@ -81,7 +102,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Chrome.KAnonymityService.QuerySet.Latency" units="ms"
-    expires_after="2024-01-14">
+    expires_after="2024-07-21">
   <owner>behamilton@google.com</owner>
   <owner>pauljensen@chromium.org</owner>
   <summary>
@@ -94,7 +115,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Chrome.KAnonymityService.QuerySet.Size" units="count"
-    expires_after="2024-02-11">
+    expires_after="2024-06-30">
   <owner>behamilton@google.com</owner>
   <owner>pauljensen@chromium.org</owner>
   <summary>
@@ -103,19 +124,20 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Chrome.KAnonymityService.TrustTokenGetter.Action"
-    enum="KAnonymityTrustTokenGetterAction" expires_after="M117">
+    enum="KAnonymityTrustTokenGetterAction" expires_after="M124">
   <owner>behamilton@google.com</owner>
   <owner>pauljensen@chromium.org</owner>
   <summary>
     Track execution of KAnonymityTrustTokenGetter requests for both normal
     operation and errors. The kTryGetTrustTokenAndKey enumeration is emitted
     when the service is called and either kGetTrustTokenSuccess or one of the
-    error enumerations is emitted at the end of the request.
+    error enumerations is emitted at the end of the request. Note: This metric
+    expired after M117 and before M121.
   </summary>
 </histogram>
 
 <histogram name="Chrome.KAnonymityService.TrustTokenGetter.Latency" units="ms"
-    expires_after="2024-02-11">
+    expires_after="2024-06-30">
   <owner>behamilton@google.com</owner>
   <owner>pauljensen@chromium.org</owner>
   <summary>
@@ -126,25 +148,10 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Chrome.Lacros.Smoothness.PercentDroppedFrames_1sWindow"
-    units="%" expires_after="2023-07-25">
-  <obsolete>
-    This metric is reported on every dropped frame instead of every frame. It is
-    deprecated in favor of
-    Chrome.Lacros.Smoothness.PercentDroppedFrames_1sWindow2
-  </obsolete>
-  <owner>xiyuan@chromium.org</owner>
-  <owner>chromeos-perfmetrics-eng@google.com</owner>
-  <summary>
-    Similar to Ash.Smoothness.PercentDroppedFrames_1sWindow but emitted for the
-    browser UI of lacros-chrome.
-  </summary>
-</histogram>
-
 <histogram name="Chrome.Lacros.Smoothness.PercentDroppedFrames_1sWindow2"
-    units="%" expires_after="2024-01-29">
+    units="%" expires_after="2024-08-04">
   <owner>xiyuan@chromium.org</owner>
-  <owner>chromeos-perfmetrics-eng@google.com</owner>
+  <owner>cros-sw-perf@google.com</owner>
   <summary>
     Similar to Ash.Smoothness.PercentDroppedFrames_1sWindow2 but emitted for the
     browser UI of lacros-chrome.
@@ -152,7 +159,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Chrome.ProcessSingleton.NotifyResult" enum="NotifyResult"
-    expires_after="2024-02-04">
+    expires_after="2024-08-04">
   <owner>gab@chromium.org</owner>
   <owner>etienneb@chromium.org</owner>
   <summary>
@@ -161,14 +168,14 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Chrome.ProcessSingleton.RemoteHungProcessTerminateReason"
-    enum="RemoteHungProcessTerminateReason" expires_after="2024-02-04">
+    enum="RemoteHungProcessTerminateReason" expires_after="2024-08-04">
   <owner>gab@chromium.org</owner>
   <owner>etienneb@chromium.org</owner>
   <summary>The reason of remote hang processes termination.</summary>
 </histogram>
 
 <histogram name="Chrome.ProcessSingleton.RemoteProcessInteractionResult"
-    enum="RemoteProcessInteractionResult" expires_after="2023-11-30">
+    enum="RemoteProcessInteractionResult" expires_after="2024-08-04">
   <owner>gab@chromium.org</owner>
   <owner>etienneb@chromium.org</owner>
   <summary>
@@ -178,7 +185,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Chrome.ProcessSingleton.TerminateProcessErrorCode.Posix"
-    enum="PopularOSErrno" expires_after="2023-11-30">
+    enum="PopularOSErrno" expires_after="2024-06-04">
   <owner>gab@chromium.org</owner>
   <owner>etienneb@chromium.org</owner>
   <summary>
@@ -188,7 +195,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Chrome.ProcessSingleton.TerminateProcessErrorCode.Windows"
-    enum="WinGetLastError" expires_after="2023-11-30">
+    enum="WinGetLastError" expires_after="2024-08-04">
   <owner>gab@chromium.org</owner>
   <owner>etienneb@chromium.org</owner>
   <summary>
@@ -198,7 +205,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Chrome.ProcessSingleton.TerminateProcessTime" units="ms"
-    expires_after="2023-11-30">
+    expires_after="2024-08-04">
   <owner>gab@chromium.org</owner>
   <owner>etienneb@chromium.org</owner>
   <summary>
@@ -208,7 +215,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Chrome.ProcessSingleton.TerminationWaitErrorCode.Windows"
-    enum="WinGetLastError" expires_after="2023-11-30">
+    enum="WinGetLastError" expires_after="2024-06-04">
   <owner>gab@chromium.org</owner>
   <owner>etienneb@chromium.org</owner>
   <summary>
@@ -217,7 +224,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Chrome.ProcessSingleton.TimeToCreate" units="ms"
-    expires_after="2024-02-04">
+    expires_after="2024-06-04">
   <owner>etienneb@chromium.org</owner>
   <owner>gab@chromium.org</owner>
   <summary>
@@ -227,7 +234,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Chrome.ProcessSingleton.TimeToFailure" units="ms"
-    expires_after="2024-02-04">
+    expires_after="2024-06-04">
   <owner>etienneb@chromium.org</owner>
   <owner>gab@chromium.org</owner>
   <summary>
@@ -238,7 +245,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Chrome.ProcessSingleton.TimeToNotify" units="ms"
-    expires_after="2024-01-21">
+    expires_after="2024-08-04">
   <owner>etienneb@chromium.org</owner>
   <owner>gab@chromium.org</owner>
   <summary>
@@ -275,7 +282,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Chrome.SystemNetworkContextManager.NetworkSandboxState"
-    enum="NetworkSandboxState" expires_after="2024-01-14">
+    enum="NetworkSandboxState" expires_after="2024-07-21">
   <owner>wfh@chromium.org</owner>
   <owner>mmenke@chromium.org</owner>
   <summary>
@@ -307,7 +314,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Chrome.Tabs.AnimationSmoothness.TabLoading" units="%"
-    expires_after="2024-01-12">
+    expires_after="2024-03-17">
   <owner>yichenz@chromium.org</owner>
   <owner>chromeos-wmp@google.com</owner>
   <summary>
@@ -318,28 +325,36 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Chrome.WrenchMenu.MenuButtonPressedToMenuShown" units="ms"
-    expires_after="2024-05-31">
+    expires_after="2024-05-12">
   <owner>temao@chromium.org</owner>
   <owner>robliao@chromium.org</owner>
   <summary>
     Records the latency from when the app menu button is pressed to when the
     menu is shown. It's logged every time the button is pressed.
+
+    This metric will be removed after M121 and is replaced by
+    Chrome.AppMenu.MenuHostInitToNextFramePresented. We do not want to use menu
+    button's compositor to track the app menu creation time.
   </summary>
 </histogram>
 
 <histogram name="Chrome.WrenchMenu.MenuHostInitToNextFramePresented" units="ms"
-    expires_after="2024-08-10">
+    expires_after="2024-05-12">
   <owner>temao@chromium.org</owner>
   <owner>robliao@chromium.org</owner>
   <summary>
     Records time from when the menu host initialization is started to when the
     next frame is successfully presented. It's logged every time the app menu
     opens.
+
+    This metric will be removed after M121 and is replaced by
+    Chrome.AppMenu.MenuHostInitToNextFramePresented. We do not want to use menu
+    button's compositor to track the app menu creation time.
   </summary>
 </histogram>
 
 <histogram name="ChromeColors.ColorOnLoad" enum="ChromeColorsInfo"
-    expires_after="2023-12-24">
+    expires_after="2024-06-30">
   <owner>tiborg@chromium.org</owner>
   <owner>chrome-desktop-ntp@google.com</owner>
   <summary>
@@ -353,7 +368,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="ChromeColors.ColorType" enum="ChromeColorType"
-    expires_after="2023-12-24">
+    expires_after="2024-07-28">
   <owner>tiborg@chromium.org</owner>
   <owner>chrome-desktop-ntp@google.com</owner>
   <summary>
@@ -368,7 +383,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="ChromeColors.DynamicColorOnLoad"
-    enum="DynamicChromeColorsInfo" expires_after="2023-12-24">
+    enum="DynamicChromeColorsInfo" expires_after="2024-07-14">
   <owner>tiborg@chromium.org</owner>
   <owner>chrome-desktop-ntp@google.com</owner>
   <summary>
@@ -404,7 +419,7 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="ChromeElf.Beacon.SetupStatus" enum="BlacklistSetup"
+<histogram name="ChromeElf.Beacon.SetupStatus" enum="BlocklistSetup"
     expires_after="M121">
   <owner>pmonette@chromium.org</owner>
   <owner>kristianm@chromium.org</owner>
@@ -427,24 +442,6 @@ chromium-metrics-reviews@google.com.
     will be enabled in practice, as the heuristic detects the presence of third
     party software. Only recorded on Windows. This histogram was expired between
     M93 and M114.
-  </summary>
-</histogram>
-
-<histogram name="ChromeElf.ThirdPartyStatus" enum="ThirdPartyStatus"
-    expires_after="M121">
-  <obsolete>
-    Retained for historical data.
-  </obsolete>
-  <owner>pmonette@chromium.org</owner>
-  <owner>kristianm@chromium.org</owner>
-  <summary>
-    Records the different status codes that are emitted by chrome_elf.dll while
-    initializing the NtMapViewOfSection hook used to blocked third-party DLLs.
-    Multiple status codes can be emitted per initialization since some of those
-    status codes represent non-fatal failures. E.g. Failure to clear the
-    previous failure codes. This also means that duplicates are possible. This
-    is recorded shortly after Chrome launches, since chrome_elf.dll doesn't have
-    access to the //base API. This histogram was expired between M82 and M114.
   </summary>
 </histogram>
 

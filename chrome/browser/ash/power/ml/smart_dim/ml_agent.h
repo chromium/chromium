@@ -50,6 +50,8 @@ class SmartDimMlAgent {
   // Called by ml_agent_unittest.cc to reset the builtin and download worker.
   void ResetForTesting();
 
+  DownloadWorker* download_worker_for_test() { return &download_worker_; }
+
  protected:
   SmartDimMlAgent();
   virtual ~SmartDimMlAgent();

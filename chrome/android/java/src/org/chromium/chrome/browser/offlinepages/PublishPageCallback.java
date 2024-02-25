@@ -4,8 +4,9 @@
 
 package org.chromium.chrome.browser.offlinepages;
 
+import org.jni_zero.CalledByNative;
+
 import org.chromium.base.Callback;
-import org.chromium.base.annotations.CalledByNative;
 import org.chromium.components.browser_ui.share.ShareParams;
 import org.chromium.ui.base.WindowAndroid;
 
@@ -35,10 +36,19 @@ public class PublishPageCallback implements Callback<String> {
         // with a null page to indicate failure.
         if (!newFilePath.isEmpty()) {
             // Make a new OfflinePageItem with the new path.
-            page = new OfflinePageItem(mPage.getUrl(), mPage.getOfflineId(),
-                    mPage.getClientId().getNamespace(), mPage.getClientId().getId(),
-                    mPage.getTitle(), newFilePath, mPage.getFileSize(), mPage.getCreationTimeMs(),
-                    mPage.getAccessCount(), mPage.getLastAccessTimeMs(), mPage.getRequestOrigin());
+            page =
+                    new OfflinePageItem(
+                            mPage.getUrl(),
+                            mPage.getOfflineId(),
+                            mPage.getClientId().getNamespace(),
+                            mPage.getClientId().getId(),
+                            mPage.getTitle(),
+                            newFilePath,
+                            mPage.getFileSize(),
+                            mPage.getCreationTimeMs(),
+                            mPage.getAccessCount(),
+                            mPage.getLastAccessTimeMs(),
+                            mPage.getRequestOrigin());
         }
 
         OfflinePageUtils.publishCompleted(page, mWindow, mShareCallback);

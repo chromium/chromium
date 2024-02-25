@@ -1,4 +1,4 @@
-// Copyright 2022 The Chromium Authors. All rights reserved.
+// Copyright 2022 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -33,6 +33,10 @@ class FakeNssService : public NssService {
   ~FakeNssService() override;
 
   NssCertDatabaseGetter CreateNSSCertDatabaseGetterForIOThread() override;
+
+  PK11SlotInfo* GetPublicSlot() const;
+  PK11SlotInfo* GetPrivateSlot() const;
+  PK11SlotInfo* GetSystemSlot() const;
 
  private:
   std::unique_ptr<crypto::ScopedTestNSSDB> public_slot_;

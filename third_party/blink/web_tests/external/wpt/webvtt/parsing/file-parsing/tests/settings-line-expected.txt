@@ -1,4 +1,5 @@
 This is a testharness.js-based test.
-FAIL settings, line assert_equals: Failed with cue 31 expected (string) "auto" but got (number) 0.5
+[FAIL] settings, line
+  assert_equals: Failed with cue 31 expected (string) "auto" but got (number) 0.5
 Harness: the test ran to completion.
 

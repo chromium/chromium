@@ -1,4 +1,4 @@
-(async function(testRunner) {
+(async function(/** @type {import('test_runner').TestRunner} */ testRunner) {
   var {page, session, dp} = await testRunner.startURL('resources/xslt.xml',
       'Test that debugger breakpoints still work after reloading an xslt document');
 

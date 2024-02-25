@@ -9,7 +9,6 @@
 
 #include "base/functional/bind.h"
 #include "base/notreached.h"
-#include "chrome/browser/chrome_notification_types.h"
 #include "chrome/browser/extensions/api/permissions/permissions_api_helpers.h"
 #include "chrome/browser/extensions/chrome_extension_function_details.h"
 #include "chrome/browser/extensions/extension_install_prompt.h"
@@ -50,7 +49,7 @@ bool ignore_user_gesture_for_tests = false;
 }  // namespace
 
 ExtensionFunction::ResponseAction PermissionsContainsFunction::Run() {
-  absl::optional<api::permissions::Contains::Params> params =
+  std::optional<api::permissions::Contains::Params> params =
       api::permissions::Contains::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params);
 
@@ -109,7 +108,7 @@ ExtensionFunction::ResponseAction PermissionsGetAllFunction::Run() {
 }
 
 ExtensionFunction::ResponseAction PermissionsRemoveFunction::Run() {
-  absl::optional<api::permissions::Remove::Params> params =
+  std::optional<api::permissions::Remove::Params> params =
       api::permissions::Remove::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params);
 
@@ -220,7 +219,7 @@ ExtensionFunction::ResponseAction PermissionsRequestFunction::Run() {
     return RespondNow(Error("Could not find an active window."));
   }
 
-  absl::optional<api::permissions::Request::Params> params =
+  std::optional<api::permissions::Request::Params> params =
       api::permissions::Request::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params);
 

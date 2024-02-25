@@ -1,3 +1,6 @@
-monorail {
+monorail: {
   component: "Platform>Extensions>API"
+}
+buganizer_public: {
+  component_id: 1456781
 }

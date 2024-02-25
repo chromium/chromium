@@ -55,7 +55,7 @@ ProtocolHandlingSubManager::ProtocolHandlingSubManager(
 ProtocolHandlingSubManager::~ProtocolHandlingSubManager() = default;
 
 void ProtocolHandlingSubManager::Configure(
-    const AppId& app_id,
+    const webapps::AppId& app_id,
     proto::WebAppOsIntegrationState& desired_state,
     base::OnceClosure configure_done) {
   DCHECK(!desired_state.has_protocols_handled());
@@ -82,8 +82,8 @@ void ProtocolHandlingSubManager::Configure(
 }
 
 void ProtocolHandlingSubManager::Execute(
-    const AppId& app_id,
-    const absl::optional<SynchronizeOsOptions>& synchronize_options,
+    const webapps::AppId& app_id,
+    const std::optional<SynchronizeOsOptions>& synchronize_options,
     const proto::WebAppOsIntegrationState& desired_state,
     const proto::WebAppOsIntegrationState& current_state,
     base::OnceClosure callback) {
@@ -146,10 +146,13 @@ void ProtocolHandlingSubManager::Execute(
       base::IgnoreArgs<Result>(std::move(register_and_complete)));
 }
 
-// TODO(b/279068663): Implement if needed.
-void ProtocolHandlingSubManager::ForceUnregister(const AppId& app_id,
+void ProtocolHandlingSubManager::ForceUnregister(const webapps::AppId& app_id,
                                                  base::OnceClosure callback) {
-  std::move(callback).Run();
+  UnregisterProtocolHandlersWithOs(
+      app_id, profile_path_,
+      base::BindOnce(&RecordProtocolHandlingResult,
+                     "WebApp.ProtocolHandlers.Unregistration.Result")
+          .Then(std::move(callback)));
 }
 
 }  // namespace web_app

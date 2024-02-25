@@ -6,8 +6,8 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_CLIPBOARD_SYSTEM_CLIPBOARD_H_
 
 #include <memory>
+#include <optional>
 
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/mojom/clipboard/clipboard.mojom-blink.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
@@ -168,20 +168,20 @@ class CORE_EXPORT SystemClipboard final
     // All calls to set data for all types need to specify the same buffer.
     void BindToBuffer(mojom::blink::ClipboardBuffer buffer);
 
-    absl::optional<mojom::blink::ClipboardBuffer> buffer_;
+    std::optional<mojom::blink::ClipboardBuffer> buffer_;
 
-    absl::optional<String> plain_text_;
+    std::optional<String> plain_text_;
 
-    absl::optional<String> html_;
+    std::optional<String> html_;
     KURL url_;
     unsigned fragment_start_ = 0;
     unsigned fragment_end_ = 0;
 
-    absl::optional<String> rtf_;
+    std::optional<String> rtf_;
 
-    absl::optional<mojo_base::BigBuffer> png_;
+    std::optional<mojo_base::BigBuffer> png_;
 
-    mutable absl::optional<mojom::blink::ClipboardFilesPtr> files_;
+    mutable std::optional<mojom::blink::ClipboardFilesPtr> files_;
 
     WTF::HashMap<String, String> custom_data_;
   };

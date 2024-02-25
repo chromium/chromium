@@ -1,0 +1,74 @@
+// Copyright 2022 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module private_aggregation_internals.mojom;
+
+import "url/mojom/url.mojom";
+import "mojo/public/mojom/base/int128.mojom";
+
+struct AggregatableReportRequestID {
+  int64 value;
+};
+
+// Due to dependency issues, this is duplicated from
+// `content.mojom.AggregatableReportHistogramContribution`.
+struct AggregatableHistogramContribution {
+  mojo_base.mojom.Uint128 bucket;
+  int32 value;
+};
+
+enum ReportStatus {
+  kPending,
+  kSent,
+  kFailedToAssemble,
+  kFailedToSend,
+};
+
+// Struct containing aggregatable report data.
+struct WebUIAggregatableReport {
+  // Null indicates a report that wasn't stored/scheduled.
+  AggregatableReportRequestID? id;
+  // Javascript convention for times, a number of milliseconds since the epoch.
+  double report_time;
+  string api_identifier;
+  string api_version;
+  url.mojom.Url report_url;
+  array<AggregatableHistogramContribution> contributions;
+  ReportStatus status;
+  // JSON string.
+  string report_body;
+};
+
+// Observer for events relevant to the private aggregation internals WebUI.
+interface Observer {
+  // Called when the reports in storage changed, indicating that the observer
+  // should call `Handler::GetReports()`.
+  OnRequestStorageModified();
+
+  // Called when a report is handled, regardless of success.
+  OnReportHandled(WebUIAggregatableReport report);
+};
+
+// Mojo interface used for communication between a WebUI and the storage layer
+// for aggregation service.
+interface Handler {
+  // Returns all reports contained in storage, including those that are
+  // actively being sent.
+  GetReports() => (array<WebUIAggregatableReport> reports);
+
+  // Sends the given reports, ignoring delay, returning when the operation has
+  // been completed and the reports have been cleared from storage.
+  SendReports(array<AggregatableReportRequestID> ids) => ();
+
+  // Deletes all persisted data for the aggregation service and private
+  // aggregation, returning when the operation has been completed.
+  ClearStorage() => ();
+};
+
+// Factory for Observer and Handler.
+interface Factory {
+  // Binds the observer and handler.
+  Create(pending_remote<Observer> observer,
+         pending_receiver<Handler> handler);
+};

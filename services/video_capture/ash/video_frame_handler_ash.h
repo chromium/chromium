@@ -5,8 +5,6 @@
 #ifndef SERVICES_VIDEO_CAPTURE_ASH_VIDEO_FRAME_HANDLER_ASH_H_
 #define SERVICES_VIDEO_CAPTURE_ASH_VIDEO_FRAME_HANDLER_ASH_H_
 
-#include <vector>
-
 #include "chromeos/crosapi/mojom/video_capture.mojom.h"
 #include "media/capture/mojom/video_capture_buffer.mojom.h"
 #include "media/capture/mojom/video_capture_types.mojom.h"
@@ -66,13 +64,12 @@ class VideoFrameHandlerAsh : public video_capture::mojom::VideoFrameHandler {
       mojo::PendingRemote<video_capture::mojom::VideoFrameAccessHandler>
           pending_frame_access_handler) override;
   void OnFrameReadyInBuffer(
-      video_capture::mojom::ReadyFrameInBufferPtr buffer,
-      std::vector<video_capture::mojom::ReadyFrameInBufferPtr> scaled_buffers)
-      override;
+      video_capture::mojom::ReadyFrameInBufferPtr buffer) override;
   void OnBufferRetired(int buffer_id) override;
   void OnError(media::VideoCaptureError error) override;
   void OnFrameDropped(media::VideoCaptureFrameDropReason reason) override;
-  void OnNewCropVersion(uint32_t crop_version) override;
+  void OnNewSubCaptureTargetVersion(
+      uint32_t sub_capture_target_version) override;
   void OnFrameWithEmptyRegionCapture() override;
   void OnLog(const std::string& message) override;
   void OnStarted() override;

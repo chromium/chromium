@@ -14,7 +14,7 @@
 // It can take effect immediately, but won't appear unless the tooltip delay has
 // elapsed.
 COMPONENT_EXPORT(UI_BASE)
-@interface ToolTipBaseView : BaseView
+@interface ToolTipBaseView : BaseView <NSViewToolTipOwner>
 
 // Set the current tooltip. It is the responsibility of the caller to set a nil
 // tooltip when the mouse cursor leaves the appropriate region.

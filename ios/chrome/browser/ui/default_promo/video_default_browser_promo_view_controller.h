@@ -14,6 +14,9 @@
 // The action handler for interactions in this view controller.
 @property(nonatomic, weak) id<ConfirmationAlertActionHandler> actionHandler;
 
+// Whether or not to show the Remind Me Later button.
+@property(nonatomic, assign) BOOL showRemindMeLater;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_UI_DEFAULT_PROMO_VIDEO_DEFAULT_BROWSER_PROMO_VIEW_CONTROLLER_H_

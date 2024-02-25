@@ -5,7 +5,6 @@
 <translation id="1076394037877376434"><ph name="PAGE_NUMBER" />. sayfayı sil</translation>
 <translation id="1113173431709655881">Kamera modu</translation>
 <translation id="1153190633558910465">Izgara kapalı</translation>
-<translation id="1175958423215084756">Bağlantı algılandı. <ph name="HOSTNAME" /></translation>
 <translation id="1197694886744716213"><ph name="PAGE_NUMBER" />. sayfa silindi</translation>
 <translation id="1258009455399840361">Saat yönünde 90 derece döndür</translation>
 <translation id="1417314334557041815">Sayfayı düzenle <ph name="INDEX" /></translation>
@@ -47,6 +46,7 @@
 <translation id="3067436040345934772">Sağa kaydır</translation>
 <translation id="3081586908890909590">Video kaydetmeye geç</translation>
 <translation id="313467653172006084">30 FPS</translation>
+<translation id="3158534262962737808">"<ph name="WIFINAME" />" ağına katılmak istiyor musunuz?</translation>
 <translation id="3227137524299004712">Mikrofon</translation>
 <translation id="3240426699337459095">Bağlantı kopyalandı</translation>
 <translation id="3354465018370944241">Fotoğraf ayarları</translation>
@@ -60,14 +60,12 @@
 <translation id="3642192109456033823">Video işleniyor...</translation>
 <translation id="3789724198583203151">Saat yönünün tersine 90 derece döndür</translation>
 <translation id="3810838688059735925">Video</translation>
-<translation id="3892148308691398805">Metni kopyala</translation>
 <translation id="4060608699153044055">Cihazdaki depolama alanı azaldığı için kayıt yapamazsınız. Kaydı başlatmak için cihazınızda yer açmanız gerekiyor.</translation>
 <translation id="4061162772429051350"><ph name="MAGAPIXELS_AMOUNT" /> MP</translation>
 <translation id="4118525110028899586">Kaydı duraklat</translation>
 <translation id="4121305183798804752">Doküman algılandı</translation>
 <translation id="414641094616694804">Bu kamera, çözünürlüğü değiştiremez</translation>
 <translation id="4176463684765177261">Devre dışı</translation>
-<translation id="4269820728363426813">Bağlantı adresini kopyala</translation>
 <translation id="428234092390943511">Sayfa küçük resmi</translation>
 <translation id="4349714250734879769">Çerçeveleri Chrome'a göre ölçeklendir</translation>
 <translation id="4383571725254449280">Performans günlüklerini yazdır</translation>
@@ -81,14 +79,15 @@
 <translation id="4705093842003735294">Tam çözünürlük</translation>
 <translation id="4864143361253542638">Taranmış sayfa listesi</translation>
 <translation id="4890010094662541459">3 x 3</translation>
+<translation id="4892746741161549733">Bağlantı adresini (<ph name="URL" />) kopyala</translation>
 <translation id="491895758387112773">Çoklu akış video kaydı</translation>
 <translation id="495170559598752135">İşlemler</translation>
 <translation id="4984613436295737187">Quad HD (1440p)</translation>
 <translation id="5034763830503483128">Fotoğraf en boy oranı</translation>
 <translation id="5057360777601936059">Kameranız şu anda kullanılamıyor.
         Lütfen kameranın düzgün bir şekilde bağlanıp bağlanmadığını kontrol edin.</translation>
+<translation id="5157591164390831335">URL algılandı.</translation>
 <translation id="5163387177077603948">Sağa doğru hareket ediyor</translation>
-<translation id="5219374179772385066">Zaman Atlama modu kullanıma sunuldu.</translation>
 <translation id="5235304959032763950">16'ya 9</translation>
 <translation id="5266635337630551423">Dokümanın sol üst köşesi</translation>
 <translation id="5317780077021120954">Kaydet</translation>
@@ -114,6 +113,7 @@
 <translation id="6353688143752491039">Kamera uygulamasıyla ilgili geri bildiriminiz için teşekkürler.
 
 Geri bildiriminiz resim ya da video kalitesi ile ilgiliyse lütfen örnek bir fotoğraf veya video ekleyip sorunun ne olduğunu açıklayın. (Örneğin, fotoğraf çok karanlık veya özne net değil.)</translation>
+<translation id="6519884562954018934"><ph name="WIFINAME" /> ağına katılın</translation>
 <translation id="6527303717912515753">Paylaş</translation>
 <translation id="6617916774429601017">Tüm çözünürlükleri göster</translation>
 <translation id="6631515515009660915">Yansıtma kapalı</translation>
@@ -133,6 +133,7 @@ Geri bildiriminiz resim ya da video kalitesi ile ilgiliyse lütfen örnek bir fo
 <translation id="7450541714075000668">Metin kopyalandı</translation>
 <translation id="7488619942230388918">GIF video kaydet</translation>
 <translation id="7557677699350329807">Sonraki kameraya geç</translation>
+<translation id="7562584071994185503">Metni (<ph name="TEXT" />) kopyala</translation>
 <translation id="7607002721634913082">Duraklatıldı</translation>
 <translation id="7608223098072244877">4'e 4</translation>
 <translation id="761421184377987513">Sol alta doğru hareket ediyor</translation>
@@ -155,10 +156,12 @@ Geri bildiriminiz resim ya da video kalitesi ile ilgiliyse lütfen örnek bir fo
 <translation id="8346544573713510785">Çerçeveleri Kamera donanım soyutlama katmanına (HAL) göre ölçeklendir</translation>
 <translation id="8425673304802773841">Yatır</translation>
 <translation id="8428213095426709021">Ayarlar</translation>
+<translation id="8609951387004618906"><ph name="URL" /> bağlantısını aç</translation>
 <translation id="8629662593426079630">360p</translation>
 <translation id="8711011893539266636">Mikrofonun sesini aç/kapat Ses kapalı</translation>
 <translation id="8730621377337864115">Bitti</translation>
 <translation id="8732462232047530626">Meta veriyi önizle</translation>
+<translation id="874854738381978209">Kablosuz ağ algılandı.</translation>
 <translation id="8815966864175525708">Portre fotoğrafı çekme moduna geç</translation>
 <translation id="8828441885228359828">Kaydı devam ettir</translation>
 <translation id="8870695351537079478">Kayıt başlatılamıyor</translation>

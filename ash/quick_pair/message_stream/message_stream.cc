@@ -5,11 +5,11 @@
 #include "ash/quick_pair/message_stream/message_stream.h"
 
 #include "ash/quick_pair/common/fast_pair/fast_pair_metrics.h"
-#include "ash/quick_pair/common/logging.h"
 #include "base/functional/bind.h"
 #include "base/strings/string_number_conversions.h"
 #include "chromeos/ash/services/quick_pair/quick_pair_process.h"
 #include "chromeos/ash/services/quick_pair/quick_pair_process_manager.h"
+#include "components/cross_device/logging/logging.h"
 #include "device/bluetooth/bluetooth_socket.h"
 #include "net/base/io_buffer.h"
 
@@ -49,7 +49,7 @@ void MessageStream::RemoveObserver(Observer* observer) {
 
 void MessageStream::Receive() {
   if (receive_retry_counter_ == kMaxRetryCount) {
-    QP_LOG(WARNING)
+    CD_LOG(WARNING, Feature::FP)
         << __func__
         << ": Failed to receive or parse data from socket more than "
         << kMaxRetryCount << " times.";
@@ -97,7 +97,7 @@ void MessageStream::ReceiveDataSuccess(int buffer_size,
 
 void MessageStream::ReceiveDataError(device::BluetoothSocket::ErrorReason error,
                                      const std::string& error_message) {
-  QP_LOG(INFO) << __func__ << ": Error: " << error_message;
+  CD_LOG(INFO, Feature::FP) << __func__ << ": Error: " << error_message;
   RecordMessageStreamReceiveResult(/*success=*/false);
   RecordMessageStreamReceiveError(error);
 
@@ -110,7 +110,7 @@ void MessageStream::ReceiveDataError(device::BluetoothSocket::ErrorReason error,
 }
 
 void MessageStream::Disconnect(base::OnceClosure on_disconnect_callback) {
-  QP_LOG(INFO) << __func__;
+  CD_LOG(INFO, Feature::FP) << __func__;
 
   // If we already have disconnected the socket, then we can run the callback.
   // This can happen since the socket might have disconnected previously but
@@ -139,10 +139,10 @@ void MessageStream::OnSocketDisconnectedWithCallback(
 
 void MessageStream::ParseMessageStreamSuccess(
     std::vector<mojom::MessageStreamMessagePtr> messages) {
-  QP_LOG(VERBOSE) << __func__;
+  CD_LOG(VERBOSE, Feature::FP) << __func__;
 
   if (messages.empty()) {
-    QP_LOG(WARNING) << __func__ << ": no messages";
+    CD_LOG(WARNING, Feature::FP) << __func__ << ": no messages";
     Receive();
     return;
   }
@@ -198,8 +198,8 @@ std::string MessageStream::MessageStreamMessageTypeToString(
 
 void MessageStream::NotifyObservers(
     const mojom::MessageStreamMessagePtr& message) {
-  QP_LOG(VERBOSE) << __func__ << ": MessageStreamMessagePtr is "
-                  << MessageStreamMessageTypeToString(message);
+  CD_LOG(VERBOSE, Feature::FP) << __func__ << ": MessageStreamMessagePtr is "
+                               << MessageStreamMessageTypeToString(message);
 
   if (message->is_model_id()) {
     for (auto& obs : observers_)
@@ -279,13 +279,13 @@ void MessageStream::NotifyObservers(
     return;
   }
 
-  QP_LOG(WARNING) << __func__ << ": unexpected message type.";
+  CD_LOG(WARNING, Feature::FP) << __func__ << ": unexpected message type.";
   NOTREACHED();
 }
 
 void MessageStream::OnUtilityProcessStopped(
     QuickPairProcessManager::ShutdownReason shutdown_reason) {
-  QP_LOG(INFO) << __func__ << ": Error: " << shutdown_reason;
+  CD_LOG(INFO, Feature::FP) << __func__ << ": Error: " << shutdown_reason;
 
   receive_retry_counter_++;
   Receive();

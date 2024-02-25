@@ -5,10 +5,6 @@
 -- Defines slices for all of the individual scrolls in a trace based on the
 -- LatencyInfo-based scroll definition.
 --
--- @column id            The unique identifier of the scroll.
--- @column ts            The start timestamp of the scroll.
--- @column dur           The duration of the scroll.
---
 -- NOTE: this view of top level scrolls is based on the LatencyInfo definition
 -- of a scroll, which differs subtly from the definition based on
 -- EventLatencies.
@@ -16,7 +12,20 @@
 -- WebView instances. Currently gesture_scroll_id unique within an instance, but
 -- is not unique across multiple instances. Switching to an EventLatency based
 -- definition of scrolls should resolve this.
-CREATE PERFETTO TABLE chrome_scrolls AS
+CREATE PERFETTO TABLE chrome_scrolls(
+  -- The unique identifier of the scroll.
+  id INT,
+  -- The start timestamp of the scroll.
+  ts INT,
+  -- The duration of the scroll.
+  dur INT,
+  -- The earliest timestamp of the InputLatency::GestureScrollBegin for the
+  -- corresponding scroll id.
+  gesture_scroll_begin_ts INT,
+  -- The earliest timestamp of the InputLatency::GestureScrollEnd for the
+  -- corresponding scroll id.
+  gesture_scroll_end_ts INT
+) AS
 WITH all_scrolls AS (
   SELECT
     name,
@@ -30,14 +39,14 @@ WITH all_scrolls AS (
 scroll_starts AS (
   SELECT
     scroll_id,
-    MIN(ts) AS scroll_start_ts
+    MIN(ts) AS gesture_scroll_begin_ts
   FROM all_scrolls
   WHERE name = 'InputLatency::GestureScrollBegin'
   GROUP BY scroll_id
 ), scroll_ends AS (
   SELECT
     scroll_id,
-    MIN(ts) AS scroll_end_ts
+    MIN(ts) AS gesture_scroll_end_ts
   FROM all_scrolls
   WHERE name = 'InputLatency::GestureScrollEnd'
   GROUP BY scroll_id
@@ -46,8 +55,8 @@ SELECT
   sa.scroll_id AS id,
   MIN(ts) AS ts,
   CAST(MAX(ts + dur) - MIN(ts) AS INT) AS dur,
-  ss.scroll_start_ts AS scroll_start_ts,
-  se.scroll_end_ts AS scroll_end_ts
+  ss.gesture_scroll_begin_ts AS gesture_scroll_begin_ts,
+  se.gesture_scroll_end_ts AS gesture_scroll_end_ts
 FROM all_scrolls sa
   LEFT JOIN scroll_starts ss ON
     sa.scroll_id = ss.scroll_id
@@ -59,12 +68,16 @@ GROUP BY sa.scroll_id;
 -- definition in chrome_scrolls. Note that scrolls may overlap (particularly in
 -- cases of jank/broken traces, etc); so scrolling intervals are not exactly the
 -- same as individual scrolls.
---
--- @column id            The unique identifier of the scroll interval. This may
---                       span multiple scrolls if they overlap.
--- @column ts            The start timestamp of the scroll interval.
--- @column dur           The duration of the scroll interval.
-CREATE VIEW chrome_scrolling_intervals AS
+CREATE PERFETTO VIEW chrome_scrolling_intervals(
+  -- The unique identifier of the scroll interval. This may span multiple scrolls if they overlap.
+  id INT,
+  -- Comma-separated list of scroll ids that are included in this interval.
+  scroll_ids STRING,
+  -- The start timestamp of the scroll interval.
+  ts INT,
+  -- The duration of the scroll interval.
+  dur INT
+) AS
 WITH all_scrolls AS (
   SELECT
     id AS scroll_id,

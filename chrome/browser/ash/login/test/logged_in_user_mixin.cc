@@ -6,6 +6,7 @@
 
 #include <vector>
 
+#include "chrome/browser/ash/login/test/user_auth_config.h"
 #include "chrome/browser/ash/login/wizard_controller.h"
 #include "chromeos/ash/components/login/auth/public/user_context.h"
 #include "chromeos/ash/components/login/auth/stub_authenticator_builder.h"
@@ -18,9 +19,9 @@ namespace {
 user_manager::UserType ConvertUserType(LoggedInUserMixin::LogInType type) {
   switch (type) {
     case LoggedInUserMixin::LogInType::kChild:
-      return user_manager::USER_TYPE_CHILD;
+      return user_manager::UserType::kChild;
     case LoggedInUserMixin::LogInType::kRegular:
-      return user_manager::USER_TYPE_REGULAR;
+      return user_manager::UserType::kRegular;
   }
 }
 
@@ -40,13 +41,14 @@ LoggedInUserMixin::LoggedInUserMixin(
     net::EmbeddedTestServer* embedded_test_server,
     InProcessBrowserTest* test_base,
     bool should_launch_browser,
-    absl::optional<AccountId> account_id,
+    std::optional<AccountId> account_id,
     bool include_initial_user,
     bool use_embedded_policy_server)
     : InProcessBrowserTestMixin(mixin_host),
       user_(account_id.value_or(
                 AccountId::FromUserEmailGaiaId(FakeGaiaMixin::kFakeUserEmail,
                                                FakeGaiaMixin::kFakeUserGaiaId)),
+            test::kDefaultAuthSetup,
             ConvertUserType(type)),
       login_manager_(mixin_host,
                      GetInitialUsers(user_, include_initial_user),
@@ -74,16 +76,24 @@ void LoggedInUserMixin::SetUpOnMainThread() {
   // account.google.com requests would never reach fake GAIA server without
   // this.
   test_base_->host_resolver()->AddRule("*", "127.0.0.1");
-  // Ensures logging in doesn't hang on the post login Gaia screens.
-  login_manager_.SkipPostLoginScreens();
 }
 
 void LoggedInUserMixin::LogInUser(bool issue_any_scope_token,
                                   bool wait_for_active_session,
-                                  bool request_policy_update) {
+                                  bool request_policy_update,
+                                  bool skip_post_login_screens) {
+  if (skip_post_login_screens) {
+    // Ensures logging in doesn't hang on the post login Gaia screens.
+    login_manager_.SkipPostLoginScreens();
+  } else {
+    CHECK(!wait_for_active_session)
+        << "wait_for_active_session must be false if skip_post_login_screen is "
+           "false as there might not be an active session after a login.";
+  }
+
   UserContext user_context = LoginManagerMixin::CreateDefaultUserContext(user_);
   user_context.SetRefreshToken(FakeGaiaMixin::kFakeRefreshToken);
-  if (user_.user_type == user_manager::USER_TYPE_CHILD) {
+  if (user_.user_type == user_manager::UserType::kChild) {
     fake_gaia_.SetupFakeGaiaForChildUser(
         user_.account_id.GetUserEmail(), user_.account_id.GetGaiaId(),
         FakeGaiaMixin::kFakeRefreshToken, issue_any_scope_token);

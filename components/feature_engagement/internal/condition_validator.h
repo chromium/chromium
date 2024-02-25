@@ -7,6 +7,7 @@
 
 #include <stdint.h>
 
+#include <optional>
 #include <ostream>
 #include <string>
 #include <vector>
@@ -14,13 +15,13 @@
 #include "base/feature_list.h"
 #include "components/feature_engagement/public/configuration.h"
 #include "components/feature_engagement/public/feature_list.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace feature_engagement {
 struct FeatureConfig;
 class AvailabilityModel;
 class DisplayLockController;
 class EventModel;
+class TimeProvider;
 
 // A ConditionValidator checks the requred conditions for a given feature,
 // and checks if all conditions are met.
@@ -101,7 +102,7 @@ class ConditionValidator {
       const AvailabilityModel& availability_model,
       const DisplayLockController& display_lock_controller,
       const Configuration* configuration,
-      uint32_t current_day) const = 0;
+      const TimeProvider& time_provider) const = 0;
 
   // Must be called to notify that the |feature| is currently showing.
   virtual void NotifyIsShowing(
@@ -115,10 +116,13 @@ class ConditionValidator {
   // Called to notify that we have a priority notification to be shown next. All
   // other IPHs will be blocked until then.
   virtual void SetPriorityNotification(
-      const absl::optional<std::string>& feature) = 0;
+      const std::optional<std::string>& feature) = 0;
 
   // Called to get if there is a pending priority notification to be shown next.
-  virtual absl::optional<std::string> GetPendingPriorityNotification() = 0;
+  virtual std::optional<std::string> GetPendingPriorityNotification() = 0;
+
+  // Called to reset the session info, including the shown history.
+  virtual void ResetSession() = 0;
 
  protected:
   ConditionValidator() = default;

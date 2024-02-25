@@ -1,0 +1,19 @@
+[
+  {
+    "os": [
+      "chromeos_ash"
+    ],
+    "policy_pref_mapping_tests": [
+      {
+        "policies": {
+          "PluginVmDataCollectionAllowed": false
+        },
+        "prefs": {
+          "plugin_vm.data_collection_allowed": {
+            "value": false
+          }
+        }
+      }
+    ]
+  }
+]

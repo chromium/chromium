@@ -7,8 +7,8 @@
 #include "ash/style/ash_color_id.h"
 #include "ash/style/typography.h"
 #include "ash/system/tray/tray_popup_utils.h"
-#include "chromeos/constants/chromeos_features.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/views/layout/fill_layout.h"
 
 namespace ash {
@@ -20,7 +20,7 @@ TrayInfoLabel::TrayInfoLabel(int message_id)
   TriView* tri_view = TrayPopupUtils::CreateDefaultRowView(
       /*use_wide_layout=*/false);
   tri_view->SetInsets(gfx::Insets::TLBR(
-      0, kMenuExtraMarginFromLeftEdge + kTrayPopupItemMinStartWidth, 0,
+      0, kMenuExtraMarginFromLeftEdge + kWideTrayPopupItemMinStartWidth, 0,
       kTrayPopupPaddingHorizontal));
   tri_view->SetContainerVisible(TriView::Container::START, false);
   tri_view->SetContainerVisible(TriView::Container::END, false);
@@ -35,18 +35,12 @@ TrayInfoLabel::~TrayInfoLabel() = default;
 
 void TrayInfoLabel::Update(int message_id) {
   label_->SetEnabledColorId(kColorAshTextColorPrimary);
-  if (chromeos::features::IsJellyEnabled()) {
-    label_->SetAutoColorReadabilityEnabled(false);
-    TypographyProvider::Get()->StyleLabel(TypographyToken::kCrosBody2, *label_);
-  } else {
-    TrayPopupUtils::SetLabelFontList(label_,
-                                     TrayPopupUtils::FontStyle::kSystemInfo);
-  }
+  label_->SetAutoColorReadabilityEnabled(false);
+  TypographyProvider::Get()->StyleLabel(TypographyToken::kCrosBody2, *label_);
   label_->SetText(l10n_util::GetStringUTF16(message_id));
 }
 
-const char* TrayInfoLabel::GetClassName() const {
-  return "TrayInfoLabel";
-}
+BEGIN_METADATA(TrayInfoLabel)
+END_METADATA
 
 }  // namespace ash

@@ -79,7 +79,7 @@ class DragWindowController::DragWindowDetails {
 
   void Update(aura::Window* original_window,
               bool is_touch_dragging,
-              const absl::optional<gfx::Rect>& shadow_bounds) {
+              const std::optional<gfx::Rect>& shadow_bounds) {
     const float opacity =
         GetDragWindowOpacity(root_window_, original_window, is_touch_dragging);
     if (opacity == 0.f) {
@@ -104,7 +104,7 @@ class DragWindowController::DragWindowDetails {
   friend class DragWindowController;
 
   void CreateDragWindow(aura::Window* original_window,
-                        const absl::optional<gfx::Rect>& shadow_bounds) {
+                        const std::optional<gfx::Rect>& shadow_bounds) {
     DCHECK(!widget_);
     views::Widget::InitParams params;
     params.type = views::Widget::InitParams::TYPE_POPUP;
@@ -150,7 +150,7 @@ class DragWindowController::DragWindowDetails {
   }
 
   // The root window of |widget_|.
-  raw_ptr<aura::Window, ExperimentalAsh> root_window_;
+  raw_ptr<aura::Window> root_window_;
 
   // Contains a WindowMirrorView which is a copy of the original window.
   std::unique_ptr<views::Widget> widget_;
@@ -162,7 +162,7 @@ class DragWindowController::DragWindowDetails {
 DragWindowController::DragWindowController(
     aura::Window* window,
     bool is_touch_dragging,
-    const absl::optional<gfx::Rect>& shadow_bounds)
+    const std::optional<gfx::Rect>& shadow_bounds)
     : window_(window),
       is_touch_dragging_(is_touch_dragging),
       shadow_bounds_(shadow_bounds),
@@ -243,8 +243,9 @@ void DragWindowController::RequestLayerPaintForTest() {
       layers.pop_back();
       if (layer->delegate())
         layer->delegate()->OnPaintLayer(context);
-      for (auto* child : layer->children())
+      for (ui::Layer* child : layer->children()) {
         layers.push_back(child);
+      }
     }
   }
 }

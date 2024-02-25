@@ -17,7 +17,7 @@ int64_t ConvertTime(const base::TimeTicks& ticks,
     return kNullTime;
   }
   DCHECK(!start_time.is_null());
-  return (start_time + (ticks - start_ticks)).ToJavaTime();
+  return (start_time + (ticks - start_ticks)).InMillisecondsSinceUnixEpoch();
 }
 
 }  // namespace metrics_util

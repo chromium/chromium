@@ -62,16 +62,9 @@ struct CastMediaSink {
   // Model name of the sink, if it represents a physical device.
   string model_name;
 
-  // A bit vector representing capabilities of the sink. Meaning of capacity
-  // value for each bit:
-  // NONE: 0,
-  // VIDEO_OUT: 1 << 0,
-  // VIDEO_IN: 1 << 1,
-  // AUDIO_OUT: 1 << 2,
-  // AUDIO_IN: 1 << 3,
-  // DEV_MODE: 1 << 4,
-  // MULTIZONE_GROUP: 1 << 5
-  uint8 capabilities;
+  // Bit vector representing capabilities of the sink.  Enum values are defined
+  // by CastDeviceCapability in cast_device_capability.h.
+  uint64 capabilities;
 
   // ID of Cast channel opened by Media Router. The ID is defined by the
   // chrome.cast.channel API.
@@ -107,8 +100,6 @@ struct MediaRoute {
   // The type of route controller that can be created for this route. See
   // media_controller.mojom for details.
   RouteControllerType controller_type;
-  // Set to true if this route was created by an OffTheRecord profile.
-  bool is_off_the_record;
   // Set to true if this route corresponds to a local presentation.
   bool is_local_presentation;
   // Set to true if this route has been created by the MRP but is waiting for
@@ -217,9 +208,6 @@ interface MediaRouteProvider {
   // If |timeout| is positive, it will be used in place of the default timeout
   // defined by Media Route Provider Manager.
   //
-  // If |off_the_record| is true, the request was made by an OffTheRecord
-  // profile.
-  //
   // If the operation was successful, |route| will be defined and |error_text|
   // will be null.  If the operation failed, |route| will be null and
   // |error_text| will be set.  If |connection| is set, it should be returned to
@@ -234,8 +222,7 @@ interface MediaRouteProvider {
               string original_presentation_id,
               url.mojom.Origin origin,
               int32 frame_tree_node_id,
-              mojo_base.mojom.TimeDelta timeout,
-              bool off_the_record) =>
+              mojo_base.mojom.TimeDelta timeout) =>
                   (MediaRoute? route,
                    RoutePresentationConnection? connection,
                    string? error_text,
@@ -250,9 +237,6 @@ interface MediaRouteProvider {
   // If |timeout| is positive, it will be used in place of the default timeout
   // defined by Media Route Provider Manager.
   //
-  // If the route request was created by an OffTheRecord profile,
-  // |off_the_record| must be true.
-  //
   // If the operation was successful, |route| will be defined and |error_text|
   // will be null.  If the operation failed, |route| will be null and
   // |error_text| will be set.  If |connection| is set, it should be returned to
@@ -266,8 +250,7 @@ interface MediaRouteProvider {
             string presentation_id,
             url.mojom.Origin origin,
             int32 frame_tree_node_id,
-            mojo_base.mojom.TimeDelta timeout,
-            bool off_the_record) =>
+            mojo_base.mojom.TimeDelta timeout) =>
                 (MediaRoute? route,
                  RoutePresentationConnection? connection,
                  string? error_text,
@@ -298,17 +281,6 @@ interface MediaRouteProvider {
   // Starts reporting the state of active media routes.
   StartObservingMediaRoutes();
 
-  // Starts listening for messages from the media sink for the route given by
-  // |route_id|.
-  // |MediaRouter::OnRouteMessagesReceived| will be invoked when a batch of
-  // messages arrives, or when there is an error.
-  // |StopListeningForRouteMessages| will stop the Media Router from receiving
-  // further messages for |route_id|.
-  StartListeningForRouteMessages(string route_id);
-
-  // Called when there are no more listeners for messages for |route_id|.
-  StopListeningForRouteMessages(string route_id);
-
   // Indicates that a PresentationConnection that was connected to route
   // |route_id| has been closed (via .close(), garbage collection or
   // navigation).
@@ -324,20 +296,19 @@ interface MediaRouteProvider {
   // initiate discovery of media sinks in response.
   DiscoverSinksNow();
 
-  // Registers a controller for the media route with given |route_id| and binds
-  // it to |media_controller| for receiving media commands. Multiple media
-  // controllers may be registered for the same route ID. This method returns
-  // false if such a media route doesn't exist or there was an error while
-  // creating the controller. This method must close |media_controller| in case
-  // of such a failure. |media_controller| and the created controller become
-  // invalid when the media route is terminated by calling |TerminateRoute|.
-  // This method also sets |observer| to be notified whenever there is a change
-  // in the status of the media route.
-  // TODO(crbug.com/1456500): Rename to RegisterMediaRouteController().
-  CreateMediaRouteController(string route_id,
-                             pending_receiver<MediaController> media_controller,
-                             pending_remote<MediaStatusObserver> observer) =>
-                                 (bool success);
+  // Binds the |media_controller| for the media route with given |route_id| to
+  // receive media commands, and binds the |observer| to be notified whenever
+  // there is a change in the status of the media route. This method can be
+  // called multiple times with the same |route_id| to bind multiple
+  // |media_controller|s and |observer|s. This method returns false if the media
+  // route for |route_id| does not exist or there was an error while binding the
+  // |media_controller|. This method must close |media_controller| in case
+  // of such a failure. |media_controller| becomes invalid when the media route
+  // is terminated by calling |TerminateRoute|.
+  BindMediaController(
+      string route_id,
+      pending_receiver<MediaController> media_controller,
+      pending_remote<MediaStatusObserver> observer) => (bool success);
 
   // Returns the state of this Media Route Provider for debugging; returns null
   // if this MRP does not report any state.

@@ -88,10 +88,7 @@ Status FrameTracker::OnConnected(DevToolsClient* client) {
     return status;
   // Enable runtime events to allow tracking execution context creation.
   params.clear();
-  status = client->SendCommand("Runtime.enable", params);
-  if (status.IsError())
-    return status;
-  return client->SendCommand("Page.enable", params);
+  return client->SendCommand("Runtime.enable", params);
 }
 
 Status FrameTracker::OnEvent(DevToolsClient* client,
@@ -117,7 +114,7 @@ Status FrameTracker::OnEvent(DevToolsClient* client,
       if (!aux_data->is_dict()) {
         return Status(kUnknownError, method + " has invalid 'auxData' value");
       }
-      if (absl::optional<bool> b = aux_data->GetDict().FindBool("isDefault")) {
+      if (std::optional<bool> b = aux_data->GetDict().FindBool("isDefault")) {
         is_default = *b;
       } else {
         return Status(kUnknownError, method + " has invalid 'isDefault' value");
@@ -188,8 +185,8 @@ Status FrameTracker::OnEvent(DevToolsClient* client,
         // The fix is to not replace an pre-existing frame_to_target_map_ entry.
       } else {
         WebViewImpl* parent_view = static_cast<WebViewImpl*>(web_view_);
-        std::unique_ptr<WebViewImpl> child_view(
-            parent_view->CreateChild(*session_id, *target_id));
+        std::unique_ptr<WebViewImpl> child_view =
+            parent_view->CreateChild(*session_id, *target_id);
         WebViewImplHolder child_holder(child_view.get());
         WebViewImpl* p = child_view.get();
         frame_to_target_map_[*target_id] = std::move(child_view);

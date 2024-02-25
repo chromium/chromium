@@ -4,9 +4,12 @@
 
 #include "components/policy/core/common/policy_logger.h"
 
+#include <deque>
+#include <string_view>
 #include <utility>
 
 #include "base/functional/bind.h"
+#include "base/i18n/time_formatting.h"
 #include "base/no_destructor.h"
 #include "base/notreached.h"
 #include "base/strings/escape.h"
@@ -37,6 +40,8 @@ std::string GetLogSourceValue(const PolicyLogger::Log::Source log_source) {
       return "Policy Fetching";
     case PolicyLogger::Log::Source::kAuthentication:
       return "Authentication";
+    case PolicyLogger::Log::Source::kRemoteCommands:
+      return "Remote Commands";
     default:
       NOTREACHED();
   }
@@ -103,15 +108,13 @@ PolicyLogger::LogHelper::LogHelper(
       location_(location) {}
 
 PolicyLogger::LogHelper::~LogHelper() {
-  if (PolicyLogger::GetInstance()->IsPolicyLoggingEnabled()) {
     policy::PolicyLogger::GetInstance()->AddLog(PolicyLogger::Log(
         log_severity_, log_source_, message_buffer_.str(), location_));
-  }
   StreamLog();
 }
 
 void PolicyLogger::LogHelper::StreamLog() const {
-  base::StringPiece filename(location_.file_name());
+  std::string_view filename(location_.file_name());
   std::ostringstream message;
 
   // Create the message to be logged to the terminal.
@@ -122,7 +125,7 @@ void PolicyLogger::LogHelper::StreamLog() const {
           << message_buffer_.str();
 
   size_t last_slash_pos = filename.find_last_of("\\/");
-  if (last_slash_pos != base::StringPiece::npos) {
+  if (last_slash_pos != std::string_view::npos) {
     filename.remove_prefix(last_slash_pos + 1);
   }
 
@@ -172,7 +175,6 @@ PolicyLogger::PolicyLogger() = default;
 PolicyLogger::~PolicyLogger() = default;
 
 void PolicyLogger::AddLog(PolicyLogger::Log&& new_log) {
-  if (IsPolicyLoggingEnabled()) {
     {
       base::AutoLock lock(lock_);
 
@@ -188,15 +190,13 @@ void PolicyLogger::AddLog(PolicyLogger::Log&& new_log) {
     if (!is_log_deletion_scheduled_ && is_log_deletion_enabled_) {
       ScheduleOldLogsDeletion();
     }
-  }
 }
 
 void PolicyLogger::DeleteOldLogs() {
   // Delete older logs with lifetime `kTimeToLive` mins, set the flag and
   // reschedule the task.
   base::AutoLock lock(lock_);
-  logs_.erase(std::remove_if(logs_.begin(), logs_.end(), IsLogExpired),
-              logs_.end());
+  std::erase_if(logs_, IsLogExpired);
 
   if (logs_.size() > 0) {
     ScheduleOldLogsDeletion();
@@ -220,23 +220,6 @@ base::Value::List PolicyLogger::GetAsList() {
     all_logs_list.Append(log.GetAsDict());
   }
   return all_logs_list;
-}
-
-bool PolicyLogger::IsPolicyLoggingEnabled() const {
-#if BUILDFLAG(IS_ANDROID)
-  return base::FeatureList::IsEnabled(policy::features::kPolicyLogsPageAndroid);
-#elif BUILDFLAG(IS_IOS)
-  return base::FeatureList::IsEnabled(policy::features::kPolicyLogsPageIOS);
-#else
-  // Check that FeatureList is available as a protection against early startup
-  // crashes. Some policy providers are initialized very early even before
-  // base::FeatureList is available, but when policies are finally applied, the
-  // feature stack is fully initialized. The instance check ensures that the
-  // final decision is delayed until all features are initialized, without any
-  // other downstream effect.
-  return base::FeatureList::GetInstance() &&
-         base::FeatureList::IsEnabled(policy::features::kPolicyLogsPageDesktop);
-#endif  // BUILDFLAG(IS_ANDROID)
 }
 
 void PolicyLogger::EnableLogDeletion() {

@@ -45,3 +45,7 @@ h1 {
 .data-collector-list {
   width: 520px;
 }
+
+.select-all-button {
+  margin-top: 8px;
+}

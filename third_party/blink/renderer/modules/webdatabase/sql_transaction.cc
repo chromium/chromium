@@ -117,15 +117,15 @@ void SQLTransaction::Trace(Visitor* visitor) const {
 }
 
 bool SQLTransaction::HasCallback() const {
-  return callback_;
+  return callback_ != nullptr;
 }
 
 bool SQLTransaction::HasSuccessCallback() const {
-  return success_callback_;
+  return success_callback_ != nullptr;
 }
 
 bool SQLTransaction::HasErrorCallback() const {
-  return error_callback_;
+  return error_callback_ != nullptr;
 }
 
 void SQLTransaction::SetBackend(SQLTransactionBackend* backend) {
@@ -345,7 +345,7 @@ void SQLTransaction::executeSql(ScriptState* script_state,
 void SQLTransaction::executeSql(
     ScriptState* script_state,
     const String& sql_statement,
-    const absl::optional<HeapVector<ScriptValue>>& arguments,
+    const std::optional<HeapVector<ScriptValue>>& arguments,
     V8SQLStatementCallback* callback,
     V8SQLStatementErrorCallback* callback_error,
     ExceptionState& exception_state) {

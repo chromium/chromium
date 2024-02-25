@@ -16,9 +16,7 @@ namespace tether {
 // Test double for WifiHotspotConnector.
 class FakeWifiHotspotConnector : public WifiHotspotConnector {
  public:
-  FakeWifiHotspotConnector(
-      NetworkStateHandler* network_state_handler,
-      TechnologyStateController* technology_state_controller);
+  explicit FakeWifiHotspotConnector(NetworkHandler* network_handler);
 
   FakeWifiHotspotConnector(const FakeWifiHotspotConnector&) = delete;
   FakeWifiHotspotConnector& operator=(const FakeWifiHotspotConnector&) = delete;
@@ -26,7 +24,9 @@ class FakeWifiHotspotConnector : public WifiHotspotConnector {
   ~FakeWifiHotspotConnector() override;
 
   // Pass an empty string for |wifi_guid| to signify a failed connection.
-  void CallMostRecentCallback(const std::string& wifi_guid);
+  void CallMostRecentCallback(
+      base::expected<std::string,
+                     WifiHotspotConnector::WifiHotspotConnectionError> result);
 
   std::string most_recent_ssid() { return most_recent_ssid_; }
 

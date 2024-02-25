@@ -31,18 +31,19 @@ ScopedJavaLocalRef<jstring> JNI_TemplateUrl_GetKeyword(JNIEnv* env,
   return base::android::ConvertUTF16ToJavaString(env, template_url->keyword());
 }
 
-jboolean JNI_TemplateUrl_IsPrepopulatedOrCreatedByPolicy(
+jboolean JNI_TemplateUrl_IsPrepopulatedOrDefaultProviderByPolicy(
     JNIEnv* env,
     jlong template_url_ptr) {
   TemplateURL* template_url = ToTemplateURL(template_url_ptr);
   return template_url->prepopulate_id() > 0 ||
-         template_url->created_by_policy() ||
+         template_url->created_by_policy() !=
+             TemplateURLData::CreatedByPolicy::kNoPolicy ||
          template_url->created_from_play_api();
 }
 
 jlong JNI_TemplateUrl_GetLastVisitedTime(JNIEnv* env, jlong template_url_ptr) {
   TemplateURL* template_url = ToTemplateURL(template_url_ptr);
-  return template_url->last_visited().ToJavaTime();
+  return template_url->last_visited().InMillisecondsSinceUnixEpoch();
 }
 
 jint JNI_TemplateUrl_GetPrepopulatedId(JNIEnv* env, jlong template_url_ptr) {

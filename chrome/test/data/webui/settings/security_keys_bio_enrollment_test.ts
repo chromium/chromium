@@ -5,7 +5,8 @@
 import {webUIListenerCallback} from 'chrome://resources/js/cr.js';
 import {PromiseResolver} from 'chrome://resources/js/promise_resolver.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import {BioEnrollDialogPage, Ctap2Status, SampleStatus, SecurityKeysBioEnrollProxy, SecurityKeysBioEnrollProxyImpl, SettingsSecurityKeysBioEnrollDialogElement} from 'chrome://settings/lazy_load.js';
+import type {SecurityKeysBioEnrollProxy, SettingsSecurityKeysBioEnrollDialogElement} from 'chrome://settings/lazy_load.js';
+import {BioEnrollDialogPage, Ctap2Status, SampleStatus, SecurityKeysBioEnrollProxyImpl} from 'chrome://settings/lazy_load.js';
 import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {eventToPromise} from 'chrome://webui-test/test_util.js';
 
@@ -51,7 +52,7 @@ class TestSecurityKeysBioEnrollProxy extends TestSecurityKeysBrowserProxy
   }
 
   cancelEnrollment() {
-    return this.methodCalled('cancelEnrollment');
+    this.methodCalled('cancelEnrollment');
   }
 
   deleteEnrollment(id: string) {

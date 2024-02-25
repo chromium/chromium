@@ -28,12 +28,6 @@ class ShoppingServiceFactory : public ProfileKeyedServiceFactory {
   static ShoppingService* GetForBrowserContextIfExists(
       content::BrowserContext* context);
 
-  // Associates |testing_factory| with |context| and immediately returns the
-  // created KeyedService. Since the factory will be used immediately, it may
-  // not be empty.
-  KeyedService* SetTestingFactoryAndUse(content::BrowserContext* context,
-                                        TestingFactory testing_factory);
-
  private:
   friend class base::NoDestructor<ShoppingServiceFactory>;
 

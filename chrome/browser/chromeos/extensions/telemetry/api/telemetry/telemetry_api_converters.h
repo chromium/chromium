@@ -105,6 +105,11 @@ chromeos::api::os_telemetry::EmbeddedDisplayInfo UncheckedConvertPtr(
 chromeos::api::os_telemetry::ExternalDisplayInfo UncheckedConvertPtr(
     crosapi::mojom::ProbeExternalDisplayInfoPtr input);
 
+chromeos::api::os_telemetry::ThermalInfo UncheckedConvertPtr(
+    crosapi::mojom::ProbeThermalInfoPtr input);
+
+chromeos::api::os_telemetry::ThermalSensorInfo UncheckedConvertPtr(
+    crosapi::mojom::ProbeThermalSensorInfoPtr input);
 }  // namespace unchecked
 
 chromeos::api::os_telemetry::CpuArchitectureEnum Convert(
@@ -130,6 +135,9 @@ chromeos::api::os_telemetry::UsbSpecSpeed Convert(
 
 chromeos::api::os_telemetry::DisplayInputType Convert(
     crosapi::mojom::ProbeDisplayInputType input);
+
+chromeos::api::os_telemetry::ThermalSensorSource Convert(
+    crosapi::mojom::ProbeThermalSensorSource input);
 
 template <class OutputT, class InputT>
 std::vector<OutputT> ConvertPtrVector(std::vector<InputT> input) {

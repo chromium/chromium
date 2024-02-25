@@ -54,8 +54,7 @@ message SystemProfileProto {
   optional string log_written_by_app_version = 40;
 
   // The brand code or distribution tag assigned to a partner, if available.
-  // Brand codes are only available on Windows.  Not every Windows install
-  // though will have a brand code.
+  // Windows, Mac, iOS, and CrOS clients may have a brand code.
   optional string brand_code = 12;
 
   // The possible channels for an installation, from least to most stable.
@@ -334,10 +333,10 @@ message SystemProfileProto {
     optional float max_dpi_x = 9;
     optional float max_dpi_y = 10;
 
-    // The form factor of the device. Added in M101.
-    // Android devices can be phone, tablet, or TV. iOS devices can be phone or
-    // tablet. For Windows, Mac, ChromeOS, Lacros, and Linux, the desktop form
-    // factor is always used.
+    // The form factor of the device. Added in M101, foldable added in M120.
+    // Android devices can be phone, tablet, TV, automotive or foldable. iOS
+    // devices can be phone or tablet. For Windows, Mac, ChromeOS, Lacros, and
+    // Linux, the desktop form factor is always used.
     enum FormFactor {
       FORM_FACTOR_UNKNOWN = 0;
       FORM_FACTOR_DESKTOP = 1;
@@ -346,6 +345,7 @@ message SystemProfileProto {
       FORM_FACTOR_TV = 4;
       FORM_FACTOR_MEET_DEVICE = 5;
       FORM_FACTOR_AUTOMOTIVE = 6;
+      FORM_FACTOR_FOLDABLE = 7;
     }
     optional FormFactor form_factor = 22;
 
@@ -999,7 +999,9 @@ message SystemProfileProto {
     STATE_EXPIRED = 3;
   }
 
-  // Information about AntiVirus products installed.
+  // Information about installed antivirus products. Windows only. See
+  // https://cs.chromium.org/chromium/src/chrome/browser/metrics/antivirus_metrics_provider_win.cc.
+  //
   // Next Tag: 6
   message AntiVirusProduct {
     // The product name e.g. "System Center Endpoint Protection". This might not
@@ -1092,6 +1094,7 @@ message SystemProfileProto {
     SODA_JA_JP = 60;
     THIRD_PARTY_MODULE_LIST = 61;
     TRUST_TOKEN_KEY_COMMITMENTS = 62;
+    THIRD_PARTY_COOKIE_DEPRECATION_METADATA = 63;
   }
 
   // Information about what Chrome components are registered and at which
@@ -1146,12 +1149,13 @@ message SystemProfileProto {
     SERVER_SIDE_FILTER_UNSPECIFIED = 0;
     // Indicates the package name filtering should occur on the server-side
     SERVER_SIDE_FILTER_REQUIRED = 1;
-    // Indicates the `app_package_name` does not need filtering since filtering
-    // occurred on the client-side.
-    NO_SERVER_SIDE_FILTER_REQUIRED_DUE_TO_CLIENT_FILTERING = 2;
     // Indicates the `app_package_name` does not need filtering since it is
     // a system app.
     NO_SERVER_SIDE_FILTER_REQUIRED_FOR_SYSTEM_APPS = 3;
+
+    // Removed in cl/567086405:
+    reserved 2;
+    reserved "NO_SERVER_SIDE_FILTER_REQUIRED_DUE_TO_CLIENT_FILTERING";
   }
 
   optional AppPackageNameAllowlistFilter app_package_name_allowlist_filter = 42;
@@ -1218,12 +1222,13 @@ message SystemProfileProto {
     optional bool is_instant_tethering_enabled = 3;
 
     // True if Messages integration is enabled on this Chromebook.
-    optional bool is_messages_enabled = 4;
+    // Deprecated 10/23.
+    optional bool is_messages_enabled = 4 [deprecated = true];
   }
   optional LinkedAndroidPhoneData linked_android_phone_data = 29;
 
   // Demo mode related dimension information.
-  // Next Tag: 4
+  // Next Tag: 6
   message DemoModeDimensions {
     optional string country = 1;
 
@@ -1241,6 +1246,16 @@ message SystemProfileProto {
       FEATURE_AWARE_DEVICE = 2;
     }
     repeated CustomizationFacet customization_facet = 3 [packed = true];
+
+    // The Demo Mode highlights app version. The version number is used to
+    // identify the Omaha Chrome Component - Demo Mode App package that was
+    // downloaded onto the device.
+    optional string app_version = 4;
+
+    // The Demo Mode resources version. The version number is used to identify
+    // the Omaha Chrome Component - Demo Mode Resources bundle that was
+    // downloaded onto the device.
+    optional string resources_version = 5;
   }
   optional DemoModeDimensions demo_mode_dimensions = 41;
 

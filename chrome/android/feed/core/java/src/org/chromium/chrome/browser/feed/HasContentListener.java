@@ -6,8 +6,6 @@ package org.chromium.chrome.browser.feed;
 
 /** Interface to listen to the hasContent events from FeedSurfaceMediator. */
 public interface HasContentListener {
-    /**
-     * Called when the has content state changes.
-     */
+    /** Called when the has content state changes. */
     void hasContentChanged(@StreamKind int kind, boolean hasContent);
 }

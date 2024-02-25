@@ -76,14 +76,6 @@ base::ScopedClosureRunner OutputSurface::GetCacheBackBufferCb() {
   return base::ScopedClosureRunner();
 }
 
-void OutputSurface::SetGpuVSyncCallback(GpuVSyncCallback callback) {
-  NOTREACHED();
-}
-
-void OutputSurface::SetGpuVSyncEnabled(bool enabled) {
-  NOTREACHED();
-}
-
 gpu::Mailbox OutputSurface::GetOverlayMailbox() const {
   return gpu::Mailbox();
 }

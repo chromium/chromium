@@ -9,6 +9,7 @@
 #include <cmath>
 #include <memory>
 
+#include "base/memory/raw_ptr.h"
 #include "base/strings/stringprintf.h"
 #include "content/common/android/gin_java_bridge_value.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -38,7 +39,7 @@ class GinJavaBridgeValueConverterTest : public testing::Test {
 
   void TearDown() override { context_.Reset(); }
 
-  v8::Isolate* isolate_;
+  raw_ptr<v8::Isolate> isolate_;
 
   // Context for the JavaScript in the test.
   v8::Persistent<v8::Context> context_;
@@ -112,7 +113,8 @@ TEST_F(GinJavaBridgeValueConverterTest, TypedArrays) {
   std::unique_ptr<GinJavaBridgeValueConverter> converter(
       new GinJavaBridgeValueConverter());
 
-  const char* source_template = "(function() {"
+  static constexpr char kSourceTemplate[] =
+      "(function() {"
       "var array_buffer = new ArrayBuffer(%s);"
       "var array_view = new %s(array_buffer);"
       "array_view[0] = 42;"
@@ -130,7 +132,7 @@ TEST_F(GinJavaBridgeValueConverterTest, TypedArrays) {
         v8::Script::Compile(
             context,
             v8::String::NewFromUtf8(
-                isolate_, base::StringPrintf(source_template, array_types[i],
+                isolate_, base::StringPrintf(kSourceTemplate, array_types[i],
                                              typed_array_type)
                               .c_str())
                 .ToLocalChecked())

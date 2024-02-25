@@ -1,0 +1,41 @@
+// Copyright 2023 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module ash.mojom.status_area_internals;
+
+// Interface for handling status area UI actions. Note that this interface
+// is only bound on non-official builds since the webUI that uses this is
+// only available on non-official builds.
+interface PageHandler {
+  // Toggles the visibility of the IME tray.
+  ToggleImeTray(bool visible);
+
+  // Toggles the visibility of the palette tray.
+  TogglePaletteTray(bool visible);
+
+  // Toggles the visibility of the logout tray.
+  ToggleLogoutTray(bool visible);
+
+  // Toggles the visibility of the virtual keyboard tray.
+  ToggleVirtualKeyboardTray(bool visible);
+
+  // Toggles the visibility of the dictation tray.
+  ToggleDictationTray(bool visible);
+
+  // Toggles the visibility of the video conference tray.
+  ToggleVideoConferenceTray(bool visible);
+
+  // Toggles the visibility of the projector tray.
+  ToggleProjectorTray(bool visible);
+
+  // Sets whether the active directory is being managed or not.
+  SetActiveDirectoryManaged(bool managed);
+
+  // Sets whether user is in a child session or not.
+  SetIsInUserChildSession(bool in_child_session);
+
+  // Triggers the privacy indicators in the status area.
+  TriggerPrivacyIndicators(string app_id, string app_name, bool is_camera_used,
+    bool is_microphone_used);
+};

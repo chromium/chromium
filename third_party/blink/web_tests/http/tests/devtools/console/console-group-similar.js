@@ -5,18 +5,18 @@
 import {TestRunner} from 'test_runner';
 import {ConsoleTestRunner} from 'console_test_runner';
 
+import * as Console from 'devtools/panels/console/console.js';
 import * as SDK from 'devtools/core/sdk/sdk.js';
 
 (async function() {
   TestRunner.addResult(`Tests that console correctly groups similar messages.\n`);
 
-  await TestRunner.loadLegacyModule('console');
   await TestRunner.showPanel('console');
 
   // Show all messages, including verbose.
-  Console.ConsoleView.instance().setImmediatelyFilterMessagesForTest();
-  Console.ConsoleView.instance().filter.textFilterUI.setValue("url:script");
-  Console.ConsoleView.instance().filter.messageLevelFiltersSetting.set(Console.ConsoleFilter.allLevelsFilterValue());
+  Console.ConsoleView.ConsoleView.instance().setImmediatelyFilterMessagesForTest();
+  Console.ConsoleView.ConsoleView.instance().filter.textFilterUI.setValue("url:script");
+  Console.ConsoleView.ConsoleView.instance().filter.messageLevelFiltersSetting.set(Console.ConsoleFilter.ConsoleFilter.allLevelsFilterValue());
 
   for (var i = 0; i < 5; i++) {
     // Groupable messages.
@@ -39,7 +39,7 @@ import * as SDK from 'devtools/core/sdk/sdk.js';
   await ConsoleTestRunner.dumpConsoleMessages();
 
   TestRunner.addResult('\n\nStop grouping messages:\n');
-  Console.ConsoleView.instance().groupSimilarSetting.set(false);
+  Console.ConsoleView.ConsoleView.instance().groupSimilarSetting.set(false);
   await ConsoleTestRunner.dumpConsoleMessages();
   TestRunner.completeTest();
 

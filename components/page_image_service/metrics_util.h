@@ -17,8 +17,9 @@ constexpr char kBackendOptimizationGuideResultHistogramName[] =
     "PageImageService.Backend.OptimizationGuide.Result";
 constexpr char kBackendSuggestResultHistogramName[] =
     "PageImageService.Backend.Suggest.Result";
-constexpr char kConsentSuccessHistogramName[] =
-    "PageImageService.ConsentSuccess";
+constexpr char kConsentStatusHistogramName[] = "PageImageService.ConsentStatus";
+constexpr char kConsentTimeoutReasonHistogramName[] =
+    "PageImageService.ConsentTimeoutReason";
 
 // Used in UMA. Must not be renumbered, and must be kept in sync with enums.xml.
 enum class PageImageServiceBackend {
@@ -35,6 +36,14 @@ enum class PageImageServiceResult {
   kNoImage = 2,
   kResponseMalformed = 3,
   kMaxValue = kResponseMalformed,
+};
+
+// Used in UMA. Must not be renumbered, and must be kept in sync with enums.xml.
+enum class PageImageServiceConsentStatus {
+  kSuccess = 0,
+  kFailure = 1,
+  kTimedOut = 2,
+  kMaxValue = kTimedOut,
 };
 
 // Returns a string for each `client_id`. Always returns a non-empty string.

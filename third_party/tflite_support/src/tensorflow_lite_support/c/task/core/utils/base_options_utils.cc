@@ -27,7 +27,7 @@ TfLiteBaseOptions CreateDefaultBaseOptions() {
   return base_options;
 }
 
-::tflite::proto::TFLiteSettings TfLiteSettingsProtoFromCOptions(
+  ::tflite::proto::TFLiteSettings TfLiteSettingsProtoFromCOptions(
     const TfLiteComputeSettings* c_options) {
   ::tflite::proto::TFLiteSettings tflite_settings;
 

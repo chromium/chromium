@@ -23,14 +23,14 @@ NS_ASSUME_NONNULL_BEGIN
 @property(nonatomic) int inputTensorIndex;
 @property(nonatomic) int outputScoreTensorIndex;
 @property(nonatomic) int outputLabelTensorIndex;
-@property(nonatomic) NSString* inputTensorName;
-@property(nonatomic) NSString* outputScoreTensorName;
-@property(nonatomic) NSString* outputLabelTensorName;
+@property(nonatomic) NSString *inputTensorName;
+@property(nonatomic) NSString *outputScoreTensorName;
+@property(nonatomic) NSString *outputLabelTensorName;
 @end
 
 /**
- * Classifier API for natural language classification tasks, categorizes string
- * into different classes.
+ * Classifier API for natural language classification tasks, categorizes string into different
+ * classes.
  *
  * The API expects a TFLite model with the following input/output tensor:
  *
@@ -39,28 +39,25 @@ NS_ASSUME_NONNULL_BEGIN
  *
  *   Output score tensor
  *     (kTfLiteUInt8/kTfLiteInt8/kTfLiteInt16/kTfLiteFloat32/kTfLiteFloat64/kTfLiteBool)
- *     output scores for each class, if type is one of the Int types, dequantize
- * it, if it is Bool type, convert the values to 0.0 and 1.0 respectively.
+ *     output scores for each class, if type is one of the Int types, dequantize it, if it
+ *       is Bool type, convert the values to 0.0 and 1.0 respectively.
  *
- *     can have an optional associated file in metadata for labels, the file
- * should be a plain text file with one label per line, the number of labels
- * should match the number of categories the model outputs. Output label tensor:
- * optional (kTfLiteString) - output classname for each class, should be of the
- * same length with scores. If this tensor is not present, the API uses score
- * indices as classnames. - will be ignored if output score tensor already has
- * an associated label file.
+ *     can have an optional associated file in metadata for labels, the file should be a
+ *       plain text file with one label per line, the number of labels should match the number
+ *       of categories the model outputs. Output label tensor: optional (kTfLiteString) -
+ *       output classname for each class, should be of the same length with scores. If this
+ *       tensor is not present, the API uses score indices as classnames. - will be ignored if
+ *       output score tensor already has an associated label file.
  *
  *   Optional Output label tensor (kTfLiteString/kTfLiteInt32)
- *     output classname for each class, should be of the same length with
- * scores. If this tensor is not present, the API uses score indices as
- * classnames.
+ *     output classname for each class, should be of the same length with scores. If this
+ *       tensor is not present, the API uses score indices as classnames.
  *
- *     will be ignored if output score tensor already has an associated labe
- * file.
+ *     will be ignored if output score tensor already has an associated labe file.
  *
- * By default the API tries to find the input/output tensors with default
- * configurations in TFLNLClassifierOptions, with tensor name prioritized over
- * tensor index. The option is configurable for different TFLite models.
+ * By default the API tries to find the input/output tensors with default configurations in
+ * TFLNLClassifierOptions, with tensor name prioritized over tensor index. The option is
+ * configurable for different TFLite models.
  */
 @interface TFLNLClassifier : NSObject
 
@@ -72,8 +69,8 @@ NS_ASSUME_NONNULL_BEGIN
  *
  * @return A TFLNLClassifier instance.
  */
-+ (instancetype)nlClassifierWithModelPath:(NSString*)modelPath
-                                  options:(TFLNLClassifierOptions*)options
++ (instancetype)nlClassifierWithModelPath:(NSString *)modelPath
+                                  options:(TFLNLClassifierOptions *)options
     NS_SWIFT_NAME(nlClassifier(modelPath:options:));
 
 /**
@@ -83,7 +80,7 @@ NS_ASSUME_NONNULL_BEGIN
  * @param text input text to the model.
  * @return A NSDictionary of categorization results.
  */
-- (NSDictionary<NSString*, NSNumber*>*)classifyWithText:(NSString*)text
+- (NSDictionary<NSString *, NSNumber *> *)classifyWithText:(NSString *)text
     NS_SWIFT_NAME(classify(text:));
 @end
 NS_ASSUME_NONNULL_END

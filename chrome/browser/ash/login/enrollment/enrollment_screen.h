@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_ASH_LOGIN_ENROLLMENT_ENROLLMENT_SCREEN_H_
 
 #include <memory>
+#include <optional>
 #include <string>
 
 #include "base/cancelable_callback.h"
@@ -28,7 +29,6 @@
 #include "components/policy/core/common/cloud/cloud_policy_constants.h"
 #include "components/policy/core/common/cloud/enterprise_metrics.h"
 #include "net/base/backoff_entry.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base {
 class ElapsedTimer;
@@ -209,8 +209,10 @@ class EnrollmentScreen
   bool AdvanceToNextAuth();
 
   // Similar to OnRetry(), but responds to a timer instead of the user
-  // pressing the Retry button.
-  void AutomaticRetry();
+  // pressing the Retry button. Does not retry if `ShouldAutoRetryOnError()`
+  // returns false.
+  // TODO(b/314130124): Remove if retry logic is not needed.
+  void MaybeAutomaticRetry();
 
   // Processes a request to retry enrollment.
   // Called by OnRetry() and AutomaticRetry().
@@ -226,9 +228,12 @@ class EnrollmentScreen
   // to reboot the device.
   void CheckInstallAttributesState();
 
-  // Indicates whether this is an automatic enrollment as part of Zero-Touch
-  // Hands Off flow or Chromad Migration.
-  bool IsAutomaticEnrollmentFlow();
+  // Returns true if enrollment should be automatically retried on error.
+  // TODO(b/314130124): Remove if retry logic is not needed.
+  bool ShouldAutoRetryOnError() const;
+
+  // Returns true if success screen should be skipped.
+  bool AutoCloseEnrollmentConfirmationOnSuccess() const;
 
   // Returns true if current visible screen is the error screen over
   // enrollment sign-in page.
@@ -241,9 +246,9 @@ class EnrollmentScreen
                           NetworkError::ErrorReason reason);
 
   base::WeakPtr<EnrollmentScreenView> view_;
-  raw_ptr<ErrorScreen, ExperimentalAsh> error_screen_ = nullptr;
+  raw_ptr<ErrorScreen> error_screen_ = nullptr;
   ScreenExitCallback exit_callback_;
-  absl::optional<TpmStatusCallback> tpm_ownership_callback_for_testing_;
+  std::optional<TpmStatusCallback> tpm_ownership_callback_for_testing_;
   policy::EnrollmentConfig config_;
   policy::EnrollmentConfig enrollment_config_;
   policy::LicenseType license_type_to_use_ = policy::LicenseType::kEnterprise;

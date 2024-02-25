@@ -23,15 +23,14 @@ import org.chromium.ui.modaldialog.ModalDialogProperties.ButtonStyles;
 import org.chromium.ui.modaldialog.SimpleModalDialogController;
 import org.chromium.ui.modelutil.PropertyModel;
 
-/**
- * Dialog to explain the advantages of Chrome notifications.
- */
+/** Dialog to explain the advantages of Chrome notifications. */
 public class NotificationPermissionRationaleDialogController implements RationaleDelegate {
     private final ModalDialogManager mModalDialogManager;
     private final Context mContext;
 
     /**
      * Initializes the notification permission rationale dialog.
+     *
      * @param context Used to inflate views and get resources.
      * @param modalDialogManager Modal manager used to show the dialog and listen to its results.
      */
@@ -43,29 +42,38 @@ public class NotificationPermissionRationaleDialogController implements Rational
 
     /**
      * Shows the notification permission rationale dialog.
+     *
      * @param rationaleCallback A callback indicating whether the user accepted to enable
-     * notifications.
+     *     notifications.
      */
     @Override
     public void showRationaleUi(Callback<Integer> rationaleCallback) {
         LayoutInflater inflater = LayoutInflater.from(mContext);
         Resources resources = mContext.getResources();
 
-        View dialogView = inflater.inflate(R.layout.notification_permission_rationale_dialog,
-                /* root= */ null);
+        View dialogView =
+                inflater.inflate(
+                        R.layout.notification_permission_rationale_dialog, /* root= */ null);
 
         PropertyModel.Builder dialogModelBuilder =
                 new PropertyModel.Builder(ModalDialogProperties.ALL_KEYS)
-                        .with(ModalDialogProperties.CONTROLLER,
-                                new SimpleModalDialogController(mModalDialogManager,
+                        .with(
+                                ModalDialogProperties.CONTROLLER,
+                                new SimpleModalDialogController(
+                                        mModalDialogManager,
                                         wrapDialogDismissalCallback(rationaleCallback)))
                         .with(ModalDialogProperties.CUSTOM_VIEW, dialogView)
-                        .with(ModalDialogProperties.BUTTON_STYLES,
+                        .with(
+                                ModalDialogProperties.BUTTON_STYLES,
                                 ButtonStyles.PRIMARY_FILLED_NEGATIVE_OUTLINE)
                         .with(ModalDialogProperties.CANCEL_ON_TOUCH_OUTSIDE, true)
-                        .with(ModalDialogProperties.POSITIVE_BUTTON_TEXT, resources,
+                        .with(
+                                ModalDialogProperties.POSITIVE_BUTTON_TEXT,
+                                resources,
                                 R.string.notification_permission_rationale_accept_button_text)
-                        .with(ModalDialogProperties.NEGATIVE_BUTTON_TEXT, resources,
+                        .with(
+                                ModalDialogProperties.NEGATIVE_BUTTON_TEXT,
+                                resources,
                                 R.string.notification_permission_rationale_reject_button_text);
 
         PropertyModel dialogModel = dialogModelBuilder.build();
@@ -75,8 +83,7 @@ public class NotificationPermissionRationaleDialogController implements Rational
 
     private Callback<Integer> wrapDialogDismissalCallback(Callback<Integer> rationaleCallback) {
         return result -> {
-            @NotificationRationaleResult
-            int resultEnumValue;
+            @NotificationRationaleResult int resultEnumValue;
 
             switch (result) {
                 case DialogDismissalCause.POSITIVE_BUTTON_CLICKED:
@@ -96,9 +103,10 @@ public class NotificationPermissionRationaleDialogController implements Rational
                     resultEnumValue = NotificationRationaleResult.NAVIGATE_BACK_OR_TOUCH_OUTSIDE;
             }
 
-            NotificationUmaTracker.getInstance().onNotificationPermissionRationaleResult(
-                    resultEnumValue);
-            rationaleCallback.onResult(result == DialogDismissalCause.POSITIVE_BUTTON_CLICKED
+            NotificationUmaTracker.getInstance()
+                    .onNotificationPermissionRationaleResult(resultEnumValue);
+            rationaleCallback.onResult(
+                    result == DialogDismissalCause.POSITIVE_BUTTON_CLICKED
                             ? RationaleUiResult.ACCEPTED
                             : RationaleUiResult.REJECTED);
         };

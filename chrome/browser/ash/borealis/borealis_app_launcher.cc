@@ -36,7 +36,7 @@ void BorealisAppLauncher::Launch(const BorealisContext& ctx,
     return;
   }
 
-  absl::optional<guest_os::GuestOsRegistryService::Registration> reg =
+  std::optional<guest_os::GuestOsRegistryService::Registration> reg =
       guest_os::GuestOsRegistryServiceFactory::GetForProfile(ctx.profile())
           ->GetRegistration(app_id);
   if (!reg) {
@@ -57,7 +57,7 @@ void BorealisAppLauncher::Launch(const BorealisContext& ctx,
       std::move(request),
       base::BindOnce(
           [](OnLaunchedCallback callback,
-             absl::optional<
+             std::optional<
                  vm_tools::cicerone::LaunchContainerApplicationResponse>
                  response) {
             if (!response) {

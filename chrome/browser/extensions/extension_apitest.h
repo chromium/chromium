@@ -7,10 +7,9 @@
 
 #include <string>
 
-#include "base/strings/string_piece_forward.h"
+#include "base/strings/string_piece.h"
 #include "base/values.h"
 #include "chrome/browser/extensions/extension_browsertest.h"
-#include "content/public/browser/notification_registrar.h"
 #include "net/test/spawned_test_server/spawned_test_server.h"
 
 namespace base {

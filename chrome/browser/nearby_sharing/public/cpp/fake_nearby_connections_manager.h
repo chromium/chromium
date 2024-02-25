@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_NEARBY_SHARING_PUBLIC_CPP_FAKE_NEARBY_CONNECTIONS_MANAGER_H_
 
 #include <memory>
+#include <optional>
 #include <set>
 #include <string>
 #include <utility>
@@ -16,7 +17,6 @@
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/nearby_sharing/public/cpp/nearby_connections_manager.h"
 #include "chromeos/ash/services/nearby/public/mojom/nearby_connections.mojom.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 class NearbyConnection;
 
@@ -42,7 +42,7 @@ class FakeNearbyConnectionsManager
   void StopDiscovery() override;
   void Connect(std::vector<uint8_t> endpoint_info,
                const std::string& endpoint_id,
-               absl::optional<std::vector<uint8_t>> bluetooth_mac_address,
+               std::optional<std::vector<uint8_t>> bluetooth_mac_address,
                DataUsage data_usage,
                NearbyConnectionCallback callback) override;
   void Disconnect(const std::string& endpoint_id) override;
@@ -58,13 +58,17 @@ class FakeNearbyConnectionsManager
   Payload* GetIncomingPayload(int64_t payload_id) override;
   void Cancel(int64_t payload_id) override;
   void ClearIncomingPayloads() override;
-  absl::optional<std::string> GetAuthenticationToken(
+  std::optional<std::string> GetAuthenticationToken(
       const std::string& endpoint_id) override;
-  absl::optional<std::vector<uint8_t>> GetRawAuthenticationToken(
+  std::optional<std::vector<uint8_t>> GetRawAuthenticationToken(
       const std::string& endpoint_id) override;
   void RegisterBandwidthUpgradeListener(
       base::WeakPtr<BandwidthUpgradeListener> listener) override;
   void UpgradeBandwidth(const std::string& endpoint_id) override;
+  void ConnectV3(PresenceDevice remote_presence_device,
+                 DataUsage data_usage,
+                 NearbyConnectionCallback callback) override;
+  void DisconnectV3(PresenceDevice remote_presence_device) override;
   base::WeakPtr<NearbyConnectionsManager> GetWeakPtr() override;
 
   void SetAuthenticationToken(const std::string& endpoint_id,
@@ -86,7 +90,7 @@ class FakeNearbyConnectionsManager
   base::WeakPtr<PayloadStatusListener> GetRegisteredPayloadStatusListener(
       int64_t payload_id);
   void SetIncomingPayload(int64_t payload_id, PayloadPtr payload);
-  absl::optional<base::FilePath> GetRegisteredPayloadPath(int64_t payload_id);
+  std::optional<base::FilePath> GetRegisteredPayloadPath(int64_t payload_id);
   bool WasPayloadCanceled(const int64_t& payload_id) const;
   void CleanupForProcessStopped();
   ConnectionsCallback GetStartAdvertisingCallback();
@@ -109,15 +113,15 @@ class FakeNearbyConnectionsManager
           void(PayloadPtr, base::WeakPtr<PayloadStatusListener>)> callback) {
     send_payload_callback_ = std::move(callback);
   }
-  const absl::optional<std::vector<uint8_t>>& advertising_endpoint_info() {
+  const std::optional<std::vector<uint8_t>>& advertising_endpoint_info() {
     return advertising_endpoint_info_;
   }
 
-  absl::optional<std::vector<uint8_t>> connection_endpoint_info(
+  std::optional<std::vector<uint8_t>> connection_endpoint_info(
       const std::string& endpoint_id) {
     auto it = connection_endpoint_infos_.find(endpoint_id);
     if (it == connection_endpoint_infos_.end()) {
-      return absl::nullopt;
+      return std::nullopt;
     }
 
     return it->second;
@@ -129,9 +133,9 @@ class FakeNearbyConnectionsManager
   void HandleStartAdvertisingCallback(ConnectionsStatus status);
   void HandleStopAdvertisingCallback(ConnectionsStatus status);
 
-  raw_ptr<IncomingConnectionListener, DanglingUntriaged | ExperimentalAsh>
-      advertising_listener_ = nullptr;
-  raw_ptr<DiscoveryListener, ExperimentalAsh> discovery_listener_ = nullptr;
+  raw_ptr<IncomingConnectionListener, DanglingUntriaged> advertising_listener_ =
+      nullptr;
+  raw_ptr<DiscoveryListener> discovery_listener_ = nullptr;
   base::WeakPtr<BandwidthUpgradeListener> bandwidth_upgrade_listener_;
   bool is_shutdown_ = false;
   DataUsage advertising_data_usage_ = DataUsage::kUnknown;
@@ -139,12 +143,12 @@ class FakeNearbyConnectionsManager
   std::set<std::string> upgrade_bandwidth_endpoint_ids_;
   std::map<std::string, std::string> endpoint_auth_tokens_;
   std::map<std::string, std::vector<uint8_t>> endpoint_raw_auth_tokens_;
-  raw_ptr<NearbyConnection, ExperimentalAsh> connection_ = nullptr;
+  raw_ptr<NearbyConnection> connection_ = nullptr;
   DataUsage connected_data_usage_ = DataUsage::kUnknown;
   base::RepeatingCallback<void(PayloadPtr,
                                base::WeakPtr<PayloadStatusListener>)>
       send_payload_callback_;
-  absl::optional<std::vector<uint8_t>> advertising_endpoint_info_;
+  std::optional<std::vector<uint8_t>> advertising_endpoint_info_;
   std::set<std::string> disconnected_endpoints_;
   std::set<int64_t> canceled_payload_ids_;
   bool capture_next_stop_advertising_callback_ = false;

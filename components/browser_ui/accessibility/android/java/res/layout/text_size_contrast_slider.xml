@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Copyright 2023 The Chromium Authors. All rights reserved.
+     Use of this source code is governed by a BSD-style license that can be
+     found in the LICENSE file. -->
+
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/text_size_contrast_view_container"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:elevation="@dimen/page_zoom_view_elevation"
+    android:gravity="center"
+    android:orientation="horizontal" >
+
+  <org.chromium.ui.widget.ChromeImageButton
+      android:id="@+id/text_size_contrast_decrease_zoom_button"
+      android:layout_width="@dimen/min_touch_target_size"
+      android:layout_height="@dimen/min_touch_target_size"
+      android:src="@drawable/ic_remove"
+      android:visibility="gone"
+      android:background="@drawable/page_zoom_ripple"
+      android:tint="@color/default_icon_color_tint_list" />
+
+  <SeekBar
+      android:id="@+id/text_size_contrast_slider"
+      android:layout_weight="1"
+      android:layout_width="0dp"
+      android:layout_height="@dimen/min_touch_target_size"
+      android:visibility="gone"
+      android:contentDescription="@string/page_zoom_label" />
+
+  <org.chromium.ui.widget.ChromeImageButton
+      android:id="@+id/text_size_contrast_increase_zoom_button"
+      android:layout_width="@dimen/min_touch_target_size"
+      android:layout_height="@dimen/min_touch_target_size"
+      android:src="@drawable/ic_add"
+      android:visibility="gone"
+      android:background="@drawable/page_zoom_ripple"
+      android:tint="@color/default_icon_color_tint_list" />
+
+</LinearLayout>

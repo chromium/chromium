@@ -4,6 +4,8 @@
 
 #include "chromecast/cast_core/runtime/browser/grpc_resource_data_source.h"
 
+#include <string_view>
+
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
@@ -92,7 +94,7 @@ void GrpcResourceDataSource::OnWebUiResourceReceived(
 }
 
 void GrpcResourceDataSource::ReadResourceFile(
-    base::StringPiece resource_file_path,
+    std::string_view resource_file_path,
     content::URLDataSource::GotDataCallback callback) {
   DCHECK(task_runner_->RunsTasksInCurrentSequence());
 

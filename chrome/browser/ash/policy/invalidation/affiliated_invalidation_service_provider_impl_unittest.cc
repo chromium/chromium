@@ -94,12 +94,11 @@ class FakeConsumer : public AffiliatedInvalidationServiceProvider::Consumer {
   const invalidation::InvalidationService* GetInvalidationService() const;
 
  private:
-  raw_ptr<AffiliatedInvalidationServiceProviderImpl, ExperimentalAsh> provider_;
+  raw_ptr<AffiliatedInvalidationServiceProviderImpl> provider_;
   invalidation::FakeInvalidationHandler invalidation_handler_;
 
   int invalidation_service_set_count_ = 0;
-  raw_ptr<invalidation::InvalidationService,
-          DanglingUntriaged | ExperimentalAsh>
+  raw_ptr<invalidation::InvalidationService, DanglingUntriaged>
       invalidation_service_ = nullptr;
 };
 
@@ -146,18 +145,15 @@ class AffiliatedInvalidationServiceProviderImplTest : public testing::Test {
                                  bool is_affiliated);
   std::unique_ptr<AffiliatedInvalidationServiceProviderImpl> provider_;
   std::unique_ptr<FakeConsumer> consumer_;
-  raw_ptr<invalidation::InvalidationService,
-          DanglingUntriaged | ExperimentalAsh>
+  raw_ptr<invalidation::InvalidationService, DanglingUntriaged>
       device_invalidation_service_;
-  raw_ptr<invalidation::FakeInvalidationService,
-          DanglingUntriaged | ExperimentalAsh>
+  raw_ptr<invalidation::FakeInvalidationService, DanglingUntriaged>
       profile_invalidation_service_;
 
  private:
   content::BrowserTaskEnvironment task_environment_;
   data_decoder::test::InProcessDataDecoder in_process_data_decoder_;
-  raw_ptr<ash::FakeChromeUserManager, DanglingUntriaged | ExperimentalAsh>
-      fake_user_manager_;
+  raw_ptr<ash::FakeChromeUserManager, DanglingUntriaged> fake_user_manager_;
   user_manager::ScopedUserManager user_manager_enabler_;
   ash::ScopedCrosSettingsTestHelper cros_settings_test_helper_;
   network::TestURLLoaderFactory test_url_loader_factory_;
@@ -173,8 +169,7 @@ FakeConsumer::FakeConsumer(AffiliatedInvalidationServiceProviderImpl* provider,
 
 FakeConsumer::~FakeConsumer() {
   if (invalidation_service_) {
-    invalidation_service_->UnregisterInvalidationHandler(
-        &invalidation_handler_);
+    invalidation_service_->RemoveObserver(&invalidation_handler_);
   }
   provider_->UnregisterConsumer(this);
 
@@ -186,8 +181,7 @@ void FakeConsumer::OnInvalidationServiceSet(
   ++invalidation_service_set_count_;
 
   if (invalidation_service_) {
-    invalidation_service_->UnregisterInvalidationHandler(
-        &invalidation_handler_);
+    invalidation_service_->RemoveObserver(&invalidation_handler_);
   }
 
   invalidation_service_ = invalidation_service;
@@ -198,7 +192,7 @@ void FakeConsumer::OnInvalidationServiceSet(
     // chance to unregister their invalidation handlers. Register an
     // invalidation handler so that |invalidation_service| CHECK()s in its
     // destructor if this regresses.
-    invalidation_service_->RegisterInvalidationHandler(&invalidation_handler_);
+    invalidation_service_->AddObserver(&invalidation_handler_);
   }
 }
 
@@ -270,7 +264,7 @@ Profile* AffiliatedInvalidationServiceProviderImplTest::LogInAndReturnProfile(
   TestingProfile* profile = profile_manager_.CreateTestingProfile(user_id);
   AccountId account_id = AccountId::FromUserEmail(user_id);
   fake_user_manager_->AddUserWithAffiliationAndTypeAndProfile(
-      account_id, is_affiliated, user_manager::USER_TYPE_REGULAR, profile);
+      account_id, is_affiliated, user_manager::UserType::kRegular, profile);
   session_manager_.NotifyUserProfileLoaded(account_id);
   return profile;
 }

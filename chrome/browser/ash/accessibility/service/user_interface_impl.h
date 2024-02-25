@@ -25,11 +25,24 @@ class UserInterfaceImpl : public ax::mojom::UserInterface {
   void Bind(mojo::PendingReceiver<ax::mojom::UserInterface> ui_receiver);
 
   // ax::mojom::UserInterface:
+  void DarkenScreen(bool enabled) override;
+  void OpenSettingsSubpage(const std::string& subpage) override;
+  void ShowConfirmationDialog(const std::string& title,
+                              const std::string& description,
+                              const std::optional<std::string>& cancel_name,
+                              ShowConfirmationDialogCallback callback) override;
   void SetFocusRings(std::vector<ax::mojom::FocusRingInfoPtr> focus_rings,
                      ax::mojom::AssistiveTechnologyType at_type) override;
+  void SetHighlights(const std::vector<gfx::Rect>& rects,
+                     SkColor color) override;
+  void SetVirtualKeyboardVisible(bool is_visible) override;
 
  private:
+  void OnDialogResult(bool confirmed);
+  ShowConfirmationDialogCallback show_confirmation_dialog_callback_;
   mojo::ReceiverSet<ax::mojom::UserInterface> ui_receivers_;
+
+  base::WeakPtrFactory<UserInterfaceImpl> weak_factory_{this};
 };
 
 }  // namespace ash

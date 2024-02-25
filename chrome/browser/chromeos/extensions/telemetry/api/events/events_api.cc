@@ -4,6 +4,8 @@
 
 #include "chrome/browser/chromeos/extensions/telemetry/api/events/events_api.h"
 
+#include <optional>
+
 #include "base/check.h"
 #include "base/functional/bind.h"
 #include "build/chromeos_buildflags.h"
@@ -14,7 +16,6 @@
 #include "chromeos/crosapi/mojom/telemetry_extension_exception.mojom.h"
 #include "content/public/browser/browser_context.h"
 #include "mojo/public/cpp/bindings/remote.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -34,13 +35,7 @@ namespace chromeos {
 
 namespace {
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
 const char kKeyboardDiagnosticsUrl[] = "chrome://diagnostics?input";
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-const char kKeyboardDiagnosticsUrl[] = "os://diagnostics?input";
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 
 namespace cx_events = ::chromeos::api::os_events;
 namespace crosapi = ::crosapi::mojom;
@@ -77,7 +72,7 @@ bool EventsApiFunctionBase::IsCrosApiAvailable() {
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 
 template <class Params>
-absl::optional<Params> EventsApiFunctionBase::GetParams() {
+std::optional<Params> EventsApiFunctionBase::GetParams() {
   auto params = Params::Create(args());
   if (!params) {
     SetBadMessage();
@@ -110,24 +105,20 @@ void OsEventsIsEventSupportedFunction::OnEventManagerResult(
   }
 
   switch (status->which()) {
-    case crosapi::internal::TelemetryExtensionSupportStatus_Data::
-        TelemetryExtensionSupportStatus_Tag::kUnmappedUnionField:
+    case crosapi::TelemetryExtensionSupportStatus::Tag::kUnmappedUnionField:
       Respond(Error("API internal error."));
       break;
-    case crosapi::internal::TelemetryExtensionSupportStatus_Data::
-        TelemetryExtensionSupportStatus_Tag::kException:
+    case crosapi::TelemetryExtensionSupportStatus::Tag::kException:
       Respond(Error(status->get_exception()->debug_message));
       break;
-    case crosapi::internal::TelemetryExtensionSupportStatus_Data::
-        TelemetryExtensionSupportStatus_Tag::kSupported: {
+    case crosapi::TelemetryExtensionSupportStatus::Tag::kSupported: {
       cx_events::EventSupportStatusInfo success;
       success.status = cx_events::EventSupportStatus::kSupported;
       Respond(
           ArgumentList(cx_events::IsEventSupported::Results::Create(success)));
       break;
     }
-    case crosapi::internal::TelemetryExtensionSupportStatus_Data::
-        TelemetryExtensionSupportStatus_Tag::kUnsupported:
+    case crosapi::TelemetryExtensionSupportStatus::Tag::kUnsupported:
       cx_events::EventSupportStatusInfo result;
       result.status = cx_events::EventSupportStatus::kUnsupported;
 
@@ -161,6 +152,9 @@ void OsEventsStartCapturingEventsFunction::RunIfAllowed() {
       break;
     case EventManager::kAppUiClosed:
       Respond(Error("Companion app UI is not open."));
+      break;
+    case EventManager::kAppUiNotFocused:
+      Respond(Error("Companion app UI is not focused."));
       break;
   }
 }

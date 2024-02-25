@@ -20,6 +20,8 @@
 // Version 3: Include recognition mode in request config.
 // Version 4: Include mask offensive words mode in request config.
 // Version 5: Include speaker change detection in request config.
+// Version 6: Include logging inclusion in request config.
+// Version 7: Include multilang fields in request config, and langid responses.
 module chromeos.machine_learning.mojom;
 
 import "mojo/public/mojom/base/time.mojom";
@@ -36,6 +38,19 @@ enum OptionalBool {
 enum SodaRecognitionMode {
   [Default] kCaption,
   kIme,
+};
+
+[Stable]
+struct SodaMultilangConfig {
+  // Rewind the audio buffer (to the end of the previous final) if SODA decides
+  // to switch the recognizer when a new language is detected. The language
+  // detection has a delay between the spoken language changed and the new
+  // language detected. The audio buffer rewind will try to cover this gap.
+  bool rewind_when_switching_language = true;
+  // locale to languagepack map for additional languages.
+  // Key is lowercased locale e.g. "en-us"
+  // Value is directory for the languagepack dlc path to use.
+  map<string, string> locale_to_language_pack_map;
 };
 
 // The configuration used to load Soda recognizer.
@@ -60,6 +75,9 @@ struct SodaConfig {
   [MinVersion=4] bool mask_offensive_words = false;
   // Whether to detect speaker changes in the transcript from model.
   [MinVersion=5] bool speaker_change_detection = false;
+  // Print more logging output in ML Service.
+  [MinVersion=6] bool include_logging_output = false;
+  [MinVersion=7] SodaMultilangConfig? multi_lang_config;
 };
 
 // From the endpointer, What kind of endpointer event to record.
@@ -172,6 +190,35 @@ struct AudioLevelEvent {
   float audio_level;
 };
 
+[Stable, Extensible]
+enum AsrSwitchResult {
+  // No switch is attempted when:
+  // 1. Multilang is disabled.
+  // 2. top_language_confidence did not meet the sensitivity threshold.
+  // 3. the top detected language is the same as the one currently being
+  // transcribed.
+  // 4. The LangId results were jittery and this event was ignored for being
+  // too short.
+  [Default] DEFAULT_NO_SWITCH = 0,
+  // ASR successfully switched to this locale.
+  SWITCH_SUCCEEDED = 1,
+  // ASR attempted to switch to this locale, but could not load the provided
+  // LP.
+  SWITCH_FAILED = 2,
+  // ASR did not attempt to switch because no LP was provided for the locale,
+  // but top_language_confidence met the sensitivity threshold.
+  SWITCH_SKIPPED_NO_LP = 3,
+};
+
+[Stable]
+struct LangIdEvent {
+  string language;
+  // Confidence level, exactly as per input protocol buffer value.
+  int32 confidence_level;
+  // converted enum value, exactly as per input protocol buffer value.
+  AsrSwitchResult asr_switch_result;
+};
+
 // This essentially mirrors the subset of SODA's SodaEvent proto we will
 // support.
 [Stable]
@@ -180,6 +227,7 @@ union SpeechRecognizerEvent {
   PartialResult partial_result;
   EndpointerEvent endpointer_event;
   FinalResult final_result;
+  [MinVersion=7] LangIdEvent langid_event;
 };
 
 // This interface is called upon by the SodaRecognizer. Implemented by
@@ -210,7 +258,7 @@ interface SodaRecognizer {
   Stop@1();
 
   // Instruct SODA to start processing. Noop if already
-  // processing. When Stopped, causes a SodAclient::OnStart callback.
+  // processing. When Stopped, causes a SodaClient::OnStart callback.
   Start@2();
 
   // Instruct SODA to stop processing after all queued audio is

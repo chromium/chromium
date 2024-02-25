@@ -1,0 +1,19 @@
+{
+  "name": "Borderless Isolated Web App",
+  "version": "1.0.0",
+  "id": "/",
+  "scope": "/",
+  "start_url": "/index.html",
+  "display": "standalone",
+  "display_override": ["borderless"],
+  "permissions_policy": {
+    "window-management": [ "*" ]
+  },
+  "icons": [
+    {
+      "src": "/256x256-green.png",
+      "sizes": "256x256",
+      "type": "image/png"
+    }
+  ]
+}

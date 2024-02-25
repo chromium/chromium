@@ -70,7 +70,7 @@ void FakeMultiDeviceSetupClient::InvokePendingSetHostDeviceCallback(
 void FakeMultiDeviceSetupClient::InvokePendingSetFeatureEnabledStateCallback(
     mojom::Feature expected_feature,
     bool expected_enabled,
-    const absl::optional<std::string>& expected_auth_token,
+    const std::optional<std::string>& expected_auth_token,
     bool success) {
   auto& tuple = set_feature_enabled_state_args_queue_.front();
   DCHECK_EQ(expected_feature, std::get<0>(tuple));
@@ -126,7 +126,7 @@ FakeMultiDeviceSetupClient::GetHostStatus() const {
 void FakeMultiDeviceSetupClient::SetFeatureEnabledState(
     mojom::Feature feature,
     bool enabled,
-    const absl::optional<std::string>& auth_token,
+    const std::optional<std::string>& auth_token,
     mojom::MultiDeviceSetup::SetFeatureEnabledStateCallback callback) {
   set_feature_enabled_state_args_queue_.emplace(feature, enabled, auth_token,
                                                 std::move(callback));

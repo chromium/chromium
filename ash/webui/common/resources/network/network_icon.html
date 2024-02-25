@@ -7,7 +7,7 @@
   }
 
   #icon {
-    background: var(--cros-icon-color-primary, rgba(0, 0, 0, 0.65));
+    background: var(--network-icon-fill-color, var(--cros-icon-color-primary, rgba(0, 0, 0, 0.65)));
     height: 20px;
     width: 20px;
   }
@@ -196,6 +196,10 @@
 
   #icon.cellular-locked {
     -webkit-mask: url(chrome://resources/ash/common/network/cellular_locked.svg);
+  }
+
+  #icon.cellular-carrier-locked {
+    -webkit-mask: url(chrome://resources/ash/common/network/cellular_carrier_locked.svg);
   }
 
   #icon.cellular-connecting {

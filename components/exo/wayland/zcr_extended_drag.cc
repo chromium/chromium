@@ -64,7 +64,7 @@ class ZcrExtendedDragSourceDelegate : public ExtendedDragSource::Delegate {
   void OnDataSourceDestroying() override { delete this; }
 
  private:
-  const raw_ptr<wl_resource, ExperimentalAsh> resource_;
+  const raw_ptr<wl_resource> resource_;
   const uint32_t settings_;
 };
 
@@ -106,7 +106,7 @@ class ZcrExtendedOfferDelegate : public ExtendedDragOffer::Delegate {
   void OnDataOfferDestroying() override { delete this; }
 
  private:
-  const raw_ptr<wl_resource, ExperimentalAsh> resource_;
+  const raw_ptr<wl_resource> resource_;
 };
 
 void extended_drag_offer_destroy(wl_client* client, wl_resource* resource) {

@@ -15,7 +15,7 @@
 #include "base/scoped_observation.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
-#include "chrome/browser/performance_manager/public/user_tuning/user_performance_tuning_manager.h"
+#include "chrome/browser/ui/performance_controls/tab_resource_usage_collector.h"
 #include "chrome/browser/ui/views/tabs/tab_slot_controller.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "ui/events/event.h"
@@ -34,9 +34,8 @@ class Tab;
 class TabStrip;
 
 // Controls how hover cards are shown and hidden for tabs.
-class TabHoverCardController
-    : public views::ViewObserver,
-      performance_manager::user_tuning::UserPerformanceTuningManager::Observer {
+class TabHoverCardController : public views::ViewObserver,
+                               public TabResourceUsageCollector::Observer {
  public:
   explicit TabHoverCardController(TabStrip* tab_strip);
   ~TabHoverCardController() override;
@@ -72,7 +71,13 @@ class TabHoverCardController
   FRIEND_TEST_ALL_PREFIXES(TabHoverCardControllerTest, ShowPreviewsForTab);
   FRIEND_TEST_ALL_PREFIXES(TabHoverCardControllerTest, DisablePreviewsForTab);
   FRIEND_TEST_ALL_PREFIXES(TabHoverCardFadeFooterInteractiveUiTest,
-                           HoverCardFooterShowsMemoryUsage);
+                           HoverCardFooterMemoryUsagePrefEnabled);
+  FRIEND_TEST_ALL_PREFIXES(TabHoverCardFadeFooterInteractiveUiTest,
+                           HoverCardFooterMemoryUsagePrefDisabled);
+  FRIEND_TEST_ALL_PREFIXES(TabHoverCardControllerTest,
+                           HidePreviewsForDiscardedTab);
+  FRIEND_TEST_ALL_PREFIXES(TabHoverCardControllerTest,
+                           ShowPreviewsForDiscardedTabWithThumbnail);
   class EventSniffer;
 
   enum ThumbnailWaitState {
@@ -86,8 +91,8 @@ class TabHoverCardController
   void OnViewVisibilityChanged(views::View* observed_view,
                                views::View* starting_view) override;
 
-  // UserPerformanceTuningManager::Observer:
-  void OnMemoryMetricsRefreshed() override;
+  // TabResourceUsageCollector::Observer:
+  void OnTabResourceMetricsRefreshed() override;
 
   bool ArePreviewsEnabled() const;
 

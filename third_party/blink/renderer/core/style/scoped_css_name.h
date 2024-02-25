@@ -31,7 +31,7 @@ class CORE_EXPORT ScopedCSSName : public GarbageCollected<ScopedCSSName> {
   }
 
   const AtomicString& GetName() const { return name_; }
-  const TreeScope* GetTreeScope() const { return tree_scope_; }
+  const TreeScope* GetTreeScope() const { return tree_scope_.Get(); }
 
   bool operator==(const ScopedCSSName& other) const {
     return name_ == other.name_ && tree_scope_ == other.tree_scope_;

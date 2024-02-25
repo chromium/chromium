@@ -14,11 +14,11 @@ import './policy_table.js';
 import {addWebUiListener, sendWithPromise} from 'chrome://resources/js/cr.js';
 import {FocusOutlineManager} from 'chrome://resources/js/focus_outline_manager.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
-import {getRequiredElement} from 'chrome://resources/js/util_ts.js';
+import {getRequiredElement} from 'chrome://resources/js/util.js';
 
-import {Policy} from './policy_row.js';
-import {PolicyTableElement, PolicyTableModel} from './policy_table.js';
-import {Status, StatusBoxElement} from './status_box.js';
+import type {Policy} from './policy_row.js';
+import type {PolicyTableElement, PolicyTableModel} from './policy_table.js';
+import type {Status, StatusBoxElement} from './status_box.js';
 
 export interface PolicyNamesResponse {
   [id: string]: {name: string, policyNames: NonNullable<string[]>};
@@ -50,6 +50,14 @@ export class Page {
    * Main initialization function. Called by the browser on page load.
    */
   initialize() {
+    // The default path is loaded when one path is not supported, so simple
+    // redirect to the home path
+    if (!loadTimeData.getString('acceptedPaths')
+             .split('|')
+             .includes(window.location.pathname)) {
+      window.history.replaceState({}, '', '/');
+    }
+
     FocusOutlineManager.forDocument(document);
 
     this.mainSection = getRequiredElement('main-section');
@@ -77,8 +85,7 @@ export class Page {
         getRequiredElement('reload-policies') as HTMLButtonElement;
     reloadPoliciesButton.onclick = () => {
       reloadPoliciesButton!.disabled = true;
-      getRequiredElement('screen-reader-message').textContent =
-          loadTimeData.getString('loadingPolicies');
+      this.createToast(loadTimeData.getString('reloadingPolicies'));
       sendWithPromise('reloadPolicies');
     };
 
@@ -118,18 +125,17 @@ export class Page {
     uploadReportButton.style.display = 'none';
     uploadReportButton.onclick = () => {
       uploadReportButton.disabled = true;
-      getRequiredElement('screen-reader-message').textContent =
-          loadTimeData.getString('reportUploading');
+      this.createToast(loadTimeData.getString('reportUploading'));
       sendWithPromise('uploadReport').then(() => {
         uploadReportButton.disabled = false;
-        getRequiredElement('screen-reader-message').textContent =
-            loadTimeData.getString('reportUploaded');
+        this.createToast(loadTimeData.getString('reportUploaded'));
       });
     };
     // </if>
 
     getRequiredElement('copy-policies').onclick = () => {
       sendWithPromise('copyPoliciesJSON');
+      this.createToast(loadTimeData.getString('copyPoliciesDone'));
     };
 
     getRequiredElement('show-unset').onchange = () => {
@@ -202,14 +208,40 @@ export class Page {
     this.reloadPoliciesDone();
   }
 
+  /**
+   * Creates a toast notification with 2 second timeout at bottom of the page.
+   * The notification is also announced to screen readers.
+   */
+  createToast(content: string): void {
+    const toast = document.createElement('div');
+    toast.textContent = content;
+    toast.classList.add('toast');
+    toast.setAttribute('role', 'alert');
+    const container = getRequiredElement('toast-container');
+    container.appendChild(toast);
+
+    setTimeout(() => {
+      container.removeChild(toast);
+    }, 2000);
+  }
+
   // Triggers the download of the policies as a JSON file.
   downloadJson(json: string) {
-    const blob = new Blob([json], {type: 'application/json'});
-    const blobUrl = URL.createObjectURL(blob);
+    const jsonObject = JSON.parse(json);
+    const timestamp = new Date(Date.now()).toLocaleString(undefined, {
+      dateStyle: 'short',
+      timeStyle: 'long',
+    });
 
+    jsonObject.policyExportTime = timestamp;
+    const blob = new Blob(
+        [JSON.stringify(jsonObject, null, 3)], {type: 'application/json'});
+    const blobUrl = URL.createObjectURL(blob);
     const link = document.createElement('a');
     link.href = blobUrl;
-    link.download = 'policies.json';
+    // Regex matches GMT timezone pattern, such as "GMT+5:30"
+    link.download =
+        `policies_${timestamp.replace(/ GMT[+-]\d+:\d+/g, '')}.json`;
 
     document.body.appendChild(link);
 
@@ -217,6 +249,7 @@ export class Page {
         'click', {bubbles: true, cancelable: true, view: window}));
 
     document.body.removeChild(link);
+    this.createToast(loadTimeData.getString('exportPoliciesDone'));
   }
 
   createOrUpdatePolicyTable(dataModel: PolicyTableModel) {
@@ -262,10 +295,12 @@ export class Page {
    * policies values has completed.
    */
   reloadPoliciesDone() {
-    (getRequiredElement('reload-policies') as HTMLButtonElement).disabled =
-        false;
-    getRequiredElement('screen-reader-message').textContent =
-        loadTimeData.getString('loadPoliciesDone');
+    const reloadButton =
+        getRequiredElement('reload-policies') as HTMLButtonElement;
+    if (reloadButton!.disabled) {
+      reloadButton!.disabled = false;
+      this.createToast(loadTimeData.getString('reloadPoliciesDone'));
+    }
   }
 
   // <if expr="not is_chromeos">

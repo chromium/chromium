@@ -78,7 +78,7 @@ void UpdateEnabledStateByUserTypeUMA() {
     return;
   }
 
-  absl::optional<bool> enabled_state;
+  std::optional<bool> enabled_state;
   if (auto* stability_metrics_manager = StabilityMetricsManager::Get())
     enabled_state = stability_metrics_manager->GetArcEnabledState();
 
@@ -101,6 +101,10 @@ void UpdateOptInFlowResultUMA(OptInFlowResult result) {
 
 void UpdateOptInNetworkErrorActionUMA(OptInNetworkErrorActionType type) {
   base::UmaHistogramEnumeration("Arc.OptInNetworkErrorAction", type);
+}
+
+void UpdateOptinTosLoadResultUMA(bool success) {
+  base::UmaHistogramBoolean("Arc.OptinTosLoadResult", success);
 }
 
 void UpdateProvisioningStatusUMA(ProvisioningStatus status,

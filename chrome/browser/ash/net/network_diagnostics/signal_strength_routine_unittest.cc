@@ -24,7 +24,8 @@ constexpr int kBadWiFiSignal = 20;
 class SignalStrengthRoutineTest : public ::testing::Test {
  public:
   SignalStrengthRoutineTest() {
-    signal_strength_routine_ = std::make_unique<SignalStrengthRoutine>();
+    signal_strength_routine_ = std::make_unique<SignalStrengthRoutine>(
+        mojom::RoutineCallSource::kDiagnosticsUI);
   }
 
   SignalStrengthRoutineTest(const SignalStrengthRoutineTest&) = delete;

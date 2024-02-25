@@ -18,7 +18,7 @@ namespace ui {
 
 namespace {
 
-void OnFrameScalingFinished(GrabWindowSnapshotAsyncCallback callback,
+void OnFrameScalingFinished(GrabSnapshotImageCallback callback,
                             const SkBitmap& scaled_bitmap) {
   std::move(callback).Run(gfx::Image::CreateFrom1xBitmap(scaled_bitmap));
 }
@@ -35,7 +35,7 @@ SkBitmap ScaleBitmap(const SkBitmap& input_bitmap,
 }  // namespace
 
 void SnapshotAsync::ScaleCopyOutputResult(
-    GrabWindowSnapshotAsyncCallback callback,
+    GrabSnapshotImageCallback callback,
     const gfx::Size& target_size,
     std::unique_ptr<viz::CopyOutputResult> result) {
   auto scoped_bitmap = result->ScopedAccessSkBitmap();
@@ -56,7 +56,7 @@ void SnapshotAsync::ScaleCopyOutputResult(
 }
 
 void SnapshotAsync::RunCallbackWithCopyOutputResult(
-    GrabWindowSnapshotAsyncCallback callback,
+    GrabSnapshotImageCallback callback,
     std::unique_ptr<viz::CopyOutputResult> result) {
   auto scoped_bitmap = result->ScopedAccessSkBitmap();
   auto bitmap = scoped_bitmap.GetOutScopedBitmap();

@@ -2,12 +2,22 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {SearchData, SearchLocation, SearchOptions, SearchRecency, State} from '../../externs/ts/state.js';
-import {addReducer, BaseAction, Reducer, ReducersMap} from '../../lib/base_store.js';
-import {Action, ActionType} from '../actions.js';
+import {Slice} from '../../lib/base_store.js';
+import {type SearchData, SearchLocation, type SearchOptions, SearchRecency, type State} from '../../state/state.js';
 
-/** Map of actions to reducers for the search slice. */
-export const searchReducersMap: ReducersMap<State, Action> = new Map();
+/**
+ * @fileoverview Search slice of the store.
+ */
+
+const slice = new Slice<State, State['search']>('search');
+export {slice as searchSlice};
+
+/**
+ * Returns if the given search data represents empty (cleared) search.
+ */
+export function isSearchEmpty(search: SearchData): boolean {
+  return Object.values(search).every(f => f === undefined);
+}
 
 /**
  * Helper function that does a deep comparison between two SearchOptions.
@@ -27,11 +37,7 @@ function optionsChanged(
       fresh.fileCategory !== stored.fileCategory;
 }
 
-/** Action to update the search state. */
-export interface SearchAction extends BaseAction {
-  type: ActionType.SEARCH;
-  payload: SearchData;
-}
+const setSearchParameters = slice.addReducer('set', searchReducer);
 
 function searchReducer(state: State, payload: SearchData): State {
   const blankSearch = {
@@ -41,11 +47,15 @@ function searchReducer(state: State, payload: SearchData): State {
   };
   // Special case: if none of the fields are set, the action clears the search
   // state in the store.
-  if (Object.values(payload).every(field => field === undefined)) {
-    return {
-      ...state,
-      search: blankSearch,
-    };
+  if (isSearchEmpty(payload)) {
+    // Only change the state if the stored value has some defined values.
+    if (state.search && !isSearchEmpty(state.search)) {
+      return {
+        ...state,
+        search: blankSearch,
+      };
+    }
+    return state;
   }
 
   const currentSearch = state.search || blankSearch;
@@ -69,24 +79,20 @@ function searchReducer(state: State, payload: SearchData): State {
   return changed ? {...state, search} : state;
 }
 
-const search = addReducer(
-    ActionType.SEARCH, searchReducer as Reducer<State, Action>,
-    searchReducersMap);
-
 /**
  * Generates a search action based on the supplied data.
  * Query, status and options can be adjusted independently of each other.
  */
-export const updateSearch = (data: SearchData) => search({
+export const updateSearch = (data: SearchData) => setSearchParameters({
   query: data.query,
   status: data.status,
   options: data.options,
 });
 
 /**
- * Clears all search settings.
+ * Create action to clear all search settings.
  */
-export const clearSearch = () => search({
+export const clearSearch = () => setSearchParameters({
   query: undefined,
   status: undefined,
   options: undefined,
@@ -100,5 +106,5 @@ export function getDefaultSearchOptions(): SearchOptions {
     location: SearchLocation.THIS_FOLDER,
     recency: SearchRecency.ANYTIME,
     fileCategory: chrome.fileManagerPrivate.FileCategory.ALL,
-  } as SearchOptions;
+  };
 }

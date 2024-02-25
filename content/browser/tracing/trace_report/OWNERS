@@ -1,0 +1,8 @@
+aattar@google.com
+etiennep@chromium.org
+file://base/trace_event/OWNERS
+
+per-file *.mojom=set noparent
+per-file *.mojom=file://ipc/SECURITY_OWNERS
+per-file *_mojom_traits*.*=set noparent
+per-file *_mojom_traits*.*=file://ipc/SECURITY_OWNERS

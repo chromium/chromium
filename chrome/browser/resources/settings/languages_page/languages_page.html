@@ -25,6 +25,11 @@
     display: none;
   }
 
+  #languagesSectionHeader {
+    padding-bottom: 12px;
+    padding-top: 12px;
+  }
+
 <if expr="is_win">
   .explain-selected {
     color: var(--google-green-700);
@@ -57,9 +62,10 @@
 </style>
 <div id="languagesSection">
   <div class="cr-row continuation">
-    <h2 class="flex">
-      $i18n{preferredLanguagesDesc}
-    </h2>
+    <div id="languagesSectionHeader" class="flex">
+      <div>$i18n{preferredLanguagesHeader}</div>
+      <div class="secondary">$i18n{preferredLanguagesDesc}</div>
+    </div>
     <cr-button id="addLanguages" class="header-aligned-button"
         disabled="[[!canEnableSomeSupportedLanguage_(languages)]]"
         on-click="onAddLanguagesClick_">

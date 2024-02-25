@@ -12,9 +12,9 @@
 namespace ash {
 
 class ASH_EXPORT Switch : public views::ToggleButton {
- public:
-  METADATA_HEADER(Switch);
+  METADATA_HEADER(Switch, views::ToggleButton)
 
+ public:
   explicit Switch(PressedCallback callback = PressedCallback());
   Switch(const Switch&) = delete;
   Switch& operator=(const Switch&) = delete;

@@ -9,5 +9,5 @@
 executable("test_simple_rust_exe") {
   crate_root = "main.rs"
   sources = [ crate_root ]
-  deps = [ "//build/rust/std:stdlib_for_rustc" ]
+  deps = [ "//build/rust/std" ]
 }

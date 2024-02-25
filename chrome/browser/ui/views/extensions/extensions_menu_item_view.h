@@ -30,9 +30,9 @@ class ToggleButton;
 // information about the extension, a button to pin the extension to the toolbar
 // and a button for accessing the associated context menu.
 class ExtensionMenuItemView : public views::FlexLayoutView {
- public:
-  METADATA_HEADER(ExtensionMenuItemView);
+  METADATA_HEADER(ExtensionMenuItemView, views::FlexLayoutView)
 
+ public:
   enum class SiteAccessToggleState {
     // Button is not visible.
     kHidden,

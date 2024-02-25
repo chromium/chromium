@@ -1,0 +1,11 @@
+include_rules = [
+  "+ios/chrome/browser/browser_state/model/chrome_browser_state_io_data.h",
+]
+
+specific_include_rules = {
+  # web::HttpServer is deprecated in favor of net::EmbeddedTestServer.
+  # TODO:(crbug.com/891834) Remove this exception.
+  "cookies_egtest\.mm": [
+    "+ios/web/public/test/http_server",
+  ],
+}

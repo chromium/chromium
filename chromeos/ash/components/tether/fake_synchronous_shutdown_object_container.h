@@ -53,10 +53,10 @@ class FakeSynchronousShutdownObjectContainer
  private:
   base::OnceClosure deletion_callback_;
 
-  raw_ptr<ActiveHost, ExperimentalAsh> active_host_ = nullptr;
-  raw_ptr<HostScanCache, ExperimentalAsh> host_scan_cache_ = nullptr;
-  raw_ptr<HostScanScheduler, ExperimentalAsh> host_scan_scheduler_ = nullptr;
-  raw_ptr<TetherDisconnector, ExperimentalAsh> tether_disconnector_ = nullptr;
+  raw_ptr<ActiveHost> active_host_ = nullptr;
+  raw_ptr<HostScanCache> host_scan_cache_ = nullptr;
+  raw_ptr<HostScanScheduler> host_scan_scheduler_ = nullptr;
+  raw_ptr<TetherDisconnector> tether_disconnector_ = nullptr;
 };
 
 }  // namespace tether

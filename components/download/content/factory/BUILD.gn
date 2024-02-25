@@ -26,4 +26,6 @@ source_set("factory") {
     "//net",
     "//url",
   ]
+
+  configs += [ "//build/config/compiler:wexit_time_destructors" ]
 }

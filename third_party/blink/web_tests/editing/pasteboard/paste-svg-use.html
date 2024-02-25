@@ -35,4 +35,16 @@ selection_test(
   },
   '<div contenteditable><div><br></div><div>      <u title="</div><div>      </div><div>      ">asdasd|</div></div>',
   'Paste blocks data URI in SVG use element injection via <noscript>');
+
+// crbug.com/1490811
+selection_test(
+  '<div contenteditable>|</div>',
+  selection => {
+    selection.setClipboardData(
+      `<svg><use xlink:href="https://example.com/external.svg#xss" /></svg>` +
+      `<svg><use href="https://example.com/external.svg#xss" /></svg>`);
+    selection.document.execCommand('paste');
+  },
+  '<div contenteditable>|<svg></svg><svg></svg></div>',
+  'Paste blocks non-local hrefs in SVG use elements');
 </script>

@@ -10,11 +10,11 @@
  *
  */
 
-import 'chrome://resources/cr_elements/cr_shared_vars.css.js';
+import 'chrome://resources/ash/common/cr_elements/cr_shared_vars.css.js';
 import './pin_keyboard.js';
 
-import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
-import {assert, assertNotReached} from 'chrome://resources/js/assert_ts.js';
+import {I18nMixin} from 'chrome://resources/ash/common/cr_elements/i18n_mixin.js';
+import {assert, assertNotReached} from 'chrome://resources/js/assert.js';
 import {ConfigureResult, PinFactorEditor} from 'chrome://resources/mojo/chromeos/ash/services/auth_factor_config/public/mojom/auth_factor_config.mojom-webui.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
@@ -375,8 +375,13 @@ export class SetupPinKeyboardElement extends SetupPinKeyboardElementBase {
       case ConfigureResult.kFatalError:
         console.error('Failed to update pin');
         this.showProblem_(MessageType.INTERNAL_ERROR, ProblemType.ERROR);
+        // Enable submission again: We don't know why this failed, and perhaps
+        // submitting again resolves the issue.
         this.enableSubmit = true;
-        break;
+        // Do not reset state, close the dialog or generate a set-pin-done
+        // event -- this would lead the user to think that setting PIN was
+        // successful when it has actually failed.
+        return;
     }
 
     this.resetState();

@@ -1,0 +1,1200 @@
+diff --git a/third_party/private_membership/src/internal/BUILD b/third_party/private_membership/src/internal/BUILD
+deleted file mode 100644
+index b6e49dade5d6e..0000000000000
+--- a/third_party/private_membership/src/internal/BUILD
++++ /dev/null
+@@ -1,281 +0,0 @@
+-package(default_visibility = ["//:__subpackages__"])
+-
+-cc_library(
+-    name = "aes_ctr_256_with_fixed_iv",
+-    srcs = [
+-        "aes_ctr_256_with_fixed_iv.cc",
+-    ],
+-    hdrs = [
+-        "aes_ctr_256_with_fixed_iv.h",
+-    ],
+-    deps = [
+-        "@boringssl//:ssl",
+-        "@com_github_google_shell//shell_encryption:statusor_fork",
+-        "@com_google_absl//absl/strings",
+-    ],
+-)
+-
+-cc_test(
+-    name = "aes_ctr_256_with_fixed_iv_test",
+-    srcs = [
+-        "aes_ctr_256_with_fixed_iv_test.cc",
+-    ],
+-    deps = [
+-        ":aes_ctr_256_with_fixed_iv",
+-        "@boringssl//:ssl",
+-        "@com_github_google_googletest//:gtest_main",
+-        "@com_github_google_shell//shell_encryption/testing:status_is_fork",
+-        "@com_github_google_shell//shell_encryption/testing:status_testing",
+-        "@com_google_absl//absl/memory",
+-    ],
+-)
+-
+-cc_library(
+-    name = "crypto_utils",
+-    srcs = [
+-        "crypto_utils.cc",
+-    ],
+-    hdrs = [
+-        "crypto_utils.h",
+-    ],
+-    deps = [
+-        ":aes_ctr_256_with_fixed_iv",
+-        ":id_utils",
+-        "//private_membership/rlwe/client/proto:private_membership_cc_proto",
+-        "@com_github_google_private_join_and_compute//private_join_and_compute/crypto:bn_util",
+-        "@com_github_google_private_join_and_compute//private_join_and_compute/crypto:ec_commutative_cipher",
+-        "@com_github_google_shell//shell_encryption:statusor_fork",
+-        "@com_google_absl//absl/strings",
+-    ],
+-)
+-
+-cc_test(
+-    name = "crypto_utils_test",
+-    srcs = ["crypto_utils_test.cc"],
+-    deps = [
+-        ":aes_ctr_256_with_fixed_iv",
+-        ":crypto_utils",
+-        "//private_membership/rlwe/client/proto:private_membership_cc_proto",
+-        "@com_github_google_googletest//:gtest_main",
+-        "@com_github_google_shell//shell_encryption/testing:status_is_fork",
+-        "@com_github_google_shell//shell_encryption/testing:status_testing",
+-    ],
+-)
+-
+-cc_library(
+-    name = "id_utils",
+-    srcs = [
+-        "id_utils.cc",
+-    ],
+-    hdrs = [
+-        "id_utils.h",
+-    ],
+-    deps = [
+-        "@com_google_absl//absl/strings",
+-    ],
+-)
+-
+-cc_test(
+-    name = "id_utils_test",
+-    srcs = [
+-        "id_utils_test.cc",
+-    ],
+-    deps = [
+-        ":id_utils",
+-        "@com_github_google_googletest//:gtest_main",
+-    ],
+-)
+-
+-cc_library(
+-    name = "oprf_utils",
+-    srcs = [
+-        "oprf_utils.cc",
+-    ],
+-    hdrs = [
+-        "oprf_utils.h",
+-    ],
+-    deps = [
+-        "//private_membership/rlwe/client/proto:private_membership_cc_proto",
+-        "@com_github_google_private_join_and_compute//private_join_and_compute/crypto:ec_commutative_cipher",
+-        "@com_github_google_shell//shell_encryption:statusor_fork",
+-    ],
+-)
+-
+-cc_test(
+-    name = "oprf_utils_test",
+-    srcs = [
+-        "oprf_utils_test.cc",
+-    ],
+-    deps = [
+-        ":oprf_utils",
+-        "@com_github_google_googletest//:gtest_main",
+-        "@com_github_google_private_join_and_compute//private_join_and_compute/crypto:ec_commutative_cipher",
+-        "@com_github_google_shell//shell_encryption/testing:status_is_fork",
+-        "@com_github_google_shell//shell_encryption/testing:status_testing",
+-    ],
+-)
+-
+-cc_library(
+-    name = "constants",
+-    hdrs = [
+-        "constants.h",
+-    ],
+-    deps = [
+-        "@boringssl//:ssl",
+-        "@com_github_google_shell//shell_encryption:montgomery",
+-        "@com_github_google_shell//shell_encryption/prng:chacha_prng",
+-        "@com_github_google_shell//shell_encryption/prng:single_thread_chacha_prng",
+-    ],
+-)
+-
+-cc_library(
+-    name = "encrypted_bucket_id",
+-    srcs = [
+-        "encrypted_bucket_id.cc",
+-    ],
+-    hdrs = [
+-        "encrypted_bucket_id.h",
+-    ],
+-    deps = [
+-        ":rlwe_id_utils",
+-        ":utils",
+-        "//private_membership/rlwe/client/cpp/internal:crypto_utils",
+-        "//private_membership/rlwe/client/proto:private_membership_rlwe_cc_proto",
+-        "@com_github_google_private_join_and_compute//private_join_and_compute/crypto:ec_commutative_cipher",
+-        "@com_github_google_shell//shell_encryption:statusor_fork",
+-        "@com_google_absl//absl/hash",
+-        "@com_google_absl//absl/strings",
+-    ],
+-)
+-
+-cc_test(
+-    name = "encrypted_bucket_id_test",
+-    srcs = [
+-        "encrypted_bucket_id_test.cc",
+-    ],
+-    deps = [
+-        ":encrypted_bucket_id",
+-        ":rlwe_id_utils",
+-        "//private_membership/rlwe/client/cpp/internal/testing:constants",
+-        "//private_membership/rlwe/client/proto:private_membership_rlwe_cc_proto",
+-        "@com_github_google_googletest//:gtest_main",
+-        "@com_github_google_shell//shell_encryption/testing:status_is_fork",
+-        "@com_github_google_shell//shell_encryption/testing:status_testing",
+-    ],
+-)
+-
+-cc_library(
+-    name = "hashed_bucket_id",
+-    srcs = [
+-        "hashed_bucket_id.cc",
+-    ],
+-    hdrs = [
+-        "hashed_bucket_id.h",
+-    ],
+-    deps = [
+-        ":rlwe_id_utils",
+-        ":utils",
+-        "//private_membership/rlwe/client/proto:private_membership_cc_proto",
+-        "//private_membership/rlwe/client/proto:private_membership_rlwe_cc_proto",
+-        "@com_github_google_private_join_and_compute//private_join_and_compute/crypto:ec_commutative_cipher",
+-        "@com_github_google_shell//shell_encryption:statusor_fork",
+-        "@com_google_absl//absl/hash",
+-        "@com_google_absl//absl/strings",
+-    ],
+-)
+-
+-cc_test(
+-    name = "hashed_bucket_id_test",
+-    srcs = [
+-        "hashed_bucket_id_test.cc",
+-    ],
+-    deps = [
+-        ":hashed_bucket_id",
+-        "//private_membership/rlwe/client/proto:private_membership_cc_proto",
+-        "//private_membership/rlwe/client/proto:private_membership_rlwe_cc_proto",
+-        "@com_github_google_googletest//:gtest_main",
+-        "@com_github_google_shell//shell_encryption/testing:status_is_fork",
+-        "@com_github_google_shell//shell_encryption/testing:status_testing",
+-    ],
+-)
+-
+-cc_library(
+-    name = "rlwe_id_utils",
+-    srcs = [
+-        "rlwe_id_utils.cc",
+-    ],
+-    hdrs = [
+-        "rlwe_id_utils.h",
+-    ],
+-    deps = [
+-        ":constants",
+-        "//private_membership/rlwe/client/cpp/internal:crypto_utils",
+-        "//private_membership/rlwe/client/proto:private_membership_cc_proto",
+-        "//private_membership/rlwe/client/proto:private_membership_rlwe_cc_proto",
+-        "@com_github_google_private_join_and_compute//private_join_and_compute/crypto:ec_commutative_cipher",
+-        "@com_github_google_shell//shell_encryption:statusor_fork",
+-        "@com_google_absl//absl/status",
+-        "@com_google_absl//absl/strings",
+-    ],
+-)
+-
+-cc_test(
+-    name = "rlwe_id_utils_test",
+-    srcs = ["rlwe_id_utils_test.cc"],
+-    deps = [
+-        ":constants",
+-        ":rlwe_id_utils",
+-        "//private_membership/rlwe/client/cpp/internal/testing:constants",
+-        "//private_membership/rlwe/client/proto:private_membership_cc_proto",
+-        "@com_github_google_googletest//:gtest_main",
+-        "@com_github_google_shell//shell_encryption/testing:status_is_fork",
+-        "@com_github_google_shell//shell_encryption/testing:status_testing",
+-        "@com_google_absl//absl/status",
+-    ],
+-)
+-
+-cc_library(
+-    name = "rlwe_params",
+-    srcs = [
+-        "rlwe_params.cc",
+-    ],
+-    hdrs = [
+-        "rlwe_params.h",
+-    ],
+-    deps = [
+-        ":constants",
+-        "//private_membership/rlwe/client/proto:private_membership_rlwe_cc_proto",
+-        "@com_github_google_shell//shell_encryption:context",
+-        "@com_github_google_shell//shell_encryption:error_params",
+-        "@com_github_google_shell//shell_encryption:montgomery",
+-        "@com_github_google_shell//shell_encryption:ntt_parameters",
+-        "@com_github_google_shell//shell_encryption:statusor_fork",
+-    ],
+-)
+-
+-cc_library(
+-    name = "utils",
+-    srcs = [
+-        "utils.cc",
+-    ],
+-    hdrs = [
+-        "utils.h",
+-    ],
+-    deps = [
+-        "@com_github_google_shell//shell_encryption:statusor_fork",
+-        "@com_google_absl//absl/strings",
+-    ],
+-)
+-
+-cc_test(
+-    name = "utils_test",
+-    srcs = [
+-        "utils_test.cc",
+-    ],
+-    deps = [
+-        ":utils",
+-        "@com_github_google_googletest//:gtest_main",
+-        "@com_github_google_shell//shell_encryption/testing:status_is_fork",
+-        "@com_github_google_shell//shell_encryption/testing:status_testing",
+-    ],
+-)
+diff --git a/third_party/private_membership/src/internal/aes_ctr_256_with_fixed_iv.cc b/third_party/private_membership/src/internal/aes_ctr_256_with_fixed_iv.cc
+index 20ff7fa4c24ea..ebd721107c30f 100644
+--- a/third_party/private_membership/src/internal/aes_ctr_256_with_fixed_iv.cc
++++ b/third_party/private_membership/src/internal/aes_ctr_256_with_fixed_iv.cc
+@@ -12,7 +12,7 @@
+ // See the License for the specific language governing permissions and
+ // limitations under the License.
+ 
+-#include "private_membership/rlwe/client/cpp/internal/aes_ctr_256_with_fixed_iv.h"
++#include "third_party/private_membership/src/internal/aes_ctr_256_with_fixed_iv.h"
+ 
+ #include <memory>
+ #include <string>
+diff --git a/third_party/private_membership/src/internal/aes_ctr_256_with_fixed_iv.h b/third_party/private_membership/src/internal/aes_ctr_256_with_fixed_iv.h
+index 536bb09cc86c1..a108f06844269 100644
+--- a/third_party/private_membership/src/internal/aes_ctr_256_with_fixed_iv.h
++++ b/third_party/private_membership/src/internal/aes_ctr_256_with_fixed_iv.h
+@@ -12,16 +12,16 @@
+ // See the License for the specific language governing permissions and
+ // limitations under the License.
+ 
+-#ifndef PRIVATE_MEMBERSHIP_RLWE_CLIENT_CPP_INTERNAL_AES_CTR_256_WITH_FIXED_IV_H_
+-#define PRIVATE_MEMBERSHIP_RLWE_CLIENT_CPP_INTERNAL_AES_CTR_256_WITH_FIXED_IV_H_
++#ifndef THIRD_PARTY_PRIVATE_MEMBERSHIP_SRC_INTERNAL_AES_CTR_256_WITH_FIXED_IV_H_
++#define THIRD_PARTY_PRIVATE_MEMBERSHIP_SRC_INTERNAL_AES_CTR_256_WITH_FIXED_IV_H_
+ 
+ #include <memory>
+ #include <string>
+ 
+-#include "private_membership/rlwe/client/cpp/open_source/chromium/private_membership_export.h"
++#include "third_party/private_membership/base/private_membership_export.h"
+ #include "absl/strings/string_view.h"
+ #include <openssl/evp.h>
+-#include "shell_encryption/statusor.h"
++#include "third_party/shell-encryption/src/statusor.h"
+ 
+ namespace private_membership {
+ 
+@@ -64,4 +64,4 @@ class PRIVATE_MEMBERSHIP_EXPORT AesCtr256WithFixedIV {
+ 
+ }  // namespace private_membership
+ 
+-#endif  // PRIVATE_MEMBERSHIP_RLWE_CLIENT_CPP_INTERNAL_AES_CTR_256_WITH_FIXED_IV_H_
++#endif  // THIRD_PARTY_PRIVATE_MEMBERSHIP_SRC_INTERNAL_AES_CTR_256_WITH_FIXED_IV_H_
+diff --git a/third_party/private_membership/src/internal/aes_ctr_256_with_fixed_iv_test.cc b/third_party/private_membership/src/internal/aes_ctr_256_with_fixed_iv_test.cc
+index f954ba2323f1d..44911f8e1376b 100644
+--- a/third_party/private_membership/src/internal/aes_ctr_256_with_fixed_iv_test.cc
++++ b/third_party/private_membership/src/internal/aes_ctr_256_with_fixed_iv_test.cc
+@@ -12,7 +12,7 @@
+ // See the License for the specific language governing permissions and
+ // limitations under the License.
+ 
+-#include "private_membership/rlwe/client/cpp/internal/aes_ctr_256_with_fixed_iv.h"
++#include "third_party/private_membership/src/internal/aes_ctr_256_with_fixed_iv.h"
+ 
+ #include <memory>
+ #include <string>
+@@ -21,8 +21,8 @@
+ #include <gtest/gtest.h>
+ #include "absl/memory/memory.h"
+ #include <openssl/rand.h>
+-#include "shell_encryption/testing/status_matchers.h"
+-#include "shell_encryption/testing/status_testing.h"
++#include "third_party/shell-encryption/src/testing/status_matchers.h"
++#include "third_party/shell-encryption/src/testing/status_testing.h"
+ 
+ namespace private_membership {
+ namespace {
+diff --git a/third_party/private_membership/src/internal/constants.h b/third_party/private_membership/src/internal/constants.h
+index a445d553ec924..d5cfcf9216cc2 100644
+--- a/third_party/private_membership/src/internal/constants.h
++++ b/third_party/private_membership/src/internal/constants.h
+@@ -12,15 +12,15 @@
+ // See the License for the specific language governing permissions and
+ // limitations under the License.
+ 
+-#ifndef PRIVATE_MEMBERSHIP_RLWE_CLIENT_CPP_INTERNAL_CONSTANTS_H_
+-#define PRIVATE_MEMBERSHIP_RLWE_CLIENT_CPP_INTERNAL_CONSTANTS_H_
++#ifndef THIRD_PARTY_PRIVATE_MEMBERSHIP_SRC_INTERNAL_CONSTANTS_H_
++#define THIRD_PARTY_PRIVATE_MEMBERSHIP_SRC_INTERNAL_CONSTANTS_H_
+ 
+ #include <cstdint>
+ 
+ #include <openssl/obj_mac.h>
+-#include "shell_encryption/montgomery.h"
+-#include "shell_encryption/prng/chacha_prng.h"
+-#include "shell_encryption/prng/single_thread_chacha_prng.h"
++#include "third_party/shell-encryption/src/montgomery.h"
++#include "third_party/shell-encryption/src/prng/chacha_prng.h"
++#include "third_party/shell-encryption/src/prng/single_thread_chacha_prng.h"
+ 
+ namespace private_membership {
+ namespace rlwe {
+@@ -46,4 +46,4 @@ typedef ::rlwe::MontgomeryInt<absl::uint128> ModularInt128;
+ }  // namespace rlwe
+ }  // namespace private_membership
+ 
+-#endif  // PRIVATE_MEMBERSHIP_RLWE_CLIENT_CPP_INTERNAL_CONSTANTS_H_
++#endif  // THIRD_PARTY_PRIVATE_MEMBERSHIP_SRC_INTERNAL_CONSTANTS_H_
+diff --git a/third_party/private_membership/src/internal/crypto_utils.cc b/third_party/private_membership/src/internal/crypto_utils.cc
+index 8132e66a2b048..48590d7070890 100644
+--- a/third_party/private_membership/src/internal/crypto_utils.cc
++++ b/third_party/private_membership/src/internal/crypto_utils.cc
+@@ -12,13 +12,13 @@
+ // See the License for the specific language governing permissions and
+ // limitations under the License.
+ 
+-#include "private_membership/rlwe/client/cpp/internal/crypto_utils.h"
++#include "third_party/private_membership/src/internal/crypto_utils.h"
+ 
+ #include <string>
+ 
+-#include "private_membership/rlwe/client/cpp/internal/aes_ctr_256_with_fixed_iv.h"
+-#include "private_membership/rlwe/client/cpp/internal/id_utils.h"
+-#include "shell_encryption/status_macros.h"
++#include "third_party/private_membership/src/internal/aes_ctr_256_with_fixed_iv.h"
++#include "third_party/private_membership/src/internal/id_utils.h"
++#include "third_party/shell-encryption/src/status_macros.h"
+ 
+ namespace private_membership {
+ namespace {
+diff --git a/third_party/private_membership/src/internal/crypto_utils.h b/third_party/private_membership/src/internal/crypto_utils.h
+index 1d65ae3929649..772d38ba0571d 100644
+--- a/third_party/private_membership/src/internal/crypto_utils.h
++++ b/third_party/private_membership/src/internal/crypto_utils.h
+@@ -12,17 +12,17 @@
+ // See the License for the specific language governing permissions and
+ // limitations under the License.
+ 
+-#ifndef PRIVATE_MEMBERSHIP_RLWE_CLIENT_CPP_INTERNAL_CRYPTO_UTILS_H_
+-#define PRIVATE_MEMBERSHIP_RLWE_CLIENT_CPP_INTERNAL_CRYPTO_UTILS_H_
++#ifndef THIRD_PARTY_PRIVATE_MEMBERSHIP_SRC_INTERNAL_CRYPTO_UTILS_H_
++#define THIRD_PARTY_PRIVATE_MEMBERSHIP_SRC_INTERNAL_CRYPTO_UTILS_H_
+ 
+ #include <string>
+ 
+-#include "private_join_and_compute/crypto/context.h"
+-#include "private_join_and_compute/crypto/ec_commutative_cipher.h"
+-#include "private_membership/rlwe/client/proto/private_membership.pb.h"
+-#include "private_membership/rlwe/client/cpp/open_source/chromium/private_membership_export.h"
++#include "third_party/private-join-and-compute/src/crypto/context.h"
++#include "third_party/private-join-and-compute/src/crypto/ec_commutative_cipher.h"
++#include "third_party/private_membership/src/private_membership.pb.h"
++#include "third_party/private_membership/base/private_membership_export.h"
+ #include "absl/strings/string_view.h"
+-#include "shell_encryption/statusor.h"
++#include "third_party/shell-encryption/src/statusor.h"
+ 
+ namespace private_membership {
+ 
+@@ -67,4 +67,4 @@ PRIVATE_MEMBERSHIP_EXPORT ::rlwe::StatusOr<std::string> DecryptValueWithKey(
+ 
+ }  // namespace private_membership
+ 
+-#endif  // PRIVATE_MEMBERSHIP_RLWE_CLIENT_CPP_INTERNAL_CRYPTO_UTILS_H_
++#endif  // THIRD_PARTY_PRIVATE_MEMBERSHIP_SRC_INTERNAL_CRYPTO_UTILS_H_
+diff --git a/third_party/private_membership/src/internal/crypto_utils_test.cc b/third_party/private_membership/src/internal/crypto_utils_test.cc
+index f43c9ef8b6116..a6b78c9455569 100644
+--- a/third_party/private_membership/src/internal/crypto_utils_test.cc
++++ b/third_party/private_membership/src/internal/crypto_utils_test.cc
+@@ -12,16 +12,16 @@
+ // See the License for the specific language governing permissions and
+ // limitations under the License.
+ 
+-#include "private_membership/rlwe/client/cpp/internal/crypto_utils.h"
++#include "third_party/private_membership/src/internal/crypto_utils.h"
+ 
+ #include <string>
+ 
+-#include "private_membership/rlwe/client/cpp/internal/aes_ctr_256_with_fixed_iv.h"
+-#include "private_membership/rlwe/client/proto/private_membership.pb.h"
++#include "third_party/private_membership/src/internal/aes_ctr_256_with_fixed_iv.h"
++#include "third_party/private_membership/src/private_membership.pb.h"
+ #include <gmock/gmock.h>
+ #include <gtest/gtest.h>
+-#include "shell_encryption/testing/status_matchers.h"
+-#include "shell_encryption/testing/status_testing.h"
++#include "third_party/shell-encryption/src/testing/status_matchers.h"
++#include "third_party/shell-encryption/src/testing/status_testing.h"
+ 
+ namespace private_membership {
+ namespace {
+diff --git a/third_party/private_membership/src/internal/encrypted_bucket_id.cc b/third_party/private_membership/src/internal/encrypted_bucket_id.cc
+index 3f840f7295951..e48fa7dafca5a 100644
+--- a/third_party/private_membership/src/internal/encrypted_bucket_id.cc
++++ b/third_party/private_membership/src/internal/encrypted_bucket_id.cc
+@@ -12,16 +12,16 @@
+ // See the License for the specific language governing permissions and
+ // limitations under the License.
+ 
+-#include "private_membership/rlwe/client/cpp/internal/encrypted_bucket_id.h"
++#include "third_party/private_membership/src/internal/encrypted_bucket_id.h"
+ 
+ #include <string>
+ #include <utility>
+ 
+-#include "private_membership/rlwe/client/cpp/internal/crypto_utils.h"
+-#include "private_membership/rlwe/client/cpp/internal/rlwe_id_utils.h"
+-#include "private_membership/rlwe/client/cpp/internal/utils.h"
++#include "third_party/private_membership/src/internal/crypto_utils.h"
++#include "third_party/private_membership/src/internal/rlwe_id_utils.h"
++#include "third_party/private_membership/src/internal/utils.h"
+ #include "absl/strings/string_view.h"
+-#include "shell_encryption/status_macros.h"
++#include "third_party/shell-encryption/src/status_macros.h"
+ 
+ namespace private_membership {
+ namespace rlwe {
+diff --git a/third_party/private_membership/src/internal/encrypted_bucket_id.h b/third_party/private_membership/src/internal/encrypted_bucket_id.h
+index 5502b99c0d4dc..6543210e3d347 100644
+--- a/third_party/private_membership/src/internal/encrypted_bucket_id.h
++++ b/third_party/private_membership/src/internal/encrypted_bucket_id.h
+@@ -12,17 +12,17 @@
+ // See the License for the specific language governing permissions and
+ // limitations under the License.
+ 
+-#ifndef PRIVATE_MEMBERSHIP_RLWE_CLIENT_CPP_INTERNAL_ENCRYPTED_BUCKET_ID_H_
+-#define PRIVATE_MEMBERSHIP_RLWE_CLIENT_CPP_INTERNAL_ENCRYPTED_BUCKET_ID_H_
++#ifndef THIRD_PARTY_PRIVATE_MEMBERSHIP_SRC_INTERNAL_ENCRYPTED_BUCKET_ID_H_
++#define THIRD_PARTY_PRIVATE_MEMBERSHIP_SRC_INTERNAL_ENCRYPTED_BUCKET_ID_H_
+ 
+ #include <string>
+ 
+-#include "private_join_and_compute/crypto/ec_commutative_cipher.h"
+-#include "private_membership/rlwe/client/cpp/open_source/chromium/private_membership_export.h"
+-#include "private_membership/rlwe/client/proto/private_membership_rlwe.pb.h"
++#include "third_party/private-join-and-compute/src/crypto/ec_commutative_cipher.h"
++#include "third_party/private_membership/base/private_membership_export.h"
++#include "third_party/private_membership/src/private_membership_rlwe.pb.h"
+ #include "absl/hash/hash.h"
+ #include "absl/strings/string_view.h"
+-#include "shell_encryption/statusor.h"
++#include "third_party/shell-encryption/src/statusor.h"
+ 
+ namespace private_membership {
+ namespace rlwe {
+@@ -92,4 +92,4 @@ class PRIVATE_MEMBERSHIP_EXPORT EncryptedBucketId {
+ }  // namespace rlwe
+ }  // namespace private_membership
+ 
+-#endif  // PRIVATE_MEMBERSHIP_RLWE_CLIENT_CPP_INTERNAL_ENCRYPTED_BUCKET_ID_H_
++#endif  // THIRD_PARTY_PRIVATE_MEMBERSHIP_SRC_INTERNAL_ENCRYPTED_BUCKET_ID_H_
+diff --git a/third_party/private_membership/src/internal/encrypted_bucket_id_test.cc b/third_party/private_membership/src/internal/encrypted_bucket_id_test.cc
+index 525657774f35b..1972c0509494e 100644
+--- a/third_party/private_membership/src/internal/encrypted_bucket_id_test.cc
++++ b/third_party/private_membership/src/internal/encrypted_bucket_id_test.cc
+@@ -12,19 +12,19 @@
+ // See the License for the specific language governing permissions and
+ // limitations under the License.
+ 
+-#include "private_membership/rlwe/client/cpp/internal/encrypted_bucket_id.h"
++#include "third_party/private_membership/src/internal/encrypted_bucket_id.h"
+ 
+ #include <cstdint>
+ #include <string>
+ 
+-#include "private_membership/rlwe/client/proto/private_membership_rlwe.pb.h"
+-#include "private_membership/rlwe/client/cpp/internal/rlwe_id_utils.h"
+-#include "private_membership/rlwe/client/cpp/internal/testing/constants.h"
++#include "third_party/private_membership/src/private_membership_rlwe.pb.h"
++#include "third_party/private_membership/src/internal/rlwe_id_utils.h"
++#include "third_party/private_membership/src/internal/testing/constants.h"
+ #include <gmock/gmock.h>
+ #include <gtest/gtest.h>
+-#include "shell_encryption/testing/protobuf_matchers.h"
+-#include "shell_encryption/testing/status_matchers.h"
+-#include "shell_encryption/testing/status_testing.h"
++#include "third_party/shell-encryption/src/testing/protobuf_matchers.h"
++#include "third_party/shell-encryption/src/testing/status_matchers.h"
++#include "third_party/shell-encryption/src/testing/status_testing.h"
+ 
+ namespace private_membership {
+ namespace rlwe {
+diff --git a/third_party/private_membership/src/internal/hashed_bucket_id.cc b/third_party/private_membership/src/internal/hashed_bucket_id.cc
+index 1e584d6618565..66a65674fb7ed 100644
+--- a/third_party/private_membership/src/internal/hashed_bucket_id.cc
++++ b/third_party/private_membership/src/internal/hashed_bucket_id.cc
+@@ -12,16 +12,16 @@
+ // See the License for the specific language governing permissions and
+ // limitations under the License.
+ 
+-#include "private_membership/rlwe/client/cpp/internal/hashed_bucket_id.h"
++#include "third_party/private_membership/src/internal/hashed_bucket_id.h"
+ 
+ #include <string>
+ #include <utility>
+ 
+-#include "private_membership/rlwe/client/proto/private_membership.pb.h"
+-#include "private_membership/rlwe/client/cpp/internal/rlwe_id_utils.h"
+-#include "private_membership/rlwe/client/cpp/internal/utils.h"
++#include "third_party/private_membership/src/private_membership.pb.h"
++#include "third_party/private_membership/src/internal/rlwe_id_utils.h"
++#include "third_party/private_membership/src/internal/utils.h"
+ #include "absl/strings/string_view.h"
+-#include "shell_encryption/status_macros.h"
++#include "third_party/shell-encryption/src/status_macros.h"
+ 
+ namespace private_membership {
+ namespace rlwe {
+diff --git a/third_party/private_membership/src/internal/hashed_bucket_id.h b/third_party/private_membership/src/internal/hashed_bucket_id.h
+index 75b70f98eac83..db1805c7a0676 100644
+--- a/third_party/private_membership/src/internal/hashed_bucket_id.h
++++ b/third_party/private_membership/src/internal/hashed_bucket_id.h
+@@ -12,16 +12,16 @@
+ // See the License for the specific language governing permissions and
+ // limitations under the License.
+ 
+-#ifndef PRIVATE_MEMBERSHIP_RLWE_CLIENT_CPP_INTERNAL_HASHED_BUCKET_ID_H_
+-#define PRIVATE_MEMBERSHIP_RLWE_CLIENT_CPP_INTERNAL_HASHED_BUCKET_ID_H_
++#ifndef THIRD_PARTY_PRIVATE_MEMBERSHIP_SRC_INTERNAL_HASHED_BUCKET_ID_H_
++#define THIRD_PARTY_PRIVATE_MEMBERSHIP_SRC_INTERNAL_HASHED_BUCKET_ID_H_
+ 
+ #include <string>
+ 
+-#include "private_join_and_compute/crypto/ec_commutative_cipher.h"
+-#include "private_membership/rlwe/client/proto/private_membership_rlwe.pb.h"
++#include "third_party/private-join-and-compute/src/crypto/ec_commutative_cipher.h"
++#include "third_party/private_membership/src/private_membership_rlwe.pb.h"
+ #include "absl/hash/hash.h"
+ #include "absl/strings/string_view.h"
+-#include "shell_encryption/statusor.h"
++#include "third_party/shell-encryption/src/statusor.h"
+ 
+ namespace private_membership {
+ namespace rlwe {
+@@ -97,4 +97,4 @@ class HashedBucketId {
+ }  // namespace rlwe
+ }  // namespace private_membership
+ 
+-#endif  // PRIVATE_MEMBERSHIP_RLWE_CLIENT_CPP_INTERNAL_HASHED_BUCKET_ID_H_
++#endif  // THIRD_PARTY_PRIVATE_MEMBERSHIP_SRC_INTERNAL_HASHED_BUCKET_ID_H_
+diff --git a/third_party/private_membership/src/internal/hashed_bucket_id_test.cc b/third_party/private_membership/src/internal/hashed_bucket_id_test.cc
+index 41e36f79d5823..be8c24112db59 100644
+--- a/third_party/private_membership/src/internal/hashed_bucket_id_test.cc
++++ b/third_party/private_membership/src/internal/hashed_bucket_id_test.cc
+@@ -12,17 +12,17 @@
+ // See the License for the specific language governing permissions and
+ // limitations under the License.
+ 
+-#include "private_membership/rlwe/client/cpp/internal/hashed_bucket_id.h"
++#include "third_party/private_membership/src/internal/hashed_bucket_id.h"
+ 
+ #include <string>
+ 
+-#include "private_membership/rlwe/client/proto/private_membership.pb.h"
+-#include "private_membership/rlwe/client/proto/private_membership_rlwe.pb.h"
++#include "third_party/private_membership/src/private_membership.pb.h"
++#include "third_party/private_membership/src/private_membership_rlwe.pb.h"
+ #include <gmock/gmock.h>
+ #include <gtest/gtest.h>
+-#include "shell_encryption/testing/protobuf_matchers.h"
+-#include "shell_encryption/testing/status_matchers.h"
+-#include "shell_encryption/testing/status_testing.h"
++#include "third_party/shell-encryption/src/testing/protobuf_matchers.h"
++#include "third_party/shell-encryption/src/testing/status_matchers.h"
++#include "third_party/shell-encryption/src/testing/status_testing.h"
+ 
+ namespace private_membership {
+ namespace rlwe {
+diff --git a/third_party/private_membership/src/internal/id_utils.cc b/third_party/private_membership/src/internal/id_utils.cc
+index 472e7197fe0fd..a01bf2a98ef98 100644
+--- a/third_party/private_membership/src/internal/id_utils.cc
++++ b/third_party/private_membership/src/internal/id_utils.cc
+@@ -12,7 +12,7 @@
+ // See the License for the specific language governing permissions and
+ // limitations under the License.
+ 
+-#include "private_membership/rlwe/client/cpp/internal/id_utils.h"
++#include "third_party/private_membership/src/internal/id_utils.h"
+ 
+ #include <string>
+ 
+diff --git a/third_party/private_membership/src/internal/id_utils.h b/third_party/private_membership/src/internal/id_utils.h
+index 40a9dad54f247..2f4110f826ffd 100644
+--- a/third_party/private_membership/src/internal/id_utils.h
++++ b/third_party/private_membership/src/internal/id_utils.h
+@@ -12,12 +12,12 @@
+ // See the License for the specific language governing permissions and
+ // limitations under the License.
+ 
+-#ifndef PRIVATE_MEMBERSHIP_RLWE_CLIENT_CPP_INTERNAL_ID_UTILS_H_
+-#define PRIVATE_MEMBERSHIP_RLWE_CLIENT_CPP_INTERNAL_ID_UTILS_H_
++#ifndef THIRD_PARTY_PRIVATE_MEMBERSHIP_SRC_INTERNAL_ID_UTILS_H_
++#define THIRD_PARTY_PRIVATE_MEMBERSHIP_SRC_INTERNAL_ID_UTILS_H_
+ 
+ #include <string>
+ 
+-#include "private_membership/rlwe/client/cpp/open_source/chromium/private_membership_export.h"
++#include "third_party/private_membership/base/private_membership_export.h"
+ #include "absl/strings/string_view.h"
+ 
+ namespace private_membership {
+@@ -29,4 +29,4 @@ PRIVATE_MEMBERSHIP_EXPORT std::string PadOrTruncate(absl::string_view in,
+ 
+ }  // namespace private_membership
+ 
+-#endif  // PRIVATE_MEMBERSHIP_RLWE_CLIENT_CPP_INTERNAL_ID_UTILS_H_
++#endif  // THIRD_PARTY_PRIVATE_MEMBERSHIP_SRC_INTERNAL_ID_UTILS_H_
+diff --git a/third_party/private_membership/src/internal/id_utils_test.cc b/third_party/private_membership/src/internal/id_utils_test.cc
+index c61fc1ed7edd3..dbace147c370e 100644
+--- a/third_party/private_membership/src/internal/id_utils_test.cc
++++ b/third_party/private_membership/src/internal/id_utils_test.cc
+@@ -12,7 +12,7 @@
+ // See the License for the specific language governing permissions and
+ // limitations under the License.
+ 
+-#include "private_membership/rlwe/client/cpp/internal/id_utils.h"
++#include "third_party/private_membership/src/internal/id_utils.h"
+ 
+ #include <string>
+ 
+diff --git a/third_party/private_membership/src/internal/oprf_utils.cc b/third_party/private_membership/src/internal/oprf_utils.cc
+index a377c878ded45..008510c34e7ea 100644
+--- a/third_party/private_membership/src/internal/oprf_utils.cc
++++ b/third_party/private_membership/src/internal/oprf_utils.cc
+@@ -12,12 +12,12 @@
+ // See the License for the specific language governing permissions and
+ // limitations under the License.
+ 
+-#include "private_membership/rlwe/client/cpp/internal/oprf_utils.h"
++#include "third_party/private_membership/src/internal/oprf_utils.h"
+ 
+ #include <string>
+ #include <utility>
+ 
+-#include "shell_encryption/status_macros.h"
++#include "third_party/shell-encryption/src/status_macros.h"
+ 
+ namespace private_membership {
+ 
+diff --git a/third_party/private_membership/src/internal/oprf_utils.h b/third_party/private_membership/src/internal/oprf_utils.h
+index 98c3c3c36b2b3..9998acade6b25 100644
+--- a/third_party/private_membership/src/internal/oprf_utils.h
++++ b/third_party/private_membership/src/internal/oprf_utils.h
+@@ -12,13 +12,13 @@
+ // See the License for the specific language governing permissions and
+ // limitations under the License.
+ 
+-#ifndef PRIVATE_MEMBERSHIP_RLWE_CLIENT_CPP_INTERNAL_OPRF_UTILS_H_
+-#define PRIVATE_MEMBERSHIP_RLWE_CLIENT_CPP_INTERNAL_OPRF_UTILS_H_
++#ifndef THIRD_PARTY_PRIVATE_MEMBERSHIP_SRC_INTERNAL_OPRF_UTILS_H_
++#define THIRD_PARTY_PRIVATE_MEMBERSHIP_SRC_INTERNAL_OPRF_UTILS_H_
+ 
+-#include "private_join_and_compute/crypto/ec_commutative_cipher.h"
+-#include "private_membership/rlwe/client/proto/private_membership.pb.h"
+-#include "private_membership/rlwe/client/cpp/open_source/chromium/private_membership_export.h"
+-#include "shell_encryption/statusor.h"
++#include "third_party/private-join-and-compute/src/crypto/ec_commutative_cipher.h"
++#include "third_party/private_membership/src/private_membership.pb.h"
++#include "third_party/private_membership/base/private_membership_export.h"
++#include "third_party/shell-encryption/src/statusor.h"
+ 
+ namespace private_membership {
+ 
+@@ -33,4 +33,4 @@ PRIVATE_MEMBERSHIP_EXPORT ::rlwe::StatusOr<DoublyEncryptedId> ReEncryptId(
+ 
+ }  // namespace private_membership
+ 
+-#endif  // PRIVATE_MEMBERSHIP_RLWE_CLIENT_CPP_INTERNAL_OPRF_UTILS_H_
++#endif  // THIRD_PARTY_PRIVATE_MEMBERSHIP_SRC_INTERNAL_OPRF_UTILS_H_
+diff --git a/third_party/private_membership/src/internal/oprf_utils_test.cc b/third_party/private_membership/src/internal/oprf_utils_test.cc
+index a1c0cd7d6aeb5..695444d8e96d1 100644
+--- a/third_party/private_membership/src/internal/oprf_utils_test.cc
++++ b/third_party/private_membership/src/internal/oprf_utils_test.cc
+@@ -12,13 +12,13 @@
+ // See the License for the specific language governing permissions and
+ // limitations under the License.
+ 
+-#include "private_membership/rlwe/client/cpp/internal/oprf_utils.h"
++#include "third_party/private_membership/src/internal/oprf_utils.h"
+ 
+-#include "private_join_and_compute/crypto/ec_commutative_cipher.h"
++#include "third_party/private-join-and-compute/src/crypto/ec_commutative_cipher.h"
+ #include <gmock/gmock.h>
+ #include <gtest/gtest.h>
+-#include "shell_encryption/testing/status_matchers.h"
+-#include "shell_encryption/testing/status_testing.h"
++#include "third_party/shell-encryption/src/testing/status_matchers.h"
++#include "third_party/shell-encryption/src/testing/status_testing.h"
+ 
+ namespace private_membership {
+ namespace {
+diff --git a/third_party/private_membership/src/internal/rlwe_id_utils.cc b/third_party/private_membership/src/internal/rlwe_id_utils.cc
+index 2c59cab0f83c6..551e637972dc3 100644
+--- a/third_party/private_membership/src/internal/rlwe_id_utils.cc
++++ b/third_party/private_membership/src/internal/rlwe_id_utils.cc
+@@ -12,18 +12,18 @@
+ // See the License for the specific language governing permissions and
+ // limitations under the License.
+ 
+-#include "private_membership/rlwe/client/cpp/internal/rlwe_id_utils.h"
++#include "third_party/private_membership/src/internal/rlwe_id_utils.h"
+ 
+ #include <string>
+ #include <utility>
+ 
+-#include "private_membership/rlwe/client/cpp/internal/crypto_utils.h"
+-#include "private_membership/rlwe/client/proto/private_membership.pb.h"
+-#include "private_membership/rlwe/client/cpp/internal/constants.h"
++#include "third_party/private_membership/src/internal/crypto_utils.h"
++#include "third_party/private_membership/src/private_membership.pb.h"
++#include "third_party/private_membership/src/internal/constants.h"
+ #include "absl/status/status.h"
+ #include "absl/strings/str_cat.h"
+ #include "absl/strings/string_view.h"
+-#include "shell_encryption/status_macros.h"
++#include "third_party/shell-encryption/src/status_macros.h"
+ 
+ namespace private_membership {
+ namespace rlwe {
+diff --git a/third_party/private_membership/src/internal/rlwe_id_utils.h b/third_party/private_membership/src/internal/rlwe_id_utils.h
+index 6e519e72b4ead..6edf07555d1f8 100644
+--- a/third_party/private_membership/src/internal/rlwe_id_utils.h
++++ b/third_party/private_membership/src/internal/rlwe_id_utils.h
+@@ -12,16 +12,16 @@
+ // See the License for the specific language governing permissions and
+ // limitations under the License.
+ 
+-#ifndef PRIVATE_MEMBERSHIP_RLWE_CLIENT_CPP_INTERNAL_RLWE_ID_UTILS_H_
+-#define PRIVATE_MEMBERSHIP_RLWE_CLIENT_CPP_INTERNAL_RLWE_ID_UTILS_H_
++#ifndef THIRD_PARTY_PRIVATE_MEMBERSHIP_SRC_INTERNAL_RLWE_ID_UTILS_H_
++#define THIRD_PARTY_PRIVATE_MEMBERSHIP_SRC_INTERNAL_RLWE_ID_UTILS_H_
+ 
+ #include <string>
+ 
+-#include "private_join_and_compute/crypto/ec_commutative_cipher.h"
+-#include "private_membership/rlwe/client/proto/private_membership.pb.h"
+-#include "private_membership/rlwe/client/cpp/open_source/chromium/private_membership_export.h"
+-#include "private_membership/rlwe/client/proto/private_membership_rlwe.pb.h"
+-#include "shell_encryption/statusor.h"
++#include "third_party/private-join-and-compute/src/crypto/ec_commutative_cipher.h"
++#include "third_party/private_membership/src/private_membership.pb.h"
++#include "third_party/private_membership/base/private_membership_export.h"
++#include "third_party/private_membership/src/private_membership_rlwe.pb.h"
++#include "third_party/shell-encryption/src/statusor.h"
+ 
+ namespace private_membership {
+ namespace rlwe {
+@@ -61,4 +61,4 @@ HashNonsensitiveIdWithSalt(absl::string_view nsid, HashType hash_type,
+ }  // namespace rlwe
+ }  // namespace private_membership
+ 
+-#endif  // PRIVATE_MEMBERSHIP_RLWE_CLIENT_CPP_INTERNAL_RLWE_ID_UTILS_H_
++#endif  // THIRD_PARTY_PRIVATE_MEMBERSHIP_SRC_INTERNAL_RLWE_ID_UTILS_H_
+diff --git a/third_party/private_membership/src/internal/rlwe_id_utils_test.cc b/third_party/private_membership/src/internal/rlwe_id_utils_test.cc
+index 029ca5d77172b..c73def66869a5 100644
+--- a/third_party/private_membership/src/internal/rlwe_id_utils_test.cc
++++ b/third_party/private_membership/src/internal/rlwe_id_utils_test.cc
+@@ -12,19 +12,19 @@
+ // See the License for the specific language governing permissions and
+ // limitations under the License.
+ 
+-#include "private_membership/rlwe/client/cpp/internal/rlwe_id_utils.h"
++#include "third_party/private_membership/src/internal/rlwe_id_utils.h"
+ 
+ #include <string>
+ #include <vector>
+ 
+-#include "private_membership/rlwe/client/cpp/internal/constants.h"
+-#include "private_membership/rlwe/client/cpp/internal/testing/constants.h"
++#include "third_party/private_membership/src/internal/constants.h"
++#include "third_party/private_membership/src/internal/testing/constants.h"
+ #include <gmock/gmock.h>
+ #include <gtest/gtest.h>
+ #include "absl/status/status.h"
+-#include "shell_encryption/testing/protobuf_matchers.h"
+-#include "shell_encryption/testing/status_matchers.h"
+-#include "shell_encryption/testing/status_testing.h"
++#include "third_party/shell-encryption/src/testing/protobuf_matchers.h"
++#include "third_party/shell-encryption/src/testing/status_matchers.h"
++#include "third_party/shell-encryption/src/testing/status_testing.h"
+ 
+ namespace private_membership {
+ namespace rlwe {
+diff --git a/third_party/private_membership/src/internal/rlwe_params.cc b/third_party/private_membership/src/internal/rlwe_params.cc
+index 11a36986357c3..c8904d1984a7e 100644
+--- a/third_party/private_membership/src/internal/rlwe_params.cc
++++ b/third_party/private_membership/src/internal/rlwe_params.cc
+@@ -12,16 +12,16 @@
+ // See the License for the specific language governing permissions and
+ // limitations under the License.
+ 
+-#include "private_membership/rlwe/client/cpp/internal/rlwe_params.h"
++#include "third_party/private_membership/src/internal/rlwe_params.h"
+ 
+ #include <memory>
+ #include <utility>
+ #include <vector>
+ 
+-#include "private_membership/rlwe/client/proto/private_membership_rlwe.pb.h"
+-#include "private_membership/rlwe/client/cpp/internal/constants.h"
+-#include "shell_encryption/montgomery.h"
+-#include "shell_encryption/status_macros.h"
++#include "third_party/private_membership/src/private_membership_rlwe.pb.h"
++#include "third_party/private_membership/src/internal/constants.h"
++#include "third_party/shell-encryption/src/montgomery.h"
++#include "third_party/shell-encryption/src/status_macros.h"
+ 
+ namespace private_membership {
+ namespace rlwe {
+diff --git a/third_party/private_membership/src/internal/rlwe_params.h b/third_party/private_membership/src/internal/rlwe_params.h
+index c769b9b5d4ef7..84e4bafbf8b63 100644
+--- a/third_party/private_membership/src/internal/rlwe_params.h
++++ b/third_party/private_membership/src/internal/rlwe_params.h
+@@ -12,15 +12,15 @@
+ // See the License for the specific language governing permissions and
+ // limitations under the License.
+ 
+-#ifndef PRIVATE_MEMBERSHIP_RLWE_CLIENT_CPP_INTERNAL_RLWE_PARAMS_H_
+-#define PRIVATE_MEMBERSHIP_RLWE_CLIENT_CPP_INTERNAL_RLWE_PARAMS_H_
++#ifndef THIRD_PARTY_PRIVATE_MEMBERSHIP_SRC_INTERNAL_RLWE_PARAMS_H_
++#define THIRD_PARTY_PRIVATE_MEMBERSHIP_SRC_INTERNAL_RLWE_PARAMS_H_
+ 
+-#include "private_membership/rlwe/client/proto/private_membership_rlwe.pb.h"
+-#include "shell_encryption/context.h"
+-#include "shell_encryption/error_params.h"
+-#include "shell_encryption/montgomery.h"
+-#include "shell_encryption/ntt_parameters.h"
+-#include "shell_encryption/statusor.h"
++#include "third_party/private_membership/src/private_membership_rlwe.pb.h"
++#include "third_party/shell-encryption/src/context.h"
++#include "third_party/shell-encryption/src/error_params.h"
++#include "third_party/shell-encryption/src/montgomery.h"
++#include "third_party/shell-encryption/src/ntt_parameters.h"
++#include "third_party/shell-encryption/src/statusor.h"
+ 
+ namespace private_membership {
+ namespace rlwe {
+@@ -48,4 +48,4 @@ CreateErrorParams(const RlweParameters& rlwe_params,
+ }  // namespace rlwe
+ }  // namespace private_membership
+ 
+-#endif  // PRIVATE_MEMBERSHIP_RLWE_CLIENT_CPP_INTERNAL_RLWE_PARAMS_H_
++#endif  // THIRD_PARTY_PRIVATE_MEMBERSHIP_SRC_INTERNAL_RLWE_PARAMS_H_
+diff --git a/third_party/private_membership/src/internal/testing/BUILD b/third_party/private_membership/src/internal/testing/BUILD
+deleted file mode 100644
+index 5b1d0ad6689be..0000000000000
+--- a/third_party/private_membership/src/internal/testing/BUILD
++++ /dev/null
+@@ -1,11 +0,0 @@
+-package(default_visibility = ["//:__subpackages__"])
+-
+-cc_library(
+-    name = "constants",
+-    hdrs = [
+-        "constants.h",
+-    ],
+-    deps = [
+-        "@boringssl//:ssl",
+-    ],
+-)
+diff --git a/third_party/private_membership/src/internal/testing/constants.h b/third_party/private_membership/src/internal/testing/constants.h
+index a98cb67d4d011..8e679f36020ce 100644
+--- a/third_party/private_membership/src/internal/testing/constants.h
++++ b/third_party/private_membership/src/internal/testing/constants.h
+@@ -1,5 +1,5 @@
+-#ifndef PRIVATE_MEMBERSHIP_RLWE_CLIENT_CPP_INTERNAL_TESTING_CONSTANTS_H_
+-#define PRIVATE_MEMBERSHIP_RLWE_CLIENT_CPP_INTERNAL_TESTING_CONSTANTS_H_
++#ifndef THIRD_PARTY_PRIVATE_MEMBERSHIP_SRC_INTERNAL_TESTING_CONSTANTS_H_
++#define THIRD_PARTY_PRIVATE_MEMBERSHIP_SRC_INTERNAL_TESTING_CONSTANTS_H_
+ 
+ #include <openssl/obj_mac.h>
+ 
+@@ -12,4 +12,4 @@ constexpr int kTestCurveId = NID_X9_62_prime256v1;
+ }  // namespace rlwe
+ }  // namespace private_membership
+ 
+-#endif  // PRIVATE_MEMBERSHIP_RLWE_CLIENT_CPP_INTERNAL_TESTING_CONSTANTS_H_
++#endif  // THIRD_PARTY_PRIVATE_MEMBERSHIP_SRC_INTERNAL_TESTING_CONSTANTS_H_
+diff --git a/third_party/private_membership/src/internal/testing/regression_test_data/BUILD b/third_party/private_membership/src/internal/testing/regression_test_data/BUILD
+deleted file mode 100644
+index df3be365735da..0000000000000
+--- a/third_party/private_membership/src/internal/testing/regression_test_data/BUILD
++++ /dev/null
+@@ -1,25 +0,0 @@
+-load("@rules_cc//cc:defs.bzl", "cc_library")
+-load("@rules_proto//proto:defs.bzl", "proto_library")
+-
+-package(default_visibility = ["//:__subpackages__"])
+-
+-proto_library(
+-    name = "regression_test_data_proto",
+-    srcs = ["regression_test_data.proto"],
+-    deps = [
+-        "//private_membership/rlwe/client/proto:private_membership_rlwe_proto",
+-    ],
+-)
+-
+-cc_proto_library(
+-    name = "regression_test_data_cc_proto",
+-    deps = [":regression_test_data_proto"],
+-)
+-
+-filegroup(
+-    name = "regression_test_data",
+-    testonly = 1,
+-    srcs = [
+-        "test_data.binarypb",
+-    ],
+-)
+diff --git a/third_party/private_membership/src/internal/testing/regression_test_data/regression_test_data.proto b/third_party/private_membership/src/internal/testing/regression_test_data/regression_test_data.proto
+index f43c87a91a1f5..023e6e7abde96 100644
+--- a/third_party/private_membership/src/internal/testing/regression_test_data/regression_test_data.proto
++++ b/third_party/private_membership/src/internal/testing/regression_test_data/regression_test_data.proto
+@@ -4,7 +4,7 @@ option optimize_for = LITE_RUNTIME;
+ 
+ package private_membership.rlwe;
+ 
+-import "private_membership/rlwe/client/proto/private_membership_rlwe.proto";
++import "private_membership_rlwe.proto";
+ 
+ // The regression test data consists of multiple test cases.
+ message PrivateMembershipRlweClientRegressionTestData {
+diff --git a/third_party/private_membership/src/internal/utils.cc b/third_party/private_membership/src/internal/utils.cc
+index b7878380c969b..f2120f2fc6a5e 100644
+--- a/third_party/private_membership/src/internal/utils.cc
++++ b/third_party/private_membership/src/internal/utils.cc
+@@ -12,11 +12,11 @@
+ // See the License for the specific language governing permissions and
+ // limitations under the License.
+ 
+-#include "private_membership/rlwe/client/cpp/internal/utils.h"
++#include "third_party/private_membership/src/internal/utils.h"
+ 
+ #include <string>
+ 
+-#include "shell_encryption/status_macros.h"
++#include "third_party/shell-encryption/src/status_macros.h"
+ 
+ namespace private_membership {
+ namespace rlwe {
+diff --git a/third_party/private_membership/src/internal/utils.h b/third_party/private_membership/src/internal/utils.h
+index 3c41b8a9a9eb4..e4f426e83fa52 100644
+--- a/third_party/private_membership/src/internal/utils.h
++++ b/third_party/private_membership/src/internal/utils.h
+@@ -12,14 +12,14 @@
+ // See the License for the specific language governing permissions and
+ // limitations under the License.
+ 
+-#ifndef PRIVATE_MEMBERSHIP_RLWE_CLIENT_CPP_INTERNAL_UTILS_H_
+-#define PRIVATE_MEMBERSHIP_RLWE_CLIENT_CPP_INTERNAL_UTILS_H_
++#ifndef THIRD_PARTY_PRIVATE_MEMBERSHIP_SRC_INTERNAL_UTILS_H_
++#define THIRD_PARTY_PRIVATE_MEMBERSHIP_SRC_INTERNAL_UTILS_H_
+ 
+ #include <string>
+ 
+-#include "private_membership/rlwe/client/cpp/open_source/chromium/private_membership_export.h"
++#include "third_party/private_membership/base/private_membership_export.h"
+ #include "absl/strings/string_view.h"
+-#include "shell_encryption/statusor.h"
++#include "third_party/shell-encryption/src/statusor.h"
+ 
+ namespace private_membership {
+ namespace rlwe {
+@@ -62,4 +62,4 @@ PRIVATE_MEMBERSHIP_EXPORT bool IsValid(absl::string_view in, int bit_length);
+ }  // namespace rlwe
+ }  // namespace private_membership
+ 
+-#endif  // PRIVATE_MEMBERSHIP_RLWE_CLIENT_CPP_INTERNAL_UTILS_H_
++#endif  // THIRD_PARTY_PRIVATE_MEMBERSHIP_SRC_INTERNAL_UTILS_H_
+diff --git a/third_party/private_membership/src/internal/utils_test.cc b/third_party/private_membership/src/internal/utils_test.cc
+index 9e7473cf1f623..c4c3812e9c25c 100644
+--- a/third_party/private_membership/src/internal/utils_test.cc
++++ b/third_party/private_membership/src/internal/utils_test.cc
+@@ -12,12 +12,12 @@
+ // See the License for the specific language governing permissions and
+ // limitations under the License.
+ 
+-#include "private_membership/rlwe/client/cpp/internal/utils.h"
++#include "third_party/private_membership/src/internal/utils.h"
+ 
+ #include <gmock/gmock.h>
+ #include <gtest/gtest.h>
+-#include "shell_encryption/testing/status_matchers.h"
+-#include "shell_encryption/testing/status_testing.h"
++#include "third_party/shell-encryption/src/testing/status_matchers.h"
++#include "third_party/shell-encryption/src/testing/status_testing.h"
+ 
+ using ::rlwe::testing::StatusIs;
+ using ::testing::HasSubstr;
+diff --git a/third_party/private_membership/src/private_membership_rlwe.proto b/third_party/private_membership/src/private_membership_rlwe.proto
+index 165096c32cd82..402dad1b5ba1f 100644
+--- a/third_party/private_membership/src/private_membership_rlwe.proto
++++ b/third_party/private_membership/src/private_membership_rlwe.proto
+@@ -20,8 +20,8 @@ package private_membership.rlwe;
+ 
+ option go_package = "github.com/google/private-membership";
+ 
+-import "private_membership/rlwe/client/proto/private_membership.proto";
+-import "shell_encryption/serialization.proto";
++import "private_membership.proto";
++import "serialization.proto";
+ 
+ // Request and Response protos
+ //
+diff --git a/third_party/private_membership/src/private_membership_rlwe_client.cc b/third_party/private_membership/src/private_membership_rlwe_client.cc
+index ca04abc7fb070..39bc87ad8d02a 100644
+--- a/third_party/private_membership/src/private_membership_rlwe_client.cc
++++ b/third_party/private_membership/src/private_membership_rlwe_client.cc
+@@ -12,7 +12,7 @@
+ // See the License for the specific language governing permissions and
+ // limitations under the License.
+ 
+-#include "private_membership/rlwe/client/cpp/private_membership_rlwe_client.h"
++#include "third_party/private_membership/src/private_membership_rlwe_client.h"
+ 
+ #include <algorithm>
+ #include <iterator>
+@@ -22,24 +22,24 @@
+ #include <utility>
+ #include <vector>
+ 
+-#include "private_join_and_compute/crypto/ec_commutative_cipher.h"
+-#include "private_membership/rlwe/client/cpp/internal/crypto_utils.h"
+-#include "private_membership/rlwe/client/proto/private_membership.pb.h"
+-#include "private_membership/rlwe/client/proto/private_membership_rlwe.pb.h"
+-#include "private_membership/rlwe/client/cpp/internal/constants.h"
+-#include "private_membership/rlwe/client/cpp/internal/encrypted_bucket_id.h"
+-#include "private_membership/rlwe/client/cpp/internal/hashed_bucket_id.h"
+-#include "private_membership/rlwe/client/cpp/internal/rlwe_id_utils.h"
+-#include "private_membership/rlwe/client/cpp/internal/rlwe_params.h"
+-#include "private_membership/rlwe/client/cpp/internal/utils.h"
++#include "third_party/private-join-and-compute/src/crypto/ec_commutative_cipher.h"
++#include "third_party/private_membership/src/internal/crypto_utils.h"
++#include "third_party/private_membership/src/private_membership.pb.h"
++#include "third_party/private_membership/src/private_membership_rlwe.pb.h"
++#include "third_party/private_membership/src/internal/constants.h"
++#include "third_party/private_membership/src/internal/encrypted_bucket_id.h"
++#include "third_party/private_membership/src/internal/hashed_bucket_id.h"
++#include "third_party/private_membership/src/internal/rlwe_id_utils.h"
++#include "third_party/private_membership/src/internal/rlwe_params.h"
++#include "third_party/private_membership/src/internal/utils.h"
+ #include "absl/container/flat_hash_map.h"
+ #include "absl/container/flat_hash_set.h"
+ #include "absl/status/statusor.h"
+ #include "absl/strings/string_view.h"
+-#include "shell_encryption/polynomial.h"
+-#include "shell_encryption/status_macros.h"
+-#include "shell_encryption/symmetric_encryption_with_prng.h"
+-#include "shell_encryption/transcription.h"
++#include "third_party/shell-encryption/src/polynomial.h"
++#include "third_party/shell-encryption/src/status_macros.h"
++#include "third_party/shell-encryption/src/symmetric_encryption_with_prng.h"
++#include "third_party/shell-encryption/src/transcription.h"
+ 
+ namespace private_membership {
+ namespace rlwe {
+diff --git a/third_party/private_membership/src/private_membership_rlwe_client.h b/third_party/private_membership/src/private_membership_rlwe_client.h
+index a47ae95a4b273..d04b8086911c7 100644
+--- a/third_party/private_membership/src/private_membership_rlwe_client.h
++++ b/third_party/private_membership/src/private_membership_rlwe_client.h
+@@ -12,24 +12,24 @@
+ // See the License for the specific language governing permissions and
+ // limitations under the License.
+ 
+-#ifndef PRIVATE_MEMBERSHIP_RLWE_CLIENT_CPP_PRIVATE_MEMBERSHIP_RLWE_CLIENT_H_
+-#define PRIVATE_MEMBERSHIP_RLWE_CLIENT_CPP_PRIVATE_MEMBERSHIP_RLWE_CLIENT_H_
++#ifndef THIRD_PARTY_PRIVATE_MEMBERSHIP_SRC_PRIVATE_MEMBERSHIP_RLWE_CLIENT_H_
++#define THIRD_PARTY_PRIVATE_MEMBERSHIP_SRC_PRIVATE_MEMBERSHIP_RLWE_CLIENT_H_
+ 
+ #include <memory>
+ #include <optional>
+ #include <string>
+ #include <vector>
+ 
+-#include "private_join_and_compute/crypto/ec_commutative_cipher.h"
+-#include "private_membership/rlwe/client/proto/private_membership.pb.h"
+-#include "private_membership/rlwe/client/cpp/open_source/chromium/private_membership_export.h"
+-#include "private_membership/rlwe/client/proto/private_membership_rlwe.pb.h"
+-#include "private_membership/rlwe/client/cpp/internal/constants.h"
++#include "third_party/private-join-and-compute/src/crypto/ec_commutative_cipher.h"
++#include "third_party/private_membership/src/private_membership.pb.h"
++#include "third_party/private_membership/base/private_membership_export.h"
++#include "third_party/private_membership/src/private_membership_rlwe.pb.h"
++#include "third_party/private_membership/src/internal/constants.h"
+ #include "absl/container/flat_hash_map.h"
+-#include "shell_encryption/montgomery.h"
+-#include "shell_encryption/prng/prng.h"
+-#include "shell_encryption/statusor.h"
+-#include "shell_encryption/symmetric_encryption.h"
++#include "third_party/shell-encryption/src/montgomery.h"
++#include "third_party/shell-encryption/src/prng/prng.h"
++#include "third_party/shell-encryption/src/statusor.h"
++#include "third_party/shell-encryption/src/symmetric_encryption.h"
+ 
+ namespace private_membership {
+ namespace rlwe {
+@@ -300,4 +300,4 @@ class PRIVATE_MEMBERSHIP_EXPORT PrivateMembershipRlweClient {
+ }  // namespace rlwe
+ }  // namespace private_membership
+ 
+-#endif  // PRIVATE_MEMBERSHIP_RLWE_CLIENT_CPP_PRIVATE_MEMBERSHIP_RLWE_CLIENT_H_
++#endif  // THIRD_PARTY_PRIVATE_MEMBERSHIP_SRC_PRIVATE_MEMBERSHIP_RLWE_CLIENT_H_
+diff --git a/third_party/private_membership/src/private_membership_rlwe_client_regression_test.cc b/third_party/private_membership/src/private_membership_rlwe_client_regression_test.cc
+index 6ced941a41f3a..a102c471539fa 100644
+--- a/third_party/private_membership/src/private_membership_rlwe_client_regression_test.cc
++++ b/third_party/private_membership/src/private_membership_rlwe_client_regression_test.cc
+@@ -2,12 +2,12 @@
+ #include <sstream>
+ #include <string>
+ 
+-#include "private_membership/rlwe/client/cpp/private_membership_rlwe_client.h"
+-#include "private_membership/rlwe/client/cpp/internal/testing/regression_test_data/regression_test_data.pb.h"
++#include "third_party/private_membership/src/private_membership_rlwe_client.h"
++#include "third_party/private_membership/src/internal/testing/regression_test_data/regression_test_data.pb.h"
+ #include <gmock/gmock.h>
+ #include <gtest/gtest.h>
+ #include "absl/status/status.h"
+-#include "shell_encryption/testing/status_testing.h"
++#include "third_party/shell-encryption/src/testing/status_testing.h"
+ 
+ namespace private_membership {
+ namespace rlwe {

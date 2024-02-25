@@ -15,8 +15,6 @@ class CommandLine;
 
 namespace content {
 
-extern const char kFirstRendererProcess[];
-
 bool IsPinchToZoomEnabled();
 
 blink::mojom::V8CacheOptions GetV8CacheOptions();

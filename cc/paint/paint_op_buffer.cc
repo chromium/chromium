@@ -87,14 +87,7 @@ PaintOpBuffer::DeserializeOptions::DeserializeOptions(
   DCHECK(scratch_buffer);
 }
 
-PaintOpBuffer::PaintOpBuffer()
-    : has_non_aa_paint_(false),
-      has_discardable_images_(false),
-      has_draw_ops_(false),
-      has_draw_text_ops_(false),
-      has_save_layer_ops_(false),
-      has_save_layer_alpha_ops_(false),
-      has_effects_preventing_lcd_text_for_save_layer_alpha_(false) {}
+PaintOpBuffer::PaintOpBuffer() = default;
 
 PaintOpBuffer::PaintOpBuffer(PaintOpBuffer&& other) {
   *this = std::move(other);
@@ -340,25 +333,21 @@ PaintOpBuffer::BufferDataPtr PaintOpBuffer::ReallocBuffer(size_t new_size) {
   return old_data;
 }
 
-void* PaintOpBuffer::AllocatePaintOp(uint16_t aligned_size) {
+void* PaintOpBuffer::AllocatePaintOpSlowPath(uint16_t aligned_size) {
   DCHECK(is_mutable());
 
   size_t required_size = used_ + aligned_size;
-  if (required_size > reserved_) {
-    // Start reserved_ at kInitialBufferSize and then double.
-    // ShrinkToFit() can make this smaller afterwards.
-    size_t new_size = reserved_ ? reserved_ : kInitialBufferSize;
-    while (required_size > new_size) {
-      new_size *= 2;
-    }
-    ReallocBuffer(new_size);
+  DCHECK_GT(required_size, reserved_) << "Should not have hit the slow path";
+  // Start reserved_ at kInitialBufferSize and then double.
+  // ShrinkToFit() can make this smaller afterwards.
+  size_t new_size = reserved_ ? reserved_ : kInitialBufferSize;
+  while (required_size > new_size) {
+    new_size *= 2;
   }
+  ReallocBuffer(new_size);
   DCHECK_LE(required_size, reserved_);
 
-  void* op = data_.get() + used_;
-  used_ = required_size;
-  op_count_++;
-  return op;
+  return AllocatePaintOp(aligned_size);
 }
 
 void PaintOpBuffer::ShrinkToFit() {

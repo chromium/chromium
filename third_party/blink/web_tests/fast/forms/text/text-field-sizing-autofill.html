@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<link rel="help" href="https://github.com/whatwg/html/pull/9903">
+<script src="../../../resources/testharness.js"></script>
+<script src="../../../resources/testharnessreport.js"></script>
+
+<style>
+#target { field-sizing: content; }
+</style>
+<input id="reference">
+<input id="target">
+
+<script>
+test(() => {
+  assert_less_than(target.offsetWidth, reference.offsetWidth);
+  internals.setSuggestedValue(target, 'suggested quick brown fox jumps');
+  assert_equals(target.offsetWidth, reference.offsetWidth);
+  internals.setSuggestedValue(target, 's');
+  assert_equals(target.offsetWidth, reference.offsetWidth);
+}, 'field-sizing:content is not applied to autofilled controls');
+</script>
+

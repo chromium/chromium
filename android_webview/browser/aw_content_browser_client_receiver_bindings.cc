@@ -2,17 +2,17 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "android_webview/browser/aw_content_browser_client.h"
-
 #include "android_webview/browser/aw_browser_context.h"
+#include "android_webview/browser/aw_content_browser_client.h"
 #include "android_webview/browser/aw_print_manager.h"
 #include "android_webview/browser/renderer_host/aw_render_view_host_ext.h"
 #include "android_webview/browser/safe_browsing/aw_url_checker_delegate_impl.h"
+#include "android_webview/common/aw_features.h"
+#include "android_webview/common/mojom/render_message_filter.mojom.h"
 #include "base/feature_list.h"
 #include "components/autofill/content/browser/content_autofill_driver_factory.h"
 #include "components/cdm/browser/media_drm_storage_impl.h"
 #include "components/content_capture/browser/onscreen_content_provider.h"
-#include "components/environment_integrity/android/android_environment_integrity_service.h"
 #include "components/network_hints/browser/simple_network_hints_handler_impl.h"
 #include "components/page_load_metrics/browser/metrics_web_contents_observer.h"
 #include "components/prefs/pref_service.h"
@@ -20,18 +20,15 @@
 #include "components/safe_browsing/core/common/features.h"
 #include "components/security_interstitials/content/security_interstitial_tab_helper.h"
 #include "components/spellcheck/spellcheck_buildflags.h"
-#include "content/public/browser/browser_associated_interface.h"
+#include "content/public/browser/browser_thread.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/resource_context.h"
-#include "content/public/common/content_features.h"
 #include "media/mojo/buildflags.h"
 #include "mojo/public/cpp/bindings/binder_map.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
 #include "services/service_manager/public/cpp/binder_registry.h"
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_registry.h"
-#include "third_party/blink/public/common/features_generated.h"
-#include "third_party/blink/public/mojom/environment_integrity/environment_integrity_service.mojom.h"
 
 #if BUILDFLAG(ENABLE_SPELLCHECK)
 #include "components/spellcheck/browser/spell_check_host_impl.h"
@@ -92,17 +89,9 @@ void MaybeCreateSafeBrowsing(
   if (!render_process_host)
     return;
 
-  if (base::FeatureList::IsEnabled(safe_browsing::kSafeBrowsingOnUIThread)) {
-    safe_browsing::MojoSafeBrowsingImpl::MaybeCreate(
-        rph_id, std::move(resource_context), std::move(get_checker_delegate),
-        std::move(receiver));
-  } else {
-    content::GetIOThreadTaskRunner({})->PostTask(
-        FROM_HERE,
-        base::BindOnce(&safe_browsing::MojoSafeBrowsingImpl::MaybeCreate,
-                       rph_id, std::move(resource_context),
-                       std::move(get_checker_delegate), std::move(receiver)));
-  }
+  safe_browsing::MojoSafeBrowsingImpl::MaybeCreate(
+      rph_id, std::move(resource_context), std::move(get_checker_delegate),
+      std::move(receiver));
 }
 
 void BindNetworkHintsHandler(
@@ -110,6 +99,47 @@ void BindNetworkHintsHandler(
     mojo::PendingReceiver<network_hints::mojom::NetworkHintsHandler> receiver) {
   network_hints::SimpleNetworkHintsHandlerImpl::Create(frame_host,
                                                        std::move(receiver));
+}
+
+// This class handles android_webview.mojom.RenderMessageFilter Mojo interface's
+// methods on IO thread.
+class AwContentsMessageFilter : public mojom::RenderMessageFilter {
+ public:
+  explicit AwContentsMessageFilter(int process_id);
+
+  AwContentsMessageFilter(const AwContentsMessageFilter&) = delete;
+  AwContentsMessageFilter& operator=(const AwContentsMessageFilter&) = delete;
+
+  // mojom::RenderMessageFilter overrides:
+  void SubFrameCreated(
+      const blink::LocalFrameToken& parent_frame_token,
+      const blink::LocalFrameToken& child_frame_token) override;
+
+  ~AwContentsMessageFilter() override;
+
+ private:
+  const int process_id_;
+};
+
+AwContentsMessageFilter::AwContentsMessageFilter(int process_id)
+    : process_id_(process_id) {}
+
+AwContentsMessageFilter::~AwContentsMessageFilter() = default;
+
+void AwContentsMessageFilter::SubFrameCreated(
+    const blink::LocalFrameToken& parent_frame_token,
+    const blink::LocalFrameToken& child_frame_token) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
+  AwContentsIoThreadClient::SubFrameCreated(process_id_, parent_frame_token,
+                                            child_frame_token);
+}
+
+void CreateRenderMessageFilter(
+    int rph_id,
+    mojo::PendingReceiver<mojom::RenderMessageFilter> receiver) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
+  mojo::MakeSelfOwnedReceiver(std::make_unique<AwContentsMessageFilter>(rph_id),
+                              std::move(receiver));
 }
 
 }  // anonymous namespace
@@ -129,16 +159,11 @@ void AwContentBrowserClient::
     RegisterAssociatedInterfaceBindersForRenderFrameHost(
         content::RenderFrameHost& render_frame_host,
         blink::AssociatedInterfaceRegistry& associated_registry) {
-  // TODO(lingqi): Swap the parameters so that lambda functions are not needed.
   associated_registry.AddInterface<autofill::mojom::AutofillDriver>(
       base::BindRepeating(
-          [](content::RenderFrameHost* render_frame_host,
-             mojo::PendingAssociatedReceiver<autofill::mojom::AutofillDriver>
-                 receiver) {
-            autofill::ContentAutofillDriverFactory::BindAutofillDriver(
-                std::move(receiver), render_frame_host);
-          },
+          &autofill::ContentAutofillDriverFactory::BindAutofillDriver,
           &render_frame_host));
+  // TODO(lingqi): Swap the parameters so that lambda functions are not needed.
   associated_registry.AddInterface<
       content_capture::mojom::ContentCaptureReceiver>(base::BindRepeating(
       [](content::RenderFrameHost* render_frame_host,
@@ -199,16 +224,10 @@ void AwContentBrowserClient::ExposeInterfacesToRenderer(
               base::Unretained(this))),
       content::GetUIThreadTaskRunner({}));
 
-#if BUILDFLAG(ENABLE_SPELLCHECK)
-  auto create_spellcheck_host =
-      [](mojo::PendingReceiver<spellcheck::mojom::SpellCheckHost> receiver) {
-        mojo::MakeSelfOwnedReceiver(std::make_unique<SpellCheckHostImpl>(),
-                                    std::move(receiver));
-      };
-  registry->AddInterface<spellcheck::mojom::SpellCheckHost>(
-      base::BindRepeating(create_spellcheck_host),
-      content::GetUIThreadTaskRunner({}));
-#endif
+  // Add the RenderMessageFilter creation callback, the callbkack will happen on
+  // the IO thread.
+  registry->AddInterface<mojom::RenderMessageFilter>(base::BindRepeating(
+      &CreateRenderMessageFilter, render_process_host->GetID()));
 }
 
 void AwContentBrowserClient::RegisterBrowserInterfaceBindersForFrame(
@@ -217,10 +236,27 @@ void AwContentBrowserClient::RegisterBrowserInterfaceBindersForFrame(
   map->Add<network_hints::mojom::NetworkHintsHandler>(
       base::BindRepeating(&BindNetworkHintsHandler));
 
-  if (base::FeatureList::IsEnabled(blink::features::kWebEnvironmentIntegrity)) {
-    map->Add<blink::mojom::EnvironmentIntegrityService>(base::BindRepeating(
-        &environment_integrity::AndroidEnvironmentIntegrityService::Create));
+#if BUILDFLAG(ENABLE_SPELLCHECK)
+  auto create_spellcheck_host =
+      [](content::RenderFrameHost* render_frame_host,
+         mojo::PendingReceiver<spellcheck::mojom::SpellCheckHost> receiver) {
+        mojo::MakeSelfOwnedReceiver(std::make_unique<SpellCheckHostImpl>(),
+                                    std::move(receiver));
+      };
+  map->Add<spellcheck::mojom::SpellCheckHost>(
+      base::BindRepeating(create_spellcheck_host),
+      content::GetUIThreadTaskRunner({}));
+#endif
+}
+
+void AwContentBrowserClient::
+    RegisterMojoBinderPoliciesForSameOriginPrerendering(
+        content::MojoBinderPolicyMap& policy_map) {
+  if (!base::FeatureList::IsEnabled(features::kWebViewPrerender2)) {
+    return;
   }
+  policy_map.SetAssociatedPolicy<page_load_metrics::mojom::PageLoadMetrics>(
+      content::MojoBinderAssociatedPolicy::kGrant);
 }
 
 }  // namespace android_webview

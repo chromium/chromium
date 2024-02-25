@@ -14,6 +14,7 @@
 #include "base/observer_list.h"
 #include "dbus/exported_object.h"
 #include "dbus/object_path.h"
+#include "device/bluetooth/bluetooth_adapter.h"
 #include "device/bluetooth/bluetooth_device.h"
 #include "device/bluetooth/bluetooth_export.h"
 #include "device/bluetooth/floss/floss_dbus_client.h"
@@ -78,6 +79,15 @@ class DEVICE_BLUETOOTH_EXPORT FlossAdapterClient : public FlossDBusClient {
     kLocalIoCaps,
     kLocalIoCapsBle,
     kDynamicAudioBuffer,
+    kRemoteIsCoordinatedSetMember,
+    kAppearance,
+    kVendorProductInfo,
+    // Unimplemented:
+    //  BT_PROPERTY_WL_MEDIA_PLAYERS_LIST,
+    //  BT_PROPERTY_REMOTE_ASHA_CAPABILITY,
+    //  BT_PROPERTY_REMOTE_ASHA_TRUNCATED_HISYNCID,
+    //  BT_PROPERTY_REMOTE_MODEL_NUM,
+    kRemoteAddrType = 0x18,
 
     kUnknown = 0xFE,
     kRemoteDeviceTimestamp = 0xFF,
@@ -87,6 +97,21 @@ class DEVICE_BLUETOOTH_EXPORT FlossAdapterClient : public FlossDBusClient {
     kNonDiscoverable = 0,
     kLimitedDiscoverable = 1,
     kGeneralDiscoverable = 2,
+  };
+
+  enum class BtAddressType {
+    kPublic = 0,
+    kRandom,
+    kPublicId,
+    kRandomId,
+    kUnknown = 0xfe,
+    kAnonymous = 0xff,
+  };
+
+  enum class BtAdapterRole {
+    kCentral = 0,
+    kPeripheral,
+    kCentralPeripheral,
   };
 
   struct VendorProductInfo {
@@ -217,6 +242,9 @@ class DEVICE_BLUETOOTH_EXPORT FlossAdapterClient : public FlossDBusClient {
   // discoverable state changes.
   uint32_t GetDiscoverableTimeout() const { return discoverable_timeout_; }
 
+  // Indicates if LE extended advertising is supported.
+  bool IsExtAdvSupported() const { return property_ext_adv_supported_.Get(); }
+
   // Start a discovery session.
   virtual void StartDiscovery(ResponseCallback<Void> callback);
 
@@ -258,9 +286,18 @@ class DEVICE_BLUETOOTH_EXPORT FlossAdapterClient : public FlossDBusClient {
       ResponseCallback<device::BluetoothDevice::UUIDList> callback,
       FlossDeviceId device);
 
+  // Triggers SDP to fetch UUIDs of a device.
+  virtual void FetchRemoteUuids(ResponseCallback<bool> callback,
+                                FlossDeviceId device);
+
+  // Gets the Vendor and Product Id of a device
   virtual void GetRemoteVendorProductInfo(
       ResponseCallback<VendorProductInfo> callback,
       FlossDeviceId device);
+
+  // Gets the address type of a device
+  virtual void GetRemoteAddressType(ResponseCallback<BtAddressType> callback,
+                                    FlossDeviceId device);
 
   // Get bonding state of a device.
   virtual void GetBondState(ResponseCallback<uint32_t> callback,
@@ -313,6 +350,10 @@ class DEVICE_BLUETOOTH_EXPORT FlossAdapterClient : public FlossDBusClient {
   virtual void RemoveSdpRecord(ResponseCallback<bool> callback,
                                const int32_t& handle);
 
+  std::vector<BtAdapterRole> GetSupportedRoles() {
+    return property_roles_.Get();
+  }
+
   // Get the object path for this adapter.
   const dbus::ObjectPath* GetObjectPath() const { return &adapter_path_; }
 
@@ -320,6 +361,7 @@ class DEVICE_BLUETOOTH_EXPORT FlossAdapterClient : public FlossDBusClient {
   void Init(dbus::Bus* bus,
             const std::string& service_name,
             const int adapter_index,
+            base::Version version,
             base::OnceClosure on_ready) override;
 
  protected:
@@ -454,6 +496,14 @@ class DEVICE_BLUETOOTH_EXPORT FlossAdapterClient : public FlossDBusClient {
       kAdapterInterface, adapter::kCallbackInterface, adapter::kGetDiscoverable,
       adapter::kOnDiscoverableChanged};
 
+  FlossProperty<bool> property_ext_adv_supported_{
+      kAdapterInterface, adapter::kCallbackInterface,
+      adapter::kIsLeExtendedAdvertisingSupported, nullptr};
+
+  FlossProperty<std::vector<BtAdapterRole>> property_roles_{
+      kAdapterInterface, adapter::kCallbackInterface,
+      adapter::kGetSupportedRoles, nullptr};
+
   // Object path for exported callbacks registered against adapter interface.
   static const char kExportedCallbacksPath[];
 
@@ -464,10 +514,10 @@ class DEVICE_BLUETOOTH_EXPORT FlossAdapterClient : public FlossDBusClient {
   int pending_register_calls_ = 0;
 
   // Callback ID used for callbacks registered to this client.
-  absl::optional<uint32_t> callback_id_;
+  std::optional<uint32_t> callback_id_;
 
   // Callback ID used for connection callbacks registered to this client.
-  absl::optional<uint32_t> connection_callback_id_;
+  std::optional<uint32_t> connection_callback_id_;
 
   base::WeakPtrFactory<FlossAdapterClient> weak_ptr_factory_{this};
 };

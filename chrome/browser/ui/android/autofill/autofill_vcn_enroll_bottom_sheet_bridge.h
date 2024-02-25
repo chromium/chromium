@@ -38,8 +38,14 @@ class AutofillVCNEnrollBottomSheetBridge {
       std::unique_ptr<AutofillVirtualCardEnrollmentInfoBarDelegateMobile>
           delegate);
 
+  void OnAccept(JNIEnv* env);
+  void OnCancel(JNIEnv* env);
+  void OnDismiss(JNIEnv* env);
+  void RecordLinkClickMetric(JNIEnv* env, int link_type);
+
  private:
   base::android::ScopedJavaGlobalRef<jobject> java_bridge_;
+  std::unique_ptr<AutofillVirtualCardEnrollmentInfoBarDelegateMobile> delegate_;
 };
 
 }  // namespace autofill

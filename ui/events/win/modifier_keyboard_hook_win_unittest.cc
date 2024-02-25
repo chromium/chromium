@@ -3,12 +3,12 @@
 // found in the LICENSE file.
 
 #include <memory>
+#include <optional>
 #include <vector>
 
 #include "base/containers/flat_set.h"
 #include "base/functional/bind.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/events/event.h"
 #include "ui/events/keyboard_hook.h"
 #include "ui/events/keycodes/dom/dom_code.h"
@@ -63,7 +63,7 @@ ModifierKeyboardHookWinTest::~ModifierKeyboardHookWinTest() = default;
 
 void ModifierKeyboardHookWinTest::SetUp() {
   keyboard_hook_ = KeyboardHookWinBase::CreateModifierKeyboardHookForTesting(
-      absl::optional<base::flat_set<DomCode>>(),
+      std::optional<base::flat_set<DomCode>>(),
       base::BindRepeating(&ModifierKeyboardHookWinTest::HandleKeyPress,
                           base::Unretained(this)));
 

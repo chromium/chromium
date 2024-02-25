@@ -158,7 +158,7 @@ void WINAPI ServiceMain::ServiceMainEntry(DWORD argc, wchar_t* argv[]) {
 }
 
 void ServiceMain::SetServiceStatus(DWORD state) {
-  ::InterlockedExchange(&service_status_.dwCurrentState, state);
+  service_status_.dwCurrentState = state;
   ::SetServiceStatus(service_status_handle_, &service_status_);
 }
 
@@ -168,8 +168,12 @@ HRESULT ServiceMain::Run(const base::CommandLine& command_line) {
     return RunCOMServer();
   }
 
-  VLOG(2) << "Running Wake task from the Windows Service";
-  return RunWakeTask();
+  if (IsInternalService()) {
+    VLOG(2) << "Running Wake task from the Windows Service";
+    return RunWakeTask();
+  }
+
+  return S_OK;
 }
 
 HRESULT ServiceMain::RunCOMServer() {

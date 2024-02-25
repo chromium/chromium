@@ -53,8 +53,8 @@ class ArcInputMethodManagerBridgeImpl
   void OnImeInfoChanged(std::vector<mojom::ImeInfoPtr> ime_info_array) override;
 
  private:
-  const raw_ptr<Delegate, ExperimentalAsh> delegate_;
-  const raw_ptr<ArcBridgeService, ExperimentalAsh>
+  const raw_ptr<Delegate> delegate_;
+  const raw_ptr<ArcBridgeService>
       bridge_service_;  // Owned by ArcServiceManager
 };
 

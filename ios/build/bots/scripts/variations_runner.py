@@ -14,7 +14,7 @@ import test_apps
 import test_runner
 from test_result_util import ResultCollection, TestResult, TestStatus
 from xcodebuild_runner import SimulatorParallelTestRunner
-import xcode_log_parser
+from xcode_log_parser import XcodeLogParser
 
 _THIS_DIR = os.path.dirname(os.path.abspath(__file__))
 _SRC_DIR = os.path.join(_THIS_DIR, os.path.pardir, os.path.pardir,
@@ -42,7 +42,6 @@ class VariationsSimulatorParallelTestRunner(SimulatorParallelTestRunner):
                          platform, out_dir, **kwargs)
     self.variations_seed_path = variations_seed_path
     self.host_app_bundle_id = test_apps.get_bundle_id(self.host_app_path)
-    self.log_parser = xcode_log_parser.get_parser()
     self.test_app = self.get_launch_test_app()
 
   def _user_data_dir(self):
@@ -57,16 +56,6 @@ class VariationsSimulatorParallelTestRunner(SimulatorParallelTestRunner):
                                                        self.udid)
     return os.path.join(app_data_path, 'Library', 'Application Support',
                         'Google', 'Chrome')
-
-  def _write_accepted_eula(self):
-    """Writes eula accepted to Local State.
-
-    This is needed once. Chrome host app doesn't have it accepted and variations
-    seed fetching requires it.
-    """
-    seed_helper.update_local_state(self._user_data_dir(),
-                                   {'EulaAccepted': True})
-    LOGGER.info('Wrote EulaAccepted: true to Local State.')
 
   def _reset_last_fetch_time(self):
     """Resets last fetch time to one day before so the next fetch can happen.
@@ -115,7 +104,7 @@ class VariationsSimulatorParallelTestRunner(SimulatorParallelTestRunner):
 
     if _VERIFY_FETCHED_IN_CURRENT_LAUNCH_ARG in self.test_app.test_args:
       self.test_app.test_args.remove(_VERIFY_FETCHED_IN_CURRENT_LAUNCH_ARG)
-    return self.log_parser.collect_test_results(launch_out_dir, output)
+    return XcodeLogParser.collect_test_results(launch_out_dir, output)
 
   def _launch_variations_smoke_test(self):
     """Runs variations smoke test logic which involves multiple test launches.
@@ -123,17 +112,6 @@ class VariationsSimulatorParallelTestRunner(SimulatorParallelTestRunner):
     Returns:
       Tuple of (bool, str) Success status and reason.
     """
-    # Launch app once to install app and create Local State file.
-    first_launch_result = self._launch_app_once('first_launch')
-    # Test will fail because there isn't EulaAccepted pref in Local State and no
-    # fetch will happen.
-    if first_launch_result.passed_tests():
-      log = 'Test passed (expected to fail) at first launch (to install app).'
-      LOGGER.error(log)
-      return False, log
-
-    self._write_accepted_eula()
-
     # Launch app to make it fetch seed from server.
     fetch_launch_result = self._launch_app_once(
         'fetch_launch', verify_fetched_within_launch=True)

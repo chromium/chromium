@@ -1,0 +1,75 @@
+# Copyright 2023 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//services/on_device_model/on_device_model.gni")
+import("//third_party/dawn/scripts/dawn_features.gni")
+
+template("model_service") {
+  component(target_name) {
+    sources = [
+      "on_device_model_service.cc",
+      "on_device_model_service.h",
+      "pre_sandbox_init.cc",
+    ]
+    deps = [
+      "//services/on_device_model/public/cpp",
+
+      # TODO(crbug.com/1519723): Remove this once possible. This is a hack due to
+      # an implicit dependency via //third_party/utf via language_detection above.
+      "//third_party/libphonenumber",
+      "//third_party/utf",
+    ]
+    public_deps = [
+      "//base",
+      "//mojo/public/cpp/bindings",
+      "//sandbox/policy",
+      "//services/on_device_model/public/cpp",
+      "//services/on_device_model/public/mojom",
+    ]
+    defines = [ "IS_ON_DEVICE_MODEL_IMPL" ]
+    if (dawn_use_built_dxc) {
+      defines += [ "DAWN_USE_BUILT_DXC" ]
+    }
+    if (invoker.enable_internal) {
+      sources += [ "on_device_model_internal.cc" ]
+      deps += [ "//services/on_device_model/ml" ]
+
+      # NOTE: Not a buildflag since it's controllable per target.
+      defines += [ "ENABLE_ML_INTERNAL" ]
+    } else {
+      sources += [ "on_device_model.cc" ]
+    }
+
+    if (is_linux || is_chromeos) {
+      deps += [
+        "//gpu/config",
+        "//third_party/dawn/src/dawn:cpp",
+        "//third_party/dawn/src/dawn:proc",
+        "//third_party/dawn/src/dawn/native",
+      ]
+    }
+  }
+}
+
+model_service("on_device_model_service") {
+  enable_internal = enable_ml_internal
+}
+
+model_service("on_device_model_service_for_test") {
+  enable_internal = false
+}
+
+source_set("tests") {
+  testonly = true
+
+  sources = [ "on_device_model_service_unittest.cc" ]
+  deps = [
+    ":on_device_model_service_for_test",
+    "//base/test:test_support",
+    "//services/on_device_model/public/cpp/test_support",
+    "//services/on_device_model/public/mojom",
+    "//testing/gmock",
+    "//testing/gtest",
+  ]
+}

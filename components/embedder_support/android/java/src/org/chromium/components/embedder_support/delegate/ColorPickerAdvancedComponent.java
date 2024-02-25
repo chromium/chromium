@@ -39,8 +39,11 @@ public class ColorPickerAdvancedComponent {
      * @param seekBarMax The range of the seek bar.
      * @param seekBarListener The listener for when the seek bar value changes.
      */
-    ColorPickerAdvancedComponent(final View rootView, final int textResourceId,
-            final int seekBarMax, final OnSeekBarChangeListener seekBarListener) {
+    ColorPickerAdvancedComponent(
+            final View rootView,
+            final int textResourceId,
+            final int seekBarMax,
+            final OnSeekBarChangeListener seekBarListener) {
         mGradientView = rootView.findViewById(R.id.gradient);
         mText = (TextView) rootView.findViewById(R.id.text);
         mText.setText(textResourceId);
@@ -51,16 +54,15 @@ public class ColorPickerAdvancedComponent {
         // Setting the thumb offset means the seek bar thumb can move all the way to each end
         // of the gradient view.
         Context context = rootView.getContext();
-        int offset = ApiCompatibilityUtils
-                             .getDrawable(context.getResources(),
-                                     R.drawable.color_picker_advanced_select_handle)
-                             .getIntrinsicWidth();
+        int offset =
+                ApiCompatibilityUtils.getDrawable(
+                                context.getResources(),
+                                R.drawable.color_picker_advanced_select_handle)
+                        .getIntrinsicWidth();
         mSeekBar.setThumbOffset(offset / 2);
     }
 
-    /**
-     * @return The value represented by this component, maintained by the seek bar progress.
-     */
+    /** @return The value represented by this component, maintained by the seek bar progress. */
     public float getValue() {
         return mSeekBar.getProgress();
     }

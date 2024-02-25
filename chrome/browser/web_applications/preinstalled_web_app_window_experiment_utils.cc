@@ -24,20 +24,21 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_attributes_entry.h"
 // TODO(crbug.com/1402146): Allow web apps to depend on app service.
+#include <optional>
+
 #include "chrome/browser/apps/app_service/metrics/app_service_metrics.h"  // nogncheck
 #include "chrome/browser/profiles/profile_attributes_storage.h"
 #include "chrome/browser/profiles/profile_manager.h"
-#include "chrome/browser/profiles/profiles_state.h"
 #include "chrome/browser/web_applications/mojom/user_display_mode.mojom-shared.h"
 #include "chrome/browser/web_applications/web_app.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
 #include "chrome/common/chrome_features.h"
+#include "chromeos/components/mgs/managed_guest_session_utils.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/pref_service.h"
 #include "components/prefs/scoped_user_pref_update.h"
 #include "components/webapps/browser/installable/installable_metrics.h"
 #include "content/public/browser/browser_thread.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chrome/browser/ash/profiles/profile_helper.h"
@@ -102,12 +103,12 @@ void DeleteExperimentPrefs(PrefService* pref_service) {
 // User group:
 ///////////////////////////////////////////////////////////////////////////////
 
-absl::optional<UserDisplayMode> UserGroupToUserDisplayMode(
+std::optional<UserDisplayMode> UserGroupToUserDisplayMode(
     UserGroup user_group) {
   switch (user_group) {
     case UserGroup::kUnknown:
     case UserGroup::kControl:
-      return absl::nullopt;
+      return std::nullopt;
     case UserGroup::kWindow:
       return UserDisplayMode::kStandalone;
     case UserGroup::kTab:
@@ -154,7 +155,7 @@ void SetUserGroupPref(PrefService* pref_service, UserGroup user_group) {
 // Eligibility:
 ///////////////////////////////////////////////////////////////////////////////
 
-absl::optional<bool> GetEligibilityPref(const PrefService* pref_service) {
+std::optional<bool> GetEligibilityPref(const PrefService* pref_service) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   const base::Value::Dict& experiment_prefs =
       pref_service->GetDict(kWebAppPreinstalledAppWindowExperimentPref);
@@ -176,8 +177,8 @@ constexpr base::Time kOldestAllowedInstallTime =
 bool AllWebAppsInstalledRecently(WebAppRegistrar& registrar) {
   for (const WebApp& web_app : registrar.GetApps()) {
     // Some old web apps may not have an install_time set.
-    if (web_app.install_time().is_null() ||
-        web_app.install_time() < kOldestAllowedInstallTime) {
+    if (web_app.first_install_time().is_null() ||
+        web_app.first_install_time() < kOldestAllowedInstallTime) {
       return false;
     }
   }
@@ -216,7 +217,7 @@ bool AnyWebAppsInstalledByPolicy(WebAppRegistrar& registrar) {
 
 // Managed Guest Sessions and ephemeral profiles are not eligible.
 bool ProfileIsEligible(Profile* profile) {
-  if (profiles::IsManagedGuestSession()) {
+  if (chromeos::IsManagedGuestSession()) {
     return false;
   }
 
@@ -244,7 +245,7 @@ bool DetermineEligibility(Profile* profile, WebAppRegistrar& registrar) {
 // Apps launched before experiment:
 ///////////////////////////////////////////////////////////////////////////////
 
-bool HasLaunchedAppBeforeExperiment(const AppId& app_id,
+bool HasLaunchedAppBeforeExperiment(const webapps::AppId& app_id,
                                     PrefService* pref_service) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
@@ -256,12 +257,12 @@ bool HasLaunchedAppBeforeExperiment(const AppId& app_id,
 
 void SetHasLaunchedAppsBeforePref(
     PrefService* pref_service,
-    const base::flat_set<AppId>& preinstalled_apps_launched_before) {
+    const base::flat_set<webapps::AppId>& preinstalled_apps_launched_before) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
   ScopedListPrefUpdate update(pref_service, kAppIdsLaunchedBeforePrefKey);
   update->clear();
-  for (const AppId& app_id : preinstalled_apps_launched_before) {
+  for (const webapps::AppId& app_id : preinstalled_apps_launched_before) {
     update->Append(app_id);
   }
 }
@@ -270,14 +271,14 @@ void SetHasLaunchedAppsBeforePref(
 // Display mode:
 ///////////////////////////////////////////////////////////////////////////////
 
-base::flat_set<AppId> GetAppIdsWithUserOverridenDisplayModePref(
+base::flat_set<webapps::AppId> GetAppIdsWithUserOverridenDisplayModePref(
     PrefService* pref_service) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
   const base::Value::List& user_overridden_app_ids =
       pref_service->GetList(kAppIdsWithUserOverriddenDisplayModePrefKey);
 
-  std::vector<AppId> app_ids;
+  std::vector<webapps::AppId> app_ids;
   for (auto& app_id_value : user_overridden_app_ids) {
     if (app_id_value.is_string()) {
       app_ids.push_back(app_id_value.GetString());
@@ -288,7 +289,7 @@ base::flat_set<AppId> GetAppIdsWithUserOverridenDisplayModePref(
 
 // Add `app_id` to list of apps with user-overridden display mode.
 void SetUserOverridenDisplayModePref(PrefService* pref_service,
-                                     const AppId& app_id) {
+                                     const webapps::AppId& app_id) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
   ScopedListPrefUpdate update(pref_service,

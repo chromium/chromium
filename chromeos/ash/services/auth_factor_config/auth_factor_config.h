@@ -5,11 +5,16 @@
 #ifndef CHROMEOS_ASH_SERVICES_AUTH_FACTOR_CONFIG_AUTH_FACTOR_CONFIG_H_
 #define CHROMEOS_ASH_SERVICES_AUTH_FACTOR_CONFIG_AUTH_FACTOR_CONFIG_H_
 
+#include <optional>
+
 #include "base/containers/enum_set.h"
+#include "base/functional/callback_forward.h"
+#include "base/memory/raw_ref.h"
 #include "chromeos/ash/components/login/auth/auth_factor_editor.h"
 #include "chromeos/ash/components/login/auth/public/authentication_error.h"
 #include "chromeos/ash/services/auth_factor_config/chrome_browser_delegates.h"
 #include "chromeos/ash/services/auth_factor_config/public/mojom/auth_factor_config.mojom.h"
+#include "components/prefs/pref_service.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
 #include "mojo/public/cpp/bindings/remote_set.h"
 
@@ -21,11 +26,35 @@ namespace ash::auth {
 // The implementation of the AuthFactorConfig service.
 class AuthFactorConfig : public mojom::AuthFactorConfig {
  public:
+  class TestApi {
+   public:
+    explicit TestApi(AuthFactorConfig& auth_factor_config)
+        : auth_factor_config_(auth_factor_config) {}
+
+    // Injects a callback that gets invoked after knowledge factor
+    // is added.
+    void SetAddKnowledgeFactorCallback(base::OnceClosure callback) {
+      auth_factor_config_->SetAddKnowledgeFactorCallbackForTesting(
+          std::move(callback));
+    }
+
+    // Instructs AuthFactorConfig not to inform
+    // UserDirectoryIntegrityManager about added factors.
+    void SetSkipUserIntegrityNotification(bool skip_notification) {
+      auth_factor_config_->SetSkipUserIntegrityNotificationForTesting(
+          skip_notification);
+    }
+
+   private:
+    const raw_ref<AuthFactorConfig> auth_factor_config_;
+  };
+
   using AuthFactorSet = base::EnumSet<mojom::AuthFactor,
                                       mojom::AuthFactor::kMinValue,
                                       mojom::AuthFactor::kMaxValue>;
 
-  explicit AuthFactorConfig(QuickUnlockStorageDelegate*);
+  explicit AuthFactorConfig(QuickUnlockStorageDelegate*,
+                            PrefService* local_state);
   ~AuthFactorConfig() override;
 
   AuthFactorConfig(const AuthFactorConfig&) = delete;
@@ -78,18 +107,51 @@ class AuthFactorConfig : public mojom::AuthFactorConfig {
                                          std::unique_ptr<UserContext> context,
                                          base::OnceCallback<void()> callback);
 
+  // Called when user is known to have knowledge factor set up.
+  void OnUserHasKnowledgeFactor(const UserContext& context);
+
  private:
+  friend class TestApi;
+
+  void ObtainContext(
+      const std::string& auth_token,
+      base::OnceCallback<void(std::unique_ptr<UserContext>)> callback);
+  void IsSupportedWithContext(const std::string& auth_token,
+                              mojom::AuthFactor factor,
+                              base::OnceCallback<void(bool)> callback,
+                              std::unique_ptr<UserContext> context);
+  void IsConfiguredWithContext(const std::string& auth_token,
+                               mojom::AuthFactor factor,
+                               base::OnceCallback<void(bool)>,
+                               std::unique_ptr<UserContext> context);
+  void IsEditableWithContext(const std::string& auth_token,
+                             mojom::AuthFactor factor,
+                             base::OnceCallback<void(bool)>,
+                             std::unique_ptr<UserContext> context);
   void OnGetAuthFactorsConfiguration(
       AuthFactorSet changed_factors,
       base::OnceCallback<void(mojom::ConfigureResult)> callback,
       const std::string& auth_token,
       std::unique_ptr<UserContext> context,
-      absl::optional<AuthenticationError> error);
+      std::optional<AuthenticationError> error);
+
+  void SetAddKnowledgeFactorCallbackForTesting(base::OnceClosure callback);
+  void SetSkipUserIntegrityNotificationForTesting(bool skip_notification);
 
   raw_ptr<QuickUnlockStorageDelegate> quick_unlock_storage_;
+  // This instance is held by browser process (see in_process_instances)
+  // as well as local_state_, so they should be local state would become
+  // invalid quite late in the flow, by that time it should not be possible
+  // to interact with AuthFactorConfig.
+  raw_ptr<PrefService, DisableDanglingPtrDetection> local_state_;
   mojo::ReceiverSet<mojom::AuthFactorConfig> receivers_;
   mojo::RemoteSet<mojom::FactorObserver> observers_;
   AuthFactorEditor auth_factor_editor_;
+
+  // Used for testing, invoked when a knowledge factor is added.
+  base::OnceClosure add_knowledge_factor_callback_;
+  std::optional<bool> skip_user_integrity_notification_;
+
   base::WeakPtrFactory<AuthFactorConfig> weak_factory_{this};
 };
 

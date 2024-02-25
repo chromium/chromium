@@ -1,0 +1,29 @@
+<style include="common">
+  #loading {
+    align-items: center;
+    background-color: var(--cros-button-background-color-primary-disabled);
+    border-radius: 16px;
+    color: var(--cros-button-label-color-primary-disabled);
+    display: flex;
+    flex-direction: row;
+    gap: 10px;
+    height: 32px;
+    justify-content: center;
+    padding-inline: 14px;
+  }
+
+  paper-spinner-lite {
+    --paper-spinner-color: var(--cros-button-label-color-primary-disabled);
+    height: 20px;
+    width: 20px;
+  }
+
+  .loading-text {
+    cursor: default;
+    margin: 0;
+  }
+</style>
+<div id="loading">
+  <paper-spinner-lite active></paper-spinner-lite>
+  <p class="loading-text">[[i18n('seaPenCreatingHighResImage')]]</p>
+</div>

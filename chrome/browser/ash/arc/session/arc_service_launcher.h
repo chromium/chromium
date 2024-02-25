@@ -8,6 +8,8 @@
 #include <memory>
 
 #include "base/memory/raw_ptr.h"
+#include "base/scoped_observation.h"
+#include "chrome/browser/ash/arc/session/arc_session_manager_observer.h"
 #include "media/media_buildflags.h"
 
 #if BUILDFLAG(USE_ARC_PROTECTED_MEDIA)
@@ -32,7 +34,7 @@ class ArcVmDataMigrationNotifier;
 class BrowserUrlOpener;
 
 // Detects ARC availability and launches ARC bridge service.
-class ArcServiceLauncher {
+class ArcServiceLauncher : public ArcSessionManagerObserver {
  public:
   // |scheduler_configuration_manager| must outlive |this| object.
   explicit ArcServiceLauncher(
@@ -41,7 +43,7 @@ class ArcServiceLauncher {
   ArcServiceLauncher(const ArcServiceLauncher&) = delete;
   ArcServiceLauncher& operator=(const ArcServiceLauncher&) = delete;
 
-  ~ArcServiceLauncher();
+  ~ArcServiceLauncher() override;
 
   // Returns a global instance.
   static ArcServiceLauncher* Get();
@@ -71,6 +73,9 @@ class ArcServiceLauncher {
   static void EnsureFactoriesBuilt();
 
  private:
+  // ArcSessionManagerObserver overrides:
+  void OnArcPlayStoreEnabledChanged(bool enabled) override;
+
 #if BUILDFLAG(USE_ARC_PROTECTED_MEDIA)
   // Callback for when the CdmFactoryDaemon D-Bus service is available, also
   // used to trigger expanding the property files if a timeout occurs after we
@@ -102,8 +107,12 @@ class ArcServiceLauncher {
   std::unique_ptr<ArcVmDataMigrationNotifier> arc_vm_data_migration_notifier_;
 
   // |scheduler_configuration_manager_| outlives |this|.
-  const raw_ptr<ash::SchedulerConfigurationManagerBase, ExperimentalAsh>
+  const raw_ptr<ash::SchedulerConfigurationManagerBase>
       scheduler_configuration_manager_;
+
+  // Observes ArcSessionManager for changes to ARC-enabled.
+  base::ScopedObservation<ArcSessionManager, ArcSessionManagerObserver>
+      session_manager_obs_{this};
 
 #if BUILDFLAG(USE_ARC_PROTECTED_MEDIA)
   base::WeakPtrFactory<ArcServiceLauncher> weak_factory_{this};

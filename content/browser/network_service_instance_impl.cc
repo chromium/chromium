@@ -9,6 +9,7 @@
 #include <utility>
 
 #include "base/base_paths.h"
+#include "base/callback_list.h"
 #include "base/check.h"
 #include "base/command_line.h"
 #include "base/environment.h"
@@ -23,7 +24,6 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/no_destructor.h"
-#include "base/path_service.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/synchronization/waitable_event.h"
@@ -35,9 +35,9 @@
 #include "base/threading/thread.h"
 #include "base/threading/thread_restrictions.h"
 #include "base/trace_event/trace_event.h"
+#include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "content/browser/browser_main_loop.h"
-#include "content/browser/buildflags.h"
 #include "content/browser/first_party_sets/first_party_sets_handler_impl.h"
 #include "content/browser/network/http_cache_backend_file_operations_factory.h"
 #include "content/browser/network/socket_broker_impl.h"
@@ -65,7 +65,6 @@
 #include "services/network/network_service.h"
 #include "services/network/public/cpp/features.h"
 #include "services/network/public/cpp/network_switches.h"
-#include "services/network/public/cpp/thread_delegate.h"
 #include "services/network/public/mojom/net_log.mojom.h"
 #include "services/network/public/mojom/network_change_manager.mojom.h"
 #include "services/network/public/mojom/network_context.mojom.h"
@@ -93,45 +92,30 @@
 #include "services/network/public/mojom/network_interface_change_listener.mojom.h"
 #endif
 
-#if BUILDFLAG(IS_ANDROID)
-#include "content/public/common/content_switches.h"
-#endif
-
 namespace content {
 
 namespace {
 
 #if BUILDFLAG(IS_POSIX)
-// Environment variable pointing to credential cache file.
+// Environment variable pointing to Kerberos credential cache file.
 constexpr char kKrb5CCEnvName[] = "KRB5CCNAME";
 // Environment variable pointing to Kerberos config file.
 constexpr char kKrb5ConfEnvName[] = "KRB5_CONFIG";
 #endif
 
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-constexpr char kKrb5CCFilePrefix[] = "FILE:";
-constexpr char kKrb5Directory[] = "kerberos";
-constexpr char kKrb5CCFile[] = "krb5cc";
-constexpr char kKrb5ConfFile[] = "krb5.conf";
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
+#if BUILDFLAG(IS_CHROMEOS)
+// File paths to the Kerberos credentials cache and configuration. The `FILE:`
+// prefix describes the type of credentials cache used. The `/home/chronos/user`
+// subpath corresponds to a bind mount of the active user.
+constexpr char kKrb5CCFilePath[] = "FILE:/home/chronos/user/kerberos/krb5cc";
+constexpr char kKrb5ConfFilePath[] = "/home/chronos/user/kerberos/krb5.conf";
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 bool g_force_create_network_service_directly = false;
 mojo::Remote<network::mojom::NetworkService>* g_network_service_remote =
     nullptr;
-#if BUILDFLAG(IS_ANDROID)
-mojo::Remote<network::mojom::EmptyNetworkService>*
-    g_empty_network_service_remote = nullptr;
-bool IsEmptyNetworkServiceEnabledForUMA() {
-  return IsInProcessNetworkService() &&
-         !base::CommandLine::ForCurrentProcess()->HasSwitch(
-             switches::kSingleProcess) &&
-         base::FeatureList::IsEnabled(
-             network::features::kNetworkServiceEmptyOutOfProcess);
-}
-#endif
 network::NetworkConnectionTracker* g_network_connection_tracker;
 bool g_network_service_is_responding = false;
-base::Time g_last_network_service_crash;
 
 // A directory name that is created below the http cache path and passed to the
 // network context when creating a network context with cache enabled.
@@ -147,13 +131,6 @@ std::unique_ptr<network::NetworkService>& GetLocalNetworkService() {
       service;
   return service.GetOrCreateValue();
 }
-
-// If this is enabled, RestrictedCookieManagers in the network service will
-// receive messages on a high priority task queue to improve performance of sync
-// cookie calls from the renderer.
-BASE_FEATURE(kNetworkServiceCookiesHighPriorityTaskRunner,
-             "NetworkServiceCookiesHighPriorityTaskRunner",
-             base::FEATURE_DISABLED_BY_DEFAULT);
 
 // If this feature is enabled, the Network Service will run on its own thread
 // when running in-process; otherwise it will run on the IO thread.
@@ -338,7 +315,7 @@ void CreateNetworkContextInternal(
   // This might recreate g_client if the network service needed to be restarted.
   auto* network_service = GetNetworkService();
 
-#if BUILDFLAG(USE_SOCKET_BROKER)
+#if BUILDFLAG(IS_WIN)
   // If the browser has started shutting down, it is possible that either a)
   // `g_client` was never created if shutdown started before the network service
   // was created, or b) the network service might have crashed meaning
@@ -348,10 +325,12 @@ void CreateNetworkContextInternal(
   // down anyway.
   if (!GetContentClient()->browser()->IsShuttingDown() &&
       GetContentClient()->browser()->ShouldSandboxNetworkService() &&
-      !params->socket_broker) {
-    params->socket_broker = g_client->BindSocketBroker();
+      !params->socket_brokers) {
+    params->socket_brokers = network::mojom::SocketBrokerRemotes::New();
+    params->socket_brokers->client = g_client->BindSocketBroker();
+    params->socket_brokers->server = g_client->BindSocketBroker();
   }
-#endif  // BUILDFLAG(USE_SOCKET_BROKER)
+#endif  // BUILDFLAG(IS_WIN)
 
   network_service->CreateNetworkContext(std::move(context), std::move(params));
 }
@@ -361,33 +340,12 @@ scoped_refptr<base::SequencedTaskRunner>& GetNetworkTaskRunnerStorage() {
   return *storage;
 }
 
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-base::FilePath GetKerberosDir() {
-  base::FilePath dir;
-  base::PathService::Get(base::DIR_HOME, &dir);
-  return dir.Append(kKrb5Directory);
-}
-
-std::string GetKrb5CCEnvValue() {
-  return kKrb5CCFilePrefix + GetKerberosDir().Append(kKrb5CCFile).value();
-}
-
-std::string GetKrb5ConfEnvValue() {
-  return GetKerberosDir().Append(kKrb5ConfFile).value();
-}
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
-
 void CreateInProcessNetworkService(
     mojo::PendingReceiver<network::mojom::NetworkService> receiver) {
   TRACE_EVENT0("loading", "CreateInProcessNetworkService");
   scoped_refptr<base::SingleThreadTaskRunner> task_runner;
   if (base::FeatureList::IsEnabled(kNetworkServiceDedicatedThread)) {
     base::Thread::Options options(base::MessagePumpType::IO, 0);
-    if (base::FeatureList::IsEnabled(
-            kNetworkServiceCookiesHighPriorityTaskRunner)) {
-      options.delegate =
-          std::make_unique<network::ThreadDelegate>(options.message_pump_type);
-    }
     GetNetworkServiceDedicatedThread().StartWithOptions(std::move(options));
     task_runner = GetNetworkServiceDedicatedThread().task_runner();
   } else {
@@ -399,26 +357,6 @@ void CreateInProcessNetworkService(
   GetNetworkTaskRunner()->PostTask(
       FROM_HERE, base::BindOnce(&CreateInProcessNetworkServiceOnThread,
                                 std::move(receiver)));
-#if BUILDFLAG(IS_ANDROID)
-  if (IsEmptyNetworkServiceEnabledForUMA() &&
-      // DownloadManagerService.java calls this in ServiceManagerOnlyMode, where
-      // this is called before the browser threads are initialized and UI thread
-      // is not named Chrome_UIThread at that point. We avoid such rare case.
-      BrowserThread::CurrentlyOn(BrowserThread::UI)) {
-    if (!g_empty_network_service_remote) {
-      g_empty_network_service_remote =
-          new mojo::Remote<network::mojom::EmptyNetworkService>;
-    }
-    g_empty_network_service_remote->reset();
-    mojo::PendingReceiver<network::mojom::EmptyNetworkService> empty_receiver =
-        g_empty_network_service_remote->BindNewPipeAndPassReceiver();
-    ServiceProcessHost::Options options;
-    options.WithDisplayName(u"Empty Network Service");
-    options.WithExtraCommandLineSwitches(
-        {network::switches::kRegisterEmptyNetworkService});
-    ServiceProcessHost::Launch(std::move(empty_receiver), std::move(options));
-  }
-#endif
 }
 
 #if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_LINUX)
@@ -461,17 +399,20 @@ network::mojom::NetworkServiceParamsPtr CreateNetworkServiceParams() {
   }
 #endif  // BUILDFLAG(IS_LINUX)
 
-#if BUILDFLAG(IS_POSIX)
-  // Send Kerberos environment variables to the network service.
+#if BUILDFLAG(IS_CHROMEOS)
+  // On ChromeOS, the network service is always out of process (unless
+  // --single-process is set on the command-line). In any case, we set Kerberos
+  // environment variables during the service initialization.
+  network_service_params->environment.push_back(
+      network::mojom::EnvironmentVariable::New(kKrb5CCEnvName,
+                                               kKrb5CCFilePath));
+  network_service_params->environment.push_back(
+      network::mojom::EnvironmentVariable::New(kKrb5ConfEnvName,
+                                               kKrb5ConfFilePath));
+#elif BUILDFLAG(IS_POSIX)
+  // Send Kerberos environment variables to the network service, if it's running
+  // in another process.
   if (IsOutOfProcessNetworkService()) {
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-    network_service_params->environment.push_back(
-        network::mojom::EnvironmentVariable::New(kKrb5CCEnvName,
-                                                 GetKrb5CCEnvValue()));
-    network_service_params->environment.push_back(
-        network::mojom::EnvironmentVariable::New(kKrb5ConfEnvName,
-                                                 GetKrb5ConfEnvValue()));
-#else
     std::unique_ptr<base::Environment> env(base::Environment::Create());
     std::string value;
     if (env->HasVar(kKrb5CCEnvName)) {
@@ -484,7 +425,6 @@ network::mojom::NetworkServiceParamsPtr CreateNetworkServiceParams() {
       network_service_params->environment.push_back(
           network::mojom::EnvironmentVariable::New(kKrb5ConfEnvName, value));
     }
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
   }
 #endif  // BUILDFLAG(IS_POSIX)
 
@@ -504,6 +444,8 @@ network::mojom::NetworkServiceParamsPtr CreateNetworkServiceParams() {
   }
 #endif  // BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_LINUX)
 
+  network_service_params->ip_protection_proxy_bypass_policy =
+      GetContentClient()->browser()->GetIpProtectionProxyBypassPolicy();
   return network_service_params;
 }
 
@@ -530,18 +472,17 @@ void BindNetworkChangeManagerReceiver(
   GetNetworkService()->GetNetworkChangeManager(std::move(receiver));
 }
 
-base::RepeatingClosureList& GetCrashHandlersList() {
-  static base::NoDestructor<base::RepeatingClosureList> s_list;
+base::RepeatingCallbackList<void(bool)>& GetProcessGoneHandlersList() {
+  static base::NoDestructor<base::RepeatingCallbackList<void(bool)>> s_list;
   return *s_list;
 }
 
-void OnNetworkServiceCrash() {
+void OnNetworkServiceProcessGone(bool crashed) {
   DCHECK(BrowserThread::CurrentlyOn(BrowserThread::UI));
   DCHECK(g_network_service_remote);
   DCHECK(g_network_service_remote->is_bound());
-  DCHECK(!g_network_service_remote->is_connected());
-  g_last_network_service_crash = base::Time::Now();
-  GetCrashHandlersList().Notify();
+  DCHECK(!crashed || !g_network_service_remote->is_connected());
+  GetProcessGoneHandlersList().Notify(crashed);
 }
 
 // Parses the desired granularity of NetLog capturing specified by the command
@@ -609,11 +550,6 @@ int64_t GetNetMaximumFileSizeFromCommandLine(
   return max_size_bytes;
 }
 
-base::RepeatingClosure& OnNetworkServiceRestartedCbStorage() {
-  static base::SequenceLocalStorageSlot<base::RepeatingClosure> restarted_cb;
-  return restarted_cb.GetOrCreateValue();
-}
-
 }  // namespace
 
 class NetworkServiceInstancePrivate {
@@ -655,20 +591,16 @@ network::mojom::NetworkService* GetNetworkService() {
         mojo::PendingReceiver<network::mojom::NetworkService> receiver =
             g_network_service_remote->BindNewPipeAndPassReceiver();
         g_network_service_remote->set_disconnect_handler(
-            base::BindOnce(&OnNetworkServiceCrash));
+            base::BindOnce(&OnNetworkServiceProcessGone, /*crashed=*/true));
         if (IsInProcessNetworkService()) {
           CreateInProcessNetworkService(std::move(receiver));
         } else {
           if (service_was_bound)
             LOG(ERROR) << "Network service crashed, restarting service.";
-          ServiceProcessHost::Options options;
-          options.WithDisplayName(u"Network Service");
-          if (base::FeatureList::IsEnabled(
-                  kNetworkServiceCookiesHighPriorityTaskRunner)) {
-            options.WithExtraCommandLineSwitches(
-                {network::switches::kNetworkServiceScheduler});
-          }
-          ServiceProcessHost::Launch(std::move(receiver), std::move(options));
+          ServiceProcessHost::Launch(std::move(receiver),
+                                     ServiceProcessHost::Options()
+                                         .WithDisplayName(u"Network Service")
+                                         .Pass());
         }
       } else {
         DCHECK(IsInProcessNetworkService())
@@ -767,7 +699,7 @@ network::mojom::NetworkService* GetNetworkService() {
       }
 
       if (FirstPartySetsHandlerImpl::GetInstance()->IsEnabled()) {
-        if (absl::optional<net::GlobalFirstPartySets> sets =
+        if (std::optional<net::GlobalFirstPartySets> sets =
                 FirstPartySetsHandlerImpl::GetInstance()->GetSets(
                     base::BindOnce([](net::GlobalFirstPartySets sets) {
                       GetNetworkService()->SetFirstPartySets(std::move(sets));
@@ -785,19 +717,12 @@ network::mojom::NetworkService* GetNetworkService() {
   return g_network_service_remote->get();
 }
 
-#if BUILDFLAG(IS_ANDROID)
-network::mojom::EmptyNetworkService* GetEmptyNetworkServiceForTesting() {
-  DCHECK(IsEmptyNetworkServiceEnabledForUMA());
-  return g_empty_network_service_remote->get();
-}
-#endif
-
-base::CallbackListSubscription RegisterNetworkServiceCrashHandler(
-    base::RepeatingClosure handler) {
+base::CallbackListSubscription RegisterNetworkServiceProcessGoneHandler(
+    NetworkServiceProcessGoneHandler handler) {
   DCHECK(BrowserThread::CurrentlyOn(BrowserThread::UI));
   DCHECK(!handler.is_null());
 
-  return GetCrashHandlersList().Add(std::move(handler));
+  return GetProcessGoneHandlersList().Add(std::move(handler));
 }
 
 #if BUILDFLAG(IS_CHROMEOS)
@@ -870,25 +795,12 @@ void ShutDownNetworkService() {
     g_in_process_instance = nullptr;
   }
   GetNetworkTaskRunnerStorage().reset();
-
-#if BUILDFLAG(IS_ANDROID)
-  if (IsEmptyNetworkServiceEnabledForUMA() && g_empty_network_service_remote) {
-    g_empty_network_service_remote->reset();
-  }
-#endif
 }
 
 void RestartNetworkService() {
   ShutDownNetworkService();
   GetNetworkService();
-  if (OnNetworkServiceRestartedCbStorage()) {
-    OnNetworkServiceRestartedCbStorage().Run();
-  }
-}
-
-void OnRestartNetworkServiceForTesting(base::RepeatingClosure on_restart) {
-  DCHECK(!OnNetworkServiceRestartedCbStorage() || !on_restart);
-  OnNetworkServiceRestartedCbStorage() = std::move(on_restart);
+  OnNetworkServiceProcessGone(/*crashed=*/false);
 }
 
 namespace {
@@ -896,9 +808,8 @@ namespace {
 cert_verifier::mojom::CertVerifierServiceFactory*
     g_cert_verifier_service_factory_for_testing = nullptr;
 
-void RunInProcessCertVerifierServiceFactory(
-    mojo::PendingReceiver<cert_verifier::mojom::CertVerifierServiceFactory>
-        receiver) {
+std::unique_ptr<cert_verifier::CertVerifierServiceFactoryImpl>&
+GetCertVerifierServiceFactoryImplStorage() {
 #if BUILDFLAG(IS_CHROMEOS)
   // See the comment in GetCertVerifierServiceFactory() for the thread-affinity
   // of the CertVerifierService.
@@ -911,7 +822,13 @@ void RunInProcessCertVerifierServiceFactory(
   static base::SequenceLocalStorageSlot<
       std::unique_ptr<cert_verifier::CertVerifierServiceFactoryImpl>>
       service_factory_slot;
-  service_factory_slot.GetOrCreateValue() =
+  return service_factory_slot.GetOrCreateValue();
+}
+
+void RunInProcessCertVerifierServiceFactory(
+    mojo::PendingReceiver<cert_verifier::mojom::CertVerifierServiceFactory>
+        receiver) {
+  GetCertVerifierServiceFactoryImplStorage() =
       std::make_unique<cert_verifier::CertVerifierServiceFactoryImpl>(
           std::move(receiver));
 }
@@ -969,9 +886,34 @@ GetCertVerifierServiceFactoryRemoteForTesting() {
   return GetCertVerifierServiceFactoryRemoteStorage();
 }
 
+cert_verifier::CertVerifierServiceFactoryImpl*
+GetCertVerifierServiceFactoryForTesting() {
+  // The same comment about CHECK(!g_cert_verifier_service_factory_for_testing)
+  // from GetCertVerifierServiceFactoryRemoteForTesting() applies here, but
+  // since this method could be called on the IO thread, it is not CHECKed here.
+
+  // TODO(https://crbug.com/1085233): This depends on the cert verifier service
+  // and the network service both being in the same process as the unit test.
+  // The network service is taken care of by `UnitTestTestSuite` calling
+  // `ForceCreateNetworkServiceDirectlyForTesting()`, but if the cert verifier
+  // service is moved to a separate process as well, something similar will
+  // need to be done for that to be testable.
+  return GetCertVerifierServiceFactoryImplStorage().get();
+}
+
 network::mojom::CertVerifierServiceRemoteParamsPtr GetCertVerifierParams(
     cert_verifier::mojom::CertVerifierCreationParamsPtr
         cert_verifier_creation_params) {
+  return GetCertVerifierParamsWithUpdater(
+      std::move(cert_verifier_creation_params), mojo::NullReceiver());
+}
+
+network::mojom::CertVerifierServiceRemoteParamsPtr
+GetCertVerifierParamsWithUpdater(
+    cert_verifier::mojom::CertVerifierCreationParamsPtr
+        cert_verifier_creation_params,
+    mojo::PendingReceiver<cert_verifier::mojom::CertVerifierServiceUpdater>
+        cert_verifier_updater_remote) {
   mojo::PendingRemote<cert_verifier::mojom::CertVerifierService>
       cert_verifier_remote;
   mojo::PendingReceiver<cert_verifier::mojom::CertVerifierServiceClient>
@@ -979,6 +921,7 @@ network::mojom::CertVerifierServiceRemoteParamsPtr GetCertVerifierParams(
 
   GetCertVerifierServiceFactory()->GetNewCertVerifier(
       cert_verifier_remote.InitWithNewPipeAndPassReceiver(),
+      std::move(cert_verifier_updater_remote),
       cert_verifier_client.InitWithNewPipeAndPassRemote(),
       std::move(cert_verifier_creation_params));
 

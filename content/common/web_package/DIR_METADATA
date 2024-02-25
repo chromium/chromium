@@ -1,5 +1,7 @@
 mixins: "//content/browser/web_package/COMMON_METADATA"
-monorail {
+monorail: {
   component: "Blink>Loader>WebPackaging"
 }
-
+buganizer_public: {
+  component_id: 1456230
+}

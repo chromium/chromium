@@ -80,13 +80,11 @@
   "automationInternal": {
     "internal": true,
     "dependencies": ["manifest:automation"],
-    "contexts": ["blessed_extension"],
-    "disallow_for_service_workers": true
+    "contexts": ["blessed_extension"]
   },
   "automation": {
     "dependencies": ["manifest:automation"],
-    "contexts": ["blessed_extension"],
-    "disallow_for_service_workers": true
+    "contexts": ["blessed_extension"]
   },
   "bluetooth": [{
     "dependencies": ["manifest:bluetooth"],
@@ -252,7 +250,7 @@
       // This feature is used by the Controlled Frame API and is specifically
       // enabled by //chrome.
       "internal": true,
-      "channel": "dev",
+      "channel": "stable",
       "contexts": ["web_page"],
       // This feature is only enabled if the embedder's delegated check returns
       // true.
@@ -356,15 +354,20 @@
       "chrome://tab-search.top-chrome/*",
       "chrome://tab-strip.top-chrome/*",
       "chrome://welcome/*",
-      "chrome://app-settings/*"
+      "chrome://vc-background/*",
+      "chrome://app-settings/*",
+      "chrome://search-engine-choice/*"
     ]
   }, {
     "channel": "stable",
     "contexts": ["webui_untrusted"],
     "matches": [
+      "chrome-untrusted://compose/*",
       "chrome-untrusted://help-app/*",
       "chrome-untrusted://media-app/*",
-      "chrome-untrusted://projector/*"
+      "chrome-untrusted://mako/*",
+      "chrome-untrusted://projector/*",
+      "chrome-untrusted://read-anything-side-panel.top-chrome/*"
     ]
   }],
   "metricsPrivateIndividualApis": {
@@ -465,6 +468,11 @@
       "chrome://os-settings/*"
     ]
   }],
+  "odfsConfigPrivate": {
+    "dependencies": ["permission:odfsConfigPrivate"],
+    "contexts": ["blessed_extension"],
+    "feature_flag": "ApiOdfsConfigPrivate"
+  },
   "offscreen": {
     "dependencies": ["permission:offscreen"],
     "contexts": ["blessed_extension"]
@@ -540,8 +548,7 @@
   },
   "runtime.getContexts": {
     "min_manifest_version": 3,
-    "contexts": ["blessed_extension"],
-    "feature_flag": "ApiRuntimeGetContexts"
+    "contexts": ["blessed_extension"]
   },
   "runtime.getURL": {
     "contexts": [
@@ -741,7 +748,7 @@
       "chrome://extensions/*",
       // System Web App version of File Manager.
       "chrome://file-manager/*",
-      "chrome://test/*"
+      "chrome://webui-test/*"
     ]
   }, {
     "channel": "stable",
@@ -761,7 +768,7 @@
   "userScripts": {
     "dependencies": [ "permission:userScripts" ],
     "contexts": [ "blessed_extension" ],
-    "channel": "trunk",
+    "developer_mode_only": true,
     "feature_flag": "ApiUserScripts"
   },
   "virtualKeyboard": {
@@ -802,7 +809,7 @@
     // This feature is used by the Controlled Frame API and is specifically
     // enabled by //chrome.
     "internal": true,
-    "channel": "dev",
+    "channel": "stable",
     "contexts": ["web_page"],
     // This feature is only enabled if the embedder's delegated check returns
     // true.
@@ -833,7 +840,7 @@
     // This feature is used by the Controlled Frame API and is specifically
     // enabled by //chrome.
     "internal": true,
-    "channel": "dev",
+    "channel": "stable",
     "contexts": ["web_page"],
     // This feature is only enabled if the embedder's delegated check returns
     // true.

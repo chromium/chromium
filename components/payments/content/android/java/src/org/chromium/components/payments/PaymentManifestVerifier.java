@@ -36,8 +36,9 @@ import java.util.Set;
  * https://docs.google.com/document/d/1izV4uC-tiRJG3JLooqY3YRLU22tYOsLTNq0P_InPJeE/edit#heading=h.cjp3jlnl47h5
  */
 public class PaymentManifestVerifier
-        implements ManifestDownloadCallback, ManifestParseCallback,
-                   PaymentManifestWebDataService.PaymentManifestWebDataServiceCallback {
+        implements ManifestDownloadCallback,
+                ManifestParseCallback,
+                PaymentManifestWebDataService.PaymentManifestWebDataServiceCallback {
     /** Interface for the callback to invoke when finished verification. */
     public interface ManifestVerifyCallback {
         /**
@@ -143,9 +144,7 @@ public class PaymentManifestVerifier
     /** Whether the manifest cache is stale (unusable). */
     private boolean mIsManifestCacheStaleOrUnusable;
 
-    /**
-     * Whether at least one payment method manifest or web app manifest failed to download or parse.
-     */
+    /** Whether at least one payment method manifest or web app manifest failed to download or parse. */
     private boolean mAtLeastOneManifestFailedToDownloadOrParse;
 
     /**
@@ -166,10 +165,15 @@ public class PaymentManifestVerifier
      * @param packageManagerDelegate The package information retriever.
      * @param callback               The callback to be notified of verification result.
      */
-    public PaymentManifestVerifier(Origin merchantOrigin, GURL methodName,
-            @Nullable Set<ResolveInfo> defaultApplications, @Nullable Set<GURL> supportedOrigins,
-            PaymentManifestWebDataService webDataService, PaymentManifestDownloader downloader,
-            PaymentManifestParser parser, PackageManagerDelegate packageManagerDelegate,
+    public PaymentManifestVerifier(
+            Origin merchantOrigin,
+            GURL methodName,
+            @Nullable Set<ResolveInfo> defaultApplications,
+            @Nullable Set<GURL> supportedOrigins,
+            PaymentManifestWebDataService webDataService,
+            PaymentManifestDownloader downloader,
+            PaymentManifestParser parser,
+            PackageManagerDelegate packageManagerDelegate,
             ManifestVerifyCallback callback) {
         assert !methodName.getScheme().isEmpty();
 
@@ -184,8 +188,11 @@ public class PaymentManifestVerifier
             }
         }
 
-        mSupportedOrigins = Collections.unmodifiableSet(
-                supportedOrigins == null ? new HashSet<GURL>() : new HashSet<>(supportedOrigins));
+        mSupportedOrigins =
+                Collections.unmodifiableSet(
+                        supportedOrigins == null
+                                ? new HashSet<GURL>()
+                                : new HashSet<>(supportedOrigins));
         mDownloader = downloader;
         mCache = webDataService;
         mParser = parser;
@@ -352,8 +359,8 @@ public class PaymentManifestVerifier
     @Override
     public void onPaymentMethodManifestDownloadSuccess(
             GURL paymentMethodManifestUrl, Origin paymentMethodManifestOrigin, String content) {
-        assert mPaymentMethodManifestOrigin
-                == null : "Each verifier downloads exactly one payment method manifest file";
+        assert mPaymentMethodManifestOrigin == null
+                : "Each verifier downloads exactly one payment method manifest file";
         mPaymentMethodManifestOrigin = paymentMethodManifestOrigin;
         mParser.parsePaymentMethodManifest(paymentMethodManifestUrl, content, this);
     }
@@ -382,7 +389,8 @@ public class PaymentManifestVerifier
         if (webAppManifestUris.length == 0) {
             if (mIsManifestCacheStaleOrUnusable) mCallback.onFinishedVerification();
             // Cache supported package names and origins as well as possibly "*".
-            mCache.addPaymentMethodManifest(mMethodName.getSpec(),
+            mCache.addPaymentMethodManifest(
+                    mMethodName.getSpec(),
                     mAppIdentifiersToCache.toArray(new String[mAppIdentifiersToCache.size()]));
             mCallback.onFinishedUsingResources();
             return;
@@ -430,7 +438,8 @@ public class PaymentManifestVerifier
         if (mIsManifestCacheStaleOrUnusable) mCallback.onFinishedVerification();
 
         // Cache supported apps' package names and origins. (Also cache "*" if applicable.)
-        mCache.addPaymentMethodManifest(mMethodName.toString(),
+        mCache.addPaymentMethodManifest(
+                mMethodName.toString(),
                 mAppIdentifiersToCache.toArray(new String[mAppIdentifiersToCache.size()]));
 
         // Cache supported apps' parsed manifests.
@@ -487,8 +496,12 @@ public class PaymentManifestVerifier
             if (appInfo == null) continue;
 
             if (appInfo.version < section.minVersion) {
-                Log.e(TAG, "\"%s\" version is %d, but at least %d is required.", section.id,
-                        appInfo.version, section.minVersion);
+                Log.e(
+                        TAG,
+                        "\"%s\" version is %d, but at least %d is required.",
+                        section.id,
+                        appInfo.version,
+                        section.minVersion);
                 continue;
             }
 
@@ -498,9 +511,11 @@ public class PaymentManifestVerifier
             }
 
             if (!appInfo.sha256CertFingerprints.equals(sectionsFingerprints.get(i))) {
-                Log.e(TAG,
+                Log.e(
+                        TAG,
                         "\"%s\" fingerprints don't match the manifest. Expected %s, but found %s.",
-                        section.id, setToString(sectionsFingerprints.get(i)),
+                        section.id,
+                        setToString(sectionsFingerprints.get(i)),
                         setToString(appInfo.sha256CertFingerprints));
                 continue;
             }

@@ -35,7 +35,8 @@ void BadgeExample::CreateExampleView(View* container) {
 
   auto show_menu = [](BadgeExample* example) {
     // Create a menu item view.
-    auto* menu_item_view = new views::MenuItemView(&example->menu_delegate_);
+    auto menu_item_view =
+        std::make_unique<views::MenuItemView>(&example->menu_delegate_);
 
     // Add items to the context menu.
     menu_item_view->AppendMenuItem(1, GetStringUTF16(IDS_BADGE_MENU_ITEM_1));
@@ -44,7 +45,8 @@ void BadgeExample::CreateExampleView(View* container) {
     menu_item_view->AppendMenuItem(3, GetStringUTF16(IDS_BADGE_MENU_ITEM_3))
         ->set_is_new(true);
 
-    example->menu_runner_ = std::make_unique<MenuRunner>(menu_item_view, 0);
+    example->menu_runner_ =
+        std::make_unique<MenuRunner>(std::move(menu_item_view), 0);
 
     View* menu_button = example->menu_button_;
     gfx::Point screen_loc;

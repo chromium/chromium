@@ -12,6 +12,7 @@
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/resource/resource_bundle.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/events/event_utils.h"
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/geometry/skia_conversions.h"
@@ -20,6 +21,7 @@
 #include "ui/views/controls/focus_ring.h"
 #include "ui/views/resources/grit/views_resources.h"
 #include "ui/views/vector_icons.h"
+#include "ui/views/view_utils.h"
 #include "ui/views/widget/widget.h"
 
 namespace views {
@@ -27,6 +29,7 @@ namespace views {
 namespace {
 constexpr int kFocusRingRadius = 16;
 constexpr int kRadioButtonIconDipSize = 16;
+constexpr int kRadioButtonIconDipSizeCr2023 = 20;
 }  // namespace
 
 RadioButton::RadioButton(const std::u16string& label, int group_id)
@@ -45,7 +48,7 @@ void RadioButton::GetAccessibleNodeData(ui::AXNodeData* node_data) {
 View* RadioButton::GetSelectedViewForGroup(int group) {
   Views views;
   GetViewsInGroupFromParent(group, &views);
-  const auto i = base::ranges::find_if(views, [](const auto* view) {
+  const auto i = base::ranges::find_if(views, [](const views::View* view) {
     // Why don't we check the runtime type like is done in SetChecked()?
     return static_cast<const RadioButton*>(view)->GetChecked();
   });
@@ -71,8 +74,9 @@ bool RadioButton::IsGroupFocusTraversable() const {
 
 void RadioButton::OnFocus() {
   Checkbox::OnFocus();
-  if (select_on_focus_)
+  if (select_on_focus_) {
     SetChecked(true);
+  }
 }
 
 void RadioButton::OnThemeChanged() {
@@ -92,8 +96,9 @@ void RadioButton::RequestFocusFromEvent() {
 void RadioButton::NotifyClick(const ui::Event& event) {
   // Set the checked state to true only if we are unchecked, since we can't
   // be toggled on and off like a checkbox.
-  if (!GetChecked())
+  if (!GetChecked()) {
     SetChecked(true);
+  }
   LabelButton::NotifyClick(event);
 }
 
@@ -102,17 +107,18 @@ ui::NativeTheme::Part RadioButton::GetThemePart() const {
 }
 
 void RadioButton::SetChecked(bool checked) {
-  if (checked == RadioButton::GetChecked())
+  if (checked == RadioButton::GetChecked()) {
     return;
+  }
   if (checked) {
     // We can't start from the root view because other parts of the UI might use
     // radio buttons with the same group. This can happen when re-using the same
     // component or even if views want to use the group for a different purpose.
     Views other;
     GetViewsInGroupFromParent(GetGroup(), &other);
-    for (auto* peer : other) {
+    for (views::View* peer : other) {
       if (peer != this) {
-        DCHECK(!strcmp(peer->GetClassName(), kViewClassName))
+        DCHECK(IsViewClass<RadioButton>(peer))
             << "radio-button-nt has same group as non radio-button-nt views.";
         static_cast<RadioButton*>(peer)->SetChecked(false);
       }
@@ -126,23 +132,28 @@ const gfx::VectorIcon& RadioButton::GetVectorIcon() const {
 }
 
 gfx::ImageSkia RadioButton::GetImage(ButtonState for_state) const {
-  return gfx::CreateVectorIcon(GetVectorIcon(), kRadioButtonIconDipSize,
+  return gfx::CreateVectorIcon(GetVectorIcon(),
+                               features::IsChromeRefresh2023()
+                                   ? kRadioButtonIconDipSizeCr2023
+                                   : kRadioButtonIconDipSize,
                                GetIconImageColor(GetIconState(for_state)));
 }
 
 SkPath RadioButton::GetFocusRingPath() const {
   SkPath path;
-  const gfx::Point center = image()->GetMirroredBounds().CenterPoint();
+  const gfx::Point center =
+      image_container_view()->GetMirroredBounds().CenterPoint();
   path.addCircle(center.x(), center.y(), kFocusRingRadius);
   return path;
 }
 
 void RadioButton::GetViewsInGroupFromParent(int group, Views* views) {
-  if (parent())
+  if (parent()) {
     parent()->GetViewsInGroup(group, views);
+  }
 }
 
-BEGIN_METADATA(RadioButton, Checkbox)
+BEGIN_METADATA(RadioButton)
 END_METADATA
 
 }  // namespace views

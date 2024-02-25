@@ -200,6 +200,7 @@ class DomainReliabilityUploaderTest : public testing::Test {
   }
 
   ~DomainReliabilityUploaderTest() override {
+    interceptor_ = nullptr;
     net::URLRequestFilter::GetInstance()->ClearHandlers();
   }
 
@@ -220,7 +221,7 @@ class DomainReliabilityUploaderTest : public testing::Test {
   net::IsolationInfo expected_isolation_info_;
 
   std::unique_ptr<net::URLRequestContext> url_request_context_;
-  raw_ptr<UploadInterceptor, DanglingUntriaged> interceptor_;
+  raw_ptr<UploadInterceptor> interceptor_;
   MockTime time_;
   std::unique_ptr<DomainReliabilityUploader> uploader_;
 };

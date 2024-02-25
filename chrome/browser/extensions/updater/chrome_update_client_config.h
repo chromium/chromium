@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_EXTENSIONS_UPDATER_CHROME_UPDATE_CLIENT_CONFIG_H_
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -13,10 +14,10 @@
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/time/time.h"
 #include "components/component_updater/configurator_impl.h"
 #include "components/update_client/configurator.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 class GURL;
 
@@ -29,7 +30,6 @@ class BrowserContext;
 }
 
 namespace update_client {
-class ActivityDataService;
 class CrxDownloaderFactory;
 class NetworkFetcherFactory;
 class ProtocolHandlerFactory;
@@ -47,10 +47,10 @@ class ChromeUpdateClientConfig : public update_client::Configurator {
 
   static scoped_refptr<ChromeUpdateClientConfig> Create(
       content::BrowserContext* context,
-      absl::optional<GURL> url_override);
+      std::optional<GURL> url_override);
 
   ChromeUpdateClientConfig(content::BrowserContext* context,
-                           absl::optional<GURL> url_override);
+                           std::optional<GURL> url_override);
 
   ChromeUpdateClientConfig(const ChromeUpdateClientConfig&) = delete;
   ChromeUpdateClientConfig& operator=(const ChromeUpdateClientConfig&) = delete;
@@ -78,13 +78,14 @@ class ChromeUpdateClientConfig : public update_client::Configurator {
   bool EnabledBackgroundDownloader() const override;
   bool EnabledCupSigning() const override;
   PrefService* GetPrefService() const override;
-  update_client::ActivityDataService* GetActivityDataService() const override;
+  update_client::PersistedData* GetPersistedData() const override;
   bool IsPerUserInstall() const override;
   std::unique_ptr<update_client::ProtocolHandlerFactory>
   GetProtocolHandlerFactory() const override;
-  absl::optional<bool> IsMachineExternallyManaged() const override;
+  std::optional<bool> IsMachineExternallyManaged() const override;
   update_client::UpdaterStateProvider GetUpdaterStateProvider() const override;
-  absl::optional<base::FilePath> GetCrxCachePath() const override;
+  std::optional<base::FilePath> GetCrxCachePath() const override;
+  bool IsConnectionMetered() const override;
 
  protected:
   friend class base::RefCountedThreadSafe<ChromeUpdateClientConfig>;
@@ -101,12 +102,12 @@ class ChromeUpdateClientConfig : public update_client::Configurator {
   raw_ptr<content::BrowserContext, LeakedDanglingUntriaged> context_ = nullptr;
   component_updater::ConfiguratorImpl impl_;
   raw_ptr<PrefService, LeakedDanglingUntriaged> pref_service_;
-  std::unique_ptr<update_client::ActivityDataService> activity_data_service_;
+  std::unique_ptr<update_client::PersistedData> persisted_data_;
   scoped_refptr<update_client::NetworkFetcherFactory> network_fetcher_factory_;
   scoped_refptr<update_client::CrxDownloaderFactory> crx_downloader_factory_;
   scoped_refptr<update_client::UnzipperFactory> unzip_factory_;
   scoped_refptr<update_client::PatcherFactory> patch_factory_;
-  absl::optional<GURL> url_override_;
+  std::optional<GURL> url_override_;
 };
 
 }  // namespace extensions

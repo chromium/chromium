@@ -9,6 +9,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/containers/contains.h"
 #include "content/browser/devtools/devtools_agent_host_impl.h"
 #include "content/browser/renderer_host/back_forward_cache_disable.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
@@ -124,7 +125,7 @@ Response SecurityHandler::Disable() {
 
 Response SecurityHandler::HandleCertificateError(int event_id,
                                                  const String& action) {
-  if (cert_error_callbacks_.find(event_id) == cert_error_callbacks_.end()) {
+  if (!base::Contains(cert_error_callbacks_, event_id)) {
     return Response::ServerError(
         String("Unknown event id: " + std::to_string(event_id)));
   }

@@ -13,7 +13,6 @@ import org.robolectric.TestLifecycle;
 import org.robolectric.internal.SandboxTestRunner;
 import org.robolectric.internal.bytecode.Sandbox;
 
-import org.chromium.base.ResettersForTesting;
 import org.chromium.base.test.util.DisabledTest;
 
 import java.lang.reflect.Method;
@@ -24,11 +23,10 @@ import java.lang.reflect.Method;
  * org.robolectric.RobolectricTestRunner} could be used directly.
  */
 public class BaseRobolectricTestRunner extends RobolectricTestRunner {
-    /**
-     * Tracks whether tests pass / fail for use in BaseTestLifecycle.
-     */
+    /** Tracks whether tests pass / fail for use in BaseTestLifecycle. */
     protected static class HelperTestRunner extends RobolectricTestRunner.HelperTestRunner {
         public static boolean sTestFailed;
+
         public HelperTestRunner(Class bootstrappedTestClass) throws InitializationError {
             super(bootstrappedTestClass);
         }
@@ -53,9 +51,7 @@ public class BaseRobolectricTestRunner extends RobolectricTestRunner {
         }
     }
 
-    /**
-     * Before / after hooks that run in the context of the sandbox classloader.
-     */
+    /** Before / after hooks that run in the context of the sandbox classloader. */
     public static class BaseTestLifecycle extends DefaultTestLifecycle {
         @Override
         public void beforeTest(Method method) {
@@ -91,15 +87,8 @@ public class BaseRobolectricTestRunner extends RobolectricTestRunner {
     }
 
     @Override
-    protected void afterClass() {
-        super.afterClass();
-        ResettersForTesting.onAfterClass();
-    }
-
-    @Override
     protected void beforeTest(Sandbox sandbox, FrameworkMethod method, Method bootstrappedMethod)
             throws Throwable {
-        ResettersForTesting.setMethodMode();
         super.beforeTest(sandbox, method, bootstrappedMethod);
 
         // Our test runner is designed to require only one Sandbox per-process.

@@ -13,6 +13,7 @@
 #include "third_party/blink/renderer/core/paint/timing/largest_contentful_paint_calculator.h"
 #include "third_party/blink/renderer/core/paint/timing/paint_timing.h"
 #include "third_party/blink/renderer/core/paint/timing/paint_timing_detector.h"
+#include "third_party/blink/renderer/core/timing/soft_navigation_heuristics.h"
 #include "third_party/blink/renderer/platform/instrumentation/tracing/trace_event.h"
 #include "third_party/blink/renderer/platform/instrumentation/tracing/traced_value.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
@@ -36,9 +37,8 @@ TextPaintTimingDetector::TextPaintTimingDetector(
 void LargestTextPaintManager::PopulateTraceValue(
     TracedValue& value,
     const TextRecord& first_text_paint) {
-  value.SetInteger(
-      "DOMNodeId",
-      static_cast<int>(DOMNodeIds::IdForNode(first_text_paint.node_)));
+  value.SetInteger("DOMNodeId",
+                   static_cast<int>(first_text_paint.node_->GetDomNodeId()));
   value.SetInteger("size", static_cast<int>(first_text_paint.recorded_size));
   value.SetInteger("candidateIndex", ++count_candidates_);
   value.SetBoolean("isMainFrame", frame_view_->GetFrame().IsMainFrame());
@@ -64,22 +64,24 @@ void LargestTextPaintManager::ReportCandidateToTrace(
       GetFrameIdForTracing(&frame_view_->GetFrame()));
 }
 
-TextRecord* LargestTextPaintManager::UpdateMetricsCandidate() {
+std::pair<TextRecord*, bool> LargestTextPaintManager::UpdateMetricsCandidate() {
   if (!largest_text_) {
-    return nullptr;
+    return {nullptr, false};
   }
   const base::TimeTicks time = largest_text_->paint_time;
   const uint64_t size = largest_text_->recorded_size;
-  DCHECK(paint_timing_detector_);
-  bool changed = paint_timing_detector_->NotifyMetricsIfLargestTextPaintChanged(
-      time, size);
+  CHECK(paint_timing_detector_);
+  CHECK(paint_timing_detector_->GetLargestContentfulPaintCalculator());
+
+  bool changed = paint_timing_detector_->GetLargestContentfulPaintCalculator()
+                     ->NotifyMetricsIfLargestTextPaintChanged(time, size);
   if (changed) {
     // It is not possible for an update to happen with a candidate that has no
     // paint time.
     DCHECK(!time.is_null());
     ReportCandidateToTrace(*largest_text_);
   }
-  return largest_text_;
+  return {largest_text_.Get(), changed};
 }
 
 void TextPaintTimingDetector::OnPaintFinished() {
@@ -119,8 +121,6 @@ void TextPaintTimingDetector::ReportPresentationTime(
     }
   }
   AssignPaintTimeToQueuedRecords(frame_index, timestamp);
-  if (recording_largest_text_paint_)
-    ltp_manager_->UpdateMetricsCandidate();
 }
 
 bool TextPaintTimingDetector::ShouldWalkObject(
@@ -179,16 +179,24 @@ void TextPaintTimingDetector::RecordAggregatedText(
   // Web font styled node should be rewalkable so that resizing during swap
   // would make the node eligible to be LCP candidate again.
   if (RuntimeEnabledFeatures::WebFontResizeLCPEnabled()) {
-    if (aggregator.GetNode()->GetComputedStyle() &&
-        aggregator.GetNode()->GetComputedStyle()->GetFont().HasCustomFont()) {
+    if (aggregator.StyleRef().GetFont().HasCustomFont()) {
       rewalkable_set_.insert(&aggregator);
     }
   }
 
+  LocalFrame& frame = frame_view_->GetFrame();
+  if (LocalDOMWindow* window = frame.DomWindow()) {
+    if (SoftNavigationHeuristics* heuristics =
+            SoftNavigationHeuristics::From(*window)) {
+      heuristics->RecordPaint(
+          &frame, mapped_visual_rect.size().GetArea(),
+          aggregator.GetNode()->IsModifiedBySoftNavigation());
+    }
+  }
   recorded_set_.insert(&aggregator);
   MaybeRecordTextRecord(aggregator, aggregated_size, property_tree_state,
                         aggregated_visual_rect, mapped_visual_rect);
-  if (absl::optional<PaintTimingVisualizer>& visualizer =
+  if (std::optional<PaintTimingVisualizer>& visualizer =
           frame_view_->GetPaintTimingDetector().Visualizer()) {
     visualizer->DumpTextDebuggingRect(aggregator, mapped_visual_rect);
   }
@@ -279,7 +287,10 @@ void TextPaintTimingDetector::AssignPaintTimeToQueuedRecords(
     record->paint_time = timestamp;
     if (can_report_element_timing)
       text_element_timing_->OnTextObjectPainted(*record);
-    if (ltp_manager_ && record->recorded_size > 0u) {
+
+    if (ltp_manager_ && (record->recorded_size > 0u) &&
+        !(record->node_ &&
+          ltp_manager_->IsUnrelatedSoftNavigationPaint(*(record->node_)))) {
       ltp_manager_->MaybeUpdateLargestText(record);
     }
     keys_to_be_removed.push_back(it.key);

@@ -65,4 +65,4 @@ struct UnionTraits<js_injection::mojom::JsWebMessageDataView,
 
 }  // namespace mojo
 
-#endif
+#endif  // COMPONENTS_JS_INJECTION_COMMON_WEB_MESSAGE_MOJOM_TRAITS_H_

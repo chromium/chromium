@@ -1,4 +1,4 @@
-// Copyright 2022 The Chromium Authors. All rights reserved.
+// Copyright 2022 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,6 +12,8 @@
 #include "third_party/blink/renderer/core/speculation_rules/document_speculation_rules.h"
 #include "third_party/blink/renderer/core/speculation_rules/speculation_rule_set.h"
 #include "third_party/blink/renderer/core/speculation_rules/speculation_rules_metrics.h"
+#include "third_party/blink/renderer/platform/weborigin/kurl.h"
+#include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
 
 namespace blink {
 
@@ -20,10 +22,8 @@ SpeculationRuleLoader::SpeculationRuleLoader(Document& document)
 
 SpeculationRuleLoader::~SpeculationRuleLoader() = default;
 
-void SpeculationRuleLoader::LoadResource(SpeculationRulesResource* resource,
-                                         const KURL& base_url) {
+void SpeculationRuleLoader::LoadResource(SpeculationRulesResource* resource) {
   DCHECK(!resource_);
-  base_url_ = base_url;
   resource_ = resource;
   resource_->AddFinishObserver(
       this, document_->GetTaskRunner(TaskType::kNetworking).get());
@@ -37,17 +37,22 @@ void SpeculationRuleLoader::NotifyFinished() {
   UMA_HISTOGRAM_MEDIUM_TIMES("Blink.SpeculationRules.FetchTime",
                              base::TimeTicks::Now() - start_time_);
 
-  int response_code = resource_->GetResponse().HttpStatusCode();
-  if (!network::IsSuccessfulStatus(response_code)) {
+  const ResourceResponse& response = resource_->GetResponse();
+  if (resource_->LoadFailedOrCanceled()) {
+    StringBuilder message;
+    message.Append("Load failed or canceled (");
+    message.Append(resource_->GetResourceError().LocalizedDescription());
+    if (int response_code = response.HttpStatusCode()) {
+      message.AppendFormat("; HTTP status %d", response_code);
+    }
+    message.Append(String(") for rule set requested from \"" +
+                          resource_->GetResourceRequest().Url().ElidedString() +
+                          "\" found in Speculation-Rules header."));
     CountSpeculationRulesLoadOutcome(
-        SpeculationRulesLoadOutcome::kInvalidStatusCode);
+        SpeculationRulesLoadOutcome::kLoadFailedOrCanceled);
     document_->AddConsoleMessage(MakeGarbageCollected<ConsoleMessage>(
         mojom::blink::ConsoleMessageSource::kOther,
-        mojom::blink::ConsoleMessageLevel::kWarning,
-        "Received a response with unsuccessful status code (" +
-            String::Number(response_code) + ") for rule set requested from \"" +
-            resource_->GetResourceRequest().Url().ElidedString() +
-            "\" found in Speculation-Rules header."));
+        mojom::blink::ConsoleMessageLevel::kWarning, message.ToString()));
     return;
   }
 
@@ -78,9 +83,9 @@ void SpeculationRuleLoader::NotifyFinished() {
     return;
   }
 
-  const auto& source_text = resource_->DecodedText();
+  String source_text = resource_->DecodedText();
   auto* source = SpeculationRuleSet::Source::FromRequest(
-      source_text, base_url_, resource_->InspectorId());
+      source_text, response.ResponseUrl(), resource_->InspectorId());
   auto* rule_set =
       SpeculationRuleSet::Parse(source, document_->GetExecutionContext());
   CHECK(rule_set);

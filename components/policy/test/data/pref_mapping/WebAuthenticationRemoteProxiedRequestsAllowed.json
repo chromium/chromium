@@ -1,0 +1,42 @@
+[
+  {
+    "os": [
+      "win",
+      "linux",
+      "mac",
+      "chromeos_ash",
+      "chromeos_lacros",
+      "fuchsia"
+    ],
+    "policy_pref_mapping_tests": [
+      {
+        "policies": {},
+        "prefs": {
+          "webauthn.remote_proxied_requests_allowed": {
+            "default_value": false
+          }
+        }
+      },
+      {
+        "policies": {
+          "WebAuthenticationRemoteProxiedRequestsAllowed": false
+        },
+        "prefs": {
+          "webauthn.remote_proxied_requests_allowed": {
+            "value": false
+          }
+        }
+      },
+      {
+        "policies": {
+          "WebAuthenticationRemoteProxiedRequestsAllowed": true
+        },
+        "prefs": {
+          "webauthn.remote_proxied_requests_allowed": {
+            "value": true
+          }
+        }
+      }
+    ]
+  }
+]

@@ -257,16 +257,19 @@ class WaylandDmabufSurfaceFeedback : public SurfaceObserver {
 
   Surface* GetSurface() { return surface_; }
   WaylandDmabufFeedback* GetFeedback() { return feedback_.get(); }
-  std::set<WaylandDmabufSurfaceFeedbackResourceWrapper*> GetFeedbackRefs() {
+  std::set<
+      raw_ptr<WaylandDmabufSurfaceFeedbackResourceWrapper, SetExperimental>>
+  GetFeedbackRefs() {
     return surface_feedback_refs_;
   }
 
  private:
-  const raw_ptr<WaylandDmabufFeedbackManager, ExperimentalAsh>
-      feedback_manager_;
-  const raw_ptr<Surface, ExperimentalAsh> surface_;
+  const raw_ptr<WaylandDmabufFeedbackManager> feedback_manager_;
+  const raw_ptr<Surface> surface_;
   std::unique_ptr<WaylandDmabufFeedback> const feedback_;
-  std::set<WaylandDmabufSurfaceFeedbackResourceWrapper*> surface_feedback_refs_;
+  std::set<
+      raw_ptr<WaylandDmabufSurfaceFeedbackResourceWrapper, SetExperimental>>
+      surface_feedback_refs_;
 };
 
 // Simple helper class to use a surface feedback with multiple resource objects
@@ -294,8 +297,8 @@ class WaylandDmabufSurfaceFeedbackResourceWrapper {
   void SetInert() { surface_feedback_ = nullptr; }
 
  private:
-  raw_ptr<WaylandDmabufSurfaceFeedback, ExperimentalAsh> surface_feedback_;
-  raw_ptr<wl_resource, ExperimentalAsh> resource_;
+  raw_ptr<WaylandDmabufSurfaceFeedback> surface_feedback_;
+  raw_ptr<wl_resource> resource_;
 };
 
 WaylandDmabufSurfaceFeedback::~WaylandDmabufSurfaceFeedback() {
@@ -310,10 +313,10 @@ WaylandDmabufSurfaceFeedback::~WaylandDmabufSurfaceFeedback() {
 
 WaylandDmabufFeedbackManager::WaylandDmabufFeedbackManager(Display* display)
     : display_(display) {
-  scoped_refptr<viz::ContextProvider> context_provider =
+  scoped_refptr<viz::RasterContextProvider> context_provider =
       aura::Env::GetInstance()
           ->context_factory()
-          ->SharedMainThreadContextProvider();
+          ->SharedMainThreadRasterContextProvider();
   gpu::Capabilities caps = context_provider->ContextCapabilities();
 
   // Intel CCS modifiers leak memory on gbm to gl buffer import. Block these
@@ -382,23 +385,21 @@ WaylandDmabufFeedbackManager::WaylandDmabufFeedbackManager(Display* display)
     return;
   }
 
-  struct stat device_stat;
   if (!base::FeatureList::IsEnabled(ash::features::kExoLinuxDmabufV4) ||
-      caps.drm_render_node.empty() ||
-      stat(caps.drm_render_node.c_str(), &device_stat) != 0) {
+      !caps.drm_device_id) {
     version_ = ZWP_LINUX_DMABUF_V1_MODIFIER_SINCE_VERSION;
     return;
   }
 
   auto tranche = std::make_unique<WaylandDmabufFeedbackTranche>(
-      device_stat.st_rdev, TrancheFlags::kNone, drm_formats_and_modifiers_);
+      caps.drm_device_id, TrancheFlags::kNone, drm_formats_and_modifiers_);
   default_feedback_ = std::make_unique<WaylandDmabufFeedback>(
-      device_stat.st_rdev, std::move(tranche));
+      caps.drm_device_id, std::move(tranche));
 
   size_t size = sizeof(WaylandDmabufFeedbackFormat) * format_table_index;
   base::MappedReadOnlyRegion mapped_region =
       base::ReadOnlySharedMemoryRegion::Create(size);
-  DCHECK(mapped_region.IsValid());
+  CHECK(mapped_region.IsValid());
 
   shared_memory_region_ = std::make_unique<base::ReadOnlySharedMemoryRegion>(
       std::move(mapped_region.region));
@@ -531,7 +532,8 @@ void WaylandDmabufFeedbackManager::AddSurfaceToScanoutCandidates(
     return;
   }
 
-  for (auto* feedback_ref : surface_feedback->GetFeedbackRefs()) {
+  for (WaylandDmabufSurfaceFeedbackResourceWrapper* feedback_ref :
+       surface_feedback->GetFeedbackRefs()) {
     SendFeedback(feedback, feedback_ref->GetFeedbackResource());
   }
 }
@@ -564,7 +566,8 @@ void WaylandDmabufFeedbackManager::RemoveSurfaceFromScanoutCandidates(
   }
 
   feedback->ClearScanoutTranche();
-  for (auto* feedback_ref : surface_feedback->GetFeedbackRefs()) {
+  for (WaylandDmabufSurfaceFeedbackResourceWrapper* feedback_ref :
+       surface_feedback->GetFeedbackRefs()) {
     SendFeedback(feedback, feedback_ref->GetFeedbackResource());
   }
 }
@@ -579,7 +582,8 @@ void WaylandDmabufFeedbackManager::MaybeResendFeedback(Surface* surface) {
   auto* feedback = surface_feedback->GetFeedback();
   feedback->MaybeAddScanoutTranche(surface);
 
-  for (auto* feedback_ref : surface_feedback->GetFeedbackRefs()) {
+  for (WaylandDmabufSurfaceFeedbackResourceWrapper* feedback_ref :
+       surface_feedback->GetFeedbackRefs()) {
     SendFeedback(feedback, feedback_ref->GetFeedbackResource());
   }
 }

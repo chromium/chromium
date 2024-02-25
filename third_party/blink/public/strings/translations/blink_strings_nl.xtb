@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="nl">
+<translation id="1012241361789814178">Debugger is onderbroken op een ander tabblad. Klik om over te schakelen naar dat tabblad.</translation>
 <translation id="1088086359088493902">Seconden</translation>
 <translation id="1142001580032786438">Weekkiezer bekijken</translation>
 <translation id="1171774979989969504">Geef een e-mailadres op.</translation>
@@ -16,6 +17,7 @@
 <translation id="1729654308190250600">Geef een e-mailadres op.</translation>
 <translation id="1758486001363313524">Anders...</translation>
 <translation id="1787192514241997742">totale tijd: <ph name="REMAINING_TIME" /></translation>
+<translation id="1800494066469288780">Camera toestaan</translation>
 <translation id="1822429046913737220">a.m./p.m.</translation>
 <translation id="1832974991323546415">afspelen op extern apparaat</translation>
 <translation id="1921819250265091946">dd</translation>
@@ -24,10 +26,12 @@
 <translation id="1993104285338243655">Overgeschakeld naar mirroring</translation>
 <translation id="2031987842108996681">Rood kanaal</translation>
 <translation id="2060505056492490888">'<ph name="DOT" />' wordt op een verkeerde positie gebruikt in '<ph name="INVALIDDOMAIN" />'.</translation>
+<translation id="2068711044993563745">De minimumwaarde (<ph name="MINIMUM" />) moet kleiner zijn dan de maximumwaarde (<ph name="MAXIMUM" />).</translation>
 <translation id="2148716181193084225">Vandaag</translation>
 <translation id="2226276347425096477">Kort deze tekst in tot <ph name="MAX_CHARACTERS" /> tekens of minder (je gebruikt momenteel <ph name="CURRENT_LENGTH" /> tekens).</translation>
 <translation id="2247351761944213033">Week <ph name="WEEKNUMBER" />, <ph name="YEAR" /></translation>
 <translation id="2277199496770840904">Track <ph name="NUMBER" /></translation>
+<translation id="2353297238722298836">Camera en microfoon toegestaan</translation>
 <translation id="2393030564806080191">Hexadecimale kleurwaarde</translation>
 <translation id="2398813069815436052">dialoogvenster geopend.</translation>
 <translation id="245932805758469625">aantal seconden van resterende video</translation>
@@ -44,11 +48,13 @@
 <translation id="2761667185364618470">Vink dit selectievakje aan als je wilt doorgaan.</translation>
 <translation id="2908441821576996758">Voer een door komma's gescheiden lijst met e-mailadressen in.</translation>
 <translation id="3049748772180311791"><ph name="QUANTITY" /> MB</translation>
+<translation id="3053226512517284904">menu met audiobeschrijvingen tonen</translation>
 <translation id="3075154866155599887">Voer een geldige waarde in. Het veld is onvolledig of bevat een ongeldige datum.</translation>
 <translation id="310520048233152454">Geef een URL op.</translation>
 <translation id="3220661731597678625">huidige stap</translation>
 <translation id="3321030238473337787">Afspeelsnelheid</translation>
 <translation id="3329013043687509092">Verzadiging</translation>
+<translation id="3377518164566272702">Microfoon en camera toestaan</translation>
 <translation id="3450233048674729344">Waarde moet kleiner dan of gelijk zijn aan <ph name="MAXIMUM" />.</translation>
 <translation id="3732799496749320381">mm</translation>
 <translation id="3754210790023674521">Scherm-in-scherm afsluiten</translation>
@@ -56,14 +62,17 @@
 <translation id="3822383571486410024">Breid deze tekst uit tot <ph name="MIN_CHARACTERS" /> tekens of meer (je gebruikt momenteel <ph name="CURRENT_LENGTH" /> tekens).</translation>
 <translation id="383465348367842624">Het naamgedeelte vóór '<ph name="ATSIGN" />' mag niet het teken '<ph name="INVALIDCHARACTER" />' bevatten.</translation>
 <translation id="3846214748874656680">Volledig scherm sluiten</translation>
+<translation id="4031179711345676612">Microfoon toegestaan</translation>
 <translation id="4103419683916926126">Milliseconden</translation>
 <translation id="4201051445878709314">Vorige maand bekijken</translation>
 <translation id="4360991593054037559">Geef een geldige waarde op. De twee dichtstbijzijnde geldige waarden zijn <ph name="VALID_VALUE_LOW" /> en <ph name="VALID_VALUE_HIGHER" />.</translation>
 <translation id="4522570452068850558">Details</translation>
+<translation id="4663373278480897665">Camera toegestaan</translation>
 <translation id="4664250907885839816">Het adresgedeelte na '<ph name="ATSIGN" />' mag niet het teken '<ph name="INVALIDCHARACTER" />' bevatten.</translation>
 <translation id="4718048029184481307">Beeld-in-beeld afspelen</translation>
 <translation id="4748357248530471599">volledig scherm met display-cutout aan- of uitzetten</translation>
 <translation id="4763480195061959176">video</translation>
+<translation id="4792862212177489858">Locatie delen</translation>
 <translation id="4812940957355064477">Voer een getal in.</translation>
 <translation id="4912200001568447310">huidig item</translation>
 <translation id="4915360478455618802">Tijdkiezer bekijken</translation>
@@ -73,6 +82,7 @@
 <translation id="4975562563186953947"><ph name="SELECTED_COUNT" /> geselecteerd</translation>
 <translation id="4992066212339426712">Geluid aanzetten</translation>
 <translation id="49969490063480558">Geef een adresgedeelte op na '<ph name="ATSIGN" />'. '<ph name="INVALIDADDRESS" />' is onvolledig.</translation>
+<translation id="5037575921016181960">Sterk wachtwoord</translation>
 <translation id="5090250355906949916">scrollbar met tijd van de video</translation>
 <translation id="509897012892853729">Blauw kanaal</translation>
 <translation id="5117590920725113268">Volgende maand bekijken</translation>
@@ -131,6 +141,7 @@
 <translation id="6941933287844615239">media downloaden</translation>
 <translation id="698788488269350478">uitgevouwen.</translation>
 <translation id="6989848892321993519">Breid deze tekst uit tot <ph name="MIN_CHARACTERS" /> tekens of meer (je gebruikt momenteel één teken).</translation>
+<translation id="7080893216867146095">Locatie delen toegestaan</translation>
 <translation id="709897737746224366">Zorg dat de indeling voldoet aan de gevraagde indeling.</translation>
 <translation id="7102274145889307184">huidige locatie</translation>
 <translation id="7263440858009898357">Selecteer een item in de lijst.</translation>
@@ -177,6 +188,7 @@
 <translation id="9132465097189459683">Anders...</translation>
 <translation id="9155987714137265666"><ph name="WEEK" />, die begint op <ph name="WEEK_START_DATE" /></translation>
 <translation id="916607977885256133">Scherm-in-scherm</translation>
+<translation id="918430632320614861">Microfoon toestaan</translation>
 <translation id="945780513535800434">Gedeeltelijk aangevinkt</translation>
 <translation id="954003015749068518">scherm-in-scherm openen</translation>
 </translationbundle>

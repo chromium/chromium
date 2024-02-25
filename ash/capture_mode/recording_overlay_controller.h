@@ -58,8 +58,7 @@ class ASH_EXPORT RecordingOverlayController {
 
   // The overlay widget and its contents view.
   views::UniqueWidgetPtr overlay_widget_ = std::make_unique<views::Widget>();
-  raw_ptr<RecordingOverlayView, ExperimentalAsh> recording_overlay_view_ =
-      nullptr;
+  raw_ptr<RecordingOverlayView> recording_overlay_view_ = nullptr;
 
   // Whether the overlay is currently enabled and showing on top of the recorded
   // surface.

@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_ASH_LOGIN_SCREENS_MOCK_ERROR_SCREEN_H_
 #define CHROME_BROWSER_ASH_LOGIN_SCREENS_MOCK_ERROR_SCREEN_H_
 
+#include "base/memory/weak_ptr.h"
 #include "chrome/browser/ash/login/screens/error_screen.h"
 #include "chrome/browser/ash/login/screens/network_error.h"
 #include "chrome/browser/ui/webui/ash/login/error_screen_handler.h"
@@ -44,6 +45,11 @@ class MockErrorScreenView : public ErrorScreenView {
   MOCK_METHOD1(SetShowConnectingIndicator, void(bool value));
   MOCK_METHOD1(SetUIState, void(NetworkError::UIState ui_state));
   MOCK_METHOD0(OnCancelButtonClicked, void());
+
+  base::WeakPtr<ErrorScreenView> AsWeakPtr() override;
+
+ private:
+  base::WeakPtrFactory<ErrorScreenView> weak_ptr_factory_{this};
 };
 
 }  // namespace ash

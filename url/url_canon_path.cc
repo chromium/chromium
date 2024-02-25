@@ -4,12 +4,12 @@
 
 #include <limits.h>
 
+#include <optional>
 #include "base/check.h"
 #include "base/check_op.h"
-#include "base/metrics/histogram_functions.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/url_canon.h"
 #include "url/url_canon_internal.h"
+#include "url/url_features.h"
 #include "url/url_parse_internal.h"
 
 namespace url {
@@ -17,9 +17,9 @@ namespace url {
 namespace {
 
 enum CharacterFlags {
-  // Pass through unchanged, whether escaped or unescaped. This doesn't
+  // Pass through unchanged, whether escaped or not. This doesn't
   // actually set anything so you can't OR it to check, it's just to make the
-  // table below more clear when neither ESCAPE or UNESCAPE is set.
+  // table below more clear when any other flag is not set.
   PASS = 0,
 
   // This character requires special handling in DoPartialPathInternal. Doing
@@ -33,11 +33,6 @@ enum CharacterFlags {
   // for this is triggered. Not valid with PASS or ESCAPE
   ESCAPE_BIT = 2,
   ESCAPE = ESCAPE_BIT | SPECIAL,
-
-  // This character must be unescaped in canonical output. Not valid with
-  // ESCAPE or PASS. We DON'T set the SPECIAL flag since if we encounter these
-  // characters unescaped, they should just be copied.
-  UNESCAPE = 4,
 };
 
 // This table contains one of the above flag values. Note some flags are more
@@ -45,13 +40,13 @@ enum CharacterFlags {
 // only flag that may be combined with others.
 //
 // This table was used to be designed to match exactly what IE did with the
-// characters, however, which doesn't comply with the URL Standard as of Jun
-// 2023. See http://crbug.com/1400251 and http://crbug.com/1252531 for efforts
-// to comply with the URL Standard.
+// characters, however, which doesn't comply with the URL Standard as of Dec
+// 2023. See https://crbug.com/1509295.
 //
 // Dot is even more special, and the escaped version is handled specially by
-// IsDot. Therefore, we don't need the "escape" flag, and even the "unescape"
-// bit is never handled (we just need the "special") bit.
+// IsDot. Therefore, we don't need the "escape" flag. We just need the "special"
+// bit.
+//
 // clang-format off
 const unsigned char kPathCharLookup[0x100] = {
 //   NULL     control chars...
@@ -59,17 +54,17 @@ const unsigned char kPathCharLookup[0x100] = {
 //   control chars...
      ESCAPE,  ESCAPE,  ESCAPE,  ESCAPE,  ESCAPE,  ESCAPE,  ESCAPE,  ESCAPE,  ESCAPE,  ESCAPE,  ESCAPE,  ESCAPE,  ESCAPE,  ESCAPE,  ESCAPE,  ESCAPE,
 //   ' '      !        "        #        $        %        &        '        (        )        *        +        ,        -        .        /
-     ESCAPE,  PASS,    ESCAPE,  ESCAPE,  PASS,    ESCAPE,  PASS,    PASS,    PASS,    PASS,    PASS,    PASS,    PASS,    UNESCAPE,SPECIAL, PASS,
+     ESCAPE,  PASS,    ESCAPE,  ESCAPE,  PASS,    ESCAPE,  PASS,    PASS,    PASS,    PASS,    PASS,    PASS,    PASS,    PASS    ,SPECIAL, PASS,
 //   0        1        2        3        4        5        6        7        8        9        :        ;        <        =        >        ?
-     UNESCAPE,UNESCAPE,UNESCAPE,UNESCAPE,UNESCAPE,UNESCAPE,UNESCAPE,UNESCAPE,UNESCAPE,UNESCAPE,PASS,    PASS,    ESCAPE,  PASS,    ESCAPE,  ESCAPE,
+     PASS    ,PASS    ,PASS    ,PASS    ,PASS    ,PASS    ,PASS    ,PASS    ,PASS    ,PASS    ,PASS,    PASS,    ESCAPE,  PASS,    ESCAPE,  ESCAPE,
 //   @        A        B        C        D        E        F        G        H        I        J        K        L        M        N        O
-     PASS,    UNESCAPE,UNESCAPE,UNESCAPE,UNESCAPE,UNESCAPE,UNESCAPE,UNESCAPE,UNESCAPE,UNESCAPE,UNESCAPE,UNESCAPE,UNESCAPE,UNESCAPE,UNESCAPE,UNESCAPE,
+     PASS,    PASS    ,PASS    ,PASS    ,PASS    ,PASS    ,PASS    ,PASS    ,PASS    ,PASS    ,PASS    ,PASS    ,PASS    ,PASS    ,PASS    ,PASS    ,
 //   P        Q        R        S        T        U        V        W        X        Y        Z        [        \        ]        ^        _
-     UNESCAPE,UNESCAPE,UNESCAPE,UNESCAPE,UNESCAPE,UNESCAPE,UNESCAPE,UNESCAPE,UNESCAPE,UNESCAPE,UNESCAPE,PASS,    ESCAPE,  PASS,    ESCAPE,  UNESCAPE,
+     PASS    ,PASS    ,PASS    ,PASS    ,PASS    ,PASS    ,PASS    ,PASS    ,PASS    ,PASS    ,PASS    ,PASS,    ESCAPE,  PASS,    ESCAPE,  PASS    ,
 //   `        a        b        c        d        e        f        g        h        i        j        k        l        m        n        o
-     ESCAPE,  UNESCAPE,UNESCAPE,UNESCAPE,UNESCAPE,UNESCAPE,UNESCAPE,UNESCAPE,UNESCAPE,UNESCAPE,UNESCAPE,UNESCAPE,UNESCAPE,UNESCAPE,UNESCAPE,UNESCAPE,
+     ESCAPE,  PASS    ,PASS    ,PASS    ,PASS    ,PASS    ,PASS    ,PASS    ,PASS    ,PASS    ,PASS    ,PASS    ,PASS    ,PASS    ,PASS    ,PASS    ,
 //   p        q        r        s        t        u        v        w        x        y        z        {        |        }        ~        <NBSP>
-     UNESCAPE,UNESCAPE,UNESCAPE,UNESCAPE,UNESCAPE,UNESCAPE,UNESCAPE,UNESCAPE,UNESCAPE,UNESCAPE,UNESCAPE,ESCAPE,  ESCAPE,  ESCAPE,  UNESCAPE,ESCAPE,
+     PASS    ,PASS    ,PASS    ,PASS    ,PASS    ,PASS    ,PASS    ,PASS    ,PASS    ,PASS    ,PASS    ,ESCAPE,  ESCAPE,  ESCAPE,  PASS    ,ESCAPE,
 //   ...all the high-bit characters are escaped
      ESCAPE,  ESCAPE,  ESCAPE,  ESCAPE,  ESCAPE,  ESCAPE,  ESCAPE,  ESCAPE,  ESCAPE,  ESCAPE,  ESCAPE,  ESCAPE,  ESCAPE,  ESCAPE,  ESCAPE,  ESCAPE,
      ESCAPE,  ESCAPE,  ESCAPE,  ESCAPE,  ESCAPE,  ESCAPE,  ESCAPE,  ESCAPE,  ESCAPE,  ESCAPE,  ESCAPE,  ESCAPE,  ESCAPE,  ESCAPE,  ESCAPE,  ESCAPE,
@@ -113,7 +108,7 @@ DotDisposition ClassifyAfterDot(const CHAR* spec,
     *consumed_len = 0;
     return DIRECTORY_CUR;
   }
-  if (IsURLSlash(spec[after_dot])) {
+  if (IsSlashOrBackslash(spec[after_dot])) {
     // Single dot followed by a slash.
     *consumed_len = 1;  // Consume the slash
     return DIRECTORY_CUR;
@@ -127,7 +122,7 @@ DotDisposition ClassifyAfterDot(const CHAR* spec,
       *consumed_len = second_dot_len;
       return DIRECTORY_UP;
     }
-    if (IsURLSlash(spec[after_second_dot])) {
+    if (IsSlashOrBackslash(spec[after_second_dot])) {
       // Double dot followed by a slash.
       *consumed_len = second_dot_len + 1;
       return DIRECTORY_UP;
@@ -170,76 +165,6 @@ void BackUpToPreviousSlash(size_t path_begin_in_output, CanonOutput* output) {
   output->set_length(i + 1);
 }
 
-// Looks for problematic nested escape sequences and escapes the output as
-// needed to ensure they can't be misinterpreted.
-//
-// Our concern is that in input escape sequence that's invalid because it
-// contains nested escape sequences might look valid once those are unescaped.
-// For example, "%%300" is not a valid escape sequence, but after unescaping the
-// inner "%30" this becomes "%00" which is valid.  Leaving this in the output
-// string can result in callers re-canonicalizing the string and unescaping this
-// sequence, thus resulting in something fundamentally different than the
-// original input here.  This can cause a variety of problems.
-//
-// This function is called after we've just unescaped a sequence that's within
-// two output characters of a previous '%' that we know didn't begin a valid
-// escape sequence in the input string.  We look for whether the output is going
-// to turn into a valid escape sequence, and if so, convert the initial '%' into
-// an escaped "%25" so the output can't be misinterpreted.
-//
-// |spec| is the input string we're canonicalizing.
-// |next_input_index| is the index of the next unprocessed character in |spec|.
-// |input_len| is the length of |spec|.
-// |last_invalid_percent_index| is the index in |output| of a previously-seen
-// '%' character.  The caller knows this '%' character isn't followed by a valid
-// escape sequence in the input string.
-// |output| is the canonicalized output thus far.  The caller guarantees this
-// ends with a '%' followed by one or two characters, and the '%' is the one
-// pointed to by |last_invalid_percent_index|.  The last character in the string
-// was just unescaped.
-template <typename CHAR>
-void CheckForNestedEscapes(const CHAR* spec,
-                           size_t next_input_index,
-                           size_t input_len,
-                           size_t last_invalid_percent_index,
-                           CanonOutput* output) {
-  const size_t length = output->length();
-  const char last_unescaped_char = output->at(length - 1);
-
-  // If |output| currently looks like "%c", we need to try appending the next
-  // input character to see if this will result in a problematic escape
-  // sequence.  Note that this won't trigger on the first nested escape of a
-  // two-escape sequence like "%%30%30" -- we'll allow the conversion to
-  // "%0%30" -- but the second nested escape will be caught by this function
-  // when it's called again in that case.
-  const bool append_next_char = last_invalid_percent_index == length - 2;
-  if (append_next_char) {
-    // If the input doesn't contain a 7-bit character next, this case won't be a
-    // problem.
-    if ((next_input_index == input_len) || (spec[next_input_index] >= 0x80))
-      return;
-    output->push_back(static_cast<char>(spec[next_input_index]));
-  }
-
-  // Now output ends like "%cc".  Try to unescape this.
-  size_t begin = last_invalid_percent_index;
-  unsigned char temp;
-  if (DecodeEscaped(output->data(), &begin, output->length(), &temp)) {
-    // New escape sequence found.  Overwrite the characters following the '%'
-    // with "25", and push_back() the one or two characters that were following
-    // the '%' when we were called.
-    if (!append_next_char)
-      output->push_back(output->at(last_invalid_percent_index + 1));
-    output->set(last_invalid_percent_index + 1, '2');
-    output->set(last_invalid_percent_index + 2, '5');
-    output->push_back(last_unescaped_char);
-  } else if (append_next_char) {
-    // Not a valid escape sequence, but we still need to undo appending the next
-    // source character so the caller can process it normally.
-    output->set_length(length);
-  }
-}
-
 // Canonicalizes and appends the given path to the output. It assumes that if
 // the input path starts with a slash, it should be copied to the output.
 //
@@ -255,19 +180,14 @@ template <typename CHAR, typename UCHAR>
 bool DoPartialPathInternal(const CHAR* spec,
                            const Component& path,
                            size_t path_begin_in_output,
+                           CanonMode canon_mode,
                            CanonOutput* output) {
   if (path.is_empty())
     return true;
 
   size_t end = static_cast<size_t>(path.end());
 
-  // We use this variable to minimize the amount of work done when unescaping --
-  // we'll only call CheckForNestedEscapes() when this points at one of the last
-  // couple of characters in |output|.
-  absl::optional<size_t> last_invalid_percent_index;
-
   bool success = true;
-  bool unescape_escaped_char = false;
   for (size_t i = static_cast<size_t>(path.begin); i < end; i++) {
     UCHAR uch = static_cast<UCHAR>(spec[i]);
     if (sizeof(CHAR) > 1 && uch >= 0x80) {
@@ -307,9 +227,6 @@ bool DoPartialPathInternal(const CHAR* spec,
                 break;
               case DIRECTORY_UP:
                 BackUpToPreviousSlash(path_begin_in_output, output);
-                if (last_invalid_percent_index >= output->length()) {
-                  last_invalid_percent_index = absl::nullopt;
-                }
                 i += dotlen + consumed_len - 1;
                 break;
             }
@@ -321,51 +238,31 @@ bool DoPartialPathInternal(const CHAR* spec,
           }
 
         } else if (out_ch == '\\') {
-          // Convert backslashes to forward slashes
-          output->push_back('/');
-
+          if (canon_mode == CanonMode::kSpecialURL) {
+            // Backslashes are path separators in special URLs.
+            //
+            // URL Standard: https://url.spec.whatwg.org/#path-state
+            // > 1. url is special and c is U+005C (\)
+            //
+            // Convert backslashes to forward slashes.
+            output->push_back('/');
+          } else {
+            output->push_back(out_ch);
+          }
         } else if (out_ch == '%') {
           // Handle escape sequences.
-          unsigned char unescaped_value;
-          if (DecodeEscaped(spec, &i, end, &unescaped_value)) {
-            // Valid escape sequence, see if we keep, reject, or unescape it.
-            // Note that at this point DecodeEscape() will have advanced |i| to
-            // the last character of the escape sequence.
-            char unescaped_flags = kPathCharLookup[unescaped_value];
-
-            if (unescaped_flags & UNESCAPE) {
-              // This escaped value shouldn't be escaped.  Try to copy it.
-              unescape_escaped_char = true;
-
-              output->push_back(unescaped_value);
-              // If we just unescaped a value within 2 output characters of the
-              // '%' from a previously-detected invalid escape sequence, we
-              // might have an input string with problematic nested escape
-              // sequences; detect and fix them.
-              if (last_invalid_percent_index.has_value() &&
-                  ((last_invalid_percent_index.value() + 3) >=
-                   output->length())) {
-                CheckForNestedEscapes(spec, i + 1, end,
-                                      last_invalid_percent_index.value(),
-                                      output);
-              }
-            } else {
-              // Either this is an invalid escaped character, or it's a valid
-              // escaped character we should keep escaped.  In the first case we
-              // should just copy it exactly and remember the error.  In the
-              // second we also copy exactly in case the server is sensitive to
-              // changing the case of any hex letters.
-              output->push_back('%');
-              output->push_back(static_cast<char>(spec[i - 1]));
-              output->push_back(static_cast<char>(spec[i]));
-            }
+          unsigned char unused_unescaped_value;
+          if (DecodeEscaped(spec, &i, end, &unused_unescaped_value)) {
+            // Valid escape sequence. We should just copy it exactly.
+            output->push_back('%');
+            output->push_back(static_cast<char>(spec[i - 1]));
+            output->push_back(static_cast<char>(spec[i]));
           } else {
             // Invalid escape sequence. IE7+ rejects any URLs with such
             // sequences, while other browsers pass them through unchanged. We
             // use the permissive behavior.
             // TODO(brettw): Consider testing IE's strict behavior, which would
             // allow removing the code to handle nested escapes above.
-            last_invalid_percent_index = output->length();
             output->push_back('%');
           }
         } else if (flags & ESCAPE_BIT) {
@@ -378,8 +275,6 @@ bool DoPartialPathInternal(const CHAR* spec,
       }
     }
   }
-  base::UmaHistogramBoolean("URL.Path.UnescapeEscapedChar",
-                            unescape_escaped_char);
   return success;
 }
 
@@ -392,17 +287,24 @@ bool DoPartialPath(const CHAR* spec,
                    CanonOutput* output,
                    Component* out_path) {
   out_path->begin = output->length();
-  bool success =
-      DoPartialPathInternal<CHAR, UCHAR>(spec, path, out_path->begin, output);
+  bool success = DoPartialPathInternal<CHAR, UCHAR>(
+      spec, path, out_path->begin,
+      // TODO(crbug.com/1416006): Support Non-special URLs.
+      CanonMode::kSpecialURL, output);
   out_path->len = output->length() - out_path->begin;
   return success;
 }
 
-template<typename CHAR, typename UCHAR>
+template <typename CHAR, typename UCHAR>
 bool DoPath(const CHAR* spec,
             const Component& path,
+            CanonMode canon_mode,
             CanonOutput* output,
             Component* out_path) {
+  // URL Standard:
+  // - https://url.spec.whatwg.org/#path-start-state
+  // - https://url.spec.whatwg.org/#path-state
+
   bool success = true;
   out_path->begin = output->length();
   if (path.is_nonempty()) {
@@ -410,13 +312,23 @@ bool DoPath(const CHAR* spec,
     // and then canonicalize it, it will of course have a slash already. This
     // check is for the replacement and relative URL resolving cases of file
     // URLs.
-    if (!IsURLSlash(spec[path.begin]))
+    if (!IsSlashOrBackslash(spec[path.begin])) {
       output->push_back('/');
+    }
 
-    success =
-        DoPartialPathInternal<CHAR, UCHAR>(spec, path, out_path->begin, output);
-  } else {
-    // No input, canonical path is a slash.
+    success = DoPartialPathInternal<CHAR, UCHAR>(spec, path, out_path->begin,
+                                                 canon_mode, output);
+  } else if (canon_mode == CanonMode::kSpecialURL) {
+    // No input, canonical path is a slash for special URLs, but it is empty for
+    // non-special URLs.
+    //
+    // Implementation note:
+    //
+    // According to the URL Standard, for non-special URLs whose parsed path is
+    // empty, such as "git://host", the state-machine finishes in the
+    // `path-start-state` without entering the `path-state`. As a result, the
+    // url's path remains an empty array. Therefore, no slash should be
+    // appended.
     output->push_back('/');
   }
   out_path->len = output->length() - out_path->begin;
@@ -427,16 +339,34 @@ bool DoPath(const CHAR* spec,
 
 bool CanonicalizePath(const char* spec,
                       const Component& path,
+                      CanonMode canon_mode,
                       CanonOutput* output,
                       Component* out_path) {
-  return DoPath<char, unsigned char>(spec, path, output, out_path);
+  return DoPath<char, unsigned char>(spec, path, canon_mode, output, out_path);
+}
+
+bool CanonicalizePath(const char16_t* spec,
+                      const Component& path,
+                      CanonMode canon_mode,
+                      CanonOutput* output,
+                      Component* out_path) {
+  return DoPath<char16_t, char16_t>(spec, path, canon_mode, output, out_path);
+}
+
+bool CanonicalizePath(const char* spec,
+                      const Component& path,
+                      CanonOutput* output,
+                      Component* out_path) {
+  return DoPath<char, unsigned char>(spec, path, CanonMode::kSpecialURL, output,
+                                     out_path);
 }
 
 bool CanonicalizePath(const char16_t* spec,
                       const Component& path,
                       CanonOutput* output,
                       Component* out_path) {
-  return DoPath<char16_t, char16_t>(spec, path, output, out_path);
+  return DoPath<char16_t, char16_t>(spec, path, CanonMode::kSpecialURL, output,
+                                    out_path);
 }
 
 bool CanonicalizePartialPath(const char* spec,
@@ -456,17 +386,19 @@ bool CanonicalizePartialPath(const char16_t* spec,
 bool CanonicalizePartialPathInternal(const char* spec,
                                      const Component& path,
                                      size_t path_begin_in_output,
+                                     CanonMode canon_mode,
                                      CanonOutput* output) {
   return DoPartialPathInternal<char, unsigned char>(
-      spec, path, path_begin_in_output, output);
+      spec, path, path_begin_in_output, canon_mode, output);
 }
 
 bool CanonicalizePartialPathInternal(const char16_t* spec,
                                      const Component& path,
                                      size_t path_begin_in_output,
+                                     CanonMode canon_mode,
                                      CanonOutput* output) {
   return DoPartialPathInternal<char16_t, char16_t>(
-      spec, path, path_begin_in_output, output);
+      spec, path, path_begin_in_output, canon_mode, output);
 }
 
 }  // namespace url

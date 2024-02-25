@@ -4,14 +4,13 @@
 
 package org.chromium.chrome.browser.policy;
 
+import org.jni_zero.CalledByNative;
+
 import org.chromium.base.ResettersForTesting;
-import org.chromium.base.annotations.CalledByNative;
 
 import java.util.UUID;
 
-/**
- * Allows access to cloud management functionalities implemented downstream.
- */
+/** Allows access to cloud management functionalities implemented downstream. */
 public class CloudManagementAndroidConnection {
     private static class LazyHolder {
         private static final CloudManagementAndroidConnection INSTANCE =

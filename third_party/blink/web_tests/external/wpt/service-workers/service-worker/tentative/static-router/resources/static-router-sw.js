@@ -1,20 +1,25 @@
 'use strict';
 
-var requests = [];
+import {routerRules} from './router-rules.js';
+import {
+  recordRequest,
+  recordError,
+  getRecords,
+  resetRecords } from './static-router-sw.sub.js';
 
-self.addEventListener('install', e => {
-  e.registerRouter([
-    {
-      condition: {urlPattern: '/**/*.txt??*'},
-      // Note: "??*" is for allowing arbitrary query strings.
-      // Upon my experiment, the URLPattern needs two '?'s for specifying
-      // a coming string as a query.
-      source: 'network'
-    }, {
-      condition: {
-        urlPattern: '/**/simple-test-for-condition-main-resource.html'},
-      source: 'network'
-    }]);
+import './imported-sw.js';
+
+self.addEventListener('install', async e => {
+  e.waitUntil(caches.open('v1').then(
+      cache => {cache.put('cache.txt', new Response('From cache'))}));
+
+  const params = new URLSearchParams(location.search);
+  const key = params.get('key');
+  try {
+    await e.addRoutes(routerRules[key]);
+  } catch (e) {
+    recordError(e);
+  }
   self.skipWaiting();
 });
 
@@ -23,13 +28,18 @@ self.addEventListener('activate', e => {
 });
 
 self.addEventListener('fetch', function(event) {
-  requests.push({url: event.request.url, mode: event.request.mode});
+  recordRequest(event.request);
   const url = new URL(event.request.url);
   const nonce = url.searchParams.get('nonce');
   event.respondWith(new Response(nonce));
 });
 
 self.addEventListener('message', function(event) {
-  event.data.port.postMessage({requests: requests});
-  requests = [];
+  if (event.data.reset) {
+    resetRecords();
+  }
+  if (event.data.port) {
+    const {requests, errors} = getRecords();
+    event.data.port.postMessage({requests, errors});
+  }
 });

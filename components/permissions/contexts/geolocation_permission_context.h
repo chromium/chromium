@@ -61,10 +61,7 @@ class GeolocationPermissionContext : public PermissionContextBase {
 
   ~GeolocationPermissionContext() override;
 
-  void DecidePermission(const PermissionRequestID& id,
-                        const GURL& requesting_origin,
-                        const GURL& embedding_origin,
-                        bool user_gesture,
+  void DecidePermission(PermissionRequestData request_data,
                         BrowserPermissionCallback callback) override;
 
   base::WeakPtr<GeolocationPermissionContext> GetWeakPtr();

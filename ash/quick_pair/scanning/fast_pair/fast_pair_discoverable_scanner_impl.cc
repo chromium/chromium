@@ -6,13 +6,13 @@
 
 #include <cstdint>
 #include <memory>
+#include <optional>
 #include <vector>
 
 #include "ash/constants/ash_features.h"
 #include "ash/quick_pair/common/constants.h"
 #include "ash/quick_pair/common/device.h"
 #include "ash/quick_pair/common/fast_pair/fast_pair_decoder.h"
-#include "ash/quick_pair/common/logging.h"
 #include "ash/quick_pair/common/pair_failure.h"
 #include "ash/quick_pair/common/protocol.h"
 #include "ash/quick_pair/repository/fast_pair_repository.h"
@@ -26,9 +26,10 @@
 #include "chromeos/ash/components/network/network_state_handler.h"
 #include "chromeos/ash/services/quick_pair/quick_pair_process.h"
 #include "chromeos/ash/services/quick_pair/quick_pair_process_manager.h"
+#include "components/cross_device/logging/logging.h"
 #include "device/bluetooth//bluetooth_adapter.h"
 #include "device/bluetooth/bluetooth_device.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
+#include "device/bluetooth/floss/floss_features.h"
 
 namespace {
 
@@ -39,7 +40,7 @@ bool IsMetadataPublished(const nearby::fastpair::Device& device) {
   if (ash::features::IsFastPairDebugMetadataEnabled() &&
       device.status().status_type() !=
           nearby::fastpair::StatusType::TYPE_UNSPECIFIED) {
-    QP_LOG(INFO) << __func__ << ": Showing unpublished metadata.";
+    CD_LOG(INFO, Feature::FP) << __func__ << ": Showing unpublished metadata.";
     return true;
   }
 
@@ -50,6 +51,8 @@ bool IsMetadataPublished(const nearby::fastpair::Device& device) {
 
 bool IsValidDeviceType(const nearby::fastpair::Device& device) {
   if (ash::features::IsFastPairHIDEnabled() &&
+      // Fast Pair HID only works on Floss.
+      floss::features::IsFlossEnabled() &&
       device.device_type() == nearby::fastpair::DeviceType::INPUT_DEVICE) {
     return true;
   }
@@ -151,20 +154,21 @@ FastPairDiscoverableScannerImpl::~FastPairDiscoverableScannerImpl() {
 
 void FastPairDiscoverableScannerImpl::OnDeviceFound(
     device::BluetoothDevice* device) {
-  QP_LOG(VERBOSE) << __func__ << ": " << device->GetNameForDisplay();
+  CD_LOG(VERBOSE, Feature::FP)
+      << __func__ << ": " << device->GetNameForDisplay();
 
   const std::vector<uint8_t>* fast_pair_service_data =
       device->GetServiceDataForUUID(kFastPairBluetoothUuid);
 
   if (!fast_pair_service_data) {
-    QP_LOG(WARNING) << __func__
-                    << ": Device doesn't have any Fast Pair Service Data.";
+    CD_LOG(WARNING, Feature::FP)
+        << __func__ << ": Device doesn't have any Fast Pair Service Data.";
     return;
   }
 
   model_id_parse_attempts_[device->GetAddress()] = 1;
 
-  QP_LOG(INFO) << __func__ << ": Attempting to get model ID";
+  CD_LOG(INFO, Feature::FP) << __func__ << ": Attempting to get model ID";
   quick_pair_process::GetHexModelIdFromServiceData(
       *fast_pair_service_data,
       base::BindOnce(&FastPairDiscoverableScannerImpl::OnModelIdRetrieved,
@@ -175,12 +179,12 @@ void FastPairDiscoverableScannerImpl::OnDeviceFound(
 
 void FastPairDiscoverableScannerImpl::OnModelIdRetrieved(
     const std::string& address,
-    const absl::optional<std::string>& model_id) {
+    const std::optional<std::string>& model_id) {
   auto it = model_id_parse_attempts_.find(address);
 
   // If there's no entry in the map, the device was lost while parsing.
   if (it == model_id_parse_attempts_.end()) {
-    QP_LOG(WARNING)
+    CD_LOG(WARNING, Feature::FP)
         << __func__
         << ": Returning early because device as lost while parsing.";
     return;
@@ -189,8 +193,8 @@ void FastPairDiscoverableScannerImpl::OnModelIdRetrieved(
   model_id_parse_attempts_.erase(it);
 
   if (!model_id) {
-    QP_LOG(INFO) << __func__
-                 << ": Returning early because no model id was parsed.";
+    CD_LOG(INFO, Feature::FP)
+        << __func__ << ": Returning early because no model id was parsed.";
     return;
   }
 
@@ -215,30 +219,30 @@ void FastPairDiscoverableScannerImpl::OnDeviceMetadataRetrieved(
     bool has_retryable_error) {
   if (has_retryable_error) {
     pending_devices_address_to_model_id_[address] = model_id;
-    QP_LOG(WARNING) << __func__
-                    << ": Could not retrieve metadata for id: " << model_id
-                    << ". Waiting for network change before retry.";
+    CD_LOG(WARNING, Feature::FP)
+        << __func__ << ": Could not retrieve metadata for id: " << model_id
+        << ". Waiting for network change before retry.";
     return;
   }
 
   if (!device_metadata) {
-    QP_LOG(WARNING) << __func__
-                    << ": No metadata available for id: " << model_id
-                    << ". Ignoring this advertisement";
+    CD_LOG(WARNING, Feature::FP)
+        << __func__ << ": No metadata available for id: " << model_id
+        << ". Ignoring this advertisement";
     return;
   }
 
   // Ignore advertisements for unpublished devices.
   if (!IsMetadataPublished(device_metadata->GetDetails())) {
-    QP_LOG(WARNING) << __func__
-                    << ": Metadata unpublished. Ignoring this advertisement";
+    CD_LOG(WARNING, Feature::FP)
+        << __func__ << ": Metadata unpublished. Ignoring this advertisement";
     return;
   }
 
   // Ignore advertisements that aren't for Fast Pair but leverage the service
   // UUID.
   if (!IsValidDeviceType(device_metadata->GetDetails())) {
-    QP_LOG(WARNING)
+    CD_LOG(WARNING, Feature::FP)
         << __func__
         << ": Invalid device type for Fast Pair. Ignoring this advertisement";
     return;
@@ -248,9 +252,10 @@ void FastPairDiscoverableScannerImpl::OnDeviceMetadataRetrieved(
   // APP_LAUNCH which should launch a companion app instead of beginning Fast
   // Pair.
   if (!IsSupportedNotificationType(device_metadata->GetDetails())) {
-    QP_LOG(WARNING) << __func__
-                    << ": Unsupported notification type for Fast Pair. "
-                       "Ignoring this advertisement";
+    CD_LOG(WARNING, Feature::FP)
+        << __func__
+        << ": Unsupported notification type for Fast Pair. "
+           "Ignoring this advertisement";
     return;
   }
 
@@ -258,16 +263,17 @@ void FastPairDiscoverableScannerImpl::OnDeviceMetadataRetrieved(
   // AUTO_LAUNCH which should trigger Smart Setup (Quick Start) instead of
   // beginning Fast Pair.
   if (!IsSupportedInteractionType(device_metadata->GetDetails())) {
-    QP_LOG(WARNING) << __func__
-                    << ": Unsupported interaction type for Fast Pair. "
-                       "Ignoring this advertisement";
+    CD_LOG(WARNING, Feature::FP)
+        << __func__
+        << ": Unsupported interaction type for Fast Pair. "
+           "Ignoring this advertisement";
     return;
   }
 
   auto device = base::MakeRefCounted<Device>(model_id, address,
                                              Protocol::kFastPairInitial);
 
-  QP_LOG(INFO) << __func__ << ": Id: " << model_id;
+  CD_LOG(INFO, Feature::FP) << __func__ << ": Id: " << model_id;
 
   NotifyDeviceFound(std::move(device));
 }
@@ -280,9 +286,9 @@ void FastPairDiscoverableScannerImpl::NotifyDeviceFound(
           : nullptr;
 
   if (classic_device && classic_device->IsPaired()) {
-    QP_LOG(ERROR) << __func__
-                  << ": A discoverable advertisement "
-                     "was notified for a paired classic device.";
+    CD_LOG(ERROR, Feature::FP) << __func__
+                               << ": A discoverable advertisement "
+                                  "was notified for a paired classic device.";
     return;
   }
 
@@ -296,9 +302,10 @@ void FastPairDiscoverableScannerImpl::NotifyDeviceFound(
   // the device is found, this statement is true and no second
   // notification is shown.
   if (ble_device && ble_device->IsPaired()) {
-    QP_LOG(INFO) << __func__
-                 << ": A discoverable advertisement "
-                    "was found and ignored for a paired BLE device.";
+    CD_LOG(INFO, Feature::FP)
+        << __func__
+        << ": A discoverable advertisement "
+           "was found and ignored for a paired BLE device.";
     return;
   }
 
@@ -306,14 +313,15 @@ void FastPairDiscoverableScannerImpl::NotifyDeviceFound(
   // mode is already paired to the Chromebook; the BLE device has no information
   // on the pairing state of the Classic device (except for V1 devices).
 
-  QP_LOG(INFO) << __func__ << ": Running found callback";
+  CD_LOG(INFO, Feature::FP) << __func__ << ": Running found callback";
   notified_devices_[device->ble_address()] = device;
   found_callback_.Run(device);
 }
 
 void FastPairDiscoverableScannerImpl::OnDeviceLost(
     device::BluetoothDevice* device) {
-  QP_LOG(VERBOSE) << __func__ << ": " << device->GetNameForDisplay();
+  CD_LOG(VERBOSE, Feature::FP)
+      << __func__ << ": " << device->GetNameForDisplay();
 
   // No need to retry fetching metadata for devices that are no longer in range.
   pending_devices_address_to_model_id_.erase(device->GetAddress());
@@ -328,7 +336,7 @@ void FastPairDiscoverableScannerImpl::OnDeviceLost(
   if (it == notified_devices_.end())
     return;
 
-  QP_LOG(INFO) << __func__ << ": Running lost callback";
+  CD_LOG(INFO, Feature::FP) << __func__ << ": Running lost callback";
   scoped_refptr<Device> notified_device = it->second;
   notified_devices_.erase(it);
   lost_callback_.Run(std::move(notified_device));
@@ -339,8 +347,9 @@ void FastPairDiscoverableScannerImpl::OnUtilityProcessStopped(
     QuickPairProcessManager::ShutdownReason shutdown_reason) {
   int current_retry_count = model_id_parse_attempts_[address];
   if (current_retry_count > kMaxParseModelIdRetryCount) {
-    QP_LOG(WARNING) << "Failed to parse model id from device more than "
-                    << kMaxParseModelIdRetryCount << " times.";
+    CD_LOG(WARNING, Feature::FP)
+        << "Failed to parse model id from device more than "
+        << kMaxParseModelIdRetryCount << " times.";
     // Clean up the state here which enables trying again in the future if this
     // device is re-discovered.
     model_id_parse_attempts_.erase(address);
@@ -350,7 +359,8 @@ void FastPairDiscoverableScannerImpl::OnUtilityProcessStopped(
   // Don't try to parse the model ID again if the device was lost.
   device::BluetoothDevice* device = adapter_->GetDevice(address);
   if (!device) {
-    QP_LOG(WARNING) << __func__ << ": Lost device in between parse attempts.";
+    CD_LOG(WARNING, Feature::FP)
+        << __func__ << ": Lost device in between parse attempts.";
     model_id_parse_attempts_.erase(address);
     return;
   }
@@ -360,7 +370,7 @@ void FastPairDiscoverableScannerImpl::OnUtilityProcessStopped(
   const std::vector<uint8_t>* fast_pair_service_data =
       device->GetServiceDataForUUID(kFastPairBluetoothUuid);
 
-  QP_LOG(INFO) << __func__ << ": Retrying call to get model ID";
+  CD_LOG(INFO, Feature::FP) << __func__ << ": Retrying call to get model ID";
   quick_pair_process::GetHexModelIdFromServiceData(
       *fast_pair_service_data,
       base::BindOnce(&FastPairDiscoverableScannerImpl::OnModelIdRetrieved,
@@ -386,7 +396,7 @@ void FastPairDiscoverableScannerImpl::DefaultNetworkChanged(
             /*address=*/it->first,
             /*model_id=*/it->second));
 
-    pending_devices_address_to_model_id_.erase(it);
+    it = pending_devices_address_to_model_id_.erase(it);
   }
 }
 

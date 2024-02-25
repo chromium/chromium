@@ -15,6 +15,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list_types.h"
 #include "chromeos/crosapi/mojom/video_conference.mojom-forward.h"
+#include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/compositor/throughput_tracker.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/views/animation/animation_delegate_views.h"
@@ -43,6 +44,8 @@ using MediaApps = std::vector<crosapi::mojom::VideoConferenceMediaAppInfoPtr>;
 
 // The "return to app" button that resides within the "return to app" panel.
 class ASH_EXPORT ReturnToAppButton : public ReturnToAppButtonBase {
+  METADATA_HEADER(ReturnToAppButton, ReturnToAppButtonBase)
+
  public:
   class Observer : public base::CheckedObserver {
    public:
@@ -99,11 +102,11 @@ class ASH_EXPORT ReturnToAppButton : public ReturnToAppButtonBase {
   // The pointers below are owned by the views hierarchy.
 
   // This panel is the parent view of this button.
-  const raw_ptr<ReturnToAppPanel, ExperimentalAsh> panel_;
+  const raw_ptr<ReturnToAppPanel> panel_;
 
   // The indicator showing if the panel is in expanded or collapsed state. Only
   // available if the button is in the top row.
-  raw_ptr<views::ImageView, ExperimentalAsh> expand_indicator_ = nullptr;
+  raw_ptr<views::ImageView> expand_indicator_ = nullptr;
 };
 
 // The "return to app" panel that resides in the video conference bubble. The
@@ -112,6 +115,8 @@ class ASH_EXPORT ReturnToAppButton : public ReturnToAppButtonBase {
 // focused.
 class ASH_EXPORT ReturnToAppPanel : public views::View,
                                     ReturnToAppButton::Observer {
+  METADATA_HEADER(ReturnToAppPanel, views::View)
+
  public:
   explicit ReturnToAppPanel(const MediaApps& apps);
   ReturnToAppPanel(const ReturnToAppPanel&) = delete;
@@ -132,6 +137,8 @@ class ASH_EXPORT ReturnToAppPanel : public views::View,
   // Mainly used to handle expand/collapse animation.
   class ReturnToAppContainer : public views::View,
                                public views::AnimationDelegateViews {
+    METADATA_HEADER(ReturnToAppContainer, views::View)
+
    public:
     ReturnToAppContainer();
     ReturnToAppContainer(const ReturnToAppContainer&) = delete;
@@ -179,7 +186,7 @@ class ASH_EXPORT ReturnToAppPanel : public views::View,
     bool expanded_target_ = false;
 
     // Measure animation smoothness metrics for all the animations.
-    absl::optional<ui::ThroughputTracker> throughput_tracker_;
+    std::optional<ui::ThroughputTracker> throughput_tracker_;
   };
 
   // ReturnToAppButton::Observer:
@@ -190,12 +197,12 @@ class ASH_EXPORT ReturnToAppPanel : public views::View,
 
   // The container of the panel, which contains all the views and is used for
   // setting padding and background painting. Owned by the views hierarchy.
-  raw_ptr<ReturnToAppContainer, ExperimentalAsh> container_view_ = nullptr;
+  raw_ptr<ReturnToAppContainer> container_view_ = nullptr;
 
   // The view at the top of the panel, summarizing the information of all media
   // apps. This pointer will be null when there's one or fewer media apps. Owned
   // by the views hierarchy.
-  raw_ptr<ReturnToAppButton, ExperimentalAsh> summary_row_view_ = nullptr;
+  raw_ptr<ReturnToAppButton> summary_row_view_ = nullptr;
 
   // Keep track the maximum number of capturing that an individual media app
   // has. This number is used to make sure the icons in `ReturnToAppButton` are

@@ -33,6 +33,9 @@
 @property(nonatomic, strong, readonly)
     ContentSuggestionsMostVisitedActionItem* config;
 
+// Tap gesture recognizer for this view.
+@property(nonatomic, strong) UITapGestureRecognizer* tapRecognizer;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_UI_CONTENT_SUGGESTIONS_CELLS_CONTENT_SUGGESTIONS_SHORTCUT_TILE_VIEW_H_

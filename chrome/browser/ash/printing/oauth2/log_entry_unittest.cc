@@ -32,7 +32,7 @@ TEST(PrintingOAuth2LogEntryTest, LogEntryMessageAndMethodOnly) {
 TEST(PrintingOAuth2LogEntryTest, LogEntryEmptyMessageAndStatus) {
   const std::string log_entry =
       LogEntry("", "method", GURL("http://abc.de:123/fgh?ij=kl#mn"),
-               absl::nullopt, chromeos::Uri("http://opq.rs:456/tu?vq=x#yz"));
+               std::nullopt, chromeos::Uri("http://opq.rs:456/tu?vq=x#yz"));
   EXPECT_EQ(log_entry,
             "oauth method;server=http://abc.de:123/fgh?ij=kl#mn;"
             "endpoint=http://opq.rs:456/tu?vq=x#yz");

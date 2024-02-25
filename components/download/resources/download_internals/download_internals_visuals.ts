@@ -2,7 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {DriverEntryState, ServiceEntry, ServiceEntryResult, ServiceEntryState, ServiceRequest, ServiceRequestResult} from './download_internals_browser_proxy.js';
+import type {ServiceEntry, ServiceRequest} from './download_internals_browser_proxy.js';
+import {DriverEntryState, ServiceEntryResult, ServiceEntryState, ServiceRequestResult} from './download_internals_browser_proxy.js';
 
 function getOngoingServiceEntryClass(entry: ServiceEntry) {
   switch (entry.state) {

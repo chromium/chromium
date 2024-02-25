@@ -5,6 +5,7 @@
 #ifndef ASH_SYSTEM_ACCESSIBILITY_DICTATION_BUBBLE_CONTROLLER_H_
 #define ASH_SYSTEM_ACCESSIBILITY_DICTATION_BUBBLE_CONTROLLER_H_
 
+#include <optional>
 #include <string>
 
 #include "ash/ash_export.h"
@@ -14,7 +15,6 @@
 #include "base/observer_list.h"
 #include "base/observer_list_types.h"
 #include "base/scoped_observation.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/ime/input_method.h"
 #include "ui/base/ime/input_method_observer.h"
 #include "ui/views/view_observer.h"
@@ -58,8 +58,8 @@ class ASH_EXPORT DictationBubbleController : public ui::InputMethodObserver,
   void UpdateBubble(
       bool visible,
       DictationBubbleIconType icon,
-      const absl::optional<std::u16string>& text,
-      const absl::optional<std::vector<DictationBubbleHintType>>& hints);
+      const std::optional<std::u16string>& text,
+      const std::optional<std::vector<DictationBubbleHintType>>& hints);
 
   // ui::InputMethodObserver:
   void OnFocus() override {}
@@ -79,17 +79,15 @@ class ASH_EXPORT DictationBubbleController : public ui::InputMethodObserver,
   void MaybeInitialize();
 
   // Updates the view and widget.
-  void Update(
-      DictationBubbleIconType icon,
-      const absl::optional<std::u16string>& text,
-      const absl::optional<std::vector<DictationBubbleHintType>>& hints);
+  void Update(DictationBubbleIconType icon,
+              const std::optional<std::u16string>& text,
+              const std::optional<std::vector<DictationBubbleHintType>>& hints);
 
   base::ObserverList<Observer> observers_;
 
   // Owned by views hierarchy.
-  raw_ptr<DictationBubbleView, ExperimentalAsh> dictation_bubble_view_ =
-      nullptr;
-  raw_ptr<views::Widget, ExperimentalAsh> widget_ = nullptr;
+  raw_ptr<DictationBubbleView> dictation_bubble_view_ = nullptr;
+  raw_ptr<views::Widget> widget_ = nullptr;
 
   base::ScopedObservation<ui::InputMethod, ui::InputMethodObserver>
       input_method_observer_{this};

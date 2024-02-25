@@ -11,6 +11,7 @@
 #include "chromeos/ash/components/phonehub/connection_scheduler.h"
 #include "chromeos/ash/components/phonehub/feature_status.h"
 #include "chromeos/ash/components/phonehub/feature_status_provider.h"
+#include "chromeos/ash/components/phonehub/phone_hub_structured_metrics_logger.h"
 #include "net/base/backoff_entry.h"
 
 namespace ash {
@@ -26,11 +27,13 @@ namespace phonehub {
 class ConnectionSchedulerImpl : public ConnectionScheduler,
                                 public FeatureStatusProvider::Observer {
  public:
-  ConnectionSchedulerImpl(secure_channel::ConnectionManager* connection_manager,
-                          FeatureStatusProvider* feature_status_provider);
+  ConnectionSchedulerImpl(
+      secure_channel::ConnectionManager* connection_manager,
+      FeatureStatusProvider* feature_status_provider,
+      PhoneHubStructuredMetricsLogger* phone_hub_structured_metrics_logger);
   ~ConnectionSchedulerImpl() override;
 
-  void ScheduleConnectionNow() override;
+  void ScheduleConnectionNow(DiscoveryEntryPoint entry_point) override;
 
  private:
   friend class ConnectionSchedulerImplTest;
@@ -48,9 +51,9 @@ class ConnectionSchedulerImpl : public ConnectionScheduler,
   base::TimeDelta GetCurrentBackoffDelayTimeForTesting();
   int GetBackoffFailureCountForTesting();
 
-  raw_ptr<secure_channel::ConnectionManager, ExperimentalAsh>
-      connection_manager_;
-  raw_ptr<FeatureStatusProvider, ExperimentalAsh> feature_status_provider_;
+  raw_ptr<secure_channel::ConnectionManager> connection_manager_;
+  raw_ptr<FeatureStatusProvider> feature_status_provider_;
+  raw_ptr<PhoneHubStructuredMetricsLogger> phone_hub_structured_metrics_logger_;
   // Provides us the backoff timers for RequestConnection().
   net::BackoffEntry retry_backoff_;
   FeatureStatus current_feature_status_;

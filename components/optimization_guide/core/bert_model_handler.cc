@@ -13,13 +13,13 @@ BertModelHandler::BertModelHandler(
     OptimizationGuideModelProvider* model_provider,
     scoped_refptr<base::SequencedTaskRunner> background_task_runner,
     proto::OptimizationTarget optimization_target,
-    const absl::optional<proto::Any>& model_metadata)
+    const std::optional<proto::Any>& model_metadata)
     : ModelHandler<std::vector<tflite::task::core::Category>,
                    const std::string&>(
           model_provider,
           background_task_runner,
           std::make_unique<BertModelExecutor>(optimization_target),
-          /*model_inference_timeout=*/absl::nullopt,
+          /*model_inference_timeout=*/std::nullopt,
           optimization_target,
           model_metadata) {}
 

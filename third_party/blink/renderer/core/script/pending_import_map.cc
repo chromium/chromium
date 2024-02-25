@@ -20,7 +20,7 @@ PendingImportMap* PendingImportMap::CreateInline(ScriptElementBase& element,
                                                  const KURL& base_url) {
   ExecutionContext* context = element.GetExecutionContext();
 
-  absl::optional<ImportMapError> error_to_rethrow;
+  std::optional<ImportMapError> error_to_rethrow;
   ImportMap* import_map =
       ImportMap::Parse(import_map_text, base_url, *context, &error_to_rethrow);
   return MakeGarbageCollected<PendingImportMap>(
@@ -30,7 +30,7 @@ PendingImportMap* PendingImportMap::CreateInline(ScriptElementBase& element,
 PendingImportMap::PendingImportMap(
     ScriptElementBase& element,
     ImportMap* import_map,
-    absl::optional<ImportMapError> error_to_rethrow,
+    std::optional<ImportMapError> error_to_rethrow,
     const ExecutionContext& original_context)
     : element_(&element),
       import_map_(import_map),

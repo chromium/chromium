@@ -14,6 +14,9 @@ namespace performance_manager::user_tuning {
 // mode is currently active.
 bool IsRefreshRateThrottled();
 
+// Returns whether battery saver mode should be managed by the OS
+bool IsBatterySaverModeManagedByOS();
+
 // Helper for logic to get the memory footprint estimate for a discarded page.
 // This must be called from the |PerformanceManager| sequence.
 uint64_t GetDiscardedMemoryEstimateForPage(

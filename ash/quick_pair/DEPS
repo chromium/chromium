@@ -1,5 +1,6 @@
 include_rules = [
   "+chromeos/ash/services/quick_pair",
+  "+components/cross_device/logging",
   "+components/image_fetcher",
   "+components/signin/public/identity_manager",
   "+components/signin/public/base",

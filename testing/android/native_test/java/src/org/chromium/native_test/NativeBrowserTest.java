@@ -4,16 +4,15 @@
 
 package org.chromium.native_test;
 
+import org.jni_zero.JNINamespace;
+import org.jni_zero.NativeMethods;
+
 import org.chromium.base.Log;
 import org.chromium.base.StrictModeContext;
-import org.chromium.base.annotations.JNINamespace;
-import org.chromium.base.annotations.NativeMethods;
 
 import java.io.File;
 
-/**
- *  Helper for browser tests running inside a java Activity.
- */
+/** Helper for browser tests running inside a java Activity. */
 @JNINamespace("testing::android")
 public class NativeBrowserTest {
     private static final String TAG = "NativeBrowserTest";
@@ -21,8 +20,9 @@ public class NativeBrowserTest {
     // Set the command line flags to be passed to the C++ main() method. Each
     // browser tests Activity should ensure these are included.
     public static final String BROWSER_TESTS_FLAGS[] = {
-            // switches::kSingleProcessTests
-            "--single-process-tests"};
+        // switches::kSingleProcessTests
+        "--single-process-tests"
+    };
 
     /**
      * Deletes a file or directory along with any of its children.

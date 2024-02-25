@@ -1,0 +1,8 @@
+WebView textSize:16.0 style:0 htmlInfo:[{htmlTag="#document"}, {display=""}]
+++View textSize:16.0 style:0 htmlInfo:[{htmlTag="div"}, {display="block"}, {role="emphasis"}]
+++++TextView text:"role" textSize:16.0 style:0 htmlInfo:[{htmlTag=""}, {display=""}]
+++View textSize:16.0 style:2 htmlInfo:[{htmlTag="em"}, {display="inline"}]
+++++TextView text:"element (no name)" textSize:16.0 style:2 htmlInfo:[{htmlTag=""}, {display=""}]
+++TextView text:" " textSize:16.0 style:0 htmlInfo:[{htmlTag=""}, {display=""}]
+++View text:"include me" textSize:16.0 style:2 htmlInfo:[{htmlTag="em"}, {display="inline"}, {aria-label="include me"}]
+++++TextView text:"element (with name)" textSize:16.0 style:2 htmlInfo:[{htmlTag=""}, {display=""}]

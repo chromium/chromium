@@ -17,25 +17,14 @@
 #include "components/autofill/core/browser/data_model/autofill_profile.h"
 #include "components/autofill/core/browser/data_model/autofill_structured_address_utils.h"
 #include "components/autofill/core/browser/data_model/form_group.h"
+#include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/autofill_l10n_util.h"
 #include "components/autofill/core/common/autofill_regexes.h"
 
 namespace autofill {
 
-namespace {
-
-// Factory for the structured tree to be used in NameInfo.
-std::unique_ptr<AddressComponent> CreateStructuredNameTree() {
-  if (HonorificPrefixEnabled()) {
-    return std::make_unique<NameFullWithPrefix>();
-  }
-  return std::make_unique<NameFull>();
-}
-
-}  // namespace
-
-NameInfo::NameInfo() : name_(CreateStructuredNameTree()) {}
+NameInfo::NameInfo() : name_(std::make_unique<NameFull>()) {}
 
 NameInfo::NameInfo(const NameInfo& info) : NameInfo() {
   *this = info;
@@ -76,38 +65,19 @@ bool NameInfo::operator==(const NameInfo& other) const {
   return name_->SameAs(*other.name_);
 }
 
-std::u16string NameInfo::GetRawInfo(ServerFieldType type) const {
-  DCHECK_EQ(FieldTypeGroup::kName, AutofillType(type).group());
-
-  // TODO(crbug.com/1141460): Remove once honorific prefixes are launched.
-  if (type == NAME_FULL_WITH_HONORIFIC_PREFIX && !HonorificPrefixEnabled()) {
-    type = NAME_FULL;
-  }
-    // Without the second generation of the structured name tree, honorific
-    // prefixes and the name including the prefix are unsupported types.
-  if (type == NAME_HONORIFIC_PREFIX && !HonorificPrefixEnabled()) {
-    return std::u16string();
-  }
-
-    return name_->GetValueForType(type);
+std::u16string NameInfo::GetRawInfo(FieldType type) const {
+  DCHECK_EQ(FieldTypeGroup::kName, GroupTypeOfFieldType(type));
+  return name_->GetValueForType(type);
 }
 
-void NameInfo::SetRawInfoWithVerificationStatus(ServerFieldType type,
+void NameInfo::SetRawInfoWithVerificationStatus(FieldType type,
                                                 const std::u16string& value,
                                                 VerificationStatus status) {
-  DCHECK_EQ(FieldTypeGroup::kName, AutofillType(type).group());
-  // Without the second generation of the structured name tree, honorific
-  // prefixes and the name including the prefix are unsupported types.
-  if ((type == NAME_HONORIFIC_PREFIX ||
-       type == NAME_FULL_WITH_HONORIFIC_PREFIX) &&
-      !HonorificPrefixEnabled()) {
-    return;
-  }
-  bool success = name_->SetValueForType(type, value, status);
-  DCHECK(success) << AutofillType::ServerFieldTypeToString(type);
+  DCHECK_EQ(FieldTypeGroup::kName, GroupTypeOfFieldType(type));
+  name_->SetValueForType(type, value, status);
 }
 
-void NameInfo::GetSupportedTypes(ServerFieldTypeSet* supported_types) const {
+void NameInfo::GetSupportedTypes(FieldTypeSet* supported_types) const {
   name_->GetSupportedTypes(supported_types);
 }
 
@@ -135,29 +105,8 @@ bool NameInfo::SetInfoWithVerificationStatusImpl(const AutofillType& type,
                                                       status);
 }
 
-void NameInfo::GetMatchingTypes(const std::u16string& text,
-                                const std::string& app_locale,
-                                ServerFieldTypeSet* matching_types) const {
-  FormGroup::GetMatchingTypes(text, app_locale, matching_types);
-  // Replace type matches for |NAME_FULL_WITH_HONORIFIC_PREFIX| with |NAME_FULL|
-  // to always vote for a full name field even if the user decides to add an
-  // additional honorific prefix to their name.
-  if (matching_types->contains(NAME_FULL_WITH_HONORIFIC_PREFIX)) {
-    matching_types->erase(NAME_FULL_WITH_HONORIFIC_PREFIX);
-    matching_types->insert(NAME_FULL);
-  }
-}
-
-VerificationStatus NameInfo::GetVerificationStatusImpl(
-    ServerFieldType type) const {
-  // Without the second generation of the structured name tree, honorific
-  // prefixes and the name including the prefix are unsupported types.
-  if (!((type == NAME_HONORIFIC_PREFIX ||
-         type == NAME_FULL_WITH_HONORIFIC_PREFIX) &&
-        !HonorificPrefixEnabled())) {
-    return name_->GetVerificationStatusForType(type);
-  }
-  return VerificationStatus::kNoStatus;
+VerificationStatus NameInfo::GetVerificationStatusImpl(FieldType type) const {
+  return name_->GetVerificationStatusForType(type);
 }
 
 EmailInfo::EmailInfo() = default;
@@ -180,18 +129,18 @@ bool EmailInfo::operator==(const EmailInfo& other) const {
   return this == &other || email_ == other.email_;
 }
 
-void EmailInfo::GetSupportedTypes(ServerFieldTypeSet* supported_types) const {
+void EmailInfo::GetSupportedTypes(FieldTypeSet* supported_types) const {
   supported_types->insert(EMAIL_ADDRESS);
 }
 
-std::u16string EmailInfo::GetRawInfo(ServerFieldType type) const {
+std::u16string EmailInfo::GetRawInfo(FieldType type) const {
   if (type == EMAIL_ADDRESS)
     return email_;
 
   return std::u16string();
 }
 
-void EmailInfo::SetRawInfoWithVerificationStatus(ServerFieldType type,
+void EmailInfo::SetRawInfoWithVerificationStatus(FieldType type,
                                                  const std::u16string& value,
                                                  VerificationStatus status) {
   DCHECK_EQ(EMAIL_ADDRESS, type);
@@ -209,13 +158,13 @@ bool CompanyInfo::operator==(const CompanyInfo& other) const {
          GetRawInfo(COMPANY_NAME) == other.GetRawInfo(COMPANY_NAME);
 }
 
-void CompanyInfo::GetSupportedTypes(ServerFieldTypeSet* supported_types) const {
+void CompanyInfo::GetSupportedTypes(FieldTypeSet* supported_types) const {
   supported_types->insert(COMPANY_NAME);
 }
 
 void CompanyInfo::GetMatchingTypes(const std::u16string& text,
                                    const std::string& app_locale,
-                                   ServerFieldTypeSet* matching_types) const {
+                                   FieldTypeSet* matching_types) const {
   if (IsValid()) {
     FormGroup::GetMatchingTypes(text, app_locale, matching_types);
   } else if (text.empty()) {
@@ -223,11 +172,11 @@ void CompanyInfo::GetMatchingTypes(const std::u16string& text,
   }
 }
 
-std::u16string CompanyInfo::GetRawInfo(ServerFieldType type) const {
+std::u16string CompanyInfo::GetRawInfo(FieldType type) const {
   return company_name_;
 }
 
-void CompanyInfo::SetRawInfoWithVerificationStatus(ServerFieldType type,
+void CompanyInfo::SetRawInfoWithVerificationStatus(FieldType type,
                                                    const std::u16string& value,
                                                    VerificationStatus status) {
   DCHECK_EQ(COMPANY_NAME, type);

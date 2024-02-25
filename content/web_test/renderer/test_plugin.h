@@ -8,6 +8,7 @@
 #include <memory>
 #include <string>
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "cc/layers/texture_layer.h"
 #include "cc/layers/texture_layer_client.h"
@@ -32,6 +33,9 @@ class CrossThreadSharedBitmap;
 }
 
 namespace gpu {
+
+class ClientSharedImage;
+
 namespace gles2 {
 class GLES2Interface;
 }
@@ -99,6 +103,7 @@ class TestPlugin : public blink::WebPlugin, public cc::TextureLayerClient {
   void DidFinishLoading() override {}
   void DidFailLoading(const blink::WebURLError& error) override {}
   bool IsPlaceholder() override;
+  v8::Local<v8::Object> V8ScriptableObject(v8::Isolate*) override;
 
   // cc::TextureLayerClient methods:
   bool PrepareTransferableResource(
@@ -166,36 +171,38 @@ class TestPlugin : public blink::WebPlugin, public cc::TextureLayerClient {
       bool lost);
   static void ReleaseSharedImage(
       scoped_refptr<ContextProviderRef> context_provider,
-      const gpu::Mailbox& mailbox,
+      scoped_refptr<gpu::ClientSharedImage> shared_image,
       const gpu::SyncToken& sync_token,
       bool lost);
 
-  TestRunner* test_runner_;
-  blink::WebPluginContainer* container_;
-  blink::WebLocalFrame* web_local_frame_;
+  raw_ptr<TestRunner> test_runner_;
+  raw_ptr<blink::WebPluginContainer> container_;
+  raw_ptr<blink::WebLocalFrame> web_local_frame_;
 
   gfx::Rect rect_;
   scoped_refptr<ContextProviderRef> context_provider_;
-  gpu::gles2::GLES2Interface* gl_;
-  gpu::Mailbox mailbox_;
+  raw_ptr<gpu::gles2::GLES2Interface> gl_;
+  scoped_refptr<gpu::ClientSharedImage> shared_image_;
   gpu::SyncToken sync_token_;
   scoped_refptr<cc::CrossThreadSharedBitmap> shared_bitmap_;
-  bool content_changed_;
-  GLuint framebuffer_;
+  bool content_changed_ = false;
+  GLuint framebuffer_ = 0;
   Scene scene_;
   scoped_refptr<cc::TextureLayer> layer_;
 
-  blink::WebPluginContainer::TouchEventRequestType touch_event_request_;
+  v8::Persistent<v8::Object> scriptable_object_;
+
+  blink::WebPluginContainer::TouchEventRequestType touch_event_request_ =
+      blink::WebPluginContainer::kTouchEventRequestTypeNone;
   // Requests touch events from the WebPluginContainerImpl multiple times to
   // tickle webkit.org/b/108381
-  bool re_request_touch_events_;
-  bool print_event_details_;
-  bool print_user_gesture_status_;
-  bool can_process_drag_;
-  bool supports_keyboard_focus_;
+  bool re_request_touch_events_ = false;
+  bool print_event_details_ = false;
+  bool print_user_gesture_status_ = false;
+  bool can_process_drag_ = false;
+  bool supports_keyboard_focus_ = false;
 
   bool is_persistent_;
-  bool can_create_without_renderer_;
 };
 
 }  // namespace content

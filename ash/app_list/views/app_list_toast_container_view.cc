@@ -24,10 +24,12 @@
 #include "ash/style/ash_color_id.h"
 #include "chromeos/constants/chromeos_features.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
 #include "ui/compositor/layer.h"
 #include "ui/views/accessibility/view_accessibility.h"
+#include "ui/views/animation/animation_abort_handle.h"
 #include "ui/views/animation/animation_builder.h"
 #include "ui/views/controls/button/label_button.h"
 #include "ui/views/layout/flex_layout.h"
@@ -71,7 +73,6 @@ AppListToastContainerView::AppListToastContainerView(
       keyboard_controller_(keyboard_controller),
       current_toast_(AppListToastType::kNone) {
   DCHECK(a11y_announcer_);
-  DCHECK(keyboard_controller_);
   SetLayoutManager(std::make_unique<views::FlexLayout>())
       ->SetMainAxisAlignment(views::LayoutAlignment::kCenter)
       .SetCrossAxisAlignment(views::LayoutAlignment::kCenter)
@@ -90,12 +91,14 @@ AppListToastContainerView::AppListToastContainerView(
 }
 
 AppListToastContainerView::~AppListToastContainerView() {
+  set_context_menu_controller(nullptr);
   toast_view_ = nullptr;
 }
 
 bool AppListToastContainerView::OnKeyPressed(const ui::KeyEvent& event) {
-  if (!delegate_)
+  if (!delegate_ || !keyboard_controller_) {
     return false;
+  }
 
   if (event.key_code() == ui::VKEY_UP)
     return keyboard_controller_->MoveFocusUpFromToast(focused_app_column_);
@@ -182,7 +185,33 @@ void AppListToastContainerView::CreateReorderNudgeView() {
                   IDR_APP_LIST_SORT_NUDGE_IMAGE))
           .SetIconBackground(true)
           .Build());
+  if (available_width_) {
+    toast_view_->SetAvailableWidth(*available_width_);
+  }
   current_toast_ = AppListToastType::kReorderNudge;
+}
+
+void AppListToastContainerView::CreateTutorialNudgeView() {
+  if (toast_view_) {
+    return;
+  }
+
+  AppListToastView::Builder toast_view_builder(u"Tutorial view is on");
+
+  toast_view_builder
+      .SetButton(
+          u"Dismiss view",
+          base::BindRepeating(&AppListToastContainerView::FadeOutToastView,
+                              base::Unretained(this)))
+      .SetStyleForTabletMode(tablet_mode_)
+      .SetSubtitle(u"Apps are grouped by category")
+      .SetIconBackground(true);
+
+  toast_view_ = AddChildView(toast_view_builder.Build());
+  if (available_width_) {
+    toast_view_->SetAvailableWidth(*available_width_);
+  }
+  current_toast_ = AppListToastType::kTutorialViewNudge;
 }
 
 void AppListToastContainerView::RemoveReorderNudgeView() {
@@ -207,8 +236,8 @@ void AppListToastContainerView::UpdateVisibilityState(VisibilityState state) {
   // Return early if the reorder nudge is not showing when the app list is
   // hiding.
   if (nudge_controller_->is_visible() &&
-      nudge_controller_->current_nudge() !=
-          AppListNudgeController::NudgeType::kReorderNudge) {
+      (nudge_controller_->current_nudge() !=
+       AppListNudgeController::NudgeType::kReorderNudge)) {
     return;
   }
 
@@ -219,9 +248,14 @@ void AppListToastContainerView::UpdateVisibilityState(VisibilityState state) {
   }
 
   AppListNudgeController::NudgeType new_nudge =
-      nudge_controller_->ShouldShowReorderNudge()
-          ? AppListNudgeController::NudgeType::kReorderNudge
-          : AppListNudgeController::NudgeType::kNone;
+      AppListNudgeController::NudgeType::kNone;
+
+  if (nudge_controller_->current_nudge() ==
+      AppListNudgeController::NudgeType::kTutorialNudge) {
+    new_nudge = AppListNudgeController::NudgeType::kTutorialNudge;
+  } else if (nudge_controller_->ShouldShowReorderNudge()) {
+    new_nudge = AppListNudgeController::NudgeType::kReorderNudge;
+  }
 
   // Update the visible and active state in `nudge_controller_`.
   switch (state) {
@@ -241,11 +275,11 @@ void AppListToastContainerView::UpdateVisibilityState(VisibilityState state) {
 }
 
 void AppListToastContainerView::OnTemporarySortOrderChanged(
-    const absl::optional<AppListSortOrder>& new_order) {
+    const std::optional<AppListSortOrder>& new_order) {
   // Remove `toast_view_` when the temporary sorting order is cleared.
   if (!GetVisibilityForSortOrder(new_order)) {
     if (committing_sort_order_) {
-      // When the toast view is closed due to committing the sort  order via the
+      // When the toast view is closed due to committing the sort order via the
       // close button , the toast view should be faded out with animation.
       FadeOutToastView();
     } else {
@@ -298,11 +332,14 @@ void AppListToastContainerView::OnTemporarySortOrderChanged(
       a11y_text_on_undo_button);
 
   toast_view_->UpdateInteriorMargins(kReorderUndoInteriorMargin);
+  if (available_width_) {
+    toast_view_->SetAvailableWidth(*available_width_);
+  }
   current_toast_ = AppListToastType::kReorderUndo;
 }
 
 bool AppListToastContainerView::GetVisibilityForSortOrder(
-    const absl::optional<AppListSortOrder>& new_order) const {
+    const std::optional<AppListSortOrder>& new_order) const {
   return new_order && *new_order != AppListSortOrder::kCustom &&
          *new_order != AppListSortOrder::kAlphabeticalEphemeralAppFirst;
 }
@@ -314,6 +351,14 @@ void AppListToastContainerView::AnnounceSortOrder(AppListSortOrder new_order) {
 void AppListToastContainerView::AnnounceUndoSort() {
   a11y_announcer_->Announce(
       l10n_util::GetStringUTF16(IDS_ASH_LAUNCHER_UNDO_SORT_DONE_SPOKEN_TEXT));
+}
+
+void AppListToastContainerView::ConfigureLayoutForAvailableWidth(
+    int available_width) {
+  available_width_ = available_width;
+  if (toast_view_) {
+    toast_view_->SetAvailableWidth(available_width);
+  }
 }
 
 views::LabelButton* AppListToastContainerView::GetToastButton() {
@@ -331,12 +376,20 @@ views::Button* AppListToastContainerView::GetCloseButton() {
 }
 
 void AppListToastContainerView::OnReorderUndoButtonClicked() {
+  toast_view_->toast_button()->SetEnabled(false);
   AppListModelProvider::Get()->model()->delegate()->RequestAppListSortRevert();
 }
 
 void AppListToastContainerView::OnReorderCloseButtonClicked() {
+  // Prevent the close button from being clicked again during the fade out
+  // animation.
+  toast_view_->close_button()->SetEnabled(false);
+
   base::AutoReset auto_reset(&committing_sort_order_, true);
-  view_delegate_->CommitTemporarySortOrder();
+  AppListModelProvider::Get()
+      ->model()
+      ->delegate()
+      ->RequestCommitTemporarySortOrder();
 }
 
 bool AppListToastContainerView::IsToastVisible() const {
@@ -345,12 +398,19 @@ bool AppListToastContainerView::IsToastVisible() const {
 }
 
 void AppListToastContainerView::FadeOutToastView() {
+  views::AnimationBuilder builder;
+  toast_view_fade_out_animation_abort_handle_ = builder.GetAbortHandle();
+  if (!toast_view_) {
+    // Aborting an existing fade out animation deletes the `toast_view_`, so
+    // avoid creating new animations.
+    return;
+  }
+
   if (!toast_view_->layer()) {
     toast_view_->SetPaintToLayer();
     toast_view_->layer()->SetFillsBoundsOpaquely(false);
   }
-
-  views::AnimationBuilder()
+  builder
       .SetPreemptionStrategy(
           ui::LayerAnimator::IMMEDIATELY_ANIMATE_TO_NEW_TARGET)
       .OnEnded(
@@ -404,5 +464,8 @@ std::u16string AppListToastContainerView::GetA11yTextOnUndoButtonFromOrder(
       return u"";
   }
 }
+
+BEGIN_METADATA(AppListToastContainerView)
+END_METADATA
 
 }  // namespace ash

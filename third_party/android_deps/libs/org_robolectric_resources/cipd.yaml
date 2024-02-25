@@ -3,8 +3,8 @@
 # found in the LICENSE file.
 
 # To create CIPD package run the following command.
-# cipd create --pkg-def cipd.yaml -tag version:2@4.10.3.cr1
+# cipd create --pkg-def cipd.yaml -tag version:2@4.11.1.cr1
 package: chromium/third_party/android_deps/libs/org_robolectric_resources
 description: "resources"
 data:
-- file: resources-4.10.3.jar
+- file: resources-4.11.1.jar

@@ -9,12 +9,14 @@
 #include <stddef.h>
 #include <stdlib.h>
 #include <windows.h>
+#include <utility>
 
 #include "base/at_exit.h"
 #include "base/check_op.h"
 #include "base/command_line.h"
 #include "base/logging.h"
 #include "base/memory/singleton.h"
+#include "base/no_destructor.h"
 #include "base/strings/string_tokenizer.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
@@ -87,6 +89,9 @@ namespace {
 //
 // The high 16 bits of the keyword have special semantics and should not be
 // set for enabling individual categories as they are reserved by winmeta.xml.
+// TODO(crbug.com/1497783): Move this to
+// components/tracing/common/etw_export_win.cc once no longer used by
+// TraceEventETWExport.
 const char* const kFilteredEventGroupNames[] = {
     "benchmark",                             // 0x1
     "blink",                                 // 0x2
@@ -108,7 +113,7 @@ const char* const kFilteredEventGroupNames[] = {
     "media",                                 // 0x20000
     "loading",                               // 0x40000
     "base",                                  // 0x80000
-    "unused_bit_20",                         // 0x100000
+    "devtools.timeline",                     // 0x100000
     "unused_bit_21",                         // 0x200000
     "unused_bit_22",                         // 0x400000
     "unused_bit_23",                         // 0x800000
@@ -141,73 +146,37 @@ const char* const kFilteredEventGroupNames[] = {
 // These must be kept as the last two entries in the above array.
 constexpr uint8_t kOtherEventsGroupNameIndex = 46;
 constexpr uint8_t kDisabledOtherEventsGroupNameIndex = 47;
+constexpr uint64_t kCategoryKeywordMask = ~0xFFFF000000000000;
 
 // Max number of available keyword bits.
 constexpr size_t kMaxNumberOfGroupNames = 48;
-uint64_t g_callback_match_any_keyword = 0;
-
-static void __stdcall EtwEnableCallback(LPCGUID SourceId,
-                                        ULONG ControlCode,
-                                        UCHAR Level,
-                                        ULONGLONG MatchAnyKeyword,
-                                        ULONGLONG MatchAllKeyword,
-                                        PEVENT_FILTER_DESCRIPTOR FilterData,
-                                        PVOID CallbackContext) {
-  // This callback is called in the context of an ETW OS thread to
-  // inform the process of the global state of the level and keyword
-  // across all sessions for this provider. We need to update the
-  // local keywords so we log the corresponding events. Protect the
-  // upper 16 bits reserved by winmeta.xml as they should not be used
-  // but older logging code and tools incorrectly used them.
-  g_callback_match_any_keyword = MatchAnyKeyword;
-  g_callback_match_any_keyword &= ~0xFFFF000000000000;
-
-  DVLOG(1) << "ETW Keyword"
-           << " Bits enabled in global context: " << std::hex << MatchAnyKeyword
-           << " Bits enabled in our code: " << std::hex
-           << g_callback_match_any_keyword;
-
-  base::trace_event::TraceEventETWExport::OnETWEnableUpdate();
-}
 
 }  // namespace
 
 namespace base {
 namespace trace_event {
 
-bool TraceEventETWExport::is_registration_complete_ = false;
-
 TraceEventETWExport::TraceEventETWExport() {
   // Construct the ETW provider. If construction fails then the event logging
   // calls will fail. We're passing a callback function as part of registration.
   // This allows us to detect changes to enable/disable/keyword changes.
-
-  // This GUID is the used to identify the Chrome provider and is used whenever
-  // ETW is enabled via tracing tools and cannot change without updating tools
-  // that collect Chrome ETW data.
-  static const GUID Chrome_GUID = {
-      0xD2D578D9,
-      0x2936,
-      0x45B6,
-      {0xA0, 0x9F, 0x30, 0xE3, 0x27, 0x15, 0xF4, 0x2D}};
-
-  etw_provider_ = std::make_unique<TlmProvider>("Google.Chrome", Chrome_GUID,
-                                                &EtwEnableCallback);
-  TraceEventETWExport::is_registration_complete_ = true;
+  etw_provider_ = std::make_unique<TlmProvider>(
+      "Google.Chrome", Chrome_GUID,
+      base::BindRepeating(&TraceEventETWExport::OnETWEnableUpdate,
+                          base::Unretained(this)));
+  is_registration_complete_ = true;
 
   // Make sure to initialize the map with all the group names. Subsequent
   // modifications will be made by the background thread and only affect the
   // values of the keys (no key addition/deletion). Therefore, the map does not
   // require a lock for access.
   // Also set up the map from category name to keyword.
-  for (size_t i = 0; i < ARRAYSIZE(kFilteredEventGroupNames); i++) {
-    uint64_t keyword = 1ULL << i;
+  for (size_t i = 0; i < std::size(kFilteredEventGroupNames); i++) {
     categories_status_[kFilteredEventGroupNames[i]] = false;
-    categories_keyword_[kFilteredEventGroupNames[i]] = keyword;
   }
   // Make sure we stay at 48 entries, the maximum number of bits available
   // for keyword use.
-  static_assert(ARRAYSIZE(kFilteredEventGroupNames) <= kMaxNumberOfGroupNames,
+  static_assert(std::size(kFilteredEventGroupNames) <= kMaxNumberOfGroupNames,
                 "Exceeded max ETW keyword bits");
 }
 
@@ -227,62 +196,20 @@ void TraceEventETWExport::EnableETWExport() {
 }
 
 // static
-uint64_t TraceEventETWExport::CategoryGroupToKeyword(
-    const uint8_t* category_state) {
-  uint64_t keyword = 0;
-
-  // To enable multiple sessions with this provider enabled we need to log the
-  // level and keyword with the event so that if the sessions differ in the
-  // level or keywords enabled we log the right events and allow ETW to
-  // route the data to the appropriate session.
-  // TODO(joel@microsoft.com) Explore better methods in future integration
-  // with perfetto.
-
-  auto* instance = GetInstance();
-  if (!instance)
-    return keyword;
-
-  // Add in the keyword for the special bits if they are set.
-  if (instance->categories_status_
-          [kFilteredEventGroupNames[kOtherEventsGroupNameIndex]]) {
-    keyword |= instance->categories_keyword_
-                   [kFilteredEventGroupNames[kOtherEventsGroupNameIndex]];
-  }
-  if (instance->categories_status_
-          [kFilteredEventGroupNames[kDisabledOtherEventsGroupNameIndex]]) {
-    keyword |=
-        instance->categories_keyword_
-            [kFilteredEventGroupNames[kDisabledOtherEventsGroupNameIndex]];
-  }
-  // Add in the keyword for the categories specified at the logging site.
-  const TraceCategory* category = TraceCategory::FromStatePtr(category_state);
-  StringPiece category_group_name = category->name();
-
-  CStringTokenizer category_group_tokens(category_group_name.begin(),
-                                         category_group_name.end(), ",");
-  while (category_group_tokens.GetNext()) {
-    StringPiece category_group_token = category_group_tokens.token_piece();
-
-    // Lookup the keyword for this part of the category_group_name
-    // and or in the keyword.
-    auto it = instance->categories_keyword_.find(category_group_token);
-    if (it != instance->categories_keyword_.end())
-      keyword |= it->second;
-  }
-  return keyword;
-}
-
-// static
 void TraceEventETWExport::AddEvent(char phase,
                                    const unsigned char* category_group_enabled,
                                    const char* name,
                                    unsigned long long id,
+                                   TimeTicks timestamp,
                                    const TraceArguments* args) {
   // We bail early in case exporting is disabled or no consumer is listening.
   auto* instance = GetInstance();
-  uint64_t keyword = CategoryGroupToKeyword(category_group_enabled);
-  if (!instance ||
-      !instance->etw_provider_->IsEnabled(TRACE_LEVEL_NONE, keyword)) {
+  if (!instance) {
+    return;
+  }
+  uint64_t keyword =
+      instance->CategoryStateToETWKeyword(category_group_enabled);
+  if (!instance->etw_provider_->IsEnabled(TRACE_LEVEL_NONE, keyword)) {
     return;
   }
 
@@ -376,20 +303,24 @@ void TraceEventETWExport::AddEvent(char phase,
     }
   }
 
+  int64_t timestamp_ms = (timestamp - TimeTicks()).InMilliseconds();
   // Log the event and include the info needed to decode it via TraceLogging
   if (num_args == 0) {
     instance->etw_provider_->WriteEvent(
         name, TlmEventDescriptor(0, keyword),
-        TlmMbcsStringField("Phase", phase_string));
+        TlmMbcsStringField("Phase", phase_string),
+        TlmInt64Field("Timestamp", timestamp_ms));
   } else if (num_args == 1) {
     instance->etw_provider_->WriteEvent(
         name, TlmEventDescriptor(0, keyword),
         TlmMbcsStringField("Phase", phase_string),
+        TlmInt64Field("Timestamp", timestamp_ms),
         TlmMbcsStringField((args->names()[0]), (arg_values_string[0].c_str())));
   } else if (num_args == 2) {
     instance->etw_provider_->WriteEvent(
         name, TlmEventDescriptor(0, keyword),
         TlmMbcsStringField("Phase", phase_string),
+        TlmInt64Field("Timestamp", timestamp_ms),
         TlmMbcsStringField((args->names()[0]), (arg_values_string[0].c_str())),
         TlmMbcsStringField((args->names()[1]), (arg_values_string[1].c_str())));
   } else {
@@ -402,9 +333,12 @@ void TraceEventETWExport::AddCompleteEndEvent(
     const unsigned char* category_group_enabled,
     const char* name) {
   auto* instance = GetInstance();
-  uint64_t keyword = CategoryGroupToKeyword(category_group_enabled);
-  if (!instance ||
-      !instance->etw_provider_->IsEnabled(TRACE_LEVEL_NONE, keyword)) {
+  if (!instance) {
+    return;
+  }
+  uint64_t keyword =
+      instance->CategoryStateToETWKeyword(category_group_enabled);
+  if (!instance->etw_provider_->IsEnabled(TRACE_LEVEL_NONE, keyword)) {
     return;
   }
 
@@ -438,16 +372,18 @@ bool TraceEventETWExport::IsCategoryGroupEnabled(
 }
 
 bool TraceEventETWExport::UpdateEnabledCategories() {
-  if (etw_match_any_keyword_ == g_callback_match_any_keyword)
+  if (etw_match_any_keyword_ ==
+      (etw_provider_->keyword_any() & kCategoryKeywordMask)) {
     return false;
+  }
 
-  // If the global keyword has changed, update each category. The global
+  // If keyword_any() has changed, update each category. The global
   // context is set by UIforETW (or other ETW trace recording tools)
   // using the ETW infrastructure. When the global context changes the
   // callback will be called to set the updated keyword bits in each
-  // browser process that has registered their ETW provider.
-  etw_match_any_keyword_ = g_callback_match_any_keyword;
-  for (size_t i = 0; i < ARRAYSIZE(kFilteredEventGroupNames); i++) {
+  // process that has registered their ETW provider.
+  etw_match_any_keyword_ = etw_provider_->keyword_any() & kCategoryKeywordMask;
+  for (size_t i = 0; i < std::size(kFilteredEventGroupNames); i++) {
     if (etw_match_any_keyword_ & (1ULL << i)) {
       categories_status_[kFilteredEventGroupNames[i]] = true;
     } else {
@@ -486,16 +422,21 @@ bool TraceEventETWExport::IsCategoryEnabled(StringPiece category_name) const {
   }
 }
 
-// static
-void TraceEventETWExport::OnETWEnableUpdate() {
+uint64_t TraceEventETWExport::CategoryStateToETWKeyword(
+    const uint8_t* category_state) {
+  const TraceCategory* category = TraceCategory::FromStatePtr(category_state);
+  uint64_t keyword = CategoryGroupToETWKeyword(category->name());
+  return keyword;
+}
+
+void TraceEventETWExport::OnETWEnableUpdate(
+    TlmProvider::EventControlCode enabled) {
   // During construction, if tracing is already enabled, we'll get
   // a callback synchronously on the same thread. Calling GetInstance
   // in that case will hang since we're in the process of creating the
   // singleton.
   if (is_registration_complete_) {
-    auto* instance = GetInstance();
-    if (instance)
-      instance->UpdateEnabledCategories();
+    UpdateEnabledCategories();
   }
 }
 
@@ -511,6 +452,75 @@ TraceEventETWExport* TraceEventETWExport::GetInstanceIfExists() {
       TraceEventETWExport,
       StaticMemorySingletonTraits<TraceEventETWExport>>::GetIfExists();
 }
+
+uint64_t CategoryGroupToETWKeyword(std::string_view category_group_name) {
+  static NoDestructor<base::flat_map<std::string_view, uint64_t>>
+      categories_to_keyword([]() {
+        std::vector<std::pair<std::string_view, uint64_t>> items;
+        for (size_t i = 0; i < kOtherEventsGroupNameIndex; i++) {
+          uint64_t keyword = 1ULL << i;
+          items.emplace_back(kFilteredEventGroupNames[i], keyword);
+        }
+        std::sort(items.begin(), items.end());
+        return base::flat_map<std::string_view, uint64_t>(base::sorted_unique,
+                                                          std::move(items));
+      }());
+
+  uint64_t keyword = 0;
+
+  // To enable multiple sessions with this provider enabled we need to log the
+  // level and keyword with the event so that if the sessions differ in the
+  // level or keywords enabled we log the right events and allow ETW to
+  // route the data to the appropriate session.
+  // TODO(joel@microsoft.com) Explore better methods in future integration
+  // with perfetto.
+
+  CStringTokenizer category_group_tokens(category_group_name.begin(),
+                                         category_group_name.end(), ",");
+  while (category_group_tokens.GetNext()) {
+    StringPiece category_group_token = category_group_tokens.token_piece();
+
+    // Lookup the keyword for this part of the category_group_name
+    // and or in the keyword.
+    auto it = categories_to_keyword->find(category_group_token);
+    if (it != categories_to_keyword->end()) {
+      keyword |= it->second;
+    } else {
+      if (StartsWith(category_group_token, "disabled-by-default")) {
+        keyword |= (1ULL << kDisabledOtherEventsGroupNameIndex);
+      } else {
+        keyword |= (1ULL << kOtherEventsGroupNameIndex);
+      }
+    }
+  }
+  return keyword;
+}
+
+#if BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
+
+perfetto::protos::gen::TrackEventConfig ETWKeywordToTrackEventConfig(
+    uint64_t keyword) {
+  perfetto::protos::gen::TrackEventConfig track_event_config;
+  for (size_t i = 0; i < kOtherEventsGroupNameIndex; ++i) {
+    if (keyword & (1ULL << i)) {
+      track_event_config.add_enabled_categories(kFilteredEventGroupNames[i]);
+    }
+  }
+  bool other_events_enabled = (keyword & (1ULL << kOtherEventsGroupNameIndex));
+  bool disabled_other_events_enables =
+      (keyword & (1ULL << kDisabledOtherEventsGroupNameIndex));
+  if (!other_events_enabled) {
+    track_event_config.add_disabled_categories("*");
+  }
+  if (!disabled_other_events_enables) {
+    track_event_config.add_disabled_categories("disabled-by-default-*");
+  } else if (other_events_enabled) {
+    track_event_config.add_enabled_categories("disabled-by-default-*");
+  }
+  return track_event_config;
+}
+
+#endif  // BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
 
 }  // namespace trace_event
 }  // namespace base

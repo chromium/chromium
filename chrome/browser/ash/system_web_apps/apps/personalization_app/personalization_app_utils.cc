@@ -4,18 +4,30 @@
 
 #include "chrome/browser/ash/system_web_apps/apps/personalization_app/personalization_app_utils.h"
 
-#include "base/notreached.h"
+#include <memory>
+#include <string_view>
+
+#include "ash/webui/personalization_app/personalization_app_ui.h"
+#include "base/base64.h"
+#include "base/logging.h"
+#include "base/strings/strcat.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/ash/system_web_apps/apps/personalization_app/personalization_app_ambient_provider_impl.h"
 #include "chrome/browser/ash/system_web_apps/apps/personalization_app/personalization_app_keyboard_backlight_provider_impl.h"
+#include "chrome/browser/ash/system_web_apps/apps/personalization_app/personalization_app_sea_pen_provider_impl.h"
 #include "chrome/browser/ash/system_web_apps/apps/personalization_app/personalization_app_theme_provider_impl.h"
 #include "chrome/browser/ash/system_web_apps/apps/personalization_app/personalization_app_user_provider_impl.h"
 #include "chrome/browser/ash/system_web_apps/apps/personalization_app/personalization_app_wallpaper_provider_impl.h"
 #include "chrome/browser/ash/wallpaper_handlers/wallpaper_fetcher_delegate.h"
+#include "chrome/browser/policy/profile_policy_connector.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
 #include "components/account_id/account_id.h"
 #include "components/user_manager/user.h"
+#include "components/user_manager/user_manager.h"
 #include "components/user_manager/user_type.h"
+#include "google_apis/gaia/gaia_auth_util.h"
+#include "url/gurl.h"
 
 namespace ash::personalization_app {
 
@@ -36,10 +48,15 @@ std::unique_ptr<content::WebUIController> CreatePersonalizationAppUI(
       ash::personalization_app::PersonalizationAppWallpaperProviderImpl>(
       web_ui,
       std::make_unique<wallpaper_handlers::WallpaperFetcherDelegateImpl>());
+  auto sea_pen_provider = std::make_unique<
+      ash::personalization_app::PersonalizationAppSeaPenProviderImpl>(
+      web_ui,
+      std::make_unique<wallpaper_handlers::WallpaperFetcherDelegateImpl>());
   return std::make_unique<ash::personalization_app::PersonalizationAppUI>(
       web_ui, std::move(ambient_provider),
-      std::move(keyboard_backlight_provider), std::move(theme_provider),
-      std::move(user_provider), std::move(wallpaper_provider));
+      std::move(keyboard_backlight_provider), std::move(sea_pen_provider),
+      std::move(theme_provider), std::move(user_provider),
+      std::move(wallpaper_provider));
 }
 
 const user_manager::User* GetUser(const Profile* profile) {
@@ -63,21 +80,60 @@ bool CanSeeWallpaperOrPersonalizationApp(const Profile* profile) {
     return false;
   }
   switch (user->GetType()) {
-    case user_manager::NUM_USER_TYPES:
-      NOTREACHED() << "Invalid user type NUM_USER_TYPES";
+    case user_manager::UserType::kKioskApp:
+    case user_manager::UserType::kArcKioskApp:
+    case user_manager::UserType::kWebKioskApp:
       return false;
-    case user_manager::USER_TYPE_KIOSK_APP:
-    case user_manager::USER_TYPE_ARC_KIOSK_APP:
-    case user_manager::USER_TYPE_WEB_KIOSK_APP:
-      return false;
-    case user_manager::USER_TYPE_REGULAR:
-    case user_manager::USER_TYPE_CHILD:
-    case user_manager::USER_TYPE_GUEST:
+    case user_manager::UserType::kRegular:
+    case user_manager::UserType::kChild:
+    case user_manager::UserType::kGuest:
     // Public account users must be able to see personalization app since retail
     // demo mode is implemented as a public account.
-    case user_manager::USER_TYPE_PUBLIC_ACCOUNT:
+    case user_manager::UserType::kPublicAccount:
       return true;
   }
+}
+
+bool IsEligibleForSeaPen(Profile* profile) {
+  if (!profile) {
+    LOG(ERROR) << __func__ << " no profile";
+    return false;
+  }
+
+  // Show for Googlers.
+  if (gaia::IsGoogleInternalAccountEmail(profile->GetProfileUserName())) {
+    DVLOG(1) << __func__ << " Google internal account";
+    return true;
+  }
+
+  // Do not show for managed profiles.
+  if (profile->GetProfilePolicyConnector()->IsManaged()) {
+    DVLOG(1) << __func__ << " managed profile";
+    return false;
+  }
+
+  const auto* user = GetUser(profile);
+  if (!user) {
+    LOG(ERROR) << __func__ << " no user";
+    return false;
+  }
+  DVLOG(1) << __func__ << " user_type=" << user->GetType();
+  switch (user->GetType()) {
+    case user_manager::UserType::kKioskApp:
+    case user_manager::UserType::kArcKioskApp:
+    case user_manager::UserType::kWebKioskApp:
+    case user_manager::UserType::kChild:
+    case user_manager::UserType::kPublicAccount:
+    case user_manager::UserType::kGuest:
+      return false;
+    case user_manager::UserType::kRegular:
+      return true;
+  }
+}
+
+GURL GetJpegDataUrl(const std::string_view encoded_jpg_data) {
+  return GURL(base::StrCat(
+      {"data:image/jpeg;base64,", base::Base64Encode(encoded_jpg_data)}));
 }
 
 }  // namespace ash::personalization_app

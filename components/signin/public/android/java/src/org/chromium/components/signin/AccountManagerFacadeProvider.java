@@ -7,9 +7,10 @@ import androidx.annotation.AnyThread;
 import androidx.annotation.MainThread;
 import androidx.annotation.VisibleForTesting;
 
+import org.jni_zero.CalledByNative;
+
 import org.chromium.base.Log;
 import org.chromium.base.ThreadUtils;
-import org.chromium.base.annotations.CalledByNative;
 
 import java.util.concurrent.atomic.AtomicReference;
 
@@ -42,29 +43,27 @@ public class AccountManagerFacadeProvider {
         sAtomicInstance.set(sInstance);
     }
 
-    /**
-     * Sets the test instance.
-     */
+    /** Sets the test instance. */
     @VisibleForTesting
     @AnyThread
     public static void setInstanceForTests(AccountManagerFacade accountManagerFacade) {
-        ThreadUtils.runOnUiThreadBlocking(() -> {
-            sTestingInstance = accountManagerFacade;
-            sAtomicInstance.set(sTestingInstance);
-        });
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    sTestingInstance = accountManagerFacade;
+                    sAtomicInstance.set(sTestingInstance);
+                });
     }
 
-    /**
-     * Resets the test instance set with {@link #setInstanceForTests}.
-     */
+    /** Resets the test instance set with {@link #setInstanceForTests}. */
     @VisibleForTesting
     @AnyThread
     public static void resetInstanceForTests() {
-        ThreadUtils.runOnUiThreadBlocking(() -> {
-            sTestingInstance = null;
-            sAtomicInstance.set(sInstance);
-            Log.d(TAG, "reset AccountManagerFacade test instance");
-        });
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    sTestingInstance = null;
+                    sAtomicInstance.set(sInstance);
+                    Log.d(TAG, "reset AccountManagerFacade test instance");
+                });
     }
 
     /**

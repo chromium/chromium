@@ -56,7 +56,6 @@ class MediaStreamVideoRendererSink::FrameDeliverer {
   }
 
   void OnVideoFrame(scoped_refptr<media::VideoFrame> frame,
-                    std::vector<scoped_refptr<media::VideoFrame>> scaled_frames,
                     base::TimeTicks /*current_time*/) {
     DCHECK_CALLED_ON_VALID_SEQUENCE(video_sequence_checker_);
     DCHECK(frame);
@@ -80,7 +79,6 @@ class MediaStreamVideoRendererSink::FrameDeliverer {
     }
 
     frame_size_ = frame->natural_size();
-    // Scaled frames are currently ignored.
     repaint_cb_.Run(std::move(frame));
   }
 
@@ -100,7 +98,7 @@ class MediaStreamVideoRendererSink::FrameDeliverer {
 
     video_frame->metadata().end_of_stream = true;
     video_frame->metadata().reference_time = base::TimeTicks::Now();
-    OnVideoFrame(video_frame, {}, base::TimeTicks());
+    OnVideoFrame(video_frame, base::TimeTicks());
   }
 
   void Start() {

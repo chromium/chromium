@@ -30,8 +30,7 @@ void ReceiverMojoToMediaAdapter::OnNewBuffer(
 }
 
 void ReceiverMojoToMediaAdapter::OnFrameReadyInBuffer(
-    media::ReadyFrameInBuffer frame,
-    std::vector<media::ReadyFrameInBuffer> scaled_frames) {
+    media::ReadyFrameInBuffer frame) {
   if (!scoped_access_permission_map_) {
     scoped_access_permission_map_ =
         ScopedAccessPermissionMap::CreateMapAndSendVideoFrameAccessHandlerReady(
@@ -42,18 +41,7 @@ void ReceiverMojoToMediaAdapter::OnFrameReadyInBuffer(
   mojom::ReadyFrameInBufferPtr mojom_frame = mojom::ReadyFrameInBuffer::New(
       frame.buffer_id, frame.frame_feedback_id, std::move(frame.frame_info));
 
-  std::vector<mojom::ReadyFrameInBufferPtr> mojom_scaled_frames;
-  mojom_scaled_frames.reserve(scaled_frames.size());
-  for (auto& scaled_frame : scaled_frames) {
-    scoped_access_permission_map_->InsertAccessPermission(
-        scaled_frame.buffer_id, std::move(scaled_frame.buffer_read_permission));
-    mojom_scaled_frames.push_back(mojom::ReadyFrameInBuffer::New(
-        scaled_frame.buffer_id, scaled_frame.frame_feedback_id,
-        std::move(scaled_frame.frame_info)));
-  }
-
-  video_frame_handler_->OnFrameReadyInBuffer(std::move(mojom_frame),
-                                             std::move(mojom_scaled_frames));
+  video_frame_handler_->OnFrameReadyInBuffer(std::move(mojom_frame));
 }
 
 void ReceiverMojoToMediaAdapter::OnBufferRetired(int buffer_id) {
@@ -73,8 +61,10 @@ void ReceiverMojoToMediaAdapter::OnFrameWithEmptyRegionCapture() {
   video_frame_handler_->OnFrameWithEmptyRegionCapture();
 }
 
-void ReceiverMojoToMediaAdapter::OnNewCropVersion(uint32_t crop_version) {
-  video_frame_handler_->OnNewCropVersion(crop_version);
+void ReceiverMojoToMediaAdapter::OnNewSubCaptureTargetVersion(
+    uint32_t sub_capture_target_version) {
+  video_frame_handler_->OnNewSubCaptureTargetVersion(
+      sub_capture_target_version);
 }
 
 void ReceiverMojoToMediaAdapter::OnLog(const std::string& message) {

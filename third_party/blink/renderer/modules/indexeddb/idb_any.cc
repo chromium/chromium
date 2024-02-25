@@ -28,10 +28,13 @@
 #include <memory>
 #include <utility>
 
+#include "third_party/blink/renderer/bindings/core/v8/to_v8_traits.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_binding_for_modules.h"
 #include "third_party/blink/renderer/core/dom/dom_string_list.h"
 #include "third_party/blink/renderer/modules/indexeddb/idb_cursor_with_value.h"
 #include "third_party/blink/renderer/modules/indexeddb/idb_database.h"
 #include "third_party/blink/renderer/modules/indexeddb/idb_index.h"
+#include "third_party/blink/renderer/modules/indexeddb/idb_key.h"
 #include "third_party/blink/renderer/modules/indexeddb/idb_object_store.h"
 
 namespace blink {
@@ -83,6 +86,34 @@ const Vector<std::unique_ptr<IDBValue>>& IDBAny::Values() const {
 int64_t IDBAny::Integer() const {
   DCHECK_EQ(type_, kIntegerType);
   return integer_;
+}
+
+v8::MaybeLocal<v8::Value> IDBAny::ToV8(ScriptState* script_state) {
+  v8::Isolate* isolate = script_state->GetIsolate();
+  switch (type_) {
+    case IDBAny::kUndefinedType:
+      return v8::Undefined(isolate);
+    case IDBAny::kNullType:
+      return v8::Null(isolate);
+    case IDBAny::kIDBCursorType:
+      return ToV8Traits<IDBCursor>::ToV8(script_state, IdbCursor());
+    case IDBAny::kIDBCursorWithValueType:
+      return ToV8Traits<IDBCursorWithValue>::ToV8(script_state,
+                                                  IdbCursorWithValue());
+    case IDBAny::kIDBDatabaseType:
+      return ToV8Traits<IDBDatabase>::ToV8(script_state, IdbDatabase());
+    case IDBAny::kIDBValueType:
+      return DeserializeIDBValue(script_state, Value());
+    case IDBAny::kIDBValueArrayType:
+      return DeserializeIDBValueArray(script_state, Values());
+    case IDBAny::kIntegerType:
+      return v8::Number::New(isolate, Integer());
+    case IDBAny::kKeyType:
+      return Key()->ToV8(script_state);
+  }
+
+  NOTREACHED();
+  return v8::Undefined(isolate);
 }
 
 IDBAny::IDBAny(IDBCursor* value)

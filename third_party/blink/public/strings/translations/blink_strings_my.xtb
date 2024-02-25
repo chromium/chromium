@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="my">
+<translation id="1012241361789814178">အခြားတဘ်တွင် အမှားရှာပြင်ကိရိယာကို ခဏရပ်ထားသည်။ ၎င်းတဘ်သို့ပြောင်းရန် ကလစ်နှိပ်ပါ။</translation>
 <translation id="1088086359088493902">စက္ကန့်</translation>
 <translation id="1142001580032786438">ရက်သတ္တပတ် ရွေးချယ်ရေးစနစ် ပြရန်</translation>
 <translation id="1171774979989969504">ကျေးဇူးပြုပြီး အီးမေးလ် လိပ်စာကို ထည့်ပေးပါ</translation>
@@ -16,6 +17,7 @@
 <translation id="1729654308190250600">ကျေးဇူးပြု၍ ဗလာမဟုတ်သည့် အီးမေးလ် လိပ်စာ ရိုက်ထည့်ပါ။</translation>
 <translation id="1758486001363313524">အခြား...</translation>
 <translation id="1787192514241997742">စုစုပေါင်းအချိန်- <ph name="REMAINING_TIME" /></translation>
+<translation id="1800494066469288780">ကင်မရာ သုံးခွင့်ပြုရန်</translation>
 <translation id="1822429046913737220">နံ။</translation>
 <translation id="1832974991323546415">အဝေးရှိ ကိရိယာထဲတွင် ဖွင့်ရန်</translation>
 <translation id="1921819250265091946">နန</translation>
@@ -24,10 +26,12 @@
 <translation id="1993104285338243655">စကရင်ပွားခြင်းသို့ ပြောင်းထားသည်</translation>
 <translation id="2031987842108996681">အနီ ချန်နယ်</translation>
 <translation id="2060505056492490888">'<ph name="DOT" />' ကို '<ph name="INVALIDDOMAIN" />' ထဲတွင် နေရာမှားသုံးထားသည်။</translation>
+<translation id="2068711044993563745">အနည်းဆုံးတန်ဖိုး (<ph name="MINIMUM" />) သည် အများဆုံးတန်ဖိုး (<ph name="MAXIMUM" />) ထက် လျှော့နည်းရမည်။</translation>
 <translation id="2148716181193084225">ယနေ့</translation>
 <translation id="2226276347425096477">ကျေးဇူးပြုပြီး ဒီစာသားကို သင်္ကေတ<ph name="MAX_CHARACTERS" /> အထိ သို့မဟုတ် နည်းအောင် တိုပေးပါ (သင်သည် လောလောဆယ်မှာ သင်္ကေတ <ph name="CURRENT_LENGTH" />ခု သုံးထားသည်)။</translation>
 <translation id="2247351761944213033">အပတ် <ph name="WEEKNUMBER" />၊ <ph name="YEAR" /></translation>
 <translation id="2277199496770840904">အပုဒ်ရေ <ph name="NUMBER" /></translation>
+<translation id="2353297238722298836">ကင်မရာနှင့် မိုက်ခရိုဖုန်းကို သုံးခွင့်ပြုထားသည်</translation>
 <translation id="2393030564806080191">ဟက်စ်အရောင် အညွှန်းကိန်း</translation>
 <translation id="2398813069815436052">ဒိုင်ယာလော့ ဖွင့်ထားသည်။</translation>
 <translation id="245932805758469625">ဗီဒီယိုပြီးဆုံးရန် ကျန်ရှိ စက္ကန့်</translation>
@@ -44,11 +48,13 @@
 <translation id="2761667185364618470">သင်သည် ဆက်လုပ်ကိုင် လိုလျှင် ကျေးဇူးပြုပြီး ဒီအကွက်ကို ခြစ်ပါ။</translation>
 <translation id="2908441821576996758">ကျေးဇူးပြုပြီး ကော်မာဖြင့် ခြားထားသည့် အီးမေးလ် လိပ်စာများ စာရင်းကို ထည့်သွင်းပါ။</translation>
 <translation id="3049748772180311791"><ph name="QUANTITY" /> MB</translation>
+<translation id="3053226512517284904">အသံဖြင့် ရှင်းလင်းချက်မီနူး ပြပါ</translation>
 <translation id="3075154866155599887">ကျေးဇူးပြုပြီး မှန်ကန်သည့် တန်ဖိုးကို ထည့်ပေးပါ။ အကွက်မှာ မပြည့်စုံပါ သို့မဟုတ် မမှန်သည့် ရက်စွဲ ပါနေသည်။</translation>
 <translation id="310520048233152454">URL တစ်ခု ရိုက်ထည့်ပါ။</translation>
 <translation id="3220661731597678625">လက်ရှိ အဆင့်</translation>
 <translation id="3321030238473337787">ဖွင့်သည့်မြန်နှုန်း</translation>
 <translation id="3329013043687509092">စိုရွှဲမှု</translation>
+<translation id="3377518164566272702">မိုက်ခရိုဖုန်းနှင့် ကင်မရာ သုံးခွင့်ပြုရန်</translation>
 <translation id="3450233048674729344">တန်ဖိုးမှာ <ph name="MAXIMUM" /> နည်း သို့မဟုတ် တူညီရမည်။</translation>
 <translation id="3732799496749320381">mm</translation>
 <translation id="3754210790023674521">နှစ်ခုထပ်၍ကြည့်ခြင်း မုဒ်မှ ထွက်ရန်</translation>
@@ -56,14 +62,17 @@
 <translation id="3822383571486410024">ကျေးဇူးပြုပြီး ဤစာသားကို စာလုံး <ph name="MIN_CHARACTERS" /> လုံး သို့မဟုတ် ထို့ထက်ပို ရှည်ပေးပါ (သင်သည် ယခု စာလုံး <ph name="CURRENT_LENGTH" /> လုံးကို သုံးထားသည်)။</translation>
 <translation id="383465348367842624">'<ph name="ATSIGN" />'၏ နောက်မှာ ပါလာသည့် အပိုင်း ထဲတွင် သင်္ကေတာ '<ph name="INVALIDCHARACTER" />' မပါရပါ။</translation>
 <translation id="3846214748874656680">မျက်နှာပြင်အပြည့်မှ ထွက်ရန်</translation>
+<translation id="4031179711345676612">မိုက်ခရိုဖုန်းကို သုံးခွင့်ပြုထားသည်</translation>
 <translation id="4103419683916926126">မီလီစက္ကန့်</translation>
 <translation id="4201051445878709314">ယခင် လကို ပြရန်</translation>
 <translation id="4360991593054037559">ကျေးဇူးပြုပြီး မှန်ကန်သည့် တန်ဖိုးကို ရိုက်ထည့်ပါ။ မှန်ကန်သည့် အနီးဆုံး တန်ဖိုး နှစ်ခုမှာ <ph name="VALID_VALUE_LOW" /> နှင့် <ph name="VALID_VALUE_HIGHER" /> ဖြစ်သည်။</translation>
 <translation id="4522570452068850558">အသေးစိတ်များ</translation>
+<translation id="4663373278480897665">ကင်မရာကို သုံးခွင့်ပြုထားသည်</translation>
 <translation id="4664250907885839816">'<ph name="ATSIGN" />'၏ နောက်မှာ ပါလာသည့် အပိုင်း ထဲတွင် သင်္ကေတာ '<ph name="INVALIDCHARACTER" />' မပါရပါ။</translation>
 <translation id="4718048029184481307">နှစ်ခုထပ်၍ကြည့်ခြင်း ဖွင့်နေသည်</translation>
 <translation id="4748357248530471599">မျက်နှာပြင်ကို ဖြတ်ညှပ်ပြသသည့် စခရင်အပြည့်ကို ဖွင့်/ပိတ်လုပ်ရန်</translation>
 <translation id="4763480195061959176">ဗီဒီယို</translation>
+<translation id="4792862212177489858">တည်နေရာ မျှဝေရန်</translation>
 <translation id="4812940957355064477">နံ</translation>
 <translation id="4912200001568447310">လက်ရှိအရာ</translation>
 <translation id="4915360478455618802">အချိန်ရွေးချယ်ရေးစနစ် ပြရန်</translation>
@@ -73,6 +82,7 @@
 <translation id="4975562563186953947"><ph name="SELECTED_COUNT" /> ရွေးထား</translation>
 <translation id="4992066212339426712">အသံတိတ်မှုဖြုတ်မည်</translation>
 <translation id="49969490063480558">'<ph name="ATSIGN" />' ၏နောက်တွင် အပိုင်းတစ်ပိုင်း ရိုက်ထည့်ပါ။ '<ph name="INVALIDADDRESS" />' က မပြည့်စုံပါ။</translation>
+<translation id="5037575921016181960">လုံခြုံမှုမြင့်သည့် စကားဝှက်</translation>
 <translation id="5090250355906949916">ဗီဒီယိုဖိုင် အချိန် ကြည့်ရှုစနစ်</translation>
 <translation id="509897012892853729">အပြာ ချန်နယ်</translation>
 <translation id="5117590920725113268">လာမည့် လကို ပြရန်</translation>
@@ -131,6 +141,7 @@
 <translation id="6941933287844615239">မီဒီယာကို ဒေါင်းလုဒ်လုပ်ပါ</translation>
 <translation id="698788488269350478">ချဲ့ထားသည်။</translation>
 <translation id="6989848892321993519">ဤစာသားကို စာလုံးရေ <ph name="MIN_CHARACTERS" /> နှင့်အထက်ဖြစ်အောင် လုပ်ပါ (လက်ရှိတွင် စာလုံးရေ ၁ လုံးအသုံးပြုထားသည်)။</translation>
+<translation id="7080893216867146095">တည်နေရာမျှဝေခြင်း ခွင့်ပြုထားသည်</translation>
 <translation id="709897737746224366">ကျေးဇူးပြုပြီး တောင်းဆိုထားသည့် ပုံစံနှင့် ကိုက်ညီပါစေ။</translation>
 <translation id="7102274145889307184">လက်ရှိတည်နေရာ</translation>
 <translation id="7263440858009898357">စာရင်းမှ အမယ်များကို ကျေးဇူးပြုပြီး ရွေးချယ်ပါ။</translation>
@@ -177,6 +188,7 @@
 <translation id="9132465097189459683">အခြား...</translation>
 <translation id="9155987714137265666"><ph name="WEEK_START_DATE" />မှာ စတင်သည့် <ph name="WEEK" /></translation>
 <translation id="916607977885256133">နှစ်ခုထပ်၍ကြည့်ခြင်း</translation>
+<translation id="918430632320614861">မိုက်ခရိုဖုန်း သုံးခွင့်ပြုရန်</translation>
 <translation id="945780513535800434">တချို့တစ်ဝက်ကို အမှန်ခြစ်ထားသည်</translation>
 <translation id="954003015749068518">နှစ်ခုထပ်၍ကြည့်ခြင်း ဖွင့်ရန်</translation>
 </translationbundle>

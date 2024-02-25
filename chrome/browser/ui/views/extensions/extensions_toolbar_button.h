@@ -8,7 +8,7 @@
 #include <memory>
 
 #include "base/memory/raw_ptr.h"
-#include "chrome/browser/ui/views/toolbar/toolbar_button.h"
+#include "chrome/browser/ui/views/toolbar/toolbar_chip_button.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/controls/button/menu_button_controller.h"
 #include "ui/views/widget/widget_observer.h"
@@ -19,11 +19,11 @@ class ExtensionsMenuCoordinator;
 
 // Button in the toolbar that provides access to the corresponding extensions
 // menu.
-class ExtensionsToolbarButton : public ToolbarButton,
+class ExtensionsToolbarButton : public ToolbarChipButton,
                                 public views::WidgetObserver {
- public:
-  METADATA_HEADER(ExtensionsToolbarButton);
+  METADATA_HEADER(ExtensionsToolbarButton, ToolbarChipButton)
 
+ public:
   enum class State {
     // All extensions have blocked access to the current site.
     kAllExtensionsBlocked,
@@ -54,7 +54,6 @@ class ExtensionsToolbarButton : public ToolbarButton,
   gfx::Size GetMinimumSize() const override;
   std::u16string GetTooltipText(const gfx::Point& p) const override;
   void OnBoundsChanged(const gfx::Rect& previous_bounds) override;
-  void UpdateIcon() override;
   bool ShouldShowInkdropAfterIphInteraction() override;
 
   // views::WidgetObserver:

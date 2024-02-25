@@ -44,6 +44,7 @@
 #include "chrome/common/chrome_paths.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chromeos/ash/components/standalone_browser/feature_refs.h"
+#include "chromeos/ash/components/standalone_browser/migrator_util.h"
 #include "components/app_constants/constants.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/services/app_service/public/cpp/app_update.h"
@@ -730,7 +731,8 @@ class AppContextMenuLacrosTest : public AppContextMenuTest {
     feature_list_.InitWithFeatures(
         ash::standalone_browser::GetFeatureRefs(),
         {ash::features::kEnforceAshExtensionKeeplist});
-    crosapi::browser_util::SetProfileMigrationCompletedForTest(true);
+    ash::standalone_browser::migrator_util::SetProfileMigrationCompletedForTest(
+        true);
   }
   AppContextMenuLacrosTest(const AppContextMenuLacrosTest&) = delete;
   AppContextMenuLacrosTest& operator=(const AppContextMenuLacrosTest&) = delete;
@@ -738,16 +740,13 @@ class AppContextMenuLacrosTest : public AppContextMenuTest {
 
   // testing::Test:
   void SetUp() override {
-    auto user_manager = std::make_unique<ash::FakeChromeUserManager>();
-    auto* fake_user_manager = user_manager.get();
-    scoped_user_manager_ = std::make_unique<user_manager::ScopedUserManager>(
-        std::move(user_manager));
+    fake_user_manager_.Reset(std::make_unique<ash::FakeChromeUserManager>());
 
     // Login a user. The "email" must match the TestingProfile's
     // GetProfileUserName() so that profile() will be the primary profile.
     const AccountId account_id = AccountId::FromUserEmail("testing_profile");
-    fake_user_manager->AddUser(account_id);
-    fake_user_manager->LoginUser(account_id);
+    fake_user_manager_->AddUser(account_id);
+    fake_user_manager_->LoginUser(account_id);
 
     // Creates profile().
     AppContextMenuTest::SetUp();
@@ -757,7 +756,8 @@ class AppContextMenuLacrosTest : public AppContextMenuTest {
 
  private:
   base::test::ScopedFeatureList feature_list_;
-  std::unique_ptr<user_manager::ScopedUserManager> scoped_user_manager_;
+  user_manager::TypedScopedUserManager<ash::FakeChromeUserManager>
+      fake_user_manager_;
 };
 
 TEST_F(AppContextMenuLacrosTest, LacrosApp) {

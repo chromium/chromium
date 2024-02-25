@@ -52,19 +52,6 @@ void FragmentainerIterator::Advance() {
   }
 }
 
-PhysicalOffset FragmentainerIterator::PaginationOffset() const {
-  return CurrentGroup().FlowThreadTranslationAtOffset(
-      FragmentainerLogicalTopInFlowThread(),
-      LayoutBox::kAssociateWithLatterPage, CoordinateSpaceConversion::kVisual);
-}
-
-LayoutUnit FragmentainerIterator::FragmentainerLogicalTopInFlowThread() const {
-  DCHECK(!AtEnd());
-  const auto& group = CurrentGroup();
-  return group.LogicalTopInFlowThread() +
-         current_fragmentainer_index_ * group.ColumnLogicalHeight();
-}
-
 PhysicalRect FragmentainerIterator::ClipRectInFlowThread() const {
   DCHECK(!AtEnd());
   PhysicalRect clip_rect;

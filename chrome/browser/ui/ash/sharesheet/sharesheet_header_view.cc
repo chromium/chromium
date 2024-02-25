@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/ash/sharesheet/sharesheet_header_view.h"
 
 #include <algorithm>
+#include <optional>
 #include <string>
 #include <utility>
 
@@ -18,6 +19,7 @@
 #include "ash/style/typography.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
+#include "base/memory/raw_ptr.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
 #include "chrome/app/vector_icons/vector_icons.h"
@@ -39,7 +41,6 @@
 #include "components/url_formatter/url_formatter.h"
 #include "components/vector_icons/vector_icons.h"
 #include "storage/browser/file_system/file_system_url.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
@@ -57,6 +58,8 @@
 #include "ui/views/controls/label.h"
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/layout/layout_provider.h"
+#include "ui/views/style/typography.h"
+#include "ui/views/style/typography_provider.h"
 #include "ui/views/view.h"
 #include "ui/views/view_class_properties.h"
 
@@ -100,8 +103,9 @@ namespace sharesheet {
 // ------------------------------------------------------
 
 class SharesheetHeaderView::SharesheetImagePreview : public views::View {
+  METADATA_HEADER(SharesheetImagePreview, views::View)
+
  public:
-  METADATA_HEADER(SharesheetImagePreview);
   explicit SharesheetImagePreview(size_t file_count) {
     auto* color_provider = AshColorProvider::Get();
     const bool is_dark_mode_enabled =
@@ -166,10 +170,7 @@ class SharesheetHeaderView::SharesheetImagePreview : public views::View {
   SharesheetImagePreview(const SharesheetImagePreview&) = delete;
   SharesheetImagePreview& operator=(const SharesheetImagePreview&) = delete;
 
-  ~SharesheetImagePreview() override {
-    ::sharesheet::SharesheetMetrics::RecordSharesheetImagePreviewPressed(
-        was_pressed_);
-  }
+  ~SharesheetImagePreview() override = default;
 
   RoundedImageView* GetImageViewAt(size_t index) {
     if (index >= image_views_.size()) {
@@ -189,16 +190,6 @@ class SharesheetHeaderView::SharesheetImagePreview : public views::View {
 
  private:
   // views::View:
-  bool OnMousePressed(const ui::MouseEvent& event) override {
-    was_pressed_ = true;
-    return false;
-  }
-
-  void OnGestureEvent(ui::GestureEvent* event) override {
-    if (event->type() == ui::ET_GESTURE_TAP)
-      was_pressed_ = true;
-  }
-
   void OnThemeChanged() override {
     View::OnThemeChanged();
     SetBorder(views::CreateRoundedRectBorder(
@@ -247,14 +238,10 @@ class SharesheetHeaderView::SharesheetImagePreview : public views::View {
     AddImageViewTo(parent_view, size);
   }
 
-  std::vector<RoundedImageView*> image_views_;
-
-  // Used for recording UMA to indicate whether or not a user tried to interact
-  // with the image preview.
-  bool was_pressed_ = false;
+  std::vector<raw_ptr<RoundedImageView, VectorExperimental>> image_views_;
 };
 
-BEGIN_METADATA(SharesheetHeaderView, SharesheetImagePreview, views::View)
+BEGIN_METADATA(SharesheetHeaderView, SharesheetImagePreview)
 END_METADATA
 
 // SharesheetHeaderView --------------------------------------------------------
@@ -278,8 +265,8 @@ SharesheetHeaderView::SharesheetHeaderView(apps::IntentPtr intent,
   SetFocusBehavior(View::FocusBehavior::ACCESSIBLE_ONLY);
   SetAccessibilityProperties(ax::mojom::Role::kGenericContainer,
                              /*name=*/std::u16string(),
-                             /*description=*/absl::nullopt,
-                             /*role_description=*/absl::nullopt,
+                             /*description=*/std::nullopt,
+                             /*role_description=*/std::nullopt,
                              ax::mojom::NameFrom::kAttributeExplicitlyEmpty);
 
   const bool has_files = !intent_->files.empty();
@@ -403,8 +390,8 @@ SharesheetHeaderView::ExtractShareText() {
       // Format URL to be elided correctly to prevent origin spoofing.
       auto elided_url = url_formatter::ElideUrl(
           extracted_text.url,
-          views::style::GetFont(CONTEXT_SHARESHEET_BUBBLE_BODY,
-                                views::style::STYLE_PRIMARY),
+          views::TypographyProvider::Get().GetFont(
+              CONTEXT_SHARESHEET_BUBBLE_BODY, views::style::STYLE_PRIMARY),
           available_width);
       auto url_label = CreatePreviewLabel(elided_url);
 
@@ -507,7 +494,7 @@ void SharesheetHeaderView::OnImageLoaded(const gfx::Size& size, size_t index) {
   image_preview_->GetImageViewAt(index)->SchedulePaint();
 }
 
-BEGIN_METADATA(SharesheetHeaderView, views::View)
+BEGIN_METADATA(SharesheetHeaderView)
 END_METADATA
 
 }  // namespace sharesheet

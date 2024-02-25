@@ -1,3 +1,4 @@
+// META: timeout=long
 // META: global=window,dedicatedworker
 // META: script=/webcodecs/video-encoder-utils.js
 // META: variant=?av1
@@ -19,7 +20,6 @@ promise_setup(async () => {
   }[location.search];
   config.hardwareAcceleration = 'prefer-software';
   config.bitrateMode = "constant";
-  config.scalabilityMode = "L1T2";
   config.framerate = 30;
   ENCODER_CONFIG = config;
 });

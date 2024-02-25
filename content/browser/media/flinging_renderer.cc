@@ -71,7 +71,7 @@ void FlingingRenderer::Initialize(media::MediaResource* media_resource,
 }
 
 void FlingingRenderer::SetLatencyHint(
-    absl::optional<base::TimeDelta> latency_hint) {}
+    std::optional<base::TimeDelta> latency_hint) {}
 
 void FlingingRenderer::Flush(base::OnceClosure flush_cb) {
   DVLOG(2) << __func__;

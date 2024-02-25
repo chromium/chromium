@@ -111,8 +111,6 @@ class ArcBridgeHostImpl : public mojom::ArcBridgeHost {
       override;
   void OnKioskInstanceReady(
       mojo::PendingRemote<mojom::KioskInstance> kiosk_remote) override;
-  void OnLockScreenInstanceReady(mojo::PendingRemote<mojom::LockScreenInstance>
-                                     lock_screen_remote) override;
   void OnMediaSessionInstanceReady(
       mojo::PendingRemote<mojom::MediaSessionInstance> media_session_remote)
       override;
@@ -205,7 +203,7 @@ class ArcBridgeHostImpl : public mojom::ArcBridgeHost {
   THREAD_CHECKER(thread_checker_);
 
   // Owned by ArcServiceManager.
-  const raw_ptr<ArcBridgeService, ExperimentalAsh> arc_bridge_service_;
+  const raw_ptr<ArcBridgeService> arc_bridge_service_;
 
   mojo::Receiver<mojom::ArcBridgeHost> receiver_;
 

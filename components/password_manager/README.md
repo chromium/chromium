@@ -1,6 +1,6 @@
 # Password Manager
 
-The password manager is [a component layered](https://sites.google.com/a/chromium.org/dev/developers/design-documents/layered-components-design).
+The password manager is [a layered component](https://sites.google.com/a/chromium.org/dev/developers/design-documents/layered-components-design).
 
 This means that the code is spread out through the following directories:
 - ./core/: Essentials, not depending on any other layers. All other layers may
@@ -9,7 +9,7 @@ This means that the code is spread out through the following directories:
 - ./ios/: iOS-specific embedding.
 
 *** note
-NOTE: Some embedder specific code must not be part of content (e.g. UI specific
+NOTE: Some embedder-specific code must not be part of content (e.g. UI specific
 code) and located in
 - /chrome/browser/password_manager/
 - /chrome/android/java/src/org/chromium/chrome/browser/password_manager/
@@ -19,7 +19,7 @@ code) and located in
 ## High-level architecture
 
 The following architecture diagram shows instances of core classes. For
-simplicity, it shows the concrete instances in case of Chrome on desktop. In
+simplicity, it shows the concrete instances in the case of Chrome on desktop. In
 reality there exist further abstractions, e.g. the
 [`ChromePasswordManagerClient`] is the Chrome-specific implementation of the
 [`PasswordManagerClient`] interface. The [`ContentPasswordManagerDriver`] is the
@@ -83,7 +83,7 @@ Here is a summary of the core responsibilities of the classes and interfaces:
 
 * [`PasswordManager`] (1 per tab)
 
-  Embedder agnostic password manager, manages the life-cycle of password forms
+  Embedder-agnostic password manager, manages the life-cycle of password forms
   (represented as [`PasswordFormManager`] instances). It is informed about newly
   observed forms from the renderers and initiates the filling on page load and
   (together with [`PasswordFormManager`]) save/update prompts on form

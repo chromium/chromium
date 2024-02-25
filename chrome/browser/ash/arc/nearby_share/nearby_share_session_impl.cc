@@ -140,8 +140,8 @@ void DeleteFilesAndMonikers(const base::FilePath& file_path,
                              base::BindOnce(&DeletePathAndFiles, file_path));
 }
 
-absl::optional<fusebox::Moniker> ConvertToMoniker(Profile* profile,
-                                                  const GURL& content_url) {
+std::optional<fusebox::Moniker> ConvertToMoniker(Profile* profile,
+                                                 const GURL& content_url) {
   GURL external_file_url = arc::ArcUrlToExternalFileUrl(content_url);
 
   const base::FilePath virtual_path =
@@ -155,13 +155,13 @@ absl::optional<fusebox::Moniker> ConvertToMoniker(Profile* profile,
               storage::kFileSystemTypeExternal, virtual_path);
   if (!fs_url.is_valid()) {
     LOG(ERROR) << "Failed to create moniker for invalid FileSystemURL.";
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   fusebox::Server* fusebox_server = fusebox::Server::GetInstance();
   if (!fusebox_server) {
     LOG(ERROR) << "FuseBox server was unavailable when creating moniker.";
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   return fusebox_server->CreateMoniker(fs_url, /*read_only=*/true);
@@ -176,7 +176,7 @@ bool IsValidArcWindow(aura::Window* const window, uint32_t task_id) {
     return false;
   }
 
-  absl::optional<int> maybe_task_id = arc::GetWindowTaskId(window);
+  std::optional<int> maybe_task_id = arc::GetWindowTaskId(window);
   if (!maybe_task_id.has_value() || maybe_task_id.value() < 0 ||
       static_cast<uint32_t>(maybe_task_id.value()) != task_id) {
     return false;
@@ -359,7 +359,7 @@ NearbyShareSessionImpl::ConvertShareIntentInfoToMonikerFileIntent() {
 
   std::vector<apps::IntentFilePtr> files;
   for (const auto& file_info : *share_info_->files) {
-    absl::optional<fusebox::Moniker> moniker =
+    std::optional<fusebox::Moniker> moniker =
         ConvertToMoniker(profile_, file_info->content_uri);
     if (!moniker.has_value()) {
       return nullptr;
@@ -466,7 +466,7 @@ void NearbyShareSessionImpl::OnFileStreamingStarted() {
 }
 
 void NearbyShareSessionImpl::ShowNearbyShareBubbleInArcWindow(
-    absl::optional<base::File::Error> result) {
+    std::optional<base::File::Error> result) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   DCHECK(arc_window_);
 

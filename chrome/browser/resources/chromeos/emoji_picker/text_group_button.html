@@ -3,13 +3,17 @@
       --hover-bg-color: var(--cr-hover-background-color);
       border: none;
       border-radius: 0;
-      color: var(--cros-text-color-secondary);
+      color: var(--emoji-picker-tab-unselected-color);
       font-size: 12px;
+      font: var(--cros-button-1-font);
       margin: 0;
       margin-inline: var(--tab-button-margin);
       min-width: unset;
-      padding: var(--text-group-button-padding);
       width: max-content;
+      --cr-button-height: var(--emoji-picker-group-button-height, 32px);
+      padding-left: var(--emoji-picker-group-button-padding, 0px);
+      padding-right: var(--emoji-picker-group-button-padding, 0px);
+      border-radius: var(--emoji-picker-group-button-border-radius, 0px);
     }
 
     #group-button:hover {
@@ -21,8 +25,12 @@
     }
 
     #group-button.text-group-active {
-      --cr-icon-button-fill-color: var(--cros-icon-color-prominent);
-      color: var(--cros-text-color-prominent);
+      --cr-icon-button-fill-color: var(--emoji-picker-tab-selected-color);
+      color: var(--emoji-picker-tab-selected-color);
+    }
+
+    cr-button {
+      --focus-shadow-color: var(--emoji-picker-focus-ring-color);
     }
   </style>
 
@@ -32,5 +40,5 @@
     on-click="handleClick"
     custom-tab-index="[[customTabIndex]]"
     aria-pressed$="[[getAriaPressedState(active)]]">
-  [[toUpperCase(name)]]
+  [[name]]
 </cr-button>

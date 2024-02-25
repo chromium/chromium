@@ -29,7 +29,7 @@ class Pointer : public WlcsPointer {
   void ButtonDown(int button);
 
  private:
-  const raw_ptr<DisplayServer, ExperimentalAsh> server_;
+  const raw_ptr<DisplayServer> server_;
 };
 
 }  // namespace exo::wlcs

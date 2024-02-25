@@ -128,14 +128,6 @@ static_library("with_no_strings") {
       "beacons.h",
       "delete_old_versions.cc",
       "delete_old_versions.h",
-      "experiment.cc",
-      "experiment.h",
-      "experiment_labels.cc",
-      "experiment_labels.h",
-      "experiment_metrics.cc",
-      "experiment_metrics.h",
-      "experiment_storage.cc",
-      "experiment_storage.h",
       "firewall_manager_win.cc",
       "firewall_manager_win.h",
       "google_update_settings.cc",
@@ -225,11 +217,7 @@ generate_embedded_i18n("generate_strings") {
       "//chrome/installer/util/prebuild/create_installer_string_rc.py"
 
   grdfile_folder = "//chrome/app/"
-  if (is_chrome_branded) {
-    grdfile_name = "google_chrome_strings"
-  } else {
-    grdfile_name = "chromium_strings"
-  }
+  grdfile_name = "${branding_path_product}_strings"
   xtb_relative_path = "resources"
   grd_files_info = [ [
         grdfile_folder,
@@ -324,9 +312,6 @@ if (is_win) {
       "delete_reg_value_work_item_unittest.cc",
       "delete_tree_work_item_unittest.cc",
       "duplicate_tree_detector_unittest.cc",
-      "experiment_labels_unittest.cc",
-      "experiment_storage_unittest.cc",
-      "experiment_unittest.cc",
       "google_update_settings_unittest.cc",
       "helper_unittest.cc",
       "initial_preferences_unittest.cc",
@@ -373,18 +358,6 @@ if (is_win) {
     data = [
       "//chrome/test/data/extensions/",
       "//chrome/test/data/installer/",
-    ]
-  }
-
-  source_set("interactive_ui_tests") {
-    testonly = true
-    sources = [ "shell_util_interactive_uitest.cc" ]
-    deps = [
-      ":with_no_strings",
-      "//base",
-      "//base/test:test_support",
-      "//chrome/browser/chrome_for_testing:buildflags",
-      "//testing/gtest",
     ]
   }
 }  # is_win

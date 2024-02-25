@@ -247,8 +247,8 @@ void SiteIsolationPolicy::PersistWebTriggeredIsolatedOrigin(
   while (dict.size() > max_size) {
     auto oldest_site_time_pair = std::min_element(
         dict.begin(), dict.end(), [](auto pair_a, auto pair_b) {
-          absl::optional<base::Time> time_a = base::ValueToTime(pair_a.second);
-          absl::optional<base::Time> time_b = base::ValueToTime(pair_b.second);
+          std::optional<base::Time> time_a = base::ValueToTime(pair_a.second);
+          std::optional<base::Time> time_b = base::ValueToTime(pair_b.second);
           // has_value() should always be true unless the prefs were corrupted.
           // In that case, prioritize the corrupted entry for removal.
           return (time_a.has_value() ? time_a.value() : base::Time::Min()) <
@@ -295,7 +295,7 @@ void SiteIsolationPolicy::ApplyPersistedIsolatedOrigins(
         pref_service->GetDict(prefs::kWebTriggeredIsolatedOrigins);
     for (auto site_time_pair : dict) {
       // Only isolate origins that haven't expired.
-      absl::optional<base::Time> timestamp =
+      std::optional<base::Time> timestamp =
           base::ValueToTime(site_time_pair.second);
       base::TimeDelta expiration_timeout =
           ::features::

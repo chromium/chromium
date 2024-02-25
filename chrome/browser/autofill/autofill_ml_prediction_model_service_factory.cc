@@ -10,47 +10,55 @@
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
-#include "components/autofill/core/browser/ml_model/autofill_model_handler.h"
+#include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "content/public/browser/browser_context.h"
 
 namespace autofill {
 
 // static
-AutofillMLPredictionModelServiceFactory*
-AutofillMLPredictionModelServiceFactory::GetInstance() {
-  static base::NoDestructor<AutofillMLPredictionModelServiceFactory> instance;
+AutofillMlPredictionModelServiceFactory*
+AutofillMlPredictionModelServiceFactory::GetInstance() {
+  static base::NoDestructor<AutofillMlPredictionModelServiceFactory> instance;
   return instance.get();
 }
 
 // static
-AutofillModelHandler*
-AutofillMLPredictionModelServiceFactory::GetForBrowserContext(
+AutofillMlPredictionModelHandler*
+AutofillMlPredictionModelServiceFactory::GetForBrowserContext(
     content::BrowserContext* context) {
-  return static_cast<AutofillModelHandler*>(
+  return static_cast<AutofillMlPredictionModelHandler*>(
       GetInstance()->GetServiceForBrowserContext(context, /*create=*/true));
 }
 
-AutofillMLPredictionModelServiceFactory::
-    AutofillMLPredictionModelServiceFactory()
-    : ProfileKeyedServiceFactory(
-          "AutofillModelHandler",
-          ProfileSelections::Builder()
-              .WithRegular(ProfileSelection::kRedirectedToOriginal)
-              .WithGuest(ProfileSelection::kRedirectedToOriginal)
-              .Build()) {
+AutofillMlPredictionModelServiceFactory::
+    AutofillMlPredictionModelServiceFactory()
+    : BrowserContextKeyedServiceFactory(
+          "AutofillMlPredictionModelHandler",
+          BrowserContextDependencyManager::GetInstance()) {
   DependsOn(OptimizationGuideKeyedServiceFactory::GetInstance());
 }
 
-AutofillMLPredictionModelServiceFactory::
-    ~AutofillMLPredictionModelServiceFactory() = default;
+AutofillMlPredictionModelServiceFactory::
+    ~AutofillMlPredictionModelServiceFactory() = default;
+
+content::BrowserContext*
+AutofillMlPredictionModelServiceFactory::GetBrowserContextToUse(
+    content::BrowserContext* context) const {
+  // `AutofillMlPredictionModelHandler` is not supported without an
+  // `OptimizationGuideKeyedService`.
+  return OptimizationGuideKeyedServiceFactory::GetForProfile(
+             Profile::FromBrowserContext(context))
+             ? context
+             : nullptr;
+}
 
 std::unique_ptr<KeyedService>
-AutofillMLPredictionModelServiceFactory::BuildServiceInstanceForBrowserContext(
+AutofillMlPredictionModelServiceFactory::BuildServiceInstanceForBrowserContext(
     content::BrowserContext* context) const {
   OptimizationGuideKeyedService* optimization_guide =
       OptimizationGuideKeyedServiceFactory::GetForProfile(
           Profile::FromBrowserContext(context));
-  return std::make_unique<AutofillModelHandler>(optimization_guide);
+  return std::make_unique<AutofillMlPredictionModelHandler>(optimization_guide);
 }
 
 }  // namespace autofill

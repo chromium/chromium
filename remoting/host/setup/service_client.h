@@ -22,7 +22,8 @@ class ServiceClient {
   class Delegate {
    public:
     // Invoked when a host has been registered.
-    virtual void OnHostRegistered(const std::string& authorization_code) = 0;
+    virtual void OnHostRegistered(const std::string& host_id,
+                                  const std::string& authorization_code) = 0;
     // Invoked when a host has been unregistered.
     virtual void OnHostUnregistered() = 0;
     // Invoked when there is an OAuth error.

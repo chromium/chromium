@@ -81,7 +81,7 @@ class ServiceAdaptor : public chromeos::cfm::mojom::CfmServiceAdaptor {
   // proxying bind request for.
   const std::string interface_name_;
 
-  const raw_ptr<Delegate, ExperimentalAsh> delegate_;
+  const raw_ptr<Delegate> delegate_;
 
   mojo::Remote<chromeos::cfm::mojom::CfmServiceContext> context_;
   mojo::Receiver<chromeos::cfm::mojom::CfmServiceAdaptor> adaptor_{this};

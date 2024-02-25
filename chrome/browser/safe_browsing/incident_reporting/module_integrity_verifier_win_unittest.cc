@@ -14,10 +14,12 @@
 #include <string>
 #include <vector>
 
+#include "base/containers/span.h"
 #include "base/files/file_path.h"
 #include "base/files/memory_mapped_file.h"
 #include "base/memory/raw_ptr.h"
 #include "base/native_library.h"
+#include "base/ranges/algorithm.h"
 #include "base/scoped_native_library.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/win/pe_image.h"
@@ -35,16 +37,17 @@ namespace {
 template <size_t ModificationLength>
 class ScopedModuleModifier {
  public:
-  explicit ScopedModuleModifier(uint8_t* address) : address_(address) {
+  explicit ScopedModuleModifier(uint8_t* address)
+      : modification_region_(address, ModificationLength) {
     uint8_t modification[ModificationLength];
-    std::transform(address, address + ModificationLength, &modification[0],
-                   [](uint8_t byte) { return byte + 1U; });
+
+    base::ranges::transform(modification_region_, std::begin(modification),
+                            [](uint8_t byte) { return byte + 1U; });
     SIZE_T bytes_written = 0;
-    EXPECT_NE(0, WriteProcessMemory(GetCurrentProcess(),
-                                    address,
-                                    &modification[0],
-                                    ModificationLength,
-                                    &bytes_written));
+    EXPECT_NE(
+        0, WriteProcessMemory(GetCurrentProcess(), modification_region_.data(),
+                              std::begin(modification), ModificationLength,
+                              &bytes_written));
     EXPECT_EQ(ModificationLength, bytes_written);
   }
 
@@ -53,19 +56,19 @@ class ScopedModuleModifier {
 
   ~ScopedModuleModifier() {
     uint8_t modification[ModificationLength];
-    std::transform(address_.get(), (address_ + ModificationLength).get(),
-                   &modification[0], [](uint8_t byte) { return byte - 1U; });
+
+    base::ranges::transform(modification_region_, std::begin(modification),
+                            [](uint8_t byte) { return byte - 1U; });
     SIZE_T bytes_written = 0;
-    EXPECT_NE(0, WriteProcessMemory(GetCurrentProcess(),
-                                    address_,
-                                    &modification[0],
-                                    ModificationLength,
-                                    &bytes_written));
+    EXPECT_NE(
+        0, WriteProcessMemory(GetCurrentProcess(), modification_region_.data(),
+                              std::begin(modification), ModificationLength,
+                              &bytes_written));
     EXPECT_EQ(ModificationLength, bytes_written);
   }
 
  private:
-  raw_ptr<uint8_t, AllowPtrArithmetic> address_;
+  base::span<uint8_t> modification_region_;
 };
 
 }  // namespace

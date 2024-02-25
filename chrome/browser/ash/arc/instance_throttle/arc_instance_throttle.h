@@ -112,7 +112,7 @@ class ArcInstanceThrottle : public KeyedService,
   bool never_enforce_quota_ = false;
 
   // Owned by ArcServiceManager.
-  const raw_ptr<ArcBridgeService, ExperimentalAsh> bridge_;
+  const raw_ptr<ArcBridgeService> bridge_;
 };
 
 }  // namespace arc

@@ -1,6 +1,7 @@
 // Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
+import {emptyState as emptySeaPenState, SeaPenState} from 'chrome://resources/ash/common/sea_pen/sea_pen_state.js';
 import {FilePath} from 'chrome://resources/mojo/mojo/public/mojom/base/file_path.mojom-webui.js';
 import {Url} from 'chrome://resources/mojo/url/mojom/url.mojom-webui.js';
 
@@ -119,7 +120,9 @@ export interface WallpaperState {
   pendingSelected: DisplayableImage|null;
   dailyRefresh: DailyRefreshState|null;
   fullscreen: boolean;
+  shouldShowTimeOfDayWallpaperDialog: boolean;
   googlePhotos: GooglePhotosState;
+  seaPen: SeaPenState;
 }
 
 export function emptyState(): WallpaperState {
@@ -149,6 +152,7 @@ export function emptyState(): WallpaperState {
     pendingSelected: null,
     dailyRefresh: null,
     fullscreen: false,
+    shouldShowTimeOfDayWallpaperDialog: false,
     googlePhotos: {
       enabled: undefined,
       albums: undefined,
@@ -158,5 +162,6 @@ export function emptyState(): WallpaperState {
       resumeTokens:
           {albums: null, albumsShared: null, photos: null, photosByAlbumId: {}},
     },
+    seaPen: emptySeaPenState(),
   };
 }

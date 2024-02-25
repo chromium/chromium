@@ -4,6 +4,7 @@
 
 #include "components/optimization_guide/content/renderer/page_text_agent.h"
 
+#include <optional>
 #include <string>
 
 #include "base/functional/bind.h"
@@ -17,7 +18,6 @@
 #include "mojo/public/cpp/bindings/remote.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace optimization_guide {
 

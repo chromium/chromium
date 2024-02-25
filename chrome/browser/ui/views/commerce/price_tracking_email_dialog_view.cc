@@ -29,9 +29,10 @@
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/referrer.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/base/window_open_disposition.h"
 #include "ui/views/controls/styled_label.h"
-#include "ui/views/layout/fill_layout.h"
 #include "ui/views/layout/flex_layout_view.h"
 #include "ui/views/view_class_properties.h"
 #include "ui/views/view_tracker.h"
@@ -65,7 +66,13 @@ PriceTrackingEmailDialogView::PriceTrackingEmailDialogView(
     : LocationBarBubbleDelegateView(anchor_view, web_contents),
       profile_(profile) {
   SetShowCloseButton(true);
-  SetLayoutManager(std::make_unique<views::FillLayout>());
+  SetLayoutManager(std::make_unique<views::FlexLayout>())
+      ->SetOrientation(views::LayoutOrientation::kVertical)
+      .SetDefault(
+          views::kFlexBehaviorKey,
+          views::FlexSpecification(views::MinimumFlexSizeRule::kPreferred,
+                                   views::MaximumFlexSizeRule::kUnbounded,
+                                   /*adjust_height_for_width=*/true));
   SetButtons(ui::DIALOG_BUTTON_CANCEL | ui::DIALOG_BUTTON_OK);
 
   int bubble_width = views::LayoutProvider::Get()->GetDistanceMetric(
@@ -77,6 +84,9 @@ PriceTrackingEmailDialogView::PriceTrackingEmailDialogView(
                  l10n_util::GetStringUTF16(IDS_PRICE_TRACKING_YES_IM_IN));
   SetButtonLabel(ui::DIALOG_BUTTON_CANCEL,
                  l10n_util::GetStringUTF16(IDS_PRICE_TRACKING_NOT_NOW));
+  SetButtonStyle(ui::DIALOG_BUTTON_CANCEL, features::IsChromeRefresh2023()
+                                               ? ui::ButtonStyle::kTonal
+                                               : ui::ButtonStyle::kDefault);
   SetAcceptCallback(base::BindOnce(&PriceTrackingEmailDialogView::OnAccepted,
                                    weak_factory_.GetWeakPtr()));
   SetCancelCallback(base::BindOnce(&PriceTrackingEmailDialogView::OnCanceled,
@@ -96,11 +106,7 @@ PriceTrackingEmailDialogView::PriceTrackingEmailDialogView(
   auto body_text =
       l10n_util::GetStringFUTF16(IDS_PRICE_TRACKING_EMAIL_CONSENT_BODY, email);
 
-  auto* text_container =
-      AddChildView(std::make_unique<views::FlexLayoutView>());
-  text_container->SetOrientation(views::LayoutOrientation::kVertical);
-
-  body_label_ = text_container->AddChildView(CreateBodyLabel(body_text));
+  body_label_ = AddChildView(CreateBodyLabel(body_text));
   body_label_->SizeToFit(bubble_width);
   body_label_->SetProperty(views::kMarginsKey,
                            gfx::Insets::VH(kParagraphMargin, 0));
@@ -114,7 +120,7 @@ PriceTrackingEmailDialogView::PriceTrackingEmailDialogView(
       gfx::Range(email_offset, email_offset + email.length()),
       email_style_info);
 
-  help_label_ = text_container->AddChildView(CreateBodyLabel(learn_more_text));
+  help_label_ = AddChildView(CreateBodyLabel(learn_more_text));
   help_label_->SizeToFit(bubble_width);
 
   views::StyledLabel::RangeStyleInfo link_style_info =
@@ -185,6 +191,9 @@ void PriceTrackingEmailDialogView::OnClosed() {
         feature_engagement::kIPHPriceTrackingEmailConsentFeature);
   }
 }
+
+BEGIN_METADATA(PriceTrackingEmailDialogView)
+END_METADATA
 
 // PriceTrackingEmailDialogCoordinator
 PriceTrackingEmailDialogCoordinator::PriceTrackingEmailDialogCoordinator(

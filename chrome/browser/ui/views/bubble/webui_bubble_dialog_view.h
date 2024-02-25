@@ -7,7 +7,7 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
-#include "chrome/browser/ui/views/bubble/bubble_contents_wrapper.h"
+#include "chrome/browser/ui/webui/top_chrome/webui_contents_wrapper.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
 #include "ui/views/controls/webview/unhandled_keyboard_event_handler.h"
@@ -18,23 +18,26 @@ namespace views {
 class WebView;
 }  // namespace views
 
-// A Views bubble host for a BubbleContentsWrapper.
+// A Views bubble host for a WebUIContentsWrapper.
 // NOTE: The anchor rect takes precedence over the anchor view in this class.
 // This is the opposite of the behaviour specified in the
 // BubbleDialogDelegateView base class.
 class WebUIBubbleDialogView : public views::WidgetObserver,
                               public views::BubbleDialogDelegateView,
-                              public BubbleContentsWrapper::Host {
- public:
-  METADATA_HEADER(WebUIBubbleDialogView);
+                              public WebUIContentsWrapper::Host {
+  METADATA_HEADER(WebUIBubbleDialogView, views::BubbleDialogDelegateView)
 
+ public:
   // An optional anchor_rect can be passed to anchor the dialog to a specific
   // point on the screen. The provided anchor_rect will take precedent over the
   // anchor_view.
   WebUIBubbleDialogView(
       views::View* anchor_view,
-      BubbleContentsWrapper* contents_wrapper,
-      const absl::optional<gfx::Rect>& anchor_rect = absl::nullopt,
+      // Note that `contents_wrapper` has a lifetime that is unrelated
+      // to this View, so it needs to reference via a WeakPtr in case
+      // the contents wrapper is destroyed before `this`.
+      base::WeakPtr<WebUIContentsWrapper> contents_wrapper,
+      const std::optional<gfx::Rect>& anchor_rect = std::nullopt,
       views::BubbleBorder::Arrow arrow = views::BubbleBorder::TOP_RIGHT);
   WebUIBubbleDialogView(const WebUIBubbleDialogView&) = delete;
   WebUIBubbleDialogView& operator=(const WebUIBubbleDialogView&) = delete;
@@ -51,7 +54,7 @@ class WebUIBubbleDialogView : public views::WidgetObserver,
   gfx::Size CalculatePreferredSize() const override;
   void AddedToWidget() override;
 
-  // BubbleContentsWrapper::Host:
+  // WebUIContentsWrapper::Host:
   void ShowUI() override;
   void CloseUI() override;
   void ResizeDueToAutoResize(content::WebContents* source,
@@ -60,8 +63,8 @@ class WebUIBubbleDialogView : public views::WidgetObserver,
       content::WebContents* source,
       const content::NativeWebKeyboardEvent& event) override;
 
-  BubbleContentsWrapper* get_contents_wrapper_for_testing() {
-    return contents_wrapper_;
+  WebUIContentsWrapper* get_contents_wrapper_for_testing() {
+    return contents_wrapper_.get();
   }
   void ResetWebUIContentsForTesting();
 
@@ -81,9 +84,9 @@ class WebUIBubbleDialogView : public views::WidgetObserver,
   // renderer process.
   views::UnhandledKeyboardEventHandler unhandled_keyboard_event_handler_;
 
-  raw_ptr<BubbleContentsWrapper> contents_wrapper_;
+  base::WeakPtr<WebUIContentsWrapper> contents_wrapper_;
   raw_ptr<views::WebView> web_view_;
-  absl::optional<gfx::Rect> bubble_anchor_;
+  std::optional<gfx::Rect> bubble_anchor_;
 
   base::ScopedObservation<views::Widget, views::WidgetObserver>
       bubble_widget_observation_{this};

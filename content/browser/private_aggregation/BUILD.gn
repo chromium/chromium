@@ -1,0 +1,48 @@
+# Copyright 2022 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//mojo/public/tools/bindings/mojom.gni")
+
+mojom("mojo_bindings") {
+  sources = [ "private_aggregation_internals.mojom" ]
+  public_deps = [
+    "//mojo/public/mojom/base:base",
+    "//url/mojom:url_mojom_origin",
+  ]
+  webui_module_path = "/"
+
+  cpp_typemaps = [
+    {
+      types = [
+        {
+          mojom =
+              "private_aggregation_internals.mojom.AggregatableReportRequestID"
+          cpp = "::content::AggregatableReportRequestStorageId"
+        },
+      ]
+      traits_headers = [
+        "private_aggregation_internals_mojom_traits.h",
+        "//content/browser/aggregation_service/aggregatable_report_request_storage_id.h",
+      ]
+      traits_sources = [ "private_aggregation_internals_mojom_traits.cc" ]
+      traits_deps = [
+        "//components/services/storage",
+        "//content/common:mojo_bindings",
+      ]
+    },
+  ]
+
+  component_output_prefix = "content_browser_aggregation_service_mojo_bindings"
+  export_class_attribute = "CONTENT_EXPORT"
+  export_define = "CONTENT_IMPLEMENTATION=1"
+  export_header = "content/common/content_export.h"
+}
+
+# See comment at the top of //content/BUILD.gn for how this works.
+group("for_content_tests") {
+  visibility = [ "//content/test/*" ]
+  if (!is_component_build) {
+    public_deps = [ ":mojo_bindings" ]
+  }
+}

@@ -8,8 +8,6 @@ import("../build_webui_tests.gni")
 assert(enable_webui_tab_strip)
 
 build_webui_tests("build") {
-  resource_path_prefix = "tab_strip"
-
   files = [
     "alert_indicators_test.ts",
     "alert_indicator_test.ts",

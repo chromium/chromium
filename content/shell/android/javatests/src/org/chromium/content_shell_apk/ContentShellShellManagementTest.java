@@ -19,18 +19,16 @@ import org.chromium.content_shell.Shell;
 
 import java.util.concurrent.ExecutionException;
 
-/**
- * Test suite to verify the behavior of the shell management logic.
- */
+/** Test suite to verify the behavior of the shell management logic. */
 @RunWith(BaseJUnit4ClassRunner.class)
 public class ContentShellShellManagementTest {
     @Rule
     public ContentShellActivityTestRule mActivityTestRule = new ContentShellActivityTestRule();
 
-    private static final String TEST_PAGE_1 = UrlUtils.encodeHtmlDataUri(
-            "<html><body style='background: red;'></body></html>");
-    private static final String TEST_PAGE_2 = UrlUtils.encodeHtmlDataUri(
-            "<html><body style='background: green;'></body></html>");
+    private static final String TEST_PAGE_1 =
+            UrlUtils.encodeHtmlDataUri("<html><body style='background: red;'></body></html>");
+    private static final String TEST_PAGE_2 =
+            UrlUtils.encodeHtmlDataUri("<html><body style='background: green;'></body></html>");
 
     @Test
     @SmallTest

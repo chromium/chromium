@@ -29,25 +29,11 @@ void LensStaticPageController::OpenStaticPage() {
   content::WebContents* active_web_contents =
       browser_->tab_strip_model()->GetActiveWebContents();
   gfx::Rect fullscreen_size = gfx::Rect(active_web_contents->GetSize());
-  // TODO(crbug/1383279): Refactor screenshot code shared here with code in
-  // image_editor::ScreenshotFlow.
-#if BUILDFLAG(IS_MAC)
-  const gfx::NativeView& native_view =
-      active_web_contents->GetContentNativeView();
-  gfx::Image img;
-  bool rval = ui::GrabViewSnapshot(native_view, fullscreen_size, &img);
-  // If |img| is empty, clients should treat it as a canceled action, but
-  // we have a DCHECK for development as we expected this call to succeed.
-  DCHECK(rval);
-  LoadChromeLens(img);
-#else
-  ui::GrabWindowSnapshotAsyncCallback load_url_callback =
+  ui::GrabSnapshotImageCallback load_url_callback =
       base::BindOnce(&LensStaticPageController::LoadChromeLens,
                      weak_ptr_factory_.GetWeakPtr());
-  const gfx::NativeWindow& native_window = active_web_contents->GetNativeView();
-  ui::GrabWindowSnapshotAsync(native_window, fullscreen_size,
-                              std::move(load_url_callback));
-#endif
+  ui::GrabViewSnapshot(active_web_contents->GetNativeView(), fullscreen_size,
+                       std::move(load_url_callback));
 }
 
 void LensStaticPageController::LoadChromeLens(gfx::Image image) {
@@ -81,7 +67,7 @@ void LensStaticPageController::StartRegionSearch(
   DCHECK(browser_);
   if (!lens_region_search_controller_) {
     lens_region_search_controller_ =
-        std::make_unique<lens::LensRegionSearchController>(browser_);
+        std::make_unique<lens::LensRegionSearchController>();
   }
   lens_region_search_controller_->Start(
       contents,

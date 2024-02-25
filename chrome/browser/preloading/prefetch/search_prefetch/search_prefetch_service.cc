@@ -17,13 +17,13 @@
 #include "base/values.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/prefetch/pref_names.h"
-#include "chrome/browser/prefetch/prefetch_prefs.h"
 #include "chrome/browser/preloading/chrome_preloading.h"
 #include "chrome/browser/preloading/prefetch/search_prefetch/cache_alias_search_prefetch_url_loader.h"
 #include "chrome/browser/preloading/prefetch/search_prefetch/field_trial_settings.h"
 #include "chrome/browser/preloading/prefetch/search_prefetch/search_prefetch_request.h"
 #include "chrome/browser/preloading/prefetch/search_prefetch/search_prefetch_url_loader.h"
 #include "chrome/browser/preloading/prefetch/search_prefetch/streaming_search_prefetch_url_loader.h"
+#include "chrome/browser/preloading/preloading_prefs.h"
 #include "chrome/browser/preloading/prerender/prerender_manager.h"
 #include "chrome/browser/preloading/prerender/prerender_utils.h"
 #include "chrome/browser/profiles/profile.h"
@@ -181,7 +181,13 @@ content::PreloadingFailureReason ToPreloadingFailureReason(
   // non-overlapping range after kPreloadingFailureReasonContentEnd. It is
   // probably a good idea to centralize the allocation of enum ranges whenever a
   // second case emerges.
-  // TODO(sreejakshetty): Assert that the reasons do not overlap.
+  // Ensure that the enums do not overlap.
+  static_assert(static_cast<int>(SearchPrefetchServingReason::kServed) !=
+                    static_cast<int>(content::PreloadingFailureReason::
+                                         kPreloadingFailureReasonContentEnd),
+                "Enum values overlap! Update enum values.");
+
+  // Calculate and return the result.
   return static_cast<content::PreloadingFailureReason>(
       static_cast<int>(reason) +
       static_cast<int>(content::PreloadingFailureReason::
@@ -277,7 +283,8 @@ bool SearchPrefetchService::MaybePrefetchURL(
   // this DefaultSearchEngine or OmniboxSearchPredictor prefetch attempt when
   // |navigation_prefetch| is true.
   attempt = preloading_data->AddPreloadingAttempt(
-      predictor, content::PreloadingType::kPrefetch, same_url_matcher);
+      predictor, content::PreloadingType::kPrefetch, same_url_matcher,
+      web_contents->GetPrimaryMainFrame()->GetPageUkmSourceId());
 
   if (!search_with_terms) {
     recorder.reason_ =
@@ -443,22 +450,9 @@ void SearchPrefetchService::OnURLOpenedFromOmnibox(OmniboxLog* log) {
   prefetch.MarkPrefetchAsClicked();
 }
 
-void SearchPrefetchService::AddCacheEntryForPrerender(
-    const GURL& updated_prerendered_url,
-    const GURL& prerendering_url) {
-  DCHECK(prerender_utils::IsSearchSuggestionPrerenderEnabled());
-
-  // We do not need this method while running the search prefetch/prerender
-  // unification experiment.
-  DCHECK(!prerender_utils::SearchPrefetchUpgradeToPrerenderIsEnabled());
-  AddCacheEntry(updated_prerendered_url, prerendering_url);
-}
-
 void SearchPrefetchService::OnPrerenderedRequestUsed(
     const GURL& canonical_search_url,
     const GURL& navigation_url) {
-  DCHECK(prerender_utils::SearchPrefetchUpgradeToPrerenderIsEnabled());
-
   auto request_it = prefetches_.find(canonical_search_url);
   DCHECK(request_it != prefetches_.end());
   if (request_it == prefetches_.end()) {
@@ -523,11 +517,11 @@ SearchPrefetchService::MaybeCreateResponseReader(
   return iter->second->CreateResponseReader();
 }
 
-absl::optional<SearchPrefetchStatus>
+std::optional<SearchPrefetchStatus>
 SearchPrefetchService::GetSearchPrefetchStatusForTesting(
     const GURL& canonical_search_url) {
   if (prefetches_.find(canonical_search_url) == prefetches_.end()) {
-    return absl::nullopt;
+    return std::nullopt;
   }
   return prefetches_[canonical_search_url]->current_status();
 }
@@ -732,8 +726,7 @@ void SearchPrefetchService::OnResultChanged(content::WebContents* web_contents,
       continue;
     }
 
-    if (prerender_utils::IsSearchSuggestionPrerenderEnabled() &&
-        prerender_utils::SearchPrefetchUpgradeToPrerenderIsEnabled()) {
+    if (prerender_utils::IsSearchSuggestionPrerenderEnabled()) {
       CoordinatePrefetchWithPrerender(match, web_contents, template_url_service,
                                       canonical_search_url);
       continue;
@@ -744,14 +737,6 @@ void SearchPrefetchService::OnResultChanged(content::WebContents* web_contents,
           GetPreloadURLFromMatch(*match.search_terms_args, template_url_service,
                                  kSuggestPrefetchParam.Get()),
           web_contents);
-    }
-    if (prerender_utils::IsSearchSuggestionPrerenderEnabled() &&
-        BaseSearchProvider::ShouldPrerender(match)) {
-      PrerenderManager::CreateForWebContents(web_contents);
-      auto* prerender_manager = PrerenderManager::FromWebContents(web_contents);
-      DCHECK(prerender_manager);
-      prerender_manager->StartPrerenderSearchSuggestion(match,
-                                                        canonical_search_url);
     }
   }
 }
@@ -875,7 +860,7 @@ void SearchPrefetchService::OnTemplateURLServiceChanged() {
       TemplateURLServiceFactory::GetForProfile(profile_);
   DCHECK(template_url_service);
 
-  absl::optional<TemplateURLData> template_url_service_data;
+  std::optional<TemplateURLData> template_url_service_data;
 
   const TemplateURL* template_url =
       template_url_service->GetDefaultSearchProvider();
@@ -1002,7 +987,7 @@ bool SearchPrefetchService::LoadFromPrefs() {
       continue;
     }
 
-    absl::optional<base::Time> last_update =
+    std::optional<base::Time> last_update =
         base::ValueToTime(prefetch_url_and_time[1]);
     if (!last_update) {
       continue;
@@ -1074,7 +1059,8 @@ void SearchPrefetchService::CoordinatePrefetchWithPrerender(
   content::PreloadingAttempt* preloading_attempt =
       preloading_data->AddPreloadingAttempt(
           chrome_preloading_predictor::kDefaultSearchEngine,
-          content::PreloadingType::kPrerender, same_url_matcher);
+          content::PreloadingType::kPrerender, same_url_matcher,
+          web_contents->GetPrimaryMainFrame()->GetPageUkmSourceId());
 
   auto prefetch_request_iter = prefetches_.find(canonical_search_url);
   if (prefetch_request_iter == prefetches_.end()) {

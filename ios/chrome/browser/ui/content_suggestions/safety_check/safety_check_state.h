@@ -5,17 +5,21 @@
 #ifndef IOS_CHROME_BROWSER_UI_CONTENT_SUGGESTIONS_SAFETY_CHECK_SAFETY_CHECK_STATE_H_
 #define IOS_CHROME_BROWSER_UI_CONTENT_SUGGESTIONS_SAFETY_CHECK_SAFETY_CHECK_STATE_H_
 
-#import "base/time/time.h"
-
 #import <UIKit/UIKit.h>
 
+#import <optional>
+
+#import "base/time/time.h"
+#import "ios/chrome/browser/ui/content_suggestions/magic_stack/magic_stack_module.h"
+
+@protocol ContentSuggestionsViewControllerAudience;
 enum class UpdateChromeSafetyCheckState;
 enum class PasswordSafetyCheckState;
 enum class SafeBrowsingSafetyCheckState;
 enum class RunningSafetyCheckState;
 
 // Helper class to contain the current Safety Check state.
-@interface SafetyCheckState : NSObject
+@interface SafetyCheckState : MagicStackModule
 
 // Initializes a `SafetyCheckState` with `updateChromeState`, `passwordState`,
 // `safeBrowsingState`, and `runningState`.
@@ -24,6 +28,9 @@ enum class RunningSafetyCheckState;
                 passwordState:(PasswordSafetyCheckState)passwordState
             safeBrowsingState:(SafeBrowsingSafetyCheckState)safeBrowsingState
                  runningState:(RunningSafetyCheckState)runningState;
+
+// Returns the number of check issues found.
+- (NSUInteger)numberOfIssues;
 
 // The current state of the Update Chrome check.
 @property(nonatomic, readwrite) UpdateChromeSafetyCheckState updateChromeState;
@@ -47,7 +54,11 @@ enum class RunningSafetyCheckState;
 @property(nonatomic, assign) NSInteger compromisedPasswordsCount;
 
 // The last run time of the Safety Check.
-@property(nonatomic, assign) base::Time lastRunTime;
+@property(nonatomic, assign) std::optional<base::Time> lastRunTime;
+
+// The object that should handle user events.
+@property(nonatomic, weak) id<ContentSuggestionsViewControllerAudience>
+    commandhandler;
 
 @end
 

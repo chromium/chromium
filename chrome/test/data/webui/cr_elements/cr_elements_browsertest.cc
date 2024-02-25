@@ -21,6 +21,10 @@ IN_PROC_BROWSER_TEST_F(CrElementsTest, CrContainerShadowMixin) {
   RunTest("cr_elements/cr_container_shadow_mixin_test.js", "mocha.run()");
 }
 
+IN_PROC_BROWSER_TEST_F(CrElementsTest, CrContainerShadowMixinLit) {
+  RunTest("cr_elements/cr_container_shadow_mixin_lit_test.js", "mocha.run()");
+}
+
 IN_PROC_BROWSER_TEST_F(CrElementsTest, CrDialog) {
   RunTest("cr_elements/cr_dialog_test.js", "mocha.run()");
 }
@@ -109,6 +113,10 @@ IN_PROC_BROWSER_TEST_F(CrElementsTest, CrViewManager) {
   RunTest("cr_elements/cr_view_manager_test.js", "mocha.run()");
 }
 
+IN_PROC_BROWSER_TEST_F(CrElementsTest, CrPaperRippleMixin) {
+  RunTest("cr_elements/cr_paper_ripple_mixin_test.js", "mocha.run()");
+}
+
 IN_PROC_BROWSER_TEST_F(CrElementsTest, CrPolicyIndicator) {
   RunTest("cr_elements/cr_policy_indicator_test.js", "mocha.run()");
 }
@@ -147,6 +155,18 @@ IN_PROC_BROWSER_TEST_F(CrElementsTest, StoreClient) {
   RunTest("cr_elements/store_client_test.js", "mocha.run()");
 }
 
+IN_PROC_BROWSER_TEST_F(CrElementsTest, CrLitElement) {
+  RunTest("cr_elements/cr_lit_element_test.js", "mocha.run()");
+}
+
+IN_PROC_BROWSER_TEST_F(CrElementsTest, CrLoadingGradient) {
+  RunTest("cr_elements/cr_loading_gradient_test.js", "mocha.run()");
+}
+
+IN_PROC_BROWSER_TEST_F(CrElementsTest, CrFeedbackButtons) {
+  RunTest("cr_elements/cr_feedback_buttons_test.js", "mocha.run()");
+}
+
 // Test with --enable-pixel-output-in-tests enabled, required by a few test
 // cases using HTML canvas.
 class CrElementsWithPixelOutputTest : public WebUIMochaBrowserTest {
@@ -157,7 +177,14 @@ class CrElementsWithPixelOutputTest : public WebUIMochaBrowserTest {
   }
 };
 
-IN_PROC_BROWSER_TEST_F(CrElementsWithPixelOutputTest, CrLottie) {
+// TOD(crbug.com/906991): revisit after PlzDedicatedWorker launch.
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS) || \
+    BUILDFLAG(IS_MAC)
+#define MAYBE_CrLottie DISABLED_CrLottie
+#else
+#define MAYBE_CrLottie CrLottie
+#endif
+IN_PROC_BROWSER_TEST_F(CrElementsWithPixelOutputTest, MAYBE_CrLottie) {
   RunTest("cr_elements/cr_lottie_test.js", "mocha.run()");
 }
 

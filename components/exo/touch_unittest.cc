@@ -18,6 +18,8 @@
 #include "components/exo/test/exo_test_data_exchange_delegate.h"
 #include "components/exo/test/exo_test_helper.h"
 #include "components/exo/test/shell_surface_builder.h"
+#include "components/exo/test/test_data_device_delegate.h"
+#include "components/exo/test/test_data_source_delegate.h"
 #include "components/exo/touch_delegate.h"
 #include "components/exo/touch_stylus_delegate.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -30,6 +32,7 @@ namespace exo {
 namespace {
 
 using TouchTest = test::ExoTestBase;
+using test::TestDataSourceDelegate;
 
 class MockTouchDelegate : public TouchDelegate {
  public:
@@ -56,26 +59,6 @@ class MockTouchStylusDelegate : public TouchStylusDelegate {
   MOCK_METHOD2(OnTouchTool, void(int, ui::EventPointerType));
   MOCK_METHOD3(OnTouchForce, void(base::TimeTicks, int, float));
   MOCK_METHOD3(OnTouchTilt, void(base::TimeTicks, int, const gfx::Vector2dF&));
-};
-
-class TestDataSourceDelegate : public DataSourceDelegate {
- public:
-  TestDataSourceDelegate() {}
-
-  TestDataSourceDelegate(const TestDataSourceDelegate&) = delete;
-  TestDataSourceDelegate& operator=(const TestDataSourceDelegate&) = delete;
-
-  // Overridden from DataSourceDelegate:
-  void OnDataSourceDestroying(DataSource* device) override {}
-  void OnTarget(const absl::optional<std::string>& mime_type) override {}
-  void OnSend(const std::string& mime_type, base::ScopedFD fd) override {}
-  void OnCancelled() override {}
-  void OnDndDropPerformed() override {}
-  void OnDndFinished() override {}
-  void OnAction(DndAction dnd_action) override {}
-  bool CanAcceptDataEventsForSurface(Surface* surface) const override {
-    return true;
-  }
 };
 
 TEST_F(TouchTest, OnTouchDown) {
@@ -531,7 +514,8 @@ TEST_F(TouchTest, OnTouchTilt) {
 
 TEST_F(TouchTest, DragDropAbort) {
   Seat seat(std::make_unique<TestDataExchangeDelegate>());
-
+  test::TestDataDeviceDelegate data_device_delegate;
+  DataDevice data_device(&data_device_delegate, &seat);
   MockTouchDelegate touch_delegate;
   std::unique_ptr<Touch> touch(new Touch(&touch_delegate, &seat));
   TestDataSourceDelegate data_source_delegate;
@@ -551,7 +535,8 @@ TEST_F(TouchTest, DragDropAbort) {
   EXPECT_CALL(touch_delegate, OnTouchFrame()).Times(2);
   generator.MoveTouch(origin.window()->GetBoundsInScreen().origin());
 
-  seat.StartDrag(&source, &origin, &icon, ui::mojom::DragEventSource::kMouse);
+  data_device.StartDrag(&source, &origin, &icon,
+                        ui::mojom::DragEventSource::kMouse);
   EXPECT_TRUE(seat.get_drag_drop_operation_for_testing());
 
   EXPECT_CALL(touch_delegate, OnTouchDown).Times(1);

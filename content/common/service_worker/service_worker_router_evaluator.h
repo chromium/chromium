@@ -6,7 +6,6 @@
 #define CONTENT_COMMON_SERVICE_WORKER_SERVICE_WORKER_ROUTER_EVALUATOR_H_
 
 #include <memory>
-#include <utility>
 
 #include "base/values.h"
 #include "content/common/content_export.h"
@@ -23,30 +22,50 @@ class CONTENT_EXPORT ServiceWorkerRouterEvaluator {
 
   bool IsValid() const { return is_valid_; }
 
+  struct CONTENT_EXPORT Result {
+    Result();
+    ~Result();
+    Result(Result&&);
+    Result& operator=(Result&&) = default;
+
+    Result(const Result& other) = delete;
+    Result& operator=(const Result&) = delete;
+
+    std::uint32_t id = 0;
+    std::vector<blink::ServiceWorkerRouterSource> sources;
+  };
+
   // Returns an empty list if nothing matched.
-  std::vector<blink::ServiceWorkerRouterSource> Evaluate(
+  std::optional<Result> Evaluate(
       const network::ResourceRequest& request,
       blink::EmbeddedWorkerStatus running_status) const;
-  std::vector<blink::ServiceWorkerRouterSource> EvaluateWithoutRunningStatus(
+  std::optional<Result> EvaluateWithoutRunningStatus(
       const network::ResourceRequest& request) const;
 
   const blink::ServiceWorkerRouterRules& rules() const { return rules_; }
   bool need_running_status() const { return need_running_status_; }
+  bool has_fetch_event_source() const { return has_fetch_event_source_; }
+  bool has_non_fetch_event_source() const {
+    return has_non_fetch_event_source_;
+  }
 
   base::Value ToValue() const;
   std::string ToString() const;
+  void RecordRouterRuleCount() const;
 
  private:
   class RouterRule;
   void Compile();
-  std::vector<blink::ServiceWorkerRouterSource> EvaluateInternal(
+  std::optional<Result> EvaluateInternal(
       const network::ResourceRequest& request,
-      absl::optional<blink::EmbeddedWorkerStatus> running_status) const;
+      std::optional<blink::EmbeddedWorkerStatus> running_status) const;
 
   const blink::ServiceWorkerRouterRules rules_;
   std::vector<std::unique_ptr<RouterRule>> compiled_rules_;
   bool is_valid_ = false;
   bool need_running_status_ = false;
+  bool has_fetch_event_source_ = false;
+  bool has_non_fetch_event_source_ = false;
 };
 
 }  // namespace content

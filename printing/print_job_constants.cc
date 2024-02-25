@@ -19,6 +19,9 @@ const char kPreviewRequestID[] = "requestID";
 // Unique ID to identify a print preview UI.
 const char kPreviewUIID[] = "previewUIID";
 
+// If true, tell the printer to print without margins.
+const char kSettingBorderless[] = "borderless";
+
 // Capabilities option. Contains the capabilities in CDD format.
 const char kSettingCapabilities[] = "capabilities";
 
@@ -54,9 +57,6 @@ const char kSettingDpiHorizontal[] = "dpiHorizontal";
 
 // Vertical DPI
 const char kSettingDpiVertical[] = "dpiVertical";
-
-// Scaling value required to fit the document to page.
-const char kSettingFitToPageScaling[] = "fitToPageScaling";
 
 // Print job duplex mode. Value is an int from DuplexMode enum.
 const char kSettingDuplexMode[] = "duplex";

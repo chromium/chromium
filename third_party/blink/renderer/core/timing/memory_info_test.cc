@@ -35,10 +35,12 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_testing.h"
 #include "third_party/blink/renderer/platform/testing/runtime_enabled_features_test_helpers.h"
+#include "third_party/blink/renderer/platform/testing/task_environment.h"
 
 namespace blink {
 
 TEST(MemoryInfo, quantizeMemorySize) {
+  test::TaskEnvironment task_environment;
   EXPECT_EQ(10000000u, QuantizeMemorySize(1024));
   EXPECT_EQ(10000000u, QuantizeMemorySize(1024 * 1024));
   EXPECT_EQ(410000000u, QuantizeMemorySize(389472983));
@@ -94,6 +96,7 @@ class MemoryInfoTest : public testing::Test {
     EXPECT_EQ(info2->usedJSHeapSize(), info->usedJSHeapSize());
     EXPECT_EQ(info2->jsHeapSizeLimit(), info->jsHeapSizeLimit());
   }
+  test::TaskEnvironment task_environment_;
 };
 
 struct MemoryInfoTestScopedMockTime {
@@ -126,7 +129,7 @@ TEST_F(MemoryInfoTest, Bucketized) {
   // allocated alive even if GC happens. In practice, the objects only get GC'd
   // after we go out of V8TestingScope. But having them in a vector makes it
   // impossible for GC to clear them up unexpectedly early.
-  Vector<v8::Local<v8::ArrayBuffer>> objects;
+  v8::LocalVector<v8::ArrayBuffer> objects(isolate);
 
   MemoryInfoTestScopedMockTime mock_time(MemoryInfo::Precision::kBucketized);
   MemoryInfo* bucketized_memory =
@@ -171,7 +174,7 @@ TEST_F(MemoryInfoTest, Bucketized) {
 TEST_F(MemoryInfoTest, Precise) {
   V8TestingScope scope;
   v8::Isolate* isolate = scope.GetIsolate();
-  Vector<v8::Local<v8::ArrayBuffer>> objects;
+  v8::LocalVector<v8::ArrayBuffer> objects(isolate);
 
   MemoryInfoTestScopedMockTime mock_time(MemoryInfo::Precision::kPrecise);
   MemoryInfo* precise_memory =
@@ -216,7 +219,7 @@ TEST_F(MemoryInfoTest, FlagEnabled) {
   ScopedPreciseMemoryInfoForTest precise_memory_info(true);
   V8TestingScope scope;
   v8::Isolate* isolate = scope.GetIsolate();
-  Vector<v8::Local<v8::ArrayBuffer>> objects;
+  v8::LocalVector<v8::ArrayBuffer> objects(isolate);
 
   // Using MemoryInfo::Precision::Bucketized to ensure that the runtime-enabled
   // flag overrides the Precision passed onto the method.
@@ -246,7 +249,7 @@ TEST_F(MemoryInfoTest, ZeroTime) {
   mock_time.AdvanceClock(base::Microseconds(100));
   V8TestingScope scope;
   v8::Isolate* isolate = scope.GetIsolate();
-  Vector<v8::Local<v8::ArrayBuffer>> objects;
+  v8::LocalVector<v8::ArrayBuffer> objects(isolate);
   objects.push_back(v8::ArrayBuffer::New(isolate, 100));
 
   MemoryInfo* precise_memory =

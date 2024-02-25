@@ -11,11 +11,12 @@
 
 namespace blink {
 
-void AppliedDecorationPainter::Paint(const cc::PaintFlags* flags) {
+void AppliedDecorationPainter::Paint(const Color& color,
+                                     const cc::PaintFlags* flags) {
   ETextDecorationStyle decoration_style = decoration_info_.DecorationStyle();
 
   context_.SetStrokeStyle(decoration_info_.StrokeStyle());
-  context_.SetStrokeColor(decoration_info_.LineColor());
+  context_.SetStrokeColor(color);
 
   AutoDarkMode auto_dark_mode(
       PaintAutoDarkMode(decoration_info_.TargetStyle(),

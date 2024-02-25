@@ -7,13 +7,13 @@
 #import <CoreFoundation/CoreFoundation.h>
 #import <CoreText/CoreText.h>
 
+#include <optional>
 #include <string>
 
 #include "base/apple/bridging.h"
 #include "base/apple/scoped_cftyperef.h"
 #include "base/notreached.h"
 #include "base/strings/sys_string_conversions.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/font_access/font_enumeration_table.pb.h"
 
 namespace content {
@@ -84,14 +84,14 @@ blink::FontEnumerationTable FontEnumerationDataSourceMac::GetFonts(
             base::apple::NSToCFPtrCast(options)));
 
     base::apple::ScopedCFTypeRef<CFArrayRef> font_descs(
-        CTFontCollectionCreateMatchingFontDescriptors(collection));
+        CTFontCollectionCreateMatchingFontDescriptors(collection.get()));
 
     // Used to filter duplicates.
     std::set<std::string> fonts_seen;
 
-    for (CFIndex i = 0; i < CFArrayGetCount(font_descs); ++i) {
+    for (CFIndex i = 0; i < CFArrayGetCount(font_descs.get()); ++i) {
       CTFontDescriptorRef fd = base::apple::CFCast<CTFontDescriptorRef>(
-          CFArrayGetValueAtIndex(font_descs, i));
+          CFArrayGetValueAtIndex(font_descs.get(), i));
       if (!IsValidFontMac(fd)) {
         // Skip invalid fonts.
         continue;

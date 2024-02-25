@@ -23,7 +23,7 @@ class BrowserProcessPlatformPartAshTest : public testing::Test {
  protected:
   content::BrowserTaskEnvironment task_environment_;
   TestingProfile profile_;
-  raw_ptr<BrowserProcessPlatformPart, ExperimentalAsh> process_part_ =
+  raw_ptr<BrowserProcessPlatformPart> process_part_ =
       TestingBrowserProcess::GetGlobal()->platform_part();
 };
 

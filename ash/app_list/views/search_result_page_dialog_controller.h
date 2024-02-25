@@ -43,7 +43,7 @@ class SearchResultPageDialogController {
   // Called when the search result page dialog gets closed.
   void OnAnchoredDialogClosed();
 
-  const raw_ptr<views::View, ExperimentalAsh> host_view_;
+  const raw_ptr<views::View> host_view_;
 
   // Whether search result page dialogs are allowed. If false, calls to `Show()`
   // will be no-op.

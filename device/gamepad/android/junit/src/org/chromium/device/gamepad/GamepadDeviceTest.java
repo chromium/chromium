@@ -12,9 +12,7 @@ import org.robolectric.annotation.Config;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Feature;
 
-/**
- * Verify no regressions in gamepad mappings.
- */
+/** Verify no regressions in gamepad mappings. */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
 public class GamepadDeviceTest {

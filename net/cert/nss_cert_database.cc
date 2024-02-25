@@ -79,7 +79,7 @@ class CertNotificationForwarder : public NSSCertDatabase::Observer {
 // TODO(https://crbug.com/1412591): once the other IsUntrusted impl is deleted,
 // rename this.
 bool IsUntrustedUsingTrustStore(const CERTCertificate* cert,
-                                CertificateTrust trust) {
+                                bssl::CertificateTrust trust) {
   if (trust.IsDistrusted()) {
     return true;
   }
@@ -555,7 +555,6 @@ NSSCertDatabase::CertInfoList NSSCertDatabase::ListCertsInfoImpl(
     // ListCertsInfo call is not expensive. If that ever changes this might
     // need to be rethought.
     TrustStoreNSS trust_store_nss(
-        TrustStoreNSS::kIgnoreSystemTrust,
         slot ? TrustStoreNSS::UserSlotTrustSetting(
                    crypto::ScopedPK11Slot(PK11_ReferenceSlot(slot.get())))
              : TrustStoreNSS::UseTrustFromAllUserSlots());

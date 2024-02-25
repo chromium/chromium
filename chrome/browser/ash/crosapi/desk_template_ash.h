@@ -38,6 +38,7 @@ class DeskTemplateAsh : public mojom::DeskTemplate {
       crosapi::mojom::DeskTemplateStatePtr additional_state);
   void GetFaviconImage(
       const GURL& url,
+      uint64_t lacros_profile_id,
       base::OnceCallback<void(const gfx::ImageSkia&)> callback);
 
   // crosapi::mojom::DeskTemplate:

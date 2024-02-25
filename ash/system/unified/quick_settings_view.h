@@ -13,6 +13,7 @@
 #include "base/memory/raw_ptr.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/view.h"
+#include "ui/views/view_utils.h"
 
 namespace views {
 class FlexLayoutView;
@@ -22,11 +23,10 @@ namespace ash {
 
 class FeatureTile;
 class FeatureTilesContainerView;
-class PageIndicatorView;
+class PaginationView;
 class QuickSettingsFooter;
 class QuickSettingsHeader;
 class QuickSettingsMediaViewContainer;
-class TrayDetailedView;
 class UnifiedMediaControlsContainer;
 class UnifiedSystemTrayController;
 
@@ -35,9 +35,9 @@ class UnifiedSystemTrayController;
 // The `QuickSettingsView` contains the quick settings controls
 class ASH_EXPORT QuickSettingsView : public views::View,
                                      public PaginationModelObserver {
- public:
-  METADATA_HEADER(QuickSettingsView);
+  METADATA_HEADER(QuickSettingsView, views::View)
 
+ public:
   explicit QuickSettingsView(UnifiedSystemTrayController* controller);
 
   QuickSettingsView(const QuickSettingsView&) = delete;
@@ -100,26 +100,29 @@ class ASH_EXPORT QuickSettingsView : public views::View,
   // PaginationModelObserver:
   void TotalPagesChanged(int previous_page_count, int new_page_count) override;
 
-  // views::View:
-  void OnGestureEvent(ui::GestureEvent* event) override;
-
   FeatureTilesContainerView* feature_tiles_container() {
     return feature_tiles_container_;
   }
   views::View* detailed_view_container() { return detailed_view_container_; }
 
   // Returns the current tray detailed view.
-  TrayDetailedView* GetDetailedViewForTest();
-
-  PageIndicatorView* page_indicator_view_for_test() {
-    return page_indicator_view_;
+  template <typename T>
+  T* GetDetailedViewForTest() {
+    CHECK(!detailed_view_container_->children().empty());
+    views::View* view = detailed_view_container_->children()[0];
+    CHECK(views::IsViewClass<T>(view));
+    return static_cast<T*>(view);
   }
+
+  PaginationView* pagination_view_for_test() { return pagination_view_; }
+
   UnifiedMediaControlsContainer* media_controls_container_for_testing() {
     return media_controls_container_;
   }
   QuickSettingsMediaViewContainer* media_view_container_for_testing() {
     return media_view_container_;
   }
+  QuickSettingsHeader* header_for_testing() { return header_; }
   QuickSettingsFooter* footer_for_testing() { return footer_; }
 
  private:
@@ -128,32 +131,28 @@ class ASH_EXPORT QuickSettingsView : public views::View,
   friend class UnifiedVolumeViewTest;
 
   // Owned by UnifiedSystemTrayBubble.
-  const raw_ptr<UnifiedSystemTrayController, ExperimentalAsh> controller_;
+  const raw_ptr<UnifiedSystemTrayController> controller_;
 
   // Owned by views hierarchy.
-  raw_ptr<views::FlexLayoutView, ExperimentalAsh> system_tray_container_ =
-      nullptr;
-  raw_ptr<QuickSettingsHeader, ExperimentalAsh> header_ = nullptr;
-  raw_ptr<FeatureTilesContainerView, ExperimentalAsh> feature_tiles_container_ =
-      nullptr;
-  raw_ptr<PageIndicatorView, ExperimentalAsh> page_indicator_view_ = nullptr;
-  raw_ptr<views::FlexLayoutView, ExperimentalAsh> sliders_container_ = nullptr;
-  raw_ptr<QuickSettingsFooter, ExperimentalAsh> footer_ = nullptr;
-  raw_ptr<views::View, ExperimentalAsh> detailed_view_container_ = nullptr;
+  raw_ptr<views::FlexLayoutView> system_tray_container_ = nullptr;
+  raw_ptr<QuickSettingsHeader> header_ = nullptr;
+  raw_ptr<FeatureTilesContainerView> feature_tiles_container_ = nullptr;
+  raw_ptr<PaginationView> pagination_view_ = nullptr;
+  raw_ptr<views::FlexLayoutView> sliders_container_ = nullptr;
+  raw_ptr<QuickSettingsFooter> footer_ = nullptr;
+  raw_ptr<views::View> detailed_view_container_ = nullptr;
 
   // Null if media::kGlobalMediaControlsCrOSUpdatedUI is enabled.
-  raw_ptr<UnifiedMediaControlsContainer, ExperimentalAsh>
-      media_controls_container_ = nullptr;
+  raw_ptr<UnifiedMediaControlsContainer> media_controls_container_ = nullptr;
 
   // Null if media::kGlobalMediaControlsCrOSUpdatedUI is disabled.
-  raw_ptr<QuickSettingsMediaViewContainer, ExperimentalAsh>
-      media_view_container_ = nullptr;
+  raw_ptr<QuickSettingsMediaViewContainer> media_view_container_ = nullptr;
 
   // The maximum height available to the view.
   int max_height_ = 0;
 
   // The view that is saved by calling SaveFocus().
-  raw_ptr<views::View, ExperimentalAsh> saved_focused_view_ = nullptr;
+  raw_ptr<views::View> saved_focused_view_ = nullptr;
 
   const std::unique_ptr<ui::EventHandler> interacted_by_tap_recorder_;
 };

@@ -8,8 +8,62 @@
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
 #include "base/numerics/safe_conversions.h"
+#include "base/trace_event/trace_event.h"
 
 namespace webnn::dml {
+
+using Microsoft::WRL::ComPtr;
+
+CommandQueue::PendingWorkDelegate::PendingWorkDelegate(
+    std::deque<CommandQueue::QueuedObject> queued_objects,
+    Microsoft::WRL::ComPtr<ID3D12CommandQueue> command_queue,
+    uint64_t last_fence_value,
+    Microsoft::WRL::ComPtr<ID3D12Fence> fence)
+    : base::win::ObjectWatcher::Delegate(),
+      queued_objects_(std::move(queued_objects)),
+      command_queue_(std::move(command_queue)),
+      last_fence_value_(last_fence_value),
+      fence_(std::move(fence)) {
+  CHECK(object_watcher_.StartWatchingOnce(fence_event_.get(), this));
+}
+
+CommandQueue::PendingWorkDelegate::~PendingWorkDelegate() = default;
+
+//  Pending GPU work will be ensured done and signals the object watcher by
+//  system eventually to delete PendingWorkDelegate, it's out of our control, we
+//  have to trust that, if not, there will be memory leak.
+void CommandQueue::PendingWorkDelegate::OnObjectSignaled(HANDLE object) {
+  CHECK_EQ(object, fence_event_.get());
+
+  CHECK_GE(fence_->GetCompletedValue(), last_fence_value_);
+  delete this;
+}
+
+// static
+void CommandQueue::ScheduleCleanupForPendingWork(
+    std::deque<CommandQueue::QueuedObject> queued_objects,
+    ComPtr<ID3D12CommandQueue> command_queue,
+    uint64_t last_fence_value,
+    ComPtr<ID3D12Fence> fence) {
+  // Create a new fence_event that ensures it is only triggered by the
+  // last_fence_value.
+  base::win::ScopedHandle fence_event(
+      CreateEvent(nullptr, /*bManualReset=*/FALSE,
+                  /*bInitialState=*/FALSE, nullptr));
+  CHECK(fence_event.is_valid());
+
+  HRESULT hr = fence->SetEventOnCompletion(last_fence_value, fence_event.get());
+  if (FAILED(hr)) {
+    DLOG(ERROR) << "Failed to set event on completion : "
+                << logging::SystemErrorCodeToString(hr);
+    return;
+  }
+
+  // It is by design we're not using std::unique_ptr because PendingWorkDelegate
+  // deletes itself.
+  new PendingWorkDelegate(std::move(queued_objects), std::move(command_queue),
+                          last_fence_value, std::move(fence));
+}
 
 CommandQueue::CommandQueue(ComPtr<ID3D12CommandQueue> command_queue,
                            ComPtr<ID3D12Fence> fence)
@@ -21,7 +75,15 @@ CommandQueue::CommandQueue(ComPtr<ID3D12CommandQueue> command_queue,
   CHECK(fence_event_.is_valid());
 }
 
-CommandQueue::~CommandQueue() = default;
+CommandQueue::~CommandQueue() {
+  if (fence_->GetCompletedValue() >= last_fence_value_) {
+    return;
+  }
+
+  ScheduleCleanupForPendingWork(std::move(queued_objects_),
+                                std::move(command_queue_), last_fence_value_,
+                                std::move(fence_));
+}
 
 // static
 scoped_refptr<CommandQueue> CommandQueue::Create(ID3D12Device* d3d12_device) {
@@ -74,12 +136,14 @@ HRESULT CommandQueue::WaitSyncForTesting() {
     DLOG(ERROR) << "Failed to set event on completion : "
                 << logging::SystemErrorCodeToString(hr);
     return hr;
-  };
+  }
   CHECK_EQ(WaitForSingleObject(fence_event_.get(), INFINITE), WAIT_OBJECT_0);
   return S_OK;
 }
 
 void CommandQueue::OnObjectSignaled(HANDLE object) {
+  TRACE_EVENT_NESTABLE_ASYNC_END0("gpu", "dml::CommandQueue::WaitAsync",
+                                  TRACE_ID_LOCAL(this));
   CHECK_EQ(object, fence_event_.get());
   while (!queued_callbacks_.empty() &&
          queued_callbacks_.front().fence_value <= fence_->GetCompletedValue()) {
@@ -100,7 +164,9 @@ void CommandQueue::WaitAsync(OnWaitAyncCallback callback) {
                 << logging::SystemErrorCodeToString(hr);
     std::move(callback).Run(hr);
     return;
-  };
+  }
+  TRACE_EVENT_NESTABLE_ASYNC_BEGIN0("gpu", "dml::CommandQueue::WaitAsync",
+                                    TRACE_ID_LOCAL(this));
   queued_callbacks_.push_back(
       {last_fence_value_, base::BindOnce(std::move(callback), S_OK)});
 }

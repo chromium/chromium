@@ -33,13 +33,15 @@ class FakeRasterSource : public RasterSource {
       const gfx::Size& size);
   static scoped_refptr<FakeRasterSource> CreatePartiallyFilled(
       const gfx::Size& size,
-      const gfx::Rect& recorded_viewport);
+      const gfx::Rect& recorded_bounds);
   static scoped_refptr<FakeRasterSource> CreateEmpty(const gfx::Size& size);
   static scoped_refptr<FakeRasterSource> CreateFromRecordingSource(
       const RecordingSource* recording_source);
   static scoped_refptr<FakeRasterSource> CreateFromRecordingSourceWithWaitable(
       const RecordingSource* recording_source,
       base::WaitableEvent* playback_allowed_event);
+
+  void SetDirectlyCompositedImageDefaultRasterScale(gfx::Vector2dF scale);
 
  protected:
   explicit FakeRasterSource(const RecordingSource* recording_source);

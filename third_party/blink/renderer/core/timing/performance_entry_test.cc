@@ -8,11 +8,16 @@
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_testing.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
+#include "third_party/blink/renderer/platform/testing/task_environment.h"
 
 namespace blink {
 
-class PerformanceEntryTest : public testing::Test {};
-TEST(PerformanceEntryTest, GetNavigationId) {
+class PerformanceEntryTest : public testing::Test {
+ protected:
+  test::TaskEnvironment task_environment_;
+};
+
+TEST_F(PerformanceEntryTest, GetNavigationId) {
   V8TestingScope scope;
 
   String navigation_id1 =

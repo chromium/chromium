@@ -21,8 +21,8 @@ namespace {
 // do not represent human account so those account should follow system-wide
 // Bluetooth setting instead.
 bool ShouldApplyUserBluetoothSetting(user_manager::UserType user_type) {
-  return user_type == user_manager::USER_TYPE_REGULAR ||
-         user_type == user_manager::USER_TYPE_CHILD;
+  return user_type == user_manager::UserType::kRegular ||
+         user_type == user_manager::UserType::kChild;
 }
 
 }  // namespace
@@ -69,8 +69,8 @@ void BluetoothPowerControllerImpl::SetBluetoothEnabledState(bool enabled) {
   SetAdapterState(enabled);
 }
 
-void BluetoothPowerControllerImpl::SetBluetoothHidDetectionActive() {
-  BLUETOOTH_LOG(EVENT) << "HID detection started, enabling adapter.";
+void BluetoothPowerControllerImpl::SetBluetoothEnabledWithoutPersistence() {
+  BLUETOOTH_LOG(EVENT) << "Enabling adapter without persistence...";
   SetAdapterState(true);
 }
 
@@ -185,7 +185,7 @@ void BluetoothPowerControllerImpl::InitPrimaryUserPrefService(
 }
 
 void BluetoothPowerControllerImpl::ApplyBluetoothPrimaryUserPref() {
-  absl::optional<user_manager::UserType> user_type =
+  std::optional<user_manager::UserType> user_type =
       user_manager::UserManager::Get()->GetActiveUser()->GetType();
 
   // Apply the Bluetooth pref only for regular users (i.e. users representing

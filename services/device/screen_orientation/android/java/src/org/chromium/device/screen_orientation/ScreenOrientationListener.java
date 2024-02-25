@@ -6,19 +6,20 @@ package org.chromium.device.screen_orientation;
 
 import android.provider.Settings;
 
-import org.chromium.base.ContextUtils;
-import org.chromium.base.annotations.CalledByNative;
-import org.chromium.base.annotations.JNINamespace;
+import org.jni_zero.CalledByNative;
+import org.jni_zero.JNINamespace;
 
-/**
- * Android implementation details for device::ScreenOrientationListenerAndroid.
- */
+import org.chromium.base.ContextUtils;
+
+/** Android implementation details for device::ScreenOrientationListenerAndroid. */
 @JNINamespace("device")
 class ScreenOrientationListener {
     @CalledByNative
     static boolean isAutoRotateEnabledByUser() {
-        return Settings.System.getInt(ContextUtils.getApplicationContext().getContentResolver(),
-                       Settings.System.ACCELEROMETER_ROTATION, 0)
+        return Settings.System.getInt(
+                        ContextUtils.getApplicationContext().getContentResolver(),
+                        Settings.System.ACCELEROMETER_ROTATION,
+                        0)
                 == 1;
     }
 }

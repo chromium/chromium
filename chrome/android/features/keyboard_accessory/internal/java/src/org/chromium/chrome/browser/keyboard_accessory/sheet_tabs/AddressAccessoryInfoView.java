@@ -11,9 +11,7 @@ import android.widget.LinearLayout;
 import org.chromium.chrome.browser.keyboard_accessory.R;
 import org.chromium.components.browser_ui.widget.chips.ChipView;
 
-/**
- * This view represents a section of user data in the address tab of the keyboard accessory.
- */
+/** This view represents a section of user data in the address tab of the keyboard accessory. */
 class AddressAccessoryInfoView extends LinearLayout {
     private ChipView mNameFull;
     private ChipView mCompanyName;
@@ -26,9 +24,7 @@ class AddressAccessoryInfoView extends LinearLayout {
     private ChipView mPhoneHomeWholeNumber;
     private ChipView mEmailAddress;
 
-    /**
-     * Constructor for inflating from XML.
-     */
+    /** Constructor for inflating from XML. */
     public AddressAccessoryInfoView(Context context, AttributeSet attrs) {
         super(context, attrs);
     }

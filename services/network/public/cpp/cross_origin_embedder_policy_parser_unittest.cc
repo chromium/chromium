@@ -4,13 +4,13 @@
 
 #include "services/network/public/cpp/cross_origin_embedder_policy_parser.h"
 
+#include <optional>
 #include <string>
 #include <vector>
 
 #include "net/http/http_response_headers.h"
 #include "services/network/public/mojom/cross_origin_embedder_policy.mojom.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace network {
 
@@ -21,17 +21,17 @@ constexpr auto kCredentialless =
     mojom::CrossOriginEmbedderPolicyValue::kCredentialless;
 constexpr auto kRequireCorp =
     mojom::CrossOriginEmbedderPolicyValue::kRequireCorp;
-const auto kNoHeader = absl::optional<std::string>();
-const auto kNoEndpoint = absl::optional<std::string>();
+const auto kNoHeader = std::optional<std::string>();
+const auto kNoEndpoint = std::optional<std::string>();
 
 struct TestCase {
-  absl::optional<std::string> coep_header;
-  absl::optional<std::string> coep_report_only_header;
+  std::optional<std::string> coep_header;
+  std::optional<std::string> coep_report_only_header;
 
   mojom::CrossOriginEmbedderPolicyValue value;
-  absl::optional<std::string> reporting_endpoint;
+  std::optional<std::string> reporting_endpoint;
   mojom::CrossOriginEmbedderPolicyValue report_only_value;
-  absl::optional<std::string> report_only_reporting_endpoint;
+  std::optional<std::string> report_only_reporting_endpoint;
 };
 
 void CheckTestCase(const TestCase& test_case) {

@@ -7,9 +7,12 @@
 #include <stdint.h>
 
 #include <algorithm>
+#include <optional>
+#include <string_view>
 
 #include "base/command_line.h"
 #include "base/files/file_path.h"
+#include "base/hash/hash.h"
 #include "base/logging.h"
 #include "base/path_service.h"
 #include "base/strings/strcat.h"
@@ -68,6 +71,23 @@ bool ReadGoogleUpdateStrKeyFromRoot(HKEY root,
          key.ReadValue(name, value) == ERROR_SUCCESS;
 }
 
+// Returns the value |name| from the app's ClientState cohort registry key in
+// |root|.
+std::optional<std::wstring> ReadGoogleUpdateCohortStrKeyFromRoot(
+    HKEY root,
+    const wchar_t* const name) {
+  std::wstring value;
+  RegKey key;
+  if (key.Open(
+          root,
+          install_static::GetClientStateKeyPath().append(L"\\cohort").c_str(),
+          KEY_QUERY_VALUE | KEY_WOW64_32KEY) == ERROR_SUCCESS &&
+      key.ReadValue(name, &value) == ERROR_SUCCESS) {
+    return value;
+  }
+  return std::nullopt;
+}
+
 // Reads the value |name| from the app's ClientState registry key in
 // HKEY_CURRENT_USER into |value|. This function is only provided for legacy
 // use. New code needing to load/store per-user data should use
@@ -85,6 +105,15 @@ bool ReadGoogleUpdateStrKey(const wchar_t* const name, std::wstring* value) {
                                             ? HKEY_LOCAL_MACHINE
                                             : HKEY_CURRENT_USER,
                                         name, value);
+}
+
+// Reads the value |name| from the app's ClientState/cohort registry key.
+std::optional<std::wstring> ReadGoogleUpdateCohortStrKey(
+    const wchar_t* const name) {
+  return ReadGoogleUpdateCohortStrKeyFromRoot(install_static::IsSystemInstall()
+                                                  ? HKEY_LOCAL_MACHINE
+                                                  : HKEY_CURRENT_USER,
+                                              name);
 }
 
 // Writes |value| into |name| in the app's ClientState key in HKEY_CURRENT_USER.
@@ -292,6 +321,29 @@ GoogleUpdateSettings::LoadMetricsClientInfo() {
   return client_info;
 }
 
+// static
+std::optional<uint32_t> GoogleUpdateSettings::GetHashedCohortId() {
+  std::optional<std::wstring> id =
+      ReadGoogleUpdateCohortStrKey(google_update::kRegDefaultField);
+  if (!id) {
+    return std::nullopt;
+  }
+  std::string id_utf8 = base::WideToUTF8(*id);
+  // Duplicate the logic of
+  // ComponentMetricsProvider::ProvideSystemProfileMetrics: For component_id
+  // strings in the "1:A:B" format, ignore the B segment; including it will
+  // result in two clients assigned to the same cohort lineage (A) hashing to
+  // different values. (The B segment tracks data about the size of fractional
+  // cohorts that do not contain this client.)
+  size_t last_colon = id_utf8.find_last_of(":");
+  if (last_colon == std::string::npos) {
+    // No colon separator indicates some unexpected id format; abandon trying
+    // to interpret it.
+    return std::nullopt;
+  }
+  return base::PersistentHash(std::string_view(id_utf8.c_str(), last_colon));
+}
+
 void GoogleUpdateSettings::StoreMetricsClientInfo(
     const metrics::ClientInfo& client_info) {
   // Attempt a best-effort at backing |client_info| in the registry (but don't
@@ -441,7 +493,7 @@ bool GoogleUpdateSettings::UpdateGoogleUpdateApKey(
 }
 
 GoogleUpdateSettings::UpdatePolicy GoogleUpdateSettings::GetAppUpdatePolicy(
-    base::WStringPiece app_guid,
+    std::wstring_view app_guid,
     bool* is_overridden) {
   bool found_override = false;
   UpdatePolicy update_policy = kDefaultUpdatePolicy;
@@ -721,51 +773,4 @@ bool GoogleUpdateSettings::GetUpdateDetailForGoogleUpdate(ProductData* data) {
 bool GoogleUpdateSettings::GetUpdateDetail(ProductData* data) {
   return GetUpdateDetailForApp(!InstallUtil::IsPerUserInstall(),
                                install_static::GetAppGuid(), data);
-}
-
-bool GoogleUpdateSettings::SetExperimentLabels(
-    const std::wstring& experiment_labels) {
-  const bool system_install = install_static::IsSystemInstall();
-  const HKEY reg_root = system_install ? HKEY_LOCAL_MACHINE : HKEY_CURRENT_USER;
-  // Use install level to write to the correct client state/app guid key.
-  std::wstring client_state_path(
-      system_install ? install_static::GetClientStateMediumKeyPath()
-                     : install_static::GetClientStateKeyPath());
-  RegKey client_state(reg_root, client_state_path.c_str(),
-                      KEY_SET_VALUE | KEY_WOW64_32KEY);
-  // It is possible that the registry keys do not yet exist or have not yet
-  // been ACLed by Google Update to be user writable.
-  if (!client_state.Valid())
-    return false;
-  if (experiment_labels.empty()) {
-    return client_state.DeleteValue(google_update::kExperimentLabels) ==
-           ERROR_SUCCESS;
-  }
-  return client_state.WriteValue(google_update::kExperimentLabels,
-                                 experiment_labels.c_str()) == ERROR_SUCCESS;
-}
-
-bool GoogleUpdateSettings::ReadExperimentLabels(
-    std::wstring* experiment_labels) {
-  const bool system_install = install_static::IsSystemInstall();
-  const HKEY reg_root = system_install ? HKEY_LOCAL_MACHINE : HKEY_CURRENT_USER;
-  std::wstring client_state_path(
-      system_install ? install_static::GetClientStateMediumKeyPath()
-                     : install_static::GetClientStateKeyPath());
-
-  RegKey client_state;
-  LONG result = client_state.Open(reg_root, client_state_path.c_str(),
-                                  KEY_QUERY_VALUE | KEY_WOW64_32KEY);
-  if (result == ERROR_SUCCESS) {
-    result = client_state.ReadValue(google_update::kExperimentLabels,
-                                    experiment_labels);
-  }
-
-  // If the key or value was not present, return the empty string.
-  if (result == ERROR_FILE_NOT_FOUND || result == ERROR_PATH_NOT_FOUND) {
-    experiment_labels->clear();
-    return true;
-  }
-
-  return result == ERROR_SUCCESS;
 }

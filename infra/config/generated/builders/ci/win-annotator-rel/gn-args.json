@@ -1,0 +1,8 @@
+{
+  "gn_args": {
+    "dcheck_always_on": false,
+    "is_component_build": false,
+    "is_debug": false,
+    "use_remoteexec": true
+  }
+}

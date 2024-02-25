@@ -6,7 +6,7 @@
 
 #include <memory>
 
-#include "ash/accessibility/accessibility_controller_impl.h"
+#include "ash/accessibility/accessibility_controller.h"
 #include "ash/ash_element_identifiers.h"
 #include "ash/constants/ash_features.h"
 #include "ash/constants/tray_background_view_catalog.h"
@@ -217,6 +217,9 @@ aura::client::DragDropClient* GetDragDropClient(views::Widget* widget) {
 
 HoldingSpaceTray::HoldingSpaceTray(Shelf* shelf)
     : TrayBackgroundView(shelf, TrayBackgroundViewCatalogName::kHoldingSpace) {
+  SetCallback(base::BindRepeating(&HoldingSpaceTray::OnTrayButtonPressed,
+                                  weak_factory_.GetWeakPtr()));
+
   // Ensure the existence of the singleton animation registry.
   HoldingSpaceAnimationRegistry::GetInstance();
 
@@ -297,7 +300,7 @@ void HoldingSpaceTray::Initialize() {
     OnHoldingSpaceModelAttached(HoldingSpaceController::Get()->model());
 }
 
-void HoldingSpaceTray::ClickedOutsideBubble() {
+void HoldingSpaceTray::ClickedOutsideBubble(const ui::LocatedEvent& event) {
   CloseBubble();
 }
 
@@ -346,6 +349,9 @@ void HoldingSpaceTray::CloseBubble() {
   holding_space_metrics::RecordPodAction(
       holding_space_metrics::PodAction::kCloseBubble);
 
+  HoldingSpaceController::Get()->OnHoldingSpaceTrayBubbleVisibilityChanged(
+      this, /*visible=*/false);
+
   widget_observer_.Reset();
 
   bubble_.reset();
@@ -363,6 +369,9 @@ void HoldingSpaceTray::ShowBubble() {
 
   bubble_ = std::make_unique<HoldingSpaceTrayBubble>(this);
   bubble_->Init();
+
+  HoldingSpaceController::Get()->OnHoldingSpaceTrayBubbleVisibilityChanged(
+      this, /*visible=*/true);
 
   // Observe the bubble widget so that we can close the bubble when a holding
   // space item is being dragged.
@@ -444,14 +453,16 @@ void HoldingSpaceTray::PerformDrop(
   holding_space_metrics::RecordPodAction(
       holding_space_metrics::PodAction::kDragAndDropToPin);
 
-  HoldingSpaceController::Get()->client()->PinFiles(unpinned_file_paths);
-  did_drop_to_pin_ = true;
+  HoldingSpaceController::Get()->client()->PinFiles(
+      unpinned_file_paths,
+      holding_space_metrics::EventSource::kHoldingSpaceTray);
 
+  did_drop_to_pin_ = true;
   output_drag_op = DragOperation::kCopy;
 }
 
-void HoldingSpaceTray::Layout() {
-  TrayBackgroundView::Layout();
+void HoldingSpaceTray::Layout(PassKey) {
+  LayoutSuperclass<TrayBackgroundView>(this);
 
   // The `drop_target_overlay_` should always fill this view's bounds as they
   // are perceived by the user. Note that the user perceives the bounds of this
@@ -727,6 +738,15 @@ void HoldingSpaceTray::ObservePrefService(PrefService* prefs) {
                                         base::Unretained(this)));
 }
 
+void HoldingSpaceTray::OnTrayButtonPressed(const ui::Event& event) {
+  if (GetBubbleWidget()) {
+    CloseBubble();
+    return;
+  }
+
+  ShowBubble();
+}
+
 void HoldingSpaceTray::UpdatePreviewsState() {
   UpdatePreviewsVisibility();
   SchedulePreviewsIconUpdate();
@@ -791,12 +811,14 @@ void HoldingSpaceTray::UpdatePreviewsIcon() {
   std::set<base::FilePath> paths_with_previews;
   for (const auto& item :
        base::Reversed(HoldingSpaceController::Get()->model()->items())) {
-    if (!IsPreviewable(item))
+    if (!IsPreviewable(item)) {
       continue;
-    if (base::Contains(paths_with_previews, item->file_path()))
+    }
+    if (base::Contains(paths_with_previews, item->file().file_path)) {
       continue;
+    }
     items_with_previews.push_back(item.get());
-    paths_with_previews.insert(item->file_path());
+    paths_with_previews.insert(item->file().file_path);
   }
   previews_tray_icon_->UpdatePreviews(items_with_previews);
 }
@@ -806,7 +828,7 @@ bool HoldingSpaceTray::PreviewsShown() const {
 }
 
 void HoldingSpaceTray::UpdateDefaultTrayIcon() {
-  const absl::optional<float>& progress = progress_indicator_->progress();
+  const std::optional<float>& progress = progress_indicator_->progress();
 
   // If `progress` is not `complete`, there is potential for overlap between the
   // `default_tray_icon_` and the `progress_indicator_`'s inner icon. To address
@@ -927,7 +949,7 @@ void HoldingSpaceTray::SetShouldAnimate(bool should_animate) {
   }
 }
 
-BEGIN_METADATA(HoldingSpaceTray, TrayBackgroundView)
+BEGIN_METADATA(HoldingSpaceTray)
 END_METADATA
 
 }  // namespace ash

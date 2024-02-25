@@ -4,6 +4,7 @@
 
 #include "components/omnibox/browser/url_scoring_signals_annotator.h"
 
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -19,7 +20,6 @@
 #include "components/omnibox/browser/in_memory_url_index_types.h"
 #include "components/omnibox/browser/scored_history_match.h"
 #include "components/omnibox/browser/url_index_private_data.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/metrics_proto/omnibox_event.pb.h"
 #include "url/gurl.h"
 
@@ -37,7 +37,7 @@ void UrlScoringSignalsAnnotator::AnnotateResult(const AutocompleteInput& input,
 
     // Initialize the scoring signals if needed.
     if (!match.scoring_signals) {
-      match.scoring_signals = absl::make_optional<ScoringSignals>();
+      match.scoring_signals = std::make_optional<ScoringSignals>();
     }
 
     match.scoring_signals->set_length_of_url(
@@ -48,7 +48,8 @@ void UrlScoringSignalsAnnotator::AnnotateResult(const AutocompleteInput& input,
         match.allowed_to_be_default_match);
 
     // Populate query-URL matching signals if not set.
-    if (!match.scoring_signals->has_total_url_match_length()) {
+    if (!match.scoring_signals->has_total_url_match_length() &&
+        !match.destination_url.is_empty()) {
       PopulateQueryUrlMatchingSignals(
           lower_raw_terms, lower_terms_to_word_starts_offsets,
           match.destination_url, &*match.scoring_signals);

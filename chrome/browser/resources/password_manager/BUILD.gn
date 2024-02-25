@@ -17,7 +17,8 @@ build_webui("build") {
     "images/checkup_result_banner_running_dark.svg",
     "images/password_manager_logo.svg",
     "images/password_sharing_family_banner.svg",
-    "images/password_sharing_secure_shield.svg",
+    "images/password_sharing_family_banner_dark.svg",
+    "images/password_sharing_secure_lock.svg",
     "images/password_sharing_progress_bar.svg",
     "password_manager.html",
   ]
@@ -32,9 +33,17 @@ build_webui("build") {
       "images/password_shortcut_promo_dark.svg",
       "images/passwords_on_web_promo.svg",
       "images/passwords_on_web_promo_dark.svg",
+      "images/relaunch_chrome_promo.svg",
+      "images/relaunch_chrome_promo_dark.svg",
+      "images/move_passwords_promo.svg",
+      "images/move_passwords_promo_dark.svg",
     ]
   } else {
-    static_files += [ "manifest.webmanifest" ]
+    static_files += [
+      "manifest.webmanifest",
+      "images/relaunch_chrome_promo_non_branded.svg",
+      "images/relaunch_chrome_promo_dark_non_branded.svg",
+    ]
   }
 
   web_component_files = [
@@ -50,6 +59,7 @@ build_webui("build") {
     "dialogs/edit_password_disclaimer_dialog.ts",
     "dialogs/multi_store_delete_password_dialog.ts",
     "dialogs/move_passwords_dialog.ts",
+    "dialogs/move_single_password_dialog.ts",
     "dialogs/password_preview_item.ts",
     "credential_details/credential_note.ts",
     "credential_details/credential_field.ts",
@@ -65,19 +75,19 @@ build_webui("build") {
     "settings_section.ts",
     "sharing/share_password_flow.ts",
     "sharing/share_password_dialog_header.ts",
+    "sharing/share_password_group_avatar.ts",
     "sharing/share_password_recipient.ts",
     "sharing/share_password_family_picker_dialog.ts",
     "sharing/share_password_loading_dialog.ts",
     "sharing/share_password_error_dialog.ts",
-    "sharing/share_password_no_members_dialog.ts",
+    "sharing/share_password_no_other_family_members_dialog.ts",
+    "sharing/share_password_not_family_member_dialog.ts",
     "sharing/share_password_confirmation_dialog.ts",
     "side_bar.ts",
     "site_favicon.ts",
     "toolbar.ts",
+    "promo_cards/promo_card.ts",
   ]
-  if (is_chrome_branded) {
-    web_component_files += [ "promo_cards/promo_card.ts" ]
-  }
 
   non_web_component_files = [
     "password_manager.ts",
@@ -90,6 +100,7 @@ build_webui("build") {
     "sync_browser_proxy.ts",
     "user_utils_mixin.ts",
     "promo_cards/promo_cards_browser_proxy.ts",
+    "sharing/metrics_utils.ts",
   ]
 
   # Files that are passed as input to css_to_wrapper().

@@ -74,7 +74,7 @@ class SystemDisplaySetDisplayPropertiesFunction
   ~SystemDisplaySetDisplayPropertiesFunction() override = default;
   ResponseAction Run() override;
 
-  void Response(absl::optional<std::string> error);
+  void Response(std::optional<std::string> error);
 };
 
 class SystemDisplaySetDisplayLayoutFunction
@@ -87,7 +87,7 @@ class SystemDisplaySetDisplayLayoutFunction
   ~SystemDisplaySetDisplayLayoutFunction() override = default;
   ResponseAction Run() override;
 
-  void Response(absl::optional<std::string> error);
+  void Response(std::optional<std::string> error);
 };
 
 class SystemDisplayEnableUnifiedDesktopFunction
@@ -155,7 +155,7 @@ class SystemDisplayShowNativeTouchCalibrationFunction
   ~SystemDisplayShowNativeTouchCalibrationFunction() override = default;
   ResponseAction Run() override;
 
-  void OnCalibrationComplete(absl::optional<std::string> error);
+  void OnCalibrationComplete(std::optional<std::string> error);
 };
 
 class SystemDisplayStartCustomTouchCalibrationFunction
@@ -201,7 +201,7 @@ class SystemDisplaySetMirrorModeFunction
   ~SystemDisplaySetMirrorModeFunction() override = default;
   ResponseAction Run() override;
 
-  void Response(absl::optional<std::string> error);
+  void Response(std::optional<std::string> error);
 };
 
 }  // namespace extensions

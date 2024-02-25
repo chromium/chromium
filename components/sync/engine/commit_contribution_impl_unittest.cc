@@ -12,19 +12,13 @@
 #include "base/functional/callback_helpers.h"
 #include "base/hash/sha1.h"
 #include "base/test/mock_callback.h"
-#include "base/test/scoped_feature_list.h"
 #include "components/sync/base/client_tag_hash.h"
-#include "components/sync/base/features.h"
 #include "components/sync/base/model_type.h"
 #include "components/sync/base/unique_position.h"
-#include "components/sync/engine/nigori/cryptographer.h"
-#include "components/sync/protocol/data_type_progress_marker.pb.h"
 #include "components/sync/protocol/entity_specifics.pb.h"
-#include "components/sync/protocol/password_specifics.pb.h"
 #include "components/sync/protocol/sharing_message_specifics.pb.h"
 #include "components/sync/protocol/sync.pb.h"
 #include "components/sync/protocol/sync_entity.pb.h"
-#include "components/sync/test/fake_cryptographer.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace syncer {
@@ -35,6 +29,9 @@ using sync_pb::CommitResponse;
 using sync_pb::EntitySpecifics;
 using sync_pb::SharingMessageCommitError;
 using sync_pb::SyncEntity;
+using testing::IsEmpty;
+using testing::Not;
+using testing::SizeIs;
 
 const ClientTagHash kTag = ClientTagHash::FromHashed("tag");
 const char kValue[] = "value";
@@ -85,8 +82,8 @@ TEST(CommitContributionImplTest, PopulateCommitProtoDefault) {
   CommitRequestData request_data;
   request_data.sequence_number = 2;
   request_data.base_version = kBaseVersion;
-  base::Base64Encode(base::SHA1HashString(data->specifics.SerializeAsString()),
-                     &request_data.specifics_hash);
+  request_data.specifics_hash = base::Base64Encode(
+      base::SHA1HashString(data->specifics.SerializeAsString()));
   request_data.entity = std::move(data);
 
   SyncEntity entity;
@@ -96,8 +93,8 @@ TEST(CommitContributionImplTest, PopulateCommitProtoDefault) {
   // Exhaustively verify the populated SyncEntity.
   EXPECT_TRUE(entity.id_string().empty());
   EXPECT_EQ(7, entity.version());
-  EXPECT_EQ(modification_time.ToJsTime(), entity.mtime());
-  EXPECT_EQ(creation_time.ToJsTime(), entity.ctime());
+  EXPECT_EQ(modification_time.InMillisecondsFSinceUnixEpoch(), entity.mtime());
+  EXPECT_EQ(creation_time.InMillisecondsFSinceUnixEpoch(), entity.ctime());
   EXPECT_FALSE(entity.name().empty());
   EXPECT_FALSE(entity.client_tag_hash().empty());
   EXPECT_EQ(kTag.value(), entity.specifics().preference().name());
@@ -126,8 +123,8 @@ TEST(CommitContributionImplTest, PopulateCommitProtoTombstone) {
   CommitRequestData request_data;
   request_data.sequence_number = 2;
   request_data.base_version = kBaseVersion;
-  base::Base64Encode(base::SHA1HashString(data->specifics.SerializeAsString()),
-                     &request_data.specifics_hash);
+  request_data.specifics_hash = base::Base64Encode(
+      base::SHA1HashString(data->specifics.SerializeAsString()));
   request_data.entity = std::move(data);
 
   SyncEntity entity;
@@ -148,7 +145,7 @@ TEST(CommitContributionImplTest, PopulateCommitProtoTombstone) {
   // set (`has_preference()` is true), but this test doesn't execute that code.
   EXPECT_EQ(0u, entity.specifics().ByteSizeLong());
   // For deletions, mtime should still be set, but ctime shouldn't.
-  EXPECT_EQ(modification_time.ToJsTime(), entity.mtime());
+  EXPECT_EQ(modification_time.InMillisecondsFSinceUnixEpoch(), entity.mtime());
   EXPECT_FALSE(entity.has_ctime());
   // The entity name is still passed on, if it was set in the input EntityData
   // (which it is in this test, even though in practice it isn't).
@@ -175,8 +172,11 @@ TEST(CommitContributionImplTest, PopulateCommitProtoBookmark) {
   CommitRequestData request_data;
   request_data.sequence_number = 2;
   request_data.base_version = kBaseVersion;
-  base::Base64Encode(base::SHA1HashString(data->specifics.SerializeAsString()),
-                     &request_data.specifics_hash);
+  request_data.specifics_hash = base::Base64Encode(
+      base::SHA1HashString(data->specifics.SerializeAsString()));
+  request_data.deprecated_bookmark_folder = false;
+  request_data.deprecated_bookmark_unique_position =
+      UniquePosition::FromProto(data->specifics.bookmark().unique_position());
   request_data.entity = std::move(data);
 
   SyncEntity entity;
@@ -185,8 +185,8 @@ TEST(CommitContributionImplTest, PopulateCommitProtoBookmark) {
   // Exhaustively verify the populated SyncEntity.
   EXPECT_FALSE(entity.id_string().empty());
   EXPECT_EQ(7, entity.version());
-  EXPECT_EQ(modification_time.ToJsTime(), entity.mtime());
-  EXPECT_EQ(creation_time.ToJsTime(), entity.ctime());
+  EXPECT_EQ(modification_time.InMillisecondsFSinceUnixEpoch(), entity.mtime());
+  EXPECT_EQ(creation_time.InMillisecondsFSinceUnixEpoch(), entity.ctime());
   EXPECT_FALSE(entity.name().empty());
   EXPECT_TRUE(entity.client_tag_hash().empty());
   EXPECT_EQ(kURL, entity.specifics().bookmark().url());
@@ -217,8 +217,11 @@ TEST(CommitContributionImplTest, PopulateCommitProtoBookmarkFolder) {
   CommitRequestData request_data;
   request_data.sequence_number = 2;
   request_data.base_version = kBaseVersion;
-  base::Base64Encode(base::SHA1HashString(data->specifics.SerializeAsString()),
-                     &request_data.specifics_hash);
+  request_data.specifics_hash = base::Base64Encode(
+      base::SHA1HashString(data->specifics.SerializeAsString()));
+  request_data.deprecated_bookmark_folder = true;
+  request_data.deprecated_bookmark_unique_position =
+      UniquePosition::FromProto(data->specifics.bookmark().unique_position());
   request_data.entity = std::move(data);
 
   SyncEntity entity;
@@ -227,8 +230,8 @@ TEST(CommitContributionImplTest, PopulateCommitProtoBookmarkFolder) {
   // Exhaustively verify the populated SyncEntity.
   EXPECT_FALSE(entity.id_string().empty());
   EXPECT_EQ(7, entity.version());
-  EXPECT_EQ(modification_time.ToJsTime(), entity.mtime());
-  EXPECT_EQ(creation_time.ToJsTime(), entity.ctime());
+  EXPECT_EQ(modification_time.InMillisecondsFSinceUnixEpoch(), entity.mtime());
+  EXPECT_EQ(creation_time.InMillisecondsFSinceUnixEpoch(), entity.ctime());
   EXPECT_FALSE(entity.name().empty());
   EXPECT_TRUE(entity.client_tag_hash().empty());
   EXPECT_FALSE(entity.specifics().bookmark().has_url());
@@ -247,8 +250,6 @@ TEST(CommitContributionImplTest, ShouldPropagateFailedItemsOnCommitResponse) {
   CommitRequestDataList requests_data;
   requests_data.push_back(std::move(request_data));
 
-  FakeCryptographer cryptographer;
-
   FailedCommitResponseDataList actual_error_response_list;
 
   auto on_commit_response_callback = base::BindOnce(
@@ -264,9 +265,8 @@ TEST(CommitContributionImplTest, ShouldPropagateFailedItemsOnCommitResponse) {
   CommitContributionImpl contribution(
       PASSWORDS, sync_pb::DataTypeContext(), std::move(requests_data),
       std::move(on_commit_response_callback),
-      /*on_full_commit_failure_callback=*/base::NullCallback(), &cryptographer,
-      PassphraseType::kCustomPassphrase,
-      /*only_commit_specifics=*/false);
+      /*on_full_commit_failure_callback=*/base::NullCallback(),
+      PassphraseType::kCustomPassphrase);
 
   sync_pb::ClientToServerMessage msg;
   contribution.AddToCommitMessage(&msg);
@@ -305,11 +305,32 @@ TEST(CommitContributionImplTest, ShouldPropagateFullCommitFailure) {
   CommitContributionImpl contribution(
       BOOKMARKS, sync_pb::DataTypeContext(), CommitRequestDataList(),
       /*on_commit_response_callback=*/base::NullCallback(),
-      on_commit_failure_callback.Get(), /*cryptographer=*/nullptr,
-      PassphraseType::kKeystorePassphrase,
-      /*only_commit_specifics=*/false);
+      on_commit_failure_callback.Get(), PassphraseType::kKeystorePassphrase);
 
   contribution.ProcessCommitFailure(SyncCommitError::kNetworkError);
+}
+
+TEST(CommitContributionImplTest, ShouldPopulateIdStringForCommitOnlyTypes) {
+  // Create non-empty commit-only entity.
+  auto data = std::make_unique<syncer::EntityData>();
+  data->client_tag_hash = ClientTagHash::FromHashed("hash");
+  data->specifics.mutable_sharing_message()->set_message_id("message_id");
+  auto request_data = std::make_unique<CommitRequestData>();
+  request_data->entity = std::move(data);
+  request_data->base_version = kUncommittedVersion;
+  CommitRequestDataList requests_data;
+  requests_data.push_back(std::move(request_data));
+
+  CommitContributionImpl contribution(
+      SHARING_MESSAGE, sync_pb::DataTypeContext(), std::move(requests_data),
+      /*on_commit_response_callback=*/base::NullCallback(),
+      /*on_full_commit_failure_callback=*/base::NullCallback(),
+      PassphraseType::kKeystorePassphrase);
+  sync_pb::ClientToServerMessage msg;
+  contribution.AddToCommitMessage(&msg);
+
+  ASSERT_THAT(msg.commit().entries(), SizeIs(1));
+  EXPECT_THAT(msg.commit().entries(0).id_string(), Not(IsEmpty()));
 }
 
 }  // namespace

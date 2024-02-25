@@ -34,6 +34,7 @@ export interface CupsPrinterInfo {
   printerProtocol: string;
   printerQueue: string;
   printServerUri: string;
+  printerStatus?: PrinterStatus;
 }
 
 export interface CupsPrintersList {
@@ -178,7 +179,7 @@ export class CupsPrintersBrowserProxyImpl implements CupsPrintersBrowserProxy {
     return instance || (instance = new CupsPrintersBrowserProxyImpl());
   }
 
-  static setInstanceForTesting(obj: CupsPrintersBrowserProxy) {
+  static setInstanceForTesting(obj: CupsPrintersBrowserProxy): void {
     instance = obj;
   }
 
@@ -195,11 +196,12 @@ export class CupsPrintersBrowserProxyImpl implements CupsPrintersBrowserProxy {
     return sendWithPromise('updateCupsPrinter', printerId, printerName);
   }
 
-  removeCupsPrinter(printerId: string, printerName: string) {
+  removeCupsPrinter(printerId: string, printerName: string): void {
     chrome.send('removeCupsPrinter', [printerId, printerName]);
   }
 
-  retrieveCupsPrinterPpd(printerId: string, printerName: string, eula: string) {
+  retrieveCupsPrinterPpd(printerId: string, printerName: string, eula: string):
+      void {
     chrome.send('retrieveCupsPrinterPpd', [printerId, printerName, eula]);
   }
 
@@ -216,11 +218,11 @@ export class CupsPrintersBrowserProxyImpl implements CupsPrintersBrowserProxy {
     return sendWithPromise('selectPPDFile');
   }
 
-  startDiscoveringPrinters() {
+  startDiscoveringPrinters(): void {
     chrome.send('startDiscoveringPrinters');
   }
 
-  stopDiscoveringPrinters() {
+  stopDiscoveringPrinters(): void {
     chrome.send('stopDiscoveringPrinters');
   }
 
@@ -245,7 +247,7 @@ export class CupsPrintersBrowserProxyImpl implements CupsPrintersBrowserProxy {
     return sendWithPromise('addDiscoveredPrinter', printerId);
   }
 
-  cancelPrinterSetUp(newPrinter: CupsPrinterInfo) {
+  cancelPrinterSetUp(newPrinter: CupsPrinterInfo): void {
     chrome.send('cancelPrinterSetUp', [newPrinter]);
   }
 
@@ -257,15 +259,15 @@ export class CupsPrintersBrowserProxyImpl implements CupsPrintersBrowserProxy {
     return sendWithPromise('queryPrintServer', serverUrl);
   }
 
-  openPrintManagementApp() {
+  openPrintManagementApp(): void {
     chrome.send('openPrintManagementApp');
   }
 
-  openScanningApp() {
+  openScanningApp(): void {
     chrome.send('openScanningApp');
   }
 
-  requestPrinterStatusUpdate(printerId: string) {
+  requestPrinterStatusUpdate(printerId: string): Promise<PrinterStatus> {
     return sendWithPromise('requestPrinterStatus', printerId);
   }
 }

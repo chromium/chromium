@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/modules/cookie_store/cookie_store.h"
 
+#include <optional>
 #include <utility>
 
 #include "base/containers/contains.h"
@@ -11,7 +12,6 @@
 #include "net/cookies/canonical_cookie.h"
 #include "services/network/public/cpp/is_potentially_trustworthy.h"
 #include "services/network/public/mojom/restricted_cookie_manager.mojom-blink.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_core.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_throw_dom_exception.h"
@@ -83,7 +83,8 @@ std::unique_ptr<net::CanonicalCookie> ToCanonicalCookie(
   }
 
   base::Time expires = options->hasExpiresNonNull()
-                           ? base::Time::FromJavaTime(options->expiresNonNull())
+                           ? base::Time::FromMillisecondsSinceUnixEpoch(
+                                 options->expiresNonNull())
                            : base::Time();
 
   String cookie_url_host = cookie_url.Host();
@@ -153,7 +154,7 @@ std::unique_ptr<net::CanonicalCookie> ToCanonicalCookie(
     same_site = net::CookieSameSite::NO_RESTRICTION;
   }
 
-  absl::optional<net::CookiePartitionKey> cookie_partition_key = absl::nullopt;
+  std::optional<net::CookiePartitionKey> cookie_partition_key = std::nullopt;
   if (options->partitioned()) {
     // We don't trust the renderer to determine the cookie partition key, so we
     // use this factory to indicate we are using a temporary value here.
@@ -166,7 +167,7 @@ std::unique_ptr<net::CanonicalCookie> ToCanonicalCookie(
           path.Utf8(), base::Time() /*creation*/, expires,
           base::Time() /*last_access*/, true /*secure*/, false /*http_only*/,
           same_site, net::CookiePriority::COOKIE_PRIORITY_DEFAULT,
-          /*same_party=*/false, cookie_partition_key, &status_out);
+          cookie_partition_key, &status_out);
 
   // TODO(crbug.com/1310444): Improve serialization validation comments and
   // associate them with ExceptionState codes.
@@ -273,45 +274,63 @@ CookieStore::CookieStore(
 
 CookieStore::~CookieStore() = default;
 
-ScriptPromise CookieStore::getAll(ScriptState* script_state,
-                                  const String& name,
-                                  ExceptionState& exception_state) {
+ScriptPromiseTyped<IDLSequence<CookieListItem>> CookieStore::getAll(
+    ScriptState* script_state,
+    const String& name,
+    ExceptionState& exception_state) {
   CookieStoreGetOptions* options = CookieStoreGetOptions::Create();
   options->setName(name);
   return getAll(script_state, options, exception_state);
 }
 
-ScriptPromise CookieStore::getAll(ScriptState* script_state,
-                                  const CookieStoreGetOptions* options,
-                                  ExceptionState& exception_state) {
+ScriptPromiseTyped<IDLSequence<CookieListItem>> CookieStore::getAll(
+    ScriptState* script_state,
+    const CookieStoreGetOptions* options,
+    ExceptionState& exception_state) {
   UseCounter::Count(CurrentExecutionContext(script_state->GetIsolate()),
                     WebFeature::kCookieStoreAPI);
 
-  return DoRead(script_state, options, &CookieStore::GetAllForUrlToGetAllResult,
-                exception_state);
+  auto* resolver = MakeGarbageCollected<
+      ScriptPromiseResolverTyped<IDLSequence<CookieListItem>>>(
+      script_state, exception_state.GetContext());
+  auto promise = resolver->Promise();
+  DoRead(script_state, options,
+         WTF::BindOnce(&CookieStore::GetAllForUrlToGetAllResult,
+                       WrapPersistent(resolver)),
+         exception_state);
+  return promise;
 }
 
-ScriptPromise CookieStore::get(ScriptState* script_state,
-                               const String& name,
-                               ExceptionState& exception_state) {
+ScriptPromiseTyped<IDLNullable<CookieListItem>> CookieStore::get(
+    ScriptState* script_state,
+    const String& name,
+    ExceptionState& exception_state) {
   CookieStoreGetOptions* options = CookieStoreGetOptions::Create();
   options->setName(name);
   return get(script_state, options, exception_state);
 }
 
-ScriptPromise CookieStore::get(ScriptState* script_state,
-                               const CookieStoreGetOptions* options,
-                               ExceptionState& exception_state) {
+ScriptPromiseTyped<IDLNullable<CookieListItem>> CookieStore::get(
+    ScriptState* script_state,
+    const CookieStoreGetOptions* options,
+    ExceptionState& exception_state) {
   UseCounter::Count(CurrentExecutionContext(script_state->GetIsolate()),
                     WebFeature::kCookieStoreAPI);
 
   if (!options->hasName() && !options->hasUrl()) {
     exception_state.ThrowTypeError("CookieStoreGetOptions must not be empty");
-    return ScriptPromise();
+    return ScriptPromiseTyped<IDLNullable<CookieListItem>>();
   }
 
-  return DoRead(script_state, options, &CookieStore::GetAllForUrlToGetResult,
-                exception_state);
+  auto* resolver = MakeGarbageCollected<
+      ScriptPromiseResolverTyped<IDLNullable<CookieListItem>>>(
+      script_state, exception_state.GetContext());
+  auto promise = resolver->Promise();
+  DoRead(script_state, options,
+         WTF::BindOnce(&CookieStore::GetAllForUrlToGetResult,
+                       WrapPersistent(resolver)),
+         exception_state);
+  return promise;
 }
 
 ScriptPromise CookieStore::set(ScriptState* script_state,
@@ -408,16 +427,15 @@ void CookieStore::RemovedEventListener(
     StopObserving();
 }
 
-ScriptPromise CookieStore::DoRead(
-    ScriptState* script_state,
-    const CookieStoreGetOptions* options,
-    DoReadBackendResultConverter backend_result_converter,
-    ExceptionState& exception_state) {
+void CookieStore::DoRead(ScriptState* script_state,
+                         const CookieStoreGetOptions* options,
+                         GetAllForUrlCallback backend_result_converter,
+                         ExceptionState& exception_state) {
   ExecutionContext* context = ExecutionContext::From(script_state);
   if (!context->GetSecurityOrigin()->CanAccessCookies()) {
     exception_state.ThrowSecurityError(
         "Access to the CookieStore API is denied in this context.");
-    return ScriptPromise();
+    return;
   }
 
   network::mojom::blink::CookieManagerGetOptionsPtr backend_options =
@@ -426,27 +444,30 @@ ScriptPromise CookieStore::DoRead(
                                      exception_state);
   if (backend_options.is_null() || cookie_url.IsNull()) {
     DCHECK(exception_state.HadException());
-    return ScriptPromise();
+    return;
   }
 
   if (!backend_) {
     exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
                                       "CookieStore backend went away");
-    return ScriptPromise();
+    return;
   }
 
-  auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(
-      script_state, exception_state.GetContext());
-  backend_->GetAllForUrl(
-      cookie_url, default_site_for_cookies_, default_top_frame_origin_,
-      context->HasStorageAccess(), std::move(backend_options),
-      WTF::BindOnce(backend_result_converter, WrapPersistent(resolver)));
-  return resolver->Promise();
+  bool is_ad_tagged = false;
+  if (auto* window = DynamicTo<LocalDOMWindow>(context)) {
+    if (auto* local_frame = window->GetFrame()) {
+      is_ad_tagged = local_frame->IsAdFrame();
+    }
+  }
+  backend_->GetAllForUrl(cookie_url, default_site_for_cookies_,
+                         default_top_frame_origin_, context->HasStorageAccess(),
+                         std::move(backend_options), is_ad_tagged,
+                         std::move(backend_result_converter));
 }
 
 // static
 void CookieStore::GetAllForUrlToGetAllResult(
-    ScriptPromiseResolver* resolver,
+    ScriptPromiseResolverTyped<IDLSequence<CookieListItem>>* resolver,
     const Vector<network::mojom::blink::CookieWithAccessResultPtr>
         backend_cookies) {
   ScriptState* script_state = resolver->GetScriptState();
@@ -468,7 +489,7 @@ void CookieStore::GetAllForUrlToGetAllResult(
 
 // static
 void CookieStore::GetAllForUrlToGetResult(
-    ScriptPromiseResolver* resolver,
+    ScriptPromiseResolverTyped<IDLNullable<CookieListItem>>* resolver,
     const Vector<network::mojom::blink::CookieWithAccessResultPtr>
         backend_cookies) {
   ScriptState* script_state = resolver->GetScriptState();
@@ -477,7 +498,7 @@ void CookieStore::GetAllForUrlToGetResult(
   ScriptState::Scope scope(script_state);
 
   if (backend_cookies.empty()) {
-    resolver->Resolve(v8::Null(script_state->GetIsolate()));
+    resolver->Resolve(nullptr);
     return;
   }
 

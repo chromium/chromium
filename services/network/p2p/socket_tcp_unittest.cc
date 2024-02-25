@@ -8,6 +8,7 @@
 #include <stdint.h>
 
 #include <memory>
+#include <string_view>
 
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
@@ -108,8 +109,8 @@ class P2PSocketTcpTestBase : public testing::Test {
 
   base::test::TaskEnvironment task_environment_;
   std::string sent_data_;
-  raw_ptr<FakeSocket, DanglingUntriaged> socket_;  // Owned by |socket_impl_|.
   std::unique_ptr<P2PSocketTcpBase> socket_impl_;
+  raw_ptr<FakeSocket> socket_;  // Owned by |socket_impl_|.
   FakeP2PSocketDelegate socket_delegate_;
   std::unique_ptr<FakeSocketClient> fake_client_;
 
@@ -211,6 +212,7 @@ TEST_F(P2PSocketTcpTest, SendDataNoAuth) {
   std::vector<uint8_t> packet;
   CreateRandomPacket(&packet);
 
+  socket_ = nullptr;  // Since about to give up ownership of `socket_impl_`.
   auto* socket_impl_ptr = socket_impl_.get();
   socket_delegate_.ExpectDestruction(std::move(socket_impl_));
   socket_impl_ptr->Send(packet, P2PPacketInfo(dest_.ip_address, options, 0));
@@ -437,6 +439,7 @@ TEST_F(P2PSocketStunTcpTest, SendDataNoAuth) {
   std::vector<uint8_t> packet;
   CreateRandomPacket(&packet);
 
+  socket_ = nullptr;  // Since about to give up ownership of `socket_impl_`.
   auto* socket_impl_ptr = socket_impl_.get();
   socket_delegate_.ExpectDestruction(std::move(socket_impl_));
   socket_impl_ptr->Send(packet, P2PPacketInfo(dest_.ip_address, options, 0));
@@ -493,9 +496,9 @@ TEST(P2PSocketTcpWithPseudoTlsTest, Basic) {
   auto context = context_builder->Build();
   ProxyResolvingClientSocketFactory factory(context.get());
 
-  base::StringPiece ssl_client_hello =
+  std::string_view ssl_client_hello =
       webrtc::FakeSSLClientSocket::GetSslClientHello();
-  base::StringPiece ssl_server_hello =
+  std::string_view ssl_server_hello =
       webrtc::FakeSSLClientSocket::GetSslServerHello();
   net::MockRead reads[] = {
       net::MockRead(net::ASYNC, ssl_server_hello.data(),
@@ -551,9 +554,9 @@ TEST(P2PSocketTcpWithPseudoTlsTest, Hostname) {
   auto context = context_builder->Build();
   ProxyResolvingClientSocketFactory factory(context.get());
 
-  base::StringPiece ssl_client_hello =
+  std::string_view ssl_client_hello =
       webrtc::FakeSSLClientSocket::GetSslClientHello();
-  base::StringPiece ssl_server_hello =
+  std::string_view ssl_server_hello =
       webrtc::FakeSSLClientSocket::GetSslServerHello();
   net::MockRead reads[] = {
       net::MockRead(net::ASYNC, ssl_server_hello.data(),

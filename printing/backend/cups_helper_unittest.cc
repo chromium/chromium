@@ -29,7 +29,7 @@ bool PapersEqual(const PrinterSemanticCapsAndDefaults::Paper& lhs,
 }
 
 void VerifyCapabilityColorModels(const PrinterSemanticCapsAndDefaults& caps) {
-  absl::optional<bool> maybe_color = IsColorModelSelected(caps.color_model);
+  std::optional<bool> maybe_color = IsColorModelSelected(caps.color_model);
   ASSERT_TRUE(maybe_color.has_value());
   EXPECT_TRUE(maybe_color.value());
   maybe_color = IsColorModelSelected(caps.bw_model);

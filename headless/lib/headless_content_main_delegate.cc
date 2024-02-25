@@ -48,6 +48,10 @@
 #include "ui/gl/gl_switches.h"
 #include "ui/ozone/public/ozone_switches.h"
 
+#if BUILDFLAG(IS_WIN)
+#include "base/win/resource_exhaustion.h"
+#endif  // BUILDFLAG(IS_WIN)
+
 #if defined(HEADLESS_USE_EMBEDDED_RESOURCES)
 #include "headless/embedded_resource_pack_data.h"     // nogncheck
 #include "headless/embedded_resource_pack_strings.h"  // nogncheck
@@ -89,6 +93,20 @@ base::LazyInstance<HeadlessCrashReporterClient>::Leaky g_headless_crash_client =
 
 const char kLogFileName[] = "CHROME_LOG_FILE";
 const char kHeadlessCrashKey[] = "headless";
+
+#if BUILDFLAG(IS_WIN)
+void OnResourceExhausted() {
+  // RegisterClassEx will fail if the session's pool of ATOMs is exhausted. This
+  // appears to happen most often when the browser is being driven by automation
+  // tools, though the underlying reason for this remains a mystery
+  // (https://crbug.com/1470483). There is nothing that Chrome can do to
+  // meaningfully run until the user restarts their session by signing out of
+  // Windows or restarting their computer.
+  LOG(ERROR) << "Your computer has run out of resources. "
+                "Sign out of Windows or restart your computer and try again.";
+  base::Process::TerminateCurrentProcessImmediately(EXIT_FAILURE);
+}
+#endif  // BUILDFLAG(IS_WIN)
 
 void InitializeResourceBundle(const base::CommandLine& command_line) {
 #if defined(HEADLESS_USE_EMBEDDED_RESOURCES)
@@ -170,7 +188,7 @@ HeadlessContentMainDelegate::~HeadlessContentMainDelegate() {
   g_current_headless_content_main_delegate = nullptr;
 }
 
-absl::optional<int> HeadlessContentMainDelegate::BasicStartupComplete() {
+std::optional<int> HeadlessContentMainDelegate::BasicStartupComplete() {
   base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
 
   // The DevTools remote debugging pipe file descriptors need to be checked
@@ -222,7 +240,7 @@ absl::optional<int> HeadlessContentMainDelegate::BasicStartupComplete() {
 #endif
 
   content::Profiling::ProcessStarted();
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 void HeadlessContentMainDelegate::InitLogging(
@@ -401,12 +419,7 @@ HeadlessContentMainDelegate::RunProcess(
   browser_runner->Run();
   browser_runner->Shutdown();
 
-  int exit_code = browser_->exit_code();
-
-  browser_.reset();
-
-  // Return an int here to disable calling content::BrowserMain.
-  return exit_code;
+  return browser_->exit_code();
 }
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
@@ -449,7 +462,7 @@ HeadlessContentMainDelegate* HeadlessContentMainDelegate::GetInstance() {
   return g_current_headless_content_main_delegate;
 }
 
-absl::optional<int> HeadlessContentMainDelegate::PreBrowserMain() {
+std::optional<int> HeadlessContentMainDelegate::PreBrowserMain() {
   HeadlessBrowser::Options::Builder builder;
 
   if (!HandleCommandLineSwitches(*base::CommandLine::ForCurrentProcess(),
@@ -458,10 +471,15 @@ absl::optional<int> HeadlessContentMainDelegate::PreBrowserMain() {
   }
   browser_->SetOptions(builder.Build());
 
+#if BUILDFLAG(IS_WIN)
+  // Register callback to handle resource exhaustion.
+  base::win::SetOnResourceExhaustedFunction(&OnResourceExhausted);
+#endif
+
 #if BUILDFLAG(IS_MAC)
   PlatformPreBrowserMain();
 #endif
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 #if BUILDFLAG(IS_WIN)
@@ -496,10 +514,10 @@ HeadlessContentMainDelegate::CreateContentUtilityClient() {
   return utility_client_.get();
 }
 
-absl::optional<int> HeadlessContentMainDelegate::PostEarlyInitialization(
+std::optional<int> HeadlessContentMainDelegate::PostEarlyInitialization(
     InvokedIn invoked_in) {
   if (absl::holds_alternative<InvokedInChildProcess>(invoked_in))
-    return absl::nullopt;
+    return std::nullopt;
 
   if (base::FeatureList::IsEnabled(features::kVirtualTime)) {
     // Only pass viz flags into the virtual time mode.
@@ -525,7 +543,7 @@ absl::optional<int> HeadlessContentMainDelegate::PostEarlyInitialization(
       base::CommandLine::ForCurrentProcess()->AppendSwitch(flag);
   }
 
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 }  // namespace headless

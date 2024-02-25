@@ -9,32 +9,101 @@
 #include "base/strings/string_util.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "base/test/scoped_feature_list.h"
+#include "chrome/browser/signin/signin_features.h"
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
+using testing::Eq;
+using testing::IsEmpty;
+using testing::Ne;
+using testing::Not;
+using testing::StartsWith;
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 const char kEpehemeralPrefix[] = "t_";
 
-TEST(DeviceIdHelper, NotEphemeral) {
-  std::string device_id =
-      GenerateSigninScopedDeviceId(false /* for_ephemeral */);
-  // Not empty.
-  EXPECT_FALSE(device_id.empty());
-  // No ephemeral prefix.
-  EXPECT_FALSE(base::StartsWith(device_id, kEpehemeralPrefix,
-                                base::CompareCase::SENSITIVE));
-  // ID is unique.
-  EXPECT_NE(device_id, GenerateSigninScopedDeviceId(false /* for_ephemeral */));
+TEST(DeviceIdHelper, NonEphemeralDeviceIdsAreNotEmpty) {
+  EXPECT_THAT(GenerateSigninScopedDeviceId(/*for_ephemeral=*/false),
+              Not(IsEmpty()));
 }
 
-TEST(DeviceIdHelper, Ephemeral) {
-  std::string device_id =
-      GenerateSigninScopedDeviceId(true /* for_ephemeral */);
-  // Ephemeral prefix.
-  EXPECT_TRUE(base::StartsWith(device_id, kEpehemeralPrefix,
-                               base::CompareCase::SENSITIVE));
-  // Not empty.
-  EXPECT_NE(device_id, kEpehemeralPrefix);
-  // ID is unique.
-  EXPECT_NE(device_id, GenerateSigninScopedDeviceId(true /* for_ephemeral */));
+TEST(DeviceIdHelper, NonEphemeralDeviceIdsDoNotHaveTheEphemeralPrefix) {
+  EXPECT_THAT(GenerateSigninScopedDeviceId(/*for_ephemeral=*/false),
+              Not(StartsWith(kEpehemeralPrefix)));
 }
+
+TEST(DeviceIdHelper,
+     NonEphemeralDeviceIdsAreUniqueIfStableDeviceIdFeatureIsDisabled) {
+  base::test::ScopedFeatureList features;
+  features.InitAndDisableFeature(kStableDeviceId);
+
+  const std::string device_id1 =
+      GenerateSigninScopedDeviceId(/*for_ephemeral=*/false);
+
+  const std::string device_id2 =
+      GenerateSigninScopedDeviceId(/*for_ephemeral=*/false);
+
+  // Newly generated id is not the same as the previous one.
+  EXPECT_THAT(device_id2, Ne(device_id1));
+}
+
+TEST(DeviceIdHelper,
+     NonEphemeralDeviceIdsAreNotUniqueIfStableDeviceIdFeatureIsEnabled) {
+  base::test::ScopedFeatureList features;
+  features.InitAndEnableFeature(kStableDeviceId);
+
+  const std::string device_id1 =
+      GenerateSigninScopedDeviceId(/*for_ephemeral=*/false);
+
+  const std::string device_id2 =
+      GenerateSigninScopedDeviceId(/*for_ephemeral=*/false);
+
+  // Newly generated id is the same as the previous one.
+  EXPECT_THAT(device_id2, Eq(device_id1));
+}
+
+TEST(DeviceIdHelper, EphemeralDeviceIdsAreNotEmpty) {
+  EXPECT_THAT(GenerateSigninScopedDeviceId(/*for_ephemeral=*/true),
+              Not(IsEmpty()));
+}
+
+TEST(DeviceIdHelper, EphemeralDeviceIdsHaveTheEphemeralPrefix) {
+  EXPECT_THAT(GenerateSigninScopedDeviceId(/*for_ephemeral=*/true),
+              StartsWith(kEpehemeralPrefix));
+}
+
+TEST(DeviceIdHelper,
+     EphemeralDeviceIdsAreUniqueIfStableDeviceIdFeatureIsDisabled) {
+  base::test::ScopedFeatureList features;
+  features.InitAndDisableFeature(kStableDeviceId);
+
+  const std::string device_id1 =
+      GenerateSigninScopedDeviceId(/*for_ephemeral=*/true);
+
+  const std::string device_id2 =
+      GenerateSigninScopedDeviceId(/*for_ephemeral=*/true);
+
+  // Newly generated id is not the same as the previous one.
+  EXPECT_THAT(device_id2, Ne(device_id1));
+}
+
+TEST(DeviceIdHelper,
+     EphemeralDeviceIdsAreUniqueIfStableDeviceIdFeatureIsEnabled) {
+  base::test::ScopedFeatureList features;
+  features.InitAndEnableFeature(kStableDeviceId);
+
+  const std::string device_id1 =
+      GenerateSigninScopedDeviceId(/*for_ephemeral=*/true);
+
+  const std::string device_id2 =
+      GenerateSigninScopedDeviceId(/*for_ephemeral=*/true);
+
+  // Newly generated id is not the same as the previous one.
+  EXPECT_THAT(device_id2, Ne(device_id1));
+}
+
 #endif

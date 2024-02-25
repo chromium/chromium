@@ -19,11 +19,10 @@ found in the LICENSE file.
       overflow: hidden;
       width: 380px;
   }
-
   :host-context(.jelly-enabled) .slide-view {
-    /* TODO(b/289793104): Define new size for the carousel/slide. */
     border: none;
     border-radius: 20px;
+    height: 360px;
   }
 </style>
 <oobe-adaptive-dialog id="progressDialog" for-step="progress" id="dialog"
@@ -31,23 +30,23 @@ found in the LICENSE file.
   <iron-icon slot="icon" icon="oobe-32:googleg"></iron-icon>
   <h1 slot="title">[[i18nDynamic(locale, 'lacrosDataMigrationTitle')]]</h1>
   <paper-progress slot="progress" min="0" max="100"
-      value="[[progressValue_]]">
+      value="[[progressValue]]">
   </paper-progress>
   <div slot="subtitle">
     <p role="status" aria-live="polite">
-      [[i18nDynamic(locale, 'lacrosDataMigrationSubtitle', progressValue_)]]
+      [[i18nDynamic(locale, 'lacrosDataMigrationSubtitle', progressValue)]]
     </p>
-    <p hidden="[[!canSkip_]]">
+    <p hidden="[[!canSkip]]">
       [[i18nDynamic(locale, 'lacrosDataMigrationSkipSuggestion')]]
     </p>
   </div>
   <div slot="content" class="flex layout vertical center center-justified"
-       hidden="[[lowBatteryStatus_]]" id="updating">
+       hidden="[[lowBatteryStatus]]" id="updating">
     <iron-icon icon="oobe-illos:update-boot-illo"
         class="illustration-jelly">
     </iron-icon>
   </div>
-  <div hidden="[[!lowBatteryStatus_]]" class="slide-view"
+  <div hidden="[[!lowBatteryStatus]]" class="slide-view"
        slot="content", id="lowBattery">
     <oobe-slide is-warning>
       <iron-icon slot="slide-img" icon="oobe-illos:update-charge-illo"
@@ -64,8 +63,8 @@ found in the LICENSE file.
 
   <!-- Skip button -->
   <div slot="bottom-buttons" class="flex layout horizontal end-justified">
-    <oobe-text-button id="skipButton"  hidden="[[!canSkip_]]"
-        on-click="onSkipButtonClicked_"
+    <oobe-text-button id="skipButton"  hidden="[[!canSkip]]"
+        on-click="onSkipButtonClicked"
         text-key="lacrosDataMigrationSkipButton">
     </oobe-text-button>
   </div>
@@ -77,13 +76,13 @@ found in the LICENSE file.
     [[i18nDynamic(locale, 'lacrosDataMigrationErrorTitle')]]
   </h1>
   <div slot="subtitle" id="lowDiskSpaceError"
-       hidden="[[!requiredSizeStr_]]">
+       hidden="[[!requiredSizeStr]]">
     <p>
       [[i18nDynamic(locale, 'lacrosDataMigrationErrorLowDiskSpace',
-                    requiredSizeStr_)]]
+                    requiredSizeStr)]]
     </p>
   </div>
-  <div slot="subtitle" id="genericError" hidden="[[requiredSizeStr_]]">
+  <div slot="subtitle" id="genericError" hidden="[[requiredSizeStr]]">
     <p>
       [[i18nDynamic(locale, 'lacrosDataMigrationErrorSubtitle')]]
     </p>
@@ -96,13 +95,13 @@ found in the LICENSE file.
   <!-- Cancel button -->
   <div slot="bottom-buttons" class="layout horizontal end-justified">
     <oobe-text-button id="cancelButton"
-                      on-click="onCancelButtonClicked_"
+                      on-click="onCancelButtonClicked"
                       text-key="lacrosDataMigrationErrorCancelButton">
     </oobe-text-button>
     <oobe-text-button id="gotoFilesButton"
-                      on-click="onGotoFilesButtonClicked_"
+                      on-click="onGotoFilesButtonClicked"
                       text-key="lacrosDataMigrationErrorGotoFilesButton"
-                      hidden="[[!showGotoFiles_]]"
+                      hidden="[[!showGotoFiles]]"
                       inverse>
     </oobe-text-button>
   </div>

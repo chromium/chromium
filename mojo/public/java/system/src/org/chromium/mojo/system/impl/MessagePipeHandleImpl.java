@@ -11,9 +11,7 @@ import org.chromium.mojo.system.ResultAnd;
 import java.nio.ByteBuffer;
 import java.util.List;
 
-/**
- * Implementation of {@link MessagePipeHandle}.
- */
+/** Implementation of {@link MessagePipeHandle}. */
 class MessagePipeHandleImpl extends HandleBase implements MessagePipeHandle {
     /**
      * @see HandleBase#HandleBase(CoreImpl, long)

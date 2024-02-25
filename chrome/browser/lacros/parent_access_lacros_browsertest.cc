@@ -17,10 +17,11 @@
 #include "ui/gfx/image/image_unittest_util.h"
 
 namespace {
+
 constexpr char test_url[] = "http://example.com";
 const std::u16string test_child_display_name = u"child display name";
-const gfx::ImageSkia test_favicon =
-    gfx::ImageSkia::CreateFrom1xBitmap(gfx::test::CreateBitmap(1, 2));
+const gfx::ImageSkia test_favicon = gfx::test::CreateImageSkia(1, 2);
+
 }  // namespace
 
 using ParentAccessLacrosBrowserTest = InProcessBrowserTest;

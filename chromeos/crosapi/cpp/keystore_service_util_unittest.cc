@@ -4,8 +4,9 @@
 
 #include "chromeos/crosapi/cpp/keystore_service_util.h"
 
+#include <optional>
+
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace crosapi {
 namespace keystore_service_util {
@@ -15,11 +16,11 @@ TEST(KeystoreServiceUtil, ECDSA) {
   value.Set("name", kWebCryptoEcdsa);
   value.Set("namedCurve", kWebCryptoNamedCurveP256);
 
-  absl::optional<crosapi::mojom::KeystoreSigningAlgorithmPtr> ptr =
+  std::optional<crosapi::mojom::KeystoreSigningAlgorithmPtr> ptr =
       SigningAlgorithmFromDictionary(value);
   ASSERT_TRUE(ptr);
 
-  absl::optional<base::Value::Dict> value2 =
+  std::optional<base::Value::Dict> value2 =
       DictionaryFromSigningAlgorithm(ptr.value());
   ASSERT_TRUE(value2);
 
@@ -37,11 +38,11 @@ TEST(KeystoreServiceUtil, PKCS) {
             base::Value::BlobStorage(std::begin(kDefaultPublicExponent),
                                      std::end(kDefaultPublicExponent)));
 
-  absl::optional<crosapi::mojom::KeystoreSigningAlgorithmPtr> ptr =
+  std::optional<crosapi::mojom::KeystoreSigningAlgorithmPtr> ptr =
       SigningAlgorithmFromDictionary(value);
   ASSERT_TRUE(ptr);
 
-  absl::optional<base::Value::Dict> value2 =
+  std::optional<base::Value::Dict> value2 =
       DictionaryFromSigningAlgorithm(ptr.value());
   ASSERT_TRUE(value2);
 

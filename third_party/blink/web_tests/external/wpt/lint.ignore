@@ -20,6 +20,7 @@ TRAILING WHITESPACE: html/syntax/xmldecl/support/no-version-or-space-or-trailing
 TRAILING WHITESPACE, INDENT TABS, CR AT EOL: *.adts
 TRAILING WHITESPACE, INDENT TABS, CR AT EOL: *.pdf
 TRAILING WHITESPACE, INDENT TABS, CR AT EOL: *.jpg
+TRAILING WHITESPACE, INDENT TABS, CR AT EOL: *.jxl
 TRAILING WHITESPACE, INDENT TABS, CR AT EOL: *.png
 TRAILING WHITESPACE, INDENT TABS, CR AT EOL: *.gif
 TRAILING WHITESPACE, INDENT TABS, CR AT EOL: *.wav
@@ -89,7 +90,7 @@ CR AT EOL: html/syntax/charset/after-head-after-1kb-crlf.html
 CR AT EOL: html/syntax/charset/after-head-in-1kb-crlf.html
 
 # Intentional use of tabs
-INDENT TABS: html/semantics/embedded-content/the-canvas-element/size.attributes.parse.whitespace.html
+INDENT TABS: html/canvas/element/canvas-host/2d.canvas.host.size.attributes.parse.whitespace.html
 INDENT TABS: webvtt/parsing/file-parsing/tests/support/header-tab.vtt
 INDENT TABS: webvtt/parsing/file-parsing/tests/support/whitespace-chars.vtt
 
@@ -157,6 +158,7 @@ SET TIMEOUT: css/selectors/invalidation/dir-pseudo-class-in-has.html
 SET TIMEOUT: css/selectors/invalidation/lang-pseudo-class-in-has-document-element.html
 SET TIMEOUT: css/selectors/invalidation/lang-pseudo-class-in-has-xhtml.xhtml
 SET TIMEOUT: css/selectors/invalidation/lang-pseudo-class-in-has.html
+SET TIMEOUT: custom-elements/scoped-registry/scoped-registry-define-upgrade-criteria.tentative.html
 SET TIMEOUT: encrypted-media/polyfill/chrome-polyfill.js
 SET TIMEOUT: encrypted-media/polyfill/clearkey-polyfill.js
 SET TIMEOUT: encrypted-media/scripts/playback-temporary-events.js
@@ -211,9 +213,40 @@ SET TIMEOUT: navigation-timing/*
 SET TIMEOUT: old-tests/submission/Microsoft/history/history_000.htm
 SET TIMEOUT: paint-timing/resources/subframe-painting.html
 SET TIMEOUT: performance-timeline/resources/navigation-id-detached-frame-page.html
+SET TIMEOUT: png/apng/acTL-plays-one.html
+SET TIMEOUT: png/apng/acTL-plays-two.html
+SET TIMEOUT: png/apng/fdAT-split-basic.html
+SET TIMEOUT: png/apng/fdAT-split-zero-length.html
+SET TIMEOUT: png/apng/fcTL-acTL-ordering.html
+SET TIMEOUT: png/apng/fcTL-blend-over-repeatedly.html
+SET TIMEOUT: png/apng/fcTL-blend-over-solid.html
+SET TIMEOUT: png/apng/fcTL-blend-source-nearly-transparent.html
+SET TIMEOUT: png/apng/fcTL-blend-source-solid.html
+SET TIMEOUT: png/apng/fcTL-blend-source-transparent.html
+SET TIMEOUT: png/apng/fcTL-dispose-background-final.html
+SET TIMEOUT: png/apng/fcTL-dispose-background.html
+SET TIMEOUT: png/apng/fcTL-dispose-before-region-background.html
+SET TIMEOUT: png/apng/fcTL-dispose-in-region-background.html
+SET TIMEOUT: png/apng/fcTL-dispose-in-region-none.html
+SET TIMEOUT: png/apng/fcTL-dispose-in-region-previous.html
+SET TIMEOUT: png/apng/fcTL-dispose-none.html
+SET TIMEOUT: png/apng/fcTL-dispose-previous-final.html
+SET TIMEOUT: png/apng/fcTL-dispose-previous-first.html
+SET TIMEOUT: png/apng/fcTL-dispose-previous.html
+SET TIMEOUT: png/apng/fdAT-16bit.html
+SET TIMEOUT: png/apng/fDAT-inherits-cICP.html
+SET TIMEOUT: png/apng/fdAT-1bit-PLTE-tRNS.html
+SET TIMEOUT: png/apng/fdAT-1bit-PLTE.html
+SET TIMEOUT: png/apng/fdAT-2bit-PLTE-tRNS.html
+SET TIMEOUT: png/apng/fdAT-8bit-gray-alpha.html
+SET TIMEOUT: png/apng/fdAT-8bit-gray.html
+SET TIMEOUT: png/apng/first-frame-IDAT.html
+SET TIMEOUT: png/apng/first-frame-not-IDAT.html
+SET TIMEOUT: png/apng/tester-check.html
 SET TIMEOUT: portals/resources/portals-adopt-predecessor-portal.html
 SET TIMEOUT: preload/single-download-preload.html
 SET TIMEOUT: preload/resources/slow-exec.js
+SET TIMEOUT: print/crashtests/reload-crash.html
 SET TIMEOUT: resize-observer/resources/iframe.html
 SET TIMEOUT: resource-timing/resources/nested-contexts.js
 SET TIMEOUT: reporting/resources/first-csp-report.https.sub.html
@@ -241,8 +274,8 @@ SET TIMEOUT: service-workers/service-worker/resources/resource-timing-worker.js
 SET TIMEOUT: shadow-dom/Document-prototype-currentScript.html
 SET TIMEOUT: shadow-dom/scroll-to-the-fragment-in-shadow-tree.html
 SET TIMEOUT: shadow-dom/slotchange-event.html
-SET TIMEOUT: trusted-types/block-string-assignment-to-DOMWindowTimers-setTimeout-setInterval.tentative.html
-SET TIMEOUT: trusted-types/DOMWindowTimers-setTimeout-setInterval.tentative.html
+SET TIMEOUT: trusted-types/block-string-assignment-to-DOMWindowTimers-setTimeout-setInterval.html
+SET TIMEOUT: trusted-types/DOMWindowTimers-setTimeout-setInterval.html
 SET TIMEOUT: pending-beacon/resources/pending_beacon-helper.js
 SET TIMEOUT: user-timing/*
 SET TIMEOUT: web-animations/crashtests/reparent-animating-element-002.html
@@ -262,6 +295,7 @@ SET TIMEOUT: xhr/resources/init.htm
 SET TIMEOUT: xhr/resources/xmlhttprequest-timeout.js
 SET TIMEOUT: fenced-frame/resolve-to-config-promise.https.html
 SET TIMEOUT: credential-management/support/fedcm-iframe.html
+SET TIMEOUT: credential-management/support/fedcm/disconnect-iframe.html
 
 # generate_tests implementation and sample usage
 GENERATE_TESTS: resources/test/tests/functional/generate-callback.html
@@ -308,8 +342,6 @@ GENERATE_TESTS: dom/ranges/Range-selectNode.html
 GENERATE_TESTS: dom/ranges/Range-set.html
 GENERATE_TESTS: dom/traversal/TreeWalker.html
 GENERATE_TESTS: domparsing/createContextualFragment.html
-GENERATE_TESTS: domxpath/001.html
-GENERATE_TESTS: domxpath/002.html
 GENERATE_TESTS: mediacapture-image/MediaStreamTrack-applyConstraints-reject.https.html
 GENERATE_TESTS: mediacapture-image/MediaStreamTrack-getCapabilities.https.html
 GENERATE_TESTS: mediacapture-image/MediaStreamTrack-getConstraints.https.html
@@ -328,6 +360,7 @@ GENERATE_TESTS: mediacapture-fromelement/creation.html
 GENERATE_TESTS: mediacapture-fromelement/ended.html
 GENERATE_TESTS: html/canvas/offscreen/manual/filter/offscreencanvas.filter.html
 GENERATE_TESTS: pointerevents/pointerevent_constructor.html
+GENERATE_TESTS: pointerevents/pointerevent_constructor.https.html
 GENERATE_TESTS: pointerevents/extension/pointerevent_constructor.html
 GENERATE_TESTS: selection/collapse.js
 GENERATE_TESTS: shadow-dom/leaktests/html-collection.html
@@ -355,7 +388,6 @@ SET TIMEOUT: html/cross-origin-opener-policy/navigate-top-to-aboutblank.https.ht
 SET TIMEOUT: html/dom/documents/dom-tree-accessors/Document.currentScript.html
 SET TIMEOUT: html/webappapis/dynamic-markup-insertion/opening-the-input-stream/crbug-583445-regression.window.js
 SET TIMEOUT: html/webappapis/timers/*
-SET TIMEOUT: orientation-event/resources/orientation-event-helpers.js
 SET TIMEOUT: portals/history/resources/portal-harness.js
 SET TIMEOUT: requestidlecallback/deadline-after-expired-timer.html
 SET TIMEOUT: resources/*
@@ -363,6 +395,7 @@ SET TIMEOUT: scheduler/tentative/current-task-signal-async-abort.any.js
 SET TIMEOUT: scheduler/tentative/current-task-signal-async-priority.any.js
 SET TIMEOUT: speculation-rules/prerender/resources/activation-start.html
 SET TIMEOUT: speculation-rules/prerender/resources/prerender-response-code.html
+SET TIMEOUT: speculation-rules/prerender/resources/prerender-while-prerender-outer.html
 SET TIMEOUT: speculation-rules/prerender/resources/deferred-promise-utils.js
 SET TIMEOUT: speculation-rules/prerender/resources/session-history-harness.js
 SET TIMEOUT: speculation-rules/prerender/resources/utils.js
@@ -371,6 +404,7 @@ SET TIMEOUT: speculation-rules/prerender/resources/media-autoplay-attribute.html
 SET TIMEOUT: speculation-rules/prerender/resources/media-play.html
 SET TIMEOUT: html/browsers/browsing-the-web/back-forward-cache/timers.html
 SET TIMEOUT: dom/abort/crashtests/timeout-close.html
+SET TIMEOUT: storage-access-api/storage-access-beyond-cookies.locks.tentative.sub.https.window.js
 
 # setTimeout use in reftests
 SET TIMEOUT: acid/acid3/test.html
@@ -436,13 +470,6 @@ TRAILING WHITESPACE: css/css-fonts/support/fonts/gsubtest-lookup3.ufo/features.f
 
 SET TIMEOUT: css/compositing/mix-blend-mode/mix-blend-mode-parent-with-3D-transform-and-transition.html
 SET TIMEOUT: css/compositing/mix-blend-mode/mix-blend-mode-sibling-with-3D-transform-and-transition.html
-SET TIMEOUT: css/css-backgrounds/color-mix-currentcolor-background-repaint-parent.html
-SET TIMEOUT: css/css-backgrounds/color-mix-currentcolor-background-repaint.html
-SET TIMEOUT: css/css-backgrounds/color-mix-currentcolor-border-repaint-parent.html
-SET TIMEOUT: css/css-backgrounds/color-mix-currentcolor-border-repaint.html
-SET TIMEOUT: css/css-backgrounds/color-mix-currentcolor-outline-repaint-parent.html
-SET TIMEOUT: css/css-backgrounds/color-mix-currentcolor-outline-repaint.html
-SET TIMEOUT: css/css-backgrounds/currentcolor-border-repaint-parent.html
 SET TIMEOUT: css/css-transitions/events-007.html
 SET TIMEOUT: css/css-transitions/support/generalParallelTest.js
 SET TIMEOUT: css/css-transitions/support/runParallelAsyncHarness.js
@@ -494,7 +521,6 @@ SET TIMEOUT: css/CSS2/tables/tables-102.xht
 SET TIMEOUT: css/mediaqueries/min-width-tables-001.html
 SET TIMEOUT: css/css-text/crashtests/rendering-rtl-bidi-override-crash.html
 SET TIMEOUT: css/css-backgrounds/color-mix-currentcolor-border-repaint-parent.html
-SET TIMEOUT: svg/painting/color-mix-currentcolor-fill-stroke-repaint.html
 SET TIMEOUT: svg/painting/currentcolor-fill-stroke-repaint.html
 SET TIMEOUT: resource-timing/resources/run-async-tasks-promise.js
 
@@ -553,6 +579,7 @@ MISSING-LINK: css/cssom-view/scrollTop-display-change.html
 
 # TODO https://github.com/web-platform-tests/wpt/issues/5770
 MISSING-LINK: css/css-highlight-api/idlharness.window.js
+MISSING-LINK: css/css-highlight-api/historical.window.js
 MISSING-LINK: css/geometry/*.worker.js
 MISSING-LINK: css/geometry/*.any.js
 MISSING-LINK: css/filter-effects/*.any.js
@@ -560,7 +587,6 @@ MISSING-LINK: css/filter-effects/*.any.js
 # Tests that use WebKit/Blink testing APIs
 LAYOUTTESTS APIS: import-maps/data-driven/resources/test-helper-iframe.js
 LAYOUTTESTS APIS: resources/chromium/enable-hyperlink-auditing.js
-LAYOUTTESTS APIS: resources/chromium/generic_sensor_mocks.js
 LAYOUTTESTS APIS: resources/chromium/webxr-test.js
 LAYOUTTESTS APIS: webxr/resources/webxr_util.js
 
@@ -587,7 +613,6 @@ MISSING DEPENDENCY: resources/chromium/web-bluetooth-test.js
 MISSING DEPENDENCY: resources/chromium/webusb-test.js
 MISSING DEPENDENCY: resources/chromium/fake-serial.js
 MISSING DEPENDENCY: resources/chromium/fake-hid.js
-MISSING DEPENDENCY: resources/chromium/generic_sensor_mocks.js
 MISSING DEPENDENCY: resources/chromium/mock-battery-monitor.js
 MISSING DEPENDENCY: resources/chromium/mock-barcodedetection.js
 MISSING DEPENDENCY: resources/chromium/mock-direct-sockets.js
@@ -621,6 +646,7 @@ AHEM SYSTEM FONT: css/css-fonts/font-size-adjust-metrics-override.html
 AHEM SYSTEM FONT: css/css-fonts/font-size-adjust-metrics-override-ref.html
 AHEM SYSTEM FONT: css/css-fonts/line-gap-override.html
 AHEM SYSTEM FONT: css/css-fonts/parsing/font-size-adjust-computed.html
+AHEM SYSTEM FONT: css/css-fonts/size-adjust-unicode-range-system-fallback.html
 AHEM SYSTEM FONT: html/dom/render-blocking/remove-attr-unblocks-rendering.optional.html
 AHEM SYSTEM FONT: html/dom/render-blocking/remove-element-unblocks-rendering.optional.html
 
@@ -705,3 +731,18 @@ SET TIMEOUT: editing/crashtests/outdent-across-svg-boundary.html
 SET TIMEOUT: editing/crashtests/textarea-will-be-blurred-by-focus-event-listener.html
 SET TIMEOUT: mathml/crashtests/mozilla/*
 PARSE-FAILED: mathml/crashtests/mozilla/289180-1.xml
+
+# Invalid HTML syntax /> on non-void elements
+HTML INVALID SYNTAX: acid/*
+HTML INVALID SYNTAX: conformance-checkers/*
+HTML INVALID SYNTAX: css/css-scoping/shadow-cascade-order-001.html
+HTML INVALID SYNTAX: dom/nodes/Document-createElement-namespace.html
+HTML INVALID SYNTAX: dom/nodes/Node-lookupNamespaceURI.html
+HTML INVALID SYNTAX: dom/nodes/Node-normalize.html
+HTML INVALID SYNTAX: domparsing/DOMParser-parseFromString-xml-doctype.html
+HTML INVALID SYNTAX: domparsing/DOMParser-parseFromString-xml-parsererror.html
+HTML INVALID SYNTAX: domparsing/XMLSerializer-serializeToString.html
+HTML INVALID SYNTAX: html/canvas/element/manual/unclosed-canvas-4.htm
+HTML INVALID SYNTAX: html/syntax/parsing/unclosed-svg-script.html
+HTML INVALID SYNTAX: quirks/percentage-height-calculation.html
+HTML INVALID SYNTAX: trusted-types/TrustedTypePolicyFactory-getAttributeType-namespace.html

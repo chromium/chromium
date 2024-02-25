@@ -82,7 +82,7 @@ IN_PROC_BROWSER_TEST_F(NonSandboxedNetworkServiceBrowserTest,
   ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
   base::RunLoop run_loop;
 
-  absl::optional<bool> result;
+  std::optional<bool> result;
   network_service_test().set_disconnect_handler(run_loop.QuitClosure());
   const base::FilePath path =
       temp_dir.GetPath().Append(FILE_PATH_LITERAL("blank.jpg"));
@@ -93,7 +93,7 @@ IN_PROC_BROWSER_TEST_F(NonSandboxedNetworkServiceBrowserTest,
                                    }));
   run_loop.Run();
 
-  EXPECT_EQ(result, absl::make_optional(true));
+  EXPECT_EQ(result, std::make_optional(true));
 }
 
 #endif
@@ -254,7 +254,7 @@ class SandboxedHttpCacheBrowserTest : public ContentBrowserTest {
 IN_PROC_BROWSER_TEST_F(SandboxedHttpCacheBrowserTest, OpeningFileIsProhibited) {
   base::RunLoop run_loop;
 
-  absl::optional<bool> result;
+  std::optional<bool> result;
   network_service_test().set_disconnect_handler(run_loop.QuitClosure());
   const base::FilePath path =
       GetTestDataFilePath().Append(FILE_PATH_LITERAL("blank.jpg"));
@@ -265,7 +265,7 @@ IN_PROC_BROWSER_TEST_F(SandboxedHttpCacheBrowserTest, OpeningFileIsProhibited) {
                                    }));
   run_loop.Run();
 
-  EXPECT_EQ(result, absl::make_optional(false));
+  EXPECT_EQ(result, std::make_optional(false));
 }
 
 IN_PROC_BROWSER_TEST_F(SandboxedHttpCacheBrowserTest,

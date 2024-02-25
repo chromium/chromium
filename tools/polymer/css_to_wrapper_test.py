@@ -31,14 +31,16 @@ class CssToWrapperTest(unittest.TestCase):
                 wrapper_file,
                 wrapper_file_expected,
                 minify=False,
-                use_js=False):
+                use_js=False,
+                extra_css_files=[]):
     assert not self._out_folder
     self._out_folder = tempfile.mkdtemp(dir=_HERE_DIR)
+
     args = [
         '--in_folder',
         os.path.join(_HERE_DIR, 'tests'), '--out_folder', self._out_folder,
         '--in_files', css_file
-    ]
+    ] + extra_css_files
 
     if minify:
       args.append('--minify')
@@ -55,37 +57,70 @@ class CssToWrapperTest(unittest.TestCase):
 
     self.assertMultiLineEqual(str(expected_wrapper), str(actual_wrapper))
 
-  def testCssToWrapperStyle(self):
+  def testCssToWrapperStylePolymer(self):
     self._run_test('css_to_wrapper/foo_style.css',
                    'css_to_wrapper/foo_style.css.ts',
-                   'css_to_wrapper/foo_style_expected.css.ts')
+                   'css_to_wrapper/expected/foo_style.css.ts')
+
+  def testCssToWrapperStyleLit(self):
+    self._run_test('css_to_wrapper/foo_style_lit_only.css',
+                   'css_to_wrapper/foo_style_lit_only.css.ts',
+                   'css_to_wrapper/expected/foo_style_lit_only.css.ts')
+
+  # Test case where a Lit style file is generated from the equivalent Polymer
+  # file.
+  def testCssToWrapperStyleLitCopy(self):
+    self._run_test(
+        'css_to_wrapper/foo_style_lit.css',
+        'css_to_wrapper/foo_style_lit.css.ts',
+        'css_to_wrapper/expected/foo_style_lit.css.ts',
+        # Need to pass the Polymer file as well, to satisfy an
+        # assertion in css_to_wrapper.py.
+        extra_css_files=['css_to_wrapper/foo_style.css'])
 
   def testCssToWrapperStyleNoIncludes(self):
     self._run_test('css_to_wrapper/foo_no_includes_style.css',
                    'css_to_wrapper/foo_no_includes_style.css.ts',
-                   'css_to_wrapper/foo_no_includes_style_expected.css.ts')
+                   'css_to_wrapper/expected/foo_no_includes_style.css.ts')
 
-  def testCssToWrapperVars(self):
+  def testCssToWrapperVarsPolymer(self):
     self._run_test('css_to_wrapper/foo_vars.css',
                    'css_to_wrapper/foo_vars.css.ts',
-                   'css_to_wrapper/foo_vars_expected.css.ts')
+                   'css_to_wrapper/expected/foo_vars.css.ts')
+
+  def testCssToWrapperVarsLit(self):
+    self._run_test('css_to_wrapper/foo_vars_lit_only.css',
+                   'css_to_wrapper/foo_vars_lit_only.css.ts',
+                   'css_to_wrapper/expected/foo_vars_lit_only.css.ts')
 
   def testCssToWrapperMinify(self):
     self._run_test('css_to_wrapper/foo_style.css',
                    'css_to_wrapper/foo_style.css.ts',
-                   'css_to_wrapper/foo_style_expected.min.css.ts',
+                   'css_to_wrapper/expected/foo_style.min.css.ts',
                    minify=True)
+
+  # Test case where a Lit style file is generated from the equivalent Polymer
+  # file and minification is turned on.
+  def testCssToWrapperStyleLitCopyMinify(self):
+    self._run_test(
+        'css_to_wrapper/foo_style_lit.css',
+        'css_to_wrapper/foo_style_lit.css.ts',
+        'css_to_wrapper/expected/foo_style_lit.min.css.ts',
+        minify=True,
+        # Need to pass the Polymer file as well, to satisfy an
+        # assertion in css_to_wrapper.py.
+        extra_css_files=['css_to_wrapper/foo_style.css'])
 
   def testCssToWrapperUseJs(self):
     self._run_test('css_to_wrapper/foo_style.css',
                    'css_to_wrapper/foo_style.css.js',
-                   'css_to_wrapper/foo_style_expected.css.ts',
+                   'css_to_wrapper/expected/foo_style.css.ts',
                    use_js=True)
 
   def testCssToWrapperSchemeRelative(self):
     self._run_test('css_to_wrapper/foo_relative_style.css',
                    'css_to_wrapper/foo_relative_style.css.ts',
-                   'css_to_wrapper/foo_relative_style_expected.css.ts')
+                   'css_to_wrapper/expected/foo_relative_style.css.ts')
 
 
 if __name__ == '__main__':

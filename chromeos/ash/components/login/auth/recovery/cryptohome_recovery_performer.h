@@ -53,26 +53,25 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_LOGIN_AUTH)
 
  private:
   // Called with the reply when fetching the recovery epoch value via network.
-  void OnNetworkFetchEpoch(
-      absl::optional<CryptohomeRecoveryEpochResponse> epoch,
-      CryptohomeRecoveryServerStatusCode);
+  void OnNetworkFetchEpoch(std::optional<CryptohomeRecoveryEpochResponse> epoch,
+                           CryptohomeRecoveryServerStatusCode);
 
   // Called with the reply to a call of GetRecoveryRequest.
   void OnGetRecoveryRequest(CryptohomeRecoveryEpochResponse epoch,
-                            absl::optional<RecoveryRequest> recovery_request,
+                            std::optional<RecoveryRequest> recovery_request,
                             std::unique_ptr<UserContext> context,
-                            absl::optional<AuthenticationError> error);
+                            std::optional<AuthenticationError> error);
 
   // Called with the reply when fetching the recovery secret from the recovery
   // service via network.
   void OnFetchRecoveryServiceResponse(
       CryptohomeRecoveryEpochResponse epoch,
-      absl::optional<CryptohomeRecoveryResponse> response,
+      std::optional<CryptohomeRecoveryResponse> response,
       CryptohomeRecoveryServerStatusCode);
 
   // Called with the response to the final call to AuthenticateWithRecovery.
   void OnAuthenticateWithRecovery(std::unique_ptr<UserContext> context,
-                                  absl::optional<AuthenticationError> error);
+                                  std::optional<AuthenticationError> error);
 
   // Record the result of the recovery and time taken.
   void RecordRecoveryResult(

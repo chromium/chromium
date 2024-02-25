@@ -5,9 +5,9 @@
 #ifndef REMOTING_HOST_CHROMEOS_REMOTING_SERVICE_H_
 #define REMOTING_HOST_CHROMEOS_REMOTING_SERVICE_H_
 
+#include <optional>
 #include "base/functional/callback_forward.h"
 #include "remoting/host/chromeos/session_id.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base {
 class FilePath;
@@ -24,7 +24,7 @@ class RemoteSupportHostAsh;
 // which is bound to the Main/UI sequence in production code.
 class RemotingService {
  public:
-  using SessionIdCallback = base::OnceCallback<void(absl::optional<SessionId>)>;
+  using SessionIdCallback = base::OnceCallback<void(std::optional<SessionId>)>;
 
   static RemotingService& Get();
   virtual ~RemotingService() = default;
@@ -33,7 +33,7 @@ class RemotingService {
   virtual RemoteSupportHostAsh& GetSupportHost() = 0;
 
   // Allows the caller to query if information about a reconnectable session is
-  // stored. Invokes `callback` with the id of this session (or absl::nullopt if
+  // stored. Invokes `callback` with the id of this session (or std::nullopt if
   // there is no reconnectable session).
   virtual void GetReconnectableEnterpriseSessionId(
       SessionIdCallback callback) = 0;

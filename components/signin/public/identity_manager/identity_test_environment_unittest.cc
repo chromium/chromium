@@ -56,7 +56,7 @@ TEST_F(IdentityTestEnvironmentTest,
   fetcher.reset();
 }
 
-// TODO(https://crbug.com/1462552): Delete this test once `ConsentLevel::kSync`
+// TODO(https://crbug.com/40066949): Delete this test once `ConsentLevel::kSync`
 // is deleted.
 TEST_F(IdentityTestEnvironmentTest,
        IdentityTestEnvironmentSetPrimaryAccountWithSyncConsent) {
@@ -90,12 +90,12 @@ TEST_F(IdentityTestEnvironmentTest,
                                                ConsentLevel::kSignin);
   EXPECT_TRUE(identity_manager->HasPrimaryAccount(ConsentLevel::kSignin));
 
-  // TODO(https://crbug.com/1462552): Remove once `ConsentLevel::kSync` is
+  // TODO(https://crbug.com/40066949): Remove once `ConsentLevel::kSync` is
   // deleted.
   EXPECT_FALSE(identity_manager->HasPrimaryAccount(ConsentLevel::kSync));
 }
 
-// TODO(https://crbug.com/1462552): Delete this test once `ConsentLevel::kSync`
+// TODO(https://crbug.com/40066949): Delete this test once `ConsentLevel::kSync`
 // is deleted.
 TEST_F(IdentityTestEnvironmentTest,
        IdentityTestEnvironmentMakePrimaryAccountAvailableWithSyncConsent) {
@@ -125,7 +125,7 @@ TEST_F(IdentityTestEnvironmentTest,
                                                          ConsentLevel::kSignin);
   EXPECT_TRUE(identity_manager->HasPrimaryAccount(ConsentLevel::kSignin));
 
-  // TODO(https://crbug.com/1462552): Remove once `ConsentLevel::kSync` is
+  // TODO(https://crbug.com/40066949): Remove once `ConsentLevel::kSync` is
   // deleted.
   EXPECT_FALSE(identity_manager->HasPrimaryAccount(ConsentLevel::kSync));
 }

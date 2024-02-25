@@ -8,9 +8,9 @@
 #include <stddef.h>
 #include <stdint.h>
 
+#include <bit>
 #include <memory>
 
-#include "base/bits.h"
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
 #include "base/trace_event/memory_dump_provider.h"
@@ -138,7 +138,7 @@ class GPU_EXPORT MappedMemoryManager {
   uint32_t chunk_size_multiple() const { return chunk_size_multiple_; }
 
   void set_chunk_size_multiple(uint32_t multiple) {
-    DCHECK(base::bits::IsPowerOfTwo(multiple));
+    DCHECK(std::has_single_bit(multiple));
     DCHECK_GE(multiple, FencedAllocator::kAllocAlignment);
     chunk_size_multiple_ = multiple;
   }

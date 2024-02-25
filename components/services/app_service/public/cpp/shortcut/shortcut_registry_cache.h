@@ -70,6 +70,12 @@ class COMPONENT_EXPORT(SHORTCUT) ShortcutRegistryCache {
   // store this data and always query a fresh one when using it.
   std::vector<ShortcutView> GetAllShortcuts();
 
+  // Returns the host app id for shortcut represented by 'id'.
+  std::string GetShortcutHostAppId(const ShortcutId& id);
+
+  // Returns the local id for shortcut represented by 'id'.
+  std::string GetShortcutLocalId(const ShortcutId& id);
+
  private:
   // Maps from shortcut_id to the latest state: the "sum" of all previous
   // deltas.

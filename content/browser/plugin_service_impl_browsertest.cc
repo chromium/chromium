@@ -5,11 +5,13 @@
 #include "content/browser/plugin_service_impl.h"
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <utility>
 
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
+#include "base/run_loop.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
@@ -20,7 +22,6 @@
 #include "content/public/test/content_browser_test.h"
 #include "ppapi/buildflags/buildflags.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 #if BUILDFLAG(ENABLE_PPAPI)
 #include "content/browser/ppapi_plugin_process_host.h"
@@ -85,7 +86,7 @@ class PluginServiceImplBrowserTest : public ContentBrowserTest {
   }
 
 #if BUILDFLAG(ENABLE_PPAPI)
-  void OpenChannelToFakePlugin(const absl::optional<url::Origin>& origin,
+  void OpenChannelToFakePlugin(const std::optional<url::Origin>& origin,
                                TestPluginClient* client) {
     base::RunLoop run_loop;
     client->SetRunLoop(&run_loop);
@@ -139,11 +140,11 @@ IN_PROC_BROWSER_TEST_F(PluginServiceImplBrowserTest, OriginLock) {
 
   // Empty origins all go to same pid.
   TestPluginClient client3a;
-  OpenChannelToFakePlugin(absl::nullopt, &client3a);
+  OpenChannelToFakePlugin(std::nullopt, &client3a);
   EXPECT_NE(base::kNullProcessId, client3a.plugin_pid());
 
   TestPluginClient client3b;
-  OpenChannelToFakePlugin(absl::nullopt, &client3b);
+  OpenChannelToFakePlugin(std::nullopt, &client3b);
   EXPECT_NE(base::kNullProcessId, client3b.plugin_pid());
 
   // Actual test: how empty origins got lumped into pids.
@@ -160,7 +161,7 @@ IN_PROC_BROWSER_TEST_F(PluginServiceImplBrowserTest, NoForkBombs) {
   PluginServiceImpl* service = PluginServiceImpl::GetInstance();
   service->SetMaxPpapiProcessesPerProfileForTesting(4);
 
-  const char* kFakeURLTemplate = "https://foo.fake%d.com/";
+  static constexpr char kFakeURLTemplate[] = "https://foo.fake%d.com/";
   TestPluginClient client;
   for (int i = 0; i < 4; ++i) {
     std::string url = base::StringPrintf(kFakeURLTemplate, i);
@@ -178,7 +179,7 @@ IN_PROC_BROWSER_TEST_F(PluginServiceImplBrowserTest, NoForkBombs) {
   }
 
   // But there's always room for the empty origin case.
-  OpenChannelToFakePlugin(absl::nullopt, &client);
+  OpenChannelToFakePlugin(std::nullopt, &client);
   EXPECT_NE(base::kNullProcessId, client.plugin_pid());
 
   // And re-using existing processes is always possible.

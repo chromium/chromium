@@ -49,6 +49,10 @@ void AppListBubbleSearchPage::VisibilityChanged(View* starting_from,
   auto* notifier_controller = search_view_->search_notifier_controller();
   if (starting_from == this && notifier_controller) {
     notifier_controller->UpdateNotifierVisibility(is_visible);
+    if (search_view_->search_notifier_view() &&
+        !notifier_controller->ShouldShowPrivacyNotice()) {
+      search_view_->RemoveSearchNotifierView();
+    }
   }
 }
 
@@ -123,7 +127,7 @@ ui::Layer* AppListBubbleSearchPage::GetPageAnimationLayerForTest() {
   return search_view_->GetPageAnimationLayer();
 }
 
-BEGIN_METADATA(AppListBubbleSearchPage, views::View)
+BEGIN_METADATA(AppListBubbleSearchPage)
 END_METADATA
 
 }  // namespace ash

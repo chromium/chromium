@@ -22,10 +22,12 @@
 #include "third_party/skia/include/core/SkColorSpace.h"
 #include "third_party/skia/include/gpu/MutableTextureState.h"
 #include "third_party/skia/include/gpu/ganesh/SkSurfaceGanesh.h"
+#include "third_party/skia/include/gpu/ganesh/vk/GrVkBackendSurface.h"
 #include "third_party/skia/include/private/chromium/GrPromiseImageTexture.h"
 #include "ui/gl/egl_util.h"
 #include "ui/gl/gl_context.h"
 #include "ui/gl/scoped_egl_image.h"
+#include "ui/gl/scoped_restore_texture.h"
 
 #define EGL_TEXTURE_INTERNAL_FORMAT_ANGLE 0x345D
 #define EGL_VULKAN_IMAGE_ANGLE 0x34D3
@@ -220,7 +222,8 @@ AngleVulkanImageBacking::AngleVulkanImageBacking(
     const gfx::ColorSpace& color_space,
     GrSurfaceOrigin surface_origin,
     SkAlphaType alpha_type,
-    uint32_t usage)
+    uint32_t usage,
+    std::string debug_label)
     : ClearTrackingSharedImageBacking(mailbox,
                                       format,
                                       size,
@@ -228,6 +231,7 @@ AngleVulkanImageBacking::AngleVulkanImageBacking(
                                       surface_origin,
                                       alpha_type,
                                       usage,
+                                      std::move(debug_label),
                                       format.EstimatedSizeInBytes(size),
                                       /*is_thread_safe=*/false),
       context_state_(context_state) {}
@@ -277,9 +281,11 @@ bool AngleVulkanImageBacking::Initialize(
   auto* device_queue = context_state_->vk_context_provider()->GetDeviceQueue();
 
   constexpr auto kUsageNeedsColorAttachment =
-      SHARED_IMAGE_USAGE_GLES2 | SHARED_IMAGE_USAGE_GLES2_FRAMEBUFFER_HINT |
-      SHARED_IMAGE_USAGE_RASTER | SHARED_IMAGE_USAGE_OOP_RASTERIZATION |
-      SHARED_IMAGE_USAGE_WEBGPU;
+      SHARED_IMAGE_USAGE_GLES2_READ | SHARED_IMAGE_USAGE_GLES2_WRITE |
+      SHARED_IMAGE_USAGE_GLES2_FRAMEBUFFER_HINT |
+      SHARED_IMAGE_USAGE_RASTER_READ | SHARED_IMAGE_USAGE_RASTER_WRITE |
+      SHARED_IMAGE_USAGE_OOP_RASTERIZATION | SHARED_IMAGE_USAGE_WEBGPU_READ |
+      SHARED_IMAGE_USAGE_WEBGPU_WRITE;
   VkImageUsageFlags vk_usage = VK_IMAGE_USAGE_SAMPLED_BIT |
                                VK_IMAGE_USAGE_TRANSFER_SRC_BIT |
                                VK_IMAGE_USAGE_TRANSFER_DST_BIT;
@@ -292,6 +298,8 @@ bool AngleVulkanImageBacking::Initialize(
     }
   }
 
+  // External sampling is supported only when initializing from GMB.
+  CHECK(!format().PrefersExternalSampler());
   int num_planes = format().NumberOfPlanes();
   vk_textures_.reserve(num_planes);
   for (int plane = 0; plane < num_planes; ++plane) {
@@ -306,7 +314,7 @@ bool AngleVulkanImageBacking::Initialize(
       return false;
     }
 
-    vk_textures_.emplace_back(std::move(vulkan_image));
+    vk_textures_.emplace_back(std::move(vulkan_image), color_space());
   }
 
   if (!data.empty()) {
@@ -326,7 +334,7 @@ bool AngleVulkanImageBacking::Initialize(
 
 bool AngleVulkanImageBacking::InitializeWihGMB(
     gfx::GpuMemoryBufferHandle handle) {
-  DCHECK(format().is_single_plane());
+  DCHECK(format().is_single_plane() || format().PrefersExternalSampler());
 
   auto* vulkan_implementation =
       context_state_->vk_context_provider()->GetVulkanImplementation();
@@ -334,7 +342,9 @@ bool AngleVulkanImageBacking::InitializeWihGMB(
   DCHECK(vulkan_implementation->CanImportGpuMemoryBuffer(device_queue,
                                                          handle.type));
 
-  VkFormat vk_format = ToVkFormat(format(), /*plane_index=*/0);
+  VkFormat vk_format = format().PrefersExternalSampler()
+                           ? ToVkFormatExternalSampler(format())
+                           : ToVkFormatSinglePlanar(format());
   auto vulkan_image = vulkan_implementation->CreateImageFromGpuMemoryHandle(
       device_queue, std::move(handle), size(), vk_format, color_space());
 
@@ -342,7 +352,7 @@ bool AngleVulkanImageBacking::InitializeWihGMB(
     return false;
   }
 
-  vk_textures_.emplace_back(std::move(vulkan_image));
+  vk_textures_.emplace_back(std::move(vulkan_image), color_space());
 
   SetCleared();
 
@@ -542,7 +552,8 @@ void AngleVulkanImageBacking::PrepareBackendTexture() {
 
   for (size_t i = 0; i < vk_textures_.size(); ++i) {
     auto vk_layout = GLImageLayoutToVkImageLayout(gl_layouts_[i]);
-    vk_textures_[i].backend_texture.setVkImageLayout(vk_layout);
+    GrBackendTextures::SetVkImageLayout(&vk_textures_[i].backend_texture,
+                                        vk_layout);
   }
 }
 
@@ -638,6 +649,15 @@ void AngleVulkanImageBacking::EndAccessSkia() {
 bool AngleVulkanImageBacking::InitializePassthroughTexture() {
   DCHECK(gl_textures_.empty());
 
+  // It is not possible to import into GL when using external sampling.
+  // Short-circuit out if this is requested (it should not be requested in
+  // production, but might be in fuzzing flows).
+  if (format().PrefersExternalSampler()) {
+    LOG(ERROR)
+        << "Importing textures with external sampling into GL is not possible";
+    return false;
+  }
+
   int num_planes = format().NumberOfPlanes();
   gl_textures_.reserve(num_planes);
   for (int plane = 0; plane < num_planes; ++plane) {
@@ -645,7 +665,7 @@ bool AngleVulkanImageBacking::InitializePassthroughTexture() {
     DCHECK(vulkan_image);
 
     auto format_desc =
-        ToGLFormatDesc(format(), plane, /*use_angle_rgbx_format=*/false);
+        context_state_->GetGLFormatCaps().ToGLFormatDesc(format(), plane);
     auto egl_image =
         CreateEGLImage(vulkan_image->image(), &vulkan_image->create_info(),
                        format_desc.image_internal_format);
@@ -663,7 +683,7 @@ bool AngleVulkanImageBacking::InitializePassthroughTexture() {
     passthrough_texture->SetEstimatedSize(GetEstimatedSize());
 
     gl::GLApi* api = gl::g_current_gl_context;
-    ScopedRestoreTexture scoped_restore(api, GL_TEXTURE_2D);
+    gl::ScopedRestoreTexture scoped_restore(api, GL_TEXTURE_2D);
     api->glBindTextureFn(GL_TEXTURE_2D, texture_id);
 
     glEGLImageTargetTexture2DOES(GL_TEXTURE_2D, egl_image.get());

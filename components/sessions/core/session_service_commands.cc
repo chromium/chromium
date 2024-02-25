@@ -170,6 +170,13 @@ enum PersistedWindowShowState {
   PERSISTED_SHOW_STATE_END = 8,
 };
 
+// TODO(crbug.com/1506068): Remove this around December 2024. This is part of a
+// workaround added to support the transition from storing the last_active_time
+// as TimeTicks to Time that was added in December 2023. This is the threshold
+// at which we consider that if a tab is so far in the past, it must be a tab
+// serialized with TimeTicks and not Time.
+const base::TimeDelta kLastActiveWorkaroundThreshold = base::Days(366 * 15);
+
 // Assert to ensure PersistedWindowShowState is updated if ui::WindowShowState
 // is changed.
 static_assert(ui::SHOW_STATE_END ==
@@ -638,9 +645,9 @@ void CreateTabsAndWindows(
         const base::Token token(payload.maybe_group.id_high,
                                 payload.maybe_group.id_low);
         session_tab->group =
-            payload.has_group ? absl::make_optional(
+            payload.has_group ? std::make_optional(
                                     tab_groups::TabGroupId::FromRawToken(token))
-                              : absl::nullopt;
+                              : std::nullopt;
         break;
       }
 
@@ -648,7 +655,7 @@ void CreateTabsAndWindows(
         std::unique_ptr<base::Pickle> pickle = command->PayloadAsPickle();
         base::PickleIterator iter(*pickle);
 
-        absl::optional<base::Token> group_token = ReadTokenFromPickle(&iter);
+        std::optional<base::Token> group_token = ReadTokenFromPickle(&iter);
         if (!group_token.has_value())
           return;
 
@@ -737,14 +744,14 @@ void CreateTabsAndWindows(
 
         SessionTab* tab = GetTab(tab_id, tabs);
         tab->user_agent_override.ua_string_override.swap(user_agent_override);
-        tab->user_agent_override.opaque_ua_metadata_override = absl::nullopt;
+        tab->user_agent_override.opaque_ua_metadata_override = std::nullopt;
         break;
       }
 
       case kCommandSetTabUserAgentOverride2: {
         SessionID tab_id = SessionID::InvalidValue();
         std::string user_agent_override;
-        absl::optional<std::string> opaque_ua_metadata_override;
+        std::optional<std::string> opaque_ua_metadata_override;
         if (!RestoreSetTabUserAgentOverrideCommand2(
                 *command, &tab_id, &user_agent_override,
                 &opaque_ua_metadata_override)) {
@@ -791,8 +798,33 @@ void CreateTabsAndWindows(
         }
         SessionTab* tab =
             GetTab(SessionID::FromSerializedValue(payload.tab_id), tabs);
-        tab->last_active_time =
-            base::TimeTicks::FromInternalValue(payload.last_active_time);
+        base::Time deserialized_time = base::Time::FromDeltaSinceWindowsEpoch(
+            base::Microseconds(payload.last_active_time));
+
+        if (base::Time::Now() - deserialized_time >
+            kLastActiveWorkaroundThreshold) {
+          // TODO(crbug.com/1506068): Remove this once enough time has passed
+          // (added in December 2023, can be removed after ~1 year). This is a
+          // workaround put in place during the migration from base::TimeTicks
+          // internal representation to microseconds since Windows epoch. As the
+          // origin point may be vastely different, the values stored in the old
+          // format appear as really old when deserialized in the new format. So
+          // checking all value older than 15 years should be a good enough
+          // filter to catch them. If it is a value stored in the old format, it
+          // should be correctly decoded.
+          base::TimeTicks time_tick_value =
+              base::TimeTicks::FromInternalValue(payload.last_active_time);
+          base::TimeDelta delta_since_epoch =
+              time_tick_value - base::TimeTicks::UnixEpoch();
+          base::Time corrected_time =
+              base::Time::UnixEpoch() + delta_since_epoch;
+          if (base::Time::Now() < corrected_time) {
+            // If the correction is giving a time in the future, set it to now.
+            corrected_time = base::Time::Now();
+          }
+          deserialized_time = corrected_time;
+        }
+        tab->last_active_time = deserialized_time;
         break;
       }
 
@@ -994,7 +1026,7 @@ std::unique_ptr<SessionCommand> CreateSetWindowTypeCommand(
 
 std::unique_ptr<SessionCommand> CreateTabGroupCommand(
     SessionID tab_id,
-    absl::optional<tab_groups::TabGroupId> group) {
+    std::optional<tab_groups::TabGroupId> group) {
   TabGroupPayload payload = {0};
   payload.tab_id = tab_id.id();
   if (group.has_value()) {
@@ -1009,7 +1041,7 @@ std::unique_ptr<SessionCommand> CreateTabGroupCommand(
 std::unique_ptr<SessionCommand> CreateTabGroupMetadataUpdateCommand(
     const tab_groups::TabGroupId group,
     const tab_groups::TabGroupVisualData* visual_data,
-    const absl::optional<std::string> saved_guid) {
+    const std::optional<std::string> saved_guid) {
   base::Pickle pickle;
   WriteTokenToPickle(&pickle, group.token());
   pickle.WriteString16(visual_data->title());
@@ -1058,7 +1090,14 @@ std::unique_ptr<SessionCommand> CreateLastActiveTimeCommand(
     base::TimeTicks last_active_time) {
   LastActiveTimePayload payload = {0};
   payload.tab_id = tab_id.id();
-  payload.last_active_time = last_active_time.ToInternalValue();
+
+  // Convert the last_active_time from TimeTicks to Time.
+  base::TimeDelta delta_since_epoch =
+      last_active_time - base::TimeTicks::UnixEpoch();
+  base::Time converted_time = base::Time::UnixEpoch() + delta_since_epoch;
+  payload.last_active_time =
+      converted_time.ToDeltaSinceWindowsEpoch().InMicroseconds();
+
   return CreateSessionCommandForPayload(kCommandLastActiveTime, payload);
 }
 

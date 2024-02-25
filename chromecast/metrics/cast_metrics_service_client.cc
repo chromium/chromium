@@ -5,6 +5,7 @@
 #include "chromecast/metrics/cast_metrics_service_client.h"
 
 #include <string>
+#include <string_view>
 
 #include "base/command_line.h"
 #include "base/files/file_path.h"
@@ -246,7 +247,7 @@ std::unique_ptr<::metrics::MetricsLogUploader>
 CastMetricsServiceClient::CreateUploader(
     const GURL& server_url,
     const GURL& insecure_server_url,
-    base::StringPiece mime_type,
+    std::string_view mime_type,
     ::metrics::MetricsLogUploader::MetricServiceType service_type,
     const ::metrics::MetricsLogUploader::UploadCallback& on_upload_complete) {
   return std::make_unique<::metrics::NetMetricsLogUploader>(
@@ -365,8 +366,7 @@ void CastMetricsServiceClient::InitializeMetricsService() {
   metrics_state_manager_->InstantiateFieldTrialList();
 
   synthetic_trial_registry_ =
-      std::make_unique<variations::SyntheticTrialRegistry>(
-          IsExternalExperimentAllowlistEnabled());
+      std::make_unique<variations::SyntheticTrialRegistry>();
   synthetic_trial_observation_.Observe(synthetic_trial_registry_.get());
 
   metrics_service_.reset(new ::metrics::MetricsService(

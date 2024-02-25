@@ -59,6 +59,12 @@ h1 {
   top: 0;
 }
 
+<if expr="chromeos_ash">
+#restart-bluetooth-btn {
+  margin-inline-end: 6px;
+}
+</if>
+
 /* Page header */
 .page-header {
   align-items: center;

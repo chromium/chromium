@@ -41,6 +41,7 @@ enum DataCollectorType {
   CHROMEOS_NETWORK_HEALTH = 23;
   PERFORMANCE = 24;
   SIGN_IN_STATE = 25;
+  CHROMEOS_APP_SERVICE = 26;
 }
 
 // PiiType represent the different known categories of PII that can exist in

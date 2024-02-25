@@ -56,6 +56,7 @@ class CustomizableTestEnvBrowserTestBase
  protected:
   void SetTestEnvironment(const TestEnvironment& test_environment);
   LoginManagerMixin* GetLoginManagerMixin();
+  const TestEnvironment& test_environment() const { return test_environment_; }
 
  private:
   std::string owner_user_email_;

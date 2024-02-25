@@ -1,0 +1,23 @@
+[
+  {
+    "os": [
+      "chromeos_ash"
+    ],
+    "policy_pref_mapping_tests": [
+      {
+        "policies": {
+          "WaitForInitialUserActivity": true
+        },
+        "prefs": {
+          "power.wait_for_initial_user_activity": {
+            "value": true
+          },
+          "session.wait_for_initial_user_activity": {
+            "location": "local_state",
+            "value": true
+          }
+        }
+      }
+    ]
+  }
+]

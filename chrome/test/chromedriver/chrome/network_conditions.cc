@@ -48,8 +48,8 @@ Status FindPresetNetwork(std::string network_name,
     if (*title != network_name)
       continue;
 
-    absl::optional<double> maybe_latency = network.FindDouble("latency");
-    absl::optional<double> maybe_throughput = network.FindDouble("throughput");
+    std::optional<double> maybe_latency = network.FindDouble("latency");
+    std::optional<double> maybe_throughput = network.FindDouble("throughput");
 
     if (!maybe_latency.has_value()) {
       return Status(kUnknownError,

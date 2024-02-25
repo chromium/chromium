@@ -12,14 +12,20 @@
 
 namespace ash::office_fallback {
 
-using DialogChoiceCallback =
-    base::OnceCallback<void(const std::string& choice)>;
-
 // The reason why the user's file can't open.
 enum class FallbackReason {
   kOffline,
-  kDriveUnavailable,
+  kDriveDisabled,
+  kNoDriveService,
+  kDriveAuthenticationNotReady,
+  kDriveFsInterfaceError,
+  kMeteredConnection,
+  kDisableDrivePreferenceSet,
+  kDriveDisabledForAccountType,
 };
+
+using DialogChoiceCallback =
+    base::OnceCallback<void(std::optional<const std::string>)>;
 
 // Defines the web dialog used to allow users to choose what to do when failing
 // to open office files.
@@ -31,7 +37,7 @@ class OfficeFallbackDialog : public SystemWebDialogDelegate {
   // Creates and shows the dialog. Returns true if a new dialog has been
   // effectively created.
   static bool Show(const std::vector<storage::FileSystemURL>& file_urls,
-                   const FallbackReason fallback_reason,
+                   FallbackReason fallback_reason,
                    const std::string& action_id,
                    DialogChoiceCallback callback);
 
@@ -45,9 +51,12 @@ class OfficeFallbackDialog : public SystemWebDialogDelegate {
                        const std::string& title_text,
                        const std::string& reason_message,
                        const std::string& instructions_message,
+                       const int& width,
+                       const int& height,
                        DialogChoiceCallback callback);
   std::string GetDialogArgs() const override;
   void GetDialogSize(gfx::Size* size) const override;
+  bool ShouldCloseDialogOnEscape() const override;
   bool ShouldShowCloseButton() const override;
 
  private:
@@ -55,6 +64,8 @@ class OfficeFallbackDialog : public SystemWebDialogDelegate {
   const std::string title_text_;
   const std::string reason_message_;
   const std::string instructions_message_;
+  const int width_;
+  const int height_;
   DialogChoiceCallback callback_;
 };
 

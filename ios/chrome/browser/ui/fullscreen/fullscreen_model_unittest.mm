@@ -7,6 +7,7 @@
 #import "base/strings/sys_string_conversions.h"
 #import "ios/chrome/browser/ui/fullscreen/test/fullscreen_model_test_util.h"
 #import "ios/chrome/browser/ui/fullscreen/test/test_fullscreen_model_observer.h"
+#import "ios/web/common/features.h"
 #import "testing/platform_test.h"
 
 namespace {
@@ -57,7 +58,9 @@ TEST_F(FullscreenModelTest, EnableDisable) {
   // Scroll in order to hide the Toolbar.
   SimulateFullscreenUserScrollWithDelta(&model(), kToolbarHeight * 3);
   EXPECT_EQ(observer().progress(), 0.0);
-  EXPECT_TRUE(model().has_base_offset());
+  if (base::FeatureList::IsEnabled(web::features::kSmoothScrollingDefault)) {
+    EXPECT_TRUE(model().has_base_offset());
+  }
   // Increment the disabled counter and check that the model is disabled.
   model().IncrementDisabledCounter();
   EXPECT_FALSE(model().enabled());
@@ -90,7 +93,9 @@ TEST_F(FullscreenModelTest, ResetForNavigation) {
   // Call ResetForNavigation() and verify that the base offset is reset and that
   // the toolbar is fully visible.
   model().ResetForNavigation();
-  EXPECT_FALSE(model().has_base_offset());
+  if (base::FeatureList::IsEnabled(web::features::kSmoothScrollingDefault)) {
+    EXPECT_FALSE(model().has_base_offset());
+  }
   EXPECT_EQ(observer().progress(), 1.0);
 }
 
@@ -142,7 +147,9 @@ TEST_F(FullscreenModelTest, UpdateToolbarHeight) {
   // Reset the toolbar height and verify that the base offset is reset and that
   // the toolbar is fully visible.
   model().SetExpandedTopToolbarHeight(2.0 * kToolbarHeight);
-  EXPECT_FALSE(model().has_base_offset());
+  if (base::FeatureList::IsEnabled(web::features::kSmoothScrollingDefault)) {
+    EXPECT_FALSE(model().has_base_offset());
+  }
   EXPECT_EQ(observer().progress(), 1.0);
   // Simulate a page load to a 0.0 y content offset.
   model().ResetForNavigation();
@@ -218,7 +225,9 @@ TEST_F(FullscreenModelTest, ScrollEnded) {
 TEST_F(FullscreenModelTest, DraggingStarted) {
   model().ResetForNavigation();
   model().SetScrollViewIsDragging(true);
-  EXPECT_TRUE(model().has_base_offset());
+  if (base::FeatureList::IsEnabled(web::features::kSmoothScrollingDefault)) {
+    EXPECT_TRUE(model().has_base_offset());
+  }
 }
 
 // Tests that toolbar_insets() returns the correct values.
@@ -309,17 +318,4 @@ TEST_F(FullscreenModelTest, ScrolledToTopAndBottom) {
   model().SetYContentOffset(kContentHeight - kScrollViewHeight);
   EXPECT_FALSE(model().is_scrolled_to_top());
   EXPECT_TRUE(model().is_scrolled_to_bottom());
-}
-
-// Tests that when the toolbar height is frozen, setting the height doesn't
-// change the returned height until the toolbar is unfrozen.
-TEST_F(FullscreenModelTest, FreezeToolbarHeight) {
-  model().SetFreezeToolbarHeight(true);
-  EXPECT_EQ(model().GetExpandedTopToolbarHeight(), 0);
-
-  model().SetExpandedTopToolbarHeight(100);
-  EXPECT_EQ(model().GetExpandedTopToolbarHeight(), 0);
-
-  model().SetFreezeToolbarHeight(false);
-  EXPECT_EQ(model().GetExpandedTopToolbarHeight(), 100);
 }

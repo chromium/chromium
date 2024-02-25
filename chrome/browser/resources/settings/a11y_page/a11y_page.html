@@ -51,27 +51,24 @@
 </if>
         <settings-toggle-button
             class="hr"
-            hidden$="[[!showAccessibilityLabelsSetting_]]"
+            hidden$="[[!hasScreenReader_]]"
             pref="{{prefs.settings.a11y.enable_accessibility_image_labels}}"
             on-change="onA11yImageLabelsChange_"
             label="$i18n{accessibleImageLabelsTitle}"
             sub-label="$i18n{accessibleImageLabelsSubtitle}">
         </settings-toggle-button>
 <if expr="is_win or is_linux or is_macosx">
-        <settings-toggle-button id="pdfOcrToggle"
-            class="hr"
-            hidden$="[[!showPdfOcrToggle_]]"
-            pref="{{prefs.settings.a11y.pdf_ocr_always_active}}"
-            on-change="onPdfOcrChange_"
-            label="$i18n{pdfOcrTitle}"
-            sub-label="$i18n{pdfOcrSubtitle}">
-        </settings-toggle-button>
+        <template is="dom-if" if="[[showPdfOcrToggle_]]">
+          <settings-pdf-ocr-toggle id="pdfOcrToggle" prefs="{{prefs}}">
+          </settings-pdf-ocr-toggle>
+        </template>
 </if>
 <if expr="is_win or is_linux">
         <settings-toggle-button
             class="hr"
             hidden$="[[!showOverscrollHistoryNavigationToggle_]]"
             pref="{{prefs.settings.a11y.overscroll_history_navigation}}"
+            on-change="onOverscrollHistoryNavigationChange_"
             label="$i18n{overscrollHistoryNavigationTitle}"
             sub-label="$i18n{overscrollHistoryNavigationSubtitle}">
         </settings-toggle-button>

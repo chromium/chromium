@@ -11,13 +11,11 @@
 #include "base/task/single_thread_task_runner.h"
 #include "remoting/host/basic_desktop_environment.h"
 #include "remoting/host/client_session_control.h"
-#include "remoting/host/curtain_mode.h"
 
 namespace remoting {
 
 class HostWindow;
 class LocalInputMonitor;
-class SessionTerminator;
 
 // Same as BasicDesktopEnvironment but also presents the Continue window to
 // the local user.
@@ -35,8 +33,6 @@ class It2MeDesktopEnvironment : public BasicDesktopEnvironment {
 
   // BasicDesktopEnvironment implementation:
   std::string GetCapabilities() const override;
-
-  bool is_curtained() const { return curtain_mode_ != nullptr; }
 
  protected:
   friend class It2MeDesktopEnvironmentFactory;
@@ -62,8 +58,6 @@ class It2MeDesktopEnvironment : public BasicDesktopEnvironment {
   // Notifies the client session about the local mouse movements.
   std::unique_ptr<LocalInputMonitor> local_input_monitor_;
 
-  std::unique_ptr<CurtainMode> curtain_mode_;
-  std::unique_ptr<SessionTerminator> session_terminator_;
   base::WeakPtrFactory<It2MeDesktopEnvironment> weak_ptr_factory_{this};
 };
 

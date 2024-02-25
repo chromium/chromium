@@ -15,7 +15,7 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/metrics/histogram_functions.h"
-#include "base/numerics/math_constants.h"
+#include "base/numerics/angle_conversions.h"
 #include "base/numerics/safe_math.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
@@ -53,11 +53,11 @@ namespace chrome_pdf {
 
 namespace {
 
-constexpr float k45DegreesInRadians = base::kPiFloat / 4;
-constexpr float k90DegreesInRadians = base::kPiFloat / 2;
-constexpr float k180DegreesInRadians = base::kPiFloat;
-constexpr float k270DegreesInRadians = 3 * base::kPiFloat / 2;
-constexpr float k360DegreesInRadians = 2 * base::kPiFloat;
+constexpr float k45DegreesInRadians = base::DegToRad(45.0f);
+constexpr float k90DegreesInRadians = base::DegToRad(90.0f);
+constexpr float k180DegreesInRadians = base::DegToRad(180.0f);
+constexpr float k270DegreesInRadians = base::DegToRad(270.0f);
+constexpr float k360DegreesInRadians = base::DegToRad(360.0f);
 
 constexpr float kPointsToPixels = static_cast<float>(printing::kPixelsPerInch) /
                                   static_cast<float>(printing::kPointsPerInch);
@@ -384,7 +384,8 @@ PDFiumPage::~PDFiumPage() {
 }
 
 void PDFiumPage::Unload() {
-  // Do not unload while in the middle of a load.
+  // Do not unload while in the middle of a load, or if some external source
+  // expects `this` to stay loaded.
   if (preventing_unload_count_)
     return;
 
@@ -458,14 +459,14 @@ void PDFiumPage::CalculatePageObjectTextRunBreaks() {
   }
 }
 
-absl::optional<AccessibilityTextRunInfo> PDFiumPage::GetTextRunInfo(
+std::optional<AccessibilityTextRunInfo> PDFiumPage::GetTextRunInfo(
     int start_char_index) {
   FPDF_PAGE page = GetPage();
   FPDF_TEXTPAGE text_page = GetTextPage();
   int chars_count = FPDFText_CountChars(text_page);
   // Check to make sure `start_char_index` is within bounds.
   if (start_char_index < 0 || start_char_index >= chars_count)
-    return absl::nullopt;
+    return std::nullopt;
 
   int actual_start_char_index = GetFirstNonUnicodeWhiteSpaceCharIndex(
       text_page, start_char_index, chars_count);
@@ -1052,8 +1053,8 @@ PDFiumPage::Area PDFiumPage::GetDestinationTarget(FPDF_DEST destination,
 
   target->page = page_index;
 
-  absl::optional<float> x;
-  absl::optional<float> y;
+  std::optional<float> x;
+  std::optional<float> y;
   GetPageDestinationTarget(destination, &x, &y, &target->zoom);
 
   // The page where a destination exists can be different from the page that it
@@ -1076,12 +1077,12 @@ PDFiumPage::Area PDFiumPage::GetDestinationTarget(FPDF_DEST destination,
 }
 
 void PDFiumPage::GetPageDestinationTarget(FPDF_DEST destination,
-                                          absl::optional<float>* dest_x,
-                                          absl::optional<float>* dest_y,
-                                          absl::optional<float>* zoom_value) {
-  *dest_x = absl::nullopt;
-  *dest_y = absl::nullopt;
-  *zoom_value = absl::nullopt;
+                                          std::optional<float>* dest_x,
+                                          std::optional<float>* dest_y,
+                                          std::optional<float>* zoom_value) {
+  *dest_x = std::nullopt;
+  *dest_y = std::nullopt;
+  *zoom_value = std::nullopt;
   if (!available_)
     return;
 
@@ -1758,6 +1759,20 @@ void PDFiumPage::MarkAvailable() {
 PDFiumPage::ScopedUnloadPreventer::ScopedUnloadPreventer(PDFiumPage* page)
     : page_(page) {
   page_->preventing_unload_count_++;
+}
+
+PDFiumPage::ScopedUnloadPreventer::ScopedUnloadPreventer(
+    const ScopedUnloadPreventer& that)
+    : ScopedUnloadPreventer(that.page_) {}
+
+PDFiumPage::ScopedUnloadPreventer& PDFiumPage::ScopedUnloadPreventer::operator=(
+    const ScopedUnloadPreventer& that) {
+  if (page_ != that.page_) {
+    page_->preventing_unload_count_--;
+    page_ = that.page_;
+    page_->preventing_unload_count_++;
+  }
+  return *this;
 }
 
 PDFiumPage::ScopedUnloadPreventer::~ScopedUnloadPreventer() {

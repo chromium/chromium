@@ -85,7 +85,8 @@ class DlpScopedFileAccessDelegateInteractiveUITest
     chromeos::DlpClient::InitializeFake();
 
     delegate_ = std::unique_ptr<DlpScopedFileAccessDelegate>(
-        new DlpScopedFileAccessDelegate(chromeos::DlpClient::Get()));
+        new DlpScopedFileAccessDelegate(
+            base::BindRepeating(chromeos::DlpClient::Get)));
 
     ASSERT_TRUE(ui_test_utils::BringBrowserWindowToFront(browser()));
     ASSERT_TRUE(ui_test_utils::ShowAndFocusNativeWindow(
@@ -145,6 +146,7 @@ class DlpScopedFileAccessDelegateInteractiveUITest
     active_drag_event_->set_location_f(event_location);
     active_drag_event_->set_root_location_f(event_root_location);
     delegate->OnDragUpdated(*active_drag_event_);
+
     auto drop_cb = delegate->GetDropCallback(*active_drag_event_);
     if (!drop_cb) {
       return false;

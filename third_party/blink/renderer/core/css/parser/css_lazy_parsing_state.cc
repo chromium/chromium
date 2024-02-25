@@ -23,7 +23,7 @@ const CSSParserContext* CSSLazyParsingState::Context() {
   DCHECK(owning_contents_);
   if (!should_use_count_) {
     DCHECK(!context_->IsUseCounterRecordingEnabled());
-    return context_;
+    return context_.Get();
   }
 
   // Try as best as possible to grab a valid Document if the old Document has
@@ -35,7 +35,7 @@ const CSSParserContext* CSSLazyParsingState::Context() {
   if (!context_->IsDocumentHandleEqual(document_)) {
     context_ = MakeGarbageCollected<CSSParserContext>(context_, document_);
   }
-  return context_;
+  return context_.Get();
 }
 
 void CSSLazyParsingState::Trace(Visitor* visitor) const {

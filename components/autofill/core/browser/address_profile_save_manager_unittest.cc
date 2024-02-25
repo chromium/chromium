@@ -4,6 +4,8 @@
 
 #include "components/autofill/core/browser/address_profile_save_manager.h"
 
+#include <string_view>
+
 #include "base/strings/strcat.h"
 #include "base/strings/string_piece.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -80,7 +82,7 @@ class TestAddressProfileSaveManager : public AddressProfileSaveManager {
               (std::unique_ptr<ProfileImportProcess>),
               (override));
 
-  // Returns a copy of the last finished import process or 'absl::nullopt' if no
+  // Returns a copy of the last finished import process or 'std::nullopt' if no
   // import process was finished.
   ProfileImportProcess* last_import();
 
@@ -111,8 +113,7 @@ class TestAddressProfileSaveManager : public AddressProfileSaveManager {
 
   // If set, this is a profile that is added in between the import operation
   // while the response from the user is pending.
-  absl::optional<AutofillProfile>
-      profile_added_while_waiting_for_user_response_;
+  std::optional<AutofillProfile> profile_added_while_waiting_for_user_response_;
 };
 
 TestAddressProfileSaveManager::TestAddressProfileSaveManager(
@@ -136,11 +137,12 @@ struct ImportScenarioTestCase {
   AutofillProfile observed_profile;
   bool is_prompt_expected;
   UserDecision user_decision;
-  AutofillProfile edited_profile;
+  AutofillProfile edited_profile{
+      i18n_model_definition::kLegacyHierarchyCountryCode};
   AutofillProfileImportType expected_import_type;
   bool is_profile_change_expected;
-  absl::optional<AutofillProfile> merge_candidate;
-  absl::optional<AutofillProfile> import_candidate;
+  std::optional<AutofillProfile> merge_candidate;
+  std::optional<AutofillProfile> import_candidate;
   std::vector<AutofillProfile> expected_final_profiles;
   std::vector<SettingsVisibleFieldTypeForMetrics>
       expected_edited_types_for_metrics;
@@ -148,7 +150,7 @@ struct ImportScenarioTestCase {
       expected_affeceted_types_in_merge_for_metrics;
   bool new_profiles_suppresssed_for_domain;
   std::vector<std::string> blocked_guids_for_updates;
-  absl::optional<AutofillProfile> profile_to_be_added_while_waiting;
+  std::optional<AutofillProfile> profile_to_be_added_while_waiting;
   bool allow_only_silent_updates = false;
 };
 
@@ -232,9 +234,10 @@ class AddressProfileSaveManagerTest
 
 // Expects that none of the histograms `names` has any samples.
 void ExpectEmptyHistograms(const base::HistogramTester& histogram_tester,
-                           const std::vector<base::StringPiece>& names) {
-  for (base::StringPiece name : names)
+                           const std::vector<std::string_view>& names) {
+  for (std::string_view name : names) {
     histogram_tester.ExpectTotalCount(name, 0);
+  }
 }
 
 void AddressProfileSaveManagerTest::TestImportScenario(
@@ -288,9 +291,11 @@ void AddressProfileSaveManagerTest::TestImportScenario(
     EXPECT_CALL(save_manager, OfferSavePrompt).Times(0);
   }
 
-  // Set the existing profiles to the personal data manager.
-  personal_data_manager_.SetProfilesForAllSources(
-      &test_scenario.existing_profiles);
+  // Add the existing profiles to the personal data manager.
+  ASSERT_TRUE(personal_data_manager_.GetProfiles().empty());
+  for (const AutofillProfile& profile : test_scenario.existing_profiles) {
+    personal_data_manager_.AddProfile(profile);
+  }
 
   // Initiate the profile import.
   save_manager.ImportProfileFromForm(
@@ -353,9 +358,9 @@ void AddressProfileSaveManagerTest::VerifyUMAMetricsCollection(
   // - The `edits` made by user.
   // - The `num_of_edits`.
   struct ImportHistogramNames {
-    base::StringPiece decision;
-    base::StringPiece edits;
-    base::StringPiece num_of_edits;
+    std::string_view decision;
+    std::string_view edits;
+    std::string_view num_of_edits;
     void ExpectAllEmpty(const base::HistogramTester& tester) const {
       ExpectEmptyHistograms(tester, {decision, edits, num_of_edits});
     }
@@ -571,7 +576,7 @@ TEST_P(AddressProfileSaveManagerTest, SaveNewProfile) {
       .user_decision = UserDecision::kAccepted,
       .expected_import_type = AutofillProfileImportType::kNewProfile,
       .is_profile_change_expected = true,
-      .merge_candidate = absl::nullopt,
+      .merge_candidate = std::nullopt,
       .import_candidate = observed_profile,
       .expected_final_profiles = {observed_profile}};
 
@@ -592,7 +597,7 @@ TEST_P(AddressProfileSaveManagerTest, SaveNewProfile_ProfileAddedWhileWaiting) {
       .user_decision = UserDecision::kAccepted,
       .expected_import_type = AutofillProfileImportType::kNewProfile,
       .is_profile_change_expected = true,
-      .merge_candidate = absl::nullopt,
+      .merge_candidate = std::nullopt,
       .import_candidate = observed_profile,
       .expected_final_profiles = {observed_profile,
                                   profile_added_while_waiting},
@@ -613,8 +618,8 @@ TEST_P(AddressProfileSaveManagerTest, SaveNewProfileOnBlockedDomain) {
       .user_decision = UserDecision::kUserNotAsked,
       .expected_import_type = AutofillProfileImportType::kSuppressedNewProfile,
       .is_profile_change_expected = false,
-      .merge_candidate = absl::nullopt,
-      .import_candidate = absl::nullopt,
+      .merge_candidate = std::nullopt,
+      .import_candidate = std::nullopt,
       .expected_final_profiles = {},
       .new_profiles_suppresssed_for_domain = true};
 
@@ -634,7 +639,7 @@ TEST_P(AddressProfileSaveManagerTest, SaveNewProfile_UserNotAskedFallback) {
       .user_decision = UserDecision::kUserNotAsked,
       .expected_import_type = AutofillProfileImportType::kNewProfile,
       .is_profile_change_expected = true,
-      .merge_candidate = absl::nullopt,
+      .merge_candidate = std::nullopt,
       .import_candidate = observed_profile,
       .expected_final_profiles = {observed_profile}};
 
@@ -657,7 +662,7 @@ TEST_P(AddressProfileSaveManagerTest, SaveNewProfile_Edited) {
       .edited_profile = edited_profile,
       .expected_import_type = AutofillProfileImportType::kNewProfile,
       .is_profile_change_expected = true,
-      .merge_candidate = absl::nullopt,
+      .merge_candidate = std::nullopt,
       .import_candidate = observed_profile,
       .expected_final_profiles = {edited_profile},
       .expected_edited_types_for_metrics = {
@@ -680,7 +685,7 @@ TEST_P(AddressProfileSaveManagerTest, SaveNewProfile_Declined) {
       .user_decision = UserDecision::kDeclined,
       .expected_import_type = AutofillProfileImportType::kNewProfile,
       .is_profile_change_expected = false,
-      .merge_candidate = absl::nullopt,
+      .merge_candidate = std::nullopt,
       .import_candidate = observed_profile,
       .expected_final_profiles = {}};
 
@@ -699,7 +704,7 @@ TEST_P(AddressProfileSaveManagerTest, SaveNewProfile_MessageDeclined) {
       .user_decision = UserDecision::kMessageDeclined,
       .expected_import_type = AutofillProfileImportType::kNewProfile,
       .is_profile_change_expected = false,
-      .merge_candidate = absl::nullopt,
+      .merge_candidate = std::nullopt,
       .import_candidate = observed_profile,
       .expected_final_profiles = {}};
 
@@ -719,8 +724,8 @@ TEST_P(AddressProfileSaveManagerTest, ImportDuplicateProfile) {
       .user_decision = UserDecision::kAccepted,
       .expected_import_type = AutofillProfileImportType::kDuplicateImport,
       .is_profile_change_expected = false,
-      .merge_candidate = absl::nullopt,
-      .import_candidate = absl::nullopt,
+      .merge_candidate = std::nullopt,
+      .import_candidate = std::nullopt,
       .expected_final_profiles = {existing_profile}};
 
   TestImportScenario(test_scenario);
@@ -745,8 +750,8 @@ TEST_P(AddressProfileSaveManagerTest,
       .user_decision = UserDecision::kUserNotAsked,
       .expected_import_type = AutofillProfileImportType::kDuplicateImport,
       .is_profile_change_expected = false,
-      .merge_candidate = absl::nullopt,
-      .import_candidate = absl::nullopt,
+      .merge_candidate = std::nullopt,
+      .import_candidate = std::nullopt,
       .expected_final_profiles = {updateable_profile}};
   TestImportScenario(test_scenario);
 }
@@ -766,8 +771,8 @@ TEST_P(AddressProfileSaveManagerTest, SilentlyUpdateProfile) {
       .user_decision = UserDecision::kUserNotAsked,
       .expected_import_type = AutofillProfileImportType::kSilentUpdate,
       .is_profile_change_expected = true,
-      .merge_candidate = absl::nullopt,
-      .import_candidate = absl::nullopt,
+      .merge_candidate = std::nullopt,
+      .import_candidate = std::nullopt,
       .expected_final_profiles = {final_profile}};
   TestImportScenario(test_scenario);
 }
@@ -788,8 +793,8 @@ TEST_P(AddressProfileSaveManagerTest, SilentlyUpdateProfileOnBlockedDomain) {
       .user_decision = UserDecision::kUserNotAsked,
       .expected_import_type = AutofillProfileImportType::kSilentUpdate,
       .is_profile_change_expected = true,
-      .merge_candidate = absl::nullopt,
-      .import_candidate = absl::nullopt,
+      .merge_candidate = std::nullopt,
+      .import_candidate = std::nullopt,
       .expected_final_profiles = {final_profile},
       .new_profiles_suppresssed_for_domain = true};
   TestImportScenario(test_scenario);
@@ -1203,7 +1208,8 @@ TEST_P(AddressProfileSaveManagerTest,
 // Silent Update is enabled for the test.
 TEST_P(AddressProfileSaveManagerTest,
        SilentlyUpdateProfile_UpdateStructuredName) {
-  AutofillProfile updateable_profile;
+  AutofillProfile updateable_profile(
+      i18n_model_definition::kLegacyHierarchyCountryCode);
   test::SetProfileTestValues(
       &updateable_profile,
       {{NAME_FULL, "AAA BBB CCC", VerificationStatus::kObserved},
@@ -1217,7 +1223,8 @@ TEST_P(AddressProfileSaveManagerTest,
        {ADDRESS_HOME_ZIP, "99666", VerificationStatus::kObserved},
        {ADDRESS_HOME_CITY, "Los Angeles", VerificationStatus::kObserved}});
 
-  AutofillProfile observed_profile;
+  AutofillProfile observed_profile(
+      i18n_model_definition::kLegacyHierarchyCountryCode);
   test::SetProfileTestValues(
       &observed_profile,
       {{NAME_FULL, "AAA BBB CCC", VerificationStatus::kObserved},
@@ -1253,7 +1260,8 @@ TEST_P(AddressProfileSaveManagerTest,
 // Silent Update is enabled for the test.
 TEST_P(AddressProfileSaveManagerTest,
        SilentlyUpdateProfile_UpdateStructuredNameWithIncompleteProfile) {
-  AutofillProfile updateable_profile;
+  AutofillProfile updateable_profile(
+      i18n_model_definition::kLegacyHierarchyCountryCode);
   test::SetProfileTestValues(
       &updateable_profile,
       {{NAME_FULL, "AAA BBB CCC", VerificationStatus::kObserved},
@@ -1267,7 +1275,8 @@ TEST_P(AddressProfileSaveManagerTest,
        {ADDRESS_HOME_ZIP, "99666", VerificationStatus::kObserved},
        {ADDRESS_HOME_CITY, "Los Angeles", VerificationStatus::kObserved}});
 
-  AutofillProfile observed_profile;
+  AutofillProfile observed_profile(
+      i18n_model_definition::kLegacyHierarchyCountryCode);
   test::SetProfileTestValues(
       &observed_profile,
       {{NAME_FULL, "AAA BBB CCC", VerificationStatus::kObserved},
@@ -1275,7 +1284,8 @@ TEST_P(AddressProfileSaveManagerTest,
        {NAME_MIDDLE, "", VerificationStatus::kParsed},
        {NAME_LAST, "BBB CCC", VerificationStatus::kParsed}});
 
-  AutofillProfile final_profile;
+  AutofillProfile final_profile(
+      i18n_model_definition::kLegacyHierarchyCountryCode);
   test::SetProfileTestValues(
       &final_profile,
       {{NAME_FULL, "AAA BBB CCC", VerificationStatus::kObserved},

@@ -21,6 +21,9 @@ def _trim_builder(builder, include_path_based):
     if builder.includable_only or builder.experiment_percentage:
         return None
 
+    if builder.mode_allowlist and "FULL_RUN" not in builder.mode_allowlist:
+        return None
+
     # The majority of CQ builders will exclude something because we don't
     # trigger most builders on changes to non-code directories (e.g. docs), so
     # only consider them path-based if they have an include filter

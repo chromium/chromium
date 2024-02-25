@@ -345,10 +345,6 @@ class MEDIA_EXPORT WASAPIAudioInputStream
   base::TimeDelta max_timestamp_diff_;
   base::TimeDelta min_timestamp_diff_;
 
-  // Enabled if the volume level of the audio session is set to zero when the
-  // session starts. Utilized in UMA histogram.
-  bool audio_session_starts_at_zero_volume_ = false;
-
   // Set to true if the selected audio device supports raw audio capture.
   // Also added to a UMS histogram.
   bool raw_processing_supported_ = false;
@@ -365,7 +361,7 @@ class MEDIA_EXPORT WASAPIAudioInputStream
   // into a TimeTick value and a default base::TimeTicks::Now() is larger than
   // 500 msec. A true return value should trigger usage of "fake" audio
   // timestamps instead of default which are QPC based.
-  absl::optional<bool> use_fake_audio_capture_timestamps_;
+  std::optional<bool> use_fake_audio_capture_timestamps_;
 
   SEQUENCE_CHECKER(sequence_checker_);
 };

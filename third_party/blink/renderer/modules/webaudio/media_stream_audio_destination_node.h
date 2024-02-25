@@ -27,7 +27,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_WEBAUDIO_MEDIA_STREAM_AUDIO_DESTINATION_NODE_H_
 
 #include "third_party/blink/renderer/modules/mediastream/media_stream.h"
-#include "third_party/blink/renderer/modules/webaudio/audio_basic_inspector_node.h"
+#include "third_party/blink/renderer/modules/webaudio/audio_node.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
 #include "third_party/blink/renderer/platform/mediastream/media_stream_source.h"
 
@@ -37,7 +37,7 @@ class AudioContext;
 class AudioNodeOptions;
 class ExceptionState;
 
-class MediaStreamAudioDestinationNode final : public AudioBasicInspectorNode {
+class MediaStreamAudioDestinationNode final : public AudioNode {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
@@ -50,8 +50,8 @@ class MediaStreamAudioDestinationNode final : public AudioBasicInspectorNode {
 
   MediaStreamAudioDestinationNode(AudioContext&, uint32_t number_of_channels);
 
-  MediaStream* stream() const { return stream_; }
-  MediaStreamSource* source() const { return source_; }
+  MediaStream* stream() const { return stream_.Get(); }
+  MediaStreamSource* source() const { return source_.Get(); }
 
   void Trace(Visitor*) const final;
 

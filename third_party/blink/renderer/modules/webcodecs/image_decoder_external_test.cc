@@ -22,6 +22,7 @@
 #include "third_party/blink/renderer/modules/webcodecs/image_track_list.h"
 #include "third_party/blink/renderer/modules/webcodecs/video_frame.h"
 #include "third_party/blink/renderer/platform/heap/persistent.h"
+#include "third_party/blink/renderer/platform/testing/task_environment.h"
 #include "third_party/blink/renderer/platform/testing/unit_test_helpers.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
 
@@ -95,6 +96,7 @@ class ImageDecoderTest : public testing::Test {
     return false;
 #endif
   }
+  test::TaskEnvironment task_environment_;
 };
 
 TEST_F(ImageDecoderTest, IsTypeSupported) {
@@ -254,6 +256,7 @@ TEST_F(ImageDecoderTest, DecodeGifZeroDuration) {
     EXPECT_EQ(frame->duration(), 0u);
     EXPECT_EQ(frame->displayWidth(), 16u);
     EXPECT_EQ(frame->displayHeight(), 16u);
+    EXPECT_EQ(frame->frame()->ColorSpace(), gfx::ColorSpace::CreateSRGB());
   }
 
   {
@@ -269,6 +272,7 @@ TEST_F(ImageDecoderTest, DecodeGifZeroDuration) {
     EXPECT_EQ(frame->duration(), 0u);
     EXPECT_EQ(frame->displayWidth(), 16u);
     EXPECT_EQ(frame->displayHeight(), 16u);
+    EXPECT_EQ(frame->frame()->ColorSpace(), gfx::ColorSpace::CreateSRGB());
   }
 
   // Decoding past the end should result in a rejected promise.
@@ -317,6 +321,7 @@ TEST_F(ImageDecoderTest, DecodeGif) {
     EXPECT_EQ(frame->duration(), 100000u);
     EXPECT_EQ(frame->displayWidth(), 100u);
     EXPECT_EQ(frame->displayHeight(), 100u);
+    EXPECT_EQ(frame->frame()->ColorSpace(), gfx::ColorSpace::CreateSRGB());
   }
 
   {
@@ -332,6 +337,7 @@ TEST_F(ImageDecoderTest, DecodeGif) {
     EXPECT_EQ(frame->duration(), 100000u);
     EXPECT_EQ(frame->displayWidth(), 100u);
     EXPECT_EQ(frame->displayHeight(), 100u);
+    EXPECT_EQ(frame->frame()->ColorSpace(), gfx::ColorSpace::CreateSRGB());
   }
 
   // Decoding past the end should result in a rejected promise.
@@ -541,11 +547,8 @@ TEST_F(ImageDecoderTest, DecoderReadableStream) {
 
   const uint8_t* data_ptr = reinterpret_cast<const uint8_t*>(data->Data());
 
-  v8::Local<v8::Value> v8_data_array;
-  ASSERT_TRUE(ToV8Traits<DOMUint8Array>::ToV8(
-                  v8_scope.GetScriptState(),
-                  DOMUint8Array::Create(data_ptr, chunk_size))
-                  .ToLocal(&v8_data_array));
+  v8::Local<v8::Value> v8_data_array = ToV8Traits<DOMUint8Array>::ToV8(
+      v8_scope.GetScriptState(), DOMUint8Array::Create(data_ptr, chunk_size));
   ASSERT_FALSE(v8_scope.GetExceptionState().HadException());
 
   underlying_source->Enqueue(ScriptValue(v8_scope.GetIsolate(), v8_data_array));
@@ -563,11 +566,9 @@ TEST_F(ImageDecoderTest, DecoderReadableStream) {
   decoder->tracks().selectedTrack()->setSelected(false);
 
   // Enqueue remaining data.
-  ASSERT_TRUE(ToV8Traits<DOMUint8Array>::ToV8(
-                  v8_scope.GetScriptState(),
-                  DOMUint8Array::Create(data_ptr + chunk_size,
-                                        data->size() - chunk_size))
-                  .ToLocal(&v8_data_array));
+  v8_data_array = ToV8Traits<DOMUint8Array>::ToV8(
+      v8_scope.GetScriptState(),
+      DOMUint8Array::Create(data_ptr + chunk_size, data->size() - chunk_size));
   ASSERT_FALSE(v8_scope.GetExceptionState().HadException());
 
   underlying_source->Enqueue(ScriptValue(v8_scope.GetIsolate(), v8_data_array));
@@ -619,6 +620,7 @@ TEST_F(ImageDecoderTest, DecoderReadableStream) {
     EXPECT_EQ(*frame->duration(), 100000u);
     EXPECT_EQ(frame->displayWidth(), 100u);
     EXPECT_EQ(frame->displayHeight(), 100u);
+    EXPECT_EQ(frame->frame()->ColorSpace(), gfx::ColorSpace::CreateSRGB());
   }
 }
 
@@ -647,10 +649,8 @@ TEST_F(ImageDecoderTest, DecoderReadableStreamAvif) {
 
   // Enqueue a single byte and ensure nothing breaks.
   const uint8_t* data_ptr = reinterpret_cast<const uint8_t*>(data->Data());
-  v8::Local<v8::Value> v8_data_array;
-  ASSERT_TRUE(ToV8Traits<DOMUint8Array>::ToV8(
-                  v8_scope.GetScriptState(), DOMUint8Array::Create(data_ptr, 1))
-                  .ToLocal(&v8_data_array));
+  v8::Local<v8::Value> v8_data_array = ToV8Traits<DOMUint8Array>::ToV8(
+      v8_scope.GetScriptState(), DOMUint8Array::Create(data_ptr, 1));
   ASSERT_FALSE(v8_scope.GetExceptionState().HadException());
 
   underlying_source->Enqueue(ScriptValue(v8_scope.GetIsolate(), v8_data_array));
@@ -671,10 +671,9 @@ TEST_F(ImageDecoderTest, DecoderReadableStreamAvif) {
   EXPECT_FALSE(decode_tester.IsRejected());
 
   // Append the rest of the data.
-  ASSERT_TRUE(ToV8Traits<DOMUint8Array>::ToV8(
-                  v8_scope.GetScriptState(),
-                  DOMUint8Array::Create(data_ptr + 1, data->size() - 1))
-                  .ToLocal(&v8_data_array));
+  v8_data_array = ToV8Traits<DOMUint8Array>::ToV8(
+      v8_scope.GetScriptState(),
+      DOMUint8Array::Create(data_ptr + 1, data->size() - 1));
   ASSERT_FALSE(v8_scope.GetExceptionState().HadException());
 
   underlying_source->Enqueue(ScriptValue(v8_scope.GetIsolate(), v8_data_array));
@@ -695,6 +694,7 @@ TEST_F(ImageDecoderTest, DecoderReadableStreamAvif) {
   EXPECT_EQ(*frame->duration(), 100000u);
   EXPECT_EQ(frame->displayWidth(), 159u);
   EXPECT_EQ(frame->displayHeight(), 159u);
+  EXPECT_EQ(frame->frame()->ColorSpace(), gfx::ColorSpace::CreateSRGB());
 #else
   EXPECT_FALSE(decode_tester.IsFulfilled());
 #endif
@@ -726,11 +726,8 @@ TEST_F(ImageDecoderTest, ReadableStreamAvifStillYuvDecoding) {
   // Append all data, but don't mark the stream as complete yet.
   const uint8_t* data_ptr = reinterpret_cast<const uint8_t*>(data->Data());
 
-  v8::Local<v8::Value> v8_data_array;
-  ASSERT_TRUE(ToV8Traits<DOMUint8Array>::ToV8(
-                  v8_scope.GetScriptState(),
-                  DOMUint8Array::Create(data_ptr, data->size()))
-                  .ToLocal(&v8_data_array));
+  v8::Local<v8::Value> v8_data_array = ToV8Traits<DOMUint8Array>::ToV8(
+      v8_scope.GetScriptState(), DOMUint8Array::Create(data_ptr, data->size()));
   ASSERT_FALSE(v8_scope.GetExceptionState().HadException());
 
   underlying_source->Enqueue(ScriptValue(v8_scope.GetIsolate(), v8_data_array));
@@ -769,9 +766,14 @@ TEST_F(ImageDecoderTest, ReadableStreamAvifStillYuvDecoding) {
     auto* frame = result->image();
     EXPECT_EQ(frame->format(), "I420");
     EXPECT_EQ(frame->timestamp(), 0u);
-    EXPECT_EQ(frame->duration(), absl::nullopt);
+    EXPECT_EQ(frame->duration(), std::nullopt);
     EXPECT_EQ(frame->displayWidth(), 3u);
     EXPECT_EQ(frame->displayHeight(), 3u);
+    EXPECT_EQ(frame->frame()->ColorSpace(),
+              gfx::ColorSpace(gfx::ColorSpace::PrimaryID::BT709,
+                              gfx::ColorSpace::TransferID::SRGB,
+                              gfx::ColorSpace::MatrixID::BT709,
+                              gfx::ColorSpace::RangeID::LIMITED));
 #else
     EXPECT_FALSE(tester.IsFulfilled());
 #endif
@@ -846,11 +848,9 @@ TEST_F(ImageDecoderTest, DecodeClosedDuringReadableStream) {
 
   const uint8_t* data_ptr = reinterpret_cast<const uint8_t*>(data->Data());
 
-  v8::Local<v8::Value> v8_data_array;
-  ASSERT_TRUE(ToV8Traits<DOMUint8Array>::ToV8(
-                  v8_scope.GetScriptState(),
-                  DOMUint8Array::Create(data_ptr, data->size() / 2))
-                  .ToLocal(&v8_data_array));
+  v8::Local<v8::Value> v8_data_array = ToV8Traits<DOMUint8Array>::ToV8(
+      v8_scope.GetScriptState(),
+      DOMUint8Array::Create(data_ptr, data->size() / 2));
   ASSERT_FALSE(v8_scope.GetExceptionState().HadException());
 
   underlying_source->Enqueue(ScriptValue(v8_scope.GetIsolate(), v8_data_array));
@@ -898,11 +898,9 @@ TEST_F(ImageDecoderTest, DecodeInvalidFileViaReadableStream) {
 
   const uint8_t* data_ptr = reinterpret_cast<const uint8_t*>(data->Data());
 
-  v8::Local<v8::Value> v8_data_array;
-  ASSERT_TRUE(ToV8Traits<DOMUint8Array>::ToV8(
-                  v8_scope.GetScriptState(),
-                  DOMUint8Array::Create(data_ptr, data->size() / 2))
-                  .ToLocal(&v8_data_array));
+  v8::Local<v8::Value> v8_data_array = ToV8Traits<DOMUint8Array>::ToV8(
+      v8_scope.GetScriptState(),
+      DOMUint8Array::Create(data_ptr, data->size() / 2));
   ASSERT_FALSE(v8_scope.GetExceptionState().HadException());
 
   underlying_source->Enqueue(ScriptValue(v8_scope.GetIsolate(), v8_data_array));
@@ -971,14 +969,58 @@ TEST_F(ImageDecoderTest, DecodeYuv) {
     auto* frame = result->image();
     EXPECT_EQ(frame->format(), "I420");
     EXPECT_EQ(frame->timestamp(), 0u);
-    EXPECT_EQ(frame->duration(), absl::nullopt);
+    EXPECT_EQ(frame->duration(), std::nullopt);
     EXPECT_EQ(frame->displayWidth(), 99u);
     EXPECT_EQ(frame->displayHeight(), 99u);
+    EXPECT_EQ(frame->frame()->ColorSpace(), gfx::ColorSpace::CreateJpeg());
   }
 }
 
-// TODO(crbug.com/1073995): Add tests for each format, partial decoding,
-// reduced resolution decoding, premultiply, and ignored color behavior.
+TEST_F(ImageDecoderTest, TransferBuffer) {
+  V8TestingScope v8_scope;
+  constexpr char kImageType[] = "image/gif";
+  EXPECT_TRUE(IsTypeSupported(&v8_scope, kImageType));
+
+  auto* init = MakeGarbageCollected<ImageDecoderInit>();
+  init->setType(kImageType);
+
+  auto data = ReadFile("images/resources/animated.gif");
+  DCHECK(!data->empty());
+
+  auto* buffer = DOMArrayBuffer::Create(std::move(data));
+  init->setData(MakeGarbageCollected<V8ImageBufferSource>(buffer));
+
+  HeapVector<Member<DOMArrayBuffer>> transfer;
+  transfer.push_back(Member<DOMArrayBuffer>(buffer));
+  init->setTransfer(std::move(transfer));
+
+  auto* decoder = ImageDecoderExternal::Create(v8_scope.GetScriptState(), init,
+                                               v8_scope.GetExceptionState());
+  ASSERT_TRUE(decoder);
+  EXPECT_TRUE(buffer->IsDetached());
+  ASSERT_FALSE(v8_scope.GetExceptionState().HadException());
+
+  {
+    auto promise = decoder->completed(v8_scope.GetScriptState());
+    ScriptPromiseTester tester(v8_scope.GetScriptState(), promise);
+    tester.WaitUntilSettled();
+    ASSERT_TRUE(tester.IsFulfilled());
+  }
+
+  {
+    auto promise = decoder->decode(MakeOptions(0, true));
+    ScriptPromiseTester tester(v8_scope.GetScriptState(), promise);
+    tester.WaitUntilSettled();
+    ASSERT_TRUE(tester.IsFulfilled());
+    auto* result = ToImageDecodeResult(&v8_scope, tester.Value());
+    EXPECT_TRUE(result->complete());
+
+    auto* frame = result->image();
+    EXPECT_EQ(frame->duration(), 0u);
+    EXPECT_EQ(frame->displayWidth(), 16u);
+    EXPECT_EQ(frame->displayHeight(), 16u);
+  }
+}
 
 }  // namespace
 

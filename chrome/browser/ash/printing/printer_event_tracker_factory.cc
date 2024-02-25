@@ -53,9 +53,10 @@ void PrinterEventTrackerFactory::SetLogging(bool enabled) {
 }
 
 // BrowserContextKeyedServiceFactory:
-KeyedService* PrinterEventTrackerFactory::BuildServiceInstanceFor(
+std::unique_ptr<KeyedService>
+PrinterEventTrackerFactory::BuildServiceInstanceForBrowserContext(
     content::BrowserContext* context) const {
-  PrinterEventTracker* tracker = new PrinterEventTracker();
+  std::unique_ptr<PrinterEventTracker> tracker = std::make_unique<PrinterEventTracker>();
   tracker->set_logging(logging_enabled_);
   return tracker;
 }

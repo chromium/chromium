@@ -51,6 +51,9 @@ void LoginDataDispatcher::Observer::OnAuthDisabledForUser(
     const AccountId& user,
     const AuthDisabledData& auth_disabled_data) {}
 
+void LoginDataDispatcher::Observer::OnAuthenticationStageChanged(
+    AuthenticationStage auth_stage) {}
+
 void LoginDataDispatcher::Observer::OnSetTpmLockedState(
     const AccountId& user,
     bool is_locked,
@@ -188,6 +191,13 @@ void LoginDataDispatcher::DisableAuthForUser(
     const AuthDisabledData& auth_disabled_data) {
   for (auto& observer : observers_) {
     observer.OnAuthDisabledForUser(account_id, auth_disabled_data);
+  }
+}
+
+void LoginDataDispatcher::AuthenticationStageChange(
+    const AuthenticationStage auth_stage) {
+  for (auto& observer : observers_) {
+    observer.OnAuthenticationStageChanged(auth_stage);
   }
 }
 

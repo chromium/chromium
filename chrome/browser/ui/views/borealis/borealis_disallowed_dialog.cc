@@ -41,8 +41,7 @@ namespace {
 
 using AllowStatus = ::borealis::BorealisFeatures::AllowStatus;
 
-using MaybeAction =
-    absl::optional<std::pair<std::u16string, base::OnceClosure>>;
+using MaybeAction = std::optional<std::pair<std::u16string, base::OnceClosure>>;
 
 // Views uses tricks like this to ensure singleton-ness of dialogs.
 static Widget* g_instance_ = nullptr;
@@ -54,7 +53,7 @@ class BehaviourProvider {
   virtual std::u16string GetMessage() const = 0;
 
   // Get a label and callback for the "call to action" button, if present.
-  virtual MaybeAction GetAction() const { return absl::nullopt; }
+  virtual MaybeAction GetAction() const { return std::nullopt; }
 
   virtual std::vector<std::pair<std::u16string, GURL>> GetLinks() const {
     return {};
@@ -67,11 +66,9 @@ class DisallowedHardware : public BehaviourProvider {
     return l10n_util::GetStringUTF16(IDS_BOREALIS_DISALLOWED_HARDWARE);
   }
   std::vector<std::pair<std::u16string, GURL>> GetLinks() const override {
-    // TODO(b/256699588): Replace this with an actual help-center link when
-    // one is created.
     return {{l10n_util::GetStringUTF16(IDS_LEARN_MORE),
-             GURL("https://www.chromium.org/chromium-os/steam-on-chromeos/"
-                  "#supported-devices")}};
+             GURL("https://support.google.com/"
+                  "chromebook?p=steam_on_chromebook")}};
   }
 };
 
@@ -102,6 +99,11 @@ class DisallowedPrimary : public BehaviourProvider {
 class DisallowedChild : public BehaviourProvider {
   std::u16string GetMessage() const override {
     return l10n_util::GetStringUTF16(IDS_BOREALIS_DISALLOWED_CHILD);
+  }
+  std::vector<std::pair<std::u16string, GURL>> GetLinks() const override {
+    return {{l10n_util::GetStringUTF16(IDS_LEARN_MORE),
+             GURL("https://support.google.com/"
+                  "chromebook?p=steam_on_chromebook")}};
   }
 };
 
@@ -161,7 +163,7 @@ class BorealisDisallowedDialog : public DialogDelegate {
                      l10n_util::GetStringUTF16(IDS_CLOSE));
     }
     InitializeView(*behaviour, title_id);
-    SetModalType(ui::MODAL_TYPE_NONE);
+    SetModalType(ui::MODAL_TYPE_SYSTEM);
     SetOwnedByWidget(true);
     SetShowCloseButton(false);
     set_fixed_width(ChromeLayoutProvider::Get()->GetDistanceMetric(
@@ -221,9 +223,7 @@ std::unique_ptr<BehaviourProvider> StatusBehaviour(AllowStatus status) {
       // Unreachable in practice. Show "failed" message just in case.
       return std::make_unique<DisallowedFailure>();
     case AllowStatus::kFeatureDisabled:
-    case AllowStatus::kUnsupportedModel:
-    case AllowStatus::kHardwareChecksFailed:
-    case AllowStatus::kIncorrectToken:
+    case AllowStatus::kInsufficientHardware:
       return std::make_unique<DisallowedHardware>();
     case AllowStatus::kFailedToDetermine:
       return std::make_unique<DisallowedFailure>();
@@ -254,8 +254,6 @@ void ShowDisallowedDialog(AllowStatus status, int title_id) {
       StatusBehaviour(status), title_id);
   g_instance_ = views::DialogDelegate::CreateDialogWidget(std::move(delegate),
                                                           nullptr, nullptr);
-  g_instance_->GetNativeWindow()->SetProperty(
-      ash::kShelfIDKey, ash::ShelfID(::borealis::kInstallerAppId).Serialize());
   g_instance_->Show();
 }
 

@@ -34,14 +34,6 @@ void FakeAccessibilityHelperInstance::PerformAction(
 }
 
 void FakeAccessibilityHelperInstance::
-    SetNativeChromeVoxArcSupportForFocusedWindowDeprecated(
-        bool enabled,
-        SetNativeChromeVoxArcSupportForFocusedWindowDeprecatedCallback
-            callback) {
-  std::move(callback).Run(true);
-}
-
-void FakeAccessibilityHelperInstance::
     SetNativeChromeVoxArcSupportForFocusedWindow(
         bool enabled,
         SetNativeChromeVoxArcSupportForFocusedWindowCallback callback) {
@@ -59,9 +51,6 @@ void FakeAccessibilityHelperInstance::RefreshWithExtraData(
   last_requested_action_ = std::move(action_data_ptr);
   refresh_with_extra_data_callback_ = std::move(callback);
 }
-
-void FakeAccessibilityHelperInstance::SetCaptionStyle(
-    ax::android::mojom::CaptionStylePtr style_ptr) {}
 
 void FakeAccessibilityHelperInstance::RequestSendAccessibilityTree(
     ax::android::mojom::AccessibilityWindowKeyPtr window_ptr) {

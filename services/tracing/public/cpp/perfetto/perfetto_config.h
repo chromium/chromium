@@ -49,6 +49,7 @@ perfetto::TraceConfig COMPONENT_EXPORT(TRACING_CPP)
 bool COMPONENT_EXPORT(TRACING_CPP) AdaptPerfettoConfigForChrome(
     perfetto::TraceConfig* perfetto_config,
     bool privacy_filtering_enabled = false,
+    bool enable_package_name_filter = false,
     perfetto::protos::gen::ChromeConfig::ClientPriority =
         perfetto::protos::gen::ChromeConfig::USER_INITIATED);
 

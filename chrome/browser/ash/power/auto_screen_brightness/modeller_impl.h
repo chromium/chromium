@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_ASH_POWER_AUTO_SCREEN_BRIGHTNESS_MODELLER_IMPL_H_
 
 #include <memory>
+#include <optional>
 
 #include "base/files/file_path.h"
 #include "base/memory/raw_ptr.h"
@@ -26,7 +27,6 @@
 #include "chrome/browser/ash/power/auto_screen_brightness/modeller.h"
 #include "chrome/browser/ash/power/auto_screen_brightness/utils.h"
 #include "chrome/browser/profiles/profile.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/user_activity/user_activity_detector.h"
 #include "ui/base/user_activity/user_activity_observer.h"
 
@@ -36,13 +36,13 @@ namespace auto_screen_brightness {
 
 struct Model {
   Model();
-  Model(const absl::optional<MonotoneCubicSpline>& global_curve,
-        const absl::optional<MonotoneCubicSpline>& personal_curve,
+  Model(const std::optional<MonotoneCubicSpline>& global_curve,
+        const std::optional<MonotoneCubicSpline>& personal_curve,
         int iteration_count);
   Model(const Model& model);
   ~Model();
-  absl::optional<MonotoneCubicSpline> global_curve;
-  absl::optional<MonotoneCubicSpline> personal_curve;
+  std::optional<MonotoneCubicSpline> global_curve;
+  std::optional<MonotoneCubicSpline> personal_curve;
   int iteration_count = 0;
 };
 
@@ -99,7 +99,7 @@ class ModellerImpl : public Modeller,
   void OnUserBrightnessChangeRequested() override;
 
   // ModelConfigLoader::Observer overrides:
-  void OnModelConfigLoaded(absl::optional<ModelConfig> model_config) override;
+  void OnModelConfigLoaded(std::optional<ModelConfig> model_config) override;
 
   // ui::UserActivityObserver overrides:
   void OnUserActivity(const ui::Event* event) override;
@@ -116,7 +116,7 @@ class ModellerImpl : public Modeller,
       const base::TickClock* tick_clock);
 
   // Current average log ambient light.
-  absl::optional<double> AverageAmbientForTesting(base::TimeTicks now);
+  std::optional<double> AverageAmbientForTesting(base::TimeTicks now);
 
   // Current number of training data points stored, which will be used for next
   // training.
@@ -239,26 +239,26 @@ class ModellerImpl : public Modeller,
   std::unique_ptr<Trainer, base::OnTaskRunnerDeleter> trainer_;
 
   // This will be replaced by a mock tick clock during tests.
-  const raw_ptr<const base::TickClock, ExperimentalAsh> tick_clock_;
+  const raw_ptr<const base::TickClock> tick_clock_;
 
   base::OneShotTimer model_timer_;
 
-  absl::optional<AlsReader::AlsInitStatus> als_init_status_;
-  absl::optional<bool> brightness_monitor_success_;
+  std::optional<AlsReader::AlsInitStatus> als_init_status_;
+  std::optional<bool> brightness_monitor_success_;
 
   // |model_config_exists_| will remain nullopt until |OnModelConfigLoaded| is
   // called. Its value will then be set to true if the input model config exists
   // (not nullopt), else its value will be false.
-  absl::optional<bool> model_config_exists_;
+  std::optional<bool> model_config_exists_;
   ModelConfig model_config_;
 
   // Whether this modeller has initialized successfully, including connecting
   // to AlsReader, BrightnessMonitor and loading a Trainer.
   // Initially has no value. Guaranteed to have a value after the completion of
   // |OnModelLoadedFromDisk|.
-  absl::optional<bool> is_modeller_enabled_;
+  std::optional<bool> is_modeller_enabled_;
 
-  absl::optional<ModelSavingSpec> model_saving_spec_;
+  std::optional<ModelSavingSpec> model_saving_spec_;
 
   // Whether the initial global curve is reset to the one constructed from
   // model config. It is true if there is no saved model loaded from the disk
@@ -273,7 +273,7 @@ class ModellerImpl : public Modeller,
   Model model_;
 
   // |initial_global_curve_| is constructed from model config.
-  absl::optional<MonotoneCubicSpline> initial_global_curve_;
+  std::optional<MonotoneCubicSpline> initial_global_curve_;
 
   // Recent log ambient values.
   std::unique_ptr<AmbientLightSampleBuffer> log_als_values_;
@@ -283,7 +283,7 @@ class ModellerImpl : public Modeller,
   base::ObserverList<Modeller::Observer> observers_;
 
   // Training start time.
-  absl::optional<base::TimeTicks> training_start_;
+  std::optional<base::TimeTicks> training_start_;
 
   SEQUENCE_CHECKER(sequence_checker_);
 

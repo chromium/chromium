@@ -4,20 +4,18 @@
 
 package org.chromium.chrome.browser.history;
 
+import android.content.Intent;
 import android.os.Bundle;
 
 import org.chromium.base.IntentUtils;
 import org.chromium.chrome.browser.IntentHandler;
 import org.chromium.chrome.browser.SnackbarActivity;
 import org.chromium.chrome.browser.back_press.BackPressHelper;
-import org.chromium.chrome.browser.back_press.BackPressManager;
 import org.chromium.chrome.browser.back_press.SecondaryActivityBackPressUma.SecondaryActivity;
-import org.chromium.chrome.browser.history_clusters.HistoryClustersConstants;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.profiles.ProfileProvider;
 
-/**
- * Activity for displaying the browsing history manager.
- */
+/** Activity for displaying the browsing history manager. */
 public class HistoryActivity extends SnackbarActivity {
     private HistoryManager mHistoryManager;
 
@@ -25,23 +23,27 @@ public class HistoryActivity extends SnackbarActivity {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        boolean isIncognito = IntentUtils.safeGetBooleanExtra(
-                getIntent(), IntentHandler.EXTRA_INCOGNITO_MODE, false);
-        boolean showHistoryClustersImmediately = IntentUtils.safeGetBooleanExtra(
-                getIntent(), HistoryClustersConstants.EXTRA_SHOW_HISTORY_CLUSTERS, false);
-        String historyClustersQuery = IntentUtils.safeGetStringExtra(
-                getIntent(), HistoryClustersConstants.EXTRA_HISTORY_CLUSTERS_QUERY);
-        mHistoryManager = new HistoryManager(this, true, getSnackbarManager(), isIncognito,
-                /* Supplier<Tab>= */ null, showHistoryClustersImmediately, historyClustersQuery,
-                new BrowsingHistoryBridge(Profile.getLastUsedRegularProfile()));
+        boolean isIncognito =
+                IntentUtils.safeGetBooleanExtra(
+                        getIntent(), IntentHandler.EXTRA_INCOGNITO_MODE, false);
+        boolean isFromCustomTabActivity =
+                getIntent().getBooleanExtra(Intent.EXTRA_RETURN_RESULT, false);
+        String clientPackageName =
+                IntentUtils.safeGetStringExtra(getIntent(), Intent.EXTRA_PACKAGE_NAME);
+        Profile profile = getProfileProvider().getOriginalProfile();
+        mHistoryManager =
+                new HistoryManager(
+                        this,
+                        true,
+                        getSnackbarManager(),
+                        ProfileProvider.getOrCreateProfile(getProfileProvider(), isIncognito),
+                        /* Supplier<Tab>= */ null,
+                        new BrowsingHistoryBridge(profile),
+                        clientPackageName,
+                        !isFromCustomTabActivity);
         setContentView(mHistoryManager.getView());
-        if (BackPressManager.isSecondaryActivityEnabled()) {
-            BackPressHelper.create(
-                    this, getOnBackPressedDispatcher(), mHistoryManager, SecondaryActivity.HISTORY);
-        } else {
-            BackPressHelper.create(this, getOnBackPressedDispatcher(),
-                    mHistoryManager::onBackPressed, SecondaryActivity.HISTORY);
-        }
+        BackPressHelper.create(
+                this, getOnBackPressedDispatcher(), mHistoryManager, SecondaryActivity.HISTORY);
     }
 
     @Override

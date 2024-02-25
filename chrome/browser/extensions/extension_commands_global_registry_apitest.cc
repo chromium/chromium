@@ -18,7 +18,7 @@
 
 namespace extensions {
 
-typedef ExtensionApiTest GlobalCommandsApiTest;
+using GlobalCommandsApiTest = ExtensionApiTest;
 
 // Test the basics of global commands and make sure they work when Chrome
 // doesn't have focus. Also test that non-global commands are not treated as

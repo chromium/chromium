@@ -9,6 +9,7 @@
 #include "base/notreached.h"
 #include "base/task/sequenced_task_runner.h"
 #include "components/bookmarks/browser/bookmark_model.h"
+#include "ios/chrome/browser/bookmarks/model/account_bookmark_model_factory.h"
 #include "ios/chrome/browser/bookmarks/model/bookmarks_utils.h"
 #include "ios/chrome/browser/bookmarks/model/local_or_syncable_bookmark_model_factory.h"
 #include "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
@@ -24,21 +25,26 @@ BookmarkRemoverHelper::~BookmarkRemoverHelper() {
 }
 
 void BookmarkRemoverHelper::BookmarkModelChanged() {
-  NOTREACHED();
+  // Nothing to do here, we only care about all bookmark models being loaded.
 }
 
 void BookmarkRemoverHelper::BookmarkModelLoaded(
     bookmarks::BookmarkModel* bookmark_model,
     bool) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  local_or_syncable_bookmark_model_observation_.Reset();
+  if (!AreAllAvailableBookmarkModelsLoaded(browser_state_)) {
+    // Some models are still loading, need to wait more.
+    return;
+  }
+
+  bookmark_model_observations_.RemoveAllObservations();
   BookmarksRemoved(::RemoveAllUserBookmarksIOS(browser_state_));
 }
 
 void BookmarkRemoverHelper::BookmarkModelBeingDeleted(
     bookmarks::BookmarkModel* bookmark_model) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  local_or_syncable_bookmark_model_observation_.Reset();
+  bookmark_model_observations_.RemoveAllObservations();
   BookmarksRemoved(false);
 }
 
@@ -46,20 +52,21 @@ void BookmarkRemoverHelper::RemoveAllUserBookmarksIOS(Callback completion) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   completion_ = std::move(completion);
 
-  bookmarks::BookmarkModel* bookmark_model =
-      ios::LocalOrSyncableBookmarkModelFactory::GetForBrowserState(
-          browser_state_);
-
-  if (!bookmark_model) {
-    BookmarksRemoved(false);
+  if (AreAllAvailableBookmarkModelsLoaded(browser_state_)) {
+    BookmarksRemoved(::RemoveAllUserBookmarksIOS(browser_state_));
     return;
   }
 
-  if (bookmark_model->loaded()) {
-    BookmarksRemoved(::RemoveAllUserBookmarksIOS(browser_state_));
-  } else {
-    // Wait for the BookmarkModel to finish loading before deleting entries.
-    local_or_syncable_bookmark_model_observation_.Observe(bookmark_model);
+  // Wait for BookmarkModels to finish loading before deleting entries.
+  bookmarks::BookmarkModel* local_or_syncable_bookmark_model =
+      ios::LocalOrSyncableBookmarkModelFactory::GetForBrowserState(
+          browser_state_);
+  bookmark_model_observations_.AddObservation(local_or_syncable_bookmark_model);
+
+  bookmarks::BookmarkModel* account_bookmark_model =
+      ios::AccountBookmarkModelFactory::GetForBrowserState(browser_state_);
+  if (account_bookmark_model) {
+    bookmark_model_observations_.AddObservation(account_bookmark_model);
   }
 }
 

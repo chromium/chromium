@@ -40,8 +40,8 @@ class TrustedVaultAccessTokenFetcherFrontend
 
   // Asynchronously fetches an access token for |account_id|. If |account_id|
   // doesn't represent current primary account, |callback| is called immediately
-  // with absl::nullopt. If primary account changes before access token fetched,
-  // |callback| is called with absl::nullopt.
+  // with std::nullopt. If primary account changes before access token fetched,
+  // |callback| is called with std::nullopt.
   void FetchAccessToken(const CoreAccountId& account_id,
                         TrustedVaultAccessTokenFetcher::TokenCallback callback);
 
@@ -59,7 +59,7 @@ class TrustedVaultAccessTokenFetcherFrontend
   void StartAccessTokenFetch();
 
   // Handles access token fetch completion. Runs |pending_requests_| with
-  // |access_token_info| on success and with absl::nullopt otherwise.
+  // |access_token_info| on success and with std::nullopt otherwise.
   void OnAccessTokenFetchCompleted(GoogleServiceAuthError error,
                                    signin::AccessTokenInfo access_token_info);
 

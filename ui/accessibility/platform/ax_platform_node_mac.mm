@@ -147,9 +147,11 @@ void AXPlatformNodeMac::NotifyAccessibilityEvent(ax::mojom::Event event_type) {
   NotifyMacEvent(objc_storage_->native_node, event_type);
 }
 
-void AXPlatformNodeMac::AnnounceText(const std::u16string& text) {
+void AXPlatformNodeMac::AnnounceTextAs(const std::u16string& text,
+                                       AnnouncementType announcement_type) {
   PostAnnouncementNotification(base::SysUTF16ToNSString(text),
-                               [objc_storage_->native_node AXWindow], false);
+                               [objc_storage_->native_node AXWindow],
+                               announcement_type == AnnouncementType::kPolite);
 }
 
 bool IsNameExposedInAXValueForRole(ax::mojom::Role role) {

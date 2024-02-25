@@ -5,6 +5,7 @@
 #include "third_party/blink/renderer/platform/loader/fetch/resource_load_scheduler.h"
 
 #include <memory>
+#include "base/memory/raw_ptr.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_mock_time_task_runner.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -66,7 +67,7 @@ class MockClient final : public GarbageCollected<MockClient>,
  private:
   Member<DetachableConsoleLogger> console_logger_ =
       MakeGarbageCollected<DetachableConsoleLogger>();
-  MockClientDelegate* delegate_;
+  raw_ptr<MockClientDelegate> delegate_;
   bool was_run_ = false;
 };
 
@@ -97,7 +98,7 @@ class ResourceLoadSchedulerTest : public testing::Test {
         mojom::ConsoleMessageLevel,
         const String&,
         bool discard_duplicates,
-        absl::optional<mojom::ConsoleMessageCategory> category) override {
+        std::optional<mojom::ConsoleMessageCategory> category) override {
       has_message_ = true;
     }
     void AddConsoleMessageImpl(ConsoleMessage*,
@@ -790,8 +791,7 @@ TEST_F(ResourceLoadSchedulerTest, ConsiderNetworkStateInTigtMode) {
   Scheduler()->Request(client2, ThrottleOption::kThrottleable,
                        ResourceLoadPriority::kLow, 5 /* intra_priority */,
                        &id2);
-  Scheduler()->SetConnectionInfo(id2,
-                                 net::HttpResponseInfo::CONNECTION_INFO_HTTP2);
+  Scheduler()->SetConnectionInfo(id2, net::HttpConnectionInfo::kHTTP2);
   EXPECT_NE(ResourceLoadScheduler::kInvalidClientId, id2);
 
   EXPECT_TRUE(client1->WasRun());
@@ -845,8 +845,7 @@ TEST_F(ResourceLoadSchedulerTest,
   Scheduler()->Request(client2, ThrottleOption::kThrottleable,
                        ResourceLoadPriority::kLow, 5 /* intra_priority */,
                        &id2);
-  Scheduler()->SetConnectionInfo(id2,
-                                 net::HttpResponseInfo::CONNECTION_INFO_HTTP2);
+  Scheduler()->SetConnectionInfo(id2, net::HttpConnectionInfo::kHTTP2);
 
   // This request will not run, because we are experiencing a slow connection.
   MockClient* client3 = MakeGarbageCollected<MockClient>();
@@ -854,8 +853,7 @@ TEST_F(ResourceLoadSchedulerTest,
   Scheduler()->Request(client3, ThrottleOption::kThrottleable,
                        ResourceLoadPriority::kLow, 5 /* intra_priority */,
                        &id3);
-  Scheduler()->SetConnectionInfo(id3,
-                                 net::HttpResponseInfo::CONNECTION_INFO_HTTP2);
+  Scheduler()->SetConnectionInfo(id3, net::HttpConnectionInfo::kHTTP2);
 
   EXPECT_TRUE(client1->WasRun());
   EXPECT_TRUE(client2->WasRun());

@@ -6,16 +6,15 @@ package org.chromium.components.embedder_support.delegate;
 
 import android.view.KeyEvent;
 
-import org.chromium.base.annotations.CalledByNative;
-import org.chromium.base.annotations.JNINamespace;
+import org.jni_zero.CalledByNative;
+import org.jni_zero.JNINamespace;
+
 import org.chromium.blink.mojom.DisplayMode;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.common.ResourceRequestBody;
 import org.chromium.url.GURL;
 
-/**
- * Java peer of the native class of the same name.
- */
+/** Java peer of the native class of the same name. */
 @JNINamespace("web_contents_delegate_android")
 public class WebContentsDelegateAndroid {
     // Equivalent of WebCore::WebConsoleMessage::LevelTip.
@@ -34,8 +33,12 @@ public class WebContentsDelegateAndroid {
      * @param isRendererInitiated Whether or not the renderer initiated this action.
      */
     @CalledByNative
-    public void openNewTab(GURL url, String extraHeaders, ResourceRequestBody postData,
-            int disposition, boolean isRendererInitiated) {}
+    public void openNewTab(
+            GURL url,
+            String extraHeaders,
+            ResourceRequestBody postData,
+            int disposition,
+            boolean isRendererInitiated) {}
 
     @CalledByNative
     public void activateContents() {}
@@ -52,21 +55,21 @@ public class WebContentsDelegateAndroid {
     @CalledByNative
     public void visibleSSLStateChanged() {}
 
-    /**
-     * Signaled when the renderer has been deemed to be unresponsive.
-     */
+    /** Signaled when the renderer has been deemed to be unresponsive. */
     @CalledByNative
     public void rendererUnresponsive() {}
 
-    /**
-     * Signaled when the render has been deemed to be responsive.
-     */
+    /** Signaled when the render has been deemed to be responsive. */
     @CalledByNative
     public void rendererResponsive() {}
 
     @CalledByNative
-    public void webContentsCreated(WebContents sourceWebContents, long openerRenderProcessId,
-            long openerRenderFrameId, String frameName, GURL targetUrl,
+    public void webContentsCreated(
+            WebContents sourceWebContents,
+            long openerRenderProcessId,
+            long openerRenderFrameId,
+            String frameName,
+            GURL targetUrl,
             WebContents newWebContents) {}
 
     @CalledByNative
@@ -135,25 +138,19 @@ public class WebContentsDelegateAndroid {
         return false;
     }
 
-    /**
-     * @return The height of the top controls in physical pixels (not DIPs).
-     */
+    /** @return The height of the top controls in physical pixels (not DIPs). */
     @CalledByNative
     public int getTopControlsHeight() {
         return 0;
     }
 
-    /**
-     * @return The minimum visible height the top controls can have in physical pixels (not DIPs).
-     */
+    /** @return The minimum visible height the top controls can have in physical pixels (not DIPs). */
     @CalledByNative
     public int getTopControlsMinHeight() {
         return 0;
     }
 
-    /**
-     * @return The height of the bottom controls in physical pixels (not DIPs).
-     */
+    /** @return The height of the bottom controls in physical pixels (not DIPs). */
     @CalledByNative
     public int getBottomControlsHeight() {
         return 0;
@@ -168,17 +165,13 @@ public class WebContentsDelegateAndroid {
         return 0;
     }
 
-    /**
-     * @return Whether or not the browser controls height changes should be animated.
-     */
+    /** @return Whether or not the browser controls height changes should be animated. */
     @CalledByNative
     public boolean shouldAnimateBrowserControlsHeightChanges() {
         return false;
     }
 
-    /**
-     * @return Whether or not the browser controls resize Blink's view size.
-     */
+    /** @return Whether or not the browser controls resize Blink's view size. */
     @CalledByNative
     public boolean controlsResizeView() {
         return false;
@@ -205,10 +198,19 @@ public class WebContentsDelegateAndroid {
         return displayMode;
     }
 
-    /**
-     * @return The {@link DisplayMode} value.
-     */
+    /** @return The {@link DisplayMode} value. */
     public int getDisplayMode() {
         return DisplayMode.UNDEFINED;
     }
+
+    /**
+     * CloseWatcher web API support. If the currently focused frame has a
+     * CloseWatcher registered in JavaScript, the CloseWatcher should receive
+     * the next "close" operation, based on what the OS convention for
+     * closing is. This function is called when the focused frame changes or a
+     * CloseWatcher registered/unregistered to update whether the CloseWatcher
+     * should intercept.
+     */
+    @CalledByNative
+    public void didChangeCloseSignalInterceptStatus() {}
 }

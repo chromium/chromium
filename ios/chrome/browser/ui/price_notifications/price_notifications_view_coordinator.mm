@@ -5,12 +5,14 @@
 #import "ios/chrome/browser/ui/price_notifications/price_notifications_view_coordinator.h"
 
 #import "base/check.h"
+#import "base/metrics/user_metrics.h"
+#import "base/metrics/user_metrics_action.h"
 #import "base/strings/sys_string_conversions.h"
 #import "components/image_fetcher/core/image_data_fetcher.h"
 #import "components/prefs/pref_service.h"
 #import "ios/chrome/browser/bookmarks/model/local_or_syncable_bookmark_model_factory.h"
-#import "ios/chrome/browser/commerce/shopping_service_factory.h"
-#import "ios/chrome/browser/push_notification/push_notification_service.h"
+#import "ios/chrome/browser/commerce/model/shopping_service_factory.h"
+#import "ios/chrome/browser/push_notification/model/push_notification_service.h"
 #import "ios/chrome/browser/shared/coordinator/alert/alert_coordinator.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
@@ -22,13 +24,13 @@
 #import "ios/chrome/browser/shared/public/commands/bookmarks_commands.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/snackbar_commands.h"
-#import "ios/chrome/browser/shared/ui/table_view/chrome_table_view_controller.h"
+#import "ios/chrome/browser/shared/ui/table_view/legacy_chrome_table_view_controller.h"
 #import "ios/chrome/browser/shared/ui/table_view/table_view_navigation_controller.h"
 #import "ios/chrome/browser/shared/ui/table_view/table_view_navigation_controller_constants.h"
 #import "ios/chrome/browser/shared/ui/table_view/table_view_utils.h"
 #import "ios/chrome/browser/ui/price_notifications/price_notifications_price_tracking_mediator.h"
 #import "ios/chrome/browser/ui/price_notifications/price_notifications_table_view_controller.h"
-#import "ios/chrome/grit/ios_chromium_strings.h"
+#import "ios/chrome/grit/ios_branded_strings.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "services/network/public/cpp/shared_url_loader_factory.h"
 #import "ui/base/device_form_factor.h"
@@ -119,22 +121,20 @@
 
   self.navigationController.navigationBar.prefersLargeTitles = NO;
 
-  if (@available(iOS 15, *)) {
-    UISheetPresentationController* sheetPresentationController =
-        self.navigationController.sheetPresentationController;
-    if (sheetPresentationController) {
-      sheetPresentationController.prefersEdgeAttachedInCompactHeight = YES;
-      sheetPresentationController
-          .widthFollowsPreferredContentSizeWhenEdgeAttached = YES;
+  UISheetPresentationController* sheetPresentationController =
+      self.navigationController.sheetPresentationController;
+  if (sheetPresentationController) {
+    sheetPresentationController.prefersEdgeAttachedInCompactHeight = YES;
+    sheetPresentationController
+        .widthFollowsPreferredContentSizeWhenEdgeAttached = YES;
 
-      sheetPresentationController.detents =
-          ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_TABLET
-              ? @[ [UISheetPresentationControllerDetent largeDetent] ]
-              : @[
-                  [UISheetPresentationControllerDetent mediumDetent],
-                  [UISheetPresentationControllerDetent largeDetent]
-                ];
-    }
+    sheetPresentationController.detents =
+        ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_TABLET
+            ? @[ [UISheetPresentationControllerDetent largeDetent] ]
+            : @[
+                [UISheetPresentationControllerDetent mediumDetent],
+                [UISheetPresentationControllerDetent largeDetent]
+              ];
   }
 
   [self.baseViewController presentViewController:self.navigationController
@@ -231,6 +231,8 @@
                                }
                                 style:UIAlertActionStyleDefault];
   [_alertCoordinator start];
+  base::RecordAction(
+      base::UserMetricsAction("Commerce.PriceTracking.IOS.Track.Failure"));
 }
 
 - (void)presentStopPriceTrackingErrorAlertForItem:
@@ -264,6 +266,8 @@
                                }
                                 style:UIAlertActionStyleDefault];
   [_alertCoordinator start];
+  base::RecordAction(
+      base::UserMetricsAction("Commerce.PriceTracking.IOS.Untrack.Failure"));
 }
 
 #pragma mark - Private

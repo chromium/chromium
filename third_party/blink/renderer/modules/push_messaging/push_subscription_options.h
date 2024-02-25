@@ -35,7 +35,7 @@ class PushSubscriptionOptions final : public ScriptWrappable {
 
   // Mutable by web developer. See https://github.com/w3c/push-api/issues/198.
   DOMArrayBuffer* applicationServerKey() const {
-    return application_server_key_;
+    return application_server_key_.Get();
   }
 
   void Trace(Visitor* visitor) const override;

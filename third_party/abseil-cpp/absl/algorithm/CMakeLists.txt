@@ -50,6 +50,7 @@ absl_cc_library(
     absl::algorithm
     absl::core_headers
     absl::meta
+    absl::nullability
   PUBLIC
 )
 

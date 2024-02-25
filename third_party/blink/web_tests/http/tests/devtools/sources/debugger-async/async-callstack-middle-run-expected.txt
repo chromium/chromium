@@ -3,11 +3,11 @@ Tests that capturing asynchronous call stacks in debugger works if started after
 Set timer for test function.
 Captured call stacks in no particular order:
 Call stack:
-    0) timeoutOffCapturing2 (async-callstack-middle-run.js:28)
+    0) timeoutOffCapturing2 (async-callstack-middle-run.js:27)
 
 Call stack:
-    0) timeoutOnCapturing (async-callstack-middle-run.js:33)
+    0) timeoutOnCapturing (async-callstack-middle-run.js:32)
     [setTimeout]
-    0) timeoutOffCapturing (async-callstack-middle-run.js:23)
+    0) timeoutOffCapturing (async-callstack-middle-run.js:22)
 
 

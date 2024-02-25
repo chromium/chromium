@@ -70,7 +70,7 @@ const net::NetworkTrafficAnnotationTag kTrafficAnnotation =
 }  // namespace
 
 QuicChromiumPacketWriter::ReusableIOBuffer::ReusableIOBuffer(size_t capacity)
-    : IOBuffer(capacity), capacity_(capacity) {}
+    : IOBufferWithSize(capacity), capacity_(capacity) {}
 
 QuicChromiumPacketWriter::ReusableIOBuffer::~ReusableIOBuffer() = default;
 
@@ -201,7 +201,7 @@ void QuicChromiumPacketWriter::SetWritable() {
   write_in_progress_ = false;
 }
 
-absl::optional<int> QuicChromiumPacketWriter::MessageTooBigErrorCode() const {
+std::optional<int> QuicChromiumPacketWriter::MessageTooBigErrorCode() const {
   return ERR_MSG_TOO_BIG;
 }
 

@@ -1,0 +1,42 @@
+[
+  {
+    "os": [
+      "win",
+      "linux",
+      "mac",
+      "chromeos_ash",
+      "chromeos_lacros",
+      "fuchsia"
+    ],
+    "policy_pref_mapping_tests": [
+      {
+        "policies": {},
+        "prefs": {
+          "browser.click_to_call_enabled": {
+            "default_value": true
+          }
+        }
+      },
+      {
+        "policies": {
+          "ClickToCallEnabled": false
+        },
+        "prefs": {
+          "browser.click_to_call_enabled": {
+            "value": false
+          }
+        }
+      },
+      {
+        "policies": {
+          "ClickToCallEnabled": true
+        },
+        "prefs": {
+          "browser.click_to_call_enabled": {
+            "value": true
+          }
+        }
+      }
+    ]
+  }
+]

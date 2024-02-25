@@ -10,9 +10,7 @@
 #include "chrome/common/extensions/api/file_system_provider.h"
 #include "chrome/common/extensions/api/file_system_provider_internal.h"
 
-namespace ash {
-namespace file_system_provider {
-namespace operations {
+namespace ash::file_system_provider::operations {
 
 ExecuteAction::ExecuteAction(RequestDispatcher* dispatcher,
                              const ProvidedFileSystemInfo& file_system_info,
@@ -24,8 +22,7 @@ ExecuteAction::ExecuteAction(RequestDispatcher* dispatcher,
       action_id_(action_id),
       callback_(std::move(callback)) {}
 
-ExecuteAction::~ExecuteAction() {
-}
+ExecuteAction::~ExecuteAction() = default;
 
 bool ExecuteAction::Execute(int request_id) {
   using extensions::api::file_system_provider::ExecuteActionRequestedOptions;
@@ -60,6 +57,4 @@ void ExecuteAction::OnError(int /* request_id */,
   std::move(callback_).Run(error);
 }
 
-}  // namespace operations
-}  // namespace file_system_provider
-}  // namespace ash
+}  // namespace ash::file_system_provider::operations

@@ -58,6 +58,10 @@
         :host {
           --cr-radio-button-checked-color: SelectedItem;
         }
+
+        :host-context([chrome-refresh-2023]) {
+          forced-color-adjust: none;
+        }
       }
 
       :host([disabled]) {

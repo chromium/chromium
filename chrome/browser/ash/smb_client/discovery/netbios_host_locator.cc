@@ -14,8 +14,7 @@
 #include "net/base/ip_endpoint.h"
 #include "net/base/network_change_notifier.h"
 
-namespace ash {
-namespace smb_client {
+namespace ash::smb_client {
 namespace {
 
 bool IsMLan(const net::NetworkInterface& interface) {
@@ -134,8 +133,8 @@ void NetBiosHostLocator::PacketReceived(const std::vector<uint8_t>& packet,
   ++outstanding_parse_requests_;
   smb_provider_client_->ParseNetBiosPacket(
       packet, transaction_id,
-      base::BindOnce(&NetBiosHostLocator::OnPacketParsed, AsWeakPtr(),
-                     sender_ip));
+      base::BindOnce(&NetBiosHostLocator::OnPacketParsed,
+                     weak_ptr_factory_.GetWeakPtr(), sender_ip));
 }
 
 void NetBiosHostLocator::OnPacketParsed(
@@ -195,5 +194,4 @@ bool NetBiosHostLocator::WouldOverwriteResult(
          results_.at(hostname) != sender_ip.address();
 }
 
-}  // namespace smb_client
-}  // namespace ash
+}  // namespace ash::smb_client

@@ -5,8 +5,8 @@
 # Toolchain-related configuration that may be needed outside the context of the
 # toolchain() rules themselves.
 
+import("//build/config/cast.gni")
 import("//build/config/chrome_build.gni")
-import("//build/config/chromecast_build.gni")
 import("//build_overrides/build.gni")
 
 declare_args() {
@@ -16,6 +16,12 @@ declare_args() {
   # conjunction with setting the llvm_force_head_revision DEPS variable when
   # `gclient runhooks` is run as well.
   llvm_force_head_revision = false
+
+  # Cronet is shipped in AOSP, where it is built using the Android Mainline
+  # Clang. Please refer to go/cronet-builders-with-mainline-clang-design for
+  # more information.
+  # If this arg is set to true, we use the Android Mainline LLVM.
+  llvm_android_mainline = false
 
   # Used for binary size analysis.
   generate_linker_map = is_android && is_official_build
@@ -38,21 +44,16 @@ if (generate_linker_map) {
 }
 
 declare_args() {
-  if (llvm_force_head_revision) {
-    clang_version = "18"
-  } else {
-    # TODO(crbug.com/1467585): Remove in the next clang roll
+  if (llvm_android_mainline) {  # https://crbug.com/1481060
     clang_version = "17"
+  } else {
+    clang_version = "19"
   }
 }
 
 # Extension for shared library files (including leading dot).
 if (is_apple) {
   shlib_extension = ".dylib"
-} else if (is_android && is_component_build) {
-  # By appending .cr, we prevent name collisions with libraries already
-  # loaded by the Android zygote.
-  shlib_extension = ".cr.so"
 } else if (is_posix || is_fuchsia) {
   shlib_extension = ".so"
 } else if (is_win) {

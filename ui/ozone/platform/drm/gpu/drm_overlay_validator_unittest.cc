@@ -91,7 +91,7 @@ class MAYBE_DrmOverlayValidatorTest : public testing::Test {
     CommitRequest commit_request;
 
     DrmOverlayPlaneList modeset_planes;
-    modeset_planes.emplace_back(CreateBuffer(), nullptr);
+    modeset_planes.push_back(DrmOverlayPlane::TestPlane(CreateBuffer()));
 
     controller->GetModesetProps(&commit_request, modeset_planes, kDefaultMode,
                                 /*enable_vrr=*/false);
@@ -132,10 +132,10 @@ class MAYBE_DrmOverlayValidatorTest : public testing::Test {
   base::test::SingleThreadTaskEnvironment task_environment_{
       base::test::SingleThreadTaskEnvironment::MainThreadType::UI};
   scoped_refptr<MockDrmDevice> drm_;
-  raw_ptr<MockGbmDevice, ExperimentalAsh> gbm_ = nullptr;
+  raw_ptr<MockGbmDevice> gbm_ = nullptr;
   std::unique_ptr<ScreenManager> screen_manager_;
   std::unique_ptr<DrmDeviceManager> drm_device_manager_;
-  raw_ptr<DrmWindow, DanglingUntriaged | ExperimentalAsh> window_;
+  raw_ptr<DrmWindow, DanglingUntriaged> window_;
   std::unique_ptr<DrmOverlayValidator> overlay_validator_;
   std::vector<OverlaySurfaceCandidate> overlay_params_;
   DrmOverlayPlaneList plane_list_;
@@ -260,10 +260,10 @@ void MAYBE_DrmOverlayValidatorTest::AddPlane(
 
   scoped_refptr<DrmFramebuffer> drm_framebuffer = CreateOverlayBuffer(
       GetFourCCFormatFromBufferFormat(params.format), params.buffer_size);
-  plane_list_.emplace_back(std::move(drm_framebuffer), params.plane_z_order,
-                           absl::get<gfx::OverlayTransform>(params.transform),
-                           gfx::Rect(), gfx::ToNearestRect(params.display_rect),
-                           params.crop_rect, true, nullptr);
+  plane_list_.emplace_back(
+      std::move(drm_framebuffer), params.color_space, params.plane_z_order,
+      absl::get<gfx::OverlayTransform>(params.transform), gfx::Rect(),
+      gfx::ToNearestRect(params.display_rect), params.crop_rect, true, nullptr);
 }
 
 void MAYBE_DrmOverlayValidatorTest::TearDown() {

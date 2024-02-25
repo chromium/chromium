@@ -40,6 +40,7 @@ struct VideoEncoderClientConfig {
       const std::vector<VideoEncodeAccelerator::Config::SpatialLayer>&
           spatial_layers,
       SVCInterLayerPredMode inter_layer_pred_mode,
+      VideoEncodeAccelerator::Config::ContentType content_type,
       const media::VideoBitrateAllocation& bitrate,
       bool reverse);
   VideoEncoderClientConfig(const VideoEncoderClientConfig&);
@@ -56,17 +57,21 @@ struct VideoEncoderClientConfig {
   size_t num_temporal_layers = 1u;
   size_t num_spatial_layers = 1u;
   SVCInterLayerPredMode inter_layer_pred_mode = SVCInterLayerPredMode::kOff;
+  VideoEncodeAccelerator::Config::ContentType content_type =
+      VideoEncodeAccelerator::Config::ContentType::kCamera;
   // The maximum number of bitstream buffer encodes that can be requested
   // without waiting for the result of the previous encodes requests.
   size_t max_outstanding_encode_requests = 1;
+  // The drop frame threshold. See VideoEncodeAccelerator::Config for detail.
+  uint8_t drop_frame_thresh = 0;
   // The desired bitrate in bits/second.
   media::VideoBitrateAllocation bitrate_allocation;
   // The desired framerate in frames/second.
   uint32_t framerate = 30.0;
   // The interval of calling VideoEncodeAccelerator::Encode(). If this is
-  // absl::nullopt, Encode() is called once VideoEncodeAccelerator consumes
+  // std::nullopt, Encode() is called once VideoEncodeAccelerator consumes
   // the previous VideoFrames.
-  absl::optional<base::TimeDelta> encode_interval = absl::nullopt;
+  std::optional<base::TimeDelta> encode_interval = std::nullopt;
   // The number of frames to be encoded. This can be more than the number of
   // frames in the video, and in which case the VideoEncoderClient loops the
   // video during encoding.
@@ -94,6 +99,7 @@ class VideoEncoderStats {
   uint32_t framerate = 0;
   size_t total_num_encoded_frames = 0;
   size_t total_encoded_frames_size = 0;
+  size_t num_dropped_frames = 0;
   // Filled in spatial/temporal layer encoding and codec is vp9.
   std::vector<std::vector<size_t>> num_encoded_frames_per_layer;
   std::vector<std::vector<size_t>> encoded_frames_size_per_layer;
@@ -261,9 +267,6 @@ class VideoEncoderClient : public VideoEncodeAccelerator::Client {
   // A counter to track what frame is represented by a bitstream returned on
   // BitstreamBufferReady().
   size_t frame_index_ = 0;
-
-  // The current top spatial layer index.
-  uint8_t current_top_spatial_index_ = 0;
 
   // A map from an input VideoFrame timestamp to the time when it is enqueued
   // into |encoder_|.

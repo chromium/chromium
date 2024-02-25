@@ -17,12 +17,12 @@ import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
+import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
-import org.chromium.chrome.test.util.browser.Features.DisableFeatures;
 import org.chromium.components.messages.MessageDispatcher;
 import org.chromium.components.messages.MessageDispatcherProvider;
 import org.chromium.components.messages.MessageIdentifier;
@@ -38,9 +38,7 @@ import java.util.List;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeoutException;
 
-/**
- * Tests for making sure the distillability service is communicating correctly.
- */
+/** Tests for making sure the distillability service is communicating correctly. */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 public class DistillabilityServiceTest {
@@ -54,9 +52,7 @@ public class DistillabilityServiceTest {
         mActivityTestRule.startMainActivityOnBlankPage();
     }
 
-    /**
-     * Make sure that Reader Mode appears after navigating from a native page.
-     */
+    /** Make sure that Reader Mode appears after navigating from a native page. */
     @Test
     @Feature({"Distillability-Service"})
     @MediumTest
@@ -64,13 +60,15 @@ public class DistillabilityServiceTest {
     @DisableFeatures(ChromeFeatureList.CONTEXTUAL_PAGE_ACTION_READER_MODE)
     @DisabledTest(message = "Flaky - crbug/1455454")
     public void testServiceAliveAfterNativePage() throws TimeoutException, ExecutionException {
-        EmbeddedTestServer testServer = EmbeddedTestServer.createAndStartServer(
-                ApplicationProvider.getApplicationContext());
+        EmbeddedTestServer testServer =
+                EmbeddedTestServer.createAndStartServer(
+                        ApplicationProvider.getApplicationContext());
 
         final CallbackHelper readerShownCallbackHelper = new CallbackHelper();
 
-        TestWebContentsObserver observer = TestThreadUtils.runOnUiThreadBlockingNoException(
-                () -> new TestWebContentsObserver(mActivityTestRule.getWebContents()));
+        TestWebContentsObserver observer =
+                TestThreadUtils.runOnUiThreadBlockingNoException(
+                        () -> new TestWebContentsObserver(mActivityTestRule.getWebContents()));
         OnPageFinishedHelper finishHelper = observer.getOnPageFinishedHelper();
 
         // Navigate to a native page.
@@ -90,12 +88,14 @@ public class DistillabilityServiceTest {
 
     private void verifyReaderModeMessageShown(CallbackHelper readerShownCallbackHelper)
             throws ExecutionException {
-        MessageDispatcher messageDispatcher = TestThreadUtils.runOnUiThreadBlocking(
-                ()
-                        -> MessageDispatcherProvider.from(
-                                mActivityTestRule.getActivity().getWindowAndroid()));
-        List<MessageStateHandler> messages = MessagesTestHelper.getEnqueuedMessages(
-                messageDispatcher, MessageIdentifier.READER_MODE);
+        MessageDispatcher messageDispatcher =
+                TestThreadUtils.runOnUiThreadBlocking(
+                        () ->
+                                MessageDispatcherProvider.from(
+                                        mActivityTestRule.getActivity().getWindowAndroid()));
+        List<MessageStateHandler> messages =
+                MessagesTestHelper.getEnqueuedMessages(
+                        messageDispatcher, MessageIdentifier.READER_MODE);
         if (messages.size() > 0 && MessagesTestHelper.getCurrentMessage(messages.get(0)) != null) {
             readerShownCallbackHelper.notifyCalled();
         }

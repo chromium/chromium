@@ -97,7 +97,7 @@ design can be found at [policy_design.md](./policy_design.md).**
         -  Declare the atomic group in the [policies.yaml](https://cs.chromium.org/chromium/src/components/policy/resources/templates/policies.yaml) file.
     -  Create a `policy_atomic_groups.yaml` file in the group where you added the
        policies if it does not already exist.
-       You may use [policy.yaml](https://cs.chromium.org/chromium/src/components/policy/resources/new_policy_templates/policy.yaml) as reference.
+       You may use [policy_atomic_groups.yaml](https://cs.chromium.org/chromium/src/components/policy/resources/new_policy_templates/policy_atomic_groups.yaml) as reference.
 6.  Create a preference and map the policy value to it.
     -   All policy values need to be mapped into a prefs value before being used
         unless the policy is needed before PrefService initialization.
@@ -112,12 +112,12 @@ design can be found at [policy_design.md](./policy_design.md).**
             [configuration_policy_handler_list_factory.cc](https://cs.chromium.org/chromium/src/chrome/browser/policy/configuration_policy_handler_list_factory.cc?type=cs&q=kSimplePolicyMap&g=0&l=150).
             If the policy needs additional verification or processing, please
             implement a `ConfigurationPolicyHandler` to do so.
-        3.  Test the mapping by adding policy to
-            [policy_test_cases.json](https://cs.chromium.org/chromium/src/components/policy/test/data/policy_test_cases.json?q=policy_test_case) (see [instructions](https://cs.chromium.org/chromium/src/docs/enterprise/policy_pref_mapping_test.md)).
+        3.  Test the mapping by adding PolicyName.json  under
+            [policy/test/data/pref_mapping](https://cs.chromium.org/chromium/src/components/policy/test/data/pref_mapping) (see [instructions](https://cs.chromium.org/chromium/src/docs/enterprise/policy_pref_mapping_test.md)).
         4.  iOS platform has its own
             [configuration_policy_handler_list_factory.mm](https://source.chromium.org/chromium/chromium/src/+/main:ios/chrome/browser/policy/configuration_policy_handler_list_factory.mm)
             and
-            [policy_test_cases.json](https://source.chromium.org/chromium/chromium/src/+/main:ios/chrome/test/data/policy/policy_test_cases.json)
+            [policy/pref_mapping](https://source.chromium.org/chromium/chromium/src/+/main:ios/chrome/test/data/policy/pref_mapping)
             file.
 7.  Disable the user setting UI when the policy is applied.
     -   If your feature can be controlled by GUI in `chrome://settings`, the
@@ -144,20 +144,23 @@ design can be found at [policy_design.md](./policy_design.md).**
     -   Most policies that are used by the browser can be shared between desktop
         and ChromeOS. However, you need a few additional steps for a device
         policy on ChromeOS.
-        -   Add a message for your policy in
+        -   Add a field for your policy in
             `components/policy/proto/chrome_device_policy.proto`. Please note
             that all proto fields are optional.
+        -   Update `components/policy/resources/templates/device_policy_proto_map.yaml`
+            with a mapping from the policy name to the `chrome_device_policy` proto
+            field you added.
         -   Update
             `chrome/browser/ash/policy/core/device_policy_decoder.{h,cc}`
             for the new policy.
-10.  Test the policy.
+10. Test the policy.
     -   Add a test to verify the policy. You can add a test in
         `chrome/browser/policy/<area>_policy_browsertest.cc` or with the policy
         implementation. For example, a network policy test can be put into
         `chrome/browser/net`. Ideally, your test would set the policy, fire up
         the browser, and interact with the browser just as a user would do to
         check whether the policy takes effect.
-11.  Manually testing your policy.
+11. Manually testing your policy.
     -   Windows: The simplest way to test is to write the registry keys manually
         to `Software\Policies\Chromium` (for Chromium builds) or
         `Software\Policies\Google\Chrome` (for Google Chrome branded builds). If
@@ -178,7 +181,7 @@ design can be found at [policy_design.md](./policy_design.md).**
         If you'd just like to do a quick test for ChromeOS, the Linux code is
         also functional on CrOS, see
         [Linux Quick Start](https://www.chromium.org/administrators/linux-quick-start).
-12.  If you are adding a new policy that supersedes an older one, verify that the
+12. If you are adding a new policy that supersedes an older one, verify that the
     new policy works as expected even if the old policy is set (allowing us to
     set both during the transition time when Chrome versions honoring the old
     and the new policies coexist).
@@ -277,8 +280,8 @@ When removing support for a policy:
 1. Lastly after the last supported version has been branched:
    - remove all the code that implements the policy behavior as shown in the
      [Examples](#examples) section below after the milestone has been reached.
-   - Update the related test in the `policy_test_cases.json` by clearing the
-     the test for that policy.
+   - Update the related tests in the under `policy/test/data/pref_mapping` by removing all
+     test related to that policy and any resulting empty file.
 1. Notify chromium-enterprise@chromium.org to ensure this removal of support is
    mentioned in the enterprise release notes.
 

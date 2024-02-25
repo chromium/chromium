@@ -1,0 +1,17 @@
+This is a testharness.js-based test.
+[FAIL] e.style['word-space-transform'] = "none" should set the property value
+  assert_not_equals: property should be set got disallowed value ""
+[FAIL] e.style['word-space-transform'] = "space" should set the property value
+  assert_not_equals: property should be set got disallowed value ""
+[FAIL] e.style['word-space-transform'] = "ideographic-space" should set the property value
+  assert_not_equals: property should be set got disallowed value ""
+[FAIL] e.style['word-space-transform'] = "space auto-phrase" should set the property value
+  assert_not_equals: property should be set got disallowed value ""
+[FAIL] e.style['word-space-transform'] = "ideographic-space auto-phrase" should set the property value
+  assert_not_equals: property should be set got disallowed value ""
+[FAIL] e.style['word-space-transform'] = "auto-phrase space" should set the property value
+  assert_not_equals: property should be set got disallowed value ""
+[FAIL] e.style['word-space-transform'] = "auto-phrase ideographic-space" should set the property value
+  assert_not_equals: property should be set got disallowed value ""
+Harness: the test ran to completion.
+

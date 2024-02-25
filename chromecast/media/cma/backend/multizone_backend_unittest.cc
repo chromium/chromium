@@ -169,6 +169,7 @@ class MultizoneBackendTest : public testing::TestWithParam<TestParams> {
   base::test::TaskEnvironment task_environment_;
   std::vector<std::unique_ptr<BufferFeeder>> effects_feeders_;
   std::unique_ptr<BufferFeeder> audio_feeder_;
+  base::RunLoop loop_;
 };
 
 namespace {
@@ -373,7 +374,7 @@ void MultizoneBackendTest::Start() {
     feeder->Start();
   CHECK(audio_feeder_);
   audio_feeder_->Start();
-  base::RunLoop().Run();
+  loop_.Run();
 }
 
 void MultizoneBackendTest::OnEndOfStream() {
@@ -381,7 +382,7 @@ void MultizoneBackendTest::OnEndOfStream() {
   for (auto& feeder : effects_feeders_)
     feeder->Stop();
 
-  base::RunLoop::QuitCurrentWhenIdleDeprecated();
+  loop_.QuitWhenIdle();
 
   EXPECT_LT(audio_feeder_->GetMaxRenderingDelayErrorUs(),
             kMaxRenderingDelayErrorUs);

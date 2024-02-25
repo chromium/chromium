@@ -4,15 +4,17 @@
 
 #include "chrome/browser/ui/views/bookmarks/bookmark_context_menu.h"
 
+#include <memory>
+
 #include "base/command_line.h"
 #include "base/i18n/rtl.h"
+#include "base/memory/ptr_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/no_destructor.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/app/chrome_command_ids.h"
-#include "chrome/browser/chrome_notification_types.h"
 #include "chrome/common/chrome_switches.h"
 #include "components/bookmarks/browser/bookmark_model.h"
-#include "content/public/browser/notification_service.h"
 #include "ui/views/controls/menu/menu_item_view.h"
 #include "ui/views/controls/menu/menu_model_adapter.h"
 #include "ui/views/controls/menu/menu_runner.h"
@@ -44,7 +46,8 @@ BookmarkContextMenu::BookmarkContextMenu(
     Profile* profile,
     BookmarkLaunchLocation opened_from,
     const BookmarkNode* parent,
-    const std::vector<const BookmarkNode*>& selection,
+    const std::vector<raw_ptr<const BookmarkNode, VectorExperimental>>&
+        selection,
     bool close_on_remove)
     : controller_(new BookmarkContextMenuController(
           parent_widget ? parent_widget->GetNativeWindow() : nullptr,
@@ -56,12 +59,11 @@ BookmarkContextMenu::BookmarkContextMenu(
           selection)),
       parent_widget_(parent_widget),
       menu_(new views::MenuItemView(this)),
-      menu_runner_(new views::MenuRunner(menu_,
-                                         views::MenuRunner::HAS_MNEMONICS |
-                                             views::MenuRunner::IS_NESTED |
-                                             views::MenuRunner::CONTEXT_MENU)),
-      observer_(nullptr),
       close_on_remove_(close_on_remove) {
+  menu_runner_ = std::make_unique<views::MenuRunner>(
+      base::WrapUnique<views::MenuItemView>(menu_),
+      views::MenuRunner::HAS_MNEMONICS | views::MenuRunner::IS_NESTED |
+          views::MenuRunner::CONTEXT_MENU);
   ui::SimpleMenuModel* menu_model = controller_->menu_model();
   for (size_t i = 0; i < menu_model->GetItemCount(); ++i) {
     views::MenuModelAdapter::AppendMenuItemFromModel(
@@ -128,7 +130,8 @@ void BookmarkContextMenu::CloseMenu() {
 
 void BookmarkContextMenu::WillExecuteCommand(
     int command_id,
-    const std::vector<const BookmarkNode*>& bookmarks) {
+    const std::vector<raw_ptr<const BookmarkNode, VectorExperimental>>&
+        bookmarks) {
   if (observer_ && IsRemoveBookmarksCommand(command_id))
     observer_->WillRemoveBookmarks(bookmarks);
 }

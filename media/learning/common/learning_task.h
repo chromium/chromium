@@ -6,12 +6,12 @@
 #define MEDIA_LEARNING_COMMON_LEARNING_TASK_H_
 
 #include <initializer_list>
+#include <optional>
 #include <string>
 #include <vector>
 
 #include "base/component_export.h"
 #include "media/learning/common/value.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace media {
 namespace learning {
@@ -121,7 +121,7 @@ struct COMPONENT_EXPORT(LEARNING_COMMON) LearningTask {
   // of feature to train the model with, to allow for feature importance
   // measurement.  Note that UMA reporting only supports subsets of size one, or
   // the whole set.
-  absl::optional<int> feature_subset_size;
+  std::optional<int> feature_subset_size;
 
   // RandomForest parameters
 

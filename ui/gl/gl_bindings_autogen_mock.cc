@@ -606,6 +606,12 @@ MockGLInterface::Mock_glClientWaitSyncAPPLE(GLsync sync,
   return interface_->ClientWaitSyncAPPLE(sync, flags, timeout);
 }
 
+void GL_BINDING_CALL MockGLInterface::Mock_glClipControlEXT(GLenum origin,
+                                                            GLenum depth) {
+  MakeGlMockFunctionUnique("glClipControlEXT");
+  interface_->ClipControlEXT(origin, depth);
+}
+
 void GL_BINDING_CALL MockGLInterface::Mock_glColorMask(GLboolean red,
                                                        GLboolean green,
                                                        GLboolean blue,
@@ -3708,10 +3714,24 @@ void GL_BINDING_CALL MockGLInterface::Mock_glPolygonMode(GLenum face,
   interface_->PolygonMode(face, mode);
 }
 
+void GL_BINDING_CALL MockGLInterface::Mock_glPolygonModeANGLE(GLenum face,
+                                                              GLenum mode) {
+  MakeGlMockFunctionUnique("glPolygonModeANGLE");
+  interface_->PolygonModeANGLE(face, mode);
+}
+
 void GL_BINDING_CALL MockGLInterface::Mock_glPolygonOffset(GLfloat factor,
                                                            GLfloat units) {
   MakeGlMockFunctionUnique("glPolygonOffset");
   interface_->PolygonOffset(factor, units);
+}
+
+void GL_BINDING_CALL
+MockGLInterface::Mock_glPolygonOffsetClampEXT(GLfloat factor,
+                                              GLfloat units,
+                                              GLfloat clamp) {
+  MakeGlMockFunctionUnique("glPolygonOffsetClampEXT");
+  interface_->PolygonOffsetClampEXT(factor, units, clamp);
 }
 
 void GL_BINDING_CALL MockGLInterface::Mock_glPopDebugGroup() {
@@ -5688,6 +5708,9 @@ MockGLInterface::GetGLProcAddress(const char* name) {
     return reinterpret_cast<GLFunctionPointerType>(Mock_glClientWaitSync);
   if (strcmp(name, "glClientWaitSyncAPPLE") == 0)
     return reinterpret_cast<GLFunctionPointerType>(Mock_glClientWaitSyncAPPLE);
+  if (strcmp(name, "glClipControlEXT") == 0) {
+    return reinterpret_cast<GLFunctionPointerType>(Mock_glClipControlEXT);
+  }
   if (strcmp(name, "glColorMask") == 0)
     return reinterpret_cast<GLFunctionPointerType>(Mock_glColorMask);
   if (strcmp(name, "glColorMaski") == 0)
@@ -6608,8 +6631,15 @@ MockGLInterface::GetGLProcAddress(const char* name) {
     return reinterpret_cast<GLFunctionPointerType>(Mock_glPointParameteri);
   if (strcmp(name, "glPolygonMode") == 0)
     return reinterpret_cast<GLFunctionPointerType>(Mock_glPolygonMode);
+  if (strcmp(name, "glPolygonModeANGLE") == 0) {
+    return reinterpret_cast<GLFunctionPointerType>(Mock_glPolygonModeANGLE);
+  }
   if (strcmp(name, "glPolygonOffset") == 0)
     return reinterpret_cast<GLFunctionPointerType>(Mock_glPolygonOffset);
+  if (strcmp(name, "glPolygonOffsetClampEXT") == 0) {
+    return reinterpret_cast<GLFunctionPointerType>(
+        Mock_glPolygonOffsetClampEXT);
+  }
   if (strcmp(name, "glPopDebugGroup") == 0)
     return reinterpret_cast<GLFunctionPointerType>(Mock_glPopDebugGroup);
   if (strcmp(name, "glPopDebugGroupKHR") == 0)

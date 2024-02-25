@@ -50,6 +50,17 @@ class AwSettings : public content::WebContentsObserver {
     COUNT,
   };
 
+  // These values are persisted to logs. Entries should not be renumbered and
+  // numeric values should never be reused.
+  // GENERATED_JAVA_ENUM_PACKAGE: org.chromium.android_webview.settings
+  enum AttributionBehavior {
+    DISABLED = 0,
+    APP_SOURCE_AND_WEB_TRIGGER = 1,
+    WEB_SOURCE_AND_WEB_TRIGGER = 2,
+    APP_SOURCE_AND_APP_TRIGGER = 3,
+    kMaxValue = APP_SOURCE_AND_APP_TRIGGER,
+  };
+
   static AwSettings* FromWebContents(content::WebContents* web_contents);
   static bool GetAllowSniffingFileUrls();
 
@@ -60,10 +71,12 @@ class AwSettings : public content::WebContentsObserver {
   AwSettings(JNIEnv* env, jobject obj, content::WebContents* web_contents);
   ~AwSettings() override;
 
+  bool GetAllowFileAccessFromFileURLs();
   bool GetJavaScriptEnabled();
   bool GetJavaScriptCanOpenWindowsAutomatically();
   bool GetAllowThirdPartyCookies();
   MixedContentMode GetMixedContentMode();
+  AttributionBehavior GetAttributionBehavior();
 
   // Called from Java. Methods with "Locked" suffix require that the settings
   // access lock is held during their execution.
@@ -88,9 +101,6 @@ class AwSettings : public content::WebContentsObserver {
   void UpdateWebkitPreferencesLocked(
       JNIEnv* env,
       const base::android::JavaParamRef<jobject>& obj);
-  void UpdateFormDataPreferencesLocked(
-      JNIEnv* env,
-      const base::android::JavaParamRef<jobject>& obj);
   void UpdateRendererPreferencesLocked(
       JNIEnv* env,
       const base::android::JavaParamRef<jobject>& obj);
@@ -107,6 +117,9 @@ class AwSettings : public content::WebContentsObserver {
       JNIEnv* env,
       const base::android::JavaParamRef<jobject>& obj);
   void UpdateMixedContentModeLocked(
+      JNIEnv* env,
+      const base::android::JavaParamRef<jobject>& obj);
+  void UpdateAttributionBehaviorLocked(
       JNIEnv* env,
       const base::android::JavaParamRef<jobject>& obj);
 
@@ -148,10 +161,12 @@ class AwSettings : public content::WebContentsObserver {
   bool javascript_can_open_windows_automatically_{false};
   bool allow_third_party_cookies_{false};
   bool allow_file_access_{false};
+  bool allow_file_access_from_file_urls_{false};
   // TODO(b/222053757,ayushsha): Change this policy to be by
   // default false from next Android version(Maybe Android U).
   bool enterprise_authentication_app_link_policy_enabled_{true};
   MixedContentMode mixed_content_mode_;
+  AttributionBehavior attribution_behavior_;
 
   scoped_refptr<AwContentsOriginMatcher> xrw_allowlist_matcher_;
 

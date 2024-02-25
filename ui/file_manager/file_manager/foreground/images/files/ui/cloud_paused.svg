@@ -1,0 +1,4 @@
+<svg id="cloud_paused" width="12" height="12" xmlns="http://www.w3.org/2000/svg">
+  <path fill="var(--xf-icon-base-color, white)" d="M6.68 3.73h1.54v4.54H6.68zM3.71 3.73h1.54v4.54H3.71z"/>
+  <path fill="var(--xf-secondary-color, red)" fill-rule="evenodd" d="M5.97 0A5.98 5.98 0 0 0 0 6c0 4.61 4.97 7.5 8.96 5.19A6 6 0 0 0 5.97 0Zm-.75 8.24H3.73v-4.5h1.5v4.5Zm2.99 0h-1.5v-4.5h1.5v4.5Z" clip-rule="evenodd"/>
+</svg>

@@ -8,6 +8,7 @@
 #include "ash/style/ash_color_id.h"
 #include "base/memory/weak_ptr.h"
 #include "ui/accessibility/ax_enums.mojom.h"
+#include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/controls/button/label_button.h"
 #include "ui/views/view.h"
 
@@ -17,9 +18,9 @@ struct VectorIcon;
 
 namespace ash {
 
-class BottomStatusIndicator
-    : public views::LabelButton,
-      public base::SupportsWeakPtr<BottomStatusIndicator> {
+class BottomStatusIndicator final : public views::LabelButton {
+  METADATA_HEADER(BottomStatusIndicator, views::LabelButton)
+
  public:
   using TappedCallback = base::RepeatingClosure;
 
@@ -37,8 +38,13 @@ class BottomStatusIndicator
   // views::View:
   void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
 
+  base::WeakPtr<BottomStatusIndicator> AsWeakPtr() {
+    return weak_ptr_factory_.GetWeakPtr();
+  }
+
  private:
   ax::mojom::Role role_ = ax::mojom::Role::kStaticText;
+  base::WeakPtrFactory<BottomStatusIndicator> weak_ptr_factory_{this};
 };
 
 }  // namespace ash

@@ -9,11 +9,12 @@
 
 #include <map>
 #include <memory>
+#include <optional>
 #include <string>
 #include <utility>
 #include <vector>
 
-#include "base/memory/raw_ptr_exclusion.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/ranges/ranges.h"
@@ -27,7 +28,6 @@
 #include "components/query_tiles/tile.h"
 #include "components/search_engines/template_url.h"
 #include "components/url_formatter/url_formatter.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/metrics_proto/omnibox_event.pb.h"
 #include "third_party/omnibox_proto/groups.pb.h"
 #include "third_party/omnibox_proto/types.pb.h"
@@ -434,10 +434,18 @@ struct AutocompleteMatch {
   // set `stripped_destination_url` to avoid repeating the computation later.
   bool IsDocumentSuggestion();
 
+  // Checks if this match is a trend suggestion based on the match subtypes.
+  bool IsTrendSuggestion() const;
+
   // Returns true if this match may attach one or more `actions`.
   // This method is used to keep actions off of matches with types that don't
   // mix well with Pedals or other actions (e.g. entities).
   bool IsActionCompatible() const;
+
+  // Returns true if this match has a keyword that puts the omnibox instantly
+  // into keyword mode when the match is focused via keyboard, instead of
+  // the usual waiting for activation of a visible keyword button.
+  bool HasInstantKeyword(TemplateURLService* template_url_service) const;
 
   // Gets data relevant to whether there should be any special keyword-related
   // UI shown for this match.  If this match represents a selected keyword, i.e.
@@ -483,6 +491,7 @@ struct AutocompleteMatch {
   void RecordAdditionalInfo(const std::string& property,
                             const std::u16string& value);
   void RecordAdditionalInfo(const std::string& property, int value);
+  void RecordAdditionalInfo(const std::string& property, double value);
   void RecordAdditionalInfo(const std::string& property, base::Time value);
 
   // Returns the value recorded for |property| in the |additional_info|
@@ -622,12 +631,16 @@ struct AutocompleteMatch {
     return it != actions.end() ? it->get() : nullptr;
   }
 
+  // Create a new match from scratch based on this match and its action at
+  // given `action_index`. The content and takeover match on the returned
+  // match will be set up to execute the action, and only a minimum of
+  // data is shared from this source match.
+  AutocompleteMatch CreateActionMatch(size_t action_index) const;
+
   // The provider of this match, used to remember which provider the user had
   // selected when the input changes. This may be NULL, in which case there is
   // no provider (or memory of the user's selection).
-  // This field is not a raw_ptr<> because it was filtered by the rewriter for:
-  // #union
-  RAW_PTR_EXCLUSION AutocompleteProvider* provider = nullptr;
+  raw_ptr<AutocompleteProvider> provider = nullptr;
 
   // The relevance of this match. See table in autocomplete.h for scores
   // returned by various providers. This is used to rank matches among all
@@ -697,6 +710,10 @@ struct AutocompleteMatch {
   // `ComputeStrippedDestinationURL()` computation.
   GURL stripped_destination_url;
 
+  // Extra headers to add to the navigation. See `NavigateParams::extra_headers`
+  // for how headers should be represented.
+  std::string extra_headers;
+
   // Optional image information. Used for entity suggestions. The dominant color
   // can be used to paint the image placeholder while fetching the image.
   std::string image_dominant_color;
@@ -706,6 +723,10 @@ struct AutocompleteMatch {
   // This is not meant for display, but internal use only. The actual UI display
   // is controlled by the `type` and `image_url`.
   std::string entity_id;
+
+  // Optional website URI for entity suggestions. Empty string means no website
+  // URI.
+  std::string website_uri;
 
   // Optional override to use for types that specify an icon sub-type.
   DocumentType document_type = DocumentType::NONE;
@@ -742,14 +763,14 @@ struct AutocompleteMatch {
   // TODO(manukh): Seems redundant to prefix a suggestion field with
   //  'suggestion_'. Check if it makes sense to rename to 'group_id', and
   //  likewise for the associated methods and local variables.
-  absl::optional<omnibox::GroupId> suggestion_group_id;
+  std::optional<omnibox::GroupId> suggestion_group_id;
 
   // If true, UI-level code should swap the contents and description fields
   // before displaying.
   bool swap_contents_and_description = false;
 
   // A rich-format version of the display for the dropdown.
-  absl::optional<SuggestionAnswer> answer;
+  std::optional<SuggestionAnswer> answer;
 
   // The transition type to use when the user opens this match.  By default,
   // this is TYPED.  Providers whose matches do not look like URLs should set
@@ -788,7 +809,7 @@ struct AutocompleteMatch {
 
   // True if we saw a tab that matched this suggestion.
   // Unset if it has not been computed yet.
-  absl::optional<bool> has_tab_match;
+  std::optional<bool> has_tab_match;
 
   // Set with a keyword provider match if this match can show a keyword hint.
   // For example, if this is a SearchProvider match for "www.amazon.com",
@@ -828,8 +849,8 @@ struct AutocompleteMatch {
   bool from_previous = false;
 
   // Optional search terms args.  If present,
-  // AutocompleteController::UpdateAssistedQueryStats() will incorporate this
-  // data with additional data it calculates and pass the completed struct to
+  // AutocompleteController::UpdateSearchboxStats() will incorporate this data
+  // with additional data it calculates and pass the completed struct to
   // TemplateURLRef::ReplaceSearchTerms() to reset the match's |destination_url|
   // after the complete set of matches in the AutocompleteResult has been chosen
   // and sorted.  Most providers will leave this as NULL, which will cause the
@@ -859,7 +880,7 @@ struct AutocompleteMatch {
   std::vector<SuggestTile> suggest_tiles;
 
   // Signals for ML scoring.
-  absl::optional<ScoringSignals> scoring_signals;
+  std::optional<ScoringSignals> scoring_signals;
 
   // A flag to mark whether this would've been excluded from the "original" list
   // of matches. Traditionally, providers limit the number of suggestions they
@@ -867,6 +888,8 @@ struct AutocompleteMatch {
   // however, providers pass ALL suggestion candidates to the controller. When
   // this flag is true, this match is an "extra" suggestion that would've
   // originally been culled by the provider.
+  // TODO(yoangela|manukh): Currently unused except in tests. Remove if not
+  //   needed. Might be needed when increasing the max provider limit?
   bool culled_by_provider = false;
 
   // True for shortcut suggestions that were boosted. Used for grouping logic.

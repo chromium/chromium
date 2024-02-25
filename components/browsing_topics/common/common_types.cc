@@ -4,10 +4,16 @@
 
 #include "components/browsing_topics/common/common_types.h"
 
+#include "third_party/blink/public/common/features.h"
+
 namespace browsing_topics {
 
 ConfigVersion CurrentConfigVersion() {
-  return ConfigVersion::kDefault;
+  if (!blink::features::kBrowsingTopicsPrioritizedTopicsList.Get().empty()) {
+    return ConfigVersion::kUsePrioritizedTopicsList;
+  } else {
+    return ConfigVersion::kInitial;
+  }
 }
 
 ApiUsageContextQueryResult::ApiUsageContextQueryResult() = default;

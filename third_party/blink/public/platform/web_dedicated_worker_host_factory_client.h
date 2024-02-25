@@ -53,8 +53,8 @@ class WebDedicatedWorkerHostFactoryClient {
       const blink::WebURL& script_url,
       network::mojom::CredentialsMode credentials_mode,
       const blink::WebFetchClientSettingsObject& fetch_client_settings_object,
-      CrossVariantMojoRemote<mojom::BlobURLTokenInterfaceBase>
-          blob_url_token) = 0;
+      CrossVariantMojoRemote<mojom::BlobURLTokenInterfaceBase> blob_url_token,
+      bool has_storage_access) = 0;
 
   // Clones the given WebWorkerFetchContext for nested workers.
   virtual scoped_refptr<WebWorkerFetchContext> CloneWorkerFetchContext(

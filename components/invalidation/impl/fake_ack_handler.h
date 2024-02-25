@@ -20,9 +20,7 @@ class Invalidation;
 
 // This AckHandler implementation colaborates with the FakeInvalidationService
 // to enable unit tests to assert that invalidations are being acked properly.
-class INVALIDATION_EXPORT FakeAckHandler
-    : public AckHandler,
-      public base::SupportsWeakPtr<FakeAckHandler> {
+class INVALIDATION_EXPORT FakeAckHandler final : public AckHandler {
  public:
   FakeAckHandler();
   ~FakeAckHandler() override;
@@ -43,10 +41,6 @@ class INVALIDATION_EXPORT FakeAckHandler
   // acknowledged.
   bool IsAcknowledged(const Invalidation& invalidation) const;
 
-  // Returns true if the specified invalidation has been delivered and
-  // dropped.
-  bool IsDropped(const Invalidation& invalidation) const;
-
   // Returns true if the specified invalidation was never delivered.
   bool IsUnsent(const Invalidation& invalidation) const;
 
@@ -55,7 +49,6 @@ class INVALIDATION_EXPORT FakeAckHandler
 
   // Implementation of AckHandler.
   void Acknowledge(const Topic& topic, const AckHandle& handle) override;
-  void Drop(const Topic& topic, const AckHandle& handle) override;
 
  private:
   typedef std::vector<Invalidation> InvalidationVector;
@@ -63,9 +56,10 @@ class INVALIDATION_EXPORT FakeAckHandler
   InvalidationVector unsent_invalidations_;
   InvalidationVector unacked_invalidations_;
   InvalidationVector acked_invalidations_;
-  InvalidationVector dropped_invalidations_;
 
   std::map<Topic, AckHandle> unrecovered_drop_events_;
+
+  base::WeakPtrFactory<FakeAckHandler> weak_ptr_factory_{this};
 };
 
 }  // namespace invalidation

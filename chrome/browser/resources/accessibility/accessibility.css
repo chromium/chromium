@@ -61,7 +61,7 @@ p {
   display: none;
 }
 
-a {
+a, span.readOnlyMode {
   margin-block-end: 10px;
   margin-block-start: 10px;
   margin-inline-start: 20px;

@@ -16,6 +16,7 @@ android_aidl("js_sandbox_aidl") {
     "src/main/stableAidl/org/chromium/android_webview/js_sandbox/common/IJsSandboxConsoleCallback.aidl",
     "src/main/stableAidl/org/chromium/android_webview/js_sandbox/common/IJsSandboxIsolate.aidl",
     "src/main/stableAidl/org/chromium/android_webview/js_sandbox/common/IJsSandboxIsolateCallback.aidl",
+    "src/main/stableAidl/org/chromium/android_webview/js_sandbox/common/IJsSandboxIsolateClient.aidl",
     "src/main/stableAidl/org/chromium/android_webview/js_sandbox/common/IJsSandboxIsolateSyncCallback.aidl",
     "src/main/stableAidl/org/chromium/android_webview/js_sandbox/common/IJsSandboxService.aidl",
   ]
@@ -43,6 +44,7 @@ android_library("javascriptengine_java") {
     "src/main/java/androidx/javascriptengine/EvaluationFailedException.java",
     "src/main/java/androidx/javascriptengine/EvaluationResultSizeLimitExceededException.java",
     "src/main/java/androidx/javascriptengine/ExecutionErrorTypes.java",
+    "src/main/java/androidx/javascriptengine/FileDescriptorIOException.java",
     "src/main/java/androidx/javascriptengine/IsolateClosedState.java",
     "src/main/java/androidx/javascriptengine/IsolateStartupParameters.java",
     "src/main/java/androidx/javascriptengine/IsolateState.java",
@@ -55,13 +57,15 @@ android_library("javascriptengine_java") {
     "src/main/java/androidx/javascriptengine/MemoryLimitExceededException.java",
     "src/main/java/androidx/javascriptengine/SandboxDeadException.java",
     "src/main/java/androidx/javascriptengine/SandboxUnsupportedException.java",
+    "src/main/java/androidx/javascriptengine/StreamingFailedException.java",
+    "src/main/java/androidx/javascriptengine/TerminationInfo.java",
   ]
 
   deps = [
     ":javascriptengine_common_java",
     ":js_sandbox_aidl_java",
     "//third_party/android_deps:com_google_code_findbugs_jsr305_java",
-    "//third_party/android_deps:com_google_guava_listenablefuture_java",
+    "//third_party/android_deps:guava_android_java",
     "//third_party/androidx:androidx_annotation_annotation_java",
     "//third_party/androidx:androidx_concurrent_concurrent_futures_java",
     "//third_party/androidx:androidx_core_core_java",
@@ -75,7 +79,6 @@ instrumentation_test_apk("javascriptengine_test") {
   sources = [ "src/androidTest/java/androidx/javascriptengine/WebViewJavaScriptSandboxTest.java" ]
   deps = [
     ":javascriptengine_java",
-    "//third_party/android_deps:com_google_guava_listenablefuture_java",
     "//third_party/android_deps:guava_android_java",
     "//third_party/androidx:androidx_core_core_java",
     "//third_party/androidx:androidx_test_core_java",

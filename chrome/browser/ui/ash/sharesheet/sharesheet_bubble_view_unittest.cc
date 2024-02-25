@@ -101,8 +101,7 @@ class SharesheetBubbleViewTest : public ChromeAshTestBase {
     ::sharesheet::SharesheetService* const sharesheet_service =
         ::sharesheet::SharesheetServiceFactory::GetForProfile(profile_.get());
     sharesheet_service->ShowBubbleForTesting(
-        parent_window_, std::move(intent),
-        /*contains_hosted_document=*/false, source,
+        parent_window_, std::move(intent), source,
         /*delivered_callback=*/base::DoNothing(),
         /*close_callback=*/base::DoNothing(), num_actions_to_add);
     bubble_delegate_ = static_cast<SharesheetBubbleViewDelegate*>(
@@ -161,12 +160,9 @@ class SharesheetBubbleViewTest : public ChromeAshTestBase {
  private:
   gfx::NativeWindow parent_window_;
   std::unique_ptr<TestingProfile> profile_;
-  raw_ptr<SharesheetBubbleViewDelegate, DanglingUntriaged | ExperimentalAsh>
-      bubble_delegate_;
-  raw_ptr<SharesheetBubbleView, DanglingUntriaged | ExperimentalAsh>
-      sharesheet_bubble_view_;
-  raw_ptr<views::Widget, DanglingUntriaged | ExperimentalAsh>
-      sharesheet_widget_;
+  raw_ptr<SharesheetBubbleViewDelegate, DanglingUntriaged> bubble_delegate_;
+  raw_ptr<SharesheetBubbleView, DanglingUntriaged> sharesheet_bubble_view_;
+  raw_ptr<views::Widget, DanglingUntriaged> sharesheet_widget_;
 };
 
 TEST_F(SharesheetBubbleViewTest, BubbleDoesOpenAndClose) {
@@ -189,31 +185,6 @@ TEST_F(SharesheetBubbleViewTest, RecordLaunchSource) {
   CloseBubble();
   histograms.ExpectBucketCount(
       ::sharesheet::kSharesheetLaunchSourceResultHistogram, source, 1);
-}
-
-TEST_F(SharesheetBubbleViewTest, RecordShareActionCount) {
-  // Text intent should only show copy action.
-  base::HistogramTester histograms;
-  ShowAndVerifyBubble(::sharesheet::CreateValidTextIntent(),
-                      ::sharesheet::LaunchSource::kUnknown);
-  CloseBubble();
-  histograms.ExpectBucketCount(
-      ::sharesheet::kSharesheetShareActionResultHistogram,
-      ::sharesheet::SharesheetMetrics::UserAction::kDriveAction, 0);
-  histograms.ExpectBucketCount(
-      ::sharesheet::kSharesheetShareActionResultHistogram,
-      ::sharesheet::SharesheetMetrics::UserAction::kCopyAction, 1);
-
-  // Drive intent should show drive and copy actions.
-  ShowAndVerifyBubble(::sharesheet::CreateDriveIntent(),
-                      ::sharesheet::LaunchSource::kUnknown);
-  CloseBubble();
-  histograms.ExpectBucketCount(
-      ::sharesheet::kSharesheetShareActionResultHistogram,
-      ::sharesheet::SharesheetMetrics::UserAction::kDriveAction, 1);
-  histograms.ExpectBucketCount(
-      ::sharesheet::kSharesheetShareActionResultHistogram,
-      ::sharesheet::SharesheetMetrics::UserAction::kCopyAction, 2);
 }
 
 TEST_F(SharesheetBubbleViewTest, ClickCopyToClipboard) {

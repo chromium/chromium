@@ -1,8 +1,0 @@
-#<skip -- crbug.com/281952>
-android.webkit.WebView focusable focused scrollable
-++android.view.View
-++++android.view.View focusable name='0:00'
-++++++android.view.View name='audio'
-++++++++android.view.View name='audio'
-++++++++++android.widget.Button clickable focusable name='play'
-++++++++++android.widget.SeekBar clickable focusable range name='movie time scrubber'

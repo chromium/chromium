@@ -6,15 +6,17 @@
 
 #import "base/values.h"
 #import "ios/chrome/browser/shared/ui/elements/instruction_view.h"
+#import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/common/ui/confirmation_alert/confirmation_alert_view_controller.h"
-#import "ios/chrome/grit/ios_chromium_strings.h"
+#import "ios/chrome/grit/ios_branded_strings.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ui/base/l10n/l10n_util.h"
 #import "url/gurl.h"
 
 namespace {
 constexpr CGFloat kPreferredCornerRadius = 20;
+constexpr CGFloat kDismissSymbolSize = 22;
 NSString* const kWhatsNewInstructionsLabelAccessibilityIdentifier =
     @"WhatsNewTitleAccessibilityIdentifier";
 }  // namespace
@@ -73,7 +75,9 @@ NSString* const kWhatsNewInstructionsLabelAccessibilityIdentifier =
   _alertScreen.underTitleView = instructionView;
   _alertScreen.titleView = self.titleLabel;
   _alertScreen.actionHandler = self.actionHandler;
-  _alertScreen.showDismissBarButton = NO;
+  _alertScreen.showDismissBarButton = YES;
+  _alertScreen.customDismissBarButtonImage =
+      DefaultSymbolWithPointSize(kXMarkCircleFillSymbol, kDismissSymbolSize);
   _alertScreen.topAlignedLayout = YES;
 
   [NSLayoutConstraint activateConstraints:@[

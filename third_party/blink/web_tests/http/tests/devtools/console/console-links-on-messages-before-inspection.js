@@ -5,13 +5,14 @@
 import {TestRunner} from 'test_runner';
 import {ConsoleTestRunner} from 'console_test_runner';
 
+import * as UI from 'devtools/ui/legacy/legacy.js';
+import * as Console from 'devtools/panels/console/console.js';
 import * as SDK from 'devtools/core/sdk/sdk.js';
 
 (async function() {
   TestRunner.addResult(
       `Tests a handling of a click on the link in a message, which had been shown before its originating script was added.\n`);
 
-  await TestRunner.loadLegacyModule('console');
   await TestRunner.showPanel('console');
 
   await TestRunner.evaluateInPagePromise(`
@@ -41,7 +42,7 @@ import * as SDK from 'devtools/core/sdk/sdk.js';
       return;
 
     TestRunner.addResult('script was added');
-    var message = Console.ConsoleView.instance().visibleViewMessages[0];
+    var message = Console.ConsoleView.ConsoleView.instance().visibleViewMessages[0];
     var anchorElement = message.element().querySelector('.devtools-link');
     anchorElement.click();
   }
@@ -51,10 +52,10 @@ import * as SDK from 'devtools/core/sdk/sdk.js';
     TestRunner.completeTest();
   };
 
-  UI.inspectorView.tabbedPane.addEventListener(UI.TabbedPane.Events.TabSelected, panelChanged);
+  UI.InspectorView.InspectorView.instance().tabbedPane.addEventListener(UI.TabbedPane.Events.TabSelected, panelChanged);
 
   function panelChanged() {
-    TestRunner.addResult('Panel ' + UI.inspectorView.tabbedPane.currentTab.id + ' was opened');
+    TestRunner.addResult('Panel ' + UI.InspectorView.InspectorView.instance().tabbedPane.currentTab.id + ' was opened');
     TestRunner.completeTest();
   }
 })();

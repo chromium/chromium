@@ -1,21 +1,22 @@
 {
   "extends": "../../tools/typescript/tsconfig_base.json",
   "compilerOptions": {
-    "lib": ["dom", "ES2015.Generator", "ES2015.Iterable", "ESNext"],
+    "checkJs": true,
+    "lib": ["dom", "ES2015.Generator", "ES2015.Iterable", "ESNext", "dom.iterable"],
 
-    "importsNotUsedAsValues": "preserve",
-    "ignoreDeprecations": "5.0",
+    "verbatimModuleSyntax": true,
     "typeRoots": [
       "../../third_party/node/node_modules/@types"
     ],
     "types": [
       "trusted-types",
       "filesystem",
-      "filewriter",
-      "w3c-css-typed-object-model-level-1"
+      "filewriter"
     ],
     "experimentalDecorators": true,
     "noEmitHelpers": true,
-    "skipLibCheck": true
+    "skipLibCheck": true,
+    "noFallthroughCasesInSwitch": false,
+    "useDefineForClassFields": false
   }
 }

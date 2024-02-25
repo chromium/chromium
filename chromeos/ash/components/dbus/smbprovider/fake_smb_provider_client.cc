@@ -99,6 +99,10 @@ void FakeSmbProviderClient::ParseNetBiosPacket(
   std::move(callback).Run(result);
 }
 
+base::WeakPtr<SmbProviderClient> FakeSmbProviderClient::AsWeakPtr() {
+  return weak_ptr_factory_.GetWeakPtr();
+}
+
 void FakeSmbProviderClient::ClearShares() {
   shares_.clear();
 }

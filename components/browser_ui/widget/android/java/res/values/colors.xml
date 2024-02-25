@@ -10,6 +10,8 @@ found in the LICENSE file.
     <color name="toolbar_shadow_color">@color/black_alpha_11</color>
     <color name="toolbar_text_box_background">@color/omnibox_bg_color</color>
     <macro name="search_box_hint" tools:ignore="UnusedResources">@macro/default_text_color_secondary</macro>
+    <macro name="search_box_hint_polish_neutral" tools:ignore="UnusedResources">@macro/default_text_color</macro>
+    <macro name="search_box_hint_polish_colorful" tools:ignore="UnusedResources">@macro/default_text_color_on_accent1_container</macro>
     <color name="search_box_hint_baseline">@color/default_text_color_secondary_baseline</color>
 
     <!-- Chip Colors -->

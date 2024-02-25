@@ -10,6 +10,8 @@
 
 #include "ash/webui/camera_app_ui/url_constants.h"
 #include "base/command_line.h"
+#include "base/files/file_path.h"
+#include "base/files/scoped_file.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
@@ -18,18 +20,23 @@
 #include "base/run_loop.h"
 #include "base/strings/strcat.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/gmock_callback_support.h"
 #include "base/test/gtest_util.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/mock_callback.h"
+#include "base/test/scoped_command_line.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/test/test_future.h"
 #include "base/values.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/browsing_data/chrome_browsing_data_remover_delegate.h"
 #include "chrome/browser/captive_portal/captive_portal_service_factory.h"
 #include "chrome/browser/enterprise/reporting/prefs.h"
+#include "chrome/browser/media/prefs/capture_device_ranking.h"
 #include "chrome/browser/search_engines/template_url_service_factory.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
+#include "chrome/browser/webauthn/webauthn_pref_names.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/common/pref_names.h"
@@ -41,8 +48,12 @@
 #include "components/browsing_data/content/browsing_data_helper.h"
 #include "components/captive_portal/core/buildflags.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
+#include "components/file_access/scoped_file_access.h"
+#include "components/file_access/test/mock_scoped_file_access_delegate.h"
+#include "components/network_session_configurator/common/network_switches.h"
 #include "components/policy/core/common/policy_pref_names.h"
 #include "components/privacy_sandbox/privacy_sandbox_features.h"
+#include "components/privacy_sandbox/tracking_protection_prefs.h"
 #include "components/search_engines/template_url_service.h"
 #include "components/services/storage/public/cpp/storage_prefs.h"
 #include "components/variations/variations_associated_data.h"
@@ -59,8 +70,13 @@
 #include "content/public/common/content_switches.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/mock_render_process_host.h"
+#include "content/public/test/navigation_simulator.h"
 #include "media/media_buildflags.h"
 #include "net/base/url_util.h"
+#include "net/ssl/ssl_info.h"
+#include "net/test/cert_test_util.h"
+#include "net/test/test_data_directory.h"
+#include "services/network/test/test_network_context.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/switches.h"
@@ -104,6 +120,7 @@
 
 #if BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/policy/system_features_disable_list_policy_handler.h"
+#include "chromeos/components/kiosk/kiosk_test_utils.h"
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
@@ -251,13 +268,13 @@ TEST_F(ChromeContentBrowserClientWindowTest, OverrideNavigationParams) {
   ui::PageTransition transition;
   bool is_renderer_initiated;
   content::Referrer referrer = content::Referrer();
-  absl::optional<url::Origin> initiator_origin = absl::nullopt;
+  std::optional<url::Origin> initiator_origin = std::nullopt;
 
   GURL remote_ntp_url("chrome-search://remote-ntp");
   transition = ui::PAGE_TRANSITION_LINK;
   is_renderer_initiated = true;
   // The origin is a placeholder to test that |initiator_origin| is set to
-  // absl::nullopt and is not meant to represent what would happen in practice.
+  // std::nullopt and is not meant to represent what would happen in practice.
   initiator_origin = url::Origin::Create(GURL("https://www.example.com"));
   client.OverrideNavigationParams(remote_ntp_url, &transition,
                                   &is_renderer_initiated, &referrer,
@@ -265,7 +282,7 @@ TEST_F(ChromeContentBrowserClientWindowTest, OverrideNavigationParams) {
   EXPECT_TRUE(ui::PageTransitionCoreTypeIs(ui::PAGE_TRANSITION_AUTO_BOOKMARK,
                                            transition));
   EXPECT_FALSE(is_renderer_initiated);
-  EXPECT_EQ(absl::nullopt, initiator_origin);
+  EXPECT_EQ(std::nullopt, initiator_origin);
 
   transition = ui::PAGE_TRANSITION_LINK;
   is_renderer_initiated = true;
@@ -276,7 +293,7 @@ TEST_F(ChromeContentBrowserClientWindowTest, OverrideNavigationParams) {
   EXPECT_TRUE(ui::PageTransitionCoreTypeIs(ui::PAGE_TRANSITION_AUTO_BOOKMARK,
                                            transition));
   EXPECT_FALSE(is_renderer_initiated);
-  EXPECT_EQ(absl::nullopt, initiator_origin);
+  EXPECT_EQ(std::nullopt, initiator_origin);
 
   // No change for transitions that are not PAGE_TRANSITION_LINK.
   transition = ui::PAGE_TRANSITION_TYPED;
@@ -296,7 +313,39 @@ TEST_F(ChromeContentBrowserClientWindowTest, OverrideNavigationParams) {
       ui::PageTransitionCoreTypeIs(ui::PAGE_TRANSITION_LINK, transition));
 }
 
+// Test that automatic beacon credentials (automatic beacons sent with cookie
+// data) are disallowed if the 3PCD preference is enabled.
+TEST_F(ChromeContentBrowserClientWindowTest, AutomaticBeaconCredentials) {
+  ChromeContentBrowserClient client;
+
+  EXPECT_TRUE(client.AreDeprecatedAutomaticBeaconCredentialsAllowed(
+      browser()->profile(), GURL("a.test"),
+      url::Origin::Create(GURL("c.test"))));
+  browser()->profile()->GetPrefs()->SetBoolean(
+      prefs::kTrackingProtection3pcdEnabled, true);
+  EXPECT_FALSE(client.AreDeprecatedAutomaticBeaconCredentialsAllowed(
+      browser()->profile(), GURL("a.test"),
+      url::Origin::Create(GURL("c.test"))));
+}
+
 #endif  // !BUILDFLAG(IS_ANDROID)
+
+#if BUILDFLAG(IS_CHROMEOS)
+TEST_F(ChromeContentBrowserClientWindowTest,
+       BackForwardCacheIsDisallowedForCacheControlNoStorePageWhenInKioskMode) {
+// Enter Kiosk session.
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  user_manager::ScopedUserManager user_manager(
+      std::make_unique<user_manager::FakeUserManager>());
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+  chromeos::SetUpFakeKioskSession();
+
+  ChromeContentBrowserClient client;
+  ASSERT_FALSE(client.ShouldAllowBackForwardCacheForCacheControlNoStorePage(
+      browser()->profile()));
+}
+
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 // NOTE: Any updates to the expectations in these tests should also be done in
 // the browser test WebRtcDisableEncryptionFlagBrowserTest.
@@ -567,35 +616,67 @@ TEST_F(ChromeContentBrowserClientTest, HandleWebUIReverse) {
 }
 
 #if !BUILDFLAG(IS_ANDROID)
-TEST_F(ChromeContentBrowserClientTest, RedirectPrivacySandboxURL) {
-  base::test::ScopedFeatureList feature_list(
-      privacy_sandbox::kPrivacySandboxSettings4);
+TEST_F(ChromeContentBrowserClientTest, BindVideoEffectsManager) {
+  TestChromeContentBrowserClient test_content_browser_client;
+  mojo::Remote<video_capture::mojom::VideoEffectsManager> video_effects_manager;
+  test_content_browser_client.BindVideoEffectsManager(
+      "test_device_id", &profile_,
+      video_effects_manager.BindNewPipeAndPassReceiver());
+
+  base::test::TestFuture<video_capture::mojom::VideoEffectsConfigurationPtr>
+      configuration_future;
+  video_effects_manager->GetConfiguration(configuration_future.GetCallback());
+  // The actual value isn't that important here. What matters is that getting a
+  // result means that the plumbing worked.
+  EXPECT_FALSE(configuration_future.Get().is_null());
+}
+#endif  // !BUILDFLAG(IS_ANDROID)
+
+TEST_F(ChromeContentBrowserClientTest, PreferenceRankAudioDeviceInfos) {
+  blink::WebMediaDeviceInfoArray infos{
+      {/*device_id=*/"0", /*label=*/"0", /*group_id=*/"0"},
+      {/*device_id=*/"1", /*label=*/"1", /*group_id=*/"1"},
+  };
+
+  // Initialize the ranking with device 1 being preferred.
+  TestingProfile profile_with_prefs;
+  media_prefs::UpdateAudioDevicePreferenceRanking(
+      *profile_with_prefs.GetPrefs(), infos.begin() + 1, infos);
 
   TestChromeContentBrowserClient test_content_browser_client;
-  base::HistogramTester histogram_tester;
-  const std::string histogram_name =
-      "Settings.PrivacySandbox.DeprecatedRedirect";
-
-  GURL settings_url = GURL(chrome::kChromeUISettingsURL);
-  settings_url = net::AppendQueryParameter(settings_url, "foo", "bar");
-
-  GURL::Replacements replacements;
-  replacements.SetPathStr(chrome::kPrivacySandboxSubPagePath);
-  GURL old_settings_url = settings_url.ReplaceComponents(replacements);
-
-  replacements.SetPathStr(chrome::kAdPrivacySubPagePath);
-  GURL new_settings_url = settings_url.ReplaceComponents(replacements);
-
-  test_content_browser_client.HandleWebUI(&old_settings_url, &profile_);
-  EXPECT_EQ(new_settings_url, old_settings_url);
-  histogram_tester.ExpectUniqueSample(histogram_name, true, 1);
-
-  test_content_browser_client.HandleWebUI(&new_settings_url, &profile_);
-  histogram_tester.ExpectBucketCount(histogram_name, false, 1);
-  histogram_tester.ExpectTotalCount(histogram_name, 2);
+  blink::WebMediaDeviceInfoArray expected_infos{
+      infos.back(),   // device_id=1
+      infos.front(),  // device_id=0
+  };
+  test_content_browser_client.PreferenceRankAudioDeviceInfos(
+      &profile_with_prefs, infos);
+  EXPECT_EQ(infos, expected_infos);
 }
 
-#endif
+TEST_F(ChromeContentBrowserClientTest, PreferenceRankVideoDeviceInfos) {
+  blink::WebMediaDeviceInfoArray infos{
+      blink::WebMediaDeviceInfo{
+          media::VideoCaptureDeviceDescriptor{/*display_name=*/"0",
+                                              /*device_id=*/"0"}},
+      blink::WebMediaDeviceInfo{
+          media::VideoCaptureDeviceDescriptor{/*display_name=*/"1",
+                                              /*device_id=*/"1"}},
+  };
+
+  // Initialize the ranking with device 1 being preferred.
+  TestingProfile profile_with_prefs;
+  media_prefs::UpdateVideoDevicePreferenceRanking(
+      *profile_with_prefs.GetPrefs(), infos.begin() + 1, infos);
+
+  TestChromeContentBrowserClient test_content_browser_client;
+  blink::WebMediaDeviceInfoArray expected_infos{
+      infos.back(),   // device_id=1
+      infos.front(),  // device_id=0
+  };
+  test_content_browser_client.PreferenceRankVideoDeviceInfos(
+      &profile_with_prefs, infos);
+  EXPECT_EQ(infos, expected_infos);
+}
 
 #if BUILDFLAG(IS_CHROMEOS)
 class ChromeContentSettingsRedirectTest
@@ -819,7 +900,7 @@ class ChromeContentSettingsPolicyTrustAnchor
     user_manager::User* user =
         fake_user_manager->AddUserWithAffiliationAndTypeAndProfile(
             account_id, false /*is_affiliated*/,
-            user_manager::USER_TYPE_REGULAR, &profile_);
+            user_manager::UserType::kRegular, &profile_);
     fake_user_manager->UserLoggedIn(account_id, user->username_hash(),
                                     false /* browser_restart */,
                                     false /* is_child */);
@@ -851,32 +932,38 @@ TEST_F(ChromeContentSettingsPolicyTrustAnchor, PolicyTrustAnchor) {
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
-class CaptivePortalCheckProcessHost : public content::MockRenderProcessHost {
+class CaptivePortalCheckNetworkContext final
+    : public network::TestNetworkContext {
  public:
-  explicit CaptivePortalCheckProcessHost(
-      content::BrowserContext* browser_context)
-      : MockRenderProcessHost(browser_context) {}
+  CaptivePortalCheckNetworkContext(content::BrowserContext* browser_context,
+                                   bool expected_disable_secure_dns)
+      : expected_disable_secure_dns_(expected_disable_secure_dns) {
+    browser_context->GetDefaultStoragePartition()->SetNetworkContextForTesting(
+        receiver_.BindNewPipeAndPassRemote());
+  }
 
-  CaptivePortalCheckProcessHost(const CaptivePortalCheckProcessHost&) = delete;
-  CaptivePortalCheckProcessHost& operator=(
-      const CaptivePortalCheckProcessHost&) = delete;
+  CaptivePortalCheckNetworkContext(const CaptivePortalCheckNetworkContext&) =
+      delete;
+  CaptivePortalCheckNetworkContext& operator=(
+      const CaptivePortalCheckNetworkContext&) = delete;
+
+  ~CaptivePortalCheckNetworkContext() override = default;
 
   void CreateURLLoaderFactory(
       mojo::PendingReceiver<network::mojom::URLLoaderFactory> receiver,
       network::mojom::URLLoaderFactoryParamsPtr params) override {
-    *invoked_url_factory_ = true;
-    DCHECK_EQ(expected_disable_secure_dns_, params->disable_secure_dns);
+    invoked_url_factory_.SetValue(true);
+    CHECK_EQ(expected_disable_secure_dns_, params->disable_secure_dns);
   }
 
-  void SetupForTracking(bool* invoked_url_factory,
-                        bool expected_disable_secure_dns) {
-    invoked_url_factory_ = invoked_url_factory;
-    expected_disable_secure_dns_ = expected_disable_secure_dns;
+  bool WaitAndGetInvokedURLLoaderFactory() {
+    return invoked_url_factory_.Get();
   }
 
  private:
-  raw_ptr<bool> invoked_url_factory_ = nullptr;
+  base::test::TestFuture<bool> invoked_url_factory_;
   bool expected_disable_secure_dns_ = false;
+  mojo::Receiver<network::mojom::NetworkContext> receiver_{this};
 };
 
 class CaptivePortalCheckRenderProcessHostFactory
@@ -892,22 +979,19 @@ class CaptivePortalCheckRenderProcessHostFactory
   content::RenderProcessHost* CreateRenderProcessHost(
       content::BrowserContext* browser_context,
       content::SiteInstance* site_instance) override {
-    auto rph = std::make_unique<CaptivePortalCheckProcessHost>(browser_context);
+    auto rph = std::make_unique<content::MockRenderProcessHost>(
+        browser_context,
+        content::StoragePartitionConfig::CreateDefault(browser_context),
+        false /* is_for_guests_only */);
     content::RenderProcessHost* result = rph.get();
     processes_.push_back(std::move(rph));
     return result;
   }
 
-  void SetupForTracking(bool* invoked_url_factory,
-                        bool expected_disable_secure_dns) {
-    processes_.back()->SetupForTracking(invoked_url_factory,
-                                        expected_disable_secure_dns);
-  }
-
   void ClearRenderProcessHosts() { processes_.clear(); }
 
  private:
-  std::list<std::unique_ptr<CaptivePortalCheckProcessHost>> processes_;
+  std::list<std::unique_ptr<content::MockRenderProcessHost>> processes_;
 };
 
 class ChromeContentBrowserClientCaptivePortalBrowserTest
@@ -925,30 +1009,35 @@ class ChromeContentBrowserClientCaptivePortalBrowserTest
     ChromeRenderViewHostTestHarness::TearDown();
   }
 
-  bool invoked_url_factory_ = false;
+  std::unique_ptr<CaptivePortalCheckNetworkContext> SetupForTracking(
+      bool expected_disable_secure_dns) {
+    return std::make_unique<CaptivePortalCheckNetworkContext>(
+        browser_context(), expected_disable_secure_dns);
+  }
+
   CaptivePortalCheckRenderProcessHostFactory cp_rph_factory_;
 };
 
 TEST_F(ChromeContentBrowserClientCaptivePortalBrowserTest,
        NotCaptivePortalWindow) {
-  cp_rph_factory_.SetupForTracking(&invoked_url_factory_,
-                                   false /* expected_disable_secure_dns */);
+  auto network_context =
+      SetupForTracking(false /* expected_disable_secure_dns */);
   NavigateAndCommit(GURL("https://www.google.com"), ui::PAGE_TRANSITION_LINK);
-  EXPECT_TRUE(invoked_url_factory_);
+  EXPECT_TRUE(network_context->WaitAndGetInvokedURLLoaderFactory());
 }
 
 #if BUILDFLAG(ENABLE_CAPTIVE_PORTAL_DETECTION)
 TEST_F(ChromeContentBrowserClientCaptivePortalBrowserTest,
        CaptivePortalWindow) {
-  cp_rph_factory_.SetupForTracking(&invoked_url_factory_,
-                                   true /* expected_disable_secure_dns */);
+  auto network_context =
+      SetupForTracking(true /* expected_disable_secure_dns */);
   captive_portal::CaptivePortalTabHelper::CreateForWebContents(
       web_contents(), CaptivePortalServiceFactory::GetForProfile(profile()),
       base::NullCallback());
   captive_portal::CaptivePortalTabHelper::FromWebContents(web_contents())
       ->set_is_captive_portal_window();
   NavigateAndCommit(GURL("https://www.google.com"), ui::PAGE_TRANSITION_LINK);
-  EXPECT_TRUE(invoked_url_factory_);
+  EXPECT_TRUE(network_context->WaitAndGetInvokedURLLoaderFactory());
 }
 #endif
 
@@ -967,7 +1056,7 @@ class ChromeContentBrowserClientStoragePartitionTest
   static constexpr char kAppId[] = "appid";
   static constexpr char kHttpsScope[] = "https://example.com";
   static constexpr char kIsolatedAppScope[] =
-      "isolated-app://aerugqztij5biqquuk3mfwpsaibuegaqcitgfchwuosuofdjabzqaaac";
+      "isolated-app://aerugqztij5biqquuk3mfwpsaibuegaqcitgfchwuosuofdjabzqaaic";
 
   content::StoragePartitionConfig CreateDefaultStoragePartitionConfig() {
     return content::StoragePartitionConfig::CreateDefault(&profile_);
@@ -1063,7 +1152,7 @@ TEST_F(ChromeContentBrowserClientStoragePartitionTest,
 
   auto expected_config = content::StoragePartitionConfig::Create(
       &profile_, /*partition_domain=*/
-      "iwa-aerugqztij5biqquuk3mfwpsaibuegaqcitgfchwuosuofdjabzqaaac",
+      "ih5acGGEiRXrgomjVcGuM1lp4cp+dagupnpwXmiyoV0s=",
       /*partition_name=*/"",
       /*in_memory=*/false);
   EXPECT_EQ(expected_config, config);
@@ -1094,6 +1183,36 @@ TEST_F(ChromeContentBrowserClientTest, IsolatedWebAppsDisabledOnSignInScreen) {
   EXPECT_FALSE(client.AreIsolatedWebAppsEnabled(sign_in_screen_profile.get()));
 }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
+#if BUILDFLAG(IS_CHROMEOS)
+TEST_F(ChromeContentBrowserClientTest, RequestFileAccessAllow) {
+  file_access::MockScopedFileAccessDelegate scoped_file_access;
+  base::test::TestFuture<file_access::ScopedFileAccess> continuation_callback;
+  base::FilePath path = base::FilePath(FILE_PATH_LITERAL("/path/to/file"));
+  EXPECT_CALL(scoped_file_access,
+              RequestFilesAccess(testing::ElementsAre(path), GURL(), _))
+      .WillOnce(base::test::RunOnceCallback<2>(
+          file_access::ScopedFileAccess::Allowed()));
+  ChromeContentBrowserClient client;
+  client.RequestFilesAccess({path}, GURL(),
+                            continuation_callback.GetCallback());
+  EXPECT_TRUE(continuation_callback.Take().is_allowed());
+}
+
+TEST_F(ChromeContentBrowserClientTest, RequestFileAccessDeny) {
+  file_access::MockScopedFileAccessDelegate scoped_file_access;
+  base::test::TestFuture<file_access::ScopedFileAccess> continuation_callback;
+  base::FilePath path = base::FilePath(FILE_PATH_LITERAL("/path/to/file"));
+  EXPECT_CALL(scoped_file_access,
+              RequestFilesAccess(testing::ElementsAre(path), GURL(), _))
+      .WillOnce(base::test::RunOnceCallback<2>(
+          file_access::ScopedFileAccess::Denied()));
+  ChromeContentBrowserClient client;
+  client.RequestFilesAccess({path}, GURL(),
+                            continuation_callback.GetCallback());
+  EXPECT_FALSE(continuation_callback.Take().is_allowed());
+}
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 class ChromeContentBrowserClientSwitchTest
     : public ChromeRenderViewHostTestHarness {
@@ -1186,3 +1305,99 @@ TEST_F(
   EXPECT_FALSE(result.HasSwitch(switches::kForceAppMode));
 }
 #endif  // BUILDFLAG(IS_CHROMEOS)
+
+class DisableWebAuthnWithBrokenCertsTest
+    : public ChromeRenderViewHostTestHarness {};
+
+TEST_F(DisableWebAuthnWithBrokenCertsTest, SecurityLevelNotAcceptable) {
+  GURL url("https://doofenshmirtz.evil");
+  TestChromeContentBrowserClient client;
+  auto simulator =
+      content::NavigationSimulator::CreateBrowserInitiated(url, web_contents());
+  net::SSLInfo ssl_info;
+  ssl_info.cert_status = net::CERT_STATUS_DATE_INVALID;
+  ssl_info.cert =
+      net::ImportCertFromFile(net::GetTestCertsDirectory(), "ok_cert.pem");
+  simulator->SetSSLInfo(std::move(ssl_info));
+  simulator->Commit();
+  EXPECT_FALSE(client.IsSecurityLevelAcceptableForWebAuthn(
+      main_rfh(), url::Origin::Create(url)));
+}
+
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+TEST_F(DisableWebAuthnWithBrokenCertsTest, ExtensionSupported) {
+  GURL url("chrome-extension://extensionid");
+  TestChromeContentBrowserClient client;
+  auto simulator =
+      content::NavigationSimulator::CreateBrowserInitiated(url, web_contents());
+  net::SSLInfo ssl_info;
+  ssl_info.cert_status = net::CERT_STATUS_DATE_INVALID;
+  ssl_info.cert =
+      net::ImportCertFromFile(net::GetTestCertsDirectory(), "ok_cert.pem");
+  simulator->SetSSLInfo(std::move(ssl_info));
+  simulator->Commit();
+  EXPECT_TRUE(client.IsSecurityLevelAcceptableForWebAuthn(
+      main_rfh(), url::Origin::Create(url)));
+}
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
+
+TEST_F(DisableWebAuthnWithBrokenCertsTest, EnterpriseOverride) {
+  PrefService* prefs =
+      Profile::FromBrowserContext(GetBrowserContext())->GetPrefs();
+  prefs->SetBoolean(webauthn::pref_names::kAllowWithBrokenCerts, true);
+  GURL url("https://doofenshmirtz.evil");
+  TestChromeContentBrowserClient client;
+  auto simulator =
+      content::NavigationSimulator::CreateBrowserInitiated(url, web_contents());
+  net::SSLInfo ssl_info;
+  ssl_info.cert_status = net::CERT_STATUS_DATE_INVALID;
+  ssl_info.cert =
+      net::ImportCertFromFile(net::GetTestCertsDirectory(), "ok_cert.pem");
+  simulator->SetSSLInfo(std::move(ssl_info));
+  simulator->Commit();
+  EXPECT_TRUE(client.IsSecurityLevelAcceptableForWebAuthn(
+      main_rfh(), url::Origin::Create(url)));
+}
+
+TEST_F(DisableWebAuthnWithBrokenCertsTest, Localhost) {
+  GURL url("http://localhost");
+  TestChromeContentBrowserClient client;
+  auto simulator =
+      content::NavigationSimulator::CreateBrowserInitiated(url, web_contents());
+  EXPECT_TRUE(client.IsSecurityLevelAcceptableForWebAuthn(
+      main_rfh(), url::Origin::Create(url)));
+}
+
+TEST_F(DisableWebAuthnWithBrokenCertsTest, SecurityLevelAcceptable) {
+  GURL url("https://owca.org");
+  TestChromeContentBrowserClient client;
+  auto simulator =
+      content::NavigationSimulator::CreateBrowserInitiated(url, web_contents());
+  net::SSLInfo ssl_info;
+  ssl_info.cert_status = 0;  // ok.
+  ssl_info.cert =
+      net::ImportCertFromFile(net::GetTestCertsDirectory(), "ok_cert.pem");
+  simulator->SetSSLInfo(std::move(ssl_info));
+  simulator->Commit();
+  EXPECT_TRUE(client.IsSecurityLevelAcceptableForWebAuthn(
+      main_rfh(), url::Origin::Create(url)));
+}
+
+// Regression test for crbug.com/1421174.
+TEST_F(DisableWebAuthnWithBrokenCertsTest, IgnoreCertificateErrorsFlag) {
+  base::test::ScopedCommandLine scoped_command_line;
+  scoped_command_line.GetProcessCommandLine()->AppendSwitch(
+      switches::kIgnoreCertificateErrors);
+  GURL url("https://doofenshmirtz.evil");
+  TestChromeContentBrowserClient client;
+  auto simulator =
+      content::NavigationSimulator::CreateBrowserInitiated(url, web_contents());
+  net::SSLInfo ssl_info;
+  ssl_info.cert_status = net::CERT_STATUS_DATE_INVALID;
+  ssl_info.cert =
+      net::ImportCertFromFile(net::GetTestCertsDirectory(), "ok_cert.pem");
+  simulator->SetSSLInfo(std::move(ssl_info));
+  simulator->Commit();
+  EXPECT_TRUE(client.IsSecurityLevelAcceptableForWebAuthn(
+      main_rfh(), url::Origin::Create(url)));
+}

@@ -1,0 +1,67 @@
+[
+  {
+    "os": [
+      "win",
+      "linux",
+      "mac",
+      "chromeos_ash",
+      "chromeos_lacros",
+      "android",
+      "fuchsia"
+    ],
+    "policy_pref_mapping_tests": [
+      {
+        "policies": {},
+        "prefs": {
+          "settings.force_google_safesearch": {
+            "default_value": false
+          }
+        }
+      },
+      {
+        "policies": {
+          "ForceGoogleSafeSearch": true
+        },
+        "prefs": {
+          "settings.force_google_safesearch": {
+            "value": true
+          }
+        }
+      },
+      {
+        "policies": {
+          "ForceGoogleSafeSearch": false
+        },
+        "prefs": {
+          "settings.force_google_safesearch": {
+            "value": false
+          }
+        }
+      },
+      {
+        "note": "ForceGoogleSafeSearch overrules ForceSafeSearch",
+        "policies": {
+          "ForceGoogleSafeSearch": false,
+          "ForceSafeSearch": true
+        },
+        "prefs": {
+          "settings.force_google_safesearch": {
+            "value": false
+          }
+        }
+      },
+      {
+        "note": "ForceGoogleSafeSearch overrules ForceSafeSearch",
+        "policies": {
+          "ForceGoogleSafeSearch": true,
+          "ForceSafeSearch": false
+        },
+        "prefs": {
+          "settings.force_google_safesearch": {
+            "value": true
+          }
+        }
+      }
+    ]
+  }
+]

@@ -1,0 +1,13 @@
+Document
+++Group IsControlElement=false
+++++Text Name='color'
+++Text Name='text size'
+++++Text Name='text size' IsControlElement=false
+++Text Name='text style'
+++++Text Name='text style' IsControlElement=false
+++Group IsControlElement=false
+++++Text IsControlElement=false
+++++++Text Name='strong'
+++Text Name='italic'
+++Text Name=' '
+++Text Name='bold'

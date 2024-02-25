@@ -48,12 +48,10 @@ found in the LICENSE file.
         android:paddingBottom="16dp"
         android:ellipsize="end"
         android:textAppearance="@style/TextAppearance.TextLarge.Secondary"
-        android:text="@string/send_tab_to_self_when_signed_in_unavailable"/>
+        android:text="@string/send_tab_to_self_android_no_target_device_label"/>
 
-    <!-- TODO(crbug.com/1295204): Make this visible by default after launch. -->
     <org.chromium.chrome.browser.share.send_tab_to_self.ManageAccountDevicesLinkView
         android:id="@+id/manage_account_devices_link"
-        android:visibility="gone"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center"

@@ -126,7 +126,7 @@ class WebUIManagedInterface : public WebUIManagedInterfaceBase {
       std::conditional_t<std::is_void_v<PageHandler>,
                          bool,
                          mojo::Receiver<PageHandler>>;
-  absl::optional<PageHandlerReceiverType> page_handler_receiver_;
+  std::optional<PageHandlerReceiverType> page_handler_receiver_;
 
   // When `Page` is void, declare a unused bool member variable instead of a
   // mojo::Remote<PageHandler>. This allows us to share the same class

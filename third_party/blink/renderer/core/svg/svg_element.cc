@@ -301,8 +301,8 @@ bool SVGElement::HasNonCSSPropertyAnimations() const {
 }
 
 AffineTransform SVGElement::LocalCoordinateSpaceTransform(CTMScope) const {
-  // To be overriden by SVGGraphicsElement (or as special case SVGTextElement
-  // and SVGPatternElement)
+  // To be overridden by SVGTransformableElement (or as special case
+  // SVGTextElement and SVGPatternElement)
   return AffineTransform();
 }
 
@@ -683,15 +683,7 @@ void SVGElement::ParseAttribute(const AttributeModificationParams& params) {
   Element::ParseAttribute(params);
 }
 
-// If the attribute is not present in the map, the map will return the "empty
-// value" - which is kAnimatedUnknown.
-using AnimatedPropertyTypeHashTraits =
-    EnumHashTraits<AnimatedPropertyType, kAnimatedUnknown>;
-
-using AttributeToPropertyTypeMap = HashMap<QualifiedName,
-                                           AnimatedPropertyType,
-                                           HashTraits<QualifiedName>,
-                                           AnimatedPropertyTypeHashTraits>;
+using AttributeToPropertyTypeMap = HashMap<QualifiedName, AnimatedPropertyType>;
 AnimatedPropertyType SVGElement::AnimatedPropertyTypeForCSSAttribute(
     const QualifiedName& attribute_name) {
   DEFINE_STATIC_LOCAL(AttributeToPropertyTypeMap, css_property_map, ());
@@ -1357,6 +1349,23 @@ void SVGElement::SynchronizeListOfSVGAttributes(
       attr->SynchronizeAttribute();
     }
   }
+}
+
+void SVGElement::AttachLayoutTree(AttachContext& context) {
+  Element::AttachLayoutTree(context);
+
+  if (!context.performing_reattach && GetLayoutObject() &&
+      GetSMILAnimations()) {
+    GetTimeContainer()->DidAttachLayoutObject();
+  }
+}
+
+SMILTimeContainer* SVGElement::GetTimeContainer() const {
+  if (auto* svg_root = DynamicTo<SVGSVGElement>(*this)) {
+    return svg_root->TimeContainer();
+  }
+
+  return ownerSVGElement()->TimeContainer();
 }
 
 }  // namespace blink

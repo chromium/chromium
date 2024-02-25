@@ -21,7 +21,9 @@ namespace device {
 
 FakeUsbDeviceManager::FakeUsbDeviceManager() {}
 
-FakeUsbDeviceManager::~FakeUsbDeviceManager() {}
+FakeUsbDeviceManager::~FakeUsbDeviceManager() {
+  RemoveAllDevices();
+}
 
 void FakeUsbDeviceManager::EnumerateDevicesAndSetClient(
     mojo::PendingAssociatedRemote<mojom::UsbDeviceManagerClient> client,

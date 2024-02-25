@@ -4,7 +4,7 @@
 
 #include "extensions/browser/scoped_ignore_content_verifier_for_test.h"
 
-#include "extensions/browser/content_verify_job.h"
+#include "extensions/browser/content_verifier/content_verify_job.h"
 
 namespace extensions {
 

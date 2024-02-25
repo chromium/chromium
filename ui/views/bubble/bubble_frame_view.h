@@ -56,11 +56,12 @@ class ImageView;
 // title row. Otherwise, they will be positioned closer to the frame
 // edge.
 class VIEWS_EXPORT BubbleFrameView : public NonClientFrameView {
- public:
-  METADATA_HEADER(BubbleFrameView);
+  METADATA_HEADER(BubbleFrameView, NonClientFrameView)
 
+ public:
   DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kMinimizeButtonElementId);
   DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kCloseButtonElementId);
+  DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kProgressIndicatorElementId);
 
   enum class PreferredArrowAdjustment { kMirror, kOffset };
 
@@ -93,6 +94,7 @@ class VIEWS_EXPORT BubbleFrameView : public NonClientFrameView {
   void UpdateWindowTitle() override;
   void SizeConstraintsChanged() override;
   void InsertClientView(ClientView* client_view) override;
+  void UpdateWindowRoundedCorners() override;
 
   // Sets a custom view to be the dialog title instead of the |default_title_|
   // label. If there is an existing title view it will be deleted.
@@ -106,16 +108,16 @@ class VIEWS_EXPORT BubbleFrameView : public NonClientFrameView {
 
   // Updates the current progress value of |progress_indicator_|. If progress is
   // absent, hides |the progress_indicator|.
-  void SetProgress(absl::optional<double> progress);
+  void SetProgress(std::optional<double> progress);
   // Returns the current progress value of |progress_indicator_| if
   // |progress_indicator_| is visible.
-  absl::optional<double> GetProgress() const;
+  std::optional<double> GetProgress() const;
 
   // View:
   gfx::Size CalculatePreferredSize() const override;
   gfx::Size GetMinimumSize() const override;
   gfx::Size GetMaximumSize() const override;
-  void Layout() override;
+  void Layout(PassKey) override;
   void OnPaint(gfx::Canvas* canvas) override;
   void PaintChildren(const PaintInfo& paint_info) override;
   void OnThemeChanged() override;
@@ -218,6 +220,9 @@ class VIEWS_EXPORT BubbleFrameView : public NonClientFrameView {
 
   BubbleBorder* bubble_border() const { return bubble_border_; }
 
+  // Returns the client_view insets from the frame view.
+  gfx::Insets GetClientViewInsets() const;
+
  protected:
   // Returns the available screen bounds if the frame were to show in |rect|.
   virtual gfx::Rect GetAvailableScreenBounds(const gfx::Rect& rect) const;
@@ -316,6 +321,10 @@ class VIEWS_EXPORT BubbleFrameView : public NonClientFrameView {
 
   int GetMainImageLeftInsets() const;
 
+  gfx::Point GetButtonAreaTopRight() const;
+
+  gfx::Size GetButtonAreaSize() const;
+
   // Helper method to create a label with text style
   static std::unique_ptr<Label> CreateLabelWithContextAndStyle(
       const std::u16string& label_text,
@@ -343,10 +352,10 @@ class VIEWS_EXPORT BubbleFrameView : public NonClientFrameView {
   raw_ptr<BoxLayoutView> title_container_ = nullptr;
 
   // One of these fields is used as the dialog title. If SetTitleView is called
-  // the custom title view is stored in |custom_title_| and this class assumes
-  // ownership. Otherwise |default_title_| is used.
-  raw_ptr<Label, DanglingUntriaged> default_title_ = nullptr;
-  raw_ptr<View, DanglingUntriaged> custom_title_ = nullptr;
+  // the custom title view is stored in `custom_title_` and this class assumes
+  // ownership. Otherwise `default_title_` is used.
+  raw_ptr<Label> default_title_ = nullptr;
+  raw_ptr<View> custom_title_ = nullptr;
 
   raw_ptr<Label> subtitle_ = nullptr;
 
@@ -361,11 +370,10 @@ class VIEWS_EXPORT BubbleFrameView : public NonClientFrameView {
   raw_ptr<ProgressBar> progress_indicator_ = nullptr;
 
   // The optional header view.
-  raw_ptr<View, DanglingUntriaged> header_view_ = nullptr;
+  raw_ptr<View> header_view_ = nullptr;
 
   // A view to contain the footnote view, if it exists.
-  raw_ptr<FootnoteContainerView, DanglingUntriaged> footnote_container_ =
-      nullptr;
+  raw_ptr<FootnoteContainerView> footnote_container_ = nullptr;
 
   // Set preference for how the arrow will be adjusted if the window is outside
   // the available bounds.

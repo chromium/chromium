@@ -16,6 +16,7 @@
 #include "base/test/task_environment.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
+#include "gpu/command_buffer/common/shared_image_capabilities.h"
 #include "gpu/config/gpu_feature_info.h"
 #include "gpu/config/gpu_info.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
@@ -70,7 +71,8 @@ class TestGpuImpl : public mojom::Gpu {
     }
 
     std::move(callback).Run(client_id, std::move(handle), gpu::GPUInfo(),
-                            gpu::GpuFeatureInfo());
+                            gpu::GpuFeatureInfo(),
+                            gpu::SharedImageCapabilities());
   }
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)

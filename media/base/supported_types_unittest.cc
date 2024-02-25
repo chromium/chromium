@@ -6,6 +6,7 @@
 
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
+#include "media/base/media_switches.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 #if BUILDFLAG(IS_ANDROID)
@@ -24,11 +25,13 @@ const bool kPropCodecsEnabled = true;
 const bool kPropCodecsEnabled = false;
 #endif
 
-#if BUILDFLAG(IS_CHROMEOS_ASH) && BUILDFLAG(USE_PROPRIETARY_CODECS)
-const bool kMpeg4Supported = true;
+bool IsMPEG4Supported() {
+#if BUILDFLAG(IS_CHROMEOS) && BUILDFLAG(USE_PROPRIETARY_CODECS)
+  return base::FeatureList::IsEnabled(kCrOSLegacyMediaFormats);
 #else
-const bool kMpeg4Supported = false;
+  return false;
 #endif
+}
 
 TEST(SupportedTypesTest, IsSupportedVideoTypeBasics) {
   // Default to common 709.
@@ -42,7 +45,7 @@ TEST(SupportedTypesTest, IsSupportedVideoTypeBasics) {
       {VideoCodec::kVP8, VP8PROFILE_ANY, kUnspecifiedLevel, kColorSpace}));
   EXPECT_TRUE(IsSupportedVideoType(
       {VideoCodec::kVP9, VP9PROFILE_PROFILE0, kUnspecifiedLevel, kColorSpace}));
-  EXPECT_TRUE(
+  EXPECT_FALSE(
       IsSupportedVideoType({VideoCodec::kTheora, VIDEO_CODEC_PROFILE_UNKNOWN,
                             kUnspecifiedLevel, kColorSpace}));
 
@@ -62,7 +65,7 @@ TEST(SupportedTypesTest, IsSupportedVideoTypeBasics) {
             IsSupportedVideoType(
                 {VideoCodec::kH264, H264PROFILE_BASELINE, 1, kColorSpace}));
   EXPECT_EQ(
-      kMpeg4Supported,
+      IsMPEG4Supported(),
       IsSupportedVideoType({VideoCodec::kMPEG4, VIDEO_CODEC_PROFILE_UNKNOWN,
                             kUnspecifiedLevel, kColorSpace}));
 
@@ -255,6 +258,10 @@ TEST(SupportedTypesTest, IsSupportedAudioTypeWithSpatialRenderingBasics) {
       IsSupportedAudioType({AudioCodec::kDTSXP2, AudioCodecProfile::kUnknown,
                             is_spatial_rendering}));
 #endif  // BUILDFLAG(ENABLE_PLATFORM_DTS_AUDIO)
+#if BUILDFLAG(ENABLE_PLATFORM_AC4_AUDIO)
+  EXPECT_FALSE(IsSupportedAudioType(
+      {AudioCodec::kAC4, AudioCodecProfile::kUnknown, is_spatial_rendering}));
+#endif  // BUILDFLAG(ENABLE_PLATFORM_AC4_AUDIO)
   EXPECT_FALSE(
       IsSupportedAudioType({AudioCodec::kUnknown, AudioCodecProfile::kUnknown,
                             is_spatial_rendering}));
@@ -292,9 +299,14 @@ TEST(SupportedTypesTest, IsSupportedVideoTypeWithHdrMetadataBasics) {
       {VideoCodec::kVP8, VP8PROFILE_ANY, kUnspecifiedLevel, color_space}));
   EXPECT_TRUE(IsSupportedVideoType(
       {VideoCodec::kVP9, VP9PROFILE_PROFILE0, kUnspecifiedLevel, color_space}));
-  EXPECT_TRUE(
+  EXPECT_FALSE(
       IsSupportedVideoType({VideoCodec::kTheora, VIDEO_CODEC_PROFILE_UNKNOWN,
                             kUnspecifiedLevel, color_space}));
+
+  // HDR metadata w/o an HDR color space should return false.
+  EXPECT_FALSE(
+      IsSupportedVideoType({VideoCodec::kVP8, VP8PROFILE_ANY, kUnspecifiedLevel,
+                            color_space, gfx::HdrMetadataType::kSmpteSt2086}));
 
   // All combinations of combinations of color gamuts and transfer functions
   // should be supported.
@@ -304,9 +316,12 @@ TEST(SupportedTypesTest, IsSupportedVideoTypeWithHdrMetadataBasics) {
       {VideoCodec::kVP8, VP8PROFILE_ANY, kUnspecifiedLevel, color_space}));
   EXPECT_TRUE(IsSupportedVideoType(
       {VideoCodec::kVP9, VP9PROFILE_PROFILE0, kUnspecifiedLevel, color_space}));
-  EXPECT_TRUE(
+  EXPECT_FALSE(
       IsSupportedVideoType({VideoCodec::kTheora, VIDEO_CODEC_PROFILE_UNKNOWN,
                             kUnspecifiedLevel, color_space}));
+  EXPECT_TRUE(
+      IsSupportedVideoType({VideoCodec::kVP8, VP8PROFILE_ANY, kUnspecifiedLevel,
+                            color_space, gfx::HdrMetadataType::kSmpteSt2086}));
 
   color_space.primaries = VideoColorSpace::PrimaryID::BT2020;
   color_space.transfer = VideoColorSpace::TransferID::ARIB_STD_B67;
@@ -314,18 +329,18 @@ TEST(SupportedTypesTest, IsSupportedVideoTypeWithHdrMetadataBasics) {
       {VideoCodec::kVP8, VP8PROFILE_ANY, kUnspecifiedLevel, color_space}));
   EXPECT_TRUE(IsSupportedVideoType(
       {VideoCodec::kVP9, VP9PROFILE_PROFILE0, kUnspecifiedLevel, color_space}));
-  EXPECT_TRUE(
+  EXPECT_FALSE(
       IsSupportedVideoType({VideoCodec::kTheora, VIDEO_CODEC_PROFILE_UNKNOWN,
                             kUnspecifiedLevel, color_space}));
-
-  // No HDR metadata types are supported.
+  // HDR10 metadata only works with the PQ transfer.
   EXPECT_FALSE(
       IsSupportedVideoType({VideoCodec::kVP8, VP8PROFILE_ANY, kUnspecifiedLevel,
                             color_space, gfx::HdrMetadataType::kSmpteSt2086}));
 
-  EXPECT_FALSE(IsSupportedVideoType({VideoCodec::kVP8, VP8PROFILE_ANY,
-                                     kUnspecifiedLevel, color_space,
-                                     gfx::HdrMetadataType::kSmpteSt2094_10}));
+  // ST2094-10 metadata is not supported even if the codec is dolby vision.
+  EXPECT_FALSE(IsSupportedVideoType(
+      {VideoCodec::kDolbyVision, DOLBYVISION_PROFILE5, kUnspecifiedLevel,
+       color_space, gfx::HdrMetadataType::kSmpteSt2094_10}));
 
   EXPECT_FALSE(IsSupportedVideoType({VideoCodec::kVP8, VP8PROFILE_ANY,
                                      kUnspecifiedLevel, color_space,
@@ -340,11 +355,7 @@ TEST(SupportedTypesTest, IsBuiltInVideoCodec) {
 #endif  // BUILDFLAG(USE_PROPRIETARY_CODECS) &&
         // BUILDFLAG(ENABLE_FFMPEG_VIDEO_DECODERS)
 
-#if BUILDFLAG(ENABLE_FFMPEG_VIDEO_DECODERS)
-  EXPECT_TRUE(IsBuiltInVideoCodec(VideoCodec::kTheora));
-#else
   EXPECT_FALSE(IsBuiltInVideoCodec(VideoCodec::kTheora));
-#endif  // BUILDFLAG(ENABLE_FFMPEG_VIDEO_DECODERS)
 
 #if BUILDFLAG(ENABLE_FFMPEG_VIDEO_DECODERS) || BUILDFLAG(ENABLE_LIBVPX)
   EXPECT_TRUE(IsBuiltInVideoCodec(VideoCodec::kVP8));

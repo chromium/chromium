@@ -200,7 +200,7 @@ void ArrowButtonView::SetBackgroundColorId(ui::ColorId color_id) {
       color_id, GetPreferredSize().width() / 2, 2 * kBorderForFocusRingDp));
 }
 
-BEGIN_METADATA(ArrowButtonView, LoginButton)
+BEGIN_METADATA(ArrowButtonView)
 END_METADATA
 
 }  // namespace ash

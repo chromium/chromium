@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/webui/print_preview/extension_printer_handler.h"
 
 #include <algorithm>
+#include <optional>
 #include <utility>
 
 #include "base/functional/bind.h"
@@ -37,7 +38,6 @@
 #include "printing/print_job_constants.h"
 #include "printing/pwg_raster_settings.h"
 #include "services/device/public/mojom/usb_device.mojom.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/geometry/size.h"
 
 using extensions::DevicePermissionsManager;
@@ -90,12 +90,12 @@ struct ProvisionalUsbPrinter {
   std::string device_guid;
 };
 
-absl::optional<ProvisionalUsbPrinter> ParseProvisionalUsbPrinterId(
+std::optional<ProvisionalUsbPrinter> ParseProvisionalUsbPrinterId(
     const std::string& printer_id) {
   std::vector<std::string> components = base::SplitString(
       printer_id, ":", base::TRIM_WHITESPACE, base::SPLIT_WANT_ALL);
   if (components.size() != 3 || components[0] != kProvisionalUsbLabel)
-    return absl::nullopt;
+    return std::nullopt;
   return ProvisionalUsbPrinter{.extension_id = std::move(components[1]),
                                .device_guid = std::move(components[2])};
 }
@@ -241,7 +241,7 @@ void ExtensionPrinterHandler::StartPrint(
 void ExtensionPrinterHandler::StartGrantPrinterAccess(
     const std::string& printer_id,
     GetPrinterInfoCallback callback) {
-  absl::optional<ProvisionalUsbPrinter> printer =
+  std::optional<ProvisionalUsbPrinter> printer =
       ParseProvisionalUsbPrinterId(printer_id);
   if (!printer.has_value()) {
     std::move(callback).Run(base::Value::Dict());
@@ -284,7 +284,7 @@ void ExtensionPrinterHandler::ConvertToPWGRaster(
   PwgRasterSettings bitmap_settings =
       PwgRasterConverter::GetBitmapSettings(printer_description, print_ticket);
 
-  absl::optional<bool> use_skia;
+  std::optional<bool> use_skia;
   const PrefService* prefs = profile_->GetPrefs();
   if (prefs && prefs->IsManagedPreference(prefs::kPdfUseSkiaRendererEnabled)) {
     use_skia = prefs->GetBoolean(prefs::kPdfUseSkiaRendererEnabled);

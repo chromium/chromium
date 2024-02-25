@@ -16,11 +16,11 @@
 #include "remoting/protocol/channel_authenticator.h"
 #include "remoting/protocol/connection_tester.h"
 #include "remoting/protocol/fake_authenticator.h"
+#include "remoting/protocol/spake2_authenticator.h"
 #include "remoting/protocol/third_party_authenticator_base.h"
 #include "remoting/protocol/third_party_client_authenticator.h"
 #include "remoting/protocol/third_party_host_authenticator.h"
 #include "remoting/protocol/token_validator.h"
-#include "remoting/protocol/v2_authenticator.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/libjingle_xmpp/xmllite/xmlelement.h"
@@ -118,11 +118,12 @@ class ThirdPartyAuthenticatorTest : public AuthenticatorTestBase {
   void InitAuthenticators() {
     token_validator_ = new FakeTokenValidator();
     host_ = std::make_unique<ThirdPartyHostAuthenticator>(
-        base::BindRepeating(&V2Authenticator::CreateForHost, host_cert_,
-                            key_pair_),
+        base::BindRepeating(&Spake2Authenticator::CreateForHost, kHostId,
+                            kClientId, host_cert_, key_pair_),
         base::WrapUnique(token_validator_.get()));
     client_ = std::make_unique<ThirdPartyClientAuthenticator>(
-        base::BindRepeating(&V2Authenticator::CreateForClient),
+        base::BindRepeating(&Spake2Authenticator::CreateForClient, kClientId,
+                            kHostId),
         base::BindRepeating(&FakeTokenFetcher::FetchThirdPartyToken,
                             base::Unretained(&token_fetcher_)));
   }

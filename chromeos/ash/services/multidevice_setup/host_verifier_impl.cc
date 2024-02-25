@@ -120,7 +120,7 @@ HostVerifierImpl::~HostVerifierImpl() {
 }
 
 bool HostVerifierImpl::IsHostVerified() {
-  absl::optional<multidevice::RemoteDeviceRef> current_host =
+  std::optional<multidevice::RemoteDeviceRef> current_host =
       host_backend_delegate_->GetMultiDeviceHostFromBackend();
   if (!current_host)
     return false;
@@ -200,7 +200,7 @@ void HostVerifierImpl::UpdateRetryState() {
   }
 
   base::Time retry_time_from_prefs =
-      base::Time::FromJavaTime(timestamp_from_prefs);
+      base::Time::FromMillisecondsSinceUnixEpoch(timestamp_from_prefs);
 
   // If a timeout value was set but has not yet occurred, start the timer.
   if (clock_->Now() < retry_time_from_prefs) {
@@ -220,7 +220,8 @@ void HostVerifierImpl::StopRetryTimerAndClearPrefs() {
 void HostVerifierImpl::AttemptVerificationWithInitialTimeout() {
   base::Time retry_time = clock_->Now() + kFirstRetryDelta;
 
-  pref_service_->SetInt64(kRetryTimestampPrefName, retry_time.ToJavaTime());
+  pref_service_->SetInt64(kRetryTimestampPrefName,
+                          retry_time.InMillisecondsSinceUnixEpoch());
   pref_service_->SetInt64(kLastUsedTimeDeltaMsPrefName,
                           kFirstRetryDelta.InMilliseconds());
 
@@ -239,7 +240,8 @@ void HostVerifierImpl::AttemptVerificationAfterInitialTimeout(
     retry_time += base::Milliseconds(time_delta_ms);
   }
 
-  pref_service_->SetInt64(kRetryTimestampPrefName, retry_time.ToJavaTime());
+  pref_service_->SetInt64(kRetryTimestampPrefName,
+                          retry_time.InMillisecondsSinceUnixEpoch());
   pref_service_->SetInt64(kLastUsedTimeDeltaMsPrefName, time_delta_ms);
 
   StartRetryTimer(retry_time);
@@ -256,7 +258,7 @@ void HostVerifierImpl::StartRetryTimer(const base::Time& time_to_fire) {
 }
 
 void HostVerifierImpl::AttemptHostVerification() {
-  absl::optional<multidevice::RemoteDeviceRef> current_host =
+  std::optional<multidevice::RemoteDeviceRef> current_host =
       host_backend_delegate_->GetMultiDeviceHostFromBackend();
   if (!current_host) {
     PA_LOG(WARNING) << "HostVerifierImpl::AttemptHostVerification(): Cannot "

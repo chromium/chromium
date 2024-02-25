@@ -75,7 +75,7 @@ TEST_F(SupervisedUserWebContentHandlerImplTest,
 
   auto result = crosapi::mojom::ParentAccessResult::NewApproved(
       crosapi::mojom::ParentAccessApprovedResult::New(
-          "TEST_TOKEN", base::Time::FromDoubleT(123456UL)));
+          "TEST_TOKEN", base::Time::FromSecondsSinceUnixEpoch(123456UL)));
 
   // Capture approval start time and forward clock by the fake approval
   // duration.

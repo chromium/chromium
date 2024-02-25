@@ -7,12 +7,14 @@
 
 #include "base/feature_list.h"
 #include "base/logging.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/synchronization/lock.h"
 #include "base/time/default_tick_clock.h"
 #include "base/time/time.h"
 #include "components/viz/common/gpu/raster_context_provider.h"
 #include "media/base/video_frame.h"
+#include "media/base/video_frame_converter.h"
 #include "media/base/video_frame_pool.h"
 #include "media/base/video_types.h"
 #include "media/capture/video/video_capture_feedback.h"
@@ -46,25 +48,6 @@ namespace blink {
 class PLATFORM_EXPORT WebRtcVideoFrameAdapter
     : public webrtc::VideoFrameBuffer {
  public:
-  class VectorBufferPool {
-   public:
-    VectorBufferPool();
-    ~VectorBufferPool() = default;
-    // Allocate will return any available buffer and the vector buffer size
-    // needs to be resized manually by the user.
-    std::unique_ptr<std::vector<uint8_t>> Allocate();
-    void Return(std::unique_ptr<std::vector<uint8_t>> buffer);
-
-   private:
-    struct BufferEntry {
-      base::TimeTicks last_use_time;
-      std::unique_ptr<std::vector<uint8_t>> buffer;
-    };
-    base::Lock buffer_lock_;
-    Vector<BufferEntry> free_buffers_ GUARDED_BY(buffer_lock_);
-    const base::TickClock* tick_clock_;
-  };
-
   class PLATFORM_EXPORT SharedResources
       : public base::RefCountedThreadSafe<SharedResources> {
    public:
@@ -79,12 +62,12 @@ class PLATFORM_EXPORT WebRtcVideoFrameAdapter
         const gfx::Size& natural_size,
         base::TimeDelta timestamp);
 
-    // Temporary vector buffers used in the video pre-processing for the input
-    // frame before encoding, e.g. scaling the input frame to natural size for
-    // encoding. Buffer needs manually release after using.
-    virtual std::unique_ptr<std::vector<uint8_t>> CreateTemporaryVectorBuffer();
-    virtual void ReleaseTemporaryVectorBuffer(
-        std::unique_ptr<std::vector<uint8_t>> buffer);
+    // Uses a media::VideoFrameConverter to copy pixel data from `src_frame` to
+    // `dest_frame` applying scaling and pixel format conversion as needed.
+    // See media::VideoFrameConverter for supported input and output formats.
+    virtual media::EncoderStatus ConvertAndScale(
+        const media::VideoFrame& src_frame,
+        media::VideoFrame& dest_frame);
 
     virtual scoped_refptr<viz::RasterContextProvider>
     GetRasterContextProvider();
@@ -116,7 +99,6 @@ class PLATFORM_EXPORT WebRtcVideoFrameAdapter
    private:
     media::VideoFramePool pool_;
     media::VideoFramePool pool_for_mapped_frames_;
-    VectorBufferPool pool_for_tmp_vectors_;
 
     std::unique_ptr<media::RenderableGpuMemoryBufferVideoFramePool>
         accelerated_frame_pool_;
@@ -126,7 +108,10 @@ class PLATFORM_EXPORT WebRtcVideoFrameAdapter
     scoped_refptr<viz::RasterContextProvider> raster_context_provider_
         GUARDED_BY(context_provider_lock_);
 
-    media::GpuVideoAcceleratorFactories* gpu_factories_;
+    raw_ptr<media::GpuVideoAcceleratorFactories> gpu_factories_;
+
+    // Handles frame conversions. Maintains an internal scratch space buffer.
+    media::VideoFrameConverter frame_converter_;
 
     base::Lock feedback_lock_;
 
@@ -199,7 +184,6 @@ class PLATFORM_EXPORT WebRtcVideoFrameAdapter
   explicit WebRtcVideoFrameAdapter(scoped_refptr<media::VideoFrame> frame);
   WebRtcVideoFrameAdapter(
       scoped_refptr<media::VideoFrame> frame,
-      std::vector<scoped_refptr<media::VideoFrame>> scaled_frames,
       scoped_refptr<SharedResources> shared_resources);
 
   scoped_refptr<media::VideoFrame> getMediaVideoFrame() const { return frame_; }
@@ -259,7 +243,6 @@ class PLATFORM_EXPORT WebRtcVideoFrameAdapter
 
   base::Lock adapted_frames_lock_;
   const scoped_refptr<media::VideoFrame> frame_;
-  const Vector<scoped_refptr<media::VideoFrame>> scaled_frames_;
   const scoped_refptr<SharedResources> shared_resources_;
   const ScaledBufferSize full_size_;
   // Frames that have been adapted, i.e. that were "hard-applied" and mapped.

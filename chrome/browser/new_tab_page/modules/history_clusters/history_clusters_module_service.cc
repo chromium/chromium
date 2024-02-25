@@ -4,6 +4,8 @@
 
 #include "chrome/browser/new_tab_page/modules/history_clusters/history_clusters_module_service.h"
 
+#include <array>
+
 #include "base/barrier_callback.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/metrics/histogram_functions.h"
@@ -14,6 +16,8 @@
 #include "chrome/browser/new_tab_page/modules/history_clusters/ranking/history_clusters_module_ranking_signals.h"
 #include "chrome/browser/new_tab_page/new_tab_page_util.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"
+#include "chrome/browser/segmentation_platform/segmentation_platform_service_factory.h"
+#include "components/history/core/browser/history_service.h"
 #include "components/history/core/browser/history_types.h"
 #include "components/history_clusters/core/history_clusters_service.h"
 #include "components/history_clusters/core/history_clusters_service_task.h"
@@ -22,6 +26,7 @@
 #include "components/search/ntp_features.h"
 #include "components/search_engines/template_url.h"
 #include "components/search_engines/template_url_service.h"
+#include "components/segmentation_platform/public/segmentation_platform_service.h"
 
 namespace {
 
@@ -39,6 +44,18 @@ enum NTPHistoryClustersIneligibleReason {
   kMaxValue = kInsufficientRelatedSearches,
 };
 
+const size_t kCategoryBoostListSize = 32;
+constexpr std::array<std::string_view, kCategoryBoostListSize>
+    kCategoryBoostList{
+        "/m/04n1sn", "/m/025t3bg",    "/g/11h1zghcjr", "/m/01hbs0",
+        "/m/01lj9",  "/m/022hpx",     "/m/01mf_",      "/m/01mkq",
+        "/m/019qw9", "/g/11h16094f_", "/m/02h32",      "/m/017rcq",
+        "/m/02csf",  "/m/027hpj",     "/m/0dcz2",      "/m/02jfc",
+        "/m/05xlzx", "/m/03nlf2w",    "/m/01pmdg",     "/m/03r55",
+        "/m/03n2_q", "/g/1q677w6hv",  "/m/02rfdq",     "/m/01rk91",
+        "/m/04rjg",  "/m/0g55yf",     "/m/06k1r",      "/m/012mq4",
+        "/m/06mnr",  "/m/014dsx",     "/g/11fhwwq0bp", "/m/033wsp"};
+
 base::Time GetBeginTime() {
   static int hours_to_look_back = base::GetFieldTrialParamByFeatureAsInt(
       ntp_features::kNtpHistoryClustersModuleBeginTimeDuration,
@@ -54,12 +71,16 @@ base::Time GetBeginTime() {
 
 HistoryClustersModuleService::HistoryClustersModuleService(
     history_clusters::HistoryClustersService* history_clusters_service,
+    history::HistoryService* history_service,
     CartService* cart_service,
     TemplateURLService* template_url_service,
-    OptimizationGuideKeyedService* optimization_guide_keyed_service)
+    OptimizationGuideKeyedService* optimization_guide_keyed_service,
+    segmentation_platform::SegmentationPlatformService*
+        segmentation_platform_service)
     : max_clusters_to_return_(GetMaxClusters()),
       category_boostlist_(GetCategories(
-          ntp_features::kNtpHistoryClustersModuleCategoriesBoostlistParam)),
+          ntp_features::kNtpHistoryClustersModuleCategoriesBoostlistParam,
+          {kCategoryBoostList.begin(), kCategoryBoostListSize})),
       should_fetch_clusters_until_exhausted_(base::FeatureList::IsEnabled(
           ntp_features::kNtpHistoryClustersModuleFetchClustersUntilExhausted)),
       history_clusters_service_(history_clusters_service),
@@ -69,7 +90,8 @@ HistoryClustersModuleService::HistoryClustersModuleService(
           ntp_features::kNtpHistoryClustersModuleUseModelRanking) &&
       optimization_guide_keyed_service) {
     module_ranker_ = std::make_unique<HistoryClustersModuleRanker>(
-        optimization_guide_keyed_service, cart_service_, category_boostlist_);
+        optimization_guide_keyed_service, segmentation_platform_service,
+        history_service, cart_service_, category_boostlist_);
   }
 }
 HistoryClustersModuleService::~HistoryClustersModuleService() = default;
@@ -153,11 +175,23 @@ void HistoryClustersModuleService::OnGetFilteredClusters(
   // Do additional filtering on clusters.
   history_clusters::CoalesceRelatedSearches(clusters);
 
-  // Cull clusters that do not have the minimum number of visits with and
-  // without images to be eligible for display.
+  // Maintain a list of observed cluster labels and discard any clusters
+  // associated with a duplicate label.
+  std::set<std::u16string> seen_cluster_labels = {};
   NTPHistoryClustersIneligibleReason ineligible_reason =
       clusters.empty() ? kNoClusters : kNone;
   base::EraseIf(clusters, [&](auto& cluster) {
+    // Cull clusters that do not have a label.
+    if (!cluster.label.has_value()) {
+      return true;
+    }
+
+    // Cull clusters with a label that has already been observed.
+    if (base::Contains(seen_cluster_labels, cluster.label.value())) {
+      return true;
+    }
+    seen_cluster_labels.insert(cluster.label.value());
+
     // Cull non prominent clusters.
     if (!cluster.should_show_on_prominent_ui_surfaces) {
       ineligible_reason = kNonProminent;
@@ -207,6 +241,8 @@ void HistoryClustersModuleService::OnGetFilteredClusters(
                              .has_url_keyed_image &&
                          v.annotated_visit.visit_row.is_known_to_sync);
         });
+    // Cull clusters that do not have the minimum number of visits with images
+    // to be eligible for display.
     if (visits_with_images < filter_params.min_visits_with_images) {
       ineligible_reason = kInsufficientImages;
       return true;
@@ -242,28 +278,57 @@ void HistoryClustersModuleService::OnGetFilteredClusters(
                        weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
   } else {
     SortClustersUsingHeuristic(category_boostlist_, clusters);
-    OnGetRankedClusters(std::move(callback), std::move(clusters),
+    std::vector<std::pair<history::Cluster, std::optional<float>>>
+        clusters_with_scores;
+    std::transform(clusters.cbegin(), clusters.cend(),
+                   std::back_inserter(clusters_with_scores),
+                   [](history::Cluster cluster) {
+                     return std::make_pair(cluster, std::nullopt);
+                   });
+    OnGetRankedClusters(std::move(callback), clusters_with_scores,
                         /*ranking_signals=*/{});
   }
 }
 
 void HistoryClustersModuleService::OnGetRankedClusters(
     GetClustersCallback callback,
-    std::vector<history::Cluster> clusters,
+    std::vector<std::pair<history::Cluster, std::optional<float>>>
+        clusters_with_scores,
     base::flat_map<int64_t, HistoryClustersModuleRankingSignals>
         ranking_signals) {
+  if (clusters_with_scores.empty()) {
+    std::move(callback).Run({}, std::move(ranking_signals));
+    return;
+  }
+
   // Record metrics for top cluster.
-  history::Cluster top_cluster = clusters.front();
+  history::Cluster top_cluster =
+      std::get<history::Cluster>(clusters_with_scores.front());
   base::UmaHistogramCounts100("NewTabPage.HistoryClusters.NumVisits",
                               top_cluster.visits.size());
   base::UmaHistogramCounts100("NewTabPage.HistoryClusters.NumRelatedSearches",
                               top_cluster.related_searches.size());
 
   // Cull to max clusters to return.
-  if (clusters.size() > max_clusters_to_return_) {
-    clusters.resize(max_clusters_to_return_);
+  if (clusters_with_scores.size() > max_clusters_to_return_) {
+    clusters_with_scores.resize(max_clusters_to_return_);
   }
 
+  for (auto& cluster_and_score : clusters_with_scores) {
+    auto& score = std::get<std::optional<float>>(cluster_and_score);
+    if (score.has_value()) {
+      base::UmaHistogramCustomCounts("NewTabPage.HistoryClusters.Score",
+                                     round(score.value() * -100), 1, 100, 100);
+    }
+  }
+
+  std::vector<history::Cluster> clusters;
+  std::transform(
+      clusters_with_scores.cbegin(), clusters_with_scores.cend(),
+      std::back_inserter(clusters),
+      [](std::pair<history::Cluster, std::optional<float>> cluster_and_score) {
+        return cluster_and_score.first;
+      });
   std::move(callback).Run(std::move(clusters), std::move(ranking_signals));
 
   if (!IsCartModuleEnabled() || !cart_service_) {

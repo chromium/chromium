@@ -17,22 +17,21 @@ FakeFastPairDataEncryptor::EncryptBytes(
   return encrypted_bytes_;
 }
 
-const absl::optional<std::array<uint8_t, 64>>&
+const std::optional<std::array<uint8_t, 64>>&
 FakeFastPairDataEncryptor::GetPublicKey() {
   return public_key_;
 }
 
 void FakeFastPairDataEncryptor::ParseDecryptedResponse(
     const std::vector<uint8_t>& encrypted_response_bytes,
-    base::OnceCallback<void(const absl::optional<DecryptedResponse>&)>
+    base::OnceCallback<void(const std::optional<DecryptedResponse>&)>
         callback) {
   std::move(callback).Run(response_);
 }
 
 void FakeFastPairDataEncryptor::ParseDecryptedPasskey(
     const std::vector<uint8_t>& encrypted_passkey_bytes,
-    base::OnceCallback<void(const absl::optional<DecryptedPasskey>&)>
-        callback) {
+    base::OnceCallback<void(const std::optional<DecryptedPasskey>&)> callback) {
   std::move(callback).Run(passkey_);
 }
 

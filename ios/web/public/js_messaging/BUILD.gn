@@ -11,10 +11,7 @@ source_set("js_messaging") {
     "//url",
   ]
 
-  public_deps = [
-    "//base",
-    "//third_party/abseil-cpp:absl",
-  ]
+  public_deps = [ "//base" ]
 
   frameworks = [ "Foundation.framework" ]
 

@@ -1,0 +1,7 @@
+This is a testharness.js-based test.
+[FAIL] ":-webkit-full-page-media" should be an invalid selector
+  assert_throws_dom: ":-webkit-full-page-media" should throw in querySelector function "() => document.querySelector(selector)" did not throw
+[FAIL] ":-webkit-full-screen-ancestor" should be an invalid selector
+  assert_throws_dom: ":-webkit-full-screen-ancestor" should throw in querySelector function "() => document.querySelector(selector)" did not throw
+Harness: the test ran to completion.
+

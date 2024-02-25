@@ -180,14 +180,14 @@ TEST_F(SignalKeyTest, TestKeyDebugStringRepresentation) {
                 test_clock_.Now() + base::Seconds(10));
 
   EXPECT_EQ(
-      "{kind=1, name_hash=42, range_start=1970-01-01 08:00:00.000 UTC, "
-      "range_end=1970-01-01 08:00:10.000 UTC}",
+      "{kind=1, name_hash=42, range_start=1970-01-01 08:00:00.000000 UTC, "
+      "range_end=1970-01-01 08:00:10.000000 UTC}",
       key.ToDebugString());
   std::stringstream key_buffer;
   key_buffer << key;
   EXPECT_EQ(
-      "{kind=1, name_hash=42, range_start=1970-01-01 08:00:00.000 UTC, "
-      "range_end=1970-01-01 08:00:10.000 UTC}",
+      "{kind=1, name_hash=42, range_start=1970-01-01 08:00:00.000000 UTC, "
+      "range_end=1970-01-01 08:00:10.000000 UTC}",
       key_buffer.str());
 }
 

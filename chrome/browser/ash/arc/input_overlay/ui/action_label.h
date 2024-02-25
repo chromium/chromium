@@ -8,6 +8,7 @@
 #include <string>
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/ash/arc/input_overlay/actions/input_element.h"
 #include "chrome/browser/ash/arc/input_overlay/constants.h"
 #include "chrome/browser/ash/arc/input_overlay/db/proto/app_data.pb.h"
@@ -16,11 +17,13 @@
 
 namespace arc::input_overlay {
 
+class ActionView;
+
 // ActionLabel shows text mapping hint for each action.
 class ActionLabel : public views::LabelButton {
+  METADATA_HEADER(ActionLabel, views::LabelButton)
  public:
-  METADATA_HEADER(ActionLabel);
-  static std::vector<ActionLabel*> Show(
+  static std::vector<raw_ptr<ActionLabel, VectorExperimental>> Show(
       views::View* parent,
       ActionType action_type,
       const InputElement& input_element,
@@ -38,10 +41,13 @@ class ActionLabel : public views::LabelButton {
   void SetTextActionLabel(const std::u16string& text);
   void SetImageActionLabel(MouseAction mouse_action);
   void SetDisplayMode(DisplayMode mode);
+  void RemoveNewState();
   void ClearFocus();
   // It is possible that multiple labels are in one ActionView and these labels
   // are called sibling labels. This label reacts to sibling's focus change.
   void OnSiblingUpdateFocus(bool sibling_focused);
+
+  ActionView* GetParent();
 
   virtual void UpdateBounds() = 0;
   virtual void UpdateLabelPositionType(TapLabelPosition label_position) = 0;
@@ -73,6 +79,8 @@ class ActionLabel : public views::LabelButton {
   gfx::Size touch_point_size_;
 
  private:
+  void OnButtonPressed();
+
   void SetToViewMode();
   void SetToEditMode();
   // In edit mode without mouse hover or focus.

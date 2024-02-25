@@ -16,6 +16,7 @@
 #include "content/common/content_export.h"
 
 namespace base {
+class ElapsedTimer;
 class FilePath;
 class SequencedTaskRunner;
 }  // namespace base
@@ -114,6 +115,7 @@ class CONTENT_EXPORT PrivateAggregationBudgetStorage {
       std::unique_ptr<PrivateAggregationBudgetStorage> owned_this,
       base::OnceCallback<void(std::unique_ptr<PrivateAggregationBudgetStorage>)>
           on_done_initializing,
+      base::ElapsedTimer elapsed_timer,
       bool was_successful);
 
   scoped_refptr<sqlite_proto::ProtoTableManager> table_manager_;

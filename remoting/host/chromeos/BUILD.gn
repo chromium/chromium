@@ -28,6 +28,7 @@ source_set("chromeos") {
     "//ash",
     "//build:chromeos_buildflags",
     "//cc",
+    "//components/prefs",
     "//components/viz/host",
     "//gpu/command_buffer/common",
     "//remoting/protocol",

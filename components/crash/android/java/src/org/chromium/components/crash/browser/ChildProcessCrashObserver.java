@@ -4,9 +4,10 @@
 
 package org.chromium.components.crash.browser;
 
+import org.jni_zero.CalledByNative;
+
 import org.chromium.base.Log;
 import org.chromium.base.ThreadUtils;
-import org.chromium.base.annotations.CalledByNative;
 
 /**
  * A Java-side bridge for notifying an observer when a child process has crashed.
@@ -22,10 +23,10 @@ import org.chromium.base.annotations.CalledByNative;
 public class ChildProcessCrashObserver {
     private static final String TAG = "ChildCrashObserver";
 
-    /**
-     * An interface for registering a callback to be executed when a child process crashes.
-     */
-    public interface ChildCrashedCallback { public void childCrashed(int pid); }
+    /** An interface for registering a callback to be executed when a child process crashes. */
+    public interface ChildCrashedCallback {
+        public void childCrashed(int pid);
+    }
 
     /**
      * The globally registered callback for responding to child process crashes, or null if no
@@ -45,9 +46,7 @@ public class ChildProcessCrashObserver {
         sCallback = callback;
     }
 
-    /**
-     * Notifies any registered observer that a child process has exited due to an apparent crash.
-     */
+    /** Notifies any registered observer that a child process has exited due to an apparent crash. */
     @CalledByNative
     public static void childCrashed(int pid) {
         if (sCallback == null) {

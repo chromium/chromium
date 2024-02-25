@@ -244,15 +244,29 @@ BPF_TEST_C(BaselinePolicy, Socketpair, BaselinePolicy) {
 #define GRND_NONBLOCK 1
 #endif
 
+#if !defined(GRND_INSECURE)
+#define GRND_INSECURE 4
+#endif
+
 BPF_TEST_C(BaselinePolicy, GetRandom, BaselinePolicy) {
   char buf[1];
 
   // Many systems do not yet support getrandom(2) so ENOSYS is a valid result
   // here.
+  errno = 0;
   int ret = HANDLE_EINTR(syscall(__NR_getrandom, buf, sizeof(buf), 0));
   BPF_ASSERT((ret == -1 && errno == ENOSYS) || ret == 1);
+  errno = 0;
   ret = HANDLE_EINTR(syscall(__NR_getrandom, buf, sizeof(buf), GRND_NONBLOCK));
   BPF_ASSERT((ret == -1 && (errno == ENOSYS || errno == EAGAIN)) || ret == 1);
+
+  // GRND_INSECURE is not supported on versions of Android < 12, and Android
+  // returns EINVAL in that case.
+  errno = 0;
+  ret = HANDLE_EINTR(syscall(__NR_getrandom, buf, sizeof(buf), GRND_INSECURE));
+  BPF_ASSERT(
+      (ret == -1 && (errno == ENOSYS || errno == EAGAIN || errno == EINVAL)) ||
+      ret == 1);
 }
 
 // Not all architectures can restrict the domain for socketpair().

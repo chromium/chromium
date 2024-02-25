@@ -11,6 +11,7 @@
 #include "services/network/public/mojom/restricted_cookie_manager.mojom-blink.h"
 #include "third_party/blink/public/mojom/cookie_store/cookie_store.mojom-blink.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
+#include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/core/dom/events/event_target.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context_lifecycle_observer.h"
@@ -24,10 +25,10 @@
 namespace blink {
 
 class CookieInit;
+class CookieListItem;
 class CookieStoreDeleteOptions;
 class CookieStoreGetOptions;
 class ExceptionState;
-class ScriptPromiseResolver;
 class ScriptState;
 
 class CookieStore final : public EventTarget,
@@ -43,14 +44,16 @@ class CookieStore final : public EventTarget,
   // mojo::Remote<network::mojom::blink::RestrictedCookieManager>
   ~CookieStore() override;
 
-  ScriptPromise getAll(ScriptState*, const String& name, ExceptionState&);
-  ScriptPromise getAll(ScriptState*,
-                       const CookieStoreGetOptions*,
-                       ExceptionState&);
-  ScriptPromise get(ScriptState*, const String& name, ExceptionState&);
-  ScriptPromise get(ScriptState*,
-                    const CookieStoreGetOptions*,
-                    ExceptionState&);
+  ScriptPromiseTyped<IDLSequence<CookieListItem>> getAll(ScriptState*,
+                                                         const String& name,
+                                                         ExceptionState&);
+  ScriptPromiseTyped<IDLSequence<CookieListItem>>
+  getAll(ScriptState*, const CookieStoreGetOptions*, ExceptionState&);
+  ScriptPromiseTyped<IDLNullable<CookieListItem>> get(ScriptState*,
+                                                      const String& name,
+                                                      ExceptionState&);
+  ScriptPromiseTyped<IDLNullable<CookieListItem>>
+  get(ScriptState*, const CookieStoreGetOptions*, ExceptionState&);
 
   ScriptPromise set(ScriptState*,
                     const String& name,
@@ -83,32 +86,30 @@ class CookieStore final : public EventTarget,
                             const RegisteredEventListener&) final;
 
  private:
-  using DoReadBackendResultConverter =
-      void (*)(ScriptPromiseResolver*,
-               const Vector<network::mojom::blink::CookieWithAccessResultPtr>);
-
   // Common code in CookieStore::{get,getAll}.
   //
   // All cookie-reading methods use the same RestrictedCookieManager API, and
   // only differ in how they present the returned data. The difference is
-  // captured in the DoReadBackendResultConverter argument, which should point
+  // captured in the base::OnceClosure argument, which should point
   // to one of the static methods below.
-  ScriptPromise DoRead(ScriptState*,
-                       const CookieStoreGetOptions*,
-                       DoReadBackendResultConverter,
-                       ExceptionState&);
+  using GetAllForUrlCallback =
+      network::mojom::blink::RestrictedCookieManager::GetAllForUrlCallback;
+  void DoRead(ScriptState*,
+              const CookieStoreGetOptions*,
+              GetAllForUrlCallback backend_result_converter,
+              ExceptionState&);
 
   // Converts the result of a RestrictedCookieManager::GetAllForUrl mojo call to
   // the promise result expected by CookieStore.getAll.
   static void GetAllForUrlToGetAllResult(
-      ScriptPromiseResolver*,
+      ScriptPromiseResolverTyped<IDLSequence<CookieListItem>>*,
       const Vector<network::mojom::blink::CookieWithAccessResultPtr>
           backend_result);
 
   // Converts the result of a RestrictedCookieManager::GetAllForUrl mojo call to
   // the promise result expected by CookieStore.get.
   static void GetAllForUrlToGetResult(
-      ScriptPromiseResolver*,
+      ScriptPromiseResolverTyped<IDLNullable<CookieListItem>>*,
       const Vector<network::mojom::blink::CookieWithAccessResultPtr>
           backend_result);
 

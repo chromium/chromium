@@ -6,6 +6,7 @@
 #define COMPONENTS_WEBAPPS_BROWSER_INSTALLABLE_INSTALLABLE_DATA_H_
 
 #include <map>
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -15,7 +16,6 @@
 #include "base/memory/scoped_refptr.h"
 #include "components/webapps/browser/installable/installable_logging.h"
 #include "components/webapps/common/web_page_metadata.mojom.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/mojom/manifest/manifest.mojom-forward.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "url/gurl.h"
@@ -23,7 +23,7 @@
 namespace webapps {
 
 struct Screenshot {
-  Screenshot(SkBitmap image, absl::optional<std::u16string> label);
+  Screenshot(SkBitmap image, std::optional<std::u16string> label);
   Screenshot(const Screenshot&);
   Screenshot& operator=(const Screenshot&);
 
@@ -32,7 +32,7 @@ struct Screenshot {
   SkBitmap image;
 
   // Label for accessibility.
-  absl::optional<std::u16string> label;
+  std::optional<std::u16string> label;
 };
 
 // This struct contains the results of an InstallableManager::GetData call and
@@ -48,7 +48,7 @@ struct InstallableData {
                   const SkBitmap* primary_icon,
                   bool has_maskable_primary_icon,
                   const std::vector<Screenshot>& screenshots,
-                  bool valid_manifest);
+                  bool installable_check_passed);
 
   InstallableData(const InstallableData&) = delete;
   InstallableData& operator=(const InstallableData&) = delete;
@@ -89,10 +89,11 @@ struct InstallableData {
   // The screenshots to show in the install UI.
   const raw_ref<const std::vector<Screenshot>, DanglingUntriaged> screenshots;
 
-  // true if the site has a valid, installable web app manifest. If
-  // |valid_manifest| was true and the site isn't installable, the reason will
-  // be in |errors|.
-  const bool valid_manifest = false;
+  // Whether the site has provided sufficient info for installing the web app.
+  // i.e. a valid, installable web app manifest. The result might be different
+  // depending on the task's |params|. If |installable_check_passed| was true
+  // and the site isn't installable, the reason will be in |errors|.
+  const bool installable_check_passed = false;
 };
 
 using InstallableCallback = base::OnceCallback<void(const InstallableData&)>;

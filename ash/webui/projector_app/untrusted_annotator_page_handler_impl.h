@@ -59,7 +59,7 @@ class UntrustedAnnotatorPageHandlerImpl
 
   // The WebUI that owns the TrustedProjectorAnnotatorUI that owns this
   // instance.
-  const raw_ptr<content::WebUI, ExperimentalAsh> web_ui_;
+  const raw_ptr<content::WebUI> web_ui_;
 };
 
 }  // namespace ash

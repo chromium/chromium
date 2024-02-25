@@ -5,6 +5,7 @@
 #include "components/feed/core/v2/tasks/load_stream_task.h"
 
 #include <memory>
+#include <optional>
 #include <utility>
 
 #include "base/check.h"
@@ -33,8 +34,8 @@
 #include "components/feed/core/v2/types.h"
 #include "components/feed/core/v2/view_demotion.h"
 #include "components/feed/feed_feature_list.h"
+#include "components/supervised_user/core/browser/proto/get_discover_feed_request.pb.h"
 #include "net/base/net_errors.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace feed {
 namespace {
@@ -329,7 +330,14 @@ void LoadStreamTask::SendFeedQueryRequest() {
 
   FeedNetwork& network = stream_->GetNetwork();
   const bool force_feed_query = GetFeedConfig().use_feed_query_requests;
-  if (!force_feed_query && options_.stream_type.IsWebFeed()) {
+  if (options_.stream_type.IsForSupervisedUser()) {
+    // TODO(b/295472540): Update parameters required for request.
+    supervised_user::GetDiscoverFeedRequest kid_friendly_request;
+    network.SendKidFriendlyApiRequest(
+        kid_friendly_request, account_info,
+        base::BindOnce(&LoadStreamTask::KidFriendlyRequestComplete,
+                       GetWeakPtr()));
+  } else if (!force_feed_query && options_.stream_type.IsWebFeed()) {
     // Special case: web feed that is not using Feed Query requests go to
     // WebFeedListContentsDiscoverApi.
     network.SendApiRequest<WebFeedListContentsDiscoverApi>(
@@ -373,20 +381,27 @@ void LoadStreamTask::SendFeedQueryRequest() {
   }
 }
 
+void LoadStreamTask::KidFriendlyRequestComplete(
+    FeedNetwork::KidFriendlyQueryRequestResult result) {
+  ProcessNetworkResponse<supervised_user::GetDiscoverFeedResponse>(
+      std::move(result.response_body), std::move(result.response_info));
+}
+
 void LoadStreamTask::QueryRequestComplete(
     FeedNetwork::QueryRequestResult result) {
-  ProcessNetworkResponse(std::move(result.response_body),
-                         std::move(result.response_info));
+  ProcessNetworkResponse<feedwire::Response>(std::move(result.response_body),
+                                             std::move(result.response_info));
 }
 
 void LoadStreamTask::QueryApiRequestComplete(
     FeedNetwork::ApiResult<feedwire::Response> result) {
-  ProcessNetworkResponse(std::move(result.response_body),
-                         std::move(result.response_info));
+  ProcessNetworkResponse<feedwire::Response>(std::move(result.response_body),
+                                             std::move(result.response_info));
 }
 
+template <typename Response>
 void LoadStreamTask::ProcessNetworkResponse(
-    std::unique_ptr<feedwire::Response> response_body,
+    std::unique_ptr<Response> response_body,
     NetworkResponseInfo response_info) {
   latencies_->StepComplete(LoadLatencyTimes::kQueryRequest);
 

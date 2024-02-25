@@ -7,13 +7,13 @@
  * 'settings-personalization-page' is the settings page containing
  * personalization settings.
  */
-import 'chrome://resources/cr_elements/cr_link_row/cr_link_row.js';
+import 'chrome://resources/ash/common/cr_elements/cr_link_row/cr_link_row.js';
 import '../os_settings_page/os_settings_animated_pages.js';
 import '../os_settings_page/os_settings_subpage.js';
 import '../os_settings_page/settings_card.js';
 import '../settings_shared.css.js';
 
-import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
+import {I18nMixin} from 'chrome://resources/ash/common/cr_elements/i18n_mixin.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {isRevampWayfindingEnabled} from '../common/load_time_booleans.js';
@@ -24,7 +24,7 @@ import {getTemplate} from './personalization_page.html.js';
 
 const SettingsPersonalizationPageElementBase = I18nMixin(PolymerElement);
 
-class SettingsPersonalizationPageElement extends
+export class SettingsPersonalizationPageElement extends
     SettingsPersonalizationPageElementBase {
   static get is() {
     return 'settings-personalization-page';
@@ -62,13 +62,13 @@ class SettingsPersonalizationPageElement extends
         PersonalizationHubBrowserProxyImpl.getInstance();
   }
 
-  private getSublabel_(): string|null {
+  private getPersonalizationRowIcon_(): string {
     return this.isRevampWayfindingEnabled_ ?
-        null :
-        this.i18n('personalizationHubSubtitle');
+        'os-settings:personalization-revamp' :
+        '';
   }
 
-  private openPersonalizationHub_() {
+  private openPersonalizationHub_(): void {
     this.personalizationHubBrowserProxy_.openPersonalizationHub();
   }
 }

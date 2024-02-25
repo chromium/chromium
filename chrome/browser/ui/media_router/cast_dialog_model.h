@@ -5,10 +5,10 @@
 #ifndef CHROME_BROWSER_UI_MEDIA_ROUTER_CAST_DIALOG_MODEL_H_
 #define CHROME_BROWSER_UI_MEDIA_ROUTER_CAST_DIALOG_MODEL_H_
 
+#include <optional>
 #include <string>
 
 #include "chrome/browser/ui/media_router/ui_media_sink.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace media_router {
 
@@ -21,7 +21,7 @@ class CastDialogModel {
 
   // Returns the index of the first sink with an active route, or nullopt if
   // there is no such sink.
-  absl::optional<size_t> GetFirstActiveSinkIndex() const;
+  std::optional<size_t> GetFirstActiveSinkIndex() const;
 
   void set_dialog_header(const std::u16string& dialog_header) {
     dialog_header_ = dialog_header;

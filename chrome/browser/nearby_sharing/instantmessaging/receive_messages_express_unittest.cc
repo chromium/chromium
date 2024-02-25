@@ -70,19 +70,18 @@ class FakeIncomingMessagesListener
     return messages_received_;
   }
 
-  absl::optional<bool> on_complete_result() { return on_complete_result_; }
+  std::optional<bool> on_complete_result() { return on_complete_result_; }
 
  private:
   std::vector<std::string> messages_received_;
-  absl::optional<bool> on_complete_result_;
+  std::optional<bool> on_complete_result_;
 };
 
 class ReceiveMessagesExpressTest : public testing::Test {
  public:
   ReceiveMessagesExpressTest()
       : test_shared_loader_factory_(
-            base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
-                &test_url_loader_factory_)) {
+            test_url_loader_factory_.GetSafeWeakWrapper()) {
     identity_test_environment_.MakePrimaryAccountAvailable(
         kTestAccount, signin::ConsentLevel::kSignin);
   }
@@ -110,7 +109,7 @@ class ReceiveMessagesExpressTest : public testing::Test {
     return message_listener_.messages_received();
   }
 
-  absl::optional<bool> OnCompleteResult() {
+  std::optional<bool> OnCompleteResult() {
     return message_listener_.on_complete_result();
   }
 
@@ -152,7 +151,7 @@ class ReceiveMessagesExpressTest : public testing::Test {
   network::TestURLLoaderFactory test_url_loader_factory_;
   scoped_refptr<network::SharedURLLoaderFactory> test_shared_loader_factory_;
 
-  absl::optional<bool> start_receive_success_;
+  std::optional<bool> start_receive_success_;
   FakeIncomingMessagesListener message_listener_;
   mojo::Receiver<sharing::mojom::IncomingMessagesListener> listener_receiver_{
       &message_listener_};

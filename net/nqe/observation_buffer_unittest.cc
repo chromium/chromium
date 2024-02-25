@@ -62,7 +62,7 @@ TEST(NetworkQualityObservationBufferTest, GetPercentileWithWeights) {
   for (int i = 1; i <= 100; ++i) {
     size_t observations_count = 0;
     // Verify that i'th percentile is more than i-1'th percentile.
-    absl::optional<int32_t> result_i = observation_buffer.GetPercentile(
+    std::optional<int32_t> result_i = observation_buffer.GetPercentile(
         now, INT32_MIN, i, &observations_count);
     EXPECT_EQ(100u, observations_count);
     ASSERT_TRUE(result_i.has_value());
@@ -70,7 +70,7 @@ TEST(NetworkQualityObservationBufferTest, GetPercentileWithWeights) {
 
     result_highest = std::max(result_highest, result_i.value());
 
-    absl::optional<int32_t> result_i_1 = observation_buffer.GetPercentile(
+    std::optional<int32_t> result_i_1 = observation_buffer.GetPercentile(
         now, INT32_MIN, i - 1, &observations_count);
     EXPECT_EQ(100u, observations_count);
     ASSERT_TRUE(result_i_1.has_value());
@@ -127,7 +127,7 @@ TEST(NetworkQualityObservationBufferTest, PercentileSameTimestamps) {
     // less than 1. This is required because computed percentiles may be
     // slightly different from what is expected due to floating point
     // computation errors and integer rounding off errors.
-    absl::optional<int32_t> result = buffer.GetPercentile(
+    std::optional<int32_t> result = buffer.GetPercentile(
         base::TimeTicks(), INT32_MIN, i, &observations_count);
     EXPECT_EQ(100u, observations_count);
     EXPECT_TRUE(result.has_value());
@@ -192,7 +192,7 @@ TEST(NetworkQualityObservationBufferTest, PercentileDifferentTimestamps) {
     // required because computed percentiles may be slightly different from
     // what is expected due to floating point computation errors and integer
     // rounding off errors.
-    absl::optional<int32_t> result =
+    std::optional<int32_t> result =
         buffer.GetPercentile(very_old, INT32_MIN, i, &observations_count);
     EXPECT_TRUE(result.has_value());
     EXPECT_NEAR(result.value(), 51 + 0.49 * i, 1);
@@ -237,7 +237,7 @@ TEST(NetworkQualityObservationBufferTest, PercentileDifferentRSSI) {
   // When the current RSSI is |high_rssi|, higher weight should be assigned
   // to observations that were taken at |high_rssi|.
   for (int i = 1; i < 100; ++i) {
-    absl::optional<int32_t> result =
+    std::optional<int32_t> result =
         buffer.GetPercentile(now, high_rssi, i, nullptr);
     EXPECT_TRUE(result.has_value());
     EXPECT_NEAR(result.value(), 51 + 0.49 * i, 2);
@@ -246,7 +246,7 @@ TEST(NetworkQualityObservationBufferTest, PercentileDifferentRSSI) {
   // When the current RSSI is |low_rssi|, higher weight should be assigned
   // to observations that were taken at |low_rssi|.
   for (int i = 1; i < 100; ++i) {
-    absl::optional<int32_t> result =
+    std::optional<int32_t> result =
         buffer.GetPercentile(now, low_rssi, i, nullptr);
     EXPECT_TRUE(result.has_value());
     EXPECT_NEAR(result.value(), i / 2, 2);
@@ -307,7 +307,7 @@ TEST(NetworkQualityObservationBufferTest, RemoveObservations) {
     // required because computed percentiles may be slightly different from
     // what is expected due to floating point computation errors and integer
     // rounding off errors.
-    absl::optional<int32_t> result =
+    std::optional<int32_t> result =
         buffer.GetPercentile(base::TimeTicks(), INT32_MIN, i, nullptr);
     EXPECT_TRUE(result.has_value());
     EXPECT_NEAR(result.value(), i, 1);
@@ -347,7 +347,7 @@ TEST(NetworkQualityObservationBufferTest, TestGetMedianRTTSince) {
   };
 
   for (const auto& test : tests) {
-    absl::optional<int32_t> url_request_rtt =
+    std::optional<int32_t> url_request_rtt =
         buffer.GetPercentile(test.start_timestamp, INT32_MIN, 50, nullptr);
     EXPECT_EQ(test.expect_network_quality_available,
               url_request_rtt.has_value());

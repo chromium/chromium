@@ -26,15 +26,20 @@
 #include "chrome/browser/ui/views/toolbar/app_menu.h"
 #include "chrome/browser/ui/web_applications/test/isolated_web_app_test_utils.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_url_info.h"
+#include "chrome/browser/web_applications/test/os_integration_test_override_impl.h"
+#include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/interaction/interactive_browser_test.h"
 #include "components/content_settings/core/common/pref_names.h"
+#include "components/privacy_sandbox/privacy_sandbox_attestations/privacy_sandbox_attestations.h"
+#include "components/privacy_sandbox/privacy_sandbox_attestations/scoped_privacy_sandbox_attestations.h"
 #include "components/privacy_sandbox/privacy_sandbox_settings.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/common/content_features.h"
 #include "content/public/test/browser_test.h"
+#include "content/public/test/browser_test_utils.h"
 #include "net/dns/mock_host_resolver.h"
 #include "third_party/blink/public/common/features.h"
 #include "ui/base/interaction/element_identifier.h"
@@ -199,9 +204,7 @@ class PageSpecificSiteDataDialogInteractiveUiTest
   }
 
  protected:
-  virtual void SetUpFeatureList() {
-    feature_list_.InitWithFeatures({net::features::kPartitionedCookies}, {});
-  }
+  virtual void SetUpFeatureList() { feature_list_.InitWithFeatures({}, {}); }
 
   virtual void SetUpCookieControlMode() {
     browser()->profile()->GetPrefs()->SetInteger(
@@ -237,7 +240,7 @@ IN_PROC_BROWSER_TEST_F(PageSpecificSiteDataDialogInteractiveUiTest,
                             &observer),
       // Name the first row in the first-party section.
       InAnyContext(NameChildView(kPageSpecificSiteDataDialogFirstPartySection,
-                                 kFirstPartyAllowedRow, 0)),
+                                 kFirstPartyAllowedRow, 0u)),
       // Verify no empty state label is present.
       InAnyContext(
           EnsureNotPresent(kPageSpecificSiteDataDialogEmptyStateLabel)),
@@ -281,7 +284,7 @@ IN_PROC_BROWSER_TEST_F(PageSpecificSiteDataDialogInteractiveUiTest,
                             &observer),
       // Name the third-party cookies row.
       InAnyContext(NameChildView(kPageSpecificSiteDataDialogThirdPartySection,
-                                 kThirdPartyBlockedRow, 2)),
+                                 kThirdPartyBlockedRow, 2u)),
       CheckRowLabel(kThirdPartyBlockedRow,
                     IDS_PAGE_SPECIFIC_SITE_DATA_DIALOG_BLOCKED_STATE_SUBTITLE),
       OpenRowMenu(kThirdPartyBlockedRow),
@@ -327,7 +330,7 @@ IN_PROC_BROWSER_TEST_F(PageSpecificSiteDataDialogInteractiveUiTest,
       // Find the third party section and name the row with partitioned only
       // access (b.test).
       InAnyContext(NameChildView(kPageSpecificSiteDataDialogThirdPartySection,
-                                 kOnlyPartitionedRow, 0)),
+                                 kOnlyPartitionedRow, 0u)),
       CheckRowLabel(
           kOnlyPartitionedRow,
           IDS_PAGE_SPECIFIC_SITE_DATA_DIALOG_PARTITIONED_STATE_SUBTITLE),
@@ -367,7 +370,7 @@ IN_PROC_BROWSER_TEST_F(PageSpecificSiteDataDialogInteractiveUiTest,
       // Find the third party section and name the row with mixed storage
       // access (c.test).
       InAnyContext(NameChildView(kPageSpecificSiteDataDialogThirdPartySection,
-                                 kMixedPartitionedRow, 1)),
+                                 kMixedPartitionedRow, 1u)),
       CheckRowLabel(
           kMixedPartitionedRow,
           IDS_PAGE_SPECIFIC_SITE_DATA_DIALOG_PARTITIONED_STATE_SUBTITLE),
@@ -402,6 +405,26 @@ class PageSpecificSiteDataDialogIsolatedWebAppInteractiveUiTest
   ~PageSpecificSiteDataDialogIsolatedWebAppInteractiveUiTest() override =
       default;
 
+  void SetUpOnMainThread() override {
+#if !BUILDFLAG(IS_MAC)
+    // TODO(https://crbug.com/1454297): OsIntegrationTestOverrideImpl seems
+    // to interfere with Kombucha on the Mac.
+    base::ScopedAllowBlockingForTesting allow_blocking;
+    override_registration_ =
+        web_app::OsIntegrationTestOverrideImpl::OverrideForTesting();
+#endif  // BUILDFLAG(IS_MAC)
+    PageSpecificSiteDataDialogInteractiveUiTest::SetUpOnMainThread();
+  }
+  void TearDownOnMainThread() override {
+    web_app::test::UninstallWebApp(browser()->profile(), app_id_);
+
+#if !BUILDFLAG(IS_MAC)
+    base::ScopedAllowBlockingForTesting allow_blocking;
+    override_registration_.reset();
+#endif  // BUILDFLAG(IS_MAC)
+    PageSpecificSiteDataDialogInteractiveUiTest::TearDownOnMainThread();
+  }
+
  protected:
   void SetUpFeatureList() override {
     feature_list_.InitWithFeatures(
@@ -414,12 +437,13 @@ class PageSpecificSiteDataDialogIsolatedWebAppInteractiveUiTest
         FILE_PATH_LITERAL("web_apps/simple_isolated_app"));
     auto iwa_url_info = web_app::InstallDevModeProxyIsolatedWebApp(
         profile, iwa_dev_server->GetOrigin());
+    app_id_ = iwa_url_info.app_id();
     content::RenderFrameHost* iwa_frame =
-        web_app::OpenIsolatedWebApp(profile, iwa_url_info.app_id());
+        web_app::OpenIsolatedWebApp(profile, app_id_);
 
     CHECK(content::ExecJs(iwa_frame, "localStorage.setItem('key', 'value')"));
 
-    return chrome::FindBrowserWithWebContents(
+    return chrome::FindBrowserWithTab(
         content::WebContents::FromRenderFrameHost(iwa_frame));
   }
 
@@ -427,7 +451,7 @@ class PageSpecificSiteDataDialogIsolatedWebAppInteractiveUiTest
   MultiStep NavigateAndOpenDialog(Browser* iwa_browser,
                                   ui::ElementIdentifier section_id) {
     return Steps(InstrumentTab(kWebContentsElementId,
-                               /*tab_index=*/absl::nullopt, iwa_browser),
+                               /*tab_index=*/std::nullopt, iwa_browser),
                  PressButton(kToolbarAppMenuButtonElementId),
                  WithView(kToolbarAppMenuButtonElementId,
                           base::BindOnce([](AppMenuButton* button) {
@@ -451,6 +475,14 @@ class PageSpecificSiteDataDialogIsolatedWebAppInteractiveUiTest
                      }),
                      string);
   }
+
+ private:
+  webapps::AppId app_id_;
+#if !BUILDFLAG(IS_MAC)
+  std::unique_ptr<
+      ::web_app::OsIntegrationTestOverrideImpl::BlockingRegistration>
+      override_registration_;
+#endif  // !BUILDFLAG(IS_MAC)
 };
 
 IN_PROC_BROWSER_TEST_F(
@@ -463,7 +495,7 @@ IN_PROC_BROWSER_TEST_F(
                             kPageSpecificSiteDataDialogFirstPartySection),
       // Name the first row in the first-party section.
       InAnyContext(NameChildView(kPageSpecificSiteDataDialogFirstPartySection,
-                                 kFirstPartyAllowedRow, 0)),
+                                 kFirstPartyAllowedRow, 0u)),
       // Verify no empty state label is present.
       InAnyContext(
           EnsureNotPresent(kPageSpecificSiteDataDialogEmptyStateLabel)),
@@ -501,12 +533,19 @@ class PageSpecificSiteDataDialogPrivacySandboxInteractiveUiTest
 IN_PROC_BROWSER_TEST_F(
     PageSpecificSiteDataDialogPrivacySandboxInteractiveUiTest,
     FirstPartyAllowed) {
+  privacy_sandbox::ScopedPrivacySandboxAttestations scoped_attestations(
+      privacy_sandbox::PrivacySandboxAttestations::CreateForTesting());
+  // Mark all Privacy Sandbox APIs as attested since the test case is testing
+  // behaviors not related to attestations.
+  privacy_sandbox::PrivacySandboxAttestations::GetInstance()
+      ->SetAllPrivacySandboxAttestedForTesting(true);
+
   RunTestSequenceInContext(
       context(),
       NavigateAndOpenDialog(kPageSpecificSiteDataDialogFirstPartySection),
       // Name the first row in the first-party section.
       InAnyContext(NameChildView(kPageSpecificSiteDataDialogFirstPartySection,
-                                 kFirstPartyAllowedRow, 0)),
+                                 kFirstPartyAllowedRow, 0u)),
       // Verify no empty state label is present.
       InAnyContext(
           EnsureNotPresent(kPageSpecificSiteDataDialogEmptyStateLabel)),

@@ -16,12 +16,12 @@ limitations under the License.
 #ifndef TENSORFLOW_LITE_SUPPORT_SCANN_ONDEVICE_CC_INDEX_FILE_MUTATOR_H_
 #define TENSORFLOW_LITE_SUPPORT_SCANN_ONDEVICE_CC_INDEX_FILE_MUTATOR_H_
 
-#include "absl/status/statusor.h"      // from @com_google_absl
-#include "absl/strings/string_view.h"  // from @com_google_absl
-#include "absl/types/optional.h"       // from @com_google_absl
-#include "absl/types/span.h"           // from @com_google_absl
-#include "leveldb/db.h"                // from @com_google_leveldb
 #include "tensorflow_lite_support/scann_ondevice/cc/core/serialized_searcher.pb.h"
+#include "absl/status/statusor.h"  // from @com_google_absl
+#include "absl/strings/string_view.h"  // from @com_google_absl
+#include "absl/types/optional.h"  // from @com_google_absl
+#include "absl/types/span.h"  // from @com_google_absl
+#include "leveldb/db.h"  // from @com_google_leveldb
 #include "tensorflow_lite_support/scann_ondevice/proto/index_config.pb.h"
 
 namespace tflite {
@@ -60,8 +60,8 @@ struct IndexedArtifacts {
 // Creates a byte buffer for the index file from the artifacts. Returns errors
 // when there are not exactly one database specified, or other issues with input
 // such as shape mismatch, invalid partition indices etc.
-absl::StatusOr<std::string> CreateIndexBuffer(const IndexedArtifacts& artifacts,
-                                              bool compression);
+absl::StatusOr<std::string> CreateIndexBuffer(
+    const IndexedArtifacts& artifacts, bool compression);
 
 }  // namespace scann_ondevice
 }  // namespace tflite

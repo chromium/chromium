@@ -42,6 +42,11 @@ interface MediaMetricsProvider {
              MediaURLScheme url_scheme,
              MediaStreamType stream_type);
 
+  // Called when a playback is started, i.e., right after initializing the
+  // demuxer and obtaining the metadata. The status is reported to UKM when the
+  // provider is destructed.
+  OnStarted(PipelineStatus status);
+
   // Called when a playback ends in error. The status is reported to UKM when
   // the provider is destructed.
   OnError(PipelineStatus status);
@@ -67,6 +72,10 @@ interface MediaMetricsProvider {
   // the `key_system` is not recognized, value 0 (kUnknownKeySystemForUkm) will
   // be reported.
   SetKeySystem(string key_system);
+
+  // Called when the EME playback has been blocked waiting for the CDM to be set
+  // or waiting for decryption key.
+  SetHasWaitingForKey();
 
   // Called when the EME playback uses a hardware secure pipeline.
   SetIsHardwareSecure();

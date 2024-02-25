@@ -36,7 +36,6 @@
 #include "mojo/public/cpp/bindings/remote.h"
 #include "net/base/address_list.h"
 #include "net/base/net_errors.h"
-#include "net/cert/pem.h"
 #include "net/socket/client_socket_factory.h"
 #include "net/socket/socket_test_util.h"
 #include "net/socket/ssl_client_socket.h"
@@ -54,6 +53,7 @@
 #include "services/network/network_context.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/boringssl/src/pki/pem.h"
 #include "third_party/openscreen/src/cast/common/channel/proto/cast_channel.pb.h"
 
 const int64_t kDistantTimeoutMillis = 100000;  // 100 seconds (never hit).
@@ -105,7 +105,7 @@ CastMessage CreateTestMessage() {
 
 base::FilePath GetTestCertsDirectory() {
   base::FilePath path;
-  base::PathService::Get(base::DIR_SOURCE_ROOT, &path);
+  base::PathService::Get(base::DIR_SRC_TEST_DATA_ROOT, &path);
   path = path.Append(FILE_PATH_LITERAL("components"));
   path = path.Append(FILE_PATH_LITERAL("test"));
   path = path.Append(FILE_PATH_LITERAL("data"));
@@ -545,7 +545,7 @@ class SslCastSocketTest : public CastSocketTestBase {
     }
 
     const std::vector<std::string> headers({"PRIVATE KEY"});
-    net::PEMTokenizer pem_tokenizer(pem_data, headers);
+    bssl::PEMTokenizer pem_tokenizer(pem_data, headers);
     if (!pem_tokenizer.GetNext()) {
       return nullptr;
     }
@@ -1004,7 +1004,8 @@ TEST_F(MockCastSocketTest, TestConnectEndToEndWithRealTransportSync) {
 
 TEST_F(MockCastSocketTest, TestObservers) {
   CreateCastSocketSecure();
-  // Test AddObserever
+
+  // Test adding observers.
   MockCastSocketObserver observer1;
   MockCastSocketObserver observer2;
   socket_->AddObserver(&observer1);
@@ -1012,11 +1013,15 @@ TEST_F(MockCastSocketTest, TestObservers) {
   socket_->AddObserver(&observer2);
   socket_->AddObserver(&observer2);
 
-  // Test notify observers
+  // Test notifying observers.
   EXPECT_CALL(observer1, OnError(_, cast_channel::ChannelError::CONNECT_ERROR));
   EXPECT_CALL(observer2, OnError(_, cast_channel::ChannelError::CONNECT_ERROR));
   CastSocketImpl::CastSocketMessageDelegate delegate(socket_.get());
   delegate.OnError(cast_channel::ChannelError::CONNECT_ERROR);
+
+  // Finally, remove the observers to avoid the CheckedObserver CHECK.
+  socket_->RemoveObserver(&observer1);
+  socket_->RemoveObserver(&observer2);
 }
 
 TEST_F(MockCastSocketTest, TestOpenChannelConnectingSocket) {
@@ -1077,8 +1082,8 @@ TEST_F(SslCastSocketTest, MAYBE_TestConnectEndToEndWithRealSSL) {
   EXPECT_TRUE(MessageFramer::Serialize(challenge, &challenge_str));
 
   int challenge_buffer_length = challenge_str.size();
-  scoped_refptr<net::IOBuffer> challenge_buffer =
-      base::MakeRefCounted<net::IOBuffer>(challenge_buffer_length);
+  auto challenge_buffer =
+      base::MakeRefCounted<net::IOBufferWithSize>(challenge_buffer_length);
   int read = ReadExactLength(challenge_buffer.get(), challenge_buffer_length,
                              server_socket_.get());
 
@@ -1116,8 +1121,8 @@ TEST_F(SslCastSocketTest, DISABLED_TestMessageEndToEndWithRealSSL) {
   EXPECT_TRUE(MessageFramer::Serialize(challenge, &challenge_str));
 
   int challenge_buffer_length = challenge_str.size();
-  scoped_refptr<net::IOBuffer> challenge_buffer =
-      base::MakeRefCounted<net::IOBuffer>(challenge_buffer_length);
+  auto challenge_buffer =
+      base::MakeRefCounted<net::IOBufferWithSize>(challenge_buffer_length);
 
   int read = ReadExactLength(challenge_buffer.get(), challenge_buffer_length,
                              server_socket_.get());
@@ -1149,8 +1154,8 @@ TEST_F(SslCastSocketTest, DISABLED_TestMessageEndToEndWithRealSSL) {
   EXPECT_TRUE(MessageFramer::Serialize(test_message, &test_message_str));
 
   int test_message_length = test_message_str.size();
-  scoped_refptr<net::IOBuffer> test_message_buffer =
-      base::MakeRefCounted<net::IOBuffer>(test_message_length);
+  auto test_message_buffer =
+      base::MakeRefCounted<net::IOBufferWithSize>(test_message_length);
 
   EXPECT_CALL(handler_, OnWriteComplete(net::OK));
   socket_->transport()->SendMessage(

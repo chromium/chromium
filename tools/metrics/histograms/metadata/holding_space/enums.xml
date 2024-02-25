@@ -1,0 +1,224 @@
+<!--
+Copyright 2023 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<!--
+
+This file describes the enumerations referenced by entries in histograms.xml for
+this directory. Some enums may instead be listed in the central enums.xml file
+at src/tools/metrics/histograms/enums.xml when multiple files use them.
+
+For best practices on writing enumerations descriptions, see
+https://chromium.googlesource.com/chromium/src.git/+/HEAD/tools/metrics/histograms/README.md#Enum-Histograms
+
+Please follow the instructions in the OWNERS file in this directory to find a
+reviewer. If no OWNERS file exists, please consider signing up at
+go/reviewing-metrics (Googlers only), as all subdirectories are expected to
+have an OWNERS file. As a last resort you can send the CL to
+chromium-metrics-reviews@google.com.
+-->
+
+<histogram-configuration>
+
+<!-- Enum types -->
+
+<enums>
+
+<enum name="BooleanExpanded">
+  <int value="0" label="Collapsed"/>
+  <int value="1" label="Expanded"/>
+</enum>
+
+<enum name="HoldingSpaceDownloadsAction">
+  <int value="0" label="kClick"/>
+</enum>
+
+<enum name="HoldingSpaceExtension">
+  <int value="0" label="kEmptyExtension"/>
+  <int value="1" label="kOtherExtension"/>
+  <int value="2" label="RESERVED"/>
+  <int value="3" label="RESERVED0"/>
+  <int value="4" label="RESERVED1"/>
+  <int value="5" label=".3ga"/>
+  <int value="6" label=".3gp"/>
+  <int value="7" label=".aac"/>
+  <int value="8" label=".alac"/>
+  <int value="9" label=".arw"/>
+  <int value="10" label=".asf"/>
+  <int value="11" label=".avi"/>
+  <int value="12" label=".bmp"/>
+  <int value="13" label=".cr2"/>
+  <int value="14" label=".crdownload"/>
+  <int value="15" label=".crx"/>
+  <int value="16" label=".csv"/>
+  <int value="17" label=".dmg"/>
+  <int value="18" label=".dng"/>
+  <int value="19" label=".doc"/>
+  <int value="20" label=".docx"/>
+  <int value="21" label=".exe"/>
+  <int value="22" label=".flac"/>
+  <int value="23" label=".gdoc"/>
+  <int value="24" label=".gif"/>
+  <int value="25" label=".gsheet"/>
+  <int value="26" label=".gslides"/>
+  <int value="27" label=".htm"/>
+  <int value="28" label=".html"/>
+  <int value="29" label=".jar"/>
+  <int value="30" label=".jpeg"/>
+  <int value="31" label=".jpg"/>
+  <int value="32" label=".log"/>
+  <int value="33" label=".m3u"/>
+  <int value="34" label=".m3u8"/>
+  <int value="35" label=".m4a"/>
+  <int value="36" label=".m4v"/>
+  <int value="37" label=".mhtml"/>
+  <int value="38" label=".mid"/>
+  <int value="39" label=".mkv"/>
+  <int value="40" label=".mov"/>
+  <int value="41" label=".mp3"/>
+  <int value="42" label=".mp4"/>
+  <int value="43" label=".mpg"/>
+  <int value="44" label=".nef"/>
+  <int value="45" label=".nrw"/>
+  <int value="46" label=".odf"/>
+  <int value="47" label=".odp"/>
+  <int value="48" label=".ods"/>
+  <int value="49" label=".odt"/>
+  <int value="50" label=".oga"/>
+  <int value="51" label=".ogg"/>
+  <int value="52" label=".ogv"/>
+  <int value="53" label=".orf"/>
+  <int value="54" label=".pdf"/>
+  <int value="55" label=".png"/>
+  <int value="56" label=".ppt"/>
+  <int value="57" label=".pptx"/>
+  <int value="58" label=".ps"/>
+  <int value="59" label=".ra"/>
+  <int value="60" label=".raf"/>
+  <int value="61" label=".ram"/>
+  <int value="62" label=".rar"/>
+  <int value="63" label=".rm"/>
+  <int value="64" label=".rtf"/>
+  <int value="65" label=".rw2"/>
+  <int value="66" label=".tini"/>
+  <int value="67" label=".torrent"/>
+  <int value="68" label=".txt"/>
+  <int value="69" label=".wav"/>
+  <int value="70" label=".webm"/>
+  <int value="71" label=".webp"/>
+  <int value="72" label=".wma"/>
+  <int value="73" label=".wmv"/>
+  <int value="74" label=".xls"/>
+  <int value="75" label=".xlsx"/>
+  <int value="76" label=".zip"/>
+</enum>
+
+<enum name="HoldingSpaceFilePickerBindingContext">
+  <int value="0" label="kUnknown"/>
+  <int value="1" label="kPhotoshopWeb"/>
+</enum>
+
+<enum name="HoldingSpaceFilesAppChipAction">
+  <int value="0" label="kClick"/>
+</enum>
+
+<enum name="HoldingSpaceFileSystemType">
+  <int value="0" label="kUnknown"/>
+  <int value="1" label="kTemporary"/>
+  <int value="2" label="kPersistent"/>
+  <int value="3" label="kIsolated"/>
+  <int value="4" label="kExternal"/>
+  <int value="5" label="kTest"/>
+  <int value="6" label="kLocal"/>
+  <int value="7" label="kRestrictedLocal"/>
+  <int value="8" label="kDragged"/>
+  <int value="9" label="kLocalMedia"/>
+  <int value="10" label="kDeviceMedia"/>
+  <int value="11" label="kSyncable"/>
+  <int value="12" label="kSyncableForInternalSync"/>
+  <int value="13" label="kLocalForPlatformApp"/>
+  <int value="14" label="kForTransientFile"/>
+  <int value="15" label="kProvided"/>
+  <int value="16" label="kDeviceMediaAsFileStorage"/>
+  <int value="17" label="kArcContent"/>
+  <int value="18" label="kArcDocumentsProvider"/>
+  <int value="19" label="kDriveFs"/>
+  <int value="20" label="kSmbFs"/>
+  <int value="21" label="kFuseBox"/>
+</enum>
+
+<enum name="HoldingSpaceItemAction">
+  <int value="0" label="kCopy"/>
+  <int value="1" label="kDrag"/>
+  <int value="2" label="kLaunch"/>
+  <int value="3" label="kPin"/>
+  <int value="4" label="kShowInFolder"/>
+  <int value="5" label="kUnpin"/>
+  <int value="6" label="kRemove"/>
+  <int value="7" label="kCancel"/>
+  <int value="8" label="kPause"/>
+  <int value="9" label="kResume"/>
+  <int value="10" label="kShowInBrowser"/>
+  <int value="11" label="kViewDetailsInBrowser"/>
+</enum>
+
+<enum name="HoldingSpaceItemLaunchFailureReason">
+  <int value="0" label="kUnknown"/>
+  <int value="1" label="kCrosApiNotFound"/>
+  <int value="2" label="kDownloadNotFound"/>
+  <int value="3" label="kFileError"/>
+  <int value="4" label="kFileInfoError"/>
+  <int value="5" label="kInvalidType"/>
+  <int value="6" label="kNoHandlerForFileType"/>
+  <int value="7" label="kNoHandlerForItemType"/>
+  <int value="8" label="kPathEmpty"/>
+  <int value="9" label="kPathNotFound"/>
+  <int value="10" label="kReattemptToOpenWhenComplete"/>
+  <int value="11" label="kShutdown"/>
+</enum>
+
+<enum name="HoldingSpaceItemType">
+  <int value="0" label="kPinnedFile"/>
+  <int value="1" label="kScreenshot"/>
+  <int value="2" label="kDownload"/>
+  <int value="3" label="kNearbyShare"/>
+  <int value="4" label="kScreenRecording"/>
+  <int value="5" label="kArcDownload"/>
+  <int value="6" label="kPrintedPdf"/>
+  <int value="7" label="kDiagnosticsLog"/>
+  <int value="8" label="kLacrosDownload"/>
+  <int value="9" label="kScan"/>
+  <int value="10" label="kPhoneHubCameraRoll"/>
+  <int value="11" label="kDriveSuggestion"/>
+  <int value="12" label="kLocalSuggestion"/>
+  <int value="13" label="kScreenRecordingGif"/>
+  <int value="14" label="kCameraAppPhoto"/>
+  <int value="15" label="kCameraAppScanJpg"/>
+  <int value="16" label="kCameraAppScanPdf"/>
+  <int value="17" label="kCameraAppVideoGif"/>
+  <int value="18" label="kCameraAppVideoMp4"/>
+  <int value="19" label="kPhotoshopWeb"/>
+</enum>
+
+<enum name="HoldingSpacePodAction">
+  <int value="0" label="kClick (Deprecated)"/>
+  <int value="1" label="kShowBubble"/>
+  <int value="2" label="kCloseBubble"/>
+  <int value="3" label="kShowContextMenu"/>
+  <int value="4" label="kShowPreviews"/>
+  <int value="5" label="kHidePreviews"/>
+  <int value="6" label="kShowPod"/>
+  <int value="7" label="kHidePod"/>
+  <int value="8" label="kDragAndDropToPin"/>
+</enum>
+
+<enum name="HoldingSpaceSuggestionsAction">
+  <int value="0" label="kCollapse"/>
+  <int value="1" label="kExpand"/>
+</enum>
+
+</enums>
+
+</histogram-configuration>

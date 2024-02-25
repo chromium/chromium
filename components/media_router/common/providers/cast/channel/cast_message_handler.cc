@@ -51,8 +51,8 @@ LaunchSessionCallbackWrapper::LaunchSessionCallbackWrapper() = default;
 LaunchSessionCallbackWrapper::~LaunchSessionCallbackWrapper() = default;
 
 VirtualConnection::VirtualConnection(int channel_id,
-                                     const std::string& source_id,
-                                     const std::string& destination_id)
+                                     std::string_view source_id,
+                                     std::string_view destination_id)
     : channel_id(channel_id),
       source_id(source_id),
       destination_id(destination_id) {}
@@ -64,18 +64,26 @@ bool VirtualConnection::operator<(const VirtualConnection& other) const {
 }
 
 InternalMessage::InternalMessage(CastMessageType type,
-                                 const std::string& message_namespace,
+                                 std::string_view source_id,
+                                 std::string_view destination_id,
+                                 std::string_view message_namespace,
                                  base::Value::Dict message)
     : type(type),
+      source_id(source_id),
+      destination_id(destination_id),
       message_namespace(message_namespace),
       message(std::move(message)) {}
 InternalMessage::~InternalMessage() = default;
 
+CastMessageHandler::Observer::~Observer() {
+  CHECK(!IsInObserverList());
+}
+
 CastMessageHandler::CastMessageHandler(CastSocketService* socket_service,
                                        ParseJsonCallback parse_json,
-                                       const std::string& user_agent,
-                                       const std::string& browser_version,
-                                       const std::string& locale)
+                                       std::string_view user_agent,
+                                       std::string_view browser_version,
+                                       std::string_view locale)
     : source_id_(base::StringPrintf("sender-%d", base::RandInt(0, 1000000))),
       parse_json_(std::move(parse_json)),
       user_agent_(user_agent),
@@ -120,21 +128,28 @@ void CastMessageHandler::CloseConnection(int channel_id,
   }
 
   VirtualConnection connection(socket->id(), source_id, destination_id);
-  if (virtual_connections_.find(connection) == virtual_connections_.end())
+  if (virtual_connections_.find(connection) == virtual_connections_.end()) {
     return;
-
+  }
   VLOG(1) << "Closing VC for channel: " << connection.channel_id
           << ", source: " << connection.source_id
           << ", dest: " << connection.destination_id;
+  // Assume the virtual connection close will succeed.  Eventually the receiver
+  // will remove the connection even if it doesn't succeed.
   socket->transport()->SendMessage(
       CreateVirtualConnectionClose(connection.source_id,
                                    connection.destination_id),
       base::BindOnce(&CastMessageHandler::OnMessageSent,
                      weak_ptr_factory_.GetWeakPtr()));
 
-  // Assume the virtual connection close will succeed.  Eventually the receiver
-  // will remove the connection even if it doesn't.
-  virtual_connections_.erase(connection);
+  RemoveConnection(channel_id, source_id, destination_id);
+}
+
+void CastMessageHandler::RemoveConnection(int channel_id,
+                                          const std::string& source_id,
+                                          const std::string& destination_id) {
+  virtual_connections_.erase(
+      VirtualConnection(channel_id, source_id, destination_id));
 }
 
 CastMessageHandler::PendingRequests*
@@ -185,39 +200,12 @@ void CastMessageHandler::RequestReceiverStatus(int channel_id) {
                           CreateReceiverStatusRequest(source_id_, request_id));
 }
 
-Result CastMessageHandler::SendBroadcastMessage(
-    int channel_id,
-    const std::vector<std::string>& app_ids,
-    const BroadcastRequest& request) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
-  CastSocket* socket = socket_service_->GetSocket(channel_id);
-  if (!socket) {
-    DVLOG(2) << __func__ << ": socket not found: " << channel_id;
-    return Result::kFailed;
-  }
-
-  int request_id = NextRequestId();
-  DVLOG(2) << __func__ << ", channel_id: " << channel_id
-           << ", request_id: " << request_id;
-
-  // Note: Even though the message is formatted like a request, we don't care
-  // about the response, as broadcasts are fire-and-forget.
-  CastMessage message =
-      CreateBroadcastRequest(source_id_, request_id, app_ids, request);
-  if (message.ByteSizeLong() > kMaxCastMessagePayload) {
-    return Result::kFailed;
-  }
-  SendCastMessageToSocket(socket, message);
-  return Result::kOk;
-}
-
 void CastMessageHandler::LaunchSession(
     int channel_id,
     const std::string& app_id,
     base::TimeDelta launch_timeout,
     const std::vector<std::string>& supported_app_types,
-    const absl::optional<base::Value>& app_params,
+    const std::optional<base::Value>& app_params,
     LaunchSessionCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   CastSocket* socket = socket_service_->GetSocket(channel_id);
@@ -253,7 +241,7 @@ void CastMessageHandler::LaunchSession(
 void CastMessageHandler::StopSession(
     int channel_id,
     const std::string& session_id,
-    const absl::optional<std::string>& client_id,
+    const std::optional<std::string>& client_id,
     ResultCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   CastSocket* socket = socket_service_->GetSocket(channel_id);
@@ -299,7 +287,7 @@ Result CastMessageHandler::SendAppMessage(int channel_id,
   return SendCastMessage(channel_id, message);
 }
 
-absl::optional<int> CastMessageHandler::SendMediaRequest(
+std::optional<int> CastMessageHandler::SendMediaRequest(
     int channel_id,
     const base::Value::Dict& body,
     const std::string& source_id,
@@ -309,7 +297,7 @@ absl::optional<int> CastMessageHandler::SendMediaRequest(
   CastSocket* socket = socket_service_->GetSocket(channel_id);
   if (!socket) {
     DVLOG(2) << __func__ << ": socket not found: " << channel_id;
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   int request_id = NextRequestId();
@@ -418,7 +406,7 @@ void CastMessageHandler::HandleCastInternalMessage(
     return;
   }
 
-  absl::optional<int> request_id = GetRequestIdFromResponse(*payload);
+  std::optional<int> request_id = GetRequestIdFromResponse(*payload);
   if (request_id) {
     auto requests_it = pending_requests_.find(channel_id);
     if (requests_it != pending_requests_.end())
@@ -441,7 +429,8 @@ void CastMessageHandler::HandleCastInternalMessage(
     return;
   }
 
-  InternalMessage internal_message(type, namespace_, std::move(*payload));
+  InternalMessage internal_message(type, source_id, destination_id, namespace_,
+                                   std::move(*payload));
   for (auto& observer : observers_)
     observer.OnInternalMessage(channel_id, internal_message);
 }

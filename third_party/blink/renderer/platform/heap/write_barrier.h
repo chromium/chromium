@@ -52,7 +52,7 @@ class WriteBarrier final {
     HeapConsistency::WriteBarrierParams params;
     switch (HeapConsistency::GetWriteBarrierType(*element, params)) {
       case HeapConsistency::WriteBarrierType::kMarking:
-        HeapConsistency::DijkstraWriteBarrier(params, *element);
+        HeapConsistency::DijkstraWriteBarrier(params, element->Get());
         break;
       case HeapConsistency::WriteBarrierType::kGenerational:
         HeapConsistency::GenerationalBarrier(params, element);

@@ -24,7 +24,7 @@ namespace autofill {
 namespace {
 
 // Returns a copy of |input| without >= 5 consecutive digits.
-std::string StripDigitsIfRequired(base::StringPiece input) {
+std::string StripDigitsIfRequired(std::string_view input) {
   static constexpr auto IsDigit = base::IsAsciiDigit<char>;
   std::string result;
   result.reserve(input.size());
@@ -40,8 +40,8 @@ std::string StripDigitsIfRequired(base::StringPiece input) {
 
     // If `input[i]` is a digit, find the range of consecutive digits starting
     // at `i`. If this range is shorter than 5 characters append it to `result`.
-    auto* end_it = base::ranges::find_if_not(input.substr(i), IsDigit);
-    base::StringPiece digits = base::MakeStringPiece(input.begin() + i, end_it);
+    auto end_it = base::ranges::find_if_not(input.substr(i), IsDigit);
+    std::string_view digits = base::MakeStringPiece(input.begin() + i, end_it);
     DCHECK(base::ranges::all_of(digits, IsDigit));
     if (digits.size() < 5)
       base::StrAppend(&result, {digits});
@@ -79,8 +79,8 @@ std::string GetDOMFormName(const std::string& form_name) {
 FormSignature CalculateFormSignature(const FormData& form_data) {
   const GURL& target_url = form_data.action;
   const GURL& source_url = form_data.url;
-  base::StringPiece scheme = target_url.scheme_piece();
-  base::StringPiece host = target_url.host_piece();
+  std::string_view scheme = target_url.scheme_piece();
+  std::string_view host = target_url.host_piece();
 
   // If target host or scheme is empty, set scheme and host of source url.
   // This is done to match the Toolbar's behavior.
@@ -108,8 +108,8 @@ FormSignature CalculateFormSignature(const FormData& form_data) {
 }
 
 FormSignature CalculateAlternativeFormSignature(const FormData& form_data) {
-  base::StringPiece scheme = form_data.action.scheme_piece();
-  base::StringPiece host = form_data.action.host_piece();
+  std::string_view scheme = form_data.action.scheme_piece();
+  std::string_view host = form_data.action.host_piece();
 
   // If target host or scheme is empty, set scheme and host of source url.
   // This is done to match the Toolbar's behavior.
@@ -122,8 +122,12 @@ FormSignature CalculateAlternativeFormSignature(const FormData& form_data) {
   for (const FormFieldData& field : form_data.fields) {
     if (!IsCheckable(field.check_status)) {
       // Add all supported form fields' form control types to the signature.
+      // We use the string representation of the FormControlType because
+      // changing the signature algorithm is non-trivial. If and when the
+      // sectioning algorithm, we could use the raw FormControlType enum
+      // instead.
       base::StrAppend(&form_signature_field_types,
-                      {"&", field.form_control_type});
+                      {"&", FormControlTypeToString(field.form_control_type)});
     }
   }
 
@@ -150,9 +154,9 @@ FormSignature CalculateAlternativeFormSignature(const FormData& form_data) {
 
 FieldSignature CalculateFieldSignatureByNameAndType(
     base::StringPiece16 field_name,
-    base::StringPiece field_type) {
-  return FieldSignature(
-      StrToHash32Bit(base::StrCat({UTF16ToUTF8(field_name), "&", field_type})));
+    FormControlType field_type) {
+  return FieldSignature(StrToHash32Bit(base::StrCat(
+      {UTF16ToUTF8(field_name), "&", FormControlTypeToString(field_type)})));
 }
 
 FieldSignature CalculateFieldSignatureForField(
@@ -161,13 +165,13 @@ FieldSignature CalculateFieldSignatureForField(
                                               field_data.form_control_type);
 }
 
-uint64_t StrToHash64Bit(base::StringPiece str) {
+uint64_t StrToHash64Bit(std::string_view str) {
   auto bytes = base::as_bytes(base::make_span(str));
   const base::SHA1Digest digest = base::SHA1HashSpan(bytes);
   return PackBytes(base::make_span(digest).subspan<0, 8>());
 }
 
-uint32_t StrToHash32Bit(base::StringPiece str) {
+uint32_t StrToHash32Bit(std::string_view str) {
   auto bytes = base::as_bytes(base::make_span(str));
   const base::SHA1Digest digest = base::SHA1HashSpan(bytes);
   return PackBytes(base::make_span(digest).subspan<0, 4>());

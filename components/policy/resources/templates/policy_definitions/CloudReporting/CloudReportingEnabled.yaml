@@ -3,11 +3,11 @@ default: false
 desc: |-
   This policy controls <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph> cloud reporting which uploads information about the browser operation to <ph name="GOOGLE_ADMIN_CONSOLE_PRODUCT_NAME">Google Admin console</ph>.
 
-        When this policy is left unset or set to Disabled, there is no data collected or uploaded.
-        When this policy is set to Enabled, the data is collected and uploaded to <ph name="GOOGLE_ADMIN_CONSOLE_PRODUCT_NAME">Google Admin console</ph>.
+  When this policy is left unset or set to Disabled, there is no data collected or uploaded.
+  When this policy is set to Enabled, the data is collected and uploaded to <ph name="GOOGLE_ADMIN_CONSOLE_PRODUCT_NAME">Google Admin console</ph>.
 
-        For <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph>, this policy is only effective when the machine is enrolled with <ph name="CLOUD_MANAGEMENT_ENROLLMENT_TOKEN">CloudManagementEnrollmentToken</ph>.
-        For <ph name="PRODUCT_OS_NAME">$2<ex>Google ChromeOS</ex></ph>, this policy is always effective.
+  For <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph>, this policy is only effective when the machine is enrolled with <ph name="CLOUD_MANAGEMENT_ENROLLMENT_TOKEN">CloudManagementEnrollmentToken</ph>.
+  For <ph name="PRODUCT_OS_NAME">$2<ex>Google ChromeOS</ex></ph>, this policy is always effective.
 example_value: true
 features:
   cloud_only: true

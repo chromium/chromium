@@ -19,9 +19,7 @@ import org.chromium.chrome.R;
  * {@link OnPreferenceClickListener} is called when the link is clicked.
  */
 public class AutofillEditLinkPreference extends Preference {
-    /**
-     * Constructor for inflating from XML.
-     */
+    /** Constructor for inflating from XML. */
     public AutofillEditLinkPreference(Context context, AttributeSet attrs) {
         super(context, attrs);
         setSelectable(false);
@@ -35,10 +33,12 @@ public class AutofillEditLinkPreference extends Preference {
 
         View button = holder.findViewById(R.id.preference_click_target);
         button.setClickable(true);
-        button.setOnClickListener(v -> {
-            if (getOnPreferenceClickListener() != null) {
-                getOnPreferenceClickListener().onPreferenceClick(AutofillEditLinkPreference.this);
-            }
-        });
+        button.setOnClickListener(
+                v -> {
+                    if (getOnPreferenceClickListener() != null) {
+                        getOnPreferenceClickListener()
+                                .onPreferenceClick(AutofillEditLinkPreference.this);
+                    }
+                });
     }
 }

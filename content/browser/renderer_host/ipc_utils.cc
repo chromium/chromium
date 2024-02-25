@@ -4,6 +4,7 @@
 
 #include "content/browser/renderer_host/ipc_utils.h"
 
+#include <optional>
 #include <utility>
 
 #include "content/browser/bad_message.h"
@@ -19,7 +20,6 @@
 #include "content/public/browser/render_process_host.h"
 #include "content/public/common/url_constants.h"
 #include "mojo/public/cpp/system/message_pipe.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/mojom/navigation/navigation_params.mojom.h"
 
 namespace content {
@@ -47,9 +47,9 @@ bool VerifyBlobToken(
 bool VerifyInitiatorOrigin(
     int process_id,
     const url::Origin& initiator_origin,
-    RenderFrameHostImpl* current_rfh = nullptr,
+    const RenderFrameHostImpl* current_rfh = nullptr,
     GURL* navigation_url = nullptr,
-    absl::optional<blink::LocalFrameToken>* initiator_frame_token = nullptr) {
+    std::optional<blink::LocalFrameToken>* initiator_frame_token = nullptr) {
   // TODO(acolwell, nasko): https://crbug.com/1029092: Ensure the precursor of
   // opaque origins matches the origin lock.  One known problematic case are
   // reloads initiated from error pages - see the following
@@ -73,7 +73,7 @@ bool VerifyInitiatorOrigin(
           navigation_url_key,
           navigation_url->DeprecatedGetOriginAsURL().spec());
     }
-    if (initiator_frame_token) {
+    if (initiator_frame_token && initiator_frame_token->has_value()) {
       if (RenderFrameHostImpl* initiator_render_frame_host =
               RenderFrameHostImpl::FromFrameToken(
                   process_id, initiator_frame_token->value())) {
@@ -247,7 +247,8 @@ bool VerifyOpenURLParams(RenderFrameHostImpl* current_rfh,
 
 bool VerifyBeginNavigationCommonParams(
     const RenderFrameHostImpl& current_rfh,
-    blink::mojom::CommonNavigationParams* common_params) {
+    blink::mojom::CommonNavigationParams* common_params,
+    std::optional<blink::LocalFrameToken>& initiator_frame_token) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   DCHECK(common_params);
   RenderProcessHost* process = current_rfh.GetProcess();
@@ -282,8 +283,9 @@ bool VerifyBeginNavigationCommonParams(
         process, bad_message::RFHI_BEGIN_NAVIGATION_MISSING_INITIATOR_ORIGIN);
     return false;
   }
-  if (!VerifyInitiatorOrigin(process_id,
-                             common_params->initiator_origin.value())) {
+  if (!VerifyInitiatorOrigin(
+          process_id, common_params->initiator_origin.value(), &current_rfh,
+          &common_params->url, &initiator_frame_token)) {
     return false;
   }
 
@@ -307,7 +309,7 @@ bool VerifyBeginNavigationCommonParams(
 
 bool VerifyNavigationInitiator(
     RenderFrameHostImpl* current_rfh,
-    const absl::optional<blink::LocalFrameToken>& initiator_frame_token,
+    const std::optional<blink::LocalFrameToken>& initiator_frame_token,
     int initiator_process_id) {
   // Verify that a frame inside a fenced frame cannot navigate its ancestors,
   // unless the frame being navigated is the outermost main frame.
@@ -327,7 +329,7 @@ bool VerifyNavigationInitiator(
   // nonce, unless the navigating frame is a fenced frame root and its owner
   // frame has the same fenced frame nonce as the initiator frame (e.g. in a
   // A(A1,A2(FF)) setup, A, A1, and A2 are all allowed to navigate FF).
-  absl::optional<base::UnguessableToken> initiator_fenced_frame_nonce =
+  std::optional<base::UnguessableToken> initiator_fenced_frame_nonce =
       initiator_render_frame_host->frame_tree_node()->GetFencedFrameNonce();
   if (initiator_fenced_frame_nonce !=
       current_rfh->frame_tree_node()->GetFencedFrameNonce()) {

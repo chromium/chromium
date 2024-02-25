@@ -141,7 +141,7 @@ class PrintJobsCleanupHandlerUnittest : public testing::Test {
   std::unique_ptr<user_manager::ScopedUserManager> scoped_user_manager_;
   TestingPrefServiceSimple test_prefs_;
   TestingProfileManager testing_profile_manager_;
-  raw_ptr<TestingProfile, DanglingUntriaged | ExperimentalAsh> testing_profile_;
+  raw_ptr<TestingProfile, DanglingUntriaged> testing_profile_;
   base::ScopedTempDir history_dir_;
   std::unique_ptr<ash::TestCupsPrintJobManager> print_job_manager_;
   std::unique_ptr<history::HistoryService> history_service_;
@@ -156,7 +156,7 @@ TEST_F(PrintJobsCleanupHandlerUnittest, Cleanup) {
   base::RunLoop run_loop;
 
   CleanupHandler::CleanupHandlerCallback callback = base::BindLambdaForTesting(
-      [&](const absl::optional<std::string>& error_message) {
+      [&](const std::optional<std::string>& error_message) {
         ASSERT_FALSE(error_message);
         run_loop.QuitClosure().Run();
       });
@@ -173,7 +173,7 @@ TEST_F(PrintJobsCleanupHandlerUnittest, CleanupWithError) {
   base::RunLoop run_loop;
 
   CleanupHandler::CleanupHandlerCallback callback = base::BindLambdaForTesting(
-      [&](const absl::optional<std::string>& error_message) {
+      [&](const std::optional<std::string>& error_message) {
         ASSERT_EQ(error_message, "Failed to delete all print jobs");
         run_loop.QuitClosure().Run();
       });

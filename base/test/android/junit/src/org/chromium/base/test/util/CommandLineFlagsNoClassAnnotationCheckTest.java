@@ -28,7 +28,8 @@ public class CommandLineFlagsNoClassAnnotationCheckTest {
     @Test
     @CommandLineFlags.Add("some-switch")
     public void testAddSwitch_method() throws Throwable {
-        Assert.assertTrue("some-switch should be appended",
+        Assert.assertTrue(
+                "some-switch should be appended",
                 CommandLine.getInstance().hasSwitch("some-switch"));
     }
 
@@ -38,7 +39,8 @@ public class CommandLineFlagsNoClassAnnotationCheckTest {
     public void testAddThenRemoveSwitch_method() throws Throwable {
         Assert.assertEquals(
                 "some-switch should be removed from the class level and added back, not ignored",
-                "method_value", CommandLine.getInstance().getSwitchValue("some-switch"));
+                "method_value",
+                CommandLine.getInstance().getSwitchValue("some-switch"));
     }
 
     @Test
@@ -47,6 +49,7 @@ public class CommandLineFlagsNoClassAnnotationCheckTest {
     public void testRemoveThenAddSwitch_method() throws Throwable {
         Assert.assertEquals(
                 "some-switch should be removed from the class level and added back, not ignored",
-                "method_value", CommandLine.getInstance().getSwitchValue("some-switch"));
+                "method_value",
+                CommandLine.getInstance().getSwitchValue("some-switch"));
     }
 }

@@ -7,18 +7,19 @@ See https://dev.chromium.org/developers/how-tos/depottools/presubmit-scripts
 for more details about the presubmit API built into gcl.
 """
 
-import imp
+import importlib
 import inspect
 import os
 import re
 
-
 try:
     # pylint: disable=C0103
-    audit_non_blink_usage = imp.load_source(
-        'audit_non_blink_usage',
-        os.path.join(os.path.dirname(inspect.stack()[0][1]),
-                     'tools/blinkpy/presubmit/audit_non_blink_usage.py'))
+    module_name = 'audit_non_blink_usage'
+    module_path = os.path.join(
+        os.path.dirname(inspect.stack()[0][1]),
+        'tools/blinkpy/presubmit/audit_non_blink_usage.py')
+    audit_non_blink_usage = importlib.machinery.SourceFileLoader(
+        module_name, module_path).load_module()
 except IOError:
     # One of the presubmit upload tests tries to exec this script, which
     # doesn't interact so well with the import hack... just ignore the
@@ -57,7 +58,7 @@ def _CheckForWrongMojomIncludes(input_api, output_api):
     # public C++ API. Adding to these allowed interfaces should meet the
     # following conditions:
     # - Its pros/cons is discussed and have consensus on
-    #   platform-architecture-dev@ and/or
+    #   platform-architecture-dev@ or
     # - It uses POD types that will not import STL (or base string) types into
     #   blink (such as no strings or vectors).
     #
@@ -75,12 +76,14 @@ def _CheckForWrongMojomIncludes(input_api, output_api):
         'third_party/blink/public/mojom/blob/blob',
         'third_party/blink/public/mojom/blob/serialized_blob',
         'third_party/blink/public/mojom/fetch/fetch_api_request',
+        'third_party/blink/public/mojom/loader/code_cache',
+        'third_party/blink/public/mojom/loader/fetch_later',
         'third_party/blink/public/mojom/loader/resource_load_info',
         'third_party/blink/public/mojom/loader/resource_load_info_notifier',
+        'third_party/blink/public/mojom/loader/transferrable_url_loader',
+        'third_party/blink/public/mojom/navigation/renderer_content_settings',
         'third_party/blink/public/mojom/worker/subresource_loader_updater',
         'third_party/blink/public/mojom/worker/worklet_global_scope_creation_params',
-        'third_party/blink/public/mojom/loader/transferrable_url_loader',
-        'third_party/blink/public/mojom/loader/code_cache',
         'media/mojo/mojom/interface_factory', 'media/mojo/mojom/audio_decoder',
         'media/mojo/mojom/audio_encoder', 'media/mojo/mojom/video_decoder',
         'media/mojo/mojom/media_metrics_provider')

@@ -5,6 +5,7 @@
 #include "ash/wm/wm_event.h"
 
 #include "ash/wm/window_positioning_utils.h"
+#include "ash/wm/wm_metrics.h"
 
 namespace ash {
 
@@ -18,9 +19,7 @@ WMEvent::~WMEvent() = default;
 bool WMEvent::IsWorkspaceEvent() const {
   switch (type_) {
     case WM_EVENT_ADDED_TO_WORKSPACE:
-    case WM_EVENT_WORKAREA_BOUNDS_CHANGED:
-    case WM_EVENT_DISPLAY_BOUNDS_CHANGED:
-    case WM_EVENT_SYSTEM_UI_AREA_CHANGED:
+    case WM_EVENT_DISPLAY_METRICS_CHANGED:
       return true;
     default:
       break;
@@ -56,14 +55,7 @@ bool WMEvent::IsPinEvent() const {
 }
 
 bool WMEvent::IsBoundsEvent() const {
-  switch (type_) {
-    case WM_EVENT_SET_BOUNDS:
-    case WM_EVENT_CENTER:
-      return true;
-    default:
-      break;
-  }
-  return false;
+  return type_ == WM_EVENT_SET_BOUNDS;
 }
 
 bool WMEvent::IsTransitionEvent() const {
@@ -106,7 +98,7 @@ const SetBoundsWMEvent* WMEvent::AsSetBoundsWMEvent() const {
 
 const DisplayMetricsChangedWMEvent* WMEvent::AsDisplayMetricsChangedWMEvent()
     const {
-  DCHECK_EQ(type(), WM_EVENT_DISPLAY_BOUNDS_CHANGED);
+  CHECK_EQ(type(), WM_EVENT_DISPLAY_METRICS_CHANGED);
   return static_cast<const DisplayMetricsChangedWMEvent*>(this);
 }
 
@@ -140,7 +132,7 @@ const SetBoundsWMEvent* SetBoundsWMEvent::AsSetBoundsWMEvent() const {
 }
 
 DisplayMetricsChangedWMEvent::DisplayMetricsChangedWMEvent(int changed_metrics)
-    : WMEvent(WM_EVENT_DISPLAY_BOUNDS_CHANGED),
+    : WMEvent(WM_EVENT_DISPLAY_METRICS_CHANGED),
       changed_metrics_(changed_metrics) {}
 
 DisplayMetricsChangedWMEvent::~DisplayMetricsChangedWMEvent() = default;
@@ -155,19 +147,19 @@ const WindowFloatWMEvent* WindowFloatWMEvent::AsFloatEvent() const {
   return this;
 }
 
-WindowSnapWMEvent::WindowSnapWMEvent(WMEventType type) : WMEvent(type) {
-  CHECK(IsSnapEvent());
-}
+WindowSnapWMEvent::WindowSnapWMEvent(WMEventType type)
+    : WindowSnapWMEvent(type,
+                        chromeos::kDefaultSnapRatio,
+                        WindowSnapActionSource::kNotSpecified) {}
 
 WindowSnapWMEvent::WindowSnapWMEvent(WMEventType type, float snap_ratio)
-    : WMEvent(type), snap_ratio_(snap_ratio) {
-  CHECK(IsSnapEvent());
-}
+    : WindowSnapWMEvent(type,
+                        snap_ratio,
+                        WindowSnapActionSource::kNotSpecified) {}
 
 WindowSnapWMEvent::WindowSnapWMEvent(WMEventType type,
                                      WindowSnapActionSource snap_action_source)
-    : WMEvent(type), snap_action_source_(snap_action_source) {
-  CHECK(IsSnapEvent());
+    : WindowSnapWMEvent(type, chromeos::kDefaultSnapRatio, snap_action_source) {
 }
 
 WindowSnapWMEvent::WindowSnapWMEvent(WMEventType type,

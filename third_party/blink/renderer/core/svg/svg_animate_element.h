@@ -123,7 +123,7 @@ class CORE_EXPORT SVGAnimateElement : public SVGAnimationElement {
   AnimatedPropertyType type_;
   CSSPropertyID css_property_id_;
 
-  bool IsAnimatingSVGDom() const { return target_property_; }
+  bool IsAnimatingSVGDom() const { return target_property_ != nullptr; }
   bool IsAnimatingCSSProperty() const {
     return css_property_id_ != CSSPropertyID::kInvalid;
   }

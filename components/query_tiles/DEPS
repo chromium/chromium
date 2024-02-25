@@ -4,6 +4,7 @@ include_rules = [
   "+components/image_fetcher",
   "+components/keyed_service",
   "+components/leveldb_proto",
+  "+components/omnibox/common/omnibox_features.h",
   "+components/prefs",
   "+net",
   "+services/network/public",

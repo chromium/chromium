@@ -1,0 +1,84 @@
+<style include="cr-radio-button-style">
+  :host {
+    background-color: var(--cr-card-background-color);
+    border-radius: 8px;
+    box-shadow: var(--cr-elevation-1);
+    margin: var(--cr-card-radio-button-margin, 8px);
+    width: var(--cr-card-radio-button-width, 200px);
+    --focus-shadow-color: rgba(var(--google-blue-600-rgb), .4);
+    --hover-bg-color: rgba(var(--google-blue-500-rgb), .04);
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :host {
+      --focus-shadow-color: rgba(var(--google-blue-300-rgb), .5);
+      --hover-bg-color: rgba(var(--google-blue-300-rgb), .08);
+    }
+  }
+
+  /* Overwrite paper-ripple defined in cr-radio-button-style
+   * to ensure it extends to the entire button. */
+  .disc-wrapper,
+  paper-ripple {
+    border-radius: inherit; /* Defined in :host above. */
+  }
+
+  paper-ripple {
+    height: var(--paper-ripple-height);
+    /* Fallback to 0 to match the values in paper-ripple.html. Falls back
+     * to auto without this. */
+    left: var(--paper-ripple-left, 0);
+    top: var(--paper-ripple-top, 0);
+    width: var(--paper-ripple-width);
+  }
+
+  #button {
+    height: var(--cr-card-radio-button-height, auto);
+    padding: var(--cr-card-radio-button-padding, 24px);
+    position: relative;
+    width: 100%;
+  }
+
+  :host-context(.focus-outline-visible) #button:focus {
+    box-shadow: 0 0 0 2px var(--focus-shadow-color);
+  }
+
+  #button:hover {
+    background-color: var(--hover-bg-color);
+  }
+
+  #checkMark {
+    fill: var(--cr-checked-color);
+    left: var(--cr-card-radio-button-checkmark-left, auto);
+    position: absolute;
+    right: var(--cr-card-radio-button-checkmark-right, var(--cr-button-edge-spacing));
+    top: var(--cr-card-radio-button-checkmark-top, var(--cr-button-edge-spacing));
+  }
+
+  :host-context([dir=rtl]) #checkMark {
+    left: var(--cr-card-radio-button-checkmark-right,
+              var(--cr-button-edge-spacing));
+    right: var(--cr-card-radio-button-checkmark-left, auto);
+  }
+
+  :host(:not([checked])) #checkMark {
+    display: none;
+  }
+
+  #slottedContent {
+    padding: var(--cr-card-radio-button-slotted-content-padding);
+  }
+</style>
+<div id="button" role="radio"
+    aria-checked$="[[getAriaChecked_(checked)]]"
+    aria-describedby="slotted-content"
+    aria-disabled$="[[getAriaDisabled_(disabled)]]"
+    class="disc-wrapper"
+    tabindex$="[[buttonTabIndex_]]"
+    aria-labelledby="slotted-content"
+    on-keydown="onInputKeydown_">
+  <iron-icon id="checkMark" icon="cr:check-circle"></iron-icon>
+  <span id="slottedContent">
+    <slot></slot>
+  </span>
+</div>

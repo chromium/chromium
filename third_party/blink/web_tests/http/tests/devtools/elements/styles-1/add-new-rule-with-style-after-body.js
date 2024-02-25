@@ -5,10 +5,11 @@
 import {TestRunner} from 'test_runner';
 import {ElementsTestRunner} from 'elements_test_runner';
 
+import * as SDK from 'devtools/core/sdk/sdk.js';
+
 (async function() {
   TestRunner.addResult(
       `Tests that adding a new rule works when there is a STYLE element after BODY. TIMEOUT SHOULD NOT OCCUR! Bug 111299 https://bugs.webkit.org/show_bug.cgi?id=111299\n`);
-  await TestRunner.loadLegacyModule('elements');
   await TestRunner.showPanel('elements');
   await TestRunner.loadHTML(`
       <div id="inspected" style="font-size: 12px">Text</div>
@@ -40,7 +41,7 @@ import {ElementsTestRunner} from 'elements_test_runner';
   function step2() {
     var section = ElementsTestRunner.firstMatchedStyleSection();
     var newProperty = section.addNewBlankProperty();
-    newProperty.startEditing();
+    newProperty.startEditingName();
     newProperty.nameElement.textContent = 'color';
     newProperty.nameElement.dispatchEvent(TestRunner.createKeyEvent('Enter'));
     newProperty.valueElement.textContent = 'maroon';

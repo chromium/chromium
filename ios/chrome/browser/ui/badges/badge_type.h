@@ -31,6 +31,8 @@ typedef NS_ENUM(NSUInteger, BadgeType) {
   kBadgeTypePermissionsCamera = 9,
   // Badge type for the Permissions Infobar with microphone icon.
   kBadgeTypePermissionsMicrophone = 10,
+  // Badge type for the Parcel Tracking Infobar.
+  kBadgeTypeParcelTracking = 11,
 };
 
 #endif  // IOS_CHROME_BROWSER_UI_BADGES_BADGE_TYPE_H_

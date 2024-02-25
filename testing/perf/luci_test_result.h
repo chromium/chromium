@@ -8,10 +8,10 @@
 #include <string>
 #include <vector>
 
+#include <optional>
 #include "base/containers/flat_map.h"
 #include "base/files/file_path.h"
 #include "base/time/time.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace perf_test {
 
@@ -47,9 +47,9 @@ class LuciTestResult {
 
     // Use only one of the two fields below.
     // Absolute path on the same machine running the test.
-    absl::optional<base::FilePath> file_path;
+    std::optional<base::FilePath> file_path;
     // The data of the artifact.
-    absl::optional<std::string> contents;
+    std::optional<std::string> contents;
 
     std::string content_type;
   };

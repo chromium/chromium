@@ -10,17 +10,18 @@
 
 #include <vector>
 
+#include <optional>
 #include "base/atomic_sequence_num.h"
 #include "base/containers/span.h"
 #include "base/memory/raw_ptr.h"
-#include "cc/paint/target_color_params.h"
 #include "cc/paint/transfer_cache_entry.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/skia/include/core/SkImageInfo.h"
 #include "third_party/skia/include/core/SkRefCnt.h"
 #include "third_party/skia/include/core/SkYUVAInfo.h"
 #include "third_party/skia/include/gpu/GrTypes.h"
 #include "third_party/skia/include/private/SkGainmapInfo.h"
+#include "ui/gfx/color_space.h"
+#include "ui/gfx/hdr_metadata.h"
 
 class GrDirectContext;
 class SkColorSpace;
@@ -81,13 +82,12 @@ class CC_PAINT_EXPORT ClientImageTransferCacheEntry final
   ClientImageTransferCacheEntry(
       const Image& image,
       bool needs_mips,
-      absl::optional<TargetColorParams> target_color_params);
-  ClientImageTransferCacheEntry(
-      const Image& image,
-      const Image& gainmap_image,
-      const SkGainmapInfo& gainmap_info,
-      bool needs_mips,
-      absl::optional<TargetColorParams> target_color_params);
+      const std::optional<gfx::HDRMetadata>& hdr_metadata = std::nullopt,
+      sk_sp<SkColorSpace> target_color_space = nullptr);
+  ClientImageTransferCacheEntry(const Image& image,
+                                const Image& gainmap_image,
+                                const SkGainmapInfo& gainmap_info,
+                                bool needs_mips);
   ~ClientImageTransferCacheEntry() final;
 
   uint32_t Id() const final;
@@ -106,7 +106,7 @@ class CC_PAINT_EXPORT ClientImageTransferCacheEntry final
   void ComputeSize();
 
   const bool needs_mips_ = false;
-  absl::optional<TargetColorParams> target_color_params_;
+  sk_sp<SkColorSpace> target_color_space_;
   const uint32_t id_;
   uint32_t size_ = 0;
   static base::AtomicSequenceNumber s_next_id_;
@@ -115,8 +115,11 @@ class CC_PAINT_EXPORT ClientImageTransferCacheEntry final
 
   // The gainmap image and parameters. Either both or neither of these must
   // be specified.
-  absl::optional<Image> gainmap_image_;
-  absl::optional<SkGainmapInfo> gainmap_info_;
+  std::optional<Image> gainmap_image_;
+  std::optional<SkGainmapInfo> gainmap_info_;
+
+  // The HDR metadata for non-gainmap HDR metadata.
+  std::optional<gfx::HDRMetadata> hdr_metadata_;
 };
 
 class CC_PAINT_EXPORT ServiceImageTransferCacheEntry final
@@ -158,6 +161,14 @@ class CC_PAINT_EXPORT ServiceImageTransferCacheEntry final
 
   const sk_sp<SkImage>& image() const { return image_; }
 
+  // Return true if GetImageWithToneMapApplied() should be used instead of
+  // image().
+  bool NeedsToneMapApplied() const { return has_gainmap_ || use_tone_curve_; }
+
+  // Return this image, tone mapped to match the specified HDR headroom.
+  sk_sp<SkImage> GetImageWithToneMapApplied(float hdr_headroom,
+                                            bool needs_mips) const;
+
   // Ensures the cached image has mips.
   void EnsureMips();
 
@@ -179,6 +190,15 @@ class CC_PAINT_EXPORT ServiceImageTransferCacheEntry final
   raw_ptr<skgpu::graphite::Recorder> graphite_recorder_ = nullptr;
   sk_sp<SkImage> image_;
 
+  // HDR tonemapping may be done with a gainmap (for local tone mapping).
+  bool has_gainmap_ = false;
+  sk_sp<SkImage> gainmap_image_;
+  SkGainmapInfo gainmap_info_;
+
+  // HDR tonemapping may be done with a tone curve (for global tone mapping).
+  bool use_tone_curve_ = false;
+  std::optional<gfx::HDRMetadata> tone_curve_hdr_metadata_;
+
   // The value of `size_` is computed during deserialization and never updated
   // (even if the size of the image changes due to mipmaps being requested).
   size_t size_ = 0;
@@ -186,7 +206,7 @@ class CC_PAINT_EXPORT ServiceImageTransferCacheEntry final
   // The individual planes that are used by `image_` when `image_` is a YUVA
   // image. The planes are kept around for use in EnsureMips(), memory dumps,
   // and unit tests.
-  absl::optional<SkYUVAInfo> yuva_info_;
+  std::optional<SkYUVAInfo> yuva_info_;
   std::vector<sk_sp<SkImage>> plane_images_;
   std::vector<size_t> plane_sizes_;
 };

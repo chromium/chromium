@@ -23,6 +23,10 @@ if (is_chromeos_ash) {
 
     webui_module_path =
         "chrome://resources/mojo/chromeos/services/network_health/public/mojom"
+
+    # Used by ash/webui/common/resources/network_health, which is still using
+    # JS + Closure.
+    generate_webui_js_bindings = true
   }
 }
 
@@ -34,6 +38,14 @@ mojom("types") {
     "//url/mojom:url_mojom_gurl",
   ]
 
-  webui_module_path =
-      "chrome://resources/mojo/chromeos/services/network_health/public/mojom"
+  # WebUI bindings only needed on ChromeOS Ash (dependency of the mojom target
+  # above). Only build them on that platform since they're using deprecated JS.
+  if (is_chromeos_ash) {
+    webui_module_path =
+        "chrome://resources/mojo/chromeos/services/network_health/public/mojom"
+
+    # Used by ash/webui/common/resources/network_health, which is still using
+    # JS + Closure.
+    generate_webui_js_bindings = true
+  }
 }

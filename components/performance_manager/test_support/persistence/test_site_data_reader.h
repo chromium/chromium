@@ -5,11 +5,11 @@
 #ifndef COMPONENTS_PERFORMANCE_MANAGER_TEST_SUPPORT_PERSISTENCE_TEST_SITE_DATA_READER_H_
 #define COMPONENTS_PERFORMANCE_MANAGER_TEST_SUPPORT_PERSISTENCE_TEST_SITE_DATA_READER_H_
 
-#include "components/performance_manager/public/persistence/site_data/site_data_reader.h"
+#include <optional>
 
 #include "base/functional/callback_forward.h"
 #include "components/performance_manager/public/persistence/site_data/feature_usage.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
+#include "components/performance_manager/public/persistence/site_data/site_data_reader.h"
 
 namespace performance_manager {
 
@@ -23,9 +23,9 @@ class SimpleTestSiteDataReader : public SiteDataReader {
   // kSiteFeatureUsageInUse on true, kSiteFeatureUsageNotInUse on false, and
   // kSiteFeatureUsageUnknown on nullopt.
   struct BackgroundFeatureUsage {
-    absl::optional<bool> updates_favicon;
-    absl::optional<bool> updates_title;
-    absl::optional<bool> uses_audio;
+    std::optional<bool> updates_favicon;
+    std::optional<bool> updates_title;
+    std::optional<bool> uses_audio;
   };
 
   explicit SimpleTestSiteDataReader(const BackgroundFeatureUsage& usage = {});
@@ -35,15 +35,15 @@ class SimpleTestSiteDataReader : public SiteDataReader {
   SimpleTestSiteDataReader& operator=(const SimpleTestSiteDataReader& other) =
       delete;
 
-  void set_updates_favicon_in_background(absl::optional<bool> value) {
+  void set_updates_favicon_in_background(std::optional<bool> value) {
     background_usage_.updates_favicon = value;
   }
 
-  void set_updates_title_in_background(absl::optional<bool> value) {
+  void set_updates_title_in_background(std::optional<bool> value) {
     background_usage_.updates_title = value;
   }
 
-  void set_uses_audio_in_background(absl::optional<bool> value) {
+  void set_uses_audio_in_background(std::optional<bool> value) {
     background_usage_.uses_audio = value;
   }
 

@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_ASH_REMOTE_APPS_REMOTE_APPS_MANAGER_H_
 
 #include <map>
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -25,7 +26,6 @@
 #include "components/keyed_service/core/keyed_service.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 class AppListModelUpdater;
 class ChromeAppListItem;
@@ -199,12 +199,12 @@ class RemoteAppsManager
 
   void OnIconDownloaded(const std::string& id, const gfx::ImageSkia& icon);
 
-  raw_ptr<Profile, ExperimentalAsh> profile_ = nullptr;
+  raw_ptr<Profile> profile_ = nullptr;
   bool is_initialized_ = false;
-  raw_ptr<app_list::AppListSyncableService, ExperimentalAsh>
-      app_list_syncable_service_ = nullptr;
-  raw_ptr<AppListModelUpdater, ExperimentalAsh> model_updater_ = nullptr;
-  raw_ptr<extensions::EventRouter, ExperimentalAsh> event_router_ = nullptr;
+  raw_ptr<app_list::AppListSyncableService> app_list_syncable_service_ =
+      nullptr;
+  raw_ptr<AppListModelUpdater> model_updater_ = nullptr;
+  raw_ptr<extensions::EventRouter> event_router_ = nullptr;
   std::unique_ptr<apps::RemoteApps> remote_apps_;
   RemoteAppsImpl remote_apps_impl_{this};
   std::unique_ptr<RemoteAppsModel> model_;

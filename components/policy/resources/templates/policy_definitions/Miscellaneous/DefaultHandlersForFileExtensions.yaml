@@ -10,7 +10,8 @@ desc: |-
   Specify Chrome apps by their ID, such as <ph name="DEFAULT_HANDLERS_FOR_FILE_EXTENSIONS_POLICY_CHROME_APP_EXAMPLE">pjkljhegncpnkpknbcohdijeoejaedia</ph>;
   Web apps by the URL used in <ph name="WEB_APP_INSTALL_FORCE_LIST_POLICY_NAME">WebAppInstallForceList</ph>, such as <ph name="DEFAULT_HANDLERS_FOR_FILE_EXTENSIONS_POLICY_WEB_APP_EXAMPLE">https://google.com/maps</ph>;
   Android apps by their package name, such as <ph name="DEFAULT_HANDLERS_FOR_FILE_EXTENSIONS_POLICY_ANDROID_APP_EXAMPLE">com.google.android.gm</ph>;
-  System Web Apps by their snake case name, such as <ph name="DEFAULT_HANDLERS_FOR_FILE_EXTENSIONS_POLICY_SYSTEM_WEB_APP_EXAMPLE">projector</ph>.
+  System Web Apps by their snake case name, such as <ph name="DEFAULT_HANDLERS_FOR_FILE_EXTENSIONS_POLICY_SYSTEM_WEB_APP_EXAMPLE">projector</ph>;
+  Virtual Tasks by their designated name prepended with <ph name="DEFAULT_HANDLERS_FOR_FILE_EXTENSIONS_POLICY_VIRTUAL_TASK_PREFIX">VirtualTask/</ph>, such as <ph name="DEFAULT_HANDLERS_FOR_FILE_EXTENSIONS_POLICY_VIRTUAL_TASK_EXAMPLE">VirtualTask/microsoft-office</ph>.
 
   Note that apps MUST declare themselves as file handlers for specified file extensions in the manifest in order for
   that policy item to take effect (i.e. the policy does NOT extend existing app capabilities).
@@ -30,6 +31,9 @@ example_value:
 - file_extensions:
   - proj
   policy_id: projector
+- file_extensions:
+  - pptx
+  policy_id: VirtualTask/microsoft-office
 features:
   can_be_recommended: true
   dynamic_refresh: true

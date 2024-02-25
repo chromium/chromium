@@ -99,6 +99,7 @@
 <translation id="1559739829547075274">Անցնել նախորդ տարրին</translation>
 <translation id="1565432156062359693">Հաջորդ ցանկ չկա</translation>
 <translation id="1571643229714746283">ChromeVox-ը պատրաստ է</translation>
+<translation id="1588252353131492116">Բաց թողնելու ստեղնը հասանելի չէ կպչուն ռեժիմում</translation>
 <translation id="1594072653727561613">mnu</translation>
 <translation id="1610130962244179598">Անցնել 6 կետանի Բրայլի</translation>
 <translation id="161042844686301425">Երկնագույն</translation>
@@ -194,6 +195,7 @@
 <translation id="2318372665160196757">Հիմնական</translation>
 <translation id="2329324941084714723">Ներդիրների վահանակ</translation>
 <translation id="2347456970887948350">Հղում</translation>
+<translation id="2363753371702255035">պարբերակ</translation>
 <translation id="2365384324219615024">Enter ստեղնի օգնությամբ կարող եք նաև ակտիվացնել տարրեր, օրինակ՝ ձևաթղթում տեքստ մուտքագրել։ Շարունակելու համար սեղմեք Enter։</translation>
 <translation id="2381733276052567791">Միացնել/անջատել հնչեցումը</translation>
 <translation id="2390264819538553347">Առաջ անցնելու համար սեղմեք Enter: Հետ գնալու համար սեղմեք Backspace:</translation>
@@ -869,7 +871,7 @@
 <translation id="7039555289296502784">Ձիթականաչ</translation>
 <translation id="7041173719775863268">Ընտրարկումն ավարտված է</translation>
 <translation id="7043850226734279132">Մուգ դարչնագույն</translation>
-<translation id="7051308646573997571">Կորալ</translation>
+<translation id="7051308646573997571">Մարջան</translation>
 <translation id="7062635574500127092">Փիրուզագույն</translation>
 <translation id="7086377898680121060">Ավելացնել պայծառությունը</translation>
 <translation id="7088743565397416204">Կրկնակի հպեք՝ ընտրված տարրն ակտիվացնելու համար</translation>

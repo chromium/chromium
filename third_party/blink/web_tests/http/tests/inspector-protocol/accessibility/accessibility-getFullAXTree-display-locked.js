@@ -1,4 +1,4 @@
-(async function(testRunner) {
+(async function(/** @type {import('test_runner').TestRunner} */ testRunner) {
   var {page, session, dp} = await testRunner.startHTML(`
     <div style='height: 10000px;'>spacer</div>
     <div id='activatable' style='content-visibility: auto'>

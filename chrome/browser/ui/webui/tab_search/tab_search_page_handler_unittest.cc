@@ -4,6 +4,8 @@
 
 #include "chrome/browser/ui/webui/tab_search/tab_search_page_handler.h"
 
+#include <stdint.h>
+
 #include "base/memory/raw_ptr.h"
 #include "base/test/bind.h"
 #include "base/timer/mock_timer.h"
@@ -62,9 +64,15 @@ class MockPage : public tab_search::mojom::Page {
   }
   mojo::Receiver<tab_search::mojom::Page> receiver_{this};
 
+  MOCK_METHOD(void,
+              TabOrganizationSessionUpdated,
+              (tab_search::mojom::TabOrganizationSessionPtr));
   MOCK_METHOD(void, TabsChanged, (tab_search::mojom::ProfileDataPtr));
   MOCK_METHOD(void, TabUpdated, (tab_search::mojom::TabUpdateInfoPtr));
   MOCK_METHOD(void, TabsRemoved, (tab_search::mojom::TabsRemovedInfoPtr));
+  MOCK_METHOD(void, TabSearchTabIndexChanged, (int32_t));
+  MOCK_METHOD(void, ShowFREChanged, (bool));
+  MOCK_METHOD(void, TabOrganizationEnabledChanged, (bool));
 };
 
 void ExpectNewTab(const tab_search::mojom::Tab* tab,
@@ -158,6 +166,8 @@ class TabSearchPageHandlerTest : public BrowserWithTestWindowTest {
     browser4_.reset();
     browser5_.reset();
     web_contents_.reset();
+    // Ensure destructor is called
+    handler_ = nullptr;
     BrowserWithTestWindowTest::TearDown();
   }
 
@@ -816,6 +826,71 @@ TEST_F(TabSearchPageHandlerTest, RecentlyClosedSectionExpandedUserPref) {
             ASSERT_FALSE(profile_tabs->recently_closed_section_expanded);
           });
   handler()->GetProfileData(std::move(callback2));
+}
+
+TEST_F(TabSearchPageHandlerTest, TabDataToMojo) {
+  AddTabWithTitle(browser1(), GURL(kTabUrl1), kTabName1);
+  std::unique_ptr<TabData> tab_data = std::make_unique<TabData>(
+      browser1()->tab_strip_model(),
+      browser1()->tab_strip_model()->GetWebContentsAt(0));
+  tab_search::mojom::TabPtr mojo_tab_ptr =
+      handler()->GetMojoForTabData(tab_data.get());
+
+  EXPECT_EQ(mojo_tab_ptr->url, tab_data->web_contents()->GetLastCommittedURL());
+  int tab_id = extensions::ExtensionTabUtil::GetTabId(
+      browser1()->tab_strip_model()->GetWebContentsAt(0));
+  handler()->CloseTab(tab_id);
+  EXPECT_CALL(page_, TabsRemoved(_)).Times(1);
+}
+
+TEST_F(TabSearchPageHandlerTest, TabOrganizationToMojo) {
+  std::unique_ptr<TabOrganization> organization =
+      std::make_unique<TabOrganization>(
+          std::vector<std::unique_ptr<TabData>>{},
+          std::vector<std::u16string>{u"default_name"});
+  tab_search::mojom::TabOrganizationPtr mojo_tab_org_ptr =
+      handler()->GetMojoForTabOrganization(organization.get());
+
+  EXPECT_EQ(mojo_tab_org_ptr->name, organization->GetDisplayName());
+  EXPECT_EQ(mojo_tab_org_ptr->organization_id, organization->organization_id());
+}
+
+TEST_F(TabSearchPageHandlerTest, TabOrganizationSessionToMojo) {
+  std::unique_ptr<TabOrganizationSession> session =
+      std::make_unique<TabOrganizationSession>();
+  tab_search::mojom::TabOrganizationSessionPtr mojo_session_ptr =
+      handler()->GetMojoForTabOrganizationSession(session.get());
+
+  EXPECT_EQ(mojo_session_ptr->session_id, session->session_id());
+}
+
+TEST_F(TabSearchPageHandlerTest, TabOrganizationSessionObservation) {
+  std::unique_ptr<TabOrganizationSession> session =
+      std::make_unique<TabOrganizationSession>();
+  EXPECT_CALL(page_, TabOrganizationSessionUpdated(_)).Times(3);
+  // Register it with the page handler under the same profile
+  handler()->OnSessionCreated(browser1(), session.get());
+
+  // Updating should notify the page.
+  handler()->OnTabOrganizationSessionUpdated(session.get());
+
+  // Destroying should notify the page.
+  session.reset();
+}
+
+TEST_F(TabSearchPageHandlerTest,
+       TabOrganizationSessionObservationWrongProfile) {
+  std::unique_ptr<TabOrganizationSession> session =
+      std::make_unique<TabOrganizationSession>();
+  EXPECT_CALL(page_, TabOrganizationSessionUpdated(_)).Times(0);
+  // Registering with the page handler in the wrong profile should not notify.
+  handler()->OnSessionCreated(browser4(), session.get());
+
+  // Updating should not notify the page.
+  handler()->OnTabOrganizationSessionUpdated(session.get());
+
+  // Destroying should not notify the page.
+  session.reset();
 }
 
 }  // namespace

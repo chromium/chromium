@@ -9,6 +9,7 @@
 #include <string>
 
 #include "base/functional/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/threading/thread_checker.h"
 #include "base/token.h"
@@ -52,15 +53,17 @@ class MODULES_EXPORT LocalVideoCapturerSource : public VideoCapturerSource {
 
   // VideoCaptureSource Implementation.
   media::VideoCaptureFormats GetPreferredFormats() override;
-  void StartCapture(const media::VideoCaptureParams& params,
-                    const VideoCaptureDeliverFrameCB& new_frame_callback,
-                    const VideoCaptureCropVersionCB& crop_version_callback,
-                    const RunningCallback& running_callback) override;
+  void StartCapture(
+      const media::VideoCaptureParams& params,
+      const VideoCaptureDeliverFrameCB& new_frame_callback,
+      const VideoCaptureSubCaptureTargetVersionCB&
+          sub_capture_target_version_callback,
+      const VideoCaptureNotifyFrameDroppedCB& frame_dropped_callback,
+      const RunningCallback& running_callback) override;
   void RequestRefreshFrame() override;
   void MaybeSuspend() override;
   void Resume() override;
   void StopCapture() override;
-  void OnFrameDropped(media::VideoCaptureFrameDropReason reason) override;
   void OnLog(const std::string& message) override;
   media::VideoCaptureFeedbackCB GetFeedbackCallback() const override;
 
@@ -70,7 +73,7 @@ class MODULES_EXPORT LocalVideoCapturerSource : public VideoCapturerSource {
   // |session_id_| identifies the capture device used for this capture session.
   const media::VideoCaptureSessionId session_id_;
 
-  WebVideoCaptureImplManager* const manager_;
+  const raw_ptr<WebVideoCaptureImplManager> manager_;
 
   LocalFrameToken frame_token_;
   base::OnceClosure release_device_cb_;

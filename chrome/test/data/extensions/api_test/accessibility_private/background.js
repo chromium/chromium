@@ -217,8 +217,8 @@ var availableTests = [
 
   function testGetDlcContentsDlcNotOnDevice() {
     const ttsDlc = chrome.accessibilityPrivate.DlcType.TTS_ES_US;
-    const error = 'Error: DLC file does not exist on-device: ' +
-        '/run/imageloader/tts-es-us/package/root/voice.zvoice';
+    const error = 'Error: TTS language pack with locale is not installed: ' +
+        'es-us';
     chrome.accessibilityPrivate.getDlcContents(ttsDlc, (contents) => {
       chrome.test.assertLastError(error);
       chrome.test.succeed();
@@ -231,6 +231,113 @@ var availableTests = [
       chrome.test.assertNoLastError();
       chrome.test.assertEq(
           'Fake DLC file content', new TextDecoder().decode(contents));
+      chrome.test.succeed();
+    });
+  },
+
+  function testGetTtsDlcContentsDlcNotOnDevice() {
+    const ttsDlc = chrome.accessibilityPrivate.DlcType.TTS_ES_US;
+    const ttsVariant = chrome.accessibilityPrivate.TtsVariant.LITE;
+    const error = 'Error: TTS language pack with locale is not installed: ' +
+        'es-us';
+    chrome.accessibilityPrivate.getTtsDlcContents(
+        ttsDlc, ttsVariant, (contents) => {
+      chrome.test.assertLastError(error);
+      chrome.test.succeed();
+    });
+  },
+
+  function testGetTtsDlcContentsSuccess() {
+    const ttsDlc = chrome.accessibilityPrivate.DlcType.TTS_ES_US;
+    const ttsVariant = chrome.accessibilityPrivate.TtsVariant.LITE;
+    chrome.accessibilityPrivate.getTtsDlcContents(
+        ttsDlc, ttsVariant, (contents) => {
+      chrome.test.assertNoLastError();
+      chrome.test.assertEq(
+          'Fake DLC file content', new TextDecoder().decode(contents));
+      chrome.test.succeed();
+    });
+  },
+
+  function testGetVariantTtsDlcContentsDlcNotOnDevice() {
+    const ttsDlc = chrome.accessibilityPrivate.DlcType.TTS_ES_US;
+    const ttsVariant = chrome.accessibilityPrivate.TtsVariant.STANDARD;
+    const error = 'Error: TTS language pack with locale is not installed: ' +
+        'es-us';
+    chrome.accessibilityPrivate.getTtsDlcContents(
+        ttsDlc, ttsVariant, (contents) => {
+      chrome.test.assertLastError(error);
+      chrome.test.succeed();
+    });
+  },
+
+  function testGetVariantTtsDlcContentsSuccess() {
+    const ttsDlc = chrome.accessibilityPrivate.DlcType.TTS_ES_US;
+    const ttsVariant = chrome.accessibilityPrivate.TtsVariant.STANDARD;
+    chrome.accessibilityPrivate.getTtsDlcContents(
+        ttsDlc, ttsVariant, (contents) => {
+      chrome.test.assertNoLastError();
+      chrome.test.assertEq(
+          'Fake DLC file content', new TextDecoder().decode(contents));
+      chrome.test.succeed();
+    });
+  },
+
+  function testSetCursorPosition() {
+    chrome.accessibilityPrivate.setCursorPosition({x: 450, y: 350});
+    chrome.test.succeed();
+  },
+
+  function testGetDisplayBoundsSimple() {
+    chrome.accessibilityPrivate.getDisplayBounds(bounds => {
+      chrome.test.assertEq(
+          '[{"height":600,"left":0,"top":0,"width":800}]',
+          JSON.stringify(bounds));
+      chrome.test.succeed();
+    });
+  },
+
+  function testGetDisplayBoundsHighDPI() {
+    chrome.accessibilityPrivate.getDisplayBounds(bounds => {
+      chrome.test.assertEq(
+          '[{"height":400,"left":0,"top":0,"width":500}]',
+          JSON.stringify(bounds));
+      chrome.test.succeed();
+    });
+  },
+
+  function testGetDisplayBoundsMultipleDisplays() {
+    chrome.accessibilityPrivate.getDisplayBounds(bounds => {
+      chrome.test.assertEq(
+          '[{"height":300,"left":0,"top":0,"width":400},' +
+          '{"height":300,"left":400,"top":0,"width":400}]',
+          JSON.stringify(bounds));
+      chrome.test.succeed();
+    });
+  },
+
+  function testInstallFaceGazeAssetsFail() {
+    chrome.accessibilityPrivate.installFaceGazeAssets(() => {
+      chrome.test.assertLastError(`Couldn't retrieve FaceGaze assets.`);
+      chrome.test.succeed();
+    });
+  },
+
+  function testInstallFaceGazeAssetsSuccess() {
+    chrome.accessibilityPrivate.installFaceGazeAssets(assets => {
+      chrome.test.assertTrue(Boolean(assets));
+      chrome.test.assertTrue(Object.keys(assets).length === 2);
+      for (const [key, value] of Object.entries(assets)) {
+        const fileContents = new TextDecoder().decode(value);
+        if (key === 'model') {
+          chrome.test.assertEq('Fake facelandmarker model', fileContents);
+        } else if (key === 'wasm') {
+          chrome.test.assertEq('Fake mediapipe web assembly', fileContents);
+        } else {
+          chrome.test.fail();
+        }
+      }
+
       chrome.test.succeed();
     });
   }

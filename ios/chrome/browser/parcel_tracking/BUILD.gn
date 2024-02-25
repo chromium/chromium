@@ -2,17 +2,112 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+source_set("metrics") {
+  sources = [
+    "metrics.h",
+    "metrics.mm",
+  ]
+  deps = [
+    ":tracking_source",
+    "//base",
+  ]
+}
+
+source_set("tracking_source") {
+  sources = [ "tracking_source.h" ]
+}
+
+source_set("infobar_delegate") {
+  sources = [
+    "parcel_tracking_infobar_delegate.h",
+    "parcel_tracking_infobar_delegate.mm",
+  ]
+  deps = [
+    ":metrics",
+    ":parcel_tracking_step",
+    ":tracking_source",
+    ":util",
+    "//base",
+    "//components/commerce/core:proto",
+    "//components/commerce/core:shopping_service",
+    "//components/infobars/core",
+    "//ios/chrome/browser/commerce/model:shopping_service",
+    "//ios/chrome/browser/shared/model/browser_state",
+    "//ios/chrome/browser/shared/public/commands",
+    "//ios/chrome/browser/web/model/annotations",
+    "//ios/web/public",
+    "//ios/web/public/annotations:custom_text_check_result",
+  ]
+}
+
+source_set("parcel_tracking_step") {
+  sources = [ "parcel_tracking_step.h" ]
+}
+
+source_set("prefs") {
+  sources = [
+    "parcel_tracking_prefs.h",
+    "parcel_tracking_prefs.mm",
+  ]
+  deps = [
+    "//base",
+    "//components/prefs",
+  ]
+}
+
 source_set("util") {
   sources = [
     "parcel_tracking_util.h",
     "parcel_tracking_util.mm",
   ]
   deps = [
+    ":features",
+    ":metrics",
+    ":prefs",
+    ":tracking_source",
     "//base",
+    "//components/commerce/core:proto",
+    "//components/commerce/core:shopping_service",
     "//components/prefs",
     "//components/signin/public/base",
+    "//ios/chrome/browser/commerce/model:shopping_service",
+    "//ios/chrome/browser/shared/model/application_context",
     "//ios/chrome/browser/shared/model/browser_state",
     "//ios/chrome/browser/shared/model/prefs:pref_names",
-    "//ios/chrome/browser/signin",
+    "//ios/chrome/browser/shared/public/commands",
+    "//ios/chrome/browser/signin/model",
+    "//ios/chrome/browser/ui/content_suggestions:constants",
+    "//ios/chrome/browser/ui/ntp/metrics:home_metrics",
+    "//ios/web/public/annotations:custom_text_check_result",
+  ]
+}
+
+source_set("features") {
+  sources = [
+    "features.h",
+    "features.mm",
+  ]
+  deps = [ "//base" ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "parcel_tracking_util_unittest.mm" ]
+  deps = [
+    ":features",
+    ":util",
+    "//base/test:test_support",
+    "//components/commerce/core:shopping_service_test_support",
+    "//ios/chrome/browser/shared/model/application_context",
+    "//ios/chrome/browser/shared/model/browser_state:test_support",
+    "//ios/chrome/browser/shared/model/prefs:pref_names",
+    "//ios/chrome/browser/shared/public/features",
+    "//ios/chrome/browser/signin/model",
+    "//ios/chrome/browser/signin/model:fake_system_identity",
+    "//ios/chrome/browser/signin/model:fake_system_identity_manager",
+    "//ios/chrome/browser/signin/model:test_support",
+    "//ios/chrome/test:test_support",
+    "//ios/web/public/test",
+    "//testing/gtest",
   ]
 }

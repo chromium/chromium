@@ -5,8 +5,9 @@
 #ifndef CONTENT_BROWSER_MEDIA_SESSION_MEDIA_SESSION_PLAYER_OBSERVER_H_
 #define CONTENT_BROWSER_MEDIA_SESSION_MEDIA_SESSION_PLAYER_OBSERVER_H_
 
+#include <optional>
+
 #include "base/time/time.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace media {
 enum class MediaContentType;
@@ -60,7 +61,7 @@ class MediaSessionPlayerObserver {
   virtual void OnRequestMediaRemoting(int player_id) = 0;
 
   // Returns the position for |player_id|.
-  virtual absl::optional<media_session::MediaPosition> GetPosition(
+  virtual std::optional<media_session::MediaPosition> GetPosition(
       int player_id) const = 0;
 
   // Returns if picture-in-picture is available for |player_id|.

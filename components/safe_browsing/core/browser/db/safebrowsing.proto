@@ -274,11 +274,11 @@ enum ThreatType {
   // Malicious binary threat type.
   MALICIOUS_BINARY = 7;
 
-  // Client side detection whitelist threat type.
-  CSD_WHITELIST = 8;
+  // Client side detection allowlist threat type.
+  CSD_ALLOWLIST = 8;
 
-  // Client side download detection whitelist threat type.
-  CSD_DOWNLOAD_WHITELIST = 9;
+  // Client side download detection allowlist threat type.
+  CSD_DOWNLOAD_ALLOWLIST = 9;
 
   // Client incident threat type.
   CLIENT_INCIDENT = 10;

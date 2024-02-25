@@ -4,7 +4,8 @@
 
 #include "services/network/public/cpp/data_pipe_to_source_stream.h"
 
-#include "base/strings/string_piece.h"
+#include <string_view>
+
 #include "base/test/task_environment.h"
 #include "net/base/io_buffer.h"
 #include "net/base/test_completion_callback.h"
@@ -48,7 +49,7 @@ class DataPipeToSourceStreamTest
       : output_buffer_(base::MakeRefCounted<net::IOBufferWithSize>(
             GetParam().buffer_size)) {}
 
-  void Init(base::StringPiece message) {
+  void Init(std::string_view message) {
     message_ = message;
     const MojoCreateDataPipeOptions data_pipe_options{
         sizeof(MojoCreateDataPipeOptions), MOJO_CREATE_DATA_PIPE_FLAG_NONE, 1,
@@ -120,7 +121,7 @@ class DataPipeToSourceStreamTest
   scoped_refptr<net::IOBufferWithSize> output_buffer_;
   std::unique_ptr<DataPipeToSourceStream> adapter_;
   mojo::ScopedDataPipeProducerHandle producer_end_;
-  base::StringPiece message_;
+  std::string_view message_;
 };
 
 INSTANTIATE_TEST_SUITE_P(

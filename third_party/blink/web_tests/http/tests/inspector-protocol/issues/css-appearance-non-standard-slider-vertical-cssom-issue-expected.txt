@@ -1,0 +1,6 @@
+Tests that non-standard appearance value slider-vertical trigger a deprecation issue using CSSOM setProperty.
+appearance value "slider-vertical" did not generate issue.
+-webkit-appearance value "slider-vertical" did not generate issue.
+appearance value "auto" did not generate issue.
+-webkit-appearance value "auto" did not generate issue.
+

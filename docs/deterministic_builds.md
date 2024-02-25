@@ -123,10 +123,8 @@ Things to do, in order of involvedness and effectiveness:
   example.
 
 - Try to reproduce the problem locally. First, set up two build directories
-  with identical args.gn. If building on Windows then until
-  https://crbug.com/1280678 is fixed you should set GOMA_USE_LOCAL=false
-  because otherwise you will hit known determinism problems. Then do a full
-  build at the last known green revision in the first build directory:
+  with identical args.gn. Then do a full build at the last known green revision
+  in the first build directory:
 
     ```
     $ gn clean out/gn

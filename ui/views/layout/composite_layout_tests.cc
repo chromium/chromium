@@ -8,6 +8,8 @@
 #include "base/memory/raw_ptr.h"
 #include "base/test/task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/base/metadata/metadata_header_macros.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/gfx/animation/animation_container.h"
 #include "ui/gfx/animation/animation_test_api.h"
 #include "ui/gfx/geometry/point.h"
@@ -52,6 +54,8 @@ constexpr gfx::Size kDefaultToolbarSize(400, kIconDimension);
 // Base class for elements in the toolbar that animate; a stand-in for e.g.
 // ToolbarIconContainer.
 class SimulatedToolbarElement : public View {
+  METADATA_HEADER(SimulatedToolbarElement, View)
+
  public:
   AnimatingLayoutManager* layout() {
     return static_cast<AnimatingLayoutManager*>(GetLayoutManager());
@@ -82,9 +86,14 @@ class SimulatedToolbarElement : public View {
   }
 };
 
+BEGIN_METADATA(SimulatedToolbarElement)
+END_METADATA
+
 // Simulates an avatar button on the Chrome toolbar, with a fixed-size icon and
 // a label that can animate in and out.
 class SimulatedAvatarButton : public SimulatedToolbarElement {
+  METADATA_HEADER(SimulatedAvatarButton, SimulatedToolbarElement)
+
  public:
   SimulatedAvatarButton() {
     AddChildView(std::make_unique<StaticSizedView>(kIconSize));
@@ -135,9 +144,6 @@ class SimulatedAvatarButton : public SimulatedToolbarElement {
   }
 
  private:
-  // views::View:
-  const char* GetClassName() const override { return "SimulatedAvatarButton"; }
-
   View* icon() { return children()[0]; }
   const View* icon() const { return children()[0]; }
   View* label() { return children()[1]; }
@@ -145,10 +151,15 @@ class SimulatedAvatarButton : public SimulatedToolbarElement {
   bool showing_label_ = false;
 };
 
+BEGIN_METADATA(SimulatedAvatarButton)
+END_METADATA
+
 // Simulates extensions buttons in the new toolbar extensions view, with a fixed
 // button on the right and buttons to the left that can animate in and out and
 // be hidden if there is insufficient space.
 class SimulatedExtensionsContainer : public SimulatedToolbarElement {
+  METADATA_HEADER(SimulatedExtensionsContainer, SimulatedToolbarElement)
+
  public:
   SimulatedExtensionsContainer() {
     auto* const main_button =
@@ -189,7 +200,7 @@ class SimulatedExtensionsContainer : public SimulatedToolbarElement {
   void SetIconVisibility(int position, bool visible) {
     DCHECK_GE(position, 0);
     DCHECK_LT(position, static_cast<int>(children().size()) - 1);
-    auto* const button = children()[position];
+    auto* const button = children()[position].get();
     if (visible) {
       layout()->FadeIn(button);
       visible_views_.insert(button);
@@ -219,7 +230,7 @@ class SimulatedExtensionsContainer : public SimulatedToolbarElement {
   // If |expected_num_icons| is specified:
   // - while animating, serves as a lower bound on the number of icons displayed
   // - while not animating, must match the number of visible icons exactly
-  void EnsureLayout(absl::optional<int> expected_num_icons) const {
+  void EnsureLayout(std::optional<int> expected_num_icons) const {
     if (layout()->is_animating()) {
       // For animating layouts, we ensure that icons are the correct size and
       // appear between the left edge of the container and exactly overlapping
@@ -282,19 +293,19 @@ class SimulatedExtensionsContainer : public SimulatedToolbarElement {
   }
 
  private:
-  // views::View:
-  const char* GetClassName() const override {
-    return "SimulatedExtensionsContainer";
-  }
-
   const View* main_button() const { return children()[children().size() - 1]; }
 
-  std::set<const View*> visible_views_;
+  std::set<raw_ptr<const View, SetExperimental>> visible_views_;
 };
+
+BEGIN_METADATA(SimulatedExtensionsContainer)
+END_METADATA
 
 // Simulates a toolbar with buttons on either side, a "location bar", and mock
 // versions of the extensions container and avatar button.
 class SimulatedToolbar : public View {
+  METADATA_HEADER(SimulatedToolbar, View)
+
  public:
   SimulatedToolbar() {
     AddChildView(std::make_unique<StaticSizedView>(kIconSize));
@@ -343,7 +354,7 @@ class SimulatedToolbar : public View {
   //
   // The parameter |expected_num_extension_icons| is passed to
   // SimulatedExtensionsContainer::EnsureLayout().
-  void EnsureLayout(absl::optional<int> expected_num_extension_icons) const {
+  void EnsureLayout(std::optional<int> expected_num_extension_icons) const {
     EXPECT_EQ(kIconDimension, height());
     EXPECT_EQ(gfx::Rect(gfx::Point(), kIconSize), children()[0]->bounds());
     EXPECT_EQ(gfx::Point(kIconDimension, 0), location()->origin());
@@ -363,12 +374,12 @@ class SimulatedToolbar : public View {
   }
 
  private:
-  // views::View:
-  const char* GetClassName() const override { return "SimulatedToolbar"; }
-
   raw_ptr<SimulatedExtensionsContainer> extensions_;
   raw_ptr<SimulatedAvatarButton> avatar_;
 };
+
+BEGIN_METADATA(SimulatedToolbar)
+END_METADATA
 
 }  // anonymous namespace
 
@@ -417,13 +428,13 @@ class CompositeLayoutTest : public testing::Test {
       avatar_test_api_->IncrementTime(delta);
     if (extensions()->layout()->is_animating())
       extensions_test_api_->IncrementTime(delta);
-    toolbar_->Layout();
+    toolbar_->DeprecatedLayoutImmediately();
   }
 
   void ResetAnimation() {
     avatar()->layout()->ResetLayout();
     extensions()->layout()->ResetLayout();
-    toolbar()->Layout();
+    toolbar()->DeprecatedLayoutImmediately();
   }
 
   bool IsAnimating() const {
@@ -451,7 +462,7 @@ class CompositeLayoutTest : public testing::Test {
   // at minimum that many if animating) simulated extension icons must be
   // visible.
   void EnsureLayout(
-      absl::optional<int> expected_num_extension_icons = absl::nullopt) {
+      std::optional<int> expected_num_extension_icons = std::nullopt) {
     toolbar_->EnsureLayout(expected_num_extension_icons);
   }
 
@@ -460,8 +471,7 @@ class CompositeLayoutTest : public testing::Test {
   std::unique_ptr<gfx::AnimationContainerTestApi> extensions_test_api_;
   std::unique_ptr<gfx::AnimationContainerTestApi> avatar_test_api_;
   std::unique_ptr<SimulatedToolbar> toolbar_;
-  std::unique_ptr<base::AutoReset<gfx::Animation::RichAnimationRenderMode>>
-      animation_lock_;
+  gfx::AnimationTestApi::RenderModeResetter animation_lock_;
 };
 
 // ------------

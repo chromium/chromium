@@ -8,6 +8,7 @@
 
 #include "base/files/file_error_or.h"
 #include "base/files/safe_base_name.h"
+#include "base/memory/raw_ref.h"
 #include "base/strings/strcat.h"
 #include "base/unguessable_token.h"
 #include "net/base/io_buffer.h"
@@ -124,7 +125,7 @@ class Copier {
 
   // Per the async_file_util.h comments, the async_file_util_ reference stays
   // alive as long as the context_ is alive.
-  storage::AsyncFileUtil& async_file_util_;
+  const raw_ref<storage::AsyncFileUtil> async_file_util_;
 
   // This is the FileSystemOperationContext originally passed to
   // FallbackCopyInForeignFile.
@@ -156,7 +157,7 @@ Copier::Copier(storage::AsyncFileUtil& async_file_util,
       dest_url_(dest_url),
       temp_url_(CreateTempURL(dest_url)),
       temp_url_needs_deleting_(false),
-      io_buffer_(base::MakeRefCounted<net::IOBuffer>(kBufferSize)),
+      io_buffer_(base::MakeRefCounted<net::IOBufferWithSize>(kBufferSize)),
       fs_writer_(nullptr),
       file_(base::File::FILE_ERROR_FAILED) {}
 
@@ -171,7 +172,7 @@ void Copier::Start(storage::AsyncFileUtil::StatusCallback callback) {
 
   callback_ = std::move(callback);
 
-  async_file_util_.EnsureFileExists(
+  async_file_util_->EnsureFileExists(
       DuplicateFileSystemOperationContext(*context_), temp_url_,
       base::BindOnce(&Copier::OnEnsureFileExists,
                      // base::Unretained is safe as callback_ owns this.
@@ -332,9 +333,9 @@ void Copier::OnFlush(int result) {
   // that on files that are still open.
   fs_writer_.reset();
 
-  async_file_util_.GetFileInfo(
+  async_file_util_->GetFileInfo(
       DuplicateFileSystemOperationContext(*context_), dest_url_,
-      storage::FileSystemOperation::GET_METADATA_FIELD_IS_DIRECTORY,
+      {storage::FileSystemOperation::GetMetadataField::kIsDirectory},
       base::BindOnce(&Copier::OnGetFileInfo,
                      // base::Unretained is safe as callback_ owns this.
                      base::Unretained(this)));
@@ -354,7 +355,7 @@ void Copier::OnGetFileInfo(base::File::Error result,
     return;
   }
 
-  async_file_util_.MoveFileLocal(
+  async_file_util_->MoveFileLocal(
       DuplicateFileSystemOperationContext(*context_), temp_url_, dest_url_,
       storage::FileSystemOperation::CopyOrMoveOptionSet(),
       base::BindOnce(&Copier::OnMoveTempToDest,
@@ -370,12 +371,24 @@ void Copier::OnMoveTempToDest(base::File::Error result) {
 }
 
 void Copier::Finish(base::File::Error result) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
   if (!temp_url_needs_deleting_) {
     std::move(callback_).Run(result);
     return;
   }
 
-  async_file_util_.DeleteFile(
+  // Normally, the storage::FileStreamWriter is created in OnEnsureFileExists
+  // and destroyed in OnFlush. However, Finish is still called if an error
+  // occurs in between. Just like the fs_writer_.reset() call in OnFlush, we
+  // have to call the storage::FileStreamWriter destructor to close the
+  // temp_url file before we try to delete that file.
+  //
+  // If we failed before OnEnsureFileExists or after OnFlush, reset is
+  // idempotent. A second reset is harmless.
+  fs_writer_.reset();
+
+  async_file_util_->DeleteFile(
       DuplicateFileSystemOperationContext(*context_), temp_url_,
       base::BindOnce(
           [](storage::AsyncFileUtil::StatusCallback callback,

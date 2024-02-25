@@ -25,10 +25,10 @@ SafeSearchPolicyTest::SafeSearchPolicyTest() {
 SafeSearchPolicyTest::~SafeSearchPolicyTest() = default;
 
 void SafeSearchPolicyTest::ApplySafeSearchPolicy(
-    absl::optional<base::Value> legacy_safe_search,
-    absl::optional<base::Value> google_safe_search,
-    absl::optional<base::Value> legacy_youtube,
-    absl::optional<base::Value> youtube_restrict) {
+    std::optional<base::Value> legacy_safe_search,
+    std::optional<base::Value> google_safe_search,
+    std::optional<base::Value> legacy_youtube,
+    std::optional<base::Value> youtube_restrict) {
   PolicyMap policies;
   SetPolicy(&policies, key::kForceSafeSearch, std::move(legacy_safe_search));
   SetPolicy(&policies, key::kForceGoogleSafeSearch,

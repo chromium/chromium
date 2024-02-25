@@ -4,6 +4,9 @@
 
 #include "content/browser/browsing_data/clear_site_data_handler.h"
 
+#include <optional>
+
+#include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/string_split.h"
@@ -16,7 +19,6 @@
 #include "net/base/load_flags.h"
 #include "net/url_request/clear_site_data.h"
 #include "services/network/public/cpp/is_potentially_trustworthy.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/features_generated.h"
 
 namespace content {
@@ -93,16 +95,14 @@ void ClearSiteDataHandler::ConsoleMessagesDelegate::AddMessage(
 }
 
 void ClearSiteDataHandler::ConsoleMessagesDelegate::OutputMessages(
-    const base::RepeatingCallback<WebContents*()>& web_contents_getter) {
+    base::WeakPtr<WebContents> web_contents) {
   if (messages_.empty())
     return;
-
-  WebContents* web_contents = web_contents_getter.Run();
 
   for (const auto& message : messages_) {
     // Prefix each message with |kConsoleMessageTemplate|.
     output_formatted_message_function_.Run(
-        web_contents, message.level,
+        web_contents.get(), message.level,
         base::StringPrintf(kConsoleMessageTemplate, message.url.spec().c_str(),
                            message.text.c_str()));
   }
@@ -121,19 +121,19 @@ void ClearSiteDataHandler::ConsoleMessagesDelegate::
 
 // static
 void ClearSiteDataHandler::HandleHeader(
-    base::RepeatingCallback<BrowserContext*()> browser_context_getter,
-    base::RepeatingCallback<WebContents*()> web_contents_getter,
+    base::WeakPtr<BrowserContext> browser_context,
+    base::WeakPtr<WebContents> web_contents,
     const StoragePartitionConfig& storage_partition_config,
     const GURL& url,
     const std::string& header_value,
     int load_flags,
-    const absl::optional<net::CookiePartitionKey> cookie_partition_key,
-    const absl::optional<blink::StorageKey> storage_key,
+    const std::optional<net::CookiePartitionKey> cookie_partition_key,
+    const std::optional<blink::StorageKey> storage_key,
     bool partitioned_state_allowed_only,
     base::OnceClosure callback) {
   ClearSiteDataHandler handler(
-      browser_context_getter, web_contents_getter, storage_partition_config,
-      url, header_value, load_flags, cookie_partition_key, storage_key,
+      browser_context, web_contents, storage_partition_config, url,
+      header_value, load_flags, cookie_partition_key, storage_key,
       partitioned_state_allowed_only, std::move(callback),
       std::make_unique<ConsoleMessagesDelegate>());
   handler.HandleHeaderAndOutputConsoleMessages();
@@ -152,19 +152,19 @@ bool ClearSiteDataHandler::ParseHeaderForTesting(
 }
 
 ClearSiteDataHandler::ClearSiteDataHandler(
-    base::RepeatingCallback<BrowserContext*()> browser_context_getter,
-    base::RepeatingCallback<WebContents*()> web_contents_getter,
+    base::WeakPtr<BrowserContext> browser_context,
+    base::WeakPtr<WebContents> web_contents,
     const StoragePartitionConfig& storage_partition_config,
     const GURL& url,
     const std::string& header_value,
     int load_flags,
-    const absl::optional<net::CookiePartitionKey> cookie_partition_key,
-    const absl::optional<blink::StorageKey> storage_key,
+    const std::optional<net::CookiePartitionKey> cookie_partition_key,
+    const std::optional<blink::StorageKey> storage_key,
     bool partitioned_state_allowed_only,
     base::OnceClosure callback,
     std::unique_ptr<ConsoleMessagesDelegate> delegate)
-    : browser_context_getter_(browser_context_getter),
-      web_contents_getter_(web_contents_getter),
+    : browser_context_(browser_context),
+      web_contents_(web_contents),
       storage_partition_config_(storage_partition_config),
       url_(url),
       header_value_(header_value),
@@ -174,8 +174,6 @@ ClearSiteDataHandler::ClearSiteDataHandler(
       partitioned_state_allowed_only_(partitioned_state_allowed_only),
       callback_(std::move(callback)),
       delegate_(std::move(delegate)) {
-  DCHECK(browser_context_getter_);
-  DCHECK(web_contents_getter_);
   DCHECK(delegate_);
 }
 
@@ -237,7 +235,7 @@ bool ClearSiteDataHandler::Run() {
       origin, clear_site_data_types, storage_buckets_to_remove,
       base::BindOnce(&ClearSiteDataHandler::TaskFinished,
                      base::TimeTicks::Now(), std::move(delegate_),
-                     web_contents_getter_, std::move(callback_)));
+                     web_contents_, std::move(callback_)));
 
   return true;
 }
@@ -266,8 +264,7 @@ bool ClearSiteDataHandler::ParseHeader(
       net::ClearSiteDataHeaderContents(header);
   std::string output_types;
 
-  if (std::find(input_types.begin(), input_types.end(),
-                net::kDatatypeWildcard) != input_types.end()) {
+  if (base::Contains(input_types, net::kDatatypeWildcard)) {
     input_types.push_back(net::kDatatypeCookies);
     input_types.push_back(net::kDatatypeStorage);
     input_types.push_back(net::kDatatypeCache);
@@ -369,7 +366,7 @@ void ClearSiteDataHandler::ExecuteClearingTask(
     const ClearSiteDataTypeSet clear_site_data_types,
     const std::set<std::string>& storage_buckets_to_remove,
     base::OnceClosure callback) {
-  ClearSiteData(browser_context_getter_, storage_partition_config_, origin,
+  ClearSiteData(browser_context_, storage_partition_config_, origin,
                 clear_site_data_types, storage_buckets_to_remove,
                 /*avoid_closing_connections=*/true, cookie_partition_key_,
                 storage_key_, partitioned_state_allowed_only_,
@@ -380,18 +377,18 @@ void ClearSiteDataHandler::ExecuteClearingTask(
 void ClearSiteDataHandler::TaskFinished(
     base::TimeTicks clearing_started,
     std::unique_ptr<ConsoleMessagesDelegate> delegate,
-    base::RepeatingCallback<WebContents*()> web_contents_getter,
+    base::WeakPtr<WebContents> web_contents,
     base::OnceClosure callback) {
   DCHECK(!clearing_started.is_null());
 
   // TODO(crbug.com/876931): Delay output until next frame for navigations.
-  delegate->OutputMessages(web_contents_getter);
+  delegate->OutputMessages(web_contents);
 
   std::move(callback).Run();
 }
 
 void ClearSiteDataHandler::OutputConsoleMessages() {
-  delegate_->OutputMessages(web_contents_getter_);
+  delegate_->OutputMessages(web_contents_);
 }
 
 void ClearSiteDataHandler::RunCallbackNotDeferred() {

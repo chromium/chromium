@@ -1,10 +1,10 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="pl">
+<translation id="1324575488877808473">Otwórz Chrome, aby zobaczyć tutaj swoje najczęściej odwiedzane strony.</translation>
 <translation id="2513892053093488070">Wyszukiwanie głosowe</translation>
 <translation id="2535710892645968259">Włącz grę z dinozaurem w Chrome z ekranu blokady.</translation>
 <translation id="2542770169955243077">Gra z dinozaurem w Chrome</translation>
-<translation id="2803429804752388720">Szukaj haseł</translation>
 <translation id="2922313168575194078">Bezpieczne wyszukiwanie zapisanych haseł w Menedżerze haseł Google</translation>
 <translation id="302608144225178783">Otwieraj grę z dinozaurem w Chrome z ekranu głównego.</translation>
 <translation id="3296938369177810197">Wyszukiwanie głosowe</translation>
@@ -29,6 +29,7 @@
 <translation id="6691821786147477657">Rozpocznij nowe wyszukiwanie lub otwórz najczęściej odwiedzane witryny na stronie głównej na iPadzie.</translation>
 <translation id="6721566127904256183">Tu zobaczysz często otwierane strony.</translation>
 <translation id="6855322554930231468">Szukaj</translation>
+<translation id="6973491011026415905">Szukaj haseł w Menedżerze haseł Google</translation>
 <translation id="7010831364920321713">Wyszukiwanie incognito</translation>
 <translation id="7048549665319929185">Wyszukaj lub wpisz URL</translation>
 <translation id="7317302007099170473">Zeskanuj kod QR</translation>

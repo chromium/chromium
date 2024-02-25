@@ -85,7 +85,7 @@ void UsbDeviceAndroid::RequestPermission(ResultCallback callback) {
 void UsbDeviceAndroid::Open(OpenCallback callback) {
   scoped_refptr<UsbDeviceHandle> device_handle;
   if (service_) {
-    JNIEnv* env = base::android::AttachCurrentThread();
+    JNIEnv* env = jni_zero::AttachCurrentThread();
     ScopedJavaLocalRef<jobject> connection =
         service_->OpenDevice(env, j_object_);
     if (!connection.is_null()) {

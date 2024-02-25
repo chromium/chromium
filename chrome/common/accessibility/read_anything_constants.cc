@@ -11,6 +11,9 @@ namespace string_constants {
 // their saved preference or from the default selected_index_ in the font model.
 const char kReadAnythingPlaceholderFontName[] = "Poppins";
 
+// Used as an initial value in prefs. This is not shown to the user.
+const char kReadAnythingPlaceholderVoiceName[] = "";
+
 const char kLetterSpacingHistogramName[] =
     "Accessibility.ReadAnything.LetterSpacing";
 const char kLineSpacingHistogramName[] =
@@ -24,6 +27,8 @@ const char kScrollEventHistogramName[] =
     "Accessibility.ReadAnything.ScrollEvent";
 const char kEmptyStateHistogramName[] = "Accessibility.ReadAnything.EmptyState";
 const char kLanguageHistogramName[] = "Accessibility.ReadAnything.Language";
+const char kPDFPageEnd[] = "End of extracted text";
+const char kPDFPageStart[] = "Start of extracted text";
 
 const std::set<std::string> GetNonSelectableUrls() {
   return {

@@ -38,10 +38,13 @@ class MockEngine : public ManifestDemuxer::Engine {
                double playback_rate,
                ManifestDemuxer::DelayCallback cb),
               (override));
-  MOCK_METHOD(bool, Seek, (base::TimeDelta time), (override));
+  MOCK_METHOD(void,
+              Seek,
+              (base::TimeDelta time, ManifestDemuxer::SeekCallback cb),
+              (override));
   MOCK_METHOD(void, StartWaitingForSeek, (), (override));
   MOCK_METHOD(void, AbortPendingReads, (), (override));
-  MOCK_METHOD(bool, IsSeekable, (), (override));
+  MOCK_METHOD(bool, IsSeekable, (), (const override));
   MOCK_METHOD(int64_t, GetMemoryUsage, (), (const, override));
   MOCK_METHOD(void, Stop, (), (override));
 };
@@ -194,7 +197,7 @@ TEST_F(ManifestDemuxerTest, OnTimeUpdateUninterruptedBySeek) {
   ASSERT_TRUE(manifest_demuxer_->has_pending_event_for_testing());
 
   // Seek won't be called until we post delay_cb.
-  EXPECT_CALL(*mock_engine_, Seek(_)).Times(0);
+  EXPECT_CALL(*mock_engine_, Seek(_, _)).Times(0);
   EXPECT_CALL(*mock_engine_, StartWaitingForSeek()).Times(1);
   EXPECT_CALL(*this, MockSeekComplete(_)).Times(0);
   manifest_demuxer_->StartWaitingForSeek(base::Seconds(1));
@@ -210,7 +213,8 @@ TEST_F(ManifestDemuxerTest, OnTimeUpdateUninterruptedBySeek) {
   // kick off an async call to the chunk demuxer. We can make the engine
   // also request a new event to be called, which means that delay_cb will be
   // set again.
-  EXPECT_CALL(*mock_engine_, Seek(_)).WillOnce(Return(true));
+  EXPECT_CALL(*mock_engine_, Seek(_, _))
+      .WillOnce(RunOnceCallback<1>(ManifestDemuxer::SeekState::kNeedsData));
   std::move(delay_cb).Run(base::Seconds(10));
   task_environment_.RunUntilIdle();
 
@@ -241,6 +245,46 @@ TEST_F(ManifestDemuxerTest, OnTimeUpdateUninterruptedBySeek) {
   ASSERT_FALSE(manifest_demuxer_->has_next_task_for_testing());
 }
 
+TEST_F(ManifestDemuxerTest, SeekInterruptedByError) {
+  ManifestDemuxer::DelayCallback delay_cb;
+  EXPECT_CALL(*mock_engine_, OnTimeUpdate(_, _, _))
+      .WillRepeatedly([&delay_cb](base::TimeDelta, double,
+                                  ManifestDemuxer::DelayCallback cb) {
+        delay_cb = std::move(cb);
+      });
+  InitializeDemuxer();
+  ASSERT_TRUE(!!delay_cb);
+  ASSERT_FALSE(manifest_demuxer_->has_pending_seek_for_testing());
+  ASSERT_TRUE(manifest_demuxer_->has_pending_event_for_testing());
+
+  // Seek won't be called until we post delay_cb.
+  EXPECT_CALL(*mock_engine_, StartWaitingForSeek());
+  EXPECT_CALL(*mock_engine_, Seek(_, _)).Times(0);
+  EXPECT_CALL(*this, MockSeekComplete(_)).Times(0);
+  manifest_demuxer_->StartWaitingForSeek(base::Seconds(100));
+  manifest_demuxer_->Seek(base::Seconds(100),
+                          base::BindOnce(&ManifestDemuxerTest::MockSeekComplete,
+                                         base::Unretained(this)));
+  task_environment_.RunUntilIdle();
+
+  // respond that data is needed, this will set chunk demuxer waiting for data.
+  EXPECT_CALL(*mock_engine_, Seek(_, _))
+      .WillOnce(RunOnceCallback<1>(ManifestDemuxer::SeekState::kNeedsData));
+  std::move(delay_cb).Run(kNoTimestamp);
+  task_environment_.RunUntilIdle();
+
+  // Send some generic pipeline error while the pipeline is still waiting for
+  // data.
+  EXPECT_CALL(*this, MockSeekComplete(_));
+  manifest_demuxer_->OnError(PIPELINE_ERROR_ABORT);
+  task_environment_.RunUntilIdle();
+
+  // Now let the delay_cb "execute", even though the error handler should have
+  // shut down all weak_ptrs and canceled all callbacks.
+  std::move(delay_cb).Run(kNoTimestamp);
+  task_environment_.RunUntilIdle();
+}
+
 TEST_F(ManifestDemuxerTest, CancelSeekAfterDemuxerBeforeEngine) {
   // What happens if we seek, the demuxer replies, and while waiting for the
   // engine to reply, we get a notice to cancel pending seek?
@@ -261,7 +305,7 @@ TEST_F(ManifestDemuxerTest, CancelSeekAfterDemuxerBeforeEngine) {
 
   // Seek won't be called until we post delay_cb.
   EXPECT_CALL(*mock_engine_, StartWaitingForSeek());
-  EXPECT_CALL(*mock_engine_, Seek(_)).Times(0);
+  EXPECT_CALL(*mock_engine_, Seek(_, _)).Times(0);
   EXPECT_CALL(*this, MockSeekComplete(_)).Times(0);
   manifest_demuxer_->StartWaitingForSeek(base::Seconds(100));
   manifest_demuxer_->Seek(base::Seconds(100),
@@ -274,7 +318,8 @@ TEST_F(ManifestDemuxerTest, CancelSeekAfterDemuxerBeforeEngine) {
   // The new `delay_cb` is bound to a task which completes the enigne seek step.
   // The chunk demuxer should have already responded, and the pending seek
   // should only be waiting on the engine.
-  EXPECT_CALL(*mock_engine_, Seek(_)).WillOnce(Return(true));
+  EXPECT_CALL(*mock_engine_, Seek(_, _))
+      .WillOnce(RunOnceCallback<1>(ManifestDemuxer::SeekState::kNeedsData));
   std::move(delay_cb).Run(kNoTimestamp);
   task_environment_.RunUntilIdle();
   ASSERT_TRUE(!!delay_cb);

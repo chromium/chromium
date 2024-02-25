@@ -60,9 +60,9 @@ class BackgroundSyncDelegateImpl
   CreateBackgroundSyncEventKeepAlive() override;
 #endif
 
-  void GetUkmSourceId(const url::Origin& origin,
-                      base::OnceCallback<void(absl::optional<ukm::SourceId>)>
-                          callback) override;
+  void GetUkmSourceId(
+      const url::Origin& origin,
+      base::OnceCallback<void(std::optional<ukm::SourceId>)> callback) override;
   void Shutdown() override;
   HostContentSettingsMap* GetHostContentSettingsMap() override;
   bool IsProfileOffTheRecord() override;

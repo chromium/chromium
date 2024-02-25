@@ -5,7 +5,10 @@
 #include "chrome/browser/ash/app_list/search/keyboard_shortcut_provider.h"
 
 #include <algorithm>
+#include <cstddef>
 #include <cstdint>
+#include <string>
+#include <vector>
 
 #include "ash/constants/ash_features.h"
 #include "ash/public/cpp/app_list/app_list_types.h"
@@ -14,13 +17,22 @@
 #include "ash/webui/shortcut_customization_ui/backend/search/search_handler.h"
 #include "ash/webui/shortcut_customization_ui/shortcuts_app_manager.h"
 #include "ash/webui/shortcut_customization_ui/shortcuts_app_manager_factory.h"
+#include "base/check_op.h"
 #include "base/feature_list.h"
+#include "base/functional/bind.h"
+#include "base/strings/utf_string_conversions.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
+#include "chrome/browser/ash/app_list/search/keyboard_shortcut_data.h"
 #include "chrome/browser/ash/app_list/search/keyboard_shortcut_result.h"
+#include "chrome/browser/ash/app_list/search/manatee/manatee_cache.h"
 #include "chrome/browser/ash/app_list/search/search_controller.h"
+#include "chrome/browser/ash/app_list/search/search_features.h"
+#include "chrome/browser/ash/app_list/search/types.h"
+#include "chrome/browser/ash/app_list/search/util/manatee.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chromeos/ash/components/string_matching/tokenized_string.h"
+#include "content/public/browser/storage_partition.h"
 
 namespace app_list {
 
@@ -34,6 +46,7 @@ constexpr double kResultRelevanceThreshold = 0.79;
 // The threshold is used to filter the results from the search handler of the
 // new shortcuts app.
 constexpr double kRelevanceScoreThreshold = 0.52;
+constexpr double kResultRelevanceManateeThreshold = 0.75;
 
 std::vector<std::pair<KeyboardShortcutData, double>> Search(
     const std::vector<KeyboardShortcutData>& shortcut_data,
@@ -44,7 +57,7 @@ std::vector<std::pair<KeyboardShortcutData, double>> Search(
   std::vector<std::pair<KeyboardShortcutData, double>> candidates;
   for (const auto& shortcut : shortcut_data) {
     double relevance = KeyboardShortcutResult::CalculateRelevance(
-        tokenized_query, shortcut.description);
+        tokenized_query, shortcut.description());
     if (relevance > kResultRelevanceThreshold) {
       candidates.push_back(std::make_pair(shortcut, relevance));
     }
@@ -52,10 +65,22 @@ std::vector<std::pair<KeyboardShortcutData, double>> Search(
   return candidates;
 }
 
+// Remove disabled shortcuts and leave enabled ones only.
+void RemoveDisabledShortcuts(
+    ash::shortcut_customization::mojom::SearchResultPtr& search_result) {
+  std::erase_if(search_result->accelerator_infos, [](const auto& x) {
+    return x->state != ash::mojom::AcceleratorState::kEnabled;
+  });
+}
+
 }  // namespace
 
-KeyboardShortcutProvider::KeyboardShortcutProvider(Profile* profile)
-    : profile_(profile) {
+KeyboardShortcutProvider::KeyboardShortcutProvider(
+    Profile* profile,
+    std::unique_ptr<ManateeCache> manatee_cache)
+    : SearchProvider(SearchCategory::kHelp),
+      profile_(profile),
+      manatee_cache_(std::move(manatee_cache)) {
   DCHECK(profile_);
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
@@ -74,6 +99,7 @@ KeyboardShortcutProvider::~KeyboardShortcutProvider() = default;
 
 void KeyboardShortcutProvider::Start(const std::u16string& query) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  query_ = query;
 
   // Cancel all previous searches.
   weak_factory_.InvalidateWeakPtrs();
@@ -82,7 +108,7 @@ void KeyboardShortcutProvider::Start(const std::u16string& query) {
     return;
   }
 
-  if (ash::features::isSearchCustomizableShortcutsInLauncherEnabled()) {
+  if (ash::features::IsSearchCustomizableShortcutsInLauncherEnabled()) {
     if (!search_handler_) {
       return;
     }
@@ -91,12 +117,45 @@ void KeyboardShortcutProvider::Start(const std::u16string& query) {
         base::BindOnce(&KeyboardShortcutProvider::OnShortcutsSearchComplete,
                        weak_factory_.GetWeakPtr()));
   } else {
-    base::ThreadPool::PostTaskAndReplyWithResult(
-        FROM_HERE, {base::MayBlock(), base::TaskPriority::USER_BLOCKING},
-        base::BindOnce(&Search, shortcut_data_, query),
-        base::BindOnce(&KeyboardShortcutProvider::OnSearchComplete,
-                       weak_factory_.GetWeakPtr()));
+    if (search_features::isLauncherManateeForKeyboardShortcutsEnabled()) {
+      if (!is_embeddings_set_) {
+        InitializeManateeCacheForShortcuts();
+
+        base::ThreadPool::PostTaskAndReplyWithResult(
+            FROM_HERE, {base::MayBlock(), base::TaskPriority::USER_BLOCKING},
+            base::BindOnce(&Search, shortcut_data_, query),
+            base::BindOnce(&KeyboardShortcutProvider::OnSearchComplete,
+                           weak_factory_.GetWeakPtr()));
+      } else {
+        InitializeManateeCacheForQuery(base::UTF16ToUTF8(query));
+      }
+    } else {
+      base::ThreadPool::PostTaskAndReplyWithResult(
+          FROM_HERE, {base::MayBlock(), base::TaskPriority::USER_BLOCKING},
+          base::BindOnce(&Search, shortcut_data_, query),
+          base::BindOnce(&KeyboardShortcutProvider::OnSearchComplete,
+                         weak_factory_.GetWeakPtr()));
+    }
   }
+}
+
+void KeyboardShortcutProvider::InitializeManateeCacheForQuery(
+    const std::string query) {
+  manatee_cache_->RegisterCallback(
+      base::BindOnce(&KeyboardShortcutProvider::OnManateeQueryResponseCallback,
+                     weak_factory_.GetWeakPtr()));
+  manatee_cache_->UrlLoader({query});
+}
+
+void KeyboardShortcutProvider::InitializeManateeCacheForShortcuts() {
+  std::vector<std::string> descriptions;
+  for (const auto& shortcut : shortcut_data_) {
+    descriptions.push_back(base::UTF16ToUTF8(shortcut.description()));
+  }
+  manatee_cache_->RegisterCallback(base::BindOnce(
+      &KeyboardShortcutProvider::OnManateeShortcutsResponseCallback,
+      base::Unretained(this)));
+  manatee_cache_->UrlLoader(descriptions);
 }
 
 void KeyboardShortcutProvider::StopQuery() {
@@ -106,6 +165,40 @@ void KeyboardShortcutProvider::StopQuery() {
 
 ash::AppListSearchResultType KeyboardShortcutProvider::ResultType() const {
   return ash::AppListSearchResultType::kKeyboardShortcut;
+}
+
+// Assumes that |shortcut_data_| has not changed since
+// initialisation.
+void KeyboardShortcutProvider::OnManateeShortcutsResponseCallback(
+    std::vector<std::vector<double>>& reply) {
+  CHECK_EQ(shortcut_data_.size(), reply.size());
+  for (size_t i = 0; i < reply.size(); ++i) {
+    shortcut_data_[i].SetEmbedding(reply[i]);
+  }
+  is_embeddings_set_ = true;
+}
+
+void KeyboardShortcutProvider::OnManateeQueryResponseCallback(
+    std::vector<std::vector<double>>& reply) {
+  if (reply.size() != 1) {
+    base::ThreadPool::PostTaskAndReplyWithResult(
+        FROM_HERE, {base::MayBlock(), base::TaskPriority::USER_BLOCKING},
+        base::BindOnce(&Search, shortcut_data_, query_),
+        base::BindOnce(&KeyboardShortcutProvider::OnSearchComplete,
+                       weak_factory_.GetWeakPtr()));
+  } else {
+    ShortcutDataAndScores candidates;
+    for (const auto& data_item : shortcut_data_) {
+      std::optional<double> similarity_score =
+          (GetEmbeddingSimilarity(data_item.embedding(), reply[0]));
+      if (similarity_score.has_value() &&
+          similarity_score.value() > kResultRelevanceManateeThreshold) {
+        candidates.push_back(
+            std::make_pair(data_item, similarity_score.value()));
+      }
+    }
+    OnSearchComplete(candidates);
+  }
 }
 
 void KeyboardShortcutProvider::ProcessShortcutList() {
@@ -136,13 +229,15 @@ void KeyboardShortcutProvider::OnSearchComplete(
 void KeyboardShortcutProvider::OnShortcutsSearchComplete(
     std::vector<ash::shortcut_customization::mojom::SearchResultPtr>
         search_results) {
-  CHECK(ash::features::isSearchCustomizableShortcutsInLauncherEnabled());
+  CHECK(ash::features::IsSearchCustomizableShortcutsInLauncherEnabled());
 
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   // Convert final candidates into correct type, and publish.
   SearchProvider::Results results;
-  for (const auto& search_result : search_results) {
+  for (auto& search_result : search_results) {
+    // Only enabled shortcuts should be displayed.
+    RemoveDisabledShortcuts(search_result);
     // The search results are sorted by relevance score in descending order
     // already.
     if (search_result->relevance_score < kRelevanceScoreThreshold) {
@@ -154,7 +249,6 @@ void KeyboardShortcutProvider::OnShortcutsSearchComplete(
       break;
     }
   }
-
   SwapResults(&results);
 }
 

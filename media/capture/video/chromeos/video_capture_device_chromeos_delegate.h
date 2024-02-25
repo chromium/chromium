@@ -18,12 +18,6 @@
 #include "media/capture/video/video_capture_device_descriptor.h"
 #include "media/capture/video_capture_types.h"
 
-namespace display {
-
-class Display;
-
-}  // namespace display
-
 namespace media {
 
 class CameraHalDelegate;
@@ -69,14 +63,14 @@ class CAPTURE_EXPORT VideoCaptureDeviceChromeOSDelegate final
   void CloseDevice(base::UnguessableToken unblock_suspend_token);
 
   // DisplayRotationDelegate implementation.
-  void SetDisplayRotation(const display::Display& display) final;
+  void SetInternalDisplayRotation(int rotation) final;
   void SetRotation(int rotation);
 
   const VideoCaptureDeviceDescriptor device_descriptor_;
 
   // A reference to the CameraHalDelegate instance in the VCD factory.  This is
   // used by AllocateAndStart to query camera info and create the camera device.
-  raw_ptr<CameraHalDelegate, ExperimentalAsh> camera_hal_delegate_;
+  raw_ptr<CameraHalDelegate> camera_hal_delegate_;
 
   // A reference to the thread that all the VideoCaptureDevice interface methods
   // are expected to be called on.

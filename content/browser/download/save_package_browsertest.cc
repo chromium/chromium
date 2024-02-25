@@ -15,6 +15,7 @@
 #include "content/public/browser/download_manager.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
+#include "content/public/test/browser_test_utils.h"
 #include "content/public/test/content_browser_test.h"
 #include "content/public/test/content_browser_test_utils.h"
 #include "content/public/test/download_test_observer.h"
@@ -40,7 +41,10 @@ class TestShellDownloadManagerDelegate : public ShellDownloadManagerDelegate {
                       const base::FilePath::StringType& default_extension,
                       bool can_save_as_complete,
                       SavePackagePathPickedCallback callback) override {
-    std::move(callback).Run(suggested_path, save_page_type_,
+    content::SavePackagePathPickedParams params;
+    params.file_path = suggested_path;
+    params.save_type = save_page_type_;
+    std::move(callback).Run(std::move(params),
                             SavePackageDownloadCreatedCallback());
   }
 

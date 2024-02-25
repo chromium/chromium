@@ -13,16 +13,16 @@ MockCloudPolicyService::MockCloudPolicyService(CloudPolicyClient* client,
     : CloudPolicyService(std::string(), std::string(), client, store) {
   // Besides recording the mock call, invoke real RefreshPolicy() method.
   // That way FetchPolicy() is called on the |client|.
-  ON_CALL(*this, RefreshPolicy(testing::_))
+  ON_CALL(*this, RefreshPolicy(testing::_, testing::_))
       .WillByDefault(
           testing::Invoke(this, &MockCloudPolicyService::InvokeRefreshPolicy));
 }
 
 MockCloudPolicyService::~MockCloudPolicyService() = default;
 
-void MockCloudPolicyService::InvokeRefreshPolicy(
-    RefreshPolicyCallback callback) {
-  CloudPolicyService::RefreshPolicy(std::move(callback));
+void MockCloudPolicyService::InvokeRefreshPolicy(RefreshPolicyCallback callback,
+                                                 PolicyFetchReason reason) {
+  CloudPolicyService::RefreshPolicy(std::move(callback), reason);
 }
 
 MockCloudPolicyServiceObserver::MockCloudPolicyServiceObserver() = default;

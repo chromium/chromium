@@ -123,7 +123,7 @@ IN_PROC_BROWSER_TEST_P(ParentAccessDialogBrowserTest, SetApproved) {
   expected_result.status = ParentAccessDialog::Result::Status::kApproved;
   expected_result.parent_access_token = "TEST_TOKEN";
   expected_result.parent_access_token_expire_timestamp =
-      base::Time::FromDoubleT(123456L);
+      base::Time::FromSecondsSinceUnixEpoch(123456L);
 
   ParentAccessDialog::Callback callback = base::BindLambdaForTesting(
       [&](std::unique_ptr<ParentAccessDialog::Result> result) -> void {
@@ -274,7 +274,7 @@ IN_PROC_BROWSER_TEST_P(ParentAccessDialogBrowserTest,
   histogram_tester.ExpectUniqueSample(
       parent_access::GetHistogramTitleForFlowType(
           parent_access::kParentAccessWidgetShowDialogErrorHistogramBase,
-          absl::nullopt),
+          std::nullopt),
       ParentAccessDialogProvider::ShowErrorType::kAlreadyVisible, 1);
   histogram_tester.ExpectUniqueSample(
       parent_access::GetHistogramTitleForFlowType(
@@ -355,7 +355,7 @@ IN_PROC_BROWSER_TEST_P(ParentAccessDialogRegularUserBrowserTest,
   histogram_tester.ExpectUniqueSample(
       parent_access::GetHistogramTitleForFlowType(
           parent_access::kParentAccessWidgetShowDialogErrorHistogramBase,
-          absl::nullopt),
+          std::nullopt),
       ParentAccessDialogProvider::ShowErrorType::kNotAChildUser, 1);
   histogram_tester.ExpectUniqueSample(
       parent_access::GetHistogramTitleForFlowType(

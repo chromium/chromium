@@ -4,9 +4,10 @@
 
 #include "chrome/browser/ash/arc/enterprise/cert_store/arc_cert_installer_utils.h"
 
+#include <string_view>
+
 #include "base/base64.h"
 #include "base/logging.h"
-#include "base/strings/string_piece.h"
 #include "crypto/rsa_private_key.h"
 #include "third_party/boringssl/src/include/openssl/evp.h"
 #include "third_party/boringssl/src/include/openssl/mem.h"
@@ -40,10 +41,8 @@ std::string CreatePkcs12ForKey(const std::string& name, EVP_PKEY* key) {
   }
 
   bssl::UniquePtr<uint8_t> free_pkcs12_key(pkcs12_key);
-  std::string encoded_pkcs12_key;
-  base::Base64Encode(base::StringPiece((char*)pkcs12_key, pkcs12_key_len),
-                     &encoded_pkcs12_key);
-  return encoded_pkcs12_key;
+  return base::Base64Encode(
+      std::string_view((char*)pkcs12_key, pkcs12_key_len));
 }
 
 std::string ExportSpki(crypto::RSAPrivateKey* rsa) {
@@ -53,9 +52,7 @@ std::string ExportSpki(crypto::RSAPrivateKey* rsa) {
     LOG(ERROR) << "Key export has failed.";
     return "";
   }
-  std::string encoded_spki;
-  base::Base64Encode(std::string(spki.begin(), spki.end()), &encoded_spki);
-  return encoded_spki;
+  return base::Base64Encode(spki);
 }
 
 }  // namespace arc

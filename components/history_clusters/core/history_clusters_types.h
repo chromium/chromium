@@ -5,13 +5,13 @@
 #ifndef COMPONENTS_HISTORY_CLUSTERS_CORE_HISTORY_CLUSTERS_TYPES_H_
 #define COMPONENTS_HISTORY_CLUSTERS_CORE_HISTORY_CLUSTERS_TYPES_H_
 
+#include <optional>
 #include <string>
 #include <vector>
 
 #include "base/containers/flat_set.h"
 #include "base/functional/callback.h"
 #include "components/history/core/browser/history_types.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace history_clusters {
 

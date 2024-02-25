@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/exclusive_access/exclusive_access_test.h"
 
+#include <optional>
 #include <utility>
 #include <vector>
 
@@ -19,16 +20,16 @@
 #include "chrome/browser/ui/exclusive_access/exclusive_access_manager.h"
 #include "chrome/browser/ui/exclusive_access/fullscreen_controller.h"
 #include "chrome/browser/ui/exclusive_access/keyboard_lock_controller.h"
-#include "chrome/browser/ui/exclusive_access/mouse_lock_controller.h"
+#include "chrome/browser/ui/exclusive_access/pointer_lock_controller.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/common/chrome_switches.h"
+#include "chrome/test/base/ui_test_utils.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/content_features.h"
 #include "content/public/common/input/native_web_keyboard_event.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/test_navigation_observer.h"
 #include "extensions/common/extension.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/mojom/frame/fullscreen.mojom.h"
 #include "ui/base/ui_base_features.h"
 #include "ui/events/base_event_utils.h"
@@ -37,32 +38,11 @@
 
 using content::WebContents;
 
-FullscreenNotificationObserver::FullscreenNotificationObserver(
-    Browser* browser) {
-  observation_.Observe(
-      browser->exclusive_access_manager()->fullscreen_controller());
-}
-
-FullscreenNotificationObserver::~FullscreenNotificationObserver() = default;
-
-void FullscreenNotificationObserver::OnFullscreenStateChanged() {
-  observed_change_ = true;
-  if (run_loop_.running())
-    run_loop_.Quit();
-}
-
-void FullscreenNotificationObserver::Wait() {
-  if (observed_change_)
-    return;
-
-  run_loop_.Run();
-}
-
 const char ExclusiveAccessTest::kFullscreenKeyboardLockHTML[] =
     "/fullscreen_keyboardlock/fullscreen_keyboardlock.html";
 
-const char ExclusiveAccessTest::kFullscreenMouseLockHTML[] =
-    "/fullscreen_mouselock/fullscreen_mouselock.html";
+const char ExclusiveAccessTest::kFullscreenPointerLockHTML[] =
+    "/fullscreen_pointerlock/fullscreen_pointerlock.html";
 
 ExclusiveAccessTest::ExclusiveAccessTest() {
   // It is important to disable system keyboard lock as low-level test utilities
@@ -75,10 +55,10 @@ ExclusiveAccessTest::~ExclusiveAccessTest() = default;
 
 void ExclusiveAccessTest::SetUpOnMainThread() {
   GetExclusiveAccessManager()
-      ->mouse_lock_controller()
+      ->pointer_lock_controller()
       ->bubble_hide_callback_for_test_ = base::BindRepeating(
       &ExclusiveAccessTest::OnBubbleHidden, weak_ptr_factory_.GetWeakPtr(),
-      &mouse_lock_bubble_hide_reason_recorder_);
+      &pointer_lock_bubble_hide_reason_recorder_);
   GetExclusiveAccessManager()
       ->keyboard_lock_controller()
       ->bubble_hide_callback_for_test_ = base::BindRepeating(
@@ -88,7 +68,7 @@ void ExclusiveAccessTest::SetUpOnMainThread() {
 
 void ExclusiveAccessTest::TearDownOnMainThread() {
   GetExclusiveAccessManager()
-      ->mouse_lock_controller()
+      ->pointer_lock_controller()
       ->bubble_hide_callback_for_test_ =
       base::RepeatingCallback<void(ExclusiveAccessBubbleHideReason)>();
   GetExclusiveAccessManager()
@@ -112,7 +92,7 @@ bool ExclusiveAccessTest::RequestKeyboardLock(bool esc_key_locked) {
   // then we create a set of keys that does not include escape (we arbitrarily
   // chose the 'a' key) which means the user/test can just press escape to exit
   // fullscreen.
-  absl::optional<base::flat_set<ui::DomCode>> codes;
+  std::optional<base::flat_set<ui::DomCode>> codes;
   if (esc_key_locked)
     codes = base::flat_set<ui::DomCode>({ui::DomCode::ESCAPE});
   else
@@ -121,20 +101,20 @@ bool ExclusiveAccessTest::RequestKeyboardLock(bool esc_key_locked) {
   return content::RequestKeyboardLock(tab, std::move(codes));
 }
 
-void ExclusiveAccessTest::RequestToLockMouse(bool user_gesture,
-                                             bool last_unlocked_by_target) {
+void ExclusiveAccessTest::RequestToLockPointer(bool user_gesture,
+                                               bool last_unlocked_by_target) {
   WebContents* tab = browser()->tab_strip_model()->GetActiveWebContents();
-  MouseLockController* mouse_lock_controller =
-      GetExclusiveAccessManager()->mouse_lock_controller();
-  mouse_lock_controller->fake_mouse_lock_for_test_ = true;
-  browser()->RequestToLockMouse(tab, user_gesture, last_unlocked_by_target);
-  mouse_lock_controller->fake_mouse_lock_for_test_ = false;
+  PointerLockController* pointer_lock_controller =
+      GetExclusiveAccessManager()->pointer_lock_controller();
+  pointer_lock_controller->fake_pointer_lock_for_test_ = true;
+  browser()->RequestPointerLock(tab, user_gesture, last_unlocked_by_target);
+  pointer_lock_controller->fake_pointer_lock_for_test_ = false;
 }
 
-void ExclusiveAccessTest::SetWebContentsGrantedSilentMouseLockPermission() {
+void ExclusiveAccessTest::SetWebContentsGrantedSilentPointerLockPermission() {
   GetExclusiveAccessManager()
-      ->mouse_lock_controller()
-      ->web_contents_granted_silent_mouse_lock_permission_ =
+      ->pointer_lock_controller()
+      ->web_contents_granted_silent_pointer_lock_permission_ =
       browser()->tab_strip_model()->GetActiveWebContents();
 }
 
@@ -151,8 +131,8 @@ void ExclusiveAccessTest::CancelKeyboardLock() {
   content::CancelKeyboardLock(tab);
 }
 
-void ExclusiveAccessTest::LostMouseLock() {
-  browser()->LostMouseLock();
+void ExclusiveAccessTest::LostPointerLock() {
+  browser()->LostPointerLock();
 }
 
 bool ExclusiveAccessTest::SendEscapeToExclusiveAccessManager() {
@@ -197,23 +177,18 @@ void ExclusiveAccessTest::Reload() {
 
 void ExclusiveAccessTest::EnterActiveTabFullscreen() {
   WebContents* tab = browser()->tab_strip_model()->GetActiveWebContents();
-  FullscreenNotificationObserver fullscreen_observer(browser());
+  ui_test_utils::FullscreenWaiter waiter(browser(), {.tab_fullscreen = true});
   browser()->EnterFullscreenModeForTab(tab->GetPrimaryMainFrame(), {});
-  fullscreen_observer.Wait();
-}
-
-void ExclusiveAccessTest::ToggleBrowserFullscreen() {
-  FullscreenNotificationObserver fullscreen_observer(browser());
-  chrome::ToggleFullscreenMode(browser());
-  fullscreen_observer.Wait();
+  waiter.Wait();
 }
 
 void ExclusiveAccessTest::EnterExtensionInitiatedFullscreen() {
-  FullscreenNotificationObserver fullscreen_observer(browser());
+  ui_test_utils::FullscreenWaiter waiter(browser(),
+                                         {.browser_fullscreen = true});
   static const char kExtensionId[] = "extension-id";
   browser()->ToggleFullscreenModeWithExtension(
       extensions::Extension::GetBaseURLFromExtensionId(kExtensionId));
-  fullscreen_observer.Wait();
+  waiter.Wait();
 }
 
 void ExclusiveAccessTest::SetEscRepeatWindowLength(
@@ -244,8 +219,9 @@ void ExclusiveAccessTest::OnBubbleHidden(
 
 void ExclusiveAccessTest::SetUserEscapeTimestampForTest(
     const base::TimeTicks timestamp) {
-  GetExclusiveAccessManager()->mouse_lock_controller()->last_user_escape_time_ =
-      timestamp;
+  GetExclusiveAccessManager()
+      ->pointer_lock_controller()
+      ->last_user_escape_time_ = timestamp;
 }
 
 int ExclusiveAccessTest::InitialBubbleDelayMs() const {

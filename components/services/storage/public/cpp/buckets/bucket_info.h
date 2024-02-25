@@ -11,6 +11,7 @@
 #include <string>
 
 #include "base/component_export.h"
+#include "base/feature_list.h"
 #include "base/time/time.h"
 #include "components/services/storage/public/cpp/buckets/bucket_id.h"
 #include "components/services/storage/public/cpp/buckets/bucket_locator.h"
@@ -19,6 +20,11 @@
 #include "third_party/blink/public/mojom/quota/quota_types.mojom-shared.h"
 
 namespace storage {
+
+// Changes the hard-coded durability for default buckets to relaxed. This only
+// affects IndexedDB.
+COMPONENT_EXPORT(STORAGE_SERVICE_BUCKETS_SUPPORT)
+BASE_DECLARE_FEATURE(kDefaultBucketUsesRelaxedDurability);
 
 // Snapshot of a bucket's information in the quota database.
 //

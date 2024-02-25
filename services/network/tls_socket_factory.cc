@@ -4,6 +4,7 @@
 
 #include "services/network/tls_socket_factory.h"
 
+#include <optional>
 #include <string>
 #include <utility>
 
@@ -11,7 +12,6 @@
 #include "net/base/completion_once_callback.h"
 #include "net/base/net_errors.h"
 #include "net/cert/cert_verifier.h"
-#include "net/cert/ct_policy_enforcer.h"
 #include "net/cert/multi_log_ct_verifier.h"
 #include "net/http/http_network_session.h"
 #include "net/http/transport_security_state.h"
@@ -24,7 +24,6 @@
 #include "services/network/public/mojom/tls_socket.mojom.h"
 #include "services/network/ssl_config_type_converter.h"
 #include "services/network/tls_client_socket.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace network {
 namespace {
@@ -53,7 +52,6 @@ TLSSocketFactory::TLSSocketFactory(net::URLRequestContext* url_request_context)
     : ssl_client_context_(url_request_context->ssl_config_service(),
                           url_request_context->cert_verifier(),
                           url_request_context->transport_security_state(),
-                          url_request_context->ct_policy_enforcer(),
                           nullptr /* Disables SSL session caching */,
                           url_request_context->sct_auditing_delegate()),
       client_socket_factory_(nullptr),
@@ -78,9 +76,9 @@ void TLSSocketFactory::UpgradeToTLS(
     UpgradeToTLSCallback callback) {
   const net::StreamSocket* socket = socket_delegate->BorrowSocket();
   if (!socket || !socket->IsConnected()) {
-    std::move(callback).Run(
-        net::ERR_SOCKET_NOT_CONNECTED, mojo::ScopedDataPipeConsumerHandle(),
-        mojo::ScopedDataPipeProducerHandle(), absl::nullopt);
+    std::move(callback).Run(net::ERR_SOCKET_NOT_CONNECTED,
+                            mojo::ScopedDataPipeConsumerHandle(),
+                            mojo::ScopedDataPipeProducerHandle(), std::nullopt);
     return;
   }
   CreateTLSClientSocket(
@@ -121,13 +119,10 @@ void TLSSocketFactory::CreateTLSClientSocket(
         no_verification_cert_verifier_ = std::make_unique<FakeCertVerifier>();
         no_verification_transport_security_state_ =
             std::make_unique<net::TransportSecurityState>();
-        no_verification_ct_policy_enforcer_ =
-            std::make_unique<net::DefaultCTPolicyEnforcer>();
         no_verification_ssl_client_context_ =
             std::make_unique<net::SSLClientContext>(
                 ssl_config_service_, no_verification_cert_verifier_.get(),
                 no_verification_transport_security_state_.get(),
-                no_verification_ct_policy_enforcer_.get(),
                 nullptr /* no session cache */,
                 nullptr /* disable sct auditing */);
       }

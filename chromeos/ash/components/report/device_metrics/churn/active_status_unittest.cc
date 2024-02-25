@@ -46,8 +46,8 @@ class ActiveStatusTest : public testing::Test {
                                              activate_date);
   }
 
-  absl::optional<base::Time> GetFirstActiveWeekForTest() {
-    return active_status_->GetFirstActiveWeek();
+  std::optional<base::Time> GetFirstActiveWeekForTest() {
+    return utils::GetFirstActiveWeek();
   }
 
   base::test::TaskEnvironment task_environment_{
@@ -70,7 +70,7 @@ TEST_F(ActiveStatusTest, SetAndGetValue) {
 TEST_F(ActiveStatusTest, CalculateValue) {
   // Verify initial active status value updates to current month timestamp.
   base::Time ts = GetFakeTimeNow();
-  absl::optional<int> value = GetActiveStatus()->CalculateNewValue(ts);
+  std::optional<int> value = GetActiveStatus()->CalculateNewValue(ts);
   EXPECT_TRUE(value.has_value());
   EXPECT_EQ(value.value(), 72351745);
 
@@ -96,7 +96,7 @@ TEST_F(ActiveStatusTest, CalculateNewValueSameMonthAsPreviousReturnsNullopt) {
   base::Time current_month_ts = GetFakeTimeNow();
 
   // Set up the initial active status value and the current month timestamp.
-  absl::optional<int> value =
+  std::optional<int> value =
       GetActiveStatus()->CalculateNewValue(current_month_ts);
   GetActiveStatus()->SetValue(value.value());
 
@@ -111,7 +111,7 @@ TEST_F(ActiveStatusTest, CalculateNewValueNewMonthReturnsUpdatedValue) {
   base::Time current_month_ts = GetFakeTimeNow();
 
   // Set up the initial active status value and the current month timestamp.
-  absl::optional<int> value =
+  std::optional<int> value =
       GetActiveStatus()->CalculateNewValue(current_month_ts);
   GetActiveStatus()->SetValue(value.value());
 
@@ -119,7 +119,7 @@ TEST_F(ActiveStatusTest, CalculateNewValueNewMonthReturnsUpdatedValue) {
   base::Time next_month_ts = utils::GetNextMonth(current_month_ts).value();
 
   // Calculate the new value for the new month.
-  absl::optional<int> new_value =
+  std::optional<int> new_value =
       GetActiveStatus()->CalculateNewValue(next_month_ts);
 
   // Ensure the updated new value is generated based on the newer timestamp.
@@ -130,7 +130,7 @@ TEST_F(ActiveStatusTest, CalculateNewValueNewMonthReturnsUpdatedValue) {
 TEST_F(ActiveStatusTest, GetCurrentActiveMonthTimestamp) {
   ASSERT_EQ(GetActiveStatus()->GetValue(), 0);
 
-  absl::optional<base::Time> current_active_month_ts =
+  std::optional<base::Time> current_active_month_ts =
       GetActiveStatus()->GetCurrentActiveMonthTimestamp();
 
   // Return inception ts since active status value has never been updated (= 0).
@@ -196,7 +196,7 @@ TEST_F(ActiveStatusTest,
   GetActiveStatus()->SetValue(val);
 
   // Calculate the cohort metadata.
-  absl::optional<ChurnCohortMetadata> metadata =
+  std::optional<ChurnCohortMetadata> metadata =
       GetActiveStatus()->CalculateCohortMetadata(current_month_ts);
 
   // Ensure the metadata is not regenerated for same |current_month_ts|.
@@ -212,11 +212,11 @@ TEST_F(ActiveStatusTest, CalculateObservationMetadataReturnsExpectedMetadata) {
   GetActiveStatus()->SetValue(cur_value);
 
   // Calculate the observation metadata for 3 periods.
-  absl::optional<ChurnObservationMetadata> metadata_0 =
+  std::optional<ChurnObservationMetadata> metadata_0 =
       GetActiveStatus()->CalculateObservationMetadata(cur_ts, 0);
-  absl::optional<ChurnObservationMetadata> metadata_1 =
+  std::optional<ChurnObservationMetadata> metadata_1 =
       GetActiveStatus()->CalculateObservationMetadata(cur_ts, 1);
-  absl::optional<ChurnObservationMetadata> metadata_2 =
+  std::optional<ChurnObservationMetadata> metadata_2 =
       GetActiveStatus()->CalculateObservationMetadata(cur_ts, 2);
 
   // Ensure that the metadata is calculated correctly.
@@ -247,11 +247,11 @@ TEST_F(ActiveStatusTest,
   GetActiveStatus()->SetValue(cur_value);
 
   // Calculate the observation metadata for 3 periods.
-  absl::optional<ChurnObservationMetadata> metadata_0 =
+  std::optional<ChurnObservationMetadata> metadata_0 =
       GetActiveStatus()->CalculateObservationMetadata(cur_ts, 0);
-  absl::optional<ChurnObservationMetadata> metadata_1 =
+  std::optional<ChurnObservationMetadata> metadata_1 =
       GetActiveStatus()->CalculateObservationMetadata(cur_ts, 1);
-  absl::optional<ChurnObservationMetadata> metadata_2 =
+  std::optional<ChurnObservationMetadata> metadata_2 =
       GetActiveStatus()->CalculateObservationMetadata(cur_ts, 2);
 
   // Ensure that the metadata is calculated correctly.
@@ -284,11 +284,11 @@ TEST_F(ActiveStatusTest,
   SetActivateDate("2021-52");
 
   // Calculate the observation metadata for 3 periods.
-  absl::optional<ChurnObservationMetadata> metadata_0 =
+  std::optional<ChurnObservationMetadata> metadata_0 =
       GetActiveStatus()->CalculateObservationMetadata(cur_ts, 0);
-  absl::optional<ChurnObservationMetadata> metadata_1 =
+  std::optional<ChurnObservationMetadata> metadata_1 =
       GetActiveStatus()->CalculateObservationMetadata(cur_ts, 1);
-  absl::optional<ChurnObservationMetadata> metadata_2 =
+  std::optional<ChurnObservationMetadata> metadata_2 =
       GetActiveStatus()->CalculateObservationMetadata(cur_ts, 2);
 
   // Ensure that the metadata is calculated correctly.
@@ -321,11 +321,11 @@ TEST_F(ActiveStatusTest,
   SetActivateDate("2022-52");
 
   // Calculate the observation metadata for 3 periods.
-  absl::optional<ChurnObservationMetadata> metadata_0 =
+  std::optional<ChurnObservationMetadata> metadata_0 =
       GetActiveStatus()->CalculateObservationMetadata(cur_ts, 0);
-  absl::optional<ChurnObservationMetadata> metadata_1 =
+  std::optional<ChurnObservationMetadata> metadata_1 =
       GetActiveStatus()->CalculateObservationMetadata(cur_ts, 1);
-  absl::optional<ChurnObservationMetadata> metadata_2 =
+  std::optional<ChurnObservationMetadata> metadata_2 =
       GetActiveStatus()->CalculateObservationMetadata(cur_ts, 2);
 
   // Ensure that the metadata is calculated correctly.
@@ -359,11 +359,11 @@ TEST_F(
   base::Time next_month_ts = GetFakeTimeNow();
 
   // Calculate the observation metadata for 3 periods.
-  absl::optional<ChurnObservationMetadata> metadata_0 =
+  std::optional<ChurnObservationMetadata> metadata_0 =
       GetActiveStatus()->CalculateObservationMetadata(next_month_ts, 0);
-  absl::optional<ChurnObservationMetadata> metadata_1 =
+  std::optional<ChurnObservationMetadata> metadata_1 =
       GetActiveStatus()->CalculateObservationMetadata(next_month_ts, 1);
-  absl::optional<ChurnObservationMetadata> metadata_2 =
+  std::optional<ChurnObservationMetadata> metadata_2 =
       GetActiveStatus()->CalculateObservationMetadata(next_month_ts, 2);
 
   // Ensure that the metadata is calculated correctly.
@@ -374,7 +374,7 @@ TEST_F(
 
 TEST_F(ActiveStatusTest, GetFirstActiveWeekActivateDateNotSetReturnsNullopt) {
   // Get the first active week.
-  absl::optional<base::Time> first_active_week = GetFirstActiveWeekForTest();
+  std::optional<base::Time> first_active_week = GetFirstActiveWeekForTest();
 
   // Ensure that nullopt is returned when the activate date is not set.
   EXPECT_FALSE(first_active_week.has_value());
@@ -388,7 +388,7 @@ TEST_F(ActiveStatusTest, GetFirstActiveWeekActivateDateSetReturnsExpectedWeek) {
                                         &expected_activate_date_ts));
 
   SetActivateDate(activate_date);
-  absl::optional<base::Time> first_active_week = GetFirstActiveWeekForTest();
+  std::optional<base::Time> first_active_week = GetFirstActiveWeekForTest();
 
   // Ensure that the returned week matches the expected value.
   EXPECT_TRUE(first_active_week.has_value());
@@ -411,7 +411,7 @@ TEST_F(ActiveStatusTest, GetFirstActiveWeekInvalidActivateDateSet) {
   // Setup the activate date (ISO8601) and expected first active week for test.
   std::string activate_date = "2021-xx";
   SetActivateDate(activate_date);
-  absl::optional<base::Time> first_active_week = GetFirstActiveWeekForTest();
+  std::optional<base::Time> first_active_week = GetFirstActiveWeekForTest();
   EXPECT_FALSE(first_active_week.has_value());
 
   // Setup the activate date (ISO8601) and expected first active week for test.

@@ -6,15 +6,17 @@ import {TestRunner} from 'test_runner';
 import {ElementsTestRunner} from 'elements_test_runner';
 import {AccessibilityTestRunner} from 'accessibility_test_runner';
 
+import * as Platform from 'devtools/core/platform/platform.js';
+import * as UI from 'devtools/ui/legacy/legacy.js';
+
 (async function() {
   TestRunner.addResult(`Tests that autocompletions are computed correctly when editing the ARIA pane.\n`);
-  await TestRunner.loadLegacyModule('elements');
   await TestRunner.showPanel('elements');
   await TestRunner.loadHTML(`
       <span id="inspected" aria-checked="true" role="checkbox"></span>
     `);
 
-  await UI.viewManager.showView('accessibility.view')
+  await UI.ViewManager.ViewManager.instance().showView('accessibility.view')
       .then(() => AccessibilityTestRunner.selectNodeAndWaitForAccessibility('inspected'))
       .then(runTests);
 
@@ -56,7 +58,7 @@ import {AccessibilityTestRunner} from 'accessibility_test_runner';
     } else {
       selectionRange.selectNodeContents(proxyElement);
     }
-    var range = self.Platform.DOMUtilities.rangeOfWord(selectionRange.startContainer, selectionRange.startOffset, prompt.completionStopCharacters, proxyElement, 'backward');
+    var range = Platform.DOMUtilities.rangeOfWord(selectionRange.startContainer, selectionRange.startOffset, prompt.completionStopCharacters, proxyElement, 'backward');
     var prefix = range.toString();
     prompt.buildPropertyCompletions(inputText.substring(0, inputText.length - prefix.length), prefix, true)
         .then(completions);

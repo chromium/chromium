@@ -7,35 +7,36 @@
  * for language and input method settings.
  */
 
-import 'chrome://resources/cr_components/localized_link/localized_link.js';
-import 'chrome://resources/cr_elements/cr_button/cr_button.js';
-import 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.js';
-import 'chrome://resources/cr_elements/cr_link_row/cr_link_row.js';
-import 'chrome://resources/cr_elements/cr_shared_vars.css.js';
+import 'chrome://resources/ash/common/cr_elements/localized_link/localized_link.js';
+import 'chrome://resources/ash/common/cr_elements/cr_button/cr_button.js';
+import 'chrome://resources/ash/common/cr_elements/cr_icon_button/cr_icon_button.js';
+import 'chrome://resources/ash/common/cr_elements/cr_link_row/cr_link_row.js';
+import 'chrome://resources/ash/common/cr_elements/cr_shared_vars.css.js';
 import 'chrome://resources/polymer/v3_0/iron-flex-layout/iron-flex-layout-classes.js';
 import 'chrome://resources/polymer/v3_0/iron-icon/iron-icon.js';
+import 'chrome://resources/polymer/v3_0/paper-spinner/paper-spinner-lite.js';
 import './add_input_methods_dialog.js';
 import './add_spellcheck_languages_dialog.js';
 import './os_edit_dictionary_page.js';
 import '../keyboard_shortcut_banner/keyboard_shortcut_banner.js';
-import '/shared/settings/controls/settings_toggle_button.js';
+import '../controls/settings_toggle_button.js';
 import '../settings_shared.css.js';
 import '../os_settings_page/os_settings_animated_pages.js';
 
-import {SettingsToggleButtonElement} from '/shared/settings/controls/settings_toggle_button.js';
+import {CrButtonElement} from 'chrome://resources/ash/common/cr_elements/cr_button/cr_button.js';
+import {I18nMixin} from 'chrome://resources/ash/common/cr_elements/i18n_mixin.js';
 import {PrefsMixin} from 'chrome://resources/cr_components/settings_prefs/prefs_mixin.js';
-import {CrButtonElement} from 'chrome://resources/cr_elements/cr_button/cr_button.js';
-import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
-import {assert} from 'chrome://resources/js/assert_ts.js';
+import {assert} from 'chrome://resources/js/assert.js';
 import {focusWithoutInk} from 'chrome://resources/js/focus_without_ink.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {DomRepeatEvent, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {castExists} from '../assert_extras.js';
-import {DeepLinkingMixin} from '../deep_linking_mixin.js';
+import {DeepLinkingMixin} from '../common/deep_linking_mixin.js';
+import {RouteOriginMixin} from '../common/route_origin_mixin.js';
+import {SettingsToggleButtonElement} from '../controls/settings_toggle_button.js';
 import {recordSettingChange} from '../metrics_recorder.js';
 import {Setting} from '../mojom-webui/setting.mojom-webui.js';
-import {RouteOriginMixin} from '../route_origin_mixin.js';
 import {Route, Router, routes} from '../router.js';
 
 import {hasOptionsPageInSettings} from './input_method_util.js';
@@ -63,14 +64,6 @@ export class OsSettingsInputPageElement extends OsSettingsInputPageElementBase {
 
   static get properties() {
     return {
-      // TODO(b/265554350): Remove this property from properties() as it is
-      // already specified in PrefsMixin.
-      /* Preferences state. */
-      prefs: {
-        type: Object,
-        notify: true,
-      },
-
       /**
        * Read-only reference to the languages model provided by the
        * 'os-settings-languages' instance.
@@ -95,21 +88,6 @@ export class OsSettingsInputPageElement extends OsSettingsInputPageElementBase {
       showAddSpellcheckLanguagesDialog_: {
         type: Boolean,
         value: false,
-      },
-
-      // TODO(b/265554350): Remove this property from properties() as it is
-      // already specified in DeepLinkingMixin, and move the default value to
-      // the field initializer.
-      /**
-       * Used by DeepLinkingMixin to focus this page's deep links.
-       */
-      supportedSettingIds: {
-        type: Object,
-        value: () => new Set<Setting>([
-          Setting.kShowInputOptionsInShelf,
-          Setting.kAddInputMethod,
-          Setting.kSpellCheck,
-        ]),
       },
 
       languageSettingsJapaneseEnabled_: {
@@ -162,6 +140,14 @@ export class OsSettingsInputPageElement extends OsSettingsInputPageElementBase {
           return loadTimeData.getBoolean('onDeviceGrammarCheckEnabled');
         },
       },
+
+      languagePacksInSettingsEnabled_: Boolean,
+
+      allowEmojiSuggestion_: Boolean,
+
+      allowOrca_: Boolean,
+
+      allowSuggestionSection_: Boolean,
     };
   }
 
@@ -177,11 +163,15 @@ export class OsSettingsInputPageElement extends OsSettingsInputPageElementBase {
 
   // Internal properties for mixins.
   // From DeepLinkingMixin.
-  // override supportedSettingIds = new Set<Setting>([
-  //   Setting.kShowInputOptionsInShelf,
-  //   Setting.kAddInputMethod,
-  //   Setting.kSpellCheck,
-  // ]);
+  override supportedSettingIds = new Set([
+    Setting.kAddInputMethod,
+    Setting.kShowEmojiSuggestions,
+    Setting.kShowInputOptionsInShelf,
+    Setting.kShowOrca,
+    Setting.kSpellCheckOnOff,
+  ]);
+  // From RouteOriginMixin.
+  override route = routes.OS_LANGUAGES_INPUT;
 
   // Internal state.
   private showAddSpellcheckLanguagesDialog_: boolean;
@@ -191,19 +181,19 @@ export class OsSettingsInputPageElement extends OsSettingsInputPageElementBase {
   private onDeviceGrammarCheckEnabled_: boolean;
   private languageSettingsJapaneseEnabled_: boolean;
   private shouldShowLanguagePacksNotice_: boolean;
+  private languagePacksInSettingsEnabled_ =
+      loadTimeData.getBoolean('languagePacksInSettingsEnabled');
+  private readonly allowEmojiSuggestion_: boolean =
+      loadTimeData.getBoolean('allowEmojiSuggestion');
+  private readonly allowOrca_: boolean = loadTimeData.getBoolean('allowOrca');
+  private readonly allowSuggestionSection_: boolean =
+      this.allowOrca_ || this.allowEmojiSuggestion_;
 
   // Computed properties.
   private spellCheckLanguages_: SpellCheckLanguageState[]|undefined;
   private showLastUsedImeShortcutReminder_: boolean;
   private showNextImeShortcutReminder_: boolean;
   private shortcutReminderBody_: TrustedHTML[];
-
-  constructor() {
-    super();
-
-    /** RouteOriginMixin override */
-    this.route = routes.OS_LANGUAGES_INPUT;
-  }
 
   override ready(): void {
     super.ready();
@@ -252,7 +242,7 @@ export class OsSettingsInputPageElement extends OsSettingsInputPageElementBase {
     this.languageHelper.setCurrentInputMethod(e.model.item.id);
     this.languagesMetricsProxy_.recordInteraction(
         LanguagesPageInteraction.SWITCH_INPUT_METHOD);
-    recordSettingChange();
+    recordSettingChange(Setting.kSetCurrentInputMethod);
   }
 
   /**
@@ -268,6 +258,7 @@ export class OsSettingsInputPageElement extends OsSettingsInputPageElementBase {
     }
 
     this.languageHelper.setCurrentInputMethod(e.model.item.id);
+    recordSettingChange(Setting.kSetCurrentInputMethod);
   }
 
   /**
@@ -405,7 +396,7 @@ export class OsSettingsInputPageElement extends OsSettingsInputPageElementBase {
   private onRemoveInputMethodClick_(
       e: DomRepeatEvent<chrome.languageSettingsPrivate.InputMethod>): void {
     this.languageHelper.removeInputMethod(e.model.item.id);
-    recordSettingChange();
+    recordSettingChange(Setting.kRemoveInputMethod);
   }
 
   private getRemoveSpellcheckLanguageTooltip_(lang: SpellCheckLanguageState):
@@ -417,7 +408,7 @@ export class OsSettingsInputPageElement extends OsSettingsInputPageElementBase {
   private onRemoveSpellcheckLanguageClick_(
       e: DomRepeatEvent<LanguageState|SpellCheckLanguageState>): void {
     this.languageHelper.toggleSpellCheck(e.model.item.language.code, false);
-    recordSettingChange();
+    recordSettingChange(Setting.kRemoveSpellCheckLanguage);
   }
 
   /**
@@ -637,6 +628,42 @@ export class OsSettingsInputPageElement extends OsSettingsInputPageElementBase {
     }
     if (this.showNextImeShortcutReminder_) {
       this.setPrefValue('ash.shortcut_reminders.next_ime_dismissed', true);
+    }
+  }
+
+  private shouldShowSpinner_(imeId: string): boolean {
+    return this.languagePacksInSettingsEnabled_ &&
+        this.languageHelper.getImeLanguagePackStatus(imeId) ===
+        chrome.inputMethodPrivate.LanguagePackStatus.IN_PROGRESS;
+  }
+
+  private shouldShowLanguagePackError_(imeId: string): boolean {
+    if (!this.languagePacksInSettingsEnabled_) {
+      return false;
+    }
+    const status = this.languageHelper.getImeLanguagePackStatus(imeId);
+    return status ===
+        chrome.inputMethodPrivate.LanguagePackStatus.ERROR_OTHER ||
+        status ===
+        chrome.inputMethodPrivate.LanguagePackStatus.ERROR_NEEDS_REBOOT;
+  }
+
+  private getLanguagePacksErrorMessage_(imeId: string): string {
+    const status = this.languageHelper.getImeLanguagePackStatus(imeId);
+    switch (status) {
+      case chrome.inputMethodPrivate.LanguagePackStatus.ERROR_NEEDS_REBOOT:
+      // We currently have a string - `inputMethodLanguagePacksNeedsRebootError`
+      // in WebUI,
+      // `IDS_OS_SETTINGS_INPUT_METHOD_LANGUAGE_PACKS_NEEDS_REBOOT_ERROR` in the
+      // GRD file - to special case the `ERROR_NEEDS_REBOOT` case. However, the
+      // string is not finalised, and therefore should not be shown to the user.
+      // TODO: b/315725816 - Either finalise the string and add it here, or
+      // remove the string altogether.
+      case chrome.inputMethodPrivate.LanguagePackStatus.ERROR_OTHER:
+        return this.i18n('inputMethodLanguagePacksGeneralError');
+      default:
+        console.error('Invalid status:', status);
+        return '';
     }
   }
 }

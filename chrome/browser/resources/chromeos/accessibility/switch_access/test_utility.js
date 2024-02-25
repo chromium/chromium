@@ -18,6 +18,7 @@
 const TestUtility = {
   async setup() {
     await Promise.all([
+      importModule('SACommands', '/switch_access/commands.js'),
       importModule('FocusRingManager', '/switch_access/focus_ring_manager.js'),
       importModule('Navigator', '/switch_access/navigator.js'),
       importModule('SwitchAccess', '/switch_access/switch_access.js'),
@@ -42,17 +43,17 @@ const TestUtility = {
   },
 
   pressNextSwitch() {
-    SwitchAccess.commands.runCommand_(
+    SACommands.instance.runCommand_(
         chrome.accessibilityPrivate.SwitchAccessCommand.NEXT);
   },
 
   pressPreviousSwitch() {
-    SwitchAccess.commands.runCommand_(
+    SACommands.instance.runCommand_(
         chrome.accessibilityPrivate.SwitchAccessCommand.PREVIOUS);
   },
 
   pressSelectSwitch() {
-    SwitchAccess.commands.runCommand_(
+    SACommands.instance.runCommand_(
         chrome.accessibilityPrivate.SwitchAccessCommand.SELECT);
   },
 

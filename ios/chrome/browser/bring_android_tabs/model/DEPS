@@ -1,0 +1,7 @@
+include_rules = [
+  "+ios/chrome/browser/first_run/model",
+  "+ios/chrome/browser/sync/model",
+  "+ios/chrome/browser/synced_sessions/model",
+  "+ios/chrome/browser/segmentation_platform/model",
+  "+ios/chrome/browser/url_loading/model",
+]

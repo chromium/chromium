@@ -11,7 +11,6 @@
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
-#include "components/policy/core/common/cloud/cloud_policy_constants.h"
 #include "components/policy/core/common/cloud/device_management_service.h"
 
 namespace policy {
@@ -74,7 +73,7 @@ class AccountStatusCheckFetcher {
 
   // Sends request to the DM server, gets and checks the response and
   // calls the callback.
-  void Fetch(FetchCallback callback, bool fetch_entollment_nudge_policy);
+  void Fetch(FetchCallback callback, bool fetch_enrollment_nudge_policy);
 
  private:
   // Response from DM server.
@@ -86,8 +85,7 @@ class AccountStatusCheckFetcher {
   // Job that sends request to the DM server.
   std::unique_ptr<DeviceManagementService::Job> fetch_request_job_;
 
-  raw_ptr<DeviceManagementService, DanglingUntriaged | ExperimentalAsh>
-      service_ = nullptr;
+  raw_ptr<DeviceManagementService, DanglingUntriaged> service_ = nullptr;
   scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
 
   // Randomly generated device id for the request to make sure request won't

@@ -4,6 +4,7 @@
 
 #include "components/desks_storage/core/desk_sync_bridge.h"
 
+#include <optional>
 #include <string>
 
 #include "ash/constants/ash_features.h"
@@ -14,6 +15,7 @@
 #include "base/functional/callback_helpers.h"
 #include "base/json/json_writer.h"
 #include "base/memory/ptr_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
@@ -41,7 +43,6 @@
 #include "components/sync/model/mutable_data_batch.h"
 #include "components/sync/protocol/model_type_state.pb.h"
 #include "components/sync/protocol/workspace_desk_specifics.pb.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/ui_base_types.h"
 #include "ui/base/window_open_disposition.h"
 
@@ -101,7 +102,7 @@ std::unique_ptr<syncer::EntityData> CopyToEntityData(
 
 // Parses the content of `record_list` into `*desk_templates`. The output
 // parameters are first for binding purposes.
-absl::optional<syncer::ModelError> ParseDeskTemplatesOnBackendSequence(
+std::optional<syncer::ModelError> ParseDeskTemplatesOnBackendSequence(
     base::flat_map<base::Uuid, std::unique_ptr<DeskTemplate>>* desk_templates,
     std::unique_ptr<ModelTypeStore::RecordList> record_list) {
   DCHECK(desk_templates);
@@ -132,7 +133,7 @@ absl::optional<syncer::ModelError> ParseDeskTemplatesOnBackendSequence(
     }
   }
 
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 }  // namespace
@@ -157,7 +158,7 @@ DeskSyncBridge::CreateMetadataChangeList() {
   return ModelTypeStore::WriteBatch::CreateMetadataChangeList();
 }
 
-absl::optional<syncer::ModelError> DeskSyncBridge::MergeFullSyncData(
+std::optional<syncer::ModelError> DeskSyncBridge::MergeFullSyncData(
     std::unique_ptr<syncer::MetadataChangeList> metadata_change_list,
     syncer::EntityChangeList entity_data) {
   // MergeFullSyncData will be called when Desk Template model type is enabled
@@ -177,10 +178,10 @@ absl::optional<syncer::ModelError> DeskSyncBridge::MergeFullSyncData(
                                      std::move(entity_data));
 }
 
-absl::optional<syncer::ModelError> DeskSyncBridge::ApplyIncrementalSyncChanges(
+std::optional<syncer::ModelError> DeskSyncBridge::ApplyIncrementalSyncChanges(
     std::unique_ptr<syncer::MetadataChangeList> metadata_change_list,
     syncer::EntityChangeList entity_changes) {
-  std::vector<const DeskTemplate*> added_or_updated;
+  std::vector<raw_ptr<const DeskTemplate, VectorExperimental>> added_or_updated;
   std::vector<base::Uuid> removed;
   std::unique_ptr<ModelTypeStore::WriteBatch> batch =
       store_->CreateWriteBatch();
@@ -234,7 +235,7 @@ absl::optional<syncer::ModelError> DeskSyncBridge::ApplyIncrementalSyncChanges(
   NotifyRemoteDeskTemplateAddedOrUpdated(added_or_updated);
   NotifyRemoteDeskTemplateDeleted(removed);
 
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 void DeskSyncBridge::GetData(StorageKeyList storage_keys,
@@ -280,11 +281,12 @@ std::string DeskSyncBridge::GetStorageKey(
 DeskModel::GetAllEntriesResult DeskSyncBridge::GetAllEntries() {
   if (!IsReady()) {
     LOG(WARNING) << "Unable to get all entries: Not Ready";
-    return GetAllEntriesResult(GetAllEntriesStatus::kFailure,
-                               std::vector<const DeskTemplate*>());
+    return GetAllEntriesResult(
+        GetAllEntriesStatus::kFailure,
+        std::vector<raw_ptr<const DeskTemplate, VectorExperimental>>());
   }
 
-  std::vector<const DeskTemplate*> entries;
+  std::vector<raw_ptr<const DeskTemplate, VectorExperimental>> entries;
 
   for (const auto& it : policy_entries_)
     entries.push_back(it.get());
@@ -534,7 +536,8 @@ void DeskSyncBridge::NotifyDeskModelLoaded() {
 }
 
 void DeskSyncBridge::NotifyRemoteDeskTemplateAddedOrUpdated(
-    const std::vector<const DeskTemplate*>& new_entries) {
+    const std::vector<raw_ptr<const DeskTemplate, VectorExperimental>>&
+        new_entries) {
   if (new_entries.empty()) {
     return;
   }
@@ -556,7 +559,7 @@ void DeskSyncBridge::NotifyRemoteDeskTemplateDeleted(
 }
 
 void DeskSyncBridge::OnStoreCreated(
-    const absl::optional<syncer::ModelError>& error,
+    const std::optional<syncer::ModelError>& error,
     std::unique_ptr<syncer::ModelTypeStore> store) {
   if (error) {
     change_processor()->ReportError(*error);
@@ -576,7 +579,7 @@ void DeskSyncBridge::OnStoreCreated(
 
 void DeskSyncBridge::OnReadAllData(
     std::unique_ptr<DeskEntries> stored_desk_templates,
-    const absl::optional<syncer::ModelError>& error) {
+    const std::optional<syncer::ModelError>& error) {
   DCHECK(stored_desk_templates);
 
   if (error) {
@@ -590,7 +593,7 @@ void DeskSyncBridge::OnReadAllData(
 }
 
 void DeskSyncBridge::OnReadAllMetadata(
-    const absl::optional<syncer::ModelError>& error,
+    const std::optional<syncer::ModelError>& error,
     std::unique_ptr<syncer::MetadataBatch> metadata_batch) {
   TRACE_EVENT0("ui", "DeskSyncBridge::OnReadAllMetadata");
   if (error) {
@@ -603,7 +606,7 @@ void DeskSyncBridge::OnReadAllMetadata(
   NotifyDeskModelLoaded();
 }
 
-void DeskSyncBridge::OnCommit(const absl::optional<syncer::ModelError>& error) {
+void DeskSyncBridge::OnCommit(const std::optional<syncer::ModelError>& error) {
   if (error) {
     change_processor()->ReportError(*error);
   }

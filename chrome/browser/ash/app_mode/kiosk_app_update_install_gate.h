@@ -30,8 +30,8 @@ class KioskAppUpdateInstallGate : public extensions::InstallGate {
                      bool install_immediately) override;
 
  private:
-  const raw_ptr<Profile, ExperimentalAsh> profile_;
-  const raw_ptr<extensions::ExtensionRegistry, ExperimentalAsh> registry_;
+  const raw_ptr<Profile> profile_;
+  const raw_ptr<extensions::ExtensionRegistry> registry_;
 };
 
 }  // namespace ash

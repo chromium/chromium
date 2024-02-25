@@ -1,0 +1,5 @@
+WebView textSize:16.0 style:0 htmlInfo:[{htmlTag="#document"}, {display=""}]
+++View textSize:16.0 style:0 htmlInfo:[{htmlTag="p"}, {display="block"}]
+++++TextView text:"I am " textSize:16.0 style:0 htmlInfo:[{htmlTag=""}, {display=""}]
+++++View textSize:16.0 style:8 htmlInfo:[{htmlTag="del"}, {display="inline"}]
+++++++TextView text:"vegetarian" textSize:16.0 style:8 htmlInfo:[{htmlTag=""}, {display=""}]

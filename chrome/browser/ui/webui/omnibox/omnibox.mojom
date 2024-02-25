@@ -11,9 +11,47 @@ struct ACMatchClassification {
   int32 style;
 };
 
-struct AutocompleteAdditionalInfo {
+struct DictionaryEntry {
   string key;
   string value;
+};
+
+// Keep consistent:
+// - omnibox_event.proto `ScoringSignals`
+// - autocomplete_scoring_model_handler.cc
+//   `AutocompleteScoringModelHandler::ExtractInputFromScoringSignals()`
+// - autocomplete_match.cc `AutocompleteMatch::MergeScoringSignals()`
+// - omnibox.mojom `struct Signals`
+// - omnibox_page_handler.cc `TypeConverter<AutocompleteMatch::ScoringSignals,
+//   mojom::SignalsPtr>`
+// - omnibox_page_handler.cc `TypeConverter<mojom::SignalsPtr,
+//   AutocompleteMatch::ScoringSignals>`
+// - omnibox_util.ts `signalNames`
+struct Signals {
+  int32? typed_count;
+  int32? visit_count;
+  int64? elapsed_time_last_visit_secs;
+  int32? shortcut_visit_count;
+  int32? shortest_shortcut_len;
+  int64? elapsed_time_last_shortcut_visit_sec;
+  bool? is_host_only;
+  int32? num_bookmarks_of_url;
+  int32? first_bookmark_title_match_position;
+  int32? total_bookmark_title_match_length;
+  int32? num_input_terms_matched_by_bookmark_title;
+  int32? first_url_match_position;
+  int32? total_url_match_length;
+  bool? host_match_at_word_boundary;
+  int32? total_host_match_length;
+  int32? total_path_match_length;
+  int32? total_query_or_ref_match_length;
+  int32? total_title_match_length;
+  bool? has_non_scheme_www_match;
+  int32? num_input_terms_matched_by_title;
+  int32? num_input_terms_matched_by_url;
+  int32? length_of_url;
+  float? site_engagement;
+  bool? allowed_to_be_default_match;
 };
 
 struct AutocompleteMatch {
@@ -44,7 +82,8 @@ struct AutocompleteMatch {
   int32 duplicates;
   bool from_previous;
   int32 pedal_id;
-  array<AutocompleteAdditionalInfo> additional_info;
+  Signals scoring_signals;
+  array<DictionaryEntry> additional_info;
 };
 
 struct AutocompleteResultsForProvider {
@@ -67,6 +106,18 @@ struct OmniboxResponse {
   array<AutocompleteResultsForProvider> results_by_provider;
 };
 
+enum AutocompleteControllerType {
+  // The autocomplete controller for the real omnibox in the location bar.
+  kBrowser = 0,
+  // The autocomplete controller used by chrome://omnibox to support customized
+  // inputs without messing with the location bar omnibox.
+  kDebug = 1,
+  // The autocomplete controller used by chrome://omnibox/ml that forces off ML
+  // scoring.
+  kMlDisabledDebug = 2,
+};
+
+// ts (`BrowserProxy`) -> cpp (`OmniboxPageHandler`) path.
 interface OmniboxPageHandler {
   // Registers the webui page.
   SetClientPage(pending_remote<OmniboxPage> page);
@@ -79,18 +130,36 @@ interface OmniboxPageHandler {
                     bool prefer_keyword,
                     string current_url,
                     int32 page_classification);
+  // Gets the ML model version.
+  GetMlModelVersion() => (int32 version);
+  // Runs `AutocompleteScoringModelService`.
+  StartMl(Signals signals) => (float score);
 };
 
+// cpp (`OmniboxPageHandler`) -> ts (`BrowserProxy`) path.
 interface OmniboxPage {
-  // Notifies the page of an omnibox response from a autocomplete
-  // controller. |is_page_controller| indicates whether the response
-  // originates from a query initiated from the page via
-  // |StartOmniboxQuery| or from the browser omnibox.
-  HandleNewAutocompleteResponse(OmniboxResponse response,
-                                bool is_page_controller);
   // Notifies the page a new omnibox query has begun.
-  HandleNewAutocompleteQuery(bool is_page_controller, string input_text);
+  HandleNewAutocompleteQuery(
+    AutocompleteControllerType autocomplete_controller_type,
+    string input_text);
+
+  // Notifies the page of an omnibox response from a autocomplete
+  // controller.
+  HandleNewAutocompleteResponse(
+    AutocompleteControllerType autocomplete_controller_type,
+    OmniboxResponse response);
+
+  // Notifies the page of an ML scoring batch completing. This is an
+  // intermediate step of autocompletion. This occurs before the omnibox
+  // response is created (i.e. before `HandleNewAutocompleteResponse()` is
+  // called) and won't usually have the same matches.
+  HandleNewMlResponse(AutocompleteControllerType autocomplete_controller_type,
+                      string input_text,
+                      array<AutocompleteMatch> matches);
+
   // Asynchronously notifies the page of the image data URLs for previous
   // omnibox responses.
-  HandleAnswerImageData(string image_url, string image_data);
+  HandleAnswerImageData(AutocompleteControllerType autocomplete_controller_type,
+                        string image_url,
+                        string image_data);
 };

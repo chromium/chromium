@@ -4,11 +4,14 @@
 
 #include "chrome/browser/ui/views/side_panel/read_anything/read_anything_coordinator.h"
 
+#include <memory>
 #include <string>
 #include <utility>
 #include <vector>
 
 #include "base/memory/raw_ptr.h"
+#include "chrome/browser/accessibility/embedded_a11y_extension_loader.h"
+#include "chrome/browser/companion/core/features.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/test_with_browser_view.h"
@@ -25,7 +28,15 @@ class MockReadAnythingCoordinatorObserver
     : public ReadAnythingCoordinator::Observer {
  public:
   MOCK_METHOD(void, Activate, (bool active), (override));
+  MOCK_METHOD(void, OnActivePageDistillable, (bool distillable), (override));
   MOCK_METHOD(void, OnCoordinatorDestroyed, (), (override));
+};
+
+class MockEmbeddedA11yExtensionLoader : public EmbeddedA11yExtensionLoader {
+ public:
+  MockEmbeddedA11yExtensionLoader() : EmbeddedA11yExtensionLoader() {}
+  MOCK_METHOD(void, InstallA11yHelperExtensionForReadingMode, (), (override));
+  MOCK_METHOD(void, RemoveA11yHelperExtensionForReadingMode, (), (override));
 };
 
 class ReadAnythingCoordinatorTest : public TestWithBrowserView {
@@ -41,6 +52,13 @@ class ReadAnythingCoordinatorTest : public TestWithBrowserView {
         SidePanelCoordinator::GetGlobalSidePanelRegistry(browser());
     read_anything_coordinator_ =
         ReadAnythingCoordinator::GetOrCreateForBrowser(browser());
+    mock_extension_loader_ =
+        std::make_unique<MockEmbeddedA11yExtensionLoader>();
+    read_anything_coordinator_->extension_loader_ =
+        mock_extension_loader_.get();
+
+    AddTab(browser_view()->browser(), GURL("http://foo1.com"));
+    browser_view()->browser()->tab_strip_model()->ActivateTabAt(0);
   }
 
   // Wrapper methods around the ReadAnythingCoordinator. These do nothing more
@@ -62,6 +80,27 @@ class ReadAnythingCoordinatorTest : public TestWithBrowserView {
     return read_anything_coordinator_->CreateContainerView();
   }
 
+  void OnBrowserSetLastActive(Browser* browser) {
+    read_anything_coordinator_->OnBrowserSetLastActive(browser);
+  }
+
+  void ActivePageDistillable() {
+    read_anything_coordinator_->ActivePageDistillable();
+  }
+
+  void ActivePageNotDistillable() {
+    read_anything_coordinator_->ActivePageNotDistillable();
+  }
+
+  void AddTabToBrowser(const GURL& tab_url) {
+    AddTab(browser_view()->browser(), tab_url);
+    // Remove the companion entry if it present.
+    auto* registry =
+        SidePanelRegistry::Get(browser_view()->GetActiveWebContents());
+    registry->Deregister(
+        SidePanelEntry::Key(SidePanelEntry::Id::kSearchCompanion));
+  }
+
  protected:
   raw_ptr<SidePanelCoordinator, DanglingUntriaged> side_panel_coordinator_ =
       nullptr;
@@ -71,6 +110,7 @@ class ReadAnythingCoordinatorTest : public TestWithBrowserView {
 
   MockReadAnythingCoordinatorObserver coordinator_observer_;
   base::test::ScopedFeatureList scoped_feature_list_;
+  std::unique_ptr<MockEmbeddedA11yExtensionLoader> mock_extension_loader_;
 };
 
 // TODO(crbug.com/1344891): Fix the memory leak on destruction observed on these
@@ -104,16 +144,6 @@ TEST_F(ReadAnythingCoordinatorTest, OnCoordinatorDestroyedCalled) {
   EXPECT_CALL(coordinator_observer_, OnCoordinatorDestroyed()).Times(1);
 }
 
-TEST_F(ReadAnythingCoordinatorTest, ActivateCalled_ShowAndCloseSidePanel) {
-  AddObserver(&coordinator_observer_);
-
-  EXPECT_CALL(coordinator_observer_, Activate(true)).Times(1);
-  side_panel_coordinator_->Show(SidePanelEntry::Id::kReadAnything);
-
-  EXPECT_CALL(coordinator_observer_, Activate(false)).Times(1);
-  side_panel_coordinator_->Close();
-}
-
 TEST_F(ReadAnythingCoordinatorTest,
        ActivateCalled_ShowAndHideReadAnythingEntry) {
   AddObserver(&coordinator_observer_);
@@ -125,6 +155,80 @@ TEST_F(ReadAnythingCoordinatorTest,
 
   EXPECT_CALL(coordinator_observer_, Activate(false)).Times(1);
   entry->OnEntryHidden();
+}
+
+TEST_F(ReadAnythingCoordinatorTest, EmbeddedA11yExtensionLoaderCalled) {
+  SidePanelEntry* entry = side_panel_registry_->GetEntryForKey(
+      SidePanelEntry::Key(SidePanelEntry::Id::kReadAnything));
+
+  EXPECT_CALL(*mock_extension_loader_, InstallA11yHelperExtensionForReadingMode)
+      .Times(1);
+  entry->OnEntryShown();
+
+  // Called once when calling OnEntryHidden and once on destruction.
+  EXPECT_CALL(*mock_extension_loader_, RemoveA11yHelperExtensionForReadingMode)
+      .Times(2);
+  entry->OnEntryHidden();
+}
+
+TEST_F(ReadAnythingCoordinatorTest,
+       OnBrowserSetLastActive_SidePanelIsNotVisible) {
+  Browser* browser = browser_view()->browser();
+  OnBrowserSetLastActive(browser);
+
+  EXPECT_FALSE(side_panel_coordinator_->IsSidePanelShowing());
+}
+
+TEST_F(ReadAnythingCoordinatorTest, OnActivePageDistillableCalled) {
+  AddObserver(&coordinator_observer_);
+
+  EXPECT_CALL(coordinator_observer_, OnActivePageDistillable(true)).Times(1);
+  // Called once when calling ActivePageDistillable and once on destruction.
+  EXPECT_CALL(coordinator_observer_, OnActivePageDistillable(false)).Times(2);
+
+  ActivePageDistillable();
+  ActivePageNotDistillable();
+}
+
+class ReadAnythingCoordinatorScreen2xDataCollectionModeTest
+    : public TestWithBrowserView {
+ public:
+  void SetUp() override {
+    base::test::ScopedFeatureList features;
+    scoped_feature_list_.InitWithFeatures(
+        {features::kReadAnything, features::kDataCollectionModeForScreen2x},
+        {});
+    TestWithBrowserView::SetUp();
+
+    side_panel_coordinator_ =
+        SidePanelUtil::GetSidePanelCoordinatorForBrowser(browser());
+    read_anything_coordinator_ =
+        ReadAnythingCoordinator::GetOrCreateForBrowser(browser());
+
+    AddTab(browser_view()->browser(), GURL("http://foo1.com"));
+    browser_view()->browser()->tab_strip_model()->ActivateTabAt(0);
+  }
+
+  void OnBrowserSetLastActive(Browser* browser) {
+    read_anything_coordinator_->OnBrowserSetLastActive(browser);
+  }
+
+ protected:
+  raw_ptr<SidePanelCoordinator, DanglingUntriaged> side_panel_coordinator_ =
+      nullptr;
+  raw_ptr<ReadAnythingCoordinator, DanglingUntriaged>
+      read_anything_coordinator_ = nullptr;
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+TEST_F(ReadAnythingCoordinatorScreen2xDataCollectionModeTest,
+       OnBrowserSetLastActive_SidePanelIsVisible) {
+  Browser* browser = browser_view()->browser();
+  OnBrowserSetLastActive(browser);
+
+  EXPECT_TRUE(side_panel_coordinator_->IsSidePanelShowing());
+  EXPECT_EQ(SidePanelUI::GetSidePanelUIForBrowser(browser)->GetCurrentEntryId(),
+            SidePanelEntryId::kReadAnything);
 }
 
 #endif  // !defined(ADDRESS_SANITIZER)

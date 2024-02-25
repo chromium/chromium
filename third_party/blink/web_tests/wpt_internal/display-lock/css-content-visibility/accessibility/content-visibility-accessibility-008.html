@@ -47,8 +47,8 @@ async_test((t) => {
     axTarget.childrenCount;  // Touch children to cause invalidations. Only necessary in web tests. Normally serializer does this.
     t.step(() => { assert_false(axTarget.isIgnored); });
     // Note that text nodes are marked ignored but still kept in the tree, because they might be
-    // needed for accname calculation.
-    t.step(() => { assert_equals(axTarget.childrenCount, 5, "When locked, nodes in hidden subtree are visible"); });
+    // needed for accname calculation, as is the target of the aria-labelledby relation.
+    t.step(() => { assert_equals(axTarget.childrenCount, 1, "When locked, nodes in hidden subtree are ignored"); });
     t.step(() => { assert_equals(axTarget.name, "Label"); });
     for (let i = 0; i < axTarget.childrenCount; ++i) {
       const axChild = axTarget.childAtIndex(i);

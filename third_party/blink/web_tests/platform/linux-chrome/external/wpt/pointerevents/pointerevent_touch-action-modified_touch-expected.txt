@@ -1,0 +1,4 @@
+This is a testharness.js-based test.
+[FAIL] Deleting touch-action elem after pointerdown
+  promise_test: Unhandled rejection with value: "error: Action action_sequence failed"
+Harness: the test ran to completion.

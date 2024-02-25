@@ -81,6 +81,7 @@ source_set("ipc_common_sources") {
     "gpu_client_ids.h",
     "gpu_disk_cache_type.cc",
     "gpu_disk_cache_type.h",
+    "gpu_memory_buffer_handle_info.h",
     "gpu_memory_buffer_impl.cc",
     "gpu_memory_buffer_impl.h",
     "gpu_memory_buffer_impl_shared_memory.cc",
@@ -165,6 +166,8 @@ source_set("ipc_common_sources") {
 
   if (is_android) {
     sources += [
+      "android/android_hardware_buffer_utils.cc",
+      "android/android_hardware_buffer_utils.h",
       "android/scoped_surface_request_conduit.cc",
       "android/scoped_surface_request_conduit.h",
       "gpu_surface_lookup.cc",
@@ -338,6 +341,7 @@ mojom("interfaces") {
     "mailbox.mojom",
     "mailbox_holder.mojom",
     "memory_stats.mojom",
+    "shared_image_capabilities.mojom",
     "sync_token.mojom",
     "vulkan_ycbcr_info.mojom",
   ]
@@ -369,6 +373,16 @@ mojom("interfaces") {
         {
           mojom = "gpu.mojom.Capabilities"
           cpp = "::gpu::Capabilities"
+        },
+      ]
+      traits_headers = [ "gpu_command_buffer_traits.h" ]
+      traits_public_deps = [ ":command_buffer_traits_sources" ]
+    },
+    {
+      types = [
+        {
+          mojom = "gpu.mojom.GLCapabilities"
+          cpp = "::gpu::GLCapabilities"
         },
       ]
       traits_headers = [ "gpu_command_buffer_traits.h" ]
@@ -504,6 +518,17 @@ mojom("interfaces") {
         },
       ]
       traits_headers = [ "mailbox_holder_mojom_traits.h" ]
+      traits_public_deps = [ ":mojom_traits" ]
+    },
+    {
+      types = [
+        {
+          mojom = "gpu.mojom.SharedImageCapabilities"
+          cpp = "::gpu::SharedImageCapabilities"
+        },
+      ]
+      traits_sources = [ "shared_image_capabilities_mojom_traits.cc" ]
+      traits_headers = [ "shared_image_capabilities_mojom_traits.h" ]
       traits_public_deps = [ ":mojom_traits" ]
     },
     {
@@ -686,6 +711,8 @@ mojom("gpu_preferences_interface") {
 
 mojom("vulkan_interface") {
   generate_java = true
+  webui_module_path = "/"
+  generate_legacy_js_bindings = true
 
   # TODO(crbug.com/1062364): This interface code is used by some javascript
   # targets even when vulkan isn't enabled, but the C++ fuzzer code will fail
@@ -730,8 +757,6 @@ mojom("vulkan_interface") {
   export_class_attribute = "GPU_EXPORT"
   export_header = "gpu/gpu_export.h"
   cpp_configs = [ "//gpu:gpu_implementation" ]
-
-  webui_module_path = "/"
 }
 
 mojom("test_interfaces") {

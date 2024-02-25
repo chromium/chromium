@@ -70,9 +70,9 @@ RemoteDeviceRefList RemoteDeviceCache::GetRemoteDevices() const {
   return remote_devices;
 }
 
-absl::optional<RemoteDeviceRef> RemoteDeviceCache::GetRemoteDevice(
-    const absl::optional<std::string>& instance_id,
-    const absl::optional<std::string>& legacy_device_id) const {
+std::optional<RemoteDeviceRef> RemoteDeviceCache::GetRemoteDevice(
+    const std::optional<std::string>& instance_id,
+    const std::optional<std::string>& legacy_device_id) const {
   DCHECK((instance_id && !instance_id->empty()) ||
          (legacy_device_id && !legacy_device_id->empty()));
 
@@ -81,12 +81,12 @@ absl::optional<RemoteDeviceRef> RemoteDeviceCache::GetRemoteDevice(
   if (cached_device)
     return RemoteDeviceRef(cached_device);
 
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 std::shared_ptr<RemoteDevice> RemoteDeviceCache::GetRemoteDeviceFromCache(
-    const absl::optional<std::string>& instance_id,
-    const absl::optional<std::string>& legacy_device_id) const {
+    const std::optional<std::string>& instance_id,
+    const std::optional<std::string>& legacy_device_id) const {
   for (const std::shared_ptr<RemoteDevice>& cached_device :
        cached_remote_devices_) {
     if (instance_id && !instance_id->empty() &&

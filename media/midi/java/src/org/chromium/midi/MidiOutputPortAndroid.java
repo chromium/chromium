@@ -7,30 +7,25 @@ package org.chromium.midi;
 import android.media.midi.MidiDevice;
 import android.media.midi.MidiInputPort;
 
+import org.jni_zero.CalledByNative;
+import org.jni_zero.JNINamespace;
+
 import org.chromium.base.Log;
-import org.chromium.base.annotations.CalledByNative;
-import org.chromium.base.annotations.JNINamespace;
 
 import java.io.IOException;
 
-/**
- * A class implementing midi::MidiOutputPortAndroid functionality.
- */
+/** A class implementing midi::MidiOutputPortAndroid functionality. */
 // Note "OutputPort" is named in the Web MIDI manner. It corresponds to MidiInputPort class in the
 // Android API.
 @JNINamespace("midi")
 class MidiOutputPortAndroid {
-    /**
-     * The underlying port.
-     */
+    /** The underlying port. */
     private MidiInputPort mPort;
-    /**
-     * The device this port belongs to.
-     */
+
+    /** The device this port belongs to. */
     private final MidiDevice mDevice;
-    /**
-     * The index of the port in the associated device.
-     */
+
+    /** The index of the port in the associated device. */
     private final int mIndex;
 
     private static final String TAG = "midi";
@@ -58,9 +53,7 @@ class MidiOutputPortAndroid {
         return mPort != null;
     }
 
-    /**
-     * Sends the data to the underlying output port.
-     */
+    /** Sends the data to the underlying output port. */
     @CalledByNative
     void send(byte[] bs) {
         if (mPort == null) {
@@ -74,9 +67,7 @@ class MidiOutputPortAndroid {
         }
     }
 
-    /**
-     * Closes the port.
-     */
+    /** Closes the port. */
     @CalledByNative
     void close() {
         if (mPort == null) {

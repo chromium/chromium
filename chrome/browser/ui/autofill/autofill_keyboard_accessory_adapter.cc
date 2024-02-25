@@ -16,6 +16,8 @@
 #include "base/time/time.h"
 #include "base/trace_event/trace_event.h"
 #include "chrome/browser/ui/autofill/autofill_popup_controller.h"
+#include "components/autofill/core/browser/filling_product.h"
+#include "components/autofill/core/browser/metrics/granular_filling_metrics.h"
 #include "components/autofill/core/browser/ui/popup_item_ids.h"
 #include "components/autofill/core/browser/ui/suggestion.h"
 #include "components/autofill/core/common/aliases.h"
@@ -66,7 +68,8 @@ void AutofillKeyboardAccessoryAdapter::Hide() {
 
 bool AutofillKeyboardAccessoryAdapter::OverlapsWithPictureInPictureWindow()
     const {
-  // TODO(crbug.com/1395164): Find out if pip window can hide the keyboard.
+  // TODO(crbug.com/1477682): Hide the KA suggestion if it overlaps with
+  // picture-in-picture window.
   return false;
 }
 
@@ -82,7 +85,7 @@ void AutofillKeyboardAccessoryAdapter::OnSuggestionsChanged() {
   CHECK(view_) << "OnSuggestionsChanged called before a View was set!";
 
   labels_.clear();
-  front_element_ = absl::nullopt;
+  front_element_ = std::nullopt;
   for (int i = 0; i < GetLineCount(); ++i) {
     const Suggestion& suggestion = controller_->GetSuggestionAt(i);
     if (suggestion.popup_item_id != PopupItemId::kClearForm) {
@@ -90,7 +93,7 @@ void AutofillKeyboardAccessoryAdapter::OnSuggestionsChanged() {
       continue;
     }
     CHECK(!front_element_.has_value()) << "Additional front item at: " << i;
-    front_element_ = absl::optional<int>(i);
+    front_element_ = std::optional<int>(i);
     // If there is a special popup item, just reuse the previously used label.
     std::vector<std::vector<Suggestion::Text>> suggestion_labels =
         controller_->GetSuggestionLabelsAt(i);
@@ -109,9 +112,9 @@ void AutofillKeyboardAccessoryAdapter::AxAnnounce(const std::u16string& text) {
   view_->AxAnnounce(text);
 }
 
-absl::optional<int32_t> AutofillKeyboardAccessoryAdapter::GetAxUniqueId() {
+std::optional<int32_t> AutofillKeyboardAccessoryAdapter::GetAxUniqueId() {
   NOTIMPLEMENTED() << "See https://crbug.com/985927";
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 base::WeakPtr<AutofillPopupView>
@@ -119,19 +122,27 @@ AutofillKeyboardAccessoryAdapter::GetWeakPtr() {
   return weak_ptr_factory_.GetWeakPtr();
 }
 
+base::WeakPtr<AutofillPopupView>
+AutofillKeyboardAccessoryAdapter::CreateSubPopupView(
+    base::WeakPtr<AutofillPopupController> controller) {
+  NOTIMPLEMENTED() << "No sub-popups on Keyboard Accessory";
+  return nullptr;
+}
+
 // AutofillPopupController implementation.
 
-void AutofillKeyboardAccessoryAdapter::AcceptSuggestion(int index) {
+void AutofillKeyboardAccessoryAdapter::AcceptSuggestion(
+    int index,
+    base::TimeTicks event_time) {
   if (controller_) {
-    controller_->AcceptSuggestion(OffsetIndexFor(index));
+    controller_->AcceptSuggestion(OffsetIndexFor(index), event_time);
   }
 }
 
-void AutofillKeyboardAccessoryAdapter::AcceptSuggestionWithoutThreshold(
+void AutofillKeyboardAccessoryAdapter::PerformButtonActionForSuggestion(
     int index) {
-  if (controller_) {
-    controller_->AcceptSuggestionWithoutThreshold(OffsetIndexFor(index));
-  }
+  // Actions currently only exist on Desktop.
+  NOTREACHED();
 }
 
 int AutofillKeyboardAccessoryAdapter::GetLineCount() const {
@@ -163,16 +174,9 @@ AutofillKeyboardAccessoryAdapter::GetSuggestionLabelsAt(int row) const {
   return {{Suggestion::Text(labels_[OffsetIndexFor(row)])}};
 }
 
-PopupType AutofillKeyboardAccessoryAdapter::GetPopupType() const {
+FillingProduct AutofillKeyboardAccessoryAdapter::GetMainFillingProduct() const {
   CHECK(controller_) << "Call GetPopupType only from its owner!";
-  return controller_->GetPopupType();
-}
-
-AutofillSuggestionTriggerSource
-AutofillKeyboardAccessoryAdapter::GetAutofillSuggestionTriggerSource() const {
-  CHECK(controller_)
-      << "Call GetAutofillSuggestionTriggerSource only from its owner!";
-  return controller_->GetAutofillSuggestionTriggerSource();
+  return controller_->GetMainFillingProduct();
 }
 
 bool AutofillKeyboardAccessoryAdapter::
@@ -180,6 +184,19 @@ bool AutofillKeyboardAccessoryAdapter::
   CHECK(controller_) << "Call ShouldIgnoreMouseObservedOutsideItemBoundsCheck "
                         "only from its owner!";
   return controller_->ShouldIgnoreMouseObservedOutsideItemBoundsCheck();
+}
+
+base::WeakPtr<AutofillPopupController>
+AutofillKeyboardAccessoryAdapter::OpenSubPopup(
+    const gfx::RectF& anchor_bounds,
+    std::vector<Suggestion> suggestions,
+    AutoselectFirstSuggestion autoselect_first_suggestion) {
+  NOTIMPLEMENTED() << "No sub-popups on Keyboard Accessory";
+  return nullptr;
+}
+
+void AutofillKeyboardAccessoryAdapter::HideSubPopup() {
+  NOTIMPLEMENTED() << "No sub-popups on Keyboard Accessory";
 }
 
 bool AutofillKeyboardAccessoryAdapter::GetRemovalConfirmationText(
@@ -190,7 +207,11 @@ bool AutofillKeyboardAccessoryAdapter::GetRemovalConfirmationText(
                             OffsetIndexFor(index), title, body);
 }
 
-bool AutofillKeyboardAccessoryAdapter::RemoveSuggestion(int index) {
+bool AutofillKeyboardAccessoryAdapter::RemoveSuggestion(
+    int index,
+    AutofillMetrics::SingleEntryRemovalMethod removal_method) {
+  CHECK_EQ(removal_method,
+           AutofillMetrics::SingleEntryRemovalMethod::kKeyboardAccessory);
   CHECK(view_) << "RemoveSuggestion called before a View was set!";
   std::u16string title, body;
   if (!GetRemovalConfirmationText(index, &title, &body))
@@ -198,17 +219,22 @@ bool AutofillKeyboardAccessoryAdapter::RemoveSuggestion(int index) {
 
   view_->ConfirmDeletion(
       title, body,
-      base::BindOnce(&AutofillKeyboardAccessoryAdapter::OnDeletionConfirmed,
+      base::BindOnce(&AutofillKeyboardAccessoryAdapter::OnDeletionDialogClosed,
                      weak_ptr_factory_.GetWeakPtr(), index));
   return true;
 }
 
-void AutofillKeyboardAccessoryAdapter::SelectSuggestion(
-    absl::optional<size_t> index) {
+void AutofillKeyboardAccessoryAdapter::SelectSuggestion(int index) {
   if (!controller_)
     return;
-  controller_->SelectSuggestion(
-      index ? absl::optional<size_t>(OffsetIndexFor(*index)) : absl::nullopt);
+  controller_->SelectSuggestion(OffsetIndexFor(index));
+}
+
+void AutofillKeyboardAccessoryAdapter::UnselectSuggestion() {
+  if (!controller_) {
+    return;
+  }
+  controller_->UnselectSuggestion();
 }
 
 // AutofillPopupViewDelegate implementation
@@ -262,9 +288,27 @@ std::vector<Suggestion> AutofillKeyboardAccessoryAdapter::GetSuggestions()
   return suggestions;
 }
 
-void AutofillKeyboardAccessoryAdapter::OnDeletionConfirmed(int index) {
-  if (controller_)
-    controller_->RemoveSuggestion(OffsetIndexFor(index));
+std::optional<AutofillClient::PopupScreenLocation>
+AutofillKeyboardAccessoryAdapter::GetPopupScreenLocation() const {
+  NOTIMPLEMENTED() << "No popup screen location for keyboard accessories.";
+  return std::nullopt;
+}
+
+void AutofillKeyboardAccessoryAdapter::OnDeletionDialogClosed(int index,
+                                                              bool confirmed) {
+  if (confirmed) {
+    if (controller_) {
+      controller_->RemoveSuggestion(
+          OffsetIndexFor(index),
+          AutofillMetrics::SingleEntryRemovalMethod::kKeyboardAccessory);
+    }
+    return;
+  }
+  if (GetFillingProductFromPopupItemId(GetSuggestionAt(index).popup_item_id) ==
+      FillingProduct::kAddress) {
+    autofill_metrics::LogDeleteAddressProfileFromExtendedMenu(
+        /*user_accepted_delete=*/false);
+  }
 }
 
 int AutofillKeyboardAccessoryAdapter::OffsetIndexFor(int element_index) const {

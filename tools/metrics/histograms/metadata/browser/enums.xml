@@ -1,0 +1,407 @@
+<!--
+Copyright 2023 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<!--
+
+This file describes the enumerations referenced by entries in histograms.xml for
+this directory. Some enums may instead be listed in the central enums.xml file
+at src/tools/metrics/histograms/enums.xml when multiple files use them.
+
+For best practices on writing enumerations descriptions, see
+https://chromium.googlesource.com/chromium/src.git/+/HEAD/tools/metrics/histograms/README.md#Enum-Histograms
+
+Please follow the instructions in the OWNERS file in this directory to find a
+reviewer. If no OWNERS file exists, please consider signing up at
+go/reviewing-metrics (Googlers only), as all subdirectories are expected to
+have an OWNERS file. As a last resort you can send the CL to
+chromium-metrics-reviews@google.com.
+-->
+
+<histogram-configuration>
+
+<!-- Enum types -->
+
+<enums>
+
+<enum name="BooleanBrowserSwitch">
+  <int value="0" label="Stay"/>
+  <int value="1" label="Switch browser"/>
+</enum>
+
+<enum name="BooleanLabeledRendererTask">
+  <int value="0" label="Unlabeled renderer task"/>
+  <int value="1" label="Labeled renderer task"/>
+</enum>
+
+<enum name="BooleanRecorded">
+  <int value="0" label="Not Recorded"/>
+  <int value="1" label="Recorded"/>
+</enum>
+
+<enum name="BrowserServicesVerificationResult">
+  <summary>Result of Trusted Web Activity verification attempt.</summary>
+  <int value="0" label="Online Success"/>
+  <int value="1" label="Online Failure"/>
+  <int value="2" label="Offline Success"/>
+  <int value="3" label="Offline Failure"/>
+  <int value="4" label="Not HTTPS"/>
+  <int value="5" label="Request Failed"/>
+  <int value="6" label="Runtime Cache Success"/>
+</enum>
+
+<enum name="BrowserType">
+  <int value="0" label="Unknown"/>
+  <int value="1" label="Internet Explorer"/>
+  <int value="2" label="Firefox"/>
+  <int value="3" label="Opera"/>
+  <int value="4" label="Safari"/>
+  <int value="5" label="Chrome"/>
+  <int value="6" label="Edge"/>
+</enum>
+
+<enum name="DarkModeStatus">
+  <int value="0" label="Unavailable"/>
+  <int value="1" label="Light"/>
+  <int value="2" label="Dark"/>
+</enum>
+
+<enum name="EnterpriseCloudReportingDestination">
+<!-- This must be kept in sync with
+     //components/reporting/proto/synced/record_constants.proto's
+     Destination. -->
+
+  <int value="0" label="UNDEFINED_DESTINATION"/>
+  <int value="1" label="UPLOAD_EVENTS"/>
+  <int value="2" label="MEET_DEVICE_TELEMETRY"/>
+  <int value="3" label="WEB_PROTECT"/>
+  <int value="4" label="ARC_INSTALL"/>
+  <int value="5" label="POLICY_VALIDATION"/>
+  <int value="6" label="EXTENSION_INSTALL"/>
+  <int value="7" label="REPORTING_RECORD"/>
+  <int value="9" label="PRINT_JOBS"/>
+  <int value="10" label="EXTENSIONS_WORKFLOW"/>
+  <int value="11" label="DLP_EVENTS"/>
+  <int value="12" label="LOGIN_LOGOUT_EVENTS"/>
+  <int value="13" label="HEARTBEAT_EVENTS"/>
+  <int value="14" label="INFO_METRIC"/>
+  <int value="15" label="TELEMETRY_METRIC"/>
+  <int value="16" label="EVENT_METRIC"/>
+  <int value="17" label="ADDED_REMOVED_EVENTS"/>
+  <int value="18" label="CRD_EVENTS"/>
+  <int value="19" label="PERIPHERAL_EVENTS"/>
+  <int value="20" label="SUSPICIOUS_EVENTS"/>
+  <int value="21" label="LOCK_UNLOCK_EVENTS"/>
+  <int value="22" label="CROS_SECURITY_AGENT"/>
+  <int value="23" label="CROS_SECURITY_PROCESS"/>
+  <int value="24" label="OS_EVENTS"/>
+  <int value="25" label="LEGACY_TECH"/>
+  <int value="26" label="CROS_SECURITY_NETWORK"/>
+  <int value="27" label="LOG_UPLOAD"/>
+  <int value="28" label="CROS_SECURITY_USER"/>
+  <int value="29" label="KIOSK_HEARTBEAT_EVENTS"/>
+  <int value="30" label="CHROME_BROWSER_ENTERPRISE"/>
+  <int value="31" label="CRASH_EVENTS"/>
+</enum>
+
+<enum name="EnterpriseCloudReportingMetricEventType">
+<!-- This must be kept in sync with
+     //components/reporting/proto/synced/metric_data.proto's
+     MetricEventType. -->
+
+  <int value="0" label="EVENT_TYPE_UNSPECIFIED"/>
+  <int value="1" label="NETWORK_HTTPS_LATENCY_CHANGE"/>
+  <int value="4" label="AUDIO_SEVERE_UNDERRUN"/>
+  <int value="5" label="USB_ADDED"/>
+  <int value="6" label="USB_REMOVED"/>
+  <int value="7" label="APP_INSTALLED"/>
+  <int value="8" label="APP_UNINSTALLED"/>
+  <int value="9" label="APP_LAUNCHED"/>
+  <int value="13" label="WIFI_SIGNAL_STRENGTH_LOW"/>
+  <int value="14" label="WIFI_SIGNAL_STRENGTH_RECOVERED"/>
+  <int value="15" label="NETWORK_STATE_CHANGE"/>
+  <int value="16" label="VPN_CONNECTION_STATE_CHANGE"/>
+  <int value="17" label="FATAL_CRASH"/>
+  <int value="18" label="URL_OPENED"/>
+  <int value="19" label="URL_CLOSED"/>
+  <int value="20" label="KIOSK_HEARTBEAT"/>
+</enum>
+
+<enum name="EnterpriseReportingPsrResult">
+  <summary>
+    Defined as code in
+    chrome/browser/ash/policy/reporting/metrics_reporting/cros_healthd_sampler_handlers/cros_healthd_psr_sampler_handler.cc
+  </summary>
+  <int value="0" label="OK"/>
+  <int value="1" label="Error getting PSR"/>
+  <int value="2" label="Unknown SystemResult type"/>
+  <int value="3" label="Null PsrInfo"/>
+  <int value="4" label="PSR is unsupported"/>
+  <int value="5" label="PSR was not started"/>
+  <int value="6" label="PSR has been stopped"/>
+  <int value="7" label="Unknown PSR log state"/>
+</enum>
+
+<enum name="EnterpriseReportingUnuploadedCrashShouldNotReportReason">
+  <summary>
+    Defined as ShouldReportResult in
+    chrome/browser/ash/policy/reporting/metrics_reporting/fatal_crash/fatal_crash_events_observer.h
+  </summary>
+  <int value="0" label="Should report"/>
+  <int value="1" label="Negative timestamp"/>
+  <int value="2" label="Has been reported"/>
+  <int value="3"
+      label="Crash is too old and the number of saved local IDs has reached
+             maximum"/>
+</enum>
+
+<enum name="HatsStatus">
+  <int value="0" label="Device selected"/>
+  <int value="1" label="Survey was shown recently"/>
+  <int value="2" label="New device detected"/>
+  <int value="3" label="Notification displayed"/>
+  <int value="4" label="User dismissed notification"/>
+  <int value="5" label="User opened survey"/>
+</enum>
+
+<enum name="InfoBarIdentifier">
+  <int value="1" label="APP_BANNER_INFOBAR_DELEGATE (Obsolete)"/>
+  <int value="2" label="APP_BANNER_INFOBAR_DELEGATE_DESKTOP (Obsolete)"/>
+  <int value="3"
+      label="ANDROID_DOWNLOAD_MANAGER_OVERWRITE_INFOBAR_DELEGATE (Obsolete)"/>
+  <int value="4" label="DUPLICATE_DOWNLOAD_INFOBAR_DELEGATE_ANDROID"/>
+  <int value="5" label="DOWNLOAD_REQUEST_INFOBAR_DELEGATE_ANDROID (Obsolete)"/>
+  <int value="6" label="FULLSCREEN_INFOBAR_DELEGATE (Obsolete)"/>
+  <int value="7" label="HUNG_PLUGIN_INFOBAR_DELEGATE"/>
+  <int value="8" label="HUNG_RENDERER_INFOBAR_DELEGATE_ANDROID (Obsolete)"/>
+  <int value="9" label="MEDIA_STREAM_INFOBAR_DELEGATE_ANDROID (Obsolete)"/>
+  <int value="10" label="MEDIA_THROTTLE_INFOBAR_DELEGATE (Obsolete)"/>
+  <int value="11" label="REQUEST_QUOTA_INFOBAR_DELEGATE (Obsolete)"/>
+  <int value="12" label="DEV_TOOLS_INFOBAR_DELEGATE"/>
+  <int value="13" label="EXTENSION_DEV_TOOLS_INFOBAR_DELEGATE"/>
+  <int value="14" label="INCOGNITO_CONNECTABILITY_INFOBAR_DELEGATE"/>
+  <int value="15" label="THEME_INSTALLED_INFOBAR_DELEGATE"/>
+  <int value="16" label="GEOLOCATION_INFOBAR_DELEGATE_ANDROID (Obsolete)"/>
+  <int value="17" label="THREE_D_API_INFOBAR_DELEGATE"/>
+  <int value="18" label="INSECURE_CONTENT_INFOBAR_DELEGATE (Obsolete)"/>
+  <int value="19" label="MIDI_PERMISSION_INFOBAR_DELEGATE_ANDROID (Obsolete)"/>
+  <int value="20"
+      label="PROTECTED_MEDIA_IDENTIFIER_INFOBAR_DELEGATE_ANDROID (Obsolete)"/>
+  <int value="21" label="NACL_INFOBAR_DELEGATE"/>
+  <int value="22"
+      label="DATA_REDUCTION_PROXY_INFOBAR_DELEGATE_ANDROID (Obsolete)"/>
+  <int value="23" label="NOTIFICATION_PERMISSION_INFOBAR_DELEGATE (Obsolete)"/>
+  <int value="24" label="AUTO_SIGNIN_FIRST_RUN_INFOBAR_DELEGATE (Obsolete)"/>
+  <int value="25" label="GENERATED_PASSWORD_SAVED_INFOBAR_DELEGATE_ANDROID"/>
+  <int value="26" label="SAVE_PASSWORD_INFOBAR_DELEGATE_MOBILE"/>
+  <int value="27" label="PEPPER_BROKER_INFOBAR_DELEGATE (Obsolete)"/>
+  <int value="28" label="PERMISSION_UPDATE_INFOBAR_DELEGATE_ANDROID"/>
+  <int value="29"
+      label="DURABLE_STORAGE_PERMISSION_INFOBAR_DELEGATE_ANDROID (Obsolete)"/>
+  <int value="30" label="NPAPI_REMOVAL_INFOBAR_DELEGATE (Obsolete)"/>
+  <int value="31" label="OUTDATED_PLUGIN_INFOBAR_DELEGATE (Obsolete)"/>
+  <int value="32" label="PLUGIN_METRO_MODE_INFOBAR_DELEGATE (Obsolete)"/>
+  <int value="33" label="RELOAD_PLUGIN_INFOBAR_DELEGATE"/>
+  <int value="34" label="PLUGIN_OBSERVER_INFOBAR_DELEGATE"/>
+  <int value="35" label="SSL_ADD_CERTIFICATE (Obsolete)"/>
+  <int value="36" label="SSL_ADD_CERTIFICATE_INFOBAR_DELEGATE (Obsolete)"/>
+  <int value="37" label="POPUP_BLOCKED_INFOBAR_DELEGATE_MOBILE"/>
+  <int value="38" label="FILE_ACCESS_DISABLED_INFOBAR_DELEGATE"/>
+  <int value="39" label="KEYSTONE_PROMOTION_INFOBAR_DELEGATE_MAC"/>
+  <int value="40" label="COLLECTED_COOKIES_INFOBAR_DELEGATE"/>
+  <int value="41" label="INSTALLATION_ERROR_INFOBAR_DELEGATE"/>
+  <int value="42" label="ALTERNATE_NAV_INFOBAR_DELEGATE"/>
+  <int value="43" label="BAD_FLAGS_INFOBAR_DELEGATE"/>
+  <int value="44" label="DEFAULT_BROWSER_INFOBAR_DELEGATE"/>
+  <int value="45" label="GOOGLE_API_KEYS_INFOBAR_DELEGATE"/>
+  <int value="46" label="OBSOLETE_SYSTEM_INFOBAR_DELEGATE"/>
+  <int value="47" label="SESSION_CRASHED_INFOBAR_DELEGATE_MAC_IOS"/>
+  <int value="48" label="PAGE_INFO_INFOBAR_DELEGATE"/>
+  <int value="49" label="AUTOFILL_CC_INFOBAR_DELEGATE_MOBILE"/>
+  <int value="50" label="TRANSLATE_INFOBAR_DELEGATE_NON_AURA"/>
+  <int value="51" label="IOS_CHROME_SAVE_PASSWORD_INFOBAR_DELEGATE (Obsolete)"/>
+  <int value="52" label="NATIVE_APP_INSTALLER_INFOBAR_DELEGATE (Obsolete)"/>
+  <int value="53" label="NATIVE_APP_LAUNCHER_INFOBAR_DELEGATE (Obsolete)"/>
+  <int value="54" label="NATIVE_APP_OPEN_POLICY_INFOBAR_DELEGATE (Obsolete)"/>
+  <int value="55" label="RE_SIGN_IN_INFOBAR_DELEGATE_IOS"/>
+  <int value="56" label="SHOW_PASSKIT_ERROR_INFOBAR_DELEGATE_IOS"/>
+  <int value="57" label="READER_MODE_INFOBAR_DELEGATE (Obsolete)"/>
+  <int value="58" label="SYNC_ERROR_INFOBAR_DELEGATE_IOS"/>
+  <int value="59" label="UPGRADE_INFOBAR_DELEGATE"/>
+  <int value="60" label="WINDOW_ERROR_INFOBAR_DELEGATE_ANDROID"/>
+  <int value="61" label="DANGEROUS_DOWNLOAD_INFOBAR_DELEGATE_ANDROID"/>
+  <int value="62" label="WINDOWS_DESKTOP_SEARCH_INFOBAR_DELEGATE (Obsolete)"/>
+  <int value="63" label="UPDATE_PASSWORD_INFOBAR_DELEGATE_MOBILE"/>
+  <int value="64" label="DATA_REDUCTION_PROMO_INFOBAR_DELEGATE_ANDROID"/>
+  <int value="65" label="AUTOFILL_CC_ASSIST_INFOBAR_DELEGATE"/>
+  <int value="66" label="ADS_BLOCKED_INFOBAR_DELEGATE_ANDROID"/>
+  <int value="67" label="INSTANT_APPS_INFOBAR_DELEGATE_ANDROID"/>
+  <int value="68"
+      label="DATA_REDUCTION_PROXY_PREVIEW_INFOBAR_DELEGATE (Obsolete)"/>
+  <int value="69" label="SCREEN_CAPTURE_INFOBAR_DELEGATE_ANDROID"/>
+  <int value="70" label="GROUPED_PERMISSION_INFOBAR_DELEGATE_ANDROID"/>
+  <int value="71" label="OFFLINE_PAGE_INFOBAR_DELEGATE_ANDROID"/>
+  <int value="72"
+      label="SEARCH_GEOLOCATION_DISCLOSURE_INFOBAR_DELEGATE_ANDROID"/>
+  <int value="73" label="AUTOMATION_INFOBAR_DELEGATE"/>
+  <int value="74" label="VR_SERVICES_UPGRADE_ANDROID"/>
+  <int value="75" label="READER_MODE_INFOBAR_ANDROID"/>
+  <int value="76" label="VR_FEEDBACK_INFOBAR_ANDROID"/>
+  <int value="77" label="FRAMEBUST_BLOCK_INFOBAR_ANDROID"/>
+  <int value="78" label="SURVEY_INFOBAR_ANDROID"/>
+  <int value="79" label="NEAR_OOM_INFOBAR_ANDROID"/>
+  <int value="80" label="INSTALLABLE_AMBIENT_BADGE_INFOBAR_DELEGATE"/>
+  <int value="81" label="PAGE_LOAD_CAPPING_INFOBAR_DELEGATE (Obsolete)"/>
+  <int value="82" label="DOWNLOAD_PROGRESS_INFOBAR_ANDROID"/>
+  <int value="83" label="AR_CORE_UPGRADE_ANDROID"/>
+  <int value="84" label="BLOATED_RENDERER_INFOBAR_DELEGATE"/>
+  <int value="85"
+      label="SUPERVISED_USERS_DEPRECATED_INFOBAR_DELEGATE (Obsolete)"/>
+  <int value="86" label="NEAR_OOM_REDUCTION_INFOBAR_ANDROID"/>
+  <int value="87" label="LITE_PAGE_PREVIEWS_INFOBAR (Obsolete M91)"/>
+  <int value="88" label="MODULE_INSTALL_FAILURE_INFOBAR_ANDROID"/>
+  <int value="89" label="INLINE_UPDATE_READY_INFOBAR_ANDROID (Obsolete)"/>
+  <int value="90" label="INLINE_UPDATE_FAILED_INFOBAR_ANDROID (Obsolete)"/>
+  <int value="91" label="FLASH_DEPRECATION_INFOBAR_DELEGATE (Obsolete)"/>
+  <int value="92" label="SEND_TAB_TO_SELF_INFOBAR_DELEGATE"/>
+  <int value="93" label="TAB_SHARING_INFOBAR_DELEGATE"/>
+  <int value="94" label="SAFETY_TIP_INFOBAR_DELEGATE"/>
+  <int value="95" label="SMS_RECEIVER_INFOBAR_DELEGATE"/>
+  <int value="96" label="KNOWN_INTERCEPTION_DISCLOSURE_INFOBAR_DELEGATE"/>
+  <int value="97" label="SYNC_ERROR_INFOBAR_DELEGATE_ANDROID"/>
+  <int value="98" label="MIXED_CONTENT_DOWNLOAD_INFOBAR_DELEGATE_ANDROID"/>
+  <int value="99" label="CONDITIONAL_TAB_STRIP_INFOBAR_ANDROID"/>
+  <int value="100" label="LITE_MODE_HTTPS_IMAGE_COMPRESSION_INFOBAR_ANDROID"/>
+  <int value="101" label="SYSTEM_INFOBAR_DELEGATE_MAC (Obsolete)"/>
+  <int value="102" label="EXPERIMENTAL_INFOBAR_DELEGATE_LACROS (Obsolete)"/>
+  <int value="103" label="ROSETTA_REQUIRED_INFOBAR_DELEGATE (Obsolete)"/>
+  <int value="104" label="WEBID_PERMISSION_INFOBAR_DELEGATE (Obsolete)"/>
+  <int value="105" label="AUTOFILL_OFFER_NOTIFICATION_INFOBAR_DELEGATE"/>
+  <int value="106" label="AUTOFILL_ADDRESS_PROFILE_INFOBAR_DELEGATE_IOS"/>
+  <int value="107" label="ADD_TO_READING_LIST_IOS"/>
+  <int value="108" label="IOS_PERMISSIONS_INFOBAR_DELEGATE"/>
+  <int value="109"
+      label="SUPPORTED_LINKS_INFOBAR_DELEGATE_CHROMEOS (Obsolete)"/>
+  <int value="110"
+      label="AUTOFILL_VIRTUAL_CARD_ENROLLMENT_INFOBAR_DELEGATE_MOBILE"/>
+  <int value="111" label="TAILORED_SECURITY_SERVICE_INFOBAR_DELEGATE"/>
+  <int value="112" label="CHROME_FOR_TESTING_INFOBAR_DELEGATE"/>
+  <int value="113" label="EXTENSIONS_WEB_AUTH_FLOW_INFOBAR_DELEGATE"/>
+  <int value="114" label="TAB_PICKUP_INFOBAR_DELEGATE"/>
+  <int value="115" label="LOCAL_TEST_POLICIES_APPLIED_INFOBAR"/>
+  <int value="116"
+      label="BIDDING_AND_AUCTION_USER_CONSENTED_DEBUGGING_DELEGATE"/>
+  <int value="117" label="PARCEL_TRACKING_INFOBAR_DELEGATE"/>
+  <int value="118" label="TEST_THIRD_PARTY_COOKIE_PHASEOUT_DELEGATE"/>
+</enum>
+
+<enum name="RendererType">
+  <int value="1" label="Normal renderer"/>
+  <int value="2" label="Extension renderer"/>
+</enum>
+
+<enum name="RenderProcessHostBlockedURLReason">
+  <int value="0" label="Invalid URL"/>
+  <int value="1" label="Failed CanRequestURL Check"/>
+</enum>
+
+<enum name="RenderProcessHostDelayShutdownReason">
+  <int value="0" label="No Delay"/>
+  <int value="1" label="Other Active Or Pending Views">
+    There are active or pending views other than the ones shutting down.
+  </int>
+  <int value="2" label="Single Process Mode">
+    Single process mode never shuts down the renderer.
+  </int>
+  <int value="3" label="No Process">
+    Render process hasn't started or is probably crashed.
+  </int>
+  <int value="4" label="Unload Handler Exists"/>
+  <int value="5" label="Fetch Keepalive Request">
+    There is pending fetch keepalive request.
+  </int>
+  <int value="6" label="Worker Exists"/>
+  <int value="7" label="Pending Reuse">The process is pending to reuse.</int>
+  <int value="8" label="Process Requested Delay">
+    The process is requested to delay shutdown.
+  </int>
+  <int value="9" label="Listener Exists"/>
+  <int value="10" label="In Observer Callback">
+    Delays until all observer callbacks completed.
+  </int>
+</enum>
+
+<enum name="SpareProcessMaybeTakeAction">
+  <int value="0" label="NoSparePresent"/>
+  <int value="1" label="MismatchedBrowserContext"/>
+  <int value="2" label="MismatchedStoragePartition"/>
+  <int value="3" label="RefusedByEmbedder">
+    Refused via BrowserContentClient::ShouldUseSpareRenderProcessHost (typically
+    because of incompatible renderer flavour like NTP or extension - see
+    https://crbug.com/834324).
+  </int>
+  <int value="4" label="SpareTaken"/>
+  <int value="5" label="RefusedBySiteInstance">
+    Refused via SiteInstanceImpl::CanAssociateWithAlreadyInitializedProcessHost
+    (typically because of tab discarding or session restore which may desire to
+    have WebContents without an associated renderer process - see
+    https://crbug.com/840409).
+  </int>
+  <int value="6" label="RefusedForPdfContent"/>
+</enum>
+
+<enum name="SupportToolWebUIActionType">
+  <summary>
+    Actions that the user can take on Support Tool WebUI (chrome://support-tool)
+  </summary>
+  <int value="0" label="kOpenSupportToolPage"/>
+  <int value="1" label="kOpenURLGeneratorPage"/>
+  <int value="2" label="kCreateSupportPacket"/>
+  <int value="3" label="kCancelDataCollection"/>
+  <int value="4" label="kGenerateURL"/>
+  <int value="5" label="kGenerateToken"/>
+</enum>
+
+<enum name="TabbedPaintPreviewCompositorFailureReason">
+  <int value="0" label="OK"/>
+  <int value="1" label="URL Mismatch"/>
+  <int value="2" label="Compositor Service Disconnected"/>
+  <int value="3" label="Compositor Client Disconnected"/>
+  <int value="4" label="Protobuf Deserialization Error"/>
+  <int value="5" label="Compositor Deserialization Error"/>
+  <int value="6" label="Invalid Root Frame SKP"/>
+  <int value="7" label="Invalid Request"/>
+  <int value="8" label="Old Version"/>
+  <int value="9" label="Unexpected Version"/>
+  <int value="10" label="Capture Expired"/>
+  <int value="11" label="No Capture"/>
+  <int value="12" label="Timed Out"/>
+  <int value="13" label="Stopped Due To Memory Pressure"/>
+  <int value="14" label="Skipped Due To Memory Pressure"/>
+  <int value="15" label="Failure When Requesting Bitmap"/>
+</enum>
+
+<enum name="TabbedPaintPreviewExitCause">
+  <int value="0" label="Pull to Refresh"/>
+  <int value="1" label="Actionbar Action"/>
+  <int value="2" label="Compositor Failed to Load"/>
+  <int value="3" label="Tab Finished Loading"/>
+  <int value="4" label="Link Clicked"/>
+  <int value="5" label="Navigation Started"/>
+  <int value="6" label="Tab Destroyed"/>
+  <int value="7" label="Tab Hidden"/>
+  <int value="8" label="Offline Available"/>
+  <int value="9" label="Accessibility Not Supported"/>
+</enum>
+
+<enum name="TabSwitchResult2">
+  <int value="0" label="Success"/>
+  <int value="1" label="Tab hidden before a frame is presented"/>
+  <int value="2" label="Tab shown twice without being hidden"/>
+</enum>
+
+</enums>
+
+</histogram-configuration>

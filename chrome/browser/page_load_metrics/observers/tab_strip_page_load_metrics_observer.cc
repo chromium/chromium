@@ -23,8 +23,8 @@ namespace internal {
 
 const char kTabsActiveAbsolutePosition[] = "Tabs.Active.AbsolutePosition";
 const char kTabsActiveRelativePosition[] = "Tabs.Active.RelativePosition";
-const char kTabsPageLoadTimeSinceActive[] = "Tabs.PageLoad.TimeSinceActive";
-const char kTabsPageLoadTimeSinceCreated[] = "Tabs.PageLoad.TimeSinceCreated";
+const char kTabsPageLoadTimeSinceActive[] = "Tabs.PageLoad.TimeSinceActive2";
+const char kTabsPageLoadTimeSinceCreated[] = "Tabs.PageLoad.TimeSinceCreated2";
 
 }  // namespace internal
 
@@ -39,7 +39,7 @@ std::vector<std::vector<content::WebContents*>> GetAllWebContents() {
     std::vector<content::WebContents*> web_contents_for_tab_strip = {};
     for (int i = 0; i < model->GetTabCount(); ++i) {
 #else   // BUILDFLAG(IS_ANDROID)
-  for (auto* browser : *BrowserList::GetInstance()) {
+  for (Browser* browser : *BrowserList::GetInstance()) {
     std::vector<content::WebContents*> web_contents_for_tab_strip = {};
     TabStripModel* model = browser->tab_strip_model();
     for (int i = 0; i < model->count(); ++i) {
@@ -54,7 +54,7 @@ std::vector<std::vector<content::WebContents*>> GetAllWebContents() {
 void RecordTimeDeltaHistogram(const char histogram_name[],
                               base::TimeDelta value) {
   base::UmaHistogramCustomTimes(histogram_name, value, base::TimeDelta(),
-                                base::Days(14), 50);
+                                base::Days(21), 50);
 }
 
 }  // namespace

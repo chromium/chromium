@@ -35,13 +35,9 @@ int ErrorReporter::Report(const char* format, va_list args) {
   return num_characters;
 }
 
-std::string ErrorReporter::message() {
-  return last_message_;
-}
+std::string ErrorReporter::message() { return last_message_; }
 
-std::string ErrorReporter::previous_message() {
-  return second_last_message_;
-}
+std::string ErrorReporter::previous_message() { return second_last_message_; }
 
 }  // namespace core
 }  // namespace task

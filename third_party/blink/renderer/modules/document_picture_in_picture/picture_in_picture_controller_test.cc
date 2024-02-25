@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "base/containers/contains.h"
+#include "base/memory/raw_ptr.h"
 #include "media/mojo/mojom/media_player.mojom-blink.h"
 #include "mojo/public/cpp/bindings/pending_associated_remote.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
@@ -79,7 +80,7 @@ LocalDOMWindow* OpenDocumentPictureInPictureWindow(
   // Create the DocumentPictureInPictureOptions.
   auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
   ExceptionState exception_state(script_state->GetIsolate(),
-                                 ExceptionState::kExecutionContext,
+                                 ExceptionContextType::kOperationInvoke,
                                  "DocumentPictureInPicture", "requestWindow");
 
   v8::Local<v8::Object> v8_object = v8::Object::New(v8_scope.GetIsolate());
@@ -244,13 +245,13 @@ class PictureInPictureControllerPlayer final : public EmptyWebMediaPlayer {
   ReadyState GetReadyState() const override { return kReadyStateHaveMetadata; }
   bool HasVideo() const override { return true; }
   void OnRequestPictureInPicture() override { surface_id_ = TestSurfaceId(); }
-  absl::optional<viz::SurfaceId> GetSurfaceId() override { return surface_id_; }
+  std::optional<viz::SurfaceId> GetSurfaceId() override { return surface_id_; }
 
   void set_infinity_duration(bool value) { infinity_duration_ = value; }
 
  private:
   bool infinity_duration_ = false;
-  absl::optional<viz::SurfaceId> surface_id_;
+  std::optional<viz::SurfaceId> surface_id_;
 };
 
 class PictureInPictureTestWebFrameClient
@@ -404,14 +405,23 @@ TEST_F(PictureInPictureControllerTestWithWidget,
   MakeGarbageCollected<WaitForEvent>(Video(),
                                      event_type_names::kEnterpictureinpicture);
 
+  EXPECT_NE(nullptr, PictureInPictureControllerImpl::From(GetDocument())
+                         .PictureInPictureElement());
+  EXPECT_NE(nullptr, PictureInPictureControllerImpl::From(GetDocument())
+                         .pictureInPictureWindow());
+
   PictureInPictureControllerImpl::From(GetDocument())
       .ExitPictureInPicture(Video(), nullptr);
 
   MakeGarbageCollected<WaitForEvent>(Video(),
                                      event_type_names::kLeavepictureinpicture);
 
+  // Make sure the state has been cleaned up.
+  // https://crbug.com/1496926
   EXPECT_EQ(nullptr, PictureInPictureControllerImpl::From(GetDocument())
                          .PictureInPictureElement());
+  EXPECT_EQ(nullptr, PictureInPictureControllerImpl::From(GetDocument())
+                         .pictureInPictureWindow());
 }
 
 TEST_F(PictureInPictureControllerTestWithWidget, StartObserving) {
@@ -649,19 +659,6 @@ TEST_F(PictureInPictureControllerTestWithWidget,
 }
 
 TEST_F(PictureInPictureControllerTestWithWidget,
-       DocumentPiPDoesNotOpenWithBlankUrl) {
-  V8TestingScope v8_scope;
-  ScriptState* script_state =
-      ToScriptStateForMainWorld(GetDocument().GetFrame());
-  ScriptState::Scope entered_context_scope(script_state);
-  LocalFrame::NotifyUserActivation(
-      &GetFrame(), mojom::UserActivationNotificationType::kTest);
-  auto* pip =
-      OpenDocumentPictureInPictureWindow(v8_scope, GetDocument(), BlankURL());
-  EXPECT_FALSE(pip);
-}
-
-TEST_F(PictureInPictureControllerTestWithWidget,
        DocumentPiPDoesOpenWithFileUrl) {
   V8TestingScope v8_scope;
   ScriptState* script_state =
@@ -677,10 +674,13 @@ TEST_F(PictureInPictureControllerTestWithWidget,
 class PictureInPictureControllerChromeClient
     : public RenderingTestChromeClient {
  public:
-  explicit PictureInPictureControllerChromeClient(
-      DummyPageHolder* dummy_page_holder)
-      : dummy_page_holder_(dummy_page_holder) {}
+  PictureInPictureControllerChromeClient() = default;
 
+  void set_dummy_page_holder(DummyPageHolder* dummy_page_holder) {
+    dummy_page_holder_ = dummy_page_holder;
+  }
+
+  // RenderingTestChromeClient:
   Page* CreateWindowDelegate(LocalFrame*,
                              const FrameLoadRequest&,
                              const AtomicString&,
@@ -688,12 +688,13 @@ class PictureInPictureControllerChromeClient
                              network::mojom::blink::WebSandboxFlags,
                              const SessionStorageNamespaceId&,
                              bool& consumed_user_gesture) override {
+    CHECK(dummy_page_holder_);
     return &dummy_page_holder_->GetPage();
   }
   MOCK_METHOD(void, SetWindowRect, (const gfx::Rect&, LocalFrame&));
 
  private:
-  DummyPageHolder* dummy_page_holder_;
+  raw_ptr<DummyPageHolder, DanglingUntriaged> dummy_page_holder_ = nullptr;
 };
 
 // Tests for Picture in Picture with a mockable chrome client.  This makes it
@@ -704,8 +705,10 @@ class PictureInPictureControllerTestWithChromeClient : public RenderingTest {
  public:
   void SetUp() override {
     chrome_client_ =
-        MakeGarbageCollected<PictureInPictureControllerChromeClient>(
-            &dummy_page_holder_);
+        MakeGarbageCollected<PictureInPictureControllerChromeClient>();
+    dummy_page_holder_ =
+        std::make_unique<DummyPageHolder>(gfx::Size(), chrome_client_);
+    chrome_client_->set_dummy_page_holder(dummy_page_holder_.get());
     RenderingTest::SetUp();
   }
 
@@ -727,7 +730,7 @@ class PictureInPictureControllerTestWithChromeClient : public RenderingTest {
   // ownership of it here so that it outlives the GC'd objects.  The client
   // cannot own it because it also has a GC root to the client; everything would
   // leak if we did so.
-  DummyPageHolder dummy_page_holder_;
+  std::unique_ptr<DummyPageHolder> dummy_page_holder_;
 };
 
 TEST_F(PictureInPictureControllerTestWithChromeClient,
@@ -746,12 +749,39 @@ TEST_F(PictureInPictureControllerTestWithChromeClient,
   // The Picture in Picture window's base URL should match the opener.
   EXPECT_EQ(GetOpenerURL().GetString(), document->BaseURL().GetString());
 
-  // Verify that move* and resize* don't call through to the chrome client.
+  // Verify that move* doesn't call through to the chrome client.
   EXPECT_CALL(GetPipChromeClient(), SetWindowRect(_, _)).Times(0);
   document->domWindow()->moveTo(10, 10);
   document->domWindow()->moveBy(10, 10);
-  document->domWindow()->resizeTo(10, 10);
-  document->domWindow()->resizeBy(10, 10);
+  testing::Mock::VerifyAndClearExpectations(&GetPipChromeClient());
+
+  {
+    // Verify that resizeTo consumes a user gesture, and so only one of the
+    // following calls will succeed.
+    EXPECT_CALL(GetPipChromeClient(), SetWindowRect(_, _));
+    LocalFrame::NotifyUserActivation(
+        document->GetFrame(), mojom::UserActivationNotificationType::kTest);
+    ExceptionState exception_state(
+        ToScriptStateForMainWorld(document->GetFrame())->GetIsolate(),
+        ExceptionContextType::kOperationInvoke, "Window", "resizeTo");
+    document->domWindow()->resizeTo(10, 10, exception_state);
+    document->domWindow()->resizeTo(20, 20, exception_state);
+    testing::Mock::VerifyAndClearExpectations(&GetPipChromeClient());
+  }
+
+  {
+    // Verify that resizeBy consumes a user gesture, and so only one of the
+    // following calls will succeed.
+    EXPECT_CALL(GetPipChromeClient(), SetWindowRect(_, _));
+    LocalFrame::NotifyUserActivation(
+        document->GetFrame(), mojom::UserActivationNotificationType::kTest);
+    ExceptionState exception_state(
+        ToScriptStateForMainWorld(document->GetFrame())->GetIsolate(),
+        ExceptionContextType::kOperationInvoke, "Window", "resizeBy");
+    document->domWindow()->resizeBy(10, 10, exception_state);
+    document->domWindow()->resizeBy(20, 20, exception_state);
+    testing::Mock::VerifyAndClearExpectations(&GetPipChromeClient());
+  }
 
   // Make sure that the `document` is not the same as the opener.
   EXPECT_NE(document, &GetDocument());
@@ -799,7 +829,7 @@ TEST_F(PictureInPictureControllerTestWithChromeClient,
   // Create the DocumentPictureInPictureOptions.
   auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
   ExceptionState exception_state(script_state->GetIsolate(),
-                                 ExceptionState::kExecutionContext,
+                                 ExceptionContextType::kOperationInvoke,
                                  "DocumentPictureInPicture", "requestWindow");
 
   v8::Local<v8::Object> v8_object = v8::Object::New(v8_scope.GetIsolate());
@@ -851,6 +881,23 @@ TEST_F(PictureInPictureControllerTestWithChromeClient,
   // This should properly return two windows.
   EXPECT_NE(nullptr, pictureInPictureWindow1);
   EXPECT_NE(nullptr, pictureInPictureWindow2);
+}
+
+TEST_F(PictureInPictureControllerTestWithChromeClient, CopiesAutoplayFlags) {
+  V8TestingScope v8_scope;
+  LocalFrame::NotifyUserActivation(
+      &GetFrame(), mojom::UserActivationNotificationType::kTest);
+
+  // Set the autoplay flags to something recognizable.
+  auto* page = GetDocument().GetPage();
+  page->ClearAutoplayFlags();
+  const int flags = 0x1234;  // Spoiler alert: this is made up.
+  page->AddAutoplayFlags(flags);
+
+  auto* pictureInPictureWindow =
+      OpenDocumentPictureInPictureWindow(v8_scope, GetDocument());
+  EXPECT_EQ(pictureInPictureWindow->document()->GetPage()->AutoplayFlags(),
+            flags);
 }
 #endif  // !BUILDFLAG(IS_ANDROID)
 

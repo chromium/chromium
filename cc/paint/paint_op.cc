@@ -5,13 +5,17 @@
 #include "cc/paint/paint_op.h"
 
 #include <algorithm>
+#include <limits>
 #include <memory>
+#include <type_traits>
 #include <utility>
 #include <vector>
 
+#include "base/check.h"
 #include "base/functional/function_ref.h"
 #include "base/memory/raw_ptr.h"
 #include "base/notreached.h"
+#include "base/numerics/safe_conversions.h"
 #include "base/types/optional_util.h"
 #include "cc/paint/decoded_draw_image.h"
 #include "cc/paint/display_item_list.h"
@@ -30,6 +34,7 @@
 #include "third_party/skia/include/core/SkSerialProcs.h"
 #include "third_party/skia/include/core/SkTextBlob.h"
 #include "third_party/skia/include/core/SkTiledImageUtils.h"
+#include "third_party/skia/include/core/SkVertices.h"
 #include "third_party/skia/include/docs/SkPDFDocument.h"
 #include "third_party/skia/include/private/chromium/Slug.h"
 #include "ui/gfx/geometry/skia_conversions.h"
@@ -129,6 +134,7 @@ void DrawImageRect(SkCanvas* canvas,
   M(DrawSkottieOp)    \
   M(DrawSlugOp)       \
   M(DrawTextBlobOp)   \
+  M(DrawVerticesOp)   \
   M(NoopOp)           \
   M(RestoreOp)        \
   M(RotateOp)         \
@@ -140,8 +146,7 @@ void DrawImageRect(SkCanvas* canvas,
   M(SetNodeIdOp)      \
   M(TranslateOp)
 
-static constexpr size_t kNumOpTypes =
-    static_cast<size_t>(PaintOpType::LastPaintOpType) + 1;
+static constexpr size_t kNumOpTypes = PaintOp::kNumOpTypes;
 
 // Verify that every op is in the TYPES macro.
 #define M(T) +1
@@ -228,11 +233,11 @@ using SerializeFunction = void (*)(const PaintOp& op,
                                    const SkM44& current_ctm,
                                    const SkM44& original_ctm);
 template <typename T>
-void Serialize(const PaintOp& op,
-               PaintOpWriter& writer,
-               const PaintFlags* flags_to_serialize,
-               const SkM44& current_ctm,
-               const SkM44& original_ctm) {
+ALWAYS_INLINE void Serialize(const PaintOp& op,
+                             PaintOpWriter& writer,
+                             const PaintFlags* flags_to_serialize,
+                             const SkM44& current_ctm,
+                             const SkM44& original_ctm) {
   if (T::kHasPaintFlags && !flags_to_serialize) {
     const auto& op_with_flags = static_cast<const PaintOpWithFlags&>(op);
     flags_to_serialize = &op_with_flags.flags;
@@ -289,14 +294,6 @@ using VoidFunction = void (*)(PaintOp* op);
 static const VoidFunction g_destructor_functions[kNumOpTypes] = {TYPES(M)};
 #undef M
 
-#define M(T) T::kIsDrawOp,
-static bool g_is_draw_op[kNumOpTypes] = {TYPES(M)};
-#undef M
-
-#define M(T) T::kHasPaintFlags,
-static bool g_has_paint_flags[kNumOpTypes] = {TYPES(M)};
-#undef M
-
 #define M(T)                                         \
   static_assert(sizeof(T) <= sizeof(LargestPaintOp), \
                 #T " must be no bigger than LargestPaintOp");
@@ -317,77 +314,31 @@ using AnalyzeOpFunc = void (*)(PaintOpBuffer*, const PaintOp*);
 static const AnalyzeOpFunc g_analyze_op_functions[kNumOpTypes] = {TYPES(M)};
 #undef M
 
-#undef TYPES
-
 }  // namespace
+
+#define M(T) T::kIsDrawOp,
+bool PaintOp::g_is_draw_op[kNumOpTypes] = {TYPES(M)};
+#undef M
+
+#define M(T) T::kHasPaintFlags,
+bool PaintOp::g_has_paint_flags[kNumOpTypes] = {TYPES(M)};
+#undef M
 
 const SkRect PaintOp::kUnsetRect = {SK_ScalarInfinity, 0, 0, 0};
 
 std::string PaintOpTypeToString(PaintOpType type) {
   switch (type) {
-    case PaintOpType::Annotate:
-      return "Annotate";
-    case PaintOpType::ClipPath:
-      return "ClipPath";
-    case PaintOpType::ClipRect:
-      return "ClipRect";
-    case PaintOpType::ClipRRect:
-      return "ClipRRect";
-    case PaintOpType::Concat:
-      return "Concat";
-    case PaintOpType::CustomData:
-      return "CustomData";
-    case PaintOpType::DrawColor:
-      return "DrawColor";
-    case PaintOpType::DrawDRRect:
-      return "DrawDRRect";
-    case PaintOpType::DrawImage:
-      return "DrawImage";
-    case PaintOpType::DrawImageRect:
-      return "DrawImageRect";
-    case PaintOpType::DrawIRect:
-      return "DrawIRect";
-    case PaintOpType::DrawLine:
-      return "DrawLine";
-    case PaintOpType::DrawOval:
-      return "DrawOval";
-    case PaintOpType::DrawPath:
-      return "DrawPath";
-    case PaintOpType::DrawRecord:
-      return "DrawRecord";
-    case PaintOpType::DrawRect:
-      return "DrawRect";
-    case PaintOpType::DrawRRect:
-      return "DrawRRect";
-    case PaintOpType::DrawSkottie:
-      return "DrawSkottie";
-    case PaintOpType::DrawSlug:
-      return "DrawSlug";
-    case PaintOpType::DrawTextBlob:
-      return "DrawTextBlob";
-    case PaintOpType::Noop:
-      return "Noop";
-    case PaintOpType::Restore:
-      return "Restore";
-    case PaintOpType::Rotate:
-      return "Rotate";
-    case PaintOpType::Save:
-      return "Save";
-    case PaintOpType::SaveLayer:
-      return "SaveLayer";
-    case PaintOpType::SaveLayerAlpha:
-      return "SaveLayerAlpha";
-    case PaintOpType::Scale:
-      return "Scale";
-    case PaintOpType::SetMatrix:
-      return "SetMatrix";
-    case PaintOpType::SetNodeId:
-      return "SetNodeId";
-    case PaintOpType::Translate:
-      return "Translate";
+#define M(T)     \
+  case T::kType: \
+    return #T;
+
+  TYPES(M)
+#undef M
   }
-  return "UNKNOWN";
+  NOTREACHED_NORETURN();
 }
+
+#undef TYPES
 
 std::ostream& operator<<(std::ostream& os, PaintOpType type) {
   return os << PaintOpTypeToString(type);
@@ -513,11 +464,7 @@ void DrawLineOp::Serialize(PaintOpWriter& writer,
                            const SkM44& current_ctm,
                            const SkM44& original_ctm) const {
   writer.Write(*flags_to_serialize, current_ctm);
-  writer.Write(x0);
-  writer.Write(y0);
-  writer.Write(x1);
-  writer.Write(y1);
-  writer.Write(draw_as_path);
+  writer.WriteSimpleMultiple(x0, y0, x1, y1, draw_as_path);
 }
 
 void DrawOvalOp::Serialize(PaintOpWriter& writer,
@@ -559,6 +506,17 @@ void DrawRRectOp::Serialize(PaintOpWriter& writer,
                             const SkM44& original_ctm) const {
   writer.Write(*flags_to_serialize, current_ctm);
   writer.Write(rrect);
+}
+
+void DrawVerticesOp::Serialize(PaintOpWriter& writer,
+                               const PaintFlags* flags_to_serialize,
+                               const SkM44& current_ctm,
+                               const SkM44& original_ctm) const {
+  writer.Write(*flags_to_serialize, current_ctm);
+
+  writer.Write(vertices->data());
+  writer.Write(uvs->data());
+  writer.Write(indices->data());
 }
 
 namespace {
@@ -798,7 +756,7 @@ PaintOp* DrawImageOp::Deserialize(PaintOpReader& reader, void* output) {
   DrawImageOp* op = new (output) DrawImageOp;
   reader.Read(&op->flags);
 
-  reader.Read(&op->image);
+  reader.Read(&op->image, op->flags.getDynamicRangeLimit());
   reader.Read(&op->scale_adjustment.fWidth);
   reader.Read(&op->scale_adjustment.fHeight);
 
@@ -813,7 +771,7 @@ PaintOp* DrawImageRectOp::Deserialize(PaintOpReader& reader, void* output) {
   DrawImageRectOp* op = new (output) DrawImageRectOp;
   reader.Read(&op->flags);
 
-  reader.Read(&op->image);
+  reader.Read(&op->image, op->flags.getDynamicRangeLimit());
   reader.Read(&op->scale_adjustment.fWidth);
   reader.Read(&op->scale_adjustment.fHeight);
 
@@ -878,6 +836,28 @@ PaintOp* DrawRRectOp::Deserialize(PaintOpReader& reader, void* output) {
   return op;
 }
 
+PaintOp* DrawVerticesOp::Deserialize(PaintOpReader& reader, void* output) {
+  DrawVerticesOp* op = new (output) DrawVerticesOp;
+
+  reader.Read(&op->flags);
+
+  std::vector<SkPoint> vertices;
+  reader.Read(&vertices);
+  op->vertices =
+      base::MakeRefCounted<RefCountedBuffer<SkPoint>>(std::move(vertices));
+
+  std::vector<SkPoint> uvs;
+  reader.Read(&uvs);
+  op->uvs = base::MakeRefCounted<RefCountedBuffer<SkPoint>>(std::move(uvs));
+
+  std::vector<uint16_t> indices;
+  reader.Read(&indices);
+  op->indices =
+      base::MakeRefCounted<RefCountedBuffer<uint16_t>>(std::move(indices));
+
+  return op;
+}
+
 namespace {
 
 // |max_map_size| is purely a safety mechanism to prevent disastrous behavior
@@ -886,7 +866,7 @@ namespace {
 template <typename T>
 bool DeserializeSkottieMap(
     base::flat_map<SkottieResourceIdHash, T>& map,
-    absl::optional<size_t> max_map_size,
+    std::optional<size_t> max_map_size,
     PaintOpReader& reader,
     base::FunctionRef<T(PaintOpReader& reader)> value_deserializer) {
   size_t map_size = 0;
@@ -914,7 +894,8 @@ bool DeserializeSkottieMap(
 
 SkottieFrameData DeserializeSkottieFrameData(PaintOpReader& reader) {
   SkottieFrameData frame_data;
-  reader.Read(&frame_data.image);
+  reader.Read(&frame_data.image, PaintFlags::DynamicRangeLimitMixture(
+                                     PaintFlags::DynamicRangeLimit::kHigh));
   reader.Read(&frame_data.quality);
   return frame_data;
 }
@@ -959,7 +940,7 @@ PaintOp* DrawSkottieOp::Deserialize(PaintOpReader& reader, void* output) {
           op->images, /*max_map_size=*/num_assets_in_animation, reader,
           DeserializeSkottieFrameData) &&
       DeserializeSkottieMap<SkColor>(op->color_map,
-                                     /*max_map_size=*/absl::nullopt, reader,
+                                     /*max_map_size=*/std::nullopt, reader,
                                      DeserializeSkottieColor) &&
       DeserializeSkottieMap<SkottieTextPropertyValue>(
           op->text_map, /*max_map_size=*/num_text_nodes_in_animation, reader,
@@ -976,10 +957,13 @@ PaintOp* DrawSlugOp::Deserialize(PaintOpReader& reader, void* output) {
   reader.Read(&op->flags);
   unsigned int count = 0;
   reader.Read(&count);
-  reader.Read(&op->slug);
-  op->extra_slugs.resize(count - 1);
-  for (auto& extra_slug : op->extra_slugs) {
-    reader.Read(&extra_slug);
+  if (count > 0) {
+    reader.Read(&op->slug);
+    op->extra_slugs.resize(
+        std::min<size_t>(op->extra_slugs.max_size(), count - 1));
+    for (auto& extra_slug : op->extra_slugs) {
+      reader.Read(&extra_slug);
+    }
   }
   return op;
 }
@@ -1051,13 +1035,13 @@ void AnnotateOp::Raster(const AnnotateOp* op,
                         SkCanvas* canvas,
                         const PlaybackParams& params) {
   switch (op->annotation_type) {
-    case PaintCanvas::AnnotationType::URL:
+    case PaintCanvas::AnnotationType::kUrl:
       SkAnnotateRectWithURL(canvas, op->rect, op->data.get());
       break;
-    case PaintCanvas::AnnotationType::LINK_TO_DESTINATION:
+    case PaintCanvas::AnnotationType::kLinkToDestination:
       SkAnnotateLinkToDestination(canvas, op->rect, op->data.get());
       break;
-    case PaintCanvas::AnnotationType::NAMED_DESTINATION: {
+    case PaintCanvas::AnnotationType::kNameDestination: {
       SkPoint point = SkPoint::Make(op->rect.x(), op->rect.y());
       SkAnnotateNamedDestination(canvas, point, op->data.get());
       break;
@@ -1321,6 +1305,34 @@ void DrawRRectOp::RasterWithFlags(const DrawRRectOp* op,
   });
 }
 
+void DrawVerticesOp::RasterWithFlags(const DrawVerticesOp* op,
+                                     const PaintFlags* flags,
+                                     SkCanvas* canvas,
+                                     const PlaybackParams& params) {
+  CHECK_EQ(op->vertices->data().size(), op->uvs->data().size());
+  SkVertices::Builder vertices_builder(
+      SkVertices::kTriangles_VertexMode,
+      base::checked_cast<int>(op->vertices->data().size()),
+      base::checked_cast<int>(op->indices->data().size()),
+      SkVertices::kHasTexCoords_BuilderFlag);
+
+  std::copy(op->vertices->data().data(),
+            op->vertices->data().data() + op->vertices->data().size(),
+            vertices_builder.positions());
+  std::copy(op->uvs->data().data(),
+            op->uvs->data().data() + op->uvs->data().size(),
+            vertices_builder.texCoords());
+  std::copy(op->indices->data().data(),
+            op->indices->data().data() + op->indices->data().size(),
+            vertices_builder.indices());
+
+  const sk_sp<SkVertices> skverts = vertices_builder.detach();
+
+  flags->DrawToSk(canvas, [&skverts](SkCanvas* c, const SkPaint& p) {
+    c->drawVertices(skverts, SkBlendMode::kSrcOver, p);
+  });
+}
+
 void DrawSkottieOp::Raster(const DrawSkottieOp* op,
                            SkCanvas* canvas,
                            const PlaybackParams& params) {
@@ -1342,7 +1354,7 @@ SkottieWrapper::FrameDataFetchResult DrawSkottieOp::GetImageAssetForRaster(
     SkSamplingOptions& sampling_out) const {
   auto images_iter = images.find(asset_id);
   if (images_iter == images.end())
-    return SkottieWrapper::FrameDataFetchResult::NO_UPDATE;
+    return SkottieWrapper::FrameDataFetchResult::kNoUpdate;
 
   const SkottieFrameData& frame_data = images_iter->second;
   if (!frame_data.image) {
@@ -1369,7 +1381,7 @@ SkottieWrapper::FrameDataFetchResult DrawSkottieOp::GetImageAssetForRaster(
   }
   sampling_out =
       PaintFlags::FilterQualityToSkSamplingOptions(frame_data.quality);
-  return SkottieWrapper::FrameDataFetchResult::NEW_DATA_AVAILABLE;
+  return SkottieWrapper::FrameDataFetchResult::kNewDataAvailable;
 }
 
 void DrawTextBlobOp::RasterWithFlags(const DrawTextBlobOp* op,
@@ -1459,7 +1471,7 @@ void SaveLayerAlphaOp::Raster(const SaveLayerAlphaOp* op,
                               const PlaybackParams& params) {
   // See PaintOp::kUnsetRect
   bool unset = op->bounds.left() == SK_ScalarInfinity;
-  absl::optional<SkPaint> paint;
+  std::optional<SkPaint> paint;
   if (op->alpha != 1.0f) {
     paint.emplace();
     paint->setAlphaf(op->alpha);
@@ -1578,6 +1590,12 @@ bool DrawRRectOp::EqualsForTesting(const DrawRRectOp& other) const {
          rrect == other.rrect;
 }
 
+bool DrawVerticesOp::EqualsForTesting(const DrawVerticesOp& other) const {
+  return flags.EqualsForTesting(other.flags) &&  // IN-TEST
+         *vertices == *other.vertices && *uvs == *other.uvs &&
+         *indices == *other.indices;
+}
+
 bool DrawSkottieOp::EqualsForTesting(const DrawSkottieOp& other) const {
   // TODO(malaykeshav): Verify the skottie objects of each PaintOb are equal
   // bsed on the serialized bytes.
@@ -1652,14 +1670,6 @@ bool TranslateOp::EqualsForTesting(const TranslateOp& other) const {
   return dx == other.dx && dy == other.dy;
 }
 
-bool PaintOp::IsDrawOp() const {
-  return g_is_draw_op[type];
-}
-
-bool PaintOp::IsPaintOpWithFlags() const {
-  return g_has_paint_flags[type];
-}
-
 bool PaintOp::EqualsForTesting(const PaintOp& other) const {
   if (GetType() != other.GetType())
     return false;
@@ -1692,8 +1702,8 @@ size_t PaintOp::Serialize(void* memory,
                               original_ctm);
 
   // Convert DrawTextBlobOp to DrawSlugOp.
-  if (GetType() == PaintOpType::DrawTextBlob) {
-    return writer.FinishOp(static_cast<uint8_t>(PaintOpType::DrawSlug));
+  if (GetType() == PaintOpType::kDrawTextBlob) {
+    return writer.FinishOp(static_cast<uint8_t>(PaintOpType::kDrawSlug));
   }
   return writer.FinishOp(type);
 }
@@ -1746,81 +1756,88 @@ bool PaintOp::GetBounds(const PaintOp& op, SkRect* rect) {
   DCHECK(op.IsDrawOp());
 
   switch (op.GetType()) {
-    case PaintOpType::DrawColor:
+    case PaintOpType::kDrawColor:
       return false;
-    case PaintOpType::DrawDRRect: {
+    case PaintOpType::kDrawDRRect: {
       const auto& rect_op = static_cast<const DrawDRRectOp&>(op);
       *rect = rect_op.outer.getBounds();
       rect->sort();
       return true;
     }
-    case PaintOpType::DrawImage: {
+    case PaintOpType::kDrawImage: {
       const auto& image_op = static_cast<const DrawImageOp&>(op);
       *rect = SkRect::MakeXYWH(image_op.left, image_op.top,
                                image_op.image.width(), image_op.image.height());
       rect->sort();
       return true;
     }
-    case PaintOpType::DrawImageRect: {
+    case PaintOpType::kDrawImageRect: {
       const auto& image_rect_op = static_cast<const DrawImageRectOp&>(op);
       *rect = image_rect_op.dst;
       rect->sort();
       return true;
     }
-    case PaintOpType::DrawIRect: {
+    case PaintOpType::kDrawIRect: {
       const auto& rect_op = static_cast<const DrawIRectOp&>(op);
       *rect = SkRect::Make(rect_op.rect);
       rect->sort();
       return true;
     }
-    case PaintOpType::DrawLine: {
+    case PaintOpType::kDrawLine: {
       const auto& line_op = static_cast<const DrawLineOp&>(op);
       rect->setLTRB(line_op.x0, line_op.y0, line_op.x1, line_op.y1);
       rect->sort();
       return true;
     }
-    case PaintOpType::DrawOval: {
+    case PaintOpType::kDrawOval: {
       const auto& oval_op = static_cast<const DrawOvalOp&>(op);
       *rect = oval_op.oval;
       rect->sort();
       return true;
     }
-    case PaintOpType::DrawPath: {
+    case PaintOpType::kDrawPath: {
       const auto& path_op = static_cast<const DrawPathOp&>(op);
       *rect = path_op.path.getBounds();
       rect->sort();
       return true;
     }
-    case PaintOpType::DrawRect: {
+    case PaintOpType::kDrawRect: {
       const auto& rect_op = static_cast<const DrawRectOp&>(op);
       *rect = rect_op.rect;
       rect->sort();
       return true;
     }
-    case PaintOpType::DrawRRect: {
+    case PaintOpType::kDrawRRect: {
       const auto& rect_op = static_cast<const DrawRRectOp&>(op);
       *rect = rect_op.rrect.rect();
       rect->sort();
       return true;
     }
-    case PaintOpType::DrawRecord:
+    case PaintOpType::kDrawRecord:
       return false;
-    case PaintOpType::DrawSkottie: {
+    case PaintOpType::kDrawSkottie: {
       const auto& skottie_op = static_cast<const DrawSkottieOp&>(op);
       *rect = skottie_op.dst;
       rect->sort();
       return true;
     }
-    case PaintOpType::DrawTextBlob: {
+    case PaintOpType::kDrawTextBlob: {
       const auto& text_op = static_cast<const DrawTextBlobOp&>(op);
       *rect = text_op.blob->bounds().makeOffset(text_op.x, text_op.y);
       rect->sort();
       return true;
     }
-    case PaintOpType::DrawSlug: {
+    case PaintOpType::kDrawSlug: {
       const auto& slug_op = static_cast<const DrawSlugOp&>(op);
       *rect = slug_op.slug->sourceBoundsWithOrigin();
       rect->sort();
+      return true;
+    }
+    case PaintOpType::kDrawVertices: {
+      const auto& vertices_op = static_cast<const DrawVerticesOp&>(op);
+      rect->setBounds(
+          vertices_op.vertices->data().data(),
+          base::checked_cast<int>(vertices_op.vertices->data().size()));
       return true;
     }
     default:
@@ -1909,16 +1926,16 @@ bool PaintOp::OpHasDiscardableImages(const PaintOp& op) {
     return true;
   }
 
-  if (op.GetType() == PaintOpType::DrawImage &&
+  if (op.GetType() == PaintOpType::kDrawImage &&
       static_cast<const DrawImageOp&>(op).HasDiscardableImages()) {
     return true;
-  } else if (op.GetType() == PaintOpType::DrawImageRect &&
+  } else if (op.GetType() == PaintOpType::kDrawImageRect &&
              static_cast<const DrawImageRectOp&>(op).HasDiscardableImages()) {
     return true;
-  } else if (op.GetType() == PaintOpType::DrawRecord &&
+  } else if (op.GetType() == PaintOpType::kDrawRecord &&
              static_cast<const DrawRecordOp&>(op).HasDiscardableImages()) {
     return true;
-  } else if (op.GetType() == PaintOpType::DrawSkottie &&
+  } else if (op.GetType() == PaintOpType::kDrawSkottie &&
              static_cast<const DrawSkottieOp&>(op).HasDiscardableImages()) {
     return true;
   }
@@ -2085,6 +2102,20 @@ size_t DrawRecordOp::AdditionalBytesUsed() const {
 size_t DrawRecordOp::AdditionalOpCount() const {
   return record.total_op_count();
 }
+
+DrawVerticesOp::DrawVerticesOp() : PaintOpWithFlags(kType) {}
+
+DrawVerticesOp::DrawVerticesOp(
+    scoped_refptr<RefCountedBuffer<SkPoint>> vertices,
+    scoped_refptr<RefCountedBuffer<SkPoint>> uvs,
+    scoped_refptr<RefCountedBuffer<uint16_t>> indices,
+    const PaintFlags& flags)
+    : PaintOpWithFlags(kType, flags),
+      vertices(std::move(vertices)),
+      uvs(std::move(uvs)),
+      indices(std::move(indices)) {}
+
+DrawVerticesOp::~DrawVerticesOp() = default;
 
 DrawSkottieOp::DrawSkottieOp(scoped_refptr<SkottieWrapper> skottie,
                              SkRect dst,

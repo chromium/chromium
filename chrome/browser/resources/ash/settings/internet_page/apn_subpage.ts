@@ -15,13 +15,13 @@ import {processDeviceState} from 'chrome://resources/ash/common/network/cellular
 import {MojoInterfaceProviderImpl} from 'chrome://resources/ash/common/network/mojo_interface_provider.js';
 import {NetworkListenerBehavior, NetworkListenerBehaviorInterface} from 'chrome://resources/ash/common/network/network_listener_behavior.js';
 import {OncMojo} from 'chrome://resources/ash/common/network/onc_mojo.js';
-import {assert} from 'chrome://resources/js/assert_ts.js';
+import {assert} from 'chrome://resources/js/assert.js';
 import {CrosNetworkConfigInterface, ManagedProperties, MAX_NUM_CUSTOM_APNS, NetworkStateProperties} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/cros_network_config.mojom-webui.js';
 import {NetworkType} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/network_types.mojom-webui.js';
 import {mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
+import {RouteObserverMixin, RouteObserverMixinInterface} from '../common/route_observer_mixin.js';
 import {Constructor} from '../common/types.js';
-import {RouteObserverMixin, RouteObserverMixinInterface} from '../route_observer_mixin.js';
 import {Route, Router, routes} from '../router.js';
 
 import {getTemplate} from './apn_subpage.html.js';
@@ -143,7 +143,7 @@ export class ApnSubpageElement extends ApnSubpageElementBase {
    * Helper method that can be used by parent elements to open the APN
    * creation dialog.
    */
-  openApnDetailDialogInCreateMode() {
+  openApnDetailDialogInCreateMode(): void {
     assert(this.guid_);
     this.$.apnList.openApnDetailDialogInCreateMode();
   }
@@ -170,12 +170,6 @@ export class ApnSubpageElement extends ApnSubpageElementBase {
       return;
     }
 
-    if (this.deviceState_ && this.deviceState_.scanning) {
-      // Cellular properties may be invalid while scanning, so keep the
-      // existing properties instead.
-      response.result.typeProperties.cellular =
-          this.managedProperties_!.typeProperties.cellular;
-    }
     this.managedProperties_ = response.result;
 
     if (!this.deviceState_) {

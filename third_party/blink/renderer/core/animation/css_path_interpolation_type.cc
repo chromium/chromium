@@ -57,12 +57,12 @@ void SetPath(const CSSProperty& property,
       return;
     case CSSPropertyID::kOffsetPath:
       // TODO(sakhapov): handle coord box.
-      builder.SetOffsetPath(ShapeOffsetPathOperation::Create(
+      builder.SetOffsetPath(MakeGarbageCollected<ShapeOffsetPathOperation>(
           std::move(path), CoordBox::kBorderBox));
       return;
     case CSSPropertyID::kClipPath:
       // TODO(pdr): Handle geometry box.
-      builder.SetClipPath(ShapeClipPathOperation::Create(
+      builder.SetClipPath(MakeGarbageCollected<ShapeClipPathOperation>(
           std::move(path), GeometryBox::kBorderBox));
       return;
     default:
@@ -127,7 +127,7 @@ InterpolationValue CSSPathInterpolationType::MaybeConvertInherit(
   if (!state.ParentStyle())
     return nullptr;
 
-  conversion_checkers.push_back(std::make_unique<InheritedPathChecker>(
+  conversion_checkers.push_back(MakeGarbageCollected<InheritedPathChecker>(
       CssProperty(), GetPath(CssProperty(), *state.ParentStyle())));
   return PathInterpolationFunctions::ConvertValue(
       GetPath(CssProperty(), *state.ParentStyle()),

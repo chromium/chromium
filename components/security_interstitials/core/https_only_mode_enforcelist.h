@@ -6,6 +6,7 @@
 #define COMPONENTS_SECURITY_INTERSTITIALS_CORE_HTTPS_ONLY_MODE_ENFORCELIST_H_
 
 #include <set>
+#include <string>
 
 #include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
@@ -45,12 +46,15 @@ class HttpsOnlyModeEnforcelist {
   // enforced for this host.
   void UnenforceForHost(const std::string& host, bool is_nondefault_storage);
 
-  // Returns true if host is not allowed to be loaded over HTTP.
-  bool IsEnforcedForHost(const std::string& host,
-                         bool is_nondefault_storage) const;
+  // Returns true if URL is not allowed to be loaded over HTTP. This check
+  // ignores the scheme of the URL: calling it with http:// or https:// will
+  // return the same result.
+  bool IsEnforcedForUrl(const GURL& url, bool is_nondefault_storage) const;
 
   // Revokes all HTTPS enforcements for host.
   void RevokeEnforcements(const std::string& host);
+
+  std::set<GURL> GetHosts(bool is_nondefault_storage) const;
 
   // Clears enforcelist for the given pattern filter. If the pattern filter is
   // empty, clears enforcelist for all hosts.
@@ -89,4 +93,4 @@ class HttpsOnlyModeEnforcelist {
 
 }  // namespace security_interstitials
 
-#endif  // COMPONENTS_SECURITY_INTERSTITIALS_CORE_HTTPS_ONLY_MODE_ALLOWLIST_H_
+#endif  // COMPONENTS_SECURITY_INTERSTITIALS_CORE_HTTPS_ONLY_MODE_ENFORCELIST_H_

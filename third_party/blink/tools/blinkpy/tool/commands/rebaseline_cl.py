@@ -13,6 +13,7 @@ import re
 from concurrent.futures import Executor
 from typing import Dict, List, Optional
 
+from blinkpy.common.checkout.baseline_optimizer import BaselineOptimizer
 from blinkpy.common.net.git_cl import GitCL, TryJobStatus
 from blinkpy.common.net.rpc import Build, RPCError
 from blinkpy.common.net.web_test_results import WebTestResults
@@ -24,6 +25,7 @@ from blinkpy.tool.commands.build_resolver import (
 from blinkpy.tool.commands.command import resolve_test_patterns
 from blinkpy.tool.commands.rebaseline import AbstractParallelRebaselineCommand
 from blinkpy.tool.commands.rebaseline import TestBaselineSet
+from blinkpy.tool.grammar import pluralize
 
 _log = logging.getLogger(__name__)
 
@@ -57,22 +59,12 @@ class RebaselineCL(AbstractParallelRebaselineCommand):
         '--patchset',
         default=None,
         type='int',
-        help='Patchset number to fetch results from.')
+        help='Patchset number to fetch try results from (defaults to latest).')
 
     def __init__(self, tool, io_pool: Optional[Executor] = None):
-        super(RebaselineCL, self).__init__(options=[
+        super().__init__(options=[
             self.only_changed_tests_option,
             self.no_trigger_jobs_option,
-            optparse.make_option(
-                '--fill-missing',
-                dest='fill_missing',
-                action='store_true',
-                default=None,
-                help='If some platforms have no try job results, use results '
-                'from try job results of other platforms.'),
-            optparse.make_option('--no-fill-missing',
-                                 dest='fill_missing',
-                                 action='store_false'),
             self.test_name_file_option,
             optparse.make_option(
                 '--builders',
@@ -86,6 +78,7 @@ class RebaselineCL(AbstractParallelRebaselineCommand):
             self.no_optimize_option,
             self.dry_run_option,
             self.results_directory_option,
+            *self.wpt_options,
         ])
         self._tool = tool
         # Use a separate thread pool for parallel network I/O in the main
@@ -102,11 +95,7 @@ class RebaselineCL(AbstractParallelRebaselineCommand):
         selected_builders = getattr(parser.values, option.dest, set())
         # This set includes CQ builders, whereas `builder_for_rebaselining()`
         # does not.
-        allowed_builders = {
-            builder
-            for builder in self._tool.builders.all_try_builder_names()
-            if not self._tool.builders.uses_wptrunner(builder)
-        }
+        allowed_builders = self._tool.builders.all_try_builder_names()
         for builder in value.split(','):
             if builder in allowed_builders:
                 selected_builders.add(builder)
@@ -122,9 +111,9 @@ class RebaselineCL(AbstractParallelRebaselineCommand):
         setattr(parser.values, option.dest, selected_builders)
 
     def execute(self, options, args, tool):
-        self._tool = tool
         self._dry_run = options.dry_run
         self.git_cl = self.git_cl or GitCL(tool)
+
         # '--dry-run' implies '--no-trigger-jobs'.
         options.trigger_jobs = options.trigger_jobs and not self._dry_run
         if args and options.test_name_file:
@@ -155,37 +144,33 @@ class RebaselineCL(AbstractParallelRebaselineCommand):
             _log.error('%s', error)
             return 1
 
-        builders_with_infra_failures = {
+        builders_with_incomplete_results = {
             build.builder_name
-            for build in GitCL.filter_infra_failed(build_statuses)
+            for build in GitCL.filter_incomplete(build_statuses)
         }
         jobs_to_results = self._fetch_results(build_statuses)
         builders_with_results = {b.builder_name for b in jobs_to_results}
         builders_without_results = (set(self.selected_try_bots) -
                                     builders_with_results -
-                                    builders_with_infra_failures)
+                                    builders_with_incomplete_results)
         if builders_without_results:
             _log.warning('Some builders have no results:')
             for builder in sorted(builders_without_results):
                 _log.warning('  %s', builder)
 
-        builders_without_results.update(builders_with_infra_failures)
-        if options.fill_missing is None and builders_without_results:
-            should_continue = self._tool.user.confirm(
-                'Would you like to continue?',
-                default=self._tool.user.DEFAULT_NO)
-            if not should_continue:
-                _log.info('Aborting.')
-                return 1
-            options.fill_missing = self._tool.user.confirm(
-                'Would you like to try to fill in missing results with '
-                'available results?\n'
-                'Note: This is generally not suggested unless the results '
+        fill_missing = False
+        builders_without_results.update(builders_with_incomplete_results)
+        if builders_without_results:
+            fill_missing = self._tool.user.confirm(
+                'Would you like to continue?\n'
+                'Note: This will try to fill in missing results '
+                'with available results.\n'
+                'This is generally not suggested unless the results '
                 'are platform agnostic.',
                 default=self._tool.user.DEFAULT_NO)
-            if not options.fill_missing:
-                _log.info('Please rebaseline again for builders '
-                          'with incomplete results later.')
+            if not fill_missing:
+                _log.info('Aborting. Please retry builders with no results.')
+                return 1
 
         if options.test_name_file:
             test_baseline_set = self._make_test_baseline_set_from_file(
@@ -197,7 +182,7 @@ class RebaselineCL(AbstractParallelRebaselineCommand):
             test_baseline_set = self._make_test_baseline_set(
                 jobs_to_results, options.only_changed_tests)
 
-        if options.fill_missing:
+        if fill_missing:
             self.fill_in_missing_results(test_baseline_set)
         with self._io_pool or contextlib.nullcontext():
             return self.rebaseline(options, test_baseline_set)
@@ -283,8 +268,7 @@ class RebaselineCL(AbstractParallelRebaselineCommand):
             A TestBaselineSet object.
         """
         test_baseline_set = TestBaselineSet(self._tool.builders)
-        port = self._tool.port_factory.get()
-        tests = resolve_test_patterns(port, test_patterns)
+        tests = resolve_test_patterns(self._host_port, test_patterns)
         for test, (build, builder_results) in itertools.product(
                 tests, builds_to_results.items()):
             for step_results in builder_results:
@@ -331,7 +315,26 @@ class RebaselineCL(AbstractParallelRebaselineCommand):
                         continue
                     test_baseline_set.add(test, build,
                                           step_results.step_name())
-        return test_baseline_set
+
+        # Validate test existence, since the builder may run tests not found
+        # locally. `Port.tests()` performs an expensive filesystem walk, so
+        # filter out all invalid tests here instead of filtering at each build
+        # step.
+        tests = set(self._host_port.tests(test_baseline_set.all_tests()))
+        missing_tests, valid_set = set(), TestBaselineSet(self._tool.builders)
+        for task in test_baseline_set:
+            if task.test in tests:
+                valid_set.add(*task)
+            else:
+                missing_tests.add(task.test)
+        if missing_tests:
+            _log.warning(
+                'Skipping rebaselining for %s missing from the local checkout:',
+                pluralize('test', len(missing_tests)))
+            for test in sorted(missing_tests):
+                _log.warning(f'  {test}')
+            _log.warning('You may want to rebase or trigger new builds.')
+        return valid_set
 
     def _test_base_path(self):
         """Returns the relative path from the repo root to the web tests."""
@@ -403,6 +406,8 @@ class RebaselineCL(AbstractParallelRebaselineCommand):
         tasks_by_step = collections.defaultdict(set)
         for task in test_baseline_set:
             tasks_by_step[task.step_name].add(task)
+        optimizer = BaselineOptimizer(self._tool, self._host_port,
+                                      self._tool.builders.all_port_names())
         for step_name, tasks in tasks_by_step.items():
             all_ports = {
                 self._tool.builders.port_name_for_builder_name(builder)
@@ -415,24 +420,30 @@ class RebaselineCL(AbstractParallelRebaselineCommand):
                     (task.build, task.port_name))
             for test in sorted(build_ports_by_test):
                 build_port_pairs = build_ports_by_test[test]
-                missing_ports = all_ports - {
-                    port
-                    for _, port in build_port_pairs
+                # Don't fill results for skipped port and test pairs. Otherwise,
+                # the baselines will be downloaded but not cleaned up.
+                missing_ports = {
+                    port_name
+                    for port_name in all_ports if
+                    not optimizer.skips_test(optimizer.port(port_name), test)
                 }
+                missing_ports -= {port for _, port in build_port_pairs}
                 if not missing_ports:
                     continue
-                _log.info('For %s:', test)
+                _log.debug('For %s:', test)
                 for port in sorted(missing_ports):
-                    build = self._choose_fill_in_build(port, build_port_pairs)
-                    _log.info('Using "%s" build %d for %s.',
-                              build.builder_name, build.build_number, port)
+                    build = self._choose_fill_in_build(optimizer, port,
+                                                       build_port_pairs)
+                    _log.debug('  Using "%s" build %d for %s.',
+                               build.builder_name, build.build_number, port)
                     test_baseline_set.add(test,
                                           build,
                                           step_name,
                                           port_name=port)
         return test_baseline_set
 
-    def _choose_fill_in_build(self, target_port, build_port_pairs):
+    def _choose_fill_in_build(self, optimizer: BaselineOptimizer, target_port,
+                              build_port_pairs):
         """Returns a Build to use to supply results for the given port.
 
         Ideally, this should return a build for a similar port so that the
@@ -443,10 +454,8 @@ class RebaselineCL(AbstractParallelRebaselineCommand):
         # for example "win-win11", or "mac-mac13-arm64". For the test port used
         # in unit tests, though, the full port name may be
         # "test-<os>-<version>".
-        def os_name(port):
-            if '-' not in port:
-                return port
-            return port[:port.rfind('-')]
+        def os_name(port_name: str) -> str:
+            return optimizer.port(port_name).operating_system()
 
         # If any Build exists with the same OS, use the first one.
         target_os = os_name(target_port)

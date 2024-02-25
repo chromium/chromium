@@ -9,23 +9,23 @@ import './strings.m.js';
 import './item.js';
 
 import {getInstance as getAnnouncerInstance} from 'chrome://resources/cr_elements/cr_a11y_announcer/cr_a11y_announcer.js';
-import {assert} from 'chrome://resources/js/assert_ts.js';
-import {isMac} from 'chrome://resources/js/platform.js';
-import {EventTracker} from 'chrome://resources/js/event_tracker.js';
 import {ListPropertyUpdateMixin} from 'chrome://resources/cr_elements/list_property_update_mixin.js';
+import {assert} from 'chrome://resources/js/assert.js';
+import {EventTracker} from 'chrome://resources/js/event_tracker.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
+import {isMac} from 'chrome://resources/js/platform.js';
 import {PluralStringProxyImpl} from 'chrome://resources/js/plural_string_proxy.js';
-import {getDeepActiveElement} from 'chrome://resources/js/util_ts.js';
-import {IronListElement} from 'chrome://resources/polymer/v3_0/iron-list/iron-list.js';
+import {getDeepActiveElement} from 'chrome://resources/js/util.js';
+import type {IronListElement} from 'chrome://resources/polymer/v3_0/iron-list/iron-list.js';
 import {microTask, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {deselectItems, selectAll, selectItem, updateAnchor} from './actions.js';
 import {BookmarksCommandManagerElement} from './command_manager.js';
 import {MenuSource} from './constants.js';
-import {BookmarksItemElement} from './item.js';
+import type {BookmarksItemElement} from './item.js';
 import {getTemplate} from './list.html.js';
 import {StoreClientMixin} from './store_client_mixin.js';
-import {OpenCommandMenuDetail} from './types.js';
+import type {OpenCommandMenuDetail} from './types.js';
 import {canReorderChildren, getDisplayedList} from './util.js';
 
 const BookmarksListElementBase =

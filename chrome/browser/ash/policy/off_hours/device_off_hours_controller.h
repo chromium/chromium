@@ -136,7 +136,7 @@ class DeviceOffHoursController : public ash::SystemClockClient::Observer {
 
   // Used for testing purposes, otherwise it's an instance of
   // base::DefaultClock.
-  raw_ptr<base::Clock, ExperimentalAsh> clock_;
+  raw_ptr<base::Clock> clock_;
 
   // We start with the assumption that the system clock is synchronized with the
   // network time. This will be updated once actual synchronization attempts are

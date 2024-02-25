@@ -9,9 +9,12 @@
 #include "chrome/browser/ui/passwords/bubble_controllers/move_to_account_store_bubble_controller.h"
 #include "chrome/browser/ui/passwords/bubble_controllers/password_bubble_controller_base.h"
 #include "chrome/browser/ui/views/passwords/password_bubble_view_base.h"
+#include "ui/base/metadata/metadata_header_macros.h"
 
 // Bubble asking the user to move a profile credential to their account store.
 class MoveToAccountStoreBubbleView : public PasswordBubbleViewBase {
+  METADATA_HEADER(MoveToAccountStoreBubbleView, PasswordBubbleViewBase)
+
   class MovingBannerView;
 
  public:

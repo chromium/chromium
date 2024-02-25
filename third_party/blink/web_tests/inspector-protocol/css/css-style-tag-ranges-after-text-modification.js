@@ -1,4 +1,4 @@
-(async function(testRunner) {
+(async function(/** @type {import('test_runner').TestRunner} */ testRunner) {
   var {page, session, dp} = await testRunner.startHTML(`<style>div{color:red;}</style><div id='inspected'></div>`, 'Verify style tag reports matching styles properly after editing style content through javascript');
 
   var [,,styleSheetAdded] = await Promise.all([

@@ -7,9 +7,9 @@ import 'chrome://resources/cr_elements/cr_shared_style.css.js';
 import 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.js';
 import 'chrome://resources/cr_elements/cr_shared_vars.css.js';
 
-import {CrButtonElement} from 'chrome://resources/cr_elements/cr_button/cr_button.js';
-import {CrIconButtonElement} from 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.js';
-import {assertNotReached} from 'chrome://resources/js/assert_ts.js';
+import type {CrButtonElement} from 'chrome://resources/cr_elements/cr_button/cr_button.js';
+import type {CrIconButtonElement} from 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.js';
+import {assertNotReached} from 'chrome://resources/js/assert.js';
 import {sanitizeInnerHtml} from 'chrome://resources/js/parse_html_subset.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
@@ -17,7 +17,8 @@ import {PasswordManagerImpl} from '../password_manager_proxy.js';
 import {Page, Router, UrlParam} from '../router.js';
 
 import {getTemplate} from './promo_card.html.js';
-import {PromoCard, PromoCardsProxyImpl} from './promo_cards_browser_proxy.js';
+import type {PromoCard} from './promo_cards_browser_proxy.js';
+import {PromoCardsProxyImpl} from './promo_cards_browser_proxy.js';
 
 // WARNING: Keep synced with
 // chrome/browser/ui/webui/password_manager/promo_cards_handler.cc.
@@ -26,6 +27,8 @@ export enum PromoCardId {
   WEB_PASSWORD_MANAGER = 'passwords_on_web_promo',
   SHORTCUT = 'password_shortcut_promo',
   ACCESS_ON_ANY_DEVICE = 'access_on_any_device_promo',
+  RELAUNCH_CHROME = 'relaunch_chrome_promo',
+  MOVE_PASSWORDS = 'move_passwords_promo',
 }
 
 /**
@@ -39,8 +42,10 @@ enum PromoCardMetricId {
   UNUSED_WEB_PASSWORD_MANAGER = 1,
   SHORTCUT = 2,
   UNUSED_ACCESS_ON_ANY_DEVICE = 3,
+  RELAUNCH_CHROME = 4,
+  MOVE_PASSWORDS = 5,
   // Must be last.
-  COUNT = 4,
+  COUNT = 6,
 }
 
 function recordPromoCardAction(card: PromoCardMetricId) {
@@ -57,6 +62,8 @@ export interface PromoCardElement {
     title: HTMLElement,
   };
 }
+
+const isOpenedAsShortcut = window.matchMedia('(display-mode: standalone)');
 
 export class PromoCardElement extends PolymerElement {
   static get is() {
@@ -75,6 +82,24 @@ export class PromoCardElement extends PolymerElement {
 
   promoCard: PromoCard;
 
+  override connectedCallback() {
+    super.connectedCallback();
+    // If this is a shortcut promo we should listen to display mode changes to
+    // close it automatically when shortcut is installed from another place.
+    // Check crbug.com/1493264 for more details when it can happen.
+    if (this.promoCard.id === PromoCardId.SHORTCUT) {
+      isOpenedAsShortcut.addEventListener('change', this.close_.bind(this));
+    }
+  }
+
+  override disconnectedCallback() {
+    super.disconnectedCallback();
+
+    if (this.promoCard.id === PromoCardId.SHORTCUT) {
+      isOpenedAsShortcut.removeEventListener('change', this.close_.bind(this));
+    }
+  }
+
   private getDescription_(): TrustedHTML {
     return sanitizeInnerHtml(this.promoCard.description);
   }
@@ -91,6 +116,15 @@ export class PromoCardElement extends PolymerElement {
         PasswordManagerImpl.getInstance().showAddShortcutDialog();
         recordPromoCardAction(PromoCardMetricId.SHORTCUT);
         break;
+      case PromoCardId.RELAUNCH_CHROME:
+        chrome.send('restartBrowser');
+        recordPromoCardAction(PromoCardMetricId.RELAUNCH_CHROME);
+        break;
+      case PromoCardId.MOVE_PASSWORDS:
+        this.dispatchEvent(new CustomEvent(
+            'move-passwords-clicked', {bubbles: true, composed: true}));
+        recordPromoCardAction(PromoCardMetricId.MOVE_PASSWORDS);
+        return;
       default:
         assertNotReached();
     }

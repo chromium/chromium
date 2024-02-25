@@ -17,6 +17,7 @@
 #include "components/sync/protocol/app_specifics.pb.h"
 #include "components/sync/protocol/autofill_specifics.pb.h"
 #include "components/sync/protocol/bookmark_specifics.pb.h"
+#include "components/sync/protocol/collaboration_group_specifics.pb.h"
 #include "components/sync/protocol/contact_info_specifics.pb.h"
 #include "components/sync/protocol/data_type_progress_marker.pb.h"
 #include "components/sync/protocol/device_info_specifics.pb.h"
@@ -65,7 +66,7 @@ using testing::Not;
 
 DEFINE_SPECIFICS_TO_VALUE_TEST(encrypted)
 
-static_assert(49 == syncer::GetNumModelTypes(),
+static_assert(50 == syncer::GetNumModelTypes(),
               "When adding a new field, add a DEFINE_SPECIFICS_TO_VALUE_TEST "
               "for your field below, and optionally a test for the specific "
               "conversions.");
@@ -81,6 +82,7 @@ DEFINE_SPECIFICS_TO_VALUE_TEST(autofill_wallet)
 DEFINE_SPECIFICS_TO_VALUE_TEST(autofill_wallet_credential)
 DEFINE_SPECIFICS_TO_VALUE_TEST(autofill_wallet_usage)
 DEFINE_SPECIFICS_TO_VALUE_TEST(bookmark)
+DEFINE_SPECIFICS_TO_VALUE_TEST(collaboration_group)
 DEFINE_SPECIFICS_TO_VALUE_TEST(contact_info)
 DEFINE_SPECIFICS_TO_VALUE_TEST(device_info)
 DEFINE_SPECIFICS_TO_VALUE_TEST(dictionary)
@@ -107,12 +109,14 @@ DEFINE_SPECIFICS_TO_VALUE_TEST(security_event)
 DEFINE_SPECIFICS_TO_VALUE_TEST(segmentation)
 DEFINE_SPECIFICS_TO_VALUE_TEST(send_tab_to_self)
 DEFINE_SPECIFICS_TO_VALUE_TEST(session)
+DEFINE_SPECIFICS_TO_VALUE_TEST(shared_tab_group_data)
 DEFINE_SPECIFICS_TO_VALUE_TEST(sharing_message)
 DEFINE_SPECIFICS_TO_VALUE_TEST(theme)
 DEFINE_SPECIFICS_TO_VALUE_TEST(typed_url)
 DEFINE_SPECIFICS_TO_VALUE_TEST(user_consent)
 DEFINE_SPECIFICS_TO_VALUE_TEST(user_event)
 DEFINE_SPECIFICS_TO_VALUE_TEST(wallet_metadata)
+DEFINE_SPECIFICS_TO_VALUE_TEST(web_apk)
 DEFINE_SPECIFICS_TO_VALUE_TEST(web_app)
 DEFINE_SPECIFICS_TO_VALUE_TEST(webauthn_credential)
 DEFINE_SPECIFICS_TO_VALUE_TEST(wifi_configuration)

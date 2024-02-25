@@ -72,7 +72,7 @@ enum class SystemWebAppType {
   // feedback report on Chrome OS.
   //
   // Source: //ash/webui/os_feedback_ui
-  // contact: cros-telemetry@google.com
+  // contact: cros-feedback-app@google.com
   OS_FEEDBACK = 19,
 
   // Projector aka Screencast (go/projector-player-dd) aims to make it simple
@@ -107,13 +107,19 @@ enum class SystemWebAppType {
   // contact: skuhne@google.com
   OS_FLAGS = 23,
 
-  // Face ML app aims to provide UI interactions to help Face ML team train
-  // their models on CrOS. This is an internal app that is only enabled on
-  // pre-released Chromebooks with appropriate hardware and OS support.
-  //
-  // Source: //ash/webui/face_ml_app_ui/
-  // contact: googleo@google.com
-  FACE_ML = 24,
+  // FaceML was deprecated.
+  // FACE_ML = 24,
+
+  // VC Background allows users to control webcam settings, including blur and
+  // background image.
+  // Source: //ash/webui/vc_background_ui/
+  // Contact: assistive-eng@google.com
+  VC_BACKGROUND = 25,
+
+  // CrOS implementation of the print preview surface.
+  // Source: //ash/webui/print_preview_cros/
+  // Contact: cros-peripherals@google.com
+  PRINT_PREVIEW_CROS = 26,
 
   // When adding a new System App, remember to:
   //
@@ -154,7 +160,7 @@ enum class SystemWebAppType {
   //
   // 8. Have one of System Web App Platform owners review the CL.
   //    See: //ash/webui/PLATFORM_OWNERS
-  kMaxValue = FACE_ML,
+  kMaxValue = PRINT_PREVIEW_CROS,
 };
 
 }  // namespace ash

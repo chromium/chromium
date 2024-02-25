@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "base/memory/raw_ptr.h"
 #include "media/learning/common/learning_task_controller.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -32,15 +33,15 @@ class MockLearningTaskController : public LearningTaskController {
   MOCK_METHOD4(BeginObservation,
                void(base::UnguessableToken id,
                     const FeatureVector& features,
-                    const absl::optional<TargetValue>& default_value,
-                    const absl::optional<ukm::SourceId>& source_id));
+                    const std::optional<TargetValue>& default_value,
+                    const std::optional<ukm::SourceId>& source_id));
   MOCK_METHOD2(CompleteObservation,
                void(base::UnguessableToken id,
                     const ObservationCompletion& completion));
   MOCK_METHOD1(CancelObservation, void(base::UnguessableToken id));
   MOCK_METHOD2(UpdateDefaultTarget,
                void(base::UnguessableToken id,
-                    const absl::optional<TargetValue>& default_target));
+                    const std::optional<TargetValue>& default_target));
   MOCK_METHOD2(PredictDistribution,
                void(const FeatureVector& features, PredictionCB callback));
 
@@ -77,7 +78,8 @@ class LearningExperimentHelperTest : public testing::Test {
   }
 
   LearningTask task_;
-  MockLearningTaskController* controller_raw_ = nullptr;
+  raw_ptr<MockLearningTaskController, DanglingUntriaged> controller_raw_ =
+      nullptr;
   std::unique_ptr<LearningExperimentHelper> helper_;
 
   FeatureDictionary dict_;

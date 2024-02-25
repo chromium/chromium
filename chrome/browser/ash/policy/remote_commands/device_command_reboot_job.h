@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_ASH_POLICY_REMOTE_COMMANDS_DEVICE_COMMAND_REBOOT_JOB_H_
 #define CHROME_BROWSER_ASH_POLICY_REMOTE_COMMANDS_DEVICE_COMMAND_REBOOT_JOB_H_
 
-#include <memory>
 #include <string>
 
 #include "base/functional/callback.h"
@@ -43,7 +42,8 @@ class RebootNotificationsScheduler;
 //   * If there is no logged in user, reports success and reboots immediately.
 //   * If a user is logged in, notifies the user, waits for a timeout, reports
 //     success and reboots.
-//   * If the user signs out during the timeout, reports success and reboots.
+//   * If the user signs out during the waiting period, reports success and
+//     reboots.
 class DeviceCommandRebootJob : public RemoteCommandJob,
                                public chromeos::PowerManagerClient::Observer {
  public:
@@ -76,6 +76,8 @@ class DeviceCommandRebootJob : public RemoteCommandJob,
       const base::Clock* clock,
       const base::TickClock* tick_clock,
       GetBootTimeCallback get_boot_time_callback);
+
+  bool ParseCommandPayload(const std::string& command_payload) override;
 
  private:
   // Posts a task with a callback. Command's callbacks cannot be run
@@ -134,7 +136,8 @@ class DeviceCommandRebootJob : public RemoteCommandJob,
 
   CallbackWithResult result_callback_;
 
-  const base::TimeDelta user_session_timeout_;
+  // Delay between execution start in user session and the reboot.
+  base::TimeDelta user_session_delay_;
 
   base::WeakPtrFactory<DeviceCommandRebootJob> weak_factory_{this};
 };

@@ -3,11 +3,10 @@
 // found in the LICENSE file.
 
 package org.chromium.chrome.browser.util;
-import org.chromium.base.annotations.NativeMethods;
 
-/**
- * JNI call glue for AfterStartupTaskUtils in C++.
- */
+import org.jni_zero.NativeMethods;
+
+/** JNI call glue for AfterStartupTaskUtils in C++. */
 public final class AfterStartupTaskUtils {
     private AfterStartupTaskUtils() {}
 

@@ -58,6 +58,17 @@ class DocumentScannerServiceClient {
   DocumentScannerServiceClient();
 
  private:
+  enum class LoadStatus {
+    NOT_LOADED,  // ServiceClient has not tried to connect to the ML process yet
+                 // or failed to connect to the ML process and will try to
+                 // load the document scanner again.
+    LOADING,     // ServiceClient is loading the document scanner.
+    LOAD_FAILED,  // ServiceClient connected to the ML process successfully but
+                  // failed to load the document scanner from it. In this case,
+                  // ServiceClient will not try to reload.
+    LOADED        // ServiceClient loaded the document scanner successfully.
+  };
+
   void LoadDocumentScanner();
 
   void LoadDocumentScannerInternal(const std::string& lib_path);
@@ -65,22 +76,19 @@ class DocumentScannerServiceClient {
   void OnLoadedDocumentScanner(
       chromeos::machine_learning::mojom::LoadModelResult result);
 
-  // Guards |document_scanner_loaded_| and |on_ready_callbacks_| which are
-  // related to the load status.
-  base::Lock load_status_lock_;
+  void OnMojoDisconnected();
 
-  bool is_loading_ GUARDED_BY(load_status_lock_) = false;
+  LoadStatus document_scanner_loaded_ = LoadStatus::NOT_LOADED;
 
-  bool document_scanner_loaded_ GUARDED_BY(load_status_lock_) = false;
-
-  std::vector<OnReadyCallback> on_ready_callbacks_
-      GUARDED_BY(load_status_lock_);
+  std::vector<OnReadyCallback> on_ready_callbacks_;
 
   mojo::Remote<chromeos::machine_learning::mojom::MachineLearningService>
       ml_service_;
 
   mojo::Remote<chromeos::machine_learning::mojom::DocumentScanner>
       document_scanner_;
+
+  SEQUENCE_CHECKER(sequence_checker_);
 
   base::WeakPtrFactory<DocumentScannerServiceClient> weak_ptr_factory_{this};
 };

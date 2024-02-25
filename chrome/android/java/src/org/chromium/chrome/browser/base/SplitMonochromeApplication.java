@@ -8,8 +8,8 @@ import android.content.Context;
 
 import org.chromium.android_webview.nonembedded.WebViewApkApplication;
 import org.chromium.base.library_loader.LibraryProcessType;
+import org.chromium.base.version_info.VersionInfo;
 import org.chromium.build.annotations.IdentifierNameString;
-import org.chromium.components.version_info.VersionInfo;
 import org.chromium.content_public.browser.ChildProcessCreationParams;
 
 /**
@@ -57,9 +57,15 @@ public class SplitMonochromeApplication extends SplitChromeApplication {
         // and are external, and will fail to bind otherwise.
         boolean bindToCaller = false;
         boolean ignoreVisibilityForImportance = false;
-        ChildProcessCreationParams.set(packageName, null /* privilegedServicesName */, packageName,
-                null /* sandboxedServicesName */, true /* isExternalService */,
-                LibraryProcessType.PROCESS_CHILD, bindToCaller, ignoreVisibilityForImportance);
+        ChildProcessCreationParams.set(
+                packageName,
+                /* privilegedServicesName= */ null,
+                packageName,
+                /* sandboxedServicesName= */ null,
+                /* isExternalService= */ true,
+                LibraryProcessType.PROCESS_CHILD,
+                bindToCaller,
+                ignoreVisibilityForImportance);
     }
 
     @Override

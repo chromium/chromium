@@ -3,7 +3,7 @@ default: null
 desc: |-
   This policy allows <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph> to use legacy insecure hashes during the TLS handshake process.
 
-        If this policy is not configured, <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph> will follow the default rollout process for disallowing insecure hashes. If it is enabled, <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph> will allow insecure hashes to be used by a server when negotiating a TLS handshake. If it is disabled, <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph> will disallow insecure hashes to be used by a server when negotiating a TLS handshake. This policy will be removed in 119.
+        If this policy is not configured, <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph> will follow the default rollout process for disallowing insecure hashes. If it is enabled, <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph> will allow insecure hashes to be used by a server when negotiating a TLS handshake. If it is disabled, <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph> will disallow insecure hashes to be used by a server when negotiating a TLS handshake. This policy will be removed in 123.
 
 example_value: false
 features:

@@ -42,9 +42,9 @@ dictionary AuthenticationExtensionsClientInputs {
   // `sameOriginWithAncestors` internal arguments for a request.
   [RuntimeEnabled=WebAuthenticationRemoteDesktopSupport] RemoteDesktopClientOverride remoteDesktopClientOverride;
 
-  // Device-bound public-key support.
-  // https://github.com/w3c/webauthn/pull/1663
-  [RuntimeEnabled=WebAuthenticationDevicePublicKey] AuthenticationExtensionsDevicePublicKeyInputs devicePubKey;
+  // Supplemental public keys support
+  // https://w3c.github.io/webauthn/#sctn-supplemental-public-keys-extension
+  [RuntimeEnabled=WebAuthenticationSupplementalPubKeys] AuthenticationExtensionsSupplementalPubKeysInputs supplementalPubKeys;
 
   // Pseudo-random function support.
   // https://w3c.github.io/webauthn/#prf-extension

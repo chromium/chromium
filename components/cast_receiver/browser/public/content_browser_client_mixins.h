@@ -6,11 +6,12 @@
 #define COMPONENTS_CAST_RECEIVER_BROWSER_PUBLIC_CONTENT_BROWSER_CLIENT_MIXINS_H_
 
 #include <memory>
+#include <string_view>
 #include <vector>
 
 #include "base/functional/callback.h"
-#include "base/strings/string_piece.h"
 #include "components/cast_receiver/browser/runtime_application_dispatcher_impl.h"
+#include "services/network/public/cpp/network_context_getter.h"
 
 namespace blink {
 class URLLoaderThrottle;
@@ -19,10 +20,6 @@ class URLLoaderThrottle;
 namespace content {
 class WebContents;
 }  // namespace content
-
-namespace network::mojom {
-class NetworkContext;
-}  // namespace network::mojom
 
 namespace cast_receiver {
 
@@ -40,10 +37,8 @@ class ContentBrowserClientMixins {
   // The NetworkContext to use with the cast_streaming component for network
   // access to implement the Cast Streaming receiver. This NetworkContext is
   // eventually passed to the Open Screen library platform implementation.
-  using NetworkContextGetter =
-      base::RepeatingCallback<network::mojom::NetworkContext*()>;
   static std::unique_ptr<ContentBrowserClientMixins> Create(
-      NetworkContextGetter network_context_getter);
+      network::NetworkContextGetter network_context_getter);
 
   virtual ~ContentBrowserClientMixins() = default;
 
@@ -73,7 +68,7 @@ class ContentBrowserClientMixins {
 
   // To be called by the ContentBrowserClient function of the same name.
   using CorsExemptHeaderCallback =
-      base::RepeatingCallback<bool(base::StringPiece)>;
+      base::RepeatingCallback<bool(std::string_view)>;
   virtual std::vector<std::unique_ptr<blink::URLLoaderThrottle>>
   CreateURLLoaderThrottles(
       const base::RepeatingCallback<content::WebContents*()>& wc_getter,

@@ -8,6 +8,7 @@
 #include <stddef.h>
 
 #include <memory>
+#include <string_view>
 
 #include "build/build_config.h"
 #include "content/child/blink_platform_impl.h"
@@ -28,7 +29,7 @@ class PpapiBlinkPlatformImpl : public BlinkPlatformImpl {
 
   // BlinkPlatformImpl methods:
   blink::WebSandboxSupport* GetSandboxSupport() override;
-  uint64_t VisitedLinkHash(const char* canonical_url, size_t length) override;
+  uint64_t VisitedLinkHash(std::string_view canonical_url) override;
   bool IsLinkVisited(uint64_t link_hash) override;
   blink::WebString DefaultLocale() override;
 

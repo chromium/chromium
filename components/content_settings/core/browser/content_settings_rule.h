@@ -38,11 +38,12 @@ class SCOPED_LOCKABLE RefCountedAutoLock
 
 // Note that Rules and their iterators must be destroyed before modifying the
 // map that their values come from, as some types of rules hold locks on the map
-// that owns their value. See UnownedRule and OriginIdentifierValueMap.
+// that owns their value. See UnownedRule and OriginValueMap.
 struct Rule {
-  Rule(const ContentSettingsPattern& primary_pattern,
-       const ContentSettingsPattern& secondary_pattern,
-       const RuleMetaData& metadata);
+  Rule(ContentSettingsPattern primary_pattern,
+       ContentSettingsPattern secondary_pattern,
+       base::Value value,
+       RuleMetaData metadata);
 
   Rule(const Rule&) = delete;
   Rule& operator=(const Rule&) = delete;
@@ -50,49 +51,12 @@ struct Rule {
   Rule(Rule&& other) = delete;
   Rule& operator=(Rule&& other) = delete;
 
-  virtual ~Rule();
-
-  virtual const base::Value& value() const = 0;
-  virtual base::Value TakeValue() = 0;
+  ~Rule();
 
   ContentSettingsPattern primary_pattern;
   ContentSettingsPattern secondary_pattern;
+  base::Value value;
   RuleMetaData metadata;
-};
-
-// Note that this Rule doesn't actually own its value, it's usually just a
-// pointer to the OriginIdentifierValueMap that created it.
-struct UnownedRule : public Rule {
-  UnownedRule(const ContentSettingsPattern& primary_pattern,
-              const ContentSettingsPattern& secondary_pattern,
-              const base::Value* unowned_value,
-              scoped_refptr<RefCountedAutoLock> value_lock,
-              const RuleMetaData& metadata);
-
-  ~UnownedRule() override;
-
-  const base::Value& value() const override;
-  base::Value TakeValue() override;
-
-  // Owned by the creator of the Rule, usually an OriginIdentifierValueMap.
-  raw_ptr<const base::Value> unowned_value;
-  // A lock held to ensure |unowned_value| is not modified/destroyed before
-  // this Rule is.
-  scoped_refptr<RefCountedAutoLock> value_lock;
-};
-
-struct OwnedRule : public Rule {
-  OwnedRule(const ContentSettingsPattern& primary_pattern,
-            const ContentSettingsPattern& secondary_pattern,
-            base::Value unowned_value,
-            const RuleMetaData& metadata);
-
-  ~OwnedRule() override;
-
-  const base::Value& value() const override;
-  base::Value TakeValue() override;
-
-  base::Value owned_value;
 };
 
 class RuleIterator {

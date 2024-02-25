@@ -7,8 +7,6 @@
 #include <utility>
 
 #include "cc/layers/nine_patch_generator.h"
-#include "cc/layers/nine_patch_layer.h"
-#include "cc/slim/features.h"
 #include "cc/slim/layer_tree_impl.h"
 #include "components/viz/common/quads/compositor_render_pass.h"
 #include "components/viz/common/resources/resource_id.h"
@@ -17,27 +15,13 @@ namespace cc::slim {
 
 // static
 scoped_refptr<NinePatchLayer> NinePatchLayer::Create() {
-  scoped_refptr<cc::NinePatchLayer> cc_layer;
-  if (!features::IsSlimCompositorEnabled()) {
-    cc_layer = cc::NinePatchLayer::Create();
-  }
-  return base::AdoptRef(new NinePatchLayer(std::move(cc_layer)));
+  return base::AdoptRef(new NinePatchLayer());
 }
 
-NinePatchLayer::NinePatchLayer(scoped_refptr<cc::NinePatchLayer> cc_layer)
-    : UIResourceLayer(std::move(cc_layer)) {}
-
+NinePatchLayer::NinePatchLayer() = default;
 NinePatchLayer::~NinePatchLayer() = default;
 
-cc::NinePatchLayer* NinePatchLayer::cc_layer() const {
-  return static_cast<cc::NinePatchLayer*>(cc_layer_.get());
-}
-
 void NinePatchLayer::SetBorder(const gfx::Rect& border) {
-  if (cc_layer()) {
-    cc_layer()->SetBorder(border);
-    return;
-  }
   if (border_ == border) {
     return;
   }
@@ -46,10 +30,6 @@ void NinePatchLayer::SetBorder(const gfx::Rect& border) {
 }
 
 void NinePatchLayer::SetAperture(const gfx::Rect& aperture) {
-  if (cc_layer()) {
-    cc_layer()->SetAperture(aperture);
-    return;
-  }
   if (aperture_ == aperture) {
     return;
   }
@@ -58,10 +38,6 @@ void NinePatchLayer::SetAperture(const gfx::Rect& aperture) {
 }
 
 void NinePatchLayer::SetFillCenter(bool fill_center) {
-  if (cc_layer()) {
-    cc_layer()->SetFillCenter(fill_center);
-    return;
-  }
   if (fill_center_ == fill_center) {
     return;
   }
@@ -70,10 +46,6 @@ void NinePatchLayer::SetFillCenter(bool fill_center) {
 }
 
 void NinePatchLayer::SetNearestNeighbor(bool nearest_neighbor) {
-  if (cc_layer()) {
-    cc_layer()->SetNearestNeighbor(nearest_neighbor);
-    return;
-  }
   if (nearest_neighbor_ == nearest_neighbor) {
     return;
   }

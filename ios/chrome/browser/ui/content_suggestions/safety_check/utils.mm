@@ -4,15 +4,16 @@
 
 #import "ios/chrome/browser/ui/content_suggestions/safety_check/utils.h"
 
+#import "base/metrics/user_metrics.h"
 #import "components/password_manager/core/browser/ui/credential_ui_entry.h"
 #import "components/password_manager/core/browser/ui/password_check_referrer.h"
-#import "components/password_manager/core/common/password_manager_features.h"
 #import "components/version_info/version_info.h"
-#import "ios/chrome/browser/passwords/password_checkup_utils.h"
-#import "ios/chrome/browser/safety_check/ios_chrome_safety_check_manager_constants.h"
+#import "ios/chrome/browser/passwords/model/password_checkup_utils.h"
 #import "ios/chrome/browser/shared/public/commands/application_commands.h"
 #import "ios/chrome/browser/shared/public/commands/open_new_tab_command.h"
+#import "ios/chrome/browser/shared/public/commands/settings_commands.h"
 #import "ios/chrome/browser/ui/content_suggestions/safety_check/safety_check_state.h"
+#import "ios/chrome/browser/ui/content_suggestions/safety_check/utils.h"
 #import "ios/chrome/common/channel_info.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ui/base/l10n/l10n_util.h"
@@ -59,8 +60,13 @@ int UniqueWarningTypeCount(
 
 }  // namespace
 
-void HandleSafetyCheckUpdateChromeTap(const GURL& chrome_upgrade_url,
-                                      id<ApplicationCommands> handler) {
+using password_manager::WarningType;
+using password_manager::PasswordCheckReferrer::kSafetyCheckMagicStack;
+using password_manager::WarningType::kCompromisedPasswordsWarning;
+
+void HandleSafetyCheckUpdateChromeTap(
+    const GURL& chrome_upgrade_url,
+    id<ApplicationCommands> applicationHandler) {
   switch (::GetChannel()) {
     case version_info::Channel::STABLE:
     case version_info::Channel::BETA:
@@ -69,7 +75,7 @@ void HandleSafetyCheckUpdateChromeTap(const GURL& chrome_upgrade_url,
       OpenNewTabCommand* command =
           [OpenNewTabCommand commandWithURLFromChrome:chrome_upgrade_url];
 
-      [handler openURLInNewTab:command];
+      [applicationHandler openURLInNewTab:command];
 
       break;
     }
@@ -80,27 +86,15 @@ void HandleSafetyCheckUpdateChromeTap(const GURL& chrome_upgrade_url,
 
 void HandleSafetyCheckPasswordTap(
     std::vector<password_manager::CredentialUIEntry>& compromised_credentials,
-    id<ApplicationCommands> handler) {
-  // If the new Password Checkup is disabled, always navigate users to the
-  // Password Issues overview screen for compromised passwords.
-  if (!password_manager::features::IsPasswordCheckupEnabled()) {
-    [handler showPasswordIssuesWithWarningType:password_manager::WarningType::
-                                                   kCompromisedPasswordsWarning
-                                      referrer:password_manager::
-                                                   PasswordCheckReferrer::
-                                                       kSafetyCheckMagicStack];
-
-    return;
-  }
-
+    id<ApplicationCommands> applicationHandler,
+    id<SettingsCommands> settingsHandler) {
   // If there's only one compromised credential, navigate users to the detail
   // view for that particular credential.
   if (compromised_credentials.size() == 1) {
     password_manager::CredentialUIEntry credential =
         compromised_credentials.front();
-
-    [handler showPasswordDetailsForCredential:credential showCancelButton:YES];
-
+    [settingsHandler showPasswordDetailsForCredential:credential
+                                     showCancelButton:YES];
     return;
   }
 
@@ -111,52 +105,45 @@ void HandleSafetyCheckPasswordTap(
   // navigate users to the Password Checkup overview screen for that particular
   // warning type.
   if (unique_warning_type_count == 1) {
-    password_manager::WarningType type =
+    WarningType type =
         password_manager::GetWarningOfHighestPriority(compromised_credentials);
-
-    [handler showPasswordIssuesWithWarningType:type
-                                      referrer:password_manager::
-                                                   PasswordCheckReferrer::
-                                                       kSafetyCheckMagicStack];
+    [applicationHandler
+        showPasswordIssuesWithWarningType:type
+                                 referrer:kSafetyCheckMagicStack];
+    return;
   }
 
   // If there are multiple passwords (with multiple warning types), or no
   // compromised credentials at all, navigate users to the Password Checkup
   // overview screen.
-  [handler showPasswordCheckupPageForReferrer:
-               password_manager::PasswordCheckReferrer::kSafetyCheckMagicStack];
+  base::RecordAction(
+      base::UserMetricsAction("MobileMagicStackOpenPasswordCheckup"));
+
+  [applicationHandler
+      showPasswordCheckupPageForReferrer:kSafetyCheckMagicStack];
 }
 
-int CheckIssuesCount(SafetyCheckState* state) {
-  bool invalid_update_chrome_state =
-      state.updateChromeState == UpdateChromeSafetyCheckState::kOutOfDate;
+bool InvalidUpdateChromeState(UpdateChromeSafetyCheckState state) {
+  return state == UpdateChromeSafetyCheckState::kOutOfDate;
+}
 
-  bool invalid_password_state =
-      state.passwordState ==
-          PasswordSafetyCheckState::kUnmutedCompromisedPasswords ||
-      state.passwordState == PasswordSafetyCheckState::kReusedPasswords ||
-      state.passwordState == PasswordSafetyCheckState::kWeakPasswords;
+bool InvalidPasswordState(PasswordSafetyCheckState state) {
+  return state == PasswordSafetyCheckState::kUnmutedCompromisedPasswords ||
+         state == PasswordSafetyCheckState::kReusedPasswords ||
+         state == PasswordSafetyCheckState::kWeakPasswords;
+}
 
-  bool invalid_safe_browsing_state =
-      state.safeBrowsingState == SafeBrowsingSafetyCheckState::kUnsafe;
+bool InvalidSafeBrowsingState(SafeBrowsingSafetyCheckState state) {
+  return state == SafeBrowsingSafetyCheckState::kUnsafe;
+}
 
-  int invalid_check_count = 0;
-
-  std::vector<bool> invalid_checks = {invalid_update_chrome_state,
-                                      invalid_password_state,
-                                      invalid_safe_browsing_state};
-
-  for (bool invalid_check : invalid_checks) {
-    if (invalid_check) {
-      invalid_check_count++;
-    }
+bool CanRunSafetyCheck(std::optional<base::Time> last_run_time) {
+  // The Safety Check should be run if it's never been run before.
+  if (!last_run_time.has_value()) {
+    return true;
   }
 
-  return invalid_check_count;
-}
-
-bool CanRunSafetyCheck(base::Time last_run_time) {
-  base::TimeDelta last_run_age = base::Time::Now() - last_run_time;
+  base::TimeDelta last_run_age = base::Time::Now() - last_run_time.value();
 
   if (last_run_age > kSafetyCheckRunThreshold) {
     return true;
@@ -166,7 +153,7 @@ bool CanRunSafetyCheck(base::Time last_run_time) {
 }
 
 NSString* FormatElapsedTimeSinceLastSafetyCheck(
-    absl::optional<base::Time> last_run_time) {
+    std::optional<base::Time> last_run_time) {
   if (!last_run_time.has_value()) {
     return l10n_util::GetNSString(IDS_IOS_CHECK_NEVER_RUN);
   }

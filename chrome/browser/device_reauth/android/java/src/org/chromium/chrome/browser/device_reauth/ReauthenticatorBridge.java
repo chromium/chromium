@@ -4,10 +4,11 @@
 
 package org.chromium.chrome.browser.device_reauth;
 
+import org.jni_zero.CalledByNative;
+import org.jni_zero.NativeMethods;
+
 import org.chromium.base.Callback;
 import org.chromium.base.ResettersForTesting;
-import org.chromium.base.annotations.CalledByNative;
-import org.chromium.base.annotations.NativeMethods;
 
 /**
  * Class handling the communication with the C++ part of the reauthentication based on device lock.
@@ -19,8 +20,8 @@ public class ReauthenticatorBridge {
     private long mNativeReauthenticatorBridge;
     private Callback<Boolean> mAuthResultCallback;
 
-    private ReauthenticatorBridge(@DeviceAuthRequester int requester) {
-        mNativeReauthenticatorBridge = ReauthenticatorBridgeJni.get().create(this, requester);
+    private ReauthenticatorBridge(@DeviceAuthSource int source) {
+        mNativeReauthenticatorBridge = ReauthenticatorBridgeJni.get().create(this, source);
     }
 
     /**
@@ -29,8 +30,8 @@ public class ReauthenticatorBridge {
      * @return Whether authentication can be used.
      */
     public boolean canUseAuthenticationWithBiometric() {
-        return ReauthenticatorBridgeJni.get().canUseAuthenticationWithBiometric(
-                mNativeReauthenticatorBridge);
+        return ReauthenticatorBridgeJni.get()
+                .canUseAuthenticationWithBiometric(mNativeReauthenticatorBridge);
     }
 
     /**
@@ -39,34 +40,33 @@ public class ReauthenticatorBridge {
      * @return Whether authentication can be used.
      */
     public boolean canUseAuthenticationWithBiometricOrScreenLock() {
-        return ReauthenticatorBridgeJni.get().canUseAuthenticationWithBiometricOrScreenLock(
-                mNativeReauthenticatorBridge);
+        return ReauthenticatorBridgeJni.get()
+                .canUseAuthenticationWithBiometricOrScreenLock(mNativeReauthenticatorBridge);
     }
 
     /**
-     * Starts reauthentication.
+     * Starts reauthentication. This method implies that the user will need to authenticate again if
+     * they want to perform an authenticated action (i.e. the user will be considered not
+     * authenticated immediately after the current action finishes).
      *
      * @param callback Callback that will be executed once request is done.
-     * @param useLastValidAuth A boolean value indicating whether to consider the last but "recent"
-     *         validated auth for passing the current authentication request.
      */
-    public void reauthenticate(Callback<Boolean> callback, boolean useLastValidAuth) {
+    public void reauthenticate(Callback<Boolean> callback) {
         if (mAuthResultCallback == null) {
             mAuthResultCallback = callback;
-            ReauthenticatorBridgeJni.get().reauthenticate(
-                    mNativeReauthenticatorBridge, useLastValidAuth);
+            ReauthenticatorBridgeJni.get().reauthenticate(mNativeReauthenticatorBridge);
         }
     }
 
     /**
      * Create an instance of {@link ReauthenticatorBridge} based on the provided
-     * {@link DeviceAuthRequester}.
+     * {@link DeviceAuthSource}.
      * */
-    public static ReauthenticatorBridge create(@DeviceAuthRequester int requester) {
+    public static ReauthenticatorBridge create(@DeviceAuthSource int source) {
         if (sReauthenticatorBridgeForTesting != null) {
             return sReauthenticatorBridgeForTesting;
         }
-        return new ReauthenticatorBridge(requester);
+        return new ReauthenticatorBridge(source);
     }
 
     /** For testing only. */
@@ -84,9 +84,12 @@ public class ReauthenticatorBridge {
 
     @NativeMethods
     interface Natives {
-        long create(ReauthenticatorBridge reauthenticatorBridge, int requester);
+        long create(ReauthenticatorBridge reauthenticatorBridge, int source);
+
         boolean canUseAuthenticationWithBiometric(long nativeReauthenticatorBridge);
+
         boolean canUseAuthenticationWithBiometricOrScreenLock(long nativeReauthenticatorBridge);
-        void reauthenticate(long nativeReauthenticatorBridge, boolean useLastValidAuth);
+
+        void reauthenticate(long nativeReauthenticatorBridge);
     }
 }

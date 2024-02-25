@@ -8,13 +8,18 @@
 #include <memory>
 #include <string>
 #include <utility>
+#include <vector>
 
-#include "ash/accelerators/ash_accelerator_configuration.h"
-#include "ash/accessibility/accessibility_controller_impl.h"
+#include "ash/accelerators/accelerator_lookup.h"
+#include "ash/accessibility/accessibility_controller.h"
 #include "ash/ash_element_identifiers.h"
 #include "ash/constants/ash_features.h"
 #include "ash/constants/notifier_catalogs.h"
 #include "ash/public/cpp/accelerator_actions.h"
+#include "ash/public/cpp/system/anchored_nudge_data.h"
+#include "ash/public/cpp/system/anchored_nudge_manager.h"
+#include "ash/public/cpp/system/toast_data.h"
+#include "ash/public/cpp/system/toast_manager.h"
 #include "ash/public/cpp/system_notification_builder.h"
 #include "ash/public/cpp/tablet_mode.h"
 #include "ash/session/test_session_controller_client.h"
@@ -30,6 +35,7 @@
 #include "ash/user_education/welcome_tour/welcome_tour_accelerator_handler.h"
 #include "ash/user_education/welcome_tour/welcome_tour_controller_observer.h"
 #include "ash/user_education/welcome_tour/welcome_tour_dialog.h"
+#include "ash/user_education/welcome_tour/welcome_tour_metrics.h"
 #include "ash/user_education/welcome_tour/welcome_tour_test_util.h"
 #include "ash/webui/system_apps/public/system_web_app_type.h"
 #include "base/functional/callback.h"
@@ -38,9 +44,11 @@
 #include "base/test/bind.h"
 #include "base/test/gmock_callback_support.h"
 #include "base/test/gmock_move_support.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
 #include "components/account_id/account_id.h"
+#include "components/services/app_service/public/cpp/app_launch_util.h"
 #include "components/user_education/common/tutorial_description.h"
 #include "components/user_manager/user_type.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -60,6 +68,7 @@ namespace ash {
 namespace {
 
 // Aliases.
+using ::ash::welcome_tour_metrics::PreventedReason;
 using ::base::test::RunOnceClosure;
 using ::session_manager::SessionState;
 using ::testing::_;
@@ -81,6 +90,7 @@ using ::user_education::HelpBubbleArrow;
 using ::user_education::TutorialDescription;
 using ::views::test::WidgetDestroyedWaiter;
 
+using AcceleratorDetails = AcceleratorLookup::AcceleratorDetails;
 using ContextMode = TutorialDescription::ContextMode;
 using ElementSpecifier = TutorialDescription::ElementSpecifier;
 
@@ -155,6 +165,43 @@ MATCHER_P2(ShownStep, element_specifier, context_mode, "") {
   return arg.step_type() == ui::InteractionSequence::StepType::kShown &&
          Matches(ElementSpecifierEq(element_specifier))(arg) &&
          arg.context_mode() == context_mode;
+}
+
+MATCHER_P(StepEq, step, "") {
+  return std::make_tuple(arg.arrow(), arg.body_text_id(), arg.context_mode(),
+                         arg.element_id(), arg.element_name(), arg.event_type(),
+                         arg.extended_properties(), arg.must_be_visible(),
+                         arg.must_remain_visible(),
+                         arg.name_elements_callback().is_null(),
+                         arg.next_button_callback().is_null(), arg.step_type(),
+                         arg.subsequence_mode(), arg.title_text_id(),
+                         arg.transition_only_on_event()) ==
+         std::make_tuple(step.arrow(), step.body_text_id(), step.context_mode(),
+                         step.element_id(), step.element_name(),
+                         step.event_type(), step.extended_properties(),
+                         step.must_be_visible(), step.must_remain_visible(),
+                         step.name_elements_callback().is_null(),
+                         step.next_button_callback().is_null(),
+                         step.step_type(), step.subsequence_mode(),
+                         step.title_text_id(), step.transition_only_on_event());
+}
+
+MATCHER_P(TutorialDescriptionEqInternal, tutorial_description, "") {
+  return std::tie(arg.can_be_restarted, arg.complete_button_text_id) ==
+             std::tie(tutorial_description->data.can_be_restarted,
+                      tutorial_description->data.complete_button_text_id) &&
+         base::ranges::equal(
+             arg.steps, tutorial_description->data.steps,
+             [](auto& a, auto& b) { return Matches(StepEq(a))(b); });
+}
+
+// NOTE: Exists only because `user_education::TutorialDescription` is move-only.
+auto TutorialDescriptionEq(
+    user_education::TutorialDescription tutorial_description) {
+  return TutorialDescriptionEqInternal(
+      base::MakeRefCounted<
+          base::RefCountedData<user_education::TutorialDescription>>(
+          std::move(tutorial_description)));
 }
 
 // MockPretargetEventHandler ---------------------------------------------------
@@ -242,7 +289,7 @@ class WelcomeTourControllerTest : public UserEducationAshTestBase {
     // returns that the given user is "new" on invocation. "New"-ness is
     // required for the user to be eligible for the Welcome Tour.
     ON_CALL(*user_education_delegate(), IsNewUser)
-        .WillByDefault(ReturnRefOfCopy(absl::make_optional(true)));
+        .WillByDefault(ReturnRefOfCopy(std::make_optional(true)));
   }
 
  private:
@@ -251,21 +298,16 @@ class WelcomeTourControllerTest : public UserEducationAshTestBase {
 
 // Tests -----------------------------------------------------------------------
 
-// Verifies that `GetTutorialDescriptions()` returns expected values.
-TEST_F(WelcomeTourControllerTest, GetTutorialDescriptions) {
+// Verifies that `GetTutorialDescription()` returns expected values.
+TEST_F(WelcomeTourControllerTest, GetTutorialDescription) {
   auto* welcome_tour_controller = WelcomeTourController::Get();
   ASSERT_TRUE(welcome_tour_controller);
 
-  std::map<TutorialId, TutorialDescription> tutorial_descriptions_by_id =
-      static_cast<UserEducationFeatureController*>(welcome_tour_controller)
-          ->GetTutorialDescriptions();
-
-  // TODO(http://b/275616974): Implement tutorial descriptions.
-  EXPECT_EQ(tutorial_descriptions_by_id.size(), 1u);
   EXPECT_THAT(
-      tutorial_descriptions_by_id,
-      Contains(Pair(
-          Eq(TutorialId::kWelcomeTourPrototype1),
+      welcome_tour_controller->GetTutorialDescription(),
+      AllOf(
+          Field(&TutorialDescription::complete_button_text_id,
+                Eq(IDS_ASH_WELCOME_TOUR_COMPLETE_BUTTON_TEXT)),
           Field(
               &TutorialDescription::steps,
               ElementsAre(
@@ -320,24 +362,24 @@ TEST_F(WelcomeTourControllerTest, GetTutorialDescriptions) {
                              HelpBubbleId::kWelcomeTourExploreApp,
                              IDS_ASH_WELCOME_TOUR_EXPLORE_APP_BUBBLE_BODY_TEXT,
                              HelpBubbleArrow::kBottomLeft,
-                             /*has_next_button=*/false))))));
+                             /*has_next_button=*/false)))));
 }
 
 // Verifies that the Welcome Tour is started when the primary user session is
 // first activated and then never again, as well as that start/end events are
 // propagated to observers appropriately.
 TEST_F(WelcomeTourControllerTest, StartsTourAndPropagatesEvents) {
-  const AccountId primary_account_id = AccountId::FromUserEmail("primary@test");
-  const AccountId secondary_account_id =
-      AccountId::FromUserEmail("secondary@test");
+  const auto primary_account_id = AccountId::FromUserEmail("primary@test");
+  const auto secondary_account_id = AccountId::FromUserEmail("secondary@test");
 
   // Ensure controller exists.
   auto* const welcome_tour_controller = WelcomeTourController::Get();
   ASSERT_TRUE(welcome_tour_controller);
 
-  // Ensure delegate exists and disallow any unexpected tutorial starts.
+  // Ensure delegate exists and disallow any tutorial registrations/starts.
   auto* const user_education_delegate = this->user_education_delegate();
   ASSERT_TRUE(user_education_delegate);
+  EXPECT_CALL(*user_education_delegate, RegisterTutorial).Times(0);
   EXPECT_CALL(*user_education_delegate, StartTutorial).Times(0);
 
   // Observe the `WelcomeTourController` for start/end events.
@@ -350,21 +392,25 @@ TEST_F(WelcomeTourControllerTest, StartsTourAndPropagatesEvents) {
   // *not* trigger the Welcome Tour to start.
   auto* const session_controller_client = GetSessionControllerClient();
   session_controller_client->AddUserSession(
-      primary_account_id.GetUserEmail(), user_manager::USER_TYPE_REGULAR,
+      primary_account_id.GetUserEmail(), user_manager::UserType::kRegular,
       /*provide_pref_service=*/true, /*is_new_profile=*/true);
   session_controller_client->AddUserSession(
-      secondary_account_id.GetUserEmail(), user_manager::USER_TYPE_REGULAR,
+      secondary_account_id.GetUserEmail(), user_manager::UserType::kRegular,
       /*provide_pref_service=*/true, /*is_new_profile=*/true);
 
   // Activate the primary user session. This *should* trigger the Welcome Tour
-  // to start as well as notify observers. Note that completed/aborted
-  // callbacks are cached for later verification.
+  // to be registered and started as well as notify observers. Note that
+  // completed/aborted callbacks are cached for later verification.
   base::OnceClosure completed_callback;
   base::OnceClosure aborted_callback;
   EXPECT_CALL(
       *user_education_delegate,
-      StartTutorial(Eq(primary_account_id),
-                    Eq(TutorialId::kWelcomeTourPrototype1),
+      RegisterTutorial(Eq(primary_account_id), Eq(TutorialId::kWelcomeTour),
+                       TutorialDescriptionEq(
+                           welcome_tour_controller->GetTutorialDescription())));
+  EXPECT_CALL(
+      *user_education_delegate,
+      StartTutorial(Eq(primary_account_id), Eq(TutorialId::kWelcomeTour),
                     Eq(welcome_tour_controller->GetInitialElementContext()),
                     /*completed_callback=*/_,
                     /*aborted_callback=*/_))
@@ -377,7 +423,8 @@ TEST_F(WelcomeTourControllerTest, StartsTourAndPropagatesEvents) {
   // The Welcome Tour dialog is expected to be shown at the start of the tour.
   EXPECT_TRUE(WelcomeTourDialog::Get());
 
-  // Disallow any unexpected tutorial starts.
+  // Disallow any tutorial registrations/starts.
+  EXPECT_CALL(*user_education_delegate, RegisterTutorial).Times(0);
   EXPECT_CALL(*user_education_delegate, StartTutorial).Times(0);
 
   // Switch to the secondary user session and back again. This should *not*
@@ -392,8 +439,8 @@ TEST_F(WelcomeTourControllerTest, StartsTourAndPropagatesEvents) {
 
   // Verify that the same event is propagated to observers regardless of whether
   // user education services in the browser indicate the tour was completed or
-  // aborted. Only if the tour is completed should there be an attempt to launch
-  // the Explore app.
+  // aborted. Only if the device is *not* in tablet mode should there be an
+  // attempt to launch the Explore app.
   for (base::OnceClosure& ended_callback :
        {std::ref(completed_callback), std::ref(aborted_callback)}) {
     ASSERT_FALSE(ended_callback.is_null());
@@ -401,8 +448,9 @@ TEST_F(WelcomeTourControllerTest, StartsTourAndPropagatesEvents) {
     EXPECT_CALL(*user_education_delegate,
                 LaunchSystemWebAppAsync(
                     Eq(primary_account_id), Eq(ash::SystemWebAppType::HELP),
+                    Eq(apps::LaunchSource::kFromWelcomeTour),
                     Eq(display::Screen::GetScreen()->GetPrimaryDisplay().id())))
-        .Times(&ended_callback == &completed_callback ? 1 : 0);
+        .Times(display::Screen::GetScreen()->InTabletMode() ? 0u : 1u);
     std::move(ended_callback).Run();
     Mock::VerifyAndClearExpectations(&observer);
     Mock::VerifyAndClearExpectations(user_education_delegate);
@@ -417,15 +465,23 @@ TEST_F(WelcomeTourControllerTest, StartsTourAndPropagatesEvents) {
 
 // Verifies that the Welcome Tour can be aborted via the dialog.
 TEST_F(WelcomeTourControllerTest, AbortsTourAndPropagatesEvents) {
-  // Expect the Welcome Tour to start when logging in the primary user. Note
-  // that the `aborted_callback` is cached.
+  const auto primary_account_id = AccountId::FromUserEmail("primary@test");
+
+  // Expect the Welcome Tour to be registered and started when logging in the
+  // primary user. Note that the `aborted_callback` is cached.
   base::OnceClosure aborted_callback;
   EXPECT_CALL(*user_education_delegate(),
-              StartTutorial(_, Eq(TutorialId::kWelcomeTourPrototype1), _, _, _))
+              RegisterTutorial(
+                  Eq(primary_account_id), Eq(TutorialId::kWelcomeTour),
+                  TutorialDescriptionEq(
+                      WelcomeTourController::Get()->GetTutorialDescription())));
+  EXPECT_CALL(*user_education_delegate(),
+              StartTutorial(Eq(primary_account_id),
+                            Eq(TutorialId::kWelcomeTour), _, _, _))
       .WillOnce(MoveArg<4>(&aborted_callback));
 
   // Start the Welcome Tour by logging in the primary user for the first time.
-  SimulateNewUserFirstLogin("primary@test");
+  SimulateNewUserFirstLogin(primary_account_id.GetUserEmail());
 
   // Observe the `WelcomeTourController` for end events.
   StrictMock<MockWelcomeTourControllerObserver> observer;
@@ -440,9 +496,17 @@ TEST_F(WelcomeTourControllerTest, AbortsTourAndPropagatesEvents) {
 
   // Expect the Welcome Tour to be aborted when clicking the `cancel_button`.
   // Fulfill the request to abort the tour by running the `aborted_callback`.
-  EXPECT_CALL(*user_education_delegate(),
-              AbortTutorial(_, Eq(TutorialId::kWelcomeTourPrototype1)))
+  EXPECT_CALL(
+      *user_education_delegate(),
+      AbortTutorial(Eq(primary_account_id), Eq(TutorialId::kWelcomeTour)))
       .WillOnce(RunOnceClosure(std::move(aborted_callback)));
+
+  // Expect an attempt to launch the Explore app when the tour is aborted.
+  EXPECT_CALL(*user_education_delegate(),
+              LaunchSystemWebAppAsync(
+                  Eq(primary_account_id), Eq(ash::SystemWebAppType::HELP),
+                  Eq(apps::LaunchSource::kFromWelcomeTour),
+                  Eq(display::Screen::GetScreen()->GetPrimaryDisplay().id())));
 
   // Click the `cancel_button` and verify the Welcome Tour is ended.
   const views::View* const cancel_button = GetDialogCancelButton();
@@ -454,7 +518,8 @@ TEST_F(WelcomeTourControllerTest, AbortsTourAndPropagatesEvents) {
 // Verifies the Welcome Tour to be aborted if ChromeVox is enabled during tour.
 TEST_F(WelcomeTourControllerTest, AbortTourIfChromeVoxEnabledDuringTour) {
   // Start the Welcome Tour by logging in the primary user for the first time.
-  SimulateNewUserFirstLogin("primary@test");
+  const auto primary_account_id = AccountId::FromUserEmail("primary@test");
+  SimulateNewUserFirstLogin(primary_account_id.GetUserEmail());
 
   // Observe the `WelcomeTourController` for end events.
   StrictMock<MockWelcomeTourControllerObserver> observer;
@@ -468,8 +533,16 @@ TEST_F(WelcomeTourControllerTest, AbortTourIfChromeVoxEnabledDuringTour) {
       .WillOnce(RunOnceClosure(ended_future.GetCallback()));
 
   // Expect the Welcome Tour to be aborted when enabling ChromeVox during tour.
+  EXPECT_CALL(
+      *user_education_delegate(),
+      AbortTutorial(Eq(primary_account_id), Eq(TutorialId::kWelcomeTour)));
+
+  // Expect an attempt to launch the Explore app when the tour is aborted.
   EXPECT_CALL(*user_education_delegate(),
-              AbortTutorial(_, Eq(TutorialId::kWelcomeTourPrototype1)));
+              LaunchSystemWebAppAsync(
+                  Eq(primary_account_id), Eq(ash::SystemWebAppType::HELP),
+                  Eq(apps::LaunchSource::kFromWelcomeTour),
+                  Eq(display::Screen::GetScreen()->GetPrimaryDisplay().id())));
 
   auto* const a11y_controller = Shell::Get()->accessibility_controller();
   a11y_controller->SetSpokenFeedbackEnabled(true, A11Y_NOTIFICATION_NONE);
@@ -479,10 +552,13 @@ TEST_F(WelcomeTourControllerTest, AbortTourIfChromeVoxEnabledDuringTour) {
 
 // Checks that the Welcome Tour should NOT start if ChromeVox is enabled.
 TEST_F(WelcomeTourControllerTest, PreventTourFromStartingIfChromeVoxEnabled) {
+  const auto primary_account_id = AccountId::FromUserEmail("primary@test");
+
   TestSessionControllerClient* const session = GetSessionControllerClient();
-  constexpr char kUserEmail[] = "primary@test";
-  session->AddUserSession(kUserEmail, user_manager::USER_TYPE_REGULAR);
-  session->SwitchActiveUser(AccountId::FromUserEmail(kUserEmail));
+  session->AddUserSession(
+      primary_account_id.GetUserEmail(), user_manager::UserType::kRegular,
+      /*provide_pref_service=*/true, /*is_new_profile=*/true);
+  session->SwitchActiveUser(primary_account_id);
 
   // Enable the spoken feedback after the pref service is ready and before the
   // session becomes active.
@@ -491,8 +567,15 @@ TEST_F(WelcomeTourControllerTest, PreventTourFromStartingIfChromeVoxEnabled) {
   EXPECT_TRUE(a11y_controller->spoken_feedback().enabled());
 
   // Start the Welcome Tour by activating the user session. Expect that the
-  // Welcome Tour is NOT started.
+  // Welcome Tour is NOT registered or started but that an attempt is made to
+  // launch the Explore app.
+  EXPECT_CALL(*user_education_delegate(), RegisterTutorial).Times(0);
   EXPECT_CALL(*user_education_delegate(), StartTutorial).Times(0);
+  EXPECT_CALL(*user_education_delegate(),
+              LaunchSystemWebAppAsync(
+                  Eq(primary_account_id), Eq(ash::SystemWebAppType::HELP),
+                  Eq(apps::LaunchSource::kFromWelcomeTour),
+                  Eq(display::Screen::GetScreen()->GetPrimaryDisplay().id())));
   session->SetSessionState(SessionState::ACTIVE);
   Mock::VerifyAndClearExpectations(user_education_delegate());
 }
@@ -505,7 +588,7 @@ TEST_F(WelcomeTourControllerTest, PreventTourFromStartingIfChromeVoxEnabled) {
 class WelcomeTourControllerCounterfactualTest
     : public WelcomeTourControllerTest,
       public ::testing::WithParamInterface<
-          /*is_counterfactual=*/absl::optional<bool>> {
+          /*is_counterfactual=*/std::optional<bool>> {
  public:
   WelcomeTourControllerCounterfactualTest() {
     if (const auto& is_counterfactual = IsCounterfactual()) {
@@ -517,7 +600,7 @@ class WelcomeTourControllerCounterfactualTest
 
   // Returns whether the Welcome Tour is enabled counterfactually as part of an
   // experiment arm given test parameterization.
-  const absl::optional<bool>& IsCounterfactual() const { return GetParam(); }
+  const std::optional<bool>& IsCounterfactual() const { return GetParam(); }
 
  private:
   // Used to conditionally enable the Welcome Tour counterfactually as part of
@@ -528,23 +611,39 @@ class WelcomeTourControllerCounterfactualTest
 INSTANTIATE_TEST_SUITE_P(All,
                          WelcomeTourControllerCounterfactualTest,
                          /*is_counterfactual=*/
-                         ::testing::Values(absl::make_optional(true),
-                                           absl::make_optional(false),
-                                           absl::nullopt));
+                         ::testing::Values(std::make_optional(true),
+                                           std::make_optional(false),
+                                           std::nullopt));
 
 // Tests -----------------------------------------------------------------------
 
 // Verifies that the Welcome Tour is prevented from running if enabled
-// counterfactually as part of an experiment arm.
+// counterfactually as part of an experiment arm and that an attempt is made to
+// launch the Explore app when that occurs.
 TEST_P(WelcomeTourControllerCounterfactualTest,
        PreventsWelcomeTourForCounterfactualArms) {
+  const auto primary_account_id = AccountId::FromUserEmail("primary@test");
+
   // Set expectations for whether the Welcome Tour will run.
+  EXPECT_CALL(
+      *user_education_delegate(),
+      RegisterTutorial(Eq(primary_account_id), Eq(TutorialId::kWelcomeTour), _))
+      .Times(IsCounterfactual().value_or(false) ? 0u : 1u);
   EXPECT_CALL(*user_education_delegate(),
-              StartTutorial(_, Eq(TutorialId::kWelcomeTourPrototype1), _, _, _))
+              StartTutorial(Eq(primary_account_id),
+                            Eq(TutorialId::kWelcomeTour), _, _, _))
       .Times(IsCounterfactual().value_or(false) ? 0u : 1u);
 
+  // Set expectations for whether the Explore app will launch.
+  EXPECT_CALL(*user_education_delegate(),
+              LaunchSystemWebAppAsync(
+                  Eq(primary_account_id), Eq(ash::SystemWebAppType::HELP),
+                  Eq(apps::LaunchSource::kFromWelcomeTour),
+                  Eq(display::Screen::GetScreen()->GetPrimaryDisplay().id())))
+      .Times(IsCounterfactual().value_or(false) ? 1u : 0u);
+
   // Login the primary user for the first time and verify expectations.
-  SimulateNewUserFirstLogin("primary@test");
+  SimulateNewUserFirstLogin(primary_account_id.GetUserEmail());
   Mock::VerifyAndClearExpectations(user_education_delegate());
 }
 
@@ -561,7 +660,7 @@ class WelcomeTourControllerUserEligibilityTest
     : public WelcomeTourControllerTest,
       public ::testing::WithParamInterface<std::tuple<
           /*force_user_eligibility=*/bool,
-          /*is_new_user_cross_device=*/absl::optional<bool>,
+          /*is_new_user_cross_device=*/std::optional<bool>,
           /*is_new_user_locally=*/bool,
           /*is_managed_user=*/bool,
           user_manager::UserType>> {
@@ -571,6 +670,9 @@ class WelcomeTourControllerUserEligibilityTest
     scoped_feature_list_.InitWithFeatureState(
         features::kWelcomeTourForceUserEligibility, ForceUserEligibility());
   }
+
+  // Returns the account ID of the primary user for whom to test eligibility.
+  const AccountId& primary_account_id() const { return primary_account_id_; }
 
   // Returns whether user eligibility is forced based on test parameterization.
   bool ForceUserEligibility() const { return std::get<0>(GetParam()); }
@@ -583,7 +685,7 @@ class WelcomeTourControllerUserEligibilityTest
 
   // Returns whether the user should be considered "new" cross-device based on
   // test parameterization.
-  const absl::optional<bool>& IsNewUserCrossDevice() const {
+  const std::optional<bool>& IsNewUserCrossDevice() const {
     return std::get<1>(GetParam());
   }
 
@@ -604,17 +706,20 @@ class WelcomeTourControllerUserEligibilityTest
 
     // Add a user based on test parameterization.
     TestSessionControllerClient* const session = GetSessionControllerClient();
-    constexpr char kUserEmail[] = "primary@test";
-    session->AddUserSession(kUserEmail, GetUserType(),
+    session->AddUserSession(primary_account_id_.GetUserEmail(), GetUserType(),
                             /*provide_pref_service=*/true,
                             /*is_new_profile=*/IsNewUserLocally(),
                             /*given_name=*/std::string(), IsManagedUser());
-    session->SwitchActiveUser(AccountId::FromUserEmail(kUserEmail));
+    session->SwitchActiveUser(primary_account_id_);
   }
 
   // Used to conditionally force user eligibility based on test
   // parameterization.
   base::test::ScopedFeatureList scoped_feature_list_;
+
+  // The account ID of the primary user for whom to test eligibility.
+  const AccountId primary_account_id_ =
+      AccountId::FromUserEmail("primary@test");
 };
 
 INSTANTIATE_TEST_SUITE_P(
@@ -623,18 +728,18 @@ INSTANTIATE_TEST_SUITE_P(
     ::testing::Combine(
         /*force_user_eligibility=*/::testing::Bool(),
         /*is_new_user_cross_device=*/
-        ::testing::Values(absl::make_optional(true),
-                          absl::make_optional(false),
-                          absl::nullopt),
+        ::testing::Values(std::make_optional(true),
+                          std::make_optional(false),
+                          std::nullopt),
         /*is_new_user_locally=*/::testing::Bool(),
         /*is_managed_user=*/::testing::Bool(),
-        ::testing::Values(user_manager::UserType::USER_TYPE_ARC_KIOSK_APP,
-                          user_manager::UserType::USER_TYPE_CHILD,
-                          user_manager::UserType::USER_TYPE_GUEST,
-                          user_manager::UserType::USER_TYPE_KIOSK_APP,
-                          user_manager::UserType::USER_TYPE_PUBLIC_ACCOUNT,
-                          user_manager::UserType::USER_TYPE_REGULAR,
-                          user_manager::UserType::USER_TYPE_WEB_KIOSK_APP)));
+        ::testing::Values(user_manager::UserType::kArcKioskApp,
+                          user_manager::UserType::kChild,
+                          user_manager::UserType::kGuest,
+                          user_manager::UserType::kKioskApp,
+                          user_manager::UserType::kPublicAccount,
+                          user_manager::UserType::kRegular,
+                          user_manager::UserType::kWebKioskApp)));
 
 // Tests -----------------------------------------------------------------------
 
@@ -650,16 +755,56 @@ TEST_P(WelcomeTourControllerUserEligibilityTest, EnforcesUserEligibility) {
   const bool is_user_eligibility_expected =
       ForceUserEligibility() ||
       (IsNewUserCrossDevice().value_or(false) && IsNewUserLocally() &&
-       !IsManagedUser() && GetUserType() == user_manager::USER_TYPE_REGULAR);
+       !IsManagedUser() && GetUserType() == user_manager::UserType::kRegular);
 
   // Set expectations for whether the Welcome Tour will run.
   EXPECT_CALL(*user_education_delegate(),
-              StartTutorial(_, Eq(TutorialId::kWelcomeTourPrototype1), _, _, _))
+              RegisterTutorial(Eq(primary_account_id()),
+                               Eq(TutorialId::kWelcomeTour), _))
       .Times(is_user_eligibility_expected ? 1u : 0u);
+  EXPECT_CALL(*user_education_delegate(),
+              StartTutorial(Eq(primary_account_id()),
+                            Eq(TutorialId::kWelcomeTour), _, _, _))
+      .Times(is_user_eligibility_expected ? 1u : 0u);
+
+  // If the Welcome Tour is run, we delay attempts to launch the Explore app
+  // until the tour is completed or aborted. If the Welcome Tour is not run, the
+  // user is not new so there should similarly be no attempt to launch Explore.
+  EXPECT_CALL(*user_education_delegate(),
+              LaunchSystemWebAppAsync(
+                  Eq(primary_account_id()), Eq(ash::SystemWebAppType::HELP),
+                  Eq(apps::LaunchSource::kFromWelcomeTour),
+                  Eq(display::Screen::GetScreen()->GetPrimaryDisplay().id())))
+      .Times(0);
+
+  base::HistogramTester histogram_tester;
 
   // Activate the user session and verify expectations.
   GetSessionControllerClient()->SetSessionState(SessionState::ACTIVE);
   Mock::VerifyAndClearExpectations(user_education_delegate());
+
+  // Verify histograms.
+  // NOTE: Order is important. For users not going through OOBE, it is expected
+  // that cross-device newness be unavailable. To ensure that the most specific
+  // prevention reason is emitted to histograms, cross-device newness checks
+  // should be last.
+  std::vector<base::Bucket> buckets;
+  if (!ForceUserEligibility()) {
+    if (GetUserType() != user_manager::UserType::kRegular) {
+      buckets.emplace_back(PreventedReason::kUserTypeNotRegular, 1);
+    } else if (IsManagedUser()) {
+      buckets.emplace_back(PreventedReason::kManagedAccount, 1);
+    } else if (!IsNewUserLocally()) {
+      buckets.emplace_back(PreventedReason::kUserNotNewLocally, 1);
+    } else if (!IsNewUserCrossDevice().has_value()) {
+      buckets.emplace_back(PreventedReason::kUserNewnessNotAvailable, 1);
+    } else if (!IsNewUserCrossDevice().value()) {
+      buckets.emplace_back(PreventedReason::kUserNotNewCrossDevice, 1);
+    }
+  }
+  EXPECT_THAT(
+      histogram_tester.GetAllSamples("Ash.WelcomeTour.Prevented.Reason"),
+      base::BucketsAreArray(buckets));
 }
 
 // WelcomeTourControllerRunTest ------------------------------------------------
@@ -668,6 +813,8 @@ TEST_P(WelcomeTourControllerUserEligibilityTest, EnforcesUserEligibility) {
 // Tour in order to assert expectations before, during, and/or after run time.
 class WelcomeTourControllerRunTest : public WelcomeTourControllerTest {
  public:
+  WelcomeTourControllerRunTest() = default;
+
   // Runs the Welcome Tour, invoking the specified `in_progress_callback` just
   // after the Welcome Tour has started. Note that this method will not return
   // until the Welcome Tour has ended.
@@ -695,17 +842,22 @@ class WelcomeTourControllerRunTest : public WelcomeTourControllerTest {
     EXPECT_CALL(observer, OnWelcomeTourEnded)
         .WillOnce(RunOnceClosure(ended_future.GetCallback()));
 
-    // When the Welcome Tour tutorial is started, cache the callback to invoke
-    // to complete the tutorial.
+    const auto primary_account_id = AccountId::FromUserEmail("primary@test");
+
+    // When the Welcome Tour tutorial is registered and started, cache the
+    // callback to invoke to complete the tutorial.
     base::OnceClosure completed_callback;
     EXPECT_CALL(
         *delegate,
-        StartTutorial(_, Eq(TutorialId::kWelcomeTourPrototype1), _, _, _))
+        RegisterTutorial(
+            Eq(primary_account_id), Eq(TutorialId::kWelcomeTour),
+            TutorialDescriptionEq(controller->GetTutorialDescription())));
+    EXPECT_CALL(*delegate, StartTutorial(Eq(primary_account_id),
+                                         Eq(TutorialId::kWelcomeTour), _, _, _))
         .WillOnce(MoveArg<3>(&completed_callback));
 
     // Simulate login of the primary user for the first time. Note that this
     // should trigger the Welcome Tour to start automatically.
-    const auto primary_account_id = AccountId::FromUserEmail("primary@test");
     SimulateNewUserFirstLogin(primary_account_id.GetUserEmail());
     EXPECT_TRUE(started_future.Wait());
 
@@ -718,6 +870,7 @@ class WelcomeTourControllerRunTest : public WelcomeTourControllerTest {
         *user_education_delegate(),
         LaunchSystemWebAppAsync(
             Eq(primary_account_id), Eq(ash::SystemWebAppType::HELP),
+            Eq(apps::LaunchSource::kFromWelcomeTour),
             Eq(display::Screen::GetScreen()->GetPrimaryDisplay().id())));
 
     // Click `accept_button` to close the Welcome Tour dialog.
@@ -885,6 +1038,44 @@ TEST_F(WelcomeTourControllerRunTest, NotificationBlocking) {
   }
 }
 
+// Verifies that nudges are suppressed while the Welcome Tour is in progress.
+TEST_F(WelcomeTourControllerRunTest, NudgePause) {
+  static constexpr char kNudgeId[] = "nudge_id";
+
+  // Verify nudge manager exists.
+  auto* const nudge_manager = AnchoredNudgeManager::Get();
+  ASSERT_TRUE(nudge_manager);
+
+  // Cache helper to check if a nudge matching `kNudgeId` is showing.
+  auto is_showing_nudge = [&]() {
+    return nudge_manager->IsNudgeShown(kNudgeId);
+  };
+
+  // Cache helper to show a toast matching `kNudgeId`.
+  auto show_nudge = [&]() {
+    AnchoredNudgeData nudge(kNudgeId, NudgeCatalogName::kMaxValue, u"text");
+    nudge_manager->Show(nudge);
+  };
+
+  // Case: Before Welcome Tour.
+  EXPECT_FALSE(is_showing_nudge());
+  show_nudge();
+  EXPECT_TRUE(is_showing_nudge());
+
+  // Case: During Welcome Tour.
+  ASSERT_NO_FATAL_FAILURE(
+      Run(/*in_progress_callback=*/base::BindLambdaForTesting([&]() {
+        EXPECT_FALSE(is_showing_nudge());
+        show_nudge();
+        EXPECT_FALSE(is_showing_nudge());
+      })));
+
+  // Case: After Welcome Tour.
+  EXPECT_FALSE(is_showing_nudge());
+  show_nudge();
+  EXPECT_TRUE(is_showing_nudge());
+}
+
 // Verifies that scrims are added to all root windows only while the Welcome
 // Tour is in progress.
 TEST_F(WelcomeTourControllerRunTest, Scrim) {
@@ -898,6 +1089,66 @@ TEST_F(WelcomeTourControllerRunTest, Scrim) {
 
   // Case: After Welcome Tour.
   ExpectScrimsOnAllRootWindows(false);
+}
+
+// Verifies that toasts are suppressed while the Welcome Tour is in progress.
+TEST_F(WelcomeTourControllerRunTest, ToastPause) {
+  static constexpr char kToastId[] = "toast_id";
+
+  // Verify toast manager exists.
+  auto* const toast_manager = ToastManager::Get();
+  ASSERT_TRUE(toast_manager);
+
+  // Cache helper to check if a toast matching `kToastId` is showing.
+  auto is_showing_toast = [&]() {
+    return toast_manager->IsToastShown(kToastId);
+  };
+
+  // Cache helper to show a toast matching `kToastId`.
+  auto show_toast = [&]() {
+    toast_manager->Show(ToastData(kToastId, ToastCatalogName::kMaxValue,
+                                  u"text", ToastData::kInfiniteDuration,
+                                  /*visible_on_lock_screen=*/true));
+  };
+
+  // Case: Before Welcome Tour.
+  EXPECT_FALSE(is_showing_toast());
+  show_toast();
+  EXPECT_TRUE(is_showing_toast());
+
+  // Case: During Welcome Tour.
+  ASSERT_NO_FATAL_FAILURE(
+      Run(/*in_progress_callback=*/base::BindLambdaForTesting([&]() {
+        EXPECT_FALSE(is_showing_toast());
+        show_toast();
+        EXPECT_FALSE(is_showing_toast());
+      })));
+
+  // Case: After Welcome Tour.
+  EXPECT_FALSE(is_showing_toast());
+  show_toast();
+  EXPECT_TRUE(is_showing_toast());
+}
+
+// Verifies that windows are minimized iff the Welcome Tour is in progress.
+TEST_F(WelcomeTourControllerRunTest, WindowMinimizer) {
+  auto window_1 = CreateAppWindow();
+
+  // Case: Before Welcome Tour.
+  EXPECT_THAT(window_1, Minimized(Eq(false)));
+
+  // Case: During Welcome Tour.
+  ASSERT_NO_FATAL_FAILURE(
+      Run(/*in_progress_callback=*/base::BindLambdaForTesting([&]() {
+        EXPECT_TRUE(WaitUntilMinimized(window_1.get()));
+        auto window_2 = CreateAppWindow();
+        EXPECT_TRUE(WaitUntilMinimized(window_2.get()));
+      })));
+
+  // Case: After Welcome Tour.
+  EXPECT_THAT(window_1, Minimized(Eq(true)));
+  auto window_3 = CreateAppWindow();
+  EXPECT_THAT(window_3, Minimized(Eq(false)));
 }
 
 // Verifies accelerator actions before/during/after the Welcome Tour.
@@ -921,18 +1172,18 @@ class WelcomeTourAcceleratorHandlerRunTest
     WelcomeTourControllerRunTest::TearDown();
   }
 
-  // Peforms the specified accelerator action. Then checks the key events
+  // Performs the specified accelerator action. Then checks the key events
   // received as expected.
   void PerformActionAndCheckKeyEvents(AcceleratorAction action, bool received) {
     // Get the accelerators corresponding to `action`.
-    const std::vector<ui::Accelerator>& accelerators =
-        Shell::Get()->ash_accelerator_configuration()->GetAcceleratorsForAction(
-            action);
-    ASSERT_FALSE(accelerators.empty());
+    const std::vector<AcceleratorDetails>& accelerators_details =
+        Shell::Get()->accelerator_lookup()->GetAcceleratorsForAction(action);
+    ASSERT_FALSE(accelerators_details.empty());
 
-    for (const ui::Accelerator& accelerator : accelerators) {
+    for (const AcceleratorDetails& accelerator_details : accelerators_details) {
       // If `received` is true, then `accelerator` should be received;
       // otherwise, `accelerator` should NOT be received.
+      const ui::Accelerator accelerator = accelerator_details.accelerator;
       EXPECT_CALL(
           *mock_pretarget_event_handler_,
           OnKeyEvent(AllOf(
@@ -1041,27 +1292,6 @@ TEST_F(WelcomeTourAcceleratorHandlerRunTest, CheckActionsThatAbortTour) {
       })));
 }
 
-// Verifies that windows are minimized iff the Welcome Tour is in progress.
-TEST_F(WelcomeTourControllerRunTest, WindowMinimizer) {
-  auto window_1 = CreateAppWindow();
-
-  // Case: Before Welcome Tour.
-  EXPECT_THAT(window_1, Minimized(Eq(false)));
-
-  // Case: During Welcome Tour.
-  ASSERT_NO_FATAL_FAILURE(
-      Run(/*in_progress_callback=*/base::BindLambdaForTesting([&]() {
-        EXPECT_TRUE(WaitUntilMinimized(window_1.get()));
-        auto window_2 = CreateAppWindow();
-        EXPECT_TRUE(WaitUntilMinimized(window_2.get()));
-      })));
-
-  // Case: After Welcome Tour.
-  EXPECT_THAT(window_1, Minimized(Eq(true)));
-  auto window_3 = CreateAppWindow();
-  EXPECT_THAT(window_3, Minimized(Eq(false)));
-}
-
 // WelcomeTourControllerTabletTest ---------------------------------------------
 
 // Base class for tests of the `WelcomeTourController` that verify the tour does
@@ -1097,14 +1327,24 @@ class WelcomeTourControllerTabletTest : public WelcomeTourControllerTest {
 
 // Verifies that the Welcome Tour will not start when in tablet mode.
 TEST_F(WelcomeTourControllerTabletTest, DoesNotStart) {
+  const auto primary_account_id = AccountId::FromUserEmail("primary@test");
+
   // Force tablet mode on.
   TabletMode::Get()->SetEnabledForTest(true);
 
   // Activate the primary user session for the first time. Since tablet mode is
-  // enabled, the Welcome Tour should not start, the dialog should not show, and
+  // enabled, the Welcome Tour should not be registered or started, the dialog
+  // should not show, there should be no attempt to launch the Explore app, and
   // no start or end calls should be made.
+  EXPECT_CALL(*user_education_delegate(), RegisterTutorial).Times(0);
   EXPECT_CALL(*user_education_delegate(), StartTutorial).Times(0);
-  SimulateNewUserFirstLogin("user@test");
+  EXPECT_CALL(*user_education_delegate(),
+              LaunchSystemWebAppAsync(
+                  Eq(primary_account_id), Eq(ash::SystemWebAppType::HELP),
+                  Eq(apps::LaunchSource::kFromWelcomeTour),
+                  Eq(display::Screen::GetScreen()->GetPrimaryDisplay().id())))
+      .Times(0);
+  SimulateNewUserFirstLogin(primary_account_id.GetUserEmail());
   EXPECT_FALSE(WelcomeTourDialog::Get());
   Mock::VerifyAndClearExpectations(user_education_delegate());
   Mock::VerifyAndClearExpectations(observer());
@@ -1112,26 +1352,41 @@ TEST_F(WelcomeTourControllerTabletTest, DoesNotStart) {
 
 // Verifies that the tour will abort if we enter tablet mode.
 TEST_F(WelcomeTourControllerTabletTest, TriggersAbort) {
+  const auto primary_account_id = AccountId::FromUserEmail("primary@test");
+
   // Activate the user session for the first time to trigger the Welcome Tour to
-  // start, as well as notify observers. Note that the aborted callback is
-  // cached for later verification.
+  // be registered and started, as well as notify observers. Note that the
+  // aborted callback is cached for later verification.
   base::OnceClosure aborted_callback;
+  EXPECT_CALL(*user_education_delegate(),
+              RegisterTutorial(
+                  Eq(primary_account_id), Eq(TutorialId::kWelcomeTour),
+                  TutorialDescriptionEq(
+                      WelcomeTourController::Get()->GetTutorialDescription())));
   EXPECT_CALL(
       *user_education_delegate(),
-      StartTutorial(/*account_id=*/_, Eq(TutorialId::kWelcomeTourPrototype1),
+      StartTutorial(Eq(primary_account_id), Eq(TutorialId::kWelcomeTour),
                     /*element_context=*/_,
                     /*completed_callback=*/_,
                     /*aborted_callback=*/_))
       .WillOnce(MoveArgs<4>(&aborted_callback));
   EXPECT_CALL(*observer(), OnWelcomeTourStarted);
-  SimulateNewUserFirstLogin("user@test");
+  SimulateNewUserFirstLogin(primary_account_id.GetUserEmail());
   Mock::VerifyAndClearExpectations(user_education_delegate());
   Mock::VerifyAndClearExpectations(observer());
   ASSERT_FALSE(aborted_callback.is_null());
 
-  // Force tablet mode on, which should cause the tutorial to abort.
+  // Force tablet mode on, which should cause the tutorial to abort. Because
+  // the device is in tablet mode, no attempt should be made to launch the
+  // Explore app.
   EXPECT_CALL(*user_education_delegate(), AbortTutorial)
       .WillOnce(RunOnceClosure(std::move(aborted_callback)));
+  EXPECT_CALL(*user_education_delegate(),
+              LaunchSystemWebAppAsync(
+                  Eq(primary_account_id), Eq(ash::SystemWebAppType::HELP),
+                  Eq(apps::LaunchSource::kFromWelcomeTour),
+                  Eq(display::Screen::GetScreen()->GetPrimaryDisplay().id())))
+      .Times(0);
   EXPECT_CALL(*observer(), OnWelcomeTourEnded);
   TabletMode::Get()->SetEnabledForTest(true);
   Mock::VerifyAndClearExpectations(observer());

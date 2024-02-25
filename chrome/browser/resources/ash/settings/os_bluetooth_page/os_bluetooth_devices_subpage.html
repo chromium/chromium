@@ -10,20 +10,12 @@
     padding: 0;
   }
 
-  #onOff {
-    font-weight: 500;
-  }
-
-  #onOff[on] {
-    color: var(--cros-text-color-prominent);
-  }
-
   .device-list {
     margin-inline-start: 32px;
   }
 </style>
 <div class="settings-box first">
-  <div id="onOff" class="start" on$="[[isBluetoothToggleOn_]]"
+  <div class="primary-toggle start" on$="[[isBluetoothToggleOn_]]"
       aria-hidden="true">
     [[getOnOffString_(isBluetoothToggleOn_,
         '$i18nPolymer{deviceOn}', '$i18nPolymer{deviceOff}')]]

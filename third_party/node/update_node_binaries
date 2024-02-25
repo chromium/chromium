@@ -15,7 +15,7 @@ set -eu
 cd "$(dirname "$0")"
 
 BASE_URL="https://nodejs.org/dist"
-NODE_VERSION="v16.13.0"
+NODE_VERSION="v20.11.0"
 
 update_unix() {
   local SUFFIX="$1"

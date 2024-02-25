@@ -11,7 +11,6 @@
 #include "base/check.h"
 #include "base/command_line.h"
 #include "base/containers/contains.h"
-#include "base/feature_list.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
@@ -138,7 +137,7 @@ void SetAccountCapabilityState(base::Value::Dict& value,
                         static_cast<int>(state));
 }
 
-signin::Tribool ParseTribool(absl::optional<int> int_value) {
+signin::Tribool ParseTribool(std::optional<int> int_value) {
   if (!int_value.has_value())
     return signin::Tribool::kUnknown;
   switch (int_value.value()) {
@@ -156,7 +155,7 @@ signin::Tribool ParseTribool(absl::optional<int> int_value) {
 
 signin::Tribool FindAccountCapabilityState(const base::Value::Dict& dict,
                                            base::StringPiece name) {
-  absl::optional<int> capability =
+  std::optional<int> capability =
       dict.FindIntByDottedPath(GetCapabilityPrefPath(name));
   return ParseTribool(capability);
 }
@@ -184,7 +183,7 @@ std::string AccountsToString(
 
 AccountTrackerService::AccountTrackerService() {
 #if BUILDFLAG(IS_ANDROID)
-  JNIEnv* env = base::android::AttachCurrentThread();
+  JNIEnv* env = jni_zero::AttachCurrentThread();
   base::android::ScopedJavaLocalRef<jobject> java_ref =
       signin::Java_AccountTrackerService_Constructor(
           env, reinterpret_cast<intptr_t>(this));
@@ -195,7 +194,7 @@ AccountTrackerService::AccountTrackerService() {
 AccountTrackerService::~AccountTrackerService() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 #if BUILDFLAG(IS_ANDROID)
-  JNIEnv* env = base::android::AttachCurrentThread();
+  JNIEnv* env = jni_zero::AttachCurrentThread();
   signin::Java_AccountTrackerService_destroy(env, java_ref_);
 #endif
   pref_service_ = nullptr;
@@ -298,7 +297,9 @@ void AccountTrackerService::NotifyAccountRemoved(
 
 void AccountTrackerService::StartTrackingAccount(
     const CoreAccountId& account_id) {
-  CHECK(!account_id.empty());
+  // TODO(crbug.com/1488401): Change into a CHECK once there are no crash reports for
+  // tracking empty account ids.
+  DUMP_WILL_BE_CHECK(!account_id.empty());
   if (!base::Contains(accounts_, account_id)) {
     DVLOG(1) << "StartTracking " << account_id;
     AccountInfo account_info;
@@ -331,7 +332,7 @@ void AccountTrackerService::SetAccountInfoFromUserInfo(
   DCHECK(base::Contains(accounts_, account_id));
   AccountInfo& account_info = accounts_[account_id];
 
-  absl::optional<AccountInfo> maybe_account_info =
+  std::optional<AccountInfo> maybe_account_info =
       AccountInfoFromUserInfo(user_info);
   if (maybe_account_info) {
     DCHECK(!maybe_account_info->gaia.empty());
@@ -379,14 +380,11 @@ void AccountTrackerService::SetAccountCapabilities(
 
 #if !(BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_CHROMEOS))
   // Set the child account status based on the account capabilities.
-  if (supervised_user::IsChildAccountSupervisionEnabled()) {
-    modified =
-        UpdateAccountInfoChildStatus(
-            account_info,
-            account_info.capabilities.is_subject_to_parental_controls() ==
-                signin::Tribool::kTrue) ||
-        modified;
-  }
+  modified = UpdateAccountInfoChildStatus(
+                 account_info,
+                 account_info.capabilities.is_subject_to_parental_controls() ==
+                     signin::Tribool::kTrue) ||
+             modified;
 #endif
 
   if (!modified) {
@@ -631,88 +629,95 @@ void AccountTrackerService::LoadFromPrefs() {
   std::set<CoreAccountId> to_remove;
   for (size_t i = 0; i < list.size(); ++i) {
     const base::Value::Dict* dict = list[i].GetIfDict();
-    if (dict) {
-      if (const std::string* account_key = dict->FindString(kAccountKeyKey)) {
-        // Ignore empty account ids.
-        if (account_key->empty()) {
-          to_remove.insert(CoreAccountId());
-          continue;
-        }
-        // Ignore incorrectly persisted non-canonical account ids.
-        if (account_key->find('@') != std::string::npos &&
-            *account_key != gaia::CanonicalizeEmail(*account_key)) {
-          to_remove.insert(CoreAccountId::FromString(*account_key));
-          continue;
-        }
+    if (!dict) {
+      continue;
+    }
 
-        CoreAccountId account_id = CoreAccountId::FromString(*account_key);
-        StartTrackingAccount(account_id);
-        AccountInfo& account_info = accounts_[account_id];
+    const std::string* account_key = dict->FindString(kAccountKeyKey);
+    if (!account_key) {
+      continue;
+    }
 
-        GetString(*dict, kAccountGaiaKey, account_info.gaia);
-        GetString(*dict, kAccountEmailKey, account_info.email);
-        GetString(*dict, kAccountHostedDomainKey, account_info.hosted_domain);
-        GetString(*dict, kAccountFullNameKey, account_info.full_name);
-        GetString(*dict, kAccountGivenNameKey, account_info.given_name);
-        GetString(*dict, kAccountLocaleKey, account_info.locale);
-        GetString(*dict, kAccountPictureURLKey, account_info.picture_url);
-        GetString(*dict, kLastDownloadedImageURLWithSizeKey,
-                  account_info.last_downloaded_image_url_with_size);
+    // Ignore empty account ids.
+    if (account_key->empty()) {
+      to_remove.insert(CoreAccountId());
+      continue;
+    }
+    // Ignore incorrectly persisted non-canonical account ids.
+    if (account_key->find('@') != std::string::npos &&
+        *account_key != gaia::CanonicalizeEmail(*account_key)) {
+      to_remove.insert(CoreAccountId::FromString(*account_key));
+      continue;
+    }
 
-        if (absl::optional<bool> is_child_status =
-                dict->FindBool(kDeprecatedChildStatusKey)) {
-          account_info.is_child_account = is_child_status.value()
-                                              ? signin::Tribool::kTrue
-                                              : signin::Tribool::kFalse;
-          // Migrate to kAccountChildAttributeKey.
-          ScopedListPrefUpdate update(pref_service_, prefs::kAccountInfo);
-          base::Value::Dict& update_dict = (*update)[i].GetDict();
-          update_dict.Set(kAccountChildAttributeKey,
-                          static_cast<int>(account_info.is_child_account));
-          update_dict.Remove(kDeprecatedChildStatusKey);
-        } else {
-          account_info.is_child_account =
-              ParseTribool(dict->FindInt(kAccountChildAttributeKey));
-        }
+    CoreAccountId account_id = CoreAccountId::FromString(*account_key);
+    StartTrackingAccount(account_id);
+    AccountInfo& account_info = accounts_[account_id];
 
-        absl::optional<bool> is_under_advanced_protection =
-            dict->FindBool(kAdvancedProtectionAccountStatusKey);
-        if (is_under_advanced_protection.has_value()) {
-          account_info.is_under_advanced_protection =
-              is_under_advanced_protection.value();
-        }
+    GetString(*dict, kAccountGaiaKey, account_info.gaia);
+    GetString(*dict, kAccountEmailKey, account_info.email);
+    GetString(*dict, kAccountHostedDomainKey, account_info.hosted_domain);
+    GetString(*dict, kAccountFullNameKey, account_info.full_name);
+    GetString(*dict, kAccountGivenNameKey, account_info.given_name);
+    GetString(*dict, kAccountLocaleKey, account_info.locale);
+    GetString(*dict, kAccountPictureURLKey, account_info.picture_url);
+    GetString(*dict, kLastDownloadedImageURLWithSizeKey,
+              account_info.last_downloaded_image_url_with_size);
 
-        if (absl::optional<int> can_offer_extended_chrome_sync_promos =
-                dict->FindIntByDottedPath(
-                    kDeprecatedCanOfferExtendedChromeSyncPromosPrefPath)) {
-          // Migrate to Capability names based pref paths.
-          ScopedListPrefUpdate update(pref_service_, prefs::kAccountInfo);
-          base::Value::Dict& update_dict = (*update)[i].GetDict();
-          SetAccountCapabilityState(
-              update_dict, kCanOfferExtendedChromeSyncPromosCapabilityName,
-              ParseTribool(can_offer_extended_chrome_sync_promos));
-          update_dict.RemoveByDottedPath(
-              kDeprecatedCanOfferExtendedChromeSyncPromosPrefPath);
-        }
+    if (std::optional<bool> is_child_status =
+            dict->FindBool(kDeprecatedChildStatusKey)) {
+      account_info.is_child_account = is_child_status.value()
+                                          ? signin::Tribool::kTrue
+                                          : signin::Tribool::kFalse;
+      // Migrate to kAccountChildAttributeKey.
+      ScopedListPrefUpdate update(pref_service_, prefs::kAccountInfo);
+      base::Value::Dict& update_dict = (*update)[i].GetDict();
+      update_dict.Set(kAccountChildAttributeKey,
+                      static_cast<int>(account_info.is_child_account));
+      update_dict.Remove(kDeprecatedChildStatusKey);
+    } else {
+      account_info.is_child_account =
+          ParseTribool(dict->FindInt(kAccountChildAttributeKey));
+    }
 
-        for (const std::string& name :
-             AccountCapabilities::GetSupportedAccountCapabilityNames()) {
-          switch (FindAccountCapabilityState(*dict, name)) {
-            case signin::Tribool::kUnknown:
-              account_info.capabilities.capabilities_map_.erase(name);
-              break;
-            case signin::Tribool::kTrue:
-              account_info.capabilities.capabilities_map_[name] = true;
-              break;
-            case signin::Tribool::kFalse:
-              account_info.capabilities.capabilities_map_[name] = false;
-              break;
-          }
-        }
+    std::optional<bool> is_under_advanced_protection =
+        dict->FindBool(kAdvancedProtectionAccountStatusKey);
+    if (is_under_advanced_protection.has_value()) {
+      account_info.is_under_advanced_protection =
+          is_under_advanced_protection.value();
+    }
 
-        if (!account_info.gaia.empty())
-          NotifyAccountUpdated(account_info);
+    if (std::optional<int> deprecated_can_offer_extended_chrome_sync_promos =
+            dict->FindIntByDottedPath(
+                kDeprecatedCanOfferExtendedChromeSyncPromosPrefPath)) {
+      // Migrate to Capability names based pref paths.
+      ScopedListPrefUpdate update(pref_service_, prefs::kAccountInfo);
+      base::Value::Dict& update_dict = (*update)[i].GetDict();
+      SetAccountCapabilityState(
+          update_dict,
+          kCanShowHistorySyncOptInsWithoutMinorModeRestrictionsCapabilityName,
+          ParseTribool(deprecated_can_offer_extended_chrome_sync_promos));
+      update_dict.RemoveByDottedPath(
+          kDeprecatedCanOfferExtendedChromeSyncPromosPrefPath);
+    }
+
+    for (const std::string& name :
+         AccountCapabilities::GetSupportedAccountCapabilityNames()) {
+      switch (FindAccountCapabilityState(*dict, name)) {
+        case signin::Tribool::kUnknown:
+          account_info.capabilities.capabilities_map_.erase(name);
+          break;
+        case signin::Tribool::kTrue:
+          account_info.capabilities.capabilities_map_[name] = true;
+          break;
+        case signin::Tribool::kFalse:
+          account_info.capabilities.capabilities_map_[name] = false;
+          break;
       }
+    }
+
+    if (!account_info.gaia.empty()) {
+      NotifyAccountUpdated(account_info);
     }
   }
 
@@ -881,6 +886,31 @@ CoreAccountId AccountTrackerService::SeedAccountInfo(AccountInfo info) {
   return info.account_id;
 }
 
+void AccountTrackerService::SeedAccountsInfo(
+    const std::vector<CoreAccountInfo>& core_account_infos,
+    const std::optional<CoreAccountId>& primary_account_id,
+    bool should_remove_stale_accounts) {
+  DVLOG(1) << "AccountTrackerService.SeedAccountsInfo: "
+           << " number of accounts " << core_account_infos.size();
+
+  if (should_remove_stale_accounts) {
+    // Remove the accounts deleted from the device, but don't remove the primary
+    // account.
+    for (const auto& account : GetAccounts()) {
+      CoreAccountId curr_account_id = account.account_id;
+      if (curr_account_id != primary_account_id &&
+          !base::Contains(core_account_infos, curr_account_id,
+                          &CoreAccountInfo::account_id)) {
+        RemoveAccount(curr_account_id);
+      }
+    }
+  }
+
+  for (const auto& core_account_info : core_account_infos) {
+    SeedAccountInfo(core_account_info.gaia, core_account_info.email);
+  }
+}
+
 void AccountTrackerService::RemoveAccount(const CoreAccountId& account_id) {
   StopTrackingAccount(account_id);
 }
@@ -903,7 +933,7 @@ AccountTrackerService::GetJavaObject() {
   return base::android::ScopedJavaLocalRef<jobject>(java_ref_);
 }
 
-void AccountTrackerService::SeedAccountsInfo(
+void AccountTrackerService::LegacySeedAccountsInfo(
     JNIEnv* env,
     const base::android::JavaParamRef<jobjectArray>& core_account_infos) {
   std::vector<CoreAccountInfo> curr_core_account_infos;
@@ -918,7 +948,7 @@ void AccountTrackerService::SeedAccountsInfo(
         ConvertFromJavaCoreAccountInfo(env, core_account_info_java));
   }
 
-  DVLOG(1) << "AccountTrackerService.SeedAccountsInfo: "
+  DVLOG(1) << "AccountTrackerService.LegacySeedAccountsInfo: "
            << " number of accounts " << curr_core_account_infos.size();
 
   // Remove the accounts deleted from device

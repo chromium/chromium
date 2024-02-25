@@ -1,0 +1,28 @@
+[
+  {
+    "os": [
+      "win"
+    ],
+    "policy_pref_mapping_tests": [
+      {
+        "note": "Default value (no policies set).",
+        "prefs": {
+          "browser_switcher.chrome_path": {
+            "default_value": ""
+          }
+        }
+      },
+      {
+        "note": "Simple value.",
+        "policies": {
+          "BrowserSwitcherChromePath": "chrome.exe"
+        },
+        "prefs": {
+          "browser_switcher.chrome_path": {
+            "value": "chrome.exe"
+          }
+        }
+      }
+    ]
+  }
+]

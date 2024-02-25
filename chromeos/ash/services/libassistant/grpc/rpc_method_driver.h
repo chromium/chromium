@@ -168,7 +168,7 @@ class RpcMethodDriver {
   }
 
   // Owned by |ServicesInitializerBase|.
-  raw_ptr<grpc::ServerCompletionQueue, ExperimentalAsh> cq_ = nullptr;
+  raw_ptr<grpc::ServerCompletionQueue> cq_ = nullptr;
 
   ServiceRpcCallFn service_rpc_call_fn_;
   RpcImplAsyncFn rpc_impl_async_fn_;

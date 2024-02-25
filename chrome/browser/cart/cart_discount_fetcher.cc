@@ -10,6 +10,7 @@
 #include "base/sequence_checker.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/time/time.h"
 #include "chrome/browser/cart/cart_db.h"
 #include "chrome/browser/cart/cart_discount_metric_collector.h"
 #include "chrome/grit/generated_resources.h"
@@ -32,7 +33,7 @@ const char kClientDataHeader[] = "X-Client-Data";
 
 const char kFetchDiscountsEndpoint[] =
     "https://memex-pa.googleapis.com/v1/shopping/cart/discounts";
-const int64_t kTimeoutMs = 30000;
+constexpr base::TimeDelta kTimeout = base::Milliseconds(30000);
 
 const char kCartDiscountFetcherEndpointParam[] =
     "CartDiscountFetcherEndpointParam";
@@ -174,7 +175,7 @@ RuleDiscountInfo CovertToRuleDiscountInfo(
     }
 
     if (discount_dict->Find("percentOff")) {
-      absl::optional<int> percent_off = discount_dict->FindInt("percentOff");
+      std::optional<int> percent_off = discount_dict->FindInt("percentOff");
       if (!percent_off.has_value()) {
         NOTREACHED() << "percent_off is not a int";
         continue;
@@ -213,7 +214,7 @@ RuleDiscountInfo CovertToRuleDiscountInfo(
       highest_amount_off = std::max(highest_amount_off, units);
 
       // Parse nanos
-      absl::optional<int> nano = amount_off_dict->FindInt("nanos");
+      std::optional<int> nano = amount_off_dict->FindInt("nanos");
       if (!nano.has_value()) {
         NOTREACHED() << "Missing nanos or it is not a int";
         continue;
@@ -318,7 +319,7 @@ CouponDiscountInfo ConvertToCouponDiscountInfo(
   return CouponDiscountInfo(std::move(coupons));
 }
 
-bool ValidateResponse(const absl::optional<base::Value>& response) {
+bool ValidateResponse(const std::optional<base::Value>& response) {
   if (!response) {
     NOTREACHED() << "Response is not valid";
     return false;
@@ -450,9 +451,8 @@ std::unique_ptr<EndpointFetcher> CartDiscountFetcher::CreateEndpointFetcher(
 
   return std::make_unique<EndpointFetcher>(
       GURL(kDiscountFetcherServerConfigEndpoint.Get()), kPostMethod,
-      kContentType, kTimeoutMs,
-      generatePostData(proto_pairs, base::Time::Now()), headers,
-      cors_exempt_headers, traffic_annotation,
+      kContentType, kTimeout, generatePostData(proto_pairs, base::Time::Now()),
+      headers, cors_exempt_headers, traffic_annotation,
       network::SharedURLLoaderFactory::Create(std::move(pending_factory)),
       is_oauth_fetch);
 }
@@ -473,7 +473,8 @@ std::string CartDiscountFetcher::generatePostData(
 
     // Set CartAbandonedTimeMinutes.
     int cart_abandoned_time_mintues =
-        (current_time - base::Time::FromDoubleT(cart_proto.timestamp()))
+        (current_time -
+         base::Time::FromSecondsSinceUnixEpoch(cart_proto.timestamp()))
             .InMinutes();
     cart_dict.Set("cartAbandonedTimeMinutes", cart_abandoned_time_mintues);
 
@@ -503,7 +504,7 @@ void CartDiscountFetcher::OnDiscountsAvailable(
     std::unique_ptr<EndpointResponse> responses) {
   VLOG(2) << "Response: " << responses->response;
   CartDiscountMap cart_discount_map;
-  absl::optional<base::Value> value =
+  std::optional<base::Value> value =
       base::JSONReader::Read(responses->response);
   if (!ValidateResponse(value)) {
     std::move(callback).Run(std::move(cart_discount_map), false);
@@ -605,11 +606,11 @@ void CartDiscountFetcher::OnDiscountsAvailable(
   }
 
   bool is_tester = false;
-  absl::optional<bool> is_tester_value = dict.FindBool("externalTester");
+  std::optional<bool> is_tester_value = dict.FindBool("externalTester");
   if (is_tester_value.has_value()) {
     is_tester = *is_tester_value;
   } else {
-    absl::optional<bool> is_internal_tester_value =
+    std::optional<bool> is_internal_tester_value =
         dict.FindBool("internalTester");
     if (is_internal_tester_value.has_value()) {
       is_tester = *is_internal_tester_value;

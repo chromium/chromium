@@ -391,16 +391,10 @@ void WorkerGlobalScope::AddConsoleMessageImpl(ConsoleMessage* console_message,
                                               bool discard_duplicates) {
   DCHECK(IsContextThread());
   ReportingProxy().ReportConsoleMessage(
-      console_message->Source(), console_message->Level(),
+      console_message->GetSource(), console_message->GetLevel(),
       console_message->Message(), console_message->Location());
   GetThread()->GetConsoleMessageStorage()->AddConsoleMessage(
       this, console_message, discard_duplicates);
-}
-
-void WorkerGlobalScope::AddInspectorIssue(
-    mojom::blink::InspectorIssueInfoPtr info) {
-  GetThread()->GetInspectorIssueStorage()->AddInspectorIssue(this,
-                                                             std::move(info));
 }
 
 void WorkerGlobalScope::AddInspectorIssue(AuditsIssue issue) {
@@ -457,7 +451,7 @@ void WorkerGlobalScope::EvaluateClassicScript(
 
 void WorkerGlobalScope::WorkerScriptFetchFinished(
     Script& worker_script,
-    absl::optional<v8_inspector::V8StackTraceId> stack_id) {
+    std::optional<v8_inspector::V8StackTraceId> stack_id) {
   DCHECK(IsContextThread());
 
   DCHECK_NE(ScriptEvalState::kEvaluated, script_eval_state_);
@@ -599,11 +593,8 @@ WorkerGlobalScope::WorkerGlobalScope(
               (creation_params->agent_cluster_id.is_empty()
                    ? base::UnguessableToken::Create()
                    : creation_params->agent_cluster_id),
-              base::FeatureList::IsEnabled(
-                  scheduler::kMicrotaskQueuePerWorkerAgent)
-                  ? v8::MicrotaskQueue::New(thread->GetIsolate(),
-                                            v8::MicrotasksPolicy::kScoped)
-                  : nullptr),
+              v8::MicrotaskQueue::New(thread->GetIsolate(),
+                                      v8::MicrotasksPolicy::kScoped)),
           creation_params->global_scope_name,
           creation_params->parent_devtools_token,
           creation_params->v8_cache_options,
@@ -611,7 +602,9 @@ WorkerGlobalScope::WorkerGlobalScope(
           std::move(creation_params->content_settings_client),
           std::move(creation_params->web_worker_fetch_context),
           thread->GetWorkerReportingProxy(),
-          creation_params->script_url.ProtocolIsData()),
+          creation_params->script_url.ProtocolIsData(),
+          /*is_default_world_of_isolate=*/
+          creation_params->is_default_world_of_isolate),
       ActiveScriptWrappable<WorkerGlobalScope>({}),
       script_type_(creation_params->script_type),
       user_agent_(creation_params->user_agent),
@@ -625,6 +618,9 @@ WorkerGlobalScope::WorkerGlobalScope(
       ukm_source_id_(creation_params->ukm_source_id),
       top_level_frame_security_origin_(
           std::move(creation_params->top_level_frame_security_origin)) {
+  // Workers should always maintain the default world of an isolate.
+  CHECK(creation_params->is_default_world_of_isolate);
+
   InstanceCounters::IncrementCounter(
       InstanceCounters::kWorkerGlobalScopeCounter);
 
@@ -752,6 +748,10 @@ void WorkerGlobalScope::Trace(Visitor* visitor) const {
   visitor->Trace(worker_script_);
   WorkerOrWorkletGlobalScope::Trace(visitor);
   Supplementable<WorkerGlobalScope>::Trace(visitor);
+}
+
+bool WorkerGlobalScope::HasPendingActivity() const {
+  return !ExecutionContext::IsContextDestroyed();
 }
 
 FontMatchingMetrics* WorkerGlobalScope::GetFontMatchingMetrics() {

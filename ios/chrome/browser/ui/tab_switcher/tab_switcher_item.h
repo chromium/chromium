@@ -9,10 +9,17 @@
 
 @class TabSwitcherItem;
 
+#ifdef __cplusplus
+class GURL;
+namespace web {
+class WebStateID;
+}  // namespace web
+#endif
+
 // Block invoked when an image fetching operation completes. The `image`
 // is nil if the operation failed.
-using TabSwitcherImageFetchingCompletionBlock =
-    void (^)(TabSwitcherItem* identifier, UIImage* image);
+typedef void (^TabSwitcherImageFetchingCompletionBlock)(TabSwitcherItem* item,
+                                                        UIImage* image);
 
 // Model object representing an item in the tab switchers.
 //
@@ -22,15 +29,20 @@ using TabSwitcherImageFetchingCompletionBlock =
 // It is OK not to call this class' implementations.
 @interface TabSwitcherItem : NSObject
 
+#ifdef __cplusplus
 // Create an item with `identifier`, which cannot be nil.
-- (instancetype)initWithIdentifier:(NSString*)identifier
+- (instancetype)initWithIdentifier:(web::WebStateID)identifier
     NS_DESIGNATED_INITIALIZER;
+#endif
 - (instancetype)init NS_UNAVAILABLE;
 
-@property(nonatomic, copy, readonly) NSString* identifier;
-@property(nonatomic, copy) NSString* title;
-@property(nonatomic, assign) BOOL hidesTitle;
-@property(nonatomic, assign) BOOL showsActivity;
+#ifdef __cplusplus
+@property(nonatomic, readonly) web::WebStateID identifier;
+@property(nonatomic, assign) GURL URL;
+#endif
+@property(nonatomic, readonly) NSString* title;
+@property(nonatomic, readonly) BOOL hidesTitle;
+@property(nonatomic, readonly) BOOL showsActivity;
 
 #pragma mark - Image Fetching
 
@@ -41,13 +53,6 @@ using TabSwitcherImageFetchingCompletionBlock =
 // Fetches the snapshot, calling `completion` on the calling sequence when the
 // operation completes.
 - (void)fetchSnapshot:(TabSwitcherImageFetchingCompletionBlock)completion;
-
-// Prefetches the snapshot. Once the asynchronous fetch has returned, the next
-// call to `fetchSnapshot:` can be synchronous.
-- (void)prefetchSnapshot;
-
-// Clears the potential prefetched snapshot.
-- (void)clearPrefetchedSnapshot;
 
 @end
 

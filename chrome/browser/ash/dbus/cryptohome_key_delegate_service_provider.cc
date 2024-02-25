@@ -159,8 +159,7 @@ void HandleSignatureKeyChallenge(
 
   certificate_provider_service->RequestSignatureBySpki(
       challenge_request_data.public_key_spki_der(), ssl_algorithm,
-      base::as_bytes(base::make_span(challenge_request_data.data_to_sign())),
-      account_id,
+      base::as_byte_span(challenge_request_data.data_to_sign()), account_id,
       base::BindOnce(&CompleteSignatureKeyChallenge,
                      base::Unretained(method_call),
                      std::move(response_sender)));

@@ -32,6 +32,8 @@ using ::testing::Values;
 namespace ui {
 namespace {
 
+constexpr uint32_t kAugmentedSurfaceNotSupportedVersion = 0;
+
 base::ScopedFD MakeFD() {
   base::FilePath temp_path;
   EXPECT_TRUE(base::CreateTemporaryFile(&temp_path));
@@ -78,7 +80,7 @@ TEST_P(WaylandZcrColorManagerTest, CreateColorManagementOutput) {
   PostToServerAndWait([&](wl::TestWaylandServerThread* server) {
     auto params_vector =
         server->zcr_color_manager_v1()->color_management_outputs();
-    for (auto* mock_params : params_vector) {
+    for (wl::TestZcrColorManagementOutputV1* mock_params : params_vector) {
       mock_params->SetGfxColorSpace(gfx::ColorSpace::CreateHDR10());
       zcr_color_management_output_v1_send_color_space_changed(
           mock_params->resource());
@@ -88,7 +90,7 @@ TEST_P(WaylandZcrColorManagerTest, CreateColorManagementOutput) {
   PostToServerAndWait([&](wl::TestWaylandServerThread* server) {
     auto params_vector =
         server->zcr_color_manager_v1()->color_management_outputs();
-    for (auto* mock_params : params_vector) {
+    for (wl::TestZcrColorManagementOutputV1* mock_params : params_vector) {
       auto* zcr_color_space = mock_params->GetZcrColorSpace();
       // assert that the color space is the same as the one in output.
       EXPECT_EQ(zcr_color_space->GetGfxColorSpace(),
@@ -110,7 +112,7 @@ TEST_P(WaylandZcrColorManagerTest, CreateColorManagementSurface) {
   PostToServerAndWait([&](wl::TestWaylandServerThread* server) {
     auto params_vector =
         server->zcr_color_manager_v1()->color_management_surfaces();
-    for (auto* mock_params : params_vector) {
+    for (wl::TestZcrColorManagementSurfaceV1* mock_params : params_vector) {
       EXPECT_EQ(gfx::ColorSpace::CreateSRGB(), mock_params->GetGfxColorSpace());
     }
   });
@@ -118,8 +120,14 @@ TEST_P(WaylandZcrColorManagerTest, CreateColorManagementSurface) {
   // Updated buffer handle needed for ApplyPendingState() to set color_space
   EXPECT_TRUE(connection_->buffer_manager_host());
   auto interface_ptr = connection_->buffer_manager_host()->BindInterface();
-  buffer_manager_gpu_->Initialize(std::move(interface_ptr), {}, false, true,
-                                  false, true, 0, true);
+  buffer_manager_gpu_->Initialize(std::move(interface_ptr), {},
+                                  /*supports_dma_buf=*/false,
+                                  /*supports_viewporter=*/true,
+                                  /*supports_acquire_fence=*/false,
+                                  /*supports_overlays=*/true,
+                                  kAugmentedSurfaceNotSupportedVersion,
+                                  /*supports_single_pixel_buffer=*/true,
+                                  /*server_version=*/{});
 
   // Setup wl_buffers.
   constexpr uint32_t buffer_id = 1;
@@ -152,7 +160,7 @@ TEST_P(WaylandZcrColorManagerTest, DoNotSetInvaliColorSpace) {
   PostToServerAndWait([&](wl::TestWaylandServerThread* server) {
     auto params_vector =
         server->zcr_color_manager_v1()->color_management_surfaces();
-    for (auto* mock_params : params_vector) {
+    for (wl::TestZcrColorManagementSurfaceV1* mock_params : params_vector) {
       EXPECT_EQ(gfx::ColorSpace::CreateSRGB(), mock_params->GetGfxColorSpace());
     }
   });
@@ -160,8 +168,14 @@ TEST_P(WaylandZcrColorManagerTest, DoNotSetInvaliColorSpace) {
   // Updated buffer handle needed for ApplyPendingState() to set color_space
   EXPECT_TRUE(connection_->buffer_manager_host());
   auto interface_ptr = connection_->buffer_manager_host()->BindInterface();
-  buffer_manager_gpu_->Initialize(std::move(interface_ptr), {}, false, true,
-                                  false, true, 0, true);
+  buffer_manager_gpu_->Initialize(std::move(interface_ptr), {},
+                                  /*supports_dma_buf=*/false,
+                                  /*supports_viewporter=*/true,
+                                  /*supports_acquire_fence=*/false,
+                                  /*supports_overlays=*/true,
+                                  kAugmentedSurfaceNotSupportedVersion,
+                                  /*supports_single_pixel_buffer=*/true,
+                                  /*server_version=*/{});
 
   // Setup wl_buffers.
   constexpr uint32_t buffer_id = 1;

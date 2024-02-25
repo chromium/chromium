@@ -31,6 +31,7 @@ class OptimizationGuideDecider;
 namespace page_image_service {
 
 class ImageServiceConsentHelper;
+enum class PageImageServiceConsentStatus;
 
 // Through my manual testing, 16ms (which is about a frame at 60hz) allowed
 // for decent aggregation without introducing any perceptible lag.
@@ -68,8 +69,9 @@ class ImageService : public KeyedService {
 
   // Asynchronously returns whether `client_id` has consent to fetch an image.
   // Public for testing purposes only.
-  void GetConsentToFetchImage(mojom::ClientId client_id,
-                              base::OnceCallback<void(bool)> callback);
+  void GetConsentToFetchImage(
+      mojom::ClientId client_id,
+      base::OnceCallback<void(PageImageServiceConsentStatus)> callback);
 
  private:
   class SuggestEntityImageURLFetcher;
@@ -88,7 +90,7 @@ class ImageService : public KeyedService {
                        const GURL& page_url,
                        const mojom::Options& options,
                        ResultCallback callback,
-                       bool consent_is_enabled);
+                       PageImageServiceConsentStatus status);
 
   // Fetches an image from Suggest appropriate for `search_query` and
   // `entity_id`, returning the result asynchronously to `callback`.

@@ -9,6 +9,7 @@
 #include <initguid.h>
 
 #include <memory>
+#include <optional>
 #include <utility>
 
 #include "base/functional/bind.h"
@@ -25,11 +26,11 @@
 #include "media/base/media_log.h"
 #include "media/base/media_switches.h"
 #include "media/base/media_util.h"
+#include "media/base/supported_types.h"
 #include "media/base/test_helpers.h"
 #include "media/base/win/d3d11_mocks.h"
 #include "media/gpu/test/fake_command_buffer_helper.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 using ::testing::_;
 using ::testing::DoAll;
@@ -60,6 +61,8 @@ class D3D11VideoDecoderTest : public ::testing::Test {
     // Create a mock D3D11 device that supports 11.0.  Note that if you change
     // this, then you probably also want VideoDevice1 and friends, below.
     mock_d3d11_device_ = MakeComPtr<NiceMock<D3D11DeviceMock>>();
+    ON_CALL(*mock_d3d11_device_.Get(), QueryInterface(IID_ID3D11Device, _))
+        .WillByDefault(SetComPointeeAndReturnOk<1>(mock_d3d11_device_.Get()));
     ON_CALL(*mock_d3d11_device_.Get(), GetFeatureLevel)
         .WillByDefault(Return(D3D_FEATURE_LEVEL_11_0));
 
@@ -152,7 +155,7 @@ class D3D11VideoDecoderTest : public ::testing::Test {
   }
 
   // Most recently provided video decoder desc.
-  absl::optional<D3D11_VIDEO_DECODER_DESC> last_video_decoder_desc_;
+  std::optional<D3D11_VIDEO_DECODER_DESC> last_video_decoder_desc_;
   D3D11_VIDEO_DECODER_CONFIG video_decoder_config_;
 
   void TearDown() override {
@@ -175,10 +178,15 @@ class D3D11VideoDecoderTest : public ::testing::Test {
   // use it.  Otherwise, we'll use the list that's autodetected by the
   // decoder based on the current device mock.
   void CreateDecoder(
-      absl::optional<D3D11VideoDecoder::SupportedConfigs> supported_configs =
-          absl::optional<D3D11VideoDecoder::SupportedConfigs>()) {
+      std::optional<D3D11VideoDecoder::SupportedConfigs> supported_configs =
+          std::optional<D3D11VideoDecoder::SupportedConfigs>()) {
     auto get_device_cb = base::BindRepeating(
-        [](Microsoft::WRL::ComPtr<ID3D11Device> device) { return device; },
+        [](Microsoft::WRL::ComPtr<ID3D11Device> device,
+           D3D11VideoDecoder::D3DVersion version)
+            -> Microsoft::WRL::ComPtr<IUnknown> {
+          EXPECT_EQ(version, D3D11VideoDecoder::D3DVersion::kD3D11);
+          return device;
+        },
         mock_d3d11_device_);
 
     // Autodetect the supported configs, unless it's being overridden.
@@ -240,7 +248,7 @@ class D3D11VideoDecoderTest : public ::testing::Test {
 
   DXGI_ADAPTER_DESC mock_adapter_desc_;
 
-  absl::optional<base::test::ScopedFeatureList> scoped_feature_list_;
+  std::optional<base::test::ScopedFeatureList> scoped_feature_list_;
   base::win::ScopedCOMInitializer com_initializer_;
 };
 
@@ -279,7 +287,10 @@ TEST_F(D3D11VideoDecoderTest, DoesNotSupportsH264HIGH10Profile) {
   VideoDecoderConfig high10 = TestVideoConfig::NormalCodecProfile(
       VideoCodec::kH264, H264PROFILE_HIGH10PROFILE);
 
-  InitializeDecoder(high10, false);
+  // When the codec is built in this should fail without H264 decoding being
+  // attempted. If H264 isn't built-in, we should at least attempt initialize.
+  const bool expect_success = !IsBuiltInVideoCodec(VideoCodec::kH264);
+  InitializeDecoder(high10, expect_success);
 }
 
 TEST_F(D3D11VideoDecoderTest, SupportsH264WithAutodetectedConfig) {
@@ -299,14 +310,17 @@ TEST_F(D3D11VideoDecoderTest, DoesNotSupportH264IfNoSupportedConfig) {
   // config check kinda works.
   // For whatever reason, Optional<SupportedConfigs>({}) results in one that
   // doesn't have a value, rather than one that has an empty vector.
-  absl::optional<D3D11VideoDecoder::SupportedConfigs> empty_configs;
+  std::optional<D3D11VideoDecoder::SupportedConfigs> empty_configs;
   empty_configs.emplace(std::vector<SupportedVideoDecoderConfig>());
   CreateDecoder(empty_configs);
 
   VideoDecoderConfig normal =
       TestVideoConfig::NormalCodecProfile(VideoCodec::kH264, H264PROFILE_MAIN);
 
-  InitializeDecoder(normal, false);
+  // When the codec is built in this should fail without H264 decoding being
+  // attempted. If H264 isn't built-in, we should at least attempt initialize.
+  const bool expect_success = !IsBuiltInVideoCodec(VideoCodec::kH264);
+  InitializeDecoder(normal, expect_success);
 }
 
 TEST_F(D3D11VideoDecoderTest, DoesNotSupportEncryptedConfig) {

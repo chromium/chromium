@@ -18,11 +18,11 @@ import org.robolectric.shadow.api.Shadow;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.CallbackHelper;
 
-/**
- * Unit tests for DeferredStartupHandler.
- */
+/** Unit tests for DeferredStartupHandler. */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(manifest = Config.NONE, shadows = {ShadowIdleHandlerAwareMessageQueue.class})
+@Config(
+        manifest = Config.NONE,
+        shadows = {ShadowIdleHandlerAwareMessageQueue.class})
 @LooperMode(LooperMode.Mode.LEGACY)
 public class DeferredStartupHandlerTest {
     private DeferredStartupHandler mDeferredStartupHandler;
@@ -81,11 +81,12 @@ public class DeferredStartupHandlerTest {
     @Test
     public void addDeferredTask_WhileIdleHandlerRunning() {
         CallbackHelper helper = new CallbackHelper();
-        mDeferredStartupHandler.addDeferredTask(() -> {
-            helper.notifyCalled();
-            // Add a new deferred task.
-            mDeferredStartupHandler.addDeferredTask(() -> helper.notifyCalled());
-        });
+        mDeferredStartupHandler.addDeferredTask(
+                () -> {
+                    helper.notifyCalled();
+                    // Add a new deferred task.
+                    mDeferredStartupHandler.addDeferredTask(() -> helper.notifyCalled());
+                });
 
         Assert.assertEquals(0, helper.getCallCount());
         Assert.assertEquals(0, mShadowMessageQueue.getIdleHandlers().size());

@@ -12,6 +12,7 @@
 #include "ui/views/test/test_views.h"
 #include "ui/views/test/views_test_utils.h"
 #include "ui/views/view.h"
+#include "ui/views/view_class_properties.h"
 
 namespace views {
 
@@ -19,11 +20,11 @@ namespace {
 
 class FillLayoutTest : public testing::Test {
  public:
-  static const int kDefaultHostWidth = 100;
-  static const int kDefaultHostHeight = 200;
+  static constexpr int kDefaultHostWidth = 100;
+  static constexpr int kDefaultHostHeight = 200;
 
-  FillLayoutTest() : host_(new View) {
-    layout_ = host_->SetLayoutManager(std::make_unique<FillLayout>());
+  FillLayoutTest() : host_(std::make_unique<View>()) {
+    host_->SetLayoutManager(std::make_unique<FillLayout>());
     SetHostSize(kDefaultHostWidth, kDefaultHostHeight);
   }
 
@@ -31,14 +32,14 @@ class FillLayoutTest : public testing::Test {
   FillLayoutTest& operator=(const FillLayoutTest&) = delete;
 
  protected:
-  // Convenience function to get the preferred size from |layout_|.
-  gfx::Size GetPreferredSize() const {
-    return layout_->GetPreferredSize(host_.get());
+  // Convenience function to get the preferred size from `layout()`.
+  gfx::Size GetPreferredSize() {
+    return layout()->GetPreferredSize(host_.get());
   }
 
-  // Convenience function to get the preferred height for width from |layout_|.
-  int GetPreferredHeightForWidth(int width) const {
-    return layout_->GetPreferredHeightForWidth(host_.get(), width);
+  // Convenience function to get the preferred height for width from `layout()`.
+  int GetPreferredHeightForWidth(int width) {
+    return layout()->GetPreferredHeightForWidth(host_.get(), width);
   }
 
   // Creates a View with the given |width| and |height| and adds it to |host_|.
@@ -57,8 +58,9 @@ class FillLayoutTest : public testing::Test {
     host_->SetBorder(CreateEmptyBorder(insets));
   }
 
-  // The test target.
-  raw_ptr<FillLayout, DanglingUntriaged> layout_ = nullptr;
+  FillLayout* layout() {
+    return static_cast<FillLayout*>(host_->GetLayoutManager());
+  }
 
   std::unique_ptr<View> host_;
 };
@@ -199,23 +201,7 @@ TEST_F(FillLayoutTest, LayoutIgnoreView) {
   View* const child_2 = AddChildView(5, 5);
   View* const child_3 = AddChildView(25, 10);
 
-  layout_->SetChildViewIgnoredByLayout(child_3, true);
-  EXPECT_EQ(gfx::Size(10, 50), GetPreferredSize());
-  test::RunScheduledLayout(host_.get());
-
-  const gfx::Size kExpectedSize(kDefaultHostWidth, kDefaultHostHeight);
-  EXPECT_EQ(kExpectedSize, child_1->size());
-  EXPECT_EQ(kExpectedSize, child_2->size());
-  EXPECT_EQ(gfx::Size(25, 10), child_3->size());
-}
-
-TEST_F(FillLayoutTest, LayoutIgnoresHiddenView) {
-  View* const child_1 = AddChildView(10, 50);
-  View* const child_2 = AddChildView(5, 5);
-  View* const child_3 = AddChildView(25, 10);
-  child_3->SetVisible(false);
-  layout_->SetIncludeHiddenViews(false);
-
+  child_3->SetProperty(kViewIgnoredByLayoutKey, true);
   EXPECT_EQ(gfx::Size(10, 50), GetPreferredSize());
   test::RunScheduledLayout(host_.get());
 
@@ -251,7 +237,7 @@ TEST_F(FillLayoutTest, MinimumSizeDisabled) {
 }
 
 TEST_F(FillLayoutTest, MinimumSizeEnabled) {
-  layout_->SetMinimumSizeEnabled(true);
+  layout()->SetMinimumSizeEnabled(true);
   StaticSizedView* const child_1 = AddChildView(10, 50);
   StaticSizedView* const child_2 = AddChildView(5, 5);
   StaticSizedView* const child_3 = AddChildView(25, 10);
@@ -262,14 +248,14 @@ TEST_F(FillLayoutTest, MinimumSizeEnabled) {
 }
 
 TEST_F(FillLayoutTest, MinimumSizeExcludesView) {
-  layout_->SetMinimumSizeEnabled(true);
+  layout()->SetMinimumSizeEnabled(true);
   StaticSizedView* const child_1 = AddChildView(10, 50);
   StaticSizedView* const child_2 = AddChildView(5, 5);
   StaticSizedView* const child_3 = AddChildView(25, 10);
   child_1->set_minimum_size({1, 3});
   child_2->set_minimum_size({3, 1});
   child_3->set_minimum_size({2, 2});
-  layout_->SetChildViewIgnoredByLayout(child_2, true);
+  child_2->SetProperty(kViewIgnoredByLayoutKey, true);
   EXPECT_EQ(gfx::Size(2, 3), host_->GetMinimumSize());
 }
 

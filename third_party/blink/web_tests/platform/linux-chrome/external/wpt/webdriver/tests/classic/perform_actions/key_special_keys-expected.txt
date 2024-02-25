@@ -1,0 +1,6 @@
+This is a wdspec test.
+[FAIL] test_codepoint_keys_behave_correctly[\u0ba8\u0bbf]
+  webdriver.error.InvalidArgumentException: invalid argument (400): invalid argument
+[FAIL] test_codepoint_keys_behave_correctly[\u1100\u1161\u11a8]
+  webdriver.error.InvalidArgumentException: invalid argument (400): invalid argument
+Harness: the test ran to completion.

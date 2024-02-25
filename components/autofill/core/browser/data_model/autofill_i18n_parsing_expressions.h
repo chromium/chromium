@@ -19,172 +19,96 @@
 namespace autofill::i18n_model_definition {
 namespace {
 
-using CountryAndFieldType = std::pair<std::string_view, ServerFieldType>;
+using CountryAndFieldType = std::pair<std::string_view, FieldType>;
 
 // Section for regular expressions.
-constexpr char kRegularExpression_1[] = "(?:^|\\s+)"; // nocheck
-constexpr char kRegularExpression_2[] = "(?:^|[,\\s]+)"; // nocheck
-constexpr char kRegularExpression_3[] = "(?:남궁|사공|서문|선우|제갈|황보|독고|망절|欧阳|令狐|皇甫|上官|司徒|诸葛|司马|宇文|呼延|端木|張簡|歐陽|諸葛|申屠|尉遲|司馬|軒轅|夏侯)"; // nocheck
-constexpr char kRegularExpression_4[] = "\\p{Hangul}"; // nocheck
-constexpr char kRegularExpression_5[] = "\\p{Hangul}+"; // nocheck
-constexpr char kRegularExpression_6[] = "(?:・|·|　|\\s+)"; // nocheck
-constexpr char kRegularExpression_7[] = "(?:Master|Mr\\.?|Miss\\.?|Mrs\\.?|Missus|Ms\\.?|Mx\\.?|M\\.?|Ma'am|Sir|Gentleman|Sire|Mistress|Madam|Ma'am|Dame|Lord|Lady|Esq|Excellency|Excellence|Her Honour|His Honour|Hon\\.?|The Right Honourable|The Most Honourable|Dr\\.?|PhD|DPhil|MD|DO|Prof\\.|Professor|QC|CL|Chancellor|Vice-Chancellor|Principle|Principal|President|Master|Warden|Dean|Regent|Rector|Provost|Director|Chief Executive|Imām|Shaykh|Muftī|Hāfiz|Hāfizah|Qārī|Mawlānā|Hājī|Sayyid|Sayyidah|Sharif|Eminent|Venerable|His Holiness|His Holiness|His All Holiness|His Beatitude|The Most Blessed|His Excellency|His Most Eminent Highness|His Eminence|Most Reverend Eminence|The Most Reverend|His Grace|His Lordship|The Reverend|Fr|Pr|Br|Sr|Elder|Rabbi|The Reverend|Cantor|Chief Rabbi|Grand Rabbi|Rebbetzin|Herr|Frau|Fräulein|Dame|PD|Doktor|Magister|Ingenieur|1lt|1st|2lt|2nd|3rd|admiral|capt|captain|col|cpt|dr|gen|general|lcdr|lt|ltc|ltg|ltjg|maj|major|mg|pastor|prof|rep|reverend|rev|sen|st)"; // nocheck
-constexpr char kRegularExpression_8[] = "(?:(?:b\\.a|ba|d\\.d\\.s|dds|ii|iii|iv|ix|jr|m\\.a|m\\.d|md|ms|ph\\.?d|sr|v|vi|vii|viii|x)\\.?)"; // nocheck
-constexpr char kRegularExpression_9[] = "(?:\\p{Han}|\\p{Hangul}|\\p{Katakana}|\\p{Hiragana}|\\p{Bopomofo})"; // nocheck
-constexpr char kRegularExpression_10[] = "(?:(?:\\p{Han}|\\p{Hangul}|\\p{Katakana}|\\p{Hiragana}|\\p{Bopomofo})+)"; // nocheck
-constexpr char kRegularExpression_11[] = "(?:강전|남궁|독고|동방|망절|사공|서문|선우|소봉|어금|장곡|제갈|황목|황보)"; // nocheck
-constexpr char kRegularExpression_12[] = "(?:Aguilar|Alonso|Álvarez|Amador|Betancourt|Blanco|Burgos|Castillo|Castro|Chávez|Colón|Contreras|Cortez|Cruz|Delgado|Diaz|Díaz|Domínguez|Estrada|Fernandez|Fernández|Flores|Fuentes|Garcia|García|Garza|Gil|Gómez|González|Guerrero|Gutiérrez|Guzmán|Hernández|Herrera|Iglesias|Jiménez|Juárez|Lopez|López|Luna|Marín|Marroquín|Martín|Martinez|Martínez|Medina|Méndez|Mendoza|Molina|Morales|Moreno|Muñoz|Narvaez|Navarro|Núñez|Ortega|Ortiz|Ortíz|Peña|Perez|Pérez|Ramírez|Ramos|Reyes|Rivera|Rodriguez|Rodríguez|Rojas|Romero|Rosario|Rubio|Ruiz|Ruíz|Salazar|Sanchez|Sánchez|Santana|Santiago|Santos|Sanz|Serrano|Soto|Suárez|Toro|Torres|Vargas|Vasquez|Vásquez|Vázquez|Velásquez)"; // nocheck
-constexpr char kRegularExpression_13[] = "(?:(?:(?:Aguilar|Alonso|Álvarez|Amador|Betancourt|Blanco|Burgos|Castillo|Castro|Chávez|Colón|Contreras|Cortez|Cruz|Delgado|Diaz|Díaz|Domínguez|Estrada|Fernandez|Fernández|Flores|Fuentes|Garcia|García|Garza|Gil|Gómez|González|Guerrero|Gutiérrez|Guzmán|Hernández|Herrera|Iglesias|Jiménez|Juárez|Lopez|López|Luna|Marín|Marroquín|Martín|Martinez|Martínez|Medina|Méndez|Mendoza|Molina|Morales|Moreno|Muñoz|Narvaez|Navarro|Núñez|Ortega|Ortiz|Ortíz|Peña|Perez|Pérez|Ramírez|Ramos|Reyes|Rivera|Rodriguez|Rodríguez|Rojas|Romero|Rosario|Rubio|Ruiz|Ruíz|Salazar|Sanchez|Sánchez|Santana|Santiago|Santos|Sanz|Serrano|Soto|Suárez|Toro|Torres|Vargas|Vasquez|Vásquez|Vázquez|Velásquez)|\\s(?:y|e|i)\\s))"; // nocheck
-constexpr char kRegularExpression_14[] = "(?:^(?:(?:\\p{Han}|\\p{Hangul}|\\p{Katakana}|\\p{Hiragana}|\\p{Bopomofo})+)(?:(?:・|·|　|\\s+)(?:(?:\\p{Han}|\\p{Hangul}|\\p{Katakana}|\\p{Hiragana}|\\p{Bopomofo})+))?$)"; // nocheck
-constexpr char kRegularExpression_15[] = "(?:[^\\s,]+)"; // nocheck
-constexpr char kRegularExpression_16[] = "(?:[^\\s,]+(?:[^\\S\\r\\n]+[^\\s,]+)*?)"; // nocheck
-constexpr char kRegularExpression_17[] = "(?:[^,\\r\\n]+)"; // nocheck
-constexpr char kRegularExpression_18[] = "\\s(?:y|e|i)\\s"; // nocheck
-constexpr char kRegularExpression_19[] = "(?:y|e|i)"; // nocheck
-constexpr char kRegularExpression_20[] = "(?:(?:a|ab|af|av|ap|abu|aït|al|ālam|aust|austre|bar|bath|bat|ben|bin|ibn|bet|bint|binti|binte|da|das|de|degli|dele|del|du|della|der|di|dos|du|e|el|fetch|vetch|fitz|i??|kil|gil|de le|de la|la|le|lille|lu|m|mac|mc|mck|mhic|mic|mala|mellom|myljom|na|ned|nedre|neder|nic|ni|nin|nord|norr|ny|o|ua|ui|opp|upp|öfver|ost|öst|öster|øst|øst|østre|över|øvste|øvre|øver|öz|pour|putra|putri|setia|tor|söder|sør|sønder|sør|syd|søndre|syndre|søre|ter|ter|tre|van|van der|väst|väster|verch|erch|vest|vestre|vesle|vetle|von|zu|von und zu)\\s)?"; // nocheck
-constexpr char kRegularExpression_21[] = "^(?:[A-Z]\\.?(?:(?:\\s|-)?[A-Z]\\.?)*)$"; // nocheck
-constexpr char kRegularExpression_22[] = "(?P<NAME_FULL>(?P<NAME_LAST>(?:(?:\\p{Han}|\\p{Hangul}|\\p{Katakana}|\\p{Hiragana}|\\p{Bopomofo})+))(?:(?:・|·|　|\\s+)(?P<NAME_FIRST>(?:(?:\\p{Han}|\\p{Hangul}|\\p{Katakana}|\\p{Hiragana}|\\p{Bopomofo})+))))"; // nocheck
-constexpr char kRegularExpression_23[] = "(?P<NAME_FULL>(?P<NAME_LAST>(?:남궁|사공|서문|선우|제갈|황보|독고|망절|欧阳|令狐|皇甫|上官|司徒|诸葛|司马|宇文|呼延|端木|張簡|歐陽|諸葛|申屠|尉遲|司馬|軒轅|夏侯))(?P<NAME_FIRST>(?:(?:\\p{Han}|\\p{Hangul}|\\p{Katakana}|\\p{Hiragana}|\\p{Bopomofo})+))?)"; // nocheck
-constexpr char kRegularExpression_24[] = "(?P<NAME_FULL>(?P<NAME_LAST>(?:\\p{Han}|\\p{Hangul}|\\p{Katakana}|\\p{Hiragana}|\\p{Bopomofo}))(?P<NAME_FIRST>(?:(?:\\p{Han}|\\p{Hangul}|\\p{Katakana}|\\p{Hiragana}|\\p{Bopomofo})+))?)"; // nocheck
-constexpr char kRegularExpression_25[] = "(?P<NAME_FULL>(?P<NAME_LAST>(?:강전|남궁|독고|동방|망절|사공|서문|선우|소봉|어금|장곡|제갈|황목|황보))(?P<NAME_FIRST>\\p{Hangul}\\p{Hangul}+))"; // nocheck
-constexpr char kRegularExpression_26[] = "(?P<NAME_FULL>(?P<NAME_LAST>(?:(?:a|ab|af|av|ap|abu|aït|al|ālam|aust|austre|bar|bath|bat|ben|bin|ibn|bet|bint|binti|binte|da|das|de|degli|dele|del|du|della|der|di|dos|du|e|el|fetch|vetch|fitz|i??|kil|gil|de le|de la|la|le|lille|lu|m|mac|mc|mck|mhic|mic|mala|mellom|myljom|na|ned|nedre|neder|nic|ni|nin|nord|norr|ny|o|ua|ui|opp|upp|öfver|ost|öst|öster|øst|øst|østre|över|øvste|øvre|øver|öz|pour|putra|putri|setia|tor|söder|sør|sønder|sør|syd|søndre|syndre|søre|ter|ter|tre|van|van der|väst|väster|verch|erch|vest|vestre|vesle|vetle|von|zu|von und zu)\\s)?(?:[^\\s,]+))(?:(?:^|\\s+)(?:(?:b\\.a|ba|d\\.d\\.s|dds|ii|iii|iv|ix|jr|m\\.a|m\\.d|md|ms|ph\\.?d|sr|v|vi|vii|viii|x)\\.?))?)"; // nocheck
-constexpr char kRegularExpression_27[] = "(?P<NAME_FULL>(?P<NAME_HONORIFIC_PREFIX>(?:Master|Mr\\.?|Miss\\.?|Mrs\\.?|Missus|Ms\\.?|Mx\\.?|M\\.?|Ma'am|Sir|Gentleman|Sire|Mistress|Madam|Ma'am|Dame|Lord|Lady|Esq|Excellency|Excellence|Her Honour|His Honour|Hon\\.?|The Right Honourable|The Most Honourable|Dr\\.?|PhD|DPhil|MD|DO|Prof\\.|Professor|QC|CL|Chancellor|Vice-Chancellor|Principle|Principal|President|Master|Warden|Dean|Regent|Rector|Provost|Director|Chief Executive|Imām|Shaykh|Muftī|Hāfiz|Hāfizah|Qārī|Mawlānā|Hājī|Sayyid|Sayyidah|Sharif|Eminent|Venerable|His Holiness|His Holiness|His All Holiness|His Beatitude|The Most Blessed|His Excellency|His Most Eminent Highness|His Eminence|Most Reverend Eminence|The Most Reverend|His Grace|His Lordship|The Reverend|Fr|Pr|Br|Sr|Elder|Rabbi|The Reverend|Cantor|Chief Rabbi|Grand Rabbi|Rebbetzin|Herr|Frau|Fräulein|Dame|PD|Doktor|Magister|Ingenieur|1lt|1st|2lt|2nd|3rd|admiral|capt|captain|col|cpt|dr|gen|general|lcdr|lt|ltc|ltg|ltjg|maj|major|mg|pastor|prof|rep|reverend|rev|sen|st))?(?:(?:^|\\s+)(?P<NAME_FIRST>(?:[^\\s,]+)))?(?:(?:^|\\s+)(?P<NAME_MIDDLE>(?:[^\\s,]+(?:[^\\S\\r\\n]+[^\\s,]+)*?)))??(?:(?:^|\\s+)(?P<NAME_LAST>(?:(?:a|ab|af|av|ap|abu|aït|al|ālam|aust|austre|bar|bath|bat|ben|bin|ibn|bet|bint|binti|binte|da|das|de|degli|dele|del|du|della|der|di|dos|du|e|el|fetch|vetch|fitz|i??|kil|gil|de le|de la|la|le|lille|lu|m|mac|mc|mck|mhic|mic|mala|mellom|myljom|na|ned|nedre|neder|nic|ni|nin|nord|norr|ny|o|ua|ui|opp|upp|öfver|ost|öst|öster|øst|øst|østre|över|øvste|øvre|øver|öz|pour|putra|putri|setia|tor|söder|sør|sønder|sør|syd|søndre|syndre|søre|ter|ter|tre|van|van der|väst|väster|verch|erch|vest|vestre|vesle|vetle|von|zu|von und zu)\\s)?(?:[^\\s,]+)))(?:(?:^|\\s+)(?:(?:b\\.a|ba|d\\.d\\.s|dds|ii|iii|iv|ix|jr|m\\.a|m\\.d|md|ms|ph\\.?d|sr|v|vi|vii|viii|x)\\.?))?)"; // nocheck
-constexpr char kRegularExpression_28[] = "(?P<NAME_FULL>(?P<NAME_HONORIFIC_PREFIX>(?:Master|Mr\\.?|Miss\\.?|Mrs\\.?|Missus|Ms\\.?|Mx\\.?|M\\.?|Ma'am|Sir|Gentleman|Sire|Mistress|Madam|Ma'am|Dame|Lord|Lady|Esq|Excellency|Excellence|Her Honour|His Honour|Hon\\.?|The Right Honourable|The Most Honourable|Dr\\.?|PhD|DPhil|MD|DO|Prof\\.|Professor|QC|CL|Chancellor|Vice-Chancellor|Principle|Principal|President|Master|Warden|Dean|Regent|Rector|Provost|Director|Chief Executive|Imām|Shaykh|Muftī|Hāfiz|Hāfizah|Qārī|Mawlānā|Hājī|Sayyid|Sayyidah|Sharif|Eminent|Venerable|His Holiness|His Holiness|His All Holiness|His Beatitude|The Most Blessed|His Excellency|His Most Eminent Highness|His Eminence|Most Reverend Eminence|The Most Reverend|His Grace|His Lordship|The Reverend|Fr|Pr|Br|Sr|Elder|Rabbi|The Reverend|Cantor|Chief Rabbi|Grand Rabbi|Rebbetzin|Herr|Frau|Fräulein|Dame|PD|Doktor|Magister|Ingenieur|1lt|1st|2lt|2nd|3rd|admiral|capt|captain|col|cpt|dr|gen|general|lcdr|lt|ltc|ltg|ltjg|maj|major|mg|pastor|prof|rep|reverend|rev|sen|st))?(?:(?:^|\\s+)(?P<NAME_LAST>(?:(?:a|ab|af|av|ap|abu|aït|al|ālam|aust|austre|bar|bath|bat|ben|bin|ibn|bet|bint|binti|binte|da|das|de|degli|dele|del|du|della|der|di|dos|du|e|el|fetch|vetch|fitz|i??|kil|gil|de le|de la|la|le|lille|lu|m|mac|mc|mck|mhic|mic|mala|mellom|myljom|na|ned|nedre|neder|nic|ni|nin|nord|norr|ny|o|ua|ui|opp|upp|öfver|ost|öst|öster|øst|øst|østre|över|øvste|øvre|øver|öz|pour|putra|putri|setia|tor|söder|sør|sønder|sør|syd|søndre|syndre|søre|ter|ter|tre|van|van der|väst|väster|verch|erch|vest|vestre|vesle|vetle|von|zu|von und zu)\\s)?(?:[^\\s,]+)))\\s*,\\s*(?P<NAME_FIRST>(?:[^\\s,]+))?(?:(?:^|\\s+)(?P<NAME_MIDDLE>(?:[^\\s,]+(?:[^\\S\\r\\n]+[^\\s,]+)*?)))??)"; // nocheck
-constexpr char kRegularExpression_29[] = "(?P<NAME_LAST>(?P<NAME_LAST_FIRST>(?:(?:a|ab|af|av|ap|abu|aït|al|ālam|aust|austre|bar|bath|bat|ben|bin|ibn|bet|bint|binti|binte|da|das|de|degli|dele|del|du|della|der|di|dos|du|e|el|fetch|vetch|fitz|i??|kil|gil|de le|de la|la|le|lille|lu|m|mac|mc|mck|mhic|mic|mala|mellom|myljom|na|ned|nedre|neder|nic|ni|nin|nord|norr|ny|o|ua|ui|opp|upp|öfver|ost|öst|öster|øst|øst|østre|över|øvste|øvre|øver|öz|pour|putra|putri|setia|tor|söder|sør|sønder|sør|syd|søndre|syndre|søre|ter|ter|tre|van|van der|väst|väster|verch|erch|vest|vestre|vesle|vetle|von|zu|von und zu)\\s)?(?:[^\\s,]+))(?:(?:^|\\s+)(?P<NAME_LAST_CONJUNCTION>(?:y|e|i)))?(?:(?:^|\\s+)(?P<NAME_LAST_SECOND>(?:(?:a|ab|af|av|ap|abu|aït|al|ālam|aust|austre|bar|bath|bat|ben|bin|ibn|bet|bint|binti|binte|da|das|de|degli|dele|del|du|della|der|di|dos|du|e|el|fetch|vetch|fitz|i??|kil|gil|de le|de la|la|le|lille|lu|m|mac|mc|mck|mhic|mic|mala|mellom|myljom|na|ned|nedre|neder|nic|ni|nin|nord|norr|ny|o|ua|ui|opp|upp|öfver|ost|öst|öster|øst|øst|østre|över|øvste|øvre|øver|öz|pour|putra|putri|setia|tor|söder|sør|sønder|sør|syd|søndre|syndre|søre|ter|ter|tre|van|van der|väst|väster|verch|erch|vest|vestre|vesle|vetle|von|zu|von und zu)\\s)?(?:[^\\s,]+))))"; // nocheck
-constexpr char kRegularExpression_30[] = "(?P<NAME_FULL>(?P<NAME_HONORIFIC_PREFIX>(?:Master|Mr\\.?|Miss\\.?|Mrs\\.?|Missus|Ms\\.?|Mx\\.?|M\\.?|Ma'am|Sir|Gentleman|Sire|Mistress|Madam|Ma'am|Dame|Lord|Lady|Esq|Excellency|Excellence|Her Honour|His Honour|Hon\\.?|The Right Honourable|The Most Honourable|Dr\\.?|PhD|DPhil|MD|DO|Prof\\.|Professor|QC|CL|Chancellor|Vice-Chancellor|Principle|Principal|President|Master|Warden|Dean|Regent|Rector|Provost|Director|Chief Executive|Imām|Shaykh|Muftī|Hāfiz|Hāfizah|Qārī|Mawlānā|Hājī|Sayyid|Sayyidah|Sharif|Eminent|Venerable|His Holiness|His Holiness|His All Holiness|His Beatitude|The Most Blessed|His Excellency|His Most Eminent Highness|His Eminence|Most Reverend Eminence|The Most Reverend|His Grace|His Lordship|The Reverend|Fr|Pr|Br|Sr|Elder|Rabbi|The Reverend|Cantor|Chief Rabbi|Grand Rabbi|Rebbetzin|Herr|Frau|Fräulein|Dame|PD|Doktor|Magister|Ingenieur|1lt|1st|2lt|2nd|3rd|admiral|capt|captain|col|cpt|dr|gen|general|lcdr|lt|ltc|ltg|ltjg|maj|major|mg|pastor|prof|rep|reverend|rev|sen|st))?(?:(?:^|\\s+)(?P<NAME_FIRST>(?:[^\\s,]+(?:[^\\S\\r\\n]+[^\\s,]+)*?)))??(?:(?:^|\\s+)(?P<NAME_LAST>(?P<NAME_LAST_FIRST>(?:(?:a|ab|af|av|ap|abu|aït|al|ālam|aust|austre|bar|bath|bat|ben|bin|ibn|bet|bint|binti|binte|da|das|de|degli|dele|del|du|della|der|di|dos|du|e|el|fetch|vetch|fitz|i??|kil|gil|de le|de la|la|le|lille|lu|m|mac|mc|mck|mhic|mic|mala|mellom|myljom|na|ned|nedre|neder|nic|ni|nin|nord|norr|ny|o|ua|ui|opp|upp|öfver|ost|öst|öster|øst|øst|østre|över|øvste|øvre|øver|öz|pour|putra|putri|setia|tor|söder|sør|sønder|sør|syd|søndre|syndre|søre|ter|ter|tre|van|van der|väst|väster|verch|erch|vest|vestre|vesle|vetle|von|zu|von und zu)\\s)?(?:[^\\s,]+))(?:(?:^|\\s+)(?P<NAME_LAST_CONJUNCTION>(?:y|e|i)))?(?:(?:^|\\s+)(?P<NAME_LAST_SECOND>(?:(?:a|ab|af|av|ap|abu|aït|al|ālam|aust|austre|bar|bath|bat|ben|bin|ibn|bet|bint|binti|binte|da|das|de|degli|dele|del|du|della|der|di|dos|du|e|el|fetch|vetch|fitz|i??|kil|gil|de le|de la|la|le|lille|lu|m|mac|mc|mck|mhic|mic|mala|mellom|myljom|na|ned|nedre|neder|nic|ni|nin|nord|norr|ny|o|ua|ui|opp|upp|öfver|ost|öst|öster|øst|øst|østre|över|øvste|øvre|øver|öz|pour|putra|putri|setia|tor|söder|sør|sønder|sør|syd|søndre|syndre|søre|ter|ter|tre|van|van der|väst|väster|verch|erch|vest|vestre|vesle|vetle|von|zu|von und zu)\\s)?(?:[^\\s,]+))))))"; // nocheck
-constexpr char kRegularExpression_31[] = "(?P<NAME_LAST>(?P<NAME_LAST_SECOND>(?:[^\\s,]+(?:[^\\S\\r\\n]+[^\\s,]+)*?)))"; // nocheck
-constexpr char kRegularExpression_32[] = "\\A\\s*"; // nocheck
-constexpr char kRegularExpression_33[] = "(?:KM\\s+)?\\d+\\w?"; // nocheck
-constexpr char kRegularExpression_34[] = "(?:apto\\.?|apt\\.?|apartamento|sala nº|sala|conjunto)"; // nocheck
-constexpr char kRegularExpression_35[] = "(?:\\d+\\w?\\b|\\w\\b)"; // nocheck
-constexpr char kRegularExpression_36[] = "andar"; // nocheck
-constexpr char kRegularExpression_37[] = "(?P<NAME_FULL>(?:(?:Master|Mr\\.?|Miss\\.?|Mrs\\.?|Missus|Ms\\.?|Mx\\.?|M\\.?|Ma'am|Sir|Gentleman|Sire|Mistress|Madam|Ma'am|Dame|Lord|Lady|Esq|Excellency|Excellence|Her Honour|His Honour|Hon\\.?|The Right Honourable|The Most Honourable|Dr\\.?|PhD|DPhil|MD|DO|Prof\\.|Professor|QC|CL|Chancellor|Vice-Chancellor|Principle|Principal|President|Master|Warden|Dean|Regent|Rector|Provost|Director|Chief Executive|Imām|Shaykh|Muftī|Hāfiz|Hāfizah|Qārī|Mawlānā|Hājī|Sayyid|Sayyidah|Sharif|Eminent|Venerable|His Holiness|His Holiness|His All Holiness|His Beatitude|The Most Blessed|His Excellency|His Most Eminent Highness|His Eminence|Most Reverend Eminence|The Most Reverend|His Grace|His Lordship|The Reverend|Fr|Pr|Br|Sr|Elder|Rabbi|The Reverend|Cantor|Chief Rabbi|Grand Rabbi|Rebbetzin|Herr|Frau|Fräulein|Dame|PD|Doktor|Magister|Ingenieur|1lt|1st|2lt|2nd|3rd|admiral|capt|captain|col|cpt|dr|gen|general|lcdr|lt|ltc|ltg|ltjg|maj|major|mg|pastor|prof|rep|reverend|rev|sen|st))?(?:(?:^|\\s+)(?P<NAME_FIRST>(?:[^\\s,]+)))?(?:(?:^|\\s+)(?:[^\\s,]+(?:[^\\S\\r\\n]+[^\\s,]+)*?))??(?:(?:^|\\s+)(?P<NAME_LAST>(?:(?:a|ab|af|av|ap|abu|aït|al|ālam|aust|austre|bar|bath|bat|ben|bin|ibn|bet|bint|binti|binte|da|das|de|degli|dele|del|du|della|der|di|dos|du|e|el|fetch|vetch|fitz|i??|kil|gil|de le|de la|la|le|lille|lu|m|mac|mc|mck|mhic|mic|mala|mellom|myljom|na|ned|nedre|neder|nic|ni|nin|nord|norr|ny|o|ua|ui|opp|upp|öfver|ost|öst|öster|øst|øst|østre|över|øvste|øvre|øver|öz|pour|putra|putri|setia|tor|söder|sør|sønder|sør|syd|søndre|syndre|søre|ter|ter|tre|van|van der|väst|väster|verch|erch|vest|vestre|vesle|vetle|von|zu|von und zu)\\s)?(?:[^\\s,]+)))(?:(?:^|\\s+)(?:(?:b\\.a|ba|d\\.d\\.s|dds|ii|iii|iv|ix|jr|m\\.a|m\\.d|md|ms|ph\\.?d|sr|v|vi|vii|viii|x)\\.?))?)"; // nocheck
-constexpr char kRegularExpression_38[] = "(?P<NAME_FULL>(?:(?:Master|Mr\\.?|Miss\\.?|Mrs\\.?|Missus|Ms\\.?|Mx\\.?|M\\.?|Ma'am|Sir|Gentleman|Sire|Mistress|Madam|Ma'am|Dame|Lord|Lady|Esq|Excellency|Excellence|Her Honour|His Honour|Hon\\.?|The Right Honourable|The Most Honourable|Dr\\.?|PhD|DPhil|MD|DO|Prof\\.|Professor|QC|CL|Chancellor|Vice-Chancellor|Principle|Principal|President|Master|Warden|Dean|Regent|Rector|Provost|Director|Chief Executive|Imām|Shaykh|Muftī|Hāfiz|Hāfizah|Qārī|Mawlānā|Hājī|Sayyid|Sayyidah|Sharif|Eminent|Venerable|His Holiness|His Holiness|His All Holiness|His Beatitude|The Most Blessed|His Excellency|His Most Eminent Highness|His Eminence|Most Reverend Eminence|The Most Reverend|His Grace|His Lordship|The Reverend|Fr|Pr|Br|Sr|Elder|Rabbi|The Reverend|Cantor|Chief Rabbi|Grand Rabbi|Rebbetzin|Herr|Frau|Fräulein|Dame|PD|Doktor|Magister|Ingenieur|1lt|1st|2lt|2nd|3rd|admiral|capt|captain|col|cpt|dr|gen|general|lcdr|lt|ltc|ltg|ltjg|maj|major|mg|pastor|prof|rep|reverend|rev|sen|st))?(?:(?:^|\\s+)(?P<NAME_LAST>(?:(?:a|ab|af|av|ap|abu|aït|al|ālam|aust|austre|bar|bath|bat|ben|bin|ibn|bet|bint|binti|binte|da|das|de|degli|dele|del|du|della|der|di|dos|du|e|el|fetch|vetch|fitz|i??|kil|gil|de le|de la|la|le|lille|lu|m|mac|mc|mck|mhic|mic|mala|mellom|myljom|na|ned|nedre|neder|nic|ni|nin|nord|norr|ny|o|ua|ui|opp|upp|öfver|ost|öst|öster|øst|øst|østre|över|øvste|øvre|øver|öz|pour|putra|putri|setia|tor|söder|sør|sønder|sør|syd|søndre|syndre|søre|ter|ter|tre|van|van der|väst|väster|verch|erch|vest|vestre|vesle|vetle|von|zu|von und zu)\\s)?(?:[^\\s,]+)))\\s*,\\s*(?P<NAME_FIRST>(?:[^\\s,]+))?(?:(?:^|\\s+)(?:[^\\s,]+(?:[^\\S\\r\\n]+[^\\s,]+)*?))??)"; // nocheck
-constexpr char kRegularExpression_39[] = "(?P<NAME_LAST>(?:(?:a|ab|af|av|ap|abu|aït|al|ālam|aust|austre|bar|bath|bat|ben|bin|ibn|bet|bint|binti|binte|da|das|de|degli|dele|del|du|della|der|di|dos|du|e|el|fetch|vetch|fitz|i??|kil|gil|de le|de la|la|le|lille|lu|m|mac|mc|mck|mhic|mic|mala|mellom|myljom|na|ned|nedre|neder|nic|ni|nin|nord|norr|ny|o|ua|ui|opp|upp|öfver|ost|öst|öster|øst|øst|østre|över|øvste|øvre|øver|öz|pour|putra|putri|setia|tor|söder|sør|sønder|sør|syd|søndre|syndre|søre|ter|ter|tre|van|van der|väst|väster|verch|erch|vest|vestre|vesle|vetle|von|zu|von und zu)\\s)?(?:[^\\s,]+)(?:(?:^|\\s+)(?:y|e|i))?(?:^|\\s+)(?:(?:a|ab|af|av|ap|abu|aït|al|ālam|aust|austre|bar|bath|bat|ben|bin|ibn|bet|bint|binti|binte|da|das|de|degli|dele|del|du|della|der|di|dos|du|e|el|fetch|vetch|fitz|i??|kil|gil|de le|de la|la|le|lille|lu|m|mac|mc|mck|mhic|mic|mala|mellom|myljom|na|ned|nedre|neder|nic|ni|nin|nord|norr|ny|o|ua|ui|opp|upp|öfver|ost|öst|öster|øst|øst|østre|över|øvste|øvre|øver|öz|pour|putra|putri|setia|tor|söder|sør|sønder|sør|syd|søndre|syndre|søre|ter|ter|tre|van|van der|väst|väster|verch|erch|vest|vestre|vesle|vetle|von|zu|von und zu)\\s)?(?:[^\\s,]+))"; // nocheck
-constexpr char kRegularExpression_40[] = "(?P<NAME_FULL>(?:(?:Master|Mr\\.?|Miss\\.?|Mrs\\.?|Missus|Ms\\.?|Mx\\.?|M\\.?|Ma'am|Sir|Gentleman|Sire|Mistress|Madam|Ma'am|Dame|Lord|Lady|Esq|Excellency|Excellence|Her Honour|His Honour|Hon\\.?|The Right Honourable|The Most Honourable|Dr\\.?|PhD|DPhil|MD|DO|Prof\\.|Professor|QC|CL|Chancellor|Vice-Chancellor|Principle|Principal|President|Master|Warden|Dean|Regent|Rector|Provost|Director|Chief Executive|Imām|Shaykh|Muftī|Hāfiz|Hāfizah|Qārī|Mawlānā|Hājī|Sayyid|Sayyidah|Sharif|Eminent|Venerable|His Holiness|His Holiness|His All Holiness|His Beatitude|The Most Blessed|His Excellency|His Most Eminent Highness|His Eminence|Most Reverend Eminence|The Most Reverend|His Grace|His Lordship|The Reverend|Fr|Pr|Br|Sr|Elder|Rabbi|The Reverend|Cantor|Chief Rabbi|Grand Rabbi|Rebbetzin|Herr|Frau|Fräulein|Dame|PD|Doktor|Magister|Ingenieur|1lt|1st|2lt|2nd|3rd|admiral|capt|captain|col|cpt|dr|gen|general|lcdr|lt|ltc|ltg|ltjg|maj|major|mg|pastor|prof|rep|reverend|rev|sen|st))?(?:(?:^|\\s+)(?P<NAME_FIRST>(?:[^\\s,]+(?:[^\\S\\r\\n]+[^\\s,]+)*?)))??(?:(?:^|\\s+)(?P<NAME_LAST>(?:(?:a|ab|af|av|ap|abu|aït|al|ālam|aust|austre|bar|bath|bat|ben|bin|ibn|bet|bint|binti|binte|da|das|de|degli|dele|del|du|della|der|di|dos|du|e|el|fetch|vetch|fitz|i??|kil|gil|de le|de la|la|le|lille|lu|m|mac|mc|mck|mhic|mic|mala|mellom|myljom|na|ned|nedre|neder|nic|ni|nin|nord|norr|ny|o|ua|ui|opp|upp|öfver|ost|öst|öster|øst|øst|østre|över|øvste|øvre|øver|öz|pour|putra|putri|setia|tor|söder|sør|sønder|sør|syd|søndre|syndre|søre|ter|ter|tre|van|van der|väst|väster|verch|erch|vest|vestre|vesle|vetle|von|zu|von und zu)\\s)?(?:[^\\s,]+)(?:(?:^|\\s+)(?:y|e|i))?(?:^|\\s+)(?:(?:a|ab|af|av|ap|abu|aït|al|ālam|aust|austre|bar|bath|bat|ben|bin|ibn|bet|bint|binti|binte|da|das|de|degli|dele|del|du|della|der|di|dos|du|e|el|fetch|vetch|fitz|i??|kil|gil|de le|de la|la|le|lille|lu|m|mac|mc|mck|mhic|mic|mala|mellom|myljom|na|ned|nedre|neder|nic|ni|nin|nord|norr|ny|o|ua|ui|opp|upp|öfver|ost|öst|öster|øst|øst|østre|över|øvste|øvre|øver|öz|pour|putra|putri|setia|tor|söder|sør|sønder|sør|syd|søndre|syndre|søre|ter|ter|tre|van|van der|väst|väster|verch|erch|vest|vestre|vesle|vetle|von|zu|von und zu)\\s)?(?:[^\\s,]+))))"; // nocheck
-constexpr char kRegularExpression_41[] = "(?P<NAME_LAST>(?:[^\\s,]+(?:[^\\S\\r\\n]+[^\\s,]+)*?))"; // nocheck
-constexpr char kRegularExpression_42[] = "(?P<ADDRESS_HOME_STREET_LOCATION>\\A\\s*(?P<ADDRESS_HOME_STREET_NAME>(?:[^\\s,]+(?:[^\\S\\r\\n]+[^\\s,]+)*?))(?:(?:,\\s*|\\s+-\\s+|\\s+)(?i:nº\\s+)?(?P<ADDRESS_HOME_HOUSE_NUMBER>(?:KM\\s+)?\\d+\\w?)))"; // nocheck
-constexpr char kRegularExpression_43[] = "(?P<ADDRESS_HOME_APT_NUM>(?P<ADDRESS_HOME_APT_NUM_type>(?:apto\\.?|apt\\.?|apartamento|sala nº|sala|conjunto))(?:(?:^|\\s+)(?P<ADDRESS_HOME_APT_NUM_name>(?:\\d+\\w?\\b|\\w\\b))))"; // nocheck
-constexpr char kRegularExpression_44[] = "(?:andar\\s*(?P<ADDRESS_HOME_FLOOR>\\d+))"; // nocheck
-constexpr char kRegularExpression_45[] = "(?:(?:[,-]\\s*|^)(?P<ADDRESS_HOME_FLOOR>\\d+)\\s*(?:º\\s*)?andar(?:\\s*[,-]|$))"; // nocheck
-constexpr char kRegularExpression_46[] = "(?:(?:ponto de )?refer[êe]ncia(?::\\s*|\\s+)(?P<ADDRESS_HOME_LANDMARK>[^,\\n]+))"; // nocheck
-constexpr char kRegularExpression_47[] = "(?P<ADDRESS_HOME_APT_NUM>(?P<ADDRESS_HOME_APT_NUM_type>(?:apto\\.?|apt\\.?|apartamento|sala nº|sala|conjunto))?(?:(?:^|\\s+)(?P<ADDRESS_HOME_APT_NUM_name>(?:\\d+\\w?\\b|\\w\\b))))"; // nocheck
-constexpr char kRegularExpression_48[] = "(?:(?:S/Num\\.?|S/N|Sin Nombre)|(?:KM\\s+)?\\d+\\w?)"; // nocheck
-constexpr char kRegularExpression_49[] = "(?:despacho|loc\\.?|local|int(?:erior|\\.?)|n[uú]m(?:ero|\\.)? int(?:erno|\\.)?|Apartamento|Apto\\.?|Departamento|apto\\.?)"; // nocheck
-constexpr char kRegularExpression_50[] = "piso"; // nocheck
-constexpr char kRegularExpression_51[] = "(?P<NAME_FULL>(?:(?:Master|Mr\\.?|Miss\\.?|Mrs\\.?|Missus|Ms\\.?|Mx\\.?|M\\.?|Ma'am|Sir|Gentleman|Sire|Mistress|Madam|Ma'am|Dame|Lord|Lady|Esq|Excellency|Excellence|Her Honour|His Honour|Hon\\.?|The Right Honourable|The Most Honourable|Dr\\.?|PhD|DPhil|MD|DO|Prof\\.|Professor|QC|CL|Chancellor|Vice-Chancellor|Principle|Principal|President|Master|Warden|Dean|Regent|Rector|Provost|Director|Chief Executive|Imām|Shaykh|Muftī|Hāfiz|Hāfizah|Qārī|Mawlānā|Hājī|Sayyid|Sayyidah|Sharif|Eminent|Venerable|His Holiness|His Holiness|His All Holiness|His Beatitude|The Most Blessed|His Excellency|His Most Eminent Highness|His Eminence|Most Reverend Eminence|The Most Reverend|His Grace|His Lordship|The Reverend|Fr|Pr|Br|Sr|Elder|Rabbi|The Reverend|Cantor|Chief Rabbi|Grand Rabbi|Rebbetzin|Herr|Frau|Fräulein|Dame|PD|Doktor|Magister|Ingenieur|1lt|1st|2lt|2nd|3rd|admiral|capt|captain|col|cpt|dr|gen|general|lcdr|lt|ltc|ltg|ltjg|maj|major|mg|pastor|prof|rep|reverend|rev|sen|st))?(?:(?:^|\\s+)(?P<NAME_FIRST>(?:[^\\s,]+)))?(?:(?:^|\\s+)(?P<NAME_MIDDLE>(?:[^\\s,]+(?:[^\\S\\r\\n]+[^\\s,]+)*?)))??(?:(?:^|\\s+)(?P<NAME_LAST>(?:(?:a|ab|af|av|ap|abu|aït|al|ālam|aust|austre|bar|bath|bat|ben|bin|ibn|bet|bint|binti|binte|da|das|de|degli|dele|del|du|della|der|di|dos|du|e|el|fetch|vetch|fitz|i??|kil|gil|de le|de la|la|le|lille|lu|m|mac|mc|mck|mhic|mic|mala|mellom|myljom|na|ned|nedre|neder|nic|ni|nin|nord|norr|ny|o|ua|ui|opp|upp|öfver|ost|öst|öster|øst|øst|østre|över|øvste|øvre|øver|öz|pour|putra|putri|setia|tor|söder|sør|sønder|sør|syd|søndre|syndre|søre|ter|ter|tre|van|van der|väst|väster|verch|erch|vest|vestre|vesle|vetle|von|zu|von und zu)\\s)?(?:[^\\s,]+)))(?:(?:^|\\s+)(?:(?:b\\.a|ba|d\\.d\\.s|dds|ii|iii|iv|ix|jr|m\\.a|m\\.d|md|ms|ph\\.?d|sr|v|vi|vii|viii|x)\\.?))?)"; // nocheck
-constexpr char kRegularExpression_52[] = "(?P<NAME_FULL>(?:(?:Master|Mr\\.?|Miss\\.?|Mrs\\.?|Missus|Ms\\.?|Mx\\.?|M\\.?|Ma'am|Sir|Gentleman|Sire|Mistress|Madam|Ma'am|Dame|Lord|Lady|Esq|Excellency|Excellence|Her Honour|His Honour|Hon\\.?|The Right Honourable|The Most Honourable|Dr\\.?|PhD|DPhil|MD|DO|Prof\\.|Professor|QC|CL|Chancellor|Vice-Chancellor|Principle|Principal|President|Master|Warden|Dean|Regent|Rector|Provost|Director|Chief Executive|Imām|Shaykh|Muftī|Hāfiz|Hāfizah|Qārī|Mawlānā|Hājī|Sayyid|Sayyidah|Sharif|Eminent|Venerable|His Holiness|His Holiness|His All Holiness|His Beatitude|The Most Blessed|His Excellency|His Most Eminent Highness|His Eminence|Most Reverend Eminence|The Most Reverend|His Grace|His Lordship|The Reverend|Fr|Pr|Br|Sr|Elder|Rabbi|The Reverend|Cantor|Chief Rabbi|Grand Rabbi|Rebbetzin|Herr|Frau|Fräulein|Dame|PD|Doktor|Magister|Ingenieur|1lt|1st|2lt|2nd|3rd|admiral|capt|captain|col|cpt|dr|gen|general|lcdr|lt|ltc|ltg|ltjg|maj|major|mg|pastor|prof|rep|reverend|rev|sen|st))?(?:(?:^|\\s+)(?P<NAME_LAST>(?:(?:a|ab|af|av|ap|abu|aït|al|ālam|aust|austre|bar|bath|bat|ben|bin|ibn|bet|bint|binti|binte|da|das|de|degli|dele|del|du|della|der|di|dos|du|e|el|fetch|vetch|fitz|i??|kil|gil|de le|de la|la|le|lille|lu|m|mac|mc|mck|mhic|mic|mala|mellom|myljom|na|ned|nedre|neder|nic|ni|nin|nord|norr|ny|o|ua|ui|opp|upp|öfver|ost|öst|öster|øst|øst|østre|över|øvste|øvre|øver|öz|pour|putra|putri|setia|tor|söder|sør|sønder|sør|syd|søndre|syndre|søre|ter|ter|tre|van|van der|väst|väster|verch|erch|vest|vestre|vesle|vetle|von|zu|von und zu)\\s)?(?:[^\\s,]+)))\\s*,\\s*(?P<NAME_FIRST>(?:[^\\s,]+))?(?:(?:^|\\s+)(?P<NAME_MIDDLE>(?:[^\\s,]+(?:[^\\S\\r\\n]+[^\\s,]+)*?)))??)"; // nocheck
-constexpr char kRegularExpression_53[] = "(?P<NAME_FULL>(?:(?:Master|Mr\\.?|Miss\\.?|Mrs\\.?|Missus|Ms\\.?|Mx\\.?|M\\.?|Ma'am|Sir|Gentleman|Sire|Mistress|Madam|Ma'am|Dame|Lord|Lady|Esq|Excellency|Excellence|Her Honour|His Honour|Hon\\.?|The Right Honourable|The Most Honourable|Dr\\.?|PhD|DPhil|MD|DO|Prof\\.|Professor|QC|CL|Chancellor|Vice-Chancellor|Principle|Principal|President|Master|Warden|Dean|Regent|Rector|Provost|Director|Chief Executive|Imām|Shaykh|Muftī|Hāfiz|Hāfizah|Qārī|Mawlānā|Hājī|Sayyid|Sayyidah|Sharif|Eminent|Venerable|His Holiness|His Holiness|His All Holiness|His Beatitude|The Most Blessed|His Excellency|His Most Eminent Highness|His Eminence|Most Reverend Eminence|The Most Reverend|His Grace|His Lordship|The Reverend|Fr|Pr|Br|Sr|Elder|Rabbi|The Reverend|Cantor|Chief Rabbi|Grand Rabbi|Rebbetzin|Herr|Frau|Fräulein|Dame|PD|Doktor|Magister|Ingenieur|1lt|1st|2lt|2nd|3rd|admiral|capt|captain|col|cpt|dr|gen|general|lcdr|lt|ltc|ltg|ltjg|maj|major|mg|pastor|prof|rep|reverend|rev|sen|st))?(?:(?:^|\\s+)(?P<NAME_FIRST>(?:[^\\s,]+(?:[^\\S\\r\\n]+[^\\s,]+)*?)))??(?:(?:^|\\s+)(?P<NAME_LAST>(?P<NAME_LAST_FIRST>(?:(?:a|ab|af|av|ap|abu|aït|al|ālam|aust|austre|bar|bath|bat|ben|bin|ibn|bet|bint|binti|binte|da|das|de|degli|dele|del|du|della|der|di|dos|du|e|el|fetch|vetch|fitz|i??|kil|gil|de le|de la|la|le|lille|lu|m|mac|mc|mck|mhic|mic|mala|mellom|myljom|na|ned|nedre|neder|nic|ni|nin|nord|norr|ny|o|ua|ui|opp|upp|öfver|ost|öst|öster|øst|øst|østre|över|øvste|øvre|øver|öz|pour|putra|putri|setia|tor|söder|sør|sønder|sør|syd|søndre|syndre|søre|ter|ter|tre|van|van der|väst|väster|verch|erch|vest|vestre|vesle|vetle|von|zu|von und zu)\\s)?(?:[^\\s,]+))(?:(?:^|\\s+)(?P<NAME_LAST_CONJUNCTION>(?:y|e|i)))?(?:(?:^|\\s+)(?P<NAME_LAST_SECOND>(?:(?:a|ab|af|av|ap|abu|aït|al|ālam|aust|austre|bar|bath|bat|ben|bin|ibn|bet|bint|binti|binte|da|das|de|degli|dele|del|du|della|der|di|dos|du|e|el|fetch|vetch|fitz|i??|kil|gil|de le|de la|la|le|lille|lu|m|mac|mc|mck|mhic|mic|mala|mellom|myljom|na|ned|nedre|neder|nic|ni|nin|nord|norr|ny|o|ua|ui|opp|upp|öfver|ost|öst|öster|øst|øst|østre|över|øvste|øvre|øver|öz|pour|putra|putri|setia|tor|söder|sør|sønder|sør|syd|søndre|syndre|søre|ter|ter|tre|van|van der|väst|väster|verch|erch|vest|vestre|vesle|vetle|von|zu|von und zu)\\s)?(?:[^\\s,]+))))))"; // nocheck
-constexpr char kRegularExpression_54[] = "(?P<ADDRESS_HOME_STREET_LOCATION>\\A\\s*(?P<ADDRESS_HOME_STREET_NAME>(?:calle\\s+\\d+\\s+[^\\d,\\n\\r]*?|(?:[^\\s,]+(?:[^\\S\\r\\n]+[^\\s,]+)*?)))(?:[,]?\\s+?(?:(?:#|No\\.?|número\\s)\\s*)?(?P<ADDRESS_HOME_HOUSE_NUMBER>(?:(?:S/Num\\.?|S/N|Sin Nombre)|(?:KM\\s+)?\\d+\\w?))))"; // nocheck
-constexpr char kRegularExpression_55[] = "(?P<ADDRESS_HOME_APT_NUM>(?P<ADDRESS_HOME_APT_NUM_type>(?:despacho|loc\\.?|local|int(?:erior|\\.?)|n[uú]m(?:ero|\\.)? int(?:erno|\\.)?|Apartamento|Apto\\.?|Departamento|apto\\.?))(?:(?:^|\\s+)(?P<ADDRESS_HOME_APT_NUM_name>(?:\\d+\\w?\\b|\\w\\b))\\b))"; // nocheck
-constexpr char kRegularExpression_56[] = "(?:piso\\s*(?P<ADDRESS_HOME_FLOOR>\\d+))"; // nocheck
-constexpr char kRegularExpression_57[] = "(?:(?:Cerca del)(?P<ADDRESS_HOME_LANDMARK>[^,\\n]+))"; // nocheck
-constexpr char kRegularExpression_58[] = "(?:\\b(?:x|Entre( Calles)?)\\s+(?P<ADDRESS_HOME_BETWEEN_STREETS>(?P<ADDRESS_HOME_BETWEEN_STREETS_1>(?:[^\\s,]+(?:[^\\S\\r\\n]+[^\\s,]+)*?))(?:\\s+y\\s+)(?P<ADDRESS_HOME_BETWEEN_STREETS_2>(?:[^,\\r\\n]+))))"; // nocheck
-constexpr char kRegularExpression_59[] = "(?P<ADDRESS_HOME_APT_NUM>(?P<ADDRESS_HOME_APT_NUM_type>(?:despacho|loc\\.?|local|int(?:erior|\\.?)|n[uú]m(?:ero|\\.)? int(?:erno|\\.)?|Apartamento|Apto\\.?|Departamento|apto\\.?))?(?:(?:^|\\s+)(?P<ADDRESS_HOME_APT_NUM_name>(?:\\d+\\w?\\b|\\w\\b))))"; // nocheck
+inline constexpr char kRegularExpression_1[] = "(?m)(?i:(?P<ADDRESS_HOME_STREET_LOCATION>\\A\\s*(?P<ADDRESS_HOME_STREET_NAME>(?:[^\\s,]+(?:[^\\S\\r\\n]+[^\\s,]+)*?))(?:(?:,\\s*|\\s+-\\s+|\\s+)(?i:nº\\s+)?(?P<ADDRESS_HOME_HOUSE_NUMBER>(?:KM\\s+)?\\d+\\w?))))"; // nocheck
+inline constexpr char kRegularExpression_2[] = "(?m)(?i:(?P<ADDRESS_HOME_APT>(?P<ADDRESS_HOME_APT_TYPE>(?:apto\\.?|apt\\.?|apartamento|sala nº|sala|conjunto))(?:(?:^|\\s+)(?P<ADDRESS_HOME_APT_NUM>(?:\\d+\\w?\\b|\\w\\b)))))"; // nocheck
+inline constexpr char kRegularExpression_3[] = "(?m)(?i:(?:andar\\s*(?P<ADDRESS_HOME_FLOOR>\\d+)))"; // nocheck
+inline constexpr char kRegularExpression_4[] = "(?m)(?i:(?:(?:[,-]\\s*|^)(?P<ADDRESS_HOME_FLOOR>\\d+)\\s*(?:º\\s*)?andar(?:\\s*[,-]|$)))"; // nocheck
+inline constexpr char kRegularExpression_5[] = "(?m)(?i:(?:(?:ponto de )?refer[êe]ncia(?::\\s*|\\s+)(?P<ADDRESS_HOME_LANDMARK>[^,\\n]+)))"; // nocheck
+inline constexpr char kRegularExpression_6[] = "(?m)(?i:(?P<ADDRESS_HOME_APT>(?P<ADDRESS_HOME_APT_TYPE>(?:apto\\.?|apt\\.?|apartamento|sala nº|sala|conjunto))?(?:(?:^|\\s+)(?P<ADDRESS_HOME_APT_NUM>(?:\\d+\\w?\\b|\\w\\b)))))"; // nocheck
+inline constexpr char kRegularExpression_7[] = "(?m)(?i:(?P<ADDRESS_HOME_STREET_LOCATION>\\A\\s*(?P<ADDRESS_HOME_STREET_NAME>(?:[^\\s,]+(?:[^\\S\\r\\n]+[^\\s,]+)*?))(?:(?:^|[,\\s]+)(?:(?:no|nr|°|º|nummer|number)[-.\\s]*)?(?P<ADDRESS_HOME_HOUSE_NUMBER>\\d+(?:\\s*[[:alpha:]]\\b|\\s*[\\/-]\\s*\\d+)?))))"; // nocheck
+inline constexpr char kRegularExpression_8[] = "(?m)(?i:(?P<ADDRESS_HOME_STREET_ADDRESS>(?P<ADDRESS_HOME_STREET_LOCATION>.*)\\n(?P<ADDRESS_HOME_OVERFLOW>[\\s\\S]+)))"; // nocheck
+inline constexpr char kRegularExpression_9[] = "(?m)(?i:(?P<ADDRESS_HOME_STREET_ADDRESS>(?P<ADDRESS_HOME_STREET_LOCATION>\\A\\s*(?P<ADDRESS_HOME_STREET_NAME>(?:[^\\s,]+(?:[^\\S\\r\\n]+[^\\s,]+)*?))(?:(?:^|[,\\s]+)(?:(?:no|nr|°|º|nummer|number)[-.\\s]*)?(?P<ADDRESS_HOME_HOUSE_NUMBER>\\d+(?:\\s*[[:alpha:]]\\b|\\s*[\\/-]\\s*\\d+)?)))(?:(?:^|[,\\s]+)(?P<ADDRESS_HOME_OVERFLOW>(?:[^\\s,]+(?:[^\\S\\r\\n]+[^\\s,]+)*?)))?))"; // nocheck
+inline constexpr char kRegularExpression_10[] = "(?m)(?i:(?P<ADDRESS_HOME_STREET_LOCATION>\\A\\s*(?P<ADDRESS_HOME_STREET_NAME>(?:calle\\s+\\d+\\s+[^\\d,\\n\\r]*?|(?:[^\\s,]+(?:[^\\S\\r\\n]+[^\\s,]+)*?)))(?:[,]?\\s+?(?:(?:#|No\\.?|número\\s)\\s*)?(?P<ADDRESS_HOME_HOUSE_NUMBER>(?:(?:S/Num\\.?|S/N|Sin Nombre)|(?:KM\\s+)?\\d+\\w?)))))"; // nocheck
+inline constexpr char kRegularExpression_11[] = "(?m)(?i:(?P<ADDRESS_HOME_APT>(?P<ADDRESS_HOME_APT_TYPE>(?:despacho|loc\\.?|local|int(?:erior|\\.?)|n[uú]m(?:ero|\\.)? int(?:erno|\\.)?|Apartamento|Apto\\.?|Departamento|apto\\.?))(?:(?:^|\\s+)(?P<ADDRESS_HOME_APT_NUM>(?:\\d+\\w?\\b|\\w\\b))\\b)))"; // nocheck
+inline constexpr char kRegularExpression_12[] = "(?m)(?i:(?:piso\\s*(?P<ADDRESS_HOME_FLOOR>\\d+)))"; // nocheck
+inline constexpr char kRegularExpression_13[] = "(?m)(?i:(?:\\b(?:x|Entre( Calles)?)\\s+(?P<ADDRESS_HOME_BETWEEN_STREETS>(?P<ADDRESS_HOME_BETWEEN_STREETS_1>(?:[^\\s,]+(?:[^\\S\\r\\n]+[^\\s,]+)*?))(?:\\s+y\\s+)(?P<ADDRESS_HOME_BETWEEN_STREETS_2>(?:[^,\\r\\n]+)))))"; // nocheck
+inline constexpr char kRegularExpression_14[] = "(?m)(?i:(?:(?:Cerca del)(?P<ADDRESS_HOME_LANDMARK>[^,\\n]+)))"; // nocheck
+inline constexpr char kRegularExpression_15[] = "(?m)(?i:(?P<ADDRESS_HOME_APT>(?P<ADDRESS_HOME_APT_TYPE>(?:despacho|loc\\.?|local|int(?:erior|\\.?)|n[uú]m(?:ero|\\.)? int(?:erno|\\.)?|Apartamento|Apto\\.?|Departamento|apto\\.?))?(?:(?:^|\\s+)(?P<ADDRESS_HOME_APT_NUM>(?:\\d+\\w?\\b|\\w\\b)))))"; // nocheck
+inline constexpr char kRegularExpression_16[] = "(?m)(?i:(?P<ADDRESS_HOME_STREET_ADDRESS>(?:(?:(?:((no|°|º|number)(\\.|-|\\s)*)?)(?P<ADDRESS_HOME_HOUSE_NUMBER>(?:\\d+\\w?))(th\\.|\\.)?)(?:(?:^|\\s+)(?P<ADDRESS_HOME_STREET_NAME>(?:[^\\s,]+(?:[^\\S\\r\\n]+[^\\s,]+)*?)))|(?P<ADDRESS_HOME_STREET_NAME__2>(?:[^\\s,]+(?:[^\\S\\r\\n]+[^\\s,]+)*?))(?:(?:^|[,\\s]+)(?:((no|°|º|number)(\\.|-|\\s)*)?)(?P<ADDRESS_HOME_HOUSE_NUMBER__2>(?:\\d+\\w?))(th\\.|\\.)?))(?:(?:^|[,\\s]+)(?P<ADDRESS_HOME_SUBPREMISE>(?:(?:(?:(?:(°|º|\\.|\\s|-)*(floor|flur|fl|og|obergeschoss|ug|untergeschoss|geschoss|andar|piso|º)(\\.|\\s|-)*)(?P<ADDRESS_HOME_FLOOR>(?:(\\d{0,3}\\w?))))|(?:(?P<ADDRESS_HOME_FLOOR__2>(?:(\\d{1,3}\\w?|\\w)))(?:(°|º|\\.|\\s|-)*(floor|flur|fl|og|obergeschoss|ug|untergeschoss|geschoss|andar|piso|º)(\\.|\\s|-)*)))(?:(?:^|[,\\s]+)(?:(?:(?:(apt|apartment|wohnung|apto|-)(\\.|\\s|-)*)(?P<ADDRESS_HOME_APT_NUM>(?:(\\d{0,3}\\w?))))|(?:(-\\s*)?(?P<ADDRESS_HOME_APT_NUM__2>(?:(\\d{1,3}\\w?|\\w)))(?:(\\.|\\s|-)*(ª)))?))?|(?:(?:(?:(apt|apartment|wohnung|apto|-)(\\.|\\s|-)*)(?P<ADDRESS_HOME_APT_NUM__3>(?:(\\d{0,3}\\w?))))|(?:(-\\s*)?(?P<ADDRESS_HOME_APT_NUM__4>(?:(\\d{1,3}\\w?|\\w)))(?:(\\.|\\s|-)*(ª)))?))))?))"; // nocheck
 
 
 // Section for singular decomposition(s).
-constexpr Decomposition kDecompositionList[] = {
-    Decomposition(kRegularExpression_22, true, true),
-    Decomposition(kRegularExpression_25, true, true),
-    Decomposition(kRegularExpression_23, true, true),
-    Decomposition(kRegularExpression_24, true, true),
-    Decomposition(kRegularExpression_30, true, true),
-    Decomposition(kRegularExpression_26, true, true),
-    Decomposition(kRegularExpression_28, true, true),
-    Decomposition(kRegularExpression_27, true, true),
-    Decomposition(kRegularExpression_40, true, true),
-    Decomposition(kRegularExpression_38, true, true),
-    Decomposition(kRegularExpression_37, true, true),
-    Decomposition(kRegularExpression_42, true, true),
-    Decomposition(kRegularExpression_47, true, true),
-    Decomposition(kRegularExpression_53, true, true),
-    Decomposition(kRegularExpression_52, true, true),
-    Decomposition(kRegularExpression_51, true, true),
-    Decomposition(kRegularExpression_54, true, true),
-    Decomposition(kRegularExpression_58, true, true),
-    Decomposition(kRegularExpression_59, true, true),
+inline constexpr Decomposition kDecompositionList[] = {
+    Decomposition(kRegularExpression_1, true, true),
+    Decomposition(kRegularExpression_6, true, true),
+    Decomposition(kRegularExpression_7, true, true),
+    Decomposition(kRegularExpression_8, true, true),
+    Decomposition(kRegularExpression_9, true, true),
+    Decomposition(kRegularExpression_10, true, true),
+    Decomposition(kRegularExpression_13, true, true),
+    Decomposition(kRegularExpression_15, true, true),
+    Decomposition(kRegularExpression_16, true, true),
 };
 
 // Section for singular extract part(s).
-constexpr ExtractPart kExtractPartList[]{
-    ExtractPart("", kRegularExpression_43),
-    ExtractPart("", kRegularExpression_44),
-    ExtractPart("", kRegularExpression_45),
-    ExtractPart("", kRegularExpression_46),
-    ExtractPart("", kRegularExpression_42),
-    ExtractPart("", kRegularExpression_55),
-    ExtractPart("", kRegularExpression_56),
-    ExtractPart("", kRegularExpression_57),
-    ExtractPart("", kRegularExpression_58),
-    ExtractPart("", kRegularExpression_54),
+inline constexpr ExtractPart kExtractPartList[]{
+    ExtractPart("", kRegularExpression_2),
+    ExtractPart("", kRegularExpression_3),
+    ExtractPart("", kRegularExpression_4),
+    ExtractPart("", kRegularExpression_5),
+    ExtractPart("", kRegularExpression_1),
+    ExtractPart("", kRegularExpression_11),
+    ExtractPart("", kRegularExpression_12),
+    ExtractPart("", kRegularExpression_14),
+    ExtractPart("", kRegularExpression_13),
+    ExtractPart("", kRegularExpression_10),
 };
 
 // Section for decomposition cascades and their alternatives.
-constexpr AutofillParsingProcess const* kDecompositionCascade_0_Alternatives[]{ &kDecompositionList[0], &kDecompositionList[1], &kDecompositionList[2], &kDecompositionList[3]};
-constexpr DecompositionCascade kDecompositionCascade_0 = DecompositionCascade(kRegularExpression_14, kDecompositionCascade_0_Alternatives);
-constexpr AutofillParsingProcess const* kDecompositionCascade_1_Alternatives[]{ &kDecompositionList[4]};
-constexpr DecompositionCascade kDecompositionCascade_1 = DecompositionCascade(kRegularExpression_13, kDecompositionCascade_1_Alternatives);
-constexpr AutofillParsingProcess const* kDecompositionCascade_2_Alternatives[]{ &kDecompositionList[5], &kDecompositionList[6], &kDecompositionList[7]};
-constexpr DecompositionCascade kDecompositionCascade_2 = DecompositionCascade("", kDecompositionCascade_2_Alternatives);
-constexpr AutofillParsingProcess const* kDecompositionCascade_3_Alternatives[]{ &kDecompositionCascade_0, &kDecompositionCascade_1, &kDecompositionCascade_2};
-constexpr DecompositionCascade kDecompositionCascade_3 = DecompositionCascade("", kDecompositionCascade_3_Alternatives);
-constexpr AutofillParsingProcess const* kDecompositionCascade_4_Alternatives[]{ &kDecompositionList[0], &kDecompositionList[1], &kDecompositionList[2], &kDecompositionList[3]};
-constexpr DecompositionCascade kDecompositionCascade_4 = DecompositionCascade(kRegularExpression_14, kDecompositionCascade_4_Alternatives);
-constexpr AutofillParsingProcess const* kDecompositionCascade_5_Alternatives[]{ &kDecompositionList[8]};
-constexpr DecompositionCascade kDecompositionCascade_5 = DecompositionCascade(kRegularExpression_13, kDecompositionCascade_5_Alternatives);
-constexpr AutofillParsingProcess const* kDecompositionCascade_6_Alternatives[]{ &kDecompositionList[5], &kDecompositionList[9], &kDecompositionList[10]};
-constexpr DecompositionCascade kDecompositionCascade_6 = DecompositionCascade("", kDecompositionCascade_6_Alternatives);
-constexpr AutofillParsingProcess const* kDecompositionCascade_7_Alternatives[]{ &kDecompositionCascade_4, &kDecompositionCascade_5, &kDecompositionCascade_6};
-constexpr DecompositionCascade kDecompositionCascade_7 = DecompositionCascade("", kDecompositionCascade_7_Alternatives);
-constexpr AutofillParsingProcess const* kDecompositionCascade_8_Alternatives[]{ &kDecompositionList[0], &kDecompositionList[1], &kDecompositionList[2], &kDecompositionList[3]};
-constexpr DecompositionCascade kDecompositionCascade_8 = DecompositionCascade(kRegularExpression_14, kDecompositionCascade_8_Alternatives);
-constexpr AutofillParsingProcess const* kDecompositionCascade_9_Alternatives[]{ &kDecompositionList[13]};
-constexpr DecompositionCascade kDecompositionCascade_9 = DecompositionCascade(kRegularExpression_13, kDecompositionCascade_9_Alternatives);
-constexpr AutofillParsingProcess const* kDecompositionCascade_10_Alternatives[]{ &kDecompositionList[5], &kDecompositionList[14], &kDecompositionList[15]};
-constexpr DecompositionCascade kDecompositionCascade_10 = DecompositionCascade("", kDecompositionCascade_10_Alternatives);
-constexpr AutofillParsingProcess const* kDecompositionCascade_11_Alternatives[]{ &kDecompositionCascade_8, &kDecompositionCascade_9, &kDecompositionCascade_10};
-constexpr DecompositionCascade kDecompositionCascade_11 = DecompositionCascade("", kDecompositionCascade_11_Alternatives);
+inline constexpr AutofillParsingProcess const* kDecompositionCascade_0_Alternatives[]{ &kDecompositionList[3], &kDecompositionList[4]};
+inline constexpr DecompositionCascade kDecompositionCascade_0 = DecompositionCascade("", kDecompositionCascade_0_Alternatives);
 
 // Section for extract parts and their pieces.
-constexpr ExtractPart const* kExtractParts_0_Pieces[]{&kExtractPartList[0],&kExtractPartList[1],&kExtractPartList[2]};
-constexpr ExtractParts kExtractParts_0 = ExtractParts("", kExtractParts_0_Pieces);
-constexpr ExtractPart const* kExtractParts_1_Pieces[]{&kExtractPartList[0],&kExtractPartList[1],&kExtractPartList[2]};
-constexpr ExtractParts kExtractParts_1 = ExtractParts("", kExtractParts_1_Pieces);
-constexpr ExtractPart const* kExtractParts_2_Pieces[]{&kExtractPartList[0],&kExtractPartList[1],&kExtractPartList[2],&kExtractPartList[3]};
-constexpr ExtractParts kExtractParts_2 = ExtractParts("", kExtractParts_2_Pieces);
-constexpr ExtractPart const* kExtractParts_3_Pieces[]{&kExtractPartList[4],&kExtractPartList[0],&kExtractPartList[1],&kExtractPartList[2],&kExtractPartList[3]};
-constexpr ExtractParts kExtractParts_3 = ExtractParts("", kExtractParts_3_Pieces);
-constexpr ExtractPart const* kExtractParts_4_Pieces[]{&kExtractPartList[5],&kExtractPartList[6]};
-constexpr ExtractParts kExtractParts_4 = ExtractParts("", kExtractParts_4_Pieces);
-constexpr ExtractPart const* kExtractParts_5_Pieces[]{&kExtractPartList[7],&kExtractPartList[8]};
-constexpr ExtractParts kExtractParts_5 = ExtractParts("", kExtractParts_5_Pieces);
-constexpr ExtractPart const* kExtractParts_6_Pieces[]{&kExtractPartList[7],&kExtractPartList[8]};
-constexpr ExtractParts kExtractParts_6 = ExtractParts("", kExtractParts_6_Pieces);
-constexpr ExtractPart const* kExtractParts_7_Pieces[]{&kExtractPartList[9],&kExtractPartList[5],&kExtractPartList[6],&kExtractPartList[7],&kExtractPartList[8]};
-constexpr ExtractParts kExtractParts_7 = ExtractParts("", kExtractParts_7_Pieces);
-
+inline constexpr ExtractPart const* kExtractParts_0_Pieces[]{&kExtractPartList[0],&kExtractPartList[1],&kExtractPartList[2]};
+inline constexpr ExtractParts kExtractParts_0 = ExtractParts("", kExtractParts_0_Pieces);
+inline constexpr ExtractPart const* kExtractParts_1_Pieces[]{&kExtractPartList[0],&kExtractPartList[1],&kExtractPartList[2]};
+inline constexpr ExtractParts kExtractParts_1 = ExtractParts("", kExtractParts_1_Pieces);
+inline constexpr ExtractPart const* kExtractParts_2_Pieces[]{&kExtractPartList[0],&kExtractPartList[1],&kExtractPartList[2],&kExtractPartList[3]};
+inline constexpr ExtractParts kExtractParts_2 = ExtractParts("", kExtractParts_2_Pieces);
+inline constexpr ExtractPart const* kExtractParts_3_Pieces[]{&kExtractPartList[4],&kExtractPartList[0],&kExtractPartList[1],&kExtractPartList[2],&kExtractPartList[3]};
+inline constexpr ExtractParts kExtractParts_3 = ExtractParts("", kExtractParts_3_Pieces);
+inline constexpr ExtractPart const* kExtractParts_4_Pieces[]{&kExtractPartList[5],&kExtractPartList[6]};
+inline constexpr ExtractParts kExtractParts_4 = ExtractParts("", kExtractParts_4_Pieces);
+inline constexpr ExtractPart const* kExtractParts_5_Pieces[]{&kExtractPartList[7],&kExtractPartList[8]};
+inline constexpr ExtractParts kExtractParts_5 = ExtractParts("", kExtractParts_5_Pieces);
+inline constexpr ExtractPart const* kExtractParts_6_Pieces[]{&kExtractPartList[7],&kExtractPartList[8]};
+inline constexpr ExtractParts kExtractParts_6 = ExtractParts("", kExtractParts_6_Pieces);
+inline constexpr ExtractPart const* kExtractParts_7_Pieces[]{&kExtractPartList[9],&kExtractPartList[5],&kExtractPartList[6],&kExtractPartList[7],&kExtractPartList[8]};
+inline constexpr ExtractParts kExtractParts_7 = ExtractParts("", kExtractParts_7_Pieces);
 }  // namespace
 
 // A lookup map for parsing expressions for countries and field types.
-constexpr auto kAutofillParsingRulesMap =
-    base::MakeFixedFlatMap<CountryAndFieldType, raw_ptr<const AutofillParsingProcess>>({
-      {{"global", NAME_FULL}, &kDecompositionCascade_3},
-      {{"BR", NAME_FULL}, &kDecompositionCascade_7},
-      {{"BR", ADDRESS_HOME_STREET_LOCATION}, &kDecompositionList[11]},
+inline constexpr auto kAutofillParsingRulesMap =
+    base::MakeFixedFlatMap<CountryAndFieldType, const AutofillParsingProcess*>({
+      {{"BR", ADDRESS_HOME_STREET_LOCATION}, &kDecompositionList[0]},
       {{"BR", ADDRESS_HOME_SUBPREMISE}, &kExtractParts_0},
       {{"BR", ADDRESS_HOME_OVERFLOW}, &kExtractParts_1},
       {{"BR", ADDRESS_HOME_OVERFLOW_AND_LANDMARK}, &kExtractParts_2},
       {{"BR", ADDRESS_HOME_STREET_ADDRESS}, &kExtractParts_3},
-      {{"BR", ADDRESS_HOME_APT_NUM}, &kDecompositionList[12]},
-      {{"MX", NAME_FULL}, &kDecompositionCascade_11},
-      {{"MX", ADDRESS_HOME_STREET_LOCATION}, &kDecompositionList[16]},
+      {{"BR", ADDRESS_HOME_APT}, &kDecompositionList[1]},
+      {{"DE", ADDRESS_HOME_STREET_LOCATION}, &kDecompositionList[2]},
+      {{"DE", ADDRESS_HOME_STREET_ADDRESS}, &kDecompositionCascade_0},
+      {{"MX", ADDRESS_HOME_STREET_LOCATION}, &kDecompositionList[5]},
       {{"MX", ADDRESS_HOME_SUBPREMISE}, &kExtractParts_4},
-      {{"MX", ADDRESS_HOME_BETWEEN_STREETS}, &kDecompositionList[17]},
+      {{"MX", ADDRESS_HOME_BETWEEN_STREETS}, &kDecompositionList[6]},
       {{"MX", ADDRESS_HOME_BETWEEN_STREETS_OR_LANDMARK}, &kExtractParts_5},
       {{"MX", ADDRESS_HOME_OVERFLOW}, &kExtractParts_6},
       {{"MX", ADDRESS_HOME_STREET_ADDRESS}, &kExtractParts_7},
-      {{"MX", ADDRESS_HOME_APT_NUM}, &kDecompositionList[18]}
+      {{"MX", ADDRESS_HOME_APT}, &kDecompositionList[7]},
+      {{"XX", ADDRESS_HOME_STREET_ADDRESS}, &kDecompositionList[8]}
       });
 
 }  // namespace autofill::i18n_model_definition

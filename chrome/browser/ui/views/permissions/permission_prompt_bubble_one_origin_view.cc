@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "base/containers/contains.h"
+#include "base/feature_list.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/string_util.h"
 #include "base/time/time.h"
@@ -17,6 +18,7 @@
 #include "chrome/browser/ui/browser_tabstrip.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/color/chrome_color_id.h"
+#include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/url_identity.h"
 #include "chrome/browser/ui/views/bubble_anchor_util_views.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
@@ -34,6 +36,7 @@
 #include "components/url_formatter/elide_url.h"
 #include "components/vector_icons/vector_icons.h"
 #include "extensions/common/constants.h"
+#include "third_party/blink/public/common/features.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/models/image_model.h"
@@ -54,11 +57,16 @@
 #include "ui/views/views_features.h"
 #include "ui/views/widget/widget.h"
 
+#if !BUILDFLAG(IS_CHROMEOS) && !BUILDFLAG(IS_FUCHSIA)
+#include "chrome/browser/ui/views/media_preview/scroll_media_preview.h"
+#endif
+
 namespace {
 
 std::u16string GetAccessibleWindowTitleInternal(
     const std::u16string display_name,
-    std::vector<permissions::PermissionRequest*> visible_requests) {
+    std::vector<raw_ptr<permissions::PermissionRequest, VectorExperimental>>
+        visible_requests) {
   // Generate one of:
   //   $origin wants to: $permission
   //   $origin wants to: $permission and $permission
@@ -100,9 +108,10 @@ bool ShouldShowRequest(permissions::PermissionPrompt::Delegate& delegate,
   return true;
 }
 
-std::vector<permissions::PermissionRequest*> GetVisibleRequests(
-    permissions::PermissionPrompt::Delegate& delegate) {
-  std::vector<permissions::PermissionRequest*> visible_requests;
+std::vector<raw_ptr<permissions::PermissionRequest, VectorExperimental>>
+GetVisibleRequests(permissions::PermissionPrompt::Delegate& delegate) {
+  std::vector<raw_ptr<permissions::PermissionRequest, VectorExperimental>>
+      visible_requests;
   for (permissions::PermissionRequest* request : delegate.Requests()) {
     if (ShouldShowRequest(delegate, request->request_type())) {
       visible_requests.push_back(request);
@@ -112,7 +121,7 @@ std::vector<permissions::PermissionRequest*> GetVisibleRequests(
 }
 
 // Get extra information to display for the permission, if any.
-absl::optional<std::u16string> GetExtraText(
+std::optional<std::u16string> GetExtraText(
     permissions::PermissionPrompt::Delegate& delegate) {
   switch (delegate.Requests()[0]->request_type()) {
     case permissions::RequestType::kStorageAccess:
@@ -125,9 +134,27 @@ absl::optional<std::u16string> GetExtraText(
               delegate.GetEmbeddingOrigin(),
               url_formatter::SchemeDisplay::OMIT_CRYPTOGRAPHIC));
     default:
-      return absl::nullopt;
+      return std::nullopt;
   }
 }
+
+#if !BUILDFLAG(IS_CHROMEOS) && !BUILDFLAG(IS_FUCHSIA)
+std::optional<MediaCoordinator::ViewType> ComputePreviewType(
+    std::vector<std::string> requested_audio_capture_device_ids,
+    std::vector<std::string> requested_video_capture_device_ids) {
+  if (!requested_audio_capture_device_ids.empty() &&
+      !requested_video_capture_device_ids.empty()) {
+    return MediaCoordinator::ViewType::kBoth;
+  }
+  if (!requested_video_capture_device_ids.empty()) {
+    return MediaCoordinator::ViewType::kCameraOnly;
+  }
+  if (!requested_audio_capture_device_ids.empty()) {
+    return MediaCoordinator::ViewType::kMicOnly;
+  }
+  return std::nullopt;
+}
+#endif
 
 }  // namespace
 
@@ -136,29 +163,66 @@ PermissionPromptBubbleOneOriginView::PermissionPromptBubbleOneOriginView(
     base::WeakPtr<permissions::PermissionPrompt::Delegate> delegate,
     base::TimeTicks permission_requested_time,
     PermissionPromptStyle prompt_style)
-    : PermissionPromptBubbleBaseView(
-          browser,
-          delegate,
-          permission_requested_time,
-          prompt_style,
-          l10n_util::GetStringFUTF16(
-              IDS_PERMISSIONS_BUBBLE_PROMPT,
-              PermissionPromptBubbleBaseView::GetUrlIdentity(browser, *delegate)
-                  .name),
-          GetAccessibleWindowTitleInternal(
-              PermissionPromptBubbleBaseView::GetUrlIdentity(browser, *delegate)
-                  .name,
-              GetVisibleRequests(*delegate.get())),
-          GetExtraText(*delegate.get())) {
-  std::vector<permissions::PermissionRequest*> visible_requests =
-      GetVisibleRequests(*delegate.get());
+    : PermissionPromptBubbleBaseView(browser,
+                                     delegate,
+                                     permission_requested_time,
+                                     prompt_style) {
+  std::vector<std::string> requested_audio_capture_device_ids;
+  std::vector<std::string> requested_video_capture_device_ids;
+  std::vector<raw_ptr<permissions::PermissionRequest, VectorExperimental>>
+      visible_requests = GetVisibleRequests(*delegate.get());
+
+  SetAccessibleTitle(GetAccessibleWindowTitleInternal(
+      GetUrlIdentityObject().name, visible_requests));
+  SetTitle(l10n_util::GetStringFUTF16(IDS_PERMISSIONS_BUBBLE_PROMPT,
+                                      GetUrlIdentityObject().name));
+
+  auto extra_text = GetExtraText(*delegate.get());
+  if (extra_text.has_value()) {
+    CreateExtraTextLabel(extra_text.value());
+  }
+
+  CreatePermissionButtons(GetAllowAlwaysText(visible_requests));
+
   for (std::size_t i = 0; i < visible_requests.size(); i++) {
     AddRequestLine(visible_requests[i], i);
+    if (visible_requests[i]->request_type() ==
+        permissions::RequestType::kCameraStream) {
+      requested_video_capture_device_ids =
+          visible_requests[i]->GetRequestedVideoCaptureDeviceIds();
+    } else if (visible_requests[i]->request_type() ==
+               permissions::RequestType::kMicStream) {
+      requested_audio_capture_device_ids =
+          visible_requests[i]->GetRequestedAudioCaptureDeviceIds();
+    }
   }
+  MaybeAddMediaPreview(requested_audio_capture_device_ids,
+                       requested_video_capture_device_ids,
+                       visible_requests.size());
 }
 
 PermissionPromptBubbleOneOriginView::~PermissionPromptBubbleOneOriginView() =
     default;
+
+void PermissionPromptBubbleOneOriginView::RunButtonCallback(int button_id) {
+#if !BUILDFLAG(IS_CHROMEOS) && !BUILDFLAG(IS_FUCHSIA)
+  auto button = GetPermissionDialogButton(button_id);
+  if (button == PermissionDialogButton::kAccept ||
+      button == PermissionDialogButton::kAcceptOnce) {
+    if (media_preview_coordinator_.has_value()) {
+      media_preview_coordinator_->UpdateDevicePreferenceRanking();
+    }
+  }
+#endif
+  PermissionPromptBubbleBaseView::RunButtonCallback(button_id);
+}
+
+void PermissionPromptBubbleOneOriginView::ChildPreferredSizeChanged(
+    views::View* child) {
+  if (GetBubbleFrameView()) {
+    SizeToContents();
+  }
+}
 
 void PermissionPromptBubbleOneOriginView::AddRequestLine(
     permissions::PermissionRequest* request,
@@ -193,4 +257,30 @@ void PermissionPromptBubbleOneOriginView::AddRequestLine(
     line_container->SetProperty(
         views::kMarginsKey, gfx::Insets().set_top(kPermissionBodyTopMargin));
   }
+}
+
+void PermissionPromptBubbleOneOriginView::MaybeAddMediaPreview(
+    std::vector<std::string> requested_audio_capture_device_ids,
+    std::vector<std::string> requested_video_capture_device_ids,
+    size_t index) {
+#if !BUILDFLAG(IS_CHROMEOS) && !BUILDFLAG(IS_FUCHSIA)
+  if (!base::FeatureList::IsEnabled(blink::features::kCameraMicPreview)) {
+    return;
+  }
+
+  auto view_type = ComputePreviewType(requested_audio_capture_device_ids,
+                                      requested_video_capture_device_ids);
+  if (!view_type) {
+    return;
+  }
+
+  media_preview_coordinator_.emplace(
+      view_type.value(),
+      *scroll_media_preview::CreateScrollViewAndGetContents(*this, index),
+      /*is_subsection=*/false,
+      MediaCoordinator::EligibleDevices{
+          /*cameras=*/requested_video_capture_device_ids,
+          /*mics=*/requested_audio_capture_device_ids},
+      *browser_->profile()->GetPrefs());
+#endif
 }

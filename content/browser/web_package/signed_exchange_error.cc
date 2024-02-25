@@ -9,12 +9,12 @@
 namespace content {
 
 // static
-absl::optional<SignedExchangeError::Field>
+std::optional<SignedExchangeError::Field>
 SignedExchangeError::GetFieldFromSignatureVerifierResult(
     SignedExchangeSignatureVerifier::Result verify_result) {
   switch (verify_result) {
     case SignedExchangeSignatureVerifier::Result::kSuccess:
-      return absl::nullopt;
+      return std::nullopt;
     case SignedExchangeSignatureVerifier::Result::kErrCertificateSHA256Mismatch:
       return Field::kSignatureCertSha256;
     case SignedExchangeSignatureVerifier::Result::
@@ -41,11 +41,11 @@ SignedExchangeError::GetFieldFromSignatureVerifierResult(
   }
 
   NOTREACHED();
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 SignedExchangeError::SignedExchangeError(const std::string& message,
-                                         absl::optional<FieldIndexPair> field)
+                                         std::optional<FieldIndexPair> field)
     : message(message), field(field) {}
 
 SignedExchangeError::SignedExchangeError(const SignedExchangeError& other) =

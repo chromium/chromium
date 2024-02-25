@@ -78,7 +78,7 @@ class ASH_EXPORT PowerButtonDisplayController
   // Saves the most recent timestamp that screen state changed.
   base::TimeTicks screen_state_last_changed_;
 
-  raw_ptr<BacklightsForcedOffSetter, ExperimentalAsh>
+  raw_ptr<BacklightsForcedOffSetter>
       backlights_forced_off_setter_;  // Not owned.
 
   base::ScopedObservation<BacklightsForcedOffSetter, ScreenBacklightObserver>
@@ -89,7 +89,7 @@ class ASH_EXPORT PowerButtonDisplayController
   bool send_accessibility_alert_on_backlights_forced_off_change_ = false;
 
   // Time source for performed action times.
-  raw_ptr<const base::TickClock, ExperimentalAsh> tick_clock_;  // Not owned.
+  raw_ptr<const base::TickClock> tick_clock_;  // Not owned.
 
   // If set, the active request passed to |backlights_forced_off_setter_| in
   // order to force the backlights off.

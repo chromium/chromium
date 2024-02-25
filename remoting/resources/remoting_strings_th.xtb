@@ -4,7 +4,6 @@
 <translation id="1002108253973310084">ระบบตรวจพบเวอร์ชันของโปรโตคอลที่เข้ากันไม่ได้ โปรดตรวจสอบว่าคุณมีซอฟต์แวร์เวอร์ชันล่าสุดติดตั้งอยู่บนคอมพิวเตอร์ทั้ง 2 เครื่องแล้ว และลองอีกครั้ง</translation>
 <translation id="1008557486741366299">ไม่ใช่ตอนนี้</translation>
 <translation id="1201402288615127009">ถัดไป</translation>
-<translation id="1296511125400541222">Copyright 2023 The Chromium Authors สงวนลิขสิทธิ์</translation>
 <translation id="1297009705180977556">เกิดข้อผิดพลาดในการเชื่อมต่อกับ <ph name="HOSTNAME" /></translation>
 <translation id="1450760146488584666">ออบเจ็กต์ที่ขอไม่มีอยู่</translation>
 <translation id="1480046233931937785">เครดิต</translation>
@@ -89,7 +88,6 @@
 <translation id="4808503597364150972">โปรดป้อน PIN ของคุณสำหรับ <ph name="HOSTNAME" /></translation>
 <translation id="4812684235631257312">โฮสต์</translation>
 <translation id="4867841927763172006">ส่ง PrtScn</translation>
-<translation id="4960795469833295568">Copyright 2023 Google LLC สงวนลิขสิทธิ์</translation>
 <translation id="4974476491460646149">ปิดการเชื่อมต่อของ <ph name="HOSTNAME" /> แล้ว</translation>
 <translation id="4985296110227979402">คุณต้องตั้งค่าคอมพิวเตอร์สำหรับการเข้าถึงระยะไกลก่อน</translation>
 <translation id="4987330545941822761">Chrome Remote Desktop ไม่สามารถระบุเบราว์เซอร์ที่จะเปิด URL ในอุปกรณ์ โปรดเลือกจากรายการด้านล่าง</translation>
@@ -154,6 +152,7 @@
 <translation id="7693372326588366043">รีเฟรชรายการโฮสต์</translation>
 <translation id="7714222945760997814">รายงานปัญหานี้</translation>
 <translation id="7868137160098754906">โปรดป้อน PIN สำหรับคอมพิวเตอร์ระยะไกล</translation>
+<translation id="7881455334687220899">ลิขสิทธิ์ 2024 The Chromium Authors สงวนลิขสิทธิ์</translation>
 <translation id="7895403300744144251">นโยบายการรักษาความปลอดภัยของคอมพิวเตอร์ระยะไกลไม่อนุญาตให้มีการเชื่อมต่อจากบัญชีของคุณ</translation>
 <translation id="7936528439960309876">จัดวางไว้ทางขวา</translation>
 <translation id="7970576581263377361">การตรวจสอบสิทธิ์ล้มเหลว โปรดลงชื่อเข้าใช้ Chromium อีกครั้ง</translation>
@@ -185,6 +184,7 @@
 <translation id="8747048596626351634">เซสชันขัดข้องหรือเริ่มต้นไม่สำเร็จ หากมี ~/.chrome-remote-desktop-session ในคอมพิวเตอร์ระยะไกล ให้ตรวจดูว่าได้เริ่มกระบวนการพื้นหน้าแบบระยะยาว เช่น สภาพแวดล้อมเดสก์ท็อปหรือตัวจัดการหน้าต่างแล้ว</translation>
 <translation id="8804164990146287819">นโยบายความเป็นส่วนตัว</translation>
 <translation id="8906511416443321782">ต้องได้รับสิทธิ์เข้าถึงไมโครโฟนเพื่อบันทึกเสียงและสตรีมไปยังไคลเอ็นต์ของ Chrome Remote Desktop</translation>
+<translation id="9042277333359847053">ลิขสิทธิ์ 2024 Google LLC สงวนลิขสิทธิ์</translation>
 <translation id="9111855907838866522">คุณเชื่อมต่อกับอุปกรณ์ระยะไกลแล้ว โปรดใช้ 4 นิ้วแตะหน้าจอเพื่อเปิดเมนู</translation>
 <translation id="9126115402994542723">อย่าขอ PIN อีกเมื่อเชื่อมต่อไปยังโฮสต์นี้จากอุปกรณ์เครื่องนี้</translation>
 <translation id="916856682307586697">เปิด XSession เริ่มต้น</translation>

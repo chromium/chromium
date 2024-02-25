@@ -9,7 +9,7 @@
 #include <utility>
 #include <vector>
 
-#include "ash/accessibility/accessibility_controller_impl.h"
+#include "ash/accessibility/accessibility_controller.h"
 #include "ash/app_list/app_list_metrics.h"
 #include "ash/app_list/app_list_model_provider.h"
 #include "ash/app_list/app_list_util.h"
@@ -212,9 +212,9 @@ class BackgroundAnimation : public AppListFolderView::Animation,
   const bool show_;
   bool is_animating_ = false;
 
-  const raw_ptr<AppListFolderView, ExperimentalAsh> folder_view_;
-  const raw_ptr<views::View, ExperimentalAsh> animating_view_;
-  const raw_ptr<SystemShadow, ExperimentalAsh> shadow_;
+  const raw_ptr<AppListFolderView> folder_view_;
+  const raw_ptr<views::View> animating_view_;
+  const raw_ptr<SystemShadow> shadow_;
 
   // Observes the rect clip change of background view.
   base::ScopedObservation<views::View, views::ViewObserver>
@@ -264,9 +264,9 @@ class FolderItemTitleAnimation : public AppListFolderView::Animation {
 
   const bool show_;
 
-  const raw_ptr<AppListFolderView, ExperimentalAsh> folder_view_;  // Not owned.
+  const raw_ptr<AppListFolderView> folder_view_;  // Not owned.
 
-  const raw_ptr<views::View, DanglingUntriaged | ExperimentalAsh> folder_title_;
+  const raw_ptr<views::View, DanglingUntriaged> folder_title_;
 
   base::OnceClosure completion_callback_;
 
@@ -279,6 +279,16 @@ class FolderItemTitleAnimation : public AppListFolderView::Animation {
 class TopIconAnimation : public AppListFolderView::Animation,
                          public TopIconAnimationObserver {
  public:
+  // The item view bounds such that the item icon matches the bounds of the icon
+  // within the folder icon. The icon position within the app list item view
+  // depends on whether the app item is badge or not.
+  struct TopItemViewBounds {
+    // Item view bounds for non-badge icon.
+    const gfx::Rect not_badged;
+    // Item view bounds for badged icon.
+    const gfx::Rect badged;
+  };
+
   TopIconAnimation(bool show,
                    AppListFolderView* folder_view,
                    views::ScrollView* scroll_view,
@@ -292,8 +302,9 @@ class TopIconAnimation : public AppListFolderView::Animation,
   TopIconAnimation& operator=(const TopIconAnimation&) = delete;
 
   ~TopIconAnimation() override {
-    for (auto* view : top_icon_views_)
+    for (ash::TopIconAnimationView* view : top_icon_views_) {
       view->RemoveObserver(this);
+    }
     top_icon_views_.clear();
   }
 
@@ -308,7 +319,7 @@ class TopIconAnimation : public AppListFolderView::Animation,
 
     // Calculate the start and end bounds of the top item icons in the
     // animation.
-    std::vector<gfx::Rect> top_item_views_bounds =
+    std::vector<TopItemViewBounds> top_item_views_bounds =
         GetTopItemViewsBoundsInFolderIcon();
     std::vector<gfx::Rect> first_page_item_views_bounds =
         GetFirstPageItemViewsBounds();
@@ -340,13 +351,20 @@ class TopIconAnimation : public AppListFolderView::Animation,
     for (size_t i = 0; i < top_items.size(); ++i) {
       const AppListItem* top_item = top_items[i];
       bool item_in_folder_icon = i < top_item_views_bounds.size();
-      gfx::Rect scaled_rect = item_in_folder_icon
-                                  ? top_item_views_bounds[i]
-                                  : folder_view_->folder_item_icon_bounds();
+      gfx::Rect scaled_rect;
+      if (item_in_folder_icon) {
+        if (top_item->GetHostBadgeIcon().isNull()) {
+          scaled_rect = top_item_views_bounds[i].not_badged;
+        } else {
+          scaled_rect = top_item_views_bounds[i].badged;
+        }
+      } else {
+        scaled_rect = folder_view_->folder_item_icon_bounds();
+      }
 
       auto icon_view = std::make_unique<TopIconAnimationView>(
           folder_view_->items_grid_view(),
-          top_item->GetIcon(app_list_config_type),
+          top_item->GetIcon(app_list_config_type), top_item->GetHostBadgeIcon(),
           base::UTF8ToUTF16(top_item->GetDisplayName()), scaled_rect, show_,
           item_in_folder_icon);
       auto* icon_view_ptr = icon_view.get();
@@ -397,7 +415,7 @@ class TopIconAnimation : public AppListFolderView::Animation,
   }
 
  private:
-  std::vector<gfx::Rect> GetTopItemViewsBoundsInFolderIcon() {
+  std::vector<TopItemViewBounds> GetTopItemViewsBoundsInFolderIcon() {
     const AppListConfig* const app_list_config =
         folder_view_->GetAppListConfig();
     size_t effective_folder_size =
@@ -411,23 +429,35 @@ class TopIconAnimation : public AppListFolderView::Animation,
     std::vector<gfx::Rect> top_icons_bounds = FolderImage::GetTopIconsBounds(
         *app_list_config, folder_view_->folder_item_icon_bounds(),
         std::min(effective_folder_size, FolderImage::kNumFolderTopItems));
-    std::vector<gfx::Rect> top_item_views_bounds;
-    const int icon_dimension = app_list_config->grid_icon_dimension();
+
+    std::vector<TopItemViewBounds> top_item_views_bounds;
+    const int not_badged_icon_dimension =
+        app_list_config->grid_icon_dimension();
+    const int badged_icon_dimension =
+        app_list_config->GetShortcutIconSize().width();
     const int icon_bottom_padding = app_list_config->grid_icon_bottom_padding();
     const int tile_width = app_list_config->grid_tile_width();
     const int tile_height = app_list_config->grid_tile_height();
-    for (gfx::Rect bounds : top_icons_bounds) {
+
+    auto get_item_bounds = [&](const gfx::Rect& target_icon_bounds,
+                               int icon_dimension) {
       // Calculate the item view's bounds based on the icon bounds.
       gfx::Rect item_bounds(
           (icon_dimension - tile_width) / 2,
           (icon_dimension + icon_bottom_padding - tile_height) / 2, tile_width,
           tile_height);
       item_bounds = gfx::ScaleToRoundedRect(
-          item_bounds, bounds.width() / static_cast<float>(icon_dimension),
-          bounds.height() / static_cast<float>(icon_dimension));
-      item_bounds.Offset(bounds.x(), bounds.y());
+          item_bounds,
+          target_icon_bounds.width() / static_cast<float>(icon_dimension),
+          target_icon_bounds.height() / static_cast<float>(icon_dimension));
+      item_bounds.Offset(target_icon_bounds.x(), target_icon_bounds.y());
+      return item_bounds;
+    };
 
-      top_item_views_bounds.emplace_back(item_bounds);
+    for (gfx::Rect bounds : top_icons_bounds) {
+      top_item_views_bounds.push_back(
+          {.not_badged = get_item_bounds(bounds, not_badged_icon_dimension),
+           .badged = get_item_bounds(bounds, badged_icon_dimension)});
     }
     return top_item_views_bounds;
   }
@@ -436,6 +466,7 @@ class TopIconAnimation : public AppListFolderView::Animation,
     // Items grid view has to be visible in case an item is being reparented, so
     // only set the opacity here.
     folder_view_->items_grid_view()->layer()->SetOpacity(visible ? 1.0f : 0.0f);
+    SetViewIgnoredForAccessibility(folder_view_->items_grid_view(), !visible);
   }
 
   // Get the bounds of the items in the first page of the opened folder relative
@@ -457,8 +488,9 @@ class TopIconAnimation : public AppListFolderView::Animation,
       gfx::RectF bounds_in_container(item->GetLocalBounds());
       views::View::ConvertRectToTarget(item, scroll_view_,
                                        &bounds_in_container);
-      if (!container_bounds.Contains(bounds_in_container))
+      if (!container_bounds.Intersects(bounds_in_container)) {
         break;
+      }
 
       // Return the item bounds in AppListFolderView coordinates.
       gfx::RectF bounds_in_folder(item->GetLocalBounds());
@@ -472,17 +504,18 @@ class TopIconAnimation : public AppListFolderView::Animation,
   // True if opening the folder.
   const bool show_;
 
-  const raw_ptr<AppListFolderView, ExperimentalAsh> folder_view_;  // Not owned.
+  const raw_ptr<AppListFolderView> folder_view_;  // Not owned.
 
   // The scroll view that contains the apps grid.
-  const raw_ptr<views::ScrollView, ExperimentalAsh> scroll_view_;
+  const raw_ptr<views::ScrollView> scroll_view_;
 
   // The app list item view with which the folder view is associated.
   // NOTE: Users of `TopIconAnimation` should ensure the animation does
   // not outlive the `folder_item_view_`.
-  const raw_ptr<AppListItemView, ExperimentalAsh> folder_item_view_;
+  const raw_ptr<AppListItemView> folder_item_view_;
 
-  std::vector<TopIconAnimationView*> top_icon_views_;
+  std::vector<raw_ptr<TopIconAnimationView, VectorExperimental>>
+      top_icon_views_;
 
   base::OnceClosure completion_callback_;
 };
@@ -572,7 +605,7 @@ class ContentsContainerAnimation : public AppListFolderView::Animation,
   // True if an item in the folder is being reparented to root grid view.
   const bool hide_for_reparent_;
 
-  const raw_ptr<AppListFolderView, ExperimentalAsh> folder_view_;
+  const raw_ptr<AppListFolderView> folder_view_;
 
   bool is_animation_running_ = false;
 
@@ -582,6 +615,8 @@ class ContentsContainerAnimation : public AppListFolderView::Animation,
 // ScrollViewWithMaxHeight limits its preferred size to a maximum height that
 // shows 4 apps grid rows.
 class ScrollViewWithMaxHeight : public views::ScrollView {
+  METADATA_HEADER(ScrollViewWithMaxHeight, views::ScrollView)
+
  public:
   explicit ScrollViewWithMaxHeight(AppListFolderView* folder_view)
       : views::ScrollView(views::ScrollView::ScrollWithLayers::kEnabled),
@@ -603,8 +638,11 @@ class ScrollViewWithMaxHeight : public views::ScrollView {
   }
 
  private:
-  const raw_ptr<AppListFolderView, ExperimentalAsh> folder_view_;
+  const raw_ptr<AppListFolderView> folder_view_;
 };
+
+BEGIN_METADATA(ScrollViewWithMaxHeight)
+END_METADATA
 
 }  // namespace
 
@@ -678,7 +716,7 @@ void AppListFolderView::CreateScrollableAppsGrid(bool tablet_mode) {
   scroll_view_->ClipHeightTo(0, std::numeric_limits<int>::max());
   scroll_view_->SetDrawOverflowIndicator(false);
   // Don't paint a background. The folder already has one.
-  scroll_view_->SetBackgroundColor(absl::nullopt);
+  scroll_view_->SetBackgroundColor(std::nullopt);
   // Arrow keys are used to select app icons.
   scroll_view_->SetAllowKeyboardScrolling(false);
 
@@ -690,8 +728,8 @@ void AppListFolderView::CreateScrollableAppsGrid(bool tablet_mode) {
   // Set up scroll bars.
   scroll_view_->SetHorizontalScrollBarMode(
       views::ScrollView::ScrollBarMode::kDisabled);
-  auto vertical_scroll =
-      std::make_unique<RoundedScrollBar>(/*horizontal=*/false);
+  auto vertical_scroll = std::make_unique<RoundedScrollBar>(
+      views::ScrollBar::Orientation::kVertical);
   vertical_scroll->SetInsets(kVerticalScrollInsets);
   scroll_view_->SetVerticalScrollBar(std::move(vertical_scroll));
 
@@ -777,7 +815,7 @@ void AppListFolderView::ScheduleShowHideAnimation(bool show,
   show_hide_metrics_tracker_ =
       GetWidget()->GetCompositor()->RequestNewThroughputTracker();
   show_hide_metrics_tracker_->Start(
-      metrics_util::ForSmoothness(base::BindRepeating([](int smoothness) {
+      metrics_util::ForSmoothnessV3(base::BindRepeating([](int smoothness) {
         UMA_HISTOGRAM_PERCENTAGE(
             "Apps.AppListFolder.ShowHide.AnimationSmoothness", smoothness);
       })));
@@ -838,8 +876,8 @@ void AppListFolderView::AddedToWidget() {
   shadow_->ObserveColorProviderSource(GetWidget());
 }
 
-void AppListFolderView::Layout() {
-  views::View::Layout();
+void AppListFolderView::Layout(PassKey) {
+  LayoutSuperclass<views::View>(this);
 
   if (gradient_helper_)
     gradient_helper_->UpdateGradientMask();
@@ -920,6 +958,7 @@ void AppListFolderView::ResetState(bool restore_folder_item_view_state) {
   // Transition all the states immediately to the end of folder closing
   // animation.
   background_view_->SetVisible(false);
+  contents_container_->SetTransform(gfx::Transform());
 
   if (restore_folder_item_view_state && folder_item_view_) {
     folder_item_view_->SetIconVisible(true);
@@ -1258,7 +1297,7 @@ void AppListFolderView::CancelReparentDragFromRootGrid() {
   items_grid_view_->EndDrag(/*cancel=*/true);
 }
 
-BEGIN_METADATA(AppListFolderView, views::View)
+BEGIN_METADATA(AppListFolderView)
 END_METADATA
 
 }  // namespace ash

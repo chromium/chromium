@@ -22,16 +22,16 @@ SkFontTableTag kCpalTag = SkSetFourByteTag('C', 'P', 'A', 'L');
 namespace blink {
 
 /* static */
-absl::optional<uint16_t> OpenTypeCpalLookup::FirstThemedPalette(
+std::optional<uint16_t> OpenTypeCpalLookup::FirstThemedPalette(
     sk_sp<SkTypeface> typeface,
     PaletteUse palette_use) {
   if (!typeface || !typeface->getTableSize(kCpalTag))
-    return absl::nullopt;
+    return std::nullopt;
 
   hb::unique_ptr<hb_face_t> face(HbFaceFromSkTypeface(typeface));
 
   if (!face || !hb_ot_color_has_palettes(face.get()))
-    return absl::nullopt;
+    return std::nullopt;
 
   int num_palettes = hb_ot_color_palette_get_count(face.get());
 
@@ -43,7 +43,7 @@ absl::optional<uint16_t> OpenTypeCpalLookup::FirstThemedPalette(
     if (hb_ot_color_palette_get_flags(face.get(), i) == desired_flag)
       return i;
   }
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 Vector<Color> OpenTypeCpalLookup::RetrieveColorRecords(

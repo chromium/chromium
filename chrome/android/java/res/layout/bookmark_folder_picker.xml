@@ -31,27 +31,27 @@
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/folder_recycler_view"
-        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/toolbar"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintBottom_toTopOf="@id/button_container"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
         android:layout_marginStart="4dp"
         android:clipToPadding="true"
-        android:scrollbars="vertical"
-        android:layout_marginTop="@dimen/toolbar_height_no_shadow"
-        android:layout_marginBottom="@dimen/bookmark_folder_picker_button_container_height" />
+        android:scrollbars="vertical" />
 
     <LinearLayout
         android:id="@+id/button_container"
         android:layout_width="match_parent"
-        android:layout_height="@dimen/bookmark_folder_picker_button_container_height"
+        android:layout_height="wrap_content"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintBottom_toBottomOf="parent"
         android:orientation="horizontal"
-        android:paddingHorizontal="20dp"
+        android:paddingTop="@dimen/bookmark_folder_picker_button_container_top_padding"
+        android:paddingBottom="@dimen/bookmark_folder_picker_button_container_bottom_padding"
+        android:paddingHorizontal="16dp"
         android:gravity="center|end">
 
         <org.chromium.ui.widget.ButtonCompat
@@ -68,7 +68,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:focusable="true"
-            style="@style/FilledButton"
+            style="@style/FilledButton.Flat"
             android:text="@string/folder_picker_move_here" />
     </LinearLayout>
 

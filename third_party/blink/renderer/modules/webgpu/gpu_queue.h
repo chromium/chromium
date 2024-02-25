@@ -5,7 +5,8 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_WEBGPU_GPU_QUEUE_H_
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_WEBGPU_GPU_QUEUE_H_
 
-#include "third_party/abseil-cpp/absl/types/optional.h"
+#include <optional>
+
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_typedefs.h"
 #include "third_party/blink/renderer/core/typed_arrays/array_buffer_view_helpers.h"
@@ -108,7 +109,7 @@ class GPUQueue : public DawnObject<WGPUQueue> {
                        const void* data_base_ptr,
                        unsigned data_bytes_per_element,
                        uint64_t data_byte_offset,
-                       absl::optional<uint64_t> byte_size,
+                       std::optional<uint64_t> byte_size,
                        ExceptionState& exception_state);
   void WriteTextureImpl(ScriptState* script_state,
                         GPUImageCopyTexture* destination,

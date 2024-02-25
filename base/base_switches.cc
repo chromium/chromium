@@ -65,6 +65,10 @@ const char kFullMemoryCrashReport[] = "full-memory-crash-report";
 // to BEST_EFFORT are not logged.
 const char kLogBestEffortTasks[] = "log-best-effort-tasks";
 
+// Handle to the shared memory segment a child process should use to transmit
+// histograms back to the browser process.
+const char kMetricsSharedMemoryHandle[] = "metrics-shmem-handle";
+
 // Suppresses all error dialogs when present.
 const char kNoErrorDialogs[]                = "noerrdialogs";
 
@@ -143,14 +147,6 @@ const char kEnableCrashReporterForTesting[] =
 #endif
 
 #if BUILDFLAG(IS_ANDROID)
-// Enables the reached code profiler that samples all threads in all processes
-// to determine which functions are almost never executed.
-const char kEnableReachedCodeProfiler[] = "enable-reached-code-profiler";
-
-// Specifies the profiling interval in microseconds for reached code profiler.
-const char kReachedCodeSamplingIntervalUs[] =
-    "reached-code-sampling-interval-us";
-
 // Default country code to be used for search engine localization.
 const char kDefaultCountryCodeAtInstall[] = "default-country-code";
 
@@ -160,13 +156,24 @@ const char kEnableIdleTracing[] = "enable-idle-tracing";
 // The field trial parameters and their values when testing changes locally.
 const char kForceFieldTrialParams[] = "force-fieldtrial-params";
 
-#endif
-
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
-// TODO(crbug.com/1176772): Remove kEnableCrashpad and IsCrashpadEnabled() when
-// Crashpad is fully enabled on Linux. Indicates that Crashpad should be
-// enabled.
-extern const char kEnableCrashpad[] = "enable-crashpad";
+// When we retrieve the package name within the SDK Runtime, we need to use
+// a bit of a hack to do this by taking advantage of the fact that the pid
+// is the same pid as the application's pid + 10000.
+// see:
+// https://cs.android.com/android/platform/superproject/main/+/main:frameworks/base/core/java/android/os/Process.java;l=292;drc=47fffdd53115a9af1820e3f89d8108745be4b55d
+// When the render process is created however, it is just a regular isolated
+// process with no particular association so we can't perform the same hack.
+// When creating minidumps, the package name is retrieved from the process
+// meaning the render process minidumps would end up reporting a generic
+// process name not associated with the app.
+// We work around this by feeding through the host package information to the
+// render process when launching it.
+const char kHostPackageName[] = "host-package-name";
+const char kHostPackageLabel[] = "host-package-label";
+const char kHostVersionCode[] = "host-version-code";
+const char kPackageName[] = "package-name";
+const char kPackageVersionName[] = "package-version-name";
+const char kPackageVersionCode[] = "package-version-code";
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS)

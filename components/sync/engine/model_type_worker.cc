@@ -6,11 +6,10 @@
 
 #include <stdint.h>
 
+#include <map>
 #include <set>
 #include <utility>
 
-#include "base/containers/contains.h"
-#include "base/containers/cxx20_erase.h"
 #include "base/containers/span.h"
 #include "base/feature_list.h"
 #include "base/format_macros.h"
@@ -59,13 +58,40 @@ const char kBlockedByUndecryptableUpdateHistogramName[] =
     "Sync.ModelTypeBlockedDueToUndecryptableUpdate";
 const char kPasswordNotesStateHistogramName[] =
     "Sync.PasswordNotesStateInUpdate";
+constexpr char kEntityEncryptionResultHistogramName[] =
+    "Sync.EntityEncryptionSucceeded";
 
 BASE_FEATURE(kSyncKeepGcDirectiveDuringSyncCycle,
              "SyncKeepGcDirectiveDuringSyncCycle",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+enum class CrossUserSharingDecryptionResult {
+  kSuccess = 0,
+  kInvitationMissingFields = 1,
+  kFailedToDecryptInvitation = 2,
+  kFailedToParseDecryptedInvitation = 3,
+
+  kMaxValue = kFailedToParseDecryptedInvitation,
+};
+
 void LogPasswordNotesState(PasswordNotesStateForUMA state) {
   base::UmaHistogramEnumeration(kPasswordNotesStateHistogramName, state);
+}
+
+void LogEncryptionResult(ModelType type, bool success) {
+  base::UmaHistogramBoolean(kEntityEncryptionResultHistogramName, success);
+  base::UmaHistogramBoolean(
+      base::StrCat({kEntityEncryptionResultHistogramName, ".",
+                    ModelTypeToHistogramSuffix(type)}),
+      success);
+}
+
+void LogCrossUserSharingDecryptionResult(
+    CrossUserSharingDecryptionResult result) {
+  base::UmaHistogramEnumeration("Sync.CrossUserSharingDecryptionResult",
+                                result);
 }
 
 // A proxy which can be called from any sequence and delegates the work to the
@@ -122,14 +148,16 @@ void AdaptWebAuthnClientTagHash(syncer::EntityData* data) {
   // Valid ClientTagHash values are Base64(SHA1(protobuf_prefix + client_tag))
   // and therefore always 28 bytes.
   const std::string& client_tag_hash = data->client_tag_hash.value();
+  std::string sync_id;
   if (client_tag_hash.size() == 32 &&
-      // base::HexEncode() returns upper case, `client_tag_hash` is lower case.
-      base::ToUpperASCII(client_tag_hash) ==
-          base::HexEncode(base::as_bytes(base::make_span(
-              data->specifics.webauthn_credential().sync_id())))) {
-    data->client_tag_hash = ClientTagHash::FromUnhashed(
-        ModelType::WEBAUTHN_CREDENTIAL,
-        data->specifics.webauthn_credential().sync_id());
+      base::HexStringToString(client_tag_hash, &sync_id) &&
+      // Deletions don't include the specifics, only the client_tag_hash.
+      (!data->specifics.has_webauthn_credential() ||
+       // Otherwise, check that the client_tag_hash really is the hex encoded
+       // sync_id.
+       sync_id == data->specifics.webauthn_credential().sync_id())) {
+    data->client_tag_hash =
+        ClientTagHash::FromUnhashed(ModelType::WEBAUTHN_CREDENTIAL, sync_id);
   }
 }
 
@@ -210,9 +238,6 @@ bool DecryptPasswordSpecifics(const Cryptographer& cryptographer,
     LogPasswordNotesState(PasswordNotesStateForUMA::kUnset);
     return true;
   }
-  if (!base::FeatureList::IsEnabled(syncer::kPasswordNotesWithBackup)) {
-    return true;
-  }
   // It is guaranteed that if `encrypted()` is decryptable, then
   // `encrypted_notes_backup()` must be decryptable too. Failure to decrypt
   // `encrypted_notes_backup()` indicates a data corruption.
@@ -236,12 +261,13 @@ bool DecryptIncomingPasswordSharingInvitationSpecifics(
     sync_pb::PasswordSharingInvitationData* unencrypted_invitation_data) {
   if (!invitation.has_encrypted_password_sharing_invitation_data() ||
       !invitation.sender_info().has_cross_user_sharing_public_key()) {
-    DLOG(ERROR)
-        << "Incoming password sharing invitation missing required fields";
+    LogCrossUserSharingDecryptionResult(
+        CrossUserSharingDecryptionResult::kInvitationMissingFields);
+    DLOG(ERROR) << "The invitation is missing required fields";
     return false;
   }
 
-  absl::optional<std::vector<uint8_t>> decrypted =
+  std::optional<std::vector<uint8_t>> decrypted =
       cryptographer.AuthDecryptForCrossUserSharing(
           base::as_bytes(base::make_span(
               invitation.encrypted_password_sharing_invitation_data())),
@@ -250,16 +276,22 @@ bool DecryptIncomingPasswordSharingInvitationSpecifics(
                                              .x25519_public_key())),
           invitation.recipient_key_version());
   if (!decrypted) {
-    DLOG(ERROR) << "Failed to decrypt an incoming password sharing invitation";
+    LogCrossUserSharingDecryptionResult(
+        CrossUserSharingDecryptionResult::kFailedToDecryptInvitation);
+    DLOG(ERROR) << "Failed to decrypt the invitation";
     return false;
   }
 
   if (!unencrypted_invitation_data->ParseFromArray(decrypted->data(),
                                                    decrypted->size())) {
-    DLOG(ERROR) << "Failed to parse password sharing invitation";
+    LogCrossUserSharingDecryptionResult(
+        CrossUserSharingDecryptionResult::kFailedToParseDecryptedInvitation);
+    DLOG(ERROR) << "Failed to parse the decrypted invitation";
     return false;
   }
 
+  LogCrossUserSharingDecryptionResult(
+      CrossUserSharingDecryptionResult::kSuccess);
   return true;
 }
 
@@ -305,9 +337,9 @@ ModelTypeWorker::ModelTypeWorker(ModelType type,
             std::make_unique<SyncInvalidationAdapter>(
                 model_type_state_.invalidations(i).hint(),
                 model_type_state_.invalidations(i).has_version()
-                    ? absl::optional<int64_t>(
+                    ? std::optional<int64_t>(
                           model_type_state_.invalidations(i).version())
-                    : absl::nullopt),
+                    : std::nullopt),
             false);
       }
 
@@ -517,7 +549,7 @@ void ModelTypeWorker::ProcessGetUpdatesResponse(
           // |server_id|, don't clear it: outdated data is better than nothing.
           // Such entry should be encrypted with another key, since |key_name|'s
           // queued updates would've have been dropped by now.
-          DCHECK(!base::Contains(entries_pending_decryption_, server_id) ||
+          DCHECK(!entries_pending_decryption_.contains(server_id) ||
                  GetEncryptionKeyName(entries_pending_decryption_[server_id]) !=
                      key_name);
           SyncRecordModelTypeUpdateDropReason(
@@ -678,8 +710,11 @@ void ModelTypeWorker::ApplyUpdates(StatusController* status, bool cycle_done) {
         sync_pb::ModelTypeState_InitialSyncState_INITIAL_SYNC_DONE);
   } else {
     DCHECK(ApplyUpdatesImmediatelyTypes().Has(type_));
-    model_type_state_.set_initial_sync_state(
-        sync_pb::ModelTypeState_InitialSyncState_INITIAL_SYNC_PARTIALLY_DONE);
+    if (model_type_state_.initial_sync_state() !=
+        sync_pb::ModelTypeState_InitialSyncState_INITIAL_SYNC_DONE) {
+      model_type_state_.set_initial_sync_state(
+          sync_pb::ModelTypeState_InitialSyncState_INITIAL_SYNC_PARTIALLY_DONE);
+    }
   }
 
   if (!entries_pending_decryption_.empty() &&
@@ -804,13 +839,13 @@ std::unique_ptr<CommitContribution> ModelTypeWorker::GetContribution(
   // |has_local_changes_state_|), in case the processor decided a local change
   // was not worth a nudge.
   scoped_refptr<GetLocalChangesRequest> request =
-      base::MakeRefCounted<GetLocalChangesRequest>(cancelation_signal_);
+      base::MakeRefCounted<GetLocalChangesRequest>();
   model_type_processor_->GetLocalChanges(
       max_entries,
       base::BindOnce(&GetLocalChangesRequest::SetResponse, request));
-  request->WaitForResponseOrCancelation();
+  request->WaitForResponseOrCancelation(cancelation_signal_);
   CommitRequestDataList response;
-  if (!request->WasCancelled()) {
+  if (!cancelation_signal_->IsSignalled()) {
     response = request->ExtractResponse();
   }
   if (response.empty()) {
@@ -836,6 +871,8 @@ std::unique_ptr<CommitContribution> ModelTypeWorker::GetContribution(
     EncryptOutgoingPasswordSharingInvitations(&response);
   } else if (type_ == PASSWORDS) {
     EncryptPasswordSpecificsData(&response);
+  } else if (encryption_enabled_) {
+    EncryptSpecifics(&response);
   }
 
   DCHECK(!AlwaysEncryptedUserTypes().Has(type_) || encryption_enabled_);
@@ -849,8 +886,7 @@ std::unique_ptr<CommitContribution> ModelTypeWorker::GetContribution(
                      weak_ptr_factory_.GetWeakPtr()),
       base::BindOnce(&ModelTypeWorker::OnFullCommitFailure,
                      weak_ptr_factory_.GetWeakPtr()),
-      encryption_enabled_ ? cryptographer_.get() : nullptr, passphrase_type_,
-      CommitOnlyTypes().Has(type_));
+      passphrase_type_);
 }
 
 bool ModelTypeWorker::HasLocalChanges() const {
@@ -1084,7 +1120,7 @@ void ModelTypeWorker::DeduplicatePendingUpdatesBasedOnOriginatorClientItemId() {
 
 bool ModelTypeWorker::ShouldIgnoreUpdatesEncryptedWith(
     const std::string& key_name) {
-  if (!base::Contains(unknown_encryption_keys_by_name_, key_name)) {
+  if (!unknown_encryption_keys_by_name_.contains(key_name)) {
     return false;
   }
   if (unknown_encryption_keys_by_name_.at(key_name)
@@ -1102,7 +1138,7 @@ void ModelTypeWorker::MaybeDropPendingUpdatesEncryptedWith(
   }
 
   size_t updates_before_dropping = entries_pending_decryption_.size();
-  base::EraseIf(entries_pending_decryption_, [&](const auto& id_and_update) {
+  std::erase_if(entries_pending_decryption_, [&](const auto& id_and_update) {
     return key_name == GetEncryptionKeyName(id_and_update.second);
   });
 
@@ -1129,15 +1165,15 @@ ModelTypeWorker::RemoveKeysNoLongerUnknown() {
   }
 
   std::vector<ModelTypeWorker::UnknownEncryptionKeyInfo> removed_keys;
-  base::EraseIf(
-      unknown_encryption_keys_by_name_, [&](const auto& key_and_info) {
-        if (base::Contains(keys_blocking_updates, key_and_info.first)) {
-          return false;
-        }
-        removed_keys.push_back(key_and_info.second);
-        return true;
-      });
-
+  for (const auto& [key_name, info] : unknown_encryption_keys_by_name_) {
+    if (!keys_blocking_updates.contains(key_name)) {
+      removed_keys.push_back(info);
+    }
+  }
+  std::erase_if(unknown_encryption_keys_by_name_,
+                [&](const auto& key_and_info) {
+                  return !keys_blocking_updates.contains(key_and_info.first);
+                });
   return removed_keys;
 }
 
@@ -1321,6 +1357,7 @@ void ModelTypeWorker::EncryptPasswordSpecificsData(
     CommitRequestDataList* request_data_list) {
   CHECK(cryptographer_);
   CHECK(encryption_enabled_);
+  CHECK_EQ(type_, PASSWORDS);
 
   for (std::unique_ptr<CommitRequestData>& request_data : *request_data_list) {
     EntityData* entity_data = request_data->entity.get();
@@ -1343,20 +1380,20 @@ void ModelTypeWorker::EncryptPasswordSpecificsData(
     bool result = cryptographer_->Encrypt(
         password_data,
         encrypted_password.mutable_password()->mutable_encrypted());
-    DCHECK(result);
-    if (base::FeatureList::IsEnabled(syncer::kPasswordNotesWithBackup)) {
-      // `encrypted_notes_backup` field needs to be populated regardless of
-      // whether or not there are any notes.
-      result = cryptographer_->Encrypt(password_data.notes(),
-                                       encrypted_password.mutable_password()
-                                           ->mutable_encrypted_notes_backup());
-      DCHECK(result);
-      // When encrypting both blobs succeeds, both encrypted blobs must use the
-      // key name.
-      DCHECK_EQ(
-          encrypted_password.password().encrypted().key_name(),
-          encrypted_password.password().encrypted_notes_backup().key_name());
-    }
+    LogEncryptionResult(type_, result);
+
+    // `encrypted_notes_backup` field needs to be populated regardless of
+    // whether or not there are any notes.
+    result = cryptographer_->Encrypt(password_data.notes(),
+                                     encrypted_password.mutable_password()
+                                         ->mutable_encrypted_notes_backup());
+    CHECK(result);
+
+    // When encrypting both blobs succeeds, both encrypted blobs must use the
+    // key name.
+    CHECK_EQ(encrypted_password.password().encrypted().key_name(),
+             encrypted_password.password().encrypted_notes_backup().key_name());
+
     // Replace the entire specifics, among other things to ensure that any
     // client-only fields are cleared.
     entity_data->specifics = std::move(encrypted_password);
@@ -1367,6 +1404,7 @@ void ModelTypeWorker::EncryptPasswordSpecificsData(
 void ModelTypeWorker::EncryptOutgoingPasswordSharingInvitations(
     CommitRequestDataList* request_data_list) {
   CHECK(cryptographer_);
+  CHECK_EQ(type_, OUTGOING_PASSWORD_SHARING_INVITATION);
 
   for (std::unique_ptr<CommitRequestData>& request_data : *request_data_list) {
     EntityData* entity_data = request_data->entity.get();
@@ -1380,7 +1418,7 @@ void ModelTypeWorker::EncryptOutgoingPasswordSharingInvitations(
     specifics->clear_client_only_unencrypted_data();
     CHECK(success);
 
-    absl::optional<std::vector<uint8_t>> encrypted_data =
+    std::optional<std::vector<uint8_t>> encrypted_data =
         cryptographer_->AuthEncryptForCrossUserSharing(
             base::as_bytes(base::make_span(serialized_password_data)),
             base::as_bytes(base::make_span(
@@ -1388,7 +1426,7 @@ void ModelTypeWorker::EncryptOutgoingPasswordSharingInvitations(
     // There should not be encryption failure but DCHECK is not used because
     // it's not guaranteed. In the worst case, the entity will be committed with
     // empty specifics (no unencrypted data will be committed to the server).
-    // TODO(crbug.com/1468523): add a metric to record encryption failures.
+    LogEncryptionResult(type_, encrypted_data.has_value());
     if (encrypted_data) {
       specifics->set_encrypted_password_sharing_invitation_data(
           encrypted_data->data(), encrypted_data->size());
@@ -1400,10 +1438,31 @@ void ModelTypeWorker::EncryptOutgoingPasswordSharingInvitations(
   }
 }
 
-GetLocalChangesRequest::GetLocalChangesRequest(
-    CancelationSignal* cancelation_signal)
-    : cancelation_signal_(cancelation_signal),
-      response_accepted_(base::WaitableEvent::ResetPolicy::MANUAL,
+void ModelTypeWorker::EncryptSpecifics(
+    CommitRequestDataList* request_data_list) {
+  CHECK(cryptographer_);
+  CHECK(encryption_enabled_);
+  CHECK_NE(type_, PASSWORDS);
+  CHECK_NE(type_, OUTGOING_PASSWORD_SHARING_INVITATION);
+
+  for (std::unique_ptr<CommitRequestData>& request_data : *request_data_list) {
+    EntityData* entity_data = request_data->entity.get();
+    entity_data->name = "encrypted";
+    if (entity_data->is_deleted()) {
+      // EntityData::is_deleted() means that the specifics is empty, so nothing
+      // to encrypt.
+      continue;
+    }
+    sync_pb::EntitySpecifics encrypted_specifics;
+    bool success = cryptographer_->Encrypt(
+        entity_data->specifics, encrypted_specifics.mutable_encrypted());
+    LogEncryptionResult(type_, success);
+    entity_data->specifics.CopyFrom(encrypted_specifics);
+  }
+}
+
+GetLocalChangesRequest::GetLocalChangesRequest()
+    : response_accepted_(base::WaitableEvent::ResetPolicy::MANUAL,
                          base::WaitableEvent::InitialState::NOT_SIGNALED) {}
 
 GetLocalChangesRequest::~GetLocalChangesRequest() = default;
@@ -1412,8 +1471,9 @@ void GetLocalChangesRequest::OnCancelationSignalReceived() {
   response_accepted_.Signal();
 }
 
-void GetLocalChangesRequest::WaitForResponseOrCancelation() {
-  if (!cancelation_signal_->TryRegisterHandler(this)) {
+void GetLocalChangesRequest::WaitForResponseOrCancelation(
+    CancelationSignal* cancelation_signal) {
+  if (!cancelation_signal->TryRegisterHandler(this)) {
     return;
   }
 
@@ -1422,17 +1482,13 @@ void GetLocalChangesRequest::WaitForResponseOrCancelation() {
     response_accepted_.Wait();
   }
 
-  cancelation_signal_->UnregisterHandler(this);
+  cancelation_signal->UnregisterHandler(this);
 }
 
 void GetLocalChangesRequest::SetResponse(
     CommitRequestDataList&& local_changes) {
   response_ = std::move(local_changes);
   response_accepted_.Signal();
-}
-
-bool GetLocalChangesRequest::WasCancelled() {
-  return cancelation_signal_->IsSignalled();
 }
 
 CommitRequestDataList&& GetLocalChangesRequest::ExtractResponse() {

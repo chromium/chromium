@@ -5,7 +5,7 @@
 #include "ash/accessibility/accessibility_controller_test_api_impl.h"
 
 #include "ash/accelerators/accelerator_controller_impl.h"
-#include "ash/accessibility/accessibility_controller_impl.h"
+#include "ash/accessibility/accessibility_controller.h"
 #include "ash/shell.h"
 #include "base/functional/callback.h"
 
@@ -13,7 +13,7 @@ namespace ash {
 
 namespace {
 
-AccessibilityControllerImpl* GetController() {
+AccessibilityController* GetController() {
   return Shell::Get()->accessibility_controller();
 }
 
@@ -54,7 +54,7 @@ void AccessibilityControllerTestApiImpl::DismissDictationKeyboardDialog() {
 }
 
 void AccessibilityControllerTestApiImpl::AddShowToastCallbackForTesting(
-    base::RepeatingClosure callback) const {
+    base::RepeatingCallback<void(AccessibilityToastType)> callback) const {
   GetController()->AddShowToastCallbackForTesting(
       std::move(callback));  // IN-TEST
 }

@@ -17,10 +17,7 @@ static_library("kiosk") {
   ]
 
   if (is_chromeos_ash) {
-    deps += [
-      "//chromeos/ash/components/login/login_state:login_state",
-      "//components/user_manager",
-    ]
+    deps += [ "//components/user_manager" ]
   }
   if (is_chromeos_lacros) {
     deps += [ "//chromeos/startup" ]
@@ -38,7 +35,11 @@ static_library("test_support") {
     "//chromeos/crosapi/mojom",
   ]
   if (is_chromeos_ash) {
-    deps += [ "//chromeos/ash/components/login/login_state:login_state" ]
+    deps += [
+      "//components/account_id",
+      "//components/user_manager",
+      "//components/user_manager:test_support",
+    ]
   }
   if (is_chromeos_lacros) {
     deps += [ "//chromeos/startup" ]

@@ -15,7 +15,11 @@ struct VectorIcon;
 #define VECTOR_ICON_TEMPLATE_H(icon_name) \
 extern const gfx::VectorIcon icon_name;
 
+namespace ui {
+
 TEMPLATE_PLACEHOLDER
+
+}  // namespace ui
 
 #undef VECTOR_ICON_TEMPLATE_H
 

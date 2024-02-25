@@ -5,12 +5,12 @@
 #ifndef COMPONENTS_SEGMENTATION_PLATFORM_PUBLIC_SERVICE_PROXY_H_
 #define COMPONENTS_SEGMENTATION_PLATFORM_PUBLIC_SERVICE_PROXY_H_
 
+#include <optional>
 #include <string>
 #include <vector>
 
 #include "base/observer_list_types.h"
 #include "components/segmentation_platform/public/proto/segmentation_platform.pb.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace segmentation_platform {
 
@@ -35,12 +35,12 @@ class ServiceProxy {
   // Information about a client to the segmentation platform.
   struct ClientInfo {
     ClientInfo(const std::string& segmentation_key,
-               absl::optional<SegmentId> selected_segment);
+               std::optional<SegmentId> selected_segment);
     ~ClientInfo();
     ClientInfo(const ClientInfo& other);
 
     std::string segmentation_key;
-    absl::optional<SegmentId> selected_segment;
+    std::optional<SegmentId> selected_segment;
     std::vector<SegmentStatus> segment_status;
   };
 

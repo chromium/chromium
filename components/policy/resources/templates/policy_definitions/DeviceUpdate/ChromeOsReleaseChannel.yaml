@@ -1,8 +1,9 @@
 caption: Release channel
+default: "stable-channel"
 desc: |-
   Specifies the release channel that this device should be locked to.
 
-        Setting <ph name="CHROME_OS_RELEASE_CHANNEL_POLICY_NAME">ChromeOsReleaseChannel</ph> only has an effect if <ph name="CHROME_OS_RELEASE_CHANNEL_DELEGATED_POLICY_NAME">ChromeOsReleaseChannelDelegated</ph> is set to False.
+  Setting <ph name="CHROME_OS_RELEASE_CHANNEL_POLICY_NAME">ChromeOsReleaseChannel</ph> only has an effect if <ph name="CHROME_OS_RELEASE_CHANNEL_DELEGATED_POLICY_NAME">ChromeOsReleaseChannelDelegated</ph> is set to False.
 device_only: true
 example_value: stable-channel
 features:

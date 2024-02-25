@@ -6,6 +6,7 @@
 #define ASH_APP_LIST_VIEWS_ASSISTANT_ASSISTANT_PAGE_VIEW_H_
 
 #include <memory>
+#include <optional>
 
 #include "ash/app_list/views/app_list_page.h"
 #include "ash/ash_export.h"
@@ -13,12 +14,15 @@
 #include "ash/public/cpp/app_list/app_list_types.h"
 #include "ash/public/cpp/assistant/controller/assistant_controller.h"
 #include "ash/public/cpp/assistant/controller/assistant_controller_observer.h"
-#include "ash/public/cpp/tablet_mode_observer.h"
-#include "ash/wm/tablet_mode/tablet_mode_controller.h"
 #include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/metadata/metadata_header_macros.h"
+#include "ui/display/display_observer.h"
+#include "ui/display/screen.h"
+
+namespace display {
+enum class TableState;
+}  // namespace display
 
 namespace ash {
 
@@ -30,10 +34,10 @@ class ViewShadow;
 class ASH_EXPORT AssistantPageView : public AppListPage,
                                      public AssistantControllerObserver,
                                      public AssistantUiModelObserver,
-                                     public TabletModeObserver {
- public:
-  METADATA_HEADER(AssistantPageView);
+                                     public display::DisplayObserver {
+  METADATA_HEADER(AssistantPageView, AppListPage)
 
+ public:
   explicit AssistantPageView(AssistantViewDelegate* assistant_view_delegate);
   AssistantPageView(const AssistantPageView&) = delete;
   AssistantPageView& operator=(const AssistantPageView&) = delete;
@@ -67,12 +71,11 @@ class ASH_EXPORT AssistantPageView : public AppListPage,
   void OnUiVisibilityChanged(
       AssistantVisibility new_visibility,
       AssistantVisibility old_visibility,
-      absl::optional<AssistantEntryPoint> entry_point,
-      absl::optional<AssistantExitPoint> exit_point) override;
+      std::optional<AssistantEntryPoint> entry_point,
+      std::optional<AssistantExitPoint> exit_point) override;
 
-  // TabletModeObserver:
-  void OnTabletModeStarted() override;
-  void OnTabletModeEnded() override;
+  // display::DisplayObserver:
+  void OnDisplayTabletStateChanged(display::TabletState state) override;
 
   // views::View:
   void OnThemeChanged() override;
@@ -81,11 +84,10 @@ class ASH_EXPORT AssistantPageView : public AppListPage,
   void InitLayout();
   void UpdateBackground(bool in_tablet_mode);
 
-  const raw_ptr<AssistantViewDelegate, ExperimentalAsh>
-      assistant_view_delegate_;
+  const raw_ptr<AssistantViewDelegate> assistant_view_delegate_;
 
   // Owned by the view hierarchy.
-  raw_ptr<AssistantMainView, ExperimentalAsh> assistant_main_view_ = nullptr;
+  raw_ptr<AssistantMainView> assistant_main_view_ = nullptr;
 
   int min_height_dip_;
 
@@ -93,8 +95,8 @@ class ASH_EXPORT AssistantPageView : public AppListPage,
 
   base::ScopedObservation<AssistantController, AssistantControllerObserver>
       assistant_controller_observation_{this};
-  base::ScopedObservation<TabletModeController, TabletModeObserver>
-      tablet_mode_observation_{this};
+  base::ScopedObservation<display::Screen, display::DisplayObserver>
+      display_observation_{this};
 };
 
 }  // namespace ash

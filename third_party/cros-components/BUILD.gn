@@ -11,18 +11,36 @@ import("//ui/webui/resources/tools/generate_grd.gni")
 _cros_components_ts_files = [
   "async_helpers/async_helpers.ts",
   "button/button.ts",
+  "card/card.ts",
   "checkbox/checkbox.ts",
+  "dropdown/dropdown.ts",
+  "dropdown/dropdown_option.ts",
   "helpers/helpers.ts",
+  "icon_button/icon-button.ts",
+  "lottie_renderer/event_binders.ts",
   "lottie_renderer/lottie-renderer.ts",
   "lottie_renderer/worker.ts",
-  "lottie_renderer/event_binders.ts",
+  "menu/menu.ts",
+  "menu/menu_item.ts",
+  "menu/menu_separator.ts",
+  "menu/menu_util.ts",
+  "menu/sub_menu_item.ts",
   "radio/radio.ts",
   "sidenav/sidenav.ts",
   "sidenav/sidenav_item.ts",
   "sidenav/sidenav_util.ts",
   "slider/slider.ts",
+  "snackbar/snackbar.ts",
+  "snackbar/show_snackbar.ts",
+  "snackbar/snackbar-item.ts",
+  "snackbar/snackbar-manager.ts",
   "switch/switch.ts",
+  "tab_slider/tab-slider-item.ts",
+  "tab_slider/tab-slider.ts",
+  "tabs/tab.ts",
+  "tabs/tabs.ts",
   "tag/tag.ts",
+  "textfield/textfield.ts",
 ]
 
 ts_library("cros_components__ts_library") {
@@ -32,6 +50,7 @@ ts_library("cros_components__ts_library") {
   root_dir = "src/"
   out_dir =
       "$root_gen_dir/ui/webui/resources/tsc/cros_components/to_be_rewritten"
+  tsconfig_base = "tsconfig_base.json"
 
   in_files = _cros_components_ts_files
 
@@ -80,12 +99,13 @@ rewrite_imports("cros_components_ts") {
     "@material/|chrome://resources/mwc/@material/",
 
     # Add js prefix's to any internal imports so they work at runtime.
-    "(?P<filepath>\.\.?/[\w/]+)\$|\g<filepath>.js",
+    "(?P<filepath>\.\.?/[\w\-/]+)\$|\g<filepath>.js",
   ]
 
   deps = [
     ":cros_components__ts_library",
     ":rename_tsconfig",
+    "//third_party/material_web_components:mwc_rewrite",
   ]
 }
 

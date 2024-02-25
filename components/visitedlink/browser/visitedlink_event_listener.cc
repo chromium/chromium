@@ -10,8 +10,6 @@
 #include "base/time/time.h"
 #include "components/visitedlink/browser/visitedlink_delegate.h"
 #include "components/visitedlink/common/visitedlink.mojom.h"
-#include "content/public/browser/notification_service.h"
-#include "content/public/browser/notification_types.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/render_widget_host.h"
 #include "content/public/browser/render_widget_host_iterator.h"

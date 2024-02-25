@@ -7,8 +7,8 @@ found in the LICENSE file.
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
-    <item android:id="@+id/cardboard_menu_option_about_vr"
-        android:title="@string/about_vr" />
     <item android:id="@+id/cardboard_menu_option_use_another_device"
         android:title="@string/use_another_device" />
+    <item android:id="@+id/cardboard_menu_option_product_safety"
+        android:title="@string/cardboard_product_safety" />
 </menu>

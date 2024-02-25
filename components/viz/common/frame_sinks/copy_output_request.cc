@@ -110,12 +110,16 @@ void CopyOutputRequest::set_blit_request(BlitRequest blit_request) {
   DCHECK(!blit_request_);
   DCHECK_EQ(result_destination(), ResultDestination::kNativeTextures);
   DCHECK(result_format() == ResultFormat::NV12_PLANES ||
-         result_format() == ResultFormat::NV12_MULTIPLANE);
+         result_format() == ResultFormat::NV12_MULTIPLANE ||
+         result_format() == ResultFormat::RGBA);
   DCHECK(has_result_selection());
 
-  // Destination region must start at an even offset for NV12 results:
-  DCHECK_EQ(blit_request.destination_region_offset().x() % 2, 0);
-  DCHECK_EQ(blit_request.destination_region_offset().y() % 2, 0);
+  if (result_format() == ResultFormat::NV12_PLANES ||
+      result_format() == ResultFormat::NV12_MULTIPLANE) {
+    // Destination region must start at an even offset for NV12 results:
+    DCHECK_EQ(blit_request.destination_region_offset().x() % 2, 0);
+    DCHECK_EQ(blit_request.destination_region_offset().y() % 2, 0);
+  }
 
 #if DCHECK_IS_ON()
   {

@@ -1,0 +1,261 @@
+From 8fded278548ac4a55592dbd4cf39b6a3aa30c289 Mon Sep 17 00:00:00 2001
+From: Piotr Bialecki <bialpio@chromium.org>
+Date: Thu, 24 Aug 2023 16:01:51 -0700
+Subject: [PATCH] [PATCH] Compile MediaPipe with GPU support on Windows on
+ ANGLE
+
+Major changes:
+- Allow mediapipe to be built with pthreads disabled.
+- Turn off LeakCheckDisabler, Chromium cannot depend on it.
+---
+ .../mediapipe/src/mediapipe/gpu/gl_base.h     |  3 ++
+ .../src/mediapipe/gpu/gl_calculator_helper.h  |  6 ++--
+ .../mediapipe/src/mediapipe/gpu/gl_context.cc | 31 +++++++++++++++----
+ .../mediapipe/src/mediapipe/gpu/gl_context.h  |  7 ++--
+ .../src/mediapipe/gpu/gl_context_egl.cc       |  9 +++++-
+ .../src/mediapipe/gpu/gl_context_internal.h   | 12 ++++++-
+ .../src/mediapipe/gpu/gpu_service.cc          |  5 +--
+ 7 files changed, 54 insertions(+), 14 deletions(-)
+
+diff --git a/third_party/mediapipe/src/mediapipe/gpu/gl_base.h b/third_party/mediapipe/src/mediapipe/gpu/gl_base.h
+index 12a04e0bbf017..bfd8d64f60b70 100644
+--- a/third_party/mediapipe/src/mediapipe/gpu/gl_base.h
++++ b/third_party/mediapipe/src/mediapipe/gpu/gl_base.h
+@@ -77,6 +77,9 @@
+ #undef Bool
+ #undef Success
+ 
++// When using Windows, we may end up pulling a #define for GetObject.
++#undef GetObject
++
+ #endif  // defined(__APPLE__)
+ 
+ namespace mediapipe {
+diff --git a/third_party/mediapipe/src/mediapipe/gpu/gl_calculator_helper.h b/third_party/mediapipe/src/mediapipe/gpu/gl_calculator_helper.h
+index c1b94fa822550..f78d439124b05 100644
+--- a/third_party/mediapipe/src/mediapipe/gpu/gl_calculator_helper.h
++++ b/third_party/mediapipe/src/mediapipe/gpu/gl_calculator_helper.h
+@@ -16,6 +16,7 @@
+ #define MEDIAPIPE_GPU_GL_CALCULATOR_HELPER_H_
+ 
+ #include <memory>
++#include <type_traits>
+ 
+ #include "absl/base/attributes.h"
+ #include "absl/memory/memory.h"
+@@ -97,8 +98,9 @@ class GlCalculatorHelper {
+   //
+   // Therefore, instead of using std::function<void(void)>, we use a template
+   // that only accepts arguments with a void result type.
+-  template <typename T, typename = typename std::enable_if<std::is_void<
+-                            typename std::result_of<T()>::type>::value>::type>
++  template <typename T,
++            typename = typename std::enable_if<std::is_void<
++                typename std::invoke_result<T>::type>::value>::type>
+   void RunInGlContext(T f) {
+     RunInGlContext([f] {
+       f();
+diff --git a/third_party/mediapipe/src/mediapipe/gpu/gl_context.cc b/third_party/mediapipe/src/mediapipe/gpu/gl_context.cc
+index 307af7992041c..a9d6ae08c79b9 100644
+--- a/third_party/mediapipe/src/mediapipe/gpu/gl_context.cc
++++ b/third_party/mediapipe/src/mediapipe/gpu/gl_context.cc
+@@ -14,6 +14,10 @@
+ 
+ #include "mediapipe/gpu/gl_context.h"
+ 
++#if !MEDIAPIPE_DISABLE_PTHREADS
++#include <pthread.h>
++#endif
++
+ #include <sys/types.h>
+ 
+ #include <cmath>
+@@ -70,17 +75,29 @@ static void SetThreadName(const char* name) {
+ }
+ 
+ GlContext::DedicatedThread::DedicatedThread() {
++#if !MEDIAPIPE_DISABLE_PTHREADS
+   ABSL_CHECK_EQ(pthread_create(&gl_thread_id_, nullptr, ThreadBody, this), 0);
++#else
++  gl_thread_ = std::thread(&DedicatedThread::ThreadBody, this);
++#endif
+ }
+ 
+ GlContext::DedicatedThread::~DedicatedThread() {
+   if (IsCurrentThread()) {
+     ABSL_CHECK(self_destruct_);
++#if !MEDIAPIPE_DISABLE_PTHREADS
+     ABSL_CHECK_EQ(pthread_detach(gl_thread_id_), 0);
++#else
++    gl_thread_.detach();
++#endif
+   } else {
+     // Give an invalid job to signal termination.
+     PutJob({});
++#if !MEDIAPIPE_DISABLE_PTHREADS
+     ABSL_CHECK_EQ(pthread_join(gl_thread_id_, nullptr), 0);
++#else
++    gl_thread_.join();
++#endif
+   }
+ }
+ 
+@@ -106,11 +123,14 @@ void GlContext::DedicatedThread::PutJob(Job job) {
+   has_jobs_cv_.SignalAll();
+ }
+ 
++#if !MEDIAPIPE_DISABLE_PTHREADS
++// static
+ void* GlContext::DedicatedThread::ThreadBody(void* instance) {
+   DedicatedThread* thread = static_cast<DedicatedThread*>(instance);
+   thread->ThreadBody();
+   return nullptr;
+ }
++#endif
+ 
+ #ifdef __APPLE__
+ #define AUTORELEASEPOOL @autoreleasepool
+@@ -174,7 +194,11 @@ void GlContext::DedicatedThread::RunWithoutWaiting(GlVoidFunction gl_func) {
+ }
+ 
+ bool GlContext::DedicatedThread::IsCurrentThread() {
++#if !MEDIAPIPE_DISABLE_PTHREADS
+   return pthread_equal(gl_thread_id_, pthread_self());
++#else
++  return std::this_thread::get_id() == gl_thread_.get_id();
++#endif
+ }
+ 
+ bool GlContext::ParseGlVersion(absl::string_view version_string, GLint* major,
+@@ -475,10 +499,6 @@ void GlContext::RunWithoutWaiting(GlVoidFunction gl_func) {
+ }
+ 
+ std::weak_ptr<GlContext>& GlContext::CurrentContext() {
+-  // Workaround for b/67878799.
+-#ifndef __EMSCRIPTEN__
+-  absl::LeakCheckDisabler disable_leak_check;
+-#endif
+   ABSL_CONST_INIT thread_local std::weak_ptr<GlContext> current_context;
+   return current_context;
+ }
+@@ -1057,7 +1077,7 @@ void GlContext::SetStandardTextureParams(GLenum target, GLint internal_format) {
+   glTexParameteri(target, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+ }
+ 
+-const GlContext::Attachment<GLuint> kUtilityFramebuffer(
++ABSL_CONST_INIT const GlContext::Attachment<GLuint> kUtilityFramebuffer(
+     [](GlContext&) -> GlContext::Attachment<GLuint>::Ptr {
+       GLuint framebuffer;
+       glGenFramebuffers(1, &framebuffer);
+diff --git a/third_party/mediapipe/src/mediapipe/gpu/gl_context.h b/third_party/mediapipe/src/mediapipe/gpu/gl_context.h
+index 9f6bc17ae7a1d..fdf313459a800 100644
+--- a/third_party/mediapipe/src/mediapipe/gpu/gl_context.h
++++ b/third_party/mediapipe/src/mediapipe/gpu/gl_context.h
+@@ -15,8 +15,6 @@
+ #ifndef MEDIAPIPE_GPU_GL_CONTEXT_H_
+ #define MEDIAPIPE_GPU_GL_CONTEXT_H_
+ 
+-#include <pthread.h>
+-
+ #include <atomic>
+ #include <functional>
+ #include <memory>
+@@ -277,8 +275,9 @@ class GlContext : public std::enable_shared_from_this<GlContext> {
+   //
+   // Therefore, instead of using std::function<void(void)>, we use a template
+   // that only accepts arguments with a void result type.
+-  template <typename T, typename = typename std::enable_if<std::is_void<
+-                            typename std::result_of<T()>::type>::value>::type>
++  template <typename T,
++            typename = typename std::enable_if<std::is_void<
++                typename std::invoke_result<T>::type>::value>::type>
+   void Run(T f) {
+     Run([f] {
+       f();
+diff --git a/third_party/mediapipe/src/mediapipe/gpu/gl_context_egl.cc b/third_party/mediapipe/src/mediapipe/gpu/gl_context_egl.cc
+index 4117d8a039598..78ac41ba4dc35 100644
+--- a/third_party/mediapipe/src/mediapipe/gpu/gl_context_egl.cc
++++ b/third_party/mediapipe/src/mediapipe/gpu/gl_context_egl.cc
+@@ -35,6 +36,7 @@ namespace mediapipe {
+ 
+ namespace {
+ 
++#if !MEDIAPIPE_DISABLE_PTHREADS
+ static pthread_key_t egl_release_thread_key;
+ static pthread_once_t egl_release_key_once = PTHREAD_ONCE_INIT;
+ 
+@@ -71,6 +73,7 @@ static void EnsureEglThreadRelease() {
+   pthread_setspecific(egl_release_thread_key,
+                       reinterpret_cast<void*>(0xDEADBEEF));
+ }
++#endif
+ 
+ static absl::StatusOr<EGLDisplay> GetInitializedDefaultEglDisplay() {
+   EGLDisplay display = eglGetDisplay(EGL_DEFAULT_DISPLAY);
+@@ -288,7 +291,11 @@ void GlContext::GetCurrentContextBinding(GlContext::ContextBinding* binding) {
+ 
+ absl::Status GlContext::SetCurrentContextBinding(
+     const ContextBinding& new_binding) {
++#if !MEDIAPIPE_DISABLE_PTHREADS
+   EnsureEglThreadRelease();
++#else
++  ABSL_LOG(WARNING) << __func__ << ": make sure this thread releases EGL resources!";
++#endif
+   EGLDisplay display = new_binding.display;
+   if (display == EGL_NO_DISPLAY) {
+     display = eglGetCurrentDisplay();
+diff --git a/third_party/mediapipe/src/mediapipe/gpu/gl_context_internal.h b/third_party/mediapipe/src/mediapipe/gpu/gl_context_internal.h
+index d683d4447d768..52ad42a0fa8bd 100644
+--- a/third_party/mediapipe/src/mediapipe/gpu/gl_context_internal.h
++++ b/third_party/mediapipe/src/mediapipe/gpu/gl_context_internal.h
+@@ -24,6 +24,10 @@
+ #endif  // TARGET_OS_OSX
+ #endif  // __APPLE__
+ 
++#if MEDIAPIPE_DISABLE_PTHREADS
++#include <thread>
++#endif
++
+ #include "mediapipe/gpu/gl_context.h"
+ 
+ namespace mediapipe {
+@@ -43,7 +47,6 @@ class GlContext::DedicatedThread {
+   void SelfDestruct();
+ 
+  private:
+-  static void* ThreadBody(void* instance);
+   void ThreadBody();
+ 
+   using Job = std::function<void(void)>;
+@@ -53,7 +56,14 @@ class GlContext::DedicatedThread {
+   absl::Mutex mutex_;
+   // Used to wait for a job's completion.
+   absl::CondVar gl_job_done_cv_ ABSL_GUARDED_BY(mutex_);
++
++#if !MEDIAPIPE_DISABLE_PTHREADS
++  static void* ThreadBody(void* instance);
++
+   pthread_t gl_thread_id_;
++#else
++  std::thread gl_thread_;
++#endif
+ 
+   std::deque<Job> jobs_ ABSL_GUARDED_BY(mutex_);
+   absl::CondVar has_jobs_cv_ ABSL_GUARDED_BY(mutex_);
+diff --git a/third_party/mediapipe/src/mediapipe/gpu/gpu_service.cc b/third_party/mediapipe/src/mediapipe/gpu/gpu_service.cc
+index 53a0e0f479052..ef77952dff8c7 100644
+--- a/third_party/mediapipe/src/mediapipe/gpu/gpu_service.cc
++++ b/third_party/mediapipe/src/mediapipe/gpu/gpu_service.cc
+@@ -16,7 +16,8 @@
+ 
+ namespace mediapipe {
+ 
+-const GraphService<GpuResources> kGpuService(
+-    "kGpuService", GraphServiceBase::kAllowDefaultInitialization);
++ABSL_CONST_INIT const GraphService<GpuResources> kGpuService(
++    "kGpuService",
++    GraphServiceBase::kAllowDefaultInitialization);
+ 
+ }  // namespace mediapipe
+-- 
+2.39.1.windows.1

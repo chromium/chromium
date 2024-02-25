@@ -43,18 +43,27 @@ namespace {
 // cases, the local heuristics predictions will be used to determine the field
 // overall type.
 static constexpr auto kAutofillHeuristicsVsHtmlOverrides =
-    base::MakeFixedFlatSet<std::pair<ServerFieldType, HtmlFieldType>>(
+    base::MakeFixedFlatSet<std::pair<FieldType, HtmlFieldType>>(
         {{ADDRESS_HOME_ADMIN_LEVEL2, HtmlFieldType::kAddressLevel1},
          {ADDRESS_HOME_ADMIN_LEVEL2, HtmlFieldType::kAddressLevel2},
-         {ADDRESS_HOME_APT_NUM, HtmlFieldType::kAddressLevel2},
+         {ADDRESS_HOME_APT_NUM, HtmlFieldType::kAddressLine2},
+         {ADDRESS_HOME_APT_NUM, HtmlFieldType::kAddressLine3},
          {ADDRESS_HOME_BETWEEN_STREETS, HtmlFieldType::kAddressLevel2},
+         {ADDRESS_HOME_BETWEEN_STREETS_OR_LANDMARK,
+          HtmlFieldType::kAddressLevel2},
+         {ADDRESS_HOME_BETWEEN_STREETS_OR_LANDMARK,
+          HtmlFieldType::kAddressLine2},
+         {ADDRESS_HOME_BETWEEN_STREETS_OR_LANDMARK,
+          HtmlFieldType::kOrganization},
          {ADDRESS_HOME_DEPENDENT_LOCALITY, HtmlFieldType::kAddressLevel1},
          {ADDRESS_HOME_DEPENDENT_LOCALITY, HtmlFieldType::kAddressLevel2},
          {ADDRESS_HOME_DEPENDENT_LOCALITY, HtmlFieldType::kAddressLevel3},
          {ADDRESS_HOME_DEPENDENT_LOCALITY, HtmlFieldType::kAddressLine1},
          {ADDRESS_HOME_DEPENDENT_LOCALITY, HtmlFieldType::kAddressLine2},
          {ADDRESS_HOME_DEPENDENT_LOCALITY, HtmlFieldType::kAddressLine3},
-         {ADDRESS_HOME_OVERFLOW, HtmlFieldType::kAddressLine2}});
+         {ADDRESS_HOME_OVERFLOW_AND_LANDMARK, HtmlFieldType::kAddressLine2},
+         {ADDRESS_HOME_OVERFLOW, HtmlFieldType::kAddressLine2},
+         {ADDRESS_HOME_OVERFLOW, HtmlFieldType::kAddressLine3}});
 
 // This list includes pairs (heuristic_type, server_type) that express which
 // heuristics predictions should be prioritized over server predictions. The
@@ -62,10 +71,13 @@ static constexpr auto kAutofillHeuristicsVsHtmlOverrides =
 // incorrectly. In these cases, the local heuristics predictions will be used to
 // determine the field type.
 static constexpr auto kAutofillHeuristicsVsServerOverrides =
-    base::MakeFixedFlatSet<std::pair<ServerFieldType, ServerFieldType>>(
+    base::MakeFixedFlatSet<std::pair<FieldType, FieldType>>(
         {{ADDRESS_HOME_ADMIN_LEVEL2, ADDRESS_HOME_CITY},
          {ADDRESS_HOME_APT_NUM, ADDRESS_HOME_LINE2},
+         {ADDRESS_HOME_APT_NUM, ADDRESS_HOME_LINE3},
          {ADDRESS_HOME_APT_NUM, ADDRESS_HOME_HOUSE_NUMBER},
+         {ADDRESS_HOME_BETWEEN_STREETS, ADDRESS_HOME_LINE1},
+         {ADDRESS_HOME_BETWEEN_STREETS, ADDRESS_HOME_LINE2},
          {ADDRESS_HOME_BETWEEN_STREETS, ADDRESS_HOME_STREET_ADDRESS},
          {ADDRESS_HOME_DEPENDENT_LOCALITY, ADDRESS_HOME_CITY},
          {ADDRESS_HOME_DEPENDENT_LOCALITY, ADDRESS_HOME_STATE},
@@ -73,7 +85,10 @@ static constexpr auto kAutofillHeuristicsVsServerOverrides =
          {ADDRESS_HOME_DEPENDENT_LOCALITY, ADDRESS_HOME_LINE2},
          {ADDRESS_HOME_DEPENDENT_LOCALITY, ADDRESS_HOME_LINE3},
          {ADDRESS_HOME_LANDMARK, ADDRESS_HOME_LINE2},
-         {ADDRESS_HOME_OVERFLOW, ADDRESS_HOME_LINE2}});
+         {ADDRESS_HOME_BETWEEN_STREETS_OR_LANDMARK, ADDRESS_HOME_LINE2},
+         {ADDRESS_HOME_OVERFLOW_AND_LANDMARK, ADDRESS_HOME_LINE2},
+         {ADDRESS_HOME_OVERFLOW, ADDRESS_HOME_LINE2},
+         {ADDRESS_HOME_OVERFLOW, ADDRESS_HOME_LINE3}});
 
 // Returns true, if the prediction is non-experimental and should be used by
 // autofill or password manager.
@@ -89,74 +104,25 @@ bool IsDefaultPrediction(const FieldPrediction& prediction) {
   return default_sources.contains(prediction.source());
 }
 
-// Compare two field log events of any type to check their log types and
-// their attributes related to autofill or editing. If they are the same type
-// and their key attributes of the type are the same, we consider |event2| is
-// identical to |event1|, we will not add |event2| after |event1| to
-// |field_log_events_|.
+// Returns true if for two consecutive events, the second event may be ignored.
+// In that case, if `event1` is at the back of AutofillField::field_log_events_,
+// `event2` is not supposed to be added.
 bool AreCollapsibleLogEvents(const AutofillField::FieldLogEventType& event1,
                              const AutofillField::FieldLogEventType& event2) {
-  if (event1.index() != event2.index()) {
-    return false;
-  }
-
-  static_assert(
-      absl::variant_size<AutofillField::FieldLogEventType>() == 9,
-      "If you add a new field event type, you need to update this function");
-
-  if (absl::holds_alternative<absl::monostate>(event1)) {
-    using E = absl::monostate;
-    return AreCollapsible(absl::get<E>(event1), absl::get<E>(event2));
-  }
-
-  if (absl::holds_alternative<AskForValuesToFillFieldLogEvent>(event1)) {
-    using E = AskForValuesToFillFieldLogEvent;
-    return AreCollapsible(absl::get<E>(event1), absl::get<E>(event2));
-  }
-
-  if (absl::holds_alternative<TriggerFillFieldLogEvent>(event1)) {
-    using E = TriggerFillFieldLogEvent;
-    return AreCollapsible(absl::get<E>(event1), absl::get<E>(event2));
-  }
-
-  if (absl::holds_alternative<FillFieldLogEvent>(event1)) {
-    using E = FillFieldLogEvent;
-    return AreCollapsible(absl::get<E>(event1), absl::get<E>(event2));
-  }
-
-  if (absl::holds_alternative<TypingFieldLogEvent>(event1)) {
-    using E = TypingFieldLogEvent;
-    return AreCollapsible(absl::get<E>(event1), absl::get<E>(event2));
-  }
-
-  if (absl::holds_alternative<HeuristicPredictionFieldLogEvent>(event1)) {
-    using E = HeuristicPredictionFieldLogEvent;
-    return AreCollapsible(absl::get<E>(event1), absl::get<E>(event2));
-  }
-
-  if (absl::holds_alternative<AutocompleteAttributeFieldLogEvent>(event1)) {
-    using E = AutocompleteAttributeFieldLogEvent;
-    return AreCollapsible(absl::get<E>(event1), absl::get<E>(event2));
-  }
-
-  if (absl::holds_alternative<ServerPredictionFieldLogEvent>(event1)) {
-    using E = ServerPredictionFieldLogEvent;
-    return AreCollapsible(absl::get<E>(event1), absl::get<E>(event2));
-  }
-
-  if (absl::holds_alternative<RationalizationFieldLogEvent>(event1)) {
-    using E = RationalizationFieldLogEvent;
-    return AreCollapsible(absl::get<E>(event1), absl::get<E>(event2));
-  }
-
-  NOTREACHED();
-  return false;
+  return absl::visit(
+      [](const auto& e1, const auto& e2) {
+        if constexpr (std::is_same_v<decltype(e1), decltype(e2)>) {
+          return AreCollapsible(e1, e2);
+        }
+        return false;
+      },
+      event1, event2);
 }
 
 // Returns whether the `heuristic_type` should be preferred over the
 // `html_type`. For certain field types that have been recently introduced, we
 // want to prioritize local heuristics over the autocomplete type.
-bool PreferHeuristicOverHtml(ServerFieldType heuristic_type,
+bool PreferHeuristicOverHtml(FieldType heuristic_type,
                              HtmlFieldType html_type) {
   return base::FeatureList::IsEnabled(
              features::kAutofillLocalHeuristicsOverrides) &&
@@ -169,8 +135,8 @@ bool PreferHeuristicOverHtml(ServerFieldType heuristic_type,
 // want to prioritize the local heuristics predictions because they are more
 // likely to be accurate. By prioritizing the local heuristics predictions, we
 // can help the server to "learn" the correct classification for these fields.
-bool PreferHeuristicOverServer(ServerFieldType heuristic_type,
-                               ServerFieldType server_type) {
+bool PreferHeuristicOverServer(FieldType heuristic_type,
+                               FieldType server_type) {
   return base::FeatureList::IsEnabled(
              features::kAutofillLocalHeuristicsOverrides) &&
          base::Contains(kAutofillHeuristicsVsServerOverrides,
@@ -180,9 +146,8 @@ bool PreferHeuristicOverServer(ServerFieldType heuristic_type,
 // Util function for `ComputedType`. Returns the values of HtmlFieldType that
 // won't be overridden by heuristics or server predictions, up to a few
 // exceptions. Check function `ComputedType` for more details.
-DenseSet<HtmlFieldType> BelievedHtmlTypes(ServerFieldType heuristic_prediction,
-                                          ServerFieldType server_prediction,
-                                          bool is_credit_card_prediction) {
+DenseSet<HtmlFieldType> BelievedHtmlTypes(FieldType heuristic_prediction,
+                                          FieldType server_prediction) {
   DenseSet<HtmlFieldType> believed_html_types = {};
   constexpr auto kMin = base::to_underlying(HtmlFieldType::kMinValue);
   constexpr auto kMax = base::to_underlying(HtmlFieldType::kMaxValue);
@@ -191,53 +156,20 @@ DenseSet<HtmlFieldType> BelievedHtmlTypes(ServerFieldType heuristic_prediction,
   }
   // We always override unspecified autocomplete attribute.
   believed_html_types.erase(HtmlFieldType::kUnspecified);
-  auto is_precedence_feature_enabled = []() {
-    return base::FeatureList::IsEnabled(
-        features::kAutofillStreetNameOrHouseNumberPrecedenceOverAutocomplete);
+  auto is_street_name_or_house_number_type = [](FieldType field_type) {
+    return field_type == ADDRESS_HOME_STREET_NAME ||
+           field_type == ADDRESS_HOME_HOUSE_NUMBER;
   };
-
-  // If the feature `kAutofillStreetNameOrHouseNumberPrecedenceOverAutocomplete`
-  // is enabled, the believed autocomplete attributes will depend on its
-  // parameterization via `kPrecedenceOverAutocompleteScope` for either
-  // heuristics or server prediction, and whether the corresponding prediction
-  // gives a street name or house number prediction. This util function takes
-  // care of removing the HtmlFieldType's that should be overridden.
-  auto override_html_types =
-      [&believed_html_types](features::PrecedenceOverAutocompleteScope scope) {
-        switch (scope) {
-          case features::PrecedenceOverAutocompleteScope::kSpecified:
-            believed_html_types.clear();
-            break;
-          case features::PrecedenceOverAutocompleteScope::kRecognized:
-            believed_html_types = {HtmlFieldType::kUnrecognized};
-            break;
-          case features::PrecedenceOverAutocompleteScope::kAddressLine1And2:
-            believed_html_types.erase_all(
-                {HtmlFieldType::kAddressLine1, HtmlFieldType::kAddressLine2});
-            break;
-          case features::PrecedenceOverAutocompleteScope::kNone:
-            break;
-        }
-      };
-
-  if (IsStreetNameOrHouseNumberType(heuristic_prediction) &&
-      is_precedence_feature_enabled()) {
-    override_html_types(
-        features::kAutofillHeuristicPrecedenceScopeOverAutocomplete.Get());
+  // When the heuristics or server predict that an address is a street name or a
+  // house number, we prioritize this over "address-line[1|2]" autocomplete
+  // since those signals are usually stronger for this combination.
+  if (is_street_name_or_house_number_type(heuristic_prediction) ||
+      is_street_name_or_house_number_type(server_prediction)) {
+    believed_html_types.erase_all(
+        {HtmlFieldType::kAddressLine1, HtmlFieldType::kAddressLine2});
   }
-  if (IsStreetNameOrHouseNumberType(server_prediction) &&
-      is_precedence_feature_enabled()) {
-    override_html_types(
-        features::kAutofillServerPrecedenceScopeOverAutocomplete.Get());
-  }
-  // If the field is credit-card related or the feature
-  // `kAutofillPredictionsForAutocompleteUnrecognized` is enabled, we always
-  // override unrecognized autocomplete attributes.
-  if (is_credit_card_prediction ||
-      base::FeatureList::IsEnabled(
-          features::kAutofillPredictionsForAutocompleteUnrecognized)) {
-    believed_html_types.erase(HtmlFieldType::kUnrecognized);
-  }
+  // Always override unrecognized autocomplete attributes.
+  believed_html_types.erase(HtmlFieldType::kUnrecognized);
   return believed_html_types;
 }
 
@@ -252,9 +184,11 @@ AutofillField::AutofillField(FieldSignature field_signature) : AutofillField() {
 }
 
 AutofillField::AutofillField(const FormFieldData& field)
-    : FormFieldData(field), parseable_name_(name), parseable_label_(label) {
-  field_signature_ =
-      CalculateFieldSignatureByNameAndType(name, form_control_type);
+    : FormFieldData(field),
+      field_signature_(
+          CalculateFieldSignatureByNameAndType(name, form_control_type)),
+      parseable_name_(name),
+      parseable_label_(label) {
   local_type_predictions_.fill(NO_SERVER_DATA);
 }
 
@@ -271,24 +205,23 @@ std::unique_ptr<AutofillField> AutofillField::CreateForPasswordManagerUpload(
   return field;
 }
 
-ServerFieldType AutofillField::heuristic_type() const {
-  return heuristic_type(GetActivePatternSource());
+FieldType AutofillField::heuristic_type() const {
+  return heuristic_type(GetActiveHeuristicSource());
 }
 
-ServerFieldType AutofillField::heuristic_type(PatternSource s) const {
-  ServerFieldType type = local_type_predictions_[static_cast<size_t>(s)];
+FieldType AutofillField::heuristic_type(HeuristicSource s) const {
+  FieldType type = local_type_predictions_[static_cast<size_t>(s)];
   // `NO_SERVER_DATA` would mean that there is no heuristic type. Client code
   // presumes there is a prediction, therefore we coalesce to `UNKNOWN_TYPE`.
   // Shadow predictions however are not used and we care whether the type is
   // `UNKNOWN_TYPE` or whether we never ran the heuristics.
-  return (type > 0 || s != GetActivePatternSource()) ? type : UNKNOWN_TYPE;
+  return (type > 0 || s != GetActiveHeuristicSource()) ? type : UNKNOWN_TYPE;
 }
 
-ServerFieldType AutofillField::server_type() const {
+FieldType AutofillField::server_type() const {
   return server_predictions_.empty()
              ? NO_SERVER_DATA
-             : ToSafeServerFieldType(server_predictions_[0].type(),
-                                     NO_SERVER_DATA);
+             : ToSafeFieldType(server_predictions_[0].type(), NO_SERVER_DATA);
 }
 
 bool AutofillField::server_type_prediction_is_override() const {
@@ -296,7 +229,7 @@ bool AutofillField::server_type_prediction_is_override() const {
                                      : server_predictions_[0].override();
 }
 
-void AutofillField::set_heuristic_type(PatternSource s, ServerFieldType type) {
+void AutofillField::set_heuristic_type(HeuristicSource s, FieldType type) {
   if (type < 0 || type > MAX_VALID_FIELD_TYPE ||
       type == FIELD_WITH_DEFAULT_VALUE) {
     NOTREACHED();
@@ -305,12 +238,13 @@ void AutofillField::set_heuristic_type(PatternSource s, ServerFieldType type) {
     type = UNKNOWN_TYPE;
   }
   local_type_predictions_[static_cast<size_t>(s)] = type;
-  if (s == GetActivePatternSource())
+  if (s == GetActiveHeuristicSource()) {
     overall_type_ = AutofillType(NO_SERVER_DATA);
+  }
 }
 
 void AutofillField::add_possible_types_validities(
-    const ServerFieldTypeValidityStateMap& possible_types_validities) {
+    const FieldTypeValidityStateMap& possible_types_validities) {
   for (const auto& possible_type_validity : possible_types_validities) {
     possible_types_validities_[possible_type_validity.first].push_back(
         possible_type_validity.second);
@@ -322,8 +256,7 @@ void AutofillField::set_server_predictions(
   overall_type_ = AutofillType(NO_SERVER_DATA);
   // Ensures that AutofillField::server_type() is a valid enum value.
   for (auto& prediction : predictions) {
-    prediction.set_type(
-        ToSafeServerFieldType(prediction.type(), NO_SERVER_DATA));
+    prediction.set_type(ToSafeFieldType(prediction.type(), NO_SERVER_DATA));
   }
 
   server_predictions_.clear();
@@ -364,9 +297,9 @@ void AutofillField::set_server_predictions(
 }
 
 std::vector<AutofillDataModel::ValidityState>
-AutofillField::get_validities_for_possible_type(ServerFieldType type) {
+AutofillField::get_validities_for_possible_type(FieldType type) {
   if (possible_types_validities_.find(type) == possible_types_validities_.end())
-    return {AutofillDataModel::UNVALIDATED};
+    return {AutofillDataModel::ValidityState::kUnvalidated};
   return possible_types_validities_[type];
 }
 
@@ -384,14 +317,8 @@ void AutofillField::SetTypeTo(const AutofillType& type) {
 AutofillType AutofillField::ComputedType() const {
   // If autocomplete=tel/tel-* and server confirms it really is a phone field,
   // we always use the server prediction as html types are not very reliable.
-  if ((GroupTypeOfHtmlFieldType(html_type_, html_mode_) ==
-           FieldTypeGroup::kPhoneBilling ||
-       GroupTypeOfHtmlFieldType(html_type_, html_mode_) ==
-           FieldTypeGroup::kPhoneHome) &&
-      (GroupTypeOfServerFieldType(server_type()) ==
-           FieldTypeGroup::kPhoneBilling ||
-       GroupTypeOfServerFieldType(server_type()) ==
-           FieldTypeGroup::kPhoneHome)) {
+  if (GroupTypeOfHtmlFieldType(html_type_) == FieldTypeGroup::kPhone &&
+      GroupTypeOfFieldType(server_type()) == FieldTypeGroup::kPhone) {
     return AutofillType(server_type());
   }
 
@@ -422,10 +349,9 @@ AutofillType AutofillField::ComputedType() const {
     return AutofillType(heuristic_type());
   }
 
-  if (BelievedHtmlTypes(heuristic_type(), server_type(),
-                        IsCreditCardPrediction())
+  if (BelievedHtmlTypes(heuristic_type(), server_type())
           .contains(html_type())) {
-    return AutofillType(html_type_, html_mode_);
+    return AutofillType(html_type_);
   }
 
   if (server_type() != NO_SERVER_DATA &&
@@ -447,7 +373,7 @@ AutofillType AutofillField::ComputedType() const {
     // Either way, retain a preference for the CVC heuristic over the
     // server's password predictions (http://crbug.com/469007)
     believe_server =
-        believe_server && !(AutofillType(server_type()).group() ==
+        believe_server && !(GroupTypeOfFieldType(server_type()) ==
                                 FieldTypeGroup::kPasswordField &&
                             heuristic_type() == CREDIT_CARD_VERIFICATION_CODE);
 
@@ -513,7 +439,7 @@ std::string AutofillField::FieldSignatureAsStr() const {
 }
 
 bool AutofillField::IsFieldFillable() const {
-  ServerFieldType field_type = Type().GetStorableType();
+  FieldType field_type = Type().GetStorableType();
   return IsFillableFieldType(field_type);
 }
 
@@ -538,14 +464,14 @@ void AutofillField::NormalizePossibleTypesValidities() {
   for (auto possible_type : possible_types_) {
     if (possible_types_validities_[possible_type].empty()) {
       possible_types_validities_[possible_type].push_back(
-          AutofillDataModel::UNVALIDATED);
+          AutofillDataModel::ValidityState::kUnvalidated);
     }
   }
 }
 
 bool AutofillField::IsCreditCardPrediction() const {
-  return AutofillType(server_type()).group() == FieldTypeGroup::kCreditCard ||
-         AutofillType(heuristic_type()).group() == FieldTypeGroup::kCreditCard;
+  return GroupTypeOfFieldType(server_type()) == FieldTypeGroup::kCreditCard ||
+         GroupTypeOfFieldType(heuristic_type()) == FieldTypeGroup::kCreditCard;
 }
 
 void AutofillField::AppendLogEventIfNotRepeated(
@@ -554,15 +480,6 @@ void AutofillField::AppendLogEventIfNotRepeated(
   // recording log events into |field_log_events_| to save memory when
   // |field_log_events_| reaches certain threshold, e.g. 1000.
 
-  // Disable it for now until we find a selection criterion to select forms to
-  // be recorded into UKM. Always enable for clients with
-  // `features::kAutofillFeedback` enabled.
-  if (!base::FeatureList::IsEnabled(
-          features::kAutofillLogUKMEventsWithSampleRate) &&
-      !base::FeatureList::IsEnabled(features::kAutofillFeedback)) {
-    return;
-  }
-
   if (field_log_events_.empty() ||
       field_log_events_.back().index() != log_event.index() ||
       !AreCollapsibleLogEvents(field_log_events_.back(), log_event)) {
@@ -570,28 +487,9 @@ void AutofillField::AppendLogEventIfNotRepeated(
   }
 }
 
-FormControlType AutofillField::FormControlType() const {
-  // Keep in sync with https://html.spec.whatwg.org/#attr-input-type.
-  if (form_control_type == "text" || form_control_type == "search" ||
-      form_control_type == "tel" || form_control_type == "url" ||
-      form_control_type == "email" || form_control_type == "password" ||
-      form_control_type == "number") {
-    return FormControlType::kText;
-  } else if (form_control_type == "textarea") {
-    return FormControlType::kTextarea;
-  } else if (form_control_type == "checkbox") {
-    return FormControlType::kCheckbox;
-  } else if (form_control_type == "radio") {
-    return FormControlType::kRadio;
-  } else if (form_control_type == "select-one") {
-    return FormControlType::kSelectOne;
-  } else if (form_control_type == "selectlist") {
-    return FormControlType::kSelectlist;
-  } else if (form_control_type == "") {
-    return FormControlType::kEmpty;
-  } else {
-    return FormControlType::kOther;
-  }
+bool AutofillField::WasAutofilledWithFallback() const {
+  return autofilled_type_ &&
+         autofilled_type_ != overall_type_.GetStorableType();
 }
 
 }  // namespace autofill

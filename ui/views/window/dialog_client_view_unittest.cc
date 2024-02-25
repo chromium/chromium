@@ -28,6 +28,7 @@
 #include "ui/views/test/test_views.h"
 #include "ui/views/test/views_test_utils.h"
 #include "ui/views/test/widget_test.h"
+#include "ui/views/widget/unique_widget_ptr.h"
 #include "ui/views/widget/widget.h"
 #include "ui/views/window/dialog_delegate.h"
 
@@ -63,7 +64,8 @@ class DialogClientViewTest : public test::WidgetTest {
   }
 
   void TearDown() override {
-    widget_->CloseNow();
+    delegate_ = nullptr;
+    widget_.ExtractAsDangling()->CloseNow();
     WidgetTest::TearDown();
   }
 
@@ -140,7 +142,7 @@ class DialogClientViewTest : public test::WidgetTest {
     Button* button = Button::AsButton(root);
     if (button && button->GetAccessibleName() == name)
       return button;
-    for (auto* child : root->children()) {
+    for (views::View* child : root->children()) {
       button = GetButtonByAccessibleName(child, name);
       if (button)
         return button;
@@ -180,8 +182,8 @@ class DialogClientViewTest : public test::WidgetTest {
 
   // The dialog Widget.
   std::unique_ptr<test::TestLayoutProvider> layout_provider_;
-  raw_ptr<Widget, DanglingUntriaged> widget_ = nullptr;
-  raw_ptr<DialogDelegateView, DanglingUntriaged> delegate_ = nullptr;
+  raw_ptr<Widget> widget_ = nullptr;
+  raw_ptr<DialogDelegateView> delegate_ = nullptr;
 
   gfx::Size preferred_size_;
   gfx::Size min_size_;
@@ -624,6 +626,28 @@ TEST_F(DesktopDialogClientViewTest,
   EXPECT_TRUE(widget()->IsClosed());
 }
 #endif  // !BUILDFLAG(IS_CHROMEOS) && !BUILDFLAG(IS_FUCHSIA)
+
+#if BUILDFLAG(ENABLE_DESKTOP_AURA)
+TEST_F(DialogClientViewTest,
+       IgnorePossiblyUnintendedClicks_ClickAfterClosingTooltip) {
+  SetDialogButtons(ui::DIALOG_BUTTON_CANCEL | ui::DIALOG_BUTTON_OK);
+  SizeAndLayoutWidget();
+  widget()->Show();
+  task_environment()->FastForwardBy(
+      base::Milliseconds(GetDoubleClickInterval() * 2));
+
+  UniqueWidgetPtr widget1(std::make_unique<Widget>());
+  Widget::InitParams params = CreateParams(Widget::InitParams::TYPE_TOOLTIP);
+  widget1->Init(std::move(params));
+  widget1->CloseNow();
+  ui::MouseEvent mouse_event(ui::ET_MOUSE_PRESSED, gfx::Point(), gfx::Point(),
+                             ui::EventTimeForNow(), ui::EF_NONE, ui::EF_NONE);
+  test::ButtonTestApi(client_view()->ok_button()).NotifyClick(mouse_event);
+  test::ButtonTestApi cancel_button(client_view()->cancel_button());
+  cancel_button.NotifyClick(mouse_event);
+  EXPECT_TRUE(widget()->IsClosed());
+}
+#endif  // BUILDFLAG(ENABLE_DESKTOP_AURA)
 
 // Ensures that repeated clicks with short intervals after view has been shown
 // are also ignored.

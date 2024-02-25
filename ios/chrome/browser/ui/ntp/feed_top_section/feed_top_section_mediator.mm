@@ -4,18 +4,40 @@
 
 #import "ios/chrome/browser/ui/ntp/feed_top_section/feed_top_section_mediator.h"
 
+#import <UserNotifications/UserNotifications.h>
+
 #import "base/feature_list.h"
+#import "base/metrics/histogram_functions.h"
+#import "base/metrics/user_metrics.h"
+#import "base/metrics/user_metrics_action.h"
+#import "base/strings/sys_string_conversions.h"
+#import "base/time/time.h"
+#import "components/prefs/pref_service.h"
 #import "components/signin/public/identity_manager/identity_manager.h"
 #import "components/signin/public/identity_manager/objc/identity_manager_observer_bridge.h"
 #import "components/sync/base/features.h"
-#import "ios/chrome/browser/ntp/features.h"
+#import "ios/chrome/browser/push_notification/model/provisional_push_notification_util.h"
+#import "ios/chrome/browser/push_notification/model/push_notification_client_id.h"
+#import "ios/chrome/browser/push_notification/model/push_notification_service.h"
+#import "ios/chrome/browser/push_notification/model/push_notification_settings_util.h"
+#import "ios/chrome/browser/push_notification/model/push_notification_util.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
-#import "ios/chrome/browser/signin/authentication_service_factory.h"
-#import "ios/chrome/browser/signin/identity_manager_factory.h"
+#import "ios/chrome/browser/shared/model/prefs/pref_names.h"
+#import "ios/chrome/browser/shared/public/features/features.h"
+#import "ios/chrome/browser/shared/public/features/system_flags.h"
+#import "ios/chrome/browser/signin/model/authentication_service.h"
+#import "ios/chrome/browser/signin/model/authentication_service_factory.h"
+#import "ios/chrome/browser/signin/model/identity_manager_factory.h"
 #import "ios/chrome/browser/ui/authentication/signin_promo_view_mediator.h"
 #import "ios/chrome/browser/ui/content_suggestions/set_up_list/utils.h"
 #import "ios/chrome/browser/ui/ntp/feed_top_section/feed_top_section_consumer.h"
 #import "ios/chrome/browser/ui/ntp/new_tab_page_delegate.h"
+#import "ios/chrome/browser/ui/push_notification/notifications_alert_presenter.h"
+#import "ios/chrome/browser/ui/push_notification/notifications_confirmation_presenter.h"
+
+using base::RecordAction;
+using base::UmaHistogramEnumeration;
+using base::UserMetricsAction;
 
 @interface FeedTopSectionMediator () <IdentityManagerObserverBridgeDelegate> {
   // Observes changes in identity.
@@ -30,10 +52,6 @@
 
 // Consumer for this mediator.
 @property(nonatomic, weak) id<FeedTopSectionConsumer> consumer;
-
-// Whether the signin promo should be shown. When the promo state changes, it
-// will call `promoStateChanges:` on the delegate.
-@property(nonatomic, assign) BOOL shouldShowSigninPromo;
 
 @end
 
@@ -61,7 +79,7 @@
 }
 
 - (void)setUp {
-  [self updateShouldShowSigninPromo];
+  [self updateShouldShowPromo];
 }
 
 - (void)dealloc {
@@ -73,18 +91,6 @@
   self.authenticationService = nullptr;
   self.identityManager = nullptr;
   self.prefService = nullptr;
-}
-
-#pragma mark - Setters
-
-- (void)setShouldShowSigninPromo:(BOOL)shouldShowSigninPromo {
-  if (_shouldShowSigninPromo == shouldShowSigninPromo) {
-    return;
-  }
-  _shouldShowSigninPromo = shouldShowSigninPromo;
-
-  // Update the consumer.
-  self.consumer.shouldShowSigninPromo = _shouldShowSigninPromo;
 }
 
 #pragma mark - FeedTopSectionViewControllerDelegate
@@ -109,11 +115,11 @@
     case signin::PrimaryAccountChangeEvent::Type::kSet:
       if (!self.signinPromoMediator.showSpinner) {
         // User has signed in, stop showing the promo.
-        self.shouldShowSigninPromo = NO;
+        [self updateShouldShowPromo];
       }
       break;
     case signin::PrimaryAccountChangeEvent::Type::kCleared:
-      [self updateShouldShowSigninPromo];
+      [self updateShouldShowPromo];
       break;
     case signin::PrimaryAccountChangeEvent::Type::kNone:
       break;
@@ -131,39 +137,239 @@
 
 - (void)signinPromoViewMediatorCloseButtonWasTapped:
     (SigninPromoViewMediator*)mediator {
-  [self.ntpDelegate handleFeedTopSectionClosed];
-  self.shouldShowSigninPromo = NO;
+  [self updateFeedTopSectionWhenClosed];
+}
+
+#pragma mark - FeedTopSectionMutator
+
+- (void)notificationsPromoViewDismissedFromButton:
+    (NotificationsPromoButtonType)buttonType {
+  [self updateFeedTopSectionWhenClosed];
+  // Update prefs that save the dismissed times if the promo conditions are not
+  // being overriden.
+  int notificationsPromoTimesDismissed =
+      self.prefService->GetInteger(prefs::kNotificationsPromoTimesDismissed);
+  if (!experimental_flags::ShouldForceContentNotificationsPromo()) {
+    self.prefService->SetTime(prefs::kNotificationsPromoLastDismissed,
+                              base::Time::Now());
+    self.prefService->SetInteger(prefs::kNotificationsPromoTimesDismissed,
+                                 notificationsPromoTimesDismissed + 1);
+  }
+  switch (buttonType) {
+    case NotificationsPromoButtonTypeClose:
+      [self logHistogramForAction:ContentNotificationTopOfFeedPromoAction::
+                                      kDismissedFromCloseButton];
+      if (notificationsPromoTimesDismissed >=
+          kNotificationsPromoMaxDismissedCount) {
+        [self enrollUserToProvisionalNotificationsFromEntrypoint:
+                  ContentNotificationPromoProvisionalEntrypoint::kCloseButton];
+      }
+      break;
+    case NotificationsPromoButtonTypeSecondary:
+      // If notification is dismissed from secondary button, set TimesDismissed
+      // > kNotificationsPromoMaxDismissedCount, to ensure the user doesn't see
+      // the notifications promo anymore.
+      self.prefService->SetInteger(prefs::kNotificationsPromoTimesDismissed,
+                                   kMaxImpressionsForDismissedThreshold);
+      [self logHistogramForAction:ContentNotificationTopOfFeedPromoAction::
+                                      kDismissedFromSecondaryButton];
+      break;
+    case NotificationsPromoButtonTypePrimary:
+      // This should never be executed as the primary button does not close the
+      // promo.
+      DCHECK(false);
+      break;
+  }
+}
+
+- (void)notificationsPromoViewMainButtonWasTapped {
+  // Show the Notifications promo alert.
+  RecordAction(UserMetricsAction(
+      "ContentNotifications.Promo.TopOfFeed.MainButtonTapped"));
+  [self logHistogramForAction:ContentNotificationTopOfFeedPromoAction::
+                                  kMainButtonTapped];
+  [self.presenter presentPushNotificationPermissionAlert];
+  [self updateFeedTopSectionWhenClosed];
 }
 
 #pragma mark - Private
 
-- (void)updateShouldShowSigninPromo {
-  self.shouldShowSigninPromo = NO;
-  // Don't show the promo for incognito or start surface.
-  if (self.isIncognito || [self.ntpDelegate isStartSurface] ||
-      !self.isSignInPromoEnabled) {
-    return;
+// Handles closing the promo, and the NTP and Feed Top Section layout when the
+// promo is closed.
+- (void)updateFeedTopSectionWhenClosed {
+  [self.NTPDelegate handleFeedTopSectionClosed];
+  [self.consumer hidePromo];
+  [self.NTPDelegate updateFeedLayout];
+}
+
+- (BOOL)isUserSignedIn {
+  auto consent =
+      base::FeatureList::IsEnabled(syncer::kReplaceSyncPromosWithSignInPromos)
+          ? signin::ConsentLevel::kSignin
+          : signin::ConsentLevel::kSync;
+  return self.identityManager->HasPrimaryAccount(consent);
+}
+
+// Returns true if notifications are enabled in Chime or at the OS level.
+- (BOOL)isNotificationsEnabled {
+  DCHECK([self isUserSignedIn]);
+  id<SystemIdentity> identity = self.authenticationService->GetPrimaryIdentity(
+      signin::ConsentLevel::kSignin);
+  // Check if user has notifications enabled at the Chime level.
+  BOOL isChimeEnabled =
+      push_notification_settings::IsMobileNotificationsEnabledForAnyClient(
+          base::SysNSStringToUTF8(identity.gaiaID), self.prefService);
+  if (isChimeEnabled) {
+    return true;
+  }
+  // Check the user's OS notification permission status for Chrome.
+  __block UNAuthorizationStatus status;
+  [PushNotificationUtil
+      getPermissionSettings:^(UNNotificationSettings* settings) {
+        status = settings.authorizationStatus;
+      }];
+
+  if (status != UNAuthorizationStatusNotDetermined &&
+      status != UNAuthorizationStatusDenied) {
+    return true;
+  }
+  return false;
+}
+
+// TODO(b/315161586): Disable notifications promo if DSE changes.
+- (BOOL)shouldShowNotificationsPromo {
+  // Check feature flag.
+  if (!IsContentPushNotificationsPromoEnabled()) {
+    return false;
   }
 
-  // Don't show the promo if SetUpList might be displayed.
-  PrefService* localState = GetApplicationContext()->GetLocalState();
-  if (IsIOSSetUpListEnabled() &&
-      set_up_list_utils::IsSetUpListActive(localState)) {
-    return;
+  // Check if user is signed in.
+  if (![self isUserSignedIn]) {
+    return false;
   }
 
+  // Check if override is active. Override only works if the user is signed in.
+  if (experimental_flags::ShouldForceContentNotificationsPromo()) {
+    return true;
+  }
+
+  // Check if notifications are enabled of any type at the Chime level.
+  if ([self isNotificationsEnabled]) {
+    return false;
+  }
+
+  int notificationsPromoTimesShown =
+      self.prefService->GetInteger(prefs::kNotificationsPromoTimesShown);
+  int notificationsPromoTimesDismissed =
+      self.prefService->GetInteger(prefs::kNotificationsPromoTimesDismissed);
+
+  base::Time now = base::Time::Now();
+  // Check if promo has been displayed `kNotificationsPromoMaxShownCount`.
+  if (notificationsPromoTimesShown >= kNotificationsPromoMaxShownCount) {
+    [self enrollUserToProvisionalNotificationsFromEntrypoint:
+              ContentNotificationPromoProvisionalEntrypoint::kShownThreshold];
+    return false;
+  }
+
+  // Check if promo has been dismissed more than the threshold.
+  if (notificationsPromoTimesDismissed >=
+      kNotificationsPromoMaxDismissedCount) {
+    return false;
+  }
+  // Check if the pref has been initialized before (base::Time() returns the
+  // null value for a base::Time type.
+  if (self.prefService->GetTime(prefs::kNotificationsPromoLastDismissed) !=
+      base::Time()) {
+    if (now -
+            self.prefService->GetTime(prefs::kNotificationsPromoLastDismissed) <
+        kNotificationsPromoDismissedCooldownTime) {
+      return false;
+    }
+  }
+  // Check if it has been less than `kNotificationsPromoShownCooldownTime`.
+  if (now - self.prefService->GetTime(prefs::kNotificationsPromoLastShown) <
+      kNotificationsPromoShownCooldownTime) {
+    return false;
+  }
+  // If all the conditions pass above, update prefs and return true.
+  self.prefService->SetTime(prefs::kNotificationsPromoLastShown, now);
+  notificationsPromoTimesShown += 1;
+  self.prefService->SetTime(prefs::kNotificationsPromoLastShown, now);
+  self.prefService->SetInteger(prefs::kNotificationsPromoTimesShown,
+                               notificationsPromoTimesShown);
+  return true;
+}
+
+- (BOOL)shouldShowSigninPromo {
+  // Don't show the promo if the account is not eligible for a SigninPromo.
+  BOOL isAccountEligibleForSignInPromo = NO;
   if ([SigninPromoViewMediator
           shouldDisplaySigninPromoViewWithAccessPoint:
               signin_metrics::AccessPoint::ACCESS_POINT_NTP_FEED_TOP_PROMO
+                                    signinPromoAction:SigninPromoAction::
+                                                          kInstantSignin
                                 authenticationService:self.authenticationService
                                           prefService:self.prefService]) {
-    auto consent =
-        base::FeatureList::IsEnabled(syncer::kReplaceSyncPromosWithSignInPromos)
-            ? signin::ConsentLevel::kSignin
-            : signin::ConsentLevel::kSync;
-    self.shouldShowSigninPromo =
-        !self.identityManager->HasPrimaryAccount(consent);
+    isAccountEligibleForSignInPromo = ![self isUserSignedIn];
   }
+  // Don't show the promo for incognito or start surface or if account is not
+  // eligible.
+  BOOL isStartSurfaceOrIncognito = self.isIncognito ||
+                                   [self.NTPDelegate isStartSurface] ||
+                                   !self.isSignInPromoEnabled;
+  if (!isStartSurfaceOrIncognito && isAccountEligibleForSignInPromo) {
+    return true;
+  }
+  return false;
+}
+
+- (void)updateShouldShowPromo {
+  // Don't show any promo if Set Up List is Enabled.
+  PrefService* localState = GetApplicationContext()->GetLocalState();
+  if (set_up_list_utils::IsSetUpListActive(localState)) {
+    // Hide promo as a safeguard in case it is being shown.
+    [self.consumer hidePromo];
+    return;
+  }
+
+  if ([self shouldShowSigninPromo]) {
+    self.consumer.visiblePromoViewType = PromoViewTypeSignin;
+    [self.consumer showPromo];
+    return;
+  }
+
+  if ([self shouldShowNotificationsPromo]) {
+    self.consumer.visiblePromoViewType = PromoViewTypeNotifications;
+    [self.consumer showPromo];
+    return;
+  }
+}
+
+#pragma mark - Private
+
+- (void)enrollUserToProvisionalNotificationsFromEntrypoint:
+    (ContentNotificationPromoProvisionalEntrypoint)entrypoint {
+  [self logHistogramForEntrypoint:entrypoint];
+  [ProvisionalPushNotificationUtil
+      enrollUserToProvisionalNotificationsForClientIds:
+          {PushNotificationClientId::kContent,
+           PushNotificationClientId::kSports}
+                                       withAuthService:
+                                           self.authenticationService];
+}
+
+#pragma mark - Metrics
+
+- (void)logHistogramForAction:(ContentNotificationTopOfFeedPromoAction)action {
+  UmaHistogramEnumeration("ContentNotifications.Promo.TopOfFeed.Action",
+                          action);
+}
+
+- (void)logHistogramForEntrypoint:
+    (ContentNotificationPromoProvisionalEntrypoint)entrypoint {
+  UmaHistogramEnumeration(
+      "ContentNotifications.Promo.ProvisionalNotifications.Entrypoint",
+      entrypoint);
 }
 
 @end

@@ -10,13 +10,9 @@ import org.chromium.chrome.browser.password_manager.CredentialManagerLauncher.Cr
 
 import java.util.Optional;
 
-/**
- * Interface for the helper responsible for Password Checkup operations.
- */
+/** Interface for the helper responsible for Password Checkup operations. */
 public interface PasswordCheckupClientHelper {
-    /**
-     * Serves as a general exception for failed requests to the password checkup backend.
-     */
+    /** Serves as a general exception for failed requests to the password checkup backend. */
     class PasswordCheckBackendException extends Exception {
         public @CredentialManagerError int errorCode;
 
@@ -26,18 +22,57 @@ public interface PasswordCheckupClientHelper {
         }
     }
 
+    // TODO(crbug.com/1504551): Delete the variant of getPasswordCheckupIntent taking
+    // Optional<String> as accountName and switch the one using String.
     /**
      * Retrieves a pending intent that can be used to launch the Password Checkup UI in the
      * credential manager. The intent is to either be used immediately or discarded.
      *
      * @param referrer the place that will launch the password checkup UI
      * @param accountName the account name that is syncing passwords. If no value was provided local
-     *         account will be used.
+     *     account will be used.
      * @param successCallback callback called with the intent if the retrieving was successful
      * @param failureCallback callback called if the retrieving failed with the encountered error.
      */
-    void getPasswordCheckupIntent(@PasswordCheckReferrer int referrer, Optional<String> accountName,
-            Callback<PendingIntent> successCallback, Callback<Exception> failureCallback);
+    void getPasswordCheckupIntent(
+            @PasswordCheckReferrer int referrer,
+            Optional<String> accountName,
+            Callback<PendingIntent> successCallback,
+            Callback<Exception> failureCallback);
+
+    /**
+     * Retrieves a pending intent that can be used to launch the Password Checkup UI in the
+     * credential manager. The intent is to either be used immediately or discarded.
+     *
+     * @param referrer the place that will launch the password checkup UI
+     * @param accountName the account name that is syncing passwords. If it's empty, local account
+     *     will be used.
+     * @param successCallback callback called with the intent if the retrieving was successful
+     * @param failureCallback callback called if the retrieving failed with the encountered error.
+     */
+    default void getPasswordCheckupIntent(
+            @PasswordCheckReferrer int referrer,
+            String accountName,
+            Callback<PendingIntent> successCallback,
+            Callback<Exception> failureCallback) {}
+
+    // TODO(crbug.com/1504551): Delete the variant of runPasswordCheckupInBackground taking
+    // Optional<String> as accountName and switch the one using String.
+    /**
+     * Asynchronously runs Password Checkup and stores the result in PasswordSpecifics then saves it
+     * to the ChromeSync module.
+     *
+     * @param referrer the place that requested to start a check.
+     * @param accountName the account name that is syncing passwords. If no value was provided local
+     *     account will be used.
+     * @param successCallback callback called with Password Check started successful
+     * @param failureCallback callback called if encountered an error.
+     */
+    void runPasswordCheckupInBackground(
+            @PasswordCheckReferrer int referrer,
+            Optional<String> accountName,
+            Callback<Void> successCallback,
+            Callback<Exception> failureCallback);
 
     /**
      * Asynchronously runs Password Checkup and stores the result in PasswordSpecifics then saves it
@@ -45,12 +80,31 @@ public interface PasswordCheckupClientHelper {
      *
      * @param referrer the place that requested to start a check.
      * @param accountName the account name that is syncing passwords. If no value was provided local
-     *         account will be used.
+     *     account will be used.
      * @param successCallback callback called with Password Check started successful
      * @param failureCallback callback called if encountered an error.
      */
-    void runPasswordCheckupInBackground(@PasswordCheckReferrer int referrer,
-            Optional<String> accountName, Callback<Void> successCallback,
+    default void runPasswordCheckupInBackground(
+            @PasswordCheckReferrer int referrer,
+            String accountName,
+            Callback<Void> successCallback,
+            Callback<Exception> failureCallback) {}
+
+    // TODO(crbug.com/1504551): Delete the variant of getBreachedCredentialsCount taking
+    // Optional<String> as accountName and switch the one using String.
+    /**
+     * Asynchronously returns the number of breached credentials for the provided account.
+     *
+     * @param referrer the place that requested number of breached credentials.
+     * @param accountName the account name that is syncing passwords. If no value was provided local
+     *     account will be used.
+     * @param successCallback callback called with the number of breached passwords.
+     * @param failureCallback callback called if encountered an error.
+     */
+    void getBreachedCredentialsCount(
+            @PasswordCheckReferrer int referrer,
+            Optional<String> accountName,
+            Callback<Integer> successCallback,
             Callback<Exception> failureCallback);
 
     /**
@@ -58,11 +112,13 @@ public interface PasswordCheckupClientHelper {
      *
      * @param referrer the place that requested number of breached credentials.
      * @param accountName the account name that is syncing passwords. If no value was provided local
-     *         account will be used.
+     *     account will be used.
      * @param successCallback callback called with the number of breached passwords.
      * @param failureCallback callback called if encountered an error.
      */
-    void getBreachedCredentialsCount(@PasswordCheckReferrer int referrer,
-            Optional<String> accountName, Callback<Integer> successCallback,
-            Callback<Exception> failureCallback);
+    default void getBreachedCredentialsCount(
+            @PasswordCheckReferrer int referrer,
+            String accountName,
+            Callback<Integer> successCallback,
+            Callback<Exception> failureCallback) {}
 }

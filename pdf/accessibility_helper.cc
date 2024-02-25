@@ -8,9 +8,9 @@
 
 #include <vector>
 
+#include <optional>
 #include "base/numerics/safe_math.h"
 #include "pdf/accessibility_structs.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace chrome_pdf {
 
@@ -38,7 +38,7 @@ AccessibilityTextRunRangeInfo GetEnclosingTextRunRangeForCharRange(
     return text_range;
   uint32_t end_char_index = checked_end_char_index.ValueOrDie();
   uint32_t current_char_index = 0;
-  absl::optional<size_t> start_text_run;
+  std::optional<size_t> start_text_run;
   for (size_t i = 0; i < text_runs.size(); ++i) {
     if (!start_text_run.has_value() &&
         IsCharWithinTextRun(text_runs[i], current_char_index,

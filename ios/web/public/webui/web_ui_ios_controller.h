@@ -7,6 +7,7 @@
 
 #include <string>
 
+#import "base/memory/raw_ptr.h"
 #include "base/strings/string_piece.h"
 
 class GURL;
@@ -34,7 +35,7 @@ class WebUIIOSController {
   std::string GetHost() const { return host_; }
 
  private:
-  WebUIIOS* web_ui_;
+  raw_ptr<WebUIIOS> web_ui_;
   std::string host_;
 };
 

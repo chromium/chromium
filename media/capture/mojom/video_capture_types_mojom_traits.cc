@@ -4,7 +4,8 @@
 
 #include "media/capture/mojom/video_capture_types_mojom_traits.h"
 
-#include "third_party/abseil-cpp/absl/types/optional.h"
+#include <optional>
+
 #include "ui/gfx/geometry/mojom/geometry.mojom.h"
 #include "ui/gfx/geometry/mojom/geometry_mojom_traits.h"
 
@@ -1558,11 +1559,15 @@ EnumTraits<media::mojom::VideoCaptureFrameDropReason,
         kRendererSinkFrameDelivererIsNotStarted:
       return media::mojom::VideoCaptureFrameDropReason::
           kRendererSinkFrameDelivererIsNotStarted;
-    case media::VideoCaptureFrameDropReason::kCropVersionNotCurrent:
-      return media::mojom::VideoCaptureFrameDropReason::kCropVersionNotCurrent;
+    case media::VideoCaptureFrameDropReason::kCropVersionNotCurrent_DEPRECATED:
+      return media::mojom::VideoCaptureFrameDropReason::
+          kCropVersionNotCurrent_DEPRECATED;
     case media::VideoCaptureFrameDropReason::kGpuMemoryBufferMapFailed:
       return media::mojom::VideoCaptureFrameDropReason::
           kGpuMemoryBufferMapFailed;
+    case media::VideoCaptureFrameDropReason::kSubCaptureTargetVersionNotCurrent:
+      return media::mojom::VideoCaptureFrameDropReason::
+          kSubCaptureTargetVersionNotCurrent;
   }
   NOTREACHED_NORETURN();
 }
@@ -1696,11 +1701,18 @@ bool EnumTraits<media::mojom::VideoCaptureFrameDropReason,
       *output = media::VideoCaptureFrameDropReason::
           kRendererSinkFrameDelivererIsNotStarted;
       return true;
-    case media::mojom::VideoCaptureFrameDropReason::kCropVersionNotCurrent:
-      *output = media::VideoCaptureFrameDropReason::kCropVersionNotCurrent;
+    case media::mojom::VideoCaptureFrameDropReason::
+        kCropVersionNotCurrent_DEPRECATED:
+      *output =
+          media::VideoCaptureFrameDropReason::kCropVersionNotCurrent_DEPRECATED;
       return true;
     case media::mojom::VideoCaptureFrameDropReason::kGpuMemoryBufferMapFailed:
       *output = media::VideoCaptureFrameDropReason::kGpuMemoryBufferMapFailed;
+      return true;
+    case media::mojom::VideoCaptureFrameDropReason::
+        kSubCaptureTargetVersionNotCurrent:
+      *output = media::VideoCaptureFrameDropReason::
+          kSubCaptureTargetVersionNotCurrent;
       return true;
   }
   NOTREACHED_NORETURN();
@@ -1777,6 +1789,21 @@ EnumTraits<media::mojom::VideoCaptureApi, media::VideoCaptureApi>::ToMojom(
 }
 
 // static
+media::mojom::CameraAvailability EnumTraits<
+    media::mojom::CameraAvailability,
+    media::CameraAvailability>::ToMojom(media::CameraAvailability input) {
+  switch (input) {
+    case media::CameraAvailability::kAvailable:
+      return media::mojom::CameraAvailability::kAvailable;
+    case media::CameraAvailability::
+        kUnavailableExclusivelyUsedByOtherApplication:
+      return media::mojom::CameraAvailability::
+          kUnavailableExclusivelyUsedByOtherApplication;
+  }
+  NOTREACHED_NORETURN();
+}
+
+// static
 bool EnumTraits<media::mojom::VideoCaptureApi, media::VideoCaptureApi>::
     FromMojom(media::mojom::VideoCaptureApi input,
               media::VideoCaptureApi* output) {
@@ -1819,6 +1846,23 @@ bool EnumTraits<media::mojom::VideoCaptureApi, media::VideoCaptureApi>::
       return true;
     case media::mojom::VideoCaptureApi::UNKNOWN:
       *output = media::VideoCaptureApi::UNKNOWN;
+      return true;
+  }
+  NOTREACHED_NORETURN();
+}
+
+// static
+bool EnumTraits<media::mojom::CameraAvailability, media::CameraAvailability>::
+    FromMojom(media::mojom::CameraAvailability input,
+              media::CameraAvailability* output) {
+  switch (input) {
+    case media::mojom::CameraAvailability::kAvailable:
+      *output = media::CameraAvailability::kAvailable;
+      return true;
+    case media::mojom::CameraAvailability::
+        kUnavailableExclusivelyUsedByOtherApplication:
+      *output = media::CameraAvailability::
+          kUnavailableExclusivelyUsedByOtherApplication;
       return true;
   }
   NOTREACHED_NORETURN();
@@ -1911,6 +1955,9 @@ bool StructTraits<media::mojom::VideoCaptureDeviceDescriptorDataView,
     return false;
   if (!data.ReadFacingMode(&(output->facing)))
     return false;
+  if (!data.ReadAvailability(&(output->availability))) {
+    return false;
+  }
   if (!data.ReadCaptureApi(&(output->capture_api)))
     return false;
   media::VideoCaptureControlSupport control_support;

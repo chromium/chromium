@@ -5,12 +5,12 @@
 #ifndef NET_URL_REQUEST_REDIRECT_UTIL_H_
 #define NET_URL_REQUEST_REDIRECT_UTIL_H_
 
+#include <optional>
 #include <string>
 #include <vector>
 
 #include "base/memory/scoped_refptr.h"
 #include "net/base/net_export.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 class GURL;
 
@@ -40,14 +40,14 @@ class RedirectUtil {
       const GURL& original_url,
       const std::string& original_method,
       const RedirectInfo& redirect_info,
-      const absl::optional<std::vector<std::string>>& removed_headers,
-      const absl::optional<net::HttpRequestHeaders>& modified_headers,
+      const std::optional<std::vector<std::string>>& removed_headers,
+      const std::optional<net::HttpRequestHeaders>& modified_headers,
       HttpRequestHeaders* request_headers,
       bool* should_clear_upload);
 
   // Returns the the "normalized" value of Referrer-Policy header if available.
-  // Otherwise returns absl::nullopt.
-  NET_EXPORT static absl::optional<std::string> GetReferrerPolicyHeader(
+  // Otherwise returns std::nullopt.
+  NET_EXPORT static std::optional<std::string> GetReferrerPolicyHeader(
       const HttpResponseHeaders* response_headers);
 
   NET_EXPORT static scoped_refptr<HttpResponseHeaders>

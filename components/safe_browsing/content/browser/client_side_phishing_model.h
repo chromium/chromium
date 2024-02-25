@@ -19,7 +19,6 @@
 #include "base/synchronization/lock.h"
 #include "base/thread_annotations.h"
 #include "components/optimization_guide/core/optimization_target_model_observer.h"
-#include "components/safe_browsing/content/browser/client_side_phishing_model.h"
 #include "components/safe_browsing/core/common/fbs/client_model_generated.h"
 #include "components/safe_browsing/core/common/proto/client_model.pb.h"
 #include "components/safe_browsing/core/common/proto/csd.pb.h"
@@ -87,6 +86,8 @@ class ClientSidePhishingModel
 
   bool IsModelMetadataImageEmbeddingVersionMatching();
 
+  int GetTriggerModelVersion();
+
   void SetVisualTfLiteModelForTesting(base::File file);
   // Overrides model type.
   void SetModelTypeForTesting(CSDModelType model_type);
@@ -105,11 +106,11 @@ class ClientSidePhishingModel
   void MaybeOverrideModel();
 
   void OnModelAndVisualTfLiteFileLoaded(
-      absl::optional<optimization_guide::proto::Any> model_metadata,
+      std::optional<optimization_guide::proto::Any> model_metadata,
       std::pair<std::string, base::File> model_and_tflite);
 
   void OnImageEmbeddingModelLoaded(
-      absl::optional<optimization_guide::proto::Any> model_metadata,
+      std::optional<optimization_guide::proto::Any> model_metadata,
       base::File image_embedding_model_data);
 
   void SetModelAndVisualTfLiteForTesting(
@@ -143,11 +144,11 @@ class ClientSidePhishingModel
   std::string model_str_ GUARDED_BY_CONTEXT(sequence_checker_);
 
   // Visual TFLite model file. Guarded by sequence_checker_.
-  absl::optional<base::File> visual_tflite_model_
+  std::optional<base::File> visual_tflite_model_
       GUARDED_BY_CONTEXT(sequence_checker_);
 
   // Image Embedding TfLite model file. Guarded by sequence_checker_.
-  absl::optional<base::File> image_embedding_model_
+  std::optional<base::File> image_embedding_model_
       GUARDED_BY_CONTEXT(sequence_checker_);
 
   // Thresholds in visual TFLite model file to be used for comparison after
@@ -174,8 +175,8 @@ class ClientSidePhishingModel
   // under each optimization target. These two are used to match the model
   // pairings properly. If the two values match, then the image embedding model
   // will be sent to the renderer process along with the trigger models.
-  absl::optional<int> trigger_model_version_;
-  absl::optional<int> embedding_model_version_;
+  std::optional<int> trigger_model_version_;
+  std::optional<int> embedding_model_version_;
 
   scoped_refptr<base::SequencedTaskRunner> background_task_runner_;
 

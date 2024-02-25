@@ -4,18 +4,17 @@
 
 // This has to be included first.
 // See http://code.google.com/p/googletest/issues/detail?id=371
-#include "testing/gtest/include/gtest/gtest.h"
-
 #include <drm_fourcc.h>
 #include <gbm.h>
 #include <unistd.h>
-#include <map>
-#include <vector>
-
 #include <va/va.h>
 #include <va/va_drmcommon.h>
 #include <va/va_str.h>
 #include <xf86drm.h>
+
+#include <map>
+#include <optional>
+#include <vector>
 
 #include "base/bits.h"
 #include "base/containers/contains.h"
@@ -36,17 +35,12 @@
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "media/base/media_switches.h"
+#include "media/base/platform_features.h"
 #include "media/gpu/vaapi/vaapi_wrapper.h"
 #include "media/media_buildflags.h"
 #include "testing/gmock/include/gmock/gmock.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
+#include "testing/gtest/include/gtest/gtest.h"
 #include "ui/gfx/linux/gbm_defines.h"
-
-#if BUILDFLAG(IS_OZONE) && BUILDFLAG(IS_LINUX)
-// GN doesn't understand conditional includes, so we need nogncheck here.
-// See crbug.com/1125897.
-#include "ui/ozone/public/ozone_platform.h"  // nogncheck
-#endif
 
 #ifndef I915_FORMAT_MOD_4_TILED
 #define I915_FORMAT_MOD_4_TILED 0x100000000000009
@@ -55,7 +49,7 @@
 namespace media {
 namespace {
 
-absl::optional<VAProfile> ConvertToVAProfile(VideoCodecProfile profile) {
+std::optional<VAProfile> ConvertToVAProfile(VideoCodecProfile profile) {
   // A map between VideoCodecProfile and VAProfile.
   const std::map<VideoCodecProfile, VAProfile> kProfileMap = {
     // VAProfileH264Baseline is deprecated in <va/va.h> from libva 2.0.0.
@@ -73,12 +67,12 @@ absl::optional<VAProfile> ConvertToVAProfile(VideoCodecProfile profile) {
 #endif  // BUILDFLAG(ENABLE_HEVC_PARSER_AND_HW_DECODER)
   };
   auto it = kProfileMap.find(profile);
-  return it != kProfileMap.end() ? absl::make_optional<VAProfile>(it->second)
-                                 : absl::nullopt;
+  return it != kProfileMap.end() ? std::make_optional<VAProfile>(it->second)
+                                 : std::nullopt;
 }
 
 // Converts the given string to VAProfile
-absl::optional<VAProfile> StringToVAProfile(const std::string& va_profile) {
+std::optional<VAProfile> StringToVAProfile(const std::string& va_profile) {
   const std::map<std::string, VAProfile> kStringToVAProfile = {
     {"VAProfileNone", VAProfileNone},
     {"VAProfileH264ConstrainedBaseline", VAProfileH264ConstrainedBaseline},
@@ -103,12 +97,12 @@ absl::optional<VAProfile> StringToVAProfile(const std::string& va_profile) {
 
   auto it = kStringToVAProfile.find(va_profile);
   return it != kStringToVAProfile.end()
-             ? absl::make_optional<VAProfile>(it->second)
-             : absl::nullopt;
+             ? std::make_optional<VAProfile>(it->second)
+             : std::nullopt;
 }
 
 // Converts the given string to VAEntrypoint
-absl::optional<VAEntrypoint> StringToVAEntrypoint(
+std::optional<VAEntrypoint> StringToVAEntrypoint(
     const std::string& va_entrypoint) {
   const std::map<std::string, VAEntrypoint> kStringToVAEntrypoint = {
     {"VAEntrypointVLD", VAEntrypointVLD},
@@ -123,8 +117,8 @@ absl::optional<VAEntrypoint> StringToVAEntrypoint(
 
   auto it = kStringToVAEntrypoint.find(va_entrypoint);
   return it != kStringToVAEntrypoint.end()
-             ? absl::make_optional<VAEntrypoint>(it->second)
-             : absl::nullopt;
+             ? std::make_optional<VAEntrypoint>(it->second)
+             : std::nullopt;
 }
 
 unsigned int ToVaRTFormat(uint32_t va_fourcc) {
@@ -570,8 +564,7 @@ TEST_F(VaapiTest, CheckSupportedSVCScalabilityModes) {
       VaapiWrapper::GetSupportedScalabilityModes(VP9PROFILE_PROFILE0,
                                                  VAProfileVP9Profile0);
 #if BUILDFLAG(IS_CHROMEOS)
-  if (base::FeatureList::IsEnabled(kVaapiVp9kSVCHWEncoding) &&
-      VaapiWrapper::GetDefaultVaEntryPoint(
+  if (VaapiWrapper::GetDefaultVaEntryPoint(
           VaapiWrapper::kEncodeConstantQuantizationParameter,
           VAProfileVP9Profile0) == VAEntrypointEncSliceLP) {
     EXPECT_EQ(scalability_modes_vp9_profile0, kSupportedTemporalAndKeySVC);
@@ -665,14 +658,14 @@ TEST_P(VaapiVppTest, BlitWithVAAllocatedSurfaces) {
 
   auto scoped_surfaces = wrapper->CreateScopedVASurfaces(
       va_rt_format_in, kInputSize, {VaapiWrapper::SurfaceUsageHint::kGeneric},
-      1u, /*visible_size=*/absl::nullopt, /*va_fourcc=*/absl::nullopt);
+      1u, /*visible_size=*/std::nullopt, /*va_fourcc=*/std::nullopt);
   ASSERT_FALSE(scoped_surfaces.empty());
   std::unique_ptr<ScopedVASurface> scoped_surface_in =
       std::move(scoped_surfaces[0]);
 
   scoped_surfaces = wrapper->CreateScopedVASurfaces(
       va_rt_format_out, kOutputSize, {VaapiWrapper::SurfaceUsageHint::kGeneric},
-      1u, /*visible_size=*/absl::nullopt, /*va_fourcc=*/absl::nullopt);
+      1u, /*visible_size=*/std::nullopt, /*va_fourcc=*/std::nullopt);
   ASSERT_FALSE(scoped_surfaces.empty());
   std::unique_ptr<ScopedVASurface> scoped_surface_out =
       std::move(scoped_surfaces[0]);
@@ -779,7 +772,7 @@ TEST_P(VaapiMinigbmTest, AllocateAndCompareWithMinigbm) {
   auto scoped_surfaces = wrapper->CreateScopedVASurfaces(
       va_rt_format, resolution, {VaapiWrapper::SurfaceUsageHint::kVideoDecoder},
       1u,
-      /*visible_size=*/absl::nullopt, /*va_fourcc=*/absl::nullopt);
+      /*visible_size=*/std::nullopt, /*va_fourcc=*/std::nullopt);
   ASSERT_FALSE(scoped_surfaces.empty());
   const auto scoped_va_surface = std::move(scoped_surfaces[0]);
   wrapper->DestroyContext();
@@ -858,7 +851,8 @@ TEST_P(VaapiMinigbmTest, AllocateAndCompareWithMinigbm) {
           base::checked_cast<uint32_t>(scoped_va_surface->size().width()));
     } else {
       const auto expected_rounded_up_pitch =
-          base::bits::AlignUp(scoped_va_surface->size().width(), 2);
+          base::bits::AlignUpDeprecatedDoNotUse(
+              scoped_va_surface->size().width(), 2);
       EXPECT_GE(va_descriptor.layers[i].pitch[0],
                 base::checked_cast<uint32_t>(expected_rounded_up_pitch));
     }
@@ -958,17 +952,6 @@ INSTANTIATE_TEST_SUITE_P(
 
 int main(int argc, char** argv) {
   base::TestSuite test_suite(argc, argv);
-
-#if BUILDFLAG(IS_OZONE) && BUILDFLAG(IS_LINUX)
-  // Initialize Ozone so that the VADisplayState can decide if we're running
-  // on top of a platform that can deal with VA-API buffers.
-  // TODO(b/230370976): we may no longer need to initialize Ozone since we
-  // don't use it for buffer allocation.
-  ui::OzonePlatform::InitParams params;
-  params.single_process = true;
-  ui::OzonePlatform::InitializeForUI(params);
-  ui::OzonePlatform::InitializeForGPU(params);
-#endif
 
   // PreSandboxInitialization() loads and opens the driver, queries its
   // capabilities and fills in the VASupportedProfiles.

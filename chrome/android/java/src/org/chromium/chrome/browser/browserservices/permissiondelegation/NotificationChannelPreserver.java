@@ -6,6 +6,8 @@ package org.chromium.chrome.browser.browserservices.permissiondelegation;
 
 import android.os.Build;
 
+import dagger.Lazy;
+
 import org.chromium.chrome.browser.notifications.NotificationChannelStatus;
 import org.chromium.chrome.browser.notifications.channels.ChromeChannelDefinitions;
 import org.chromium.chrome.browser.notifications.channels.SiteChannelsManager;
@@ -14,8 +16,6 @@ import org.chromium.components.embedder_support.util.Origin;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
-
-import dagger.Lazy;
 
 /**
  * If an origin is associated with an installed webapp (TWAs on Android O+, WebAPKs on Android T+)
@@ -62,12 +62,14 @@ public class NotificationChannelPreserver {
             return;
         }
 
-        assert status == NotificationChannelStatus.ENABLED ||
-                status == NotificationChannelStatus.BLOCKED;
+        assert status == NotificationChannelStatus.ENABLED
+                || status == NotificationChannelStatus.BLOCKED;
 
         @ContentSettingValues
-        int settingValue = status == NotificationChannelStatus.ENABLED ? ContentSettingValues.ALLOW
-                                                                       : ContentSettingValues.BLOCK;
+        int settingValue =
+                status == NotificationChannelStatus.ENABLED
+                        ? ContentSettingValues.ALLOW
+                        : ContentSettingValues.BLOCK;
         mStore.setPreInstallNotificationPermission(origin, settingValue);
         mSiteChannelsManager.deleteSiteChannel(channelId);
     }
@@ -97,9 +99,7 @@ public class NotificationChannelPreserver {
         preserver.get().deleteChannel(origin);
     }
 
-    /**
-     * Similar to {@link #deleteChannelIfNeeded}, but calling {@link #restoreChannel}.
-     */
+    /** Similar to {@link #deleteChannelIfNeeded}, but calling {@link #restoreChannel}. */
     static void restoreChannelIfNeeded(
             Lazy<NotificationChannelPreserver> preserver, Origin origin) {
         if (beforeAndroidO()) return;

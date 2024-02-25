@@ -6,7 +6,6 @@
 
 import logging
 import os
-from functools import reduce
 
 from core import benchmark_utils
 from core import benchmark_finders
@@ -44,7 +43,8 @@ def validate_story_names(benchmarks, test_expectations):
   for benchmark in benchmarks:
     if benchmark.Name() in CLUSTER_TELEMETRY_BENCHMARKS:
       continue
-    story_set = benchmark_utils.GetBenchmarkStorySet(benchmark())
+    story_set = benchmark_utils.GetBenchmarkStorySet(benchmark(),
+                                                     exhaustive=True)
     stories.extend([benchmark.Name() + '/' + s.name for s in story_set.stories])
   broken_expectations = test_expectations.check_for_broken_expectations(stories)
   unused_patterns = ''
@@ -69,19 +69,6 @@ def validate_expectations_component_tags(test_expectations):
                "mobile and desktop condition tags") % e.lineno)
 
 
-def validate_tag_declaration_lists(tag_sets):
-  tags_set = set(reduce(lambda x, y: list(x) + list(y), tag_sets))
-  for tag in tags_set:
-    assert tag in SYSTEM_CONDITION_TAGS, (
-        "Tag %s is not in Telemetry's set of allowable condition tags, "
-        "either remove it from expectations.config or add it to Telemetry's "
-        "set of allowable tags." % tag)
-  for tag in SYSTEM_CONDITION_TAGS:
-    assert tag in tags_set, (
-        "Tag %s is not declared in expectations.config, "
-        "please declare it the top of the file" % tag)
-
-
 def validate_supported_platform_lists(benchmarks):
   for b in benchmarks:
     assert all(tag.lower() in SYSTEM_CONDITION_TAGS
@@ -99,7 +86,6 @@ def main():
   if ret:
     logging.error(msg)
     return ret
-  #validate_tag_declaration_lists(test_expectations.tag_sets)
   validate_supported_platform_lists(benchmarks)
   validate_story_names(benchmarks, test_expectations)
   validate_expectations_component_tags(test_expectations)

@@ -6,34 +6,35 @@
 #define COMPONENTS_AUTOFILL_CORE_BROWSER_DATA_MODEL_AUTOFILL_PROFILE_COMPARATOR_H_
 
 #include <memory>
+#include <optional>
 #include <set>
 #include <string>
+#include <string_view>
 
 #include "base/containers/flat_map.h"
 #include "base/strings/string_piece.h"
 #include "components/autofill/core/browser/data_model/address.h"
 #include "components/autofill/core/browser/data_model/autofill_profile.h"
 #include "components/autofill/core/browser/data_model/contact_info.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace autofill {
 
 struct ProfileValueDifference {
   // The type of the field that is different.
-  ServerFieldType type;
+  FieldType type;
   // The original value.
   std::u16string first_value;
   // The new value.
   std::u16string second_value;
-  bool operator==(const ProfileValueDifference& right) const;
+  bool operator==(const ProfileValueDifference& right) const = default;
 };
 
-ServerFieldTypeSet GetUserVisibleTypes();
+FieldTypeSet GetUserVisibleTypes();
 
 // A utility class to assist in the comparison of AutofillProfile data.
 class AutofillProfileComparator {
  public:
-  explicit AutofillProfileComparator(const base::StringPiece& app_locale);
+  explicit AutofillProfileComparator(const std::string_view& app_locale);
 
   AutofillProfileComparator(const AutofillProfileComparator&) = delete;
   AutofillProfileComparator& operator=(const AutofillProfileComparator&) =
@@ -84,17 +85,16 @@ class AutofillProfileComparator {
   static std::vector<ProfileValueDifference> GetProfileDifference(
       const AutofillProfile& first_profile,
       const AutofillProfile& second_profile,
-      ServerFieldTypeSet types,
+      FieldTypeSet types,
       const std::string& app_locale);
 
   // Same as `GetProfileDifference()` but returns a map that maps the type to a
   // pair of strings that contain the corresponding value from the first and
   // second profile.
-  static base::flat_map<ServerFieldType,
-                        std::pair<std::u16string, std::u16string>>
+  static base::flat_map<FieldType, std::pair<std::u16string, std::u16string>>
   GetProfileDifferenceMap(const AutofillProfile& first_profile,
                           const AutofillProfile& second_profile,
-                          ServerFieldTypeSet types,
+                          FieldTypeSet types,
                           const std::string& app_locale);
 
   // Get the difference of two profiles for settings-visible values.
@@ -107,8 +107,7 @@ class AutofillProfileComparator {
   // Same as `GetSettingsVisibleProfileDifference()` but returns a map that maps
   // the type to a pair of strings that contain the corresponding value from the
   // first and second profile.
-  static base::flat_map<ServerFieldType,
-                        std::pair<std::u16string, std::u16string>>
+  static base::flat_map<FieldType, std::pair<std::u16string, std::u16string>>
   GetSettingsVisibleProfileDifferenceMap(const AutofillProfile& first_profile,
                                          const AutofillProfile& second_profile,
                                          const std::string& app_locale);
@@ -200,15 +199,6 @@ class AutofillProfileComparator {
                       const AutofillProfile& p2,
                       Address& address) const;
 
-  // Populates |birthdate| with the result of merging the birthdate in |p1| and
-  // |p2|. Returns true if successful. Expects that |p1| and |p2| have
-  // already been found to be mergeable.
-  //
-  // Heuristic: For each component (day, month, year), take the non empty one.
-  bool MergeBirthdates(const AutofillProfile& p1,
-                       const AutofillProfile& p2,
-                       Birthdate& birthdate) const;
-
   // App locale used when this comparator instance was created.
   const std::string app_locale() const { return app_locale_; }
 
@@ -298,16 +288,6 @@ class AutofillProfileComparator {
   // the addresses.
   bool HaveMergeableAddresses(const AutofillProfile& p1,
                               const AutofillProfile& p2) const;
-
-  // Returns true if |p1| and |p2| have birthdates which are equivalent for
-  // the purposes of merging the two profiles. This means that for every
-  // birthdate component (day, month, year), either one of them is empty or they
-  // are equal.
-  //
-  // Note that this method does not provide any guidance on actually merging
-  // the birthdates.
-  bool HaveMergeableBirthdates(const AutofillProfile& p1,
-                               const AutofillProfile& p2) const;
 
   // Populates |name_info| with the result of merging the Chinese, Japanese or
   // Korean names in |p1| and |p2|. Returns true if successful. Expects that

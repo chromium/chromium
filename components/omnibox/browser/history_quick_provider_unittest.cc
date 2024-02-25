@@ -84,8 +84,12 @@ void WaitForURLsDeletedNotification(history::HistoryService* history_service) {
 // thread's message loop when done.
 class GetURLTask : public history::HistoryDBTask {
  public:
-  GetURLTask(const GURL& url, bool* result_storage)
-      : result_storage_(result_storage), url_(url) {}
+  GetURLTask(const GURL& url,
+             bool* result_storage,
+             base::OnceClosure quit_closure)
+      : result_storage_(result_storage),
+        url_(url),
+        quit_closure_(std::move(quit_closure)) {}
   GetURLTask(const GetURLTask&) = delete;
   GetURLTask& operator=(const GetURLTask&) = delete;
 
@@ -95,15 +99,14 @@ class GetURLTask : public history::HistoryDBTask {
     return true;
   }
 
-  void DoneRunOnMainThread() override {
-    base::RunLoop::QuitCurrentWhenIdleDeprecated();
-  }
+  void DoneRunOnMainThread() override { std::move(quit_closure_).Run(); }
 
  private:
   ~GetURLTask() override = default;
 
   raw_ptr<bool> result_storage_;
   const GURL url_;
+  base::OnceClosure quit_closure_;
 };
 
 }  // namespace
@@ -212,8 +215,8 @@ void HistoryQuickProviderTest::SetUp() {
       std::make_unique<TemplateURLService>(nullptr, 0));
 
   client_->set_in_memory_url_index(std::make_unique<InMemoryURLIndex>(
-      client_->GetLocalOrSyncableBookmarkModel(), client_->GetHistoryService(),
-      nullptr, history_dir_.GetPath(), SchemeSet()));
+      client_->GetBookmarkModel(), client_->GetHistoryService(), nullptr,
+      history_dir_.GetPath(), SchemeSet()));
   client_->GetInMemoryURLIndex()->Init();
 
   // Block until History has processed InMemoryURLIndex initialization.
@@ -225,6 +228,7 @@ void HistoryQuickProviderTest::SetUp() {
 }
 
 void HistoryQuickProviderTest::TearDown() {
+  ac_matches_.clear();
   provider_ = nullptr;
   client_.reset();
   task_environment_.RunUntilIdle();
@@ -417,13 +421,15 @@ void HistoryQuickProviderTest::RunTestWithCursor(
 bool HistoryQuickProviderTest::GetURLProxy(const GURL& url) {
   base::CancelableTaskTracker task_tracker;
   bool result = false;
+  base::RunLoop loop;
   client_->GetHistoryService()->ScheduleDBTask(
       FROM_HERE,
-      std::unique_ptr<history::HistoryDBTask>(new GetURLTask(url, &result)),
+      std::unique_ptr<history::HistoryDBTask>(
+          new GetURLTask(url, &result, loop.QuitWhenIdleClosure())),
       &task_tracker);
   // Run the message loop until GetURLTask::DoneRunOnMainThread stops it.  If
   // the test hangs, DoneRunOnMainThread isn't being invoked correctly.
-  base::RunLoop().Run();
+  loop.Run();
   return result;
 }
 
@@ -584,8 +590,8 @@ TEST_F(HistoryQuickProviderTest, ContentsClass) {
   // Verify that contents_class divides the string in the right places.
   // [22, 24) is the "第二".  All the other pairs are the "e3".
   ACMatchClassifications contents_class(ac_matches()[0].contents_class);
-  size_t expected_offsets[] = {0,  22, 24, 31, 33, 40, 42, 49,
-                               51, 58, 60, 67, 69, 76, 78};
+  size_t expected_offsets[] = {0,  22, 24, 31, 33, 40, 42, 49, 51, 58,
+                               60, 67, 69, 76, 78, 85, 86, 94, 95};
   // ScoredHistoryMatch may not highlight all the occurrences of these terms
   // because it only highlights terms at word breaks, and it only stores word
   // breaks up to some specified number of characters (50 at the time of this

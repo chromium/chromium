@@ -81,23 +81,23 @@ ColorTransform AlphaBlend(ColorTransform foreground_transform,
 ColorTransform BlendForMinContrast(
     ColorTransform foreground_transform,
     ColorTransform background_transform,
-    absl::optional<ColorTransform> high_contrast_foreground_transform,
+    std::optional<ColorTransform> high_contrast_foreground_transform,
     float contrast_ratio) {
   const auto generator =
       [](ColorTransform foreground_transform,
          ColorTransform background_transform,
-         absl::optional<ColorTransform> high_contrast_foreground_transform,
+         std::optional<ColorTransform> high_contrast_foreground_transform,
          float contrast_ratio, SkColor input_color, const ColorMixer& mixer) {
         const SkColor foreground_color =
             foreground_transform.Run(input_color, mixer);
         const SkColor background_color =
             background_transform.Run(input_color, mixer);
-        const absl::optional<SkColor> high_contrast_foreground =
+        const std::optional<SkColor> high_contrast_foreground =
             high_contrast_foreground_transform.has_value()
-                ? absl::make_optional(
+                ? std::make_optional(
                       high_contrast_foreground_transform.value().Run(
                           input_color, mixer))
-                : absl::nullopt;
+                : std::nullopt;
         const SkColor result_color =
             color_utils::BlendForMinContrast(foreground_color, background_color,
                                              high_contrast_foreground,
@@ -122,7 +122,7 @@ ColorTransform BlendForMinContrast(
 
 ColorTransform BlendForMinContrastWithSelf(ColorTransform transform,
                                            float contrast_ratio) {
-  return BlendForMinContrast(transform, transform, absl::nullopt,
+  return BlendForMinContrast(transform, transform, std::nullopt,
                              contrast_ratio);
 }
 
@@ -154,7 +154,7 @@ ColorTransform ContrastInvert(ColorTransform transform) {
         color_utils::GetContrastRatio(foreground, far_endpoint);
     const SkColor result_color =
         color_utils::BlendForMinContrast(foreground, near_endpoint,
-                                         absl::nullopt, contrast_ratio)
+                                         std::nullopt, contrast_ratio)
             .color;
     DVLOG(2) << "ColorTransform ContrastInvert:"
              << " Input Color: " << SkColorName(input_color)

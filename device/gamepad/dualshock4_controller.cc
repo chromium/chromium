@@ -7,6 +7,7 @@
 #include <algorithm>
 #include <array>
 
+#include "base/containers/span.h"
 #include "base/metrics/crc32.h"
 #include "base/numerics/safe_conversions.h"
 #include "device/gamepad/gamepad_data_fetcher.h"
@@ -121,9 +122,9 @@ uint32_t ComputeDualshock4Checksum(base::span<const uint8_t> report_data) {
   // The Bluetooth report checksum includes a constant header byte not contained
   // in the report data.
   constexpr uint8_t bt_header = 0xa2;
-  uint32_t crc = base::Crc32(0xffffffff, &bt_header, 1);
+  uint32_t crc = base::Crc32(0xffffffff, base::make_span(&bt_header, 1u));
   // Extend the checksum with the contents of the report.
-  return ~base::Crc32(crc, report_data.data(), report_data.size_bytes());
+  return ~base::Crc32(crc, report_data);
 }
 
 // Scales |value| with range [0,255] to a float within [-1.0,+1.0].
@@ -170,7 +171,7 @@ void ReadTouchCoordinates(base::span<const uint8_t> ds4_touch_data_span,
 template <typename Transform>
 void ProcessTouchData(base::span<const TouchPadData> touchpad_data,
                       Transform& id_transform,
-                      absl::optional<uint32_t>& initial_touch_id,
+                      std::optional<uint32_t>& initial_touch_id,
                       Gamepad* pad) {
   pad->touch_events_length = 0;
   GamepadTouch* touches = pad->touch_events;
@@ -389,7 +390,7 @@ void Dualshock4Controller::SetVibrationBluetooth(double strong_magnitude,
   // The last four bytes of the report hold a CRC32 checksum. Compute the
   // checksum and store it in little-endian byte order.
   uint32_t crc = ComputeDualshock4Checksum(
-      base::make_span(control_report.data(), control_report.size() - 4));
+      base::span(control_report).first(control_report.size() - 4));
   control_report[control_report.size() - 4] = crc & 0xff;
   control_report[control_report.size() - 3] = (crc >> 8) & 0xff;
   control_report[control_report.size() - 2] = (crc >> 16) & 0xff;

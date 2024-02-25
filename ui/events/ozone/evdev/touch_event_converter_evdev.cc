@@ -17,16 +17,19 @@
 
 #include "base/command_line.h"
 #include "base/feature_list.h"
+#include "base/files/file_enumerator.h"
+#include "base/files/file_path.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
-
 #include "base/time/time.h"
 #include "base/trace_event/trace_event.h"
+
 #include "ui/events/devices/device_data_manager.h"
 #include "ui/events/devices/device_util_linux.h"
 #include "ui/events/event.h"
@@ -108,6 +111,47 @@ float GetFingerSizeScale(int32_t finger_size_res, int32_t screen_size_res) {
 
 const int kTrackingIdForUnusedSlot = -1;
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+struct SupportedHidrawDevice {
+  std::string name;
+  uint16_t vendor_id;
+  uint16_t product_id;
+  ui::HeatmapPalmDetector::ModelId model_id;
+};
+
+// Returns a list of supported hidraw spi devices.
+std::vector<SupportedHidrawDevice> GetSupportedHidrawDevices() {
+  return {{
+      .name = "spi 04F3:4222",
+      .vendor_id = 0x04F3,
+      .product_id = 0x4222,
+      .model_id = ui::HeatmapPalmDetector::ModelId::kRex,
+  }};
+}
+
+ui::HeatmapPalmDetector::ModelId GetHidrawModelId(
+    const ui::EventDeviceInfo& info) {
+  // Do not initialize hidraw device for stylus devices.
+  if (info.HasKeyEvent(BTN_TOOL_PEN)) {
+    return ui::HeatmapPalmDetector::ModelId::kNotSupported;
+  }
+  std::vector<SupportedHidrawDevice> supported_hidraw_devices =
+      GetSupportedHidrawDevices();
+  for (const SupportedHidrawDevice& device : GetSupportedHidrawDevices()) {
+    if (info.name() == device.name && info.vendor_id() == device.vendor_id &&
+        info.product_id() == device.product_id) {
+      return device.model_id;
+    }
+  }
+  return ui::HeatmapPalmDetector::ModelId::kNotSupported;
+}
+
+base::FilePath GetHidrawPath(const base::FilePath& root_path) {
+  return base::FileEnumerator(root_path, false,
+                              base::FileEnumerator::DIRECTORIES)
+      .Next();
+}
+#endif
 }  // namespace
 
 namespace ui {
@@ -299,6 +343,25 @@ void TouchEventConverterEvdev::Initialize(const EventDeviceInfo& info) {
     MaybeCancelAllTouches();
 
   false_touch_finder_ = FalseTouchFinder::Create(GetTouchscreenSize());
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  if (base::FeatureList::IsEnabled(kEnableHeatmapPalmDetection)) {
+    hidraw_model_id_ = GetHidrawModelId(info);
+    if (hidraw_model_id_ != HeatmapPalmDetector::ModelId::kNotSupported) {
+      std::string hidraw_device_dir =
+          base::StrCat({"/sys/class/input/", path_.BaseName().value(),
+                        "/device/device/hidraw/"});
+      hidraw_device_path_ = base::StrCat(
+          {"/dev/", GetHidrawPath(base::FilePath(hidraw_device_dir))
+                        .BaseName()
+                        .value()});
+      auto* palm_detector = HeatmapPalmDetector::GetInstance();
+      if (palm_detector) {
+        palm_detector->Start(hidraw_model_id_, hidraw_device_path_);
+      }
+    }
+  }
+#endif
 }
 
 void TouchEventConverterEvdev::Reinitialize() {
@@ -841,7 +904,7 @@ void TouchEventConverterEvdev::RecordMetrics(base::TimeTicks timestamp) {
 }
 
 void TouchEventConverterEvdev::RecordSession(base::TimeDelta session_length) {
-  session_start_time_ = absl::nullopt;
+  session_start_time_ = std::nullopt;
   if (session_length.InMilliseconds() <= 0) {
     return;
   }

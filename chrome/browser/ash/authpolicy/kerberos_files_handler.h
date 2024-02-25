@@ -5,29 +5,22 @@
 #ifndef CHROME_BROWSER_ASH_AUTHPOLICY_KERBEROS_FILES_HANDLER_H_
 #define CHROME_BROWSER_ASH_AUTHPOLICY_KERBEROS_FILES_HANDLER_H_
 
+#include <optional>
 #include <string>
 
 #include "base/functional/callback.h"
 #include "base/memory/weak_ptr.h"
 #include "components/prefs/pref_member.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ash {
 
 // Kerberos defaults for canonicalization SPN. (see
 // https://web.mit.edu/kerberos/krb5-1.12/doc/admin/conf_files/krb5_conf.html)
 // Exported for browsertests.
-extern const char kKrb5CnameSettings[];
 
-// Environment variable pointing to credential cache file.
-extern const char kKrb5CCEnvName[];
-// Environment variable pointing to Kerberos config file.
-extern const char kKrb5ConfEnvName[];
-// Prefix for KRB5CCNAME environment variable. Defines credential cache type.
-extern const char kKrb5CCFilePrefix[];
-// Directory in the user home to store Kerberos files.
+// Directory in the user's cryptohome where Kerberos files are stored.
 extern const char kKrb5Directory[];
-// Credential cache file name.
+// Kerberos Credential cache file name.
 extern const char kKrb5CCFile[];
 // Kerberos config file name.
 extern const char kKrb5ConfFile[];
@@ -44,8 +37,8 @@ class KerberosFilesHandler {
   virtual ~KerberosFilesHandler();
 
   // Writes the Kerberos credentials to disk asynchronously.
-  void SetFiles(absl::optional<std::string> krb5cc,
-                absl::optional<std::string> krb5conf);
+  void SetFiles(std::optional<std::string> krb5cc,
+                std::optional<std::string> krb5conf);
 
   // Deletes the Kerberos credentials from disk asynchronously.
   virtual void DeleteFiles();

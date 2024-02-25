@@ -2,11 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {assert} from 'chrome://resources/js/assert_ts.js';
+import {assert} from 'chrome://resources/js/assert.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 
 import {pageVisibility} from './page_visibility.js';
-import {Route, Router, SettingsRoutes} from './router.js';
+import type {SettingsRoutes} from './router.js';
+import {Route, Router} from './router.js';
 
 /**
  * Add all of the child routes that originate from the privacy route,
@@ -18,7 +19,7 @@ function addPrivacyChildRoutes(r: Partial<SettingsRoutes>) {
   r.CLEAR_BROWSER_DATA.isNavigableDialog = true;
 
   if (loadTimeData.getBoolean('enableSafetyHub')) {
-    r.SAFETY_HUB = r.PRIVACY.createChild('/safetyHub');
+    r.SAFETY_HUB = r.PRIVACY.createChild('/safetyCheck');
   } else {
     r.SAFETY_CHECK = r.PRIVACY.createSection('/safetyCheck', 'safetyCheck');
   }
@@ -27,14 +28,19 @@ function addPrivacyChildRoutes(r: Partial<SettingsRoutes>) {
     r.PRIVACY_GUIDE = r.PRIVACY.createChild('guide');
   }
   r.SITE_SETTINGS = r.PRIVACY.createChild('/content');
-  r.COOKIES = r.PRIVACY.createChild('/cookies');
   r.SECURITY = r.PRIVACY.createChild('/security');
 
-  if (loadTimeData.getBoolean('isPrivacySandboxSettings4') &&
-      !loadTimeData.getBoolean('isPrivacySandboxRestricted')) {
+  r.TRACKING_PROTECTION = r.PRIVACY.createChild('/trackingProtection');
+  r.COOKIES = r.PRIVACY.createChild('/cookies');
+
+  if (!loadTimeData.getBoolean('isPrivacySandboxRestricted')) {
     r.PRIVACY_SANDBOX = r.PRIVACY.createChild('/adPrivacy');
     r.PRIVACY_SANDBOX_TOPICS =
         r.PRIVACY_SANDBOX.createChild('/adPrivacy/interests');
+    if (loadTimeData.getBoolean('isProactiveTopicsBlockingEnabled')) {
+      r.PRIVACY_SANDBOX_MANAGE_TOPICS =
+          r.PRIVACY_SANDBOX_TOPICS.createChild('/adPrivacy/interests/manage');
+    }
     r.PRIVACY_SANDBOX_FLEDGE =
         r.PRIVACY_SANDBOX.createChild('/adPrivacy/sites');
     r.PRIVACY_SANDBOX_AD_MEASUREMENT =
@@ -60,11 +66,6 @@ function addPrivacyChildRoutes(r: Partial<SettingsRoutes>) {
   } else {
     r.SECURITY_KEYS_PHONES = r.SECURITY.createChild('/securityKeys/phones');
     // </if>
-  }
-
-  if (!loadTimeData.getBoolean(
-          'isPerformanceSettingsPreloadingSubpageEnabled')) {
-    r.PRELOADING = r.COOKIES.createChild('/preloading');
   }
 
   r.SITE_SETTINGS_ALL = r.SITE_SETTINGS.createChild('all');
@@ -94,6 +95,7 @@ function addPrivacyChildRoutes(r: Partial<SettingsRoutes>) {
   r.SITE_SETTINGS_IMAGES = r.SITE_SETTINGS.createChild('images');
   r.SITE_SETTINGS_MIXEDSCRIPT = r.SITE_SETTINGS.createChild('insecureContent');
   r.SITE_SETTINGS_JAVASCRIPT = r.SITE_SETTINGS.createChild('javascript');
+  r.SITE_SETTINGS_JAVASCRIPT_JIT = r.SITE_SETTINGS.createChild('v8');
   r.SITE_SETTINGS_SOUND = r.SITE_SETTINGS.createChild('sound');
   r.SITE_SETTINGS_SENSORS = r.SITE_SETTINGS.createChild('sensors');
   r.SITE_SETTINGS_LOCATION = r.SITE_SETTINGS.createChild('location');
@@ -104,6 +106,9 @@ function addPrivacyChildRoutes(r: Partial<SettingsRoutes>) {
   r.SITE_SETTINGS_USB_DEVICES = r.SITE_SETTINGS.createChild('usbDevices');
   r.SITE_SETTINGS_HID_DEVICES = r.SITE_SETTINGS.createChild('hidDevices');
   r.SITE_SETTINGS_SERIAL_PORTS = r.SITE_SETTINGS.createChild('serialPorts');
+  if (loadTimeData.getBoolean('enableWebPrintingContentSetting')) {
+    r.SITE_SETTINGS_WEB_PRINTING = r.SITE_SETTINGS.createChild('webPrinting');
+  }
   if (loadTimeData.getBoolean('enableWebBluetoothNewPermissionsBackend')) {
     r.SITE_SETTINGS_BLUETOOTH_DEVICES =
         r.SITE_SETTINGS.createChild('bluetoothDevices');
@@ -120,9 +125,7 @@ function addPrivacyChildRoutes(r: Partial<SettingsRoutes>) {
     r.SITE_SETTINGS_FEDERATED_IDENTITY_API =
         r.SITE_SETTINGS.createChild('federatedIdentityApi');
   }
-  if (loadTimeData.getBoolean('isPrivacySandboxSettings4')) {
-    r.SITE_SETTINGS_SITE_DATA = r.SITE_SETTINGS.createChild('siteData');
-  }
+  r.SITE_SETTINGS_SITE_DATA = r.SITE_SETTINGS.createChild('siteData');
   r.SITE_SETTINGS_VR = r.SITE_SETTINGS.createChild('vr');
   if (loadTimeData.getBoolean('enableExperimentalWebPlatformFeatures')) {
     r.SITE_SETTINGS_BLUETOOTH_SCANNING =
@@ -132,11 +135,17 @@ function addPrivacyChildRoutes(r: Partial<SettingsRoutes>) {
   r.SITE_SETTINGS_WINDOW_MANAGEMENT =
       r.SITE_SETTINGS.createChild('windowManagement');
   r.SITE_SETTINGS_FILE_SYSTEM_WRITE = r.SITE_SETTINGS.createChild('filesystem');
+  r.SITE_SETTINGS_FILE_SYSTEM_WRITE_DETAILS =
+      r.SITE_SETTINGS_FILE_SYSTEM_WRITE.createChild('siteDetails');
   r.SITE_SETTINGS_LOCAL_FONTS = r.SITE_SETTINGS.createChild('localFonts');
 
   if (loadTimeData.getBoolean('enablePermissionStorageAccessApi')) {
     r.SITE_SETTINGS_STORAGE_ACCESS =
         r.SITE_SETTINGS.createChild('storageAccess');
+  }
+  if (loadTimeData.getBoolean('enableAutomaticFullscreenContentSetting')) {
+    r.SITE_SETTINGS_AUTOMATIC_FULLSCREEN =
+        r.SITE_SETTINGS.createChild('automaticFullscreen');
   }
 }
 
@@ -165,9 +174,18 @@ function createBrowserSettingsRoutes(): SettingsRoutes {
 
     r.SYNC = r.PEOPLE.createChild('/syncSetup');
     r.SYNC_ADVANCED = r.SYNC.createChild('/syncSetup/advanced');
+    if (loadTimeData.getBoolean('enablePageContentSetting')) {
+      r.PAGE_CONTENT = r.SYNC.createChild('/syncSetup/pageContent');
+    }
   }
 
   const visibility = pageVisibility || {};
+
+  if (visibility.ai !== false &&
+      loadTimeData.getBoolean('showAdvancedFeaturesMainControl')) {
+    r.AI = r.BASIC.createSection(
+        '/ai', 'ai', loadTimeData.getString('aiPageTitle'));
+  }
 
   // <if expr="not chromeos_ash">
   if (visibility.people !== false) {
@@ -272,10 +290,6 @@ function createBrowserSettingsRoutes(): SettingsRoutes {
       r.PERFORMANCE = r.BASIC.createSection(
           '/performance', 'performance',
           loadTimeData.getString('performancePageTitle'));
-      if (loadTimeData.getBoolean(
-              'isPerformanceSettingsPreloadingSubpageEnabled')) {
-        r.PRELOADING = r.PERFORMANCE.createChild('/preloading');
-      }
     }
 
     // <if expr="_google_chrome">

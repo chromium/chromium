@@ -181,12 +181,12 @@ class UnitTest(unittest.TestCase):
     json_args = {
         'test_cases': ['test1'],
         'restart': 'true',
-        'xcode_parallelization': True,
-        'shards': 2
+        'xcodebuild_sim_runner': True,
+        'clones': 2
     }
 
     cmd = [
-        '--shards',
+        '--clones',
         '1',
         '--platform',
         'iPhone X',
@@ -202,14 +202,14 @@ class UnitTest(unittest.TestCase):
         'some/dir'
     ]
 
-    # shards should be 2, since json arg takes precedence over cmd line
+    # clones should be 2, since json arg takes precedence over cmd line
     runner = run.Runner()
     runner.parse_args(cmd)
     # Empty array
     self.assertEquals(len(runner.args.env_var), 0)
-    self.assertTrue(runner.args.xcode_parallelization)
+    self.assertTrue(runner.args.xcodebuild_sim_runner)
     self.assertTrue(runner.args.restart)
-    self.assertEquals(runner.args.shards, 2)
+    self.assertEquals(runner.args.clones, 2)
 
   def test_parse_args_record_video_without_xcode_parallelization(self):
     """
@@ -515,12 +515,10 @@ class RunnerInstallXcodeTest(test_runner_test.TestCase):
   @mock.patch(
       'xcode_util.is_runtime_builtin', autospec=True, return_value=False)
   @mock.patch('mac_util.is_macos_13_or_higher', autospec=True)
-  @mock.patch('iossim_util.delete_simulator_runtime_and_wait', autospec=True)
   def test_legacy_xcode_macos13_runtime_not_builtin(
-      self, mock_delete_simulator_runtime_and_wait, mock_macos_13_or_higher,
-      mock_is_runtime_builtin, mock_move_runtime, mock_install_runtime_dmg,
-      mock_install, mock_construct_runtime_cache_folder, mock_tr, _1, _2, _3,
-      _4):
+      self, mock_macos_13_or_higher, mock_is_runtime_builtin, mock_move_runtime,
+      mock_install_runtime_dmg, mock_install,
+      mock_construct_runtime_cache_folder, mock_tr, _1, _2, _3, _4):
     mock_macos_13_or_higher.return_value = True
     mock_construct_runtime_cache_folder.side_effect = lambda a, b: a + b
     test_runner = mock_tr.return_value
@@ -542,7 +540,6 @@ class RunnerInstallXcodeTest(test_runner_test.TestCase):
                                                 'test/runtime-ios-14.4', '14.4',
                                                 'testXcodeVersion')
     self.assertFalse(mock_move_runtime.called)
-    mock_delete_simulator_runtime_and_wait.assert_called_with('14.4')
 
   @mock.patch('test_runner.defaults_delete')
   @mock.patch('json.dump')

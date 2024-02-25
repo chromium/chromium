@@ -2,26 +2,35 @@ import base64
 
 from tests.support.asserts import assert_pdf
 from tests.support.image import cm_to_px, png_dimensions, ImageDifference
-from typing import Any, Mapping
+from typing import Any, Coroutine, Mapping
 
+import asyncio
+import copy
+from datetime import datetime, timedelta
 import pytest
 import pytest_asyncio
+import time
 from webdriver.bidi.error import (
     InvalidArgumentException,
     NoSuchFrameException,
     NoSuchScriptException,
+    NoSuchUserContextException,
+    UnableToSetCookieException,
+    UnderspecifiedStoragePartitionException
 )
 from webdriver.bidi.modules.script import ContextTarget
+from webdriver.error import TimeoutException
 
 
 @pytest_asyncio.fixture
 async def add_preload_script(bidi_session):
     preload_scripts_ids = []
 
-    async def add_preload_script(function_declaration, arguments=None, sandbox=None):
+    async def add_preload_script(function_declaration, arguments=None, contexts=None, sandbox=None):
         script = await bidi_session.script.add_preload_script(
             function_declaration=function_declaration,
             arguments=arguments,
+            contexts=contexts,
             sandbox=sandbox,
         )
         preload_scripts_ids.append(script)
@@ -52,6 +61,39 @@ async def subscribe_events(bidi_session):
             await bidi_session.session.unsubscribe(events=events,
                                                    contexts=contexts)
         except (InvalidArgumentException, NoSuchFrameException):
+            pass
+
+
+@pytest_asyncio.fixture
+async def set_cookie(bidi_session):
+    """
+    Set a cookie and remove them after the test is finished.
+    """
+    cookies = []
+
+    async def set_cookie(cookie, partition=None):
+        partition_descriptor = None
+        set_cookie_result = await bidi_session.storage.set_cookie(cookie=cookie, partition=partition)
+        if set_cookie_result["partitionKey"] != {}:
+            # Make a copy of the partition key, as the original dict is used for assertion.
+            partition_descriptor = copy.deepcopy(set_cookie_result["partitionKey"])
+            partition_descriptor["type"] = "storageKey"
+        # Store the cookie partition to remove the cookie after the test.
+        # The requested partition can be a browsing context, so the returned partition descriptor (it's always of type
+        # "storageKey") is used.
+        cookies.append((copy.deepcopy(cookie), partition_descriptor))
+        return set_cookie_result
+
+    yield set_cookie
+
+    yesterday = datetime.now() - timedelta(1)
+    yesterday_timestamp = time.mktime(yesterday.timetuple())
+
+    for cookie, partition in reversed(cookies):
+        try:
+            cookie["expiry"] = yesterday_timestamp
+            await bidi_session.storage.set_cookie(cookie=cookie, partition=partition)
+        except (InvalidArgumentException, UnableToSetCookieException, UnderspecifiedStoragePartitionException):
             pass
 
 
@@ -102,20 +144,37 @@ def wait_for_event(bidi_session, event_loop):
 
 
 @pytest.fixture
+def wait_for_future_safe(configuration):
+    """Wait for the given future for a given amount of time.
+    Fails gracefully if the future does not resolve within the given timeout."""
+
+    async def wait_for_future_safe(future: Coroutine, timeout: float = 2.0):
+        try:
+            return await asyncio.wait_for(
+                asyncio.shield(future),
+                timeout=timeout * configuration["timeout_multiplier"],
+            )
+        except asyncio.exceptions.TimeoutError:
+            raise TimeoutException("Future did not resolve within the given timeout")
+
+    return wait_for_future_safe
+
+
+@pytest.fixture
 def current_time(bidi_session, top_context):
     """Get the current time stamp in ms from the remote end.
 
     This is required especially when tests are run on different devices like
     for Android, where it's not guaranteed that both machines are in sync.
     """
-    async def _():
+    async def current_time():
         result = await bidi_session.script.evaluate(
             expression="Date.now()",
             target=ContextTarget(top_context["context"]),
             await_promise=True)
         return result["value"]
 
-    return _
+    return current_time
 
 
 @pytest.fixture
@@ -292,6 +351,15 @@ def compare_png_bidi(bidi_session, url):
 
 
 @pytest.fixture
+def current_url(bidi_session):
+    async def current_url(context):
+        contexts = await bidi_session.browsing_context.get_tree(root=context, max_depth=0)
+        return contexts[0]["url"]
+
+    return current_url
+
+
+@pytest.fixture
 def get_element(bidi_session, top_context):
     async def get_element(css_selector, context=top_context):
         result = await bidi_session.script.evaluate(
@@ -368,3 +436,95 @@ def load_static_test_page(bidi_session, url, top_context):
         )
 
     return load_static_test_page
+
+
+@pytest_asyncio.fixture
+async def create_user_context(bidi_session):
+    """Create a user context and ensure it is removed at the end of the test."""
+
+    user_contexts = []
+
+    async def create_user_context():
+        nonlocal user_contexts
+        user_context = await bidi_session.browser.create_user_context()
+        user_contexts.append(user_context)
+
+        return user_context
+
+    yield create_user_context
+
+    # Remove all created user contexts at the end of the test
+    for user_context in user_contexts:
+        try:
+            await bidi_session.browser.remove_user_context(user_context=user_context)
+        except NoSuchUserContextException:
+            # Ignore exceptions in case a specific user context was already
+            # removed during the test.
+            pass
+
+
+@pytest_asyncio.fixture
+async def add_cookie(bidi_session):
+    """
+    Add a cookie with `document.cookie` and remove them after the test is finished.
+    """
+    cookies = []
+
+    async def add_cookie(
+        context,
+        name,
+        value,
+        domain=None,
+        expiry=None,
+        path=None,
+        same_site="none",
+        secure=False,
+    ):
+        cookie_string = f"{name}={value}"
+        cookie = {"name": name, "context": context}
+
+        if domain is not None:
+            cookie_string += f";domain={domain}"
+
+        if expiry is not None:
+            cookie_string += f";expires={expiry}"
+
+        if path is not None:
+            cookie_string += f";path={path}"
+            cookie["path"] = path
+
+        if same_site != "none":
+            cookie_string += f";SameSite={same_site}"
+
+        if secure is True:
+            cookie_string += ";Secure"
+
+        await bidi_session.script.evaluate(
+            expression=f"document.cookie = '{cookie_string}'",
+            target=ContextTarget(context),
+            await_promise=True,
+        )
+
+        cookies.append(cookie)
+
+    yield add_cookie
+
+    for cookie in reversed(cookies):
+        cookie_string = f"""{cookie["name"]}="""
+
+        if "path" in cookie:
+            cookie_string += f""";path={cookie["path"]}"""
+
+        await bidi_session.script.evaluate(
+            expression=f"""document.cookie = '{cookie_string};Max-Age=0'""",
+            target=ContextTarget(cookie["context"]),
+            await_promise=True,
+        )
+
+
+@pytest.fixture
+def domain_value(server_config):
+    def domain_value(domain="", subdomain=""):
+        return server_config["domains"][domain][subdomain]
+
+    return domain_value

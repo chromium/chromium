@@ -12,7 +12,7 @@ include_rules = [
   "+components/download/public/common",
   "+components/file_access",
   "+components/filename_generation",
-  "+components/permissions/features.h",
+  "+components/grit",
   "+components/power_monitor",
   "+components/services/font",
   "+components/services/filesystem",
@@ -27,6 +27,7 @@ include_rules = [
   "+components/link_header_util",
   "+components/metrics",
   "+components/metrics:single_sample_metrics",
+  "+components/miracle_parameter",
   "+components/network_session_configurator/common",
   "+components/offline_pages/buildflags/buildflags.h",
   "+components/offline_pages/core/request_header",
@@ -132,18 +133,19 @@ include_rules = [
 
 specific_include_rules = {
   ".*test\.cc": [
+    "+components/os_crypt/async/browser/test_utils.h",
     "+services/network/test",
   ],
   ".*test_utils\.(h|cc)": [
     "+services/network/test",
   ],
+  "browser_interface_binders\.cc": [
+    "+components/ml/webnn/features.mojom-features.h",
+  ],
   "browser_main_loop\.cc": [
     # TODO(crbug.com/1049894): Remove.
     "+services/network/transitional_url_loader_factory_owner.h",
     "+device/fido/hid/fido_hid_discovery.h",
-  ],
-  "browser_main_loop\.h": [
-    "+ui/ozone/buildflags.h",
   ],
   "browsing_data_(filter_builder|remover)_impl_unittest\.cc": [
     "+services/network/cookie_manager.h",

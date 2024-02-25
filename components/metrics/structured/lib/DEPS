@@ -1,0 +1,15 @@
+# Removes the rules inherited from //components/metrics. Since this library will
+# copied to chromiumos, it can only depend on files included in libchrome. See
+# README.md for more background.
+#
+# See
+# [libchrome docs](https://chromium.googlesource.com/chromiumos/docs/+/HEAD/packages/libchrome.md)
+# for more details.
+noparent = True
+
+include_rules = [
+    "+base",
+    "+crypto",
+    "+third_party/protobuf",
+    "+testing/gtest",
+]

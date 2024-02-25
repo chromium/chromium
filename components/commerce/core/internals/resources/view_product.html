@@ -1,0 +1,84 @@
+<!doctype html>
+<html lang="en" dir="ltr">
+<!--
+Copyright 2024 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+  <head>
+    <meta charset="utf-8">
+    <title>Product URL Viewer</title>
+    <meta name="viewport" content="width=device-width">
+<if expr="is_ios">
+    <!-- TODO(crbug.com/487000): Remove this once injected by web. -->
+    <script src="chrome://resources/js/ios/web_ui.js"></script>
+    <script src="chrome://resources/js/ios/mojo_api.js"></script>
+</if>
+    <style>
+      body {
+        font-family: sans-serif;
+      }
+
+      .url-input {
+        padding: 20px 0px 20px 0px;
+      }
+
+      table {
+        border-collapse: collapse;
+      }
+
+      td {
+        padding: 5px;
+      }
+
+      td:nth-child(1) {
+        text-align: right;
+        font-weight: bold;
+      }
+
+      tr:nth-child(even) {
+        background-color: #eeeeee;
+      }
+
+      tr:nth-child(odd) {
+        background-color: #dddddd;
+      }
+    </style>
+  </head>
+
+  <body>
+    <h1>Product URL Viewer</h1>
+    <div class="description">
+      To see information here, first visit the target URL in a normal tab.
+    </div>
+    <div class="url-input">
+      <span>Product URL: </span>
+      <input id="productUrl" type="text">
+      <button id="loadProductBtn">Load product</button>
+    </div>
+    <div>
+      <table>
+        <tr>
+          <td>Title: </td>
+          <td id="productTitle"></td>
+        </tr>
+        <tr>
+          <td>Cluster Title: </td>
+          <td id="productClusterTitle"></td>
+        </tr>
+        <tr>
+          <td>Cluster ID: </td>
+          <td id="productClusterId"></td>
+        </tr>
+        <tr>
+          <td>Image URL: </td>
+          <td id="productImageUrl"></td>
+        </tr>
+      </table>
+    </div>
+  </body>
+
+  <script type="module" src="view_product.js"></script>
+
+</html>

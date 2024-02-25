@@ -1,0 +1,778 @@
+From e17b326bbf9026308c87ac7d9444aa3b4db73288 Mon Sep 17 00:00:00 2001
+From: Daniel Cheng <dcheng@chromium.org>
+Date: Mon, 11 Sep 2023 00:22:25 -0700
+Subject: [PATCH 09/10] Remove whitespace tokenizer.
+
+It uses the unsafe function `chartorune` and is not needed in Chrome. If
+this patch does not apply, it can be regenerated with:
+
+git rm src/tensorflow_lite_support/custom_ops/kernel/whitespace_tokenizer*
+
+Change-Id: I593c1bf1db662e805f79b6a9ce3d4f8a4d515ea6
+---
+ .../custom_ops/kernel/whitespace_tokenizer.cc | 224 ------------------
+ .../custom_ops/kernel/whitespace_tokenizer.h  |  31 ---
+ .../whitespace_tokenizer_op_resolver.cc       |  32 ---
+ .../kernel/whitespace_tokenizer_op_resolver.h |  34 ---
+ ...hitespace_tokenizer_op_resolver_wrapper.cc |  29 ---
+ .../kernel/whitespace_tokenizer_test.cc       | 189 ---------------
+ .../kernel/whitespace_tokenizer_test.py       | 166 -------------
+ 7 files changed, 705 deletions(-)
+ delete mode 100644 third_party/tflite_support/src/tensorflow_lite_support/custom_ops/kernel/whitespace_tokenizer.cc
+ delete mode 100644 third_party/tflite_support/src/tensorflow_lite_support/custom_ops/kernel/whitespace_tokenizer.h
+ delete mode 100644 third_party/tflite_support/src/tensorflow_lite_support/custom_ops/kernel/whitespace_tokenizer_op_resolver.cc
+ delete mode 100644 third_party/tflite_support/src/tensorflow_lite_support/custom_ops/kernel/whitespace_tokenizer_op_resolver.h
+ delete mode 100644 third_party/tflite_support/src/tensorflow_lite_support/custom_ops/kernel/whitespace_tokenizer_op_resolver_wrapper.cc
+ delete mode 100644 third_party/tflite_support/src/tensorflow_lite_support/custom_ops/kernel/whitespace_tokenizer_test.cc
+ delete mode 100644 third_party/tflite_support/src/tensorflow_lite_support/custom_ops/kernel/whitespace_tokenizer_test.py
+
+diff --git a/third_party/tflite_support/src/tensorflow_lite_support/custom_ops/kernel/whitespace_tokenizer.cc b/third_party/tflite_support/src/tensorflow_lite_support/custom_ops/kernel/whitespace_tokenizer.cc
+deleted file mode 100644
+index dad2f0004be06..0000000000000
+--- a/third_party/tflite_support/src/tensorflow_lite_support/custom_ops/kernel/whitespace_tokenizer.cc
++++ /dev/null
+@@ -1,224 +0,0 @@
+-/* Copyright 2020 The TensorFlow Authors. All Rights Reserved.
+-
+-Licensed under the Apache License, Version 2.0 (the "License");
+-you may not use this file except in compliance with the License.
+-You may obtain a copy of the License at
+-
+-    http://www.apache.org/licenses/LICENSE-2.0
+-
+-Unless required by applicable law or agreed to in writing, software
+-distributed under the License is distributed on an "AS IS" BASIS,
+-WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+-See the License for the specific language governing permissions and
+-limitations under the License.
+-==============================================================================*/
+-
+-#include "tensorflow_lite_support/custom_ops/kernel/whitespace_tokenizer.h"
+-
+-#include <algorithm>
+-#include <utility>
+-#include <vector>
+-
+-#include "tensorflow/lite/context.h"
+-#include "tensorflow/lite/kernels/kernel_util.h"
+-#include "tensorflow/lite/string_util.h"
+-#include "libutf/utf.h"
+-
+-constexpr int kInput = 0;
+-constexpr int kOutputValues = 0;
+-constexpr int kOutputRowSplitsStart = 1;
+-
+-namespace tflite {
+-namespace ops {
+-namespace custom {
+-namespace whitespace_tokenizer {
+-
+-// This TFLite op implements a whitespace tokenizer, and can output the
+-// tokens as either a padded tensor or a ragged tensor.
+-//
+-// If we're outputting a padded tensor, our outputs are:
+-// * A string tensor
+-//
+-// If we're outputting a ragged tensor, our outputs are:
+-// * A string tensor (the innermost values of the ragged tensor)
+-// * N int64 tensors (the row_splits of the ragged tensor, where N is the
+-//   rank of the input tensor)
+-
+-inline bool OutputIsPaddedTensor(TfLiteNode* node) {
+-  return NumOutputs(node) == 1;
+-}
+-
+-inline int charntorune(Rune* r, const char* s, int n) {
+-  const int bytes_read = chartorune(r, const_cast<char *>(s));
+-  if (bytes_read > n) {
+-    *r = Runeerror;
+-    return 0;
+-  }
+-  return bytes_read;
+-}
+-
+-std::vector<std::pair<const char*, int>> Tokenize(StringRef str) {
+-  const char* p = str.str;
+-  int n = str.len;
+-
+-  std::vector<std::pair<const char*, int>> tokens;
+-  const char* start = nullptr;
+-  while (n > 0) {
+-    Rune r;
+-    int c = charntorune(&r, p, n);
+-    if (r == Runeerror) break;
+-
+-    if (isspacerune(r)) {
+-      if (start != nullptr) {
+-        tokens.push_back({start, p - start});
+-      }
+-      start = nullptr;
+-    } else {
+-      if (start == nullptr) {
+-        start = p;
+-      }
+-    }
+-
+-    p += c;
+-    n -= c;
+-  }
+-  if (start != nullptr) {
+-    tokens.push_back({start, p - start});
+-  }
+-
+-  return tokens;
+-}
+-
+-TfLiteStatus WritePaddedOutput(
+-    const std::vector<std::vector<std::pair<const char*, int>>>& list_of_tokens,
+-    const TfLiteTensor* input, TfLiteTensor* output_values) {
+-  TfLiteIntArray* output_shape = TfLiteIntArrayCreate(NumDimensions(input) + 1);
+-  for (int i = 0; i < NumDimensions(input); ++i) {
+-    output_shape->data[i] = SizeOfDimension(input, i);
+-  }
+-
+-  size_t max_tokens = 0;
+-  for (const auto& tokens : list_of_tokens) {
+-    max_tokens = std::max(max_tokens, tokens.size());
+-  }
+-
+-  output_shape->data[NumDimensions(input)] = max_tokens;
+-  DynamicBuffer buffer;
+-  for (const auto& tokens : list_of_tokens) {
+-    for (const auto& token : tokens) {
+-      buffer.AddString(token.first, token.second);
+-    }
+-    for (int i = tokens.size(); i < max_tokens; ++i) {
+-      buffer.AddString(nullptr, 0);
+-    }
+-  }
+-  buffer.WriteToTensor(output_values, output_shape);
+-  return kTfLiteOk;
+-}
+-
+-TfLiteStatus WriteRaggedOutput(
+-    const std::vector<std::vector<std::pair<const char*, int>>>& list_of_tokens,
+-    const TfLiteTensor* input, TfLiteTensor* output_values,
+-    std::vector<TfLiteTensor*> nested_row_splits) {
+-  // The outer dimensions of the ragged tensor are all non-ragged.
+-  for (int i = 0; i < nested_row_splits.size() - 1; ++i) {
+-    int row_splits_step = SizeOfDimension(input, i + 1);
+-    TfLiteTensor* row_splits = nested_row_splits[i];
+-    for (int j = 0; j < SizeOfDimension(row_splits, 0); ++j) {
+-      row_splits->data.i64[j] = j * row_splits_step;
+-    }
+-  }
+-
+-  // Generate the innermost row_splits and values tensors.
+-  TfLiteTensor* row_splits = nested_row_splits.back();
+-  TfLiteIntArray* output_shape = TfLiteIntArrayCreate(1);
+-  DynamicBuffer buffer;
+-  int token_index = 0;
+-  int row_splits_index = 0;
+-  for (const auto& tokens : list_of_tokens) {
+-    row_splits->data.i64[row_splits_index] = token_index;
+-    for (const auto& token : tokens) {
+-      buffer.AddString(token.first, token.second);
+-      ++token_index;
+-    }
+-    ++row_splits_index;
+-  }
+-  row_splits->data.i64[row_splits_index] = token_index;
+-  output_shape->data[0] = token_index;
+-  buffer.WriteToTensor(output_values, output_shape);
+-  return kTfLiteOk;
+-}
+-
+-TfLiteStatus Prepare(TfLiteContext* context, TfLiteNode* node) {
+-  TfLiteTensor* output_values = GetOutput(context, node, kOutputValues);
+-  SetTensorToDynamic(output_values);
+-
+-  if (OutputIsPaddedTensor(node)) {
+-    return kTfLiteOk;
+-  }
+-
+-  const TfLiteTensor* input = GetInput(context, node, kInput);
+-  TF_LITE_ENSURE(context, NumDimensions(input) ==
+-                              (NumOutputs(node) - kOutputRowSplitsStart));
+-
+-  // Resize the row_splits tensors.  We're just adding a ragged inner
+-  // dimension to the shape of the input tensor, so the size of the
+-  // row_splits tensors can be calculated using the input tensor's shape.
+-  int input_size = 1;
+-  for (int i = 0; i < NumDimensions(input); ++i) {
+-    input_size *= SizeOfDimension(input, i);
+-
+-    TfLiteIntArray* row_splits_shape = TfLiteIntArrayCreate(1);
+-    row_splits_shape->data[0] = input_size + 1;
+-    TfLiteTensor* row_splits =
+-        GetOutput(context, node, kOutputRowSplitsStart + i);
+-    TF_LITE_ENSURE_STATUS(
+-        context->ResizeTensor(context, row_splits, row_splits_shape));
+-  }
+-
+-  return kTfLiteOk;
+-}
+-
+-TfLiteStatus Eval(TfLiteContext* context, TfLiteNode* node) {
+-  const TfLiteTensor* input = GetInput(context, node, kInput);
+-  int input_size = 1;
+-  for (int i = 0; i < NumDimensions(input); ++i) {
+-    input_size *= SizeOfDimension(input, i);
+-  }
+-
+-  std::vector<std::vector<std::pair<const char*, int>>> list_of_tokens;
+-  list_of_tokens.reserve(input_size);
+-  for (int i = 0; i < input_size; ++i) {
+-    list_of_tokens.emplace_back(Tokenize(GetString(input, i)));
+-  }
+-
+-  TfLiteTensor* output_values = GetOutput(context, node, kOutputValues);
+-  TF_LITE_ENSURE(context, IsDynamicTensor(output_values));
+-
+-  if (OutputIsPaddedTensor(node)) {
+-    return WritePaddedOutput(list_of_tokens, input, output_values);
+-  }
+-
+-  std::vector<TfLiteTensor*> nested_row_splits;
+-  nested_row_splits.reserve(NumDimensions(input));
+-  for (int i = 0; i < NumDimensions(input); ++i) {
+-    TfLiteTensor* output_row_splits =
+-        GetOutput(context, node, kOutputRowSplitsStart + i);
+-    nested_row_splits.push_back(output_row_splits);
+-  }
+-  return WriteRaggedOutput(list_of_tokens, input, output_values,
+-                           nested_row_splits);
+-}
+-
+-}  // namespace whitespace_tokenizer
+-
+-TfLiteRegistration* Register_tftext_WhitespaceTokenizer() {
+-  static TfLiteRegistration r = {nullptr, nullptr,
+-                                 whitespace_tokenizer::Prepare,
+-                                 whitespace_tokenizer::Eval};
+-  return &r;
+-}
+-
+-}  // namespace custom
+-}  // namespace ops
+-}  // namespace tflite
+diff --git a/third_party/tflite_support/src/tensorflow_lite_support/custom_ops/kernel/whitespace_tokenizer.h b/third_party/tflite_support/src/tensorflow_lite_support/custom_ops/kernel/whitespace_tokenizer.h
+deleted file mode 100644
+index b190248087d20..0000000000000
+--- a/third_party/tflite_support/src/tensorflow_lite_support/custom_ops/kernel/whitespace_tokenizer.h
++++ /dev/null
+@@ -1,31 +0,0 @@
+-/* Copyright 2020 The TensorFlow Authors. All Rights Reserved.
+-
+-Licensed under the Apache License, Version 2.0 (the "License");
+-you may not use this file except in compliance with the License.
+-You may obtain a copy of the License at
+-
+-    http://www.apache.org/licenses/LICENSE-2.0
+-
+-Unless required by applicable law or agreed to in writing, software
+-distributed under the License is distributed on an "AS IS" BASIS,
+-WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+-See the License for the specific language governing permissions and
+-limitations under the License.
+-==============================================================================*/
+-
+-#ifndef TENSORFLOW_LITE_SUPPORT_CUSTOM_OPS_KERNEL_WHITESPACE_TOKENIZER_H_
+-#define TENSORFLOW_LITE_SUPPORT_CUSTOM_OPS_KERNEL_WHITESPACE_TOKENIZER_H_
+-
+-#include "tensorflow/lite/context.h"
+-
+-namespace tflite {
+-namespace ops {
+-namespace custom {
+-
+-TfLiteRegistration* Register_tftext_WhitespaceTokenizer();
+-
+-}  // namespace custom
+-}  // namespace ops
+-}  // namespace tflite
+-
+-#endif  // TENSORFLOW_LITE_SUPPORT_CUSTOM_OPS_KERNEL_WHITESPACE_TOKENIZER_H_
+diff --git a/third_party/tflite_support/src/tensorflow_lite_support/custom_ops/kernel/whitespace_tokenizer_op_resolver.cc b/third_party/tflite_support/src/tensorflow_lite_support/custom_ops/kernel/whitespace_tokenizer_op_resolver.cc
+deleted file mode 100644
+index 534fbef4aff2d..0000000000000
+--- a/third_party/tflite_support/src/tensorflow_lite_support/custom_ops/kernel/whitespace_tokenizer_op_resolver.cc
++++ /dev/null
+@@ -1,32 +0,0 @@
+-/* Copyright 2020 The TensorFlow Authors. All Rights Reserved.
+-
+-Licensed under the Apache License, Version 2.0 (the "License");
+-you may not use this file except in compliance with the License.
+-You may obtain a copy of the License at
+-
+-    http://www.apache.org/licenses/LICENSE-2.0
+-
+-Unless required by applicable law or agreed to in writing, software
+-distributed under the License is distributed on an "AS IS" BASIS,
+-WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+-See the License for the specific language governing permissions and
+-limitations under the License.
+-==============================================================================*/
+-
+-#include "tensorflow_lite_support/custom_ops/kernel/whitespace_tokenizer_op_resolver.h"
+-
+-#include "tensorflow_lite_support/custom_ops/kernel/whitespace_tokenizer.h"
+-#include "tensorflow/lite/mutable_op_resolver.h"
+-
+-namespace tflite {
+-namespace ops {
+-namespace custom {
+-
+-void AddWhitespaceTokenizerCustomOp(MutableOpResolver* resolver) {
+-  resolver->AddCustom("tftext:WhitespaceTokenizer",
+-                      Register_tftext_WhitespaceTokenizer());
+-}
+-
+-}  // namespace custom
+-}  // namespace ops
+-}  // namespace tflite
+diff --git a/third_party/tflite_support/src/tensorflow_lite_support/custom_ops/kernel/whitespace_tokenizer_op_resolver.h b/third_party/tflite_support/src/tensorflow_lite_support/custom_ops/kernel/whitespace_tokenizer_op_resolver.h
+deleted file mode 100644
+index 4f57d8d8010cb..0000000000000
+--- a/third_party/tflite_support/src/tensorflow_lite_support/custom_ops/kernel/whitespace_tokenizer_op_resolver.h
++++ /dev/null
+@@ -1,34 +0,0 @@
+-/* Copyright 2020 The TensorFlow Authors. All Rights Reserved.
+-
+-Licensed under the Apache License, Version 2.0 (the "License");
+-you may not use this file except in compliance with the License.
+-You may obtain a copy of the License at
+-
+-    http://www.apache.org/licenses/LICENSE-2.0
+-
+-Unless required by applicable law or agreed to in writing, software
+-distributed under the License is distributed on an "AS IS" BASIS,
+-WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+-See the License for the specific language governing permissions and
+-limitations under the License.
+-==============================================================================*/
+-
+-#ifndef TENSORFLOW_LITE_SUPPORT_CUSTOM_OPS_KERNEL_WHITESPACE_TOKENIZER_OP_RESOLVER_H_
+-#define TENSORFLOW_LITE_SUPPORT_CUSTOM_OPS_KERNEL_WHITESPACE_TOKENIZER_OP_RESOLVER_H_
+-
+-#include "tensorflow/lite/mutable_op_resolver.h"
+-
+-namespace tflite {
+-namespace ops {
+-namespace custom {
+-
+-// Adds the WhitespaceTokenizer custom op to an op resolver.
+-// This function can be loaded using dlopen.  Since C++ function names get
+-// mangled, declare this function as extern C, so its name is unchanged.
+-extern "C" void AddWhitespaceTokenizerCustomOp(MutableOpResolver* resolver);
+-
+-}  // namespace custom
+-}  // namespace ops
+-}  // namespace tflite
+-
+-#endif  // LETENSORFLOW_LITE_SUPPORT_CUSTOM_OPS_KERNEL_WHITESPACE_TOKENIZER_OP_RESOLVER_H_
+diff --git a/third_party/tflite_support/src/tensorflow_lite_support/custom_ops/kernel/whitespace_tokenizer_op_resolver_wrapper.cc b/third_party/tflite_support/src/tensorflow_lite_support/custom_ops/kernel/whitespace_tokenizer_op_resolver_wrapper.cc
+deleted file mode 100644
+index 03d3ba899395a..0000000000000
+--- a/third_party/tflite_support/src/tensorflow_lite_support/custom_ops/kernel/whitespace_tokenizer_op_resolver_wrapper.cc
++++ /dev/null
+@@ -1,29 +0,0 @@
+-/* Copyright 2020 The TensorFlow Authors. All Rights Reserved.
+-
+-Licensed under the Apache License, Version 2.0 (the "License");
+-you may not use this file except in compliance with the License.
+-You may obtain a copy of the License at
+-
+-    http://www.apache.org/licenses/LICENSE-2.0
+-
+-Unless required by applicable law or agreed to in writing, software
+-distributed under the License is distributed on an "AS IS" BASIS,
+-WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+-See the License for the specific language governing permissions and
+-limitations under the License.
+-==============================================================================*/
+-
+-#include "pybind11/pybind11.h"
+-#include "tensorflow/lite/mutable_op_resolver.h"
+-#include "tensorflow_lite_support/custom_ops/kernel/whitespace_tokenizer_op_resolver.h"
+-
+-PYBIND11_MODULE(_pywrap_whitespace_tokenizer_op_resolver, m) {
+-  m.doc() = "_pywrap_whitespace_tokenizer_op_resolver";
+-  m.def(
+-      "AddWhitespaceTokenizerCustomOp",
+-      [](uintptr_t resolver) {
+-        tflite::ops::custom::AddWhitespaceTokenizerCustomOp(
+-            reinterpret_cast<tflite::MutableOpResolver*>(resolver));
+-      },
+-      "Op registerer function for the tftext:WhitespaceTokenizer custom op.");
+-}
+diff --git a/third_party/tflite_support/src/tensorflow_lite_support/custom_ops/kernel/whitespace_tokenizer_test.cc b/third_party/tflite_support/src/tensorflow_lite_support/custom_ops/kernel/whitespace_tokenizer_test.cc
+deleted file mode 100644
+index 4654e46c4a270..0000000000000
+--- a/third_party/tflite_support/src/tensorflow_lite_support/custom_ops/kernel/whitespace_tokenizer_test.cc
++++ /dev/null
+@@ -1,189 +0,0 @@
+-/* Copyright 2020 The TensorFlow Authors. All Rights Reserved.
+-
+-Licensed under the Apache License, Version 2.0 (the "License");
+-you may not use this file except in compliance with the License.
+-You may obtain a copy of the License at
+-
+-    http://www.apache.org/licenses/LICENSE-2.0
+-
+-Unless required by applicable law or agreed to in writing, software
+-distributed under the License is distributed on an "AS IS" BASIS,
+-WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+-See the License for the specific language governing permissions and
+-limitations under the License.
+-==============================================================================*/
+-
+-#include "tensorflow_lite_support/custom_ops/kernel/whitespace_tokenizer.h"
+-
+-#include <string>
+-#include <vector>
+-
+-#include <gmock/gmock.h>
+-#include <gtest/gtest.h>
+-#include "tensorflow/lite/kernels/test_util.h"
+-#include "tensorflow/lite/schema/schema_generated.h"
+-#include "tensorflow/lite/string_util.h"
+-
+-namespace tflite {
+-namespace ops {
+-namespace custom {
+-namespace whitespace_tokenizer {
+-namespace test {
+-namespace {
+-
+-using ::testing::ElementsAre;
+-using ::testing::ElementsAreArray;
+-
+-}  // namespace
+-
+-enum OutputType { PADDED, RAGGED };
+-
+-class WhitespaceTokenizerModel : public SingleOpModel {
+- public:
+-  WhitespaceTokenizerModel(OutputType output_type,
+-                           const std::vector<std::string>& input_values,
+-                           const std::vector<int>& input_shape)
+-      : input_shape_(input_shape) {
+-    input_ = AddInput(TensorType_STRING);
+-    output_values_ = AddOutput(TensorType_STRING);
+-    if (output_type == RAGGED) {
+-      for (int i = 0; i < input_shape_.size(); ++i) {
+-        output_row_splits_.push_back(AddOutput(TensorType_INT64));
+-      }
+-    }
+-    SetCustomOp("WhitespaceTokenizer", {}, Register_tftext_WhitespaceTokenizer);
+-
+-    BuildInterpreter({input_shape});
+-    PopulateStringTensor(input_, input_values);
+-    Invoke();
+-  }
+-
+-  std::vector<int> GetValuesTensorShape() {
+-    return GetTensorShape(output_values_);
+-  }
+-
+-  std::vector<std::string> ExtractValuesTensorVector() {
+-    std::vector<std::string> r;
+-    TfLiteTensor* tensor = interpreter_->tensor(output_values_);
+-    int n = GetStringCount(tensor);
+-    for (int i = 0; i < n; ++i) {
+-      StringRef ref = GetString(tensor, i);
+-      r.emplace_back(ref.str, ref.len);
+-    }
+-    return r;
+-  }
+-
+-  void CheckRowSplits(const std::vector<int>& token_counts) {
+-    int size = 1;
+-    for (int i = 0; i < input_shape_.size(); ++i) {
+-      size *= input_shape_[i];
+-      EXPECT_THAT(GetTensorShape(output_row_splits_[i]), ElementsAre(size + 1))
+-          << "row_splits " << i << " has the wrong shape";
+-
+-      std::vector<int64_t> expected_values(size + 1);
+-      if (i == input_shape_.size() - 1) {
+-        ASSERT_EQ(token_counts.size(), size);
+-
+-        int index = 0;
+-        expected_values[0] = index;
+-        for (int j = 0; j < size; ++j) {
+-          index += token_counts[j];
+-          expected_values[j + 1] = index;
+-        }
+-      } else {
+-        for (int j = 0; j <= size; ++j) {
+-          expected_values[j] = j * input_shape_[i + 1];
+-        }
+-      }
+-      EXPECT_THAT(ExtractVector<int64_t>(output_row_splits_[i]),
+-                  ElementsAreArray(expected_values))
+-          << "row_splits " << i << " has an incorrect value/index";
+-    }
+-  }
+-
+- private:
+-  int input_;
+-  std::vector<int> input_shape_;
+-  int output_values_;
+-  std::vector<int> output_row_splits_;
+-};  // namespace test
+-
+-TEST(WhitespaceTokenizerTest, SingleStringPaddedOutput) {
+-  WhitespaceTokenizerModel m(PADDED, {"this is a test"}, {1});
+-  EXPECT_THAT(m.GetValuesTensorShape(), ElementsAre(1, 4));
+-  EXPECT_THAT(m.ExtractValuesTensorVector(),
+-              ElementsAre("this", "is", "a", "test"));
+-}
+-
+-TEST(WhitespaceTokenizerTest, SingleStringRaggedOutput) {
+-  WhitespaceTokenizerModel m(RAGGED, {"this is a test"}, {1});
+-  m.CheckRowSplits({4});
+-  EXPECT_THAT(m.ExtractValuesTensorVector(),
+-              ElementsAre("this", "is", "a", "test"));
+-}
+-
+-TEST(WhitespaceTokenizerTest, VectorPaddedOutput) {
+-  WhitespaceTokenizerModel m(PADDED,
+-                             {"this is a test",        //
+-                              "three token sentence",  //
+-                              "many more tokens than that sentence"},
+-                             {3});
+-  EXPECT_THAT(m.GetValuesTensorShape(), ElementsAre(3, 6));
+-  EXPECT_THAT(
+-      m.ExtractValuesTensorVector(),
+-      ElementsAre("this", "is", "a", "test", "", "",         //
+-                  "three", "token", "sentence", "", "", "",  //
+-                  "many", "more", "tokens", "than", "that", "sentence"));
+-}
+-
+-TEST(WhitespaceTokenizerTest, VectorRaggedOutput) {
+-  WhitespaceTokenizerModel m(RAGGED,
+-                             {"this is a test",        //
+-                              "three token sentence",  //
+-                              "many more tokens than that sentence"},
+-                             {3});
+-  m.CheckRowSplits({4, 3, 6});
+-  EXPECT_THAT(
+-      m.ExtractValuesTensorVector(),
+-      ElementsAre("this", "is", "a", "test",     //
+-                  "three", "token", "sentence",  //
+-                  "many", "more", "tokens", "than", "that", "sentence"));
+-}
+-
+-TEST(WhitespaceTokenizerTest, MatrixPaddedOutput) {
+-  WhitespaceTokenizerModel m(PADDED,
+-                             {"a b c", "d e f",  //
+-                              "g h", "i j k l",  //
+-                              "m", "n o p q r"},
+-                             {3, 2});
+-  EXPECT_THAT(m.GetValuesTensorShape(), ElementsAre(3, 2, 5));
+-  EXPECT_THAT(m.ExtractValuesTensorVector(),
+-              ElementsAre("a", "b", "c", "", "",   //
+-                          "d", "e", "f", "", "",   //
+-                          "g", "h", "", "", "",    //
+-                          "i", "j", "k", "l", "",  //
+-                          "m", "", "", "", "",     //
+-                          "n", "o", "p", "q", "r"));
+-}
+-
+-TEST(WhitespaceTokenizerTest, MatrixRAGGEDOutput) {
+-  WhitespaceTokenizerModel m(RAGGED,
+-                             {"a b c", "d e f",  //
+-                              "g h", "i j k l",  //
+-                              "m", "n o p q r"},
+-                             {3, 2});
+-  m.CheckRowSplits({3, 3, 2, 4, 1, 5});
+-  EXPECT_THAT(m.ExtractValuesTensorVector(),
+-              ElementsAre("a", "b", "c",       //
+-                          "d", "e", "f",       //
+-                          "g", "h",            //
+-                          "i", "j", "k", "l",  //
+-                          "m",                 //
+-                          "n", "o", "p", "q", "r"));
+-}
+-
+-}  // namespace test
+-}  // namespace whitespace_tokenizer
+-}  // namespace custom
+-}  // namespace ops
+-}  // namespace tflite
+diff --git a/third_party/tflite_support/src/tensorflow_lite_support/custom_ops/kernel/whitespace_tokenizer_test.py b/third_party/tflite_support/src/tensorflow_lite_support/custom_ops/kernel/whitespace_tokenizer_test.py
+deleted file mode 100644
+index 364698bdeb953..0000000000000
+--- a/third_party/tflite_support/src/tensorflow_lite_support/custom_ops/kernel/whitespace_tokenizer_test.py
++++ /dev/null
+@@ -1,166 +0,0 @@
+-# Copyright 2020 The TensorFlow Authors. All Rights Reserved.
+-#
+-# Licensed under the Apache License, Version 2.0 (the "License");
+-# you may not use this file except in compliance with the License.
+-# You may obtain a copy of the License at
+-#
+-#     http://www.apache.org/licenses/LICENSE-2.0
+-#
+-# Unless required by applicable law or agreed to in writing, software
+-# distributed under the License is distributed on an "AS IS" BASIS,
+-# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+-# See the License for the specific language governing permissions and
+-# limitations under the License.
+-# ==============================================================================
+-"""Tests for tensorflow_lite_support.custom_ops.kernel.whitespace_tokenizer."""
+-
+-import os
+-import sys
+-import timeit
+-
+-from absl import logging
+-from absl.testing import parameterized
+-import numpy as np
+-import tensorflow as tf
+-import tensorflow_text as tf_text
+-# pylint: disable=g-direct-tensorflow-import
+-from tensorflow.lite.python import interpreter as interpreter_wrapper
+-
+-# Force loaded shared object symbols to be globally visible. This is needed so
+-# that the interpreter_wrapper, in one .so file, can see the op resolver
+-# in a different .so file. Note that this may already be set by default.
+-# pylint: disable=g-import-not-at-top,g-bad-import-order,unused-import
+-if hasattr(sys, 'setdlopenflags') and hasattr(sys, 'getdlopenflags'):
+-  sys.setdlopenflags(sys.getdlopenflags() | os.RTLD_GLOBAL)
+-from tensorflow_lite_support.custom_ops.kernel import _pywrap_whitespace_tokenizer_op_resolver
+-
+-TEST_CASES = [
+-    ['this is a test'],
+-    ['extra   spaces    in     here'],
+-    ['a four token sentence', 'a five token sentence thing.'],
+-    [['a multi dimensional test case', 'a b c d', 'e f g'],
+-     ['h i j', 'k l m 2 3', 'n o p'], ['q r s 0 1', 't u v', 'w x y z']],
+-]
+-
+-INVOKES_FOR_SINGLE_OP_BENCHMARK = 1000
+-INVOKES_FOR_FLEX_DELEGATE_BENCHMARK = 10
+-
+-
+-@tf.function
+-def _call_whitespace_tokenizer_to_tensor(test_case):
+-  tokenizer = tf_text.WhitespaceTokenizer()
+-  return tokenizer.tokenize(test_case).to_tensor()
+-
+-
+-@tf.function
+-def _call_whitespace_tokenizer_to_ragged(test_case):
+-  tokenizer = tf_text.WhitespaceTokenizer()
+-  return tokenizer.tokenize(test_case)
+-
+-
+-class WhitespaceTokenizerTest(parameterized.TestCase):
+-
+-  @parameterized.parameters([t] for t in TEST_CASES)
+-  def testToTensorEquivalence(self, test_case):
+-    tf_output = _call_whitespace_tokenizer_to_tensor(test_case)
+-
+-    model_filename = tf.compat.v1.resource_loader.get_path_to_datafile(
+-        'testdata/whitespace_tokenizer_to_tensor.tflite')
+-    with open(model_filename, 'rb') as file:
+-      model = file.read()
+-    interpreter = interpreter_wrapper.InterpreterWithCustomOps(
+-        model_content=model,
+-        custom_op_registerers=['AddWhitespaceTokenizerCustomOp'])
+-
+-    np_test_case = np.array(test_case, dtype=str)
+-    interpreter.resize_tensor_input(0, np_test_case.shape)
+-    interpreter.allocate_tensors()
+-    interpreter.set_tensor(interpreter.get_input_details()[0]['index'],
+-                           np_test_case)
+-    interpreter.invoke()
+-    tflite_output = interpreter.get_tensor(
+-        interpreter.get_output_details()[0]['index'])
+-
+-    self.assertEqual(tf_output.numpy().tolist(), tflite_output.tolist())
+-
+-  @parameterized.parameters([t] for t in TEST_CASES)
+-  def testToRaggedEquivalence(self, test_case):
+-    tf_output = _call_whitespace_tokenizer_to_ragged(test_case)
+-
+-    np_test_case = np.array(test_case, dtype=str)
+-    rank = len(np_test_case.shape)
+-
+-    model_filename = tf.compat.v1.resource_loader.get_path_to_datafile(
+-        'testdata/whitespace_tokenizer_to_ragged_{}d_input.tflite'.format(rank))
+-    with open(model_filename, 'rb') as file:
+-      model = file.read()
+-    interpreter = interpreter_wrapper.InterpreterWithCustomOps(
+-        model_content=model,
+-        custom_op_registerers=['AddWhitespaceTokenizerCustomOp'])
+-    interpreter.resize_tensor_input(0, np_test_case.shape)
+-    interpreter.allocate_tensors()
+-    interpreter.set_tensor(interpreter.get_input_details()[0]['index'],
+-                           np_test_case)
+-    interpreter.invoke()
+-
+-    # Traverse the nested row_splits/values of the ragged tensor.
+-    for i in range(rank):
+-      tflite_output_cur_row_splits = interpreter.get_tensor(
+-          interpreter.get_output_details()[1 + i]['index'])
+-      self.assertEqual(tf_output.row_splits.numpy().tolist(),
+-                       tflite_output_cur_row_splits.tolist())
+-      tf_output = tf_output.values
+-
+-    tflite_output_values = interpreter.get_tensor(
+-        interpreter.get_output_details()[0]['index'])
+-    self.assertEqual(tf_output.numpy().tolist(), tflite_output_values.tolist())
+-
+-  def testSingleOpLatency(self):
+-    model_filename = tf.compat.v1.resource_loader.get_path_to_datafile(
+-        'testdata/whitespace_tokenizer_to_tensor.tflite')
+-    with open(model_filename, 'rb') as file:
+-      model = file.read()
+-    interpreter = interpreter_wrapper.InterpreterWithCustomOps(
+-        model_content=model,
+-        custom_op_registerers=['AddWhitespaceTokenizerCustomOp'])
+-
+-    latency = 0.0
+-    for test_case in TEST_CASES:
+-      np_test_case = np.array(test_case, dtype=str)
+-      interpreter.resize_tensor_input(0, np_test_case.shape)
+-      interpreter.allocate_tensors()
+-      interpreter.set_tensor(interpreter.get_input_details()[0]['index'],
+-                             np_test_case)
+-      start_time = timeit.default_timer()
+-      for _ in range(INVOKES_FOR_SINGLE_OP_BENCHMARK):
+-        interpreter.invoke()
+-      latency = latency + timeit.default_timer() - start_time
+-
+-    latency = latency / (INVOKES_FOR_SINGLE_OP_BENCHMARK * len(TEST_CASES))
+-    logging.info('Latency: %fms', latency * 1000.0)
+-
+-  def testFlexDelegateLatency(self):
+-    model_filename = tf.compat.v1.resource_loader.get_path_to_datafile(
+-        'testdata/whitespace_tokenizer_flex_delegate.tflite')
+-    with open(model_filename, 'rb') as file:
+-      model = file.read()
+-    interpreter = interpreter_wrapper.Interpreter(model_content=model)
+-
+-    latency = 0.0
+-    for test_case in TEST_CASES:
+-      np_test_case = np.array(test_case, dtype=str)
+-      interpreter.resize_tensor_input(0, np_test_case.shape)
+-      interpreter.allocate_tensors()
+-      interpreter.set_tensor(interpreter.get_input_details()[0]['index'],
+-                             np_test_case)
+-      start_time = timeit.default_timer()
+-      for _ in range(INVOKES_FOR_FLEX_DELEGATE_BENCHMARK):
+-        interpreter.invoke()
+-      latency = latency + timeit.default_timer() - start_time
+-
+-    latency = latency / (INVOKES_FOR_FLEX_DELEGATE_BENCHMARK * len(TEST_CASES))
+-    logging.info('Latency: %fms', latency * 1000.0)
+-
+-
+-if __name__ == '__main__':
+-  tf.test.main()
+-- 
+2.42.0.515.g380fc7ccd1-goog
+

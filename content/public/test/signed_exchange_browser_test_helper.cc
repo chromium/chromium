@@ -40,7 +40,7 @@ void SignedExchangeBrowserTestHelper::SetUp() {
 void SignedExchangeBrowserTestHelper::TearDownOnMainThread() {
   interceptor_.reset();
   signed_exchange_utils::SetVerificationTimeForTesting(
-      absl::optional<base::Time>());
+      std::optional<base::Time>());
 }
 
 scoped_refptr<net::X509Certificate>
@@ -75,8 +75,8 @@ void SignedExchangeBrowserTestHelper::InstallMockCert(
   net::CertVerifyResult dummy_result;
   dummy_result.verified_cert = original_cert;
   dummy_result.cert_status = net::OK;
-  dummy_result.ocsp_result.response_status = net::OCSPVerifyResult::PROVIDED;
-  dummy_result.ocsp_result.revocation_status = net::OCSPRevocationStatus::GOOD;
+  dummy_result.ocsp_result.response_status = bssl::OCSPVerifyResult::PROVIDED;
+  dummy_result.ocsp_result.revocation_status = bssl::OCSPRevocationStatus::GOOD;
   cert_verifier->AddResultForCertAndHost(original_cert, "test.example.org",
                                          dummy_result, net::OK);
 }
@@ -94,7 +94,7 @@ bool SignedExchangeBrowserTestHelper::OnInterceptCallback(
     return false;
   URLLoaderInterceptor::WriteResponse(
       it->second, params->client.get(), /*headers=*/nullptr,
-      absl::optional<net::SSLInfo>(), params->url_request.url);
+      std::optional<net::SSLInfo>(), params->url_request.url);
   return true;
 }
 

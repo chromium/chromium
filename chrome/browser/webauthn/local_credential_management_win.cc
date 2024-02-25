@@ -52,7 +52,7 @@ class CredentialPresenceCacher : public ProfileObserver {
   CredentialPresenceCacher(
       Profile* profile,
       base::OnceCallback<void(
-          absl::optional<std::vector<device::DiscoverableCredentialMetadata>>)>
+          std::optional<std::vector<device::DiscoverableCredentialMetadata>>)>
           callback)
       : profile_(profile), callback_(std::move(callback)) {}
 
@@ -85,13 +85,13 @@ class CredentialPresenceCacher : public ProfileObserver {
  private:
   raw_ptr<Profile> profile_;
   base::OnceCallback<void(
-      absl::optional<std::vector<device::DiscoverableCredentialMetadata>>)>
+      std::optional<std::vector<device::DiscoverableCredentialMetadata>>)>
       callback_;
 };
 
 void EnumerateResultToBool(
     base::OnceCallback<void(bool)> callback,
-    absl::optional<std::vector<device::DiscoverableCredentialMetadata>>
+    std::optional<std::vector<device::DiscoverableCredentialMetadata>>
         credentials) {
   std::move(callback).Run(credentials.has_value() &&
                           ContainsUserCreatedCredential(*credentials));
@@ -118,7 +118,7 @@ std::unique_ptr<LocalCredentialManagement> LocalCredentialManagement::Create(
 
 void LocalCredentialManagementWin::HasCredentials(
     base::OnceCallback<void(bool)> callback) {
-  absl::optional<bool> result;
+  std::optional<bool> result;
 
   if (!api_->IsAvailable() || !api_->SupportsSilentDiscovery()) {
     result = false;
@@ -141,11 +141,11 @@ void LocalCredentialManagementWin::HasCredentials(
 
 void LocalCredentialManagementWin::Enumerate(
     base::OnceCallback<void(
-        absl::optional<std::vector<device::DiscoverableCredentialMetadata>>)>
+        std::optional<std::vector<device::DiscoverableCredentialMetadata>>)>
         callback) {
   if (!api_->IsAvailable() || !api_->SupportsSilentDiscovery()) {
     base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-        FROM_HERE, base::BindOnce(std::move(callback), absl::nullopt));
+        FROM_HERE, base::BindOnce(std::move(callback), std::nullopt));
     return;
   }
 

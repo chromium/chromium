@@ -59,6 +59,22 @@ export const PillarButton = {
 };
 
 /**
+ * Errors in the Highlights app.
+ *
+ * This is used by histogram: DemoMode.Highlights.Error
+ *
+ * These values are persisted to logs, so entries should not be renumbered and
+ * numeric values should never be reused.
+ *
+ * @enum {number}
+ */
+const DemoModeHighlightsError = {
+  ATTRACTION_LOOP_TIMESTAMP_INVALID: 0,
+  PAGE_VIEW_DURATION_INVALID: 1,
+  DETAILS_PAGE_VIEW_DURATION_INVALID: 2,
+};
+
+/**
  * A map between the Page in this js file and DemoModeHighlightsAction enum in
  * the UMA enums.xml.
  */
@@ -104,6 +120,11 @@ class DemoMetricsService {
    * @param timestampInMilliseconds
    */
   recordAttractLoopBreakTimestamp(timestampInMilliseconds) {
+    if (!timestampInMilliseconds) {
+      this.recordError_(
+          DemoModeHighlightsError.ATTRACTION_LOOP_TIMESTAMP_INVALID);
+      return;
+    }
     chrome.metricsPrivateIndividualApis.recordMediumTime(
         'DemoMode.AttractLoop.Timestamp',
         timestampInMilliseconds,
@@ -159,6 +180,10 @@ class DemoMetricsService {
    * @param {number} durationInMilliseconds
    */
   recordPageViewDuration(page, durationInMilliseconds) {
+    if (!durationInMilliseconds) {
+      this.recordError_(DemoModeHighlightsError.PAGE_VIEW_DURATION_INVALID);
+      return;
+    }
     chrome.metricsPrivateIndividualApis.recordMediumTime(
         'DemoMode.Highlights.PageStayDuration.' + page + 'Page',
         durationInMilliseconds);
@@ -178,9 +203,25 @@ class DemoMetricsService {
    * @param {DetailsPage} detailsPage
    */
   recordDetailsPageViewDuration(detailsPage, durationInMilliseconds) {
+    if (!durationInMilliseconds) {
+      this.recordError_(
+          DemoModeHighlightsError.DETAILS_PAGE_VIEW_DURATION_INVALID);
+      return;
+    }
     chrome.metricsPrivateIndividualApis.recordMediumTime(
         'DemoMode.Highlights.DetailsPageStayDuration.' + detailsPage + 'Page',
         durationInMilliseconds);
+  }
+
+  /**
+   * Record error in highlight app.
+   * @param {DemoModeHighlightsError} error
+   * @private
+   */
+  recordError_(error) {
+    const maxValue = Object.keys(DemoModeHighlightsError).length;
+    chrome.metricsPrivateIndividualApis.recordEnumerationValue(
+        'DemoMode.Highlights.Error', error, maxValue);
   }
 }
 

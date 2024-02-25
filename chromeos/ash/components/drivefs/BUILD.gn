@@ -15,18 +15,15 @@ component("drivefs") {
     "drivefs_bootstrap.h",
     "drivefs_host.cc",
     "drivefs_host.h",
-    "drivefs_host_observer.h",
     "drivefs_http_client.cc",
     "drivefs_http_client.h",
-    "drivefs_pin_manager.cc",
-    "drivefs_pin_manager.h",
+    "drivefs_pinning_manager.cc",
+    "drivefs_pinning_manager.h",
     "drivefs_search.cc",
     "drivefs_search.h",
     "drivefs_session.cc",
     "drivefs_session.h",
     "drivefs_util.h",
-    "sync_status_tracker.cc",
-    "sync_status_tracker.h",
   ]
   if (!use_real_dbus_clients) {
     sources += [
@@ -43,7 +40,7 @@ component("drivefs") {
     "//chromeos/ash/components/dbus/userdataauth",
     "//chromeos/ash/components/disks",
     "//chromeos/ash/components/drivefs/mojom",
-    "//chromeos/ash/components/drivefs/mojom:pin_manager_types",
+    "//chromeos/ash/components/drivefs/mojom:pinning_manager_types",
     "//chromeos/ash/components/file_manager",
     "//chromeos/ash/components/network",
     "//chromeos/components/mojo_bootstrap",
@@ -86,10 +83,9 @@ source_set("unit_tests") {
     "drivefs_bootstrap_unittest.cc",
     "drivefs_host_unittest.cc",
     "drivefs_http_client_unittest.cc",
-    "drivefs_pin_manager_unittest.cc",
+    "drivefs_pinning_manager_unittest.cc",
     "drivefs_search_unittest.cc",
     "drivefs_session_unittest.cc",
-    "sync_status_tracker_unittest.cc",
   ]
 
   deps = [
@@ -103,7 +99,7 @@ source_set("unit_tests") {
     "//chromeos/ash/components/dbus/userdataauth",
     "//chromeos/ash/components/disks:test_support",
     "//chromeos/ash/components/drivefs/mojom",
-    "//chromeos/ash/components/drivefs/mojom:pin_manager_types",
+    "//chromeos/ash/components/drivefs/mojom:pinning_manager_types",
     "//chromeos/components/mojo_bootstrap",
     "//chromeos/dbus/power",
     "//chromeos/dbus/power:power_manager_proto",

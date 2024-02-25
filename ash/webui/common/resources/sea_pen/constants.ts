@@ -1,0 +1,68 @@
+// Copyright 2023 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+import {Url} from 'chrome://resources/mojo/url/mojom/url.mojom-webui.js';
+
+import {getVcBackgroundTemplates, getWallpaperTemplates} from './constants_generated.js';
+import {isSeaPenTextInputEnabled} from './load_time_booleans.js';
+import {SeaPenTemplateChip, SeaPenTemplateId, SeaPenTemplateOption} from './sea_pen_generated.mojom-webui.js';
+
+export type Query = 'Query';
+
+/**
+ * An interface for the data of a recent sea pen image.
+ */
+export interface RecentSeaPenData {
+  url: Url;
+  queryInfo: string;
+}
+
+export interface SeaPenOption {
+  // `value` is the actual option value to be sent to the server side.
+  value: SeaPenTemplateOption;
+  // `translation` is the translated value to be displayed in the UI.
+  translation: string;
+}
+
+export interface SeaPenTemplate {
+  id: SeaPenTemplateId|Query;
+  // `title` is the user-visible string in collection titles and breadcrumbs.
+  title: string;
+  preview: Url[];
+  // `text` is the string that shows up on the sea pen subpage.
+  text: string;
+  // `options` are in the form of 'option_name': [option1, option2, ...].
+  options: Map<SeaPenTemplateChip, SeaPenOption[]>;
+}
+
+export function getSeaPenTemplates(): SeaPenTemplate[] {
+  const templates = window.location.origin === 'chrome://personalization' ?
+      getWallpaperTemplates() :
+      getVcBackgroundTemplates();
+
+  if (isSeaPenTextInputEnabled()) {
+    templates.push({
+      preview: [{
+        url:
+            'chrome://resources/ash/common/sea_pen/sea_pen_images/sea_pen_tile.jpg',
+      }],
+      title: 'Freeform',
+      text: 'Freeform',
+      id: 'Query',
+      options: new Map(),
+    });
+  }
+  return templates;
+}
+
+/**
+ * Split the template string into an array of strings, where each string is
+ * either a literal string or a placeholder for a chip.
+ * @example
+ * // returns ['A park in ', '<city>', ' in the style of ', '<style>']
+ * parseTemplateText('A park in <city> in the style of <style>');
+ */
+export function parseTemplateText(template: string): string[] {
+  return template.split(/(<\w+>)/g);
+}

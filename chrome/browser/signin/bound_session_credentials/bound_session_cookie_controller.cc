@@ -4,20 +4,34 @@
 
 #include "chrome/browser/signin/bound_session_credentials/bound_session_cookie_controller.h"
 
+#include "base/containers/flat_set.h"
 #include "base/memory/raw_ptr.h"
+#include "base/time/time.h"
+#include "chrome/browser/signin/bound_session_credentials/bound_session_params_util.h"
 #include "url/gurl.h"
 
 BoundSessionCookieController::BoundSessionCookieController(
-    const bound_session_credentials::RegistrationParams& registration_params,
-    const base::flat_set<std::string>& cookie_names,
+    const bound_session_credentials::BoundSessionParams& bound_session_params,
     Delegate* delegate)
-    : url_(registration_params.site()),
-      session_id_(registration_params.session_id()),
+    : url_(bound_session_params.site()),
+      session_id_(bound_session_params.session_id()),
+      session_creation_time_(bound_session_credentials::TimestampToTime(
+          bound_session_params.creation_time())),
       delegate_(delegate) {
   CHECK(!url_.is_empty());
-  CHECK(!cookie_names.empty());
-  for (const std::string& cookie_name : cookie_names) {
-    bound_cookies_info_.insert({cookie_name, base::Time()});
+  CHECK(!bound_session_params.credentials().empty());
+  // Note:
+  // - Same cookie name with a different scope (Domain, Path) is not
+  //   supported. We expect cookie names to be unique.
+  // - The scope of the cookie is ignored and is assumed to have the same scope
+  //   of the session.
+  // - The scope of the session is site based (not origin) and is specified in
+  //   `url`.
+  // - A cookie path other than '/' isn't supported.
+  for (const bound_session_credentials::Credential& credential :
+       bound_session_params.credentials()) {
+    bound_cookies_info_.insert(
+        {credential.cookie_credential().name(), base::Time()});
   }
 }
 
@@ -38,4 +52,11 @@ chrome::mojom::BoundSessionThrottlerParamsPtr
 BoundSessionCookieController::bound_session_throttler_params() {
   return chrome::mojom::BoundSessionThrottlerParams::New(
       url().host(), url().path(), min_cookie_expiration_time());
+}
+
+base::flat_set<std::string> BoundSessionCookieController::bound_cookie_names()
+    const {
+  return base::MakeFlatSet<std::string>(
+      bound_cookies_info_, {},
+      [](const auto& bound_cookie_info) { return bound_cookie_info.first; });
 }

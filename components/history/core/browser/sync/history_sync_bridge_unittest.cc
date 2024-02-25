@@ -219,8 +219,8 @@ class FakeModelTypeChangeProcessor : public syncer::ModelTypeChangeProcessor {
     ADD_FAILURE() << "ReportError: " << error.ToString();
   }
 
-  absl::optional<syncer::ModelError> GetError() const override {
-    return absl::nullopt;
+  std::optional<syncer::ModelError> GetError() const override {
+    return std::nullopt;
   }
 
   base::WeakPtr<syncer::ModelTypeControllerDelegate> GetControllerDelegate()
@@ -367,7 +367,7 @@ class HistorySyncBridgeTest : public testing::Test {
     // Note that because HISTORY is in ApplyUpdatesImmediatelyTypes(), the
     // processor doesn't actually call MergeFullSyncData, but rather
     // ApplyIncrementalSyncChanges.
-    absl::optional<syncer::ModelError> error =
+    std::optional<syncer::ModelError> error =
         bridge()->ApplyIncrementalSyncChanges(
             std::move(metadata_changes),
             CreateAddEntityChangeList(specifics_vector));
@@ -401,7 +401,7 @@ class HistorySyncBridgeTest : public testing::Test {
       metadata_changes->UpdateMetadata(storage_key, sync_pb::EntityMetadata());
     }
 
-    absl::optional<syncer::ModelError> error =
+    std::optional<syncer::ModelError> error =
         bridge()->ApplyIncrementalSyncChanges(
             std::move(metadata_changes),
             CreateAddEntityChangeList(specifics_vector));
@@ -497,7 +497,7 @@ TEST_F(HistorySyncBridgeTest, AppliesRemoteChanges) {
   // Check that the remote visit's annotation info got synced.
   // NOTE: Annotation info is present on the last remote visit.
   const std::vector<AnnotatedVisit> annotated_visits =
-      backend()->ToAnnotatedVisits(
+      backend()->ToAnnotatedVisitsFromRows(
           backend()->GetVisits(),
           /*compute_redirect_chain_start_properties=*/false);
   EXPECT_TRUE(annotated_visits[1].content_annotations.has_url_keyed_image);
@@ -656,33 +656,7 @@ TEST_F(HistorySyncBridgeTest, DeletesForeignVisitsWhenSyncStoppedPermanently) {
   bridge()->SetSyncTransportState(
       syncer::SyncService::TransportState::DISABLED);
 
-  // Now foreign visits should've been cleared. Note that due to a workaround
-  // for crbug.com/1383912, there are actually two calls, even though one would
-  // suffice.
-  EXPECT_EQ(backend()->delete_all_foreign_visits_call_count(), 2);
-}
-
-TEST_F(
-    HistorySyncBridgeTest,
-    DeletesForeignVisitsWhenSyncStoppedPermanentlyEvenWithoutClearingMetadata) {
-  sync_pb::HistorySpecifics remote_entity =
-      CreateSpecifics(base::Time::Now() - base::Minutes(1), "remote_cache_guid",
-                      GURL("https://remote.com"));
-
-  // Start Sync, so the remote data gets written to the local DB.
-  ApplyInitialSyncChanges({remote_entity});
-  ASSERT_EQ(backend()->GetVisits().size(), 1u);
-
-  ASSERT_EQ(backend()->delete_all_foreign_visits_call_count(), 0);
-
-  // Stop Sync permanently, but without clearing metadata. This "shouldn't"
-  // happen (metadata should get cleared in that case), but due to
-  // crbug.com/897628 it can actually happen.
-  bridge()->OnSyncPaused();  // No-op, but for the sake of a realistic sequence.
-  bridge()->SetSyncTransportState(
-      syncer::SyncService::TransportState::DISABLED);
-
-  // Foreign visits should've been cleared.
+  // Now foreign visits should've been cleared.
   EXPECT_EQ(backend()->delete_all_foreign_visits_call_count(), 1);
 }
 
@@ -1650,6 +1624,47 @@ TEST_F(HistorySyncBridgeTest, UntracksEntityOnIndividualDeletion) {
   EXPECT_EQ(GetPersistedEntityMetadata().size(), 1u);
 }
 
+TEST_F(HistorySyncBridgeTest,
+       UntracksEntityOnIndividualDeletionWhileSyncPaused) {
+  // Start syncing (with no data yet).
+  ApplyInitialSyncChanges({});
+
+  // Visit some URLs.
+  auto [url_row1, visit_row1] = AddVisitToBackendAndAdvanceClock(
+      GURL("https://url1.com"), ui::PAGE_TRANSITION_TYPED);
+  auto [url_row2, visit_row2] = AddVisitToBackendAndAdvanceClock(
+      GURL("https://url2.com"), ui::PAGE_TRANSITION_LINK);
+
+  // Notify the bridge about the visits - they should be sent to the processor.
+  bridge()->OnURLVisited(
+      /*history_backend=*/nullptr, url_row1, visit_row1);
+  bridge()->OnURLVisited(
+      /*history_backend=*/nullptr, url_row2, visit_row2);
+  ASSERT_EQ(GetPersistedEntityMetadata().size(), 2u);
+
+  EXPECT_EQ(processor()->GetEntities().size(), 2u);
+
+  // Sync gets paused. In this state, the bridge will not send any more data to
+  // the processor, but deletions should still cause entities to get untracked.
+  bridge()->SetSyncTransportState(syncer::SyncService::TransportState::PAUSED);
+  bridge()->OnSyncPaused();  // No-op, but for the sake of a realistic sequence.
+
+  // While in the Sync-paused state (and before the entities get committed
+  // successfully and thus would get untracked anyway), delete the first
+  // URL+visit and notify the bridge. This should not result in any Put() or
+  // Delete() calls to the processor (deletions are handled through the separate
+  // HISTORY_DELETE_DIRECTIVES data type), but it should untrack the deleted
+  // entity.
+  backend()->RemoveURLAndVisits(url_row1.id());
+
+  bridge()->OnVisitDeleted(visit_row1);
+  bridge()->OnURLsDeleted(/*history_backend=*/nullptr, /*all_history=*/false,
+                          /*expired=*/false, {url_row1}, /*favicon_urls=*/{});
+  // The metadata for the first (deleted) entity should be gone, but the
+  // metadata for the second entity should still exist.
+  EXPECT_EQ(GetPersistedEntityMetadata().size(), 1u);
+}
+
 TEST_F(HistorySyncBridgeTest, UntracksAllEntitiesOnAllHistoryDeletion) {
   // Start syncing (with no data yet).
   ApplyInitialSyncChanges({});
@@ -1674,6 +1689,47 @@ TEST_F(HistorySyncBridgeTest, UntracksAllEntitiesOnAllHistoryDeletion) {
   // result in any Put() or Delete() calls on the processor (deletions are
   // handled through the separate HISTORY_DELETE_DIRECTIVES data type), but it
   // should untrack all entities.
+  backend()->Clear();
+  // Deleting all history does *not* result in OnVisitDeleted() calls, and also
+  // does not include the actual deleted URLs in OnURLsDeleted().
+  bridge()->OnURLsDeleted(/*history_backend=*/nullptr, /*all_history=*/true,
+                          /*expired=*/false, /*deleted_rows=*/{},
+                          /*favicon_urls=*/{});
+
+  EXPECT_TRUE(GetPersistedEntityMetadata().empty());
+}
+
+TEST_F(HistorySyncBridgeTest,
+       UntracksAllEntitiesOnAllHistoryDeletionWhileSyncPaused) {
+  // Start syncing (with no data yet).
+  ApplyInitialSyncChanges({});
+
+  // Add some visits to the DB.
+  auto [url_row1, visit_row1] = AddVisitToBackendAndAdvanceClock(
+      GURL("https://url1.com"), ui::PAGE_TRANSITION_TYPED);
+  auto [url_row2, visit_row2] = AddVisitToBackendAndAdvanceClock(
+      GURL("https://url2.com"), ui::PAGE_TRANSITION_LINK);
+
+  // Notify the bridge about the visits - they should be sent to the processor.
+  bridge()->OnURLVisited(
+      /*history_backend=*/nullptr, url_row1, visit_row1);
+  bridge()->OnURLVisited(
+      /*history_backend=*/nullptr, url_row2, visit_row2);
+  ASSERT_EQ(GetPersistedEntityMetadata().size(), 2u);
+
+  EXPECT_EQ(processor()->GetEntities().size(), 2u);
+
+  // Sync gets paused. In this state, the bridge will not send any more data to
+  // the processor, but deletions should still cause entities to get untracked.
+  bridge()->SetSyncTransportState(syncer::SyncService::TransportState::PAUSED);
+  bridge()->OnSyncPaused();  // No-op, but for the sake of a realistic sequence.
+
+  // While in the Sync-paused state (and before the entities get committed
+  // successfully and thus would get untracked anyway), simulate a
+  // delete-all-history operation. This should not result in any Put() or
+  // Delete() calls to the processor (deletions are handled through the separate
+  // HISTORY_DELETE_DIRECTIVES data type), but it should untrack the deleted
+  // entity.
   backend()->Clear();
   // Deleting all history does *not* result in OnVisitDeleted() calls, and also
   // does not include the actual deleted URLs in OnURLsDeleted().

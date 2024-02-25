@@ -211,6 +211,20 @@ void InitializeStaticGLBindingsGL() {
   g_no_context_current_gl->Api = new NoContextGLApi;
 }
 
+CurrentGL*& ThreadLocalCurrentGL() {
+  thread_local CurrentGL* current_gl = nullptr;
+  return current_gl;
+}
+
+CurrentGL* GetThreadLocalCurrentGL() {
+  // This prevents mutation of the thread local CurrentGL pointer.
+  return ThreadLocalCurrentGL();
+}
+
+void SetThreadLocalCurrentGL(CurrentGL* current) {
+  ThreadLocalCurrentGL() = current ? current : g_no_context_current_gl;
+}
+
 void ClearBindingsGL() {
   if (g_no_context_current_gl) {
     delete g_no_context_current_gl->Api;
@@ -219,8 +233,7 @@ void ClearBindingsGL() {
     delete g_no_context_current_gl;
     g_no_context_current_gl = nullptr;
   }
-
-  GetGlContextForCurrentThread() = nullptr;
+  ThreadLocalCurrentGL() = nullptr;
 }
 
 bool SetNullDrawGLBindingsEnabled(bool enabled) {
@@ -231,10 +244,6 @@ bool SetNullDrawGLBindingsEnabled(bool enabled) {
 
 bool GetNullDrawBindingsEnabled() {
   return g_null_draw_bindings_enabled;
-}
-
-void SetCurrentGL(CurrentGL* current) {
-  GetGlContextForCurrentThread() = current ? current : g_no_context_current_gl;
 }
 
 GLApi::GLApi() = default;
@@ -301,21 +310,6 @@ void RealGLApi::glTexImage2DFn(GLenum target,
   GLenum gl_format = GetTexFormat(version_.get(), format);
   GLenum gl_type = GetPixelType(version_.get(), type, format);
 
-  // TODO(yizhou): Check if cubemap, 3d texture or texture2d array has the same
-  // bug on intel mac.
-  if (!version_->is_angle && gl_workarounds_.reset_teximage2d_base_level &&
-      target == GL_TEXTURE_2D) {
-    GLint base_level = 0;
-    GLApiBase::glGetTexParameterivFn(target, GL_TEXTURE_BASE_LEVEL,
-                                     &base_level);
-    if (base_level) {
-      GLApiBase::glTexParameteriFn(target, GL_TEXTURE_BASE_LEVEL, 0);
-      GLApiBase::glTexImage2DFn(target, level, gl_internal_format, width,
-                                height, border, gl_format, gl_type, pixels);
-      GLApiBase::glTexParameteriFn(target, GL_TEXTURE_BASE_LEVEL, base_level);
-      return;
-    }
-  }
   GLApiBase::glTexImage2DFn(target, level, gl_internal_format, width, height,
                             border, gl_format, gl_type, pixels);
 }
@@ -424,21 +418,6 @@ void RealGLApi::glClearFn(GLbitfield mask) {
   } else if (logging_enabled_) {
     LOG(WARNING) << "Skipped glClear()";
   }
-}
-
-void RealGLApi::glClearColorFn(GLclampf red,
-                               GLclampf green,
-                               GLclampf blue,
-                               GLclampf alpha) {
-  if (!version_->is_angle && gl_workarounds_.clear_to_zero_or_one_broken &&
-      (1 == red || 0 == red) && (1 == green || 0 == green) &&
-      (1 == blue || 0 == blue) && (1 == alpha || 0 == alpha)) {
-    if (1 == alpha)
-      alpha = 2;
-    else
-      alpha = -1;
-  }
-  GLApiBase::glClearColorFn(red, green, blue, alpha);
 }
 
 void RealGLApi::glDrawArraysFn(GLenum mode, GLint first, GLsizei count) {
@@ -553,10 +532,6 @@ void RealGLApi::SetDisabledExtensions(const std::string& disabled_extensions) {
 void RealGLApi::ClearCachedGLExtensions() {
   filtered_exts_.clear();
   filtered_exts_str_.clear();
-}
-
-void RealGLApi::set_gl_workarounds(const GLWorkarounds& workarounds) {
-  gl_workarounds_ = workarounds;
 }
 
 void RealGLApi::set_version(std::unique_ptr<GLVersionInfo> version) {

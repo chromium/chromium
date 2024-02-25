@@ -29,9 +29,7 @@ import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.permissions.PermissionCallback;
 import org.chromium.ui.test.util.BlankUiTestActivity;
 
-/**
- * Tests for the {@link SaveBitmapDelegate}.
- */
+/** Tests for the {@link SaveBitmapDelegate}. */
 @RunWith(ChromeJUnit4ClassRunner.class)
 public class SaveBitmapDelegateTest {
     private SaveBitmapDelegate mSaveBitmapDelegate;
@@ -40,8 +38,7 @@ public class SaveBitmapDelegateTest {
     public BaseActivityTestRule<BlankUiTestActivity> mActivityTestRule =
             new BaseActivityTestRule<>(BlankUiTestActivity.class);
 
-    @Mock
-    private Runnable mCloseDialogRunnable;
+    @Mock private Runnable mCloseDialogRunnable;
 
     private TestWindowAndroid mPermissionDelegate;
 
@@ -56,13 +53,18 @@ public class SaveBitmapDelegateTest {
         mPermissionDelegate =
                 TestThreadUtils.runOnUiThreadBlocking(() -> new TestWindowAndroid(activity));
         Bitmap bitmap = Bitmap.createBitmap(10, 10, Bitmap.Config.ALPHA_8);
-        mSaveBitmapDelegate = new SaveBitmapDelegate(activity, bitmap,
-                R.string.screenshot_filename_prefix, mCloseDialogRunnable, mPermissionDelegate) {
-            @Override
-            protected void finishDownloadWithPermission(boolean granted) {
-                mBitmapSaved = true;
-            }
-        };
+        mSaveBitmapDelegate =
+                new SaveBitmapDelegate(
+                        activity,
+                        bitmap,
+                        R.string.screenshot_filename_prefix,
+                        mCloseDialogRunnable,
+                        mPermissionDelegate) {
+                    @Override
+                    protected void finishDownloadWithPermission(boolean granted) {
+                        mBitmapSaved = true;
+                    }
+                };
     }
 
     @After
@@ -96,9 +98,7 @@ public class SaveBitmapDelegateTest {
         Assert.assertFalse(mBitmapSaved);
     }
 
-    /**
-     * Test implementation of {@link WindowAndroid}.
-     */
+    /** Test implementation of {@link WindowAndroid}. */
     private class TestWindowAndroid extends WindowAndroid {
         private boolean mHasPermission;
         private boolean mCanRequestPermission;

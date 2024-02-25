@@ -4,22 +4,22 @@
 
 #include "third_party/blink/renderer/core/script/script.h"
 
-#include "third_party/abseil-cpp/absl/types/optional.h"
+#include <optional>
+
 #include "third_party/blink/renderer/bindings/core/v8/script_evaluation_result.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_core.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
-#include "third_party/blink/renderer/core/probe/core_probes.h"
 #include "third_party/blink/renderer/core/script_type_names.h"
 
 namespace blink {
 
-absl::optional<mojom::blink::ScriptType> Script::ParseScriptType(
+std::optional<mojom::blink::ScriptType> Script::ParseScriptType(
     const String& script_type) {
   if (script_type == script_type_names::kClassic)
     return mojom::blink::ScriptType::kClassic;
   if (script_type == script_type_names::kModule)
     return mojom::blink::ScriptType::kModule;
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 void Script::RunScriptOnScriptState(
@@ -28,9 +28,6 @@ void Script::RunScriptOnScriptState(
     V8ScriptRunner::RethrowErrorsOption rethrow_errors) {
   if (!script_state)
     return;
-
-  probe::CompileAndRunScript probe_scope(ExecutionContext::From(script_state),
-                                         this);
 
   v8::HandleScope scope(script_state->GetIsolate());
   std::ignore = RunScriptOnScriptStateAndReturnValue(

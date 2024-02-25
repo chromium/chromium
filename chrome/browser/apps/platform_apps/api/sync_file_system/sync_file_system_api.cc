@@ -161,7 +161,7 @@ SyncFileSystemRequestFileSystemFunction::Run() {
                GetFileSystemContext(),
                blink::StorageKey::CreateFirstParty(
                    url::Origin::Create(source_url())),
-               /*bucket=*/absl::nullopt, storage::kFileSystemTypeSyncable,
+               /*bucket=*/std::nullopt, storage::kFileSystemTypeSyncable,
                storage::OPEN_FILE_SYSTEM_CREATE_IF_NONEXISTENT,
                base::BindOnce(&self::DidOpenFileSystem, this)));
   return RespondLater();

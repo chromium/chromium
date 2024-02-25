@@ -4,17 +4,17 @@
 
 #import "ios/chrome/browser/ui/content_suggestions/cells/content_suggestions_return_to_recent_tab_view.h"
 
+#import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/browser/ui/content_suggestions/cells/content_suggestions_return_to_recent_tab_item.h"
-#import "ios/chrome/browser/ui/content_suggestions/content_suggestions_feature.h"
 #import "ios/chrome/browser/ui/content_suggestions/ntp_home_constant.h"
+#import "ios/chrome/browser/ui/ntp/new_tab_page_constants.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/table_view/table_view_cells_constants.h"
 #import "ui/base/l10n/l10n_util.h"
 
 namespace {
 const CGFloat kContentViewCornerRadius = 12.0f;
-const CGFloat kMagicStackContentViewCornerRadius = 24.0f;
 const CGFloat kContentViewBorderWidth = 1.0f;
 const CGFloat kIconCornerRadius = 4.0f;
 const CGFloat kContentViewSubviewSpacing = 12.0f;
@@ -27,7 +27,7 @@ const CGFloat kIconWidth = 32.0f;
   self = [super initWithFrame:frame];
   if (self) {
     self.layer.cornerRadius = IsMagicStackEnabled()
-                                  ? kMagicStackContentViewCornerRadius
+                                  ? kHomeModuleContainerCornerRadius
                                   : kContentViewCornerRadius;
     self.layer.masksToBounds = YES;
     if (IsMagicStackEnabled()) {

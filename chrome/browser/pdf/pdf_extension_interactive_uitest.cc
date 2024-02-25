@@ -3,10 +3,12 @@
 // found in the LICENSE file.
 
 #include "base/run_loop.h"
+#include "base/test/with_feature_override.h"
 #include "build/build_config.h"
 #include "build/buildflag.h"
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/extensions/extension_apitest.h"
+#include "chrome/browser/pdf/pdf_extension_test_base.h"
 #include "chrome/browser/pdf/pdf_extension_test_util.h"
 #include "chrome/browser/renderer_context_menu/render_view_context_menu_browsertest_util.h"
 #include "chrome/browser/ui/tabs/tab_strip_model_observer.h"
@@ -24,6 +26,7 @@
 #include "extensions/browser/guest_view/mime_handler_view/mime_handler_view_guest.h"
 #include "net/dns/mock_host_resolver.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
+#include "pdf/pdf_features.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/mojom/input/focus_type.mojom-shared.h"
@@ -50,41 +53,17 @@
 namespace {
 
 using ::pdf_extension_test_util::ConvertPageCoordToScreenCoord;
-using ::pdf_extension_test_util::EnsurePDFHasLoaded;
 using ::pdf_extension_test_util::GetOnlyMimeHandlerView;
 using ::pdf_extension_test_util::SetInputFocusOnPlugin;
 
-class PDFExtensionInteractiveUITest : public extensions::ExtensionApiTest {
+class PDFExtensionInteractiveUITest : public base::test::WithFeatureOverride,
+                                      public PDFExtensionTestBase {
  public:
+  PDFExtensionInteractiveUITest()
+      : base::test::WithFeatureOverride(chrome_pdf::features::kPdfOopif) {}
+
   void SetUpCommandLine(base::CommandLine* command_line) override {
     content::IsolateAllSitesForTesting(command_line);
-  }
-
-  void SetUpOnMainThread() override {
-    extensions::ExtensionApiTest::SetUpOnMainThread();
-    host_resolver()->AddRule("*", "127.0.0.1");
-    ASSERT_TRUE(embedded_test_server()->InitializeAndListen());
-    content::SetupCrossSiteRedirector(embedded_test_server());
-    embedded_test_server()->StartAcceptingConnections();
-  }
-
-  void TearDownOnMainThread() override {
-    ASSERT_TRUE(embedded_test_server()->ShutdownAndWaitUntilComplete());
-    extensions::ExtensionApiTest::TearDownOnMainThread();
-  }
-
-  extensions::MimeHandlerViewGuest* LoadPdfGetMimeHandlerView(const GURL& url) {
-    ui_test_utils::NavigateToURLWithDisposition(
-        browser(), url, WindowOpenDisposition::NEW_FOREGROUND_TAB,
-        ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
-    if (!EnsurePDFHasLoaded(GetActiveWebContents()))
-      return nullptr;
-
-    return GetOnlyMimeHandlerView(GetActiveWebContents());
-  }
-
-  content::WebContents* GetActiveWebContents() {
-    return browser()->tab_strip_model()->GetActiveWebContents();
   }
 
   content::FocusedNodeDetails TabAndWait(
@@ -101,6 +80,8 @@ class PDFExtensionInteractiveUITest : public extensions::ExtensionApiTest {
     }
     return focus_observer.Wait();
   }
+
+  bool UseOopif() const override { return GetParam(); }
 };
 
 class TabChangedWaiter : public TabStripModelObserver {
@@ -130,9 +111,14 @@ class TabChangedWaiter : public TabStripModelObserver {
 }  // namespace
 
 // For crbug.com/1038918
-IN_PROC_BROWSER_TEST_F(PDFExtensionInteractiveUITest,
+IN_PROC_BROWSER_TEST_P(PDFExtensionInteractiveUITest,
                        CtrlPageUpDownSwitchesTabs) {
-  extensions::MimeHandlerViewGuest* guest = LoadPdfGetMimeHandlerView(
+  // TODO(crbug.com/1445746): Remove this once the test passes for OOPIF PDF.
+  if (UseOopif()) {
+    GTEST_SKIP();
+  }
+
+  extensions::MimeHandlerViewGuest* guest = LoadPdfInNewTabGetMimeHandlerView(
       embedded_test_server()->GetURL("/pdf/test.pdf"));
 
   auto* tab_strip_model = browser()->tab_strip_model();
@@ -166,8 +152,13 @@ IN_PROC_BROWSER_TEST_F(PDFExtensionInteractiveUITest,
   EXPECT_EQ(1, tab_strip_model->active_index());
 }
 
-IN_PROC_BROWSER_TEST_F(PDFExtensionInteractiveUITest, FocusForwardTraversal) {
-  extensions::MimeHandlerViewGuest* guest = LoadPdfGetMimeHandlerView(
+IN_PROC_BROWSER_TEST_P(PDFExtensionInteractiveUITest, FocusForwardTraversal) {
+  // TODO(crbug.com/1445746): Remove this once the test passes for OOPIF PDF.
+  if (UseOopif()) {
+    GTEST_SKIP();
+  }
+
+  extensions::MimeHandlerViewGuest* guest = LoadPdfInNewTabGetMimeHandlerView(
       embedded_test_server()->GetURL("/pdf/test.pdf#toolbar=0"));
 
   // Tab in.
@@ -179,8 +170,13 @@ IN_PROC_BROWSER_TEST_F(PDFExtensionInteractiveUITest, FocusForwardTraversal) {
   EXPECT_EQ(blink::mojom::FocusType::kNone, details.focus_type);
 }
 
-IN_PROC_BROWSER_TEST_F(PDFExtensionInteractiveUITest, FocusReverseTraversal) {
-  extensions::MimeHandlerViewGuest* guest = LoadPdfGetMimeHandlerView(
+IN_PROC_BROWSER_TEST_P(PDFExtensionInteractiveUITest, FocusReverseTraversal) {
+  // TODO(crbug.com/1445746): Remove this once the test passes for OOPIF PDF.
+  if (UseOopif()) {
+    GTEST_SKIP();
+  }
+
+  extensions::MimeHandlerViewGuest* guest = LoadPdfInNewTabGetMimeHandlerView(
       embedded_test_server()->GetURL("/pdf/test.pdf#toolbar=0"));
 
   // Tab in.
@@ -218,10 +214,16 @@ views::Widget* TouchSelectText(content::WebContents* contents,
 
 // On text selection, a touch selection menu should pop up. On clicking ellipsis
 // icon on the menu, the context menu should open up.
-IN_PROC_BROWSER_TEST_F(PDFExtensionInteractiveUITest,
+IN_PROC_BROWSER_TEST_P(PDFExtensionInteractiveUITest,
                        ContextMenuOpensFromTouchSelectionMenu) {
+  // TODO(crbug.com/1445746): Remove this once the test passes for OOPIF PDF.
+  if (UseOopif()) {
+    GTEST_SKIP();
+  }
+
   const GURL url = embedded_test_server()->GetURL("/pdf/text_large.pdf");
-  extensions::MimeHandlerViewGuest* guest = LoadPdfGetMimeHandlerView(url);
+  extensions::MimeHandlerViewGuest* guest =
+      LoadPdfInNewTabGetMimeHandlerView(url);
   ASSERT_TRUE(guest);
 
   content::RenderFrameHost* guest_mainframe = guest->GetGuestMainFrame();
@@ -265,12 +267,18 @@ IN_PROC_BROWSER_TEST_F(PDFExtensionInteractiveUITest,
 #else
 #define MAYBE_TouchSelectionBounds TouchSelectionBounds
 #endif  // BUILDFLAG(IS_WIN)
-IN_PROC_BROWSER_TEST_F(PDFExtensionInteractiveUITest,
+IN_PROC_BROWSER_TEST_P(PDFExtensionInteractiveUITest,
                        MAYBE_TouchSelectionBounds) {
+  // TODO(crbug.com/1445746): Remove this once the test passes for OOPIF PDF.
+  if (UseOopif()) {
+    GTEST_SKIP();
+  }
+
   // Use test.pdf here because it has embedded font metrics. With a fixed zoom,
   // coordinates should be consistent across platforms.
   const GURL url = embedded_test_server()->GetURL("/pdf/test.pdf#zoom=100");
-  extensions::MimeHandlerViewGuest* guest = LoadPdfGetMimeHandlerView(url);
+  extensions::MimeHandlerViewGuest* guest =
+      LoadPdfInNewTabGetMimeHandlerView(url);
   ASSERT_TRUE(guest);
 
   content::RenderFrameHost* guest_mainframe = guest->GetGuestMainFrame();
@@ -297,3 +305,7 @@ IN_PROC_BROWSER_TEST_F(PDFExtensionInteractiveUITest,
   EXPECT_POINTF_NEAR(gfx::PointF(492.0f, 171.0f), end_bound.edge_end(), 1.0f);
 }
 #endif  // defined(TOOLKIT_VIEWS) && defined(USE_AURA)
+
+// TODO(crbug.com/1445746): Stop testing both modes after OOPIF PDF viewer
+// launches.
+INSTANTIATE_FEATURE_OVERRIDE_TEST_SUITE(PDFExtensionInteractiveUITest);

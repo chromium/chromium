@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_ASH_ATTESTATION_TPM_CHALLENGE_KEY_SUBTLE_H_
 
 #include <memory>
+#include <optional>
 #include <string>
 
 #include "base/functional/callback.h"
@@ -22,7 +23,6 @@
 #include "chromeos/dbus/tpm_manager/tpm_manager.pb.h"
 #include "components/account_id/account_id.h"
 #include "components/user_manager/user.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 class Profile;
 
@@ -98,7 +98,7 @@ class TpmChallengeKeySubtle {
       const std::string& key_name,
       Profile* profile,
       TpmChallengeKeyCallback callback,
-      const absl::optional<std::string>& signals) = 0;
+      const std::optional<std::string>& signals) = 0;
 
   // Generates a VA challenge response using the key pair prepared by
   // |PrepareKey| method. Returns VA challenge response via |callback|. In case
@@ -152,7 +152,7 @@ class TpmChallengeKeySubtleImpl final : public TpmChallengeKeySubtle {
                            const std::string& key_name,
                            Profile* profile,
                            TpmChallengeKeyCallback callback,
-                           const absl::optional<std::string>& signals) override;
+                           const std::optional<std::string>& signals) override;
   void StartSignChallengeStep(const std::string& challenge,
                               TpmChallengeKeyCallback callback) override;
   void StartRegisterKeyStep(TpmChallengeKeyCallback callback) override;
@@ -233,15 +233,15 @@ class TpmChallengeKeySubtleImpl final : public TpmChallengeKeySubtle {
   void RunCallback(const TpmChallengeKeyResult& result);
 
   std::unique_ptr<AttestationFlow> default_attestation_flow_;
-  raw_ptr<AttestationFlow, ExperimentalAsh> attestation_flow_ = nullptr;
+  raw_ptr<AttestationFlow, LeakedDanglingUntriaged> attestation_flow_ = nullptr;
   // Can be nullptr.
-  raw_ptr<MachineCertificateUploader, ExperimentalAsh>
+  raw_ptr<MachineCertificateUploader, LeakedDanglingUntriaged>
       machine_certificate_uploader_ = nullptr;
 
   TpmChallengeKeyCallback callback_;
   // |profile_| may be nullptr if this is an instance that is used device-wide
   // and only intended to work with machine keys.
-  raw_ptr<Profile, DanglingUntriaged | ExperimentalAsh> profile_ = nullptr;
+  raw_ptr<Profile, DanglingUntriaged> profile_ = nullptr;
 
   ::attestation::VerifiedAccessFlow flow_type_ =
       ::attestation::ENTERPRISE_MACHINE;
@@ -255,7 +255,7 @@ class TpmChallengeKeySubtleImpl final : public TpmChallengeKeySubtle {
   // as corporate.
   std::string public_key_;
   // Signals from Context Aware Access.
-  absl::optional<std::string> signals_;
+  std::optional<std::string> signals_;
 
   SEQUENCE_CHECKER(sequence_checker_);
 

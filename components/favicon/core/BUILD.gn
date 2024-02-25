@@ -24,7 +24,6 @@ static_library("core") {
     "history_ui_favicon_request_handler.h",
     "history_ui_favicon_request_handler_impl.cc",
     "history_ui_favicon_request_handler_impl.h",
-    "large_favicon_provider.h",
     "large_icon_service.h",
     "large_icon_service_impl.cc",
     "large_icon_service_impl.h",
@@ -62,7 +61,6 @@ static_library("database") {
     "//components/database_utils",
     "//components/favicon_base",
     "//sql",
-    "//third_party/sqlite",
     "//ui/gfx",
     "//url",
   ]
@@ -118,7 +116,6 @@ source_set("unit_tests") {
     "//sql:test_support",
     "//testing/gmock",
     "//testing/gtest",
-    "//third_party/sqlite",
     "//ui/base",
     "//ui/gfx",
     "//ui/gfx:test_support",

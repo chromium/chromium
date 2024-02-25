@@ -11,7 +11,7 @@ TestPasswordAutofillAgent::TestPasswordAutofillAgent(
     blink::AssociatedInterfaceRegistry* registry)
     : PasswordAutofillAgent(render_frame, registry) {}
 
-TestPasswordAutofillAgent::~TestPasswordAutofillAgent() {}
+TestPasswordAutofillAgent::~TestPasswordAutofillAgent() = default;
 
 bool TestPasswordAutofillAgent::FrameCanAccessPasswordManager() {
   return true;

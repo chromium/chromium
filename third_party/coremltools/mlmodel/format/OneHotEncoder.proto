@@ -1,0 +1,41 @@
+// Copyright (c) 2017, Apple Inc. All rights reserved.
+//
+// Use of this source code is governed by a BSD-3-clause license that can be
+// found in LICENSE.txt or at https://opensource.org/licenses/BSD-3-Clause
+
+syntax = "proto3";
+option optimize_for = LITE_RUNTIME;
+
+import public "DataStructures.proto";
+
+package CoreML.Specification;
+
+/*
+ * Transforms a categorical feature into an array. The array will be all
+ * zeros expect a single entry of one.
+ *
+ * Each categorical value will map to an index, this mapping is given by
+ * either the ``stringCategories`` parameter or the ``int64Categories``
+ * parameter.
+ */
+message OneHotEncoder {
+  enum HandleUnknown {
+    ErrorOnUnknown = 0;
+    IgnoreUnknown = 1;  // Output will be all zeros for unknown values.
+  }
+
+  /*
+   * Mapping to be used for the encoding. The position of the category in
+   * the below vector determines where the single one entry will be in the
+   * output.
+   */
+  oneof CategoryType {
+    StringVector stringCategories = 1;
+    Int64Vector int64Categories = 2;
+  }
+
+  // Output can be a dictionary with only one entry, instead of an array.
+  bool outputSparse = 10;
+
+  HandleUnknown handleUnknown = 11;
+}

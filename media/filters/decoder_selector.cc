@@ -197,7 +197,7 @@ void DecoderSelector<StreamType>::SelectDecoderInternal(
   }
 
   if (needs_new_decoders) {
-    decode_failure_reinit_cause_ = absl::nullopt;
+    decode_failure_reinit_cause_ = std::nullopt;
     CreateDecoders();
   }
 

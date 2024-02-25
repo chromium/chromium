@@ -19,6 +19,8 @@ include_rules = [
   "+chromeos/ash/services/assistant/public/cpp",
   "+chromeos/ash/services/libassistant/public/cpp",
   "+chromeos/constants",
+  "+chromeos/ui/frame",
+  "+components/feature_engagement/public/feature_constants.h",
   "+mojo/public/cpp",
   "+net/base",
   "+third_party/skia/include/core",
@@ -51,6 +53,8 @@ include_rules = [
 
 specific_include_rules = {
   ".*_unittest\.cc": [
+    "+ash/app_list/test/app_list_test_helper.h",
+    "+ash/app_list/views/search_box_view.h",
     "+ash/assistant/assistant_controller_impl.h",
     "+ash/assistant/assistant_interaction_controller_impl.h",
     "+ash/assistant/assistant_ui_controller.h",
@@ -61,12 +65,12 @@ specific_include_rules = {
     "+ash/shell.h",
     "+ash/test/ash_test_base.h",
     "+ash/test/ash_test_views_delegate.h",
-    "+ash/wm/tablet_mode/tablet_mode_controller.h",
     "+base/test/scoped_feature_list.h",
     "+cc/test/pixel_comparator.h",
     "+chromeos/ash/services/assistant/test_support/mock_assistant.h",
     "+chromeos/ui/frame/default_frame_header.h",
     "+chromeos/ui/vector_icons/vector_icons.h",
+    "+components/feature_engagement/test/scoped_iph_feature_list.h",
     "+components/prefs",
     "+components/vector_icons",
     "+testing/gmock",

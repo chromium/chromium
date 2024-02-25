@@ -2,12 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {assert} from 'chrome://resources/js/assert_ts.js';
+import {assert} from 'chrome://resources/js/assert.js';
 import {CustomElement} from 'chrome://resources/js/custom_element.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 
 import {getTemplate} from './experiment.html.js';
-import {Feature, FlagsBrowserProxyImpl} from './flags_browser_proxy.js';
+import type {Feature} from './flags_browser_proxy.js';
+import {FlagsBrowserProxyImpl} from './flags_browser_proxy.js';
 
 /**
  * Parses the element's text content to find the matching search term.

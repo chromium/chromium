@@ -69,8 +69,8 @@ class EmbeddingPostprocessor : public Postprocessor {
 
   // Performs actual cosine similarity computation.
   template <typename T>
-  static tflite::support::StatusOr<double>
-  ComputeCosineSimilarity(const T* u, const T* v, int num_elements);
+  static tflite::support::StatusOr<double> ComputeCosineSimilarity(
+      const T* u, const T* v, int num_elements);
 
   template <typename T>
   void NormalizeFeatureVector(T* feature_vector) const;
@@ -146,8 +146,7 @@ void EmbeddingPostprocessor::QuantizeFeatureVector(T* feature_vector) const {
 /* static */
 template <typename T>
 tflite::support::StatusOr<double>
-EmbeddingPostprocessor::ComputeCosineSimilarity(const T* u,
-                                                const T* v,
+EmbeddingPostprocessor::ComputeCosineSimilarity(const T* u, const T* v,
                                                 int num_elements) {
   if (num_elements <= 0) {
     return CreateStatusWithPayload(
@@ -175,8 +174,7 @@ EmbeddingPostprocessor::ComputeCosineSimilarity(const T* u,
 /* static */
 template <typename T>
 tflite::support::StatusOr<double> EmbeddingPostprocessor::CosineSimilarity(
-    const T& u,
-    const T& v) {
+    const T& u, const T& v) {
   if (u.has_value_string() && v.has_value_string()) {
     if (u.value_string().size() != v.value_string().size()) {
       return CreateStatusWithPayload(

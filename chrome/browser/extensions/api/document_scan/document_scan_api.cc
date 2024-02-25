@@ -4,15 +4,14 @@
 
 #include "chrome/browser/extensions/api/document_scan/document_scan_api.h"
 
+#include <optional>
 #include <string>
 #include <utility>
 #include <vector>
 
-#include "base/base64.h"
-#include "base/containers/contains.h"
 #include "base/functional/bind.h"
-#include "chromeos/crosapi/mojom/document_scan.mojom.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
+#include "chrome/browser/extensions/api/document_scan/document_scan_api_handler.h"
+#include "chrome/browser/extensions/chrome_extension_function_details.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chrome/browser/ash/crosapi/crosapi_ash.h"
@@ -22,137 +21,239 @@
 #include "chromeos/lacros/lacros_service.h"
 #endif
 
-namespace extensions::api {
+namespace extensions {
 
 namespace {
 
 // Error messages that can be included in a response when scanning fails.
 constexpr char kUserGestureRequiredError[] =
     "User gesture required to perform scan";
-constexpr char kNoScannersAvailableError[] = "No scanners available";
-constexpr char kUnsupportedMimeTypesError[] = "Unsupported MIME types";
 constexpr char kScanImageError[] = "Failed to scan image";
-constexpr char kVirtualPrinterUnavailableError[] =
-    "Virtual USB printer unavailable";
-
-// The name of the virtual USB printer used for testing.
-constexpr char kVirtualUSBPrinter[] = "DavieV Virtual USB Printer (USB)";
-
-// The testing MIME type.
-constexpr char kTestingMimeType[] = "testing";
-
-// The PNG MIME type.
-constexpr char kScannerImageMimeTypePng[] = "image/png";
-
-// The PNG image data URL prefix of a scanned image.
-constexpr char kPngImageDataUrlPrefix[] = "data:image/png;base64,";
 
 }  // namespace
 
 DocumentScanScanFunction::DocumentScanScanFunction() = default;
-
 DocumentScanScanFunction::~DocumentScanScanFunction() = default;
 
-void DocumentScanScanFunction::SetMojoInterfaceForTesting(
-    crosapi::mojom::DocumentScan* document_scan) {
-  document_scan_ = document_scan;
-}
-
 ExtensionFunction::ResponseAction DocumentScanScanFunction::Run() {
-  params_ = document_scan::Scan::Params::Create(args());
-  EXTENSION_FUNCTION_VALIDATE(params_);
+  auto params = api::document_scan::Scan::Params::Create(args());
+  EXTENSION_FUNCTION_VALIDATE(params);
 
   if (!user_gesture())
     return RespondNow(Error(kUserGestureRequiredError));
 
-  MaybeInitializeMojoInterface();
-  if (!document_scan_)
-    return RespondNow(Error(kScanImageError));
-
-  document_scan_->GetScannerNames(
-      base::BindOnce(&DocumentScanScanFunction::OnNamesReceived, this));
-  return did_respond() ? AlreadyResponded() : RespondLater();
-}
-
-void DocumentScanScanFunction::MaybeInitializeMojoInterface() {
-  // Check if SetMojoInterfaceForTesting() already initialized `document_scan_`.
-  if (document_scan_)
-    return;
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  DCHECK(crosapi::CrosapiManager::IsInitialized());
-  document_scan_ =
-      crosapi::CrosapiManager::Get()->crosapi_ash()->document_scan_ash();
-#else
-  auto* service = chromeos::LacrosService::Get();
-  if (service->IsAvailable<crosapi::mojom::DocumentScan>()) {
-    document_scan_ = service->GetRemote<crosapi::mojom::DocumentScan>().get();
-  } else {
-    LOG(ERROR) << "Document scan not available";
-  }
-#endif
-}
-
-void DocumentScanScanFunction::OnNamesReceived(
-    const std::vector<std::string>& scanner_names) {
-  if (scanner_names.empty()) {
-    Respond(Error(kNoScannersAvailableError));
-    return;
+  std::vector<std::string> mime_types;
+  if (params->options.mime_types) {
+    mime_types = std::move(*params->options.mime_types);
   }
 
-  bool should_use_virtual_usb_printer = false;
-  if (params_->options.mime_types) {
-    std::vector<std::string>& mime_types = *params_->options.mime_types;
-    if (base::Contains(mime_types, kTestingMimeType)) {
-      should_use_virtual_usb_printer = true;
-    } else if (!base::Contains(mime_types, kScannerImageMimeTypePng)) {
-      Respond(Error(kUnsupportedMimeTypesError));
-      return;
-    }
-  }
+  DocumentScanAPIHandler::Get(browser_context())
+      ->SimpleScan(
+          mime_types,
+          base::BindOnce(&DocumentScanScanFunction::OnScanCompleted, this));
 
-  // TODO(pstew): Call a delegate method here to select a scanner and options.
-  // The first scanner supporting one of the requested MIME types used to be
-  // selected. The testing MIME type dictates that the virtual USB printer
-  // should be used if available. Otherwise, since all of the scanners only
-  // support PNG, select the first scanner in the list.
-
-  std::string scanner_name;
-  if (should_use_virtual_usb_printer) {
-    if (!base::Contains(scanner_names, kVirtualUSBPrinter)) {
-      Respond(Error(kVirtualPrinterUnavailableError));
-      return;
-    }
-
-    scanner_name = kVirtualUSBPrinter;
-  } else {
-    scanner_name = scanner_names[0];
-  }
-
-  document_scan_->ScanFirstPage(
-      scanner_name,
-      base::BindOnce(&DocumentScanScanFunction::OnScanCompleted, this));
+  return RespondLater();
 }
 
 void DocumentScanScanFunction::OnScanCompleted(
-    crosapi::mojom::ScanFailureMode failure_mode,
-    const absl::optional<std::string>& scan_data) {
-  // TODO(pstew): Enlist a delegate to display received scan in the UI and
-  // confirm that this scan should be sent to the caller. If this is a
-  // multi-page scan, provide a means for adding additional scanned images up to
-  // the requested limit.
-  if (!scan_data.has_value() ||
-      failure_mode != crosapi::mojom::ScanFailureMode::kNoFailure) {
+    std::optional<api::document_scan::ScanResults> scan_results,
+    std::optional<std::string> error) {
+  if (error) {
+    Respond(Error(*error));
+    return;
+  }
+
+  if (!scan_results) {
     Respond(Error(kScanImageError));
     return;
   }
 
-  std::string image_base64;
-  base::Base64Encode(scan_data.value(), &image_base64);
-  document_scan::ScanResults scan_results;
-  scan_results.data_urls.push_back(kPngImageDataUrlPrefix + image_base64);
-  scan_results.mime_type = kScannerImageMimeTypePng;
-  Respond(ArgumentList(document_scan::Scan::Results::Create(scan_results)));
+  Respond(WithArguments(scan_results->ToValue()));
 }
 
-}  // namespace extensions::api
+DocumentScanGetScannerListFunction::DocumentScanGetScannerListFunction() =
+    default;
+DocumentScanGetScannerListFunction::~DocumentScanGetScannerListFunction() =
+    default;
+
+ExtensionFunction::ResponseAction DocumentScanGetScannerListFunction::Run() {
+  auto params = api::document_scan::GetScannerList::Params::Create(args());
+  EXTENSION_FUNCTION_VALIDATE(params);
+
+  DocumentScanAPIHandler::Get(browser_context())
+      ->GetScannerList(
+          ChromeExtensionFunctionDetails(this).GetNativeWindowForUI(),
+          extension_, user_gesture(), std::move(params->filter),
+          base::BindOnce(
+              &DocumentScanGetScannerListFunction::OnScannerListReceived,
+              this));
+
+  return did_respond() ? AlreadyResponded() : RespondLater();
+}
+
+void DocumentScanGetScannerListFunction::OnScannerListReceived(
+    api::document_scan::GetScannerListResponse response) {
+  Respond(ArgumentList(
+      api::document_scan::GetScannerList::Results::Create(response)));
+}
+
+DocumentScanOpenScannerFunction::DocumentScanOpenScannerFunction() = default;
+DocumentScanOpenScannerFunction::~DocumentScanOpenScannerFunction() = default;
+
+ExtensionFunction::ResponseAction DocumentScanOpenScannerFunction::Run() {
+  auto params = api::document_scan::OpenScanner::Params::Create(args());
+  EXTENSION_FUNCTION_VALIDATE(params);
+
+  DocumentScanAPIHandler::Get(browser_context())
+      ->OpenScanner(
+          extension_, std::move(params->scanner_id),
+          base::BindOnce(&DocumentScanOpenScannerFunction::OnResponseReceived,
+                         this));
+
+  return did_respond() ? AlreadyResponded() : RespondLater();
+}
+
+void DocumentScanOpenScannerFunction::OnResponseReceived(
+    api::document_scan::OpenScannerResponse response) {
+  Respond(
+      ArgumentList(api::document_scan::OpenScanner::Results::Create(response)));
+}
+
+DocumentScanGetOptionGroupsFunction::DocumentScanGetOptionGroupsFunction() =
+    default;
+DocumentScanGetOptionGroupsFunction::~DocumentScanGetOptionGroupsFunction() =
+    default;
+
+ExtensionFunction::ResponseAction DocumentScanGetOptionGroupsFunction::Run() {
+  auto params = api::document_scan::GetOptionGroups::Params::Create(args());
+  EXTENSION_FUNCTION_VALIDATE(params);
+
+  DocumentScanAPIHandler::Get(browser_context())
+      ->GetOptionGroups(
+          extension_, std::move(params->scanner_handle),
+          base::BindOnce(
+              &DocumentScanGetOptionGroupsFunction::OnResponseReceived, this));
+
+  return did_respond() ? AlreadyResponded() : RespondLater();
+}
+
+void DocumentScanGetOptionGroupsFunction::OnResponseReceived(
+    api::document_scan::GetOptionGroupsResponse response) {
+  Respond(ArgumentList(
+      api::document_scan::GetOptionGroups::Results::Create(response)));
+}
+
+DocumentScanCloseScannerFunction::DocumentScanCloseScannerFunction() = default;
+DocumentScanCloseScannerFunction::~DocumentScanCloseScannerFunction() = default;
+
+ExtensionFunction::ResponseAction DocumentScanCloseScannerFunction::Run() {
+  auto params = api::document_scan::CloseScanner::Params::Create(args());
+  EXTENSION_FUNCTION_VALIDATE(params);
+
+  DocumentScanAPIHandler::Get(browser_context())
+      ->CloseScanner(
+          extension_, std::move(params->scanner_handle),
+          base::BindOnce(&DocumentScanCloseScannerFunction::OnResponseReceived,
+                         this));
+
+  return did_respond() ? AlreadyResponded() : RespondLater();
+}
+
+void DocumentScanCloseScannerFunction::OnResponseReceived(
+    api::document_scan::CloseScannerResponse response) {
+  Respond(ArgumentList(
+      api::document_scan::CloseScanner::Results::Create(response)));
+}
+
+DocumentScanSetOptionsFunction::DocumentScanSetOptionsFunction() = default;
+DocumentScanSetOptionsFunction::~DocumentScanSetOptionsFunction() = default;
+
+ExtensionFunction::ResponseAction DocumentScanSetOptionsFunction::Run() {
+  auto params = api::document_scan::SetOptions::Params::Create(args());
+  EXTENSION_FUNCTION_VALIDATE(params);
+
+  DocumentScanAPIHandler::Get(browser_context())
+      ->SetOptions(
+          extension_, std::move(params->scanner_handle),
+          std::move(params->options),
+          base::BindOnce(&DocumentScanSetOptionsFunction::OnResponseReceived,
+                         this));
+
+  return did_respond() ? AlreadyResponded() : RespondLater();
+}
+
+void DocumentScanSetOptionsFunction::OnResponseReceived(
+    api::document_scan::SetOptionsResponse response) {
+  Respond(
+      ArgumentList(api::document_scan::SetOptions::Results::Create(response)));
+}
+
+DocumentScanStartScanFunction::DocumentScanStartScanFunction() = default;
+DocumentScanStartScanFunction::~DocumentScanStartScanFunction() = default;
+
+ExtensionFunction::ResponseAction DocumentScanStartScanFunction::Run() {
+  auto params = api::document_scan::StartScan::Params::Create(args());
+  EXTENSION_FUNCTION_VALIDATE(params);
+
+  DocumentScanAPIHandler::Get(browser_context())
+      ->StartScan(
+          ChromeExtensionFunctionDetails(this).GetNativeWindowForUI(),
+          extension_, user_gesture(), std::move(params->scanner_handle),
+          std::move(params->options),
+          base::BindOnce(&DocumentScanStartScanFunction::OnResponseReceived,
+                         this));
+
+  return did_respond() ? AlreadyResponded() : RespondLater();
+}
+
+void DocumentScanStartScanFunction::OnResponseReceived(
+    api::document_scan::StartScanResponse response) {
+  Respond(
+      ArgumentList(api::document_scan::StartScan::Results::Create(response)));
+}
+
+DocumentScanCancelScanFunction::DocumentScanCancelScanFunction() = default;
+DocumentScanCancelScanFunction::~DocumentScanCancelScanFunction() = default;
+
+ExtensionFunction::ResponseAction DocumentScanCancelScanFunction::Run() {
+  auto params = api::document_scan::CancelScan::Params::Create(args());
+  EXTENSION_FUNCTION_VALIDATE(params);
+
+  DocumentScanAPIHandler::Get(browser_context())
+      ->CancelScan(
+          extension_, std::move(params->job),
+          base::BindOnce(&DocumentScanCancelScanFunction::OnResponseReceived,
+                         this));
+
+  return did_respond() ? AlreadyResponded() : RespondLater();
+}
+
+void DocumentScanCancelScanFunction::OnResponseReceived(
+    api::document_scan::CancelScanResponse response) {
+  Respond(
+      ArgumentList(api::document_scan::CancelScan::Results::Create(response)));
+}
+
+DocumentScanReadScanDataFunction::DocumentScanReadScanDataFunction() = default;
+DocumentScanReadScanDataFunction::~DocumentScanReadScanDataFunction() = default;
+
+ExtensionFunction::ResponseAction DocumentScanReadScanDataFunction::Run() {
+  auto params = api::document_scan::ReadScanData::Params::Create(args());
+  EXTENSION_FUNCTION_VALIDATE(params);
+
+  DocumentScanAPIHandler::Get(browser_context())
+      ->ReadScanData(
+          extension_, std::move(params->job),
+          base::BindOnce(&DocumentScanReadScanDataFunction::OnResponseReceived,
+                         this));
+
+  return did_respond() ? AlreadyResponded() : RespondLater();
+}
+
+void DocumentScanReadScanDataFunction::OnResponseReceived(
+    api::document_scan::ReadScanDataResponse response) {
+  Respond(ArgumentList(
+      api::document_scan::ReadScanData::Results::Create(response)));
+}
+
+}  // namespace extensions

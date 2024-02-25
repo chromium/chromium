@@ -227,8 +227,8 @@ class ArcFileSystemOperationRunner
   void SetShouldDefer(bool should_defer);
 
   // Maybe nullptr in unittests.
-  const raw_ptr<content::BrowserContext, ExperimentalAsh> context_;
-  const raw_ptr<ArcBridgeService, ExperimentalAsh>
+  const raw_ptr<content::BrowserContext> context_;
+  const raw_ptr<ArcBridgeService>
       arc_bridge_service_;  // Owned by ArcServiceManager
 
   // Indicates if this instance should enable/disable deferring by events.

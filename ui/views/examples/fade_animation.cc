@@ -6,9 +6,9 @@
 
 #include <algorithm>
 #include <memory>
+#include <optional>
 
 #include "base/functional/bind.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/color/color_id.h"
@@ -123,6 +123,9 @@ FadingView::FadingView() {
 
 FadingView::~FadingView() = default;
 
+BEGIN_METADATA(FadingView)
+END_METADATA
+
 ProposedLayout CenteringLayoutManager::CalculateProposedLayout(
     const SizeBounds& size_bounds) const {
   ProposedLayout layout;
@@ -130,7 +133,7 @@ ProposedLayout CenteringLayoutManager::CalculateProposedLayout(
 
   gfx::Rect host_bounds(size_bounds.width().min_of(host_view()->width()),
                         size_bounds.height().min_of(host_view()->height()));
-  for (auto* child : children) {
+  for (views::View* child : children) {
     gfx::Size preferred_size = child->GetPreferredSize();
     gfx::Rect child_bounds = host_bounds;
     child_bounds.ClampToCenteredSize(preferred_size);

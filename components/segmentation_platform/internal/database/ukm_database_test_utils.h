@@ -6,6 +6,7 @@
 #define COMPONENTS_SEGMENTATION_PLATFORM_INTERNAL_DATABASE_UKM_DATABASE_TEST_UTILS_H_
 
 #include "components/segmentation_platform/internal/database/ukm_metrics_table.h"
+#include "components/segmentation_platform/internal/database/ukm_types.h"
 #include "url/gurl.h"
 
 namespace segmentation_platform::test_util {
@@ -34,6 +35,22 @@ struct UrlMatcher {
   GURL url;
 };
 void AssertUrlsInTable(sql::Database& db, const std::vector<UrlMatcher>& urls);
+
+// Gets all rows from UMA metrics table.
+std::vector<UmaMetricEntry> GetAllUmaMetrics(sql::Database& db);
+
+// Runs a `SELECT * FROM uma_metrics WHERE cond` type query and returns the
+// metrics rows.
+std::vector<UmaMetricEntry> GetUmaMetricsRowWithQuery(base::StringPiece query,
+                                                      sql::Database& db);
+
+// Checks UMA rows are equal.
+void ExpectUmaRowIsEqual(const UmaMetricEntry& row1,
+                         const UmaMetricEntry& row2);
+
+// Checks if the UMA metrics table rows and expected rows are the same.
+void AssertRowsInUmaMetricsTable(sql::Database& db,
+                                 const std::vector<UmaMetricEntry>& rows);
 
 }  // namespace segmentation_platform::test_util
 

@@ -10,8 +10,10 @@
 
 #include <map>
 #include <string>
+#include <string_view>
 #include <vector>
 
+#include "base/containers/span.h"
 #include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
 #include "base/types/expected.h"
@@ -167,7 +169,7 @@ class InputMethodEngine : virtual public TextInputMethod,
       int context_id,
       int length_before_selection,
       int length_after_selection,
-      base::StringPiece16 replacement_text);
+      std::u16string_view replacement_text);
 
   // Commit the text currently being composed to the composition.
   // Fails if the context is not focused.
@@ -234,7 +236,6 @@ class InputMethodEngine : virtual public TextInputMethod,
   // TextInputMethod overrides.
   void Focus(const TextInputMethod::InputContext& input_context) override;
   void Blur() override;
-  void OnTouch(ui::EventPointerType pointerType) override;
   void Enable(const std::string& component_id) override;
   void Disable() override;
   void Reset() override;
@@ -349,6 +350,10 @@ class InputMethodEngine : virtual public TextInputMethod,
                           ui::ime::InputMethodMenuItem* property);
 
   void OnScreenProjectionChanged(bool is_projected);
+
+  // Infers if the user is choosing from a candidate from the window.
+  // TODO(b/300576550): get this information from IME.
+  bool InferIsUserSelecting(base::span<const Candidate> candidates);
 
   // The current candidate window.
   ui::CandidateWindow candidate_window_;

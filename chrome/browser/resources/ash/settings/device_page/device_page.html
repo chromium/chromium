@@ -1,4 +1,8 @@
 <style include="settings-shared">
+  cr-link-row:not(:last-of-type) {
+    border-bottom: var(--cr-separator-line);
+  }
+
   .restore-defaults-button {
     border-radius: 16px;
     height: 32px;
@@ -10,6 +14,7 @@
     margin-inline-end: 8px;
   }
 </style>
+
 <os-settings-animated-pages id="pages" section="[[section_]]">
   <div id="main" route-path="default">
     <settings-card header-text="$i18n{devicePageTitle}">
@@ -17,15 +22,18 @@
           if="[[showPointersRow_(hasMouse_, hasPointingStick_,
                                 hasTouchpad_, isDeviceSettingsSplitEnabled_)]]">
         <cr-link-row id="pointersRow"
+            start-icon="[[rowIcons_.pointingStick]]"
             label="[[getPointersTitle_(hasMouse_, hasPointingStick_,
                                       hasTouchpad_)]]"
             on-click="onPointersClick_"
-            role-description="$i18n{subpageArrowRoleDescription}"></cr-link-row>
+            role-description="$i18n{subpageArrowRoleDescription}">
+        </cr-link-row>
       </template>
       <template is="dom-if"
           if="[[showPerDeviceMouseRow_(mice,
                                       isDeviceSettingsSplitEnabled_)]]">
-        <cr-link-row class="hr" id="perDeviceMouseRow" label="$i18n{mouseTitle}"
+        <cr-link-row id="perDeviceMouseRow"
+            start-icon="[[rowIcons_.mouse]]" label="$i18n{mouseTitle}"
             on-click="onPerDeviceMouseClick_" aria-label="$i18n{mouseTitle}"
             role-description="$i18n{subpageArrowRoleDescription}">
         </cr-link-row>
@@ -33,7 +41,8 @@
       <template is="dom-if"
           if="[[showPerDeviceTouchpadRow_(touchpads,
                                           isDeviceSettingsSplitEnabled_)]]">
-        <cr-link-row class="hr" id="perDeviceTouchpadRow"
+        <cr-link-row id="perDeviceTouchpadRow"
+            start-icon="[[rowIcons_.touchpad]]"
             aria-label="$i18n{touchpadTitle}"
             label="$i18n{touchpadTitle}" on-click="onPerDeviceTouchpadClick_"
             role-description="$i18n{subpageArrowRoleDescription}">
@@ -42,7 +51,8 @@
       <template is="dom-if"
           if="[[showPerDevicePointingStickRow_(pointingSticks,
                                               isDeviceSettingsSplitEnabled_)]]">
-        <cr-link-row class="hr" id="perDevicePointingStickRow"
+        <cr-link-row id="perDevicePointingStickRow"
+            start-icon="[[rowIcons_.pointingStick]]"
             aria-label="$i18n{pointingStickTitle}"
             label="$i18n{pointingStickTitle}"
             on-click="onPerDevicePointingStickClick_"
@@ -50,44 +60,67 @@
         </cr-link-row>
       </template>
       <template is="dom-if" if="[[isDeviceSettingsSplitEnabled_]]">
-        <cr-link-row class="hr" id="perDeviceKeyboardRow"
-            label="$i18n{keyboardTitle}" aria-label="$i18n{keyboardTitle}"
+        <cr-link-row id="perDeviceKeyboardRow"
+            start-icon="[[rowIcons_.keyboardAndInputs]]"
+            label="$i18n{keyboardTitle}"
+            aria-label="$i18n{keyboardTitle}"
+            sub-label="[[inputMethodDisplayName_]]"
             on-click="onPerDeviceKeyboardClick_"
             role-description="$i18n{subpageArrowRoleDescription}">
         </cr-link-row>
       </template>
       <template is="dom-if" if="[[!isDeviceSettingsSplitEnabled_]]">
-        <cr-link-row class="hr" id="keyboardRow" label="$i18n{keyboardTitle}"
+        <cr-link-row id="keyboardRow"
+            start-icon="[[rowIcons_.keyboardAndInputs]]"
+            label="$i18n{keyboardTitle}"
+            sub-label="[[inputMethodDisplayName_]]"
             on-click="onKeyboardClick_"
-            role-description="$i18n{subpageArrowRoleDescription}"></cr-link-row>
+            role-description="$i18n{subpageArrowRoleDescription}">
+        </cr-link-row>
       </template>
       <template is="dom-if" if="[[hasStylus_]]">
-        <cr-link-row class="hr" id="stylusRow" label="$i18n{stylusTitle}"
+        <cr-link-row id="stylusRow"
+            start-icon="[[rowIcons_.stylus]]"
+            label="$i18n{stylusTitle}"
             on-click="onStylusClick_"
             role-description="$i18n{subpageArrowRoleDescription}">
         </cr-link-row>
       </template>
-      <template is="dom-if" if="[[isPeripheralCustomizationEnabled]]">
-        <cr-link-row class="hr" id="tabletRow" label="$i18n{tabletTitle}"
+      <template is="dom-if" if="[[showGraphicsTabletRow_(graphicsTablets,
+          isPeripheralCustomizationEnabled)]]">
+        <cr-link-row id="tabletRow"
+            start-icon="[[rowIcons_.tablet]]" label="$i18n{tabletTitle}"
             on-click="onGraphicsTabletClick"
             role-description="$i18n{subpageArrowRoleDescription}">
         </cr-link-row>
       </template>
-      <cr-link-row class="hr" id="displayRow" label="$i18n{displayTitle}"
-          on-click="onDisplayClick_"
-          role-description="$i18n{subpageArrowRoleDescription}"></cr-link-row>
-      <cr-link-row class="hr" id="audioRow" label="$i18n{audioTitle}"
-          on-click="onAudioClick_"
+      <cr-link-row id="displayRow" start-icon="[[rowIcons_.display]]"
+          label="$i18n{displayTitle}" on-click="onDisplayClick_"
           role-description="$i18n{subpageArrowRoleDescription}">
       </cr-link-row>
-      <cr-link-row class="hr" hidden="[[hideStorageInfo_]]" id="storageRow"
-          label="$i18n{storageTitle}" on-click="onStorageClick_"
-          role-description="$i18n{subpageArrowRoleDescription}"></cr-link-row>
-      <cr-link-row class="hr" id="powerRow" label="$i18n{powerTitle}"
-          on-click="onPowerClick_"
+      <cr-link-row id="audioRow" start-icon="[[rowIcons_.audio]]"
+          label="$i18n{audioTitle}" on-click="onAudioClick_"
           role-description="$i18n{subpageArrowRoleDescription}">
       </cr-link-row>
+      <template is="dom-if" if="[[!isRevampWayfindingEnabled_]]">
+        <template is="dom-if" if="[[!hideStorageInfo_]]">
+          <cr-link-row id="storageRow"
+              label="$i18n{storageTitle}"
+              on-click="onStorageClick_"
+              role-description="$i18n{subpageArrowRoleDescription}">
+          </cr-link-row>
+        </template>
+        <cr-link-row id="powerRow"
+            label="$i18n{powerTitle}"
+            on-click="onPowerClick_"
+            role-description="$i18n{subpageArrowRoleDescription}">
+        </cr-link-row>
+      </template>
     </settings-card>
+
+    <template is="dom-if" if="[[isRevampWayfindingEnabled_]]">
+      <printing-settings-card></printing-settings-card>
+    </template>
   </div>
 
   <template is="dom-if" route-path="/pointer-overlay">
@@ -180,22 +213,6 @@
       </settings-audio>
     </os-settings-subpage>
   </template>
-  <template is="dom-if" route-path="/storage">
-    <os-settings-subpage page-title="$i18n{storageTitle}">
-      <settings-storage prefs="{{prefs}}"
-          android-enabled="[[androidEnabled_]]">
-      </settings-storage>
-    </os-settings-subpage>
-  </template>
-  <template is="dom-if" if="[[androidEnabled_]]">
-    <template is="dom-if" route-path="/storage/externalStoragePreferences">
-      <os-settings-subpage
-          page-title="$i18n{storageExternal}">
-        <settings-storage-external prefs="{{prefs}}">
-        </settings-storage-external>
-      </os-settings-subpage>
-    </template>
-  </template>
   <template is="dom-if"
       route-path="/per-device-keyboard/remap-keys">
     <os-settings-subpage id="perDeviceKeyboardRemapKeysRow"
@@ -208,6 +225,7 @@
         <span>$i18n{keyboardRemapRestoreDefaultsLabel}</span>
     </cr-button>
       <settings-per-device-keyboard-remap-keys keyboards="[[keyboards]]"
+          keyboard-policies="[[keyboardPolicies]]"
           id="remap-keys">
       </settings-per-device-keyboard-remap-keys>
     </os-settings-subpage>
@@ -216,14 +234,79 @@
       route-path="/per-device-mouse/customizeButtons">
     <os-settings-subpage id="customizeMouseButtonsRow"
         page-title="$i18n{customizeMouseButtonsTitle}">
-      <settings-customize-mouse-buttons-subpage mice="[[mice]]">
+      <settings-customize-mouse-buttons-subpage
+          mouse-list="[[mice]]"
+          mouse-policies="[[mousePolicies]]">
       </settings-customize-mouse-buttons-subpage>
     </os-settings-subpage>
   </template>
-  <template is="dom-if" route-path="/power">
-    <os-settings-subpage
-        page-title="$i18n{powerTitle}">
-      <settings-power prefs="{{prefs}}"></settings-power>
-    </os-settings-subpage>
+
+  <template is="dom-if" if="[[!isRevampWayfindingEnabled_]]">
+    <template is="dom-if" route-path="/storage">
+      <os-settings-subpage page-title="$i18n{storageTitle}">
+        <settings-storage prefs="{{prefs}}">
+        </settings-storage>
+      </os-settings-subpage>
+    </template>
+    <template is="dom-if" if="[[isExternalStorageEnabled_]]">
+      <template is="dom-if" route-path="/storage/externalStoragePreferences">
+        <os-settings-subpage page-title="$i18n{storageExternal}">
+          <settings-storage-external prefs="{{prefs}}">
+          </settings-storage-external>
+        </os-settings-subpage>
+      </template>
+    </template>
+    <template is="dom-if" route-path="/power">
+      <os-settings-subpage page-title="$i18n{powerTitle}">
+        <settings-power prefs="{{prefs}}"></settings-power>
+      </os-settings-subpage>
+    </template>
+  </template>
+
+  <template is="dom-if" if="[[isRevampWayfindingEnabled_]]">
+    <!-- Input subpages -->
+    <template is="dom-if" route-path="/osLanguages/input">
+      <os-settings-subpage page-title="$i18n{inputPageTitle}">
+        <os-settings-input-page prefs="{{prefs}}"
+            languages="[[languages]]"
+            language-helper="[[languageHelper]]">
+        </os-settings-input-page>
+      </os-settings-subpage>
+    </template>
+
+    <template is="dom-if" route-path="/osLanguages/inputMethodOptions">
+      <os-settings-subpage>
+        <settings-input-method-options-page prefs="{{prefs}}"
+            language-helper="[[languageHelper]]">
+        </settings-input-method-options-page>
+      </os-settings-subpage>
+    </template>
+
+    <template is="dom-if" route-path="/osLanguages/editDictionary">
+      <os-settings-subpage page-title="$i18n{editDictionaryLabel}">
+        <os-settings-edit-dictionary-page></os-settings-edit-dictionary-page>
+      </os-settings-subpage>
+    </template>
+
+    <template is="dom-if"
+        route-path="/osLanguages/japaneseManageUserDictionary">
+      <os-settings-subpage
+          page-title="$i18n{japaneseManageUserDictionaryLabel}">
+        <os-settings-japanese-manage-user-dictionary-page>
+        </os-settings-japanese-manage-user-dictionary-page>
+      </os-settings-subpage>
+    </template>
+
+    <!-- Printing cups printers subpage -->
+    <template is="dom-if" route-path="/cupsPrinters">
+      <os-settings-subpage
+          page-title="$i18n{cupsPrintTitle}"
+          search-label="$i18n{searchLabel}"
+          search-term="{{searchTerm}}">
+        <settings-cups-printers search-term="{{searchTerm}}"
+            prefs="{{prefs}}">
+        </settings-cups-printers>
+      </os-settings-subpage>
+    </template>
   </template>
 </os-settings-animated-pages>

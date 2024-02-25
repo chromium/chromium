@@ -19,7 +19,6 @@
 
 namespace blink {
 
-class AudioContext;
 class ExceptionState;
 class WebAudioLatencyHint;
 class WebAudioSinkDescriptor;
@@ -33,7 +32,7 @@ class RealtimeAudioDestinationHandler final
       AudioNode&,
       const WebAudioSinkDescriptor&,
       const WebAudioLatencyHint&,
-      absl::optional<float> sample_rate);
+      std::optional<float> sample_rate);
   ~RealtimeAudioDestinationHandler() override;
 
   // For AudioHandler.
@@ -63,7 +62,7 @@ class RealtimeAudioDestinationHandler final
               const AudioIOPosition& output_position,
               const AudioCallbackMetric& metric) final;
 
-  // Returns a hadrware callback buffer size from audio infra.
+  // Returns a hardware callback buffer size from audio infra.
   uint32_t GetCallbackBufferSize() const;
 
   // Returns a given frames-per-buffer size from audio infra.
@@ -83,11 +82,10 @@ class RealtimeAudioDestinationHandler final
                          media::OutputDeviceStatusCB callback);
 
  private:
-  explicit RealtimeAudioDestinationHandler(
-      AudioNode&,
-      const WebAudioSinkDescriptor&,
-      const WebAudioLatencyHint&,
-      absl::optional<float> sample_rate);
+  explicit RealtimeAudioDestinationHandler(AudioNode&,
+                                           const WebAudioSinkDescriptor&,
+                                           const WebAudioLatencyHint&,
+                                           std::optional<float> sample_rate);
 
   void CreatePlatformDestination();
   void StartPlatformDestination();
@@ -118,7 +116,7 @@ class RealtimeAudioDestinationHandler final
 
   // Stores the user-provided (AudioContextOptions) sample rate. When `nullopt`
   // it is updated with the sample rate of the first platform destination.
-  absl::optional<float> sample_rate_;
+  std::optional<float> sample_rate_;
 
   // If true, the audio graph will be pulled to get new data.  Otherwise, the
   // graph is not pulled, even if the audio thread is still running and
@@ -126,7 +124,7 @@ class RealtimeAudioDestinationHandler final
   //
   // Must be modified only in StartPlatformDestination (via
   // EnablePullingAudioGraph) or StopPlatformDestination (via
-  // DisablePullingAudioGraph) .  This is modified only by the main threda and
+  // DisablePullingAudioGraph). This is modified only by the main thread and
   // the audio thread only reads this.
   std::atomic_bool allow_pulling_audio_graph_;
 

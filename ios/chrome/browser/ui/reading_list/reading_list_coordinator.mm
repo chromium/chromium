@@ -5,6 +5,7 @@
 #import "ios/chrome/browser/ui/reading_list/reading_list_coordinator.h"
 
 #import "base/ios/ios_util.h"
+#import "base/memory/raw_ptr.h"
 #import "base/memory/scoped_refptr.h"
 #import "base/metrics/histogram_macros.h"
 #import "base/metrics/user_metrics.h"
@@ -21,15 +22,15 @@
 #import "components/sync/base/user_selectable_type.h"
 #import "components/sync/service/sync_service.h"
 #import "components/sync/service/sync_user_settings.h"
-#import "ios/chrome/browser/favicon/ios_chrome_favicon_loader_factory.h"
-#import "ios/chrome/browser/favicon/ios_chrome_large_icon_service_factory.h"
-#import "ios/chrome/browser/feature_engagement/tracker_factory.h"
-#import "ios/chrome/browser/metrics/new_tab_page_uma.h"
-#import "ios/chrome/browser/policy/policy_util.h"
-#import "ios/chrome/browser/reading_list/offline_page_tab_helper.h"
-#import "ios/chrome/browser/reading_list/offline_url_utils.h"
-#import "ios/chrome/browser/reading_list/reading_list_model_factory.h"
-#import "ios/chrome/browser/shared/coordinator/scene/scene_state_browser_agent.h"
+#import "ios/chrome/browser/favicon/model/ios_chrome_favicon_loader_factory.h"
+#import "ios/chrome/browser/favicon/model/ios_chrome_large_icon_service_factory.h"
+#import "ios/chrome/browser/feature_engagement/model/tracker_factory.h"
+#import "ios/chrome/browser/metrics/model/new_tab_page_uma.h"
+#import "ios/chrome/browser/net/model/crurl.h"
+#import "ios/chrome/browser/policy/model/policy_util.h"
+#import "ios/chrome/browser/reading_list/model/offline_page_tab_helper.h"
+#import "ios/chrome/browser/reading_list/model/offline_url_utils.h"
+#import "ios/chrome/browser/reading_list/model/reading_list_model_factory.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/shared/model/url/chrome_url_constants.h"
@@ -40,11 +41,12 @@
 #import "ios/chrome/browser/shared/ui/table_view/table_view_navigation_controller.h"
 #import "ios/chrome/browser/shared/ui/table_view/table_view_navigation_controller_constants.h"
 #import "ios/chrome/browser/shared/ui/util/pasteboard_util.h"
-#import "ios/chrome/browser/signin/authentication_service.h"
-#import "ios/chrome/browser/signin/authentication_service_factory.h"
-#import "ios/chrome/browser/signin/chrome_account_manager_service_factory.h"
-#import "ios/chrome/browser/signin/identity_manager_factory.h"
-#import "ios/chrome/browser/sync/sync_service_factory.h"
+#import "ios/chrome/browser/signin/model/authentication_service.h"
+#import "ios/chrome/browser/signin/model/authentication_service_factory.h"
+#import "ios/chrome/browser/signin/model/chrome_account_manager_service_factory.h"
+#import "ios/chrome/browser/signin/model/identity_manager_factory.h"
+#import "ios/chrome/browser/sync/model/sync_service_factory.h"
+#import "ios/chrome/browser/ui/authentication/account_settings_presenter.h"
 #import "ios/chrome/browser/ui/authentication/cells/signin_promo_view_consumer.h"
 #import "ios/chrome/browser/ui/authentication/enterprise/enterprise_utils.h"
 #import "ios/chrome/browser/ui/authentication/signin_presenter.h"
@@ -60,11 +62,12 @@
 #import "ios/chrome/browser/ui/reading_list/reading_list_mediator.h"
 #import "ios/chrome/browser/ui/reading_list/reading_list_menu_provider.h"
 #import "ios/chrome/browser/ui/reading_list/reading_list_table_view_controller.h"
+#import "ios/chrome/browser/ui/settings/google_services/manage_sync_settings_coordinator.h"
 #import "ios/chrome/browser/ui/sharing/sharing_coordinator.h"
 #import "ios/chrome/browser/ui/sharing/sharing_params.h"
-#import "ios/chrome/browser/url_loading/url_loading_browser_agent.h"
-#import "ios/chrome/browser/url_loading/url_loading_params.h"
-#import "ios/chrome/browser/window_activities/window_activity_helpers.h"
+#import "ios/chrome/browser/url_loading/model/url_loading_browser_agent.h"
+#import "ios/chrome/browser/url_loading/model/url_loading_params.h"
+#import "ios/chrome/browser/window_activities/model/window_activity_helpers.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ios/web/common/features.h"
 #import "ios/web/public/navigation/referrer.h"
@@ -75,7 +78,9 @@
 // TODO(crbug.com/1425862): SigninPromoViewMediator will be refactored so that
 // we can move the SigninPromoViewConsumer implementation from the coordinator
 // to the view.
-@interface ReadingListCoordinator () <IdentityManagerObserverBridgeDelegate,
+@interface ReadingListCoordinator () <AccountSettingsPresenter,
+                                      IdentityManagerObserverBridgeDelegate,
+                                      ManageSyncSettingsCoordinatorDelegate,
                                       ReadingListMenuProvider,
                                       ReadingListListItemFactoryDelegate,
                                       ReadingListListViewControllerAudience,
@@ -109,13 +114,15 @@
   // Handler for sign-in commands.
   id<ApplicationCommands> _applicationCommandsHandler;
   // Authentication Service to retrieve the user's signed-in state.
-  AuthenticationService* _authService;
+  raw_ptr<AuthenticationService> _authService;
   // Service to retrieve preference values.
-  PrefService* _prefService;
+  raw_ptr<PrefService> _prefService;
   // Manager for user's Google identities.
-  signin::IdentityManager* _identityManager;
+  raw_ptr<signin::IdentityManager> _identityManager;
   // Sync service.
-  syncer::SyncService* _syncService;
+  raw_ptr<syncer::SyncService> _syncService;
+  // Coordinator of manage sync settings.
+  ManageSyncSettingsCoordinator* _manageSyncSettingsCoordinator;
 }
 
 #pragma mark - ChromeCoordinator
@@ -205,8 +212,8 @@
                         syncService:_syncService
                         accessPoint:signin_metrics::AccessPoint::
                                         ACCESS_POINT_READING_LIST
-                          presenter:self
-                 baseViewController:self.tableViewController];
+                    signinPresenter:self
+           accountSettingsPresenter:self];
   _signinPromoViewMediator.signinPromoAction =
       SigninPromoAction::kInstantSignin;
   _signinPromoViewMediator.consumer = self;
@@ -289,7 +296,7 @@
     return;
   }
   [self loadEntryURL:entry->URL()
-          withOfflineURL:GURL::EmptyGURL()
+          withOfflineURL:GURL()
       loadOfflineVersion:NO
                 inNewTab:NO
                incognito:NO];
@@ -306,7 +313,7 @@
     return;
   }
   [self loadEntryURL:entry->URL()
-          withOfflineURL:GURL::EmptyGURL()
+          withOfflineURL:GURL()
       loadOfflineVersion:NO
                 inNewTab:YES
                incognito:incognito];
@@ -327,7 +334,8 @@
       [_signinPromoViewMediator createConfigurator];
   [self.tableViewController promoStateChanged:YES
                             promoConfigurator:promoConfigurator
-                                promoDelegate:_signinPromoViewMediator];
+                                promoDelegate:_signinPromoViewMediator
+                                    promoText:[self promoTextForPromoAction]];
 }
 
 #pragma mark - URL Loading Helpers
@@ -352,8 +360,7 @@
   // auth otherwise.
   if (incognito) {
     IncognitoReauthSceneAgent* reauthAgent = [IncognitoReauthSceneAgent
-        agentFromScene:SceneStateBrowserAgent::FromBrowser(self.browser)
-                           ->GetSceneState()];
+        agentFromScene:self.browser->GetSceneState()];
     __weak ReadingListCoordinator* weakSelf = self;
     if (reauthAgent.authenticationRequired) {
       // Copy C++ args to call later from the block.
@@ -377,8 +384,9 @@
   base::RecordAction(base::UserMetricsAction("MobileReadingListOpen"));
   web::WebState* activeWebState =
       self.browser->GetWebStateList()->GetActiveWebState();
-  new_tab_page_uma::RecordAction(
-      self.browser->GetBrowserState()->IsOffTheRecord(), activeWebState,
+  bool is_ntp = activeWebState->GetVisibleURL() == kChromeUINewTabURL;
+  new_tab_page_uma::RecordNTPAction(
+      self.browser->GetBrowserState()->IsOffTheRecord(), is_ntp,
       new_tab_page_uma::ACTION_OPENED_READING_LIST_ENTRY);
 
   // Load the offline URL if available.
@@ -468,11 +476,11 @@
         ReadingListCoordinator* strongSelf = weakSelf;
 
         // Record that this context menu was shown to the user.
-        RecordMenuShown(MenuScenarioHistogram::kReadingListEntry);
+        RecordMenuShown(kMenuScenarioHistogramReadingListEntry);
 
         BrowserActionFactory* actionFactory = [[BrowserActionFactory alloc]
             initWithBrowser:strongSelf.browser
-                   scenario:MenuScenarioHistogram::kReadingListEntry];
+                   scenario:kMenuScenarioHistogramReadingListEntry];
 
         NSMutableArray<UIMenuElement*>* menuElements =
             [[NSMutableArray alloc] init];
@@ -482,7 +490,7 @@
             return;
 
           [weakSelf loadEntryURL:item.entryURL
-                  withOfflineURL:GURL::EmptyGURL()
+                  withOfflineURL:GURL()
               loadOfflineVersion:NO
                         inNewTab:YES
                        incognito:NO];
@@ -498,7 +506,7 @@
                 return;
 
               [weakSelf loadEntryURL:item.entryURL
-                      withOfflineURL:GURL::EmptyGURL()
+                      withOfflineURL:GURL()
                   loadOfflineVersion:NO
                             inNewTab:YES
                            incognito:YES];
@@ -538,7 +546,8 @@
                         }]];
         }
 
-        [menuElements addObject:[actionFactory actionToCopyURL:item.entryURL]];
+        CrURL* URL = [[CrURL alloc] initWithGURL:item.entryURL];
+        [menuElements addObject:[actionFactory actionToCopyURL:URL]];
 
         [menuElements addObject:[actionFactory actionToShareWithBlock:^{
                         [weakSelf shareURL:item.entryURL
@@ -564,6 +573,25 @@
 - (void)showSignin:(ShowSigninCommand*)command {
   [_applicationCommandsHandler showSignin:command
                        baseViewController:self.tableViewController];
+}
+
+#pragma mark - AccountSettingsPresenter
+
+- (void)showAccountSettings {
+  CHECK(!_syncService->GetAccountInfo().IsEmpty())
+      << base::SysNSStringToUTF8([self description]);
+  SyncSettingsAccountState accountState =
+      (base::FeatureList::IsEnabled(
+           syncer::kReplaceSyncPromosWithSignInPromos) &&
+       !_syncService->HasSyncConsent())
+          ? SyncSettingsAccountState::kSignedIn
+          : SyncSettingsAccountState::kSyncing;
+  _manageSyncSettingsCoordinator = [[ManageSyncSettingsCoordinator alloc]
+      initWithBaseViewController:self.tableViewController
+                         browser:self.browser
+                    accountState:accountState];
+  _manageSyncSettingsCoordinator.delegate = self;
+  [_manageSyncSettingsCoordinator start];
 }
 
 #pragma mark - SigninPromoViewConsumer
@@ -615,19 +643,24 @@
 // Computes whether the sign-in promo should be visible in the reading list and
 // updates the view accordingly.
 - (void)updateSignInPromoVisibility {
-  BOOL areAccountStorageAndPromoEnabled =
-      base::FeatureList::IsEnabled(
-          syncer::kReadingListEnableDualReadingListModel) &&
-      base::FeatureList::IsEnabled(
-          syncer::kReadingListEnableSyncTransportModeUponSignIn);
-  if (!areAccountStorageAndPromoEnabled || self.isSyncDisabledByAdministrator) {
+  if (self.isSyncDisabledByAdministrator) {
     self.shouldShowSignInPromo = NO;
     return;
   }
 
+  SigninPromoAction signinPromoAction = SigninPromoAction::kInstantSignin;
+  if (_identityManager->HasPrimaryAccount(signin::ConsentLevel::kSignin) &&
+      base::FeatureList::IsEnabled(
+          syncer::kReplaceSyncPromosWithSignInPromos) &&
+      base::FeatureList::IsEnabled(kEnableReviewAccountSettingsPromo) &&
+      !_syncService->GetUserSettings()->GetSelectedTypes().Has(
+          syncer::UserSelectableType::kReadingList)) {
+    signinPromoAction = SigninPromoAction::kReviewAccountSettings;
+  }
   if (![SigninPromoViewMediator
           shouldDisplaySigninPromoViewWithAccessPoint:
               signin_metrics::AccessPoint::ACCESS_POINT_READING_LIST
+                                    signinPromoAction:signinPromoAction
                                 authenticationService:_authService
                                           prefService:_prefService]) {
     self.shouldShowSignInPromo = NO;
@@ -635,16 +668,33 @@
   }
 
   if (_identityManager->HasPrimaryAccount(signin::ConsentLevel::kSignin)) {
-    // If the user is signed-in with the promo (thus opted-in for Reading List
-    // account storage), the promo should stay visible during the initial sync
-    // and a spinner should be shown on it.
-    self.shouldShowSignInPromo = _signinPromoViewMediator.showSpinner;
+    syncer::UserSelectableTypeSet selected_types =
+        _syncService->GetUserSettings()->GetSelectedTypes();
+    if (base::FeatureList::IsEnabled(
+            syncer::kReplaceSyncPromosWithSignInPromos) &&
+        base::FeatureList::IsEnabled(kEnableReviewAccountSettingsPromo) &&
+        !selected_types.Has(syncer::UserSelectableType::kReadingList)) {
+      // Should remove the promo section completely in case it was showing
+      // before with another action.
+      self.shouldShowSignInPromo = NO;
+      _signinPromoViewMediator.signinPromoAction =
+          SigninPromoAction::kReviewAccountSettings;
+      self.shouldShowSignInPromo = YES;
+    } else {
+      // If the user is signed-in with the promo (thus opted-in for Reading List
+      // account storage), the promo should stay visible during the initial sync
+      // and a spinner should be shown on it.
+      self.shouldShowSignInPromo = _signinPromoViewMediator.showSpinner;
+    }
   } else {
     const std::string lastSignedInGaiaId =
-        _prefService->GetString(prefs::kGoogleServicesLastGaiaId);
-    // If the last signed-in user did not remove data during sign-out, don't
-    // show the signin promo.
-    self.shouldShowSignInPromo = lastSignedInGaiaId.empty();
+        _prefService->GetString(prefs::kGoogleServicesLastSyncingGaiaId);
+    // Show the promo if the last syncing user signed out and chose to clear
+    // data, or if the feature kEnableBatchUploadFromBookmarksManager is
+    // enabled.
+    self.shouldShowSignInPromo =
+        lastSignedInGaiaId.empty() ||
+        base::FeatureList::IsEnabled(kEnableBatchUploadFromBookmarksManager);
   }
 }
 
@@ -659,7 +709,8 @@
       [_signinPromoViewMediator createConfigurator];
   [self.tableViewController promoStateChanged:shouldShowSignInPromo
                             promoConfigurator:promoConfigurator
-                                promoDelegate:_signinPromoViewMediator];
+                                promoDelegate:_signinPromoViewMediator
+                                    promoText:[self promoTextForPromoAction]];
   if (shouldShowSignInPromo) {
     [_signinPromoViewMediator signinPromoViewIsVisible];
   } else {
@@ -696,6 +747,15 @@
   return syncDisabledPolicy || syncTypesDisabledPolicy;
 }
 
+- (NSString*)promoTextForPromoAction {
+  if (_signinPromoViewMediator.signinPromoAction ==
+      SigninPromoAction::kReviewAccountSettings) {
+    return l10n_util::GetNSString(
+        IDS_IOS_SIGNIN_PROMO_REVIEW_READING_LIST_SETTINGS);
+  }
+  return l10n_util::GetNSString(IDS_IOS_SIGNIN_PROMO_READING_LIST);
+}
+
 #pragma mark - ReadingListListItemFactoryDelegate
 
 - (BOOL)isIncognitoForced {
@@ -704,6 +764,24 @@
 
 - (BOOL)isIncognitoAvailable {
   return !IsIncognitoModeDisabled(_prefService);
+}
+
+#pragma mark - ManageSyncSettingsCoordinatorDelegate
+
+- (void)manageSyncSettingsCoordinatorWasRemoved:
+    (ManageSyncSettingsCoordinator*)coordinator {
+  DCHECK_EQ(_manageSyncSettingsCoordinator, coordinator);
+  [_manageSyncSettingsCoordinator stop];
+  _manageSyncSettingsCoordinator = nil;
+  // Should remove the promo section completely.
+  self.shouldShowSignInPromo = NO;
+  _signinPromoViewMediator.signinPromoAction =
+      SigninPromoAction::kInstantSignin;
+  [self updateSignInPromoVisibility];
+}
+
+- (NSString*)manageSyncSettingsCoordinatorTitle {
+  return l10n_util::GetNSString(IDS_IOS_GOOGLE_ACCOUNT_SETTINGS_TITLE);
 }
 
 @end

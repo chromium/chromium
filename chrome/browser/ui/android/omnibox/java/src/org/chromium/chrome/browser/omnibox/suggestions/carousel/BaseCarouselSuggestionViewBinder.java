@@ -4,32 +4,29 @@
 
 package org.chromium.chrome.browser.omnibox.suggestions.carousel;
 
-import android.content.res.Configuration;
-import android.content.res.Resources;
+import android.content.Context;
+import android.graphics.Color;
+import android.view.ViewGroup.MarginLayoutParams;
+import android.view.ViewOutlineProvider;
 
-import androidx.annotation.NonNull;
+import androidx.annotation.ColorInt;
+import androidx.annotation.Px;
 
-import org.chromium.chrome.browser.omnibox.OmniboxFeatures;
 import org.chromium.chrome.browser.omnibox.R;
 import org.chromium.chrome.browser.omnibox.styles.OmniboxResourceProvider;
 import org.chromium.chrome.browser.omnibox.suggestions.SuggestionCommonProperties;
-import org.chromium.chrome.browser.omnibox.suggestions.SuggestionCommonProperties.FormFactor;
-import org.chromium.chrome.browser.omnibox.suggestions.base.SpacingRecyclerViewItemDecoration;
+import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
+import org.chromium.components.browser_ui.widget.RoundedCornerOutlineProvider;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.SimpleRecyclerViewAdapter;
 
-/**
- * Binder for the Carousel suggestions.
- */
-public final class BaseCarouselSuggestionViewBinder {
-    private static int sTileViewPadding = -1;
-    /** @see PropertyModelChangeProcessor.ViewBinder#bind(Object, Object, Object) */
+/** Binder for the Carousel suggestions. */
+public interface BaseCarouselSuggestionViewBinder {
+    /**
+     * @see PropertyModelChangeProcessor.ViewBinder#bind(Object, Object, Object)
+     */
     public static void bind(PropertyModel model, BaseCarouselSuggestionView view, PropertyKey key) {
-        // Initialize resources we will be frequently accessing.
-        if (sTileViewPadding < 0) {
-            sTileViewPadding = view.getResources().getDimensionPixelSize(R.dimen.tile_view_padding);
-        }
 
         if (key == BaseCarouselSuggestionViewProperties.TILES) {
             var items = model.get(BaseCarouselSuggestionViewProperties.TILES);
@@ -39,57 +36,66 @@ public final class BaseCarouselSuggestionViewBinder {
             } else {
                 adapter.getModelList().clear();
             }
-        } else if (key == SuggestionCommonProperties.DEVICE_FORM_FACTOR) {
-            int itemDecoration = view.getItemDecorationCount();
-            while (itemDecoration > 0) {
-                itemDecoration--;
-                view.removeItemDecorationAt(itemDecoration);
-            }
-
-            var context = view.getContext();
-            // Adjust the initial offset of the MV Carousel to match the offset of the
-            // suggestion header.
-            int initialSpacing = OmniboxFeatures.shouldShowModernizeVisualUpdate(context)
-                    ? OmniboxResourceProvider.getHeaderStartPadding(context) - sTileViewPadding
-                    : OmniboxResourceProvider.getSideSpacing(context);
-            int itemSpacing = getItemSpacingPx(
-                    model.get(SuggestionCommonProperties.DEVICE_FORM_FACTOR), view.getResources());
-            view.addItemDecoration(
-                    new SpacingRecyclerViewItemDecoration(initialSpacing, itemSpacing / 2));
+            view.resetSelection();
+        } else if (key == BaseCarouselSuggestionViewProperties.ITEM_DECORATION) {
+            view.setItemDecoration(model.get(BaseCarouselSuggestionViewProperties.ITEM_DECORATION));
+        } else if (key == BaseCarouselSuggestionViewProperties.CONTENT_DESCRIPTION) {
+            view.setContentDescription(
+                    model.get(BaseCarouselSuggestionViewProperties.CONTENT_DESCRIPTION));
         } else if (key == BaseCarouselSuggestionViewProperties.HORIZONTAL_FADE) {
             view.setHorizontalFadingEdgeEnabled(
                     model.get(BaseCarouselSuggestionViewProperties.HORIZONTAL_FADE));
+        } else if (key == BaseCarouselSuggestionViewProperties.TOP_PADDING
+                || key == BaseCarouselSuggestionViewProperties.BOTTOM_PADDING) {
+            int top = model.get(BaseCarouselSuggestionViewProperties.TOP_PADDING);
+            int bottom = model.get(BaseCarouselSuggestionViewProperties.BOTTOM_PADDING);
+            view.setPaddingRelative(0, top, 0, bottom);
+        } else if (key == BaseCarouselSuggestionViewProperties.APPLY_BACKGROUND) {
+            boolean useBackground =
+                    model.get(BaseCarouselSuggestionViewProperties.APPLY_BACKGROUND);
+
+            // Default values to be used if background is disabled.
+            @ColorInt int bgColor = Color.TRANSPARENT;
+            @Px int horizontalMargin = 0;
+            ViewOutlineProvider outline = null;
+
+            // Specific values to apply if background is enabled.
+            if (useBackground) {
+                // Note: this assumes carousel is not showing in the incognito mode.
+                bgColor = getSuggestionBackgroundColor(model, view.getContext());
+                horizontalMargin = OmniboxResourceProvider.getSideSpacing(view.getContext());
+                outline =
+                        new RoundedCornerOutlineProvider(
+                                view.getContext()
+                                        .getResources()
+                                        .getDimensionPixelSize(
+                                                R.dimen.omnibox_suggestion_bg_round_corner_radius));
+            }
+
+            // Apply values.
+            view.setBackgroundColor(bgColor);
+            var layoutParams = view.getLayoutParams();
+            if (layoutParams instanceof MarginLayoutParams) {
+                ((MarginLayoutParams) layoutParams)
+                        .setMargins(horizontalMargin, 0, horizontalMargin, 0);
+                view.setLayoutParams(layoutParams);
+            }
+
+            view.setOutlineProvider(outline);
+            view.setClipToOutline(outline != null);
         }
     }
 
     /**
-     * Calculate the margin between tiles based on screen size.
+     * Retrieve the background color to be applied to suggestion.
      *
-     * @param formFactor the form factor of the device, from which we differentiate between PHONE
-     *         and TABLET.
-     * @param resources Android resources object, used to read the dimension.
-     * @return The requested item spacing, expressed in Pixels.
+     * @param model A property model to look up relevant properties.
+     * @param ctx Context used to retrieve appropriate color value.
+     * @return @ColorInt value representing the color to be applied.
      */
-    static int getItemSpacingPx(@FormFactor int formFactor, @NonNull Resources resources) {
-        // Note: Tile suggestions are generated by native code.
-        if (resources.getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE) {
-            return resources.getDimensionPixelOffset(R.dimen.tile_view_padding_landscape);
-        }
-
-        int tileViewPortraitEdgePadding =
-                resources.getDimensionPixelSize(R.dimen.tile_view_padding_edge_portrait);
-        switch (formFactor) {
-            case FormFactor.PHONE:
-                int screenWidth = resources.getDisplayMetrics().widthPixels;
-                int tileViewWidth = resources.getDimensionPixelOffset(R.dimen.tile_view_width);
-                return Integer.max(-resources.getDimensionPixelOffset(R.dimen.tile_view_padding),
-                        (int) ((screenWidth - tileViewPortraitEdgePadding - tileViewWidth * 4.5)
-                                / 4));
-            case FormFactor.TABLET:
-                return tileViewPortraitEdgePadding;
-            default:
-                assert false : "Unknown device type";
-                return 0;
-        }
+    public static @ColorInt int getSuggestionBackgroundColor(PropertyModel model, Context ctx) {
+        return model.get(SuggestionCommonProperties.COLOR_SCHEME) == BrandedColorScheme.INCOGNITO
+                ? ctx.getColor(R.color.omnibox_suggestion_bg_incognito)
+                : OmniboxResourceProvider.getStandardSuggestionBackgroundColor(ctx);
     }
 }

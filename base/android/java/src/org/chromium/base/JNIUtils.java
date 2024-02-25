@@ -4,15 +4,11 @@
 
 package org.chromium.base;
 
-import org.chromium.base.annotations.CalledByNative;
-import org.chromium.build.annotations.MainDex;
+import org.jni_zero.CalledByNative;
 
 import java.util.Map;
 
-/**
- * This class provides JNI-related methods to the native library.
- */
-@MainDex
+/** This class provides JNI-related methods to the native library. */
 public class JNIUtils {
     private static final String TAG = "JNIUtils";
     private static ClassLoader sJniClassLoader;
@@ -50,9 +46,7 @@ public class JNIUtils {
         sJniClassLoader = classLoader;
     }
 
-    /**
-     * Helper to convert from java maps to two arrays for JNI.
-     */
+    /** Helper to convert from java maps to two arrays for JNI. */
     public static <K, V> void splitMap(Map<K, V> map, K[] outKeys, V[] outValues) {
         assert map.size() == outKeys.length;
         assert outValues.length == outKeys.length;

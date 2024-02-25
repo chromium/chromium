@@ -8,7 +8,6 @@
 
 #include "base/logging.h"
 #include "base/memory/raw_ptr_exclusion.h"
-#include "base/strings/string_piece.h"
 #include "chromeos/ash/components/network/network_type_pattern.h"
 #include "chromeos/ash/components/network/tether_constants.h"
 #include "components/onc/onc_constants.h"
@@ -511,7 +510,7 @@ const FieldTranslationEntry* GetFieldTranslationTable(
 }
 
 const StringTranslationEntry* GetEapInnerTranslationTableForShillOuter(
-    base::StringPiece shill_eap_outer) {
+    std::string_view shill_eap_outer) {
   if (shill_eap_outer == shill::kEapMethodPEAP) {
     return eap_peap_inner_table;
   }
@@ -523,7 +522,7 @@ const StringTranslationEntry* GetEapInnerTranslationTableForShillOuter(
 }
 
 const StringTranslationEntry* GetEapInnerTranslationTableForOncOuter(
-    base::StringPiece onc_eap_outer) {
+    std::string_view onc_eap_outer) {
   if (onc_eap_outer == ::onc::eap::kPEAP) {
     return eap_peap_inner_table;
   }

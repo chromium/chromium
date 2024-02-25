@@ -11,4 +11,6 @@ dictionary AudioDataInit {
   required [EnforceRange] unsigned long numberOfChannels;
   required [EnforceRange] long long timestamp;  // microseconds
   required AllowSharedBufferSource data;
+
+  sequence<ArrayBuffer> transfer = [];
 };

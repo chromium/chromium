@@ -6,11 +6,11 @@
 
 #include <map>
 #include <memory>
+#include <optional>
 #include <string>
 #include <utility>
 
 #include "ash/public/cpp/shell_window_ids.h"
-#include "ash/public/cpp/tablet_mode.h"
 #include "base/feature_list.h"
 #include "base/files/file_path.h"
 #include "base/location.h"
@@ -41,16 +41,15 @@
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
-#include "chrome/browser/ui/views/extensions/extension_dialog.h"
 #include "chrome/browser/ui/webui/ash/system_web_dialog_delegate.h"
 #include "chromeos/ui/base/window_properties.h"
 #include "extensions/browser/app_window/app_window.h"
 #include "extensions/browser/app_window/native_app_window.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/aura/window.h"
 #include "ui/base/base_window.h"
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
 #include "ui/color/color_provider.h"
+#include "ui/display/screen.h"
 #include "ui/gfx/color_palette.h"
 #include "ui/shell_dialogs/select_file_policy.h"
 #include "ui/shell_dialogs/selected_file_info.h"
@@ -203,7 +202,7 @@ class SystemFilesAppDialogDelegate : public ash::SystemWebDialogDelegate {
   ~SystemFilesAppDialogDelegate() override = default;
 
   void SetModal(bool modal) {
-    set_modal_type(modal ? ui::MODAL_TYPE_WINDOW : ui::MODAL_TYPE_NONE);
+    set_dialog_modal_type(modal ? ui::MODAL_TYPE_WINDOW : ui::MODAL_TYPE_NONE);
   }
 
   FrameKind GetWebDialogFrameKind() const override {
@@ -453,7 +452,8 @@ void SelectFileDialogExtension::SelectFileWithFileManagerParams(
                                     owner.android_task_id.has_value() ||
                                     owner.lacros_window_id.has_value();
 
-  can_resize_ = !ash::TabletMode::IsInTabletMode() && !is_for_capture_mode;
+  can_resize_ =
+      !display::Screen::GetScreen()->InTabletMode() && !is_for_capture_mode;
 
   // Obtain BaseWindow and WebContents if the owner window is browser.
   if (!skip_finding_browser)
@@ -547,7 +547,7 @@ bool SelectFileDialogExtension::IsResizeable() const {
 }
 
 void SelectFileDialogExtension::ApplyPolicyAndNotifyListener(
-    absl::optional<policy::DlpFileDestination> dialog_caller) {
+    std::optional<policy::DlpFileDestination> dialog_caller) {
   if (!listener_)
     return;
 
@@ -605,11 +605,10 @@ void SelectFileDialogExtension::NotifyListener(
       listener_->FileSelectionCanceled(params_);
       break;
     case SINGLE_FILE:
-      listener_->FileSelectedWithExtraInfo(selection_files[0], selection_index_,
-                                           params_);
+      listener_->FileSelected(selection_files[0], selection_index_, params_);
       break;
     case MULTIPLE_FILES:
-      listener_->MultiFilesSelectedWithExtraInfo(selection_files, params_);
+      listener_->MultiFilesSelected(selection_files, params_);
       break;
     default:
       NOTREACHED_NORETURN();

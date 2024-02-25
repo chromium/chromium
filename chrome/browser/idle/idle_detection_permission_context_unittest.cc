@@ -88,8 +88,10 @@ TEST_F(IdleDetectionPermissionContextTest, TestDenyInIncognitoAfterDelay) {
   ASSERT_EQ(CONTENT_SETTING_DEFAULT,
             permission_context.last_permission_set_setting());
 
-  permission_context.RequestPermission(id, url, true /* user_gesture */,
-                                       base::DoNothing());
+  permission_context.RequestPermission(
+      permissions::PermissionRequestData(&permission_context, id,
+                                         /*user_gesture=*/true, url),
+      base::DoNothing());
 
   // Should be blocked after 1-2 seconds, but the timer is reset whenever the
   // tab is not visible, so these 500ms never add up to >= 1 second.
@@ -156,10 +158,14 @@ TEST_F(IdleDetectionPermissionContextTest, TestParallelDenyInIncognito) {
   ASSERT_EQ(CONTENT_SETTING_DEFAULT,
             permission_context.last_permission_set_setting());
 
-  permission_context.RequestPermission(id1, url, /*user_gesture=*/true,
-                                       base::DoNothing());
-  permission_context.RequestPermission(id2, url, /*user_gesture=*/true,
-                                       base::DoNothing());
+  permission_context.RequestPermission(
+      permissions::PermissionRequestData(&permission_context, id1,
+                                         /*user_gesture=*/true, url),
+      base::DoNothing());
+  permission_context.RequestPermission(
+      permissions::PermissionRequestData(&permission_context, id2,
+                                         /*user_gesture=*/true, url),
+      base::DoNothing());
 
   EXPECT_EQ(0, permission_context.permission_set_count());
   EXPECT_EQ(CONTENT_SETTING_ASK,

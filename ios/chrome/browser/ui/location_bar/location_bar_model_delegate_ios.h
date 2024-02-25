@@ -5,6 +5,7 @@
 #ifndef IOS_CHROME_BROWSER_UI_LOCATION_BAR_LOCATION_BAR_MODEL_DELEGATE_IOS_H_
 #define IOS_CHROME_BROWSER_UI_LOCATION_BAR_LOCATION_BAR_MODEL_DELEGATE_IOS_H_
 
+#import "base/memory/raw_ptr.h"
 #include "components/omnibox/browser/location_bar_model_delegate.h"
 
 class ChromeBrowserState;
@@ -55,9 +56,9 @@ class LocationBarModelDelegateIOS : public LocationBarModelDelegate {
   // Returns the active WebState.
   web::WebState* GetActiveWebState() const;
 
-  WebStateList* web_state_list_;  // weak
+  raw_ptr<WebStateList> web_state_list_;  // weak
 
-  ChromeBrowserState* browser_state_;
+  raw_ptr<ChromeBrowserState> browser_state_;
 };
 
 #endif  // IOS_CHROME_BROWSER_UI_LOCATION_BAR_LOCATION_BAR_MODEL_DELEGATE_IOS_H_

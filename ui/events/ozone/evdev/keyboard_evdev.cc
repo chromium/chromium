@@ -4,6 +4,8 @@
 
 #include "ui/events/ozone/evdev/keyboard_evdev.h"
 
+#include "base/functional/callback_forward.h"
+#include "base/logging.h"
 #include "base/task/single_thread_task_runner.h"
 #include "ui/events/event.h"
 #include "ui/events/event_constants.h"
@@ -12,16 +14,50 @@
 #include "ui/events/keycodes/dom/dom_code.h"
 #include "ui/events/keycodes/dom/keycode_converter.h"
 #include "ui/events/keycodes/keyboard_code_conversion.h"
+#include "ui/events/keycodes/keyboard_codes_posix.h"
 #include "ui/events/ozone/layout/keyboard_layout_engine.h"
 #include "ui/events/ozone/layout/keyboard_layout_engine_manager.h"
 #include "ui/events/types/event_type.h"
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "ash/constants/ash_features.h"
+#endif
+
 namespace ui {
 
-KeyboardEvdev::KeyboardEvdev(EventModifiers* modifiers,
-                             KeyboardLayoutEngine* keyboard_layout_engine,
-                             const EventDispatchCallback& callback)
+namespace {
+
+std::optional<KeyboardCode> RemapButtonsToKeyboardCodes(unsigned int key) {
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  if (!ash::features::IsPeripheralCustomizationEnabled()) {
+    return std::nullopt;
+  }
+
+  if (key >= BTN_0 && key <= BTN_9) {
+    return static_cast<KeyboardCode>(static_cast<int>(VKEY_BUTTON_0) +
+                                     (key - BTN_0));
+  }
+
+  // BTN_A through BTN_Z is only 6 buttons as it only includes {A, B, C, X, Y,
+  // Z}.
+  if (key >= BTN_A && key <= BTN_Z) {
+    return static_cast<KeyboardCode>(static_cast<int>(VKEY_BUTTON_A) +
+                                     (key - BTN_A));
+  }
+#endif
+
+  return std::nullopt;
+}
+
+}  // namespace
+
+KeyboardEvdev::KeyboardEvdev(
+    EventModifiers* modifiers,
+    KeyboardLayoutEngine* keyboard_layout_engine,
+    const EventDispatchCallback& callback,
+    base::RepeatingCallback<void(bool)> any_keys_are_pressed_callback)
     : callback_(callback),
+      any_keys_are_pressed_callback_(any_keys_are_pressed_callback),
       modifiers_(modifiers),
       keyboard_layout_engine_(keyboard_layout_engine),
       auto_repeat_handler_(this) {}
@@ -45,8 +81,9 @@ void KeyboardEvdev::OnKeyChange(unsigned int key,
     return;  // Key already released.
 
   key_state_.set(key, down);
-  auto_repeat_handler_.UpdateKeyRepeat(key, scan_code, down,
-                                       suppress_auto_repeat, device_id);
+  any_keys_are_pressed_callback_.Run(key_state_.any());
+  auto_repeat_handler_.UpdateKeyRepeat(
+      key, scan_code, down, suppress_auto_repeat, device_id, timestamp);
   DispatchKey(key, scan_code, down, is_repeat, timestamp, device_id, flags);
 }
 
@@ -76,10 +113,12 @@ void KeyboardEvdev::GetAutoRepeatRate(base::TimeDelta* delay,
   auto_repeat_handler_.GetAutoRepeatRate(delay, interval);
 }
 
-bool KeyboardEvdev::SetCurrentLayoutByName(const std::string& layout_name) {
-  bool result = keyboard_layout_engine_->SetCurrentLayoutByName(layout_name);
+void KeyboardEvdev::SetCurrentLayoutByName(
+    const std::string& layout_name,
+    base::OnceCallback<void(bool)> callback) {
+  keyboard_layout_engine_->SetCurrentLayoutByName(layout_name,
+                                                  std::move(callback));
   RefreshModifiers();
-  return result;
 }
 
 void KeyboardEvdev::FlushInput(base::OnceClosure closure) {
@@ -140,17 +179,27 @@ void KeyboardEvdev::DispatchKey(unsigned int key,
                                 int device_id,
                                 int flags) {
   DomCode dom_code = KeycodeConverter::EvdevCodeToDomCode(key);
-  if (dom_code == DomCode::NONE)
-    return;
-  int modifier_flags = modifiers_->GetModifierFlags();
   DomKey dom_key;
   KeyboardCode key_code;
-  if (!keyboard_layout_engine_->Lookup(dom_code, modifier_flags, &dom_key,
-                                       &key_code))
-    return;
-  if (!repeat) {
-    int flag = ModifierDomKeyToEventFlag(dom_key);
-    UpdateModifier(flag, down);
+
+  if (auto button_key_code = RemapButtonsToKeyboardCodes(key);
+      button_key_code.has_value()) {
+    dom_code = DomCode::NONE;
+    dom_key = DomKey::InvalidKey::NONE;
+    key_code = *button_key_code;
+  } else {
+    if (dom_code == DomCode::NONE) {
+      return;
+    }
+    int modifier_flags = modifiers_->GetModifierFlags();
+    if (!keyboard_layout_engine_->Lookup(dom_code, modifier_flags, &dom_key,
+                                         &key_code)) {
+      return;
+    }
+    if (!repeat) {
+      int flag = ModifierDomKeyToEventFlag(dom_key);
+      UpdateModifier(flag, down);
+    }
   }
 
   KeyEvent event(down ? ET_KEY_PRESSED : ET_KEY_RELEASED, key_code, dom_code,

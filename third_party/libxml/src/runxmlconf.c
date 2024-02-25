@@ -6,10 +6,11 @@
  * daniel@veillard.com
  */
 
-#include "libxml.h"
+#include "config.h"
 #include <stdio.h>
+#include <libxml/xmlversion.h>
 
-#ifdef LIBXML_XPATH_ENABLED
+#if defined(LIBXML_XPATH_ENABLED) && defined(LIBXML_VALID_ENABLED)
 
 #include <string.h>
 #include <sys/stat.h>
@@ -121,7 +122,7 @@ static void test_log(const char *msg, ...) {
 }
 
 static void
-testErrorHandler(void *userData ATTRIBUTE_UNUSED, xmlErrorPtr error) {
+testErrorHandler(void *userData ATTRIBUTE_UNUSED, const xmlError *error) {
     int res;
 
     if (testErrorsSize >= 32768)
@@ -148,9 +149,6 @@ static xmlXPathContextPtr ctxtXPath;
 
 static void
 initializeLibxml2(void) {
-    xmlGetWarningsDefaultValue = 0;
-    xmlPedanticParserDefault(0);
-
     xmlMemSetup(xmlMemFree, xmlMemMalloc, xmlMemRealloc, xmlMemoryStrdup);
     xmlInitParser();
     xmlSetExternalEntityLoader(testExternalEntityLoader);
@@ -165,7 +163,6 @@ initializeLibxml2(void) {
     */
     if (ctxtXPath->cache != NULL)
 	xmlXPathContextSetCache(ctxtXPath, 0, -1, 0);
-    xmlSetStructuredErrorFunc(NULL, testErrorHandler);
 }
 
 /************************************************************************
@@ -186,6 +183,7 @@ xmlconfTestInvalid(const char *id, const char *filename, int options) {
 	         id, filename);
         return(0);
     }
+    xmlCtxtSetErrorHandler(ctxt, testErrorHandler, NULL);
     doc = xmlCtxtReadFile(ctxt, filename, NULL, options);
     if (doc == NULL) {
         test_log("test %s : %s invalid document turned not well-formed too\n",
@@ -216,6 +214,7 @@ xmlconfTestValid(const char *id, const char *filename, int options) {
 	         id, filename);
         return(0);
     }
+    xmlCtxtSetErrorHandler(ctxt, testErrorHandler, NULL);
     doc = xmlCtxtReadFile(ctxt, filename, NULL, options);
     if (doc == NULL) {
         test_log("test %s : %s failed to parse a valid document\n",
@@ -238,22 +237,27 @@ xmlconfTestValid(const char *id, const char *filename, int options) {
 
 static int
 xmlconfTestNotNSWF(const char *id, const char *filename, int options) {
+    xmlParserCtxtPtr ctxt;
     xmlDocPtr doc;
     int ret = 1;
 
+    ctxt = xmlNewParserCtxt();
+    xmlCtxtSetErrorHandler(ctxt, testErrorHandler, NULL);
     /*
      * In case of Namespace errors, libxml2 will still parse the document
      * but log a Namespace error.
      */
-    doc = xmlReadFile(filename, NULL, options);
+    doc = xmlCtxtReadFile(ctxt, filename, NULL, options);
     if (doc == NULL) {
         test_log("test %s : %s failed to parse the XML\n",
 	         id, filename);
         nb_errors++;
 	ret = 0;
     } else {
-	if ((xmlLastError.code == XML_ERR_OK) ||
-	    (xmlLastError.domain != XML_FROM_NAMESPACE)) {
+        const xmlError *error = xmlGetLastError();
+
+	if ((error->code == XML_ERR_OK) ||
+	    (error->domain != XML_FROM_NAMESPACE)) {
 	    test_log("test %s : %s failed to detect namespace error\n",
 		     id, filename);
 	    nb_errors++;
@@ -261,15 +265,19 @@ xmlconfTestNotNSWF(const char *id, const char *filename, int options) {
 	}
 	xmlFreeDoc(doc);
     }
+    xmlFreeParserCtxt(ctxt);
     return(ret);
 }
 
 static int
 xmlconfTestNotWF(const char *id, const char *filename, int options) {
+    xmlParserCtxtPtr ctxt;
     xmlDocPtr doc;
     int ret = 1;
 
-    doc = xmlReadFile(filename, NULL, options);
+    ctxt = xmlNewParserCtxt();
+    xmlCtxtSetErrorHandler(ctxt, testErrorHandler, NULL);
+    doc = xmlCtxtReadFile(ctxt, filename, NULL, options);
     if (doc != NULL) {
         test_log("test %s : %s failed to detect not well formedness\n",
 	         id, filename);
@@ -277,6 +285,7 @@ xmlconfTestNotWF(const char *id, const char *filename, int options) {
 	xmlFreeDoc(doc);
 	ret = 0;
     }
+    xmlFreeParserCtxt(ctxt);
     return(ret);
 }
 
@@ -593,9 +602,9 @@ main(int argc ATTRIBUTE_UNUSED, char **argv ATTRIBUTE_UNUSED) {
 }
 
 #else /* ! LIBXML_XPATH_ENABLED */
-#include <stdio.h>
 int
 main(int argc ATTRIBUTE_UNUSED, char **argv) {
-    fprintf(stderr, "%s need XPath support\n", argv[0]);
+    fprintf(stderr, "%s need XPath and validation support\n", argv[0]);
+    return(0);
 }
 #endif

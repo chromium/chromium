@@ -65,6 +65,8 @@
 #include "components/services/quarantine/quarantine.h"
 #include "content/browser/download/save_types.h"
 #include "content/common/content_export.h"
+#include "net/base/isolation_info.h"
+#include "services/network/public/cpp/request_mode.h"
 
 class GURL;
 
@@ -99,6 +101,9 @@ class CONTENT_EXPORT SaveFileManager
       SaveItemId save_item_id,
       const GURL& url,
       const Referrer& referrer,
+      const net::IsolationInfo& isolation_info,
+      network::mojom::RequestMode request_mode,
+      bool is_outermost_main_frame,
       int render_process_host_id,
       int render_view_routing_id,
       int render_frame_routing_id,

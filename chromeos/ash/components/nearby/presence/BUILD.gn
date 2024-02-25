@@ -30,10 +30,12 @@ static_library("presence") {
     "//chromeos/ash/components/nearby/presence/proto",
     "//chromeos/ash/services/nearby/public/cpp:cpp",
     "//chromeos/ash/services/nearby/public/mojom",
+    "//components/cross_device/logging:logging",
     "//components/keyed_service/content:content",
     "//components/keyed_service/core",
     "//components/pref_registry:pref_registry",
     "//components/prefs",
+    "//components/push_notification:push_notification",
     "//content/public/browser",
   ]
 
@@ -56,6 +58,7 @@ source_set("unit_tests") {
     "//chromeos/ash/services/nearby/public/cpp:test_support",
     "//components/prefs:prefs",
     "//components/prefs:test_support",
+    "//components/push_notification:unit_tests",
     "//content/public/browser",
     "//content/test:test_support",
     "//mojo/public/cpp/bindings:bindings",

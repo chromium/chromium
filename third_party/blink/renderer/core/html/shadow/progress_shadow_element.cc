@@ -32,6 +32,7 @@
 
 #include "third_party/blink/renderer/core/dom/node_computed_style.h"
 #include "third_party/blink/renderer/core/html/html_progress_element.h"
+#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 
 namespace blink {
 
@@ -49,9 +50,12 @@ void ProgressShadowElement::AdjustStyle(ComputedStyleBuilder& builder) {
   DCHECK(progress_style);
   if (progress_style->HasEffectiveAppearance()) {
     builder.SetDisplay(EDisplay::kNone);
-  } else if (!IsHorizontalWritingMode(builder.GetWritingMode())) {
-    // For vertical writing-mode, we need to set the direction to rtl so that
-    // the progress value bar is rendered bottom up.
+  } else if (!RuntimeEnabledFeatures::
+                 FormControlsVerticalWritingModeDirectionSupportEnabled() &&
+             !IsHorizontalWritingMode(builder.GetWritingMode())) {
+    // For vertical writing-mode, when direction is not supported, we need to
+    // set the direction to rtl so that the progress value bar is rendered
+    // bottom up.
     builder.SetDirection(TextDirection::kRtl);
   }
 }

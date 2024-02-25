@@ -152,4 +152,8 @@ int ScopedFakeAshProxy::request_sign_out_count() const {
   return request_sign_out_count_;
 }
 
+bool ScopedFakeAshProxy::IsScreenReaderEnabled() const {
+  return false;
+}
+
 }  // namespace remoting::test

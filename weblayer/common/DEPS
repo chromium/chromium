@@ -1,7 +1,0 @@
-include_rules = [
-  "+components/embedder_support/origin_trials",
-  "+content/public/common",
-  "+gpu/config",
-  "+third_party/blink/public/strings/grit/blink_strings.h",
-  "+ui/base",
-]

@@ -128,19 +128,16 @@ class LockScreenValueStoreMigratorImpl : public LockScreenValueStoreMigrator {
   // |migration_items_|.
   void ClearMigrationData(const ExtensionId& extension_id);
 
-  const raw_ptr<content::BrowserContext, DanglingUntriaged | ExperimentalAsh>
-      context_;
+  const raw_ptr<content::BrowserContext, DanglingUntriaged> context_;
 
   ExtensionMigratedCallback callback_;
 
   // Set of extensions whose data is being migrated.
   std::set<ExtensionId> extensions_to_migrate_;
 
-  const raw_ptr<ValueStoreCache, DanglingUntriaged | ExperimentalAsh>
-      source_store_cache_;
-  const raw_ptr<ValueStoreCache, DanglingUntriaged | ExperimentalAsh>
-      target_store_cache_;
-  const raw_ptr<base::SequencedTaskRunner, ExperimentalAsh> task_runner_;
+  const raw_ptr<ValueStoreCache, DanglingUntriaged> source_store_cache_;
+  const raw_ptr<ValueStoreCache, DanglingUntriaged> target_store_cache_;
+  const raw_ptr<base::SequencedTaskRunner> task_runner_;
 
   // Crypto key used to encrypt/decrypt data items in the storage.
   const std::string crypto_key_;

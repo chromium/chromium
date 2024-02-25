@@ -21,7 +21,7 @@ limitations under the License.
 #include <string>
 
 #include "absl/status/status.h"  // from @com_google_absl
-#include "absl/types/span.h"     // from @com_google_absl
+#include "absl/types/span.h"  // from @com_google_absl
 #include "tensorflow_lite_support/scann_ondevice/cc/core/serialized_searcher.pb.h"
 
 namespace tflite {

@@ -10,6 +10,7 @@
 class FullscreenController;
 
 @protocol SecondaryToolbarKeyboardStateProvider;
+@protocol ToolbarHeightDelegate;
 
 /// View controller for the secondary part of the adaptive toolbar. It is the
 /// one at the bottom of the screen. Displayed only on specific size classes.
@@ -18,6 +19,9 @@ class FullscreenController;
 /// Protocol to retrieve the keyboard state on the active web state.
 @property(nonatomic, weak) id<SecondaryToolbarKeyboardStateProvider>
     keyboardStateProvider;
+
+/// Delegate that handles the toolbars height.
+@property(nonatomic, weak) id<ToolbarHeightDelegate> toolbarHeightDelegate;
 
 /// Fullscreen controller used for collapsing the view above the keyboard.
 @property(nonatomic, assign) FullscreenController* fullscreenController;

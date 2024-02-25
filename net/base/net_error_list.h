@@ -790,7 +790,7 @@ NET_ERROR(HTTP2_STREAM_CLOSED, -376)
 
 // The server returned a non-2xx HTTP response code.
 //
-// Not that this error is only used by certain APIs that interpret the HTTP
+// Note that this error is only used by certain APIs that interpret the HTTP
 // response itself. URLRequest for instance just passes most non-2xx
 // response back as success.
 NET_ERROR(HTTP_RESPONSE_CODE_FAILURE, -379)
@@ -816,6 +816,12 @@ NET_ERROR(INCONSISTENT_IP_ADDRESS_SPACE, -383)
 // network access check.
 NET_ERROR(CACHED_IP_ADDRESS_SPACE_BLOCKED_BY_PRIVATE_NETWORK_ACCESS_POLICY,
           -384)
+
+// The connection is blocked by private network access checks.
+NET_ERROR(BLOCKED_BY_PRIVATE_NETWORK_ACCESS_CHECKS, -385)
+
+// Content decoding failed due to the zstd window size being too big (over 8MB).
+NET_ERROR(ZSTD_WINDOW_SIZE_TOO_BIG, -386)
 
 // The cache does not have the requested entry.
 NET_ERROR(CACHE_MISS, -400)

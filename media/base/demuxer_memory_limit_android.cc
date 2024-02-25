@@ -12,10 +12,15 @@ namespace media {
 namespace {
 
 size_t SelectLimit(size_t default_limit,
+                   size_t medium_limit,
                    size_t low_limit,
                    size_t very_low_limit) {
-  if (!base::SysInfo::IsLowEndDeviceOrPartialLowEndModeEnabled()) {
-    return default_limit;
+  // This is truly for only for low end devices since it will have impacts on
+  // the ability to buffer and play HD+ content.
+  if (!base::SysInfo::IsLowEndDevice()) {
+    return base::SysInfo::IsLowEndDeviceOrPartialLowEndModeEnabled()
+               ? medium_limit
+               : default_limit;
   }
   // Use very low limit on 512MiB Android Go devices only.
   if (base::android::BuildInfo::GetInstance()->sdk_int() >=
@@ -32,6 +37,7 @@ size_t GetDemuxerStreamAudioMemoryLimit(
     const AudioDecoderConfig* /*audio_config*/) {
   static const size_t limit =
       SelectLimit(internal::kDemuxerStreamAudioMemoryLimitDefault,
+                  internal::kDemuxerStreamAudioMemoryLimitMedium,
                   internal::kDemuxerStreamAudioMemoryLimitLow,
                   internal::kDemuxerStreamAudioMemoryLimitVeryLow);
   return limit;
@@ -42,6 +48,7 @@ size_t GetDemuxerStreamVideoMemoryLimit(
     const VideoDecoderConfig* /*video_config*/) {
   static const size_t limit =
       SelectLimit(internal::kDemuxerStreamVideoMemoryLimitDefault,
+                  internal::kDemuxerStreamVideoMemoryLimitMedium,
                   internal::kDemuxerStreamVideoMemoryLimitLow,
                   internal::kDemuxerStreamVideoMemoryLimitVeryLow);
   return limit;

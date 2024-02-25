@@ -14,10 +14,10 @@
 #include "base/observer_list.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
-#include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/media/router/media_router_feature.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/browser_navigator.h"
 #include "chrome/browser/ui/browser_navigator_params.h"
 #include "chrome/browser/ui/global_media_controls/media_item_ui_metrics.h"
@@ -30,7 +30,9 @@
 #include "chrome/browser/ui/views/global_media_controls/media_item_ui_helper.h"
 #include "chrome/browser/ui/views/global_media_controls/media_item_ui_legacy_cast_footer_view.h"
 #include "chrome/grit/generated_resources.h"
+#include "components/global_media_controls/public/constants.h"
 #include "components/global_media_controls/public/media_item_manager.h"
+#include "components/global_media_controls/public/views/media_item_ui_detailed_view.h"
 #include "components/global_media_controls/public/views/media_item_ui_list_view.h"
 #include "components/global_media_controls/public/views/media_item_ui_view.h"
 #include "components/live_caption/caption_util.h"
@@ -63,8 +65,10 @@
 #include "ui/views/layout/fill_layout.h"
 #include "ui/views/layout/layout_provider.h"
 #include "ui/views/style/typography.h"
+#include "ui/views/view_class_properties.h"
 #include "ui/views/views_features.h"
 
+using global_media_controls::GlobalMediaControlsEntryPoint;
 using media_session::mojom::MediaSessionAction;
 
 namespace {
@@ -207,11 +211,13 @@ void MediaDialogView::RefreshMediaItem(
   if (!observed_items_[id]) {
     return;
   }
-
+  bool show_devices =
+      entry_point_ == GlobalMediaControlsEntryPoint::kPresentation;
   observed_items_[id]->UpdateFooterView(
-      BuildFooter(id, item, profile_, entry_point_));
-  observed_items_[id]->UpdateDeviceSelector(BuildDeviceSelector(
-      id, item, service_, service_, profile_, entry_point_));
+      BuildFooter(id, item, profile_, media_color_theme_));
+  observed_items_[id]->UpdateDeviceSelector(
+      BuildDeviceSelector(id, item, service_, service_, profile_, entry_point_,
+                          show_devices, media_color_theme_));
 
   UpdateBubbleSize();
 }
@@ -268,8 +274,6 @@ void MediaDialogView::UpdateBubbleSize() {
         live_translate_container_->GetPreferredSize().height();
     live_translate_container_->SetPreferredSize(
         gfx::Size(width, live_translate_height));
-
-    live_translate_subtitle_->SetTextStyle(views::style::STYLE_SECONDARY);
 
     live_translate_label_wrapper_->SetPreferredSize(gfx::Size(
         width, live_translate_label_wrapper_->GetPreferredSize().height()));
@@ -378,6 +382,7 @@ MediaDialogView::MediaDialogView(
           std::make_unique<global_media_controls::MediaItemUIListView>())),
       web_contents_for_presentation_request_(contents),
       entry_point_(entry_point) {
+  SetProperty(views::kElementIdentifierKey, kToolbarMediaBubbleElementId);
   // Enable layer based clipping to ensure children using layers are clipped
   // appropriately.
   SetPaintClientToLayer(true);
@@ -396,6 +401,14 @@ MediaDialogView::MediaDialogView(
       prefs::kLiveTranslateEnabled,
       base::BindRepeating(&MediaDialogView::OnLiveTranslateEnabledChanged,
                           base::Unretained(this)));
+
+#if !BUILDFLAG(IS_CHROMEOS)
+  // MediaDialogView can be built on CrOS but the updated UI should only be
+  // enabled for non-CrOS platforms.
+  if (base::FeatureList::IsEnabled(media::kGlobalMediaControlsUpdatedUI)) {
+    media_color_theme_ = GetMediaColorTheme();
+  }
+#endif
 }
 
 MediaDialogView::~MediaDialogView() {
@@ -552,8 +565,9 @@ void MediaDialogView::InitializeLiveTranslateSection() {
       profile_->GetPrefs()->GetBoolean(prefs::kLiveCaptionEnabled));
 
   auto live_translate_image = std::make_unique<views::ImageView>();
-  live_translate_image->SetImage(ui::ImageModel::FromVectorIcon(
-      kTranslateChromeRefreshIcon, ui::kColorIcon, kImageWidthDip));
+  live_translate_image->SetImage(
+      ui::ImageModel::FromVectorIcon(vector_icons::kTranslateChromeRefreshIcon,
+                                     ui::kColorIcon, kImageWidthDip));
   live_translate_container->AddChildView(std::move(live_translate_image));
 
   auto live_translate_label_wrapper = std::make_unique<View>();
@@ -568,14 +582,6 @@ void MediaDialogView::InitializeLiveTranslateSection() {
   live_translate_title->SetMultiLine(true);
   live_translate_title_ = live_translate_label_wrapper->AddChildView(
       std::move(live_translate_title));
-
-  auto live_translate_subtitle =
-      std::make_unique<views::Label>(l10n_util::GetStringUTF16(
-          IDS_GLOBAL_MEDIA_CONTROLS_LIVE_TRANSLATE_SUBTITLE));
-  live_translate_subtitle->SetHorizontalAlignment(
-      gfx::HorizontalAlignment::ALIGN_LEFT);
-  live_translate_subtitle_ = live_translate_label_wrapper->AddChildView(
-      std::move(live_translate_subtitle));
 
   live_translate_label_wrapper_ = live_translate_container->AddChildView(
       std::move(live_translate_label_wrapper));
@@ -655,16 +661,19 @@ void MediaDialogView::SetLiveCaptionTitle(const std::u16string& new_text) {
   UpdateBubbleSize();
 }
 
-
 std::unique_ptr<global_media_controls::MediaItemUIView>
 MediaDialogView::BuildMediaItemUIView(
     const std::string& id,
     base::WeakPtr<media_message_center::MediaNotificationItem> item) {
+  bool show_devices =
+      entry_point_ == GlobalMediaControlsEntryPoint::kPresentation;
   return std::make_unique<global_media_controls::MediaItemUIView>(
-      id, item, BuildFooter(id, item, profile_, entry_point_),
-      BuildDeviceSelector(id, item, service_, service_, profile_,
-                          entry_point_));
+      id, item, BuildFooter(id, item, profile_, media_color_theme_),
+      BuildDeviceSelector(id, item, service_, service_, profile_, entry_point_,
+                          show_devices, media_color_theme_),
+      /*notification_theme=*/std::nullopt, media_color_theme_,
+      global_media_controls::MediaDisplayPage::kMediaDialogView);
 }
 
-BEGIN_METADATA(MediaDialogView, views::BubbleDialogDelegateView)
+BEGIN_METADATA(MediaDialogView)
 END_METADATA

@@ -160,7 +160,7 @@ class SystemNotificationManager {
       file_manager::io_task::IOTaskId task_id,
       const std::string& notification_id,
       const bool paused,
-      absl::optional<int> button_index);
+      std::optional<int> button_index);
 
   // Returns an instance of an 'ash' Notification with title and message
   // specified by string ID values (for 110n).
@@ -210,34 +210,28 @@ class SystemNotificationManager {
   NotificationPtr MakeDriveSyncErrorNotification(const Event& event);
 
   // Click handler for the Drive offline confirmation dialog notification.
-  void HandleDriveDialogClick(absl::optional<int> button_index);
+  void HandleDriveDialogClick(std::optional<int> button_index);
 
   // Make notification from the DriveFS offline settings event.
   NotificationPtr MakeDriveConfirmDialogNotification(const Event& event);
-
-  // Update/remove Drive sync progress notification.
-  // |event| is the event object delivered from EventRouter and
-  // |event_arguments| contains ListView serialized version of
-  // file_manager_private::FileTransferStatus.
-  NotificationPtr UpdateDriveSyncNotification(const Event& event);
 
   // Click handler for the removable device notification.
   void HandleRemovableNotificationClick(
       const std::string& path,
       const std::vector<DeviceNotificationUserActionUmaType>&
           uma_types_for_buttons,
-      absl::optional<int> button_index);
+      std::optional<int> button_index);
 
   // Click handler for Data Leak Prevention or Enterprise Connectors policy
   // notifications.
   void HandleDataProtectionPolicyNotificationClick(
       base::RepeatingClosure proceed_callback,
       base::RepeatingClosure cancel_callback,
-      absl::optional<int> button_index);
+      std::optional<int> button_index);
 
   // Click handler for the progress notification.
   void HandleProgressClick(const std::string& notification_id,
-                           absl::optional<int> button_index);
+                           std::optional<int> button_index);
 
   // Makes a notification instance for mount errors.
   NotificationPtr MakeMountErrorNotification(
@@ -278,23 +272,22 @@ class SystemNotificationManager {
   std::map<std::string, SystemNotificationManagerMountStatus> mount_status_;
 
   // User profile.
-  const raw_ptr<Profile, DanglingUntriaged | ExperimentalAsh> profile_;
+  const raw_ptr<Profile, DanglingUntriaged> profile_;
 
   // Application name (used for notification display source).
   std::u16string const app_name_;
 
   // DriveFS event router: not owned.
-  raw_ptr<DriveFsEventRouter, DanglingUntriaged | ExperimentalAsh>
-      drivefs_event_router_ = nullptr;
+  raw_ptr<DriveFsEventRouter, DanglingUntriaged> drivefs_event_router_ =
+      nullptr;
 
   // IOTaskController is owned by VolumeManager.
-  raw_ptr<file_manager::io_task::IOTaskController,
-          DanglingUntriaged | ExperimentalAsh>
+  raw_ptr<file_manager::io_task::IOTaskController, DanglingUntriaged>
       io_task_controller_ = nullptr;
 
   // Keep track of the bulk-pinning stage.
   using BulkPinStage = file_manager_private::BulkPinStage;
-  BulkPinStage bulk_pin_stage_ = BulkPinStage::BULK_PIN_STAGE_NONE;
+  BulkPinStage bulk_pin_stage_ = BulkPinStage::kNone;
 
   // base::WeakPtr{this} factory.
   base::WeakPtrFactory<SystemNotificationManager> weak_ptr_factory_{this};

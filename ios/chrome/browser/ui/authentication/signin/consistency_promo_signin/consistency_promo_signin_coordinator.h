@@ -15,14 +15,10 @@ enum class AccessPoint : int;
 // using accounts on the device, opening Incognito, and adding an account.
 @interface ConsistencyPromoSigninCoordinator : SigninCoordinator
 
-- (instancetype)initWithBaseViewController:(UIViewController*)baseViewController
-                                   browser:(Browser*)browser
-                               accessPoint:
-                                   (signin_metrics::AccessPoint)AccessPoint
-    NS_DESIGNATED_INITIALIZER;
-
-- (instancetype)initWithBaseViewController:(UIViewController*)baseViewController
-                                   browser:(Browser*)browser NS_UNAVAILABLE;
++ (instancetype)
+    coordinatorWithBaseViewController:(UIViewController*)viewController
+                              browser:(Browser*)browser
+                          accessPoint:(signin_metrics::AccessPoint)accessPoint;
 
 @end
 

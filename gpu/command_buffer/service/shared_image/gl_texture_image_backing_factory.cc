@@ -7,6 +7,7 @@
 #include <list>
 #include <utility>
 
+#include "base/feature_list.h"
 #include "build/build_config.h"
 #include "gpu/command_buffer/common/mailbox.h"
 #include "gpu/command_buffer/common/shared_image_usage.h"
@@ -19,15 +20,22 @@
 namespace gpu {
 namespace {
 
+BASE_FEATURE(kCorrectFramebufferAttachmentComputationInGLTexture,
+             "CorrectFramebufferAttachmentComputationInGLTexture",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 constexpr uint32_t kWebGPUUsages =
-    SHARED_IMAGE_USAGE_WEBGPU | SHARED_IMAGE_USAGE_WEBGPU_SWAP_CHAIN_TEXTURE |
+    SHARED_IMAGE_USAGE_WEBGPU_READ | SHARED_IMAGE_USAGE_WEBGPU_WRITE |
+    SHARED_IMAGE_USAGE_WEBGPU_SWAP_CHAIN_TEXTURE |
     SHARED_IMAGE_USAGE_WEBGPU_STORAGE_TEXTURE;
 
 constexpr uint32_t kSupportedUsage =
-    SHARED_IMAGE_USAGE_GLES2 | SHARED_IMAGE_USAGE_GLES2_FRAMEBUFFER_HINT |
+    SHARED_IMAGE_USAGE_GLES2_READ | SHARED_IMAGE_USAGE_GLES2_WRITE |
+    SHARED_IMAGE_USAGE_GLES2_FRAMEBUFFER_HINT |
     SHARED_IMAGE_USAGE_DISPLAY_WRITE | SHARED_IMAGE_USAGE_DISPLAY_READ |
-    SHARED_IMAGE_USAGE_RASTER | SHARED_IMAGE_USAGE_OOP_RASTERIZATION |
-    SHARED_IMAGE_USAGE_SCANOUT | SHARED_IMAGE_USAGE_CONCURRENT_READ_WRITE |
+    SHARED_IMAGE_USAGE_RASTER_READ | SHARED_IMAGE_USAGE_RASTER_WRITE |
+    SHARED_IMAGE_USAGE_OOP_RASTERIZATION | SHARED_IMAGE_USAGE_SCANOUT |
+    SHARED_IMAGE_USAGE_CONCURRENT_READ_WRITE |
     SHARED_IMAGE_USAGE_HIGH_PERFORMANCE_GPU | SHARED_IMAGE_USAGE_CPU_UPLOAD |
     kWebGPUUsages;
 }
@@ -46,21 +54,8 @@ GLTextureImageBackingFactory::GLTextureImageBackingFactory(
                                   workarounds,
                                   feature_info,
                                   progress_reporter),
-      for_cpu_upload_usage_(for_cpu_upload_usage) {
-  // If RED_8 and RG_88 are supported then YUV formats should also work.
-  // TODO(crbug.com/1406253): Verify if P010 support is also needed here for
-  // software GpuMemoryBuffers.
-  auto r_iter = supported_formats_.find(viz::SinglePlaneFormat::kR_8);
-  auto rg_iter = supported_formats_.find(viz::SinglePlaneFormat::kRG_88);
-  if (r_iter != supported_formats_.end() &&
-      rg_iter != supported_formats_.end()) {
-    auto& r_info = r_iter->second[0];
-    auto& rg_info = rg_iter->second[0];
-    supported_formats_[viz::MultiPlaneFormat::kNV12] = {r_info, rg_info};
-    supported_formats_[viz::MultiPlaneFormat::kYV12] = {r_info, r_info, r_info};
-    supported_formats_[viz::MultiPlaneFormat::kI420] = {r_info, r_info, r_info};
-  }
-}
+      for_cpu_upload_usage_(for_cpu_upload_usage),
+      support_all_metal_usages_(false) {}
 
 GLTextureImageBackingFactory::~GLTextureImageBackingFactory() = default;
 
@@ -153,8 +148,9 @@ bool GLTextureImageBackingFactory::IsSupported(
 
   bool has_cpu_upload_usage = usage & SHARED_IMAGE_USAGE_CPU_UPLOAD;
 
-  if (for_cpu_upload_usage_ != has_cpu_upload_usage)
+  if (for_cpu_upload_usage_ != has_cpu_upload_usage) {
     return false;
+  }
 
   if (has_cpu_upload_usage) {
     if (!GLTextureImageBacking::SupportsPixelUploadWithFormat(format)) {
@@ -171,24 +167,30 @@ bool GLTextureImageBackingFactory::IsSupported(
 
   // This is not beneficial on iOS. The main purpose of this is a multi-gpu
   // support.
-#if BUILDFLAG(IS_MAC)
-  if (gl::GetGLImplementation() == gl::kGLImplementationEGLANGLE &&
-      gl::GetANGLEImplementation() == gl::ANGLEImplementation::kMetal) {
-    constexpr uint32_t kMetalInvalidUsages =
-        SHARED_IMAGE_USAGE_DISPLAY_READ | SHARED_IMAGE_USAGE_SCANOUT |
-        SHARED_IMAGE_USAGE_GLES2 | SHARED_IMAGE_USAGE_GLES2_FRAMEBUFFER_HINT;
-    if (usage & kMetalInvalidUsages) {
-      return false;
+  if (!support_all_metal_usages_) {
+    if (gl::GetGLImplementation() == gl::kGLImplementationEGLANGLE &&
+        gl::GetANGLEImplementation() == gl::ANGLEImplementation::kMetal) {
+      constexpr uint32_t kMetalInvalidUsages =
+          SHARED_IMAGE_USAGE_DISPLAY_READ | SHARED_IMAGE_USAGE_SCANOUT |
+          SHARED_IMAGE_USAGE_GLES2_READ | SHARED_IMAGE_USAGE_GLES2_WRITE |
+          SHARED_IMAGE_USAGE_GLES2_FRAMEBUFFER_HINT;
+      if (usage & kMetalInvalidUsages) {
+        return false;
+      }
     }
   }
-#endif  // BUILDFLAG(IS_MAC)
 
-  // Doesn't support contexts other than GL for OOPR Canvas
+  // Using GLTextureImageBacking for raster/display is only appropriate when
+  // running on top of GL. For the case WebGL fallback (GrContextType::kNone)
+  // this usages aren't actually relevant but WebGL still adds them so ignore.
   if (gr_context_type != GrContextType::kGL &&
-      ((usage & SHARED_IMAGE_USAGE_DISPLAY_READ) ||
-       (usage & SHARED_IMAGE_USAGE_DISPLAY_WRITE) ||
-       (usage & SHARED_IMAGE_USAGE_RASTER))) {
-    return false;
+      gr_context_type != GrContextType::kNone) {
+    constexpr uint32_t kUnsupportedUsages =
+        SHARED_IMAGE_USAGE_DISPLAY_READ | SHARED_IMAGE_USAGE_DISPLAY_WRITE |
+        SHARED_IMAGE_USAGE_RASTER_READ | SHARED_IMAGE_USAGE_RASTER_WRITE;
+    if (usage & kUnsupportedUsages) {
+      return false;
+    }
   }
 
   // Only supports WebGPU usages on Dawn's OpenGLES backend.
@@ -201,6 +203,10 @@ bool GLTextureImageBackingFactory::IsSupported(
   }
 
   return CanCreateTexture(format, size, pixel_data, GL_TEXTURE_2D);
+}
+
+void GLTextureImageBackingFactory::EnableSupportForAllMetalUsagesForTesting() {
+  support_all_metal_usages_ = true;
 }
 
 std::unique_ptr<SharedImageBacking>
@@ -217,20 +223,40 @@ GLTextureImageBackingFactory::CreateSharedImageInternal(
     base::span<const uint8_t> pixel_data) {
   DCHECK(CanCreateTexture(format, size, pixel_data, GL_TEXTURE_2D));
 
-  const bool for_framebuffer_attachment =
-      (usage & (SHARED_IMAGE_USAGE_RASTER |
-                SHARED_IMAGE_USAGE_GLES2_FRAMEBUFFER_HINT)) != 0;
+  bool for_framebuffer_attachment = false;
+  // NOTE: We are in the process of computing writes to GL without using
+  // GLES2_FRAMEBUFFER_HINT as part of eliminating the latter. Here we make the
+  // change guarded by a killswitch.
+  // TODO(b/41491709): Remove this killswitch post safe rollout.
+  if (base::FeatureList::IsEnabled(
+          kCorrectFramebufferAttachmentComputationInGLTexture)) {
+    // GLTextureImageBackingFactory supports raster and display usage only for
+    // Ganesh-GL, meaning that raster/display write usage implies GL writes
+    // within Skia.
+    for_framebuffer_attachment = usage & (SHARED_IMAGE_USAGE_GLES2_WRITE |
+                                          SHARED_IMAGE_USAGE_RASTER_WRITE |
+                                          SHARED_IMAGE_USAGE_DISPLAY_WRITE);
+  } else {
+    for_framebuffer_attachment =
+        (usage &
+         (SHARED_IMAGE_USAGE_RASTER_READ | SHARED_IMAGE_USAGE_RASTER_WRITE |
+          SHARED_IMAGE_USAGE_GLES2_FRAMEBUFFER_HINT)) != 0;
+  }
+
   const bool framebuffer_attachment_angle =
       for_framebuffer_attachment && texture_usage_angle_;
 
   auto result = std::make_unique<GLTextureImageBacking>(
       mailbox, format, size, color_space, surface_origin, alpha_type, usage,
-      use_passthrough_);
+      std::move(debug_label), use_passthrough_);
   result->InitializeGLTexture(GetFormatInfo(format), pixel_data,
-                              progress_reporter_, framebuffer_attachment_angle,
-                              std::move(debug_label));
+                              progress_reporter_, framebuffer_attachment_angle);
 
   return std::move(result);
+}
+
+SharedImageBackingType GLTextureImageBackingFactory::GetBackingType() {
+  return SharedImageBackingType::kGLTexture;
 }
 
 }  // namespace gpu

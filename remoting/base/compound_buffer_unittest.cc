@@ -16,6 +16,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 
 using net::IOBuffer;
+using net::IOBufferWithSize;
 
 namespace remoting {
 
@@ -77,7 +78,7 @@ class CompoundBufferTest : public testing::Test {
 
  protected:
   void SetUp() override {
-    data_ = base::MakeRefCounted<IOBuffer>(kDataSize);
+    data_ = base::MakeRefCounted<IOBufferWithSize>(kDataSize);
     for (int i = 0; i < kDataSize; ++i) {
       data_->data()[i] = i;
     }
@@ -172,8 +173,10 @@ class CompoundBufferTest : public testing::Test {
     CompoundBuffer* result = new CompoundBuffer();
     const char* data = kTestData.data();
     for (int i = 0; i < segments; ++i) {
-      int size = i % 2 == 0 ? 1 : 2;
-      result->Append(base::MakeRefCounted<net::WrappedIOBuffer>(data), size);
+      size_t size = i % 2 == 0 ? 1 : 2;
+      result->Append(base::MakeRefCounted<net::WrappedIOBuffer>(
+                         base::make_span(data, size)),
+                     size);
       data += size;
     }
     result->Lock();

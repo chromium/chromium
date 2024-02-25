@@ -9,6 +9,7 @@
 #include "base/base64.h"
 #include "base/strings/string_number_conversions.h"
 #include "components/os_crypt/sync/os_crypt.h"
+#include "components/password_manager/core/browser/features/password_features.h"
 #include "components/password_manager/core/common/password_manager_pref_names.h"
 #include "components/prefs/pref_service.h"
 #include "components/prefs/scoped_user_pref_update.h"
@@ -53,9 +54,7 @@ std::string EncryptString(const std::string& plain_text) {
   if (!OSCrypt::EncryptString(plain_text, &encrypted_text)) {
     return std::string();
   }
-  std::string encrypted_base64_text;
-  base::Base64Encode(encrypted_text, &encrypted_base64_text);
-  return encrypted_base64_text;
+  return base::Base64Encode(encrypted_text);
 }
 
 std::string GetAndDecryptField(const base::Value& dict,
@@ -96,23 +95,23 @@ bool StringToLengthAndSalt(const std::string& s,
 std::string BooleanToString(bool bool_value) {
   return bool_value ? "true" : "false";
 }
+}  // namespace
 
-// Helper function to convert a dictionary value to PasswordWordHashData.
-absl::optional<PasswordHashData> ConvertToPasswordHashData(
+std::optional<PasswordHashData> ConvertToPasswordHashData(
     const base::Value& dict) {
   PasswordHashData result;
   result.username = GetAndDecryptField(dict, kUsernameFieldKey);
   if (result.username.empty())
-    return absl::nullopt;
+    return std::nullopt;
 
   if (!base::StringToUint64(GetAndDecryptField(dict, kHashFieldKey),
                             &result.hash)) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   if (!StringToLengthAndSalt(GetAndDecryptField(dict, kLengthAndSaltFieldKey),
                              &result.length, &result.salt)) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   result.is_gaia_password = GetAndDecryptField(dict, kIsGaiaFieldKey) == "true";
@@ -120,32 +119,34 @@ absl::optional<PasswordHashData> ConvertToPasswordHashData(
   return result;
 }
 
-}  // namespace
-
+// TODO(b/325053878): Refactor class after safe_browsing_ui.* migration to
+// the //chrome directory.
 HashPasswordManager::HashPasswordManager(PrefService* prefs) : prefs_(prefs) {}
 HashPasswordManager::HashPasswordManager() = default;
 HashPasswordManager::~HashPasswordManager() = default;
 
-bool HashPasswordManager::SavePasswordHash(const std::string username,
+bool HashPasswordManager::SavePasswordHash(const std::string& username,
                                            const std::u16string& password,
                                            bool is_gaia_password) {
-  if (!prefs_)
-    return false;
-
+  CheckPrefs(is_gaia_password);
+  // TODO(b/324872193): Modify ScopedListPrefUpdate so unique_ptr isn't
+  // necessary in this class.
+  std::unique_ptr<ScopedListPrefUpdate> update =
+      GetScopedListPrefUpdate(is_gaia_password);
   // If we've already saved password hash for |username|, and the |password| is
   // unchanged, no need to save password hash again. Instead we update the last
   // sign in timestamp.
-  ScopedListPrefUpdate update(prefs_, prefs::kPasswordHashDataList);
-  for (base::Value& password_hash_data : update.Get()) {
+  for (base::Value& password_hash_data : update->Get()) {
     if (AreUsernamesSame(
             GetAndDecryptField(password_hash_data, kUsernameFieldKey),
             IsGaiaPassword(password_hash_data), username, is_gaia_password)) {
-      absl::optional<PasswordHashData> existing_password_hash =
+      std::optional<PasswordHashData> existing_password_hash =
           ConvertToPasswordHashData(password_hash_data);
       if (existing_password_hash && existing_password_hash->MatchesPassword(
                                         username, password, is_gaia_password)) {
-        password_hash_data.GetDict().Set(kLastSignInTimeFieldKey,
-                                         base::Time::Now().ToDoubleT());
+        password_hash_data.GetDict().Set(
+            kLastSignInTimeFieldKey,
+            base::Time::Now().InSecondsFSinceUnixEpoch());
         return true;
       }
     }
@@ -180,30 +181,30 @@ void HashPasswordManager::ClearSavedPasswordHash() {
 
 void HashPasswordManager::ClearSavedPasswordHash(const std::string& username,
                                                  bool is_gaia_password) {
-  if (!prefs_)
-    return;
+  CheckPrefs(is_gaia_password);
 
-  ScopedListPrefUpdate update(prefs_, prefs::kPasswordHashDataList);
-  update->EraseIf([&](const auto& dict) {
+  std::unique_ptr<ScopedListPrefUpdate> update =
+      GetScopedListPrefUpdate(is_gaia_password);
+
+  (*update)->EraseIf([&](const auto& dict) {
     return AreUsernamesSame(GetAndDecryptField(dict, kUsernameFieldKey),
                             IsGaiaPassword(dict), username, is_gaia_password);
   });
 }
 
 void HashPasswordManager::ClearAllPasswordHash(bool is_gaia_password) {
-  if (!prefs_)
-    return;
+  CheckPrefs(is_gaia_password);
+  std::unique_ptr<ScopedListPrefUpdate> update =
+      GetScopedListPrefUpdate(is_gaia_password);
 
-  ScopedListPrefUpdate update(prefs_, prefs::kPasswordHashDataList);
-  update->EraseIf([&](const auto& dict) {
+  (*update)->EraseIf([&](const auto& dict) {
     return GetAndDecryptField(dict, kIsGaiaFieldKey) ==
            BooleanToString(is_gaia_password);
   });
 }
 
 void HashPasswordManager::ClearAllNonGmailPasswordHash() {
-  if (!prefs_)
-    return;
+  CHECK(prefs_);
 
   ScopedListPrefUpdate update(prefs_, prefs::kPasswordHashDataList);
   update->EraseIf([](const base::Value& data) {
@@ -215,18 +216,39 @@ void HashPasswordManager::ClearAllNonGmailPasswordHash() {
         CanonicalizeUsername(username, /*is_gaia_account=*/true);
     return email.find("@gmail.com") == std::string::npos;
   });
+  ClearAllPasswordHash(/*is_gaia_password=*/false);
 }
 
 std::vector<PasswordHashData> HashPasswordManager::RetrieveAllPasswordHashes() {
+  CHECK(prefs_);
   std::vector<PasswordHashData> result;
-  if (!prefs_ || !prefs_->HasPrefPath(prefs::kPasswordHashDataList))
-    return result;
+  if (base::FeatureList::IsEnabled(
+          features::kLocalStateEnterprisePasswordHashes)) {
+    // TODO(b/325053878): Replace w/ CHECK once safe.
+    if (!local_prefs_) {
+      return result;
+    }
+  }
+  result = RetrieveAllPasswordHashesInternal(
+      prefs_->GetList(prefs::kPasswordHashDataList));
+  if (base::FeatureList::IsEnabled(
+          features::kLocalStateEnterprisePasswordHashes)) {
+    std::vector<PasswordHashData> enterprise_result =
+        RetrieveAllPasswordHashesInternal(
+            local_prefs_->GetList(prefs::kLocalPasswordHashDataList));
+    result.insert(result.end(), enterprise_result.begin(),
+                  enterprise_result.end());
+  }
 
-  const base::Value::List& hash_list =
-      prefs_->GetList(prefs::kPasswordHashDataList);
+  return result;
+}
 
+std::vector<PasswordHashData>
+HashPasswordManager::RetrieveAllPasswordHashesInternal(
+    const base::Value::List& hash_list) const {
+  std::vector<PasswordHashData> result;
   for (const base::Value& entry : hash_list) {
-    absl::optional<PasswordHashData> password_hash_data =
+    std::optional<PasswordHashData> password_hash_data =
         ConvertToPasswordHashData(entry);
     if (password_hash_data)
       result.push_back(std::move(*password_hash_data));
@@ -234,34 +256,32 @@ std::vector<PasswordHashData> HashPasswordManager::RetrieveAllPasswordHashes() {
   return result;
 }
 
-absl::optional<PasswordHashData> HashPasswordManager::RetrievePasswordHash(
+std::optional<PasswordHashData> HashPasswordManager::RetrievePasswordHash(
     const std::string& username,
     bool is_gaia_password) {
-  if (!prefs_ || username.empty() ||
-      !prefs_->HasPrefPath(prefs::kPasswordHashDataList)) {
-    return absl::nullopt;
+  CHECK(prefs_);
+  if (username.empty()) {
+    return std::nullopt;
   }
-
-  for (const base::Value& entry :
-       prefs_->GetList(prefs::kPasswordHashDataList)) {
+  const base::Value::List& hash_list = GetPrefList(is_gaia_password);
+  for (const base::Value& entry : hash_list) {
     if (AreUsernamesSame(GetAndDecryptField(entry, kUsernameFieldKey),
                          IsGaiaPassword(entry), username, is_gaia_password)) {
       return ConvertToPasswordHashData(entry);
     }
   }
 
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 bool HashPasswordManager::HasPasswordHash(const std::string& username,
                                           bool is_gaia_password) {
-  if (username.empty() || !prefs_ ||
-      !prefs_->HasPrefPath(prefs::kPasswordHashDataList)) {
+  CheckPrefs(is_gaia_password);
+  if (username.empty()) {
     return false;
   }
-
-  for (const base::Value& entry :
-       prefs_->GetList(prefs::kPasswordHashDataList)) {
+  const base::Value::List& hash_list = GetPrefList(is_gaia_password);
+  for (const base::Value& entry : hash_list) {
     if (AreUsernamesSame(GetAndDecryptField(entry, kUsernameFieldKey),
                          IsGaiaPassword(entry), username, is_gaia_password)) {
       return true;
@@ -279,7 +299,8 @@ base::CallbackListSubscription HashPasswordManager::RegisterStateCallback(
 
 bool HashPasswordManager::EncryptAndSave(
     const PasswordHashData& password_hash_data) {
-  if (!prefs_ || password_hash_data.username.empty()) {
+  CheckPrefs(password_hash_data.is_gaia_password);
+  if (password_hash_data.username.empty()) {
     return false;
   }
 
@@ -309,10 +330,12 @@ bool HashPasswordManager::EncryptAndSave(
   encrypted_password_hash_entry.Set(kLengthAndSaltFieldKey,
                                     encrypted_length_and_salt);
   encrypted_password_hash_entry.Set(kIsGaiaFieldKey, encrypted_is_gaia_value);
-  encrypted_password_hash_entry.Set(kLastSignInTimeFieldKey,
-                                    base::Time::Now().ToDoubleT());
-  ScopedListPrefUpdate update(prefs_, prefs::kPasswordHashDataList);
-  base::Value::List& update_list = update.Get();
+  encrypted_password_hash_entry.Set(
+      kLastSignInTimeFieldKey, base::Time::Now().InSecondsFSinceUnixEpoch());
+  std::unique_ptr<ScopedListPrefUpdate> update =
+      GetScopedListPrefUpdate(password_hash_data.is_gaia_password);
+
+  base::Value::List& update_list = update->Get();
   size_t num_erased = update_list.EraseIf([&](const auto& dict) {
     return AreUsernamesSame(GetAndDecryptField(dict, kUsernameFieldKey),
                             IsGaiaPassword(dict), password_hash_data.username,
@@ -331,6 +354,63 @@ bool HashPasswordManager::EncryptAndSave(
 
   update_list.Append(std::move(encrypted_password_hash_entry));
   return true;
+}
+
+const base::Value::List& HashPasswordManager::GetPrefList(
+    bool is_gaia_password) const {
+  if (!is_gaia_password) {
+    if (base::FeatureList::IsEnabled(
+            features::kLocalStateEnterprisePasswordHashes)) {
+      return local_prefs_->GetList(prefs::kLocalPasswordHashDataList);
+    }
+  }
+  return prefs_->GetList(prefs::kPasswordHashDataList);
+}
+
+std::unique_ptr<ScopedListPrefUpdate>
+HashPasswordManager::GetScopedListPrefUpdate(bool is_gaia_password) const {
+  if (!is_gaia_password) {
+    if (base::FeatureList::IsEnabled(
+            features::kLocalStateEnterprisePasswordHashes)) {
+      return std::make_unique<ScopedListPrefUpdate>(
+          local_prefs_, prefs::kLocalPasswordHashDataList);
+    }
+  }
+  return std::make_unique<ScopedListPrefUpdate>(prefs_,
+                                                prefs::kPasswordHashDataList);
+}
+
+void HashPasswordManager::CheckPrefs(bool is_gaia_password) const {
+  CHECK(prefs_);
+  if (!is_gaia_password) {
+    if (base::FeatureList::IsEnabled(
+            features::kLocalStateEnterprisePasswordHashes)) {
+      CHECK(local_prefs_);
+    }
+  }
+}
+
+void HashPasswordManager::MigrateEnterprisePasswordHashes() {
+  CHECK(prefs_);
+  // TODO(b/325053878): Replace w/ CHECK once safe.
+  // Ensure pref has been registered before proceeding.
+  if (!local_prefs_ ||
+      !local_prefs_->FindPreference(prefs::kLocalPasswordHashDataList)) {
+    return;
+  }
+  ScopedListPrefUpdate update(prefs_, prefs::kPasswordHashDataList);
+  ScopedListPrefUpdate enterprise_update(local_prefs_,
+                                         prefs::kLocalPasswordHashDataList);
+  base::Value::List& update_list = update.Get();
+  base::Value::List& enterprise_update_list = enterprise_update.Get();
+  for (auto it = update_list.begin(); it != update_list.end();) {
+    if (!IsGaiaPassword(*it)) {
+      enterprise_update_list.Append(std::move(it->GetDict()));
+      it = update_list.erase(it);
+      continue;
+    }
+    ++it;
+  }
 }
 
 }  // namespace password_manager

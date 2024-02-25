@@ -166,6 +166,8 @@ message ServiceWorkerRegistrationData {
             kFencedframeDestination = 22;
             kWebIdentityDestination = 23;
             kDictionaryDestination = 24;
+            kSpeculationRulesDestination = 25;
+            kJsonDestination = 26;
           }
           optional Destination destination = 3;
         }
@@ -176,6 +178,14 @@ message ServiceWorkerRegistrationData {
           }
           optional Status status = 1;
         }
+        // TODO(crbug.com/1492871): Remove and replace this to `condition`
+        message ConditionObject {
+          repeated Condition conditions = 1;
+        }
+        message OrCondition {
+          repeated ConditionObject objects = 1;
+        }
+        // TODO(crbug.com/1492871): Make this a `message` to fit WebIDL
         oneof condition {
           // Used for representing URLPattern.
           URLPattern url_pattern = 1;
@@ -183,6 +193,9 @@ message ServiceWorkerRegistrationData {
           Request request = 2;
           // Used for representing running status.
           RunningStatus running_status = 3;
+          // Used for representing 'or' condition.
+          // The `_condition` suffix is to avoid conflicts with keywords in C++
+          OrCondition or_condition = 4;
         }
       }
       message Source {

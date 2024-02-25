@@ -6,6 +6,7 @@
 #define COMPONENTS_OS_CRYPT_ASYNC_BROWSER_OS_CRYPT_ASYNC_H_
 
 #include <memory>
+#include <optional>
 #include <vector>
 
 #include "base/callback_list.h"
@@ -15,7 +16,6 @@
 #include "base/sequence_checker.h"
 #include "components/os_crypt/async/browser/key_provider.h"
 #include "components/os_crypt/async/common/encryptor.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace os_crypt_async {
 
@@ -69,7 +69,7 @@ class COMPONENT_EXPORT(OS_CRYPT_ASYNC) OSCryptAsync {
   void CallbackHelper(InitCallback callback) const;
   void HandleKey(ProviderIterator current,
                  const std::string& tag,
-                 absl::optional<Encryptor::Key> key);
+                 std::optional<Encryptor::Key> key);
 
   std::unique_ptr<Encryptor> encryptor_instance_
       GUARDED_BY_CONTEXT(sequence_checker_);

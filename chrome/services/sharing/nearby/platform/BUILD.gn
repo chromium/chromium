@@ -18,10 +18,16 @@ source_set("platform") {
     "ble_medium.h",
     "ble_peripheral.cc",
     "ble_peripheral.h",
+    "ble_v2_gatt_client.cc",
+    "ble_v2_gatt_client.h",
+    "ble_v2_gatt_server.cc",
+    "ble_v2_gatt_server.h",
     "ble_v2_medium.cc",
     "ble_v2_medium.h",
-    "ble_v2_peripheral.cc",
-    "ble_v2_peripheral.h",
+    "ble_v2_remote_peripheral.cc",
+    "ble_v2_remote_peripheral.h",
+    "ble_v2_server_socket.cc",
+    "ble_v2_server_socket.h",
     "bluetooth_adapter.cc",
     "bluetooth_adapter.h",
     "bluetooth_classic_medium.cc",
@@ -68,7 +74,10 @@ source_set("platform") {
     "wifi_lan_socket.h",
   ]
 
+  configs += [ "//build/config/compiler:wexit_time_destructors" ]
+
   public_deps = [
+    "//third_party/nearby:connections_credential_proto",
     "//third_party/nearby:connections_local_credential_proto",
     "//third_party/nearby:platform_api_platform",
     "//third_party/nearby:platform_impl_shared_file",
@@ -77,6 +86,7 @@ source_set("platform") {
   deps = [
     "//ash/constants",
     "//base",
+    "//chrome/services/sharing/nearby/common",
     "//chrome/services/sharing/webrtc",
     "//chromeos/ash/components/nearby/presence/conversions:conversions",
     "//chromeos/ash/services/nearby/public/cpp:tcp_server_socket_port",
@@ -101,8 +111,10 @@ source_set("unit_tests") {
     "atomic_uint32_unittest.cc",
     "bidirectional_stream_unittest.cc",
     "ble_medium_unittest.cc",
+    "ble_v2_gatt_client_unittest.cc",
+    "ble_v2_gatt_server_unittest.cc",
     "ble_v2_medium_unittest.cc",
-    "ble_v2_peripheral_unittest.cc",
+    "ble_v2_remote_peripheral_unittest.cc",
     "bluetooth_adapter_unittest.cc",
     "bluetooth_classic_medium_unittest.cc",
     "bluetooth_server_socket_unittest.cc",
@@ -128,6 +140,7 @@ source_set("unit_tests") {
   deps = [
     ":platform",
     "//base/test:test_support",
+    "//chrome/services/sharing/nearby/common",
     "//chrome/services/sharing/nearby/test_support",
     "//chromeos/ash/components/login/login_state",
     "//chromeos/ash/services/nearby/public/cpp:tcp_server_socket_port",
@@ -139,6 +152,8 @@ source_set("unit_tests") {
     "//components/prefs:test_support",
     "//components/sync_preferences:test_support",
     "//components/user_manager:test_support",
+    "//device/bluetooth:deprecated_experimental_mojo",
+    "//device/bluetooth:mocks",
     "//mojo/public/cpp/bindings",
     "//services/network/public/mojom",
     "//testing/gtest",

@@ -16,19 +16,18 @@
 // Thus, we have the following routines that are supported by cros_healthd in
 // ChromiumOS but not yet part of this crosapi interface (in both
 // `TelemetryDiagnosticRoutineArgument` and `TelemetryDiagnosticRoutineDetail`):
-// - Memory routine
 // - Audio driver routine
 // - Cpu stress routine
 // - Ufs lifetime routine
 // - Disk read routine
 // - Cpu cache routine
 // - Prime search routine
-// - Volume button routine
 // - Led lit up routine
 
 module crosapi.mojom;
 
 import "chromeos/crosapi/mojom/telemetry_extension_exception.mojom";
+import "mojo/public/mojom/base/time.mojom";
 
 // This routine checks whether there is any memory problem by
 // reading/writing different patterns.
@@ -41,9 +40,36 @@ struct TelemetryDiagnosticMemoryRoutineArgument {
   uint32? max_testing_mem_kib@0;
 };
 
-// Argument types for the possible routines the routine control API can create.
+// This routine checks the functionality of the volume button. The routine
+// passes if the specified volume button event is received before the timeout.
+// Otherwise, the routine fails.
+//
+// NextMinVersion: 1, NextIndex: 2
+[Stable]
+struct TelemetryDiagnosticVolumeButtonRoutineArgument {
+  [Stable, Extensible]
+  enum ButtonType {
+    // The default value is for backward compatibility, should not be used.
+    [Default] kUnmappedEnumField = 0,
+    kVolumeUp = 1,    // Test for the volume up button.
+    kVolumeDown = 2,  // Test for the volume down button.
+  };
+  // The type of volume button to test.
+  ButtonType type@0;
+  // Length of time to listen to the volume button events. The timeout should be
+  // positive and less or equal to 600 seconds.
+  mojo_base.mojom.TimeDelta timeout@1;
+};
+
+// This routine checks whether the fan is controllable.
 //
 // NextMinVersion: 1, NextIndex: 1
+[Stable]
+struct TelemetryDiagnosticFanRoutineArgument {};
+
+// Argument types for the possible routines the routine control API can create.
+//
+// NextMinVersion: 4, NextIndex: 4
 [Stable, Extensible]
 union TelemetryDiagnosticRoutineArgument {
   // Default field is required by extensible unions for backward compatibility.
@@ -51,6 +77,10 @@ union TelemetryDiagnosticRoutineArgument {
   [Default] bool unrecognizedArgument @0;
   // Arguments to create a memory routine.
   [MinVersion=1] TelemetryDiagnosticMemoryRoutineArgument memory@1;
+  // Arguments to create a volume button routine.
+  [MinVersion=2] TelemetryDiagnosticVolumeButtonRoutineArgument volume_button@2;
+  // Arguments to create a fan routine.
+  [MinVersion=3] TelemetryDiagnosticFanRoutineArgument fan@3;
 };
 
 // Routine has been initialized but not yet started.
@@ -139,9 +169,9 @@ enum TelemetryDiagnosticMemtesterTestItemEnum {
 
   // These tests test writing random n bit words across the memory regions.
   // Test Pattern: 8 bit random words.
-  k8BitWrites = 18,
+  kEightBitWrites = 18,
   // Test Pattern: 16 bit random words.
-  k16BitWrites = 19,
+  kSixteenBitWrites = 19,
 };
 
 // Result from running memtester.
@@ -166,16 +196,54 @@ struct TelemetryDiagnosticMemoryRoutineDetail {
   TelemetryDiagnosticMemtesterResult result@1;
 };
 
+// Details regarding volume button routine.
+//
+// NextMinVersion: 1, NextIndex: 0
+[Stable]
+struct TelemetryDiagnosticVolumeButtonRoutineDetail {};
+
+// Whether the given hardware probed matches the hardware description recorded.
+//
+// NextMinVersion: 1, NextIndex: 4
+[Stable, Extensible]
+enum TelemetryDiagnosticHardwarePresenceStatus {
+  // The default value is for backward compatibility, should not be used.
+  [Default] kUnmappedEnumField = 0,
+  // The hardware presence matches the description.
+  kMatched = 1,
+  // The hardware presence does not match the description.
+  kNotMatched = 2,
+  // There is no description available, skipping check.
+  kNotConfigured = 3,
+};
+
+// Details regarding fan routine.
+//
+// NextMinVersion: 1, NextIndex: 3
+[Stable]
+struct TelemetryDiagnosticFanRoutineDetail {
+  // The ids of fans that can be controlled.
+  array<uint8> passed_fan_ids@0;
+  // The ids of fans that cannot be controlled.
+  array<uint8> failed_fan_ids@1;
+  // Whether the number of fan probed is matched.
+  TelemetryDiagnosticHardwarePresenceStatus fan_count_status@2;
+};
+
 // Details about a finished routine.
 //
-// NextMinVersion: 2, NextIndex: 2
-[Stable]
+// NextMinVersion: 4, NextIndex: 4
+[Stable, Extensible]
 union TelemetryDiagnosticRoutineDetail {
   // Default field is required by extensible unions for backward compatibility.
   // Any unrecognized Mojo field will deserialize to this field. Don't use this.
   [Default] bool unrecognizedArgument@0;
   // Details of a completed memory routine.
   [MinVersion=1] TelemetryDiagnosticMemoryRoutineDetail memory@1;
+  // Details of a completed volume button routine.
+  [MinVersion=2] TelemetryDiagnosticVolumeButtonRoutineDetail volume_button@2;
+  // Details of a completed fan routine.
+  [MinVersion=3] TelemetryDiagnosticFanRoutineDetail fan@3;
 };
 
 // Information about a finished routine.

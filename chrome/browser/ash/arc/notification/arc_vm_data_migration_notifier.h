@@ -5,13 +5,14 @@
 #ifndef CHROME_BROWSER_ASH_ARC_NOTIFICATION_ARC_VM_DATA_MIGRATION_NOTIFIER_H_
 #define CHROME_BROWSER_ASH_ARC_NOTIFICATION_ARC_VM_DATA_MIGRATION_NOTIFIER_H_
 
+#include <optional>
+
 #include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
 #include "base/sequence_checker.h"
 #include "chrome/browser/ash/arc/session/arc_session_manager.h"
 #include "chrome/browser/ash/arc/session/arc_session_manager_observer.h"
 #include "chrome/browser/profiles/profile.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace arc {
 
@@ -33,13 +34,13 @@ class ArcVmDataMigrationNotifier : public ArcSessionManagerObserver {
       bool auto_resume_enabled) override;
 
  private:
-  const raw_ptr<Profile, DanglingUntriaged | ExperimentalAsh> profile_;
+  const raw_ptr<Profile, DanglingUntriaged> profile_;
 
   void ShowNotification();
 
   void CloseNotification();
 
-  void OnNotificationClicked(absl::optional<int> button_index);
+  void OnNotificationClicked(std::optional<int> button_index);
 
   void OnRestartAccepted(bool accepted);
 

@@ -5,9 +5,11 @@
 import {TestRunner} from 'test_runner';
 import {SourcesTestRunner} from 'sources_test_runner';
 
+import * as Platform from 'devtools/core/platform/platform.js';
+import * as SourcesModule from 'devtools/panels/sources/sources.js';
+
 (async function() {
   TestRunner.addResult(`Verifies that SelectUISourceCodeDialog rendering works properly.\n`);
-  await TestRunner.loadLegacyModule('sources');
   await TestRunner.evaluateInPagePromise(`    function dummy1() { }
       //# sourceURL=http://test/helloWorld12.js
     `);
@@ -15,7 +17,7 @@ import {SourcesTestRunner} from 'sources_test_runner';
       //# sourceURL=http://test/some/very-long-url/which/usually/breaks-rendering/due-to/trancation/so/that/the-path-is-cut-appropriately/and-no-horizontal-scrollbars/are-shown.js
     `);
 
-  var provider = new Sources.FilteredUISourceCodeListProvider();
+  var provider = new SourcesModule.FilteredUISourceCodeListProvider.FilteredUISourceCodeListProvider();
   provider.attach();
 
   TestRunner.runTestSuite([
@@ -64,7 +66,7 @@ import {SourcesTestRunner} from 'sources_test_runner';
       if (node.nodeType === Node.TEXT_NODE)
         text += node.textContent;
       else
-        text += String.sprintf('[%s]', node.textContent);
+        text += Platform.StringUtilities.sprintf('[%s]', node.textContent);
     }
     return text;
   }

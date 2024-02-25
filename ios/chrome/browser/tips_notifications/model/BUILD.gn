@@ -1,0 +1,69 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("client") {
+  sources = [
+    "tips_notification_client.h",
+    "tips_notification_client.mm",
+  ]
+  deps = [
+    ":utils",
+    "//base",
+    "//components/feature_engagement/public",
+    "//ios/chrome/browser/default_browser/model",
+    "//ios/chrome/browser/default_browser/model:utils",
+    "//ios/chrome/browser/feature_engagement/model",
+    "//ios/chrome/browser/push_notification/model:constants",
+    "//ios/chrome/browser/push_notification/model:push_notification_client",
+    "//ios/chrome/browser/shared/coordinator/scene:scene_state_header",
+    "//ios/chrome/browser/shared/model/application_context",
+    "//ios/chrome/browser/shared/model/browser",
+    "//ios/chrome/browser/shared/model/browser_state",
+    "//ios/chrome/browser/shared/model/prefs:pref_names",
+    "//ios/chrome/browser/shared/model/utils",
+    "//ios/chrome/browser/shared/public/commands",
+    "//ios/chrome/browser/signin/model",
+    "//ios/chrome/browser/ui/authentication:signin_presenter",
+  ]
+  frameworks = [ "UserNotifications.framework" ]
+}
+
+source_set("utils") {
+  sources = [
+    "utils.h",
+    "utils.mm",
+  ]
+  deps = [
+    "//base",
+    "//ios/chrome/app/strings",
+    "//ios/chrome/browser/shared/public/features",
+    "//ui/base",
+  ]
+  frameworks = [ "UserNotifications.framework" ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "tips_notification_client_unittest.mm" ]
+  deps = [
+    ":client",
+    ":utils",
+    "//base",
+    "//base/test:test_support",
+    "//ios/chrome/browser/default_browser/model",
+    "//ios/chrome/browser/default_browser/model:test_support",
+    "//ios/chrome/browser/default_browser/model:utils",
+    "//ios/chrome/browser/first_run/model",
+    "//ios/chrome/browser/push_notification/model:constants",
+    "//ios/chrome/browser/shared/coordinator/scene:scene_state_header",
+    "//ios/chrome/browser/shared/model/browser",
+    "//ios/chrome/browser/shared/model/browser/test:test_support",
+    "//ios/chrome/browser/shared/model/browser_state:test_support",
+    "//ios/chrome/browser/shared/model/prefs:pref_names",
+    "//ios/chrome/browser/shared/public/commands",
+    "//ios/chrome/test:test_support",
+    "//ios/testing:block_swizzler",
+    "//third_party/ocmock",
+  ]
+}

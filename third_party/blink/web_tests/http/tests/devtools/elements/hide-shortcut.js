@@ -5,10 +5,11 @@
 import {TestRunner} from 'test_runner';
 import {ElementsTestRunner} from 'elements_test_runner';
 
+import * as Platform from 'devtools/core/platform/platform.js';
+
 (async function() {
   TestRunner.addResult(
       `Tests the hide shortcut, which toggles visibility:hidden on the node and it's ancestors. Bug 110641\n`);
-  await TestRunner.loadLegacyModule('elements');
   await TestRunner.showPanel('elements');
   await TestRunner.loadHTML(`
       <style>
@@ -151,7 +152,7 @@ import {ElementsTestRunner} from 'elements_test_runner';
   ]);
 
   function getPropertyText(computedStyle, propertyName) {
-    return String.sprintf('%s: %s;', propertyName, computedStyle.get(propertyName));
+    return Platform.StringUtilities.sprintf('%s: %s;', propertyName, computedStyle.get(propertyName));
   }
 
   function testPseudoToggle(pseudoNode, next) {

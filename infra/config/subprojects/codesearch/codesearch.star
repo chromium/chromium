@@ -4,6 +4,7 @@
 
 load("//lib/builders.star", "cpu", "os", "reclient")
 load("//lib/consoles.star", "consoles")
+load("//lib/gn_args.star", "gn_args")
 load("//lib/try.star", "try_")
 
 luci.bucket(
@@ -46,6 +47,17 @@ consoles.list_view(
 
 try_.builder(
     name = "gen-android-try",
+    gn_args = gn_args.config(
+        configs = [
+            "codesearch_builder",
+            "clang",
+            "debug_builder",
+            "minimal_symbols",
+            "reclient",
+            "android_builder_without_codecs",
+            "static",
+        ],
+    ),
     properties = {
         "recipe_properties": {
             "build_config": "android",
@@ -56,6 +68,17 @@ try_.builder(
 
 try_.builder(
     name = "gen-chromiumos-try",
+    gn_args = gn_args.config(
+        configs = [
+            "codesearch_builder",
+            "clang",
+            "debug_builder",
+            "minimal_symbols",
+            "reclient",
+            "chromeos",
+            "use_cups",
+        ],
+    ),
     properties = {
         "recipe_properties": {
             "build_config": "chromeos",
@@ -66,6 +89,15 @@ try_.builder(
 
 try_.builder(
     name = "gen-fuchsia-try",
+    gn_args = gn_args.config(
+        configs = [
+            "codesearch_builder",
+            "release_builder",
+            "reclient",
+            "fuchsia",
+            "cast_receiver",
+        ],
+    ),
     properties = {
         "recipe_properties": {
             "build_config": "fuchsia",
@@ -76,7 +108,18 @@ try_.builder(
 
 try_.builder(
     name = "gen-ios-try",
-    os = os.MAC_13,
+    gn_args = gn_args.config(
+        configs = [
+            "codesearch_builder",
+            "reclient",
+            "clang",
+            "debug",
+            "minimal_symbols",
+            "ios",
+            "ios_disable_code_signing",
+        ],
+    ),
+    os = os.MAC_DEFAULT,
     cpu = cpu.ARM64,
     properties = {
         "recipe_properties": {
@@ -88,6 +131,17 @@ try_.builder(
 
 try_.builder(
     name = "gen-lacros-try",
+    gn_args = gn_args.config(
+        configs = [
+            "codesearch_builder",
+            "clang",
+            "debug_builder",
+            "minimal_symbols",
+            "reclient",
+            "lacros_on_linux",
+            "use_cups",
+        ],
+    ),
     properties = {
         "recipe_properties": {
             "build_config": "lacros",
@@ -98,10 +152,29 @@ try_.builder(
 
 try_.builder(
     name = "gen-linux-try",
+    gn_args = gn_args.config(
+        configs = [
+            "codesearch_builder",
+            "clang",
+            "debug_builder",
+            "minimal_symbols",
+            "reclient",
+        ],
+    ),
 )
 
 try_.builder(
     name = "gen-mac-try",
+    gn_args = gn_args.config(
+        configs = [
+            "codesearch_builder",
+            "clang",
+            "debug_builder",
+            "minimal_symbols",
+            "reclient",
+            "mac",
+        ],
+    ),
     os = os.MAC_10_15,
     properties = {
         "recipe_properties": {
@@ -113,6 +186,16 @@ try_.builder(
 
 try_.builder(
     name = "gen-webview-try",
+    gn_args = gn_args.config(
+        configs = [
+            "codesearch_builder",
+            "clang",
+            "debug_builder",
+            "reclient",
+            "android_builder_without_codecs",
+            "static",
+        ],
+    ),
     properties = {
         "recipe_properties": {
             "build_config": "webview",
@@ -123,6 +206,15 @@ try_.builder(
 
 try_.builder(
     name = "gen-win-try",
+    gn_args = gn_args.config(
+        configs = [
+            "codesearch_builder",
+            "clang",
+            "debug_builder",
+            "minimal_symbols",
+            "reclient",
+        ],
+    ),
     os = os.WINDOWS_10,
     properties = {
         "recipe_properties": {

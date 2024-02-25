@@ -529,7 +529,7 @@ INSTANTIATE_TEST_SUITE_P(ShelfAutoHideSeparation,
 
 // Tests that shelf auto hide behavior is always hidden in app mode.
 TEST_P(ShelfControllerAppModeTest, AutoHideBehavior) {
-  SimulateKioskMode(user_manager::USER_TYPE_KIOSK_APP);
+  SimulateKioskMode(user_manager::UserType::kKioskApp);
 
   Shelf* shelf = GetPrimaryShelf();
   EXPECT_EQ(ShelfAutoHideBehavior::kAlwaysHidden, shelf->auto_hide_behavior());

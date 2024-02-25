@@ -113,8 +113,9 @@ ImageResourceContent* StyleFetchedImage::CachedImage() const {
 
 CSSValue* StyleFetchedImage::CssValue() const {
   return MakeGarbageCollected<CSSImageValue>(
-      AtomicString(url_.GetString()), url_, Referrer(),
-      origin_clean_ ? OriginClean::kTrue : OriginClean::kFalse, is_ad_related_,
+      CSSUrlData(AtomicString(url_.GetString()), url_, Referrer(),
+                 origin_clean_ ? OriginClean::kTrue : OriginClean::kFalse,
+                 is_ad_related_),
       const_cast<StyleFetchedImage*>(this));
 }
 
@@ -148,32 +149,63 @@ bool StyleFetchedImage::IsAccessAllowed(String& failing_url) const {
   return false;
 }
 
-gfx::SizeF StyleFetchedImage::ImageSize(
-    float multiplier,
-    const gfx::SizeF& default_object_size,
-    RespectImageOrientationEnum respect_orientation) const {
-  Image* image = image_->GetImage();
-
-  if (image->IsBitmapImage() && override_image_resolution_ > 0.0f) {
+float StyleFetchedImage::ApplyImageResolution(float multiplier) const {
+  const Image& image = *image_->GetImage();
+  if (image.IsBitmapImage() && override_image_resolution_ > 0.0f) {
     multiplier /= override_image_resolution_;
   } else if (image_->HasDevicePixelRatioHeaderValue()) {
     multiplier /= image_->DevicePixelRatioHeaderValue();
   }
+  return multiplier;
+}
 
+gfx::SizeF StyleFetchedImage::ImageSize(
+    float multiplier,
+    const gfx::SizeF& default_object_size,
+    RespectImageOrientationEnum respect_orientation) const {
+  multiplier = ApplyImageResolution(multiplier);
+
+  const Image& image = *image_->GetImage();
+  gfx::SizeF size;
   if (auto* svg_image = DynamicTo<SVGImage>(image)) {
-    return ImageSizeForSVGImage(*svg_image, multiplier, default_object_size);
+    const gfx::SizeF unzoomed_default_object_size =
+        gfx::ScaleSize(default_object_size, 1 / multiplier);
+    size = svg_image->ConcreteObjectSize(unzoomed_default_object_size);
+  } else {
+    size = gfx::SizeF(
+        image.Size(ForceOrientationIfNecessary(respect_orientation)));
+  }
+  return ApplyZoom(size, multiplier);
+}
+
+IntrinsicSizingInfo StyleFetchedImage::GetNaturalSizingInfo(
+    float multiplier,
+    RespectImageOrientationEnum respect_orientation) const {
+  const Image& image = *image_->GetImage();
+  IntrinsicSizingInfo intrinsic_sizing_info;
+  if (auto* svg_image = DynamicTo<SVGImage>(image)) {
+    svg_image->GetIntrinsicSizingInfo(intrinsic_sizing_info);
+  } else {
+    gfx::SizeF size(
+        image.Size(ForceOrientationIfNecessary(respect_orientation)));
+    intrinsic_sizing_info.size = size;
+    intrinsic_sizing_info.aspect_ratio = size;
   }
 
-  respect_orientation = ForceOrientationIfNecessary(respect_orientation);
-  gfx::SizeF size(image->Size(respect_orientation));
-
-  return ApplyZoom(size, multiplier);
+  multiplier = ApplyImageResolution(multiplier);
+  intrinsic_sizing_info.size =
+      ApplyZoom(intrinsic_sizing_info.size, multiplier);
+  return intrinsic_sizing_info;
 }
 
 bool StyleFetchedImage::HasIntrinsicSize() const {
   const Image& image = *image_->GetImage();
   if (auto* svg_image = DynamicTo<SVGImage>(image)) {
-    return HasIntrinsicDimensionsForSVGImage(*svg_image);
+    IntrinsicSizingInfo intrinsic_sizing_info;
+    if (!svg_image->GetIntrinsicSizingInfo(intrinsic_sizing_info)) {
+      return false;
+    }
+    return !intrinsic_sizing_info.IsNone();
   }
   return image.HasIntrinsicSize();
 }

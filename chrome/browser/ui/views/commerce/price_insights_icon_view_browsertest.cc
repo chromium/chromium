@@ -4,7 +4,7 @@
 
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
-#include "chrome/browser/ui/commerce/price_tracking/mock_shopping_list_ui_tab_helper.h"
+#include "chrome/browser/ui/commerce/mock_commerce_ui_tab_helper.h"
 #include "chrome/browser/ui/page_action/page_action_icon_type.h"
 #include "chrome/browser/ui/test/test_browser_ui.h"
 #include "chrome/browser/ui/views/commerce/price_insights_icon_view.h"
@@ -16,7 +16,6 @@
 #include "components/commerce/core/test_utils.h"
 #include "components/feature_engagement/public/feature_constants.h"
 #include "components/strings/grit/components_strings.h"
-#include "components/user_education/test/feature_promo_test_util.h"
 #include "content/public/test/browser_test.h"
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/base/interaction/element_tracker.h"
@@ -28,13 +27,18 @@ const char kTestURL[] = "about:blank";
 
 class PriceInsightsIconViewBrowserTest : public UiBrowserTest {
  public:
+  PriceInsightsIconViewBrowserTest() {
+    test_features_.InitWithFeatures(
+        {commerce::kPriceInsights, commerce::kCommerceAllowChipExpansion}, {});
+  }
+
   // UiBrowserTest:
   void PreShow() override {
-    MockShoppingListUiTabHelper::CreateForWebContents(
+    MockCommerceUiTabHelper::CreateForWebContents(
         browser()->tab_strip_model()->GetActiveWebContents());
-    MockShoppingListUiTabHelper* mock_tab_helper =
-        static_cast<MockShoppingListUiTabHelper*>(
-            MockShoppingListUiTabHelper::FromWebContents(
+    MockCommerceUiTabHelper* mock_tab_helper =
+        static_cast<MockCommerceUiTabHelper*>(
+            MockCommerceUiTabHelper::FromWebContents(
                 browser()->tab_strip_model()->GetActiveWebContents()));
     EXPECT_CALL(*mock_tab_helper, ShouldShowPriceInsightsIconView)
         .Times(testing::AnyNumber());
@@ -45,6 +49,30 @@ class PriceInsightsIconViewBrowserTest : public UiBrowserTest {
         .Times(testing::AnyNumber());
     ON_CALL(*mock_tab_helper, GetPriceInsightsInfo)
         .WillByDefault(testing::ReturnRef(price_insights_info_));
+    EXPECT_CALL(*mock_tab_helper, ShouldExpandPageActionIcon)
+        .WillRepeatedly(testing::Return(true));
+
+    PriceInsightsIconView::PriceInsightsIconLabelType label_type =
+        PriceInsightsIconView::PriceInsightsIconLabelType::kNone;
+    std::string test_name =
+        testing::UnitTest::GetInstance()->current_test_info()->name();
+    if (test_name == "InvokeUi_show_price_insights_icon_with_low_price_label") {
+      label_type =
+          PriceInsightsIconView::PriceInsightsIconLabelType::kPriceIsLow;
+    } else if (test_name ==
+               "InvokeUi_show_price_insights_icon_with_high_price_label") {
+      label_type =
+          PriceInsightsIconView::PriceInsightsIconLabelType::kPriceIsHigh;
+    }
+
+    EXPECT_CALL(*mock_tab_helper, GetPriceInsightsIconLabelTypeForPage)
+        .WillRepeatedly(testing::Return(label_type));
+  }
+
+  MockCommerceUiTabHelper* getTabHelper() {
+    return static_cast<MockCommerceUiTabHelper*>(
+        MockCommerceUiTabHelper::FromWebContents(
+            browser()->tab_strip_model()->GetActiveWebContents()));
   }
 
   void ShowUi(const std::string& name) override {
@@ -71,7 +99,7 @@ class PriceInsightsIconViewBrowserTest : public UiBrowserTest {
   }
 
  protected:
-  absl::optional<commerce::PriceInsightsInfo> price_insights_info_;
+  std::optional<commerce::PriceInsightsInfo> price_insights_info_;
 
   PriceInsightsIconView* GetChip() {
     const ui::ElementContext context =
@@ -86,7 +114,7 @@ class PriceInsightsIconViewBrowserTest : public UiBrowserTest {
   }
 
  private:
-  base::test::ScopedFeatureList test_features_{commerce::kPriceInsights};
+  base::test::ScopedFeatureList test_features_;
 
   BrowserView* GetBrowserView() {
     return BrowserView::GetBrowserViewForBrowser(browser());
@@ -161,29 +189,17 @@ class PriceInsightsIconViewWithLabelBrowserTest
     return true;
   }
 
-  void SetupFeatureEngagementTracker() {
-    BrowserFeaturePromoController* const promo_controller =
-        BrowserView::GetBrowserViewForBrowser(browser())
-            ->GetFeaturePromoController();
-    EXPECT_TRUE(
-        user_education::test::WaitForFeatureEngagementReady(promo_controller));
-  }
-
  private:
   feature_engagement::test::ScopedIphFeatureList test_features_;
 };
 
 IN_PROC_BROWSER_TEST_F(PriceInsightsIconViewWithLabelBrowserTest,
                        InvokeUi_show_price_insights_icon_with_low_price_label) {
-  SetupFeatureEngagementTracker();
-
   ShowAndVerifyUi();
 }
 
 IN_PROC_BROWSER_TEST_F(
     PriceInsightsIconViewWithLabelBrowserTest,
     InvokeUi_show_price_insights_icon_with_high_price_label) {
-  SetupFeatureEngagementTracker();
-
   ShowAndVerifyUi();
 }

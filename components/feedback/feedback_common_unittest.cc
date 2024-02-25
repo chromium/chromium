@@ -128,3 +128,22 @@ TEST_F(FeedbackCommonTest, IncludeInSystemLogs) {
   EXPECT_FALSE(FeedbackCommon::IncludeInSystemLogs(
       feedback::FeedbackReport::kAllCrashReportIdsKey, google_email));
 }
+
+TEST_F(FeedbackCommonTest, IsOffensiveOrUnsafe) {
+  feedback_->set_is_offensive_or_unsafe(true);
+  feedback_->PrepareReport(&report_);
+
+  EXPECT_EQ(1, report_.web_data().product_specific_data_size());
+  EXPECT_EQ("is_offensive_or_unsafe",
+            report_.web_data().product_specific_data(0).key());
+  EXPECT_EQ("true", report_.web_data().product_specific_data(0).value());
+}
+
+TEST_F(FeedbackCommonTest, AiMetadata) {
+  feedback_->set_ai_metadata("{\"log_id\":\"TEST_ID\"}");
+  feedback_->PrepareReport(&report_);
+
+  EXPECT_EQ(1, report_.web_data().product_specific_data_size());
+  EXPECT_EQ("log_id", report_.web_data().product_specific_data(0).key());
+  EXPECT_EQ("TEST_ID", report_.web_data().product_specific_data(0).value());
+}

@@ -58,6 +58,10 @@ class TestNetworkConnectionTracker;
 class TestNetworkQualityTracker;
 }
 
+namespace os_crypt_async {
+class OSCryptAsync;
+}
+
 namespace policy {
 class PolicyService;
 }
@@ -157,6 +161,7 @@ class TestingBrowserProcess : public BrowserProcess {
   HidSystemTrayIcon* hid_system_tray_icon() override;
   UsbSystemTrayIcon* usb_system_tray_icon() override;
 #endif
+  os_crypt_async::OSCryptAsync* os_crypt_async() override;
   BuildState* GetBuildState() override;
 
   // Set the local state for tests. Consumer is responsible for cleaning it up
@@ -165,6 +170,7 @@ class TestingBrowserProcess : public BrowserProcess {
   void SetMetricsService(metrics::MetricsService* metrics_service);
   void SetProfileManager(std::unique_ptr<ProfileManager> profile_manager);
   void SetSafeBrowsingService(safe_browsing::SafeBrowsingService* sb_service);
+  void SetWebRtcLogUploader(std::unique_ptr<WebRtcLogUploader> uploader);
   void SetRulesetService(
       std::unique_ptr<subresource_filter::RulesetService> ruleset_service);
   void SetSharedURLLoaderFactory(
@@ -226,18 +232,19 @@ class TestingBrowserProcess : public BrowserProcess {
 #if BUILDFLAG(ENABLE_PRINT_PREVIEW)
   std::unique_ptr<printing::BackgroundPrintingManager>
       background_printing_manager_;
-  scoped_refptr<printing::PrintPreviewDialogController>
+  std::unique_ptr<printing::PrintPreviewDialogController>
       print_preview_dialog_controller_;
 #endif
 
   scoped_refptr<safe_browsing::SafeBrowsingService> sb_service_;
   std::unique_ptr<subresource_filter::RulesetService>
       subresource_filter_ruleset_service_;
+  std::unique_ptr<WebRtcLogUploader> webrtc_log_uploader_;
 
   std::unique_ptr<network_time::NetworkTimeTracker> network_time_tracker_;
 
   // The following objects are not owned by TestingBrowserProcess:
-  raw_ptr<PrefService, DanglingUntriaged> local_state_ = nullptr;
+  raw_ptr<PrefService> local_state_ = nullptr;
   scoped_refptr<network::SharedURLLoaderFactory> shared_url_loader_factory_;
 
   std::unique_ptr<TestingBrowserProcessPlatformPart> platform_part_;
@@ -262,6 +269,7 @@ class TestingBrowserProcess : public BrowserProcess {
 #endif
 
   std::unique_ptr<StatusTray> status_tray_;
+  std::unique_ptr<os_crypt_async::OSCryptAsync> os_crypt_async_;
 };
 
 // RAII (resource acquisition is initialization) for TestingBrowserProcess.

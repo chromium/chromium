@@ -6,50 +6,30 @@
 #define CONTENT_BROWSER_FIRST_PARTY_SETS_FIRST_PARTY_SET_PARSER_H_
 
 #include <istream>
+#include <optional>
 #include <utility>
 
 #include "base/containers/flat_map.h"
-#include "base/strings/string_piece_forward.h"
+#include "base/strings/string_piece.h"
 #include "base/types/expected.h"
 #include "base/values.h"
+#include "content/browser/first_party_sets/first_party_sets_overrides_policy.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/first_party_sets_handler.h"
 #include "net/base/schemeful_site.h"
 #include "net/first_party_sets/first_party_set_entry.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
+#include "net/first_party_sets/global_first_party_sets.h"
+#include "net/first_party_sets/local_set_declaration.h"
+#include "net/first_party_sets/sets_mutation.h"
 
 namespace content {
 
 class CONTENT_EXPORT FirstPartySetParser {
  public:
-  using SetsMap = base::flat_map<net::SchemefulSite, net::FirstPartySetEntry>;
-  // Keys are alias sites, values are their canonical representatives.
-  using Aliases = base::flat_map<net::SchemefulSite, net::SchemefulSite>;
-  using SingleSet = SetsMap;
-  using SetsAndAliases = std::pair<SetsMap, Aliases>;
-
-  enum class PolicySetType { kReplacement, kAddition };
-
-  struct CONTENT_EXPORT ParsedPolicySetLists {
-    ParsedPolicySetLists(std::vector<SingleSet> replacement_list,
-                         std::vector<SingleSet> addition_list);
-
-    ParsedPolicySetLists();
-    ParsedPolicySetLists(ParsedPolicySetLists&&);
-    ParsedPolicySetLists& operator=(ParsedPolicySetLists&&) = default;
-    ParsedPolicySetLists(const ParsedPolicySetLists&);
-    ParsedPolicySetLists& operator=(const ParsedPolicySetLists&) = default;
-    ~ParsedPolicySetLists();
-
-    bool operator==(const ParsedPolicySetLists& other) const;
-
-    std::vector<SingleSet> replacements;
-    std::vector<SingleSet> additions;
-  };
-
-  using PolicyParseResult = std::pair<
-      base::expected<ParsedPolicySetLists, FirstPartySetsHandler::ParseError>,
-      std::vector<FirstPartySetsHandler::ParseWarning>>;
+  using PolicyParseResult =
+      std::pair<base::expected<FirstPartySetsOverridesPolicy,
+                               FirstPartySetsHandler::ParseError>,
+                std::vector<FirstPartySetsHandler::ParseWarning>>;
 
   FirstPartySetParser() = delete;
   ~FirstPartySetParser() = delete;
@@ -63,16 +43,17 @@ class CONTENT_EXPORT FirstPartySetParser {
   // not check versions or assertions, since it is intended only for sets
   // received by Component Updater.
   //
-  // Returns an empty map if parsing or validation of any set failed. Must not
-  // be called before field trial state has been initialized.
-  static SetsAndAliases ParseSetsFromStream(std::istream& input,
-                                            bool emit_errors,
-                                            bool emit_metrics);
+  // Returns an empty GlobalFirstPartySets instance if parsing or validation of
+  // any set failed.
+  static net::GlobalFirstPartySets ParseSetsFromStream(std::istream& input,
+                                                       base::Version version,
+                                                       bool emit_errors,
+                                                       bool emit_metrics);
 
   // Canonicalizes the passed in origin to a registered domain. In particular,
   // this ensures that the origin is non-opaque, is HTTPS, and has a registered
-  // domain. Returns absl::nullopt in case of any error.
-  static absl::optional<net::SchemefulSite> CanonicalizeRegisteredDomain(
+  // domain. Returns std::nullopt in case of any error.
+  static std::optional<net::SchemefulSite> CanonicalizeRegisteredDomain(
       const base::StringPiece origin_string,
       bool emit_errors);
 
@@ -83,11 +64,10 @@ class CONTENT_EXPORT FirstPartySetParser {
   // returns an error.
   [[nodiscard]] static PolicyParseResult ParseSetsFromEnterprisePolicy(
       const base::Value::Dict& policy);
-};
 
-CONTENT_EXPORT std::ostream& operator<<(
-    std::ostream& os,
-    const FirstPartySetParser::ParsedPolicySetLists& lists);
+  [[nodiscard]] static net::LocalSetDeclaration ParseFromCommandLine(
+      const std::string& switch_value);
+};
 
 }  // namespace content
 

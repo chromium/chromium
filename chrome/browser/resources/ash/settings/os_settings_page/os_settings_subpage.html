@@ -2,58 +2,54 @@
   :host {
     box-sizing: border-box;
     display: block;
-    left: 0;
-    /* Do not shorten '0px' below to '0' as the calc function requires
-     * units. */
-    min-height: calc(100vh - var(--cr-toolbar-height) -
-        var(--cr-toolbar-padding-top, 0));
-    padding-bottom: 60px;
-    position: absolute;
-    right: 0;
-    top: 0;
   }
 
-  :host(:not(.multi-card)) {
-    background-color: var(--cr-card-background-color);
-    box-shadow: var(--cr-card-shadow);
-  }
-
-  :host-context(body.jelly-enabled):host {
+  :host-context(body:not(.revamp-wayfinding-enabled)):host {
     background-color: var(--cros-sys-app_base);
+    box-shadow: var(--cr-card-shadow);
+    min-height: calc(100vh - var(--settings-toolbar-height));
+    padding-bottom: 60px;
   }
 
-  #headerLine {
+  #subpageHeader {
     min-height: 40px;
     padding-bottom: 24px;
     padding-top: 8px;
   }
 
-  #learnMore {
-    align-items: center;
-    display: flex;
-    height: var(--cr-icon-ripple-size);
-    justify-content: center;
-    margin-inline-end: var(--cr-icon-ripple-margin);
-    margin-inline-start: var(--cr-icon-button-margin-start);
-    position: relative;  /* Needed for paper-ripple. */
-    width: var(--cr-icon-ripple-size);
+  :host-context(body.revamp-wayfinding-enabled) #subpageHeader {
+    padding-top: 16px;
+    padding-bottom: 16px;
   }
 
-  :host-context(body.jelly-enabled) #title {
+  #subpageTitle {
+    flex: 1;  /* Push other items to the end. */
     font: var(--cros-button-1-font);
   }
 
-  #title-icon {
+  :host-context(body.revamp-wayfinding-enabled) #subpageTitle {
+    color: var(--cros-sys-primary);
+  }
+
+  #titleIcon {
     height: 36px;
     margin-inline-end: 12px;
     margin-inline-start: 2px;
     width: 36px;
   }
 
-  #closeButton {
+  #backButton {
     /* Centers the ripple on the icon with appropriate margin on right. */
     margin-inline-end: 10px;
     margin-inline-start: -10px;
+  }
+
+  :host-context(body.revamp-wayfinding-enabled) #backButton {
+    --cr-icon-button-fill-color: var(--cros-sys-primary);
+  }
+
+  #cardBody {
+    margin-bottom: 0;
   }
 
   paper-spinner-lite {
@@ -61,33 +57,38 @@
     width: var(--cr-icon-size);
   }
 
-  h1 {
-    flex: 1;  /* Push other items to the end. */
-  }
-
   cr-search-field {
+    --cr-search-field-input-width: 200px;
     /* Keep normal icon spacing from subpage-title-extra controls. */
     margin-inline-start: 16px;
   }
+
+  /* Use ID to increase specificity over cros-color-overrides. */
+  :host-context(body.revamp-wayfinding-enabled)
+      #searchField::part(searchInput) {
+    /* Add contrast between the search input and the subpage backdrop. */
+    --cr-input-background-color: var(--cros-sys-input_field_on_shaded);
+  }
 </style>
-<div class="cr-row first" id="headerLine">
-  <cr-icon-button class="icon-arrow-back" id="closeButton"
-      hidden="[[hideCloseButton]]" on-click="onBackClick_"
+<div id="subpageHeader" class="cr-row first">
+  <cr-icon-button id="backButton" class="icon-arrow-back"
+      hidden="[[hideBackButton]]" on-click="onBackClick_"
       aria-label$="[[getBackButtonAriaLabel_(pageTitle)]]"
       aria-roledescription$=
           "[[getBackButtonAriaRoleDescription_(pageTitle)]]">
   </cr-icon-button>
   <template is="dom-if" if="[[titleIcon]]">
-    <img id="title-icon" src="[[titleIcon]]" aria-hidden="true">
+    <img id="titleIcon" src="[[titleIcon]]" aria-hidden="true">
   </template>
-  <h1 id="title" class="cr-title-text">[[pageTitle]]</h1>
+  <h1 id="subpageTitle">[[pageTitle]]</h1>
   <template is="dom-if" if="[[learnMoreUrl]]">
     <cr-icon-button iron-icon="cr:help-outline" dir="ltr"
         aria-label="[[getLearnMoreAriaLabel_(pageTitle)]]" on-click="onHelpClick_">
     </cr-icon-button>
   </template>
   <template is="dom-if" if="[[searchLabel]]">
-    <cr-search-field label="[[searchLabel]]"
+    <cr-search-field id="searchField"
+        label="[[searchLabel]]"
         on-search-changed="onSearchChanged_"
         clear-label="$i18n{clearSearch}">
     </cr-search-field>
@@ -98,4 +99,12 @@
   </template>
   <slot name="subpage-title-extra"></slot>
 </div>
-<slot></slot>
+
+<template is="dom-if" if="[[isRevampWayfindingEnabled_]]">
+  <settings-card id="cardBody">
+    <slot></slot>
+  </settings-card>
+</template>
+<template is="dom-if" if="[[!isRevampWayfindingEnabled_]]">
+  <slot></slot>
+</template>

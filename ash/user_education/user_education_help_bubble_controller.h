@@ -7,6 +7,7 @@
 
 #include <map>
 #include <memory>
+#include <optional>
 
 #include "ash/ash_export.h"
 #include "ash/user_education/user_education_types.h"
@@ -14,7 +15,6 @@
 #include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
 #include "base/types/pass_key.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ui {
 class ElementContext;
@@ -54,18 +54,33 @@ class ASH_EXPORT UserEducationHelpBubbleController {
   // help bubble showing or if there is an ongoing tutorial running. Iff a help
   // bubble was created, `close_callback` is run when the help bubble is closed.
   // NOTE: Currently only the primary user profile is supported.
+  // TODO(https://b/303280629): Lock this API down with
+  // `UserEducationPrivateApiKey`.
   bool CreateHelpBubble(HelpBubbleId help_bubble_id,
                         user_education::HelpBubbleParams help_bubble_params,
                         ui::ElementIdentifier element_id,
                         ui::ElementContext element_context,
                         base::OnceClosure close_callback = base::DoNothing());
 
+  // Creates a help bubble just like `CreateHelpBubble()`, but also returns a
+  // `base::ScopedClosureRunner` that will close the help bubble when it is
+  // destroyed, if the help bubble is still open.
+  // NOTE: Currently only the primary user profile is supported.
+  // TODO(https://b/303280629): Lock this API down with
+  // `UserEducationPrivateApiKey`.
+  [[nodiscard]] base::ScopedClosureRunner CreateScopedHelpBubble(
+      HelpBubbleId help_bubble_id,
+      user_education::HelpBubbleParams help_bubble_params,
+      ui::ElementIdentifier element_id,
+      ui::ElementContext element_context,
+      base::OnceClosure close_callback = base::DoNothing());
+
   // Returns the unique identifier for the help bubble currently being shown for
   // the tracked element associated with the specified `element_id` in the
   // specified `element_context`. If no help bubble is currently being shown for
   // the tracked element or if the tracked element does not exist, an absent
   // value is returned.
-  absl::optional<HelpBubbleId> GetHelpBubbleId(
+  std::optional<HelpBubbleId> GetHelpBubbleId(
       ui::ElementIdentifier element_id,
       ui::ElementContext element_context) const;
 

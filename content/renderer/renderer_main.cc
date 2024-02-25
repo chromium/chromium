@@ -3,6 +3,8 @@
 // found in the LICENSE file.
 
 #include <stddef.h>
+
+#include <optional>
 #include <utility>
 
 #include "base/allocator/partition_alloc_support.h"
@@ -22,6 +24,7 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/system/sys_info.h"
 #include "base/task/sequence_manager/sequence_manager.h"
+#include "base/threading/hang_watcher.h"
 #include "base/threading/platform_thread.h"
 #include "base/timer/hi_res_timer_manager.h"
 #include "base/trace_event/trace_event.h"
@@ -29,6 +32,7 @@
 #include "build/chromeos_buildflags.h"
 #include "content/common/content_constants_internal.h"
 #include "content/common/content_switches_internal.h"
+#include "content/common/features.h"
 #include "content/common/skia_utils.h"
 #include "content/public/common/content_features.h"
 #include "content/public/common/content_switches.h"
@@ -43,13 +47,16 @@
 #include "ppapi/buildflags/buildflags.h"
 #include "sandbox/policy/switches.h"
 #include "services/tracing/public/cpp/trace_startup.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/public/platform/scheduler/web_thread_scheduler.h"
 #include "third_party/icu/source/common/unicode/unistr.h"
 #include "third_party/icu/source/i18n/unicode/timezone.h"
 #include "third_party/webrtc_overrides/init_webrtc.h"  // nogncheck
 #include "ui/base/ui_base_switches.h"
+
+#if BUILDFLAG(IS_WIN)
+#include "components/startup_metric_utils/renderer/startup_metric_utils.h"
+#endif  // BUILDFLAG(IS_WIN)
 
 #if BUILDFLAG(IS_ANDROID)
 #include "base/android/library_loader/library_loader_hooks.h"
@@ -76,7 +83,7 @@
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
-#include "content/renderer/renderer_thread_type_handler.h"
+#include "content/child/sandboxed_process_thread_type_handler.h"
 #endif
 
 #if BUILDFLAG(ENABLE_PPAPI)
@@ -111,8 +118,13 @@ std::unique_ptr<base::MessagePump> CreateMainThreadMessagePump() {
 
 void LogTimeToStartRunLoop(const base::CommandLine& command_line,
                            base::TimeTicks run_loop_start_time) {
-  if (!command_line.HasSwitch(switches::kRendererProcessLaunchTimeTicks))
+#if BUILDFLAG(IS_WIN)
+  startup_metric_utils::GetRenderer().RecordRunLoopStart(run_loop_start_time);
+#endif
+
+  if (!command_line.HasSwitch(switches::kRendererProcessLaunchTimeTicks)) {
     return;
+  }
 
   const std::string launch_time_delta_micro_as_string =
       command_line.GetSwitchValueASCII(
@@ -176,7 +188,7 @@ int RendererMain(MainFunctionParams parameters) {
 #if defined(ARCH_CPU_X86_64)
   using UserspaceSwapInit =
       ash::memory::userspace_swap::UserspaceSwapRendererInitializationImpl;
-  absl::optional<UserspaceSwapInit> swap_init;
+  std::optional<UserspaceSwapInit> swap_init;
   if (UserspaceSwapInit::UserspaceSwapSupportedAndEnabled()) {
     swap_init.emplace();
 
@@ -255,9 +267,11 @@ int RendererMain(MainFunctionParams parameters) {
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
     // Thread type delegate of the process should be registered before
     // first thread type change in ChildProcess constructor.
+    // It also needs to be registered before the process has multiple threads,
+    // which may race with application of the sandbox.
     if (base::FeatureList::IsEnabled(
-            features::kHandleRendererThreadTypeChangesInBrowser)) {
-      RendererThreadTypeHandler::Create();
+            features::kHandleChildThreadTypeChangesInBrowser)) {
+      SandboxedProcessThreadTypeHandler::Create();
 
       // Change the main thread type. On Linux and ChromeOS this needs to be
       // done only if kHandleRendererThreadTypeChangesInBrowser is enabled to
@@ -315,6 +329,20 @@ int RendererMain(MainFunctionParams parameters) {
       if (client) {
         client->PostSandboxInitialized();
       }
+    }
+
+    // Start the HangWatcher now that the sandbox is engaged, if it hasn't
+    // already been started.
+    if (base::HangWatcher::IsEnabled() &&
+        !base::HangWatcher::GetInstance()->IsStarted()) {
+      DCHECK(parameters.hang_watcher_not_started_time.has_value());
+      base::TimeDelta uncovered_hang_watcher_time =
+          base::TimeTicks::Now() -
+          parameters.hang_watcher_not_started_time.value();
+      base::UmaHistogramTimes(
+          "HangWatcher.RendererProcess.UncoveredStartupTime",
+          uncovered_hang_watcher_time);
+      base::HangWatcher::GetInstance()->Start();
     }
 
 #if BUILDFLAG(MOJO_RANDOM_DELAYS_ENABLED)

@@ -16,6 +16,9 @@ mojom("mojom") {
 
   webui_module_path = "/"
 
+  # Used by the help app UI, which is still using JS + Closure.
+  generate_webui_js_bindings = true
+
   public_deps = [
     "//mojo/public/mojom/base",
     "//sandbox/policy/mojom",

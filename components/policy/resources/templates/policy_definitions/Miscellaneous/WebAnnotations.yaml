@@ -1,0 +1,95 @@
+caption: Allow detecting plain text entities in web pages.
+default: 0
+desc: |-
+  This policy decides if plain text entities are detected on webpages, letting users trigger contextual actions by interacting with them.
+  The policy has multiple properties, one for each entity type.
+  The entity types are <ph name="DEFAULT_ENUM_VALUE">default</ph>, <ph name="ADDRESS_ENUM_VALUE">addresses</ph> ... .
+
+  If the value for an entity is unset, the behavior of the <ph name="DEFAULT_ENUM_VALUE">default</ph> entity is applied.
+  The default behavior for <ph name="DEFAULT_ENUM_VALUE">default</ph> is <ph name="ENABLED_ENUM_VALUE">enabled</ph>.
+
+  The values for each entity types are <ph name="DEFAULT_ENUM_VALUE">default</ph>, <ph name="ENABLED_ENUM_VALUE">enabled</ph>,
+  <ph name="DISABLED_ENUM_VALUE">disabled</ph> or <ph name="LONGPRESSONLY_ENUM_VALUE">longpressonly</ph>.
+  If the value is set to <ph name="DEFAULT_ENUM_VALUE">default</ph>, the behavior of the <ph name="DEFAULT_ENUM_VALUE">default</ph> entity is applied.
+  If the value is set to <ph name="ENABLED_ENUM_VALUE">enabled</ph>, entities are detected, underlines and triggered either by one tap or long press.
+  If the value is set to <ph name="DISABLED_ENUM_VALUE">disabled</ph>, entities are not detected and not actionable.
+  If the value is set to <ph name="LONGPRESSONLY_ENUM_VALUE">longpressonly</ph>, entities are detected and only actionable using long press.
+example_value:
+  default: enabled
+  addresses: longpressonly
+  calendar: default
+  email: disabled
+  package: default
+  phonenumbers: default
+  units: default
+default:
+  default: enabled
+  addresses: default
+  calendar: default
+  email: default
+  package: default
+  phonenumbers: default
+  units: default
+features:
+  dynamic_refresh: true
+  per_profile: true
+owners:
+- olivierrobin@google.com
+- djean@google.com
+- erahmaoui@google.com
+schema:
+  properties:
+    default:
+      enum:
+      - enabled
+      - disabled
+      - longpressonly
+      type: string
+    addresses:
+      enum:
+      - default
+      - enabled
+      - disabled
+      - longpressonly
+      type: string
+    calendar:
+      enum:
+      - default
+      - enabled
+      - disabled
+      - longpressonly
+      type: string
+    email:
+      enum:
+      - default
+      - enabled
+      - disabled
+      - longpressonly
+      type: string
+    package:
+      enum:
+      - default
+      - enabled
+      - disabled
+      - longpressonly
+      type: string
+    phonenumbers:
+      enum:
+      - default
+      - enabled
+      - disabled
+      - longpressonly
+      type: string
+    units:
+      enum:
+      - default
+      - enabled
+      - disabled
+      - longpressonly
+      type: string
+  type: object
+supported_on:
+- ios:123-
+tags: []
+type: dict
+

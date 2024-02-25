@@ -13,6 +13,8 @@ namespace ash {
 AutoEnrollmentCheckScreenHandler::AutoEnrollmentCheckScreenHandler()
     : BaseScreenHandler(kScreenId) {}
 
+AutoEnrollmentCheckScreenHandler::~AutoEnrollmentCheckScreenHandler() = default;
+
 void AutoEnrollmentCheckScreenHandler::Show() {
   ShowInWebUI();
 }
@@ -22,6 +24,11 @@ void AutoEnrollmentCheckScreenHandler::DeclareLocalizedValues(
   builder->Add("autoEnrollmentCheckMessage",
                IDS_AUTO_ENROLLMENT_CHECK_SCREEN_MESSAGE);
   builder->Add("gettingDeviceReadyTitle", IDS_GETTING_DEVICE_READY);
+}
+
+base::WeakPtr<AutoEnrollmentCheckScreenView>
+AutoEnrollmentCheckScreenHandler::AsWeakPtr() {
+  return weak_ptr_factory_.GetWeakPtr();
 }
 
 }  // namespace ash

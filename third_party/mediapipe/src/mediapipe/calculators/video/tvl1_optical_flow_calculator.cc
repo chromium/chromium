@@ -13,13 +13,13 @@
 // limitations under the License.
 
 #include "absl/base/macros.h"
+#include "absl/log/absl_check.h"
 #include "absl/synchronization/mutex.h"
 #include "mediapipe/framework/calculator_framework.h"
 #include "mediapipe/framework/formats/image_frame.h"
 #include "mediapipe/framework/formats/image_frame_opencv.h"
 #include "mediapipe/framework/formats/motion/optical_flow_field.h"
 #include "mediapipe/framework/port/opencv_video_inc.h"
-#include "absl/log/absl_check.h"
 
 namespace mediapipe {
 namespace {

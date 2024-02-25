@@ -13,11 +13,10 @@ import android.view.View;
 import androidx.annotation.NonNull;
 import androidx.annotation.VisibleForTesting;
 
-import org.chromium.base.annotations.CalledByNative;
-import org.chromium.base.annotations.JNINamespace;
-import org.chromium.base.annotations.NativeMethods;
-import org.chromium.components.browser_ui.widget.listmenu.ListMenu;
-import org.chromium.components.browser_ui.widget.listmenu.ListMenuButtonDelegate;
+import org.jni_zero.CalledByNative;
+import org.jni_zero.JNINamespace;
+import org.jni_zero.NativeMethods;
+
 import org.chromium.components.messages.DismissReason;
 import org.chromium.components.messages.MessageBannerProperties;
 import org.chromium.components.messages.MessageDispatcher;
@@ -29,15 +28,15 @@ import org.chromium.components.messages.PrimaryWidgetAppearance;
 import org.chromium.components.messages.SecondaryMenuMaxSize;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.ui.base.WindowAndroid;
+import org.chromium.ui.listmenu.ListMenu;
+import org.chromium.ui.listmenu.ListMenuButtonDelegate;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.widget.RectProvider;
 import org.chromium.ui.widget.Toast;
 
 import java.lang.ref.WeakReference;
 
-/**
- * Manages the translate message UI.
- */
+/** Manages the translate message UI. */
 @JNINamespace("translate")
 class TranslateMessage implements TranslateMessageSecondaryMenu.Handler {
     public static class MenuItem {
@@ -49,7 +48,11 @@ class TranslateMessage implements TranslateMessageSecondaryMenu.Handler {
         public final int overflowMenuItemId;
         public final String languageCode;
 
-        public MenuItem(String title, String subtitle, boolean hasCheckmark, int overflowMenuItemId,
+        public MenuItem(
+                String title,
+                String subtitle,
+                boolean hasCheckmark,
+                int overflowMenuItemId,
                 String languageCode) {
             this.title = title;
             this.subtitle = subtitle;
@@ -92,13 +95,20 @@ class TranslateMessage implements TranslateMessageSecondaryMenu.Handler {
                 MessageDispatcherProvider.from(webContents.getTopLevelNativeWindow());
         if (messageDispatcher == null) return null;
 
-        return new TranslateMessage(context, messageDispatcher, webContents, nativeTranslateMessage,
+        return new TranslateMessage(
+                context,
+                messageDispatcher,
+                webContents,
+                nativeTranslateMessage,
                 dismissalDurationSeconds);
     }
 
     @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
-    TranslateMessage(@NonNull Context context, @NonNull MessageDispatcher messageDispatcher,
-            @NonNull WebContents webContents, long nativeTranslateMessage,
+    TranslateMessage(
+            @NonNull Context context,
+            @NonNull MessageDispatcher messageDispatcher,
+            @NonNull WebContents webContents,
+            long nativeTranslateMessage,
             int dismissalDurationSeconds) {
         mContext = context;
         mMessageDispatcher = messageDispatcher;
@@ -119,19 +129,26 @@ class TranslateMessage implements TranslateMessageSecondaryMenu.Handler {
         if (needsDispatch) {
             mMessageProperties =
                     new PropertyModel.Builder(MessageBannerProperties.ALL_KEYS)
-                            .with(MessageBannerProperties.MESSAGE_IDENTIFIER,
+                            .with(
+                                    MessageBannerProperties.MESSAGE_IDENTIFIER,
                                     MessageIdentifier.TRANSLATE)
-                            .with(MessageBannerProperties.ICON_RESOURCE_ID,
+                            .with(
+                                    MessageBannerProperties.ICON_RESOURCE_ID,
                                     R.drawable.infobar_translate_compact)
-                            .with(MessageBannerProperties.ICON_TINT_COLOR,
+                            .with(
+                                    MessageBannerProperties.ICON_TINT_COLOR,
                                     MessageBannerProperties.TINT_NONE)
-                            .with(MessageBannerProperties.SECONDARY_MENU_BUTTON_DELEGATE,
+                            .with(
+                                    MessageBannerProperties.SECONDARY_MENU_BUTTON_DELEGATE,
                                     new SecondaryMenuButtonDelegate())
-                            .with(MessageBannerProperties.SECONDARY_MENU_MAX_SIZE,
+                            .with(
+                                    MessageBannerProperties.SECONDARY_MENU_MAX_SIZE,
                                     SecondaryMenuMaxSize.LARGE)
-                            .with(MessageBannerProperties.DISMISSAL_DURATION,
+                            .with(
+                                    MessageBannerProperties.DISMISSAL_DURATION,
                                     mDismissalDurationSeconds)
-                            .with(MessageBannerProperties.ON_PRIMARY_ACTION,
+                            .with(
+                                    MessageBannerProperties.ON_PRIMARY_ACTION,
                                     this::handlePrimaryAction)
                             .with(MessageBannerProperties.ON_DISMISSED, this::handleDismiss)
                             .build();
@@ -141,11 +158,13 @@ class TranslateMessage implements TranslateMessageSecondaryMenu.Handler {
         mMessageProperties.set(MessageBannerProperties.DESCRIPTION, description);
 
         if (TextUtils.isEmpty(primaryButtonText)) {
-            mMessageProperties.set(MessageBannerProperties.PRIMARY_WIDGET_APPEARANCE,
+            mMessageProperties.set(
+                    MessageBannerProperties.PRIMARY_WIDGET_APPEARANCE,
                     PrimaryWidgetAppearance.PROGRESS_SPINNER);
         } else {
             mMessageProperties.set(MessageBannerProperties.PRIMARY_BUTTON_TEXT, primaryButtonText);
-            mMessageProperties.set(MessageBannerProperties.PRIMARY_WIDGET_APPEARANCE,
+            mMessageProperties.set(
+                    MessageBannerProperties.PRIMARY_WIDGET_APPEARANCE,
                     PrimaryWidgetAppearance.BUTTON_IF_TEXT_IS_SET);
         }
 
@@ -155,8 +174,11 @@ class TranslateMessage implements TranslateMessageSecondaryMenu.Handler {
         }
 
         if (needsDispatch) {
-            mMessageDispatcher.enqueueMessage(mMessageProperties, mWebContents,
-                    MessageScopeType.NAVIGATION, /*highPriority=*/false);
+            mMessageDispatcher.enqueueMessage(
+                    mMessageProperties,
+                    mWebContents,
+                    MessageScopeType.NAVIGATION,
+                    /* highPriority= */ false);
         }
     }
 
@@ -187,15 +209,25 @@ class TranslateMessage implements TranslateMessageSecondaryMenu.Handler {
     }
 
     @CalledByNative
-    public static MenuItem[] constructMenuItemArray(String[] titles, String[] subtitles,
-            boolean[] hasCheckmarks, int[] overflowMenuItemIds, String[] languageCodes) {
-        assert titles.length == subtitles.length && titles.length == hasCheckmarks.length
+    public static MenuItem[] constructMenuItemArray(
+            String[] titles,
+            String[] subtitles,
+            boolean[] hasCheckmarks,
+            int[] overflowMenuItemIds,
+            String[] languageCodes) {
+        assert titles.length == subtitles.length
+                && titles.length == hasCheckmarks.length
                 && titles.length == overflowMenuItemIds.length
                 && titles.length == languageCodes.length;
         MenuItem[] menuItems = new MenuItem[titles.length];
         for (int i = 0; i < titles.length; ++i) {
-            menuItems[i] = new MenuItem(titles[i], subtitles[i], hasCheckmarks[i],
-                    overflowMenuItemIds[i], languageCodes[i]);
+            menuItems[i] =
+                    new MenuItem(
+                            titles[i],
+                            subtitles[i],
+                            hasCheckmarks[i],
+                            overflowMenuItemIds[i],
+                            languageCodes[i]);
         }
         return menuItems;
     }
@@ -204,12 +236,16 @@ class TranslateMessage implements TranslateMessageSecondaryMenu.Handler {
     @Override
     public MenuItem[] handleSecondaryMenuItemClicked(MenuItem menuItem) {
         if (mNativeTranslateMessage == 0) return null;
-        return TranslateMessageJni.get().handleSecondaryMenuItemClicked(mNativeTranslateMessage,
-                menuItem.overflowMenuItemId, menuItem.languageCode, menuItem.hasCheckmark);
+        return TranslateMessageJni.get()
+                .handleSecondaryMenuItemClicked(
+                        mNativeTranslateMessage,
+                        menuItem.overflowMenuItemId,
+                        menuItem.languageCode,
+                        menuItem.hasCheckmark);
     }
 
-    private final class SecondaryMenuButtonDelegate
-            extends DataSetObserver implements ListMenuButtonDelegate {
+    private final class SecondaryMenuButtonDelegate extends DataSetObserver
+            implements ListMenuButtonDelegate {
         /**
          * Keeps track of the RectProvider supplied to anchor the AnchoredPopupWindow to the
          * ListMenuButton. It's kept as a WeakReference so that this doesn't inadvertently extend
@@ -228,8 +264,10 @@ class TranslateMessage implements TranslateMessageSecondaryMenu.Handler {
 
         @Override
         public ListMenu getListMenu() {
-            return new TranslateMessageSecondaryMenu(mContext, /*handler=*/TranslateMessage.this,
-                    /*dataSetObserver=*/this,
+            return new TranslateMessageSecondaryMenu(
+                    mContext,
+                    /* handler= */ TranslateMessage.this,
+                    /* dataSetObserver= */ this,
                     mNativeTranslateMessage == 0
                             ? null
                             : TranslateMessageJni.get().buildOverflowMenu(mNativeTranslateMessage));
@@ -249,9 +287,15 @@ class TranslateMessage implements TranslateMessageSecondaryMenu.Handler {
     @NativeMethods
     interface Natives {
         void handlePrimaryAction(long nativeTranslateMessage);
+
         void handleDismiss(long nativeTranslateMessage, int dismissReason);
+
         MenuItem[] buildOverflowMenu(long nativeTranslateMessage);
-        MenuItem[] handleSecondaryMenuItemClicked(long nativeTranslateMessage,
-                int overflowMenuItemId, String languageCode, boolean hadCheckmark);
+
+        MenuItem[] handleSecondaryMenuItemClicked(
+                long nativeTranslateMessage,
+                int overflowMenuItemId,
+                String languageCode,
+                boolean hadCheckmark);
     }
 }

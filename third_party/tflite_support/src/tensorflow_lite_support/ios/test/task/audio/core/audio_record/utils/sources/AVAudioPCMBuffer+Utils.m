@@ -16,29 +16,24 @@
 
 @implementation AVAudioPCMBuffer (Utils)
 
-- (AVAudioPCMBuffer*)bufferUsingAudioConverter:
-    (AVAudioConverter*)audioConverter {
-  // Capacity of converted PCM buffer is calculated in order to maintain the
-  // same latency as the input pcmBuffer.
-  AVAudioFrameCount capacity =
-      ceil(self.frameLength * audioConverter.outputFormat.sampleRate /
-           audioConverter.inputFormat.sampleRate);
-  AVAudioPCMBuffer* outPCMBuffer = [[AVAudioPCMBuffer alloc]
+- (AVAudioPCMBuffer *)bufferUsingAudioConverter:(AVAudioConverter *)audioConverter {
+  // Capacity of converted PCM buffer is calculated in order to maintain the same
+  // latency as the input pcmBuffer.
+  AVAudioFrameCount capacity = ceil(self.frameLength * audioConverter.outputFormat.sampleRate /
+                                    audioConverter.inputFormat.sampleRate);
+  AVAudioPCMBuffer *outPCMBuffer = [[AVAudioPCMBuffer alloc]
       initWithPCMFormat:audioConverter.outputFormat
-          frameCapacity:capacity * (AVAudioFrameCount)audioConverter
-                                       .outputFormat.channelCount];
+          frameCapacity:capacity * (AVAudioFrameCount)audioConverter.outputFormat.channelCount];
 
-  AVAudioConverterInputBlock inputBlock = ^AVAudioBuffer* _Nullable(
-      AVAudioPacketCount inNumberOfPackets,
-      AVAudioConverterInputStatus* _Nonnull outStatus) {
+  AVAudioConverterInputBlock inputBlock = ^AVAudioBuffer *_Nullable(
+      AVAudioPacketCount inNumberOfPackets, AVAudioConverterInputStatus *_Nonnull outStatus) {
     *outStatus = AVAudioConverterInputStatus_HaveData;
     return self;
   };
 
-  AVAudioConverterOutputStatus converterStatus =
-      [audioConverter convertToBuffer:outPCMBuffer
-                                error:nil
-                   withInputFromBlock:inputBlock];
+  AVAudioConverterOutputStatus converterStatus = [audioConverter convertToBuffer:outPCMBuffer
+                                                                           error:nil
+                                                              withInputFromBlock:inputBlock];
   switch (converterStatus) {
     case AVAudioConverterOutputStatus_HaveData: {
       return outPCMBuffer;
@@ -46,8 +41,8 @@
     case AVAudioConverterOutputStatus_InputRanDry:
     case AVAudioConverterOutputStatus_EndOfStream:
     case AVAudioConverterOutputStatus_Error: {
-      // Conversion failed so returning a nil. Reason of the error isn't
-      // important to the library's users.
+      // Conversion failed so returning a nil. Reason of the error isn't important to the library's
+      // users.
       break;
     }
   }
@@ -55,22 +50,21 @@
   return nil;
 }
 
-+ (nullable AVAudioPCMBuffer*)loadPCMBufferFromFileWithURL:(NSURL*)url {
-  AVAudioFile* audioFile = [[AVAudioFile alloc] initForReading:url error:nil];
-  AVAudioPCMBuffer* buffer = [[AVAudioPCMBuffer alloc]
-      initWithPCMFormat:audioFile.processingFormat
-          frameCapacity:(AVAudioFrameCount)audioFile.length];
++ (nullable AVAudioPCMBuffer *)loadPCMBufferFromFileWithURL:(NSURL *)url {
+  AVAudioFile *audioFile = [[AVAudioFile alloc] initForReading:url error:nil];
+  AVAudioPCMBuffer *buffer =
+      [[AVAudioPCMBuffer alloc] initWithPCMFormat:audioFile.processingFormat
+                                    frameCapacity:(AVAudioFrameCount)audioFile.length];
 
   [audioFile readIntoBuffer:buffer error:nil];
 
   return buffer;
 }
 
-+ (nullable AVAudioPCMBuffer*)
-    loadPCMBufferFromFileWithPath:(NSString*)path
-                 processingFormat:(AVAudioFormat*)processingFormat {
-  AVAudioPCMBuffer* buffer = [AVAudioPCMBuffer
-      loadPCMBufferFromFileWithURL:[NSURL fileURLWithPath:path]];
++ (nullable AVAudioPCMBuffer *)loadPCMBufferFromFileWithPath:(NSString *)path
+                                            processingFormat:(AVAudioFormat *)processingFormat {
+  AVAudioPCMBuffer *buffer =
+      [AVAudioPCMBuffer loadPCMBufferFromFileWithURL:[NSURL fileURLWithPath:path]];
 
   if (!buffer) {
     return nil;
@@ -80,34 +74,30 @@
     return buffer;
   }
 
-  AVAudioConverter* audioConverter =
-      [[AVAudioConverter alloc] initFromFormat:buffer.format
-                                      toFormat:processingFormat];
+  AVAudioConverter *audioConverter = [[AVAudioConverter alloc] initFromFormat:buffer.format
+                                                                     toFormat:processingFormat];
 
   return [buffer bufferUsingAudioConverter:audioConverter];
 }
 
-+ (nullable AVAudioPCMBuffer*)loadPCMBufferFromFileWithPath:(NSString*)path
-                                                audioFormat:(TFLAudioFormat*)
-                                                                audioFormat {
++ (nullable AVAudioPCMBuffer *)loadPCMBufferFromFileWithPath:(NSString *)path
+                                                 audioFormat:(TFLAudioFormat *)audioFormat {
   // Task library expects float data in interleaved format.
-  AVAudioFormat* processingFormat = [[AVAudioFormat alloc]
-      initWithCommonFormat:AVAudioPCMFormatFloat32
-                sampleRate:audioFormat.sampleRate
-                  channels:(AVAudioChannelCount)audioFormat.channelCount
-               interleaved:YES];
+  AVAudioFormat *processingFormat =
+      [[AVAudioFormat alloc] initWithCommonFormat:AVAudioPCMFormatFloat32
+                                       sampleRate:audioFormat.sampleRate
+                                         channels:(AVAudioChannelCount)audioFormat.channelCount
+                                      interleaved:YES];
 
-  return [AVAudioPCMBuffer loadPCMBufferFromFileWithPath:path
-                                        processingFormat:processingFormat];
+  return [AVAudioPCMBuffer loadPCMBufferFromFileWithPath:path processingFormat:processingFormat];
 }
 
-- (nullable TFLFloatBuffer*)floatBuffer {
+- (nullable TFLFloatBuffer *)floatBuffer {
   if (self.format.commonFormat != AVAudioPCMFormatFloat32) {
     return nil;
   }
 
-  return [[TFLFloatBuffer alloc] initWithData:self.floatChannelData[0]
-                                         size:self.frameLength];
+  return [[TFLFloatBuffer alloc] initWithData:self.floatChannelData[0] size:self.frameLength];
 }
 
 @end

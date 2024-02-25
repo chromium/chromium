@@ -3,16 +3,17 @@
 // found in the LICENSE file.
 import './app_management_cros_shared_style.css.js';
 import './app_management_cros_shared_vars.css.js';
-import 'chrome://resources/cr_elements/cr_icons.css.js';
+import 'chrome://resources/ash/common/cr_elements/cr_icons.css.js';
 
 import {App, AppType} from 'chrome://resources/cr_components/app_management/app_management.mojom-webui.js';
 import {AppManagementEntryPoint, AppManagementEntryPointsHistogramName} from 'chrome://resources/cr_components/app_management/constants.js';
 import {getAppIcon} from 'chrome://resources/cr_components/app_management/util.js';
-import {assertNotReached} from 'chrome://resources/js/assert_ts.js';
+import {assertNotReached} from 'chrome://resources/js/assert.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
+import {AppManagementStoreMixin} from '../../common/app_management/store_mixin.js';
+
 import {getTemplate} from './app_item.html.js';
-import {AppManagementStoreMixin} from './store_mixin.js';
 import {openAppDetailPage} from './util.js';
 
 const AppManagementAppItemElementBase = AppManagementStoreMixin(PolymerElement);

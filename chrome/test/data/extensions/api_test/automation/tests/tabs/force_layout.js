@@ -21,4 +21,4 @@ var allTests = [
   }
 ];
 
-setUpAndRunTests(allTests, 'force_layout.html');
+setUpAndRunTabsTests(allTests, 'force_layout.html');

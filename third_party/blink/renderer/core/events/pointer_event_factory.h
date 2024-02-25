@@ -5,7 +5,8 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_EVENTS_POINTER_EVENT_FACTORY_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_EVENTS_POINTER_EVENT_FACTORY_H_
 
-#include "third_party/abseil-cpp/absl/types/optional.h"
+#include <optional>
+
 #include "third_party/blink/public/common/input/pointer_id.h"
 #include "third_party/blink/public/common/input/web_pointer_event.h"
 #include "third_party/blink/public/common/input/web_pointer_properties.h"
@@ -171,16 +172,16 @@ class CORE_EXPORT PointerEventFactory {
     bool is_active_buttons = false;
     bool hovering = true;
     uint32_t unique_touch_event_id = 0;
-    absl::optional<gfx::PointF> last_position;
-    absl::optional<gfx::PointF> last_rawupdate_position;
+    std::optional<gfx::PointF> last_position;
+    std::optional<gfx::PointF> last_rawupdate_position;
 
     PointerAttributes() = default;
     PointerAttributes(IncomingId incoming_id,
                       bool is_active_buttons,
                       bool hovering,
                       uint32_t unique_touch_event_id,
-                      absl::optional<gfx::PointF> last_position,
-                      absl::optional<gfx::PointF> last_rawupdate_position)
+                      std::optional<gfx::PointF> last_position,
+                      std::optional<gfx::PointF> last_rawupdate_position)
         : incoming_id(incoming_id),
           is_active_buttons(is_active_buttons),
           hovering(hovering),

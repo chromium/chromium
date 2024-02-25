@@ -54,10 +54,11 @@ import java.util.function.Function;
 
 /** Unit tests for {@link Log}. */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(manifest = Config.NONE, shadows = {FileUtilsTest.FakeShadowBitmapFactory.class})
+@Config(
+        manifest = Config.NONE,
+        shadows = {FileUtilsTest.FakeShadowBitmapFactory.class})
 public class FileUtilsTest {
-    @Rule
-    public final TemporaryFolder temporaryFolder = new TemporaryFolder();
+    @Rule public final TemporaryFolder temporaryFolder = new TemporaryFolder();
 
     private Context mContext;
 
@@ -76,23 +77,26 @@ public class FileUtilsTest {
     private String listAllPaths(Path rootDir) {
         ArrayList<String> pathList = new ArrayList<String>();
         try {
-            Files.walkFileTree(rootDir, new SimpleFileVisitor<Path>() {
-                @Override
-                public FileVisitResult preVisitDirectory(Path path, BasicFileAttributes attrs)
-                        throws IOException {
-                    String relPathString = rootDir.relativize(path).toString();
-                    if (!relPathString.isEmpty()) { // Exclude |rootDir|.
-                        pathList.add(relPathString + "/");
-                    }
-                    return FileVisitResult.CONTINUE;
-                }
-                @Override
-                public FileVisitResult visitFile(Path path, BasicFileAttributes attrs)
-                        throws IOException {
-                    pathList.add(rootDir.relativize(path).toString());
-                    return FileVisitResult.CONTINUE;
-                }
-            });
+            Files.walkFileTree(
+                    rootDir,
+                    new SimpleFileVisitor<Path>() {
+                        @Override
+                        public FileVisitResult preVisitDirectory(
+                                Path path, BasicFileAttributes attrs) throws IOException {
+                            String relPathString = rootDir.relativize(path).toString();
+                            if (!relPathString.isEmpty()) { // Exclude |rootDir|.
+                                pathList.add(relPathString + "/");
+                            }
+                            return FileVisitResult.CONTINUE;
+                        }
+
+                        @Override
+                        public FileVisitResult visitFile(Path path, BasicFileAttributes attrs)
+                                throws IOException {
+                            pathList.add(rootDir.relativize(path).toString());
+                            return FileVisitResult.CONTINUE;
+                        }
+                    });
         } catch (IOException e) {
         }
 
@@ -221,12 +225,14 @@ public class FileUtilsTest {
     @Ignore
     @Test
     public void testRecursivelyDeleteFileWithCanDelete() throws IOException {
-        Function<String, Boolean> canDeleteIfEndsWith1 = (String filepath) -> {
-            return filepath.endsWith("1");
-        };
-        Function<String, Boolean> canDeleteIfEndsWith2 = (String filepath) -> {
-            return filepath.endsWith("2");
-        };
+        Function<String, Boolean> canDeleteIfEndsWith1 =
+                (String filepath) -> {
+                    return filepath.endsWith("1");
+                };
+        Function<String, Boolean> canDeleteIfEndsWith2 =
+                (String filepath) -> {
+                    return filepath.endsWith("2");
+                };
 
         prepareMixedFilesTestCase();
         assertFileList("a1/; a1/b1/; a1/b1/c; a1/b1/c2; a1/b2/; a1/b2/c/; a1/b3; a2/; c");
@@ -271,19 +277,20 @@ public class FileUtilsTest {
 
     @Test
     public void testGetFileSize() throws IOException {
-        Function<byte[], Boolean> runCase = (byte[] inputBytes) -> {
-            ByteArrayInputStream inputStream = new ByteArrayInputStream(inputBytes);
-            byte[] fileBytes;
-            long size;
-            try {
-                File tempFile = temporaryFolder.newFile();
-                FileUtils.copyStreamToFile(inputStream, tempFile);
-                size = FileUtils.getFileSizeBytes(tempFile);
-            } catch (IOException e) {
-                return false;
-            }
-            return inputBytes.length == size;
-        };
+        Function<byte[], Boolean> runCase =
+                (byte[] inputBytes) -> {
+                    ByteArrayInputStream inputStream = new ByteArrayInputStream(inputBytes);
+                    byte[] fileBytes;
+                    long size;
+                    try {
+                        File tempFile = temporaryFolder.newFile();
+                        FileUtils.copyStreamToFile(inputStream, tempFile);
+                        size = FileUtils.getFileSizeBytes(tempFile);
+                    } catch (IOException e) {
+                        return false;
+                    }
+                    return inputBytes.length == size;
+                };
 
         assertTrue(runCase.apply(new byte[] {}));
         assertTrue(runCase.apply(new byte[] {3, 1, 4, 1, 5, 9, 2, 6, 5}));
@@ -308,17 +315,18 @@ public class FileUtilsTest {
 
     @Test
     public void testCopyStream() {
-        Function<byte[], Boolean> runCase = (byte[] inputBytes) -> {
-            ByteArrayInputStream inputStream = new ByteArrayInputStream(inputBytes);
-            ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-            try {
-                FileUtils.copyStream(inputStream, outputStream);
-            } catch (IOException e) {
-                return false;
-            }
-            byte[] outputBytes = outputStream.toByteArray();
-            return Arrays.equals(inputBytes, outputBytes);
-        };
+        Function<byte[], Boolean> runCase =
+                (byte[] inputBytes) -> {
+                    ByteArrayInputStream inputStream = new ByteArrayInputStream(inputBytes);
+                    ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+                    try {
+                        FileUtils.copyStream(inputStream, outputStream);
+                    } catch (IOException e) {
+                        return false;
+                    }
+                    byte[] outputBytes = outputStream.toByteArray();
+                    return Arrays.equals(inputBytes, outputBytes);
+                };
 
         assertTrue(runCase.apply(new byte[] {}));
         assertTrue(runCase.apply(new byte[] {3, 1, 4, 1, 5, 9, 2, 6, 5}));
@@ -329,26 +337,27 @@ public class FileUtilsTest {
 
     @Test
     public void testCopyStreamToFile() {
-        Function<byte[], Boolean> runCase = (byte[] inputBytes) -> {
-            ByteArrayInputStream inputStream = new ByteArrayInputStream(inputBytes);
-            ByteArrayOutputStream verifyStream = new ByteArrayOutputStream();
-            byte[] fileBytes;
-            try {
-                File tempFile = temporaryFolder.newFile();
-                FileUtils.copyStreamToFile(inputStream, tempFile);
-                byte[] buffer = new byte[6543]; // Use weird size.
-                try (InputStream is = new FileInputStream(tempFile)) {
-                    int amountRead;
-                    while ((amountRead = is.read(buffer)) != -1) {
-                        verifyStream.write(buffer, 0, amountRead);
+        Function<byte[], Boolean> runCase =
+                (byte[] inputBytes) -> {
+                    ByteArrayInputStream inputStream = new ByteArrayInputStream(inputBytes);
+                    ByteArrayOutputStream verifyStream = new ByteArrayOutputStream();
+                    byte[] fileBytes;
+                    try {
+                        File tempFile = temporaryFolder.newFile();
+                        FileUtils.copyStreamToFile(inputStream, tempFile);
+                        byte[] buffer = new byte[6543]; // Use weird size.
+                        try (InputStream is = new FileInputStream(tempFile)) {
+                            int amountRead;
+                            while ((amountRead = is.read(buffer)) != -1) {
+                                verifyStream.write(buffer, 0, amountRead);
+                            }
+                        }
+                    } catch (IOException e) {
+                        return false;
                     }
-                }
-            } catch (IOException e) {
-                return false;
-            }
-            byte[] outputBytes = verifyStream.toByteArray();
-            return Arrays.equals(inputBytes, outputBytes);
-        };
+                    byte[] outputBytes = verifyStream.toByteArray();
+                    return Arrays.equals(inputBytes, outputBytes);
+                };
 
         assertTrue(runCase.apply(new byte[] {}));
         assertTrue(runCase.apply(new byte[] {3, 1, 4, 1, 5, 9, 2, 6, 5}));
@@ -359,16 +368,17 @@ public class FileUtilsTest {
 
     @Test
     public void testReadStream() {
-        Function<byte[], Boolean> runCase = (byte[] inputBytes) -> {
-            ByteArrayInputStream inputStream = new ByteArrayInputStream(inputBytes);
-            byte[] verifyBytes;
-            try {
-                verifyBytes = FileUtils.readStream(inputStream);
-            } catch (IOException e) {
-                return false;
-            }
-            return Arrays.equals(inputBytes, verifyBytes);
-        };
+        Function<byte[], Boolean> runCase =
+                (byte[] inputBytes) -> {
+                    ByteArrayInputStream inputStream = new ByteArrayInputStream(inputBytes);
+                    byte[] verifyBytes;
+                    try {
+                        verifyBytes = FileUtils.readStream(inputStream);
+                    } catch (IOException e) {
+                        return false;
+                    }
+                    return Arrays.equals(inputBytes, verifyBytes);
+                };
 
         assertTrue(runCase.apply(new byte[] {}));
         assertTrue(runCase.apply(new byte[] {3, 1, 4, 1, 5, 9, 2, 6, 5}));
@@ -381,29 +391,33 @@ public class FileUtilsTest {
     public void testGetUriForFileWithContentUri() {
         // ContentUriUtils needs to be initialized for "content://" URL to work. Use a fake
         // version to avoid dealing with Android innards, and to provide consistent results.
-        ContentUriUtils.setFileProviderUtil(new ContentUriUtils.FileProviderUtil() {
-            @Override
-            public Uri getContentUriFromFile(File file) {
-                Uri.Builder builder = new Uri.Builder();
-                String fileString = file.toString();
-                if (fileString.startsWith("/")) {
-                    fileString = fileString.substring(1);
-                }
-                builder.scheme("content").authority("org.chromium.test");
-                for (String path : fileString.split("/")) {
-                    builder.appendPath(path);
-                }
-                return builder.build();
-            }
-        });
+        ContentUriUtils.setFileProviderUtil(
+                new ContentUriUtils.FileProviderUtil() {
+                    @Override
+                    public Uri getContentUriFromFile(File file) {
+                        Uri.Builder builder = new Uri.Builder();
+                        String fileString = file.toString();
+                        if (fileString.startsWith("/")) {
+                            fileString = fileString.substring(1);
+                        }
+                        builder.scheme("content").authority("org.chromium.test");
+                        for (String path : fileString.split("/")) {
+                            builder.appendPath(path);
+                        }
+                        return builder.build();
+                    }
+                });
 
         assertEquals(
                 "content://org.chromium.test/", FileUtils.getUriForFile(new File("/")).toString());
-        assertEquals("content://org.chromium.test/foo.bar",
+        assertEquals(
+                "content://org.chromium.test/foo.bar",
                 FileUtils.getUriForFile(new File("/foo.bar")).toString());
-        assertEquals("content://org.chromium.test/path1/path2/filename.ext",
+        assertEquals(
+                "content://org.chromium.test/path1/path2/filename.ext",
                 FileUtils.getUriForFile(new File("/path1/path2/filename.ext")).toString());
-        assertEquals("content://org.chromium.test/../../..",
+        assertEquals(
+                "content://org.chromium.test/../../..",
                 FileUtils.getUriForFile(new File("/../../..")).toString());
     }
 
@@ -413,7 +427,8 @@ public class FileUtilsTest {
         // Only test using absolute path. Otherwise cwd would be included into results.
         assertEquals("file:///", FileUtils.getUriForFile(new File("/")).toString());
         assertEquals("file:///foo.bar", FileUtils.getUriForFile(new File("/foo.bar")).toString());
-        assertEquals("file:///path1/path2/filename.ext",
+        assertEquals(
+                "file:///path1/path2/filename.ext",
                 FileUtils.getUriForFile(new File("/path1/path2/filename.ext")).toString());
         assertEquals("file:///../../..", FileUtils.getUriForFile(new File("/../../..")).toString());
     }
@@ -484,7 +499,11 @@ public class FileUtilsTest {
         }
 
         @Override
-        public Cursor query(Uri uri, String[] projection, String selection, String[] selectionArgs,
+        public Cursor query(
+                Uri uri,
+                String[] projection,
+                String selection,
+                String[] selectionArgs,
                 String sortOrder) {
             return null;
         }

@@ -13,14 +13,15 @@ import 'chrome://resources/polymer/v3_0/iron-collapse/iron-collapse.js';
 import 'chrome://resources/cr_elements/cr_auto_img/cr_auto_img.js';
 
 import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
-import {assert} from 'chrome://resources/js/assert_ts.js';
+import {assert} from 'chrome://resources/js/assert.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {BrowserProxyImpl} from './browser_proxy.js';
 import {getTemplate} from './cluster.html.js';
-import {Cluster, SearchQuery, URLVisit} from './history_cluster_types.mojom-webui.js';
-import {ClusterAction, PageCallbackRouter, VisitAction} from './history_clusters.mojom-webui.js';
+import type {Cluster, SearchQuery, URLVisit} from './history_cluster_types.mojom-webui.js';
+import type {PageCallbackRouter} from './history_clusters.mojom-webui.js';
+import {ClusterAction, VisitAction} from './history_clusters.mojom-webui.js';
 import {MetricsProxyImpl} from './metrics_proxy.js';
 import {insertHighlightedTextWithMatchesIntoElement} from './utils.js';
 
@@ -248,7 +249,7 @@ class HistoryClusterElement extends HistoryClusterElementBase {
    */
   private onBrowserIdle_(): Promise<void> {
     return new Promise(resolve => {
-      window.requestIdleCallback(() => {
+      requestIdleCallback(() => {
         resolve();
       });
     });
@@ -331,7 +332,7 @@ class HistoryClusterElement extends HistoryClusterElementBase {
     // iron-list can't handle our size changing because of loading an image
     // without an explicit event. But we also can't send this until we have
     // updated the image property, so send it on the next idle.
-    window.requestIdleCallback(() => {
+    requestIdleCallback(() => {
       this.dispatchEvent(new CustomEvent('iron-resize', {
         bubbles: true,
         composed: true,

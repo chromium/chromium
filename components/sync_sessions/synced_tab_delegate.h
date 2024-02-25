@@ -9,6 +9,7 @@
 #include <string>
 #include <vector>
 
+#include "base/functional/callback_forward.h"
 #include "components/sessions/core/serialized_navigation_entry.h"
 #include "components/sessions/core/session_id.h"
 #include "url/gurl.h"
@@ -33,6 +34,10 @@ class SyncedTabDelegate {
   // distinct IDs does not imply they are distinct tabs.
   virtual SessionID GetSessionId() const = 0;
   virtual bool IsBeingDestroyed() const = 0;
+  // The last active time returned can be an approximation (cached value). The
+  // cached version is done for performance purpose, to avoid sending too many
+  // updates when the last_active_time changes quickly.
+  virtual base::Time GetLastActiveTime() = 0;
 
   // Method derived from extensions TabHelper.
   virtual std::string GetExtensionAppId() const = 0;
@@ -42,7 +47,6 @@ class SyncedTabDelegate {
   virtual int GetCurrentEntryIndex() const = 0;
   virtual int GetEntryCount() const = 0;
   virtual GURL GetVirtualURLAtIndex(int i) const = 0;
-  virtual std::string GetPageLanguageAtIndex(int i) const = 0;
   virtual void GetSerializedNavigationAtIndex(
       int i,
       sessions::SerializedNavigationEntry* serialized_entry) const = 0;
@@ -61,6 +65,13 @@ class SyncedTabDelegate {
   // restored as a placeholder. In that case, the previous synced data from that
   // tab should be preserved.
   virtual bool IsPlaceholderTab() const = 0;
+
+  // Reads placeholder tab data from the associated web contents as a snapshot.
+  // Must be called only if IsPlaceholderTab() returns true. It returns a
+  // callback that will determine if a WebContentsStateSyncedTabDelegate should
+  // have its sync data reassociated with its tab.
+  virtual std::unique_ptr<SyncedTabDelegate>
+  CreatePlaceholderTabSyncedTabDelegate() = 0;
 
   // Task IDs represent navigations and relationships between navigations. -1
   // indicates the Task ID is unknown. A Navigation ID is a Unique ID and

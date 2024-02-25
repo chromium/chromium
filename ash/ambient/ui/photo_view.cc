@@ -139,7 +139,7 @@ void PhotoView::StartTransitionAnimation() {
 
     ui::AnimationThroughputReporter reporter(
         animation.GetAnimator(),
-        metrics_util::ForSmoothness(base::BindRepeating(ReportSmoothness)));
+        metrics_util::ForSmoothnessV3(base::BindRepeating(ReportSmoothness)));
 
     visible_layer->SetOpacity(0.0f);
   }
@@ -157,7 +157,7 @@ void PhotoView::StartTransitionAnimation() {
 
     ui::AnimationThroughputReporter reporter(
         animation.GetAnimator(),
-        metrics_util::ForSmoothness(base::BindRepeating(ReportSmoothness)));
+        metrics_util::ForSmoothnessV3(base::BindRepeating(ReportSmoothness)));
 
     invisible_layer->SetOpacity(1.0f);
   }
@@ -180,7 +180,7 @@ gfx::ImageSkia PhotoView::GetVisibleImageForTesting() {
   return image_views_.at(image_index_)->GetCurrentImage();
 }
 
-BEGIN_METADATA(PhotoView, views::View)
+BEGIN_METADATA(PhotoView)
 END_METADATA
 
 }  // namespace ash

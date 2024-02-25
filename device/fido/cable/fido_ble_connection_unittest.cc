@@ -5,6 +5,7 @@
 #include "device/fido/cable/fido_ble_connection.h"
 
 #include <bitset>
+#include <string_view>
 #include <utility>
 
 #include "base/functional/bind.h"
@@ -13,7 +14,6 @@
 #include "base/memory/raw_ptr.h"
 #include "base/ranges/algorithm.h"
 #include "base/run_loop.h"
-#include "base/strings/string_piece.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/task_environment.h"
 #include "build/build_config.h"
@@ -66,7 +66,7 @@ namespace {
 constexpr auto kDefaultServiceRevision =
     static_cast<uint8_t>(FidoBleConnection::ServiceRevision::kFido2);
 
-std::vector<uint8_t> ToByteVector(base::StringPiece str) {
+std::vector<uint8_t> ToByteVector(std::string_view str) {
   return std::vector<uint8_t>(str.begin(), str.end());
 }
 
@@ -98,13 +98,13 @@ class TestReadCallback {
 
  private:
   std::vector<uint8_t> value_;
-  absl::optional<base::RunLoop> run_loop_{absl::in_place};
+  std::optional<base::RunLoop> run_loop_{std::in_place};
 };
 
 using TestConnectionCallbackReceiver = test::ValueCallbackReceiver<bool>;
 
 using TestReadControlPointLengthCallback =
-    test::ValueCallbackReceiver<absl::optional<uint16_t>>;
+    test::ValueCallbackReceiver<std::optional<uint16_t>>;
 
 using TestReadServiceRevisionsCallback =
     test::ValueCallbackReceiver<std::set<FidoBleConnection::ServiceRevision>>;
@@ -152,7 +152,7 @@ class FidoBleConnectionTest : public ::testing::Test {
               new NiceMockBluetoothGattConnection(adapter_, device_address);
           std::move(callback).Run(
               std::move(base::WrapUnique(connection_.get())),
-              /*error_code=*/absl::nullopt);
+              /*error_code=*/std::nullopt);
         }));
 
     ON_CALL(*fido_device_, IsGattServicesDiscoveryComplete)
@@ -163,7 +163,7 @@ class FidoBleConnectionTest : public ::testing::Test {
             [=](BluetoothRemoteGattCharacteristic::ValueCallback& callback) {
               base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
                   FROM_HERE, base::BindOnce(std::move(callback),
-                                            /*error_code=*/absl::nullopt,
+                                            /*error_code=*/std::nullopt,
                                             std::vector<uint8_t>(
                                                 {kDefaultServiceRevision})));
             }));
@@ -239,7 +239,7 @@ class FidoBleConnectionTest : public ::testing::Test {
         .WillOnce(Invoke(
             [success, value](
                 BluetoothRemoteGattCharacteristic::ValueCallback& callback) {
-              absl::optional<BluetoothGattService::GattErrorCode> error_code;
+              std::optional<BluetoothGattService::GattErrorCode> error_code;
               if (!success)
                 error_code = BluetoothGattService::GattErrorCode::kFailed;
               base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
@@ -254,7 +254,7 @@ class FidoBleConnectionTest : public ::testing::Test {
         .WillOnce(Invoke(
             [success, value](
                 BluetoothRemoteGattCharacteristic::ValueCallback& callback) {
-              absl::optional<BluetoothGattService::GattErrorCode> error_code;
+              std::optional<BluetoothGattService::GattErrorCode> error_code;
               if (!success)
                 error_code = BluetoothGattService::GattErrorCode::kFailed;
               base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
@@ -271,8 +271,8 @@ class FidoBleConnectionTest : public ::testing::Test {
             [success, value](
                 BluetoothRemoteGattCharacteristic::ValueCallback& callback) {
               auto error_code =
-                  success ? absl::nullopt
-                          : absl::make_optional(
+                  success ? std::nullopt
+                          : std::make_optional(
                                 BluetoothGattService::GattErrorCode::kFailed);
               base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
                   FROM_HERE,
@@ -681,17 +681,17 @@ TEST_F(FidoBleConnectionTest, ReadControlPointLength) {
     SetNextReadControlPointLengthReponse(false, {});
     connection.ReadControlPointLength(length_callback.callback());
     length_callback.WaitForCallback();
-    EXPECT_EQ(absl::nullopt, length_callback.value());
+    EXPECT_EQ(std::nullopt, length_callback.value());
   }
 
   // The Control Point Length should consist of exactly two bytes, hence we
-  // EXPECT_EQ(absl::nullopt) for payloads of size 0, 1 and 3.
+  // EXPECT_EQ(std::nullopt) for payloads of size 0, 1 and 3.
   {
     TestReadControlPointLengthCallback length_callback;
     SetNextReadControlPointLengthReponse(true, {});
     connection.ReadControlPointLength(length_callback.callback());
     length_callback.WaitForCallback();
-    EXPECT_EQ(absl::nullopt, length_callback.value());
+    EXPECT_EQ(std::nullopt, length_callback.value());
   }
 
   {
@@ -699,7 +699,7 @@ TEST_F(FidoBleConnectionTest, ReadControlPointLength) {
     SetNextReadControlPointLengthReponse(true, {0xAB});
     connection.ReadControlPointLength(length_callback.callback());
     length_callback.WaitForCallback();
-    EXPECT_EQ(absl::nullopt, length_callback.value());
+    EXPECT_EQ(std::nullopt, length_callback.value());
   }
 
   {
@@ -715,7 +715,7 @@ TEST_F(FidoBleConnectionTest, ReadControlPointLength) {
     SetNextReadControlPointLengthReponse(true, {0xAB, 0xCD, 0xEF});
     connection.ReadControlPointLength(length_callback.callback());
     length_callback.WaitForCallback();
-    EXPECT_EQ(absl::nullopt, length_callback.value());
+    EXPECT_EQ(std::nullopt, length_callback.value());
   }
 }
 
@@ -766,7 +766,7 @@ TEST_F(FidoBleConnectionTest, ReadsAndWriteFailWhenDisconnected) {
   TestReadControlPointLengthCallback length_callback;
   connection.ReadControlPointLength(length_callback.callback());
   length_callback.WaitForCallback();
-  EXPECT_EQ(absl::nullopt, length_callback.value());
+  EXPECT_EQ(std::nullopt, length_callback.value());
 
   // Writes should always fail on a disconnected device.
   TestWriteCallback write_callback;

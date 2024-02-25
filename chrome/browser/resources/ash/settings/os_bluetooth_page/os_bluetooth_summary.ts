@@ -9,18 +9,18 @@
  */
 
 import '../settings_shared.css.js';
-import 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.js';
-import 'chrome://resources/cr_elements/icons.html.js';
+import 'chrome://resources/ash/common/cr_elements/cr_icon_button/cr_icon_button.js';
+import 'chrome://resources/ash/common/cr_elements/icons.html.js';
 
-import {getDeviceName} from 'chrome://resources/ash/common/bluetooth/bluetooth_utils.js';
+import {getDeviceNameUnsafe} from 'chrome://resources/ash/common/bluetooth/bluetooth_utils.js';
 import {getBluetoothConfig} from 'chrome://resources/ash/common/bluetooth/cros_bluetooth_config.js';
-import {getInstance as getAnnouncerInstance} from 'chrome://resources/cr_elements/cr_a11y_announcer/cr_a11y_announcer.js';
-import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
+import {getInstance as getAnnouncerInstance} from 'chrome://resources/ash/common/cr_elements/cr_a11y_announcer/cr_a11y_announcer.js';
+import {I18nMixin} from 'chrome://resources/ash/common/cr_elements/i18n_mixin.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {BluetoothSystemProperties, BluetoothSystemState, DeviceConnectionState, PairedBluetoothDeviceProperties} from 'chrome://resources/mojo/chromeos/ash/services/bluetooth_config/public/mojom/cros_bluetooth_config.mojom-webui.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {RouteOriginMixin} from '../route_origin_mixin.js';
+import {RouteOriginMixin} from '../common/route_origin_mixin.js';
 import {Route, Router, routes} from '../router.js';
 
 import {OsBluetoothDevicesSubpageBrowserProxy, OsBluetoothDevicesSubpageBrowserProxyImpl} from './os_bluetooth_devices_subpage_browser_proxy.js';
@@ -175,31 +175,32 @@ export class SettingsBluetoothSummaryElement extends
     }
 
     const isA11yLabel = labelType === LabelType.A11Y;
-    const firstConnectedDeviceName = getDeviceName(connectedDevices[0]);
+    const firstConnectedDeviceName = getDeviceNameUnsafe(connectedDevices[0]);
 
     if (connectedDevices.length === 1) {
-      return isA11yLabel ? this.i18n(
+      return isA11yLabel ? loadTimeData.getStringF(
                                'bluetoothSummaryPageConnectedA11yOneDevice',
                                firstConnectedDeviceName) :
                            firstConnectedDeviceName;
     }
 
     if (connectedDevices.length === 2) {
-      const secondConnectedDeviceName = getDeviceName(connectedDevices[1]);
+      const secondConnectedDeviceName =
+          getDeviceNameUnsafe(connectedDevices[1]);
       return isA11yLabel ?
-          this.i18n(
+          loadTimeData.getStringF(
               'bluetoothSummaryPageConnectedA11yTwoDevices',
               firstConnectedDeviceName, secondConnectedDeviceName) :
-          this.i18n(
+          loadTimeData.getStringF(
               'bluetoothSummaryPageTwoDevicesDescription',
               firstConnectedDeviceName, secondConnectedDeviceName);
     }
 
     return isA11yLabel ?
-        this.i18n(
+        loadTimeData.getStringF(
             'bluetoothSummaryPageConnectedA11yTwoOrMoreDevices',
             firstConnectedDeviceName, connectedDevices.length - 1) :
-        this.i18n(
+        loadTimeData.getStringF(
             'bluetoothSummaryPageTwoOrMoreDevicesDescription',
             firstConnectedDeviceName, connectedDevices.length - 1);
   }
@@ -269,6 +270,14 @@ export class SettingsBluetoothSummaryElement extends
                                     this.i18n('bluetoothDisabledA11YLabel'));
 
     this.browserProxy_.showBluetoothRevampHatsSurvey();
+  }
+
+  private shouldShowPairNewDevice_(): boolean {
+    if (!this.systemProperties) {
+      return false;
+    }
+
+    return this.systemProperties.systemState === BluetoothSystemState.kEnabled;
   }
 }
 

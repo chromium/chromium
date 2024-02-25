@@ -57,7 +57,7 @@
 #include "third_party/blink/public/common/thread_safe_browser_interface_broker_proxy.h"
 #include "third_party/blink/public/common/tokens/tokens.h"
 #include "third_party/blink/public/platform/media/web_media_player_builder.h"
-#include "third_party/blink/public/platform/media/webmediaplayer_delegate.h"
+#include "third_party/blink/public/platform/media/web_media_player_delegate.h"
 #include "third_party/blink/public/platform/scheduler/web_thread_scheduler.h"
 #include "third_party/blink/public/platform/web_fullscreen_video_status.h"
 #include "third_party/blink/public/platform/web_media_player.h"
@@ -81,6 +81,7 @@
 #include "third_party/blink/renderer/platform/media/video_decode_stats_reporter.h"
 #include "third_party/blink/renderer/platform/media/web_audio_source_provider_client.h"
 #include "third_party/blink/renderer/platform/media/web_content_decryption_module_impl.h"
+#include "third_party/blink/renderer/platform/testing/task_environment.h"
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
@@ -169,8 +170,6 @@ class MockWebMediaPlayerClient : public WebMediaPlayerClient {
                                        const WebString&,
                                        bool));
   MOCK_METHOD1(RemoveVideoTrack, void(WebMediaPlayer::TrackId));
-  MOCK_METHOD1(AddTextTrack, void(WebInbandTextTrack*));
-  MOCK_METHOD1(RemoveTextTrack, void(WebInbandTextTrack*));
   MOCK_METHOD1(MediaSourceOpened, void(WebMediaSource*));
   MOCK_METHOD2(RemotePlaybackCompatibilityChanged, void(const WebURL&, bool));
   MOCK_METHOD0(WasAlwaysMuted, bool());
@@ -210,7 +209,6 @@ class MockWebMediaPlayerClient : public WebMediaPlayerClient {
   MOCK_METHOD0(DidSeek, void());
   MOCK_METHOD2(OnFirstFrame, void(base::TimeTicks, size_t));
   MOCK_METHOD0(OnRequestVideoFrameCallback, void());
-  MOCK_METHOD0(GetTextTrackMetadata, Vector<TextTrackMetadata>());
 };
 
 class MockWebMediaPlayerEncryptedMediaClient
@@ -427,9 +425,6 @@ class WebMediaPlayerImplTest
         ukm::kInvalidSourceId, media::learning::FeatureValue(0),
         media::VideoDecodePerfHistory::SaveCallback(),
         media::MediaMetricsProvider::GetLearningSessionCallback(),
-        WTF::BindRepeating(
-            &WebMediaPlayerImplTest::GetRecordAggregateWatchTimeCallback,
-            WTF::Unretained(this)),
         WTF::BindRepeating(&WebMediaPlayerImplTest::IsShuttingDown,
                            WTF::Unretained(this)),
         provider.BindNewPipeAndPassReceiver());
@@ -496,11 +491,6 @@ class WebMediaPlayerImplTest
   void SetDuration(base::TimeDelta value) {
     wmpi_->SetPipelineMediaDurationForTest(value);
     wmpi_->OnDurationChange();
-  }
-
-  media::MediaMetricsProvider::RecordAggregateWatchTimeCallback
-  GetRecordAggregateWatchTimeCallback() {
-    return base::NullCallback();
   }
 
   MOCK_METHOD(bool, IsShuttingDown, ());
@@ -690,7 +680,7 @@ class WebMediaPlayerImplTest
   }
 
   bool ShouldCancelUponDefer() const {
-    const auto* ds = wmpi_->demuxer_manager_->GetDataSourceForTesting();
+    auto* ds = wmpi_->demuxer_manager_->GetDataSourceForTesting();
     CHECK_NE(ds, nullptr);
     CHECK_NE(ds->GetAsCrossOriginDataSource(), nullptr);
     // Right now, the only implementation of DataSource that WMPI can get
@@ -705,7 +695,7 @@ class WebMediaPlayerImplTest
   }
 
   bool IsDataSourceMarkedAsPlaying() const {
-    const auto* ds = wmpi_->demuxer_manager_->GetDataSourceForTesting();
+    auto* ds = wmpi_->demuxer_manager_->GetDataSourceForTesting();
     CHECK_NE(ds, nullptr);
     CHECK_NE(ds->GetAsCrossOriginDataSource(), nullptr);
     // See comment in |ShouldCancelUponDefer|.
@@ -881,6 +871,8 @@ class WebMediaPlayerImplTest
   media::MemoryDumpProviderProxy* GetMediaThreadMemDumper() {
     return wmpi_->media_thread_mem_dumper_.get();
   }
+
+  test::TaskEnvironment task_environment_;
 
   // "Media" thread. This is necessary because WMPI destruction waits on a
   // WaitableEvent.
@@ -1127,8 +1119,6 @@ TEST_F(WebMediaPlayerImplTest, LoadPreloadMetadataSuspendNoStreaming) {
 
 // Verify that lazy load for preload=metadata works properly.
 TEST_F(WebMediaPlayerImplTest, LazyLoadPreloadMetadataSuspend) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(media::kPreloadMetadataLazyLoad);
   InitializeWebMediaPlayerImpl();
   EXPECT_CALL(client_, CouldPlayIfEnoughData()).WillRepeatedly(Return(false));
   wmpi_->SetPreload(WebMediaPlayer::kPreloadMetaData);
@@ -1151,6 +1141,25 @@ TEST_F(WebMediaPlayerImplTest, LazyLoadPreloadMetadataSuspend) {
   EXPECT_EQ(reported_memory_ - data_source_size, 0);
 
   EXPECT_CALL(*surface_layer_bridge_ptr_, ClearObserver());
+}
+
+// Verify that lazy load is skipped when rVFC has been requested.
+TEST_F(WebMediaPlayerImplTest, LazyLoadSkippedForRVFC) {
+  InitializeWebMediaPlayerImpl();
+  EXPECT_CALL(client_, CouldPlayIfEnoughData()).WillRepeatedly(Return(false));
+  wmpi_->SetPreload(WebMediaPlayer::kPreloadMetaData);
+
+  EXPECT_CALL(*compositor_, SetOnFramePresentedCallback(_));
+  RequestVideoFrameCallback();
+
+  // Ensure we don't reach the suspended state.
+  LoadAndWaitForReadyState(kVideoOnlyTestFile,
+                           WebMediaPlayer::kReadyStateHaveMetadata);
+  testing::Mock::VerifyAndClearExpectations(&client_);
+  EXPECT_CALL(client_, ReadyStateChanged()).Times(AnyNumber());
+  CycleThreads();
+  EXPECT_FALSE(IsSuspended());
+  EXPECT_FALSE(wmpi_->DidLazyLoad());
 }
 
 // Verify that preload=metadata suspend video w/ poster uses zero video memory.
@@ -2420,8 +2429,8 @@ TEST_F(WebMediaPlayerImplTest, MemDumpReporting) {
   CycleThreads();
 
   base::trace_event::MemoryDumpRequestArgs args = {
-      1 /* dump_guid*/, base::trace_event::MemoryDumpType::EXPLICITLY_TRIGGERED,
-      base::trace_event::MemoryDumpLevelOfDetail::DETAILED};
+      1 /* dump_guid*/, base::trace_event::MemoryDumpType::kExplicitlyTriggered,
+      base::trace_event::MemoryDumpLevelOfDetail::kDetailed};
 
   int32_t id = media::GetNextMediaPlayerLoggingID() - 1;
   int dump_count = 0;
@@ -2454,7 +2463,7 @@ TEST_F(WebMediaPlayerImplTest, MemDumpReporting) {
         }));
 
         if (args.level_of_detail ==
-            base::trace_event::MemoryDumpLevelOfDetail::DETAILED) {
+            base::trace_event::MemoryDumpLevelOfDetail::kDetailed) {
           ASSERT_TRUE(base::ranges::any_of(entries, [](const auto& e) {
             return e.name == "player_state" && !e.value_string.empty();
           }));
@@ -2466,11 +2475,12 @@ TEST_F(WebMediaPlayerImplTest, MemDumpReporting) {
 
   dump_manager->CreateProcessDump(args, on_memory_dump_done);
 
-  args.level_of_detail = base::trace_event::MemoryDumpLevelOfDetail::BACKGROUND;
+  args.level_of_detail =
+      base::trace_event::MemoryDumpLevelOfDetail::kBackground;
   args.dump_guid++;
   dump_manager->CreateProcessDump(args, on_memory_dump_done);
 
-  args.level_of_detail = base::trace_event::MemoryDumpLevelOfDetail::LIGHT;
+  args.level_of_detail = base::trace_event::MemoryDumpLevelOfDetail::kLight;
   args.dump_guid++;
   dump_manager->CreateProcessDump(args, on_memory_dump_done);
 
@@ -2485,7 +2495,7 @@ TEST_F(WebMediaPlayerImplTest, DISABLED_DemuxerOverride) {
       std::make_unique<NiceMock<media::MockDemuxer>>();
   StrictMock<media::MockDemuxerStream> stream(media::DemuxerStream::AUDIO);
   stream.set_audio_decoder_config(TestAudioConfig::Normal());
-  std::vector<media::DemuxerStream*> streams;
+  std::vector<vector_experimental_raw_ptr<media::DemuxerStream>> streams;
   streams.push_back(&stream);
 
   EXPECT_CALL(stream, SupportsConfigChanges()).WillRepeatedly(Return(false));
@@ -2602,8 +2612,8 @@ class WebMediaPlayerImplBackgroundBehaviorTest
   }
 
   int GetMaxKeyframeDistanceSec() const {
-    return WebMediaPlayerImpl::kMaxKeyframeDistanceToDisableBackgroundVideoMs /
-           base::Time::kMillisecondsPerSecond;
+    return WebMediaPlayerImpl::kMaxKeyframeDistanceToDisableBackgroundVideo
+        .InSeconds();
   }
 
   bool ShouldDisableVideoWhenHidden() const {
@@ -2772,13 +2782,13 @@ INSTANTIATE_TEST_SUITE_P(
     ::testing::Combine(
         ::testing::Bool(),
         ::testing::Values(
-            WebMediaPlayerImpl::kMaxKeyframeDistanceToDisableBackgroundVideoMs /
-                    base::Time::kMillisecondsPerSecond -
+            WebMediaPlayerImpl::kMaxKeyframeDistanceToDisableBackgroundVideo
+                    .InSeconds() -
                 1,
             300),
         ::testing::Values(
-            WebMediaPlayerImpl::kMaxKeyframeDistanceToDisableBackgroundVideoMs /
-                    base::Time::kMillisecondsPerSecond -
+            WebMediaPlayerImpl::kMaxKeyframeDistanceToDisableBackgroundVideo
+                    .InSeconds() -
                 1,
             100),
         ::testing::Bool(),

@@ -6,6 +6,7 @@
 
 #include <stdint.h>
 #include <ostream>
+#include <string_view>
 
 #include "base/check.h"
 #include "base/lazy_instance.h"
@@ -96,10 +97,11 @@ void UBreakIteratorDeleter::operator()(UBreakIterator* ptr) {
   }
 }
 
-BreakIterator::BreakIterator(StringPiece16 str, BreakType break_type)
+BreakIterator::BreakIterator(std::u16string_view str, BreakType break_type)
     : string_(str), break_type_(break_type) {}
 
-BreakIterator::BreakIterator(StringPiece16 str, const std::u16string& rules)
+BreakIterator::BreakIterator(std::u16string_view str,
+                             const std::u16string& rules)
     : string_(str), rules_(rules), break_type_(RULE_BASED) {}
 
 BreakIterator::~BreakIterator() {
@@ -200,16 +202,16 @@ bool BreakIterator::Advance() {
   }
 }
 
-bool BreakIterator::SetText(const char16_t* text, const size_t length) {
+bool BreakIterator::SetText(std::u16string_view text) {
   UErrorCode status = U_ZERO_ERROR;
-  ubrk_setText(iter_.get(), text, length, &status);
+  ubrk_setText(iter_.get(), text.data(), text.length(), &status);
   pos_ = 0;  // implicit when ubrk_setText is done
   prev_ = npos;
   if (U_FAILURE(status)) {
     NOTREACHED() << "ubrk_setText failed";
     return false;
   }
-  string_ = StringPiece16(text, length);
+  string_ = text;
   return true;
 }
 
@@ -265,7 +267,7 @@ std::u16string BreakIterator::GetString() const {
   return std::u16string(GetStringPiece());
 }
 
-StringPiece16 BreakIterator::GetStringPiece() const {
+std::u16string_view BreakIterator::GetStringPiece() const {
   DCHECK(prev_ != npos && pos_ != npos);
   return string_.substr(prev_, pos_ - prev_);
 }

@@ -194,10 +194,9 @@ class OfflineContentProviderObserver final
   }
 
   void OnItemRemoved(const ContentId& id) override {}
-  void OnItemUpdated(
-      const OfflineItem& item,
-      const absl::optional<offline_items_collection::UpdateDelta>& update_delta)
-      override {
+  void OnItemUpdated(const OfflineItem& item,
+                     const std::optional<offline_items_collection::UpdateDelta>&
+                         update_delta) override {
     if (item.state != offline_items_collection::OfflineItemState::IN_PROGRESS &&
         item.state != offline_items_collection::OfflineItemState::PENDING &&
         item.state != offline_items_collection::OfflineItemState::PAUSED &&
@@ -229,9 +228,7 @@ class OfflineContentProviderObserver final
   const OfflineItem& latest_item() const { return latest_item_; }
 
  private:
-  void Resume(const ContentId& id) {
-    delegate_->ResumeDownload(id, false /* has_user_gesture */);
-  }
+  void Resume(const ContentId& id) { delegate_->ResumeDownload(id); }
 
   ItemsAddedCallback items_added_callback_;
   FinishedProcessingItemCallback finished_processing_item_callback_;
@@ -530,11 +527,11 @@ IN_PROC_BROWSER_TEST_F(BackgroundFetchBrowserTest,
   ASSERT_NO_FATAL_FAILURE(
       RunScriptFunction("StartSingleFileDownloadWithCorrectDownloadTotal()"));
 
-  std::vector<const ukm::mojom::UkmEntry*> entries =
+  std::vector<raw_ptr<const ukm::mojom::UkmEntry, VectorExperimental>> entries =
       test_ukm_recorder_->GetEntriesByName(
           ukm::builders::BackgroundFetch::kEntryName);
   ASSERT_EQ(1u, entries.size());
-  const auto* entry = entries[0];
+  const auto* entry = entries[0].get();
   test_ukm_recorder_->ExpectEntryMetric(
       entry, ukm::builders::BackgroundFetch::kHasTitleName, 1);
   test_ukm_recorder_->ExpectEntryMetric(
@@ -599,8 +596,9 @@ IN_PROC_BROWSER_TEST_F(BackgroundFetchBrowserTest,
   EXPECT_FALSE(offline_item.is_off_the_record);
 }
 
+// Flaky on multiple platforms (b/323879025)/
 IN_PROC_BROWSER_TEST_F(BackgroundFetchBrowserTest,
-                       OfflineItemCollection_VerifyIconReceived) {
+                       DISABLED_OfflineItemCollection_VerifyIconReceived) {
   // Starts a Background Fetch for a single to-be-downloaded file and waits for
   // the fetch to be registered with the offline items collection. We then
   // verify that the expected icon is associated with the newly added offline
@@ -734,16 +732,8 @@ IN_PROC_BROWSER_TEST_F(BackgroundFetchBrowserTest,
   ASSERT_TRUE(items[0].is_off_the_record);
 }
 
-// Flaky on Windows 7 (https://crbug.com/1039250)
-#if BUILDFLAG(IS_WIN)
-#define MAYBE_FetchesRunToCompletionAndUpdateTitle_Fetched \
-  DISABLED_FetchesRunToCompletionAndUpdateTitle_Fetched
-#else
-#define MAYBE_FetchesRunToCompletionAndUpdateTitle_Fetched \
-  FetchesRunToCompletionAndUpdateTitle_Fetched
-#endif
 IN_PROC_BROWSER_TEST_F(BackgroundFetchBrowserTest,
-                       MAYBE_FetchesRunToCompletionAndUpdateTitle_Fetched) {
+                       FetchesRunToCompletionAndUpdateTitle_Fetched) {
   ASSERT_NO_FATAL_FAILURE(RunScriptAndCheckResultingMessage(
       "RunFetchTillCompletion()", "backgroundfetchsuccess"));
   EXPECT_EQ(offline_content_provider_observer_->latest_item().state,
@@ -755,16 +745,8 @@ IN_PROC_BROWSER_TEST_F(BackgroundFetchBrowserTest,
                        "New Fetched Title!", base::CompareCase::SENSITIVE));
 }
 
-// Flaky on Windows 7 (https://crbug.com/1039250)
-#if BUILDFLAG(IS_WIN)
-#define MAYBE_FetchesRunToCompletionAndUpdateTitle_Failed \
-  DISABLED_FetchesRunToCompletionAndUpdateTitle_Failed
-#else
-#define MAYBE_FetchesRunToCompletionAndUpdateTitle_Failed \
-  FetchesRunToCompletionAndUpdateTitle_Failed
-#endif
 IN_PROC_BROWSER_TEST_F(BackgroundFetchBrowserTest,
-                       MAYBE_FetchesRunToCompletionAndUpdateTitle_Failed) {
+                       FetchesRunToCompletionAndUpdateTitle_Failed) {
   ASSERT_NO_FATAL_FAILURE(RunScriptAndCheckResultingMessage(
       "RunFetchTillCompletionWithMissingResource()", "backgroundfetchfail"));
   EXPECT_EQ(offline_content_provider_observer_->latest_item().state,
@@ -857,14 +839,7 @@ IN_PROC_BROWSER_TEST_F(BackgroundFetchBrowserTest,
       "This origin does not have permission to start a fetch."));
 }
 
-// Flaky on Windows 7 (https://crbug.com/1039250)
-#if BUILDFLAG(IS_WIN)
-#define MAYBE_FetchFromServiceWorker DISABLED_FetchFromServiceWorker
-#else
-#define MAYBE_FetchFromServiceWorker FetchFromServiceWorker
-#endif
-IN_PROC_BROWSER_TEST_F(BackgroundFetchBrowserTest,
-                       MAYBE_FetchFromServiceWorker) {
+IN_PROC_BROWSER_TEST_F(BackgroundFetchBrowserTest, FetchFromServiceWorker) {
   auto* settings_map =
       HostContentSettingsMapFactory::GetForProfile(browser()->profile());
   DCHECK(settings_map);
@@ -1006,7 +981,7 @@ IN_PROC_BROWSER_TEST_F(BackgroundFetchFencedFrameBrowserTest,
       "frames.";
   StartSingleFileDownload(fenced_frame, kExpectedError);
 
-  std::vector<const ukm::mojom::UkmEntry*> entries =
+  std::vector<raw_ptr<const ukm::mojom::UkmEntry, VectorExperimental>> entries =
       test_ukm_recorder_->GetEntriesByName(
           ukm::builders::BackgroundFetch::kEntryName);
   ASSERT_EQ(0u, entries.size());
@@ -1049,7 +1024,7 @@ IN_PROC_BROWSER_TEST_F(BackgroundFetchFencedFrameBrowserTest,
       "frames.";
   StartSingleFileDownload(fenced_frame, kExpectedError);
 
-  std::vector<const ukm::mojom::UkmEntry*> entries =
+  std::vector<raw_ptr<const ukm::mojom::UkmEntry, VectorExperimental>> entries =
       test_ukm_recorder_->GetEntriesByName(
           ukm::builders::BackgroundFetch::kEntryName);
   ASSERT_EQ(0u, entries.size());

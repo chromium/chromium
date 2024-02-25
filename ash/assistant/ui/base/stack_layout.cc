@@ -4,6 +4,7 @@
 
 #include "ash/assistant/ui/base/stack_layout.h"
 
+#include <algorithm>
 #include <numeric>
 
 #include "base/ranges/algorithm.h"
@@ -26,11 +27,13 @@ void StackLayout::ViewRemoved(views::View* host, views::View* view) {
 }
 
 gfx::Size StackLayout::GetPreferredSize(const views::View* host) const {
-  return std::accumulate(host->children().cbegin(), host->children().cend(),
-                         gfx::Size(), [](gfx::Size size, const auto* v) {
-                           size.SetToMax(v->GetPreferredSize());
-                           return size;
-                         });
+  return std::transform_reduce(
+      host->children().cbegin(), host->children().cend(), gfx::Size(),
+      [](gfx::Size a, const gfx::Size b) {
+        a.SetToMax(b);
+        return a;
+      },
+      [](const views::View* v) { return v->GetPreferredSize(); });
 }
 
 int StackLayout::GetPreferredHeightForWidth(const views::View* host,
@@ -49,7 +52,7 @@ void StackLayout::Layout(views::View* host) {
   const int host_width = host->GetContentsBounds().width();
   const int host_height = host->GetContentsBounds().height();
 
-  for (auto* child : host->children()) {
+  for (views::View* child : host->children()) {
     int child_width = host_width;
     int child_height = host_height;
 

@@ -12,11 +12,12 @@
 
 #include "base/functional/callback.h"
 #include "base/time/time.h"
-#include "content/browser/service_worker/embedded_worker_status.h"
 #include "content/browser/service_worker/service_worker_version.h"
 #include "content/common/content_export.h"
+#include "content/public/browser/service_worker_client_info.h"
 #include "content/public/browser/service_worker_version_base_info.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
+#include "third_party/blink/public/common/service_worker/embedded_worker_status.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "third_party/blink/public/mojom/service_worker/service_worker_container_type.mojom.h"
 #include "url/gurl.h"
@@ -27,16 +28,14 @@ class StorageKey;
 
 namespace content {
 
-class ServiceWorkerClientInfo;
-
 struct CONTENT_EXPORT ServiceWorkerVersionInfo
     : public ServiceWorkerVersionBaseInfo {
  public:
   ServiceWorkerVersionInfo();
   ServiceWorkerVersionInfo(
-      EmbeddedWorkerStatus running_status,
+      blink::EmbeddedWorkerStatus running_status,
       ServiceWorkerVersion::Status status,
-      absl::optional<ServiceWorkerVersion::FetchHandlerType> fetch_handler_type,
+      std::optional<ServiceWorkerVersion::FetchHandlerType> fetch_handler_type,
       const GURL& script_url,
       const GURL& scope,
       const blink::StorageKey& storage_key,
@@ -47,19 +46,19 @@ struct CONTENT_EXPORT ServiceWorkerVersionInfo
       int devtools_agent_route_id,
       ukm::SourceId ukm_source_id,
       blink::mojom::AncestorFrameType ancestor_frame_type,
-      absl::optional<std::string> router_rules);
+      std::optional<std::string> router_rules);
   ServiceWorkerVersionInfo(const ServiceWorkerVersionInfo& other);
   ~ServiceWorkerVersionInfo() override;
 
-  EmbeddedWorkerStatus running_status;
+  blink::EmbeddedWorkerStatus running_status;
   ServiceWorkerVersion::Status status;
-  absl::optional<ServiceWorkerVersion::FetchHandlerType> fetch_handler_type;
+  std::optional<ServiceWorkerVersion::FetchHandlerType> fetch_handler_type;
   blink::mojom::NavigationPreloadState navigation_preload_state;
   GURL script_url;
   int thread_id;
   int devtools_agent_route_id;
   ukm::SourceId ukm_source_id = ukm::kInvalidSourceId;
-  absl::optional<std::string> router_rules;
+  std::optional<std::string> router_rules;
   base::Time script_response_time;
   base::Time script_last_modified;
   std::map<std::string, ServiceWorkerClientInfo> clients;

@@ -65,7 +65,8 @@ class DnsResolutionRoutineTest : public ::testing::Test {
   }
 
   void SetUpDnsResolutionRoutine() {
-    dns_resolution_routine_ = std::make_unique<DnsResolutionRoutine>();
+    dns_resolution_routine_ = std::make_unique<DnsResolutionRoutine>(
+        mojom::RoutineCallSource::kDiagnosticsUI);
     dns_resolution_routine_->set_network_context_for_testing(
         fake_network_context_.get());
     dns_resolution_routine_->set_profile_for_testing(test_profile_);
@@ -93,7 +94,7 @@ class DnsResolutionRoutineTest : public ::testing::Test {
   session_manager::SessionManager session_manager_;
   std::unique_ptr<FakeNetworkContext> fake_network_context_;
   // Unowned
-  raw_ptr<Profile, DanglingUntriaged | ExperimentalAsh> test_profile_;
+  raw_ptr<Profile, DanglingUntriaged> test_profile_;
   TestingProfileManager profile_manager_;
   std::unique_ptr<DnsResolutionRoutine> dns_resolution_routine_;
   base::WeakPtrFactory<DnsResolutionRoutineTest> weak_factory_{this};
@@ -107,7 +108,7 @@ TEST_F(DnsResolutionRoutineTest, TestSuccessfulResolution) {
   auto successful_resolution = std::make_unique<FakeNetworkContext::DnsResult>(
       net::OK, net::ResolveErrorInfo(net::OK),
       net::AddressList(FakeIPAddress()),
-      /*endpoint_results_with_metadata=*/absl::nullopt);
+      /*endpoint_results_with_metadata=*/std::nullopt);
   fake_dns_results.push_back(std::move(successful_resolution));
   SetUpAndRunRoutine(std::move(fake_dns_results),
                      mojom::RoutineVerdict::kNoProblem, {});
@@ -121,8 +122,8 @@ TEST_F(DnsResolutionRoutineTest, TestResolutionFailure) {
   auto failed_resolution = std::make_unique<FakeNetworkContext::DnsResult>(
       net::ERR_NAME_NOT_RESOLVED,
       net::ResolveErrorInfo(net::ERR_NAME_NOT_RESOLVED),
-      /*resolved_addresses=*/absl::nullopt,
-      /*endpoint_results_with_metadata=*/absl::nullopt);
+      /*resolved_addresses=*/std::nullopt,
+      /*endpoint_results_with_metadata=*/std::nullopt);
   fake_dns_results.push_back(std::move(failed_resolution));
   SetUpAndRunRoutine(std::move(fake_dns_results),
                      mojom::RoutineVerdict::kProblem,
@@ -137,13 +138,13 @@ TEST_F(DnsResolutionRoutineTest, TestSuccessOnRetry) {
       fake_dns_results;
   auto timed_out_resolution = std::make_unique<FakeNetworkContext::DnsResult>(
       net::ERR_DNS_TIMED_OUT, net::ResolveErrorInfo(net::ERR_DNS_TIMED_OUT),
-      /*resolved_addresses=*/absl::nullopt,
-      /*endpoint_results_with_metadata=*/absl::nullopt);
+      /*resolved_addresses=*/std::nullopt,
+      /*endpoint_results_with_metadata=*/std::nullopt);
   fake_dns_results.push_back(std::move(timed_out_resolution));
   auto successful_resolution = std::make_unique<FakeNetworkContext::DnsResult>(
       net::OK, net::ResolveErrorInfo(net::OK),
       net::AddressList(FakeIPAddress()),
-      /*endpoint_results_with_metadata=*/absl::nullopt);
+      /*endpoint_results_with_metadata=*/std::nullopt);
   fake_dns_results.push_back(std::move(successful_resolution));
 
   fake_dns_results.push_back(std::move(successful_resolution));

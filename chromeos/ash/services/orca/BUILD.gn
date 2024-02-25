@@ -1,0 +1,41 @@
+# Copyright 2023 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/chromeos/ui_mode.gni")
+
+assert(is_chromeos_ash, "Non-ChromeOS builds cannot depend on //ash")
+
+source_set("orca") {
+  sources = [
+    "orca_library.cc",
+    "orca_library.h",
+  ]
+
+  deps = [
+    "//ash/constants",
+    "//base",
+    "//chromeos/ash/services/orca/public/cpp",
+    "//chromeos/ash/services/orca/public/mojom",
+  ]
+}
+
+source_set("unittests") {
+  testonly = true
+  sources = [ "orca_library_unittest.cc" ]
+  deps = [
+    ":orca",
+    "//base",
+    "//base/test:test_support",
+    "//chromeos/ash/services/orca/public/cpp",
+    "//chromeos/ash/services/orca/public/mojom",
+    "//mojo/public/cpp/bindings:bindings",
+    "//testing/gmock",
+    "//testing/gtest",
+  ]
+  data_deps = [
+    "//chromeos/ash/services/orca/testdata:test_orca_shared_library_bad_bind",
+    "//chromeos/ash/services/orca/testdata:test_orca_shared_library_good",
+    "//chromeos/ash/services/orca/testdata:test_orca_shared_library_wrong_exports",
+  ]
+}

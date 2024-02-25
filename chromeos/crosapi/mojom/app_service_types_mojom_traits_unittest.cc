@@ -11,6 +11,7 @@
 #include "components/services/app_service/public/cpp/app_launch_util.h"
 #include "components/services/app_service/public/cpp/app_types.h"
 #include "components/services/app_service/public/cpp/capability_access.h"
+#include "components/services/app_service/public/cpp/icon_effects.h"
 #include "components/services/app_service/public/cpp/icon_types.h"
 #include "components/services/app_service/public/cpp/intent_filter.h"
 #include "components/services/app_service/public/cpp/intent_filter_util.h"
@@ -31,9 +32,9 @@ TEST(AppServiceTypesMojomTraitsTest, RoundTrip) {
   input->description = "description";
   input->version = "version";
   input->additional_search_terms = {"1", "2"};
-  input->icon_key = apps::IconKey(
-      /*timeline=*/1, apps::IconKey::kInvalidResourceId, /*icon_effects=*/2);
-  input->icon_key->raw_icon_updated = true;
+  input->icon_key =
+      apps::IconKey(/*raw_icon_updated=*/true,
+                    /*icon_effects=*/apps::IconEffects::kChromeBadge);
   input->last_launch_time = base::Time() + base::Days(1);
   input->install_time = base::Time() + base::Days(2);
   input->install_reason = apps::InstallReason::kUser;
@@ -44,8 +45,10 @@ TEST(AppServiceTypesMojomTraitsTest, RoundTrip) {
   input->show_in_shelf = true;
   input->show_in_search = true;
   input->show_in_management = true;
-  input->has_badge = absl::nullopt;
+  input->has_badge = std::nullopt;
   input->paused = false;
+  input->app_size_in_bytes = 1000000;
+  input->data_size_in_bytes = 1000000;
 
   auto intent_filter = std::make_unique<apps::IntentFilter>();
   intent_filter->AddSingleValueCondition(apps::ConditionType::kScheme, "https",
@@ -65,6 +68,8 @@ TEST(AppServiceTypesMojomTraitsTest, RoundTrip) {
   input->handles_intents = true;
 
   input->is_platform_app = true;
+  input->allow_close = true;
+  input->allow_window_mode_selection = true;
 
   apps::AppPtr output;
   ASSERT_TRUE(
@@ -79,10 +84,12 @@ TEST(AppServiceTypesMojomTraitsTest, RoundTrip) {
   EXPECT_EQ(output->description, "description");
   EXPECT_EQ(output->version, "version");
   EXPECT_EQ(output->additional_search_terms, input->additional_search_terms);
+  EXPECT_EQ(output->app_size_in_bytes, 1000000);
+  EXPECT_EQ(output->data_size_in_bytes, 1000000);
 
-  EXPECT_EQ(output->icon_key->timeline, 1U);
+  EXPECT_TRUE(absl::holds_alternative<bool>(output->icon_key->update_version));
+  EXPECT_TRUE(absl::get<bool>(output->icon_key->update_version));
   EXPECT_EQ(output->icon_key->icon_effects, 2U);
-  EXPECT_TRUE(output->icon_key->raw_icon_updated);
 
   EXPECT_EQ(output->last_launch_time, base::Time() + base::Days(1));
   EXPECT_EQ(output->install_time, base::Time() + base::Days(2));
@@ -124,6 +131,8 @@ TEST(AppServiceTypesMojomTraitsTest, RoundTrip) {
   EXPECT_TRUE(output->handles_intents.value());
 
   EXPECT_TRUE(output->is_platform_app.value());
+  EXPECT_TRUE(output->allow_close.value());
+  EXPECT_TRUE(output->allow_window_mode_selection.value());
 }
 
 // Test that serialization and deserialization works with optional fields that
@@ -140,7 +149,7 @@ TEST(AppServiceTypesMojomTraitsTest, RoundTripNoOptional) {
   input->show_in_shelf = true;
   input->show_in_search = true;
   input->show_in_management = true;
-  input->has_badge = absl::nullopt;
+  input->has_badge = std::nullopt;
   input->paused = false;
 
   auto intent_filter = std::make_unique<apps::IntentFilter>();
@@ -150,7 +159,11 @@ TEST(AppServiceTypesMojomTraitsTest, RoundTripNoOptional) {
   input->window_mode = apps::WindowMode::kBrowser;
   input->allow_uninstall = true;
   input->handles_intents = true;
-  input->is_platform_app = absl::nullopt;
+  input->is_platform_app = std::nullopt;
+  input->app_size_in_bytes = std::nullopt;
+  input->data_size_in_bytes = std::nullopt;
+  input->allow_close = std::nullopt;
+  input->allow_window_mode_selection = std::nullopt;
 
   apps::AppPtr output;
   ASSERT_TRUE(
@@ -171,6 +184,8 @@ TEST(AppServiceTypesMojomTraitsTest, RoundTripNoOptional) {
   EXPECT_TRUE(output->show_in_management.value());
   EXPECT_FALSE(output->has_badge.has_value());
   EXPECT_FALSE(output->paused.value());
+  EXPECT_FALSE(output->app_size_in_bytes.has_value());
+  EXPECT_FALSE(output->data_size_in_bytes.has_value());
 
   ASSERT_EQ(output->intent_filters.size(), 1U);
   auto& filter = output->intent_filters[0];
@@ -186,6 +201,8 @@ TEST(AppServiceTypesMojomTraitsTest, RoundTripNoOptional) {
   EXPECT_TRUE(output->allow_uninstall);
   EXPECT_TRUE(output->handles_intents);
   EXPECT_FALSE(output->is_platform_app.has_value());
+  EXPECT_FALSE(output->allow_close.has_value());
+  EXPECT_FALSE(output->allow_window_mode_selection.has_value());
 }
 
 // Test that serialization and deserialization works with updating app type.
@@ -295,6 +312,43 @@ TEST(AppServiceTypesMojomTraitsTest, RoundTripReadiness) {
   }
 }
 
+// Test that serialization and deserialization works with updating IconKey.
+TEST(AppServiceTypesMojomTraitsTest, RoundTripIconKey) {
+  {
+    auto icon_key = std::make_unique<apps::IconKey>(/*raw_icon_updated=*/true,
+                                                    apps::IconEffects::kNone);
+    apps::IconKeyPtr output;
+    ASSERT_TRUE(mojo::test::SerializeAndDeserialize<crosapi::mojom::IconKey>(
+        icon_key, output));
+    EXPECT_EQ(*icon_key, *output);
+  }
+  {
+    auto icon_key = std::make_unique<apps::IconKey>();
+    apps::IconKeyPtr output;
+    ASSERT_TRUE(mojo::test::SerializeAndDeserialize<crosapi::mojom::IconKey>(
+        icon_key, output));
+    EXPECT_EQ(*icon_key, *output);
+  }
+  {
+    auto icon_key =
+        std::make_unique<apps::IconKey>(apps::IconEffects::kBlocked);
+    icon_key->update_version = apps::IconKey::kInitVersion;
+    apps::IconKeyPtr output;
+    ASSERT_TRUE(mojo::test::SerializeAndDeserialize<crosapi::mojom::IconKey>(
+        icon_key, output));
+    EXPECT_EQ(*icon_key, *output);
+  }
+  {
+    auto icon_key = std::make_unique<apps::IconKey>(
+        apps::IconEffects::kCrOsStandardBackground);
+    icon_key->update_version = 100;
+    apps::IconKeyPtr output;
+    ASSERT_TRUE(mojo::test::SerializeAndDeserialize<crosapi::mojom::IconKey>(
+        icon_key, output));
+    EXPECT_EQ(*icon_key, *output);
+  }
+}
+
 // Test that serialization and deserialization works with updating install
 // reason.
 TEST(AppServiceTypesMojomTraitsTest, RoundTripInstallReason) {
@@ -369,7 +423,7 @@ TEST(AppServiceTypesMojomTraitsTest, RoundTripInstallReason) {
 TEST(AppServiceTypesMojomTraitsTest, RoundTripRecommendable) {
   auto input = std::make_unique<apps::App>(apps::AppType::kArc, "abcdefg");
   {
-    input->recommendable = absl::nullopt;
+    input->recommendable = std::nullopt;
     apps::AppPtr output;
     ASSERT_TRUE(mojo::test::SerializeAndDeserialize<crosapi::mojom::App>(
         input, output));
@@ -395,7 +449,7 @@ TEST(AppServiceTypesMojomTraitsTest, RoundTripRecommendable) {
 TEST(AppServiceTypesMojomTraitsTest, RoundTripSearchable) {
   auto input = std::make_unique<apps::App>(apps::AppType::kArc, "abcdefg");
   {
-    input->searchable = absl::nullopt;
+    input->searchable = std::nullopt;
     apps::AppPtr output;
     ASSERT_TRUE(mojo::test::SerializeAndDeserialize<crosapi::mojom::App>(
         input, output));
@@ -422,7 +476,7 @@ TEST(AppServiceTypesMojomTraitsTest, RoundTripSearchable) {
 TEST(AppServiceTypesMojomTraitsTest, RoundTripShowInLauncher) {
   auto input = std::make_unique<apps::App>(apps::AppType::kArc, "abcdefg");
   {
-    input->show_in_launcher = absl::nullopt;
+    input->show_in_launcher = std::nullopt;
     apps::AppPtr output;
     ASSERT_TRUE(mojo::test::SerializeAndDeserialize<crosapi::mojom::App>(
         input, output));
@@ -449,7 +503,7 @@ TEST(AppServiceTypesMojomTraitsTest, RoundTripShowInLauncher) {
 TEST(AppServiceTypesMojomTraitsTest, RoundTripShowInShelf) {
   auto input = std::make_unique<apps::App>(apps::AppType::kArc, "abcdefg");
   {
-    input->show_in_shelf = absl::nullopt;
+    input->show_in_shelf = std::nullopt;
     apps::AppPtr output;
     ASSERT_TRUE(mojo::test::SerializeAndDeserialize<crosapi::mojom::App>(
         input, output));
@@ -476,7 +530,7 @@ TEST(AppServiceTypesMojomTraitsTest, RoundTripShowInShelf) {
 TEST(AppServiceTypesMojomTraitsTest, RoundTripShowInSearch) {
   auto input = std::make_unique<apps::App>(apps::AppType::kArc, "abcdefg");
   {
-    input->show_in_search = absl::nullopt;
+    input->show_in_search = std::nullopt;
     apps::AppPtr output;
     ASSERT_TRUE(mojo::test::SerializeAndDeserialize<crosapi::mojom::App>(
         input, output));
@@ -503,7 +557,7 @@ TEST(AppServiceTypesMojomTraitsTest, RoundTripShowInSearch) {
 TEST(AppServiceTypesMojomTraitsTest, RoundTripShowInManagement) {
   auto input = std::make_unique<apps::App>(apps::AppType::kArc, "abcdefg");
   {
-    input->show_in_management = absl::nullopt;
+    input->show_in_management = std::nullopt;
     apps::AppPtr output;
     ASSERT_TRUE(mojo::test::SerializeAndDeserialize<crosapi::mojom::App>(
         input, output));
@@ -529,7 +583,7 @@ TEST(AppServiceTypesMojomTraitsTest, RoundTripShowInManagement) {
 TEST(AppServiceTypesMojomTraitsTest, RoundTripHasBadge) {
   auto input = std::make_unique<apps::App>(apps::AppType::kArc, "abcdefg");
   {
-    input->has_badge = absl::nullopt;
+    input->has_badge = std::nullopt;
     apps::AppPtr output;
     ASSERT_TRUE(mojo::test::SerializeAndDeserialize<crosapi::mojom::App>(
         input, output));
@@ -555,7 +609,7 @@ TEST(AppServiceTypesMojomTraitsTest, RoundTripHasBadge) {
 TEST(AppServiceTypesMojomTraitsTest, RoundTripPaused) {
   auto input = std::make_unique<apps::App>(apps::AppType::kArc, "abcdefg");
   {
-    input->paused = absl::nullopt;
+    input->paused = std::nullopt;
     apps::AppPtr output;
     ASSERT_TRUE(mojo::test::SerializeAndDeserialize<crosapi::mojom::App>(
         input, output));
@@ -1030,6 +1084,14 @@ TEST(AppServiceTypesMojomTraitsTest, RoundTripLaunchSource) {
             input, output));
     EXPECT_EQ(output, input);
   }
+  {
+    input = apps::LaunchSource::kFromInstaller;
+    apps::LaunchSource output;
+    ASSERT_TRUE(
+        mojo::test::SerializeAndDeserialize<crosapi::mojom::LaunchSource>(
+            input, output));
+    EXPECT_EQ(output, input);
+  }
 }
 
 TEST(AppServiceTypesMojomTraitsTest, RoundTripPermissions) {
@@ -1199,4 +1261,46 @@ TEST(AppServiceTypesMojomTraitsTest, RoundTripCapabilityAccess) {
     EXPECT_FALSE(output->camera.value_or(true));
     EXPECT_TRUE(output->microphone.value_or(false));
   }
+}
+
+// Test that every field in apps::Shortcut in correctly converted.
+TEST(AppServiceTypesMojomTraitsTest, ShortcutRoundTrip) {
+  auto input = std::make_unique<apps::Shortcut>("host_app_id", "local_id");
+  input->name = "lacros test name";
+  input->icon_key =
+      apps::IconKey(/*raw_icon_updated=*/true,
+                    /*icon_effects=*/apps::IconEffects::kChromeBadge);
+  input->allow_removal = true;
+
+  apps::ShortcutPtr output;
+  ASSERT_TRUE(mojo::test::SerializeAndDeserialize<crosapi::mojom::AppShortcut>(
+      input, output));
+
+  EXPECT_EQ(output->host_app_id, "host_app_id");
+  EXPECT_EQ(output->local_id, "local_id");
+  EXPECT_EQ(output->shortcut_id,
+            apps::GenerateShortcutId("host_app_id", "local_id"));
+  EXPECT_EQ(output->name, "lacros test name");
+  EXPECT_EQ(output->shortcut_source, apps::ShortcutSource::kUser);
+
+  EXPECT_EQ(output->icon_key->icon_effects, 2U);
+  EXPECT_TRUE(absl::holds_alternative<bool>(output->icon_key->update_version));
+  EXPECT_TRUE(absl::get<bool>(output->icon_key->update_version));
+  EXPECT_TRUE(output->allow_removal);
+}
+
+// Test that serialization and deserialization works with optional fields that
+// doesn't fill up.
+TEST(AppServiceTypesMojomTraitsTest, ShortcutRoundTripNoOptional) {
+  auto input = std::make_unique<apps::Shortcut>("host_app_id", "local_id");
+
+  apps::ShortcutPtr output;
+  ASSERT_TRUE(mojo::test::SerializeAndDeserialize<crosapi::mojom::AppShortcut>(
+      input, output));
+
+  EXPECT_EQ(output->host_app_id, "host_app_id");
+  EXPECT_EQ(output->local_id, "local_id");
+  EXPECT_EQ(output->shortcut_id,
+            apps::GenerateShortcutId("host_app_id", "local_id"));
+  EXPECT_EQ(output->shortcut_source, apps::ShortcutSource::kUser);
 }

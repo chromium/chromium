@@ -1,0 +1,5 @@
+WebView textSize:16.0 style:0 htmlInfo:[{htmlTag="#document"}, {display=""}]
+++View text:"description Text-description" textSize:16.0 style:0 htmlInfo:[{htmlTag="div"}, {display="block"}, {aria-description="Text-description"}, {aria-label="description"}]
+++View text:"both Description from describedby" textSize:16.0 style:0 htmlInfo:[{htmlTag="div"}, {display="block"}, {aria-describedby="desc1"}, {aria-description="describedby overrides description"}, {aria-label="both"}]
+++View textSize:16.0 style:0 htmlInfo:[{htmlTag="div"}, {display="block"}, {id="desc1"}, {role="tooltip"}]
+++++TextView text:"Description from describedby" textSize:16.0 style:0 htmlInfo:[{htmlTag=""}, {display=""}]

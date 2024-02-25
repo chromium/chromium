@@ -7,20 +7,20 @@
 
 #include <map>
 #include <memory>
+#include <optional>
 #include <string>
 #include <vector>
 
 #include "base/functional/callback.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
-#include "base/strings/string_piece_forward.h"
+#include "base/strings/string_piece.h"
 #include "chrome/common/extensions/api/passwords_private.h"
-#include "components/password_manager/core/browser/bulk_leak_check_service.h"
-#include "components/password_manager/core/browser/ui/export_progress_status.h"
-#include "components/password_manager/core/browser/ui/import_results.h"
+#include "components/password_manager/core/browser/export/export_progress_status.h"
+#include "components/password_manager/core/browser/import/import_results.h"
+#include "components/password_manager/core/browser/leak_detection/bulk_leak_check_service.h"
 #include "components/password_manager/core/browser/ui/insecure_credentials_manager.h"
 #include "extensions/browser/extension_function.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace content {
 class WebContents;
@@ -32,8 +32,7 @@ namespace extensions {
 // saved passwords and password exceptions (reading, adding, changing, removing,
 // import/export) and to notify listeners when these values have changed.
 class PasswordsPrivateDelegate
-    : public base::SupportsWeakPtr<PasswordsPrivateDelegate>,
-      public base::RefCounted<PasswordsPrivateDelegate> {
+    : public base::RefCounted<PasswordsPrivateDelegate> {
  public:
   using ImportResultsCallback =
       base::OnceCallback<void(const api::passwords_private::ImportResults&)>;
@@ -44,7 +43,7 @@ class PasswordsPrivateDelegate
   using ShareRecipients = std::vector<api::passwords_private::RecipientInfo>;
 
   using PlaintextPasswordCallback =
-      base::OnceCallback<void(absl::optional<std::u16string>)>;
+      base::OnceCallback<void(std::optional<std::u16string>)>;
 
   using StartPasswordCheckCallback =
       base::OnceCallback<void(password_manager::BulkLeakCheckService::State)>;
@@ -66,9 +65,9 @@ class PasswordsPrivateDelegate
 
   // Checks whether the given |url| meets the requirements to save a password
   // for it (e.g. valid, has proper scheme etc.) and returns the corresponding
-  // UrlCollection on success and absl::nullopt otherwise.
-  virtual absl::optional<api::passwords_private::UrlCollection>
-  GetUrlCollection(const std::string& url) = 0;
+  // UrlCollection on success and std::nullopt otherwise.
+  virtual std::optional<api::passwords_private::UrlCollection> GetUrlCollection(
+      const std::string& url) = 0;
 
   // Returns whether the account store is a default location for saving
   // passwords. False means the device store is a default one. Must be called
@@ -95,7 +94,7 @@ class PasswordsPrivateDelegate
   // Updates a credential. Not all attributes can be updated.
   // |credential|: The credential to be updated. Matched to an existing
   // credential by id.
-  // Returns absl::nullopt if the credential could not be found or updated.
+  // Returns std::nullopt if the credential could not be found or updated.
   // Otherwise, returns the newly updated credential. Note that the new
   // credential may have a different ID, so it should replace the old one.
   virtual bool ChangeCredential(
@@ -119,7 +118,7 @@ class PasswordsPrivateDelegate
   // |id| the id created when going over the list of saved passwords.
   // |reason| The reason why the plaintext password is requested.
   // |callback| The callback that gets invoked with the saved password if it
-  // could be obtained successfully, or absl::nullopt otherwise.
+  // could be obtained successfully, or std::nullopt otherwise.
   // |web_contents| The web content object used as the UI; will be used to show
   //     an OS-level authentication dialog if necessary.
   virtual void RequestPlaintextPassword(
@@ -129,12 +128,12 @@ class PasswordsPrivateDelegate
       content::WebContents* web_contents) = 0;
 
   // Requests the full PasswordUiEntry (with filled password) with the given id.
-  // Returns the full PasswordUiEntry with |callback|. Returns |absl::nullopt|
+  // Returns the full PasswordUiEntry with |callback|. Returns |std::nullopt|
   // if no matching credential with |id| is found.
   // |id| the id created when going over the list of saved passwords.
   // |reason| The reason why the full PasswordUiEntry is requested.
   // |callback| The callback that gets invoked with the PasswordUiEntry if it
-  // could be obtained successfully, or absl::nullopt otherwise.
+  // could be obtained successfully, or std::nullopt otherwise.
   // |web_contents| The web content object used as the UI; will be used to show
   //     an OS-level authentication dialog if necessary.
   virtual void RequestCredentialsDetails(
@@ -242,7 +241,7 @@ class PasswordsPrivateDelegate
   GetInsecureCredentialsManager() = 0;
 
   // Restarts the authentication timer if it is running.
-  virtual void ExtendAuthValidity() = 0;
+  virtual void RestartAuthTimer() = 0;
 
   // Switches Biometric authentication before filling state after
   // successful authentication.
@@ -255,6 +254,8 @@ class PasswordsPrivateDelegate
   // Shows the file with the exported passwords in OS shell.
   virtual void ShowExportedFileInShell(content::WebContents* web_contents,
                                        std::string file_path) = 0;
+
+  virtual base::WeakPtr<PasswordsPrivateDelegate> AsWeakPtr() = 0;
 
  protected:
   virtual ~PasswordsPrivateDelegate() = default;

@@ -74,7 +74,7 @@ class FingerprintStorageTestApi {
   }
 
  private:
-  raw_ptr<FingerprintStorage, ExperimentalAsh> fingerprint_storage_;
+  raw_ptr<FingerprintStorage> fingerprint_storage_;
 };
 
 // Verifies that:

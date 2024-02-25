@@ -6,11 +6,11 @@
 
 #include <tuple>
 
+#include <optional>
 #include "base/logging.h"
 #include "base/time/time.h"
 #include "crypto/scoped_mock_unexportable_key_provider.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace {
 
@@ -47,7 +47,7 @@ TEST_P(UnexportableKeySigningTest, RoundTrip) {
   SCOPED_TRACE(static_cast<int>(algo));
   SCOPED_TRACE(mock_enabled);
 
-  absl::optional<crypto::ScopedMockUnexportableKeyProvider> mock;
+  std::optional<crypto::ScopedMockUnexportableKeyProvider> mock;
   if (mock_enabled) {
     mock.emplace();
   }
@@ -78,7 +78,7 @@ TEST_P(UnexportableKeySigningTest, RoundTrip) {
   const uint8_t msg[] = {1, 2, 3, 4};
 
   const base::TimeTicks sign_start = base::TimeTicks::Now();
-  const absl::optional<std::vector<uint8_t>> sig = key->SignSlowly(msg);
+  const std::optional<std::vector<uint8_t>> sig = key->SignSlowly(msg);
   LOG(INFO) << "Signing took " << (base::TimeTicks::Now() - sign_start);
   ASSERT_TRUE(sig);
 
@@ -94,7 +94,7 @@ TEST_P(UnexportableKeySigningTest, RoundTrip) {
   LOG(INFO) << "Import took " << (base::TimeTicks::Now() - import2_start);
 
   const base::TimeTicks sign2_start = base::TimeTicks::Now();
-  const absl::optional<std::vector<uint8_t>> sig2 = key->SignSlowly(msg);
+  const std::optional<std::vector<uint8_t>> sig2 = key->SignSlowly(msg);
   LOG(INFO) << "Signing took " << (base::TimeTicks::Now() - sign2_start);
   ASSERT_TRUE(sig2);
 

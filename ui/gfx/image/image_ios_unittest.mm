@@ -26,18 +26,18 @@ UIImage* UIImageWithSizeAndScale(CGFloat width, CGFloat height, CGFloat scale) {
       CGColorSpaceCreateDeviceRGB());
   base::apple::ScopedCFTypeRef<CGContextRef> context(CGBitmapContextCreate(
       NULL, target_size.width, target_size.height, 8, target_size.width * 4,
-      color_space,
+      color_space.get(),
       kCGImageAlphaPremultipliedFirst |
           static_cast<CGImageAlphaInfo>(kCGBitmapByteOrder32Host)));
 
   CGRect target_rect = CGRectMake(0, 0,
                                   target_size.width, target_size.height);
-  CGContextSetFillColorWithColor(context, [[UIColor redColor] CGColor]);
-  CGContextFillRect(context, target_rect);
+  CGContextSetFillColorWithColor(context.get(), [[UIColor redColor] CGColor]);
+  CGContextFillRect(context.get(), target_rect);
 
   base::apple::ScopedCFTypeRef<CGImageRef> cg_image(
-      CGBitmapContextCreateImage(context));
-  return [UIImage imageWithCGImage:cg_image
+      CGBitmapContextCreateImage(context.get()));
+  return [UIImage imageWithCGImage:cg_image.get()
                              scale:scale
                        orientation:UIImageOrientationUp];
 }

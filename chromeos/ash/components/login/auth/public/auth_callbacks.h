@@ -6,10 +6,10 @@
 #define CHROMEOS_ASH_COMPONENTS_LOGIN_AUTH_PUBLIC_AUTH_CALLBACKS_H_
 
 #include <memory>
+#include <optional>
 
 #include "base/functional/callback.h"
 #include "chromeos/ash/components/login/auth/public/authentication_error.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ash {
 
@@ -17,7 +17,7 @@ class UserContext;
 
 using AuthOperationCallback =
     base::OnceCallback<void(std::unique_ptr<UserContext>,
-                            absl::optional<AuthenticationError>)>;
+                            std::optional<AuthenticationError>)>;
 using AuthOperation = base::OnceCallback<void(std::unique_ptr<UserContext>,
                                               AuthOperationCallback)>;
 using AuthErrorCallback =
@@ -25,7 +25,7 @@ using AuthErrorCallback =
 using AuthSuccessCallback =
     base::OnceCallback<void(std::unique_ptr<UserContext>)>;
 using NoContextOperationCallback =
-    base::OnceCallback<void(absl::optional<AuthenticationError>)>;
+    base::OnceCallback<void(std::optional<AuthenticationError>)>;
 
 }  // namespace ash
 

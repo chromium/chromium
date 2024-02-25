@@ -87,7 +87,7 @@ class GrpcServer : public grpc::CallbackGenericService {
   }
 
   // Starts the gRPC server.
-  void Start(const std::string& endpoint);
+  ABSL_MUST_USE_RESULT grpc::Status Start(const std::string& endpoint);
 
   // Stops the gRPC server synchronously. May block indefinitely if there's a
   // non-finished pending reactor created by the gRPC framework.

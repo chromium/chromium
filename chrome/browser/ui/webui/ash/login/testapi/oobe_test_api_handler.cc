@@ -7,7 +7,9 @@
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_switches.h"
 #include "ash/public/ash_interfaces.h"
+#include "ash/public/cpp/input_device_settings_controller.h"
 #include "ash/public/cpp/tablet_mode.h"
+#include "ash/public/mojom/input_device_settings.mojom.h"
 #include "base/check.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
@@ -23,14 +25,19 @@
 #include "chrome/browser/ash/login/startup_utils.h"
 #include "chrome/browser/ash/login/ui/login_display_host.h"
 #include "chrome/browser/ash/login/wizard_controller.h"
+#include "chrome/browser/ash/policy/core/browser_policy_connector_ash.h"
 #include "chrome/browser/ash/policy/enrollment/enrollment_requisition_manager.h"
+#include "chrome/browser/browser_process.h"
+#include "chrome/browser/browser_process_platform_part.h"
 #include "chrome/browser/ui/ash/login_screen_client_impl.h"
 #include "chrome/browser/ui/webui/ash/login/hid_detection_screen_handler.h"
 #include "chromeos/ash/components/assistant/buildflags.h"
 #include "chromeos/strings/grit/chromeos_strings.h"
 #include "components/account_id/account_id.h"
 #include "components/login/localized_values_builder.h"
+#include "components/user_manager/user_manager.h"
 #include "services/device/public/mojom/input_service.mojom.h"
+#include "ui/display/screen.h"
 
 namespace ash {
 
@@ -66,7 +73,6 @@ void OobeTestAPIHandler::DeclareJSCallbacks() {
 void OobeTestAPIHandler::GetAdditionalParameters(base::Value::Dict* dict) {
   login::NetworkStateHelper helper_;
   dict->Set("testapi_shouldSkipNetworkFirstShow",
-            features::IsOobeNetworkScreenSkipEnabled() &&
                 !switches::IsOOBENetworkScreenSkippingDisabledForTesting() &&
                 helper_.IsConnectedToEthernet());
 
@@ -90,15 +96,51 @@ void OobeTestAPIHandler::GetAdditionalParameters(base::Value::Dict* dict) {
   );
 
   dict->Set("testapi_isOobeInTabletMode",
-            TabletMode::Get()->InTabletMode() ||
+            display::Screen::GetScreen()->InTabletMode() ||
                 switches::ShouldOobeUseTabletModeFirstRun());
   dict->Set("testapi_shouldSkipConsolidatedConsent",
             !BUILDFLAG(GOOGLE_CHROME_BRANDING));
   dict->Set("testapi_isHPSEnabled", ash::features::IsQuickDimEnabled());
+
+  bool skip_touchpad_scroll =
+      !features::IsOobeTouchpadScrollEnabled() ||
+      InputDeviceSettingsController::Get()->GetConnectedTouchpads().empty();
+  dict->Set("testapi_shouldSkipTouchpadScroll", skip_touchpad_scroll);
+
+  bool skip_display_size = !features::IsOobeDisplaySizeEnabled();
+  dict->Set("testapi_shouldSkipDisplaySize", skip_display_size);
+
+  // CHOOBE screen is only skipped if the number of optional screens is less
+  // than 3, since theme selection is always shown, CHOOBE should be skipped
+  // when display size Screen or touchpad scroll screen is skipped.
+  bool skip_choobe = !features::IsOobeChoobeEnabled() || skip_touchpad_scroll ||
+                     skip_display_size;
+  dict->Set("testapi_shouldSkipChoobe", skip_choobe);
+
+  dict->Set("testapi_shouldSkipGaiaInfoScreen",
+            !features::IsOobeGaiaInfoScreenEnabled());
+
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+  // The current method is called early, before the user logs-in,
+  // If Chrome was launched in OOBE, `is_owner` will be set to true since
+  // `user_manager->GetUsers().size()` would return 0.
+  // If it's launched in the login screen to test the add person flow, then
+  // the number of existing users before the new user logs-in should be > 0.
+  policy::BrowserPolicyConnectorAsh* connector =
+      g_browser_process->platform_part()->browser_policy_connector_ash();
+  auto* user_manager = user_manager::UserManager::Get();
+  bool is_owner = !connector->IsDeviceEnterpriseManaged() &&
+                  user_manager->GetUsers().size() == 0;
+  dict->Set("testapi_shouldSkipHwDataCollection",
+            !is_owner || !switches::IsRevenBranding());
+#else
+  dict->Set("testapi_shouldSkipHwDataCollection", true);
+#endif
 }
 
 void OobeTestAPIHandler::LoginWithPin(const std::string& username,
                                       const std::string& pin) {
+  VLOG(1) << "LoginWithPin";
   LoginScreenClientImpl::Get()->AuthenticateUserWithPasswordOrPin(
       AccountId::FromUserEmail(username), pin, /*authenticated_by_pin=*/true,
       base::BindOnce([](bool success) {
@@ -107,10 +149,12 @@ void OobeTestAPIHandler::LoginWithPin(const std::string& username,
 }
 
 void OobeTestAPIHandler::AdvanceToScreen(const std::string& screen) {
+  VLOG(1) << "AdvanceToScreen(" << screen << ")";
   LoginDisplayHost::default_host()->StartWizard(OobeScreenId(screen));
 }
 
 void OobeTestAPIHandler::SkipToLoginForTesting() {
+  VLOG(1) << "SkipToLoginForTesting";
   WizardController* controller = WizardController::default_controller();
   if (!controller || !controller->is_initialized()) {
     LOG(ERROR)
@@ -125,6 +169,7 @@ void OobeTestAPIHandler::EmulateDevicesConnectedForTesting() {
   HIDDetectionScreen* screen_ = static_cast<HIDDetectionScreen*>(
       WizardController::default_controller()->GetScreen(
           HIDDetectionView::kScreenId));
+  VLOG(1) << "EmulateDevicesConnectedForTesting";
   auto touchscreen = device::mojom::InputDeviceInfo::New();
   touchscreen->id = "fake_touchscreen";
   touchscreen->subsystem = device::mojom::InputDeviceSubsystem::SUBSYSTEM_INPUT;
@@ -148,19 +193,22 @@ void OobeTestAPIHandler::EmulateDevicesConnectedForTesting() {
 }
 
 void OobeTestAPIHandler::SkipPostLoginScreens() {
+  VLOG(1) << "SkipPostLoginScreens";
   WizardController::default_controller()
       ->SkipPostLoginScreensForTesting();  // IN-TEST
 }
 
 void OobeTestAPIHandler::LoginAsGuest() {
+  VLOG(1) << "LoginAsGuest";
   WizardController::default_controller()->SkipToLoginForTesting();  // IN-TEST
   CHECK(ExistingUserController::current_controller());
-  UserContext context(user_manager::USER_TYPE_GUEST, EmptyAccountId());
+  UserContext context(user_manager::UserType::kGuest, EmptyAccountId());
   ExistingUserController::current_controller()->Login(context,
                                                       SigninSpecifics());
 }
 
 void OobeTestAPIHandler::ShowGaiaDialog() {
+  VLOG(1) << "ShowGaiaDialog";
   LoginDisplayHost::default_host()->ShowGaiaDialog(EmptyAccountId());
 }
 

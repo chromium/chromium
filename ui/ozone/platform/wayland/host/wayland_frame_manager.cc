@@ -11,6 +11,8 @@
 #include "base/containers/adapters.h"
 #include "base/containers/fixed_flat_set.h"
 #include "base/time/time.h"
+#include "base/trace_event/trace_event.h"
+#include "build/chromeos_buildflags.h"
 #include "ui/gfx/color_space.h"
 #include "ui/gfx/geometry/rect_conversions.h"
 #include "ui/gfx/geometry/rrect_f.h"
@@ -42,7 +44,7 @@ constexpr base::TimeDelta kPresentationFlushTimerStopThreshold =
 constexpr char kBoundsRectNanOrInf[] =
     "Overlay bounds_rect is invalid (NaN or infinity).";
 
-bool potential_compositor_buffer_lock = true;
+bool potential_compositor_buffer_lock = false;
 
 bool ValidateRect(const gfx::RectF& rect) {
   return !std::isnan(rect.x()) && !std::isnan(rect.y()) &&
@@ -52,6 +54,18 @@ bool ValidateRect(const gfx::RectF& rect) {
 }
 
 uint32_t GetPresentationKindFlags(uint32_t flags) {
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  // `gfx::PresentationFeedback::kFailure` is not a flag defined by wayland
+  // protocol (in presentation-time.xml). So unlike other flags, it does not
+  // have a corresponding WP_PRESENTATION_FEEDBACK_KIND*. However in Ash-Lacros
+  // interraction, this flag is still sent and used. In Ash-Lacros world,
+  // `presented` with `gfx::PresentationFeedback::kFailure` is used instead of
+  // `discarded` so that timestamp can be included in the message.
+  if (flags & gfx::PresentationFeedback::kFailure) {
+    return gfx::PresentationFeedback::kFailure;
+  }
+#endif
+
   // Wayland spec has different meaning of VSync. In Chromium, VSync means to
   // update the begin frame vsync timing based on presentation feedback.
   uint32_t presentation_flags = gfx::PresentationFeedback::kVSync;
@@ -70,7 +84,7 @@ uint32_t GetPresentationKindFlags(uint32_t flags) {
 
 WaylandFrame::WaylandFrame(
     uint32_t frame_id,
-    int64_t seq,
+    const gfx::FrameData& data,
     WaylandSurface* root_surface,
     wl::WaylandOverlayConfig root_config,
     base::circular_deque<
@@ -82,7 +96,8 @@ WaylandFrame::WaylandFrame(
       subsurfaces_to_overlays(std::move(subsurfaces_to_overlays)),
       submission_acked(false),
       presentation_acked(false),
-      seq(seq) {}
+      seq(data.seq),
+      trace_id(data.swap_trace_id) {}
 
 WaylandFrame::WaylandFrame(
     WaylandSurface* root_surface,
@@ -100,14 +115,7 @@ WaylandFrame::~WaylandFrame() = default;
 
 WaylandFrameManager::WaylandFrameManager(WaylandWindow* window,
                                          WaylandConnection* connection)
-    : window_(window), connection_(connection), weak_factory_(this) {
-  if (!connection->zaura_shell() ||
-      connection->zaura_shell()->HasBugFix(1358908)) {
-    // TODO(msisov): if this gets removed at some point, the
-    // WaylandSurfaceFactoryTest can also stop sending this bug fix.
-    potential_compositor_buffer_lock = false;
-  }
-}
+    : window_(window), connection_(connection), weak_factory_(this) {}
 
 WaylandFrameManager::~WaylandFrameManager() {
   ClearStates();
@@ -229,6 +237,25 @@ void WaylandFrameManager::PlayBackFrame(std::unique_ptr<WaylandFrame> frame) {
   auto& root_config = frame->root_config;
   bool empty_frame = !root_config.buffer_id;
 
+  // Configure the root surface first so it gets the presentation_feedback and
+  // frame_callback listeners attached if possible. This can reduce the overall
+  // number of commits required.
+  if (empty_frame) {
+    // GPU channel has been destroyed. Do nothing for empty frames except that
+    // the frame should be marked as failed if it hasn't been presented yet.
+    if (!frame->presentation_acked) {
+      frame->feedback = gfx::PresentationFeedback::Failure();
+    }
+  } else {
+    // Opaque region is set during OnSequencePoint() no need to set it again.
+    ApplySurfaceConfigure(frame.get(), root_surface, root_config, false);
+    // A fatal error happened. Must stop the playback and terminate the gpu
+    // process as it might have been compromised.
+    if (!fatal_error_message_.empty()) {
+      return;
+    }
+  }
+
   // Configure subsurfaces. Traverse the deque backwards s.t. we can set
   // frame_callback and presentation_feedback on the top-most possible surface.
   WaylandSubsurface* reference_above = nullptr;
@@ -259,38 +286,29 @@ void WaylandFrameManager::PlayBackFrame(std::unique_ptr<WaylandFrame> frame) {
     } else {
       // TODO(crbug.com/1457446): Remove clip_rect when
       // augmented_surface_set_clip_rect become supported widely enough.
-      subsurface->ConfigureAndShowSurface(
+      bool needs_commit = subsurface->ConfigureAndShowSurface(
           config.bounds_rect, root_config.bounds_rect, config.clip_rect,
           config.transform, root_config.surface_scale_factor, nullptr,
           reference_above);
-      ApplySurfaceConfigure(frame.get(), surface, config, true);
+      needs_commit |= ApplySurfaceConfigure(frame.get(), surface, config, true);
       // A fatal error happened. Must stop the playback and terminate the gpu
       // process as it might have been compromised.
       if (!fatal_error_message_.empty())
         return;
       reference_above = subsurface;
-      surface->Commit(false);
+
+      if (needs_commit) {
+        surface->Commit(false);
+      }
     }
   }
 
   DCHECK(fatal_error_message_.empty());
 
-  if (empty_frame) {
-    // GPU channel has been destroyed. Do nothing for empty frames except that
-    // the frame should be marked as failed if it hasn't been presented yet.
-    if (!frame->presentation_acked)
-      frame->feedback = gfx::PresentationFeedback::Failure();
-  } else {
-    // Opaque region is set during OnSequencePoint() no need to set it again.
-    ApplySurfaceConfigure(frame.get(), root_surface, root_config, false);
-    // A fatal error happened. Must stop the playback and terminate the gpu
-    // process as it might have been compromised.
-    if (!fatal_error_message_.empty())
-      return;
-  }
-
   DCHECK(empty_frame || !connection_->presentation() ||
          frame->pending_feedback || frame->feedback.has_value());
+  TRACE_EVENT_NESTABLE_ASYNC_BEGIN0(
+      "wayland", "WaylandFrameManager.PlaybackFrame", frame->frame_id);
   root_surface->Commit(true);
 
   frame->root_config = wl::WaylandOverlayConfig();
@@ -322,14 +340,14 @@ void WaylandFrameManager::DiscardFrame(std::unique_ptr<WaylandFrame> frame) {
   MaybeProcessSubmittedFrames();
 }
 
-void WaylandFrameManager::ApplySurfaceConfigure(
+bool WaylandFrameManager::ApplySurfaceConfigure(
     WaylandFrame* frame,
     WaylandSurface* surface,
     wl::WaylandOverlayConfig& config,
     bool set_opaque_region) {
   DCHECK(surface);
   if (!config.buffer_id)
-    return;
+    return true;
 
   if (!ValidateRect(config.bounds_rect)) {
     DCHECK(fatal_error_message_.empty());
@@ -337,15 +355,8 @@ void WaylandFrameManager::ApplySurfaceConfigure(
     // terminating the gpu during the playback is illegal - a pending frame will
     // DCHECK in ::ClearStates.
     fatal_error_message_ = kBoundsRectNanOrInf;
-    return;
+    return true;
   }
-
-  static const wl_callback_listener frame_listener = {
-      &WaylandFrameManager::FrameCallbackDone};
-  static const wp_presentation_feedback_listener feedback_listener = {
-      &WaylandFrameManager::FeedbackSyncOutput,
-      &WaylandFrameManager::FeedbackPresented,
-      &WaylandFrameManager::FeedbackDiscarded};
 
   surface->set_buffer_transform(
       absl::holds_alternative<gfx::OverlayTransform>(config.transform)
@@ -363,12 +374,14 @@ void WaylandFrameManager::ApplySurfaceConfigure(
       config.priority_hint == gfx::OverlayPriorityHint::kVideo);
   surface->set_color_space(
       config.color_space.value_or(gfx::ColorSpace::CreateSRGB()));
+  surface->set_frame_trace_id(frame->trace_id);
   if (set_opaque_region) {
     auto region_px =
         config.enable_blend
-            ? absl::nullopt
-            : absl::optional<std::vector<gfx::Rect>>(
-                  {gfx::Rect(gfx::ToRoundedSize(config.bounds_rect.size()))});
+            ? std::nullopt
+            : std::optional<std::vector<gfx::Rect>>({gfx::Rect(
+                  gfx::ToEnclosingRectIgnoringError(config.bounds_rect)
+                      .size())});
     surface->set_opaque_region(region_px);
   }
 
@@ -394,7 +407,8 @@ void WaylandFrameManager::ApplySurfaceConfigure(
   // `bounds_rect` origin.
   gfx::RectF surface_damage = gfx::RectF(config.damage_region);
   surface_damage -= config.bounds_rect.OffsetFromOrigin();
-  surface->UpdateBufferDamageRegion(ToEnclosingRect(surface_damage));
+  surface->UpdateBufferDamageRegion(
+      gfx::ToEnclosingRectIgnoringError(surface_damage));
   if (config.rounded_clip_bounds) {
     // The deprecated implementation uses root surface coordinates, so do not
     // offset if the local coordinates rounded corners is not supported.
@@ -415,11 +429,13 @@ void WaylandFrameManager::ApplySurfaceConfigure(
     surface->set_clip_rect(clip_rect);
   } else {
     // Reset clip rect value when `config.clip_rect` is not set.
-    surface->set_clip_rect(absl::nullopt);
+    surface->set_clip_rect(std::nullopt);
   }
 
   if (!config.access_fence_handle.is_null())
     surface->set_acquire_fence(std::move(config.access_fence_handle));
+
+  bool needs_commit = false;
 
   // If it's a solid color buffer, do not set a release callback as it's not
   // required to wait for this buffer - Wayland compositor only uses that to
@@ -433,9 +449,12 @@ void WaylandFrameManager::ApplySurfaceConfigure(
     // new wl_buffer, which leads to graphics freeze. So only setup
     // frame_callback when we're attaching a different buffer.
     if (!frame->wl_frame_callback) {
+      static constexpr wl_callback_listener kFrameCallbackListener = {
+          .done = &OnFrameDone};
       frame->wl_frame_callback.reset(wl_surface_frame(surface->surface()));
-      wl_callback_add_listener(frame->wl_frame_callback.get(), &frame_listener,
-                               this);
+      wl_callback_add_listener(frame->wl_frame_callback.get(),
+                               &kFrameCallbackListener, this);
+      needs_commit = true;
     }
 
     if (!is_solid_color_buffer) {
@@ -452,10 +471,15 @@ void WaylandFrameManager::ApplySurfaceConfigure(
   }
 
   if (connection_->presentation() && !frame->pending_feedback) {
+    static constexpr wp_presentation_feedback_listener
+        kPresentationFeedbackListener = {.sync_output = &OnSyncOutput,
+                                         .presented = &OnPresented,
+                                         .discarded = &OnDiscarded};
     frame->pending_feedback.reset(wp_presentation_feedback(
         connection_->presentation(), surface->surface()));
     wp_presentation_feedback_add_listener(frame->pending_feedback.get(),
-                                          &feedback_listener, this);
+                                          &kPresentationFeedbackListener, this);
+    needs_commit = true;
   }
 
   if (!is_solid_color_buffer) {
@@ -465,7 +489,7 @@ void WaylandFrameManager::ApplySurfaceConfigure(
     for (auto& submitted_frames : submitted_frames_) {
       auto result = submitted_frames->submitted_buffers.find(surface);
       if (result != submitted_frames->submitted_buffers.end() &&
-          result->second->wl_buffer() == buffer_handle->wl_buffer()) {
+          result->second->buffer() == buffer_handle->buffer()) {
         submitted_frames->submitted_buffers.erase(result);
         break;
       }
@@ -476,34 +500,35 @@ void WaylandFrameManager::ApplySurfaceConfigure(
 
   // Send instructions across wayland protocol, but do not commit yet, let the
   // caller decide whether the commit should flush.
-  surface->ApplyPendingState();
+  needs_commit |= surface->ApplyPendingState();
+  return needs_commit;
 }
 
 // static
-void WaylandFrameManager::FrameCallbackDone(void* data,
-                                            struct wl_callback* callback,
-                                            uint32_t time) {
+void WaylandFrameManager::OnFrameDone(void* data,
+                                      wl_callback* callback,
+                                      uint32_t time) {
   auto* self = static_cast<WaylandFrameManager*>(data);
   DCHECK(self);
-  self->OnFrameCallback(callback);
+  self->HandleFrameCallback(callback);
 }
 
-void WaylandFrameManager::OnFrameCallback(struct wl_callback* callback) {
+void WaylandFrameManager::HandleFrameCallback(wl_callback* callback) {
   DCHECK(submitted_frames_.back()->wl_frame_callback.get() == callback);
   submitted_frames_.back()->wl_frame_callback.reset();
   MaybeProcessPendingFrame();
 }
 
 // static
-void WaylandFrameManager::FeedbackSyncOutput(
+void WaylandFrameManager::OnSyncOutput(
     void* data,
-    struct wp_presentation_feedback* wp_presentation_feedback,
-    struct wl_output* output) {}
+    struct wp_presentation_feedback* presentation_feedback,
+    wl_output* output) {}
 
 // static
-void WaylandFrameManager::FeedbackPresented(
+void WaylandFrameManager::OnPresented(
     void* data,
-    struct wp_presentation_feedback* wp_presentation_feedback,
+    struct wp_presentation_feedback* presentation_feedback,
     uint32_t tv_sec_hi,
     uint32_t tv_sec_lo,
     uint32_t tv_nsec,
@@ -513,8 +538,8 @@ void WaylandFrameManager::FeedbackPresented(
     uint32_t flags) {
   auto* self = static_cast<WaylandFrameManager*>(data);
   DCHECK(self);
-  self->OnPresentation(
-      wp_presentation_feedback,
+  self->HandlePresentationFeedback(
+      presentation_feedback,
       gfx::PresentationFeedback(self->connection_->ConvertPresentationTime(
                                     tv_sec_hi, tv_sec_lo, tv_nsec),
                                 base::Nanoseconds(refresh),
@@ -522,22 +547,22 @@ void WaylandFrameManager::FeedbackPresented(
 }
 
 // static
-void WaylandFrameManager::FeedbackDiscarded(
+void WaylandFrameManager::OnDiscarded(
     void* data,
-    struct wp_presentation_feedback* wp_presentation_feedback) {
+    struct wp_presentation_feedback* presentation_feedback) {
   auto* self = static_cast<WaylandFrameManager*>(data);
   DCHECK(self);
-  self->OnPresentation(wp_presentation_feedback,
-                       gfx::PresentationFeedback::Failure(),
-                       true /* discarded */);
+  self->HandlePresentationFeedback(presentation_feedback,
+                                   gfx::PresentationFeedback::Failure(),
+                                   true /* discarded */);
 }
 
-void WaylandFrameManager::OnPresentation(
-    struct wp_presentation_feedback* wp_presentation_feedback,
+void WaylandFrameManager::HandlePresentationFeedback(
+    struct wp_presentation_feedback* presentation_feedback,
     const gfx::PresentationFeedback& feedback,
     bool discarded) {
   for (auto& frame : submitted_frames_) {
-    if (frame->pending_feedback.get() == wp_presentation_feedback) {
+    if (frame->pending_feedback.get() == presentation_feedback) {
       frame->feedback = feedback;
       break;
     } else if (!frame->feedback.has_value() && !discarded) {
@@ -591,7 +616,7 @@ bool WaylandFrameManager::EnsureWlBuffersExist(WaylandFrame& frame) {
       if (!handle) {
         frame.buffer_lost = true;
         subsurface_to_overlay.second = wl::WaylandOverlayConfig();
-      } else if (!handle->wl_buffer() && !handle_pending_creation) {
+      } else if (!handle->buffer() && !handle_pending_creation) {
         // Found the first not-ready buffer, let handle invoke
         // MaybeProcessPendingFrame() when wl_buffer is created.
         handle_pending_creation = handle;
@@ -604,7 +629,7 @@ bool WaylandFrameManager::EnsureWlBuffersExist(WaylandFrame& frame) {
     if (!handle) {
       frame.buffer_lost = true;
       frame.root_config = wl::WaylandOverlayConfig();
-    } else if (!handle->wl_buffer() && !handle_pending_creation) {
+    } else if (!handle->buffer() && !handle_pending_creation) {
       handle_pending_creation = handle;
     }
   }
@@ -624,16 +649,16 @@ bool WaylandFrameManager::EnsureWlBuffersExist(WaylandFrame& frame) {
 }
 
 void WaylandFrameManager::OnExplicitBufferRelease(WaylandSurface* surface,
-                                                  struct wl_buffer* wl_buffer,
+                                                  wl_buffer* buffer,
                                                   base::ScopedFD fence) {
-  DCHECK(wl_buffer);
+  DCHECK(buffer);
 
   // Releases may not necessarily come in order, so search the submitted
   // buffers.
   for (const auto& frame : submitted_frames_) {
     auto result = frame->submitted_buffers.find(surface);
     if (result != frame->submitted_buffers.end() &&
-        result->second->wl_buffer() == wl_buffer) {
+        result->second->buffer() == buffer) {
       // Explicitly make this buffer released when
       // linux_explicit_synchronization is used.
       result->second->OnExplicitRelease(surface);
@@ -648,6 +673,9 @@ void WaylandFrameManager::OnExplicitBufferRelease(WaylandSurface* surface,
         DCHECK(frame->merged_release_fence_fd.is_valid());
       }
 
+      TRACE_EVENT_INSTANT2("wayland", "OnExplicitBufferRelease",
+                           TRACE_EVENT_SCOPE_THREAD, "frame_id",
+                           frame->frame_id, "buffer_id", result->second->id());
       frame->submitted_buffers.erase(result);
       break;
     }
@@ -659,15 +687,15 @@ void WaylandFrameManager::OnExplicitBufferRelease(WaylandSurface* surface,
 }
 
 void WaylandFrameManager::OnWlBufferRelease(WaylandSurface* surface,
-                                            struct wl_buffer* wl_buffer) {
-  DCHECK(wl_buffer);
+                                            wl_buffer* buffer) {
+  DCHECK(buffer);
 
   // Releases may not necessarily come in order, so search the submitted
   // buffers.
   for (const auto& frame : submitted_frames_) {
     auto result = frame->submitted_buffers.find(surface);
     if (result != frame->submitted_buffers.end() &&
-        result->second->wl_buffer() == wl_buffer) {
+        result->second->buffer() == buffer) {
       if (connection_->UseImplicitSyncInterop()) {
         base::ScopedFD fence =
             connection_->buffer_manager_host()->ExtractReleaseFence(
@@ -684,6 +712,9 @@ void WaylandFrameManager::OnWlBufferRelease(WaylandSurface* surface,
         }
       }
 
+      TRACE_EVENT_INSTANT2("wayland", "OnWlBufferRelease",
+                           TRACE_EVENT_SCOPE_THREAD, "frame_id",
+                           frame->frame_id, "buffer_id", result->second->id());
       frame->submitted_buffers.erase(result);
       break;
     }
@@ -756,13 +787,15 @@ void WaylandFrameManager::MaybeProcessSubmittedFrames() {
       if (iter != submitted_frames_.begin()) {
         auto prev_iter = iter - 1;
         if ((*prev_iter)->merged_release_fence_fd.is_valid()) {
-          release_fence_handle.owned_fd =
-              std::move((*prev_iter)->merged_release_fence_fd);
+          release_fence_handle.Adopt(
+              std::move((*prev_iter)->merged_release_fence_fd));
         }
       }
 
       // The presentation info entries are sent with the last OnSubmission()
       // call.
+      TRACE_EVENT_NESTABLE_ASYNC_END0(
+          "wayland", "WaylandFrameManager.PlaybackFrame", (*iter)->frame_id);
       connection_->buffer_manager_host()->OnSubmission(
           window_->GetWidget(), (*iter)->frame_id, gfx::SwapResult::SWAP_ACK,
           std::move(release_fence_handle),
@@ -846,6 +879,8 @@ void WaylandFrameManager::FreezeTimeout() {
   for (auto& frame : submitted_frames_) {
     if (frame->submitted_buffers.empty())
       continue;
+    TRACE_EVENT_INSTANT1("wayland", "FreezeTimeout", TRACE_EVENT_SCOPE_THREAD,
+                         "frame_id", frame->frame_id);
     frame->submitted_buffers.clear();
     MaybeProcessSubmittedFrames();
     return;

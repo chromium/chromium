@@ -62,11 +62,14 @@ enum class WebGPUPowerPreference : uint32_t {
 };
 
 enum class GrContextType : uint32_t {
+  kNone,
   kGL,      // Ganesh
   kVulkan,  // Ganesh
   kGraphiteDawn,
   kGraphiteMetal,
 };
+
+GPU_EXPORT std::string GrContextTypeToString(GrContextType type);
 
 enum class DawnBackendValidationLevel : uint32_t {
   kDisabled = 0,
@@ -256,6 +259,13 @@ struct GPU_EXPORT GpuPreferences {
 
   // Enable usage of unsafe WebGPU features.
   bool enable_unsafe_webgpu = false;
+
+  // Enable usage of WebGPU features intended only for use during development.
+  bool enable_webgpu_developer_features = false;
+
+  // Enable usage of experimental WebGPU features that would eventually land in
+  // the WebGPU spec.
+  bool enable_webgpu_experimental_features = false;
 
   // Enable validation layers in Dawn backends.
   DawnBackendValidationLevel enable_dawn_backend_validation =

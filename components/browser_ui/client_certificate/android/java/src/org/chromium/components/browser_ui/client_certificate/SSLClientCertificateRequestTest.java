@@ -22,18 +22,13 @@ import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.components.browser_ui.client_certificate.SSLClientCertificateRequest.CertSelectionFailureDialog;
 import org.chromium.components.browser_ui.client_certificate.SSLClientCertificateRequest.KeyChainCertSelectionWrapper;
 
-/**
- * Unit tests for the SSLClientCertificateRequest class.
- */
+/** Unit tests for the SSLClientCertificateRequest class. */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
 public class SSLClientCertificateRequestTest {
-    @Mock
-    private KeyChainCertSelectionWrapper mKeyChainMock;
-    @Mock
-    private KeyChainAliasCallback mCallbackMock;
-    @Mock
-    private CertSelectionFailureDialog mFailureDialogMock;
+    @Mock private KeyChainCertSelectionWrapper mKeyChainMock;
+    @Mock private KeyChainAliasCallback mCallbackMock;
+    @Mock private CertSelectionFailureDialog mFailureDialogMock;
 
     @Before
     public void setUp() {

@@ -4,8 +4,10 @@
 
 package org.chromium.components.background_task_scheduler.internal;
 
+import android.app.Notification;
 import android.app.job.JobParameters;
 import android.app.job.JobService;
+import android.os.Build;
 import android.os.SystemClock;
 
 import org.chromium.base.ContextUtils;
@@ -37,8 +39,10 @@ public class BackgroundTaskJobService extends JobService {
         private final JobParameters mParams;
         private final long mTaskStartTimeMs;
 
-        TaskFinishedCallbackJobService(BackgroundTaskJobService jobService,
-                BackgroundTask backgroundTask, JobParameters params) {
+        TaskFinishedCallbackJobService(
+                BackgroundTaskJobService jobService,
+                BackgroundTask backgroundTask,
+                JobParameters params) {
             mJobService = jobService;
             mBackgroundTask = backgroundTask;
             mParams = params;
@@ -54,22 +58,48 @@ public class BackgroundTaskJobService extends JobService {
             // happens on the main thread, so do this removal also on the main thread.
             // To ensure that a new job is not immediately scheduled in between removing the task
             // from being a current task and before calling jobFinished, leading to us finishing
-            // something with the same ID, call
-            // {@link JobService#jobFinished(JobParameters, boolean} also on the main thread.
-            ThreadUtils.runOnUiThreadBlocking(new Runnable() {
-                @Override
-                public void run() {
-                    if (!isCurrentBackgroundTaskForJobId()) {
-                        Log.e(TAG, "Tried finishing non-current BackgroundTask.");
-                        return;
-                    }
+            // something with the same ID, call {@link JobService#jobFinished(JobParameters,
+            // boolean} also on the main thread.
+            ThreadUtils.runOnUiThreadBlocking(
+                    new Runnable() {
+                        @Override
+                        public void run() {
+                            if (!isCurrentBackgroundTaskForJobId()) {
+                                Log.e(TAG, "Tried finishing non-current BackgroundTask.");
+                                return;
+                            }
 
-                    mJobService.mCurrentTasks.remove(mParams.getJobId());
-                    mJobService.jobFinished(mParams, needsReschedule);
-                    BackgroundTaskSchedulerUma.getInstance().reportTaskFinished(
-                            mParams.getJobId(), SystemClock.uptimeMillis() - mTaskStartTimeMs);
-                }
-            });
+                            mJobService.mCurrentTasks.remove(mParams.getJobId());
+                            mJobService.jobFinished(mParams, needsReschedule);
+                            BackgroundTaskSchedulerUma.getInstance()
+                                    .reportTaskFinished(
+                                            mParams.getJobId(),
+                                            SystemClock.uptimeMillis() - mTaskStartTimeMs);
+                        }
+                    });
+        }
+
+        @Override
+        public void setNotification(int notificationId, Notification notification) {
+            if (Build.VERSION.SDK_INT < Build.VERSION_CODES.UPSIDE_DOWN_CAKE) return;
+            ThreadUtils.runOnUiThreadBlocking(
+                    () -> {
+                        if (!isCurrentBackgroundTaskForJobId()) {
+                            Log.e(
+                                    TAG,
+                                    "Tried attaching notification for non-current BackgroundTask.");
+                            return;
+                        }
+                        mJobService.setNotification(
+                                mParams,
+                                notificationId,
+                                notification,
+                                JobService.JOB_END_NOTIFICATION_POLICY_DETACH);
+                        BackgroundTaskSchedulerUma.getInstance()
+                                .reportNotificationWasSet(
+                                        mParams.getJobId(),
+                                        SystemClock.uptimeMillis() - mTaskStartTimeMs);
+                    });
         }
 
         private boolean isCurrentBackgroundTaskForJobId() {
@@ -89,8 +119,8 @@ public class BackgroundTaskJobService extends JobService {
             Log.w(TAG, "Failed to start task. Could not instantiate BackgroundTask class.");
             // Cancel task if the BackgroundTask class is not found anymore. We assume this means
             // that the task has been deprecated.
-            BackgroundTaskSchedulerFactoryInternal.getScheduler().cancel(
-                    ContextUtils.getApplicationContext(), params.getJobId());
+            BackgroundTaskSchedulerFactoryInternal.getScheduler()
+                    .cancel(ContextUtils.getApplicationContext(), params.getJobId());
             return false;
         }
 
@@ -106,7 +136,9 @@ public class BackgroundTaskJobService extends JobService {
 
         BackgroundTaskSchedulerUma.getInstance().reportTaskStarted(taskParams.getTaskId());
         boolean taskNeedsBackgroundProcessing =
-                backgroundTask.onStartTask(ContextUtils.getApplicationContext(), taskParams,
+                backgroundTask.onStartTask(
+                        ContextUtils.getApplicationContext(),
+                        taskParams,
                         new TaskFinishedCallbackJobService(this, backgroundTask, params));
 
         if (!taskNeedsBackgroundProcessing) mCurrentTasks.remove(params.getJobId());
@@ -117,8 +149,10 @@ public class BackgroundTaskJobService extends JobService {
     public boolean onStopJob(JobParameters params) {
         ThreadUtils.assertOnUiThread();
         if (!mCurrentTasks.containsKey(params.getJobId())) {
-            Log.w(TAG,
-                    "Failed to stop job, because job with job id " + params.getJobId()
+            Log.w(
+                    TAG,
+                    "Failed to stop job, because job with job id "
+                            + params.getJobId()
                             + " does not exist.");
             return false;
         }

@@ -47,7 +47,7 @@
     'cros-highlight-color-hover' : '$cros.sys.hover-on-subtle',
     'cros-highlight-color-focus' : '$cros.sys.ripple-neutral-on-subtle',
     'cros-highlight-color-error' : '$cros.sys.error-container',
-    'cros-highlight-color-green' : '$cros.sys.positive-container',
+    'cros-highlight-color-green' : '$cros.sys.success-container',
     'cros-highlight-color-red' : '$cros.sys.error-container',
     'cros-highlight-color-yellow' : '$cros.sys.warning-container',
     'cros-text-highlight-color' : '$cros.sys.highlight-text',
@@ -75,7 +75,7 @@
     'cros-menu-icon-color' : '$cros.sys.on-surface',
     'cros-menu-shortcut-color' : '$cros.sys.secondary',
     'cros-menu-item-background-hover' : '$cros.sys.hover-on-subtle',
-    'cros-color-positive' : '$cros.sys.positive',
+    'cros-color-positive' : '$cros.sys.success',
     'cros-color-warning' : '$cros.sys.warning',
     'cros-color-alert' : '$cros.sys.error',
   },
@@ -95,6 +95,10 @@
       light: '$cros.ref.primary100',
       dark:  '$cros.ref.primary20',
       generate_per_mode: true,
+    },
+    'inverse-on-primary': {
+      light:  '$cros.ref.primary20',
+      dark: '$cros.ref.primary100',
     },
     /* If this is changed, please also update SampleColorScheme */
     'primary-container': {
@@ -165,6 +169,14 @@
       light: 'rgba($cros.ref.error40.rgb, 0.30)',
       dark: 'rgba($cros.ref.error80.rgb, 0.30)',
     },
+    'inverse-error': {
+      light: '$cros.ref.error80',
+      dark:  '$cros.ref.error40',
+    },
+    'inverse-on-error': {
+      light: '$cros.ref.error20',
+      dark:  '$cros.ref.error100',
+    },
 
     /* Neutral */
     'surface-variant': {
@@ -184,6 +196,14 @@
       light: 'rgba($cros.ref.neutral10.rgb, 0.14)',
       dark:  'rgba($cros.ref.neutral90.rgb, 0.14)',
     },
+    white: {
+      light: '$cros.ref.neutral100',
+      dark: '$cros.ref.neutral100',
+    },
+    black: {
+      light: '$cros.ref.neutral0',
+      dark: '$cros.ref.neutral0',
+    },
 
     /* Bases */
     header: {
@@ -202,6 +222,14 @@
       light: '$cros.ref.neutral99',
       dark:  '$cros.ref.neutral8',
     },
+    'base-highlight': {
+      light: 'blend(rgba($cros.ref.primary70.rgb, 0.24), $cros.ref.neutral100)',
+      dark: 'blend(rgba($cros.ref.primary70.rgb, 0.28), $cros.ref.neutral15)',
+    },
+    'on-base-highlight': {
+      light: 'rgba($cros.ref.primary60.rgb, 0.30)',
+      dark: 'rgba($cros.ref.neutral0.rgb, 0.32)',
+    },
     'base-elevated': {
       light: '$cros.ref.neutralvariant100',
       /* In dark mode we layer primary80 @ 11% ontop of neutral80 @ 2% ontop of neutral 10. */
@@ -216,6 +244,10 @@
     'system-base-elevated': {
       light: 'rgba($cros.sys.surface3.rgb, 0.9)',
       dark: 'rgba($cros.sys.surface3.rgb, 0.9)',
+    },
+    'system-base-elevated-opaque': {
+      light: '$cros.sys.surface3',
+      dark: '$cros.sys.surface3',
     },
 
     /* Surfaces */
@@ -300,15 +332,15 @@
     'system-on-primary-container-disabled': 'rgba($cros.sys.system-on-primary-container.rgb, 0.38)',
 
     /* Harmonized colors */
-    'on-positive-container': {
+    'on-success-container': {
       light: '$cros.ref.green30',
       dark: '$cros.ref.green90',
     },
-    'positive-container': {
+    'success-container': {
       light: '$cros.ref.green95',
       dark: 'blend(rgba($cros.ref.green95.rgb, 0.20), $black)',
     },
-    'positive': {
+    'success': {
       light: '$cros.ref.green50',
       dark: '$cros.ref.green80',
     },
@@ -329,6 +361,10 @@
       light: '$cros.ref.yellow80',
       dark: '$cros.ref.yellow80',
     },
+    'system-warning-inverse': {
+      light: '$cros.ref.yellow10',
+      dark: '$cros.ref.yellow80',
+    },
     'warning': {
       light: '$cros.ref.yellow50',
       dark: '$cros.ref.yellow80',
@@ -346,6 +382,14 @@
       light: '$cros.ref.red50',
       dark: '$cros.ref.red80',
     },
+    'system-on-error-container': {
+      light: '$cros.ref.red10',
+      dark: '$cros.ref.red10',
+    },
+    'system-error-container': {
+      light: '$cros.ref.red80',
+      dark: '$cros.ref.red80',
+    },
 
     'on-progress-container': {
       light: '$cros.ref.blue30',
@@ -360,14 +404,13 @@
       dark: '$cros.ref.blue80',
     },
 
-    'system-on-negative-container': {
-      light: '$cros.ref.red10',
-      dark: '$cros.ref.red10',
-    },
-    'system-negative-container': {
-      light: '$cros.ref.red80',
-      dark: '$cros.ref.red80',
-    },
+    /* TODO(b/322857277): Delete after migrated. Deprecated harmonized colors */
+    'on-positive-container': '$cros.sys.on-success-container',
+    'positive-container': '$cros.sys.success-container',
+    'positive': '$cros.sys.success',
+
+    'system-on-negative-container': '$cros.sys.system-on-error-container',
+    'system-negative-container': '$cros.sys.system-error-container',
 
     /* Text and icons */
     'on-surface': {
@@ -406,6 +449,10 @@
       light: 'rgba($cros.ref.neutral99.rgb, 0.10)',
       dark: 'rgba($cros.ref.neutral10.rgb, 0.06)',
     },
+    'inverse-hover-on-prominent': {
+      light: 'rgba($cros.ref.neutral10.rgb, 0.06)',
+      dark: 'rgba($cros.ref.neutral99.rgb, 0.10)',
+    },
     'hover-on-subtle': {
       light: 'rgba($cros.ref.neutral10.rgb, 0.06)',
       dark: 'rgba($cros.ref.neutral99.rgb, 0.1)',
@@ -418,6 +465,10 @@
       light: 'rgba($cros.ref.primary70.rgb, 0.32)',
       dark: 'rgba($cros.ref.primary60.rgb, 0.32)',
     },
+    'inverse-ripple-primary': {
+      light: 'rgba($cros.ref.primary60.rgb, 0.32)',
+      dark:  'rgba($cros.ref.primary70.rgb, 0.32)',
+    },
     'ripple-neutral-on-prominent': {
       light: 'rgba($cros.ref.neutral99.rgb, 0.16)',
       dark: 'rgba($cros.ref.neutral10.rgb, 0.08)',
@@ -425,6 +476,10 @@
     'ripple-neutral-on-subtle': {
       light: 'rgba($cros.ref.neutral10.rgb, 0.12)',
       dark: 'rgba($cros.ref.neutral90.rgb, 0.16)',
+    },
+    'inverse-ripple-neutral-on-subtle': {
+      light: 'rgba($cros.ref.neutral90.rgb, 0.16)',
+      dark: 'rgba($cros.ref.neutral10.rgb, 0.12)',
     },
     'highlight-shape': {
       light: 'rgba($cros.ref.primary70.rgb, 0.3)',
@@ -463,9 +518,43 @@
       light: '$cros.ref.neutral30',
       dark: '$cros.ref.neutral0',
     },
+    'shadow-ambient': 'rgba($cros.sys.shadow.rgb, 0.2)',
+    'shadow-key': 'rgba($cros.sys.shadow.rgb, 0.1)',
+
     /* When the button is pressed, we layer the ripple color on top of the hover color to form the pressed color, that's what blend() does here. */
     'pressed-on-prominent': 'blend($cros.sys.hover-on-prominent, $cros.sys.ripple-neutral-on-prominent)',
     'pressed-on-subtle': 'blend($cros.sys.hover-on-subtle, $cros.sys.ripple-neutral-on-subtle)',
+
+    /* Sparkle tokens */
+    'analog': {
+      light: '$cros.ref.sparkle-analog70',
+      dark: '$cros.ref.sparkle-analog30',
+    },
+
+    'analog-variant': {
+      light: '$cros.ref.sparkle-analog80',
+      dark: '$cros.ref.sparkle-analog40',
+    },
+
+    'muted': {
+      light: '$cros.ref.sparkle-muted80',
+      dark: '$cros.ref.sparkle-muted30',
+    },
+
+    'muted-variant': {
+      light: '$cros.ref.sparkle-muted90',
+      dark: '$cros.ref.sparkle-muted40',
+    },
+
+    'complement': {
+      light: '$cros.ref.sparkle-complement90',
+      dark: '$cros.ref.sparkle-complement20',
+    },
+
+    'complement-variant': {
+      light: '$cros.ref.sparkle-complement95',
+      dark: '$cros.ref.sparkle-complement30',
+    },
 
     /* Illustration colors. */
     'illo.color1': {
@@ -568,6 +657,10 @@
       dark: '#d7aefb',
       generate_per_mode: true,
     },
+    'illo.analog': '$cros.ref.sparkle-analog70',
+    'illo.muted': '$cros.ref.sparkle-muted80',
+    'illo.complement': '$cros.ref.sparkle-complement90',
+    'illo.on-gradient': '$cros.ref.neutral10',
 
     /*
      * Some GM2 assets are "elevated" meaning they have slightly different
@@ -584,6 +677,20 @@
     'illo.elevated.color1.2': '$cros.sys.illo.color1.2',
     'illo.elevated.base': '$cros.sys.illo.base',
     'illo.elevated.secondary': '$cros.sys.illo.secondary',
+
+    /*
+     * Gaming colors
+     *
+     * Gaming colors are static values here because they are always in the vibrant
+     * palette. So, they don't have a direct mapping to ref colors. Placeholder
+     * colors are in the vibrant palette with a purple seed color.
+     */
+    /* Primary 40 Vibrant */
+    'gaming-control-button-default': '#a100bc',
+    /* Primary 50 Vibrant */
+    'gaming-control-button-hover': '#c900eb',
+    /* Primary 80 Vibrant */
+    'gaming-control-button-border-hover': '#f9acff',
 
     /* Icon colors. */
     'file-ms-excel': '#16a765',

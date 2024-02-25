@@ -13,13 +13,10 @@
 #include "base/synchronization/lock.h"
 #include "base/win/windows_version.h"
 #include "ui/gfx/geometry/rect.h"
-#include "ui/gl/gl_angle_util_win.h"
-#include "ui/gl/gl_bindings.h"
-#include "ui/gl/gl_display.h"
 #include "ui/gl/gl_features.h"
-#include "ui/gl/gl_implementation.h"
 #include "ui/gl/gl_switches.h"
 #include "ui/gl/gl_utils.h"
+#include "ui/gl/gpu_switching_manager.h"
 
 namespace gl {
 namespace {
@@ -79,7 +76,7 @@ void SetOverlayCapsValid(bool valid) {
   g_overlay_caps_valid = valid;
 }
 
-// A warpper of IDXGIOutput4::CheckOverlayColorSpaceSupport()
+// A wrapper of IDXGIOutput4::CheckOverlayColorSpaceSupport()
 bool CheckOverlayColorSpaceSupport(
     DXGI_FORMAT dxgi_format,
     DXGI_COLOR_SPACE_TYPE dxgi_color_space,
@@ -136,7 +133,7 @@ UINT g_rgb10a2_overlay_support_flags = 0;
 bool g_enable_bgra8_overlays_with_yuv_overlay_support = false;
 
 // Force enabling DXGI_FORMAT_R10G10B10A2_UNORM format for overlay. Intel
-// celake and Tigerlake fail to report the cap of this HDR overlay format.
+// Icelake and Tigerlake fail to report the cap of this HDR overlay format.
 // TODO(magchen@): Remove this workaround when this cap is fixed in the Intel
 // drivers.
 bool g_force_rgb10a2_overlay_support = false;
@@ -190,8 +187,7 @@ void GetGpuDriverOverlayInfo(bool* supports_overlays,
   if (base::win::GetVersion() < base::win::Version::WIN10_RS1)
     return;
 
-  Microsoft::WRL::ComPtr<ID3D11Device> d3d11_device =
-      QueryD3D11DeviceObjectFromANGLE();
+  Microsoft::WRL::ComPtr<ID3D11Device> d3d11_device = g_d3d11_device;
   if (!d3d11_device) {
     DLOG(ERROR) << "Failed to retrieve D3D11 device";
     return;
@@ -515,29 +511,6 @@ void InitializeDirectComposition(
   g_d3d11_device = d3d11_device.Detach();
 }
 
-void InitializeDirectCompositionANGLE(GLDisplayEGL* display) {
-  // Direct composition can only be used with ANGLE.
-  if (gl::GetGLImplementation() != gl::kGLImplementationEGLANGLE) {
-    return;
-  }
-
-  // EGL_KHR_no_config_context surface compatibility is required to be able to
-  // MakeCurrent with the default pbuffer surface.
-  if (!display->ext->b_EGL_KHR_no_config_context) {
-    DLOG(ERROR) << "EGL_KHR_no_config_context not supported";
-    return;
-  }
-
-  Microsoft::WRL::ComPtr<ID3D11Device> d3d11_device =
-      QueryD3D11DeviceObjectFromANGLE();
-  if (!d3d11_device) {
-    DLOG(ERROR) << "Failed to retrieve D3D11 device";
-    return;
-  }
-
-  InitializeDirectComposition(std::move(d3d11_device));
-}
-
 void ShutdownDirectComposition() {
   if (g_dcomp_device) {
     g_dcomp_device->Release();
@@ -609,6 +582,147 @@ bool DirectCompositionScaledOverlaysSupported() {
     // Assume scaling is supported for BGRA overlays.
     return true;
   }
+}
+
+bool VideoProcessorAutoHDRSupported() {
+  if (GetGlWorkarounds().disable_vp_auto_hdr) {
+    return false;
+  }
+
+  if (!base::FeatureList::IsEnabled(features::kNvidiaVpTrueHDR)) {
+    return false;
+  }
+
+  Microsoft::WRL::ComPtr<ID3D11Device> d3d11_device = g_d3d11_device;
+  if (!d3d11_device) {
+    LOG(ERROR) << "Failed to get device";
+    return false;
+  }
+
+  Microsoft::WRL::ComPtr<ID3D11DeviceContext> d3d11_context;
+  d3d11_device->GetImmediateContext(&d3d11_context);
+  if (!d3d11_context) {
+    DLOG(ERROR) << "Failed to get context";
+    return false;
+  }
+
+  Microsoft::WRL::ComPtr<ID3D11VideoContext> d3d11_video_context;
+  if (FAILED(d3d11_context.As(&d3d11_video_context))) {
+    DLOG(ERROR) << "Failed to retrieve video context";
+    return false;
+  }
+
+  Microsoft::WRL::ComPtr<ID3D11VideoDevice> d3d11_video_device;
+  if (FAILED(d3d11_device.As(&d3d11_video_device))) {
+    DLOG(ERROR) << "Failed to retrieve video device";
+    return false;
+  }
+
+  D3D11_VIDEO_PROCESSOR_CONTENT_DESC desc;
+  desc.InputFrameFormat = D3D11_VIDEO_FRAME_FORMAT_PROGRESSIVE;
+  desc.InputFrameRate.Numerator = 60;
+  desc.InputFrameRate.Denominator = 1;
+  desc.InputWidth = 1920;
+  desc.InputHeight = 1080;
+  desc.OutputFrameRate.Numerator = 60;
+  desc.OutputFrameRate.Denominator = 1;
+  desc.OutputWidth = 1920;
+  desc.OutputHeight = 1080;
+  desc.Usage = D3D11_VIDEO_USAGE_PLAYBACK_NORMAL;
+
+  Microsoft::WRL::ComPtr<ID3D11VideoProcessorEnumerator> d3d11_video_enumerator;
+  if (FAILED(d3d11_video_device->CreateVideoProcessorEnumerator(
+          &desc, &d3d11_video_enumerator))) {
+    DLOG(ERROR) << "Failed to create video processor enumerator";
+    return false;
+  }
+
+  Microsoft::WRL::ComPtr<ID3D11VideoProcessor> d3d11_video_processor;
+  if (FAILED(d3d11_video_device->CreateVideoProcessor(
+          d3d11_video_enumerator.Get(), 0, &d3d11_video_processor))) {
+    DLOG(ERROR) << "Failed to create video processor";
+    return false;
+  }
+
+  constexpr GUID kNvidiaTrueHDRInterfaceGUID = {
+      0xfdd62bb4,
+      0x620b,
+      0x4fd7,
+      {0x9a, 0xb3, 0x1e, 0x59, 0xd0, 0xd5, 0x44, 0xb3}};
+
+  UINT driver_supports_true_hdr = 0;
+  HRESULT hr = d3d11_video_context->VideoProcessorGetStreamExtension(
+      d3d11_video_processor.Get(), 0, &kNvidiaTrueHDRInterfaceGUID,
+      sizeof(driver_supports_true_hdr), &driver_supports_true_hdr);
+  if (FAILED(hr)) {
+    DLOG(ERROR) << "Failed to get stream extension with error 0x" << std::hex
+                << hr;
+    return false;
+  }
+
+  d3d11_video_processor.Reset();
+  d3d11_video_enumerator.Reset();
+  d3d11_video_context.Reset();
+  d3d11_video_device.Reset();
+  d3d11_context.Reset();
+  d3d11_device.Reset();
+  return (driver_supports_true_hdr == 1);
+}
+
+bool CheckVideoProcessorFormatSupport(DXGI_FORMAT dxgi_format) {
+  Microsoft::WRL::ComPtr<ID3D11Device> d3d11_device = g_d3d11_device;
+  if (!d3d11_device) {
+    DLOG(ERROR) << "Failed to retrieve D3D11 device";
+    return false;
+  }
+
+  Microsoft::WRL::ComPtr<ID3D11VideoDevice> video_device;
+  if (FAILED(d3d11_device.As(&video_device))) {
+    DLOG(ERROR) << "Failed to retrieve video device";
+    return false;
+  }
+
+  UINT device = 0;
+  if (!SUCCEEDED(d3d11_device->CheckFormatSupport(dxgi_format, &device))) {
+    DLOG(ERROR) << "Failed to check supported format";
+    return false;
+  }
+
+  D3D11_VIDEO_PROCESSOR_CONTENT_DESC desc;
+  desc.InputFrameFormat = D3D11_VIDEO_FRAME_FORMAT_PROGRESSIVE;
+  desc.InputFrameRate.Numerator = 60;
+  desc.InputFrameRate.Denominator = 1;
+  desc.InputWidth = 1920;
+  desc.InputHeight = 1080;
+  desc.OutputFrameRate.Numerator = 60;
+  desc.OutputFrameRate.Denominator = 1;
+  desc.OutputWidth = 1920;
+  desc.OutputHeight = 1080;
+  desc.Usage = D3D11_VIDEO_USAGE_PLAYBACK_NORMAL;
+
+  Microsoft::WRL::ComPtr<ID3D11VideoProcessorEnumerator> video_enumerator;
+  if (!SUCCEEDED(video_device->CreateVideoProcessorEnumerator(
+          &desc, &video_enumerator))) {
+    DLOG(ERROR) << "Failed to create video processor enumerator";
+    return false;
+  }
+
+  if (!video_enumerator) {
+    DLOG(ERROR) << "Failed to locate video enumerator";
+    return false;
+  }
+
+  UINT enumerator = 0;
+  if (!SUCCEEDED(video_enumerator->CheckVideoProcessorFormat(dxgi_format,
+                                                             &enumerator))) {
+    DLOG(ERROR) << "Failed to check video processor format";
+    video_enumerator.Reset();
+    return false;
+  }
+
+  video_enumerator.Reset();
+  return (enumerator & D3D11_VIDEO_PROCESSOR_FORMAT_SUPPORT_OUTPUT) &&
+         (device & D3D11_FORMAT_SUPPORT_VIDEO_PROCESSOR_OUTPUT);
 }
 
 UINT GetDirectCompositionOverlaySupportFlags(DXGI_FORMAT format) {
@@ -717,8 +831,7 @@ gfx::mojom::DXGIInfoPtr GetDirectCompositionHDRMonitorDXGIInfo() {
 
 bool DXGISwapChainTearingSupported() {
   static const bool supported = [] {
-    Microsoft::WRL::ComPtr<ID3D11Device> d3d11_device =
-        QueryD3D11DeviceObjectFromANGLE();
+    Microsoft::WRL::ComPtr<ID3D11Device> d3d11_device = g_d3d11_device;
     if (!d3d11_device) {
       DLOG(ERROR) << "Not using swap chain tearing because failed to retrieve "
                      "D3D11 device from ANGLE";

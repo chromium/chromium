@@ -14,6 +14,7 @@
 #include "content/public/browser/browser_thread.h"
 #include "extensions/browser/api/storage/backend_task_runner.h"
 #include "extensions/browser/api/storage/storage_frontend.h"
+#include "extensions/common/extension_id.h"
 
 namespace extensions {
 
@@ -31,7 +32,7 @@ base::WeakPtr<syncer::SyncableService> GetSyncableServiceOnBackendSequence(
 }
 
 void PopulateExtensionSettingSpecifics(
-    const std::string& extension_id,
+    const ExtensionId& extension_id,
     const std::string& key,
     const base::Value& value,
     sync_pb::ExtensionSettingSpecifics* specifics) {
@@ -44,22 +45,20 @@ void PopulateExtensionSettingSpecifics(
   }
 }
 
-void PopulateAppSettingSpecifics(
-    const std::string& extension_id,
-    const std::string& key,
-    const base::Value& value,
-    sync_pb::AppSettingSpecifics* specifics) {
+void PopulateAppSettingSpecifics(const ExtensionId& extension_id,
+                                 const std::string& key,
+                                 const base::Value& value,
+                                 sync_pb::AppSettingSpecifics* specifics) {
   PopulateExtensionSettingSpecifics(
       extension_id, key, value, specifics->mutable_extension_setting());
 }
 
 }  // namespace
 
-syncer::SyncData CreateData(
-    const std::string& extension_id,
-    const std::string& key,
-    const base::Value& value,
-    syncer::ModelType type) {
+syncer::SyncData CreateData(const ExtensionId& extension_id,
+                            const std::string& key,
+                            const base::Value& value,
+                            syncer::ModelType type) {
   sync_pb::EntitySpecifics specifics;
   switch (type) {
     case syncer::EXTENSION_SETTINGS:
@@ -86,29 +85,27 @@ syncer::SyncData CreateData(
       extension_id + "/" + key, key, specifics);
 }
 
-syncer::SyncChange CreateAdd(
-    const std::string& extension_id,
-    const std::string& key,
-    const base::Value& value,
-    syncer::ModelType type) {
+syncer::SyncChange CreateAdd(const ExtensionId& extension_id,
+                             const std::string& key,
+                             const base::Value& value,
+                             syncer::ModelType type) {
   return syncer::SyncChange(
       FROM_HERE,
       syncer::SyncChange::ACTION_ADD,
       CreateData(extension_id, key, value, type));
 }
 
-syncer::SyncChange CreateUpdate(
-    const std::string& extension_id,
-    const std::string& key,
-    const base::Value& value,
-    syncer::ModelType type) {
+syncer::SyncChange CreateUpdate(const ExtensionId& extension_id,
+                                const std::string& key,
+                                const base::Value& value,
+                                syncer::ModelType type) {
   return syncer::SyncChange(
       FROM_HERE,
       syncer::SyncChange::ACTION_UPDATE,
       CreateData(extension_id, key, value, type));
 }
 
-syncer::SyncChange CreateDelete(const std::string& extension_id,
+syncer::SyncChange CreateDelete(const ExtensionId& extension_id,
                                 const std::string& key,
                                 syncer::ModelType type) {
   return syncer::SyncChange(

@@ -2,173 +2,44 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//third_party/closure_compiler/compile_js.gni")
+import("../../build_webui_tests.gni")
 
-js_type_check("closure_compile") {
-  is_polymer3 = true
-  closure_flags = default_closure_args + [
-                    "browser_resolver_prefix_replacements=\"chrome://scanning/=" + rebase_path(
-                            "//ash/webui/scanning/resources/",
-                            root_build_dir) + "\"",
-                    "browser_resolver_prefix_replacements=\"chrome://webui-test/chromeos/=" + rebase_path(
-                            "//chrome/test/data/webui/chromeos/",
-                            root_build_dir) + "\"",
-                    "js_module_root=" + rebase_path("//chrome/test/data/webui/",
-                                                    root_build_dir),
-                    "browser_resolver_prefix_replacements=\"chrome://webui-test/=" + "./gen/chrome/test/data/webui/tsc\"",
-                    "js_module_root=" + rebase_path("//chrome/test/data/webui/",
-                                                    root_build_dir),
-                    "js_module_root=./gen/chrome/test/data/webui/",
-                  ]
-  deps = [
-    ":action_toolbar_test",
-    ":color_mode_select_test",
-    ":file_type_select_test",
-    ":loading_page_test",
-    ":multi_page_checkbox_test",
-    ":multi_page_scan_test",
-    ":page_size_select_test",
-    ":resolution_select_test",
-    ":scan_done_section_test",
-    ":scan_preview_test",
-    ":scan_to_select_test",
-    ":scanner_select_test",
-    ":scanning_app_test",
-    ":scanning_app_test_utils",
-    ":source_select_test",
-    ":test_scanning_browser_proxy",
+build_webui_tests("build_webui_tests") {
+  ts_path_mappings = [
+    "chrome://scanning/*|" +
+        rebase_path("$root_gen_dir/ash/webui/scanning/resources/tsc/*",
+                    target_gen_dir),
+    "chrome://webui-test/chromeos/*|" +
+        rebase_path("$root_gen_dir/chrome/test/data/webui/chromeos/tsc/*",
+                    target_gen_dir),
   ]
-}
 
-js_library("action_toolbar_test") {
-  deps = [
-    "..:chai_assert",
-    "//ash/webui/scanning/resources:action_toolbar",
+  files = [
+    "action_toolbar_test.ts",
+    "color_mode_select_test.ts",
+    "file_type_select_test.ts",
+    "loading_page_test.ts",
+    "multi_page_checkbox_test.ts",
+    "multi_page_scan_test.ts",
+    "page_size_select_test.ts",
+    "resolution_select_test.ts",
+    "scan_done_section_test.ts",
+    "scanner_select_test.ts",
+    "scanning_app_test.ts",
+    "scanning_app_test_utils.ts",
+    "scan_preview_test.ts",
+    "scan_to_select_test.ts",
+    "source_select_test.ts",
+    "test_scanning_browser_proxy.ts",
   ]
-  externs_list = [ "$externs_path/mocha-2.5.js" ]
-}
 
-js_library("color_mode_select_test") {
-  deps = [
-    ":scanning_app_test_utils",
-    "..:chai_assert",
-    "//ash/webui/scanning/resources:color_mode_select",
-  ]
-  externs_list = [ "$externs_path/mocha-2.5.js" ]
-}
-
-js_library("file_type_select_test") {
-  deps = [
-    "..:chai_assert",
-    "//ash/webui/scanning/resources:file_type_select",
-  ]
-  externs_list = [ "$externs_path/mocha-2.5.js" ]
-}
-
-js_library("loading_page_test") {
-  deps = [
-    "..:chai_assert",
-    "//ash/webui/scanning/resources:loading_page",
-  ]
-  externs_list = [ "$externs_path/mocha-2.5.js" ]
-}
-
-js_library("multi_page_scan_test") {
-  deps = [
-    "..:chai_assert",
-    "//ash/webui/scanning/resources:multi_page_scan",
-  ]
-  externs_list = [ "$externs_path/mocha-2.5.js" ]
-}
-
-js_library("multi_page_checkbox_test") {
-  deps = [
-    "..:chai_assert",
-    "//ash/webui/scanning/resources:multi_page_checkbox",
-  ]
-  externs_list = [ "$externs_path/mocha-2.5.js" ]
-}
-
-js_library("page_size_select_test") {
-  deps = [
-    "..:chai_assert",
-    "//ash/webui/scanning/resources:page_size_select",
-  ]
-  externs_list = [ "$externs_path/mocha-2.5.js" ]
-}
-
-js_library("resolution_select_test") {
-  deps = [
-    "..:chai_assert",
-    "//ash/webui/scanning/resources:resolution_select",
-  ]
-  externs_list = [ "$externs_path/mocha-2.5.js" ]
-}
-
-js_library("scan_done_section_test") {
-  deps = [
-    "..:chai_assert",
-    "//ash/webui/scanning/resources:scan_done_section",
-  ]
-  externs_list = [ "$externs_path/mocha-2.5.js" ]
-}
-
-js_library("scan_preview_test") {
-  deps = [
-    "..:chai_assert",
-    "//ash/webui/scanning/resources:scan_preview",
-  ]
-  externs_list = [ "$externs_path/mocha-2.5.js" ]
-}
-
-js_library("scan_to_select_test") {
-  deps = [
-    ":test_scanning_browser_proxy",
-    "..:chai_assert",
-    "//ash/webui/scanning/resources:scan_to_select",
-  ]
-  externs_list = [ "$externs_path/mocha-2.5.js" ]
-}
-
-js_library("scanner_select_test") {
-  deps = [
-    ":scanning_app_test_utils",
-    "..:chai_assert",
-    "//ash/webui/scanning/resources:scanner_select",
-  ]
-  externs_list = [ "$externs_path/mocha-2.5.js" ]
-}
-
-js_library("scanning_app_test") {
-  deps = [
-    ":scanning_app_test_utils",
-    "..:chai_assert",
-    "..:test_util",
-    "//ash/webui/scanning/resources:scanning_app",
-    "//third_party/polymer/v3_0/components-chromium/iron-collapse:iron-collapse",
-  ]
-  externs_list = [
-    "$externs_path/mocha-2.5.js",
-    "//ui/webui/resources/cr_elements/cr_button/cr_button_externs.js",
-  ]
-}
-
-js_library("scanning_app_test_utils") {
-  deps = [ "..:chai_assert" ]
-}
-
-js_library("source_select_test") {
-  deps = [
-    ":scanning_app_test_utils",
-    "//ash/webui/scanning/resources:source_select",
-  ]
-  externs_list = [ "$externs_path/mocha-2.5.js" ]
-}
-
-js_library("test_scanning_browser_proxy") {
-  deps = [
-    "..:chai_assert",
-    "..:test_browser_proxy",
-    "//ash/webui/scanning/resources:scanning_browser_proxy",
+  ts_deps = [
+    "//ash/webui/common/resources:build_ts",
+    "//ash/webui/common/resources/cr_elements:build_ts",
+    "//ash/webui/scanning/resources:build_ts",
+    "//chrome/test/data/webui/chromeos:build_ts",
+    "//third_party/polymer/v3_0:library",
+    "//ui/webui/resources/js:build_ts",
+    "//ui/webui/resources/mojo:build_ts",
   ]
 }

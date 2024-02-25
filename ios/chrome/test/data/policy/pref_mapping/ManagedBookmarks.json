@@ -1,0 +1,81 @@
+[
+  {
+    "os": [
+      "ios"
+    ],
+    "policy_pref_mapping_tests": [
+      {
+        "note": "Check default values (no policies set).",
+        "prefs": {
+          "bookmarks.managed_bookmarks": {
+            "default_value": []
+          },
+          "bookmarks.managed_bookmarks_folder_name": {
+            "default_value": ""
+          }
+        }
+      },
+      {
+        "note": "Managed bookmarks together with folder name.",
+        "policies": {
+          "ManagedBookmarks": [
+            {
+              "toplevel_name": "My managed bookmarks folder"
+            },
+            {
+              "name": "Google",
+              "url": "google.com"
+            },
+            {
+              "name": "Youtube",
+              "url": "youtube.com"
+            },
+            {
+              "children": [
+                {
+                  "name": "Chromium",
+                  "url": "chromium.org"
+                },
+                {
+                  "name": "Chromium Developers",
+                  "url": "dev.chromium.org"
+                }
+              ],
+              "name": "Chrome links"
+            }
+          ]
+        },
+        "prefs": {
+          "bookmarks.managed_bookmarks": {
+            "value": [
+              {
+                "name": "Google",
+                "url": "http://google.com/"
+              },
+              {
+                "name": "Youtube",
+                "url": "http://youtube.com/"
+              },
+              {
+                "children": [
+                  {
+                    "name": "Chromium",
+                    "url": "http://chromium.org/"
+                  },
+                  {
+                    "name": "Chromium Developers",
+                    "url": "http://dev.chromium.org/"
+                  }
+                ],
+                "name": "Chrome links"
+              }
+            ]
+          },
+          "bookmarks.managed_bookmarks_folder_name": {
+            "value": "My managed bookmarks folder"
+          }
+        }
+      }
+    ]
+  }
+]

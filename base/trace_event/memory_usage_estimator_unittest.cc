@@ -150,6 +150,30 @@ TEST(EstimateMemoryUsageTest, Vector) {
   EXPECT_EQ(expected_size, EstimateMemoryUsage(vector));
 }
 
+TEST(EstimateMemoryUsageTest, Vector_of_Pointers) {
+  {
+    std::unique_ptr<Data> u_ptr = std::make_unique<Data>(11);
+    std::vector<Data*> vector;
+    vector.reserve(1000);
+    vector.push_back(u_ptr.get());
+
+    size_t capacity = vector.capacity();
+    size_t expected_size = capacity * sizeof(Data*);
+    EXPECT_EQ(expected_size, EstimateMemoryUsage(vector));
+  }
+
+  {
+    std::unique_ptr<Data> u_ptr = std::make_unique<Data>(11);
+    std::vector<raw_ptr<Data>> vector;
+    vector.reserve(1000);
+    vector.push_back(u_ptr.get());
+
+    size_t capacity = vector.capacity();
+    size_t expected_size = capacity * sizeof(raw_ptr<Data>);
+    EXPECT_EQ(expected_size, EstimateMemoryUsage(vector));
+  }
+}
+
 TEST(EstimateMemoryUsageTest, List) {
   struct POD {
     short data;
@@ -247,19 +271,18 @@ TEST(EstimateMemoryUsageTest, IsStandardContainerComplexIteratorTest) {
   };
 
   static_assert(
-      internal::IsStandardContainerComplexIterator<std::list<int>::iterator>(),
+      internal::IsIteratorOfStandardContainer<std::list<int>::iterator>, "");
+  static_assert(
+      internal::IsIteratorOfStandardContainer<std::list<int>::const_iterator>,
       "");
-  static_assert(internal::IsStandardContainerComplexIterator<
-                    std::list<int>::const_iterator>(),
+  static_assert(
+      internal::IsIteratorOfStandardContainer<std::list<int>::reverse_iterator>,
+      "");
+  static_assert(internal::IsIteratorOfStandardContainer<
+                    std::list<int>::const_reverse_iterator>,
                 "");
-  static_assert(internal::IsStandardContainerComplexIterator<
-                    std::list<int>::reverse_iterator>(),
-                "");
-  static_assert(internal::IsStandardContainerComplexIterator<
-                    std::list<int>::const_reverse_iterator>(),
-                "");
-  static_assert(!internal::IsStandardContainerComplexIterator<int>(), "");
-  static_assert(!internal::IsStandardContainerComplexIterator<abstract*>(), "");
+  static_assert(!internal::IsIteratorOfStandardContainer<int>, "");
+  static_assert(!internal::IsIteratorOfStandardContainer<abstract*>, "");
 }
 
 }  // namespace trace_event

@@ -18,17 +18,17 @@
   }
 </style>
 <cr-toolbar id="mainToolbar" on-keydown="onKeyDown_"
-    page-name="$i18n{passwordManagerString}" clear-label="$i18n{clearSearch}"
+    page-name="[[pageName]]" clear-label="$i18n{clearSearch}"
     search-prompt="$i18n{searchPrompt}" menu-label="$i18n{menuButtonLabel}"
     autofocus on-search-changed="onSearchChanged_"
     role="banner" show-menu="[[narrow]]" narrow="[[narrow]]"
-    narrow-threshold="1200">
+    narrow-threshold="1036">
   <picture slot="product-logo">
     <img id="product-logo"
         srcset="chrome://password-manager/images/password_manager_logo.svg"
         role="presentation">
   </picture>
   <cr-icon-button id="helpButton" iron-icon="cr:help-outline"
-      title="$i18n{help}" on-click="onHelpClick_">
+      title="$i18n{help}" on-click="onHelpClick_" dir="ltr">
   </cr-icon-button>
 </cr-toolbar>

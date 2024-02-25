@@ -379,7 +379,7 @@ TEST_F(MetricsLogTest, Timestamps_InitialStabilityLog) {
   std::string encoded;
   // Don't set the close_time param since this is an initial stability log.
   log.FinalizeLog(/*truncate_events=*/false, client_.GetVersionString(),
-                  /*close_time=*/absl::nullopt, &encoded);
+                  /*close_time=*/std::nullopt, &encoded);
   ChromeUserMetricsExtension parsed;
   ASSERT_TRUE(parsed.ParseFromString(encoded));
   EXPECT_FALSE(parsed.has_time_log_created());
@@ -398,7 +398,7 @@ TEST_F(MetricsLogTest, Timestamps_IndependentLog) {
   std::string encoded;
   // Don't set the close_time param since this is an independent log.
   log.FinalizeLog(/*truncate_events=*/false, client_.GetVersionString(),
-                  /*close_time=*/absl::nullopt, &encoded);
+                  /*close_time=*/std::nullopt, &encoded);
   ChromeUserMetricsExtension parsed;
   ASSERT_TRUE(parsed.ParseFromString(encoded));
   EXPECT_FALSE(parsed.has_time_log_created());
@@ -441,8 +441,7 @@ TEST_F(MetricsLogTest,
   std::unique_ptr<network_time::FieldTrialTest> field_trial_test(
       new network_time::FieldTrialTest());
   field_trial_test->SetFeatureParams(
-      true, 0.0, network_time::NetworkTimeTracker::FETCHES_ON_DEMAND_ONLY,
-      network_time::NetworkTimeTracker::ClockDriftSamples::NO_SAMPLES);
+      true, 0.0, network_time::NetworkTimeTracker::FETCHES_ON_DEMAND_ONLY);
   scoped_refptr<network::TestSharedURLLoaderFactory> shared_url_loader_factory =
       base::MakeRefCounted<network::TestSharedURLLoaderFactory>();
   TestingPrefServiceSimple pref_service;
@@ -450,7 +449,7 @@ TEST_F(MetricsLogTest,
   network_time::NetworkTimeTracker network_time_tracker(
       std::make_unique<base::DefaultClock>(),
       std::make_unique<base::DefaultTickClock>(), &pref_service,
-      shared_url_loader_factory);
+      shared_url_loader_factory, /*fetch_behavior=*/std::nullopt);
 
   // Set up the backup client clock.
   TestMetricsServiceClient client;
@@ -494,8 +493,7 @@ TEST_F(
   std::unique_ptr<network_time::FieldTrialTest> field_trial_test(
       new network_time::FieldTrialTest());
   field_trial_test->SetFeatureParams(
-      true, 0.0, network_time::NetworkTimeTracker::FETCHES_ON_DEMAND_ONLY,
-      network_time::NetworkTimeTracker::ClockDriftSamples::NO_SAMPLES);
+      true, 0.0, network_time::NetworkTimeTracker::FETCHES_ON_DEMAND_ONLY);
   scoped_refptr<network::TestSharedURLLoaderFactory> shared_url_loader_factory =
       base::MakeRefCounted<network::TestSharedURLLoaderFactory>();
   TestingPrefServiceSimple pref_service;
@@ -508,7 +506,7 @@ TEST_F(
   network_time::NetworkTimeTracker network_time_tracker(
       std::unique_ptr<base::Clock>(clock),
       std::unique_ptr<const base::TickClock>(tick_clock), &pref_service,
-      shared_url_loader_factory);
+      shared_url_loader_factory, /*fetch_behavior=*/std::nullopt);
 
   // Should have times from regular (ongoing) logs.  The creation time should
   // come from the backup client clock; the closure time should come from the
@@ -552,8 +550,7 @@ TEST_F(MetricsLogTest,
   std::unique_ptr<network_time::FieldTrialTest> field_trial_test(
       new network_time::FieldTrialTest());
   field_trial_test->SetFeatureParams(
-      true, 0.0, network_time::NetworkTimeTracker::FETCHES_ON_DEMAND_ONLY,
-      network_time::NetworkTimeTracker::ClockDriftSamples::NO_SAMPLES);
+      true, 0.0, network_time::NetworkTimeTracker::FETCHES_ON_DEMAND_ONLY);
   scoped_refptr<network::TestSharedURLLoaderFactory> shared_url_loader_factory =
       base::MakeRefCounted<network::TestSharedURLLoaderFactory>();
   TestingPrefServiceSimple pref_service;
@@ -566,7 +563,7 @@ TEST_F(MetricsLogTest,
   network_time::NetworkTimeTracker network_time_tracker(
       std::unique_ptr<base::Clock>(clock),
       std::unique_ptr<const base::TickClock>(tick_clock), &pref_service,
-      shared_url_loader_factory);
+      shared_url_loader_factory, /*fetch_behavior=*/std::nullopt);
 
   // Should have times from regular (ongoing) logs.  These times should come
   // from the network clock.

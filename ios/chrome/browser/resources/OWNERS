@@ -1,3 +1,0 @@
-# All committers can modify non-stable Experimental Settings.
-per-file *=*
-per-file Settings.bundle/*=*

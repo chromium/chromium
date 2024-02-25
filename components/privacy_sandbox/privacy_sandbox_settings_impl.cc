@@ -13,6 +13,8 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/observer_list.h"
 #include "base/ranges/algorithm.h"
+#include "base/strings/strcat.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "base/time/time.h"
@@ -28,6 +30,9 @@
 #include "components/privacy_sandbox/privacy_sandbox_attestations/privacy_sandbox_attestations.h"
 #include "components/privacy_sandbox/privacy_sandbox_features.h"
 #include "components/privacy_sandbox/privacy_sandbox_prefs.h"
+#include "components/privacy_sandbox/privacy_sandbox_settings.h"
+#include "components/privacy_sandbox/tpcd_experiment_eligibility.h"
+#include "components/privacy_sandbox/tracking_protection_settings.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/common/content_features.h"
 #include "net/base/registry_controlled_domains/registry_controlled_domain.h"
@@ -98,6 +103,22 @@ base::Value::Dict CreateBlockedTopicEntry(const CanonicalTopic& topic) {
       .Set(kBlockedTopicsBlockTimeKey, base::TimeToValue(base::Time::Now()));
 }
 
+std::set<browsing_topics::Topic> GetTopicsSetFromString(
+    std::string topics_string) {
+  if (topics_string.empty()) {
+    return {};
+  }
+  std::set<browsing_topics::Topic> result;
+  std::vector<std::string> tokens = base::SplitString(
+      topics_string, ",", base::TRIM_WHITESPACE, base::SPLIT_WANT_ALL);
+  for (const std::string& token : tokens) {
+    int topic_id;
+    CHECK(base::StringToInt(token, &topic_id));
+    result.emplace(topic_id);
+  }
+  return result;
+}
+
 }  // namespace
 
 // static
@@ -138,14 +159,17 @@ PrivacySandboxSettingsImpl::PrivacySandboxSettingsImpl(
     std::unique_ptr<Delegate> delegate,
     HostContentSettingsMap* host_content_settings_map,
     scoped_refptr<content_settings::CookieSettings> cookie_settings,
+    TrackingProtectionSettings* tracking_protection_settings,
     PrefService* pref_service)
     : delegate_(std::move(delegate)),
       host_content_settings_map_(host_content_settings_map),
       cookie_settings_(cookie_settings),
+      tracking_protection_settings_(tracking_protection_settings),
       pref_service_(pref_service) {
-  DCHECK(pref_service_);
-  DCHECK(host_content_settings_map_);
-  DCHECK(cookie_settings_);
+  CHECK(pref_service_);
+  CHECK(host_content_settings_map_);
+  CHECK(cookie_settings_);
+  CHECK(tracking_protection_settings_);
   // "Clear on exit" causes a cookie deletion on shutdown. But for practical
   // purposes, we're notifying the observers on startup (which should be
   // equivalent, as no cookie operations could have happened while the profile
@@ -154,11 +178,14 @@ PrivacySandboxSettingsImpl::PrivacySandboxSettingsImpl(
     OnCookiesCleared();
   }
 
+  tracking_protection_settings_observation_.Observe(
+      tracking_protection_settings_);
+
   pref_change_registrar_.Init(pref_service_);
   pref_change_registrar_.Add(
-      prefs::kPrivacySandboxFirstPartySetsEnabled,
+      prefs::kPrivacySandboxRelatedWebsiteSetsEnabled,
       base::BindRepeating(
-          &PrivacySandboxSettingsImpl::OnFirstPartySetsEnabledPrefChanged,
+          &PrivacySandboxSettingsImpl::OnRelatedWebsiteSetsEnabledPrefChanged,
           base::Unretained(this)));
 }
 
@@ -183,47 +210,32 @@ PrivacySandboxSettingsImpl::GetM1TopicAllowedStatus() const {
   return control_status;
 }
 
-const std::vector<browsing_topics::Topic>&
+const std::set<browsing_topics::Topic>&
 PrivacySandboxSettingsImpl::GetFinchDisabledTopics() {
   if (finch_disabled_topics_.size() > 0) {
     return finch_disabled_topics_;
   }
   std::string disabled_topics_string =
       blink::features::kBrowsingTopicsDisabledTopicsList.Get();
-  if (disabled_topics_string.empty()) {
-    return finch_disabled_topics_;
-  }
-  std::vector<std::string> tokens = base::SplitString(
-      disabled_topics_string, ",", base::TRIM_WHITESPACE, base::SPLIT_WANT_ALL);
-  for (const std::string& token : tokens) {
-    int disabled_topic_id;
-    CHECK(base::StringToInt(token, &disabled_topic_id));
-    finch_disabled_topics_.emplace_back(disabled_topic_id);
-  }
+  finch_disabled_topics_ = GetTopicsSetFromString(disabled_topics_string);
   return finch_disabled_topics_;
 }
 
-bool PrivacySandboxSettingsImpl::IsTopicsAllowed() const {
-  // M1 specific
-  if (base::FeatureList::IsEnabled(privacy_sandbox::kPrivacySandboxSettings4)) {
-    Status status = GetM1TopicAllowedStatus();
-    JoinHistogram(kIsTopicsAllowedHistogram, status);
-    return IsAllowed(status);
+const std::set<browsing_topics::Topic>&
+PrivacySandboxSettingsImpl::GetFinchPrioritizedTopics() {
+  if (finch_prioritized_topics_.size() > 0) {
+    return finch_prioritized_topics_;
   }
+  std::string prioritized_topics_string =
+      blink::features::kBrowsingTopicsPrioritizedTopicsList.Get();
+  finch_prioritized_topics_ = GetTopicsSetFromString(prioritized_topics_string);
+  return finch_prioritized_topics_;
+}
 
-  // Topics API calculation should be prevented if the user has blocked 3PC
-  // cookies, as there will be no context specific check.
-  const auto cookie_controls_mode =
-      static_cast<content_settings::CookieControlsMode>(
-          pref_service_->GetInteger(prefs::kCookieControlsMode));
-  const auto default_content_setting =
-      cookie_settings_->GetDefaultCookieSetting();
-
-  const bool third_party_cookies_blocked =
-      default_content_setting == ContentSetting::CONTENT_SETTING_BLOCK ||
-      cookie_controls_mode ==
-          content_settings::CookieControlsMode::kBlockThirdParty;
-  return IsPrivacySandboxEnabled() && !third_party_cookies_blocked;
+bool PrivacySandboxSettingsImpl::IsTopicsAllowed() const {
+  Status status = GetM1TopicAllowedStatus();
+  JoinHistogram(kIsTopicsAllowedHistogram, status);
+  return IsAllowed(status);
 }
 
 bool PrivacySandboxSettingsImpl::IsTopicsAllowedForContext(
@@ -244,20 +256,12 @@ bool PrivacySandboxSettingsImpl::IsTopicsAllowedForContext(
     return false;
   }
 
-  // M1 specific
-  if (base::FeatureList::IsEnabled(privacy_sandbox::kPrivacySandboxSettings4)) {
-    Status status = GetM1TopicAllowedStatus();
-    if (IsAllowed(status)) {
-      status = GetSiteAccessAllowedStatus(top_frame_origin, url);
-    }
-    JoinHistogram(kIsTopicsAllowedForContextHistogram, status);
-    return IsAllowed(status);
+  Status status = GetM1TopicAllowedStatus();
+  if (IsAllowed(status)) {
+    status = GetSiteAccessAllowedStatus(top_frame_origin, url);
   }
-
-  // If the Topics API is disabled completely, it is not available in any
-  // context.
-  return IsTopicsAllowed() &&
-         IsPrivacySandboxEnabledForContext(top_frame_origin, url);
+  JoinHistogram(kIsTopicsAllowedForContextHistogram, status);
+  return IsAllowed(status);
 }
 
 bool PrivacySandboxSettingsImpl::IsTopicAllowed(const CanonicalTopic& topic) {
@@ -316,6 +320,22 @@ void PrivacySandboxSettingsImpl::SetTopicAllowed(const CanonicalTopic& topic,
   }
 }
 
+bool PrivacySandboxSettingsImpl::IsTopicPrioritized(
+    const CanonicalTopic& topic) {
+  const std::set<browsing_topics::Topic>& prioritized_topics =
+      GetFinchPrioritizedTopics();
+  if (prioritized_topics.contains(topic.topic_id())) {
+    return true;
+  }
+  for (const browsing_topics::Topic& ancestor_topic :
+       browsing_topics::SemanticTree().GetAncestorTopics(topic.topic_id())) {
+    if (prioritized_topics.contains(ancestor_topic)) {
+      return true;
+    }
+  }
+  return false;
+}
+
 void PrivacySandboxSettingsImpl::ClearTopicSettings(base::Time start_time,
                                                     base::Time end_time) {
   ScopedListPrefUpdate scoped_pref_update(pref_service_,
@@ -340,7 +360,7 @@ base::Time PrivacySandboxSettingsImpl::TopicsDataAccessibleSince() const {
 }
 
 PrivacySandboxSettingsImpl::Status
-PrivacySandboxSettingsImpl::GetM1AttributionReportingAllowedStatus(
+PrivacySandboxSettingsImpl::GetM1AdMeasurementAllowedStatus(
     const url::Origin& top_frame_origin,
     const url::Origin& reporting_origin) const {
   Status status = GetM1PrivacySandboxApiEnabledStatus(
@@ -354,15 +374,10 @@ PrivacySandboxSettingsImpl::GetM1AttributionReportingAllowedStatus(
 }
 
 bool PrivacySandboxSettingsImpl::IsAttributionReportingEverAllowed() const {
-  // M1 specific
-  if (base::FeatureList::IsEnabled(privacy_sandbox::kPrivacySandboxSettings4)) {
-    Status status = GetM1PrivacySandboxApiEnabledStatus(
-        prefs::kPrivacySandboxM1AdMeasurementEnabled);
-    JoinHistogram(kIsAttributionReportingEverAllowedHistogram, status);
-    return IsAllowed(status);
-  }
-
-  return IsPrivacySandboxEnabled();
+  Status status = GetM1PrivacySandboxApiEnabledStatus(
+      prefs::kPrivacySandboxM1AdMeasurementEnabled);
+  JoinHistogram(kIsAttributionReportingEverAllowedHistogram, status);
+  return IsAllowed(status);
 }
 
 bool PrivacySandboxSettingsImpl::IsAttributionReportingAllowed(
@@ -385,16 +400,10 @@ bool PrivacySandboxSettingsImpl::IsAttributionReportingAllowed(
     return false;
   }
 
-  // M1 specific
-  if (base::FeatureList::IsEnabled(privacy_sandbox::kPrivacySandboxSettings4)) {
-    Status status = GetM1AttributionReportingAllowedStatus(top_frame_origin,
-                                                           reporting_origin);
-    JoinHistogram(kIsAttributionReportingAllowedHistogram, status);
-    return IsAllowed(status);
-  }
-
-  return IsPrivacySandboxEnabledForContext(top_frame_origin,
-                                           reporting_origin.GetURL());
+  Status status =
+      GetM1AdMeasurementAllowedStatus(top_frame_origin, reporting_origin);
+  JoinHistogram(kIsAttributionReportingAllowedHistogram, status);
+  return IsAllowed(status);
 }
 
 bool PrivacySandboxSettingsImpl::MaySendAttributionReport(
@@ -418,29 +427,40 @@ bool PrivacySandboxSettingsImpl::MaySendAttributionReport(
     return false;
   }
 
-  // M1 specific
-  if (base::FeatureList::IsEnabled(privacy_sandbox::kPrivacySandboxSettings4)) {
-    Status status = GetM1AttributionReportingAllowedStatus(
-        /*top_frame_origin=*/source_origin,
+  Status status = GetM1AdMeasurementAllowedStatus(
+      /*top_frame_origin=*/source_origin,
+      /*reporting_origin=*/reporting_origin);
+  if (IsAllowed(status)) {
+    status = GetM1AdMeasurementAllowedStatus(
+        /*top_frame_origin=*/destination_origin,
         /*reporting_origin=*/reporting_origin);
-    if (IsAllowed(status)) {
-      status = GetM1AttributionReportingAllowedStatus(
-          /*top_frame_origin=*/destination_origin,
-          /*reporting_origin=*/reporting_origin);
-    }
-    JoinHistogram(kMaySendAttributionReportHistogram, status);
-    return IsAllowed(status);
   }
+  JoinHistogram(kMaySendAttributionReportHistogram, status);
+  return IsAllowed(status);
+}
 
-  // The |reporting_origin| needs to have been accessible in both source
-  // and trigger contexts. These are both checked when they occur, but
-  // user settings may have changed between then and when the attribution report
-  // is sent.
-  return IsPrivacySandboxEnabledForContext(/*top_frame_origin=*/source_origin,
-                                           reporting_origin.GetURL()) &&
-         IsPrivacySandboxEnabledForContext(
-             /*top_frame_origin=*/destination_origin,
-             reporting_origin.GetURL());
+bool PrivacySandboxSettingsImpl::
+    IsAttributionReportingTransitionalDebuggingAllowed(
+        const url::Origin& top_frame_origin,
+        const url::Origin& reporting_origin,
+        bool& can_bypass) const {
+  content_settings::CookieSettingsBase::CookieSettingWithMetadata
+      cookie_setting_with_metadata;
+  // Third party cookies must also be available for this context. An empty site
+  // for cookies is provided so the context is always treated as a third party.
+  bool allowed = cookie_settings_->IsFullCookieAccessAllowed(
+      reporting_origin.GetURL(), net::SiteForCookies(), top_frame_origin,
+      net::CookieSettingOverrides(), &cookie_setting_with_metadata);
+
+  if (base::FeatureList::IsEnabled(
+          kAttributionDebugReportingCookieDeprecationTesting)) {
+    can_bypass =
+        cookie_setting_with_metadata.BlockedByThirdPartyCookieBlocking() &&
+        delegate_->AreThirdPartyCookiesBlockedByCookieDeprecationExperiment();
+  } else {
+    can_bypass = false;
+  }
+  return allowed;
 }
 
 void PrivacySandboxSettingsImpl::SetFledgeJoiningAllowed(
@@ -503,7 +523,7 @@ void PrivacySandboxSettingsImpl::ClearFledgeJoiningAllowedSettings(
 
   std::vector<std::string> keys_to_remove;
   for (auto entry : pref_data) {
-    absl::optional<base::Time> created_time = base::ValueToTime(entry.second);
+    std::optional<base::Time> created_time = base::ValueToTime(entry.second);
     if (created_time.has_value() && start_time <= created_time &&
         created_time <= end_time) {
       keys_to_remove.push_back(entry.first);
@@ -588,19 +608,15 @@ bool PrivacySandboxSettingsImpl::IsFledgeAllowed(
     return false;
   }
 
-  if (base::FeatureList::IsEnabled(privacy_sandbox::kPrivacySandboxSettings4)) {
-    Status status = GetM1FledgeAllowedStatus(top_frame_origin, auction_party);
-    JoinFledgeHistogram(interest_group_api_operation, status);
-    return IsAllowed(status);
-  }
-
-  return IsPrivacySandboxEnabledForContext(top_frame_origin,
-                                           auction_party.GetURL());
+  Status status = GetM1FledgeAllowedStatus(top_frame_origin, auction_party);
+  JoinFledgeHistogram(interest_group_api_operation, status);
+  return IsAllowed(status);
 }
 
 bool PrivacySandboxSettingsImpl::IsSharedStorageAllowed(
     const url::Origin& top_frame_origin,
     const url::Origin& accessing_origin,
+    std::string* out_debug_message,
     content::RenderFrameHost* console_frame) const {
   // Check for attestation on the caller's site.
   Status attestation_status =
@@ -609,42 +625,67 @@ bool PrivacySandboxSettingsImpl::IsSharedStorageAllowed(
           PrivacySandboxAttestationsGatedAPI::kSharedStorage);
   if (!IsAllowed(attestation_status)) {
     JoinHistogram(kIsSharedStorageAllowedHistogram, attestation_status);
+    std::string error_message =
+        base::StrCat({"Attestation check for Shared Storage on ",
+                      accessing_origin.Serialize(), " failed."});
+    if (out_debug_message) {
+      *out_debug_message = base::StrCat(
+          {error_message, "\nReturned status ",
+           base::NumberToString(int(attestation_status)),
+           "; see `PrivacySandboxSettingsImpl::Status` at ",
+           "https://chromium.googlesource.com/chromium/src/+/refs/heads/main/",
+           "components/privacy_sandbox/privacy_sandbox_settings_impl.h."});
+    }
     if (console_frame) {
       console_frame->AddMessageToConsole(
-          blink::mojom::ConsoleMessageLevel::kError,
-          "Attestation check for Shared Storage on " +
-              accessing_origin.Serialize() + " failed.");
+          blink::mojom::ConsoleMessageLevel::kError, error_message);
     }
     return false;
   }
 
-  if (base::FeatureList::IsEnabled(privacy_sandbox::kPrivacySandboxSettings4)) {
-    Status status = GetPrivacySandboxAllowedStatus();
-    if (IsAllowed(status)) {
-      status = GetSiteAccessAllowedStatus(top_frame_origin,
-                                          accessing_origin.GetURL());
+  Status status = GetPrivacySandboxAllowedStatus();
+  if (IsAllowed(status)) {
+    status =
+        GetSiteAccessAllowedStatus(top_frame_origin, accessing_origin.GetURL());
+    if (out_debug_message) {
+      *out_debug_message = base::StrCat(
+          {"Site access settings returned status ",
+           base::NumberToString(int(status)), " for accessing origin ",
+           accessing_origin.Serialize(), " and top-frame origin ",
+           top_frame_origin.Serialize(),
+           "; see `PrivacySandboxSettingsImpl::Status` at ",
+           "https://chromium.googlesource.com/chromium/src/+/refs/heads/main/",
+           "components/privacy_sandbox/privacy_sandbox_settings_impl.h."});
     }
-    JoinHistogram(kIsSharedStorageAllowedHistogram, status);
-    return IsAllowed(status);
+  } else if (out_debug_message) {
+    *out_debug_message = base::StrCat(
+        {"Privacy Sandbox settings returned status ",
+         base::NumberToString(int(status)),
+         "; see `PrivacySandboxSettingsImpl::Status` at ",
+         "https://chromium.googlesource.com/chromium/src/+/refs/heads/main/",
+         "components/privacy_sandbox/privacy_sandbox_settings_impl.h."});
   }
-
-  // Ensures that Shared Storage is only allowed if both Privacy Sandbox is
-  // enabled and full cookie access is enabled for this context.
-  return IsPrivacySandboxEnabledForContext(top_frame_origin,
-                                           accessing_origin.GetURL());
+  JoinHistogram(kIsSharedStorageAllowedHistogram, status);
+  return IsAllowed(status);
 }
 
 bool PrivacySandboxSettingsImpl::IsSharedStorageSelectURLAllowed(
     const url::Origin& top_frame_origin,
-    const url::Origin& accessing_origin) const {
-  if (base::FeatureList::IsEnabled(privacy_sandbox::kPrivacySandboxSettings4)) {
-    Status status =
-        GetM1FledgeAllowedStatus(top_frame_origin, accessing_origin);
-    JoinHistogram(kIsSharedStorageSelectURLAllowedHistogram, status);
-    return IsAllowed(status);
+    const url::Origin& accessing_origin,
+    std::string* out_debug_message) const {
+  Status status = GetM1FledgeAllowedStatus(top_frame_origin, accessing_origin);
+  JoinHistogram(kIsSharedStorageSelectURLAllowedHistogram, status);
+  if (out_debug_message) {
+    *out_debug_message = base::StrCat(
+        {"M1 measurement settings returned status ",
+         base::NumberToString(int(status)), " for accessing origin ",
+         accessing_origin.Serialize(), " and top-frame origin ",
+         top_frame_origin.Serialize(),
+         "; see `PrivacySandboxSettingsImpl::Status` at ",
+         "https://chromium.googlesource.com/chromium/src/+/refs/heads/main/",
+         "components/privacy_sandbox/privacy_sandbox_settings_impl.h."});
   }
-
-  return IsSharedStorageAllowed(top_frame_origin, accessing_origin);
+  return IsAllowed(status);
 }
 
 bool PrivacySandboxSettingsImpl::IsPrivateAggregationAllowed(
@@ -660,57 +701,46 @@ bool PrivacySandboxSettingsImpl::IsPrivateAggregationAllowed(
     return false;
   }
 
-  if (base::FeatureList::IsEnabled(privacy_sandbox::kPrivacySandboxSettings4)) {
-    Status status = GetM1AttributionReportingAllowedStatus(top_frame_origin,
-                                                           reporting_origin);
-    JoinHistogram(kIsPrivateAggregationAllowedHistogram, status);
-    return IsAllowed(status);
-  }
-
-  return IsPrivacySandboxEnabledForContext(top_frame_origin,
-                                           reporting_origin.GetURL());
+  Status status =
+      GetM1AdMeasurementAllowedStatus(top_frame_origin, reporting_origin);
+  JoinHistogram(kIsPrivateAggregationAllowedHistogram, status);
+  return IsAllowed(status);
 }
 
-bool PrivacySandboxSettingsImpl::IsPrivacySandboxEnabled() const {
-  PrivacySandboxSettingsImpl::Status status = GetPrivacySandboxAllowedStatus();
-  if (!IsAllowed(status)) {
+bool PrivacySandboxSettingsImpl::IsPrivateAggregationDebugModeAllowed(
+    const url::Origin& top_frame_origin,
+    const url::Origin& reporting_origin) const {
+  if (!IsPrivateAggregationAllowed(top_frame_origin, reporting_origin)) {
     return false;
   }
 
-  // For Measurement and Relevance APIs, we explicitly do not require the
-  // underlying pref to be enabled if there is a local flag enabling the APIs to
-  // allow for local testing.
-  if (base::FeatureList::IsEnabled(
-          privacy_sandbox::kOverridePrivacySandboxSettingsLocalTesting)) {
+  // Third party cookies must also be available for this context. An empty site
+  // for cookies is provided so the context is always treated as a third party.
+  content_settings::CookieSettingsBase::CookieSettingWithMetadata
+      cookie_setting_with_metadata;
+  if (cookie_settings_->IsFullCookieAccessAllowed(
+          reporting_origin.GetURL(), net::SiteForCookies(), top_frame_origin,
+          net::CookieSettingOverrides(), &cookie_setting_with_metadata)) {
     return true;
   }
 
-  return pref_service_->GetBoolean(prefs::kPrivacySandboxApisEnabledV2);
+  // Third-party cookie access is disabled, but we may still allow Private
+  // Aggregation's debug mode in this context if it was only blocked due to the
+  // 3PCD experiment.
+  return base::FeatureList::IsEnabled(
+             kPrivateAggregationDebugReportingCookieDeprecationTesting) &&
+         cookie_setting_with_metadata.BlockedByThirdPartyCookieBlocking() &&
+         delegate_->AreThirdPartyCookiesBlockedByCookieDeprecationExperiment();
 }
 
 void PrivacySandboxSettingsImpl::SetAllPrivacySandboxAllowedForTesting() {
-  if (base::FeatureList::IsEnabled(privacy_sandbox::kPrivacySandboxSettings4)) {
-    pref_service_->SetBoolean(prefs::kPrivacySandboxM1FledgeEnabled, true);
-    pref_service_->SetBoolean(prefs::kPrivacySandboxM1TopicsEnabled, true);
-    pref_service_->SetBoolean(prefs::kPrivacySandboxM1AdMeasurementEnabled,
-                              true);
-    return;
-  }
-
-  pref_service_->SetBoolean(prefs::kPrivacySandboxApisEnabledV2, true);
+  pref_service_->SetBoolean(prefs::kPrivacySandboxM1FledgeEnabled, true);
+  pref_service_->SetBoolean(prefs::kPrivacySandboxM1TopicsEnabled, true);
+  pref_service_->SetBoolean(prefs::kPrivacySandboxM1AdMeasurementEnabled, true);
 }
 
 void PrivacySandboxSettingsImpl::SetTopicsBlockedForTesting() {
-  if (base::FeatureList::IsEnabled(privacy_sandbox::kPrivacySandboxSettings4)) {
-    pref_service_->SetBoolean(prefs::kPrivacySandboxM1TopicsEnabled, false);
-    return;
-  }
-
-  pref_service_->SetBoolean(prefs::kPrivacySandboxApisEnabledV2, false);
-}
-
-void PrivacySandboxSettingsImpl::SetPrivacySandboxEnabled(bool enabled) {
-  pref_service_->SetBoolean(prefs::kPrivacySandboxApisEnabledV2, enabled);
+  pref_service_->SetBoolean(prefs::kPrivacySandboxM1TopicsEnabled, false);
 }
 
 bool PrivacySandboxSettingsImpl::IsPrivacySandboxRestricted() const {
@@ -733,14 +763,9 @@ void PrivacySandboxSettingsImpl::OnCookiesCleared() {
   SetTopicsDataAccessibleFromNow();
 }
 
-void PrivacySandboxSettingsImpl::OnFirstPartySetsEnabledPrefChanged() {
-  if (!base::FeatureList::IsEnabled(features::kFirstPartySets)) {
-    return;
-  }
-
+void PrivacySandboxSettingsImpl::OnRelatedWebsiteSetsEnabledPrefChanged() {
   for (auto& observer : observers_) {
-    observer.OnFirstPartySetsEnabledChanged(
-        pref_service_->GetBoolean(prefs::kPrivacySandboxFirstPartySetsEnabled));
+    observer.OnFirstPartySetsEnabledChanged(AreRelatedWebsiteSetsEnabled());
   }
 }
 
@@ -755,20 +780,6 @@ void PrivacySandboxSettingsImpl::RemoveObserver(Observer* observer) {
 void PrivacySandboxSettingsImpl::SetDelegateForTesting(
     std::unique_ptr<Delegate> delegate) {
   delegate_ = std::move(delegate);
-}
-
-bool PrivacySandboxSettingsImpl::IsPrivacySandboxEnabledForContext(
-    const absl::optional<url::Origin>& top_frame_origin,
-    const GURL& url) const {
-  if (!IsPrivacySandboxEnabled()) {
-    return false;
-  }
-
-  // Third party cookies must also be available for this context. An empty site
-  // for cookies is provided so the context is always treated as a third party.
-  return cookie_settings_->IsFullCookieAccessAllowed(
-      url, net::SiteForCookies(), top_frame_origin,
-      net::CookieSettingOverrides());
 }
 
 void PrivacySandboxSettingsImpl::SetTopicsDataAccessibleFromNow() const {
@@ -815,6 +826,10 @@ PrivacySandboxSettingsImpl::GetM1PrivacySandboxApiEnabledStatus(
   DCHECK(pref_name == prefs::kPrivacySandboxM1TopicsEnabled ||
          pref_name == prefs::kPrivacySandboxM1FledgeEnabled ||
          pref_name == prefs::kPrivacySandboxM1AdMeasurementEnabled);
+  if (delegate_->IsCookieDeprecationExperimentEligible() &&
+      features::kCookieDeprecationTestingDisableAdsAPIs.Get()) {
+    return Status::kBlockedBy3pcdExperiment;
+  }
 
   bool should_ignore_restriction =
       pref_name == prefs::kPrivacySandboxM1AdMeasurementEnabled &&
@@ -836,6 +851,42 @@ PrivacySandboxSettingsImpl::GetM1PrivacySandboxApiEnabledStatus(
   status = (pref_service_->GetBoolean(pref_name)) ? Status::kAllowed
                                                   : Status::kApisDisabled;
   return status;
+}
+
+TpcdExperimentEligibility
+PrivacySandboxSettingsImpl::GetCookieDeprecationExperimentCurrentEligibility()
+    const {
+  return delegate_->GetCookieDeprecationExperimentCurrentEligibility();
+}
+
+bool PrivacySandboxSettingsImpl::IsCookieDeprecationLabelAllowed() const {
+  return delegate_->IsCookieDeprecationLabelAllowed();
+}
+
+bool PrivacySandboxSettingsImpl::IsCookieDeprecationLabelAllowedForContext(
+    const url::Origin& top_frame_origin,
+    const url::Origin& context_origin) const {
+  if (!IsCookieDeprecationLabelAllowed()) {
+    return false;
+  }
+
+  return IsAllowed(
+      GetSiteAccessAllowedStatus(top_frame_origin, context_origin.GetURL()));
+}
+
+void PrivacySandboxSettingsImpl::OnBlockAllThirdPartyCookiesChanged() {
+  for (auto& observer : observers_) {
+    observer.OnFirstPartySetsEnabledChanged(AreRelatedWebsiteSetsEnabled());
+  }
+}
+
+bool PrivacySandboxSettingsImpl::AreRelatedWebsiteSetsEnabled() const {
+  // FPS should be on in the 3PCD experiment unless all 3PC are blocked.
+  if (tracking_protection_settings_->IsTrackingProtection3pcdEnabled()) {
+    return !tracking_protection_settings_->AreAllThirdPartyCookiesBlocked();
+  }
+  return pref_service_->GetBoolean(
+      prefs::kPrivacySandboxRelatedWebsiteSetsEnabled);
 }
 
 }  // namespace privacy_sandbox

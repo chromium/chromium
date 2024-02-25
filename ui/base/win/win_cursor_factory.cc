@@ -6,6 +6,7 @@
 
 #include <windows.h>
 
+#include <optional>
 #include <string>
 #include <utility>
 
@@ -14,7 +15,6 @@
 #include "base/notreached.h"
 #include "base/win/scoped_gdi_object.h"
 #include "base/win/windows_types.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/base/cursor/cursor.h"
 #include "ui/base/cursor/mojom/cursor_type.mojom-shared.h"
@@ -156,20 +156,20 @@ scoped_refptr<PlatformCursor> WinCursorFactory::GetDefaultCursor(
   return default_cursors_[type];
 }
 
-absl::optional<CursorData> WinCursorFactory::GetCursorData(
+std::optional<CursorData> WinCursorFactory::GetCursorData(
     mojom::CursorType type) {
   DCHECK_NE(type, mojom::CursorType::kNone);
   DCHECK_NE(type, mojom::CursorType::kCustom);
 
   auto cursor = GetDefaultCursor(type);
   if (!cursor) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   HCURSOR hcursor = WinCursor::FromPlatformCursor(cursor)->hcursor();
   SkBitmap bitmap = IconUtil::CreateSkBitmapFromHICON(hcursor);
   if (bitmap.isNull()) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   return ui::CursorData({std::move(bitmap)},

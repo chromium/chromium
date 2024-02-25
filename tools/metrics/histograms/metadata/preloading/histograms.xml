@@ -26,6 +26,9 @@ chromium-metrics-reviews@google.com.
                velocity and acceleration suggest it will leave soon. The
                output of this predictor is mouse velocity instead of a
                logit/probability."/>
+  <variant name="OnPreloadingHeuristicsMLModel"
+      summary="The estimated probability that a user will click on a link
+               that is calculated by preloading heuristic ML model."/>
 </variants>
 
 <variants name="GroundTruth">
@@ -41,16 +44,14 @@ chromium-metrics-reviews@google.com.
   <variant name="DefaultSearchEngine"
       summary="When preloading is triggered from the default search engine
                suggest service."/>
-  <variant name="kLinkRel"
+  <variant name="LinkRel"
       summary="When preloading is triggered by the 'rel' keyword embedded in
                the link element."/>
-  <variant name="kUnspecified" summary=""/>
-  <variant name="kUrlPointerDownOnAnchor"
-      summary="When preloading is triggered by OnPointerDown."/>
-  <variant name="kUrlPointerHoverOnAnchor"
-      summary="When preloading is triggered by OnPointerHover."/>
   <variant name="MouseBackButton"
       summary="When a mouse down of a mouse back button is seen."/>
+  <variant name="MouseHoverOrMouseDownOnBookmarkBar"
+      summary="When preloading is triggered by mouse hover bookmarkbar or
+               mouse down bookmark bar."/>
   <variant name="OmniboxDirectURLInput"
       summary="When preloading is triggered from the Omnibox DUI."/>
   <variant name="OmniboxMousePredictor"
@@ -63,6 +64,11 @@ chromium-metrics-reviews@google.com.
       summary="When a pointerdown event happens on a HTTP/HTTPS anchor."/>
   <variant name="SpeculationRules"
       summary="When preloading is triggered by the speculation rules."/>
+  <variant name="Unspecified" summary=""/>
+  <variant name="UrlPointerDownOnAnchor"
+      summary="When preloading is triggered by OnPointerDown."/>
+  <variant name="UrlPointerHoverOnAnchor"
+      summary="When preloading is triggered by OnPointerHover."/>
 </variants>
 
 <variants name="PreloadingType">
@@ -74,7 +80,7 @@ chromium-metrics-reviews@google.com.
 </variants>
 
 <histogram name="Preloading.AnchorElementPreloader.PreloadingTriggered"
-    enum="AnchorElementPreloaderType" expires_after="2024-02-11">
+    enum="AnchorElementPreloaderType" expires_after="2024-07-14">
   <owner>spelchat@chromium.org</owner>
   <owner>curranmax@chromium.org</owner>
   <owner>chrome-brapp-loading@google.com</owner>
@@ -90,7 +96,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Preloading.Experimental.UpdateSpeculationCandidatesReason"
     enum="PreloadingUpdateSpeculationCandidatesReason"
-    expires_after="2024-01-21">
+    expires_after="2024-07-28">
   <owner>taiyo@chromium.org</owner>
   <owner>chrome-prerendering@google.com</owner>
   <summary>
@@ -104,7 +110,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Preloading.Experimental.{ExperimentalPreloadingPrediction}.{GroundTruth}"
-    units="param" expires_after="2024-06-01">
+    units="param" expires_after="2024-08-04">
   <owner>isaboori@google.com</owner>
   <owner>spelchat@chromium.org</owner>
   <owner>jbroman@chromium.org</owner>
@@ -127,7 +133,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Preloading.Predictor.{PreloadingPredictor}.Precision"
-    enum="PredictorConfusionMatrix" expires_after="2024-06-01">
+    enum="PredictorConfusionMatrix" expires_after="2024-08-04">
   <owner>isaboori@google.com</owner>
   <owner>spelchat@chromium.org</owner>
   <owner>sreejakshetty@chromium.org</owner>
@@ -144,7 +150,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Preloading.Predictor.{PreloadingPredictor}.Recall"
-    enum="PredictorConfusionMatrix" expires_after="2024-06-01">
+    enum="PredictorConfusionMatrix" expires_after="2024-08-04">
   <owner>isaboori@google.com</owner>
   <owner>spelchat@chromium.org</owner>
   <owner>sreejakshetty@chromium.org</owner>
@@ -162,7 +168,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Preloading.PrerenderBackNavigationEligibility.{PreloadingPredictor}"
-    enum="PrerenderBackNavigationEligibility" expires_after="2024-06-01">
+    enum="PrerenderBackNavigationEligibility" expires_after="2024-08-04">
   <owner>mcnee@chromium.org</owner>
   <owner>chrome-brapp-loading@chromium.org</owner>
   <summary>
@@ -174,7 +180,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Preloading.{PreloadingType}.Attempt.{PreloadingPredictor}.Precision"
-    enum="PredictorConfusionMatrix" expires_after="2024-06-01">
+    enum="PredictorConfusionMatrix" expires_after="2024-08-04">
   <owner>isaboori@google.com</owner>
   <owner>spelchat@chromium.org</owner>
   <owner>sreejakshetty@chromium.org</owner>
@@ -194,7 +200,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Preloading.{PreloadingType}.Attempt.{PreloadingPredictor}.Recall"
-    enum="PredictorConfusionMatrix" expires_after="2024-06-01">
+    enum="PredictorConfusionMatrix" expires_after="2024-08-04">
   <owner>isaboori@google.com</owner>
   <owner>spelchat@chromium.org</owner>
   <owner>sreejakshetty@chromium.org</owner>
@@ -215,7 +221,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Preloading.{PreloadingType}.Attempt.{PreloadingPredictor}.TriggeringOutcome"
-    enum="PreloadingTriggeringOutcome" expires_after="2024-06-01">
+    enum="PreloadingTriggeringOutcome" expires_after="2024-08-04">
   <owner>spelchat@chromium.org</owner>
   <owner>sreejakshetty@chromium.org</owner>
   <owner>jbroman@chromium.org</owner>

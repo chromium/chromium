@@ -5,11 +5,11 @@
 #ifndef CHROME_BROWSER_ASH_LOGIN_TEST_ENROLLMENT_UI_MIXIN_H_
 #define CHROME_BROWSER_ASH_LOGIN_TEST_ENROLLMENT_UI_MIXIN_H_
 
+#include <optional>
 #include <string>
 
 #include "chrome/browser/ash/login/enrollment/enrollment_screen.h"
 #include "chrome/test/base/mixin_based_in_process_browser_test.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ash {
 namespace test {
@@ -89,8 +89,8 @@ class EnrollmentUIMixin : public InProcessBrowserTestMixin {
   EnrollmentScreen::Result WaitForScreenExit();
 
  private:
-  absl::optional<EnrollmentScreen::Result> screen_result_;
-  absl::optional<base::RunLoop> screen_exit_waiter_;
+  std::optional<EnrollmentScreen::Result> screen_result_;
+  std::optional<base::RunLoop> screen_exit_waiter_;
 
   void HandleScreenExit(EnrollmentScreen::Result result);
 };

@@ -191,8 +191,6 @@ TEST_P(BoxPainterTest, ScrollHitTestProperties) {
   // The scroll hit test should be after the container background but before the
   // scrolled contents.
   EXPECT_EQ(kBackgroundPaintInBorderBoxSpace,
-            container.ComputeBackgroundPaintLocationIfComposited());
-  EXPECT_EQ(kBackgroundPaintInBorderBoxSpace,
             container.GetBackgroundPaintLocation());
   EXPECT_THAT(ContentDisplayItems(),
               ElementsAre(VIEW_SCROLLING_BACKGROUND_DISPLAY_ITEM,
@@ -216,10 +214,13 @@ TEST_P(BoxPainterTest, ScrollHitTestProperties) {
               2, 2, PaintChunk::Id(container.Id(), DisplayItem::kScrollHitTest),
               container.FirstFragment().LocalBorderBoxProperties(),
               &scroll_hit_test_data, gfx::Rect(0, 0, 200, 200)),
-          IsPaintChunk(2, 3,
-                       PaintChunk::Id(container.Id(),
-                                      kClippedContentsBackgroundChunkType),
-                       scrolling_contents_properties)));
+          IsPaintChunk(
+              2, 3,
+              PaintChunk::Id(container.Id(),
+                             RuntimeEnabledFeatures::HitTestOpaquenessEnabled()
+                                 ? kScrollingBackgroundChunkType
+                                 : kClippedContentsBackgroundChunkType),
+              scrolling_contents_properties)));
 
   // We always create scroll node for the root layer.
   const auto& root_transform =
@@ -281,11 +282,11 @@ size_t CountDrawImagesWithConstraint(const cc::PaintRecord& record,
                                      SkCanvas::SrcRectConstraint constraint) {
   size_t count = 0;
   for (const cc::PaintOp& op : record) {
-    if (op.GetType() == cc::PaintOpType::DrawImageRect) {
+    if (op.GetType() == cc::PaintOpType::kDrawImageRect) {
       const auto& image_op = static_cast<const cc::DrawImageRectOp&>(op);
       if (image_op.constraint == constraint)
         ++count;
-    } else if (op.GetType() == cc::PaintOpType::DrawRecord) {
+    } else if (op.GetType() == cc::PaintOpType::kDrawRecord) {
       const auto& record_op = static_cast<const cc::DrawRecordOp&>(op);
       count += CountDrawImagesWithConstraint(record_op.record, constraint);
     }

@@ -15,6 +15,7 @@
 #include "base/time/time.h"
 #include "base/values.h"
 #include "content/public/browser/browser_thread.h"
+#include "extensions/common/extension_id.h"
 
 namespace content {
 class BrowserContext;
@@ -53,7 +54,7 @@ class RulesCacheDelegate {
     kPersistent,
   };
 
-  RulesCacheDelegate(Type type, bool log_storage_init_delay);
+  explicit RulesCacheDelegate(Type type);
 
   virtual ~RulesCacheDelegate();
 
@@ -68,7 +69,7 @@ class RulesCacheDelegate {
   // Initialize the storage functionality.
   void Init(RulesRegistry* registry);
 
-  void UpdateRules(const std::string& extension_id, base::Value::List value);
+  void UpdateRules(const ExtensionId& extension_id, base::Value::List value);
 
   // Indicates whether or not this registry has any registered rules cached.
   bool HasRules() const;
@@ -102,16 +103,16 @@ class RulesCacheDelegate {
   void ReadRulesForInstalledExtensions();
 
   // Read/write a list of rules serialized to Values.
-  void ReadFromStorage(const std::string& extension_id);
-  void ReadFromStorageCallback(const std::string& extension_id,
-                               absl::optional<base::Value> value);
+  void ReadFromStorage(const ExtensionId& extension_id);
+  void ReadFromStorageCallback(const ExtensionId& extension_id,
+                               std::optional<base::Value> value);
 
   // Check the preferences whether the extension with |extension_id| has some
   // rules stored on disk. If this information is not in the preferences, true
   // is returned as a safe default value.
-  bool GetDeclarativeRulesStored(const std::string& extension_id) const;
+  bool GetDeclarativeRulesStored(const ExtensionId& extension_id) const;
   // Modify the preference to |rules_stored|.
-  void SetDeclarativeRulesStored(const std::string& extension_id,
+  void SetDeclarativeRulesStored(const ExtensionId& extension_id,
                                  bool rules_stored);
 
   raw_ptr<content::BrowserContext> browser_context_;
@@ -129,11 +130,6 @@ class RulesCacheDelegate {
 
   // A set of extension IDs that have rules we are reading from storage.
   std::set<std::string> waiting_for_extensions_;
-
-  // We measure the time spent on loading rules on init. The result is logged
-  // with UMA once per each RulesCacheDelegate instance, unless in Incognito.
-  base::Time storage_init_time_;
-  bool log_storage_init_delay_;
 
   // Weak pointer to post tasks to the owning rules registry.
   base::WeakPtr<RulesRegistry> registry_;

@@ -34,6 +34,7 @@ class TranslateUILanguagesManager {
 
   TranslateUILanguagesManager(
       const base::WeakPtr<TranslateManager>& translate_manager,
+      const std::vector<std::string>& language_codes,
       const std::string& source_language,
       const std::string& target_language);
 

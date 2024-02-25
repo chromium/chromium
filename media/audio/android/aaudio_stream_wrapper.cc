@@ -4,14 +4,13 @@
 
 #include "media/audio/android/aaudio_stream_wrapper.h"
 
-#include "base/android/build_info.h"
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/thread_annotations.h"
 #include "base/trace_event/trace_event.h"
-#include "media/audio/android/aaudio_stubs.h"
 
+#pragma clang attribute push DEFAULT_REQUIRES_ANDROID_API(AAUDIO_MIN_API)
 namespace media {
 
 // Used to circumvent issues where the AAudio thread callbacks continue
@@ -129,16 +128,15 @@ AAudioStreamWrapper::~AAudioStreamWrapper() {
 
   CHECK(!aaudio_stream_);
 
-  if (base::android::SdkVersion::SDK_VERSION_S >=
-      base::android::BuildInfo::GetInstance()->sdk_int()) {
-    // On Android S+, |destruction_helper_| can be destroyed as part of the
-    // normal class teardown.
+  // On Android S+, |destruction_helper_| can be destroyed as part of the
+  // normal class teardown.
+  if (__builtin_available(android 31, *)) {
     return;
   }
 
   // In R and earlier, it is possible for callbacks to still be running even
-  // after calling AAudioStream_close(). The code below is a mitigation to work
-  // around this issue. See crbug.com/1183255.
+  // after calling AAudioStream_close(). The code below is a mitigation to
+  // work around this issue. See crbug.com/1183255.
 
   // Keep |destruction_helper_| alive longer than |this|, so the |user_data|
   // bound to the callback stays valid, until the callbacks stop.
@@ -169,6 +167,21 @@ bool AAudioStreamWrapper::Open() {
   AAudioStreamBuilder_setFramesPerDataCallback(builder,
                                                params_.frames_per_buffer());
 
+  if (stream_type_ == StreamType::kInput) {
+    // Set AAUDIO_INPUT_PRESET_VOICE_COMMUNICATION when we need echo
+    // cancellation. Otherwise, we use AAUDIO_INPUT_PRESET_CAMCORDER instead
+    // of the platform default of AAUDIO_INPUT_PRESET_VOICE_RECOGNITION, since
+    // it supposedly uses a wideband signal.
+    //
+    // We do not use AAUDIO_INPUT_PRESET_UNPROCESSED, even if
+    // `params_.effects() == AudioParameters::NO_EFFECTS` because the lack of
+    // automatic gain control results in quiet, sometimes silent, streams.
+    AAudioStreamBuilder_setInputPreset(
+        builder, params_.effects() & AudioParameters::ECHO_CANCELLER
+                     ? AAUDIO_INPUT_PRESET_VOICE_COMMUNICATION
+                     : AAUDIO_INPUT_PRESET_CAMCORDER);
+  }
+
   // Callbacks
   AAudioStreamBuilder_setDataCallback(builder, OnAudioDataRequestedCallback,
                                       destruction_helper_.get());
@@ -183,6 +196,8 @@ bool AAudioStreamWrapper::Open() {
     CHECK(!aaudio_stream_);
     return false;
   }
+
+  CHECK_EQ(AAUDIO_FORMAT_PCM_FLOAT, AAudioStream_getFormat(aaudio_stream_));
 
   // After opening the stream, sets the effective buffer size to 3X the burst
   // size to prevent glitching if the burst is small (e.g. < 128). On some
@@ -333,3 +348,4 @@ void AAudioStreamWrapper::OnStreamError(aaudio_result_t error) {
 }
 
 }  // namespace media
+#pragma clang attribute pop

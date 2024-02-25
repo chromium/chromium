@@ -77,7 +77,7 @@ class TabGroupsMoveFunction : public ExtensionFunction {
   // |error| is populated if the group cannot be found or moved.
   bool MoveGroup(int group_id,
                  int new_index,
-                 const absl::optional<int>& window_id,
+                 const std::optional<int>& window_id,
                  tab_groups::TabGroupId* group,
                  std::string* error);
 };

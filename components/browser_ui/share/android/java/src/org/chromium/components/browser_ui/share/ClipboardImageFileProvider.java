@@ -19,9 +19,7 @@ import org.chromium.base.ContextUtils;
 import org.chromium.base.StrictModeContext;
 import org.chromium.ui.base.Clipboard;
 
-/**
- * Implementation class for {@link Clipboard.ImageFileProvider}.
- */
+/** Implementation class for {@link Clipboard.ImageFileProvider}. */
 public class ClipboardImageFileProvider implements Clipboard.ImageFileProvider {
     @Override
     public void storeImageAndGenerateUri(

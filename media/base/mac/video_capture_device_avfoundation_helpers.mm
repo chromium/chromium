@@ -4,23 +4,44 @@
 
 #include "media/base/mac/video_capture_device_avfoundation_helpers.h"
 
+#include "base/feature_list.h"
 #include "build/build_config.h"
 
 namespace media {
 
-NSArray<AVCaptureDevice*>* GetVideoCaptureDevices() {
-  // Query for all camera device types available on apple platform. The
-  // others in the enum are only supported on iOS/iPadOS.
-  NSArray* captureDeviceType = @[
-    AVCaptureDeviceTypeBuiltInWideAngleCamera,
 #if BUILDFLAG(IS_MAC)
-    AVCaptureDeviceTypeExternalUnknown
-#endif
-  ];
+BASE_FEATURE(kUseAVCaptureDeviceTypeExternal,
+             "UseAVCaptureDeviceTypeExternal",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+#endif  // BUILDFLAG(IS_MAC)
+
+NSArray<AVCaptureDevice*>* GetVideoCaptureDevices() {
+  // Camera device types available on all apple platforms.
+  NSArray* captureDeviceTypes = @[ AVCaptureDeviceTypeBuiltInWideAngleCamera ];
+
+#if BUILDFLAG(IS_MAC)
+  // MacOS has an additional 'external' device type we want to include.
+  // AVCaptureDeviceTypeExternal since 14.0, AVCaptureDeviceTypeExternalUnknown
+  // before. See crbug.com/1484830.
+  if (@available(macOS 14.0, *)) {
+    if (base::FeatureList::IsEnabled(kUseAVCaptureDeviceTypeExternal)) {
+      captureDeviceTypes =
+          [captureDeviceTypes arrayByAddingObject:AVCaptureDeviceTypeExternal];
+    } else {
+      // @available needs to be alone in an if statement, so we need to
+      // duplicate the else case here.
+      captureDeviceTypes = [captureDeviceTypes
+          arrayByAddingObject:AVCaptureDeviceTypeExternalUnknown];
+    }
+  } else {
+    captureDeviceTypes = [captureDeviceTypes
+        arrayByAddingObject:AVCaptureDeviceTypeExternalUnknown];
+  }
+#endif  // BUILDFLAG(IS_MAC)
 
   AVCaptureDeviceDiscoverySession* deviceDiscoverySession =
       [AVCaptureDeviceDiscoverySession
-          discoverySessionWithDeviceTypes:captureDeviceType
+          discoverySessionWithDeviceTypes:captureDeviceTypes
                                 mediaType:AVMediaTypeVideo
                                  position:AVCaptureDevicePositionUnspecified];
   return deviceDiscoverySession.devices;

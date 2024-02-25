@@ -4,6 +4,7 @@
 
 #import "ios/chrome/browser/autocomplete/model/autocomplete_provider_client_impl.h"
 
+#import "base/feature_list.h"
 #import "base/notreached.h"
 #import "base/strings/utf_string_conversions.h"
 #import "components/history/core/browser/history_service.h"
@@ -13,7 +14,9 @@
 #import "components/omnibox/browser/actions/omnibox_pedal_provider.h"
 #import "components/omnibox/browser/autocomplete_classifier.h"
 #import "components/omnibox/browser/omnibox_triggered_feature_service.h"
+#import "components/omnibox/browser/provider_state_service.h"
 #import "components/omnibox/browser/shortcuts_backend.h"
+#import "components/omnibox/common/omnibox_features.h"
 #import "components/prefs/pref_service.h"
 #import "components/signin/public/identity_manager/identity_manager.h"
 #import "components/sync/service/sync_service.h"
@@ -21,15 +24,15 @@
 #import "ios/chrome/browser/autocomplete/model/autocomplete_classifier_factory.h"
 #import "ios/chrome/browser/autocomplete/model/in_memory_url_index_factory.h"
 #import "ios/chrome/browser/autocomplete/model/omnibox_pedal_implementation.h"
+#import "ios/chrome/browser/autocomplete/model/provider_state_service_factory.h"
 #import "ios/chrome/browser/autocomplete/model/remote_suggestions_service_factory.h"
 #import "ios/chrome/browser/autocomplete/model/shortcuts_backend_factory.h"
 #import "ios/chrome/browser/autocomplete/model/tab_matcher_impl.h"
 #import "ios/chrome/browser/autocomplete/model/zero_suggest_cache_service_factory.h"
-#import "ios/chrome/browser/bookmarks/model/account_bookmark_model_factory.h"
-#import "ios/chrome/browser/bookmarks/model/local_or_syncable_bookmark_model_factory.h"
-#import "ios/chrome/browser/history/history_service_factory.h"
-#import "ios/chrome/browser/history/top_sites_factory.h"
-#import "ios/chrome/browser/search_engines/template_url_service_factory.h"
+#import "ios/chrome/browser/bookmarks/model/bookmark_model_factory.h"
+#import "ios/chrome/browser/history/model/history_service_factory.h"
+#import "ios/chrome/browser/history/model/top_sites_factory.h"
+#import "ios/chrome/browser/search_engines/model/template_url_service_factory.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/browser/browser_list.h"
@@ -38,18 +41,34 @@
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/shared/model/url/chrome_url_constants.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
-#import "ios/chrome/browser/signin/identity_manager_factory.h"
-#import "ios/chrome/browser/sync/sync_service_factory.h"
+#import "ios/chrome/browser/signin/model/identity_manager_factory.h"
+#import "ios/chrome/browser/sync/model/sync_service_factory.h"
 #import "ios/components/webui/web_ui_url_constants.h"
 #import "services/network/public/cpp/shared_url_loader_factory.h"
+
+namespace {
+
+// Killswitch, can be removed around December 2023. If enabled,
+// IsAuthenticated() will only return true for Sync-consented accounts.
+BASE_FEATURE(kIosAutocompleteProviderRequireSync,
+             "IosAutocompleteProviderRequireSync",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+}  // namespace
 
 AutocompleteProviderClientImpl::AutocompleteProviderClientImpl(
     ChromeBrowserState* browser_state)
     : browser_state_(browser_state),
       url_consent_helper_(
-          unified_consent::UrlKeyedDataCollectionConsentHelper::
-              NewPersonalizedDataCollectionConsentHelper(
-                  SyncServiceFactory::GetForBrowserState(browser_state_))),
+          base::FeatureList::IsEnabled(
+              omnibox::kPrefBasedDataCollectionConsentHelper)
+              ? unified_consent::UrlKeyedDataCollectionConsentHelper::
+                    NewAnonymizedDataCollectionConsentHelper(
+                        browser_state_->GetPrefs())
+              : unified_consent::UrlKeyedDataCollectionConsentHelper::
+                    NewPersonalizedDataCollectionConsentHelper(
+                        SyncServiceFactory::GetForBrowserState(
+                            browser_state_))),
       omnibox_triggered_feature_service_(
           std::make_unique<OmniboxTriggeredFeatureService>()),
       tab_matcher_(browser_state_) {
@@ -95,15 +114,9 @@ scoped_refptr<history::TopSites> AutocompleteProviderClientImpl::GetTopSites() {
   return ios::TopSitesFactory::GetForBrowserState(browser_state_);
 }
 
-bookmarks::BookmarkModel*
-AutocompleteProviderClientImpl::GetLocalOrSyncableBookmarkModel() {
-  return ios::LocalOrSyncableBookmarkModelFactory::GetForBrowserState(
-      browser_state_);
-}
-
-bookmarks::BookmarkModel*
-AutocompleteProviderClientImpl::GetAccountBookmarkModel() {
-  return ios::AccountBookmarkModelFactory::GetForBrowserState(browser_state_);
+bookmarks::CoreBookmarkModel*
+AutocompleteProviderClientImpl::GetBookmarkModel() {
+  return ios::BookmarkModelFactory::GetForBrowserState(browser_state_);
 }
 
 history::URLDatabase* AutocompleteProviderClientImpl::GetInMemoryDatabase() {
@@ -187,6 +200,11 @@ AutocompleteProviderClientImpl::GetOnDeviceTailModelService() const {
   return nullptr;
 }
 
+ProviderStateService* AutocompleteProviderClientImpl::GetProviderStateService()
+    const {
+  return ios::ProviderStateServiceFactory::GetForBrowserState(browser_state_);
+}
+
 std::string AutocompleteProviderClientImpl::GetAcceptLanguages() const {
   return browser_state_->GetPrefs()->GetString(
       language::prefs::kAcceptLanguages);
@@ -249,13 +267,19 @@ bool AutocompleteProviderClientImpl::IsPersonalizedUrlDataCollectionActive()
 bool AutocompleteProviderClientImpl::IsAuthenticated() const {
   signin::IdentityManager* identity_manager =
       IdentityManagerFactory::GetForBrowserState(browser_state_);
-  return identity_manager &&
-         identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSync);
+  signin::ConsentLevel level =
+      base::FeatureList::IsEnabled(kIosAutocompleteProviderRequireSync)
+          ? signin::ConsentLevel::kSync
+          : signin::ConsentLevel::kSignin;
+  return identity_manager && identity_manager->HasPrimaryAccount(level);
 }
 
 bool AutocompleteProviderClientImpl::IsSyncActive() const {
   syncer::SyncService* sync =
       SyncServiceFactory::GetForBrowserState(browser_state_);
+  // TODO(crbug.com/40066949): Remove usage of IsSyncFeatureActive() after kSync
+  // users are migrated to kSignin in phase 3. See ConsentLevel::kSync
+  // documentation for details.
   return sync && sync->IsSyncFeatureActive();
 }
 
@@ -281,4 +305,13 @@ void AutocompleteProviderClientImpl::PrefetchImage(const GURL& url) {}
 
 const TabMatcher& AutocompleteProviderClientImpl::GetTabMatcher() const {
   return tab_matcher_;
+}
+
+bool AutocompleteProviderClientImpl::in_background_state() const {
+  return in_background_state_;
+}
+
+void AutocompleteProviderClientImpl::set_in_background_state(
+    bool in_background_state) {
+  in_background_state_ = in_background_state;
 }

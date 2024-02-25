@@ -10,7 +10,7 @@
 
 #include "base/base_export.h"
 #include "base/functional/callback.h"
-#include "base/strings/string_piece_forward.h"
+#include "base/strings/string_piece.h"
 
 namespace base {
 

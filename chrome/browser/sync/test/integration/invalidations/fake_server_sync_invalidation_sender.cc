@@ -51,7 +51,6 @@ void FakeServerSyncInvalidationSender::OnWillCommit() {
 }
 
 void FakeServerSyncInvalidationSender::OnCommit(
-    const std::string& committer_invalidator_client_id,
     syncer::ModelTypeSet committed_model_types) {
   // Update token to interested data types mapping. This is needed to support
   // newly added DeviceInfos during commit request.
@@ -74,7 +73,7 @@ void FakeServerSyncInvalidationSender::OnCommit(
 
     // Versions are used to keep hints ordered. Versions are not really used by
     // tests, just use current time.
-    payload.set_version(base::Time::Now().ToJavaTime());
+    payload.set_version(base::Time::Now().InMillisecondsSinceUnixEpoch());
     payload.set_hint("hint");
 
     invalidations_to_deliver_[token].push_back(std::move(payload));

@@ -97,8 +97,7 @@ scoped_refptr<base::RefCountedMemory> Get1xPNGBytesFromNSImage(
   return refcounted_bytes;
 }
 
-NSImage* NSImageFromPNG(const std::vector<gfx::ImagePNGRep>& image_png_reps,
-                        CGColorSpaceRef color_space) {
+NSImage* NSImageFromPNG(const std::vector<gfx::ImagePNGRep>& image_png_reps) {
   if (image_png_reps.empty()) {
     LOG(ERROR) << "Unable to decode PNG.";
     return GetErrorNSImage();
@@ -116,24 +115,6 @@ NSImage* NSImageFromPNG(const std::vector<gfx::ImagePNGRep>& image_png_reps,
       LOG(ERROR) << "Unable to decode PNG at " << image_png_rep.scale << ".";
       return GetErrorNSImage();
     }
-
-    // PNGCodec ignores colorspace related ancillary chunks (sRGB, iCCP). Ignore
-    // colorspace information when decoding directly from PNG to an NSImage so
-    // that the conversions: PNG -> SkBitmap -> NSImage and PNG -> NSImage
-    // produce visually similar results.
-    CGColorSpaceModel decoded_color_space_model =
-        CGColorSpaceGetModel(ns_image_rep.colorSpace.CGColorSpace);
-    CGColorSpaceModel color_space_model = CGColorSpaceGetModel(color_space);
-    if (decoded_color_space_model == color_space_model) {
-      NSColorSpace* ns_color_space =
-          [[NSColorSpace alloc] initWithCGColorSpace:color_space];
-      NSBitmapImageRep* ns_retagged_image_rep =
-          [ns_image_rep
-              bitmapImageRepByRetaggingWithColorSpace:ns_color_space];
-      if (ns_retagged_image_rep && ns_retagged_image_rep != ns_image_rep)
-        ns_image_rep = ns_retagged_image_rep;
-    }
-
     if (!image) {
       float scale = image_png_rep.scale;
       NSSize image_size = NSMakeSize(ns_image_rep.pixelsWide / scale,

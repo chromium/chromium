@@ -6,6 +6,7 @@
 #define MEDIA_CDM_CDM_CAPABILITY_H_
 
 #include <map>
+#include <optional>
 
 #include "base/containers/flat_set.h"
 #include "base/functional/callback.h"
@@ -14,7 +15,6 @@
 #include "media/base/encryption_scheme.h"
 #include "media/base/media_export.h"
 #include "media/base/video_codecs.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace media {
 
@@ -74,7 +74,7 @@ bool MEDIA_EXPORT operator==(const CdmCapability& lhs,
 
 // Callback for when a capability is initialized if lazy initialization
 // required.
-using CdmCapabilityCB = base::OnceCallback<void(absl::optional<CdmCapability>)>;
+using CdmCapabilityCB = base::OnceCallback<void(std::optional<CdmCapability>)>;
 
 }  // namespace media
 

@@ -10,6 +10,8 @@
 #include "third_party/blink/renderer/core/frame/local_frame_client.h"
 #include "third_party/blink/renderer/core/html/html_frame_owner_element.h"
 #include "third_party/blink/renderer/core/html/html_image_element.h"
+#include "third_party/blink/renderer/core/layout/hit_test_location.h"
+#include "third_party/blink/renderer/core/layout/hit_test_result.h"
 #include "third_party/blink/renderer/core/layout/layout_object.h"
 #include "third_party/blink/renderer/core/layout/layout_object_inlines.h"
 #include "third_party/blink/renderer/core/layout/layout_view.h"
@@ -97,7 +99,7 @@ void StickyAdDetector::MaybeFireDetection(LocalFrame* outermost_main_frame) {
   if (!element)
     return;
 
-  DOMNodeId element_id = DOMNodeIds::IdForNode(element);
+  DOMNodeId element_id = element->GetDomNodeId();
 
   if (element_id == candidate_id_) {
     // If the main frame scrolling position has changed by a distance greater

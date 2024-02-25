@@ -5,12 +5,12 @@
 #ifndef COMPONENTS_CAST_RECEIVER_BROWSER_PERMISSIONS_MANAGER_IMPL_H_
 #define COMPONENTS_CAST_RECEIVER_BROWSER_PERMISSIONS_MANAGER_IMPL_H_
 
+#include <optional>
 #include <string>
 #include <vector>
 
 #include "base/supports_user_data.h"
 #include "components/cast_receiver/browser/public/permissions_manager.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/permissions/permission_utils.h"
 #include "url/gurl.h"
 #include "url/origin.h"
@@ -50,7 +50,7 @@ class PermissionsManagerImpl : public PermissionsManager,
   const std::string app_id_;
 
   // URL for this application, if any.
-  const absl::optional<GURL> app_url_;
+  const std::optional<GURL> app_url_;
 
   // Permissions to extend to this app.
   std::vector<blink::PermissionType> permissions_;

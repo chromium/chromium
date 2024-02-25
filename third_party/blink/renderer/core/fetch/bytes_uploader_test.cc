@@ -11,7 +11,9 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/platform/scheduler/test/renderer_scheduler_test_support.h"
+#include "third_party/blink/renderer/platform/heap/persistent.h"
 #include "third_party/blink/renderer/platform/scheduler/public/thread.h"
+#include "third_party/blink/renderer/platform/testing/task_environment.h"
 #include "third_party/blink/renderer/platform/testing/unit_test_helpers.h"
 
 using network::mojom::blink::ChunkedDataPipeGetter;
@@ -47,6 +49,10 @@ class MockBytesConsumer : public BytesConsumer {
 
 class BytesUploaderTest : public ::testing::Test {
  public:
+  ~BytesUploaderTest() override {
+    // Avoids leaking mocked objects passed to `bytes_uploader_`.
+    bytes_uploader_.Release();
+  }
   void InitializeBytesUploader(MockBytesConsumer* mock_bytes_consumer,
                                uint32_t capacity = 100u) {
     bytes_uploader_ = MakeGarbageCollected<BytesUploader>(
@@ -69,6 +75,7 @@ class BytesUploaderTest : public ::testing::Test {
   Persistent<BytesUploader> bytes_uploader_;
 
  private:
+  test::TaskEnvironment task_environment_;
   mojo::ScopedDataPipeProducerHandle writable_;
   mojo::ScopedDataPipeConsumerHandle readable_;
   mojo::Remote<ChunkedDataPipeGetter> remote_;

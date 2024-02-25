@@ -47,10 +47,8 @@ public class FeedSliceViewTracker implements ViewTreeObserver.OnPreDrawListener 
     // Whether to watch a slice view to get notified for user-interaction reliability related
     // UI changes.
     private final boolean mWatchForUserInteractionReliabilityReport;
-    @Nullable
-    private RecyclerView mRootView;
-    @Nullable
-    private FeedListContentManager mContentManager;
+    @Nullable private RecyclerView mRootView;
+    @Nullable private FeedListContentManager mContentManager;
     private ListLayoutHelper mLayoutHelper;
     // The set of content keys already reported as mostly visible (66% threshold), which is used to
     // determine if a slice has been viewed by the user.
@@ -64,8 +62,7 @@ public class FeedSliceViewTracker implements ViewTreeObserver.OnPreDrawListener 
     // away from the indicator.
     private HashSet<String> mLoadMoreAwayFromIndicatorContentKeys = new HashSet<>();
     private boolean mFeedContentVisible;
-    @Nullable
-    private Observer mObserver;
+    @Nullable private Observer mObserver;
     // Map from content key to a list of watchers that will get notified for the first-time visible
     // changes. Each item in the waicther list consists of the view threshold percentage and the
     // callback.
@@ -77,9 +74,11 @@ public class FeedSliceViewTracker implements ViewTreeObserver.OnPreDrawListener 
     public interface Observer {
         // Invoked the first time a slice is 66% visible.
         void sliceVisible(String sliceId);
+
         // Invoked any time at least one slice is X% exposed and all visible content slices cover Y%
         // of the viewport (see Good Visits threshold params).
         void reportContentSliceVisibleTime(long elapsedMs);
+
         // Invoked when feed content is first visible. This can happens as soon as an xsurface view
         // is partially visible.
         void feedContentVisible();
@@ -88,17 +87,24 @@ public class FeedSliceViewTracker implements ViewTreeObserver.OnPreDrawListener 
         //
         // Called the first time a slice view is 5% visible.
         void reportViewFirstBarelyVisible(View view);
+
         // Called the first time a slice view is rendered.
         void reportViewFirstRendered(View view);
+
         // Called the first time a loading indicator for load-more is 5% visible.
         void reportLoadMoreIndicatorVisible();
+
         // Called the first time the user scrolled away from the loading indicator for load-more.
         void reportLoadMoreUserScrolledAwayFromIndicator();
     }
 
-    public FeedSliceViewTracker(@NonNull RecyclerView rootView, @NonNull Activity activity,
-            @NonNull FeedListContentManager contentManager, @Nullable ListLayoutHelper layoutHelper,
-            boolean watchForUserInteractionReliabilityReport, @NonNull Observer observer) {
+    public FeedSliceViewTracker(
+            @NonNull RecyclerView rootView,
+            @NonNull Activity activity,
+            @NonNull FeedListContentManager contentManager,
+            @Nullable ListLayoutHelper layoutHelper,
+            boolean watchForUserInteractionReliabilityReport,
+            @NonNull Observer observer) {
         mActivity = activity;
         mRootView = rootView;
         mContentManager = contentManager;
@@ -131,9 +137,7 @@ public class FeedSliceViewTracker implements ViewTreeObserver.OnPreDrawListener 
         mLayoutHelper = null;
     }
 
-    /**
-     * Clear tracking so that slices already seen can be reported as viewed again.
-     */
+    /** Clear tracking so that slices already seen can be reported as viewed again. */
     public void clear() {
         mContentKeysMostlyVisible.clear();
         mFeedContentVisible = false;
@@ -196,7 +200,8 @@ public class FeedSliceViewTracker implements ViewTreeObserver.OnPreDrawListener 
         int lastPosition = mLayoutHelper.findLastVisibleItemPosition();
         boolean countTimeForGoodVisits = false;
         for (int i = firstPosition;
-                i <= lastPosition && i < mContentManager.getItemCount() && i >= 0; ++i) {
+                i <= lastPosition && i < mContentManager.getItemCount() && i >= 0;
+                ++i) {
             String contentKey = mContentManager.getContent(i).getKey();
             View childView = mRootView.getLayoutManager().findViewByPosition(i);
             if (childView == null) continue;
@@ -250,9 +255,10 @@ public class FeedSliceViewTracker implements ViewTreeObserver.OnPreDrawListener 
                 }
             }
 
-            countTimeForGoodVisits = countTimeForGoodVisits
-                    || isViewVisible(childView, GOOD_VISITS_EXPOSURE_THRESHOLD)
-                    || isViewCoveringViewport(childView, GOOD_VISITS_COVERAGE_THRESHOLD);
+            countTimeForGoodVisits =
+                    countTimeForGoodVisits
+                            || isViewVisible(childView, GOOD_VISITS_EXPOSURE_THRESHOLD)
+                            || isViewCoveringViewport(childView, GOOD_VISITS_COVERAGE_THRESHOLD);
 
             if (!mContentKeysMostlyVisible.contains(contentKey)
                     && isViewVisible(childView, DEFAULT_VIEW_LOG_THRESHOLD)) {
@@ -267,11 +273,12 @@ public class FeedSliceViewTracker implements ViewTreeObserver.OnPreDrawListener 
                 // There is not a system way to measure the render latency. Here we mimic how
                 // Time To First Draw Done is measured, which is done by posting a runnable after
                 // onPreDraw.
-                Runnable renderedRunnable = () -> {
-                    if (mObserver != null) {
-                        mObserver.reportViewFirstRendered(childView);
-                    }
-                };
+                Runnable renderedRunnable =
+                        () -> {
+                            if (mObserver != null) {
+                                mObserver.reportViewFirstRendered(childView);
+                            }
+                        };
                 PostTask.postTask(TaskTraits.UI_DEFAULT, renderedRunnable);
                 mContentKeysBarelyVisible.add(contentKey);
             }

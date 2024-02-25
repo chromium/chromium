@@ -75,7 +75,7 @@ bool SkiaOutputDeviceWebView::Reshape(const SkImageInfo& image_info,
 }
 
 void SkiaOutputDeviceWebView::Present(
-    const absl::optional<gfx::Rect>& update_rect,
+    const std::optional<gfx::Rect>& update_rect,
     BufferPresentedCallback feedback,
     OutputSurfaceFrame frame) {
   DCHECK(!update_rect);
@@ -121,7 +121,7 @@ void SkiaOutputDeviceWebView::InitSkiaSurface(unsigned int fbo) {
                     ? kTopLeft_GrSurfaceOrigin
                     : kBottomLeft_GrSurfaceOrigin;
 
-  SkSurfaceProps surface_props{0, kUnknown_SkPixelGeometry};
+  SkSurfaceProps surface_props;
   sk_surface_ = SkSurfaces::WrapBackendRenderTarget(
       context_state_->gr_context(), render_target, origin, color_type,
       sk_color_space_, &surface_props);

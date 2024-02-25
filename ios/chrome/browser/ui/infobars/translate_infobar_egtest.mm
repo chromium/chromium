@@ -14,7 +14,7 @@
 #import "components/translate/core/common/translate_constants.h"
 #import "components/translate/core/common/translate_util.h"
 #import "ios/chrome/browser/shared/model/url/chrome_url_constants.h"
-#import "ios/chrome/browser/translate/translate_app_interface.h"
+#import "ios/chrome/browser/translate/model/translate_app_interface.h"
 #import "ios/chrome/browser/ui/badges/badge_constants.h"
 #import "ios/chrome/browser/ui/infobars/banners/infobar_banner_constants.h"
 #import "ios/chrome/browser/ui/infobars/infobar_constants.h"
@@ -23,7 +23,6 @@
 #import "ios/chrome/browser/ui/popup_menu/popup_menu_constants.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey.h"
-#import "ios/chrome/test/earl_grey/chrome_earl_grey_app_interface.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey_ui.h"
 #import "ios/chrome/test/earl_grey/chrome_matchers.h"
 #import "ios/chrome/test/earl_grey/web_http_server_chrome_test_case.h"
@@ -242,19 +241,6 @@ void TestResponseProvider::GetLanguageResponse(
 @end
 
 @implementation TranslateInfobarTestCase
-
-- (AppLaunchConfiguration)appConfigurationForTestCase {
-  AppLaunchConfiguration config;
-  if ([self isRunningTest:@selector
-            (testLanguageDetectionDisabledWithForceTranslate)]) {
-    config.features_enabled.push_back(translate::kIOSForceTranslateEnabled);
-  }
-  if ([self isRunningTest:@selector
-            (testLanguageDetectionDisabledWithoutForceTranslate)]) {
-    config.features_disabled.push_back(translate::kIOSForceTranslateEnabled);
-  }
-  return config;
-}
 
 - (void)setUp {
   [super setUp];
@@ -490,8 +476,8 @@ void TestResponseProvider::GetLanguageResponse(
 }
 
 // Tests that language detection is performed but no infobar is triggered when
-// translate is disabled but force translate is on.
-- (void)testLanguageDetectionDisabledWithForceTranslate {
+// translate is disabled.
+- (void)testLanguageDetectionDisabled {
   std::unique_ptr<web::DataResponseProvider> provider(new TestResponseProvider);
   web::test::SetUpHttpServer(std::move(provider));
 
@@ -500,10 +486,8 @@ void TestResponseProvider::GetLanguageResponse(
       base::StringPrintf("http://%s", kFrenchPagePath));
 
   // Disable translate.
-  [ChromeEarlGreyAppInterface
-      setBoolValue:NO
-       forUserPref:base::SysUTF8ToNSString(
-                       translate::prefs::kOfferTranslateEnabled)];
+  [ChromeEarlGrey setBoolValue:NO
+                   forUserPref:translate::prefs::kOfferTranslateEnabled];
 
   // Open some webpage.
   [ChromeEarlGrey loadURL:URL];
@@ -517,39 +501,8 @@ void TestResponseProvider::GetLanguageResponse(
                   @"Before Translate banner was found");
 
   // Enable translate.
-  [ChromeEarlGreyAppInterface
-      setBoolValue:YES
-       forUserPref:base::SysUTF8ToNSString(
-                       translate::prefs::kOfferTranslateEnabled)];
-}
-
-// Tests that language detection is not performed when translate is disabled
-// with force translate disabled.
-- (void)testLanguageDetectionDisabledWithoutForceTranslate {
-  const GURL URL = web::test::HttpServer::MakeUrl(
-      "http://scenarioLanguageDetectionDisabled");
-  std::map<GURL, std::string> responses;
-  // A page with some text.
-  responses[URL] = "<html><body>Hello world!</body></html>";
-  web::test::SetUpSimpleHttpServer(responses);
-
-  // Disable translate.
-  [ChromeEarlGreyAppInterface
-      setBoolValue:NO
-       forUserPref:base::SysUTF8ToNSString(
-                       translate::prefs::kOfferTranslateEnabled)];
-
-  // Open some webpage.
-  [ChromeEarlGrey loadURL:URL];
-  // Check that no language has been detected.
-  GREYAssertFalse([self waitForLanguageDetection],
-                  @"A language has been detected");
-
-  // Enable translate.
-  [ChromeEarlGreyAppInterface
-      setBoolValue:YES
-       forUserPref:base::SysUTF8ToNSString(
-                       translate::prefs::kOfferTranslateEnabled)];
+  [ChromeEarlGrey setBoolValue:YES
+                   forUserPref:translate::prefs::kOfferTranslateEnabled];
 }
 
 // Tests that the infobar banner persists as the page scrolls mode and that the

@@ -15,7 +15,7 @@
 namespace variations {
 
 TEST(VariationsCommandLineTest, TestGetVariationsCommandLine) {
-  std::string trial_list = "trial1/group1/*trial2/group2/";
+  std::string trial_list = "trial1/group1/*trial2/group2";
   std::string param_list = "trial1.group1:p1/v1/p2/2";
   std::string enable_feature_list = "feature1<trial1";
   std::string disable_feature_list = "feature2<trial2";
@@ -26,7 +26,7 @@ TEST(VariationsCommandLineTest, TestGetVariationsCommandLine) {
   scoped_feature_list.InitFromCommandLine(enable_feature_list,
                                           disable_feature_list);
 
-  std::string output = GetVariationsCommandLine();
+  std::string output = VariationsCommandLine::GetForCurrentProcess().ToString();
   EXPECT_NE(output.find(trial_list), std::string::npos);
   EXPECT_NE(output.find(param_list), std::string::npos);
   EXPECT_NE(output.find(enable_feature_list), std::string::npos);

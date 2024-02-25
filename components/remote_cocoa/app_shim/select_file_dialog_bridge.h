@@ -24,12 +24,6 @@ namespace remote_cocoa {
 class REMOTE_COCOA_APP_SHIM_EXPORT SelectFileDialogBridge
     : public mojom::SelectFileDialog {
  public:
-  // Callback made from the NSSavePanel's completion block.
-  using PanelEndedCallback =
-      base::OnceCallback<void(bool was_cancelled,
-                              const std::vector<base::FilePath>& files,
-                              int index)>;
-
   explicit SelectFileDialogBridge(NSWindow* owning_window);
 
   SelectFileDialogBridge(const SelectFileDialogBridge&) = delete;

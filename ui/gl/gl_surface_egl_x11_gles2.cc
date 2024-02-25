@@ -5,8 +5,9 @@
 #include "ui/gl/gl_surface_egl_x11_gles2.h"
 
 #include "ui/base/x/x11_util.h"
+#include "ui/gfx/x/connection.h"
+#include "ui/gfx/x/visual_manager.h"
 #include "ui/gfx/x/xproto.h"
-#include "ui/gfx/x/xproto_util.h"
 #include "ui/gl/egl_util.h"
 #include "ui/gl/gl_bindings.h"
 
@@ -96,7 +97,7 @@ EGLConfig NativeViewGLSurfaceEGLX11GLES2::GetConfig() {
 
     EGLDisplay display = GLSurfaceEGL::GetGLDisplayEGL()->GetDisplay();
     x11::VisualId visual_id;
-    ui::XVisualManager::GetInstance()->ChooseVisualForWindow(
+    connection->GetOrCreateVisualManager().ChooseVisualForWindow(
         true, &visual_id, nullptr, nullptr, nullptr);
     EGLint num_configs;
     if (!eglChooseConfig(display, config_attribs, nullptr, 0, &num_configs)) {
@@ -182,7 +183,8 @@ void NativeViewGLSurfaceEGLX11GLES2::OnEvent(const x11::Event& x11_event) {
 
   auto expose_copy = *expose;
   expose_copy.window = parent_window_;
-  x11::SendEvent(expose_copy, parent_window_, x11::EventMask::Exposure);
+  x11::Connection::Get()->SendEvent(expose_copy, parent_window_,
+                                    x11::EventMask::Exposure);
   x11::Connection::Get()->Flush();
 }
 

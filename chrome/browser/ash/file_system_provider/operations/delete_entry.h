@@ -15,9 +15,7 @@ namespace base {
 class FilePath;
 }  // namespace base
 
-namespace ash {
-namespace file_system_provider {
-namespace operations {
+namespace ash::file_system_provider::operations {
 
 // Deletes an entry. If |recursive| is passed and the entry is a directory, then
 // all contents of it (recursively) will be deleted too. Created per request.
@@ -49,8 +47,6 @@ class DeleteEntry : public Operation {
   storage::AsyncFileUtil::StatusCallback callback_;
 };
 
-}  // namespace operations
-}  // namespace file_system_provider
-}  // namespace ash
+}  // namespace ash::file_system_provider::operations
 
 #endif  // CHROME_BROWSER_ASH_FILE_SYSTEM_PROVIDER_OPERATIONS_DELETE_ENTRY_H_

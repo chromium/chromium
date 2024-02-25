@@ -36,8 +36,7 @@ namespace content {
 
 class CONTENT_EXPORT MidiHost : public midi::MidiManagerClient,
                                 public midi::mojom::MidiSessionProvider,
-                                public midi::mojom::MidiSession,
-                                public base::SupportsWeakPtr<MidiHost> {
+                                public midi::mojom::MidiSession {
  public:
   MidiHost(const MidiHost&) = delete;
   MidiHost& operator=(const MidiHost&) = delete;
@@ -134,6 +133,9 @@ class CONTENT_EXPORT MidiHost : public midi::MidiManagerClient,
   // Bound on the IO thread and should only be called there. Use CallClient to
   // call midi::mojom::MidiSessionClient methods.
   mojo::Remote<midi::mojom::MidiSessionClient> midi_client_;
+
+  // WeakPtr factory for CallClient callbacks.
+  base::WeakPtrFactory<MidiHost> weak_ptr_factory_{this};
 };
 
 }  // namespace content

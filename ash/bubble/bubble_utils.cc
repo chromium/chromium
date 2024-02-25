@@ -5,11 +5,12 @@
 #include "ash/bubble/bubble_utils.h"
 
 #include <memory>
-#include <utility>
 
 #include "ash/capture_mode/capture_mode_util.h"
 #include "ash/public/cpp/shell_window_ids.h"
 #include "ash/root_window_controller.h"
+#include "ash/shelf/hotseat_widget.h"
+#include "ash/shelf/shelf.h"
 #include "ash/style/typography.h"
 #include "base/check.h"
 #include "chromeos/constants/chromeos_features.h"
@@ -18,16 +19,16 @@
 #include "ui/events/types/event_type.h"
 #include "ui/views/controls/label.h"
 
-namespace ash {
-namespace bubble_utils {
+namespace ash::bubble_utils {
 
 bool ShouldCloseBubbleForEvent(const ui::LocatedEvent& event) {
-  // Should only be called for "press" type events.
+  // Should only be called for "press" or scroll begin type events.
   DCHECK(event.type() == ui::ET_MOUSE_PRESSED ||
          event.type() == ui::ET_TOUCH_PRESSED ||
          event.type() == ui::ET_GESTURE_LONG_PRESS ||
          event.type() == ui::ET_GESTURE_TAP ||
-         event.type() == ui::ET_GESTURE_TWO_FINGER_TAP)
+         event.type() == ui::ET_GESTURE_TWO_FINGER_TAP ||
+         event.type() == ui::ET_GESTURE_SCROLL_BEGIN)
       << event.type();
 
   // Users in a capture session may be trying to capture the bubble.
@@ -61,6 +62,21 @@ bool ShouldCloseBubbleForEvent(const ui::LocatedEvent& event) {
       root_controller->GetContainer(kShellWindowId_SettingBubbleContainer);
   if (settings_bubble_container->Contains(target))
     return false;
+
+  // Ignore clicks in the help bubble container.
+  aura::Window* help_bubble_container =
+      root_controller->GetContainer(kShellWindowId_HelpBubbleContainer);
+  if (help_bubble_container->Contains(target)) {
+    return false;
+  }
+
+  // Ignore clicks in the shelf area containing app icons. This is to ensure
+  // that the bubble is not closed when you click on a shelf arrow.
+  Shelf* shelf = Shelf::ForWindow(target);
+  if (target == shelf->hotseat_widget()->GetNativeWindow() &&
+      shelf->hotseat_widget()->EventTargetsShelfView(event)) {
+    return false;
+  }
 
   return true;
 }
@@ -131,5 +147,4 @@ std::unique_ptr<views::Label> CreateLabel(TypographyToken style,
   return label;
 }
 
-}  // namespace bubble_utils
-}  // namespace ash
+}  // namespace ash::bubble_utils

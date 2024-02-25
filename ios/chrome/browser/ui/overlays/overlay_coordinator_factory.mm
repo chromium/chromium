@@ -7,23 +7,26 @@
 #import <ostream>
 
 #import "base/check.h"
+#import "base/memory/raw_ptr.h"
 #import "base/notreached.h"
-#import "ios/chrome/browser/infobars/infobar_ios.h"
-#import "ios/chrome/browser/infobars/infobar_type.h"
-#import "ios/chrome/browser/overlays/public/default/default_infobar_overlay_request_config.h"
-#import "ios/chrome/browser/overlays/public/overlay_request_support.h"
+#import "ios/chrome/browser/infobars/model/infobar_ios.h"
+#import "ios/chrome/browser/infobars/model/infobar_type.h"
+#import "ios/chrome/browser/overlays/model/public/default/default_infobar_overlay_request_config.h"
+#import "ios/chrome/browser/overlays/model/public/overlay_request_support.h"
 #import "ios/chrome/browser/ui/overlays/infobar_banner/infobar_banner_overlay_coordinator.h"
 #import "ios/chrome/browser/ui/overlays/infobar_banner/translate/translate_infobar_placeholder_overlay_coordinator.h"
 #import "ios/chrome/browser/ui/overlays/infobar_modal/autofill_address_profile/save_address_profile_infobar_modal_overlay_coordinator.h"
+#import "ios/chrome/browser/ui/overlays/infobar_modal/parcel_tracking/parcel_tracking_infobar_modal_overlay_coordinator.h"
 #import "ios/chrome/browser/ui/overlays/infobar_modal/passwords/password_infobar_modal_overlay_coordinator.h"
 #import "ios/chrome/browser/ui/overlays/infobar_modal/permissions/permissions_infobar_modal_overlay_coordinator.h"
 #import "ios/chrome/browser/ui/overlays/infobar_modal/save_card/save_card_infobar_modal_overlay_coordinator.h"
+#import "ios/chrome/browser/ui/overlays/infobar_modal/tab_pickup/tab_pickup_infobar_modal_overlay_coordinator.h"
 #import "ios/chrome/browser/ui/overlays/infobar_modal/translate/translate_infobar_modal_overlay_coordinator.h"
 #import "ios/chrome/browser/ui/overlays/overlay_request_coordinator.h"
 #import "ios/chrome/browser/ui/overlays/web_content_area/alerts/alert_overlay_coordinator.h"
 
 @implementation OverlayRequestCoordinatorFactory {
-  Browser* _browser;
+  raw_ptr<Browser> _browser;
   OverlayModality _modality;
 }
 
@@ -121,6 +124,10 @@
           return [SaveCardInfobarModalOverlayCoordinator class];
         case InfobarType::kInfobarTypeTranslate:
           return [TranslateInfobarModalOverlayCoordinator class];
+        case InfobarType::kInfobarTypeParcelTracking:
+          return [ParcelTrackingInfobarModalOverlayCoordinator class];
+        case InfobarType::kInfobarTypeTabPickup:
+          return [TabPickupInfobarModalOverlayCoordinator class];
         default:
           break;
       }

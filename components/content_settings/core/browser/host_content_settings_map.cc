@@ -47,6 +47,7 @@
 #include "components/content_settings/core/common/content_settings.h"
 #include "components/content_settings/core/common/content_settings_constraints.h"
 #include "components/content_settings/core/common/content_settings_metadata.h"
+#include "components/content_settings/core/common/content_settings_partition_key.h"
 #include "components/content_settings/core/common/content_settings_pattern.h"
 #include "components/content_settings/core/common/content_settings_types.h"
 #include "components/content_settings/core/common/content_settings_utils.h"
@@ -182,12 +183,20 @@ content_settings::PatternPair GetPatternsFromScopingType(
       break;
     case WebsiteSettingsInfo::REQUESTING_AND_TOP_SCHEMEFUL_SITE_SCOPE:
       CHECK(!secondary_url.is_empty());
-      patterns.first = content_settings::URLToSchemefulSitePattern(primary_url);
+      patterns.first =
+          ContentSettingsPattern::FromURLToSchemefulSitePattern(primary_url);
       patterns.second =
-          content_settings::URLToSchemefulSitePattern(secondary_url);
+          ContentSettingsPattern::FromURLToSchemefulSitePattern(secondary_url);
+      break;
+    case WebsiteSettingsInfo::REQUESTING_ORIGIN_AND_TOP_SCHEMEFUL_SITE_SCOPE:
+      CHECK(!secondary_url.is_empty());
+      patterns.first = ContentSettingsPattern::FromURLNoWildcard(primary_url);
+      patterns.second =
+          ContentSettingsPattern::FromURLToSchemefulSitePattern(secondary_url);
       break;
     case WebsiteSettingsInfo::REQUESTING_SCHEMEFUL_SITE_ONLY_SCOPE:
-      patterns.first = content_settings::URLToSchemefulSitePattern(primary_url);
+      patterns.first =
+          ContentSettingsPattern::FromURLToSchemefulSitePattern(primary_url);
       patterns.second = ContentSettingsPattern::Wildcard();
       break;
     case WebsiteSettingsInfo::TOP_ORIGIN_ONLY_SCOPE:
@@ -198,18 +207,6 @@ content_settings::PatternPair GetPatternsFromScopingType(
       patterns.second = ContentSettingsPattern::Wildcard();
       break;
   }
-  return patterns;
-}
-
-content_settings::PatternPair GetPatternsForContentSettingsType(
-    const GURL& primary_url,
-    const GURL& secondary_url,
-    ContentSettingsType type) {
-  const WebsiteSettingsInfo* website_settings_info =
-      content_settings::WebsiteSettingsRegistry::GetInstance()->Get(type);
-  DCHECK(website_settings_info);
-  content_settings::PatternPair patterns = GetPatternsFromScopingType(
-      website_settings_info->scoping_type(), primary_url, secondary_url);
   return patterns;
 }
 
@@ -304,7 +301,7 @@ HostContentSettingsMap::HostContentSettingsMap(PrefService* prefs,
       prefs_, is_off_the_record_, store_last_modified_, restore_session);
   pref_provider_ = pref_provider_ptr.get();
   content_settings_providers_[PREF_PROVIDER] = std::move(pref_provider_ptr);
-  user_modifiable_providers_.push_back(pref_provider_);
+  user_modifiable_providers_.push_back(pref_provider_.get());
   pref_provider_->AddObserver(this);
 
   auto default_provider = std::make_unique<content_settings::DefaultProvider>(
@@ -369,7 +366,9 @@ ContentSetting HostContentSettingsMap::GetDefaultContentSettingFromProvider(
     ContentSettingsType content_type,
     content_settings::ProviderInterface* provider) const {
   std::unique_ptr<content_settings::RuleIterator> rule_iterator(
-      provider->GetRuleIterator(content_type, false));
+      provider->GetRuleIterator(
+          content_type, false,
+          content_settings::PartitionKey::WipGetDefault()));
 
   if (rule_iterator) {
     ContentSettingsPattern wildcard = ContentSettingsPattern::Wildcard();
@@ -377,7 +376,7 @@ ContentSetting HostContentSettingsMap::GetDefaultContentSettingFromProvider(
       std::unique_ptr<content_settings::Rule> rule = rule_iterator->Next();
       if (rule->primary_pattern == wildcard &&
           rule->secondary_pattern == wildcard) {
-        return content_settings::ValueToContentSetting(rule->value());
+        return content_settings::ValueToContentSetting(rule->value);
       }
     }
   }
@@ -449,7 +448,7 @@ ContentSetting HostContentSettingsMap::GetUserModifiableContentSetting(
 
 ContentSettingsForOneType HostContentSettingsMap::GetSettingsForOneType(
     ContentSettingsType content_type,
-    absl::optional<content_settings::SessionModel> session_model) const {
+    std::optional<content_settings::mojom::SessionModel> session_model) const {
   ContentSettingsForOneType settings;
   UsedContentSettingsProviders();
 
@@ -521,7 +520,7 @@ void HostContentSettingsMap::SetWebsiteSettingCustomScope(
     // the value. If successful then ownership is passed to the provider.
     if (provider_pair.second->SetWebsiteSetting(
             primary_pattern, secondary_pattern, content_type, std::move(value),
-            constraints)) {
+            constraints, content_settings::PartitionKey::WipGetDefault())) {
       if (base::FeatureList::IsEnabled(
               content_settings::features::kActiveContentSettingExpiry)) {
         UpdateExpiryEnforcementTimer(content_type, constraints.expiration());
@@ -611,6 +610,19 @@ content_settings::PatternPair HostContentSettingsMap::GetNarrowestPatterns(
   return patterns;
 }
 
+content_settings::PatternPair
+HostContentSettingsMap::GetPatternsForContentSettingsType(
+    const GURL& primary_url,
+    const GURL& secondary_url,
+    ContentSettingsType type) {
+  const WebsiteSettingsInfo* website_settings_info =
+      content_settings::WebsiteSettingsRegistry::GetInstance()->Get(type);
+  DCHECK(website_settings_info);
+  content_settings::PatternPair patterns = GetPatternsFromScopingType(
+      website_settings_info->scoping_type(), primary_url, secondary_url);
+  return patterns;
+}
+
 void HostContentSettingsMap::SetContentSettingCustomScope(
     const ContentSettingsPattern& primary_pattern,
     const ContentSettingsPattern& secondary_pattern,
@@ -656,8 +668,10 @@ base::WeakPtr<HostContentSettingsMap> HostContentSettingsMap::GetWeakPtr() {
 
 void HostContentSettingsMap::SetClockForTesting(base::Clock* clock) {
   clock_ = clock;
-  for (auto* provider : user_modifiable_providers_)
+  for (content_settings::UserModifiableProvider* provider :
+       user_modifiable_providers_) {
     provider->SetClockForTesting(clock);
+  }
 }
 
 void HostContentSettingsMap::RecordExceptionMetrics() {
@@ -669,7 +683,6 @@ void HostContentSettingsMap::RecordExceptionMetrics() {
     const std::string type_name = info->name();
 
     size_t num_exceptions = 0;
-    size_t num_third_party_cookie_allow_exceptions = 0;
     base::flat_map<ContentSetting, size_t> num_exceptions_with_setting;
     const content_settings::ContentSettingsInfo* content_info =
         content_setting_registry->Get(content_type);
@@ -688,12 +701,6 @@ void HostContentSettingsMap::RecordExceptionMetrics() {
         if (content_info)
           ++num_exceptions_with_setting[setting_entry.GetContentSetting()];
         ++num_exceptions;
-        if (content_type == ContentSettingsType::COOKIES &&
-            setting_entry.primary_pattern.MatchesAllHosts() &&
-            !setting_entry.secondary_pattern.MatchesAllHosts() &&
-            setting_entry.GetContentSetting() == CONTENT_SETTING_ALLOW) {
-          num_third_party_cookie_allow_exceptions++;
-        }
       }
     }
 
@@ -741,11 +748,42 @@ void HostContentSettingsMap::RecordExceptionMetrics() {
                                    max_toplevel);
     }
     if (content_type == ContentSettingsType::COOKIES) {
-      base::UmaHistogramCustomCounts(
-          "ContentSettings.RegularProfile.Exceptions.cookies.AllowThirdParty",
-          num_third_party_cookie_allow_exceptions, 1, 1000, 30);
+      RecordThirdPartyCookieMetrics(settings);
     }
   }
+}
+
+void HostContentSettingsMap::RecordThirdPartyCookieMetrics(
+    const ContentSettingsForOneType& settings) {
+  size_t num_3pc_allow_exceptions = 0;
+  size_t num_3pc_allow_exceptions_temporary = 0;
+  size_t num_3pc_allow_exceptions_domain_wildcard = 0;
+
+  for (const ContentSettingPatternSource& setting_entry : settings) {
+    if (setting_entry.source == "preference" &&
+        setting_entry.primary_pattern.MatchesAllHosts() &&
+        !setting_entry.secondary_pattern.MatchesAllHosts() &&
+        setting_entry.GetContentSetting() == CONTENT_SETTING_ALLOW) {
+      num_3pc_allow_exceptions++;
+      if (!setting_entry.metadata.expiration().is_null()) {
+        num_3pc_allow_exceptions_temporary++;
+      }
+      if (setting_entry.secondary_pattern.HasDomainWildcard()) {
+        num_3pc_allow_exceptions_domain_wildcard++;
+      }
+    }
+  }
+  base::UmaHistogramCustomCounts(
+      "ContentSettings.RegularProfile.Exceptions.cookies.AllowThirdParty",
+      num_3pc_allow_exceptions, 1, 1000, 30);
+  base::UmaHistogramCustomCounts(
+      "ContentSettings.RegularProfile.Exceptions.cookies."
+      "TemporaryAllowThirdParty",
+      num_3pc_allow_exceptions_temporary, 1, 100, 20);
+  base::UmaHistogramCustomCounts(
+      "ContentSettings.RegularProfile.Exceptions.cookies."
+      "DomainWildcardAllowThirdParty",
+      num_3pc_allow_exceptions_domain_wildcard, 1, 100, 10);
 }
 
 void HostContentSettingsMap::AddObserver(content_settings::Observer* observer) {
@@ -765,8 +803,11 @@ void HostContentSettingsMap::UpdateLastUsedTime(const GURL& primary_url,
                                                 const GURL& secondary_url,
                                                 ContentSettingsType type,
                                                 const base::Time time) {
-  for (auto* provider : user_modifiable_providers_) {
-    provider->UpdateLastUsedTime(primary_url, secondary_url, type, time);
+  for (content_settings::UserModifiableProvider* provider :
+       user_modifiable_providers_) {
+    provider->UpdateLastUsedTime(
+        primary_url, secondary_url, type, time,
+        content_settings::PartitionKey::WipGetDefault());
   }
 }
 
@@ -774,8 +815,11 @@ void HostContentSettingsMap::ResetLastVisitedTime(
     const ContentSettingsPattern& primary_pattern,
     const ContentSettingsPattern& secondary_pattern,
     ContentSettingsType type) {
-  for (auto* provider : user_modifiable_providers_) {
-    provider->ResetLastVisitTime(primary_pattern, secondary_pattern, type);
+  for (content_settings::UserModifiableProvider* provider :
+       user_modifiable_providers_) {
+    provider->ResetLastVisitTime(
+        primary_pattern, secondary_pattern, type,
+        content_settings::PartitionKey::WipGetDefault());
   }
 }
 
@@ -783,30 +827,43 @@ void HostContentSettingsMap::UpdateLastVisitedTime(
     const ContentSettingsPattern& primary_pattern,
     const ContentSettingsPattern& secondary_pattern,
     ContentSettingsType type) {
-  for (auto* provider : user_modifiable_providers_) {
-    provider->UpdateLastVisitTime(primary_pattern, secondary_pattern, type);
+  for (content_settings::UserModifiableProvider* provider :
+       user_modifiable_providers_) {
+    provider->UpdateLastVisitTime(
+        primary_pattern, secondary_pattern, type,
+        content_settings::PartitionKey::WipGetDefault());
   }
 }
 
-bool HostContentSettingsMap::RenewContentSetting(
+std::optional<base::TimeDelta> HostContentSettingsMap::RenewContentSetting(
     const GURL& primary_url,
     const GURL& secondary_url,
     ContentSettingsType type,
-    absl::optional<ContentSetting> setting_to_match) {
-  bool any_updated = false;
-  for (auto* provider : user_modifiable_providers_) {
-    any_updated = provider->RenewContentSetting(primary_url, secondary_url,
-                                                type, setting_to_match) ||
-                  any_updated;
+    std::optional<ContentSetting> setting_to_match) {
+  std::optional<base::TimeDelta> delta_to_nearest_expiration = std::nullopt;
+  for (content_settings::UserModifiableProvider* provider :
+       user_modifiable_providers_) {
+    std::optional<base::TimeDelta> delta_to_expiration =
+        provider->RenewContentSetting(
+            primary_url, secondary_url, type, setting_to_match,
+            content_settings::PartitionKey::WipGetDefault());
+
+    if (!delta_to_nearest_expiration.has_value()) {
+      delta_to_nearest_expiration = delta_to_expiration;
+    } else if (delta_to_expiration.has_value()) {
+      delta_to_nearest_expiration =
+          std::min(delta_to_nearest_expiration, delta_to_expiration);
+    }
   }
-  return any_updated;
+  return delta_to_nearest_expiration;
 }
 
 void HostContentSettingsMap::ClearSettingsForOneType(
     ContentSettingsType content_type) {
   UsedContentSettingsProviders();
   for (const auto& provider_pair : content_settings_providers_)
-    provider_pair.second->ClearAllContentSettingsRules(content_type);
+    provider_pair.second->ClearAllContentSettingsRules(
+        content_type, content_settings::PartitionKey::WipGetDefault());
   FlushLossyWebsiteSettings();
 }
 
@@ -840,10 +897,11 @@ void HostContentSettingsMap::ClearSettingsForOneTypeWithPredicate(
   for (const ContentSettingPatternSource& setting :
        GetSettingsForOneType(content_type)) {
     if (predicate(setting)) {
-      for (auto* provider : user_modifiable_providers_) {
-        provider->SetWebsiteSetting(setting.primary_pattern,
-                                    setting.secondary_pattern, content_type,
-                                    base::Value(), {});
+      for (content_settings::UserModifiableProvider* provider :
+           user_modifiable_providers_) {
+        provider->SetWebsiteSetting(
+            setting.primary_pattern, setting.secondary_pattern, content_type,
+            base::Value(), {}, content_settings::PartitionKey::WipGetDefault());
       }
     }
   }
@@ -871,6 +929,7 @@ HostContentSettingsMap::~HostContentSettingsMap() {
 void HostContentSettingsMap::ShutdownOnUIThread() {
   DCHECK(thread_checker_.CalledOnValidThread());
   DCHECK(prefs_);
+  expiration_enforcement_timers_.clear();
   prefs_ = nullptr;
   for (const auto& provider_pair : content_settings_providers_)
     provider_pair.second->ShutdownOnUIThread();
@@ -882,15 +941,17 @@ void HostContentSettingsMap::AddSettingsForOneType(
     ContentSettingsType content_type,
     ContentSettingsForOneType* settings,
     bool incognito,
-    absl::optional<content_settings::SessionModel> session_model) const {
+    std::optional<content_settings::mojom::SessionModel> session_model) const {
   std::unique_ptr<content_settings::RuleIterator> rule_iterator(
-      provider->GetRuleIterator(content_type, incognito));
+      provider->GetRuleIterator(
+          content_type, incognito,
+          content_settings::PartitionKey::WipGetDefault()));
   if (!rule_iterator)
     return;
 
   while (rule_iterator->HasNext()) {
     std::unique_ptr<content_settings::Rule> rule = rule_iterator->Next();
-    base::Value value = rule->TakeValue();
+    base::Value value = std::move(rule->value);
 
     // We may be adding settings for only specific rule types. If that's the
     // case and this setting isn't a match, don't add it.
@@ -953,7 +1014,7 @@ base::Value HostContentSettingsMap::GetWebsiteSetting(
           content_type);
   if (content_settings_info) {
     for (const std::string& scheme :
-         content_settings_info->allowlisted_schemes()) {
+         content_settings_info->allowlisted_primary_schemes()) {
       DCHECK(SchemeCanBeAllowlisted(scheme));
 
       if (primary_url.SchemeIs(scheme)) {
@@ -1050,23 +1111,52 @@ base::Value HostContentSettingsMap::GetContentSettingValueAndPatterns(
   CHECK(provider);
 
   if (include_incognito) {
-    // Check incognito-only specific settings. It's essential that the
-    // |RuleIterator| gets out of scope before we get a rule iterator for the
-    // normal mode.
-    std::unique_ptr<content_settings::RuleIterator> incognito_rule_iterator(
-        provider->GetRuleIterator(content_type, true /* incognito */));
-    base::Value value = GetContentSettingValueAndPatterns(
-        incognito_rule_iterator.get(), primary_url, secondary_url,
-        primary_pattern, secondary_pattern, metadata, clock);
-    if (!value.is_none())
-      return value;
+    if (base::FeatureList::IsEnabled(
+            content_settings::features::kIndexedHostContentSettingsMap)) {
+      auto rule = provider->GetRule(
+          primary_url, secondary_url, content_type, /*off_the_record=*/true,
+          content_settings::PartitionKey::WipGetDefault());
+      if (rule) {
+        return GetContentSettingValueAndPatterns(rule.get(), primary_pattern,
+                                                 secondary_pattern, metadata);
+      }
+    } else {
+      // Check incognito-only specific settings. It's essential that the
+      // |RuleIterator| gets out of scope before we get a rule iterator for the
+      // normal mode.
+      std::unique_ptr<content_settings::RuleIterator> incognito_rule_iterator(
+          provider->GetRuleIterator(
+              content_type, true /* incognito */,
+              content_settings::PartitionKey::WipGetDefault()));
+      base::Value value = GetContentSettingValueAndPatterns(
+          incognito_rule_iterator.get(), primary_url, secondary_url,
+          primary_pattern, secondary_pattern, metadata, clock);
+      if (!value.is_none()) {
+        return value;
+      }
+    }
   }
+
   // No settings from the incognito; use the normal mode.
-  std::unique_ptr<content_settings::RuleIterator> rule_iterator(
-      provider->GetRuleIterator(content_type, false /* incognito */));
-  base::Value value = GetContentSettingValueAndPatterns(
-      rule_iterator.get(), primary_url, secondary_url, primary_pattern,
-      secondary_pattern, metadata, clock);
+  base::Value value;
+  if (base::FeatureList::IsEnabled(
+          content_settings::features::kIndexedHostContentSettingsMap)) {
+    auto rule = provider->GetRule(
+        primary_url, secondary_url, content_type, /*off_the_record=*/false,
+        content_settings::PartitionKey::WipGetDefault());
+    if (rule) {
+      value = GetContentSettingValueAndPatterns(rule.get(), primary_pattern,
+                                                secondary_pattern, metadata);
+    }
+  } else {
+    std::unique_ptr<content_settings::RuleIterator> rule_iterator(
+        provider->GetRuleIterator(
+            content_type, false /* incognito */,
+            content_settings::PartitionKey::WipGetDefault()));
+    value = GetContentSettingValueAndPatterns(
+        rule_iterator.get(), primary_url, secondary_url, primary_pattern,
+        secondary_pattern, metadata, clock);
+  }
   if (!value.is_none() && include_incognito) {
     value = ProcessIncognitoInheritanceBehavior(content_type, std::move(value));
   }
@@ -1093,17 +1183,31 @@ base::Value HostContentSettingsMap::GetContentSettingValueAndPatterns(
                content_settings::features::kActiveContentSettingExpiry) ||
            (rule->metadata.expiration().is_null() ||
             (rule->metadata.expiration() > clock->Now())))) {
-        if (primary_pattern)
-          *primary_pattern = rule->primary_pattern;
-        if (secondary_pattern)
-          *secondary_pattern = rule->secondary_pattern;
-        if (metadata)
-          *metadata = rule->metadata;
-        return rule->TakeValue();
+        return GetContentSettingValueAndPatterns(rule.get(), primary_pattern,
+                                                 secondary_pattern, metadata);
       }
     }
   }
   return base::Value();
+}
+
+// static
+base::Value HostContentSettingsMap::GetContentSettingValueAndPatterns(
+    content_settings::Rule* rule,
+    ContentSettingsPattern* primary_pattern,
+    ContentSettingsPattern* secondary_pattern,
+    content_settings::RuleMetaData* metadata) {
+  if (primary_pattern) {
+    *primary_pattern = std::move(rule->primary_pattern);
+  }
+  if (secondary_pattern) {
+    *secondary_pattern = std::move(rule->secondary_pattern);
+  }
+  if (metadata) {
+    *metadata = std::move(rule->metadata);
+  }
+  DCHECK(!rule->value.is_none());
+  return std::move(rule->value);
 }
 
 void HostContentSettingsMap::
@@ -1256,8 +1360,10 @@ void HostContentSettingsMap::DeleteNearlyExpiredSettingsAndMaybeScheduleNextRun(
     if (is_user_modifiable) {
       static_cast<content_settings::UserModifiableProvider*>(
           content_settings_providers_[provider_type].get())
-          ->ExpireWebsiteSetting(entry.primary_pattern, entry.secondary_pattern,
-                                 content_setting_type);
+          ->ExpireWebsiteSetting(
+              entry.primary_pattern, entry.secondary_pattern,
+              content_setting_type,
+              content_settings::PartitionKey::WipGetDefault());
     } else {
       // For non-modifiable providers there exists no expiry method and
       // SetWebsiteSettingCustomScope cannot work.

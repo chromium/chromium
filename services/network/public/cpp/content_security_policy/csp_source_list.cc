@@ -7,9 +7,11 @@
 #include "base/check_op.h"
 #include "base/containers/cxx20_erase.h"
 #include "base/containers/flat_set.h"
+#include "base/feature_list.h"
 #include "base/ranges/algorithm.h"
 #include "services/network/public/cpp/content_security_policy/content_security_policy.h"
 #include "services/network/public/cpp/content_security_policy/csp_source.h"
+#include "services/network/public/cpp/features.h"
 #include "services/network/public/mojom/content_security_policy.mojom-shared.h"
 
 namespace network {
@@ -194,13 +196,13 @@ bool UrlSourceListSubsumes(
 
 }  // namespace
 
-bool CheckCSPSourceList(mojom::CSPDirectiveName directive_name,
-                        const mojom::CSPSourceList& source_list,
-                        const GURL& url,
-                        const mojom::CSPSource& self_source,
-                        bool has_followed_redirect,
-                        bool is_response_check,
-                        bool is_opaque_fenced_frame) {
+CSPCheckResult CheckCSPSourceList(mojom::CSPDirectiveName directive_name,
+                                  const mojom::CSPSourceList& source_list,
+                                  const GURL& url,
+                                  const mojom::CSPSource& self_source,
+                                  bool has_followed_redirect,
+                                  bool is_response_check,
+                                  bool is_opaque_fenced_frame) {
   if (is_opaque_fenced_frame)
     DCHECK_EQ(directive_name, mojom::CSPDirectiveName::FencedFrameSrc);
 
@@ -208,7 +210,7 @@ bool CheckCSPSourceList(mojom::CSPDirectiveName directive_name,
   // the response is received.
   if (directive_name == mojom::CSPDirectiveName::NavigateTo &&
       source_list.allow_response_redirects && !is_response_check) {
-    return true;
+    return CSPCheckResult::Allowed();
   }
 
   // Wildcards match network schemes ('http', 'https', 'ftp', 'ws', 'wss'), and
@@ -222,23 +224,38 @@ bool CheckCSPSourceList(mojom::CSPDirectiveName directive_name,
   // fenced frames can map to non-https potentially trustworthy urls to avoid
   // privacy leak.
   if (source_list.allow_star) {
-    if (url.SchemeIsHTTPOrHTTPS() || url.SchemeIsWSOrWSS() ||
-        url.SchemeIs("ftp")) {
-      return true;
+    if (url.SchemeIsHTTPOrHTTPS()) {
+      return CSPCheckResult::Allowed();
     }
     if (!self_source.scheme.empty() && url.SchemeIs(self_source.scheme))
-      return true;
+      return CSPCheckResult::Allowed();
   }
 
   if (source_list.allow_self &&
       CheckCSPSource(self_source, url, self_source,
                      CSPSourceContext::ContentSecurityPolicy,
                      has_followed_redirect, is_opaque_fenced_frame)) {
-    return true;
+    return CSPCheckResult::Allowed();
   }
 
-  return AllowFromSources(url, source_list.sources, self_source,
-                          has_followed_redirect, is_opaque_fenced_frame);
+  if (AllowFromSources(url, source_list.sources, self_source,
+                       has_followed_redirect, is_opaque_fenced_frame)) {
+    return CSPCheckResult::Allowed();
+  }
+
+  if (source_list.allow_star) {
+    if (url.SchemeIsWSOrWSS()) {
+      return CSPCheckResult::AllowedOnlyIfWildcardMatchesWs();
+    }
+    if (url.SchemeIs("ftp")) {
+      return base::FeatureList::IsEnabled(
+                 features::kCspStopMatchingWildcardDirectivesToFtp)
+                 ? CSPCheckResult::Blocked()
+                 : CSPCheckResult::AllowedOnlyIfWildcardMatchesFtp();
+    }
+  }
+
+  return CSPCheckResult::Blocked();
 }
 
 bool CSPSourceListSubsumes(

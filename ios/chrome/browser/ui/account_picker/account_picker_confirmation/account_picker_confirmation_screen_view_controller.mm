@@ -13,26 +13,37 @@
 #import "ios/chrome/browser/ui/account_picker/account_picker_layout_delegate.h"
 #import "ios/chrome/browser/ui/authentication/views/identity_button_control.h"
 #import "ios/chrome/browser/ui/authentication/views/identity_view.h"
-#import "ios/chrome/common/button_configuration_util.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/util/button_util.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
 #import "ios/chrome/common/ui/util/pointer_interaction_util.h"
-#import "ios/chrome/grit/ios_chromium_strings.h"
+#import "ios/chrome/grit/ios_branded_strings.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ui/base/l10n/l10n_util.h"
 
 namespace {
 
+// Duration of showing/hiding the identity button.
+constexpr NSTimeInterval kIdentityButtonAnimationDuration = 0.1;
 // Margins for `_contentView` (top, bottom, leading and trailing).
 constexpr CGFloat kContentMargin = 16.;
 // Space between elements in `_contentView`.
 constexpr CGFloat kContentSpacing = 16.;
-// Extra top padding between the navigation bar of the scroll view and the
-// top edge of the scroll view.
-constexpr CGFloat kExtraNavBarTopPadding = 3.;
 // Vertical insets of primary button.
 constexpr CGFloat kPrimaryButtonVerticalInsets = 15.5;
+
+// Returns font to use for the navigation bar title.
+UIFont* GetNavigationBarTitleFont() {
+  UITraitCollection* large_trait_collection =
+      [UITraitCollection traitCollectionWithPreferredContentSizeCategory:
+                             UIContentSizeCategoryLarge];
+  UIFontDescriptor* font_descriptor = [UIFontDescriptor
+      preferredFontDescriptorWithTextStyle:UIFontTextStyleBody
+             compatibleWithTraitCollection:large_trait_collection];
+  UIFont* font = [UIFont systemFontOfSize:font_descriptor.pointSize
+                                   weight:UIFontWeightBold];
+  return [[UIFontMetrics defaultMetrics] scaledFontForFont:font];
+}
 
 // Returns the width and height of a single pixel in point.
 CGFloat GetPixelLength() {
@@ -47,6 +58,7 @@ CGFloat GetPixelLength() {
   __strong UIStackView* _contentView;
   // Button to present the default identity.
   __strong IdentityButtonControl* _identityButtonControl;
+  BOOL _identityButtonControlShouldBeHidden;
   // "Grouped" section containing the identity button and the switch.
   // If there is no switch, then this is equal to `identityButtonControl`.
   __strong UIView* _groupedIdentityButtonSection;
@@ -88,8 +100,9 @@ CGFloat GetPixelLength() {
   [_activityIndicatorView startAnimating];
   // Disable buttons.
   _identityButtonControl.enabled = NO;
+  _askEveryTimeSwitch.enabled = NO;
   _primaryButton.enabled = NO;
-  [_primaryButton setTitle:@"" forState:UIControlStateNormal];
+  SetConfigurationTitle(_primaryButton, @" ");
 }
 
 - (void)stopSpinner {
@@ -97,13 +110,30 @@ CGFloat GetPixelLength() {
   DCHECK(_activityIndicatorView);
   [_activityIndicatorView removeFromSuperview];
   _activityIndicatorView = nil;
-  // Show the IdentityButtonControl, since it may be hidden.
-  _identityButtonControl.hidden = NO;
+  if (!_identityButtonControlShouldBeHidden) {
+    // Show the IdentityButtonControl, since it may be hidden.
+    _identityButtonControl.hidden = NO;
+  }
   // Enable buttons.
   _identityButtonControl.enabled = YES;
+  _askEveryTimeSwitch.enabled = YES;
   _primaryButton.enabled = YES;
   DCHECK(_submitString);
-  [_primaryButton setTitle:_submitString forState:UIControlStateNormal];
+  SetConfigurationTitle(_primaryButton, _submitString);
+}
+
+- (void)setIdentityButtonHidden:(BOOL)hidden animated:(BOOL)animated {
+  _identityButtonControlShouldBeHidden = hidden;
+  if (!animated) {
+    _identityButtonControl.hidden = hidden;
+    return;
+  }
+  __weak __typeof(_identityButtonControl) weakIdentityButton =
+      _identityButtonControl;
+  [UIView animateWithDuration:kIdentityButtonAnimationDuration
+                   animations:^{
+                     weakIdentityButton.hidden = hidden;
+                   }];
 }
 
 #pragma mark - UIViewController
@@ -118,60 +148,29 @@ CGFloat GetPixelLength() {
   // Set the navigation title in the left bar button item to have left
   // alignment.
   UILabel* titleLabel = [[UILabel alloc] init];
-  titleLabel.font = [UIFont preferredFontForTextStyle:UIFontTextStyleHeadline];
+  titleLabel.adjustsFontForContentSizeCategory = YES;
+  titleLabel.font = GetNavigationBarTitleFont();
   titleLabel.text = _configuration.titleText;
   titleLabel.textAlignment = NSTextAlignmentLeft;
   titleLabel.adjustsFontSizeToFitWidth = YES;
   titleLabel.minimumScaleFactor = 0.1;
 
-  UIButton* cancelButton = [UIButton buttonWithType:UIButtonTypeSystem];
-  [cancelButton setTitle:l10n_util::GetNSString(IDS_CANCEL)
-                forState:UIControlStateNormal];
-  cancelButton.titleLabel.font =
-      [UIFont preferredFontForTextStyle:UIFontTextStyleBody];
-  [cancelButton addTarget:self
-                   action:@selector(cancelButtonAction:)
-         forControlEvents:UIControlEventTouchUpInside];
-  cancelButton.accessibilityIdentifier =
-      kAccountPickerCancelButtonAccessibilityIdentifier;
-  // Put titleLabel and cancelButton each in a wrapper UIView so we can adjust
-  // their top padding.
-  UIView* titleLabelWrapper = [[UIView alloc] init];
-  UIView* cancelButtonWrapper = [[UIView alloc] init];
-  [titleLabelWrapper addSubview:titleLabel];
-  [cancelButtonWrapper addSubview:cancelButton];
-  titleLabel.translatesAutoresizingMaskIntoConstraints = NO;
-  cancelButton.translatesAutoresizingMaskIntoConstraints = NO;
-
-  // Fix the positions of titleLabel and cancelButton relative to their
-  // wrappers.
-  [NSLayoutConstraint activateConstraints:@[
-    [titleLabel.topAnchor constraintEqualToAnchor:titleLabelWrapper.topAnchor
-                                         constant:kExtraNavBarTopPadding],
-    [titleLabel.bottomAnchor
-        constraintEqualToAnchor:titleLabelWrapper.bottomAnchor],
-    [titleLabel.leadingAnchor
-        constraintEqualToAnchor:titleLabelWrapper.leadingAnchor],
-    [titleLabel.trailingAnchor
-        constraintEqualToAnchor:titleLabelWrapper.trailingAnchor],
-    [cancelButton.topAnchor
-        constraintEqualToAnchor:cancelButtonWrapper.topAnchor
-                       constant:kExtraNavBarTopPadding],
-    [cancelButton.bottomAnchor
-        constraintEqualToAnchor:cancelButtonWrapper.bottomAnchor],
-    [cancelButton.leadingAnchor
-        constraintEqualToAnchor:cancelButtonWrapper.leadingAnchor],
-    [cancelButton.trailingAnchor
-        constraintEqualToAnchor:cancelButtonWrapper.trailingAnchor]
-  ]];
-
-  // Add the wrappers to the navigation bar.
+  // Add the title label to the navigation bar.
   UIBarButtonItem* leftItem =
-      [[UIBarButtonItem alloc] initWithCustomView:titleLabelWrapper];
-  UIBarButtonItem* rightItem =
-      [[UIBarButtonItem alloc] initWithCustomView:cancelButtonWrapper];
+      [[UIBarButtonItem alloc] initWithCustomView:titleLabel];
   self.navigationItem.leftBarButtonItem = leftItem;
-  self.navigationItem.rightBarButtonItem = rightItem;
+  self.navigationController.navigationBar.minimumContentSizeCategory =
+      UIContentSizeCategoryLarge;
+  self.navigationController.navigationBar.maximumContentSizeCategory =
+      UIContentSizeCategoryExtraExtraLarge;
+  // Create the skip button.
+  UIBarButtonItem* cancelButtonItem = [[UIBarButtonItem alloc]
+      initWithBarButtonSystemItem:UIBarButtonSystemItemCancel
+                           target:self
+                           action:@selector(cancelButtonAction:)];
+  cancelButtonItem.accessibilityIdentifier =
+      kAccountPickerCancelButtonAccessibilityIdentifier;
+  self.navigationItem.rightBarButtonItem = cancelButtonItem;
 
   // Replace the controller view by the scroll view.
   UIScrollView* scrollView = [[UIScrollView alloc] init];
@@ -214,12 +213,27 @@ CGFloat GetPixelLength() {
   NSString* bodyText = _configuration.bodyText;
   if (bodyText) {
     UILabel* label = [[UILabel alloc] init];
+    label.adjustsFontForContentSizeCategory = YES;
     label.text = bodyText;
     label.textColor = [UIColor colorNamed:kGrey700Color];
     label.font = [UIFont preferredFontForTextStyle:UIFontTextStyleSubheadline];
     label.numberOfLines = 0;
     [_contentView addArrangedSubview:label];
     [label.widthAnchor constraintEqualToAnchor:_contentView.widthAnchor]
+        .active = YES;
+  }
+
+  // Add `childViewController` as a child view controller above the list of
+  // accounts to choose from.
+  UIViewController* childViewController =
+      self.accountConfirmationChildViewController;
+  if (childViewController) {
+    [_contentView addArrangedSubview:childViewController.view];
+    childViewController.view.translatesAutoresizingMaskIntoConstraints = NO;
+    [self addChildViewController:childViewController];
+    [childViewController didMoveToParentViewController:self];
+    [childViewController.view.widthAnchor
+        constraintEqualToAnchor:_contentView.widthAnchor]
         .active = YES;
   }
 
@@ -256,11 +270,17 @@ CGFloat GetPixelLength() {
     askEveryTimeLabel.textColor = [UIColor colorNamed:kTextSecondaryColor];
     askEveryTimeLabel.font =
         [UIFont preferredFontForTextStyle:UIFontTextStyleSubheadline];
+    askEveryTimeLabel.numberOfLines = 0;
+    askEveryTimeLabel.lineBreakMode = NSLineBreakByWordWrapping;
     _askEveryTimeSwitch = [[UISwitch alloc] init];
     [_askEveryTimeSwitch addTarget:self
                             action:@selector(askEveryTimeSwitchAction:)
                   forControlEvents:UIControlEventValueChanged];
     _askEveryTimeSwitch.on = YES;
+    [_askEveryTimeSwitch
+        setContentCompressionResistancePriority:UILayoutPriorityRequired
+                                        forAxis:
+                                            UILayoutConstraintAxisHorizontal];
     [switchWithLabel addArrangedSubview:askEveryTimeLabel];
     [switchWithLabel addArrangedSubview:_askEveryTimeSwitch];
 
@@ -304,9 +324,11 @@ CGFloat GetPixelLength() {
 
   // Add the primary button (the "Continue as"/"Sign in" button).
   _primaryButton = PrimaryActionButton(/* pointer_interaction_enabled */ YES);
-  SetContentEdgeInsets(_primaryButton,
-                       UIEdgeInsetsMake(kPrimaryButtonVerticalInsets, 0,
-                                        kPrimaryButtonVerticalInsets, 0));
+  UIButtonConfiguration* buttonConfiguration = _primaryButton.configuration;
+  buttonConfiguration.contentInsets = NSDirectionalEdgeInsetsMake(
+      kPrimaryButtonVerticalInsets, 0, kPrimaryButtonVerticalInsets, 0);
+  _primaryButton.configuration = buttonConfiguration;
+
   _primaryButton.accessibilityIdentifier =
       kAccountPickerPrimaryButtonAccessibilityIdentifier;
   _primaryButton.translatesAutoresizingMaskIntoConstraints = NO;
@@ -323,11 +345,18 @@ CGFloat GetPixelLength() {
   // Adjust the identity button control rounded corners to the same value than
   // the "continue as" button.
   _groupedIdentityButtonSection.layer.cornerRadius =
-      _primaryButton.layer.cornerRadius;
+      _primaryButton.configuration.background.cornerRadius;
 
   // Ensure that keyboard is hidden.
   UIResponder* firstResponder = GetFirstResponder();
   [firstResponder resignFirstResponder];
+}
+
+- (void)viewDidLayoutSubviews {
+  [super viewDidLayoutSubviews];
+  CGFloat width = self.view.intrinsicContentSize.width;
+  self.preferredContentSize =
+      CGSizeMake(width, [self layoutFittingHeightForWidth:width]);
 }
 
 #pragma mark - UI actions
@@ -367,11 +396,11 @@ CGFloat GetPixelLength() {
             verticalFittingPriority:UILayoutPriorityFittingSizeLevel];
   CGFloat safeAreaInsetsHeight = 0;
   switch (_layoutDelegate.displayStyle) {
-    case kAccountPickerSheetDisplayStyleBottom:
+    case AccountPickerSheetDisplayStyle::kBottom:
       safeAreaInsetsHeight =
           self.navigationController.view.window.safeAreaInsets.bottom;
       break;
-    case kAccountPickerSheetDisplayStyleCentered:
+    case AccountPickerSheetDisplayStyle::kCentered:
       break;
   }
   // Safe area insets needs to be based on the window since the `self.view`
@@ -397,8 +426,10 @@ CGFloat GetPixelLength() {
 
   // If spinner is active, delay UI updates until stopSpinner() is called.
   if (!_activityIndicatorView) {
-    [_primaryButton setTitle:_submitString forState:UIControlStateNormal];
-    _identityButtonControl.hidden = NO;
+    SetConfigurationTitle(_primaryButton, _submitString);
+    if (!_identityButtonControlShouldBeHidden) {
+      _identityButtonControl.hidden = NO;
+    }
   }
 }
 
@@ -410,8 +441,7 @@ CGFloat GetPixelLength() {
   // Hide the IdentityButtonControl, and update the primary button to serve as
   // a "Sign in…" button.
   _groupedIdentityButtonSection.hidden = YES;
-  [_primaryButton setTitle:_configuration.submitButtonTitle
-                  forState:UIControlStateNormal];
+  SetConfigurationTitle(_primaryButton, _configuration.submitButtonTitle);
 }
 
 @end

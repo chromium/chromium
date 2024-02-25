@@ -19,10 +19,10 @@
 #include <type_traits>
 #include <utility>
 
+#include "absl/log/absl_check.h"
 #include "absl/strings/str_cat.h"
 #include "mediapipe/framework/packet.h"
 #include "mediapipe/framework/port/status.h"
-#include "absl/log/absl_check.h"
 
 namespace mediapipe {
 

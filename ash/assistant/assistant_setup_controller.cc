@@ -44,7 +44,7 @@ void AssistantSetupController::OnDeepLinkReceived(
   if (type != assistant::util::DeepLinkType::kOnboarding)
     return;
 
-  absl::optional<bool> relaunch = assistant::util::GetDeepLinkParamAsBool(
+  std::optional<bool> relaunch = assistant::util::GetDeepLinkParamAsBool(
       params, assistant::util::DeepLinkParam::kRelaunch);
 
   StartOnboarding(relaunch.value_or(false));

@@ -31,6 +31,8 @@
 #include <memory>
 
 #include "base/dcheck_is_on.h"
+#include "base/memory/raw_ptr.h"
+#include "base/memory/raw_ref.h"
 #include "cc/paint/paint_flags.h"
 #include "third_party/blink/renderer/platform/fonts/font.h"
 #include "third_party/blink/renderer/platform/graphics/dark_mode_filter.h"
@@ -104,7 +106,7 @@ struct ImageDrawOptions {
         decode_mode(decode_mode),
         apply_dark_mode(apply_dark_mode),
         may_be_lcp_candidate(may_be_lcp_candidate) {}
-  DarkModeFilter* dark_mode_filter = nullptr;
+  raw_ptr<DarkModeFilter> dark_mode_filter = nullptr;
   SkSamplingOptions sampling_options;
   RespectImageOrientationEnum respect_orientation = kRespectImageOrientation;
   Image::ImageClampingMode clamping_mode = Image::kClampImageToSourceRect;
@@ -189,9 +191,9 @@ class PLATFORM_EXPORT GraphicsContext {
   cc::PaintCanvas* Canvas() { return canvas_; }
   const cc::PaintCanvas* Canvas() const { return canvas_; }
 
-  PaintController& GetPaintController() { return paint_controller_; }
+  PaintController& GetPaintController() { return *paint_controller_; }
   const PaintController& GetPaintController() const {
-    return paint_controller_;
+    return *paint_controller_;
   }
 
   DarkModeFilter* GetDarkModeFilter();
@@ -249,11 +251,25 @@ class PLATFORM_EXPORT GraphicsContext {
     return ImmutableState()->TextDrawingMode();
   }
 
+  void SetTextPaintOrder(const TextPaintOrder& order) {
+    MutableState()->SetTextPaintOrder(order);
+  }
+  TextPaintOrder GetTextPaintOrder() const {
+    return ImmutableState()->GetTextPaintOrder();
+  }
+
   void SetImageInterpolationQuality(InterpolationQuality quality) {
     MutableState()->SetInterpolationQuality(quality);
   }
   InterpolationQuality ImageInterpolationQuality() const {
     return ImmutableState()->GetInterpolationQuality();
+  }
+
+  void SetDynamicRangeLimit(DynamicRangeLimit limit) {
+    MutableState()->SetDynamicRangeLimit(limit);
+  }
+  blink::DynamicRangeLimit DynamicRangeLimit() const {
+    return ImmutableState()->GetDynamicRangeLimit();
   }
 
   SkSamplingOptions ImageSamplingOptions() const {
@@ -391,29 +407,12 @@ class PLATFORM_EXPORT GraphicsContext {
                 SkClipOp = SkClipOp::kIntersect);
 
   void DrawText(const Font&,
-                const TextRunPaintInfo&,
+                const TextFragmentPaintInfo&,
                 const gfx::PointF&,
                 DOMNodeId,
                 const AutoDarkMode& auto_dark_mode);
   void DrawText(const Font&,
-                const NGTextFragmentPaintInfo&,
-                const gfx::PointF&,
-                DOMNodeId,
-                const AutoDarkMode& auto_dark_mode);
-
-  // TODO(layout-dev): This method is only used by SVGInlineTextBoxPainter, see
-  // if we can change that to use the four parameter version above.
-  void DrawText(const Font&,
-                const TextRunPaintInfo&,
-                const gfx::PointF&,
-                const cc::PaintFlags&,
-                DOMNodeId,
-                const AutoDarkMode& auto_dark_mode);
-
-  // TODO(layout-dev): This method is only used by NGTextPainter, see if the
-  // four parameter overload can be removed or if it can wrap this method.
-  void DrawText(const Font&,
-                const NGTextFragmentPaintInfo&,
+                const TextFragmentPaintInfo&,
                 const gfx::PointF&,
                 const cc::PaintFlags&,
                 DOMNodeId,
@@ -425,7 +424,7 @@ class PLATFORM_EXPORT GraphicsContext {
                          const gfx::PointF&,
                          const AutoDarkMode& auto_dark_mode);
   void DrawEmphasisMarks(const Font&,
-                         const NGTextFragmentPaintInfo&,
+                         const TextFragmentPaintInfo&,
                          const AtomicString& mark,
                          const gfx::PointF&,
                          const AutoDarkMode& auto_dark_mode);
@@ -436,14 +435,6 @@ class PLATFORM_EXPORT GraphicsContext {
       const gfx::PointF&,
       const AutoDarkMode& auto_dark_mode,
       Font::CustomFontNotReadyAction = Font::kDoNotPaintIfFontNotReady);
-  void DrawHighlightForText(const Font&,
-                            const TextRun&,
-                            const gfx::PointF&,
-                            int h,
-                            const Color& background_color,
-                            const AutoDarkMode& auto_dark_mode,
-                            int from = 0,
-                            int to = -1);
 
   void DrawLineForText(const gfx::PointF&,
                        float width,
@@ -455,7 +446,7 @@ class PLATFORM_EXPORT GraphicsContext {
   // the backdrop (i.e. EndLayer()).
   void BeginLayer(float opacity = 1.0f);
   void BeginLayer(SkBlendMode);
-  void BeginLayer(sk_sp<cc::ColorFilter>);
+  void BeginLayer(sk_sp<cc::ColorFilter>, const SkBlendMode* = nullptr);
   void BeginLayer(sk_sp<PaintFilter>);
   void EndLayer();
 
@@ -554,14 +545,6 @@ class PLATFORM_EXPORT GraphicsContext {
   }
 
   template <typename TextPaintInfo>
-  void DrawTextInternal(const Font&,
-                        const TextPaintInfo&,
-                        const gfx::PointF&,
-                        const cc::PaintFlags& flags,
-                        DOMNodeId,
-                        const AutoDarkMode& auto_dark_mode);
-
-  template <typename TextPaintInfo>
   void DrawEmphasisMarksInternal(const Font&,
                                  const TextPaintInfo&,
                                  const AtomicString& mark,
@@ -569,7 +552,7 @@ class PLATFORM_EXPORT GraphicsContext {
                                  const AutoDarkMode& auto_dark_mode);
 
   template <typename DrawTextFunc>
-  void DrawTextPasses(const AutoDarkMode& auto_dark_mode, const DrawTextFunc&);
+  void DrawTextPasses(const DrawTextFunc&);
 
   void BeginLayer(const cc::PaintFlags&);
 
@@ -601,9 +584,9 @@ class PLATFORM_EXPORT GraphicsContext {
   // This is owned by paint_recorder_. Never delete this object.
   // Drawing operations are allowed only after the first BeginRecording() which
   // initializes this to not null.
-  cc::PaintCanvas* canvas_ = nullptr;
+  raw_ptr<cc::PaintCanvas> canvas_ = nullptr;
 
-  PaintController& paint_controller_;
+  const raw_ref<PaintController, DanglingUntriaged> paint_controller_;
 
   // Paint states stack. The state controls the appearance of drawn content, so
   // this stack enables local drawing state changes with Save()/Restore() calls.
@@ -614,12 +597,14 @@ class PLATFORM_EXPORT GraphicsContext {
   wtf_size_t paint_state_index_ = 0;
 
   // Raw pointer to the current state.
-  GraphicsContextState* paint_state_ = nullptr;
+  raw_ptr<GraphicsContextState> paint_state_ = nullptr;
 
   PaintRecorder paint_recorder_;
 
-  printing::MetafileSkia* printing_metafile_ = nullptr;
-  paint_preview::PaintPreviewTracker* paint_preview_tracker_ = nullptr;
+  raw_ptr<printing::MetafileSkia, DanglingUntriaged> printing_metafile_ =
+      nullptr;
+  raw_ptr<paint_preview::PaintPreviewTracker, DanglingUntriaged>
+      paint_preview_tracker_ = nullptr;
 
 #if DCHECK_IS_ON()
   int layer_count_ = 0;

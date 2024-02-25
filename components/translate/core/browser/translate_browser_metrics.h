@@ -62,8 +62,6 @@ void ReportMenuTranslationUnavailableReason(
 // Called when language detection details are complete.
 void ReportLanguageDetectionContentLength(size_t length);
 
-void ReportUnsupportedLanguageAtInitiation(base::StringPiece language);
-
 // Called when a request is sent to the translate server to report the source
 // language of the translated page. Buckets are labelled with LocaleCodeISO639
 // values.

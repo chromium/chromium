@@ -1,4 +1,4 @@
-(async function(testRunner) {
+(async function(/** @type {import('test_runner').TestRunner} */ testRunner) {
   var {page, session, dp} = await testRunner.startBlank(
       `Tests that Page.setInterceptFileChooserDialog state is preserved after cross-process navigation`);
 
@@ -21,6 +21,6 @@
     })
   ]);
   testRunner.log('Intercepted file chooser in mode: ' + event.params.mode);
-  
+
   testRunner.completeTest();
 })

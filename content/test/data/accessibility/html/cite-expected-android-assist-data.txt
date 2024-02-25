@@ -1,0 +1,5 @@
+WebView textSize:16.0 style:0 htmlInfo:[{htmlTag="#document"}, {display=""}]
+++Image text:"Pipe" textSize:16.0 style:0 htmlInfo:[{htmlTag="img"}, {display="inline"}, {alt="Pipe"}, {height="277"}, {src="pipe.jpg"}, {width="220"}]
+++View textSize:16.0 style:0 htmlInfo:[{htmlTag="p"}, {display="block"}]
+++++TextView text:"The pipe" textSize:16.0 style:2 htmlInfo:[{htmlTag=""}, {display=""}]
+++++TextView text:" clicked by SomeOne." textSize:16.0 style:0 htmlInfo:[{htmlTag=""}, {display=""}]

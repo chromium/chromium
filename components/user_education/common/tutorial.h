@@ -5,11 +5,12 @@
 #ifndef COMPONENTS_USER_EDUCATION_COMMON_TUTORIAL_H_
 #define COMPONENTS_USER_EDUCATION_COMMON_TUTORIAL_H_
 
+#include <optional>
+
 #include "base/gtest_prod_util.h"
 #include "components/user_education/common/help_bubble_factory.h"
 #include "components/user_education/common/help_bubble_params.h"
 #include "components/user_education/common/tutorial_description.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/base/interaction/element_tracker.h"
 #include "ui/base/interaction/interaction_sequence.h"
@@ -96,11 +97,18 @@ class Tutorial {
   // calling the abort callback if necessary.
   void Abort();
 
+  // Sets the temporary state associated with the tutorial.
+  void SetState(std::unique_ptr<ScopedTutorialState> tutorial_state);
+
  private:
   // Tutorial Constructor that takes an InteractionSequence. Should only be
   // used in cases where custom step logic must be called
   explicit Tutorial(
       std::unique_ptr<ui::InteractionSequence> interaction_sequence);
+
+  // The temporary state associated with the tutorial. The state is reset
+  // which this goes out of scope
+  std::unique_ptr<ScopedTutorialState> tutorial_state_;
 
   // The Interaction Sequence which controls the tutorial bubbles opening and
   // closing

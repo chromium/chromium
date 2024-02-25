@@ -2,12 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "ui/gfx/color_conversions.h"
+
 #include <stdlib.h>
+
+#include <optional>
 #include <tuple>
 
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
-#include "ui/gfx/color_conversions.h"
 
 namespace gfx {
 
@@ -92,17 +94,17 @@ TEST(ColorConversions, OklabToXYZD65) {
   // https://colorjs.io/apps/convert/?color=lime&precision=4
   ColorTest colors_tests[] = {
       {{0.0f, 0.0f, 0.0f}, {0.0f, 0.0f, 0.0f}},  // black
-      {{100.0f, 0.0, 0.0f},
+      {{1.00f, 0.0, 0.0f},
        {0.9504559270516717f, 1.0f, 1.0890577507598784f}},  // white
-      {{86.64396115356694f, -0.23388757418790818f, 0.17949847989672985f},
+      {{0.8664396115356694f, -0.23388757418790818f, 0.17949847989672985f},
        {0.357584339383878f, 0.715168678767756f, 0.11919477979462598f}},  // lime
-      {{42.09136612058102f, 0.16470430417002319f, -0.10147178154592906f},
+      {{0.4209136612058102f, 0.16470430417002319f, -0.10147178154592906f},
        {0.1279775574172914f, 0.06148383144929487f,
         0.20935510595451154f}},  // purple
-      {{48.06125447400232f, 0.1440294785250731f, 0.0688902950420287f},
+      {{0.4806125447400232f, 0.1440294785250731f, 0.0688902950420287f},
        {0.167625056565021f, 0.09823806119130823f,
         0.03204123425728893f}},  // brown
-      {{51.97518277948419f, -0.14030232755310995f, 0.10767589774360209f},
+      {{0.5197518277948419f, -0.14030232755310995f, 0.10767589774360209f},
        {0.07718833433230218f, 0.15437666866460437f,
         0.025729444777434055f}}};  // green
 
@@ -132,18 +134,18 @@ TEST(ColorConversions, XYZD65ToOklab) {
   ColorTest colors_tests[] = {
       {{0.0f, 0.0f, 0.0f}, {0.0f, 0.0f, 0.0f}},  // black
       {{0.9504559270516717f, 1.0f, 1.0890577507598784f},
-       {100.0f, 0.0, 0.0f}},  // white
+       {1.00f, 0.0, 0.0f}},  // white
       {{0.357584339383878f, 0.715168678767756f, 0.11919477979462598f},
-       {86.64396115356694f, -0.23388757418790818f,
+       {0.8664396115356694f, -0.23388757418790818f,
         0.17949847989672985f}},  // lime
       {{0.1279775574172914f, 0.06148383144929487f, 0.20935510595451154f},
-       {42.09136612058102f, 0.16470430417002319f,
+       {0.4209136612058102f, 0.16470430417002319f,
         -0.10147178154592906f}},  // purple
       {{0.167625056565021f, 0.09823806119130823f, 0.03204123425728893f},
-       {48.06125447400232f, 0.1440294785250731f,
+       {0.4806125447400232f, 0.1440294785250731f,
         0.0688902950420287f}},  // brown
       {{0.07718833433230218f, 0.15437666866460437f, 0.025729444777434055f},
-       {51.97518277948419f, -0.14030232755310995f,
+       {0.5197518277948419f, -0.14030232755310995f,
         0.10767589774360209f}}};  // green
 
   for (auto& color_pair : colors_tests) {
@@ -279,8 +281,7 @@ TEST(ColorConversions, LchToLab) {
   for (auto& color_pair : colors_tests) {
     auto [input_l, input_c, input_h] = color_pair.input;
     auto [expected_l, expected_a, expected_b] = color_pair.expected;
-    auto [output_l, output_a, output_b] =
-        LchToLab(input_l, input_c, absl::optional<float>(input_h));
+    auto [output_l, output_a, output_b] = LchToLab(input_l, input_c, input_h);
     EXPECT_NEAR(output_l, expected_l, 0.001f)
         << input_l << ' ' << input_c << ' ' << input_h << " to " << expected_l
         << ' ' << expected_a << ' ' << expected_b << " produced " << output_l
@@ -294,28 +295,6 @@ TEST(ColorConversions, LchToLab) {
         << ' ' << expected_a << ' ' << expected_b << " produced " << output_l
         << ' ' << output_a << ' ' << output_b;
   }
-
-  // Try with a none hue value (white).
-  float input_l = 100.0f;
-  float input_c = 0.000010331815288315629f;
-  absl::optional<float> input_h = absl::nullopt;
-  float expected_l = 100.0f;
-  float expected_a = -0.000007807961277528364f;
-  float expected_b = 0.000006766250648659877f;
-  auto [output_l, output_a, output_b] =
-      LchToLab(input_l, input_c, absl::optional<float>(input_h));
-  EXPECT_NEAR(output_l, expected_l, 0.001f)
-      << input_l << ' ' << input_c << ' ' << "none"
-      << " to " << expected_l << ' ' << expected_a << ' ' << expected_b
-      << " produced " << output_l << ' ' << output_a << ' ' << output_b;
-  EXPECT_NEAR(output_a, expected_a, 0.001f)
-      << input_l << ' ' << input_c << ' ' << "none"
-      << " to " << expected_l << ' ' << expected_a << ' ' << expected_b
-      << " produced " << output_l << ' ' << output_a << ' ' << output_b;
-  EXPECT_NEAR(output_b, expected_b, 0.001f)
-      << input_l << ' ' << input_c << ' ' << "none"
-      << " to " << expected_l << ' ' << expected_a << ' ' << expected_b
-      << " produced " << output_l << ' ' << output_a << ' ' << output_b;
 }
 
 TEST(ColorConversions, LabToLch) {
@@ -372,8 +351,7 @@ TEST(ColorConversions, LchToSkColor4f) {
   for (auto& color_pair : colors_tests) {
     auto [input_l, input_c, input_h] = color_pair.input;
     auto [expected_r, expected_g, expected_b] = color_pair.expected;
-    SkColor4f color =
-        LchToSkColor4f(input_l, input_c, absl::optional<float>(input_h), 1.0f);
+    SkColor4f color = LchToSkColor4f(input_l, input_c, input_h, 1.0f);
     EXPECT_NEAR(color.fR, expected_r, 0.01f)
         << input_l << ' ' << input_c << ' ' << input_h << " to " << expected_r
         << ' ' << expected_g << ' ' << expected_b << " produced " << color.fR
@@ -387,28 +365,6 @@ TEST(ColorConversions, LchToSkColor4f) {
         << ' ' << expected_g << ' ' << expected_b << " produced " << color.fR
         << ' ' << color.fG << ' ' << color.fB;
   }
-
-  // Try with a none hue value (white).
-  float input_l = 100.0f;
-  float input_c = 0.000010331815288315629f;
-  absl::optional<float> input_h = absl::nullopt;
-  float expected_r = 1.0f;
-  float expected_g = 1.0f;
-  float expected_b = 1.0f;
-  SkColor4f color =
-      LchToSkColor4f(input_l, input_c, absl::optional<float>(input_h), 1.0f);
-  EXPECT_NEAR(color.fR, expected_r, 0.001f)
-      << input_l << ' ' << input_c << ' ' << "none"
-      << " to " << expected_r << ' ' << expected_g << ' ' << expected_b
-      << " produced " << color.fR << ' ' << color.fG << ' ' << color.fB;
-  EXPECT_NEAR(color.fG, expected_g, 0.001f)
-      << input_l << ' ' << input_c << ' ' << "none"
-      << " to " << expected_r << ' ' << expected_g << ' ' << expected_b
-      << " produced " << color.fR << ' ' << color.fG << ' ' << color.fB;
-  EXPECT_NEAR(color.fB, expected_b, 0.001f)
-      << input_l << ' ' << input_c << ' ' << "none"
-      << " to " << expected_r << ' ' << expected_g << ' ' << expected_b
-      << " produced " << color.fR << ' ' << color.fG << ' ' << color.fB;
 }
 
 TEST(ColorConversions, OklchToSkColor4f) {
@@ -416,21 +372,20 @@ TEST(ColorConversions, OklchToSkColor4f) {
   // https://colorjs.io/apps/convert/?color=purple&precision=4
   ColorTest colors_tests[] = {
       {{0.0f, 0.0f, 0.0f}, {0.0f, 0.0f, 0.0f}},  // black
-      {{86.64396115356694f, 0.2948272403370167f, 142.49533888780996f},
+      {{0.8664396115356694f, 0.2948272403370167f, 142.49533888780996f},
        {0.0f, 1.0f, 0.0f}},  // lime
-      {{42.09136612058102f, 0.19345291484554133f, 328.36341792345144f},
+      {{0.4209136612058102f, 0.19345291484554133f, 328.36341792345144f},
        {0.5019607843137255f, 0.0f, 0.5019607843137255f}},  // purple
-      {{48.06125447400232f, 0.1596570181206647f, 25.562112067668068f},
+      {{0.4806125447400232f, 0.1596570181206647f, 25.562112067668068f},
        {0.6470588235294118f, 0.16470588235294117f,
         0.16470588235294117f}},  // brown
-      {{51.97518277948419f, 0.17685825418032036f, 142.4953388878099f},
+      {{0.5197518277948419f, 0.17685825418032036f, 142.4953388878099f},
        {0.0f, 0.5019607843137255f, 0.0f}}};  // green
 
   for (auto& color_pair : colors_tests) {
     auto [input_l, input_c, input_h] = color_pair.input;
     auto [expected_r, expected_g, expected_b] = color_pair.expected;
-    SkColor4f color = OklchToSkColor4f(input_l, input_c,
-                                       absl::optional<float>(input_h), 1.0f);
+    SkColor4f color = OklchToSkColor4f(input_l, input_c, input_h, 1.0f);
     EXPECT_NEAR(color.fR, expected_r, 0.01f)
         << input_l << ' ' << input_c << ' ' << input_h << " to " << expected_r
         << ' ' << expected_g << ' ' << expected_b << " produced " << color.fR
@@ -444,28 +399,6 @@ TEST(ColorConversions, OklchToSkColor4f) {
         << ' ' << expected_g << ' ' << expected_b << " produced " << color.fR
         << ' ' << color.fG << ' ' << color.fB;
   }
-
-  // Try with a none hue value (white).
-  float input_l = 100.0f;
-  float input_c = 0.000010331815288315629f;
-  absl::optional<float> input_h = absl::nullopt;
-  float expected_r = 1.0f;
-  float expected_g = 1.0f;
-  float expected_b = 1.0f;
-  SkColor4f color =
-      OklchToSkColor4f(input_l, input_c, absl::optional<float>(input_h), 1.0f);
-  EXPECT_NEAR(color.fR, expected_r, 0.001f)
-      << input_l << ' ' << input_c << ' ' << "none"
-      << " to " << expected_r << ' ' << expected_g << ' ' << expected_b
-      << " produced " << color.fR << ' ' << color.fG << ' ' << color.fB;
-  EXPECT_NEAR(color.fG, expected_g, 0.001f)
-      << input_l << ' ' << input_c << ' ' << "none"
-      << " to " << expected_r << ' ' << expected_g << ' ' << expected_b
-      << " produced " << color.fR << ' ' << color.fG << ' ' << color.fB;
-  EXPECT_NEAR(color.fB, expected_b, 0.001f)
-      << input_l << ' ' << input_c << ' ' << "none"
-      << " to " << expected_r << ' ' << expected_g << ' ' << expected_b
-      << " produced " << color.fR << ' ' << color.fG << ' ' << color.fB;
 }
 
 TEST(ColorConversions, SRGBLinearToXYZD50) {

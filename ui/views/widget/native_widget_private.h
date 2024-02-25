@@ -84,6 +84,8 @@ class VIEWS_EXPORT NativeWidgetPrivate : public NativeWidget {
   // initialization.
   virtual void OnWidgetInitDone() = 0;
 
+  virtual void ReparentNativeViewImpl(gfx::NativeView new_parent) = 0;
+
   // Returns a NonClientFrameView for the widget's NonClientView, or NULL if
   // the NativeWidget wants no special NonClientFrameView.
   virtual std::unique_ptr<NonClientFrameView> CreateNonClientFrameView() = 0;
@@ -240,7 +242,6 @@ class VIEWS_EXPORT NativeWidgetPrivate : public NativeWidget {
       const base::TimeDelta& duration) = 0;
   virtual void SetVisibilityAnimationTransition(
       Widget::VisibilityTransition transition) = 0;
-  virtual bool IsTranslucentWindowOpacitySupported() const = 0;
   virtual ui::GestureRecognizer* GetGestureRecognizer() = 0;
   virtual ui::GestureConsumer* GetGestureConsumer() = 0;
   virtual void OnSizeConstraintsChanged() = 0;

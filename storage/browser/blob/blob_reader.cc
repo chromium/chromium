@@ -137,7 +137,7 @@ void BlobReader::ReadSideData(StatusCallback done) {
                      std::move(done), side_data_size));
 }
 
-absl::optional<mojo_base::BigBuffer> BlobReader::TakeSideData() {
+std::optional<mojo_base::BigBuffer> BlobReader::TakeSideData() {
   return std::move(side_data_);
 }
 

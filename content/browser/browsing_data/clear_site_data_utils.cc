@@ -34,13 +34,13 @@ class SiteDataClearer : public BrowsingDataRemover::Observer {
  public:
   SiteDataClearer(
       BrowserContext* browser_context,
-      const absl::optional<StoragePartitionConfig> storage_partition_config,
+      const std::optional<StoragePartitionConfig> storage_partition_config,
       const url::Origin& origin,
       const ClearSiteDataTypeSet clear_site_data_types,
       const std::set<std::string>& storage_buckets_to_remove,
       bool avoid_closing_connections,
-      const absl::optional<net::CookiePartitionKey> cookie_partition_key,
-      const absl::optional<blink::StorageKey> storage_key,
+      const std::optional<net::CookiePartitionKey> cookie_partition_key,
+      const std::optional<blink::StorageKey> storage_key,
       bool partitioned_state_allowed_only,
       base::OnceClosure callback)
       : storage_partition_config_(storage_partition_config),
@@ -186,13 +186,13 @@ class SiteDataClearer : public BrowsingDataRemover::Observer {
     delete this;
   }
 
-  const absl::optional<StoragePartitionConfig> storage_partition_config_;
+  const std::optional<StoragePartitionConfig> storage_partition_config_;
   const url::Origin origin_;
   const ClearSiteDataTypeSet clear_site_data_types_;
   const std::set<std::string> storage_buckets_to_remove_;
   const bool avoid_closing_connections_;
-  const absl::optional<net::CookiePartitionKey> cookie_partition_key_;
-  const absl::optional<blink::StorageKey> storage_key_;
+  const std::optional<net::CookiePartitionKey> cookie_partition_key_;
+  const std::optional<blink::StorageKey> storage_key_;
   const bool partitioned_state_allowed_only_;
   base::OnceClosure callback_;
   int pending_task_count_ = 0;
@@ -205,14 +205,14 @@ class SiteDataClearer : public BrowsingDataRemover::Observer {
 }  // namespace
 
 void ClearSiteData(
-    const base::RepeatingCallback<BrowserContext*()>& browser_context_getter,
-    const absl::optional<StoragePartitionConfig> storage_partition_config,
+    base::WeakPtr<BrowserContext> browser_context,
+    const std::optional<StoragePartitionConfig> storage_partition_config,
     const url::Origin& origin,
     const ClearSiteDataTypeSet clear_site_data_types,
     const std::set<std::string>& storage_buckets_to_remove,
     bool avoid_closing_connections,
-    const absl::optional<net::CookiePartitionKey> cookie_partition_key,
-    const absl::optional<blink::StorageKey> storage_key,
+    const std::optional<net::CookiePartitionKey> cookie_partition_key,
+    const std::optional<blink::StorageKey> storage_key,
     bool partitioned_state_allowed_only,
     base::OnceClosure callback) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
@@ -220,12 +220,11 @@ void ClearSiteData(
   // It's not possible to clear all storage and also only specific buckets.
   DCHECK(!clear_site_data_types.Has(ClearSiteDataType::kStorage) ||
          storage_buckets_to_remove.empty());
-  BrowserContext* browser_context = browser_context_getter.Run();
   if (!browser_context) {
     std::move(callback).Run();
     return;
   }
-  (new SiteDataClearer(browser_context, storage_partition_config, origin,
+  (new SiteDataClearer(browser_context.get(), storage_partition_config, origin,
                        clear_site_data_types, storage_buckets_to_remove,
                        avoid_closing_connections, cookie_partition_key,
                        storage_key, partitioned_state_allowed_only,

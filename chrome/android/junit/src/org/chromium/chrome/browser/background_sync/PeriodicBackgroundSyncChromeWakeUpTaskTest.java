@@ -15,7 +15,6 @@ import static org.mockito.Mockito.verify;
 import android.content.Context;
 import android.os.PersistableBundle;
 
-import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -29,7 +28,6 @@ import org.robolectric.annotation.Config;
 
 import org.chromium.base.BaseSwitches;
 import org.chromium.base.Callback;
-import org.chromium.base.SysUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Feature;
@@ -44,29 +42,23 @@ import org.chromium.components.background_task_scheduler.TaskInfo;
 import org.chromium.components.background_task_scheduler.TaskParameters;
 import org.chromium.net.ConnectionType;
 
-/**
- * Unit tests for PeriodicBackgroundSyncChromeWakeUpTask.
- */
+/** Unit tests for PeriodicBackgroundSyncChromeWakeUpTask. */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(manifest = Config.NONE, shadows = {ShadowDeviceConditions.class})
+@Config(
+        manifest = Config.NONE,
+        shadows = {ShadowDeviceConditions.class})
 @CommandLineFlags.Add({BaseSwitches.ENABLE_LOW_END_DEVICE_MODE})
 public class PeriodicBackgroundSyncChromeWakeUpTaskTest {
-    @Rule
-    public JniMocker mocker = new JniMocker();
+    @Rule public JniMocker mocker = new JniMocker();
 
     private PersistableBundle mTaskExtras;
     private long mTaskTime;
 
-    @Mock
-    private PeriodicBackgroundSyncChromeWakeUpTask.Natives mNativeMock;
-    @Mock
-    private BackgroundTaskScheduler mTaskScheduler;
-    @Mock
-    private BackgroundTask.TaskFinishedCallback mTaskFinishedCallback;
-    @Mock
-    private Callback<Boolean> mInternalBooleanCallback;
-    @Captor
-    private ArgumentCaptor<TaskInfo> mTaskInfo;
+    @Mock private PeriodicBackgroundSyncChromeWakeUpTask.Natives mNativeMock;
+    @Mock private BackgroundTaskScheduler mTaskScheduler;
+    @Mock private BackgroundTask.TaskFinishedCallback mTaskFinishedCallback;
+    @Mock private Callback<Boolean> mInternalBooleanCallback;
+    @Captor private ArgumentCaptor<TaskInfo> mTaskInfo;
 
     @Before
     public void setUp() {
@@ -84,12 +76,6 @@ public class PeriodicBackgroundSyncChromeWakeUpTaskTest {
         mocker.mock(PeriodicBackgroundSyncChromeWakeUpTaskJni.TEST_HOOKS, mNativeMock);
     }
 
-    @After
-    public void tearDown() {
-        // Clean up static state for subsequent Robolectric tests.
-        SysUtils.resetForTesting();
-    }
-
     @Test
     @Feature("BackgroundSync")
     public void testNetworkConditions_NoNetwork() {
@@ -99,8 +85,10 @@ public class PeriodicBackgroundSyncChromeWakeUpTaskTest {
                         .addExtras(mTaskExtras)
                         .build();
 
-        int result = new PeriodicBackgroundSyncChromeWakeUpTask().onStartTaskBeforeNativeLoaded(
-                RuntimeEnvironment.application, params, mTaskFinishedCallback);
+        int result =
+                new PeriodicBackgroundSyncChromeWakeUpTask()
+                        .onStartTaskBeforeNativeLoaded(
+                                RuntimeEnvironment.application, params, mTaskFinishedCallback);
         assertEquals(NativeBackgroundTask.StartBeforeNativeResult.RESCHEDULE, result);
 
         // TaskFinishedCallback callback is only called once native code has
@@ -117,8 +105,10 @@ public class PeriodicBackgroundSyncChromeWakeUpTaskTest {
                         .addExtras(mTaskExtras)
                         .build();
 
-        int result = new PeriodicBackgroundSyncChromeWakeUpTask().onStartTaskBeforeNativeLoaded(
-                RuntimeEnvironment.application, params, mTaskFinishedCallback);
+        int result =
+                new PeriodicBackgroundSyncChromeWakeUpTask()
+                        .onStartTaskBeforeNativeLoaded(
+                                RuntimeEnvironment.application, params, mTaskFinishedCallback);
         assertEquals(NativeBackgroundTask.StartBeforeNativeResult.LOAD_NATIVE, result);
 
         // TaskFinishedCallback callback is only called once native code has
@@ -134,8 +124,9 @@ public class PeriodicBackgroundSyncChromeWakeUpTaskTest {
                         .addExtras(mTaskExtras)
                         .build();
 
-        new PeriodicBackgroundSyncChromeWakeUpTask().onStartTaskWithNative(
-                RuntimeEnvironment.application, params, mTaskFinishedCallback);
+        new PeriodicBackgroundSyncChromeWakeUpTask()
+                .onStartTaskWithNative(
+                        RuntimeEnvironment.application, params, mTaskFinishedCallback);
 
         verify(mNativeMock).firePeriodicBackgroundSyncEvents(any(Runnable.class));
         verify(mTaskFinishedCallback, times(0)).taskFinished(anyBoolean());
@@ -150,8 +141,8 @@ public class PeriodicBackgroundSyncChromeWakeUpTaskTest {
                         .addExtras(mTaskExtras)
                         .build();
 
-        new PeriodicBackgroundSyncChromeWakeUpTask().onStopTaskBeforeNativeLoaded(
-                RuntimeEnvironment.application, params);
+        new PeriodicBackgroundSyncChromeWakeUpTask()
+                .onStopTaskBeforeNativeLoaded(RuntimeEnvironment.application, params);
 
         verify(mTaskFinishedCallback, times(0)).taskFinished(anyBoolean());
         verify(mTaskScheduler, times(0)).schedule(any(Context.class), any(TaskInfo.class));
@@ -165,8 +156,8 @@ public class PeriodicBackgroundSyncChromeWakeUpTaskTest {
                         .addExtras(mTaskExtras)
                         .build();
 
-        new PeriodicBackgroundSyncChromeWakeUpTask().onStopTaskWithNative(
-                RuntimeEnvironment.application, params);
+        new PeriodicBackgroundSyncChromeWakeUpTask()
+                .onStopTaskWithNative(RuntimeEnvironment.application, params);
 
         verify(mTaskFinishedCallback, times(0)).taskFinished(anyBoolean());
         verify(mTaskScheduler, times(0)).schedule(any(Context.class), any(TaskInfo.class));

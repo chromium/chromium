@@ -74,7 +74,7 @@ class PluginVmDriveImageDownloadService {
                           bool first_chunk);
   void ProgressCallback(int64_t progress, int64_t total);
 
-  raw_ptr<PluginVmInstaller, ExperimentalAsh> plugin_vm_installer_;
+  raw_ptr<PluginVmInstaller> plugin_vm_installer_;
   std::unique_ptr<drive::DriveServiceInterface> drive_service_;
   std::unique_ptr<crypto::SecureHash> secure_hash_service_;
   std::string file_id_;

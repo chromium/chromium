@@ -4,7 +4,8 @@
 
 #include "third_party/blink/renderer/modules/file_system_access/file_system_change_record.h"
 
-#include "third_party/abseil-cpp/absl/types/optional.h"
+#include <optional>
+
 #include "third_party/blink/renderer/bindings/modules/v8/v8_file_system_change_type.h"
 #include "third_party/blink/renderer/modules/file_system_access/file_system_handle.h"
 
@@ -60,10 +61,10 @@ const char* FileSystemChangeRecord::type() const {
   return V8FileSystemChangeType(ToChangeTypeEnum(type_->which())).AsCStr();
 }
 
-absl::optional<Vector<String>> FileSystemChangeRecord::relativePathMovedFrom()
+std::optional<Vector<String>> FileSystemChangeRecord::relativePathMovedFrom()
     const {
   return type_->is_moved() ? type_->get_moved()->former_relative_path
-                           : absl::nullopt;
+                           : std::nullopt;
 }
 
 void FileSystemChangeRecord::Trace(Visitor* visitor) const {

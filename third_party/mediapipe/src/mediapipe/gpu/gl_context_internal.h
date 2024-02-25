@@ -24,6 +24,10 @@
 #endif  // TARGET_OS_OSX
 #endif  // __APPLE__
 
+#if MEDIAPIPE_DISABLE_PTHREADS
+#include <thread>
+#endif
+
 #include "mediapipe/gpu/gl_context.h"
 
 namespace mediapipe {
@@ -43,7 +47,6 @@ class GlContext::DedicatedThread {
   void SelfDestruct();
 
  private:
-  static void* ThreadBody(void* instance);
   void ThreadBody();
 
   using Job = std::function<void(void)>;
@@ -53,7 +56,14 @@ class GlContext::DedicatedThread {
   absl::Mutex mutex_;
   // Used to wait for a job's completion.
   absl::CondVar gl_job_done_cv_ ABSL_GUARDED_BY(mutex_);
+
+#if !MEDIAPIPE_DISABLE_PTHREADS
+  static void* ThreadBody(void* instance);
+
   pthread_t gl_thread_id_;
+#else
+  std::thread gl_thread_;
+#endif
 
   std::deque<Job> jobs_ ABSL_GUARDED_BY(mutex_);
   absl::CondVar has_jobs_cv_ ABSL_GUARDED_BY(mutex_);

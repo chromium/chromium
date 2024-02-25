@@ -6,6 +6,7 @@
 #include <stdint.h>
 
 #include <fuzzer/FuzzedDataProvider.h>
+#include <optional>
 
 #include "base/check.h"
 #include "base/strings/string_number_conversions.h"
@@ -16,14 +17,12 @@
 #include "net/dns/dns_response.h"
 #include "net/dns/dns_util.h"
 #include "net/dns/public/dns_protocol.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace {
 
-void ValidateParsedResponse(
-    net::DnsResponse& response,
-    const net::IOBufferWithSize& packet,
-    absl::optional<net::DnsQuery> query = absl::nullopt) {
+void ValidateParsedResponse(net::DnsResponse& response,
+                            const net::IOBufferWithSize& packet,
+                            std::optional<net::DnsQuery> query = std::nullopt) {
   CHECK_EQ(response.io_buffer(), &packet);
   CHECK_EQ(static_cast<int>(response.io_buffer_size()), packet.size());
 
@@ -64,7 +63,7 @@ void ValidateParsedResponse(
     if (query) {
       CHECK_EQ(response.question_count(), 1u);
       CHECK_EQ(response.id().value(), query->id());
-      absl::optional<std::string> dotted_qname =
+      std::optional<std::string> dotted_qname =
           net::dns_names_util::NetworkToDottedName(query->qname(),
                                                    /*require_complete=*/true);
       CHECK(dotted_qname.has_value());

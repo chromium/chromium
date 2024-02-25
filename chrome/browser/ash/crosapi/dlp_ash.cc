@@ -6,14 +6,18 @@
 
 #include "ash/shell.h"
 #include "base/check.h"
-#include "base/logging.h"
+#include "base/files/file_path.h"
+#include "base/functional/bind.h"
 #include "chrome/browser/ash/crosapi/crosapi_ash.h"
 #include "chrome/browser/ash/crosapi/crosapi_manager.h"
 #include "chrome/browser/ash/crosapi/screen_manager_ash.h"
 #include "chrome/browser/ash/crosapi/window_util.h"
 #include "chrome/browser/ash/policy/dlp/dlp_content_manager_ash.h"
+#include "chrome/browser/ash/policy/dlp/dlp_files_controller_ash_utils.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_content_restriction_set.h"
+#include "chrome/browser/chromeos/policy/dlp/dlp_files_utils.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_rules_manager.h"
+#include "chrome/browser/profiles/profile_manager.h"
 #include "content/public/browser/browser_thread.h"
 
 namespace crosapi {
@@ -58,6 +62,27 @@ policy::DlpContentRestrictionSet ConvertMojoToDlpContentRestrictionSet(
   return result;
 }
 
+policy::dlp::FileAction ConvertMojoToDlpFileAction(mojom::FileAction action) {
+  switch (action) {
+    case crosapi::mojom::FileAction::kUnknown:
+      return policy::dlp::FileAction::kUnknown;
+    case crosapi::mojom::FileAction::kDownload:
+      return policy::dlp::FileAction::kDownload;
+    case crosapi::mojom::FileAction::kTransfer:
+      return policy::dlp::FileAction::kTransfer;
+    case crosapi::mojom::FileAction::kUpload:
+      return policy::dlp::FileAction::kUpload;
+    case crosapi::mojom::FileAction::kCopy:
+      return policy::dlp::FileAction::kCopy;
+    case crosapi::mojom::FileAction::kMove:
+      return policy::dlp::FileAction::kMove;
+    case crosapi::mojom::FileAction::kOpen:
+      return policy::dlp::FileAction::kOpen;
+    case crosapi::mojom::FileAction::kShare:
+      return policy::dlp::FileAction::kShare;
+  }
+}
+
 content::DesktopMediaID AreaToDesktopMediaID(
     const mojom::ScreenShareAreaPtr& area) {
   // Fullscreen share.
@@ -86,7 +111,10 @@ content::DesktopMediaID AreaToDesktopMediaID(
 
 }  // namespace
 
-DlpAsh::DlpAsh() = default;
+DlpAsh::DlpAsh() {
+  receivers_.set_disconnect_handler(base::BindRepeating(
+      &DlpAsh::OnDisconnect, weak_ptr_factory_.GetWeakPtr()));
+}
 
 DlpAsh::~DlpAsh() = default;
 
@@ -97,16 +125,12 @@ void DlpAsh::BindReceiver(mojo::PendingReceiver<mojom::Dlp> receiver) {
 void DlpAsh::DlpRestrictionsUpdated(const std::string& window_id,
                                     mojom::DlpRestrictionSetPtr restrictions) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  aura::Window* window = GetShellSurfaceWindow(window_id);
-  if (!window) {
-    LOG(WARNING) << "Didn't find Lacros window with id: " << window_id;
-    return;
-  }
   policy::DlpContentManagerAsh* dlp_content_manager =
       policy::DlpContentManagerAsh::Get();
   DCHECK(dlp_content_manager);
   dlp_content_manager->OnWindowRestrictionChanged(
-      window, ConvertMojoToDlpContentRestrictionSet(restrictions));
+      receivers_.current_receiver(), window_id,
+      ConvertMojoToDlpContentRestrictionSet(restrictions));
 }
 
 void DlpAsh::CheckScreenShareRestriction(
@@ -167,6 +191,17 @@ void DlpAsh::OnScreenShareStopped(const std::string& label,
   dlp_content_manager->OnScreenShareStopped(label, media_id);
 }
 
+void DlpAsh::ShowBlockedFiles(std::optional<uint64_t> task_id,
+                              const std::vector<base::FilePath>& blocked_files,
+                              mojom::FileAction action) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  Profile* profile = ProfileManager::GetPrimaryUserProfile();
+  DCHECK(profile);
+  ::policy::files_controller_ash_utils::ShowDlpBlockedFiles(
+      profile, task_id, blocked_files, ConvertMojoToDlpFileAction(action));
+}
+
 void DlpAsh::ChangeScreenShareState(
     mojo::RemoteSetElementId id,
     const content::DesktopMediaID& media_id,
@@ -189,6 +224,15 @@ void DlpAsh::StopScreenShare(mojo::RemoteSetElementId id) {
   if (!screen_share_remote_delegates_.Contains(id))
     return;
   screen_share_remote_delegates_.Get(id)->OnStop();
+}
+
+void DlpAsh::OnDisconnect() {
+  policy::DlpContentManagerAsh* dlp_content_manager =
+      policy::DlpContentManagerAsh::Get();
+  if (!dlp_content_manager) {
+    return;
+  }
+  dlp_content_manager->CleanPendingRestrictions(receivers_.current_receiver());
 }
 
 }  // namespace crosapi

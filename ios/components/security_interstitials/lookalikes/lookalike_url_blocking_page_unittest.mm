@@ -4,6 +4,7 @@
 
 #import "ios/components/security_interstitials/lookalikes/lookalike_url_blocking_page.h"
 
+#import "base/memory/raw_ptr.h"
 #import "base/strings/string_number_conversions.h"
 #import "base/test/ios/wait_util.h"
 #import "base/test/metrics/histogram_tester.h"
@@ -93,7 +94,7 @@ class LookalikeUrlBlockingPageTest : public PlatformTest {
   web::WebTaskEnvironment task_environment_{
       web::WebTaskEnvironment::IO_MAINLOOP};
   FakeWebState web_state_;
-  web::FakeNavigationManager* navigation_manager_ = nullptr;
+  raw_ptr<web::FakeNavigationManager> navigation_manager_ = nullptr;
   GURL url_;
   std::unique_ptr<IOSSecurityInterstitialPage> page_;
   base::HistogramTester histogram_tester_;
@@ -173,7 +174,7 @@ TEST_F(LookalikeUrlBlockingPageTest,
   ASSERT_EQ(1, navigation_manager_->GetLastCommittedItemIndex());
   ASSERT_TRUE(navigation_manager_->CanGoBack());
 
-  page_ = CreateBlockingPage(&web_state_, GURL::EmptyGURL(), url_);
+  page_ = CreateBlockingPage(&web_state_, GURL(), url_);
 
   // Send the don't proceed command.
   SendCommand(security_interstitials::CMD_DONT_PROCEED);
@@ -202,7 +203,7 @@ TEST_F(LookalikeUrlBlockingPageTest,
 TEST_F(LookalikeUrlBlockingPageTest,
        HandleDontProceedCommandWithoutSafeUrlClose) {
   test_ukm_recorder_.Purge();
-  page_ = CreateBlockingPage(&web_state_, GURL::EmptyGURL(), url_);
+  page_ = CreateBlockingPage(&web_state_, GURL(), url_);
   ASSERT_FALSE(navigation_manager_->CanGoBack());
 
   // Send the don't proceed command.

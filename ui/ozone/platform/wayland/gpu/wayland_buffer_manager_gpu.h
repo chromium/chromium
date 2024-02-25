@@ -64,7 +64,8 @@ class WaylandBufferManagerGpu : public ozone::mojom::WaylandBufferManagerGpu {
       bool supports_acquire_fence,
       bool supports_overlays,
       uint32_t supported_surface_augmentor_version,
-      bool supports_single_pixel_buffer) override;
+      bool supports_single_pixel_buffer,
+      const base::Version& server_version) override;
 
   // These two calls get the surface, which backs the |widget| and notifies it
   // about the submission and the presentation. After the surface receives the
@@ -176,6 +177,7 @@ class WaylandBufferManagerGpu : public ozone::mojom::WaylandBufferManagerGpu {
   bool supports_out_of_window_clip_rect() const {
     return supports_out_of_window_clip_rect_;
   }
+  bool has_transformation_fix() const { return has_transformation_fix_; }
 
   void set_drm_modifiers_filter(
       std::unique_ptr<DrmModifiersFilter> drm_modifiers_filter) {
@@ -311,6 +313,10 @@ class WaylandBufferManagerGpu : public ozone::mojom::WaylandBufferManagerGpu {
   // Whether wayland server supports clip delegation for quads that are
   // partially or fully outside of the window.
   bool supports_out_of_window_clip_rect_ = false;
+
+  // Whether wayland server has the fix that applies transformations in the
+  // correct order.
+  bool has_transformation_fix_ = false;
 
   // A DRM modifiers filter to ensure we don't allocate buffers with modifiers
   // not supported by Vulkan.

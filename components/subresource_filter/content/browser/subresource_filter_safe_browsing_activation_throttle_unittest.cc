@@ -400,14 +400,15 @@ class SubresourceFilterSafeBrowsingActivationThrottleInfoBarUiTest
   bool presenting_ads_blocked_infobar() {
     auto* infobar_manager = infobars::ContentInfoBarManager::FromWebContents(
         content::RenderViewHostTestHarness::web_contents());
-    if (infobar_manager->infobar_count() == 0)
+    if (infobar_manager->infobars().empty()) {
       return false;
+    }
 
     // No infobars other than the ads blocked infobar should be displayed in the
     // context of these tests.
-    EXPECT_EQ(infobar_manager->infobar_count(), 1u);
-    auto* infobar = infobar_manager->infobar_at(0);
-    EXPECT_EQ(infobar->delegate()->GetIdentifier(),
+    EXPECT_EQ(infobar_manager->infobars().size(), 1u);
+    auto* infobar = infobar_manager->infobars()[0].get();
+    EXPECT_EQ(infobar->GetIdentifier(),
               infobars::InfoBarDelegate::ADS_BLOCKED_INFOBAR_DELEGATE_ANDROID);
 
     return true;
@@ -614,11 +615,11 @@ TEST_F(SubresourceFilterSafeBrowsingActivationThrottleTest,
 
 TEST_F(SubresourceFilterSafeBrowsingActivationThrottleTest,
        NavigationFails_NoActivation) {
-  EXPECT_EQ(absl::optional<mojom::ActivationLevel>(),
+  EXPECT_EQ(std::optional<mojom::ActivationLevel>(),
             observer()->GetPageActivationForLastCommittedLoad());
   content::NavigationSimulator::NavigateAndFailFromDocument(
       GURL(kURL), net::ERR_TIMED_OUT, main_rfh());
-  EXPECT_EQ(absl::optional<mojom::ActivationLevel>(),
+  EXPECT_EQ(std::optional<mojom::ActivationLevel>(),
             observer()->GetPageActivationForLastCommittedLoad());
 }
 
@@ -661,9 +662,6 @@ TEST_F(SubresourceFilterSafeBrowsingActivationThrottleTest, ActivationList) {
        safe_browsing::ThreatPatternType::SOCIAL_ENGINEERING_ADS},
       {mojom::ActivationLevel::kDisabled, ActivationList::PHISHING_INTERSTITIAL,
        safe_browsing::SB_THREAT_TYPE_BLOCKLISTED_RESOURCE,
-       safe_browsing::ThreatPatternType::SOCIAL_ENGINEERING_ADS},
-      {mojom::ActivationLevel::kDisabled, ActivationList::PHISHING_INTERSTITIAL,
-       safe_browsing::SB_THREAT_TYPE_URL_CLIENT_SIDE_MALWARE,
        safe_browsing::ThreatPatternType::SOCIAL_ENGINEERING_ADS},
       {mojom::ActivationLevel::kDisabled, ActivationList::PHISHING_INTERSTITIAL,
        safe_browsing::SB_THREAT_TYPE_URL_BINARY_MALWARE,
@@ -736,7 +734,7 @@ TEST_F(SubresourceFilterSafeBrowsingActivationThrottleTest, LogsUkm) {
   const auto& entries =
       test_ukm_recorder.GetEntriesByName(SubresourceFilter::kEntryName);
   EXPECT_EQ(1u, entries.size());
-  for (const auto* entry : entries) {
+  for (const ukm::mojom::UkmEntry* entry : entries) {
     test_ukm_recorder.ExpectEntrySourceHasUrl(entry, url);
     test_ukm_recorder.ExpectEntryMetric(
         entry, SubresourceFilter::kActivationDecisionName,
@@ -755,7 +753,7 @@ TEST_F(SubresourceFilterSafeBrowsingActivationThrottleTest,
   const auto& entries =
       test_ukm_recorder.GetEntriesByName(SubresourceFilter::kEntryName);
   EXPECT_EQ(1u, entries.size());
-  for (const auto* entry : entries) {
+  for (const ukm::mojom::UkmEntry* entry : entries) {
     test_ukm_recorder.ExpectEntrySourceHasUrl(entry, url);
     test_ukm_recorder.ExpectEntryMetric(
         entry, SubresourceFilter::kActivationDecisionName,
@@ -776,7 +774,7 @@ TEST_F(SubresourceFilterSafeBrowsingActivationThrottleTest, LogsUkmDryRun) {
   const auto& entries =
       test_ukm_recorder.GetEntriesByName(SubresourceFilter::kEntryName);
   EXPECT_EQ(1u, entries.size());
-  for (const auto* entry : entries) {
+  for (const ukm::mojom::UkmEntry* entry : entries) {
     test_ukm_recorder.ExpectEntrySourceHasUrl(entry, url);
     test_ukm_recorder.ExpectEntryMetric(
         entry, SubresourceFilter::kActivationDecisionName,
@@ -971,29 +969,14 @@ TEST_F(SubresourceFilterSafeBrowsingActivationThrottleTest,
   fake_safe_browsing_database()->SimulateTimeout();
   SimulateStartAndExpectProceed(url);
 
-  // Flush the pending tasks on the IO thread, so the delayed task surely gets
-  // posted.
-  if (base::FeatureList::IsEnabled(safe_browsing::kSafeBrowsingOnUIThread)) {
-    task_environment()->RunUntilIdle();
-  } else {
-    test_io_task_runner()->RunUntilIdle();
-  }
+  // Flush the pending tasks, so the delayed task surely gets posted.
+  task_environment()->RunUntilIdle();
 
   // Expect one delayed task, and fast forward time.
   base::TimeDelta expected_delay =
       SubresourceFilterSafeBrowsingClientRequest::kCheckURLTimeout;
 
-  if (base::FeatureList::IsEnabled(safe_browsing::kSafeBrowsingOnUIThread)) {
-    // When the safe browsing code runs on the UI thread, can't check
-    // task_environment()->NextMainThreadPendingTaskDelay() since there are many
-    // other tasks posted.
-    // EXPECT_EQ(expected_delay,
-    // task_environment()->NextMainThreadPendingTaskDelay());
-    task_environment()->FastForwardBy(expected_delay);
-  } else {
-    EXPECT_EQ(expected_delay, test_io_task_runner()->NextPendingTaskDelay());
-    test_io_task_runner()->FastForwardBy(expected_delay);
-  }
+  task_environment()->FastForwardBy(expected_delay);
 
   SimulateCommitAndExpectProceed();
   EXPECT_EQ(mojom::ActivationLevel::kDisabled,
@@ -1051,7 +1034,7 @@ TEST_P(SubresourceFilterSafeBrowsingActivationThrottleParamTest,
 struct RedirectSamplesAndResults {
   std::vector<GURL> urls;
   bool expected_activation;
-  absl::optional<RedirectPosition> last_enforcement_position;
+  std::optional<RedirectPosition> last_enforcement_position;
 };
 
 TEST_F(SubresourceFilterSafeBrowsingActivationThrottleTest,
@@ -1083,7 +1066,7 @@ TEST_F(SubresourceFilterSafeBrowsingActivationThrottleTest,
       {{bad_url, normal_url, worse_url}, true, RedirectPosition::kLast},
       {{worse_url, normal_url, bad_url}, true, RedirectPosition::kLast},
       {{normal_url, worse_url, bad_url}, true, RedirectPosition::kLast},
-      {{normal_url, normal_url}, false, absl::nullopt},
+      {{normal_url, normal_url}, false, std::nullopt},
       {{normal_url, bad_url, normal_url}, false, RedirectPosition::kMiddle},
       {{worse_url}, true, RedirectPosition::kOnly},
   };
@@ -1106,7 +1089,7 @@ TEST_F(SubresourceFilterSafeBrowsingActivationThrottleTest,
     auto entries =
         test_ukm_recorder.GetEntriesByName(SubresourceFilter::kEntryName);
     EXPECT_EQ(1u, entries.size());
-    const auto* entry = entries[0];
+    const auto* entry = entries[0].get();
     if (test_case.last_enforcement_position.has_value()) {
       test_ukm_recorder.ExpectEntryMetric(
           entry, SubresourceFilter::kEnforcementRedirectPositionName,

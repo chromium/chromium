@@ -47,6 +47,9 @@ class WebSocketEncoder final {
   void EncodePongFrame(base::StringPiece frame,
                        int masking_key,
                        std::string* output);
+  void EncodeCloseFrame(base::StringPiece frame,
+                        int masking_key,
+                        std::string* output);
 
   bool deflate_enabled() const { return !!deflater_; }
 

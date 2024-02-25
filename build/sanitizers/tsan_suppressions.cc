@@ -16,7 +16,8 @@
 // for the instructions on writing suppressions.
 char kTSanDefaultSuppressions[] =
     // False positives in libdbus.so, libdconfsettings.so, libflashplayer.so,
-    // libgio.so, libglib.so, libgobject.so, and libfontconfig.so.1.
+    // libgio.so, libglib.so, libgobject.so, libfontconfig.so.1 and
+    // swrast_dri.so.
     // Since we don't instrument them, we cannot reason about the
     // synchronization in them.
     "race:libdbus*.so\n"
@@ -26,6 +27,7 @@ char kTSanDefaultSuppressions[] =
     "race:libglib*.so\n"
     "race:libgobject*.so\n"
     "race:libfontconfig.so.1\n"
+    "race:swrast_dri.so\n"
 
     // Intentional race in ToolsSanityTest.DataRace in base_unittests.
     "race:base/tools_sanity_unittest.cc\n"
@@ -89,6 +91,11 @@ char kTSanDefaultSuppressions[] =
     // order. This is allowed in this context as it is always guarded by a
     // single global mutex.
     "deadlock:GlobalSafepoint::EnterGlobalSafepointScope\n"
+
+    // Logging crash keys is inherently unsafe. We suppress this rather than fix
+    // it because OutputCrashKeysToStream is only enabled in non-official builds
+    // and the race is therefore not present in released builds.
+    "race:crash_reporter::*::OutputCrashKeysToStream\n"
 
     // End of suppressions.
     ;  // Please keep this semicolon.

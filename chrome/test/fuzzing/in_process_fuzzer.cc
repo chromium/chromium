@@ -9,6 +9,8 @@
 #include "base/functional/callback_forward.h"
 #include "base/strings/string_util.h"
 #include "base/test/bind.h"
+#include "base/test/scoped_run_loop_timeout.h"
+#include "base/test/test_timeouts.h"
 #include "chrome/test/base/chrome_test_launcher.h"
 #include "chrome/test/fuzzing/in_process_fuzzer.h"
 #include "chrome/test/fuzzing/in_process_fuzzer_buildflags.h"
@@ -25,9 +27,32 @@ extern "C" int LLVMFuzzerRunDriver(int* argc,
                                    int (*UserCb)(const uint8_t* Data,
                                                  size_t Size));
 
+namespace {
+
+std::string_view RunLoopTimeoutBehaviorToString(
+    RunLoopTimeoutBehavior behavior) {
+  switch (behavior) {
+    case RunLoopTimeoutBehavior::kDefault:
+      return "kDefault";
+    case RunLoopTimeoutBehavior::kContinue:
+      return "kContinue";
+    case RunLoopTimeoutBehavior::kDeclareInfiniteLoop:
+      return "kDeclareInfiniteLoop";
+  }
+  return "kUnknown";
+}
+
+void LogRunLoopTimeoutCallback(RunLoopTimeoutBehavior behavior) {
+  LOG(INFO) << "Custom RunLoop timeout callback triggered ("
+            << RunLoopTimeoutBehaviorToString(behavior) << ").";
+}
+
+}  // namespace
+
 InProcessFuzzerFactoryBase* g_in_process_fuzzer_factory;
 
-InProcessFuzzer::InProcessFuzzer() = default;
+InProcessFuzzer::InProcessFuzzer(InProcessFuzzerOptions options)
+    : options_(options) {}
 
 InProcessFuzzer::~InProcessFuzzer() = default;
 
@@ -35,6 +60,50 @@ base::CommandLine::StringVector
 InProcessFuzzer::GetChromiumCommandLineArguments() {
   base::CommandLine::StringVector empty;
   return empty;
+}
+
+void InProcessFuzzer::SetUp() {
+  std::optional<base::test::ScopedRunLoopTimeout> scoped_timeout;
+
+  switch (options_.run_loop_timeout_behavior) {
+    case RunLoopTimeoutBehavior::kContinue:
+      KeepRunningOnTimeout();
+      break;
+    case RunLoopTimeoutBehavior::kDeclareInfiniteLoop:
+      DeclareInfiniteLoopOnTimeout();
+      break;
+    case RunLoopTimeoutBehavior::kDefault:
+      break;
+  }
+
+  if (options_.run_loop_timeout) {
+    scoped_timeout.emplace(FROM_HERE, *options_.run_loop_timeout);
+  }
+
+  // Note that browser tests are being launched by the `SetUp` method.
+  InProcessBrowserTest::SetUp();
+}
+
+void InProcessFuzzer::KeepRunningOnTimeout() {
+  base::test::ScopedRunLoopTimeout::SetTimeoutCallbackForTesting(
+      std::make_unique<base::test::ScopedRunLoopTimeout::TimeoutCallback>(
+          base::IgnoreArgs<const base::Location&,
+                           base::RepeatingCallback<std::string()>,
+                           const base::Location&>(base::BindRepeating(
+              &LogRunLoopTimeoutCallback, RunLoopTimeoutBehavior::kContinue))));
+}
+
+void InProcessFuzzer::DeclareInfiniteLoopOnTimeout() {
+  base::test::ScopedRunLoopTimeout::SetTimeoutCallbackForTesting(
+      std::make_unique<base::test::ScopedRunLoopTimeout::TimeoutCallback>(
+          base::IgnoreArgs<const base::Location&,
+                           base::RepeatingCallback<std::string()>,
+                           const base::Location&>(
+              base::BindRepeating(&InProcessFuzzer::DeclareInfiniteLoop,
+                                  base::Unretained(this)))
+              .Then(base::BindRepeating(
+                  &LogRunLoopTimeoutCallback,
+                  RunLoopTimeoutBehavior::kDeclareInfiniteLoop))));
 }
 
 void InProcessFuzzer::Run(
@@ -79,7 +148,7 @@ class FuzzTestLauncherDelegate : public content::TestLauncherDelegate {
 };
 
 int fuzz_callback(const uint8_t* data, size_t size) {
-  return g_test->Fuzz(data, size);
+  return g_test->DoFuzz(data, size);
 }
 
 void InProcessFuzzer::RunTestOnMainThread() {
@@ -92,7 +161,21 @@ void InProcessFuzzer::RunTestOnMainThread() {
   char** argv2 = argv.data();
   g_test = this;
   base::IgnoreResult(LLVMFuzzerRunDriver(&argc, &argv2, fuzz_callback));
+  if (exit_after_fuzz_case_) {
+    LOG(INFO) << "Early exit requested - exiting after LLVMFuzzerRunDriver.";
+    exit(0);
+  }
   g_test = nullptr;
+}
+
+int InProcessFuzzer::DoFuzz(const uint8_t* data, size_t size) {
+  // We actually exit before running the *next* fuzz case to give an opportunity
+  // to return the return value to the fuzzing engine.
+  if (exit_after_fuzz_case_) {
+    LOG(INFO) << "Early exit requested - exiting after fuzz case.";
+    exit(0);
+  }
+  return Fuzz(data, size);
 }
 
 // Main function for running in process fuzz tests.
@@ -152,17 +235,22 @@ int main(int argc, char** argv) {
         fuzzer->GetChromiumCommandLineArguments();
     chromium_arguments.insert(chromium_arguments.begin(), executable_name);
     chromium_arguments.push_back(FILE_PATH_LITERAL("--single-process-tests"));
-#if !BUILDFLAG(AVOID_SINGLE_PROCESS_MODE)
+#if BUILDFLAG(IS_CENTIPEDE)
     // TODO(1038952): make libfuzzer compatible with single-process mode.
     // As it stands, single-process mode works with centipede (and is probably
     // desirable both in terms of fuzzing speed and correctly gathering
     // coverage information) but not yet with libfuzzer.
     chromium_arguments.push_back(FILE_PATH_LITERAL("--single-process"));
-#endif  // BUILDFLAG(AVOID_SINGLE_PROCESS_MODE)
+#endif  // BUILDFLAG(IS_CENTIPEDE)
     chromium_arguments.push_back(FILE_PATH_LITERAL("--no-sandbox"));
     chromium_arguments.push_back(FILE_PATH_LITERAL("--no-zygote"));
     chromium_arguments.push_back(FILE_PATH_LITERAL("--disable-gpu"));
     base::CommandLine::ForCurrentProcess()->InitFromArgv(chromium_arguments);
+
+    // Various bits of setup are done by base::TestSuite::Initialize.
+    // As we're not a functional test suite, most of those things are not
+    // necessary, but at least this is:
+    TestTimeouts::Initialize();
   }
 
   FuzzTestLauncherDelegate* fuzzer_launcher_delegate =

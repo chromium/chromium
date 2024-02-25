@@ -104,7 +104,7 @@ void PrefetchURLLoader::FollowRedirect(
     const std::vector<std::string>& removed_headers,
     const net::HttpRequestHeaders& modified_headers,
     const net::HttpRequestHeaders& modified_cors_exempt_headers,
-    const absl::optional<GURL>& new_url) {
+    const std::optional<GURL>& new_url) {
   DCHECK(modified_headers.IsEmpty())
       << "Redirect with modified headers was not supported yet. "
          "crbug.com/845683";
@@ -121,7 +121,7 @@ void PrefetchURLLoader::FollowRedirect(
   loader_->FollowRedirect(
       removed_headers, net::HttpRequestHeaders() /* modified_headers */,
       net::HttpRequestHeaders() /* modified_cors_exempt_headers */,
-      absl::nullopt);
+      std::nullopt);
 }
 
 void PrefetchURLLoader::SetPriority(net::RequestPriority priority,
@@ -152,7 +152,7 @@ void PrefetchURLLoader::OnReceiveEarlyHints(
 void PrefetchURLLoader::OnReceiveResponse(
     network::mojom::URLResponseHeadPtr response,
     mojo::ScopedDataPipeConsumerHandle body,
-    absl::optional<mojo_base::BigBuffer> cached_metadata) {
+    std::optional<mojo_base::BigBuffer> cached_metadata) {
   if (is_signed_exchange_handling_enabled_ &&
       signed_exchange_utils::ShouldHandleAsSignedHTTPExchange(
           resource_request_.url, *response)) {
@@ -194,7 +194,7 @@ void PrefetchURLLoader::OnReceiveResponse(
   if (!body) {
     forwarding_client_->OnReceiveResponse(std::move(response),
                                           mojo::ScopedDataPipeConsumerHandle(),
-                                          absl::nullopt);
+                                          std::nullopt);
     return;
   }
 
@@ -270,7 +270,7 @@ bool PrefetchURLLoader::SendEmptyBody() {
   }
   DCHECK(response_);
   forwarding_client_->OnReceiveResponse(std::move(response_),
-                                        std::move(consumer), absl::nullopt);
+                                        std::move(consumer), std::nullopt);
   return true;
 }
 

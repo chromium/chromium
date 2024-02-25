@@ -43,14 +43,18 @@ class MockSystemMediaControlsObserver : public SystemMediaControlsObserver {
 
   // SystemMediaControlsObserver implementation.
   MOCK_METHOD0(OnServiceReady, void());
-  MOCK_METHOD0(OnNext, void());
-  MOCK_METHOD0(OnPrevious, void());
-  MOCK_METHOD0(OnPause, void());
-  MOCK_METHOD0(OnPlayPause, void());
-  MOCK_METHOD0(OnStop, void());
-  MOCK_METHOD0(OnPlay, void());
-  MOCK_METHOD1(OnSeek, void(const base::TimeDelta&));
-  MOCK_METHOD1(OnSeekTo, void(const base::TimeDelta&));
+  MOCK_METHOD1(OnNext, void(system_media_controls::SystemMediaControls*));
+  MOCK_METHOD1(OnPrevious, void(system_media_controls::SystemMediaControls*));
+  MOCK_METHOD1(OnPause, void(system_media_controls::SystemMediaControls*));
+  MOCK_METHOD1(OnPlayPause, void(system_media_controls::SystemMediaControls*));
+  MOCK_METHOD1(OnStop, void(system_media_controls::SystemMediaControls*));
+  MOCK_METHOD1(OnPlay, void(system_media_controls::SystemMediaControls*));
+  MOCK_METHOD2(OnSeek,
+               void(system_media_controls::SystemMediaControls*,
+                    const base::TimeDelta&));
+  MOCK_METHOD2(OnSeekTo,
+               void(system_media_controls::SystemMediaControls*,
+                    const base::TimeDelta&));
 };
 
 class SystemMediaControlsLinuxTest : public testing::Test,
@@ -227,13 +231,6 @@ class SystemMediaControlsLinuxTest : public testing::Test,
     if (service_wait_loop_)
       service_wait_loop_->Quit();
   }
-  void OnNext() override {}
-  void OnPrevious() override {}
-  void OnPlay() override {}
-  void OnPause() override {}
-  void OnPlayPause() override {}
-  void OnStop() override {}
-  void OnSeekTo(const base::TimeDelta& time) override {}
 
   base::test::TaskEnvironment task_environment_;
   std::unique_ptr<base::RunLoop> service_wait_loop_;
@@ -256,56 +253,56 @@ TEST_F(SystemMediaControlsLinuxTest, ObserverNotifiedOfServiceReadyWhenAdded) {
 
 TEST_F(SystemMediaControlsLinuxTest, ObserverNotifiedOfNextCalls) {
   MockSystemMediaControlsObserver observer;
-  EXPECT_CALL(observer, OnNext());
+  EXPECT_CALL(observer, OnNext(GetService()));
   AddObserver(&observer);
   CallMediaPlayer2PlayerMethodAndBlock("Next");
 }
 
 TEST_F(SystemMediaControlsLinuxTest, ObserverNotifiedOfPreviousCalls) {
   MockSystemMediaControlsObserver observer;
-  EXPECT_CALL(observer, OnPrevious());
+  EXPECT_CALL(observer, OnPrevious(GetService()));
   AddObserver(&observer);
   CallMediaPlayer2PlayerMethodAndBlock("Previous");
 }
 
 TEST_F(SystemMediaControlsLinuxTest, ObserverNotifiedOfPauseCalls) {
   MockSystemMediaControlsObserver observer;
-  EXPECT_CALL(observer, OnPause());
+  EXPECT_CALL(observer, OnPause(GetService()));
   AddObserver(&observer);
   CallMediaPlayer2PlayerMethodAndBlock("Pause");
 }
 
 TEST_F(SystemMediaControlsLinuxTest, ObserverNotifiedOfPlayPauseCalls) {
   MockSystemMediaControlsObserver observer;
-  EXPECT_CALL(observer, OnPlayPause());
+  EXPECT_CALL(observer, OnPlayPause(GetService()));
   AddObserver(&observer);
   CallMediaPlayer2PlayerMethodAndBlock("PlayPause");
 }
 
 TEST_F(SystemMediaControlsLinuxTest, ObserverNotifiedOfStopCalls) {
   MockSystemMediaControlsObserver observer;
-  EXPECT_CALL(observer, OnStop());
+  EXPECT_CALL(observer, OnStop(GetService()));
   AddObserver(&observer);
   CallMediaPlayer2PlayerMethodAndBlock("Stop");
 }
 
 TEST_F(SystemMediaControlsLinuxTest, ObserverNotifiedOfPlayCalls) {
   MockSystemMediaControlsObserver observer;
-  EXPECT_CALL(observer, OnPlay());
+  EXPECT_CALL(observer, OnPlay(GetService()));
   AddObserver(&observer);
   CallMediaPlayer2PlayerMethodAndBlock("Play");
 }
 
 TEST_F(SystemMediaControlsLinuxTest, ObserverNotifiedOfSeekCalls) {
   MockSystemMediaControlsObserver observer;
-  EXPECT_CALL(observer, OnSeek(base::Seconds(3)));
+  EXPECT_CALL(observer, OnSeek(GetService(), base::Seconds(3)));
   AddObserver(&observer);
   CallSeekAndBlock(/*is_seek_to=*/false, base::Seconds(3).InMicroseconds());
 }
 
 TEST_F(SystemMediaControlsLinuxTest, ObserverNotifiedOfSetPositionCalls) {
   MockSystemMediaControlsObserver observer;
-  EXPECT_CALL(observer, OnSeekTo(base::Seconds(7)));
+  EXPECT_CALL(observer, OnSeekTo(GetService(), base::Seconds(7)));
   AddObserver(&observer);
   CallSeekAndBlock(/*is_seek_to=*/true, base::Seconds(7).InMicroseconds());
 }

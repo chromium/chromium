@@ -5,8 +5,15 @@
 module ash.quick_start.mojom;
 
 struct BootstrapConfigurations {
-  // Cryptauth Device ID can be empty even with a valid BootstrapConfigurations.
-  string cryptauth_device_id;
+  // Instance ID can be empty even with a valid BootstrapConfigurations.
+  string instance_id;
+
+  // Indicates whether the account in question is a supervised account
+  // (Unicorn, Geller, etc.).
+  bool is_supervised_account;
+
+  // Email address for the account in question.
+  string email;
 };
 
 enum WifiSecurityType {
@@ -16,6 +23,10 @@ enum WifiSecurityType {
   kOpen = 3,
   kOWE = 4,
   kSAE = 5,
+};
+
+struct UserVerificationMethod {
+  bool use_source_lock_screen_prompt;
 };
 
 // These values are directly taken from Android, and reported back.
@@ -34,11 +45,13 @@ struct UserVerificationRequested {
   bool is_awaiting_user_verification;
 };
 
-// TODO (b/291903244): Convert Responses on QuickStartDecoder to Union Type
 enum QuickStartDecoderError {
   kEmptyMessage = 0,
   kUnableToReadAsJSON = 1,
   kMessageDoesNotMatchSchema = 2,
+  kUnexpectedMessageType = 3,
+  kUnknownPayload = 4,
+  kUnableToReadAsBase64 = 5,
 };
 
 struct WifiCredentials {
@@ -58,4 +71,18 @@ struct FidoAssertionResponse {
   // browser process.
   array<uint8> auth_data;
   array<uint8> signature;
+};
+
+struct NotifySourceOfUpdateResponse {
+  bool ack_received;
+};
+
+union QuickStartMessage {
+  BootstrapConfigurations bootstrap_configurations;
+  WifiCredentials wifi_credentials;
+  NotifySourceOfUpdateResponse notify_source_of_update_response;
+  FidoAssertionResponse fido_assertion_response;
+  UserVerificationRequested user_verification_requested;
+  UserVerificationResponse user_verification_response;
+  UserVerificationMethod user_verification_method;
 };

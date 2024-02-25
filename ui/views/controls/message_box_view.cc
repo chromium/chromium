@@ -12,6 +12,7 @@
 
 #include "base/functional/bind.h"
 #include "base/i18n/rtl.h"
+#include "base/memory/raw_ptr.h"
 #include "base/strings/string_split.h"
 #include "base/strings/utf_string_conversions.h"
 #include "ui/accessibility/ax_node_data.h"
@@ -104,7 +105,9 @@ MessageBoxView::MessageBoxView(const std::u16string& message,
             .SetAllowCharacterBreak(true)
             .SetHorizontalAlignment(alignment)
             .CustomConfigure(base::BindOnce(
-                [](std::vector<Label*>& message_labels, Label* message_label) {
+                [](std::vector<raw_ptr<Label, VectorExperimental>>&
+                       message_labels,
+                   Label* message_label) {
                   message_labels.push_back(message_label);
                 },
                 std::ref(message_labels_))));
@@ -319,7 +322,7 @@ gfx::Insets MessageBoxView::GetHorizontalInsets(
   return horizontal_insets;
 }
 
-BEGIN_METADATA(MessageBoxView, View)
+BEGIN_METADATA(MessageBoxView)
 END_METADATA
 
 }  // namespace views

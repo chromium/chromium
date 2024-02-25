@@ -554,11 +554,16 @@ TEST_P(FrameThrottlingTest, ThrottledFrameCompositing) {
 
   auto* frame_element = To<HTMLIFrameElement>(
       GetDocument().getElementById(AtomicString("frame")));
-  auto* frame_view = frame_element->contentDocument()->View();
+  auto* frame_doc = frame_element->contentDocument();
+  auto* frame_view = frame_doc->View();
   EXPECT_FALSE(frame_view->CanThrottleRendering());
   auto* root_layer = WebView().MainFrameImpl()->GetFrameView()->RootCcLayer();
   EXPECT_EQ(0u, CcLayersByDOMElementId(root_layer, "container").size());
-  EXPECT_EQ(1u, CcLayersByDOMElementId(root_layer, "inner_frame").size());
+  if (RuntimeEnabledFeatures::HitTestOpaquenessEnabled()) {
+    EXPECT_TRUE(CcLayerByOwnerNodeId(root_layer, frame_doc->GetDomNodeId()));
+  } else {
+    EXPECT_EQ(1u, CcLayersByDOMElementId(root_layer, "inner_frame").size());
+  }
 
   // First make the child hidden to enable throttling, and composite
   // the container.
@@ -570,7 +575,11 @@ TEST_P(FrameThrottlingTest, ThrottledFrameCompositing) {
   CompositeFrame();
   EXPECT_TRUE(frame_view->CanThrottleRendering());
   EXPECT_EQ(1u, CcLayersByDOMElementId(root_layer, "container").size());
-  EXPECT_EQ(1u, CcLayersByDOMElementId(root_layer, "inner_frame").size());
+  if (RuntimeEnabledFeatures::HitTestOpaquenessEnabled()) {
+    EXPECT_TRUE(CcLayerByOwnerNodeId(root_layer, frame_doc->GetDomNodeId()));
+  } else {
+    EXPECT_EQ(1u, CcLayersByDOMElementId(root_layer, "inner_frame").size());
+  }
 
   // Then bring it back on-screen, and decomposite container.
   container_element->setAttribute(kStyleAttr, g_empty_atom);
@@ -579,7 +588,11 @@ TEST_P(FrameThrottlingTest, ThrottledFrameCompositing) {
   CompositeFrame();
   EXPECT_FALSE(frame_view->CanThrottleRendering());
   EXPECT_EQ(0u, CcLayersByDOMElementId(root_layer, "container").size());
-  EXPECT_EQ(1u, CcLayersByDOMElementId(root_layer, "inner_frame").size());
+  if (RuntimeEnabledFeatures::HitTestOpaquenessEnabled()) {
+    EXPECT_TRUE(CcLayerByOwnerNodeId(root_layer, frame_doc->GetDomNodeId()));
+  } else {
+    EXPECT_EQ(1u, CcLayersByDOMElementId(root_layer, "inner_frame").size());
+  }
 }
 
 TEST_P(FrameThrottlingTest, MutatingThrottledFrameDoesNotCauseAnimation) {
@@ -1331,7 +1344,7 @@ TEST_P(FrameThrottlingTest, AllowOneAnimationFrame) {
   CompositeFrame();
   EXPECT_TRUE(frame_element->contentDocument()->View()->CanThrottleRendering());
 
-  v8::HandleScope scope(v8::Isolate::GetCurrent());
+  v8::HandleScope scope(Window().GetIsolate());
   v8::Local<v8::Value> result =
       ClassicScript::CreateUnspecifiedScript("window.didRaf;")
           ->RunScriptAndReturnValue(
@@ -1576,7 +1589,7 @@ TEST_P(FrameThrottlingTest, NestedFramesInRemoteFrameHiddenAndShown) {
   frame_document->documentElement()->setAttribute(html_names::kStyleAttr,
                                                   AtomicString("color: blue"));
   // This is needed to reproduce crbug.com/1054644 before the fix.
-  frame_view->SetNeedsPaintPropertyUpdate();
+  frame_view->SetIntersectionObservationState(LocalFrameView::kDesired);
 
   // Show the frame without any other change.
   LocalFrameRoot().WasShown();
@@ -1615,6 +1628,7 @@ TEST_P(FrameThrottlingTest, LifecycleThrottledFrameNeedsRepaint) {
       GetDocument().getElementById(AtomicString("frame")));
   auto* frame_document = frame_element->contentDocument();
   frame_document->View()->SetLifecycleUpdatesThrottledForTesting(true);
+  GetDocument().View()->GetLayoutView()->Layer()->SetNeedsRepaint();
   GetDocument().View()->ScheduleAnimation();
   EXPECT_TRUE(frame_document->View()->ShouldThrottleRenderingForTest());
 
@@ -2017,7 +2031,7 @@ TEST_P(FrameThrottlingTest, ClearPaintArtifactOnThrottlingLocalRoot) {
 
   // This emulates javascript.
   div->setAttribute(html_names::kStyleAttr, g_empty_atom);
-  div->getBoundingClientRect();
+  div->GetBoundingClientRect();
   // This emulates WebFrameWidgetImpl::UpdateRenderThrottlingStatusForSubFrame.
   view->UpdateRenderThrottlingStatus(true, false, false, true);
   // UpdateRenderThrottlingStatus should have cleared out previous paint

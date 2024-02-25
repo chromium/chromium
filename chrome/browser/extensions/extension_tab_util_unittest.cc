@@ -4,12 +4,17 @@
 
 #include "chrome/browser/extensions/extension_tab_util.h"
 
+#include "base/json/json_reader.h"
 #include "base/test/gmock_expected_support.h"
+#include "base/values.h"
 #include "chrome/browser/extensions/api/tabs/tabs_constants.h"
 #include "chrome/browser/extensions/extension_service_test_base.h"
 #include "chrome/browser/extensions/extension_util.h"
+#include "components/sync_preferences/testing_pref_service_syncable.h"
+#include "extensions/browser/pref_names.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/extension_builder.h"
+#include "extensions/common/mojom/context_type.mojom.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace extensions {
@@ -19,9 +24,9 @@ TEST(ExtensionTabUtilTest, ScrubTabBehaviorForTabsPermission) {
                        .AddPermission("tabs")
                        .Build();
   ExtensionTabUtil::ScrubTabBehavior scrub_tab_behavior =
-      ExtensionTabUtil::GetScrubTabBehavior(
-          extension.get(), Feature::Context::UNSPECIFIED_CONTEXT,
-          GURL("http://www.google.com"));
+      ExtensionTabUtil::GetScrubTabBehavior(extension.get(),
+                                            mojom::ContextType::kUnspecified,
+                                            GURL("http://www.google.com"));
   EXPECT_EQ(ExtensionTabUtil::kDontScrubTab, scrub_tab_behavior.committed_info);
   EXPECT_EQ(ExtensionTabUtil::kDontScrubTab, scrub_tab_behavior.pending_info);
 }
@@ -29,9 +34,9 @@ TEST(ExtensionTabUtilTest, ScrubTabBehaviorForTabsPermission) {
 TEST(ExtensionTabUtilTest, ScrubTabBehaviorForNoPermission) {
   auto extension = ExtensionBuilder("Extension with no permissions").Build();
   ExtensionTabUtil::ScrubTabBehavior scrub_tab_behavior =
-      ExtensionTabUtil::GetScrubTabBehavior(
-          extension.get(), Feature::Context::UNSPECIFIED_CONTEXT,
-          GURL("http://www.google.com"));
+      ExtensionTabUtil::GetScrubTabBehavior(extension.get(),
+                                            mojom::ContextType::kUnspecified,
+                                            GURL("http://www.google.com"));
   EXPECT_EQ(ExtensionTabUtil::kScrubTabFully,
             scrub_tab_behavior.committed_info);
   EXPECT_EQ(ExtensionTabUtil::kScrubTabFully, scrub_tab_behavior.pending_info);
@@ -43,7 +48,7 @@ TEST(ExtensionTabUtilTest, ScrubTabBehaviorForHostPermission) {
                        .Build();
   ExtensionTabUtil::ScrubTabBehavior scrub_tab_behavior =
       ExtensionTabUtil::GetScrubTabBehavior(
-          extension.get(), Feature::Context::UNSPECIFIED_CONTEXT,
+          extension.get(), mojom::ContextType::kUnspecified,
           GURL("http://www.google.com/some/path"));
   EXPECT_EQ(ExtensionTabUtil::kDontScrubTab, scrub_tab_behavior.committed_info);
   EXPECT_EQ(ExtensionTabUtil::kDontScrubTab, scrub_tab_behavior.pending_info);
@@ -51,9 +56,9 @@ TEST(ExtensionTabUtilTest, ScrubTabBehaviorForHostPermission) {
 
 TEST(ExtensionTabUtilTest, ScrubTabBehaviorForNoExtension) {
   ExtensionTabUtil::ScrubTabBehavior scrub_tab_behavior =
-      ExtensionTabUtil::GetScrubTabBehavior(
-          nullptr, Feature::Context::UNSPECIFIED_CONTEXT,
-          GURL("http://www.google.com"));
+      ExtensionTabUtil::GetScrubTabBehavior(nullptr,
+                                            mojom::ContextType::kUnspecified,
+                                            GURL("http://www.google.com"));
   EXPECT_EQ(ExtensionTabUtil::kScrubTabFully,
             scrub_tab_behavior.committed_info);
   EXPECT_EQ(ExtensionTabUtil::kScrubTabFully, scrub_tab_behavior.pending_info);
@@ -61,8 +66,7 @@ TEST(ExtensionTabUtilTest, ScrubTabBehaviorForNoExtension) {
 
 TEST(ExtensionTabUtilTest, ScrubTabBehaviorForWebUI) {
   ExtensionTabUtil::ScrubTabBehavior scrub_tab_behavior =
-      ExtensionTabUtil::GetScrubTabBehavior(nullptr,
-                                            Feature::Context::WEBUI_CONTEXT,
+      ExtensionTabUtil::GetScrubTabBehavior(nullptr, mojom::ContextType::kWebUi,
                                             GURL("http://www.google.com"));
   EXPECT_EQ(ExtensionTabUtil::kDontScrubTab, scrub_tab_behavior.committed_info);
   EXPECT_EQ(ExtensionTabUtil::kDontScrubTab, scrub_tab_behavior.pending_info);
@@ -70,9 +74,9 @@ TEST(ExtensionTabUtilTest, ScrubTabBehaviorForWebUI) {
 
 TEST(ExtensionTabUtilTest, ScrubTabBehaviorForWebUIUntrusted) {
   ExtensionTabUtil::ScrubTabBehavior scrub_tab_behavior =
-      ExtensionTabUtil::GetScrubTabBehavior(
-          nullptr, Feature::Context::WEBUI_UNTRUSTED_CONTEXT,
-          GURL("http://www.google.com"));
+      ExtensionTabUtil::GetScrubTabBehavior(nullptr,
+                                            mojom::ContextType::kUntrustedWebUi,
+                                            GURL("http://www.google.com"));
   EXPECT_EQ(ExtensionTabUtil::kScrubTabFully,
             scrub_tab_behavior.committed_info);
   EXPECT_EQ(ExtensionTabUtil::kScrubTabFully, scrub_tab_behavior.pending_info);
@@ -103,7 +107,7 @@ class ChromeExtensionNavigationTest : public ExtensionServiceTestBase {
 
 void ChromeExtensionNavigationTest::SetUp() {
   ExtensionServiceTestBase::SetUp();
-  InitializeEmptyExtensionService();
+  InitializeExtensionServiceWithUpdater();
 }
 
 TEST_F(ChromeExtensionNavigationTest, PrepareURLForNavigation) {
@@ -157,6 +161,15 @@ TEST_F(ChromeExtensionNavigationTest, PrepareURLForNavigation) {
     EXPECT_EQ(tabs_constants::kFileUrlsNotAllowedInExtensionNavigations,
               url.error());
   }
+  // File URLs with view-source scheme should return false and set the error.
+  {
+    const std::string kViewSourceFileURL("view-source:file:///etc/passwd");
+    auto url = ExtensionTabUtil::PrepareURLForNavigation(
+        kViewSourceFileURL, extension.get(), browser_context());
+    ASSERT_FALSE(url.has_value());
+    EXPECT_EQ(tabs_constants::kFileUrlsNotAllowedInExtensionNavigations,
+              url.error());
+  }
   // File URLs are returned when the extension has access to file.
   {
     util::SetAllowFileAccess(extension->id(), browser_context(), true);
@@ -165,6 +178,52 @@ TEST_F(ChromeExtensionNavigationTest, PrepareURLForNavigation) {
         kFileURLWithAccess, extension.get(), browser_context());
     EXPECT_THAT(url, base::test::ValueIs(GURL(kFileURLWithAccess)));
   }
+  // Regression test for crbug.com/1487908. Ensure that file URLs are returned
+  // when the call originates from non-extension contexts (e.g. WebUI contexts).
+  {
+    const std::string kFileURL("file:///etc/passwd");
+    auto url = ExtensionTabUtil::PrepareURLForNavigation(
+        kFileURL, /*extension=*/nullptr, browser_context());
+    EXPECT_THAT(url, base::test::ValueIs(GURL(kFileURL)));
+  }
+}
+
+TEST_F(ChromeExtensionNavigationTest,
+       PrepareURLForNavigationWithEnterprisePolicy) {
+  // Set the extension to allow file URL navigation via enterprise policy.
+  std::string extension_id = "abcdefghijklmnopabcdefghijklmnop";
+  std::string json = base::StringPrintf(
+      R"({
+        "%s": {
+          "file_url_navigation_allowed": true
+        }
+      })",
+      extension_id.c_str());
+
+  std::optional<base::Value> settings = base::JSONReader::Read(json);
+  testing_pref_service()->SetManagedPref(
+      pref_names::kExtensionManagement,
+      base::Value::ToUniquePtrValue(std::move(settings.value())));
+
+  auto extension = ExtensionBuilder("test").SetID(extension_id).Build();
+
+  // File URLs are returned when the extension has access to file.
+  const std::string kFileURLWithEnterprisePolicy("file:///etc/passwd");
+  auto url = ExtensionTabUtil::PrepareURLForNavigation(
+      kFileURLWithEnterprisePolicy, extension.get(), browser_context());
+  EXPECT_THAT(url, base::test::ValueIs(GURL(kFileURLWithEnterprisePolicy)));
+}
+
+TEST_F(ChromeExtensionNavigationTest, PrepareURLForNavigationWithPDFViewer) {
+  // Set ID for PDF viewer extension.
+  auto extension =
+      ExtensionBuilder("test").SetID(extension_misc::kPdfExtensionId).Build();
+
+  // File URLs are returned when the extension has access to file.
+  const std::string kFileURLWithPDFViewer("file:///etc/passwd");
+  auto url = ExtensionTabUtil::PrepareURLForNavigation(
+      kFileURLWithPDFViewer, extension.get(), browser_context());
+  EXPECT_THAT(url, base::test::ValueIs(GURL(kFileURLWithPDFViewer)));
 }
 
 TEST_F(ChromeExtensionNavigationTest, PrepareURLForNavigationOnDevtools) {

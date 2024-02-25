@@ -5,6 +5,7 @@
 #ifndef CONTENT_PUBLIC_BROWSER_AUDIO_SERVICE_H_
 #define CONTENT_PUBLIC_BROWSER_AUDIO_SERVICE_H_
 
+#include "base/auto_reset.h"
 #include "base/functional/callback.h"
 #include "content/common/content_export.h"
 #include "media/mojo/mojom/audio_stream_factory.mojom.h"
@@ -21,6 +22,11 @@ namespace content {
 // is started lazily and may run either in-process or in a dedicated sandboxed
 // subprocess.
 CONTENT_EXPORT audio::mojom::AudioService& GetAudioService();
+
+// Provides an override for the reference returned by
+// |GetAudioService()|.
+CONTENT_EXPORT base::AutoReset<audio::mojom::AudioService*>
+OverrideAudioServiceForTesting(audio::mojom::AudioService* service);
 
 // Creates an instance of AudioSystem for use with the Audio Service, bound to
 // the thread it's used on for the first time.

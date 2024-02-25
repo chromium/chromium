@@ -32,7 +32,6 @@ import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
 import org.chromium.chrome.browser.customtabs.CustomTabsIntentTestUtils;
 import org.chromium.chrome.browser.customtabs.IncognitoCustomTabActivityTestRule;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.TabLaunchType;
@@ -42,16 +41,13 @@ import org.chromium.chrome.browser.tabpersistence.TabStateDirectory;
 import org.chromium.chrome.browser.tabpersistence.TabStateFileManager;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
-import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 
 import java.io.File;
 import java.util.concurrent.Callable;
 
-/**
- * Tests for the Incognito Notification service.
- */
+/** Tests for the Incognito Notification service. */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 public class IncognitoNotificationServiceTest {
@@ -64,27 +60,38 @@ public class IncognitoNotificationServiceTest {
 
     private void createTabOnUiThread() {
         TestThreadUtils.runOnUiThreadBlocking(
-                (Runnable) () -> mActivityTestRule.getActivity().getTabCreator(true).createNewTab(
-                                new LoadUrlParams("about:blank"), TabLaunchType.FROM_CHROME_UI,
-                                null));
+                (Runnable)
+                        () ->
+                                mActivityTestRule
+                                        .getActivity()
+                                        .getTabCreator(true)
+                                        .createNewTab(
+                                                new LoadUrlParams("about:blank"),
+                                                TabLaunchType.FROM_CHROME_UI,
+                                                null));
     }
 
     private void sendClearIncognitoIntent() throws CanceledException {
-        PendingIntent clearIntent = IncognitoNotificationServiceImpl
-                                            .getRemoveAllIncognitoTabsIntent(
-                                                    ApplicationProvider.getApplicationContext())
-                                            .getPendingIntent();
+        PendingIntent clearIntent =
+                IncognitoNotificationServiceImpl.getRemoveAllIncognitoTabsIntent(
+                                ApplicationProvider.getApplicationContext())
+                        .getPendingIntent();
         clearIntent.send();
     }
 
     private void launchIncognitoTabAndEnsureNotificationDisplayed() {
         mActivityTestRule.startMainActivityOnBlankPage();
         createTabOnUiThread();
-        CriteriaHelper.pollUiThread(() -> {
-            Criteria.checkThat(
-                    mActivityTestRule.getActivity().getTabModelSelector().getModel(true).getCount(),
-                    Matchers.greaterThanOrEqualTo(1));
-        });
+        CriteriaHelper.pollUiThread(
+                () -> {
+                    Criteria.checkThat(
+                            mActivityTestRule
+                                    .getActivity()
+                                    .getTabModelSelector()
+                                    .getModel(true)
+                                    .getCount(),
+                            Matchers.greaterThanOrEqualTo(1));
+                });
 
         Context context = ContextUtils.getApplicationContext();
         NotificationManager nm =
@@ -92,7 +99,7 @@ public class IncognitoNotificationServiceTest {
         boolean isIncognitoNotificationDisplayed = false;
         for (StatusBarNotification statusBarNotification : nm.getActiveNotifications()) {
             if (IncognitoNotificationManager.INCOGNITO_TABS_OPEN_TAG.equals(
-                        statusBarNotification.getTag())) {
+                    statusBarNotification.getTag())) {
                 isIncognitoNotificationDisplayed = true;
             }
         }
@@ -112,19 +119,22 @@ public class IncognitoNotificationServiceTest {
         pollUiThreadForChromeActivityIncognitoTabCount(2);
 
         final Profile incognitoProfile =
-                TestThreadUtils.runOnUiThreadBlockingNoException(new Callable<Profile>() {
-                    @Override
-                    public Profile call() {
-                        return mActivityTestRule.getActivity()
-                                .getTabModelSelector()
-                                .getModel(true)
-                                .getProfile();
-                    }
+                TestThreadUtils.runOnUiThreadBlockingNoException(
+                        new Callable<Profile>() {
+                            @Override
+                            public Profile call() {
+                                return mActivityTestRule
+                                        .getActivity()
+                                        .getTabModelSelector()
+                                        .getModel(true)
+                                        .getProfile();
+                            }
+                        });
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    assertTrue(incognitoProfile.isOffTheRecord());
+                    assertTrue(incognitoProfile.isNativeInitialized());
                 });
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            assertTrue(incognitoProfile.isOffTheRecord());
-            assertTrue(incognitoProfile.isNativeInitialized());
-        });
 
         sendClearIncognitoIntent();
 
@@ -138,8 +148,8 @@ public class IncognitoNotificationServiceTest {
     @DisabledTest(message = "crbug.com/1033835")
     public void testNoAliveProcess() throws Exception {
         Context context = ApplicationProvider.getApplicationContext();
-        final TestTabModelDirectory tabbedModeDirectory = new TestTabModelDirectory(
-                context, "tabs", String.valueOf(0));
+        final TestTabModelDirectory tabbedModeDirectory =
+                new TestTabModelDirectory(context, "tabs", String.valueOf(0));
 
         // Add a couple non-incognito tabs (their filenames use a different prefix, so we do not
         // need to worry about ID space collisions with the generated incognito tabs).
@@ -149,13 +159,14 @@ public class IncognitoNotificationServiceTest {
         // Generate a few incognito tabs (using arbitrary data from an existing TabState
         // definition).
         for (int i = 0; i < 3; i++) {
-            TabStateInfo incognitoInfo = new TabStateInfo(
-                    true,
-                    TestTabModelDirectory.V2_TEXTAREA.version,
-                    i,
-                    TestTabModelDirectory.V2_TEXTAREA.url,
-                    TestTabModelDirectory.V2_TEXTAREA.title,
-                    TestTabModelDirectory.V2_TEXTAREA.encodedTabState);
+            TabStateInfo incognitoInfo =
+                    new TabStateInfo(
+                            true,
+                            TestTabModelDirectory.V2_TEXTAREA.version,
+                            i,
+                            TestTabModelDirectory.V2_TEXTAREA.url,
+                            TestTabModelDirectory.V2_TEXTAREA.title,
+                            TestTabModelDirectory.V2_TEXTAREA.encodedTabState);
             tabbedModeDirectory.writeTabStateFile(incognitoInfo);
         }
 
@@ -178,29 +189,33 @@ public class IncognitoNotificationServiceTest {
 
         sendClearIncognitoIntent();
 
-        CriteriaHelper.pollInstrumentationThread(() -> {
-            File[] actualTabbedModeFiles = tabbedModeDirectory.getDataDirectory().listFiles();
-            if (actualTabbedModeFiles == null) return;
-            int actualIncognitoCount = 0;
-            for (File tabbedModeFile : actualTabbedModeFiles) {
-                Pair<Integer, Boolean> tabFileInfo =
-                        TabStateFileManager.parseInfoFromFilename(tabbedModeFile.getName());
-                if (tabFileInfo != null && tabFileInfo.second) actualIncognitoCount++;
-            }
-            Criteria.checkThat(actualIncognitoCount, Matchers.is(0));
-        });
+        CriteriaHelper.pollInstrumentationThread(
+                () -> {
+                    File[] actualTabbedModeFiles =
+                            tabbedModeDirectory.getDataDirectory().listFiles();
+                    if (actualTabbedModeFiles == null) return;
+                    int actualIncognitoCount = 0;
+                    for (File tabbedModeFile : actualTabbedModeFiles) {
+                        Pair<Integer, Boolean> tabFileInfo =
+                                TabStateFileManager.parseInfoFromFilename(tabbedModeFile.getName());
+                        if (tabFileInfo != null && tabFileInfo.second) actualIncognitoCount++;
+                    }
+                    Criteria.checkThat(actualIncognitoCount, Matchers.is(0));
+                });
 
-        CriteriaHelper.pollInstrumentationThread(() -> {
-            File[] actualTabbedModeFiles = tabbedModeDirectory.getDataDirectory().listFiles();
-            Criteria.checkThat(actualTabbedModeFiles, Matchers.notNullValue());
-            int actualNormalCount = 0;
-            for (File tabbedModeFile : actualTabbedModeFiles) {
-                Pair<Integer, Boolean> tabFileInfo =
-                        TabStateFileManager.parseInfoFromFilename(tabbedModeFile.getName());
-                if (tabFileInfo != null && !tabFileInfo.second) actualNormalCount++;
-            }
-            Criteria.checkThat(actualNormalCount, Matchers.is(2));
-        });
+        CriteriaHelper.pollInstrumentationThread(
+                () -> {
+                    File[] actualTabbedModeFiles =
+                            tabbedModeDirectory.getDataDirectory().listFiles();
+                    Criteria.checkThat(actualTabbedModeFiles, Matchers.notNullValue());
+                    int actualNormalCount = 0;
+                    for (File tabbedModeFile : actualTabbedModeFiles) {
+                        Pair<Integer, Boolean> tabFileInfo =
+                                TabStateFileManager.parseInfoFromFilename(tabbedModeFile.getName());
+                        if (tabFileInfo != null && !tabFileInfo.second) actualNormalCount++;
+                    }
+                    Criteria.checkThat(actualNormalCount, Matchers.is(2));
+                });
 
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> Assert.assertFalse(LibraryLoader.getInstance().isInitialized()));
@@ -216,21 +231,21 @@ public class IncognitoNotificationServiceTest {
     @Test
     @MediumTest
     @Feature("Incognito")
-    @EnableFeatures(ChromeFeatureList.CCT_INCOGNITO)
     public void testCloseAllIncognitoNotificationForIncognitoCCT_DoesNotCloseCCT()
             throws PendingIntent.CanceledException {
         launchIncognitoTabAndEnsureNotificationDisplayed();
 
         // Create an Incognito CCT now.
-        Intent customTabIntent = CustomTabsIntentTestUtils.createMinimalIncognitoCustomTabIntent(
-                ApplicationProvider.getApplicationContext(), "about:blank");
+        Intent customTabIntent =
+                CustomTabsIntentTestUtils.createMinimalIncognitoCustomTabIntent(
+                        ApplicationProvider.getApplicationContext(), "about:blank");
         mCustomTabActivityTestRule.startCustomTabActivityWithIntent(customTabIntent);
 
         // Click on "Close all Incognito tabs" notification.
-        PendingIntent clearIntent = IncognitoNotificationServiceImpl
-                                            .getRemoveAllIncognitoTabsIntent(
-                                                    ApplicationProvider.getApplicationContext())
-                                            .getPendingIntent();
+        PendingIntent clearIntent =
+                IncognitoNotificationServiceImpl.getRemoveAllIncognitoTabsIntent(
+                                ApplicationProvider.getApplicationContext())
+                        .getPendingIntent();
         clearIntent.send();
 
         pollUiThreadForChromeActivityIncognitoTabCount(0);
@@ -240,20 +255,28 @@ public class IncognitoNotificationServiceTest {
     }
 
     private void pollUiThreadForChromeActivityIncognitoTabCount(int expectedCount) {
-        CriteriaHelper.pollUiThread(() -> {
-            Criteria.checkThat(
-                    mActivityTestRule.getActivity().getTabModelSelector().getModel(true).getCount(),
-                    Matchers.is(expectedCount));
-        });
+        CriteriaHelper.pollUiThread(
+                () -> {
+                    Criteria.checkThat(
+                            mActivityTestRule
+                                    .getActivity()
+                                    .getTabModelSelector()
+                                    .getModel(true)
+                                    .getCount(),
+                            Matchers.is(expectedCount));
+                });
     }
 
     private void pollUiThreadForCustomIncognitoTabCount(int expectedCount) {
-        CriteriaHelper.pollUiThread(() -> {
-            Criteria.checkThat(mCustomTabActivityTestRule.getActivity()
-                                       .getTabModelSelector()
-                                       .getModel(true)
-                                       .getCount(),
-                    Matchers.is(expectedCount));
-        });
+        CriteriaHelper.pollUiThread(
+                () -> {
+                    Criteria.checkThat(
+                            mCustomTabActivityTestRule
+                                    .getActivity()
+                                    .getTabModelSelector()
+                                    .getModel(true)
+                                    .getCount(),
+                            Matchers.is(expectedCount));
+                });
     }
 }

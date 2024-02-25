@@ -54,6 +54,7 @@ class WaylandOutputManager;
 class WaylandSeat;
 class WaylandZAuraShell;
 class WaylandZAuraOutputManager;
+class WaylandZAuraOutputManagerV2;
 class WaylandZcrColorManager;
 class WaylandZcrCursorShapes;
 class WaylandZcrTouchpadHaptics;
@@ -62,6 +63,7 @@ class WaylandZwpPointerGestures;
 class WaylandZwpRelativePointerManager;
 class WaylandDataDeviceManager;
 class WaylandCursorPosition;
+class WaylandCursorShape;
 class WaylandWindowDragController;
 class GtkPrimarySelectionDeviceManager;
 class GtkShell1;
@@ -97,7 +99,7 @@ class WaylandConnection {
   WaylandConnection& operator=(const WaylandConnection&) = delete;
   ~WaylandConnection();
 
-  bool Initialize();
+  bool Initialize(bool use_threaded_polling = false);
 
   // Immediately flushes the Wayland display.
   void Flush();
@@ -109,6 +111,10 @@ class WaylandConnection {
   // Sets a callback that that shutdowns the browser in case of unrecoverable
   // error. Called by WaylandEventWatcher.
   void SetShutdownCb(base::OnceCallback<void()> shutdown_cb);
+
+  // Returns the dotted number version of the Wayland server. For Lacros, this
+  // is the Ash Chrome version.
+  base::Version GetServerVersion() const;
 
   // A correct display must be chosen when creating objects or calling
   // roundrips.  That is, all the methods that deal with polling, pulling event
@@ -199,10 +205,18 @@ class WaylandConnection {
     return zaura_output_manager_.get();
   }
 
+  WaylandZAuraOutputManagerV2* zaura_output_manager_v2() const {
+    return zaura_output_manager_v2_.get();
+  }
+
   WaylandZAuraShell* zaura_shell() const { return zaura_shell_.get(); }
 
   WaylandZcrColorManager* zcr_color_manager() const {
     return zcr_color_manager_.get();
+  }
+
+  WaylandCursorShape* wayland_cursor_shape() const {
+    return cursor_shape_.get();
   }
 
   WaylandZcrCursorShapes* zcr_cursor_shapes() const {
@@ -279,7 +293,7 @@ class WaylandConnection {
   // available.
   bool SupportsSetWindowGeometry() const;
 
-  // Returns true when dragging is entered or started.
+  // Returns true when there an active outgoing drag-and-drop session.
   bool IsDragInProgress() const;
 
   // Creates a new wl_surface.
@@ -332,6 +346,11 @@ class WaylandConnection {
 
   bool ShouldUseOverlayDelegation() const;
 
+  // True if the client has bound the either aura output manager globals. If
+  // present aura output manager handles the responsibilities of keeping
+  // output metrics up to date and triggering delegate notifications.
+  bool IsUsingZAuraOutputManager() const;
+
   wl::SerialTracker& serial_tracker() { return serial_tracker_; }
 
   void set_tablet_layout_state(display::TabletState tablet_layout_state) {
@@ -373,12 +392,14 @@ class WaylandConnection {
   friend class WaylandOutput;
   friend class WaylandSeat;
   friend class WaylandZAuraOutputManager;
+  friend class WaylandZAuraOutputManagerV2;
   friend class WaylandZAuraShell;
   friend class WaylandZcrTouchpadHaptics;
   friend class WaylandZwpPointerConstraints;
   friend class WaylandZwpPointerGestures;
   friend class WaylandZwpRelativePointerManager;
   friend class WaylandZcrColorManager;
+  friend class WaylandCursorShape;
   friend class WaylandZcrCursorShapes;
   friend class XdgActivation;
   friend class XdgForeignWrapper;
@@ -387,6 +408,13 @@ class WaylandConnection {
 
   void RegisterGlobalObjectFactory(const char* interface_name,
                                    wl::GlobalObjectFactory factory);
+
+  // Returns true if the required wl_globals are announced by the server.
+  bool WlGlobalsReady() const;
+
+  // Based on the bound globals, returns true if required information are
+  // announced by the server. E.g. server version from zaura-shell.
+  bool WlObjectsReady() const;
 
   // Updates InputDevice structures in Chrome. Currently, Wayland doesn't
   // support such, so the devices are derived from the connected interfaces.
@@ -406,21 +434,26 @@ class WaylandConnection {
   // in place, i.e: wl_seat and wl_data_device_manager.
   void CreateDataObjectsIfReady();
 
-  // wl_registry_listener
-  static void Global(void* data,
-                     wl_registry* registry,
-                     uint32_t name,
-                     const char* interface,
-                     uint32_t version);
-  static void GlobalRemove(void* data, wl_registry* registry, uint32_t name);
+  // wl_registry_listener callbacks:
+  static void OnGlobal(void* data,
+                       wl_registry* registry,
+                       uint32_t name,
+                       const char* interface,
+                       uint32_t version);
+  static void OnGlobalRemove(void* data, wl_registry* registry, uint32_t name);
 
-  // xdg_wm_base_listener
-  static void Ping(void* data, xdg_wm_base* shell, uint32_t serial);
+  // xdg_wm_base_listener callbacks:
+  static void OnPing(void* data, xdg_wm_base* shell, uint32_t serial);
 
-  // xdg_wm_base_listener
-  static void ClockId(void* data,
-                      wp_presentation* presentation,
-                      uint32_t clk_id);
+  // wp_presentation_listener callbacks:
+  static void OnClockId(void* data,
+                        wp_presentation* presentation,
+                        uint32_t clk_id);
+
+  void HandleGlobal(wl_registry* registry,
+                    uint32_t name,
+                    const char* interface,
+                    uint32_t version);
 
   base::flat_map<std::string, wl::GlobalObjectFactory> global_object_factories_;
 
@@ -465,8 +498,10 @@ class WaylandConnection {
   std::unique_ptr<WaylandOutputManager> output_manager_;
   std::unique_ptr<WaylandCursorPosition> cursor_position_;
   std::unique_ptr<WaylandZAuraOutputManager> zaura_output_manager_;
+  std::unique_ptr<WaylandZAuraOutputManagerV2> zaura_output_manager_v2_;
   std::unique_ptr<WaylandZAuraShell> zaura_shell_;
   std::unique_ptr<WaylandZcrColorManager> zcr_color_manager_;
+  std::unique_ptr<WaylandCursorShape> cursor_shape_;
   std::unique_ptr<WaylandZcrCursorShapes> zcr_cursor_shapes_;
   std::unique_ptr<WaylandZcrTouchpadHaptics> zcr_touchpad_haptics_;
   std::unique_ptr<WaylandZwpPointerConstraints> zwp_pointer_constraints_;
@@ -531,8 +566,6 @@ class WaylandConnection {
   // Global Wayland interfaces available in the current session, with their
   // versions.
   std::vector<std::pair<std::string, uint32_t>> available_globals_;
-
-  base::RepeatingClosure roundtrip_closure_for_testing_;
 };
 
 }  // namespace ui

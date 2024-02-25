@@ -6,6 +6,7 @@
 #define COMPONENTS_VIZ_SERVICE_DISPLAY_EMBEDDER_SKIA_OUTPUT_DEVICE_H_
 
 #include <memory>
+#include <optional>
 #include <vector>
 
 #include "base/containers/queue.h"
@@ -20,7 +21,6 @@
 #include "components/viz/service/display/skia_output_surface.h"
 #include "components/viz/service/viz_service_export.h"
 #include "gpu/command_buffer/common/swap_buffers_complete_params.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/skia/include/core/SkRefCnt.h"
 #include "third_party/skia/include/gpu/GrBackendSemaphore.h"
 #include "ui/gfx/swap_result.h"
@@ -106,11 +106,15 @@ class VIZ_SERVICE_EXPORT SkiaOutputDevice {
       base::RepeatingCallback<void(gpu::SwapBuffersCompleteParams,
                                    const gfx::Size& pixel_size,
                                    gfx::GpuFenceHandle release_fence)>;
+  using ReleaseOverlaysCallback =
+      base::RepeatingCallback<void(const std::vector<gpu::Mailbox>)>;
+
   SkiaOutputDevice(
       GrDirectContext* gr_context,
       skgpu::graphite::Context* graphite_context,
       gpu::MemoryTracker* memory_tracker,
-      DidSwapBufferCompleteCallback did_swap_buffer_complete_callback);
+      DidSwapBufferCompleteCallback did_swap_buffer_complete_callback,
+      ReleaseOverlaysCallback release_overlays_callback = base::DoNothing());
 
   SkiaOutputDevice(const SkiaOutputDevice&) = delete;
   SkiaOutputDevice& operator=(const SkiaOutputDevice&) = delete;
@@ -142,7 +146,7 @@ class VIZ_SERVICE_EXPORT SkiaOutputDevice {
   // Presents the back buffer. Optional `update_rect` represents hint of the
   // rect that was updated in the back buffer. If not specified the whole buffer
   // is supposed to be updated.
-  virtual void Present(const absl::optional<gfx::Rect>& update_rect,
+  virtual void Present(const std::optional<gfx::Rect>& update_rect,
                        BufferPresentedCallback feedback,
                        OutputSurfaceFrame frame) = 0;
   virtual bool EnsureMinNumberOfBuffers(size_t n);
@@ -152,8 +156,6 @@ class VIZ_SERVICE_EXPORT SkiaOutputDevice {
 
   // Enable or disable DC layers. Must be called before DC layers are scheduled.
   virtual void SetEnableDCLayers(bool enabled);
-
-  virtual void SetGpuVSyncEnabled(bool enabled);
 
   virtual void SetVSyncDisplayID(int64_t display_id) {}
 
@@ -165,8 +167,8 @@ class VIZ_SERVICE_EXPORT SkiaOutputDevice {
   // primary plane will be on screen when SwapBuffers() or PostSubBuffer() is
   // called.
   virtual void SchedulePrimaryPlane(
-      const absl::optional<
-          OverlayProcessorInterface::OutputSurfaceOverlayPlane>& plane);
+      const std::optional<OverlayProcessorInterface::OutputSurfaceOverlayPlane>&
+          plane);
 
   // Schedule overlays which will be on screen when SwapBuffers() or
   // PostSubBuffer() is called.
@@ -209,9 +211,10 @@ class VIZ_SERVICE_EXPORT SkiaOutputDevice {
     uint64_t SwapId();
     const gpu::SwapBuffersCompleteParams& Complete(
         gfx::SwapCompletionResult result,
-        const absl::optional<gfx::Rect>& damage_area,
+        const std::optional<gfx::Rect>& damage_area,
         std::vector<gpu::Mailbox> released_overlays,
-        const gpu::Mailbox& primary_plane_mailbox);
+        const gpu::Mailbox& primary_plane_mailbox,
+        int64_t swap_trace_id);
     void CallFeedback();
 
    private:
@@ -254,7 +257,7 @@ class VIZ_SERVICE_EXPORT SkiaOutputDevice {
       gfx::SwapCompletionResult result,
       const gfx::Size& size,
       OutputSurfaceFrame frame,
-      const absl::optional<gfx::Rect>& damage_area = absl::nullopt,
+      const std::optional<gfx::Rect>& damage_area = std::nullopt,
       std::vector<gpu::Mailbox> released_overlays = {},
       const gpu::Mailbox& primary_plane_mailbox = gpu::Mailbox());
 
@@ -266,6 +269,7 @@ class VIZ_SERVICE_EXPORT SkiaOutputDevice {
 
   uint64_t swap_id_ = 0;
   DidSwapBufferCompleteCallback did_swap_buffer_complete_callback_;
+  ReleaseOverlaysCallback release_overlays_callback_;
 
   base::queue<SwapInfo> pending_swaps_;
   base::TimeTicks viz_scheduled_draw_;

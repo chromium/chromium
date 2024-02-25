@@ -1,4 +1,4 @@
-// Copyright 2022 The Chromium Authors. All rights reserved.
+// Copyright 2022 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,10 +8,11 @@
 #include <string>
 
 #include "base/containers/flat_set.h"
+#include "base/observer_list_types.h"
 #include "base/strings/string_piece.h"
 #include "base/time/time.h"
 #include "content/common/content_export.h"
-#include "third_party/blink/public/common/origin_trials/origin_trial_feature.h"
+#include "third_party/blink/public/mojom/origin_trial_feature/origin_trial_feature.mojom-shared.h"
 #include "url/origin.h"
 
 namespace content {
@@ -29,7 +30,37 @@ namespace content {
 // stable partitioning key until cookie partitioning is fully rolled out.
 class CONTENT_EXPORT OriginTrialsControllerDelegate {
  public:
+  class Observer : public base::CheckedObserver {
+   public:
+    // Called when the observed trial is enabled or disabled for `origin`
+    // (under `partition_site`).
+    //
+    // NOTE: The status provided to this callback cannot be
+    // guaranteed across startups, despite the observer being scoped to
+    // persistent origin trials. Embedders that intend to use the
+    // callbacks to inform some persisted setting should check those settings
+    // against their associated trials on startup.
+    // TODO (crbug.com/1466156): Verify that the call-sites for these methods
+    // fully consider whether an active OriginTrialPolicy is disabling the
+    // associated token, trial, and/or feature. Disabling one of these after a
+    // persistent trial has previously been enabled for an origin should
+    // effectively disabled also disable the trial for that origin.
+    virtual void OnStatusChanged(const url::Origin& origin,
+                                 const std::string& partition_site,
+                                 bool match_subdomains,
+                                 bool enabled) = 0;
+    // Called when all persisted tokens are removed.
+    virtual void OnPersistedTokensCleared() = 0;
+    // The name of the persistent origin trial whose status changes `this`
+    // is observing.
+    virtual std::string trial_name() = 0;
+  };
+
   virtual ~OriginTrialsControllerDelegate() = default;
+
+  // Observers.
+  virtual void AddObserver(Observer* observer) {}
+  virtual void RemoveObserver(Observer* observer) {}
 
   // Persist all enabled and persistable tokens in the `header_tokens`.
   //
@@ -69,10 +100,11 @@ class CONTENT_EXPORT OriginTrialsControllerDelegate {
   // be enabled.
   // TODO(https://crbug.com/1410180): Switch `partition_origin` to use Cookie
   // partitioning.
-  virtual bool IsFeaturePersistedForOrigin(const url::Origin& origin,
-                                           const url::Origin& partition_origin,
-                                           blink::OriginTrialFeature feature,
-                                           const base::Time current_time) = 0;
+  virtual bool IsFeaturePersistedForOrigin(
+      const url::Origin& origin,
+      const url::Origin& partition_origin,
+      blink::mojom::OriginTrialFeature feature,
+      const base::Time current_time) = 0;
 
   // Return the list of persistent origin trials that have been saved for
   // `origin`, partitioned by `partition_origin`, and haven't expired given the

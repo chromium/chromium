@@ -269,7 +269,7 @@ class DownloadsOpenFunction : public ExtensionFunction {
 
   ResponseAction Run() override;
 
-  typedef base::OnceCallback<void(DownloadOpenPrompt*)> OnPromptCreatedCallback;
+  using OnPromptCreatedCallback = base::OnceCallback<void(DownloadOpenPrompt*)>;
   static void set_on_prompt_created_cb_for_testing(
       OnPromptCreatedCallback* on_prompt_created_cb) {
     on_prompt_created_cb_ = on_prompt_created_cb;
@@ -432,7 +432,8 @@ class ExtensionDownloadsEventRouter
 
   raw_ptr<Profile> profile_;
   download::AllDownloadItemNotifier notifier_;
-  std::set<const extensions::Extension*> ui_disabling_extensions_;
+  std::set<raw_ptr<const extensions::Extension, SetExperimental>>
+      ui_disabling_extensions_;
 
   base::Time last_checked_removal_;
 

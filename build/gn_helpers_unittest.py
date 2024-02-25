@@ -323,7 +323,7 @@ class UnitTest(unittest.TestCase):
 
       siso_deps = pathlib.Path(temp_dir) / '.siso_deps'
       siso_deps.touch()
-      self.assertEqual(f'autosiso{suffix}',
+      self.assertEqual(f'autoninja{suffix}',
                        gn_helpers.CreateBuildCommand(temp_dir)[0])
 
       with mock.patch('shutil.which', lambda x: None):

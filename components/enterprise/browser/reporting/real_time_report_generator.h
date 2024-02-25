@@ -20,7 +20,9 @@ class ReportingDelegateFactory;
 // uploaded much more frequently than the CBCM status report.
 class RealTimeReportGenerator {
  public:
-  struct Data {};
+  struct Data {
+    bool operator==(const Data&) const = default;
+  };
   // Delegate class that is used to collect information and generate reports
   // outside the //components. For example, RealTimeReportGeneratorDesktop
   // actual_report chrome/browser/enterprise/reporting.

@@ -71,7 +71,7 @@ class CrosapiNewWindowDelegate : public ash::NewWindowDelegate {
     void SetWindowID(const std::string& window_id);
 
    private:
-    raw_ptr<CrosapiNewWindowDelegate, ExperimentalAsh> owner_;
+    raw_ptr<CrosapiNewWindowDelegate> owner_;
 
     // Observes windows launched after window tab-drop request.
     base::ScopedMultiSourceObservation<aura::Window, aura::WindowObserver>
@@ -88,7 +88,8 @@ class CrosapiNewWindowDelegate : public ash::NewWindowDelegate {
 
     // Stores the set of Exo aura::Window instances whose surface widget has
     // been committed prior to |window_id_| is set.
-    std::set<aura::Window*> windows_committed_prior_to_window_id_;
+    std::set<raw_ptr<aura::Window, SetExperimental>>
+        windows_committed_prior_to_window_id_;
   };
 
   // Destroys the WindowObserver once the "WebUI tab-drop closure routine has
@@ -97,7 +98,7 @@ class CrosapiNewWindowDelegate : public ash::NewWindowDelegate {
 
   // Not owned. Practically, this should point to ChromeNewWindowClient in
   // production.
-  const raw_ptr<ash::NewWindowDelegate, ExperimentalAsh> delegate_;
+  const raw_ptr<ash::NewWindowDelegate> delegate_;
 
   std::unique_ptr<WindowObserver> window_observer_;
 };

@@ -67,7 +67,7 @@ class LocalFileSuggestionProviderTest : public testing::Test {
   void UpdateResults() {
     base::RunLoop run_loop;
     auto cb = base::BindLambdaForTesting(
-        [&](const absl::optional<std::vector<FileSuggestData>>& data) {
+        [&](const std::optional<std::vector<FileSuggestData>>& data) {
           results_ = data;
           run_loop.Quit();
         });
@@ -75,7 +75,7 @@ class LocalFileSuggestionProviderTest : public testing::Test {
     run_loop.Run();
   }
 
-  absl::optional<std::vector<FileSuggestData>>& Results() { return results_; }
+  std::optional<std::vector<FileSuggestData>>& Results() { return results_; }
 
   LocalFileSuggestionProvider* GetProvider() { return provider_.get(); }
 
@@ -94,13 +94,13 @@ class LocalFileSuggestionProviderTest : public testing::Test {
     WaitForProviderToBeInitialized();
   }
 
-  raw_ptr<TestingProfile, DanglingUntriaged | ExperimentalAsh> profile_;
+  raw_ptr<TestingProfile, DanglingUntriaged> profile_;
 
  private:
   content::BrowserTaskEnvironment task_environment_;
   std::unique_ptr<TestingProfileManager> testing_profile_manager_;
   std::unique_ptr<LocalFileSuggestionProvider> provider_;
-  absl::optional<std::vector<FileSuggestData>> results_;
+  std::optional<std::vector<FileSuggestData>> results_;
 };
 
 TEST_F(LocalFileSuggestionProviderTest, ResultsEmptyOnInitialization) {

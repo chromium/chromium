@@ -24,6 +24,15 @@ struct StaticMemorySingletonTraits;
 
 namespace trace_event {
 
+// This GUID is the used to identify the Chrome provider and is used whenever
+// ETW is enabled via tracing tools and cannot change without updating tools
+// that collect Chrome ETW data.
+inline constexpr GUID Chrome_GUID = {
+    0xD2D578D9,
+    0x2936,
+    0x45B6,
+    {0xA0, 0x9F, 0x30, 0xE3, 0x27, 0x15, 0xF4, 0x2D}};
+
 class BASE_EXPORT TraceEventETWExport {
  public:
   TraceEventETWExport(const TraceEventETWExport&) = delete;
@@ -50,6 +59,7 @@ class BASE_EXPORT TraceEventETWExport {
                        const unsigned char* category_group_enabled,
                        const char* name,
                        unsigned long long id,
+                       TimeTicks timestamp,
                        const TraceArguments* args);
 
   // Exports an ETW event that marks the end of a complete event.
@@ -59,25 +69,25 @@ class BASE_EXPORT TraceEventETWExport {
   // Returns true if any category in the group is enabled.
   static bool IsCategoryGroupEnabled(StringPiece category_group_name);
 
-  // Called from the ETW EnableCallback when the state of the provider or
-  // keywords has changed.
-  static void OnETWEnableUpdate();
-
  private:
   // Ensure only the provider can construct us.
   friend struct StaticMemorySingletonTraits<TraceEventETWExport>;
   TraceEventETWExport();
 
+  // Called from the ETW EnableCallback when the state of the provider or
+  // keywords has changed.
+  void OnETWEnableUpdate(TlmProvider::EventControlCode enabled);
+
   // Updates the list of enabled categories by consulting the ETW keyword.
   // Returns true if there was a change, false otherwise.
   bool UpdateEnabledCategories();
 
-  static uint64_t CategoryGroupToKeyword(const uint8_t* category_state);
-
   // Returns true if the category is enabled.
   bool IsCategoryEnabled(StringPiece category_name) const;
 
-  static bool is_registration_complete_;
+  uint64_t CategoryStateToETWKeyword(const uint8_t* category_state);
+
+  bool is_registration_complete_ = false;
 
   // The keywords that were enabled last time the callback was made.
   uint64_t etw_match_any_keyword_ = 0;
@@ -88,10 +98,17 @@ class BASE_EXPORT TraceEventETWExport {
 
   // Maps category names to their status (enabled/disabled).
   std::map<StringPiece, bool> categories_status_;
-
-  // Maps category names to their keyword.
-  std::map<StringPiece, uint64_t> categories_keyword_;
 };
+
+BASE_EXPORT uint64_t
+CategoryGroupToETWKeyword(std::string_view category_group_name);
+
+#if BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
+
+BASE_EXPORT perfetto::protos::gen::TrackEventConfig
+ETWKeywordToTrackEventConfig(uint64_t keyword);
+
+#endif  // BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
 
 }  // namespace trace_event
 }  // namespace base

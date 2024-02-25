@@ -5,10 +5,11 @@
 #ifndef CONTENT_PUBLIC_BROWSER_TRUST_TOKEN_ACCESS_DETAILS_H_
 #define CONTENT_PUBLIC_BROWSER_TRUST_TOKEN_ACCESS_DETAILS_H_
 
+#include <optional>
+
 #include "content/common/content_export.h"
 #include "services/network/public/mojom/trust_token_access_observer.mojom.h"
 #include "services/network/public/mojom/trust_tokens.mojom-forward.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/origin.h"
 
 namespace content {
@@ -17,7 +18,7 @@ struct CONTENT_EXPORT TrustTokenAccessDetails {
   TrustTokenAccessDetails();
   TrustTokenAccessDetails(const url::Origin& origin,
                           network::mojom::TrustTokenOperationType type,
-                          const absl::optional<url::Origin>& issuer,
+                          const std::optional<url::Origin>& issuer,
                           bool blocked);
   explicit TrustTokenAccessDetails(
       const network::mojom::TrustTokenAccessDetailsPtr& details);
@@ -28,7 +29,7 @@ struct CONTENT_EXPORT TrustTokenAccessDetails {
 
   url::Origin origin;
   network::mojom::TrustTokenOperationType type;
-  absl::optional<url::Origin> issuer;
+  std::optional<url::Origin> issuer;
   bool blocked = false;
 };
 

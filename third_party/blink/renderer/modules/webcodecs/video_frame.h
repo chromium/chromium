@@ -7,8 +7,11 @@
 
 #include <stdint.h>
 
+#include <optional>
+
 #include "base/feature_list.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
+#include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
+#include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_typedefs.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_typedefs.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_video_pixel_format.h"
@@ -16,7 +19,7 @@
 #include "third_party/blink/renderer/core/imagebitmap/image_bitmap_source.h"
 #include "third_party/blink/renderer/modules/canvas/canvas2d/canvas_image_source_util.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
-#include "third_party/blink/renderer/modules/webcodecs/allow_shared_buffer_source_util.h"
+#include "third_party/blink/renderer/modules/webcodecs/array_buffer_util.h"
 #include "third_party/blink/renderer/modules/webcodecs/video_frame_handle.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
 #include "third_party/blink/renderer/platform/heap/member.h"
@@ -36,8 +39,7 @@ class CanvasImageSource;
 class DOMRectReadOnly;
 class ExceptionState;
 class ExecutionContext;
-class ScriptPromise;
-class ScriptPromiseResolver;
+class PlaneLayout;
 class ScriptState;
 class VideoColorSpace;
 class VideoFrameBufferInit;
@@ -77,10 +79,10 @@ class MODULES_EXPORT VideoFrame final : public ScriptWrappable,
                             const VideoFrameBufferInit*,
                             ExceptionState&);
 
-  absl::optional<V8VideoPixelFormat> format() const;
+  std::optional<V8VideoPixelFormat> format() const;
 
   int64_t timestamp() const;
-  absl::optional<uint64_t> duration() const;
+  std::optional<uint64_t> duration() const;
 
   uint32_t codedWidth() const;
   uint32_t codedHeight() const;
@@ -95,10 +97,11 @@ class MODULES_EXPORT VideoFrame final : public ScriptWrappable,
 
   uint32_t allocationSize(VideoFrameCopyToOptions* options, ExceptionState&);
 
-  ScriptPromise copyTo(ScriptState* script_state,
-                       const AllowSharedBufferSource* destination,
-                       VideoFrameCopyToOptions* options,
-                       ExceptionState& exception_state);
+  ScriptPromiseTyped<IDLSequence<PlaneLayout>> copyTo(
+      ScriptState* script_state,
+      const AllowSharedBufferSource* destination,
+      VideoFrameCopyToOptions* options,
+      ExceptionState& exception_state);
 
   // Invalidates |handle_|, releasing underlying media::VideoFrame references.
   // This effectively "destroys" all frames sharing the same Handle.
@@ -121,7 +124,7 @@ class MODULES_EXPORT VideoFrame final : public ScriptWrappable,
  private:
   // CanvasImageSource implementation
   scoped_refptr<Image> GetSourceImageForCanvas(
-      CanvasResourceProvider::FlushReason,
+      FlushReason,
       SourceImageStatus*,
       const gfx::SizeF&,
       const AlphaDisposition alpha_disposition = kPremultiplyAlpha) override;
@@ -133,17 +136,21 @@ class MODULES_EXPORT VideoFrame final : public ScriptWrappable,
   bool IsAccelerated() const override;
 
   void ResetExternalMemory();
-  ScriptPromiseResolver* CopyToAsync(ScriptState* script_state,
-                                     scoped_refptr<media::VideoFrame> frame,
-                                     gfx::Rect src_rect,
-                                     const AllowSharedBufferSource* destination,
-                                     const VideoFrameLayout& dest_layout);
+  void ConvertAndCopyToRGB(scoped_refptr<media::VideoFrame> frame,
+                           const gfx::Rect& src_rect,
+                           const VideoFrameLayout& dest_layout,
+                           base::span<uint8_t> buffer);
+  bool CopyToAsync(ScriptPromiseResolverTyped<IDLSequence<PlaneLayout>>*,
+                   scoped_refptr<media::VideoFrame> frame,
+                   gfx::Rect src_rect,
+                   const AllowSharedBufferSource* destination,
+                   const VideoFrameLayout& dest_layout);
 
   // ImageBitmapSource implementation
   static constexpr uint64_t kCpuEfficientFrameSize = 320u * 240u;
   gfx::Size BitmapSourceSize() const override;
   ScriptPromise CreateImageBitmap(ScriptState*,
-                                  absl::optional<gfx::Rect> crop_rect,
+                                  std::optional<gfx::Rect> crop_rect,
                                   const ImageBitmapOptions*,
                                   ExceptionState&) override;
 

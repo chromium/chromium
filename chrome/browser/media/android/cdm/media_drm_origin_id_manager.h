@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_MEDIA_ANDROID_CDM_MEDIA_DRM_ORIGIN_ID_MANAGER_H_
 
 #include <memory>
+#include <optional>
 
 #include "base/containers/queue.h"
 #include "base/functional/callback.h"
@@ -15,7 +16,6 @@
 #include "base/unguessable_token.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "media/base/media_drm_storage.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 class MediaDrmOriginIdManagerFactory;
 class PrefRegistrySimple;
@@ -106,7 +106,7 @@ class MediaDrmOriginIdManager : public KeyedService {
 
   // True if per-application provisioning is supported. If nullopt, then
   // support has not yet been determined.
-  absl::optional<bool> is_per_application_provisioning_supported_;
+  std::optional<bool> is_per_application_provisioning_supported_;
 
   // When testing don't call MediaDrm to provision the origin ID, just call
   // this CB and use the value returned to indicate if provisioning succeeded or

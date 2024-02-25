@@ -4,7 +4,7 @@
 
 package org.chromium.chrome.browser.download;
 
-import org.chromium.base.annotations.NativeMethods;
+import org.jni_zero.NativeMethods;
 
 /**
  * Handles initialization for the downloads system, i.e. creating in-progress download manager or
@@ -18,8 +18,8 @@ public class DownloadStartupUtils {
      */
     public static void ensureDownloadSystemInitialized(
             boolean isFullBrowserStarted, boolean isOffTheRecord) {
-        DownloadStartupUtilsJni.get().ensureDownloadSystemInitialized(
-                isFullBrowserStarted, isOffTheRecord);
+        DownloadStartupUtilsJni.get()
+                .ensureDownloadSystemInitialized(isFullBrowserStarted, isOffTheRecord);
     }
 
     @NativeMethods

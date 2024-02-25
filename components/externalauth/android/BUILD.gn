@@ -38,7 +38,6 @@ android_library("java") {
   sources = [
     "java/src/org/chromium/components/externalauth/ExternalAuthUtils.java",
     "java/src/org/chromium/components/externalauth/UserRecoverableErrorHandler.java",
-    "java/src/org/chromium/components/externalauth/VerifiedHandler.java",
   ]
 }
 

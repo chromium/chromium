@@ -26,9 +26,7 @@ import java.util.Set;
 
 import javax.inject.Inject;
 
-/**
- * Provides Trusted Web Activity specific behaviour for the {@link CurrentPageVerifier}.
- */
+/** Provides Trusted Web Activity specific behaviour for the {@link CurrentPageVerifier}. */
 @ActivityScope
 public class TwaVerifier implements Verifier, DestroyObserver {
     /** The Digital Asset Link relationship used for Trusted Web Activities. */
@@ -43,17 +41,16 @@ public class TwaVerifier implements Verifier, DestroyObserver {
      * This value will be {@code null} until {@link #getPendingOrigins} is called (you can just use
      * getPendingOrigins to get a ensured non-null value).
      */
-    @Nullable
-    private Set<Origin> mPendingOrigins;
+    @Nullable private Set<Origin> mPendingOrigins;
+
     private boolean mDestroyed;
 
-    /**
-     * All the origins that have been successfully verified.
-     */
+    /** All the origins that have been successfully verified. */
     private Set<Origin> mVerifiedOrigins = new HashSet<>();
 
     @Inject
-    public TwaVerifier(ActivityLifecycleDispatcher lifecycleDispatcher,
+    public TwaVerifier(
+            ActivityLifecycleDispatcher lifecycleDispatcher,
             BrowserServicesIntentDataProvider intentDataProvider,
             ChromeOriginVerifierFactory originVerifierFactory,
             CustomTabActivityTabProvider tabProvider,
@@ -64,8 +61,12 @@ public class TwaVerifier implements Verifier, DestroyObserver {
         // TODO(peconn): See if we can get rid of the dependency on Web Contents.
         WebContents webContents =
                 tabProvider.getTab() != null ? tabProvider.getTab().getWebContents() : null;
-        mOriginVerifier = originVerifierFactory.create(
-                clientPackageNameProvider.get(), RELATIONSHIP, webContents, externalAuthUtils);
+        mOriginVerifier =
+                originVerifierFactory.create(
+                        clientPackageNameProvider.get(),
+                        RELATIONSHIP,
+                        webContents,
+                        externalAuthUtils);
 
         lifecycleDispatcher.register(this);
     }
@@ -82,14 +83,16 @@ public class TwaVerifier implements Verifier, DestroyObserver {
 
         Promise<Boolean> promise = new Promise<>();
         if (getPendingOrigins().contains(origin)) {
-            mOriginVerifier.start((packageName, unused, verified, online) -> {
-                if (mDestroyed) return;
+            mOriginVerifier.start(
+                    (packageName, unused, verified, online) -> {
+                        if (mDestroyed) return;
 
-                getPendingOrigins().remove(origin);
-                if (verified) mVerifiedOrigins.add(origin);
+                        getPendingOrigins().remove(origin);
+                        if (verified) mVerifiedOrigins.add(origin);
 
-                promise.fulfill(verified);
-            }, origin);
+                        promise.fulfill(verified);
+                    },
+                    origin);
 
         } else {
             promise.fulfill(mOriginVerifier.wasPreviouslyVerified(origin));

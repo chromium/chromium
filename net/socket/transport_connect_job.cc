@@ -119,7 +119,7 @@ TransportConnectJob::TransportConnectJob(
     const scoped_refptr<TransportSocketParams>& params,
     Delegate* delegate,
     const NetLogWithSource* net_log,
-    absl::optional<EndpointResultOverride> endpoint_result_override)
+    std::optional<EndpointResultOverride> endpoint_result_override)
     : ConnectJob(priority,
                  socket_tag,
                  ConnectionTimeout(),
@@ -183,7 +183,7 @@ ResolveErrorInfo TransportConnectJob::GetResolveErrorInfo() const {
   return resolve_error_info_;
 }
 
-absl::optional<HostResolverEndpointResult>
+std::optional<HostResolverEndpointResult>
 TransportConnectJob::GetHostResolverEndpointResult() const {
   CHECK_LT(current_endpoint_result_, endpoint_results_.size());
   return endpoint_results_[current_endpoint_result_];
@@ -519,9 +519,7 @@ bool TransportConnectJob::IsSvcbOptional(
   }
 
   if (!common_connect_job_params()->ssl_client_context ||
-      !common_connect_job_params()
-           ->ssl_client_context->config()
-           .EncryptedClientHelloEnabled()) {
+      !common_connect_job_params()->ssl_client_context->config().ech_enabled) {
     return true;  // ECH is not supported for this request.
   }
 

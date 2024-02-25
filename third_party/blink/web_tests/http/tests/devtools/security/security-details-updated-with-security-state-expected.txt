@@ -105,7 +105,7 @@ https
 bar.test
 </SPAN>
 Origin view (https://foo.test) -----------------
-<DIV class=widget vbox security-origin-view slot=insertion-point-main >
+<DIV class=widget vbox security-origin-view jslog=Pane; context: security.origin-view slot=insertion-point-main >
     <DIV class=title-section >
         <DIV class=title-section-header role=heading aria-level=1 >
 Origin
@@ -126,7 +126,7 @@ foo.test
             </SPAN>
         </DIV>
         <DIV class=view-network-button >
-            <BUTTON class=text-button type=button role=link >
+            <BUTTON class=text-button jslog=Action; track: click; context: security.view-requests-in-network-panel type=button role=link >
 View requests in Network Panel
             </BUTTON>
         </DIV>
@@ -218,7 +218,7 @@ Super CA
                 <TD >
                 </TD>
                 <TD >
-                    <BUTTON class=origin-button text-button type=button role=button >
+                    <BUTTON class=origin-button text-button jslog=Action; track: click; context: security.view-certificate-for-origin type=button role=button >
 Open full certificate details
                     </BUTTON>
                 </TD>
@@ -227,7 +227,7 @@ Open full certificate details
     </DIV>
 </DIV>
 Origin view (https://ecdhe.foo.test) -----------
-<DIV class=widget vbox security-origin-view slot=insertion-point-main >
+<DIV class=widget vbox security-origin-view jslog=Pane; context: security.origin-view slot=insertion-point-main >
     <DIV class=title-section >
         <DIV class=title-section-header role=heading aria-level=1 >
 Origin
@@ -248,7 +248,7 @@ ecdhe.foo.test
             </SPAN>
         </DIV>
         <DIV class=view-network-button >
-            <BUTTON class=text-button type=button role=link >
+            <BUTTON class=text-button jslog=Action; track: click; context: security.view-requests-in-network-panel type=button role=link >
 View requests in Network Panel
             </BUTTON>
         </DIV>
@@ -345,7 +345,7 @@ Super CA
                 <TD >
                 </TD>
                 <TD >
-                    <BUTTON class=origin-button text-button type=button role=button >
+                    <BUTTON class=origin-button text-button jslog=Action; track: click; context: security.view-certificate-for-origin type=button role=button >
 Open full certificate details
                     </BUTTON>
                 </TD>
@@ -354,7 +354,7 @@ Open full certificate details
     </DIV>
 </DIV>
 Origin view (https://tls13.foo.test) -----------
-<DIV class=widget vbox security-origin-view slot=insertion-point-main >
+<DIV class=widget vbox security-origin-view jslog=Pane; context: security.origin-view slot=insertion-point-main >
     <DIV class=title-section >
         <DIV class=title-section-header role=heading aria-level=1 >
 Origin
@@ -375,7 +375,7 @@ tls13.foo.test
             </SPAN>
         </DIV>
         <DIV class=view-network-button >
-            <BUTTON class=text-button type=button role=link >
+            <BUTTON class=text-button jslog=Action; track: click; context: security.view-requests-in-network-panel type=button role=link >
 View requests in Network Panel
             </BUTTON>
         </DIV>
@@ -472,7 +472,7 @@ Super CA
                 <TD >
                 </TD>
                 <TD >
-                    <BUTTON class=origin-button text-button type=button role=button >
+                    <BUTTON class=origin-button text-button jslog=Action; track: click; context: security.view-certificate-for-origin type=button role=button >
 Open full certificate details
                     </BUTTON>
                 </TD>
@@ -481,7 +481,7 @@ Open full certificate details
     </DIV>
 </DIV>
 Origin view (https://ech.foo.test) -------------
-<DIV class=widget vbox security-origin-view slot=insertion-point-main >
+<DIV class=widget vbox security-origin-view jslog=Pane; context: security.origin-view slot=insertion-point-main >
     <DIV class=title-section >
         <DIV class=title-section-header role=heading aria-level=1 >
 Origin
@@ -502,7 +502,7 @@ ech.foo.test
             </SPAN>
         </DIV>
         <DIV class=view-network-button >
-            <BUTTON class=text-button type=button role=link >
+            <BUTTON class=text-button jslog=Action; track: click; context: security.view-requests-in-network-panel type=button role=link >
 View requests in Network Panel
             </BUTTON>
         </DIV>
@@ -607,7 +607,7 @@ Super CA
                 <TD >
                 </TD>
                 <TD >
-                    <BUTTON class=origin-button text-button type=button role=button >
+                    <BUTTON class=origin-button text-button jslog=Action; track: click; context: security.view-certificate-for-origin type=button role=button >
 Open full certificate details
                     </BUTTON>
                 </TD>

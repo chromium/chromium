@@ -9,8 +9,7 @@
         "port_name": "linux",
         "specifiers": ["Linux", "Debug"],
         "steps": {
-            "webdriver_tests_suite": {
-                "uses_wptrunner": true,
+            "webdriver_wpt_tests": {
                 "product": "chrome"
             }
         }
@@ -45,7 +44,7 @@
         "port_name": "win-win11",
         "specifiers": ["Win11", "Release"]
     },
-    "fuchsia-x64-rel": {
+    "fuchsia-x64-cast-receiver-rel": {
         "main": "tryserver.chromium.linux",
         "port_name": "fuchsia",
         "specifiers": ["Fuchsia", "Release"],
@@ -55,125 +54,6 @@
         },
         "is_try_builder": true,
         "is_cq_builder": true
-    },
-    "linux-wpt-fyi-rel": {
-        "main": "chromium.fyi",
-        "port_name": "linux",
-        "specifiers": ["Linux", "Release"],
-        "is_try_builder": true,
-        "steps": {
-            "wpt_tests_suite (with patch)": {
-                "uses_wptrunner": true,
-                "product": "chrome"
-            }
-        }
-    },
-    "linux-wpt-content-shell-fyi-rel": {
-        "main": "chromium.fyi",
-        "port_name": "linux",
-        "specifiers": ["Linux", "Release"],
-        "is_try_builder": true,
-        "steps": {
-            "wpt_tests_suite (with patch)": {
-                "uses_wptrunner": true
-            },
-            "wpt_tests_suite_highdpi (with patch)": {
-                "uses_wptrunner": true,
-                "flag_specific": "highdpi"
-            },
-            "wpt_tests_suite_not_site_per_process (with patch)": {
-                "uses_wptrunner": true,
-                "flag_specific": "disable-site-isolation-trials"
-            }
-        }
-    },
-    "mac10.15-wpt-content-shell-fyi-rel": {
-        "main": "chromium.fyi",
-        "port_name": "mac-mac10.15",
-        "specifiers": ["Mac10.15", "Release"],
-        "is_try_builder": true,
-        "steps": {
-            "wpt_tests_suite (with patch)": {
-                "uses_wptrunner": true
-            }
-        }
-    },
-    "mac11-wpt-content-shell-fyi-rel": {
-        "main": "chromium.fyi",
-        "port_name": "mac-mac11",
-        "specifiers": ["Mac11", "Release"],
-        "is_try_builder": true,
-        "steps": {
-            "wpt_tests_suite (with patch)": {
-                "uses_wptrunner": true
-            }
-        }
-    },
-    "mac12-wpt-content-shell-fyi-rel": {
-        "main": "chromium.fyi",
-        "port_name": "mac-mac12",
-        "specifiers": ["Mac12", "Release"],
-        "is_try_builder": true,
-        "steps": {
-            "wpt_tests_suite (with patch)": {
-                "uses_wptrunner": true
-            }
-        }
-    },
-    "mac12-arm64-wpt-content-shell-fyi-rel": {
-        "main": "chromium.fyi",
-        "port_name": "mac-mac12-arm64",
-        "specifiers": ["Mac12-arm64", "Release"],
-        "is_try_builder": true,
-        "steps": {
-            "wpt_tests_suite (with patch)": {
-                "uses_wptrunner": true
-            }
-        }
-    },
-    "mac13-wpt-content-shell-fyi-rel": {
-        "main": "chromium.fyi",
-        "port_name": "mac-mac13",
-        "specifiers": ["Mac13", "Release"],
-        "is_try_builder": true,
-        "steps": {
-            "wpt_tests_suite (with patch)": {
-                "uses_wptrunner": true
-            }
-        }
-    },
-    "mac13-arm64-wpt-content-shell-fyi-rel": {
-        "main": "chromium.fyi",
-        "port_name": "mac-mac13-arm64",
-        "specifiers": ["Mac13-arm64", "Release"],
-        "is_try_builder": true,
-        "steps": {
-            "wpt_tests_suite (with patch)": {
-                "uses_wptrunner": true
-            }
-        }
-    },
-    "win10-wpt-content-shell-fyi-rel": {
-        "main": "chromium.fyi",
-        "port_name": "win-win10.20h2",
-        "specifiers": ["Win10.20h2", "Release"],
-        "is_try_builder": true,
-        "steps": {
-            "wpt_tests_suite (with patch)": {
-                "uses_wptrunner": true
-            }
-        }
-    },
-    "win11-wpt-content-shell-fyi-rel": {
-        "main": "chromium.fyi",
-        "port_name": "win-win11",
-        "specifiers": ["Win11", "Release"],
-        "is_try_builder": true,
-        "steps": {
-            "wpt_tests_suite (with patch)": {
-                "uses_wptrunner": true
-            }
-        }
     },
     "linux-blink-rel": {
         "main": "tryserver.blink",
@@ -197,8 +77,7 @@
             "not_site_per_process_blink_wpt_tests (with patch)": {
                 "flag_specific": "disable-site-isolation-trials"
             },
-            "webdriver_tests_suite (with patch)": {
-                "uses_wptrunner": true,
+            "webdriver_wpt_tests (with patch)": {
                 "product": "chrome"
             }
         },
@@ -274,10 +153,37 @@
         },
         "is_try_builder": true
     },
+    "mac13.arm64-skia-alt-blink-rel": {
+        "main": "tryserver.blink",
+        "port_name": "mac-mac13-arm64",
+        "specifiers": ["Mac13-arm64", "Release"],
+        "steps": {
+            "graphite_enabled_blink_web_tests (with patch)": {
+                "flag_specific": "enable-skia-graphite"
+            },
+            "graphite_enabled_blink_wpt_tests (with patch)": {
+                "flag_specific": "enable-skia-graphite"
+            }
+        },
+        "is_try_builder": true
+    },
     "win10.20h2-blink-rel": {
         "main": "tryserver.blink",
         "port_name": "win-win10.20h2",
         "specifiers": ["Win10.20h2", "Release"],
+        "steps": {
+            "blink_web_tests (with patch)": {},
+            "blink_wpt_tests (with patch)": {}
+        },
+        "is_try_builder": true
+    },
+    "win11-arm64-blink-rel": {
+        "main": "tryserver.blink",
+        "port_name": "win-win11-arm64",
+        "specifiers": [
+            "Win11-arm64",
+            "Release"
+        ],
         "steps": {
             "blink_web_tests (with patch)": {},
             "blink_wpt_tests (with patch)": {}
@@ -322,8 +228,8 @@
     },
     "mac-rel": {
         "main": "tryserver.chromium.mac",
-        "port_name": "mac-mac12",
-        "specifiers": ["Mac12", "Release"],
+        "port_name": "mac-mac13",
+        "specifiers": ["Mac13", "Release"],
         "steps": {
             "blink_web_tests (with patch)": {},
             "blink_wpt_tests (with patch)": {}

@@ -8,7 +8,7 @@
 
 #include "base/values.h"
 #include "chrome/browser/ash/login/oobe_screen.h"
-#include "chrome/grit/chromium_strings.h"
+#include "chrome/grit/branded_strings.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/login/localized_values_builder.h"
 #include "components/strings/grit/components_strings.h"
@@ -146,6 +146,10 @@ bool ResetScreenHandler::GetIsTpmFirmwareUpdateChecked() {
 
 void ResetScreenHandler::HandleSetTpmFirmwareUpdateChecked(bool value) {
   is_tpm_firmware_update_checked_ = value;
+}
+
+base::WeakPtr<ResetView> ResetScreenHandler::AsWeakPtr() {
+  return weak_ptr_factory_.GetWeakPtr();
 }
 
 }  // namespace ash

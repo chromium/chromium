@@ -24,6 +24,7 @@
 #import "ios/chrome/browser/ui/overscroll_actions/overscroll_actions_view.h"
 #import "ios/chrome/browser/ui/side_swipe/side_swipe_mediator.h"
 #import "ios/chrome/browser/ui/voice/voice_search_notification_names.h"
+#import "ios/chrome/common/material_timing.h"
 #import "ios/public/provider/chrome/browser/fullscreen/fullscreen_api.h"
 #import "ios/web/common/features.h"
 #import "ios/web/public/ui/crw_web_view_proxy.h"
@@ -69,8 +70,8 @@ constexpr base::TimeDelta kMinimumPullDurationToTriggerAction =
 // Since the bounce effect of the scrollview is cancelled by setting the
 // contentInsets to the value of the overscroll contentOffset, the bounce
 // bounce back have to be emulated manually using a spring simulation.
-const CGFloat kSpringTightness = 2;
-const CGFloat kSpringDampiness = 0.5;
+const CGFloat kSpringTightness = 4;
+const CGFloat kSpringDampiness = 0.35;
 
 // Investigation into crbug.com/1102494 shows that the most likely issue is
 // that there are many many instances of OverscrollActionsController live at
@@ -80,7 +81,6 @@ static int gInstanceCount = 0;
 // This holds the current state of the bounce back animation.
 typedef struct {
   CGFloat yInset;
-  CGFloat initialYInset;
   CGFloat headerInset;
   CGFloat velocityInset;
   CGFloat initialTopMargin;
@@ -761,12 +761,18 @@ UIEdgeInsets TopContentInset(UIScrollView* scrollView, CGFloat topInset) {
       if ((base::TimeTicks::Now() - _lastScrollBeginTime) >=
           kMinimumPullDurationToTriggerAction) {
         _performingScrollViewIndependentAnimation = YES;
-        [self setScrollViewContentInset:TopContentInset(
-                                            self.scrollView,
-                                            self.initialContentInset)];
-        CGPoint contentOffset = [[self scrollView] contentOffset];
-        contentOffset.y = -self.initialContentInset;
-        [[self scrollView] setContentOffset:contentOffset animated:YES];
+        __weak __typeof(self) weakSelf = self;
+        [UIView animateWithDuration:kMaterialDuration1
+                         animations:^{
+                           [weakSelf setScrollViewContentInset:
+                                         TopContentInset(
+                                             weakSelf.scrollView,
+                                             weakSelf.initialContentInset)];
+                           CGPoint contentOffset =
+                               weakSelf.scrollView.contentOffset;
+                           contentOffset.y = -self.initialContentInset;
+                           self.scrollView.contentOffset = contentOffset;
+                         }];
         [self.overscrollActionView displayActionAnimation];
         dispatch_async(dispatch_get_main_queue(), ^{
           [self recordMetricForTriggeredAction:selectedAction];
@@ -949,14 +955,14 @@ UIEdgeInsets TopContentInset(UIScrollView* scrollView, CGFloat topInset) {
         self.scrollView, -distanceScrolled + self.initialContentInset);
     [self setScrollViewContentInset:insets];
   }
-  _bounceState.yInset = [self scrollView].contentInset.top;
-  _bounceState.initialYInset = _bounceState.yInset;
-  _bounceState.initialTopMargin = self.overscrollActionView.frame.origin.y;
   _bounceState.headerInset = self.initialContentInset;
+  _bounceState.yInset =
+      [self scrollView].contentInset.top - _bounceState.headerInset;
+  _bounceState.initialTopMargin = self.overscrollActionView.frame.origin.y;
   _bounceState.time = CACurrentMediaTime();
   _bounceState.velocityInset = -velocity.y * 1000.0;
 
-  if (fabs(_bounceState.yInset - _bounceState.headerInset) < 0.5) {
+  if (fabs(_bounceState.yInset) < 0.5) {
     // If no bounce is required, then clear state, as the necessary
     // `-scrollViewDidScroll` callback will not be triggered to reset
     // `overscrollState` to NO_PULL_STARTED.
@@ -980,26 +986,28 @@ UIEdgeInsets TopContentInset(UIScrollView* scrollView, CGFloat topInset) {
   const double time = CACurrentMediaTime();
   const double dt = time - _bounceState.time;
   CGFloat force = -_bounceState.yInset * kSpringTightness;
-  if (_bounceState.yInset > _bounceState.headerInset)
+  if (_bounceState.yInset > 0) {
     force -= _bounceState.velocityInset * kSpringDampiness;
+  }
   _bounceState.velocityInset += force;
   _bounceState.yInset += _bounceState.velocityInset * dt;
   _bounceState.time = time;
   [self applyBounceState];
-  if (fabs(_bounceState.yInset - _bounceState.headerInset) < 0.5)
+  if (fabs(_bounceState.yInset) < 0.5) {
     [self stopBounce];
+  }
 }
 
 - (void)applyBounceState {
-  if (_bounceState.yInset - _bounceState.headerInset < 0.5)
-    _bounceState.yInset = _bounceState.headerInset;
+  if (_bounceState.yInset < 0.5) {
+    _bounceState.yInset = 0;
+  }
   if (_performingScrollViewIndependentAnimation) {
-    [self
-        updateWithVerticalOffset:_bounceState.yInset - _bounceState.headerInset
-                       topMargin:_bounceState.initialTopMargin];
+    [self updateWithVerticalOffset:_bounceState.yInset
+                         topMargin:_bounceState.initialTopMargin];
   } else {
-    const UIEdgeInsets insets =
-        TopContentInset(self.scrollView, _bounceState.yInset);
+    const UIEdgeInsets insets = TopContentInset(
+        self.scrollView, _bounceState.yInset + _bounceState.headerInset);
     _forceStateUpdate = YES;
     [self setScrollViewContentInset:insets];
     _forceStateUpdate = NO;

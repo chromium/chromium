@@ -14,8 +14,8 @@
 
 #include "base/check_is_test.h"
 #include "base/containers/flat_map.h"
+#include "base/moving_window.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
-#include "ui/base/moving_max.h"
 #include "ui/gfx/color_space_win.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gl/dc_layer_overlay_params.h"
@@ -48,6 +48,11 @@ struct VideoProcessorWrapper {
   gfx::Size video_input_size;
   gfx::Size video_output_size;
 
+  bool GetDriverSupportsVpAutoHdr() { return driver_supports_vp_auto_hdr; }
+  void SetDriverSupportsVpAutoHdr(bool value) {
+    driver_supports_vp_auto_hdr = value;
+  }
+
   // The video processor is cached so SwapChains don't have to recreate it
   // whenever they're created.
   Microsoft::WRL::ComPtr<ID3D11VideoDevice> video_device;
@@ -55,6 +60,10 @@ struct VideoProcessorWrapper {
   Microsoft::WRL::ComPtr<ID3D11VideoProcessor> video_processor;
   Microsoft::WRL::ComPtr<ID3D11VideoProcessorEnumerator>
       video_processor_enumerator;
+
+ private:
+  // Whether the GPU driver supports video processor auto HDR.
+  bool driver_supports_vp_auto_hdr = false;
 };
 
 class SolidColorSurface;
@@ -145,8 +154,10 @@ class GL_EXPORT DCLayerTree {
   // at least given input and output size.  The video processor is shared across
   // layers so the same one can be reused if it's large enough.  Returns true on
   // success.
-  VideoProcessorWrapper* InitializeVideoProcessor(const gfx::Size& input_size,
-                                                  const gfx::Size& output_size);
+  VideoProcessorWrapper* InitializeVideoProcessor(
+      const gfx::Size& input_size,
+      const gfx::Size& output_size,
+      bool& video_processor_recreated);
 
   bool disable_nv12_dynamic_textures() const {
     return disable_nv12_dynamic_textures_;
@@ -222,6 +233,11 @@ class GL_EXPORT DCLayerTree {
   DelegatedInkRenderer* GetInkRendererForTesting() const {
     CHECK_IS_TEST();
     return ink_renderer_.get();
+  }
+
+  bool HasPendingOverlaysForTesting() const {
+    CHECK_IS_TEST();
+    return pending_overlays_.size() > 0;
   }
 
   // Owns a list of |VisualSubtree|s that represent visual layers.
@@ -309,7 +325,7 @@ class GL_EXPORT DCLayerTree {
           const gfx::Transform& quad_to_root_transform,
           const gfx::RRectF& rounded_corner_bounds,
           float opacity,
-          const absl::optional<gfx::Rect>& clip_rect_in_root);
+          const std::optional<gfx::Rect>& clip_rect_in_root);
 
       IDCompositionVisual2* container_visual() const {
         return clip_visual_.Get();
@@ -399,7 +415,7 @@ class GL_EXPORT DCLayerTree {
       gfx::Transform quad_to_root_transform_;
 
       // Clip rect in root space.
-      absl::optional<gfx::Rect> clip_rect_in_root_;
+      std::optional<gfx::Rect> clip_rect_in_root_;
 
       // Rounded corner clip in root space
       gfx::RRectF rounded_corner_bounds_;
@@ -437,8 +453,8 @@ class GL_EXPORT DCLayerTree {
     VisualSubtreeMap BuildMapAndAssignMatchingSubtrees(
         const std::vector<std::unique_ptr<DCLayerOverlayParams>>& overlays,
         std::vector<std::unique_ptr<VisualSubtree>>& visual_subtrees,
-        std::vector<absl::optional<size_t>>& overlay_index_to_reused_subtree,
-        std::vector<absl::optional<size_t>>& subtree_index_to_overlay);
+        std::vector<std::optional<size_t>>& overlay_index_to_reused_subtree,
+        std::vector<std::optional<size_t>>& subtree_index_to_overlay);
 
     // This function is called as part of |BuildTreeOptimized|.
     // For each overlay that has no match attempts to find unused subtree of
@@ -451,8 +467,8 @@ class GL_EXPORT DCLayerTree {
     // Returns previous frame subtree first unused index.
     size_t ReuseUnmatchedSubtrees(
         std::vector<std::unique_ptr<VisualSubtree>>& new_visual_subtrees,
-        std::vector<absl::optional<size_t>>& overlay_index_to_reused_subtree,
-        std::vector<absl::optional<size_t>>& subtree_index_to_overlay);
+        std::vector<std::optional<size_t>>& overlay_index_to_reused_subtree,
+        std::vector<std::optional<size_t>>& subtree_index_to_overlay);
 
     // This function is called as part of |BuildTreeOptimized|.
     // Detaches unused subtrees of the previous frame from root starting with
@@ -471,9 +487,9 @@ class GL_EXPORT DCLayerTree {
     // Returns true if commit is needed.
     bool DetachReusedSubtreesThatNeedRepositioningFromRoot(
         const std::vector<std::unique_ptr<VisualSubtree>>& new_visual_subtrees,
-        const std::vector<absl::optional<size_t>>&
+        const std::vector<std::optional<size_t>>&
             overlay_index_to_reused_subtree,
-        const std::vector<absl::optional<size_t>>& subtree_index_to_overlay,
+        const std::vector<std::optional<size_t>>& subtree_index_to_overlay,
         std::vector<bool>& prev_subtree_is_attached_to_root);
 
     // Detaches given subtree from the root.
@@ -525,13 +541,14 @@ class GL_EXPORT DCLayerTree {
   // Store the largest video processor to avoid problems in
   // (http://crbug.com/1121061) and (http://crbug.com/1472975).
   VideoProcessorWrapper video_processor_wrapper_;
+
   // To reduce resource usage, we keep track of the largest input/output
   // dimensions for several last VideoProcessor usages. All 4 dimensions must be
   // tracked separately.
-  ui::MovingMax max_video_processor_input_height_;
-  ui::MovingMax max_video_processor_input_width_;
-  ui::MovingMax max_video_processor_output_height_;
-  ui::MovingMax max_video_processor_output_width_;
+  base::MovingMax<int> max_video_processor_input_height_;
+  base::MovingMax<int> max_video_processor_input_width_;
+  base::MovingMax<int> max_video_processor_output_height_;
+  base::MovingMax<int> max_video_processor_output_width_;
 
   // Current video processor input and output colorspace.
   gfx::ColorSpace video_input_color_space_;

@@ -29,7 +29,6 @@ android_library("bindings_java") {
     "bindings/src/org/chromium/mojo/bindings/AssociatedInterfaceRequestNotSupported.java",
     "bindings/src/org/chromium/mojo/bindings/AutoCloseableRouter.java",
     "bindings/src/org/chromium/mojo/bindings/BindingsHelper.java",
-    "bindings/src/org/chromium/mojo/bindings/Callbacks.java",
     "bindings/src/org/chromium/mojo/bindings/ConnectionErrorHandler.java",
     "bindings/src/org/chromium/mojo/bindings/Connector.java",
     "bindings/src/org/chromium/mojo/bindings/DataHeader.java",

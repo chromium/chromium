@@ -7,6 +7,7 @@
 #include <map>
 #include <memory>
 #include <string>
+#include <string_view>
 
 #include "base/containers/contains.h"
 #include "base/memory/ref_counted_memory.h"
@@ -51,22 +52,19 @@ constexpr char kIsGooglePhotosKey[] = "isGooglePhotos";
 constexpr char kStaticEncodeKey[] = "staticEncode";
 constexpr char kUrlKey[] = "url";
 
-std::map<std::string, std::string> ParseParams(
-    const std::string& param_string) {
+std::map<std::string, std::string> ParseParams(std::string_view param_string) {
   url::Component query(0, param_string.size());
   url::Component key;
   url::Component value;
   constexpr int kMaxUriDecodeLen = 2048;
   std::map<std::string, std::string> params;
-  while (
-      url::ExtractQueryKeyValue(param_string.c_str(), &query, &key, &value)) {
+  while (url::ExtractQueryKeyValue(param_string, &query, &key, &value)) {
     url::RawCanonOutputW<kMaxUriDecodeLen> output;
-    url::DecodeURLEscapeSequences(param_string.c_str() + value.begin, value.len,
+    url::DecodeURLEscapeSequences(param_string.substr(value.begin, value.len),
                                   url::DecodeURLMode::kUTF8OrIsomorphic,
                                   &output);
-    params.insert({param_string.substr(key.begin, key.len),
-                   base::UTF16ToUTF8(
-                       base::StringPiece16(output.data(), output.length()))});
+    params.insert({std::string(param_string.substr(key.begin, key.len)),
+                   base::UTF16ToUTF8(output.view())});
   }
   return params;
 }
@@ -138,7 +136,7 @@ void SanitizedImageSource::StartDataRequest(
   std::string image_url_or_params = url.query();
   if (url != GURL(base::StrCat(
                  {chrome::kChromeUIImageURL, "?", image_url_or_params}))) {
-    std::move(callback).Run(base::MakeRefCounted<base::RefCountedString>());
+    std::move(callback).Run(nullptr);
     return;
   }
 
@@ -151,7 +149,7 @@ void SanitizedImageSource::StartDataRequest(
 
     auto url_it = params.find(kUrlKey);
     if (url_it == params.end()) {
-      std::move(callback).Run(base::MakeRefCounted<base::RefCountedString>());
+      std::move(callback).Run(nullptr);
       return;
     }
     image_url = GURL(url_it->second);
@@ -175,6 +173,13 @@ void SanitizedImageSource::StartDataRequest(
       send_auth_token = true;
     }
   }
+
+  if (image_url.SchemeIs(url::kHttpScheme)) {
+    // Disallow any HTTP requests, treat them as a failure instead.
+    std::move(callback).Run(nullptr);
+    return;
+  }
+
   request_attributes.image_url = image_url;
 
   // Download the image body.
@@ -284,7 +289,7 @@ void SanitizedImageSource::OnImageLoaded(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   if (loader->NetError() != net::OK || !body) {
-    std::move(callback).Run(base::MakeRefCounted<base::RefCountedString>());
+    std::move(callback).Run(nullptr);
     return;
   }
 
@@ -311,7 +316,7 @@ void SanitizedImageSource::OnAnimationDecoded(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   if (!mojo_frames.size()) {
-    std::move(callback).Run(base::MakeRefCounted<base::RefCountedString>());
+    std::move(callback).Run(nullptr);
     return;
   }
 

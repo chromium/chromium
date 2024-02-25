@@ -1,0 +1,19 @@
+# Copyright 2023 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("../build_webui_tests.gni")
+
+build_webui_tests("build") {
+  files = [ "histograms_internals_test.ts" ]
+
+  ts_deps = [
+    "//content/browser/resources/histograms:build_ts",
+    "//ui/webui/resources/js:build_ts",
+  ]
+
+  ts_path_mappings =
+      [ "chrome://histograms/*|" +
+        rebase_path("$root_gen_dir/content/browser/resources/histograms/tsc/*",
+                    target_gen_dir) ]
+}

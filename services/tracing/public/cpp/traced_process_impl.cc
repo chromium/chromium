@@ -128,7 +128,7 @@ void TracedProcessImpl::ConnectToTracingService(
 
 void TracedProcessImpl::GetCategories(std::set<std::string>* category_set) {
   base::AutoLock lock(agents_lock_);
-  for (auto* agent : agents_) {
+  for (BaseAgent* agent : agents_) {
     agent->GetCategories(category_set);
   }
 }

@@ -5,13 +5,13 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_PAYMENTS_TEST_CHROME_PAYMENT_REQUEST_DELEGATE_H_
 #define CHROME_BROWSER_UI_VIEWS_PAYMENTS_TEST_CHROME_PAYMENT_REQUEST_DELEGATE_H_
 
+#include <optional>
 #include <string>
 
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/payments/chrome_payment_request_delegate.h"
 #include "chrome/browser/ui/views/payments/payment_request_dialog_view.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 class PrefService;
 
@@ -92,9 +92,9 @@ class TestChromePaymentRequestDelegate : public ChromePaymentRequestDelegate {
 
   bool has_authenticator_ = true;
 
-  absl::optional<bool> is_off_the_record_;
-  absl::optional<bool> is_valid_ssl_;
-  absl::optional<bool> is_browser_window_active_;
+  std::optional<bool> is_off_the_record_;
+  std::optional<bool> is_valid_ssl_;
+  std::optional<bool> is_browser_window_active_;
 };
 
 }  // namespace payments

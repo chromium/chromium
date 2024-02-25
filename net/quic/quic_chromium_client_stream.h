@@ -102,6 +102,10 @@ class NET_EXPORT_PRIVATE QuicChromiumClientStream
                          bool fin,
                          CompletionOnceCallback callback);
 
+    // Writes |packet| to server by constructing a UDP payload from
+    // packet and sending the datagram on the stream.
+    int WriteConnectUdpPayload(absl::string_view packet);
+
     // Reads at most |buf_len| bytes into |buf|. Returns the number of bytes
     // read.
     int Read(IOBuffer* buf, int buf_len);
@@ -261,7 +265,7 @@ class NET_EXPORT_PRIVATE QuicChromiumClientStream
   // Writes |data| to the peer and closes the write side if |fin| is true.
   // Returns true if the data have been fully written. If the data was not fully
   // written, returns false and OnCanWrite() will be invoked later.
-  bool WriteStreamData(absl::string_view data, bool fin);
+  bool WriteStreamData(std::string_view data, bool fin);
   // Same as WriteStreamData except it writes data from a vector of IOBuffers,
   // with the length of each buffer at the corresponding index in |lengths|.
   bool WritevStreamData(const std::vector<scoped_refptr<IOBuffer>>& buffers,

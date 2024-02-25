@@ -1,0 +1,13 @@
+// Copyright 2023 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+// https://wicg.github.io/navigation-api/
+[
+  Exposed=Window,
+  RuntimeEnabled=NavigationActivation
+] interface NavigationActivation {
+  readonly attribute NavigationHistoryEntry? entry;
+  readonly attribute NavigationHistoryEntry? from;
+  readonly attribute NavigationType navigationType;
+};

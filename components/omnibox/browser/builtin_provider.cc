@@ -6,7 +6,6 @@
 
 #include <stddef.h>
 
-#include <algorithm>
 #include <string>
 
 #include "base/strings/strcat.h"
@@ -16,19 +15,12 @@
 #include "components/omnibox/browser/autocomplete_match.h"
 #include "components/omnibox/browser/autocomplete_match_classification.h"
 #include "components/omnibox/browser/autocomplete_provider_client.h"
-#include "components/omnibox/browser/history_provider.h"
-#include "components/omnibox/browser/omnibox_field_trial.h"
-#include "components/search_engines/template_url_data.h"
-#include "components/search_engines/template_url_service.h"
-#include "components/search_engines/template_url_starter_pack_data.h"
 #include "components/url_formatter/url_fixer.h"
 #include "third_party/metrics_proto/omnibox_focus_type.pb.h"
 #include "third_party/metrics_proto/omnibox_input_type.pb.h"
-#include "ui/base/page_transition_types.h"
 #include "url/url_constants.h"
 
 const int BuiltinProvider::kRelevance = 860;
-const int BuiltinProvider::kStarterPackRelevance = 1350;
 
 BuiltinProvider::BuiltinProvider(AutocompleteProviderClient* client)
     : AutocompleteProvider(AutocompleteProvider::TYPE_BUILTIN),
@@ -40,43 +32,18 @@ BuiltinProvider::BuiltinProvider(AutocompleteProviderClient* client)
 void BuiltinProvider::Start(const AutocompleteInput& input,
                             bool minimal_changes) {
   matches_.clear();
-  if (input.focus_type() != metrics::OmniboxFocusType::INTERACTION_DEFAULT ||
+  if (input.IsZeroSuggest() ||
       (input.type() == metrics::OmniboxInputType::EMPTY)) {
     return;
   }
 
-  const std::u16string text = input.text();
-  DoStarterPackAutocompletion(text);
-
   if (input.type() != metrics::OmniboxInputType::QUERY) {
-    DoBuiltinAutocompletion(text);
+    DoBuiltinAutocompletion(input.text());
+    UpdateRelevanceScores(input);
   }
-
-  UpdateRelevanceScores(input);
 }
 
 BuiltinProvider::~BuiltinProvider() = default;
-
-void BuiltinProvider::DoStarterPackAutocompletion(const std::u16string& text) {
-  // Custom search engines is not enabled on mobile.
-#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
-  // When the user's input begins with '@', we want to prioritize providing
-  // suggestions for all active starter pack search engines.
-  bool starts_with_starter_pack_symbol =
-      base::StartsWith(text, u"@", base::CompareCase::INSENSITIVE_ASCII);
-
-  if (starts_with_starter_pack_symbol) {
-    TemplateURLService::TemplateURLVector matches;
-    template_url_service_->AddMatchingKeywords(text, false, &matches);
-    for (auto* match : matches) {
-      if (match->starter_pack_id() > 0 &&
-          match->is_active() == TemplateURLData::ActiveStatus::kTrue) {
-        AddStarterPackMatch(*match);
-      }
-    }
-  }
-#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
-}
 
 void BuiltinProvider::DoBuiltinAutocompletion(const std::u16string& text) {
   const size_t kAboutSchemeLength = strlen(url::kAboutScheme);
@@ -198,36 +165,6 @@ void BuiltinProvider::AddBuiltinMatch(const std::u16string& match_string,
   match.destination_url = GURL(match_string);
   match.contents = match_string;
   match.contents_class = styles;
-  matches_.push_back(match);
-}
-
-void BuiltinProvider::AddStarterPackMatch(const TemplateURL& template_url) {
-  // The history starter pack engine is disabled in incognito mode.
-  if (client_->IsOffTheRecord() &&
-      template_url.starter_pack_id() == TemplateURLStarterPackData::kHistory) {
-    return;
-  }
-
-  // The starter pack relevance score is currently ranked above
-  // search-what-you-typed suggestion to avoid the keyword mode chip attaching
-  // to the search suggestion instead of these Builtin suggestions.
-  // TODO(yoangela): This should be updated so the keyword chip only attaches to
-  //  STARTER_PACK type suggestions rather than rely on out-scoring all other
-  //  suggestions.
-  AutocompleteMatch match(this, kStarterPackRelevance, false,
-                          AutocompleteMatchType::STARTER_PACK);
-
-  const std::u16string destination_url =
-      TemplateURLStarterPackData::GetDestinationUrlForStarterPackID(
-          template_url.starter_pack_id());
-  match.fill_into_edit = template_url.keyword();
-  match.destination_url = GURL(destination_url);
-  match.contents = destination_url;
-  match.contents_class.emplace_back(0, ACMatchClassification::URL);
-  match.description = template_url.short_name();
-  match.description_class.emplace_back(0, ACMatchClassification::NONE);
-  match.transition = ui::PAGE_TRANSITION_GENERATED;
-  match.allowed_to_be_default_match = true;
   matches_.push_back(match);
 }
 

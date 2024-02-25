@@ -10,16 +10,17 @@ import org.chromium.content.browser.HostZoomMapImpl;
 
 import java.util.Map;
 
-/**
- * Implementations of various static methods related to page zoom.
- */
+/** Implementations of various static methods related to page zoom. */
 public class HostZoomMap {
     // Preset zoom factors that the +/- buttons can "snap" the zoom level to if user chooses to
     // not use the slider. These zoom factors correspond to the zoom levels that are used on
     // desktop, i.e. {0.50, 0.67, ... 3.00}, excluding the smallest/largest two, since they are
     // of little value on a mobile device.
-    public static final double[] AVAILABLE_ZOOM_FACTORS = new double[] {-3.80, -2.20, -1.58, -1.22,
-            -0.58, 0.00, 0.52, 1.22, 1.56, 2.22, 3.07, 3.80, 5.03, 6.03};
+    public static final double[] AVAILABLE_ZOOM_FACTORS =
+            new double[] {
+                -3.80, -2.20, -1.58, -1.22, -0.58, 0.00, 0.52, 1.22, 1.56, 2.22, 3.07, 3.80, 5.03,
+                6.03
+            };
 
     // The value of the base for zoom factor, should match |kTextSizeMultiplierRatio|.
     public static final float TEXT_SIZE_MULTIPLIER_RATIO = 1.2f;
@@ -43,22 +44,19 @@ public class HostZoomMap {
         assert !webContents.isDestroyed();
 
         // Just before sending the zoom level to the backend, we will take into account the system
-        // level setting and the desktop site zoom scale. We only do this here and not when applying
-        // the default values chosen in the settings flow so that if the user changes their OS-level
-        // setting or Request Desktop Site setting, the Chrome setting will continue to display the
-        // same value, but adjust accordingly. For example, if the user chooses 150% zoom in
-        // settings with font set to XL and navigates to a desktop site that requires 110% zoom,
-        // then really that choice is 195% * 1.1 = 214.5%. If the user then switches to default
-        // |fontScale| or switches to a mobile site, we would still want the value to be 150% shown
-        // to the user, and not the 214.5%.
-        HostZoomMapImpl.setZoomLevel(webContents, newZoomLevel,
-                HostZoomMapImpl.adjustZoomLevel(newZoomLevel, sSystemFontScale,
-                        HostZoomMapImpl.getDesktopSiteZoomScale(webContents)));
+        // level setting. We only do this here and not when applying the default values chosen in
+        // the settings flow so that if the user changes their OS-level setting, the Chrome setting
+        // will continue to display the same value, but adjust accordingly. For example, if the user
+        // chooses 150% zoom in settings with font set to XL, then really that choice is 195%. If
+        // the user then switches to default |fontScale|, we would still want the value to be 150%
+        // shown to the user, and not the 195%.
+        HostZoomMapImpl.setZoomLevel(
+                webContents,
+                newZoomLevel,
+                HostZoomMapImpl.adjustZoomLevel(newZoomLevel, sSystemFontScale));
     }
 
-    /**
-     * Get the current system font scale
-     */
+    /** Get the current system font scale */
     public static float getSystemFontScale() {
         return sSystemFontScale;
     }
@@ -80,12 +78,10 @@ public class HostZoomMap {
         assert !webContents.isDestroyed();
 
         // Just before returning a zoom level from the backend, we must again take into account the
-        // system level setting and the desktop site zoom scale. Here we need to do the reverse
-        // operation of the above, effectively divide rather than multiply, so we will pass the
-        // reciprocal of |sSystemFontScale| and |DESKTOP_SITE_ZOOM_SCALE| respectively.
-        return HostZoomMapImpl.adjustZoomLevel(HostZoomMapImpl.getZoomLevel(webContents),
-                (float) 1 / sSystemFontScale,
-                (float) 1 / HostZoomMapImpl.getDesktopSiteZoomScale(webContents));
+        // system level setting. Here we need to do the reverse operation of the above, effectively
+        // divide rather than multiply, so we will pass the reciprocal of |sSystemFontScale|.
+        return HostZoomMapImpl.adjustZoomLevel(
+                HostZoomMapImpl.getZoomLevel(webContents), (float) 1 / sSystemFontScale);
     }
 
     /**
@@ -118,6 +114,15 @@ public class HostZoomMap {
     public static void setDefaultZoomLevel(
             BrowserContextHandle context, double newDefaultZoomLevel) {
         HostZoomMapImpl.setDefaultZoomLevel(context, newDefaultZoomLevel);
+    }
+
+    /**
+     * Returns true when the field trial param to adjust zoom for OS-level font setting is
+     * true, false otherwise.
+     * @return bool True if zoom should be adjusted.
+     */
+    public static boolean shouldAdjustForOSLevel() {
+        return HostZoomMapImpl.shouldAdjustForOSLevel();
     }
 
     /**

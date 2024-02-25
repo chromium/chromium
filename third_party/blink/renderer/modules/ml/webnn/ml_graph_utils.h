@@ -8,8 +8,12 @@
 #include <utility>
 #include <vector>
 
+#include "base/types/expected.h"
 #include "components/ml/webnn/graph_validation_utils.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_auto_pad.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_ml_conv_2d_filter_operand_layout.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_ml_conv_transpose_2d_options.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_ml_input_operand_layout.h"
 #include "third_party/blink/renderer/core/typed_arrays/array_buffer/array_buffer_contents.h"
 #include "third_party/blink/renderer/core/typed_arrays/dom_array_buffer_view.h"
 #include "third_party/blink/renderer/modules/ml/webnn/ml_graph.h"
@@ -67,15 +71,26 @@ struct ArrayBufferViewInfo {
 //
 // TODO(crbug.com/1273291): Revisit the error handling once the WebNN spec issue
 // is resolved: https://github.com/webmachinelearning/webnn/issues/351
-std::unique_ptr<Vector<std::pair<String, ArrayBufferViewInfo>>>
+MODULES_EXPORT std::unique_ptr<Vector<std::pair<String, ArrayBufferViewInfo>>>
 TransferNamedArrayBufferViews(v8::Isolate* isolate,
                               const MLNamedArrayBufferViews& source_views,
                               ExceptionState& exception_state);
 
-MLNamedArrayBufferViews* CreateNamedArrayBufferViews(
+MODULES_EXPORT MLNamedArrayBufferViews* CreateNamedArrayBufferViews(
     std::unique_ptr<Vector<std::pair<String, ArrayBufferViewInfo>>> views_info);
 
 webnn::AutoPad BlinkAutoPadToComponent(blink::V8MLAutoPad::Enum type);
+
+// Create a default permutation vector [rank - 1, ..., 0].
+Vector<uint32_t> CreateDefaultPermutation(const wtf_size_t rank);
+
+// Create a axes vector [0, ..., rank - 1].
+Vector<uint32_t> CreateAllAxes(const wtf_size_t rank);
+
+// Create a default axes vector [1, ... , rank - 1] when rank > 1 and an empty
+// vector when rank <= 1 for layer normalization specified in
+// https://www.w3.org/TR/webnn/#api-mlgraphbuilder-layernorm.
+Vector<uint32_t> CreateLayerNormalizationDefaultAxes(const wtf_size_t rank);
 
 // Helper to get padding sizes for convolution 2d or pooling 2d Nodes.
 template <typename OptionsType>
@@ -123,6 +138,51 @@ webnn::Padding2d CalculatePadding2D(const OptionsType* options,
   }
   return padding;
 }
+
+// A depthwise conv2d operation is a variant of grouped convolution where the
+// options.groups == input_channels == output_channels according to WebNN conv2d
+// spec: https://www.w3.org/TR/webnn/#api-mlgraphbuilder-conv2d.
+bool IsDepthwiseConv2d(uint32_t input_channels,
+                       uint32_t output_channels,
+                       uint32_t groups);
+
+// Helper to validate filer layout for Nhwc input layout.
+base::expected<void, String> ValidateFilterLayout(
+    bool depthwise,
+    V8MLInputOperandLayout input_layout,
+    V8MLConv2dFilterOperandLayout filter_layout);
+
+// Helper to get padding sizes for convolution transpose 2d Node.
+webnn::Padding2d CalculateConvTransposePadding2D(
+    const blink::MLConvTranspose2dOptions* options,
+    uint32_t input_height,
+    uint32_t input_width,
+    uint32_t filter_height,
+    uint32_t filter_width,
+    uint32_t stride_height,
+    uint32_t stride_width,
+    uint32_t dilation_height,
+    uint32_t dilation_width,
+    uint32_t output_padding_height,
+    uint32_t output_padding_width);
+
+// Helper to get output sizes for convolution transpose 2d Node.
+webnn::Size2d<uint32_t> CalculateConvTransposeOutputSize2D(
+    const blink::MLConvTranspose2dOptions* options,
+    uint32_t input_height,
+    uint32_t input_width,
+    uint32_t filter_height,
+    uint32_t filter_width,
+    uint32_t stride_height,
+    uint32_t stride_width,
+    uint32_t dilation_height,
+    uint32_t dilation_width,
+    uint32_t output_padding_height,
+    uint32_t output_padding_width);
+
+// Helper to validate gemm options.
+base::expected<void, String> ValidateGemmOptions(const MLGemmOptions* options,
+                                                 uint32_t output_channels);
 
 }  // namespace blink
 

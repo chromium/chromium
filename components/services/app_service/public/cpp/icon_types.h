@@ -5,17 +5,26 @@
 #ifndef COMPONENTS_SERVICES_APP_SERVICE_PUBLIC_CPP_ICON_TYPES_H_
 #define COMPONENTS_SERVICES_APP_SERVICE_PUBLIC_CPP_ICON_TYPES_H_
 
+#include <optional>
 #include <vector>
 
 #include "base/component_export.h"
 #include "base/functional/callback.h"
+#include "third_party/abseil-cpp/absl/types/variant.h"
 #include "ui/gfx/image/image_skia.h"
 
 namespace apps {
 
 struct COMPONENT_EXPORT(APP_TYPES) IconKey {
+  // The value of a UpdateVersion can be a bool or a int32_t, depending on
+  // whether the IconKey is being passed between a publisher and App Service, or
+  // App Service and clients.
+  using UpdateVersion = absl::variant<bool, int32_t>;
+
   IconKey();
-  IconKey(uint64_t timeline, int32_t resource_id, uint32_t icon_effects);
+  explicit IconKey(uint32_t icon_effects);
+  IconKey(int32_t resource_id, uint32_t icon_effects);
+  IconKey(bool raw_icon_updated, uint32_t icon_effects);
 
   IconKey(const IconKey&) = delete;
   IconKey& operator=(const IconKey&) = delete;
@@ -29,35 +38,45 @@ struct COMPONENT_EXPORT(APP_TYPES) IconKey {
 
   std::unique_ptr<IconKey> Clone() const;
 
-  // A timeline value for icons that do not change.
-  static const uint64_t kDoesNotChangeOverTime;
+  // Returns true when `update_version` is set as true. This is used for
+  // publishers to update the icon image per the app's request.
+  bool HasUpdatedVersion() const;
 
   static const int32_t kInvalidResourceId;
 
-  // A monotonically increasing number so that, after an icon update, a new
-  // IconKey, one that is different in terms of field-by-field equality, can be
-  // broadcast by a Publisher.
-  //
-  // The exact value of the number isn't important, only that newer IconKey's
-  // (those that were created more recently) have a larger timeline than older
-  // IconKey's.
-  //
-  // This is, in some sense, *a* version number, but the field is not called
-  // "version", to avoid any possible confusion that it encodes *the* app's
-  // version number, e.g. the "2.3.5" in "FooBar version 2.3.5 is installed".
-  //
-  // For example, if an app is disabled for some reason (so that its icon is
-  // grayed out), this would result in a different timeline even though the
-  // app's version is unchanged.
-  uint64_t timeline = 0;
+  static const int32_t kInitVersion;
 
-  // True when the raw icon is updated. After an icon update, a new IconKey can
-  // be broadcast by a Publisher. Then the AppService icon directory should be
-  // removed to fetch the new raw icon from the app.
+  static const int32_t kInvalidVersion;
+
+  // `update_version` should hold a bool to specify whether the icon image is
+  // updated by the app when the publisher publishes the app. `update_version`
+  // should never hold a int32_t when calling OnApps to publish apps.
   //
-  // When the raw icon is updated, `timeline` should be updated, so we don't
-  // need to check `raw_icon_updated` for `operator==` and `operator!=`.
-  bool raw_icon_updated = false;
+  // AppRegistryCache generates an int32_t for `update_version` to notify
+  // AppService clients whether reload the icon, when merging `deltas`.
+  // `update_version` should never hold a bool in AppRegistryCache's `states_`.
+  //
+  // If the icon has a valid `resource_id`, `update_version` is
+  // `kInvalidVersion` in AppRegistryCache's `states_`, and never changes.
+  //
+  // When an app is added, if the icon doesn't have a valid `resource_id`,
+  // `update_version` is set as `kInitVersion`.
+  //
+  // If the app updates the icon image, `update_version` is set as true by a
+  // Publisher, and AppService increases the saved `update_version` to notify
+  // AppService clients to reload icons.
+  //
+  // The exact value of the number isn't important, only that newer
+  // IconKey's (those that were created more recently) have a larger
+  // `update_version` than older IconKey's.
+  //
+  // `update_version` isn't changed if `icon_effects` is changed.
+  // `update_version` is increased only when the app updates, or upgrades, and
+  // publish a new icon image.
+  //
+  // The default value is set as false to ease the publishers implementation
+  // when calling OnApps.
+  UpdateVersion update_version = false;
 
   // If non-zero (or equivalently, not equal to kInvalidResourceId), the
   // compressed icon is compiled into the Chromium binary as a statically
@@ -130,6 +149,12 @@ struct COMPONENT_EXPORT(APP_TYPES) IconValue {
 
 using IconValuePtr = std::unique_ptr<IconValue>;
 using LoadIconCallback = base::OnceCallback<void(IconValuePtr)>;
+
+// Merges `delta` to `state`, and  returns's the merge result. If `delta`'s
+// `update_version` is true, increase `state`'s `update_version`.
+COMPONENT_EXPORT(APP_TYPES)
+std::optional<apps::IconKey> MergeIconKey(const apps::IconKey* state,
+                                          const apps::IconKey* delta);
 
 }  // namespace apps
 

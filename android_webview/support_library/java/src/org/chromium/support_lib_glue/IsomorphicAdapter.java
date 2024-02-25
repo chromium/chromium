@@ -9,9 +9,7 @@ import org.chromium.support_lib_boundary.IsomorphicObjectBoundaryInterface;
 
 import java.util.concurrent.Callable;
 
-/**
- * Abstract base class for adapters whose objects are isomorphic
- */
+/** Abstract base class for adapters whose objects are isomorphic */
 abstract class IsomorphicAdapter implements IsomorphicObjectBoundaryInterface {
     abstract AwSupportLibIsomorphic getPeeredObject();
 

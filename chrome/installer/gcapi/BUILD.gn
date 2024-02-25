@@ -21,6 +21,10 @@ shared_library("gcapi") {
     ":lib",
     "//base",
   ]
+
+  # GCAPI should not depend on ICU, since third-party users may not have
+  # initialized it.
+  assert_no_deps = [ "//base:i18n" ]
 }
 
 copy("copy_gcapi_header") {
@@ -37,8 +41,6 @@ source_set("lib") {
   sources = [
     "gcapi.cc",
     "gcapi.h",
-    "gcapi_omaha_experiment.cc",
-    "gcapi_omaha_experiment.h",
     "gcapi_reactivation.cc",
     "gcapi_reactivation.h",
     "google_update_util.cc",
@@ -56,7 +58,6 @@ source_set("lib") {
 test("gcapi_test") {
   sources = [
     "gcapi_last_run_test.cc",
-    "gcapi_omaha_experiment_test.cc",
     "gcapi_reactivation_test.cc",
     "gcapi_test.cc",
     "gcapi_test.rc",

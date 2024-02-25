@@ -63,29 +63,26 @@ public class Origin {
         if (port != -1) authority += ":" + port;
 
         try {
-            return new Origin(uri.normalizeScheme()
-                                      .buildUpon()
-                                      .opaquePart("")
-                                      .fragment("")
-                                      .path("")
-                                      .encodedAuthority(authority)
-                                      .clearQuery()
-                                      .build());
+            return new Origin(
+                    uri.normalizeScheme()
+                            .buildUpon()
+                            .opaquePart("")
+                            .fragment("")
+                            .path("")
+                            .encodedAuthority(authority)
+                            .clearQuery()
+                            .build());
         } catch (UnsupportedOperationException e) {
             return null;
         }
     }
 
-    /**
-     * Constructs a canonical Origin from a String, throwing an exception if parsing fails.
-     */
+    /** Constructs a canonical Origin from a String, throwing an exception if parsing fails. */
     public static Origin createOrThrow(String uri) {
         return createOrThrow(Uri.parse(uri));
     }
 
-    /**
-     * Constructs a canonical Origin from an Uri, throwing an exception if parsing fails.
-     */
+    /** Constructs a canonical Origin from an Uri, throwing an exception if parsing fails. */
     public static Origin createOrThrow(Uri uri) {
         Origin origin = Origin.create(uri);
         if (origin == null) throw new IllegalArgumentException("Could not parse: " + uri);
@@ -104,9 +101,7 @@ public class Origin {
         return mOrigin.hashCode();
     }
 
-    /**
-     * Returns a String representing the Origin.
-     */
+    /** Returns a String representing the Origin. */
     @Override
     public String toString() {
         return mOrigin.toString();

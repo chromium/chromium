@@ -38,7 +38,7 @@ class BruschettaMountProviderTest : public testing::Test {
   guest_os::GuestId id_{guest_os::VmType::BRUSCHETTA, "vm_name", ""};
   guest_os::GuestInfo info_{id_, 32, "username", base::FilePath("/home/dir"),
                             "",  123};
-  raw_ptr<FakeBruschettaLauncher, ExperimentalAsh> launcher_;
+  raw_ptr<FakeBruschettaLauncher> launcher_;
   BruschettaMountProvider provider_{&profile_, id_};
 };
 

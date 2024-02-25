@@ -29,19 +29,20 @@ public class MockMetricsBridgeService extends Service {
     private static final AtomicInteger sRecordsCount = new AtomicInteger(0);
     private static final ConditionVariable sReceivedRecord = new ConditionVariable();
 
-    private final IMetricsBridgeService.Stub mMockBinder = new IMetricsBridgeService.Stub() {
-        @Override
-        public void recordMetrics(byte[] data) {
-            sRecordedData = data;
-            sRecordsCount.incrementAndGet();
-            sReceivedRecord.open();
-        }
+    private final IMetricsBridgeService.Stub mMockBinder =
+            new IMetricsBridgeService.Stub() {
+                @Override
+                public void recordMetrics(byte[] data) {
+                    sRecordedData = data;
+                    sRecordsCount.incrementAndGet();
+                    sReceivedRecord.open();
+                }
 
-        @Override
-        public List<byte[]> retrieveNonembeddedMetrics() {
-            throw new UnsupportedOperationException();
-        }
-    };
+                @Override
+                public List<byte[]> retrieveNonembeddedMetrics() {
+                    throw new UnsupportedOperationException();
+                }
+            };
 
     @Override
     public IBinder onBind(Intent intent) {
@@ -61,17 +62,18 @@ public class MockMetricsBridgeService extends Service {
             if (!sReceivedRecord.block(TIMEOUT_MILLIS)) {
                 throw new TimeoutException(
                         "Timedout waiting for recordMetrics() to be called for the ("
-                        + (sRecordsCount.get() + 1) + ") time");
+                                + (sRecordsCount.get() + 1)
+                                + ") time");
             }
         }
-        Assert.assertEquals("recordMetrics() should be called (" + times + ") times", times,
+        Assert.assertEquals(
+                "recordMetrics() should be called (" + times + ") times",
+                times,
                 sRecordsCount.get());
         return sRecordedData;
     }
 
-    /**
-     * Reset static variables between tests.
-     */
+    /** Reset static variables between tests. */
     public static void reset() {
         sRecordedData = null;
         sRecordsCount.set(0);

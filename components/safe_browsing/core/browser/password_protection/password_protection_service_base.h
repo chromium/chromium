@@ -267,10 +267,6 @@ class PasswordProtectionServiceBase : public history::HistoryServiceObserver {
                    const GURL& main_frame_url,
                    ReusedPasswordAccountType password_type);
 
-  // If ReusedPasswordAccountType is GMAIL and syncing.
-  bool IsSyncingGMAILPasswordWithSignedInProtectionEnabled(
-      ReusedPasswordAccountType password_type) const;
-
   // Called by a PasswordProtectionRequest instance when it finishes to remove
   // itself from |requests_|.
   virtual void RequestFinished(
@@ -324,8 +320,8 @@ class PasswordProtectionServiceBase : public history::HistoryServiceObserver {
       LoginReputationClientRequest::TriggerType trigger_type,
       ReusedPasswordAccountType password_type) = 0;
 
-  // If primary account is syncing.
-  virtual bool IsPrimaryAccountSyncing() const = 0;
+  // If primary account is syncing history.
+  virtual bool IsPrimaryAccountSyncingHistory() const = 0;
 
   // If primary account is signed in.
   virtual bool IsPrimaryAccountSignedIn() const = 0;

@@ -5,6 +5,7 @@
 #include "chrome/browser/ash/input_method/autocorrect_manager.h"
 
 #include "ash/constants/ash_features.h"
+#include "ash/system/federated/federated_client_manager.h"
 #include "base/functional/callback_helpers.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
@@ -16,6 +17,9 @@
 #include "chrome/common/pref_names.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/test/base/testing_profile.h"
+#include "chromeos/ash/components/dbus/federated/federated_client.h"
+#include "chromeos/ash/services/federated/public/cpp/fake_service_connection.h"
+#include "chromeos/ash/services/federated/public/cpp/service_connection.h"
 #include "chromeos/ash/services/ime/public/cpp/autocorrect.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/ukm/test_ukm_recorder.h"
@@ -443,6 +447,8 @@ std::string ToString(const AutocorrectSuggestionProvider& provider) {
   switch (provider) {
     case AutocorrectSuggestionProvider::kUsEnglish840:
       return "UsEnglish840";
+    case AutocorrectSuggestionProvider::kUsEnglish840V2:
+      return "UsEnglish840V2";
     case AutocorrectSuggestionProvider::kUsEnglishDownloaded:
       return "UsEnglishDownloaded";
     case AutocorrectSuggestionProvider::kUsEnglishPrebundled:
@@ -515,13 +521,22 @@ class AutocorrectManagerTest : public testing::Test {
  protected:
   AutocorrectManagerTest()
       : profile_(std::make_unique<TestingProfile>()),
-        manager_(&mock_suggestion_handler_, profile_.get()) {
+        manager_(&mock_suggestion_handler_, profile_.get()),
+        scoped_federated_fake_for_test_(&fake_federated_service_connection_) {
     // Disable ImeRulesConfigs by default.
     feature_list_.InitWithFeatures({}, DisabledFeatures());
+
+    // TODO(b/b/289140140): Refactor FederatedClientManager such that the
+    // testing framework for clients can be simpler.
+    ash::FederatedClient::InitializeFake();
+    federated::FederatedClientManager::UseFakeAshInteractionForTest();
+
     IMEBridge::Get()->SetInputContextHandler(&mock_ime_input_context_handler_);
     keyboard_client_ = ChromeKeyboardControllerClient::CreateForTest();
     keyboard_client_->set_keyboard_enabled_for_test(false);
   }
+
+  void TearDown() override { ash::FederatedClient::Shutdown(); }
 
   content::BrowserTaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
@@ -532,6 +547,10 @@ class AutocorrectManagerTest : public testing::Test {
   std::unique_ptr<ChromeKeyboardControllerClient> keyboard_client_;
   AutocorrectManager manager_;
   base::HistogramTester histogram_tester_;
+
+  ash::federated::FakeServiceConnectionImpl fake_federated_service_connection_;
+  ash::federated::ScopedFakeServiceConnectionForTest
+      scoped_federated_fake_for_test_;
 };
 
 TEST_F(AutocorrectManagerTest,
@@ -2869,6 +2888,7 @@ INSTANTIATE_TEST_SUITE_P(
         AutocorrectSuggestionProvider::kUsEnglishPrebundled,
         AutocorrectSuggestionProvider::kUsEnglishDownloaded,
         AutocorrectSuggestionProvider::kUsEnglish840,
+        AutocorrectSuggestionProvider::kUsEnglish840V2,
     }),
     [](const testing::TestParamInfo<AutocorrectSuggestionProvider> info) {
       return ToString(info.param);
@@ -2954,16 +2974,31 @@ TEST_F(AutocorrectManagerTest,
   EXPECT_TRUE(manager_.DisabledByInvalidExperimentContext());
 }
 
-TEST_F(AutocorrectManagerTest,
-       IsNotDisabledWhenUserInDefaultBucketAndAllRequiredConstraintsMet) {
+class EnabledByValidSuggestionProvider
+    : public AutocorrectManagerTest,
+      public testing::WithParamInterface<AutocorrectSuggestionProvider> {};
+
+INSTANTIATE_TEST_SUITE_P(
+    AutocorrectManagerTest,
+    EnabledByValidSuggestionProvider,
+    testing::ValuesIn<>({
+        AutocorrectSuggestionProvider::kUsEnglish840,
+        AutocorrectSuggestionProvider::kUsEnglish840V2,
+    }),
+    [](const testing::TestParamInfo<AutocorrectSuggestionProvider> info) {
+      return ToString(info.param);
+    });
+
+TEST_P(EnabledByValidSuggestionProvider,
+       IsNotDisabledWhenUserInDefaultBucketAndValidSuggestionProviderUsed) {
+  const AutocorrectSuggestionProvider& provider = GetParam();
   feature_list_.Reset();
   feature_list_.InitWithFeatures(RequiredForAutocorrectByDefault(),
                                  DisabledFeatures());
 
   manager_.OnActivate(kUsEnglishEngineId);
   manager_.OnFocus(kContextId);
-  manager_.OnConnectedToSuggestionProvider(
-      AutocorrectSuggestionProvider::kUsEnglish840);
+  manager_.OnConnectedToSuggestionProvider(provider);
 
   EXPECT_FALSE(manager_.DisabledByInvalidExperimentContext());
 }
@@ -3205,7 +3240,7 @@ INSTANTIATE_TEST_SUITE_P(
 struct PkUserPrefCase {
   std::string test_name;
   std::string engine_id;
-  absl::optional<int> autocorrect_level;
+  std::optional<int> autocorrect_level;
   AutocorrectPreference expected_pref;
 };
 
@@ -3227,7 +3262,7 @@ INSTANTIATE_TEST_SUITE_P(
          /*expected_pref=*/AutocorrectPreference::kDisabled},
         {"UsEnglishDefault",
          /*engine_id=*/kUsEnglishEngineId,
-         /*autocorrect_level=*/absl::nullopt,
+         /*autocorrect_level=*/std::nullopt,
          /*expected_pref=*/AutocorrectPreference::kDefault},
     }),
     [](const testing::TestParamInfo<PkUserPrefCase> info) {
@@ -3333,7 +3368,7 @@ INSTANTIATE_TEST_SUITE_P(
          /*expected_pref=*/AutocorrectPreference::kDisabled},
         {"UsInternationalDefault",
          /*engine_id=*/kUsInternationalEngineId,
-         /*autocorrect_level=*/absl::nullopt,
+         /*autocorrect_level=*/std::nullopt,
          /*expected_pref=*/AutocorrectPreference::kDefault},
 
         {"SpainSpanishEnabled",
@@ -3346,7 +3381,7 @@ INSTANTIATE_TEST_SUITE_P(
          /*expected_pref=*/AutocorrectPreference::kDisabled},
         {"SpainSpanishDefault",
          /*engine_id=*/kSpainSpanishEngineId,
-         /*autocorrect_level=*/absl::nullopt,
+         /*autocorrect_level=*/std::nullopt,
          /*expected_pref=*/AutocorrectPreference::kDefault},
 
         {"LatinAmericaSpanishEnabled",
@@ -3359,7 +3394,7 @@ INSTANTIATE_TEST_SUITE_P(
          /*expected_pref=*/AutocorrectPreference::kDisabled},
         {"LatinAmericaSpanishDefault",
          /*engine_id=*/kLatinAmericaSpanishEngineId,
-         /*autocorrect_level=*/absl::nullopt,
+         /*autocorrect_level=*/std::nullopt,
          /*expected_pref=*/AutocorrectPreference::kDefault},
 
         {"BrazilPortugeseEnabled",
@@ -3372,7 +3407,7 @@ INSTANTIATE_TEST_SUITE_P(
          /*expected_pref=*/AutocorrectPreference::kDisabled},
         {"BrazilPortugeseDefault",
          /*engine_id=*/kBrazilPortugeseEngineId,
-         /*autocorrect_level=*/absl::nullopt,
+         /*autocorrect_level=*/std::nullopt,
          /*expected_pref=*/AutocorrectPreference::kDefault},
 
         {"FranceFrenchEnabled",
@@ -3385,7 +3420,7 @@ INSTANTIATE_TEST_SUITE_P(
          /*expected_pref=*/AutocorrectPreference::kDisabled},
         {"FranceFrenchDefault",
          /*engine_id=*/kFranceFrenchEngineId,
-         /*autocorrect_level=*/absl::nullopt,
+         /*autocorrect_level=*/std::nullopt,
          /*expected_pref=*/AutocorrectPreference::kDefault},
     }),
     [](const testing::TestParamInfo<PkUserPrefCase> info) {
@@ -3435,7 +3470,7 @@ TEST_F(AutocorrectManagerTest,
 struct PkEnabledByDefaultCase {
   std::string test_name;
   std::string engine_id;
-  absl::optional<int> autocorrect_level;
+  std::optional<int> autocorrect_level;
   AutocorrectPreference preference_before;
   AutocorrectPreference preference_after;
 };
@@ -3487,7 +3522,7 @@ INSTANTIATE_TEST_SUITE_P(
         PkEnabledByDefaultCase{
             "EnglishDefaultToEnabledByDefault",
             /*engine_id=*/kUsEnglishEngineId,
-            /*autocorrect_level=*/absl::nullopt,
+            /*autocorrect_level=*/std::nullopt,
             /*preference_before=*/AutocorrectPreference::kDefault,
             /*preference_after=*/AutocorrectPreference::kEnabledByDefault},
         PkEnabledByDefaultCase{
@@ -3512,7 +3547,7 @@ INSTANTIATE_TEST_SUITE_P(
         PkEnabledByDefaultCase{
             "PortugeseDefaultRemainsDefault",
             /*engine_id=*/kBrazilPortugeseEngineId,
-            /*autocorrect_level=*/absl::nullopt,
+            /*autocorrect_level=*/std::nullopt,
             /*preference_before=*/AutocorrectPreference::kDefault,
             /*preference_after=*/AutocorrectPreference::kDefault},
         PkEnabledByDefaultCase{
@@ -3537,7 +3572,7 @@ INSTANTIATE_TEST_SUITE_P(
         PkEnabledByDefaultCase{
             "SpainSpanishDefaultRemainsDefault",
             /*engine_id=*/kSpainSpanishEngineId,
-            /*autocorrect_level=*/absl::nullopt,
+            /*autocorrect_level=*/std::nullopt,
             /*preference_before=*/AutocorrectPreference::kDefault,
             /*preference_after=*/AutocorrectPreference::kDefault},
         PkEnabledByDefaultCase{
@@ -3575,6 +3610,7 @@ INSTANTIATE_TEST_SUITE_P(
         AutocorrectSuggestionProvider::kUsEnglishPrebundled,
         AutocorrectSuggestionProvider::kUsEnglishDownloaded,
         AutocorrectSuggestionProvider::kUsEnglish840,
+        AutocorrectSuggestionProvider::kUsEnglish840V2,
     }),
     [](const testing::TestParamInfo<AutocorrectSuggestionProvider> info) {
       return ToString(info.param);
@@ -3932,6 +3968,19 @@ TEST_F(AutocorrectManagerUkmMetricsTest, RecordsAppCompatUkmForExitField) {
       ukm_entries[1], UkmEntry::kCompatibilitySummary_PKName,
       static_cast<int>(
           AutocorrectCompatibilitySummary::kUserExitedTextFieldWithUnderline));
+}
+
+TEST_F(AutocorrectManagerTest, FederatedLogging) {
+  feature_list_.Reset();
+  feature_list_.InitWithFeatures({features::kAutocorrectFederatedPhh},
+                                 DisabledFeatures());
+  EXPECT_EQ(0, manager_.GetFederatedClientManagerForTest()
+                   .get_num_successful_reports_for_test());
+
+  manager_.HandleAutocorrect(gfx::Range(0, 3), u"teh", u"the");
+  // The handling of an autocorrection triggers a federated logging event.
+  EXPECT_EQ(1, manager_.GetFederatedClientManagerForTest()
+                   .get_num_successful_reports_for_test());
 }
 
 }  // namespace

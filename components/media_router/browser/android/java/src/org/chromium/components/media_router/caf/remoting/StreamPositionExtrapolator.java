@@ -56,8 +56,9 @@ public class StreamPositionExtrapolator {
         if (mTimestamp == 0) return 0;
         if (!mIsPlaying) return Math.max(mLastKnownPosition, 0);
 
-        long interpolatedStreamPosition = mLastKnownPosition
-                + (long) (mPlaybackRate * (System.currentTimeMillis() - mTimestamp));
+        long interpolatedStreamPosition =
+                mLastKnownPosition
+                        + (long) (mPlaybackRate * (System.currentTimeMillis() - mTimestamp));
         if (mDuration >= 0) {
             // Don't limit if mDuration is negative, which means the remote media is streamed
             // instead of buffered.

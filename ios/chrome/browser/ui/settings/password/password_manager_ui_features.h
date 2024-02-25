@@ -11,15 +11,15 @@
 // components.
 namespace password_manager::features {
 
-BASE_DECLARE_FEATURE(kIOSPasswordAuthOnEntry);
-
-// Helper function returning the status of `kIOSPasswordAuthOnEntry`.
-bool IsAuthOnEntryEnabled();
-
 BASE_DECLARE_FEATURE(kIOSPasswordAuthOnEntryV2);
 
 // Helper function returning the status of `kIOSPasswordAuthOnEntry2`.
 bool IsAuthOnEntryV2Enabled();
+
+BASE_DECLARE_FEATURE(kIOSEnablePasscodeSettings);
+
+// Helper function returning the status of `kIOSEnablePasscodeShortcut`.
+bool IsPasscodeSettingsEnabled();
 
 }  // namespace password_manager::features
 

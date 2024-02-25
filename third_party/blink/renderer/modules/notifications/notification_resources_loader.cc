@@ -5,9 +5,9 @@
 #include "third_party/blink/renderer/modules/notifications/notification_resources_loader.h"
 
 #include <cmath>
+#include <optional>
 
 #include "base/time/time.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/notifications/notification_constants.h"
 #include "third_party/blink/public/mojom/fetch/fetch_api_request.mojom-blink.h"
 #include "third_party/blink/public/mojom/notifications/notification.mojom-blink.h"

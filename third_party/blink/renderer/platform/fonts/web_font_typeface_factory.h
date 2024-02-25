@@ -5,6 +5,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_FONTS_WEB_FONT_TYPEFACE_FACTORY_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_FONTS_WEB_FONT_TYPEFACE_FACTORY_H_
 
+#include "third_party/blink/renderer/platform/platform_export.h"
 #include "third_party/skia/include/core/SkFontMgr.h"
 
 #include "build/build_config.h"
@@ -13,28 +14,31 @@
 
 namespace blink {
 
+class FontFormatCheck;
 // Decides which Skia backend to use for instantiating a web font. In the
 // regular case, this would be default font manager used for the platform.
-// However, for variable fonts, color bitmap font formats and CFF2 fonts we want
-// to use FreeType on Windows and Mac.
-class WebFontTypefaceFactory {
+// However, for COLRv1 fonts, variable fonts, color bitmap font formats and CFF2
+// fonts we want to use FreeType/Fontations on Windows and Mac.
+class PLATFORM_EXPORT WebFontTypefaceFactory {
   STACK_ALLOCATED();
 
  public:
+  using InstantiationFunction = sk_sp<SkTypeface> (*)(sk_sp<SkData>);
+
+  using FontInstantiator = struct {
+    InstantiationFunction make_system;
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_APPLE)
+    InstantiationFunction make_fallback;
+#endif
+  };
+
   static bool CreateTypeface(const sk_sp<SkData>, sk_sp<SkTypeface>&);
+  static bool CreateTypeface(const sk_sp<SkData>,
+                             sk_sp<SkTypeface>&,
+                             const FontFormatCheck& format_check,
+                             const FontInstantiator& instantiator);
 
  private:
-  static sk_sp<SkTypeface> MakeTypefaceDefaultFontMgr(sk_sp<SkData>);
-  static sk_sp<SkTypeface> MakeTypefaceFreeType(sk_sp<SkData>);
-#if BUILDFLAG(USE_FONTATIONS_BACKEND)
-  static sk_sp<SkTypeface> MakeTypefaceFontations(sk_sp<SkData>);
-#endif
-
-  static sk_sp<SkTypeface> MakeVariationsTypeface(sk_sp<SkData>);
-  static sk_sp<SkTypeface> MakeSbixTypeface(sk_sp<SkData>);
-  static sk_sp<SkTypeface> MakeColrV0Typeface(sk_sp<SkData>);
-  static sk_sp<SkTypeface> MakeColrV0VariationsTypeface(sk_sp<SkData>);
-
   // These values are written to logs.  New enum values can be added, but
   // existing enums must never be renumbered or deleted and reused.
   enum class InstantiationResult {

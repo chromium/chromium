@@ -30,6 +30,7 @@ struct Paper {
   gfx.mojom.Size size_um;
   [MinVersion=1] gfx.mojom.Rect? printable_area_um;
   [MinVersion=2] int32 max_height_um;
+  [MinVersion=3] bool has_borderless_variant;
 };
 
 // Media type used by printer semantic capabilities and defaults.

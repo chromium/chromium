@@ -12,6 +12,7 @@
 #include "base/values.h"
 #include "components/prefs/pref_value_map.h"
 #include "extensions/common/api/types.h"
+#include "extensions/common/extension_id.h"
 
 struct ExtensionPrefValueMap::ExtensionEntry {
   // Installation time of the extension.
@@ -66,7 +67,7 @@ void ExtensionPrefValueMap::RemoveExtensionPref(const std::string& ext_id,
 }
 
 bool ExtensionPrefValueMap::CanExtensionControlPref(
-    const std::string& extension_id,
+    const extensions::ExtensionId& extension_id,
     const std::string& pref_key,
     bool incognito) const {
   auto ext = entries_.find(extension_id);
@@ -105,7 +106,7 @@ void ExtensionPrefValueMap::ClearAllIncognitoSessionOnlyPreferences() {
 }
 
 bool ExtensionPrefValueMap::DoesExtensionControlPref(
-    const std::string& extension_id,
+    const extensions::ExtensionId& extension_id,
     const std::string& pref_key,
     bool* from_incognito) const {
   bool incognito = (from_incognito != nullptr);
@@ -120,15 +121,14 @@ void ExtensionPrefValueMap::RegisterExtension(const std::string& ext_id,
                                               const base::Time& install_time,
                                               bool is_enabled,
                                               bool is_incognito_enabled) {
-  if (entries_.find(ext_id) == entries_.end()) {
-    entries_[ext_id] = base::WrapUnique(new ExtensionEntry);
-
-    // Only update the install time if the extension is newly installed.
-    entries_[ext_id]->install_time = install_time;
+  auto& entry = entries_[ext_id];
+  if (!entry) {
+    entry = std::make_unique<ExtensionEntry>();
+    entry->install_time = install_time;
   }
 
-  entries_[ext_id]->enabled = is_enabled;
-  entries_[ext_id]->incognito_enabled = is_incognito_enabled;
+  entry->enabled = is_enabled;
+  entry->incognito_enabled = is_incognito_enabled;
 }
 
 void ExtensionPrefValueMap::UnregisterExtension(const std::string& ext_id) {

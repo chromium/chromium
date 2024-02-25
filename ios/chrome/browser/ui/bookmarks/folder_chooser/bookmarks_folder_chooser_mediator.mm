@@ -5,12 +5,13 @@
 #import "ios/chrome/browser/ui/bookmarks/folder_chooser/bookmarks_folder_chooser_mediator.h"
 
 #import "base/containers/contains.h"
+#import "base/memory/raw_ptr.h"
 #import "components/bookmarks/browser/bookmark_model.h"
 #import "components/bookmarks/common/bookmark_features.h"
 #import "components/sync/base/features.h"
 #import "ios/chrome/browser/bookmarks/model/bookmark_model_bridge_observer.h"
-#import "ios/chrome/browser/signin/authentication_service_observer_bridge.h"
-#import "ios/chrome/browser/sync/sync_observer_bridge.h"
+#import "ios/chrome/browser/signin/model/authentication_service_observer_bridge.h"
+#import "ios/chrome/browser/sync/model/sync_observer_bridge.h"
 #import "ios/chrome/browser/ui/bookmarks/bookmark_ui_constants.h"
 #import "ios/chrome/browser/ui/bookmarks/bookmark_utils_ios.h"
 #import "ios/chrome/browser/ui/bookmarks/folder_chooser/bookmarks_folder_chooser_consumer.h"
@@ -41,7 +42,7 @@ using bookmarks::BookmarkNode;
   // Observer for signin status changes.
   std::unique_ptr<AuthenticationServiceObserverBridge> _authServiceBridge;
   // Sync service.
-  syncer::SyncService* _syncService;
+  raw_ptr<syncer::SyncService> _syncService;
   // Observer for sync service status changes.
   std::unique_ptr<SyncObserverBridge> _syncObserverBridge;
 }
@@ -56,12 +57,8 @@ using bookmarks::BookmarkNode;
                              syncService:(syncer::SyncService*)syncService {
   DCHECK(localOrSyncableBookmarkModel);
   DCHECK(localOrSyncableBookmarkModel->loaded());
-  if (base::FeatureList::IsEnabled(syncer::kEnableBookmarksAccountStorage)) {
-    DCHECK(accountBookmarkModel);
-    DCHECK(accountBookmarkModel->loaded());
-  } else {
-    DCHECK(!accountBookmarkModel);
-  }
+  DCHECK(accountBookmarkModel);
+  DCHECK(accountBookmarkModel->loaded());
   DCHECK(authService->initialized());
 
   self = [super init];

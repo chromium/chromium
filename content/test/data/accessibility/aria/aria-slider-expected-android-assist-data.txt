@@ -1,0 +1,3 @@
+WebView textSize:16.0 style:0 htmlInfo:[{htmlTag="#document"}, {display=""}]
+++SeekBar text:"Slider" textSize:16.0 style:0 htmlInfo:[{htmlTag="div"}, {display="block"}, {aria-valuemax="10"}, {aria-valuemin="1"}, {aria-valuenow="5"}, {role="slider"}]
+++++TextView text:"Slider" textSize:16.0 style:0 htmlInfo:[{htmlTag=""}, {display=""}]

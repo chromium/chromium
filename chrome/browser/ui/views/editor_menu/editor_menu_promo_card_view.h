@@ -6,26 +6,31 @@
 #define CHROME_BROWSER_UI_VIEWS_EDITOR_MENU_EDITOR_MENU_PROMO_CARD_VIEW_H_
 
 #include "base/memory/raw_ptr.h"
+#include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/widget/unique_widget_ptr.h"
+#include "ui/views/widget/widget.h"
 #include "ui/views/widget/widget_observer.h"
 
 namespace views {
-class LabelButton;
+class Label;
+class MdTextButton;
 }
 
 namespace chromeos::editor_menu {
 
+class EditorMenuViewDelegate;
 class PreTargetHandler;
 
 // A view which shows a promo card to introduce the Editor Menu feature.
 class EditorMenuPromoCardView : public views::View,
                                 public views::WidgetObserver {
- public:
-  METADATA_HEADER(EditorMenuPromoCardView);
+  METADATA_HEADER(EditorMenuPromoCardView, views::View)
 
-  explicit EditorMenuPromoCardView(const gfx::Rect& anchor_view_bounds);
+ public:
+  EditorMenuPromoCardView(const gfx::Rect& anchor_view_bounds,
+                          EditorMenuViewDelegate* delegate);
 
   EditorMenuPromoCardView(const EditorMenuPromoCardView&) = delete;
   EditorMenuPromoCardView& operator=(const EditorMenuPromoCardView&) = delete;
@@ -33,30 +38,46 @@ class EditorMenuPromoCardView : public views::View,
   ~EditorMenuPromoCardView() override;
 
   static views::UniqueWidgetPtr CreateWidget(
-      const gfx::Rect& anchor_view_bounds);
+      const gfx::Rect& anchor_view_bounds,
+      EditorMenuViewDelegate* delegate);
 
   // views::View:
   void AddedToWidget() override;
   void RequestFocus() override;
   void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
+  int GetHeightForWidth(int width) const override;
 
   // views::WidgetObserver:
   void OnWidgetDestroying(views::Widget* widget) override;
   void OnWidgetActivationChanged(views::Widget* widget, bool active) override;
+  bool AcceleratorPressed(const ui::Accelerator& accelerator) override;
 
   void UpdateBounds(const gfx::Rect& anchor_view_bounds);
 
  private:
   void InitLayout();
-  void InitTextContainer(views::View* main_view);
-  void InitButtonBar(views::View* main_view);
+  void AddTitle(views::View* main_view);
+  void AddDescription(views::View* main_view);
+  void AddButtonBar(views::View* main_view);
+
+  void CloseWidgetWithReason(views::Widget::ClosedReason closed_reason);
+
+  void ResetPreTargetHandler();
 
   std::unique_ptr<PreTargetHandler> pre_target_handler_;
 
-  raw_ptr<views::LabelButton> dismiss_button_ = nullptr;
+  // `delegate_` outlives `this`.
+  raw_ptr<EditorMenuViewDelegate> delegate_ = nullptr;
+
+  raw_ptr<views::Label> title_ = nullptr;
+  raw_ptr<views::Label> description_ = nullptr;
+  raw_ptr<views::MdTextButton> dismiss_button_ = nullptr;
+  raw_ptr<views::MdTextButton> try_it_button_ = nullptr;
 
   base::ScopedObservation<views::Widget, views::WidgetObserver>
       widget_observation_{this};
+
+  base::WeakPtrFactory<EditorMenuPromoCardView> weak_factory_{this};
 };
 
 }  // namespace chromeos::editor_menu

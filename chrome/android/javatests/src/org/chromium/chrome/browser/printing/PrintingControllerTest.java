@@ -45,10 +45,9 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
 /**
- * Tests Android printing.
- * TODO(cimamoglu): Add a test with cancellation.
- * TODO(cimamoglu): Add a test with multiple, stacked onLayout/onWrite calls.
- * TODO(cimamoglu): Add a test which emulates Chromium failing to generate a PDF.
+ * Tests Android printing. TODO(cimamoglu): Add a test with cancellation. TODO(cimamoglu): Add a
+ * test with multiple, stacked onLayout/onWrite calls. TODO(cimamoglu): Add a test which emulates
+ * Chromium failing to generate a PDF.
  */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
@@ -59,8 +58,8 @@ public class PrintingControllerTest {
 
     private static final String TEMP_FILE_NAME = "temp_print";
     private static final String TEMP_FILE_EXTENSION = ".pdf";
-    private static final String URL = UrlUtils.encodeHtmlDataUri(
-            "<html><head></head><body>foo</body></html>");
+    private static final String URL =
+            UrlUtils.encodeHtmlDataUri("<html><head></head><body>foo</body></html>");
     private static final String PDF_PREAMBLE = "%PDF-1";
     private static final long TEST_TIMEOUT = 20000L;
 
@@ -143,8 +142,8 @@ public class PrintingControllerTest {
 
     /**
      * Test a basic printing flow by emulating the corresponding system calls to the printing
-     * controller: onStart, onLayout, onWrite, onFinish.  Each one is called once, and in this
-     * order, in the UI thread.
+     * controller: onStart, onLayout, onWrite, onFinish. Each one is called once, and in this order,
+     * in the UI thread.
      */
     @Test
     @LargeTest
@@ -180,8 +179,11 @@ public class PrintingControllerTest {
                     // Called on UI thread.
                     @Override
                     public void onLayoutFinished(PrintDocumentInfo info, boolean changed) {
-                        printingController.onWrite(new PageRange[] {PageRange.ALL_PAGES},
-                                fileDescriptor, new CancellationSignal(), writeResultCallback);
+                        printingController.onWrite(
+                                new PageRange[] {PageRange.ALL_PAGES},
+                                fileDescriptor,
+                                new CancellationSignal(),
+                                writeResultCallback);
                     }
                 };
 
@@ -207,10 +209,9 @@ public class PrintingControllerTest {
     }
 
     /**
-     * Test for http://crbug.com/528909
-     * Simulating while a printing job is triggered and about to call Android framework to show UI,
-     * the corresponding tab is closed, this behaviour is mostly from JavaScript code. Make sure we
-     * don't crash and won't call into framework.
+     * Test for http://crbug.com/528909 Simulating while a printing job is triggered and about to
+     * call Android framework to show UI, the corresponding tab is closed, this behaviour is mostly
+     * from JavaScript code. Make sure we don't crash and won't call into framework.
      */
     @Test
     @MediumTest
@@ -222,20 +223,22 @@ public class PrintingControllerTest {
         final PrintManagerDelegate mockPrintManagerDelegate =
                 mockPrintManagerDelegate(() -> Assert.fail("Shouldn't start a printing job."));
 
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            printingController.setPendingPrint(
-                    new TabPrinter(currentTab), mockPrintManagerDelegate, -1, -1);
-            TabModelUtils.closeCurrentTab(mActivityTestRule.getActivity().getCurrentTabModel());
-            Assert.assertFalse("currentTab should be closed already.", currentTab.isInitialized());
-            printingController.startPendingPrint();
-        });
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    printingController.setPendingPrint(
+                            new TabPrinter(currentTab), mockPrintManagerDelegate, -1, -1);
+                    TabModelUtils.closeCurrentTab(
+                            mActivityTestRule.getActivity().getCurrentTabModel());
+                    Assert.assertFalse(
+                            "currentTab should be closed already.", currentTab.isInitialized());
+                    printingController.startPendingPrint();
+                });
     }
 
     /**
-     * Test for http://crbug.com/528909
-     * Simulating while a printing job is triggered and printing UI is showing, the corresponding
-     * tab is closed, this behaviour is mostly from JavaScript code. Make sure we don't crash and
-     * let framework notify user that we can't perform printing job.
+     * Test for http://crbug.com/528909 Simulating while a printing job is triggered and printing UI
+     * is showing, the corresponding tab is closed, this behaviour is mostly from JavaScript code.
+     * Make sure we don't crash and let framework notify user that we can't perform printing job.
      */
     @Test
     @LargeTest
@@ -267,23 +270,28 @@ public class PrintingControllerTest {
         final ParcelFileDescriptor fileDescriptor =
                 ParcelFileDescriptor.open(tempFile, ParcelFileDescriptor.MODE_READ_WRITE);
         try {
-            TestThreadUtils.runOnUiThreadBlocking(() -> {
-                // Close tab.
-                TabModelUtils.closeCurrentTab(mActivityTestRule.getActivity().getCurrentTabModel());
-                Assert.assertFalse(
-                        "currentTab should be closed already.", currentTab.isInitialized());
+            TestThreadUtils.runOnUiThreadBlocking(
+                    () -> {
+                        // Close tab.
+                        TabModelUtils.closeCurrentTab(
+                                mActivityTestRule.getActivity().getCurrentTabModel());
+                        Assert.assertFalse(
+                                "currentTab should be closed already.", currentTab.isInitialized());
 
-                final WriteResultCallbackWrapper writeResultCallback =
-                        new WriteResultCallbackWrapperMock() {
-                            @Override
-                            public void onWriteFailed(CharSequence error) {
-                                onWriteFailedCompleted.notifyCalled();
-                            }
-                        };
-                // Call onWrite.
-                printingController.onWrite(new PageRange[] {PageRange.ALL_PAGES}, fileDescriptor,
-                        new CancellationSignal(), writeResultCallback);
-            });
+                        final WriteResultCallbackWrapper writeResultCallback =
+                                new WriteResultCallbackWrapperMock() {
+                                    @Override
+                                    public void onWriteFailed(CharSequence error) {
+                                        onWriteFailedCompleted.notifyCalled();
+                                    }
+                                };
+                        // Call onWrite.
+                        printingController.onWrite(
+                                new PageRange[] {PageRange.ALL_PAGES},
+                                fileDescriptor,
+                                new CancellationSignal(),
+                                writeResultCallback);
+                    });
 
             onWriteFailedCompleted.waitForCallback("onWriteFailed callback never completed.");
         } finally {
@@ -296,10 +304,9 @@ public class PrintingControllerTest {
     }
 
     /**
-     * Test for http://crbug.com/863297
-     * This bug shows Android printing framework could call |PrintDocumentAdapter.onFinish()|
-     * before one of |WriteResultCallback.onWrite{Cancelled, Failed, Finished}()| get called.
-     * Crash test, pass if there is no crash.
+     * Test for http://crbug.com/863297 This bug shows Android printing framework could call
+     * |PrintDocumentAdapter.onFinish()| before one of |WriteResultCallback.onWrite{Cancelled,
+     * Failed, Finished}()| get called. Crash test, pass if there is no crash.
      */
     @Test
     @MediumTest
@@ -339,8 +346,10 @@ public class PrintingControllerTest {
                     new LayoutResultCallbackWrapperMock() {
                         @Override
                         public void onLayoutFinished(PrintDocumentInfo info, boolean changed) {
-                            printingController.onWrite(new PageRange[] {PageRange.ALL_PAGES},
-                                    handler.getFileDescriptor(), new CancellationSignal(),
+                            printingController.onWrite(
+                                    new PageRange[] {PageRange.ALL_PAGES},
+                                    handler.getFileDescriptor(),
+                                    new CancellationSignal(),
                                     writeResultCallback);
                         }
                     };
@@ -384,7 +393,9 @@ public class PrintingControllerTest {
     private PrintManagerDelegate mockPrintManagerDelegate(final Runnable r) {
         return new PrintManagerDelegate() {
             @Override
-            public void print(String printJobName, PrintDocumentAdapter documentAdapter,
+            public void print(
+                    String printJobName,
+                    PrintDocumentAdapter documentAdapter,
                     PrintAttributes attributes) {
                 if (r != null) r.run();
             }
@@ -392,23 +403,32 @@ public class PrintingControllerTest {
     }
 
     private void startControllerOnUiThread(final PrintingControllerImpl controller, final Tab tab) {
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            controller.startPrint(new TabPrinter(tab),
-                    /* non-op PrintManagerDelegate */ mockPrintManagerDelegate(null));
-        });
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    controller.startPrint(
+                            new TabPrinter(tab),
+                            /* non-op PrintManagerDelegate */ mockPrintManagerDelegate(null));
+                });
     }
 
     private void callStartOnUiThread(final PrintingControllerImpl controller) {
         TestThreadUtils.runOnUiThreadBlocking(() -> controller.onStart());
     }
 
-    private void callLayoutOnUiThread(final PrintingControllerImpl controller,
-            final PrintAttributes oldAttributes, final PrintAttributes newAttributes,
+    private void callLayoutOnUiThread(
+            final PrintingControllerImpl controller,
+            final PrintAttributes oldAttributes,
+            final PrintAttributes newAttributes,
             final LayoutResultCallbackWrapper layoutResultCallback) {
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            controller.onLayout(oldAttributes, newAttributes, new CancellationSignal(),
-                    layoutResultCallback, null);
-        });
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    controller.onLayout(
+                            oldAttributes,
+                            newAttributes,
+                            new CancellationSignal(),
+                            layoutResultCallback,
+                            null);
+                });
     }
 
     private void callFinishOnUiThread(final PrintingControllerImpl controller) {

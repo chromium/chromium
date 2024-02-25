@@ -1,8 +1,9 @@
-# These individual OWNERS also OWN the global capture/ folder.
-
 # For content/
 file://media/capture/content/OWNERS
 # For video/
 file://media/capture/video/OWNERS
 # For video/mac/
 file://media/capture/video/mac/OWNERS
+
+per-file PIPEWIRE_OWNERS=file://media/capture/PIPEWIRE_OWNERS
+

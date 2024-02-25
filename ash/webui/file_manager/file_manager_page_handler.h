@@ -30,7 +30,7 @@ class FileManagerPageHandler : public mojom::PageHandler {
   FileManagerPageHandler& operator=(const FileManagerPageHandler&) = delete;
 
  private:
-  raw_ptr<FileManagerUI, ExperimentalAsh> file_manager_ui_;  // Owns |this|.
+  raw_ptr<FileManagerUI> file_manager_ui_;  // Owns |this|.
   mojo::Receiver<mojom::PageHandler> receiver_;
   mojo::Remote<mojom::Page> page_;
 };

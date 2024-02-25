@@ -25,9 +25,7 @@ import org.chromium.chrome.browser.app.metrics.LaunchCauseMetrics;
 import org.chromium.chrome.browser.flags.ActivityType;
 import org.chromium.content_public.browser.test.NativeLibraryTestUtils;
 
-/**
- * Tests basic functionality of CustomTabLaunchCauseMetrics.
- */
+/** Tests basic functionality of CustomTabLaunchCauseMetrics. */
 @RunWith(BaseJUnit4ClassRunner.class)
 @Batch(Batch.UNIT_TESTS)
 public final class CustomTabLaunchCauseMetricsTest {
@@ -38,10 +36,11 @@ public final class CustomTabLaunchCauseMetricsTest {
 
     @After
     public void tearDown() {
-        ThreadUtils.runOnUiThreadBlocking(() -> {
-            ApplicationStatus.resetActivitiesForInstrumentationTests();
-            LaunchCauseMetrics.resetForTests();
-        });
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    ApplicationStatus.resetActivitiesForInstrumentationTests();
+                    LaunchCauseMetrics.resetForTests();
+                });
     }
 
     private static int histogramCountForValue(int value) {
@@ -53,12 +52,13 @@ public final class CustomTabLaunchCauseMetricsTest {
         // CustomTabActivity can't be mocked, because Mockito can't handle @ApiLevel annotations,
         // and so can't mock classes that use them because classes can't be found on older API
         // levels.
-        CustomTabActivity activity = new CustomTabActivity() {
-            @Override
-            public int getActivityType() {
-                return twa ? ActivityType.TRUSTED_WEB_ACTIVITY : ActivityType.CUSTOM_TAB;
-            }
-        };
+        CustomTabActivity activity =
+                new CustomTabActivity() {
+                    @Override
+                    public int getActivityType() {
+                        return twa ? ActivityType.TRUSTED_WEB_ACTIVITY : ActivityType.CUSTOM_TAB;
+                    }
+                };
         ApplicationStatus.onStateChangeForTesting(activity, ActivityState.CREATED);
         return new CustomTabLaunchCauseMetrics(activity) {
             @Override

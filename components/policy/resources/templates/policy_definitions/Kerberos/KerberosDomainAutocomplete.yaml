@@ -14,8 +14,6 @@ owners:
 - file://chrome/browser/ash/kerberos/OWNERS
 schema:
   type: string
-supported_chrome_os_management:
-- google_cloud
 supported_on:
 - chrome_os:116-
 tags:

@@ -5,6 +5,7 @@
 #include "chrome/browser/policy/cloud/user_policy_signin_service.h"
 
 #include <memory>
+#include <optional>
 
 #include "base/command_line.h"
 #include "base/feature_list.h"
@@ -35,6 +36,7 @@
 #include "components/policy/test_support/policy_storage.h"
 #include "components/prefs/pref_service.h"
 #include "components/prefs/pref_test_utils.h"
+#include "components/signin/public/base/signin_switches.h"
 #include "components/signin/public/identity_manager/accounts_mutator.h"
 #include "components/signin/public/identity_manager/identity_test_utils.h"
 #include "components/sync/base/command_line_switches.h"
@@ -47,7 +49,6 @@
 #include "net/test/embedded_test_server/http_response.h"
 #include "net/test/embedded_test_server/request_handler_util.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 class UserPolicySigninServiceTest;
 class SigninUIError;
@@ -111,11 +112,8 @@ class UserPolicySigninServiceTest : public InProcessBrowserTest,
         &FakeGaia::HandleRequest, base::Unretained(&fake_gaia_)));
 
     bool disallow_managed_profile_signout = GetParam();
-    if (disallow_managed_profile_signout) {
-      feature_list_.InitAndEnableFeature(kDisallowManagedProfileSignout);
-    } else {
-      feature_list_.InitAndDisableFeature(kDisallowManagedProfileSignout);
-    }
+    feature_list_.InitWithFeatureState(kDisallowManagedProfileSignout,
+                                       disallow_managed_profile_signout);
   }
 
   ~UserPolicySigninServiceTest() override {
@@ -146,7 +144,7 @@ class UserPolicySigninServiceTest : public InProcessBrowserTest,
     return new TurnSyncOnHelper(
         profile(), signin_metrics::AccessPoint::ACCESS_POINT_BOOKMARK_MANAGER,
         signin_metrics::PromoAction::PROMO_ACTION_WITH_DEFAULT,
-        signin_metrics::Reason::kReauthentication, account_info_.account_id,
+        account_info_.account_id,
         TurnSyncOnHelper::SigninAbortedMode::REMOVE_ACCOUNT,
         std::make_unique<TestTurnSyncOnHelperDelegate>(this),
         base::DoNothing());
@@ -237,10 +235,11 @@ class UserPolicySigninServiceTest : public InProcessBrowserTest,
 
     embedded_test_server_.StartAcceptingConnections();
 
-    account_info_ =
-        signin::MakeAccountAvailable(identity_manager(), kTestEmail);
-    signin::SetRefreshTokenForAccount(
-        identity_manager(), account_info_.account_id, kTestRefreshToken);
+    account_info_ = MakeAccountAvailable(
+        identity_manager(), signin::AccountAvailabilityOptionsBuilder()
+                                .AsPrimary(signin::ConsentLevel::kSignin)
+                                .WithRefreshToken(kTestRefreshToken)
+                                .Build(kTestEmail));
     SetupFakeGaiaResponses();
   }
 
@@ -439,7 +438,7 @@ IN_PROC_BROWSER_TEST_P(UserPolicySigninServiceTest, UndoSignin) {
     // Policy is reverted.
     WaitForPrefValue(profile()->GetPrefs(), prefs::kShowHomeButton,
                      base::Value(false));
-    EXPECT_EQ(absl::nullopt,
+    EXPECT_EQ(std::nullopt,
               signin::GetPrimaryAccountConsentLevel(identity_manager()));
     EXPECT_TRUE(signin_client()->IsClearPrimaryAccountAllowed(
         /*has_sync_account=*/false));
@@ -459,9 +458,7 @@ IN_PROC_BROWSER_TEST_P(UserPolicySigninServiceTest, ConcurrentSignin) {
   CreateTurnSyncOnHelper();
   WaitForPolicyHanging();
 
-  // User is not signed in, policy is not applied.
-  EXPECT_EQ(absl::nullopt,
-            signin::GetPrimaryAccountConsentLevel(identity_manager()));
+  // Policy hanging, policy is not applied.
   EXPECT_FALSE(profile()->GetPrefs()->GetBoolean(prefs::kShowHomeButton));
   EXPECT_TRUE(signin_client()->IsClearPrimaryAccountAllowed(
       /*has_sync_account=*/false));
@@ -533,7 +530,7 @@ IN_PROC_BROWSER_TEST_P(UserPolicySigninServiceTest,
                           kDiceResponseHandler_Signout);
     EXPECT_TRUE(signin_client()->IsClearPrimaryAccountAllowed(
         /*has_sync_account=*/false));
-    EXPECT_EQ(absl::nullopt,
+    EXPECT_EQ(std::nullopt,
               signin::GetPrimaryAccountConsentLevel(identity_manager()));
     EXPECT_FALSE(
         chrome::enterprise_util::UserAcceptedAccountManagement(profile()));

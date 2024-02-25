@@ -18,16 +18,16 @@ found in the LICENSE file.
         android:id="@+id/ui_back_button_holder"
         android:layout_alignParentStart="true"
         android:layout_alignParentTop="true"
-        android:layout_width="24dp"
-        android:layout_height="24dp"
-        android:layout_marginTop="16dp"
-        android:layout_marginStart="16dp">
+        android:layout_width="@dimen/ui_button_width"
+        android:layout_height="@dimen/ui_button_height"
+        android:layout_marginTop="@dimen/ui_close_button_margin_top"
+        android:layout_marginStart="@dimen/ui_close_button_margin_left">
         <org.chromium.ui.widget.ChromeImageButton
             style="@style/CardboardUiButton"
             android:id="@+id/cardboard_ui_back_button"
             android:contentDescription="@string/close"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
             android:src="@drawable/btn_close_white"
             android:layout_gravity="start|top"/>
     </FrameLayout>
@@ -45,16 +45,16 @@ found in the LICENSE file.
             android:id="@+id/ui_settings_button_holder"
             android:layout_alignParentEnd="true"
             android:layout_alignParentTop="true"
-            android:layout_width="24dp"
-            android:layout_height="24dp"
-            android:layout_marginTop="16dp"
-            android:layout_marginEnd="16dp">
+            android:layout_width="@dimen/ui_button_width"
+            android:layout_height="@dimen/ui_button_height"
+            android:layout_marginTop="@dimen/ui_settings_button_margin_top"
+            android:layout_marginEnd="@dimen/ui_settings_button_margin_right">
             <org.chromium.ui.widget.ChromeImageButton
                 style="@style/CardboardUiButton"
                 android:id="@+id/cardboard_ui_settings_button"
-                android:contentDescription="@string/menu"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                android:contentDescription="@string/vr_menu"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
                 android:src="@drawable/ic_more_vert_24dp_on_dark_bg"
                 android:layout_gravity="end|top"/>
         </FrameLayout>

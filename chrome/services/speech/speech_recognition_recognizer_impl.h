@@ -133,9 +133,10 @@ class SpeechRecognitionRecognizerImpl
 
   void OnMaskOffensiveWordsChanged(bool mask_offensive_words) final;
 
-  void ResetSodaWithNewLanguage(base::FilePath config_path,
-                                std::string language_name,
-                                bool config_exists);
+  void ResetSodaWithNewLanguage(
+      std::string language_name,
+      std::pair<base::FilePath, bool> config_and_exists);
+
   void RecordDuration();
 
   // Called as a response to sending a SpeechRecognitionEvent to the client

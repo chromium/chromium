@@ -1,0 +1,5 @@
+This is a testharness.js-based test.
+[FAIL] Ensure that navigation failure blocks bfcache and gets recorded.
+  assert_true: Expected: navigation-failure\nGot: http-status-not-ok,masked\nMissing: navigation-failure\nExtra: http-status-not-ok,masked\n expected true got false
+Harness: the test ran to completion.
+

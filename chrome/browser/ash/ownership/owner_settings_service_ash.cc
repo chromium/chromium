@@ -8,12 +8,15 @@
 #include <stdint.h>
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <utility>
 
+#include "ash/constants/ash_features.h"
 #include "ash/constants/ash_switches.h"
 #include "base/command_line.h"
 #include "base/containers/contains.h"
+#include "base/debug/dump_without_crashing.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
@@ -50,7 +53,6 @@
 #include "crypto/nss_util_internal.h"
 #include "crypto/scoped_nss_types.h"
 #include "crypto/signature_creator.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace em = enterprise_management;
 
@@ -191,6 +193,38 @@ void OnTPMTokenReadyOnIOThread(
   original_task_runner->PostTask(FROM_HERE, std::move(ready_callback));
 }
 
+// Deletes the `private_key` and the associated public key.
+// TODO(b/264397430): The method is used to delete replaced keys. It can be
+// removed after the migration is done.
+void DeleteKeyPairOnWorkerThread(crypto::ScopedSECKEYPrivateKey private_key) {
+  if (!private_key) {
+    return;
+  }
+  RecordOwnerKeyEvent(OwnerKeyEvent::kOldOwnerKeyCleanUpStarted,
+                      /*success=*/true);
+
+  crypto::ScopedSECKEYPublicKey public_key(
+      SECKEY_ConvertToPublicKey(private_key.get()));
+
+  // PK11_DeleteTokenPrivateKey function frees the privKey structure
+  // unconditionally, and thus releasing the ownership of the passed private
+  // key.
+  // |force| is set to true, so the key will be deleted even if there are
+  // matching certificates for it. There shouldn't be any though.
+  if (PK11_DeleteTokenPrivateKey(/*privKey=*/private_key.release(),
+                                 /*force=*/true) != SECSuccess) {
+    LOG(ERROR) << "Cannot delete owner private key";
+  }
+
+  // PK11_DeleteTokenPublicKey function frees the pubKey structure
+  // unconditionally, and thus releasing the ownership of the passed private
+  // key.
+  if (PK11_DeleteTokenPublicKey(/*pubKey=*/public_key.release()) !=
+      SECSuccess) {
+    LOG(WARNING) << "Cannot delete owner public key";
+  }
+}
+
 }  // namespace
 
 OwnerSettingsServiceAsh::ManagementSettings::ManagementSettings() = default;
@@ -310,17 +344,42 @@ bool OwnerSettingsServiceAsh::Set(const std::string& setting,
   return true;
 }
 
+// Returns the latest list for setting:
+// 1: retrieve the list from pending changes
+// 2: retrieve the list with CrosSettings, be careful
+// - the CrosSettings is on observer of this object
+// - or the list is already written to the disk
+base::Value::List OwnerSettingsServiceAsh::GetListForSetting(
+    const std::string& setting) const {
+  auto iter = pending_changes_.find(setting);
+  if (iter != pending_changes_.end()) {
+    const std::unique_ptr<base::Value>& pending_val = iter->second;
+    if (!pending_val->is_list()) {
+      LOG(ERROR) << "The " << setting << " setting is not a list!";
+      base::debug::DumpWithoutCrashing();
+      return base::Value::List();
+    }
+    return pending_val->GetList().Clone();
+  }
+  const base::Value* old_value = CrosSettings::Get()->GetPref(setting);
+
+  if (old_value == nullptr) {
+    return base::Value::List();
+  }
+
+  if (!old_value->is_list()) {
+    LOG(ERROR) << "The " << setting << " setting is not a list!";
+    base::debug::DumpWithoutCrashing();
+    return base::Value::List();
+  }
+
+  return old_value->GetList().Clone();
+}
+
 bool OwnerSettingsServiceAsh::AppendToList(const std::string& setting,
                                            const base::Value& value) {
   DCHECK(thread_checker_.CalledOnValidThread());
-  const base::Value::List* old_value;
-  if (!CrosSettings::Get()->GetList(setting, &old_value)) {
-    return false;
-  }
-
-  base::Value::List new_value =
-      old_value ? old_value->Clone() : base::Value::List();
-
+  base::Value::List new_value = GetListForSetting(setting);
   new_value.Append(value.Clone());
   return Set(setting, base::Value(std::move(new_value)));
 }
@@ -328,12 +387,7 @@ bool OwnerSettingsServiceAsh::AppendToList(const std::string& setting,
 bool OwnerSettingsServiceAsh::RemoveFromList(const std::string& setting,
                                              const base::Value& value) {
   DCHECK(thread_checker_.CalledOnValidThread());
-  const base::Value* old_value = CrosSettings::Get()->GetPref(setting);
-  if (old_value && !old_value->is_list())
-    return false;
-  base::Value::List new_value;
-  if (old_value)
-    new_value = old_value->GetList().Clone();
+  base::Value::List new_value = GetListForSetting(setting);
   new_value.EraseValue(value);
   return Set(setting, base::Value(std::move(new_value)));
 }
@@ -368,8 +422,20 @@ void OwnerSettingsServiceAsh::OnProfileManagerDestroying() {
 
 void OwnerSettingsServiceAsh::OwnerKeySet(bool success) {
   DCHECK(thread_checker_.CalledOnValidThread());
+  RecordOwnerKeyEvent(OwnerKeyEvent::kOwnerKeySet, success);
 
   if (base::FeatureList::IsEnabled(ownership::kChromeSideOwnerKeyGeneration)) {
+    // If the new owner key was successfully set and there was a different owner
+    // key before, it can be deleted now.
+    if (success && old_owner_key_) {
+      base::ThreadPool::PostTask(
+          FROM_HERE,
+          {base::MayBlock(), base::TaskPriority::BEST_EFFORT,
+           base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN},
+          base::BindOnce(&DeleteKeyPairOnWorkerThread,
+                         std::move(old_owner_key_)));
+    }
+
     // OwnerKeySet notification is used to reload the owner key in Chrome when
     // session manager generates it. If Chrome is responsible for generating the
     // owner key, the notification is not useful.
@@ -504,7 +570,7 @@ void OwnerSettingsServiceAsh::UpdateDeviceSettings(
           if (account_id)
             account->set_account_id(*account_id);
 
-          absl::optional<int> type =
+          std::optional<int> type =
               entry_dict.FindInt(kAccountsPrefDeviceLocalAccountsKeyType);
           if (type.has_value()) {
             account->set_type(
@@ -650,7 +716,6 @@ void OwnerSettingsServiceAsh::UpdateDeviceSettings(
     //   kAccountsPrefEphemeralUsersEnabled
     //   kAccountsPrefFamilyLinkAccountsAllowed
     //   kAccountsPrefTransferSAMLCookies
-    //   kDeviceAttestationEnabled
     //   kDeviceOwner
     //   kDeviceReportRuntimeCounters
     //   kDeviceReportXDREvents
@@ -757,6 +822,7 @@ void OwnerSettingsServiceAsh::OnReloadedKeypairImpl(
     scoped_refptr<PublicKey> public_key,
     scoped_refptr<PrivateKey> private_key) {
   std::move(callback).Run(std::move(public_key), std::move(private_key));
+  old_owner_key_ = owner_key_loader_->ExtractOldOwnerKey();
   owner_key_loader_.reset();
 }
 
@@ -864,6 +930,11 @@ void OwnerSettingsServiceAsh::MigrateFeatureFlags(
     feature_flags->add_feature_flags(flag);
   }
   feature_flags->clear_switches();
+}
+
+void OwnerSettingsServiceAsh::SetPrivateKeyForTesting(
+    scoped_refptr<ownership::PrivateKey> private_key) {
+  private_key_ = private_key;
 }
 
 }  // namespace ash

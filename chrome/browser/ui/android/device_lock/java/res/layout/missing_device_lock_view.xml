@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+Copyright 2023 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<org.chromium.chrome.browser.ui.device_lock.MissingDeviceLockView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:id="@+id/missing_device_lock_view">
+
+    <ScrollView
+        android:id="@+id/scroll_view"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:fadingEdgeLength="48dp"
+        android:requiresFadingEdge="vertical"
+        android:scrollbars="none">
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <ImageView
+                android:id="@+id/missing_device_lock_illustration"
+                android:layout_width="match_parent"
+                android:layout_height="136dp"
+                android:layout_alignParentTop="true"
+                android:adjustViewBounds="true"
+                android:scaleType="fitCenter"
+                android:layout_centerHorizontal="true"
+                android:background="@color/signin_header_animation_background"
+                app:srcCompat="@drawable/missing_device_lock_illustration"
+                android:importantForAccessibility="no"/>
+
+            <TextView
+                android:id="@+id/missing_device_lock_title"
+                android:layout_below="@id/missing_device_lock_illustration"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="16dp"
+                android:layout_marginTop="16dp"
+                android:layout_marginEnd="16dp"
+                android:text="@string/missing_device_lock_title"
+                android:textAppearance="@style/TextAppearance.Headline.Primary" />
+
+            <TextView
+                android:id="@+id/missing_device_lock_description"
+                android:layout_below="@id/missing_device_lock_title"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="16dp"
+                android:layout_marginTop="16dp"
+                android:layout_marginEnd="16dp"
+                android:text="@string/missing_device_lock_description"
+                android:textAppearance="@style/TextAppearance.TextMedium.Primary" />
+
+            <CheckBox
+                android:id="@+id/missing_device_lock_remove_local_data"
+                android:layout_below="@id/missing_device_lock_description"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="14dp"
+                android:layout_marginEnd="16dp"
+                android:layout_marginTop="24dp"
+                android:layout_marginBottom="40dp"
+                android:paddingStart="4dp"
+                android:text="@string/missing_device_lock_remove_local_data"
+                android:textAppearance="@style/TextAppearance.TextMedium.Primary"/>
+        </RelativeLayout>
+
+    </ScrollView>
+
+    <FrameLayout
+        android:id="@+id/button_bar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:padding="16dp">
+        <org.chromium.components.browser_ui.widget.DualControlLayout
+            android:id="@+id/dual_control_button_bar"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"/>
+    </FrameLayout>
+
+</org.chromium.chrome.browser.ui.device_lock.MissingDeviceLockView>

@@ -8,13 +8,13 @@
 #include <memory>
 #include <vector>
 
+#include <optional>
 #include "base/win/access_token.h"
 #include "base/win/security_descriptor.h"
 #include "base/win/sid.h"
 #include "base/win/windows_types.h"
 #include "sandbox/win/src/app_container.h"
 #include "sandbox/win/src/sandbox_types.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace sandbox {
 
@@ -70,21 +70,21 @@ class AppContainerBase final : public AppContainer {
   // `token` specify the base token to create the new token from. Must have
   // TOKEN_DUPLICATE access. The token is created with the impersonation
   // capabilities list.
-  absl::optional<base::win::AccessToken> BuildImpersonationToken(
+  std::optional<base::win::AccessToken> BuildImpersonationToken(
       const base::win::AccessToken& token);
 
   // Build a primary token from an existing token.
   // `token` specify the base token to create the new token from. Must have
   // TOKEN_DUPLICATE access. The token is created with the normal capabilities
   // list.
-  absl::optional<base::win::AccessToken> BuildPrimaryToken(
+  std::optional<base::win::AccessToken> BuildPrimaryToken(
       const base::win::AccessToken& token);
 
  private:
   AppContainerBase(base::win::Sid& package_sid, AppContainerType type);
   ~AppContainerBase();
 
-  bool AddCapability(const absl::optional<base::win::Sid>& capability_sid,
+  bool AddCapability(const std::optional<base::win::Sid>& capability_sid,
                      bool impersonation_only);
 
   // Standard object-lifetime reference counter.

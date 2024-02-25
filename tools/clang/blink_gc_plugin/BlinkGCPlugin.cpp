@@ -37,20 +37,14 @@ class BlinkGCPluginAction : public PluginASTAction {
     for (const auto& arg : args) {
       if (arg == "dump-graph") {
         options_.dump_graph = true;
-      } else if (arg == "enable-weak-members-in-unmanaged-classes") {
-        options_.enable_weak_members_in_unmanaged_classes = true;
       } else if (arg == "enable-persistent-in-unique-ptr-check") {
         options_.enable_persistent_in_unique_ptr_check = true;
       } else if (arg == "enable-members-on-stack-check") {
         options_.enable_members_on_stack_check = true;
       } else if (arg == "enable-extra-padding-check") {
         options_.enable_extra_padding_check = true;
-      } else if (arg == "forbid-associated-remote-receiver") {
-        options_.forbid_associated_remote_receiver = true;
-      } else if (arg == "enable-off-heap-collections-of-gced-check") {
-        options_.enable_off_heap_collections_of_gced_check = true;
-      } else if (arg == "enable-off-heap-collections-of-gced-check-pdfium") {
-        options_.enable_off_heap_collections_of_gced_check_pdfium = true;
+      } else if (arg == "disable-off-heap-collections-of-gced-check") {
+        options_.enable_off_heap_collections_of_gced_check = false;
       } else {
         llvm::errs() << "Unknown blink-gc-plugin argument: " << arg << "\n";
         return false;

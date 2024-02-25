@@ -11,9 +11,10 @@
 #include "base/tracing_buildflags.h"
 
 #if BUILDFLAG(ENABLE_BASE_TRACING)
+#include <optional>
+
 #include "base/trace_event/memory_dump_manager.h"  // no-presubmit-check
 #include "base/trace_event/process_memory_dump.h"  // no-presubmit-check
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #endif  // BUILDFLAG(ENABLE_BASE_TRACING)
 
 namespace base {
@@ -60,7 +61,11 @@ void SharedMemoryTracker::IncrementMemoryUsage(
 void SharedMemoryTracker::DecrementMemoryUsage(
     const SharedMemoryMapping& mapping) {
   AutoLock hold(usages_lock_);
-  DCHECK(usages_.find(mapping.raw_memory_ptr()) != usages_.end());
+  const auto it = usages_.find(mapping.raw_memory_ptr());
+  // TODO(pbos): When removing this NotFatalUntil, use erase(it) below. We can't
+  // do that now because if this CHECK is actually failing there'd be a memory
+  // bug.
+  CHECK(it != usages_.end(), base::NotFatalUntil::M125);
   usages_.erase(mapping.raw_memory_ptr());
 }
 
@@ -103,7 +108,7 @@ SharedMemoryTracker::GetOrCreateSharedMemoryDumpInternal(
   // If resident size is not available, a virtual size is used as fallback.
   size_t size = virtual_size;
 #if defined(COUNT_RESIDENT_BYTES_SUPPORTED)
-  absl::optional<size_t> resident_size =
+  std::optional<size_t> resident_size =
       trace_event::ProcessMemoryDump::CountResidentBytesInSharedMemory(
           mapped_memory, mapped_size);
   if (resident_size.has_value())

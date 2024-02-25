@@ -426,9 +426,9 @@ bool IsValidSchema(const base::Value::Dict& dict,
 
   if (type_string == schema::kInteger) {
     // Validate 'minimum' > 'maximum'.
-    const absl::optional<double> minimum_value =
+    const std::optional<double> minimum_value =
         dict.FindDouble(schema::kMinimum);
-    const absl::optional<double> maximum_value =
+    const std::optional<double> maximum_value =
         dict.FindDouble(schema::kMaximum);
     if (minimum_value && maximum_value) {
       if (minimum_value.value() > maximum_value.value()) {
@@ -1456,7 +1456,7 @@ void Schema::MaskSensitiveValues(base::Value* value) const {
 Schema Schema::Parse(const std::string& content, std::string* error) {
   // Validate as a generic JSON schema, and ignore unknown attributes; they
   // may become used in a future version of the schema format.
-  absl::optional<base::Value::Dict> dict = Schema::ParseToDictAndValidate(
+  std::optional<base::Value::Dict> dict = Schema::ParseToDictAndValidate(
       content, kSchemaOptionsIgnoreUnknownAttributes, error);
   if (!dict.has_value())
     return Schema();
@@ -1486,7 +1486,7 @@ Schema Schema::Parse(const std::string& content, std::string* error) {
 }
 
 // static
-absl::optional<base::Value::Dict> Schema::ParseToDictAndValidate(
+std::optional<base::Value::Dict> Schema::ParseToDictAndValidate(
     const std::string& schema,
     int validator_options,
     std::string* error) {
@@ -1496,15 +1496,15 @@ absl::optional<base::Value::Dict> Schema::ParseToDictAndValidate(
 
   if (!value_with_error.has_value()) {
     *error = value_with_error.error().message;
-    return absl::nullopt;
+    return std::nullopt;
   }
   base::Value json = std::move(*value_with_error);
   if (!json.is_dict()) {
     *error = "Schema must be a JSON object";
-    return absl::nullopt;
+    return std::nullopt;
   }
   if (!IsValidSchema(json.GetDict(), validator_options, error)) {
-    return absl::nullopt;
+    return std::nullopt;
   }
   return std::move(json).TakeDict();
 }

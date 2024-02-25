@@ -25,12 +25,12 @@ class QuickAnswersView;
 class UserConsentView;
 
 // This class handles mouse events, and update background color or
-// dismiss Quick Answers or Editor Menu views.
+// dismiss for Quick Answers, Editor Menu, or Mahi Menu views.
 // TODO (siabhijeet): Migrate to using two-phased event dispatching.
 class PreTargetHandler : public ui::EventHandler {
  public:
   explicit PreTargetHandler(views::View* view,
-                            const CardType& type = CardType::kQuickAnswers);
+                            const CardType& type = CardType::kDefault);
 
   // Disallow copy and assign.
   PreTargetHandler(const PreTargetHandler&) = delete;
@@ -61,7 +61,7 @@ class PreTargetHandler : public ui::EventHandler {
 
   std::unique_ptr<views::ExternalFocusTracker> external_focus_tracker_;
 
-  const CardType card_type_ = CardType::kQuickAnswers;
+  const CardType card_type_ = CardType::kDefault;
 };
 
 }  // namespace chromeos::editor_menu

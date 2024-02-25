@@ -1,0 +1,91 @@
+# Copyright 2023 The Chromium Authors
+# Use of this source code is governed by a BSD - style license that can be
+# found in the LICENSE file.
+
+import("//build/config/android/rules.gni")
+import("//third_party/jni_zero/jni_zero.gni")
+
+generate_jni("jni") {
+  sources = [ "java/src/org/chromium/chrome/browser/touch_to_fill/no_passkeys/NoPasskeysBottomSheetBridge.java" ]
+}
+
+android_library("java") {
+  deps = [
+    ":java_resources",
+    "//build/android:build_java",
+    "//chrome/browser/password_manager/android:password_manager_resource_provider_java",
+    "//chrome/browser/ui/android/strings:ui_strings_grd",
+    "//components/browser_ui/bottomsheet/android:java",
+    "//third_party/androidx:androidx_annotation_annotation_java",
+    "//third_party/jni_zero:jni_zero_java",
+    "//ui/android:ui_java",
+  ]
+
+  srcjar_deps = [ ":jni" ]
+  sources = [
+    "java/src/org/chromium/chrome/browser/touch_to_fill/no_passkeys/NoPasskeysBottomSheetBridge.java",
+    "java/src/org/chromium/chrome/browser/touch_to_fill/no_passkeys/NoPasskeysBottomSheetContent.java",
+    "java/src/org/chromium/chrome/browser/touch_to_fill/no_passkeys/NoPasskeysBottomSheetCoordinator.java",
+    "java/src/org/chromium/chrome/browser/touch_to_fill/no_passkeys/NoPasskeysBottomSheetMediator.java",
+  ]
+
+  resources_package = "org.chromium.chrome.browser.touch_to_fill.no_passkeys"
+}
+
+android_resources("java_resources") {
+  sources = [ "java/res/layout/no_passkeys_bottom_sheet.xml" ]
+}
+
+robolectric_library("junit") {
+  testonly = true
+  resources_package = "org.chromium.chrome.browser.touch_to_fill.no_passkeys"
+
+  sources = [ "java/src/org/chromium/chrome/browser/touch_to_fill/no_passkeys/NoPasskeysBottomSheetModuleTest.java" ]
+
+  deps = [
+    ":java",
+    ":java_resources",
+    "//base:base_java_test_support",
+    "//base:base_junit_test_support",
+    "//components/browser_ui/bottomsheet/android:java",
+    "//components/browser_ui/theme/android:java_resources",
+    "//third_party/androidx:androidx_appcompat_appcompat_java",
+    "//third_party/androidx:androidx_test_core_java",
+    "//third_party/jni_zero:jni_zero_java",
+    "//third_party/junit:junit",
+    "//third_party/mockito:mockito_java",
+    "//ui/android:ui_no_recycler_view_java",
+  ]
+}
+
+android_library("javatests") {
+  testonly = true
+  resources_package = "org.chromium.chrome.browser.touch_to_fill.no_passkeys"
+
+  sources = [ "java/src/org/chromium/chrome/browser/touch_to_fill/no_passkeys/NoPasskeysBottomSheetRenderTest.java" ]
+
+  deps = [
+    ":java",
+    ":java_resources",
+    "//base:base_java",
+    "//base:base_java_test_support",
+    "//chrome/browser/autofill/test:test_support_java",
+    "//chrome/browser/flags:java",
+    "//chrome/browser/touch_to_fill/common/android:java",
+    "//chrome/test/android:chrome_java_integration_test_support",
+    "//chrome/test/android:chrome_java_test_support_common",
+    "//components/browser_ui/bottomsheet/android:factory_java",
+    "//components/browser_ui/bottomsheet/android:java",
+    "//components/browser_ui/bottomsheet/android:java_resources",
+    "//components/browser_ui/bottomsheet/android:manager_java",
+    "//components/browser_ui/bottomsheet/android/test:java",
+    "//components/browser_ui/widget/android:java",
+    "//third_party/androidx:androidx_test_monitor_java",
+    "//third_party/androidx:androidx_test_runner_java",
+    "//third_party/junit:junit",
+    "//third_party/mockito:mockito_java",
+    "//ui/android:ui_java_test_support",
+    "//ui/android:ui_no_recycler_view_java",
+    "//ui/android:ui_utils_java",
+  ]
+}

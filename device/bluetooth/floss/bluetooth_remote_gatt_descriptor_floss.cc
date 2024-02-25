@@ -1,4 +1,4 @@
-// Copyright 2022 The Chromium Authors. All rights reserved.
+// Copyright 2022 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -120,7 +120,7 @@ void BluetoothRemoteGattDescriptorFloss::GattDescriptorRead(
     cached_data_ = data;
 
     std::move(pending_read_callback_)
-        .Run(/*error_code=*/absl::nullopt, cached_data_);
+        .Run(/*error_code=*/std::nullopt, cached_data_);
   } else {
     std::move(pending_read_callback_)
         .Run(BluetoothGattServiceFloss::GattStatusToServiceError(status), {});

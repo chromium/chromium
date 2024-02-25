@@ -39,8 +39,7 @@ const extensions::Extension* GetEnabledExtension(
     const extensions::ExtensionId& extension_id) {
   extensions::ExtensionRegistry* registry =
       extensions::ExtensionRegistry::Get(browser_context);
-  return registry->GetExtensionById(extension_id,
-                                    extensions::ExtensionRegistry::ENABLED);
+  return registry->enabled_extensions().GetByID(extension_id);
 }
 
 // Loads an icon of a single size.
@@ -197,7 +196,7 @@ void LacrosFileSystemProvider::ForwardOperation(
 
 void LacrosFileSystemProvider::ForwardRequest(
     const std::string& provider,
-    const absl::optional<std::string>& file_system_id,
+    const std::optional<std::string>& file_system_id,
     int64_t request_id,
     int32_t histogram_value,
     const std::string& event_name,
@@ -269,7 +268,7 @@ void LacrosFileSystemProvider::ForwardRequest(
 
 void LacrosFileSystemProvider::CancelRequest(
     const std::string& provider,
-    const absl::optional<std::string>& file_system_id,
+    const std::optional<std::string>& file_system_id,
     int64_t request_id) {
   Profile* main_profile = GetMainProfile();
   if (!main_profile) {

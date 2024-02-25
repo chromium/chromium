@@ -6,8 +6,10 @@
 import 'chrome://settings/lazy_load.js';
 
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import {CrButtonElement, loadTimeData} from 'chrome://settings/settings.js';
-import {CrInputElement, PaymentsManagerImpl, SettingsCreditCardEditDialogElement, SettingsIbanEditDialogElement, SettingsPaymentsSectionElement} from 'chrome://settings/lazy_load.js';
+import type {CrButtonElement} from 'chrome://settings/settings.js';
+import {loadTimeData} from 'chrome://settings/settings.js';
+import type {CrInputElement, SettingsCreditCardEditDialogElement, SettingsIbanEditDialogElement, SettingsPaymentsSectionElement} from 'chrome://settings/lazy_load.js';
+import {PaymentsManagerImpl} from 'chrome://settings/lazy_load.js';
 import {assertEquals, assertFalse, assertNotEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {eventToPromise, isVisible, whenAttributeIs} from 'chrome://webui-test/test_util.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
@@ -29,6 +31,7 @@ suite('PaymentsSectionCreditCardEditDialogTest', function() {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
     loadTimeData.overrideValues({
       showIbansSettings: true,
+      cvcStorageAvailable: true,
     });
   });
 
@@ -50,6 +53,7 @@ suite('PaymentsSectionCreditCardEditDialogTest', function() {
       autofill: {
         credit_card_enabled: {value: true},
         payment_methods_mandatory_reauth: {value: true},
+        payment_cvc_storage: {value: true},
       },
     };
     document.body.appendChild(section);
@@ -183,8 +187,11 @@ suite('PaymentsSectionCreditCardEditDialogTest', function() {
     const firstEntry = section.$.paymentsList.shadowRoot!.querySelector(
         'settings-iban-list-entry');
     assertTrue(!!firstEntry);
-    const menuButton = firstEntry.$.ibanMenu;
+    assertFalse(!!firstEntry.shadowRoot!.querySelector('#remoteIbanLink'));
+    const menuButton =
+        firstEntry.shadowRoot!.querySelector<HTMLElement>('#ibanMenu');
     assertTrue(!!menuButton);
+
     menuButton.click();
     flush();
 
@@ -231,12 +238,15 @@ suite('PaymentsSectionCreditCardEditDialogTest', function() {
     const numberInput =
         creditCardDialog.shadowRoot!.querySelector<CrInputElement>(
             '#numberInput');
+    const cvcInput =
+        creditCardDialog.shadowRoot!.querySelector<CrInputElement>('#cvcInput');
 
     // Verify the nickname input field is shown when nickname management is
     // enabled.
     assertTrue(!!nicknameInput);
     assertTrue(!!nameInput);
     assertTrue(!!numberInput);
+    assertTrue(!!cvcInput);
     // Verify the card number field is autofocused when nickname management is
     // enabled.
     assertTrue(numberInput.matches(':focus-within'));
@@ -254,12 +264,15 @@ suite('PaymentsSectionCreditCardEditDialogTest', function() {
     const nicknameInput = creditCardDialog.$.nicknameInput;
     const nameInput = creditCardDialog.$.nameInput;
     const numberInput = creditCardDialog.$.numberInput;
+    const cvcInput =
+        creditCardDialog.shadowRoot!.querySelector<CrInputElement>('#cvcInput');
 
     // Verify the nickname input field is shown when nickname management is
     // enabled.
     assertTrue(!!nicknameInput);
     assertTrue(!!nameInput);
     assertTrue(!!numberInput);
+    assertTrue(!!cvcInput);
     // Verify the card number field is autofocused when nickname management is
     // enabled.
     assertTrue(numberInput.matches(':focus-within'));
@@ -271,8 +284,8 @@ suite('PaymentsSectionCreditCardEditDialogTest', function() {
     // Wait for the dialog to open.
     await whenAttributeIs(creditCardDialog.$.dialog, 'open', '');
 
-    // Fill in name, card number, expiration year and card nickname, and trigger
-    // the on-input handler.
+    // Fill in name, card number, expiration year, card nickname and CVC, and
+    // trigger the on-input handler.
     const nameInput =
         creditCardDialog.shadowRoot!.querySelector<CrInputElement>(
             '#nameInput');
@@ -284,11 +297,14 @@ suite('PaymentsSectionCreditCardEditDialogTest', function() {
             '#nicknameInput');
     const yearInput =
         creditCardDialog.shadowRoot!.querySelector<HTMLSelectElement>('#year');
+    const cvcInput =
+        creditCardDialog.shadowRoot!.querySelector<CrInputElement>('#cvcInput');
     nameInput!.value = 'Jane Doe';
     numberInput!.value = '4111111111111111';
     typeInNickname(nicknameInput!, 'Grocery Card');
     yearInput!.value = nextYear();
     yearInput!.dispatchEvent(new CustomEvent('change'));
+    cvcInput!.value = '123';
     flush();
 
     const expiredError =
@@ -312,6 +328,7 @@ suite('PaymentsSectionCreditCardEditDialogTest', function() {
     assertEquals(saveEvent.detail.cardNumber, '4111111111111111');
     assertEquals(saveEvent.detail.nickname, 'Grocery Card');
     assertEquals(saveEvent.detail.expirationYear, nextYear());
+    assertEquals('123', saveEvent.detail.cvc);
   });
 
   test('trim credit card when save', async function() {
@@ -333,11 +350,14 @@ suite('PaymentsSectionCreditCardEditDialogTest', function() {
             '#nicknameInput');
     const yearInput =
         creditCardDialog.shadowRoot!.querySelector<HTMLSelectElement>('#year');
+    const cvcInput =
+        creditCardDialog.shadowRoot!.querySelector<CrInputElement>('#cvcInput');
     nameInput!.value = '  Jane Doe  \n';
     numberInput!.value = ' 4111111111111111 ';
     typeInNickname(nicknameInput!, ' Grocery Card  ');
     yearInput!.value = nextYear();
     yearInput!.dispatchEvent(new CustomEvent('change'));
+    cvcInput!.value = ' ';
     flush();
 
     const expiredError =
@@ -361,6 +381,9 @@ suite('PaymentsSectionCreditCardEditDialogTest', function() {
     assertEquals(saveEvent.detail.cardNumber, '4111111111111111');
     assertEquals(saveEvent.detail.nickname, 'Grocery Card');
     assertEquals(saveEvent.detail.expirationYear, nextYear());
+    // Due to PCI compliance we don't check the structure or length of the CVC,
+    // thus don't make any updates to the same.
+    assertEquals(' ', saveEvent.detail.cvc);
   });
 
   test('update local card value', async function() {
@@ -370,6 +393,7 @@ suite('PaymentsSectionCreditCardEditDialogTest', function() {
     // Set the expiration year to next year to avoid expired card.
     creditCard.expirationYear = nextYear();
     creditCard.cardNumber = '4444333322221111';
+    creditCard.cvc = '123';
     const creditCardDialog = await createEditCreditCardDialog([creditCard]);
 
     // Wait for the dialog to open.
@@ -387,6 +411,8 @@ suite('PaymentsSectionCreditCardEditDialogTest', function() {
             '#numberInput');
     const yearInput =
         creditCardDialog.shadowRoot!.querySelector<HTMLSelectElement>('#year');
+    const cvcInput =
+        creditCardDialog.shadowRoot!.querySelector<CrInputElement>('#cvcInput');
     assertEquals(nameInput!.value, 'Wrong name');
     assertEquals(nicknameInput!.value, 'Shopping Card');
     assertEquals(numberInput!.value, '4444333322221111');
@@ -409,6 +435,7 @@ suite('PaymentsSectionCreditCardEditDialogTest', function() {
     typeInNickname(nicknameInput!, 'Grocery Card');
     yearInput!.value = farFutureYear();
     yearInput!.dispatchEvent(new CustomEvent('change'));
+    cvcInput!.value = '098';
     flush();
 
     const savedPromise = eventToPromise('save-credit-card', creditCardDialog);
@@ -421,6 +448,7 @@ suite('PaymentsSectionCreditCardEditDialogTest', function() {
     assertEquals(saveEvent.detail.cardNumber, '4111111111111111');
     assertEquals(saveEvent.detail.nickname, 'Grocery Card');
     assertEquals(saveEvent.detail.expirationYear, farFutureYear());
+    assertEquals('098', saveEvent.detail.cvc);
   });
 
   test('show error message when input nickname is invalid', async function() {

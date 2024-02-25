@@ -1,11 +1,16 @@
 #include "rar.hpp"
 
 // If NewFile==NULL, we delete created file after user confirmation.
-// It is useful we we need to overwrite an existing folder or file,
+// It is useful if we need to overwrite an existing folder or file,
 // but need user confirmation for that.
-bool FileCreate(RAROptions *Cmd,File *NewFile,wchar *Name,size_t MaxNameSize,
-                bool *UserReject,int64 FileSize,RarTime *FileTime,bool WriteOnly)
-{
+bool FileCreate(CommandData* Cmd,
+                File* NewFile,
+                wchar* Name,
+                size_t MaxNameSize,
+                bool* UserReject,
+                int64 FileSize,
+                RarTime* FileTime,
+                bool WriteOnly) {
   if (UserReject!=NULL)
     *UserReject=false;
 #ifdef _WIN_ALL
@@ -44,15 +49,16 @@ bool FileCreate(RAROptions *Cmd,File *NewFile,wchar *Name,size_t MaxNameSize,
   }
 
   // Try to truncate the existing file first instead of delete,
-  // so we preserve existing file permissions such as NTFS permissions.
+  // so we preserve existing file permissions, such as NTFS permissions,
+  // also as "Compressed" attribute and hard links. In GUI version we avoid
+  // deleting an existing file for non-.rar archive formats as well.
   uint FileMode=WriteOnly ? FMF_WRITE|FMF_SHAREREAD:FMF_UPDATE|FMF_SHAREREAD;
   if (NewFile!=NULL && NewFile->Create(Name,FileMode))
     return true;
 
-  CreatePath(Name,true);
+  CreatePath(Name, true, Cmd->DisableNames);
   return NewFile!=NULL ? NewFile->Create(Name,FileMode):DelFile(Name);
 }
-
 
 bool GetAutoRenamedName(wchar *Name,size_t MaxNameSize)
 {

@@ -3,7 +3,10 @@
 // found in the LICENSE file.
 
 #include "ui/views/animation/pulsing_ink_drop_mask.h"
+
+#include "base/i18n/rtl.h"
 #include "ui/compositor/paint_recorder.h"
+#include "ui/views/view_class_properties.h"
 
 namespace {
 // Cycle duration of ink drop pulsing animation used for in-product help.
@@ -32,6 +35,18 @@ void PulsingInkDropMask::OnPaintLayer(const ui::PaintContext& context) {
   ui::PaintRecorder recorder(context, layer()->size());
 
   gfx::RectF bounds(layer()->bounds());
+
+  const gfx::Insets* const internal_padding =
+      layer_container_->GetProperty(views::kInternalPaddingKey);
+  if (internal_padding) {
+    gfx::Insets insets(*internal_padding);
+    if (layer_container_->GetFlipCanvasOnPaintForRTLUI() &&
+        base::i18n::IsRTL()) {
+      insets.set_left(internal_padding->right());
+      insets.set_right(internal_padding->left());
+    }
+    bounds.Inset(gfx::InsetsF(insets));
+  }
 
   const float current_inset =
       throb_animation_.CurrentValueBetween(0.0f, kFeaturePromoPulseInsetDip);

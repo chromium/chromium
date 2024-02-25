@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<script src="../../resources/testharness.js"></script>
+<script src="../../resources/testharnessreport.js"></script>
+
+<body>
+<div id="group">
+  <details name="n" open></details>
+</div>
+<script>
+
+const kHTMLDetailsElementNameAttributeClosesSelf = 4678;
+
+test(() => {
+  assert_false(internals.isUseCounted(document, kHTMLDetailsElementNameAttributeClosesSelf),
+               "shouldn't be counted before the test.");
+
+  const e = document.createElement('details');
+  e.name = "n";
+  e.open = true;
+
+  assert_false(internals.isUseCounted(document, kHTMLDetailsElementNameAttributeClosesSelf),
+               "shouldn't be counted before inserting element");
+  assert_true(e.open, "should be open before insertion");
+
+  document.getElementById("group").appendChild(e);
+
+  assert_true(internals.isUseCounted(document, kHTMLDetailsElementNameAttributeClosesSelf),
+              "should be counted after insertion");
+  assert_false(e.open, "should be closed after insertion");
+}, 'Behavior of kHTMLDetailsElementNameAttributeClosesSelf use counter');
+
+</script>

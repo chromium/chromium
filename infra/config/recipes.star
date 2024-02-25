@@ -150,6 +150,10 @@ build_recipe(
 )
 
 build_recipe(
+    name = "recipe:chromium/generic_script_runner",
+)
+
+build_recipe(
     name = "recipe:chromium/orchestrator",
     bootstrappable = True,
 )
@@ -165,7 +169,15 @@ build_recipe(
 )
 
 build_recipe(
+    name = "recipe:chromium/gn_args_verifier",
+)
+
+build_recipe(
     name = "recipe:chromium/targets_config_verifier",
+)
+
+build_recipe(
+    name = "recipe:chromium_licenses/scan",
 )
 
 build_recipe(
@@ -181,11 +193,19 @@ build_recipe(
 )
 
 build_recipe(
+    name = "recipe:chromium/mega_cq_launcher",
+)
+
+build_recipe(
     name = "recipe:chromium_clang_coverage_tot",
 )
 
 build_recipe(
     name = "recipe:chromium_fuzz_coverage",
+)
+
+build_recipe(
+    name = "recipe:chrome_codeql_database_builder",
 )
 
 build_recipe(
@@ -238,10 +258,6 @@ build_recipe(
 build_recipe(
     name = "recipe:gofindit/chromium/test_single_revision",
     bootstrappable = POLYMORPHIC,
-)
-
-build_recipe(
-    name = "recipe:perf/crossbench",
 )
 
 build_recipe(

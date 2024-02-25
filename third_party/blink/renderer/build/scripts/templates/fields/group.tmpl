@@ -1,4 +1,4 @@
-{% from 'templates/fields/field.tmpl' import encode, declare_storage, compare, fieldwise_initialize %}
+{% from 'templates/fields/field.tmpl' import encode, declare_storage, compare, group_source_expression, field_source_expression %}
 {% from 'templates/macros.tmpl' import print_if %}
 {% macro declare_field_group_class(group): -%}
 {% for subgroup in group.subgroups %}
@@ -18,14 +18,19 @@ class {{group.type_name}} : public GarbageCollected<{{group.type_name}}> {
   }
 
   {% if group.all_fields|selectattr("is_inherited")|list|length > 0 and
-        group.all_fields|rejectattr("is_inherited")|list|length > 0 -%}
+        group.all_fields|rejectattr("is_inherited")|list|length > 0 %}
     // Used when constructing ComputedStyleBase, since this group contains
     // both inherited and non-inherited members.
     CORE_EXPORT {{group.type_name}}(const {{group.type_name}}& source_for_noninherited,
                                     const {{group.type_name}}& parent_style) :
-    {{fieldwise_initialize(group)}}
-    {
-    }
+    {% set comma = joiner(", ") %}
+    {% for subgroup in group.subgroups %}
+    {{comma()}}{{subgroup.member_name}}({{group_source_expression(subgroup, 'source_for_noninherited', 'parent_style')}})
+    {% endfor %}
+    {% for field in group.fields %}
+    {{comma()}}{{field.name}}({{field_source_expression(field, 'source_for_noninherited', 'parent_style')}})
+    {% endfor %}
+    {}
   {% endif %}
 
   CORE_EXPORT void Trace(Visitor* visitor) const {
@@ -45,7 +50,7 @@ class {{group.type_name}} : public GarbageCollected<{{group.type_name}}> {
     return (
     {% set boolean_and = joiner("&& ") %}
     {% for subgroup in group.subgroups %}
-      {{boolean_and()}}{{subgroup.member_name}} == other.{{subgroup.member_name}}
+      {{boolean_and()}}base::ValuesEquivalent({{subgroup.member_name}}, other.{{subgroup.member_name}})
     {% endfor %}
     {% for field in group.fields if not field.custom_compare %}
       {{boolean_and()}}{{compare(field.wrapper_pointer_name, field.name, "other")}}
@@ -55,7 +60,7 @@ class {{group.type_name}} : public GarbageCollected<{{group.type_name}}> {
   bool operator!=(const {{group.type_name}}& other) const { return !(*this == other); }
 
   {% for subgroup in group.subgroups %}
-  DataRef<{{subgroup.type_name}}> {{subgroup.member_name}};
+  Member<{{subgroup.type_name}}> {{subgroup.member_name}};
   {% endfor %}
   {% for field in group.fields %}
   {{declare_storage(field)}}

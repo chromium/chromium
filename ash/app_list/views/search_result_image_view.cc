@@ -48,8 +48,13 @@ constexpr gfx::Insets kFocusRingInsets =
 constexpr double kDraggedImageOpacity = 0.6;
 
 class ImagePreviewView : public views::ImageButton {
+  METADATA_HEADER(ImagePreviewView, views::ImageButton)
+
  public:
-  ImagePreviewView() { SetInstallFocusRingOnFocus(false); }
+  ImagePreviewView() {
+    SetInstallFocusRingOnFocus(false);
+    SetFocusBehavior(FocusBehavior::ACCESSIBLE_ONLY);
+  }
   ImagePreviewView(const ImagePreviewView&) = delete;
   ImagePreviewView& operator=(const ImagePreviewView&) = delete;
   ~ImagePreviewView() override = default;
@@ -70,11 +75,15 @@ class ImagePreviewView : public views::ImageButton {
   }
 };
 
+BEGIN_METADATA(ImagePreviewView)
+END_METADATA
+
 }  // namespace
 
 SearchResultImageView::SearchResultImageView(
     int index,
-    SearchResultImageListView* list_view)
+    SearchResultImageListView* list_view,
+    SearchResultImageViewDelegate* image_view_delegate)
     : index_(index), list_view_(list_view) {
   SetLayoutManager(std::make_unique<views::FillLayout>());
   result_image_ = AddChildView(std::make_unique<ImagePreviewView>());
@@ -99,25 +108,12 @@ SearchResultImageView::SearchResultImageView(
   SetCallback(base::BindRepeating(&SearchResultImageView::OnImageViewPressed,
                                   base::Unretained(this)));
 
-  set_context_menu_controller(SearchResultImageViewDelegate::Get());
-  set_drag_controller(SearchResultImageViewDelegate::Get());
+  set_drag_controller(image_view_delegate);
 }
 
 void SearchResultImageView::OnImageViewPressed(const ui::Event& event) {
   list_view_->SearchResultActivated(this, event.flags(),
                                     true /* by_button_press */);
-}
-
-void SearchResultImageView::OnGestureEvent(ui::GestureEvent* event) {
-  SearchResultImageViewDelegate::Get()->HandleSearchResultImageViewGestureEvent(
-      this, *event);
-  SearchResultBaseView::OnGestureEvent(event);
-}
-
-void SearchResultImageView::OnMouseEvent(ui::MouseEvent* event) {
-  SearchResultImageViewDelegate::Get()->HandleSearchResultImageViewMouseEvent(
-      this, *event);
-  SearchResultBaseView::OnMouseEvent(event);
 }
 
 gfx::Size SearchResultImageView::CalculatePreferredSize() const {
@@ -173,7 +169,7 @@ void SearchResultImageView::OnMetadataChanged() {
   UpdateAccessibleName();
   // By default, the description will be set to the tooltip text, but the title
   // is already announced in the accessible name.
-  SetAccessibleDescription(
+  GetViewAccessibility().SetDescription(
       u"", ax::mojom::DescriptionFrom::kAttributeExplicitlyEmpty);
 
   if (!result() || result()->icon().icon.IsEmpty()) {
@@ -197,13 +193,14 @@ void SearchResultImageView::OnMetadataChanged() {
         image, skia::ImageOperations::RESIZE_BEST, GetContentsBounds().size());
   }
 
-  result_image_->SetImage(views::Button::STATE_NORMAL, image);
+  result_image_->SetImageModel(views::Button::STATE_NORMAL,
+                               ui::ImageModel::FromImageSkia(image));
   SetTooltipText(result()->title());
 }
 
 SearchResultImageView::~SearchResultImageView() = default;
 
-BEGIN_METADATA(SearchResultImageView, SearchResultBaseView)
+BEGIN_METADATA(SearchResultImageView)
 END_METADATA
 
 }  // namespace ash

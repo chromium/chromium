@@ -1,0 +1,38 @@
+[
+  {
+    "can_be_recommended": true,
+    "os": [
+      "win",
+      "linux",
+      "mac",
+      "chromeos_ash",
+      "chromeos_lacros",
+      "fuchsia"
+    ],
+    "policy_pref_mapping_tests": [
+      {
+        "policies": {
+          "RegisteredProtocolHandlers": [
+            {
+              "default": true,
+              "protocol": "test",
+              "url": "http://example.com/%s"
+            }
+          ]
+        },
+        "prefs": {
+          "custom_handlers.policy.registered_protocol_handlers": {
+            "check_for_mandatory": false,
+            "value": [
+              {
+                "default": true,
+                "protocol": "test",
+                "url": "http://example.com/%s"
+              }
+            ]
+          }
+        }
+      }
+    ]
+  }
+]

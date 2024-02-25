@@ -21,7 +21,7 @@ limitations under the License.
 
 #include "absl/status/status.h"  // from @com_google_absl
 #include "tensorflow/lite/core/api/op_resolver.h"
-#include "tensorflow/lite/core/kernels/register.h"
+#include "tensorflow/lite/kernels/register.h"
 #include "tensorflow_lite_support/cc/port/statusor.h"
 #include "tensorflow_lite_support/cc/task/core/base_task_api.h"
 #include "tensorflow_lite_support/cc/task/processor/embedding_postprocessor.h"
@@ -84,8 +84,7 @@ class TextEmbedder
   //
   // [1]: https://en.wikipedia.org/wiki/Cosine_similarity
   static tflite::support::StatusOr<double> CosineSimilarity(
-      const processor::FeatureVector& u,
-      const processor::FeatureVector& v);
+      const processor::FeatureVector& u, const processor::FeatureVector& v);
 
  protected:
   // The options used to build this TextEmbedder.

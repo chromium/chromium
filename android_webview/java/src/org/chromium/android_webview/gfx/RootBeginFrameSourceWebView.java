@@ -4,17 +4,16 @@
 
 package org.chromium.android_webview.gfx;
 
+import org.jni_zero.CalledByNative;
+import org.jni_zero.JNINamespace;
+import org.jni_zero.NativeMethods;
+
 import org.chromium.android_webview.common.Lifetime;
 import org.chromium.base.ContextUtils;
-import org.chromium.base.annotations.CalledByNative;
-import org.chromium.base.annotations.JNINamespace;
-import org.chromium.base.annotations.NativeMethods;
 import org.chromium.ui.display.DisplayAndroid;
 import org.chromium.ui.display.DisplayAndroid.DisplayAndroidObserver;
 
-/**
- * Provides DisplayRefreshRate tracking for MainBeginFrameSourceWebView
- */
+/** Provides DisplayRefreshRate tracking for MainBeginFrameSourceWebView */
 @JNINamespace("android_webview")
 @Lifetime.Singleton
 public class RootBeginFrameSourceWebView implements DisplayAndroidObserver {
@@ -32,13 +31,19 @@ public class RootBeginFrameSourceWebView implements DisplayAndroidObserver {
 
     @Override
     public void onRefreshRateChanged(float refreshRate) {
-        RootBeginFrameSourceWebViewJni.get().onUpdateRefreshRate(
-                mNativeRootBeginFrameSourceWebView, RootBeginFrameSourceWebView.this, refreshRate);
+        RootBeginFrameSourceWebViewJni.get()
+                .onUpdateRefreshRate(
+                        mNativeRootBeginFrameSourceWebView,
+                        RootBeginFrameSourceWebView.this,
+                        refreshRate);
     }
 
     @NativeMethods
     interface Natives {
-        void onUpdateRefreshRate(long nativeRootBeginFrameSourceWebView,
-                RootBeginFrameSourceWebView caller, float refreshRate);
+        void onUpdateRefreshRate(
+                long nativeRootBeginFrameSourceWebView,
+                RootBeginFrameSourceWebView caller,
+                float refreshRate);
     }
-};
+}
+;

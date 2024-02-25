@@ -191,7 +191,7 @@ bool XmlElement::HasAttr(const QName& name) const {
   return false;
 }
 
-void XmlElement::SetAttr(const QName& name, const std::string& value) {
+void XmlElement::SetAttr(const QName& name, std::string_view value) {
   XmlAttr* attr;
   for (attr = first_attr_; attr; attr = attr->next_attr_) {
     if (attr->name_ == name)

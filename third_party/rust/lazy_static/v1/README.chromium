@@ -2,6 +2,8 @@ Name: lazy_static
 URL: https://crates.io/crates/lazy_static
 Description: A macro for declaring lazily evaluated statics in Rust.
 Version: 1.4.0
-Security Critical: no
+Security Critical: yes
 Shipped: yes
 License: Apache 2.0
+License File: //third_party/rust/chromium_crates_io/vendor/lazy_static-1.4.0/LICENSE-APACHE
+Revision: 421669662b35fcb455f2902daed2e20bbbba79b6

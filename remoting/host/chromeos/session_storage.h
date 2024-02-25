@@ -5,9 +5,9 @@
 #ifndef REMOTING_HOST_CHROMEOS_SESSION_STORAGE_H_
 #define REMOTING_HOST_CHROMEOS_SESSION_STORAGE_H_
 
+#include <optional>
 #include "base/functional/callback_forward.h"
 #include "base/values.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace remoting {
 
@@ -21,7 +21,7 @@ class SessionStorage {
                             base::OnceClosure on_done) = 0;
   virtual void DeleteSession(base::OnceClosure on_done) = 0;
   virtual void RetrieveSession(
-      base::OnceCallback<void(absl::optional<base::Value::Dict>)> on_done) = 0;
+      base::OnceCallback<void(std::optional<base::Value::Dict>)> on_done) = 0;
 
   virtual void HasSession(base::OnceCallback<void(bool)> on_done) const = 0;
 };

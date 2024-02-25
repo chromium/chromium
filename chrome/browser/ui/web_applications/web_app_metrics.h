@@ -5,6 +5,8 @@
 #ifndef CHROME_BROWSER_UI_WEB_APPLICATIONS_WEB_APP_METRICS_H_
 #define CHROME_BROWSER_UI_WEB_APPLICATIONS_WEB_APP_METRICS_H_
 
+#include <optional>
+
 #include "base/containers/flat_map.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
@@ -13,10 +15,9 @@
 #include "chrome/browser/ui/browser_tab_strip_tracker.h"
 #include "chrome/browser/ui/tabs/tab_strip_model_observer.h"
 #include "chrome/browser/ui/web_applications/diagnostics/web_app_icon_health_checks.h"
-#include "chrome/browser/web_applications/web_app_id.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/site_engagement/content/site_engagement_observer.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
+#include "components/webapps/common/web_app_id.h"
 #include "url/gurl.h"
 
 class Profile;
@@ -34,6 +35,11 @@ class WebContents;
 namespace site_engagement {
 enum class EngagementType;
 }  // namespace site_engagement
+
+namespace webapps {
+enum class InstallableWebAppCheckResult;
+struct WebAppBannerData;
+}  // namespace webapps
 
 namespace web_app {
 
@@ -74,15 +80,19 @@ class WebAppMetrics : public KeyedService,
   // base::PowerSuspendObserver:
   void OnSuspend() override;
 
-  // Called when a web contents changes associated AppId (may be empty).
+  // Called when a web contents changes associated webapps::AppId (may be
+  // empty).
   void NotifyOnAssociatedAppChanged(
       content::WebContents* web_contents,
-      const absl::optional<AppId>& previous_app_id,
-      const absl::optional<AppId>& new_app_id);
+      const std::optional<webapps::AppId>& previous_app_id,
+      const std::optional<webapps::AppId>& new_app_id);
 
   // Notify WebAppMetrics that an installability check has been completed for
   // a WebContents (see AppBannerManager::OnInstallableWebAppStatusUpdated).
-  void NotifyInstallableWebAppStatusUpdated(content::WebContents* web_contents);
+  void NotifyInstallableWebAppStatusUpdated(
+      content::WebContents* web_contents,
+      webapps::InstallableWebAppCheckResult result,
+      const std::optional<webapps::WebAppBannerData>& data);
   // Notify WebAppMetrics that a WebContents is being destroyed.
   void NotifyWebContentsDestroyed(content::WebContents* web_contents);
 
@@ -109,7 +119,7 @@ class WebAppMetrics : public KeyedService,
   static constexpr int kNumUserInstalledAppsNotCounted = -1;
   int num_user_installed_apps_ = kNumUserInstalledAppsNotCounted;
 
-  base::flat_map<web_app::AppId, base::Time> app_last_interacted_time_{};
+  base::flat_map<webapps::AppId, base::Time> app_last_interacted_time_{};
   // DanglingUntriaged because it is assigned a DanglingUntriaged pointer.
   raw_ptr<content::WebContents, DanglingUntriaged> foreground_web_contents_ =
       nullptr;

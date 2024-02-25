@@ -1,5 +1,6 @@
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN">
-<html><head>
+<html>
+  <head>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
     <title>CSS Test: dynamic changes to 'counter-increment'</title>
     <link rel="author" href="http://dbaron.org/" title="L. David Baron">
@@ -9,43 +10,51 @@
     <meta content="dom" name="flags">
     <meta http-equiv="Content-Script-Type" content="text/javascript">
     <style type="text/css">
-        body { white-space: nowrap; }
-        #test, .reset { counter-reset: c; }
-        .increment:before { content: counters(c, ".") "-"; }
-        .increment { counter-increment: c; }
+      body { white-space: nowrap; }
+      #test, .reset { counter-reset: c; }
+      .increment::before { content: counters(c, ".") "-"; }
+      .increment { counter-increment: c; }
     </style>
     <script type="text/javascript">
-        if (window.testRunner) {
-            testRunner.dumpAsText();   
-            testRunner.waitUntilDone();
-        }
+      if (window.testRunner) {
+        testRunner.dumpAsText();
+        testRunner.waitUntilDone();
+      }
 
-        function run() {
-            var t = document.getElementById("test");
-            var s = document.createElement("span");
-            s.setAttribute("class", "reset");
-            s.setAttribute("id", "newSpan");
-            t.insertBefore(s, t.childNodes.item(1));
-            if (window.testRunner) {
-                testElement = document.getElementById("test");
-                console = document.getElementById("console");
-                spanList = testElement.getElementsByTagName("span")
-                for (i = 0; i < spanList.length; ++i ) {
-                    newSpanElement = document.createElement("span");
-                    newSpanElement.innerText =
-                    internals.counterValue(document.getElementById(spanList.item(i).getAttribute("id")));
-                    if (newSpanElement.innerText.length)
-                        newSpanElement.innerText = newSpanElement.innerText + "-"
-                    console.appendChild(newSpanElement);
-                }
-                testRunner.notifyDone();
-            }
+      function run() {
+        var t = document.getElementById("test");
+        var s = document.createElement("span");
+        s.setAttribute("class", "reset");
+        s.setAttribute("id", "newSpan");
+        t.insertBefore(s, t.childNodes.item(1));
+        if (window.testRunner) {
+          testElement = document.getElementById("test");
+          console = document.getElementById("console");
+          spanList = testElement.getElementsByTagName("span")
+          for (i = 0; i < spanList.length; ++i ) {
+            newSpanElement = document.createElement("span");
+            newSpanElement.innerText =
+              internals.counterValue(document.getElementById(spanList.item(i).getAttribute("id")));
+            if (newSpanElement.innerText.length)
+              newSpanElement.innerText = newSpanElement.innerText + "-"
+            console.appendChild(newSpanElement);
           }
+          testRunner.notifyDone();
+        }
+      }
     </script>
-</head><body onload="setTimeout('run()', 0)">
+  </head>
+  <body onload="setTimeout('run()', 0)">
     <p>The following two lines should be the same:</p>
-    <div id="test"><span id="span1" class="increment"></span><span id="span2" class="reset"></span><span id="span3" class="increment"></span><span id="span4" class="increment"></span></div>
-    <div id="reference">1-1.1-1.2-</div>
+    <div id="test">
+      <!-- Here <span class="reset" id="newSpan"></span> will be inserted -->
+      <span id="span1" class="increment"></span>
+      <span id="span2" class="reset"></span>
+      <span id="span3" class="increment"></span>
+      <span id="span4" class="increment"></span>
+    </div>
+    <div id="reference">1- 2- 3-</div>
     <hr>
     <div id="console"/>
-</body></html>
+  </body>
+</html>

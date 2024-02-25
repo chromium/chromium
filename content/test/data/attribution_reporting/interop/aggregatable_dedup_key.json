@@ -1,243 +1,247 @@
 {
   "description": "2nd trigger with the same deduplication key is not attributed",
   "input": {
-    "sources": [
+    "registrations": [
       {
-        "timestamp": "1643235573000",
+        "timestamp": "0",
         "registration_request": {
-          "source_origin": "https://source.test",
+          "context_origin": "https://source.test",
           "attribution_src_url": "https://reporter.test/register-source",
           "source_type": "navigation"
         },
-        "responses": [{
-          "url": "https://reporter.test/register-source",
-          "response": {
-            "Attribution-Reporting-Register-Source": {
-              "destination": "https://destination.test",
-              "source_event_id": "123",
-              "aggregation_keys": {
-                "a": "0x159"
-              },
-              "filter_data": {
-                "x": ["y", "z"]
+        "responses": [
+          {
+            "url": "https://reporter.test/register-source",
+            "debug_permission": true,
+            "response": {
+              "Attribution-Reporting-Register-Source": {
+                "destination": "https://destination.test",
+                "source_event_id": "123",
+                "aggregation_keys": {
+                  "a": "0x159"
+                },
+                "filter_data": {
+                  "x": ["y", "z"]
+                }
               }
             }
           }
-        }]
-      }
-    ],
-    "triggers": [
+        ]
+      },
       // Should result in an event-level report and an aggregatable report.
       {
-        "timestamp": "1643235574000",
+        "timestamp": "1000",
         "registration_request": {
           "attribution_src_url": "https://reporter.test/register-trigger",
-          "destination_origin": "https://destination.test"
+          "context_origin": "https://destination.test"
         },
-        "responses": [{
-          "url": "https://reporter.test/register-trigger",
-          "response": {
-            "Attribution-Reporting-Register-Trigger": {
-              "event_trigger_data": [
-                {
-                  "trigger_data": "1",
-                  "deduplication_key": "1"
-                }
-              ],
-              "aggregatable_trigger_data": [
-                {
-                  "source_keys": ["a"],
-                  "key_piece": "0x400"
-                }
-              ],
-              "aggregatable_values": {
-                "a": 123
-              },
-              "aggregatable_deduplication_keys": [
-                {
-                  "deduplication_key": "0",
-                  "filters": {
-                    "x": ["x"]
+        "responses": [
+          {
+            "url": "https://reporter.test/register-trigger",
+            "response": {
+              "Attribution-Reporting-Register-Trigger": {
+                "event_trigger_data": [
+                  {
+                    "trigger_data": "1",
+                    "deduplication_key": "1"
                   }
+                ],
+                "aggregatable_trigger_data": [
+                  {
+                    "source_keys": ["a"],
+                    "key_piece": "0x400"
+                  }
+                ],
+                "aggregatable_values": {
+                  "a": 123
                 },
-                // Selected dedup key.
-                {
-                  "deduplication_key": "1",
-                  "filters": {
-                    "x": ["y"]
+                "aggregatable_deduplication_keys": [
+                  {
+                    "deduplication_key": "0",
+                    "filters": {
+                      "x": ["x"]
+                    }
+                  },
+                  // Selected dedup key.
+                  {
+                    "deduplication_key": "1",
+                    "filters": {
+                      "x": ["y"]
+                    }
+                  },
+                  {
+                    "deduplication_key": "2",
+                    "filters": {
+                      "x": ["z"]
+                    }
                   }
-                },
-                {
-                  "deduplication_key": "2",
-                  "filters": {
-                    "x": ["z"]
-                  }
-                }
-              ]
+                ]
+              }
             }
           }
-        }]
+        ]
       },
       // Should result in an event-level report and the aggregatable report
       // will be deduplicated.
       {
-        "timestamp": "1643235575000",
+        "timestamp": "2000",
         "registration_request": {
           "attribution_src_url": "https://reporter.test/register-trigger",
-          "destination_origin": "https://destination.test"
+          "context_origin": "https://destination.test"
         },
-        "responses": [{
-          "url": "https://reporter.test/register-trigger",
-          "debug_permission": true,
-          "response": {
-            "Attribution-Reporting-Register-Trigger": {
-              "event_trigger_data": [
-                {
-                  "trigger_data": "2"
-                }
-              ],
-              "aggregatable_trigger_data": [
-                {
-                  "source_keys": ["a"],
-                  "key_piece": "0x400"
-                }
-              ],
-              "aggregatable_values": {
-                "a": 654
-              },
-              "aggregatable_deduplication_keys": [
-                {
-                  "deduplication_key": "1",
-                  "filters": {
-                    "x": ["z"]
+        "responses": [
+          {
+            "url": "https://reporter.test/register-trigger",
+            "debug_permission": true,
+            "response": {
+              "Attribution-Reporting-Register-Trigger": {
+                "event_trigger_data": [
+                  {
+                    "trigger_data": "2"
                   }
-                }
-              ],
-              "debug_reporting": true
+                ],
+                "aggregatable_trigger_data": [
+                  {
+                    "source_keys": ["a"],
+                    "key_piece": "0x400"
+                  }
+                ],
+                "aggregatable_values": {
+                  "a": 654
+                },
+                "aggregatable_deduplication_keys": [
+                  {
+                    "deduplication_key": "1",
+                    "filters": {
+                      "x": ["z"]
+                    }
+                  }
+                ],
+                "debug_reporting": true
+              }
             }
           }
-        }]
+        ]
       },
       // Should result in an aggregatable report as the deduplication key is
       // different.
       {
-        "timestamp": "1643235576000",
+        "timestamp": "3000",
         "registration_request": {
           "attribution_src_url": "https://reporter.test/register-trigger",
-          "destination_origin": "https://destination.test"
+          "context_origin": "https://destination.test"
         },
-        "responses": [{
-          "url": "https://reporter.test/register-trigger",
-          "response": {
-            "Attribution-Reporting-Register-Trigger": {
-              "aggregatable_trigger_data": [
-                {
-                  "source_keys": ["a"],
-                  "key_piece": "0x400"
-                }
-              ],
-              "aggregatable_values": {
-                "a": 456
-              },
-              "aggregatable_deduplication_keys": [
-                {
-                  "deduplication_key": "2"
-                }
-              ]
+        "responses": [
+          {
+            "url": "https://reporter.test/register-trigger",
+            "response": {
+              "Attribution-Reporting-Register-Trigger": {
+                "aggregatable_trigger_data": [
+                  {
+                    "source_keys": ["a"],
+                    "key_piece": "0x400"
+                  }
+                ],
+                "aggregatable_values": {
+                  "a": 456
+                },
+                "aggregatable_deduplication_keys": [
+                  {
+                    "deduplication_key": "2"
+                  }
+                ]
+              }
             }
           }
-        }]
+        ]
       },
       // Should result in an aggregatable report as the deduplication key is
       // filtered.
       {
-        "timestamp": "1643235577000",
+        "timestamp": "4000",
         "registration_request": {
           "attribution_src_url": "https://reporter.test/register-trigger",
-          "destination_origin": "https://destination.test"
+          "context_origin": "https://destination.test"
         },
-        "responses": [{
-          "url": "https://reporter.test/register-trigger",
-          "response": {
-            "Attribution-Reporting-Register-Trigger": {
-              "aggregatable_trigger_data": [
-                {
-                  "source_keys": ["a"],
-                  "key_piece": "0x400"
-                }
-              ],
-              "aggregatable_values": {
-                "a": 789
-              },
-              "aggregatable_deduplication_keys": [{
-                "deduplication_key": "1",
-                "not_filters": {
-                  "x": ["y"]
-                }
-              }]
+        "responses": [
+          {
+            "url": "https://reporter.test/register-trigger",
+            "response": {
+              "Attribution-Reporting-Register-Trigger": {
+                "aggregatable_trigger_data": [
+                  {
+                    "source_keys": ["a"],
+                    "key_piece": "0x400"
+                  }
+                ],
+                "aggregatable_values": {
+                  "a": 789
+                },
+                "aggregatable_deduplication_keys": [
+                  {
+                    "deduplication_key": "1",
+                    "not_filters": {
+                      "x": ["y"]
+                    }
+                  }
+                ]
+              }
             }
           }
-        }]
+        ]
       },
       // Should result in an aggregatable report as the deduplication key is null.
       {
-        "timestamp": "1643235578000",
+        "timestamp": "5000",
         "registration_request": {
           "attribution_src_url": "https://reporter.test/register-trigger",
-          "destination_origin": "https://destination.test"
+          "context_origin": "https://destination.test"
         },
-        "responses": [{
-          "url": "https://reporter.test/register-trigger",
-          "response": {
-            "Attribution-Reporting-Register-Trigger": {
-              "aggregatable_trigger_data": [
-                {
-                  "source_keys": ["a"],
-                  "key_piece": "0x400"
-                }
-              ],
-              "aggregatable_values": {
-                "a": 987
-              },
-              "aggregatable_deduplication_keys": [{
-                "filters": {
-                  "x": ["y"]
-                }
-              }]
+        "responses": [
+          {
+            "url": "https://reporter.test/register-trigger",
+            "response": {
+              "Attribution-Reporting-Register-Trigger": {
+                "aggregatable_trigger_data": [
+                  {
+                    "source_keys": ["a"],
+                    "key_piece": "0x400"
+                  }
+                ],
+                "aggregatable_values": {
+                  "a": 987
+                },
+                "aggregatable_deduplication_keys": [
+                  {
+                    "filters": {
+                      "x": ["y"]
+                    }
+                  }
+                ]
+              }
             }
           }
-        }]
+        ]
       }
     ]
   },
   "output": {
-    "event_level_results": [
+    "unparsable_registrations": [],
+    "reports": [
       {
-        "payload": {
-          "attribution_destination": "https://destination.test",
-          "randomized_trigger_rate": 0.0024263,
-          "scheduled_report_time": "1643411973",
-          "source_event_id": "123",
-          "source_type": "navigation",
-          "trigger_data": "1"
-        },
-        "report_url": "https://reporter.test/.well-known/attribution-reporting/report-event-attribution",
-        "report_time": "1643411973000"
+        "payload": [
+          {
+            "body": {
+              "attribution_destination": "https://destination.test",
+              "source_event_id": "123",
+              "source_site": "https://source.test"
+            },
+            "type": "trigger-aggregate-deduplicated"
+          }
+        ],
+        "report_time": "2000",
+        "report_url": "https://reporter.test/.well-known/attribution-reporting/debug/verbose"
       },
-      {
-        "payload": {
-          "attribution_destination": "https://destination.test",
-          "randomized_trigger_rate": 0.0024263,
-          "scheduled_report_time": "1643411973",
-          "source_event_id": "123",
-          "source_type": "navigation",
-          "trigger_data": "2"
-        },
-        "report_url": "https://reporter.test/.well-known/attribution-reporting/report-event-attribution",
-        "report_time": "1643411973000"
-      }
-    ],
-    "aggregatable_results": [
       {
         "payload": {
           "attribution_destination": "https://destination.test",
@@ -249,7 +253,7 @@
           ]
         },
         "report_url": "https://reporter.test/.well-known/attribution-reporting/report-aggregate-attribution",
-        "report_time": "1643239174000"
+        "report_time": "3601000"
       },
       {
         "payload": {
@@ -262,7 +266,7 @@
           ]
         },
         "report_url": "https://reporter.test/.well-known/attribution-reporting/report-aggregate-attribution",
-        "report_time": "1643239176000"
+        "report_time": "3603000"
       },
       {
         "payload": {
@@ -275,7 +279,7 @@
           ]
         },
         "report_url": "https://reporter.test/.well-known/attribution-reporting/report-aggregate-attribution",
-        "report_time": "1643239177000"
+        "report_time": "3604000"
       },
       {
         "payload": {
@@ -288,21 +292,31 @@
           ]
         },
         "report_url": "https://reporter.test/.well-known/attribution-reporting/report-aggregate-attribution",
-        "report_time": "1643239178000"
-      }
-    ],
-    "verbose_debug_reports": [
+        "report_time": "3605000"
+      },
       {
-        "payload": [ {
-          "body": {
-             "attribution_destination": "https://destination.test",
-             "source_event_id": "123",
-             "source_site": "https://source.test"
-          },
-          "type": "trigger-aggregate-deduplicated"
-       } ],
-       "report_time": "1643235575000",
-       "report_url": "https://reporter.test/.well-known/attribution-reporting/debug/verbose"
+        "payload": {
+          "attribution_destination": "https://destination.test",
+          "randomized_trigger_rate": 0.0024263,
+          "scheduled_report_time": "172800",
+          "source_event_id": "123",
+          "source_type": "navigation",
+          "trigger_data": "1"
+        },
+        "report_url": "https://reporter.test/.well-known/attribution-reporting/report-event-attribution",
+        "report_time": "172800000"
+      },
+      {
+        "payload": {
+          "attribution_destination": "https://destination.test",
+          "randomized_trigger_rate": 0.0024263,
+          "scheduled_report_time": "172800",
+          "source_event_id": "123",
+          "source_type": "navigation",
+          "trigger_data": "2"
+        },
+        "report_url": "https://reporter.test/.well-known/attribution-reporting/report-event-attribution",
+        "report_time": "172800000"
       }
     ]
   }

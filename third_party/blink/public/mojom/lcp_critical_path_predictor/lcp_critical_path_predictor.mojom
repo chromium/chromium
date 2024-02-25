@@ -5,12 +5,40 @@
 module blink.mojom;
 
 import "mojo/public/mojom/base/byte_string.mojom";
+import "mojo/public/mojom/base/time.mojom";
+import "url/mojom/url.mojom";
 
 // Interface for LCP Critical Path Predictor from the renderer process.
 interface LCPCriticalPathPredictorHost {
   // `lcp_element_locator` is a LCP ElementLocator information
   // serialized in proto3 binary format.
-  SetLcpElementLocator(mojo_base.mojom.ByteString lcp_element_locator);
+  // `predicted_lcp_index` is predicted index of `lcp_element_locators` in
+  //  LCPCriticalPathPredictorNavigationTimeHint.
+  SetLcpElementLocator(mojo_base.mojom.ByteString lcp_element_locator,
+    uint32? predicted_lcp_index);
+
+  // `lcp_influencer_scripts` contain the list of script URLs that affected
+  // the LCP element.
+  SetLcpInfluencerScriptUrls(array<url.mojom.Url> lcp_influencer_scripts);
+
+  // `origins` contain the list of preconnectable origins that affected the LCP element.
+  SetPreconnectOrigins(array<url.mojom.Url> origins);
+
+  // This method is for letting the LCPP know the used web fonts.
+  // `font_url` is a web font's URL, which has started to be fetched.
+  // This method should be called under the following conditions:
+  // - the `kLCPPFontURLPredictor` feature is enabled,
+  // - and the `font_url` scheme is HTTP or HTTPS,
+  // Otherwise, the renderer will be killed.
+  NotifyFetchedFont(url.mojom.Url font_url);
+
+  // This method is for letting the LCPP know the subresource URL.  This
+  // method should be called under the following conditions:
+  // - the `kHttpDiskCachePrewarming` feature is enabled,
+  // - and the `subresource_url` scheme is HTTP or HTTPS,
+  // Otherwise, the renderer will be killed.
+  // 'subresource_load_start' is the duration from navigation start to resource loading start time.
+  NotifyFetchedSubresource(url.mojom.Url subresource_url, mojo_base.mojom.TimeDelta subresource_load_start);
 };
 
 // LCP Critical Path Predictor hints provided at navigation time.
@@ -20,4 +48,13 @@ struct LCPCriticalPathPredictorNavigationTimeHint {
   // Each ElementLocator is serialized in proto3 binary format.
   // See third_party/blink/renderer/core/lcp_critical_path_predictor/element_locator.proto
   array<mojo_base.mojom.ByteString> lcp_element_locators;
+
+  // Script URLs that influence LCP, learned from past loads.
+  array<url.mojom.Url> lcp_influencer_scripts;
+
+  // Font URLs that were used in the past loads.
+  array<url.mojom.Url> fetched_fonts;
+
+  // Preconnectable origins that affected the LCP element.
+  array<url.mojom.Url> preconnect_origins;
 };

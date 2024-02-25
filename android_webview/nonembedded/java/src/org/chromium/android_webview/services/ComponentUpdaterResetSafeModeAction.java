@@ -7,15 +7,14 @@ package org.chromium.android_webview.services;
 import androidx.annotation.NonNull;
 
 import org.chromium.android_webview.common.SafeModeAction;
+import org.chromium.android_webview.common.SafeModeActionIds;
 
-/**
- * A {@link SafeModeAction} to reset Component Updater.
- */
+/** A {@link SafeModeAction} to reset Component Updater. */
 public class ComponentUpdaterResetSafeModeAction implements SafeModeAction {
     private static final String TAG = "WebViewSafeMode";
 
     // This ID should not be changed or reused.
-    public static final String ID = "reset_component_updater";
+    private static final String ID = SafeModeActionIds.RESET_COMPONENT_UPDATER;
 
     @Override
     @NonNull

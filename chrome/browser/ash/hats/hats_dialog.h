@@ -47,26 +47,10 @@ class HatsDialog : public ui::WebDialogDelegate {
                           std::vector<int>* scores);
 
   // ui::WebDialogDelegate implementation.
-  ui::ModalType GetDialogModalType() const override;
-  std::u16string GetDialogTitle() const override;
-  GURL GetDialogContentURL() const override;
-  void GetWebUIMessageHandlers(
-      std::vector<content::WebUIMessageHandler*>* handlers) const override;
-  void GetDialogSize(gfx::Size* size) const override;
-  std::string GetDialogArgs() const override;
-  void OnCloseContents(content::WebContents* source,
-                       bool* out_close_dialog) override;
-  void OnDialogClosed(const std::string& json_retval) override;
   void OnLoadingStateChanged(content::WebContents* source) override;
-  bool ShouldShowDialogTitle() const override;
-  bool ShouldShowCloseButton() const override;
-  bool HandleContextMenu(content::RenderFrameHost& render_frame_host,
-                         const content::ContextMenuParams& params) override;
-  ui::WebDialogDelegate::FrameKind GetWebDialogFrameKind() const override;
 
   const std::string trigger_id_;
   const std::string histogram_name_;
-  std::string url_;
 
   std::string action_;
 };

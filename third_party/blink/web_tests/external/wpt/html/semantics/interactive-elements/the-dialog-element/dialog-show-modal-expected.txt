@@ -1,4 +1,0 @@
-This is a testharness.js-based test.
-FAIL Tests that showModal() performs the steps specified in the HTML spec. Failed to execute 'matches' on 'Element': ':modal' is not a valid selector.
-Harness: the test ran to completion.
-

@@ -13,7 +13,6 @@
 #include "base/strings/stringprintf.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
 #include "chromeos/ash/components/network/cellular_inhibitor.h"
@@ -78,14 +77,8 @@ class CellularConnectionHandlerTest : public testing::Test {
       const CellularConnectionHandlerTest&) = delete;
 
  protected:
-  explicit CellularConnectionHandlerTest(bool enable_dbus_migration)
-      : helper_(/*use_default_devices_and_services=*/false) {
-    if (enable_dbus_migration) {
-      feature_list_.InitAndEnableFeature(ash::features::kSmdsDbusMigration);
-    } else {
-      feature_list_.InitAndDisableFeature(ash::features::kSmdsDbusMigration);
-    }
-  }
+  explicit CellularConnectionHandlerTest()
+      : helper_(/*use_default_devices_and_services=*/false) {}
   ~CellularConnectionHandlerTest() override = default;
 
   // testing::Test:
@@ -271,7 +264,6 @@ class CellularConnectionHandlerTest : public testing::Test {
     std::move(on_failure_callback_).Run();
   }
 
-  base::test::ScopedFeatureList feature_list_;
   base::test::SingleThreadTaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   base::HistogramTester histogram_tester_;
@@ -288,37 +280,7 @@ class CellularConnectionHandlerTest : public testing::Test {
   std::string expected_error_name_;
 };
 
-class CellularConnectionHandlerTest_DBusMigrationDisabled
-    : public CellularConnectionHandlerTest {
- public:
-  CellularConnectionHandlerTest_DBusMigrationDisabled(
-      const CellularConnectionHandlerTest_DBusMigrationDisabled&) = delete;
-  CellularConnectionHandlerTest_DBusMigrationDisabled& operator=(
-      const CellularConnectionHandlerTest_DBusMigrationDisabled&) = delete;
-
- protected:
-  CellularConnectionHandlerTest_DBusMigrationDisabled()
-      : CellularConnectionHandlerTest(
-            /*enable_dbus_migration=*/false) {}
-  ~CellularConnectionHandlerTest_DBusMigrationDisabled() override = default;
-};
-
-class CellularConnectionHandlerTest_DBusMigrationEnabled
-    : public CellularConnectionHandlerTest {
- public:
-  CellularConnectionHandlerTest_DBusMigrationEnabled(
-      const CellularConnectionHandlerTest_DBusMigrationEnabled&) = delete;
-  CellularConnectionHandlerTest_DBusMigrationEnabled& operator=(
-      const CellularConnectionHandlerTest_DBusMigrationEnabled&) = delete;
-
- protected:
-  CellularConnectionHandlerTest_DBusMigrationEnabled()
-      : CellularConnectionHandlerTest(
-            /*enable_dbus_migration=*/true) {}
-  ~CellularConnectionHandlerTest_DBusMigrationEnabled() override = default;
-};
-
-TEST_F(CellularConnectionHandlerTest_DBusMigrationDisabled, NoService) {
+TEST_F(CellularConnectionHandlerTest, NoService) {
   // Note: No cellular service added.
 
   base::RunLoop run_loop;
@@ -331,8 +293,7 @@ TEST_F(CellularConnectionHandlerTest_DBusMigrationDisabled, NoService) {
                    kCouldNotFindNetworkWithIccid);
 }
 
-TEST_F(CellularConnectionHandlerTest_DBusMigrationDisabled,
-       ServiceAlreadyConnectable) {
+TEST_F(CellularConnectionHandlerTest, ServiceAlreadyConnectable) {
   AddCellularDevice();
   AddCellularService(/*profile_num=*/1);
   SetServiceIccid(/*profile_num=*/1);
@@ -348,7 +309,7 @@ TEST_F(CellularConnectionHandlerTest_DBusMigrationDisabled,
       CellularConnectionHandler::PrepareCellularConnectionResult::kSuccess);
 }
 
-TEST_F(CellularConnectionHandlerTest_DBusMigrationDisabled, FailsInhibiting) {
+TEST_F(CellularConnectionHandlerTest, FailsInhibiting) {
   // Note: No cellular device added. This causes the inhibit operation to fail.
 
   AddCellularService(/*profile_num=*/1);
@@ -366,7 +327,7 @@ TEST_F(CellularConnectionHandlerTest_DBusMigrationDisabled, FailsInhibiting) {
                    kInhibitFailed);
 }
 
-TEST_F(CellularConnectionHandlerTest_DBusMigrationDisabled, NoRelevantEuicc) {
+TEST_F(CellularConnectionHandlerTest, NoRelevantEuicc) {
   AddCellularDevice();
   AddCellularService(/*profile_num=*/1);
   SetServiceEid(/*profile_num=*/1, /*euicc_num=*/1);
@@ -382,8 +343,7 @@ TEST_F(CellularConnectionHandlerTest_DBusMigrationDisabled, NoRelevantEuicc) {
                    kCouldNotFindRelevantEuicc);
 }
 
-TEST_F(CellularConnectionHandlerTest_DBusMigrationDisabled,
-       FailsRequestingInstalledProfiles) {
+TEST_F(CellularConnectionHandlerTest, FailsRequestingInstalledProfiles) {
   AddCellularDevice();
   AddEuicc(/*euicc_num=*/1);
   AddProfile(/*profile_num=*/1, /*euicc_num=*/1);
@@ -401,8 +361,7 @@ TEST_F(CellularConnectionHandlerTest_DBusMigrationDisabled,
                    kRefreshProfilesFailed);
 }
 
-TEST_F(CellularConnectionHandlerTest_DBusMigrationDisabled,
-       TimeoutWaitingForConnectable_ESim) {
+TEST_F(CellularConnectionHandlerTest, TimeoutWaitingForConnectable_ESim) {
   const base::TimeDelta kWaitingForConnectableTimeout = base::Seconds(30);
 
   SetEnableProfileBehavior(HermesProfileClient::TestInterface::
@@ -430,8 +389,7 @@ TEST_F(CellularConnectionHandlerTest_DBusMigrationDisabled,
                    kTimeoutWaitingForConnectable);
 }
 
-TEST_F(CellularConnectionHandlerTest_DBusMigrationDisabled,
-       TimeoutWaitingForConnectable_PSim) {
+TEST_F(CellularConnectionHandlerTest, TimeoutWaitingForConnectable_PSim) {
   const base::TimeDelta kWaitingForConnectableTimeout = base::Seconds(30);
 
   SetEnableProfileBehavior(HermesProfileClient::TestInterface::
@@ -457,8 +415,7 @@ TEST_F(CellularConnectionHandlerTest_DBusMigrationDisabled,
                    kTimeoutWaitingForConnectable);
 }
 
-TEST_F(CellularConnectionHandlerTest_DBusMigrationDisabled,
-       Success_AutoConnected) {
+TEST_F(CellularConnectionHandlerTest, Success_AutoConnected) {
   AddCellularDevice();
   AddEuicc(/*euicc_num=*/1);
   AddProfile(/*profile_num=*/1, /*euicc_num=*/1);
@@ -479,8 +436,7 @@ TEST_F(CellularConnectionHandlerTest_DBusMigrationDisabled,
       CellularConnectionHandler::PrepareCellularConnectionResult::kSuccess);
 }
 
-TEST_F(CellularConnectionHandlerTest_DBusMigrationDisabled,
-       Success_TimeoutAutoConnected) {
+TEST_F(CellularConnectionHandlerTest, Success_TimeoutAutoConnected) {
   AddCellularDevice();
   AddEuicc(/*euicc_num=*/1);
   AddProfile(/*profile_num=*/1, /*euicc_num=*/1);
@@ -498,8 +454,7 @@ TEST_F(CellularConnectionHandlerTest_DBusMigrationDisabled,
       CellularConnectionHandler::PrepareCellularConnectionResult::kSuccess);
 }
 
-TEST_F(CellularConnectionHandlerTest_DBusMigrationDisabled,
-       Success_AlreadyEnabled) {
+TEST_F(CellularConnectionHandlerTest, Success_AlreadyEnabled) {
   AddCellularDevice();
   AddEuicc(/*euicc_num=*/1);
   AddProfile(/*profile_num=*/1,
@@ -521,7 +476,7 @@ TEST_F(CellularConnectionHandlerTest_DBusMigrationDisabled,
       CellularConnectionHandler::PrepareCellularConnectionResult::kSuccess);
 }
 
-TEST_F(CellularConnectionHandlerTest_DBusMigrationDisabled, ConnectToStub) {
+TEST_F(CellularConnectionHandlerTest, ConnectToStub) {
   AddCellularDevice();
   AddEuicc(/*euicc_num=*/1);
   // Do not add a service; instead, this will cause a fake stub network to be
@@ -549,7 +504,7 @@ TEST_F(CellularConnectionHandlerTest_DBusMigrationDisabled, ConnectToStub) {
       CellularConnectionHandler::PrepareCellularConnectionResult::kSuccess);
 }
 
-TEST_F(CellularConnectionHandlerTest_DBusMigrationDisabled, MultipleRequests) {
+TEST_F(CellularConnectionHandlerTest, MultipleRequests) {
   AddCellularDevice();
   AddEuicc(/*euicc_num=*/1);
   AddProfile(/*profile_num=*/1, /*euicc_num=*/1);
@@ -584,292 +539,7 @@ TEST_F(CellularConnectionHandlerTest_DBusMigrationDisabled, MultipleRequests) {
       /*expected_count=*/2);
 }
 
-TEST_F(CellularConnectionHandlerTest_DBusMigrationDisabled, NewProfile) {
-  AddCellularDevice();
-  AddEuicc(/*euicc_num=*/1);
-  AddProfile(/*profile_num=*/1, /*euicc_num=*/1);
-
-  base::RunLoop run_loop;
-  ExpectSuccess(CreateTestServicePath(/*profile_num=*/1), &run_loop,
-                /*auto_connected=*/false);
-  CallPrepareNewlyInstalledCellularNetworkForConnection(/*profile_num=*/1,
-                                                        /*euicc_num=*/1);
-
-  // Verify that service corresponding to new profile becomes
-  // connectable.
-  run_loop.Run();
-  ExpectServiceConnectable(/*profile_num=*/1);
-  ExpectResult(
-      CellularConnectionHandler::PrepareCellularConnectionResult::kSuccess);
-}
-
-TEST_F(CellularConnectionHandlerTest_DBusMigrationEnabled, NoService) {
-  // Note: No cellular service added.
-
-  base::RunLoop run_loop;
-  ExpectFailure(/*service_path=*/std::string(),
-                NetworkConnectionHandler::kErrorNotFound, &run_loop);
-  CallPrepareExistingCellularNetworkForConnection(/*profile_num=*/1);
-  run_loop.Run();
-
-  ExpectResult(CellularConnectionHandler::PrepareCellularConnectionResult::
-                   kCouldNotFindNetworkWithIccid);
-}
-
-TEST_F(CellularConnectionHandlerTest_DBusMigrationEnabled,
-       ServiceAlreadyConnectable) {
-  AddCellularDevice();
-  AddCellularService(/*profile_num=*/1);
-  SetServiceIccid(/*profile_num=*/1);
-  SetServiceConnectable(/*profile_num=*/1);
-
-  base::RunLoop run_loop;
-  ExpectSuccess(CreateTestServicePath(/*profile_num=*/1), &run_loop,
-                /*auto_connected=*/false);
-  CallPrepareExistingCellularNetworkForConnection(/*profile_num=*/1);
-  run_loop.Run();
-
-  ExpectResult(
-      CellularConnectionHandler::PrepareCellularConnectionResult::kSuccess);
-}
-
-TEST_F(CellularConnectionHandlerTest_DBusMigrationEnabled, FailsInhibiting) {
-  // Note: No cellular device added. This causes the inhibit operation to fail.
-
-  AddCellularService(/*profile_num=*/1);
-  SetServiceEid(/*profile_num=*/1, /*euicc_num=*/1);
-  SetServiceIccid(/*profile_num=*/1);
-
-  base::RunLoop run_loop;
-  ExpectFailure(CreateTestServicePath(/*profile_num=*/1),
-                NetworkConnectionHandler::kErrorCellularInhibitFailure,
-                &run_loop);
-  CallPrepareExistingCellularNetworkForConnection(/*profile_num=*/1);
-  run_loop.Run();
-
-  ExpectResult(CellularConnectionHandler::PrepareCellularConnectionResult::
-                   kInhibitFailed);
-}
-
-TEST_F(CellularConnectionHandlerTest_DBusMigrationEnabled, NoRelevantEuicc) {
-  AddCellularDevice();
-  AddCellularService(/*profile_num=*/1);
-  SetServiceEid(/*profile_num=*/1, /*euicc_num=*/1);
-  SetServiceIccid(/*profile_num=*/1);
-
-  base::RunLoop run_loop;
-  ExpectFailure(CreateTestServicePath(/*profile_num=*/1),
-                NetworkConnectionHandler::kErrorESimProfileIssue, &run_loop);
-  CallPrepareExistingCellularNetworkForConnection(/*profile_num=*/1);
-  run_loop.Run();
-
-  ExpectResult(CellularConnectionHandler::PrepareCellularConnectionResult::
-                   kCouldNotFindRelevantEuicc);
-}
-
-TEST_F(CellularConnectionHandlerTest_DBusMigrationEnabled,
-       FailsRequestingInstalledProfiles) {
-  AddCellularDevice();
-  AddEuicc(/*euicc_num=*/1);
-  AddProfile(/*profile_num=*/1, /*euicc_num=*/1);
-  SetServiceEid(/*profile_num=*/1, /*euicc_num=*/1);
-
-  QueueEuiccErrorStatus();
-
-  base::RunLoop run_loop;
-  ExpectFailure(CreateTestServicePath(/*profile_num=*/1),
-                NetworkConnectionHandler::kErrorESimProfileIssue, &run_loop);
-  CallPrepareExistingCellularNetworkForConnection(/*profile_num=*/1);
-  run_loop.Run();
-
-  ExpectResult(CellularConnectionHandler::PrepareCellularConnectionResult::
-                   kRefreshProfilesFailed);
-}
-
-TEST_F(CellularConnectionHandlerTest_DBusMigrationEnabled,
-       TimeoutWaitingForConnectable_ESim) {
-  const base::TimeDelta kWaitingForConnectableTimeout = base::Seconds(30);
-
-  SetEnableProfileBehavior(HermesProfileClient::TestInterface::
-                               EnableProfileBehavior::kNotConnectable);
-
-  AddCellularDevice();
-  AddEuicc(/*euicc_num=*/1);
-  AddProfile(/*profile_num=*/1, /*euicc_num=*/1);
-  SetServiceEid(/*profile_num=*/1, /*euicc_num=*/1);
-  SetServiceIccid(/*profile_num=*/1);
-
-  base::RunLoop run_loop;
-  ExpectFailure(CreateTestServicePath(/*profile_num=*/1),
-                NetworkConnectionHandler::kConnectableCellularTimeout,
-                &run_loop);
-  CallPrepareExistingCellularNetworkForConnection(/*profile_num=*/1);
-
-  // Let all operations run, then wait for the timeout to occur.
-  base::RunLoop().RunUntilIdle();
-  AdvanceClock(kWaitingForConnectableTimeout);
-
-  run_loop.Run();
-
-  ExpectResult(CellularConnectionHandler::PrepareCellularConnectionResult::
-                   kTimeoutWaitingForConnectable);
-}
-
-TEST_F(CellularConnectionHandlerTest_DBusMigrationEnabled,
-       TimeoutWaitingForConnectable_PSim) {
-  const base::TimeDelta kWaitingForConnectableTimeout = base::Seconds(30);
-
-  SetEnableProfileBehavior(HermesProfileClient::TestInterface::
-                               EnableProfileBehavior::kNotConnectable);
-
-  AddCellularDevice();
-  AddCellularService(/*profile_num=*/1);
-  SetServiceIccid(/*profile_num=*/1);
-
-  base::RunLoop run_loop;
-  ExpectFailure(CreateTestServicePath(/*profile_num=*/1),
-                NetworkConnectionHandler::kConnectableCellularTimeout,
-                &run_loop);
-  CallPrepareExistingCellularNetworkForConnection(/*profile_num=*/1);
-
-  // Let all operations run, then wait for the timeout to occur.
-  base::RunLoop().RunUntilIdle();
-  AdvanceClock(kWaitingForConnectableTimeout);
-
-  run_loop.Run();
-
-  ExpectResult(CellularConnectionHandler::PrepareCellularConnectionResult::
-                   kTimeoutWaitingForConnectable);
-}
-
-TEST_F(CellularConnectionHandlerTest_DBusMigrationEnabled,
-       Success_AutoConnected) {
-  AddCellularDevice();
-  AddEuicc(/*euicc_num=*/1);
-  AddProfile(/*profile_num=*/1, /*euicc_num=*/1);
-  SetServiceEid(/*profile_num=*/1, /*euicc_num=*/1);
-  SetServiceIccid(/*profile_num=*/1);
-
-  base::RunLoop run_loop;
-  ExpectSuccess(CreateTestServicePath(/*profile_num=*/1), &run_loop,
-                /*auto_connected=*/true);
-  CallPrepareExistingCellularNetworkForConnection(/*profile_num=*/1);
-  // Simulate the cellular network get connected after 10 seconds.
-  AdvanceClock(base::Seconds(10));
-  SetCellularServiceConnected(/*profile_num=*/1);
-  run_loop.Run();
-
-  ExpectServiceConnectable(/*profile_num=*/1);
-  ExpectResult(
-      CellularConnectionHandler::PrepareCellularConnectionResult::kSuccess);
-}
-
-TEST_F(CellularConnectionHandlerTest_DBusMigrationEnabled,
-       Success_TimeoutAutoConnected) {
-  AddCellularDevice();
-  AddEuicc(/*euicc_num=*/1);
-  AddProfile(/*profile_num=*/1, /*euicc_num=*/1);
-  SetServiceEid(/*profile_num=*/1, /*euicc_num=*/1);
-  SetServiceIccid(/*profile_num=*/1);
-
-  base::RunLoop run_loop;
-  ExpectSuccess(CreateTestServicePath(/*profile_num=*/1), &run_loop,
-                /*auto_connected=*/false);
-  CallPrepareExistingCellularNetworkForConnection(/*profile_num=*/1);
-  run_loop.Run();
-
-  ExpectServiceConnectable(/*profile_num=*/1);
-  ExpectResult(
-      CellularConnectionHandler::PrepareCellularConnectionResult::kSuccess);
-}
-
-TEST_F(CellularConnectionHandlerTest_DBusMigrationEnabled,
-       Success_AlreadyEnabled) {
-  AddCellularDevice();
-  AddEuicc(/*euicc_num=*/1);
-  AddProfile(/*profile_num=*/1,
-             /*euicc_num=*/1,
-             /*add_service=*/true,
-             /*already_enabled=*/true);
-  SetServiceEid(/*profile_num=*/1, /*euicc_num=*/1);
-  SetServiceIccid(/*profile_num=*/1);
-
-  base::RunLoop run_loop;
-  ExpectSuccess(CreateTestServicePath(/*profile_num=*/1), &run_loop,
-                /*auto_connected=*/false);
-  CallPrepareExistingCellularNetworkForConnection(/*profile_num=*/1);
-  SetServiceConnectable(/*profile_num=*/1);
-  run_loop.Run();
-
-  ExpectServiceConnectable(/*profile_num=*/1);
-  ExpectResult(
-      CellularConnectionHandler::PrepareCellularConnectionResult::kSuccess);
-}
-
-TEST_F(CellularConnectionHandlerTest_DBusMigrationEnabled, ConnectToStub) {
-  AddCellularDevice();
-  AddEuicc(/*euicc_num=*/1);
-  // Do not add a service; instead, this will cause a fake stub network to be
-  // created.
-  AddProfile(/*profile_num=*/1, /*euicc_num=*/1, /*add_service=*/false);
-
-  base::RunLoop run_loop;
-  // Expect that by the end, we will connect to a "real" (i.e., non-stub)
-  // service path.
-  ExpectSuccess(CreateTestServicePath(/*profile_num=*/1), &run_loop,
-                /*auto_connected=*/false);
-  CallPrepareExistingCellularNetworkForConnection(/*profile_num=*/1);
-  base::RunLoop().RunUntilIdle();
-
-  // A connection has started to a stub. Because the profile gets enabled,
-  // Shill exposes a service and makes it connectable.
-  AddCellularService(/*profile_num=*/1);
-  SetServiceEid(/*profile_num=*/1, /*euicc_num=*/1);
-  SetServiceIccid(/*profile_num=*/1);
-  SetServiceConnectable(/*profile_num=*/1);
-
-  run_loop.Run();
-  ExpectServiceConnectable(/*profile_num=*/1);
-  ExpectResult(
-      CellularConnectionHandler::PrepareCellularConnectionResult::kSuccess);
-}
-
-TEST_F(CellularConnectionHandlerTest_DBusMigrationEnabled, MultipleRequests) {
-  AddCellularDevice();
-  AddEuicc(/*euicc_num=*/1);
-  AddProfile(/*profile_num=*/1, /*euicc_num=*/1);
-  AddProfile(/*profile_num=*/2, /*euicc_num=*/1);
-  SetServiceEid(/*profile_num=*/1, /*euicc_num=*/1);
-  SetServiceEid(/*profile_num=*/2, /*euicc_num=*/1);
-  SetServiceIccid(/*profile_num=*/1);
-  SetServiceIccid(/*profile_num=*/2);
-
-  base::RunLoop run_loop1;
-  ExpectSuccess(CreateTestServicePath(/*profile_num=*/1), &run_loop1,
-                /*auto_connected=*/false);
-
-  // Start both operations.
-  CallPrepareExistingCellularNetworkForConnection(/*profile_num=*/1);
-  CallPrepareExistingCellularNetworkForConnection(/*profile_num=*/2);
-
-  // Verify that the first service becomes connectable.
-  run_loop1.Run();
-  ExpectServiceConnectable(/*profile_num=*/1);
-
-  base::RunLoop run_loop2;
-  ExpectSuccess(CreateTestServicePath(/*profile_num=*/2), &run_loop2,
-                /*auto_connected=*/false);
-
-  // Verify that the second service becomes connectable.
-  run_loop2.Run();
-  ExpectServiceConnectable(/*profile_num=*/2);
-
-  ExpectResult(
-      CellularConnectionHandler::PrepareCellularConnectionResult::kSuccess,
-      /*expected_count=*/2);
-}
-
-TEST_F(CellularConnectionHandlerTest_DBusMigrationEnabled, NewProfile) {
+TEST_F(CellularConnectionHandlerTest, NewProfile) {
   AddCellularDevice();
   AddEuicc(/*euicc_num=*/1);
   AddProfile(/*profile_num=*/1, /*euicc_num=*/1);

@@ -76,7 +76,7 @@ class PrintingOAuth2ProfileAuthServersSyncBridgeTest : public testing::Test {
     }
     ON_CALL(mock_processor_, IsTrackingMetadata())
         .WillByDefault(testing::Return(true));
-    absl::optional<syncer::ModelError> error = bridge_->MergeFullSyncData(
+    std::optional<syncer::ModelError> error = bridge_->MergeFullSyncData(
         bridge_->CreateMetadataChangeList(), std::move(data_change_list));
     ASSERT_FALSE(error);
   }
@@ -91,7 +91,7 @@ class PrintingOAuth2ProfileAuthServersSyncBridgeTest : public testing::Test {
     for (const std::string& uri : deleted) {
       data_change_list.push_back(syncer::EntityChange::CreateDelete(uri));
     }
-    absl::optional<syncer::ModelError> error =
+    std::optional<syncer::ModelError> error =
         bridge_->ApplyIncrementalSyncChanges(
             bridge_->CreateMetadataChangeList(), std::move(data_change_list));
     ASSERT_FALSE(error);
@@ -143,7 +143,7 @@ class PrintingOAuth2ProfileAuthServersSyncBridgeTest : public testing::Test {
     store_->CommitWriteBatch(
         std::move(batch),
         base::BindLambdaForTesting(
-            [&loop](const absl::optional<syncer::ModelError>& error) {
+            [&loop](const std::optional<syncer::ModelError>& error) {
               DCHECK(!error);
               loop.Quit();
             }));

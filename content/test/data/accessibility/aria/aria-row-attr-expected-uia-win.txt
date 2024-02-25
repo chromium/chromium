@@ -1,14 +1,14 @@
 Document
 ++DataGrid Grid.ColumnCount=3 Grid.RowCount=5 Selection.CanSelectMultiple=false Selection.IsSelectionRequired=false Table.RowOrColumnMajor='RowMajor'
 ++++DataItem
+++++++DataItem Name='cell 2' GridItem.Column=0 GridItem.ColumnSpan=1 GridItem.Row=2 GridItem.RowSpan=1
+++++++++Text Name='cell 2' IsControlElement=false
+++++++DataItem Name='cell 3' GridItem.Column=1 GridItem.ColumnSpan=1 GridItem.Row=2 GridItem.RowSpan=1
+++++++++Text Name='cell 3' IsControlElement=false
+++++++DataItem Name='cell 4' GridItem.Column=2 GridItem.ColumnSpan=1 GridItem.Row=2 GridItem.RowSpan=1
+++++++++Text Name='cell 4' IsControlElement=false
+++++DataItem
 ++++++DataItem Name='cell 2' GridItem.Column=0 GridItem.ColumnSpan=1 GridItem.Row=3 GridItem.RowSpan=1
 ++++++++Text Name='cell 2' IsControlElement=false
 ++++++DataItem Name='cell 3' GridItem.Column=1 GridItem.ColumnSpan=1 GridItem.Row=3 GridItem.RowSpan=1
-++++++++Text Name='cell 3' IsControlElement=false
-++++++DataItem Name='cell 4' GridItem.Column=2 GridItem.ColumnSpan=1 GridItem.Row=3 GridItem.RowSpan=1
-++++++++Text Name='cell 4' IsControlElement=false
-++++DataItem
-++++++DataItem Name='cell 2' GridItem.Column=0 GridItem.ColumnSpan=1 GridItem.Row=1 GridItem.RowSpan=1
-++++++++Text Name='cell 2' IsControlElement=false
-++++++DataItem Name='cell 3' GridItem.Column=1 GridItem.ColumnSpan=1 GridItem.Row=1 GridItem.RowSpan=1
 ++++++++Text Name='cell 3' IsControlElement=false

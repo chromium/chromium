@@ -40,8 +40,9 @@ constexpr size_t kScryptMaxMemory = 1024 * 1024 * 32;
 const user_manager::User* GetManagedGuestSessionUser() {
   user_manager::UserManager* user_manager = user_manager::UserManager::Get();
   for (const user_manager::User* user : user_manager->GetUsers()) {
-    if (!user || user->GetType() != user_manager::USER_TYPE_PUBLIC_ACCOUNT)
+    if (!user || user->GetType() != user_manager::UserType::kPublicAccount) {
       continue;
+    }
 
     return user;
   }
@@ -68,7 +69,7 @@ SharedSessionHandler::SharedSessionHandler() = default;
 
 SharedSessionHandler::~SharedSessionHandler() = default;
 
-absl::optional<std::string>
+std::optional<std::string>
 SharedSessionHandler::LaunchSharedManagedGuestSession(
     const std::string& password) {
   if (!IsDeviceRestrictedManagedGuestSessionEnabled()) {
@@ -99,13 +100,13 @@ SharedSessionHandler::LaunchSharedManagedGuestSession(
 
   session_secret_ = GenerateRandomString(kSessionSecretLength);
 
-  ash::UserContext context(user_manager::USER_TYPE_PUBLIC_ACCOUNT,
+  ash::UserContext context(user_manager::UserType::kPublicAccount,
                            user->GetAccountId());
   context.SetKey(ash::Key(session_secret_));
   context.SetCanLockManagedGuestSession(true);
   existing_user_controller->Login(context, ash::SigninSpecifics());
 
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 void SharedSessionHandler::EnterSharedSession(
@@ -190,7 +191,7 @@ void SharedSessionHandler::UnlockSharedSession(
     return;
   }
 
-  absl::optional<std::string> scrypt_result =
+  std::optional<std::string> scrypt_result =
       GetHashFromScrypt(password, user_secret_salt_);
 
   if (!scrypt_result) {
@@ -269,7 +270,7 @@ void SharedSessionHandler::ResetStateForTesting() {
   user_secret_salt_.clear();
 }
 
-absl::optional<std::string> SharedSessionHandler::GetHashFromScrypt(
+std::optional<std::string> SharedSessionHandler::GetHashFromScrypt(
     const std::string& password,
     const std::string& salt) {
   std::string hash_key;
@@ -282,7 +283,7 @@ absl::optional<std::string> SharedSessionHandler::GetHashFromScrypt(
                      kScryptMaxMemory, key_data, kHashKeyLength);
 
   if (!scrypt_ok)
-    return absl::nullopt;
+    return std::nullopt;
   return hash_key;
 }
 
@@ -291,7 +292,7 @@ void SharedSessionHandler::UnlockWithSessionSecret(
   const user_manager::User* active_user =
       user_manager::UserManager::Get()->GetActiveUser();
 
-  ash::UserContext user_context(user_manager::USER_TYPE_PUBLIC_ACCOUNT,
+  ash::UserContext user_context(user_manager::UserType::kPublicAccount,
                                 active_user->GetAccountId());
   user_context.SetKey(ash::Key(session_secret_));
   LoginApiLockHandler::Get()->Authenticate(user_context, std::move(callback));
@@ -300,7 +301,7 @@ void SharedSessionHandler::UnlockWithSessionSecret(
 bool SharedSessionHandler::CreateAndSetUserSecretHashAndSalt(
     const std::string& password) {
   std::string salt = GenerateRandomString(kUserSaltLength);
-  absl::optional<std::string> scrypt_result = GetHashFromScrypt(password, salt);
+  std::optional<std::string> scrypt_result = GetHashFromScrypt(password, salt);
 
   if (!scrypt_result)
     return false;
@@ -319,24 +320,22 @@ void SharedSessionHandler::OnAuthenticateDone(
     return;
   }
 
-  std::move(callback).Run(absl::nullopt);
+  std::move(callback).Run(std::nullopt);
 }
 
 void SharedSessionHandler::OnCleanupDone(
     CallbackWithOptionalError callback,
-    const absl::optional<std::string>& errors) {
+    const std::optional<std::string>& errors) {
   if (errors) {
     std::move(callback).Run(*errors);
     return;
   }
 
-  std::move(callback).Run(absl::nullopt);
+  std::move(callback).Run(std::nullopt);
 }
 
 std::string SharedSessionHandler::GenerateRandomString(size_t size) {
-  char random_bytes[size];
-  crypto::RandBytes(random_bytes, size);
-  return base::HexEncode(random_bytes, size);
+  return base::HexEncode(crypto::RandBytesAsVector(size));
 }
 
 }  // namespace chromeos

@@ -6,18 +6,29 @@ import("//build/config/android/rules.gni")
 
 android_library("java") {
   sources = [
-    "java/src/org/chromium/chrome/modules/readaloud/ExpandedPlayer.java",
     "java/src/org/chromium/chrome/modules/readaloud/Playback.java",
     "java/src/org/chromium/chrome/modules/readaloud/PlaybackArgs.java",
     "java/src/org/chromium/chrome/modules/readaloud/PlaybackListener.java",
+    "java/src/org/chromium/chrome/modules/readaloud/Player.java",
     "java/src/org/chromium/chrome/modules/readaloud/ReadAloudPlaybackHooks.java",
     "java/src/org/chromium/chrome/modules/readaloud/ReadAloudPlaybackHooksProvider.java",
+    "java/src/org/chromium/chrome/modules/readaloud/contentjs/Extractor.java",
+    "java/src/org/chromium/chrome/modules/readaloud/contentjs/Highlighter.java",
   ]
   deps = [
+    "//base:base_java",
     "//chrome/browser/android/httpclient/public:java",
-    "//chrome/browser/readaloud/android:player_state_java",
+    "//chrome/browser/android/lifecycle:java",
+    "//chrome/browser/browser_controls/android:java",
+    "//chrome/browser/profiles/android:java",
+    "//chrome/browser/tab:java",
+    "//chrome/browser/ui/android/layouts:java",
     "//components/browser_ui/bottomsheet/android:java",
+    "//components/browser_ui/styles/android:java",
+    "//components/prefs/android:java",
+    "//content/public/android:content_java",
     "//third_party/androidx:androidx_annotation_annotation_java",
+    "//ui/android:ui_no_recycler_view_java",
   ]
 
   # Add the actual implementation where necessary so that downstream targets
@@ -28,5 +39,8 @@ android_library("java") {
 # ReadAloudPlaybackHooksProvider for public builds.
 android_library("provider_public_java") {
   sources = [ "java/src/org/chromium/chrome/modules/readaloud/ReadAloudPlaybackHooksProvider.java" ]
-  deps = [ ":java" ]
+  deps = [
+    ":java",
+    "//chrome/browser/profiles/android:java",
+  ]
 }

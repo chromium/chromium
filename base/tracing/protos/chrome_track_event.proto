@@ -37,6 +37,7 @@ message BlinkTaskScope {
     TASK_SCOPE_POP_STATE = 5;
     TASK_SCOPE_SCHEDULER_POST_TASK = 6;
     TASK_SCOPE_REQUEST_IDLE_CALLBACK = 7;
+    TASK_SCOPE_XML_HTTP_REQUEST = 8;
   }
   optional TaskScopeType type = 1;
   optional int64 scope_task_id = 2;
@@ -86,6 +87,8 @@ message ChromeRasterTask {
 message ChromeMessagePumpForUI {
   // The MSG defined in winuser.h.
   optional uint32 message_id = 1;
+  // The result of the Win32 API call WaitForMultipleObjectsEx().
+  optional uint32 wait_for_object_result = 2;
 }
 
 // An enumeration specifying the reason of the RenderFrame deletion.
@@ -749,8 +752,9 @@ message RendererMainThreadTaskExecution {
     TASK_TYPE_INTERNAL_NAVIGATION_CANCELLATION = 80;
     TASK_TYPE_LOW_PRIORITY_SCRIPT_EXECUTION = 81;
     TASK_TYPE_STORAGE = 82;
-    TASK_TYPE_NETWORKING_UNFREEZABLE_IMAGE_LOADING = 83;
+    TASK_TYPE_NETWORKING_UNFREEZABLE_RENDER_BLOCKING_LOADING = 83;
     TASK_TYPE_MAIN_THREAD_TASK_QUEUE_V8_LOW_PRIORITY = 84;
+    TASK_TYPE_CLIPBOARD = 85;
   }
 
   enum FrameType {
@@ -810,6 +814,9 @@ message EventLatency {
   // This is set only for scroll updates and is based on the
   // Event.ScrollJank.DelayedFramesPercentage.FixedWindow metric.
   optional bool is_janky_scrolled_frame = 5;
+  // The interval that this frame was produced for according to the
+  // BeginFrameArgs.
+  optional double vsync_interval_ms = 6;
 }
 
 message ProcessSingleton {
@@ -1377,6 +1384,18 @@ message ChromeGraphicsPipeline {
     STEP_SEND_BEGIN_MAIN_FRAME = 8;
     STEP_SUBMIT_COMPOSITOR_FRAME = 9;
     STEP_SURFACE_AGGREGATION = 10;
+    STEP_SEND_BUFFER_SWAP = 11;
+    STEP_BUFFER_SWAP_POST_SUBMIT = 12;
+    STEP_FINISH_BUFFER_SWAP = 13;
+    STEP_SWAP_BUFFERS_ACK = 14;
+
+    // Frame submission stages when Exo (Wayland server implementation in Ash
+    // browser process) is involved. Wayland clients (such as Lacros or ARC++)
+    // submit visual contents via Wayland surface commits, with which Exo
+    // constructs compositor frames and forwards to Ash Viz.
+    STEP_EXO_CONSTRUCT_COMPOSITOR_FRAME = 15;
+    STEP_EXO_SUBMIT_COMPOSITOR_FRAME = 16;
+    STEP_EXO_DISCARD_COMPOSITOR_FRAME = 17;
   }
   enum FrameSkippedReason {
     SKIPPED_REASON_UNKNOWN = 0;
@@ -1393,9 +1412,149 @@ message ChromeGraphicsPipeline {
   optional FrameSkippedReason frame_skipped_reason = 6;
 };
 
+message LibunwindstackUnwinder {
+  // The enum is a copy of ErrorCode enum inside third_party/libunwindstack,
+  // ideally this should be in sync with that.
+  enum ErrorCode {
+    ERROR_NONE = 0;            // No error.
+    ERROR_MEMORY_INVALID = 1;  // Memory read failed.
+    ERROR_UNWIND_INFO = 2;     // Unable to use unwind information to unwind.
+    ERROR_UNSUPPORTED = 3;     // Encountered unsupported feature.
+    ERROR_INVALID_MAP = 4;     // Unwind in an invalid map.
+    ERROR_MAX_FRAMES_EXCEEDED = 5;  // The number of frames exceed the total
+                                    // allowed.
+    ERROR_REPEATED_FRAME = 6;  // The last frame has the same pc/sp as the next.
+    ERROR_INVALID_ELF = 7;     // Unwind in an invalid elf.
+    ERROR_THREAD_DOES_NOT_EXIST = 8;  // Attempt to unwind a local thread that
+                                      // does not exist.
+    ERROR_THREAD_TIMEOUT = 9;  // Timeout trying to unwind a local thread.
+    ERROR_SYSTEM_CALL = 10;    // System call failed while unwinding.
+    ERROR_BAD_ARCH = 11;       // Arch invalid (none, or mismatched).
+    ERROR_MAPS_PARSE = 12;     // Failed to parse maps data.
+    ERROR_INVALID_PARAMETER_LIBUNWINDSTACK =
+        13;                  // Invalid parameter passed to function.
+    ERROR_PTRACE_CALL = 14;  // Ptrace call failed while unwinding.
+  }
+  optional ErrorCode error_code = 1;
+  optional int32 num_frames = 2;
+};
+
+message ScrollPredictorMetrics {
+  message EventFrameValue {
+    optional int64 event_trace_id = 1;
+    // The fractional pixels (can be fractional after the predictor adjusts in
+    // resampling of input) that the page was scrolled by this frame.
+    optional float delta_value_pixels = 2;
+  };
+  // Data from the previous, current, and next frame used to determine the
+  // values below as according to the metric doc:
+  // http://doc/1Y0u0Tq5eUZff75nYUzQVw6JxmbZAW9m64pJidmnGWsY.
+  optional EventFrameValue prev_event_frame_value = 1;
+  optional EventFrameValue cur_event_frame_value = 2;
+  optional EventFrameValue next_event_frame_value = 3;
+  // This is the amount of delta processed in this frame that was above the
+  // janky threshold (as defined by
+  // http://doc/1Y0u0Tq5eUZff75nYUzQVw6JxmbZAW9m64pJidmnGWsY)
+  optional float janky_value_pixels = 4;
+  // True if we are also missing frames (so multiple frames are being presented
+  // at once).
+  optional bool has_missed_vsyncs = 5;
+  // True if we're moving less than the slow scroll threshold as defined by the
+  // doc above.
+  optional bool is_slow_scroll = 6;
+};
+
+//
+// Critical User Interaction metrics
+//
+
+message PageLoad {
+  optional int64 navigation_id = 1;
+  optional string url = 2;
+}
+
+message StartUp {
+  // This enum must be kept up to date with LaunchCauseMetrics.LaunchCause.
+  enum LaunchCauseType {
+    OTHER = 0;
+    CUSTOM_TAB = 1;
+    TWA = 2;
+    RECENTS = 3;
+    RECENTS_OR_BACK = 4;
+    FOREGROUND_WHEN_LOCKED = 5;
+    MAIN_LAUNCHER_ICON = 6;
+    MAIN_LAUNCHER_ICON_SHORTCUT = 7;
+    HOME_SCREEN_WIDGET = 8;
+    OPEN_IN_BROWSER_FROM_MENU = 9;
+    EXTERNAL_SEARCH_ACTION_INTENT = 10;
+    NOTIFICATION = 11;
+    EXTERNAL_VIEW_INTENT = 12;
+    OTHER_CHROME = 13;
+    WEBAPK_CHROME_DISTRIBUTOR = 14;
+    WEBAPK_OTHER_DISTRIBUTOR = 15;
+    HOME_SCREEN_SHORTCUT = 16;
+    SHARE_INTENT = 17;
+    NFC = 18;
+  }
+
+  optional int64 activity_id = 1;
+  // deprecated field 2.
+  optional LaunchCauseType launch_cause = 3;
+}
+
+message WebContentInteraction {
+  enum Type {
+    INTERACTION_UNSPECIFIED = 0;
+    INTERACTION_KEYBOARD = 1;
+    INTERACTION_CLICK_TAP = 2;
+    INTERACTION_DRAG = 3;
+  }
+
+  optional Type type = 1;
+  optional int64 total_duration_ms = 2;
+}
+
+// The EventForwarder is a subsystem in android that forwards events from Java
+// code to Chromium's native implementation. In this case we register how many
+// events there was, what time this event occurred and the current x & y on the
+// device screen (pixels).
+//
+// All data comes from MotionEvent getters so read these for more context:
+// https://developer.android.com/reference/android/view/MotionEvent
+message EventForwarder {
+  // The events getHistorySize().
+  optional int32 history_size = 1;
+  // The time of the oldest event (getHistoricalEventTimeNanos(0)).
+  optional int64 oldest_time_ns = 2;
+  // The time of the newest event (getEventTimeNanos(0)).
+  optional int64 latest_time_ns = 5;
+  // The X coordinate of the event as reported by MotionEvent.getX().
+  optional float x_pixel = 3;
+  // The Y coordinate of the event as reported by MotionEvent.getY().
+  optional float y_pixel = 4;
+  // Determine if the previous forwarded event changed x coordinate.
+  optional bool has_x_movement = 6;
+  // Determine if the previous forwarded event changed y coordinate.
+  optional bool has_y_movement = 7;
+}
+
+// TouchDispositionGestureFilter is a class on android that detects and forwards
+// along gesture events based on touch acks and other information.
+message TouchDispositionGestureFilter {
+  // The number of gesture's inside of a GestureEventDataPacket.
+  optional int32 gesture_count = 1;
+}
+
+message ViewClassName {
+  // The name associated with a View class in browser UI. The class name is set
+  // by the view class itself through metadata macros and contains no data that
+  // can be modified by a user.
+  optional string name = 1;
+}
+
 message ChromeTrackEvent {
   // Extension range for Chrome: 1000-1999
-  // Next ID: 1053
+  // Next ID: 1061
   extend TrackEvent {
     optional ChromeAppState chrome_app_state = 1000;
 
@@ -1509,5 +1668,22 @@ message ChromeTrackEvent {
     optional ChromeGraphicsPipeline chrome_graphics_pipeline = 1052;
 
     optional CrasUnified chromeos_cras_unified = 1053;
+
+    optional LibunwindstackUnwinder libunwindstack_unwinder = 1054;
+
+    optional ScrollPredictorMetrics scroll_predictor_metrics = 1055;
+
+    optional PageLoad page_load = 1056;
+
+    optional StartUp startup = 1057;
+
+    optional WebContentInteraction web_content_interaction = 1058;
+
+    optional EventForwarder event_forwarder = 1059;
+
+    optional TouchDispositionGestureFilter touch_disposition_gesture_filter =
+        1060;
+
+    optional ViewClassName view_class_name = 1061;
   }
 }

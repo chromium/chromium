@@ -28,6 +28,11 @@ enum HttpStatusCode {
 // not yet covered or just invalid. Please extend it when needed.
 NET_EXPORT const char* GetHttpReasonPhrase(HttpStatusCode code);
 
+// Similar to the one above, but returns a nullptr in case code does not map
+// to a known reasone phrase, which allows a gentle recovery in case the code
+// was obtained from a non-trusted party.
+NET_EXPORT const char* TryToGetHttpReasonPhrase(HttpStatusCode code);
+
 }  // namespace net
 
 #endif  // NET_HTTP_HTTP_STATUS_CODE_H_

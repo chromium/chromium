@@ -20,6 +20,7 @@
 #include <string>
 #include <utility>
 
+#include "base/check.h"
 #include "base/logging.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
@@ -43,7 +44,6 @@ bool GetSwitch(const char* switch_name, std::string* value) {
   ScopedLocalAlloc scoped_args(args);  // Take ownership.
   if (!args) {
     PLOG(FATAL) << "CommandLineToArgvW";
-    return false;
   }
 
   std::string switch_name_with_equals(switch_name);
@@ -191,7 +191,7 @@ std::unique_ptr<WinChildProcess::Handles> WinChildProcess::Launch() {
       TestPaths::Executable().value() +
       base::UTF8ToWide(base::StringPrintf(
           " --gtest_filter=%s.%s %s=0x%x|0x%x --gtest_also_run_disabled_tests",
-          test_info->test_case_name(),
+          test_info->test_suite_name(),
           test_info->name(),
           kIsMultiprocessChild,
           HandleToInt(write_for_child.get()),

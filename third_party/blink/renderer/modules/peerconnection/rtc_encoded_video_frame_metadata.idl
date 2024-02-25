@@ -32,6 +32,9 @@ dictionary RTCEncodedVideoFrameMetadata {
     unsigned long synchronizationSource;
     sequence<unsigned long> contributingSources;
     octet payloadType;
+    DOMString mimeType;
     [RuntimeEnabled=RTCEncodedVideoFrameAdditionalMetadata]
-    long long captureTimestamp;     // microseconds.
+    long long timestamp;     // Presentation timestamp, microseconds.
+    [RuntimeEnabled=RTCEncodedFrameSetMetadata]
+    unsigned long rtpTimestamp;
 };

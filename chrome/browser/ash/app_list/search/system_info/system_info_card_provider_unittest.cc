@@ -22,7 +22,7 @@
 #include "chrome/browser/ash/app_list/search/system_info/system_info_util.h"
 #include "chrome/browser/ash/app_list/search/test/test_search_controller.h"
 #include "chrome/browser/ash/file_manager/path_util.h"
-#include "chrome/browser/ui/webui/settings/ash/device_storage_util.h"
+#include "chrome/browser/ui/webui/ash/settings/pages/storage/device_storage_util.h"
 #include "chrome/common/channel_info.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chromeos/ash/components/dbus/concierge/concierge_client.h"
@@ -143,7 +143,7 @@ healthd_mojom::BatteryInfoPtr CreateCrosHealthdBatteryHealthResponse(
       /*current_now=*/0,
       /*technology=*/"",
       /*status=*/"",
-      /*manufacture_date=*/absl::nullopt, std::move(temp_value_ptr));
+      /*manufacture_date=*/std::nullopt, std::move(temp_value_ptr));
   return battery_info;
 }
 
@@ -215,7 +215,7 @@ void SetPowerManagerProperties(
 base::FilePath GetTestDataFilePath(const std::string& file_name) {
   // Get the path to file manager's test data directory.
   base::FilePath source_dir;
-  CHECK(base::PathService::Get(base::DIR_SOURCE_ROOT, &source_dir));
+  CHECK(base::PathService::Get(base::DIR_SRC_TEST_DATA_ROOT, &source_dir));
   base::FilePath test_data_dir = source_dir.AppendASCII("chrome")
                                      .AppendASCII("test")
                                      .AppendASCII("data")
@@ -311,8 +311,9 @@ class SystemInfoCardProviderTest : public testing::Test {
     arc_service_manager_ = std::make_unique<arc::ArcServiceManager>();
     profile_ = std::make_unique<TestingProfile>();
     search_controller_ = std::make_unique<TestSearchController>();
-    provider_ = std::make_unique<SystemInfoCardProvider>(profile_.get());
-    provider_->set_controller(search_controller_.get());
+    auto provider = std::make_unique<SystemInfoCardProvider>(profile_.get());
+    provider_ = provider.get();
+    search_controller_->AddProvider(std::move(provider));
 
     // Create and register My files directory.
     // By emulating chromeos running, GetMyFilesFolderForProfile will return the
@@ -330,7 +331,7 @@ class SystemInfoCardProviderTest : public testing::Test {
   }
 
   void TearDown() override {
-    provider_.reset();
+    provider_ = nullptr;
     search_controller_.reset();
     profile_.reset();
     arc_service_manager_.reset();
@@ -348,14 +349,16 @@ class SystemInfoCardProviderTest : public testing::Test {
     return search_controller_->last_results();
   }
 
-  void StartSearch(const std::u16string& query) { provider_->Start(query); }
+  void StartSearch(const std::u16string& query) {
+    search_controller_->StartSearch(query);
+  }
 
   content::BrowserTaskEnvironment task_environment_;
   ::ash::mojo_service_manager::FakeMojoServiceManager fake_service_manager_;
   std::unique_ptr<arc::ArcServiceManager> arc_service_manager_;
   std::unique_ptr<Profile> profile_;
   std::unique_ptr<TestSearchController> search_controller_;
-  std::unique_ptr<SystemInfoCardProvider> provider_;
+  raw_ptr<SystemInfoCardProvider> provider_;
 };
 
 TEST_F(SystemInfoCardProviderTest, Version) {
@@ -394,6 +397,33 @@ TEST_F(SystemInfoCardProviderTest, Version) {
   ASSERT_EQ(details.GetType(), ash::SearchResultTextItemType::kString);
   EXPECT_EQ(details.GetText(), u"Click to check for details");
   EXPECT_TRUE(details.GetTextTags().empty());
+}
+
+TEST_F(SystemInfoCardProviderTest, PreventTriggeringOfTooShortQueries) {
+  auto timer = std::make_unique<base::MockRepeatingTimer>();
+  provider_->SetCpuUsageTimerForTesting(std::move(timer));
+
+  int temp_1 = 40;
+  int temp_2 = 50;
+  int temp_3 = 15;
+  uint32_t core_1_speed = 4000000;
+  uint32_t core_2_speed = 2000000;
+  CpuUsageData core_1(1000, 1000, 1000);
+  CpuUsageData core_2(2000, 2000, 2000);
+
+  SetCrosHealthdCpuResponse({core_1, core_2}, {temp_1, temp_2, temp_3},
+                            {core_1_speed, core_2_speed});
+  StartSearch(u"cp");
+  Wait();
+  ASSERT_TRUE(results().empty());
+
+  StartSearch(u"c");
+  Wait();
+  ASSERT_TRUE(results().empty());
+
+  StartSearch(u"cpu");
+  Wait();
+  ASSERT_FALSE(results().empty());
 }
 
 TEST_F(SystemInfoCardProviderTest, Cpu) {
@@ -462,7 +492,7 @@ TEST_F(SystemInfoCardProviderTest, Cpu) {
                             {new_temp_1, new_temp_2, new_temp_3},
                             {core_1_speed, core_2_speed});
 
-  StartSearch(u"cpu usage");
+  StartSearch(u"cpu");
   Wait();
 
   ASSERT_FALSE(results().empty());
@@ -550,7 +580,7 @@ TEST_F(SystemInfoCardProviderTest, Memory) {
   EXPECT_EQ(results()[0]->system_info_answer_card_data()->bar_chart_percentage,
             75);
 
-  StartSearch(u"memory usage");
+  StartSearch(u"memory");
   Wait();
 
   ASSERT_FALSE(results().empty());
@@ -777,7 +807,7 @@ TEST_F(SystemInfoCardProviderTest, BatteryPowerManagerError) {
   SetCrosHealthdBatteryHealthResponse(charge_full_now, charge_full_design,
                                       cycle_count);
 
-  absl::nullopt_t props = absl::nullopt;
+  std::nullopt_t props = std::nullopt;
   chromeos::FakePowerManagerClient::Get()->UpdatePowerProperties(props);
 
   StartSearch(u"battery");
@@ -816,14 +846,14 @@ TEST_F(SystemInfoCardProviderTest, Storage) {
 
   const int kMountPathBytes = 8092;
   const int kAndroidPathBytes = 15271;
-  const int kDownloadsPathBytes = 59943;
+  const int kDownloadsPathBytes = 56758;
 
   // Add files in My files and android files.
   AddFile("random.bin", kMountPathBytes, mount_path);          // ~7.9 KB
   AddFile("tall.pdf", kAndroidPathBytes, android_files_path);  // ~14.9 KB
   // Add file in Downloads and simulate bind mount with
   // [android files]/Download.
-  AddFile("video.ogv", kDownloadsPathBytes, downloads_path);  // ~58.6 KB
+  AddFile("video.ogv", kDownloadsPathBytes, downloads_path);  // ~55.4 KB
 
   int64_t total_bytes = base::SysInfo::AmountOfTotalDiskSpace(mount_path);
   int64_t available_bytes = base::SysInfo::AmountOfFreeDiskSpace(mount_path);

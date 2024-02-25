@@ -18,12 +18,12 @@
 #include "chrome/browser/web_applications/os_integration/os_integration_manager.h"
 #include "chrome/browser/web_applications/web_app_command_scheduler.h"
 #include "chrome/browser/web_applications/web_app_constants.h"
-#include "chrome/browser/web_applications/web_app_id.h"
 #include "chrome/browser/web_applications/web_app_sync_bridge.h"
 #include "chrome/common/url_constants.h"
 #include "components/custom_handlers/protocol_handler.h"
 #include "components/google/core/common/google_util.h"
 #include "components/prefs/pref_service.h"
+#include "components/webapps/common/web_app_id.h"
 #include "content/public/browser/web_ui.h"
 
 namespace settings {
@@ -130,7 +130,7 @@ void ProtocolHandlersHandler::OnAppRegistrarDestroyed() {
 }
 
 void ProtocolHandlersHandler::OnWebAppUninstalled(
-    const web_app::AppId& app_id,
+    const webapps::AppId& app_id,
     webapps::WebappUninstallSource uninstall_source) {
   OnWebAppProtocolSettingsChanged();
 }
@@ -312,7 +312,7 @@ void ProtocolHandlersHandler::ResetProtocolHandlerUserApproval(
   CHECK(!handler.IsEmpty());
   DCHECK(web_app_provider_);
 
-  const web_app::AppId& app_id = handler.web_app_id().value();
+  const webapps::AppId& app_id = handler.web_app_id().value();
   web_app_provider_->scheduler().UpdateProtocolHandlerUserApproval(
       app_id, handler.protocol(), web_app::ApiApprovalState::kRequiresPrompt,
       base::DoNothing());

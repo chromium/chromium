@@ -24,6 +24,10 @@ class MEDIA_EXPORT CrossOriginDataSource : public DataSource {
   virtual bool HasAccessControl() const = 0;
 
   virtual const std::string& GetMimeType() const = 0;
+
+  // Allows the data source to perform any additional initialization steps.
+  // This should always be called after constructing, and before other use.
+  virtual void Initialize(base::OnceCallback<void(bool)> init_cb) = 0;
 };
 
 }  // namespace media

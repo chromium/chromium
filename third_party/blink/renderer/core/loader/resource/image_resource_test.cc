@@ -32,6 +32,7 @@
 
 #include <memory>
 #include "base/task/single_thread_task_runner.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/loader/referrer_utils.h"
@@ -68,10 +69,10 @@
 #include "third_party/blink/renderer/platform/network/http_names.h"
 #include "third_party/blink/renderer/platform/scheduler/test/fake_frame_scheduler.h"
 #include "third_party/blink/renderer/platform/scheduler/test/fake_task_runner.h"
-#include "third_party/blink/renderer/platform/testing/histogram_tester.h"
 #include "third_party/blink/renderer/platform/testing/mock_context_lifecycle_notifier.h"
 #include "third_party/blink/renderer/platform/testing/runtime_enabled_features_test_helpers.h"
 #include "third_party/blink/renderer/platform/testing/scoped_mocked_url.h"
+#include "third_party/blink/renderer/platform/testing/task_environment.h"
 #include "third_party/blink/renderer/platform/testing/testing_platform_support_with_mock_scheduler.h"
 #include "third_party/blink/renderer/platform/testing/unit_test_helpers.h"
 #include "third_party/blink/renderer/platform/testing/url_loader_mock_factory.h"
@@ -128,6 +129,9 @@ class ImageResourceTest : public testing::Test,
     ThreadState::Current()->CollectAllGarbageForTesting(
         ThreadState::StackState::kNoHeapPointers);
   }
+
+ private:
+  test::TaskEnvironment task_environment_;
 };
 
 // Ensure that the image decoder can determine the dimensions of kJpegImage from
@@ -254,7 +258,9 @@ TEST_F(ImageResourceTest, MultipartImage) {
       http_names::kContentType,
       AtomicString("multipart/x-mixed-replace; boundary=boundary"));
   image_resource->Loader()->DidReceiveResponse(
-      WrappedResourceResponse(multipart_response));
+      WrappedResourceResponse(multipart_response),
+      /*body=*/mojo::ScopedDataPipeConsumerHandle(),
+      /*cached_metadata=*/std::nullopt);
   EXPECT_FALSE(image_resource->ResourceBuffer());
   EXPECT_FALSE(image_resource->GetContent()->HasImage());
   EXPECT_EQ(0, observer->ImageChangedCount());
@@ -299,7 +305,7 @@ TEST_F(ImageResourceTest, MultipartImage) {
 
   // This part finishes. The image is created, callbacks are sent, and the data
   // buffer is cleared.
-  image_resource->Loader()->DidFinishLoading(base::TimeTicks(), 0, 0, 0, false);
+  image_resource->Loader()->DidFinishLoading(base::TimeTicks(), 0, 0, 0);
   EXPECT_TRUE(image_resource->ResourceBuffer());
   EXPECT_FALSE(image_resource->ErrorOccurred());
   ASSERT_TRUE(image_resource->GetContent()->HasImage());
@@ -340,7 +346,9 @@ TEST_F(ImageResourceTest, BitmapMultipartImage) {
       http_names::kContentType,
       AtomicString("multipart/x-mixed-replace; boundary=boundary"));
   image_resource->Loader()->DidReceiveResponse(
-      WrappedResourceResponse(multipart_response));
+      WrappedResourceResponse(multipart_response),
+      /*body=*/mojo::ScopedDataPipeConsumerHandle(),
+      /*cached_metadata=*/std::nullopt);
   EXPECT_FALSE(image_resource->GetContent()->HasImage());
 
   const char kBoundary[] = "--boundary\n";
@@ -350,7 +358,7 @@ TEST_F(ImageResourceTest, BitmapMultipartImage) {
   image_resource->AppendData(reinterpret_cast<const char*>(kJpegImage),
                              sizeof(kJpegImage));
   image_resource->AppendData(kBoundary, strlen(kBoundary));
-  image_resource->Loader()->DidFinishLoading(base::TimeTicks(), 0, 0, 0, false);
+  image_resource->Loader()->DidFinishLoading(base::TimeTicks(), 0, 0, 0);
   EXPECT_TRUE(image_resource->GetContent()->HasImage());
   EXPECT_TRUE(IsA<BitmapImage>(image_resource->GetContent()->GetImage()));
   EXPECT_TRUE(image_resource->GetContent()
@@ -823,7 +831,9 @@ TEST_F(ImageResourceTest, CancelOnDecodeError) {
   resource_response.SetMimeType(AtomicString("image/jpeg"));
   resource_response.SetExpectedContentLength(18);
   image_resource->Loader()->DidReceiveResponse(
-      WrappedResourceResponse(resource_response));
+      WrappedResourceResponse(resource_response),
+      /*body=*/mojo::ScopedDataPipeConsumerHandle(),
+      /*cached_metadata=*/std::nullopt);
 
   EXPECT_EQ(0, observer->ImageChangedCount());
 
@@ -851,13 +861,15 @@ TEST_F(ImageResourceTest, DecodeErrorWithEmptyBody) {
   ResourceResponse resource_response(test_url);
   resource_response.SetMimeType(AtomicString("image/jpeg"));
   image_resource->Loader()->DidReceiveResponse(
-      WrappedResourceResponse(resource_response));
+      WrappedResourceResponse(resource_response),
+      /*body=*/mojo::ScopedDataPipeConsumerHandle(),
+      /*cached_metadata=*/std::nullopt);
 
   EXPECT_EQ(ResourceStatus::kPending, image_resource->GetStatus());
   EXPECT_FALSE(observer->ImageNotifyFinishedCalled());
   EXPECT_EQ(0, observer->ImageChangedCount());
 
-  image_resource->Loader()->DidFinishLoading(base::TimeTicks(), 0, 0, 0, false);
+  image_resource->Loader()->DidFinishLoading(base::TimeTicks(), 0, 0, 0);
 
   EXPECT_EQ(ResourceStatus::kDecodeError, image_resource->GetStatus());
   EXPECT_TRUE(observer->ImageNotifyFinishedCalled());
@@ -894,7 +906,9 @@ TEST_F(ImageResourceTest, PartialContentWithoutDimensions) {
                         sizeof(kJpegImage)));
 
   image_resource->Loader()->DidReceiveResponse(
-      WrappedResourceResponse(partial_response));
+      WrappedResourceResponse(partial_response),
+      /*body=*/mojo::ScopedDataPipeConsumerHandle(),
+      /*cached_metadata=*/std::nullopt);
   image_resource->Loader()->DidReceiveData(
       reinterpret_cast<const char*>(kJpegImage),
       kJpegImageSubrangeWithoutDimensionsLength);
@@ -906,7 +920,7 @@ TEST_F(ImageResourceTest, PartialContentWithoutDimensions) {
   image_resource->Loader()->DidFinishLoading(
       base::TimeTicks(), kJpegImageSubrangeWithoutDimensionsLength,
       kJpegImageSubrangeWithoutDimensionsLength,
-      kJpegImageSubrangeWithoutDimensionsLength, false);
+      kJpegImageSubrangeWithoutDimensionsLength);
 
   EXPECT_EQ(ResourceStatus::kDecodeError, image_resource->GetStatus());
   EXPECT_TRUE(observer->ImageNotifyFinishedCalled());
@@ -1139,6 +1153,8 @@ class ImageResourceCounterTest : public testing::Test {
     return InstanceCounters::CounterValue(
         InstanceCounters::kUACSSResourceCounter);
   }
+
+  test::TaskEnvironment task_environment_;
 };
 
 TEST_F(ImageResourceCounterTest, InstanceCounters) {
@@ -1182,7 +1198,7 @@ TEST_F(ImageResourceCounterTest, InstanceCounters_UserAgent) {
 }
 
 TEST_F(ImageResourceCounterTest, RevalidationPolicyMetrics) {
-  blink::HistogramTester histogram_tester;
+  base::HistogramTester histogram_tester;
   auto* fetcher = CreateFetcher();
 
   KURL test_url("http://127.0.0.1:8000/img.png");

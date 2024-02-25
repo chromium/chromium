@@ -9,6 +9,9 @@
 
 @class BaseGridMediator;
 @class URLWithTitle;
+namespace web {
+class WebStateID;
+}  // namespace web
 
 // Delegate protocol for an object that can handle the action sheet that asks
 // for confirmation from the tab grid.
@@ -20,9 +23,10 @@
 - (void)
     showCloseItemsConfirmationActionSheetWithBaseGridMediator:
         (BaseGridMediator*)baseGridMediator
-                                                        items:(NSArray<
-                                                                  NSString*>*)
-                                                                  items
+                                                      itemIDs:
+                                                          (const std::set<
+                                                              web::WebStateID>&)
+                                                              itemIDs
                                                        anchor:(UIBarButtonItem*)
                                                                   buttonAnchor;
 
@@ -33,6 +37,11 @@
 
 // Dismisses presented popovers, if any.
 - (void)dismissPopovers;
+
+// Display the tab group creation menu for the given identifiers.
+- (void)showTabGroupCreationWithWithIdentifiers:
+            (const std::set<web::WebStateID>&)identifiers
+                                      incognito:(BOOL)incognito;
 
 @end
 

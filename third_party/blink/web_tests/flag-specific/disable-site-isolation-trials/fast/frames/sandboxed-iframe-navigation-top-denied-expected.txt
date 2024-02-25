@@ -1,0 +1,4 @@
+CONSOLE ERROR: Unsafe attempt to initiate navigation for frame with URL 'navigate-top-to-fail.html'. The frame attempting navigation of the top-level window is sandboxed, but the flag of 'allow-top-navigation' or 'allow-top-navigation-by-user-activation' is not set.
+
+CONSOLE ERROR: Uncaught SecurityError: Failed to set the 'href' property on 'Location': The current window does not have permission to navigate the target frame to 'fail-and-notify-done.html'.
+This test verifies that a sandboxed IFrame cannot navigate the top-level frame without allow-top-navigation. This test passes if the navigation does not occur.

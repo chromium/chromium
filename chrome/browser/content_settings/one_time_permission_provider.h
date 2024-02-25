@@ -12,9 +12,11 @@
 #include "base/power_monitor/power_observer.h"
 #include "base/time/time.h"
 #include "chrome/browser/permissions/one_time_permissions_tracker_observer.h"
-#include "components/content_settings/core/browser/content_settings_origin_identifier_value_map.h"
+#include "components/content_settings/core/browser/content_settings_origin_value_map.h"
+#include "components/content_settings/core/browser/content_settings_rule.h"
 #include "components/content_settings/core/browser/user_modifiable_provider.h"
 #include "components/content_settings/core/common/content_settings.h"
+#include "components/content_settings/core/common/content_settings_partition_key.h"
 #include "components/content_settings/core/common/content_settings_pattern.h"
 #include "components/content_settings/core/common/content_settings_types.h"
 #include "components/permissions/permission_uma_util.h"
@@ -46,42 +48,63 @@ class OneTimePermissionProvider
   // UserModifiableProvider:
   std::unique_ptr<content_settings::RuleIterator> GetRuleIterator(
       ContentSettingsType content_type,
-      bool incognito) const override;
+      bool incognito,
+      const content_settings::PartitionKey& partition_key) const override;
+  std::unique_ptr<content_settings::Rule> GetRule(
+      const GURL& primary_url,
+      const GURL& secondary_url,
+      ContentSettingsType content_type,
+      bool off_the_record,
+      const content_settings::PartitionKey& partition_key) const override;
   bool SetWebsiteSetting(
       const ContentSettingsPattern& primary_pattern,
       const ContentSettingsPattern& secondary_pattern,
       ContentSettingsType content_type,
       base::Value&& value,
-      const content_settings::ContentSettingConstraints& constraints) override;
-  void ClearAllContentSettingsRules(ContentSettingsType content_type) override;
+      const content_settings::ContentSettingConstraints& constraints,
+      const content_settings::PartitionKey& partition_key) override;
+  void ClearAllContentSettingsRules(
+      ContentSettingsType content_type,
+      const content_settings::PartitionKey& partition_key) override;
   void ShutdownOnUIThread() override;
-  bool UpdateLastUsedTime(const GURL& primary_url,
-                          const GURL& secondary_url,
-                          ContentSettingsType content_type,
-                          const base::Time time) override;
-  bool ResetLastVisitTime(const ContentSettingsPattern& primary_pattern,
-                          const ContentSettingsPattern& secondary_pattern,
-                          ContentSettingsType content_type) override;
-  bool UpdateLastVisitTime(const ContentSettingsPattern& primary_pattern,
-                           const ContentSettingsPattern& secondary_pattern,
-                           ContentSettingsType content_type) override;
-  bool RenewContentSetting(
+  bool UpdateLastUsedTime(
+      const GURL& primary_url,
+      const GURL& secondary_url,
+      ContentSettingsType content_type,
+      const base::Time time,
+      const content_settings::PartitionKey& partition_key) override;
+  bool ResetLastVisitTime(
+      const ContentSettingsPattern& primary_pattern,
+      const ContentSettingsPattern& secondary_pattern,
+      ContentSettingsType content_type,
+      const content_settings::PartitionKey& partition_key) override;
+  bool UpdateLastVisitTime(
+      const ContentSettingsPattern& primary_pattern,
+      const ContentSettingsPattern& secondary_pattern,
+      ContentSettingsType content_type,
+      const content_settings::PartitionKey& partition_key) override;
+  std::optional<base::TimeDelta> RenewContentSetting(
       const GURL& primary_url,
       const GURL& secondary_url,
       ContentSettingsType type,
-      absl::optional<ContentSetting> setting_to_match) override;
+      std::optional<ContentSetting> setting_to_match,
+      const content_settings::PartitionKey& partition_key) override;
   void SetClockForTesting(base::Clock* clock) override;
 
-  void ExpireWebsiteSetting(const ContentSettingsPattern& primary_pattern,
-                            const ContentSettingsPattern& secondary_pattern,
-                            ContentSettingsType content_settings_type) override;
+  void ExpireWebsiteSetting(
+      const ContentSettingsPattern& primary_pattern,
+      const ContentSettingsPattern& secondary_pattern,
+      ContentSettingsType content_settings_type,
+      const content_settings::PartitionKey& partition_key) override;
 
   // PowerSuspendObserver:
   void OnSuspend() override;
 
   // OneTimePermissionsTrackerObserver:
   void OnLastPageFromOriginClosed(const url::Origin&) override;
-  void OnAllTabsInBackgroundTimerExpired(const url::Origin&) override;
+  void OnAllTabsInBackgroundTimerExpired(
+      const url::Origin& origin,
+      const BackgroundExpiryType& expiry_type) override;
   void OnCapturingVideoExpired(const url::Origin&) override;
   void OnCapturingAudioExpired(const url::Origin&) override;
 
@@ -103,7 +126,7 @@ class OneTimePermissionProvider
       const GURL& origin_gurl,
       permissions::OneTimePermissionEvent trigger_event);
 
-  content_settings::OriginIdentifierValueMap value_map_;
+  content_settings::OriginValueMap value_map_;
   raw_ptr<OneTimePermissionsTracker> one_time_permissions_tracker_ = nullptr;
 
   // Unowned

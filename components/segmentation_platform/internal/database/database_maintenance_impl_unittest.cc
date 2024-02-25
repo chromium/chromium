@@ -39,11 +39,12 @@ using SegmentId = proto::SegmentId;
 using SignalType = proto::SignalType;
 using Aggregation = proto::Aggregation;
 using SignalIdentifier = std::pair<uint64_t, SignalType>;
-using CleanupItem = std::tuple<uint64_t, SignalType, base::Time>;
 
 namespace {
 constexpr uint64_t kLatestCompactionDaysAgo = 2;
 constexpr uint64_t kEarliestCompactionDaysAgo = 60;
+// Event hash for non UKM signals.
+static const uint64_t kNonUkmEventHash = 0;
 
 std::string kTestSegmentationKey = "some_key";
 
@@ -73,7 +74,7 @@ std::set<DatabaseMaintenanceImpl::SignalIdentifier> GetSignalIds(
 std::vector<CleanupItem> GetCleanupItems(std::vector<SignalData> signal_datas) {
   std::vector<CleanupItem> cleanup_items;
   for (auto& sd : signal_datas) {
-    cleanup_items.emplace_back(sd.name_hash, sd.signal_type,
+    cleanup_items.emplace_back(sd.name_hash, kNonUkmEventHash, sd.signal_type,
                                sd.earliest_needed_timestamp);
   }
   return cleanup_items;
@@ -164,7 +165,7 @@ class DatabaseMaintenanceImplTest : public testing::Test {
     cleanup_items.erase(
         std::remove_if(cleanup_items.begin(), cleanup_items.end(),
                        [](CleanupItem item) {
-                         return std::get<0>(item) ==
+                         return item.name_hash ==
                                 base::HashMetricName("Failed");
                        }),
         cleanup_items.end());

@@ -116,8 +116,9 @@ chrome.test.runTests([
   async function largeRegexError() {
     await updateDynamicRules(
         {addRules: [createLargeRegexRuleWithID(5)]},
-        'Rule with id 5 specified a more complex regex than allowed as part ' +
-            'of the "regexFilter" key.');
+        'Rule with id 5 was skipped as the "regexFilter" value exceeded the ' +
+        '2KB memory limit when compiled. Learn more: ' +
+        'https://developer.chrome.com/docs/extensions/reference/api/declarativeNetRequest#regex-rules');
 
     chrome.test.succeed();
   },

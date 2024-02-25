@@ -2,10 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {assert} from 'chrome://resources/js/assert_ts.js';
+import {assert} from 'chrome://resources/js/assert.js';
 
-import {FittingType, NamedDestinationMessageData, Point, Rect} from './constants.js';
-import {Size} from './viewport.js';
+import type {NamedDestinationMessageData, Point, Rect} from './constants.js';
+import {FittingType} from './constants.js';
+import type {Size} from './viewport.js';
 
 export interface OpenPdfParams {
   boundingBox?: Rect;

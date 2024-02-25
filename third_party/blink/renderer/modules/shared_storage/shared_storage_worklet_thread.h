@@ -7,8 +7,8 @@
 
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "third_party/blink/public/mojom/shared_storage/shared_storage_worklet_service.mojom-blink-forward.h"
+#include "third_party/blink/renderer/core/workers/worker_backing_thread.h"
 #include "third_party/blink/renderer/core/workers/worker_thread.h"
-#include "third_party/blink/renderer/core/workers/worklet_thread_holder.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
 #include "third_party/blink/renderer/platform/mojo/heap_mojo_remote.h"
 #include "third_party/blink/renderer/platform/wtf/casting.h"
@@ -16,35 +16,34 @@
 namespace blink {
 
 class WorkerReportingProxy;
-class SharedStorageWorkletServiceImpl;
 
 // SharedStorageWorkletThread is a per-SharedStorageWorkletGlobalScope object
-// that has a reference count to the backing thread that performs
-// SharedStorageWorklet tasks.
-class MODULES_EXPORT SharedStorageWorkletThread final : public WorkerThread {
+// that performs SharedStorageWorklet tasks.
+class MODULES_EXPORT SharedStorageWorkletThread : public WorkerThread {
  public:
-  explicit SharedStorageWorkletThread(WorkerReportingProxy&);
-  ~SharedStorageWorkletThread() final;
+  static std::unique_ptr<SharedStorageWorkletThread> Create(
+      WorkerReportingProxy& worker_reporting_proxy);
 
-  void SharedStorageWorkletServiceConnectionError();
-
-  WorkerBackingThread& GetWorkerBackingThread() final;
-  void ClearWorkerBackingThread() final {}
-
-  static void ClearSharedBackingThread();
+  ~SharedStorageWorkletThread() override;
 
   void InitializeSharedStorageWorkletService(
       mojo::PendingReceiver<mojom::blink::SharedStorageWorkletService> receiver,
       base::OnceClosure disconnect_handler);
 
- private:
-  WorkerOrWorkletGlobalScope* CreateWorkerGlobalScope(
-      std::unique_ptr<GlobalScopeCreationParams>) final;
-  bool IsOwningBackingThread() const final { return false; }
+  static std::optional<WorkerBackingThreadStartupData>
+  CreateThreadStartupData();
+
+ protected:
+  explicit SharedStorageWorkletThread(WorkerReportingProxy&);
+
   ThreadType GetThreadType() const final {
     // TODO(crbug.com/1414951): Specify a correct type.
     return ThreadType::kUnspecifiedWorkerThread;
   }
+
+ private:
+  WorkerOrWorkletGlobalScope* CreateWorkerGlobalScope(
+      std::unique_ptr<GlobalScopeCreationParams>) final;
 };
 
 }  // namespace blink

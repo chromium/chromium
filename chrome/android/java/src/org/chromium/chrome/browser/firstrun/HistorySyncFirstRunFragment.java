@@ -1,0 +1,69 @@
+// Copyright 2024 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+package org.chromium.chrome.browser.firstrun;
+
+import android.os.Bundle;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.view.accessibility.AccessibilityEvent;
+import android.widget.FrameLayout;
+
+import androidx.fragment.app.Fragment;
+
+import org.chromium.chrome.R;
+import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.ui.signin.history_sync.HistorySyncCoordinator;
+
+public class HistorySyncFirstRunFragment extends Fragment
+        implements FirstRunFragment, HistorySyncCoordinator.HistorySyncDelegate {
+    private HistorySyncCoordinator mHistorySyncCoordinator;
+    private FrameLayout mFragmentView;
+
+    @Override
+    public View onCreateView(
+            LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        mFragmentView = new FrameLayout(getActivity());
+
+        return mFragmentView;
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        assert getPageDelegate().getProfileProviderSupplier().get() != null;
+        Profile profile = getPageDelegate().getProfileProviderSupplier().get().getOriginalProfile();
+        mHistorySyncCoordinator = new HistorySyncCoordinator(getLayoutInflater(), this, profile);
+        mFragmentView.removeAllViews();
+        mFragmentView.addView(mHistorySyncCoordinator.getView());
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        if (mHistorySyncCoordinator != null) {
+            mHistorySyncCoordinator.destroy();
+            mHistorySyncCoordinator = null;
+        }
+    }
+
+    /** Implements {@link FirstRunFragment}. */
+    @Override
+    public void setInitialA11yFocus() {
+        // Ignore calls before view is created.
+        if (getView() == null) return;
+
+        final View title = getView().findViewById(R.id.sync_consent_title);
+        title.sendAccessibilityEvent(AccessibilityEvent.TYPE_VIEW_FOCUSED);
+    }
+
+    /** Implements {@link HistorySyncDelegate} */
+    @Override
+    public void dismiss() {
+        getPageDelegate().advanceToNextPage();
+        mHistorySyncCoordinator.destroy();
+        mHistorySyncCoordinator = null;
+    }
+}

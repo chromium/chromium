@@ -40,6 +40,14 @@ class CORE_EXPORT PropertyRegistration final
   static const PropertyRegistration* From(const ExecutionContext*,
                                           const AtomicString& property_name);
 
+  static std::optional<CSSSyntaxDefinition> ConvertSyntax(
+      const CSSValue* value);
+  static std::optional<bool> ConvertInherits(const CSSValue* value);
+  static std::optional<const CSSValue*> ConvertInitial(
+      const CSSValue* value,
+      const CSSSyntaxDefinition& syntax,
+      const CSSParserContext& parser_context);
+
   PropertyRegistration(const AtomicString& name,
                        const CSSSyntaxDefinition&,
                        bool inherits,
@@ -49,8 +57,8 @@ class CORE_EXPORT PropertyRegistration final
 
   const CSSSyntaxDefinition& Syntax() const { return syntax_; }
   bool Inherits() const { return inherits_; }
-  const CSSValue* Initial() const { return initial_; }
-  StyleRuleProperty* PropertyRule() const { return property_rule_; }
+  const CSSValue* Initial() const { return initial_.Get(); }
+  StyleRuleProperty* PropertyRule() const { return property_rule_.Get(); }
   const InterpolationTypes& GetInterpolationTypes() const {
     return interpolation_types_;
   }

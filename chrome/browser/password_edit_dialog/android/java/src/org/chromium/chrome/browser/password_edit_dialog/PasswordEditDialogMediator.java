@@ -8,7 +8,7 @@ import android.content.res.Resources;
 
 import androidx.annotation.StringRes;
 
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.build.BuildConfig;
 import org.chromium.ui.modaldialog.DialogDismissalCause;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.modaldialog.ModalDialogProperties;
@@ -18,30 +18,37 @@ import org.chromium.ui.modelutil.PropertyModel;
 import java.util.List;
 
 /**
- * Contains the logic for save & update password edit dialog.
- * Handles models updates and reacts to UI events.
+ * Contains the logic for save & update password edit dialog. Handles models updates and reacts to
+ * UI events.
  */
 class PasswordEditDialogMediator implements ModalDialogProperties.Controller {
     private PropertyModel mDialogViewModel;
     private PropertyModel mModalDialogModel;
     private List<String> mSavedUsernames;
+    private String mAccount;
 
     private final ModalDialogManager mModalDialogManager;
     private final Resources mResources;
     private final PasswordEditDialogCoordinator.Delegate mDialogInteractions;
 
-    PasswordEditDialogMediator(ModalDialogManager modalDialogManager, Resources resources,
+    PasswordEditDialogMediator(
+            ModalDialogManager modalDialogManager,
+            Resources resources,
             PasswordEditDialogCoordinator.Delegate dialogInteractions) {
         mModalDialogManager = modalDialogManager;
         mResources = resources;
         mDialogInteractions = dialogInteractions;
     }
 
-    void initialize(PropertyModel dialogViewModel, PropertyModel modalDialogModel,
-            List<String> savedUsernames) {
+    void initialize(
+            PropertyModel dialogViewModel,
+            PropertyModel modalDialogModel,
+            List<String> savedUsernames,
+            String account) {
         mDialogViewModel = dialogViewModel;
         mModalDialogModel = modalDialogModel;
         mSavedUsernames = savedUsernames;
+        mAccount = account;
     }
 
     /**
@@ -51,17 +58,15 @@ class PasswordEditDialogMediator implements ModalDialogProperties.Controller {
      */
     void handleUsernameChanged(String username) {
         mDialogViewModel.set(PasswordEditDialogProperties.USERNAME, username);
-        mModalDialogModel.set(ModalDialogProperties.POSITIVE_BUTTON_TEXT,
+        mDialogViewModel.set(
+                PasswordEditDialogProperties.FOOTER,
+                createEditPasswordDialogFooter(
+                        mAccount, mDialogInteractions.isUsingAccountStorage(username), mResources));
+        mModalDialogModel.set(
+                ModalDialogProperties.POSITIVE_BUTTON_TEXT,
                 isUpdate(mSavedUsernames, username)
                         ? mResources.getString(R.string.password_manager_update_button)
                         : mResources.getString(R.string.password_manager_save_button));
-    }
-
-    /**
-     * Updates model's selected username index when it's changed in UI.
-     */
-    void handleUsernameSelected(int selectedIndex) {
-        mDialogViewModel.set(PasswordEditDialogProperties.USERNAME_INDEX, selectedIndex);
     }
 
     /**
@@ -72,7 +77,8 @@ class PasswordEditDialogMediator implements ModalDialogProperties.Controller {
     void handlePasswordChanged(String password) {
         mDialogViewModel.set(PasswordEditDialogProperties.PASSWORD, password);
         boolean isPasswordInvalid = password.isEmpty();
-        mDialogViewModel.set(PasswordEditDialogProperties.PASSWORD_ERROR,
+        mDialogViewModel.set(
+                PasswordEditDialogProperties.PASSWORD_ERROR,
                 isPasswordInvalid
                         ? mResources.getString(R.string.password_entry_edit_empty_password_error)
                         : null);
@@ -83,18 +89,15 @@ class PasswordEditDialogMediator implements ModalDialogProperties.Controller {
     @Override
     public void onClick(PropertyModel model, @ButtonType int buttonType) {
         if (buttonType == ButtonType.POSITIVE) {
-            if (ChromeFeatureList.isEnabled(ChromeFeatureList.PASSWORD_EDIT_DIALOG_WITH_DETAILS)) {
-                mDialogInteractions.onDialogAccepted(
-                        mDialogViewModel.get(PasswordEditDialogProperties.USERNAME),
-                        mDialogViewModel.get(PasswordEditDialogProperties.PASSWORD));
-            } else {
-                mDialogInteractions.onLegacyDialogAccepted(
-                        mDialogViewModel.get(PasswordEditDialogProperties.USERNAME_INDEX));
-            }
+            mDialogInteractions.onDialogAccepted(
+                    mDialogViewModel.get(PasswordEditDialogProperties.USERNAME),
+                    mDialogViewModel.get(PasswordEditDialogProperties.PASSWORD));
         }
-        mModalDialogManager.dismissDialog(model,
-                buttonType == ButtonType.POSITIVE ? DialogDismissalCause.POSITIVE_BUTTON_CLICKED
-                                                  : DialogDismissalCause.NEGATIVE_BUTTON_CLICKED);
+        mModalDialogManager.dismissDialog(
+                model,
+                buttonType == ButtonType.POSITIVE
+                        ? DialogDismissalCause.POSITIVE_BUTTON_CLICKED
+                        : DialogDismissalCause.NEGATIVE_BUTTON_CLICKED);
     }
 
     @Override
@@ -119,10 +122,25 @@ class PasswordEditDialogMediator implements ModalDialogProperties.Controller {
             // Otherwise, they are just asked if they want to update the password.
             // TODO(crbug.com/1378591): Take care that confirm username dialog should
             // not be navigated through the cog button.
-            return displayUsernames.size() < 2 ? R.string.password_update_dialog_title
-                                               : R.string.confirm_username_dialog_title;
+            return displayUsernames.size() < 2
+                    ? R.string.password_update_dialog_title
+                    : R.string.confirm_username_dialog_title;
         }
         return R.string.save_password;
+    }
+
+    public static String createEditPasswordDialogFooter(
+            String account, boolean isUsingAccountStorage, Resources resources) {
+        @StringRes int footerId;
+        if (isUsingAccountStorage) {
+            footerId = R.string.password_edit_dialog_synced_footer_google;
+        } else {
+            footerId =
+                    BuildConfig.IS_CHROME_BRANDED
+                            ? R.string.password_edit_dialog_unsynced_footer_google
+                            : R.string.password_edit_dialog_unsynced_footer;
+        }
+        return resources.getString(footerId, account);
     }
 
     /**

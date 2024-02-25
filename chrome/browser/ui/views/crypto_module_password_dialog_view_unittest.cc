@@ -6,6 +6,7 @@
 
 #include <string>
 
+#include "base/scoped_observation.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
 #include "chrome/browser/ui/crypto_module_password_dialog.h"
@@ -13,6 +14,8 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/views/controls/textfield/textfield.h"
 #include "ui/views/test/views_test_base.h"
+#include "ui/views/widget/widget_observer.h"
+#include "ui/views/window/dialog_client_view.h"
 
 using CryptoModulePasswordDialogViewTest = ChromeViewsTestBase;
 
@@ -50,4 +53,45 @@ TEST_F(CryptoModulePasswordDialogViewTest, CancelDoesntUsePassword) {
   EXPECT_TRUE(dialog->Cancel());
   EXPECT_TRUE(callback_run);
   EXPECT_EQ("", password);
+}
+
+class WidgetCloseWaiter : public views::WidgetObserver {
+ public:
+  explicit WidgetCloseWaiter(views::Widget* widget) {
+    observation_.Observe(widget);
+  }
+  ~WidgetCloseWaiter() override {}
+
+  void Wait() { loop_.Run(); }
+
+  void OnWidgetDestroying(views::Widget* widget) override {
+    CHECK_EQ(widget, observation_.GetSource());
+    observation_.Reset();
+    loop_.Quit();
+  }
+
+ private:
+  base::ScopedObservation<views::Widget, views::WidgetObserver> observation_{
+      this};
+  base::RunLoop loop_;
+};
+
+TEST_F(CryptoModulePasswordDialogViewTest, EscapeRunsCallback) {
+  bool callback_run = false;
+  auto dialog = CreateCryptoDialog(base::BindLambdaForTesting(
+      [&](const std::string&) { callback_run = true; }));
+  auto* weak_dialog = dialog.get();
+
+  views::Widget* dialog_widget =
+      dialog->CreateDialogWidget(std::move(dialog), GetContext(), nullptr);
+
+  views::DialogClientView* dcv = weak_dialog->GetDialogClientView();
+  ASSERT_TRUE(dcv);
+
+  WidgetCloseWaiter waiter(dialog_widget);
+
+  dcv->AcceleratorPressed(ui::Accelerator(ui::VKEY_ESCAPE, 0));
+
+  waiter.Wait();
+  EXPECT_TRUE(callback_run);
 }

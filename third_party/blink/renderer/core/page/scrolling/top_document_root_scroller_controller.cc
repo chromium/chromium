@@ -15,8 +15,6 @@
 #include "third_party/blink/renderer/core/layout/layout_view.h"
 #include "third_party/blink/renderer/core/page/chrome_client.h"
 #include "third_party/blink/renderer/core/page/page.h"
-#include "third_party/blink/renderer/core/page/scrolling/overscroll_controller.h"
-#include "third_party/blink/renderer/core/page/scrolling/viewport_scroll_callback.h"
 #include "third_party/blink/renderer/core/paint/paint_layer.h"
 #include "third_party/blink/renderer/core/paint/paint_layer_scrollable_area.h"
 #include "third_party/blink/renderer/core/scroll/scrollable_area.h"
@@ -39,7 +37,7 @@ TopDocumentRootScrollerController::TopDocumentRootScrollerController(Page& page)
     : page_(&page) {}
 
 void TopDocumentRootScrollerController::Trace(Visitor* visitor) const {
-  visitor->Trace(viewport_apply_scroll_);
+  visitor->Trace(root_frame_viewport_);
   visitor->Trace(global_root_scroller_);
   visitor->Trace(page_);
 }
@@ -94,7 +92,7 @@ gfx::Size TopDocumentRootScrollerController::RootScrollerVisibleArea() const {
 
 void TopDocumentRootScrollerController::Reset() {
   global_root_scroller_.Clear();
-  viewport_apply_scroll_.Clear();
+  root_frame_viewport_.Clear();
 }
 
 Node* TopDocumentRootScrollerController::FindGlobalRootScroller() {
@@ -140,8 +138,9 @@ void SetNeedsCompositingUpdateOnAncestors(Node* node) {
 
 void TopDocumentRootScrollerController::UpdateGlobalRootScroller(
     Node* new_global_root_scroller) {
-  if (!viewport_apply_scroll_)
+  if (!root_frame_viewport_) {
     return;
+  }
 
   // Note, the layout object can be replaced during a rebuild. In that case,
   // re-run process even if the element itself is the same.
@@ -154,24 +153,12 @@ void TopDocumentRootScrollerController::UpdateGlobalRootScroller(
   if (!target_scroller)
     return;
 
-  if (global_root_scroller_)
-    global_root_scroller_->RemoveApplyScroll();
-
-  // Use disable-native-scroll since the ViewportScrollCallback needs to
-  // apply scroll actions both before (BrowserControls) and after (overscroll)
-  // scrolling the element so it will apply scroll to the element itself.
-  new_global_root_scroller->SetApplyScroll(viewport_apply_scroll_);
-
   Node* old_root_scroller = global_root_scroller_;
 
   global_root_scroller_ = new_global_root_scroller;
 
-  // Ideally, scroll customization would pass the current element to scroll to
-  // the apply scroll callback but this doesn't happen today so we set it
-  // through a back door here. This is also needed by the
-  // ViewportScrollCallback to swap the new global root scroller into the
-  // layout viewport in RootFrameViewport.
-  viewport_apply_scroll_->SetScroller(target_scroller);
+  // Swap the new global root scroller into the layout viewport.
+  root_frame_viewport_->SetLayoutViewport(*target_scroller);
 
   SetNeedsCompositingUpdateOnAncestors(old_root_scroller);
   SetNeedsCompositingUpdateOnAncestors(new_global_root_scroller);
@@ -225,26 +212,16 @@ void TopDocumentRootScrollerController::DidDisposeScrollableArea(
   }
 }
 
-void TopDocumentRootScrollerController::InitializeViewportScrollCallback(
+void TopDocumentRootScrollerController::Initialize(
     RootFrameViewport& root_frame_viewport,
     Document& main_document) {
   DCHECK(page_);
-  viewport_apply_scroll_ = MakeGarbageCollected<ViewportScrollCallback>(
-      &page_->GetBrowserControls(), &page_->GetOverscrollController(),
-      root_frame_viewport);
+  root_frame_viewport_ = root_frame_viewport;
 
   // Initialize global_root_scroller_ to the default; the main document node.
   // We can't yet reliably compute this because the frame we're loading may not
   // be swapped into the main frame yet so TopDocument returns nullptr.
   UpdateGlobalRootScroller(&main_document);
-}
-
-bool TopDocumentRootScrollerController::IsViewportScrollCallback(
-    const ScrollStateCallback* callback) const {
-  if (!callback)
-    return false;
-
-  return callback == viewport_apply_scroll_.Get();
 }
 
 Node* TopDocumentRootScrollerController::GlobalRootScroller() const {

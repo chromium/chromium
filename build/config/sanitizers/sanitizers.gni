@@ -2,8 +2,8 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//build/config/cast.gni")
 import("//build/config/chrome_build.gni")
-import("//build/config/chromecast_build.gni")
 import("//build/config/chromeos/args.gni")
 import("//build/config/chromeos/ui_mode.gni")
 import("//build/config/profiling/profiling.gni")
@@ -86,10 +86,6 @@ declare_args() {
   # Not for client use.
   disable_libfuzzer = false
 
-  # Optimize for coverage guided fuzzing (balance between speed and number of
-  # branches). Can be also used to remove non-determinism and other issues.
-  optimize_for_fuzzing = false
-
   # Value for -fsanitize-coverage flag. Setting this causes
   # use_sanitizer_coverage to be enabled.
   # This flag is not used for libFuzzer (use_libfuzzer=true). Instead, we use:
@@ -99,6 +95,10 @@ declare_args() {
   # Default value when unset and use_sanitizer_coverage=true:
   #     trace-pc-guard,indirect-calls
   sanitizer_coverage_flags = ""
+
+  # A sanitizer coverage allowlist, specifying exactly which
+  # files or symbol names should be instrumented, rather than all of them.
+  sanitizer_coverage_allowlist = ""
 
   # When enabled, only relevant sanitizer defines are set, but compilation
   # happens with no extra flags. This is useful when in component build
@@ -110,6 +110,13 @@ declare_args() {
 
   # When true, sanitizer warnings will cause test case failures.
   fail_on_san_warnings = false
+
+  # The fuzztest library builds only on some platforms, so for now,
+  # all targets depending on fuzztest need to be configured according
+  # to this.
+  # TODO(crbug.com/1494445): remove this when all build permutations
+  # work
+  fuzztest_supported = !(is_win && is_component_build)
 }
 
 declare_args() {
@@ -122,8 +129,39 @@ declare_args() {
   is_ubsan_vptr = is_ubsan_security
 }
 
+declare_args() {
+  # Builds fuzztest test executables such that they support the
+  # --fuzz= argument, which requires some sanitizer coverage.
+  # We want to enable this only when we're *NOT* using a fuzzing
+  # engine such as libfuzzer or centipede. It's generally a
+  # useful option, but it requires sanitizer coverage, and that
+  # could conceivably disrupt normal unit testing workflows, so we'll
+  # enable it by default only in sanitizer builds.
+  # Also be sure not to enable this on non-Chromium builds where
+  # the required //third_party/fuzztest dependency may be absent.
+  # TODO(crbug.com/1495713): enable on component builds
+  enable_fuzztest_fuzz =
+      !(use_libfuzzer || use_afl || use_centipede ||
+        use_external_fuzzing_engine) &&
+      (is_asan || is_hwasan || is_lsan || is_tsan || is_msan || is_ubsan ||
+       is_ubsan_vptr || is_ubsan_security) && !is_component_build && is_linux &&
+      build_with_chromium
+}
+
 assert(!is_hwasan || (target_os == "android" && target_cpu == "arm64"),
        "HWASan only supported on Android ARM64 builds.")
+
+assert(
+    !(enable_fuzztest_fuzz && use_libfuzzer),
+    "Can't specify enable_fuzztest_fuzz and use_libfuzzer. When libfuzzer is enabled, fuzztest executables automatically support --fuzz but provide output that's libfuzzer compatible.")
+
+assert(
+    !(enable_fuzztest_fuzz && use_centipede),
+    "Can't specify enable_fuzztest_fuzz and use_centipede. The same binaries are built in a different mode to add centipede support.")
+
+assert(
+    !(enable_fuzztest_fuzz && is_component_build),
+    "Can't specify enable_fuzztest_fuzz in component builds; fuzztest doesn't yet support it. Consider using use_libfuzzer=true instead which provides superficially similar functionality.")
 
 # Disable sanitizers for non-target toolchains, and for the toolchain using
 # the prebuilt Rust stdlib which has no sanitizer support with it.
@@ -148,6 +186,7 @@ if (!is_a_target_toolchain || toolchain_for_rust_host_build_tools) {
   use_libfuzzer = false
   use_locally_built_instrumented_libraries = false
   use_sanitizer_coverage = false
+  enable_fuzztest_fuzz = false
 } else if (current_cpu != "arm64") {
   is_hwasan = false
 }
@@ -164,9 +203,7 @@ use_prebuilt_instrumented_libraries = is_msan
 use_fuzzing_engine =
     use_libfuzzer || use_afl || use_centipede || use_external_fuzzing_engine
 
-# Whether the current fuzzing engine supports libprotobuf_mutator. Right now
-# this is just libfuzzer, but others are likely to support this in future,
-# so it's preferable to check this.
+# Whether the current fuzzing engine supports libprotobuf_mutator.
 use_fuzzing_engine_with_lpm = use_libfuzzer || use_centipede
 
 # Whether the fuzzing engine supports fuzzers which supply their own
@@ -182,8 +219,8 @@ declare_args() {
   generate_fuzzer_owners = use_fuzzing_engine
 
   use_sanitizer_coverage =
-      !use_clang_coverage &&
-      (use_fuzzing_engine || sanitizer_coverage_flags != "")
+      !use_clang_coverage && (use_fuzzing_engine || enable_fuzztest_fuzz ||
+                              sanitizer_coverage_flags != "")
 
   # https://crbug.com/1002058: Code coverage works inside the sandbox via the
   # help of several helper IPCs. Unfortunately, the sandbox-only path does not
@@ -196,20 +233,26 @@ declare_args() {
       use_clang_profiling && !use_fuzzing_engine && !is_fuchsia
 }
 
-if (use_fuzzing_engine && sanitizer_coverage_flags == "") {
-  sanitizer_coverage_flags = "trace-pc-guard"
-  if (use_centipede) {
-    # Centipede's minimal flags are listed in //third_party/centipede/src/clang-flags.txt.
-    # But, for users like Chromium using an up-to-date clang, we can also
-    # enable extra optional types of coverage which may make Centipede more
-    # effective. This list is not currently documented and has been derived
-    # from discussion with centipede creators (though one is warned about at
-    # https://github.com/google/centipede/blob/main/centipede_callbacks.cc#L68)
-    sanitizer_coverage_flags = sanitizer_coverage_flags +
-                               ",pc-table,trace-cmp,control-flow,trace-loads"
+if (sanitizer_coverage_flags == "") {
+  if (enable_fuzztest_fuzz) {
+    # ./fuzztest_executable --fuzz=
+    # requires only this single type of coverage
+    sanitizer_coverage_flags = "inline-8bit-counters"
+  } else if (use_fuzzing_engine) {
+    sanitizer_coverage_flags = "trace-pc-guard"
+    if (use_centipede) {
+      # Centipede's minimal flags are listed in //third_party/fuzztest/src/centipede/clang-flags.txt.
+      # But, for users like Chromium using an up-to-date clang, we can also
+      # enable extra optional types of coverage which may make Centipede more
+      # effective. This list is not currently documented and has been derived
+      # from discussion with centipede creators (though one is warned about at
+      # https://github.com/google/centipede/blob/main/centipede_callbacks.cc#L68)
+      sanitizer_coverage_flags = sanitizer_coverage_flags +
+                                 ",pc-table,trace-cmp,control-flow,trace-loads"
+    }
+  } else if (use_sanitizer_coverage) {
+    sanitizer_coverage_flags = "trace-pc-guard,indirect-calls"
   }
-} else if (use_sanitizer_coverage && sanitizer_coverage_flags == "") {
-  sanitizer_coverage_flags = "trace-pc-guard,indirect-calls"
 }
 
 # Whether we are linking against a sanitizer runtime library. Among other
@@ -283,6 +326,10 @@ assert(
     "crbug.com/753445: use_sanitizer_coverage=true is not supported by the " +
         "Chromium mac_clang_x64 toolchain on iOS distribution. Please set " +
         "the argument value to false.")
+
+assert(
+    sanitizer_coverage_allowlist == "" || use_sanitizer_coverage,
+    "Can't specify a sanitizer coverage allowlist without using sanitizer coverage.")
 
 # Use these lists of configs to disable instrumenting code that is part of a
 # fuzzer, but which isn't being targeted (such as libprotobuf-mutator, *.pb.cc

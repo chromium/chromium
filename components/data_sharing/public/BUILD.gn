@@ -1,0 +1,40 @@
+# Copyright 2023 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+if (is_android) {
+  import("//build/config/android/config.gni")
+  import("//build/config/android/rules.gni")
+  import("//third_party/jni_zero/jni_zero.gni")
+}
+
+source_set("public") {
+  sources = [
+    "data_sharing_network_loader.h",
+    "data_sharing_service.h",
+    "features.cc",
+    "features.h",
+  ]
+
+  public_deps = [
+    "//base",
+    "//components/keyed_service/core",
+    "//net/traffic_annotation",
+  ]
+}
+
+if (is_android) {
+  android_library("public_java") {
+    sources = [
+      "android/java/src/org/chromium/components/data_sharing/DataSharingNetworkLoader.java",
+      "android/java/src/org/chromium/components/data_sharing/DataSharingService.java",
+    ]
+
+    deps = [
+      "//base:base_java",
+      "//net/android:net_java",
+      "//third_party/jni_zero:jni_zero_java",
+      "//url:gurl_java",
+    ]
+  }
+}

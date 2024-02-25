@@ -31,31 +31,26 @@ extern const int kMinutesBetweenSessions;
 // The max amount of cards in the Discover Feed.
 extern const int kMaxCardsInFeed;
 
-// The number of days for the Activity Buckets calculations.
-extern const int kRangeForActivityBucketsInDays;
-
 // Stores the time when the user visits an article on the feed.
-extern NSString* const kArticleVisitTimestampKey;
+extern const char kArticleVisitTimestampKey[];
 // Stores the time elapsed on the feed when the user leaves.
-extern NSString* const kLongFeedVisitTimeAggregateKey;
-extern NSString* const kLongFollowingFeedVisitTimeAggregateKey;
-extern NSString* const kLongDiscoverFeedVisitTimeAggregateKey;
-extern NSString* const kLastUsedFeedForGoodVisitsKey;
+extern const char kLongFeedVisitTimeAggregateKey[];
+extern const char kLongFollowingFeedVisitTimeAggregateKey[];
+extern const char kLongDiscoverFeedVisitTimeAggregateKey[];
+extern const char kLastUsedFeedForGoodVisitsKey[];
 // Stores the last interaction time for Good Visits (NSDate).
-extern NSString* const kLastInteractionTimeForGoodVisits;
-extern NSString* const kLastInteractionTimeForDiscoverGoodVisits;
-extern NSString* const kLastInteractionTimeForFollowingGoodVisits;
+extern const char kLastInteractionTimeForGoodVisits[];
+extern const char kLastInteractionTimeForDiscoverGoodVisits[];
+extern const char kLastInteractionTimeForFollowingGoodVisits[];
 // Stores the last day the Time in Feed was reported on UMA. It stores the
 // midnight (beginning of the day) of the last interaction.
-extern NSString* const kLastDayTimeInFeedReportedKey;
+extern const char kLastDayTimeInFeedReportedKey[];
 // Stores the time spent on the feed for a day.
-extern NSString* const kTimeSpentInFeedAggregateKey;
+extern const char kTimeSpentInFeedAggregateKey[];
 // Stores the last time the activity bucket was reported.
-extern NSString* const kActivityBucketLastReportedDateKey;
+extern const char kActivityBucketLastReportedDateKey[];
 // Stores the last 28 days of activity bucket reported days.
-extern NSString* const kActivityBucketLastReportedDateArrayKey;
-// Stores the latest activity bucket the user was on.
-extern NSString* const kActivityBucketKey;
+extern const char kActivityBucketLastReportedDateArrayKey[];
 
 #pragma mark - Enums
 
@@ -321,8 +316,6 @@ extern const char kFollowCountFollowingNoContentShown[];
 extern const char kFollowCountAfterFollow[];
 // After unfollowing a channel.
 extern const char kFollowCountAfterUnfollow[];
-// After engaging with the Following feed.
-extern const char kFollowCountWhenEngaged[];
 
 // Histogram name for last visible card when switching from Discover to
 // Following feed.

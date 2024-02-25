@@ -72,6 +72,12 @@
           "builder": "fuchsia-fyi-x64-dbg-persistent-emulator",
           "project": "chromium"
         }
+      ],
+      "mirroring_builder_group_and_names": [
+        {
+          "builder": "fuchsia-fyi-x64-dbg-persistent-emulator",
+          "group": "tryserver.chromium.fuchsia"
+        }
       ]
     }
   },

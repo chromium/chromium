@@ -67,7 +67,7 @@ WebSocket::WebSocket(const GURL& url,
       listener_(listener),
       state_(INITIALIZED),
       write_buffer_(base::MakeRefCounted<net::DrainableIOBuffer>(
-          base::MakeRefCounted<net::IOBuffer>(0),
+          base::MakeRefCounted<net::IOBufferWithSize>(),
           0)),
       read_buffer_(
           base::MakeRefCounted<net::IOBufferWithSize>(read_buffer_size)) {}
@@ -158,7 +158,7 @@ void WebSocket::OnSocketConnect(int code) {
     return;
   }
 
-  base::Base64Encode(base::RandBytesAsString(16), &sec_key_);
+  sec_key_ = base::Base64Encode(base::RandBytesAsVector(16));
   std::string handshake = base::StringPrintf(
       "GET %s HTTP/1.1\r\n"
       "Host: %s\r\n"
@@ -208,9 +208,10 @@ void WebSocket::ContinueWritingIfNecessary() {
   if (!write_buffer_->BytesRemaining()) {
     if (pending_write_.empty())
       return;
+    const size_t pending_write_length = pending_write_.length();
     write_buffer_ = base::MakeRefCounted<net::DrainableIOBuffer>(
-        base::MakeRefCounted<net::StringIOBuffer>(pending_write_),
-        pending_write_.length());
+        base::MakeRefCounted<net::StringIOBuffer>(std::move(pending_write_)),
+        pending_write_length);
     pending_write_.clear();
   }
   int code = socket_->Write(
@@ -280,9 +281,8 @@ void WebSocket::OnReadDuringHandshake(const char* data, int len) {
     return;
 
   const char kMagicKey[] = "258EAFA5-E914-47DA-95CA-C5AB0DC85B11";
-  std::string websocket_accept;
-  base::Base64Encode(base::SHA1HashString(sec_key_ + kMagicKey),
-                     &websocket_accept);
+  std::string websocket_accept =
+      base::Base64Encode(base::SHA1HashString(sec_key_ + kMagicKey));
   auto headers = base::MakeRefCounted<net::HttpResponseHeaders>(
       net::HttpUtil::AssembleRawHeaders(
           base::StringPiece(handshake_response_.data(), headers_end)));

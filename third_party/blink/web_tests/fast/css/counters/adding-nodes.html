@@ -1,5 +1,6 @@
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN">
-<html><head>
+<html>
+  <head>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
     <title>Adding nodes that affect the CSS counter tree</title>
     <link rel="author" href="mailto:carol.szabo@nokia.com" title="Carol Szabo">
@@ -10,46 +11,57 @@
     <meta http-equiv="Content-Style-Type" content="text/css">
     <meta http-equiv="Content-Script-Type" content="text/javascript">
     <style type="text/css">
-        body { white-space: nowrap; }
-        .reset { counter-reset: c; }
-        .increment:before, .use:before { content: counters(c, ".") "-"; }
-        .increment { counter-increment: c; }
+      body { white-space: nowrap; }
+      .reset { counter-reset: c; }
+      .increment::before, .use::before { content: counters(c, ".") "-"; }
+      .increment { counter-increment: c; }
     </style>
     <script type="text/javascript">
-        if (window.testRunner) {
-            testRunner.dumpAsText();
-            testRunner.waitUntilDone();
-        }
+      if (window.testRunner) {
+        testRunner.dumpAsText();
+        testRunner.waitUntilDone();
+      }
 
-        function run() {
-            testElement = document.getElementById("test");
+      function run() {
+        testElement = document.getElementById("test");
+        newSpanElement = document.createElement("span");
+        newSpanElement.setAttribute("class","increment");
+        newSpanElement.setAttribute("id","newNode");
+        testElement.insertBefore(newSpanElement, testElement.firstChild);
+        if (window.testRunner) {
+          console = document.getElementById("console");
+          spanList = testElement.getElementsByTagName("span")
+          for (i = 0; i < spanList.length; ++i ) {
             newSpanElement = document.createElement("span");
-            newSpanElement.setAttribute("class","increment");
-            newSpanElement.setAttribute("id","newNode");
-            testElement.insertBefore(newSpanElement, testElement.firstChild);
-            if (window.testRunner) {
-                console = document.getElementById("console");
-                spanList = testElement.getElementsByTagName("span")
-                for (i = 0; i < spanList.length; ++i ) {
-                    newSpanElement = document.createElement("span");
-                    id = spanList.item(i).getAttribute("id");
-                    if (id != null)
-                        newSpanElement.innerText = internals.counterValue(document.getElementById(id));
-                    if (newSpanElement.innerText.length)
-                        newSpanElement.innerText = newSpanElement.innerText + "-";
-                    console.appendChild(newSpanElement);
-                }
-                testElement.parentNode.removeChild(testElement);
-                testElement = document.getElementById("reference");
-                testElement.innerHTML = testElement.innerHTML.replace(/<b>a<u>b<\/u><\/b>/g,"");
-                testRunner.notifyDone();
-            }
+            id = spanList.item(i).getAttribute("id");
+            if (id != null)
+              newSpanElement.innerText = internals.counterValue(document.getElementById(id));
+            if (newSpanElement.innerText.length)
+              newSpanElement.innerText = newSpanElement.innerText + "-";
+            console.appendChild(newSpanElement);
+          }
+          testElement.parentNode.removeChild(testElement);
+          testElement = document.getElementById("reference");
+          testElement.innerHTML = testElement.innerHTML.replace(/<b>a<u>b<\/u><\/b>/g,"");
+          testRunner.notifyDone();
         }
+      }
     </script>
-</head><body onload="setTimeout('run()', 0)">
+  </head>
+  <body onload="setTimeout('run()', 0)">
     <p>The following two lines should have the same content:</p>
-    <div id="test"><b>a<u>b</u></b><b>a<u>b</u></b><span id="parent"><b>a<u>b</u></b><span id="rootOne" class="increment"/><b>a<u>b</u></b></span><b>a<u>b</u></b><span id="rootTwo" class="reset"><b>a<u>b</u></b></span><b>a<u>b</u></b><span id="r2c1" class="use"><b>a<u>b</u></b><span id="nrreset" class="reset"><b>a<u>b</u></b><span id="r3c1" class="increment"></span><b>a<u>b</u></b></span></span></div>
-    <div id="reference">1-<b>a<u>b</u></b><b>a<u>b</u></b><b>a<u>b</u></b>2-<b>a<u>b</u></b><b>a<u>b</u></b><b>a<u>b</u></b><b>a<u>b</u></b>2.0-<b>a<u>b</u></b><b>a<u>b</u></b>2.0.1-<b>a<u>b</u></b></div>
+    <div id="test">
+      <!-- Here <span class="increment" id="newNode"></span> will be inserted -->
+      <span id="parent">
+        <span id="rootOne" class="increment"/></span>
+        <span id="rootTwo" class="reset"></span>
+        <span id="r2c1" class="use">
+          <span id="nrreset" class="reset">
+            <span id="r3c1" class="increment"></span>
+          </span>
+        </span>
+    </div>
+    <div id="reference">1- 2- 2- 2.1-</div>
     <hr>
     <div id="console"></div>
-</body></html>
+  </body></html>

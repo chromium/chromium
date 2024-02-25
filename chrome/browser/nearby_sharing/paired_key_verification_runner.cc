@@ -10,9 +10,10 @@
 #include "base/functional/bind.h"
 #include "chrome/browser/nearby_sharing/certificates/common.h"
 #include "chrome/browser/nearby_sharing/certificates/constants.h"
-#include "chrome/browser/nearby_sharing/logging/logging.h"
-#include "chrome/browser/nearby_sharing/proto/rpc_resources.pb.h"
-#include "chrome/services/sharing/public/proto/wire_format.pb.h"
+#include "chrome/browser/nearby_sharing/nearby_share_metrics.h"
+#include "components/cross_device/logging/logging.h"
+#include "third_party/nearby/sharing/proto/rpc_resources.pb.h"
+#include "third_party/nearby/sharing/proto/wire_format.pb.h"
 
 namespace {
 
@@ -58,7 +59,7 @@ PairedKeyVerificationRunner::PairedKeyVerificationRunner(
     const std::string& endpoint_id,
     const std::vector<uint8_t>& token,
     NearbyConnection* connection,
-    const absl::optional<NearbyShareDecryptedPublicCertificate>& certificate,
+    const std::optional<NearbyShareDecryptedPublicCertificate>& certificate,
     NearbyShareCertificateManager* certificate_manager,
     nearby_share::mojom::Visibility visibility,
     bool restrict_to_contacts,
@@ -104,10 +105,12 @@ void PairedKeyVerificationRunner::Run(
 }
 
 void PairedKeyVerificationRunner::OnReadPairedKeyEncryptionFrame(
-    absl::optional<sharing::mojom::V1FramePtr> frame) {
+    std::optional<sharing::mojom::V1FramePtr> frame) {
   if (!frame) {
-    NS_LOG(WARNING) << __func__
-                    << ": Failed to read remote paired key encrpytion";
+    CD_LOG(WARNING, Feature::NS)
+        << __func__ << ": Failed to read remote paired key encrpytion";
+    RecordNearbySharePairedKeyVerificationError(
+        NearbySharePairedKeyVerificationError::kFailedToReadEncryptionFrame);
     std::move(callback_).Run(PairedKeyVerificationResult::kFail);
     return;
   }
@@ -117,18 +120,22 @@ void PairedKeyVerificationRunner::OnReadPairedKeyEncryptionFrame(
   PairedKeyVerificationResult remote_public_certificate_result =
       VerifyRemotePublicCertificate(*frame);
   verification_results.push_back(remote_public_certificate_result);
-  NS_LOG(VERBOSE) << __func__
-                  << ": Remote public certificate verification result "
-                  << remote_public_certificate_result;
+  CD_LOG(VERBOSE, Feature::NS)
+      << __func__ << ": Remote public certificate verification result "
+      << remote_public_certificate_result;
 
   if (remote_public_certificate_result ==
       PairedKeyVerificationResult::kSuccess) {
     SendCertificateInfo();
   } else if (restrict_to_contacts_) {
-    NS_LOG(VERBOSE) << __func__
-                    << ": we are only allowing connections with contacts. "
-                       "Rejecting connection from unknown ShareTarget - "
-                    << share_target_.id;
+    CD_LOG(VERBOSE, Feature::NS)
+        << __func__
+        << ": we are only allowing connections with contacts. "
+           "Rejecting connection from unknown ShareTarget - "
+        << share_target_.id;
+    RecordNearbySharePairedKeyVerificationError(
+        NearbySharePairedKeyVerificationError::
+            kUnableToVerifyRemotePublicCertificateWhileRestrictedToContacts);
     std::move(callback_).Run(PairedKeyVerificationResult::kFail);
     return;
   }
@@ -136,8 +143,9 @@ void PairedKeyVerificationRunner::OnReadPairedKeyEncryptionFrame(
   PairedKeyVerificationResult local_result =
       VerifyPairedKeyEncryptionFrame(*frame);
   verification_results.push_back(local_result);
-  NS_LOG(VERBOSE) << __func__ << ": Paired key encryption verification result "
-                  << local_result;
+  CD_LOG(VERBOSE, Feature::NS)
+      << __func__ << ": Paired key encryption verification result "
+      << local_result;
 
   SendPairedKeyResultFrame(local_result);
 
@@ -151,9 +159,12 @@ void PairedKeyVerificationRunner::OnReadPairedKeyEncryptionFrame(
 
 void PairedKeyVerificationRunner::OnReadPairedKeyResultFrame(
     std::vector<PairedKeyVerificationResult> verification_results,
-    absl::optional<sharing::mojom::V1FramePtr> frame) {
+    std::optional<sharing::mojom::V1FramePtr> frame) {
   if (!frame) {
-    NS_LOG(WARNING) << __func__ << ": Failed to read remote paired key result";
+    CD_LOG(WARNING, Feature::NS)
+        << __func__ << ": Failed to read remote paired key result";
+    RecordNearbySharePairedKeyVerificationError(
+        NearbySharePairedKeyVerificationError::kFailedToReadResultFrame);
     std::move(callback_).Run(PairedKeyVerificationResult::kFail);
     return;
   }
@@ -161,40 +172,45 @@ void PairedKeyVerificationRunner::OnReadPairedKeyResultFrame(
   PairedKeyVerificationResult key_result =
       Convert(frame.value()->get_paired_key_result()->status);
   verification_results.push_back(key_result);
-  NS_LOG(VERBOSE) << __func__ << ": Paired key result frame result "
-                  << key_result;
+  CD_LOG(VERBOSE, Feature::NS)
+      << __func__ << ": Paired key result frame result " << key_result;
 
   PairedKeyVerificationResult combined_result =
       MergeResults(verification_results);
-  NS_LOG(VERBOSE) << __func__ << ": Combined verification result "
-                  << combined_result;
+  CD_LOG(VERBOSE, Feature::NS)
+      << __func__ << ": Combined verification result " << combined_result;
   std::move(callback_).Run(combined_result);
 }
 
 void PairedKeyVerificationRunner::SendPairedKeyResultFrame(
     PairedKeyVerificationResult result) {
-  sharing::nearby::Frame frame;
-  frame.set_version(sharing::nearby::Frame::V1);
-  sharing::nearby::V1Frame* v1_frame = frame.mutable_v1();
-  v1_frame->set_type(sharing::nearby::V1Frame::PAIRED_KEY_RESULT);
-  sharing::nearby::PairedKeyResultFrame* result_frame =
+  nearby::sharing::service::proto::Frame frame;
+  frame.set_version(nearby::sharing::service::proto::Frame::V1);
+  nearby::sharing::service::proto::V1Frame* v1_frame = frame.mutable_v1();
+  v1_frame->set_type(
+      nearby::sharing::service::proto::V1Frame::PAIRED_KEY_RESULT);
+  nearby::sharing::service::proto::PairedKeyResultFrame* result_frame =
       v1_frame->mutable_paired_key_result();
 
   switch (result) {
     case PairedKeyVerificationResult::kUnable:
-      result_frame->set_status(sharing::nearby::PairedKeyResultFrame::UNABLE);
+      result_frame->set_status(
+          nearby::sharing::service::proto::PairedKeyResultFrame::UNABLE);
       break;
 
     case PairedKeyVerificationResult::kSuccess:
-      result_frame->set_status(sharing::nearby::PairedKeyResultFrame::SUCCESS);
+      result_frame->set_status(
+          nearby::sharing::service::proto::PairedKeyResultFrame::SUCCESS);
       break;
 
     case PairedKeyVerificationResult::kFail:
-      result_frame->set_status(sharing::nearby::PairedKeyResultFrame::FAIL);
+      result_frame->set_status(
+          nearby::sharing::service::proto::PairedKeyResultFrame::FAIL);
       break;
 
     case PairedKeyVerificationResult::kUnknown:
-      result_frame->set_status(sharing::nearby::PairedKeyResultFrame::UNKNOWN);
+      result_frame->set_status(
+          nearby::sharing::service::proto::PairedKeyResultFrame::UNKNOWN);
       break;
   }
 
@@ -206,20 +222,21 @@ void PairedKeyVerificationRunner::SendPairedKeyResultFrame(
 
 void PairedKeyVerificationRunner::SendCertificateInfo() {
   // TODO(https://crbug.com/1114765): Update once the bug is resolved.
-  std::vector<nearbyshare::proto::PublicCertificate> certificates;
+  std::vector<nearby::sharing::proto::PublicCertificate> certificates;
 
   if (certificates.empty()) {
     return;
   }
 
-  sharing::nearby::Frame frame;
-  frame.set_version(sharing::nearby::Frame::V1);
-  sharing::nearby::V1Frame* v1_frame = frame.mutable_v1();
-  v1_frame->set_type(sharing::nearby::V1Frame::CERTIFICATE_INFO);
-  sharing::nearby::CertificateInfoFrame* cert_frame =
+  nearby::sharing::service::proto::Frame frame;
+  frame.set_version(nearby::sharing::service::proto::Frame::V1);
+  nearby::sharing::service::proto::V1Frame* v1_frame = frame.mutable_v1();
+  v1_frame->set_type(
+      nearby::sharing::service::proto::V1Frame::CERTIFICATE_INFO);
+  nearby::sharing::service::proto::CertificateInfoFrame* cert_frame =
       v1_frame->mutable_certificate_info();
   for (const auto& certificate : certificates) {
-    sharing::nearby::PublicCertificate* cert =
+    nearby::sharing::service::proto::PublicCertificate* cert =
         cert_frame->add_public_certificate();
     cert->set_secret_id(certificate.secret_id());
     cert->set_authenticity_key(certificate.secret_key());
@@ -238,7 +255,7 @@ void PairedKeyVerificationRunner::SendCertificateInfo() {
 }
 
 void PairedKeyVerificationRunner::SendPairedKeyEncryptionFrame() {
-  absl::optional<std::vector<uint8_t>> signature =
+  std::optional<std::vector<uint8_t>> signature =
       certificate_manager_->SignWithPrivateCertificate(
           visibility_, PadPrefix(local_prefix_, raw_token_));
   if (!signature || signature->empty()) {
@@ -254,11 +271,12 @@ void PairedKeyVerificationRunner::SendPairedKeyEncryptionFrame() {
         GenerateRandomBytes(kNearbyShareNumBytesAuthenticationTokenHash);
   }
 
-  sharing::nearby::Frame frame;
-  frame.set_version(sharing::nearby::Frame::V1);
-  sharing::nearby::V1Frame* v1_frame = frame.mutable_v1();
-  v1_frame->set_type(sharing::nearby::V1Frame::PAIRED_KEY_ENCRYPTION);
-  sharing::nearby::PairedKeyEncryptionFrame* encryption_frame =
+  nearby::sharing::service::proto::Frame frame;
+  frame.set_version(nearby::sharing::service::proto::Frame::V1);
+  nearby::sharing::service::proto::V1Frame* v1_frame = frame.mutable_v1();
+  v1_frame->set_type(
+      nearby::sharing::service::proto::V1Frame::PAIRED_KEY_ENCRYPTION);
+  nearby::sharing::service::proto::PairedKeyEncryptionFrame* encryption_frame =
       v1_frame->mutable_paired_key_encryption();
   encryption_frame->set_signed_data(signature->data(), signature->size());
   encryption_frame->set_secret_id_hash(certificate_id_hash.data(),
@@ -272,17 +290,17 @@ void PairedKeyVerificationRunner::SendPairedKeyEncryptionFrame() {
 PairedKeyVerificationRunner::PairedKeyVerificationResult
 PairedKeyVerificationRunner::VerifyRemotePublicCertificate(
     const sharing::mojom::V1FramePtr& frame) {
-  absl::optional<std::vector<uint8_t>> hash =
+  std::optional<std::vector<uint8_t>> hash =
       certificate_manager_->HashAuthenticationTokenWithPrivateCertificate(
           visibility_, raw_token_);
   if (hash && *hash == frame->get_paired_key_encryption()->secret_id_hash) {
-    NS_LOG(VERBOSE) << __func__
-                    << ": Successfully verified remote public certificate.";
+    CD_LOG(VERBOSE, Feature::NS)
+        << __func__ << ": Successfully verified remote public certificate.";
     return PairedKeyVerificationResult::kSuccess;
   }
 
-  NS_LOG(VERBOSE) << __func__
-                  << ": Unable to verify remote public certificate.";
+  CD_LOG(VERBOSE, Feature::NS)
+      << __func__ << ": Unable to verify remote public certificate.";
   return PairedKeyVerificationResult::kUnable;
 }
 
@@ -290,46 +308,55 @@ PairedKeyVerificationRunner::PairedKeyVerificationResult
 PairedKeyVerificationRunner::VerifyPairedKeyEncryptionFrame(
     const sharing::mojom::V1FramePtr& frame) {
   if (!certificate_) {
-    NS_LOG(VERBOSE) << __func__
-                    << ": Unable to verify remote paired key encryption frame. "
-                       "Certificate not found.";
+    CD_LOG(VERBOSE, Feature::NS)
+        << __func__
+        << ": Unable to verify remote paired key encryption frame. "
+           "Certificate not found.";
     return PairedKeyVerificationResult::kUnable;
   }
 
   if (!certificate_->VerifySignature(
           PadPrefix(remote_prefix_, raw_token_),
           frame->get_paired_key_encryption()->signed_data)) {
-    NS_LOG(VERBOSE) << __func__
-                    << ": Unable to verify remote paired key encryption frame. "
-                       "Signature verification failed.";
+    CD_LOG(VERBOSE, Feature::NS)
+        << __func__
+        << ": Unable to verify remote paired key encryption frame. "
+           "Signature verification failed.";
 
     if (!frame->get_paired_key_encryption()->optional_signed_data) {
-      NS_LOG(VERBOSE) << __func__ << ": No fallback signature to verify.";
+      CD_LOG(VERBOSE, Feature::NS)
+          << __func__ << ": No fallback signature to verify.";
+      RecordNearbySharePairedKeyVerificationError(
+          NearbySharePairedKeyVerificationError::kMissingOptionalSignature);
       return PairedKeyVerificationResult::kFail;
     }
 
-    NS_LOG(VERBOSE)
+    CD_LOG(VERBOSE, Feature::NS)
         << __func__
         << ": Attempting to verify fallback signature for relaxed visibility.";
     if (!certificate_->VerifySignature(
             PadPrefix(remote_prefix_, raw_token_),
             *frame->get_paired_key_encryption()->optional_signed_data)) {
-      NS_LOG(VERBOSE)
+      CD_LOG(VERBOSE, Feature::NS)
           << __func__
           << ": Unable to verify remote paired key encryption frame. "
              "Fallback signature verification failed.";
+      RecordNearbySharePairedKeyVerificationError(
+          NearbySharePairedKeyVerificationError::
+              kUnableToVerifyOptionalSignature);
       return PairedKeyVerificationResult::kFail;
     }
   }
 
   if (!share_target_.is_known) {
-    NS_LOG(VERBOSE) << __func__
-                    << ": Unable to verify remote paired key encryption frame. "
-                       "Remote side is not a known share target.";
+    CD_LOG(VERBOSE, Feature::NS)
+        << __func__
+        << ": Unable to verify remote paired key encryption frame. "
+           "Remote side is not a known share target.";
     return PairedKeyVerificationResult::kUnable;
   }
 
-  NS_LOG(VERBOSE)
+  CD_LOG(VERBOSE, Feature::NS)
       << __func__
       << ": Successfully verified remote paired key encryption frame.";
   return PairedKeyVerificationResult::kSuccess;

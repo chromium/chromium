@@ -102,7 +102,7 @@ class BaseRequestsTest : public testing::Test {
     network::mojom::URLLoaderFactoryParamsPtr params =
         network::mojom::URLLoaderFactoryParams::New();
     params->process_id = network::mojom::kBrowserProcessId;
-    params->is_corb_enabled = false;
+    params->is_orb_enabled = false;
     network_context_->CreateURLLoaderFactory(
         url_loader_factory_.BindNewPipeAndPassReceiver(), std::move(params));
     test_shared_loader_factory_ =
@@ -160,7 +160,7 @@ TEST_F(BaseRequestsTest, ParseValidJson) {
   base::Value::Dict* root_dict = json->GetIfDict();
   ASSERT_TRUE(root_dict);
 
-  absl::optional<int> int_value = root_dict->FindInt("test");
+  std::optional<int> int_value = root_dict->FindInt("test");
   ASSERT_TRUE(int_value.has_value());
   EXPECT_EQ(123, *int_value);
 }

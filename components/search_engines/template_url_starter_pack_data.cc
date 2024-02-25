@@ -14,7 +14,7 @@
 namespace TemplateURLStarterPackData {
 
 // Update this whenever a change is made to any starter pack data.
-const int kCurrentDataVersion = 5;
+const int kCurrentDataVersion = 7;
 
 // Only update this if there's an incompatible change that requires force
 // updating the user's starter pack data. This will overwrite any of the
@@ -54,10 +54,21 @@ const StarterPackEngine tabs = {
     .type = SEARCH_ENGINE_STARTER_PACK_TABS,
 };
 
+const StarterPackEngine AskGoogle = {
+    .name_message_id = IDS_SEARCH_ENGINES_STARTER_PACK_GEMINI_NAME,
+    .keyword_message_id = IDS_SEARCH_ENGINES_STARTER_PACK_GEMINI_KEYWORD,
+    .favicon_url = nullptr,
+    .search_url = "https://gemini.google.com/app?q={searchTerms}",
+    .destination_url = "https://gemini.google.com",
+    .id = StarterPackID::kAskGoogle,
+    .type = SEARCH_ENGINE_STARTER_PACK_ASK_GOOGLE,
+};
+
 const StarterPackEngine* engines[] = {
     &bookmarks,
     &history,
     &tabs,
+    &AskGoogle,
 };
 
 int GetDataVersion() {

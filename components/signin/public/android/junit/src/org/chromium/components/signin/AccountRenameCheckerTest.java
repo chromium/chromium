@@ -4,7 +4,6 @@
 
 package org.chromium.components.signin;
 
-import android.accounts.Account;
 import android.content.Context;
 
 import androidx.annotation.Nullable;
@@ -23,6 +22,7 @@ import org.robolectric.annotation.LooperMode;
 
 import org.chromium.base.task.test.CustomShadowAsyncTask;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.components.signin.base.CoreAccountInfo;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -31,12 +31,13 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicReference;
 
-/**
- * JUnit tests of the class {@link AccountRenameChecker}.
- */
+/** JUnit tests of the class {@link AccountRenameChecker}. */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(shadows = {AccountRenameCheckerTest.ShadowGoogleAuthUtil.class,
-                CustomShadowAsyncTask.class})
+@Config(
+        shadows = {
+            AccountRenameCheckerTest.ShadowGoogleAuthUtil.class,
+            CustomShadowAsyncTask.class
+        })
 @LooperMode(LooperMode.Mode.LEGACY)
 public class AccountRenameCheckerTest {
     @Implements(GoogleAuthUtil.class)
@@ -50,7 +51,8 @@ public class AccountRenameCheckerTest {
         }
 
         static void insertRenameEvent(String from, String to) {
-            addEvent(from,
+            addEvent(
+                    from,
                     new AccountChangeEvent(
                             0L, from, GoogleAuthUtil.CHANGE_TYPE_ACCOUNT_RENAMED_TO, 0, to));
         }
@@ -82,7 +84,8 @@ public class AccountRenameCheckerTest {
 
     @Test
     public void newNameIsValidWhenOldAccountIsRemovedAndThenRenamed() {
-        ShadowGoogleAuthUtil.addEvent("A",
+        ShadowGoogleAuthUtil.addEvent(
+                "A",
                 new AccountChangeEvent(0L, "A", GoogleAuthUtil.CHANGE_TYPE_ACCOUNT_REMOVED, 0, ""));
         ShadowGoogleAuthUtil.insertRenameEvent("A", "B");
 
@@ -138,12 +141,12 @@ public class AccountRenameCheckerTest {
 
     private @Nullable String getNewNameOfRenamedAccount(
             String oldAccountEmail, List<String> accountEmails) {
-        final List<Account> accounts = new ArrayList<>();
+        final List<CoreAccountInfo> coreAccountInfos = new ArrayList<>();
         for (String email : accountEmails) {
-            accounts.add(AccountUtils.createAccountFromName(email));
+            coreAccountInfos.add(CoreAccountInfo.createFromEmailAndGaiaId(email, "notUsedGaiaId"));
         }
         final AtomicReference<String> newAccountName = new AtomicReference<>();
-        mChecker.getNewNameOfRenamedAccountAsync(oldAccountEmail, accounts)
+        mChecker.getNewEmailOfRenamedAccountAsync(oldAccountEmail, coreAccountInfos)
                 .then(newAccountName::set);
         return newAccountName.get();
     }

@@ -199,7 +199,8 @@
       </div>
       <cr-toggle id="audioInputNoiseCancellationToggle"
           checked="{{isNoiseCancellationEnabled_}}"
-          aria-labelledby="audioInputNoiseCancellationLabel">
+          aria-labelledby="audioInputNoiseCancellationLabel"
+          on-change="toggleNoiseCancellationEnabled_">
       </cr-toggle>
     </div>
     <div id="audioInputAllowAGCSubsection" class="settings-box"
@@ -221,13 +222,13 @@
         pref="{{prefs.ash.low_battery_sound.enabled}}"
         label="$i18n{lowBatterySoundLabel}"
         deep-link-focus-id$="[[Setting.kLowBatterySound]]"
-        hidden$="[[!systemSoundsEnabled_]]">
+        hidden$="[[powerSoundsHidden_]]">
     </settings-toggle-button>
     <settings-toggle-button id="chargingSoundsToggle"
         pref="{{prefs.ash.charging_sounds.enabled}}"
         label="$i18n{chargingSoundsLabel}"
         deep-link-focus-id$="[[Setting.kChargingSounds]]"
-        hidden$="[[!systemSoundsEnabled_]]">
+        hidden$="[[powerSoundsHidden_]]">
     </settings-toggle-button>
     <div class="settings-box start-padding continuation">
       <div id="deviceStartupSoundEnabledLabel"

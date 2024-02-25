@@ -1,0 +1,19 @@
+[
+  {
+    "os": [
+      "chromeos_ash"
+    ],
+    "policy_pref_mapping_tests": [
+      {
+        "policies": {
+          "PrintingAllowedDuplexModes": "duplex"
+        },
+        "prefs": {
+          "printing.allowed_duplex_modes": {
+            "value": 6
+          }
+        }
+      }
+    ]
+  }
+]

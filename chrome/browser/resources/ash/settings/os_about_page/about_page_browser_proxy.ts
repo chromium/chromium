@@ -47,7 +47,7 @@ export interface AboutPageUpdateInfo {
  * Information related to device end of life. These values will always be
  * populated by the C++ handler.
  */
-interface EndOfLifeInfo {
+export interface EndOfLifeInfo {
   hasEndOfLife: boolean;
   aboutPageEndOfLifeMessage: string;
   shouldShowEndOfLifeIncentive: boolean;
@@ -240,61 +240,61 @@ export class AboutPageBrowserProxyImpl implements AboutPageBrowserProxy {
     return instance || (instance = new AboutPageBrowserProxyImpl());
   }
 
-  static setInstanceForTesting(obj: AboutPageBrowserProxy) {
+  static setInstanceForTesting(obj: AboutPageBrowserProxy): void {
     instance = obj;
   }
 
-  applyDeferredUpdate() {
+  applyDeferredUpdate(): void {
     chrome.send('applyDeferredUpdate');
   }
 
-  pageReady() {
+  pageReady(): void {
     chrome.send('aboutPageReady');
   }
 
-  refreshUpdateStatus() {
+  refreshUpdateStatus(): void {
     chrome.send('refreshUpdateStatus');
   }
 
-  launchReleaseNotes() {
+  launchReleaseNotes(): void {
     chrome.send('launchReleaseNotes');
   }
 
   // <if expr="_google_chrome">
-  openFeedbackDialog() {
+  openFeedbackDialog(): void {
     chrome.send('openFeedbackDialog');
   }
   // </if>
 
-  openDiagnostics() {
+  openDiagnostics(): void {
     chrome.send('openDiagnostics');
   }
 
-  openProductLicenseOther() {
+  openProductLicenseOther(): void {
     chrome.send('openProductLicenseOther');
   }
 
-  openOsHelpPage() {
+  openOsHelpPage(): void {
     chrome.send('openOsHelpPage');
   }
 
-  openFirmwareUpdatesPage() {
+  openFirmwareUpdatesPage(): void {
     chrome.send('openFirmwareUpdatesPage');
   }
 
-  getFirmwareUpdateCount() {
+  getFirmwareUpdateCount(): Promise<number> {
     return sendWithPromise('getFirmwareUpdateCount');
   }
 
-  requestUpdate() {
+  requestUpdate(): void {
     chrome.send('requestUpdate');
   }
 
-  requestUpdateOverCellular(targetVersion: string, targetSize: string) {
+  requestUpdateOverCellular(targetVersion: string, targetSize: string): void {
     chrome.send('requestUpdateOverCellular', [targetVersion, targetSize]);
   }
 
-  setChannel(channel: BrowserChannel, isPowerwashAllowed: boolean) {
+  setChannel(channel: BrowserChannel, isPowerwashAllowed: boolean): void {
     chrome.send('setChannel', [channel, isPowerwashAllowed]);
   }
 

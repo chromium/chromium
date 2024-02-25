@@ -43,7 +43,7 @@ const char* GetNameForEffectiveConnectionType(EffectiveConnectionType type) {
   return "";
 }
 
-absl::optional<EffectiveConnectionType> GetEffectiveConnectionTypeForName(
+std::optional<EffectiveConnectionType> GetEffectiveConnectionTypeForName(
     base::StringPiece connection_type_name) {
   if (connection_type_name == kEffectiveConnectionTypeUnknown)
     return EFFECTIVE_CONNECTION_TYPE_UNKNOWN;
@@ -61,7 +61,7 @@ absl::optional<EffectiveConnectionType> GetEffectiveConnectionTypeForName(
     return EFFECTIVE_CONNECTION_TYPE_3G;
   if (connection_type_name == kEffectiveConnectionType4G)
     return EFFECTIVE_CONNECTION_TYPE_4G;
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 const char* DeprecatedGetNameForEffectiveConnectionType(

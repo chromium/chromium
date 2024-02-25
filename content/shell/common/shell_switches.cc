@@ -8,11 +8,16 @@
 
 namespace switches {
 
-// Makes Content Shell use the given path for its data directory.
-// NOTE: If changing this value, change the corresponding Java-side value in
-// ContentShellBrowserTestActivity.java#getUserDataDirectoryCommandLineSwitch()
-// to match.
+// TODO(b/1295373): Keep the old flag for a short period and remove it once we
+// are sure everything is ok.
 const char kContentShellDataPath[] = "data-path";
+
+// Makes Content Shell use the given path for its data directory.
+// NOTE: "user-data-dir" is used to align with Chromedriver's behavior. Please
+// do NOT change this to another value.
+// NOTE: The same value is also used at Java-side in
+// ContentShellBrowserTestActivity.java#getUserDataDirectoryCommandLineSwitch().
+const char kContentShellUserDataDir[] = "user-data-dir";
 
 // The directory breakpad should store minidumps in.
 const char kCrashDumpsDir[] = "crash-dumps-dir";

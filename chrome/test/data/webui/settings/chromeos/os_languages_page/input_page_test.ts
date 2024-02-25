@@ -7,17 +7,18 @@ import 'chrome://os-settings/lazy_load.js';
 import {CrCheckboxWithPolicyElement, InputsShortcutReminderState, LanguageHelper, LanguagesBrowserProxyImpl, LanguagesMetricsProxyImpl, LanguagesPageInteraction, OsSettingsAddItemsDialogElement, OsSettingsInputPageElement, SettingsLanguagesElement} from 'chrome://os-settings/lazy_load.js';
 import {CrCheckboxElement, CrSettingsPrefs, IronListElement, Router, routes, settingMojom, SettingsPrefsElement, SettingsToggleButtonElement} from 'chrome://os-settings/os_settings.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
-import {getDeepActiveElement} from 'chrome://resources/js/util_ts.js';
+import {getDeepActiveElement} from 'chrome://resources/js/util.js';
 import {keyDownOn} from 'chrome://resources/polymer/v3_0/iron-test-helpers/mock-interactions.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {assertDeepEquals, assertEquals, assertFalse, assertGE, assertGT, assertNotEquals, assertNull, assertStringContains, assertTrue} from 'chrome://webui-test/chai_assert.js';
-import {fakeDataBind, waitAfterNextRender} from 'chrome://webui-test/polymer_test_util.js';
+import {FakeSettingsPrivate} from 'chrome://webui-test/fake_settings_private.js';
+import {fakeDataBind, flushTasks, waitAfterNextRender} from 'chrome://webui-test/polymer_test_util.js';
 import {eventToPromise, isVisible} from 'chrome://webui-test/test_util.js';
 
 import {FakeLanguageSettingsPrivate, getFakeLanguagePrefs} from '../fake_language_settings_private.js';
-import {FakeSettingsPrivate} from '../fake_settings_private.js';
-import {TestLanguagesBrowserProxy} from '../test_os_languages_browser_proxy.js';
-import {TestLanguagesMetricsProxy} from '../test_os_languages_metrics_proxy.js';
+
+import {TestLanguagesBrowserProxy} from './test_os_languages_browser_proxy.js';
+import {TestLanguagesMetricsProxy} from './test_os_languages_metrics_proxy.js';
 
 suite('<os-settings-input-page>', () => {
   let inputPage: OsSettingsInputPageElement;
@@ -26,17 +27,10 @@ suite('<os-settings-input-page>', () => {
   let languageHelper: LanguageHelper;
   let settingsLanguages: SettingsLanguagesElement;
 
-  suiteSetup(() => {
-    CrSettingsPrefs.deferInitialization = true;
-  });
-
-  setup(async () => {
-    document.body.innerHTML = window.trustedTypes!.emptyHTML;
+  async function createInputPage(): Promise<void> {
     const prefElement: SettingsPrefsElement =
         document.createElement('settings-prefs');
     const settingsPrivate = new FakeSettingsPrivate(getFakeLanguagePrefs());
-    prefElement.initialize(
-        settingsPrivate as unknown as typeof chrome.settingsPrivate);
 
     /**
      * Prefs listener to emulate SpellcheckService listeners.
@@ -70,22 +64,15 @@ suite('<os-settings-input-page>', () => {
     // settingsPrivate, so prefer to use settingsPrivate getters/setters
     // whenever possible.
     settingsPrivate.onPrefsChanged.addListener(spellCheckServiceListener);
-
+    prefElement.initialize(settingsPrivate);
     document.body.appendChild(prefElement);
 
     await CrSettingsPrefs.initialized;
-    // Set up test browser proxy.
-    browserProxy = new TestLanguagesBrowserProxy();
-    LanguagesBrowserProxyImpl.setInstanceForTesting(browserProxy);
-
-    // Sets up test metrics proxy.
-    metricsProxy = new TestLanguagesMetricsProxy();
-    LanguagesMetricsProxyImpl.setInstanceForTesting(metricsProxy);
 
     // Set up fake languageSettingsPrivate API.
     const languageSettingsPrivate = browserProxy.getLanguageSettingsPrivate() as
-        unknown as FakeLanguageSettingsPrivate;
-    languageSettingsPrivate.setSettingsPrefs(prefElement);
+        FakeLanguageSettingsPrivate;
+    languageSettingsPrivate.setSettingsPrefsForTesting(prefElement);
 
     // Instantiate the data model with data bindings for prefs.
     settingsLanguages = document.createElement('settings-languages');
@@ -103,28 +90,49 @@ suite('<os-settings-input-page>', () => {
     fakeDataBind(settingsLanguages, inputPage, 'language-helper');
     languageHelper = inputPage.languageHelper;
     document.body.appendChild(inputPage);
+    await flushTasks();
+  }
+
+  suiteSetup(() => {
+    // Set up test browser proxy.
+    browserProxy = new TestLanguagesBrowserProxy();
+    LanguagesBrowserProxyImpl.setInstanceForTesting(browserProxy);
+
+    // Sets up test metrics proxy.
+    metricsProxy = new TestLanguagesMetricsProxy();
+    LanguagesMetricsProxyImpl.setInstanceForTesting(metricsProxy);
+
+    CrSettingsPrefs.deferInitialization = true;
+  });
+
+  setup(() => {
+    document.body.innerHTML = window.trustedTypes!.emptyHTML;
+    loadTimeData.overrideValues({
+      allowEmojiSuggestion: true,
+    });
+    Router.getInstance().navigateTo(routes.OS_LANGUAGES_INPUT);
   });
 
   teardown(() => {
     inputPage.remove();
     settingsLanguages.remove();
     Router.getInstance().resetRouteForTesting();
+    browserProxy.reset();
+    metricsProxy.reset();
   });
 
   suite('language pack notice', () => {
-    test('is shown when needed', () => {
-      inputPage.set('shouldShowLanguagePacksNotice_', true);
+    test('is shown when needed', async () => {
       loadTimeData.overrideValues({languagePacksHandwritingEnabled: true});
-      flush();
+      await createInputPage();
 
       assertTrue(isVisible(
           inputPage.shadowRoot!.querySelector('#languagePacksNotice')));
     });
 
-    test('is hidden when needed', () => {
-      inputPage.set('shouldShowLanguagePacksNotice_', false);
+    test('is hidden when needed', async () => {
       loadTimeData.overrideValues({languagePacksHandwritingEnabled: false});
-      flush();
+      await createInputPage();
 
       assertFalse(isVisible(
           inputPage.shadowRoot!.querySelector('#languagePacksNotice')));
@@ -132,6 +140,10 @@ suite('<os-settings-input-page>', () => {
   });
 
   suite('input method list', () => {
+    setup(async () => {
+      await createInputPage();
+    });
+
     test('displays correctly', () => {
       const inputMethodsList =
           inputPage.shadowRoot!.querySelector('#inputMethodsList');
@@ -249,10 +261,12 @@ suite('<os-settings-input-page>', () => {
 
   suite('input page', () => {
     test('Deep link to spell check', async () => {
-      const params = new URLSearchParams();
-      params.append('settingId', settingMojom.Setting.kSpellCheck.toString());
-      Router.getInstance().navigateTo(routes.OS_LANGUAGES_INPUT, params);
+      await createInputPage();
 
+      const setting = settingMojom.Setting.kSpellCheckOnOff;
+      const params = new URLSearchParams();
+      params.append('settingId', setting.toString());
+      Router.getInstance().navigateTo(routes.OS_LANGUAGES_INPUT, params);
       flush();
 
       const enableSpellcheckingToggle =
@@ -264,11 +278,11 @@ suite('<os-settings-input-page>', () => {
       await waitAfterNextRender(deepLinkElement);
       assertEquals(
           deepLinkElement, getDeepActiveElement(),
-          'Spell check toggle should be focused for settingId=1207.');
+          `Spell check toggle should be focused for settingId=${setting}.`);
     });
 
     test('Spellcheck row is focused after returning from subpage', async () => {
-      Router.getInstance().navigateTo(routes.OS_LANGUAGES_INPUT);
+      await createInputPage();
 
       const triggerSelector = '#editDictionarySubpageTrigger';
       const subpageTrigger =
@@ -300,7 +314,9 @@ suite('<os-settings-input-page>', () => {
     let cancelButton: HTMLButtonElement;
     let actionButton: HTMLButtonElement;
 
-    setup(() => {
+    setup(async () => {
+      await createInputPage();
+
       let element = inputPage.shadowRoot!.querySelector(
           'os-settings-add-input-methods-dialog');
       assertNull(element);
@@ -341,11 +357,6 @@ suite('<os-settings-input-page>', () => {
       // No input methods has been selected, so the action button is disabled.
       assertTrue(actionButton.disabled);
       assertFalse(cancelButton.disabled);
-    });
-
-    teardown(() => {
-      inputPage.remove();
-      dialog.remove();
     });
 
     test('has action button working correctly', () => {
@@ -521,6 +532,10 @@ suite('<os-settings-input-page>', () => {
   });
 
   suite('records metrics', () => {
+    setup(async () => {
+      await createInputPage();
+    });
+
     test('when deactivating show ime menu', async () => {
       inputPage.setPrefValue('settings.language.ime_menu_activated', true);
       const showImeMenu =
@@ -651,17 +666,12 @@ suite('<os-settings-input-page>', () => {
     // This list is not dynamically updated.
     let spellCheckList: NodeListOf<HTMLElement>;
 
-    setup(() => {
+    setup(async () => {
       // Enable grammar check.
-      // We use the property directly instead of loadTimeData, as overriding
-      // loadTimeData does not work as the property is set using a value().
-      inputPage.set('onDeviceGrammarCheckEnabled_', true);
-      // However, we should still set loadTimeData as some other code may use
-      // it (such as languages.js).
       loadTimeData.overrideValues({
         onDeviceGrammarCheckEnabled: true,
       });
-      flush();
+      await createInputPage();
 
       // Spell check is initially on.
       // Work around b/289955380 by only finding the only button which is not
@@ -687,10 +697,6 @@ suite('<os-settings-input-page>', () => {
       assertStringContains(
           spellCheckList[0]!.textContent!, 'English (United States)');
       assertStringContains(spellCheckList[1]!.textContent!, 'Add languages');
-    });
-
-    teardown(() => {
-      inputPage.remove();
     });
 
     test('can remove enabled language from spell check list', () => {
@@ -1103,7 +1109,9 @@ suite('<os-settings-input-page>', () => {
       });
     }
 
-    setup(() => {
+    setup(async () => {
+      await createInputPage();
+
       let element = inputPage.shadowRoot!.querySelector(
           'os-settings-add-spellcheck-languages-dialog');
       assertNull(element);
@@ -1140,11 +1148,6 @@ suite('<os-settings-input-page>', () => {
           dialog.shadowRoot!.querySelector<HTMLButtonElement>('.cancel-button');
       assertTrue(!!cancel);
       cancelButton = cancel;
-    });
-
-    teardown(() => {
-      inputPage.remove();
-      dialog.remove();
     });
 
     test('action button is enabled and disabled when necessary', () => {
@@ -1342,6 +1345,97 @@ suite('<os-settings-input-page>', () => {
       searchInput.setValue('');
       keyDownOn(searchInput, 19, [], 'Escape');
       assertFalse(dialog.$.dialog.open);
+    });
+  });
+
+  suite('Suggestions', () => {
+    suite('when emoji suggestions are not available', () => {
+      setup(() => {
+        loadTimeData.overrideValues({allowEmojiSuggestion: false});
+      });
+    });
+
+    test('Emoji suggestion toggle is visible', async () => {
+      await createInputPage();
+      const emojiSuggestionToggle =
+          inputPage.shadowRoot!.querySelector('#emojiSuggestionToggle');
+      assertTrue(isVisible(emojiSuggestionToggle));
+    });
+
+    test('Deep link to emoji suggestion toggle', async () => {
+      await createInputPage();
+
+      const params = new URLSearchParams();
+      const setting = settingMojom.Setting.kShowEmojiSuggestions;
+      params.append('settingId', setting.toString());
+      Router.getInstance().navigateTo(routes.OS_LANGUAGES_INPUT, params);
+      flush();
+
+      const deepLinkElement = inputPage.shadowRoot!.querySelector<HTMLElement>(
+          '#emojiSuggestionToggle');
+      assertTrue(!!deepLinkElement);
+      await waitAfterNextRender(deepLinkElement);
+      assertEquals(
+          deepLinkElement, inputPage.shadowRoot!.activeElement,
+          `Emoji suggestion toggle should be focused for settingId=${
+              setting}.`);
+    });
+
+    suite('when allowOrca is false', () => {
+      setup(() => {
+        loadTimeData.overrideValues({allowOrca: false});
+      });
+
+      test('Orca toggle should be hidden', async () => {
+        await createInputPage();
+        const orcaToggle = inputPage.shadowRoot!.querySelector('#orcaToggle');
+        assertFalse(isVisible(orcaToggle));
+      });
+    });
+
+    suite('when allowOrca is true', () => {
+      setup(() => {
+        loadTimeData.overrideValues({allowOrca: true});
+      });
+
+      test('Orca toggle should be visible', async () => {
+        await createInputPage();
+        const orcaToggle = inputPage.shadowRoot!.querySelector('#orcaToggle');
+        assertTrue(isVisible(orcaToggle));
+      });
+
+      test('Deep link to orca suggestion toggle', async () => {
+        await createInputPage();
+
+        const params = new URLSearchParams();
+        const setting = settingMojom.Setting.kShowOrca;
+        params.append('settingId', setting.toString());
+        Router.getInstance().navigateTo(routes.OS_LANGUAGES_INPUT, params);
+        flush();
+
+        const deepLinkElement =
+            inputPage.shadowRoot!.querySelector<HTMLElement>('#orcaToggle');
+        assertTrue(!!deepLinkElement);
+        await waitAfterNextRender(deepLinkElement);
+        assertEquals(
+            deepLinkElement, inputPage.shadowRoot!.activeElement,
+            `Orca suggestion toggle should be focused for settingId=${
+                setting}.`);
+      });
+    });
+
+    suite('when both the emoji suggestions and orca are not allowed', () => {
+      setup(() => {
+        loadTimeData.overrideValues(
+            {allowEmojiSuggestion: false, allowOrca: false});
+      });
+
+      test('Suggestions section is not visible', async () => {
+        await createInputPage();
+        const suggestionsSection =
+            inputPage.shadowRoot!.querySelector('#suggestionsSection');
+        assertFalse(isVisible(suggestionsSection));
+      });
     });
   });
 });

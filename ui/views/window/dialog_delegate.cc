@@ -24,6 +24,7 @@
 #include "ui/views/buildflags.h"
 #include "ui/views/layout/layout_provider.h"
 #include "ui/views/style/platform_style.h"
+#include "ui/views/view_utils.h"
 #include "ui/views/views_features.h"
 #include "ui/views/widget/widget.h"
 #include "ui/views/widget/widget_observer.h"
@@ -120,6 +121,10 @@ Widget::InitParams DialogDelegate::GetDialogWidgetInitParams(
   // method behaviors.
   params.child = parent && (delegate->GetModalType() == ui::MODAL_TYPE_CHILD);
 #endif
+
+  if (dialog && dialog->widget_owns_native_widget_) {
+    params.ownership = Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET;
+  }
   return params;
 }
 
@@ -148,7 +153,7 @@ std::u16string DialogDelegate::GetDialogButtonLabel(
 
 ui::ButtonStyle DialogDelegate::GetDialogButtonStyle(
     ui::DialogButton button) const {
-  absl::optional<ui::ButtonStyle> style = GetParams().button_styles[button];
+  std::optional<ui::ButtonStyle> style = GetParams().button_styles[button];
   if (style.has_value()) {
     return *style;
   }
@@ -297,10 +302,7 @@ std::unique_ptr<NonClientFrameView> DialogDelegate::CreateDialogFrameView(
 const DialogClientView* DialogDelegate::GetDialogClientView() const {
   if (!GetWidget())
     return nullptr;
-  const views::View* client_view = GetWidget()->client_view();
-  return client_view->GetClassName() == DialogClientView::kViewClassName
-             ? static_cast<const DialogClientView*>(client_view)
-             : nullptr;
+  return AsViewClass<DialogClientView>(GetWidget()->client_view());
 }
 
 DialogClientView* DialogDelegate::GetDialogClientView() {
@@ -346,7 +348,7 @@ views::View* DialogDelegate::GetFootnoteViewForTesting() const {
   // it to create anything other than a BubbleFrameView.
   // TODO(https://crbug.com/1011446): Make CreateDialogFrameView final, then
   // remove this DCHECK.
-  DCHECK_EQ(frame->GetClassName(), BubbleFrameView::kViewClassName);
+  DCHECK(IsViewClass<BubbleFrameView>(frame));
   return static_cast<BubbleFrameView*>(frame)->GetFootnoteView();
 }
 
@@ -400,7 +402,7 @@ void DialogDelegate::SetButtonLabel(ui::DialogButton button,
 }
 
 void DialogDelegate::SetButtonStyle(ui::DialogButton button,
-                                    absl::optional<ui::ButtonStyle> style) {
+                                    std::optional<ui::ButtonStyle> style) {
   if (params_.button_styles[button] == style) {
     return;
   }
@@ -428,6 +430,11 @@ void DialogDelegate::SetCancelCallbackWithClose(
 
 void DialogDelegate::SetCloseCallback(base::OnceClosure callback) {
   close_callback_ = std::move(callback);
+}
+
+void DialogDelegate::SetWidgetOwnsNativeWidget() {
+  CHECK(!GetWidget());
+  widget_owns_native_widget_ = true;
 }
 
 std::unique_ptr<View> DialogDelegate::DisownExtraView() {
@@ -520,7 +527,7 @@ View* DialogDelegateView::GetContentsView() {
   return this;
 }
 
-BEGIN_METADATA(DialogDelegateView, View)
+BEGIN_METADATA(DialogDelegateView)
 END_METADATA
 
 }  // namespace views

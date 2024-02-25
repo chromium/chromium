@@ -4,12 +4,10 @@
 
 #include <memory>
 
-#include "ash/constants/ash_features.h"
 #include "ash/system/update/eol_notice_quick_settings_view.h"
 #include "ash/test/ash_test_base.h"
 #include "ash/test/pixel/ash_pixel_differ.h"
 #include "ash/test/pixel/ash_pixel_test_init_params.h"
-#include "base/test/scoped_feature_list.h"
 #include "chromeos/constants/chromeos_features.h"
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
 #include "ui/gfx/geometry/size.h"
@@ -25,10 +23,7 @@ namespace {
 // Pixel tests for the EOL quick settings view.
 class EolNoticeQuickSettingsViewPixelTest : public AshTestBase {
  public:
-  EolNoticeQuickSettingsViewPixelTest() {
-    feature_list_.InitWithFeatures(
-        {features::kQsRevamp, chromeos::features::kJelly}, {});
-  }
+  EolNoticeQuickSettingsViewPixelTest() = default;
 
   void SetUp() override {
     AshTestBase::SetUp();
@@ -53,12 +48,11 @@ class EolNoticeQuickSettingsViewPixelTest : public AshTestBase {
   }
 
   // AshTestBase:
-  absl::optional<pixel_test::InitParams> CreatePixelTestInitParams()
+  std::optional<pixel_test::InitParams> CreatePixelTestInitParams()
       const override {
     return pixel_test::InitParams();
   }
 
-  base::test::ScopedFeatureList feature_list_;
   std::unique_ptr<views::Widget> widget_;
 };
 

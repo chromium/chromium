@@ -6,14 +6,14 @@
  * @fileoverview 'settings-cups-printers-entry' is a component that holds a
  * printer.
  */
-import 'chrome://resources/cr_elements/cr_button/cr_button.js';
+import 'chrome://resources/ash/common/cr_elements/cr_button/cr_button.js';
 import 'chrome://resources/polymer/v3_0/iron-icon/iron-icon.js';
 import '../settings_shared.css.js';
 import './cups_printer_types.js';
 
-import {FocusRowMixin} from 'chrome://resources/cr_elements/focus_row_mixin.js';
-import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
-import {assertNotReached} from 'chrome://resources/js/assert_ts.js';
+import {FocusRowMixin} from 'chrome://resources/ash/common/cr_elements/focus_row_mixin.js';
+import {I18nMixin} from 'chrome://resources/ash/common/cr_elements/i18n_mixin.js';
+import {assertNotReached} from 'chrome://resources/js/assert.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
@@ -105,15 +105,6 @@ export class SettingsCupsPrintersEntryElement extends
         },
         readOnly: true,
       },
-
-      /** @protected {boolean} */
-      isJellyEnabled_: {
-        type: Boolean,
-        value: () => {
-          return loadTimeData.getBoolean('isJellyEnabled');
-        },
-        readOnly: true,
-      },
     };
   }
 
@@ -126,7 +117,6 @@ export class SettingsCupsPrintersEntryElement extends
   private isPrinterSettingsRevampEnabled_: boolean;
   private isPrinterSettingsPrinterStatusEnabled_: boolean;
   private isPrintPreviewDiscoveredPrintersEnabled_: boolean;
-  private isJellyEnabled_: boolean;
 
   /**
    * Fires a custom event when the menu button is clicked. Sends the details of
@@ -240,15 +230,12 @@ export class SettingsCupsPrintersEntryElement extends
   }
 
   private getPrinterIcon_(): string {
-    const printerStatusIcon = this.isJellyEnabled_ ?
-        `os-settings:printer-status-illo` :
-        `os-settings:printer-status`;
-
     // Only saved printers need to display an icon with printer status.
     if (!this.isSavedPrinter_()) {
       return 'os-settings:printer-plain';
     }
 
+    const printerStatusIcon = 'os-settings:printer-status-illo';
     const printerStatusReason = this.printerStatusReasonCache.get(
         this.printerEntry.printerInfo.printerId);
     if (printerStatusReason === undefined || printerStatusReason === null) {

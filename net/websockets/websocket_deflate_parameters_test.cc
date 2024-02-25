@@ -4,6 +4,8 @@
 
 #include "net/websockets/websocket_deflate_parameters.h"
 
+#include <iterator>
+#include <ostream>
 #include <string>
 #include <vector>
 

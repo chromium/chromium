@@ -5,12 +5,13 @@
 #ifndef MEDIA_MOJO_SERVICES_PLAYBACK_EVENTS_RECORDER_H_
 #define MEDIA_MOJO_SERVICES_PLAYBACK_EVENTS_RECORDER_H_
 
+#include <optional>
+
 #include "base/time/time.h"
 #include "media/mojo/mojom/playback_events_recorder.mojom.h"
 #include "media/mojo/services/media_mojo_export.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/remote.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace media {
 
@@ -52,7 +53,7 @@ class MEDIA_MOJO_EXPORT PlaybackEventsRecorder final
     size_t audio_bytes_ = 0;
     size_t video_bytes_ = 0;
 
-    absl::optional<PipelineStatistics> last_stats_;
+    std::optional<PipelineStatistics> last_stats_;
     base::TimeTicks last_stats_time_;
   };
 

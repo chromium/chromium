@@ -12,6 +12,8 @@
 #include "ash/system/unified/feature_pod_button.h"
 #include "base/memory/raw_ptr.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/metadata/metadata_header_macros.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/compositor/layer.h"
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/views/controls/button/button.h"
@@ -40,6 +42,8 @@ void ConfigureLabel(views::Label* label, SkColor color, int font_size) {
 
 // View shown if the privacy screen setting is enterprise managed.
 class PrivacyScreenToastManagedView : public views::View {
+  METADATA_HEADER(PrivacyScreenToastManagedView, views::View)
+
  public:
   PrivacyScreenToastManagedView() {
     SetLayoutManager(std::make_unique<views::BoxLayout>(
@@ -71,8 +75,13 @@ class PrivacyScreenToastManagedView : public views::View {
   ~PrivacyScreenToastManagedView() override = default;
 };
 
+BEGIN_METADATA(PrivacyScreenToastManagedView)
+END_METADATA
+
 // View containing the various labels in the toast.
 class PrivacyScreenToastLabelView : public views::View {
+  METADATA_HEADER(PrivacyScreenToastLabelView, views::View)
+
  public:
   PrivacyScreenToastLabelView() {
     auto* layout = SetLayoutManager(std::make_unique<views::BoxLayout>(
@@ -108,9 +117,12 @@ class PrivacyScreenToastLabelView : public views::View {
   }
 
  private:
-  raw_ptr<views::Label, ExperimentalAsh> label_;
-  raw_ptr<PrivacyScreenToastManagedView, ExperimentalAsh> managed_view_;
+  raw_ptr<views::Label> label_;
+  raw_ptr<PrivacyScreenToastManagedView> managed_view_;
 };
+
+BEGIN_METADATA(PrivacyScreenToastLabelView)
+END_METADATA
 
 PrivacyScreenToastView::PrivacyScreenToastView(
     PrivacyScreenToastController* controller,
@@ -158,7 +170,7 @@ void PrivacyScreenToastView::SetPrivacyScreenEnabled(bool enabled,
       IDS_ASH_STATUS_TRAY_PRIVACY_SCREEN_TOAST_ACCESSIBILITY_TEXT,
       enabled_state, managed_state));
 
-  Layout();
+  DeprecatedLayoutImmediately();
 }
 
 bool PrivacyScreenToastView::IsButtonFocused() const {
@@ -174,5 +186,8 @@ void PrivacyScreenToastView::OnViewBlurred(views::View* observed_view) {
   DCHECK(observed_view == button_);
   controller_->StartAutoCloseTimer();
 }
+
+BEGIN_METADATA(PrivacyScreenToastView)
+END_METADATA
 
 }  // namespace ash

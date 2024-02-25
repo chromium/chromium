@@ -6,7 +6,6 @@
 #define CHROME_BROWSER_DIPS_DIPS_SERVICE_H_
 
 #include "base/functional/bind.h"
-#include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
@@ -196,7 +195,7 @@ class DIPSService : public KeyedService {
   std::unique_ptr<signin::PersistentRepeatingTimer> repeating_timer_;
   base::SequenceBound<DIPSStorage> storage_;
   base::ObserverList<Observer> observers_;
-  absl::optional<DIPSBrowserSigninDetector> dips_browser_signin_detector_;
+  std::optional<DIPSBrowserSigninDetector> dips_browser_signin_detector_;
 
   std::map<std::string, int> open_sites_;
 

@@ -27,7 +27,6 @@ import java.lang.annotation.Target;
  * })
  * </code>
  */
-
 @Inherited
 @Retention(RetentionPolicy.RUNTIME)
 @Target({ElementType.METHOD, ElementType.TYPE})

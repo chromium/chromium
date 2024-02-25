@@ -13,6 +13,7 @@
 #include "extensions/browser/event_router.h"
 #include "extensions/browser/extension_system.h"
 #include "extensions/browser/extensions_browser_client.h"
+#include "extensions/common/extension_id.h"
 #include "net/base/net_errors.h"
 
 namespace {
@@ -64,21 +65,21 @@ TCPSocketEventDispatcher::ReadParams::ReadParams(const ReadParams& other) =
 
 TCPSocketEventDispatcher::ReadParams::~ReadParams() = default;
 
-void TCPSocketEventDispatcher::OnSocketConnect(const std::string& extension_id,
+void TCPSocketEventDispatcher::OnSocketConnect(const ExtensionId& extension_id,
                                                int socket_id) {
   DCHECK_CURRENTLY_ON(thread_id_);
 
   StartSocketRead(extension_id, socket_id);
 }
 
-void TCPSocketEventDispatcher::OnSocketResume(const std::string& extension_id,
+void TCPSocketEventDispatcher::OnSocketResume(const ExtensionId& extension_id,
                                               int socket_id) {
   DCHECK_CURRENTLY_ON(thread_id_);
 
   StartSocketRead(extension_id, socket_id);
 }
 
-void TCPSocketEventDispatcher::StartSocketRead(const std::string& extension_id,
+void TCPSocketEventDispatcher::StartSocketRead(const ExtensionId& extension_id,
                                                int socket_id) {
   DCHECK_CURRENTLY_ON(thread_id_);
 
@@ -190,7 +191,7 @@ void TCPSocketEventDispatcher::PostEvent(const ReadParams& params,
 
 // static
 void TCPSocketEventDispatcher::DispatchEvent(void* browser_context_id,
-                                             const std::string& extension_id,
+                                             const ExtensionId& extension_id,
                                              std::unique_ptr<Event> event) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 

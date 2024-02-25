@@ -6,19 +6,25 @@
 #define CHROME_BROWSER_UI_VIEWS_TOOLBAR_TOOLBAR_ACTION_HOVER_CARD_BUBBLE_VIEW_H_
 
 #include "chrome/browser/ui/toolbar/toolbar_action_view_controller.h"
+#include "chrome/browser/ui/views/tabs/fade_label_view.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_action_view.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
 #include "ui/views/controls/separator.h"
 
 class ToolbarActionView;
+
+namespace content {
 class WebContents;
+}  // namespace content
 
 // Dialog that displays a hover card with extensions information.
 class ToolbarActionHoverCardBubbleView
     : public views::BubbleDialogDelegateView {
+  METADATA_HEADER(ToolbarActionHoverCardBubbleView,
+                  views::BubbleDialogDelegateView)
+
  public:
-  METADATA_HEADER(ToolbarActionHoverCardBubbleView);
   explicit ToolbarActionHoverCardBubbleView(ToolbarActionView* action_view);
   ToolbarActionHoverCardBubbleView(const ToolbarActionHoverCardBubbleView&) =
       delete;
@@ -47,20 +53,13 @@ class ToolbarActionHoverCardBubbleView
   class FadeLabel;
   class FootnoteView;
 
-  bool using_rounded_corners() const { return corner_radius_.has_value(); }
-
-  // views::BubbleDialogDelegateView:
-  void OnThemeChanged() override;
-
-  raw_ptr<FadeLabel> title_label_ = nullptr;
-  raw_ptr<FadeLabel> site_access_title_label_ = nullptr;
-  raw_ptr<FadeLabel> site_access_description_label_ = nullptr;
-  raw_ptr<FadeLabel> policy_label_ = nullptr;
+  raw_ptr<FadeLabelView> title_label_ = nullptr;
+  raw_ptr<FadeLabelView> site_access_title_label_ = nullptr;
+  raw_ptr<FadeLabelView> site_access_description_label_ = nullptr;
+  raw_ptr<FadeLabelView> policy_label_ = nullptr;
 
   raw_ptr<views::Separator> site_access_separator_;
   raw_ptr<views::Separator> policy_separator_;
-
-  absl::optional<int> corner_radius_;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_TOOLBAR_TOOLBAR_ACTION_HOVER_CARD_BUBBLE_VIEW_H_

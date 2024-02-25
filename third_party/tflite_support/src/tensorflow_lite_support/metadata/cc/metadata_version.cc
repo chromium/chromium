@@ -48,6 +48,7 @@ enum class SchemaMembers {
   kContentPropertiesAudioProperties = 8,
   kAssociatedFileTypeScannIndexFile = 9,
   kAssociatedFileVersion = 10,
+  kCustomMetadata = 11,
 };
 
 // Helper class to compare semantic versions in terms of three integers, major,
@@ -116,6 +117,8 @@ Version GetMemberVersion(SchemaMembers member) {
       return Version(1, 4, 0);
     case SchemaMembers::kAssociatedFileVersion:
       return Version(1, 4, 1);
+    case SchemaMembers::kCustomMetadata:
+      return Version(1, 5, 0);
     default:
       // Should never happen.
       TFLITE_LOG(FATAL) << "Unsupported schema member: "
@@ -140,8 +143,7 @@ template <typename T>
 void UpdateMinimumVersionForArray(
     const flatbuffers::Vector<flatbuffers::Offset<T>>* array,
     Version* min_version) {
-  if (array == nullptr)
-    return;
+  if (array == nullptr) return;
 
   for (int i = 0; i < array->size(); ++i) {
     UpdateMinimumVersionForTable<T>(array->Get(i), min_version);
@@ -150,10 +152,8 @@ void UpdateMinimumVersionForArray(
 
 template <>
 void UpdateMinimumVersionForTable<tflite::AssociatedFile>(
-    const tflite::AssociatedFile* table,
-    Version* min_version) {
-  if (table == nullptr)
-    return;
+    const tflite::AssociatedFile* table, Version* min_version) {
+  if (table == nullptr) return;
 
   if (table->type() == AssociatedFileType_VOCABULARY) {
     UpdateMinimumVersion(
@@ -169,16 +169,15 @@ void UpdateMinimumVersionForTable<tflite::AssociatedFile>(
 
   if (table->version() != nullptr) {
     UpdateMinimumVersion(
-        GetMemberVersion(SchemaMembers::kAssociatedFileVersion), min_version);
+        GetMemberVersion(SchemaMembers::kAssociatedFileVersion),
+        min_version);
   }
 }
 
 template <>
 void UpdateMinimumVersionForTable<tflite::ProcessUnit>(
-    const tflite::ProcessUnit* table,
-    Version* min_version) {
-  if (table == nullptr)
-    return;
+    const tflite::ProcessUnit* table, Version* min_version) {
+  if (table == nullptr) return;
 
   tflite::ProcessUnitOptions process_unit_type = table->options_type();
   if (process_unit_type == ProcessUnitOptions_BertTokenizerOptions) {
@@ -204,8 +203,7 @@ void UpdateMinimumVersionForTable<tflite::ProcessUnit>(
 template <>
 void UpdateMinimumVersionForTable<tflite::Content>(const tflite::Content* table,
                                                    Version* min_version) {
-  if (table == nullptr)
-    return;
+  if (table == nullptr) return;
 
   // Checks the ContenProperties field.
   if (table->content_properties_type() == ContentProperties_AudioProperties) {
@@ -217,10 +215,8 @@ void UpdateMinimumVersionForTable<tflite::Content>(const tflite::Content* table,
 
 template <>
 void UpdateMinimumVersionForTable<tflite::TensorMetadata>(
-    const tflite::TensorMetadata* table,
-    Version* min_version) {
-  if (table == nullptr)
-    return;
+    const tflite::TensorMetadata* table, Version* min_version) {
+  if (table == nullptr) return;
 
   // Checks the associated_files field.
   UpdateMinimumVersionForArray<tflite::AssociatedFile>(
@@ -236,10 +232,8 @@ void UpdateMinimumVersionForTable<tflite::TensorMetadata>(
 
 template <>
 void UpdateMinimumVersionForTable<tflite::SubGraphMetadata>(
-    const tflite::SubGraphMetadata* table,
-    Version* min_version) {
-  if (table == nullptr)
-    return;
+    const tflite::SubGraphMetadata* table, Version* min_version) {
+  if (table == nullptr) return;
 
   // Checks in the input/output metadata arrays.
   UpdateMinimumVersionForArray<tflite::TensorMetadata>(
@@ -282,12 +276,17 @@ void UpdateMinimumVersionForTable<tflite::SubGraphMetadata>(
         GetMemberVersion(SchemaMembers::kSubGraphMetadataOutputTensorGroups),
         min_version);
   }
+
+  // Checks for the custom metadata field.
+  if (table->custom_metadata() != nullptr) {
+    UpdateMinimumVersion(GetMemberVersion(SchemaMembers::kCustomMetadata),
+                         min_version);
+  }
 }
 
 template <>
 void UpdateMinimumVersionForTable<tflite::ModelMetadata>(
-    const tflite::ModelMetadata* table,
-    Version* min_version) {
+    const tflite::ModelMetadata* table, Version* min_version) {
   if (table == nullptr) {
     // Should never happen, because VerifyModelMetadataBuffer has verified it.
     TFLITE_LOG(FATAL) << "The ModelMetadata object is null.";

@@ -866,7 +866,7 @@ TEST_F(TextIteratorTest, StartAndEndInMultiCharFirstLetterInPre) {
 }
 
 // crbug.com/1175482
-TEST_F(TextIteratorTest, FirstLetterAndReaminingAreDifferentBlocks) {
+TEST_F(TextIteratorTest, FirstLetterAndRemainingAreDifferentBlocks) {
   SetBodyContent(R"HTML(
       <style>.class11 { float:left; } *:first-letter { float:inherit; }</style>
       <body contenteditable=true autofocus><dt class="class11">Cascade)HTML");
@@ -1012,7 +1012,7 @@ TEST_F(TextIteratorTest, PositionInShadowTree) {
   SetBodyContent("<div id=host><a></a><b></b><img slot=c alt=C></div>");
   Element& host = *GetDocument().getElementById(AtomicString("host"));
   ShadowRoot& shadow_root =
-      host.AttachShadowRootInternal(ShadowRootType::kOpen);
+      host.AttachShadowRootForTesting(ShadowRootMode::kOpen);
   shadow_root.setInnerHTML("A<slot name=c></slot>");
   GetDocument().UpdateStyleAndLayout(DocumentUpdateReason::kTest);
   Element& body = *GetDocument().body();

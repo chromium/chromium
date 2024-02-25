@@ -72,19 +72,16 @@ FaviconURL::IconType IconTypeFromContentIconType(
 // TODO(crbug.com/1383087): remove when ContentWebState supports serialization
 // using protobuf message format directly.
 CRWSessionStorage* CreateSessionStorage(
-    SessionID unique_identifier,
+    WebStateID unique_identifier,
     proto::WebStateMetadataStorage metadata,
     WebState::WebStateStorageLoader storage_loader) {
   // Load the data from disk as this is needed to create the CRWSessionStorage.
-  proto::WebStateStorage storage;
-  std::move(storage_loader).Run(storage);
+  proto::WebStateStorage storage = std::move(storage_loader).Run();
   *storage.mutable_metadata() = std::move(metadata);
 
-  CRWSessionStorage* session_storage =
-      [[CRWSessionStorage alloc] initWithProto:storage];
-  session_storage.stableIdentifier = [[NSUUID UUID] UUIDString];
-  session_storage.uniqueIdentifier = unique_identifier;
-  return session_storage;
+  return [[CRWSessionStorage alloc] initWithProto:storage
+                                 uniqueIdentifier:unique_identifier
+                                 stableIdentifier:[[NSUUID UUID] UUIDString]];
 }
 
 }  // namespace
@@ -95,7 +92,7 @@ ContentWebState::ContentWebState(const CreateParams& params)
 ContentWebState::ContentWebState(const CreateParams& params,
                                  CRWSessionStorage* session_storage)
     : unique_identifier_(session_storage ? session_storage.uniqueIdentifier
-                                         : SessionID::NewUnique()) {
+                                         : WebStateID::NewUnique()) {
   content::BrowserContext* browser_context =
       ContentBrowserContext::FromBrowserState(params.browser_state);
   scoped_refptr<content::SiteInstance> site_instance;
@@ -144,7 +141,7 @@ ContentWebState::ContentWebState(const CreateParams& params,
 }
 
 ContentWebState::ContentWebState(BrowserState* browser_state,
-                                 SessionID unique_identifier,
+                                 WebStateID unique_identifier,
                                  proto::WebStateMetadataStorage metadata,
                                  WebStateStorageLoader storage_loader,
                                  NativeSessionFetcher session_fetcher)
@@ -187,7 +184,7 @@ std::unique_ptr<WebState> ContentWebState::Clone() const {
   params.last_active_time = base::Time::Now();
   CRWSessionStorage* session_storage = BuildSessionStorage();
   session_storage.stableIdentifier = [[NSUUID UUID] UUIDString];
-  session_storage.uniqueIdentifier = SessionID::NewUnique();
+  session_storage.uniqueIdentifier = WebStateID::NewUnique();
   auto clone = std::make_unique<ContentWebState>(params, session_storage);
   IgnoreOverRealizationCheck();
   clone->ForceRealized();
@@ -319,7 +316,7 @@ NSString* ContentWebState::GetStableIdentifier() const {
   return UUID_;
 }
 
-SessionID ContentWebState::GetUniqueIdentifier() const {
+WebStateID ContentWebState::GetUniqueIdentifier() const {
   return unique_identifier_;
 }
 
@@ -400,7 +397,7 @@ const GURL& ContentWebState::GetLastCommittedURL() const {
   return item ? item->GetURL() : GURL::EmptyGURL();
 }
 
-absl::optional<GURL> ContentWebState::GetLastCommittedURLIfTrusted() const {
+std::optional<GURL> ContentWebState::GetLastCommittedURLIfTrusted() const {
   return GetLastCommittedURL();
 }
 
@@ -474,6 +471,14 @@ UIColor* ContentWebState::GetThemeColor() {
   return nil;
 }
 
+UIColor* ContentWebState::GetUnderPageBackgroundColor() {
+  auto color = web_contents_->GetBackgroundColor();
+  if (color) {
+    return skia::UIColorFromSkColor(*color);
+  }
+  return nil;
+}
+
 void ContentWebState::AddPolicyDecider(WebStatePolicyDecider* decider) {
   policy_deciders_.AddObserver(decider);
 }
@@ -498,7 +503,7 @@ bool ContentWebState::CanTakeSnapshot() const {
   return false;
 }
 
-void ContentWebState::TakeSnapshot(const gfx::RectF& rect,
+void ContentWebState::TakeSnapshot(const CGRect rect,
                                    SnapshotCallback callback) {}
 
 void ContentWebState::CreateFullPagePdf(base::OnceCallback<void(NSData*)>) {}

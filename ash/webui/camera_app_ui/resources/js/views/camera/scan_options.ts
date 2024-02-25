@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 import {assert, assertEnumVariant} from '../../assert.js';
+import {queuedAsyncCallback} from '../../async_job_queue.js';
 import * as barcodeChip from '../../barcode_chip.js';
 import {CameraManager, CameraUI} from '../../device/index.js';
 import * as dom from '../../dom.js';
@@ -53,6 +54,11 @@ export class ScanOptions implements CameraUI {
 
   private readonly onChangeListeners = new Set<ScanOptionsChangeListener>();
 
+  private readonly updateDocumentModeStatus =
+      queuedAsyncCallback('keepLatest', async () => {
+        await this.checkDocumentModeReadiness();
+      });
+
   constructor(private readonly cameraManager: CameraManager) {
     this.cameraManager.registerCameraUI(this);
 
@@ -63,9 +69,10 @@ export class ScanOptions implements CameraUI {
     // ready.
     dom.get('#scan-barcode', HTMLInputElement).checked = true;
 
-    (async () => {
-      const {supported} =
-          await ChromeHelper.getInstance().getDocumentScannerReadyState();
+    // TODO(pihsun): Move this outside of the constructor.
+    void (async () => {
+      const supported =
+          await ChromeHelper.getInstance().isDocumentScannerSupported();
       dom.get('#scan-document-option', HTMLElement).hidden = !supported;
     })();
 
@@ -75,9 +82,9 @@ export class ScanOptions implements CameraUI {
           evt.preventDefault();
         }
       });
-      option.addEventListener('change', () => {
+      option.addEventListener('change', async () => {
         if (option.checked) {
-          this.switchToScanType(this.getToggledScanOption());
+          await this.switchToScanType(this.getToggledScanOption());
         }
       });
     }
@@ -129,12 +136,14 @@ export class ScanOptions implements CameraUI {
     const {deviceId} = video.getVideoSettings();
     this.documentCornerOverlay.attach(deviceId);
     const scanType = this.getToggledScanOption();
-    (async () => {
+    // Not awaiting here since this is for teardown after preview video
+    // expires.
+    void (async () => {
       await video.onExpired.wait();
       this.detachPreview();
     })();
     await this.switchToScanType(scanType);
-    this.checkDocumentModeReadiness();
+    this.updateDocumentModeStatus();
   }
 
   /**

@@ -5,13 +5,13 @@
 #include "third_party/blink/renderer/platform/graphics/compositing/content_layer_client_impl.h"
 
 #include <memory>
+#include <optional>
 
 #include "base/functional/bind.h"
 #include "base/trace_event/traced_value.h"
 #include "base/types/optional_util.h"
 #include "cc/paint/paint_flags.h"
 #include "cc/paint/paint_op_buffer.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/renderer/platform/geometry/geometry_as_json.h"
 #include "third_party/blink/renderer/platform/graphics/compositing/adjust_mask_layer_geometry.h"
 #include "third_party/blink/renderer/platform/graphics/compositing/paint_chunks_to_cc_layer.h"
@@ -25,6 +25,26 @@
 #include "third_party/blink/renderer/platform/json/json_values.h"
 
 namespace blink {
+
+namespace {
+
+bool DrawingShouldFillScrollingContentsLayer(
+    const PropertyTreeState& layer_state,
+    const cc::PictureLayer& layer) {
+  if (!layer.draws_content()) {
+    return false;
+  }
+  if (const auto* scroll_node = layer_state.Transform().ScrollNode()) {
+    // If the layer covers the whole scrolling contents area, we should fill
+    // the layer with (empty) drawing to disable UseRecordedBoundsForTiling
+    // for this layer, to avoid tiling rect change during scroll.
+    return layer.bounds().width() >= scroll_node->ContentsRect().width() &&
+           layer.bounds().height() >= scroll_node->ContentsRect().height();
+  }
+  return false;
+}
+
+}  // namespace
 
 ContentLayerClientImpl::ContentLayerClientImpl()
     : cc_picture_layer_(cc::PictureLayer::Create(this)),
@@ -82,7 +102,8 @@ void ContentLayerClientImpl::UpdateCcPictureLayer(
   gfx::Vector2dF layer_offset = pending_layer.LayerOffset();
   gfx::Size old_layer_bounds = raster_invalidator_.LayerBounds();
 
-  if (layer_state.Effect().BlendMode() == SkBlendMode::kDstIn) {
+  bool is_mask_layer = layer_state.Effect().BlendMode() == SkBlendMode::kDstIn;
+  if (is_mask_layer) {
     AdjustMaskLayerGeometry(pending_layer.GetPropertyTreeState().Transform(),
                             layer_offset, layer_bounds);
   }
@@ -91,7 +112,7 @@ void ContentLayerClientImpl::UpdateCcPictureLayer(
   raster_invalidator_.Generate(raster_invalidation_function_, paint_chunks,
                                layer_offset, layer_bounds, layer_state);
 
-  absl::optional<RasterUnderInvalidationCheckingParams>
+  std::optional<RasterUnderInvalidationCheckingParams>
       raster_under_invalidation_params;
   if (RuntimeEnabledFeatures::PaintUnderInvalidationCheckingEnabled()) {
     raster_under_invalidation_params.emplace(
@@ -108,12 +129,7 @@ void ContentLayerClientImpl::UpdateCcPictureLayer(
   cc_picture_layer_->SetOffsetToTransformParent(layer_offset);
 
   cc_picture_layer_->SetBounds(layer_bounds);
-  if (RuntimeEnabledFeatures::HitTestOpaquenessEnabled()) {
-    cc_picture_layer_->SetHitTestOpaqueness(
-        pending_layer.GetHitTestOpaqueness());
-  } else {
-    cc_picture_layer_->SetHitTestable(true);
-  }
+  pending_layer.UpdateCcLayerHitTestOpaqueness();
 
   // If nothing changed in the layer, keep the original display item list.
   // Here check layer_bounds because RasterInvalidator doesn't issue raster
@@ -130,6 +146,12 @@ void ContentLayerClientImpl::UpdateCcPictureLayer(
       paint_chunks, layer_state, layer_offset,
       base::OptionalToPtr(raster_under_invalidation_params),
       *cc_display_item_list_);
+  if (is_mask_layer || DrawingShouldFillScrollingContentsLayer(
+                           layer_state, *cc_picture_layer_)) {
+    cc_display_item_list_->StartPaint();
+    cc_display_item_list_->push<cc::NoopOp>();
+    cc_display_item_list_->EndPaintOfUnpaired(gfx::Rect(layer_bounds));
+  }
   cc_display_item_list_->Finalize();
 
   cc_picture_layer_->SetIsDrawable(pending_layer.DrawsContent());

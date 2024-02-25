@@ -5,13 +5,18 @@
 #ifndef ASH_CURTAIN_REMOTE_MAINTENANCE_CURTAIN_VIEW_H_
 #define ASH_CURTAIN_REMOTE_MAINTENANCE_CURTAIN_VIEW_H_
 
+#include <memory>
+
 #include "ash/ash_export.h"
 #include "base/memory/raw_ptr.h"
+#include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/view.h"
 
 namespace ash {
 class AshWebView;
+class OobeDialogUtil;
 class StackLayout;
+class ViewShadow;
 }  // namespace ash
 
 namespace gfx {
@@ -30,6 +35,8 @@ constexpr int kRemoteMaintenanceCurtainAshWebViewId = 14569;
 // is created by an enterprise admin through the 'start crd session' remote
 // command.
 class ASH_EXPORT RemoteMaintenanceCurtainView : public views::View {
+  METADATA_HEADER(RemoteMaintenanceCurtainView, views::View)
+
  public:
   RemoteMaintenanceCurtainView();
   RemoteMaintenanceCurtainView(const RemoteMaintenanceCurtainView&) = delete;
@@ -50,6 +57,8 @@ class ASH_EXPORT RemoteMaintenanceCurtainView : public views::View {
   raw_ptr<StackLayout> layout_ = nullptr;
   raw_ptr<AshWebView> curtain_view_ = nullptr;
   raw_ptr<views::View> wallpaper_view_ = nullptr;
+
+  std::unique_ptr<ViewShadow> curtain_view_shadow_;
 };
 
 }  // namespace ash::curtain

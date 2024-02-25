@@ -97,7 +97,7 @@ class APP_MENU_EXPORT AppMenuModelAdapter : public views::MenuModelAdapter {
   std::unique_ptr<NotificationMenuController> notification_menu_controller_;
 
   // The parent widget of the context menu.
-  raw_ptr<views::Widget, ExperimentalAsh> widget_owner_;
+  raw_ptr<views::Widget> widget_owner_;
 
   // The event type which was used to show the menu.
   const ui::MenuSourceType source_type_;
@@ -105,13 +105,12 @@ class APP_MENU_EXPORT AppMenuModelAdapter : public views::MenuModelAdapter {
   // The callback which is triggered when the menu is closed.
   base::OnceClosure on_menu_closed_callback_;
 
-  // The root MenuItemView which contains all child MenuItemViews. Owned by
-  // |menu_runner_|.
-  raw_ptr<views::MenuItemView, DanglingUntriaged | ExperimentalAsh> root_ =
-      nullptr;
-
   // Used to show the menu.
   std::unique_ptr<views::MenuRunner> menu_runner_;
+
+  // The root MenuItemView which contains all child MenuItemViews. Owned by
+  // `menu_runner_`.
+  raw_ptr<views::MenuItemView> root_ = nullptr;
 
   // The timestamp taken when the menu is opened. Used in metrics.
   base::TimeTicks menu_open_time_;

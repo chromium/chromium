@@ -1,0 +1,95 @@
+<style include="settings-shared">
+  :host-context(body.revamp-wayfinding-enabled)
+    #crostiniRowIcon,
+    #bruschettaRowIcon {
+    margin-inline-end: 16px;
+    fill: var(--cros-sys-primary);
+  }
+</style>
+
+<settings-card header-text="$i18n{crostiniPageTitle}">
+  <div id="crostini" class="settings-box two-line first"
+      actionable$="[[prefs.crostini.enabled.value]]"
+      on-click="onSubpageClick_">
+    <template is="dom-if" if="[[isRevampWayfindingEnabled_]]">
+      <iron-icon id="crostiniRowIcon"
+          icon="os-settings:about-linux">
+      </iron-icon>
+    </template>
+    <div class="start">
+      $i18n{crostiniPageLabel}
+      <div class="secondary" id="secondaryText">
+        <template is="dom-if" if="[[isCrostiniSupported_]]" restamp>
+          <localized-link
+              localized-string="[[i18nAdvanced('crostiniSubtext')]]">
+          </localized-link>
+        </template>
+        <template is="dom-if" if="[[!isCrostiniSupported_]]" restamp>
+          <localized-link localized-string="[[i18nAdvanced(
+              'crostiniSubtextNotSupported')]]">
+          </localized-link>
+        </template>
+      </div>
+    </div>
+    <template is="dom-if" if="[[isCrostiniSupported_]]" restamp>
+      <template is="dom-if" if="[[!isCrostiniAllowed_]]" restamp>
+        <cr-policy-indicator indicator-type="userPolicy">
+        </cr-policy-indicator>
+      </template>
+    </template>
+    <template is="dom-if" if="[[prefs.crostini.enabled.value]]">
+      <cr-icon-button class="subpage-arrow"
+          aria-label="$i18n{crostiniPageTitle}"
+          aria-describedby="secondaryText"
+          aria-roledescription="$i18n{subpageArrowRoleDescription}">
+      </cr-icon-button>
+    </template>
+    <template is="dom-if" if="[[!prefs.crostini.enabled.value]]">
+      <div class="separator"></div>
+        <cr-button id="enableCrostiniButton"
+            disabled$="[[disableCrostiniInstall_]]"
+            on-click="onEnableClick_"
+            aria-describedby="secondaryText"
+            deep-link-focus-id$="[[Setting.kSetUpCrostini]]">
+          $i18n{crostiniEnable}
+        </cr-button>
+    </template>
+  </div>
+
+  <template is="dom-if" if="[[showBruschetta_]]">
+    <div id="bruschetta" class="settings-box two-line"
+        actionable$="[[prefs.bruschetta.installed.value]]"
+        on-click="onBruschettaSubpageClick_">
+      <template is="dom-if" if="[[isRevampWayfindingEnabled_]]">
+        <iron-icon id="bruschettaRowIcon"
+            icon="os-settings:about-manage-develop-environment">
+        </iron-icon>
+      </template>
+      <div class="start">
+        $i18n{bruschettaPageLabel}
+        <div class="secondary" id="bruschettaSecondaryText">
+          <localized-link
+              localized-string="[[i18nAdvanced('bruschettaSubtext')]]">
+          </localized-link>
+        </div>
+      </div>
+      <cr-policy-indicator indicator-type="userPolicy">
+      </cr-policy-indicator>
+      <template is="dom-if" if="[[prefs.bruschetta.installed.value]]">
+        <cr-icon-button class="subpage-arrow"
+            aria-label="$i18n{bruschettaPageLabel}"
+            aria-describedby="secondaryText"
+            aria-roledescription="$i18n{subpageArrowRoleDescription}">
+        </cr-icon-button>
+      </template>
+      <template is="dom-if" if="[[!prefs.bruschetta.installed.value]]">
+        <div class="separator"></div>
+        <cr-button id="enableBruschettaButton"
+            on-click="onBruschettaEnableClick_"
+            aria-describedby="secondaryText">
+          $i18n{bruschettaEnable}
+        </cr-button>
+      </template>
+    </div>
+  </template>
+</settings-card>

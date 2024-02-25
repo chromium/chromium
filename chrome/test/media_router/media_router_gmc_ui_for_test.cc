@@ -21,7 +21,7 @@ namespace media_router {
 MediaRouterGmcUiForTest::MediaRouterGmcUiForTest(
     content::WebContents* web_contents)
     : MediaRouterUiForTestBase(web_contents),
-      browser_(chrome::FindBrowserWithWebContents(web_contents)) {
+      browser_(chrome::FindBrowserWithTab(web_contents)) {
   DCHECK(browser_);
 }
 
@@ -133,7 +133,7 @@ CastDeviceEntryView* MediaRouterGmcUiForTest::GetDeviceView(
 
 void MediaRouterGmcUiForTest::ObserveDialog(
     WatchType watch_type,
-    absl::optional<std::string> sink_name) {
+    std::optional<std::string> sink_name) {
   CHECK(!watch_sink_name_);
   CHECK(!watch_callback_);
   CHECK_EQ(watch_type_, WatchType::kNone);

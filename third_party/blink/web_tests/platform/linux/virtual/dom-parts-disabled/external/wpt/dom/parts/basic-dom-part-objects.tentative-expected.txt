@@ -1,0 +1,35 @@
+This is a testharness.js-based test.
+[FAIL] Basic imperative DOM Parts object construction (Document)
+  doc.getPartRoot is not a function
+[FAIL] Cloning (Document)
+  doc.getPartRoot is not a function
+[FAIL] Cloning Element (Document)
+  doc.getPartRoot is not a function
+[FAIL] Cloning Text (Document)
+  doc.getPartRoot is not a function
+[FAIL] Cloning Comment (Document)
+  doc.getPartRoot is not a function
+[FAIL] DOM mutations are not tracked (Document)
+  doc.getPartRoot is not a function
+[FAIL] ChildNodePart children manipulation (Document)
+  doc.getPartRoot is not a function
+[FAIL] Corner case ChildNodePart construction and cloning (Document)
+  doc.getPartRoot is not a function
+[FAIL] Basic imperative DOM Parts object construction (DocumentFragment)
+  doc.getPartRoot is not a function
+[FAIL] Cloning (DocumentFragment)
+  doc.getPartRoot is not a function
+[FAIL] Cloning Element (DocumentFragment)
+  doc.getPartRoot is not a function
+[FAIL] Cloning Text (DocumentFragment)
+  doc.getPartRoot is not a function
+[FAIL] Cloning Comment (DocumentFragment)
+  doc.getPartRoot is not a function
+[FAIL] DOM mutations are not tracked (DocumentFragment)
+  doc.getPartRoot is not a function
+[FAIL] ChildNodePart children manipulation (DocumentFragment)
+  doc.getPartRoot is not a function
+[FAIL] Corner case ChildNodePart construction and cloning (DocumentFragment)
+  doc.getPartRoot is not a function
+Harness: the test ran to completion.
+

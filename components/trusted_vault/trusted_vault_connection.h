@@ -6,10 +6,10 @@
 #define COMPONENTS_TRUSTED_VAULT_TRUSTED_VAULT_CONNECTION_H_
 
 #include <memory>
+#include <optional>
 #include <vector>
 
 #include "base/functional/callback.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 struct CoreAccountInfo;
 
@@ -76,6 +76,23 @@ enum class TrustedVaultRecoverabilityStatus {
   kMaxValue = kError,
 };
 
+// The possible results for `DownloadAuthenticationFactorsRegistrationState`.
+// These values are persisted in histograms. Entries should not be renumbered
+// and numeric values should never be reused.
+enum class DownloadAuthenticationFactorsRegistrationStateResult {
+  // The state of the security domain could not be determined.
+  kError = 0,
+  // The security domain is empty and thus doesn't have any secrets.
+  kEmpty = 1,
+  // The security domain is non-empty, but has virtual devices that are valid
+  // for recovery.
+  kRecoverable = 2,
+  // The security domain is non-empty, but has no virtual devices that can be
+  // used for recovery.
+  kIrrecoverable = 3,
+  kMaxValue = kIrrecoverable,
+};
+
 enum class AuthenticationFactorType { kPhysicalDevice, kUnspecified };
 
 struct TrustedVaultKeyAndVersion {
@@ -106,6 +123,9 @@ class TrustedVaultConnection {
                               int /*last_key_version*/)>;
   using IsRecoverabilityDegradedCallback =
       base::OnceCallback<void(TrustedVaultRecoverabilityStatus)>;
+  using DownloadAuthenticationFactorsRegistrationStateCallback =
+      base::OnceCallback<void(
+          DownloadAuthenticationFactorsRegistrationStateResult)>;
 
   // Used to control ongoing request lifetime, destroying Request object causes
   // request cancellation.
@@ -135,7 +155,7 @@ class TrustedVaultConnection {
       int last_trusted_vault_key_version,
       const SecureBoxPublicKey& authentication_factor_public_key,
       AuthenticationFactorType authentication_factor_type,
-      absl::optional<int> authentication_factor_type_hint,
+      std::optional<int> authentication_factor_type_hint,
       RegisterAuthenticationFactorCallback callback) = 0;
 
   // Special version of the above for the case where the caller has no local
@@ -163,6 +183,14 @@ class TrustedVaultConnection {
   DownloadIsRecoverabilityDegraded(
       const CoreAccountInfo& account_info,
       IsRecoverabilityDegradedCallback callback) = 0;
+
+  // Enumerates the members of the security domain and determines the
+  // recoverability of the security domain. (See the values of
+  // `DownloadAuthenticationFactorsRegistrationStateResult`.)
+  [[nodiscard]] virtual std::unique_ptr<Request>
+  DownloadAuthenticationFactorsRegistrationState(
+      const CoreAccountInfo& account_info,
+      DownloadAuthenticationFactorsRegistrationStateCallback callback) = 0;
 };
 
 }  // namespace trusted_vault

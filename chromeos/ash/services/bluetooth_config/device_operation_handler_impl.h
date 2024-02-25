@@ -38,18 +38,18 @@ class DeviceOperationHandlerImpl : public DeviceOperationHandler {
       const std::string& device_id) const override;
   void RecordUserInitiatedReconnectionMetrics(
       const device::BluetoothTransport transport,
-      absl::optional<base::Time> reconnection_attempt_start,
-      absl::optional<device::BluetoothDevice::ConnectErrorCode> error_code)
+      std::optional<base::Time> reconnection_attempt_start,
+      std::optional<device::BluetoothDevice::ConnectErrorCode> error_code)
       const override;
 
   // device::BluetoothDevice::Connect() callback.
   void OnDeviceConnect(
       device::BluetoothTransport transport,
-      absl::optional<device::BluetoothDevice::ConnectErrorCode> error_code);
+      std::optional<device::BluetoothDevice::ConnectErrorCode> error_code);
 
   scoped_refptr<device::BluetoothAdapter> bluetooth_adapter_;
-  raw_ptr<DeviceNameManager, ExperimentalAsh> device_name_manager_;
-  raw_ptr<FastPairDelegate, ExperimentalAsh> fast_pair_delegate_;
+  raw_ptr<DeviceNameManager> device_name_manager_;
+  raw_ptr<FastPairDelegate> fast_pair_delegate_;
 
   base::Time last_reconnection_attempt_start_;
 

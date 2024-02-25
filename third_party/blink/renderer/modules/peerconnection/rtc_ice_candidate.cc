@@ -56,7 +56,7 @@ RTCIceCandidate* RTCIceCandidate::Create(
 
   String sdp_mid = candidate_init->sdpMid();
 
-  absl::optional<uint16_t> sdp_m_line_index;
+  std::optional<uint16_t> sdp_m_line_index;
   if (candidate_init->hasSdpMLineIndexNonNull()) {
     sdp_m_line_index = candidate_init->sdpMLineIndexNonNull();
   } else {
@@ -67,7 +67,8 @@ RTCIceCandidate* RTCIceCandidate::Create(
   return MakeGarbageCollected<RTCIceCandidate>(
       MakeGarbageCollected<RTCIceCandidatePlatform>(
           candidate_init->candidate(), sdp_mid, std::move(sdp_m_line_index),
-          candidate_init->usernameFragment()));
+          candidate_init->usernameFragment(),
+          /*url can not be reconstruncted*/ std::nullopt));
 }
 
 RTCIceCandidate* RTCIceCandidate::Create(
@@ -86,12 +87,12 @@ String RTCIceCandidate::sdpMid() const {
   return platform_candidate_->SdpMid();
 }
 
-absl::optional<uint16_t> RTCIceCandidate::sdpMLineIndex() const {
+std::optional<uint16_t> RTCIceCandidate::sdpMLineIndex() const {
   return platform_candidate_->SdpMLineIndex();
 }
 
 RTCIceCandidatePlatform* RTCIceCandidate::PlatformCandidate() const {
-  return platform_candidate_;
+  return platform_candidate_.Get();
 }
 
 void RTCIceCandidate::Trace(Visitor* visitor) const {
@@ -107,7 +108,7 @@ String RTCIceCandidate::component() const {
   return platform_candidate_->Component();
 }
 
-absl::optional<uint32_t> RTCIceCandidate::priority() const {
+std::optional<uint32_t> RTCIceCandidate::priority() const {
   return platform_candidate_->Priority();
 }
 
@@ -119,7 +120,7 @@ String RTCIceCandidate::protocol() const {
   return platform_candidate_->Protocol();
 }
 
-absl::optional<uint16_t> RTCIceCandidate::port() const {
+std::optional<uint16_t> RTCIceCandidate::port() const {
   return platform_candidate_->Port();
 }
 
@@ -127,7 +128,7 @@ String RTCIceCandidate::type() const {
   return platform_candidate_->Type();
 }
 
-absl::optional<String> RTCIceCandidate::tcpType() const {
+std::optional<String> RTCIceCandidate::tcpType() const {
   return platform_candidate_->TcpType();
 }
 
@@ -135,12 +136,20 @@ String RTCIceCandidate::relatedAddress() const {
   return platform_candidate_->RelatedAddress();
 }
 
-absl::optional<uint16_t> RTCIceCandidate::relatedPort() const {
+std::optional<uint16_t> RTCIceCandidate::relatedPort() const {
   return platform_candidate_->RelatedPort();
 }
 
 String RTCIceCandidate::usernameFragment() const {
   return platform_candidate_->UsernameFragment();
+}
+
+std::optional<String> RTCIceCandidate::url() const {
+  return platform_candidate_->Url();
+}
+
+std::optional<String> RTCIceCandidate::relayProtocol() const {
+  return platform_candidate_->RelayProtocol();
 }
 
 ScriptValue RTCIceCandidate::toJSONForBinding(ScriptState* script_state) {

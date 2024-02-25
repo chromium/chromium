@@ -5,6 +5,7 @@
 #include "content/browser/media/media_license_manager.h"
 
 #include <memory>
+#include <optional>
 #include <utility>
 #include <vector>
 
@@ -28,7 +29,6 @@
 #include "media/cdm/cdm_type.h"
 #include "sql/database.h"
 #include "sql/sqlite_result_code.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "third_party/blink/public/mojom/quota/quota_types.mojom-shared.h"
 #include "url/origin.h"

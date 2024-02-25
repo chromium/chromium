@@ -1,4 +1,4 @@
-(async function(testRunner) {
+(async function(/** @type {import('test_runner').TestRunner} */ testRunner) {
     var {page, session, dp} = await testRunner.startBlank('Tests for correct opener in Page.TargetCreated and Page.TargetInfoChanged protocol method.');
     await dp.Target.setDiscoverTargets({discover: true});
     await dp.Page.enable();

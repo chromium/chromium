@@ -112,11 +112,11 @@ class AssistantNotificationBuilder {
   }
 
   AssistantNotificationBuilder& WithTimeout(
-      absl::optional<base::TimeDelta> timeout) {
+      std::optional<base::TimeDelta> timeout) {
     notification_.expiry_time =
         timeout.has_value()
-            ? absl::optional<base::Time>(base::Time::Now() + timeout.value())
-            : absl::nullopt;
+            ? std::optional<base::Time>(base::Time::Now() + timeout.value())
+            : std::nullopt;
     return *this;
   }
 
@@ -243,9 +243,7 @@ class AssistantNotificationControllerTest : public AssistantAshTestBase {
   }
 
  private:
-  raw_ptr<AssistantNotificationControllerImpl,
-          DanglingUntriaged | ExperimentalAsh>
-      controller_;
+  raw_ptr<AssistantNotificationControllerImpl, DanglingUntriaged> controller_;
   std::unique_ptr<AssistantNotificationModelObserverMock> observer_;
 };
 
@@ -439,7 +437,7 @@ TEST_F(AssistantNotificationControllerTest,
   auto notification_bldr = AssistantNotificationBuilder().WithId("id");
 
   AddOrUpdateNotification(notification_bldr.WithTimeoutMs(kTimeoutMs).Build());
-  AddOrUpdateNotification(notification_bldr.WithTimeout(absl::nullopt).Build());
+  AddOrUpdateNotification(notification_bldr.WithTimeout(std::nullopt).Build());
 
   auto& observer = AddStrictObserverMock();
 

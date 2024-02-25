@@ -16,13 +16,14 @@
 
 #include <algorithm>
 #include <cmath>
+#include <cstdint>
 #include <cstring>
 #include <deque>
 #include <memory>
 
+#include "absl/log/absl_check.h"
+#include "absl/log/absl_log.h"
 #include "absl/strings/str_format.h"
-#include "mediapipe/framework/port/integral_types.h"
-#include "mediapipe/framework/port/logging.h"
 #include "mediapipe/framework/port/vector.h"
 #include "mediapipe/util/tracking/camera_motion.h"
 #include "mediapipe/util/tracking/camera_motion.pb.h"
@@ -34,7 +35,6 @@
 #include "mediapipe/util/tracking/region_flow_computation.h"
 #include "mediapipe/util/tracking/region_flow_computation.pb.h"
 #include "mediapipe/util/tracking/region_flow_visualization.h"
-#include "absl/log/absl_check.h"
 
 namespace mediapipe {
 
@@ -94,7 +94,7 @@ MotionAnalysis::MotionAnalysis(const MotionAnalysisOptions& options,
 
   if (compute_feature_descriptors_) {
     ABSL_CHECK_EQ(RegionFlowComputationOptions::FORMAT_RGB,
-             options_.flow_options().image_format())
+                  options_.flow_options().image_format())
         << "Feature descriptors only support RGB currently.";
     prev_frame_.reset(new cv::Mat(frame_height_, frame_width_, CV_8UC3));
   }
@@ -150,7 +150,6 @@ void MotionAnalysis::InitPolicyOptions() {
 
       // Better features.
       tracking_options->set_adaptive_features_levels(3);
-      tracking_options->set_use_cv_tracking_algorithm(true);
 
       // Speed.
       flow_options->set_downsample_mode(
@@ -196,7 +195,6 @@ void MotionAnalysis::InitPolicyOptions() {
       tracking_options->set_fractional_tracking_distance(0.1);
       tracking_options->set_reuse_features_max_frame_distance(15);
       tracking_options->set_max_features(500);
-      tracking_options->set_use_cv_tracking_algorithm(true);
 
       flow_options->set_downsample_mode(
           RegionFlowComputationOptions::DOWNSAMPLE_TO_MIN_SIZE);
@@ -248,7 +246,6 @@ void MotionAnalysis::InitPolicyOptions() {
       tracking_options->set_reuse_features_min_survived_frac(0.6);
       tracking_options->set_max_features(240);
       tracking_options->set_adaptive_tracking_distance(true);
-      tracking_options->set_use_cv_tracking_algorithm(true);
 
       // Assumes downsampled input.
       flow_options->set_pre_blur_sigma(0);
@@ -305,7 +302,6 @@ void MotionAnalysis::InitPolicyOptions() {
       tracking_options->set_adaptive_features_levels(3);
 
       // Speed.
-      tracking_options->set_use_cv_tracking_algorithm(true);
       flow_options->set_downsample_mode(
           RegionFlowComputationOptions::DOWNSAMPLE_BY_SCHEDULE);
 
@@ -363,15 +359,15 @@ bool MotionAnalysis::AddFrameGeneric(
     RegionFlowFeatureList* output_feature_list) {
   // Don't check input sizes here, RegionFlowComputation does that based
   // on its internal options.
-  ABSL_CHECK(feature_computation_) << "Calls to AddFrame* can NOT be mixed "
-                              << "with AddFeatures";
+  ABSL_CHECK(feature_computation_)
+      << "Calls to AddFrame* can NOT be mixed " << "with AddFeatures";
 
   // Compute RegionFlow.
   {
     MEASURE_TIME << "CALL RegionFlowComputation::AddImage";
     if (!region_flow_computation_->AddImageWithSeed(frame, timestamp_usec,
                                                     initial_transform)) {
-      LOG(ERROR) << "Error while computing region flow.";
+      ABSL_LOG(ERROR) << "Error while computing region flow.";
       return false;
     }
   }
@@ -402,7 +398,7 @@ bool MotionAnalysis::AddFrameGeneric(
             compute_feature_match_descriptors ? prev_frame_.get() : nullptr));
 
     if (feature_list == nullptr) {
-      LOG(ERROR) << "Error retrieving feature list.";
+      ABSL_LOG(ERROR) << "Error retrieving feature list.";
       return false;
     }
   }
@@ -671,7 +667,7 @@ void MotionAnalysis::RenderResults(const RegionFlowFeatureList& feature_list,
                 text_scale * 3, cv::LINE_AA);
   }
 #else
-  LOG(FATAL) << "Code stripped out because of NO_RENDERING";
+  ABSL_LOG(FATAL) << "Code stripped out because of NO_RENDERING";
 #endif
 }
 
@@ -700,9 +696,9 @@ void MotionAnalysis::ComputeDenseForeground(
 
   // Setup push pull map (with border). Ensure constructor used the right type.
   ABSL_CHECK(foreground_push_pull_->filter_type() ==
-            PushPullFilteringC1::BINOMIAL_5X5 ||
-        foreground_push_pull_->filter_type() ==
-            PushPullFilteringC1::GAUSSIAN_5X5);
+                 PushPullFilteringC1::BINOMIAL_5X5 ||
+             foreground_push_pull_->filter_type() ==
+                 PushPullFilteringC1::GAUSSIAN_5X5);
 
   cv::Mat foreground_map(frame_height_ + 4, frame_width_ + 4, CV_32FC2);
   std::vector<Vector2_f> feature_locations;

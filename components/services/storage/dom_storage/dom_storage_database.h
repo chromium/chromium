@@ -8,6 +8,7 @@
 #include <stdint.h>
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -21,7 +22,6 @@
 #include "base/trace_event/memory_allocator_dump_guid.h"
 #include "base/trace_event/memory_dump_provider.h"
 #include "base/types/pass_key.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/leveldatabase/env_chromium.h"
 #include "third_party/leveldatabase/src/include/leveldb/db.h"
 #include "third_party/leveldatabase/src/include/leveldb/env.h"
@@ -92,7 +92,7 @@ class DomStorageDatabase : private base::trace_event::MemoryDumpProvider {
       const base::FilePath& directory,
       const std::string& name,
       const leveldb_env::Options& options,
-      const absl::optional<base::trace_event::MemoryAllocatorDumpGuid>&
+      const std::optional<base::trace_event::MemoryAllocatorDumpGuid>&
           memory_dump_id,
       scoped_refptr<base::SequencedTaskRunner> blocking_task_runner,
       OpenCallback callback);
@@ -104,7 +104,7 @@ class DomStorageDatabase : private base::trace_event::MemoryDumpProvider {
   // sequence once the operation completes.
   static void OpenInMemory(
       const std::string& name,
-      const absl::optional<base::trace_event::MemoryAllocatorDumpGuid>&
+      const std::optional<base::trace_event::MemoryAllocatorDumpGuid>&
           memory_dump_id,
       scoped_refptr<base::SequencedTaskRunner> blocking_task_runner,
       OpenCallback callback);
@@ -170,7 +170,7 @@ class DomStorageDatabase : private base::trace_event::MemoryDumpProvider {
       const base::FilePath& directory,
       const std::string& name,
       const leveldb_env::Options& options,
-      const absl::optional<base::trace_event::MemoryAllocatorDumpGuid>&
+      const std::optional<base::trace_event::MemoryAllocatorDumpGuid>&
           memory_dump_id,
       scoped_refptr<base::SequencedTaskRunner> callback_task_runner,
       StatusCallback callback);
@@ -180,7 +180,7 @@ class DomStorageDatabase : private base::trace_event::MemoryDumpProvider {
   DomStorageDatabase(
       PassKey,
       const std::string& tracking_name,
-      const absl::optional<base::trace_event::MemoryAllocatorDumpGuid>&
+      const std::optional<base::trace_event::MemoryAllocatorDumpGuid>&
           memory_dump_id,
       scoped_refptr<base::SequencedTaskRunner> callback_task_runner,
       StatusCallback callback);
@@ -190,7 +190,7 @@ class DomStorageDatabase : private base::trace_event::MemoryDumpProvider {
       const std::string& name,
       std::unique_ptr<leveldb::Env> env,
       const leveldb_env::Options& options,
-      const absl::optional<base::trace_event::MemoryAllocatorDumpGuid>
+      const std::optional<base::trace_event::MemoryAllocatorDumpGuid>
           memory_dump_id_,
       scoped_refptr<base::SequencedTaskRunner> callback_task_runner,
       StatusCallback callback);
@@ -209,7 +209,7 @@ class DomStorageDatabase : private base::trace_event::MemoryDumpProvider {
   const std::string name_;
   const std::unique_ptr<leveldb::Env> env_;
   const leveldb_env::Options options_;
-  const absl::optional<base::trace_event::MemoryAllocatorDumpGuid>
+  const std::optional<base::trace_event::MemoryAllocatorDumpGuid>
       memory_dump_id_;
   std::unique_ptr<leveldb::DB> db_;
 

@@ -4,15 +4,31 @@
 
 package org.chromium.content.browser.accessibility;
 
+import static org.chromium.content.browser.accessibility.AccessibilityNodeInfoBuilder.EXTRAS_KEY_PAGE_ABSOLUTE_HEIGHT;
+import static org.chromium.content.browser.accessibility.AccessibilityNodeInfoBuilder.EXTRAS_KEY_PAGE_ABSOLUTE_LEFT;
+import static org.chromium.content.browser.accessibility.AccessibilityNodeInfoBuilder.EXTRAS_KEY_PAGE_ABSOLUTE_TOP;
+import static org.chromium.content.browser.accessibility.AccessibilityNodeInfoBuilder.EXTRAS_KEY_PAGE_ABSOLUTE_WIDTH;
+import static org.chromium.content.browser.accessibility.AccessibilityNodeInfoBuilder.EXTRAS_KEY_UNCLIPPED_HEIGHT;
+import static org.chromium.content.browser.accessibility.AccessibilityNodeInfoBuilder.EXTRAS_KEY_UNCLIPPED_LEFT;
+import static org.chromium.content.browser.accessibility.AccessibilityNodeInfoBuilder.EXTRAS_KEY_UNCLIPPED_TOP;
+import static org.chromium.content.browser.accessibility.AccessibilityNodeInfoBuilder.EXTRAS_KEY_UNCLIPPED_WIDTH;
+
+import static java.lang.String.CASE_INSENSITIVE_ORDER;
+
 import android.graphics.Matrix;
 import android.os.Bundle;
 import android.os.LocaleList;
 import android.text.TextUtils;
+import android.util.Pair;
 import android.view.ViewStructure;
 import android.view.autofill.AutofillId;
 import android.view.autofill.AutofillValue;
 
+import androidx.annotation.NonNull;
+
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
 /**
  * Implementation of ViewStructure that allows us to print it out as a
@@ -22,10 +38,9 @@ public class TestViewStructure extends ViewStructure {
     private CharSequence mText;
     private String mClassName;
     private Bundle mBundle;
+    private HtmlInfo mHtmlInfo;
     private int mChildCount;
     private ArrayList<TestViewStructure> mChildren = new ArrayList<TestViewStructure>();
-    private boolean mDone = true;
-    private boolean mDumpHtmlTags;
     private float mTextSize;
     private int mFgColor;
     private int mBgColor;
@@ -35,21 +50,11 @@ public class TestViewStructure extends ViewStructure {
 
     public TestViewStructure() {}
 
-    public boolean isDone() {
-        if (!mDone) return false;
-
-        for (TestViewStructure child : mChildren) {
-            if (!child.isDone()) return false;
-        }
-
-        return true;
-    }
-
     @Override
     public String toString() {
         StringBuilder builder = new StringBuilder();
-        recursiveDumpToString(builder, 0, mDumpHtmlTags);
-        return builder.toString();
+        recursiveDumpToString(builder, 0);
+        return builder.toString().trim();
     }
 
     public String getClassName() {
@@ -72,35 +77,120 @@ public class TestViewStructure extends ViewStructure {
         return mStyle;
     }
 
-    private void recursiveDumpToString(StringBuilder builder, int indent, boolean dumpHtmlTags) {
-        for (int i = 0; i < indent; i++) {
-            builder.append("  ");
-        }
+    private static String bundleToString(Bundle extras) {
+        // Sort keys to ensure consistent output of tests.
+        List<String> sortedKeySet = new ArrayList<String>(extras.keySet());
+        Collections.sort(sortedKeySet, CASE_INSENSITIVE_ORDER);
 
-        if (!TextUtils.isEmpty(mClassName)) {
-            builder.append(mClassName);
-        }
-
-        if (!TextUtils.isEmpty(mText)) {
-            builder.append(" text='");
-            builder.append(mText);
-            builder.append("'");
-        }
-
-        if (mBundle != null) {
-            String htmlTag = mBundle.getCharSequence("htmlTag").toString();
-            if (dumpHtmlTags && !TextUtils.isEmpty(htmlTag)) {
-                builder.append(" htmlTag='");
-                builder.append(htmlTag);
-                builder.append("'");
+        List<String> bundleStrings = new ArrayList<>();
+        StringBuilder builder = new StringBuilder();
+        builder.append("[");
+        for (String key : sortedKeySet) {
+            // Bundle extras related to bounding boxes should be ignored so the tests can safely
+            // run on varying devices and not be screen-dependent.
+            if (key.equals(EXTRAS_KEY_UNCLIPPED_LEFT)
+                    || key.equals(EXTRAS_KEY_UNCLIPPED_TOP)
+                    || key.equals(EXTRAS_KEY_UNCLIPPED_WIDTH)
+                    || key.equals(EXTRAS_KEY_UNCLIPPED_HEIGHT)
+                    || key.equals(EXTRAS_KEY_PAGE_ABSOLUTE_LEFT)
+                    || key.equals(EXTRAS_KEY_PAGE_ABSOLUTE_TOP)
+                    || key.equals(EXTRAS_KEY_PAGE_ABSOLUTE_WIDTH)
+                    || key.equals(EXTRAS_KEY_PAGE_ABSOLUTE_HEIGHT)
+                    || key.equals("root_scroll_y")
+                    || key.equals("url")) {
+                continue;
             }
+
+            // Simplify the key String before printing to make test outputs easier to read.
+            bundleStrings.add(
+                    key.replace("AccessibilityNodeInfo.", "")
+                            + "=\""
+                            + extras.get(key).toString()
+                            + "\"");
+        }
+        builder.append(TextUtils.join(", ", bundleStrings)).append("]");
+
+        // If all keys were filtered, return an empty string.
+        String ret = builder.toString();
+        return ret.equals("[]") ? "" : ret;
+    }
+
+    private void recursiveDumpToString(StringBuilder builder, int indent) {
+        // We do not want to print the root node, start at the WebView.
+        if (mClassName == null) {
+            assert indent == 0;
+            assert mChildCount == 1;
+            mChildren.get(0).recursiveDumpToString(builder, indent);
+            return;
+        }
+
+        for (int i = 0; i < indent; i++) {
+            builder.append("++");
+        }
+
+        // Print classname first, but only print content after the last period to remove redundancy.
+        assert mClassName != null : "Classname should never be null";
+        assert !mClassName.contains("\\.") : "Classname should contain periods";
+        String[] classNameParts = mClassName.split("\\.");
+        builder.append(classNameParts[classNameParts.length - 1]);
+
+        // Print text unless it is empty (null is allowed).
+        if (mText == null) {
+            builder.append(" text:\"null\"");
+        } else if (!mText.toString().isEmpty()) {
+            builder.append(" text:\"").append(mText.toString().replace("\n", "\\n")).append("\"");
+        }
+
+        // Print text selection values if present.
+        if (mSelectionStart != 0 || getTextSelectionEnd() != 0) {
+            builder.append(" textSelectionStart:").append(mSelectionStart);
+            builder.append(" textSelectionEnd:").append(mSelectionEnd);
+        }
+
+        // Print font styling values.
+        builder.append(" textSize:").append(String.format("%.1f", mTextSize));
+        builder.append(" style:").append(mStyle);
+        if (mFgColor != 0xFF000000) {
+            builder.append(" fgColor:").append(mFgColor);
+        }
+        if (mBgColor != 0 && mBgColor != -1) {
+            builder.append(" bgColor:").append(mBgColor);
+        }
+
+        // Print Bundle extras and htmlInfo attributes.
+        if (mBundle != null) {
+            String bundleString = bundleToString(mBundle);
+            if (!bundleString.isEmpty()) {
+                builder.append(" bundle:").append(bundleString);
+            }
+        }
+        if (mHtmlInfo != null) {
+            builder.append(" htmlInfo:[");
+            List<String> attrStrings = new ArrayList<>();
+            attrStrings.add("{htmlTag=\"" + mHtmlInfo.getTag() + "\"}");
+            for (Pair<String, String> pair : mHtmlInfo.getAttributes()) {
+                // We add an extra html attribute for debugging, do not print these values in tests.
+                if (pair.first.equals("root_scroll_y")) {
+                    continue;
+                }
+                attrStrings.add("{" + pair.first + "=\"" + pair.second + "\"}");
+            }
+            builder.append(TextUtils.join(", ", attrStrings)).append("]");
         }
 
         builder.append("\n");
 
         for (TestViewStructure child : mChildren) {
-            child.recursiveDumpToString(builder, indent + 1, dumpHtmlTags);
+            child.recursiveDumpToString(builder, indent + 1);
         }
+    }
+
+    public int getTotalDescendantCount() {
+        int totalChildren = mChildCount;
+        for (int i = 0; i < mChildCount; i++) {
+            totalChildren += getChild(i).getTotalDescendantCount();
+        }
+        return totalChildren;
     }
 
     @Override
@@ -174,10 +264,6 @@ public class TestViewStructure extends ViewStructure {
         return mChildren.size();
     }
 
-    public void dumpHtmlTags() {
-        mDumpHtmlTags = true;
-    }
-
     @Override
     public ViewStructure newChild(int index) {
         TestViewStructure viewStructure = new TestViewStructure();
@@ -193,16 +279,11 @@ public class TestViewStructure extends ViewStructure {
 
     @Override
     public ViewStructure asyncNewChild(int index) {
-        TestViewStructure result = (TestViewStructure) newChild(index);
-        result.mDone = false;
-        return result;
+        return newChild(index);
     }
 
     @Override
-    public void asyncCommit() {
-        assert !mDone;
-        mDone = true;
-    }
+    public void asyncCommit() {}
 
     @Override
     public AutofillId getAutofillId() {
@@ -211,7 +292,7 @@ public class TestViewStructure extends ViewStructure {
 
     @Override
     public HtmlInfo.Builder newHtmlInfoBuilder(String tag) {
-        return null;
+        return new TestBuilder(tag);
     }
 
     @Override
@@ -274,7 +355,9 @@ public class TestViewStructure extends ViewStructure {
     public void setHint(CharSequence hint) {}
 
     @Override
-    public void setHtmlInfo(HtmlInfo arg0) {}
+    public void setHtmlInfo(HtmlInfo htmlInfo) {
+        mHtmlInfo = htmlInfo;
+    }
 
     @Override
     public void setInputType(int arg0) {}
@@ -319,4 +402,48 @@ public class TestViewStructure extends ViewStructure {
 
     @Override
     public void setWebDomain(String webDomain) {}
+
+    /** Test implementation of {@link HtmlInfo}. */
+    public static class TestHtmlInfo extends HtmlInfo {
+        private final String mTag;
+        private final List<Pair<String, String>> mAttributes;
+
+        public TestHtmlInfo(String tag, List<Pair<String, String>> attributes) {
+            mTag = tag;
+            mAttributes = attributes;
+        }
+
+        @Override
+        public List<Pair<String, String>> getAttributes() {
+            return mAttributes;
+        }
+
+        @NonNull
+        @Override
+        public String getTag() {
+            return mTag;
+        }
+    }
+
+    /** Test implementation of {@link HtmlInfo.Builder}. */
+    public static class TestBuilder extends HtmlInfo.Builder {
+        private final String mTag;
+        private final List<Pair<String, String>> mAttributes;
+
+        public TestBuilder(String tag) {
+            mTag = tag;
+            mAttributes = new ArrayList<Pair<String, String>>();
+        }
+
+        @Override
+        public HtmlInfo.Builder addAttribute(@NonNull String name, @NonNull String value) {
+            mAttributes.add(new Pair<String, String>(name, value));
+            return this;
+        }
+
+        @Override
+        public HtmlInfo build() {
+            return new TestHtmlInfo(mTag, mAttributes);
+        }
+    }
 }

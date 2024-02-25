@@ -3,6 +3,8 @@
 // found in the LICENSE file.
 
 #include "components/autofill/core/browser/ui/autofill_resource_utils.h"
+
+#include "base/containers/fixed_flat_map.h"
 #include "build/branding_buildflags.h"
 #include "build/build_config.h"
 #include "components/autofill/core/browser/data_model/credit_card.h"
@@ -21,89 +23,84 @@ namespace {
 // Used in the IDS_ space as a placeholder for resources that don't exist.
 constexpr int kResourceNotFoundId = 0;
 
-// Used to fetch the |icon_id| corresponding the the |name| resource.
-struct DataResources {
-  const char* name;
-  int icon_id;
-};
-
-DataResources kDataResources[] = {
-    {kAmericanExpressCard, IDR_AUTOFILL_CC_AMEX},
-    {kDinersCard, IDR_AUTOFILL_CC_DINERS},
-    {kDiscoverCard, IDR_AUTOFILL_CC_DISCOVER},
-    {kEloCard, IDR_AUTOFILL_CC_ELO},
-    {kGenericCard, IDR_AUTOFILL_CC_GENERIC},
-    {kJCBCard, IDR_AUTOFILL_CC_JCB},
-    {kMasterCard, IDR_AUTOFILL_CC_MASTERCARD},
-    {kMirCard, IDR_AUTOFILL_CC_MIR},
-    {kTroyCard, IDR_AUTOFILL_CC_TROY},
-    {kUnionPay, IDR_AUTOFILL_CC_UNIONPAY},
-    {kVisaCard, IDR_AUTOFILL_CC_VISA},
+constexpr auto kDataResources = base::MakeFixedFlatMap<Suggestion::Icon, int>({
+    {Suggestion::Icon::kCardAmericanExpress, IDR_AUTOFILL_CC_AMEX},
+    {Suggestion::Icon::kCardDiners, IDR_AUTOFILL_CC_DINERS},
+    {Suggestion::Icon::kCardDiscover, IDR_AUTOFILL_CC_DISCOVER},
+    {Suggestion::Icon::kCardElo, IDR_AUTOFILL_CC_ELO},
+    {Suggestion::Icon::kCardGeneric, IDR_AUTOFILL_CC_GENERIC},
+    {Suggestion::Icon::kCardJCB, IDR_AUTOFILL_CC_JCB},
+    {Suggestion::Icon::kCardMasterCard, IDR_AUTOFILL_CC_MASTERCARD},
+    {Suggestion::Icon::kCardMir, IDR_AUTOFILL_CC_MIR},
+    {Suggestion::Icon::kCardTroy, IDR_AUTOFILL_CC_TROY},
+    {Suggestion::Icon::kCardUnionPay, IDR_AUTOFILL_CC_UNIONPAY},
+    {Suggestion::Icon::kCardVisa, IDR_AUTOFILL_CC_VISA},
 #if BUILDFLAG(IS_ANDROID)
-    {"httpWarning", IDR_ANDROID_AUTOFILL_HTTP_WARNING},
-    {"httpsInvalid", IDR_ANDROID_AUTOFILL_HTTPS_INVALID_WARNING},
-    {"scanCreditCardIcon", IDR_ANDROID_AUTOFILL_CC_SCAN_NEW},
-    {"settings", IDR_ANDROID_AUTOFILL_SETTINGS},
-    {"create", IDR_ANDROID_AUTOFILL_CREATE},
-    {"offerTag", IDR_ANDROID_AUTOFILL_OFFER_TAG_GREEN},
+    {Suggestion::Icon::kHttpWarning, IDR_ANDROID_AUTOFILL_HTTP_WARNING},
+    {Suggestion::Icon::kHttpsInvalid,
+     IDR_ANDROID_AUTOFILL_HTTPS_INVALID_WARNING},
+    {Suggestion::Icon::kScanCreditCard, IDR_ANDROID_AUTOFILL_CC_SCAN_NEW},
+    {Suggestion::Icon::kSettingsAndroid, IDR_ANDROID_AUTOFILL_SETTINGS},
+    {Suggestion::Icon::kCreate, IDR_ANDROID_AUTOFILL_CREATE},
+    {Suggestion::Icon::kOfferTag, IDR_ANDROID_AUTOFILL_OFFER_TAG_GREEN},
+    {Suggestion::Icon::kPlusAddress, IDR_AUTOFILL_PLUS_ADDRESS},
 #endif  // BUILDFLAG(IS_ANDROID)
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-    {"googlePay", IDR_AUTOFILL_GOOGLE_PAY},
+    {Suggestion::Icon::kGooglePay, IDR_AUTOFILL_GOOGLE_PAY},
 #if !BUILDFLAG(IS_ANDROID)
-    {"googlePayDark", IDR_AUTOFILL_GOOGLE_PAY_DARK},
-#endif  // NOT OS_ANDROID
+    {Suggestion::Icon::kGooglePayDark, IDR_AUTOFILL_GOOGLE_PAY_DARK},
+#endif  // !BUILDFLAG(IS_ANDROID)
 #endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
-};
+});
 
-DataResources kNewCardArtAndNetworkDataResources[] = {
-    {kAmericanExpressCard, IDR_AUTOFILL_METADATA_CC_AMEX},
-    {kDinersCard, IDR_AUTOFILL_METADATA_CC_DINERS},
-    {kDiscoverCard, IDR_AUTOFILL_METADATA_CC_DISCOVER},
-    {kEloCard, IDR_AUTOFILL_METADATA_CC_ELO},
-    {kGenericCard, IDR_AUTOFILL_METADATA_CC_GENERIC},
-    {kJCBCard, IDR_AUTOFILL_METADATA_CC_JCB},
-    {kMasterCard, IDR_AUTOFILL_METADATA_CC_MASTERCARD},
-    {kMirCard, IDR_AUTOFILL_METADATA_CC_MIR},
-    {kTroyCard, IDR_AUTOFILL_METADATA_CC_TROY},
-    {kUnionPay, IDR_AUTOFILL_METADATA_CC_UNIONPAY},
-    {kVisaCard, IDR_AUTOFILL_METADATA_CC_VISA},
+constexpr auto kNewCardArtAndNetworkDataResources =
+    base::MakeFixedFlatMap<Suggestion::Icon, int>({
+        {Suggestion::Icon::kCardAmericanExpress, IDR_AUTOFILL_METADATA_CC_AMEX},
+        {Suggestion::Icon::kCardDiners, IDR_AUTOFILL_METADATA_CC_DINERS},
+        {Suggestion::Icon::kCardDiscover, IDR_AUTOFILL_METADATA_CC_DISCOVER},
+        {Suggestion::Icon::kCardElo, IDR_AUTOFILL_METADATA_CC_ELO},
+        {Suggestion::Icon::kCardGeneric, IDR_AUTOFILL_METADATA_CC_GENERIC},
+        {Suggestion::Icon::kCardJCB, IDR_AUTOFILL_METADATA_CC_JCB},
+        {Suggestion::Icon::kCardMasterCard,
+         IDR_AUTOFILL_METADATA_CC_MASTERCARD},
+        {Suggestion::Icon::kCardMir, IDR_AUTOFILL_METADATA_CC_MIR},
+        {Suggestion::Icon::kCardTroy, IDR_AUTOFILL_METADATA_CC_TROY},
+        {Suggestion::Icon::kCardUnionPay, IDR_AUTOFILL_METADATA_CC_UNIONPAY},
+        {Suggestion::Icon::kCardVisa, IDR_AUTOFILL_METADATA_CC_VISA},
 #if BUILDFLAG(IS_ANDROID)
-    {"httpWarning", IDR_ANDROID_AUTOFILL_HTTP_WARNING},
-    {"httpsInvalid", IDR_ANDROID_AUTOFILL_HTTPS_INVALID_WARNING},
-    {"scanCreditCardIcon", IDR_ANDROID_AUTOFILL_CC_SCAN_NEW},
-    {"settings", IDR_ANDROID_AUTOFILL_SETTINGS},
-    {"create", IDR_ANDROID_AUTOFILL_CREATE},
-    {"offerTag", IDR_ANDROID_AUTOFILL_OFFER_TAG_GREEN},
+        {Suggestion::Icon::kHttpWarning, IDR_ANDROID_AUTOFILL_HTTP_WARNING},
+        {Suggestion::Icon::kHttpsInvalid,
+         IDR_ANDROID_AUTOFILL_HTTPS_INVALID_WARNING},
+        {Suggestion::Icon::kScanCreditCard, IDR_ANDROID_AUTOFILL_CC_SCAN_NEW},
+        {Suggestion::Icon::kSettingsAndroid, IDR_ANDROID_AUTOFILL_SETTINGS},
+        {Suggestion::Icon::kCreate, IDR_ANDROID_AUTOFILL_CREATE},
+        {Suggestion::Icon::kOfferTag, IDR_ANDROID_AUTOFILL_OFFER_TAG_GREEN},
+        {Suggestion::Icon::kPlusAddress, IDR_AUTOFILL_PLUS_ADDRESS},
 #endif  // BUILDFLAG(IS_ANDROID)
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-    {"googlePay", IDR_AUTOFILL_GOOGLE_PAY},
+        {Suggestion::Icon::kGooglePay, IDR_AUTOFILL_GOOGLE_PAY},
 #if !BUILDFLAG(IS_ANDROID)
-    {"googlePayDark", IDR_AUTOFILL_GOOGLE_PAY_DARK},
-#endif  // NOT OS_ANDROID
+        {Suggestion::Icon::kGooglePayDark, IDR_AUTOFILL_GOOGLE_PAY_DARK},
+#endif  // !BUILDFLAG(IS_ANDROID)
 #endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
-};
+    });
 
 }  // namespace
 
-int GetIconResourceID(const std::string& resource_name) {
+int GetIconResourceID(Suggestion::Icon resource_name) {
 #if !BUILDFLAG(GOOGLE_CHROME_BRANDING)
-  if (resource_name == "googlePay" || resource_name == "googlePayDark") {
+  if (resource_name == Suggestion::Icon::kGooglePay ||
+      resource_name == Suggestion::Icon::kGooglePayDark) {
     return 0;
   }
 #endif
-  int result = kResourceNotFoundId;
-  for (const auto& kDataResource :
-       base::FeatureList::IsEnabled(
-           autofill::features::kAutofillEnableNewCardArtAndNetworkImages)
-           ? kNewCardArtAndNetworkDataResources
-           : kDataResources) {
-    if (resource_name == kDataResource.name) {
-      result = kDataResource.icon_id;
-      break;
-    }
-  }
-
-  return result;
+  const auto& kDataResource =
+      base::FeatureList::IsEnabled(
+          autofill::features::kAutofillEnableNewCardArtAndNetworkImages)
+          ? kNewCardArtAndNetworkDataResources
+          : kDataResources;
+  auto* it = kDataResource.find(resource_name);
+  return it == kDataResource.end() ? kResourceNotFoundId : it->second;
 }
 
 }  // namespace autofill

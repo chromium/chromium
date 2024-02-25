@@ -92,11 +92,6 @@ void ShadowRealmGlobalScope::ExceptionThrown(ErrorEvent* error_event) {
   NOTREACHED();
 }
 
-void ShadowRealmGlobalScope::AddInspectorIssue(
-    mojom::blink::InspectorIssueInfoPtr issue) {
-  NOTREACHED();
-}
-
 void ShadowRealmGlobalScope::AddInspectorIssue(AuditsIssue issue) {
   NOTREACHED();
 }

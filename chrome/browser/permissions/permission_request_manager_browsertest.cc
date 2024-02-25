@@ -384,6 +384,47 @@ IN_PROC_BROWSER_TEST_F(PermissionRequestManagerBrowserTest,
   EXPECT_EQ(1, bubble_factory()->TotalRequestCount());
 }
 
+// Ignored permission request should not trigger a blocked activity indicator on
+// a new document.
+IN_PROC_BROWSER_TEST_F(PermissionRequestManagerBrowserTest,
+                       SameOriginCrossDocumentNavigation) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+
+  ui_test_utils::NavigateToURLBlockUntilNavigationsComplete(
+      browser(), embedded_test_server()->GetURL("/empty.html"), 1);
+
+  auto* pscs = content_settings::PageSpecificContentSettings::GetForFrame(
+      GetActiveMainFrame());
+
+  ASSERT_TRUE(pscs);
+  EXPECT_FALSE(pscs->IsContentBlocked(ContentSettingsType::GEOLOCATION));
+  EXPECT_FALSE(pscs->IsContentAllowed(ContentSettingsType::GEOLOCATION));
+
+  // Request 'geolocation' permission.
+  ASSERT_TRUE(content::ExecJs(
+      GetActiveMainFrame(),
+      "navigator.geolocation.getCurrentPosition(function(){});"));
+
+  bubble_factory()->WaitForPermissionBubble();
+  EXPECT_TRUE(bubble_factory()->is_visible());
+
+  // Start a same-origin cross-document navigation. This will resolve currently
+  // visible permission prompt as `Ignored`.
+  ui_test_utils::NavigateToURLBlockUntilNavigationsComplete(
+      browser(), embedded_test_server()->GetURL("/empty.html"), 1);
+
+  EXPECT_FALSE(bubble_factory()->is_visible());
+
+  // After a new started navigation PSCS will be deleted. Get a new instance.
+  pscs = content_settings::PageSpecificContentSettings::GetForFrame(
+      GetActiveMainFrame());
+  // Geolocation content setting was not blocked nor allowed. In other words,
+  // there is no visible activity indicator after Geolocation permission prompt
+  // was resolved as `Ignored`.
+  EXPECT_FALSE(pscs->IsContentBlocked(ContentSettingsType::GEOLOCATION));
+  EXPECT_FALSE(pscs->IsContentAllowed(ContentSettingsType::GEOLOCATION));
+}
+
 // Prompts are only shown for active tabs and (on Desktop) hidden on tab
 // switching
 IN_PROC_BROWSER_TEST_F(PermissionRequestManagerBrowserTest, MultipleTabs) {
@@ -704,8 +745,8 @@ class PermissionRequestManagerQuietUiBrowserTest
   using QuietUiReason = permissions::PermissionUiSelector::QuietUiReason;
   using WarningReason = permissions::PermissionUiSelector::WarningReason;
 
-  void SetCannedUiDecision(absl::optional<QuietUiReason> quiet_ui_reason,
-                           absl::optional<WarningReason> warning_reason) {
+  void SetCannedUiDecision(std::optional<QuietUiReason> quiet_ui_reason,
+                           std::optional<WarningReason> warning_reason) {
     GetPermissionRequestManager()->set_permission_ui_selector_for_testing(
         std::make_unique<TestQuietNotificationPermissionUiSelector>(
             UiDecision(quiet_ui_reason, warning_reason)));
@@ -758,7 +799,7 @@ IN_PROC_BROWSER_TEST_F(PermissionRequestManagerQuietUiBrowserTest,
   bubble_factory()->WaitForPermissionBubble();
   auto* manager = GetPermissionRequestManager();
 
-  absl::optional<permissions::PermissionPromptDisposition> disposition =
+  std::optional<permissions::PermissionPromptDisposition> disposition =
       manager->current_request_prompt_disposition_for_testing();
   auto disposition_from_prompt_bubble =
       manager->view_for_testing()->GetPromptDisposition();
@@ -798,7 +839,7 @@ IN_PROC_BROWSER_TEST_F(PermissionRequestManagerQuietUiBrowserTest,
       WindowOpenDisposition::NEW_FOREGROUND_TAB,
       ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
 
-  absl::optional<permissions::PermissionPromptDisposition> disposition =
+  std::optional<permissions::PermissionPromptDisposition> disposition =
       manager->current_request_prompt_disposition_for_testing();
 
   EXPECT_TRUE(disposition.has_value());
@@ -813,8 +854,8 @@ IN_PROC_BROWSER_TEST_F(PermissionRequestManagerQuietUiBrowserTest,
 IN_PROC_BROWSER_TEST_F(PermissionRequestManagerQuietUiBrowserTest,
                        ConsoleMessages) {
   const struct {
-    absl::optional<QuietUiReason> simulated_quiet_ui_reason;
-    absl::optional<WarningReason> simulated_warning_reason;
+    std::optional<QuietUiReason> simulated_quiet_ui_reason;
+    std::optional<WarningReason> simulated_warning_reason;
     const char* expected_message;
   } kTestCases[] = {
       {UiDecision::UseNormalUi(), UiDecision::ShowNoWarning(), nullptr},
@@ -895,7 +936,7 @@ IN_PROC_BROWSER_TEST_F(PermissionRequestManagerBrowserTest,
   GetPermissionRequestManager()->Dismiss();
   base::RunLoop().RunUntilIdle();
 
-  if (base::FeatureList::IsEnabled(permissions::features::kPermissionChip)) {
+  if (permissions::PermissionUtil::DoesPlatformSupportChip()) {
     EXPECT_FALSE(request1.finished());
     EXPECT_TRUE(request2.finished());
   } else {
@@ -1282,8 +1323,10 @@ IN_PROC_BROWSER_TEST_F(PermissionRequestManagerWithFencedFrameTest,
   content::PermissionController* permission_controller =
       browser()->profile()->GetPermissionController();
   permission_controller->RequestPermissionFromCurrentDocument(
-      blink::PermissionType::SENSORS, fenced_frame_host,
-      /* user_gesture = */ true, callback.Get());
+      fenced_frame_host,
+      content::PermissionRequestDescription(blink::PermissionType::SENSORS,
+                                            /* user_gesture = */ true),
+      callback.Get());
   ASSERT_TRUE(console_observer.Wait());
   ASSERT_EQ(1u, console_observer.messages().size());
 }

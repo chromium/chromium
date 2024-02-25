@@ -24,6 +24,7 @@
 #include "components/reporting/proto/synced/record.pb.h"
 #include "components/reporting/proto/synced/record_constants.pb.h"
 #include "components/reporting/resources/resource_manager.h"
+#include "components/reporting/util/status_macros.h"
 #include "components/reporting/util/test_support_callbacks.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -116,8 +117,10 @@ using TestEncryptionKeyAttached = MockFunction<void(SignedEncryptionInfo)>;
 TEST_P(UploadClientTest, CreateUploadClientAndUploadRecords) {
   static constexpr int64_t kExpectedCallTimes = 10;
   static constexpr int64_t kGenerationId = 1234;
+#if BUILDFLAG(IS_CHROMEOS)
   static constexpr char kGenerationGuid[] =
       "c947e7e9-b87d-4592-9fe7-407792544e53";
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
   base::Value::Dict data;
   data.Set("TEST_KEY", "TEST_VALUE");
@@ -141,7 +144,9 @@ TEST_P(UploadClientTest, CreateUploadClientAndUploadRecords) {
         encrypted_record.mutable_sequence_information();
     sequence_information->set_sequencing_id(static_cast<int64_t>(i));
     sequence_information->set_generation_id(kGenerationId);
+#if BUILDFLAG(IS_CHROMEOS)
     sequence_information->set_generation_guid(kGenerationGuid);
+#endif  // BUILDFLAG(IS_CHROMEOS)
     sequence_information->set_priority(Priority::IMMEDIATE);
     ScopedReservation record_reservation(encrypted_record.ByteSizeLong(),
                                          memory_resource_);
@@ -165,6 +170,7 @@ TEST_P(UploadClientTest, CreateUploadClientAndUploadRecords) {
   ReportingServerConnector::TestEnvironment test_env;
 
   static constexpr char matched_record_template[] =
+#if BUILDFLAG(IS_CHROMEOS)
       R"JSON(
 {
   "sequenceInformation": {
@@ -174,7 +180,19 @@ TEST_P(UploadClientTest, CreateUploadClientAndUploadRecords) {
     "sequencingId": "%d"
   }
 }
-)JSON";
+)JSON"
+#else   // BUILDFLAG(IS_CHROMEOS)
+      R"JSON(
+{
+  "sequenceInformation": {
+    "generationId": "1234",
+    "priority": 1,
+    "sequencingId": "%d"
+  }
+}
+)JSON"
+#endif  // BUILDFLAG(IS_CHROMEOS)
+      ;
 
   test::TestMultiEvent<SequenceInformation, bool> upload_success_event;
 
@@ -185,12 +203,15 @@ TEST_P(UploadClientTest, CreateUploadClientAndUploadRecords) {
   test::TestEvent<StatusOr<std::unique_ptr<UploadClient>>> e;
   UploadClient::Create(e.cb());
   StatusOr<std::unique_ptr<UploadClient>> upload_client_result = e.result();
-  ASSERT_OK(upload_client_result) << upload_client_result.status();
+  ASSERT_TRUE(upload_client_result.has_value()) << upload_client_result.error();
 
-  auto upload_client = std::move(upload_client_result.ValueOrDie());
+  auto upload_client = std::move(upload_client_result.value());
+  // config_file_version is set to 0 for testing. The default value is -1 and we
+  // want to override it.
   auto enqueue_result = upload_client->EnqueueUpload(
-      need_encryption_key(), std::move(records), std::move(total_reservation),
-      upload_success_event.repeating_cb(), encryption_key_attached_cb);
+      need_encryption_key(), /*config_file_version=*/0, std::move(records),
+      std::move(total_reservation), upload_success_event.repeating_cb(),
+      encryption_key_attached_cb);
   EXPECT_TRUE(enqueue_result.ok());
   task_environment_.RunUntilIdle();
 
@@ -221,7 +242,7 @@ TEST_P(UploadClientTest, CreateUploadClientAndUploadRecords) {
   auto response = ResponseBuilder(std::move(request_body))
                       .SetForceConfirm(force_confirm())
                       .Build();
-  ASSERT_TRUE(response);
+  ASSERT_OK(response) << response.error();
   test_env.SimulateCustomResponseForRequest(0, std::move(*response));
 
   auto upload_success_result = upload_success_event.result();

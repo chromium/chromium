@@ -6,14 +6,15 @@
 #define COMPONENTS_SEGMENTATION_PLATFORM_INTERNAL_DATABASE_SIGNAL_DATABASE_H_
 
 #include <cstdint>
+#include <optional>
 #include <utility>
 #include <vector>
 
 #include "base/functional/callback_forward.h"
 #include "base/time/time.h"
-#include "components/segmentation_platform/internal/database/signal_key.h"
+#include "components/segmentation_platform/internal/database/ukm_types.h"
+#include "components/segmentation_platform/public/database_client.h"
 #include "components/segmentation_platform/public/proto/types.pb.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace segmentation_platform {
 
@@ -25,7 +26,6 @@ class SignalDatabase {
  public:
   using SuccessCallback = base::OnceCallback<void(bool)>;
   using Sample = std::pair<base::Time, int32_t>;
-  using SamplesCallback = base::OnceCallback<void(std::vector<Sample>)>;
 
   virtual ~SignalDatabase() = default;
 
@@ -36,17 +36,25 @@ class SignalDatabase {
   // to delta from UTC midnight for efficient storage.
   virtual void WriteSample(proto::SignalType signal_type,
                            uint64_t name_hash,
-                           absl::optional<int32_t> value,
+                           std::optional<int32_t> value,
                            SuccessCallback callback) = 0;
+
+  using DbEntry = UmaMetricEntry;
+  using EntriesCallback = base::OnceCallback<void(std::vector<DbEntry>)>;
 
   // Called to get signals collected between any two timestamps (including both
   // ends). The samples are returned in the |callback| as a list of pairs
-  // containing signal timestamp and and an optional value.
+  // containing database entries.
   virtual void GetSamples(proto::SignalType signal_type,
                           uint64_t name_hash,
                           base::Time start_time,
                           base::Time end_time,
-                          SamplesCallback callback) = 0;
+                          EntriesCallback callback) = 0;
+
+  // Called to fetch all entries from the signal database. WARNING: This may
+  // return signals that are deleted from database but are still cached in
+  // memory. The caller should filter signals in time range as needed.
+  virtual const std::vector<DbEntry>* GetAllSamples() = 0;
 
   // Called to delete database entries having end time earlier than |end_time|.
   virtual void DeleteSamples(proto::SignalType signal_type,

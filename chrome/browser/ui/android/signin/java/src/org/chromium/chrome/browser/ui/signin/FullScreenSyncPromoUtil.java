@@ -4,7 +4,6 @@
 
 package org.chromium.chrome.browser.ui.signin;
 
-import android.accounts.Account;
 import android.content.Context;
 import android.text.TextUtils;
 
@@ -20,6 +19,7 @@ import org.chromium.components.signin.AccountManagerFacadeProvider;
 import org.chromium.components.signin.AccountUtils;
 import org.chromium.components.signin.Tribool;
 import org.chromium.components.signin.base.AccountInfo;
+import org.chromium.components.signin.base.CoreAccountInfo;
 import org.chromium.components.signin.identitymanager.ConsentLevel;
 import org.chromium.components.signin.identitymanager.IdentityManager;
 import org.chromium.components.signin.metrics.SigninAccessPoint;
@@ -36,30 +36,35 @@ import java.util.Set;
 public final class FullScreenSyncPromoUtil {
     /**
      * Launches the {@link SyncConsentActivity} if it needs to be displayed.
+     *
      * @param context The {@link Context} to launch the {@link SyncConsentActivity}.
+     * @param profile The active user profile.
      * @param syncConsentActivityLauncher launcher used to launch the {@link SyncConsentActivity}.
      * @param currentMajorVersion The current major version of Chrome.
      * @return Whether the signin promo is shown.
      */
-    public static boolean launchPromoIfNeeded(Context context,
+    public static boolean launchPromoIfNeeded(
+            Context context,
+            Profile profile,
             SyncConsentActivityLauncher syncConsentActivityLauncher,
             final int currentMajorVersion) {
         final SigninPreferencesManager prefManager = SigninPreferencesManager.getInstance();
-        if (shouldLaunchPromo(prefManager, currentMajorVersion)) {
+        if (shouldLaunchPromo(profile, prefManager, currentMajorVersion)) {
             syncConsentActivityLauncher.launchActivityIfAllowed(
                     context, SigninAccessPoint.SIGNIN_PROMO);
             prefManager.setSigninPromoLastShownVersion(currentMajorVersion);
-            final List<Account> accounts = AccountUtils.getAccountsIfFulfilledOrEmpty(
-                    AccountManagerFacadeProvider.getInstance().getAccounts());
-            prefManager.setSigninPromoLastAccountNames(
-                    new HashSet<>(AccountUtils.toAccountNames(accounts)));
+            final List<CoreAccountInfo> coreAccountInfos =
+                    AccountUtils.getCoreAccountInfosIfFulfilledOrEmpty(
+                            AccountManagerFacadeProvider.getInstance().getCoreAccountInfos());
+            prefManager.setSigninPromoLastAccountEmails(
+                    new HashSet<>(AccountUtils.toAccountEmails(coreAccountInfos)));
             return true;
         }
         return false;
     }
 
     private static boolean shouldLaunchPromo(
-            SigninPreferencesManager prefManager, final int currentMajorVersion) {
+            Profile profile, SigninPreferencesManager prefManager, final int currentMajorVersion) {
         if (ChromeFeatureList.isEnabled(ChromeFeatureList.FORCE_STARTUP_SIGNIN_PROMO)) {
             return true;
         }
@@ -74,7 +79,6 @@ public final class FullScreenSyncPromoUtil {
             return false;
         }
 
-        final Profile profile = Profile.getLastUsedRegularProfile();
         final IdentityManager identityManager =
                 IdentityServicesProvider.get().getIdentityManager(profile);
         if (identityManager.getPrimaryAccountInfo(ConsentLevel.SYNC) != null) {
@@ -83,26 +87,33 @@ public final class FullScreenSyncPromoUtil {
         }
 
         if (!TextUtils.isEmpty(
-                    UserPrefs.get(profile).getString(Pref.GOOGLE_SERVICES_LAST_USERNAME))) {
+                UserPrefs.get(profile).getString(Pref.GOOGLE_SERVICES_LAST_SYNCING_USERNAME))) {
             // Don't show if user has manually signed out.
             return false;
         }
 
         final AccountManagerFacade accountManagerFacade =
                 AccountManagerFacadeProvider.getInstance();
-        final List<Account> accounts =
-                AccountUtils.getAccountsIfFulfilledOrEmpty(accountManagerFacade.getAccounts());
-        if (accounts.isEmpty()) {
+        final List<CoreAccountInfo> coreAccountInfos =
+                AccountUtils.getCoreAccountInfosIfFulfilledOrEmpty(
+                        accountManagerFacade.getCoreAccountInfos());
+        if (coreAccountInfos.isEmpty()) {
             // Don't show if the account list isn't available yet or there are no accounts in it.
             return false;
         }
 
+        // TODO(crbug.com/1477562): Use IdentityManager.findExtendedAccountInfoByAccountId()
+        // instead.
         final @Nullable AccountInfo firstAccount =
-                identityManager.findExtendedAccountInfoByEmailAddress(accounts.get(0).name);
+                identityManager.findExtendedAccountInfoByEmailAddress(
+                        coreAccountInfos.get(0).getEmail());
         if (!(firstAccount != null
-                    && firstAccount.getAccountCapabilities().canOfferExtendedSyncPromos()
-                            == Tribool.TRUE)) {
-            // Show promo only when CanOfferExtendedSyncPromos capability for the first account
+                && firstAccount
+                                .getAccountCapabilities()
+                                .canShowHistorySyncOptInsWithoutMinorModeRestrictions()
+                        == Tribool.TRUE)) {
+            // Show promo only when CanShowHistorySyncOptInsWithoutMinorModeRestrictions capability
+            // for the first account
             // is fetched and true.
             return false;
         }
@@ -110,11 +121,11 @@ public final class FullScreenSyncPromoUtil {
             return false;
         }
 
-        final List<String> currentAccountNames = AccountUtils.toAccountNames(accounts);
-        final Set<String> previousAccountNames = prefManager.getSigninPromoLastAccountNames();
+        final List<String> currentAccountEmails = AccountUtils.toAccountEmails(coreAccountInfos);
+        final Set<String> previousAccountEmails = prefManager.getSigninPromoLastAccountEmails();
         // Don't show if no new accounts have been added after the last time promo was shown.
-        return previousAccountNames == null
-                || !previousAccountNames.containsAll(currentAccountNames);
+        return previousAccountEmails == null
+                || !previousAccountEmails.containsAll(currentAccountEmails);
     }
 
     private FullScreenSyncPromoUtil() {}

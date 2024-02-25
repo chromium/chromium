@@ -29,6 +29,7 @@
 #include "chrome/grit/chrome_unscaled_resources.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/prefs/pref_service.h"
+#include "components/services/app_service/public/cpp/icon_types.h"
 #include "components/services/app_service/public/cpp/intent_util.h"
 #include "storage/browser/file_system/file_system_context.h"
 #include "storage/browser/file_system/file_system_url.h"
@@ -87,8 +88,7 @@ apps::AppPtr CreatePluginVmApp(Profile* profile, bool allowed) {
       apps::InstallReason::kUser, apps::InstallSource::kUnknown);
 
   app->icon_key =
-      apps::IconKey(apps::IconKey::kDoesNotChangeOverTime,
-                    IDR_LOGO_PLUGIN_VM_DEFAULT_192, apps::IconEffects::kNone);
+      apps::IconKey(IDR_LOGO_PLUGIN_VM_DEFAULT_192, apps::IconEffects::kNone);
 
   app->permissions = CreatePermissions(profile);
 
@@ -124,11 +124,11 @@ apps::LaunchResult ConvertPluginVmResultToLaunchResult(
     plugin_vm::LaunchPluginVmAppResult plugin_vm_result) {
   switch (plugin_vm_result) {
     case plugin_vm::LaunchPluginVmAppResult::SUCCESS:
-      return apps::LaunchResult(apps::State::SUCCESS);
+      return apps::LaunchResult(apps::State::kSuccess);
     case plugin_vm::LaunchPluginVmAppResult::FAILED_DIRECTORY_NOT_SHARED:
-      return apps::LaunchResult(apps::State::FAILED_DIRECTORY_NOT_SHARED);
+      return apps::LaunchResult(apps::State::kFailedDirectoryNotShared);
     case plugin_vm::LaunchPluginVmAppResult::FAILED:
-      return apps::LaunchResult(apps::State::FAILED);
+      return apps::LaunchResult(apps::State::kFailed);
   }
 }
 
@@ -339,8 +339,7 @@ AppPtr PluginVmApps::CreateApp(
       registration.Name(), InstallReason::kUser, apps::InstallSource::kUnknown);
 
   if (generate_new_icon_key) {
-    app->icon_key = std::move(
-        *icon_key_factory_.CreateIconKey(IconEffects::kCrOsStandardIcon));
+    app->icon_key = IconKey(IconEffects::kCrOsStandardIcon);
   }
 
   app->last_launch_time = registration.LastLaunchTime();
@@ -351,6 +350,7 @@ AppPtr PluginVmApps::CreateApp(
   app->show_in_shelf = false;
   app->show_in_management = false;
   app->allow_uninstall = false;
+  app->allow_close = true;
   app->handles_intents = true;
   app->intent_filters = CreateIntentFilterForPluginVm(registration);
   return app;

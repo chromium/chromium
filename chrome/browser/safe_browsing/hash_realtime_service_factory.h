@@ -46,8 +46,6 @@ class HashRealTimeServiceFactory : public ProfileKeyedServiceFactory {
   std::unique_ptr<KeyedService> BuildServiceInstanceForBrowserContext(
       content::BrowserContext* context) const override;
 
-  static bool IsEnhancedProtectionEnabled(Profile* profile);
-
   static network::mojom::NetworkContext* GetNetworkContext(Profile* profile);
 };
 

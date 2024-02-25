@@ -8,18 +8,12 @@ angle_root = "//third_party/angle"
 # True if ANGLE can access build/, testing/ and other Chrome folders.
 angle_has_build = true
 
-# Declares the maximum supported VulkanMemoryAllocator version by the client
-# in format AAABBBCCC, where AAA = major, BBB = minor, CCC = patch.
-# The VulkanMemoryAllocator version may be found in its CHANGELOG.md.
-angle_vma_version = 3000000
-
 # Overrides for ANGLE's dependencies
 angle_glslang_dir = "//third_party/vulkan-deps/glslang/src"
 angle_googletest_dir = "//third_party/googletest/src"
 angle_jsoncpp_dir = "//third_party/jsoncpp"
 angle_libjpeg_turbo_dir = "//third_party/libjpeg_turbo"
 angle_libpng_dir = "//third_party/libpng"
-angle_spirv_cross_dir = "//third_party/vulkan-deps/spirv-cross/src"
 angle_spirv_headers_dir = "//third_party/vulkan-deps/spirv-headers/src"
 angle_spirv_tools_dir = "//third_party/vulkan-deps/spirv-tools/src"
 angle_vulkan_memory_allocator_dir = "//third_party/vulkan_memory_allocator"

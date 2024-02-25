@@ -41,6 +41,12 @@
   <message name="IDS_AVATAR_BUTTON_SYNC_PAUSED" desc="Short label for the avatar button when sync is paused for the current profile." meaning="Sync is paused">
     Paused
   </message>
+  <message name="IDS_AVATAR_BUTTON_WORK" desc="Short label for the avatar button when the profile is a work profile." meaning="Using a work profile">
+    Work
+  </message>
+  <message name="IDS_AVATAR_BUTTON_SCHOOL" desc="Short label for the avatar button when the profile is a school profile." meaning="Using a school profile">
+    School
+  </message>
 
   <!-- Multi-profile -->
   <message name="IDS_PROFILES_MENU_NAME" desc="The name of menu for profiles (Mac and linux) and name for the launcher menu section (Mac).">
@@ -80,6 +86,9 @@
   <message name="IDS_PROFILES_DICE_SIGNIN_BUTTON" desc="Button in the profile user menu to sign in and turn on Sync.">
     Turn on sync...
   </message>
+  <message name="IDS_PROFILES_DICE_WEB_ONLY_SIGNIN_BUTTON" desc="Button in the profile menu to sign in on Chrome and turn on Sync for a specific web account that is signed in only on the web.">
+    Continue as <ph name="ACCOUNT_NAME">$1<ex>John</ex></ph>
+  </message>
   <message name="IDS_PROFILES_DICE_NOT_SYNCING_TITLE" desc="Title of the sync promo account card in the user menu.">
     Sync is off
   </message>
@@ -110,6 +119,9 @@
   <message name="IDS_PROFILES_ADDRESSES_LINK" desc="Text of the menu item leading to the list of autofill addresses.">
     Addresses and more
   </message>
+  <message name="IDS_PROFILE_MENU_SIGNIN_PROMO_DESCRIPTION" desc="Text for the sign-in promo in the profile menu when the used is signed out, describing the benefits of signing in.">
+    Sign in to get your passwords and more on all your devices
+  </message>
   <if expr="not use_titlecase">
     <message name="IDS_PROFILES_LIST_PROFILES_TITLE" desc="Title in the profile menu for the list of 'other profiles'.">
       Other profiles
@@ -119,6 +131,18 @@
     </message>
     <message name="IDS_PROFILES_PROFILE_HIDE_MANAGE_ACCOUNTS_BUTTON" desc="Button in the avatar menu bubble view used to hide the accounts for a profile.">
       Hide accounts
+    </message>
+    <message name="IDS_PROFILE_MENU_OPEN_GUEST_PROFILE" desc="The text label of the open guest profile item in the profile menu.">
+      Open Guest profile
+    </message>
+    <message name="IDS_PROFILE_MENU_CLOSE_PROFILE_X_WINDOWS_BUTTON" desc="Button in the profile menu to close all windows of the current profile. This is not used for zero windows.">
+      {0, plural,
+      =1 {Close this profile}
+      other {Close this profile (# windows)}
+      }
+    </message>
+    <message name="IDS_PROFILE_MENU_ADD_NEW_PROFILE" desc="The text label of the add new profile item in the profile menu.">
+      Add new profile
     </message>
   </if>
   <if expr="use_titlecase">
@@ -131,7 +155,22 @@
     <message name="IDS_PROFILES_PROFILE_HIDE_MANAGE_ACCOUNTS_BUTTON" desc="Button in the avatar menu bubble view used to hide the accounts for a profile.">
       Hide Accounts
     </message>
+    <message name="IDS_PROFILE_MENU_OPEN_GUEST_PROFILE" desc="The text label of the open guest profile item in the profile menu.">
+      Open Guest Profile
+    </message>
+    <message name="IDS_PROFILE_MENU_CLOSE_PROFILE_X_WINDOWS_BUTTON" desc="Button in the profile menu to close all windows of the current profile. This is not used for zero windows.">
+      {0, plural,
+      =1 {Close This Profile}
+      other {Close This Profile (# Windows)}
+      }
+    </message>
+    <message name="IDS_PROFILE_MENU_ADD_NEW_PROFILE" desc="The text label of the add new profile item in the profile menu.">
+      Add New Profile
+    </message>
   </if>
+  <message name="IDS_PROFILES_MANAGED_BY" desc="Label shown under the avatar in the avatar menu bubble view stating that the account is managed.">
+    managed by <ph name="VALUE">$1<ex>1</ex></ph>
+  </message>
   <message name="IDS_PROFILES_MANAGE_PROFILES_BUTTON_TOOLTIP" desc="Button in the avatar menu bubble view for launching the profile picker.">
     Manage profiles
   </message>
@@ -464,9 +503,6 @@
       <message name="IDS_PIN_KEYBOARD_DELETE_ACCESSIBLE_NAME" desc="Text to be spoken when the focus is set to the delete button of the PIN keyboard.">
         Delete
       </message>
-      <message name="IDS_LOGIN_ERROR_FINGERPRINT_MAX_ATTEMPT" desc="Couldn't sign in because fingerprint unlock has reached maximum attempt">
-        Sorry, your fingerprint is still not recognized. Please enter your password.
-      </message>
       <message name="IDS_LOGIN_ERROR_AUTHENTICATING" desc="Couldn't sign in because password is invalid">
         Sorry, your password could not be verified. Please try again.
       </message>
@@ -596,6 +632,24 @@
     <message name="IDS_PROFILE_PICKER_REMOVE_WARNING_LOCAL_PROFILE_TITLE" desc="Title of the remove warning message shown for local profiles, shown when the user selects remove from the 3 dotted menu.">
       Delete this profile and its data?
     </message>
+    <message name="IDS_PROFILE_PICKER_FORCE_SIGN_IN_ERROR_DIALOG_NOT_ALLOWED_TITLE" desc="Title of the force sign in error dialog, the dialog is shown when the user attempts to enter a profile that is not allowed to be unlocked.">
+      Can't use this profile
+    </message>
+    <message name="IDS_PROFILE_PICKER_FORCE_SIGN_IN_ERROR_DIALOG_NOT_ALLOWED_BODY" desc="Body of the force sign in error dialog, the dialog is shown when the user attempts to enter a profile that is not allowed to be unlocked.">
+      Your administrator has made a system-wide change that disables some old profiles. You can no longer access this profile but can still remove it
+    </message>
+    <message name="IDS_PROFILE_PICKER_FORCE_SIGN_IN_ERROR_DIALOG_WRONG_ACCOUNT_TITLE" desc="Title of the force sign in error dialog, the dialog is shown when the user attempts to reauth a profile with the wrong account.">
+      Can't unlock the profile
+    </message>
+    <message name="IDS_PROFILE_PICKER_FORCE_SIGN_IN_ERROR_DIALOG_WRONG_ACCOUNT_BODY" desc="Body of the force sign in error dialog, the dialog is shown when the user attempts to reauth a profile with the wrong account.">
+      To unlock the profile sign in with your main account email: <ph name="EMAIL">$1<ex>example.com</ex></ph>
+    </message>
+    <message name="IDS_PROFILE_PICKER_FORCE_SIGN_IN_ERROR_TIMEOUT_TITLE" desc="Title of the force sign in error dialog, the dialog is shown when the user attempts to reauth a profile, but the process timed out.">
+      Sign in timed out
+    </message>
+    <message name="IDS_PROFILE_PICKER_FORCE_SIGN_IN_ERROR_TIMEOUT_BODY" desc="Body of the force sign in error dialog, the dialog is shown when the user attempts to reauth a profile, but the process timed out.">
+      Couldn't sign you in, please try again
+    </message>
     <message name="IDS_PROFILE_PICKER_REMOVE_WARNING_HISTORY" desc="The title of a statistic (browsing history) shown inside a table below the warning text when attempting to remove an user. A number is displayed next to it.">
       Browsing history
     </message>
@@ -698,7 +752,7 @@
         Delete this profile and browsing data?
       </message>
       <message name="IDS_PROFILE_PICKER_REMOVE_WARNING_SIGNED_IN_PROFILE_LACROS" desc="Remove warning message shown for signed in profiles shown when the user selects remove from the 3 dotted menu">
-        This will permanently delete browsing data from this device. The Google Accounts in this profile may be used by other apps on your <ph name="DEVICE_TYPE">$1<ex>Chromebook</ex></ph>. You can remove these accounts in <ph name="BEGIN_LINK">&lt;a is="action-link" target="_blank"&gt;</ph><ph name="SETTING_SECTION">$2<ex>Settings</ex></ph> > <ph name="ACCOUNTS_SECTION">$3<ex>Accounts</ex></ph><ph name="END_LINK">&lt;/a&gt;</ph>.
+        This will permanently delete browsing data and saved desks associated with this profile from this device. The Google Accounts in this profile may be used by other apps on your <ph name="DEVICE_TYPE">$1<ex>Chromebook</ex></ph>. You can remove these accounts in <ph name="BEGIN_LINK">&lt;a is="action-link" target="_blank"&gt;</ph><ph name="SETTING_SECTION">$2<ex>Settings</ex></ph> > <ph name="ACCOUNTS_SECTION">$3<ex>Accounts</ex></ph><ph name="END_LINK">&lt;/a&gt;</ph>.
       </message>
       <message name="IDS_PRIMARY_PROFILE_FIRST_RUN_NEXT_BUTTON_LABEL" desc="Label of the 'next' button of the landing screen in first run experience for the primary profile. The screen promotes Chrome sync.">
         Let's go

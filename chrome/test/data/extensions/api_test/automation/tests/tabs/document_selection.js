@@ -62,4 +62,4 @@ var allTests = [
   },
 ];
 
-setUpAndRunTests(allTests, 'document_selection.html');
+setUpAndRunTabsTests(allTests, 'document_selection.html');

@@ -18,4 +18,12 @@ bool ShouldShowCardMetadata(const CreditCard& card) {
          base::FeatureList::IsEnabled(features::kAutofillEnableCardArtImage);
 }
 
+bool VirtualCardFeatureEnabled() {
+#if BUILDFLAG(IS_IOS)
+  return base::FeatureList::IsEnabled(features::kAutofillEnableVirtualCards);
+#else
+  return true;
+#endif
+}
+
 }  // namespace autofill

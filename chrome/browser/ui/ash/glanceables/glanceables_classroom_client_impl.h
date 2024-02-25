@@ -7,6 +7,7 @@
 
 #include <list>
 #include <memory>
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -17,15 +18,10 @@
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
-#include "base/timer/timer.h"
 #include "base/types/expected.h"
 #include "chrome/browser/ui/ash/glanceables/glanceables_classroom_course_work_item.h"
 #include "google_apis/common/api_error_codes.h"
 #include "google_apis/common/request_sender.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
-
-class GURL;
-class Profile;
 
 namespace base {
 class Clock;
@@ -59,10 +55,8 @@ class GlanceablesClassroomClientImpl : public GlanceablesClassroomClient {
       const GlanceablesClassroomCourseWorkItem* rhs)>;
 
   GlanceablesClassroomClientImpl(
-      Profile* profile,
       base::Clock* clock,
-      const CreateRequestSenderCallback& create_request_sender_callback,
-      bool use_best_effort_prefetch_task_runner = true);
+      const CreateRequestSenderCallback& create_request_sender_callback);
   GlanceablesClassroomClientImpl(const GlanceablesClassroomClientImpl&) =
       delete;
   GlanceablesClassroomClientImpl& operator=(
@@ -78,30 +72,12 @@ class GlanceablesClassroomClientImpl : public GlanceablesClassroomClient {
       GetAssignmentsCallback callback) override;
   void GetStudentAssignmentsWithoutDueDate(
       GetAssignmentsCallback callback) override;
-  void IsTeacherRoleActive(IsRoleEnabledCallback callback) override;
-  void GetTeacherAssignmentsWithApproachingDueDate(
-      GetAssignmentsCallback callback) override;
-  void GetTeacherAssignmentsRecentlyDue(
-      GetAssignmentsCallback callback) override;
-  void GetTeacherAssignmentsWithoutDueDate(
-      GetAssignmentsCallback callback) override;
-  void GetGradedTeacherAssignments(GetAssignmentsCallback callback) override;
-  void OpenUrl(const GURL& url) const override;
   void OnGlanceablesBubbleClosed() override;
 
   void set_number_of_assignments_prioritized_for_display_for_testing(
       size_t value) {
     number_of_assignments_prioritized_for_display_ = value;
   }
-
-  // If `teacher_data_prefetch_timer_` is running, fires it.
-  // `prefetch_callback`, if set, will run when the data requested by the
-  // prefetch gets loaded.
-  // No-op if the timer is not running. `prefetch_callback` gets ignored in this
-  // case.
-  // Returns whether the timer was fired.
-  bool FireTeacherDataPrefetchTimerIfRunningForTesting(
-      base::OnceClosure prefetch_callback);
 
  private:
   FRIEND_TEST_ALL_PREFIXES(GlanceablesClassroomClientImplTest, FetchCourses);
@@ -436,7 +412,7 @@ class GlanceablesClassroomClientImpl : public GlanceablesClassroomClient {
   // always returns true - the return value is bool for consistency with
   // `GetFilteredTeacherAssignments()`.
   bool GetFilteredStudentAssignments(
-      base::RepeatingCallback<bool(const absl::optional<base::Time>&)>
+      base::RepeatingCallback<bool(const std::optional<base::Time>&)>
           due_predicate,
       base::RepeatingCallback<bool(GlanceablesClassroomStudentSubmissionState)>
           submission_state_predicate,
@@ -461,7 +437,7 @@ class GlanceablesClassroomClientImpl : public GlanceablesClassroomClient {
   // callbask was delayed to refresh submissions state of a subset of filtered
   // assignments.
   bool GetFilteredTeacherAssignments(
-      base::RepeatingCallback<bool(const absl::optional<base::Time>&)>
+      base::RepeatingCallback<bool(const std::optional<base::Time>&)>
           due_predicate,
       base::RepeatingCallback<bool(GlanceablesClassroomStudentSubmissionState)>
           submission_state_predicate,
@@ -474,20 +450,12 @@ class GlanceablesClassroomClientImpl : public GlanceablesClassroomClient {
   void PruneInvalidCourseWork(const CourseList& courses,
                               CourseWorkPerCourse& course_work);
 
-  // Triggers teacher data fetch. Runs with a delay after login. The goal is to
-  // fetch course work student submissions state early, so older submissions
-  // don't have to be refetched when the UI is first shown.
-  void PrefetchTeacherData();
-
   // Returns lazily initialized `request_sender_`.
   google_apis::RequestSender* GetRequestSender();
 
-  // The profile for which this client was created.
-  const raw_ptr<Profile, ExperimentalAsh> profile_;
-
   // Clock to be used to retrieve current time - expected to be default clock in
   // production.
-  const raw_ptr<base::Clock, ExperimentalAsh> clock_;
+  const raw_ptr<base::Clock> clock_;
 
   // Callback passed from `GlanceablesKeyedService` that creates
   // `request_sender_`.
@@ -495,14 +463,6 @@ class GlanceablesClassroomClientImpl : public GlanceablesClassroomClient {
 
   // Helper class that sends requests, handles retries and authentication.
   std::unique_ptr<google_apis::RequestSender> request_sender_;
-
-  // Timers used to prefetch teacher data.
-  base::OneShotTimer teacher_data_prefetch_timer_;
-
-  // Callback which, if set, gets called when a fetch triggered by
-  // `teacher_data_prefetch_timer_` completes. The callback can be set using
-  // `FireTeacherDataPrefetchTimerIfRunningForTesting()`.
-  base::OnceClosure prefetch_callback_;
 
   // The number of top teacher assignments that are expected to be displayed in
   // the glanceables bubble, and should thus be fresh when returned using the

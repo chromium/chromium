@@ -90,7 +90,7 @@ TEST_F(ConnectedInputDevicesLogSourceTest, Touchpad_single) {
   EXPECT_EQ(vendor_name, it->second);
   it = response().find("TOUCHPAD_PID");
   ASSERT_NE(it, response().end());
-  EXPECT_EQ(base::StringPrintf("%#06x", pid), it->second);
+  EXPECT_EQ(base::StringPrintf("0x%04x", pid), it->second);
 
   /* Verify fetch_callback() has not been called again. */
   EXPECT_EQ(1U, num_callback_calls());
@@ -125,7 +125,7 @@ TEST_F(ConnectedInputDevicesLogSourceTest, Touchpad_single_other_ext) {
   EXPECT_EQ(t1_vendor_name, it->second);
   it = response().find("TOUCHPAD_PID");
   ASSERT_NE(it, response().end());
-  EXPECT_EQ(base::StringPrintf("%#06x", t1_pid), it->second);
+  EXPECT_EQ(base::StringPrintf("0x%04x", t1_pid), it->second);
 
   /* Verify fetch_callback() has not been called again. */
   EXPECT_EQ(1U, num_callback_calls());
@@ -162,7 +162,7 @@ TEST_F(ConnectedInputDevicesLogSourceTest, Touchpad_single_ts_ext) {
   EXPECT_EQ(tp_vendor_name, it->second);
   it = response().find("TOUCHPAD_PID");
   ASSERT_NE(it, response().end());
-  EXPECT_EQ(base::StringPrintf("%#06x", tp_pid), it->second);
+  EXPECT_EQ(base::StringPrintf("0x%04x", tp_pid), it->second);
 
   /* Verify fetch_callback() has not been called again. */
   EXPECT_EQ(1U, num_callback_calls());
@@ -193,7 +193,7 @@ TEST_F(ConnectedInputDevicesLogSourceTest, Touchscreen_single) {
   EXPECT_EQ(vendor_name, it->second);
   it = response().find("TOUCHSCREEN_PID");
   ASSERT_NE(it, response().end());
-  EXPECT_EQ(base::StringPrintf("%#06x", pid), it->second);
+  EXPECT_EQ(base::StringPrintf("0x%04x", pid), it->second);
 
   /* Verify fetch_callback() has not been called again. */
   EXPECT_EQ(1U, num_callback_calls());
@@ -233,7 +233,7 @@ TEST_F(ConnectedInputDevicesLogSourceTest, Touchscreen_single_other_ext) {
   EXPECT_EQ(t1_vendor_name, it->second);
   it = response().find("TOUCHSCREEN_PID");
   ASSERT_NE(it, response().end());
-  EXPECT_EQ(base::StringPrintf("%#06x", t1_pid), it->second);
+  EXPECT_EQ(base::StringPrintf("0x%04x", t1_pid), it->second);
 
   /* Verify fetch_callback() has not been called again. */
   EXPECT_EQ(1U, num_callback_calls());
@@ -270,7 +270,7 @@ TEST_F(ConnectedInputDevicesLogSourceTest, Touchscreen_single_tp_ext) {
   EXPECT_EQ(ts_vendor_name, it->second);
   it = response().find("TOUCHSCREEN_PID");
   ASSERT_NE(it, response().end());
-  EXPECT_EQ(base::StringPrintf("%#06x", ts_pid), it->second);
+  EXPECT_EQ(base::StringPrintf("0x%04x", ts_pid), it->second);
 
   /* Verify fetch_callback() has not been called again. */
   EXPECT_EQ(1U, num_callback_calls());
@@ -308,13 +308,13 @@ TEST_F(ConnectedInputDevicesLogSourceTest, Touchpad_single_touchscreen_single) {
   EXPECT_EQ(tp_vendor_name, it->second);
   it = response().find("TOUCHPAD_PID");
   ASSERT_NE(it, response().end());
-  EXPECT_EQ(base::StringPrintf("%#06x", tp_pid), it->second);
+  EXPECT_EQ(base::StringPrintf("0x%04x", tp_pid), it->second);
   it = response().find("TOUCHSCREEN_VENDOR");
   ASSERT_NE(it, response().end());
   EXPECT_EQ(ts_vendor_name, it->second);
   it = response().find("TOUCHSCREEN_PID");
   ASSERT_NE(it, response().end());
-  EXPECT_EQ(base::StringPrintf("%#06x", ts_pid), it->second);
+  EXPECT_EQ(base::StringPrintf("0x%04x", ts_pid), it->second);
 
   /* Verify fetch_callback() has not been called again. */
   EXPECT_EQ(1U, num_callback_calls());
@@ -341,7 +341,7 @@ TEST_F(ConnectedInputDevicesLogSourceTest, Touchpad_unknown_vendor_single) {
   EXPECT_EQ(unknown_vendor_name, it->second);
   it = response().find("TOUCHPAD_PID");
   ASSERT_NE(it, response().end());
-  EXPECT_EQ(base::StringPrintf("%#06x", pid), it->second);
+  EXPECT_EQ(base::StringPrintf("0x%04x", pid), it->second);
 
   /* Verify fetch_callback() has not been called again. */
   EXPECT_EQ(1U, num_callback_calls());
@@ -370,7 +370,7 @@ TEST_F(ConnectedInputDevicesLogSourceTest, Touchscreen_unknown_vendor_single) {
   EXPECT_EQ(unknown_vendor_name, it->second);
   it = response().find("TOUCHSCREEN_PID");
   ASSERT_NE(it, response().end());
-  EXPECT_EQ(base::StringPrintf("%#06x", pid), it->second);
+  EXPECT_EQ(base::StringPrintf("0x%04x", pid), it->second);
 
   /* Verify fetch_callback() has not been called again. */
   EXPECT_EQ(1U, num_callback_calls());

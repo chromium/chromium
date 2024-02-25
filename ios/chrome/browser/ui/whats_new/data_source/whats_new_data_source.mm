@@ -14,7 +14,7 @@
 #import "ios/chrome/browser/ui/whats_new/data_source/whats_new_item.h"
 #import "ios/chrome/browser/ui/whats_new/whats_new_util.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
-#import "ios/chrome/grit/ios_chromium_strings.h"
+#import "ios/chrome/grit/ios_branded_strings.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ui/base/l10n/l10n_util_mac.h"
 #import "url/gurl.h"
@@ -26,7 +26,6 @@ const CGFloat kIconImageWhatsNew = 16;
 
 // The file name.
 NSString* const kfileName = @"whats_new_entries.plist";
-NSString* const kfileNameM116 = @"whats_new_entries_m116.plist";
 
 // Dictionary keys.
 NSString* const kDictionaryFeaturesKey = @"Features";
@@ -36,15 +35,15 @@ NSString* const kDictionaryTitleKey = @"Title";
 NSString* const kDictionarySubtitleKey = @"Subtitle";
 NSString* const kDictionaryIsSymbolKey = @"IsSymbol";
 NSString* const kDictionaryIsSystemSymbolKey = @"IsSystemSymbol";
-NSString* const kDictionaryBannerImageKey = @"BannerImageName";
+NSString* const kDictionaryIsMulticolorSymbolKey = @"IsMulticolorSymbol";
 NSString* const kDictionaryImageNameKey = @"ImageName";
 NSString* const kDictionaryImageTextKey = @"ImageTexts";
-NSString* const kDictionaryHeroBannerImageKey = @"HeroBannerImageName";
 NSString* const kDictionaryIconImageKey = @"IconImageName";
 NSString* const kDictionaryBackgroundColorKey = @"IconBackgroundColor";
 NSString* const kDictionaryInstructionsKey = @"InstructionSteps";
-NSString* const kDictionaryPrimaryActionKey = @"PrimaryActionTitle";
+NSString* const kDictionaryPrimaryActionKey = @"PrimaryAction";
 NSString* const kDictionaryLearnMoreURLKey = @"LearnMoreUrlString";
+NSString* const kDictionaryIsIphoneOnlyKey = @"IsIphoneOnly";
 
 // Returns the UIColor corresponding to `color`.
 UIColor* GenerateColor(NSString* color) {
@@ -63,11 +62,37 @@ UIColor* GenerateColor(NSString* color) {
   }
 }
 
+// Returns the string for the primary button corresponding to the primary
+// action.
+NSString* GetPrimaryActionTitle(WhatsNewPrimaryAction action) {
+  switch (action) {
+    case WhatsNewPrimaryAction::kIOSSettings:
+      return l10n_util::GetNSString(IDS_IOS_OPEN_IOS_SETTINGS);
+    case WhatsNewPrimaryAction::kPrivacySettings:
+      return l10n_util::GetNSString(IDS_IOS_OPEN_CHROME_SETTINGS);
+    case WhatsNewPrimaryAction::kChromeSettings:
+      return l10n_util::GetNSString(IDS_IOS_OPEN_CHROME_SETTINGS);
+    case WhatsNewPrimaryAction::kIOSSettingsPasswords:
+      return l10n_util::GetNSString(IDS_IOS_OPEN_IOS_SETTINGS);
+    case WhatsNewPrimaryAction::kLens:
+      return l10n_util::GetNSString(IDS_IOS_GO_TO_LENS);
+    case WhatsNewPrimaryAction::kNoAction:
+    case WhatsNewPrimaryAction::kError:
+      return nil;
+  };
+}
+
 // Returns a UIImage given an image name.
-UIImage* GenerateImage(BOOL is_symbol, NSString* image, BOOL is_system_symbol) {
+UIImage* GenerateImage(BOOL is_symbol,
+                       NSString* image,
+                       BOOL is_system_symbol,
+                       BOOL is_multicolor_symbol) {
   if (is_symbol) {
     if (is_system_symbol) {
       return DefaultSymbolTemplateWithPointSize(image, kIconImageWhatsNew);
+    } else if (is_multicolor_symbol) {
+      return MakeSymbolMulticolor(
+          CustomSymbolWithPointSize(image, kIconImageWhatsNew));
     }
     return CustomSymbolTemplateWithPointSize(image, kIconImageWhatsNew);
   }
@@ -101,6 +126,18 @@ WhatsNewType WhatsNewTypeFromInt(int type) {
   }
 
   return static_cast<WhatsNewType>(type);
+}
+
+WhatsNewPrimaryAction WhatsNewPrimaryActionFromInt(int type) {
+  const int min_value = static_cast<int>(WhatsNewPrimaryAction::kMinValue);
+  const int max_value = static_cast<int>(WhatsNewPrimaryAction::kMaxValue);
+
+  if (min_value > type || type > max_value) {
+    NOTREACHED() << "unexpected type: " << type;
+    return WhatsNewPrimaryAction::kError;
+  }
+
+  return static_cast<WhatsNewPrimaryAction>(type);
 }
 
 NSArray<WhatsNewItem*>* WhatsNewItemsFromFileAndKey(NSString* path,
@@ -187,27 +224,15 @@ WhatsNewItem* ConstructWhatsNewItem(NSDictionary* entry) {
   }
   whats_new_item.subtitle = l10n_util::GetNSString([subtitle intValue]);
 
-  // What's New M116 does not support hero banner or banner image.
-  if (!IsWhatsNewM116Enabled()) {
-    // Load the entry hero banner image.
-    NSString* hero_banner_image = entry[kDictionaryHeroBannerImageKey];
-    whats_new_item.heroBannerImage =
-        [hero_banner_image length] == 0
-            ? nil
-            : GenerateImage(false, hero_banner_image, false);
-
-    // Load the entry banner image.
-    NSString* banner_image = entry[kDictionaryBannerImageKey];
-    whats_new_item.bannerImage =
-        [banner_image length] == 0 ? nil
-                                   : GenerateImage(false, banner_image, false);
-  }
-
   // Load the entry icon.
   BOOL is_symbol = [entry[kDictionaryIsSymbolKey] boolValue];
   BOOL is_system_symbol = [entry[kDictionaryIsSystemSymbolKey] boolValue];
-  whats_new_item.iconImage = GenerateImage(
-      is_symbol, entry[kDictionaryIconImageKey], is_system_symbol);
+  BOOL is_multicolor_symbol =
+      [entry[kDictionaryIsMulticolorSymbolKey] boolValue];
+
+  whats_new_item.iconImage =
+      GenerateImage(is_symbol, entry[kDictionaryIconImageKey], is_system_symbol,
+                    is_multicolor_symbol);
 
   // Load the entry icon background image.
   whats_new_item.backgroundColor =
@@ -229,15 +254,23 @@ WhatsNewItem* ConstructWhatsNewItem(NSDictionary* entry) {
     whats_new_item.instructionSteps = instructions;
   }
 
-  // Load the entry primary action title.
-  NSNumber* primary_action_title =
+  // Load the entry primary action.
+  NSNumber* primary_action =
       base::apple::ObjCCast<NSNumber>(entry[kDictionaryPrimaryActionKey]);
-  if (!primary_action_title) {
-    whats_new_item.primaryActionTitle = nil;
+  if (!primary_action) {
+    whats_new_item.primaryAction = WhatsNewPrimaryAction::kNoAction;
   } else {
-    whats_new_item.primaryActionTitle =
-        l10n_util::GetNSString([primary_action_title intValue]);
+    whats_new_item.primaryAction =
+        WhatsNewPrimaryActionFromInt([primary_action intValue]);
   }
+
+  if (whats_new_item.primaryAction == WhatsNewPrimaryAction::kError) {
+    return nil;
+  }
+
+  // Load the entry primary action title.
+  whats_new_item.primaryActionTitle =
+      GetPrimaryActionTitle(whats_new_item.primaryAction);
 
   // Load the entry learn more url.
   NSString* url = entry[kDictionaryLearnMoreURLKey];
@@ -245,34 +278,35 @@ WhatsNewItem* ConstructWhatsNewItem(NSDictionary* entry) {
     GURL gurl(base::SysNSStringToUTF8(url));
     [whats_new_item setLearnMoreURL:gurl];
   } else {
-    [whats_new_item setLearnMoreURL:GURL::EmptyGURL()];
+    [whats_new_item setLearnMoreURL:GURL()];
   }
 
-  if (IsWhatsNewM116Enabled()) {
-    // Load screenshot image.
-    NSString* screenshot_image = entry[kDictionaryImageNameKey];
-    whats_new_item.screenshotName = screenshot_image;
+  // Load screenshot image.
+  NSString* screenshot_image = entry[kDictionaryImageNameKey];
+  whats_new_item.screenshotName = screenshot_image;
 
-    // Load screenshot text provider.
-    NSDictionary* screenshot_texts = entry[kDictionaryImageTextKey];
-    NSMutableDictionary* screenshot_text_provider =
-        [NSMutableDictionary dictionaryWithCapacity:screenshot_texts.count];
-    for (id key in screenshot_texts) {
-      NSNumber* val =
-          base::apple::ObjCCast<NSNumber>([screenshot_texts objectForKey:key]);
-      [screenshot_text_provider setValue:l10n_util::GetNSString([val intValue])
-                                  forKey:key];
-    }
-    whats_new_item.screenshotTextProvider = screenshot_text_provider;
+  // Load screenshot text provider.
+  NSDictionary* screenshot_texts = entry[kDictionaryImageTextKey];
+  NSMutableDictionary* screenshot_text_provider =
+      [NSMutableDictionary dictionaryWithCapacity:screenshot_texts.count];
+  for (id key in screenshot_texts) {
+    NSNumber* val =
+        base::apple::ObjCCast<NSNumber>([screenshot_texts objectForKey:key]);
+    [screenshot_text_provider setValue:l10n_util::GetNSString([val intValue])
+                                forKey:key];
   }
+  whats_new_item.screenshotTextProvider = screenshot_text_provider;
+
+  // Load whether or not the feature is iPhone-only.
+  BOOL is_iphone_only = [entry[kDictionaryIsIphoneOnlyKey] boolValue];
+  whats_new_item.isIphoneOnly = is_iphone_only;
 
   return whats_new_item;
 }
 
 NSString* WhatsNewFilePath() {
   NSString* bundle_path = [base::apple::FrameworkBundle() bundlePath];
-  NSString* entries_file_path = [bundle_path
-      stringByAppendingPathComponent:IsWhatsNewM116Enabled() ? kfileNameM116
-                                                             : kfileName];
+  NSString* entries_file_path =
+      [bundle_path stringByAppendingPathComponent:kfileName];
   return entries_file_path;
 }

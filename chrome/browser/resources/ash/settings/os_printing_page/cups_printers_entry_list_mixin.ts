@@ -8,8 +8,8 @@
  * saved and nearby printers.
  */
 
-import {ListPropertyUpdateMixin, ListPropertyUpdateMixinInterface} from 'chrome://resources/cr_elements/list_property_update_mixin.js';
-import {assert} from 'chrome://resources/js/assert_ts.js';
+import {ListPropertyUpdateMixin, ListPropertyUpdateMixinInterface} from 'chrome://resources/ash/common/cr_elements/list_property_update_mixin.js';
+import {assert} from 'chrome://resources/js/assert.js';
 import {dedupingMixin, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {Constructor} from '../common/types.js';
@@ -135,10 +135,10 @@ export const CupsPrintersEntryListMixin = dedupingMixin(
         }
 
         // Override in the custom element implementation
-        onSavedPrintersAdded(_addedPrinters: PrinterListEntry[]) {}
+        onSavedPrintersAdded(_addedPrinters: PrinterListEntry[]): void {}
 
         // Override in the custom element implementation
-        onSavedPrintersRemoved(_removedPrinters: PrinterListEntry[]) {}
+        onSavedPrintersRemoved(_removedPrinters: PrinterListEntry[]): void {}
       }
 
       return CupsPrintersEntryListMixinInternal;

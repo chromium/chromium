@@ -16,7 +16,6 @@
 #include "chrome/browser/resource_coordinator/lifecycle_unit_state.mojom-shared.h"
 #include "components/performance_manager/public/user_tuning/prefs.h"
 #include "components/prefs/pref_change_registrar.h"
-#include "content/public/browser/web_contents_observer.h"
 #include "content/public/browser/web_contents_user_data.h"
 
 class ChromeBrowserMainExtraPartsPerformanceManager;
@@ -25,7 +24,7 @@ class PrefService;
 
 namespace performance_manager::user_tuning {
 
-// This singleton is responsible for managing the state of high efficiency mode,
+// This singleton is responsible for managing the state of memory saver mode,
 // as well as the different signals surrounding its toggling.
 //
 // It is created and owned by `ChromeBrowserMainExtraPartsPerformanceManager`
@@ -37,19 +36,18 @@ namespace performance_manager::user_tuning {
 // This object lives on the main thread and should be used from it exclusively.
 class UserPerformanceTuningManager {
  public:
-  class HighEfficiencyModeDelegate {
+  class MemorySaverModeDelegate {
    public:
-    virtual void ToggleHighEfficiencyMode(
-        prefs::HighEfficiencyModeState state) = 0;
+    virtual void ToggleMemorySaverMode(prefs::MemorySaverModeState state) = 0;
     virtual void SetTimeBeforeDiscard(base::TimeDelta time_before_discard) = 0;
-    virtual ~HighEfficiencyModeDelegate() = default;
+    virtual ~MemorySaverModeDelegate() = default;
   };
 
   class Observer : public base::CheckedObserver {
    public:
-    // Raised when the high efficiency mode setting is changed. Get the new
-    // state using `UserPerformanceTuningManager::IsHighEfficiencyModeActive()`
-    virtual void OnHighEfficiencyModeChanged() {}
+    // Raised when the memory saver mode setting is changed. Get the new
+    // state using `UserPerformanceTuningManager::IsMemorySaverModeActive()`
+    virtual void OnMemorySaverModeChanged() {}
 
     // Raised when the total memory footprint reaches X%.
     // Can be used by the UI to show a promo
@@ -62,59 +60,6 @@ class UserPerformanceTuningManager {
     // Raised when the count of janky intervals reaches X.
     // Can be used by the UI to show a promo
     virtual void OnJankThresholdReached() {}
-
-    // Raised when memory metrics for a discarded page becomes available to read
-    virtual void OnMemoryMetricsRefreshed() {}
-  };
-
-  class TabResourceUsage : public base::RefCounted<TabResourceUsage> {
-   public:
-    TabResourceUsage() = default;
-
-    uint64_t memory_usage_in_bytes() const { return memory_usage_bytes_; }
-
-    void set_memory_usage_in_bytes(uint64_t memory_usage_bytes) {
-      memory_usage_bytes_ = memory_usage_bytes;
-    }
-
-   private:
-    friend class base::RefCounted<TabResourceUsage>;
-    ~TabResourceUsage() = default;
-
-    uint64_t memory_usage_bytes_ = 0;
-  };
-
-  // Per-tab class to keep track of current memory usage for each tab.
-  class ResourceUsageTabHelper
-      : public content::WebContentsObserver,
-        public content::WebContentsUserData<ResourceUsageTabHelper> {
-   public:
-    ResourceUsageTabHelper(const ResourceUsageTabHelper&) = delete;
-    ResourceUsageTabHelper& operator=(const ResourceUsageTabHelper&) = delete;
-
-    ~ResourceUsageTabHelper() override;
-
-    // content::WebContentsObserver
-    void PrimaryPageChanged(content::Page& page) override;
-
-    uint64_t GetMemoryUsageInBytes() {
-      return resource_usage_->memory_usage_in_bytes();
-    }
-
-    void SetMemoryUsageInBytes(uint64_t memory_usage_bytes) {
-      resource_usage_->set_memory_usage_in_bytes(memory_usage_bytes);
-    }
-
-    scoped_refptr<const TabResourceUsage> resource_usage() const {
-      return resource_usage_;
-    }
-
-   private:
-    friend class content::WebContentsUserData<ResourceUsageTabHelper>;
-    explicit ResourceUsageTabHelper(content::WebContents* contents);
-    WEB_CONTENTS_USER_DATA_KEY_DECL();
-
-    scoped_refptr<TabResourceUsage> resource_usage_;
   };
 
   class PreDiscardResourceUsage
@@ -160,19 +105,19 @@ class UserPerformanceTuningManager {
   void AddObserver(Observer* o);
   void RemoveObserver(Observer* o);
 
-  // Returns true if High Efficiency mode is currently enabled.
-  bool IsHighEfficiencyModeActive();
+  // Returns true if Memory Saver mode is currently enabled.
+  bool IsMemorySaverModeActive();
 
-  // Returns true if the prefs underlying High Efficiency Mode are managed by an
+  // Returns true if the prefs underlying Memory Saver Mode are managed by an
   // enterprise policy.
-  bool IsHighEfficiencyModeManaged() const;
+  bool IsMemorySaverModeManaged() const;
 
-  // Returns true if the prefs underlying High Efficiency Mode are still in the
+  // Returns true if the prefs underlying Memory Saver Mode are still in the
   // default state.
-  bool IsHighEfficiencyModeDefault() const;
+  bool IsMemorySaverModeDefault() const;
 
-  // Enables high efficiency mode and sets the relevant prefs accordingly.
-  void SetHighEfficiencyModeEnabled(bool enabled);
+  // Enables memory saver mode and sets the relevant prefs accordingly.
+  void SetMemorySaverModeEnabled(bool enabled);
 
   // Discards the given WebContents with the same mechanism as one that is
   // discarded through a natural timeout
@@ -194,25 +139,25 @@ class UserPerformanceTuningManager {
 
     void NotifyTabCountThresholdReached() override;
     void NotifyMemoryThresholdReached() override;
-    void NotifyMemoryMetricsRefreshed(ProxyAndPmfKbVector) override;
   };
 
   explicit UserPerformanceTuningManager(
       PrefService* local_state,
       std::unique_ptr<UserPerformanceTuningNotifier> notifier = nullptr,
-      std::unique_ptr<HighEfficiencyModeDelegate>
-          high_efficiency_mode_delegate = nullptr);
+      std::unique_ptr<MemorySaverModeDelegate> memory_saver_mode_delegate =
+          nullptr);
 
   void Start();
 
-  void OnHighEfficiencyModePrefChanged();
-  void OnHighEfficiencyModeTimeBeforeDiscardChanged();
+  void UpdateMemorySaverModeState();
+  void OnMemorySaverModePrefChanged();
+  void OnMemorySaverModeTimeBeforeDiscardChanged();
 
   void NotifyTabCountThresholdReached();
   void NotifyMemoryThresholdReached();
   void NotifyMemoryMetricsRefreshed();
 
-  std::unique_ptr<HighEfficiencyModeDelegate> high_efficiency_mode_delegate_;
+  std::unique_ptr<MemorySaverModeDelegate> memory_saver_mode_delegate_;
 
   PrefChangeRegistrar pref_change_registrar_;
   base::ObserverList<Observer> observers_;

@@ -4,6 +4,8 @@
 
 #include "chromeos/ash/components/login/auth/public/user_context.h"
 
+#include <optional>
+
 #include "ash/constants/ash_features.h"
 #include "base/check.h"
 #include "chromeos/ash/components/login/auth/public/auth_session_intent.h"
@@ -20,7 +22,7 @@ UserContext::UserContext(const UserContext& other) = default;
 
 UserContext::UserContext(const user_manager::User& user)
     : account_id_(user.GetAccountId()), user_type_(user.GetType()) {
-  if (user_type_ == user_manager::USER_TYPE_REGULAR) {
+  if (user_type_ == user_manager::UserType::kRegular) {
     account_id_.SetUserEmail(
         user_manager::CanonicalizeUserID(account_id_.GetUserEmail()));
   }
@@ -29,9 +31,10 @@ UserContext::UserContext(const user_manager::User& user)
 UserContext::UserContext(user_manager::UserType user_type,
                          const AccountId& account_id)
     : account_id_(account_id), user_type_(user_type) {
-  if (user_type_ == user_manager::USER_TYPE_REGULAR)
+  if (user_type_ == user_manager::UserType::kRegular) {
     account_id_.SetUserEmail(
         user_manager::CanonicalizeUserID(account_id_.GetUserEmail()));
+  }
 }
 
 UserContext::~UserContext() = default;
@@ -86,14 +89,30 @@ void UserContext::CryptohomeContext::SetIsForcingDircrypto(
   is_forcing_dircrypto_ = is_forcing_dircrypto;
 }
 
-void UserContext::CryptohomeContext::SetAuthSessionId(
-    const std::string& authsession_id) {
+void UserContext::CryptohomeContext::SetAuthSessionIds(
+    const std::string& authsession_id,
+    const std::string& broadcast_id) {
+  LOG_IF(WARNING, !authsession_id_.empty())
+      << "Overwriting existing auth session ID";
   DCHECK(authsession_id_.empty());
   authsession_id_ = authsession_id;
+  broadcast_id_ = broadcast_id;
 }
 
-void UserContext::CryptohomeContext::ResetAuthSessionId() {
+void UserContext::CryptohomeContext::ResetAuthSessionIds() {
   authsession_id_.clear();
+  broadcast_id_.clear();
+  authorized_for_.Clear();
+  valid_until_ = base::Time();
+}
+
+base::Time UserContext::CryptohomeContext::GetSessionLifetime() const {
+  return valid_until_;
+}
+
+void UserContext::CryptohomeContext::SetSessionLifetime(
+    const base::Time& valid_until) {
+  valid_until_ = valid_until;
 }
 
 void UserContext::CryptohomeContext::SetSessionAuthFactors(
@@ -112,11 +131,11 @@ void UserContext::CryptohomeContext::SetAuthFactorsConfiguration(
 }
 
 void UserContext::CryptohomeContext::ClearAuthFactorsConfiguration() {
-  auth_factors_configuration_ = absl::nullopt;
+  auth_factors_configuration_ = std::nullopt;
 }
 
 const AuthFactorsConfiguration&
-UserContext::CryptohomeContext::GetAuthFactorsConfiguration() {
+UserContext::CryptohomeContext::GetAuthFactorsConfiguration() const {
   if (!auth_factors_configuration_.has_value()) {
     // Crash with debug assertions, try to stay alive otherwise. This method
     // could be const if we didn't set auth_factors_configuration_ if
@@ -136,14 +155,32 @@ const std::string& UserContext::CryptohomeContext::GetAuthSessionId() const {
   return authsession_id_;
 }
 
+const std::string& UserContext::CryptohomeContext::GetBroadcastId() const {
+  return broadcast_id_;
+}
+
 AuthSessionIntents UserContext::CryptohomeContext::GetAuthorizedIntents()
     const {
   return authorized_for_;
 }
 
+void UserContext::CryptohomeContext::ClearAuthorizedIntents() {
+  authorized_for_.Clear();
+}
+
 void UserContext::CryptohomeContext::AddAuthorizedIntent(
     const AuthSessionIntent auth_intent) {
   authorized_for_.Put(auth_intent);
+}
+
+std::optional<UserContext::MountState>
+UserContext::CryptohomeContext::GetMountState() const {
+  return mount_state_;
+}
+
+void UserContext::CryptohomeContext::SetMountState(
+    UserContext::MountState mount_state) {
+  mount_state_ = mount_state;
 }
 
 void UserContext::CryptohomeContext::ClearSecrets() {
@@ -252,17 +289,17 @@ const std::string& UserContext::GetReauthProofToken() const {
   return reauth_proof_token_;
 }
 
-const absl::optional<password_manager::PasswordHashData>&
+const std::optional<password_manager::PasswordHashData>&
 UserContext::GetSyncPasswordData() const {
   return sync_password_data_;
 }
 
-const absl::optional<SamlPasswordAttributes>&
+const std::optional<SamlPasswordAttributes>&
 UserContext::GetSamlPasswordAttributes() const {
   return saml_password_attributes_;
 }
 
-const absl::optional<SyncTrustedVaultKeys>&
+const std::optional<SyncTrustedVaultKeys>&
 UserContext::GetSyncTrustedVaultKeys() const {
   return sync_trusted_vault_keys_;
 }
@@ -305,11 +342,45 @@ void UserContext::SaveKeyForReplacement() {
 void UserContext::ReuseReplacementKey() {
   DCHECK(replacement_key_.has_value());
   key_ = *replacement_key_;
-  replacement_key_ = absl::nullopt;
+  replacement_key_ = std::nullopt;
 }
 
 void UserContext::SetPasswordKey(const Key& key) {
   password_key_ = key;
+}
+
+void UserContext::SetGaiaPassword(const GaiaPassword& password) {
+  gaia_password_.emplace(password);
+}
+
+void UserContext::SetSamlPassword(const SamlPassword& password) {
+  saml_password_.emplace(password);
+}
+
+void UserContext::SetLocalPasswordInput(const LocalPasswordInput& password) {
+  local_input_.emplace(password);
+}
+
+std::optional<OnlinePassword> UserContext::GetOnlinePassword() const {
+  if (gaia_password_.has_value()) {
+    return OnlinePassword{gaia_password_->value()};
+  } else if (saml_password_.has_value()) {
+    return OnlinePassword{saml_password_->value()};
+  } else {
+    return std::nullopt;
+  }
+}
+
+std::optional<PasswordInput> UserContext::GetPassword() const {
+  if (local_input_.has_value()) {
+    return PasswordInput{local_input_->value()};
+  } else if (gaia_password_.has_value()) {
+    return PasswordInput{gaia_password_->value()};
+  } else if (saml_password_.has_value()) {
+    return PasswordInput{saml_password_->value()};
+  } else {
+    return std::nullopt;
+  }
 }
 
 void UserContext::SetAuthCode(const std::string& auth_code) {
@@ -404,12 +475,21 @@ const std::string& UserContext::GetLoginInputMethodIdUsed() const {
   return login_input_method_id_used_;
 }
 
-void UserContext::SetAuthSessionId(const std::string& authsession_id) {
-  cryptohome_.SetAuthSessionId(authsession_id);
+void UserContext::SetAuthSessionIds(const std::string& authsession_id,
+                                    const std::string& broadcast_id) {
+  cryptohome_.SetAuthSessionIds(authsession_id, broadcast_id);
 }
 
-void UserContext::ResetAuthSessionId() {
-  cryptohome_.ResetAuthSessionId();
+void UserContext::ResetAuthSessionIds() {
+  cryptohome_.ResetAuthSessionIds();
+}
+
+base::Time UserContext::GetSessionLifetime() const {
+  return cryptohome_.GetSessionLifetime();
+}
+
+void UserContext::SetSessionLifetime(const base::Time& valid_until) {
+  cryptohome_.SetSessionLifetime(valid_until);
 }
 
 void UserContext::SetSessionAuthFactors(SessionAuthFactors data) {
@@ -429,7 +509,8 @@ void UserContext::ClearAuthFactorsConfiguration() {
   cryptohome_.ClearAuthFactorsConfiguration();
 }
 
-const AuthFactorsConfiguration& UserContext::GetAuthFactorsConfiguration() {
+const AuthFactorsConfiguration& UserContext::GetAuthFactorsConfiguration()
+    const {
   return cryptohome_.GetAuthFactorsConfiguration();
 }
 
@@ -441,22 +522,41 @@ const std::string& UserContext::GetAuthSessionId() const {
   return cryptohome_.GetAuthSessionId();
 }
 
+const std::string& UserContext::GetBroadcastId() const {
+  return cryptohome_.GetBroadcastId();
+}
+
 AuthSessionIntents UserContext::GetAuthorizedIntents() const {
   return cryptohome_.GetAuthorizedIntents();
+}
+
+void UserContext::ClearAuthorizedIntents() {
+  cryptohome_.ClearAuthorizedIntents();
 }
 
 void UserContext::AddAuthorizedIntent(const AuthSessionIntent auth_intent) {
   cryptohome_.AddAuthorizedIntent(auth_intent);
 }
 
+std::optional<UserContext::MountState> UserContext::GetMountState() const {
+  return cryptohome_.GetMountState();
+}
+
+void UserContext::SetMountState(UserContext::MountState mount_state) {
+  cryptohome_.SetMountState(mount_state);
+}
+
 void UserContext::ClearSecrets() {
   key_.ClearSecret();
   password_key_.ClearSecret();
-  replacement_key_ = absl::nullopt;
+  replacement_key_ = std::nullopt;
   auth_code_.clear();
   refresh_token_.clear();
   sync_trusted_vault_keys_.reset();
   cryptohome_.ClearSecrets();
+  gaia_password_.reset();
+  saml_password_.reset();
+  local_input_.reset();
 }
 
 }  // namespace ash

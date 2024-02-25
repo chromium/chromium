@@ -12,7 +12,7 @@ import "url/mojom/url.mojom";
 
 // This structure holds basic information about a printer.
 // It corresponds to the LocalDestinationInfo object in
-// chrome/browser/resources/print_preview/data/local_parsers.js.
+// chrome/browser/resources/print_preview/data/local_parsers.ts.
 [Stable]
 struct LocalDestinationInfo {
   // Printer id.
@@ -27,12 +27,14 @@ struct LocalDestinationInfo {
   bool configured_via_policy@3;
   // The GURL class cannot be used as it does not support the ipp/ipps scheme.
   [MinVersion=3] string? uri@4;
+  // The current printer status if any exists for the associated printer.
+  [MinVersion=4] PrinterStatus? printer_status@5;
 };
 
 // A container for the results of a printer status query. A printer status
 // query can return multiple errors so PrinterStatus contains multiple
 // StatusReasons. This struct corresponds to the PrinterStatus object in
-// chrome/browser/resources/print_preview/data/printer_status_cros.js.
+// chrome/browser/resources/print_preview/data/printer_status_cros.ts.
 [Stable]
 struct PrinterStatus {
   // Printer id.
@@ -138,6 +140,7 @@ struct PrintJob {
     kArc,
     kExtension,
     kPrintPreviewIncognito,
+    [MinVersion=1] kIsolatedWebApp,
   };
 };
 
@@ -258,18 +261,43 @@ enum PrintJobStatus {
   kCancelled,
 };
 
+[Stable]
+struct PrintJobUpdate {
+  PrintJobStatus status;
+  uint32 pages_printed;
+};
+
 // This interface is used to notify Lacros about print job events.
 [Stable, Uuid="a372ba50-7409-4c16-86b9-47a1725947d0"]
 interface PrintJobObserver {
-  // Runs when the status of a print job changes.
-  OnPrintJobUpdate@0(string printer_id, uint32 job_id, PrintJobStatus status);
+  // Deprecated and replaced with `OnPrintJobUpdate` below.
+  OnPrintJobUpdateDeprecated@0(
+    string printer_id,
+    uint32 job_id,
+    PrintJobStatus status);
+
+  // Runs when the print jobs gets an update.
+  [MinVersion=1]
+  OnPrintJobUpdate@1(
+    string printer_id,
+    uint32 job_id,
+    PrintJobUpdate update);
 };
 
 // Used to specify which source(s) to observe print jobs from.
 [Stable, Extensible]
 enum PrintJobSource {
- [Default] kAny, // reserved
- kExtension,
+  [Default] kAny, // reserved
+  kExtension,
+  [MinVersion=1] kIsolatedWebApp,
+};
+
+// This interface is used to notify Lacros about local printer events.
+[Stable]
+interface LocalPrintersObserver {
+  // Fires for any update to a local printer and sends the full set of connected
+  // local printers.
+  OnLocalPrintersUpdated@0(array<LocalDestinationInfo> printers);
 };
 
 // This union of structs represents the OAuth-related status of a printer.
@@ -295,7 +323,7 @@ interface LocalPrinter {
   GetPrinters@0() => (array<LocalDestinationInfo> printers);
 
   // Gets capabilities for a printer as a CapabilitiesResponse object.
-  // See chrome/browser/resources/print_preview/native_layer.js for a
+  // See chrome/browser/resources/print_preview/native_layer.ts for a
   // detailed description of the CapabilitiesResponse object as well as
   // chrome/browser/resources/print_preview/data/ for descriptions of
   // the various sub-objects (such as the Cloud Device Description object).
@@ -364,4 +392,9 @@ interface LocalPrinter {
   [MinVersion=5]
   GetIppClientInfo@15(string printer_id)
     => (array<printing.mojom.IppClientInfo> settings);
+
+  // Adds a local printers observer.
+  [MinVersion=7]
+  AddLocalPrintersObserver@16(pending_remote<LocalPrintersObserver> observer)
+      => (array<LocalDestinationInfo> printers);
 };

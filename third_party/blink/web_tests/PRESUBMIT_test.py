@@ -124,12 +124,13 @@ class PresubmitTest(unittest.TestCase):
         for WPT importer.
         """
         error_file = MockAffectedFile(
-            "some/dir/doctype_error.html",
+            "/chromium/src/third_party/blink/web_tests/"
+            "external/wpt/some/dir/doctype_error.html",
             ["<html>", "<body>", "<p>Test</p>", "</body>", "</html>"])
         mock_input_api = MockInputApi()
+        mock_input_api.os_path = posixpath
+        mock_input_api.presubmit_local_path = "/chromium/src/third_party/blink/web_tests"
         mock_input_api.files = [error_file]
-        mock_input_api.change.author_email = \
-            "wpt-autoroller@chops-service-accounts.iam.gserviceaccount.com"
 
         messages = PRESUBMIT._CheckForDoctypeHTML(mock_input_api,
                                                   MockOutputApi())
@@ -164,8 +165,7 @@ class PresubmitTest(unittest.TestCase):
         input_api.os_path = posixpath
         input_api.presubmit_local_path = '/chromium/src/third_party/blink/web_tests'
         input_api.files = [mock_vts_config]
-        messages = PRESUBMIT._CheckNewVirtualSuitesForOwners(
-            input_api, MockOutputApi())
+        messages = PRESUBMIT._CheckNewVirtualSuites(input_api, MockOutputApi())
         self.assertEqual(messages, [])
 
     def testCheckForNewOwnerlessVirtualSuites(self):
@@ -187,13 +187,38 @@ class PresubmitTest(unittest.TestCase):
         input_api.os_path = posixpath
         input_api.presubmit_local_path = '/chromium/src/third_party/blink/web_tests'
         input_api.files = [mock_vts_config]
-        messages = PRESUBMIT._CheckNewVirtualSuitesForOwners(
-            input_api, MockOutputApi())
+        messages = PRESUBMIT._CheckNewVirtualSuites(input_api, MockOutputApi())
         self.assertEqual(1, len(messages))
         self.assertEqual('warning', messages[0].type)
         self.assertRegex(messages[0].message, 'Consider specifying "owners"')
         self.assertEqual(['new-temporary-suite', 'new-permanent-suite'],
                          messages[0].items)
+
+    def testCheckForVeryLongVirtualSuiteNames(self):
+        old_suites = [{
+            'prefix': 'existing-very-long-suite-name',
+        }]
+        new_suites = [{
+            'prefix': 'existing-very-long-suite-name',
+        }, {
+            'prefix': 'new-very-long-suite-name',
+            'owners': ['someone@chromium.org'],
+        }]
+        mock_vts_config = MockAffectedFile(
+            '/chromium/src/third_party/blink/web_tests/VirtualTestSuites',
+            json.dumps(new_suites), json.dumps(old_suites))
+        input_api = MockInputApi()
+        input_api.os_path = posixpath
+        input_api.presubmit_local_path = '/chromium/src/third_party/blink/web_tests'
+        input_api.files = [mock_vts_config]
+        messages = PRESUBMIT._CheckNewVirtualSuites(input_api,
+                                                    MockOutputApi(),
+                                                    max_suite_length=8)
+        self.assertEqual(1, len(messages))
+        self.assertEqual('warning', messages[0].type)
+        self.assertRegex(messages[0].message,
+                         'Consider shorter virtual suite names')
+        self.assertEqual(['new-very-long-suite-name'], messages[0].items)
 
 
 if __name__ == "__main__":

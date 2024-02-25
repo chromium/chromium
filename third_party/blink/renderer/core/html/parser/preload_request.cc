@@ -13,6 +13,7 @@
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/frame/settings.h"
+#include "third_party/blink/renderer/core/lcp_critical_path_predictor/lcp_critical_path_predictor.h"
 #include "third_party/blink/renderer/core/loader/document_loader.h"
 #include "third_party/blink/renderer/core/loader/preload_helper.h"
 #include "third_party/blink/renderer/core/script/document_write_intervention.h"
@@ -67,8 +68,8 @@ std::unique_ptr<PreloadRequest> PreloadRequest::CreateIfNeeded(
     const network::mojom::ReferrerPolicy referrer_policy,
     ResourceFetcher::IsImageSet is_image_set,
     const ExclusionInfo* exclusion_info,
-    absl::optional<float> resource_width,
-    absl::optional<float> resource_height,
+    std::optional<float> resource_width,
+    std::optional<float> resource_height,
     RequestType request_type) {
   // Never preload data URLs. We also disallow relative ref URLs which become
   // data URLs if the document's URL is a data URL. We don't want to create
@@ -89,9 +90,8 @@ std::unique_ptr<PreloadRequest> PreloadRequest::CreateIfNeeded(
 
 Resource* PreloadRequest::Start(Document* document) {
   DCHECK(document->domWindow());
-  base::TimeTicks discovery_timestamp = base::TimeTicks::Now();
   base::UmaHistogramTimes("Blink.PreloadRequestWaitTime",
-                          discovery_timestamp - creation_time_);
+                          base::TimeTicks::Now() - creation_time_);
 
   FetchInitiatorInfo initiator_info;
   initiator_info.name = AtomicString(initiator_name_);
@@ -116,25 +116,27 @@ Resource* PreloadRequest::Start(Document* document) {
   if (is_attribution_reporting_eligible_img_or_script_ &&
       document->domWindow()->GetFrame()->GetAttributionSrcLoader()->CanRegister(
           url, /*element=*/nullptr,
-          /*request_id=*/absl::nullopt, /*log_issues=*/false)) {
+          /*request_id=*/std::nullopt, /*log_issues=*/false)) {
     resource_request.SetAttributionReportingEligibility(
         network::mojom::AttributionReportingEligibility::kEventSourceOrTrigger);
   }
 
-  bool shared_storage_writable =
-      shared_storage_writable_ &&
+  bool shared_storage_writable_opted_in =
+      shared_storage_writable_opted_in_ &&
       RuntimeEnabledFeatures::SharedStorageAPIM118Enabled(
           document->domWindow()) &&
-      document->domWindow()->IsSecureContext();
-  resource_request.SetSharedStorageWritable(shared_storage_writable);
+      document->domWindow()->IsSecureContext() &&
+      !document->domWindow()->GetSecurityOrigin()->IsOpaque();
+  resource_request.SetSharedStorageWritableOptedIn(
+      shared_storage_writable_opted_in);
+  if (shared_storage_writable_opted_in) {
+    CHECK_EQ(resource_type_, ResourceType::kImage);
+    UseCounter::Count(document, WebFeature::kSharedStorageAPI_Image_Attribute);
+  }
 
   ResourceLoaderOptions options(document->domWindow()->GetCurrentWorld());
   options.initiator_info = initiator_info;
   FetchParameters params(std::move(resource_request), options);
-
-  if (resource_type_ == ResourceType::kImage) {
-    params.SetDiscoveryTime(discovery_timestamp);
-  }
 
   auto* origin = document->domWindow()->GetSecurityOrigin();
   if (script_type_ == mojom::blink::ScriptType::kModule) {
@@ -176,10 +178,23 @@ Resource* PreloadRequest::Start(Document* document) {
     // We intentionally ignore the returned value, because we don't resend
     // the async request to the blocked script here.
     MaybeDisallowFetchForDocWrittenScript(params, *document);
+
+    if (base::FeatureList::IsEnabled(features::kLCPScriptObserver)) {
+      if (LCPCriticalPathPredictor* lcpp = document->GetFrame()->GetLCPP()) {
+        if (lcpp->lcp_influencer_scripts().Contains(url)) {
+          is_potentially_lcp_influencer_ = true;
+        }
+      }
+    }
   }
   params.SetRenderBlockingBehavior(render_blocking_behavior_);
 
   params.SetIsPotentiallyLCPElement(is_potentially_lcp_element_);
+  params.SetIsPotentiallyLCPInfluencer(is_potentially_lcp_influencer_);
+
+  if (LCPCriticalPathPredictor* lcpp = document->GetFrame()->GetLCPP()) {
+    lcpp->OnStartPreload(url);
+  }
 
   return PreloadHelper::StartPreload(resource_type_, params, *document);
 }

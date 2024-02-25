@@ -4,13 +4,12 @@
 
 package org.chromium.device;
 
-import org.chromium.base.FeatureMap;
-import org.chromium.base.annotations.JNINamespace;
-import org.chromium.base.annotations.NativeMethods;
+import org.jni_zero.JNINamespace;
+import org.jni_zero.NativeMethods;
 
-/**
- * Java accessor for base::Features listed in {@link DeviceFeatureList}
- */
+import org.chromium.base.FeatureMap;
+
+/** Java accessor for base::Features listed in {@link DeviceFeatureList} */
 @JNINamespace("features")
 public final class DeviceFeatureMap extends FeatureMap {
     private static final DeviceFeatureMap sInstance = new DeviceFeatureMap();
@@ -25,9 +24,7 @@ public final class DeviceFeatureMap extends FeatureMap {
         return sInstance;
     }
 
-    /**
-     * Convenience method to call {@link #isEnabledInNative(String)} statically.
-     */
+    /** Convenience method to call {@link #isEnabledInNative(String)} statically. */
     public static boolean isEnabled(String featureName) {
         return getInstance().isEnabledInNative(featureName);
     }

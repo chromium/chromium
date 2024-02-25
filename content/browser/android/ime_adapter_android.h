@@ -124,9 +124,9 @@ class CONTENT_EXPORT ImeAdapterAndroid : public RenderWidgetHostConnector {
   // Update the composition character bounds, the visible line bounds or both.
   void SetBounds(const std::vector<gfx::Rect>& character_bounds,
                  const bool character_bounds_changed,
-                 const absl::optional<std::vector<gfx::Rect>>& line_bounds);
-  // Requests to start stylus writing and returns true if successful.
-  bool RequestStartStylusWriting();
+                 const std::optional<std::vector<gfx::Rect>>& line_bounds);
+  // Check if stylus writing can be started.
+  bool ShouldInitiateStylusWriting();
 
   void OnEditElementFocusedForStylusWriting(
       const gfx::Rect& focused_edit_bounds,

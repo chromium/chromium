@@ -45,8 +45,10 @@ enum class HoldingSpaceCommandId {
 
   // In-progress item commands.
   kCancelItem,
-  kResumeItem,
+  kOpenItem,
   kPauseItem,
+  kResumeItem,
+  kViewItemDetailsInBrowser,
 
   // Tray commands.
   kHidePreviews,

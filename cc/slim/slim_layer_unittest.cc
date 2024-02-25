@@ -7,11 +7,9 @@
 #include <vector>
 
 #include "base/memory/ref_counted.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/unguessable_token.h"
 #include "cc/layers/deadline_policy.h"
 #include "cc/resources/ui_resource_manager.h"
-#include "cc/slim/features.h"
 #include "cc/slim/filter.h"
 #include "cc/slim/layer.h"
 #include "cc/slim/layer_tree.h"
@@ -25,7 +23,6 @@
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "third_party/skia/include/core/SkImageInfo.h"
-#include "ui/gfx/geometry/point3_f.h"
 #include "ui/gfx/geometry/point_f.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/rounded_corners_f.h"
@@ -34,21 +31,7 @@
 
 namespace cc::slim {
 
-class SlimLayerTest : public testing::TestWithParam<bool> {
- public:
-  SlimLayerTest() {
-    if (GetParam()) {
-      scoped_feature_list_.InitAndEnableFeature(features::kSlimCompositor);
-    } else {
-      scoped_feature_list_.InitAndDisableFeature(features::kSlimCompositor);
-    }
-  }
-
- protected:
-  base::test::ScopedFeatureList scoped_feature_list_;
-};
-
-TEST_P(SlimLayerTest, LayerTreeManipulation) {
+TEST(SlimLayerTest, LayerTreeManipulation) {
   scoped_refptr<Layer> layer1 = Layer::Create();
   scoped_refptr<Layer> layer2 = Layer::Create();
   scoped_refptr<Layer> layer3 = Layer::Create();
@@ -104,7 +87,7 @@ TEST_P(SlimLayerTest, LayerTreeManipulation) {
   EXPECT_TRUE(layer4->HasOneRef());
 }
 
-TEST_P(SlimLayerTest, LayerProperties) {
+TEST(SlimLayerTest, LayerProperties) {
   scoped_refptr<Layer> layer = Layer::Create();
 
   layer->SetPosition(gfx::PointF(1.f, 2.f));
@@ -116,8 +99,8 @@ TEST_P(SlimLayerTest, LayerProperties) {
   layer->SetTransform(gfx::Transform::MakeTranslation(1.f, 2.f));
   EXPECT_EQ(layer->transform(), gfx::Transform::MakeTranslation(1.f, 2.f));
 
-  layer->SetTransformOrigin(gfx::Point3F(1.f, 2.f, 3.f));
-  EXPECT_EQ(layer->transform_origin(), gfx::Point3F(1.f, 2.f, 3.f));
+  layer->SetTransformOrigin(gfx::PointF(1.f, 2.f));
+  EXPECT_EQ(layer->transform_origin(), gfx::PointF(1.f, 2.f));
 
   layer->SetIsDrawable(true);
   EXPECT_TRUE(layer->draws_content());
@@ -149,13 +132,25 @@ TEST_P(SlimLayerTest, LayerProperties) {
   filters.push_back(Filter::CreateBrightness(0.5f));
   layer->SetFilters(std::move(filters));
 
-  EXPECT_FALSE(layer->HasRoundedCorner());
+  EXPECT_FALSE(layer->HasNonTrivialMaskFilterInfo());
   layer->SetRoundedCorner(gfx::RoundedCornersF(50));
   EXPECT_EQ(layer->corner_radii(), gfx::RoundedCornersF(50));
-  EXPECT_TRUE(layer->HasRoundedCorner());
+  EXPECT_TRUE(layer->HasNonTrivialMaskFilterInfo());
+  layer->SetRoundedCorner(gfx::RoundedCornersF());
+  EXPECT_FALSE(layer->HasNonTrivialMaskFilterInfo());
+
+  gfx::LinearGradient gradient;
+  gradient.AddStep(0.0f, 0);
+  gradient.AddStep(1.0f, 255);
+  EXPECT_FALSE(layer->HasNonTrivialMaskFilterInfo());
+  layer->SetGradientMask(gradient);
+  EXPECT_EQ(layer->gradient_mask(), gradient);
+  EXPECT_TRUE(layer->HasNonTrivialMaskFilterInfo());
+  layer->SetGradientMask(gfx::LinearGradient());
+  EXPECT_FALSE(layer->HasNonTrivialMaskFilterInfo());
 }
 
-TEST_P(SlimLayerTest, SurfaceLayerProperties) {
+TEST(SlimLayerTest, SurfaceLayerProperties) {
   scoped_refptr<SurfaceLayer> layer = SurfaceLayer::Create();
 
   layer->SetStretchContentToFillBounds(true);
@@ -163,22 +158,20 @@ TEST_P(SlimLayerTest, SurfaceLayerProperties) {
   layer->SetStretchContentToFillBounds(false);
   EXPECT_FALSE(layer->stretch_content_to_fill_bounds());
 
-  layer->SetMayContainVideo(true);
-
   base::UnguessableToken token = base::UnguessableToken::Create();
   viz::SurfaceId start(viz::FrameSinkId(1u, 2u),
                        viz::LocalSurfaceId(3u, 4u, token));
   viz::SurfaceId end(viz::FrameSinkId(1u, 2u),
                      viz::LocalSurfaceId(5u, 6u, token));
 
-  EXPECT_EQ(layer->oldest_acceptable_fallback(), absl::nullopt);
+  EXPECT_EQ(layer->oldest_acceptable_fallback(), std::nullopt);
   layer->SetOldestAcceptableFallback(start);
   EXPECT_EQ(layer->oldest_acceptable_fallback(), start);
   layer->SetSurfaceId(end, cc::DeadlinePolicy::UseDefaultDeadline());
   EXPECT_EQ(layer->surface_id(), end);
 }
 
-TEST_P(SlimLayerTest, UIResourceLayerProperties) {
+TEST(SlimLayerTest, UIResourceLayerProperties) {
   scoped_refptr<UIResourceLayer> layer = UIResourceLayer::Create();
 
   layer->SetUIResourceId(1);
@@ -195,13 +188,8 @@ TEST_P(SlimLayerTest, UIResourceLayerProperties) {
 
   layer->SetVertexOpacity(0.1f, 0.2f, 0.3f, 0.4f);
 
-  if (!base::FeatureList::IsEnabled(features::kSlimCompositor)) {
-    return;
-  }
   TestLayerTreeClient client;
-  LayerTree::InitParams params;
-  params.client = &client;
-  auto layer_tree = LayerTree::Create(std::move(params));
+  auto layer_tree = LayerTree::Create(&client);
   layer_tree->SetRoot(layer);
 
   EXPECT_NE(layer->resource_id(), 0);
@@ -210,7 +198,7 @@ TEST_P(SlimLayerTest, UIResourceLayerProperties) {
             1u);
 }
 
-TEST_P(SlimLayerTest, NinePatchLayerProperties) {
+TEST(SlimLayerTest, NinePatchLayerProperties) {
   scoped_refptr<NinePatchLayer> layer = NinePatchLayer::Create();
 
   auto image_info =
@@ -225,13 +213,8 @@ TEST_P(SlimLayerTest, NinePatchLayerProperties) {
   layer->SetFillCenter(true);
   layer->SetNearestNeighbor(true);
 
-  if (!base::FeatureList::IsEnabled(features::kSlimCompositor)) {
-    return;
-  }
   TestLayerTreeClient client;
-  LayerTree::InitParams params;
-  params.client = &client;
-  auto layer_tree = LayerTree::Create(std::move(params));
+  auto layer_tree = LayerTree::Create(&client);
   layer_tree->SetRoot(layer);
 
   EXPECT_EQ(layer_tree->GetUIResourceManager()
@@ -239,7 +222,7 @@ TEST_P(SlimLayerTest, NinePatchLayerProperties) {
             1u);
 }
 
-TEST_P(SlimLayerTest, NumDescendantsThatDrawContent) {
+TEST(SlimLayerTest, NumDescendantsThatDrawContent) {
   auto layer0 = Layer::Create();
   auto layer1 = Layer::Create();
   auto layer2 = Layer::Create();
@@ -287,7 +270,5 @@ TEST_P(SlimLayerTest, NumDescendantsThatDrawContent) {
   EXPECT_EQ(layer1->NumDescendantsThatDrawContent(), 1);
   EXPECT_EQ(layer2->NumDescendantsThatDrawContent(), 2);
 }
-
-INSTANTIATE_TEST_SUITE_P(All, SlimLayerTest, testing::Bool());
 
 }  // namespace cc::slim

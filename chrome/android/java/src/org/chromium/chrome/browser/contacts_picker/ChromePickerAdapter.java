@@ -4,7 +4,6 @@
 
 package org.chromium.chrome.browser.contacts_picker;
 
-import android.accounts.Account;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.graphics.drawable.Drawable;
@@ -32,10 +31,12 @@ import java.util.Collections;
 /**
  * A {@link PickerAdapter} with special behavior tailored for Chrome.
  *
- * Owner email is looked up in the {@link ProfileDataCache}, or, failing that, via the {@link
+ * <p>Owner email is looked up in the {@link ProfileDataCache}, or, failing that, via the {@link
  * AccountManagerFacade}.
  */
 public class ChromePickerAdapter extends PickerAdapter implements ProfileDataCache.Observer {
+    private final Profile mProfile;
+
     // The profile data cache to consult when figuring out the signed in user.
     private ProfileDataCache mProfileDataCache;
 
@@ -45,7 +46,8 @@ public class ChromePickerAdapter extends PickerAdapter implements ProfileDataCac
     // Whether owner info is being fetched asynchronously.
     private boolean mWaitingOnOwnerInfo;
 
-    public ChromePickerAdapter(Context context) {
+    public ChromePickerAdapter(Context context, Profile profile) {
+        mProfile = profile;
         mProfileDataCache =
                 ProfileDataCache.createWithoutBadge(context, R.dimen.contact_picker_icon_size);
     }
@@ -111,9 +113,10 @@ public class ChromePickerAdapter extends PickerAdapter implements ProfileDataCac
         if (coreAccountInfo != null) {
             return coreAccountInfo.getEmail();
         }
-        final @Nullable Account defaultAccount = AccountUtils.getDefaultAccountIfFulfilled(
-                AccountManagerFacadeProvider.getInstance().getAccounts());
-        return defaultAccount != null ? defaultAccount.name : null;
+        final @Nullable CoreAccountInfo defaultCoreAccountInfo =
+                AccountUtils.getDefaultCoreAccountInfoIfFulfilled(
+                        AccountManagerFacadeProvider.getInstance().getCoreAccountInfos());
+        return defaultCoreAccountInfo != null ? defaultCoreAccountInfo.getEmail() : null;
     }
 
     @Override
@@ -129,6 +132,7 @@ public class ChromePickerAdapter extends PickerAdapter implements ProfileDataCac
      * Constructs a {@link ContactDetails} record for the currently signed in user. Name is obtained
      * via the {@link DisplayableProfileData}, if available, or (alternatively) using the signed in
      * information.
+     *
      * @param ownerEmail The email for the currently signed in user.
      * @return The contact info for the currently signed in user.
      */
@@ -140,8 +144,13 @@ public class ChromePickerAdapter extends PickerAdapter implements ProfileDataCac
             name = CoreAccountInfo.getEmailFrom(getCoreAccountInfo());
         }
 
-        ContactDetails contact = new ContactDetails(ContactDetails.SELF_CONTACT_ID, name,
-                Collections.singletonList(ownerEmail), /*phoneNumbers=*/null, /*addresses=*/null);
+        ContactDetails contact =
+                new ContactDetails(
+                        ContactDetails.SELF_CONTACT_ID,
+                        name,
+                        Collections.singletonList(ownerEmail),
+                        /* phoneNumbers= */ null,
+                        /* addresses= */ null);
         Drawable icon = profileData.getImage();
         contact.setIsSelf(true);
         contact.setSelfIcon(icon);
@@ -151,8 +160,8 @@ public class ChromePickerAdapter extends PickerAdapter implements ProfileDataCac
     private CoreAccountInfo getCoreAccountInfo() {
         // Since this is read-only operation to obtain email address, always using regular profile
         // for both regular and off-the-record profile is safe.
-        IdentityManager identityManager = IdentityServicesProvider.get().getIdentityManager(
-                Profile.getLastUsedRegularProfile());
+        IdentityManager identityManager =
+                IdentityServicesProvider.get().getIdentityManager(mProfile.getOriginalProfile());
         return identityManager.getPrimaryAccountInfo(ConsentLevel.SYNC);
     }
 }

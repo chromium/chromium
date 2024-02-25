@@ -13,21 +13,20 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/thread_pool.h"
-#include "components/password_manager/core/browser/affiliation/affiliation_utils.h"
+#include "components/affiliations/core/browser/affiliation_utils.h"
+#include "components/password_manager/core/browser/features/password_manager_features_util.h"
 #include "components/password_manager/core/browser/password_feature_manager.h"
 #include "components/password_manager/core/browser/password_form.h"
-#include "components/password_manager/core/browser/password_manager_features_util.h"
+#include "components/password_manager/core/browser/password_manager_client.h"
 #include "components/password_manager/core/browser/password_manager_metrics_util.h"
-#include "components/password_manager/core/browser/password_manager_util.h"
 #include "components/password_manager/core/browser/password_reuse_detector.h"
 #include "components/password_manager/core/browser/password_reuse_manager.h"
-#include "components/password_manager/core/browser/password_store_consumer.h"
+#include "components/password_manager/core/browser/password_store/password_store_consumer.h"
+#include "components/password_manager/core/browser/password_store/password_store_interface.h"
 #include "components/password_manager/core/browser/password_sync_util.h"
-#include "components/password_manager/core/common/password_manager_features.h"
 #include "components/password_manager/core/common/password_manager_pref_names.h"
 #include "components/safe_browsing/core/common/features.h"
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
-#include "components/sync/base/features.h"
 #include "google_apis/gaia/gaia_auth_util.h"
 #include "google_apis/gaia/gaia_urls.h"
 
@@ -54,16 +53,14 @@ constexpr char kOverallSuffix[] = ".Overall";
 constexpr char kWithCustomPassphraseSuffix[] = ".WithCustomPassphrase";
 constexpr char kWithoutCustomPassphraseSuffix[] = ".WithoutCustomPassphrase";
 
-bool IsCustomPassphraseEnabled(password_manager::SyncState sync_state) {
+bool IsCustomPassphraseEnabled(
+    password_manager::sync_util::SyncState sync_state) {
   switch (sync_state) {
-    case password_manager::SyncState::kSyncingWithCustomPassphrase:
-    case password_manager::SyncState::
-        kAccountPasswordsActiveWithCustomPassphrase:
-      return true;
-    case password_manager::SyncState::kNotSyncing:
-    case password_manager::SyncState::kSyncingNormalEncryption:
-    case password_manager::SyncState::kAccountPasswordsActiveNormalEncryption:
+    case password_manager::sync_util::SyncState::kNotActive:
+    case password_manager::sync_util::SyncState::kActiveWithNormalEncryption:
       return false;
+    case password_manager::sync_util::SyncState::kActiveWithCustomPassphrase:
+      return true;
   }
   NOTREACHED_NORETURN();
 }
@@ -189,6 +186,14 @@ void ReportNumberOfAccountsMetrics(
       total_user_created_accounts + total_generated_accounts +
           total_received_via_sharing_accounts);
 
+  // Same as above but not split by custom passphrase which is most always
+  // useless.
+  LogAccountStatHiRes(
+      base::StrCat({kPasswordManager, store_suffix, kTotalAccountsByTypeSuffix,
+                    kOverallSuffix}),
+      total_user_created_accounts + total_generated_accounts +
+          total_received_via_sharing_accounts);
+
   LogAccountStatHiRes(
       base::StrCat({kPasswordManager, store_suffix, ".BlacklistedSitesHiRes3",
                     custom_passphrase_suffix}),
@@ -208,7 +213,7 @@ void ReportLoginsWithSchemesMetrics(
     if (form->blocked_by_user)
       continue;
 
-    if (IsValidAndroidFacetURI(form->signon_realm)) {
+    if (affiliations::IsValidAndroidFacetURI(form->signon_realm)) {
       ++android_logins;
     } else if (form->url.SchemeIs(url::kHttpsScheme)) {
       ++https_logins;
@@ -286,10 +291,6 @@ CredentialsEnableServiceSettingToPasswordManagerEnableState(
 void ReportPasswordNotesMetrics(
     bool is_account_store,
     const std::vector<std::unique_ptr<PasswordForm>>& forms) {
-  if (!base::FeatureList::IsEnabled(syncer::kPasswordNotesWithBackup)) {
-    return;
-  }
-
   base::StringPiece suffix_for_store =
       GetMetricsSuffixForStore(is_account_store);
 
@@ -440,9 +441,8 @@ void ReportPasswordProtectedMetrics(
     const std::vector<std::unique_ptr<PasswordForm>>& forms) {
   for (const std::unique_ptr<PasswordForm>& form : forms) {
     if (!form->blocked_by_user && form->password_value.size() > 0) {
-      metrics_util::LogIsPasswordProtected(
-          form->password_value.size() >=
-          password_manager::GetMinPasswordLengthToCheck());
+      metrics_util::LogIsPasswordProtected(form->password_value.size() >=
+                                           kMinPasswordLengthToCheck);
     }
   }
 }
@@ -560,9 +560,9 @@ void ReportAllMetrics(bool custom_passphrase_enabled,
                       const std::string& sync_username,
                       bool is_opted_in_account_storage,
                       bool is_safe_browsing_enabled,
-                      absl::optional<std::vector<std::unique_ptr<PasswordForm>>>
+                      std::optional<std::vector<std::unique_ptr<PasswordForm>>>
                           profile_store_results,
-                      absl::optional<std::vector<std::unique_ptr<PasswordForm>>>
+                      std::optional<std::vector<std::unique_ptr<PasswordForm>>>
                           account_store_results) {
   // Maps from (signon_realm, username) to password.
   std::unique_ptr<
@@ -645,14 +645,11 @@ StoreMetricsReporter::StoreMetricsReporter(
     PasswordStoreInterface* profile_store,
     PasswordStoreInterface* account_store,
     const syncer::SyncService* sync_service,
-    const signin::IdentityManager* identity_manager,
     PrefService* prefs,
     password_manager::PasswordReuseManager* password_reuse_manager,
-    bool is_under_advanced_protection,
     base::OnceClosure done_callback)
     : profile_store_(profile_store),
       account_store_(account_store),
-      is_under_advanced_protection_(is_under_advanced_protection),
       done_callback_(std::move(done_callback)) {
   DCHECK(prefs);
 
@@ -673,14 +670,13 @@ StoreMetricsReporter::StoreMetricsReporter(
 
   prefs->SetDouble(
       password_manager::prefs::kLastTimePasswordStoreMetricsReported,
-      base::Time::Now().ToDoubleT());
+      base::Time::Now().InSecondsFSinceUnixEpoch());
 
-  sync_username_ =
-      password_manager::sync_util::GetSyncUsernameIfSyncingPasswords(
-          sync_service, identity_manager);
+  sync_username_ = password_manager::sync_util::
+      GetAccountEmailIfSyncFeatureEnabledIncludingPasswords(sync_service);
 
   custom_passphrase_enabled_ = IsCustomPassphraseEnabled(
-      password_manager_util::GetPasswordSyncState(sync_service));
+      password_manager::sync_util::GetPasswordSyncState(sync_service));
 
   is_opted_in_account_storage_ =
       features_util::IsOptedInForAccountStorage(prefs, sync_service);
@@ -698,8 +694,7 @@ StoreMetricsReporter::StoreMetricsReporter(
   // May be null in tests.
   if (profile_store) {
     if (password_reuse_manager) {
-      password_reuse_manager->ReportMetrics(sync_username_,
-                                            is_under_advanced_protection_);
+      password_reuse_manager->ReportMetrics(sync_username_);
     }
   }
 
@@ -747,8 +742,8 @@ void StoreMetricsReporter::OnGetPasswordStoreResultsFrom(
       base::BindOnce(&ReportAllMetrics, custom_passphrase_enabled_,
                      sync_username_, is_opted_in_account_storage_,
                      is_safe_browsing_enabled_,
-                     std::exchange(profile_store_results_, absl::nullopt),
-                     std::exchange(account_store_results_, absl::nullopt)),
+                     std::exchange(profile_store_results_, std::nullopt),
+                     std::exchange(account_store_results_, std::nullopt)),
       base::BindOnce(&OnMetricsReportingCompleted,
                      weak_ptr_factory_.GetWeakPtr(),
                      std::move(done_callback_)));

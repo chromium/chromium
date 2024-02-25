@@ -35,8 +35,8 @@ struct NativeEnumSerializerImpl {
 
     CHECK_GE(sizeof(int32_t), pickle.payload_size());
     *output = 0;
-    memcpy(reinterpret_cast<char*>(output), pickle.payload(),
-           pickle.payload_size());
+    memcpy(reinterpret_cast<char*>(output), pickle.payload_bytes().data(),
+           pickle.payload_bytes().size());
   }
 
   struct PickleData {

@@ -25,9 +25,10 @@
 #include "third_party/blink/renderer/core/inspector/inspector_css_agent.h"
 #include "third_party/blink/renderer/core/inspector/inspector_dom_agent.h"
 #include "third_party/blink/renderer/core/inspector/node_content_visibility_state.h"
+#include "third_party/blink/renderer/core/layout/flex/layout_flexible_box.h"
 #include "third_party/blink/renderer/core/layout/hit_test_location.h"
+#include "third_party/blink/renderer/core/layout/hit_test_result.h"
 #include "third_party/blink/renderer/core/layout/layout_view.h"
-#include "third_party/blink/renderer/core/layout/ng/flex/layout_ng_flexible_box.h"
 #include "third_party/blink/renderer/core/page/chrome_client.h"
 #include "third_party/blink/renderer/core/page/page.h"
 #include "third_party/blink/renderer/platform/cursors.h"
@@ -179,7 +180,7 @@ void SearchingForNodeTool::Draw(float scale) {
                              !omit_tooltip_ && highlight_config_->show_info &&
                              node->GetLayoutObject() &&
                              node->GetDocument().GetFrame();
-  overlay_->EnsureAXContext(node);
+  DCHECK(overlay_->HasAXContext(node));
   InspectorHighlight highlight(node, *highlight_config_, contrast_info_,
                                append_element_info, false,
                                content_visibility_state_);
@@ -251,6 +252,7 @@ bool SearchingForNodeTool::HandleMouseMove(const WebMouseEvent& event) {
   // Store values for the highlight.
   bool hovered_node_changed = node != hovered_node_;
   hovered_node_ = node;
+  overlay_->EnsureAXContext(node);
   event_target_node_ = (event.GetModifiers() & WebInputEvent::kShiftKey)
                            ? HoveredNodeForEvent(frame, event, false)
                            : nullptr;
@@ -261,8 +263,7 @@ bool SearchingForNodeTool::HandleMouseMove(const WebMouseEvent& event) {
 
   contrast_info_ = FetchContrast(node);
   if (hovered_node_changed) {
-    if (auto* flexbox =
-            DynamicTo<LayoutNGFlexibleBox>(node->GetLayoutObject())) {
+    if (auto* flexbox = DynamicTo<LayoutFlexibleBox>(node->GetLayoutObject())) {
       flexbox->SetNeedsLayoutForDevtools();
     }
     NodeHighlightRequested(node);
@@ -359,9 +360,10 @@ NodeHighlightTool::NodeHighlightTool(
   std::tie(node_, content_visibility_state_) =
       DetermineContentVisibilityState(node);
   contrast_info_ = FetchContrast(node_);
-  if (auto* flexbox = DynamicTo<LayoutNGFlexibleBox>(node->GetLayoutObject())) {
+  if (auto* flexbox = DynamicTo<LayoutFlexibleBox>(node->GetLayoutObject())) {
     flexbox->SetNeedsLayoutForDevtools();
   }
+  overlay_->EnsureAXContext(node);
 }
 
 String NodeHighlightTool::GetOverlayName() {
@@ -407,8 +409,7 @@ void NodeHighlightTool::DrawMatchingSelector() {
   ContainerNode* query_base = node_->ContainingShadowRoot();
   if (!query_base)
     query_base = node_->ownerDocument();
-
-  overlay_->EnsureAXContext(query_base);
+  DCHECK(overlay_->HasAXContext(query_base));
 
   StaticElementList* elements = query_base->QuerySelectorAll(
       AtomicString(selector_list_), exception_state);
@@ -439,7 +440,7 @@ std::unique_ptr<protocol::DictionaryValue>
 NodeHighlightTool::GetNodeInspectorHighlightAsJson(
     bool append_element_info,
     bool append_distance_info) const {
-  overlay_->EnsureAXContext(node_.Get());
+  DCHECK(overlay_->HasAXContext(node_.Get()));
   InspectorHighlight highlight(node_.Get(), *highlight_config_, contrast_info_,
                                append_element_info, append_distance_info,
                                content_visibility_state_);
@@ -632,18 +633,18 @@ void SourceOrderTool::Draw(float scale) {
   for (Node& child_node : NodeTraversal::ChildrenOf(*node_)) {
     // Don't draw if it's not an element or is not the direct child of the
     // parent node.
-    if (!child_node.IsElementNode())
+    auto* element = DynamicTo<Element>(child_node);
+    if (!element) {
       continue;
-    // Don't draw if it's not rendered/would be ignored by a screen reader.
-    if (child_node.GetComputedStyle()) {
-      bool display_none =
-          child_node.GetComputedStyle()->Display() == EDisplay::kNone;
-      bool visibility_hidden =
-          child_node.GetComputedStyle()->Visibility() == EVisibility::kHidden;
-      if (display_none || visibility_hidden)
-        continue;
     }
-    DrawNode(&child_node, position_number);
+    // Don't draw if it's not rendered/would be ignored by a screen reader.
+    if (const ComputedStyle* style = element->GetComputedStyle()) {
+      if (style->Display() == EDisplay::kNone ||
+          style->Visibility() == EVisibility::kHidden) {
+        continue;
+      }
+    }
+    DrawNode(element, position_number);
     position_number++;
   }
 }
@@ -718,6 +719,7 @@ bool NearbyDistanceTool::HandleMouseMove(const WebMouseEvent& event) {
 
   // Store values for the highlight.
   hovered_node_ = node;
+  overlay_->EnsureAXContext(node);
   return true;
 }
 
@@ -729,7 +731,7 @@ void NearbyDistanceTool::Draw(float scale) {
   Node* node = hovered_node_.Get();
   if (!node)
     return;
-  overlay_->EnsureAXContext(node);
+  DCHECK(overlay_->HasAXContext(node));
   auto content_visibility_state = DetermineSelfContentVisibilityState(node);
   InspectorHighlight highlight(
       node, InspectorHighlight::DefaultConfig(),
@@ -873,6 +875,23 @@ void PausedInDebuggerTool::Dispatch(const ScriptValue& message,
   }
   exception_state.ThrowDOMException(DOMExceptionCode::kSyntaxError,
                                     kInvalidOverlayCommand);
+}
+
+// WcoTool --------------------------------------------------------
+
+WindowControlsOverlayTool::WindowControlsOverlayTool(
+    InspectorOverlayAgent* overlay,
+    OverlayFrontend* frontend,
+    std::unique_ptr<protocol::DictionaryValue> wco_config)
+    : InspectTool(overlay, frontend), wco_config_(std::move(wco_config)) {}
+
+String WindowControlsOverlayTool::GetOverlayName() {
+  return OverlayNames::OVERLAY_WINDOW_CONTROLS_OVERLAY;
+}
+
+void WindowControlsOverlayTool::Draw(float scale) {
+  overlay_->EvaluateInOverlay("drawWindowControlsOverlay",
+                              wco_config_->clone());
 }
 
 }  // namespace blink

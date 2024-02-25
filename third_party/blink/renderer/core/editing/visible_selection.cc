@@ -44,15 +44,15 @@ namespace blink {
 
 template <typename Strategy>
 VisibleSelectionTemplate<Strategy>::VisibleSelectionTemplate()
-    : affinity_(TextAffinity::kDownstream), base_is_first_(true) {}
+    : affinity_(TextAffinity::kDownstream), anchor_is_first_(true) {}
 
 template <typename Strategy>
 VisibleSelectionTemplate<Strategy>::VisibleSelectionTemplate(
     const SelectionTemplate<Strategy>& selection)
-    : base_(selection.Base()),
-      extent_(selection.Extent()),
+    : anchor_(selection.Anchor()),
+      focus_(selection.Focus()),
       affinity_(selection.Affinity()),
-      base_is_first_(selection.IsBaseFirst()) {}
+      anchor_is_first_(selection.IsAnchorFirst()) {}
 
 template <typename Strategy>
 class VisibleSelectionTemplate<Strategy>::Creator {
@@ -70,8 +70,8 @@ class VisibleSelectionTemplate<Strategy>::Creator {
       const SelectionTemplate<Strategy>& passed_selection,
       TextGranularity granularity,
       const WordInclusion& inclusion = WordInclusion::kDefault) {
-    DCHECK(!NeedsLayoutTreeUpdate(passed_selection.Base()));
-    DCHECK(!NeedsLayoutTreeUpdate(passed_selection.Extent()));
+    DCHECK(!NeedsLayoutTreeUpdate(passed_selection.Anchor()));
+    DCHECK(!NeedsLayoutTreeUpdate(passed_selection.Focus()));
 
     const SelectionTemplate<Strategy>& canonicalized_selection =
         CanonicalizeSelection(passed_selection);
@@ -126,57 +126,57 @@ SelectionInFlatTree ExpandWithGranularity(const SelectionInFlatTree& selection,
 template <typename Strategy>
 VisibleSelectionTemplate<Strategy>::VisibleSelectionTemplate(
     const VisibleSelectionTemplate<Strategy>& other)
-    : base_(other.base_),
-      extent_(other.extent_),
+    : anchor_(other.anchor_),
+      focus_(other.focus_),
       affinity_(other.affinity_),
-      base_is_first_(other.base_is_first_) {}
+      anchor_is_first_(other.anchor_is_first_) {}
 
 template <typename Strategy>
 VisibleSelectionTemplate<Strategy>& VisibleSelectionTemplate<Strategy>::
 operator=(const VisibleSelectionTemplate<Strategy>& other) {
-  base_ = other.base_;
-  extent_ = other.extent_;
+  anchor_ = other.anchor_;
+  focus_ = other.focus_;
   affinity_ = other.affinity_;
-  base_is_first_ = other.base_is_first_;
+  anchor_is_first_ = other.anchor_is_first_;
   return *this;
 }
 
 template <typename Strategy>
 SelectionTemplate<Strategy> VisibleSelectionTemplate<Strategy>::AsSelection()
     const {
-  if (base_.IsNull()) {
+  if (anchor_.IsNull()) {
     return typename SelectionTemplate<Strategy>::Builder()
         .Build();
   }
   return typename SelectionTemplate<Strategy>::Builder()
-      .SetBaseAndExtent(base_, extent_)
+      .SetBaseAndExtent(anchor_, focus_)
       .SetAffinity(affinity_)
       .Build();
 }
 
 template <typename Strategy>
 bool VisibleSelectionTemplate<Strategy>::IsCaret() const {
-  return base_.IsNotNull() && base_ == extent_;
+  return anchor_.IsNotNull() && anchor_ == focus_;
 }
 
 template <typename Strategy>
 bool VisibleSelectionTemplate<Strategy>::IsNone() const {
-  return base_.IsNull();
+  return anchor_.IsNull();
 }
 
 template <typename Strategy>
 bool VisibleSelectionTemplate<Strategy>::IsRange() const {
-  return base_ != extent_;
+  return anchor_ != focus_;
 }
 
 template <typename Strategy>
 PositionTemplate<Strategy> VisibleSelectionTemplate<Strategy>::Start() const {
-  return base_is_first_ ? base_ : extent_;
+  return anchor_is_first_ ? anchor_ : focus_;
 }
 
 template <typename Strategy>
 PositionTemplate<Strategy> VisibleSelectionTemplate<Strategy>::End() const {
-  return base_is_first_ ? extent_ : base_;
+  return anchor_is_first_ ? focus_ : anchor_;
 }
 
 EphemeralRange FirstEphemeralRangeOf(const VisibleSelection& selection) {
@@ -203,7 +203,7 @@ static EphemeralRangeTemplate<Strategy> NormalizeRangeAlgorithm(
   // in the course of running edit commands which modify the DOM.
   // Failing to ensure this can result in equivalentXXXPosition calls returning
   // incorrect results.
-  DCHECK(!NeedsLayoutTreeUpdate(selection.Base())) << selection;
+  DCHECK(!NeedsLayoutTreeUpdate(selection.Anchor())) << selection;
 
   if (selection.IsCaret()) {
     // If the selection is a caret, move the range start upstream. This
@@ -242,31 +242,33 @@ static SelectionTemplate<Strategy> CanonicalizeSelection(
     const SelectionTemplate<Strategy>& selection) {
   if (selection.IsNone())
     return SelectionTemplate<Strategy>();
-  const PositionTemplate<Strategy>& base =
-      CreateVisiblePosition(selection.Base(), selection.Affinity())
+  const PositionTemplate<Strategy>& anchor =
+      CreateVisiblePosition(selection.Anchor(), selection.Affinity())
           .DeepEquivalent();
   if (selection.IsCaret()) {
-    if (base.IsNull())
+    if (anchor.IsNull()) {
       return SelectionTemplate<Strategy>();
-    return
-        typename SelectionTemplate<Strategy>::Builder().Collapse(base).Build();
+    }
+    return typename SelectionTemplate<Strategy>::Builder()
+        .Collapse(anchor)
+        .Build();
   }
-  const PositionTemplate<Strategy>& extent =
-      CreateVisiblePosition(selection.Extent(), selection.Affinity())
+  const PositionTemplate<Strategy>& focus =
+      CreateVisiblePosition(selection.Focus(), selection.Affinity())
           .DeepEquivalent();
-  if (base.IsNotNull() && extent.IsNotNull()) {
+  if (anchor.IsNotNull() && focus.IsNotNull()) {
     return typename SelectionTemplate<Strategy>::Builder()
-        .SetBaseAndExtent(base, extent)
+        .SetBaseAndExtent(anchor, focus)
         .Build();
   }
-  if (base.IsNotNull()) {
+  if (anchor.IsNotNull()) {
+    return typename SelectionTemplate<Strategy>::Builder()
+        .Collapse(anchor)
+        .Build();
+  }
+  if (focus.IsNotNull()) {
     return
-        typename SelectionTemplate<Strategy>::Builder().Collapse(base).Build();
-  }
-  if (extent.IsNotNull()) {
-    return typename SelectionTemplate<Strategy>::Builder()
-        .Collapse(extent)
-        .Build();
+        typename SelectionTemplate<Strategy>::Builder().Collapse(focus).Build();
   }
   return SelectionTemplate<Strategy>();
 }
@@ -276,7 +278,7 @@ bool VisibleSelectionTemplate<Strategy>::IsValidFor(
     const Document& document) const {
   if (IsNone())
     return true;
-  return base_.IsValidFor(document) && extent_.IsValidFor(document);
+  return anchor_.IsValidFor(document) && focus_.IsValidFor(document);
 }
 
 template <typename Strategy>
@@ -302,8 +304,8 @@ static bool EqualSelectionsAlgorithm(
   const VisibleSelectionTemplate<Strategy> selection_wrapper1(selection1);
   const VisibleSelectionTemplate<Strategy> selection_wrapper2(selection2);
 
-  return selection_wrapper1.Base() == selection_wrapper2.Base() &&
-         selection_wrapper1.Extent() == selection_wrapper2.Extent();
+  return selection_wrapper1.Anchor() == selection_wrapper2.Anchor() &&
+         selection_wrapper1.Focus() == selection_wrapper2.Focus();
 }
 
 template <typename Strategy>
@@ -328,26 +330,26 @@ VisibleSelectionTemplate<Strategy>::VisibleEnd() const {
 
 template <typename Strategy>
 VisiblePositionTemplate<Strategy>
-VisibleSelectionTemplate<Strategy>::VisibleBase() const {
+VisibleSelectionTemplate<Strategy>::VisibleAnchor() const {
   return CreateVisiblePosition(
-      base_, IsRange() ? (IsBaseFirst() ? TextAffinity::kUpstream
-                                        : TextAffinity::kDownstream)
-                       : Affinity());
-}
-
-template <typename Strategy>
-VisiblePositionTemplate<Strategy>
-VisibleSelectionTemplate<Strategy>::VisibleExtent() const {
-  return CreateVisiblePosition(
-      extent_, IsRange() ? (IsBaseFirst() ? TextAffinity::kDownstream
-                                          : TextAffinity::kUpstream)
+      anchor_, IsRange() ? (IsAnchorFirst() ? TextAffinity::kUpstream
+                                            : TextAffinity::kDownstream)
                          : Affinity());
 }
 
 template <typename Strategy>
+VisiblePositionTemplate<Strategy>
+VisibleSelectionTemplate<Strategy>::VisibleFocus() const {
+  return CreateVisiblePosition(
+      focus_, IsRange() ? (IsAnchorFirst() ? TextAffinity::kDownstream
+                                           : TextAffinity::kUpstream)
+                        : Affinity());
+}
+
+template <typename Strategy>
 void VisibleSelectionTemplate<Strategy>::Trace(Visitor* visitor) const {
-  visitor->Trace(base_);
-  visitor->Trace(extent_);
+  visitor->Trace(anchor_);
+  visitor->Trace(focus_);
 }
 
 #if DCHECK_IS_ON()
@@ -378,10 +380,9 @@ void VisibleSelectionTemplate<Strategy>::PrintTo(
     *ostream << "VisibleSelection()";
     return;
   }
-  *ostream << "VisibleSelection(base: " << selection.Base()
-           << " extent:" << selection.Extent()
-           << " start: " << selection.Start() << " end: " << selection.End()
-           << ' ' << selection.Affinity() << ' '
+  *ostream << "VisibleSelection(anchor: " << selection.Anchor()
+           << " focus:" << selection.Focus() << " start: " << selection.Start()
+           << " end: " << selection.End() << ' ' << selection.Affinity() << ' '
            << ')';
 }
 

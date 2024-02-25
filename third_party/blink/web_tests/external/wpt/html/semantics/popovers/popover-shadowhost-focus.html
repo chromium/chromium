@@ -31,17 +31,6 @@
 </div>
 
 <script>
-(function attachShadowRoots(root) {
-  root.querySelectorAll("template[shadowrootmode]").forEach(template => {
-    const mode = template.getAttribute("shadowrootmode");
-    const delegatesFocus = template.hasAttribute("shadowrootdelegatesfocus");
-    const shadowRoot = template.parentNode.attachShadow({ mode, delegatesFocus });
-    shadowRoot.appendChild(template.content);
-    template.remove();
-    attachShadowRoots(shadowRoot);
-  });
-})(document);
-
 document.querySelectorAll('body > [popover]').forEach(popover => {
   promise_test(async () => {
     const expectedFocusedElement = (popover.matches('.should-be-focused') ? popover : null)

@@ -31,14 +31,10 @@ import org.chromium.ui.modaldialog.ModalDialogManager;
 /** This class tests the behavior of the {@link ReaderModeToolbarButtonController}. */
 @RunWith(BaseRobolectricTestRunner.class)
 public class ReaderModeToolbarButtonControllerTest {
-    @Mock
-    private Tab mMockTab;
-    @Mock
-    private ReaderModeManager mMockReaderModeManager;
-    @Mock
-    private Supplier<Tab> mMockTabSupplier;
-    @Mock
-    private ModalDialogManager mMockModalDialogManager;
+    @Mock private Tab mMockTab;
+    @Mock private ReaderModeManager mMockReaderModeManager;
+    @Mock private Supplier<Tab> mMockTabSupplier;
+    @Mock private ModalDialogManager mMockModalDialogManager;
     private UserDataHost mUserDataHost;
     private TestValues mTestValues;
 
@@ -67,8 +63,11 @@ public class ReaderModeToolbarButtonControllerTest {
     }
 
     private ReaderModeToolbarButtonController createController() {
-        return new ReaderModeToolbarButtonController(mMockTab.getContext(), mMockTabSupplier,
-                mMockModalDialogManager, mock(Drawable.class));
+        return new ReaderModeToolbarButtonController(
+                mMockTab.getContext(),
+                mMockTabSupplier,
+                mMockModalDialogManager,
+                mock(Drawable.class));
     }
 
     @Test

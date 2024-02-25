@@ -8,11 +8,9 @@
 #include "ash/wm/desks/desks_controller.h"
 #include "base/run_loop.h"
 
-namespace ui {
-namespace test {
+namespace ui::test {
 class EventGenerator;
-}  // namespace test
-}  // namespace ui
+}  // namespace ui::test
 
 namespace ash {
 
@@ -21,7 +19,7 @@ class DeskActivationAnimation;
 class DeskMiniView;
 class LegacyDeskBarView;
 
-constexpr int kNumFingersForHighlight = 3;
+constexpr int kNumFingersForFocus = 3;
 constexpr int kNumFingersForDesksSwitch = 4;
 
 // Used for waiting for the desk switch animations on all root windows to

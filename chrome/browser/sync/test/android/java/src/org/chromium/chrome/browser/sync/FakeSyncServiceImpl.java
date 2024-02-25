@@ -11,11 +11,12 @@ import org.json.JSONArray;
 
 import org.chromium.base.Callback;
 import org.chromium.base.ThreadUtils;
-import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.components.signin.base.CoreAccountInfo;
 import org.chromium.components.signin.base.GoogleServiceAuthError;
 import org.chromium.components.sync.SyncService;
 import org.chromium.components.sync.SyncServiceImpl;
+import org.chromium.components.sync.UserSelectableType;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 
 import java.util.Date;
@@ -26,7 +27,7 @@ import java.util.Set;
  *
  * Only what has been needed for tests so far has been faked.
  */
-public class FakeSyncServiceImpl extends SyncService {
+public class FakeSyncServiceImpl implements SyncService {
     private final SyncService mDelegate;
 
     private boolean mEngineInitialized;
@@ -37,11 +38,10 @@ public class FakeSyncServiceImpl extends SyncService {
     private boolean mEncryptEverythingEnabled;
     private boolean mRequiresClientUpgrade;
     private boolean mCanSyncFeatureStart;
-    @GoogleServiceAuthError.State
-    private int mAuthError;
+    @GoogleServiceAuthError.State private int mAuthError;
 
     public FakeSyncServiceImpl() {
-        mDelegate = SyncServiceFactory.getForProfile(Profile.getLastUsedRegularProfile());
+        mDelegate = SyncServiceFactory.getForProfile(ProfileManager.getLastUsedRegularProfile());
     }
 
     @Override
@@ -52,10 +52,11 @@ public class FakeSyncServiceImpl extends SyncService {
 
     @AnyThread
     public void setEngineInitialized(boolean engineInitialized) {
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            mEngineInitialized = engineInitialized;
-            notifySyncStateChanged();
-        });
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    mEngineInitialized = engineInitialized;
+                    notifySyncStateChanged();
+                });
     }
 
     @Override
@@ -66,10 +67,11 @@ public class FakeSyncServiceImpl extends SyncService {
 
     @AnyThread
     public void setAuthError(@GoogleServiceAuthError.State int authError) {
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            mAuthError = authError;
-            notifySyncStateChanged();
-        });
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    mAuthError = authError;
+                    notifySyncStateChanged();
+                });
     }
 
     @Override
@@ -87,10 +89,12 @@ public class FakeSyncServiceImpl extends SyncService {
     @AnyThread
     public void setPassphraseRequiredForPreferredDataTypes(
             boolean passphraseRequiredForPreferredDataTypes) {
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            mPassphraseRequiredForPreferredDataTypes = passphraseRequiredForPreferredDataTypes;
-            notifySyncStateChanged();
-        });
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    mPassphraseRequiredForPreferredDataTypes =
+                            passphraseRequiredForPreferredDataTypes;
+                    notifySyncStateChanged();
+                });
     }
 
     @Override
@@ -101,10 +105,11 @@ public class FakeSyncServiceImpl extends SyncService {
 
     @AnyThread
     public void setTrustedVaultKeyRequired(boolean trustedVaultKeyRequired) {
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            mTrustedVaultKeyRequired = trustedVaultKeyRequired;
-            notifySyncStateChanged();
-        });
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    mTrustedVaultKeyRequired = trustedVaultKeyRequired;
+                    notifySyncStateChanged();
+                });
     }
 
     @Override
@@ -116,11 +121,12 @@ public class FakeSyncServiceImpl extends SyncService {
     @AnyThread
     public void setTrustedVaultKeyRequiredForPreferredDataTypes(
             boolean trustedVaultKeyRequiredForPreferredDataTypes) {
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            mTrustedVaultKeyRequiredForPreferredDataTypes =
-                    trustedVaultKeyRequiredForPreferredDataTypes;
-            notifySyncStateChanged();
-        });
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    mTrustedVaultKeyRequiredForPreferredDataTypes =
+                            trustedVaultKeyRequiredForPreferredDataTypes;
+                    notifySyncStateChanged();
+                });
     }
 
     @Override
@@ -131,10 +137,11 @@ public class FakeSyncServiceImpl extends SyncService {
 
     @AnyThread
     public void setTrustedVaultRecoverabilityDegraded(boolean recoverabilityDegraded) {
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            mTrustedVaultRecoverabilityDegraded = recoverabilityDegraded;
-            notifySyncStateChanged();
-        });
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    mTrustedVaultRecoverabilityDegraded = recoverabilityDegraded;
+                    notifySyncStateChanged();
+                });
     }
 
     @Override
@@ -151,10 +158,11 @@ public class FakeSyncServiceImpl extends SyncService {
 
     @AnyThread
     public void setCanSyncFeatureStart(boolean canSyncFeatureStart) {
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            mCanSyncFeatureStart = canSyncFeatureStart;
-            notifySyncStateChanged();
-        });
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    mCanSyncFeatureStart = canSyncFeatureStart;
+                    notifySyncStateChanged();
+                });
     }
 
     @Override
@@ -165,16 +173,19 @@ public class FakeSyncServiceImpl extends SyncService {
 
     @AnyThread
     public void setRequiresClientUpgrade(boolean requiresClientUpgrade) {
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            mRequiresClientUpgrade = requiresClientUpgrade;
-            notifySyncStateChanged();
-        });
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    mRequiresClientUpgrade = requiresClientUpgrade;
+                    notifySyncStateChanged();
+                });
     }
 
     @AnyThread
     public void setEncryptEverythingEnabled(boolean encryptEverythingEnabled) {
         TestThreadUtils.runOnUiThreadBlocking(
-                () -> { mEncryptEverythingEnabled = encryptEverythingEnabled; });
+                () -> {
+                    mEncryptEverythingEnabled = encryptEverythingEnabled;
+                });
     }
 
     private void notifySyncStateChanged() {
@@ -245,6 +256,11 @@ public class FakeSyncServiceImpl extends SyncService {
     @Override
     public void setSelectedTypes(boolean syncEverything, Set<Integer> enabledTypes) {
         mDelegate.setSelectedTypes(syncEverything, enabledTypes);
+    }
+
+    @Override
+    public void setSelectedType(@UserSelectableType int type, boolean isTypeOn) {
+        mDelegate.setSelectedType(type, isTypeOn);
     }
 
     @Override

@@ -29,17 +29,16 @@ import org.chromium.content_shell_apk.ContentShellActivityTestRule.RerunWithUpda
 
 import java.util.concurrent.Callable;
 
-/**
- * Tests rich text clipboard functionality.
- */
+/** Tests rich text clipboard functionality. */
 @RunWith(BaseJUnit4ClassRunner.class)
 public class ClipboardTest {
     @Rule
     public ContentShellActivityTestRule mActivityTestRule = new ContentShellActivityTestRule();
 
-    private static final String TEST_PAGE_DATA_URL = UrlUtils.encodeHtmlDataUri(
-            "<html><body>Hello, <a href=\"http://www.example.com/\">world</a>, how <b> "
-                    + "Chromium</b> doing today?</body></html>");
+    private static final String TEST_PAGE_DATA_URL =
+            UrlUtils.encodeHtmlDataUri(
+                    "<html><body>Hello, <a href=\"http://www.example.com/\">world</a>, how <b> "
+                            + "Chromium</b> doing today?</body></html>");
 
     private static final String EXPECTED_TEXT_RESULT = "Hello, world, how Chromium doing today?";
 
@@ -64,13 +63,16 @@ public class ClipboardTest {
     @DisabledTest(message = "https://crbug.com/791021")
     public void testCopyDocumentFragment() {
         ClipboardManager clipboardManager =
-                TestThreadUtils.runOnUiThreadBlockingNoException(new Callable<ClipboardManager>() {
-                    @Override
-                    public ClipboardManager call() {
-                        return (ClipboardManager) mActivityTestRule.getActivity().getSystemService(
-                                Context.CLIPBOARD_SERVICE);
-                    }
-                });
+                TestThreadUtils.runOnUiThreadBlockingNoException(
+                        new Callable<ClipboardManager>() {
+                            @Override
+                            public ClipboardManager call() {
+                                return (ClipboardManager)
+                                        mActivityTestRule
+                                                .getActivity()
+                                                .getSystemService(Context.CLIPBOARD_SERVICE);
+                            }
+                        });
 
         Assert.assertNotNull(clipboardManager);
 
@@ -87,23 +89,31 @@ public class ClipboardTest {
 
         // Verify that the data on the clipboard is what we expect it to be. For Android JB MR2
         // and higher we expect HTML content, for other versions the plain-text representation.
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            final ClipData clip = clipboardManager.getPrimaryClip();
-            Assert.assertEquals(EXPECTED_TEXT_RESULT,
-                    clip.getItemAt(0).coerceToText(mActivityTestRule.getActivity()));
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    final ClipData clip = clipboardManager.getPrimaryClip();
+                    Assert.assertEquals(
+                            EXPECTED_TEXT_RESULT,
+                            clip.getItemAt(0).coerceToText(mActivityTestRule.getActivity()));
 
-            String htmlText = clip.getItemAt(0).getHtmlText();
-            Assert.assertNotNull(htmlText);
-            Assert.assertTrue(htmlText.contains(EXPECTED_HTML_NEEDLE));
-        });
+                    String htmlText = clip.getItemAt(0).getHtmlText();
+                    Assert.assertNotNull(htmlText);
+                    Assert.assertTrue(htmlText.contains(EXPECTED_HTML_NEEDLE));
+                });
     }
 
     private void copy(final WebContentsImpl webContents) {
-        TestThreadUtils.runOnUiThreadBlocking(() -> { webContents.copy(); });
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    webContents.copy();
+                });
     }
 
     private void selectAll(final WebContentsImpl webContents) {
-        TestThreadUtils.runOnUiThreadBlocking(() -> { webContents.selectAll(); });
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    webContents.selectAll();
+                });
     }
 
     // Returns whether there is a primary clip with content on the current clipboard.

@@ -46,14 +46,9 @@ class COMPONENT_EXPORT(GEOLOCATION) SystemGeolocationSource {
   virtual void RegisterPermissionUpdateCallback(
       PermissionUpdateCallback callback) = 0;
 
-  // Informs system that some page wants to use geolocation. This function may
-  // be implemented if the OS specific implementation requires it.
-  virtual void TrackGeolocationAttempted() {}
-  // Informs that some page does not need to use geolocation any more. This
-  // function should be called only if the intention to use geolocation was
-  // signalled for the same page using TrackGeolocationAttempted(). This
-  // function may be implemented if the OS specific implementation requires it.
-  virtual void TrackGeolocationRelinquished() {}
+  // Opens system specific permission settings page (if available on this
+  // platform).
+  virtual void OpenSystemPermissionSetting() {}
 
 #if BUILDFLAG(IS_APPLE)
   // This method accepts a callback. The callback is called whenever a new

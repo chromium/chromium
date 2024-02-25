@@ -21,15 +21,12 @@
 #include "base/trace_event/trace_event.h"
 #include "cc/cc_export.h"
 #include "components/viz/common/resources/shared_image_format.h"
+#include "gpu/command_buffer/client/client_shared_image.h"
 #include "gpu/command_buffer/common/gl2_types.h"
 #include "gpu/command_buffer/common/mailbox.h"
 #include "gpu/command_buffer/common/sync_token.h"
 #include "ui/gfx/geometry/size.h"
-#include "ui/gfx/gpu_memory_buffer.h"
 
-namespace gfx {
-class GpuMemoryBuffer;
-}
 namespace gpu {
 namespace raster {
 class RasterInterface;
@@ -57,13 +54,8 @@ struct StagingBuffer {
   const viz::SharedImageFormat format;
   base::TimeTicks last_usage;
 
-  // The following fields are initialized by OneCopyRasterBufferProvider.
-  // Storage for the staging buffer.  This can be a GPU native or shared memory
-  // GpuMemoryBuffer.
-  std::unique_ptr<gfx::GpuMemoryBuffer> gpu_memory_buffer;
-
-  // Mailbox for the shared image bound to the GpuMemoryBuffer.
-  gpu::Mailbox mailbox;
+  // The shared image used by this StagingBuffer instance.
+  scoped_refptr<gpu::ClientSharedImage> client_shared_image;
 
   // Sync token for the last RasterInterface operations using the shared image.
   gpu::SyncToken sync_token;
@@ -76,6 +68,9 @@ struct StagingBuffer {
   // Id of the content that's rastered into this staging buffer.  Used to
   // retrieve staging buffer with known content for reuse for partial raster.
   uint64_t content_id = 0;
+
+  // Whether the underlying buffer is shared memory or GPU native.
+  bool is_shared_memory = false;
 };
 
 class CC_EXPORT StagingBufferPool final
@@ -133,7 +128,8 @@ class CC_EXPORT StagingBufferPool final
 
   mutable base::Lock lock_;
   // |lock_| must be acquired when accessing the following members.
-  using StagingBufferSet = std::set<const StagingBuffer*>;
+  using StagingBufferSet =
+      std::set<raw_ptr<const StagingBuffer, SetExperimental>>;
   StagingBufferSet buffers_;
   using StagingBufferDeque =
       base::circular_deque<std::unique_ptr<StagingBuffer>>;

@@ -34,7 +34,6 @@
 #include "base/task/single_thread_task_runner.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
 #include "services/network/public/mojom/referrer_policy.mojom-blink-forward.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/tokens/tokens.h"
 #include "third_party/blink/public/common/user_agent/user_agent_metadata.h"
 #include "third_party/blink/public/mojom/devtools/inspector_issue.mojom-blink-forward.h"
@@ -202,7 +201,7 @@ class CORE_EXPORT ExecutionContext : public Supplementable<ExecutionContext>,
 
   // Returns a reference to the current world we are in. If the current v8
   // context is empty, returns null.
-  scoped_refptr<const DOMWrapperWorld> GetCurrentWorld() const;
+  const DOMWrapperWorld* GetCurrentWorld() const;
 
   // Returns the content security policy to be used based on the current
   // JavaScript world we are in.
@@ -263,7 +262,6 @@ class CORE_EXPORT ExecutionContext : public Supplementable<ExecutionContext>,
                          bool discard_duplicates = false) {
     AddConsoleMessageImpl(message, discard_duplicates);
   }
-  virtual void AddInspectorIssue(mojom::blink::InspectorIssueInfoPtr) = 0;
   virtual void AddInspectorIssue(AuditsIssue) = 0;
 
   void CountDeprecation(WebFeature feature) override;
@@ -328,24 +326,24 @@ class CORE_EXPORT ExecutionContext : public Supplementable<ExecutionContext>,
   virtual FrameOrWorkerScheduler* GetScheduler() = 0;
 
   v8::Isolate* GetIsolate() const { return isolate_; }
-  Agent* GetAgent() const { return agent_; }
+  Agent* GetAgent() const { return agent_.Get(); }
 
   v8::MicrotaskQueue* GetMicrotaskQueue() const;
 
   OriginTrialContext* GetOriginTrialContext() const {
-    return origin_trial_context_;
+    return origin_trial_context_.Get();
   }
 
   RuntimeFeatureStateOverrideContext* GetRuntimeFeatureStateOverrideContext()
       const override {
-    return runtime_feature_state_override_context_;
+    return runtime_feature_state_override_context_.Get();
   }
 
   virtual TrustedTypePolicyFactory* GetTrustedTypes() const { return nullptr; }
   virtual bool RequireTrustedTypes() const;
 
   // FeatureContext override
-  bool FeatureEnabled(OriginTrialFeature) const override;
+  bool FeatureEnabled(mojom::blink::OriginTrialFeature) const override;
 
   // Tests whether the policy-controlled feature is enabled in this frame.
   // Optionally sends a report to any registered reporting observers or
@@ -379,6 +377,7 @@ class CORE_EXPORT ExecutionContext : public Supplementable<ExecutionContext>,
   virtual void ReportPermissionsPolicyViolation(
       mojom::blink::PermissionsPolicyFeature,
       mojom::blink::PolicyDisposition,
+      const std::optional<String>& reporting_endpoint,
       const String& message = g_empty_string) const {}
   virtual void ReportDocumentPolicyViolation(
       mojom::blink::DocumentPolicyFeature,
@@ -392,6 +391,10 @@ class CORE_EXPORT ExecutionContext : public Supplementable<ExecutionContext>,
   // Implementation of WindowOrWorkerGlobalScope.crossOriginIsolated.
   // https://html.spec.whatwg.org/C/webappapis.html#concept-settings-object-cross-origin-isolated-capability
   virtual bool CrossOriginIsolatedCapability() const = 0;
+
+  // Allows --disable-web-security (via `Agent::IsWebSecurityDisabled()`) to
+  // override `CrossOriginIsolatedCapability()` .
+  bool CrossOriginIsolatedCapabilityOrDisabledWebSecurity() const;
 
   // Returns true if scripts within this ExecutionContext are allowed to use
   // Trusted Context APIs (i.e. annotated with [IsolatedContext] IDL attribute).
@@ -421,9 +424,9 @@ class CORE_EXPORT ExecutionContext : public Supplementable<ExecutionContext>,
   // the lifetime of its parent. This is used for resource usage attribution,
   // where the resource usage of a child context will be charged to its parent
   // (and so on up the tree).
-  virtual absl::optional<ExecutionContextToken> GetParentExecutionContextToken()
+  virtual std::optional<ExecutionContextToken> GetParentExecutionContextToken()
       const {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   // ExecutionContext subclasses are usually the V8 global object, which means
@@ -469,8 +472,7 @@ class CORE_EXPORT ExecutionContext : public Supplementable<ExecutionContext>,
   };
 
   // Returns true if this execution context has obtained storage access via the
-  // Storage Access API. In practice, this can only return true for
-  // LocalDOMWindows.
+  // Storage Access API.
   virtual bool HasStorageAccess() const { return false; }
 
  protected:
@@ -488,7 +490,7 @@ class CORE_EXPORT ExecutionContext : public Supplementable<ExecutionContext>,
       mojom::blink::ConsoleMessageLevel,
       const String& message,
       bool discard_duplicates,
-      absl::optional<mojom::ConsoleMessageCategory> category) override;
+      std::optional<mojom::ConsoleMessageCategory> category) override;
   void AddConsoleMessageImpl(ConsoleMessage*,
                              bool discard_duplicates) override = 0;
 

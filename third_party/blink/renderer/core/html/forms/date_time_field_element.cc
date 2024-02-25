@@ -27,6 +27,7 @@
 
 #include "third_party/blink/renderer/core/css/style_change_reason.h"
 #include "third_party/blink/renderer/core/dom/document.h"
+#include "third_party/blink/renderer/core/dom/node_computed_style.h"
 #include "third_party/blink/renderer/core/dom/text.h"
 #include "third_party/blink/renderer/core/editing/frame_selection.h"
 #include "third_party/blink/renderer/core/editing/position.h"
@@ -81,8 +82,11 @@ void DateTimeFieldElement::DefaultKeyboardEventHandler(
     return;
 
   const String& key = keyboard_event.key();
+  bool is_horizontal =
+      GetComputedStyle() ? GetComputedStyle()->IsHorizontalWritingMode() : true;
 
-  if (key == "ArrowLeft") {
+  if ((is_horizontal && key == "ArrowLeft") ||
+      (!is_horizontal && key == "ArrowUp")) {
     if (!field_owner_)
       return;
     // FIXME: We'd like to use FocusController::advanceFocus(FocusDirectionLeft,
@@ -92,7 +96,8 @@ void DateTimeFieldElement::DefaultKeyboardEventHandler(
     return;
   }
 
-  if (key == "ArrowRight") {
+  if ((is_horizontal && key == "ArrowRight") ||
+      (!is_horizontal && key == "ArrowDown")) {
     if (!field_owner_)
       return;
     // FIXME: We'd like to use
@@ -106,7 +111,8 @@ void DateTimeFieldElement::DefaultKeyboardEventHandler(
   if (IsFieldOwnerReadOnly())
     return;
 
-  if (key == "ArrowDown") {
+  if ((is_horizontal && key == "ArrowDown") ||
+      (!is_horizontal && key == "ArrowLeft")) {
     if (keyboard_event.getModifierState("Alt"))
       return;
     keyboard_event.SetDefaultHandled();
@@ -114,7 +120,8 @@ void DateTimeFieldElement::DefaultKeyboardEventHandler(
     return;
   }
 
-  if (key == "ArrowUp") {
+  if ((is_horizontal && key == "ArrowUp") ||
+      (!is_horizontal && key == "ArrowRight")) {
     keyboard_event.SetDefaultHandled();
     StepUp();
     return;
@@ -146,7 +153,7 @@ void DateTimeFieldElement::SetFocused(bool value,
     }
   }
 
-  ContainerNode::SetFocused(value, focus_type);
+  Element::SetFocused(value, focus_type);
 }
 
 void DateTimeFieldElement::FocusOnNextField() {
@@ -215,7 +222,7 @@ void DateTimeFieldElement::SetDisabled() {
                           style_change_extra_data::g_disabled));
 }
 
-bool DateTimeFieldElement::SupportsFocus() const {
+bool DateTimeFieldElement::SupportsFocus(UpdateBehavior) const {
   return !IsDisabled() && !IsFieldOwnerDisabled();
 }
 

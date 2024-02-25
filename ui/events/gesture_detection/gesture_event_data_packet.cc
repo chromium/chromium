@@ -6,7 +6,7 @@
 
 #include "base/check_op.h"
 #include "base/notreached.h"
-#include "ui/events/gesture_detection/motion_event.h"
+#include "ui/events/velocity_tracker/motion_event.h"
 
 namespace ui {
 namespace {

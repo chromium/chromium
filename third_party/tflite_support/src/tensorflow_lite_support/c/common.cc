@@ -17,7 +17,7 @@ limitations under the License.
 
 #include <cstdlib>
 
-void TfLiteSupportErrorDelete(TfLiteSupportError* error) {
+void TfLiteSupportErrorDelete(TfLiteSupportError *error) {
   // `strdup` obtains memory using `malloc` and the memory needs to be
   // released using `free`.
   free(error->message);

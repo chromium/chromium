@@ -45,6 +45,10 @@ class RenderTextTestApi {
     render_text_->Draw(canvas, select_all);
   }
 
+  HorizontalAlignment GetCurrentHorizontalAlignment() {
+    return render_text_->GetCurrentHorizontalAlignment();
+  }
+
   const std::u16string& GetLayoutText() {
     return render_text_->GetLayoutText();
   }

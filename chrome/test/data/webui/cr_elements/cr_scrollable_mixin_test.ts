@@ -6,7 +6,7 @@
 import 'chrome://resources/polymer/v3_0/iron-list/iron-list.js';
 
 import {CrScrollableMixin} from 'chrome://resources/cr_elements/cr_scrollable_mixin.js';
-import {IronListElement} from 'chrome://resources/polymer/v3_0/iron-list/iron-list.js';
+import type {IronListElement} from 'chrome://resources/polymer/v3_0/iron-list/iron-list.js';
 import {flush, html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {waitBeforeNextRender} from 'chrome://webui-test/polymer_test_util.js';
@@ -167,7 +167,7 @@ suite('cr-scrollable-mixin items', function() {
   test('initially hidden', function(done) {
     const outer = testElement.shadowRoot!.querySelector('#outer')!;
     assertEquals(
-        0, ironList.shadowRoot!.querySelectorAll('.item')!.length,
+        0, ironList.shadowRoot!.querySelectorAll('.item').length,
         'should have no initial items');
     let resizeEvents = 0;
     const resizeListener = function() {
@@ -180,13 +180,13 @@ suite('cr-scrollable-mixin items', function() {
       if (resizeEvents === 1) {
         assertEquals(
             3,
-            testElement.shadowRoot!.querySelectorAll('.item')!.length,
+            testElement.shadowRoot!.querySelectorAll('.item').length,
             'should have default minimum number of items',
         );
       } else if (resizeEvents === 2) {
         assertEquals(
             testElement.items.length,
-            testElement.shadowRoot!.querySelectorAll('.item')!.length,
+            testElement.shadowRoot!.querySelectorAll('.item').length,
             'should render all items',
         );
         done();

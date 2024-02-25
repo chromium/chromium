@@ -50,7 +50,7 @@ class DownloadsHandler : public SettingsPageUIHandler,
   void HandleSelectDownloadLocation(const base::Value::List& args);
 
   // SelectFileDialog::Listener implementation.
-  void FileSelected(const base::FilePath& path,
+  void FileSelected(const ui::SelectedFileInfo& file,
                     int index,
                     void* params) override;
   void FileSelectionCanceled(void* params) override;

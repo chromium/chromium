@@ -54,7 +54,7 @@ class FakeLoginDetachableBaseModel : public LoginDetachableBaseModel {
   bool SetPairedBaseAsLastUsedByUser(const UserInfo& user_info) override;
 
  private:
-  raw_ptr<LoginDataDispatcher, ExperimentalAsh> data_dispatcher_;
+  raw_ptr<LoginDataDispatcher> data_dispatcher_;
 
   // Current pairing status.
   DetachableBasePairingStatus pairing_status_ =

@@ -22,6 +22,9 @@ constexpr mojom::RoutineVerdict kVerdict = mojom::RoutineVerdict::kNoProblem;
 
 constexpr mojom::RoutineType kType = mojom::RoutineType::kHttpFirewall;
 
+constexpr mojom::RoutineCallSource kSource =
+    mojom::RoutineCallSource::kDiagnosticsUI;
+
 }  // namespace
 
 class NetworkDiagnosticsRoutineTest : public ::testing::Test {
@@ -29,7 +32,9 @@ class NetworkDiagnosticsRoutineTest : public ::testing::Test {
   // Minimal definition for an inherited NetworkDiagnosticsRoutine class.
   class TestNetworkDiagnosticsRoutine : public NetworkDiagnosticsRoutine {
    public:
-    TestNetworkDiagnosticsRoutine() = default;
+    explicit TestNetworkDiagnosticsRoutine(
+        chromeos::network_diagnostics::mojom::RoutineCallSource source)
+        : NetworkDiagnosticsRoutine(source) {}
     TestNetworkDiagnosticsRoutine(const TestNetworkDiagnosticsRoutine&) =
         delete;
     TestNetworkDiagnosticsRoutine& operator=(
@@ -44,7 +49,8 @@ class NetworkDiagnosticsRoutineTest : public ::testing::Test {
 
   NetworkDiagnosticsRoutineTest() {
     test_network_diagnostics_routine_ =
-        std::make_unique<TestNetworkDiagnosticsRoutine>();
+        std::make_unique<TestNetworkDiagnosticsRoutine>(
+            mojom::RoutineCallSource::kUnknown);
   }
 
   TestNetworkDiagnosticsRoutine* test_network_diagnostics_routine() {
@@ -60,6 +66,10 @@ class NetworkDiagnosticsRoutineTest : public ::testing::Test {
   }
 
   void set_can_run(bool can_run) { can_run_ = can_run; }
+
+  void set_source(mojom::RoutineCallSource source) {
+    test_network_diagnostics_routine()->set_source_for_testing(source);
+  }
 
  private:
   std::unique_ptr<TestNetworkDiagnosticsRoutine>
@@ -91,6 +101,22 @@ TEST_F(NetworkDiagnosticsRoutineTest, NotRunRoutine) {
 
   routine->RunRoutine(
       base::BindLambdaForTesting([&](mojom::RoutineResultPtr result) {
+        EXPECT_EQ(result->verdict, kInitialVerdict);
+        EXPECT_FALSE(result->timestamp.is_null());
+        run_loop.Quit();
+      }));
+
+  run_loop.Run();
+}
+
+TEST_F(NetworkDiagnosticsRoutineTest, CorrectSource) {
+  TestNetworkDiagnosticsRoutine* routine = test_network_diagnostics_routine();
+  set_source(kSource);
+  base::RunLoop run_loop;
+
+  routine->RunRoutine(
+      base::BindLambdaForTesting([&](mojom::RoutineResultPtr result) {
+        EXPECT_EQ(result->source, kSource);
         EXPECT_EQ(result->verdict, kInitialVerdict);
         EXPECT_FALSE(result->timestamp.is_null());
         run_loop.Quit();

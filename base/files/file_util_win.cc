@@ -62,6 +62,8 @@ namespace {
 
 int g_extra_allowed_path_for_no_execute = 0;
 
+bool g_disable_secure_system_temp_for_testing = false;
+
 const DWORD kFileShareAll =
     FILE_SHARE_READ | FILE_SHARE_WRITE | FILE_SHARE_DELETE;
 const wchar_t kDefaultTempDirPrefix[] = L"ChromiumTemp";
@@ -688,6 +690,10 @@ bool CreateTemporaryDirInDir(const FilePath& base_dir,
 }
 
 bool GetSecureSystemTemp(FilePath* temp) {
+  if (g_disable_secure_system_temp_for_testing) {
+    return false;
+  }
+
   ScopedBlockingCall scoped_blocking_call(FROM_HERE, BlockingType::MAY_BLOCK);
 
   CHECK(temp);
@@ -711,6 +717,10 @@ bool GetSecureSystemTemp(FilePath* temp) {
   return false;
 }
 
+void SetDisableSecureSystemTempForTesting(bool disabled) {
+  g_disable_secure_system_temp_for_testing = disabled;
+}
+
 // The directory is created under `GetSecureSystemTemp` for security reasons if
 // the caller is admin to avoid attacks from lower privilege processes.
 //
@@ -719,7 +729,8 @@ bool GetSecureSystemTemp(FilePath* temp) {
 // `GetSecureSystemTemp` could be because `%systemroot%\SystemTemp` does not
 // exist, or unable to resolve `DIR_WINDOWS` or `DIR_PROGRAM_FILES`, say due to
 // registry redirection, or unable to create a directory due to
-// `GetSecureSystemTemp` being read-only or having atypical ACLs.
+// `GetSecureSystemTemp` being read-only or having atypical ACLs. Tests can also
+// disable this behavior resulting in false being returned.
 bool CreateNewTempDirectory(const FilePath::StringType& prefix,
                             FilePath* new_temp_path) {
   ScopedBlockingCall scoped_blocking_call(FROM_HERE, BlockingType::MAY_BLOCK);
@@ -805,11 +816,11 @@ bool NormalizeFilePath(const FilePath& path, FilePath* real_path) {
   // The expansion of |path| into a full path may make it longer.
   constexpr int kMaxPathLength = MAX_PATH + 10;
   wchar_t native_file_path[kMaxPathLength];
-  // kMaxPathLength includes space for trailing '\0' so we subtract 1.
-  // Returned length, used_wchars, does not include trailing '\0'.
-  // Failure is indicated by returning 0 or >= kMaxPathLength.
+  // On success, `used_wchars` returns the number of written characters, not
+  // include the trailing '\0'. Thus, failure is indicated by returning 0 or >=
+  // kMaxPathLength.
   DWORD used_wchars = ::GetFinalPathNameByHandle(
-      file.GetPlatformFile(), native_file_path, kMaxPathLength - 1,
+      file.GetPlatformFile(), native_file_path, kMaxPathLength,
       FILE_NAME_NORMALIZED | VOLUME_NAME_NT);
 
   if (used_wchars >= kMaxPathLength || used_wchars == 0)
@@ -972,23 +983,26 @@ File FILEToFile(FILE* file_stream) {
   return File(ScopedPlatformFile(other_handle));
 }
 
-int ReadFile(const FilePath& filename, char* data, int max_size) {
+std::optional<uint64_t> ReadFile(const FilePath& filename, span<char> buffer) {
   ScopedBlockingCall scoped_blocking_call(FROM_HERE, BlockingType::MAY_BLOCK);
   win::ScopedHandle file(CreateFile(filename.value().c_str(), GENERIC_READ,
                                     FILE_SHARE_READ | FILE_SHARE_WRITE, NULL,
                                     OPEN_EXISTING, FILE_FLAG_SEQUENTIAL_SCAN,
                                     NULL));
-  if (!file.is_valid() || max_size < 0)
-    return -1;
-
-  DWORD read;
-  if (::ReadFile(file.get(), data, static_cast<DWORD>(max_size), &read, NULL)) {
-    // TODO(crbug.com/1333521): Change to return some type with a uint64_t size
-    // and eliminate this cast.
-    return checked_cast<int>(read);
+  if (!file.is_valid()) {
+    return std::nullopt;
   }
 
-  return -1;
+  // TODO(crbug.com/1333521): Consider supporting reading more than INT_MAX
+  // bytes.
+  DWORD bytes_to_read = static_cast<DWORD>(checked_cast<int>(buffer.size()));
+
+  DWORD bytes_read;
+  if (!::ReadFile(file.get(), buffer.data(), bytes_to_read, &bytes_read,
+                  nullptr)) {
+    return std::nullopt;
+  }
+  return bytes_read;
 }
 
 int WriteFile(const FilePath& filename, const char* data, int size) {

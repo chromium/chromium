@@ -21,6 +21,8 @@ class SharedURLLoaderFactory;
 
 namespace trusted_vault {
 
+enum class SecurityDomainId;
+
 // This class is created on UI thread and used/destroyed on trusted vault
 // backend thread.
 class TrustedVaultConnectionImpl : public TrustedVaultConnection {
@@ -35,6 +37,7 @@ class TrustedVaultConnectionImpl : public TrustedVaultConnection {
       base::Hours(1);
 
   TrustedVaultConnectionImpl(
+      SecurityDomainId security_domain,
       const GURL& trusted_vault_service_url,
       std::unique_ptr<network::PendingSharedURLLoaderFactory>
           pending_url_loader_factory,
@@ -51,7 +54,7 @@ class TrustedVaultConnectionImpl : public TrustedVaultConnection {
       int last_trusted_vault_key_version,
       const SecureBoxPublicKey& authentication_factor_public_key,
       AuthenticationFactorType authentication_factor_type,
-      absl::optional<int> authentication_factor_type_hint,
+      std::optional<int> authentication_factor_type_hint,
       RegisterAuthenticationFactorCallback callback) override;
 
   std::unique_ptr<Request> RegisterDeviceWithoutKeys(
@@ -69,6 +72,11 @@ class TrustedVaultConnectionImpl : public TrustedVaultConnection {
       const CoreAccountInfo& account_info,
       IsRecoverabilityDegradedCallback callback) override;
 
+  std::unique_ptr<TrustedVaultConnection::Request>
+  DownloadAuthenticationFactorsRegistrationState(
+      const CoreAccountInfo& account_info,
+      DownloadAuthenticationFactorsRegistrationStateCallback callback) override;
+
  private:
   std::unique_ptr<Request> SendJoinSecurityDomainsRequest(
       const CoreAccountInfo& account_info,
@@ -76,8 +84,10 @@ class TrustedVaultConnectionImpl : public TrustedVaultConnection {
       int last_trusted_vault_key_version,
       const SecureBoxPublicKey& authentication_factor_public_key,
       AuthenticationFactorType authentication_factor_type,
-      absl::optional<int> authentication_factor_type_hint,
+      std::optional<int> authentication_factor_type_hint,
       JoinSecurityDomainsCallback callback);
+
+  const SecurityDomainId security_domain_;
 
   // SharedURLLoaderFactory is created lazily, because it needs to be done on
   // the backend sequence, while this class ctor is called on UI thread.

@@ -33,13 +33,8 @@ class VIZ_COMMON_EXPORT SubtreeCaptureId {
   constexpr bool is_valid() const { return !subtree_id_.is_zero(); }
   constexpr const base::Token& subtree_id() const { return subtree_id_; }
 
-  bool operator==(const SubtreeCaptureId& rhs) const {
-    return subtree_id_ == rhs.subtree_id_;
-  }
-  bool operator!=(const SubtreeCaptureId& rhs) const { return !(*this == rhs); }
-  bool operator<(const SubtreeCaptureId& rhs) const {
-    return subtree_id_ < rhs.subtree_id_;
-  }
+  friend std::strong_ordering operator<=>(const SubtreeCaptureId&,
+                                          const SubtreeCaptureId&) = default;
 
   std::string ToString() const;
 

@@ -13,7 +13,7 @@
 
 namespace content {
 
-class MDocProvider;
+class DigitalIdentityProvider;
 class FederatedIdentityModalDialogViewDelegate;
 
 // Implements ContentBrowserClient to allow calls out to the Chrome layer to
@@ -31,30 +31,34 @@ class WebIdTestContentBrowserClient
   std::unique_ptr<IdentityRequestDialogController>
   CreateIdentityRequestDialogController(WebContents* web_contents) override;
 
-  std::unique_ptr<MDocProvider> CreateMDocProvider() override;
+  std::unique_ptr<DigitalIdentityProvider> CreateDigitalIdentityProvider()
+      override;
 
   // This needs to be called once for every WebID invocation. If there is a
   // need in future to generate these in sequence then a callback can be used.
   void SetIdentityRequestDialogController(
       std::unique_ptr<IdentityRequestDialogController> controller);
 
-  void SetMDocProvider(std::unique_ptr<MDocProvider> provider);
+  void SetDigitalIdentityProvider(
+      std::unique_ptr<DigitalIdentityProvider> provider);
 
   void SetIdentityRegistry(
       WebContents* web_contents,
       base::WeakPtr<FederatedIdentityModalDialogViewDelegate> delegate,
-      const url::Origin& url);
+      const GURL& config_url);
 
   IdentityRequestDialogController*
   GetIdentityRequestDialogControllerForTests() {
     return test_dialog_controller_.get();
   }
 
-  MDocProvider* GetMDocProviderForTests() { return test_mdoc_provider_.get(); }
+  DigitalIdentityProvider* GetDigitalIdentityProviderForTests() {
+    return test_digital_identity_provider_.get();
+  }
 
  private:
   std::unique_ptr<IdentityRequestDialogController> test_dialog_controller_;
-  std::unique_ptr<MDocProvider> test_mdoc_provider_;
+  std::unique_ptr<DigitalIdentityProvider> test_digital_identity_provider_;
 };
 
 }  // namespace content

@@ -10,8 +10,8 @@
 #include <string>
 #include <type_traits>
 
+#include <optional>
 #include "base/check.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace cast {
 namespace utils {
@@ -118,7 +118,7 @@ class GrpcStatusOr {
 
  private:
   grpc::Status status_;
-  absl::optional<T> data_;
+  std::optional<T> data_;
 };
 
 }  // namespace utils

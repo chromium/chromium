@@ -5,13 +5,15 @@
 #ifndef PRINTING_PRINT_JOB_CONSTANTS_CUPS_H_
 #define PRINTING_PRINT_JOB_CONSTANTS_CUPS_H_
 
+#include <string_view>
+
 #include "base/component_export.h"
 #include "build/build_config.h"
 #include "printing/buildflags/buildflags.h"
 
 #if BUILDFLAG(IS_MAC)
 #include "base/containers/span.h"
-#include "base/strings/string_piece.h"
+
 #endif
 
 #if !BUILDFLAG(USE_CUPS)
@@ -87,14 +89,14 @@ COMPONENT_EXPORT(PRINTING_BASE) extern const char kZero[];
 // particular printer manufacturer, and the corresponding names used with that
 // to choose either black and white or color printing.
 struct COMPONENT_EXPORT(PRINTING_BASE) PpdColorSetting {
-  constexpr PpdColorSetting(base::StringPiece name,
-                            base::StringPiece bw,
-                            base::StringPiece color)
+  constexpr PpdColorSetting(std::string_view name,
+                            std::string_view bw,
+                            std::string_view color)
       : name(name), bw(bw), color(color) {}
 
-  base::StringPiece name;
-  base::StringPiece bw;
-  base::StringPiece color;
+  std::string_view name;
+  std::string_view bw;
+  std::string_view color;
 };
 
 COMPONENT_EXPORT(PRINTING_BASE)

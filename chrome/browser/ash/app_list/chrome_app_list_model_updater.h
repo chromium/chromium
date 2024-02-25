@@ -57,16 +57,23 @@ class ChromeAppListModelUpdater : public AppListModelUpdater,
   void SetSearchEngineIsGoogle(bool is_google) override;
   void RecalculateWouldTriggerLauncherSearchIph() override;
   void PublishSearchResults(
-      const std::vector<ChromeSearchResult*>& results,
+      const std::vector<raw_ptr<ChromeSearchResult, VectorExperimental>>&
+          results,
       const std::vector<ash::AppListSearchResultCategory>& categories) override;
   void ClearSearchResults() override;
-  std::vector<ChromeSearchResult*> GetPublishedSearchResultsForTest() override;
+  std::vector<raw_ptr<ChromeSearchResult, VectorExperimental>>
+  GetPublishedSearchResultsForTest() override;
+  void SetAccessibleName(const std::string& id,
+                         const std::string& name) override;
 
   // Methods only used by ChromeAppListItem that talk to ash directly.
   void SetItemIconVersion(const std::string& id, int icon_version) override;
   void SetItemIconAndColor(const std::string& id,
                            const gfx::ImageSkia& icon,
-                           const ash::IconColor& icon_color) override;
+                           const ash::IconColor& icon_color,
+                           bool is_placeholder_icon) override;
+  void SetItemBadgeIcon(const std::string& id,
+                        const gfx::ImageSkia& badge_icon) override;
   void SetItemName(const std::string& id, const std::string& name) override;
   void SetAppStatus(const std::string& id, ash::AppStatus app_status) override;
   void SetItemPosition(const std::string& id,
@@ -86,6 +93,7 @@ class ChromeAppListModelUpdater : public AppListModelUpdater,
 
   void ActivateChromeItem(const std::string& id, int event_flags) override;
   void LoadAppIcon(const std::string& id) override;
+  void UpdateProgress(const std::string& id, float progress) override;
 
   // Methods for item querying.
   ChromeAppListItem* FindItem(const std::string& id) override;
@@ -110,7 +118,6 @@ class ChromeAppListModelUpdater : public AppListModelUpdater,
       bool update_folder) override;
 
   void OnAppListHidden() override;
-  void CommitTemporarySortOrder() override;
 
   void AddObserver(AppListModelUpdaterObserver* observer) override;
   void RemoveObserver(AppListModelUpdaterObserver* observer) override;
@@ -137,6 +144,7 @@ class ChromeAppListModelUpdater : public AppListModelUpdater,
                            const std::string& new_name) override;
   void RequestAppListSort(ash::AppListSortOrder order) override;
   void RequestAppListSortRevert() override;
+  void RequestCommitTemporarySortOrder() override;
 
   // Returns the temporary sort order.
   ash::AppListSortOrder GetTemporarySortOrderForTest() const;
@@ -207,13 +215,11 @@ class ChromeAppListModelUpdater : public AppListModelUpdater,
   void OnFeatureEngagementTrackerInitialized(bool success);
 
   // Indicates the profile that the model updater is associated with.
-  const raw_ptr<Profile, ExperimentalAsh> profile_ = nullptr;
+  const raw_ptr<Profile> profile_ = nullptr;
 
   // Provides the access to the methods for ordering app list items.
-  const raw_ptr<app_list::reorder::AppListReorderDelegate, ExperimentalAsh>
-      order_delegate_;
-  const raw_ptr<app_list::AppListSyncModelSanitizer, ExperimentalAsh>
-      sync_model_sanitizer_;
+  const raw_ptr<app_list::reorder::AppListReorderDelegate> order_delegate_;
+  const raw_ptr<app_list::AppListSyncModelSanitizer> sync_model_sanitizer_;
 
   // A helper class to manage app list items. It never talks to ash.
   std::unique_ptr<ChromeAppListItemManager> item_manager_;
@@ -225,12 +231,13 @@ class ChromeAppListModelUpdater : public AppListModelUpdater,
   bool is_active_ = false;
 
   // The most recently list of search results.
-  std::vector<ChromeSearchResult*> published_results_;
+  std::vector<raw_ptr<ChromeSearchResult, VectorExperimental>>
+      published_results_;
   base::ObserverList<AppListModelUpdaterObserver> observers_;
   bool search_engine_is_google_ = false;
 
   // The id of the item whose icon update is in progress.
-  absl::optional<std::string> item_with_icon_update_;
+  std::optional<std::string> item_with_icon_update_;
 
   // Set when sort is triggered and reset when exiting the temporary sort
   // status.

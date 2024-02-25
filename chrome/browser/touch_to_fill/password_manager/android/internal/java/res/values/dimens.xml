@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+Copyright 2019 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<resources>
+    <dimen name="touch_to_fill_favicon_size">24dp</dimen>
+    <dimen name="touch_to_fill_favicon_size_modern">32dp</dimen>
+    <dimen name="touch_to_fill_avatar">80dp</dimen>
+    <dimen name="touch_to_fill_sheet_margin">16dp</dimen>
+    <dimen name="touch_to_fill_sheet_bottom_padding_button">22dp</dimen>
+    <dimen name="touch_to_fill_list_item_margin">24dp</dimen>
+    <dimen name="touch_to_fill_list_item_margin_vertical">14dp</dimen>
+    <dimen name="touch_to_fill_list_item_text_min_height">20dp</dimen>
+</resources>

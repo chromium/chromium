@@ -5,8 +5,9 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_GRAPHICS_GPU_WEBGL_IMAGE_CONVERSION_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_GRAPHICS_GPU_WEBGL_IMAGE_CONVERSION_H_
 
+#include <optional>
+
 #include "base/memory/scoped_refptr.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/renderer/platform/graphics/image.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
@@ -120,27 +121,6 @@ class PLATFORM_EXPORT WebGLImageConversion final {
     GLint skip_pixels;
     GLint skip_rows;
     GLint skip_images;
-  };
-
-  class PLATFORM_EXPORT ImageExtractor final {
-    STACK_ALLOCATED();
-
-   public:
-    // Extract an SkImage from an Image. If the alpha channel will ultimately
-    // be premultiplied, then `premultiply_alpha` should be true. If the color
-    // space of image is to be ignored then `target_color_space` is to be
-    // nullptr. Otherwise, `target_color_space` should be set to the color space
-    // that the image will ultimately be converted to.
-    ImageExtractor(Image*,
-                   bool premultiply_alpha,
-                   sk_sp<SkColorSpace> target_color_space);
-    ImageExtractor(const ImageExtractor&) = delete;
-    ImageExtractor& operator=(const ImageExtractor&) = delete;
-
-    sk_sp<SkImage> GetSkImage() { return sk_image_; }
-
-   private:
-    sk_sp<SkImage> sk_image_;
   };
 
   // Convert a GL format and GL type to a DataFormat. This will return

@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+Copyright 2023 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="24dp"
+    android:height="24dp"
+    android:viewportWidth="24"
+    android:viewportHeight="24">
+  <path
+      android:pathData="M3.575,20.425C3.975,20.808 4.45,21 5,21H14V19H5V5H7V8H17V5H19V13H21L21,5C21,4.45 20.8,3.983 20.4,3.6C20.017,3.2 19.55,3 19,3H14.85C14.667,2.417 14.308,1.942 13.775,1.575C13.258,1.192 12.667,1 12,1C11.367,1 10.783,1.192 10.25,1.575C9.717,1.942 9.358,2.417 9.175,3H5C4.45,3 3.975,3.2 3.575,3.6C3.192,3.983 3,4.45 3,5V19C3,19.55 3.192,20.025 3.575,20.425ZM12.7,4.725C12.517,4.908 12.283,5 12,5C11.717,5 11.475,4.908 11.275,4.725C11.092,4.525 11,4.283 11,4C11,3.717 11.092,3.483 11.275,3.3C11.475,3.1 11.717,3 12,3C12.283,3 12.517,3.1 12.7,3.3C12.9,3.483 13,3.717 13,4C13,4.283 12.9,4.525 12.7,4.725Z"
+      android:fillColor="@android:color/black"
+      android:fillType="evenOdd"/>
+  <path
+      android:pathData="M17,16h2v5h-2z"
+      android:fillColor="@android:color/black"/>
+  <path
+      android:pathData="M15,15h6v2h-6z"
+      android:fillColor="@android:color/black"/>
+</vector>

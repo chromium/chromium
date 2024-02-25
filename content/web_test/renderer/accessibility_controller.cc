@@ -8,7 +8,7 @@
 #include "gin/handle.h"
 #include "gin/object_template_builder.h"
 #include "gin/wrappable.h"
-#include "third_party/blink/public/web/blink.h"
+#include "third_party/blink/public/platform/scheduler/web_agent_group_scheduler.h"
 #include "third_party/blink/public/web/web_ax_context.h"
 #include "third_party/blink/public/web/web_document.h"
 #include "third_party/blink/public/web/web_element.h"
@@ -61,7 +61,7 @@ gin::WrapperInfo AccessibilityControllerBindings::kWrapperInfo = {
 void AccessibilityControllerBindings::Install(
     base::WeakPtr<AccessibilityController> controller,
     blink::WebLocalFrame* frame) {
-  v8::Isolate* isolate = blink::MainThreadIsolate();
+  v8::Isolate* isolate = frame->GetAgentGroupScheduler()->Isolate();
   v8::HandleScope handle_scope(isolate);
   v8::Local<v8::Context> context = frame->MainWorldScriptContext();
   if (context.IsEmpty())
@@ -174,8 +174,8 @@ void AccessibilityController::Reset() {
 void AccessibilityController::Install(blink::WebLocalFrame* frame) {
   ax_context_ = std::make_unique<blink::WebAXContext>(frame->GetDocument(),
                                                       ui::kAXModeComplete);
-  elements_ = std::make_unique<WebAXObjectProxyList>(*ax_context_);
-  frame->View()->GetSettings()->SetInlineTextBoxAccessibilityEnabled(true);
+  elements_ = std::make_unique<WebAXObjectProxyList>(
+      frame->GetAgentGroupScheduler()->Isolate(), *ax_context_);
 
   AccessibilityControllerBindings::Install(weak_factory_.GetWeakPtr(), frame);
 }
@@ -203,14 +203,13 @@ void AccessibilityController::PostNotification(
   if (!IsInstalled())
     return;
 
-  v8::Isolate* isolate = blink::MainThreadIsolate();
-  v8::HandleScope handle_scope(isolate);
-
   blink::WebFrame* frame = web_view()->MainFrame();
   if (!frame || frame->IsWebRemoteFrame())
     return;
   blink::WebLocalFrame* local_frame = frame->ToWebLocalFrame();
 
+  v8::Isolate* isolate = local_frame->GetAgentGroupScheduler()->Isolate();
+  v8::HandleScope handle_scope(isolate);
   v8::Local<v8::Context> context = local_frame->MainWorldScriptContext();
   if (context.IsEmpty())
     return;
@@ -249,7 +248,12 @@ void AccessibilityController::LogAccessibilityEvents() {
 
 void AccessibilityController::SetNotificationListener(
     v8::Local<v8::Function> callback) {
-  v8::Isolate* isolate = blink::MainThreadIsolate();
+  blink::WebFrame* frame = web_view()->MainFrame();
+  if (!frame || frame->IsWebRemoteFrame()) {
+    return;
+  }
+  blink::WebLocalFrame* local_frame = frame->ToWebLocalFrame();
+  v8::Isolate* isolate = local_frame->GetAgentGroupScheduler()->Isolate();
   notification_callback_.Reset(isolate, callback);
 }
 
@@ -337,6 +341,12 @@ blink::WebAXObject AccessibilityController::GetAccessibilityObjectForMainFrame()
          "local frame.";
   return blink::WebAXObject::FromWebDocument(
       web_view()->MainFrame()->ToWebLocalFrame()->GetDocument());
+}
+
+void AccessibilityController::Remove(unsigned axid) {
+  if (IsInstalled()) {
+    elements_->Remove(axid);
+  }
 }
 
 }  // namespace content

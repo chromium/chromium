@@ -55,6 +55,10 @@ void DocumentStyleSheetCollector::AppendSheetForList(StyleSheet* sheet) {
   }
 }
 
+void DocumentStyleSheetCollector::AppendRuleSetDiff(RuleSetDiff* diff) {
+  collection_->AppendRuleSetDiff(diff);
+}
+
 ActiveDocumentStyleSheetCollector::ActiveDocumentStyleSheetCollector(
     StyleSheetCollection& collection)
     : DocumentStyleSheetCollector(&collection, nullptr) {}

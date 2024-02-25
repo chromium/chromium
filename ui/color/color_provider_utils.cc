@@ -53,21 +53,85 @@ constexpr RendererColorIdTable kRendererColorIdMap[] = {
      kColorOverlayScrollbarStrokeHoveredDark},
     {RendererColorId::kColorOverlayScrollbarStrokeHoveredLight,
      kColorOverlayScrollbarStrokeHoveredLight},
-    {RendererColorId::kColorScrollbarArrowBackgroundHovered,
-     kColorScrollbarArrowBackgroundHovered},
-    {RendererColorId::kColorScrollbarArrowBackgroundPressed,
-     kColorScrollbarArrowBackgroundPressed},
-    {RendererColorId::kColorScrollbarArrowForeground,
-     kColorScrollbarArrowForeground},
-    {RendererColorId::kColorScrollbarArrowForegroundPressed,
-     kColorScrollbarArrowForegroundPressed},
-    {RendererColorId::kColorScrollbarCorner, kColorScrollbarCorner},
-    {RendererColorId::kColorScrollbarThumb, kColorScrollbarThumb},
-    {RendererColorId::kColorScrollbarThumbHovered, kColorScrollbarThumbHovered},
-    {RendererColorId::kColorScrollbarThumbInactive,
-     kColorScrollbarThumbInactive},
-    {RendererColorId::kColorScrollbarThumbPressed, kColorScrollbarThumbPressed},
-    {RendererColorId::kColorScrollbarTrack, kColorScrollbarTrack},
+    {RendererColorId::kColorWebNativeControlAccent,
+     kColorWebNativeControlAccent},
+    {RendererColorId::kColorWebNativeControlAccentDisabled,
+     kColorWebNativeControlAccentDisabled},
+    {RendererColorId::kColorWebNativeControlAccentHovered,
+     kColorWebNativeControlAccentHovered},
+    {RendererColorId::kColorWebNativeControlAccentPressed,
+     kColorWebNativeControlAccentPressed},
+    {RendererColorId::kColorWebNativeControlAutoCompleteBackground,
+     kColorWebNativeControlAutoCompleteBackground},
+    {RendererColorId::kColorWebNativeControlBackground,
+     kColorWebNativeControlBackground},
+    {RendererColorId::kColorWebNativeControlBackgroundDisabled,
+     kColorWebNativeControlBackgroundDisabled},
+    {RendererColorId::kColorWebNativeControlBorder,
+     kColorWebNativeControlBorder},
+    {RendererColorId::kColorWebNativeControlBorderDisabled,
+     kColorWebNativeControlBorderDisabled},
+    {RendererColorId::kColorWebNativeControlBorderHovered,
+     kColorWebNativeControlBorderHovered},
+    {RendererColorId::kColorWebNativeControlBorderPressed,
+     kColorWebNativeControlBorderPressed},
+    {RendererColorId::kColorWebNativeControlButtonBorder,
+     kColorWebNativeControlButtonBorder},
+    {RendererColorId::kColorWebNativeControlButtonBorderDisabled,
+     kColorWebNativeControlButtonBorderDisabled},
+    {RendererColorId::kColorWebNativeControlButtonBorderHovered,
+     kColorWebNativeControlButtonBorderHovered},
+    {RendererColorId::kColorWebNativeControlButtonBorderPressed,
+     kColorWebNativeControlButtonBorderPressed},
+    {RendererColorId::kColorWebNativeControlButtonFill,
+     kColorWebNativeControlButtonFill},
+    {RendererColorId::kColorWebNativeControlButtonFillDisabled,
+     kColorWebNativeControlButtonFillDisabled},
+    {RendererColorId::kColorWebNativeControlButtonFillHovered,
+     kColorWebNativeControlButtonFillHovered},
+    {RendererColorId::kColorWebNativeControlButtonFillPressed,
+     kColorWebNativeControlButtonFillPressed},
+    {RendererColorId::kColorWebNativeControlFill, kColorWebNativeControlFill},
+    {RendererColorId::kColorWebNativeControlFillDisabled,
+     kColorWebNativeControlFillDisabled},
+    {RendererColorId::kColorWebNativeControlFillHovered,
+     kColorWebNativeControlFillHovered},
+    {RendererColorId::kColorWebNativeControlFillPressed,
+     kColorWebNativeControlFillPressed},
+    {RendererColorId::kColorWebNativeControlLightenLayer,
+     kColorWebNativeControlLightenLayer},
+    {RendererColorId::kColorWebNativeControlProgressValue,
+     kColorWebNativeControlProgressValue},
+    {RendererColorId::kColorWebNativeControlScrollbarArrowBackgroundHovered,
+     kColorWebNativeControlScrollbarArrowBackgroundHovered},
+    {RendererColorId::kColorWebNativeControlScrollbarArrowBackgroundPressed,
+     kColorWebNativeControlScrollbarArrowBackgroundPressed},
+    {RendererColorId::kColorWebNativeControlScrollbarArrowForeground,
+     kColorWebNativeControlScrollbarArrowForeground},
+    {RendererColorId::kColorWebNativeControlScrollbarArrowForegroundPressed,
+     kColorWebNativeControlScrollbarArrowForegroundPressed},
+    {RendererColorId::kColorWebNativeControlScrollbarCorner,
+     kColorWebNativeControlScrollbarCorner},
+    {RendererColorId::kColorWebNativeControlScrollbarThumb,
+     kColorWebNativeControlScrollbarThumb},
+    {RendererColorId::kColorWebNativeControlScrollbarThumbHovered,
+     kColorWebNativeControlScrollbarThumbHovered},
+    {RendererColorId::kColorWebNativeControlScrollbarThumbInactive,
+     kColorWebNativeControlScrollbarThumbInactive},
+    {RendererColorId::kColorWebNativeControlScrollbarThumbOverlayMinimalMode,
+     kColorWebNativeControlScrollbarThumbOverlayMinimalMode},
+    {RendererColorId::kColorWebNativeControlScrollbarThumbPressed,
+     kColorWebNativeControlScrollbarThumbPressed},
+    {RendererColorId::kColorWebNativeControlScrollbarTrack,
+     kColorWebNativeControlScrollbarTrack},
+    {RendererColorId::kColorWebNativeControlSlider,
+     kColorWebNativeControlSlider},
+    {RendererColorId::kColorWebNativeControlSliderDisabled,
+     kColorWebNativeControlSliderDisabled},
+    {RendererColorId::kColorWebNativeControlSliderHovered,
+     kColorWebNativeControlSliderHovered},
+    {RendererColorId::kColorWebNativeControlSliderPressed,
+     kColorWebNativeControlSliderPressed},
 };
 
 ColorProviderUtilsCallbacks* g_color_provider_utils_callbacks = nullptr;
@@ -94,6 +158,28 @@ base::StringPiece ContrastModeName(
       return "kNormal";
     case ColorProviderKey::ContrastMode::kHigh:
       return "kHigh";
+    default:
+      return "<invalid>";
+  }
+}
+
+base::StringPiece ForcedColorsName(
+    ColorProviderKey::ForcedColors forced_colors) {
+  switch (forced_colors) {
+    case ColorProviderKey::ForcedColors::kNone:
+      return "kNone";
+    case ColorProviderKey::ForcedColors::kEmulated:
+      return "kEmulated";
+    case ColorProviderKey::ForcedColors::kActive:
+      return "kActive";
+    case ColorProviderKey::ForcedColors::kDusk:
+      return "kDusk";
+    case ColorProviderKey::ForcedColors::kDesert:
+      return "kDesert";
+    case ColorProviderKey::ForcedColors::kBlack:
+      return "kBlack";
+    case ColorProviderKey::ForcedColors::kWhite:
+      return "kWhite";
     default:
       return "<invalid>";
   }
@@ -312,32 +398,372 @@ ColorProvider CreateEmulatedForcedColorsColorProvider(bool dark_mode) {
 
   // Set the colors for the scrollbar parts based on the emulated definitions
   // above.
-  mixer[kColorScrollbarArrowForeground] = {kColorForcedBtnText};
-  mixer[kColorScrollbarArrowForegroundPressed] = {kColorForcedHighlight};
-  mixer[kColorScrollbarCorner] = {kColorForcedBtnFace};
-  CompleteFluentScrollbarColorsDefinition(mixer);
+  mixer[kColorWebNativeControlScrollbarArrowForeground] = {kColorForcedBtnText};
+  mixer[kColorWebNativeControlScrollbarThumbOverlayMinimalMode] = {
+      kColorWebNativeControlScrollbarArrowForeground};
+  mixer[kColorWebNativeControlScrollbarArrowForegroundPressed] = {
+      kColorForcedHighlight};
+  mixer[kColorWebNativeControlScrollbarCorner] = {kColorForcedBtnFace};
+  CompleteControlsForcedColorsDefinition(mixer);
+
+  // Set these color ids as some non web native RendererColorIds depend on their
+  // values.
+  mixer[kColorPrimaryBackground] = {kColorForcedWindow};
+  mixer[kColorEndpointForeground] =
+      GetColorWithMaxContrast(kColorPrimaryBackground);
+  mixer[kColorEndpointBackground] =
+      GetColorWithMaxContrast(kColorEndpointForeground);
+  mixer[kColorMenuSelectionBackground] =
+      AlphaBlend(kColorEndpointForeground, kColorPrimaryBackground,
+                 gfx::kGoogleGreyAlpha200);
+  mixer[kColorMidground] = {kColorForcedWindowText};
+  mixer[kColorSeparator] = {kColorMidground};
+  CompleteDefaultNonWebNativeRendererColorIdsDefinition(mixer);
+
   color_provider.GenerateColorMap();
   return color_provider;
 }
 
-void CompleteFluentScrollbarColorsDefinition(ui::ColorMixer& mixer) {
-  mixer[kColorScrollbarArrowBackgroundHovered] = {kColorScrollbarCorner};
-  mixer[kColorScrollbarArrowBackgroundPressed] = {
-      kColorScrollbarArrowBackgroundHovered};
-  mixer[kColorScrollbarThumb] = {kColorScrollbarArrowForeground};
-  mixer[kColorScrollbarThumbHovered] = {kColorScrollbarArrowForegroundPressed};
-  mixer[kColorScrollbarThumbInactive] = {kColorScrollbarThumb};
-  mixer[kColorScrollbarThumbPressed] = {kColorScrollbarThumbHovered};
-  mixer[kColorScrollbarTrack] = {kColorScrollbarCorner};
+ColorProvider CreateEmulatedForcedColorsColorProviderForTest() {
+  ColorProvider color_provider;
+  ui::ColorMixer& mixer = color_provider.AddMixer();
+
+  mixer[kColorWebNativeControlAccent] = {SK_ColorCYAN};
+  mixer[kColorWebNativeControlAccentDisabled] = {SK_ColorGREEN};
+  mixer[kColorWebNativeControlAccentHovered] = {SK_ColorCYAN};
+  mixer[kColorWebNativeControlAccentPressed] = {SK_ColorCYAN};
+  mixer[kColorWebNativeControlAutoCompleteBackground] = {SK_ColorBLACK};
+  mixer[kColorWebNativeControlBackground] = {SK_ColorBLACK};
+  mixer[kColorWebNativeControlBackgroundDisabled] = {SK_ColorBLACK};
+  mixer[kColorWebNativeControlBorder] = {SK_ColorWHITE};
+  mixer[kColorWebNativeControlBorderDisabled] = {SK_ColorGREEN};
+  mixer[kColorWebNativeControlBorderHovered] = {SK_ColorWHITE};
+  mixer[kColorWebNativeControlBorderPressed] = {SK_ColorWHITE};
+  mixer[kColorWebNativeControlButtonBorder] = {SK_ColorWHITE};
+  mixer[kColorWebNativeControlButtonBorderDisabled] = {SK_ColorGREEN};
+  mixer[kColorWebNativeControlButtonBorderHovered] = {SK_ColorWHITE};
+  mixer[kColorWebNativeControlButtonBorderPressed] = {SK_ColorWHITE};
+  mixer[kColorWebNativeControlButtonFill] = {SK_ColorBLACK};
+  mixer[kColorWebNativeControlButtonFillDisabled] = {SK_ColorBLACK};
+  mixer[kColorWebNativeControlButtonFillHovered] = {SK_ColorBLACK};
+  mixer[kColorWebNativeControlButtonFillPressed] = {SK_ColorBLACK};
+  mixer[kColorWebNativeControlFill] = {SK_ColorBLACK};
+  mixer[kColorWebNativeControlFillDisabled] = {SK_ColorBLACK};
+  mixer[kColorWebNativeControlFillHovered] = {SK_ColorBLACK};
+  mixer[kColorWebNativeControlFillPressed] = {SK_ColorBLACK};
+  mixer[kColorWebNativeControlLightenLayer] = {SK_ColorBLACK};
+  mixer[kColorWebNativeControlProgressValue] = {SK_ColorCYAN};
+  mixer[kColorWebNativeControlScrollbarArrowBackgroundHovered] = {
+      SkColorSetRGB(0x1A, 0xEB, 0xFF)};
+  mixer[kColorWebNativeControlScrollbarArrowBackgroundPressed] = {
+      SkColorSetRGB(0x1A, 0xEB, 0xFF)};
+  mixer[kColorWebNativeControlScrollbarArrowForeground] = {SK_ColorBLACK};
+  mixer[kColorWebNativeControlScrollbarArrowForegroundPressed] = {
+      SK_ColorBLACK};
+  mixer[kColorWebNativeControlScrollbarCorner] = {SK_ColorBLACK};
+  mixer[kColorWebNativeControlScrollbarThumb] = {SK_ColorBLACK};
+  mixer[kColorWebNativeControlScrollbarThumbHovered] = {
+      SkColorSetRGB(0x1A, 0xEB, 0xFF)};
+  mixer[kColorWebNativeControlScrollbarThumbInactive] = {SK_ColorWHITE};
+  mixer[kColorWebNativeControlScrollbarThumbOverlayMinimalMode] = {
+      SK_ColorBLACK};
+  mixer[kColorWebNativeControlScrollbarThumbPressed] = {
+      SkColorSetRGB(0x1A, 0xEB, 0xFF)};
+  mixer[kColorWebNativeControlScrollbarTrack] = {SK_ColorWHITE};
+  mixer[kColorWebNativeControlSlider] = {SK_ColorCYAN};
+  mixer[kColorWebNativeControlSliderDisabled] = {SK_ColorGREEN};
+  mixer[kColorWebNativeControlSliderHovered] = {SK_ColorCYAN};
+  mixer[kColorWebNativeControlSliderPressed] = {SK_ColorCYAN};
+
+  color_provider.GenerateColorMap();
+  return color_provider;
+}
+
+ColorProvider COMPONENT_EXPORT(COLOR)
+    CreateDefaultColorProviderForBlink(bool dark_mode) {
+  ColorProvider color_provider;
+  ui::ColorMixer& mixer = color_provider.AddMixer();
+
+  mixer[kColorPrimaryBackground] = {dark_mode ? SkColorSetRGB(0x29, 0x2A, 0x2D)
+                                              : SK_ColorWHITE};
+  mixer[kColorEndpointForeground] =
+      GetColorWithMaxContrast(kColorPrimaryBackground);
+  mixer[kColorEndpointBackground] =
+      GetColorWithMaxContrast(kColorEndpointForeground);
+  mixer[kColorMenuSelectionBackground] =
+      AlphaBlend(kColorEndpointForeground, kColorPrimaryBackground,
+                 gfx::kGoogleGreyAlpha200);
+  mixer[kColorMidground] = {dark_mode ? gfx::kGoogleGrey800
+                                      : gfx::kGoogleGrey300};
+  mixer[kColorSeparator] = {kColorMidground};
+  CompleteDefaultNonWebNativeRendererColorIdsDefinition(mixer);
+
+  if (dark_mode) {
+    mixer[kColorWebNativeControlAccent] = {SkColorSetRGB(0x99, 0xC8, 0xFF)};
+    mixer[kColorWebNativeControlAccentDisabled] = {
+        SkColorSetRGB(0x75, 0x75, 0x75)};
+    mixer[kColorWebNativeControlAccentHovered] = {
+        SkColorSetRGB(0xD1, 0xE6, 0xFF)};
+    mixer[kColorWebNativeControlAccentPressed] = {
+        SkColorSetRGB(0x61, 0xA9, 0xFF)};
+    mixer[kColorWebNativeControlAutoCompleteBackground] = {
+        SkColorSetARGB(0x66, 0x46, 0x5a, 0x7E)};
+    mixer[kColorWebNativeControlBackground] = {SkColorSetRGB(0x3B, 0x3B, 0x3B)};
+    mixer[kColorWebNativeControlBackgroundDisabled] = {
+        SkColorSetRGB(0x3B, 0x3B, 0x3B)};
+    mixer[kColorWebNativeControlBorder] = {SkColorSetRGB(0x85, 0x85, 0x85)};
+    mixer[kColorWebNativeControlBorderDisabled] = {
+        SkColorSetRGB(0x62, 0x62, 0x62)};
+    mixer[kColorWebNativeControlBorderHovered] = {
+        SkColorSetRGB(0xAC, 0xAC, 0xAC)};
+    mixer[kColorWebNativeControlBorderPressed] = {
+        SkColorSetRGB(0x6E, 0x6E, 0x6E)};
+    mixer[kColorWebNativeControlButtonBorder] = {
+        SkColorSetRGB(0x6B, 0x6B, 0x6B)};
+    mixer[kColorWebNativeControlButtonBorderDisabled] = {
+        SkColorSetRGB(0x36, 0x36, 0x36)};
+    mixer[kColorWebNativeControlButtonBorderHovered] = {
+        SkColorSetRGB(0x7B, 0x7B, 0x7B)};
+    mixer[kColorWebNativeControlButtonBorderPressed] = {
+        SkColorSetRGB(0x61, 0x61, 0x61)};
+    mixer[kColorWebNativeControlButtonFill] = {SkColorSetRGB(0x6B, 0x6B, 0x6B)};
+    mixer[kColorWebNativeControlButtonFillDisabled] = {
+        SkColorSetRGB(0x36, 0x36, 0x36)};
+    mixer[kColorWebNativeControlButtonFillHovered] = {
+        SkColorSetRGB(0x7B, 0x7B, 0x7B)};
+    mixer[kColorWebNativeControlButtonFillPressed] = {
+        SkColorSetRGB(0x61, 0x61, 0x61)};
+    mixer[kColorWebNativeControlFill] = {SkColorSetRGB(0x3B, 0x3B, 0x3B)};
+    mixer[kColorWebNativeControlFillDisabled] = {
+        SkColorSetRGB(0x36, 0x36, 0x36)};
+    mixer[kColorWebNativeControlFillHovered] = {
+        SkColorSetRGB(0x3B, 0x3B, 0x3B)};
+    mixer[kColorWebNativeControlFillPressed] = {
+        SkColorSetRGB(0x3B, 0x3B, 0x3B)};
+    mixer[kColorWebNativeControlLightenLayer] = {
+        SkColorSetRGB(0x3B, 0x3B, 0x3B)};
+    mixer[kColorWebNativeControlProgressValue] = {
+        SkColorSetRGB(0x63, 0xAD, 0xE5)};
+    mixer[kColorWebNativeControlScrollbarArrowBackgroundHovered] = {
+        SkColorSetRGB(0x4F, 0x4F, 0x4F)};
+    mixer[kColorWebNativeControlScrollbarArrowBackgroundPressed] = {
+        SkColorSetRGB(0xB1, 0xB1, 0xB1)};
+    mixer[kColorWebNativeControlScrollbarArrowForeground] = {SK_ColorWHITE};
+    mixer[kColorWebNativeControlScrollbarArrowForegroundPressed] = {
+        SK_ColorBLACK};
+    mixer[kColorWebNativeControlScrollbarCorner] = {
+        SkColorSetRGB(0x12, 0x12, 0x12)};
+    mixer[kColorWebNativeControlScrollbarThumb] = {
+        SkColorSetA(SK_ColorWHITE, 0x33)};
+    mixer[kColorWebNativeControlScrollbarThumbHovered] = {
+        SkColorSetA(SK_ColorWHITE, 0x4D)};
+    mixer[kColorWebNativeControlScrollbarThumbInactive] = {SK_ColorWHITE};
+    mixer[kColorWebNativeControlScrollbarThumbOverlayMinimalMode] = {
+        SkColorSetA(SK_ColorWHITE, 0x8B)};
+    mixer[kColorWebNativeControlScrollbarThumbPressed] = {
+        SkColorSetA(SK_ColorWHITE, 0x80)};
+    mixer[kColorWebNativeControlScrollbarTrack] = {
+        SkColorSetRGB(0x42, 0x42, 0x42)};
+    mixer[kColorWebNativeControlSlider] = {SkColorSetRGB(0x99, 0xC8, 0xFF)};
+    mixer[kColorWebNativeControlSliderDisabled] = {
+        SkColorSetRGB(0x75, 0x75, 0x75)};
+    mixer[kColorWebNativeControlSliderHovered] = {
+        SkColorSetRGB(0xD1, 0xE6, 0xFF)};
+    mixer[kColorWebNativeControlSliderPressed] = {
+        SkColorSetRGB(0x61, 0xA9, 0xFF)};
+  } else {
+    mixer[kColorWebNativeControlAccent] = {SkColorSetRGB(0x00, 0x75, 0xFF)};
+    mixer[kColorWebNativeControlAccentDisabled] = {
+        SkColorSetARGB(0x4D, 0x76, 0x76, 0x76)};
+    mixer[kColorWebNativeControlAccentHovered] = {
+        SkColorSetRGB(0x00, 0x5C, 0xC8)};
+    mixer[kColorWebNativeControlAccentPressed] = {
+        SkColorSetRGB(0x37, 0x93, 0xFF)};
+    mixer[kColorWebNativeControlAutoCompleteBackground] = {
+        SkColorSetRGB(0xE8, 0xF0, 0xFE)};
+    mixer[kColorWebNativeControlBackground] = {SK_ColorWHITE};
+    mixer[kColorWebNativeControlBackgroundDisabled] = {
+        SkColorSetA(SK_ColorWHITE, 0x99)};
+    mixer[kColorWebNativeControlBorder] = {SkColorSetRGB(0x76, 0x76, 0x76)};
+    mixer[kColorWebNativeControlBorderDisabled] = {
+        SkColorSetARGB(0x4D, 0x76, 0x76, 0x76)};
+    mixer[kColorWebNativeControlBorderHovered] = {
+        SkColorSetRGB(0x4F, 0x4F, 0x4F)};
+    mixer[kColorWebNativeControlBorderPressed] = {
+        SkColorSetRGB(0x8D, 0x8D, 0x8D)};
+    mixer[kColorWebNativeControlButtonBorder] = {
+        SkColorSetRGB(0x76, 0x76, 0x76)};
+    mixer[kColorWebNativeControlButtonBorderDisabled] = {
+        SkColorSetARGB(0x4D, 0x76, 0x76, 0x76)};
+    mixer[kColorWebNativeControlButtonBorderHovered] = {
+        SkColorSetRGB(0x4F, 0x4F, 0x4F)};
+    mixer[kColorWebNativeControlButtonBorderPressed] = {
+        SkColorSetRGB(0x8D, 0x8D, 0x8D)};
+    mixer[kColorWebNativeControlButtonFill] = {SkColorSetRGB(0xEF, 0xEF, 0xEF)};
+    mixer[kColorWebNativeControlButtonFillDisabled] = {
+        SkColorSetARGB(0x4D, 0xEF, 0xEF, 0xEF)};
+    mixer[kColorWebNativeControlButtonFillHovered] = {
+        SkColorSetRGB(0xE5, 0xE5, 0xE5)};
+    mixer[kColorWebNativeControlButtonFillPressed] = {
+        SkColorSetRGB(0xF5, 0xF5, 0xF5)};
+    mixer[kColorWebNativeControlFill] = {SkColorSetRGB(0xEF, 0xEF, 0xEF)};
+    mixer[kColorWebNativeControlFillDisabled] = {
+        SkColorSetARGB(0x4D, 0xEF, 0xEF, 0xEF)};
+    mixer[kColorWebNativeControlFillHovered] = {
+        SkColorSetRGB(0xE5, 0xE5, 0xE5)};
+    mixer[kColorWebNativeControlFillPressed] = {
+        SkColorSetRGB(0xF5, 0xF5, 0xF5)};
+    mixer[kColorWebNativeControlLightenLayer] = {
+        SkColorSetARGB(0x33, 0xA9, 0xA9, 0xA9)};
+    mixer[kColorWebNativeControlProgressValue] = {
+        SkColorSetRGB(0x00, 0x75, 0xFF)};
+    mixer[kColorWebNativeControlScrollbarArrowBackgroundHovered] = {
+        SkColorSetRGB(0xD2, 0xD2, 0xD2)};
+    mixer[kColorWebNativeControlScrollbarArrowBackgroundPressed] = {
+        SkColorSetRGB(0x78, 0x78, 0x78)};
+    mixer[kColorWebNativeControlScrollbarArrowForeground] = {
+        SkColorSetRGB(0x50, 0x50, 0x50)};
+    mixer[kColorWebNativeControlScrollbarArrowForegroundPressed] = {
+        SK_ColorWHITE};
+    mixer[kColorWebNativeControlScrollbarCorner] = {
+        SkColorSetRGB(0xDC, 0xDC, 0xDC)};
+    mixer[kColorWebNativeControlScrollbarThumb] = {
+        SkColorSetA(SK_ColorBLACK, 0x33)};
+    mixer[kColorWebNativeControlScrollbarThumbHovered] = {
+        SkColorSetA(SK_ColorBLACK, 0x4D)};
+    mixer[kColorWebNativeControlScrollbarThumbInactive] = {
+        SkColorSetRGB(0xEA, 0xEA, 0xEA)};
+    mixer[kColorWebNativeControlScrollbarThumbOverlayMinimalMode] = {
+        SkColorSetA(SK_ColorBLACK, 0x72)};
+    mixer[kColorWebNativeControlScrollbarThumbPressed] = {
+        SkColorSetA(SK_ColorBLACK, 0x80)};
+    mixer[kColorWebNativeControlScrollbarTrack] = {
+        SkColorSetRGB(0xF1, 0xF1, 0xF1)};
+    mixer[kColorWebNativeControlSlider] = {SkColorSetRGB(0x00, 0x75, 0xFF)};
+    mixer[kColorWebNativeControlSliderDisabled] = {
+        SkColorSetRGB(0xCB, 0xCB, 0xCB)};
+    mixer[kColorWebNativeControlSliderHovered] = {
+        SkColorSetRGB(0x00, 0x5C, 0xC8)};
+    mixer[kColorWebNativeControlSliderPressed] = {
+        SkColorSetRGB(0x37, 0x93, 0xFF)};
+  }
+
+  color_provider.GenerateColorMap();
+  return color_provider;
+}
+
+void CompleteScrollbarColorsDefinition(ui::ColorMixer& mixer) {
+  mixer[kColorWebNativeControlScrollbarArrowBackgroundHovered] = {
+      kColorWebNativeControlScrollbarCorner};
+  mixer[kColorWebNativeControlScrollbarArrowBackgroundPressed] = {
+      kColorWebNativeControlScrollbarArrowBackgroundHovered};
+  mixer[kColorWebNativeControlScrollbarThumb] = {
+      kColorWebNativeControlScrollbarArrowForeground};
+  mixer[kColorWebNativeControlScrollbarThumbHovered] = {
+      kColorWebNativeControlScrollbarArrowForegroundPressed};
+  mixer[kColorWebNativeControlScrollbarThumbInactive] = {
+      kColorWebNativeControlScrollbarThumb};
+  mixer[kColorWebNativeControlScrollbarThumbPressed] = {
+      kColorWebNativeControlScrollbarThumbHovered};
+  mixer[kColorWebNativeControlScrollbarTrack] = {
+      kColorWebNativeControlScrollbarCorner};
+}
+
+void CompleteControlsForcedColorsDefinition(ui::ColorMixer& mixer) {
+  mixer[kColorWebNativeControlAccent] = {kColorForcedHighlight};
+  mixer[kColorWebNativeControlAccentDisabled] = {kColorForcedGrayText};
+  mixer[kColorWebNativeControlAccentHovered] = {kColorForcedHighlight};
+  mixer[kColorWebNativeControlAccentPressed] = {kColorForcedHighlight};
+  mixer[kColorWebNativeControlAutoCompleteBackground] = {kColorForcedWindow};
+  mixer[kColorWebNativeControlBackground] = {kColorForcedWindow};
+  mixer[kColorWebNativeControlBackgroundDisabled] = {kColorForcedWindow};
+  mixer[kColorWebNativeControlBorder] = {kColorForcedBtnText};
+  mixer[kColorWebNativeControlBorderDisabled] = {kColorForcedGrayText};
+  mixer[kColorWebNativeControlBorderHovered] = {kColorForcedBtnText};
+  mixer[kColorWebNativeControlBorderPressed] = {kColorForcedBtnText};
+  mixer[kColorWebNativeControlButtonBorder] = {kColorForcedBtnText};
+  mixer[kColorWebNativeControlButtonBorderDisabled] = {kColorForcedGrayText};
+  mixer[kColorWebNativeControlButtonBorderHovered] = {kColorForcedBtnText};
+  mixer[kColorWebNativeControlButtonBorderPressed] = {kColorForcedBtnText};
+  mixer[kColorWebNativeControlButtonFill] = {kColorForcedWindow};
+  mixer[kColorWebNativeControlButtonFillDisabled] = {kColorForcedWindow};
+  mixer[kColorWebNativeControlButtonFillHovered] = {kColorForcedWindow};
+  mixer[kColorWebNativeControlButtonFillPressed] = {kColorForcedWindow};
+  mixer[kColorWebNativeControlFill] = {kColorForcedWindow};
+  mixer[kColorWebNativeControlFillDisabled] = {kColorForcedWindow};
+  mixer[kColorWebNativeControlFillHovered] = {kColorForcedWindow};
+  mixer[kColorWebNativeControlFillPressed] = {kColorForcedWindow};
+  mixer[kColorWebNativeControlLightenLayer] = {kColorForcedWindow};
+  mixer[kColorWebNativeControlProgressValue] = {kColorForcedHighlight};
+  mixer[kColorWebNativeControlScrollbarArrowForeground] = {kColorForcedBtnText};
+  mixer[kColorWebNativeControlScrollbarArrowForegroundPressed] = {
+      kColorForcedHighlight};
+  mixer[kColorWebNativeControlScrollbarThumbOverlayMinimalMode] = {
+      kColorForcedBtnText};
+  mixer[kColorWebNativeControlScrollbarCorner] = {kColorForcedBtnFace};
+  mixer[kColorWebNativeControlSlider] = {kColorForcedHighlight};
+  mixer[kColorWebNativeControlSliderDisabled] = {kColorForcedGrayText};
+  mixer[kColorWebNativeControlSliderHovered] = {kColorForcedHighlight};
+  mixer[kColorWebNativeControlSliderPressed] = {kColorForcedHighlight};
+  CompleteScrollbarColorsDefinition(mixer);
+}
+
+void COMPONENT_EXPORT(COLOR)
+    CompleteDefaultNonWebNativeRendererColorIdsDefinition(
+        ui::ColorMixer& mixer) {
+  mixer[kColorMenuBackground] = {kColorPrimaryBackground};
+  mixer[kColorMenuItemBackgroundSelected] = {kColorMenuSelectionBackground};
+  mixer[kColorMenuSeparator] = {kColorSeparator};
+  mixer[kColorOverlayScrollbarFill] =
+      SetAlpha(kColorEndpointForeground, gfx::kGoogleGreyAlpha700);
+  mixer[kColorOverlayScrollbarFillDark] = SetAlpha(
+      GetColorWithMaxContrast(SK_ColorWHITE), gfx::kGoogleGreyAlpha700);
+  mixer[kColorOverlayScrollbarFillLight] = SetAlpha(
+      GetColorWithMaxContrast(SK_ColorBLACK), gfx::kGoogleGreyAlpha700);
+  mixer[kColorOverlayScrollbarFillHovered] =
+      SetAlpha(kColorEndpointForeground, gfx::kGoogleGreyAlpha800);
+  mixer[kColorOverlayScrollbarFillHoveredDark] = SetAlpha(
+      GetColorWithMaxContrast(SK_ColorWHITE), gfx::kGoogleGreyAlpha800);
+  mixer[kColorOverlayScrollbarFillHoveredLight] = SetAlpha(
+      GetColorWithMaxContrast(SK_ColorBLACK), gfx::kGoogleGreyAlpha800);
+  mixer[kColorOverlayScrollbarStroke] =
+      SetAlpha(kColorEndpointBackground, gfx::kGoogleGreyAlpha400);
+  mixer[kColorOverlayScrollbarStrokeDark] =
+      SetAlpha(GetColorWithMaxContrast(kColorOverlayScrollbarFillDark),
+               gfx::kGoogleGreyAlpha400);
+  mixer[kColorOverlayScrollbarStrokeLight] =
+      SetAlpha(GetColorWithMaxContrast(kColorOverlayScrollbarFillLight),
+               gfx::kGoogleGreyAlpha400);
+  mixer[kColorOverlayScrollbarStrokeHovered] =
+      SetAlpha(kColorEndpointBackground, gfx::kGoogleGreyAlpha500);
+  mixer[kColorOverlayScrollbarStrokeHoveredDark] =
+      SetAlpha(GetColorWithMaxContrast(kColorOverlayScrollbarFillHoveredDark),
+               gfx::kGoogleGreyAlpha500);
+  mixer[kColorOverlayScrollbarStrokeHoveredLight] =
+      SetAlpha(GetColorWithMaxContrast(kColorOverlayScrollbarFillHoveredLight),
+               gfx::kGoogleGreyAlpha500);
+}
+
+RendererColorMap COMPONENT_EXPORT(COLOR)
+    GetDefaultBlinkColorProviderColorMaps(bool dark_mode,
+                                          bool is_forced_colors) {
+  return CreateRendererColorMap(
+      is_forced_colors ? CreateEmulatedForcedColorsColorProvider(dark_mode)
+                       : CreateDefaultColorProviderForBlink(dark_mode));
 }
 
 bool IsRendererColorMappingEquivalent(
-    const ColorProvider& color_provider,
+    const ColorProvider* color_provider,
     const RendererColorMap& renderer_color_map) {
+  if (!color_provider) {
+    return false;
+  }
+  CHECK(!renderer_color_map.empty());
+
   for (const auto& table : kRendererColorIdMap) {
     // The `renderer_color_map_` should map the full set of renderer color ids.
     DCHECK(base::Contains(renderer_color_map, table.renderer_color_id));
-    if (color_provider.GetColor(table.color_id) !=
+    if (color_provider->GetColor(table.color_id) !=
         renderer_color_map.at(table.renderer_color_id)) {
       return false;
     }

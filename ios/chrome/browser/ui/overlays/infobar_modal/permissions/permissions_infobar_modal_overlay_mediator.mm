@@ -6,8 +6,8 @@
 
 #import "base/strings/sys_string_conversions.h"
 #import "base/strings/utf_string_conversions.h"
-#import "ios/chrome/browser/overlays/public/default/default_infobar_overlay_request_config.h"
-#import "ios/chrome/browser/permissions/permissions_infobar_delegate.h"
+#import "ios/chrome/browser/overlays/model/public/default/default_infobar_overlay_request_config.h"
+#import "ios/chrome/browser/permissions/model/permissions_infobar_delegate.h"
 #import "ios/chrome/browser/ui/overlays/overlay_request_mediator+subclassing.h"
 #import "ios/chrome/browser/ui/permissions/permission_info.h"
 #import "ios/chrome/browser/ui/permissions/permission_metrics_util.h"
@@ -72,11 +72,7 @@
 }
 
 - (void)disconnect {
-  if (_webState && _observer) {
-    _webState->RemoveObserver(_observer.get());
-    _observer.reset();
-    _webState = nullptr;
-  }
+  [self detachFromWebState];
 }
 
 #pragma mark - Accessors
@@ -104,6 +100,10 @@
   [self.consumer permissionStateChanged:permissionsDescription];
 }
 
+- (void)webStateDestroyed:(web::WebState*)webState {
+  [self detachFromWebState];
+}
+
 #pragma mark - PermissionsDelegate
 
 - (void)updateStateForPermission:(PermissionInfo*)permissionDescription {
@@ -120,8 +120,8 @@
 // Helper that creates and dispatches initial permissions information to the
 // InfobarModal.
 - (void)dispatchInitialPermissionsInfo {
-  NSMutableArray<PermissionInfo*>* permissionsinfo =
-      [[NSMutableArray alloc] init];
+  NSMutableDictionary<NSNumber*, NSNumber*>* permissionsInfo =
+      [[NSMutableDictionary alloc] init];
 
   NSDictionary<NSNumber*, NSNumber*>* statesForAllPermissions =
       self.webState->GetStatesForAllPermissions();
@@ -129,13 +129,18 @@
     web::PermissionState state =
         (web::PermissionState)statesForAllPermissions[key].unsignedIntValue;
     if (state != web::PermissionStateNotAccessible) {
-      PermissionInfo* permissionInfo = [[PermissionInfo alloc] init];
-      permissionInfo.permission = (web::Permission)key.unsignedIntValue;
-      permissionInfo.state = state;
-      [permissionsinfo addObject:permissionInfo];
+      [permissionsInfo setObject:statesForAllPermissions[key] forKey:key];
     }
   }
-  [self.consumer setPermissionsInfo:permissionsinfo];
+  [self.consumer setPermissionsInfo:permissionsInfo];
+}
+
+- (void)detachFromWebState {
+  if (_webState && _observer) {
+    _webState->RemoveObserver(_observer.get());
+    _observer.reset();
+    _webState = nullptr;
+  }
 }
 
 @end

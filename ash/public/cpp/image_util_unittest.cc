@@ -7,13 +7,14 @@
 #include <string>
 
 #include "ash/public/cpp/image_util.h"
-#include "ash/public/cpp/test/in_process_image_decoder.h"
+#include "ash/public/cpp/test/in_process_data_decoder.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/location.h"
 #include "base/run_loop.h"
 #include "base/strings/string_piece.h"
+#include "base/task/thread_pool.h"
 #include "base/test/bind.h"
 #include "base/test/scoped_run_loop_timeout.h"
 #include "base/test/task_environment.h"
@@ -45,13 +46,6 @@ namespace {
 // very long time) if there's a bug in the code where the callback is not being
 // run.
 constexpr base::TimeDelta kDecodeImageTimeout = base::Seconds(3);
-
-gfx::ImageSkia CreateTestImage(int width, int height, SkColor color) {
-  SkBitmap bitmap;
-  bitmap.allocN32Pixels(width, height);
-  bitmap.eraseColor(color);
-  return gfx::ImageSkia::CreateFrom1xBitmap(bitmap);
-}
 
 using EncodingFunction =
     base::RepeatingCallback<bool(const SkBitmap&, std::vector<unsigned char>*)>;
@@ -132,13 +126,16 @@ class ImageUtilTest : public ::testing::Test {
         });
   }
 
-  gfx::ImageSkia DecodeImageFile(base::FilePath::StringPieceType file_name,
-                                 data_decoder::mojom::ImageCodec codec) {
+  gfx::ImageSkia DecodeImageFile(
+      base::FilePath::StringPieceType file_name,
+      data_decoder::mojom::ImageCodec codec,
+      scoped_refptr<base::SequencedTaskRunner> file_task_runner = nullptr) {
     base::test::ScopedRunLoopTimeout timeout(FROM_HERE, kDecodeImageTimeout);
     base::RunLoop run_loop;
     gfx::ImageSkia image_out;
     image_util::DecodeImageFile(CreateDecodeImageCallback(run_loop, image_out),
-                                CreateFilePath(file_name), codec);
+                                CreateFilePath(file_name), codec,
+                                std::move(file_task_runner));
     run_loop.Run();
     return image_out;
   }
@@ -155,12 +152,13 @@ class ImageUtilTest : public ::testing::Test {
   }
 
   base::test::TaskEnvironment task_environment_;
-  InProcessImageDecoder decoder_;
+  InProcessDataDecoder decoder_;
   base::ScopedTempDir scoped_temp_dir_;
 };
 
 TEST_F(ImageUtilTest, DecodeImageDataDefaultCodec) {
-  gfx::ImageSkia original_image = CreateTestImage(200, 100, SK_ColorYELLOW);
+  gfx::ImageSkia original_image =
+      gfx::test::CreateImageSkia(200, 100, SK_ColorYELLOW);
   gfx::ImageSkia decoded_image = DecodeImageData(
       data_decoder::mojom::ImageCodec::kDefault, EncodeAsJpeg(original_image));
   EXPECT_TRUE(gfx::test::AreImagesEqual(gfx::Image(decoded_image),
@@ -168,7 +166,8 @@ TEST_F(ImageUtilTest, DecodeImageDataDefaultCodec) {
 }
 
 TEST_F(ImageUtilTest, DecodeImageDataPng) {
-  gfx::ImageSkia original_image = CreateTestImage(200, 100, SK_ColorYELLOW);
+  gfx::ImageSkia original_image =
+      gfx::test::CreateImageSkia(200, 100, SK_ColorYELLOW);
   gfx::ImageSkia decoded_image = DecodeImageData(
       data_decoder::mojom::ImageCodec::kPng, EncodeAsPng(original_image));
   EXPECT_TRUE(gfx::test::AreImagesEqual(gfx::Image(decoded_image),
@@ -182,7 +181,8 @@ TEST_F(ImageUtilTest, DecodeImageDataFailsForInvalidData) {
 }
 
 TEST_F(ImageUtilTest, DecodeImageFileDefaultCodec) {
-  gfx::ImageSkia original_image = CreateTestImage(200, 100, SK_ColorYELLOW);
+  gfx::ImageSkia original_image =
+      gfx::test::CreateImageSkia(200, 100, SK_ColorYELLOW);
   ASSERT_TRUE(base::WriteFile(CreateFilePath("test_image.jpg"),
                               EncodeAsJpeg(original_image)));
   gfx::ImageSkia decoded_image = DecodeImageFile(
@@ -191,8 +191,21 @@ TEST_F(ImageUtilTest, DecodeImageFileDefaultCodec) {
                                         gfx::Image(original_image)));
 }
 
+TEST_F(ImageUtilTest, DecodeImageFileCustomTaskRunner) {
+  gfx::ImageSkia original_image =
+      gfx::test::CreateImageSkia(200, 100, SK_ColorYELLOW);
+  ASSERT_TRUE(base::WriteFile(CreateFilePath("test_image.jpg"),
+                              EncodeAsJpeg(original_image)));
+  gfx::ImageSkia decoded_image = DecodeImageFile(
+      "test_image.jpg", data_decoder::mojom::ImageCodec::kDefault,
+      base::ThreadPool::CreateSequencedTaskRunner({base::MayBlock()}));
+  EXPECT_TRUE(gfx::test::AreImagesEqual(gfx::Image(decoded_image),
+                                        gfx::Image(original_image)));
+}
+
 TEST_F(ImageUtilTest, DecodeImageFilePng) {
-  gfx::ImageSkia original_image = CreateTestImage(200, 100, SK_ColorYELLOW);
+  gfx::ImageSkia original_image =
+      gfx::test::CreateImageSkia(200, 100, SK_ColorYELLOW);
   ASSERT_TRUE(base::WriteFile(CreateFilePath("test_image.png"),
                               EncodeAsPng(original_image)));
   gfx::ImageSkia decoded_image =
@@ -214,8 +227,10 @@ TEST_F(ImageUtilTest, DecodeImageFileFailsForMissingFile) {
 }
 
 TEST_F(ImageUtilTest, DecodeImageFileMultipleFiles) {
-  gfx::ImageSkia original_image_1 = CreateTestImage(200, 100, SK_ColorYELLOW);
-  gfx::ImageSkia original_image_2 = CreateTestImage(100, 200, SK_ColorCYAN);
+  gfx::ImageSkia original_image_1 =
+      gfx::test::CreateImageSkia(200, 100, SK_ColorYELLOW);
+  gfx::ImageSkia original_image_2 =
+      gfx::test::CreateImageSkia(100, 200, SK_ColorCYAN);
   ASSERT_TRUE(base::WriteFile(CreateFilePath("test_image_1.jpg"),
                               EncodeAsJpeg(original_image_1)));
   ASSERT_TRUE(base::WriteFile(CreateFilePath("test_image_2.jpg"),
@@ -231,7 +246,8 @@ TEST_F(ImageUtilTest, DecodeImageFileMultipleFiles) {
 }
 
 TEST_F(ImageUtilTest, DecodeImageFileSameFileMultipleTimes) {
-  gfx::ImageSkia original_image = CreateTestImage(200, 100, SK_ColorYELLOW);
+  gfx::ImageSkia original_image =
+      gfx::test::CreateImageSkia(200, 100, SK_ColorYELLOW);
   ASSERT_TRUE(base::WriteFile(CreateFilePath("test_image.jpg"),
                               EncodeAsJpeg(original_image)));
   gfx::ImageSkia decoded_image = DecodeImageFile(
@@ -239,7 +255,7 @@ TEST_F(ImageUtilTest, DecodeImageFileSameFileMultipleTimes) {
   EXPECT_TRUE(gfx::test::AreImagesEqual(gfx::Image(decoded_image),
                                         gfx::Image(original_image)));
 
-  original_image = CreateTestImage(100, 200, SK_ColorCYAN);
+  original_image = gfx::test::CreateImageSkia(100, 200, SK_ColorCYAN);
   ASSERT_TRUE(base::WriteFile(CreateFilePath("test_image.jpg"),
                               EncodeAsJpeg(original_image)));
   decoded_image = DecodeImageFile("test_image.jpg",

@@ -55,7 +55,7 @@ bool TrackedAtomicPreference::EnforceAndReport(
 
   if (delegate_) {
     delegate_->OnAtomicPreferenceValidation(
-        pref_path_, value ? absl::make_optional(value->Clone()) : absl::nullopt,
+        pref_path_, value ? std::make_optional(value->Clone()) : std::nullopt,
         value_state, external_validation_value_state, helper_.IsPersonal());
   }
   TrackedPreferenceHelper::ResetAction reset_action =

@@ -5,8 +5,8 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_PAINT_FIELDSET_PAINT_INFO_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_PAINT_FIELDSET_PAINT_INFO_H_
 
+#include "third_party/blink/renderer/core/layout/geometry/box_strut.h"
 #include "third_party/blink/renderer/core/layout/geometry/physical_rect.h"
-#include "third_party/blink/renderer/core/layout/ng/geometry/ng_box_strut.h"
 
 namespace blink {
 
@@ -20,11 +20,11 @@ struct FieldsetPaintInfo {
   // caused by the rendered legend.
   FieldsetPaintInfo(const ComputedStyle& fieldset_style,
                     const PhysicalSize& fieldset_size,
-                    const NGPhysicalBoxStrut& fieldset_borders,
+                    const PhysicalBoxStrut& fieldset_borders,
                     const PhysicalRect& legend_border_box);
 
   // Block-start border outset caused by the rendered legend.
-  NGPhysicalBoxStrut border_outsets;
+  PhysicalBoxStrut border_outsets;
 
   // The cutout rectangle (where the border is not to be painted) occupied by
   // the legend. Note that this may intersect with other border sides than the

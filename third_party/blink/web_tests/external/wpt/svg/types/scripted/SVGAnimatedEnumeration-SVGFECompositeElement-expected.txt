@@ -1,4 +1,5 @@
 This is a testharness.js-based test.
-FAIL Use of SVGAnimatedEnumeration within SVGFECompositeElement Failed to set the 'baseVal' property on 'SVGAnimatedEnumeration': The enumeration value provided is 0, which is not settable.
+[FAIL] Use of SVGAnimatedEnumeration within SVGFECompositeElement
+  Failed to set the 'baseVal' property on 'SVGAnimatedEnumeration': The enumeration value provided is 0, which is not settable.
 Harness: the test ran to completion.
 

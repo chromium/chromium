@@ -18,9 +18,7 @@ public class UiWidgetFactory {
 
     protected UiWidgetFactory() {}
 
-    /**
-     * returns a UiWidgetFactory.
-     */
+    /** returns a UiWidgetFactory. */
     public static UiWidgetFactory getInstance() {
         if (sFactory == null) sFactory = new UiWidgetFactory();
         return sFactory;

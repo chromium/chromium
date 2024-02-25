@@ -12,7 +12,6 @@
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
 #include "cc/mojo_embedder/async_layer_tree_frame_sink.h"
-#include "components/exo/frame_sink_resource_manager.h"
 #include "components/exo/shell_surface.h"
 #include "components/exo/surface_tree_host.h"
 #include "components/exo/test/exo_test_base.h"
@@ -31,46 +30,18 @@
 namespace exo {
 namespace {
 
-class BufferTest : public test::ExoTestBase,
-                   public testing::WithParamInterface<bool> {
+class BufferTest
+    : public test::ExoTestBase,
+      public testing::WithParamInterface<test::FrameSubmissionType> {
  public:
   BufferTest()
       : test::ExoTestBase(base::test::TaskEnvironment::TimeSource::MOCK_TIME) {
-    if (GetParam()) {
-      feature_list_.InitAndEnableFeature(kExoReactiveFrameSubmission);
-    } else {
-      feature_list_.InitAndDisableFeature(kExoReactiveFrameSubmission);
-    }
+    test::SetFrameSubmissionFeatureFlags(&feature_list_, GetParam());
   }
 
  private:
   base::test::ScopedFeatureList feature_list_;
 };
-
-base::RepeatingClosure CreateReleaseBufferClosure(
-    int* release_buffer_call_count,
-    base::RepeatingClosure closure) {
-  return base::BindLambdaForTesting(
-      [release_buffer_call_count, closure = std::move(closure)]() {
-        if (release_buffer_call_count) {
-          (*release_buffer_call_count)++;
-        }
-        closure.Run();
-      });
-}
-
-base::OnceCallback<void(gfx::GpuFenceHandle)> CreateExplicitReleaseCallback(
-    int* release_call_count,
-    base::RepeatingClosure closure) {
-  return base::BindLambdaForTesting(
-      [release_call_count,
-       closure = std::move(closure)](gfx::GpuFenceHandle release_fence) {
-        if (release_call_count) {
-          (*release_call_count)++;
-        }
-        closure.Run();
-      });
-}
 
 void VerifySyncTokensInCompositorFrame(viz::CompositorFrame* frame) {
   std::vector<GLbyte*> sync_tokens;
@@ -107,9 +78,13 @@ viz::CompositorFrame CreateCompositorFrame(
   return frame;
 }
 
-// Instantiate the values of disabling/enabling reactive frame submission in the
-// parameterized tests.
-INSTANTIATE_TEST_SUITE_P(All, BufferTest, testing::Values(false, true));
+// Instantiate the values of frame submission types in the parameterized tests.
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    BufferTest,
+    testing::Values(test::FrameSubmissionType::kNoReactive,
+                    test::FrameSubmissionType::kReactive_NoAutoNeedsBeginFrame,
+                    test::FrameSubmissionType::kReactive_AutoNeedsBeginFrame));
 
 TEST_P(BufferTest, ReleaseCallback) {
   gfx::Size buffer_size(256, 256);
@@ -125,7 +100,7 @@ TEST_P(BufferTest, ReleaseCallback) {
   // Set the release callback.
   int release_call_count = 0;
   base::RunLoop run_loop_1;
-  buffer->set_release_callback(CreateReleaseBufferClosure(
+  buffer->set_release_callback(test::CreateReleaseBufferClosure(
       &release_call_count, run_loop_1.QuitClosure()));
 
   buffer->OnAttach();
@@ -136,8 +111,8 @@ TEST_P(BufferTest, ReleaseCallback) {
   bool rv = buffer->ProduceTransferableResource(
       frame_sink_holder->resource_manager(), nullptr, false, &resource,
       gfx::ColorSpace::CreateSRGB(), nullptr,
-      CreateExplicitReleaseCallback(&release_resource_count,
-                                    run_loop_2.QuitClosure()));
+      test::CreateExplicitReleaseCallback(&release_resource_count,
+                                          run_loop_2.QuitClosure()));
   ASSERT_TRUE(rv);
 
   // Release buffer.
@@ -173,8 +148,8 @@ TEST_P(BufferTest, SolidColorReleaseCallback) {
   // Set the release callback.
   int release_call_count = 0;
   base::RunLoop run_loop;
-  buffer->set_release_callback(
-      CreateReleaseBufferClosure(&release_call_count, run_loop.QuitClosure()));
+  buffer->set_release_callback(test::CreateReleaseBufferClosure(
+      &release_call_count, run_loop.QuitClosure()));
 
   buffer->OnAttach();
   viz::TransferableResource resource;
@@ -183,8 +158,8 @@ TEST_P(BufferTest, SolidColorReleaseCallback) {
   bool rv = buffer->ProduceTransferableResource(
       frame_sink_holder->resource_manager(), nullptr, false, &resource,
       gfx::ColorSpace::CreateSRGB(), nullptr,
-      CreateExplicitReleaseCallback(&release_resource_count,
-                                    base::DoNothing()));
+      test::CreateExplicitReleaseCallback(&release_resource_count,
+                                          base::DoNothing()));
   // Solid color buffer is immediately released after commit.
   EXPECT_EQ(release_resource_count, 1);
   EXPECT_FALSE(rv);
@@ -226,7 +201,7 @@ TEST_P(BufferTest, IsLost) {
     bool rv = buffer->ProduceTransferableResource(
         frame_sink_holder->resource_manager(), nullptr, false, &resource,
         gfx::ColorSpace::CreateSRGB(), nullptr,
-        CreateExplicitReleaseCallback(nullptr, run_loop_1.QuitClosure()));
+        test::CreateExplicitReleaseCallback(nullptr, run_loop_1.QuitClosure()));
     ASSERT_TRUE(rv);
 
     scoped_refptr<viz::RasterContextProvider> context_provider =
@@ -234,9 +209,8 @@ TEST_P(BufferTest, IsLost) {
             ->context_factory()
             ->SharedMainThreadRasterContextProvider();
     if (context_provider) {
-      gpu::raster::RasterInterface* ri = context_provider->RasterInterface();
-      ri->LoseContextCHROMIUM(GL_GUILTY_CONTEXT_RESET_ARB,
-                              GL_INNOCENT_CONTEXT_RESET_ARB);
+      static_cast<viz::TestInProcessContextProvider*>(context_provider.get())
+          ->SendOnContextLost();
     }
 
     // Release buffer.
@@ -256,7 +230,7 @@ TEST_P(BufferTest, IsLost) {
     bool rv = buffer->ProduceTransferableResource(
         frame_sink_holder->resource_manager(), nullptr, false, &new_resource,
         gfx::ColorSpace::CreateSRGB(), nullptr,
-        CreateExplicitReleaseCallback(nullptr, run_loop_2.QuitClosure()));
+        test::CreateExplicitReleaseCallback(nullptr, run_loop_2.QuitClosure()));
     ASSERT_TRUE(rv);
     buffer->OnDetach();
 
@@ -321,8 +295,8 @@ TEST_P(BufferTest, SurfaceTreeHostDestruction) {
   base::RunLoop run_loop;
   auto combined_quit_closure = BarrierClosure(2, run_loop.QuitClosure());
 
-  buffer->set_release_callback(
-      CreateReleaseBufferClosure(&release_call_count, combined_quit_closure));
+  buffer->set_release_callback(test::CreateReleaseBufferClosure(
+      &release_call_count, combined_quit_closure));
 
   buffer->OnAttach();
   viz::TransferableResource resource;
@@ -331,8 +305,8 @@ TEST_P(BufferTest, SurfaceTreeHostDestruction) {
   bool rv = buffer->ProduceTransferableResource(
       frame_sink_holder->resource_manager(), nullptr, false, &resource,
       gfx::ColorSpace::CreateSRGB(), nullptr,
-      CreateExplicitReleaseCallback(&release_resource_count,
-                                    combined_quit_closure));
+      test::CreateExplicitReleaseCallback(&release_resource_count,
+                                          combined_quit_closure));
   ASSERT_TRUE(rv);
 
   // Submit frame with resource.
@@ -381,8 +355,8 @@ TEST_P(BufferTest, SurfaceTreeHostLastFrame) {
   base::RunLoop run_loop;
   auto combined_quit_closure = BarrierClosure(2, run_loop.QuitClosure());
 
-  buffer->set_release_callback(
-      CreateReleaseBufferClosure(&release_call_count, combined_quit_closure));
+  buffer->set_release_callback(test::CreateReleaseBufferClosure(
+      &release_call_count, combined_quit_closure));
 
   buffer->OnAttach();
   viz::TransferableResource resource;
@@ -391,8 +365,8 @@ TEST_P(BufferTest, SurfaceTreeHostLastFrame) {
   bool rv = buffer->ProduceTransferableResource(
       frame_sink_holder->resource_manager(), nullptr, false, &resource,
       gfx::ColorSpace::CreateSRGB(), nullptr,
-      CreateExplicitReleaseCallback(&release_resource_count,
-                                    combined_quit_closure));
+      test::CreateExplicitReleaseCallback(&release_resource_count,
+                                          combined_quit_closure));
   ASSERT_TRUE(rv);
 
   // Submit frame with resource.
@@ -433,11 +407,13 @@ TEST_P(BufferTest, SurfaceTreeHostLastFrame) {
 }
 
 // Tests that only apply if ExoReactiveFrameSubmission is enabled.
-class ReactiveFrameSubmissionBufferTest : public test::ExoTestBase {
+class ReactiveFrameSubmissionBufferTest
+    : public test::ExoTestBase,
+      public testing::WithParamInterface<test::FrameSubmissionType> {
  public:
   ReactiveFrameSubmissionBufferTest()
       : test::ExoTestBase(base::test::TaskEnvironment::TimeSource::MOCK_TIME) {
-    feature_list_.InitAndEnableFeature(kExoReactiveFrameSubmission);
+    test::SetFrameSubmissionFeatureFlags(&feature_list_, GetParam());
   }
 
  private:
@@ -479,7 +455,14 @@ class TestLayerTreeFrameSinkHolder : public LayerTreeFrameSinkHolder {
   base::RepeatingClosure post_reclaim_callback_;
 };
 
-TEST_F(ReactiveFrameSubmissionBufferTest,
+// Instantiate the values of frame submission types in the parameterized tests.
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    ReactiveFrameSubmissionBufferTest,
+    testing::Values(test::FrameSubmissionType::kReactive_NoAutoNeedsBeginFrame,
+                    test::FrameSubmissionType::kReactive_AutoNeedsBeginFrame));
+
+TEST_P(ReactiveFrameSubmissionBufferTest,
        SurfaceTreeHostNotReclaimCachedFrameResources) {
   gfx::Size buffer_size(256, 256);
 
@@ -505,8 +488,8 @@ TEST_F(ReactiveFrameSubmissionBufferTest,
   base::RunLoop run_loop1;
   auto combined_quit_closure = BarrierClosure(2, run_loop1.QuitClosure());
 
-  buffer->set_release_callback(
-      CreateReleaseBufferClosure(&release_call_count, combined_quit_closure));
+  buffer->set_release_callback(test::CreateReleaseBufferClosure(
+      &release_call_count, combined_quit_closure));
 
   buffer->OnAttach();
   viz::TransferableResource resource;
@@ -515,8 +498,8 @@ TEST_F(ReactiveFrameSubmissionBufferTest,
   bool rv = buffer->ProduceTransferableResource(
       frame_sink_holder->resource_manager(), nullptr, false, &resource,
       gfx::ColorSpace::CreateSRGB(), nullptr,
-      CreateExplicitReleaseCallback(&release_resource_count,
-                                    combined_quit_closure));
+      test::CreateExplicitReleaseCallback(&release_resource_count,
+                                          combined_quit_closure));
   ASSERT_TRUE(rv);
 
   // Submit frame with `resource`.
@@ -580,7 +563,7 @@ TEST_F(ReactiveFrameSubmissionBufferTest,
   ASSERT_EQ(release_resource_count, 1);
 }
 
-TEST_F(ReactiveFrameSubmissionBufferTest,
+TEST_P(ReactiveFrameSubmissionBufferTest,
        SurfaceTreeHostDiscardFrameNotReclaimNewFrameResources) {
   gfx::Size buffer_size(256, 256);
 
@@ -602,8 +585,8 @@ TEST_F(ReactiveFrameSubmissionBufferTest,
   base::RunLoop run_loop;
   auto combined_quit_closure = BarrierClosure(2, run_loop.QuitClosure());
 
-  buffer->set_release_callback(
-      CreateReleaseBufferClosure(&release_call_count, combined_quit_closure));
+  buffer->set_release_callback(test::CreateReleaseBufferClosure(
+      &release_call_count, combined_quit_closure));
 
   buffer->OnAttach();
   viz::TransferableResource resource;
@@ -612,8 +595,8 @@ TEST_F(ReactiveFrameSubmissionBufferTest,
   bool rv = buffer->ProduceTransferableResource(
       frame_sink_holder->resource_manager(), nullptr, false, &resource,
       gfx::ColorSpace::CreateSRGB(), nullptr,
-      CreateExplicitReleaseCallback(&release_resource_count,
-                                    combined_quit_closure));
+      test::CreateExplicitReleaseCallback(&release_resource_count,
+                                          combined_quit_closure));
   ASSERT_TRUE(rv);
 
   frame_sink_holder->ClearPendingBeginFramesForTesting();
@@ -655,7 +638,7 @@ TEST_F(ReactiveFrameSubmissionBufferTest,
   ASSERT_EQ(release_resource_count, 1);
 }
 
-TEST_F(ReactiveFrameSubmissionBufferTest,
+TEST_P(ReactiveFrameSubmissionBufferTest,
        SurfaceTreeHostDiscardFrameNotReclaimInUseResources) {
   gfx::Size buffer_size(256, 256);
 
@@ -681,8 +664,8 @@ TEST_F(ReactiveFrameSubmissionBufferTest,
   base::RunLoop run_loop1;
   auto combined_quit_closure = BarrierClosure(2, run_loop1.QuitClosure());
 
-  buffer->set_release_callback(
-      CreateReleaseBufferClosure(&release_call_count, combined_quit_closure));
+  buffer->set_release_callback(test::CreateReleaseBufferClosure(
+      &release_call_count, combined_quit_closure));
 
   buffer->OnAttach();
   viz::TransferableResource resource;
@@ -691,8 +674,8 @@ TEST_F(ReactiveFrameSubmissionBufferTest,
   bool rv = buffer->ProduceTransferableResource(
       frame_sink_holder->resource_manager(), nullptr, false, &resource,
       gfx::ColorSpace::CreateSRGB(), nullptr,
-      CreateExplicitReleaseCallback(&release_resource_count,
-                                    combined_quit_closure));
+      test::CreateExplicitReleaseCallback(&release_resource_count,
+                                          combined_quit_closure));
   ASSERT_TRUE(rv);
 
   // Submit frame with `resource`.

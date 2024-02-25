@@ -22,26 +22,6 @@
 
 namespace {
 
-inline void UmaHistogramTimeToInteraction(base::TimeDelta sample,
-                                          DIPSCookieMode mode) {
-  const std::string name = base::StrCat(
-      {"Privacy.DIPS.TimeFromStorageToInteraction", GetHistogramSuffix(mode)});
-
-  base::UmaHistogramCustomTimes(name, sample,
-                                /*min=*/base::TimeDelta(),
-                                /*max=*/base::Days(7), 100);
-}
-
-inline void UmaHistogramTimeToStorage(base::TimeDelta sample,
-                                      DIPSCookieMode mode) {
-  const std::string name = base::StrCat(
-      {"Privacy.DIPS.TimeFromInteractionToStorage", GetHistogramSuffix(mode)});
-
-  base::UmaHistogramCustomTimes(name, sample,
-                                /*min=*/base::TimeDelta(),
-                                /*max=*/base::Days(7), 100);
-}
-
 // The number of sites to process in each call to DIPSStorage::Prepopulate().
 // Intended to be constant; settable only for testing.
 size_t g_prepopulate_chunk_size = 100;
@@ -61,7 +41,7 @@ DIPSStorage::PrepopulateArgs::PrepopulateArgs(PrepopulateArgs&&) = default;
 
 DIPSStorage::PrepopulateArgs::~PrepopulateArgs() = default;
 
-DIPSStorage::DIPSStorage(const absl::optional<base::FilePath>& path)
+DIPSStorage::DIPSStorage(const std::optional<base::FilePath>& path)
     : db_(std::make_unique<DIPSDatabase>(path)) {
   base::AssertLongCPUWorkAllowed();
 }
@@ -80,7 +60,7 @@ DIPSState DIPSStorage::ReadSite(std::string site) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(db_);
 
-  absl::optional<StateValue> state = db_->Read(site);
+  std::optional<StateValue> state = db_->Read(site);
 
   if (state.has_value()) {
     // We should not have entries in the DB without any timestamps.
@@ -104,7 +84,7 @@ void DIPSStorage::Write(const DIPSState& state) {
              state.bounce_times(), state.web_authn_assertion_times());
 }
 
-absl::optional<PopupsStateValue> DIPSStorage::ReadPopup(
+std::optional<PopupsStateValue> DIPSStorage::ReadPopup(
     const std::string& first_party_site,
     const std::string& tracking_site) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -113,15 +93,24 @@ absl::optional<PopupsStateValue> DIPSStorage::ReadPopup(
   return db_->ReadPopup(first_party_site, tracking_site);
 }
 
-bool DIPSStorage::WritePopup(const std::string& first_party_site,
-                             const std::string& tracking_site,
-                             const uint64_t access_id,
-                             const base::Time& popup_time) {
+std::vector<PopupWithTime> DIPSStorage::ReadRecentPopupsWithInteraction(
+    const base::TimeDelta& lookback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(db_);
 
-  return db_->WritePopup(first_party_site, tracking_site, access_id,
-                         popup_time);
+  return db_->ReadRecentPopupsWithInteraction(lookback);
+}
+
+bool DIPSStorage::WritePopup(const std::string& first_party_site,
+                             const std::string& tracking_site,
+                             const uint64_t access_id,
+                             const base::Time& popup_time,
+                             bool is_current_interaction) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  DCHECK(db_);
+
+  return db_->WritePopup(first_party_site, tracking_site, access_id, popup_time,
+                         is_current_interaction);
 }
 
 void DIPSStorage::RemoveEvents(base::Time delete_begin,
@@ -192,13 +181,6 @@ void DIPSStorage::RecordStorage(const GURL& url,
   DCHECK(db_);
 
   DIPSState state = Read(url);
-  if (!state.site_storage_times().has_value() &&
-      state.user_interaction_times().has_value()) {
-    // First storage, but previous interaction.
-    UmaHistogramTimeToStorage(time - state.user_interaction_times()->second,
-                              mode);
-  }
-
   state.update_site_storage_time(time);
 }
 
@@ -209,14 +191,6 @@ void DIPSStorage::RecordInteraction(const GURL& url,
   DCHECK(db_);
 
   DIPSState state = Read(url);
-  if (!state.user_interaction_times().has_value() &&
-      state.site_storage_times().has_value()) {
-    // Site previously wrote to storage. Record metric for the time delay
-    // between first storage and interaction.
-    UmaHistogramTimeToInteraction(time - state.site_storage_times()->first,
-                                  mode);
-  }
-
   state.update_user_interaction_time(time);
 }
 
@@ -227,14 +201,6 @@ void DIPSStorage::RecordWebAuthnAssertion(const GURL& url,
   DCHECK(db_);
 
   DIPSState state = Read(url);
-  if (!state.web_authn_assertion_times().has_value() &&
-      state.site_storage_times().has_value()) {
-    // Site previously wrote to storage. Record metric for the time delay
-    // between first storage and interaction.
-    UmaHistogramTimeToInteraction(time - state.site_storage_times()->first,
-                                  mode);
-  }
-
   state.update_web_authn_assertion_time(time);
 }
 
@@ -289,7 +255,7 @@ std::vector<std::string> DIPSStorage::GetSitesThatUsedStorage(
 }
 
 std::vector<std::string> DIPSStorage::GetSitesToClear(
-    absl::optional<base::TimeDelta> custom_period) const {
+    std::optional<base::TimeDelta> custom_period) const {
   std::vector<std::string> sites_to_clear;
   base::TimeDelta grace_period =
       custom_period.value_or(features::kDIPSGracePeriod.Get());
@@ -322,10 +288,10 @@ bool DIPSStorage::DidSiteHaveInteractionSince(const GURL& url,
          last_user_interaction_time >= bound;
 }
 
-absl::optional<base::Time> DIPSStorage::LastInteractionTime(const GURL& url) {
+std::optional<base::Time> DIPSStorage::LastInteractionTime(const GURL& url) {
   const DIPSState state = Read(url);
   if (!state.user_interaction_times().has_value()) {
-    return absl::nullopt;
+    return std::nullopt;
   }
   return state.user_interaction_times()->second;
 }

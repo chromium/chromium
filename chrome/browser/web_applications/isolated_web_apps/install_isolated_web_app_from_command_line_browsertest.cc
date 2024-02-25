@@ -2,9 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/web_applications/isolated_web_apps/install_isolated_web_app_from_command_line.h"
-
 #include <memory>
+#include <optional>
 #include <vector>
 
 #include "base/command_line.h"
@@ -14,22 +13,22 @@
 #include "base/threading/thread_restrictions.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
-#include "chrome/browser/ui/web_applications/test/isolated_web_app_builder.h"
 #include "chrome/browser/ui/web_applications/test/isolated_web_app_test_utils.h"
+#include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_installation_manager.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_url_info.h"
+#include "chrome/browser/web_applications/isolated_web_apps/test/test_signed_web_bundle_builder.h"
 #include "chrome/browser/web_applications/test/web_app_test_observers.h"
 #include "chrome/browser/web_applications/web_app.h"
-#include "chrome/browser/web_applications/web_app_id.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "components/web_package/signed_web_bundles/signed_web_bundle_id.h"
+#include "components/webapps/common/web_app_id.h"
 #include "content/public/common/content_features.h"
 #include "content/public/test/browser_test.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "testing/gmock/include/gmock/gmock.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
 namespace web_app {
@@ -89,7 +88,7 @@ class InstallIsolatedWebAppFromCommandLineFromUrlBrowserTest
 IN_PROC_BROWSER_TEST_F(InstallIsolatedWebAppFromCommandLineFromUrlBrowserTest,
                        AppFromCommandLineIsInstalled) {
   WebAppTestInstallObserver observer(browser()->profile());
-  AppId id = observer.BeginListeningAndWait();
+  webapps::AppId id = observer.BeginListeningAndWait();
 
   EXPECT_THAT(GetWebAppRegistrar().IsInstalled(id), IsTrue());
   EXPECT_THAT(GetWebAppRegistrar().GetAppById(id),
@@ -100,7 +99,7 @@ IN_PROC_BROWSER_TEST_F(InstallIsolatedWebAppFromCommandLineFromUrlBrowserTest,
                                         Eq(url::Origin::Create(GetAppUrl())))),
                               Eq(base::Version("1.0.0")),
                               /*controlled_frame_partitions=*/_,
-                              /*pending_update_info=*/Eq(absl::nullopt))));
+                              /*pending_update_info=*/Eq(std::nullopt))));
 }
 
 class InstallIsolatedWebAppFromCommandLineFromFileBrowserTest
@@ -140,7 +139,7 @@ class InstallIsolatedWebAppFromCommandLineFromFileBrowserTest
 IN_PROC_BROWSER_TEST_F(InstallIsolatedWebAppFromCommandLineFromFileBrowserTest,
                        AppFromCommandLineIsInstalled) {
   WebAppTestInstallObserver observer(browser()->profile());
-  AppId id = observer.BeginListeningAndWait();
+  webapps::AppId id = observer.BeginListeningAndWait();
 
   ASSERT_TRUE(bundle_id_);
   ASSERT_EQ(
@@ -168,7 +167,7 @@ IN_PROC_BROWSER_TEST_F(InstallIsolatedWebAppFromCommandLineFromFileBrowserTest,
                                   &DevModeBundle::path, Eq(absolute_path))),
                               Eq(base::Version("1.0.0")),
                               /*controlled_frame_partitions=*/_,
-                              /*pending_update_info=*/Eq(absl::nullopt))));
+                              /*pending_update_info=*/Eq(std::nullopt))));
 }
 
 }  // namespace

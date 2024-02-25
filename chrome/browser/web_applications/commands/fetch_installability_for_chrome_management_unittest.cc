@@ -5,6 +5,7 @@
 #include "chrome/browser/web_applications/commands/fetch_installability_for_chrome_management.h"
 
 #include <memory>
+#include <optional>
 
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
@@ -16,16 +17,15 @@
 #include "chrome/browser/web_applications/test/web_app_test.h"
 #include "chrome/browser/web_applications/web_app_command_manager.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
-#include "chrome/browser/web_applications/web_app_id.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_contents/web_app_data_retriever.h"
 #include "chrome/browser/web_applications/web_contents/web_app_url_loader.h"
 #include "components/webapps/browser/installable/installable_logging.h"
+#include "components/webapps/common/web_app_id.h"
 #include "content/public/browser/web_contents.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace web_app {
 namespace {
@@ -39,8 +39,8 @@ class FetchInstallabilityForChromeManagementTest : public WebAppTest {
   const GURL kWebAppUrl = GURL("https://example.com/path/index.html");
   const GURL kWebAppScope = GURL("https://example.com/path/");
   const std::string kWebAppName = "Example App";
-  const AppId kWebAppId =
-      GenerateAppId(/*manifest_id=*/absl::nullopt, kWebAppUrl);
+  const webapps::AppId kWebAppId =
+      GenerateAppId(/*manifest_id=*/std::nullopt, kWebAppUrl);
 
   FetchInstallabilityForChromeManagementTest() = default;
   ~FetchInstallabilityForChromeManagementTest() override = default;
@@ -64,7 +64,7 @@ class FetchInstallabilityForChromeManagementTest : public WebAppTest {
 
   struct FetchResult {
     InstallableCheckResult result = InstallableCheckResult::kInstallable;
-    absl::optional<AppId> app_id = absl::nullopt;
+    std::optional<webapps::AppId> app_id = std::nullopt;
   };
 
   FetchResult ScheduleCommandAndWait(
@@ -79,12 +79,13 @@ class FetchInstallabilityForChromeManagementTest : public WebAppTest {
         std::make_unique<FetchInstallabilityForChromeManagement>(
             url, std::move(web_contents), std::move(url_loader),
             std::move(data_retriever),
-            base::BindLambdaForTesting([&](InstallableCheckResult result,
-                                           absl::optional<AppId> app_id) {
-              output.result = result;
-              output.app_id = app_id;
-              run_loop.Quit();
-            })));
+            base::BindLambdaForTesting(
+                [&](InstallableCheckResult result,
+                    std::optional<webapps::AppId> app_id) {
+                  output.result = result;
+                  output.app_id = app_id;
+                  run_loop.Quit();
+                })));
     run_loop.Run();
     return output;
   }
@@ -109,7 +110,7 @@ TEST_F(FetchInstallabilityForChromeManagementTest, UrlLoadError) {
                              std::move(url_loader), std::move(data_retriever));
   EXPECT_THAT(result, AllOf(Field(&FetchResult::result,
                                   Eq(InstallableCheckResult::kNotInstallable)),
-                            Field(&FetchResult::app_id, Eq(absl::nullopt))));
+                            Field(&FetchResult::app_id, Eq(std::nullopt))));
 }
 
 TEST_F(FetchInstallabilityForChromeManagementTest, NotInstallable) {
@@ -127,7 +128,7 @@ TEST_F(FetchInstallabilityForChromeManagementTest, NotInstallable) {
                              std::move(url_loader), std::move(data_retriever));
   EXPECT_THAT(result, AllOf(Field(&FetchResult::result,
                                   Eq(InstallableCheckResult::kNotInstallable)),
-                            Field(&FetchResult::app_id, Eq(absl::nullopt))));
+                            Field(&FetchResult::app_id, Eq(std::nullopt))));
 }
 
 TEST_F(FetchInstallabilityForChromeManagementTest, Installable) {

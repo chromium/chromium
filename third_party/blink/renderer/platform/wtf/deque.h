@@ -150,13 +150,13 @@ class Deque
 
   void clear();
 
-  template <typename VisitorDispatcher, typename A = Allocator>
-  std::enable_if_t<A::kIsGarbageCollected> Trace(VisitorDispatcher) const;
+  void Trace(auto visitor) const
+    requires Allocator::kIsGarbageCollected;
 
   static_assert(!std::is_polymorphic<T>::value ||
                     !VectorTraits<T>::kCanInitializeWithMemset,
                 "Cannot initialize with memset if there is a vtable");
-  static_assert(Allocator::kIsGarbageCollected || !IsDisallowNew<T>::value ||
+  static_assert(Allocator::kIsGarbageCollected || !IsDisallowNew<T> ||
                     !IsTraceable<T>::value,
                 "Cannot put DISALLOW_NEW objects that "
                 "have trace methods into an off-heap Deque");
@@ -732,9 +732,9 @@ inline T* DequeIteratorBase<T, inlineCapacity, Allocator>::Before() const {
 // This is only defined if the allocator is a HeapAllocator. It is used when
 // visiting during a tracing GC.
 template <typename T, wtf_size_t inlineCapacity, typename Allocator>
-template <typename VisitorDispatcher, typename A>
-std::enable_if_t<A::kIsGarbageCollected>
-Deque<T, inlineCapacity, Allocator>::Trace(VisitorDispatcher visitor) const {
+void Deque<T, inlineCapacity, Allocator>::Trace(auto visitor) const
+  requires Allocator::kIsGarbageCollected
+{
   static_assert(inlineCapacity == 0,
                 "Heap allocated Deque should not use inline buffer");
   static_assert(Allocator::kIsGarbageCollected,

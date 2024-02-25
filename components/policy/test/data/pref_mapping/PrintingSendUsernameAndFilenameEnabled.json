@@ -1,0 +1,19 @@
+[
+  {
+    "os": [
+      "chromeos_ash"
+    ],
+    "policy_pref_mapping_tests": [
+      {
+        "policies": {
+          "PrintingSendUsernameAndFilenameEnabled": true
+        },
+        "prefs": {
+          "printing.send_username_and_filename_enabled": {
+            "value": true
+          }
+        }
+      }
+    ]
+  }
+]

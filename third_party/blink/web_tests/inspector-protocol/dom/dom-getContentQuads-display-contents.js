@@ -1,4 +1,4 @@
-(async function(testRunner) {
+(async function(/** @type {import('test_runner').TestRunner} */ testRunner) {
   const { dp } = await testRunner.startURL('resources/display-contents.html',
     'Tests DOM.getContentQuads method with text inside display:contents elements.');
 

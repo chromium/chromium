@@ -77,7 +77,6 @@ RootWebArea
   none
     none
       *none
-      *none
 {
     childIds : <object>
     chromeRole : {
@@ -106,9 +105,7 @@ RootWebArea
 RootWebArea
   none
     none
-      none
-        *none
-        *none
+      *none
 {
     childIds : <object>
     chromeRole : {
@@ -313,7 +310,6 @@ RootWebArea
   none
     none
       *none
-      *none
 {
     childIds : <object>
     chromeRole : {
@@ -342,9 +338,7 @@ RootWebArea
 RootWebArea
   none
     none
-      none
-        *none
-        *none
+      *none
 {
     childIds : <object>
     chromeRole : {
@@ -599,8 +593,7 @@ RootWebArea
 RootWebArea
   none
     none
-      none
-        *none
+      *none
 {
     childIds : <object>
     chromeRole : {
@@ -684,7 +677,6 @@ RootWebArea
 RootWebArea
   none
     none
-      *none
       *none
 {
     childIds : <object>

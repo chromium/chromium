@@ -43,41 +43,34 @@ import org.chromium.ui.modelutil.PropertyModel;
 @RunWith(BaseRobolectricTestRunner.class)
 @LooperMode(PAUSED)
 public class MessageBannerMediatorUnitTest {
-    @Rule
-    public MockitoRule mMockitoRule = MockitoJUnit.rule();
+    @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
     private static final int PEEKING_LAYER_HEIGHT = 20;
     private static final int DEFAULT_MARGIN = 18;
     private static final int PEEKING_MARGIN = PEEKING_LAYER_HEIGHT + DEFAULT_MARGIN;
 
-    @Mock
-    private Resources mResources;
-    @Mock
-    private DisplayMetrics mDisplayMetrics;
-    @Mock
-    private Supplier<Integer> mTopOffsetSupplier;
-    @Mock
-    private Supplier<Integer> mMaxTranslationSupplier;
-    @Mock
-    private Runnable mDismissedRunnable;
-    @Mock
-    private Runnable mShownRunnable;
-    @Mock
-    private Runnable mHiddenRunnable;
-    @Mock
-    private SwipeAnimationHandler mSwipeAnimationHandler;
+    @Mock private Resources mResources;
+    @Mock private DisplayMetrics mDisplayMetrics;
+    @Mock private Supplier<Integer> mTopOffsetSupplier;
+    @Mock private Supplier<Integer> mMaxTranslationSupplier;
+    @Mock private Runnable mDismissedRunnable;
+    @Mock private Runnable mShownRunnable;
+    @Mock private Runnable mHiddenRunnable;
+    @Mock private SwipeAnimationHandler mSwipeAnimationHandler;
 
     private MessageBannerMediator mMediator;
     private PropertyModel mModel;
 
     @Before
     public void setUp() {
-        mModel = new PropertyModel.Builder(MessageBannerProperties.ALL_KEYS)
-                         .with(MessageBannerProperties.MESSAGE_IDENTIFIER,
-                                 MessageIdentifier.TEST_MESSAGE)
-                         .with(MessageBannerProperties.TITLE, "Title")
-                         .with(MessageBannerProperties.DESCRIPTION, "Desc")
-                         .build();
+        mModel =
+                new PropertyModel.Builder(MessageBannerProperties.ALL_KEYS)
+                        .with(
+                                MessageBannerProperties.MESSAGE_IDENTIFIER,
+                                MessageIdentifier.TEST_MESSAGE)
+                        .with(MessageBannerProperties.TITLE, "Title")
+                        .with(MessageBannerProperties.DESCRIPTION, "Desc")
+                        .build();
         when(mResources.getDisplayMetrics()).thenReturn(mDisplayMetrics);
         mDisplayMetrics.widthPixels = 500;
         when(mResources.getDimensionPixelSize(R.dimen.message_vertical_hide_threshold))
@@ -88,14 +81,21 @@ public class MessageBannerMediatorUnitTest {
                 .thenReturn(PEEKING_LAYER_HEIGHT);
         when(mResources.getDimensionPixelSize(R.dimen.message_shadow_top_margin))
                 .thenReturn(DEFAULT_MARGIN);
-        doAnswer(invocation -> {
-            ((Animator) invocation.getArguments()[0]).start();
-            return null;
-        })
+        doAnswer(
+                        invocation -> {
+                            ((Animator) invocation.getArguments()[0]).start();
+                            return null;
+                        })
                 .when(mSwipeAnimationHandler)
                 .onSwipeEnd(any(Animator.class));
-        mMediator = new MessageBannerMediator(mModel, mTopOffsetSupplier, mMaxTranslationSupplier,
-                mResources, mDismissedRunnable, mSwipeAnimationHandler);
+        mMediator =
+                new MessageBannerMediator(
+                        mModel,
+                        mTopOffsetSupplier,
+                        mMaxTranslationSupplier,
+                        mResources,
+                        mDismissedRunnable,
+                        mSwipeAnimationHandler);
         when(mTopOffsetSupplier.get()).thenReturn(75);
         when(mMaxTranslationSupplier.get()).thenReturn(100);
     }
@@ -573,8 +573,13 @@ public class MessageBannerMediatorUnitTest {
         mMediator.onSwipeUpdated(e2, 0, distance, 0, distance);
         if (flingVelocityAtEnd != 0) {
             MotionEvent e3 = MotionEvent.obtain(0, 0, MotionEvent.ACTION_UP, 0, distance, 0);
-            mMediator.onFling(flingVelocityAtEnd < 0 ? ScrollDirection.UP : ScrollDirection.DOWN,
-                    e3, 0, distance, 0, flingVelocityAtEnd);
+            mMediator.onFling(
+                    flingVelocityAtEnd < 0 ? ScrollDirection.UP : ScrollDirection.DOWN,
+                    e3,
+                    0,
+                    distance,
+                    0,
+                    flingVelocityAtEnd);
         }
         mMediator.onSwipeFinished();
     }
@@ -591,23 +596,47 @@ public class MessageBannerMediatorUnitTest {
         mMediator.onSwipeUpdated(e2, distance, 0, distance, 0);
         if (flingVelocityAtEnd != 0) {
             MotionEvent e3 = MotionEvent.obtain(0, 0, MotionEvent.ACTION_UP, distance, 0, 0);
-            mMediator.onFling(flingVelocityAtEnd < 0 ? ScrollDirection.LEFT : ScrollDirection.RIGHT,
-                    e3, distance, 0, flingVelocityAtEnd, 0);
+            mMediator.onFling(
+                    flingVelocityAtEnd < 0 ? ScrollDirection.LEFT : ScrollDirection.RIGHT,
+                    e3,
+                    distance,
+                    0,
+                    flingVelocityAtEnd,
+                    0);
         }
         mMediator.onSwipeFinished();
     }
 
-    private void assertModelState(float translationXExpected, float translationYExpected,
-            float alphaExpected, float heightExpected, int marginTopExpected, String message) {
-        assertEquals("Incorrect translation x, " + message, translationXExpected,
-                mModel.get(MessageBannerProperties.TRANSLATION_X), MathUtils.EPSILON);
-        assertEquals("Incorrect translation y, " + message, translationYExpected,
-                mModel.get(MessageBannerProperties.TRANSLATION_Y), MathUtils.EPSILON);
-        assertEquals("Incorrect alpha, " + message, alphaExpected,
-                mModel.get(MessageBannerProperties.CONTENT_ALPHA), MathUtils.EPSILON);
-        assertEquals("Incorrect visual height, " + message, heightExpected,
-                mModel.get(MessageBannerProperties.VISUAL_HEIGHT), MathUtils.EPSILON);
-        assertEquals("Incorrect margin top, " + message, marginTopExpected,
+    private void assertModelState(
+            float translationXExpected,
+            float translationYExpected,
+            float alphaExpected,
+            float heightExpected,
+            int marginTopExpected,
+            String message) {
+        assertEquals(
+                "Incorrect translation x, " + message,
+                translationXExpected,
+                mModel.get(MessageBannerProperties.TRANSLATION_X),
+                MathUtils.EPSILON);
+        assertEquals(
+                "Incorrect translation y, " + message,
+                translationYExpected,
+                mModel.get(MessageBannerProperties.TRANSLATION_Y),
+                MathUtils.EPSILON);
+        assertEquals(
+                "Incorrect alpha, " + message,
+                alphaExpected,
+                mModel.get(MessageBannerProperties.CONTENT_ALPHA),
+                MathUtils.EPSILON);
+        assertEquals(
+                "Incorrect visual height, " + message,
+                heightExpected,
+                mModel.get(MessageBannerProperties.VISUAL_HEIGHT),
+                MathUtils.EPSILON);
+        assertEquals(
+                "Incorrect margin top, " + message,
+                marginTopExpected,
                 mModel.get(MessageBannerProperties.MARGIN_TOP));
     }
 }

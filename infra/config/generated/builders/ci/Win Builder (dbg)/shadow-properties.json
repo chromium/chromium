@@ -1,7 +1,7 @@
 {
   "$build/reclient": {
     "bootstrap_env": {
-      "RBE_v": "3"
+      "RBE_experimental_exit_on_stuck_actions": "true"
     },
     "instance": "rbe-chromium-untrusted",
     "jobs": 250,

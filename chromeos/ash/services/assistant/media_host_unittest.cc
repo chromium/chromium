@@ -16,8 +16,9 @@
 #include "chromeos/ash/services/libassistant/public/mojom/android_app_info.mojom-shared.h"
 #include "chromeos/ash/services/libassistant/public/mojom/android_app_info.mojom.h"
 #include "chromeos/services/assistant/public/shared/utils.h"
+#include "services/media_session/public/cpp/test/mock_media_session.h"
+#include "services/media_session/public/cpp/test/test_media_controller.h"
 #include "testing/gmock/include/gmock/gmock.h"
-#include "testing/gtest/include/gtest/gtest.h"
 
 namespace ash::assistant {
 
@@ -27,6 +28,8 @@ using libassistant::mojom::MediaState;
 using libassistant::mojom::MediaStatePtr;
 using libassistant::mojom::PlaybackState;
 using media_session::mojom::MediaSessionInfo;
+using media_session::test::MockMediaSessionMojoObserver;
+using media_session::test::TestMediaController;
 using ::testing::_;
 
 constexpr char kPlayAndroidMediaAction[] = "android.intent.action.VIEW";
@@ -72,61 +75,12 @@ MATCHER_P(MatchesAndroidAppInfo, expected, "") {
   return false;
 }
 
-class MediaControllerMock : public media_session::mojom::MediaController {
- public:
-  // media_session::mojom::MediaController implementation:
-  MOCK_METHOD(void, Suspend, ());
-  MOCK_METHOD(void, Resume, ());
-  MOCK_METHOD(void, Stop, ());
-  MOCK_METHOD(void, ToggleSuspendResume, ());
-  MOCK_METHOD(void, PreviousTrack, ());
-  MOCK_METHOD(void, NextTrack, ());
-  MOCK_METHOD(void, Seek, (::base::TimeDelta seek_time));
-  MOCK_METHOD(
-      void,
-      ObserveImages,
-      (::media_session::mojom::MediaSessionImageType type,
-       int32_t minimum_size_px,
-       int32_t desired_size_px,
-       mojo::PendingRemote<media_session::mojom::MediaControllerImageObserver>
-           observer));
-  MOCK_METHOD(void, SeekTo, (::base::TimeDelta seek_time));
-  MOCK_METHOD(void, ScrubTo, (::base::TimeDelta seek_time));
-  MOCK_METHOD(void, EnterPictureInPicture, ());
-  MOCK_METHOD(void, ExitPictureInPicture, ());
-  MOCK_METHOD(void, SetAudioSinkId, (const absl::optional<std::string>& id));
-  MOCK_METHOD(void, ToggleMicrophone, ());
-  MOCK_METHOD(void, ToggleCamera, ());
-  MOCK_METHOD(void, HangUp, ());
-  MOCK_METHOD(void, Raise, ());
-  MOCK_METHOD(void, SetMute, (bool mute));
-  MOCK_METHOD(void, RequestMediaRemoting, ());
-  MOCK_METHOD(void, EnterAutoPictureInPicture, ());
-
-  void AddObserver(
-      mojo::PendingRemote<media_session::mojom::MediaControllerObserver> remote)
-      override {
-    observer_.Bind(std::move(remote));
-  }
-
-  void Bind(
-      mojo::PendingReceiver<media_session::mojom::MediaController> receiver) {
-    receiver_.Bind(std::move(receiver));
-  }
-
-  mojo::Remote<media_session::mojom::MediaControllerObserver>& observer() {
-    return observer_;
-  }
-
- private:
-  mojo::Remote<media_session::mojom::MediaControllerObserver> observer_;
-  mojo::Receiver<media_session::mojom::MediaController> receiver_{this};
-};
-
 class FakeMediaControllerManager
     : public media_session::mojom::MediaControllerManager {
  public:
-  FakeMediaControllerManager() = default;
+  FakeMediaControllerManager() {
+    media_controller_ = std::make_unique<TestMediaController>();
+  }
   FakeMediaControllerManager(const FakeMediaControllerManager&) = delete;
   FakeMediaControllerManager& operator=(const FakeMediaControllerManager&) =
       delete;
@@ -136,7 +90,9 @@ class FakeMediaControllerManager
     return receiver_;
   }
 
-  MediaControllerMock& media_controller_mock() { return media_controller_; }
+  TestMediaController* media_controller() const {
+    return media_controller_.get();
+  }
 
   // media_session::mojom::MediaControllerManager implementation:
   void CreateMediaControllerForSession(
@@ -147,52 +103,13 @@ class FakeMediaControllerManager
   void CreateActiveMediaController(
       mojo::PendingReceiver<media_session::mojom::MediaController> receiver)
       override {
-    media_controller_.Bind(std::move(receiver));
+    media_controller_->BindMediaControllerReceiver(std::move(receiver));
   }
   void SuspendAllSessions() override { NOTIMPLEMENTED(); }
 
  private:
   mojo::Receiver<media_session::mojom::MediaControllerManager> receiver_{this};
-  testing::StrictMock<MediaControllerMock> media_controller_;
-};
-
-class MediaSessionObserverMock
-    : public media_session::mojom::MediaSessionObserver {
- public:
-  MediaSessionObserverMock() = default;
-  MediaSessionObserverMock(const MediaSessionObserverMock&) = delete;
-  MediaSessionObserverMock& operator=(const MediaSessionObserverMock&) = delete;
-  ~MediaSessionObserverMock() override = default;
-
-  // media_session::mojom::MediaSessionObserver implementation:
-  MOCK_METHOD(void,
-              MediaSessionInfoChanged,
-              (media_session::mojom::MediaSessionInfoPtr info));
-  MOCK_METHOD(void,
-              MediaSessionMetadataChanged,
-              (const absl::optional<::media_session::MediaMetadata>& metadata));
-  MOCK_METHOD(
-      void,
-      MediaSessionActionsChanged,
-      (const std::vector<media_session::mojom::MediaSessionAction>& action));
-  MOCK_METHOD(void,
-              MediaSessionImagesChanged,
-              ((const base::flat_map<
-                  media_session::mojom::MediaSessionImageType,
-                  std::vector<::media_session::MediaImage>>& images)));
-  MOCK_METHOD(void,
-              MediaSessionPositionChanged,
-              (const absl::optional<::media_session::MediaPosition>& position));
-
-  mojo::PendingRemote<media_session::mojom::MediaSessionObserver>
-  BindNewPipeAndPassRemote() {
-    return receiver_.BindNewPipeAndPassRemote();
-  }
-
-  void FlushForTesting() { receiver_.FlushForTesting(); }
-
- private:
-  mojo::Receiver<media_session::mojom::MediaSessionObserver> receiver_{this};
+  std::unique_ptr<TestMediaController> media_controller_;
 };
 
 }  // namespace
@@ -228,13 +145,8 @@ class MediaHostTest : public testing::Test {
     return media_host().media_session();
   }
 
-  MediaControllerMock& chromeos_media_controller_mock() {
-    return media_controller_manager_.media_controller_mock();
-  }
-
-  mojo::Remote<media_session::mojom::MediaControllerObserver>&
-  chromeos_media_controller_observer() {
-    return chromeos_media_controller_mock().observer();
+  TestMediaController* media_controller() const {
+    return media_controller_manager_.media_controller();
   }
 
   void FlushMojomPipes() {
@@ -249,30 +161,21 @@ class MediaHostTest : public testing::Test {
 
   void StartMediaSession(
       base::UnguessableToken token = base::UnguessableToken::Create()) {
-    chromeos_media_controller_observer()->MediaSessionChanged(token);
-    chromeos_media_controller_observer().FlushForTesting();
+    media_controller()->SimulateMediaSessionChanged(token);
+    media_controller()->Flush();
   }
 
   void MediaSessionInfoChanged(
       media_session::mojom::MediaSessionInfoPtr session_info) {
-    chromeos_media_controller_observer()->MediaSessionInfoChanged(
+    media_controller()->SimulateMediaSessionInfoChanged(
         std::move(session_info));
-    chromeos_media_controller_observer().FlushForTesting();
+    media_controller()->Flush();
   }
 
   void MediaSessionMetadataChanged(
       const media_session::MediaMetadata& meta_data) {
-    chromeos_media_controller_observer()->MediaSessionMetadataChanged(
-        meta_data);
-    chromeos_media_controller_observer().FlushForTesting();
-  }
-
-  void AddMediaSessionObserver(MediaSessionObserverMock& observer) {
-    // The observer is always called when adding.
-    EXPECT_CALL(observer, MediaSessionMetadataChanged);
-    EXPECT_CALL(observer, MediaSessionInfoChanged);
-    media_session().AddObserver(observer.BindNewPipeAndPassRemote());
-    observer.FlushForTesting();
+    media_controller()->SimulateMediaSessionMetadataChanged(meta_data);
+    media_controller()->Flush();
   }
 
   void AddAssistantInteractionSubscriber(
@@ -307,16 +210,15 @@ TEST_F(MediaHostTest, ShouldSupportPausePlaying) {
   media_host().PauseInternalMediaPlayer();
 }
 
-TEST_F(MediaHostTest, ShouldInitiallyNotObserverMediaChanges) {
-  EXPECT_FALSE(chromeos_media_controller_observer().is_bound());
+TEST_F(MediaHostTest, ShouldInitiallyNotObserveMediaChanges) {
+  EXPECT_EQ(0, media_controller()->add_observer_count());
 }
 
 TEST_F(MediaHostTest,
        ShouldStartObservingMediaChangesWhenRelatedInfoIsEnabled) {
   SetRelatedInfoEnabled(true);
-
-  EXPECT_TRUE(chromeos_media_controller_observer().is_bound());
-  EXPECT_TRUE(chromeos_media_controller_observer().is_connected());
+  EXPECT_EQ(1, media_controller()->add_observer_count());
+  EXPECT_EQ(1, media_controller()->GetActiveObserverCount());
 }
 
 TEST_F(MediaHostTest,
@@ -327,7 +229,8 @@ TEST_F(MediaHostTest,
   SetRelatedInfoEnabled(false);
 
   // Note the observer is not unbound, but the connection is severed.
-  EXPECT_FALSE(chromeos_media_controller_observer().is_connected());
+  EXPECT_EQ(1, media_controller()->add_observer_count());
+  EXPECT_EQ(0, media_controller()->GetActiveObserverCount());
 }
 
 TEST_F(MediaHostTest, ShouldSetTitleWhenCallingSetExternalPlaybackState) {
@@ -463,7 +366,7 @@ TEST_F(MediaHostTest,
 
   const auto session_id = base::UnguessableToken::Create();
   StartMediaSession(session_id);
-  media_host().media_session().SetInternalAudioFocusIdForTesting(session_id);
+  media_session().SetInternalAudioFocusIdForTesting(session_id);
 
   EXPECT_NO_CALLS(libassistant_controller_mock(), SetExternalPlaybackState);
 
@@ -472,16 +375,8 @@ TEST_F(MediaHostTest,
 }
 
 TEST_F(MediaHostTest, ShouldForwardLibassistantMediaSessionUpdates) {
-  testing::StrictMock<MediaSessionObserverMock> media_session_observer;
-  AddMediaSessionObserver(media_session_observer);
-
-  absl::optional<media_session::MediaMetadata> expected_output =
-      media_session::MediaMetadata();
-  expected_output->title = u"the title";
-  expected_output->artist = u"the artist";
-  expected_output->album = u"the album";
-  EXPECT_CALL(media_session_observer,
-              MediaSessionMetadataChanged(expected_output));
+  MockMediaSessionMojoObserver media_session_observer(media_session());
+  media_session_observer.WaitForEmptyMetadata();
 
   auto input = MediaState::New();
   input->metadata = libassistant::mojom::MediaMetadata::New();
@@ -489,9 +384,13 @@ TEST_F(MediaHostTest, ShouldForwardLibassistantMediaSessionUpdates) {
   input->metadata->artist = "the artist";
   input->metadata->album = "the album";
   libassistant_media_delegate().OnPlaybackStateChanged(std::move(input));
-
   FlushMojomPipes();
-  media_session_observer.FlushForTesting();
+
+  media_session::MediaMetadata expected_output;
+  expected_output.title = u"the title";
+  expected_output.artist = u"the artist";
+  expected_output.album = u"the album";
+  media_session_observer.WaitForExpectedMetadata(expected_output);
 }
 
 TEST_F(MediaHostTest, ShouldForwardLibassistantOpenAndroidMediaUpdates) {
@@ -536,43 +435,38 @@ TEST_F(MediaHostTest, ShouldOpenWebMediaUrl) {
 }
 
 TEST_F(MediaHostTest, ShouldPlayNextTrack) {
-  EXPECT_CALL(chromeos_media_controller_mock(), NextTrack);
-
+  EXPECT_EQ(0, media_controller()->next_track_count());
   libassistant_media_delegate().NextTrack();
-
   FlushMojomPipes();
+  EXPECT_EQ(1, media_controller()->next_track_count());
 }
 
 TEST_F(MediaHostTest, ShouldPlayPreviousTrack) {
-  EXPECT_CALL(chromeos_media_controller_mock(), PreviousTrack);
-
+  EXPECT_EQ(0, media_controller()->previous_track_count());
   libassistant_media_delegate().PreviousTrack();
-
   FlushMojomPipes();
+  EXPECT_EQ(1, media_controller()->previous_track_count());
 }
 
 TEST_F(MediaHostTest, ShouldPause) {
-  EXPECT_CALL(chromeos_media_controller_mock(), Suspend);
-
+  EXPECT_EQ(0, media_controller()->suspend_count());
   libassistant_media_delegate().Pause();
-
   FlushMojomPipes();
+  EXPECT_EQ(1, media_controller()->suspend_count());
 }
 
 TEST_F(MediaHostTest, ShouldResume) {
-  EXPECT_CALL(chromeos_media_controller_mock(), Resume);
-
+  EXPECT_EQ(0, media_controller()->resume_count());
   libassistant_media_delegate().Resume();
-
   FlushMojomPipes();
+  EXPECT_EQ(1, media_controller()->resume_count());
 }
 
 TEST_F(MediaHostTest, ShouldStop) {
-  EXPECT_CALL(chromeos_media_controller_mock(), Suspend);
-
+  EXPECT_EQ(0, media_controller()->suspend_count());
   libassistant_media_delegate().Stop();
-
   FlushMojomPipes();
+  EXPECT_EQ(1, media_controller()->suspend_count());
 }
 
 }  // namespace ash::assistant

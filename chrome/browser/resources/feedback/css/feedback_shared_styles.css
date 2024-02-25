@@ -2,6 +2,9 @@
  * Use of this source code is governed by a BSD-style license that can be
  * found in the LICENSE file. */
 
+/* TODO(temao): Delete this file when feedback UI componentization is
+finished (crbug.com/1509032).*/
+
 @import url(./feedback_shared_vars.css);
 
 html:has(body.jelly-enabled) :host-context(.focus-outline-visible)

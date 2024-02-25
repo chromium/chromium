@@ -59,8 +59,8 @@ class CONTENT_EXPORT AudioInputDeviceManager : public MediaStreamProvider {
   void OpenedOnIOThread(
       const base::UnguessableToken& session_id,
       const blink::MediaStreamDevice& device,
-      const absl::optional<media::AudioParameters>& input_params,
-      const absl::optional<std::string>& matched_output_device_id);
+      const std::optional<media::AudioParameters>& input_params,
+      const std::optional<std::string>& matched_output_device_id);
 
   // Callback called on IO thread with the session_id referencing the closed
   // device.
@@ -76,7 +76,7 @@ class CONTENT_EXPORT AudioInputDeviceManager : public MediaStreamProvider {
   base::ObserverList<MediaStreamProviderListener>::Unchecked listeners_;
   blink::MediaStreamDevices devices_;
 
-  const raw_ptr<media::AudioSystem, DanglingUntriaged> audio_system_;
+  const raw_ptr<media::AudioSystem> audio_system_;
 };
 
 }  // namespace content

@@ -25,7 +25,7 @@ bool StructTraits<extensions::mojom::APIPermissionDataView,
   std::unique_ptr<extensions::APIPermission> api_permission =
       permission_info->CreateAPIPermission();
 
-  absl::optional<base::Value> value;
+  std::optional<base::Value> value;
   if (!data.ReadValue(&value))
     return false;
 
@@ -68,7 +68,7 @@ bool StructTraits<extensions::mojom::ManifestPermissionDataView,
   if (!permission)
     return false;
 
-  absl::optional<base::Value> value;
+  std::optional<base::Value> value;
   if (!data.ReadValue(&value))
     return false;
 

@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_PERMISSIONS_PERMISSION_DECISION_AUTO_BLOCKER_H_
 #define COMPONENTS_PERMISSIONS_PERMISSION_DECISION_AUTO_BLOCKER_H_
 
+#include <optional>
 #include <set>
 
 #include "base/functional/callback.h"
@@ -16,25 +17,49 @@
 #include "components/content_settings/core/common/content_settings_types.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "content/public/browser/permission_result.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
 class GURL;
 
-namespace settings {
-FORWARD_DECLARE_TEST(SiteSettingsHandlerTest, GetAllSites);
-FORWARD_DECLARE_TEST(SiteSettingsHandlerTest, GetRecentSitePermissions);
-FORWARD_DECLARE_TEST(SiteSettingsHandlerTest,
-                     StorageAccessExceptions_Description_Embargoed);
-FORWARD_DECLARE_TEST(SiteSettingsHandlerTest,
-                     StorageAccessExceptions_Description_EmbargoedTwoProfiles);
-}  // namespace settings
-
-namespace site_settings {
-FORWARD_DECLARE_TEST(RecentSiteSettingsHelperTest, CheckRecentSitePermissions);
-}  // namespace site_settings
-
 namespace permissions {
+
+// Mockable interface for PermissionDecisionAutoBlocker (see below), for those
+// few instances where this is used outside of permissions and needs separate
+// unit tests.
+class PermissionDecisionAutoBlockerBase {
+ public:
+  PermissionDecisionAutoBlockerBase() = default;
+  virtual ~PermissionDecisionAutoBlockerBase() = default;
+
+  PermissionDecisionAutoBlockerBase(const PermissionDecisionAutoBlockerBase&) =
+      delete;
+  PermissionDecisionAutoBlockerBase& operator=(
+      const PermissionDecisionAutoBlockerBase&) = delete;
+
+  // Returns whether |request_origin| is under embargo for |permission|.
+  virtual bool IsEmbargoed(const GURL& request_origin,
+                           ContentSettingsType permission) = 0;
+
+  // Records that a dismissal of a prompt for |permission| was made. If the
+  // total number of dismissals exceeds a threshhold and
+  // features::kBlockPromptsIfDismissedOften is enabled, it will place |url|
+  // under embargo for |permission|. |dismissed_prompt_was_quiet| will inform
+  // the decision of which threshold to pick, depending on whether the prompt
+  // that was presented to the user was quiet or not.
+  virtual bool RecordDismissAndEmbargo(const GURL& url,
+                                       ContentSettingsType permission,
+                                       bool dismissed_prompt_was_quiet) = 0;
+
+  // Records that an ignore of a prompt for |permission| was made. If the
+  // total number of ignores exceeds a threshold and
+  // features::kBlockPromptsIfIgnoredOften is enabled, it will place |url|
+  // under embargo for |permission|. |ignored_prompt_was_quiet| will inform
+  // the decision of which threshold to pick, depending on whether the prompt
+  // that was presented to the user was quiet or not.
+  virtual bool RecordIgnoreAndEmbargo(const GURL& url,
+                                      ContentSettingsType permission,
+                                      bool ignored_prompt_was_quiet) = 0;
+};
 
 // The PermissionDecisionAutoBlocker decides whether or not a given origin
 // should be automatically blocked from requesting a permission. When an origin
@@ -44,7 +69,8 @@ namespace permissions {
 // result in it being placed under embargo again. Currently, an origin can be
 // placed under embargo if it has a number of prior dismissals greater than a
 // threshold.
-class PermissionDecisionAutoBlocker : public KeyedService {
+class PermissionDecisionAutoBlocker : public PermissionDecisionAutoBlockerBase,
+                                      public KeyedService {
  public:
   class Observer : public base::CheckedObserver {
    public:
@@ -56,11 +82,17 @@ class PermissionDecisionAutoBlocker : public KeyedService {
 
   explicit PermissionDecisionAutoBlocker(HostContentSettingsMap* settings_map);
 
-  PermissionDecisionAutoBlocker(const PermissionDecisionAutoBlocker&) = delete;
-  PermissionDecisionAutoBlocker& operator=(
-      const PermissionDecisionAutoBlocker&) = delete;
-
   ~PermissionDecisionAutoBlocker() override;
+
+  // PermissionDecisionAutoBlockerBase
+  bool IsEmbargoed(const GURL& request_origin,
+                   ContentSettingsType permission) override;
+  bool RecordDismissAndEmbargo(const GURL& url,
+                               ContentSettingsType permission,
+                               bool dismissed_prompt_was_quiet) override;
+  bool RecordIgnoreAndEmbargo(const GURL& url,
+                              ContentSettingsType permission,
+                              bool ignored_prompt_was_quiet) override;
 
   // Returns whether the permission auto blocker is enabled for the passed-in
   // content setting.
@@ -71,7 +103,7 @@ class PermissionDecisionAutoBlocker : public KeyedService {
   // Prefer to use PermissionManager::GetPermissionStatus when possible. This
   // method is only exposed to facilitate permission checks from threads other
   // than the UI thread. See https://crbug.com/658020.
-  static absl::optional<content::PermissionResult> GetEmbargoResult(
+  static std::optional<content::PermissionResult> GetEmbargoResult(
       HostContentSettingsMap* settings_map,
       const GURL& request_origin,
       ContentSettingsType permission,
@@ -80,12 +112,9 @@ class PermissionDecisionAutoBlocker : public KeyedService {
   // Updates the threshold to start blocking prompts from the field trial.
   static void UpdateFromVariations();
 
-  // Returns whether |request_origin| is under embargo for |permission|.
-  bool IsEmbargoed(const GURL& request_origin, ContentSettingsType permission);
-
   // Checks the status of the content setting to determine if |request_origin|
   // is under embargo for |permission|. This checks all types of embargo.
-  absl::optional<content::PermissionResult> GetEmbargoResult(
+  std::optional<content::PermissionResult> GetEmbargoResult(
       const GURL& request_origin,
       ContentSettingsType permission);
 
@@ -113,26 +142,6 @@ class PermissionDecisionAutoBlocker : public KeyedService {
   std::set<GURL> GetEmbargoedOrigins(
       std::vector<ContentSettingsType> content_types);
 
-  // Records that a dismissal of a prompt for |permission| was made. If the
-  // total number of dismissals exceeds a threshhold and
-  // features::kBlockPromptsIfDismissedOften is enabled, it will place |url|
-  // under embargo for |permission|. |dismissed_prompt_was_quiet| will inform
-  // the decision of which threshold to pick, depending on whether the prompt
-  // that was presented to the user was quiet or not.
-  bool RecordDismissAndEmbargo(const GURL& url,
-                               ContentSettingsType permission,
-                               bool dismissed_prompt_was_quiet);
-
-  // Records that an ignore of a prompt for |permission| was made. If the
-  // total number of ignores exceeds a threshold and
-  // features::kBlockPromptsIfIgnoredOften is enabled, it will place |url|
-  // under embargo for |permission|. |ignored_prompt_was_quiet| will inform
-  // the decision of which threshold to pick, depending on whether the prompt
-  // that was presented to the user was quiet or not.
-  bool RecordIgnoreAndEmbargo(const GURL& url,
-                              ContentSettingsType permission,
-                              bool ignored_prompt_was_quiet);
-
   // Records that a prompt was displayed for |permission|. If
   // features::kBlockRepeatedAutoReauthnPrompts is enabled, it will place |url|
   // under embargo for |permission|.
@@ -156,27 +165,15 @@ class PermissionDecisionAutoBlocker : public KeyedService {
 
   static const char* GetPromptDismissCountKeyForTesting();
 
- private:
-  friend class PermissionDecisionAutoBlockerUnitTest;
-  FRIEND_TEST_ALL_PREFIXES(site_settings::RecentSiteSettingsHelperTest,
-                           CheckRecentSitePermissions);
-  FRIEND_TEST_ALL_PREFIXES(settings::SiteSettingsHandlerTest, GetAllSites);
-  FRIEND_TEST_ALL_PREFIXES(settings::SiteSettingsHandlerTest,
-                           GetRecentSitePermissions);
-  FRIEND_TEST_ALL_PREFIXES(settings::SiteSettingsHandlerTest,
-                           StorageAccessExceptions_Description_Embargoed);
-  FRIEND_TEST_ALL_PREFIXES(
-      settings::SiteSettingsHandlerTest,
-      StorageAccessExceptions_Description_EmbargoedTwoProfiles);
+  void SetClockForTesting(base::Clock* clock);
 
+ private:
   void PlaceUnderEmbargo(const GURL& request_origin,
                          ContentSettingsType permission,
                          const char* key);
 
   void NotifyEmbargoStarted(const GURL& origin,
                             ContentSettingsType content_setting);
-
-  void SetClockForTesting(base::Clock* clock);
 
   // Keys used for storing count data in a website setting.
   static const char kPromptDismissCountKey[];

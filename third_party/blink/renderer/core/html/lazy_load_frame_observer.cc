@@ -37,20 +37,22 @@ namespace {
 // could break their functionality, so these heuristics are used to recognize
 // likely hidden frames and immediately load them so that they can function
 // properly.
-bool IsFrameProbablyHidden(const PhysicalRect& bounding_client_rect,
+bool IsFrameProbablyHidden(const gfx::RectF& bounding_client_rect,
                            const Element& element) {
   // Tiny frames that are 4x4 or smaller are likely not intended to be seen by
   // the user. Note that this condition includes frames marked as
   // "display:none", since those frames would have dimensions of 0x0.
-  if (bounding_client_rect.Width() <= 4.0f ||
-      bounding_client_rect.Height() <= 4.0f)
+  if (bounding_client_rect.width() <= 4.0f ||
+      bounding_client_rect.height() <= 4.0f) {
     return true;
+  }
 
   // Frames that are positioned completely off the page above or to the left are
   // likely never intended to be visible to the user.
-  if (bounding_client_rect.Right() < 0.0f ||
-      bounding_client_rect.Bottom() < 0.0f)
+  if (bounding_client_rect.right() < 0.0f ||
+      bounding_client_rect.bottom() < 0.0f) {
     return true;
+  }
 
   const ComputedStyle* style = element.GetComputedStyle();
   if (style) {
@@ -66,24 +68,24 @@ bool IsFrameProbablyHidden(const PhysicalRect& bounding_client_rect,
   return false;
 }
 
-int GetLazyFrameLoadingViewportDistanceThresholdPx(const Document& document) {
+int GetLazyLoadingFrameMarginPx(const Document& document) {
   const Settings* settings = document.GetSettings();
   if (!settings)
     return 0;
 
   switch (GetNetworkStateNotifier().EffectiveType()) {
     case WebEffectiveConnectionType::kTypeUnknown:
-      return settings->GetLazyFrameLoadingDistanceThresholdPxUnknown();
+      return settings->GetLazyLoadingFrameMarginPxUnknown();
     case WebEffectiveConnectionType::kTypeOffline:
-      return settings->GetLazyFrameLoadingDistanceThresholdPxOffline();
+      return settings->GetLazyLoadingFrameMarginPxOffline();
     case WebEffectiveConnectionType::kTypeSlow2G:
-      return settings->GetLazyFrameLoadingDistanceThresholdPxSlow2G();
+      return settings->GetLazyLoadingFrameMarginPxSlow2G();
     case WebEffectiveConnectionType::kType2G:
-      return settings->GetLazyFrameLoadingDistanceThresholdPx2G();
+      return settings->GetLazyLoadingFrameMarginPx2G();
     case WebEffectiveConnectionType::kType3G:
-      return settings->GetLazyFrameLoadingDistanceThresholdPx3G();
+      return settings->GetLazyLoadingFrameMarginPx3G();
     case WebEffectiveConnectionType::kType4G:
-      return settings->GetLazyFrameLoadingDistanceThresholdPx4G();
+      return settings->GetLazyLoadingFrameMarginPx4G();
   }
   NOTREACHED();
   return 0;
@@ -115,13 +117,29 @@ void LazyLoadFrameObserver::DeferLoadUntilNearViewport(
   lazy_load_request_info_ =
       std::make_unique<LazyLoadRequestInfo>(resource_request, frame_load_type);
 
-  lazy_load_intersection_observer_ = IntersectionObserver::Create(
-      {Length::Fixed(GetLazyFrameLoadingViewportDistanceThresholdPx(
-          element_->GetDocument()))},
-      {std::numeric_limits<float>::min()}, &element_->GetDocument(),
-      WTF::BindRepeating(&LazyLoadFrameObserver::LoadIfHiddenOrNearViewport,
-                         WrapWeakPersistent(this)),
-      LocalFrameUkmAggregator::kLazyLoadIntersectionObserver);
+  if (RuntimeEnabledFeatures::LazyLoadScrollMarginIframeEnabled()) {
+    lazy_load_intersection_observer_ = IntersectionObserver::Create(
+        element_->GetDocument(),
+        WTF::BindRepeating(&LazyLoadFrameObserver::LoadIfHiddenOrNearViewport,
+                           WrapWeakPersistent(this)),
+        LocalFrameUkmAggregator::kLazyLoadIntersectionObserver,
+        IntersectionObserver::Params{
+            .scroll_margin = {Length::Fixed(
+                GetLazyLoadingFrameMarginPx(element_->GetDocument()))},
+            .thresholds = {std::numeric_limits<float>::min()},
+        });
+  } else {
+    lazy_load_intersection_observer_ = IntersectionObserver::Create(
+        element_->GetDocument(),
+        WTF::BindRepeating(&LazyLoadFrameObserver::LoadIfHiddenOrNearViewport,
+                           WrapWeakPersistent(this)),
+        LocalFrameUkmAggregator::kLazyLoadIntersectionObserver,
+        IntersectionObserver::Params{
+            .margin = {Length::Fixed(
+                GetLazyLoadingFrameMarginPx(element_->GetDocument()))},
+            .thresholds = {std::numeric_limits<float>::min()},
+        });
+  }
 
   lazy_load_intersection_observer_->observe(element_);
 }
@@ -145,6 +163,17 @@ void LazyLoadFrameObserver::LoadIfHiddenOrNearViewport(
     return;
   }
 
+  // When frames are loaded lazily, normally loading attributes are specified as
+  // |LoadingAttributeValue::kLazy|. However, the browser initiated lazyloading
+  // (e.g. LazyEmbeds) may apply lazyload automatically to some frames. In that
+  // case, target frames may not have loading="lazy" attributes. If the frame
+  // doesn't have loading="lazy", that means the frame is loaded as a lazyload
+  // manner, which is enabled by the browser initiated lazyloading.
+  //
+  // Normally the lazyload is triggered to frames regardless of size or
+  // visibility, but as the browser initiated lazyload does not apply
+  // lazyloading if the frame is small or hidden. See the comment in
+  // |IsFrameProbablyHidden()| for more details.
   LoadingAttributeValue loading_attr = GetLoadingAttributeValue(
       element_->FastGetAttribute(html_names::kLoadingAttr));
   if (loading_attr != LoadingAttributeValue::kLazy &&

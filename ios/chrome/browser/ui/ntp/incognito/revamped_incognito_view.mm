@@ -7,7 +7,7 @@
 #import "base/ios/ns_range.h"
 #import "components/content_settings/core/common/features.h"
 #import "components/strings/grit/components_strings.h"
-#import "ios/chrome/browser/drag_and_drop/url_drag_drop_handler.h"
+#import "ios/chrome/browser/drag_and_drop/model/url_drag_drop_handler.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/browser/shared/ui/util/rtl_geometry.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
@@ -21,7 +21,7 @@
 #import "ios/chrome/common/ui/util/text_view_util.h"
 #import "ios/web/public/navigation/navigation_manager.h"
 #import "ios/web/public/navigation/referrer.h"
-#import "net/base/mac/url_conversions.h"
+#import "net/base/apple/url_conversions.h"
 #import "ui/base/l10n/l10n_util.h"
 
 namespace {
@@ -201,15 +201,10 @@ NSAttributedString* FormatHTMLForLearnMoreSection() {
           configurationWithPointSize:kIncognitoSymbolImagePointSize
                               weight:UIImageSymbolWeightLight
                                scale:UIImageSymbolScaleMedium];
-      if (@available(iOS 15, *)) {
-        incognitoImage =
-            SymbolWithPalette(CustomSymbolWithConfiguration(
-                                  kIncognitoCircleFillSymbol, configuration),
-                              LargeIncognitoPalette());
-      } else {
-        incognitoImage = CustomSymbolWithConfiguration(
-            kIncognitoCircleFilliOS14Symbol, configuration);
-      }
+      incognitoImage =
+          SymbolWithPalette(CustomSymbolWithConfiguration(
+                                kIncognitoCircleFillSymbol, configuration),
+                            LargeIncognitoPalette());
 
       UIImageView* incognitoImageView =
           [[UIImageView alloc] initWithImage:incognitoImage];

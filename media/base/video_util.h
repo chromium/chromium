@@ -14,6 +14,7 @@
 #include "media/base/media_export.h"
 #include "media/base/video_types.h"
 #include "third_party/skia/include/core/SkImage.h"
+#include "third_party/skia/include/core/SkYUVAInfo.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/size.h"
 
@@ -198,14 +199,6 @@ MEDIA_EXPORT scoped_refptr<VideoFrame> WrapAsI420VideoFrame(
 [[nodiscard]] MEDIA_EXPORT bool I420CopyWithPadding(const VideoFrame& src_frame,
                                                     VideoFrame* dst_frame);
 
-// Copy pixel data from |src_frame| to |dst_frame| applying scaling and pixel
-// format conversion as needed. Both frames need to be mappabale and have either
-// I420 or NV12 pixel format.
-[[nodiscard]] MEDIA_EXPORT EncoderStatus
-ConvertAndScaleFrame(const VideoFrame& src_frame,
-                     VideoFrame& dst_frame,
-                     std::vector<uint8_t>& tmp_buf);
-
 // Converts kRGBA_8888_SkColorType and kBGRA_8888_SkColorType to the appropriate
 // ARGB, XRGB, ABGR, or XBGR format.
 MEDIA_EXPORT VideoPixelFormat
@@ -224,6 +217,10 @@ MEDIA_EXPORT scoped_refptr<VideoFrame> CreateFromSkImage(
     const gfx::Size& natural_size,
     base::TimeDelta timestamp,
     bool force_opaque = false);
+
+// Utility to convert a media pixel format to SkYUVAInfo.
+MEDIA_EXPORT std::tuple<SkYUVAInfo::PlaneConfig, SkYUVAInfo::Subsampling>
+VideoPixelFormatToSkiaValues(VideoPixelFormat video_format);
 
 }  // namespace media
 

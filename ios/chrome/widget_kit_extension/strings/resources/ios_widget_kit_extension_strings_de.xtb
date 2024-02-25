@@ -1,10 +1,10 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="de">
+<translation id="1324575488877808473">Öffne Chrome, um deine meistbesuchten Websites hier anzeigen zu lassen.</translation>
 <translation id="2513892053093488070">Sprachsuche</translation>
 <translation id="2535710892645968259">Über den Sperrbildschirm gelangst du direkt zum Spiel „Chrome Dino“.</translation>
 <translation id="2542770169955243077">Chrome-Dino-Spiel</translation>
-<translation id="2803429804752388720">Passwörter suchen</translation>
 <translation id="2922313168575194078">Im Google Passwortmanager sicher nach gespeicherten Passwörtern suchen</translation>
 <translation id="302608144225178783">Über den Startbildschirm gelangst du direkt zum Chrome-Dino-Spiel.</translation>
 <translation id="3296938369177810197">Sprachsuche</translation>
@@ -29,6 +29,7 @@
 <translation id="6691821786147477657">Du kannst über den Startbildschirm deines iPads eine neue Suche starten oder deine am häufigsten besuchten Websites aufrufen.</translation>
 <translation id="6721566127904256183">Hier werden deine am häufigsten besuchte Websites angezeigt.</translation>
 <translation id="6855322554930231468">Suchen</translation>
+<translation id="6973491011026415905">Passwörter im Google Passwortmanager suchen</translation>
 <translation id="7010831364920321713">Inkognitosuche</translation>
 <translation id="7048549665319929185">Suchen oder
 URL eingeben</translation>

@@ -1,0 +1,31 @@
+[
+  {
+    "can_be_recommended": true,
+    "os": [
+      "win",
+      "linux"
+    ],
+    "policy_pref_mapping_tests": [
+      {
+        "note": "Default value (no policies set).",
+        "prefs": {
+          "background_mode.enabled": {
+            "default_value": true,
+            "location": "local_state"
+          }
+        }
+      },
+      {
+        "policies": {
+          "BackgroundModeEnabled": false
+        },
+        "prefs": {
+          "background_mode.enabled": {
+            "location": "local_state",
+            "value": false
+          }
+        }
+      }
+    ]
+  }
+]

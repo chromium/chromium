@@ -4,12 +4,20 @@
 
 module screen_ai.mojom;
 
-import "mojo/public/mojom/base/file_path.mojom";
-import "mojo/public/mojom/base/read_only_file.mojom";
-import "sandbox/policy/mojom/sandbox.mojom";
 import "skia/public/mojom/bitmap.mojom";
+import "ui/accessibility/ax_features.mojom";
 import "ui/accessibility/mojom/ax_tree_id.mojom";
 import "ui/accessibility/mojom/ax_tree_update.mojom";
+import "ui/gfx/geometry/mojom/geometry.mojom";
+
+// This enum should be kept in sync with the one in
+// `components/services/screen_ai/proto/chrome_screen_ai.proto`
+enum Direction {
+  DIRECTION_UNSPECIFIED,
+  DIRECTION_LEFT_TO_RIGHT,
+  DIRECTION_RIGHT_TO_LEFT,
+  DIRECTION_TOP_TO_BOTTOM,
+};
 
 // A wrapper struct mirroring parts of the chrome_screen_ai.proto.
 struct VisualAnnotation {
@@ -34,6 +42,21 @@ struct LineBox {
 
   // Index within the block that this line belongs to.
   int32 order_within_block;
+
+  // Line bounding box relative to the original image.
+  gfx.mojom.Rect bounding_box;
+
+  // Rotation angle (in degrees, clockwise) of the line bounding box about its
+  // top-left corner.
+  float bounding_box_angle;
+
+  // Line bounding box relative to the original image with bottom edge
+  // representing estimated baseline of text.
+  gfx.mojom.Rect baseline_box;
+
+  // Rotation angle (in degrees, clockwise) of the line baseline box about its
+  // top-left corner.
+  float baseline_box_angle;
 };
 
 // A wrapper struct mirroring parts of the chrome_screen_ai.proto.
@@ -48,10 +71,24 @@ struct WordBox {
   // language code if that is defined (e.g. "en"), or else the ISO 639-2
   // three-letter code if that is defined, or else a Google-specific code.
   string language;
+
+  // This word is separated from next word by space.
+  bool has_space_after;
+
+  // Word bounding box relative to the original image.
+  gfx.mojom.Rect bounding_box;
+
+  // Rotation angle (in degrees, clockwise) of the word bounding box about its
+  // top-left corner.
+  float bounding_box_angle;
+
+  // The direction of the script contained in the word.
+  Direction direction;
 };
 
 // Main interface a client uses for visual annotation functions of the Screen AI
 // service.
+[RuntimeFeature=ax.mojom.features.kScreenAIOCREnabled]
 interface ScreenAIAnnotator {
   // Receives an image, such as a screenshot or a canvas content, as well as the
   // ID of the accessibility tree that contains the image (`parent_tree_id`).
@@ -103,12 +140,14 @@ interface Screen2xMainContentExtractor {
 // initializes it for OCR.
 // OCR service can receive multiple annotator pipelines and provide results for
 // them separately.
+[RuntimeFeature=ax.mojom.features.kScreenAIOCREnabled]
 interface OCRService {
   // Binds a new annotator to the service.
-  BindAnnotator(pending_receiver<ScreenAIAnnotator> annotator);
+  BindAnnotator(pending_receiver<ScreenAIAnnotator>? annotator);
 
   // Binds a client to receive update messages for annotation service.
-  BindAnnotatorClient(pending_remote<ScreenAIAnnotatorClient> annotator_client);
+  BindAnnotatorClient(
+    pending_remote<ScreenAIAnnotatorClient>? annotator_client);
 };
 
 // Provides an interface to the Main Content Extraction functionalities of the
@@ -117,44 +156,9 @@ interface OCRService {
 // initializes for Main Content Extraction.
 // Main Content Extraction service can receive multiple annotator pipelines and
 // provide results for them separately.
+[RuntimeFeature=ax.mojom.features.kScreenAIMainContentExtractionEnabled]
 interface MainContentExtractionService {
   // Binds a new main content extractor to the service.
-  BindMainContentExtractor(pending_receiver<Screen2xMainContentExtractor>
+  BindMainContentExtractor(pending_receiver<Screen2xMainContentExtractor>?
     main_content_extractor);
-};
-
-// The service runs in a sandboxed process to run Screen AI service library. The
-// library provides two AI modules:
-//   1) An image processing module to analyze snapshots of the browser or an
-//      image in a PDF and add more details to the accessibility tree.
-//   2) A text processing module that receives the accessibility tree and
-//      returns the main content of the tree.
-// The services require initialization before running. This factory interface
-// binds interfaces to the actual services after library load and initialization
-// for each of them.
-[ServiceSandbox=sandbox.mojom.Sandbox.kScreenAI]
-interface ScreenAIServiceFactory {
-  // Triggers the service to load and initialize the Screen AI library at
-  // |library_path| for OCR. Model files are read from |library_path| folder.
-  // This should be called from the browser process.
-  // TODO(crbug.com/1443341): Read all model files from file handles.
-  InitializeOCR(
-    mojo_base.mojom.FilePath library_path,
-    pending_receiver<OCRService> ocr_service_receiver) =>
-      (bool initialized);
-
-  // Triggers the service to load and initialize the Screen AI library at
-  // |library_path| for main content extraction.
-  // |screen2x_model_config| and |screen2x_model| are already open file handles
-  // to Screen2x model files.
-  // This should be called from the browser process.
-  InitializeMainContentExtraction(
-    mojo_base.mojom.ReadOnlyFile screen2x_model_config,
-    mojo_base.mojom.ReadOnlyFile screen2x_model,
-    mojo_base.mojom.FilePath library_path,
-    pending_receiver<MainContentExtractionService>
-      main_content_extractor_service) =>
-      (bool initialized);
-
-  // TODO(crbug.com/1443349): Add Initialization for Layout Extractor.
 };

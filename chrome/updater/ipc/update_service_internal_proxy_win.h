@@ -7,11 +7,12 @@
 
 #include <windows.h>
 
+#include <optional>
+
 #include "base/functional/callback_forward.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/sequence_checker.h"
 #include "chrome/updater/update_service_internal.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace updater {
 
@@ -26,8 +27,8 @@ class UpdateServiceInternalProxyImpl
  public:
   explicit UpdateServiceInternalProxyImpl(UpdaterScope scope);
 
-  void Run(base::OnceCallback<void(absl::optional<RpcError>)> callback);
-  void Hello(base::OnceCallback<void(absl::optional<RpcError>)> callback);
+  void Run(base::OnceCallback<void(std::optional<RpcError>)> callback);
+  void Hello(base::OnceCallback<void(std::optional<RpcError>)> callback);
 
  private:
   friend class base::RefCountedThreadSafe<UpdateServiceInternalProxyImpl>;

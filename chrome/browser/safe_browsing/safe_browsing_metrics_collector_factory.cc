@@ -35,10 +35,11 @@ SafeBrowsingMetricsCollectorFactory::SafeBrowsingMetricsCollectorFactory()
               .WithGuest(ProfileSelection::kOriginalOnly)
               .Build()) {}
 
-KeyedService* SafeBrowsingMetricsCollectorFactory::BuildServiceInstanceFor(
+std::unique_ptr<KeyedService>
+SafeBrowsingMetricsCollectorFactory::BuildServiceInstanceForBrowserContext(
     content::BrowserContext* context) const {
   Profile* profile = Profile::FromBrowserContext(context);
-  return new SafeBrowsingMetricsCollector(profile->GetPrefs());
+  return std::make_unique<SafeBrowsingMetricsCollector>(profile->GetPrefs());
 }
 
 }  // namespace safe_browsing

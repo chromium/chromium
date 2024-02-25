@@ -27,20 +27,12 @@ namespace {
 constexpr base::TimeDelta kKioskNetworkWaitTime = base::Seconds(10);
 base::TimeDelta g_network_wait_time = kKioskNetworkWaitTime;
 
-absl::optional<bool> g_can_configure_network_for_testing;
+std::optional<bool> g_can_configure_network_for_testing;
 
 bool IsDeviceEnterpriseManaged() {
   return g_browser_process->platform_part()
       ->browser_policy_connector_ash()
       ->IsDeviceEnterpriseManaged();
-}
-
-bool IsConsumerKiosk() {
-  return !IsDeviceEnterpriseManaged();
-}
-
-bool CanConfigureNetworkForConsumerKiosk() {
-  return user_manager::UserManager::Get()->GetOwnerAccountId().is_valid();
 }
 
 bool CanConfigureNetworkForEnterpriseKiosk() {
@@ -134,20 +126,9 @@ void NetworkUiController::InitializeNetwork() {
 }
 
 void NetworkUiController::OnConfigureNetwork() {
-  CHECK(IsConsumerKiosk());
-  CHECK(profile_);
-
-  if (network_ui_state_ == NetworkUIState::kShowing) {
-    return;
-  }
-
-  if (CanConfigureNetworkForConsumerKiosk() && host_) {
-    host_->VerifyOwnerForKiosk(
-        base::BindOnce(&NetworkUiController::ShowNetworkConfigureUI,
-                       weak_ptr_factory_.GetWeakPtr()));
-  } else if (!host_) {
-    CHECK_IS_TEST();
-  }
+  // TODO(b/256596599): Remove this consumer-kiosk only method and all its
+  // references.
+  NOTREACHED();
 }
 
 void NetworkUiController::OnNetworkConfigFinished() {
@@ -217,11 +198,7 @@ void NetworkUiController::MaybeShowNetworkConfigureUI() {
     return;
   }
 
-  if (IsConsumerKiosk()) {
-    MaybeShowNetworkConfigureUIForConsumerKiosk();
-  } else {
-    ShowNetworkConfigureUI();
-  }
+  ShowNetworkConfigureUI();
 }
 
 void NetworkUiController::ShowNetworkConfigureUI() {
@@ -253,30 +230,20 @@ void NetworkUiController::OnNetworkWaitTimeout() {
 }
 
 bool NetworkUiController::CanConfigureNetwork() {
+  // TODO(b/256596599): Check if this code is still relevant for
+  // enterprise kiosks.
   if (g_can_configure_network_for_testing.has_value()) {
     return g_can_configure_network_for_testing.value();
   }
 
-  if (IsDeviceEnterpriseManaged()) {
-    return CanConfigureNetworkForEnterpriseKiosk();
-  }
-
-  return CanConfigureNetworkForConsumerKiosk();
-}
-
-void NetworkUiController::MaybeShowNetworkConfigureUIForConsumerKiosk() {
-  if (!network_wait_timeout_) {
-    OnConfigureNetwork();
-  } else {
-    splash_screen_view_->ToggleNetworkConfig(true);
-  }
+  return IsDeviceEnterpriseManaged() && CanConfigureNetworkForEnterpriseKiosk();
 }
 
 // static
-std::unique_ptr<base::AutoReset<absl::optional<bool>>>
+std::unique_ptr<base::AutoReset<std::optional<bool>>>
 NetworkUiController::SetCanConfigureNetworkForTesting(
     bool can_configure_network) {
-  return std::make_unique<base::AutoReset<absl::optional<bool>>>(
+  return std::make_unique<base::AutoReset<std::optional<bool>>>(
       &g_can_configure_network_for_testing, can_configure_network);
 }
 

@@ -6,17 +6,22 @@ import 'chrome://resources/cr_elements/cr_hidden_style.css.js';
 import 'chrome://resources/cr_elements/cr_toast/cr_toast.js';
 import 'chrome://resources/cr_elements/cr_button/cr_button.js';
 
-import {CrToastElement} from 'chrome://resources/cr_elements/cr_toast/cr_toast.js';
-import {assert} from 'chrome://resources/js/assert_ts.js';
+import type {HelpBubbleMixinInterface} from 'chrome://resources/cr_components/help_bubble/help_bubble_mixin.js';
+import {HelpBubbleMixin} from 'chrome://resources/cr_components/help_bubble/help_bubble_mixin.js';
+import type {CrToastElement} from 'chrome://resources/cr_elements/cr_toast/cr_toast.js';
+import {assert} from 'chrome://resources/js/assert.js';
 import {EventTracker} from 'chrome://resources/js/event_tracker.js';
-import {PolymerElement, TemplateInstanceBase, templatize} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import type {TemplateInstanceBase} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {PolymerElement, templatize} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {loadTimeData} from '../../i18n_setup.js';
+import {recordOccurence as recordOccurrence} from '../../metrics_utils.js';
+import {IphFeature} from '../../new_tab_page.mojom-webui.js';
 import {NewTabPageProxy} from '../../new_tab_page_proxy.js';
 import {WindowProxy} from '../../window_proxy.js';
-import {Module} from '../module_descriptor.js';
+import type {Module} from '../module_descriptor.js';
 import {ModuleRegistry} from '../module_registry.js';
-import {ModuleInstance, ModuleWrapperElement} from '../module_wrapper.js';
+import type {ModuleInstance, ModuleWrapperElement} from '../module_wrapper.js';
 
 import {getTemplate} from './modules.html.js';
 
@@ -62,8 +67,14 @@ export interface ModulesV2Element {
   };
 }
 
+export const MODULE_CUSTOMIZE_ELEMENT_ID =
+    'NewTabPageUI::kModulesCustomizeIPHAnchorElement';
+
+const AppElementBase = HelpBubbleMixin(PolymerElement) as
+    {new (): PolymerElement & HelpBubbleMixinInterface};
+
 /** Container for the NTP modules. */
-export class ModulesV2Element extends PolymerElement {
+export class ModulesV2Element extends AppElementBase {
   static get is() {
     return 'ntp-modules-v2';
   }
@@ -219,6 +230,20 @@ export class ModulesV2Element extends PolymerElement {
                 forwardHostProp: this.forwardHostProp_,
                 instanceProps: {item: true},
               }) as {new (): TemplateInstanceBase & HTMLElement};
+
+
+      if (modules.length > 1) {
+        const maxModuleInstanceCount = loadTimeData.getInteger(
+            'multipleLoadedModulesMaxModuleInstanceCount');
+        if (maxModuleInstanceCount > 0) {
+          modules.forEach(module => {
+            module.elements.splice(
+                maxModuleInstanceCount,
+                module.elements.length - maxModuleInstanceCount);
+          });
+        }
+      }
+
       this.templateInstances_ =
           modules
               .map(module => {
@@ -252,6 +277,24 @@ export class ModulesV2Element extends PolymerElement {
           'NewTabPage.Modules.VisibleOnNTPLoad', !this.disabledModules_.all);
       this.recordModuleLoadedWithModules_(modules);
       this.dispatchEvent(new Event('modules-loaded'));
+
+      if (this.templateInstances_.length > 0) {
+        this.registerHelpBubble(
+            MODULE_CUSTOMIZE_ELEMENT_ID,
+            [
+              '#container',
+              'ntp-module-wrapper',
+              '#moduleElement',
+            ],
+            {fixed: true});
+        // TODO(crbug.com/1494416): Currently, a period of time must elapse
+        // between the registration of the anchor element and the promo
+        // invocation, else the anchor element will not be ready for use.
+        setTimeout(() => {
+          NewTabPageProxy.getInstance().handler.maybeShowFeaturePromo(
+              IphFeature.kCustomizeModules);
+        }, 1000);
+      }
     }
   }
 
@@ -372,8 +415,10 @@ export class ModulesV2Element extends PolymerElement {
             this.$.container.insertBefore(
                 wrapper, this.$.container.childNodes[index]);
             restoreCallback();
-            chrome.metricsPrivate.recordSparseValueWithPersistentHash(
-                'NewTabPage.Modules.Restored', wrapper.module.descriptor.id);
+
+            recordOccurrence('NewTabPage.Modules.Restored');
+            recordOccurrence(
+                `NewTabPage.Modules.Restored.${wrapper.module.descriptor.id}`);
           } :
           undefined,
     };
@@ -381,8 +426,8 @@ export class ModulesV2Element extends PolymerElement {
     // Notify the user.
     this.$.undoToast.show();
 
-    chrome.metricsPrivate.recordSparseValueWithPersistentHash(
-        'NewTabPage.Modules.Dismissed', wrapper.module.descriptor.id);
+    NewTabPageProxy.getInstance().handler.onDismissModule(
+        wrapper.module.descriptor.id);
   }
 
   private onUndoButtonClick_() {

@@ -6,6 +6,7 @@
 #define CONTENT_BROWSER_WEB_PACKAGE_SIGNED_EXCHANGE_ENVELOPE_H_
 
 #include <map>
+#include <optional>
 #include <string>
 
 #include "base/containers/span.h"
@@ -16,7 +17,6 @@
 #include "crypto/sha2.h"
 #include "net/http/http_response_headers.h"
 #include "net/http/http_status_code.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
 namespace content {
@@ -35,7 +35,7 @@ class CONTENT_EXPORT SignedExchangeEnvelope {
   //
   // This also performs the steps 1, 3 and 4 of "Cross-origin trust" validation.
   // https://wicg.github.io/webpackage/draft-yasskin-httpbis-origin-signed-exchanges-impl.html#cross-origin-trust
-  static absl::optional<SignedExchangeEnvelope> Parse(
+  static std::optional<SignedExchangeEnvelope> Parse(
       SignedExchangeVersion version,
       const signed_exchange_utils::URLWithRawString& fallback_url,
       base::StringPiece signature_header_field,

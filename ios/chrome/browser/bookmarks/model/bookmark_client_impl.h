@@ -11,9 +11,9 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/task/deferred_sequenced_task_runner.h"
-#include "components/bookmarks/browser/bookmark_client.h"
-#include "components/bookmarks/common/storage_type.h"
+#include "components/power_bookmarks/core/bookmark_client_base.h"
 
+enum class BookmarkModelType;
 class BookmarkUndoService;
 class ChromeBrowserState;
 class GURL;
@@ -27,14 +27,14 @@ namespace sync_bookmarks {
 class BookmarkSyncService;
 }  // namespace sync_bookmarks
 
-class BookmarkClientImpl : public bookmarks::BookmarkClient {
+class BookmarkClientImpl : public power_bookmarks::BookmarkClientBase {
  public:
   BookmarkClientImpl(
       ChromeBrowserState* browser_state,
       bookmarks::ManagedBookmarkService* managed_bookmark_service,
       sync_bookmarks::BookmarkSyncService* bookmark_sync_service,
       BookmarkUndoService* bookmark_undo_service,
-      bookmarks::StorageType storage_type_for_uma);
+      BookmarkModelType model_type_for_uma);
 
   BookmarkClientImpl(const BookmarkClientImpl&) = delete;
   BookmarkClientImpl& operator=(const BookmarkClientImpl&) = delete;
@@ -49,16 +49,17 @@ class BookmarkClientImpl : public bookmarks::BookmarkClient {
       base::CancelableTaskTracker* tracker) override;
   bool SupportsTypedCountForUrls() override;
   void GetTypedCountForUrls(UrlTypedCountMap* url_typed_count_map) override;
-  bool IsPermanentNodeVisibleWhenEmpty(
-      bookmarks::BookmarkNode::Type type) override;
   bookmarks::LoadManagedNodeCallback GetLoadManagedNodeCallback() override;
-  bookmarks::metrics::StorageStateForUma GetStorageStateForUma() override;
+  bool IsSyncFeatureEnabledIncludingBookmarksForUma() override;
   bool CanSetPermanentNodeTitle(
       const bookmarks::BookmarkNode* permanent_node) override;
-  bool CanSyncNode(const bookmarks::BookmarkNode* node) override;
-  bool CanBeEditedByUser(const bookmarks::BookmarkNode* node) override;
-  std::string EncodeBookmarkSyncMetadata() override;
-  void DecodeBookmarkSyncMetadata(
+  bool IsNodeManaged(const bookmarks::BookmarkNode* node) override;
+  std::string EncodeLocalOrSyncableBookmarkSyncMetadata() override;
+  std::string EncodeAccountBookmarkSyncMetadata() override;
+  void DecodeLocalOrSyncableBookmarkSyncMetadata(
+      const std::string& metadata_str,
+      const base::RepeatingClosure& schedule_save_closure) override;
+  void DecodeAccountBookmarkSyncMetadata(
       const std::string& metadata_str,
       const base::RepeatingClosure& schedule_save_closure) override;
   void OnBookmarkNodeRemovedUndoable(
@@ -83,7 +84,7 @@ class BookmarkClientImpl : public bookmarks::BookmarkClient {
   // Pointer to BookmarkUndoService, responsible for making operations undoable.
   const raw_ptr<BookmarkUndoService> bookmark_undo_service_;
 
-  const bookmarks::StorageType storage_type_for_uma_;
+  const BookmarkModelType model_type_for_uma_;
 
   raw_ptr<bookmarks::BookmarkModel> model_ = nullptr;
 };

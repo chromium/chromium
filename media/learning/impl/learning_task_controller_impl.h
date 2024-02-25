@@ -51,17 +51,16 @@ class COMPONENT_EXPORT(LEARNING_IMPL) LearningTaskControllerImpl
   // service should support default values, but it's much more convenient if
   // they're part of the base api.  So, since clients shouldn't be dealing with
   // us directly (see LearningSessionImpl), it's okay.
-  void BeginObservation(
-      base::UnguessableToken id,
-      const FeatureVector& features,
-      const absl::optional<TargetValue>& default_target,
-      const absl::optional<ukm::SourceId>& source_id) override;
+  void BeginObservation(base::UnguessableToken id,
+                        const FeatureVector& features,
+                        const std::optional<TargetValue>& default_target,
+                        const std::optional<ukm::SourceId>& source_id) override;
   void CompleteObservation(base::UnguessableToken id,
                            const ObservationCompletion& completion) override;
   void CancelObservation(base::UnguessableToken id) override;
   void UpdateDefaultTarget(
       base::UnguessableToken id,
-      const absl::optional<TargetValue>& default_target) override;
+      const std::optional<TargetValue>& default_target) override;
   const LearningTask& GetLearningTask() override;
   void PredictDistribution(const FeatureVector& features,
                            PredictionCB callback) override;

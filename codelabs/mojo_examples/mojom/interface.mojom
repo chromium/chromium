@@ -1,0 +1,51 @@
+// Copyright 2023 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module codelabs.mojom;
+
+// Bound in the renderer process; only used in
+// `02-associated-interface-freezing` and
+// `03-channel-associated-interface-freezing`.
+interface ObjectA {
+  // A sample IPC send to the toy "renderer".
+  DoA();
+};
+
+// Bound in the renderer process.
+interface ObjectB {
+  // A sample IPC send to the toy "renderer".
+  DoB();
+};
+
+// An associated object with the ChannelProxy. This is used
+// for the `04-legacy-ipc-with-separate-remote` which emulates standard
+// content process setup where this is the `content.mojom.ChildProcess`.
+// The AssociatedProcess is associated with the legacy IPC channel.
+interface AssociatedProcess {
+  // Set an intermediate process object that is unassociated.
+  SetProcess(pending_receiver<Process> process);
+};
+
+// This is a simple generic interface that serves no purpose but to transport a
+// message handle from the browser to the renderer. It's just a handle, so it
+// requires more type information to actually bind the handle properly on the
+// other end (see `Process.GetAssociatedInterface()`).
+interface GenericInterface {};
+
+// A process-wide interface that the renderer uses to broker new connections to
+// other associated interfaces (see `ObjectA` and `ObjectB` above). This is a
+// toy version of `blink.mojom.AssociatedInterfaceProvider`, the mechanism by
+// which we bind associated interfaces that span the real browser <=> renderer
+// processes in Chromium.
+interface Process {
+  // A sample IPC send to the toy "renderer"; used by the `01-multi-process`
+  // example.
+  SayHello();
+
+  // Because we're transporting a generic handle, we need more information to
+  // bind it properly in the toy "renderer" process, which is what the "name"
+  // argument provides.
+  GetAssociatedInterface(
+      string name, pending_associated_receiver<GenericInterface> receiver);
+};

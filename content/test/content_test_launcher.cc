@@ -66,7 +66,7 @@ class ContentTestLauncherDelegate : public TestLauncherDelegate {
   }
 
   std::string GetUserDataDirectoryCommandLineSwitch() override {
-    return switches::kContentShellDataPath;
+    return switches::kContentShellUserDataDir;
   }
 
  protected:

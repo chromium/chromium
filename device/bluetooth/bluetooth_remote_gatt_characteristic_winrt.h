@@ -144,7 +144,7 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothRemoteGattCharacteristicWinrt
   ValueCallback pending_read_callback_;
   std::unique_ptr<PendingWriteCallbacks> pending_write_callbacks_;
   std::unique_ptr<PendingNotificationCallbacks> pending_notification_callbacks_;
-  absl::optional<EventRegistrationToken> value_changed_token_;
+  std::optional<EventRegistrationToken> value_changed_token_;
   // The destructor runs callbacks. Methods can use |destructor_called_| to
   // protect against reentrant calls to a partially deleted instance.
   bool destructor_called_ = false;

@@ -4,7 +4,6 @@
 
 #include "ash/system/unified/quick_settings_footer.h"
 
-#include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
 #include "ash/constants/quick_settings_catalogs.h"
 #include "ash/public/cpp/ash_view_ids.h"
@@ -17,7 +16,6 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/test/metrics/histogram_tester.h"
-#include "base/test/scoped_feature_list.h"
 #include "components/user_manager/user_type.h"
 #include "ui/views/test/views_test_utils.h"
 #include "ui/views/view_utils.h"
@@ -35,7 +33,6 @@ class QuickSettingsFooterTest : public NoSessionAshTestBase {
   ~QuickSettingsFooterTest() override = default;
 
   void SetUp() override {
-    feature_list_.InitWithFeatures({features::kQsRevamp}, {});
     NoSessionAshTestBase::SetUp();
     widget_ = CreateFramelessTestWidget();
     widget_->SetFullscreen(true);
@@ -78,9 +75,7 @@ class QuickSettingsFooterTest : public NoSessionAshTestBase {
   std::unique_ptr<views::Widget> widget_;
 
   // Owned by `widget_`.
-  raw_ptr<QuickSettingsFooter, DanglingUntriaged | ExperimentalAsh> footer_;
-
-  base::test::ScopedFeatureList feature_list_;
+  raw_ptr<QuickSettingsFooter, DanglingUntriaged> footer_;
 };
 
 // Tests that all buttons are with the correct view id, catalog name and UMA
@@ -217,7 +212,7 @@ TEST_F(QuickSettingsFooterTest, ButtonStatesGuestMode) {
 }
 
 TEST_F(QuickSettingsFooterTest, ButtonStatesPublicAccount) {
-  SimulateUserLogin("foo@example.com", user_manager::USER_TYPE_PUBLIC_ACCOUNT);
+  SimulateUserLogin("foo@example.com", user_manager::UserType::kPublicAccount);
   SetUpView();
 
   ASSERT_TRUE(GetSettingsButton());
@@ -269,8 +264,8 @@ TEST_F(QuickSettingsFooterTest, SignOutButtonRecordsUmaAndSignsOut) {
 
 // Settings button is disabled when kSettingsIconDisabled is set.
 TEST_F(QuickSettingsFooterTest, DisableSettingsIconPolicy) {
-  GetSessionControllerClient()->AddUserSession("foo@example.com",
-                                               user_manager::USER_TYPE_REGULAR);
+  GetSessionControllerClient()->AddUserSession(
+      "foo@example.com", user_manager::UserType::kRegular);
   GetSessionControllerClient()->SetSessionState(
       session_manager::SessionState::ACTIVE);
   SetUpView();

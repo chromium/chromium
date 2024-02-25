@@ -13,6 +13,7 @@
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "google_apis/gaia/gaia_urls.h"
+#include "google_apis/gaia/google_service_auth_error.h"
 #include "google_apis/gaia/oauth2_access_token_fetcher.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 
@@ -220,6 +221,11 @@ class OAuth2AccessTokenManager::Fetcher : public OAuth2AccessTokenConsumer {
   base::OneShotTimer retry_timer_;
   std::unique_ptr<OAuth2AccessTokenFetcher> fetcher_;
 
+  // Token binding challenge from the last server response or an empty string if
+  // the response didn't contain any challenge.
+  bool seen_token_binding_challenge_ = false;
+  std::string token_binding_challenge_;
+
   // Variables that store fetch results.
   // Initialized to be GoogleServiceAuthError::SERVICE_UNAVAILABLE to handle
   // destruction.
@@ -284,7 +290,7 @@ OAuth2AccessTokenManager::Fetcher::~Fetcher() {
 
 void OAuth2AccessTokenManager::Fetcher::Start() {
   fetcher_ = oauth2_access_token_manager_->CreateAccessTokenFetcher(
-      account_id_, url_loader_factory_, this);
+      account_id_, url_loader_factory_, this, token_binding_challenge_);
   DCHECK(fetcher_);
 
   // Stop the timer before starting the fetch, as defense in depth against the
@@ -345,6 +351,19 @@ OAuth2AccessTokenManager::Fetcher::ComputeExponentialBackOffMilliseconds(
 
 bool OAuth2AccessTokenManager::Fetcher::RetryIfPossible(
     const GoogleServiceAuthError& error) {
+  if (error.state() == GoogleServiceAuthError::CHALLENGE_RESPONSE_REQUIRED) {
+    token_binding_challenge_ = error.GetTokenBindingChallenge();
+    if (!seen_token_binding_challenge_) {
+      seen_token_binding_challenge_ = true;
+      // The server wants us to sign a challenge. Retry immediately if this is
+      // the first attempt to pass a challenge.
+      Start();
+      return true;
+    }
+  } else {
+    token_binding_challenge_.clear();
+  }
+
   if (retry_number_ < oauth2_access_token_manager_->max_fetch_retry_num_) {
     base::TimeDelta backoff = base::Milliseconds(
         ComputeExponentialBackOffMilliseconds(retry_number_));
@@ -624,9 +643,10 @@ std::unique_ptr<OAuth2AccessTokenFetcher>
 OAuth2AccessTokenManager::CreateAccessTokenFetcher(
     const CoreAccountId& account_id,
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
-    OAuth2AccessTokenConsumer* consumer) {
+    OAuth2AccessTokenConsumer* consumer,
+    const std::string& token_binding_challenge) {
   return delegate_->CreateAccessTokenFetcher(account_id, url_loader_factory,
-                                             consumer);
+                                             consumer, token_binding_challenge);
 }
 
 std::unique_ptr<OAuth2AccessTokenManager::Request>

@@ -26,6 +26,7 @@
 #include "content/browser/renderer_host/frame_tree.h"
 #include "content/browser/renderer_host/frame_tree_node.h"
 #include "content/browser/renderer_host/ipc_utils.h"
+#include "content/browser/renderer_host/navigation_metrics_utils.h"
 #include "content/browser/renderer_host/navigator.h"
 #include "content/browser/renderer_host/render_frame_host_delegate.h"
 #include "content/browser/renderer_host/render_view_host_delegate.h"
@@ -240,7 +241,7 @@ bool RenderFrameProxyHost::InitRenderFrameProxy(
   if (!GetProcess()->IsInitializedAndNotDead())
     return false;
 
-  absl::optional<blink::FrameToken> opener_frame_token;
+  std::optional<blink::FrameToken> opener_frame_token;
   if (frame_tree_node_->opener()) {
     opener_frame_token =
         frame_tree_node_->render_manager()->GetOpenerFrameToken(
@@ -503,7 +504,7 @@ void RenderFrameProxyHost::SetIsInert(bool inert) {
 }
 
 void RenderFrameProxyHost::RouteMessageEvent(
-    const absl::optional<blink::LocalFrameToken>& source_frame_token,
+    const std::optional<blink::LocalFrameToken>& source_frame_token,
     const std::u16string& source_origin,
     const std::u16string& target_origin,
     blink::TransferableMessage message) {
@@ -568,7 +569,7 @@ void RenderFrameProxyHost::RouteMessageEvent(
 
   // If there is a |source_frame_token|, translate it to the frame token of the
   // equivalent RenderFrameProxyHost in the target process.
-  absl::optional<blink::RemoteFrameToken> translated_source_token;
+  std::optional<blink::RemoteFrameToken> translated_source_token;
   ukm::SourceId source_page_ukm_source_id = ukm::kInvalidSourceId;
   blink::StorageKey source_storage_key;
   if (source_frame_token) {
@@ -740,6 +741,15 @@ void RenderFrameProxyHost::OpenURL(blink::mojom::OpenURLParamsPtr params) {
     return;
   }
 
+  if (params->initiator_frame_token) {
+    RenderFrameHostImpl* initiator_frame = RenderFrameHostImpl::FromFrameToken(
+        GetProcess()->GetID(), params->initiator_frame_token.value());
+    if (current_rfh->IsOutermostMainFrame()) {
+      MaybeRecordAdClickMainFrameNavigationMetrics(
+          initiator_frame, params->initiator_activation_and_ad_status);
+    }
+  }
+
   // Since this navigation targeted a specific RenderFrameProxy, it should stay
   // in the current tab.
   DCHECK_EQ(WindowOpenDisposition::CURRENT_TAB, params->disposition);
@@ -789,13 +799,13 @@ void RenderFrameProxyHost::OpenURL(blink::mojom::OpenURLParamsPtr params) {
 
 void RenderFrameProxyHost::UpdateViewportIntersection(
     blink::mojom::ViewportIntersectionStatePtr intersection_state,
-    const absl::optional<blink::FrameVisualProperties>& visual_properties) {
+    const std::optional<blink::FrameVisualProperties>& visual_properties) {
   cross_process_frame_connector_->UpdateViewportIntersection(
       *intersection_state, visual_properties);
 }
 
 void RenderFrameProxyHost::DidChangeOpener(
-    const absl::optional<blink::LocalFrameToken>& opener_frame_token) {
+    const std::optional<blink::LocalFrameToken>& opener_frame_token) {
   frame_tree_node_->render_manager()->DidChangeOpener(opener_frame_token,
                                                       site_instance_group());
 }
@@ -803,14 +813,6 @@ void RenderFrameProxyHost::DidChangeOpener(
 void RenderFrameProxyHost::AdvanceFocus(
     blink::mojom::FocusType focus_type,
     const blink::LocalFrameToken& source_frame_token) {
-  // TODO(crbug.com/1292671): Correctly attribute to a fenced frame embedded
-  // inside a portal to avoid focusing.
-  if (frame_tree_node_->frame_tree().IsPortal()) {
-    bad_message::ReceivedBadMessage(
-        GetProcess(), bad_message::RFPH_ADVANCE_FOCUS_INTO_PORTAL);
-    return;
-  }
-
   // Translate the source RenderFrameHost in this process to its equivalent
   // RenderFrameProxyHost in the target SiteInstanceGroup.  This is needed for
   // continuing the focus traversal from correct place in a parent frame after

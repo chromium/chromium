@@ -2,7 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "chrome/browser/nearby_sharing/local_device_data/nearby_share_device_data_updater_impl.h"
+
 #include <memory>
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -12,12 +15,10 @@
 #include "base/time/clock.h"
 #include "base/time/time.h"
 #include "chrome/browser/nearby_sharing/client/fake_nearby_share_client.h"
-#include "chrome/browser/nearby_sharing/local_device_data/nearby_share_device_data_updater_impl.h"
-#include "chrome/browser/nearby_sharing/proto/device_rpc.pb.h"
-#include "chrome/browser/nearby_sharing/proto/rpc_resources.pb.h"
 #include "chromeos/ash/components/nearby/common/client/nearby_http_result.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
+#include "third_party/nearby/sharing/proto/device_rpc.pb.h"
+#include "third_party/nearby/sharing/proto/rpc_resources.pb.h"
 
 namespace {
 
@@ -30,36 +31,37 @@ const char kTestCertificateId2[] = "cert_id_2";
 const char kTestPersonName[] = "person_name";
 constexpr base::TimeDelta kTestTimeout = base::Minutes(123);
 
-const std::vector<nearbyshare::proto::Contact>& TestContactList() {
-  static const base::NoDestructor<std::vector<nearbyshare::proto::Contact>>
+const std::vector<nearby::sharing::proto::Contact>& TestContactList() {
+  static const base::NoDestructor<std::vector<nearby::sharing::proto::Contact>>
       list([] {
-        nearbyshare::proto::Contact contact1;
+        nearby::sharing::proto::Contact contact1;
         contact1.mutable_identifier()->set_account_name(kTestContactEmail1);
-        nearbyshare::proto::Contact contact2;
+        nearby::sharing::proto::Contact contact2;
         contact2.mutable_identifier()->set_account_name(kTestContactEmail2);
-        return std::vector<nearbyshare::proto::Contact>{contact1, contact2};
+        return std::vector<nearby::sharing::proto::Contact>{contact1, contact2};
       }());
   return *list;
 }
 
-const std::vector<nearbyshare::proto::PublicCertificate>&
+const std::vector<nearby::sharing::proto::PublicCertificate>&
 TestCertificateList() {
   static const base::NoDestructor<
-      std::vector<nearbyshare::proto::PublicCertificate>>
+      std::vector<nearby::sharing::proto::PublicCertificate>>
       list([] {
-        nearbyshare::proto::PublicCertificate cert1;
+        nearby::sharing::proto::PublicCertificate cert1;
         cert1.set_secret_id(kTestCertificateId1);
-        nearbyshare::proto::PublicCertificate cert2;
+        nearby::sharing::proto::PublicCertificate cert2;
         cert2.set_secret_id(kTestCertificateId2);
-        return std::vector<nearbyshare::proto::PublicCertificate>{cert1, cert2};
+        return std::vector<nearby::sharing::proto::PublicCertificate>{cert1,
+                                                                      cert2};
       }());
   return *list;
 }
 
-const nearbyshare::proto::UpdateDeviceResponse& TestResponse() {
-  static const base::NoDestructor<nearbyshare::proto::UpdateDeviceResponse>
+const nearby::sharing::proto::UpdateDeviceResponse& TestResponse() {
+  static const base::NoDestructor<nearby::sharing::proto::UpdateDeviceResponse>
       response([] {
-        nearbyshare::proto::UpdateDeviceResponse response;
+        nearby::sharing::proto::UpdateDeviceResponse response;
         response.set_person_name(kTestPersonName);
         return response;
       }());
@@ -67,11 +69,11 @@ const nearbyshare::proto::UpdateDeviceResponse& TestResponse() {
 }
 
 void VerifyRequest(
-    const absl::optional<std::vector<nearbyshare::proto::Contact>>&
+    const std::optional<std::vector<nearby::sharing::proto::Contact>>&
         expected_contacts,
-    const absl::optional<std::vector<nearbyshare::proto::PublicCertificate>>&
+    const std::optional<std::vector<nearby::sharing::proto::PublicCertificate>>&
         expected_certificates,
-    const nearbyshare::proto::UpdateDeviceRequest& request) {
+    const nearby::sharing::proto::UpdateDeviceRequest& request) {
   std::vector<std::string> field_mask{request.update_mask().paths().begin(),
                                       request.update_mask().paths().end()};
 
@@ -111,9 +113,10 @@ void VerifyRequest(
 }
 
 void VerifyResponse(
-    const absl::optional<nearbyshare::proto::UpdateDeviceResponse>&
+    const std::optional<nearby::sharing::proto::UpdateDeviceResponse>&
         expected_response,
-    const absl::optional<nearbyshare::proto::UpdateDeviceResponse>& response) {
+    const std::optional<nearby::sharing::proto::UpdateDeviceResponse>&
+        response) {
   if (expected_response) {
     ASSERT_TRUE(response);
     EXPECT_EQ(expected_response->SerializeAsString(),
@@ -138,8 +141,10 @@ class NearbyShareDeviceDataUpdaterImplTest : public ::testing::Test {
   }
 
   void CallUpdateDeviceData(
-      const absl::optional<std::vector<nearbyshare::proto::Contact>>& contacts,
-      const absl::optional<std::vector<nearbyshare::proto::PublicCertificate>>&
+      const std::optional<std::vector<nearby::sharing::proto::Contact>>&
+          contacts,
+      const std::optional<
+          std::vector<nearby::sharing::proto::PublicCertificate>>&
           certificates) {
     updater_->UpdateDeviceData(
         contacts, certificates,
@@ -148,9 +153,10 @@ class NearbyShareDeviceDataUpdaterImplTest : public ::testing::Test {
   }
 
   void ProcessNextUpdateDeviceDataRequest(
-      const absl::optional<std::vector<nearbyshare::proto::Contact>>&
+      const std::optional<std::vector<nearby::sharing::proto::Contact>>&
           expected_contacts,
-      const absl::optional<std::vector<nearbyshare::proto::PublicCertificate>>&
+      const std::optional<
+          std::vector<nearby::sharing::proto::PublicCertificate>>&
           expected_certificates,
       UpdateDeviceRequestResult result) {
     // Verify the next request.
@@ -178,8 +184,8 @@ class NearbyShareDeviceDataUpdaterImplTest : public ::testing::Test {
     EXPECT_EQ(num_responses + 1, responses_.size());
 
     VerifyResponse(result == UpdateDeviceRequestResult::kSuccess
-                       ? absl::make_optional(TestResponse())
-                       : absl::nullopt,
+                       ? std::make_optional(TestResponse())
+                       : std::nullopt,
                    responses_.back());
   }
 
@@ -190,25 +196,26 @@ class NearbyShareDeviceDataUpdaterImplTest : public ::testing::Test {
   }
 
   // The callback passed into UpdateDeviceData().
-  void OnResult(const absl::optional<nearbyshare::proto::UpdateDeviceResponse>&
-                    response) {
+  void OnResult(
+      const std::optional<nearby::sharing::proto::UpdateDeviceResponse>&
+          response) {
     responses_.push_back(response);
   }
 
   base::test::SingleThreadTaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
-  std::vector<absl::optional<nearbyshare::proto::UpdateDeviceResponse>>
+  std::vector<std::optional<nearby::sharing::proto::UpdateDeviceResponse>>
       responses_;
   FakeNearbyShareClientFactory fake_client_factory_;
   std::unique_ptr<NearbyShareDeviceDataUpdater> updater_;
 };
 
 TEST_F(NearbyShareDeviceDataUpdaterImplTest, Success_NoParameters) {
-  CallUpdateDeviceData(/*contacts=*/absl::nullopt,
-                       /*certificates=*/absl::nullopt);
+  CallUpdateDeviceData(/*contacts=*/std::nullopt,
+                       /*certificates=*/std::nullopt);
   ProcessNextUpdateDeviceDataRequest(
-      /*expected_contacts=*/absl::nullopt,
-      /*expected_certificates=*/absl::nullopt,
+      /*expected_contacts=*/std::nullopt,
+      /*expected_certificates=*/std::nullopt,
       UpdateDeviceRequestResult::kSuccess);
 }
 
@@ -220,9 +227,9 @@ TEST_F(NearbyShareDeviceDataUpdaterImplTest, Success_AllParameters) {
 
 TEST_F(NearbyShareDeviceDataUpdaterImplTest, Success_OneParameter) {
   CallUpdateDeviceData(TestContactList(),
-                       /*certificates=*/absl::nullopt);
+                       /*certificates=*/std::nullopt);
   ProcessNextUpdateDeviceDataRequest(TestContactList(),
-                                     /*expected_certificates=*/absl::nullopt,
+                                     /*expected_certificates=*/std::nullopt,
                                      UpdateDeviceRequestResult::kSuccess);
 }
 
@@ -240,19 +247,19 @@ TEST_F(NearbyShareDeviceDataUpdaterImplTest, Failure_HttpError) {
 
 TEST_F(NearbyShareDeviceDataUpdaterImplTest, QueuedRequests) {
   // Queue requests while waiting to process.
-  CallUpdateDeviceData(/*contacts=*/absl::nullopt,
-                       /*certificates=*/absl::nullopt);
+  CallUpdateDeviceData(/*contacts=*/std::nullopt,
+                       /*certificates=*/std::nullopt);
   CallUpdateDeviceData(TestContactList(), TestCertificateList());
-  CallUpdateDeviceData(/*contacts=*/absl::nullopt, TestCertificateList());
+  CallUpdateDeviceData(/*contacts=*/std::nullopt, TestCertificateList());
 
   // Requests are processed in the order they are received.
   ProcessNextUpdateDeviceDataRequest(
-      /*expected_contacts=*/absl::nullopt,
-      /*expected_certificates=*/absl::nullopt,
+      /*expected_contacts=*/std::nullopt,
+      /*expected_certificates=*/std::nullopt,
       UpdateDeviceRequestResult::kSuccess);
   ProcessNextUpdateDeviceDataRequest(TestContactList(), TestCertificateList(),
                                      UpdateDeviceRequestResult::kTimeout);
-  ProcessNextUpdateDeviceDataRequest(/*expected_contacts=*/absl::nullopt,
+  ProcessNextUpdateDeviceDataRequest(/*expected_contacts=*/std::nullopt,
                                      TestCertificateList(),
                                      UpdateDeviceRequestResult::kHttpFailure);
 }

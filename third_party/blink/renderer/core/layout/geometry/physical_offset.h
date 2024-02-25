@@ -154,16 +154,6 @@ inline gfx::Vector2d ToCeiledVector2d(const PhysicalOffset& o) {
   return {o.left.Ceil(), o.top.Ceil()};
 }
 
-// TODO(wangxianzhu): For temporary conversion from LayoutPoint/LayoutSize to
-// PhysicalOffset, where the input will be changed to PhysicalOffset soon, to
-// avoid redundant PhysicalOffset() which can't be discovered by the compiler.
-inline PhysicalOffset PhysicalOffsetToBeNoop(const LayoutPoint& p) {
-  return PhysicalOffset(p);
-}
-inline PhysicalOffset PhysicalOffsetToBeNoop(const DeprecatedLayoutSize& s) {
-  return PhysicalOffset(s);
-}
-
 CORE_EXPORT std::ostream& operator<<(std::ostream&, const PhysicalOffset&);
 
 }  // namespace blink

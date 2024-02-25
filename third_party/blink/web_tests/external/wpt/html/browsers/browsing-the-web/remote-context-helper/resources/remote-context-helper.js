@@ -104,13 +104,18 @@
      *     when this event occurs, e.g. "pageshow",
      *     (@see window.addEventListener). This only makes sense for
      *     window-based executors, not worker-based.
+     * @param {string} [options.status] If supplied, the executor will pass
+     *     this value in the "status" parameter to the executor. The default
+     *     executor will default to a status code of 200, if the parameter is
+     *     not supplied.
      */
     constructor(
-        {origin, scripts = [], headers = [], startOn} = {}) {
+        {origin, scripts = [], headers = [], startOn, status} = {}) {
       this.origin = origin;
       this.scripts = scripts;
       this.headers = headers;
       this.startOn = startOn;
+      this.status = status;
     }
 
     /**
@@ -143,6 +148,10 @@
       if (extraConfig.startOn) {
         startOn = extraConfig.startOn;
       }
+      let status = this.status;
+      if (extraConfig.status) {
+        status = extraConfig.status;
+      }
       const headers = this.headers.concat(extraConfig.headers);
       const scripts = this.scripts.concat(extraConfig.scripts);
       return new RemoteContextConfig({
@@ -150,6 +159,7 @@
         headers,
         scripts,
         startOn,
+        status
       });
     }
   }
@@ -220,6 +230,10 @@
         url.searchParams.append('startOn', config.startOn);
       }
 
+      if (config.status) {
+        url.searchParams.append('status', config.status);
+      }
+
       if (executorCreator) {
         await executorCreator(url.href);
       }
@@ -282,6 +296,17 @@
         el.src = url;
         document.body.appendChild(el);
       }, [url, elementName, attributes]);
+    };
+  }
+
+  function iframeSrcdocExecutorCreator(remoteContextWrapper, attributes) {
+    return async (url) => {
+      // `url` points to the content needed to run an `Executor` in the frame.
+      // So we download the content and pass it via the `srcdoc` attribute,
+      // setting the iframe's `src` to `undefined`.
+      attributes['srcdoc'] = await fetch(url).then(r => r.text());
+      elementExecutorCreator(
+          remoteContextWrapper, 'iframe', attributes)(undefined);
     };
   }
 
@@ -356,7 +381,7 @@
     }
 
     /**
-     * Adds an iframe to the current document.
+     * Adds an iframe with `src` attribute to the current document.
      * @param {RemoteContextConfig} [extraConfig]
      * @param {[string, string][]} [attributes] A list of pairs of strings
      *     of attribute name and value these will be set on the iframe element
@@ -366,6 +391,21 @@
     addIframe(extraConfig, attributes = {}) {
       return this.helper.createContext({
         executorCreator: elementExecutorCreator(this, 'iframe', attributes),
+        extraConfig,
+      });
+    }
+
+    /**
+     * Adds an iframe with `srcdoc` attribute to the current document
+     * @param {RemoteContextConfig} [extraConfig]
+     * @param {[string, string][]} [attributes] A list of pairs of strings
+     *     of attribute name and value these will be set on the iframe element
+     *     when added to the document.
+     * @returns {Promise<RemoteContextWrapper>} The remote context.
+     */
+    addIframeSrcdoc(extraConfig, attributes = {}) {
+      return this.helper.createContext({
+        executorCreator: iframeSrcdocExecutorCreator(this, attributes),
         extraConfig,
       });
     }

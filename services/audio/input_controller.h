@@ -9,11 +9,12 @@
 #include <stdint.h>
 
 #include <memory>
+#include <optional>
 #include <string>
+#include <string_view>
 
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
-#include "base/strings/string_piece.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_checker.h"
 #include "base/time/time.h"
@@ -28,14 +29,12 @@
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "services/audio/stream_monitor.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace media {
 class AecdumpRecordingManager;
 class AudioBus;
 class AudioInputStream;
 class AudioManager;
-class Snoopable;
 class UserInputMonitor;
 struct AudioGlitchInfo;
 }  // namespace media
@@ -43,9 +42,13 @@ struct AudioGlitchInfo;
 namespace audio {
 class AudioProcessorHandler;
 class AudioCallback;
-class OutputTapper;
 class DeviceOutputListener;
+class OutputTapper;
+class Snoopable;
+
+#if BUILDFLAG(CHROME_WIDE_ECHO_CANCELLATION)
 class ProcessingAudioFifo;
+#endif
 
 // Only do power monitoring for non-mobile platforms to save resources.
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
@@ -138,7 +141,7 @@ class InputController final : public StreamMonitor {
     // OnMuted callback has had time to be processed.
     virtual void OnCreated(bool initially_muted) = 0;
     virtual void OnError(ErrorCode error_code) = 0;
-    virtual void OnLog(base::StringPiece) = 0;
+    virtual void OnLog(std::string_view) = 0;
     // Called whenever the muted state of the underlying stream changes.
     virtual void OnMuted(bool is_muted) = 0;
 
@@ -303,7 +306,7 @@ class InputController final : public StreamMonitor {
   // Used as a callback for |audio_processor_handler_|.
   void DeliverProcessedAudio(const media::AudioBus& audio_bus,
                              base::TimeTicks audio_capture_time,
-                             absl::optional<double> new_volume,
+                             std::optional<double> new_volume,
                              const media::AudioGlitchInfo& glitch_info);
 #endif
 

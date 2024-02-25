@@ -17,6 +17,8 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
 
   // Parse until the end of stream/unsupported stream/error in stream is
   // found.
+  media::H265SliceHeader shdr;
+  media::H265SliceHeader prior_shdr;
   while (true) {
     media::H265NALU nalu;
     media::H265SEI sei;
@@ -24,8 +26,6 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
     if (res != media::H265Parser::kOk)
       break;
 
-    media::H265SliceHeader shdr;
-    media::H265SliceHeader prior_shdr;
     switch (nalu.nal_unit_type) {
       case media::H265NALU::VPS_NUT:
         int vps_id;

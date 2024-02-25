@@ -35,7 +35,7 @@ void PaintArc(Canvas* canvas,
               SkColor color,
               SkScalar start_angle,
               SkScalar sweep,
-              absl::optional<SkScalar> stroke_width) {
+              std::optional<SkScalar> stroke_width) {
   if (!stroke_width) {
     // Stroke width depends on size.
     // . For size < 28:          3 - (28 - size) / 16
@@ -124,18 +124,17 @@ void PaintThrobberSpinningWithState(Canvas* canvas,
                                     const Rect& bounds,
                                     SkColor color,
                                     const ThrobberSpinningState& state,
-                                    absl::optional<SkScalar> stroke_width) {
+                                    std::optional<SkScalar> stroke_width) {
   PaintArc(canvas, bounds, color, state.start_angle, state.sweep_angle,
            stroke_width);
 }
 
-void PaintThrobberSpinningWithStartAngle(
-    Canvas* canvas,
-    const Rect& bounds,
-    SkColor color,
-    const base::TimeDelta& elapsed_time,
-    int64_t start_angle,
-    absl::optional<SkScalar> stroke_width) {
+void PaintThrobberSpinningWithStartAngle(Canvas* canvas,
+                                         const Rect& bounds,
+                                         SkColor color,
+                                         const base::TimeDelta& elapsed_time,
+                                         int64_t start_angle,
+                                         std::optional<SkScalar> stroke_width) {
   const ThrobberSpinningState state =
       CalculateThrobberSpinningStateWithStartAngle(elapsed_time, start_angle);
   PaintThrobberSpinningWithState(canvas, bounds, color, state, stroke_width);
@@ -155,7 +154,7 @@ void PaintThrobberSpinning(Canvas* canvas,
                            const Rect& bounds,
                            SkColor color,
                            const base::TimeDelta& elapsed_time,
-                           absl::optional<SkScalar> stroke_width) {
+                           std::optional<SkScalar> stroke_width) {
   const ThrobberSpinningState state =
       CalculateThrobberSpinningState(elapsed_time);
   PaintThrobberSpinningWithState(canvas, bounds, color, state, stroke_width);
@@ -165,7 +164,7 @@ void PaintThrobberWaiting(Canvas* canvas,
                           const Rect& bounds,
                           SkColor color,
                           const base::TimeDelta& elapsed_time,
-                          absl::optional<SkScalar> stroke_width) {
+                          std::optional<SkScalar> stroke_width) {
   int64_t start_angle = 0, sweep = 0;
   CalculateWaitingAngles(elapsed_time, &start_angle, &sweep);
   PaintArc(canvas, bounds, color, start_angle, sweep, stroke_width);
@@ -176,7 +175,7 @@ void PaintThrobberSpinningAfterWaiting(Canvas* canvas,
                                        SkColor color,
                                        const base::TimeDelta& elapsed_time,
                                        ThrobberWaitingState* waiting_state,
-                                       absl::optional<SkScalar> stroke_width) {
+                                       std::optional<SkScalar> stroke_width) {
   int64_t waiting_start_angle = 0, waiting_sweep = 0;
   CalculateWaitingAngles(waiting_state->elapsed_time, &waiting_start_angle,
                          &waiting_sweep);

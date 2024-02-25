@@ -5,6 +5,7 @@
 #include "base/cancelable_callback.h"
 
 #include <memory>
+#include <optional>
 
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
@@ -38,9 +39,9 @@ void OnMoveOnlyReceived(int* value, std::unique_ptr<int> result) {
 TEST(CancelableCallbackTest, Cancel) {
   int count = 0;
   CancelableRepeatingClosure cancelable(
-      base::BindRepeating(&Increment, base::Unretained(&count)));
+      BindRepeating(&Increment, Unretained(&count)));
 
-  base::RepeatingClosure callback = cancelable.callback();
+  RepeatingClosure callback = cancelable.callback();
   callback.Run();
   EXPECT_EQ(1, count);
 
@@ -59,10 +60,10 @@ TEST(CancelableCallbackTest, Cancel) {
 TEST(CancelableCallbackTest, MultipleCancel) {
   int count = 0;
   CancelableRepeatingClosure cancelable(
-      base::BindRepeating(&Increment, base::Unretained(&count)));
+      BindRepeating(&Increment, Unretained(&count)));
 
-  base::RepeatingClosure callback1 = cancelable.callback();
-  base::RepeatingClosure callback2 = cancelable.callback();
+  RepeatingClosure callback1 = cancelable.callback();
+  RepeatingClosure callback2 = cancelable.callback();
   cancelable.Cancel();
 
   callback1.Run();
@@ -75,7 +76,7 @@ TEST(CancelableCallbackTest, MultipleCancel) {
   cancelable.Cancel();
 
   // callback() of a cancelled callback is null.
-  base::RepeatingClosure callback3 = cancelable.callback();
+  RepeatingClosure callback3 = cancelable.callback();
   EXPECT_TRUE(callback3.is_null());
 }
 
@@ -83,11 +84,11 @@ TEST(CancelableCallbackTest, MultipleCancel) {
 //  - Destruction of CancelableRepeatingCallback cancels outstanding callbacks.
 TEST(CancelableCallbackTest, CallbackCanceledOnDestruction) {
   int count = 0;
-  base::RepeatingClosure callback;
+  RepeatingClosure callback;
 
   {
     CancelableRepeatingClosure cancelable(
-        base::BindRepeating(&Increment, base::Unretained(&count)));
+        BindRepeating(&Increment, Unretained(&count)));
 
     callback = cancelable.callback();
     callback.Run();
@@ -104,8 +105,7 @@ TEST(CancelableCallbackTest, CancelDropsCallback) {
   scoped_refptr<TestRefCounted> ref_counted = new TestRefCounted;
   EXPECT_TRUE(ref_counted->HasOneRef());
 
-  CancelableOnceClosure cancelable(
-      base::BindOnce(RefCountedParam, ref_counted));
+  CancelableOnceClosure cancelable(BindOnce(RefCountedParam, ref_counted));
   EXPECT_FALSE(cancelable.IsCancelled());
   EXPECT_TRUE(ref_counted.get());
   EXPECT_FALSE(ref_counted->HasOneRef());
@@ -123,17 +123,16 @@ TEST(CancelableCallbackTest, CancelDropsCallback) {
 TEST(CancelableCallbackTest, Reset) {
   int count = 0;
   CancelableRepeatingClosure cancelable(
-      base::BindRepeating(&Increment, base::Unretained(&count)));
+      BindRepeating(&Increment, Unretained(&count)));
 
-  base::RepeatingClosure callback = cancelable.callback();
+  RepeatingClosure callback = cancelable.callback();
   callback.Run();
   EXPECT_EQ(1, count);
 
   callback.Run();
   EXPECT_EQ(2, count);
 
-  cancelable.Reset(
-      base::BindRepeating(&IncrementBy, base::Unretained(&count), 3));
+  cancelable.Reset(BindRepeating(&IncrementBy, Unretained(&count), 3));
   EXPECT_FALSE(cancelable.IsCancelled());
 
   // The stale copy of the cancelable callback is non-null.
@@ -143,7 +142,7 @@ TEST(CancelableCallbackTest, Reset) {
   callback.Run();
   EXPECT_EQ(2, count);
 
-  base::RepeatingClosure callback2 = cancelable.callback();
+  RepeatingClosure callback2 = cancelable.callback();
   ASSERT_FALSE(callback2.is_null());
 
   callback2.Run();
@@ -157,7 +156,7 @@ TEST(CancelableCallbackTest, IsNull) {
   EXPECT_TRUE(cancelable.IsCancelled());
 
   int count = 0;
-  cancelable.Reset(base::BindOnce(&Increment, base::Unretained(&count)));
+  cancelable.Reset(BindOnce(&Increment, Unretained(&count)));
   EXPECT_FALSE(cancelable.IsCancelled());
 
   cancelable.Cancel();
@@ -166,12 +165,13 @@ TEST(CancelableCallbackTest, IsNull) {
 
 // CancelableRepeatingCallback posted to a task environment with PostTask.
 //  - Posted callbacks can be cancelled.
+//  - Chained callbacks from `.Then()` still run on cancelled callbacks.
 TEST(CancelableCallbackTest, PostTask) {
-  test::TaskEnvironment task_environment;
+  test::SingleThreadTaskEnvironment task_environment;
 
   int count = 0;
   CancelableRepeatingClosure cancelable(
-      base::BindRepeating(&Increment, base::Unretained(&count)));
+      BindRepeating(&Increment, Unretained(&count)));
 
   SingleThreadTaskRunner::GetCurrentDefault()->PostTask(FROM_HERE,
                                                         cancelable.callback());
@@ -182,11 +182,70 @@ TEST(CancelableCallbackTest, PostTask) {
   SingleThreadTaskRunner::GetCurrentDefault()->PostTask(FROM_HERE,
                                                         cancelable.callback());
 
-  // Cancel before running the tasks.
+  // Cancel before running the task.
   cancelable.Cancel();
   RunLoop().RunUntilIdle();
 
   // Callback never ran due to cancellation; count is the same.
+  EXPECT_EQ(1, count);
+
+  // Chain a callback to the cancelable callback.
+  cancelable.Reset(BindRepeating(&Increment, Unretained(&count)));
+  SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE, cancelable.callback().Then(
+                     BindRepeating(&IncrementBy, Unretained(&count), 2)));
+
+  // Cancel before running the task.
+  cancelable.Cancel();
+  RunLoop().RunUntilIdle();
+
+  // Callback never ran due to cancellation, but chained callback still should
+  // have. Count should increase by exactly two.
+  EXPECT_EQ(3, count);
+}
+
+// CancelableRepeatingCallback posted to a task environment with
+// PostTaskAndReply.
+//  - Posted callbacks can be cancelled.
+TEST(CancelableCallbackTest, PostTaskAndReply) {
+  std::optional<test::SingleThreadTaskEnvironment> task_environment;
+  task_environment.emplace();
+
+  int count = 0;
+  CancelableRepeatingClosure cancelable_reply(
+      BindRepeating(&Increment, Unretained(&count)));
+
+  std::optional<RunLoop> loop;
+  loop.emplace();
+  SingleThreadTaskRunner::GetCurrentDefault()->PostTaskAndReply(
+      FROM_HERE, DoNothing(),
+      cancelable_reply.callback().Then(loop->QuitClosure()));
+  loop->Run();
+
+  EXPECT_EQ(1, count);
+
+  loop.emplace();
+  SingleThreadTaskRunner::GetCurrentDefault()->PostTaskAndReply(
+      FROM_HERE, DoNothing(),
+      cancelable_reply.callback().Then(loop->QuitClosure()));
+
+  // Cancel before running the tasks.
+  cancelable_reply.Cancel();
+  loop->Run();
+
+  // Callback never ran due to cancellation; count is the same. Note that
+  // QuitClosure() is still invoked because chained callbacks via Then() get
+  // invoked even if the first callback is cancelled.
+  EXPECT_EQ(1, count);
+
+  // Post it again to exercise a shutdown-like scenario.
+  cancelable_reply.Reset(BindRepeating(&Increment, Unretained(&count)));
+
+  SingleThreadTaskRunner::GetCurrentDefault()->PostTaskAndReply(
+      FROM_HERE, DoNothing(), cancelable_reply.callback());
+  task_environment.reset();
+
+  // Callback never ran due to task runner shutdown; count is the same.
   EXPECT_EQ(1, count);
 }
 
@@ -196,7 +255,7 @@ TEST(CancelableCallbackTest, MoveOnlyType) {
 
   int result = 0;
   CancelableRepeatingCallback<void(std::unique_ptr<int>)> cb(
-      base::BindRepeating(&OnMoveOnlyReceived, base::Unretained(&result)));
+      BindRepeating(&OnMoveOnlyReceived, Unretained(&result)));
   cb.callback().Run(std::make_unique<int>(kExpectedResult));
 
   EXPECT_EQ(kExpectedResult, result);

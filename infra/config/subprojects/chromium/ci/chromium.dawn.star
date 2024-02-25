@@ -9,12 +9,14 @@ load("//lib/builder_health_indicators.star", "health_spec")
 load("//lib/builders.star", "reclient", "sheriff_rotations")
 load("//lib/ci.star", "ci")
 load("//lib/consoles.star", "consoles")
+load("//lib/gn_args.star", "gn_args")
 
 ci.defaults.set(
     executable = ci.DEFAULT_EXECUTABLE,
     builder_group = "chromium.dawn",
     pool = ci.gpu.POOL,
     sheriff_rotations = sheriff_rotations.DAWN,
+    contact_team_email = "chrome-gpu-infra@google.com",
     execution_timeout = ci.DEFAULT_EXECUTION_TIMEOUT,
     health_spec = health_spec.DEFAULT,
     reclient_instance = reclient.instance.DEFAULT_TRUSTED,
@@ -66,6 +68,14 @@ ci.gpu.linux_builder(
         build_gs_bucket = "chromium-dawn-archive",
         run_tests_serially = True,
     ),
+    gn_args = gn_args.config(
+        configs = [
+            "dawn_enable_opengles",
+            "release_try_builder",
+            "minimal_symbols",
+            "reclient",
+        ],
+    ),
     console_view_entry = consoles.console_view_entry(
         category = "ToT|Linux|Builder",
         short_name = "x64",
@@ -93,6 +103,14 @@ ci.gpu.linux_builder(
         build_gs_bucket = "chromium-dawn-archive",
         run_tests_serially = True,
     ),
+    gn_args = gn_args.config(
+        configs = [
+            "dawn_enable_opengles",
+            "release_try_builder",
+            "minimal_symbols",
+            "reclient",
+        ],
+    ),
     console_view_entry = consoles.console_view_entry(
         category = "DEPS|Linux|Builder",
         short_name = "x64",
@@ -119,9 +137,52 @@ ci.gpu.linux_builder(
         build_gs_bucket = "chromium-dawn-archive",
         run_tests_serially = True,
     ),
+    gn_args = gn_args.config(
+        configs = [
+            "android_builder",
+            "release_try_builder",
+            "minimal_symbols",
+            "reclient",
+        ],
+    ),
     console_view_entry = consoles.console_view_entry(
         category = "DEPS|Android|Builder",
         short_name = "arm",
+    ),
+    reclient_jobs = reclient.jobs.HIGH_JOBS_FOR_CI,
+)
+
+ci.gpu.linux_builder(
+    name = "Dawn Android arm64 DEPS Builder",
+    description_html = "Builds Android arm64 binaries using DEPS-ed in Dawn",
+    builder_spec = builder_config.builder_spec(
+        gclient_config = builder_config.gclient_config(
+            config = "chromium",
+            apply_configs = [
+                "android",
+            ],
+        ),
+        chromium_config = builder_config.chromium_config(
+            config = "android",
+            target_platform = builder_config.target_platform.ANDROID,
+        ),
+        android_config = builder_config.android_config(
+            config = "arm64_builder_rel_mb",
+        ),
+        build_gs_bucket = "chromium-dawn-archive",
+    ),
+    gn_args = gn_args.config(
+        configs = [
+            "android_builder",
+            "arm64",
+            "release_try_builder",
+            "minimal_symbols",
+            "reclient",
+        ],
+    ),
+    console_view_entry = consoles.console_view_entry(
+        category = "DEPS|Android|Builder",
+        short_name = "a64",
     ),
     reclient_jobs = reclient.jobs.HIGH_JOBS_FOR_CI,
 )
@@ -180,9 +241,11 @@ ci.thin_tester(
     ),
 )
 
-ci.gpu.linux_builder(
+ci.thin_tester(
     name = "Dawn Android arm64 DEPS Release (Pixel 6)",
+    triggered_by = ["ci/Dawn Android arm64 DEPS Builder"],
     builder_spec = builder_config.builder_spec(
+        execution_mode = builder_config.execution_mode.TEST,
         gclient_config = builder_config.gclient_config(
             config = "chromium",
             apply_configs = [
@@ -203,7 +266,6 @@ ci.gpu.linux_builder(
         category = "DEPS|Android",
         short_name = "p6",
     ),
-    reclient_jobs = reclient.jobs.HIGH_JOBS_FOR_CI,
 )
 
 ci.thin_tester(
@@ -283,6 +345,15 @@ ci.gpu.linux_builder(
         build_gs_bucket = "chromium-dawn-archive",
         run_tests_serially = True,
     ),
+    gn_args = gn_args.config(
+        configs = [
+            "dawn_enable_opengles",
+            "tsan",
+            "release_try_builder",
+            "minimal_symbols",
+            "reclient",
+        ],
+    ),
     console_view_entry = consoles.console_view_entry(
         category = "ToT|Linux|TSAN",
         short_name = "x64",
@@ -313,9 +384,53 @@ ci.gpu.linux_builder(
         build_gs_bucket = "chromium-dawn-archive",
         run_tests_serially = True,
     ),
+    gn_args = gn_args.config(
+        configs = [
+            "android_builder",
+            "release_try_builder",
+            "minimal_symbols",
+            "reclient",
+        ],
+    ),
     console_view_entry = consoles.console_view_entry(
         category = "ToT|Android|Builder",
         short_name = "arm",
+    ),
+    reclient_jobs = reclient.jobs.HIGH_JOBS_FOR_CI,
+)
+
+ci.gpu.linux_builder(
+    name = "Dawn Android arm64 Builder",
+    description_html = "Builds Android arm64 binaries using ToT Dawn",
+    builder_spec = builder_config.builder_spec(
+        gclient_config = builder_config.gclient_config(
+            config = "chromium",
+            apply_configs = [
+                "android",
+                "dawn_top_of_tree",
+            ],
+        ),
+        chromium_config = builder_config.chromium_config(
+            config = "android",
+            target_platform = builder_config.target_platform.ANDROID,
+        ),
+        android_config = builder_config.android_config(
+            config = "arm64_builder_rel_mb",
+        ),
+        build_gs_bucket = "chromium-dawn-archive",
+    ),
+    gn_args = gn_args.config(
+        configs = [
+            "android_builder",
+            "arm64",
+            "release_try_builder",
+            "minimal_symbols",
+            "reclient",
+        ],
+    ),
+    console_view_entry = consoles.console_view_entry(
+        category = "ToT|Android|Builder",
+        short_name = "a64",
     ),
     reclient_jobs = reclient.jobs.HIGH_JOBS_FOR_CI,
 )
@@ -376,9 +491,11 @@ ci.thin_tester(
     ),
 )
 
-ci.gpu.linux_builder(
+ci.thin_tester(
     name = "Dawn Android arm64 Release (Pixel 6)",
+    triggered_by = ["ci/Dawn Android arm64 Builder"],
     builder_spec = builder_config.builder_spec(
+        execution_mode = builder_config.execution_mode.TEST,
         gclient_config = builder_config.gclient_config(
             config = "chromium",
             apply_configs = [
@@ -400,7 +517,37 @@ ci.gpu.linux_builder(
         category = "ToT|Android",
         short_name = "p6",
     ),
-    reclient_jobs = reclient.jobs.HIGH_JOBS_FOR_CI,
+)
+
+ci.thin_tester(
+    name = "Dawn Android arm64 Experimental Release (Pixel 6)",
+    description_html = "Runs ToT Dawn tests on experimental Pixel 6 configs",
+    triggered_by = ["ci/Dawn Android arm64 Builder"],
+    builder_spec = builder_config.builder_spec(
+        execution_mode = builder_config.execution_mode.TEST,
+        gclient_config = builder_config.gclient_config(
+            config = "chromium",
+            apply_configs = [
+                "android",
+                "dawn_top_of_tree",
+            ],
+        ),
+        chromium_config = builder_config.chromium_config(
+            config = "android",
+            target_platform = builder_config.target_platform.ANDROID,
+        ),
+        android_config = builder_config.android_config(
+            config = "arm64_builder_rel_mb",
+        ),
+        build_gs_bucket = "chromium-dawn-archive",
+        run_tests_serially = True,
+    ),
+    # Uncomment this entry when this experimental tester is actually in use.
+    console_view_entry = consoles.console_view_entry(
+        category = "ToT|Android",
+        short_name = "exp",
+    ),
+    list_view = "chromium.gpu.experimental",
 )
 
 ci.thin_tester(
@@ -457,6 +604,7 @@ ci.thin_tester(
 
 ci.gpu.mac_builder(
     name = "Dawn Mac arm64 DEPS Release (Apple M2)",
+    branch_selector = branches.selector.MAC_BRANCHES,
     builder_spec = builder_config.builder_spec(
         gclient_config = builder_config.gclient_config(
             config = "chromium",
@@ -473,6 +621,15 @@ ci.gpu.mac_builder(
         ),
         build_gs_bucket = "chromium-dawn-archive",
         run_tests_serially = True,
+    ),
+    gn_args = gn_args.config(
+        configs = [
+            "dawn_enable_opengles",
+            "release_try_builder",
+            "minimal_symbols",
+            "reclient",
+            "arm64",
+        ],
     ),
     console_view_entry = consoles.console_view_entry(
         category = "DEPS|Mac",
@@ -502,6 +659,15 @@ ci.gpu.mac_builder(
         build_gs_bucket = "chromium-dawn-archive",
         run_tests_serially = True,
     ),
+    gn_args = gn_args.config(
+        configs = [
+            "dawn_enable_opengles",
+            "release_try_builder",
+            "minimal_symbols",
+            "reclient",
+            "arm64",
+        ],
+    ),
     console_view_entry = consoles.console_view_entry(
         category = "ToT|Mac",
         short_name = "arm64",
@@ -523,11 +689,21 @@ ci.gpu.mac_builder(
                 "mb",
             ],
             build_config = builder_config.build_config.RELEASE,
+            target_arch = builder_config.target_arch.INTEL,
             target_bits = 64,
             target_platform = builder_config.target_platform.MAC,
         ),
         build_gs_bucket = "chromium-dawn-archive",
         run_tests_serially = True,
+    ),
+    gn_args = gn_args.config(
+        configs = [
+            "dawn_enable_opengles",
+            "release_try_builder",
+            "minimal_symbols",
+            "reclient",
+            "x64",
+        ],
     ),
     console_view_entry = consoles.console_view_entry(
         category = "ToT|Mac|Builder",
@@ -548,11 +724,21 @@ ci.gpu.mac_builder(
                 "mb",
             ],
             build_config = builder_config.build_config.RELEASE,
+            target_arch = builder_config.target_arch.INTEL,
             target_bits = 64,
             target_platform = builder_config.target_platform.MAC,
         ),
         build_gs_bucket = "chromium-dawn-archive",
         run_tests_serially = True,
+    ),
+    gn_args = gn_args.config(
+        configs = [
+            "dawn_enable_opengles",
+            "release_try_builder",
+            "minimal_symbols",
+            "reclient",
+            "x64",
+        ],
     ),
     console_view_entry = consoles.console_view_entry(
         category = "DEPS|Mac|Builder",
@@ -578,6 +764,7 @@ ci.thin_tester(
                 "mb",
             ],
             build_config = builder_config.build_config.RELEASE,
+            target_arch = builder_config.target_arch.INTEL,
             target_bits = 64,
             target_platform = builder_config.target_platform.MAC,
         ),
@@ -606,6 +793,7 @@ ci.thin_tester(
                 "mb",
             ],
             build_config = builder_config.build_config.RELEASE,
+            target_arch = builder_config.target_arch.INTEL,
             target_bits = 64,
             target_platform = builder_config.target_platform.MAC,
         ),
@@ -633,6 +821,7 @@ ci.thin_tester(
                 "mb",
             ],
             build_config = builder_config.build_config.RELEASE,
+            target_arch = builder_config.target_arch.INTEL,
             target_bits = 64,
             target_platform = builder_config.target_platform.MAC,
         ),
@@ -640,10 +829,10 @@ ci.thin_tester(
         run_tests_serially = True,
     ),
     # Uncomment this entry when this experimental tester is actually in use.
-    console_view_entry = consoles.console_view_entry(
-        category = "ToT|Mac|AMD",
-        short_name = "exp",
-    ),
+    # console_view_entry = consoles.console_view_entry(
+    #     category = "ToT|Mac|AMD",
+    #     short_name = "exp",
+    # ),
     list_view = "chromium.gpu.experimental",
 )
 
@@ -661,6 +850,7 @@ ci.thin_tester(
                 "mb",
             ],
             build_config = builder_config.build_config.RELEASE,
+            target_arch = builder_config.target_arch.INTEL,
             target_bits = 64,
             target_platform = builder_config.target_platform.MAC,
         ),
@@ -668,10 +858,10 @@ ci.thin_tester(
         run_tests_serially = True,
     ),
     # Uncomment this entry when this experimental tester is actually in use.
-    console_view_entry = consoles.console_view_entry(
-        category = "ToT|Mac|Intel",
-        short_name = "exp",
-    ),
+    # console_view_entry = consoles.console_view_entry(
+    #     category = "ToT|Mac|Intel",
+    #     short_name = "exp",
+    # ),
     list_view = "chromium.gpu.experimental",
 )
 
@@ -689,6 +879,7 @@ ci.thin_tester(
                 "mb",
             ],
             build_config = builder_config.build_config.RELEASE,
+            target_arch = builder_config.target_arch.INTEL,
             target_bits = 64,
             target_platform = builder_config.target_platform.MAC,
         ),
@@ -715,6 +906,7 @@ ci.thin_tester(
                 "mb",
             ],
             build_config = builder_config.build_config.RELEASE,
+            target_arch = builder_config.target_arch.INTEL,
             target_bits = 64,
             target_platform = builder_config.target_platform.MAC,
         ),
@@ -748,6 +940,16 @@ ci.gpu.windows_builder(
             target_platform = builder_config.target_platform.WIN,
         ),
         build_gs_bucket = "chromium-dawn-archive",
+    ),
+    gn_args = gn_args.config(
+        configs = [
+            "dawn_use_built_dxc",
+            "dawn_enable_opengles",
+            "asan",
+            "release_try_builder",
+            "minimal_symbols",
+            "reclient",
+        ],
     ),
     console_view_entry = consoles.console_view_entry(
         category = "ToT|Windows|ASAN|Builder",
@@ -783,6 +985,9 @@ ci.thin_tester(
         category = "ToT|Windows|ASAN|Intel",
         short_name = "x64",
     ),
+    # Building DXC from source + ASAN results in longer run times, so
+    # increase default timeout.
+    execution_timeout = 4 * time.hour,
 )
 
 ci.thin_tester(
@@ -812,6 +1017,9 @@ ci.thin_tester(
         category = "ToT|Windows|ASAN|Nvidia",
         short_name = "x64",
     ),
+    # Building DXC from source + ASAN results in longer run times, so
+    # increase default timeout.
+    execution_timeout = 4 * time.hour,
 )
 
 ci.gpu.windows_builder(
@@ -834,6 +1042,15 @@ ci.gpu.windows_builder(
         ),
         build_gs_bucket = "chromium-dawn-archive",
         run_tests_serially = True,
+    ),
+    gn_args = gn_args.config(
+        configs = [
+            "dawn_use_built_dxc",
+            "dawn_enable_opengles",
+            "release_try_builder",
+            "minimal_symbols",
+            "reclient",
+        ],
     ),
     console_view_entry = consoles.console_view_entry(
         category = "ToT|Windows|Builder",
@@ -860,6 +1077,15 @@ ci.gpu.windows_builder(
         ),
         build_gs_bucket = "chromium-dawn-archive",
         run_tests_serially = True,
+    ),
+    gn_args = gn_args.config(
+        configs = [
+            "dawn_use_built_dxc",
+            "dawn_enable_opengles",
+            "release_try_builder",
+            "minimal_symbols",
+            "reclient",
+        ],
     ),
     console_view_entry = consoles.console_view_entry(
         category = "DEPS|Windows|Builder",
@@ -948,10 +1174,10 @@ ci.thin_tester(
         run_tests_serially = True,
     ),
     # Uncomment this entry when this experimental tester is actually in use.
-    # console_view_entry = consoles.console_view_entry(
-    #     category = "ToT|Windows|Intel",
-    #     short_name = "ex64",
-    # ),
+    console_view_entry = consoles.console_view_entry(
+        category = "ToT|Windows|Intel",
+        short_name = "ex64",
+    ),
     list_view = "chromium.gpu.experimental",
 )
 
@@ -979,6 +1205,36 @@ ci.thin_tester(
         category = "ToT|Windows|Intel",
         short_name = "x64",
     ),
+)
+
+ci.thin_tester(
+    name = "Dawn Win10 x64 Experimental Release (NVIDIA)",
+    description_html = "Runs ToT Dawn tests on experimental NVIDIA configs",
+    triggered_by = ["Dawn Win10 x64 Builder"],
+    builder_spec = builder_config.builder_spec(
+        execution_mode = builder_config.execution_mode.TEST,
+        gclient_config = builder_config.gclient_config(
+            config = "chromium",
+        ),
+        chromium_config = builder_config.chromium_config(
+            config = "chromium",
+            apply_configs = [
+                "mb",
+            ],
+            build_config = builder_config.build_config.RELEASE,
+            target_bits = 64,
+            target_platform = builder_config.target_platform.WIN,
+        ),
+        build_gs_bucket = "chromium-dawn-archive",
+        run_tests_serially = True,
+    ),
+    # Uncomment this entry when this experimental tester is actually in use.
+    console_view_entry = consoles.console_view_entry(
+        category = "ToT|Windows|Nvidia",
+        short_name = "ex64",
+    ),
+    list_view = "chromium.gpu.experimental",
+    execution_timeout = 6 * time.hour,
 )
 
 ci.thin_tester(
@@ -1028,6 +1284,15 @@ ci.gpu.windows_builder(
         build_gs_bucket = "chromium-dawn-archive",
         run_tests_serially = True,
     ),
+    gn_args = gn_args.config(
+        configs = [
+            "dawn_enable_opengles",
+            "release_try_builder",
+            "minimal_symbols",
+            "reclient",
+            "x86",
+        ],
+    ),
     console_view_entry = consoles.console_view_entry(
         category = "ToT|Windows|Builder",
         short_name = "x86",
@@ -1053,6 +1318,15 @@ ci.gpu.windows_builder(
         ),
         build_gs_bucket = "chromium-dawn-archive",
         run_tests_serially = True,
+    ),
+    gn_args = gn_args.config(
+        configs = [
+            "dawn_enable_opengles",
+            "release_try_builder",
+            "minimal_symbols",
+            "reclient",
+            "x86",
+        ],
     ),
     console_view_entry = consoles.console_view_entry(
         category = "DEPS|Windows|Builder",

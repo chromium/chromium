@@ -55,6 +55,7 @@ class GlLegacySharedImage {
   GlLegacySharedImage(
       SharedImageBackingFactory* backing_factory,
       bool is_thread_safe,
+      bool concurrent_read_write,
       SharedImageManager* shared_image_manager,
       MemoryTypeTracker* memory_type_tracker,
       SharedImageRepresentationFactory* shared_image_representation_factory);
@@ -73,8 +74,9 @@ class GlLegacySharedImage {
 // Basic test to check creation and deletion of AHB backed shared image.
 TEST_F(AHardwareBufferImageBackingFactoryTest, Basic) {
   GlLegacySharedImage gl_legacy_shared_image{
-      backing_factory_.get(), /*is_thread_safe=*/false, &shared_image_manager_,
-      &memory_type_tracker_, &shared_image_representation_factory_};
+      backing_factory_.get(),          /*is_thread_safe=*/false,
+      /*concurrent_read_write=*/false, &shared_image_manager_,
+      &memory_type_tracker_,           &shared_image_representation_factory_};
 
   // Validate a SkiaImageRepresentation.
   auto skia_representation = shared_image_representation_factory_.ProduceSkia(
@@ -123,7 +125,8 @@ TEST_F(AHardwareBufferImageBackingFactoryTest, GLSkiaGL) {
   auto color_space = gfx::ColorSpace::CreateSRGB();
   GrSurfaceOrigin surface_origin = kTopLeft_GrSurfaceOrigin;
   SkAlphaType alpha_type = kPremul_SkAlphaType;
-  uint32_t usage = SHARED_IMAGE_USAGE_GLES2 | SHARED_IMAGE_USAGE_DISPLAY_READ;
+  uint32_t usage =
+      SHARED_IMAGE_USAGE_GLES2_WRITE | SHARED_IMAGE_USAGE_DISPLAY_READ;
   gpu::SurfaceHandle surface_handle = gpu::kNullSurfaceHandle;
   auto backing = backing_factory_->CreateSharedImage(
       mailbox, format, surface_handle, size, color_space, surface_origin,
@@ -183,10 +186,11 @@ TEST_F(AHardwareBufferImageBackingFactoryTest, InitialData) {
     initial_data[i] = static_cast<uint8_t>(i);
   }
 
+  // Create a SharedImage whose contents will be read out by Skia.
   auto color_space = gfx::ColorSpace::CreateSRGB();
   GrSurfaceOrigin surface_origin = kTopLeft_GrSurfaceOrigin;
   SkAlphaType alpha_type = kPremul_SkAlphaType;
-  uint32_t usage = SHARED_IMAGE_USAGE_GLES2 | SHARED_IMAGE_USAGE_DISPLAY_READ;
+  uint32_t usage = SHARED_IMAGE_USAGE_DISPLAY_READ;
   auto backing = backing_factory_->CreateSharedImage(
       mailbox, format, size, color_space, surface_origin, alpha_type, usage,
       "TestLabel", initial_data);
@@ -214,7 +218,10 @@ TEST_F(AHardwareBufferImageBackingFactoryTest, InvalidFormat) {
   GrSurfaceOrigin surface_origin = kTopLeft_GrSurfaceOrigin;
   SkAlphaType alpha_type = kPremul_SkAlphaType;
   gpu::SurfaceHandle surface_handle = gpu::kNullSurfaceHandle;
-  uint32_t usage = SHARED_IMAGE_USAGE_GLES2;
+  // NOTE: The specific usage here doesn't matter - the only important thing is
+  // that it be a usage that the factory supports so that the test is exercising
+  // the fact that the passed-in *format* is not supported.
+  uint32_t usage = SHARED_IMAGE_USAGE_GLES2_READ;
   auto backing = backing_factory_->CreateSharedImage(
       mailbox, format, surface_handle, size, color_space, surface_origin,
       alpha_type, usage, "TestLabel", /*is_thread_safe=*/false);
@@ -230,7 +237,10 @@ TEST_F(AHardwareBufferImageBackingFactoryTest, InvalidSize) {
   GrSurfaceOrigin surface_origin = kTopLeft_GrSurfaceOrigin;
   SkAlphaType alpha_type = kPremul_SkAlphaType;
   gpu::SurfaceHandle surface_handle = gpu::kNullSurfaceHandle;
-  uint32_t usage = SHARED_IMAGE_USAGE_GLES2;
+  // NOTE: The specific usage here doesn't matter - the only important thing is
+  // that it be a usage that the factory supports so that the test is exercising
+  // the fact that the passed-in *size* is not supported.
+  uint32_t usage = SHARED_IMAGE_USAGE_GLES2_READ;
   auto backing = backing_factory_->CreateSharedImage(
       mailbox, format, surface_handle, size, color_space, surface_origin,
       alpha_type, usage, "TestLabel", /*is_thread_safe=*/false);
@@ -251,7 +261,9 @@ TEST_F(AHardwareBufferImageBackingFactoryTest, EstimatedSize) {
   GrSurfaceOrigin surface_origin = kTopLeft_GrSurfaceOrigin;
   SkAlphaType alpha_type = kPremul_SkAlphaType;
   gpu::SurfaceHandle surface_handle = gpu::kNullSurfaceHandle;
-  uint32_t usage = SHARED_IMAGE_USAGE_GLES2;
+  // NOTE: The specific usage does not matter here as long as it is supported by
+  // the factory.
+  uint32_t usage = SHARED_IMAGE_USAGE_GLES2_READ;
   auto backing = backing_factory_->CreateSharedImage(
       mailbox, format, surface_handle, size, color_space, surface_origin,
       alpha_type, usage, "TestLabel", /*is_thread_safe=*/false);
@@ -267,12 +279,12 @@ TEST_F(AHardwareBufferImageBackingFactoryTest, EstimatedSize) {
   shared_image.reset();
 }
 
-// TODO(crbug/994720): Failing on Android builders.
 // Test to check that only one context can write at a time
-TEST_F(AHardwareBufferImageBackingFactoryTest, DISABLED_OnlyOneWriter) {
+TEST_F(AHardwareBufferImageBackingFactoryTest, OnlyOneWriter) {
   GlLegacySharedImage gl_legacy_shared_image{
-      backing_factory_.get(), /*is_thread_safe=*/true, &shared_image_manager_,
-      &memory_type_tracker_, &shared_image_representation_factory_};
+      backing_factory_.get(),          /*is_thread_safe=*/true,
+      /*concurrent_read_write=*/false, &shared_image_manager_,
+      &memory_type_tracker_,           &shared_image_representation_factory_};
 
   auto skia_representation = shared_image_representation_factory_.ProduceSkia(
       gl_legacy_shared_image.mailbox(), context_state_.get());
@@ -297,7 +309,7 @@ TEST_F(AHardwareBufferImageBackingFactoryTest, DISABLED_OnlyOneWriter) {
   scoped_write_access2 = skia_representation2->BeginScopedWriteAccess(
       &begin_semaphores2, &end_semaphores2,
       SharedImageRepresentation::AllowUnclearedAccess::kYes);
-  EXPECT_FALSE(scoped_write_access);
+  EXPECT_FALSE(scoped_write_access2);
   EXPECT_EQ(0u, begin_semaphores2.size());
   EXPECT_EQ(0u, end_semaphores2.size());
   skia_representation2.reset();
@@ -309,8 +321,9 @@ TEST_F(AHardwareBufferImageBackingFactoryTest, DISABLED_OnlyOneWriter) {
 // Test to check that multiple readers are allowed
 TEST_F(AHardwareBufferImageBackingFactoryTest, CanHaveMultipleReaders) {
   GlLegacySharedImage gl_legacy_shared_image{
-      backing_factory_.get(), /*is_thread_safe=*/true, &shared_image_manager_,
-      &memory_type_tracker_, &shared_image_representation_factory_};
+      backing_factory_.get(),          /*is_thread_safe=*/true,
+      /*concurrent_read_write=*/false, &shared_image_manager_,
+      &memory_type_tracker_,           &shared_image_representation_factory_};
 
   auto skia_representation = shared_image_representation_factory_.ProduceSkia(
       gl_legacy_shared_image.mailbox(), context_state_.get());
@@ -343,8 +356,9 @@ TEST_F(AHardwareBufferImageBackingFactoryTest, CanHaveMultipleReaders) {
 // Test to check that a context cannot write while another context is reading
 TEST_F(AHardwareBufferImageBackingFactoryTest, CannotWriteWhileReading) {
   GlLegacySharedImage gl_legacy_shared_image{
-      backing_factory_.get(), /*is_thread_safe=*/true, &shared_image_manager_,
-      &memory_type_tracker_, &shared_image_representation_factory_};
+      backing_factory_.get(),          /*is_thread_safe=*/true,
+      /*concurrent_read_write=*/false, &shared_image_manager_,
+      &memory_type_tracker_,           &shared_image_representation_factory_};
 
   auto skia_representation = shared_image_representation_factory_.ProduceSkia(
       gl_legacy_shared_image.mailbox(), context_state_.get());
@@ -382,8 +396,9 @@ TEST_F(AHardwareBufferImageBackingFactoryTest, CannotWriteWhileReading) {
 // Test to check that a context cannot read while another context is writing
 TEST_F(AHardwareBufferImageBackingFactoryTest, CannotReadWhileWriting) {
   GlLegacySharedImage gl_legacy_shared_image{
-      backing_factory_.get(), /*is_thread_safe=*/true, &shared_image_manager_,
-      &memory_type_tracker_, &shared_image_representation_factory_};
+      backing_factory_.get(),          /*is_thread_safe=*/true,
+      /*concurrent_read_write=*/false, &shared_image_manager_,
+      &memory_type_tracker_,           &shared_image_representation_factory_};
 
   auto skia_representation = shared_image_representation_factory_.ProduceSkia(
       gl_legacy_shared_image.mailbox(), context_state_.get());
@@ -414,9 +429,39 @@ TEST_F(AHardwareBufferImageBackingFactoryTest, CannotReadWhileWriting) {
   skia_representation.reset();
 }
 
+TEST_F(AHardwareBufferImageBackingFactoryTest, ConcurrentReadWrite) {
+  GlLegacySharedImage gl_legacy_shared_image{
+      backing_factory_.get(),         /*is_thread_safe=*/true,
+      /*concurrent_read_write=*/true, &shared_image_manager_,
+      &memory_type_tracker_,          &shared_image_representation_factory_};
+
+  auto skia_representation = shared_image_representation_factory_.ProduceSkia(
+      gl_legacy_shared_image.mailbox(), context_state_.get());
+  std::vector<GrBackendSemaphore> begin_semaphores;
+  std::vector<GrBackendSemaphore> end_semaphores;
+  std::unique_ptr<SkiaImageRepresentation::ScopedReadAccess> scoped_read_access;
+  scoped_read_access = skia_representation->BeginScopedReadAccess(
+      &begin_semaphores, &end_semaphores);
+  EXPECT_TRUE(scoped_read_access);
+  EXPECT_EQ(0u, begin_semaphores.size());
+  EXPECT_EQ(0u, end_semaphores.size());
+
+  auto skia_representation2 = shared_image_representation_factory_.ProduceSkia(
+      gl_legacy_shared_image.mailbox(), context_state_.get());
+  std::unique_ptr<SkiaImageRepresentation::ScopedWriteAccess>
+      scoped_write_access;
+  scoped_write_access = skia_representation2->BeginScopedWriteAccess(
+      &begin_semaphores, &end_semaphores,
+      SharedImageRepresentation::AllowUnclearedAccess::kYes);
+  EXPECT_TRUE(scoped_write_access);
+  EXPECT_EQ(0u, begin_semaphores.size());
+  EXPECT_EQ(0u, end_semaphores.size());
+}
+
 GlLegacySharedImage::GlLegacySharedImage(
     SharedImageBackingFactory* backing_factory,
     bool is_thread_safe,
+    bool concurrent_read_write,
     SharedImageManager* shared_image_manager,
     MemoryTypeTracker* memory_type_tracker,
     SharedImageRepresentationFactory* shared_image_representation_factory)
@@ -429,11 +474,18 @@ GlLegacySharedImage::GlLegacySharedImage(
   gpu::SurfaceHandle surface_handle = gpu::kNullSurfaceHandle;
   GLenum expected_target = GL_TEXTURE_2D;
 
-  // SHARED_IMAGE_USAGE_DISPLAY_READ for skia read and SHARED_IMAGE_USAGE_RASTER
-  // for skia write.
-  uint32_t usage = SHARED_IMAGE_USAGE_GLES2 | SHARED_IMAGE_USAGE_RASTER;
-  if (!is_thread_safe)
+  // Provide usage settings to model an SI that is written via raster and read
+  // via GL (e.g., for canvas import into WebGL). Add
+  // SHARED_IMAGE_USAGE_DISPLAY_READ if modeling the display compositor being on
+  // the same thread as raster.
+  uint32_t usage =
+      SHARED_IMAGE_USAGE_GLES2_READ | SHARED_IMAGE_USAGE_RASTER_WRITE;
+  if (!is_thread_safe) {
     usage |= SHARED_IMAGE_USAGE_DISPLAY_READ;
+  }
+  if (concurrent_read_write) {
+    usage |= SHARED_IMAGE_USAGE_CONCURRENT_READ_WRITE;
+  }
   backing_ = backing_factory->CreateSharedImage(
       mailbox_, format, surface_handle, size_, color_space, surface_origin,
       alpha_type, usage, "TestLabel", is_thread_safe);
@@ -467,8 +519,9 @@ GlLegacySharedImage::~GlLegacySharedImage() {
 
 TEST_F(AHardwareBufferImageBackingFactoryTest, Overlay) {
   GlLegacySharedImage gl_legacy_shared_image{
-      backing_factory_.get(), /*is_thread_safe=*/false, &shared_image_manager_,
-      &memory_type_tracker_, &shared_image_representation_factory_};
+      backing_factory_.get(),          /*is_thread_safe=*/false,
+      /*concurrent_read_write=*/false, &shared_image_manager_,
+      &memory_type_tracker_,           &shared_image_representation_factory_};
 
   auto skia_representation = shared_image_representation_factory_.ProduceSkia(
       gl_legacy_shared_image.mailbox(), context_state_.get());

@@ -38,6 +38,7 @@
 #include "components/media_router/browser/media_routes_observer.h"
 #include "components/media_router/browser/presentation/web_contents_presentation_manager.h"
 #include "components/media_router/browser/test/mock_media_router.h"
+#include "components/prefs/pref_change_registrar.h"
 #include "components/sessions/content/session_tab_helper.h"
 #include "components/soda/constants.h"
 #include "content/public/browser/presentation_observer.h"
@@ -46,6 +47,7 @@
 #include "content/public/common/content_features.h"
 #include "content/public/test/back_forward_cache_util.h"
 #include "content/public/test/browser_test.h"
+#include "content/public/test/browser_test_utils.h"
 #include "content/public/test/media_start_stop_observer.h"
 #include "media/base/media_switches.h"
 #include "net/dns/mock_host_resolver.h"
@@ -386,6 +388,8 @@ class MediaDialogViewBrowserTest : public InProcessBrowserTest {
         media_router::ChromeMediaRouterFactory::GetInstance()
             ->SetTestingFactoryAndUse(
                 context, base::BindRepeating(&TestMediaRouter::Create)));
+    ON_CALL(*media_router_, RegisterMediaSinksObserver)
+        .WillByDefault(testing::Return(true));
   }
 
   void OpenTestURL() {
@@ -484,18 +488,30 @@ class MediaDialogViewBrowserTest : public InProcessBrowserTest {
 
   void ClickEnableLiveCaptionOnDialog() {
     base::RunLoop().RunUntilIdle();
+    base::RunLoop run_loop;
+    PrefChangeRegistrar change_observer;
+    change_observer.Init(browser()->profile()->GetPrefs());
+    change_observer.Add(prefs::kLiveCaptionEnabled, run_loop.QuitClosure());
+
     ASSERT_TRUE(MediaDialogView::IsShowing());
     views::Button* live_caption_button = static_cast<views::Button*>(
         MediaDialogView::GetDialogViewForTesting()->live_caption_button_);
     ui_test_utils::ClickOnView(live_caption_button);
+    run_loop.Run();
   }
 
   void ClickEnableLiveTranslateOnDialog() {
     base::RunLoop().RunUntilIdle();
+    base::RunLoop run_loop;
+    PrefChangeRegistrar change_observer;
+    change_observer.Init(browser()->profile()->GetPrefs());
+    change_observer.Add(prefs::kLiveTranslateEnabled, run_loop.QuitClosure());
+
     ASSERT_TRUE(MediaDialogView::IsShowing());
     views::Button* live_translate_button = static_cast<views::Button*>(
         MediaDialogView::GetDialogViewForTesting()->live_translate_button_);
     ui_test_utils::ClickOnView(live_translate_button);
+    run_loop.Run();
   }
 
   void ClickItemByTitle(const std::u16string& title) {
@@ -615,11 +631,8 @@ class MediaDialogViewBrowserTest : public InProcessBrowserTest {
   base::CallbackListSubscription subscription_;
 };
 
-// This test was first disabled on BUILDFLAG(IS_MAC) && defined(ARCH_CPU_ARM64)
-// for https://crbug.com/1222873.
-// Then got disabled on all platforms for https://crbug.com/1225531.
 IN_PROC_BROWSER_TEST_F(MediaDialogViewBrowserTest,
-                       DISABLED_ShowsMetadataAndControlsMedia) {
+                       ShowsMetadataAndControlsMedia) {
   // The toolbar icon should not start visible.
   EXPECT_FALSE(ui_.IsToolbarIconVisible());
 
@@ -667,16 +680,8 @@ IN_PROC_BROWSER_TEST_F(MediaDialogViewBrowserTest,
   EXPECT_FALSE(ui_.IsDialogVisible());
 }
 
-// TODO(crbug.com/1225531, crbug.com/1222873): Flaky.
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC)
-#define MAYBE_ShowsMetadataAndControlsMediaInRTL \
-  DISABLED_ShowsMetadataAndControlsMediaInRTL
-#else
-#define MAYBE_ShowsMetadataAndControlsMediaInRTL \
-  ShowsMetadataAndControlsMediaInRTL
-#endif
 IN_PROC_BROWSER_TEST_F(MediaDialogViewBrowserTest,
-                       MAYBE_ShowsMetadataAndControlsMediaInRTL) {
+                       ShowsMetadataAndControlsMediaInRTL) {
   base::i18n::SetICUDefaultLocale("ar");
   ASSERT_TRUE(base::i18n::IsRTL());
 
@@ -918,8 +923,8 @@ IN_PROC_BROWSER_TEST_F(MediaDialogViewBrowserTest,
   EXPECT_TRUE(IsPlayingSessionDisplayedFirst());
 }
 
-// TODO(crbug.com/1225531, crbug.com/1222873, crbug.com/1271131): Flaky.
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
+// TODO(crbug.com/1425041): Live captioning not supported on Arm64 Windows.
+#if BUILDFLAG(IS_WIN) && defined(ARCH_CPU_ARM64) || BUILDFLAG(IS_MAC)
 #define MAYBE_LiveCaption DISABLED_LiveCaption
 #else
 #define MAYBE_LiveCaption LiveCaption
@@ -994,7 +999,7 @@ IN_PROC_BROWSER_TEST_F(MediaDialogViewBrowserTest, MAYBE_LiveCaption) {
             GetLiveCaptionTitleLabel()->GetText());
 }
 
-#if BUILDFLAG(IS_MAC) || (BUILDFLAG(IS_WIN) && defined(ARCH_CPU_ARM64))
+#if (BUILDFLAG(IS_WIN) && defined(ARCH_CPU_ARM64)) || BUILDFLAG(IS_MAC)
 // https://crbug.com/1222873
 // Flaky on all Mac bots: https://crbug.com/1274967
 // TODO(https://crbug.com/1425041): Renable on WinArm64 when live captioning is
@@ -1067,8 +1072,7 @@ IN_PROC_BROWSER_TEST_F(MediaDialogViewBrowserTest,
 // TODO(crbug.com/1225531, crbug.com/1222873): Flaky.
 // TODO(https://crbug.com/1425041): Renable on WinArm64 when live captioning is
 // enabled.
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || \
-    (BUILDFLAG(IS_WIN) && defined(ARCH_CPU_ARM64))
+#if (BUILDFLAG(IS_WIN) && defined(ARCH_CPU_ARM64)) || BUILDFLAG(IS_MAC)
 #define MAYBE_LiveCaptionShowLanguage DISABLED_LiveCaptionShowLanguage
 #else
 #define MAYBE_LiveCaptionShowLanguage LiveCaptionShowLanguage

@@ -8,6 +8,7 @@
 
 #include <algorithm>
 #include <memory>
+#include <optional>
 #include <string>
 #include <utility>
 #include <vector>
@@ -60,7 +61,6 @@
 #include "testing/gmock/include/gmock/gmock-matchers.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 #include "url/third_party/mozilla/url_parse.h"
 #include "url/url_constants.h"
@@ -173,6 +173,14 @@ class CookieMonsterTestBase : public CookieStoreTest<T> {
     return callback.cookies();
   }
 
+  CookieList GetAllCookies(CookieMonster* cm) {
+    DCHECK(cm);
+    GetAllCookiesCallback callback;
+    cm->GetAllCookiesAsync(callback.MakeCallback());
+    callback.WaitUntilDone();
+    return callback.cookies();
+  }
+
   CookieAccessResultList GetExcludedCookiesForURLWithOptions(
       CookieMonster* cm,
       const GURL& url,
@@ -200,13 +208,13 @@ class CookieMonsterTestBase : public CookieStoreTest<T> {
       const GURL& url,
       const std::string& cookie_line,
       base::Time creation_time,
-      absl::optional<CookiePartitionKey> cookie_partition_key = absl::nullopt) {
+      std::optional<CookiePartitionKey> cookie_partition_key = std::nullopt) {
     DCHECK(cm);
     DCHECK(!creation_time.is_null());
     ResultSavingCookieCallback<CookieAccessResult> callback;
     cm->SetCanonicalCookieAsync(
         CanonicalCookie::Create(url, cookie_line, creation_time,
-                                absl::nullopt /* server_time */,
+                                std::nullopt /* server_time */,
                                 cookie_partition_key),
         url, CookieOptions::MakeAllInclusive(), callback.MakeCallback());
     callback.WaitUntilDone();
@@ -261,7 +269,6 @@ class CookieMonsterTestBase : public CookieStoreTest<T> {
     //    * Three levels of host cookie (w.b.a, w.c.b.a, w.d.c.b.a)
     //    * http_only cookie (w.c.b.a)
     //    * same_site cookie (w.c.b.a)
-    //    * same_party cookie (w.c.b.a)
     //    * Two secure cookies (.c.b.a, w.c.b.a)
     //    * Two domain path cookies (.c.b.a/dir1, .c.b.a/dir1/dir2)
     //    * Two host path cookies (w.c.b.a/dir1, w.c.b.a/dir1/dir2)
@@ -273,94 +280,87 @@ class CookieMonsterTestBase : public CookieStoreTest<T> {
     cookies.push_back(CanonicalCookie::CreateUnsafeCookieForTesting(
         "dom_1", "A", ".harvard.edu", "/", now, base::Time(), base::Time(),
         base::Time(), false, false, CookieSameSite::LAX_MODE,
-        COOKIE_PRIORITY_DEFAULT, false));
+        COOKIE_PRIORITY_DEFAULT));
     cookies.push_back(CanonicalCookie::CreateUnsafeCookieForTesting(
         "dom_2", "B", ".math.harvard.edu", "/", now, base::Time(), base::Time(),
         base::Time(), false, false, CookieSameSite::LAX_MODE,
-        COOKIE_PRIORITY_DEFAULT, false));
+        COOKIE_PRIORITY_DEFAULT));
     cookies.push_back(CanonicalCookie::CreateUnsafeCookieForTesting(
         "dom_3", "C", ".bourbaki.math.harvard.edu", "/", now, base::Time(),
         base::Time(), base::Time(), false, false, CookieSameSite::LAX_MODE,
-        COOKIE_PRIORITY_DEFAULT, false));
+        COOKIE_PRIORITY_DEFAULT));
 
     // Host cookies
     cookies.push_back(CanonicalCookie::CreateUnsafeCookieForTesting(
         "host_1", "A", url_top_level_domain_plus_1, "/", now, base::Time(),
         base::Time(), base::Time(), false, false, CookieSameSite::LAX_MODE,
-        COOKIE_PRIORITY_DEFAULT, false));
+        COOKIE_PRIORITY_DEFAULT));
     cookies.push_back(CanonicalCookie::CreateUnsafeCookieForTesting(
         "host_2", "B", url_top_level_domain_plus_2, "/", now, base::Time(),
         base::Time(), base::Time(), false, false, CookieSameSite::LAX_MODE,
-        COOKIE_PRIORITY_DEFAULT, false));
+        COOKIE_PRIORITY_DEFAULT));
     cookies.push_back(CanonicalCookie::CreateUnsafeCookieForTesting(
         "host_3", "C", url_top_level_domain_plus_3, "/", now, base::Time(),
         base::Time(), base::Time(), false, false, CookieSameSite::LAX_MODE,
-        COOKIE_PRIORITY_DEFAULT, false));
+        COOKIE_PRIORITY_DEFAULT));
 
     // http_only cookie
     cookies.push_back(CanonicalCookie::CreateUnsafeCookieForTesting(
         "httpo_check", "A", url_top_level_domain_plus_2, "/", now, base::Time(),
         base::Time(), base::Time(), false, true, CookieSameSite::LAX_MODE,
-        COOKIE_PRIORITY_DEFAULT, false));
+        COOKIE_PRIORITY_DEFAULT));
 
     // same-site cookie
     cookies.push_back(CanonicalCookie::CreateUnsafeCookieForTesting(
         "same_site_check", "A", url_top_level_domain_plus_2, "/", now,
         base::Time(), base::Time(), base::Time(), false, false,
-        CookieSameSite::STRICT_MODE, COOKIE_PRIORITY_DEFAULT, false));
-
-    // same-party cookie
-    cookies.push_back(CanonicalCookie::CreateUnsafeCookieForTesting(
-        "same_party_check", "A", url_top_level_domain_plus_2, "/", now,
-        base::Time(), base::Time(), base::Time(), true /* secure */, false,
-        CookieSameSite::LAX_MODE, COOKIE_PRIORITY_DEFAULT,
-        true /* same_party */));
+        CookieSameSite::STRICT_MODE, COOKIE_PRIORITY_DEFAULT));
 
     // Secure cookies
     cookies.push_back(CanonicalCookie::CreateUnsafeCookieForTesting(
         "sec_dom", "A", ".math.harvard.edu", "/", now, base::Time(),
         base::Time(), base::Time(), true, false, CookieSameSite::NO_RESTRICTION,
-        COOKIE_PRIORITY_DEFAULT, false));
+        COOKIE_PRIORITY_DEFAULT));
     cookies.push_back(CanonicalCookie::CreateUnsafeCookieForTesting(
         "sec_host", "B", url_top_level_domain_plus_2, "/", now, base::Time(),
         base::Time(), base::Time(), true, false, CookieSameSite::NO_RESTRICTION,
-        COOKIE_PRIORITY_DEFAULT, false));
+        COOKIE_PRIORITY_DEFAULT));
 
     // Domain path cookies
     cookies.push_back(CanonicalCookie::CreateUnsafeCookieForTesting(
         "dom_path_1", "A", ".math.harvard.edu", "/dir1", now, base::Time(),
         base::Time(), base::Time(), false, false, CookieSameSite::LAX_MODE,
-        COOKIE_PRIORITY_DEFAULT, false));
+        COOKIE_PRIORITY_DEFAULT));
     cookies.push_back(CanonicalCookie::CreateUnsafeCookieForTesting(
         "dom_path_2", "B", ".math.harvard.edu", "/dir1/dir2", now, base::Time(),
         base::Time(), base::Time(), false, false, CookieSameSite::LAX_MODE,
-        COOKIE_PRIORITY_DEFAULT, false));
+        COOKIE_PRIORITY_DEFAULT));
 
     // Host path cookies
     cookies.push_back(CanonicalCookie::CreateUnsafeCookieForTesting(
         "host_path_1", "A", url_top_level_domain_plus_2, "/dir1", now,
         base::Time(), base::Time(), base::Time(), false, false,
-        CookieSameSite::LAX_MODE, COOKIE_PRIORITY_DEFAULT, false));
+        CookieSameSite::LAX_MODE, COOKIE_PRIORITY_DEFAULT));
     cookies.push_back(CanonicalCookie::CreateUnsafeCookieForTesting(
         "host_path_2", "B", url_top_level_domain_plus_2, "/dir1/dir2", now,
         base::Time(), base::Time(), base::Time(), false, false,
-        CookieSameSite::LAX_MODE, COOKIE_PRIORITY_DEFAULT, false));
+        CookieSameSite::LAX_MODE, COOKIE_PRIORITY_DEFAULT));
 
     // Partitioned cookies
     cookies.push_back(CanonicalCookie::CreateUnsafeCookieForTesting(
         "__Host-pc_1", "A", url_top_level_domain_secure, "/", now, base::Time(),
         base::Time(), base::Time(), true, false, CookieSameSite::NO_RESTRICTION,
-        CookiePriority::COOKIE_PRIORITY_DEFAULT, false,
+        CookiePriority::COOKIE_PRIORITY_DEFAULT,
         CookiePartitionKey::FromURLForTesting(GURL(kTopLevelDomainPlus1))));
     cookies.push_back(CanonicalCookie::CreateUnsafeCookieForTesting(
         "__Host-pc_2", "B", url_top_level_domain_secure, "/", now, base::Time(),
         base::Time(), base::Time(), true, false, CookieSameSite::NO_RESTRICTION,
-        CookiePriority::COOKIE_PRIORITY_DEFAULT, false,
+        CookiePriority::COOKIE_PRIORITY_DEFAULT,
         CookiePartitionKey::FromURLForTesting(GURL(kTopLevelDomainPlus1))));
 
     for (auto& cookie : cookies) {
       GURL source_url = cookie_util::SimulatedCookieSource(
-          *cookie, cookie->IsSecure() ? "https" : "http");
+          *cookie, cookie->SecureAttribute() ? "https" : "http");
       EXPECT_TRUE(this->SetCanonicalCookie(cm, std::move(cookie), source_url,
                                            true /* modify_httponly */));
     }
@@ -533,7 +533,10 @@ class CookieMonsterTestBase : public CookieStoreTest<T> {
             base::StringPrintf("a%d=b;priority=%s;%s", next_cookie_id,
                                CookiePriorityToString(priority).c_str(),
                                is_secure ? "secure" : "");
-        EXPECT_TRUE(SetCookie(cm, https_www_foo_.url(), cookie));
+
+        EXPECT_TRUE(SetCookie(
+            cm, is_secure ? https_www_foo_.url() : http_www_foo_.url(),
+            cookie));
         cookie_data.emplace_back(is_secure, priority);
         id_list[is_secure][priority].push_back(next_cookie_id);
       }
@@ -545,6 +548,25 @@ class CookieMonsterTestBase : public CookieStoreTest<T> {
 
     // Parse the list of cookies
     std::string cookie_str = this->GetCookies(cm, https_www_foo_.url());
+    // If any part of OBC is active then we also need to query the insecure url
+    // and combine the resulting strings.
+    if (cookie_util::IsOriginBoundCookiesPartiallyEnabled()) {
+      std::string cookie_str_insecure =
+          this->GetCookies(cm, http_www_foo_.url());
+
+      std::vector<base::StringPiece> to_be_combined;
+      // The cookie strings may be empty, only add them to our vector if
+      // they're not. Otherwise we'll get an extra separator added which is bad.
+      if (!cookie_str.empty()) {
+        to_be_combined.push_back(cookie_str);
+      }
+      if (!cookie_str_insecure.empty()) {
+        to_be_combined.push_back(cookie_str_insecure);
+      }
+
+      cookie_str = base::JoinString(to_be_combined, /*separator=*/"; ");
+    }
+
     size_t num_nonsecure = 0;
     size_t num_secure = 0;
     for (const std::string& token : base::SplitString(
@@ -645,10 +667,11 @@ class CookieMonsterTestBase : public CookieStoreTest<T> {
     size_t total_secure_cookies = 0;
     size_t total_non_secure_cookies = 0;
     for (const auto& cookie : cookies) {
-      if (cookie.IsSecure())
+      if (cookie.SecureAttribute()) {
         ++total_secure_cookies;
-      else
+      } else {
         ++total_non_secure_cookies;
+      }
     }
 
     EXPECT_EQ(expected_secure_cookies, total_secure_cookies);
@@ -917,7 +940,7 @@ class CookieMonsterTestBase : public CookieStoreTest<T> {
               /*last_access=*/creation_time, /*last_update=*/creation_time,
               /*secure=*/true,
               /*httponly=*/false, CookieSameSite::NO_RESTRICTION,
-              COOKIE_PRIORITY_DEFAULT, false /* same_party */));
+              COOKIE_PRIORITY_DEFAULT));
       GURL source_url = cookie_util::SimulatedCookieSource(*cc, "https");
       cm->SetCanonicalCookieAsync(std::move(cc), source_url,
                                   CookieOptions::MakeAllInclusive(),
@@ -934,7 +957,7 @@ class CookieMonsterTestBase : public CookieStoreTest<T> {
           c.ExpiryDate() == cookie.ExpiryDate() &&
           c.LastAccessDate() == cookie.LastAccessDate() &&
           c.LastUpdateDate() == cookie.LastUpdateDate() &&
-          c.IsSecure() == cookie.IsSecure() &&
+          c.SecureAttribute() == cookie.SecureAttribute() &&
           c.IsHttpOnly() == cookie.IsHttpOnly() &&
           c.Priority() == cookie.Priority()) {
         return true;
@@ -948,6 +971,27 @@ class CookieMonsterTestBase : public CookieStoreTest<T> {
 
 using CookieMonsterTest = CookieMonsterTestBase<CookieMonsterTestTraits>;
 
+class CookieMonsterTestGarbageCollectionObc
+    : public CookieMonsterTest,
+      public testing::WithParamInterface<std::tuple<bool, bool>> {
+ public:
+  CookieMonsterTestGarbageCollectionObc() {
+    scoped_feature_list_.InitWithFeatureStates(
+        {{net::features::kEnableSchemeBoundCookies, IsSchemeBoundEnabled()},
+         {net::features::kEnablePortBoundCookies, IsPortBoundEnabled()}});
+  }
+
+  bool IsSchemeBoundEnabled() const { return std::get<0>(GetParam()); }
+
+  bool IsPortBoundEnabled() const { return std::get<1>(GetParam()); }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+using CookieMonsterTestPriorityGarbageCollectionObc =
+    CookieMonsterTestGarbageCollectionObc;
+
 struct CookiesInputInfo {
   const GURL url;
   const std::string name;
@@ -959,7 +1003,6 @@ struct CookiesInputInfo {
   bool http_only;
   CookieSameSite same_site;
   CookiePriority priority;
-  bool same_party;
 };
 
 }  // namespace
@@ -1065,8 +1108,8 @@ TEST_F(DeferredCookieTaskTest, DeferredSetCookie) {
   ResultSavingCookieCallback<CookieAccessResult> call1;
   cookie_monster_->SetCanonicalCookieAsync(
       CanonicalCookie::Create(http_www_foo_.url(), "A=B", base::Time::Now(),
-                              absl::nullopt /* server_time */,
-                              absl::nullopt /* cookie_partition_key */),
+                              std::nullopt /* server_time */,
+                              std::nullopt /* cookie_partition_key */),
       http_www_foo_.url(), CookieOptions::MakeAllInclusive(),
       call1.MakeCallback());
   base::RunLoop().RunUntilIdle();
@@ -1080,8 +1123,8 @@ TEST_F(DeferredCookieTaskTest, DeferredSetCookie) {
   ResultSavingCookieCallback<CookieAccessResult> call2;
   cookie_monster_->SetCanonicalCookieAsync(
       CanonicalCookie::Create(http_www_foo_.url(), "X=Y", base::Time::Now(),
-                              absl::nullopt /* server_time */,
-                              absl::nullopt /* cookie_partition_key */),
+                              std::nullopt /* server_time */,
+                              std::nullopt /* cookie_partition_key */),
       http_www_foo_.url(), CookieOptions::MakeAllInclusive(),
       call2.MakeCallback());
   ASSERT_TRUE(call2.was_run());
@@ -1097,11 +1140,11 @@ TEST_F(DeferredCookieTaskTest, DeferredSetAllCookies) {
   list.push_back(*CanonicalCookie::CreateUnsafeCookieForTesting(
       "A", "B", "." + http_www_foo_.domain(), "/", base::Time::Now(),
       base::Time(), base::Time(), base::Time(), false, true,
-      CookieSameSite::NO_RESTRICTION, COOKIE_PRIORITY_DEFAULT, false));
+      CookieSameSite::NO_RESTRICTION, COOKIE_PRIORITY_DEFAULT));
   list.push_back(*CanonicalCookie::CreateUnsafeCookieForTesting(
       "C", "D", "." + http_www_foo_.domain(), "/", base::Time::Now(),
       base::Time(), base::Time(), base::Time(), false, true,
-      CookieSameSite::NO_RESTRICTION, COOKIE_PRIORITY_DEFAULT, false));
+      CookieSameSite::NO_RESTRICTION, COOKIE_PRIORITY_DEFAULT));
 
   ResultSavingCookieCallback<CookieAccessResult> call1;
   cookie_monster_->SetAllCookiesAsync(list, call1.MakeCallback());
@@ -1368,8 +1411,8 @@ TEST_F(DeferredCookieTaskTest, DeferredTaskOrder) {
 
   cookie_monster_->SetCanonicalCookieAsync(
       CanonicalCookie::Create(http_www_foo_.url(), "A=B", base::Time::Now(),
-                              absl::nullopt /* server_time */,
-                              absl::nullopt /* cookie_partition_key */),
+                              std::nullopt /* server_time */,
+                              std::nullopt /* cookie_partition_key */),
       http_www_foo_.url(), CookieOptions::MakeAllInclusive(),
       set_cookies_callback.MakeCallback());
 
@@ -1642,7 +1685,7 @@ TEST_F(CookieMonsterTest, TestCookieDeleteMatchingCookies) {
   EXPECT_EQ(2u, DeleteMatchingCookies(
                     cm.get(),
                     base::BindRepeating([](const net::CanonicalCookie& cookie) {
-                      return !cookie.IsSecure();
+                      return !cookie.SecureAttribute();
                     })));
   EXPECT_THAT(GetAllCookies(cm.get()),
               ElementsAre(MatchesCookieNameDomain("a1", "a.com"),
@@ -1722,20 +1765,127 @@ TEST_F(CookieMonsterTest, TestLastAccess) {
   EXPECT_FALSE(last_access_date == GetFirstCookieAccessDate(cm.get()));
 }
 
-TEST_F(CookieMonsterTest, TestHostGarbageCollection) {
+TEST_P(CookieMonsterTestPriorityGarbageCollectionObc,
+       TestHostGarbageCollection) {
   TestHostGarbageCollectHelper();
 }
 
-TEST_F(CookieMonsterTest, TestPriorityAwareGarbageCollectionNonSecure) {
+TEST_P(CookieMonsterTestPriorityGarbageCollectionObc,
+       TestPriorityAwareGarbageCollectionNonSecure) {
   TestPriorityAwareGarbageCollectHelperNonSecure();
 }
 
-TEST_F(CookieMonsterTest, TestPriorityAwareGarbageCollectionSecure) {
+TEST_P(CookieMonsterTestPriorityGarbageCollectionObc,
+       TestPriorityAwareGarbageCollectionSecure) {
   TestPriorityAwareGarbageCollectHelperSecure();
 }
 
-TEST_F(CookieMonsterTest, TestPriorityAwareGarbageCollectionMixed) {
+TEST_P(CookieMonsterTestPriorityGarbageCollectionObc,
+       TestPriorityAwareGarbageCollectionMixed) {
   TestPriorityAwareGarbageCollectHelperMixed();
+}
+
+// Test that domain cookies are always deleted before host cookies for a given
+// {priority, secureness}. In this case, default priority and secure.
+TEST_P(CookieMonsterTestGarbageCollectionObc, DomainCookiesPreferred) {
+  ASSERT_TRUE(cookie_util::IsOriginBoundCookiesPartiallyEnabled());
+  // This test requires the following values.
+  ASSERT_EQ(180U, CookieMonster::kDomainMaxCookies);
+  ASSERT_EQ(150U, CookieMonster::kDomainMaxCookies -
+                      CookieMonster::kDomainPurgeCookies);
+
+  auto cm = std::make_unique<CookieMonster>(nullptr, net::NetLog::Get());
+
+  // Insert an extra host cookie so that one will need to be deleted;
+  // demonstrating that host cookies will still be deleted if need be but they
+  // aren't preferred.
+  for (int i = 0; i < 151; i++) {
+    std::string cookie = "host_" + base::NumberToString(i) + "=foo; Secure";
+    EXPECT_TRUE(SetCookie(cm.get(), https_www_foo_.url(), cookie));
+  }
+
+  // By adding the domain cookies after the host cookies they are more recently
+  // accessed, which would normally cause these cookies to be preserved. By
+  // showing that they're still deleted before the host cookies we can
+  // demonstrate that domain cookies are preferred for deletion.
+  for (int i = 0; i < 30; i++) {
+    std::string cookie = "domain_" + base::NumberToString(i) +
+                         "=foo; Secure; Domain=" + https_www_foo_.domain();
+    EXPECT_TRUE(SetCookie(cm.get(), https_www_foo_.url(), cookie));
+  }
+
+  auto cookie_list = this->GetAllCookiesForURL(cm.get(), https_www_foo_.url());
+
+  int domain_count = 0;
+  int host_count = 0;
+  for (const auto& cookie : cookie_list) {
+    if (cookie.IsHostCookie()) {
+      host_count++;
+    } else {
+      domain_count++;
+    }
+  }
+
+  EXPECT_EQ(host_count, 150);
+  EXPECT_EQ(domain_count, 0);
+}
+
+// Securely set cookies should always be deleted after non-securely set cookies.
+TEST_P(CookieMonsterTestGarbageCollectionObc, SecureCookiesPreferred) {
+  ASSERT_TRUE(cookie_util::IsOriginBoundCookiesPartiallyEnabled());
+  // This test requires the following values.
+  ASSERT_EQ(180U, CookieMonster::kDomainMaxCookies);
+  ASSERT_EQ(150U, CookieMonster::kDomainMaxCookies -
+                      CookieMonster::kDomainPurgeCookies);
+
+  auto cm = std::make_unique<CookieMonster>(nullptr, net::NetLog::Get());
+
+  // If scheme binding is enabled then the secure url is enough, otherwise we
+  // need to also add "Secure" to the cookie line.
+  std::string secure_attr =
+      cookie_util::IsSchemeBoundCookiesEnabled() ? "" : "; Secure";
+
+  // These cookies would normally be preferred for deletion because they're 1)
+  // Domain cookies, and 2) they're least recently accessed. But, since they're
+  // securely set they'll be deleted after non-secure cookies.
+  for (int i = 0; i < 151; i++) {
+    std::string cookie = "domain_" + base::NumberToString(i) +
+                         "=foo; Domain=" + https_www_foo_.domain() +
+                         secure_attr;
+    EXPECT_TRUE(SetCookie(cm.get(), https_www_foo_.url(), cookie));
+  }
+
+  for (int i = 0; i < 30; i++) {
+    std::string cookie = "host_" + base::NumberToString(i) + "=foo";
+    EXPECT_TRUE(SetCookie(cm.get(), http_www_foo_.url(), cookie));
+  }
+
+  auto secure_cookie_list =
+      this->GetAllCookiesForURL(cm.get(), https_www_foo_.url());
+  auto insecure_cookie_list =
+      this->GetAllCookiesForURL(cm.get(), http_www_foo_.url());
+
+  int domain_count = 0;
+  int host_count = 0;
+
+  for (const auto& cookie : secure_cookie_list) {
+    if (cookie.IsHostCookie()) {
+      host_count++;
+    } else {
+      domain_count++;
+    }
+  }
+
+  for (const auto& cookie : insecure_cookie_list) {
+    if (cookie.IsHostCookie()) {
+      host_count++;
+    } else {
+      domain_count++;
+    }
+  }
+
+  EXPECT_EQ(host_count, 0);
+  EXPECT_EQ(domain_count, 150);
 }
 
 TEST_F(CookieMonsterTest, TestPartitionedCookiesGarbageCollection_Memory) {
@@ -1815,14 +1965,14 @@ TEST_F(CookieMonsterTest, SetCookieableSchemes) {
   GURL http_url("http://host/path");
 
   base::Time now = base::Time::Now();
-  absl::optional<base::Time> server_time = absl::nullopt;
+  std::optional<base::Time> server_time = std::nullopt;
   EXPECT_TRUE(
       CreateAndSetCookieReturnStatus(cm.get(), http_url, "x=1").IsInclude());
   EXPECT_TRUE(
       SetCanonicalCookieReturnAccessResult(
           cm.get(),
           CanonicalCookie::Create(http_url, "y=1", now, server_time,
-                                  absl::nullopt /* cookie_partition_key */),
+                                  std::nullopt /* cookie_partition_key */),
           http_url, false /*modify_httponly*/)
           .status.IsInclude());
 
@@ -1833,7 +1983,7 @@ TEST_F(CookieMonsterTest, SetCookieableSchemes) {
       SetCanonicalCookieReturnAccessResult(
           cm.get(),
           CanonicalCookie::Create(foo_url, "y=1", now, server_time,
-                                  absl::nullopt /* cookie_partition_key */),
+                                  std::nullopt /* cookie_partition_key */),
           foo_url, false /*modify_httponly*/)
           .status.HasExactlyExclusionReasonsForTesting(
               {CookieInclusionStatus::EXCLUDE_NONCOOKIEABLE_SCHEME}));
@@ -1844,7 +1994,7 @@ TEST_F(CookieMonsterTest, SetCookieableSchemes) {
       SetCanonicalCookieReturnAccessResult(
           cm_foo.get(),
           CanonicalCookie::Create(foo_url, "y=1", now, server_time,
-                                  absl::nullopt /* cookie_partition_key */),
+                                  std::nullopt /* cookie_partition_key */),
           foo_url, false /*modify_httponly*/)
           .status.IsInclude());
 
@@ -1855,7 +2005,7 @@ TEST_F(CookieMonsterTest, SetCookieableSchemes) {
       SetCanonicalCookieReturnAccessResult(
           cm_foo.get(),
           CanonicalCookie::Create(http_url, "y=1", now, server_time,
-                                  absl::nullopt /* cookie_partition_key */),
+                                  std::nullopt /* cookie_partition_key */),
           http_url, false /*modify_httponly*/)
           .status.HasExactlyExclusionReasonsForTesting(
               {CookieInclusionStatus::EXCLUDE_NONCOOKIEABLE_SCHEME}));
@@ -1875,13 +2025,13 @@ TEST_F(CookieMonsterTest, SetCookieableSchemes_StoreInitialized) {
   EXPECT_FALSE(cookie_scheme_callback.result());
 
   base::Time now = base::Time::Now();
-  absl::optional<base::Time> server_time = absl::nullopt;
+  std::optional<base::Time> server_time = std::nullopt;
   GURL foo_url("foo://host/path");
   EXPECT_TRUE(
       SetCanonicalCookieReturnAccessResult(
           cm.get(),
           CanonicalCookie::Create(foo_url, "y=1", now, server_time,
-                                  absl::nullopt /* cookie_partition_key */),
+                                  std::nullopt /* cookie_partition_key */),
           foo_url, false /*modify_httponly*/)
           .status.HasExactlyExclusionReasonsForTesting(
               {CookieInclusionStatus::EXCLUDE_NONCOOKIEABLE_SCHEME}));
@@ -1909,7 +2059,7 @@ TEST_F(CookieMonsterTest, GetAllCookiesForURL) {
 
   EXPECT_TRUE(CreateAndSetCookie(
       cm.get(), https_www_foo_.url(),
-      https_www_foo_.Format("I=J; domain=.%D; secure; sameparty"), options));
+      https_www_foo_.Format("I=J; domain=.%D; secure"), options));
 
   // Create partitioned cookies for the same site with some partition key.
   auto cookie_partition_key1 =
@@ -1920,13 +2070,13 @@ TEST_F(CookieMonsterTest, GetAllCookiesForURL) {
       CookiePartitionKey::FromURLForTesting(GURL("https://toplevelsite3.com"));
   EXPECT_TRUE(CreateAndSetCookie(
       cm.get(), https_www_bar_.url(), "__Host-K=L; secure; path=/; partitioned",
-      options, absl::nullopt, absl::nullopt, cookie_partition_key1));
+      options, std::nullopt, std::nullopt, cookie_partition_key1));
   EXPECT_TRUE(CreateAndSetCookie(
       cm.get(), https_www_bar_.url(), "__Host-M=N; secure; path=/; partitioned",
-      options, absl::nullopt, absl::nullopt, cookie_partition_key2));
+      options, std::nullopt, std::nullopt, cookie_partition_key2));
   EXPECT_TRUE(CreateAndSetCookie(
       cm.get(), https_www_bar_.url(), "__Host-O=P; secure; path=/; partitioned",
-      options, absl::nullopt, absl::nullopt, cookie_partition_key3));
+      options, std::nullopt, std::nullopt, cookie_partition_key3));
 
   const Time last_access_date(GetFirstCookieAccessDate(cm.get()));
 
@@ -2263,12 +2413,12 @@ TEST_F(CookieMonsterTest, DeleteExpiredCookiesAfterTimeElapsed) {
 
   EXPECT_TRUE(SetCookie(cm.get(), https_www_bar_.url(),
                         "__Host-A=B; secure; path=/",
-                        /*cookie_partition_key=*/absl::nullopt));
+                        /*cookie_partition_key=*/std::nullopt));
   // Set a cookie with a Max-Age. Since we only parse integers for this
   // attribute, 1 second is the minimum allowable time.
   EXPECT_TRUE(SetCookie(cm.get(), https_www_bar_.url(),
                         "__Host-C=D; secure; path=/; max-age=1",
-                        /*cookie_partition_key=*/absl::nullopt));
+                        /*cookie_partition_key=*/std::nullopt));
 
   CookieList cookies = GetAllCookiesForURL(cm.get(), https_www_bar_.url(),
                                            CookiePartitionKeyCollection());
@@ -2319,12 +2469,12 @@ TEST_F(CookieMonsterTest, DeleteExpiredAfterTimeElapsed_GetAllCookies) {
 
   EXPECT_TRUE(SetCookie(cm.get(), https_www_bar_.url(),
                         "__Host-A=B; secure; path=/",
-                        /*cookie_partition_key=*/absl::nullopt));
+                        /*cookie_partition_key=*/std::nullopt));
   // Set a cookie with a Max-Age. Since we only parse integers for this
   // attribute, 1 second is the minimum allowable time.
   EXPECT_TRUE(SetCookie(cm.get(), https_www_bar_.url(),
                         "__Host-C=D; secure; path=/; max-age=1",
-                        /*cookie_partition_key=*/absl::nullopt));
+                        /*cookie_partition_key=*/std::nullopt));
 
   GetAllCookiesCallback get_cookies_callback1;
   cm->GetAllCookiesAsync(get_cookies_callback1.MakeCallback());
@@ -2389,11 +2539,11 @@ TEST_F(CookieMonsterTest, DeletePartitionedCookie) {
                         "__Host-C=D; secure; path=/; partitioned",
                         cookie_partition_key));
   EXPECT_TRUE(SetCookie(cm.get(), https_www_bar_.url(),
-                        "__Host-E=F; secure; path=/", absl::nullopt));
+                        "__Host-E=F; secure; path=/", std::nullopt));
 
   auto cookie = CanonicalCookie::Create(
       https_www_bar_.url(), "__Host-A=B; secure; path=/; partitioned",
-      /*creation_time=*/Time::Now(), /*server_time=*/absl::nullopt,
+      /*creation_time=*/Time::Now(), /*server_time=*/std::nullopt,
       cookie_partition_key);
   ASSERT_TRUE(cookie);
 
@@ -2496,17 +2646,17 @@ TEST_F(CookieMonsterTest, DontImportDuplicateCookies_PartitionedCookies) {
   // ===> This one is the WINNER (biggest creation time).  <====
   auto cc = CanonicalCookie::Create(
       cookie_url, "__Host-Z=a; Secure; Path=/; Partitioned; Max-Age=3456000",
-      Time::Now() + base::Days(2), absl::nullopt, cookie_partition_key);
+      Time::Now() + base::Days(2), std::nullopt, cookie_partition_key);
   initial_cookies.push_back(std::move(cc));
 
   cc = CanonicalCookie::Create(
       cookie_url, "__Host-Z=b; Secure; Path=/; Partitioned; Max-Age=3456000",
-      Time::Now(), absl::nullopt, cookie_partition_key);
+      Time::Now(), std::nullopt, cookie_partition_key);
   initial_cookies.push_back(std::move(cc));
 
   cc = CanonicalCookie::Create(
       cookie_url, "__Host-Z=c; Secure; Path=/; Partitioned; Max-Age=3456000",
-      Time::Now() + base::Days(1), absl::nullopt, cookie_partition_key);
+      Time::Now() + base::Days(1), std::nullopt, cookie_partition_key);
   initial_cookies.push_back(std::move(cc));
 
   auto store = base::MakeRefCounted<MockPersistentCookieStore>();
@@ -2592,28 +2742,28 @@ TEST_F(CookieMonsterTest, ImportDuplicateCreationTimes_PartitionedCookies) {
   std::vector<std::unique_ptr<CanonicalCookie>> initial_cookies;
   auto cc = CanonicalCookie::Create(
       cookie_url, "__Host-X=1; Secure; Path=/; Partitioned; Max-Age=3456000",
-      now, absl::nullopt, cookie_partition_key);
+      now, std::nullopt, cookie_partition_key);
   initial_cookies.push_back(std::move(cc));
   cc = CanonicalCookie::Create(
       cookie_url, "__Host-X=2; Secure; Path=/; Partitioned; Max-Age=3456000",
-      now, absl::nullopt, cookie_partition_key);
+      now, std::nullopt, cookie_partition_key);
   initial_cookies.push_back(std::move(cc));
   cc = CanonicalCookie::Create(
       cookie_url, "__Host-X=3; Secure; Path=/; Partitioned; Max-Age=3456000",
-      now, absl::nullopt, cookie_partition_key);
+      now, std::nullopt, cookie_partition_key);
   initial_cookies.push_back(std::move(cc));
 
   cc = CanonicalCookie::Create(
       cookie_url, "__Host-Y=1; Secure; Path=/; Partitioned; Max-Age=3456000",
-      earlier, absl::nullopt, cookie_partition_key);
+      earlier, std::nullopt, cookie_partition_key);
   initial_cookies.push_back(std::move(cc));
   cc = CanonicalCookie::Create(
       cookie_url, "__Host-Y=2; Secure; Path=/; Partitioned; Max-Age=3456000",
-      earlier, absl::nullopt, cookie_partition_key);
+      earlier, std::nullopt, cookie_partition_key);
   initial_cookies.push_back(std::move(cc));
   cc = CanonicalCookie::Create(
       cookie_url, "__Host-Y=3; Secure; Path=/; Partitioned; Max-Age=3456000",
-      earlier, absl::nullopt, cookie_partition_key);
+      earlier, std::nullopt, cookie_partition_key);
   initial_cookies.push_back(std::move(cc));
 
   // Inject our initial cookies into the mock PersistentCookieStore.
@@ -2640,7 +2790,7 @@ TEST_F(CookieMonsterTest, PredicateSeesAllCookies) {
   CookieDeletionInfo delete_info(base::Time(), now);
   delete_info.value_for_testing = "A";
 
-  EXPECT_EQ(9u, DeleteAllMatchingInfo(cm.get(), std::move(delete_info)));
+  EXPECT_EQ(8u, DeleteAllMatchingInfo(cm.get(), std::move(delete_info)));
 
   EXPECT_EQ("dom_2=B; dom_3=C; host_3=C",
             GetCookies(cm.get(), GURL(kTopLevelDomainPlus3)));
@@ -2694,13 +2844,13 @@ TEST_F(CookieMonsterTest, BackingStoreCommunication) {
   const CookiesInputInfo input_info[] = {
       {GURL("https://a.b.foo.com"), "a", "1", "a.b.foo.com", "/path/to/cookie",
        expires, true /* secure */, false, CookieSameSite::NO_RESTRICTION,
-       COOKIE_PRIORITY_DEFAULT, false},
+       COOKIE_PRIORITY_DEFAULT},
       {GURL("https://www.foo.com"), "b", "2", ".foo.com", "/path/from/cookie",
        expires + base::Seconds(10), true, true, CookieSameSite::NO_RESTRICTION,
-       COOKIE_PRIORITY_DEFAULT, true},
+       COOKIE_PRIORITY_DEFAULT},
       {GURL("https://foo.com"), "c", "3", "foo.com", "/another/path/to/cookie",
        base::Time::Now() + base::Seconds(100), false, false,
-       CookieSameSite::STRICT_MODE, COOKIE_PRIORITY_DEFAULT, false}};
+       CookieSameSite::STRICT_MODE, COOKIE_PRIORITY_DEFAULT}};
   const int INPUT_DELETE = 1;
 
   // Create new cookies and flush them to the store.
@@ -2714,7 +2864,7 @@ TEST_F(CookieMonsterTest, BackingStoreCommunication) {
               cookie.name, cookie.value, cookie.domain, cookie.path,
               base::Time(), cookie.expiration_time, base::Time(), base::Time(),
               cookie.secure, cookie.http_only, cookie.same_site,
-              cookie.priority, cookie.same_party),
+              cookie.priority),
           cookie.url, true /*modify_httponly*/));
     }
 
@@ -2743,7 +2893,7 @@ TEST_F(CookieMonsterTest, BackingStoreCommunication) {
       EXPECT_EQ(input->path, output->Path());
       EXPECT_LE(current.ToInternalValue(),
                 output->CreationDate().ToInternalValue());
-      EXPECT_EQ(input->secure, output->IsSecure());
+      EXPECT_EQ(input->secure, output->SecureAttribute());
       EXPECT_EQ(input->http_only, output->IsHttpOnly());
       EXPECT_EQ(input->same_site, output->SameSite());
       EXPECT_TRUE(output->IsPersistent());
@@ -2933,8 +3083,8 @@ TEST_F(CookieMonsterTest, WhileLoadingLoadCompletesBeforeKeyLoadCompletes) {
   auto cm = std::make_unique<CookieMonster>(store.get(), net::NetLog::Get());
 
   auto cookie = CanonicalCookie::Create(
-      kUrl, "a=b", base::Time::Now(), absl::nullopt /* server_time */,
-      absl::nullopt /* cookie_partition_key */);
+      kUrl, "a=b", base::Time::Now(), std::nullopt /* server_time */,
+      std::nullopt /* cookie_partition_key */);
   ResultSavingCookieCallback<CookieAccessResult> set_cookie_callback;
   cm->SetCanonicalCookieAsync(std::move(cookie), kUrl,
                               CookieOptions::MakeAllInclusive(),
@@ -2997,8 +3147,8 @@ TEST_F(CookieMonsterTest, WhileLoadingDeleteAllGetForURL) {
   // When passed to the CookieMonster, it takes ownership of the pointed to
   // cookies.
   cookies.push_back(CanonicalCookie::Create(
-      kUrl, "a=b", base::Time::Now(), absl::nullopt /* server_time */,
-      absl::nullopt /* cookie_partition_key */));
+      kUrl, "a=b", base::Time::Now(), std::nullopt /* server_time */,
+      std::nullopt /* cookie_partition_key */));
   ASSERT_TRUE(cookies[0]);
   store->TakeCallbackAt(0).Run(std::move(cookies));
 
@@ -3024,8 +3174,8 @@ TEST_F(CookieMonsterTest, WhileLoadingGetAllSetGetAll) {
   cm->GetAllCookiesAsync(get_cookies_callback1.MakeCallback());
 
   auto cookie = CanonicalCookie::Create(
-      kUrl, "a=b", base::Time::Now(), absl::nullopt /* server_time */,
-      absl::nullopt /* cookie_partition_key */);
+      kUrl, "a=b", base::Time::Now(), std::nullopt /* server_time */,
+      std::nullopt /* cookie_partition_key */);
   ResultSavingCookieCallback<CookieAccessResult> set_cookie_callback;
   cm->SetCanonicalCookieAsync(std::move(cookie), kUrl,
                               CookieOptions::MakeAllInclusive(),
@@ -3072,15 +3222,15 @@ TEST_F(CookieMonsterTest, CheckOrderOfCookieTaskQueueWhenLoadingCompletes) {
 
   // Get all cookies task that queues a task to set a cookie when executed.
   auto cookie = CanonicalCookie::Create(
-      kUrl, "a=b", base::Time::Now(), absl::nullopt /* server_time */,
-      absl::nullopt /* cookie_partition_key */);
+      kUrl, "a=b", base::Time::Now(), std::nullopt /* server_time */,
+      std::nullopt /* cookie_partition_key */);
   ResultSavingCookieCallback<CookieAccessResult> set_cookie_callback;
   cm->GetAllCookiesAsync(base::BindOnce(
       &RunClosureOnAllCookiesReceived,
       base::BindOnce(&CookieStore::SetCanonicalCookieAsync,
                      base::Unretained(cm.get()), std::move(cookie), kUrl,
                      CookieOptions::MakeAllInclusive(),
-                     set_cookie_callback.MakeCallback(), absl::nullopt)));
+                     set_cookie_callback.MakeCallback(), std::nullopt)));
 
   // Get cookie task. Queued before the delete task is executed, so should not
   // see the set cookie.
@@ -3173,28 +3323,26 @@ TEST_F(CookieMonsterTest, SetAllCookies) {
   list.push_back(*CanonicalCookie::CreateUnsafeCookieForTesting(
       "A", "B", "." + http_www_foo_.url().host(), "/", base::Time::Now(),
       base::Time(), base::Time(), base::Time(), false, false,
-      CookieSameSite::NO_RESTRICTION, COOKIE_PRIORITY_DEFAULT, false));
+      CookieSameSite::NO_RESTRICTION, COOKIE_PRIORITY_DEFAULT));
   list.push_back(*CanonicalCookie::CreateUnsafeCookieForTesting(
       "C", "D", "." + http_www_foo_.url().host(), "/bar", base::Time::Now(),
       base::Time(), base::Time(), base::Time(), false, false,
-      CookieSameSite::NO_RESTRICTION, COOKIE_PRIORITY_DEFAULT, false));
+      CookieSameSite::NO_RESTRICTION, COOKIE_PRIORITY_DEFAULT));
   list.push_back(*CanonicalCookie::CreateUnsafeCookieForTesting(
       "W", "X", "." + http_www_foo_.url().host(), "/", base::Time::Now(),
       base::Time(), base::Time(), base::Time(), false, false,
-      CookieSameSite::NO_RESTRICTION, COOKIE_PRIORITY_DEFAULT, false));
+      CookieSameSite::NO_RESTRICTION, COOKIE_PRIORITY_DEFAULT));
   list.push_back(*CanonicalCookie::CreateUnsafeCookieForTesting(
       "__Host-Y", "Z", https_www_foo_.url().host(), "/", base::Time::Now(),
       base::Time(), base::Time(), base::Time(), true, false,
       CookieSameSite::NO_RESTRICTION, CookiePriority::COOKIE_PRIORITY_DEFAULT,
-      false,
       CookiePartitionKey::FromURLForTesting(GURL("https://toplevelsite.com"))));
   // Expired cookie, should not be stored.
   list.push_back(*CanonicalCookie::CreateUnsafeCookieForTesting(
       "expired", "foobar", https_www_foo_.url().host(), "/",
       base::Time::Now() - base::Days(1), base::Time::Now() - base::Days(2),
       base::Time(), base::Time(), /*secure=*/true, /*httponly=*/false,
-      CookieSameSite::NO_RESTRICTION, CookiePriority::COOKIE_PRIORITY_DEFAULT,
-      /*same_party=*/false));
+      CookieSameSite::NO_RESTRICTION, CookiePriority::COOKIE_PRIORITY_DEFAULT));
 
   // SetAllCookies must not flush.
   ASSERT_EQ(0, store->flush_count());
@@ -3283,7 +3431,7 @@ TEST_F(CookieMonsterTest, HistogramCheck) {
       base::Time::Now() + base::Minutes(59), base::Time(), base::Time(),
       /*secure=*/true,
       /*httponly=*/false, CookieSameSite::NO_RESTRICTION,
-      COOKIE_PRIORITY_DEFAULT, /*same_party=*/false);
+      COOKIE_PRIORITY_DEFAULT);
   GURL source_url = cookie_util::SimulatedCookieSource(*cookie, "https");
   ASSERT_TRUE(SetCanonicalCookie(cm.get(), std::move(cookie), source_url,
                                  /*modify_httponly=*/true));
@@ -3303,10 +3451,9 @@ TEST_F(CookieMonsterTest, HistogramCheck) {
 TEST_F(CookieMonsterTest, InvalidExpiryTime) {
   std::string cookie_line =
       std::string(kValidCookieLine) + "; expires=Blarg arg arg";
-  std::unique_ptr<CanonicalCookie> cookie(
-      CanonicalCookie::Create(http_www_foo_.url(), cookie_line, Time::Now(),
-                              absl::nullopt /* server_time */,
-                              absl::nullopt /* cookie_partition_key */));
+  std::unique_ptr<CanonicalCookie> cookie(CanonicalCookie::Create(
+      http_www_foo_.url(), cookie_line, Time::Now(),
+      std::nullopt /* server_time */, std::nullopt /* cookie_partition_key */));
   ASSERT_FALSE(cookie->IsPersistent());
 }
 
@@ -3415,8 +3562,7 @@ TEST_F(CookieMonsterTest, ControlCharacterPurge) {
           "boo",
           "." + domain, path, now2, later, base::Time(), base::Time(),
           true /* secure */, false /* httponly */,
-          CookieSameSite::NO_RESTRICTION, COOKIE_PRIORITY_DEFAULT,
-          false /* sameparty */);
+          CookieSameSite::NO_RESTRICTION, COOKIE_PRIORITY_DEFAULT);
   initial_cookies.push_back(std::move(cc));
 
   std::unique_ptr<CanonicalCookie> cc2 =
@@ -3426,8 +3572,7 @@ TEST_F(CookieMonsterTest, ControlCharacterPurge) {
           "boo",
           "." + domain, path, now3, later, base::Time(), base::Time(),
           true /* secure */, false /* httponly */,
-          CookieSameSite::NO_RESTRICTION, COOKIE_PRIORITY_DEFAULT,
-          false /* sameparty */);
+          CookieSameSite::NO_RESTRICTION, COOKIE_PRIORITY_DEFAULT);
   initial_cookies.push_back(std::move(cc2));
 
   // Partitioned cookies with control characters should not be loaded.
@@ -3441,7 +3586,7 @@ TEST_F(CookieMonsterTest, ControlCharacterPurge) {
           domain, "/", now3, later, base::Time(), base::Time(),
           true /* secure */, false /* httponly */,
           CookieSameSite::NO_RESTRICTION, COOKIE_PRIORITY_DEFAULT,
-          false /* sameparty */, cookie_partition_key);
+          cookie_partition_key);
   initial_cookies.push_back(std::move(cc3));
 
   AddCookieToList(url, "hello=world; path=" + path, now4, &initial_cookies);
@@ -3528,24 +3673,19 @@ TEST_F(CookieMonsterTest, NumKeysHistogram) {
   std::vector<std::unique_ptr<CanonicalCookie>> initial_cookies;
   initial_cookies.push_back(CanonicalCookie::Create(
       GURL("http://domain1.test"), "A=1", base::Time::Now(),
-      absl::nullopt /* server_time */,
-      absl::nullopt /* cookie_partition_key */));
+      std::nullopt /* server_time */, std::nullopt /* cookie_partition_key */));
   initial_cookies.push_back(CanonicalCookie::Create(
       GURL("http://domain2.test"), "A=1", base::Time::Now(),
-      absl::nullopt /* server_time */,
-      absl::nullopt /* cookie_partition_key */));
+      std::nullopt /* server_time */, std::nullopt /* cookie_partition_key */));
   initial_cookies.push_back(CanonicalCookie::Create(
       GURL("http://sub.domain2.test"), "A=1", base::Time::Now(),
-      absl::nullopt /* server_time */,
-      absl::nullopt /* cookie_partition_key */));
+      std::nullopt /* server_time */, std::nullopt /* cookie_partition_key */));
   initial_cookies.push_back(CanonicalCookie::Create(
       GURL("http://domain3.test"), "A=1", base::Time::Now(),
-      absl::nullopt /* server_time */,
-      absl::nullopt /* cookie_partition_key */));
+      std::nullopt /* server_time */, std::nullopt /* cookie_partition_key */));
   initial_cookies.push_back(CanonicalCookie::Create(
       GURL("http://domain3.test"), "B=1", base::Time::Now(),
-      absl::nullopt /* server_time */,
-      absl::nullopt /* cookie_partition_key */));
+      std::nullopt /* server_time */, std::nullopt /* cookie_partition_key */));
   store->SetLoadExpectation(true /* return_value */,
                             std::move(initial_cookies));
   auto cm = std::make_unique<CookieMonster>(store.get(), net::NetLog::Get());
@@ -3635,7 +3775,7 @@ TEST_F(CookieMonsterTest, CookieCount2Histogram) {
         base::Time::Now() + base::Minutes(59), base::Time(), base::Time(),
         /*secure=*/true,
         /*httponly=*/false, CookieSameSite::NO_RESTRICTION,
-        COOKIE_PRIORITY_DEFAULT, /*same_party=*/false);
+        COOKIE_PRIORITY_DEFAULT);
     GURL source_url = cookie_util::SimulatedCookieSource(*cookie, "https");
     ASSERT_TRUE(SetCanonicalCookie(cm.get(), std::move(cookie), source_url,
                                    /*modify_httponly=*/true));
@@ -3667,14 +3807,14 @@ TEST_F(CookieMonsterTest, CookieJarSizeHistograms) {
   auto set_cookie =
       [&](const std::string& name, int cookie_value_size_kb,
           const std::string& domain, CookieSameSite same_site,
-          const absl::optional<CookiePartitionKey>& partition_key) {
+          const std::optional<CookiePartitionKey>& partition_key) {
         auto cc = CanonicalCookie::CreateUnsafeCookieForTesting(
             name, std::string(cookie_value_size_kb * 1024, '0'), domain, "/",
             base::Time(), base::Time::Now() + base::Minutes(59), base::Time(),
             base::Time(),
             /*secure=*/true,
             /*httponly=*/false, same_site, COOKIE_PRIORITY_DEFAULT,
-            /*same_party=*/false, partition_key);
+            partition_key);
         GURL source_url = cookie_util::SimulatedCookieSource(*cc, "https");
         ASSERT_TRUE(SetCanonicalCookie(cm.get(), std::move(cc), source_url,
                                        /*can_modify_httponly=*/true));
@@ -3682,7 +3822,7 @@ TEST_F(CookieMonsterTest, CookieJarSizeHistograms) {
 
   {  // Add unpartitioned cookie.
     base::HistogramTester histogram_tester;
-    set_cookie("a", 2, "a.url", CookieSameSite::NO_RESTRICTION, absl::nullopt);
+    set_cookie("a", 2, "a.url", CookieSameSite::NO_RESTRICTION, std::nullopt);
     ASSERT_TRUE(cm->DoRecordPeriodicStatsForTesting());
 
     histogram_tester.ExpectUniqueSample("Cookie.CookieJarSize",
@@ -3717,7 +3857,7 @@ TEST_F(CookieMonsterTest, CookieJarSizeHistograms) {
   {  // Add unpartitioned cookie from another domain. Is also SameSite=Lax to
      // ensure the counter includes SameSite cookies.
     base::HistogramTester histogram_tester;
-    set_cookie("c", 4, "c.url", CookieSameSite::LAX_MODE, absl::nullopt);
+    set_cookie("c", 4, "c.url", CookieSameSite::LAX_MODE, std::nullopt);
     ASSERT_TRUE(cm->DoRecordPeriodicStatsForTesting());
 
     histogram_tester.ExpectUniqueSample("Cookie.CookieJarSize",
@@ -3761,6 +3901,11 @@ TEST_F(CookieMonsterTest, PartitionedCookieHistograms) {
     histogram_tester.ExpectUniqueSample(
         "Cookie.PartitionedCookieJarSizeKibibytes.Unnonced", /*sample=*/0,
         /*count=*/1);
+
+    // Partitioned cookie jar size per partition.
+    histogram_tester.ExpectUniqueSample("Cookie.CookiePartitionSizeKibibytes",
+                                        /*sample=*/0,
+                                        /*count=*/0);
   }
 
   {  // Add unpartitioned cookie.
@@ -3770,7 +3915,7 @@ TEST_F(CookieMonsterTest, PartitionedCookieHistograms) {
         base::Time::Now() + base::Minutes(59), base::Time(), base::Time(),
         /*secure=*/true,
         /*httponly=*/false, CookieSameSite::NO_RESTRICTION,
-        COOKIE_PRIORITY_DEFAULT, /*same_party=*/false);
+        COOKIE_PRIORITY_DEFAULT);
     GURL source_url = cookie_util::SimulatedCookieSource(*cookie, "https");
     ASSERT_TRUE(SetCanonicalCookie(cm.get(), std::move(cookie), source_url,
                                    /*modify_httponly=*/true));
@@ -3800,6 +3945,11 @@ TEST_F(CookieMonsterTest, PartitionedCookieHistograms) {
     histogram_tester.ExpectUniqueSample(
         "Cookie.PartitionedCookieJarSizeKibibytes.Unnonced", /*sample=*/0,
         /*count=*/1);
+
+    // Partitioned cookie jar size per partition.
+    histogram_tester.ExpectUniqueSample("Cookie.CookiePartitionSizeKibibytes",
+                                        /*sample=*/0,
+                                        /*count=*/0);
   }
 
   {  // Add unnonced partitioned cookie.
@@ -3809,7 +3959,7 @@ TEST_F(CookieMonsterTest, PartitionedCookieHistograms) {
         base::Time::Now() + base::Minutes(59), base::Time(), base::Time(),
         /*secure=*/true,
         /*httponly=*/false, CookieSameSite::NO_RESTRICTION,
-        COOKIE_PRIORITY_DEFAULT, /*same_party=*/false,
+        COOKIE_PRIORITY_DEFAULT,
         CookiePartitionKey::FromURLForTesting(GURL("https://example.com")));
     GURL source_url = cookie_util::SimulatedCookieSource(*cookie, "https");
     ASSERT_TRUE(SetCanonicalCookie(cm.get(), std::move(cookie), source_url,
@@ -3840,6 +3990,11 @@ TEST_F(CookieMonsterTest, PartitionedCookieHistograms) {
     histogram_tester.ExpectUniqueSample(
         "Cookie.PartitionedCookieJarSizeKibibytes.Unnonced", /*sample=*/2,
         /*count=*/1);
+
+    // Partitioned cookie jar size per partition.
+    histogram_tester.ExpectUniqueSample("Cookie.CookiePartitionSizeKibibytes",
+                                        /*sample=*/2,
+                                        /*count=*/1);
   }
 
   {  // Add nonced partitioned cookie.
@@ -3849,7 +4004,7 @@ TEST_F(CookieMonsterTest, PartitionedCookieHistograms) {
         base::Time::Now() + base::Minutes(59), base::Time(), base::Time(),
         /*secure=*/true,
         /*httponly=*/false, CookieSameSite::NO_RESTRICTION,
-        COOKIE_PRIORITY_DEFAULT, /*same_party=*/false,
+        COOKIE_PRIORITY_DEFAULT,
         CookiePartitionKey::FromURLForTesting(
             GURL("https://example.com"), base::UnguessableToken::Create()));
     GURL source_url = cookie_util::SimulatedCookieSource(*cookie, "https");
@@ -3881,6 +4036,14 @@ TEST_F(CookieMonsterTest, PartitionedCookieHistograms) {
     histogram_tester.ExpectUniqueSample(
         "Cookie.PartitionedCookieJarSizeKibibytes.Unnonced", /*sample=*/2,
         /*count=*/1);
+
+    // Partitioned cookie jar size per partition.
+    histogram_tester.ExpectBucketCount("Cookie.CookiePartitionSizeKibibytes",
+                                       /*sample=*/2,
+                                       /*count=*/1);
+    histogram_tester.ExpectBucketCount("Cookie.CookiePartitionSizeKibibytes",
+                                       /*sample=*/3,
+                                       /*count=*/1);
   }
 }
 
@@ -3947,8 +4110,8 @@ TEST_F(CookieMonsterTest, SecureCookieLocalhost) {
   {
     auto cookie = CanonicalCookie::Create(
         insecure_localhost, "from_insecure_localhost=1; Secure",
-        base::Time::Now(), absl::nullopt /* server_time */,
-        absl::nullopt /* cookie_partition_key */);
+        base::Time::Now(), std::nullopt /* server_time */,
+        std::nullopt /* cookie_partition_key */);
     ASSERT_TRUE(cookie);
     CookieInclusionStatus status =
         SetCanonicalCookieReturnAccessResult(cm.get(), std::move(cookie),
@@ -3964,8 +4127,8 @@ TEST_F(CookieMonsterTest, SecureCookieLocalhost) {
   {
     auto cookie = CanonicalCookie::Create(
         secure_localhost, "from_secure_localhost=1; Secure", base::Time::Now(),
-        absl::nullopt /* server_time */,
-        absl::nullopt /* cookie_partition_key */);
+        std::nullopt /* server_time */,
+        std::nullopt /* cookie_partition_key */);
     ASSERT_TRUE(cookie);
     CookieInclusionStatus status =
         SetCanonicalCookieReturnAccessResult(cm.get(), std::move(cookie),
@@ -3985,7 +4148,7 @@ TEST_F(CookieMonsterTest, SecureCookieLocalhost) {
     callback.WaitUntilDone();
     EXPECT_EQ(2u, callback.cookies_with_access_results().size());
     for (const auto& cookie_item : callback.cookies_with_access_results()) {
-      EXPECT_TRUE(cookie_item.cookie.IsSecure());
+      EXPECT_TRUE(cookie_item.cookie.SecureAttribute());
       EXPECT_TRUE(cookie_item.access_result.status.IsInclude());
       EXPECT_TRUE(
           cookie_item.access_result.status.HasExactlyWarningReasonsForTesting(
@@ -4003,7 +4166,7 @@ TEST_F(CookieMonsterTest, SecureCookieLocalhost) {
     callback.WaitUntilDone();
     EXPECT_EQ(2u, callback.cookies_with_access_results().size());
     for (const auto& cookie_item : callback.cookies_with_access_results()) {
-      EXPECT_TRUE(cookie_item.cookie.IsSecure());
+      EXPECT_TRUE(cookie_item.cookie.SecureAttribute());
       EXPECT_EQ(CookieInclusionStatus(), cookie_item.access_result.status);
     }
   }
@@ -4016,8 +4179,7 @@ TEST_F(CookieMonsterTest, MaybeDeleteEquivalentCookieAndUpdateStatus) {
   // Set a secure, httponly cookie from a secure origin
   auto preexisting_cookie = CanonicalCookie::Create(
       https_www_foo_.url(), "A=B;Secure;HttpOnly", base::Time::Now(),
-      absl::nullopt /* server_time */,
-      absl::nullopt /* cookie_partition_key */);
+      std::nullopt /* server_time */, std::nullopt /* cookie_partition_key */);
   CookieAccessResult access_result = SetCanonicalCookieReturnAccessResult(
       cm.get(), std::move(preexisting_cookie), https_www_foo_.url(),
       true /* can_modify_httponly */);
@@ -4033,10 +4195,9 @@ TEST_F(CookieMonsterTest, MaybeDeleteEquivalentCookieAndUpdateStatus) {
 
   // Set a non-Secure cookie from an insecure origin that is
   // equivalent to the pre-existing Secure cookie.
-  auto bad_cookie =
-      CanonicalCookie::Create(http_www_foo_.url(), "A=D", base::Time::Now(),
-                              absl::nullopt /* server_time */,
-                              absl::nullopt /* cookie_partition_key */);
+  auto bad_cookie = CanonicalCookie::Create(
+      http_www_foo_.url(), "A=D", base::Time::Now(),
+      std::nullopt /* server_time */, std::nullopt /* cookie_partition_key */);
   // Allow modifying HttpOnly, so that we don't skip preexisting cookies for
   // being HttpOnly.
   access_result = SetCanonicalCookieReturnAccessResult(
@@ -4067,8 +4228,7 @@ TEST_F(CookieMonsterTest, MaybeDeleteEquivalentCookieAndUpdateStatus) {
   // trying to shadow a secure cookie.
   bad_cookie = CanonicalCookie::Create(
       http_www_foo_.url(), "A=E; path=/some/path", base::Time::Now(),
-      absl::nullopt /* server_time */,
-      absl::nullopt /* cookie_partition_key */);
+      std::nullopt /* server_time */, std::nullopt /* cookie_partition_key */);
   // Allow modifying HttpOnly, so that we don't skip preexisting cookies for
   // being HttpOnly.
   access_result = SetCanonicalCookieReturnAccessResult(
@@ -4098,8 +4258,7 @@ TEST_F(CookieMonsterTest, MaybeDeleteEquivalentCookieAndUpdateStatus) {
   // Test skipping equivalent cookie for HttpOnly only.
   bad_cookie = CanonicalCookie::Create(
       https_www_foo_.url(), "A=E; Secure", base::Time::Now(),
-      absl::nullopt /* server_time */,
-      absl::nullopt /* cookie_partition_key */);
+      std::nullopt /* server_time */, std::nullopt /* cookie_partition_key */);
   access_result = SetCanonicalCookieReturnAccessResult(
       cm.get(), std::move(bad_cookie), https_www_foo_.url(),
       false /* can_modify_httponly */);
@@ -4126,7 +4285,7 @@ TEST_F(CookieMonsterTest,
 
   auto preexisting_cookie = CanonicalCookie::Create(
       https_www_foo_.url(), "__Host-A=B; Secure; Path=/; Partitioned; HttpOnly",
-      base::Time::Now(), absl::nullopt /* server_time */,
+      base::Time::Now(), std::nullopt /* server_time */,
       cookie_partition_key1 /* cookie_partition_key */);
   CookieAccessResult access_result = SetCanonicalCookieReturnAccessResult(
       cm.get(), std::move(preexisting_cookie), https_www_foo_.url(),
@@ -4142,8 +4301,7 @@ TEST_F(CookieMonsterTest,
   // Should not overwrite HttpOnly cookie.
   auto bad_cookie = CanonicalCookie::Create(
       https_www_foo_.url(), "__Host-A=D; Secure; Path=/; Partitioned",
-      base::Time::Now(), absl::nullopt /* server_time */,
-      cookie_partition_key1);
+      base::Time::Now(), std::nullopt /* server_time */, cookie_partition_key1);
   access_result = SetCanonicalCookieReturnAccessResult(
       cm.get(), std::move(bad_cookie), https_www_foo_.url(),
       false /* can_modify_httponly */);
@@ -4156,6 +4314,432 @@ TEST_F(CookieMonsterTest,
       ::testing::HasSubstr("A=B"));
 }
 
+// Tests whether cookies that vary based on their source scheme/port are
+// overwritten correctly depending on the state of the origin-bound feature
+// flags.
+class CookieMonsterTest_MaybeDeleteEquivalentCookieAndUpdateStatus
+    : public CookieMonsterTest {
+ public:
+  // Creates a store, CookieMonster, and inserts a single cookie, created on an
+  // https/443 origin.
+  void InitializeTest() {
+    store_ = base::MakeRefCounted<MockPersistentCookieStore>();
+    cm_ = std::make_unique<CookieMonster>(store_.get(), net::NetLog::Get());
+
+    auto preexisting_cookie_https = CanonicalCookie::Create(
+        https_www_foo_.url(), "A=PreexistingHttps443", base::Time::Now(),
+        /*server_time=*/std::nullopt,
+        /*cookie_partition_key=*/std::nullopt);
+
+    CookieAccessResult access_result = SetCanonicalCookieReturnAccessResult(
+        cm_.get(), std::move(preexisting_cookie_https), https_www_foo_.url(),
+        /*can_modify_httponly=*/true);
+    ASSERT_TRUE(access_result.status.IsInclude());
+
+    auto preexisting_domain_cookie_https = CanonicalCookie::Create(
+        https_www_foo_.url(),
+        "A=PreexistingDomainHttps443; Domain=" + https_www_foo_.domain(),
+        base::Time::Now(),
+        /*server_time=*/std::nullopt,
+        /*cookie_partition_key=*/std::nullopt);
+
+    access_result = SetCanonicalCookieReturnAccessResult(
+        cm_.get(), std::move(preexisting_domain_cookie_https),
+        https_www_foo_.url(),
+        /*can_modify_httponly=*/true);
+    ASSERT_TRUE(access_result.status.IsInclude());
+
+    ASSERT_EQ(GetAllCookies(cm_.get()).size(), 2UL);
+  }
+
+  // Inserts a single cookie that differs from "PreexistingHttps443" by scheme
+  // only.
+  void AddHttpPort443Cookie() {
+    GURL::Replacements replace_scheme;
+    replace_scheme.SetSchemeStr("http");
+    // We need to explicitly set the existing port, otherwise GURL will
+    // implicitly take the port of the new scheme. I.e.: We'll inadvertently
+    // change the port to 80.
+    replace_scheme.SetPortStr("443");
+    GURL foo_made_http = https_www_foo_.url().ReplaceComponents(replace_scheme);
+
+    auto differ_by_scheme_only = CanonicalCookie::Create(
+        foo_made_http, "A=InsertedHttp443", base::Time::Now(),
+        /*server_time=*/std::nullopt,
+        /*cookie_partition_key=*/std::nullopt);
+
+    CookieAccessResult access_result = SetCanonicalCookieReturnAccessResult(
+        cm_.get(), std::move(differ_by_scheme_only), foo_made_http,
+        /*can_modify_httponly=*/true);
+    ASSERT_TRUE(access_result.status.IsInclude());
+  }
+
+  // Inserts a single cookie that differs from "PreexistingHttps443" by port
+  // only.
+  void AddHttpsPort80Cookie() {
+    GURL::Replacements replace_port;
+    replace_port.SetPortStr("80");
+    GURL foo_made_80 = https_www_foo_.url().ReplaceComponents(replace_port);
+
+    auto differ_by_port_only = CanonicalCookie::Create(
+        foo_made_80, "A=InsertedHttps80", base::Time::Now(),
+        /*server_time=*/std::nullopt,
+        /*cookie_partition_key=*/std::nullopt);
+
+    CookieAccessResult access_result = SetCanonicalCookieReturnAccessResult(
+        cm_.get(), std::move(differ_by_port_only), foo_made_80,
+        /*can_modify_httponly=*/true);
+    ASSERT_TRUE(access_result.status.IsInclude());
+  }
+
+  // Inserts a single Domain cookie that differs from
+  // "PreexistingDomainHttps443" by port only.
+  void AddDomainHttpsPort80Cookie() {
+    GURL::Replacements replace_port;
+    replace_port.SetPortStr("80");
+    GURL foo_made_80 = https_www_foo_.url().ReplaceComponents(replace_port);
+
+    auto differ_by_port_only = CanonicalCookie::Create(
+        foo_made_80,
+        "A=InsertedDomainHttps80; Domain=" + https_www_foo_.domain(),
+        base::Time::Now(),
+        /*server_time=*/std::nullopt,
+        /*cookie_partition_key=*/std::nullopt);
+
+    CookieAccessResult access_result = SetCanonicalCookieReturnAccessResult(
+        cm_.get(), std::move(differ_by_port_only), foo_made_80,
+        /*can_modify_httponly=*/true);
+    ASSERT_TRUE(access_result.status.IsInclude());
+  }
+
+  scoped_refptr<net::MockPersistentCookieStore> store_;
+  std::unique_ptr<CookieMonster> cm_;
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+// Scheme binding disabled.
+// Port binding disabled.
+// Cookies that differ only in their scheme and/or port should overwrite the
+// preexisting cookies.
+TEST_F(CookieMonsterTest_MaybeDeleteEquivalentCookieAndUpdateStatus,
+       NoSchemeNoPort) {
+  scoped_feature_list_.InitWithFeatures(
+      {}, {net::features::kEnableSchemeBoundCookies,
+           net::features::kEnablePortBoundCookies});
+
+  InitializeTest();
+
+  AddHttpPort443Cookie();
+
+  auto cookies = GetAllCookies(cm_.get());
+  EXPECT_THAT(cookies,
+              testing::UnorderedElementsAre(
+                  MatchesCookieNameValue("A", "InsertedHttp443"),
+                  MatchesCookieNameValue("A", "PreexistingDomainHttps443")));
+
+  AddHttpsPort80Cookie();
+
+  cookies = GetAllCookies(cm_.get());
+  EXPECT_THAT(cookies,
+              testing::UnorderedElementsAre(
+                  MatchesCookieNameValue("A", "InsertedHttps80"),
+                  MatchesCookieNameValue("A", "PreexistingDomainHttps443")));
+
+  AddDomainHttpsPort80Cookie();
+
+  cookies = GetAllCookies(cm_.get());
+  EXPECT_THAT(cookies,
+              testing::UnorderedElementsAre(
+                  MatchesCookieNameValue("A", "InsertedHttps80"),
+                  MatchesCookieNameValue("A", "InsertedDomainHttps80")));
+}
+
+// Scheme binding enabled.
+// Port binding disabled.
+// Cookies that differ in scheme are separate, cookies that differ only by
+// port should be overwritten.
+TEST_F(CookieMonsterTest_MaybeDeleteEquivalentCookieAndUpdateStatus,
+       YesSchemeNoPort) {
+  scoped_feature_list_.InitWithFeatures(
+      {net::features::kEnableSchemeBoundCookies},
+      {net::features::kEnablePortBoundCookies});
+
+  InitializeTest();
+
+  AddHttpPort443Cookie();
+
+  auto cookies = GetAllCookies(cm_.get());
+  EXPECT_THAT(cookies,
+              testing::UnorderedElementsAre(
+                  MatchesCookieNameValue("A", "PreexistingHttps443"),
+                  MatchesCookieNameValue("A", "InsertedHttp443"),
+                  MatchesCookieNameValue("A", "PreexistingDomainHttps443")));
+
+  AddHttpsPort80Cookie();
+
+  cookies = GetAllCookies(cm_.get());
+  EXPECT_THAT(cookies,
+              testing::UnorderedElementsAre(
+                  MatchesCookieNameValue("A", "InsertedHttp443"),
+                  MatchesCookieNameValue("A", "InsertedHttps80"),
+                  MatchesCookieNameValue("A", "PreexistingDomainHttps443")));
+
+  AddDomainHttpsPort80Cookie();
+
+  cookies = GetAllCookies(cm_.get());
+  EXPECT_THAT(cookies,
+              testing::UnorderedElementsAre(
+                  MatchesCookieNameValue("A", "InsertedHttp443"),
+                  MatchesCookieNameValue("A", "InsertedHttps80"),
+                  MatchesCookieNameValue("A", "InsertedDomainHttps80")));
+}
+
+// Scheme binding disabled.
+// Port binding enabled.
+// Cookies that differ only by scheme and Domain cookies that differ only by
+// port should be overwritten. Host cookies that differ only by port are
+// separate.
+TEST_F(CookieMonsterTest_MaybeDeleteEquivalentCookieAndUpdateStatus,
+       NoSchemeYesPort) {
+  scoped_feature_list_.InitWithFeatures(
+      {net::features::kEnablePortBoundCookies},
+      {net::features::kEnableSchemeBoundCookies});
+
+  InitializeTest();
+
+  AddHttpPort443Cookie();
+
+  auto cookies = GetAllCookies(cm_.get());
+  EXPECT_THAT(cookies,
+              testing::UnorderedElementsAre(
+                  MatchesCookieNameValue("A", "InsertedHttp443"),
+                  MatchesCookieNameValue("A", "PreexistingDomainHttps443")));
+
+  AddHttpsPort80Cookie();
+
+  cookies = GetAllCookies(cm_.get());
+  EXPECT_THAT(cookies,
+              testing::UnorderedElementsAre(
+                  MatchesCookieNameValue("A", "InsertedHttp443"),
+                  MatchesCookieNameValue("A", "InsertedHttps80"),
+                  MatchesCookieNameValue("A", "PreexistingDomainHttps443")));
+
+  AddDomainHttpsPort80Cookie();
+
+  cookies = GetAllCookies(cm_.get());
+  EXPECT_THAT(cookies,
+              testing::UnorderedElementsAre(
+                  MatchesCookieNameValue("A", "InsertedHttp443"),
+                  MatchesCookieNameValue("A", "InsertedHttps80"),
+                  MatchesCookieNameValue("A", "InsertedDomainHttps80")));
+}
+
+// Scheme binding enabled.
+// Port binding enabled.
+// Cookies that differ by port or scheme are separate. Except for Domain cookies
+// which will be overwritten if they differ only by port.
+TEST_F(CookieMonsterTest_MaybeDeleteEquivalentCookieAndUpdateStatus,
+       YesSchemeYesPort) {
+  scoped_feature_list_.InitWithFeatures(
+      {net::features::kEnableSchemeBoundCookies,
+       net::features::kEnablePortBoundCookies},
+      {});
+
+  InitializeTest();
+
+  AddHttpPort443Cookie();
+
+  auto cookies = GetAllCookies(cm_.get());
+  EXPECT_THAT(cookies,
+              testing::UnorderedElementsAre(
+                  MatchesCookieNameValue("A", "PreexistingHttps443"),
+                  MatchesCookieNameValue("A", "InsertedHttp443"),
+                  MatchesCookieNameValue("A", "PreexistingDomainHttps443")));
+
+  AddHttpsPort80Cookie();
+
+  cookies = GetAllCookies(cm_.get());
+  EXPECT_THAT(cookies,
+              testing::UnorderedElementsAre(
+                  MatchesCookieNameValue("A", "PreexistingHttps443"),
+                  MatchesCookieNameValue("A", "InsertedHttp443"),
+                  MatchesCookieNameValue("A", "InsertedHttps80"),
+                  MatchesCookieNameValue("A", "PreexistingDomainHttps443")));
+
+  AddDomainHttpsPort80Cookie();
+
+  cookies = GetAllCookies(cm_.get());
+  EXPECT_THAT(cookies,
+              testing::UnorderedElementsAre(
+                  MatchesCookieNameValue("A", "PreexistingHttps443"),
+                  MatchesCookieNameValue("A", "InsertedHttp443"),
+                  MatchesCookieNameValue("A", "InsertedHttps80"),
+                  MatchesCookieNameValue("A", "InsertedDomainHttps80")));
+}
+
+// Tests that only the correct set of (potentially duplicate) cookies are loaded
+// from the backend store depending on the state of the origin-bound feature
+// flags.
+class CookieMonsterTest_StoreLoadedCookies : public CookieMonsterTest {
+ public:
+  void InitializeTest() {
+    store_ = base::MakeRefCounted<MockPersistentCookieStore>();
+    cm_ = std::make_unique<CookieMonster>(store_.get(), net::NetLog::Get());
+
+    base::Time most_recent_time = base::Time::Now();
+    base::Time middle_time = most_recent_time - base::Minutes(1);
+    base::Time least_recent_time = middle_time - base::Minutes(1);
+
+    auto basic_cookie = CanonicalCookie::Create(
+        https_www_foo_.url(), "A=basic", base::Time::Now(),
+        std::nullopt /* server_time */,
+        std::nullopt /* cookie_partition_key */);
+
+    // When there are duplicate cookies the most recent one is kept. So, this
+    // one.
+    basic_cookie->SetCreationDate(most_recent_time);
+    starting_list_.push_back(std::move(basic_cookie));
+
+    GURL::Replacements replace_scheme;
+    replace_scheme.SetSchemeStr("http");
+    // We need to explicitly set the existing port, otherwise GURL will
+    // implicitly take the port of the new scheme. I.e.: We'll inadvertently
+    // change the port to 80.
+    replace_scheme.SetPortStr("443");
+    GURL foo_with_http = https_www_foo_.url().ReplaceComponents(replace_scheme);
+
+    auto http_cookie =
+        CanonicalCookie::Create(foo_with_http, "A=http", base::Time::Now(),
+                                std::nullopt /* server_time */,
+                                std::nullopt /* cookie_partition_key */);
+
+    http_cookie->SetCreationDate(middle_time);
+    starting_list_.push_back(std::move(http_cookie));
+
+    GURL::Replacements replace_port;
+    replace_port.SetPortStr("450");
+    GURL foo_with_450 = https_www_foo_.url().ReplaceComponents(replace_port);
+
+    auto port_450_cookie =
+        CanonicalCookie::Create(foo_with_450, "A=port450", base::Time::Now(),
+                                std::nullopt /* server_time */,
+                                std::nullopt /* cookie_partition_key */);
+    port_450_cookie->SetCreationDate(least_recent_time);
+    starting_list_.push_back(std::move(port_450_cookie));
+
+    auto basic_domain_cookie = CanonicalCookie::Create(
+        https_www_foo_.url(),
+        "A=basic_domain; Domain=" + https_www_foo_.domain(), base::Time::Now(),
+        std::nullopt /* server_time */,
+        std::nullopt /* cookie_partition_key */);
+
+    // When there are duplicate domain cookies the most recent one is kept. So,
+    // this one.
+    basic_domain_cookie->SetCreationDate(most_recent_time);
+    starting_list_.push_back(std::move(basic_domain_cookie));
+
+    auto http_domain_cookie = CanonicalCookie::Create(
+        foo_with_http, "A=http_domain; Domain=" + https_www_foo_.domain(),
+        base::Time::Now(), std::nullopt /* server_time */,
+        std::nullopt /* cookie_partition_key */);
+
+    http_domain_cookie->SetCreationDate(middle_time);
+    starting_list_.push_back(std::move(http_domain_cookie));
+
+    // Domain cookies don't consider the port, so this cookie should always be
+    // considered a duplicate.
+    auto port_450_domain_cookie = CanonicalCookie::Create(
+        foo_with_450, "A=port450_domain; Domain=" + https_www_foo_.domain(),
+        base::Time::Now(), std::nullopt /* server_time */,
+        std::nullopt /* cookie_partition_key */);
+    port_450_domain_cookie->SetCreationDate(least_recent_time);
+    starting_list_.push_back(std::move(port_450_domain_cookie));
+
+    ASSERT_EQ(starting_list_.size(), 6UL);
+  }
+
+  scoped_refptr<net::MockPersistentCookieStore> store_;
+  std::unique_ptr<CookieMonster> cm_;
+  std::vector<std::unique_ptr<CanonicalCookie>> starting_list_;
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+// Scheme binding disabled.
+// Port binding disabled.
+// Only 2 cookies, the most recently created, should exist.
+TEST_F(CookieMonsterTest_StoreLoadedCookies, NoSchemeNoPort) {
+  scoped_feature_list_.InitWithFeatures(
+      {}, {net::features::kEnableSchemeBoundCookies,
+           net::features::kEnablePortBoundCookies});
+  InitializeTest();
+  cm_->StoreLoadedCookies(std::move(starting_list_));
+  auto cookies = GetAllCookies(cm_.get());
+
+  EXPECT_THAT(cookies, testing::UnorderedElementsAre(
+                           MatchesCookieNameValue("A", "basic"),
+                           MatchesCookieNameValue("A", "basic_domain")));
+}
+
+// Scheme binding enabled.
+// Port binding disabled.
+// 4 Cookies should exist.
+TEST_F(CookieMonsterTest_StoreLoadedCookies, YesSchemeNoPort) {
+  scoped_feature_list_.InitWithFeatures(
+      {net::features::kEnableSchemeBoundCookies},
+      {net::features::kEnablePortBoundCookies});
+  InitializeTest();
+  cm_->StoreLoadedCookies(std::move(starting_list_));
+  auto cookies = GetAllCookies(cm_.get());
+
+  EXPECT_THAT(cookies, testing::UnorderedElementsAre(
+                           MatchesCookieNameValue("A", "basic"),
+                           MatchesCookieNameValue("A", "http"),
+                           MatchesCookieNameValue("A", "basic_domain"),
+                           MatchesCookieNameValue("A", "http_domain")));
+}
+
+// Scheme binding disabled.
+// Port binding enabled.
+// 3 Cookies should exist.
+TEST_F(CookieMonsterTest_StoreLoadedCookies, NoSchemeYesPort) {
+  scoped_feature_list_.InitWithFeatures(
+      {net::features::kEnablePortBoundCookies},
+      {net::features::kEnableSchemeBoundCookies});
+  InitializeTest();
+  cm_->StoreLoadedCookies(std::move(starting_list_));
+  auto cookies = GetAllCookies(cm_.get());
+
+  // Domain cookies aren't bound to a port by design, so duplicates across ports
+  // should still be removed. I.e.: "A=port450_domain"
+  EXPECT_THAT(cookies, testing::UnorderedElementsAre(
+                           MatchesCookieNameValue("A", "basic"),
+                           MatchesCookieNameValue("A", "port450"),
+                           MatchesCookieNameValue("A", "basic_domain")));
+}
+
+// Scheme binding enabled.
+// Port binding enabled.
+// 5 Cookies should exist.
+TEST_F(CookieMonsterTest_StoreLoadedCookies, YesSchemeYesPort) {
+  scoped_feature_list_.InitWithFeatures(
+      {net::features::kEnablePortBoundCookies,
+       net::features::kEnableSchemeBoundCookies},
+      {});
+
+  InitializeTest();
+  cm_->StoreLoadedCookies(std::move(starting_list_));
+  auto cookies = GetAllCookies(cm_.get());
+
+  // Domain cookies aren't bound to a port by design, so duplicates across ports
+  // should still be removed. I.e.: "A=port450_domain"
+  EXPECT_THAT(cookies, testing::UnorderedElementsAre(
+                           MatchesCookieNameValue("A", "basic"),
+                           MatchesCookieNameValue("A", "http"),
+                           MatchesCookieNameValue("A", "port450"),
+                           MatchesCookieNameValue("A", "basic_domain"),
+                           MatchesCookieNameValue("A", "http_domain")));
+}
+
 // Test skipping a cookie in MaybeDeleteEquivalentCookieAndUpdateStatus for
 // multiple reasons (Secure and HttpOnly).
 TEST_F(CookieMonsterTest, SkipDontOverwriteForMultipleReasons) {
@@ -4165,8 +4749,7 @@ TEST_F(CookieMonsterTest, SkipDontOverwriteForMultipleReasons) {
   // Set a secure, httponly cookie from a secure origin
   auto preexisting_cookie = CanonicalCookie::Create(
       https_www_foo_.url(), "A=B;Secure;HttpOnly", base::Time::Now(),
-      absl::nullopt /* server_time */,
-      absl::nullopt /* cookie_partition_key */);
+      std::nullopt /* server_time */, std::nullopt /* cookie_partition_key */);
   CookieAccessResult access_result = SetCanonicalCookieReturnAccessResult(
       cm.get(), std::move(preexisting_cookie), https_www_foo_.url(),
       true /* can_modify_httponly */);
@@ -4174,10 +4757,9 @@ TEST_F(CookieMonsterTest, SkipDontOverwriteForMultipleReasons) {
 
   // Attempt to set a new cookie with the same name that is not Secure or
   // Httponly from an insecure scheme.
-  auto cookie =
-      CanonicalCookie::Create(http_www_foo_.url(), "A=B", base::Time::Now(),
-                              absl::nullopt /* server_time */,
-                              absl::nullopt /* cookie_partition_key */);
+  auto cookie = CanonicalCookie::Create(
+      http_www_foo_.url(), "A=B", base::Time::Now(),
+      std::nullopt /* server_time */, std::nullopt /* cookie_partition_key */);
   access_result = SetCanonicalCookieReturnAccessResult(
       cm.get(), std::move(cookie), http_www_foo_.url(),
       false /* can_modify_httponly */);
@@ -4202,8 +4784,7 @@ TEST_F(CookieMonsterTest, DontDeleteEquivalentCookieIfSetIsRejected) {
 
   auto preexisting_cookie = CanonicalCookie::Create(
       http_www_foo_.url(), "cookie=foo", base::Time::Now(),
-      absl::nullopt /* server_time */,
-      absl::nullopt /* cookie_partition_key */);
+      std::nullopt /* server_time */, std::nullopt /* cookie_partition_key */);
   CookieAccessResult access_result = SetCanonicalCookieReturnAccessResult(
       cm.get(), std::move(preexisting_cookie), http_www_foo_.url(),
       false /* can_modify_httponly */);
@@ -4211,8 +4792,7 @@ TEST_F(CookieMonsterTest, DontDeleteEquivalentCookieIfSetIsRejected) {
 
   auto bad_cookie = CanonicalCookie::Create(
       http_www_foo_.url(), "cookie=bar;secure", base::Time::Now(),
-      absl::nullopt /* server_time */,
-      absl::nullopt /* cookie_partition_key */);
+      std::nullopt /* server_time */, std::nullopt /* cookie_partition_key */);
   CookieAccessResult access_result2 = SetCanonicalCookieReturnAccessResult(
       cm.get(), std::move(bad_cookie), http_www_foo_.url(),
       false /* can_modify_httponly */);
@@ -4388,50 +4968,6 @@ TEST_F(CookieMonsterTest, SetSecureCookies) {
   ExpectLogContainsSomewhere(
       entries, 0, NetLogEventType::COOKIE_STORE_COOKIE_REJECTED_HTTPONLY,
       NetLogEventPhase::NONE);
-}
-
-TEST_F(CookieMonsterTest, SetSamePartyCookies) {
-  CookieMonster cm(nullptr, net::NetLog::Get());
-  GURL http_url("http://www.foo.com");
-  GURL http_superdomain_url("http://foo.com");
-  GURL https_url("https://www.foo.com");
-  GURL https_foo_url("https://www.foo.com/foo");
-  GURL http_foo_url("http://www.foo.com/foo");
-
-  // A non-SameParty cookie can be created from either a URL with a secure or
-  // insecure scheme.
-  EXPECT_TRUE(
-      CreateAndSetCookieReturnStatus(&cm, http_url, "A=C;").IsInclude());
-  EXPECT_TRUE(
-      CreateAndSetCookieReturnStatus(&cm, https_url, "A=B;").IsInclude());
-
-  // A SameParty cookie can be set without the Secure attribute.
-  EXPECT_TRUE(CreateAndSetCookieReturnStatus(&cm, https_url, "A=B; SameParty")
-                  .IsInclude());
-
-  // A SameParty cookie can be set from a URL with a secure scheme.
-  EXPECT_TRUE(
-      CreateAndSetCookieReturnStatus(&cm, https_url, "A=B; Secure; SameParty")
-          .IsInclude());
-
-  // If a non-SameParty cookie is created from a URL with an secure scheme, and
-  // a SameParty cookie with the same name already exists, update the cookie.
-  EXPECT_TRUE(
-      CreateAndSetCookieReturnStatus(&cm, https_url, "A=B; Secure; SameParty")
-          .IsInclude());
-  EXPECT_TRUE(CreateAndSetCookieReturnStatus(&cm, https_url, "A=C; Secure;")
-                  .IsInclude());
-
-  DeleteAll(&cm);
-
-  // If a SameParty cookie is set on top of an existing non-SameParty cookie but
-  // with a different path, both are retained.
-  EXPECT_TRUE(
-      CreateAndSetCookieReturnStatus(&cm, https_url, "A=B; path=/foo; Secure")
-          .IsInclude());
-  EXPECT_TRUE(CreateAndSetCookieReturnStatus(&cm, https_url,
-                                             "A=C; Secure; path=/; SameParty")
-                  .IsInclude());
 }
 
 // Tests the behavior of "Leave Secure Cookies Alone" in
@@ -4870,8 +5406,8 @@ TEST_F(CookieMonsterTest, SetCanonicalCookieDoesNotBlockForLoadAll) {
   GURL cookie_url("http://a.com/");
   cm.SetCanonicalCookieAsync(
       CanonicalCookie::Create(cookie_url, "A=B", base::Time::Now(),
-                              absl::nullopt /* server_time */,
-                              absl::nullopt /* cookie_partition_key */),
+                              std::nullopt /* server_time */,
+                              std::nullopt /* cookie_partition_key */),
       cookie_url, CookieOptions::MakeAllInclusive(),
       callback_set.MakeCallback());
 
@@ -4948,8 +5484,8 @@ TEST_F(CookieMonsterTest, DeleteCookieWithInheritedTimestamps) {
   GURL url("http://www.example.com");
   std::string cookie_line = "foo=bar";
   CookieOptions options = CookieOptions::MakeAllInclusive();
-  absl::optional<base::Time> server_time = absl::nullopt;
-  absl::optional<CookiePartitionKey> partition_key = absl::nullopt;
+  std::optional<base::Time> server_time = std::nullopt;
+  std::optional<CookiePartitionKey> partition_key = std::nullopt;
   CookieMonster cm(nullptr, nullptr);
 
   // Write a cookie created at |t1|.
@@ -4991,8 +5527,8 @@ TEST_F(CookieMonsterTest, RejectCreatedSameSiteCookieOnSet) {
   CookieInclusionStatus status;
   // Cookie can be created successfully; SameSite is not checked on Creation.
   auto cookie = CanonicalCookie::Create(url, cookie_line, base::Time::Now(),
-                                        /*server_time=*/absl::nullopt,
-                                        /*cookie_partition_key=*/absl::nullopt,
+                                        /*server_time=*/std::nullopt,
+                                        /*cookie_partition_key=*/std::nullopt,
                                         /*block_truncated=*/true, &status);
   ASSERT_TRUE(cookie != nullptr);
   ASSERT_TRUE(status.IsInclude());
@@ -5015,9 +5551,8 @@ TEST_F(CookieMonsterTest, RejectCreatedSecureCookieOnSet) {
   // Cookie can be created successfully from an any url. Secure is not checked
   // on Create.
   auto cookie = CanonicalCookie::Create(
-      http_url, cookie_line, base::Time::Now(), /*server_time=*/absl::nullopt,
-      /*cookie_partition_key=*/absl::nullopt, /*block_truncated=*/true,
-      &status);
+      http_url, cookie_line, base::Time::Now(), /*server_time=*/std::nullopt,
+      /*cookie_partition_key=*/std::nullopt, /*block_truncated=*/true, &status);
 
   ASSERT_TRUE(cookie != nullptr);
   ASSERT_TRUE(status.IsInclude());
@@ -5040,8 +5575,8 @@ TEST_F(CookieMonsterTest, RejectCreatedHttpOnlyCookieOnSet) {
   CookieInclusionStatus status;
   // Cookie can be created successfully; HttpOnly is not checked on Create.
   auto cookie = CanonicalCookie::Create(url, cookie_line, base::Time::Now(),
-                                        /*server_time=*/absl::nullopt,
-                                        /*cookie_partition_key=*/absl::nullopt,
+                                        /*server_time=*/std::nullopt,
+                                        /*cookie_partition_key=*/std::nullopt,
                                         /*block_truncated=*/true, &status);
 
   ASSERT_TRUE(cookie != nullptr);
@@ -5122,8 +5657,8 @@ TEST_F(CookieMonsterTest, CookiesWithoutSameSiteMustBeSecure) {
     GURL url = test.is_url_secure ? secure_url : insecure_url;
     base::Time creation_time = base::Time::Now() - test.creation_time_delta;
     auto cookie = CanonicalCookie::Create(
-        url, test.cookie_line, creation_time, absl::nullopt /* server_time */,
-        absl::nullopt /* cookie_partition_key */);
+        url, test.cookie_line, creation_time, std::nullopt /* server_time */,
+        std::nullopt /* cookie_partition_key */);
     // Make a copy so we can delete it after the test.
     CanonicalCookie cookie_copy = *cookie;
     CookieAccessResult result = SetCanonicalCookieReturnAccessResult(
@@ -5196,15 +5731,14 @@ TEST_F(CookieMonsterNotificationTest, NoNotificationOnLoad) {
   std::vector<std::unique_ptr<CanonicalCookie>> initial_cookies;
   GURL url("http://www.foo.com");
   initial_cookies.push_back(CanonicalCookie::Create(
-      url, "X=1; path=/", base::Time::Now(), absl::nullopt /* server_time */,
-      absl::nullopt /* cookie_partition_key */));
+      url, "X=1; path=/", base::Time::Now(), std::nullopt /* server_time */,
+      std::nullopt /* cookie_partition_key */));
   initial_cookies.push_back(CanonicalCookie::Create(
-      url, "Y=1; path=/", base::Time::Now(), absl::nullopt /* server_time */,
-      absl::nullopt /* cookie_partition_key */));
+      url, "Y=1; path=/", base::Time::Now(), std::nullopt /* server_time */,
+      std::nullopt /* cookie_partition_key */));
   initial_cookies.push_back(CanonicalCookie::Create(
       url, "Y=2; path=/", base::Time::Now() + base::Days(1),
-      absl::nullopt /* server_time */,
-      absl::nullopt /* cookie_partition_key */));
+      std::nullopt /* server_time */, std::nullopt /* cookie_partition_key */));
 
   // Execute the load
   store->TakeCallbackAt(0).Run(std::move(initial_cookies));
@@ -5574,8 +6108,8 @@ TEST_F(CookieMonsterTest, CookiePortReadDiffersFromSetHistogram) {
 
   auto unspecified_cookie = CanonicalCookie::Create(
       GURL("https://www.foo.com/withoutport"), "C=D; Path=/withoutport",
-      base::Time::Now(), /* server_time */ absl::nullopt,
-      /* cookie_partition_key */ absl::nullopt);
+      base::Time::Now(), /* server_time */ std::nullopt,
+      /* cookie_partition_key */ std::nullopt);
   // Force to be unspecified.
   unspecified_cookie->SetSourcePort(url::PORT_UNSPECIFIED);
   EXPECT_TRUE(SetCanonicalCookieReturnAccessResult(
@@ -5586,8 +6120,8 @@ TEST_F(CookieMonsterTest, CookiePortReadDiffersFromSetHistogram) {
 
   auto invalid_cookie = CanonicalCookie::Create(
       GURL("https://www.foo.com/invalidport"), "E=F; Path=/invalidport",
-      base::Time::Now(), /* server_time */ absl::nullopt,
-      /* cookie_partition_key */ absl::nullopt);
+      base::Time::Now(), /* server_time */ std::nullopt,
+      /* cookie_partition_key */ std::nullopt);
   // Force to be invalid.
   invalid_cookie->SetSourcePort(99999);
   EXPECT_TRUE(SetCanonicalCookieReturnAccessResult(
@@ -5748,11 +6282,11 @@ TEST_F(FirstPartySetEnabledCookieMonsterTest, RecordsPeriodicFPSSizes) {
 
   access_delegate_->SetFirstPartySets({
       {owner1,
-       net::FirstPartySetEntry(owner1, net::SiteType::kPrimary, absl::nullopt)},
+       net::FirstPartySetEntry(owner1, net::SiteType::kPrimary, std::nullopt)},
       {member1, net::FirstPartySetEntry(owner1, net::SiteType::kAssociated, 0)},
       {member2, net::FirstPartySetEntry(owner1, net::SiteType::kAssociated, 1)},
       {owner2,
-       net::FirstPartySetEntry(owner2, net::SiteType::kPrimary, absl::nullopt)},
+       net::FirstPartySetEntry(owner2, net::SiteType::kPrimary, std::nullopt)},
       {member3, net::FirstPartySetEntry(owner2, net::SiteType::kAssociated, 0)},
       {member4, net::FirstPartySetEntry(owner2, net::SiteType::kAssociated, 1)},
   });
@@ -5801,11 +6335,11 @@ TEST_F(CookieMonsterTest, GetAllCookiesForURLNonce) {
   EXPECT_TRUE(CreateAndSetCookie(
       cm.get(), https_www_foo_.url(),
       "__Host-B=1; Secure; HttpOnly; Path=/; Partitioned", options,
-      absl::nullopt, absl::nullopt, anonymous_iframe_key));
+      std::nullopt, std::nullopt, anonymous_iframe_key));
   EXPECT_TRUE(CreateAndSetCookie(
       cm.get(), https_www_foo_.url(),
       "__Host-C=0; Secure; HttpOnly; Path=/; Partitioned", options,
-      absl::nullopt, absl::nullopt, anonymous_iframe_key));
+      std::nullopt, std::nullopt, anonymous_iframe_key));
 
   // Check cookies from outside the anonymous iframe:
   EXPECT_THAT(GetAllCookiesForURL(cm.get(), https_www_foo_.url()),
@@ -5842,7 +6376,7 @@ TEST_F(CookieMonsterTest, SiteHasCookieInOtherPartition) {
   // Set partitioned cookie.
   EXPECT_TRUE(CreateAndSetCookie(
       cm.get(), url, "foo=bar; Secure; SameSite=None; Partitioned", options,
-      absl::nullopt, absl::nullopt, partition_key));
+      std::nullopt, std::nullopt, partition_key));
 
   // Should return false with that cookie's partition key.
   EXPECT_THAT(cm->SiteHasCookieInOtherPartition(site, partition_key),
@@ -5858,7 +6392,7 @@ TEST_F(CookieMonsterTest, SiteHasCookieInOtherPartition) {
   // Set a nonced partitioned cookie with a different partition key.
   EXPECT_TRUE(CreateAndSetCookie(
       cm.get(), url, "foo=bar; Secure; SameSite=None; Partitioned", options,
-      absl::nullopt, absl::nullopt,
+      std::nullopt, std::nullopt,
       CookiePartitionKey::FromURLForTesting(GURL("https://nottoplevelsite.com"),
                                             base::UnguessableToken::Create())));
 
@@ -5869,7 +6403,7 @@ TEST_F(CookieMonsterTest, SiteHasCookieInOtherPartition) {
   // Set unpartitioned cookie.
   EXPECT_TRUE(CreateAndSetCookie(cm.get(), url,
                                  "bar=baz; Secure; SameSite=None;", options,
-                                 absl::nullopt, absl::nullopt));
+                                 std::nullopt, std::nullopt));
 
   // Should still return false with the original cookie's partition key. This
   // method only considers partitioned cookies.
@@ -5878,7 +6412,7 @@ TEST_F(CookieMonsterTest, SiteHasCookieInOtherPartition) {
 
   // Should return nullopt when the partition key is nullopt.
   EXPECT_FALSE(
-      cm->SiteHasCookieInOtherPartition(site, /*partition_key=*/absl::nullopt));
+      cm->SiteHasCookieInOtherPartition(site, /*partition_key=*/std::nullopt));
 }
 
 // Test that domain cookies which shadow origin cookies are excluded when scheme
@@ -5887,7 +6421,7 @@ TEST_F(CookieMonsterTest, FilterCookiesWithOptionsExcludeShadowingDomains) {
   auto store = base::MakeRefCounted<MockPersistentCookieStore>();
   auto cm = std::make_unique<CookieMonster>(store.get(), net::NetLog::Get());
   base::Time creation_time = base::Time::Now();
-  absl::optional<base::Time> server_time = absl::nullopt;
+  std::optional<base::Time> server_time = std::nullopt;
   CookieOptions options = CookieOptions::MakeAllInclusive();
   options.set_return_excluded_cookies();
 
@@ -5924,14 +6458,14 @@ TEST_F(CookieMonsterTest, FilterCookiesWithOptionsExcludeShadowingDomains) {
 
   auto origin_cookie1 = CanonicalCookie::Create(
       https_www_foo_.url(), "foo1=origin", creation_time, server_time,
-      /*cookie_partition_key=*/absl::nullopt);
+      /*cookie_partition_key=*/std::nullopt);
   auto origin_cookie2 = CanonicalCookie::Create(
       https_www_foo_.url(), "foo2=origin", creation_time, server_time,
-      /*cookie_partition_key=*/absl::nullopt);
+      /*cookie_partition_key=*/std::nullopt);
 
   auto domain_cookie1 = CanonicalCookie::Create(
       https_www_foo_.url(), "foo1=domain; Domain=" + https_www_foo_.domain(),
-      creation_time, server_time, /*cookie_partition_key=*/absl::nullopt);
+      creation_time, server_time, /*cookie_partition_key=*/std::nullopt);
 
   // Shadowing domain cookie after the origin cookie.
   cookie_ptrs = {origin_cookie1.get(), origin_cookie2.get(),
@@ -5953,7 +6487,7 @@ TEST_F(CookieMonsterTest, FilterCookiesWithOptionsExcludeShadowingDomains) {
 
   auto domain_cookie2 = CanonicalCookie::Create(
       https_www_foo_.url(), "foo2=domain; Domain=" + https_www_foo_.domain(),
-      creation_time, server_time, /*cookie_partition_key=*/absl::nullopt);
+      creation_time, server_time, /*cookie_partition_key=*/std::nullopt);
 
   // Multiple different shadowing domain cookies.
   cookie_ptrs = {domain_cookie1.get(), origin_cookie2.get(),
@@ -5966,7 +6500,7 @@ TEST_F(CookieMonsterTest, FilterCookiesWithOptionsExcludeShadowingDomains) {
 
   auto domain_cookie3 = CanonicalCookie::Create(
       https_www_foo_.url(), "foo3=domain; Domain=" + https_www_foo_.domain(),
-      creation_time, server_time, /*cookie_partition_key=*/absl::nullopt);
+      creation_time, server_time, /*cookie_partition_key=*/std::nullopt);
 
   // Non-shadowing domain cookie should be included.
   cookie_ptrs = {domain_cookie1.get(), origin_cookie2.get(),
@@ -5981,7 +6515,7 @@ TEST_F(CookieMonsterTest, FilterCookiesWithOptionsExcludeShadowingDomains) {
 
   auto sub_domain_cookie1 = CanonicalCookie::Create(
       https_www_foo_.url(), "foo1=subdomain; Domain=" + https_www_foo_.host(),
-      creation_time, server_time, /*cookie_partition_key=*/absl::nullopt);
+      creation_time, server_time, /*cookie_partition_key=*/std::nullopt);
 
   // If there are multiple domain cookies that shadow the same cookie, they
   // should all be excluded.
@@ -6006,7 +6540,7 @@ TEST_F(CookieMonsterTest, FilterCookiesWithOptionsExcludeShadowingDomains) {
   auto path_origin_cookie1 = CanonicalCookie::Create(
       https_www_foo_.url(), "foo1=pathorigin; Path=/bar", creation_time,
       server_time,
-      /*cookie_partition_key=*/absl::nullopt);
+      /*cookie_partition_key=*/std::nullopt);
 
   // Origin cookies on different paths may not be shadowed, even if the
   // origin cookie wouldn't be included on this request.
@@ -6020,7 +6554,7 @@ TEST_F(CookieMonsterTest, FilterCookiesWithOptionsExcludeShadowingDomains) {
 
   auto insecure_origin_cookie1 = CanonicalCookie::Create(
       http_www_foo_.url(), "foo1=insecureorigin", creation_time, server_time,
-      /*cookie_partition_key=*/absl::nullopt);
+      /*cookie_partition_key=*/std::nullopt);
   EXPECT_EQ(insecure_origin_cookie1->SourceScheme(),
             CookieSourceScheme::kNonSecure);
 
@@ -6039,7 +6573,7 @@ TEST_F(CookieMonsterTest, FilterCookiesWithOptionsExcludeShadowingDomains) {
   auto insecure_domain_cookie1 = CanonicalCookie::Create(
       http_www_foo_.url(),
       "foo1=insecuredomain; Domain=" + http_www_foo_.domain(), creation_time,
-      server_time, /*cookie_partition_key=*/absl::nullopt);
+      server_time, /*cookie_partition_key=*/std::nullopt);
 
   // Domain cookies that are excluded due to scheme binding shouldn't also be
   // exclude because of shadowing.
@@ -6076,16 +6610,16 @@ TEST_F(CookieMonsterTest, FilterCookiesWithOptionsExcludeShadowingDomains) {
   auto trust_origin_cookie1 =
       CanonicalCookie::Create(http_www_trustworthy.url(), "foo1=trustorigin",
                               creation_time, server_time,
-                              /*cookie_partition_key=*/absl::nullopt);
+                              /*cookie_partition_key=*/std::nullopt);
 
   auto secure_trust_domain_cookie1 = CanonicalCookie::Create(
       https_www_trustworthy.url(),
       "foo1=securetrustdomain; Domain=" + https_www_trustworthy.domain(),
-      creation_time, server_time, /*cookie_partition_key=*/absl::nullopt);
+      creation_time, server_time, /*cookie_partition_key=*/std::nullopt);
   auto secure_trust_domain_cookie2 = CanonicalCookie::Create(
       https_www_trustworthy.url(),
       "foo2=securetrustdomain; Domain=" + https_www_trustworthy.domain(),
-      creation_time, server_time, /*cookie_partition_key=*/absl::nullopt);
+      creation_time, server_time, /*cookie_partition_key=*/std::nullopt);
 
   // Securely set domain cookies are excluded when shadowing trustworthy-ly set
   // origin cookies.
@@ -6101,15 +6635,15 @@ TEST_F(CookieMonsterTest, FilterCookiesWithOptionsExcludeShadowingDomains) {
   auto trust_domain_cookie1 = CanonicalCookie::Create(
       http_www_trustworthy.url(),
       "foo1=trustdomain; Domain=" + http_www_trustworthy.domain(),
-      creation_time, server_time, /*cookie_partition_key=*/absl::nullopt);
+      creation_time, server_time, /*cookie_partition_key=*/std::nullopt);
   auto trust_domain_cookie2 = CanonicalCookie::Create(
       http_www_trustworthy.url(),
       "foo2=trustdomain; Domain=" + http_www_trustworthy.domain(),
-      creation_time, server_time, /*cookie_partition_key=*/absl::nullopt);
+      creation_time, server_time, /*cookie_partition_key=*/std::nullopt);
   auto secure_trust_origin_cookie1 = CanonicalCookie::Create(
       https_www_trustworthy.url(), "foo1=securetrustorigin", creation_time,
       server_time,
-      /*cookie_partition_key=*/absl::nullopt);
+      /*cookie_partition_key=*/std::nullopt);
 
   // Trustworthy-ly set domain cookies are excluded when shadowing securely set
   // origin cookies.
@@ -6125,7 +6659,7 @@ TEST_F(CookieMonsterTest, FilterCookiesWithOptionsExcludeShadowingDomains) {
   auto port_origin_cookie1 =
       CanonicalCookie::Create(https_www_foo_.url(), "foo1=differentportorigin",
                               creation_time, server_time,
-                              /*cookie_partition_key=*/absl::nullopt);
+                              /*cookie_partition_key=*/std::nullopt);
   port_origin_cookie1->SetSourcePort(123);
 
   // Origin cookies that have warnings due to port binding don't affect domain
@@ -6196,7 +6730,7 @@ TEST_F(CookieMonsterTest, FilterCookiesWithOptionsWarnShadowingDomains) {
   auto store = base::MakeRefCounted<MockPersistentCookieStore>();
   auto cm = std::make_unique<CookieMonster>(store.get(), net::NetLog::Get());
   base::Time creation_time = base::Time::Now();
-  absl::optional<base::Time> server_time = absl::nullopt;
+  std::optional<base::Time> server_time = std::nullopt;
   CookieOptions options = CookieOptions::MakeAllInclusive();
   options.set_return_excluded_cookies();
 
@@ -6270,14 +6804,14 @@ TEST_F(CookieMonsterTest, FilterCookiesWithOptionsWarnShadowingDomains) {
 
   auto origin_cookie1 = CanonicalCookie::Create(
       https_www_foo_.url(), "foo1=origin", creation_time, server_time,
-      /*cookie_partition_key=*/absl::nullopt);
+      /*cookie_partition_key=*/std::nullopt);
   auto origin_cookie2 = CanonicalCookie::Create(
       https_www_foo_.url(), "foo2=origin", creation_time, server_time,
-      /*cookie_partition_key=*/absl::nullopt);
+      /*cookie_partition_key=*/std::nullopt);
 
   auto domain_cookie1 = CanonicalCookie::Create(
       https_www_foo_.url(), "foo1=domain; Domain=" + https_www_foo_.domain(),
-      creation_time, server_time, /*cookie_partition_key=*/absl::nullopt);
+      creation_time, server_time, /*cookie_partition_key=*/std::nullopt);
 
   // Shadowing domain cookie after the origin cookie.
   cookie_ptrs = {origin_cookie1.get(), origin_cookie2.get(),
@@ -6299,7 +6833,7 @@ TEST_F(CookieMonsterTest, FilterCookiesWithOptionsWarnShadowingDomains) {
 
   auto domain_cookie2 = CanonicalCookie::Create(
       https_www_foo_.url(), "foo2=domain; Domain=" + https_www_foo_.domain(),
-      creation_time, server_time, /*cookie_partition_key=*/absl::nullopt);
+      creation_time, server_time, /*cookie_partition_key=*/std::nullopt);
 
   // Multiple different shadowing domain cookies.
   cookie_ptrs = {domain_cookie1.get(), origin_cookie2.get(),
@@ -6313,7 +6847,7 @@ TEST_F(CookieMonsterTest, FilterCookiesWithOptionsWarnShadowingDomains) {
 
   auto domain_cookie3 = CanonicalCookie::Create(
       https_www_foo_.url(), "foo3=domain; Domain=" + https_www_foo_.domain(),
-      creation_time, server_time, /*cookie_partition_key=*/absl::nullopt);
+      creation_time, server_time, /*cookie_partition_key=*/std::nullopt);
 
   // Non-shadowing domain cookie shouldn't have a warning.
   cookie_ptrs = {domain_cookie1.get(), origin_cookie2.get(),
@@ -6328,7 +6862,7 @@ TEST_F(CookieMonsterTest, FilterCookiesWithOptionsWarnShadowingDomains) {
 
   auto sub_domain_cookie1 = CanonicalCookie::Create(
       https_www_foo_.url(), "foo1=subdomain; Domain=" + https_www_foo_.host(),
-      creation_time, server_time, /*cookie_partition_key=*/absl::nullopt);
+      creation_time, server_time, /*cookie_partition_key=*/std::nullopt);
 
   // If there are multiple domain cookies that shadow the same cookie, they
   // should all have a warning.
@@ -6352,7 +6886,7 @@ TEST_F(CookieMonsterTest, FilterCookiesWithOptionsWarnShadowingDomains) {
   auto path_origin_cookie1 = CanonicalCookie::Create(
       https_www_foo_.url(), "foo1=pathorigin; Path=/bar", creation_time,
       server_time,
-      /*cookie_partition_key=*/absl::nullopt);
+      /*cookie_partition_key=*/std::nullopt);
 
   // Origin cookies on different paths may not be shadowed, even if the
   // origin cookie wouldn't be included on this request.
@@ -6365,7 +6899,7 @@ TEST_F(CookieMonsterTest, FilterCookiesWithOptionsWarnShadowingDomains) {
 
   auto insecure_origin_cookie1 = CanonicalCookie::Create(
       http_www_foo_.url(), "foo1=insecureorigin", creation_time, server_time,
-      /*cookie_partition_key=*/absl::nullopt);
+      /*cookie_partition_key=*/std::nullopt);
   EXPECT_EQ(insecure_origin_cookie1->SourceScheme(),
             CookieSourceScheme::kNonSecure);
 
@@ -6383,7 +6917,7 @@ TEST_F(CookieMonsterTest, FilterCookiesWithOptionsWarnShadowingDomains) {
   auto insecure_domain_cookie1 = CanonicalCookie::Create(
       http_www_foo_.url(),
       "foo1=insecuredomain; Domain=" + http_www_foo_.domain(), creation_time,
-      server_time, /*cookie_partition_key=*/absl::nullopt);
+      server_time, /*cookie_partition_key=*/std::nullopt);
 
   // Domain cookies that are excluded due to scheme binding shouldn't also get a
   // shadow warning.
@@ -6421,16 +6955,16 @@ TEST_F(CookieMonsterTest, FilterCookiesWithOptionsWarnShadowingDomains) {
   auto trust_origin_cookie1 =
       CanonicalCookie::Create(http_www_trustworthy.url(), "foo1=trustorigin",
                               creation_time, server_time,
-                              /*cookie_partition_key=*/absl::nullopt);
+                              /*cookie_partition_key=*/std::nullopt);
 
   auto secure_trust_domain_cookie1 = CanonicalCookie::Create(
       https_www_trustworthy.url(),
       "foo1=securetrustdomain; Domain=" + https_www_trustworthy.domain(),
-      creation_time, server_time, /*cookie_partition_key=*/absl::nullopt);
+      creation_time, server_time, /*cookie_partition_key=*/std::nullopt);
   auto secure_trust_domain_cookie2 = CanonicalCookie::Create(
       https_www_trustworthy.url(),
       "foo2=securetrustdomain; Domain=" + https_www_trustworthy.domain(),
-      creation_time, server_time, /*cookie_partition_key=*/absl::nullopt);
+      creation_time, server_time, /*cookie_partition_key=*/std::nullopt);
 
   // Securely set domain cookie has warning when shadowing trustworthy-ly set
   // origin cookies.
@@ -6446,15 +6980,15 @@ TEST_F(CookieMonsterTest, FilterCookiesWithOptionsWarnShadowingDomains) {
   auto trust_domain_cookie1 = CanonicalCookie::Create(
       http_www_trustworthy.url(),
       "foo1=trustdomain; Domain=" + http_www_trustworthy.domain(),
-      creation_time, server_time, /*cookie_partition_key=*/absl::nullopt);
+      creation_time, server_time, /*cookie_partition_key=*/std::nullopt);
   auto trust_domain_cookie2 = CanonicalCookie::Create(
       http_www_trustworthy.url(),
       "foo2=trustdomain; Domain=" + http_www_trustworthy.domain(),
-      creation_time, server_time, /*cookie_partition_key=*/absl::nullopt);
+      creation_time, server_time, /*cookie_partition_key=*/std::nullopt);
   auto secure_trust_origin_cookie1 = CanonicalCookie::Create(
       https_www_trustworthy.url(), "foo1=securetrustorigin", creation_time,
       server_time,
-      /*cookie_partition_key=*/absl::nullopt);
+      /*cookie_partition_key=*/std::nullopt);
 
   // Trustworthy-ly set domain cookies are excluded when shadowing securely set
   // origin cookies.
@@ -6469,7 +7003,7 @@ TEST_F(CookieMonsterTest, FilterCookiesWithOptionsWarnShadowingDomains) {
   auto port_origin_cookie1 =
       CanonicalCookie::Create(https_www_foo_.url(), "foo1=differentportorigin",
                               creation_time, server_time,
-                              /*cookie_partition_key=*/absl::nullopt);
+                              /*cookie_partition_key=*/std::nullopt);
   port_origin_cookie1->SetSourcePort(123);
 
   // Origin cookies that have warnings due to port binding don't affect domain
@@ -6553,7 +7087,7 @@ TEST_F(CookieMonsterTest, FromStorageCookieCreated300DaysAgoThenUpdatedNow) {
   list.push_back(*CanonicalCookie::CreateUnsafeCookieForTesting(
       "A", "B", "." + https_www_foo_.url().host(), "/", original_creation,
       original_expiry, base::Time(), base::Time(), true, false,
-      CookieSameSite::NO_RESTRICTION, COOKIE_PRIORITY_DEFAULT, true));
+      CookieSameSite::NO_RESTRICTION, COOKIE_PRIORITY_DEFAULT));
   EXPECT_TRUE(SetAllCookies(cookie_monster.get(), list));
 
   // Verify the cookie exists and was not clamped, even if clamping is on.
@@ -6569,8 +7103,8 @@ TEST_F(CookieMonsterTest, FromStorageCookieCreated300DaysAgoThenUpdatedNow) {
       CanonicalCookie::CreateSanitizedCookie(
           https_www_foo_.url(), "A", "B", https_www_foo_.url().host(), "/",
           new_creation, new_expiry, base::Time(), true, false,
-          CookieSameSite::NO_RESTRICTION, COOKIE_PRIORITY_DEFAULT, true,
-          absl::nullopt),
+          CookieSameSite::NO_RESTRICTION, COOKIE_PRIORITY_DEFAULT,
+          std::nullopt),
       https_www_foo_.url(), false));
   EXPECT_THAT(
       GetAllCookies(cookie_monster.get()),
@@ -6596,7 +7130,7 @@ TEST_F(CookieMonsterTest, FromStorageCookieCreated500DaysAgoThenUpdatedNow) {
   list.push_back(*CanonicalCookie::CreateUnsafeCookieForTesting(
       "A", "B", "." + https_www_foo_.url().host(), "/", original_creation,
       original_expiry, base::Time(), base::Time(), true, false,
-      CookieSameSite::NO_RESTRICTION, COOKIE_PRIORITY_DEFAULT, true));
+      CookieSameSite::NO_RESTRICTION, COOKIE_PRIORITY_DEFAULT));
   EXPECT_TRUE(SetAllCookies(cookie_monster.get(), list));
 
   // Verify the cookie exists and was not clamped, even if clamping is on.
@@ -6612,8 +7146,8 @@ TEST_F(CookieMonsterTest, FromStorageCookieCreated500DaysAgoThenUpdatedNow) {
       CanonicalCookie::CreateSanitizedCookie(
           https_www_foo_.url(), "A", "B", https_www_foo_.url().host(), "/",
           new_creation, new_expiry, base::Time(), true, false,
-          CookieSameSite::NO_RESTRICTION, COOKIE_PRIORITY_DEFAULT, true,
-          absl::nullopt),
+          CookieSameSite::NO_RESTRICTION, COOKIE_PRIORITY_DEFAULT,
+          std::nullopt),
       https_www_foo_.url(), false));
   EXPECT_THAT(
       GetAllCookies(cookie_monster.get()),
@@ -6640,8 +7174,8 @@ TEST_F(CookieMonsterTest, SanitizedCookieCreated300DaysAgoThenUpdatedNow) {
       CanonicalCookie::CreateSanitizedCookie(
           https_www_foo_.url(), "A", "B", https_www_foo_.url().host(), "/",
           original_creation, original_expiry, base::Time(), true, false,
-          CookieSameSite::NO_RESTRICTION, COOKIE_PRIORITY_DEFAULT, true,
-          absl::nullopt),
+          CookieSameSite::NO_RESTRICTION, COOKIE_PRIORITY_DEFAULT,
+          std::nullopt),
       https_www_foo_.url(), false));
   EXPECT_THAT(
       GetAllCookies(cookie_monster.get()),
@@ -6656,8 +7190,8 @@ TEST_F(CookieMonsterTest, SanitizedCookieCreated300DaysAgoThenUpdatedNow) {
       CanonicalCookie::CreateSanitizedCookie(
           https_www_foo_.url(), "A", "B", https_www_foo_.url().host(), "/",
           new_creation, new_expiry, base::Time(), true, false,
-          CookieSameSite::NO_RESTRICTION, COOKIE_PRIORITY_DEFAULT, true,
-          absl::nullopt),
+          CookieSameSite::NO_RESTRICTION, COOKIE_PRIORITY_DEFAULT,
+          std::nullopt),
       https_www_foo_.url(), false));
   EXPECT_THAT(
       GetAllCookies(cookie_monster.get()),
@@ -6684,8 +7218,8 @@ TEST_F(CookieMonsterTest, SanitizedCookieCreated500DaysAgoThenUpdatedNow) {
       CanonicalCookie::CreateSanitizedCookie(
           https_www_foo_.url(), "A", "B", https_www_foo_.url().host(), "/",
           original_creation, original_expiry, base::Time(), true, false,
-          CookieSameSite::NO_RESTRICTION, COOKIE_PRIORITY_DEFAULT, true,
-          absl::nullopt),
+          CookieSameSite::NO_RESTRICTION, COOKIE_PRIORITY_DEFAULT,
+          std::nullopt),
       https_www_foo_.url(), false));
   EXPECT_TRUE(GetAllCookies(cookie_monster.get()).empty());
 
@@ -6697,12 +7231,23 @@ TEST_F(CookieMonsterTest, SanitizedCookieCreated500DaysAgoThenUpdatedNow) {
       CanonicalCookie::CreateSanitizedCookie(
           https_www_foo_.url(), "A", "B", https_www_foo_.url().host(), "/",
           new_creation, new_expiry, base::Time(), true, false,
-          CookieSameSite::NO_RESTRICTION, COOKIE_PRIORITY_DEFAULT, true,
-          absl::nullopt),
+          CookieSameSite::NO_RESTRICTION, COOKIE_PRIORITY_DEFAULT,
+          std::nullopt),
       https_www_foo_.url(), false));
   EXPECT_THAT(GetAllCookies(cookie_monster.get()),
               ElementsAre(MatchesCookieNameValueCreationExpiry(
                   "A", "B", new_creation, new_creation + base::Days(400))));
 }
+
+INSTANTIATE_TEST_SUITE_P(/* no label */,
+                         CookieMonsterTestPriorityGarbageCollectionObc,
+                         testing::Combine(testing::Bool(), testing::Bool()));
+
+INSTANTIATE_TEST_SUITE_P(/* no label */,
+                         CookieMonsterTestGarbageCollectionObc,
+                         testing::ValuesIn(std::vector<std::tuple<bool, bool>>{
+                             {true, false},
+                             {false, true},
+                             {true, true}}));
 
 }  // namespace net

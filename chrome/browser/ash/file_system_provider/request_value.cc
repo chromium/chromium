@@ -6,8 +6,7 @@
 
 #include <utility>
 
-namespace ash {
-namespace file_system_provider {
+namespace ash::file_system_provider {
 
 RequestValue::RequestValue() noexcept = default;
 RequestValue::RequestValue(RequestValue&& other) noexcept = default;
@@ -76,5 +75,4 @@ RequestValue RequestValue::CreateForTesting(const std::string& params) {
   return result;
 }
 
-}  // namespace file_system_provider
-}  // namespace ash
+}  // namespace ash::file_system_provider

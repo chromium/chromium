@@ -5,8 +5,19 @@
 #ifndef NET_WEBSOCKETS_WEBSOCKET_QUIC_SPDY_STREAM_H_
 #define NET_WEBSOCKETS_WEBSOCKET_QUIC_SPDY_STREAM_H_
 
+#include <stddef.h>
+
+#include "base/memory/raw_ptr.h"
+#include "net/base/net_export.h"
 #include "net/quic/quic_chromium_client_stream.h"
 #include "net/third_party/quiche/src/quiche/quic/core/http/quic_spdy_client_session_base.h"
+#include "net/third_party/quiche/src/quiche/quic/core/http/quic_spdy_stream.h"
+#include "net/third_party/quiche/src/quiche/quic/core/quic_types.h"
+
+namespace quic {
+class QuicHeaderList;
+class QuicSpdyClientSessionBase;
+}  // namespace quic
 
 namespace net {
 

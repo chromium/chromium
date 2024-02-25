@@ -7,6 +7,7 @@
 #include "base/task/sequenced_task_runner.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/renderer/core/dom/scriptable_document_parser.h"
+#include "third_party/blink/renderer/core/execution_context/agent.h"
 #include "third_party/blink/renderer/core/html/parser/html_preload_scanner.h"
 #include "third_party/blink/renderer/core/html/parser/html_token.h"
 #include "third_party/blink/renderer/core/html/parser/html_tokenizer.h"
@@ -151,7 +152,8 @@ BackgroundHTMLScanner::ScriptTokenScanner::ScriptTokenScanner(
     ScriptableDocumentParser* parser,
     scoped_refptr<base::SequencedTaskRunner> task_runner,
     wtf_size_t min_script_size)
-    : parser_(parser),
+    : isolate_(parser->GetDocument()->GetAgent().isolate()),
+      parser_(parser),
       task_runner_(std::move(task_runner)),
       min_script_size_(min_script_size) {}
 
@@ -190,7 +192,7 @@ void BackgroundHTMLScanner::ScriptTokenScanner::ScanToken(
         }
 
         auto streamer = base::MakeRefCounted<BackgroundInlineScriptStreamer>(
-            script_text, GetCompileOptions(first_script_in_scan_));
+            isolate_, script_text, GetCompileOptions(first_script_in_scan_));
         first_script_in_scan_ = false;
         auto parser_lock = parser_.Lock();
         if (!parser_lock || !streamer->CanStream())

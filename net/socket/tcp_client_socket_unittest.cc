@@ -74,7 +74,7 @@ class TCPClientSocketTest : public testing::Test {
     std::unique_ptr<TCPServerSocket> server_socket =
         std::make_unique<TCPServerSocket>(nullptr, NetLogSource());
     ASSERT_THAT(server_socket->Listen(IPEndPoint(local_address, 0), 1,
-                                      /*ipv6_only=*/absl::nullopt),
+                                      /*ipv6_only=*/std::nullopt),
                 IsOk());
     IPEndPoint server_address;
     ASSERT_THAT(server_socket->GetLocalAddress(&server_address), IsOk());
@@ -118,7 +118,7 @@ TEST_F(TCPClientSocketTest, BindLoopbackToLoopback) {
 
   TCPServerSocket server(nullptr, NetLogSource());
   ASSERT_THAT(server.Listen(IPEndPoint(lo_address, 0), 1,
-                            /*ipv6_only=*/absl::nullopt),
+                            /*ipv6_only=*/std::nullopt),
               IsOk());
   IPEndPoint server_address;
   ASSERT_THAT(server.GetLocalAddress(&server_address), IsOk());
@@ -173,7 +173,7 @@ TEST_F(TCPClientSocketTest, BindLoopbackToIPv6) {
   TCPServerSocket server(nullptr, NetLogSource());
   int listen_result =
       server.Listen(IPEndPoint(IPAddress::IPv6Localhost(), 0), 1,
-                    /*ipv6_only=*/absl::nullopt);
+                    /*ipv6_only=*/std::nullopt);
   if (listen_result != OK) {
     LOG(ERROR) << "Failed to listen on ::1 - probably because IPv6 is disabled."
                   " Skipping the test";
@@ -197,7 +197,7 @@ TEST_F(TCPClientSocketTest, WasEverUsed) {
   IPAddress lo_address = IPAddress::IPv4Localhost();
   TCPServerSocket server(nullptr, NetLogSource());
   ASSERT_THAT(
-      server.Listen(IPEndPoint(lo_address, 0), 1, /*ipv6_only=*/absl::nullopt),
+      server.Listen(IPEndPoint(lo_address, 0), 1, /*ipv6_only=*/std::nullopt),
       IsOk());
   IPEndPoint server_address;
   ASSERT_THAT(server.GetLocalAddress(&server_address), IsOk());
@@ -247,7 +247,7 @@ TEST_F(TCPClientSocketTest, DnsAliasesPersistForReuse) {
   IPAddress lo_address = IPAddress::IPv4Localhost();
   TCPServerSocket server(nullptr, NetLogSource());
   ASSERT_THAT(
-      server.Listen(IPEndPoint(lo_address, 0), 1, /*ipv6_only=*/absl::nullopt),
+      server.Listen(IPEndPoint(lo_address, 0), 1, /*ipv6_only=*/std::nullopt),
       IsOk());
   IPEndPoint server_address;
   ASSERT_THAT(server.GetLocalAddress(&server_address), IsOk());
@@ -393,8 +393,7 @@ TEST_F(TCPClientSocketTest, Tag) {
   SocketTag tag2(getuid(), tag_val2);
   s.ApplySocketTag(tag2);
   const char kRequest1[] = "GET / HTTP/1.0";
-  scoped_refptr<IOBuffer> write_buffer1 =
-      base::MakeRefCounted<StringIOBuffer>(kRequest1);
+  auto write_buffer1 = base::MakeRefCounted<StringIOBuffer>(kRequest1);
   TestCompletionCallback write_callback1;
   EXPECT_EQ(s.Write(write_buffer1.get(), strlen(kRequest1),
                     write_callback1.callback(), TRAFFIC_ANNOTATION_FOR_TESTS),
@@ -445,8 +444,7 @@ TEST_F(TCPClientSocketTest, TagAfterConnect) {
   SocketTag tag2(getuid(), tag_val2);
   s.ApplySocketTag(tag2);
   const char kRequest1[] = "GET / HTTP/1.0";
-  scoped_refptr<IOBuffer> write_buffer1 =
-      base::MakeRefCounted<StringIOBuffer>(kRequest1);
+  auto write_buffer1 = base::MakeRefCounted<StringIOBuffer>(kRequest1);
   TestCompletionCallback write_callback1;
   EXPECT_EQ(s.Write(write_buffer1.get(), strlen(kRequest1),
                     write_callback1.callback(), TRAFFIC_ANNOTATION_FOR_TESTS),
@@ -460,8 +458,7 @@ TEST_F(TCPClientSocketTest, TagAfterConnect) {
   SocketTag tag1(SocketTag::UNSET_UID, tag_val1);
   s.ApplySocketTag(tag1);
   const char kRequest2[] = "\n\n";
-  scoped_refptr<IOBuffer> write_buffer2 =
-      base::MakeRefCounted<StringIOBuffer>(kRequest2);
+  auto write_buffer2 = base::MakeRefCounted<StringIOBuffer>(kRequest2);
   TestCompletionCallback write_callback2;
   EXPECT_EQ(s.Write(write_buffer2.get(), strlen(kRequest2),
                     write_callback2.callback(), TRAFFIC_ANNOTATION_FOR_TESTS),
@@ -509,7 +506,7 @@ TEST_F(TCPClientSocketTest, SuspendBeforeConnect) {
 
   TCPServerSocket server(nullptr, NetLogSource());
   ASSERT_THAT(
-      server.Listen(IPEndPoint(lo_address, 0), 1, /*ipv6_only=*/absl::nullopt),
+      server.Listen(IPEndPoint(lo_address, 0), 1, /*ipv6_only=*/std::nullopt),
       IsOk());
   IPEndPoint server_address;
   ASSERT_THAT(server.GetLocalAddress(&server_address), IsOk());
@@ -549,7 +546,7 @@ TEST_F(TCPClientSocketTest, SuspendDuringConnect) {
 
   TCPServerSocket server(nullptr, NetLogSource());
   ASSERT_THAT(
-      server.Listen(IPEndPoint(lo_address, 0), 1, /*ipv6_only=*/absl::nullopt),
+      server.Listen(IPEndPoint(lo_address, 0), 1, /*ipv6_only=*/std::nullopt),
       IsOk());
   IPEndPoint server_address;
   ASSERT_THAT(server.GetLocalAddress(&server_address), IsOk());
@@ -576,7 +573,7 @@ TEST_F(TCPClientSocketTest, SuspendDuringConnectMultipleAddresses) {
 
   TCPServerSocket server(nullptr, NetLogSource());
   ASSERT_THAT(server.Listen(IPEndPoint(IPAddress(0, 0, 0, 0), 0), 1,
-                            /*ipv6_only=*/absl::nullopt),
+                            /*ipv6_only=*/std::nullopt),
               IsOk());
   IPEndPoint server_address;
   ASSERT_THAT(server.GetLocalAddress(&server_address), IsOk());
@@ -613,7 +610,7 @@ TEST_F(TCPClientSocketTest, SuspendWhileIdle) {
   // Power notifications happen asynchronously.
   base::RunLoop().RunUntilIdle();
 
-  scoped_refptr<IOBuffer> buffer = base::MakeRefCounted<IOBuffer>(1);
+  auto buffer = base::MakeRefCounted<IOBufferWithSize>(1);
   buffer->data()[0] = '1';
   TestCompletionCallback callback;
   // Check that the client socket is disconnected, and actions fail with
@@ -652,7 +649,7 @@ TEST_F(TCPClientSocketTest, SuspendDuringRead) {
 
   // Start a read. This shouldn't complete, since the other end of the pipe
   // writes no data.
-  scoped_refptr<IOBuffer> read_buffer = base::MakeRefCounted<IOBuffer>(1);
+  auto read_buffer = base::MakeRefCounted<IOBufferWithSize>(1);
   read_buffer->data()[0] = '1';
   TestCompletionCallback callback;
   ASSERT_THAT(client_socket->Read(read_buffer.get(), 1, callback.callback()),
@@ -679,8 +676,7 @@ TEST_F(TCPClientSocketTest, SuspendDuringWrite) {
 
   // Write to the socket until a write doesn't complete synchronously.
   const int kBufferSize = 4096;
-  scoped_refptr<IOBuffer> write_buffer =
-      base::MakeRefCounted<IOBuffer>(kBufferSize);
+  auto write_buffer = base::MakeRefCounted<IOBufferWithSize>(kBufferSize);
   memset(write_buffer->data(), '1', kBufferSize);
   TestCompletionCallback callback;
   while (true) {
@@ -727,7 +723,7 @@ TEST_F(TCPClientSocketTest, SuspendDuringReadAndWrite) {
 
     // Start a read. This shouldn't complete, since the other end of the pipe
     // writes no data.
-    scoped_refptr<IOBuffer> read_buffer = base::MakeRefCounted<IOBuffer>(1);
+    auto read_buffer = base::MakeRefCounted<IOBufferWithSize>(1);
     read_buffer->data()[0] = '1';
     TestCompletionCallback read_callback;
 
@@ -763,8 +759,7 @@ TEST_F(TCPClientSocketTest, SuspendDuringReadAndWrite) {
 
     // Write to the socket until a write doesn't complete synchronously.
     const int kBufferSize = 4096;
-    scoped_refptr<IOBuffer> write_buffer =
-        base::MakeRefCounted<IOBuffer>(kBufferSize);
+    auto write_buffer = base::MakeRefCounted<IOBufferWithSize>(kBufferSize);
     memset(write_buffer->data(), '1', kBufferSize);
     TestCompletionCallback write_callback;
     while (true) {

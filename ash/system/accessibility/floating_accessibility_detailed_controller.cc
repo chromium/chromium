@@ -15,6 +15,8 @@
 #include "ash/system/tray/tray_constants.h"
 #include "ash/wm/collision_detection/collision_detection_utils.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/metadata/metadata_header_macros.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/models/image_model.h"
 #include "ui/compositor/layer.h"
 #include "ui/compositor/scoped_layer_animation_settings.h"
@@ -33,6 +35,8 @@ constexpr int kDetailedViewHeightDip = 350;
 
 class FloatingAccessibilityDetailedController::DetailedBubbleView
     : public TrayBubbleView {
+  METADATA_HEADER(DetailedBubbleView, TrayBubbleView)
+
  public:
   explicit DetailedBubbleView(TrayBubbleView::InitParams init_params)
       : TrayBubbleView(init_params) {}
@@ -41,11 +45,6 @@ class FloatingAccessibilityDetailedController::DetailedBubbleView
                         views::BubbleBorder::Arrow alignment) {
     SetArrowWithoutResizing(alignment);
     SetAnchorRect(anchor_rect);
-  }
-
-  // views::View:
-  const char* GetClassName() const override {
-    return "FloatingAccessibilityDetailedView";
   }
 };
 
@@ -88,7 +87,7 @@ void FloatingAccessibilityDetailedController::Show(
       std::make_unique<AccessibilityDetailedView>(this));
   bubble_view_->SetPreferredSize(
       gfx::Size(kTrayMenuWidth, kDetailedViewHeightDip));
-  bubble_view_->SetFocusBehavior(ActionableView::FocusBehavior::ALWAYS);
+  bubble_view_->SetFocusBehavior(views::View::FocusBehavior::ALWAYS);
 
   bubble_widget_ = views::BubbleDialogDelegateView::CreateBubble(bubble_view_);
   bubble_view_->SetCanActivate(true);
@@ -159,6 +158,9 @@ void FloatingAccessibilityDetailedController::BubbleViewDestroyed() {
   // Hammer time, |this| is destroyed in the previous call.
 }
 
+void FloatingAccessibilityDetailedController::HideBubble(
+    const TrayBubbleView* bubble_view) {}
+
 void FloatingAccessibilityDetailedController::OnAccessibilityStatusChanged() {
   if (detailed_view_)
     detailed_view_->OnAccessibilityStatusChanged();
@@ -182,5 +184,8 @@ void FloatingAccessibilityDetailedController::OnWindowActivated(
 
   bubble_widget_->CloseWithReason(views::Widget::ClosedReason::kLostFocus);
 }
+
+BEGIN_METADATA(FloatingAccessibilityDetailedController, DetailedBubbleView)
+END_METADATA
 
 }  // namespace ash

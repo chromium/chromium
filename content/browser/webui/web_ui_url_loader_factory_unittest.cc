@@ -4,6 +4,8 @@
 
 #include "content/public/browser/web_ui_url_loader_factory.h"
 
+#include <optional>
+
 #include "base/memory/ref_counted_memory.h"
 #include "base/notreached.h"
 #include "base/strings/strcat.h"
@@ -12,6 +14,7 @@
 #include "content/browser/webui/url_data_manager.h"
 #include "content/public/browser/url_data_source.h"
 #include "content/public/common/url_constants.h"
+#include "content/public/test/test_browser_context.h"
 #include "content/public/test/test_renderer_host.h"
 #include "mojo/public/c/system/data_pipe.h"
 #include "mojo/public/c/system/types.h"
@@ -22,7 +25,6 @@
 #include "services/network/public/mojom/url_loader_factory.mojom.h"
 #include "services/network/test/test_url_loader_client.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace content {
 
@@ -114,19 +116,19 @@ class OversizedWebUIDataSource final : public URLDataSource {
 
 const struct RangeRequestTestData {
   size_t resource_size = 0;
-  absl::optional<int> first_byte_position;
-  absl::optional<int> last_byte_position;
+  std::optional<int> first_byte_position;
+  std::optional<int> last_byte_position;
   int expected_error_code = net::OK;
   uint32_t expected_size = 0;
 } kRangeRequestTestData[] = {
     // No range.
-    {kMaxTestResourceSize, absl::nullopt, absl::nullopt, net::OK,
+    {kMaxTestResourceSize, std::nullopt, std::nullopt, net::OK,
      kMaxTestResourceSize},
 
     // No range, 0-size resource.
-    {0, absl::nullopt, absl::nullopt, net::OK, 0},
+    {0, std::nullopt, std::nullopt, net::OK, 0},
 
-    {kMaxTestResourceSize, 3, absl::nullopt, net::OK, kMaxTestResourceSize - 3},
+    {kMaxTestResourceSize, 3, std::nullopt, net::OK, kMaxTestResourceSize - 3},
 
     {kMaxTestResourceSize, 1, 1, net::OK, 1},
 
@@ -144,7 +146,7 @@ const struct RangeRequestTestData {
 #if defined(ARCH_CPU_64_BITS)
     // Resource too large.
     {static_cast<size_t>(std::numeric_limits<uint32_t>::max()) + 1,
-     absl::nullopt, absl::nullopt, net::ERR_INSUFFICIENT_RESOURCES, 0},
+     std::nullopt, std::nullopt, net::ERR_INSUFFICIENT_RESOURCES, 0},
 #endif  // defined(ARCH_CPU_64_BITS)
 };
 
@@ -221,6 +223,30 @@ TEST_P(WebUIURLLoaderFactoryTest, RangeRequest) {
       EXPECT_EQ(response, expected_resource);
     }
   }
+}
+
+TEST(WebUIURLLoaderFactoryErrorHandlingTest, HandlesDestroyedContext) {
+  content::BrowserTaskEnvironment task_environment;
+  auto test_context = std::make_unique<TestBrowserContext>();
+  mojo::Remote<network::mojom::URLLoaderFactory> loader_factory(
+      CreateWebUIServiceWorkerLoaderFactory(test_context.get(),
+                                            kTestWebUIScheme, {}));
+
+  // Destroy the context before sending a request.
+  test_context.reset();
+
+  network::ResourceRequest request;
+  request.url = GURL(base::StrCat({kTestWebUIScheme, "://", kTestWebUIHost}));
+
+  mojo::PendingRemote<network::mojom::URLLoader> loader;
+  network::TestURLLoaderClient loader_client;
+  loader_factory->CreateLoaderAndStart(
+      loader.InitWithNewPipeAndPassReceiver(), /*request_id=*/0,
+      /*options=*/0, request, loader_client.CreateRemote(),
+      net::MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS));
+  loader_client.RunUntilComplete();
+
+  ASSERT_EQ(loader_client.completion_status().error_code, net::ERR_FAILED);
 }
 
 }  // namespace content

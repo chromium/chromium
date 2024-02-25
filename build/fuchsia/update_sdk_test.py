@@ -30,12 +30,6 @@ class TestGetHostArch(unittest.TestCase):
 @mock.patch('builtins.open')
 @mock.patch('os.path.isfile')
 class TestGetSDKOverrideGCSPath(unittest.TestCase):
-  def testFileNotFound(self, mock_isfile, mock_open):
-    mock_isfile.return_value = False
-
-    actual = GetSDKOverrideGCSPath('this-file-does-not-exist.txt')
-    self.assertIsNone(actual)
-
   def testDefaultPath(self, mock_isfile, mock_open):
     mock_isfile.return_value = False
 

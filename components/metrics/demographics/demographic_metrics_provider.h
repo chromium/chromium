@@ -6,6 +6,7 @@
 #define COMPONENTS_METRICS_DEMOGRAPHICS_DEMOGRAPHIC_METRICS_PROVIDER_H_
 
 #include <memory>
+#include <optional>
 
 #include "base/feature_list.h"
 #include "base/time/time.h"
@@ -13,7 +14,6 @@
 #include "components/metrics/metrics_log_uploader.h"
 #include "components/metrics/metrics_provider.h"
 #include "components/metrics/ukm_demographic_metrics_provider.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/metrics_proto/chrome_user_metrics_extension.pb.h"
 #include "third_party/metrics_proto/user_demographics.pb.h"
 
@@ -84,7 +84,7 @@ class DemographicMetricsProvider : public MetricsProvider,
   void ProvideSyncedUserNoisedBirthYearAndGender(ReportType* report) {
     DCHECK(report);
 
-    absl::optional<UserDemographics> user_demographics =
+    std::optional<UserDemographics> user_demographics =
         ProvideSyncedUserNoisedBirthYearAndGender();
     if (user_demographics.has_value()) {
       report->mutable_user_demographics()->set_birth_year(
@@ -104,7 +104,7 @@ class DemographicMetricsProvider : public MetricsProvider,
 
  private:
   // Provides the synced user's noised birth year and gender.
-  absl::optional<UserDemographics> ProvideSyncedUserNoisedBirthYearAndGender();
+  std::optional<UserDemographics> ProvideSyncedUserNoisedBirthYearAndGender();
 
   void LogUserDemographicsStatusInHistogram(UserDemographicsStatus status);
 

@@ -176,6 +176,10 @@ class UI_ANDROID_EXPORT DelegatedFrameHostAndroid
     return GetPreNavigationSurfaceId();
   }
 
+  viz::SurfaceId GetFirstSurfaceIdAfterNavigationForTesting() const;
+
+  void SetIsFrameSinkIdOwner(bool is_owner);
+
  private:
   // FrameEvictorClient implementation.
   void EvictDelegatedFrame(
@@ -248,6 +252,12 @@ class UI_ANDROID_EXPORT DelegatedFrameHostAndroid
   blink::ContentToVisibleTimeReporter content_to_visible_time_recorder_;
 
   std::unique_ptr<viz::FrameEvictor> frame_evictor_;
+
+  // Speculative RenderWidgetHostViews can start with a FrameSinkId owned by the
+  // currently committed RenderWidgetHostView. Ownership is transferred when the
+  // navigation is committed. This bit tracks whether this
+  // DelegatedFrameHostAndroid owns its FrameSinkId.
+  bool owns_frame_sink_id_ = false;
 };
 
 }  // namespace ui

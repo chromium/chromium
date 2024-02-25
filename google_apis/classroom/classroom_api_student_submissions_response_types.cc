@@ -4,6 +4,8 @@
 
 #include "google_apis/classroom/classroom_api_student_submissions_response_types.h"
 
+#include <string_view>
+
 #include "base/json/json_value_converter.h"
 #include "google_apis/common/parser_util.h"
 #include "google_apis/common/time_util.h"
@@ -24,7 +26,7 @@ constexpr char kTurnedInStudentSubmissionState[] = "TURNED_IN";
 constexpr char kReturnedStudentSubmissionState[] = "RETURNED";
 constexpr char kReclaimedStudentSubmissionState[] = "RECLAIMED_BY_STUDENT";
 
-bool ConvertStudentSubmissionState(base::StringPiece input,
+bool ConvertStudentSubmissionState(std::string_view input,
                                    StudentSubmission::State* output) {
   if (input == kNewStudentSubmissionState) {
     *output = StudentSubmission::State::kNew;
@@ -43,13 +45,13 @@ bool ConvertStudentSubmissionState(base::StringPiece input,
 }
 
 bool ConvertAssignedGrade(const base::Value* input,
-                          absl::optional<double>* assigned_grade) {
+                          std::optional<double>* assigned_grade) {
   *assigned_grade = input->GetIfDouble();
   return true;
 }
 
-bool ConvertUpdateTime(base::StringPiece input,
-                       absl::optional<base::Time>* output) {
+bool ConvertUpdateTime(std::string_view input,
+                       std::optional<base::Time>* output) {
   base::Time update_time;
   if (!util::GetTimeFromString(input, &update_time)) {
     return false;
@@ -71,10 +73,10 @@ void StudentSubmission::RegisterJSONConverter(
   converter->RegisterCustomField<StudentSubmission::State>(
       kApiResponseStudentSubmissionStateKey, &StudentSubmission::state_,
       &ConvertStudentSubmissionState);
-  converter->RegisterCustomValueField<absl::optional<double>>(
+  converter->RegisterCustomValueField<std::optional<double>>(
       kApiResponseStudentSubmissionAssignedGradeKey,
       &StudentSubmission::assigned_grade_, &ConvertAssignedGrade);
-  converter->RegisterCustomField<absl::optional<base::Time>>(
+  converter->RegisterCustomField<std::optional<base::Time>>(
       kApiResponseStudentSubmissionUpdateTimeKey,
       &StudentSubmission::last_update_, &ConvertUpdateTime);
 }

@@ -8,38 +8,46 @@
  * security settings.
  */
 import 'chrome://resources/cr_components/settings_prefs/prefs.js';
+import 'chrome://resources/cr_elements/icons.html.js';
 import 'chrome://resources/cr_elements/cr_button/cr_button.js';
 import 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.js';
 import 'chrome://resources/cr_elements/cr_link_row/cr_link_row.js';
 import 'chrome://resources/cr_elements/cr_shared_style.css.js';
+import 'chrome://resources/cr_elements/cr_hidden_style.css.js';
 import 'chrome://resources/polymer/v3_0/iron-flex-layout/iron-flex-layout-classes.js';
-import '/shared/settings/controls/settings_toggle_button.js';
+import '../controls/settings_toggle_button.js';
+import '../safety_hub/safety_hub_module.js';
 import '../settings_page/settings_animated_pages.js';
 import '../settings_page/settings_subpage.js';
 import '../settings_shared.css.js';
 import '../site_settings/settings_category_default_radio_group.js';
 import './privacy_guide/privacy_guide_dialog.js';
 
-import {SettingsToggleButtonElement} from '/shared/settings/controls/settings_toggle_button.js';
-import {PrivacyPageBrowserProxy, PrivacyPageBrowserProxyImpl} from '/shared/settings/privacy_page/privacy_page_browser_proxy.js';
+import type {PrivacyPageBrowserProxy} from '/shared/settings/privacy_page/privacy_page_browser_proxy.js';
+import {PrivacyPageBrowserProxyImpl} from '/shared/settings/privacy_page/privacy_page_browser_proxy.js';
 import {PrefsMixin} from 'chrome://resources/cr_components/settings_prefs/prefs_mixin.js';
-import {CrLinkRowElement} from 'chrome://resources/cr_elements/cr_link_row/cr_link_row.js';
+import type {CrLinkRowElement} from 'chrome://resources/cr_elements/cr_link_row/cr_link_row.js';
 import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
 import {WebUiListenerMixin} from 'chrome://resources/cr_elements/web_ui_listener_mixin.js';
-import {assert, assertNotReached} from 'chrome://resources/js/assert_ts.js';
+import {assert, assertNotReached} from 'chrome://resources/js/assert.js';
 import {focusWithoutInk} from 'chrome://resources/js/focus_without_ink.js';
+import {PluralStringProxyImpl} from 'chrome://resources/js/plural_string_proxy.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {BaseMixin} from '../base_mixin.js';
-import {FocusConfig} from '../focus_config.js';
+import type {SettingsToggleButtonElement} from '../controls/settings_toggle_button.js';
+import type {FocusConfig} from '../focus_config.js';
 import {HatsBrowserProxyImpl, TrustSafetyInteraction} from '../hats_browser_proxy.js';
 import {loadTimeData} from '../i18n_setup.js';
-import {MetricsBrowserProxy, MetricsBrowserProxyImpl, PrivacyGuideInteractions} from '../metrics_browser_proxy.js';
+import type {MetricsBrowserProxy} from '../metrics_browser_proxy.js';
+import {MetricsBrowserProxyImpl, PrivacyGuideInteractions, SafetyHubEntryPoint} from '../metrics_browser_proxy.js';
 import {routes} from '../route.js';
 import {RouteObserverMixin, Router} from '../router.js';
-import {NotificationPermission, SafetyHubBrowserProxy, SafetyHubBrowserProxyImpl, SafetyHubEvent} from '../safety_hub/safety_hub_browser_proxy.js';
-import {ChooserType, ContentSetting, ContentSettingsTypes, CookieControlsMode, NotificationSetting} from '../site_settings/constants.js';
-import {SiteSettingsPrefsBrowserProxy, SiteSettingsPrefsBrowserProxyImpl} from '../site_settings/site_settings_prefs_browser_proxy.js';
+import type {NotificationPermission, SafetyHubBrowserProxy} from '../safety_hub/safety_hub_browser_proxy.js';
+import {SafetyHubBrowserProxyImpl, SafetyHubEvent} from '../safety_hub/safety_hub_browser_proxy.js';
+import {ChooserType, ContentSetting, ContentSettingsTypes, CookieControlsMode, SettingsState} from '../site_settings/constants.js';
+import type {SiteSettingsPrefsBrowserProxy} from '../site_settings/site_settings_prefs_browser_proxy.js';
+import {SiteSettingsPrefsBrowserProxyImpl} from '../site_settings/site_settings_prefs_browser_proxy.js';
 
 import {PrivacyGuideAvailabilityMixin} from './privacy_guide/privacy_guide_availability_mixin.js';
 import {getTemplate} from './privacy_page.html.js';
@@ -52,7 +60,6 @@ interface BlockAutoplayStatus {
 export interface SettingsPrivacyPageElement {
   $: {
     clearBrowsingData: CrLinkRowElement,
-    cookiesLinkRow: CrLinkRowElement,
     permissionsLinkRow: CrLinkRowElement,
     securityLinkRow: CrLinkRowElement,
   };
@@ -97,8 +104,6 @@ export class SettingsPrivacyPageElement extends SettingsPrivacyPageElementBase {
           return loadTimeData.getBoolean('enableSafeBrowsingSubresourceFilter');
         },
       },
-
-      cookieSettingDescription_: String,
 
       enableBlockAutoplayContentSetting_: {
         type: Boolean,
@@ -145,16 +150,15 @@ export class SettingsPrivacyPageElement extends SettingsPrivacyPageElementBase {
         },
       },
 
-      enableQuietNotificationPromptsSetting_: {
-        type: Boolean,
-        value: () =>
-            loadTimeData.getBoolean('enableQuietNotificationPromptsSetting'),
-      },
-
       enableWebBluetoothNewPermissionsBackend_: {
         type: Boolean,
         value: () =>
             loadTimeData.getBoolean('enableWebBluetoothNewPermissionsBackend'),
+      },
+
+      enableWebPrintingContentSetting_: {
+        type: Boolean,
+        value: () => loadTimeData.getBoolean('enableWebPrintingContentSetting'),
       },
 
       showNotificationPermissionsReview_: {
@@ -173,9 +177,10 @@ export class SettingsPrivacyPageElement extends SettingsPrivacyPageElementBase {
             loadTimeData.getBoolean('isPrivacySandboxRestrictedNoticeEnabled'),
       },
 
-      isPrivacySandboxSettings4_: {
+      is3pcdRedesignEnabled_: {
         type: Boolean,
-        value: () => loadTimeData.getBoolean('isPrivacySandboxSettings4'),
+        value: () =>
+            loadTimeData.getBoolean('is3pcdCookieSettingsRedesignEnabled'),
       },
 
       privateStateTokensEnabled_: {
@@ -206,6 +211,18 @@ export class SettingsPrivacyPageElement extends SettingsPrivacyPageElementBase {
         },
       },
 
+      isProactiveTopicsBlockingEnabled_: {
+        type: Boolean,
+        value: () =>
+            loadTimeData.getBoolean('isProactiveTopicsBlockingEnabled'),
+      },
+
+      enableAutomaticFullscreenContentSetting_: {
+        type: Boolean,
+        value: () =>
+            loadTimeData.getBoolean('enableAutomaticFullscreenContentSetting'),
+      },
+
       focusConfig_: {
         type: Object,
         value() {
@@ -216,12 +233,17 @@ export class SettingsPrivacyPageElement extends SettingsPrivacyPageElementBase {
           }
 
           if (routes.COOKIES) {
-            const selector =
-                loadTimeData.getBoolean('isPrivacySandboxSettings4') ?
-                '#thirdPartyCookiesLinkRow' :
-                '#cookiesLinkRow';
-            map.set(`${routes.COOKIES.path}_${routes.PRIVACY.path}`, selector);
-            map.set(`${routes.COOKIES.path}_${routes.BASIC.path}`, selector);
+            map.set(
+                `${routes.COOKIES.path}_${routes.PRIVACY.path}`,
+                '#thirdPartyCookiesLinkRow');
+            map.set(
+                `${routes.COOKIES.path}_${routes.BASIC.path}`,
+                '#thirdPartyCookiesLinkRow');
+          }
+
+          if (routes.TRACKING_PROTECTION) {
+            map.set(
+                routes.TRACKING_PROTECTION.path, '#trackingProtectionLinkRow');
           }
 
           if (routes.SITE_SETTINGS) {
@@ -241,11 +263,11 @@ export class SettingsPrivacyPageElement extends SettingsPrivacyPageElementBase {
       },
 
       /**
-       * Expose NotificationSetting enum to HTML bindings.
+       * Expose the Permissions SettingsState enum to HTML bindings.
        */
-      notificationSettingEnum_: {
+      settingsStateEnum_: {
         type: Object,
-        value: NotificationSetting,
+        value: SettingsState,
       },
 
       searchFilter_: String,
@@ -291,9 +313,22 @@ export class SettingsPrivacyPageElement extends SettingsPrivacyPageElementBase {
       enableSafetyHub_: {
         type: Boolean,
         value() {
-          return loadTimeData.getBoolean('enableSafetyHub');
+          return loadTimeData.getBoolean('enableSafetyHub') &&
+              !loadTimeData.getBoolean('isGuest');
         },
       },
+
+      showDedicatedCpssSetting_: {
+        type: Boolean,
+        value() {
+          return loadTimeData.getBoolean('permissionDedicatedCpssSettings');
+        },
+      },
+
+      isNotificationAllowed_: Boolean,
+      isLocationAllowed_: Boolean,
+      notificationPermissionsReviewHeader_: String,
+      notificationPermissionsReviewSubeader_: String,
     };
   }
 
@@ -302,19 +337,20 @@ export class SettingsPrivacyPageElement extends SettingsPrivacyPageElementBase {
   private showClearBrowsingDataDialog_: boolean;
   private showPrivacyGuideDialog_: boolean;
   private enableSafeBrowsingSubresourceFilter_: boolean;
-  private cookieSettingDescription_: string;
   private enableBlockAutoplayContentSetting_: boolean;
   private blockAutoplayStatus_: BlockAutoplayStatus;
   private enableFederatedIdentityApiContentSetting_: boolean;
   private enablePaymentHandlerContentSetting_: boolean;
   private enableExperimentalWebPlatformFeatures_: boolean;
   private enableSecurityKeysSubpage_: boolean;
-  private enableQuietNotificationPromptsSetting_: boolean;
   private enableWebBluetoothNewPermissionsBackend_: boolean;
+  private enableWebPrintingContentSetting_: boolean;
   private showNotificationPermissionsReview_: boolean;
   private isPrivacySandboxRestricted_: boolean;
   private isPrivacySandboxRestrictedNoticeEnabled_: boolean;
-  private isPrivacySandboxSettings4_: boolean;
+  private isProactiveTopicsBlockingEnabled_: boolean;
+  private enableAutomaticFullscreenContentSetting_: boolean;
+  private is3pcdRedesignEnabled_: boolean;
   private privateStateTokensEnabled_: boolean;
   private autoPictureInPictureEnabled_: boolean;
   private safetyCheckNotificationPermissionsEnabled_: boolean;
@@ -322,6 +358,8 @@ export class SettingsPrivacyPageElement extends SettingsPrivacyPageElementBase {
   private enableSafetyHub_: boolean;
   private focusConfig_: FocusConfig;
   private searchFilter_: string;
+  private notificationPermissionsReviewHeader_: string;
+  private notificationPermissionsReviewSubheader_: string;
   private browserProxy_: PrivacyPageBrowserProxy =
       PrivacyPageBrowserProxyImpl.getInstance();
   private metricsBrowserProxy_: MetricsBrowserProxy =
@@ -330,6 +368,9 @@ export class SettingsPrivacyPageElement extends SettingsPrivacyPageElementBase {
       SiteSettingsPrefsBrowserProxyImpl.getInstance();
   private safetyHubBrowserProxy_: SafetyHubBrowserProxy =
       SafetyHubBrowserProxyImpl.getInstance();
+  private isNotificationAllowed_: boolean;
+  private isLocationAllowed_: boolean;
+  private showDedicatedCpssSetting_: boolean;
 
   override ready() {
     super.ready();
@@ -348,21 +389,18 @@ export class SettingsPrivacyPageElement extends SettingsPrivacyPageElementBase {
         (status: BlockAutoplayStatus) =>
             this.onBlockAutoplayStatusChanged_(status));
 
-    this.siteSettingsPrefsBrowserProxy_.getCookieSettingDescription().then(
-        (description: string) => this.cookieSettingDescription_ = description);
+    if (this.safetyCheckNotificationPermissionsEnabled_ && !this.isGuest_) {
+      this.addWebUiListener(
+          SafetyHubEvent.NOTIFICATION_PERMISSIONS_MAYBE_CHANGED,
+          (sites: NotificationPermission[]) =>
+              this.onReviewNotificationPermissionListChanged_(sites));
 
-    this.addWebUiListener(
-        'cookieSettingDescriptionChanged',
-        (description: string) => this.cookieSettingDescription_ = description);
+      this.safetyHubBrowserProxy_.getNotificationPermissionReview().then(
+          (sites: NotificationPermission[]) =>
+              this.onReviewNotificationPermissionListChanged_(sites));
+    }
 
-    this.addWebUiListener(
-        SafetyHubEvent.NOTIFICATION_PERMISSIONS_MAYBE_CHANGED,
-        (sites: NotificationPermission[]) =>
-            this.onReviewNotificationPermissionListChanged_(sites));
-
-    this.safetyHubBrowserProxy_.getNotificationPermissionReview().then(
-        (sites: NotificationPermission[]) =>
-            this.onReviewNotificationPermissionListChanged_(sites));
+    this.updateLocationAndNotificationState_();
   }
 
   override currentRouteChanged() {
@@ -371,6 +409,15 @@ export class SettingsPrivacyPageElement extends SettingsPrivacyPageElementBase {
     this.showPrivacyGuideDialog_ =
         Router.getInstance().getCurrentRoute() === routes.PRIVACY_GUIDE &&
         this.isPrivacyGuideAvailable;
+
+    // Only record the metrics when the user navigates to the notification
+    // settings page that shows the entry point.
+    if (Router.getInstance().getCurrentRoute() ===
+            routes.SITE_SETTINGS_NOTIFICATIONS &&
+        this.showNotificationPermissionsReview_) {
+      this.metricsBrowserProxy_.recordSafetyHubEntryPointShown(
+          SafetyHubEntryPoint.NOTIFICATIONS);
+    }
   }
 
   /**
@@ -398,6 +445,13 @@ export class SettingsPrivacyPageElement extends SettingsPrivacyPageElementBase {
     this.interactedWithPage_();
 
     Router.getInstance().navigateTo(routes.COOKIES);
+  }
+
+  private onTrackingProtectionClick_() {
+    this.interactedWithPage_();
+    this.metricsBrowserProxy_.recordAction(
+        'Settings.TrackingProtection.OpenedFromPrivacyPage');
+    Router.getInstance().navigateTo(routes.TRACKING_PROTECTION);
   }
 
   private onCbdDialogClosed_() {
@@ -437,18 +491,49 @@ export class SettingsPrivacyPageElement extends SettingsPrivacyPageElementBase {
     this.interactedWithPage_();
     this.metricsBrowserProxy_.recordAction(
         'Settings.PrivacySandbox.OpenedFromSettingsParent');
+    Router.getInstance().navigateTo(routes.PRIVACY_SANDBOX);
+  }
 
-    if (this.isPrivacySandboxSettings4_) {
-      Router.getInstance().navigateTo(routes.PRIVACY_SANDBOX);
-      return;
+  private async updateLocationAndNotificationState_() {
+    const [notificationDefaultValue, locationDefaultValue] = await Promise.all([
+      this.siteSettingsPrefsBrowserProxy_.getDefaultValueForContentType(
+          ContentSettingsTypes.NOTIFICATIONS),
+      this.siteSettingsPrefsBrowserProxy_.getDefaultValueForContentType(
+          ContentSettingsTypes.GEOLOCATION),
+    ]);
+    this.isNotificationAllowed_ =
+        (notificationDefaultValue.setting === ContentSetting.ASK);
+    this.isLocationAllowed_ =
+        (locationDefaultValue.setting === ContentSetting.ASK);
+  }
+
+  private onLocationTopLevelRadioChanged_(event: CustomEvent<{value: string}>) {
+    const radioButtonName = event.detail.value;
+    switch (radioButtonName) {
+      case 'location-block-radio-button':
+        this.setPrefValue('generated.geolocation', SettingsState.BLOCK);
+        this.isLocationAllowed_ = false;
+        break;
+      case 'location-ask-radio-button':
+        this.setPrefValue('generated.geolocation', SettingsState.CPSS);
+        this.isLocationAllowed_ = true;
+        break;
     }
+  }
 
-    // Create a MouseEvent directly to avoid Polymer failing to synthesise a
-    // click event if this function was called in response to a touch event.
-    // See crbug.com/1253883 for details.
-    // TODO(crbug/1159942): Replace this with an ordinary OpenWindowProxy call.
-    this.shadowRoot!.querySelector<HTMLAnchorElement>('#privacySandboxLink')!
-        .dispatchEvent(new MouseEvent('click'));
+  private onNotificationTopLevelRadioChanged_(
+      event: CustomEvent<{value: string}>) {
+    const radioButtonName = event.detail.value;
+    switch (radioButtonName) {
+      case 'notification-block-radio-button':
+        this.setPrefValue('generated.notification', SettingsState.BLOCK);
+        this.isNotificationAllowed_ = false;
+        break;
+      case 'notification-ask-radio-button':
+        this.setPrefValue('generated.notification', SettingsState.CPSS);
+        this.isNotificationAllowed_ = true;
+        break;
+    }
   }
 
   private onPrivacyGuideClick_() {
@@ -461,28 +546,31 @@ export class SettingsPrivacyPageElement extends SettingsPrivacyPageElementBase {
         /* removeSearch */ true);
   }
 
-  private onReviewNotificationPermissionListChanged_(
+  private async onReviewNotificationPermissionListChanged_(
       permissions: NotificationPermission[]) {
     // The notification permissions review is shown when there are items to
-    // review (provided the feature is enabled). Once visible it remains that
-    // way to show completion info, even if the list is emptied.
+    // review (provided the feature is enabled and should be shown). Once
+    // visible it remains that way to show completion info, even if the list is
+    // emptied.
     if (this.showNotificationPermissionsReview_) {
       return;
     }
-    this.showNotificationPermissionsReview_ =
+    this.showNotificationPermissionsReview_ = !this.isGuest_ &&
         this.safetyCheckNotificationPermissionsEnabled_ &&
         permissions.length > 0;
+
+    this.notificationPermissionsReviewHeader_ =
+        await PluralStringProxyImpl.getInstance().getPluralString(
+            'safetyHubNotificationPermissionsPrimaryLabel', permissions.length);
+    this.notificationPermissionsReviewSubheader_ =
+        await PluralStringProxyImpl.getInstance().getPluralString(
+            'safetyHubNotificationPermissionsSecondaryLabel',
+            permissions.length);
   }
 
   private interactedWithPage_() {
     HatsBrowserProxyImpl.getInstance().trustSafetyInteractionOccurred(
         TrustSafetyInteraction.USED_PRIVACY_CARD);
-  }
-
-  private computePrivacySandboxSublabel_(): string {
-    const enabled = this.getPref('privacy_sandbox.apis_enabled_v2').value;
-    return enabled ? this.i18n('privacySandboxTrialsEnabled') :
-                     this.i18n('privacySandboxTrialsDisabled');
   }
 
   private computeAdPrivacySublabel_(): string {
@@ -515,15 +603,20 @@ export class SettingsPrivacyPageElement extends SettingsPrivacyPageElementBase {
     }
   }
 
-  private isPrivacySandboxSettings3Enabled_(): boolean {
-    return !this.isPrivacySandboxRestricted_ &&
-        !this.isPrivacySandboxSettings4_;
+  private shouldShowAdPrivacy_(): boolean {
+    return !this.isPrivacySandboxRestricted_ ||
+        this.isPrivacySandboxRestrictedNoticeEnabled_;
   }
 
-  private isPrivacySandboxSettings4Enabled_(): boolean {
-    return (!this.isPrivacySandboxRestricted_ ||
-            this.isPrivacySandboxRestrictedNoticeEnabled_) &&
-        this.isPrivacySandboxSettings4_;
+  private shouldShowManageTopics_(): boolean {
+    return this.isProactiveTopicsBlockingEnabled_ &&
+        !this.isPrivacySandboxRestricted_;
+  }
+
+  private onSafetyHubButtonClick_() {
+    this.metricsBrowserProxy_.recordSafetyHubEntryPointClicked(
+        SafetyHubEntryPoint.NOTIFICATIONS);
+    Router.getInstance().navigateTo(routes.SAFETY_HUB);
   }
 }
 

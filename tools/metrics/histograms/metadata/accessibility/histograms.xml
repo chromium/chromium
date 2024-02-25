@@ -33,123 +33,21 @@ chromium-metrics-reviews@google.com.
   <variant name="en-US" summary="English language code"/>
   <variant name="es-ES" summary="Spanish language code"/>
   <variant name="fr-FR" summary="French language code"/>
+  <variant name="hi-IN" summary="Hindi language code"/>
+  <variant name="id-ID" summary="Indonesian language code"/>
   <variant name="it-IT" summary="Italian language code"/>
   <variant name="ja-JP" summary="Japanese language code"/>
-</variants>
-
-<variants name="SwitchAccessMenuAction">
-  <variant name="ActionRecorder"
-      summary="Switch Access Menu Action: Action Recorder"/>
-  <variant name="Copy" summary="Switch Access Menu Action: Copy"/>
-  <variant name="Cut" summary="Switch Access Menu Action: Cut"/>
-  <variant name="Decrement" summary="Switch Access Menu Action: Decrement"/>
-  <variant name="Dictation" summary="Switch Access Menu Action: Dictation"/>
-  <variant name="DisplayBrightnessDown"
-      summary="Switch Access Menu Action: Display Brightness Down"/>
-  <variant name="DisplayBrightnessUp"
-      summary="Switch Access Menu Action: Display Brightness Up"/>
-  <variant name="DisplayMenu"
-      summary="Switch Access Menu Action: Display Menu"/>
-  <variant name="DisplayMirror"
-      summary="Switch Access Menu Action: Display Mirror"/>
-  <variant name="DisplayRotate"
-      summary="Switch Access Menu Action: Display Rotate"/>
-  <variant name="DisplayZoomIn"
-      summary="Switch Access Menu Action: Display Zoom In"/>
-  <variant name="DisplayZoomOut"
-      summary="Switch Access Menu Action: Display Zoom Out"/>
-  <variant name="EndTextSelection"
-      summary="Switch Access Menu Action: End Text Selection"/>
-  <variant name="ExecuteMacro"
-      summary="Switch Access Menu Action: Execute Macro"/>
-  <variant name="Increment" summary="Switch Access Menu Action: Increment"/>
-  <variant name="ItemScan" summary="Switch Access Menu Action: Item Scan"/>
-  <variant name="JumpToBeginningOfText"
-      summary="Switch Access Menu Action: Jump To Beginning Of Text"/>
-  <variant name="JumpToEndOfText"
-      summary="Switch Access Menu Action: Jump To End Of Text"/>
-  <variant name="Keyboard" summary="Switch Access Menu Action: Keyboard"/>
-  <variant name="LeaveGroup" summary="Switch Access Menu Action: Leave Group"/>
-  <variant name="LeftClick" summary="Switch Access Menu Action: Left Click"/>
-  <variant name="MediaFastforward"
-      summary="Switch Access Menu Action: Media Fastforward"/>
-  <variant name="MediaMenu" summary="Switch Access Menu Action: Media Menu"/>
-  <variant name="MediaMute" summary="Switch Access Menu Action: Media Mute"/>
-  <variant name="MediaPlayPause"
-      summary="Switch Access Menu Action: Media Play Pause"/>
-  <variant name="MediaRewind"
-      summary="Switch Access Menu Action: Media Rewind"/>
-  <variant name="MediaVolumeDown"
-      summary="Switch Access Menu Action: Media Volume Down"/>
-  <variant name="MediaVolumeUp"
-      summary="Switch Access Menu Action: Media Volume Up"/>
-  <variant name="MoveBackwardOneCharOfText"
-      summary="Switch Access Menu Action: Move Backward One Char Of Text"/>
-  <variant name="MoveBackwardOneWordOfText"
-      summary="Switch Access Menu Action: Move Backward One Word Of Text"/>
-  <variant name="MoveCursor" summary="Switch Access Menu Action: Move Cursor"/>
-  <variant name="MoveDownOneLineOfText"
-      summary="Switch Access Menu Action: Move Down One Line Of Text"/>
-  <variant name="MoveForwardOneCharOfText"
-      summary="Switch Access Menu Action: Move Forward One Char Of Text"/>
-  <variant name="MoveForwardOneWordOfText"
-      summary="Switch Access Menu Action: Move Forward One Word Of Text"/>
-  <variant name="MoveUpOneLineOfText"
-      summary="Switch Access Menu Action: Move Up One Line Of Text"/>
-  <variant name="Paste" summary="Switch Access Menu Action: Paste"/>
-  <variant name="PointScan" summary="Switch Access Menu Action: Point Scan"/>
-  <variant name="RightClick" summary="Switch Access Menu Action: Right Click"/>
-  <variant name="ScrollDown" summary="Switch Access Menu Action: Scroll Down"/>
-  <variant name="ScrollLeft" summary="Switch Access Menu Action: Scroll Left"/>
-  <variant name="ScrollRight"
-      summary="Switch Access Menu Action: Scroll Right"/>
-  <variant name="ScrollUp" summary="Switch Access Menu Action: Scroll Up"/>
-  <variant name="Select" summary="Switch Access Menu Action: Select"/>
-  <variant name="Settings" summary="Switch Access Menu Action: Settings"/>
-  <variant name="Shortcuts" summary="Switch Access Menu Action: Shortcuts"/>
-  <variant name="StartRecording"
-      summary="Switch Access Menu Action: Start Recording"/>
-  <variant name="StartTextSelection"
-      summary="Switch Access Menu Action: Start Text Selection"/>
-  <variant name="StopRecording"
-      summary="Switch Access Menu Action: Stop Recording"/>
-  <variant name="SystemDiagnostics"
-      summary="Switch Access Menu Action: System Diagnostics"/>
-  <variant name="SystemHelp" summary="Switch Access Menu Action: System Help"/>
-  <variant name="SystemLauncher"
-      summary="Switch Access Menu Action: System Launcher"/>
-  <variant name="SystemMenu" summary="Switch Access Menu Action: System Menu"/>
-  <variant name="SystemScreenshot"
-      summary="Switch Access Menu Action: System Screenshot"/>
-  <variant name="SystemStatusBar"
-      summary="Switch Access Menu Action: System Status Bar"/>
-  <variant name="SystemTaskManager"
-      summary="Switch Access Menu Action: System Task Manager"/>
-  <variant name="UserLock" summary="Switch Access Menu Action: User Lock"/>
-  <variant name="UserMenu" summary="Switch Access Menu Action: User Menu"/>
-  <variant name="UserNextUser"
-      summary="Switch Access Menu Action: User Next User"/>
-  <variant name="UserPreviousUser"
-      summary="Switch Access Menu Action: User Previous User"/>
-  <variant name="UserSignOut"
-      summary="Switch Access Menu Action: User Sign Out"/>
-  <variant name="WebBookmark"
-      summary="Switch Access Menu Action: Web Bookmark"/>
-  <variant name="WebBottomOfPage"
-      summary="Switch Access Menu Action: Web Bottom Of Page"/>
-  <variant name="WebClearHistory"
-      summary="Switch Access Menu Action: Web Clear History"/>
-  <variant name="WebDownloads"
-      summary="Switch Access Menu Action: Web Downloads"/>
-  <variant name="WebFindInPage"
-      summary="Switch Access Menu Action: Web Find In Page"/>
-  <variant name="WebMenu" summary="Switch Access Menu Action: Web Menu"/>
-  <variant name="WebTopOfPage"
-      summary="Switch Access Menu Action: Web Top Of Page"/>
+  <variant name="ko-KR" summary="Korean language code"/>
+  <variant name="pl-PL" summary="Polish language code"/>
+  <variant name="pt-BR" summary="Portuguese (Brazil) language code"/>
+  <variant name="th-TH" summary="Thai language code"/>
+  <variant name="tr-TR" summary="Turkish language code"/>
+  <variant name="zh-CN" summary="Chinese (Simplified) language code"/>
+  <variant name="zh-TW" summary="Chinese (Traditional) code"/>
 </variants>
 
 <histogram name="Accessibility.ActiveTime" units="ms"
-    expires_after="2024-02-04">
+    expires_after="2024-06-30">
   <owner>aleventhal@chromium.org</owner>
   <owner>janewman@microsoft.com</owner>
   <owner>chrome-a11y-core@google.com</owner>
@@ -161,7 +59,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Accessibility.Android.AutoDisableV2.{CurrentState}Time.{CallType}"
-    units="ms" expires_after="2023-11-30">
+    units="ms" expires_after="2024-06-30">
   <owner>mschillaci@google.com</owner>
   <owner>aldietz@google.com</owner>
   <owner>dtseng@google.com</owner>
@@ -190,7 +88,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Accessibility.Android.AutoDisableV2.{MethodCall}Called.{CallType}"
-    units="count" expires_after="2023-11-30">
+    units="count" expires_after="2024-06-30">
   <owner>mschillaci@google.com</owner>
   <owner>aldietz@google.com</owner>
   <owner>dtseng@google.com</owner>
@@ -216,7 +114,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Accessibility.Android.Cache.MaxNodesInCache" units="count"
-    expires_after="2024-02-04">
+    expires_after="2024-06-30">
   <owner>mschillaci@google.com</owner>
   <owner>chrome-a11y-core@google.com</owner>
   <summary>
@@ -226,7 +124,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Accessibility.Android.Cache.PercentageRetrievedFromCache"
-    units="%" expires_after="2024-02-04">
+    units="%" expires_after="2024-06-30">
   <owner>mschillaci@google.com</owner>
   <owner>chrome-a11y-core@google.com</owner>
   <summary>
@@ -237,7 +135,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Accessibility.Android.OnDemand.EventsDropped" units="count"
-    expires_after="2024-02-04">
+    expires_after="2024-06-30">
   <owner>mschillaci@google.com</owner>
   <owner>abigailbklein@google.com</owner>
   <owner>chrome-a11y-core@google.com</owner>
@@ -248,7 +146,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Accessibility.Android.OnDemand.OneHundredPercentEventsDropped"
-    units="count" expires_after="2024-02-05">
+    units="count" expires_after="2024-06-30">
   <owner>mschillaci@google.com</owner>
   <owner>abigailbklein@google.com</owner>
   <owner>chrome-a11y-core@google.com</owner>
@@ -261,7 +159,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Accessibility.Android.OnDemand.OneHundredPercentEventsDropped.{AXMode}"
-    units="count" expires_after="2024-02-20">
+    units="count" expires_after="2024-06-30">
   <owner>mschillaci@google.com</owner>
   <owner>abigailbklein@google.com</owner>
   <owner>chrome-a11y-core@google.com</owner>
@@ -286,7 +184,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Accessibility.Android.OnDemand.PercentageDropped" units="%"
-    expires_after="2024-02-05">
+    expires_after="2024-06-30">
   <owner>mschillaci@google.com</owner>
   <owner>abigailbklein@google.com</owner>
   <owner>chrome-a11y-core@google.com</owner>
@@ -297,7 +195,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Accessibility.Android.OnDemand.PercentageDropped.{AXMode}"
-    units="%" expires_after="2024-02-20">
+    units="%" expires_after="2024-06-30">
   <owner>mschillaci@google.com</owner>
   <owner>abigailbklein@google.com</owner>
   <owner>chrome-a11y-core@google.com</owner>
@@ -321,7 +219,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Accessibility.Android.PageZoom.AppMenuEnabledState"
-    enum="AccessibilityPageZoomAppMenuEnabledState" expires_after="2024-02-04">
+    enum="AccessibilityPageZoomAppMenuEnabledState" expires_after="2024-06-30">
   <owner>mschillaci@google.com</owner>
   <owner>aldietz@google.com</owner>
   <owner>chrome-a11y-core@google.com</owner>
@@ -336,7 +234,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Accessibility.Android.PageZoom.AppMenuSliderOpened"
-    enum="Boolean" expires_after="2024-02-04">
+    enum="Boolean" expires_after="2024-06-30">
   <owner>mschillaci@google.com</owner>
   <owner>aldietz@google.com</owner>
   <owner>chrome-a11y-core@google.com</owner>
@@ -347,7 +245,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Accessibility.Android.PageZoom.AppMenuSliderZoomLevelChanged"
-    enum="Boolean" expires_after="2024-02-04">
+    enum="Boolean" expires_after="2024-06-30">
   <owner>mschillaci@google.com</owner>
   <owner>aldietz@google.com</owner>
   <owner>chrome-a11y-core@google.com</owner>
@@ -359,7 +257,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Accessibility.Android.PageZoom.AppMenuSliderZoomLevelValue"
-    units="%" expires_after="2024-02-04">
+    units="%" expires_after="2024-06-30">
   <owner>mschillaci@google.com</owner>
   <owner>aldietz@google.com</owner>
   <owner>chrome-a11y-core@google.com</owner>
@@ -373,7 +271,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Accessibility.Android.PageZoom.SettingsDefaultZoomLevelChanged"
-    enum="Boolean" expires_after="2024-02-04">
+    enum="Boolean" expires_after="2024-06-30">
   <owner>mschillaci@google.com</owner>
   <owner>aldietz@google.com</owner>
   <owner>chrome-a11y-core@google.com</owner>
@@ -386,7 +284,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Accessibility.Android.PageZoom.SettingsDefaultZoomLevelValue"
-    units="%" expires_after="2024-02-04">
+    units="%" expires_after="2024-06-30">
   <owner>mschillaci@google.com</owner>
   <owner>aldietz@google.com</owner>
   <owner>chrome-a11y-core@google.com</owner>
@@ -416,8 +314,56 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
+<histogram name="Accessibility.Android.UpdateAccessibilityServices.DidPoll"
+    enum="BooleanHit" expires_after="2024-06-30">
+  <owner>mschillaci@google.com</owner>
+  <owner>aldietz@google.com</owner>
+  <owner>chrome-a11y-core@google.com</owner>
+  <summary>
+    Recorded every time the AccessibilityState.updateAccessibilityServices
+    method hit the criteria to poll. Lower number of hits is better.
+  </summary>
+</histogram>
+
+<histogram name="Accessibility.Android.UpdateAccessibilityServices.PollCount"
+    units="count" expires_after="2024-06-30">
+  <owner>mschillaci@google.com</owner>
+  <owner>aldietz@google.com</owner>
+  <owner>chrome-a11y-core@google.com</owner>
+  <summary>
+    Tracks the number of times this sequence of calls to
+    AccessibilityState.updateAccessibilityServices required polling to get
+    consistent enabled and running services. Lower count is better.
+  </summary>
+</histogram>
+
+<histogram name="Accessibility.Android.UpdateAccessibilityServices.PollTimeout"
+    enum="BooleanHit" expires_after="2024-06-30">
+  <owner>mschillaci@google.com</owner>
+  <owner>aldietz@google.com</owner>
+  <owner>chrome-a11y-core@google.com</owner>
+  <summary>
+    Tracks the number of times the
+    AccessibilityState.updateAccessibilityServices did not complete polling
+    before the max timeout. This should be rare. Any instances of this are bad.
+    Lower number of hits is better, should (almost always) be zero.
+  </summary>
+</histogram>
+
+<histogram name="Accessibility.Android.UpdateAccessibilityServices.Runtime"
+    units="microseconds" expires_after="2024-06-30">
+  <owner>mschillaci@google.com</owner>
+  <owner>aldietz@google.com</owner>
+  <owner>chrome-a11y-core@google.com</owner>
+  <summary>
+    Tracks the amount of time the AccessibilityState.updateAccessibilityServices
+    method took from start to finish (not counting async wait time). Lower time
+    is better.
+  </summary>
+</histogram>
+
 <histogram name="Accessibility.Android.Usage.A11yAlwaysOn" units="ms"
-    expires_after="2024-02-20">
+    expires_after="2024-06-30">
   <owner>mschillaci@google.com</owner>
   <owner>chrome-a11y-core@google.com</owner>
   <summary>
@@ -433,7 +379,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Accessibility.Android.Usage.{UsageType}" units="ms"
-    expires_after="2024-02-20">
+    expires_after="2024-06-30">
   <owner>mschillaci@google.com</owner>
   <owner>chrome-a11y-core@google.com</owner>
   <summary>
@@ -451,7 +397,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Accessibility.Android.UserFontSizePref.Change" units="%"
-    expires_after="2024-01-14">
+    expires_after="2024-06-30">
   <owner>twellington@chromium.org</owner>
   <owner>skym@chromium.org</owner>
   <summary>
@@ -462,7 +408,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Accessibility.Android.UserFontSizePref.OnStartup" units="%"
-    expires_after="2024-01-14">
+    expires_after="2024-06-30">
   <owner>twellington@chromium.org</owner>
   <owner>skym@chromium.org</owner>
   <summary>
@@ -472,25 +418,8 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Accessibility.AndroidServiceInfo"
-    enum="AccessibilityAndroidServiceInfoEnum" expires_after="M109">
-  <owner>aleventhal@chromium.org</owner>
-  <owner>mschillaci@chromium.org</owner>
-  <owner>chrome-a11y-core@google.com</owner>
-  <summary>
-    Deprecated as of 10/2022, M109. Now using the per-variant enum (below).
-    Tracks flags and capabilities of enabled accessibility services. Recorded
-    every time an Android web content view first creates a virtual view
-    hierarchy, indicating that some accessibility service is running. The number
-    of emits of this histogram won't be as useful as the unique user counts. The
-    primary purpose of this is to guide optimization by determining what
-    capabilities of accessibility services are widespread and which ones are
-    relatively rare.
-  </summary>
-</histogram>
-
 <histogram name="Accessibility.AndroidServiceInfo.{RunningApps}"
-    enum="AccessibilityAndroidServiceInfoEnum" expires_after="2024-02-20">
+    enum="AccessibilityAndroidServiceInfoEnum" expires_after="2024-06-30">
   <owner>mschillaci@google.com</owner>
   <owner>aldietz@google.com</owner>
   <owner>dtseng@chromium.org</owner>
@@ -516,7 +445,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Accessibility.ATK-APIs" enum="AccessibilityATKAPIEnum"
-    expires_after="2023-11-30">
+    expires_after="2024-07-14">
   <owner>jdiggs@chromium.org</owner>
   <owner>jkim@igalia.com</owner>
   <owner>chrome-a11y-core@google.com</owner>
@@ -527,7 +456,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Accessibility.AutoDisabled.DisabledTime" units="ms"
-    expires_after="2024-02-04">
+    expires_after="2024-06-30">
   <owner>abigailbklein@google.com</owner>
   <owner>chrome-a11y-core@google.com</owner>
   <summary>
@@ -537,7 +466,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Accessibility.AutoDisabled.EnabledTime" units="ms"
-    expires_after="2024-02-04">
+    expires_after="2024-06-30">
   <owner>abigailbklein@google.com</owner>
   <owner>chrome-a11y-core@google.com</owner>
   <summary>
@@ -547,13 +476,79 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Accessibility.AutoDisabled.EventCount" units="count"
-    expires_after="2024-02-04">
+    expires_after="2024-06-30">
   <owner>abigailbklein@google.com</owner>
   <owner>chrome-a11y-core@google.com</owner>
   <summary>
     The number of user input events that were received within one time window,
     without any accompanying accessibility API usage, that triggered
     accessibility to be auto-disabled.
+  </summary>
+</histogram>
+
+<histogram name="Accessibility.AXTreeSnapshotter.Snapshot.EndToEndRuntime"
+    units="ms" expires_after="2024-09-30">
+  <owner>mschillaci@google.com</owner>
+  <owner>chrome-a11y-core@google.com</owner>
+  <summary>
+    Tracks the total end-to-end runtime of the AXTreeSnapshotter flow from
+    initial Java request to a fully populated Java-side tree. This is recorded
+    during the snapshot callback after the root node's asyncCommit call. It is
+    currently recorded only during the snapshot stress test experiments.
+  </summary>
+</histogram>
+
+<histogram name="Accessibility.AXTreeSnapshotter.Snapshot.Error"
+    enum="AXTreeSnapshotErrorReason" expires_after="2024-09-30">
+  <owner>mschillaci@google.com</owner>
+  <owner>chrome-a11y-core@google.com</owner>
+  <summary>
+    The number of times that an AXTreeSnapshot request was not properly
+    fulfilled, split by error reason. Each individual snapshot request can only
+    report one failure reason. A page with multiple render frames can have some
+    snapshots succeed, and others fail. On repeat calls for snapshots, a
+    previously succeeding call may fail, or vice versa.
+  </summary>
+</histogram>
+
+<histogram name="Accessibility.AXTreeSnapshotter.Snapshot.NoRestrictions.Nodes"
+    units="count" expires_after="2024-09-30">
+  <owner>mschillaci@google.com</owner>
+  <owner>chrome-a11y-core@google.com</owner>
+  <summary>
+    Tracks the total number of nodes that are serialized in a AXTreeSnapshotter
+    call that does not have a max node limit.
+  </summary>
+</histogram>
+
+<histogram name="Accessibility.AXTreeSnapshotter.Snapshot.NoRestrictions.Time"
+    units="ms" expires_after="2024-09-30">
+  <owner>mschillaci@google.com</owner>
+  <owner>chrome-a11y-core@google.com</owner>
+  <summary>
+    Tracks the total serialization runtime of a AXTreeSnapshotter call that does
+    not have a timeout limit.
+  </summary>
+</histogram>
+
+<histogram name="Accessibility.AXTreeSnapshotter.Snapshot.Request"
+    enum="BooleanSent" expires_after="2024-09-30">
+  <owner>mschillaci@google.com</owner>
+  <owner>chrome-a11y-core@google.com</owner>
+  <summary>
+    The number of times that an AXTreeSnapshot has been requested by any client.
+    Each request is per render frame, so this can be counted multiple times on a
+    page, and a snapshot can be requested multiple times per page.
+  </summary>
+</histogram>
+
+<histogram name="Accessibility.Bundle" enum="AccessibilityModeBundleEnum"
+    expires_after="2024-06-30">
+  <owner>kevers@chromium.org</owner>
+  <owner>chrome-a11y-core@chromium.org</owner>
+  <summary>
+    Tracks when combinations of mode flags are set. Records when the mode flag
+    changes and aligns with one of the common (named) flag bundles.
   </summary>
 </histogram>
 
@@ -612,7 +607,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Accessibility.CrosAutoclick.TrayMenu.ChangeAction"
-    enum="AutoclickActionType" expires_after="2023-11-30">
+    enum="AutoclickActionType" expires_after="2024-07-28">
   <owner>katie@chromium.org</owner>
   <owner>dtseng@chromium.org</owner>
   <owner>chrome-a11y-core@google.com</owner>
@@ -623,7 +618,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Accessibility.CrosCaretHighlight" enum="BooleanEnabled"
-    expires_after="2024-02-04">
+    expires_after="2024-06-30">
   <owner>dtseng@chromium.org</owner>
   <owner>chrome-a11y-core@google.com</owner>
   <summary>
@@ -633,7 +628,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Accessibility.CrosColorCorrection" enum="BooleanEnabled"
-    expires_after="2024-06-14">
+    expires_after="2024-08-18">
   <owner>katie@chromium.org</owner>
   <owner>chrome-a11y-core@google.com</owner>
   <summary>
@@ -643,7 +638,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Accessibility.CrosColorCorrection.FilterAmount" units="%"
-    expires_after="2024-06-14">
+    expires_after="2024-08-18">
   <owner>katie@chromium.org</owner>
   <owner>chrome-a11y-core@google.com</owner>
   <summary>
@@ -655,7 +650,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Accessibility.CrosColorCorrection.FilterType"
-    enum="ColorCorrectionFilterTypes" expires_after="2024-06-14">
+    enum="ColorCorrectionFilterTypes" expires_after="2024-08-18">
   <owner>katie@chromium.org</owner>
   <owner>chrome-a11y-core@google.com</owner>
   <summary>
@@ -667,7 +662,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Accessibility.CrosCursorColor" enum="BooleanEnabled"
-    expires_after="2024-02-04">
+    expires_after="2024-06-30">
   <owner>dtseng@chromium.org</owner>
   <owner>katie@chromium.org</owner>
   <owner>chrome-a11y-core@google.com</owner>
@@ -678,7 +673,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Accessibility.CrosCursorHighlight" enum="BooleanEnabled"
-    expires_after="2024-02-04">
+    expires_after="2024-06-30">
   <owner>dtseng@chromium.org</owner>
   <owner>chrome-a11y-core@google.com</owner>
   <summary>
@@ -688,7 +683,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Accessibility.CrosDictation" enum="BooleanEnabled"
-    expires_after="2024-02-04">
+    expires_after="2024-06-30">
   <owner>anastasi@google.com</owner>
   <owner>dtseng@chromium.org</owner>
   <owner>chrome-a11y-core@google.com</owner>
@@ -699,7 +694,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Accessibility.CrosDictation.Language" enum="LocaleCodeISO639"
-    expires_after="2024-02-04">
+    expires_after="2024-06-30">
   <owner>katie@chromium.org</owner>
   <owner>dtseng@chromium.org</owner>
   <owner>chrome-a11y-core@google.com</owner>
@@ -714,7 +709,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Accessibility.CrosDictation.ListeningDuration.NetworkRecognition"
-    units="ms" expires_after="2024-02-04">
+    units="ms" expires_after="2024-06-30">
   <owner>katie@chromium.org</owner>
   <owner>chrome-a11y-core@google.com</owner>
   <summary>
@@ -726,7 +721,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Accessibility.CrosDictation.ListeningDuration.OnDeviceRecognition"
-    units="ms" expires_after="2023-11-30">
+    units="ms" expires_after="2024-08-04">
   <owner>katie@chromium.org</owner>
   <owner>chrome-a11y-core@google.com</owner>
   <summary>
@@ -744,7 +739,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Accessibility.CrosDictation.MacroRecognized"
-    enum="CrosDictationMacroName" expires_after="2024-02-04">
+    enum="CrosDictationMacroName" expires_after="2024-04-28">
   <owner>akihiroota@chromium.org</owner>
   <owner>chrome-a11y-core@google.com</owner>
   <summary>Recorded whenever Dictation recognizes a macro.</summary>
@@ -758,7 +753,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Accessibility.CrosDictation.PumpkinSucceeded"
-    enum="BooleanUsage" expires_after="2023-11-30">
+    enum="BooleanUsage" expires_after="2024-08-04">
   <owner>akihiroota@chromium.org</owner>
   <owner>chrome-a11y-core@google.com</owner>
   <summary>
@@ -768,7 +763,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Accessibility.CrosDictation.ToggleDictationMethod"
-    enum="CrosDictationToggleDictationMethod" expires_after="2024-02-04">
+    enum="CrosDictationToggleDictationMethod" expires_after="2024-04-28">
   <owner>anastasi@google.com</owner>
   <owner>dtseng@chromium.org</owner>
   <owner>chrome-a11y-core@google.com</owner>
@@ -776,7 +771,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Accessibility.CrosDictation.UsedOnDeviceSpeech"
-    enum="BooleanUsage" expires_after="2023-11-30">
+    enum="BooleanUsage" expires_after="2024-08-04">
   <owner>katie@chromium.org</owner>
   <owner>chrome-a11y-core@google.com</owner>
   <summary>
@@ -786,7 +781,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Accessibility.CrosDictation.UsedPumpkin" enum="BooleanUsage"
-    expires_after="2024-02-04">
+    expires_after="2024-06-30">
   <owner>akihiroota@chromium.org</owner>
   <owner>chrome-a11y-core@google.com</owner>
   <summary>
@@ -797,7 +792,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Accessibility.CrosDockedMagnifier" enum="BooleanEnabled"
-    expires_after="2024-02-04">
+    expires_after="2024-06-30">
   <owner>dtseng@chromium.org</owner>
   <owner>katie@chromium.org</owner>
   <owner>chrome-a11y-core@google.com</owner>
@@ -808,7 +803,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Accessibility.CrosFocusHighlight" enum="BooleanEnabled"
-    expires_after="2024-02-04">
+    expires_after="2024-06-30">
   <owner>dtseng@chromium.org</owner>
   <owner>chrome-a11y-core@google.com</owner>
   <summary>
@@ -818,7 +813,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Accessibility.CrosHighContrast" enum="BooleanEnabled"
-    expires_after="2024-02-04">
+    expires_after="2024-06-30">
   <owner>dtseng@chromium.org</owner>
   <owner>kenjibaheux@google.com</owner>
   <owner>chrome-a11y-core@google.com</owner>
@@ -829,7 +824,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Accessibility.CrosLargeCursor" enum="BooleanEnabled"
-    expires_after="2024-02-04">
+    expires_after="2024-06-30">
   <owner>dtseng@chromium.org</owner>
   <owner>kenjibaheux@google.com</owner>
   <owner>chrome-a11y-core@google.com</owner>
@@ -851,7 +846,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Accessibility.CrosScreenMagnifier" enum="BooleanEnabled"
-    expires_after="2024-02-04">
+    expires_after="2024-06-30">
   <owner>dtseng@chromium.org</owner>
   <owner>josiahk@google.com</owner>
   <owner>kenjibaheux@google.com</owner>
@@ -863,7 +858,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Accessibility.CrosSelectToSpeak" enum="BooleanEnabled"
-    expires_after="2024-02-04">
+    expires_after="2024-06-30">
   <owner>dtseng@chromium.org</owner>
   <owner>katie@chromium.org</owner>
   <owner>chrome-a11y-core@google.com</owner>
@@ -874,7 +869,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Accessibility.CrosSelectToSpeak.BackgroundShading"
-    enum="BooleanEnabled" expires_after="2023-11-30">
+    enum="BooleanEnabled" expires_after="2024-07-28">
   <owner>katie@chromium.org</owner>
   <owner>chrome-a11y-core@google.com</owner>
   <summary>
@@ -894,7 +889,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Accessibility.CrosSelectToSpeak.EnhancedNetworkVoices"
-    enum="BooleanEnabled" expires_after="2024-02-04">
+    enum="BooleanEnabled" expires_after="2024-06-30">
   <owner>ajitnarayanan@google.com</owner>
   <owner>chrome-a11y-core@google.com</owner>
   <summary>
@@ -904,7 +899,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Accessibility.CrosSelectToSpeak.NavigationControls"
-    enum="BooleanEnabled" expires_after="2024-02-04">
+    enum="BooleanEnabled" expires_after="2024-06-30">
   <owner>ajitnarayanan@google.com</owner>
   <owner>chrome-a11y-core@google.com</owner>
   <summary>
@@ -940,7 +935,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Accessibility.CrosSelectToSpeak.SentenceNavigationMethod"
-    enum="CrosSelectToSpeakActivationMethod" expires_after="2023-11-30">
+    enum="CrosSelectToSpeakActivationMethod" expires_after="2024-08-04">
   <owner>ajitnarayanan@google.com</owner>
   <owner>chrome-a11y-core@google.com</owner>
   <summary>
@@ -951,7 +946,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Accessibility.CrosSelectToSpeak.StartSpeechMethod"
-    enum="CrosSelectToSpeakStartSpeechMethod" expires_after="2024-02-04">
+    enum="CrosSelectToSpeakStartSpeechMethod" expires_after="2024-06-30">
   <owner>katie@chromium.org</owner>
   <owner>chrome-a11y-core@google.com</owner>
   <summary>
@@ -962,7 +957,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Accessibility.CrosSelectToSpeak.StateChangeEvent"
-    enum="CrosSelectToSpeakStateChangeEvent" expires_after="2024-02-04">
+    enum="CrosSelectToSpeakStateChangeEvent" expires_after="2024-06-30">
   <owner>katie@chromium.org</owner>
   <owner>chrome-a11y-core@google.com</owner>
   <summary>
@@ -975,7 +970,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Accessibility.CrosSelectToSpeak.TtsEngineUsed"
-    enum="CrosSelectToSpeakTtsEngineUsed" expires_after="2024-02-04">
+    enum="CrosSelectToSpeakTtsEngineUsed" expires_after="2024-06-30">
   <owner>ajitnarayanan@google.com</owner>
   <owner>chrome-a11y-core@google.com</owner>
   <summary>
@@ -1015,7 +1010,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Accessibility.CrosSpokenFeedback{AccessibilityEveryReport}"
-    enum="BooleanEnabled" expires_after="2024-02-20">
+    enum="BooleanEnabled" expires_after="2024-06-30">
   <owner>dtseng@chromium.org</owner>
   <owner>kenjibaheux@google.com</owner>
   <owner>aleventhal@google.com</owner>
@@ -1032,7 +1027,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Accessibility.CrosStickyKeys" enum="BooleanEnabled"
-    expires_after="2024-02-04">
+    expires_after="2024-06-30">
   <owner>dtseng@chromium.org</owner>
   <owner>kenjibaheux@google.com</owner>
   <owner>tengs@chromium.org</owner>
@@ -1044,7 +1039,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Accessibility.CrosSwitchAccess" enum="BooleanEnabled"
-    expires_after="2024-02-04">
+    expires_after="2024-06-30">
   <owner>dtseng@chromium.org</owner>
   <owner>anastasi@google.com</owner>
   <owner>chrome-a11y-core@google.com</owner>
@@ -1055,7 +1050,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Accessibility.CrosSwitchAccess.AutoScan" enum="BooleanEnabled"
-    expires_after="2023-11-30">
+    expires_after="2024-06-30">
   <owner>dtseng@chromium.org</owner>
   <owner>anastasi@google.com</owner>
   <owner>chrome-a11y-core@google.com</owner>
@@ -1067,7 +1062,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Accessibility.CrosSwitchAccess.AutoScan.KeyboardSpeedMs"
-    units="ms" expires_after="2023-11-30">
+    units="ms" expires_after="2024-06-30">
   <owner>dtseng@chromium.org</owner>
   <owner>anastasi@google.com</owner>
   <owner>chrome-a11y-core@google.com</owner>
@@ -1079,7 +1074,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Accessibility.CrosSwitchAccess.AutoScan.SpeedMs" units="ms"
-    expires_after="2023-11-30">
+    expires_after="2024-06-30">
   <owner>dtseng@chromium.org</owner>
   <owner>anastasi@google.com</owner>
   <owner>chrome-a11y-core@google.com</owner>
@@ -1091,7 +1086,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Accessibility.CrosSwitchAccess.Error"
-    enum="CrosSwitchAccessError" expires_after="2023-11-30">
+    enum="CrosSwitchAccessError" expires_after="2024-06-30">
   <owner>dtseng@chromium.org</owner>
   <owner>anastasi@google.com</owner>
   <owner>chrome-a11y-core@google.com</owner>
@@ -1102,7 +1097,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Accessibility.CrosSwitchAccess.NextKeyCode" enum="KeyCode"
-    expires_after="2023-11-30">
+    expires_after="2024-06-30">
   <owner>dtseng@chromium.org</owner>
   <owner>anastasi@google.com</owner>
   <owner>chrome-a11y-core@google.com</owner>
@@ -1113,7 +1108,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Accessibility.CrosSwitchAccess.PreviousKeyCode" enum="KeyCode"
-    expires_after="2023-11-30">
+    expires_after="2024-06-30">
   <owner>dtseng@chromium.org</owner>
   <owner>anastasi@google.com</owner>
   <owner>chrome-a11y-core@google.com</owner>
@@ -1124,7 +1119,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Accessibility.CrosSwitchAccess.SelectKeyCode" enum="KeyCode"
-    expires_after="2023-11-30">
+    expires_after="2024-06-30">
   <owner>dtseng@chromium.org</owner>
   <owner>anastasi@google.com</owner>
   <owner>chrome-a11y-core@google.com</owner>
@@ -1135,7 +1130,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Accessibility.CrosVirtualKeyboard" enum="BooleanEnabled"
-    expires_after="2023-11-30">
+    expires_after="2024-07-28">
   <owner>dtseng@chromium.org</owner>
   <owner>kenjibaheux@google.com</owner>
   <owner>chrome-a11y-core@google.com</owner>
@@ -1145,8 +1140,25 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Accessibility.EventProcessingTime3{Variation}" units="ms"
+    expires_after="2024-08-22">
+  <owner>grt@chromium.org</owner>
+  <owner>aleventhal@chromium.org</owner>
+  <summary>
+    The round-trip time to send a set of accessibility mode flags from the
+    browser process to a renderer and receive and process the first set of
+    updates and events. Recorded once each time the browser process receives the
+    first set of updates and events from a renderer following {Variation} call
+    to RenderAccessibility::SetMode.
+  </summary>
+  <token key="Variation">
+    <variant name=".First" summary="the very first"/>
+    <variant name=".NotFirst" summary="all but the first"/>
+  </token>
+</histogram>
+
 <histogram name="Accessibility.ExperimentalModeFlag.FormControls"
-    enum="BooleanEnabled" expires_after="2024-02-04">
+    enum="BooleanEnabled" expires_after="2024-06-30">
   <owner>aldietz@google.com</owner>
   <owner>chrome-a11y-core@google.com</owner>
   <summary>
@@ -1173,24 +1185,8 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Accessibility.ImageLabels" enum="BooleanEnabled"
-    expires_after="2023-11-30">
-  <obsolete>
-    Logged on profile open, including for profiles that do not show web content.
-    (For those profiles, this logged the value of disabled.) Replaced in M-107
-    with Accessibility.ImageLabels2, which is similar but not logged for
-    unnecessary profiles.
-  </obsolete>
-  <owner>katie@chromium.org</owner>
-  <owner>chrome-a11y-core@google.com</owner>
-  <summary>
-    Whether the Chrome accessibility image label setting is on. Logged once 45
-    secs after profile open.
-  </summary>
-</histogram>
-
 <histogram name="Accessibility.ImageLabels.Android" enum="BooleanEnabled"
-    expires_after="2024-02-04">
+    expires_after="2024-06-30">
   <owner>dtseng@chromium.org</owner>
   <owner>mschillaci@google.com</owner>
   <owner>chrome-a11y-core@google.com</owner>
@@ -1202,7 +1198,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Accessibility.ImageLabels.Android.DialogOption"
-    enum="AccessibilityImageLabelModeAndroid" expires_after="2023-11-30">
+    enum="AccessibilityImageLabelModeAndroid" expires_after="2024-06-30">
   <owner>dtseng@chromium.org</owner>
   <owner>mschillaci@google.com</owner>
   <owner>chrome-a11y-core@google.com</owner>
@@ -1213,7 +1209,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Accessibility.ImageLabels.Android.OnlyOnWifi"
-    enum="BooleanEnabled" expires_after="2024-02-04">
+    enum="BooleanEnabled" expires_after="2024-06-30">
   <owner>dtseng@chromium.org</owner>
   <owner>mschillaci@google.com</owner>
   <owner>chrome-a11y-core@google.com</owner>
@@ -1225,7 +1221,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Accessibility.ImageLabels.ModalDialogAccepted"
-    enum="BooleanAccepted" expires_after="2024-02-04">
+    enum="BooleanAccepted" expires_after="2024-08-11">
   <owner>katie@chromium.org</owner>
   <owner>dtseng@chromium.org</owner>
   <summary>
@@ -1237,7 +1233,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Accessibility.ImageLabels.PageLanguage" enum="LanguageName"
-    expires_after="2024-02-04">
+    expires_after="2024-06-30">
   <owner>katie@chromium.org</owner>
   <owner>dtseng@chromium.org</owner>
   <owner>chrome-a11y-core@google.com</owner>
@@ -1248,7 +1244,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Accessibility.ImageLabels.RequestLanguage" enum="LanguageName"
-    expires_after="2024-02-04">
+    expires_after="2024-06-30">
   <owner>katie@chromium.org</owner>
   <owner>dtseng@chromium.org</owner>
   <owner>chrome-a11y-core@google.com</owner>
@@ -1260,7 +1256,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Accessibility.ImageLabels.{Result}By{Dimension}"
-    units="pixels" expires_after="2024-02-20">
+    units="pixels" expires_after="2024-06-30">
   <owner>dtseng@chromium.org</owner>
   <owner>mschillaci@google.com</owner>
   <owner>chrome-a11y-core@google.com</owner>
@@ -1281,7 +1277,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Accessibility.ImageLabels.{Result}By{Length}"
-    units="characters" expires_after="2024-02-20">
+    units="characters" expires_after="2024-06-30">
   <owner>dtseng@chromium.org</owner>
   <owner>mschillaci@google.com</owner>
   <owner>chrome-a11y-core@google.com</owner>
@@ -1303,7 +1299,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Accessibility.ImageLabels2" enum="BooleanEnabled"
-    expires_after="2024-02-04">
+    expires_after="2024-06-30">
   <owner>katie@chromium.org</owner>
   <owner>chrome-a11y-core@google.com</owner>
   <summary>
@@ -1315,7 +1311,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Accessibility.InactiveTime" units="ms"
-    expires_after="2024-02-04">
+    expires_after="2024-06-30">
   <owner>aleventhal@chromium.org</owner>
   <owner>abigailbklein@chromium.org</owner>
   <owner>janewman@microsoft.com</owner>
@@ -1327,7 +1323,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Accessibility.iOS.NewLargerTextCategory" enum="BooleanHit"
-    expires_after="2023-10-16">
+    expires_after="2024-10-16">
   <owner>gambard@chromium.org</owner>
   <owner>rkgibson@google.com</owner>
   <summary>
@@ -1409,26 +1405,8 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Accessibility.LiveCaption" enum="BooleanEnabled"
-    expires_after="2023-11-30">
-  <obsolete>
-    Replaced in M-109 with the histogram Accessibility.LiveCaption2, which is
-    similar but not logged for unnecessary profiles such as system profiles and
-    unusual ChromeOS profiles (sign-in profile, etc.)
-  </obsolete>
-  <owner>katie@chromium.org</owner>
-  <owner>abigailbklein@google.com</owner>
-  <owner>evliu@google.com</owner>
-  <owner>chrome-a11y-core@google.com</owner>
-  <summary>
-    Whether the Live Caption feature is enabled. This is logged once when the
-    Live Caption controller is initialized on platforms that support Live
-    Caption.
-  </summary>
-</histogram>
-
 <histogram name="Accessibility.LiveCaption.AudioPropertyChanged"
-    enum="BooleanEnabled" expires_after="2023-11-30">
+    enum="BooleanEnabled" expires_after="2024-09-30">
   <owner>katie@chromium.org</owner>
   <owner>abigailbklein@google.com</owner>
   <owner>evliu@google.com</owner>
@@ -1441,7 +1419,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Accessibility.LiveCaption.CaptionBubbleError"
-    enum="CaptionBubbleErrorType" expires_after="2024-02-04">
+    enum="CaptionBubbleErrorType" expires_after="2024-09-30">
   <owner>abigailbklein@google.com</owner>
   <owner>evliu@google.com</owner>
   <owner>chrome-a11y-core@google.com</owner>
@@ -1451,32 +1429,8 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Accessibility.LiveCaption.Duration.CaptionBubble{Visibility}2"
-    units="ms" expires_after="2022-09-30">
-  <obsolete>
-    Deprecated as of 09/2022. Now using
-    Accessibility.LiveCaption.Duration.CaptionBubble{Visibility}3 This metric
-    measured the total speech recognition time not only for Live Caption but
-    also for other applications that use SODA.
-  </obsolete>
-  <owner>abigailbklein@google.com</owner>
-  <owner>evliu@google.com</owner>
-  <owner>chrome-a11y-core@google.com</owner>
-  <summary>
-    Measures how long SODA was running while the Live Caption UI was
-    {Visibility}. Logged once on the destruction of the
-    SpeechRecognitionRecognizerImpl.
-  </summary>
-  <token key="Visibility">
-    <variant name="Hidden"
-        summary="hidden. This might be because it was closed by user or
-                 because there was an error passing transcriptions to the UI"/>
-    <variant name="Visible" summary="visible and showing transcriptions"/>
-  </token>
-</histogram>
-
 <histogram name="Accessibility.LiveCaption.Duration.CaptionBubble{Visibility}3"
-    units="ms" expires_after="2024-02-20">
+    units="ms" expires_after="2024-09-30">
   <owner>abigailbklein@google.com</owner>
   <owner>evliu@google.com</owner>
   <owner>chrome-a11y-core@google.com</owner>
@@ -1494,7 +1448,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Accessibility.LiveCaption.EnableFrom{Entrypoint}"
-    enum="BooleanEnabled" expires_after="2024-02-20">
+    enum="BooleanEnabled" expires_after="2024-09-30">
   <owner>katie@chromium.org</owner>
   <owner>abigailbklein@google.com</owner>
   <owner>evliu@google.com</owner>
@@ -1511,7 +1465,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Accessibility.LiveCaption.ExpandBubble"
-    enum="LiveCaptionExpandBubbleEvent" expires_after="2023-11-30">
+    enum="LiveCaptionExpandBubbleEvent" expires_after="2024-09-30">
   <owner>katie@chromium.org</owner>
   <owner>abigailbklein@google.com</owner>
   <owner>evliu@google.com</owner>
@@ -1521,26 +1475,8 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Accessibility.LiveCaption.FeatureEnabled"
-    enum="BooleanEnabled" expires_after="2023-11-30">
-  <obsolete>
-    Replaced in M-109 with the histogram
-    Accessibility.LiveCaption.FeatureEnabled2, which is similar but not logged
-    for unnecessary profiles such as system profiles and unusual ChromeOS
-    profiles (sign-in profile, etc.)
-  </obsolete>
-  <owner>katie@chromium.org</owner>
-  <owner>abigailbklein@google.com</owner>
-  <owner>evliu@google.com</owner>
-  <owner>chrome-a11y-core@google.com</owner>
-  <summary>
-    Whether the Live Caption feature flag is enabled. This is logged once at the
-    time of component registration.
-  </summary>
-</histogram>
-
 <histogram name="Accessibility.LiveCaption.FeatureEnabled2"
-    enum="BooleanEnabled" expires_after="2024-02-04">
+    enum="BooleanEnabled" expires_after="2024-09-30">
   <owner>katie@chromium.org</owner>
   <owner>abigailbklein@google.com</owner>
   <owner>evliu@google.com</owner>
@@ -1551,8 +1487,18 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Accessibility.LiveCaption.LanguageCount" units="count"
+    expires_after="2024-09-30">
+  <owner>evliu@google.com</owner>
+  <owner>chrome-a11y-core@google.com</owner>
+  <summary>
+    The number of languages used to initialize the Speech On-Device API (SODA).
+    This is logged each time SODA is reset.
+  </summary>
+</histogram>
+
 <histogram name="Accessibility.LiveCaption.LiveCaptionPinBubbleEvent"
-    enum="LiveCaptionPinBubbleEvent" expires_after="2023-11-30">
+    enum="LiveCaptionPinBubbleEvent" expires_after="2024-09-30">
   <owner>abigailbklein@google.com</owner>
   <owner>evliu@google.com</owner>
   <owner>chrome-a11y-core@google.com</owner>
@@ -1560,7 +1506,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Accessibility.LiveCaption.LoadSodaErrorCode"
-    enum="WinGetLastError" expires_after="2024-02-04">
+    enum="WinGetLastError" expires_after="2024-09-30">
   <owner>abigailbklein@google.com</owner>
   <owner>evliu@google.com</owner>
   <owner>chrome-a11y-core@google.com</owner>
@@ -1572,7 +1518,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Accessibility.LiveCaption.LoadSodaResult"
-    enum="LoadSodaResult" expires_after="2024-02-04">
+    enum="LoadSodaResult" expires_after="2024-09-30">
   <owner>abigailbklein@google.com</owner>
   <owner>evliu@google.com</owner>
   <owner>chrome-a11y-core@google.com</owner>
@@ -1583,7 +1529,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Accessibility.LiveCaption.MaskOffensiveWords" enum="Boolean"
-    expires_after="2023-11-30">
+    expires_after="2024-09-30">
   <owner>abigailbklein@google.com</owner>
   <owner>evliu@google.com</owner>
   <owner>chrome-a11y-core@google.com</owner>
@@ -1593,8 +1539,15 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Accessibility.LiveCaption.PinBubble" enum="Boolean"
+    expires_after="2024-09-30">
+  <owner>evliu@google.com</owner>
+  <owner>chrome-a11y-core@google.com</owner>
+  <summary>Records when a user pins or unpins the Live Caption bubble.</summary>
+</histogram>
+
 <histogram name="Accessibility.LiveCaption.Session2"
-    enum="LiveCaptionSessionEvent" expires_after="2024-02-04">
+    enum="LiveCaptionSessionEvent" expires_after="2024-09-30">
   <owner>katie@chromium.org</owner>
   <owner>abigailbklein@google.com</owner>
   <owner>evliu@google.com</owner>
@@ -1611,7 +1564,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Accessibility.LiveCaption.SodaVerificationFailureMissingIndicatorFile"
-    enum="Boolean" expires_after="2024-02-04">
+    enum="Boolean" expires_after="2024-09-30">
   <owner>abigailbklein@google.com</owner>
   <owner>evliu@google.com</owner>
   <owner>chrome-a11y-core@google.com</owner>
@@ -1623,7 +1576,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Accessibility.LiveCaption.SpeechRecognitionServiceLanguage"
-    enum="SodaLanguageCode" expires_after="2023-11-30">
+    enum="SodaLanguageCode" expires_after="2024-09-30">
   <owner>evliu@google.com</owner>
   <owner>chrome-media-ux@google.com</owner>
   <owner>chrome-a11y-core@google.com</owner>
@@ -1636,7 +1589,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Accessibility.LiveCaption.{SodaLanguageCode}.SessionContainsRecognizedSpeech"
-    enum="BooleanEnabled" expires_after="2024-02-01">
+    enum="BooleanEnabled" expires_after="2024-09-30">
   <owner>evliu@google.com</owner>
   <owner>chrome-media-ux@google.com</owner>
   <owner>chrome-a11y-core@google.com</owner>
@@ -1649,7 +1602,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Accessibility.LiveCaption2" enum="BooleanEnabled"
-    expires_after="2024-02-04">
+    expires_after="2024-09-30">
   <owner>katie@chromium.org</owner>
   <owner>abigailbklein@google.com</owner>
   <owner>evliu@google.com</owner>
@@ -1737,7 +1690,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Accessibility.ModeFlag" enum="AccessibilityModeFlagEnum"
-    expires_after="2024-02-04">
+    expires_after="2024-06-30">
   <owner>aleventhal@chromium.org</owner>
   <owner>chrome-a11y-core@google.com</owner>
   <summary>
@@ -1753,7 +1706,6 @@ chromium-metrics-reviews@google.com.
     expires_after="never">
 <!-- expires-never: Core metric for monitoring OOBE accessibility status. -->
 
-  <owner>lpalmaro@chromium.org</owner>
   <owner>jessejames@chromium.org</owner>
   <owner>rsorokin@chromium.org</owner>
   <owner>alemate@chromium.org</owner>
@@ -1765,7 +1717,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Accessibility.PDF.HasAccessibleText" enum="BooleanExists"
-    expires_after="2024-02-04">
+    expires_after="2024-06-30">
   <owner>dtseng@chromium.org</owner>
   <owner>nektar@chromium.org</owner>
   <owner>chrome-a11y-core@google.com</owner>
@@ -1777,8 +1729,18 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Accessibility.PDF.OpenedWithScreenReader" enum="BooleanExists"
+    expires_after="2024-12-30">
+  <owner>kyungjunlee@google.com</owner>
+  <owner>chrome-a11y-core@google.com</owner>
+  <summary>
+    When a PDF is constructed for accessibility, true if a screen reader is on;
+    otherwise, false.
+  </summary>
+</histogram>
+
 <histogram name="Accessibility.PdfOcr.ActiveWhenInaccessiblePdfOpened"
-    enum="BooleanExists" expires_after="2024-02-01">
+    enum="BooleanExists" expires_after="2024-06-30">
   <owner>kyungjunlee@google.com</owner>
   <owner>chrome-a11y-core@google.com</owner>
   <summary>
@@ -1789,7 +1751,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Accessibility.PdfOcr.InaccessiblePdfPageCount" units="count"
-    expires_after="2024-06-01">
+    expires_after="2024-08-04">
   <owner>kyungjunlee@google.com</owner>
   <owner>chrome-a11y-core@google.com</owner>
   <summary>
@@ -1799,7 +1761,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Accessibility.PdfOcr.MostDetectedLanguageInOcrData"
-    enum="LocaleCodeISO639" expires_after="2024-06-01">
+    enum="LocaleCodeISO639" expires_after="2024-08-04">
   <owner>kyungjunlee@google.com</owner>
   <owner>chrome-a11y-core@google.com</owner>
   <summary>
@@ -1809,7 +1771,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Accessibility.PdfOcr.PDFImages" enum="PdfOcrRequestStatus"
-    expires_after="2024-06-01">
+    expires_after="2024-08-04">
   <owner>kyungjunlee@google.com</owner>
   <owner>chrome-a11y-core@google.com</owner>
   <summary>
@@ -1823,7 +1785,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Accessibility.PdfOcr.UserAcceptLanguage"
-    enum="LocaleCodeISO639" expires_after="2024-06-01">
+    enum="LocaleCodeISO639" expires_after="2024-08-04">
   <owner>kyungjunlee@google.com</owner>
   <owner>chrome-a11y-core@google.com</owner>
   <summary>
@@ -1834,7 +1796,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Accessibility.PdfOcr.UserSelection" enum="PdfOcrUserSelection"
-    expires_after="2024-02-01">
+    expires_after="2024-06-30">
   <owner>kyungjunlee@google.com</owner>
   <owner>chrome-a11y-core@google.com</owner>
   <summary>
@@ -1843,9 +1805,48 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Accessibility.Performance.AXObjectCacheImpl.Incremental"
+    units="bytes" expires_after="2024-07-21">
+  <owner>kevers@chromium.org</owner>
+  <owner>chrome-a11y-core@google.com</owner>
+  <summary>
+    Tracks the size of dirty tree serialization from the renderer to the browser
+    process.
+
+    Logged every time the document layout is clean and we need to update the
+    accessibility tree. Low priority updates may be batched and sent every 150ms
+    if a change was detected.
+  </summary>
+</histogram>
+
+<histogram
+    name="Accessibility.Performance.AXObjectCacheImpl.Incremental.{DataType}"
+    units="bytes" expires_after="2024-07-21">
+  <owner>kevers@chromium.org</owner>
+  <owner>chrome-a11y-core@google.com</owner>
+  <summary>
+    Tracks the contribution of {DataType} valued properties to the overall size
+    of dirty tree serialization from the renderer to the browser process.
+
+    Logged every time the document layout is clean and we need to update the
+    accessibility tree. Low priority updates may be batched and sent every 150ms
+    if a change was detected.
+  </summary>
+  <token key="DataType">
+    <variant name="Bool"/>
+    <variant name="ChildIds"/>
+    <variant name="Float"/>
+    <variant name="HTML"/>
+    <variant name="Int"/>
+    <variant name="IntList"/>
+    <variant name="String"/>
+    <variant name="StringList"/>
+  </token>
+</histogram>
+
 <histogram
     name="Accessibility.Performance.AXObjectCacheImpl.RedundantSerializations"
-    units="count" expires_after="2024-02-11">
+    units="count" expires_after="2024-06-30">
   <owner>aleventhal@chromium.org</owner>
   <owner>chrome-a11y-core@google.com</owner>
   <summary>
@@ -1858,10 +1859,23 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Accessibility.Performance.AXTree.Destroy" units="ms"
-    expires_after="2024-02-11">
+<histogram name="Accessibility.Performance.AXObjectCacheImpl.Snapshot"
+    units="bytes" expires_after="2024-07-14">
+  <owner>kevers@chromium.org</owner>
+  <owner>chrome-a11y-core@google.com</owner>
+  <summary>
+    Tracks the size of entire tree (snapshot) serialization from the renderer to
+    the browser process. Snapshots are on demand when the entire a11y tree needs
+    to be send from the renderer to the browser process.
+  </summary>
+</histogram>
+
+<histogram name="Accessibility.Performance.AXTree.Destroy2"
+    units="microseconds" expires_after="2024-06-30">
+  <owner>mschillaci@google.com</owner>
   <owner>agarwaltushar@google.com</owner>
   <owner>olivierli@chromium.org</owner>
+  <owner>chrome-a11y-core@google.com</owner>
   <summary>
     Tracks time spent in AXTree::Destroy.
 
@@ -1869,12 +1883,19 @@ chromium-metrics-reviews@google.com.
     which updates AXTree to internally use a std::map instead of a
     base::flat_map. Please see the CL description for more context and a
     performance profile.
+
+    Warning: This metric may include reports from clients with low-resolution
+    clocks (i.e. on Windows, ref. |TimeTicks::IsHighResolution()|). Such reports
+    will cause this metric to have an abnormal distribution. When considering
+    revising this histogram, see UMA_HISTOGRAM_CUSTOM_MICROSECONDS_TIMES for the
+    solution.
   </summary>
 </histogram>
 
 <histogram
-    name="Accessibility.Performance.BrowserAccessibilityManager::OnAccessibilityEvents"
-    units="ms" expires_after="2024-02-04">
+    name="Accessibility.Performance.BrowserAccessibilityManager::OnAccessibilityEvents2"
+    units="microseconds" expires_after="2024-06-30">
+  <owner>mschillaci@google.com</owner>
   <owner>aleventhal@chromium.org</owner>
   <owner>chrome-a11y-core@google.com</owner>
   <summary>
@@ -1887,22 +1908,36 @@ chromium-metrics-reviews@google.com.
     histogram only measures events which are processed by
     BrowserAccessibilityManager and thus should have a better histogram to
     understand the cost of doing so, and be used to meaure optimizations.
+
+    Warning: This metric may include reports from clients with low-resolution
+    clocks (i.e. on Windows, ref. |TimeTicks::IsHighResolution()|). Such reports
+    will cause this metric to have an abnormal distribution. When considering
+    revising this histogram, see UMA_HISTOGRAM_CUSTOM_MICROSECONDS_TIMES for the
+    solution.
   </summary>
 </histogram>
 
-<histogram name="Accessibility.Performance.HandleAXEvents" units="ms"
-    expires_after="2024-02-04">
+<histogram name="Accessibility.Performance.HandleAXEvents2"
+    units="microseconds" expires_after="2024-06-30">
+  <owner>mschillaci@google.com</owner>
   <owner>aleventhal@chromium.org</owner>
   <owner>chrome-a11y-core@google.com</owner>
   <summary>
     Tracks time spent on the browser main thread handling accessibility events
     sent from the renderer process. Logged each time the method is run without
     returning early.
+
+    Warning: This metric may include reports from clients with low-resolution
+    clocks (i.e. on Windows, ref. |TimeTicks::IsHighResolution()|). Such reports
+    will cause this metric to have an abnormal distribution. When considering
+    revising this histogram, see UMA_HISTOGRAM_CUSTOM_MICROSECONDS_TIMES for the
+    solution.
   </summary>
 </histogram>
 
-<histogram name="Accessibility.Performance.ProcessDeferredAccessibilityEvents"
-    units="ms" expires_after="2024-02-04">
+<histogram name="Accessibility.Performance.ProcessDeferredAccessibilityEvents2"
+    units="microseconds" expires_after="2024-04-28">
+  <owner>mschillaci@google.com</owner>
   <owner>aleventhal@chromium.org</owner>
   <owner>janewman@microsoft.com</owner>
   <owner>chrome-a11y-core@google.com</owner>
@@ -1910,33 +1945,72 @@ chromium-metrics-reviews@google.com.
     Tracks time spent on the render process processing deferred accessibility
     events. Logged each time the method is run during the accessbility document
     lifecycle.
+
+    Warning: This metric may include reports from clients with low-resolution
+    clocks (i.e. on Windows, ref. |TimeTicks::IsHighResolution()|). Such reports
+    will cause this metric to have an abnormal distribution. When considering
+    revising this histogram, see UMA_HISTOGRAM_CUSTOM_MICROSECONDS_TIMES for the
+    solution.
   </summary>
 </histogram>
 
-<histogram name="Accessibility.Performance.SendPendingAccessibilityEvents"
-    units="ms" expires_after="2024-02-04">
+<histogram
+    name="Accessibility.Performance.SendPendingAccessibilityEvents.PostLoad2"
+    units="microseconds" expires_after="2024-05-12">
+  <owner>mschillaci@google.com</owner>
+  <owner>aleventhal@chromium.org</owner>
+  <owner>janewman@microsoft.com</owner>
+  <owner>chrome-a11y-core@google.com</owner>
+  <summary>
+    Tracks time spent on the render process sending pending accessibility
+    events. Logging commences after loading is complete and triggered each time
+    the method is run without returning early.
+
+    Warning: This metric may include reports from clients with low-resolution
+    clocks (i.e. on Windows, ref. |TimeTicks::IsHighResolution()|). Such reports
+    will cause this metric to have an abnormal distribution. When considering
+    revising this histogram, see UMA_HISTOGRAM_CUSTOM_MICROSECONDS_TIMES for the
+    solution.
+  </summary>
+</histogram>
+
+<histogram name="Accessibility.Performance.SendPendingAccessibilityEvents2"
+    units="microseconds" expires_after="2024-06-30">
+  <owner>mschillaci@google.com</owner>
   <owner>aleventhal@chromium.org</owner>
   <owner>janewman@microsoft.com</owner>
   <owner>chrome-a11y-core@google.com</owner>
   <summary>
     Tracks time spent on the render process sending pending accessibility
     events. Logged each time the method is run without returning early.
+
+    Warning: This metric may include reports from clients with low-resolution
+    clocks (i.e. on Windows, ref. |TimeTicks::IsHighResolution()|). Such reports
+    will cause this metric to have an abnormal distribution. When considering
+    revising this histogram, see UMA_HISTOGRAM_CUSTOM_MICROSECONDS_TIMES for the
+    solution.
   </summary>
 </histogram>
 
-<histogram name="Accessibility.Performance.Tree.Unserialize" units="ms"
-    expires_after="2024-02-04">
+<histogram name="Accessibility.Performance.Tree.Unserialize2"
+    units="microseconds" expires_after="2024-06-30">
   <owner>aleventhal@chromium.org</owner>
   <owner>janewman@microsoft.com</owner>
   <owner>chrome-a11y-core@google.com</owner>
   <summary>
     Tracks time spent on the browser process unserializing accessibility
     updates. Logged each time the method is run without returning early.
+
+    Warning: This metric may include reports from clients with low-resolution
+    clocks (i.e. on Windows, ref. |TimeTicks::IsHighResolution()|). Such reports
+    will cause this metric to have an abnormal distribution. When considering
+    revising this histogram, see UMA_HISTOGRAM_CUSTOM_MICROSECONDS_TIMES for the
+    solution.
   </summary>
 </histogram>
 
 <histogram name="Accessibility.Performance.WinAPIs.{API}" units="microseconds"
-    expires_after="2024-02-20">
+    expires_after="2024-06-30">
   <owner>aleventhal@chromium.org</owner>
   <owner>kschmi@microsoft.com</owner>
   <owner>janewman@microsoft.com</owner>
@@ -1996,7 +2070,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Accessibility.ReadAnything.Color" enum="ReadAnythingColor"
-    expires_after="2024-02-04">
+    expires_after="2024-06-30">
   <owner>abigailbklein@google.com</owner>
   <owner>chrome-a11y-core@google.com</owner>
   <summary>
@@ -2005,7 +2079,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Accessibility.ReadAnything.EmptyState"
-    enum="ReadAnythingEmptyState" expires_after="2024-02-04">
+    enum="ReadAnythingEmptyState" expires_after="2024-06-30">
   <owner>abigailbklein@google.com</owner>
   <owner>chrome-a11y-core@google.com</owner>
   <summary>
@@ -2015,7 +2089,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Accessibility.ReadAnything.FontName"
-    enum="ReadAnythingFontName" expires_after="2024-02-04">
+    enum="ReadAnythingFontName" expires_after="2024-06-30">
   <owner>abigailbklein@google.com</owner>
   <owner>chrome-a11y-core@google.com</owner>
   <summary>
@@ -2024,7 +2098,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Accessibility.ReadAnything.FontScale" units="em"
-    expires_after="2024-02-04">
+    expires_after="2024-06-30">
   <owner>abigailbklein@google.com</owner>
   <owner>chrome-a11y-core@google.com</owner>
   <summary>
@@ -2033,7 +2107,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Accessibility.ReadAnything.Language" enum="LocaleCodeISO639"
-    expires_after="2024-02-04">
+    expires_after="2024-06-30">
   <owner>abigailbklein@google.com</owner>
   <owner>chrome-a11y-core@google.com</owner>
   <summary>
@@ -2043,7 +2117,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Accessibility.ReadAnything.LetterSpacing"
-    enum="ReadAnythingLetterSpacing" expires_after="2024-02-04">
+    enum="ReadAnythingLetterSpacing" expires_after="2024-06-30">
   <owner>abigailbklein@google.com</owner>
   <owner>chrome-a11y-core@google.com</owner>
   <summary>
@@ -2052,7 +2126,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Accessibility.ReadAnything.LineSpacing"
-    enum="ReadAnythingLineSpacing" expires_after="2024-02-04">
+    enum="ReadAnythingLineSpacing" expires_after="2024-06-30">
   <owner>abigailbklein@google.com</owner>
   <owner>chrome-a11y-core@google.com</owner>
   <summary>
@@ -2061,7 +2135,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Accessibility.ReadAnything.MergedDistillationTime.{Result}"
-    units="ms" expires_after="2024-02-20">
+    units="ms" expires_after="2024-06-30">
   <owner>abigailbklein@google.com</owner>
   <owner>chrome-a11y-core@google.com</owner>
   <summary>
@@ -2075,8 +2149,15 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
+<histogram name="Accessibility.ReadAnything.OmniboxIconShown"
+    enum="BooleanShown" expires_after="2024-04-28">
+  <owner>abigailbklein@google.com</owner>
+  <owner>chrome-a11y-core@google.com</owner>
+  <summary>Records when the Read Anything omnibox icon is shown.</summary>
+</histogram>
+
 <histogram name="Accessibility.ReadAnything.RulesDistillationTime.{Result}"
-    units="ms" expires_after="2024-02-20">
+    units="ms" expires_after="2024-06-30">
   <owner>abigailbklein@google.com</owner>
   <owner>chrome-a11y-core@google.com</owner>
   <summary>
@@ -2090,19 +2171,52 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Accessibility.ReadAnything.ScrollEvent"
-    enum="ReadAnythingScrollEvent" expires_after="2024-02-04">
+    enum="ReadAnythingScrollEvent" expires_after="2024-06-30">
   <owner>abigailbklein@google.com</owner>
   <owner>chrome-a11y-core@google.com</owner>
   <summary>Records when a scroll happens.</summary>
 </histogram>
 
 <histogram name="Accessibility.ReadAnything.SettingsChange"
-    enum="ReadAnythingSettingsChange" expires_after="2024-02-04">
+    enum="ReadAnythingSettingsChange" expires_after="2024-06-30">
   <owner>abigailbklein@google.com</owner>
   <owner>chrome-a11y-core@google.com</owner>
   <summary>
     Records when the user changes a text style setting in the Read Anything
     panel.
+  </summary>
+</histogram>
+
+<histogram
+    name="Accessibility.ReadAnything.TimeFromEntryTriggeredToContentLoaded"
+    units="ms" expires_after="2024-09-30">
+  <owner>lwinston@google.com</owner>
+  <owner>komo-eng@google.com</owner>
+  <summary>
+    Records the time from when opening the Read Anything side panel entry first
+    triggers the renderer and when the WebUI content has finished loading.
+  </summary>
+</histogram>
+
+<histogram
+    name="Accessibility.ReadAnything.TimeFromEntryTriggeredToWebUIConnected"
+    units="ms" expires_after="2024-09-30">
+  <owner>lwinston@google.com</owner>
+  <owner>komo-eng@google.com</owner>
+  <summary>
+    Records the time from when opening the Read Anything side panel entry first
+    triggers the renderer and when the WebUI connects.
+  </summary>
+</histogram>
+
+<histogram
+    name="Accessibility.ReadAnything.TimeFromWebUIConnectToContentLoaded"
+    units="ms" expires_after="2024-09-30">
+  <owner>lwinston@google.com</owner>
+  <owner>komo-eng@google.com</owner>
+  <summary>
+    Records the time from when the Read Anything WebUI content connects and when
+    the content has loaded.
   </summary>
 </histogram>
 
@@ -2120,7 +2234,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Accessibility.ScreenAI.AnnotateScreenshotTime.{Result}"
-    units="ms" expires_after="2023-11-30">
+    units="ms" expires_after="2024-05-30">
   <owner>kyungjunlee@google.com</owner>
   <owner>chrome-a11y-core@google.com</owner>
   <summary>
@@ -2136,7 +2250,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Accessibility.ScreenAI.Component.InstallRetries" units="count"
-    expires_after="2024-05-01">
+    expires_after="2024-06-30">
   <owner>rhalavati@chromium.org</owner>
   <owner>chrome-a11y-core@google.com</owner>
   <summary>
@@ -2146,7 +2260,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Accessibility.ScreenAI.Component.{Action}"
-    enum="BooleanSuccess" expires_after="2024-05-01">
+    enum="BooleanSuccess" expires_after="2024-06-30">
   <owner>rhalavati@chromium.org</owner>
   <owner>chrome-a11y-core@google.com</owner>
   <summary>Records success or failure of Screen AI component {Action}.</summary>
@@ -2157,7 +2271,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Accessibility.ScreenAI.LibraryLoadDetailedResultOnWindows"
-    enum="WinGetLastError" expires_after="2024-02-04">
+    enum="WinGetLastError" expires_after="2024-06-30">
   <owner>rhalavati@chromium.org</owner>
   <owner>chrome-a11y-core@google.com</owner>
   <summary>
@@ -2166,37 +2280,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Accessibility.ScreenAI.LoadLibraryResult"
-    enum="ScreenAILoadLibraryResult" expires_after="2023-11-30">
-  <obsolete>
-    Deprecated in May 2023 and replaced with several boolean histograms for
-    different functionality initialization of the library. See
-    Accessibility.ScreenAI.*.Initialized
-  </obsolete>
-  <owner>kyungjunlee@google.com</owner>
-  <owner>chrome-a11y-core@google.com</owner>
-  <summary>
-    Records whether it loads or fails to load necessary Screen AI libraries.
-    It's being emitted when loading Screen AI libraries according to the
-    configuration. Refer to ScreenAIService::LoadLibrary for details.
-  </summary>
-</histogram>
-
-<histogram name="Accessibility.ScreenAI.OCR.ImageSize" units="count"
-    expires_after="2023-11-30">
-  <obsolete>
-    Removed in July 2023 in favor of Accessibility.ScreenAI.OCR.ImageSize10M
-    which has a higher max value.
-  </obsolete>
+<histogram name="Accessibility.ScreenAI.OCR.ImageSize.PDF" units="count"
+    expires_after="2024-10-01">
   <owner>rhalavati@chromium.org</owner>
   <owner>chrome-a11y-core@google.com</owner>
   <summary>
-    Records the number of pixels in the passed image to OCR request.
+    Records the number of pixels in the passed image to OCR from PDF.
   </summary>
 </histogram>
 
 <histogram name="Accessibility.ScreenAI.OCR.ImageSize10M" units="count"
-    expires_after="2023-11-30">
+    expires_after="2024-10-01">
   <owner>rhalavati@chromium.org</owner>
   <owner>chrome-a11y-core@google.com</owner>
   <summary>
@@ -2204,15 +2298,52 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Accessibility.ScreenAI.OCR.Time" units="ms"
-    expires_after="2024-02-04">
+<histogram name="Accessibility.ScreenAI.OCR.Latency.{ImageSize}" units="ms"
+    expires_after="2024-12-01">
   <owner>rhalavati@chromium.org</owner>
   <owner>chrome-a11y-core@google.com</owner>
-  <summary>Records how long an OCR request in Screen AI service takes.</summary>
+  <summary>
+    Records the latency for an OCR request in Screen AI service for an image
+    with {ImageSize} pixels.
+  </summary>
+  <token key="ImageSize">
+    <variant name="Large" summary="[1000x1000, 2000x2000)"/>
+    <variant name="Medium" summary="[500x500, 1000x1000)"/>
+    <variant name="Small" summary="less than 500x500"/>
+    <variant name="XLarge" summary="2000x2000 and more"/>
+  </token>
+</histogram>
+
+<histogram name="Accessibility.ScreenAI.OCR.LinesCount" units="count"
+    expires_after="2024-10-01">
+  <owner>rhalavati@google.com</owner>
+  <owner>chrome-a11y-core@google.com</owner>
+  <summary>
+    Records the number of lines that OCR recognized for an image.
+  </summary>
+</histogram>
+
+<histogram name="Accessibility.ScreenAI.OCR.LinesCount.PDF" units="count"
+    expires_after="2024-10-01">
+  <owner>rhalavati@google.com</owner>
+  <owner>chrome-a11y-core@google.com</owner>
+  <summary>
+    Records the number of lines that OCR recognized for an image sent from PDF.
+  </summary>
+</histogram>
+
+<histogram name="Accessibility.ScreenAI.OCR.Time.PDF" units="ms"
+    expires_after="2024-10-01">
+  <owner>rhalavati@chromium.org</owner>
+  <owner>chrome-a11y-core@google.com</owner>
+  <summary>
+    Records how long an OCR request in Screen AI service takes for a PDF
+    request.
+  </summary>
 </histogram>
 
 <histogram name="Accessibility.ScreenAI.Screen2xDistillationTime.{Result}"
-    units="ms" expires_after="2024-02-20">
+    units="ms" expires_after="2024-06-30">
   <owner>abigailbklein@google.com</owner>
   <owner>rhalavati@google.com</owner>
   <owner>kyungjunlee@google.com</owner>
@@ -2229,19 +2360,41 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
+<histogram name="Accessibility.ScreenAI.Service.Initialization"
+    enum="BooleanSuccess" expires_after="2024-10-01">
+  <owner>rhalavati@chromium.org</owner>
+  <owner>chrome-a11y-core@google.com</owner>
+  <summary>
+    Records if launching the ScreenAI service was successful or not.
+  </summary>
+</histogram>
+
+<histogram name="Accessibility.ScreenAI.Service.InitializationTime.{Result}"
+    units="ms" expires_after="2024-10-01">
+  <owner>rhalavati@chromium.org</owner>
+  <owner>chrome-a11y-core@google.com</owner>
+  <summary>
+    Records how long it took for the ScreenAI service to {Result}.
+  </summary>
+  <token key="Result">
+    <variant name="Failure" summary="fail initialization"/>
+    <variant name="Success" summary="initialize successfully"/>
+  </token>
+</histogram>
+
 <histogram name="Accessibility.ScreenAI.VisualAnnotator.NodesCount"
-    units="count" expires_after="2023-11-30">
+    units="count" expires_after="2023-11-28">
   <owner>kyungjunlee@google.com</owner>
   <owner>chrome-a11y-core@google.com</owner>
   <summary>
-    Records the number of annotations produced by ScreenAI visual annotator.
-    It's being emitted whenever getting annotations from ScreenAI visual
-    annotator.
+    Deprecated, see Accessibility.ScreenAI.OCR.LinesCount instead. Records the
+    number of annotations produced by ScreenAI visual annotator. It's being
+    emitted whenever getting annotations from ScreenAI visual annotator.
   </summary>
 </histogram>
 
 <histogram name="Accessibility.ScreenAI.{Step}.Initialized"
-    enum="BooleanSuccess" expires_after="2024-05-01">
+    enum="BooleanSuccess" expires_after="2024-06-30">
   <owner>rhalavati@chromium.org</owner>
   <owner>chrome-a11y-core@google.com</owner>
   <summary>
@@ -2256,6 +2409,18 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
+<histogram name="Accessibility.ScreenReader.ScrollToImage" enum="Boolean"
+    expires_after="2024-12-07">
+  <owner>dtseng@chromium.org</owner>
+  <owner>chrome-a11y-core@google.com</owner>
+  <summary>
+    Whether the result of a scroll to make visible accessibility action is
+    performed on an image node. This roughly corresponds to accessibility focus
+    on an image. Logged from ChromeVox (ChromeOS) and
+    BrowserAccessibilityManager (non-ChromeOS).
+  </summary>
+</histogram>
+
 <histogram name="Accessibility.VTTContainsStyleBlock" enum="BooleanEnabled"
     expires_after="2024-08-07">
   <owner>evliu@google.com</owner>
@@ -2267,7 +2432,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Accessibility.WebSpeech.Duration" units="ms"
-    expires_after="2023-12-24">
+    expires_after="2024-06-30">
   <owner>evliu@google.com</owner>
   <owner>chrome-media-ux@google.com</owner>
   <summary>
@@ -2277,7 +2442,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Accessibility.WinAPIs" enum="AccessibilityWinAPIEnum"
-    expires_after="2024-02-04">
+    expires_after="2024-06-30">
   <owner>aleventhal@chromium.org</owner>
   <owner>nektar@chromium.org</owner>
   <owner>chrome-a11y-core@google.com</owner>
@@ -2397,21 +2562,6 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
-<histogram name="DomDistiller.InfoBarUsage" enum="BooleanUsage"
-    expires_after="2023-06-25">
-  <obsolete>
-    Deprecated in January 2023 as part of message post-launch cleanup since the
-    messages system records dismissal reasons using
-    Android.Messages.Dismissed.ReaderMode.
-  </obsolete>
-  <owner>mdjones@chromium.org</owner>
-  <summary>
-    &quot;Used&quot; is recorded when the user clicks the infobar to enter
-    Reader Mode. &quot;Not Used&quot; is recorded when the user clicks the close
-    button. If there's no user action, nothing is recorded.
-  </summary>
-</histogram>
-
 <histogram name="DomDistiller.MessageDismissalCondition"
     enum="ReaderModeMessageDismissalCondition" expires_after="2023-09-10">
   <owner>twellington@chromium.org</owner>
@@ -2421,12 +2571,6 @@ chromium-metrics-reviews@google.com.
     message prompt in conjunction with the Reader Mode accessibility setting.
     Recorded for Android only.
   </summary>
-</histogram>
-
-<histogram name="DomDistiller.PageHasDistilledData"
-    enum="BooleanHasDistilledData" expires_after="M85">
-  <owner>kuan@chromium.org</owner>
-  <summary>Records whether a page has distilled data.</summary>
 </histogram>
 
 <histogram name="DomDistiller.ReaderMode.EntryPoint"
@@ -2449,125 +2593,15 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="DomDistiller.ReaderShownForPageLoad" enum="Boolean"
-    expires_after="2024-01-07">
+    expires_after="2024-07-14">
   <owner>mdjones@chromium.org</owner>
   <summary>
     Records if the panel became visible at any point after a page was navigated.
   </summary>
 </histogram>
 
-<histogram name="DomDistiller.Statistics.FirstPageWordCount" units="words"
-    expires_after="M85">
-  <owner>mdjones@chromium.org</owner>
-  <summary>
-    Records the number of words in a distilled page. This only records the first
-    page of a multi-page article.
-  </summary>
-</histogram>
-
-<histogram name="DomDistiller.Statistics.WordCount" units="words"
-    expires_after="M85">
-  <obsolete>
-    Removed in April 2023.
-  </obsolete>
-  <owner>nyquist@chromium.org</owner>
-  <summary>
-    Records the number of words in a distilled page. For articles with multiple
-    pages, each page is counted separately.
-  </summary>
-</histogram>
-
-<histogram name="DomDistiller.Time.ActivelyViewingArticleBeforeDistilling"
-    units="ms" expires_after="2021-08-19">
-  <obsolete>
-    Removed in M118.
-  </obsolete>
-  <owner>katie@chromium.org</owner>
-  <owner>chrome-a11y-core@chromium.org</owner>
-  <summary>
-    Records the amount of active time a user spent on a distillable page before
-    switching that page to Reader Mode. Active time is time that the article was
-    visible, not total time the page was open: the timer is paused when the page
-    is not visible. This is not recorded when the user opens a distillable page
-    but does not switch to Reader Mode from that page (via the omnibox icon or
-    menu option).
-  </summary>
-</histogram>
-
-<histogram name="DomDistiller.Time.ArticleProcessing" units="ms"
-    expires_after="M77">
-  <obsolete>
-    Removed in April 2023.
-  </obsolete>
-  <owner>yfriedman@chromium.org</owner>
-  <summary>
-    Time spent in DomDistiller's identification of text content.
-  </summary>
-</histogram>
-
-<histogram name="DomDistiller.Time.DistillationTotal" units="ms"
-    expires_after="M85">
-  <obsolete>
-    Removed in April 2023.
-  </obsolete>
-  <owner>yfriedman@chromium.org</owner>
-  <summary>Complete time spent in DomDistiller's processing of a page.</summary>
-</histogram>
-
-<histogram name="DomDistiller.Time.DistillPage" units="ms" expires_after="M77">
-  <obsolete>
-    Removed in April 2023.
-  </obsolete>
-  <owner>wychen@chromium.org</owner>
-  <summary>
-    Time spent in DistillPageImpl(), mostly ExecuteJavaScript(), including
-    compilation and execution.
-  </summary>
-</histogram>
-
-<histogram name="DomDistiller.Time.DocumentConstruction" units="ms"
-    expires_after="M77">
-  <obsolete>
-    Removed in April 2023.
-  </obsolete>
-  <owner>yfriedman@chromium.org</owner>
-  <summary>
-    Time spent in creating DomDistiller's internal representation of the HTML
-    document.
-  </summary>
-</histogram>
-
-<histogram name="DomDistiller.Time.Formatting" units="ms" expires_after="M77">
-  <obsolete>
-    Removed in April 2023.
-  </obsolete>
-  <owner>yfriedman@chromium.org</owner>
-  <summary>
-    Time spent in DomDistiller's final processing of article content/formatting.
-  </summary>
-</histogram>
-
-<histogram name="DomDistiller.Time.MarkupParsing" units="ms"
-    expires_after="M77">
-  <obsolete>
-    Removed in April 2023.
-  </obsolete>
-  <owner>yfriedman@chromium.org</owner>
-  <summary>
-    Time spent in DomDistiller's processing of article metadata.
-  </summary>
-</histogram>
-
-<histogram name="DomDistiller.Time.ViewerLoading" units="ms"
-    expires_after="M77">
-  <owner>wychen@chromium.org</owner>
-  <summary>
-    Records the time from the Reader Mode panel opening to the viewer loaded.
-  </summary>
-</histogram>
-
 <histogram name="DomDistiller.Time.ViewingReaderModePage" units="ms"
-    expires_after="2024-01-14">
+    expires_after="2024-07-21">
   <owner>mdjones@chromium.org</owner>
   <summary>
     Records the amount of time a user spent on a Reader Mode Page.
@@ -2600,7 +2634,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="SodaInstaller.BinaryInstallationResult" enum="BooleanSuccess"
-    expires_after="2024-05-01">
+    expires_after="2024-06-30">
   <owner>abigailbklein@google.com</owner>
   <owner>evliu@google.com</owner>
   <owner>yilkal@chromium.org</owner>
@@ -2627,7 +2661,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="SodaInstaller.Language.{SodaLanguageCode}.InstallationFailureTime"
-    units="ms" expires_after="2024-05-01">
+    units="ms" expires_after="2024-06-30">
   <owner>abigailbklein@google.com</owner>
   <owner>evliu@google.com</owner>
   <owner>yilkal@chromium.org</owner>
@@ -2641,7 +2675,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="SodaInstaller.Language.{SodaLanguageCode}.InstallationResult"
-    enum="BooleanSuccess" expires_after="2024-05-01">
+    enum="BooleanSuccess" expires_after="2024-06-30">
   <owner>abigailbklein@google.com</owner>
   <owner>evliu@google.com</owner>
   <owner>yilkal@chromium.org</owner>
@@ -2657,7 +2691,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="SodaInstaller.Language.{SodaLanguageCode}.InstallationSuccessTime"
-    units="ms" expires_after="2024-05-01">
+    units="ms" expires_after="2024-06-30">
   <owner>abigailbklein@google.com</owner>
   <owner>evliu@google.com</owner>
   <owner>yilkal@chromium.org</owner>

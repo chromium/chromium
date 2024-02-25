@@ -6,7 +6,6 @@
 #define CHROME_BROWSER_ASH_POLICY_REMOTE_COMMANDS_DEVICE_COMMAND_REBOOT_JOB_TEST_UTIL_H_
 
 #include <memory>
-#include <utility>
 
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
@@ -14,6 +13,7 @@
 #include "chrome/browser/ash/policy/scheduled_task_handler/test/fake_reboot_notifications_scheduler.h"
 #include "chromeos/ash/components/login/login_state/login_state.h"
 #include "chromeos/ash/components/login/session/session_termination_manager.h"
+#include "components/policy/proto/device_management_backend.pb.h"
 #include "components/prefs/testing_pref_service.h"
 
 namespace policy {
@@ -57,11 +57,11 @@ class DeviceCommandRebootJobTestBase {
   }
 
   std::unique_ptr<DeviceCommandRebootJob> CreateAndInitializeCommand(
-      base::TimeDelta age_of_command);
+      base::TimeDelta age_of_command,
+      base::TimeDelta user_session_reboot_delay);
 
-  std::unique_ptr<DeviceCommandRebootJob> CreateAndInitializeCommand() {
-    return CreateAndInitializeCommand(base::TimeDelta());
-  }
+  std::unique_ptr<DeviceCommandRebootJob> CreateAndInitializeCommand(
+      enterprise_management::RemoteCommand command_proto);
 
   // IO thread is required by `chromeos::NativeTimer`.
   base::test::SingleThreadTaskEnvironment task_environment_{

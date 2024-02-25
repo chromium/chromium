@@ -7,8 +7,8 @@ import {NetworkTestRunner} from 'network_test_runner';
 import {ConsoleTestRunner} from 'console_test_runner';
 
 (async function() {
-  TestRunner.addResult(`Tests that FileReader's Blob request isn't shown in network panel.\n`);
-  await TestRunner.loadLegacyModule('console');
+  // This await is necessary for evaluateInPagePromise to produce accurate line numbers.
+  await TestRunner.addResult(`Tests that FileReader's Blob request isn't shown in network panel.\n`);
   await TestRunner.evaluateInPagePromise(`
       function readBlob()
       {

@@ -12,6 +12,7 @@
 #include "base/memory/weak_ptr.h"
 #include "components/viz/common/resources/shared_image_format.h"
 #include "gpu/command_buffer/common/shared_image_usage.h"
+#include "gpu/command_buffer/service/shared_image/shared_image_backing.h"
 #include "gpu/config/gpu_preferences.h"
 #include "gpu/gpu_gles2_export.h"
 #include "gpu/ipc/common/surface_handle.h"
@@ -111,6 +112,10 @@ class GPU_GLES2_EXPORT SharedImageBackingFactory {
                             gfx::GpuMemoryBufferType gmb_type,
                             GrContextType gr_context_type,
                             base::span<const uint8_t> pixel_data);
+
+  // Return BackingType of the implementation. This value isn't guaranteed to
+  // be precise, use it for logging/tracing only.
+  virtual SharedImageBackingType GetBackingType() = 0;
 
   base::WeakPtr<SharedImageBackingFactory> GetWeakPtr();
 

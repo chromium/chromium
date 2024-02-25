@@ -38,10 +38,13 @@ static_library("common") {
   deps = [
     "//base",
     "//net",
+    "//third_party/abseil-cpp:absl",
     "//third_party/flatbuffers",
     "//third_party/protobuf:protobuf_lite",
     "//url",
   ]
+
+  configs += [ "//build/config/compiler:wexit_time_destructors" ]
 }
 
 static_library("test_support") {

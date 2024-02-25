@@ -49,7 +49,7 @@ class PrivilegedHostDeviceSetterImpl : public PrivilegedHostDeviceSetterBase {
   void SetHostDevice(const std::string& host_instance_id_or_legacy_device_id,
                      SetHostDeviceCallback callback) override;
 
-  raw_ptr<MultiDeviceSetupBase, ExperimentalAsh> multidevice_setup_;
+  raw_ptr<MultiDeviceSetupBase> multidevice_setup_;
 };
 
 }  // namespace multidevice_setup

@@ -1,0 +1,14 @@
+# Copyright 2023 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//mojo/public/tools/bindings/mojom.gni")
+
+mojom("mojom") {
+  sources = [ "on_device_internals_page.mojom" ]
+  public_deps = [
+    "//mojo/public/mojom/base",
+    "//services/on_device_model/public/mojom",
+  ]
+  webui_module_path = "/"
+}

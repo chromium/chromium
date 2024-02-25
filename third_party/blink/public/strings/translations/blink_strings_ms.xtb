@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="ms">
+<translation id="1012241361789814178">Penyahpepijat dijeda dalam tab lain, klik untuk beralih kepada tab itu.</translation>
 <translation id="1088086359088493902">Saat</translation>
 <translation id="1142001580032786438">Paparkan pemilih minggu</translation>
 <translation id="1171774979989969504">Sila masukkan alamat e-mel.</translation>
@@ -16,6 +17,7 @@
 <translation id="1729654308190250600">Sila masukkan alamat e-mel bukan kosong.</translation>
 <translation id="1758486001363313524">Lain-lain...</translation>
 <translation id="1787192514241997742">jumlah masa: <ph name="REMAINING_TIME" /></translation>
+<translation id="1800494066469288780">Benarkan kamera</translation>
 <translation id="1822429046913737220">PG / P/M</translation>
 <translation id="1832974991323546415">main pada peranti jauh</translation>
 <translation id="1921819250265091946">dd</translation>
@@ -24,10 +26,12 @@
 <translation id="1993104285338243655">Beralih kepada pencerminan</translation>
 <translation id="2031987842108996681">Saluran merah</translation>
 <translation id="2060505056492490888">'<ph name="DOT" />' digunakan pada kedudukan yang salah dalam '<ph name="INVALIDDOMAIN" />'.</translation>
+<translation id="2068711044993563745">Nilai minimum (<ph name="MINIMUM" />) perlu kurang daripada nilai maksimum (<ph name="MAXIMUM" />).</translation>
 <translation id="2148716181193084225">Hari ini</translation>
 <translation id="2226276347425096477">Sila pendekkan teks ini menjadi <ph name="MAX_CHARACTERS" /> aksara atau kurang (anda kini menggunakan <ph name="CURRENT_LENGTH" /> aksara).</translation>
 <translation id="2247351761944213033">Minggu <ph name="WEEKNUMBER" />, <ph name="YEAR" /></translation>
 <translation id="2277199496770840904">Lagu <ph name="NUMBER" /></translation>
+<translation id="2353297238722298836">Kamera dan mikrofon dibenarkan</translation>
 <translation id="2393030564806080191">Nilai warna perenambelasan</translation>
 <translation id="2398813069815436052">dialog dibuka.</translation>
 <translation id="245932805758469625">bilangan saat baki video</translation>
@@ -44,11 +48,13 @@
 <translation id="2761667185364618470">Sila tandakan kotak ini jika anda mahu teruskan.</translation>
 <translation id="2908441821576996758">Sila masukkan senarai alamat e-mel yang dipisahkan dengan koma.</translation>
 <translation id="3049748772180311791"><ph name="QUANTITY" /> MB</translation>
+<translation id="3053226512517284904">tunjukkan menu perihalan audio</translation>
 <translation id="3075154866155599887">Sila masukkan nilai yang sah. Medan tidak lengkap atau mengandungi tarikh yang tidak sah.</translation>
 <translation id="310520048233152454">Sila masukkan URL.</translation>
 <translation id="3220661731597678625">langkah semasa</translation>
 <translation id="3321030238473337787">Kelajuan main balik</translation>
 <translation id="3329013043687509092">Ketepuan</translation>
+<translation id="3377518164566272702">Benarkan mikrofon dan kamera</translation>
 <translation id="3450233048674729344">Nilai mestilah kurang daripada atau sama dengan <ph name="MAXIMUM" />.</translation>
 <translation id="3732799496749320381">mm</translation>
 <translation id="3754210790023674521">Keluar daripada gambar dalam gambar</translation>
@@ -56,14 +62,17 @@
 <translation id="3822383571486410024">Sila panjangkan teks ini kepada <ph name="MIN_CHARACTERS" /> aksara atau lebih (anda sedang menggunakan <ph name="CURRENT_LENGTH" /> aksara).</translation>
 <translation id="383465348367842624">Bahagian yang diikuti oleh '<ph name="ATSIGN" />' tidak boleh mengandungi simbol '<ph name="INVALIDCHARACTER" />'.</translation>
 <translation id="3846214748874656680">Keluar dari skrin penuh</translation>
+<translation id="4031179711345676612">Mikrofon dibenarkan</translation>
 <translation id="4103419683916926126">Milisaat</translation>
 <translation id="4201051445878709314">Tunjukkan bulan sebelumnya</translation>
 <translation id="4360991593054037559">Sila masukkan nilai yang sah. Dua nilai sah yang terdekat ialah <ph name="VALID_VALUE_LOW" /> dan <ph name="VALID_VALUE_HIGHER" />.</translation>
 <translation id="4522570452068850558">Butiran</translation>
+<translation id="4663373278480897665">Kamera dibenarkan</translation>
 <translation id="4664250907885839816">Bahagian selepas '<ph name="ATSIGN" />' tidak boleh mengandungi simbol '<ph name="INVALIDCHARACTER" />'.</translation>
 <translation id="4718048029184481307">Memainkan video dalam gambar dalam gambar</translation>
 <translation id="4748357248530471599">togol skrin penuh potongan paparan</translation>
 <translation id="4763480195061959176">video</translation>
+<translation id="4792862212177489858">Kongsi lokasi</translation>
 <translation id="4812940957355064477">Sila masukkan nombor.</translation>
 <translation id="4912200001568447310">item semasa</translation>
 <translation id="4915360478455618802">Paparkan pemilih masa</translation>
@@ -73,6 +82,7 @@
 <translation id="4975562563186953947"><ph name="SELECTED_COUNT" /> dipilih</translation>
 <translation id="4992066212339426712">Nyahredam</translation>
 <translation id="49969490063480558">Sila masukkan bahagian selepas '<ph name="ATSIGN" />'. '<ph name="INVALIDADDRESS" />' tidak lengkap.</translation>
+<translation id="5037575921016181960">Kata laluan kukuh</translation>
 <translation id="5090250355906949916">pembersih masa video</translation>
 <translation id="509897012892853729">Saluran biru</translation>
 <translation id="5117590920725113268">Tunjukkan bulan seterusnya</translation>
@@ -131,6 +141,7 @@
 <translation id="6941933287844615239">muat turun media</translation>
 <translation id="698788488269350478">dikembangkan.</translation>
 <translation id="6989848892321993519">Sila panjangkan teks ini kepada <ph name="MIN_CHARACTERS" /> aksara atau lebih (anda sedang menggunakan 1 aksara).</translation>
+<translation id="7080893216867146095">Perkongsian lokasi dibenarkan</translation>
 <translation id="709897737746224366">Sila padankan dengan format yang diminta.</translation>
 <translation id="7102274145889307184">lokasi semasa</translation>
 <translation id="7263440858009898357">Sila pilih item dalam senarai.</translation>
@@ -177,6 +188,7 @@
 <translation id="9132465097189459683">Lain-lain...</translation>
 <translation id="9155987714137265666"><ph name="WEEK" />, bermula pada <ph name="WEEK_START_DATE" /></translation>
 <translation id="916607977885256133">Gambar dalam Gambar</translation>
+<translation id="918430632320614861">Benarkan mikrofon</translation>
 <translation id="945780513535800434">Ditandai Sebahagiannya</translation>
 <translation id="954003015749068518">masuk ke gambar dalam gambar</translation>
 </translationbundle>

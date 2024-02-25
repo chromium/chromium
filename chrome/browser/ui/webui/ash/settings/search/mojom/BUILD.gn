@@ -1,0 +1,23 @@
+# Copyright 2020 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/chromeos/ui_mode.gni")
+import("//mojo/public/tools/bindings/mojom.gni")
+
+assert(is_chromeos_ash)
+
+mojom("mojom") {
+  sources = [
+    "search.mojom",
+    "search_result_icon.mojom",
+    "user_action_recorder.mojom",
+  ]
+
+  public_deps = [
+    "//ash/webui/settings/public/constants:mojom",
+    "//mojo/public/mojom/base",
+  ]
+
+  webui_module_path = "/"
+}

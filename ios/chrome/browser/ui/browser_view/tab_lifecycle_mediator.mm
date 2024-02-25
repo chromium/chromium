@@ -4,39 +4,48 @@
 
 #import "ios/chrome/browser/ui/browser_view/tab_lifecycle_mediator.h"
 
-#import "ios/chrome/browser/autofill/autofill_tab_helper.h"
-#import "ios/chrome/browser/autofill/bottom_sheet/autofill_bottom_sheet_tab_helper.h"
-#import "ios/chrome/browser/commerce/price_notifications/price_notifications_iph_presenter.h"
-#import "ios/chrome/browser/commerce/price_notifications/price_notifications_tab_helper.h"
-#import "ios/chrome/browser/download/download_manager_tab_helper.h"
-#import "ios/chrome/browser/download/pass_kit_tab_helper.h"
-#import "ios/chrome/browser/follow/follow_iph_presenter.h"
-#import "ios/chrome/browser/follow/follow_tab_helper.h"
-#import "ios/chrome/browser/itunes_urls/itunes_urls_handler_tab_helper.h"
-#import "ios/chrome/browser/ntp/new_tab_page_tab_helper.h"
-#import "ios/chrome/browser/overscroll_actions/overscroll_actions_tab_helper.h"
-#import "ios/chrome/browser/passwords/password_tab_helper.h"
-#import "ios/chrome/browser/prerender/prerender_service.h"
+#import "ios/chrome/browser/app_launcher/model/app_launcher_tab_helper.h"
+#import "ios/chrome/browser/autofill/model/autofill_tab_helper.h"
+#import "ios/chrome/browser/autofill/model/bottom_sheet/autofill_bottom_sheet_tab_helper.h"
+#import "ios/chrome/browser/commerce/model/price_notifications/price_notifications_iph_presenter.h"
+#import "ios/chrome/browser/commerce/model/price_notifications/price_notifications_tab_helper.h"
+#import "ios/chrome/browser/download/model/download_manager_tab_helper.h"
+#import "ios/chrome/browser/download/model/pass_kit_tab_helper.h"
+#import "ios/chrome/browser/follow/model/follow_iph_presenter.h"
+#import "ios/chrome/browser/follow/model/follow_tab_helper.h"
+#import "ios/chrome/browser/itunes_urls/model/itunes_urls_handler_tab_helper.h"
+#import "ios/chrome/browser/lens/model/lens_tab_helper.h"
+#import "ios/chrome/browser/ntp/model/new_tab_page_tab_helper.h"
+#import "ios/chrome/browser/overscroll_actions/model/overscroll_actions_tab_helper.h"
+#import "ios/chrome/browser/parcel_tracking/parcel_tracking_prefs.h"
+#import "ios/chrome/browser/parcel_tracking/parcel_tracking_util.h"
+#import "ios/chrome/browser/passwords/model/password_tab_helper.h"
+#import "ios/chrome/browser/prerender/model/prerender_service.h"
+#import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/shared/public/commands/autofill_bottom_sheet_commands.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
+#import "ios/chrome/browser/shared/public/commands/lens_commands.h"
 #import "ios/chrome/browser/shared/public/commands/mini_map_commands.h"
+#import "ios/chrome/browser/shared/public/commands/parcel_tracking_opt_in_commands.h"
+#import "ios/chrome/browser/shared/public/commands/unit_conversion_commands.h"
 #import "ios/chrome/browser/shared/public/commands/web_content_commands.h"
-#import "ios/chrome/browser/snapshots/snapshot_tab_helper.h"
-#import "ios/chrome/browser/ssl/captive_portal_tab_helper.h"
+#import "ios/chrome/browser/snapshots/model/snapshot_tab_helper.h"
+#import "ios/chrome/browser/ssl/model/captive_portal_tab_helper.h"
+#import "ios/chrome/browser/tab_insertion/model/tab_insertion_browser_agent.h"
 #import "ios/chrome/browser/ui/download/download_manager_coordinator.h"
 #import "ios/chrome/browser/ui/ntp/new_tab_page_coordinator.h"
 #import "ios/chrome/browser/ui/print/print_coordinator.h"
 #import "ios/chrome/browser/ui/side_swipe/side_swipe_mediator.h"
-#import "ios/chrome/browser/web/annotations/annotations_tab_helper.h"
-#import "ios/chrome/browser/web/print/print_tab_helper.h"
-#import "ios/chrome/browser/web/repost_form_tab_helper.h"
-#import "ios/chrome/browser/web/repost_form_tab_helper_delegate.h"
-#import "ios/chrome/browser/web_state_list/tab_insertion_browser_agent.h"
-#import "ios/chrome/browser/web_state_list/web_state_dependency_installation_observer.h"
-#import "ios/chrome/browser/web_state_list/web_state_dependency_installer_bridge.h"
-#import "ios/chrome/browser/webui/net_export_tab_helper.h"
-#import "ios/chrome/browser/webui/net_export_tab_helper_delegate.h"
+#import "ios/chrome/browser/web/model/annotations/annotations_tab_helper.h"
+#import "ios/chrome/browser/web/model/print/print_tab_helper.h"
+#import "ios/chrome/browser/web/model/repost_form_tab_helper.h"
+#import "ios/chrome/browser/web/model/repost_form_tab_helper_delegate.h"
+#import "ios/chrome/browser/web_state_list/model/web_state_dependency_installation_observer.h"
+#import "ios/chrome/browser/web_state_list/model/web_state_dependency_installer_bridge.h"
+#import "ios/chrome/browser/webui/model/net_export_tab_helper.h"
+#import "ios/chrome/browser/webui/model/net_export_tab_helper_delegate.h"
+#import "ios/public/provider/chrome/browser/lens/lens_api.h"
 #import "ui/base/device_form_factor.h"
 
 @interface TabLifecycleMediator () <DependencyInstalling>
@@ -77,10 +86,8 @@
 
   PasswordTabHelper* passwordTabHelper =
       PasswordTabHelper::FromWebState(webState);
-  DCHECK(_baseViewController);
   DCHECK(_passwordControllerDelegate);
   DCHECK(_commandDispatcher);
-  passwordTabHelper->SetBaseViewController(_baseViewController);
   passwordTabHelper->SetPasswordControllerDelegate(_passwordControllerDelegate);
   passwordTabHelper->SetDispatcher(_commandDispatcher);
 
@@ -88,6 +95,12 @@
       AutofillBottomSheetTabHelper::FromWebState(webState);
   bottomSheetTabHelper->SetAutofillBottomSheetHandler(
       HandlerForProtocol(_commandDispatcher, AutofillBottomSheetCommands));
+
+  if (ios::provider::IsLensSupported()) {
+    LensTabHelper* lensTabHelper = LensTabHelper::FromWebState(webState);
+    lensTabHelper->SetLensCommandsHandler(
+        HandlerForProtocol(_commandDispatcher, LensCommands));
+  }
 
   DCHECK(_overscrollActionsDelegate);
   OverscrollActionsTabHelper::FromWebState(webState)->SetDelegate(
@@ -138,6 +151,13 @@
     annotationsTabHelper->SetBaseViewController(_baseViewController);
     annotationsTabHelper->SetMiniMapCommands(
         HandlerForProtocol(_commandDispatcher, MiniMapCommands));
+    annotationsTabHelper->SetUnitConversionCommands(
+        HandlerForProtocol(_commandDispatcher, UnitConversionCommands));
+    if (IsIOSParcelTrackingEnabled() &&
+        !IsParcelTrackingDisabled(GetApplicationContext()->GetLocalState())) {
+      annotationsTabHelper->SetParcelTrackingOptInCommands(
+          HandlerForProtocol(_commandDispatcher, ParcelTrackingOptInCommands));
+    }
   }
 
   PriceNotificationsTabHelper* priceNotificationsTabHelper =
@@ -147,6 +167,8 @@
     priceNotificationsTabHelper->SetPriceNotificationsIPHPresenter(
         _priceNotificationsIPHPresenter);
   }
+  AppLauncherTabHelper::FromWebState(webState)->SetBrowserPresentationProvider(
+      _appLauncherBrowserPresentationProvider);
 }
 
 - (void)uninstallDependencyForWebState:(web::WebState*)webState {
@@ -159,13 +181,17 @@
 
   PasswordTabHelper* passwordTabHelper =
       PasswordTabHelper::FromWebState(webState);
-  passwordTabHelper->SetBaseViewController(nil);
   passwordTabHelper->SetPasswordControllerDelegate(nil);
   passwordTabHelper->SetDispatcher(nil);
 
   AutofillBottomSheetTabHelper* bottomSheetTabHelper =
       AutofillBottomSheetTabHelper::FromWebState(webState);
   bottomSheetTabHelper->SetAutofillBottomSheetHandler(nil);
+
+  LensTabHelper* lensTabHelper = LensTabHelper::FromWebState(webState);
+  if (lensTabHelper) {
+    lensTabHelper->SetLensCommandsHandler(nil);
+  }
 
   OverscrollActionsTabHelper::FromWebState(webState)->SetDelegate(nil);
 
@@ -194,6 +220,7 @@
   if (annotationsTabHelper) {
     annotationsTabHelper->SetBaseViewController(nil);
     annotationsTabHelper->SetMiniMapCommands(nil);
+    annotationsTabHelper->SetUnitConversionCommands(nil);
   }
 
   PriceNotificationsTabHelper* priceNotificationsTabHelper =
@@ -201,6 +228,9 @@
   if (priceNotificationsTabHelper) {
     priceNotificationsTabHelper->SetPriceNotificationsIPHPresenter(nil);
   }
+
+  AppLauncherTabHelper::FromWebState(webState)->SetBrowserPresentationProvider(
+      nil);
 }
 
 @end

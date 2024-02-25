@@ -14,7 +14,6 @@
 #include "base/ranges/algorithm.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/buildflags.h"
-#include "chrome/browser/chrome_notification_types.h"
 #include "chrome/browser/lifetime/application_lifetime_desktop.h"
 #include "chrome/browser/lifetime/browser_shutdown.h"
 #include "chrome/browser/lifetime/termination_notification.h"
@@ -25,7 +24,6 @@
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_list_observer.h"
 #include "chrome/browser/ui/browser_window.h"
-#include "content/public/browser/notification_service.h"
 
 using base::UserMetricsAction;
 using content::WebContents;
@@ -34,7 +32,7 @@ namespace {
 
 BrowserList::BrowserVector GetBrowsersToClose(Profile* profile) {
   BrowserList::BrowserVector browsers_to_close;
-  for (auto* browser : *BrowserList::GetInstance()) {
+  for (Browser* browser : *BrowserList::GetInstance()) {
     if (browser->profile()->GetOriginalProfile() ==
         profile->GetOriginalProfile())
       browsers_to_close.push_back(browser);
@@ -44,7 +42,7 @@ BrowserList::BrowserVector GetBrowsersToClose(Profile* profile) {
 
 BrowserList::BrowserVector GetIncognitoBrowsersToClose(Profile* profile) {
   BrowserList::BrowserVector browsers_to_close;
-  for (auto* browser : *BrowserList::GetInstance()) {
+  for (Browser* browser : *BrowserList::GetInstance()) {
     if (browser->profile() == profile)
       browsers_to_close.push_back(browser);
   }
@@ -159,7 +157,7 @@ void BrowserList::RemoveObserver(BrowserListObserver* observer) {
 // static
 void BrowserList::CloseAllBrowsersWithProfile(Profile* profile) {
   BrowserVector browsers_to_close;
-  for (auto* browser : *BrowserList::GetInstance()) {
+  for (Browser* browser : *BrowserList::GetInstance()) {
     if (browser->profile()->GetOriginalProfile() ==
         profile->GetOriginalProfile())
       browsers_to_close.push_back(browser);
@@ -324,6 +322,14 @@ void BrowserList::NotifyBrowserNoLongerActive(Browser* browser) {
 }
 
 // static
+void BrowserList::NotifyBrowserCloseCancelled(Browser* browser,
+                                              BrowserClosingStatus reason) {
+  for (BrowserListObserver& observer : observers_.Get()) {
+    observer.OnBrowserCloseCancelled(browser, reason);
+  }
+}
+
+// static
 void BrowserList::NotifyBrowserCloseStarted(Browser* browser) {
   GetInstance()->currently_closing_browsers_.insert(browser);
 
@@ -333,7 +339,7 @@ void BrowserList::NotifyBrowserCloseStarted(Browser* browser) {
 
 // static
 bool BrowserList::IsOffTheRecordBrowserActive() {
-  for (auto* browser : *BrowserList::GetInstance()) {
+  for (Browser* browser : *BrowserList::GetInstance()) {
     if (browser->profile()->IsOffTheRecord())
       return true;
   }

@@ -199,7 +199,7 @@ class ClientSessionTest : public testing::Test {
 
   // HostExtensions to pass when creating the ClientSession. Caller retains
   // ownership of the HostExtensions themselves.
-  std::vector<HostExtension*> extensions_;
+  std::vector<raw_ptr<HostExtension, VectorExperimental>> extensions_;
 
   // Vectors of events to bind to `client_sessions_`, must outlive it.
   std::vector<protocol::KeyEvent> key_events_;

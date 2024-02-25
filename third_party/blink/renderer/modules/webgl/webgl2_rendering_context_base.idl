@@ -301,7 +301,7 @@ interface mixin WebGL2RenderingContextBase {
     [CallWith=ScriptState, RaisesException] void texImage2D(GLenum target, GLint level, GLint internalformat, GLsizei width, GLsizei height, GLint border, GLenum format, GLenum type, HTMLCanvasElement canvas);
     [CallWith=ScriptState, RaisesException] void texImage2D(GLenum target, GLint level, GLint internalformat, GLsizei width, GLsizei height, GLint border, GLenum format, GLenum type, OffscreenCanvas offscreenCanvas);
     [CallWith=ScriptState, RaisesException] void texImage2D(GLenum target, GLint level, GLint internalformat, GLsizei width, GLsizei height, GLint border, GLenum format, GLenum type, HTMLVideoElement video);
-    [CallWith=ScriptState, RaisesException, RuntimeEnabled=WebCodecs] void texImage2D(GLenum target, GLint level, GLint internalformat, GLsizei width, GLsizei height, GLint border, GLenum format, GLenum type, VideoFrame frame);
+    [CallWith=ScriptState, RaisesException] void texImage2D(GLenum target, GLint level, GLint internalformat, GLsizei width, GLsizei height, GLint border, GLenum format, GLenum type, VideoFrame frame);
     [RaisesException] void texImage2D(GLenum target, GLint level, GLint internalformat, GLsizei width, GLsizei height, GLint border, GLenum format, GLenum type, ImageBitmap bitmap);
     void texImage2D(GLenum target, GLint level, GLint internalformat, GLsizei width,
         GLsizei height, GLint border, GLenum format, GLenum type,
@@ -312,7 +312,7 @@ interface mixin WebGL2RenderingContextBase {
     [CallWith=ScriptState, RaisesException] void texSubImage2D(GLenum target, GLint level, GLint xoffset, GLint yoffset, GLsizei width, GLsizei height, GLenum format, GLenum type, HTMLCanvasElement canvas);
     [CallWith=ScriptState, RaisesException] void texSubImage2D(GLenum target, GLint level, GLint xoffset, GLint yoffset, GLsizei width, GLsizei height, GLenum format, GLenum type, OffscreenCanvas offscreenCanvas);
     [CallWith=ScriptState, RaisesException] void texSubImage2D(GLenum target, GLint level, GLint xoffset, GLint yoffset, GLsizei width, GLsizei height, GLenum format, GLenum type, HTMLVideoElement video);
-    [CallWith=ScriptState, RaisesException, RuntimeEnabled=WebCodecs] void texSubImage2D(GLenum target, GLint level, GLint xoffset, GLint yoffset, GLsizei width, GLsizei height, GLenum format, GLenum type, VideoFrame frame);
+    [CallWith=ScriptState, RaisesException] void texSubImage2D(GLenum target, GLint level, GLint xoffset, GLint yoffset, GLsizei width, GLsizei height, GLenum format, GLenum type, VideoFrame frame);
     [RaisesException] void texSubImage2D(GLenum target, GLint level, GLint xoffset, GLint yoffset, GLsizei width, GLsizei height, GLenum format, GLenum type, ImageBitmap bitmap);
     void texSubImage2D(GLenum target, GLint level, GLint xoffset, GLint yoffset,
         GLsizei width, GLsizei height, GLenum format, GLenum type,
@@ -325,7 +325,7 @@ interface mixin WebGL2RenderingContextBase {
     [CallWith=ScriptState, RaisesException] void texImage3D(GLenum target, GLint level, GLint internalformat, GLsizei width, GLsizei height, GLsizei depth, GLint border, GLenum format, GLenum type, HTMLCanvasElement canvas);
     [CallWith=ScriptState, RaisesException] void texImage3D(GLenum target, GLint level, GLint internalformat, GLsizei width, GLsizei height, GLsizei depth, GLint border, GLenum format, GLenum type, OffscreenCanvas offscreenCanvas);
     [CallWith=ScriptState, RaisesException] void texImage3D(GLenum target, GLint level, GLint internalformat, GLsizei width, GLsizei height, GLsizei depth, GLint border, GLenum format, GLenum type, HTMLVideoElement video);
-    [CallWith=ScriptState, RaisesException, RuntimeEnabled=WebCodecs] void texImage3D(GLenum target, GLint level, GLint internalformat, GLsizei width, GLsizei height, GLsizei depth, GLint border, GLenum format, GLenum type, VideoFrame frame);
+    [CallWith=ScriptState, RaisesException] void texImage3D(GLenum target, GLint level, GLint internalformat, GLsizei width, GLsizei height, GLsizei depth, GLint border, GLenum format, GLenum type, VideoFrame frame);
     [RaisesException] void texImage3D(GLenum target, GLint level, GLint internalformat, GLsizei width, GLsizei height, GLsizei depth, GLint border, GLenum format, GLenum type, ImageBitmap bitmap);
     void texImage3D(GLenum target, GLint level, GLint internalformat,
         GLsizei width, GLsizei height, GLsizei depth, GLint border,
@@ -341,7 +341,7 @@ interface mixin WebGL2RenderingContextBase {
     [CallWith=ScriptState, RaisesException] void texSubImage3D(GLenum target, GLint level, GLint xoffset, GLint yoffset, GLint zoffset, GLsizei width, GLsizei height, GLsizei depth, GLenum format, GLenum type, HTMLCanvasElement canvas);
     [CallWith=ScriptState, RaisesException] void texSubImage3D(GLenum target, GLint level, GLint xoffset, GLint yoffset, GLint zoffset, GLsizei width, GLsizei height, GLsizei depth, GLenum format, GLenum type, OffscreenCanvas offscreenCanvas);
     [CallWith=ScriptState, RaisesException] void texSubImage3D(GLenum target, GLint level, GLint xoffset, GLint yoffset, GLint zoffset, GLsizei width, GLsizei height, GLsizei depth, GLenum format, GLenum type, HTMLVideoElement video);
-    [CallWith=ScriptState, RaisesException, RuntimeEnabled=WebCodecs] void texSubImage3D(GLenum target, GLint level, GLint xoffset, GLint yoffset, GLint zoffset, GLsizei width, GLsizei height, GLsizei depth, GLenum format, GLenum type, VideoFrame frame);
+    [CallWith=ScriptState, RaisesException] void texSubImage3D(GLenum target, GLint level, GLint xoffset, GLint yoffset, GLint zoffset, GLsizei width, GLsizei height, GLsizei depth, GLenum format, GLenum type, VideoFrame frame);
     [RaisesException] void texSubImage3D(GLenum target, GLint level, GLint xoffset, GLint yoffset, GLint zoffset, GLsizei width, GLsizei height, GLsizei depth, GLenum format, GLenum type, ImageBitmap bitmap);
     void texSubImage3D(GLenum target, GLint level, GLint xoffset,
         GLint yoffset, GLint zoffset, GLsizei width, GLsizei height,

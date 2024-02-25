@@ -6,6 +6,7 @@
 #define CHROMEOS_DBUS_COMMON_PIPE_READER_H_
 
 #include <memory>
+#include <optional>
 #include <string>
 
 #include "base/component_export.h"
@@ -13,7 +14,6 @@
 #include "base/functional/callback.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base {
 class TaskRunner;
@@ -37,7 +37,7 @@ namespace chromeos {
 class COMPONENT_EXPORT(CHROMEOS_DBUS_COMMON) PipeReader {
  public:
   using CompletionCallback =
-      base::OnceCallback<void(absl::optional<std::string> data)>;
+      base::OnceCallback<void(std::optional<std::string> data)>;
 
   explicit PipeReader(const scoped_refptr<base::TaskRunner>& task_runner);
 

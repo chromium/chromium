@@ -97,15 +97,24 @@ class SynchronousSimpleTaskRunner : public base::TestSimpleTaskRunner {
 
 class FakeRasterBuffer : public RasterBuffer {
  public:
+  FakeRasterBuffer() = default;
+  explicit FakeRasterBuffer(float expected_hdr_headroom)
+      : expected_hdr_headroom_(expected_hdr_headroom) {}
+
   void Playback(const RasterSource* raster_source,
                 const gfx::Rect& raster_full_rect,
                 const gfx::Rect& raster_dirty_rect,
                 uint64_t new_content_id,
                 const gfx::AxisTransform2d& transform,
                 const RasterSource::PlaybackSettings& playback_settings,
-                const GURL& url) override {}
+                const GURL& url) override {
+    EXPECT_EQ(expected_hdr_headroom_, playback_settings.hdr_headroom);
+  }
 
   bool SupportsBackgroundThreadPriority() const override { return true; }
+
+ private:
+  const float expected_hdr_headroom_ = 1.f;
 };
 
 class TileManagerTilePriorityQueueTest : public TestLayerTreeHostBase {
@@ -1018,7 +1027,7 @@ TEST_F(TileManagerTilePriorityQueueTest, DebugNameAppearsInMemoryDump) {
   host_impl()->tile_manager()->PrepareTiles(host_impl()->global_tile_state());
 
   base::trace_event::MemoryDumpArgs dump_args = {
-      base::trace_event::MemoryDumpLevelOfDetail::DETAILED};
+      base::trace_event::MemoryDumpLevelOfDetail::kDetailed};
   base::trace_event::ProcessMemoryDump memory_dump(dump_args);
   host_impl()->resource_pool()->OnMemoryDump(dump_args, &memory_dump);
   bool found_debug_name = false;
@@ -1665,8 +1674,7 @@ TEST_F(TileManagerTilePriorityQueueTest, NoRasterTasksforSolidColorTiles) {
   gfx::Size size(10, 10);
   const gfx::Size layer_bounds(1000, 1000);
 
-  std::unique_ptr<FakeRecordingSource> recording_source =
-      FakeRecordingSource::CreateFilledRecordingSource(layer_bounds);
+  auto recording_source = FakeRecordingSource::Create(layer_bounds);
 
   PaintFlags solid_flags;
   SkColor4f solid_color{0.1f, 0.2f, 0.3f, 1.0f};
@@ -2060,8 +2068,7 @@ TEST_F(PixelInspectTileManagerTest, LowResHasNoImage) {
     surface->getCanvas()->clear(SK_ColorBLUE);
     sk_sp<SkImage> blue_image = surface->makeImageSnapshot();
 
-    std::unique_ptr<FakeRecordingSource> recording_source =
-        FakeRecordingSource::CreateFilledRecordingSource(size);
+    auto recording_source = FakeRecordingSource::Create(size);
     recording_source->SetBackgroundColor(SkColors::kTransparent);
     recording_source->SetRequiresClear(true);
     PaintFlags flags;
@@ -2156,8 +2163,7 @@ TEST_F(ActivationTasksDoNotBlockReadyToDrawTest,
   EXPECT_TRUE(host_impl()->use_gpu_rasterization());
 
   // Active tree has no non-solid tiles, so it will generate no tile tasks.
-  std::unique_ptr<FakeRecordingSource> active_tree_recording_source =
-      FakeRecordingSource::CreateFilledRecordingSource(layer_bounds);
+  auto active_tree_recording_source = FakeRecordingSource::Create(layer_bounds);
 
   PaintFlags solid_flags;
   SkColor solid_color = SkColorSetARGB(255, 12, 23, 34);
@@ -2168,8 +2174,8 @@ TEST_F(ActivationTasksDoNotBlockReadyToDrawTest,
   active_tree_recording_source->Rerecord();
 
   // Pending tree has non-solid tiles, so it will generate tile tasks.
-  std::unique_ptr<FakeRecordingSource> pending_tree_recording_source =
-      FakeRecordingSource::CreateFilledRecordingSource(layer_bounds);
+  auto pending_tree_recording_source =
+      FakeRecordingSource::Create(layer_bounds);
   SkColor non_solid_color = SkColorSetARGB(128, 45, 56, 67);
   PaintFlags non_solid_flags;
   non_solid_flags.setColor(non_solid_color);
@@ -2233,7 +2239,7 @@ TEST_F(PartialRasterTileManagerTest, CancelledTasksHaveNoContentId) {
   pending_layer->SetDrawsContent(true);
 
   // The bounds() just mirror the raster source size.
-  pending_layer->SetBounds(pending_layer->raster_source()->GetSize());
+  pending_layer->SetBounds(pending_layer->raster_source()->size());
   SetupRootProperties(pending_layer.get());
   pending_tree->SetRootLayerForTesting(std::move(pending_layer));
 
@@ -2317,7 +2323,8 @@ void RunPartialRasterCheck(std::unique_ptr<LayerTreeHostImpl> host_impl,
           gfx::ColorSpace::CreateSRGB());
 
   resource.set_software_backing(std::make_unique<TestSoftwareBacking>());
-  host_impl->resource_pool()->PrepareForExport(resource);
+  host_impl->resource_pool()->PrepareForExport(
+      resource, viz::TransferableResource::ResourceSource::kTest);
 
   host_impl->resource_pool()->OnContentReplaced(resource, kInvalidatedId);
   host_impl->resource_pool()->ReleaseResource(std::move(resource));
@@ -2335,7 +2342,7 @@ void RunPartialRasterCheck(std::unique_ptr<LayerTreeHostImpl> host_impl,
   pending_layer->SetDrawsContent(true);
 
   // The bounds() just mirror the raster source size.
-  pending_layer->SetBounds(pending_layer->raster_source()->GetSize());
+  pending_layer->SetBounds(pending_layer->raster_source()->size());
   SetupRootProperties(pending_layer.get());
   pending_tree->SetRootLayerForTesting(std::move(pending_layer));
 
@@ -2386,8 +2393,7 @@ void RunPartialTileDecodeCheck(std::unique_ptr<LayerTreeHostImpl> host_impl,
 
   const gfx::Size layer_bounds(500, 500);
 
-  std::unique_ptr<FakeRecordingSource> recording_source =
-      FakeRecordingSource::CreateFilledRecordingSource(layer_bounds);
+  auto recording_source = FakeRecordingSource::Create(layer_bounds);
   recording_source->set_fill_with_nonsolid_color(true);
 
   int dimension = 250;
@@ -2421,7 +2427,7 @@ void RunPartialTileDecodeCheck(std::unique_ptr<LayerTreeHostImpl> host_impl,
   pending_layer->SetDrawsContent(true);
 
   // The bounds() just mirror the raster source size.
-  pending_layer->SetBounds(pending_layer->raster_source()->GetSize());
+  pending_layer->SetBounds(pending_layer->raster_source()->size());
   SetupRootProperties(pending_layer.get());
   pending_tree->SetRootLayerForTesting(std::move(pending_layer));
 
@@ -2565,6 +2571,10 @@ class MockReadyToDrawRasterBufferProviderImpl
           base::OnceClosure callback,
           uint64_t pending_callback_id));
 
+  void set_expected_hdr_headroom(float expected_hdr_headroom) {
+    expected_hdr_headroom_ = expected_hdr_headroom;
+  }
+
   std::unique_ptr<RasterBuffer> AcquireBufferForRaster(
       const ResourcePool::InUsePoolResource& resource,
       uint64_t resource_content_id,
@@ -2574,8 +2584,11 @@ class MockReadyToDrawRasterBufferProviderImpl
       bool depends_on_hardware_accelerated_webp_candidates) override {
     if (!resource.software_backing())
       resource.set_software_backing(std::make_unique<TestSoftwareBacking>());
-    return std::make_unique<FakeRasterBuffer>();
+    return std::make_unique<FakeRasterBuffer>(expected_hdr_headroom_);
   }
+
+ private:
+  float expected_hdr_headroom_ = 1.f;
 };
 
 class TileManagerReadyToDrawTest : public TileManagerTest {
@@ -2592,8 +2605,7 @@ class TileManagerReadyToDrawTest : public TileManagerTest {
 
     const gfx::Size layer_bounds(1000, 1000);
 
-    solid_color_recording_source_ =
-        FakeRecordingSource::CreateFilledRecordingSource(layer_bounds);
+    solid_color_recording_source_ = FakeRecordingSource::Create(layer_bounds);
 
     PaintFlags solid_flags;
     SkColor solid_color = SkColorSetARGB(255, 12, 23, 34);
@@ -2603,8 +2615,7 @@ class TileManagerReadyToDrawTest : public TileManagerTest {
 
     solid_color_recording_source_->Rerecord();
 
-    recording_source_ =
-        FakeRecordingSource::CreateFilledRecordingSource(layer_bounds);
+    recording_source_ = FakeRecordingSource::Create(layer_bounds);
     SkColor non_solid_color = SkColorSetARGB(128, 45, 56, 67);
     PaintFlags non_solid_flags;
     non_solid_flags.setColor(non_solid_color);
@@ -2699,6 +2710,25 @@ TEST_F(TileManagerReadyToDrawTest, NonSmoothActivationDoesNotWaitOnCallback) {
 
   // We're using a StrictMock on the RasterBufferProvider, so any function call
   // will cause a test failure.
+  base::RunLoop run_loop;
+
+  host_impl()->tile_manager()->PrepareTiles(host_impl()->global_tile_state());
+  EXPECT_CALL(MockHostImpl(), NotifyReadyToActivate())
+      .WillOnce(Invoke([&run_loop]() { run_loop.Quit(); }));
+  run_loop.Run();
+
+  EXPECT_TRUE(host_impl()->tile_manager()->IsReadyToDraw());
+  EXPECT_TRUE(host_impl()->tile_manager()->IsReadyToActivate());
+}
+
+TEST_F(TileManagerReadyToDrawTest, HdrHeadroomPropagated) {
+  constexpr float kTestHdrHeadroom = 4.f;
+  TargetColorParams target_color_params;
+  target_color_params.hdr_max_luminance_relative = kTestHdrHeadroom;
+  host_impl()->set_target_color_params(target_color_params);
+  mock_raster_buffer_provider()->set_expected_hdr_headroom(kTestHdrHeadroom);
+
+  SetupTreesWithPendingTreeTiles();
   base::RunLoop run_loop;
 
   host_impl()->tile_manager()->PrepareTiles(host_impl()->global_tile_state());
@@ -3207,8 +3237,7 @@ TEST_F(CheckerImagingTileManagerTest,
        NoImageDecodeDependencyForCheckeredTiles) {
   const gfx::Size layer_bounds(512, 512);
 
-  std::unique_ptr<FakeRecordingSource> recording_source =
-      FakeRecordingSource::CreateFilledRecordingSource(layer_bounds);
+  auto recording_source = FakeRecordingSource::Create(layer_bounds);
   recording_source->set_fill_with_nonsolid_color(true);
 
   auto generator =
@@ -3261,8 +3290,7 @@ class EmptyCacheTileManagerTest : public TileManagerTest {
 TEST_F(EmptyCacheTileManagerTest, AtRasterOnScreenTileRasterTasks) {
   const gfx::Size layer_bounds(500, 500);
 
-  std::unique_ptr<FakeRecordingSource> recording_source =
-      FakeRecordingSource::CreateFilledRecordingSource(layer_bounds);
+  auto recording_source = FakeRecordingSource::Create(layer_bounds);
   recording_source->set_fill_with_nonsolid_color(true);
 
   int dimension = 500;
@@ -3297,8 +3325,7 @@ TEST_F(EmptyCacheTileManagerTest, AtRasterOnScreenTileRasterTasks) {
 TEST_F(EmptyCacheTileManagerTest, AtRasterPrepaintTileRasterTasksSkipped) {
   const gfx::Size layer_bounds(500, 500);
 
-  std::unique_ptr<FakeRecordingSource> recording_source =
-      FakeRecordingSource::CreateFilledRecordingSource(layer_bounds);
+  auto recording_source = FakeRecordingSource::Create(layer_bounds);
   recording_source->set_fill_with_nonsolid_color(true);
 
   int dimension = 500;
@@ -3333,8 +3360,7 @@ TEST_F(EmptyCacheTileManagerTest, AtRasterPrepaintTileRasterTasksSkipped) {
 TEST_F(CheckerImagingTileManagerTest, BuildsImageDecodeQueueAsExpected) {
   const gfx::Size layer_bounds(900, 900);
 
-  std::unique_ptr<FakeRecordingSource> recording_source =
-      FakeRecordingSource::CreateFilledRecordingSource(layer_bounds);
+  auto recording_source = FakeRecordingSource::Create(layer_bounds);
   recording_source->set_fill_with_nonsolid_color(true);
 
   int dimension = 450;
@@ -3497,8 +3523,7 @@ TEST_F(CheckerImagingTileManagerTest,
        TileManagerCleanupClearsCheckerImagedDecodes) {
   const gfx::Size layer_bounds(512, 512);
 
-  std::unique_ptr<FakeRecordingSource> recording_source =
-      FakeRecordingSource::CreateFilledRecordingSource(layer_bounds);
+  auto recording_source = FakeRecordingSource::Create(layer_bounds);
   recording_source->set_fill_with_nonsolid_color(true);
   PaintImage image = MakeCheckerablePaintImage(gfx::Size(512, 512));
   recording_source->add_draw_image(image, gfx::Point(0, 0));
@@ -3536,8 +3561,7 @@ TEST_F(CheckerImagingTileManagerTest,
        TileManagerCorrectlyPrioritizesCheckerImagedDecodes) {
   gfx::Size layer_bounds(500, 500);
 
-  std::unique_ptr<FakeRecordingSource> recording_source =
-      FakeRecordingSource::CreateFilledRecordingSource(layer_bounds);
+  auto recording_source = FakeRecordingSource::Create(layer_bounds);
   recording_source->set_fill_with_nonsolid_color(true);
   PaintImage image = MakeCheckerablePaintImage(gfx::Size(512, 512));
   recording_source->add_draw_image(image, gfx::Point(0, 0));
@@ -3618,8 +3642,7 @@ class CheckerImagingTileManagerMemoryTest
 TEST_F(CheckerImagingTileManagerMemoryTest, AddsAllNowTilesToImageDecodeQueue) {
   const gfx::Size layer_bounds(900, 1400);
 
-  std::unique_ptr<FakeRecordingSource> recording_source =
-      FakeRecordingSource::CreateFilledRecordingSource(layer_bounds);
+  auto recording_source = FakeRecordingSource::Create(layer_bounds);
   recording_source->set_fill_with_nonsolid_color(true);
 
   int dimension = 450;
@@ -3772,6 +3795,7 @@ TEST_F(SynchronousRasterTileManagerTest, AlwaysUseImageCache) {
   host_impl()->tile_manager()->PrepareTiles(host_impl()->global_tile_state());
   static_cast<SynchronousTaskGraphRunner*>(task_graph_runner())->RunUntilIdle();
 
+  pending_layer_ = old_pending_layer_ = active_layer_ = nullptr;
   // Destroy the LTHI since it accesses the RasterBufferProvider during cleanup.
   TakeHostImpl();
 }
@@ -3846,8 +3870,7 @@ TEST_F(DecodedImageTrackerTileManagerTest, DecodedImageTrackerDropsLocksOnUse) {
 
   // Add images to a fake recording source.
   const gfx::Size layer_bounds(1000, 500);
-  std::unique_ptr<FakeRecordingSource> recording_source =
-      FakeRecordingSource::CreateFilledRecordingSource(layer_bounds);
+  auto recording_source = FakeRecordingSource::Create(layer_bounds);
   recording_source->set_fill_with_nonsolid_color(true);
   recording_source->add_draw_image(image1, gfx::Point(0, 0));
   recording_source->add_draw_image(image2, gfx::Point(700, 0));
@@ -3921,8 +3944,7 @@ class HdrImageTileManagerTest : public CheckerImagingTileManagerTest {
 
     // Add images to a fake recording source.
     constexpr gfx::Size kLayerBounds(1000, 500);
-    auto recording_source =
-        FakeRecordingSource::CreateFilledRecordingSource(kLayerBounds);
+    auto recording_source = FakeRecordingSource::Create(kLayerBounds);
     recording_source->set_fill_with_nonsolid_color(true);
     recording_source->add_draw_image(hdr_image, gfx::Point(0, 0));
     recording_source->Rerecord();

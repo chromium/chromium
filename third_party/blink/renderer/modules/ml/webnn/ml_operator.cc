@@ -12,6 +12,14 @@ namespace blink {
 // static
 String MLOperator::OperatorKindToString(MLOperator::OperatorKind kind) {
   switch (kind) {
+    case MLOperator::OperatorKind::kArgMin:
+      return "argMin";
+    case MLOperator::OperatorKind::kArgMax:
+      return "argMax";
+    case MLOperator::OperatorKind::kBatchNormalization:
+      return "batchNormalization";
+    case MLOperator::OperatorKind::kCast:
+      return "cast";
     case MLOperator::OperatorKind::kClamp:
       return "clamp";
     case MLOperator::OperatorKind::kConcat:
@@ -28,38 +36,104 @@ String MLOperator::OperatorKindToString(MLOperator::OperatorKind kind) {
       return "mul";
     case MLOperator::OperatorKind::kDiv:
       return "div";
+    case MLOperator::OperatorKind::kMin:
+      return "min";
+    case MLOperator::OperatorKind::kMax:
+      return "max";
+    case MLOperator::OperatorKind::kPow:
+      return "pow";
+    case MLOperator::OperatorKind::kEqual:
+      return "equal";
+    case MLOperator::OperatorKind::kGreater:
+      return "greater";
+    case MLOperator::OperatorKind::kGreaterOrEqual:
+      return "greaterOrEqual";
+    case MLOperator::OperatorKind::kLesser:
+      return "lesser";
+    case MLOperator::OperatorKind::kLesserOrEqual:
+      return "lesserOrEqual";
     case MLOperator::OperatorKind::kAbs:
       return "abs";
     case MLOperator::OperatorKind::kCeil:
       return "ceil";
+    case MLOperator::OperatorKind::kCos:
+      return "cos";
+    case MLOperator::OperatorKind::kExp:
+      return "exp";
     case MLOperator::OperatorKind::kFloor:
       return "floor";
+    case MLOperator::OperatorKind::kLog:
+      return "log";
     case MLOperator::OperatorKind::kNeg:
       return "neg";
+    case MLOperator::OperatorKind::kSin:
+      return "sin";
+    case MLOperator::OperatorKind::kTan:
+      return "tan";
+    case MLOperator::OperatorKind::kErf:
+      return "erf";
+    case MLOperator::OperatorKind::kIdentity:
+      return "identity";
+    case MLOperator::OperatorKind::kLogicalNot:
+      return "logicalNot";
+    case MLOperator::OperatorKind::kReciprocal:
+      return "reciprocal";
+    case MLOperator::OperatorKind::kSqrt:
+      return "sqrt";
+    case MLOperator::OperatorKind::kInstanceNormalization:
+      return "instanceNormalization";
+    case MLOperator::OperatorKind::kLayerNormalization:
+      return "layerNormalization";
     case MLOperator::OperatorKind::kLeakyRelu:
       return "leakyRelu";
-    case MLOperator::OperatorKind::kMax:
-      return "max";
-    case MLOperator::OperatorKind::kMin:
-      return "min";
+    case MLOperator::OperatorKind::kLinear:
+      return "linear";
+    case MLOperator::OperatorKind::kLstm:
+      return "lstm";
     case MLOperator::OperatorKind::kElu:
       return "elu";
+    case MLOperator::OperatorKind::kExpand:
+      return "expand";
+    case MLOperator::OperatorKind::kGather:
+      return "gather";
     case MLOperator::OperatorKind::kGemm:
       return "gemm";
+    case MLOperator::OperatorKind::kHardSigmoid:
+      return "hardSigmoid";
     case MLOperator::OperatorKind::kHardSwish:
       return "hardSwish";
     case MLOperator::OperatorKind::kAveragePool2d:
       return "averagePool2d";
+    case MLOperator::OperatorKind::kL2Pool2d:
+      return "l2Pool2d";
     case MLOperator::OperatorKind::kMaxPool2d:
       return "maxPool2d";
+    case MLOperator::OperatorKind::kMatmul:
+      return "matmul";
     case MLOperator::OperatorKind::kPad:
       return "pad";
     case MLOperator::OperatorKind::kPRelu:
       return "prelu";
+    case MLOperator::OperatorKind::kReduceL1:
+      return "reduceL1";
+    case MLOperator::OperatorKind::kReduceL2:
+      return "reduceL2";
+    case MLOperator::OperatorKind::kReduceLogSum:
+      return "reduceLogSum";
+    case MLOperator::OperatorKind::kReduceLogSumExp:
+      return "reduceLogSumExp";
+    case MLOperator::OperatorKind::kReduceMax:
+      return "reduceMax";
     case MLOperator::OperatorKind::kReduceMean:
       return "reduceMean";
+    case MLOperator::OperatorKind::kReduceMin:
+      return "reduceMin";
+    case MLOperator::OperatorKind::kReduceProduct:
+      return "reduceProduct";
     case MLOperator::OperatorKind::kReduceSum:
       return "reduceSum";
+    case MLOperator::OperatorKind::kReduceSumSquare:
+      return "reduceSumSquare";
     case MLOperator::OperatorKind::kRelu:
       return "relu";
     case MLOperator::OperatorKind::kReshape:
@@ -68,17 +142,24 @@ String MLOperator::OperatorKindToString(MLOperator::OperatorKind kind) {
       return "resample2d";
     case MLOperator::OperatorKind::kSigmoid:
       return "sigmoid";
+    case MLOperator::OperatorKind::kSoftsign:
+      return "softsign";
     case MLOperator::OperatorKind::kSlice:
       return "slice";
     case MLOperator::OperatorKind::kSoftmax:
       return "softmax";
+    case MLOperator::OperatorKind::kSoftplus:
+      return "softplus";
     case MLOperator::OperatorKind::kSplit:
       return "split";
     case MLOperator::OperatorKind::kTanh:
       return "tanh";
     case MLOperator::OperatorKind::kTranspose:
       return "transpose";
+    case MLOperator::OperatorKind::kWhere:
+      return "where";
   }
+  NOTREACHED_NORETURN();
 }
 
 MLOperator::MLOperator(MLGraphBuilder* builder,
@@ -100,7 +181,7 @@ MLOperator::OperatorKind MLOperator::Kind() const {
 }
 
 const bindings::DictionaryBase* MLOperator::Options() const {
-  return options_;
+  return options_.Get();
 }
 
 bool MLOperator::IsConnected() const {
@@ -133,6 +214,24 @@ MLConcatOperator::~MLConcatOperator() = default;
 
 uint32_t MLConcatOperator::Axis() const {
   return axis_;
+}
+
+MLLstmOperator::MLLstmOperator(MLGraphBuilder* builder,
+                               const uint32_t steps,
+                               const uint32_t hidden_size,
+                               const bindings::DictionaryBase* options)
+    : MLOperator(builder, MLOperator::OperatorKind::kLstm, options),
+      steps_(steps),
+      hidden_size_(hidden_size) {}
+
+MLLstmOperator::~MLLstmOperator() = default;
+
+uint32_t MLLstmOperator::steps() const {
+  return steps_;
+}
+
+uint32_t MLLstmOperator::hidden_size() const {
+  return hidden_size_;
 }
 
 MLPadOperator::MLPadOperator(MLGraphBuilder* builder,

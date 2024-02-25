@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {getRequiredElement} from 'chrome://resources/js/util_ts.js';
+import {getRequiredElement} from 'chrome://resources/js/util.js';
 
 import {AudioSample, OutputPage} from './output_page.js';
 import {PageNavigator} from './page.js';
@@ -26,13 +26,11 @@ export class AudioPlayer extends HTMLElement {
         getRequiredElement<HTMLTemplateElement>('audioPlayer-template')
                       .content.cloneNode(true);
     this.audioDiv = (clone as HTMLElement).querySelector('div')!;
-    this.audioPlay =
-        this.audioDiv.querySelector('#play-btn') as HTMLButtonElement;
-    this.audioQuery =
-        this.audioDiv.querySelector('#output-qs') as HTMLDivElement;
+    this.audioPlay = this.audioDiv.querySelector('#play-btn')!;
+    this.audioQuery = this.audioDiv.querySelector('#output-qs')!;
     this.audioNameTag = this.audioDiv.querySelectorAll('p')[0]!;
     this.audioExpectation = this.audioDiv.querySelectorAll('p')[1]!;
-    this.prevLink = this.audioDiv.querySelector('#back') as HTMLButtonElement;
+    this.prevLink = this.audioDiv.querySelector('#back')!;
     this.prevLink.textContent = '< Back';
     this.prevLink.addEventListener('click', () => {
       this.handleBackClick();
@@ -53,10 +51,10 @@ export class AudioPlayer extends HTMLElement {
   }
 
   setAudioExpectation() {
-    if (this.current!.pan == -1) {
+    if (this.current!.pan === -1) {
       this.audioExpectation.innerHTML =
           'Should hear audio coming from the left channel.';
-    } else if (this.current!.pan == 1) {
+    } else if (this.current!.pan === 1) {
       this.audioExpectation.innerHTML =
           'Should hear audio coming from the right channel.';
     } else {
@@ -66,10 +64,8 @@ export class AudioPlayer extends HTMLElement {
   }
 
   setButtons() {
-    const yesLink =
-        this.audioQuery.querySelector('#output-yes') as HTMLButtonElement;
-    const noLink =
-        this.audioQuery.querySelector('#output-no') as HTMLButtonElement;
+    const yesLink = this.audioQuery.querySelector('#output-yes')!;
+    const noLink = this.audioQuery.querySelector('#output-no')!;
 
     yesLink.addEventListener('click', () => this.handleResponse(true));
     noLink.addEventListener('click', () => this.handleResponse(false));
@@ -85,7 +81,7 @@ export class AudioPlayer extends HTMLElement {
       oscNode.type = 'sine';
       oscNode.channelCount = this.current!.channelCount;
       oscNode.frequency.value = this.current!.freqency;
-      if (this.current!.channelCount == 2) {
+      if (this.current!.channelCount === 2) {
         const panNode = this.audioContext.createStereoPanner();
         panNode.pan.value = this.current!.pan;
         oscNode.connect(panNode);
@@ -122,19 +118,19 @@ export class AudioPlayer extends HTMLElement {
       this.timerId = null;
     }
     this.setUpAudioPlayer();
-    this.prevLink.hidden = this.sampleIdx == 0;
+    this.prevLink.hidden = this.sampleIdx === 0;
     this.audioQuery.hidden = true;
   }
 
   handleResponse(response: boolean) {
     OutputPage.getInstance().setOutputMapEntry(this.current!, response);
-    if (this.sampleIdx + 1 == this.audioSamples.length) {
+    if (this.sampleIdx + 1 === this.audioSamples.length) {
       PageNavigator.getInstance().showPage('feedback');
     } else {
       this.sampleIdx += 1;
       this.setUpAudioPlayer();
       this.audioQuery.hidden = true;
-      this.prevLink.hidden = this.sampleIdx == 0;
+      this.prevLink.hidden = this.sampleIdx === 0;
     }
   }
 }

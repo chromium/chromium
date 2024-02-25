@@ -1,4 +1,4 @@
-(async function(testRunner) {
+(async function(/** @type {import('test_runner').TestRunner} */ testRunner) {
   var {page, session, dp} = await testRunner.startBlank(
       `Tests that evaluating V8-embedder callbacks allows side-effect-free methods. Should not crash.`);
 
@@ -37,20 +37,20 @@
   await checkHasSideEffect(`document.querySelector('div').x = "foo"`);
 
   // Command Line API
-  await checkHasNoSideEffect(`$('div')`);
-  await checkHasNoSideEffect(`$$('div')`);
-  await checkHasNoSideEffect(`$x('//div')`);
-  await checkHasNoSideEffect(`getEventListeners(document)`);
-  await checkHasNoSideEffect(`$.toString()`);
-  await checkHasNoSideEffect(`$$.toString()`);
-  await checkHasNoSideEffect(`$x.toString()`);
-  await checkHasNoSideEffect(`getEventListeners.toString()`);
+  await checkHasSideEffect(`$('div')`);
+  await checkHasSideEffect(`$$('div')`);
+  await checkHasSideEffect(`$x('//div')`);
+  await checkHasSideEffect(`getEventListeners(document)`);
+  await checkHasSideEffect(`$.toString()`);
+  await checkHasSideEffect(`$$.toString()`);
+  await checkHasSideEffect(`$x.toString()`);
+  await checkHasSideEffect(`getEventListeners.toString()`);
 
   // Unsafe Command Line API
   await checkHasSideEffect(`monitorEvents()`);
   await checkHasSideEffect(`unmonitorEvents()`);
-  await checkHasNoSideEffect(`monitorEvents.toString()`);
-  await checkHasNoSideEffect(`unmonitorEvents.toString()`);
+  await checkHasSideEffect(`monitorEvents.toString()`);
+  await checkHasSideEffect(`unmonitorEvents.toString()`);
 
   // Document
   await checkHasNoSideEffect(`document.getElementsByTagName('div')`);

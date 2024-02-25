@@ -7,13 +7,13 @@
 #include <windows.h>
 
 #include <memory>
+#include <optional>
 #include <utility>
 
 #include "base/check.h"
 #include "base/command_line.h"
 #include "base/notreached.h"
 #include "base/task/thread_pool.h"
-#include "base/win/registry.h"
 #include "chrome/browser/enterprise/connectors/device_trust/key_management/browser/commands/win_key_rotation_command.h"
 #include "chrome/browser/enterprise/connectors/device_trust/key_management/core/network/mock_key_network_delegate.h"
 #include "chrome/browser/enterprise/connectors/device_trust/key_management/core/persistence/key_persistence_delegate.h"
@@ -25,7 +25,6 @@
 #include "components/policy/proto/device_management_backend.pb.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "testing/gmock/include/gmock/gmock.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 using testing::_;
 using testing::Invoke;
@@ -46,7 +45,7 @@ HRESULT MockRunGoogleUpdateElevatedCommandFn(
     std::string expected_client_id,
     const wchar_t* command,
     const std::vector<std::string>& args,
-    absl::optional<DWORD>* return_code) {
+    std::optional<DWORD>* return_code) {
   base::CommandLine cmd_line(base::CommandLine::NO_PROGRAM);
   CHECK(args.size() == 3);
   cmd_line.AppendSwitchASCII(switches::kRotateDTKey, args[0]);
@@ -94,7 +93,6 @@ DeviceTrustTestEnvironmentWin::DeviceTrustTestEnvironmentWin()
     : DeviceTrustTestEnvironment("device_trust_test_environment_win",
                                  kSuccessCode),
       install_details_(true) {
-  registry_override_manager_.OverrideRegistry(HKEY_LOCAL_MACHINE);
   KeyRotationCommandFactory::SetFactoryInstanceForTesting(this);
 }
 
@@ -125,9 +123,17 @@ void DeviceTrustTestEnvironmentWin::SetUpExistingKey() {
       trust_level, key_pair->key()->GetWrappedKey()));
 }
 
+void DeviceTrustTestEnvironmentWin::ClearExistingKey() {
+  EXPECT_TRUE(key_persistence_delegate_->StoreKeyPair(
+      BPKUR::KEY_TRUST_LEVEL_UNSPECIFIED, std::vector<uint8_t>()));
+
+  EXPECT_FALSE(KeyExists());
+}
+
 std::vector<uint8_t> DeviceTrustTestEnvironmentWin::GetWrappedKey() {
   std::vector<uint8_t> wrapped_key;
-  auto loaded_key_pair = key_persistence_delegate_->LoadKeyPair();
+  auto loaded_key_pair = key_persistence_delegate_->LoadKeyPair(
+      KeyStorageType::kPermanent, nullptr);
   if (loaded_key_pair) {
     auto* key_pointer = loaded_key_pair->key();
     if (key_pointer) {

@@ -38,14 +38,14 @@ class FakeCrosHotspotConfig : public mojom::CrosHotspotConfig {
 
  private:
   void NotifyHotspotInfoObservers();
-  void NotifyHotspotTurnedOn(bool wifi_turned_off);
+  void NotifyHotspotTurnedOn();
   void NotifyHotspotTurnedOff(mojom::DisableReason reason);
 
   mojom::HotspotInfoPtr hotspot_info_;
-  mojo::RemoteSet<mojom::CrosHotspotConfigObserver>
-      cros_hotspot_config_observers_;
   mojo::RemoteSet<mojom::HotspotEnabledStateObserver>
       hotspot_enabled_state_observers_;
+  mojo::RemoteSet<mojom::CrosHotspotConfigObserver>
+      cros_hotspot_config_observers_;
   mojo::Receiver<mojom::CrosHotspotConfig> receiver_{this};
 };
 

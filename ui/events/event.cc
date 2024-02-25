@@ -294,10 +294,21 @@ void Event::SetHandled() {
   result_ = static_cast<EventResult>(result_ | ER_HANDLED);
 }
 
+void Event::SetSkipped() {
+  CHECK(cancelable_);
+  result_ = static_cast<EventResult>(result_ | ER_CONSUMED | ER_SKIPPED);
+}
+
+void Event::SetFlags(int flags) {
+  flags_ = flags;
+  OnFlagsUpdated();
+}
+
 std::string Event::ToString() const {
   return base::StrCat(
-      {GetName(), " time_stamp ",
-       base::NumberToString(time_stamp_.since_origin().InSecondsF())});
+      {GetName(), " time_stamp=",
+       base::NumberToString(time_stamp_.since_origin().InSecondsF()),
+       " source_device_id=", base::NumberToString(source_device_id_)});
 }
 
 Event::Event(EventType type, base::TimeTicks time_stamp, int flags)
@@ -417,8 +428,8 @@ void LocatedEvent::UpdateForRootTransform(
 }
 
 std::string LocatedEvent::ToString() const {
-  return base::StrCat({Event::ToString(), " location ", location_.ToString(),
-                       " root_location ", root_location_.ToString()});
+  return base::StrCat({Event::ToString(), " location=", location_.ToString(),
+                       " root_location=", root_location_.ToString()});
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -583,14 +594,16 @@ void MouseEvent::SetClickCount(int click_count) {
       f |= EF_IS_TRIPLE_CLICK;
       break;
   }
-  set_flags(f);
+  SetFlags(f);
 }
 
 std::string MouseEvent::ToString() const {
-  return base::StrCat(
-      {LocatedEvent::ToString(), " flags ",
-       base::JoinString(base::make_span(MouseEventFlagsNames(flags())),
-                        " | ")});
+  return base::StrCat({
+      LocatedEvent::ToString(),
+      " flags=",
+      base::JoinString(base::make_span(MouseEventFlagsNames(flags())), "|"),
+      base::StringPrintf("(0x%04x)", flags()),
+  });
 }
 
 std::unique_ptr<Event> MouseEvent::Clone() const {
@@ -626,14 +639,13 @@ MouseWheelEvent::MouseWheelEvent(const MouseWheelEvent& mouse_wheel_event)
   DCHECK_EQ(ET_MOUSEWHEEL, type());
 }
 
-MouseWheelEvent::MouseWheelEvent(
-    const gfx::Vector2d& offset,
-    const gfx::PointF& location,
-    const gfx::PointF& root_location,
-    base::TimeTicks time_stamp,
-    int flags,
-    int changed_button_flags,
-    const absl::optional<gfx::Vector2d> tick_120ths)
+MouseWheelEvent::MouseWheelEvent(const gfx::Vector2d& offset,
+                                 const gfx::PointF& location,
+                                 const gfx::PointF& root_location,
+                                 base::TimeTicks time_stamp,
+                                 int flags,
+                                 int changed_button_flags,
+                                 const std::optional<gfx::Vector2d> tick_120ths)
     : MouseEvent(ET_UNKNOWN,
                  location,
                  root_location,
@@ -934,7 +946,7 @@ void KeyEvent::InitializeNative() {
   // Check if this is a key repeat. This must be called before initial flags
   // processing, e.g: NormalizeFlags(), to avoid issues like crbug.com/1069690.
   if (synthesize_key_repeat_enabled_ && IsRepeated(GetLastKeyEvent()))
-    set_flags(flags() | EF_IS_REPEAT);
+    SetFlags(flags() | EF_IS_REPEAT);
 
 #if BUILDFLAG(IS_LINUX)
   NormalizeFlags();
@@ -942,11 +954,11 @@ void KeyEvent::InitializeNative() {
   // Only Windows has native character events.
   if (is_char_) {
     key_ = DomKey::FromCharacter(static_cast<int32_t>(native_event().wParam));
-    set_flags(PlatformKeyMap::ReplaceControlAndAltWithAltGraph(flags()));
+    SetFlags(PlatformKeyMap::ReplaceControlAndAltWithAltGraph(flags()));
   } else {
     int adjusted_flags = flags();
     key_ = PlatformKeyMap::DomKeyFromKeyboardCode(key_code(), &adjusted_flags);
-    set_flags(adjusted_flags);
+    SetFlags(adjusted_flags);
   }
 #endif
 }
@@ -1038,7 +1050,7 @@ bool KeyEvent::IsRepeated(KeyEvent** last_key_event) {
 
   if (is_repeat) {
     last->set_time_stamp(time_stamp());
-    last->set_flags(last->flags() | EF_IS_REPEAT);
+    last->SetFlags(last->flags() | EF_IS_REPEAT);
     return true;
   }
 
@@ -1066,6 +1078,13 @@ DomKey KeyEvent::GetDomKey() const {
   if (key_ == DomKey::NONE)
     ApplyLayout();
   return key_;
+}
+
+void KeyEvent::OnFlagsUpdated() {
+  // TODO(https://crbug.com/324462727): this is problematic on windows.
+#if BUILDFLAG(IS_CHROMEOS)
+  key_ = DomKey::NONE;
+#endif
 }
 
 char16_t KeyEvent::GetCharacter() const {
@@ -1146,16 +1165,31 @@ void KeyEvent::NormalizeFlags() {
       return;
   }
   if (type() == ET_KEY_PRESSED)
-    set_flags(flags() | mask);
+    SetFlags(flags() | mask);
   else
-    set_flags(flags() & ~mask);
+    SetFlags(flags() & ~mask);
 }
 
 std::string KeyEvent::ToString() const {
-  return base::StrCat(
-      {Event::ToString(), " key ", base::StringPrintf("(0x%.4x)", key_code_),
-       " flags ",
-       base::JoinString(base::make_span(KeyEventFlagsNames(flags())), " | ")});
+  auto dom_key = GetDomKey();
+  return base::StrCat({
+      Event::ToString(),
+      " code=",
+      KeycodeConverter::DomCodeToCodeString(code()),
+      base::StringPrintf("(0x%04x)", static_cast<uint32_t>(code_)),
+      " key=",
+      KeycodeConverter::DomKeyToKeyString(dom_key),
+      base::StringPrintf("(0x%04x)", static_cast<uint32_t>(dom_key)),
+      " keycode=",
+      base::StringPrintf("(0x%04x)", key_code_),
+#if BUILDFLAG(IS_OZONE)
+      " scan_code=",
+      base::StringPrintf("(0x%04x)", scan_code_),
+#endif  // BUILDFLAG(IS_OZONE)
+      " flags=",
+      base::JoinString(base::make_span(KeyEventFlagsNames(flags())), "|"),
+      base::StringPrintf("(0x%04x)", flags()),
+  });
 }
 
 std::unique_ptr<Event> KeyEvent::Clone() const {
@@ -1267,11 +1301,16 @@ void ScrollEvent::Scale(const float factor) {
 }
 
 std::string ScrollEvent::ToString() const {
-  return base::StringPrintf(
-      "%s offset %g,%g offset_ordinal %g,%g momentum_phase %s event_phase %s",
-      MouseEvent::ToString().c_str(), x_offset_, y_offset_, x_offset_ordinal_,
-      y_offset_ordinal_, MomentumPhaseToString(momentum_phase_).c_str(),
-      ScrollEventPhaseToString(scroll_event_phase_).c_str());
+  return base::StrCat({
+      MouseEvent::ToString(),
+      base::StringPrintf(" offset=%g,%g", x_offset_, y_offset_),
+      base::StringPrintf(" offset_ordinal=%g,%g", x_offset_ordinal_,
+                         y_offset_ordinal_),
+      " momentum_phase=",
+      MomentumPhaseToString(momentum_phase_),
+      " event_phase=",
+      ScrollEventPhaseToString(scroll_event_phase_),
+  });
 }
 
 std::unique_ptr<Event> ScrollEvent::Clone() const {
@@ -1307,9 +1346,11 @@ GestureEvent::GestureEvent(const GestureEvent& other) = default;
 GestureEvent::~GestureEvent() = default;
 
 std::string GestureEvent::ToString() const {
-  return base::StringPrintf("%s touch_event_id %d",
-                            LocatedEvent::ToString().c_str(),
-                            unique_touch_event_id_);
+  return base::StrCat({
+      LocatedEvent::ToString(),
+      " touch_event_id=",
+      base::NumberToString(unique_touch_event_id_),
+  });
 }
 
 std::unique_ptr<Event> GestureEvent::Clone() const {

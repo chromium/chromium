@@ -7,9 +7,9 @@
 #include "net/net_jni_headers/HttpUtil_jni.h"
 #include "url/gurl.h"
 
+using base::android::ConvertJavaStringToUTF8;
 using base::android::JavaParamRef;
 using base::android::ScopedJavaLocalRef;
-using base::android::ConvertJavaStringToUTF16;
 
 namespace net {
 

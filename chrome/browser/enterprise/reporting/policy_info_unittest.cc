@@ -57,7 +57,7 @@ class PolicyInfoTest : public ::testing::Test {
         std::unique_ptr<sync_preferences::PrefServiceSyncable>(),
         base::UTF8ToUTF16(test_profile_name), 0,
         TestingProfile::TestingFactories(), /*is_supervised_profile=*/false,
-        absl::optional<bool>(), GetPolicyService());
+        std::optional<bool>(), GetPolicyService());
     profile_manager_->CreateTestingProfile(chrome::kInitialProfile);
   }
 
@@ -107,10 +107,9 @@ TEST_F(PolicyInfoTest, ChromePolicy) {
 
   EXPECT_CALL(*policy_service(), GetPolicies(_));
 
-  auto client =
-      std::make_unique<policy::ChromePolicyConversionsClient>(profile());
   AppendChromePolicyInfoIntoProfileReport(
-      policy::DictionaryPolicyConversions(std::move(client))
+      policy::PolicyConversions(
+          std::make_unique<policy::ChromePolicyConversionsClient>(profile()))
           .EnableConvertTypes(false)
           .EnablePrettyPrint(false)
           .ToValueDict(),
@@ -156,10 +155,9 @@ TEST_F(PolicyInfoTest, ExtensionPolicy) {
                               policy::POLICY_SOURCE_PLATFORM, base::Value(3),
                               nullptr);
   em::ChromeUserProfileInfo profile_info;
-  auto client =
-      std::make_unique<policy::ChromePolicyConversionsClient>(profile());
   AppendExtensionPolicyInfoIntoProfileReport(
-      policy::DictionaryPolicyConversions(std::move(client))
+      policy::PolicyConversions(
+          std::make_unique<policy::ChromePolicyConversionsClient>(profile()))
           .EnableConvertTypes(false)
           .EnablePrettyPrint(false)
           .ToValueDict(),

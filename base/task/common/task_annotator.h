@@ -60,14 +60,14 @@ class BASE_EXPORT TaskAnnotator {
   // giving one last chance for this TaskAnnotator to add metadata to
   // |pending_task| before it is moved into the queue.
   void WillQueueTask(perfetto::StaticString trace_event_name,
-                     PendingTask* pending_task);
+                     TaskMetadata* pending_task);
 
   // Creates a process-wide unique ID to represent this task in trace events.
   // This will be mangled with a Process ID hash to reduce the likelyhood of
   // colliding with TaskAnnotator pointers on other processes. Callers may use
   // this when generating their own flow events (i.e. when passing
   // |queue_function == nullptr| in above methods).
-  uint64_t GetTaskTraceID(const PendingTask& task) const;
+  uint64_t GetTaskTraceID(const TaskMetadata& task) const;
 
   // Run the given task, emitting the toplevel trace event and additional
   // trace event arguments. Like for TRACE_EVENT macros, all of the arguments
@@ -174,7 +174,7 @@ class BASE_EXPORT [[maybe_unused, nodiscard]] TaskAnnotator::LongTaskTracker {
 
   // For tracking task duration.
   //
-  // Not a raw_ptr<...> for performance reasons: based on analysis of sampling
+  // RAW_PTR_EXCLUSION: Performance reasons: based on analysis of sampling
   // profiler data (TaskAnnotator::LongTaskTracker::~LongTaskTracker).
   RAW_PTR_EXCLUSION const TickClock* tick_clock_;  // Not owned.
   TimeTicks task_start_time_;
@@ -192,8 +192,8 @@ class BASE_EXPORT [[maybe_unused, nodiscard]] TaskAnnotator::LongTaskTracker {
   // known. Note that this will not compile in the Native client.
   uint32_t (*ipc_method_info_)();
   bool is_response_ = false;
-  // Not a raw_ptr/raw_ref<...> for performance reasons: based on analysis of
-  // sampling profiler data (TaskAnnotator::LongTaskTracker::~LongTaskTracker).
+  // RAW_PTR_EXCLUSION: Performance reasons: based on analysis of sampling
+  // profiler data (TaskAnnotator::LongTaskTracker::~LongTaskTracker).
   [[maybe_unused]] RAW_PTR_EXCLUSION PendingTask& pending_task_;
   [[maybe_unused]] RAW_PTR_EXCLUSION TaskAnnotator* task_annotator_;
 };

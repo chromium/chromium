@@ -30,7 +30,7 @@ class CONTENT_EXPORT ReduceAcceptLanguageThrottle
   void BeforeWillRedirectRequest(
       net::RedirectInfo* redirect_info,
       const network::mojom::URLResponseHead& response_head,
-      bool* defer,
+      RestartWithURLReset* restart_with_url_reset,
       std::vector<std::string>* to_be_removed_request_headers,
       net::HttpRequestHeaders* modified_request_headers,
       net::HttpRequestHeaders* modified_cors_exempt_request_headers) override;
@@ -38,13 +38,14 @@ class CONTENT_EXPORT ReduceAcceptLanguageThrottle
   void BeforeWillProcessResponse(
       const GURL& response_url,
       const network::mojom::URLResponseHead& response_head,
-      bool* defer) override;
+      RestartWithURLReset* restart_with_url_reset) override;
 
  private:
   // Contains the logic for whether or not the navigation should restart, and
   // persists the reduce accept-language if there is a restart.
   void MaybeRestartWithLanguageNegotiation(
-      const network::mojom::URLResponseHead& response_head);
+      const network::mojom::URLResponseHead& response_head,
+      RestartWithURLReset* restart_with_url_reset);
 
   // The delegate is owned by the BrowserContext, and both are expected to
   // outlive this throttle.

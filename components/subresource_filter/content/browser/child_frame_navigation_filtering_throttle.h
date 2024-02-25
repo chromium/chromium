@@ -12,6 +12,7 @@
 #include "components/subresource_filter/content/browser/async_document_subresource_filter.h"
 #include "components/subresource_filter/core/common/load_policy.h"
 #include "content/public/browser/navigation_throttle.h"
+#include "third_party/blink/public/common/frame/frame_ad_evidence.h"
 
 namespace features {
 BASE_DECLARE_FEATURE(kSendCnameAliasesToSubresourceFilterFromBrowser);
@@ -44,7 +45,8 @@ class ChildFrameNavigationFilteringThrottle
  public:
   ChildFrameNavigationFilteringThrottle(
       content::NavigationHandle* handle,
-      AsyncDocumentSubresourceFilter* parent_frame_filter);
+      AsyncDocumentSubresourceFilter* parent_frame_filter,
+      blink::FrameAdEvidence ad_evidence);
 
   ChildFrameNavigationFilteringThrottle(
       const ChildFrameNavigationFilteringThrottle&) = delete;
@@ -96,6 +98,8 @@ class ChildFrameNavigationFilteringThrottle
 
   // Set to the least restrictive load policy by default.
   LoadPolicy load_policy_ = LoadPolicy::EXPLICITLY_ALLOW;
+
+  blink::FrameAdEvidence ad_evidence_;
 
   base::WeakPtrFactory<ChildFrameNavigationFilteringThrottle> weak_ptr_factory_{
       this};

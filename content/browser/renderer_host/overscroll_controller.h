@@ -5,10 +5,11 @@
 #ifndef CONTENT_BROWSER_RENDERER_HOST_OVERSCROLL_CONTROLLER_H_
 #define CONTENT_BROWSER_RENDERER_HOST_OVERSCROLL_CONTROLLER_H_
 
+#include <optional>
+
 #include "base/time/time.h"
 #include "cc/input/overscroll_behavior.h"
 #include "content/common/content_export.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/input/web_gesture_event.h"
 #include "third_party/blink/public/common/input/web_input_event.h"
 #include "ui/events/blink/did_overscroll_params.h"
@@ -186,7 +187,7 @@ class CONTENT_EXPORT OverscrollController {
   // cases. So we only process 0.3 second inertial events then cancel the
   // overscroll if it is not completed yet.
   // Timestamp for the first inertial event (fling) in current stream.
-  absl::optional<base::TimeTicks> first_inertial_event_time_;
+  std::optional<base::TimeTicks> first_inertial_event_time_;
 };
 
 }  // namespace content

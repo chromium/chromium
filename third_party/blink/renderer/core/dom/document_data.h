@@ -7,7 +7,7 @@
 
 #include "services/network/public/mojom/trust_tokens.mojom-blink.h"
 #include "third_party/blink/public/mojom/permissions/permission.mojom-blink.h"
-#include "third_party/blink/renderer/bindings/core/v8/script_regexp.h"
+#include "third_party/blink/renderer/platform/bindings/script_regexp.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_set.h"
 #include "third_party/blink/renderer/platform/mojo/heap_mojo_remote.h"
 
@@ -72,6 +72,10 @@ class DocumentData final : public GarbageCollected<DocumentData> {
   // The number of immediate child frames created within this document so far.
   // This count doesn't include this document's frame nor descendant frames.
   int immediate_child_frame_creation_count_ = 0;
+
+  // LCPP's LCP ElementLocator was matched against a tag against html
+  // during preload scanning.
+  bool lcpp_encountered_lcp_in_html = false;
 
   friend class Document;
 };

@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Copyright 2023 The Chromium Authors. All rights reserved.
+     Use of this source code is governed by a BSD-style license that can be
+     found in the LICENSE file. -->
+
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:paddingStart="@dimen/dialog_padding_sides"
+    android:paddingEnd="@dimen/dialog_padding_sides"
+    android:paddingTop="@dimen/dialog_padding_top">
+
+    <TextView
+        android:id="@id/title"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentTop="true"
+        android:layout_toStartOf="@id/title_icon"
+        android:textAppearance="@style/TextAppearance.AlertDialogTitleStyle" />
+
+    <ImageView
+        android:id="@id/title_icon"
+        android:layout_width="wrap_content"
+        android:layout_height="24dp"
+        android:layout_marginTop="4dp"
+        android:layout_alignParentEnd="true"
+        android:contentDescription="@string/autofill_from_google_account" />
+</RelativeLayout>

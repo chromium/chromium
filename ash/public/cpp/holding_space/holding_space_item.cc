@@ -54,17 +54,14 @@ HoldingSpaceItem::InProgressCommand::InProgressCommand(
       icon(other.icon),
       handler(other.handler) {}
 
-HoldingSpaceItem::InProgressCommand::~InProgressCommand() = default;
-
 HoldingSpaceItem::InProgressCommand&
-HoldingSpaceItem::InProgressCommand::operator=(const InProgressCommand& other) =
+HoldingSpaceItem::InProgressCommand::operator=(const InProgressCommand&) =
     default;
 
+HoldingSpaceItem::InProgressCommand::~InProgressCommand() = default;
+
 bool HoldingSpaceItem::InProgressCommand::operator==(
-    const InProgressCommand& other) const {
-  return command_id == other.command_id && label_id == other.label_id &&
-         icon == other.icon && handler == other.handler;
-}
+    const InProgressCommand&) const = default;
 
 // HoldingSpaceItem ------------------------------------------------------------
 
@@ -74,10 +71,8 @@ HoldingSpaceItem::~HoldingSpaceItem() {
 
 bool HoldingSpaceItem::operator==(const HoldingSpaceItem& rhs) const {
   return type_ == rhs.type_ && id_ == rhs.id_ && file_ == rhs.file_ &&
-         file_path_ == rhs.file_path_ &&
-         file_system_url_ == rhs.file_system_url_ && text_ == rhs.text_ &&
-         secondary_text_ == rhs.secondary_text_ &&
-         secondary_text_color_id_ == rhs.secondary_text_color_id_ &&
+         text_ == rhs.text_ && secondary_text_ == rhs.secondary_text_ &&
+         secondary_text_color_variant_ == rhs.secondary_text_color_variant_ &&
          *image_ == *rhs.image_ && progress_ == rhs.progress_ &&
          in_progress_commands_ == rhs.in_progress_commands_;
 }
@@ -86,11 +81,8 @@ bool HoldingSpaceItem::operator==(const HoldingSpaceItem& rhs) const {
 std::unique_ptr<HoldingSpaceItem> HoldingSpaceItem::CreateFileBackedItem(
     Type type,
     const HoldingSpaceFile& file,
-    const base::FilePath& file_path,
-    const GURL& file_system_url,
     ImageResolver image_resolver) {
-  return CreateFileBackedItem(type, file, file_path, file_system_url,
-                              HoldingSpaceProgress(),
+  return CreateFileBackedItem(type, file, HoldingSpaceProgress(),
                               std::move(image_resolver));
 }
 
@@ -98,17 +90,14 @@ std::unique_ptr<HoldingSpaceItem> HoldingSpaceItem::CreateFileBackedItem(
 std::unique_ptr<HoldingSpaceItem> HoldingSpaceItem::CreateFileBackedItem(
     Type type,
     const HoldingSpaceFile& file,
-    const base::FilePath& file_path,
-    const GURL& file_system_url,
     const HoldingSpaceProgress& progress,
     ImageResolver image_resolver) {
-  DCHECK(!file_system_url.is_empty());
+  DCHECK(!file.file_system_url.is_empty());
 
   // Note: std::make_unique does not work with private constructors.
   return base::WrapUnique(new HoldingSpaceItem(
-      type, /*id=*/base::UnguessableToken::Create().ToString(), file, file_path,
-      file_system_url, std::move(image_resolver).Run(type, file_path),
-      progress));
+      type, /*id=*/base::UnguessableToken::Create().ToString(), file,
+      std::move(image_resolver).Run(type, file.file_path), progress));
 }
 
 // static
@@ -128,6 +117,7 @@ bool HoldingSpaceItem::IsCameraAppType(HoldingSpaceItem::Type type) {
     case Type::kLocalSuggestion:
     case Type::kNearbyShare:
     case Type::kPhoneHubCameraRoll:
+    case Type::kPhotoshopWeb:
     case Type::kPinnedFile:
     case Type::kPrintedPdf:
     case Type::kScan:
@@ -155,6 +145,7 @@ bool HoldingSpaceItem::IsDownloadType(HoldingSpaceItem::Type type) {
     case Type::kLocalSuggestion:
     case Type::kNearbyShare:
     case Type::kPhoneHubCameraRoll:
+    case Type::kPhotoshopWeb:
     case Type::kPinnedFile:
     case Type::kPrintedPdf:
     case Type::kScan:
@@ -185,6 +176,7 @@ bool HoldingSpaceItem::IsScreenCaptureType(HoldingSpaceItem::Type type) {
     case Type::kLocalSuggestion:
     case Type::kNearbyShare:
     case Type::kPhoneHubCameraRoll:
+    case Type::kPhotoshopWeb:
     case Type::kPinnedFile:
     case Type::kPrintedPdf:
     case Type::kScan:
@@ -209,6 +201,7 @@ bool HoldingSpaceItem::IsSuggestionType(HoldingSpaceItem::Type type) {
     case Type::kLacrosDownload:
     case Type::kNearbyShare:
     case Type::kPhoneHubCameraRoll:
+    case Type::kPhotoshopWeb:
     case Type::kPinnedFile:
     case Type::kPrintedPdf:
     case Type::kScan:
@@ -225,7 +218,7 @@ bool HoldingSpaceItem::IsSuggestionType(HoldingSpaceItem::Type type) {
 std::unique_ptr<HoldingSpaceItem> HoldingSpaceItem::Deserialize(
     const base::Value::Dict& dict,
     ImageResolver image_resolver) {
-  const absl::optional<int> version = dict.FindInt(kVersionPath);
+  const std::optional<int> version = dict.FindInt(kVersionPath);
   DCHECK(version.has_value() && version.value() == kVersion);
 
   const Type type = DeserializeType(dict);
@@ -234,8 +227,8 @@ std::unique_ptr<HoldingSpaceItem> HoldingSpaceItem::Deserialize(
   // NOTE: `std::make_unique` does not work with private constructors.
   return base::WrapUnique(new HoldingSpaceItem(
       type, DeserializeId(dict),
-      HoldingSpaceFile(HoldingSpaceFile::FileSystemType::kUnknown), file_path,
-      /*file_system_url=*/GURL(),
+      HoldingSpaceFile(file_path, HoldingSpaceFile::FileSystemType::kUnknown,
+                       /*file_system_url=*/GURL()),
       std::move(image_resolver).Run(type, file_path), HoldingSpaceProgress()));
 }
 
@@ -244,7 +237,7 @@ std::unique_ptr<HoldingSpaceItem> HoldingSpaceItem::Deserialize(
 // serialization versions are supported, care must be taken to handle each.
 const std::string& HoldingSpaceItem::DeserializeId(
     const base::Value::Dict& dict) {
-  const absl::optional<int> version = dict.FindInt(kVersionPath);
+  const std::optional<int> version = dict.FindInt(kVersionPath);
   DCHECK(version.has_value() && version.value() == kVersion);
 
   const std::string* id = dict.FindString(kIdPath);
@@ -258,10 +251,10 @@ const std::string& HoldingSpaceItem::DeserializeId(
 // serialization versions are supported, care must be taken to handle each.
 base::FilePath HoldingSpaceItem::DeserializeFilePath(
     const base::Value::Dict& dict) {
-  const absl::optional<int> version = dict.FindInt(kVersionPath);
+  const std::optional<int> version = dict.FindInt(kVersionPath);
   DCHECK(version.has_value() && version.value() == kVersion);
 
-  const absl::optional<base::FilePath> file_path =
+  const std::optional<base::FilePath> file_path =
       base::ValueToFilePath(dict.Find(kFilePathPath));
   DCHECK(file_path.has_value());
 
@@ -273,7 +266,7 @@ base::FilePath HoldingSpaceItem::DeserializeFilePath(
 // serialization versions are supported, care must be taken to handle each.
 HoldingSpaceItem::Type HoldingSpaceItem::DeserializeType(
     const base::Value::Dict& dict) {
-  const absl::optional<int> version = dict.FindInt(kVersionPath);
+  const std::optional<int> version = dict.FindInt(kVersionPath);
   DCHECK(version.has_value() && version.value() == kVersion);
 
   return static_cast<Type>(dict.FindInt(kTypePath).value());
@@ -287,7 +280,7 @@ base::Value::Dict HoldingSpaceItem::Serialize() const {
   dict.Set(kVersionPath, kVersion);
   dict.Set(kTypePath, static_cast<int>(type_));
   dict.Set(kIdPath, id_);
-  dict.Set(kFilePathPath, base::FilePathToValue(file_path_));
+  dict.Set(kFilePathPath, base::FilePathToValue(file_.file_path));
   return dict;
 }
 
@@ -297,61 +290,68 @@ base::CallbackListSubscription HoldingSpaceItem::AddDeletionCallback(
 }
 
 bool HoldingSpaceItem::IsInitialized() const {
-  return !file_system_url_.is_empty();
+  return !file_.file_system_url.is_empty();
 }
 
-void HoldingSpaceItem::Initialize(const HoldingSpaceFile& file,
-                                  const GURL& file_system_url) {
+void HoldingSpaceItem::Initialize(const HoldingSpaceFile& file) {
   DCHECK(!IsInitialized());
-  DCHECK(!file_system_url.is_empty());
+  DCHECK(!file.file_system_url.is_empty());
   file_ = file;
-  file_system_url_ = file_system_url;
 }
 
-bool HoldingSpaceItem::SetBackingFile(const HoldingSpaceFile& file,
-                                      const base::FilePath& file_path,
-                                      const GURL& file_system_url) {
-  if (file_ == file && file_path_ == file_path &&
-      file_system_url_ == file_system_url) {
-    return false;
+std::optional<HoldingSpaceFile> HoldingSpaceItem::SetBackingFile(
+    const HoldingSpaceFile& file) {
+  if (file_ == file) {
+    return std::nullopt;
   }
 
+  auto previous_file = std::move(file_);
   file_ = file;
-  file_path_ = file_path;
-  file_system_url_ = file_system_url;
-  image_->UpdateBackingFilePath(file_path);
+  image_->UpdateBackingFilePath(file_.file_path);
 
-  return true;
+  return previous_file;
 }
 
 std::u16string HoldingSpaceItem::GetText() const {
-  return text_.value_or(file_path_.BaseName().LossyDisplayName());
+  return text_.value_or(file_.file_path.BaseName().LossyDisplayName());
 }
 
-bool HoldingSpaceItem::SetText(const absl::optional<std::u16string>& text) {
-  if (text_ == text)
-    return false;
+std::optional<std::optional<std::u16string>> HoldingSpaceItem::SetText(
+    const std::optional<std::u16string>& text) {
+  if (text_ == text) {
+    return std::nullopt;
+  }
 
+  auto previous_text = std::move(text_);
   text_ = text;
-  return true;
+
+  return previous_text;
 }
 
-bool HoldingSpaceItem::SetSecondaryText(
-    const absl::optional<std::u16string>& secondary_text) {
-  if (secondary_text_ == secondary_text)
-    return false;
+std::optional<std::optional<std::u16string>> HoldingSpaceItem::SetSecondaryText(
+    const std::optional<std::u16string>& secondary_text) {
+  if (secondary_text_ == secondary_text) {
+    return std::nullopt;
+  }
 
+  auto previous_secondary_text = std::move(secondary_text_);
   secondary_text_ = secondary_text;
-  return true;
+
+  return previous_secondary_text;
 }
 
-bool HoldingSpaceItem::SetSecondaryTextColorId(
-    const absl::optional<ui::ColorId>& secondary_text_color_id) {
-  if (secondary_text_color_id_ == secondary_text_color_id)
-    return false;
+std::optional<std::optional<HoldingSpaceColorVariant>>
+HoldingSpaceItem::SetSecondaryTextColorVariant(
+    const std::optional<HoldingSpaceColorVariant>&
+        secondary_text_color_variant) {
+  if (secondary_text_color_variant_ == secondary_text_color_variant) {
+    return std::nullopt;
+  }
 
-  secondary_text_color_id_ = secondary_text_color_id;
-  return true;
+  auto previous_secondary_text_color_variant = secondary_text_color_variant_;
+  secondary_text_color_variant_ = secondary_text_color_variant;
+
+  return previous_secondary_text_color_variant;
 }
 
 std::u16string HoldingSpaceItem::GetAccessibleName() const {
@@ -368,29 +368,37 @@ std::u16string HoldingSpaceItem::GetAccessibleName() const {
       secondary_text_.value());
 }
 
-bool HoldingSpaceItem::SetAccessibleName(
-    const absl::optional<std::u16string>& accessible_name) {
-  if (accessible_name_ == accessible_name)
-    return false;
+std::optional<std::optional<std::u16string>>
+HoldingSpaceItem::SetAccessibleName(
+    const std::optional<std::u16string>& accessible_name) {
+  if (accessible_name_ == accessible_name) {
+    return std::nullopt;
+  }
 
+  auto previous_accessible_name = std::move(accessible_name_);
   accessible_name_ = accessible_name;
-  return true;
+
+  return previous_accessible_name;
 }
 
-bool HoldingSpaceItem::SetProgress(const HoldingSpaceProgress& progress) {
+std::optional<HoldingSpaceProgress> HoldingSpaceItem::SetProgress(
+    const HoldingSpaceProgress& progress) {
   // NOTE: Progress can only be updated for in progress items.
-  if (progress_ == progress || progress_.IsComplete())
-    return false;
+  if (progress_ == progress || progress_.IsComplete()) {
+    return std::nullopt;
+  }
 
+  auto previous_progress = progress_;
   progress_ = progress;
 
   if (progress_.IsComplete())
     in_progress_commands_.clear();
 
-  return true;
+  return previous_progress;
 }
 
-bool HoldingSpaceItem::SetInProgressCommands(
+std::optional<std::vector<HoldingSpaceItem::InProgressCommand>>
+HoldingSpaceItem::SetInProgressCommands(
     std::vector<InProgressCommand> in_progress_commands) {
   DCHECK(base::ranges::all_of(in_progress_commands,
                               [](const InProgressCommand& in_progress_command) {
@@ -398,11 +406,14 @@ bool HoldingSpaceItem::SetInProgressCommands(
                                     in_progress_command.command_id);
                               }));
 
-  if (progress_.IsComplete() || in_progress_commands_ == in_progress_commands)
-    return false;
+  if (progress_.IsComplete() || in_progress_commands_ == in_progress_commands) {
+    return std::nullopt;
+  }
 
+  auto previous_in_progress_commands = std::move(in_progress_commands_);
   in_progress_commands_ = in_progress_commands;
-  return true;
+
+  return previous_in_progress_commands;
 }
 
 void HoldingSpaceItem::InvalidateImage() {
@@ -413,15 +424,11 @@ void HoldingSpaceItem::InvalidateImage() {
 HoldingSpaceItem::HoldingSpaceItem(Type type,
                                    const std::string& id,
                                    const HoldingSpaceFile& file,
-                                   const base::FilePath& file_path,
-                                   const GURL& file_system_url,
                                    std::unique_ptr<HoldingSpaceImage> image,
                                    const HoldingSpaceProgress& progress)
     : type_(type),
       id_(id),
       file_(file),
-      file_path_(file_path),
-      file_system_url_(file_system_url),
       image_(std::move(image)),
       progress_(progress) {}
 

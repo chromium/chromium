@@ -3,24 +3,49 @@
 // found in the LICENSE file.
 
 #include "content/public/test/service_worker_test_helpers.h"
-#include "base/memory/raw_ptr.h"
 
 #include <memory>
 #include <utility>
 
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
+#include "base/scoped_observation.h"
+#include "base/scoped_observation_traits.h"
 #include "base/time/default_tick_clock.h"
-#include "content/browser/service_worker/embedded_worker_status.h"
+#include "content/browser/service_worker/service_worker_context_core.h"
 #include "content/browser/service_worker/service_worker_context_core_observer.h"
 #include "content/browser/service_worker/service_worker_context_wrapper.h"
+#include "content/browser/service_worker/service_worker_version.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/service_worker_context.h"
 #include "third_party/blink/public/common/notifications/platform_notification_data.h"
+#include "third_party/blink/public/common/service_worker/embedded_worker_status.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
+#include "third_party/blink/public/mojom/service_worker/service_worker_database.mojom-forward.h"
 #include "url/gurl.h"
+
+// Allow `ServiceWorkerVersionCreatedWatcher` to scoped observe the custom
+// observer add/remove methods on `ServiceWorkerContextCore`.
+namespace base {
+template <>
+struct ScopedObservationTraits<
+    content::ServiceWorkerContextCore,
+    content::ServiceWorkerContextCore::TestVersionObserver> {
+  static void AddObserver(
+      content::ServiceWorkerContextCore* source,
+      content::ServiceWorkerContextCore::TestVersionObserver* observer) {
+    source->AddVersionObserverForTest(observer);
+  }
+  static void RemoveObserver(
+      content::ServiceWorkerContextCore* source,
+      content::ServiceWorkerContextCore::TestVersionObserver* observer) {
+    source->RemoveVersionObserverForTest(observer);
+  }
+};
+}  // namespace base
 
 namespace content {
 
@@ -115,7 +140,7 @@ void DispatchNotificationClickForRegistration(
                         base::DoNothing());
   version->endpoint()->DispatchNotificationClickEvent(
       "notification_id", notification_data, -1 /* action_index */,
-      absl::nullopt /* reply */,
+      std::nullopt /* reply */,
       base::BindOnce([](blink::mojom::ServiceWorkerEventStatus event_status) {
         DCHECK_EQ(blink::mojom::ServiceWorkerEventStatus::COMPLETED,
                   event_status);
@@ -123,6 +148,105 @@ void DispatchNotificationClickForRegistration(
 }
 
 }  // namespace
+
+// Implementation for `content::ServiceWorkerContextCore::TestVersionObserver`.
+// Observes new versions created and sets a state observer new versions that it
+// observes being created.
+class ServiceWorkerTestHelper::ServiceWorkerVersionCreatedWatcher
+    : public content::ServiceWorkerContextCore::TestVersionObserver {
+ public:
+  ServiceWorkerVersionCreatedWatcher(
+      content::ServiceWorkerContextCore* context_core,
+      ServiceWorkerTestHelper* parent)
+      : parent_(parent) {
+    scoped_observation_.Observe(context_core);
+  }
+
+ private:
+  // content::ServiceWorkerContextCore::TestObserver
+  void OnServiceWorkerVersionCreated(ServiceWorkerVersion* version) override {
+    // Create a `ServiceWorkerVersionStateManager` for this version.
+    parent_->OnServiceWorkerVersionCreated(version);
+  }
+
+  raw_ptr<ServiceWorkerTestHelper> const parent_;
+  base::ScopedObservation<
+      content::ServiceWorkerContextCore,
+      content::ServiceWorkerContextCore::TestVersionObserver>
+      scoped_observation_{this};
+};
+
+// Observes state changes of the `ServiceWorkerVersion` it is observing.
+class ServiceWorkerTestHelper::ServiceWorkerVersionStateManager
+    : public ServiceWorkerVersion::Observer {
+ public:
+  ServiceWorkerVersionStateManager(ServiceWorkerTestHelper* parent,
+                                   ServiceWorkerVersion* version)
+      : parent_(parent), sw_version_(version) {
+    scoped_observation_.Observe(sw_version_);
+  }
+
+  ~ServiceWorkerVersionStateManager() override {
+    // Release potential dangling pointers.
+    sw_version_ = nullptr;
+    parent_ = nullptr;
+  }
+
+ private:
+  // ServiceWorkerVersion::Observer
+  void OnRunningStateChanged(ServiceWorkerVersion* version) override {
+    parent_->OnDidRunningStatusChange(version->running_status(),
+                                      version->version_id());
+  }
+
+  raw_ptr<ServiceWorkerTestHelper> parent_;
+  raw_ptr<ServiceWorkerVersion> sw_version_;
+  base::ScopedObservation<ServiceWorkerVersion, ServiceWorkerVersion::Observer>
+      scoped_observation_{this};
+};
+
+ServiceWorkerTestHelper::ServiceWorkerTestHelper(ServiceWorkerContext* context,
+                                                 int64_t worker_version_id) {
+  DCHECK(context);
+  if (worker_version_id != blink::mojom::kInvalidServiceWorkerVersionId) {
+    RegisterStateObserver(context, worker_version_id);
+  } else {
+    RegisterVersionCreatedObserver(context);
+  }
+}
+
+ServiceWorkerTestHelper::~ServiceWorkerTestHelper() {
+  version_created_watcher_.reset();
+  for (auto& version_state_manager : version_state_managers_) {
+    version_state_manager.reset();
+  }
+  version_state_managers_.clear();
+}
+
+void ServiceWorkerTestHelper::RegisterVersionCreatedObserver(
+    ServiceWorkerContext* context) {
+  scoped_refptr<ServiceWorkerContextWrapper> context_wrapper(
+      static_cast<ServiceWorkerContextWrapper*>(context));
+  version_created_watcher_ =
+      std::make_unique<ServiceWorkerVersionCreatedWatcher>(
+          context_wrapper->GetContextCoreForTest(), this);
+}
+
+void ServiceWorkerTestHelper::RegisterStateObserver(
+    ServiceWorkerContext* context,
+    int64_t worker_version_id) {
+  scoped_refptr<ServiceWorkerContextWrapper> context_wrapper(
+      static_cast<ServiceWorkerContextWrapper*>(context));
+  version_state_managers_.push_back(
+      std::make_unique<ServiceWorkerVersionStateManager>(
+          this, context_wrapper->GetLiveVersion(worker_version_id)));
+}
+
+void ServiceWorkerTestHelper::OnServiceWorkerVersionCreated(
+    ServiceWorkerVersion* version) {
+  version_state_managers_.push_back(
+      std::make_unique<ServiceWorkerVersionStateManager>(this, version));
+}
 
 void StopServiceWorkerForScope(ServiceWorkerContext* context,
                                const GURL& scope,
@@ -191,7 +315,7 @@ bool TriggerTimeoutAndCheckRunningState(ServiceWorkerContext* context,
   // TODO(b/266799118): Investigate the need to call OnRequestTermination()
   service_worker_version->OnRequestTermination();
   return service_worker_version->running_status() ==
-         content::EmbeddedWorkerStatus::RUNNING;
+         blink::EmbeddedWorkerStatus::kRunning;
 }
 
 bool CheckServiceWorkerIsRunning(ServiceWorkerContext* context,
@@ -199,11 +323,35 @@ bool CheckServiceWorkerIsRunning(ServiceWorkerContext* context,
   ServiceWorkerVersion* service_worker_version =
       static_cast<ServiceWorkerContextWrapper*>(context)->GetLiveVersion(
           service_worker_version_id);
-  if (!service_worker_version) {
-    return false;
-  }
-  return service_worker_version->running_status() ==
-         content::EmbeddedWorkerStatus::RUNNING;
+  return service_worker_version && service_worker_version->running_status() ==
+                                       blink::EmbeddedWorkerStatus::kRunning;
+}
+
+bool CheckServiceWorkerIsStarting(ServiceWorkerContext* context,
+                                  int64_t service_worker_version_id) {
+  ServiceWorkerVersion* service_worker_version =
+      static_cast<ServiceWorkerContextWrapper*>(context)->GetLiveVersion(
+          service_worker_version_id);
+  return service_worker_version && service_worker_version->running_status() ==
+                                       blink::EmbeddedWorkerStatus::kStarting;
+}
+
+bool CheckServiceWorkerIsStopping(ServiceWorkerContext* context,
+                                  int64_t service_worker_version_id) {
+  ServiceWorkerVersion* service_worker_version =
+      static_cast<ServiceWorkerContextWrapper*>(context)->GetLiveVersion(
+          service_worker_version_id);
+  return service_worker_version && service_worker_version->running_status() ==
+                                       blink::EmbeddedWorkerStatus::kStopping;
+}
+
+bool CheckServiceWorkerIsStopped(ServiceWorkerContext* context,
+                                 int64_t service_worker_version_id) {
+  ServiceWorkerVersion* service_worker_version =
+      static_cast<ServiceWorkerContextWrapper*>(context)->GetLiveVersion(
+          service_worker_version_id);
+  return !service_worker_version || service_worker_version->running_status() ==
+                                        blink::EmbeddedWorkerStatus::kStopped;
 }
 
 void SetServiceWorkerIdleDelay(ServiceWorkerContext* context,

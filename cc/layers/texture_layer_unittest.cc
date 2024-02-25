@@ -155,7 +155,8 @@ struct CommonResourceObjects {
         &MockReleaseCallback::Release2, base::Unretained(&mock_callback_),
         shared_bitmap_id_);
     sw_resource_ = viz::TransferableResource::MakeSoftware(
-        shared_bitmap_id_, size, viz::SinglePlaneFormat::kRGBA_8888);
+        shared_bitmap_id_, gpu::SyncToken(), size,
+        viz::SinglePlaneFormat::kRGBA_8888);
   }
 
   using RepeatingReleaseCallback =
@@ -185,7 +186,7 @@ class TextureLayerTest : public testing::Test {
 
  protected:
   void SetUp() override {
-    animation_host_ = AnimationHost::CreateForTesting(ThreadInstance::MAIN);
+    animation_host_ = AnimationHost::CreateForTesting(ThreadInstance::kMain);
     layer_tree_host_ = MockLayerTreeHost::Create(
         &fake_client_, &task_graph_runner_, animation_host_.get());
     EXPECT_CALL(*layer_tree_host_, SetNeedsCommit()).Times(AnyNumber());
@@ -239,7 +240,7 @@ class RunOnCommitLayerTreeHostClient : public FakeLayerTreeHostClient {
     run_on_commit_and_draw_ = std::move(c);
   }
 
-  void DidCommitAndDrawFrame() override {
+  void DidCommitAndDrawFrame(int source_frame_number) override {
     if (run_on_commit_and_draw_)
       std::move(run_on_commit_and_draw_).Run();
   }
@@ -295,6 +296,7 @@ TEST_F(TextureLayerTest, ShutdownWithResource) {
       loop.Run();
     }
 
+    client.SetLayerTreeHost(nullptr);
     // Destroy the LayerTreeHost and the compositor-thread LayerImpl trees
     // while the resource is still in the layer. The resource should be released
     // back to the TextureLayer's client, but is post-tasked back so...
@@ -1481,7 +1483,8 @@ class SoftwareTextureLayerSwitchTreesTest : public SoftwareTextureLayerTest {
         // doesn't need to register the SharedBitmapId otherwise.
         texture_layer_->SetTransferableResource(
             viz::TransferableResource::MakeSoftware(
-                id_, gfx::Size(1, 1), viz::SinglePlaneFormat::kRGBA_8888),
+                id_, gpu::SyncToken(), gfx::Size(1, 1),
+                viz::SinglePlaneFormat::kRGBA_8888),
             base::BindOnce([](const gpu::SyncToken&, bool) {}));
         break;
       case 2:
@@ -1584,7 +1587,8 @@ class SoftwareTextureLayerPurgeMemoryTest : public SoftwareTextureLayerTest {
         // doesn't need to register the SharedBitmapId otherwise.
         texture_layer_->SetTransferableResource(
             viz::TransferableResource::MakeSoftware(
-                id_, gfx::Size(1, 1), viz::SinglePlaneFormat::kRGBA_8888),
+                id_, gpu::SyncToken(), gfx::Size(1, 1),
+                viz::SinglePlaneFormat::kRGBA_8888),
             base::BindOnce([](const gpu::SyncToken&, bool) {}));
         break;
       case 2:
@@ -1668,7 +1672,8 @@ class SoftwareTextureLayerMultipleRegisterTest
         // doesn't need to register the SharedBitmapId otherwise.
         texture_layer_->SetTransferableResource(
             viz::TransferableResource::MakeSoftware(
-                id1_, gfx::Size(1, 1), viz::SinglePlaneFormat::kRGBA_8888),
+                id1_, gpu::SyncToken(), gfx::Size(1, 1),
+                viz::SinglePlaneFormat::kRGBA_8888),
             base::BindOnce([](const gpu::SyncToken&, bool) {}));
         break;
       case 2:
@@ -1769,7 +1774,8 @@ class SoftwareTextureLayerRegisterUnregisterTest
         // doesn't need to register the SharedBitmapId otherwise.
         texture_layer_->SetTransferableResource(
             viz::TransferableResource::MakeSoftware(
-                id1_, gfx::Size(1, 1), viz::SinglePlaneFormat::kRGBA_8888),
+                id1_, gpu::SyncToken(), gfx::Size(1, 1),
+                viz::SinglePlaneFormat::kRGBA_8888),
             base::BindOnce([](const gpu::SyncToken&, bool) {}));
         break;
       case 2:
@@ -1856,7 +1862,8 @@ class SoftwareTextureLayerLoseFrameSinkTest : public SoftwareTextureLayerTest {
         // doesn't need to register the SharedBitmapId otherwise.
         texture_layer_->SetTransferableResource(
             viz::TransferableResource::MakeSoftware(
-                id_, gfx::Size(1, 1), viz::SinglePlaneFormat::kRGBA_8888),
+                id_, gpu::SyncToken(), gfx::Size(1, 1),
+                viz::SinglePlaneFormat::kRGBA_8888),
             base::BindOnce(
                 &SoftwareTextureLayerLoseFrameSinkTest::ReleaseCallback,
                 base::Unretained(this)));
@@ -1974,7 +1981,8 @@ class SoftwareTextureLayerUnregisterRegisterTest
         // doesn't need to register the SharedBitmapId otherwise.
         texture_layer_->SetTransferableResource(
             viz::TransferableResource::MakeSoftware(
-                id_, gfx::Size(1, 1), viz::SinglePlaneFormat::kRGBA_8888),
+                id_, gpu::SyncToken(), gfx::Size(1, 1),
+                viz::SinglePlaneFormat::kRGBA_8888),
             base::BindOnce([](const gpu::SyncToken&, bool) {}));
         break;
       case 2:
@@ -2013,6 +2021,52 @@ class SoftwareTextureLayerUnregisterRegisterTest
 };
 
 SINGLE_AND_MULTI_THREAD_TEST_F(SoftwareTextureLayerUnregisterRegisterTest);
+
+class TextureLayerNoResourceTest : public LayerTreeTest, TextureLayerClient {
+ public:
+  bool PrepareTransferableResource(
+      SharedBitmapIdRegistrar* bitmap_registar,
+      viz::TransferableResource* transferable_resource,
+      viz::ReleaseCallback* release_callback) override {
+    return false;
+  }
+
+  void SetupTree() override {
+    SetInitialRootBounds(gfx::Size(100, 100));
+    LayerTreeTest::SetupTree();
+    auto texture_layer = TextureLayer::CreateForMailbox(this);
+    texture_layer->SetIsDrawable(true);
+    texture_layer->SetContentsOpaque(true);
+    texture_layer->SetBounds(gfx::Size(100, 100));
+    texture_layer->SetBackgroundColor(SkColors::kRed);
+    layer_tree_host()->root_layer()->AddChild(texture_layer);
+    texture_layer_id_ = static_cast<uint32_t>(texture_layer->id());
+  }
+
+  void BeginTest() override { PostSetNeedsCommitToMainThread(); }
+
+  void DisplayReceivedCompositorFrameOnThread(
+      const viz::CompositorFrame& frame) override {
+    EXPECT_EQ(0u, frame.resource_list.size());
+    EXPECT_EQ(1u, frame.render_pass_list.size());
+
+    const auto& quad_list = frame.render_pass_list[0]->quad_list;
+    EXPECT_EQ(1u, quad_list.size());
+    EXPECT_NE(viz::DrawQuad::Material::kTextureContent,
+              quad_list.ElementAt(0)->material);
+
+    const auto& shared_list = frame.render_pass_list[0]->shared_quad_state_list;
+    EXPECT_EQ(1u, shared_list.size());
+    EXPECT_NE(texture_layer_id_, shared_list.ElementAt(0)->layer_id);
+
+    EndTest();
+  }
+
+ private:
+  uint32_t texture_layer_id_;
+};
+
+SINGLE_AND_MULTI_THREAD_TEST_F(TextureLayerNoResourceTest);
 
 }  // namespace
 }  // namespace cc

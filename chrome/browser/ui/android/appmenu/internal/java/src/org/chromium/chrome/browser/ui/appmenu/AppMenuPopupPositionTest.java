@@ -18,9 +18,7 @@ import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 
-/**
- * Tests AppMenu#getPopupPosition.
- */
+/** Tests AppMenu#getPopupPosition. */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
 public class AppMenuPopupPositionTest {
@@ -31,31 +29,31 @@ public class AppMenuPopupPositionTest {
     private final int mAppHeight = 1000;
     private final int mBgPadding = 10;
     private final int mPopupWidth = 300;
-    private final int mPopupHeight = 500;
     private final int mAnchorX = 100;
     private final int mAnchorY = 300;
     private final int mAnchorWidth = 40;
     private final int mNegativeSoftwareVerticalOffset = 25;
-    private final int mNegativeSoftwareVerticalOffsetNotTopAnchored = 15;
     private final View mAnchorView = Mockito.mock(View.class);
     private final Rect mAppRect = new Rect(0, 0, mAppWidth, mAppHeight);
     private final Rect mBgPaddingRect = new Rect(mBgPadding, mBgPadding, mBgPadding, mBgPadding);
 
     @Before
     public void setUp() {
-        Mockito.doAnswer((InvocationOnMock invocation) -> {
-                   mTempLocation[0] = mAnchorX;
-                   mTempLocation[1] = mAnchorY;
-                   return null;
-               })
+        Mockito.doAnswer(
+                        (InvocationOnMock invocation) -> {
+                            mTempLocation[0] = mAnchorX;
+                            mTempLocation[1] = mAnchorY;
+                            return null;
+                        })
                 .when(mAnchorView)
                 .getLocationInWindow(mTempLocation);
 
-        Mockito.doAnswer((InvocationOnMock invocation) -> {
-                   mTempLocation[0] = mAnchorX;
-                   mTempLocation[1] = mAnchorY;
-                   return null;
-               })
+        Mockito.doAnswer(
+                        (InvocationOnMock invocation) -> {
+                            mTempLocation[0] = mAnchorX;
+                            mTempLocation[1] = mAnchorY;
+                            return null;
+                        })
                 .when(mAnchorView)
                 .getLocationOnScreen(mTempLocation);
 
@@ -119,9 +117,15 @@ public class AppMenuPopupPositionTest {
     }
 
     private int[] getPopupPosition(boolean isByPermanentButton, int rotation, int layoutDirection) {
-        return AppMenu.getPopupPosition(mTempLocation, isByPermanentButton,
-                mNegativeSoftwareVerticalOffset, mNegativeSoftwareVerticalOffsetNotTopAnchored,
-                rotation, mAppRect, mBgPaddingRect, mAnchorView, mPopupWidth, mPopupHeight,
+        return AppMenu.getPopupPosition(
+                mTempLocation,
+                isByPermanentButton,
+                mNegativeSoftwareVerticalOffset,
+                rotation,
+                mAppRect,
+                mBgPaddingRect,
+                mAnchorView,
+                mPopupWidth,
                 layoutDirection);
     }
 }

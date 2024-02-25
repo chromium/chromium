@@ -41,7 +41,7 @@ class NET_EXPORT_PRIVATE ProofSourceChromium : public quic::ProofSource {
                 const std::string& hostname,
                 const std::string& server_config,
                 quic::QuicTransportVersion quic_version,
-                absl::string_view chlo_hash,
+                std::string_view chlo_hash,
                 std::unique_ptr<Callback> callback) override;
 
   quiche::QuicheReferenceCountedPointer<Chain> GetCertChain(
@@ -55,7 +55,7 @@ class NET_EXPORT_PRIVATE ProofSourceChromium : public quic::ProofSource {
       const quic::QuicSocketAddress& client_address,
       const std::string& hostname,
       uint16_t signature_algorithm,
-      absl::string_view in,
+      std::string_view in,
       std::unique_ptr<SignatureCallback> callback) override;
 
   absl::InlinedVector<uint16_t, 8> SupportedTlsSignatureAlgorithms()
@@ -70,7 +70,7 @@ class NET_EXPORT_PRIVATE ProofSourceChromium : public quic::ProofSource {
       const std::string& hostname,
       const std::string& server_config,
       quic::QuicTransportVersion quic_version,
-      absl::string_view chlo_hash,
+      std::string_view chlo_hash,
       quiche::QuicheReferenceCountedPointer<quic::ProofSource::Chain>*
           out_chain,
       quic::QuicCryptoProof* proof);

@@ -4,7 +4,8 @@
 
 #include "cc/input/main_thread_scrolling_reason.h"
 
-#include "base/containers/cxx20_erase.h"
+#include <string>
+
 #include "base/strings/string_util.h"
 #include "base/trace_event/traced_value.h"
 
@@ -19,7 +20,7 @@ std::string MainThreadScrollingReason::AsText(uint32_t reasons) {
   size_t array_end_pos = result.find(']');
   result =
       result.substr(array_start_pos + 1, array_end_pos - array_start_pos - 1);
-  base::Erase(result, '\"');
+  std::erase(result, '\"');
   // Add spaces after all commas.
   base::ReplaceChars(result, ",", ", ", &result);
   return result;
@@ -30,27 +31,32 @@ void MainThreadScrollingReason::AddToTracedValue(
     base::trace_event::TracedValue& traced_value) {
   traced_value.BeginArray("main_thread_scrolling_reasons");
 
-  if (reasons & kHasBackgroundAttachmentFixedObjects)
-    traced_value.AppendString("Has background-attachment:fixed");
-  if (reasons & kScrollbarScrolling)
-    traced_value.AppendString("Scrollbar scrolling");
-  if (reasons & kNotOpaqueForTextAndLCDText)
-    traced_value.AppendString("Not opaque for text and LCD text");
-  if (reasons & kCantPaintScrollingBackgroundAndLCDText)
-    traced_value.AppendString("Can't paint scrolling background and LCD text");
+#define ADD_REASON(reason, string)       \
+  do                                     \
+    if (reasons & reason) {              \
+      traced_value.AppendString(string); \
+      reasons &= ~reason;                \
+    }                                    \
+  while (false)
 
-  // Transient scrolling reasons.
-  if (reasons & kNonFastScrollableRegion)
-    traced_value.AppendString("Non fast scrollable region");
-  if (reasons & kFailedHitTest)
-    traced_value.AppendString("Failed hit test");
-  if (reasons & kNoScrollingLayer)
-    traced_value.AppendString("No scrolling layer");
-  if (reasons & kWheelEventHandlerRegion)
-    traced_value.AppendString("Wheel event handler region");
-  if (reasons & kTouchEventHandlerRegion)
-    traced_value.AppendString("Touch event handler region");
+  ADD_REASON(kHasBackgroundAttachmentFixedObjects,
+             "Has background-attachment:fixed");
+  ADD_REASON(kNotOpaqueForTextAndLCDText, "Not opaque for text and LCD text");
+  ADD_REASON(kNoScrollingLayer, "No scrolling layer");
+  ADD_REASON(kPreferNonCompositedScrolling, "Prefer non-composited scrolling");
+  ADD_REASON(kBackgroundNeedsRepaintOnScroll,
+             "Background needs repaint on scroll");
+  ADD_REASON(kScrollbarScrolling, "Scrollbar scrolling");
+  ADD_REASON(kNonFastScrollableRegion, "Non fast scrollable region");
+  ADD_REASON(kFailedHitTest, "Failed hit test");
+  ADD_REASON(kPopupNoThreadedInput,
+             "Popup scrolling (no threaded input handler)");
+  ADD_REASON(kWheelEventHandlerRegion, "Wheel event handler region");
+  ADD_REASON(kTouchEventHandlerRegion, "Touch event handler region");
 
+#undef ADD_REASON
+
+  DCHECK_EQ(reasons, kNotScrollingOnMain);
   traced_value.EndArray();
 }
 

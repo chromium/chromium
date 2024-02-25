@@ -9,8 +9,10 @@
 #include <functional>
 #include <map>
 #include <memory>
+#include <optional>
 #include <set>
 #include <string>
+#include <string_view>
 #include <vector>
 
 #include "base/check.h"
@@ -19,13 +21,11 @@
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
-#include "base/strings/string_piece_forward.h"
 #include "build/build_config.h"
 #include "device/fido/fido_constants.h"
 #include "device/fido/fido_discovery_base.h"
 #include "device/fido/fido_transport_protocol.h"
 #include "device/fido/pin.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace device {
 
@@ -182,7 +182,7 @@ class COMPONENT_EXPORT(DEVICE_FIDO) FidoRequestHandlerBase
     // make_credential_attachment contains the attachment preference for
     // makeCredential requests. See also `request_is_internal_only`, which isn't
     // specific to makeCredential requests.
-    absl::optional<AuthenticatorAttachment> make_credential_attachment;
+    std::optional<AuthenticatorAttachment> make_credential_attachment;
 
     // conditional_ui_treatment_ controls how conditional UI will be handled for
     // this request.
@@ -228,7 +228,7 @@ class COMPONENT_EXPORT(DEVICE_FIDO) FidoRequestHandlerBase
     virtual void BluetoothAdapterPowerChanged(bool is_powered_on) = 0;
     virtual void FidoAuthenticatorAdded(
         const FidoAuthenticator& authenticator) = 0;
-    virtual void FidoAuthenticatorRemoved(base::StringPiece device_id) = 0;
+    virtual void FidoAuthenticatorRemoved(std::string_view device_id) = 0;
 
     // SupportsPIN returns true if this observer supports collecting a PIN from
     // the user. If this function returns false, |CollectPIN| and
@@ -298,7 +298,7 @@ class COMPONENT_EXPORT(DEVICE_FIDO) FidoRequestHandlerBase
   // received from the any one of the connected authenticators, in which case
   // all other authenticators are cancelled.
   // https://w3c.github.io/webauthn/#iface-pkcredential
-  void CancelActiveAuthenticators(base::StringPiece exclude_id = "");
+  void CancelActiveAuthenticators(std::string_view exclude_id = "");
   virtual void OnBluetoothAdapterEnumerated(bool is_present,
                                             bool is_powered_on,
                                             bool can_power_on,
@@ -411,10 +411,6 @@ class COMPONENT_EXPORT(DEVICE_FIDO) FidoRequestHandlerBase
   // |OnTransportAvailabilityEnumerated| on |observer_|.
   std::unique_ptr<TransportAvailabilityCallbackReadiness>
       transport_availability_callback_readiness_;
-
-  // internal_authenticator_found_ is used to check that at most one kInternal
-  // authenticator is discovered.
-  bool internal_authenticator_found_ = false;
 
   base::WeakPtrFactory<FidoRequestHandlerBase> weak_factory_{this};
 };

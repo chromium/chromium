@@ -15,6 +15,7 @@ group("build") {
 
 ts_library("build_ts") {
   in_files = [
+    "clipboard_copy.ts",
     "content.ts",
     "service_worker.ts",
   ]
@@ -28,6 +29,7 @@ ts_library("build_ts") {
     "//tools/typescript/definitions/accessibility_service_private.d.ts",
     "//tools/typescript/definitions/context_menus.d.ts",
     "//tools/typescript/definitions/i18n.d.ts",
+    "//tools/typescript/definitions/scripting.d.ts",
   ]
 }
 

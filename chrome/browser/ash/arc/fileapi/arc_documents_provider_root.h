@@ -8,6 +8,7 @@
 #include <stdint.h>
 
 #include <map>
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -21,7 +22,6 @@
 #include "chrome/browser/ash/arc/fileapi/arc_file_system_operation_runner.h"
 #include "storage/browser/file_system/async_file_util.h"
 #include "storage/browser/file_system/watcher_manager.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 class GURL;
 
@@ -99,7 +99,7 @@ class ArcDocumentsProviderRoot : public ArcFileSystemOperationRunner::Observer {
   // file metadata reports unknown size, it will attempt to open the file and
   // read the size from the file descriptor.
   void GetFileInfo(const base::FilePath& path,
-                   int fields,
+                   storage::FileSystemOperation::GetMetadataFieldSet fields,
                    GetFileInfoCallback callback);
 
   // Queries a list of files under a directory just like
@@ -248,11 +248,12 @@ class ArcDocumentsProviderRoot : public ArcFileSystemOperationRunner::Observer {
   void OnGetRootSize(GetRootSizeCallback callback,
                      mojom::RootSizePtr maybe_root_size);
 
-  void GetFileInfoFromDocument(GetFileInfoCallback callback,
-                               const base::FilePath& path,
-                               int fields,
-                               base::File::Error error,
-                               const mojom::DocumentPtr& document);
+  void GetFileInfoFromDocument(
+      GetFileInfoCallback callback,
+      const base::FilePath& path,
+      storage::FileSystemOperation::GetMetadataFieldSet fields,
+      base::File::Error error,
+      const mojom::DocumentPtr& document);
 
   void ReadDirectoryWithDocumentId(ReadDirectoryCallback callback,
                                    const std::string& document_id);
@@ -261,8 +262,14 @@ class ArcDocumentsProviderRoot : public ArcFileSystemOperationRunner::Observer {
                                           const NameToDocumentMap& mapping);
 
   void DeleteFileWithDocumentId(StatusCallback callback,
+                                const base::FilePath& path,
                                 const std::string& document_id);
-  void OnFileDeleted(StatusCallback callback, bool success);
+  void DeleteFileWithParentDocumentId(StatusCallback callback,
+                                      const std::string& document_id,
+                                      const std::string& parent_document_id);
+  void OnFileDeleted(StatusCallback callback,
+                     const std::string& parent_document_id,
+                     bool success);
 
   void CreateFileAfterConflictCheck(StatusCallback callback,
                                     const base::FilePath& path,
@@ -286,9 +293,16 @@ class ArcDocumentsProviderRoot : public ArcFileSystemOperationRunner::Observer {
                           const std::string& display_name,
                           StatusCallback callback);
   void RenameFileWithDocumentId(StatusCallback callback,
+                                const base::FilePath& path,
                                 const std::string& display_name,
-                                const std::string& documentId);
-  void OnFileRenamed(StatusCallback callback, mojom::DocumentPtr document);
+                                const std::string& document_id);
+  void RenameFileWithParentDocumentId(StatusCallback callback,
+                                      const std::string& display_name,
+                                      const std::string& document_id,
+                                      const std::string& parent_document_id);
+  void OnFileRenamed(StatusCallback callback,
+                     const std::string& parent_document_id,
+                     mojom::DocumentPtr document);
 
   void CopyFileWithSourceDocumentId(StatusCallback callback,
                                     const base::FilePath& target_path,
@@ -301,6 +315,7 @@ class ArcDocumentsProviderRoot : public ArcFileSystemOperationRunner::Observer {
       const std::string& target_parent_document_id);
   void OnFileCopied(StatusCallback callback,
                     const std::string& target_display_name_to_rename,
+                    const std::string& target_parent_document_id,
                     mojom::DocumentPtr document);
 
   void MoveFileInternal(const base::FilePath& source_path,
@@ -325,6 +340,8 @@ class ArcDocumentsProviderRoot : public ArcFileSystemOperationRunner::Observer {
       const std::string& target_parent_document_id);
   void OnFileMoved(StatusCallback callback,
                    const std::string& target_display_name_to_rename,
+                   const std::string& source_parent_document_id,
+                   const std::string& target_parent_document_id,
                    mojom::DocumentPtr document);
 
   void AddWatcherWithDocumentId(const base::FilePath& path,
@@ -385,7 +402,7 @@ class ArcDocumentsProviderRoot : public ArcFileSystemOperationRunner::Observer {
                              ReadDirectoryInternalCallback callback);
   void ReadDirectoryInternalWithChildDocuments(
       const std::string& document_id,
-      absl::optional<std::vector<mojom::DocumentPtr>> maybe_children);
+      std::optional<std::vector<mojom::DocumentPtr>> maybe_children);
 
   // Clears a directory cache.
   void ClearDirectoryCache(const std::string& document_id);
@@ -393,7 +410,7 @@ class ArcDocumentsProviderRoot : public ArcFileSystemOperationRunner::Observer {
   // |runner_| outlives this object. ArcDocumentsProviderRootMap, the owner of
   // this object, depends on ArcFileSystemOperationRunner in the
   // BrowserContextKeyedServiceFactory dependency graph.
-  const raw_ptr<ArcFileSystemOperationRunner, ExperimentalAsh> runner_;
+  const raw_ptr<ArcFileSystemOperationRunner> runner_;
 
   const std::string authority_;
   const std::string root_document_id_;

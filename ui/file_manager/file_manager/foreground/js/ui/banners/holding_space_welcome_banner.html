@@ -3,15 +3,7 @@
     --feature-icon-bg: none;
   }
 
-  :host-context([theme='legacy']) educational-banner [slot=illustration] {
-    --holding-space-svg-color-1: var(--cros-illustration-color-1-shade-2);
-    --holding-space-svg-color-2: var(--cros-illustration-color-1);
-    --holding-space-svg-color-3: var(--cros-illustration-color-2);
-    --holding-space-svg-color-4: var(--cros-illustration-color-5);
-    --holding-space-svg-color-5: var(--cros-illustration-color-4);
-  }
-
-  :host-context([theme='refresh23']) educational-banner [slot=illustration] {
+  educational-banner [slot=illustration] {
     --holding-space-svg-color-1: var(--cros-sys-illo-color1-2);
     --holding-space-svg-color-2: var(--cros-sys-illo-color1);
     --holding-space-svg-color-3: var(--cros-sys-illo-color2);
@@ -33,19 +25,7 @@
     line-height: 20px;
   }
 
-  :host-context([theme='legacy']) .icon {
-    -webkit-mask-image: url(/foreground/images/files/ui/menu_ng.svg);
-    -webkit-mask-position: center;
-    -webkit-mask-repeat: no-repeat;
-    -webkit-mask-size: 100%;
-    background-color: var(--cros-text-color-primary);
-    display: inline-block;
-    height: 20px;
-    vertical-align: middle;
-    width: 13px;
-  }
-
-  :host-context([theme='refresh23']) .icon {
+  .icon {
     -webkit-mask-image: url(/foreground/images/files/ui/menu_ng.svg);
     -webkit-mask-position: center;
     -webkit-mask-repeat: no-repeat;

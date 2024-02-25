@@ -5,11 +5,11 @@
 #ifndef CHROME_BROWSER_ASH_CHILD_ACCOUNTS_TIME_LIMIT_OVERRIDE_H_
 #define CHROME_BROWSER_ASH_CHILD_ACCOUNTS_TIME_LIMIT_OVERRIDE_H_
 
+#include <optional>
 #include <string>
 
 #include "base/time/time.h"
 #include "base/values.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ash {
 namespace usage_time_limit {
@@ -32,18 +32,18 @@ class TimeLimitOverride {
 
   // Factory method. Creates TimeLimitOverride from a |dict|. Returns nullopt if
   // |dict| could not be parsed.
-  static absl::optional<TimeLimitOverride> FromDictionary(
+  static std::optional<TimeLimitOverride> FromDictionary(
       const base::Value::Dict* dict);
 
   // Factory method. Creates TimeLimitOverride from the most recent override in
   // the list of overrides passed in |list|. Returns nullopt if |list| could not
   // be parsed.
-  static absl::optional<TimeLimitOverride> MostRecentFromList(
+  static std::optional<TimeLimitOverride> MostRecentFromList(
       const base::Value::List* list);
 
   TimeLimitOverride(Action action,
                     base::Time created_at,
-                    absl::optional<base::TimeDelta> duration);
+                    std::optional<base::TimeDelta> duration);
 
   TimeLimitOverride(const TimeLimitOverride&) = delete;
   TimeLimitOverride& operator=(const TimeLimitOverride&) = delete;
@@ -63,7 +63,7 @@ class TimeLimitOverride {
   base::Time created_at() const { return created_at_; }
 
   // Returns override duration if specified.
-  absl::optional<base::TimeDelta> duration() const { return duration_; }
+  std::optional<base::TimeDelta> duration() const { return duration_; }
 
   // Convenience method to quickly check if is this is a locking override.
   bool IsLock() const;
@@ -74,7 +74,7 @@ class TimeLimitOverride {
  private:
   Action action_;
   base::Time created_at_;
-  absl::optional<base::TimeDelta> duration_;
+  std::optional<base::TimeDelta> duration_;
 };
 
 }  // namespace usage_time_limit

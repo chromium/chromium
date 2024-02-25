@@ -7,24 +7,10 @@
 
 #import "ios/chrome/browser/shared/coordinator/chrome_coordinator/chrome_coordinator.h"
 
-@class InactiveTabsCoordinator;
 @protocol GridCommands;
 @protocol GridToolbarsConfigurationProvider;
-@protocol TabContextMenuProvider;
-
-// Delegate for the coordinator.
-@protocol InactiveTabsCoordinatorDelegate
-
-// Tells the delegate that the user selected an item.
-- (void)inactiveTabsCoordinator:
-            (InactiveTabsCoordinator*)inactiveTabsCoordinator
-            didSelectItemWithID:(NSString*)itemID;
-
-// Tells the delegate that the coordinator should be dismissed.
-- (void)inactiveTabsCoordinatorDidFinish:
-    (InactiveTabsCoordinator*)inactiveTabsCoordinator;
-
-@end
+@protocol InactiveTabsCoordinatorDelegate;
+@protocol TabContextMenuDelegate;
 
 // Handles interaction for Inactive Tabs.
 //
@@ -43,13 +29,13 @@
 // The mutator receiver handling regular grid calls.
 @property(nonatomic, weak, readonly) id<GridToolbarsConfigurationProvider>
     toolbarsConfigurationProvider;
+@property(nonatomic, weak) id<TabContextMenuDelegate> tabContextMenuDelegate;
 
 // Init the inactive tabs coordinator, all parameters should *not* be nil.
 - (instancetype)
     initWithBaseViewController:(UIViewController*)viewController
                        browser:(Browser*)browser
                       delegate:(id<InactiveTabsCoordinatorDelegate>)delegate
-                  menuProvider:(id<TabContextMenuProvider>)menuProvider
     NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)initWithBaseViewController:(UIViewController*)viewController

@@ -4,30 +4,37 @@
 
 #include "components/performance_manager/test_support/performance_manager_browsertest_harness.h"
 
-#include <memory>
+#include <string>
 
+#include "base/command_line.h"
 #include "base/run_loop.h"
+#include "base/strings/string_piece.h"
 #include "base/synchronization/condition_variable.h"
 #include "base/synchronization/lock.h"
+#include "base/test/bind.h"
 #include "components/performance_manager/embedder/performance_manager_lifetime.h"
-#include "components/performance_manager/performance_manager_impl.h"
+#include "components/performance_manager/embedder/performance_manager_registry.h"
+#include "components/performance_manager/public/graph/graph.h"
+#include "components/performance_manager/public/performance_manager.h"
+#include "content/public/browser/browser_context.h"
+#include "content/public/browser/navigation_controller.h"
+#include "content/public/browser/web_contents_observer.h"
 #include "content/public/common/content_switches.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/shell/browser/shell.h"
-#include "content/shell/browser/shell_content_browser_client.h"
-#include "content/shell/browser/shell_web_contents_view_delegate_creator.h"
-#include "mojo/public/cpp/bindings/binder_map.h"
 #include "net/dns/mock_host_resolver.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
-#include "services/service_manager/public/cpp/binder_registry.h"
+#include "ui/base/page_transition_types.h"
+#include "url/gurl.h"
 
 namespace performance_manager {
 
 PerformanceManagerBrowserTestHarness::PerformanceManagerBrowserTestHarness() =
     default;
 
-PerformanceManagerBrowserTestHarness::~PerformanceManagerBrowserTestHarness() =
-    default;
+PerformanceManagerBrowserTestHarness::~PerformanceManagerBrowserTestHarness() {
+  EXPECT_TRUE(tracked_browser_contexts_.empty());
+}
 
 void PerformanceManagerBrowserTestHarness::SetUp() {
   // We use a ConditionVariable instead of RunLoop because the task environment
@@ -53,18 +60,37 @@ void PerformanceManagerBrowserTestHarness::SetUp() {
   // Wait until the PM is initialized and callbacks have been invoked on the
   // PM sequence.
   base::AutoLock auto_lock(lock);
-  while (!graph_initialization_complete)
+  while (!graph_initialization_complete) {
     cv.Wait();
+  }
 }
 
 void PerformanceManagerBrowserTestHarness::PreRunTestOnMainThread() {
   Super::PreRunTestOnMainThread();
+
+  content::BrowserContext* initial_browser_context =
+      shell()->web_contents()->GetBrowserContext();
+  ASSERT_TRUE(initial_browser_context);
+  const auto [_, inserted] =
+      tracked_browser_contexts_.insert(initial_browser_context);
+  ASSERT_TRUE(inserted);
+  PerformanceManagerRegistry::GetInstance()->NotifyBrowserContextAdded(
+      initial_browser_context);
 
   // Set up the embedded web server.
   host_resolver()->AddRule("*", "127.0.0.1");
   embedded_test_server()->ServeFilesFromSourceDirectory(
       "components/test/data/performance_manager");
   ASSERT_TRUE(embedded_test_server()->Start());
+}
+
+void PerformanceManagerBrowserTestHarness::PostRunTestOnMainThread() {
+  for (content::BrowserContext* browser_context : tracked_browser_contexts_) {
+    PerformanceManagerRegistry::GetInstance()->NotifyBrowserContextRemoved(
+        browser_context);
+  }
+  tracked_browser_contexts_.clear();
+  Super::PostRunTestOnMainThread();
 }
 
 void PerformanceManagerBrowserTestHarness::SetUpCommandLine(
@@ -78,6 +104,13 @@ void PerformanceManagerBrowserTestHarness::OnGraphCreated(Graph* graph) {}
 
 content::Shell* PerformanceManagerBrowserTestHarness::CreateShell() {
   content::Shell* shell = CreateBrowser();
+  content::BrowserContext* browser_context =
+      shell->web_contents()->GetBrowserContext();
+  const auto [_, inserted] = tracked_browser_contexts_.insert(browser_context);
+  if (inserted) {
+    PerformanceManagerRegistry::GetInstance()->NotifyBrowserContextAdded(
+        browser_context);
+  }
   return shell;
 }
 
@@ -99,8 +132,9 @@ PerformanceManagerBrowserTestHarness::NavigateAndWaitForConsoleMessage(
     base::StringPiece console_pattern) {
   content::WebContentsConsoleObserver console_observer(contents);
   console_observer.SetPattern(std::string(console_pattern));
-  if (NavigateToURL(contents, url) && console_observer.Wait())
+  if (NavigateToURL(contents, url) && console_observer.Wait()) {
     return ::testing::AssertionSuccess();
+  }
   return ::testing::AssertionFailure();
 }
 
@@ -113,8 +147,9 @@ class WaitForLoadObserver : public content::WebContentsObserver {
   ~WaitForLoadObserver() override = default;
 
   void Wait() {
-    if (!web_contents()->IsLoading())
+    if (!web_contents()->IsLoading()) {
       return;
+    }
     run_loop_.Run();
   }
 

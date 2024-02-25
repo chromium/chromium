@@ -1,0 +1,60 @@
+// Copyright 2023 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module mojo.test.feature_unittest.mojom;
+import "mojo/public/cpp/bindings/tests/feature_unittest_other.test-mojom";
+
+// Basic introduction of a feature.
+feature TestFeatureOn {
+  const string name = "TestFeatureOn";
+  const bool default_state = true;
+};
+
+feature TestFeatureOff {
+  const string name = "TestFeatureOff";
+  const bool default_state = false;
+};
+
+[RuntimeFeature=TestFeatureOff]
+interface DefaultDenied {
+  GetInt() => (int32 ret);
+};
+
+[RuntimeFeature=TestFeatureOn]
+interface DefaultAllowed {
+  GetInt() => (int32 ret);
+};
+
+[RuntimeFeature=mojo.test.feature_unittest_other.mojom.OtherFeatureOff]
+interface OtherDenied {
+  GetInt() => (int32 ret);
+};
+
+[RuntimeFeature=mojo.test.feature_unittest_other.mojom.OtherFeatureOn]
+interface OtherAllowed {
+  GetInt() => (int32 ret);
+};
+
+interface FeaturesOnMethods {
+  [RuntimeFeature=TestFeatureOff]
+  DefaultDenied() => (int32 ret);
+
+  [RuntimeFeature=TestFeatureOff, Sync]
+  DefaultDeniedSync() => (int32 ret);
+
+  [RuntimeFeature=TestFeatureOn]
+  DefaultAllowed() => (int32 ret);
+
+  Normal() => (int32 ret);
+};
+
+// This interface and its methods are not guarded by features, but the ones
+// it passes are. Note that mojom_interface_feature_check prevents specifying
+// non-nullable interfaces.
+interface PassesInterfaces {
+  PassPendingOptionalRemoteAllowed(pending_remote<DefaultAllowed>? iface) => (bool ok);
+  PassPendingOptionalReceiverAllowed(pending_receiver<DefaultAllowed>? iface);
+  PassPendingOptionalRemoteDisabled(pending_remote<DefaultDenied>? iface) => (bool ok);
+  PassPendingOptionalReceiverDisabled(pending_receiver<DefaultDenied>? iface) => (bool ok);
+};

@@ -9,8 +9,9 @@ import android.text.Editable;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
-import org.chromium.base.annotations.JNINamespace;
-import org.chromium.base.annotations.NativeMethods;
+import org.jni_zero.JNINamespace;
+import org.jni_zero.NativeMethods;
+
 import org.chromium.ui.text.EmptyTextWatcher;
 
 /**
@@ -22,14 +23,12 @@ public class PhoneNumberUtil {
     // Avoid instantiation by accident.
     private PhoneNumberUtil() {}
 
-    /**
-     * TextWatcher to watch phone number changes so as to format it based on country code.
-     */
+    /** TextWatcher to watch phone number changes so as to format it based on country code. */
     public static class CountryAwareFormatTextWatcher implements EmptyTextWatcher {
         /** Indicates the change was caused by ourselves. */
         private boolean mSelfChange;
-        @Nullable
-        private String mCountryCode;
+
+        @Nullable private String mCountryCode;
 
         /**
          * Updates the country code used to format phone numbers.
@@ -104,7 +103,9 @@ public class PhoneNumberUtil {
     @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
     public interface Natives {
         String formatForDisplay(String phoneNumber, String countryCode);
+
         String formatForResponse(String phoneNumber);
+
         boolean isPossibleNumber(String phoneNumber, String countryCode);
     }
 }

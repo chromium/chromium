@@ -186,7 +186,7 @@ DOMFloat32Array* XRRay::matrix() {
   }
 
   // Step 9: Return matrix
-  return matrix_;
+  return matrix_.Get();
 }
 
 gfx::Transform XRRay::RawMatrix() {

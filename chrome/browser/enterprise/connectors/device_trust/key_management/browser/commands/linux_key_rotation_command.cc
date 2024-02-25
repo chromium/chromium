@@ -53,10 +53,8 @@ base::CommandLine GetCommandLine(const KeyRotationCommand::Params& params,
   base::FilePath exe_path = GetBinaryFilePath();
 
   base::CommandLine command_line(exe_path);
-  std::string token_base64;
-  base::Base64Encode(params.dm_token, &token_base64);
-  std::string nonce_base64;
-  base::Base64Encode(params.nonce, &nonce_base64);
+  std::string token_base64 = base::Base64Encode(params.dm_token);
+  std::string nonce_base64 = base::Base64Encode(params.nonce);
 
   command_line.AppendSwitchNative(switches::kRotateDTKey, token_base64);
   command_line.AppendSwitchNative(switches::kDmServerUrl, params.dm_server_url);

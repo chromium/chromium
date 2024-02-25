@@ -187,6 +187,9 @@ class COMPONENT_EXPORT(EVDEV) EventDeviceInfo {
   // device.
   bool HasValidMTAbsXY() const;
 
+  // Determine whether this device supports heatmap.
+  bool SupportsHeatmap() const;
+
   // Determine whether the device supports rumble.
   bool SupportsRumble() const;
 

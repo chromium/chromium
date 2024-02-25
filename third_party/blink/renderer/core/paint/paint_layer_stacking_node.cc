@@ -184,7 +184,7 @@ static LayoutObject* ChildOfFlexboxOrGridParentOrGrandparent(
   if (!parent) {
     return nullptr;
   }
-  if (parent->IsLayoutNGFlexibleBox() || parent->IsLayoutNGGrid()) {
+  if (parent->IsFlexibleBox() || parent->IsLayoutGrid()) {
     return &layer->GetLayoutObject();
   }
 
@@ -192,7 +192,7 @@ static LayoutObject* ChildOfFlexboxOrGridParentOrGrandparent(
   if (!grandparent) {
     return nullptr;
   }
-  if (grandparent->IsLayoutNGFlexibleBox() || grandparent->IsLayoutNGGrid()) {
+  if (grandparent->IsFlexibleBox() || grandparent->IsLayoutGrid()) {
     return parent;
   }
   return nullptr;
@@ -205,6 +205,10 @@ static bool OrderLessThan(const PaintLayer* first, const PaintLayer* second) {
   LayoutObject* second_ancestor =
       ChildOfFlexboxOrGridParentOrGrandparent(second);
   if (!first_ancestor || !second_ancestor) {
+    return false;
+  }
+
+  if (first_ancestor->Parent() != second_ancestor->Parent()) {
     return false;
   }
 
@@ -234,10 +238,6 @@ static void GetOrderSortedChildren(
   for (PaintLayer* child = paint_layer->FirstChild(); child;
        child = child->NextSibling()) {
     sorted_children.push_back(child);
-  }
-
-  if (!RuntimeEnabledFeatures::PaintFlexGridSortedByOrderEnabled()) {
-    return;
   }
 
   std::stable_sort(sorted_children.begin(), sorted_children.end(),
@@ -308,7 +308,7 @@ void PaintLayerStackingNode::CollectLayers(PaintLayer& paint_layer,
   if (object.IsStackingContext())
     return;
 
-  absl::optional<HighestLayers> subtree_highest_layers;
+  std::optional<HighestLayers> subtree_highest_layers;
   bool has_overlay_overflow_controls =
       paint_layer.GetScrollableArea() &&
       paint_layer.GetScrollableArea()->HasOverlayOverflowControls();

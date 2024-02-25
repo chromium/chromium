@@ -28,8 +28,9 @@ PageTimingMetadataRecorder::MonotonicTiming::operator=(MonotonicTiming&&) =
     default;
 
 PageTimingMetadataRecorder::PageTimingMetadataRecorder(
-    const MonotonicTiming& initial_timing)
-    : instance_id_(g_next_instance_id++) {
+    const MonotonicTiming& initial_timing,
+    const bool is_main_frame)
+    : instance_id_(g_next_instance_id++), is_main_frame_(is_main_frame) {
   UpdateMetadata(initial_timing);
 }
 
@@ -40,6 +41,9 @@ void PageTimingMetadataRecorder::UpdateMetadata(const MonotonicTiming& timing) {
                                      timing.first_contentful_paint);
   UpdateFirstInputDelayMetadata(timing.first_input_timestamp,
                                 timing.first_input_delay);
+  UpdateLargestContentfulPaintMetadata(timing.navigation_start,
+                                       timing.frame_largest_contentful_paint,
+                                       timing.document_token);
   timing_ = timing;
 }
 
@@ -54,9 +58,17 @@ void PageTimingMetadataRecorder::ApplyMetadataToPastSamples(
                                    scope);
 }
 
+void PageTimingMetadataRecorder::AddProfileMetadata(
+    base::StringPiece name,
+    int64_t key,
+    int64_t value,
+    base::SampleMetadataScope scope) {
+  base::AddProfileMetadata(name, key, value, scope);
+}
+
 void PageTimingMetadataRecorder::UpdateFirstInputDelayMetadata(
-    const absl::optional<base::TimeTicks>& first_input_timestamp,
-    const absl::optional<base::TimeDelta>& first_input_delay) {
+    const std::optional<base::TimeTicks>& first_input_timestamp,
+    const std::optional<base::TimeDelta>& first_input_delay) {
   // Applying metadata to past samples has non-trivial cost so only do so if
   // the relevant values changed.
   const bool should_apply_metadata =
@@ -73,8 +85,8 @@ void PageTimingMetadataRecorder::UpdateFirstInputDelayMetadata(
 }
 
 void PageTimingMetadataRecorder::UpdateFirstContentfulPaintMetadata(
-    const absl::optional<base::TimeTicks>& navigation_start,
-    const absl::optional<base::TimeTicks>& first_contentful_paint) {
+    const std::optional<base::TimeTicks>& navigation_start,
+    const std::optional<base::TimeTicks>& first_contentful_paint) {
   // Applying metadata to past samples has non-trivial cost so only do so if
   // the relevant values changed.
   const bool should_apply_metadata =
@@ -115,6 +127,76 @@ void PageTimingMetadataRecorder::AddInteractionDurationMetadata(
       CreateInteractionDurationMetadataKey(instance_id_, interaction_count_),
       /* value=*/(interaction_end - interaction_start).InMilliseconds(),
       base::SampleMetadataScope::kProcess);
+}
+
+void PageTimingMetadataRecorder::AddInteractionDurationAfterQueueingMetadata(
+    const base::TimeTicks interaction_start,
+    const base::TimeTicks interaction_queued_main_thread,
+    const base::TimeTicks interaction_end) {
+  // Safe check that start < queued < end.
+  if (!IsTimeTicksRangeSensible(interaction_start,
+                                interaction_queued_main_thread) ||
+      !IsTimeTicksRangeSensible(interaction_queued_main_thread,
+                                interaction_end)) {
+    return;
+  }
+
+  ApplyMetadataToPastSamples(
+      interaction_queued_main_thread, interaction_end,
+      "Blink.Responsiveness.UserInteraction.MaxEventDurationFromQueued",
+      /* key=*/
+      CreateInteractionDurationMetadataKey(instance_id_, interaction_count_),
+      /* value=*/
+      (interaction_end - interaction_queued_main_thread).InMilliseconds(),
+      base::SampleMetadataScope::kProcess);
+}
+
+void PageTimingMetadataRecorder::UpdateLargestContentfulPaintMetadata(
+    const std::optional<base::TimeTicks>& navigation_start,
+    const std::optional<base::TimeTicks>& largest_contentful_paint,
+    const std::optional<blink::DocumentToken>& document_token) {
+  const bool should_apply_global_lcp_metadata =
+      navigation_start.has_value() && document_token.has_value() &&
+      (timing_.navigation_start != navigation_start ||
+       timing_.document_token != document_token);
+
+  // Document token and navigation start TimeTicks are passed to browser
+  // process, where global LCP value is available.
+  if (should_apply_global_lcp_metadata) {
+    AddProfileMetadata(
+        "Internal.LargestContentfulPaint.NavigationStart",
+        /* key= */ instance_id_,
+        /* value= */ navigation_start->since_origin().InMilliseconds(),
+        base::SampleMetadataScope::kProcess);
+
+    AddProfileMetadata(
+        "Internal.LargestContentfulPaint.DocumentToken",
+        /* key= */ instance_id_,
+        /* value= */ blink::DocumentToken::Hasher()(*document_token),
+        base::SampleMetadataScope::kProcess);
+  }
+
+  // Local LCP can get updated multiple times (mostly < 10 times) during a page
+  // load. For a given `name_hash` and `key`, when applying on new LCP range,
+  // the metadata tag on old overlapping ranges will be removed.
+  const bool should_apply_local_lcp_metadata =
+      navigation_start.has_value() && largest_contentful_paint.has_value() &&
+      (timing_.frame_largest_contentful_paint != largest_contentful_paint ||
+       timing_.navigation_start != navigation_start);
+
+  if (should_apply_local_lcp_metadata &&
+      IsTimeTicksRangeSensible(*navigation_start, *largest_contentful_paint)) {
+    ApplyMetadataToPastSamples(
+        *navigation_start, *largest_contentful_paint,
+        is_main_frame_ ? "PageLoad.PaintTiming."
+                         "NavigationToLargestContentfulPaint2.MainFrame"
+                       : "PageLoad.PaintTiming."
+                         "NavigationToLargestContentfulPaint2.SubFrame",
+        /* key=*/instance_id_,
+        /* value=*/
+        (*largest_contentful_paint - *navigation_start).InMilliseconds(),
+        base::SampleMetadataScope::kProcess);
+  }
 }
 
 }  // namespace page_load_metrics

@@ -39,22 +39,7 @@ const int kSampleRate = 44100;
 // Make sure the kFakeAudioFrameSize is a valid frame size for all audio decoder
 // configs used in this test.
 const int kFakeAudioFrameSize = 48;
-const uint8_t kFakeKeyId[] = {0x4b, 0x65, 0x79, 0x20, 0x49, 0x44};
-const uint8_t kFakeIv[DecryptConfig::kDecryptionKeySize] = {0};
 const int kDecodingDelay = 3;
-
-// Create a fake non-empty encrypted buffer.
-static scoped_refptr<DecoderBuffer> CreateFakeEncryptedBuffer() {
-  const int buffer_size = 16;  // Need a non-empty buffer;
-  scoped_refptr<DecoderBuffer> buffer(
-      base::MakeRefCounted<DecoderBuffer>(buffer_size));
-  buffer->set_decrypt_config(DecryptConfig::CreateCencConfig(
-      std::string(reinterpret_cast<const char*>(kFakeKeyId),
-                  std::size(kFakeKeyId)),
-      std::string(reinterpret_cast<const char*>(kFakeIv), std::size(kFakeIv)),
-      std::vector<SubsampleEntry>()));
-  return buffer;
-}
 
 class DecryptingAudioDecoderTest : public testing::Test {
  public:
@@ -394,12 +379,12 @@ TEST_F(DecryptingAudioDecoderTest, Reinitialize_EncryptedToEncrypted) {
       .Times(AtMost(1))
       .WillOnce(RunOnceCallback<1>(true));
 
-  // The new config is different from the initial config in bits-per-channel,
+  // The new config is different from the initial config in bytes-per-channel,
   // channel layout and samples_per_second.
   AudioDecoderConfig new_config(AudioCodec::kVorbis, kSampleFormatPlanarS16,
                                 CHANNEL_LAYOUT_5_1, 88200, EmptyExtraData(),
                                 EncryptionScheme::kCenc);
-  EXPECT_NE(new_config.bits_per_channel(), config_.bits_per_channel());
+  EXPECT_NE(new_config.bytes_per_channel(), config_.bytes_per_channel());
   EXPECT_NE(new_config.channel_layout(), config_.channel_layout());
   EXPECT_NE(new_config.samples_per_second(), config_.samples_per_second());
   ASSERT_TRUE(new_config.is_encrypted());
@@ -416,12 +401,12 @@ TEST_F(DecryptingAudioDecoderTest, Reinitialize_EncryptedToClear) {
       .Times(AtMost(1))
       .WillOnce(RunOnceCallback<1>(true));
 
-  // The new config is different from the initial config in bits-per-channel,
+  // The new config is different from the initial config in bytes-per-channel,
   // channel layout and samples_per_second.
   AudioDecoderConfig new_config(AudioCodec::kVorbis, kSampleFormatPlanarS16,
                                 CHANNEL_LAYOUT_5_1, 88200, EmptyExtraData(),
                                 EncryptionScheme::kUnencrypted);
-  EXPECT_NE(new_config.bits_per_channel(), config_.bits_per_channel());
+  EXPECT_NE(new_config.bytes_per_channel(), config_.bytes_per_channel());
   EXPECT_NE(new_config.channel_layout(), config_.channel_layout());
   EXPECT_NE(new_config.samples_per_second(), config_.samples_per_second());
   ASSERT_FALSE(new_config.is_encrypted());

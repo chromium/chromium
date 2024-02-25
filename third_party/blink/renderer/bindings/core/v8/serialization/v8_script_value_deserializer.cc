@@ -5,18 +5,18 @@
 #include "third_party/blink/renderer/bindings/core/v8/serialization/v8_script_value_deserializer.h"
 
 #include <limits>
+#include <optional>
 
 #include "base/feature_list.h"
 #include "base/numerics/checked_math.h"
 #include "base/time/time.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/fenced_frame/fenced_frame_utils.h"
 #include "third_party/blink/public/platform/web_blob_info.h"
 #include "third_party/blink/renderer/bindings/core/v8/serialization/serialization_tag.h"
 #include "third_party/blink/renderer/bindings/core/v8/serialization/trailer_reader.h"
 #include "third_party/blink/renderer/bindings/core/v8/serialization/unpacked_serialized_script_value.h"
-#include "third_party/blink/renderer/bindings/core/v8/to_v8_for_core.h"
+#include "third_party/blink/renderer/bindings/core/v8/to_v8_traits.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_blob.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_dom_exception.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_dom_matrix.h"
@@ -236,16 +236,12 @@ void V8ScriptValueDeserializer::Transfer() {
   if (!unpacked_value_)
     return;
 
-  v8::Isolate* isolate = script_state_->GetIsolate();
-  v8::Local<v8::Context> context = script_state_->GetContext();
-  v8::Local<v8::Object> creation_context = context->Global();
-
   // Transfer array buffers.
   const auto& array_buffers = unpacked_value_->ArrayBuffers();
   for (unsigned i = 0; i < array_buffers.size(); i++) {
     DOMArrayBufferBase* array_buffer = array_buffers.at(i);
     v8::Local<v8::Value> wrapper =
-        ToV8(array_buffer, creation_context, isolate);
+        ToV8Traits<DOMArrayBufferBase>::ToV8(script_state_, array_buffer);
     if (array_buffer->IsShared()) {
       // Crash if we are receiving a SharedArrayBuffer and this isn't allowed.
       auto* execution_context = ExecutionContext::From(script_state_);
@@ -268,7 +264,7 @@ bool V8ScriptValueDeserializer::ReadUnguessableToken(
   uint64_t low;
   if (!ReadUint64(&high) || !ReadUint64(&low))
     return false;
-  absl::optional<base::UnguessableToken> token =
+  std::optional<base::UnguessableToken> token =
       base::UnguessableToken::Deserialize(high, low);
   if (!token.has_value()) {
     return false;
@@ -509,7 +505,7 @@ ScriptWrappable* V8ScriptValueDeserializer::ReadDOMObject(
       SerializedImageDataSettings settings(predefined_color_space,
                                            image_data_storage_format);
       ImageData* image_data = ImageData::ValidateAndCreate(
-          width, height, absl::nullopt, settings.GetImageDataSettings(),
+          width, height, std::nullopt, settings.GetImageDataSettings(),
           ImageData::ValidateAndCreateParams(), exception_state);
       if (!image_data)
         return nullptr;
@@ -700,9 +696,9 @@ ScriptWrappable* V8ScriptValueDeserializer::ReadDOMObject(
           container_width, container_height, has_content_size, content_width,
           content_height, freeze_initial_size;
       KURL url;
-      absl::optional<KURL> urn_uuid;
+      std::optional<KURL> urn_uuid;
       FencedFrameConfig::AttributeVisibility url_visibility, size_visibility;
-      absl::optional<gfx::Size> container_size, content_size;
+      std::optional<gfx::Size> container_size, content_size;
 
       if (!ReadUTF8String(&url_string) || !ReadUint32(&width) ||
           !ReadUint32(&height) ||
@@ -794,9 +790,11 @@ File* V8ScriptValueDeserializer::ReadFile() {
   auto blob_handle = GetOrCreateBlobDataHandle(uuid, type, kSizeForDataHandle);
   if (!blob_handle)
     return nullptr;
-  absl::optional<base::Time> last_modified;
-  if (has_snapshot && std::isfinite(last_modified_ms))
-    last_modified = base::Time::FromJsTime(last_modified_ms);
+  std::optional<base::Time> last_modified;
+  if (has_snapshot && std::isfinite(last_modified_ms)) {
+    last_modified =
+        base::Time::FromMillisecondsSinceUnixEpoch(last_modified_ms);
+  }
   return File::CreateFromSerialization(path, name, relative_path,
                                        user_visibility, has_snapshot, size,
                                        last_modified, std::move(blob_handle));
@@ -859,7 +857,7 @@ V8ScriptValueDeserializer::GetOrCreateBlobDataHandle(const String& uuid,
 v8::MaybeLocal<v8::Object> V8ScriptValueDeserializer::ReadHostObject(
     v8::Isolate* isolate) {
   DCHECK_EQ(isolate, script_state_->GetIsolate());
-  ExceptionState exception_state(isolate, ExceptionState::kUnknownContext,
+  ExceptionState exception_state(isolate, ExceptionContextType::kUnknown,
                                  nullptr, nullptr);
   ScriptWrappable* wrappable = nullptr;
   SerializationTag tag = kVersionTag;
@@ -873,9 +871,8 @@ v8::MaybeLocal<v8::Object> V8ScriptValueDeserializer::ReadHostObject(
                                       "Unable to deserialize cloned data.");
     return v8::MaybeLocal<v8::Object>();
   }
-  v8::Local<v8::Object> creation_context =
-      script_state_->GetContext()->Global();
-  v8::Local<v8::Value> wrapper = ToV8(wrappable, creation_context, isolate);
+  v8::Local<v8::Value> wrapper =
+      ToV8Traits<ScriptWrappable>::ToV8(script_state_, wrappable);
   DCHECK(wrapper->IsObject());
   return wrapper.As<v8::Object>();
 }
@@ -900,14 +897,12 @@ V8ScriptValueDeserializer::GetSharedArrayBufferFromId(v8::Isolate* isolate,
     ArrayBufferContents& contents = shared_array_buffers_contents.at(id);
     DOMSharedArrayBuffer* shared_array_buffer =
         DOMSharedArrayBuffer::Create(contents);
-    v8::Local<v8::Object> creation_context =
-        script_state_->GetContext()->Global();
-    v8::Local<v8::Value> wrapper =
-        ToV8(shared_array_buffer, creation_context, isolate);
+    v8::Local<v8::Value> wrapper = ToV8Traits<DOMSharedArrayBuffer>::ToV8(
+        script_state_, shared_array_buffer);
     DCHECK(wrapper->IsSharedArrayBuffer());
     return v8::Local<v8::SharedArrayBuffer>::Cast(wrapper);
   }
-  ExceptionState exception_state(isolate, ExceptionState::kUnknownContext,
+  ExceptionState exception_state(isolate, ExceptionContextType::kUnknown,
                                  nullptr, nullptr);
   exception_state.ThrowDOMException(DOMExceptionCode::kDataCloneError,
                                     "Unable to deserialize SharedArrayBuffer.");
@@ -924,7 +919,7 @@ V8ScriptValueDeserializer::GetSharedValueConveyor(v8::Isolate* isolate) {
           serialized_script_value_->MaybeGetSharedValueConveyor()) {
     return conveyor;
   }
-  ExceptionState exception_state(isolate, ExceptionState::kUnknownContext,
+  ExceptionState exception_state(isolate, ExceptionContextType::kUnknown,
                                  nullptr, nullptr);
   exception_state.ThrowDOMException(DOMExceptionCode::kDataCloneError,
                                     "Unable to deserialize shared JS value.");

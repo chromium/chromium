@@ -38,7 +38,7 @@ TEST(PrintSettingsTest, IsColorModelSelected) {
 }
 
 TEST(PrintSettingsDeathTest, IsColorModelSelectedEdges) {
-  ::testing::FLAGS_gtest_death_test_style = "threadsafe";
+  GTEST_FLAG_SET(death_test_style, "threadsafe");
   EXPECT_DCHECK_DEATH(
       IsColorModelSelected(mojom::ColorModel::kUnknownColorModel));
 }

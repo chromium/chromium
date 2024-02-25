@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html>
+<head>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script>
+
+window.onpagehide = parent.t.step_func(() => {
+  try {
+    console.log("trying the synx xhr");
+    var xhr = new XMLHttpRequest();
+    xhr.open("GET", "resources/1251.html", false);
+    xhr.send(null);
+    assert_unreached('Sync XHR must throw during an pagehide event');
+  } catch (e) {
+    parent.t.done();
+  }
+});
+
+</script>
+</head>
+<body>
+</body>
+</html>

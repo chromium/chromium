@@ -2,5 +2,5 @@ Tests exception message with empty stack in console contains async stack trace.
 
 VM:1 Uncaught SyntaxError: Unexpected end of input
 setTimeout (async)
-(anonymous) @ console-message-cont…s-async-stack.js:17
+(anonymous) @ console-message-cont…s-async-stack.js:16
 

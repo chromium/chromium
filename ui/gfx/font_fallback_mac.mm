@@ -50,11 +50,11 @@ std::vector<Font> GetFallbackFonts(const Font& font) {
   if (!cascade_list)
     return fallback_fonts;  // This should only happen for an invalid |font|.
 
-  const CFIndex fallback_count = CFArrayGetCount(cascade_list);
+  const CFIndex fallback_count = CFArrayGetCount(cascade_list.get());
   for (CFIndex i = 0; i < fallback_count; ++i) {
     CTFontDescriptorRef descriptor =
         base::apple::CFCastStrict<CTFontDescriptorRef>(
-            CFArrayGetValueAtIndex(cascade_list, i));
+            CFArrayGetValueAtIndex(cascade_list.get(), i));
     base::apple::ScopedCFTypeRef<CTFontRef> fallback_font(
         CTFontCreateWithFontDescriptor(descriptor, 0.0, nullptr));
     if (fallback_font.get()) {
@@ -90,7 +90,7 @@ bool GetFallbackFont(const Font& font,
   // font handles and is not guaranteed to result in the correct typeface, see
   // https://crbug.com/1003829
   *result = Font(PlatformFont::CreateFromSkTypeface(
-      std::move(fallback_typeface), font.GetFontSize(), absl::nullopt));
+      std::move(fallback_typeface), font.GetFontSize(), std::nullopt));
   return true;
 }
 

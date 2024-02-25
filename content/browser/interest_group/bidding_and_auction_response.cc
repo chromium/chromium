@@ -13,23 +13,23 @@ const size_t kFramingHeaderSize = 5;  // bytes
 const uint8_t kExpectedHeaderVersionInfo = 0x02;
 }  // namespace
 
-absl::optional<base::span<const uint8_t>>
+std::optional<base::span<const uint8_t>>
 ExtractCompressedBiddingAndAuctionResponse(
     base::span<const uint8_t> decrypted_data) {
   if (decrypted_data.size() < kFramingHeaderSize) {
     // Response is too short
-    return absl::nullopt;
+    return std::nullopt;
   }
   if (decrypted_data[0] != kExpectedHeaderVersionInfo) {
     // Bad version and compression information
-    return absl::nullopt;
+    return std::nullopt;
   }
   size_t response_length = (decrypted_data[1] << 24) |
                            (decrypted_data[2] << 16) |
                            (decrypted_data[3] << 8) | (decrypted_data[4] << 0);
   if (decrypted_data.size() < kFramingHeaderSize + response_length) {
     // Incomplete Data.
-    return absl::nullopt;
+    return std::nullopt;
   }
   return decrypted_data.subspan(kFramingHeaderSize, response_length);
 }
@@ -43,13 +43,13 @@ BiddingAndAuctionResponse::BiddingAndAuctionResponse() = default;
 BiddingAndAuctionResponse::~BiddingAndAuctionResponse() = default;
 
 // static
-absl::optional<BiddingAndAuctionResponse> BiddingAndAuctionResponse::TryParse(
+std::optional<BiddingAndAuctionResponse> BiddingAndAuctionResponse::TryParse(
     base::Value input,
     const base::flat_map<url::Origin, std::vector<std::string>>& group_names) {
   BiddingAndAuctionResponse output;
   base::Value::Dict* input_dict = input.GetIfDict();
   if (!input_dict) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   base::Value::Dict* error_struct = input_dict->FindDict("error");
@@ -57,89 +57,92 @@ absl::optional<BiddingAndAuctionResponse> BiddingAndAuctionResponse::TryParse(
     std::string* message = error_struct->FindString("message");
     if (message) {
       output.error = *message;
+    } else {
+      output.error = "Unknown server error";
     }
+    output.is_chaff = true;  // Mark it as a no-bid result.
+    return std::move(output);
   }
 
-  absl::optional<bool> maybe_is_chaff = input_dict->FindBool("isChaff");
+  std::optional<bool> maybe_is_chaff = input_dict->FindBool("isChaff");
   if (maybe_is_chaff && maybe_is_chaff.value()) {
     output.is_chaff = true;
-    //  TODO(behamilton): Fail auction - auction failed on the server.
     return std::move(output);
   }
   output.is_chaff = false;
 
   std::string* maybe_render_url = input_dict->FindString("adRenderURL");
   if (!maybe_render_url) {
-    return absl::nullopt;
+    return std::nullopt;
   }
   output.ad_render_url = GURL(*maybe_render_url);
   if (!output.ad_render_url.is_valid() ||
       !network::IsUrlPotentiallyTrustworthy(output.ad_render_url)) {
-    return absl::nullopt;
+    return std::nullopt;
   }
   base::Value* components_value = input_dict->Find("components");
   if (components_value) {
     base::Value::List* components = components_value->GetIfList();
     if (!components) {
-      return absl::nullopt;
+      return std::nullopt;
     }
     for (const base::Value& component_val : *components) {
       const std::string* component_str = component_val.GetIfString();
       if (!component_str) {
-        return absl::nullopt;
+        return std::nullopt;
       }
       GURL component(*component_str);
       if (!component.is_valid() ||
           !network::IsUrlPotentiallyTrustworthy(component)) {
-        return absl::nullopt;
+        return std::nullopt;
       }
       output.ad_components.emplace_back(std::move(component));
     }
   }
   std::string* maybe_name = input_dict->FindString("interestGroupName");
   if (!maybe_name) {
-    return absl::nullopt;
+    return std::nullopt;
   }
   output.interest_group_name = *maybe_name;
 
   std::string* maybe_owner = input_dict->FindString("interestGroupOwner");
   if (!maybe_owner) {
-    return absl::nullopt;
+    return std::nullopt;
   }
   output.interest_group_owner = url::Origin::Create(GURL(*maybe_owner));
   if (!network::IsOriginPotentiallyTrustworthy(output.interest_group_owner)) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   base::Value::Dict* bidding_groups = input_dict->FindDict("biddingGroups");
   if (!bidding_groups) {
-    return absl::nullopt;
+    return std::nullopt;
   }
   for (const auto owner_groups : *bidding_groups) {
     url::Origin owner = url::Origin::Create(GURL(owner_groups.first));
     if (!network::IsOriginPotentiallyTrustworthy(owner)) {
-      return absl::nullopt;
+      return std::nullopt;
     }
 
     auto it = group_names.find(owner);
     if (it == group_names.end()) {
-      return absl::nullopt;
+      return std::nullopt;
     }
     const std::vector<std::string>& names = it->second;
 
     const base::Value::List* groups = owner_groups.second.GetIfList();
     if (!groups) {
-      return absl::nullopt;
+      return std::nullopt;
     }
 
     for (const auto& group : *groups) {
-      absl::optional<int> maybe_group_idx = group.GetIfInt();
+      std::optional<int> maybe_group_idx = group.GetIfInt();
       if (!maybe_group_idx) {
-        return absl::nullopt;
+        return std::nullopt;
       }
       if (*maybe_group_idx < 0 ||
           static_cast<size_t>(*maybe_group_idx) >= names.size()) {
-        return absl::nullopt;
+        return std::nullopt;
       }
       output.bidding_groups.emplace_back(owner, names[*maybe_group_idx]);
     }
@@ -147,6 +150,14 @@ absl::optional<BiddingAndAuctionResponse> BiddingAndAuctionResponse::TryParse(
 
   output.score = input_dict->FindDouble("score");
   output.bid = input_dict->FindDouble("bid");
+
+  std::string* maybe_currency = input_dict->FindString("bidCurrency");
+  if (maybe_currency) {
+    if (!blink::IsValidAdCurrencyCode(*maybe_currency)) {
+      return std::nullopt;
+    }
+    output.bid_currency = blink::AdCurrency::From(*maybe_currency);
+  }
 
   base::Value::Dict* win_reporting_urls =
       input_dict->FindDict("winReportingURLs");
@@ -156,13 +167,35 @@ absl::optional<BiddingAndAuctionResponse> BiddingAndAuctionResponse::TryParse(
     if (buyer_reporting) {
       output.buyer_reporting = ReportingURLs::TryParse(buyer_reporting);
     }
-    base::Value::Dict* seller_reporting =
+    base::Value::Dict* top_level_seller_reporting =
         win_reporting_urls->FindDict("topLevelSellerReportingURLs");
-    if (seller_reporting) {
-      output.seller_reporting = ReportingURLs::TryParse(seller_reporting);
+    if (top_level_seller_reporting) {
+      output.top_level_seller_reporting =
+          ReportingURLs::TryParse(top_level_seller_reporting);
+    }
+    base::Value::Dict* component_seller_reporting =
+        win_reporting_urls->FindDict("componentSellerReportingURLs");
+    if (component_seller_reporting) {
+      output.component_seller_reporting =
+          ReportingURLs::TryParse(component_seller_reporting);
     }
   }
+  std::string* maybe_top_level_seller =
+      input_dict->FindString("topLevelSeller");
+  if (maybe_top_level_seller) {
+    url::Origin top_level_seller =
+        url::Origin::Create(GURL(*maybe_top_level_seller));
+    if (!network::IsOriginPotentiallyTrustworthy(top_level_seller)) {
+      return std::nullopt;
+    }
+    output.top_level_seller = std::move(top_level_seller);
+  }
+  std::string* maybe_ad_metadata = input_dict->FindString("adMetadata");
+  if (maybe_ad_metadata) {
+    output.ad_metadata = *maybe_ad_metadata;
+  }
 
+  output.result = AuctionResult::kSuccess;
   return std::move(output);
 }
 
@@ -175,7 +208,7 @@ BiddingAndAuctionResponse::ReportingURLs&
 BiddingAndAuctionResponse::ReportingURLs::operator=(ReportingURLs&&) = default;
 
 // static
-absl::optional<BiddingAndAuctionResponse::ReportingURLs>
+std::optional<BiddingAndAuctionResponse::ReportingURLs>
 BiddingAndAuctionResponse::ReportingURLs::TryParse(
     base::Value::Dict* input_dict) {
   ReportingURLs output;

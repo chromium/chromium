@@ -22,6 +22,7 @@
 #include "extensions/common/extension_id.h"
 #include "extensions/test/extension_test_message_listener.h"
 #include "extensions/test/result_catcher.h"
+#include "ui/display/display_switches.h"
 
 using extensions::AppWindowGeometryCache;
 using extensions::ResultCatcher;
@@ -51,7 +52,7 @@ class GeometryCacheChangeHelper : AppWindowGeometryCache::Observer {
       return;
 
     waiting_ = true;
-    content::RunMessageLoop();
+    loop_.Run();
   }
 
   // Implements the AppWindowGeometryCache::Observer interface.
@@ -68,7 +69,7 @@ class GeometryCacheChangeHelper : AppWindowGeometryCache::Observer {
       cache_->RemoveObserver(this);
 
       if (waiting_)
-        base::RunLoop::QuitCurrentWhenIdleDeprecated();
+        loop_.QuitWhenIdle();
     }
   }
 
@@ -79,6 +80,8 @@ class GeometryCacheChangeHelper : AppWindowGeometryCache::Observer {
   gfx::Rect bounds_;
   bool satisfied_;
   bool waiting_;
+  // base::RunLoop used to require kNestableTaskAllowed
+  base::RunLoop loop_{base::RunLoop::Type::kNestableTasksAllowed};
 };
 
 // Helper class for tests related to the Apps Window API (chrome.app.window).

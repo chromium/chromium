@@ -147,7 +147,6 @@ def main(base_dir, adb_cmd='adb'):
 
 
 if __name__ == '__main__':
-  logging.basicConfig(level=logging.INFO)
   if 2 <= len(sys.argv) <= 3:
     print('adb_logcat_monitor: Initializing')
     if len(sys.argv) == 2:

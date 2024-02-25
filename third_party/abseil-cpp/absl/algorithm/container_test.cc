@@ -14,6 +14,7 @@
 
 #include "absl/algorithm/container.h"
 
+#include <algorithm>
 #include <functional>
 #include <initializer_list>
 #include <iterator>
@@ -40,8 +41,10 @@ using ::testing::Each;
 using ::testing::ElementsAre;
 using ::testing::Gt;
 using ::testing::IsNull;
+using ::testing::IsSubsetOf;
 using ::testing::Lt;
 using ::testing::Pointee;
+using ::testing::SizeIs;
 using ::testing::Truly;
 using ::testing::UnorderedElementsAre;
 
@@ -963,10 +966,27 @@ TEST(MutatingTest, RotateCopy) {
   EXPECT_THAT(actual, ElementsAre(3, 4, 1, 2, 5));
 }
 
+template <typename T>
+T RandomlySeededPrng() {
+  std::random_device rdev;
+  std::seed_seq::result_type data[T::state_size];
+  std::generate_n(data, T::state_size, std::ref(rdev));
+  std::seed_seq prng_seed(data, data + T::state_size);
+  return T(prng_seed);
+}
+
 TEST(MutatingTest, Shuffle) {
   std::vector<int> actual = {1, 2, 3, 4, 5};
-  absl::c_shuffle(actual, std::random_device());
+  absl::c_shuffle(actual, RandomlySeededPrng<std::mt19937_64>());
   EXPECT_THAT(actual, UnorderedElementsAre(1, 2, 3, 4, 5));
+}
+
+TEST(MutatingTest, Sample) {
+  std::vector<int> actual;
+  absl::c_sample(std::vector<int>{1, 2, 3, 4, 5}, std::back_inserter(actual), 3,
+                 RandomlySeededPrng<std::mt19937_64>());
+  EXPECT_THAT(actual, IsSubsetOf({1, 2, 3, 4, 5}));
+  EXPECT_THAT(actual, SizeIs(3));
 }
 
 TEST(MutatingTest, PartialSort) {

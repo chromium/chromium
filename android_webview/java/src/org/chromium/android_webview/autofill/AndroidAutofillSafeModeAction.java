@@ -8,6 +8,7 @@ import androidx.annotation.NonNull;
 
 import org.chromium.android_webview.common.Lifetime;
 import org.chromium.android_webview.common.SafeModeAction;
+import org.chromium.android_webview.common.SafeModeActionIds;
 
 /**
  * A {@link SafeModeAction} to disable autofill provided by Android framework.
@@ -18,7 +19,7 @@ import org.chromium.android_webview.common.SafeModeAction;
 @Lifetime.Singleton
 public class AndroidAutofillSafeModeAction implements SafeModeAction {
     // This ID should not be changed or reused.
-    public static final String ID = "disable_android_autofill";
+    private static final String ID = SafeModeActionIds.DISABLE_ANDROID_AUTOFILL;
 
     private static boolean sIsAndroidAutofillDisabled;
 

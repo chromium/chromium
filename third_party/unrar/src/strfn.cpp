@@ -120,51 +120,24 @@ wchar* RemoveLF(wchar *Str)
   return Str;
 }
 
-
-unsigned char loctolower(unsigned char ch)
-{
-#if defined(_WIN_ALL)
-  // Convert to LPARAM first to avoid a warning in 64 bit mode.
-  // Convert to uintptr_t to avoid Clang/win error: cast to 'char *' from smaller integer type 'unsigned char' [-Werror,-Wint-to-pointer-cast]
-  return (int)(LPARAM)CharLowerA((LPSTR)(uintptr_t)ch);
-#else
-  return tolower(ch);
-#endif
-}
-
-
-unsigned char loctoupper(unsigned char ch)
-{
-#if defined(_WIN_ALL)
-  // Convert to LPARAM first to avoid a warning in 64 bit mode.
-  // Convert to uintptr_t to avoid Clang/win error: cast to 'char *' from smaller integer type 'unsigned char' [-Werror,-Wint-to-pointer-cast]
-  return (int)(LPARAM)CharUpperA((LPSTR)(uintptr_t)ch);
-#else
-  return toupper(ch);
-#endif
-}
-
-
-// toupper with English only results if English input is provided.
-// It avoids Turkish (small i) -> (big I with dot) conversion problem.
-// We do not define 'ch' as 'int' to avoid necessity to cast all
+#if defined(SFX_MODULE)
+// char version of etoupperw. Used in console SFX module only.
+// Fast toupper for English only input and output. Additionally to speed,
+// it also avoids Turkish small i to big I with dot conversion problem.
+// We do not define 'c' as 'int' to avoid necessity to cast all
 // signed chars passed to this function to unsigned char.
-unsigned char etoupper(unsigned char ch)
-{
-  if (ch=='i')
-    return 'I';
-  return toupper(ch);
+unsigned char etoupper(unsigned char c) {
+  return c >= 'a' && c <= 'z' ? c - 'a' + 'A' : c;
 }
+#endif
 
-
-// Unicode version of etoupper.
-wchar etoupperw(wchar ch)
-{
-  if (ch=='i')
-    return 'I';
-  return toupperw(ch);
+// Fast toupper for English only input and output. Additionally to speed,
+// it also avoids Turkish small i to big I with dot conversion problem.
+// We do not define 'c' as 'int' to avoid necessity to cast all
+// signed wchars passed to this function to unsigned char.
+wchar etoupperw(wchar c) {
+  return c >= 'a' && c <= 'z' ? c - 'a' + 'A' : c;
 }
-
 
 // We do not want to cast every signed char to unsigned when passing to
 // isdigit, so we implement the replacement. Shall work for Unicode too.
@@ -378,6 +351,33 @@ void itoa(int64 n,wchar *Str,size_t MaxSize)
   Str[Pos]=0;
 }
 
+// Convert the number to string using thousand separators.
+void fmtitoa(int64 n, wchar* Str, size_t MaxSize) {
+  static wchar ThSep = 0;  // Thousands separator.
+#ifdef _WIN_ALL
+  wchar Info[10];
+  if ((!ThSep) != 0 && GetLocaleInfo(LOCALE_USER_DEFAULT, LOCALE_STHOUSAND,
+                                     Info, ASIZE(Info)) > 0) {
+    ThSep = *Info;
+  }
+#elif defined(_UNIX)
+  ThSep = *localeconv()->thousands_sep;
+#endif
+  if (ThSep == 0) {  // If failed to detect the actual separator value.
+    ThSep = ' ';
+  }
+  wchar
+      RawText[30];  // 20 characters are enough for largest unsigned 64 bit int.
+  itoa(n, RawText, ASIZE(RawText));
+  uint S = 0, D = 0, L = wcslen(RawText) % 3;
+  while (RawText[S] != 0 && D + 1 < MaxSize) {
+    if (S != 0 && (S + 3 - L) % 3 == 0) {
+      Str[D++] = ThSep;
+    }
+    Str[D++] = RawText[S++];
+  }
+  Str[D] = 0;
+}
 
 const wchar* GetWide(const char *Src)
 {

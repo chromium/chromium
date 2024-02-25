@@ -6,6 +6,7 @@
 #define DEVICE_VR_OPENXR_OPENXR_UTIL_H_
 
 #include "base/logging.h"
+#include "device/vr/public/mojom/pose.h"
 #include "third_party/openxr/src/include/openxr/openxr.h"
 #include "ui/gfx/geometry/transform.h"
 #include "ui/gfx/geometry/transform_util.h"
@@ -25,26 +26,37 @@ namespace device {
     }                                                                   \
   } while (false)
 
+#define RETURN_VAL_IF_XR_FAILED(xrcode, return_expr)                    \
+  do {                                                                  \
+    XrResult return_if_xr_failed_xr_result = (xrcode);                  \
+    if (XR_FAILED(return_if_xr_failed_xr_result)) {                     \
+      DLOG(ERROR) << __func__                                           \
+                  << " Failed with: " << return_if_xr_failed_xr_result; \
+      return return_expr;                                               \
+    }                                                                   \
+  } while (false)
+
 #define RETURN_IF_FALSE(condition, error_code, msg) \
   do {                                              \
     if (!(condition)) {                             \
-      LOG(ERROR) << __FUNCTION__ << ": " << msg;    \
+      DLOG(ERROR) << __func__ << ": " << msg;       \
       return error_code;                            \
     }                                               \
   } while (false)
 
-#define RETURN_IF(condition, error_code, msg)    \
-  do {                                           \
-    if (condition) {                             \
-      LOG(ERROR) << __FUNCTION__ << ": " << msg; \
-      return error_code;                         \
-    }                                            \
+#define RETURN_IF(condition, error_code, msg) \
+  do {                                        \
+    if (condition) {                          \
+      DLOG(ERROR) << __func__ << ": " << msg; \
+      return error_code;                      \
+    }                                         \
   } while (false)
 
 // Returns the identity pose, where the position is {0, 0, 0} and the
 // orientation is {0, 0, 0, 1}.
 XrPosef PoseIdentity();
 gfx::Transform XrPoseToGfxTransform(const XrPosef& pose);
+device::Pose XrPoseToDevicePose(const XrPosef& pose);
 XrPosef GfxTransformToXrPose(const gfx::Transform& transform);
 bool IsPoseValid(XrSpaceLocationFlags locationFlags);
 

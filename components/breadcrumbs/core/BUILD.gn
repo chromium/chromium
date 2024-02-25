@@ -42,7 +42,12 @@ source_set("status") {
     "breadcrumbs_status.cc",
     "breadcrumbs_status.h",
   ]
-  deps = [ "//base" ]
+  deps = [
+    "//base",
+    "//components/prefs",
+    "//components/variations",
+    "//components/version_info:channel",
+  ]
 }
 
 source_set("unit_tests") {
@@ -50,7 +55,9 @@ source_set("unit_tests") {
   deps = [
     ":core",
     ":generate_not_user_triggered_actions",
+    ":status",
     "//base/test:test_support",
+    "//components/prefs:test_support",
     "//testing/gtest",
   ]
 
@@ -61,6 +68,7 @@ source_set("unit_tests") {
     "breadcrumb_manager_observer_unittest.cc",
     "breadcrumb_manager_unittest.cc",
     "breadcrumb_persistent_storage_manager_unittest.cc",
+    "breadcrumbs_status_unittest.cc",
   ]
 }
 

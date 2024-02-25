@@ -39,6 +39,7 @@
 #include "components/search_engines/search_engine_utils.h"
 #include "components/search_engines/search_engines_switches.h"
 #include "components/search_engines/search_terms_data.h"
+#include "components/search_engines/template_url_data.h"
 #include "components/url_formatter/url_formatter.h"
 #include "google_apis/google_api_keys.h"
 #include "net/base/mime_util.h"
@@ -144,8 +145,7 @@ class SearchTermLocation {
              (url_component_type == url::Parsed::REF));
       url::Component query, key, value;
       query.len = static_cast<int>(url_component.size());
-      while (url::ExtractQueryKeyValue(url_component.data(), &query, &key,
-                                       &value)) {
+      while (url::ExtractQueryKeyValue(url_component, &query, &key, &value)) {
         if (key.is_nonempty() && value.is_nonempty()) {
           const base::StringPiece value_string =
               url_component.substr(value.begin, value.len);
@@ -201,11 +201,36 @@ std::string YandexSearchPathFromDeviceFormFactor() {
     case ui::DEVICE_FORM_FACTOR_PHONE:
       return "search/touch/";
     case ui::DEVICE_FORM_FACTOR_TABLET:
+    case ui::DEVICE_FORM_FACTOR_FOLDABLE:
     case ui::DEVICE_FORM_FACTOR_AUTOMOTIVE:
       return "search/pad/";
   }
   NOTREACHED();
   return std::string();
+}
+
+// Returns true if `enterprise_engine` is strictly better than `other_engine`,
+// where `enterprise_engine` is a search engine created by the
+// `SiteSearchSettings` policy, and `other_engine` is a search engine not
+// created by Enterprise policy.
+bool IsEnterpriseSideSearchEngineBetterThanEngine(
+    const TemplateURL* enterprise_engine,
+    const TemplateURL* other_engine) {
+  // Keyword conflicts between search engines set by policy are handled when the
+  // policies are processed. At this point, `enterprise_engine` is created by
+  // the `SiteSearchSettings` policy, `other_engine` should have been created by
+  // something else, but not via policy.
+  CHECK_EQ(enterprise_engine->created_by_policy(),
+           TemplateURLData::CreatedByPolicy::kSiteSearch);
+  CHECK_EQ(other_engine->created_by_policy(),
+           TemplateURLData::CreatedByPolicy::kNoPolicy);
+
+  const std::u16string& keyword = enterprise_engine->keyword();
+  // Prefer `enterprise_engine` if the `keyword` starts with the "@" symbol.
+  // Otherwise, prefer `other_engine` if it has been manually edited by the
+  // user.
+  return (!keyword.empty() && keyword[0] == u'@') ||
+         other_engine->safe_for_autoreplace();
 }
 
 }  // namespace
@@ -229,7 +254,6 @@ size_t TemplateURLRef::SearchTermsArgs::EstimateMemoryUsage() const {
 
   res += base::trace_event::EstimateMemoryUsage(search_terms);
   res += base::trace_event::EstimateMemoryUsage(original_query);
-  res += base::trace_event::EstimateMemoryUsage(assisted_query_stats);
   res += base::trace_event::EstimateMemoryUsage(current_page_url);
   res += base::trace_event::EstimateMemoryUsage(session_token);
   res += base::trace_event::EstimateMemoryUsage(prefetch_query);
@@ -418,8 +442,9 @@ bool TemplateURLRef::SupportsReplacement(
 std::string TemplateURLRef::ReplaceSearchTerms(
     const SearchTermsArgs& search_terms_args,
     const SearchTermsData& search_terms_data,
-    PostContent* post_content) const {
-  ParseIfNecessary(search_terms_data);
+    PostContent* post_content,
+    std::string url_override) const {
+  ParseIfNecessary(search_terms_data, url_override);
   if (!valid_)
     return std::string();
 
@@ -616,7 +641,7 @@ bool TemplateURLRef::ExtractSearchTermsFromURL(
     url::Component query, key, value;
     query.len = static_cast<int>(source.size());
     bool key_found = false;
-    while (url::ExtractQueryKeyValue(source.data(), &query, &key, &value)) {
+    while (url::ExtractQueryKeyValue(source, &query, &key, &value)) {
       if (key.is_nonempty()) {
         if (source.substr(key.begin, key.len) == search_term_key_) {
           // Fail if search term key is found twice.
@@ -882,12 +907,14 @@ std::string TemplateURLRef::ParseURL(const std::string& url,
   return parsed_url;
 }
 
-void TemplateURLRef::ParseIfNecessary(
-    const SearchTermsData& search_terms_data) const {
-  if (!parsed_) {
+void TemplateURLRef::ParseIfNecessary(const SearchTermsData& search_terms_data,
+                                      std::string url_override) const {
+  bool url_override_is_valid = GURL(url_override).is_valid();
+  if (!parsed_ || url_override_is_valid) {
     InvalidateCachedValues();
     parsed_ = true;
-    parsed_url_ = ParseURL(GetURL(), &replacements_, &post_params_, &valid_);
+    parsed_url_ = ParseURL(url_override_is_valid ? url_override : GetURL(),
+                           &replacements_, &post_params_, &valid_);
     supports_replacements_ = false;
     if (valid_) {
       bool has_only_one_search_term = false;
@@ -1089,48 +1116,17 @@ std::string TemplateURLRef::HandleReplacements(
         DCHECK(!replacement.is_post_param);
         const size_t searchbox_stats_size =
             search_terms_args.searchbox_stats.ByteSizeLong();
-        if (!search_terms_args.assisted_query_stats.empty()) {
-          DCHECK(searchbox_stats_size > 0)
-              << "searchbox_stats must be set when assisted_query_stats is.";
-          // Get the base URL without substituting AQS and gs_lcrp to avoid
-          // infinite recursion and unwanted replacement respectively. We need
-          // the URL to find out if it meets all AQS requirements (e.g. HTTPS
-          // protocol check). See TemplateURLRef::SearchTermsArgs for more
-          // details.
-          SearchTermsArgs sanitized_search_terms_args(search_terms_args);
-          sanitized_search_terms_args.assisted_query_stats.clear();
-          // Clear the proto. Its empty state has a serialized size of zero.
-          sanitized_search_terms_args.searchbox_stats.Clear();
-          GURL base_url(ReplaceSearchTerms(sanitized_search_terms_args,
-                                           search_terms_data, nullptr));
-          if (base_url.SchemeIsCryptographic() &&
-              base::FeatureList::IsEnabled(
-                  omnibox::kReportAssistedQueryStats)) {
-            HandleReplacement("aqs", search_terms_args.assisted_query_stats,
-                              replacement, &url);
-            base::UmaHistogramCounts1000(
-                "Omnibox.AssistedQueryStats.Length",
-                static_cast<int>(
-                    search_terms_args.assisted_query_stats.length()));
-          }
-        }
-
         if (searchbox_stats_size > 0) {
-          DCHECK(!search_terms_args.assisted_query_stats.empty())
-              << "assisted_query_stats must be set when searchbox_stats is.";
-          // Get the base URL without substituting gs_lcrp and AQS to avoid
-          // infinite recursion and unwanted replacement respectively. We need
-          // the URL to find out if it meets all gs_lcrp requirements (e.g.
-          // HTTPS protocol check). See TemplateURLRef::SearchTermsArgs for more
-          // details.
+          // Get the base URL without substituting gs_lcrp to avoid infinite
+          // recursion and unwanted replacement respectively. We need the URL to
+          // find out if it meets all gs_lcrp requirements (e.g. HTTPS protocol
+          // check). See TemplateURLRef::SearchTermsArgs for more details.
           SearchTermsArgs sanitized_search_terms_args(search_terms_args);
-          sanitized_search_terms_args.assisted_query_stats.clear();
           // Clear the proto. Its empty state has a serialized size of zero.
           sanitized_search_terms_args.searchbox_stats.Clear();
           GURL base_url(ReplaceSearchTerms(sanitized_search_terms_args,
                                            search_terms_data, nullptr));
-          if (base_url.SchemeIsCryptographic() &&
-              base::FeatureList::IsEnabled(omnibox::kReportSearchboxStats)) {
+          if (base_url.SchemeIsCryptographic()) {
             TRACE_EVENT0(
                 "omnibox",
                 "TemplateURLRef::HandleReplacement:serialize_searchbox_stats");
@@ -1212,7 +1208,7 @@ std::string TemplateURLRef::HandleReplacements(
       case GOOGLE_ORIGINAL_QUERY_FOR_SUGGESTION:
         DCHECK(!replacement.is_post_param);
         if (search_terms_args.accepted_suggestion >= 0 ||
-            !search_terms_args.assisted_query_stats.empty()) {
+            search_terms_args.searchbox_stats.ByteSizeLong() > 0) {
           HandleReplacement("oq", base::UTF16ToUTF8(encoded_original_query),
                             replacement, &url);
         }
@@ -1354,9 +1350,8 @@ std::string TemplateURLRef::HandleReplacements(
         break;
 
       case GOOGLE_IMAGE_THUMBNAIL_BASE64: {
-        std::string base64_thumbnail_content;
-        base::Base64Encode(search_terms_args.image_thumbnail_content,
-                           &base64_thumbnail_content);
+        std::string base64_thumbnail_content =
+            base::Base64Encode(search_terms_args.image_thumbnail_content);
         HandleReplacement(std::string(), base64_thumbnail_content, replacement,
                           &url);
         if (replacement.is_post_param) {
@@ -1508,14 +1503,43 @@ TemplateURL::TemplateURL(const TemplateURLData& data,
 TemplateURL::~TemplateURL() {
 }
 
-bool TemplateURL::IsBetterThanEngineWithConflictingKeyword(
+bool TemplateURL::IsBetterThanConflictingEngine(
     const TemplateURL* other) const {
   DCHECK(other);
+
+  auto is_ssp = [](const TemplateURL* turl) {
+    return turl->created_by_policy() ==
+           TemplateURLData::CreatedByPolicy::kSiteSearch;
+  };
+  auto no_policy = [](const TemplateURL* turl) {
+    return turl->created_by_policy() ==
+           TemplateURLData::CreatedByPolicy::kNoPolicy;
+  };
+
+  // Site search engines set by enterprise policy have different priority over
+  // existing search engines because we don't want to break current workflows
+  // for power users.
+  if (is_ssp(this) && no_policy(other)) {
+    return IsEnterpriseSideSearchEngineBetterThanEngine(this, other);
+  } else if (no_policy(this) && is_ssp(other)) {
+    return !IsEnterpriseSideSearchEngineBetterThanEngine(other, this);
+  } else if (is_ssp(this) && is_ssp(other)) {
+    // If both engines are created by the SiteSearchSettings policy, prefer the
+    // one that is featured. Otherwise, fallback to the comparison based on
+    // the signals below.
+    if (this->featured_by_policy() && !other->featured_by_policy()) {
+      return true;
+    } else if (!this->featured_by_policy() && other->featured_by_policy()) {
+      return false;
+    }
+  }
 
   auto get_sort_key = [](const TemplateURL* engine) {
     return std::make_tuple(
         // Policy-created engines always win over non-policy created engines.
-        engine->created_by_policy(),
+        // At this point, managed search engine should be created by DSP policy.
+        engine->created_by_policy() ==
+            TemplateURLData::CreatedByPolicy::kDefaultSearchProvider,
         // Policy-enforced engines always win over policy-recommended engines.
         engine->enforced_by_policy(),
         // The integral value of the type enum is used to sort next.
@@ -1668,8 +1692,16 @@ BuiltinEngineType TemplateURL::GetBuiltinEngineType() const {
         return KEYWORD_MODE_STARTER_PACK_HISTORY;
       case TemplateURLStarterPackData::kTabs:
         return KEYWORD_MODE_STARTER_PACK_TABS;
+      case TemplateURLStarterPackData::kAskGoogle:
+        return KEYWORD_MODE_STARTER_PACK_ASK_GOOGLE;
       default:
-        NOTREACHED();
+        // In theory, this code path should never be reached.  However, it's
+        // possible that when expanding the starter pack, a new entry may
+        // persist in the database that does not yet exist in this version of
+        // chrome. (e.g. a user runs a newer version with the new starter pack
+        // entry, has sync on, which syncs to another login instance running an
+        // older version that hasn't received the new starter pack update yet).
+        // Realistically, this is not catastrophic.
         return KEYWORD_MODE_NON_BUILT_IN;
     }
   } else {
@@ -1855,7 +1887,7 @@ GURL TemplateURL::RemoveSideSearchParamFromURL(
   if (!IsSideSearchSupported())
     return side_search_url;
   return net::AppendOrReplaceQueryParameter(side_search_url,
-                                            side_search_param(), absl::nullopt);
+                                            side_search_param(), std::nullopt);
 }
 
 GURL TemplateURL::GenerateSideImageSearchURL(const GURL& image_search_url,
@@ -1876,7 +1908,7 @@ GURL TemplateURL::RemoveSideImageSearchParamFromURL(
   if (!IsSideImageSearchSupported())
     return image_search_url;
   return net::AppendOrReplaceQueryParameter(
-      image_search_url, side_image_search_param(), absl::nullopt);
+      image_search_url, side_image_search_param(), std::nullopt);
 }
 
 void TemplateURL::CopyFrom(const TemplateURL& other) {

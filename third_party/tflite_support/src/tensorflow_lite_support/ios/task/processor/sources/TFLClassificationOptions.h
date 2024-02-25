@@ -23,14 +23,13 @@ NS_SWIFT_NAME(ClassificationOptions)
 @interface TFLClassificationOptions : NSObject <NSCopying>
 
 /** If set, all classes  in this list will be filtered out from the results . */
-@property(nonatomic, copy) NSArray* labelDenyList;
+@property(nonatomic, copy) NSArray *labelDenyList;
 
-/** If set, all classes not in this list will be filtered out from the results .
- */
-@property(nonatomic, copy) NSArray* labelAllowList;
+/** If set, all classes not in this list will be filtered out from the results . */
+@property(nonatomic, copy) NSArray *labelAllowList;
 
 /** Display names local for display names*/
-@property(nonatomic, copy) NSString* displayNamesLocale;
+@property(nonatomic, copy) NSString *displayNamesLocale;
 
 /** Results with score threshold greater than this value are returned . */
 @property(nonatomic) float scoreThreshold;

@@ -17,9 +17,9 @@ class FloatingMenuButton;
 
 // View for the Switch Access Back Button.
 class SwitchAccessBackButtonView : public views::BoxLayoutView {
- public:
-  METADATA_HEADER(SwitchAccessBackButtonView);
+  METADATA_HEADER(SwitchAccessBackButtonView, views::BoxLayoutView)
 
+ public:
   explicit SwitchAccessBackButtonView(bool for_menu);
   ~SwitchAccessBackButtonView() override = default;
 
@@ -42,7 +42,7 @@ class SwitchAccessBackButtonView : public views::BoxLayoutView {
   bool show_focus_ring_ = false;
 
   // Owned by views hierarchy.
-  raw_ptr<FloatingMenuButton, ExperimentalAsh> back_button_;
+  raw_ptr<FloatingMenuButton> back_button_;
 };
 
 BEGIN_VIEW_BUILDER(/* no export */,

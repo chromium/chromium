@@ -48,8 +48,9 @@ class MediaItemUIDeviceSelectorView
       public IconLabelBubbleView::Delegate,
       public MediaItemUIFooterView::Delegate,
       public global_media_controls::mojom::DeviceListClient {
+  METADATA_HEADER(MediaItemUIDeviceSelectorView,
+                  global_media_controls::MediaItemUIDeviceSelector)
  public:
-  METADATA_HEADER(MediaItemUIDeviceSelectorView);
 
   // media_color_theme is only set when this device selector view is used on
   // Chrome OS ash and media::kGlobalMediaControlsCrOSUpdatedUI is enabled.
@@ -62,10 +63,9 @@ class MediaItemUIDeviceSelectorView
           receiver,
       bool has_audio_output,
       global_media_controls::GlobalMediaControlsEntryPoint entry_point,
-      bool show_expand_button = true,
       bool show_devices = false,
-      absl::optional<media_message_center::MediaColorTheme> media_color_theme =
-          absl::nullopt);
+      std::optional<media_message_center::MediaColorTheme> media_color_theme =
+          std::nullopt);
   ~MediaItemUIDeviceSelectorView() override;
 
   // Called when audio output devices are discovered.
@@ -78,7 +78,8 @@ class MediaItemUIDeviceSelectorView
   void OnColorsChanged(SkColor foreground_color,
                        SkColor background_color) override;
   void UpdateCurrentAudioDevice(const std::string& current_device_id) override;
-  void ShowOrHideDeviceList() override;
+  void ShowDevices() override;
+  void HideDevices() override;
   bool IsDeviceSelectorExpanded() override;
 
   // Called when the audio device switching has become enabled or disabled.
@@ -118,8 +119,7 @@ class MediaItemUIDeviceSelectorView
   void UpdateVisibility();
   bool ShouldBeVisible() const;
   void CreateExpandButtonStrip(bool show_expand_button);
-  void ShowDevices();
-  void HideDevices();
+  void ShowOrHideDeviceList();
   void RemoveDevicesOfType(DeviceEntryUIType type);
   void OnCastDeviceSelected(const std::string& device_id);
   DeviceEntryUI* GetDeviceEntryUI(views::View* view) const;
@@ -138,7 +138,7 @@ class MediaItemUIDeviceSelectorView
   SkColor foreground_color_ = global_media_controls::kDefaultForegroundColor;
   SkColor background_color_ = global_media_controls::kDefaultBackgroundColor;
   global_media_controls::GlobalMediaControlsEntryPoint const entry_point_;
-  absl::optional<media_message_center::MediaColorTheme> media_color_theme_;
+  std::optional<media_message_center::MediaColorTheme> media_color_theme_;
 
   // Child views
   raw_ptr<AudioDeviceEntryView, DanglingUntriaged>

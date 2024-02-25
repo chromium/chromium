@@ -4,6 +4,8 @@
 
 #import "ios/chrome/browser/ui/scanner/scanner_view.h"
 
+#import <numbers>
+
 #import "base/apple/foundation_util.h"
 #import "base/check.h"
 #import "base/numerics/math_constants.h"
@@ -135,9 +137,10 @@ const CGFloat kFlashDuration = 0.5;
   // Check that the current transform is either an identity or a 90, -90, or 180
   // degree rotation.
   DCHECK(fabs(atan2f(rotation.b, rotation.a)) < 0.001 ||
-         fabs(fabs(atan2f(rotation.b, rotation.a)) - base::kPiFloat) < 0.001 ||
-         fabs(fabs(atan2f(rotation.b, rotation.a)) - base::kPiFloat / 2) <
-             0.001);
+         fabs(fabs(atan2f(rotation.b, rotation.a)) -
+              std::numbers::pi_v<float>) < 0.001 ||
+         fabs(fabs(atan2f(rotation.b, rotation.a)) -
+              std::numbers::pi_v<float> / 2) < 0.001);
   rotation.a = round(rotation.a);
   rotation.b = round(rotation.b);
   rotation.c = round(rotation.c);

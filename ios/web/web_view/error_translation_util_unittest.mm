@@ -9,7 +9,7 @@
 #import "base/apple/bridging.h"
 #import "ios/net/protocol_handler_util.h"
 #import "ios/web/test/test_url_constants.h"
-#import "net/base/mac/url_conversions.h"
+#import "net/base/apple/url_conversions.h"
 #import "net/base/net_errors.h"
 #import "testing/gtest/include/gtest/gtest.h"
 #import "testing/gtest_mac.h"

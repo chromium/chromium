@@ -6,8 +6,16 @@
 
 #import "base/ios/ios_util.h"
 #import "base/metrics/field_trial_params.h"
+#import "components/variations/service/variations_service.h"
+#import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
-#import "ios/chrome/browser/ui/content_suggestions/content_suggestions_feature.h"
+#import "ios/chrome/browser/shared/public/features/features.h"
+
+#pragma mark - Constants
+
+// The default number of impressions for the top-of-feed sync promo before it
+// should be auto-dismissed.
+const int kFeedSyncPromoDefaultAutodismissImpressions = 6;
 
 #pragma mark - Feature declarations
 
@@ -31,14 +39,6 @@ BASE_FEATURE(kEnableNTPViewHierarchyRepair,
              "NTPViewHierarchyRepair",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-BASE_FEATURE(kEnableCheckVisibilityOnAttentionLogStart,
-             "EnableCheckVisibilityOnAttentionLogStart",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
-BASE_FEATURE(kEnableRefineDataSourceReloadReporting,
-             "EnableRefineDataSourceReloadReporting",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 BASE_FEATURE(kFeedHeaderSettings,
              "FeedHeaderSettings",
              base::FEATURE_DISABLED_BY_DEFAULT);
@@ -47,20 +47,16 @@ BASE_FEATURE(kOverrideFeedSettings,
              "OverrideFeedSettings",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(kEnableFeedSyntheticCapabilities,
-             "EnableFeedSyntheticCapabilities",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 BASE_FEATURE(kWebFeedFeedbackReroute,
              "WebFeedFeedbackReroute",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-BASE_FEATURE(kEnableFollowManagementInstantReload,
-             "EnableFollowManagementInstantReload",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 BASE_FEATURE(kEnableSignedOutViewDemotion,
              "EnableSignedOutViewDemotion",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+BASE_FEATURE(kEnableiPadFeedGhostCards,
+             "EnableiPadFeedGhostCards",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 #pragma mark - Feature parameters
@@ -108,7 +104,12 @@ bool IsNTPViewHierarchyRepairEnabled() {
 }
 
 bool IsDiscoverFeedTopSyncPromoEnabled() {
-  return base::FeatureList::IsEnabled(kEnableDiscoverFeedTopSyncPromo);
+  // Promo should not be shown on FRE, or for users in Great Britain for AADC
+  // compliance.
+  variations::VariationsService* variations_service =
+      GetApplicationContext()->GetVariationsService();
+  return variations_service &&
+         variations_service->GetStoredPermanentCountry() != "gb";
 }
 
 SigninPromoViewStyle GetTopOfFeedPromoStyle() {
@@ -133,30 +134,24 @@ SigninPromoViewStyle GetTopOfFeedPromoStyle() {
 }
 
 bool ShouldIgnoreFeedEngagementConditionForTopSyncPromo() {
-  CHECK(IsDiscoverFeedTopSyncPromoEnabled());
-  return base::GetFieldTrialParamByFeatureAsBool(
-      kEnableDiscoverFeedTopSyncPromo,
-      kDiscoverFeedTopSyncPromoIgnoreEngagementCondition, false);
+  if (IsDiscoverFeedTopSyncPromoEnabled()) {
+    return base::GetFieldTrialParamByFeatureAsBool(
+        kEnableDiscoverFeedTopSyncPromo,
+        kDiscoverFeedTopSyncPromoIgnoreEngagementCondition, false);
+  }
+  return true;
 }
 
 int FeedSyncPromoAutodismissCount() {
   return base::GetFieldTrialParamByFeatureAsInt(
       kEnableDiscoverFeedTopSyncPromo,
-      kDiscoverFeedTopSyncPromoAutodismissImpressions, 10);
+      kDiscoverFeedTopSyncPromoAutodismissImpressions,
+      kFeedSyncPromoDefaultAutodismissImpressions);
 }
 
 bool IsContentSuggestionsForSupervisedUserEnabled(PrefService* pref_service) {
   return pref_service->GetBoolean(
       prefs::kNTPContentSuggestionsForSupervisedUserEnabled);
-}
-
-bool IsCheckVisibilityOnAttentionLogStartEnabled() {
-  return base::FeatureList::IsEnabled(
-      kEnableCheckVisibilityOnAttentionLogStart);
-}
-
-bool IsRefineDataSourceReloadReportingEnabled() {
-  return base::FeatureList::IsEnabled(kEnableRefineDataSourceReloadReporting);
 }
 
 bool IsStickyHeaderDisabledForFollowingFeed() {
@@ -167,10 +162,6 @@ bool IsStickyHeaderDisabledForFollowingFeed() {
 bool IsDotEnabledForNewFollowedContent() {
   return base::GetFieldTrialParamByFeatureAsBool(
       kFeedHeaderSettings, kEnableDotForNewFollowedContent, false);
-}
-
-bool IsFeedSyntheticCapabilitiesEnabled() {
-  return base::FeatureList::IsEnabled(kEnableFeedSyntheticCapabilities);
 }
 
 int FollowingFeedHeaderHeight() {
@@ -184,10 +175,10 @@ bool IsWebFeedFeedbackRerouteEnabled() {
   return base::FeatureList::IsEnabled(kWebFeedFeedbackReroute);
 }
 
-bool IsFollowManagementInstantReloadEnabled() {
-  return base::FeatureList::IsEnabled(kEnableFollowManagementInstantReload);
-}
-
 bool IsSignedOutViewDemotionEnabled() {
   return base::FeatureList::IsEnabled(kEnableSignedOutViewDemotion);
+}
+
+bool IsiPadFeedGhostCardsEnabled() {
+  return base::FeatureList::IsEnabled(kEnableiPadFeedGhostCards);
 }

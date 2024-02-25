@@ -8,7 +8,6 @@ import {ConsoleTestRunner} from 'console_test_runner';
 (async function() {
   TestRunner.addResult('Tests that console.assert() will dump a message and stack trace with source URLs and line numbers.\n');
 
-  await TestRunner.loadLegacyModule('console');
   await TestRunner.showPanel('console');
 
   await TestRunner.evaluateInPagePromise(`

@@ -1,0 +1,38 @@
+[
+  {
+    "os": [
+      "chromeos_ash"
+    ],
+    "policy_pref_mapping_tests": [
+      {
+        "note": "When setting the policy to true it will remain on its default value",
+        "policies": {
+          "SecondaryGoogleAccountSigninAllowed": true
+        },
+        "prefs": {
+          "account_manager.secondary_google_account_signin_allowed": {
+            "default_value": true
+          }
+        }
+      },
+      {
+        "policies": {
+          "SecondaryGoogleAccountSigninAllowed": false
+        },
+        "prefs": {
+          "account_manager.secondary_google_account_signin_allowed": {
+            "value": false
+          }
+        }
+      },
+      {
+        "policies": {},
+        "prefs": {
+          "account_manager.secondary_google_account_signin_allowed": {
+            "default_value": true
+          }
+        }
+      }
+    ]
+  }
+]

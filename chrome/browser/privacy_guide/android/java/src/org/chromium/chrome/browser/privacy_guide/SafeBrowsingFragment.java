@@ -10,8 +10,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.RadioGroup;
 
-import androidx.fragment.app.Fragment;
-
 import org.chromium.base.supplier.OneshotSupplier;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.safe_browsing.SafeBrowsingBridge;
@@ -20,12 +18,10 @@ import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.widget.RadioButtonWithDescription;
 import org.chromium.components.browser_ui.widget.RadioButtonWithDescriptionAndAuxButton;
 
-/**
- * Controls the behaviour of the Safe Browsing privacy guide page.
- */
-public class SafeBrowsingFragment extends Fragment
+/** Controls the behaviour of the Safe Browsing privacy guide page. */
+public class SafeBrowsingFragment extends PrivacyGuideBasePage
         implements RadioButtonWithDescriptionAndAuxButton.OnAuxButtonClickedListener,
-                   RadioGroup.OnCheckedChangeListener {
+                RadioGroup.OnCheckedChangeListener {
     private RadioButtonWithDescription mStandardProtectionFriendlier;
     private RadioButtonWithDescriptionAndAuxButton mStandardProtection;
     private RadioButtonWithDescriptionAndAuxButton mEnhancedProtection;
@@ -52,13 +48,21 @@ public class SafeBrowsingFragment extends Fragment
 
         // The enhanced protection description is being overwritten when the flag is enabled
         if (ChromeFeatureList.sFriendlierSafeBrowsingSettingsEnhancedProtection.isEnabled()) {
-            mEnhancedProtection.setDescriptionText(getContext().getString(
-                    R.string.safe_browsing_enhanced_protection_summary_updated));
+            mEnhancedProtection.setDescriptionText(
+                    getContext()
+                            .getString(R.string.safe_browsing_enhanced_protection_summary_updated));
         }
 
         if (ChromeFeatureList.sFriendlierSafeBrowsingSettingsStandardProtection.isEnabled()) {
             mStandardProtection.setVisibility(View.GONE);
             mStandardProtectionFriendlier.setVisibility(View.VISIBLE);
+            if (SafeBrowsingBridge.isHashRealTimeLookupEligibleInSession()) {
+                mStandardProtectionFriendlier.setDescriptionText(
+                        getContext()
+                                .getString(
+                                        R.string
+                                                .safe_browsing_standard_protection_summary_updated_proxy));
+            }
         } else {
             mStandardProtection.setAuxButtonClickedListener(this);
             mStandardProtection.setVisibility(View.VISIBLE);
@@ -71,15 +75,14 @@ public class SafeBrowsingFragment extends Fragment
     }
 
     private void initialRadioButtonConfig() {
-        @SafeBrowsingState
-        int safeBrowsingState = PrivacyGuideUtils.getSafeBrowsingState();
+        @SafeBrowsingState int safeBrowsingState = PrivacyGuideUtils.getSafeBrowsingState();
         switch (safeBrowsingState) {
             case (SafeBrowsingState.ENHANCED_PROTECTION):
                 mEnhancedProtection.setChecked(true);
                 break;
             case (SafeBrowsingState.STANDARD_PROTECTION):
                 if (ChromeFeatureList.sFriendlierSafeBrowsingSettingsStandardProtection
-                                .isEnabled()) {
+                        .isEnabled()) {
                     mStandardProtectionFriendlier.setChecked(true);
                 } else {
                     mStandardProtection.setChecked(true);
@@ -95,16 +98,29 @@ public class SafeBrowsingFragment extends Fragment
         LayoutInflater inflater = LayoutInflater.from(getView().getContext());
         if (clickedButtonId == mEnhancedProtection.getId()) {
             if (ChromeFeatureList.isEnabled(
-                        ChromeFeatureList.FRIENDLIER_SAFE_BROWSING_SETTINGS_ENHANCED_PROTECTION)) {
-                displayBottomSheet(inflater.inflate(
-                        R.layout.privacy_guide_sb_enhanced_explanation_updated, null));
+                    ChromeFeatureList.FRIENDLIER_SAFE_BROWSING_SETTINGS_ENHANCED_PROTECTION)) {
+                displayBottomSheet(
+                        inflater.inflate(
+                                R.layout.privacy_guide_sb_enhanced_explanation_updated, null));
             } else {
                 displayBottomSheet(
                         inflater.inflate(R.layout.privacy_guide_sb_enhanced_explanation, null));
             }
         } else if (clickedButtonId == mStandardProtection.getId()) {
-            displayBottomSheet(
-                    inflater.inflate(R.layout.privacy_guide_sb_standard_explanation, null));
+            View sheetContent =
+                    inflater.inflate(R.layout.privacy_guide_sb_standard_explanation, null);
+            if (SafeBrowsingBridge.isHashRealTimeLookupEligibleInSession()) {
+                PrivacyGuideExplanationItem itemTwo =
+                        sheetContent.findViewById(R.id.sb_standard_item_two);
+                itemTwo.setSummaryText(
+                        getContext().getString(R.string.privacy_guide_sb_standard_item_two_proxy));
+                PrivacyGuideExplanationItem itemThree =
+                        sheetContent.findViewById(R.id.sb_standard_item_three);
+                itemThree.setSummaryText(
+                        getContext()
+                                .getString(R.string.privacy_guide_sb_standard_item_three_proxy));
+            }
+            displayBottomSheet(sheetContent);
         } else {
             assert false : "Unknown Aux clickedButtonId " + clickedButtonId;
         }
@@ -127,7 +143,17 @@ public class SafeBrowsingFragment extends Fragment
     }
 
     private void displayBottomSheet(View sheetContent) {
-        mBottomSheetView = new PrivacyGuideBottomSheetView(sheetContent, this::closeBottomSheet);
+        if (ChromeFeatureList.isEnabled(
+                        ChromeFeatureList.FRIENDLIER_SAFE_BROWSING_SETTINGS_ENHANCED_PROTECTION)
+                && ChromeFeatureList.isEnabled(
+                        ChromeFeatureList.FRIENDLIER_SAFE_BROWSING_SETTINGS_STANDARD_PROTECTION)) {
+            mBottomSheetView =
+                    new PrivacyGuideBottomSheetView(
+                            sheetContent, this::closeBottomSheet, 0.9f, 1.0f);
+        } else {
+            mBottomSheetView =
+                    new PrivacyGuideBottomSheetView(sheetContent, this::closeBottomSheet);
+        }
         // TODO(crbug.com/1287979): Re-enable animation once bug is fixed
         if (mBottomSheetController != null) {
             mBottomSheetController.requestShowContent(mBottomSheetView, false);

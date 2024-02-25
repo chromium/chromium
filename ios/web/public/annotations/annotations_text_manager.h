@@ -58,6 +58,9 @@ class AnnotationsTextManager : public WebStateUserData<AnnotationsTextManager> {
   // Removes any highlight added by a tap.
   virtual void RemoveHighlight() = 0;
 
+  // Sets the supported typed for the annotation extraction.
+  virtual void SetSupportedTypes(NSTextCheckingType supported_types) = 0;
+
   WEB_STATE_USER_DATA_KEY_DECL();
 
  protected:

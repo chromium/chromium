@@ -14,17 +14,22 @@
 #include "chrome/browser/ui/webui/extension_control_handler.h"
 #include "chrome/browser/ui/webui/favicon_source.h"
 #include "chrome/browser/ui/webui/managed_ui_handler.h"
+#include "chrome/browser/ui/webui/password_manager/promo_card.h"
+#include "chrome/browser/ui/webui/password_manager/promo_cards_handler.h"
 #include "chrome/browser/ui/webui/password_manager/sync_handler.h"
 #include "chrome/browser/ui/webui/plural_string_handler.h"
+#include "chrome/browser/ui/webui/policy_indicator_localized_strings_provider.h"
 #include "chrome/browser/ui/webui/sanitized_image_source.h"
+#include "chrome/browser/ui/webui/settings/safety_hub_handler.h"
 #include "chrome/browser/ui/webui/webui_util.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_utils.h"
 #include "chrome/common/url_constants.h"
 #include "chrome/common/webui_url_constants.h"
+#include "chrome/grit/branded_strings.h"
 #include "chrome/grit/browser_resources.h"
-#include "chrome/grit/chromium_strings.h"
+#include "chrome/grit/chrome_unscaled_resources.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/grit/password_manager_resources.h"
 #include "chrome/grit/password_manager_resources_map.h"
@@ -32,6 +37,7 @@
 #include "components/favicon_base/favicon_url_parser.h"
 #include "components/grit/components_scaled_resources.h"
 #include "components/password_manager/content/common/web_ui_constants.h"
+#include "components/password_manager/core/browser/features/password_features.h"
 #include "components/password_manager/core/browser/leak_detection_dialog_utils.h"
 #include "components/password_manager/core/common/password_manager_constants.h"
 #include "components/password_manager/core/common/password_manager_features.h"
@@ -40,6 +46,7 @@
 #include "content/public/browser/url_data_source.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_ui_data_source.h"
+#include "device/fido/features.h"
 #include "ui/base/accelerators/accelerator.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/resource/resource_bundle.h"
@@ -50,12 +57,6 @@
 #include "chrome/browser/browser_process_platform_part.h"
 #include "chrome/browser/ui/webui/settings/settings_security_key_handler.h"
 #include "components/password_manager/core/browser/password_manager_util.h"
-#endif
-
-#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-#include "chrome/browser/ui/webui/password_manager/promo_card.h"
-#include "chrome/browser/ui/webui/password_manager/promo_cards_handler.h"
-#include "chrome/grit/chrome_unscaled_resources.h"
 #endif
 
 #if !BUILDFLAG(OPTIMIZE_WEBUI)
@@ -89,303 +90,371 @@ content::WebUIDataSource* CreateAndAddPasswordsUIHTMLSource(
 #endif
 
   static const webui::LocalizedString kStrings[] = {
-    {"accountStorageToggleLabel",
-     base::FeatureList::IsEnabled(syncer::kSyncWebauthnCredentials)
-         ? IDS_PASSWORD_MANAGER_UI_ACCOUNT_STORAGE_WITH_PASSKEYS_TOGGLE_LABEL
-         : IDS_PASSWORD_MANAGER_UI_ACCOUNT_STORAGE_TOGGLE_LABEL},
-    {"addPassword", IDS_PASSWORD_MANAGER_UI_ADD_PASSWORD_BUTTON},
-    {"addPasswordFooter", IDS_PASSWORD_MANAGER_UI_ADD_PASSWORD_FOOTNOTE},
-    {"addPasswordStoreOptionAccount",
-     IDS_PASSWORD_MANAGER_DESTINATION_DROPDOWN_SAVE_TO_ACCOUNT},
-    {"addPasswordStoreOptionDevice",
-     IDS_PASSWORD_MANAGER_DESTINATION_DROPDOWN_SAVE_TO_DEVICE},
-    {"addPasswordStorePickerA11yDescription",
-     IDS_PASSWORD_MANAGER_DESTINATION_DROPDOWN_ACCESSIBLE_NAME},
-    {"addPasswordTitle", IDS_PASSWORD_MANAGER_UI_ADD_PASSWORD},
-    {"addShortcut", IDS_PASSWORD_MANAGER_UI_ADD_SHORTCUT_TITLE},
-    {"alreadyChangedPasswordLink",
-     IDS_PASSWORD_MANAGER_UI_ALREADY_CHANGED_PASSWORD},
-    {"appsLabel", IDS_PASSWORD_MANAGER_UI_APPS_LABEL},
-    {"authTimedOut", IDS_PASSWORD_MANAGER_UI_AUTH_TIMED_OUT},
-    {"autosigninLabel", IDS_PASSWORD_MANAGER_UI_AUTOSIGNIN_TOGGLE_LABEL},
-    {"backToCheckup", IDS_PASSWORD_MANAGER_UI_BACK_TO_CHECKUP_ARIA_DESCRIPTION},
-    {"backToPasswords",
-     IDS_PASSWORD_MANAGER_UI_BACK_TO_PASSWORDS_ARIA_DESCRIPTION},
-    {"blockedSitesDescription",
-     IDS_PASSWORD_MANAGER_UI_BLOCKED_SITES_DESCRIPTION},
-    {"blockedSitesTitle", IDS_PASSWORD_MANAGER_UI_BLOCKED_SITES_TITLE},
-    {"cancel", IDS_CANCEL},
-    {"changePassword", IDS_PASSWORD_MANAGER_UI_CHANGE_PASSWORD_BUTTON},
-    {"changePasswordAriaDescription",
-     IDS_PASSWORD_MANAGER_UI_CHANGE_PASSWORD_BUTTON_ARIA_DESCRIPTION},
-    {"changePasswordInApp", IDS_PASSWORD_MANAGER_UI_CHANGE_PASSWORD_IN_APP},
-    {"checkup", IDS_PASSWORD_MANAGER_UI_CHECKUP},
-    {"checkupCanceled", IDS_PASSWORD_MANAGER_UI_CHECKUP_CANCELED},
-    {"checkupErrorGeneric", IDS_PASSWORD_MANAGER_UI_CHECKUP_OTHER_ERROR},
-    {"checkupErrorNoPasswords", IDS_PASSWORD_MANAGER_UI_CHECKUP_NO_PASSWORDS},
-    {"checkupErrorOffline", IDS_PASSWORD_MANAGER_UI_CHECKUP_OFFLINE},
-    {"checkupErrorQuota", IDS_PASSWORD_MANAGER_UI_CHECKUP_QUOTA_LIMIT},
-    {"checkupErrorSignedOut", IDS_PASSWORD_MANAGER_UI_CHECKUP_SIGNED_OUT},
-    {"checkupResultGreen", IDS_PASSWORD_MANAGER_UI_CHECKUP_GREEN_STATE_A11Y},
-    {"checkupResultRed", IDS_PASSWORD_MANAGER_UI_CHECKUP_RED_STATE_A11Y},
-    {"checkupResultYellow", IDS_PASSWORD_MANAGER_UI_CHECKUP_YELLOW_STATE_A11Y},
-    {"compromisedRowWithError",
-     IDS_PASSWORD_MANAGER_UI_CHECKUP_COMPROMISED_SECTION},
-    {"checkupProgress", IDS_PASSWORD_MANAGER_UI_CHECKUP_PROGRESS},
-    {"checkupTitle", IDS_PASSWORD_MANAGER_UI_CHECKUP_TITLE},
-    {"clearSearch", IDS_CLEAR_SEARCH},
-    {"close", IDS_CLOSE},
-    {"compromisedPasswordsDescription",
-     IDS_PASSWORD_MANAGER_UI_COMPROMISED_PASSWORDS_DESCRIPTION},
-    {"compromisedPasswordsEmpty",
-     IDS_PASSWORD_MANAGER_UI_NO_COMPROMISED_PASSWORDS},
-    {"compromisedPasswordsTitle",
-     IDS_PASSWORD_MANAGER_UI_HAS_COMPROMISED_PASSWORDS},
-    {"controlledByExtension", IDS_SETTINGS_CONTROLLED_BY_EXTENSION},
-    {"copyDisplayName", IDS_PASSWORD_MANAGER_UI_COPY_DISPLAY_NAME_LABEL},
-    {"copyPassword", IDS_PASSWORD_MANAGER_UI_COPY_PASSWORD},
-    {"copyUsername", IDS_PASSWORD_MANAGER_UI_COPY_USERNAME},
-    {"delete", IDS_DELETE},
-    {"deletePassword", IDS_DELETE},
-    {"deletePasskeyConfirmationDescription",
-     IDS_PASSWORD_MANAGER_UI_DELETE_PASSKEY_CONFIRMATION_DESCRIPTION},
-    {"deletePasskeyConfirmationTitle",
-     IDS_PASSWORD_MANAGER_UI_DELETE_PASSKEY_CONFIRMATION_TITLE},
-    {"deletePasswordConfirmationDescription",
-     IDS_PASSWORD_MANAGER_UI_DELETE_PASSWORD_CONFIRMATION_DESCRIPTION},
-    {"deletePasswordConfirmationTitle",
-     IDS_PASSWORD_MANAGER_UI_DELETE_PASSWORD_CONFIRMATION_TITLE},
-    {"deletePasswordDialogDevice",
-     IDS_PASSWORD_MANAGER_UI_DELETE_DIALOG_FROM_DEVICE_CHECKBOX_LABEL},
-    {"deletePasswordDialogBody", IDS_PASSWORD_MANAGER_UI_DELETE_DIALOG_BODY},
-    {"deletePasswordDialogAccount",
-     IDS_PASSWORD_MANAGER_UI_DELETE_DIALOG_FROM_ACCOUNT_CHECKBOX_LABEL},
-    {"deletePasswordDialogTitle", IDS_PASSWORD_MANAGER_UI_DELETE_DIALOG_TITLE},
-    {"done", IDS_DONE},
-    {"disable", IDS_DISABLE},
-    {"displayNameCopiedToClipboard",
-     IDS_PASSWORD_MANAGER_UI_DISPLAY_NAME_COPIED_TO_CLIPBOARD},
-    {"displayNameLabel", IDS_PASSWORD_MANAGER_UI_DISPLAY_NAME_LABEL},
-    {"displayNamePlaceholder",
-     IDS_PASSWORD_MANAGER_UI_DISPLAY_NAME_PLACEHOLDER},
-    {"downloadFile", IDS_PASSWORD_MANAGER_UI_DOWNLOAD_FILE},
-    {"downloadLinkShow", IDS_DOWNLOAD_LINK_SHOW},
-    {"edit", IDS_EDIT2},
-    {"editDisclaimerDescription",
-     IDS_PASSWORD_MANAGER_UI_EDIT_DISCLAIMER_DESCRIPTION},
-    {"editDisclaimerTitle", IDS_PASSWORD_MANAGER_UI_EDIT_DISCLAIMER_TITLE},
-    {"editPasskeyTitle", IDS_PASSWORD_MANAGER_UI_EDIT_PASSKEY},
-    {"editPassword", IDS_EDIT2},
-    {"editPasswordFootnote", IDS_PASSWORD_MANAGER_UI_PASSWORD_EDIT_FOOTNOTE},
-    {"editPasswordTitle", IDS_PASSWORD_MANAGER_UI_EDIT_PASSWORD},
-    {"emptyNote", IDS_PASSWORD_MANAGER_UI_NO_NOTE_ADDED},
-    {"emptyStateImportSyncing",
-     IDS_PASSWORD_MANAGER_UI_EMPTY_STATE_SYNCING_USERS},
-    {"exportPasswords", IDS_PASSWORD_MANAGER_UI_EXPORT_TITLE},
-    {"exportPasswordsDescription",
-     IDS_PASSWORD_MANAGER_UI_EXPORT_BANNER_DESCRIPTION},
-    {"exportPasswordsFailTips", IDS_PASSWORD_MANAGER_UI_EXPORTING_FAILURE_TIPS},
-    {"exportPasswordsFailTipsAnotherFolder",
-     IDS_PASSWORD_MANAGER_UI_EXPORTING_FAILURE_TIP_ANOTHER_FOLDER},
-    {"exportPasswordsFailTipsEnoughSpace",
-     IDS_PASSWORD_MANAGER_UI_EXPORTING_FAILURE_TIP_ENOUGH_SPACE},
-    {"exportPasswordsFailTitle",
-     IDS_PASSWORD_MANAGER_UI_EXPORTING_FAILURE_TITLE},
-    {"exportPasswordsTryAgain", IDS_PASSWORD_MANAGER_UI_EXPORT_TRY_AGAIN},
-    {"exportSuccessful", IDS_PASSWORD_MANAGER_UI_EXPORT_SUCCESSFUL},
-    {"federationLabel", IDS_PASSWORD_MANAGER_UI_FEDERATION_LABEL},
-    {"gotIt", IDS_SETTINGS_GOT_IT},
-    {"help", IDS_PASSWORD_MANAGER_UI_HELP},
-    {"hidePassword", IDS_PASSWORD_MANAGER_UI_HIDE_PASSWORD},
-    {"hidePasswordA11yLabel", IDS_PASSWORD_MANAGER_UI_HIDE_PASSWORD_A11Y},
-    {"importPasswords", IDS_PASSWORD_MANAGER_UI_IMPORT_BANNER_TITLE},
-    {"importPasswordsCancel", IDS_PASSWORD_MANAGER_UI_IMPORT_CANCEL},
-    {"importPasswordsSkip", IDS_PASSWORD_MANAGER_UI_IMPORT_SKIP},
-    {"importPasswordsReplace", IDS_PASSWORD_MANAGER_UI_IMPORT_REPLACE},
-    {"importPasswordsAlreadyActive",
-     IDS_PASSWORD_MANAGER_UI_IMPORT_ALREADY_ACTIVE},
-    {"importPasswordsFileSizeExceeded",
-     IDS_PASSWORD_MANAGER_UI_IMPORT_FILE_SIZE_EXCEEDED},
-    {"importPasswordsUnknownError",
-     IDS_PASSWORD_MANAGER_UI_IMPORT_ERROR_UNKNOWN},
-    {"importPasswordsBadFormatError",
-     IDS_PASSWORD_MANAGER_UI_IMPORT_ERROR_BAD_FORMAT},
-    {"importPasswordsErrorTitle", IDS_PASSWORD_MANAGER_UI_IMPORT_ERROR_TITLE},
-    {"importPasswordsMissingPassword",
-     IDS_PASSWORD_MANAGER_UI_IMPORT_MISSING_PASSWORD},
-    {"importPasswordsMissingURL", IDS_PASSWORD_MANAGER_UI_IMPORT_MISSING_URL},
-    {"importPasswordsInvalidURL", IDS_PASSWORD_MANAGER_UI_IMPORT_INVALID_URL},
-    {"importPasswordsLongURL", IDS_PASSWORD_MANAGER_UI_IMPORT_LONG_URL},
-    {"importPasswordsLongPassword",
-     IDS_PASSWORD_MANAGER_UI_IMPORT_LONG_PASSWORD},
-    {"importPasswordsLongUsername",
-     IDS_PASSWORD_MANAGER_UI_IMPORT_LONG_USERNAME},
-    {"importPasswordsLongNote", IDS_PASSWORD_MANAGER_UI_IMPORT_LONG_NOTE},
-    {"importPasswordsConflictDevice",
-     IDS_PASSWORD_MANAGER_UI_IMPORT_CONFLICT_DEVICE},
-    {"importPasswordsConflictAccount",
-     IDS_PASSWORD_MANAGER_UI_IMPORT_CONFLICT_ACCOUNT},
-    {"importPasswordsCompleteTitle",
-     IDS_PASSWORD_MANAGER_UI_IMPORT_COMPLETE_TITLE},
-    {"importPasswordsSuccessTitle",
-     IDS_PASSWORD_MANAGER_UI_IMPORT_SUCCESS_TITLE},
-    {"importPasswordsSuccessTip", IDS_PASSWORD_MANAGER_UI_IMPORT_SUCCESS_TIP},
-    {"importPasswordsDeleteFileOption",
-     IDS_PASSWORD_MANAGER_UI_IMPORT_DELETE_FILE_OPTION},
-    {"importPasswordsDescriptionAccount",
-     IDS_PASSWORD_MANAGER_UI_IMPORT_DESCRIPTION_SYNCING_USERS},
-    {"importPasswordsSelectFile",
-     IDS_PASSWORD_MANAGER_UI_IMPORT_SELECT_FILE_DESCRIPTION},
-    {"importPasswordsStorePickerA11yDescription",
-     IDS_PASSWORD_MANAGER_UI_IMPORT_STORE_PICKER_ACCESSIBLE_NAME},
-    {"passwordsStoreOptionAccount",
-     IDS_PASSWORD_MANAGER_UI_STORE_PICKER_OPTION_ACCOUNT},
-    {"justNow", IDS_PASSWORD_MANAGER_UI_JUST_NOW},
-    {"leakedPassword", IDS_PASSWORD_MANAGER_UI_PASSWORD_LEAKED},
-    {"localPasswordManager",
-     IDS_PASSWORD_BUBBLES_PASSWORD_MANAGER_LINK_TEXT_SAVING_ON_DEVICE},
-    {"manage", IDS_SETTINGS_MANAGE},
+      {"accountStorageToggleLabel",
+       base::FeatureList::IsEnabled(syncer::kSyncWebauthnCredentials)
+           ? IDS_PASSWORD_MANAGER_UI_ACCOUNT_STORAGE_WITH_PASSKEYS_TOGGLE_LABEL
+           : IDS_PASSWORD_MANAGER_UI_ACCOUNT_STORAGE_TOGGLE_LABEL},
+      {"accountStorageToggleSubLabel",
+       IDS_PASSWORD_MANAGER_UI_ACCOUNT_STORAGE_TOGGLE_SUB_LABEL},
+      {"addPassword", IDS_PASSWORD_MANAGER_UI_ADD_PASSWORD_BUTTON},
+      {"addPasswordFooter", IDS_PASSWORD_MANAGER_UI_ADD_PASSWORD_FOOTNOTE},
+      {"addPasswordStoreOptionAccount",
+       IDS_PASSWORD_MANAGER_DESTINATION_DROPDOWN_SAVE_TO_ACCOUNT},
+      {"addPasswordStoreOptionDevice",
+       IDS_PASSWORD_MANAGER_DESTINATION_DROPDOWN_SAVE_TO_DEVICE},
+      {"addPasswordStorePickerA11yDescription",
+       IDS_PASSWORD_MANAGER_DESTINATION_DROPDOWN_ACCESSIBLE_NAME},
+      {"addPasswordTitle", IDS_PASSWORD_MANAGER_UI_ADD_PASSWORD},
+      {"addShortcut", IDS_PASSWORD_MANAGER_UI_ADD_SHORTCUT_TITLE},
+      {"alreadyChangedPasswordLink",
+       IDS_PASSWORD_MANAGER_UI_ALREADY_CHANGED_PASSWORD},
+      {"appsLabel", IDS_PASSWORD_MANAGER_UI_APPS_LABEL},
+      {"authTimedOut", IDS_PASSWORD_MANAGER_UI_AUTH_TIMED_OUT},
+      {"autosigninLabel", IDS_PASSWORD_MANAGER_UI_AUTOSIGNIN_TOGGLE_LABEL},
+      {"backToCheckup",
+       IDS_PASSWORD_MANAGER_UI_BACK_TO_CHECKUP_ARIA_DESCRIPTION},
+      {"backToPasswords",
+       IDS_PASSWORD_MANAGER_UI_BACK_TO_PASSWORDS_ARIA_DESCRIPTION},
+      {"blockedSitesDescription",
+       IDS_PASSWORD_MANAGER_UI_BLOCKED_SITES_DESCRIPTION},
+      {"blockedSitesTitle", IDS_PASSWORD_MANAGER_UI_BLOCKED_SITES_TITLE},
+      {"cancel", IDS_CANCEL},
+      {"changePassword", IDS_PASSWORD_MANAGER_UI_CHANGE_PASSWORD_BUTTON},
+      {"changePasswordAriaDescription",
+       IDS_PASSWORD_MANAGER_UI_CHANGE_PASSWORD_BUTTON_ARIA_DESCRIPTION},
+      {"changePasswordInApp", IDS_PASSWORD_MANAGER_UI_CHANGE_PASSWORD_IN_APP},
+      {"checkup", IDS_PASSWORD_MANAGER_UI_CHECKUP},
+      {"checkupCanceled", IDS_PASSWORD_MANAGER_UI_CHECKUP_CANCELED},
+      {"checkupErrorGeneric", IDS_PASSWORD_MANAGER_UI_CHECKUP_OTHER_ERROR},
+      {"checkupErrorNoPasswords", IDS_PASSWORD_MANAGER_UI_CHECKUP_NO_PASSWORDS},
+      {"checkupErrorOffline", IDS_PASSWORD_MANAGER_UI_CHECKUP_OFFLINE},
+      {"checkupErrorQuota", IDS_PASSWORD_MANAGER_UI_CHECKUP_QUOTA_LIMIT},
+      {"checkupErrorSignedOut", IDS_PASSWORD_MANAGER_UI_CHECKUP_SIGNED_OUT},
+      {"checkupResultGreen", IDS_PASSWORD_MANAGER_UI_CHECKUP_GREEN_STATE_A11Y},
+      {"checkupResultRed", IDS_PASSWORD_MANAGER_UI_CHECKUP_RED_STATE_A11Y},
+      {"checkupResultYellow",
+       IDS_PASSWORD_MANAGER_UI_CHECKUP_YELLOW_STATE_A11Y},
+      {"compromisedRowWithError",
+       IDS_PASSWORD_MANAGER_UI_CHECKUP_COMPROMISED_SECTION},
+      {"checkupProgress", IDS_PASSWORD_MANAGER_UI_CHECKUP_PROGRESS},
+      {"checkupTitle", IDS_PASSWORD_MANAGER_UI_CHECKUP_TITLE},
+      {"clearSearch", IDS_CLEAR_SEARCH},
+      {"close", IDS_CLOSE},
+      {"compromisedPasswordsDescription",
+       IDS_PASSWORD_MANAGER_UI_COMPROMISED_PASSWORDS_DESCRIPTION},
+      {"compromisedPasswordsEmpty",
+       IDS_PASSWORD_MANAGER_UI_NO_COMPROMISED_PASSWORDS},
+      {"compromisedPasswordsTitle",
+       IDS_PASSWORD_MANAGER_UI_HAS_COMPROMISED_PASSWORDS},
+      {"controlledByExtension", IDS_SETTINGS_CONTROLLED_BY_EXTENSION},
+      {"copyDisplayName", IDS_PASSWORD_MANAGER_UI_COPY_DISPLAY_NAME_LABEL},
+      {"copyPassword", IDS_PASSWORD_MANAGER_UI_COPY_PASSWORD},
+      {"copyUsername", IDS_PASSWORD_MANAGER_UI_COPY_USERNAME},
+      {"delete", IDS_DELETE},
+      {"deletePassword", IDS_DELETE},
+      {"deletePasskeyConfirmationDescription",
+       IDS_PASSWORD_MANAGER_UI_DELETE_PASSKEY_CONFIRMATION_DESCRIPTION},
+      {"deletePasskeyConfirmationTitle",
+       IDS_PASSWORD_MANAGER_UI_DELETE_PASSKEY_CONFIRMATION_TITLE},
+      {"deletePasswordConfirmationDescription",
+       IDS_PASSWORD_MANAGER_UI_DELETE_PASSWORD_CONFIRMATION_DESCRIPTION},
+      {"deletePasswordConfirmationTitle",
+       IDS_PASSWORD_MANAGER_UI_DELETE_PASSWORD_CONFIRMATION_TITLE},
+      {"deletePasswordDialogDevice",
+       IDS_PASSWORD_MANAGER_UI_DELETE_DIALOG_FROM_DEVICE_CHECKBOX_LABEL},
+      {"deletePasswordDialogBody", IDS_PASSWORD_MANAGER_UI_DELETE_DIALOG_BODY},
+      {"deletePasswordDialogAccount",
+       IDS_PASSWORD_MANAGER_UI_DELETE_DIALOG_FROM_ACCOUNT_CHECKBOX_LABEL},
+      {"deletePasswordDialogTitle",
+       IDS_PASSWORD_MANAGER_UI_DELETE_DIALOG_TITLE},
+      {"done", IDS_DONE},
+      {"disable", IDS_DISABLE},
+      {"displayNameCopiedToClipboard",
+       IDS_PASSWORD_MANAGER_UI_DISPLAY_NAME_COPIED_TO_CLIPBOARD},
+      {"displayNameLabel", IDS_PASSWORD_MANAGER_UI_DISPLAY_NAME_LABEL},
+      {"displayNamePlaceholder",
+       IDS_PASSWORD_MANAGER_UI_DISPLAY_NAME_PLACEHOLDER},
+      {"downloadFile", IDS_PASSWORD_MANAGER_UI_DOWNLOAD_FILE},
+      {"downloadLinkShow", IDS_DOWNLOAD_LINK_SHOW},
+      {"edit", IDS_EDIT2},
+      {"editDisclaimerDescription",
+       IDS_PASSWORD_MANAGER_UI_EDIT_DISCLAIMER_DESCRIPTION},
+      {"editDisclaimerTitle", IDS_PASSWORD_MANAGER_UI_EDIT_DISCLAIMER_TITLE},
+      {"editPasskeyTitle", IDS_PASSWORD_MANAGER_UI_EDIT_PASSKEY},
+      {"editPassword", IDS_EDIT2},
+      {"editPasswordFootnote", IDS_PASSWORD_MANAGER_UI_PASSWORD_EDIT_FOOTNOTE},
+      {"editPasswordTitle", IDS_PASSWORD_MANAGER_UI_EDIT_PASSWORD},
+      {"emptyNote", IDS_PASSWORD_MANAGER_UI_NO_NOTE_ADDED},
+      {"emptyStateImportSyncing",
+       IDS_PASSWORD_MANAGER_UI_EMPTY_STATE_SYNCING_USERS},
+      {"emptyUsername", IDS_PASSWORD_MANAGER_UI_NO_USERNAME},
+      {"exportPasswords", IDS_PASSWORD_MANAGER_UI_EXPORT_TITLE},
+      {"exportPasswordsDescription",
+       IDS_PASSWORD_MANAGER_UI_EXPORT_BANNER_DESCRIPTION},
+      {"exportPasswordsFailTips",
+       IDS_PASSWORD_MANAGER_UI_EXPORTING_FAILURE_TIPS},
+      {"exportPasswordsFailTipsAnotherFolder",
+       IDS_PASSWORD_MANAGER_UI_EXPORTING_FAILURE_TIP_ANOTHER_FOLDER},
+      {"exportPasswordsFailTipsEnoughSpace",
+       IDS_PASSWORD_MANAGER_UI_EXPORTING_FAILURE_TIP_ENOUGH_SPACE},
+      {"exportPasswordsFailTitle",
+       IDS_PASSWORD_MANAGER_UI_EXPORTING_FAILURE_TITLE},
+      {"exportPasswordsTryAgain", IDS_PASSWORD_MANAGER_UI_EXPORT_TRY_AGAIN},
+      {"exportSuccessful", IDS_PASSWORD_MANAGER_UI_EXPORT_SUCCESSFUL},
+      {"federatedCredentialProviderAriaLabel",
+       IDS_PASSWORD_MANAGER_UI_FEDERATED_CREDENTIAL_ARIA_LABEL},
+      {"federationLabel", IDS_PASSWORD_MANAGER_UI_FEDERATION_LABEL},
+      {"gotIt", IDS_SETTINGS_GOT_IT},
+      {"help", IDS_PASSWORD_MANAGER_UI_HELP},
+      {"hidePassword", IDS_PASSWORD_MANAGER_UI_HIDE_PASSWORD},
+      {"hidePasswordA11yLabel", IDS_PASSWORD_MANAGER_UI_HIDE_PASSWORD_A11Y},
+      {"importPasswords", IDS_PASSWORD_MANAGER_UI_IMPORT_BANNER_TITLE},
+      {"importPasswordsCancel", IDS_PASSWORD_MANAGER_UI_IMPORT_CANCEL},
+      {"importPasswordsSkip", IDS_PASSWORD_MANAGER_UI_IMPORT_SKIP},
+      {"importPasswordsReplace", IDS_PASSWORD_MANAGER_UI_IMPORT_REPLACE},
+      {"importPasswordsAlreadyActive",
+       IDS_PASSWORD_MANAGER_UI_IMPORT_ALREADY_ACTIVE},
+      {"importPasswordsFileSizeExceeded",
+       IDS_PASSWORD_MANAGER_UI_IMPORT_FILE_SIZE_EXCEEDED},
+      {"importPasswordsUnknownError",
+       IDS_PASSWORD_MANAGER_UI_IMPORT_ERROR_UNKNOWN},
+      {"importPasswordsBadFormatError",
+       IDS_PASSWORD_MANAGER_UI_IMPORT_ERROR_BAD_FORMAT},
+      {"importPasswordsErrorTitle", IDS_PASSWORD_MANAGER_UI_IMPORT_ERROR_TITLE},
+      {"importPasswordsMissingPassword",
+       IDS_PASSWORD_MANAGER_UI_IMPORT_MISSING_PASSWORD},
+      {"importPasswordsMissingURL", IDS_PASSWORD_MANAGER_UI_IMPORT_MISSING_URL},
+      {"importPasswordsInvalidURL", IDS_PASSWORD_MANAGER_UI_IMPORT_INVALID_URL},
+      {"importPasswordsLongURL", IDS_PASSWORD_MANAGER_UI_IMPORT_LONG_URL},
+      {"importPasswordsLongPassword",
+       IDS_PASSWORD_MANAGER_UI_IMPORT_LONG_PASSWORD},
+      {"importPasswordsLongUsername",
+       IDS_PASSWORD_MANAGER_UI_IMPORT_LONG_USERNAME},
+      {"importPasswordsLongNote", IDS_PASSWORD_MANAGER_UI_IMPORT_LONG_NOTE},
+      {"importPasswordsConflictDevice",
+       IDS_PASSWORD_MANAGER_UI_IMPORT_CONFLICT_DEVICE},
+      {"importPasswordsConflictAccount",
+       IDS_PASSWORD_MANAGER_UI_IMPORT_CONFLICT_ACCOUNT},
+      {"importPasswordsCompleteTitle",
+       IDS_PASSWORD_MANAGER_UI_IMPORT_COMPLETE_TITLE},
+      {"importPasswordsSuccessTitle",
+       IDS_PASSWORD_MANAGER_UI_IMPORT_SUCCESS_TITLE},
+      {"importPasswordsSuccessTip", IDS_PASSWORD_MANAGER_UI_IMPORT_SUCCESS_TIP},
+      {"importPasswordsDeleteFileOption",
+       IDS_PASSWORD_MANAGER_UI_IMPORT_DELETE_FILE_OPTION},
+      {"importPasswordsDescriptionAccount",
+       IDS_PASSWORD_MANAGER_UI_IMPORT_DESCRIPTION_SYNCING_USERS},
+      {"importPasswordsSelectFile",
+       IDS_PASSWORD_MANAGER_UI_IMPORT_SELECT_FILE_DESCRIPTION},
+      {"importPasswordsStorePickerA11yDescription",
+       IDS_PASSWORD_MANAGER_UI_IMPORT_STORE_PICKER_ACCESSIBLE_NAME},
+      {"passwordsStoreOptionAccount",
+       IDS_PASSWORD_MANAGER_UI_STORE_PICKER_OPTION_ACCOUNT},
+      {"justNow", IDS_PASSWORD_MANAGER_UI_JUST_NOW},
+      {"leakedPassword", IDS_PASSWORD_MANAGER_UI_PASSWORD_LEAKED},
+      {"localPasswordManager",
+       IDS_PASSWORD_BUBBLES_PASSWORD_MANAGER_LINK_TEXT_SAVING_ON_DEVICE},
+      {"manage", IDS_SETTINGS_MANAGE},
 #if BUILDFLAG(IS_WIN)
-    {"managePasskeysLabel", IDS_PASSWORD_MANAGER_UI_MANAGE_PASSKEYS_LABEL},
+      {"managePasskeysLabel", IDS_PASSWORD_MANAGER_UI_MANAGE_PASSKEYS_LABEL},
 #elif BUILDFLAG(IS_MAC)
-    {"managePasskeysLabel", IDS_PASSWORD_MANAGER_UI_MANAGE_PASSKEYS_FROM_PROFILE_LABEL},
+      {"createPasskeysInICloudKeychainLabel",
+       IDS_PASSWORD_MANAGER_UI_CREATE_PASSKEYS_IN_ICLOUD_KEYCHAIN_LABEL},
+      {"createPasskeysInICloudKeychainSubLabel",
+       IDS_PASSWORD_MANAGER_UI_CREATE_PASSKEYS_IN_ICLOUD_KEYCHAIN_SUBLABEL},
+      {"managePasskeysLabel",
+       IDS_PASSWORD_MANAGER_UI_MANAGE_PASSKEYS_FROM_PROFILE_LABEL},
 #endif
-    {"menu", IDS_MENU},
-    {"menuButtonLabel", IDS_SETTINGS_MENU_BUTTON_LABEL},
-    {"missingTLD", IDS_PASSWORD_MANAGER_UI_MISSING_TLD},
-    {"moreActions", IDS_PASSWORD_MANAGER_UI_MORE_ACTIONS},
-    {"moreActionsAriaDescription",
-     IDS_PASSWORD_MANAGER_UI_MORE_ACTIONS_ARIA_DESCRIPTION},
-    {"movePasswordsButton", IDS_PASSWORD_MANAGER_UI_MOVE_PASSWORDS_BUTTON},
-    {"movePasswordsDescription",
-     IDS_PASSWORD_MANAGER_UI_MOVE_PASSWORDS_DESCRIPTION},
-    {"movePasswordsTitle", IDS_PASSWORD_MANAGER_UI_MOVE_PASSWORDS_TITLE},
-    {"muteCompromisedPassword", IDS_PASSWORD_MANAGER_UI_MUTE_ISSUE},
-    {"mutedCompromisedCredentials",
-     IDS_PASSWORD_MANAGER_UI_MUTED_COMPROMISED_PASSWORDS},
-    {"notValidWebsite", IDS_PASSWORD_MANAGER_UI_NOT_VALID_WEB_ADDRESS},
-    {"noteLabel", IDS_PASSWORD_MANAGER_UI_NOTE_LABEL},
-    {"noPasswordsFound", IDS_PASSWORD_MANAGER_UI_NO_PASSWORDS_FOUND},
-    {"opensInNewTab", IDS_PASSWORD_MANAGER_UI_OPENS_IN_NEW_TAB},
-    {"passkeyDeleted", IDS_PASSWORD_MANAGER_UI_PASSKEY_DELETED},
-    {"passkeyManagementInfoLabel",
-     IDS_PASSWORD_MANAGER_UI_PASSKEY_MANAGEMENT_INFO_LABEL},
-    {"passwordCopiedToClipboard",
-     IDS_PASSWORD_MANAGER_UI_PASSWORD_COPIED_TO_CLIPBOARD},
-    {"passwordDeleted", IDS_PASSWORD_MANAGER_UI_PASSWORD_DELETED},
-    {"passwordLabel", IDS_PASSWORD_MANAGER_UI_PASSWORD_LABEL},
-    {"passwordManager",
-     IDS_PASSWORD_BUBBLES_PASSWORD_MANAGER_LINK_TEXT_SYNCED_TO_ACCOUNT},
-    // Header for the page, always "Password Manager".
-    {"passwordManagerString", IDS_PASSWORD_MANAGER_UI_TITLE},
-    // Page title, branded. "Google Password Manager" or "Password Manager"
-    // depending on the build.
-    {"passwordManagerTitle",
-     IDS_PASSWORD_BUBBLES_PASSWORD_MANAGER_LINK_TEXT_SAVING_ON_DEVICE},
-    {"passwordNoteCharacterCount",
-     IDS_PASSWORD_MANAGER_UI_NOTE_CHARACTER_COUNT},
-    {"passwordNoteCharacterCountWarning",
-     IDS_PASSWORD_MANAGER_UI_NOTE_CHARACTER_COUNT_WARNING},
-    {"passwords", IDS_PASSWORD_MANAGER_UI_PASSWORDS},
-    {"phishedAndLeakedPassword",
-     IDS_PASSWORD_MANAGER_UI_PASSWORD_PHISHED_AND_LEAKED},
-    {"phishedPassword", IDS_PASSWORD_MANAGER_UI_PASSWORD_PHISHED},
-    {"removeBlockedAriaDescription",
-     IDS_PASSWORD_MANAGER_UI_REMOVE_BLOCKED_SITE_ARIA_DESCRIPTION},
-    {"reload", IDS_RELOAD},
-    {"reusedPasswordsDescription",
-     IDS_PASSWORD_MANAGER_UI_REUSED_PASSWORDS_DESCRIPTION},
-    {"reusedPasswordsEmpty", IDS_PASSWORD_MANAGER_UI_NO_REUSED_PASSWORDS},
-    {"reusedPasswordsTitle", IDS_PASSWORD_MANAGER_UI_HAS_REUSED_PASSWORDS},
-    {"runCheckupAriaDescription",
-     IDS_PASSWORD_MANAGER_UI_RUN_CHECKUP_ARIA_DESCRIPTION},
-    {"save", IDS_SAVE},
-    {"savePasswordsLabel", IDS_PASSWORD_MANAGER_UI_SAVE_PASSWORDS_TOGGLE_LABEL},
-    {"share", IDS_PASSWORD_MANAGER_UI_SHARE},
-    {"shareDialogTitle", IDS_PASSWORD_MANAGER_UI_SHARE_DIALOG_TITLE},
-    {"shareDialogLoadingTitle",
-     IDS_PASSWORD_MANAGER_UI_SHARE_PASSWORD_LOADING_TITLE},
-    {"shareDialogSuccessTitle",
-     IDS_PASSWORD_MANAGER_UI_SHARE_PASSWORD_SUCCESS_TITLE},
-    {"shareDialogCanceledTitle",
-     IDS_PASSWORD_MANAGER_UI_SHARE_PASSWORD_CANCELED_TITLE},
-    {"sharePasswordFamilyPickerDescription",
-     IDS_PASSWORD_MANAGER_UI_SHARE_PASSWORD_FAMILY_PICKER_DESCRIPTION},
-    {"sharePasswordManageFamily",
-     IDS_PASSWORD_MANAGER_UI_SHARE_PASSWORD_MANAGE_FAMILY},
-    {"sharePasswordMemeberUnavailable",
-     IDS_PASSWORD_MANAGER_UI_SHARE_PASSWORD_MEMBER_UNAVAILABLE},
-    {"sharePasswordNotAvailable",
-     IDS_PASSWORD_MANAGER_UI_SHARE_PASSWORD_NOT_AVAILABLE},
-    {"sharePasswordErrorDescription",
-     IDS_PASSWORD_MANAGER_UI_SHARE_PASSWORD_ERROR_DESCRIPTION},
-    {"sharePasswordErrorTitle",
-     IDS_PASSWORD_MANAGER_UI_SHARE_PASSWORD_ERROR_TITLE},
-    {"sharePasswordGotIt", IDS_PASSWORD_MANAGER_UI_SHARE_PASSWORD_GOT_IT},
-    {"sharePasswordTryAgain", IDS_PASSWORD_MANAGER_UI_SHARE_PASSWORD_TRY_AGAIN},
-    {"searchPrompt", IDS_PASSWORD_MANAGER_UI_SEARCH_PROMPT},
-    {"selectFile", IDS_PASSWORD_MANAGER_UI_SELECT_FILE},
-    {"settings", IDS_PASSWORD_MANAGER_UI_SETTINGS},
-    {"showMore", IDS_PASSWORD_MANAGER_UI_SHOW_MORE},
-    {"showPassword", IDS_PASSWORD_MANAGER_UI_SHOW_PASSWORD},
-    {"showPasswordA11yLabel", IDS_PASSWORD_MANAGER_UI_SHOW_PASSWORD_A11Y},
-    {"sitesAndAppsLabel", IDS_PASSWORD_MANAGER_UI_SITES_AND_APPS_LABEL},
-    {"sitesLabel", IDS_PASSWORD_MANAGER_UI_SITES_LABEL},
-    {"trustedVaultBannerLabelOfferOptIn",
-     IDS_PASSWORD_MANAGER_UI_TRUSTED_VAULT_OPT_IN_TITLE},
-    {"trustedVaultBannerSubLabelOfferOptIn",
-     IDS_PASSWORD_MANAGER_UI_TRUSTED_VAULT_OPT_IN_DESCRIPTION},
-    {"trustedVaultBannerLabelOptedIn",
-     IDS_PASSWORD_MANAGER_UI_TRUSTED_VAULT_OPTED_IN_TITLE},
-    {"trustedVaultBannerSubLabelOptedIn",
-     IDS_PASSWORD_MANAGER_UI_TRUSTED_VAULT_OPTED_IN_DESCRIPTION},
-    {"tryAgain", IDS_PASSWORD_MANAGER_UI_CHECK_PASSWORDS_AFTER_ERROR},
-    {"undoRemovePassword", IDS_PASSWORD_MANAGER_UI_UNDO},
-    {"unmuteCompromisedPassword", IDS_PASSWORD_MANAGER_UI_UNMUTE_ISSUE},
-    {"usernameAlreadyUsed", IDS_PASSWORD_MANAGER_UI_USERNAME_ALREADY_USED},
-    {"usernameCopiedToClipboard",
-     IDS_PASSWORD_MANAGER_UI_USERNAME_COPIED_TO_CLIPBOARD},
-    {"usernameLabel", IDS_PASSWORD_MANAGER_UI_USERNAME_LABEL},
-    {"usernamePlaceholder", IDS_PASSWORD_MANAGER_UI_USERNAME_PLACEHOLDER},
-    {"viewExistingPassword", IDS_PASSWORD_MANAGER_UI_VIEW_EXISTING_PASSWORD},
-    {"viewExistingPasswordAriaDescription",
-     IDS_PASSWORD_MANAGER_UI_VIEW_EXISTING_PASSWORD_ARIA_DESCRIPTION},
-    {"viewPasswordAriaDescription",
-     IDS_PASSWORD_MANAGER_UI_VIEW_PASSWORD_ARIA_DESCRIPTION},
-    {"viewPasswordsButton", IDS_PASSWORD_MANAGER_UI_IMPORT_VIEW_PASSWORDS},
-    {"weakPasswordsDescription",
-     IDS_PASSWORD_MANAGER_UI_WEAK_PASSWORDS_DESCRIPTION},
-    {"weakPasswordsEmpty", IDS_PASSWORD_MANAGER_UI_NO_WEAK_PASSWORDS},
-    {"weakPasswordsTitle", IDS_PASSWORD_MANAGER_UI_HAS_WEAK_PASSWORDS},
-    {"websiteLabel", IDS_PASSWORD_MANAGER_UI_WEBSITE_LABEL},
+      {"menu", IDS_MENU},
+      {"menuButtonLabel", IDS_SETTINGS_MENU_BUTTON_LABEL},
+      {"missingTLD", IDS_PASSWORD_MANAGER_UI_MISSING_TLD},
+      {"moreActions", IDS_PASSWORD_MANAGER_UI_MORE_ACTIONS},
+      {"moreActionsAriaDescription",
+       IDS_PASSWORD_MANAGER_UI_MORE_ACTIONS_ARIA_DESCRIPTION},
+      {"movePasswordsButton", IDS_PASSWORD_MANAGER_UI_MOVE_PASSWORDS_BUTTON},
+      {"moveSinglePassword",
+       IDS_PASSWORD_MANAGER_UI_MOVE_SINGLE_PASSWORD_TO_ACCOUNT},
+      {"moveSinglePasswordTitle",
+       IDS_PASSWORD_MANAGER_UI_MOVE_SINGLE_PASSWORD_TITLE},
+      {"moveSinglePasswordDescription",
+       IDS_PASSWORD_MANAGER_UI_MOVE_SINGLE_PASSWORD_DESCRIPTION},
+      {"moveSinglePasswordButton",
+       IDS_PASSWORD_MANAGER_UI_MOVE_SINGLE_PASSWORD_ACTION_BUTTON},
+      {"movePasswordsDescription",
+       IDS_PASSWORD_MANAGER_UI_MOVE_PASSWORDS_DESCRIPTION},
+      {"movePasswordsInSettingsSubLabel",
+       IDS_PASSWORD_MANAGER_UI_MOVE_PASSWORDS_IN_SETTINGS_SUB_LABEL},
+      {"movePasswordsTitle", IDS_PASSWORD_MANAGER_UI_MOVE_PASSWORDS_TITLE},
+      {"muteCompromisedPassword", IDS_PASSWORD_MANAGER_UI_MUTE_ISSUE},
+      {"mutedCompromisedCredentials",
+       IDS_PASSWORD_MANAGER_UI_MUTED_COMPROMISED_PASSWORDS},
+      {"notValidWebsite", IDS_PASSWORD_MANAGER_UI_NOT_VALID_WEB_ADDRESS},
+      {"noteLabel", IDS_PASSWORD_MANAGER_UI_NOTE_LABEL},
+      {"noPasswordsFound", IDS_PASSWORD_MANAGER_UI_NO_PASSWORDS_FOUND},
+      {"opensInNewTab", IDS_PASSWORD_MANAGER_UI_OPENS_IN_NEW_TAB},
+      {"passkeyDeleted", IDS_PASSWORD_MANAGER_UI_PASSKEY_DELETED},
+      {"passkeyDetailsCardAriaLabel",
+       IDS_PASSWORD_MANAGER_UI_PASSKEY_DETAILS_CARD_ARIA_LABEL},
+      {"passkeyDetailsCardNoUsernameAriaLabel",
+       IDS_PASSWORD_MANAGER_UI_PASSKEY_DETAILS_CARD_NO_USERNAME_ARIA_LABEL},
+      {"passkeyDetailsCardEditButtonAriaLabel",
+       IDS_PASSWORD_MANAGER_UI_PASSKEY_DETAILS_CARD_EDIT_BUTTON_ARIA_LABEL},
+      {"passkeyDetailsCardEditButtonNoUsernameAriaLabel",
+       IDS_PASSWORD_MANAGER_UI_PASSKEY_DETAILS_CARD_EDIT_BUTTON_NO_USERNAME_ARIA_LABEL},
+      {"passkeyDetailsCardDeleteButtonAriaLabel",
+       IDS_PASSWORD_MANAGER_UI_PASSKEY_DETAILS_CARD_DELETE_BUTTON_ARIA_LABEL},
+      {"passkeyDetailsCardDeleteButtonNoUsernameAriaLabel",
+       IDS_PASSWORD_MANAGER_UI_PASSKEY_DETAILS_CARD_DELETE_BUTTON_NO_USERNAME_ARIA_LABEL},
+      {"passkeyManagementInfoLabel",
+       IDS_PASSWORD_MANAGER_UI_PASSKEY_MANAGEMENT_INFO_LABEL},
+      {"passwordCopiedToClipboard",
+       IDS_PASSWORD_MANAGER_UI_PASSWORD_COPIED_TO_CLIPBOARD},
+      {"passwordDeleted", IDS_PASSWORD_MANAGER_UI_PASSWORD_DELETED},
+      {"passwordDetailsCardAriaLabel",
+       IDS_PASSWORD_MANAGER_UI_PASSWORD_DETAILS_CARD_ARIA_LABEL},
+      {"passwordDetailsCardEditButtonAriaLabel",
+       IDS_PASSWORD_MANAGER_UI_PASSWORD_DETAILS_CARD_EDIT_BUTTON_ARIA_LABEL},
+      {"passwordDetailsCardEditButtonNoUsernameAriaLabel",
+       IDS_PASSWORD_MANAGER_UI_PASSWORD_DETAILS_CARD_EDIT_BUTTON_NO_USERNAME_ARIA_LABEL},
+      {"passwordDetailsCardDeleteButtonAriaLabel",
+       IDS_PASSWORD_MANAGER_UI_PASSWORD_DETAILS_CARD_DELETE_BUTTON_ARIA_LABEL},
+      {"passwordDetailsCardDeleteButtonNoUsernameAriaLabel",
+       IDS_PASSWORD_MANAGER_UI_PASSWORD_DETAILS_CARD_DELETE_BUTTON_NO_USERNAME_ARIA_LABEL},
+      {"passwordLabel", IDS_PASSWORD_MANAGER_UI_PASSWORD_LABEL},
+      {"passwordManager",
+       IDS_PASSWORD_BUBBLES_PASSWORD_MANAGER_LINK_TEXT_SYNCED_TO_ACCOUNT},
+      // Header for the page, always "Password Manager".
+      {"passwordManagerString", IDS_PASSWORD_MANAGER_UI_TITLE},
+      // Page title, branded. "Google Password Manager" or "Password Manager"
+      // depending on the build.
+      {"passwordManagerTitle",
+       IDS_PASSWORD_BUBBLES_PASSWORD_MANAGER_LINK_TEXT_SAVING_ON_DEVICE},
+      {"passwordMovedToastMessage",
+       IDS_PASSWORD_MANAGER_UI_PASSWORD_MOVED_TOAST_MESSAGE},
+      {"passwordNoteCharacterCount",
+       IDS_PASSWORD_MANAGER_UI_NOTE_CHARACTER_COUNT},
+      {"passwordNoteCharacterCountWarning",
+       IDS_PASSWORD_MANAGER_UI_NOTE_CHARACTER_COUNT_WARNING},
+      {"passwordListAriaLabel",
+       IDS_PASSWORD_MANAGER_UI_PASSWORD_LIST_ARIA_LABEL},
+      {"passwords", IDS_PASSWORD_MANAGER_UI_PASSWORDS},
+      {"phishedAndLeakedPassword",
+       IDS_PASSWORD_MANAGER_UI_PASSWORD_PHISHED_AND_LEAKED},
+      {"phishedPassword", IDS_PASSWORD_MANAGER_UI_PASSWORD_PHISHED},
+      {"removeBlockedAriaDescription",
+       IDS_PASSWORD_MANAGER_UI_REMOVE_BLOCKED_SITE_ARIA_DESCRIPTION},
+      {"reload", IDS_RELOAD},
+      {"reusedPasswordsDescription",
+       IDS_PASSWORD_MANAGER_UI_REUSED_PASSWORDS_DESCRIPTION},
+      {"reusedPasswordsEmpty", IDS_PASSWORD_MANAGER_UI_NO_REUSED_PASSWORDS},
+      {"reusedPasswordsTitle", IDS_PASSWORD_MANAGER_UI_HAS_REUSED_PASSWORDS},
+      {"runCheckupAriaDescription",
+       IDS_PASSWORD_MANAGER_UI_RUN_CHECKUP_ARIA_DESCRIPTION},
+      {"save", IDS_SAVE},
+      {"savePasswordsLabel",
+       IDS_PASSWORD_MANAGER_UI_SAVE_PASSWORDS_TOGGLE_LABEL},
+      {"share", IDS_PASSWORD_MANAGER_UI_SHARE},
+      {"shareDialogTitle", IDS_PASSWORD_MANAGER_UI_SHARE_DIALOG_TITLE},
+      {"shareDialogLoadingTitle",
+       IDS_PASSWORD_MANAGER_UI_SHARE_PASSWORD_LOADING_TITLE},
+      {"shareDialogSuccessTitle",
+       IDS_PASSWORD_MANAGER_UI_SHARE_PASSWORD_SUCCESS_TITLE},
+      {"shareDialogCanceledTitle",
+       IDS_PASSWORD_MANAGER_UI_SHARE_PASSWORD_CANCELED_TITLE},
+      {"sharePasswordFamilyPickerDescription",
+       IDS_PASSWORD_MANAGER_UI_SHARE_PASSWORD_FAMILY_PICKER_DESCRIPTION},
+      {"sharePasswordConfirmationDescriptionSingleRecipient",
+       IDS_PASSWORD_MANAGER_UI_SHARE_PASSWORD_CONFIRMATION_DESCRIPTION_SINGLE},
+      {"sharePasswordConfirmationDescriptionMultipleRecipients",
+       IDS_PASSWORD_MANAGER_UI_SHARE_PASSWORD_CONFIRMATION_DESCRIPTION_MULTIPLE},
+      {"sharePasswordConfirmationFooterWebsite",
+       IDS_PASSWORD_MANAGER_UI_SHARE_PASSWORD_CONFIRMATION_FOOTER_WEBSITE},
+      {"sharePasswordConfirmationFooterAndroidApp",
+       IDS_PASSWORD_MANAGER_UI_SHARE_PASSWORD_CONFIRMATION_FOOTER_ANDROID_APP},
+      {"sharePasswordViewFamily",
+       IDS_PASSWORD_MANAGER_UI_SHARE_PASSWORD_VIEW_FAMILY},
+      {"sharePasswordMemeberUnavailable",
+       IDS_PASSWORD_MANAGER_UI_SHARE_PASSWORD_MEMBER_UNAVAILABLE},
+      {"sharePasswordManagedByAdmin",
+       IDS_PASSWORD_MANAGER_UI_SHARING_IS_MANAGED_BY_ADMIN},
+      {"sharePasswordNotAvailable",
+       IDS_PASSWORD_MANAGER_UI_SHARE_PASSWORD_NOT_AVAILABLE},
+      {"sharePasswordErrorDescription",
+       IDS_PASSWORD_MANAGER_UI_SHARE_PASSWORD_ERROR_DESCRIPTION},
+      {"sharePasswordErrorTitle",
+       IDS_PASSWORD_MANAGER_UI_SHARE_PASSWORD_ERROR_TITLE},
+      {"sharePasswordGotIt", IDS_PASSWORD_MANAGER_UI_SHARE_PASSWORD_GOT_IT},
+      {"sharePasswordTryAgain",
+       IDS_PASSWORD_MANAGER_UI_SHARE_PASSWORD_TRY_AGAIN},
+      {"searchPrompt", IDS_PASSWORD_MANAGER_UI_SEARCH_PROMPT},
+      {"selectFile", IDS_PASSWORD_MANAGER_UI_SELECT_FILE},
+      {"settings", IDS_PASSWORD_MANAGER_UI_SETTINGS},
+      {"showMore", IDS_PASSWORD_MANAGER_UI_SHOW_MORE},
+      {"showPassword", IDS_PASSWORD_MANAGER_UI_SHOW_PASSWORD},
+      {"showPasswordA11yLabel", IDS_PASSWORD_MANAGER_UI_SHOW_PASSWORD_A11Y},
+      {"sitesAndAppsLabel", IDS_PASSWORD_MANAGER_UI_SITES_AND_APPS_LABEL},
+      {"sitesLabel", IDS_PASSWORD_MANAGER_UI_SITES_LABEL},
+      {"trustedVaultBannerLabelOfferOptIn",
+       IDS_PASSWORD_MANAGER_UI_TRUSTED_VAULT_OPT_IN_TITLE},
+      {"trustedVaultBannerSubLabelOfferOptIn",
+       IDS_PASSWORD_MANAGER_UI_TRUSTED_VAULT_OPT_IN_DESCRIPTION},
+      {"trustedVaultBannerLabelOptedIn",
+       IDS_PASSWORD_MANAGER_UI_TRUSTED_VAULT_OPTED_IN_TITLE},
+      {"trustedVaultBannerSubLabelOptedIn",
+       IDS_PASSWORD_MANAGER_UI_TRUSTED_VAULT_OPTED_IN_DESCRIPTION},
+      {"tryAgain", IDS_PASSWORD_MANAGER_UI_CHECK_PASSWORDS_AFTER_ERROR},
+      {"undoRemovePassword", IDS_PASSWORD_MANAGER_UI_UNDO},
+      {"unmuteCompromisedPassword", IDS_PASSWORD_MANAGER_UI_UNMUTE_ISSUE},
+      {"usernameAlreadyUsed", IDS_PASSWORD_MANAGER_UI_USERNAME_ALREADY_USED},
+      {"usernameCopiedToClipboard",
+       IDS_PASSWORD_MANAGER_UI_USERNAME_COPIED_TO_CLIPBOARD},
+      {"usernameLabel", IDS_PASSWORD_MANAGER_UI_USERNAME_LABEL},
+      {"usernamePlaceholder", IDS_PASSWORD_MANAGER_UI_USERNAME_PLACEHOLDER},
+      {"viewExistingPassword", IDS_PASSWORD_MANAGER_UI_VIEW_EXISTING_PASSWORD},
+      {"viewExistingPasswordAriaDescription",
+       IDS_PASSWORD_MANAGER_UI_VIEW_EXISTING_PASSWORD_ARIA_DESCRIPTION},
+      {"viewPasswordAriaDescription",
+       IDS_PASSWORD_MANAGER_UI_VIEW_PASSWORD_ARIA_DESCRIPTION},
+      {"viewPasswordsButton", IDS_PASSWORD_MANAGER_UI_IMPORT_VIEW_PASSWORDS},
+      {"weakPasswordsDescription",
+       IDS_PASSWORD_MANAGER_UI_WEAK_PASSWORDS_DESCRIPTION},
+      {"weakPasswordsEmpty", IDS_PASSWORD_MANAGER_UI_NO_WEAK_PASSWORDS},
+      {"weakPasswordsTitle", IDS_PASSWORD_MANAGER_UI_HAS_WEAK_PASSWORDS},
+      {"websiteLabel", IDS_PASSWORD_MANAGER_UI_WEBSITE_LABEL},
 #if BUILDFLAG(IS_MAC)
-    {"biometricAuthenticaionForFillingLabel",
-     IDS_PASSWORD_MANAGER_UI_BIOMETRIC_AUTHENTICATION_FOR_FILLING_TOGGLE_LABEL_MAC},
-    {"biometricAuthenticaionForFillingSublabel",
-     IDS_PASSWORD_MANAGER_UI_BIOMETRIC_AUTHENTICATION_FOR_FILLING_TOGGLE_SUBLABEL_MAC},
+      {"biometricAuthenticaionForFillingLabel",
+       IDS_PASSWORD_MANAGER_UI_BIOMETRIC_AUTHENTICATION_FOR_FILLING_TOGGLE_LABEL_MAC},
+      {"biometricAuthenticaionForFillingSublabel",
+       IDS_PASSWORD_MANAGER_UI_BIOMETRIC_AUTHENTICATION_FOR_FILLING_TOGGLE_SUBLABEL_MAC},
 #elif BUILDFLAG(IS_WIN)
-    {"biometricAuthenticaionForFillingLabel",
-     IDS_PASSWORD_MANAGER_UI_BIOMETRIC_AUTHENTICATION_FOR_FILLING_TOGGLE_LABEL_WIN},
-    {"biometricAuthenticaionForFillingSublabel",
-     IDS_PASSWORD_MANAGER_UI_BIOMETRIC_AUTHENTICATION_FOR_FILLING_TOGGLE_SUBLABEL_WIN},
+      {"biometricAuthenticaionForFillingLabel",
+       IDS_PASSWORD_MANAGER_UI_BIOMETRIC_AUTHENTICATION_FOR_FILLING_TOGGLE_LABEL_WIN},
+      {"biometricAuthenticaionForFillingSublabel",
+       IDS_PASSWORD_MANAGER_UI_BIOMETRIC_AUTHENTICATION_FOR_FILLING_TOGGLE_SUBLABEL_WIN},
 #endif
   };
-  for (const auto& str : kStrings)
+  for (const auto& str : kStrings) {
     webui::AddLocalizedString(source, str.name, str.id);
+  }
 
   source->AddString(
       "passwordsSectionDescription",
-      l10n_util::GetStringFUTF16(
-          IDS_PASSWORD_MANAGER_UI_PASSWORDS_DESCRIPTION,
-          base::ASCIIToUTF16(chrome::kPasswordManagerLearnMoreURL)));
+      l10n_util::GetStringFUTF16(IDS_PASSWORD_MANAGER_UI_PASSWORDS_DESCRIPTION,
+                                 chrome::kPasswordManagerLearnMoreURL));
 
   source->AddString(
-      "sharePasswordNoMembersDescription",
+      "sharePasswordNotFamilyMember",
       l10n_util::GetStringFUTF16(
-          IDS_PASSWORD_MANAGER_UI_SHARE_PASSWORD_NO_MEMBERS_DESCRIPTION,
-          base::ASCIIToUTF16(chrome::kFamilyGroupSiteURL)));
+          IDS_PASSWORD_MANAGER_UI_SHARE_PASSWORD_NOT_FAMILY_MEMBER,
+          chrome::kFamilyGroupCreateURL));
 
-  source->AddString("familyGroupSiteURL", chrome::kFamilyGroupSiteURL);
+  source->AddString(
+      "sharePasswordNoOtherFamilyMembers",
+      l10n_util::GetStringFUTF16(
+          IDS_PASSWORD_MANAGER_UI_SHARE_PASSWORD_NO_OTHER_FAMILY_MEMBERS,
+          chrome::kFamilyGroupViewURL));
+
+  source->AddString("familyGroupViewURL", chrome::kFamilyGroupViewURL);
 
   source->AddString(
       "checkupUrl",
@@ -400,14 +469,25 @@ content::WebUIDataSource* CreateAndAddPasswordsUIHTMLSource(
                          ShouldBiometricAuthenticationForFillingToggleBeVisible(
                              g_browser_process->local_state()));
 #endif
-
-  source->AddBoolean("enablePasswordsImportM2",
-                     base::FeatureList::IsEnabled(
-                         password_manager::features::kPasswordsImportM2));
+#if BUILDFLAG(IS_MAC)
+  source->AddBoolean(
+      "createPasskeysInICloudKeychainToggleVisible",
+      base::FeatureList::IsEnabled(device::kWebAuthnICloudKeychain));
+#endif
 
   source->AddBoolean(
       "enableSendPasswords",
       base::FeatureList::IsEnabled(password_manager::features::kSendPasswords));
+
+  source->AddBoolean("enableButterOnDesktopFollowup",
+                     base::FeatureList::IsEnabled(
+                         password_manager::features::kButterOnDesktopFollowup));
+
+  source->AddString("passwordSharingLearnMoreURL",
+                    chrome::kPasswordSharingLearnMoreURL);
+
+  source->AddString("passwordSharingTroubleshootURL",
+                    chrome::kPasswordSharingTroubleshootURL);
 
   source->AddString("passwordManagerLearnMoreURL",
                     chrome::kPasswordManagerLearnMoreURL);
@@ -425,7 +505,8 @@ content::WebUIDataSource* CreateAndAddPasswordsUIHTMLSource(
               IDS_PASSWORD_MANAGER_UI_AUTH_TIMED_OUT_DESCRIPTION),
           l10n_util::GetStringUTF16(
               IDS_PASSWORD_BUBBLES_PASSWORD_MANAGER_LINK_TEXT_SAVING_ON_DEVICE),
-          syncer::kPasswordNotesAuthValidity.Get().InMinutes()));
+          password_manager::constants::kPasswordManagerAuthValidity
+              .InMinutes()));
 
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
   // Overwrite ubranded logo for Chrome-branded builds.
@@ -505,6 +586,9 @@ void AddPluralStrings(content::WebUI* web_ui) {
       "compromisedPasswords",
       IDS_PASSWORD_MANAGER_UI_COMPROMISED_PASSWORDS_COUNT);
   plural_string_handler->AddLocalizedString(
+      "deviceOnlyPasswordsIconTooltip",
+      IDS_PASSWORD_MANAGER_UI_DEVICE_ONLY_PASSWORDS_ICON_TOOLTIP);
+  plural_string_handler->AddLocalizedString(
       "importPasswordsFailuresSummary",
       IDS_PASSWORD_MANAGER_UI_IMPORT_FAILURES_SUMMARY);
   plural_string_handler->AddLocalizedString(
@@ -532,6 +616,9 @@ void AddPluralStrings(content::WebUI* web_ui) {
       "searchResults", IDS_PASSWORD_MANAGER_UI_SEARCH_RESULT);
   plural_string_handler->AddLocalizedString(
       "movePasswords", IDS_PASSWORD_MANAGER_UI_MOVE_PASSWORDS_TO_ACCOUNT);
+  plural_string_handler->AddLocalizedString(
+      "deviceOnlyListItemAriaLabel",
+      IDS_PASSWORD_MANAGER_UI_PASSWORD_LIST_ITEM_ARIA_LABEL);
   web_ui->AddMessageHandler(std::move(plural_string_handler));
 }
 
@@ -542,6 +629,10 @@ DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(PasswordManagerUI,
 DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(PasswordManagerUI, kAddShortcutElementId);
 DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(PasswordManagerUI,
                                       kOverflowMenuElementId);
+DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(PasswordManagerUI,
+                                      kSharePasswordElementId);
+DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(PasswordManagerUI,
+                                      kAccountStoreToggleElementId);
 DEFINE_CLASS_CUSTOM_ELEMENT_EVENT_TYPE(PasswordManagerUI,
                                        kAddShortcutCustomEventId);
 
@@ -555,17 +646,14 @@ PasswordManagerUI::PasswordManagerUI(content::WebUI* web_ui)
   web_ui->AddMessageHandler(
       std::make_unique<password_manager::SyncHandler>(profile));
   web_ui->AddMessageHandler(std::make_unique<ExtensionControlHandler>());
-#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+  web_ui->AddMessageHandler(std::make_unique<SafetyHubHandler>(profile));
   web_ui->AddMessageHandler(
-      std::make_unique<password_manager::PromoCardsHandler>(
-          profile,
-          password_manager::PromoCardInterface::GetAllPromoCardsForProfile(
-              profile)));
-#endif
+      std::make_unique<password_manager::PromoCardsHandler>(profile));
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
   web_ui->AddMessageHandler(std::make_unique<settings::PasskeysHandler>());
 #endif
   auto* source = CreateAndAddPasswordsUIHTMLSource(profile, web_ui);
+  policy_indicator::AddLocalizedStrings(source);
   AddPluralStrings(web_ui);
   ManagedUIHandler::Initialize(web_ui, source);
   content::URLDataSource::Add(profile,
@@ -601,5 +689,7 @@ void PasswordManagerUI::CreateHelpBubbleHandler(
       std::vector<ui::ElementIdentifier>{
           PasswordManagerUI::kSettingsMenuItemElementId,
           PasswordManagerUI::kAddShortcutElementId,
+          PasswordManagerUI::kSharePasswordElementId,
+          PasswordManagerUI::kAccountStoreToggleElementId,
           PasswordManagerUI::kOverflowMenuElementId});
 }

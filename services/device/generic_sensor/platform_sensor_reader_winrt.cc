@@ -6,6 +6,7 @@
 
 #include <cmath>
 
+#include "base/numerics/angle_conversions.h"
 #include "base/numerics/math_constants.h"
 #include "base/time/time.h"
 #include "base/win/core_winrt_util.h"
@@ -296,7 +297,7 @@ void PlatformSensorReaderWinrtBase<
                   << logging::SystemErrorCodeToString(hr);
     }
 
-    reading_callback_token_ = absl::nullopt;
+    reading_callback_token_ = std::nullopt;
   }
 }
 
@@ -517,9 +518,9 @@ HRESULT PlatformSensorReaderWinrtGyrometer::OnReadingChangedCallback(
     // but the generic sensor interface uses radians so the data must be
     // converted.
     SensorReading reading;
-    reading.gyro.x = gfx::DegToRad(x);
-    reading.gyro.y = gfx::DegToRad(y);
-    reading.gyro.z = gfx::DegToRad(z);
+    reading.gyro.x = base::DegToRad(x);
+    reading.gyro.y = base::DegToRad(y);
+    reading.gyro.z = base::DegToRad(z);
     reading.gyro.timestamp = timestamp_delta.InSecondsF();
     client_->OnReadingUpdated(reading);
 

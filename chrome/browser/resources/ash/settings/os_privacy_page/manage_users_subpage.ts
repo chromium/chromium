@@ -8,29 +8,30 @@
  * accounts on the device.
  */
 
-import 'chrome://resources/cr_elements/cr_shared_vars.css.js';
-import 'chrome://resources/cr_elements/action_link.css.js';
+import 'chrome://resources/ash/common/cr_elements/cr_shared_vars.css.js';
+import 'chrome://resources/ash/common/cr_elements/action_link.css.js';
 import 'chrome://resources/js/action_link.js';
-import '/shared/settings/controls/settings_toggle_button.js';
+import '../controls/settings_toggle_button.js';
 import '../settings_shared.css.js';
 import '../os_people_page/user_list.js';
 import '../os_people_page/add_user_dialog.js';
 
+import {I18nMixin} from 'chrome://resources/ash/common/cr_elements/i18n_mixin.js';
 import {focusWithoutInk} from 'chrome://resources/js/focus_without_ink.js';
 import {afterNextRender, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {castExists} from '../assert_extras.js';
-import {isChild} from '../common/load_time_booleans.js';
-import {DeepLinkingMixin} from '../deep_linking_mixin.js';
+import {DeepLinkingMixin} from '../common/deep_linking_mixin.js';
+import {isChild, isRevampWayfindingEnabled} from '../common/load_time_booleans.js';
+import {RouteObserverMixin} from '../common/route_observer_mixin.js';
 import {Setting} from '../mojom-webui/setting.mojom-webui.js';
 import {SettingsUsersAddUserDialogElement} from '../os_people_page/add_user_dialog.js';
-import {RouteObserverMixin} from '../route_observer_mixin.js';
 import {Route, routes} from '../router.js';
 
 import {getTemplate} from './manage_users_subpage.html.js';
 
 const SettingsManageUsersSubpageElementBase =
-    DeepLinkingMixin(RouteObserverMixin(PolymerElement));
+    DeepLinkingMixin(RouteObserverMixin(I18nMixin(PolymerElement)));
 
 export interface SettingsManageUsersSubpageElement {
   $: {
@@ -85,12 +86,21 @@ export class SettingsManageUsersSubpageElement extends
           Setting.kRemoveFromUserAllowlistV2,
         ]),
       },
+
+      isRevampWayfindingEnabled_: {
+        type: Boolean,
+        value() {
+          return isRevampWayfindingEnabled();
+        },
+        readOnly: true,
+      },
     };
   }
 
   private isOwner_: boolean;
   private isUserListManaged_: boolean;
   private isChild_: boolean;
+  private isRevampWayfindingEnabled_: boolean;
 
   constructor() {
     super();
@@ -106,7 +116,7 @@ export class SettingsManageUsersSubpageElement extends
         });
   }
 
-  override ready() {
+  override ready(): void {
     super.ready();
 
     this.addEventListener(
@@ -170,6 +180,12 @@ export class SettingsManageUsersSubpageElement extends
   private focusAddUserButton_(): void {
     focusWithoutInk(
         castExists(this.shadowRoot!.querySelector('#add-user-button a')));
+  }
+
+  private getRestrictSigninSublabel_(): string|null {
+    return this.isRevampWayfindingEnabled_ ?
+        this.i18n('restrictSigninDescription') :
+        null;
   }
 }
 

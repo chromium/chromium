@@ -48,7 +48,7 @@ ScriptPromise ImageBitmapSource::FulfillImageBitmap(
 
 ScriptPromise ImageBitmapSource::CreateImageBitmap(
     ScriptState* script_state,
-    absl::optional<gfx::Rect> crop_rect,
+    std::optional<gfx::Rect> crop_rect,
     const ImageBitmapOptions* options,
     ExceptionState& exception_state) {
   return ScriptPromise();

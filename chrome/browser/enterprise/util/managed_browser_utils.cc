@@ -42,6 +42,7 @@
 #include "chrome/browser/enterprise/util/jni_headers/ManagedBrowserUtils_jni.h"
 #include "chrome/browser/profiles/profile_android.h"
 #include "chrome/browser/ui/managed_ui.h"
+#include "components/enterprise/browser/reporting/common_pref_names.h"
 #endif  // BUILDFLAG(IS_ANDROID)
 
 namespace chrome {
@@ -188,6 +189,16 @@ bool ProfileCanBeManaged(Profile* profile) {
           ->GetProfileAttributesStorage()
           .GetProfileAttributesWithPath(profile->GetPath());
   return entry && entry->CanBeManaged();
+}
+
+ManagementEnvironment GetManagementEnvironment(
+    Profile* profile,
+    const AccountInfo& account_info) {
+  if (!UserAcceptedAccountManagement(profile)) {
+    return ManagementEnvironment::kNone;
+  }
+  // TODO (b/322796016): Add check for school using account_info
+  return ManagementEnvironment::kWork;
 }
 
 bool IsKnownConsumerDomain(const std::string& email_domain) {
@@ -623,7 +634,7 @@ std::string GetBrowserManagerName(Profile* profile) {
 
   // @TODO(https://crbug.com/1227786): There are some use-cases where the
   // expected behavior of chrome://management is to show more than one domain.
-  absl::optional<std::string> manager = GetAccountManagerIdentity(profile);
+  std::optional<std::string> manager = GetAccountManagerIdentity(profile);
   if (!manager &&
       base::FeatureList::IsEnabled(features::kFlexOrgManagementDisclosure)) {
     manager = GetDeviceManagerIdentity();
@@ -645,6 +656,12 @@ JNI_ManagedBrowserUtils_GetBrowserManagerName(
     const base::android::JavaParamRef<jobject>& profile) {
   return base::android::ConvertUTF8ToJavaString(
       env, GetBrowserManagerName(ProfileAndroid::FromProfileAndroid(profile)));
+}
+
+// static
+jboolean JNI_ManagedBrowserUtils_IsReportingEnabled(JNIEnv* env) {
+  return g_browser_process->local_state()->GetBoolean(
+      enterprise_reporting::kCloudReportingEnabled);
 }
 
 #endif  // BUILDFLAG(IS_ANDROID)

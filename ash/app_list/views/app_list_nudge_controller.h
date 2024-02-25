@@ -5,10 +5,11 @@
 #ifndef ASH_APP_LIST_VIEWS_APP_LIST_NUDGE_CONTROLLER_H_
 #define ASH_APP_LIST_VIEWS_APP_LIST_NUDGE_CONTROLLER_H_
 
+#include <optional>
+
 #include "ash/ash_export.h"
 #include "base/time/time.h"
 #include "components/prefs/scoped_user_pref_update.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 class PrefRegistrySimple;
 class PrefService;
@@ -29,6 +30,8 @@ class ASH_EXPORT AppListNudgeController {
     kPrivacyNotice,
     // A nudge in app list that guide users to reorder apps using context menu.
     kReorderNudge,
+    // A nudge in app list that notifies user that they are in a tutorial view.
+    kTutorialNudge,
   };
 
   AppListNudgeController();
@@ -61,7 +64,7 @@ class ASH_EXPORT AppListNudgeController {
   // Called when the app list temporary sort order changes. Null `new_order`
   // indicates that the temporary sort order is cleared.
   void OnTemporarySortOrderChanged(
-      const absl::optional<AppListSortOrder>& new_order);
+      const std::optional<AppListSortOrder>& new_order);
 
   // Updates the privacy notice's accepted pref. The
   // caller of this function is responsible for the actual creation and removal

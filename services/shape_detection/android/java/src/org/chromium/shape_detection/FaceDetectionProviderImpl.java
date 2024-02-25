@@ -12,9 +12,7 @@ import org.chromium.shape_detection.mojom.FaceDetection;
 import org.chromium.shape_detection.mojom.FaceDetectionProvider;
 import org.chromium.shape_detection.mojom.FaceDetectorOptions;
 
-/**
- * Service provider to create FaceDetection services
- */
+/** Service provider to create FaceDetection services */
 public class FaceDetectionProviderImpl implements FaceDetectionProvider {
     public FaceDetectionProviderImpl() {}
 

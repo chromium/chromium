@@ -6,11 +6,12 @@ package org.chromium.chrome.browser.autofill;
 
 import androidx.annotation.VisibleForTesting;
 
-import org.chromium.base.annotations.CalledByNative;
-import org.chromium.base.annotations.JNINamespace;
-import org.chromium.base.annotations.NativeMethods;
+import org.jni_zero.CalledByNative;
+import org.jni_zero.JNINamespace;
+import org.jni_zero.NativeMethods;
+
 import org.chromium.chrome.browser.autofill.editors.EditorProperties.DropdownKeyValue;
-import org.chromium.components.autofill.ServerFieldType;
+import org.chromium.components.autofill.FieldType;
 
 import java.text.Collator;
 import java.util.ArrayList;
@@ -48,14 +49,16 @@ public final class AutofillProfileBridge {
 
         final Collator collator = Collator.getInstance(Locale.getDefault());
         collator.setStrength(Collator.PRIMARY);
-        Collections.sort(countries, new Comparator<DropdownKeyValue>() {
-            @Override
-            public int compare(DropdownKeyValue lhs, DropdownKeyValue rhs) {
-                int result = collator.compare(lhs.getValue(), rhs.getValue());
-                if (result == 0) result = lhs.getKey().compareTo(rhs.getKey());
-                return result;
-            }
-        });
+        Collections.sort(
+                countries,
+                new Comparator<DropdownKeyValue>() {
+                    @Override
+                    public int compare(DropdownKeyValue lhs, DropdownKeyValue rhs) {
+                        int result = collator.compare(lhs.getValue(), rhs.getValue());
+                        if (result == 0) result = lhs.getKey().compareTo(rhs.getKey());
+                        return result;
+                    }
+                });
         return countries;
     }
 
@@ -70,14 +73,16 @@ public final class AutofillProfileBridge {
 
         final Collator collator = Collator.getInstance(Locale.getDefault());
         collator.setStrength(Collator.PRIMARY);
-        Collections.sort(adminAreas, new Comparator<DropdownKeyValue>() {
-            @Override
-            public int compare(DropdownKeyValue lhs, DropdownKeyValue rhs) {
-                // Sorted according to the admin area values, such as Quebec,
-                // rather than the admin area keys, such as QC.
-                return collator.compare(lhs.getValue(), rhs.getValue());
-            }
-        });
+        Collections.sort(
+                adminAreas,
+                new Comparator<DropdownKeyValue>() {
+                    @Override
+                    public int compare(DropdownKeyValue lhs, DropdownKeyValue rhs) {
+                        // Sorted according to the admin area values, such as Quebec,
+                        // rather than the admin area keys, such as QC.
+                        return collator.compare(lhs.getValue(), rhs.getValue());
+                    }
+                });
         return adminAreas;
     }
 
@@ -88,12 +93,10 @@ public final class AutofillProfileBridge {
         return requiredFields;
     }
 
-    /**
-     * Description of an address editor input field.
-     */
+    /** Description of an address editor input field. */
     public static class AutofillAddressUiComponent {
-        /** The type of the field, e.g., ServerFieldType.NAME_FULL. */
-        public final @ServerFieldType int id;
+        /** The type of the field, e.g., FieldType.NAME_FULL. */
+        public final @FieldType int id;
 
         /** The localized display label for the field, e.g., "City." */
         public final String label;
@@ -107,8 +110,8 @@ public final class AutofillProfileBridge {
         /**
          * Builds a description of an address editor input field.
          *
-         * @param id         The type of the field, .e.g., ServerFieldType.ADDRESS_HOME_CITY.
-         * @param label      The localized display label for the field, .e.g., "City."
+         * @param id The type of the field, .e.g., FieldType.ADDRESS_HOME_CITY.
+         * @param label The localized display label for the field, .e.g., "City."
          * @param isRequired Whether the field is required.
          * @param isFullLine Whether the field takes up the full line.
          */
@@ -143,14 +146,24 @@ public final class AutofillProfileBridge {
         List<Integer> componentLengths = new ArrayList<>();
         List<AutofillAddressUiComponent> uiComponents = new ArrayList<>();
 
-        mCurrentBestLanguageCode = AutofillProfileBridgeJni.get().getAddressUiComponents(
-                countryCode, languageCode, validationType, componentIds, componentNames,
-                componentRequired, componentLengths);
+        mCurrentBestLanguageCode =
+                AutofillProfileBridgeJni.get()
+                        .getAddressUiComponents(
+                                countryCode,
+                                languageCode,
+                                validationType,
+                                componentIds,
+                                componentNames,
+                                componentRequired,
+                                componentLengths);
 
         for (int i = 0; i < componentIds.size(); i++) {
             uiComponents.add(
-                    new AutofillAddressUiComponent(componentIds.get(i), componentNames.get(i),
-                            componentRequired.get(i) == 1, componentLengths.get(i) == 1));
+                    new AutofillAddressUiComponent(
+                            componentIds.get(i),
+                            componentNames.get(i),
+                            componentRequired.get(i) == 1,
+                            componentLengths.get(i) == 1));
         }
 
         return uiComponents;
@@ -182,11 +195,18 @@ public final class AutofillProfileBridge {
     @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
     public interface Natives {
         String getDefaultCountryCode();
+
         void getSupportedCountries(List<String> countryCodes, List<String> countryNames);
+
         void getRequiredFields(String countryCode, List<Integer> requiredFields);
-        String getAddressUiComponents(String countryCode, String languageCode,
-                @AddressValidationType int validationType, List<Integer> componentIds,
-                List<String> componentNames, List<Integer> componentRequired,
+
+        String getAddressUiComponents(
+                String countryCode,
+                String languageCode,
+                @AddressValidationType int validationType,
+                List<Integer> componentIds,
+                List<String> componentNames,
+                List<Integer> componentRequired,
                 List<Integer> componentLengths);
     }
 }

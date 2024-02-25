@@ -11,15 +11,16 @@
 window.initialId = scheduler.taskId;
 window.results = [];
 const expected = [
-  { value: "not ancestor", name: "Inline script task" },
-  { value: "not ancestor", name: "External blocking script task" },
-  { value: "not ancestor", name: "Inline module script task" },
+  { value: "ancestor", name: "Inline script task" },
+  { value: "ancestor", name: "Inline module script task" },
+  { value: "ancestor", name: "External blocking script task" },
 ];
 
 const scriptToEval = `window.results.push(scheduler.isAncestor(window.initialId));`;
 document.write("<script>" + scriptToEval + "<\/script>");
-document.write("<script src='resources/script.js'><\/script>");
 document.write("<script type=module>" + scriptToEval + "<\/script>");
+document.write("<script src='resources/script.js'><\/script>");
+// TODO(https://crbug.com/1478359): Add more tests for deferred scripts, etc.
 promise_test(() => {
   return new Promise(async resolve => {
     // Wait till all the results come in.

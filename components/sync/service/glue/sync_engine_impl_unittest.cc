@@ -613,7 +613,7 @@ TEST_F(SyncEngineImplTest, ShouldEnableInvalidationsWhenStartedHandling) {
 
 TEST_F(SyncEngineImplTest, ShouldEnableInvalidationsOnTokenUpdate) {
   EXPECT_CALL(mock_sync_invalidations_service_, GetFCMRegistrationToken)
-      .WillRepeatedly(Return(absl::nullopt));
+      .WillRepeatedly(Return(std::nullopt));
   InitializeBackend(/*expect_success=*/true);
   fake_manager_->WaitForSyncThread();
 
@@ -636,29 +636,6 @@ TEST_F(SyncEngineImplTest, GenerateCacheGUID) {
   EXPECT_EQ(24U, guid1.size());
   EXPECT_EQ(24U, guid2.size());
   EXPECT_NE(guid1, guid2);
-}
-
-TEST_F(SyncEngineImplTest, ShouldPopulateAccountIdCachedInPrefs) {
-  SyncTransportDataPrefs transport_data_prefs(&pref_service_);
-  transport_data_prefs.SetCacheGuid(kTestCacheGuid);
-  transport_data_prefs.SetBirthday(kTestBirthday);
-
-  InitializeBackend();
-
-  ASSERT_EQ(kTestCacheGuid, transport_data_prefs.GetCacheGuid());
-  EXPECT_EQ(kTestGaiaId, transport_data_prefs.GetGaiaId());
-}
-
-TEST_F(SyncEngineImplTest,
-       ShouldNotPopulateAccountIdCachedInPrefsWithLocalSync) {
-  SyncTransportDataPrefs transport_data_prefs(&pref_service_);
-  transport_data_prefs.SetCacheGuid(kTestCacheGuid);
-  transport_data_prefs.SetBirthday(kTestBirthday);
-
-  InitializeBackend(/*expect_success=*/true, /*gaia_id=*/std::string());
-
-  ASSERT_EQ(kTestCacheGuid, transport_data_prefs.GetCacheGuid());
-  EXPECT_TRUE(transport_data_prefs.GetGaiaId().empty());
 }
 
 TEST_F(SyncEngineImplTest, ShouldLoadSyncDataUponInitialization) {
@@ -724,6 +701,7 @@ TEST_F(SyncEngineImplTest, ShouldReturnWhetherNextPollTimePassed) {
   SyncTransportDataPrefs transport_data_prefs(&pref_service_);
   transport_data_prefs.SetCacheGuid(kTestCacheGuid);
   transport_data_prefs.SetBirthday(kTestBirthday);
+  transport_data_prefs.SetGaiaId(kTestGaiaId);
 
   transport_data_prefs.SetLastPollTime(base::Time::Now() - base::Hours(5));
   transport_data_prefs.SetPollInterval(base::Hours(4));

@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "base/functional/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/heap/persistent.h"
@@ -105,10 +106,6 @@ class PLATFORM_EXPORT EventLoop final : public WTF::RefCounted<EventLoop> {
 
   bool IsSchedulerAttachedForTest(FrameOrWorkerScheduler*);
 
-  bool RejectsPromisesOnEachCompletion() const {
-    return reject_promises_on_completion_;
-  }
-
  private:
   friend class WTF::RefCounted<EventLoop>;
   friend blink::Agent;
@@ -117,20 +114,17 @@ class PLATFORM_EXPORT EventLoop final : public WTF::RefCounted<EventLoop> {
             v8::Isolate* isolate,
             std::unique_ptr<v8::MicrotaskQueue> microtask_queue);
   ~EventLoop();
-  void AddCompletedCallbackIfNecessary();
 
   static void RunPendingMicrotask(void* data);
   static void RunEndOfCheckpointTasks(v8::Isolate* isolat, void* data);
 
   WeakPersistent<Delegate> delegate_;
-  v8::Isolate* isolate_;
+  raw_ptr<v8::Isolate> isolate_;
   bool loop_enabled_ = true;
-  bool register_complete_callback_ = false;
   Deque<base::OnceClosure> pending_microtasks_;
   Vector<base::OnceClosure> end_of_checkpoint_tasks_;
   std::unique_ptr<v8::MicrotaskQueue> microtask_queue_;
   HashSet<FrameOrWorkerScheduler*> schedulers_;
-  const bool reject_promises_on_completion_;
 };
 
 }  // namespace scheduler

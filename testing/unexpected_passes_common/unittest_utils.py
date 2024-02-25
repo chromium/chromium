@@ -67,6 +67,7 @@ def CreateGenericQuerier(
     num_samples: Optional[int] = None,
     large_query_mode: Optional[bool] = None,
     num_jobs: Optional[int] = None,
+    use_batching: bool = True,
     cls: Optional[Type[queries_module.BigQueryQuerier]] = None
 ) -> queries_module.BigQueryQuerier:
   suite = suite or 'pixel'
@@ -74,7 +75,8 @@ def CreateGenericQuerier(
   num_samples = num_samples or 5
   large_query_mode = large_query_mode or False
   cls = cls or SimpleBigQueryQuerier
-  return cls(suite, project, num_samples, large_query_mode, num_jobs)
+  return cls(suite, project, num_samples, large_query_mode, num_jobs,
+             use_batching)
 
 
 def GetArgsForMockCall(call_args_list: List[tuple],

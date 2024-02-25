@@ -70,6 +70,12 @@ id<GREYAction> TapAtPointPercentage(CGFloat xOriginStartPercentage,
 // not too much to have the cell being deleted right away.
 id<GREYAction> SwipeToShowDeleteButton();
 
+// Action to simulate the behaviour of swiping right using the 3-finger gesture
+// with VoiceOver. This gesture "jump" to the next screen of the scroll view. To
+// simulate it, it is changing the content offset and triggering scroll view
+// delegate methods as there is no way to actually trigger the gesture.
+id<GREYAction> AccessibilitySwipeRight();
+
 }  // namespace chrome_test_util
 
 #endif  // IOS_CHROME_TEST_EARL_GREY_CHROME_ACTIONS_H_

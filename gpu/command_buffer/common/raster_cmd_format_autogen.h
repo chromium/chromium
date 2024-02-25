@@ -395,6 +395,7 @@ struct BeginRasterCHROMIUMImmediate {
             gpu::raster::MsaaMode _msaa_mode,
             GLboolean _can_use_lcd_text,
             GLboolean _visible,
+            GLfloat _hdr_headroom,
             const GLbyte* _mailbox) {
     SetHeader();
     r = _r;
@@ -406,6 +407,7 @@ struct BeginRasterCHROMIUMImmediate {
     msaa_mode = _msaa_mode;
     can_use_lcd_text = _can_use_lcd_text;
     visible = _visible;
+    hdr_headroom = _hdr_headroom;
     memcpy(ImmediateDataAddress(this), _mailbox, ComputeDataSize());
   }
 
@@ -419,10 +421,11 @@ struct BeginRasterCHROMIUMImmediate {
             gpu::raster::MsaaMode _msaa_mode,
             GLboolean _can_use_lcd_text,
             GLboolean _visible,
+            GLfloat _hdr_headroom,
             const GLbyte* _mailbox) {
-    static_cast<ValueType*>(cmd)->Init(_r, _g, _b, _a, _needs_clear,
-                                       _msaa_sample_count, _msaa_mode,
-                                       _can_use_lcd_text, _visible, _mailbox);
+    static_cast<ValueType*>(cmd)->Init(
+        _r, _g, _b, _a, _needs_clear, _msaa_sample_count, _msaa_mode,
+        _can_use_lcd_text, _visible, _hdr_headroom, _mailbox);
     const uint32_t size = ComputeSize();
     return NextImmediateCmdAddressTotalSize<ValueType>(cmd, size);
   }
@@ -437,10 +440,11 @@ struct BeginRasterCHROMIUMImmediate {
   uint32_t msaa_mode;
   uint32_t can_use_lcd_text;
   uint32_t visible;
+  float hdr_headroom;
 };
 
-static_assert(sizeof(BeginRasterCHROMIUMImmediate) == 40,
-              "size of BeginRasterCHROMIUMImmediate should be 40");
+static_assert(sizeof(BeginRasterCHROMIUMImmediate) == 44,
+              "size of BeginRasterCHROMIUMImmediate should be 44");
 static_assert(offsetof(BeginRasterCHROMIUMImmediate, header) == 0,
               "offset of BeginRasterCHROMIUMImmediate header should be 0");
 static_assert(offsetof(BeginRasterCHROMIUMImmediate, r) == 4,
@@ -464,6 +468,9 @@ static_assert(
     "offset of BeginRasterCHROMIUMImmediate can_use_lcd_text should be 32");
 static_assert(offsetof(BeginRasterCHROMIUMImmediate, visible) == 36,
               "offset of BeginRasterCHROMIUMImmediate visible should be 36");
+static_assert(
+    offsetof(BeginRasterCHROMIUMImmediate, hdr_headroom) == 40,
+    "offset of BeginRasterCHROMIUMImmediate hdr_headroom should be 40");
 
 struct RasterCHROMIUM {
   typedef RasterCHROMIUM ValueType;
@@ -1427,11 +1434,19 @@ struct ConvertYUVAMailboxesToRGBINTERNALImmediate {
 
   void SetHeader() { header.SetCmdByTotalSize<ValueType>(ComputeSize()); }
 
-  void Init(GLenum _planes_yuv_color_space,
+  void Init(GLint _src_x,
+            GLint _src_y,
+            GLsizei _width,
+            GLsizei _height,
+            GLenum _planes_yuv_color_space,
             GLenum _plane_config,
             GLenum _subsampling,
             const GLbyte* _mailboxes) {
     SetHeader();
+    src_x = _src_x;
+    src_y = _src_y;
+    width = _width;
+    height = _height;
     planes_yuv_color_space = _planes_yuv_color_space;
     plane_config = _plane_config;
     subsampling = _subsampling;
@@ -1439,40 +1454,61 @@ struct ConvertYUVAMailboxesToRGBINTERNALImmediate {
   }
 
   void* Set(void* cmd,
+            GLint _src_x,
+            GLint _src_y,
+            GLsizei _width,
+            GLsizei _height,
             GLenum _planes_yuv_color_space,
             GLenum _plane_config,
             GLenum _subsampling,
             const GLbyte* _mailboxes) {
-    static_cast<ValueType*>(cmd)->Init(_planes_yuv_color_space, _plane_config,
+    static_cast<ValueType*>(cmd)->Init(_src_x, _src_y, _width, _height,
+                                       _planes_yuv_color_space, _plane_config,
                                        _subsampling, _mailboxes);
     const uint32_t size = ComputeSize();
     return NextImmediateCmdAddressTotalSize<ValueType>(cmd, size);
   }
 
   gpu::CommandHeader header;
+  int32_t src_x;
+  int32_t src_y;
+  int32_t width;
+  int32_t height;
   uint32_t planes_yuv_color_space;
   uint32_t plane_config;
   uint32_t subsampling;
 };
 
 static_assert(
-    sizeof(ConvertYUVAMailboxesToRGBINTERNALImmediate) == 16,
-    "size of ConvertYUVAMailboxesToRGBINTERNALImmediate should be 16");
+    sizeof(ConvertYUVAMailboxesToRGBINTERNALImmediate) == 32,
+    "size of ConvertYUVAMailboxesToRGBINTERNALImmediate should be 32");
 static_assert(
     offsetof(ConvertYUVAMailboxesToRGBINTERNALImmediate, header) == 0,
     "offset of ConvertYUVAMailboxesToRGBINTERNALImmediate header should be 0");
+static_assert(
+    offsetof(ConvertYUVAMailboxesToRGBINTERNALImmediate, src_x) == 4,
+    "offset of ConvertYUVAMailboxesToRGBINTERNALImmediate src_x should be 4");
+static_assert(
+    offsetof(ConvertYUVAMailboxesToRGBINTERNALImmediate, src_y) == 8,
+    "offset of ConvertYUVAMailboxesToRGBINTERNALImmediate src_y should be 8");
+static_assert(
+    offsetof(ConvertYUVAMailboxesToRGBINTERNALImmediate, width) == 12,
+    "offset of ConvertYUVAMailboxesToRGBINTERNALImmediate width should be 12");
+static_assert(
+    offsetof(ConvertYUVAMailboxesToRGBINTERNALImmediate, height) == 16,
+    "offset of ConvertYUVAMailboxesToRGBINTERNALImmediate height should be 16");
 static_assert(offsetof(ConvertYUVAMailboxesToRGBINTERNALImmediate,
-                       planes_yuv_color_space) == 4,
+                       planes_yuv_color_space) == 20,
               "offset of ConvertYUVAMailboxesToRGBINTERNALImmediate "
-              "planes_yuv_color_space should be 4");
+              "planes_yuv_color_space should be 20");
 static_assert(offsetof(ConvertYUVAMailboxesToRGBINTERNALImmediate,
-                       plane_config) == 8,
+                       plane_config) == 24,
               "offset of ConvertYUVAMailboxesToRGBINTERNALImmediate "
-              "plane_config should be 8");
+              "plane_config should be 24");
 static_assert(offsetof(ConvertYUVAMailboxesToRGBINTERNALImmediate,
-                       subsampling) == 12,
+                       subsampling) == 28,
               "offset of ConvertYUVAMailboxesToRGBINTERNALImmediate "
-              "subsampling should be 12");
+              "subsampling should be 28");
 
 struct ConvertRGBAToYUVAMailboxesINTERNALImmediate {
   typedef ConvertRGBAToYUVAMailboxesINTERNALImmediate ValueType;

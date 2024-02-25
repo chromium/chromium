@@ -6,6 +6,7 @@
 #define CHROMEOS_ASH_SERVICES_DEVICE_SYNC_CRYPTAUTH_ENROLLMENT_MANAGER_IMPL_H_
 
 #include <memory>
+#include <optional>
 #include <string>
 
 #include "base/memory/raw_ptr.h"
@@ -16,7 +17,6 @@
 #include "chromeos/ash/services/device_sync/cryptauth_gcm_manager.h"
 #include "chromeos/ash/services/device_sync/proto/cryptauth_api.pb.h"
 #include "chromeos/ash/services/device_sync/sync_scheduler.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 class PrefRegistrySimple;
 class PrefService;
@@ -99,7 +99,7 @@ class CryptAuthEnrollmentManagerImpl : public CryptAuthEnrollmentManager,
   void Start() override;
   void ForceEnrollmentNow(
       cryptauth::InvocationReason invocation_reason,
-      const absl::optional<std::string>& session_id) override;
+      const std::optional<std::string>& session_id) override;
   bool IsEnrollmentValid() const override;
   base::Time GetLastEnrollmentTime() const override;
   base::TimeDelta GetTimeToNextAttempt() const override;
@@ -137,8 +137,8 @@ class CryptAuthEnrollmentManagerImpl : public CryptAuthEnrollmentManager,
   // CryptAuthGCMManager::Observer:
   void OnGCMRegistrationResult(bool success) override;
   void OnReenrollMessage(
-      const absl::optional<std::string>& session_id,
-      const absl::optional<CryptAuthFeatureType>& feature_type) override;
+      const std::optional<std::string>& session_id,
+      const std::optional<CryptAuthFeatureType>& feature_type) override;
 
   // Callback when a new keypair is generated.
   void OnKeyPairGenerated(const std::string& public_key,
@@ -160,7 +160,7 @@ class CryptAuthEnrollmentManagerImpl : public CryptAuthEnrollmentManager,
   void OnEnrollmentFinished(bool success);
 
   // Used to determine the time.
-  raw_ptr<base::Clock, ExperimentalAsh> clock_;
+  raw_ptr<base::Clock> clock_;
 
   // Creates CryptAuthEnroller instances for each enrollment attempt.
   std::unique_ptr<CryptAuthEnrollerFactory> enroller_factory_;
@@ -174,12 +174,12 @@ class CryptAuthEnrollmentManagerImpl : public CryptAuthEnrollmentManager,
 
   //  Used to perform GCM registrations and also notifies when GCM push messages
   //  trigger re-enrollments. Not owned and must outlive this instance.
-  raw_ptr<CryptAuthGCMManager, ExperimentalAsh> gcm_manager_;
+  raw_ptr<CryptAuthGCMManager> gcm_manager_;
 
   // Contains perferences that outlive the lifetime of this object and across
   // process restarts.
   // Not owned and must outlive this instance.
-  raw_ptr<PrefService, ExperimentalAsh> pref_service_;
+  raw_ptr<PrefService> pref_service_;
 
   // Schedules the time between enrollment attempts.
   std::unique_ptr<SyncScheduler> scheduler_;

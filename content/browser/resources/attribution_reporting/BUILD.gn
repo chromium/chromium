@@ -12,10 +12,7 @@ build_webui("build") {
     "attribution_internals.css",
   ]
 
-  non_web_component_files = [
-    "attribution_internals.ts",
-    "table_model.ts",
-  ]
+  non_web_component_files = [ "attribution_internals.ts" ]
 
   web_component_files = [ "attribution_internals_table.ts" ]
 
@@ -33,8 +30,11 @@ build_webui("build") {
     "$root_gen_dir/$attribution_reporting_component_folder/registration.mojom-webui.ts",
     "$root_gen_dir/$attribution_reporting_component_folder/source_registration_time_config.mojom-webui.ts",
     "$root_gen_dir/$attribution_reporting_component_folder/source_type.mojom-webui.ts",
+    "$root_gen_dir/$attribution_reporting_component_folder/trigger_data_matching.mojom-webui.ts",
+    "$root_gen_dir/$attribution_reporting_content_folder/aggregatable_result.mojom-webui.ts",
     "$root_gen_dir/$attribution_reporting_content_folder/attribution_internals.mojom-webui.ts",
     "$root_gen_dir/$attribution_reporting_content_folder/attribution_reporting.mojom-webui.ts",
+    "$root_gen_dir/$attribution_reporting_content_folder/event_level_result.mojom-webui.ts",
     "$root_gen_dir/$attribution_reporting_content_folder/store_source_result.mojom-webui.ts",
     "$root_gen_dir/$network_folder/schemeful_site.mojom-webui.ts",
     "$root_gen_dir/$network_folder/attribution.mojom-webui.ts",
@@ -46,7 +46,7 @@ build_webui("build") {
     "//$attribution_reporting_component_folder:source_type_mojom_ts__generator",
     "//$attribution_reporting_content_folder:internals_mojo_bindings_ts__generator",
     "//$attribution_reporting_content_folder:mojo_bindings_ts__generator",
-    "//$attribution_reporting_content_folder:store_source_result_mojom_ts__generator",
+    "//$attribution_reporting_content_folder:registration_result_mojom_ts__generator",
     "//$network_folder:mojom_attribution_ts__generator",
     "//$network_folder:mojom_schemeful_site_ts__generator",
   ]

@@ -151,7 +151,7 @@ void DesktopDropTargetWin::Translate(
   *event = std::make_unique<ui::DropTargetEvent>(
       *(data->get()), gfx::PointF(location), gfx::PointF(root_location),
       ui::DragDropTypes::DropEffectToDragOperation(effect));
-  (*event)->set_flags(ConvertKeyStateToAuraEventFlags(key_state));
+  (*event)->SetFlags(ConvertKeyStateToAuraEventFlags(key_state));
   if (target_window_changed)
     (*delegate)->OnDragEntered(*event->get());
 }

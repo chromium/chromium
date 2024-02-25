@@ -15,7 +15,7 @@
 #include "base/dcheck_is_on.h"
 #include "base/memory/ref_counted.h"
 #include "base/sequence_checker.h"
-#include "base/strings/string_piece_forward.h"
+#include "base/strings/string_piece.h"
 #include "base/thread_annotations.h"
 #include "base/time/time.h"
 #include "sql/database.h"
@@ -56,6 +56,10 @@ enum class ColumnType {
 // in the connection object using set_error_delegate().
 class COMPONENT_EXPORT(SQL) Statement {
  public:
+  // Utility function that returns what //sql code encodes the 'time' value as
+  // in a database when using BindTime
+  static int64_t TimeToSqlValue(base::Time time);
+
   // Creates an uninitialized statement. The statement will be invalid until
   // you initialize it via Assign.
   Statement();
@@ -155,8 +159,8 @@ class COMPONENT_EXPORT(SQL) Statement {
   // * BindInt64(col, val.ToDeltaSinceWindowsEpoch().InMicroseconds())
   //
   // Features that serialize base::Time in other ways, such as ToTimeT() or
-  // ToJavaTime(), will require a database migration to be converted to this
-  // (recommended) serialization method.
+  // InMillisecondsSinceUnixEpoch(), will require a database migration to be
+  // converted to this (recommended) serialization method.
   //
   // TODO(crbug.com/1195962): Migrate all time serialization to this method, and
   //                          then remove the migration details above.
@@ -269,6 +273,9 @@ class COMPONENT_EXPORT(SQL) Statement {
   // Helper for Run() and Step(), calls sqlite3_step() and returns the checked
   // value from it.
   SqliteResultCode StepInternal();
+
+  // Retrieve and log the count of VM steps required to execute the query.
+  void ReportQueryExecutionMetrics() const;
 
   // The actual sqlite statement. This may be unique to us, or it may be cached
   // by the Database, which is why it's ref-counted. This pointer is

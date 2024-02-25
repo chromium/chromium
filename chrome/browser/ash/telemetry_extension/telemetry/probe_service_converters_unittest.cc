@@ -5,6 +5,7 @@
 #include "chrome/browser/ash/telemetry_extension/telemetry/probe_service_converters.h"
 
 #include <cstdint>
+#include <optional>
 #include <utility>
 #include <vector>
 
@@ -14,7 +15,6 @@
 #include "chromeos/services/network_health/public/mojom/network_health_types.mojom.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ash::converters::telemetry {
 
@@ -58,7 +58,8 @@ TEST(ProbeServiceConverters, ConvertCategoryVector) {
       crosapi::mojom::ProbeCategoryEnum::kTpm,
       crosapi::mojom::ProbeCategoryEnum::kAudio,
       crosapi::mojom::ProbeCategoryEnum::kBus,
-      crosapi::mojom::ProbeCategoryEnum::kDisplay};
+      crosapi::mojom::ProbeCategoryEnum::kDisplay,
+      crosapi::mojom::ProbeCategoryEnum::kThermal};
   EXPECT_THAT(
       ConvertCategoryVector(kInput),
       ElementsAre(
@@ -78,7 +79,8 @@ TEST(ProbeServiceConverters, ConvertCategoryVector) {
           cros_healthd::mojom::ProbeCategoryEnum::kTpm,
           cros_healthd::mojom::ProbeCategoryEnum::kAudio,
           cros_healthd::mojom::ProbeCategoryEnum::kBus,
-          cros_healthd::mojom::ProbeCategoryEnum::kDisplay));
+          cros_healthd::mojom::ProbeCategoryEnum::kDisplay,
+          cros_healthd::mojom::ProbeCategoryEnum::kThermal));
 }
 
 TEST(ProbeServiceConverters, ErrorType) {
@@ -315,7 +317,7 @@ TEST(ProbeServiceConverters, ProbeUsbSpecSpeed) {
   EXPECT_EQ(Convert(cros_healthd::mojom::UsbSpecSpeed::k12Mbps),
             crosapi::mojom::ProbeUsbSpecSpeed::k12Mbps);
 
-  EXPECT_EQ(Convert(cros_healthd::mojom::UsbSpecSpeed::kDeprecateSpeed),
+  EXPECT_EQ(Convert(cros_healthd::mojom::UsbSpecSpeed::kDeprecatedSpeed),
             crosapi::mojom::ProbeUsbSpecSpeed::kUnknown);
 
   EXPECT_EQ(Convert(cros_healthd::mojom::UsbSpecSpeed::k480Mbps),
@@ -1598,10 +1600,10 @@ TEST(ProbeServiceConverters, DisplayResultPtrInfo) {
         std::string(kDisplayNameExternal));
 
     auto external_display_empty = cros_healthd::mojom::ExternalDisplayInfo::New(
-        nullptr, nullptr, nullptr, nullptr, nullptr, absl::nullopt, nullptr,
-        nullptr, nullptr, nullptr, absl::nullopt,
+        nullptr, nullptr, nullptr, nullptr, nullptr, std::nullopt, nullptr,
+        nullptr, nullptr, nullptr, std::nullopt,
         cros_healthd::mojom::DisplayInputType::kUnmappedEnumField,
-        absl::nullopt);
+        std::nullopt);
 
     std::vector<cros_healthd::mojom::ExternalDisplayInfoPtr> external_displays;
     external_displays.push_back(std::move(external_display_1));
@@ -1646,6 +1648,76 @@ TEST(ProbeServiceConverters, DisplayResultPtrInfo) {
   // Check equality for external display 2
   EXPECT_EQ(external_displays[1],
             crosapi::mojom::ProbeExternalDisplayInfo::New());
+}
+
+TEST(ProbeServiceConverters, ProbeThermalSensorSource) {
+  EXPECT_EQ(Convert(cros_healthd::mojom::ThermalSensorInfo::
+                        ThermalSensorSource::kUnmappedEnumField),
+            crosapi::mojom::ProbeThermalSensorSource::kUnmappedEnumField);
+
+  EXPECT_EQ(
+      Convert(cros_healthd::mojom::ThermalSensorInfo::ThermalSensorSource::kEc),
+      crosapi::mojom::ProbeThermalSensorSource::kEc);
+
+  EXPECT_EQ(
+      Convert(
+          cros_healthd::mojom::ThermalSensorInfo::ThermalSensorSource::kSysFs),
+      crosapi::mojom::ProbeThermalSensorSource::kSysFs);
+}
+
+TEST(ProbeServiceConverters, ThermalResultPtrError) {
+  const auto output =
+      ConvertProbePtr(cros_healthd::mojom::ThermalResult::NewError(nullptr));
+  ASSERT_TRUE(output);
+  EXPECT_TRUE(output->is_error());
+}
+
+TEST(ProbeServiceConverters, ThermalResultPtrInfo) {
+  // Constants for thermal sensor 1
+  constexpr char kSensorName1[] = "thermal_sensor_1";
+  constexpr double kSensorTemp1 = 100;
+  constexpr cros_healthd::mojom::ThermalSensorInfo::ThermalSensorSource
+      kSensorSource1 =
+          cros_healthd::mojom::ThermalSensorInfo::ThermalSensorSource::kEc;
+
+  // Constants for thermal sensor 2
+  constexpr char kSensorName2[] = "thermal_sensor_2";
+  constexpr double kSensorTemp2 = 50;
+  constexpr cros_healthd::mojom::ThermalSensorInfo::ThermalSensorSource
+      kSensorSource2 =
+          cros_healthd::mojom::ThermalSensorInfo::ThermalSensorSource::kSysFs;
+
+  cros_healthd::mojom::ThermalResultPtr input;
+  {
+    auto thermal_sensor_1 = cros_healthd::mojom::ThermalSensorInfo::New(
+        kSensorName1, kSensorTemp1, kSensorSource1);
+
+    auto thermal_sensor_2 = cros_healthd::mojom::ThermalSensorInfo::New(
+        kSensorName2, kSensorTemp2, kSensorSource2);
+
+    std::vector<cros_healthd::mojom::ThermalSensorInfoPtr> thermal_sensors;
+    thermal_sensors.push_back(std::move(thermal_sensor_1));
+    thermal_sensors.push_back(std::move(thermal_sensor_2));
+
+    auto info = cros_healthd::mojom::ThermalInfo::New();
+    info->thermal_sensors = std::move(thermal_sensors);
+
+    input = cros_healthd::mojom::ThermalResult::NewThermalInfo(std::move(info));
+  }
+
+  const auto output = ConvertProbePtr(std::move(input));
+  ASSERT_TRUE(output);
+  ASSERT_TRUE(output->is_thermal_info());
+  const auto& thermal_sensors = output->get_thermal_info()->thermal_sensors;
+  ASSERT_EQ(thermal_sensors.size(), 2UL);
+  // Check equality for thermal sensor 1.
+  EXPECT_EQ(thermal_sensors[0],
+            crosapi::mojom::ProbeThermalSensorInfo::New(
+                kSensorName1, kSensorTemp1, Convert(kSensorSource1)));
+  // Check equality for thermal sensor 2.
+  EXPECT_EQ(thermal_sensors[1],
+            crosapi::mojom::ProbeThermalSensorInfo::New(
+                kSensorName2, kSensorTemp2, Convert(kSensorSource2)));
 }
 
 TEST(ProbeServiceConverters, TelemetryInfoPtrWithNotNullFields) {
@@ -1700,7 +1772,7 @@ TEST(ProbeServiceConverters, TelemetryInfoPtrWithNotNullFields) {
                   crosapi::mojom::DoubleValue::New(0.),
                   crosapi::mojom::DoubleValue::New(0.), "",
                   crosapi::mojom::DoubleValue::New(0.),
-                  crosapi::mojom::DoubleValue::New(0.), "", "", absl::nullopt,
+                  crosapi::mojom::DoubleValue::New(0.), "", "", std::nullopt,
                   nullptr)),
           crosapi::mojom::ProbeNonRemovableBlockDeviceResult::
               NewBlockDeviceInfo({}),
@@ -1738,8 +1810,8 @@ TEST(ProbeServiceConverters, TelemetryInfoPtrWithNotNullFields) {
                   crosapi::mojom::BoolValue::New(false),
                   crosapi::mojom::BoolValue::New(false),
                   crosapi::mojom::UInt32Value::New(0),
-                  crosapi::mojom::UInt32Value::New(0), absl::nullopt,
-                  absl::nullopt)),
+                  crosapi::mojom::UInt32Value::New(0), std::nullopt,
+                  std::nullopt)),
           crosapi::mojom::ProbeBusResult::NewBusDevicesInfo(
               std::vector<crosapi::mojom::ProbeBusInfoPtr>()),
           crosapi::mojom::ProbeDisplayResult::NewDisplayInfo(

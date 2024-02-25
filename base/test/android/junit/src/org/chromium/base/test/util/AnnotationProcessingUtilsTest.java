@@ -41,10 +41,11 @@ public class AnnotationProcessingUtilsTest {
     public void testGetTargetAnnotation_NotOnClassNorMethod() {
         TargetAnnotation retrievedAnnotation;
 
-        retrievedAnnotation = AnnotationProcessingUtils.getAnnotation(
-                createTestDescription(
-                        ClassWithoutTargetAnnotation.class, "methodWithoutAnnotation"),
-                TargetAnnotation.class);
+        retrievedAnnotation =
+                AnnotationProcessingUtils.getAnnotation(
+                        createTestDescription(
+                                ClassWithoutTargetAnnotation.class, "methodWithoutAnnotation"),
+                        TargetAnnotation.class);
         assertNull(retrievedAnnotation);
     }
 
@@ -52,9 +53,10 @@ public class AnnotationProcessingUtilsTest {
     public void testGetTargetAnnotation_NotOnClassButOnMethod() {
         TargetAnnotation retrievedAnnotation;
 
-        retrievedAnnotation = AnnotationProcessingUtils.getAnnotation(
-                getTest(ClassWithoutTargetAnnotation.class, "methodWithTargetAnnotation"),
-                TargetAnnotation.class);
+        retrievedAnnotation =
+                AnnotationProcessingUtils.getAnnotation(
+                        getTest(ClassWithoutTargetAnnotation.class, "methodWithTargetAnnotation"),
+                        TargetAnnotation.class);
         assertNotNull(retrievedAnnotation);
     }
 
@@ -62,9 +64,12 @@ public class AnnotationProcessingUtilsTest {
     public void testGetTargetAnnotation_NotOnClassDifferentOneOnMethod() {
         TargetAnnotation retrievedAnnotation;
 
-        retrievedAnnotation = AnnotationProcessingUtils.getAnnotation(
-                getTest(ClassWithoutTargetAnnotation.class, "methodWithAnnotatedAnnotation"),
-                TargetAnnotation.class);
+        retrievedAnnotation =
+                AnnotationProcessingUtils.getAnnotation(
+                        getTest(
+                                ClassWithoutTargetAnnotation.class,
+                                "methodWithAnnotatedAnnotation"),
+                        TargetAnnotation.class);
         assertNull(retrievedAnnotation);
     }
 
@@ -72,9 +77,10 @@ public class AnnotationProcessingUtilsTest {
     public void testGetTargetAnnotation_OnClassButNotOnMethod() {
         TargetAnnotation retrievedAnnotation;
 
-        retrievedAnnotation = AnnotationProcessingUtils.getAnnotation(
-                getTest(ClassWithAnnotation.class, "methodWithoutAnnotation"),
-                TargetAnnotation.class);
+        retrievedAnnotation =
+                AnnotationProcessingUtils.getAnnotation(
+                        getTest(ClassWithAnnotation.class, "methodWithoutAnnotation"),
+                        TargetAnnotation.class);
         assertNotNull(retrievedAnnotation);
         assertEquals(Location.Class, retrievedAnnotation.value());
     }
@@ -83,9 +89,10 @@ public class AnnotationProcessingUtilsTest {
     public void testGetTargetAnnotation_OnClassAndMethod() {
         TargetAnnotation retrievedAnnotation;
 
-        retrievedAnnotation = AnnotationProcessingUtils.getAnnotation(
-                getTest(ClassWithAnnotation.class, "methodWithTargetAnnotation"),
-                TargetAnnotation.class);
+        retrievedAnnotation =
+                AnnotationProcessingUtils.getAnnotation(
+                        getTest(ClassWithAnnotation.class, "methodWithTargetAnnotation"),
+                        TargetAnnotation.class);
         assertNotNull(retrievedAnnotation);
         assertEquals(Location.Method, retrievedAnnotation.value());
     }
@@ -95,8 +102,10 @@ public class AnnotationProcessingUtilsTest {
     public void testGetTargetAnnotation_OnRuleButNotOnMethod() {
         TargetAnnotation retrievedAnnotation;
 
-        retrievedAnnotation = AnnotationProcessingUtils.getAnnotation(
-                getTest(ClassWithRule.class, "methodWithoutAnnotation"), TargetAnnotation.class);
+        retrievedAnnotation =
+                AnnotationProcessingUtils.getAnnotation(
+                        getTest(ClassWithRule.class, "methodWithoutAnnotation"),
+                        TargetAnnotation.class);
         assertNotNull(retrievedAnnotation);
         assertEquals(Location.Rule, retrievedAnnotation.value());
     }
@@ -106,8 +115,10 @@ public class AnnotationProcessingUtilsTest {
     public void testGetTargetAnnotation_OnRuleAndMethod() {
         TargetAnnotation retrievedAnnotation;
 
-        retrievedAnnotation = AnnotationProcessingUtils.getAnnotation(
-                getTest(ClassWithRule.class, "methodWithTargetAnnotation"), TargetAnnotation.class);
+        retrievedAnnotation =
+                AnnotationProcessingUtils.getAnnotation(
+                        getTest(ClassWithRule.class, "methodWithTargetAnnotation"),
+                        TargetAnnotation.class);
         assertNotNull(retrievedAnnotation);
         assertEquals(Location.Method, retrievedAnnotation.value());
     }
@@ -116,9 +127,12 @@ public class AnnotationProcessingUtilsTest {
     public void testGetMetaAnnotation_Indirectly() {
         MetaAnnotation retrievedAnnotation;
 
-        retrievedAnnotation = AnnotationProcessingUtils.getAnnotation(
-                getTest(ClassWithoutTargetAnnotation.class, "methodWithAnnotatedAnnotation"),
-                MetaAnnotation.class);
+        retrievedAnnotation =
+                AnnotationProcessingUtils.getAnnotation(
+                        getTest(
+                                ClassWithoutTargetAnnotation.class,
+                                "methodWithAnnotatedAnnotation"),
+                        MetaAnnotation.class);
         assertNotNull(retrievedAnnotation);
     }
 
@@ -126,9 +140,10 @@ public class AnnotationProcessingUtilsTest {
     public void testGetAllTargetAnnotations() {
         List<TargetAnnotation> retrievedAnnotations;
 
-        retrievedAnnotations = AnnotationProcessingUtils.getAnnotations(
-                getTest(ClassWithAnnotation.class, "methodWithTargetAnnotation"),
-                TargetAnnotation.class);
+        retrievedAnnotations =
+                AnnotationProcessingUtils.getAnnotations(
+                        getTest(ClassWithAnnotation.class, "methodWithTargetAnnotation"),
+                        TargetAnnotation.class);
         assertEquals(2, retrievedAnnotations.size());
         assertEquals(Location.Class, retrievedAnnotations.get(0).value());
         assertEquals(Location.Method, retrievedAnnotations.get(1).value());
@@ -138,9 +153,10 @@ public class AnnotationProcessingUtilsTest {
     public void testGetAllTargetAnnotations_OnParentClass() {
         List<TargetAnnotation> retrievedAnnotations;
 
-        retrievedAnnotations = AnnotationProcessingUtils.getAnnotations(
-                getTest(DerivedClassWithoutAnnotation.class, "newMethodWithoutAnnotation"),
-                TargetAnnotation.class);
+        retrievedAnnotations =
+                AnnotationProcessingUtils.getAnnotations(
+                        getTest(DerivedClassWithoutAnnotation.class, "newMethodWithoutAnnotation"),
+                        TargetAnnotation.class);
         assertEquals(1, retrievedAnnotations.size());
         assertEquals(Location.Class, retrievedAnnotations.get(0).value());
     }
@@ -149,9 +165,12 @@ public class AnnotationProcessingUtilsTest {
     public void testGetAllTargetAnnotations_OnDerivedMethodAndParentClass() {
         List<TargetAnnotation> retrievedAnnotations;
 
-        retrievedAnnotations = AnnotationProcessingUtils.getAnnotations(
-                getTest(DerivedClassWithoutAnnotation.class, "newMethodWithTargetAnnotation"),
-                TargetAnnotation.class);
+        retrievedAnnotations =
+                AnnotationProcessingUtils.getAnnotations(
+                        getTest(
+                                DerivedClassWithoutAnnotation.class,
+                                "newMethodWithTargetAnnotation"),
+                        TargetAnnotation.class);
         assertEquals(2, retrievedAnnotations.size());
         assertEquals(Location.Class, retrievedAnnotations.get(0).value());
         assertEquals(Location.DerivedMethod, retrievedAnnotations.get(1).value());
@@ -161,9 +180,10 @@ public class AnnotationProcessingUtilsTest {
     public void testGetAllTargetAnnotations_OnDerivedMethodAndParentClassAndMethod() {
         List<TargetAnnotation> retrievedAnnotations;
 
-        retrievedAnnotations = AnnotationProcessingUtils.getAnnotations(
-                getTest(DerivedClassWithoutAnnotation.class, "methodWithTargetAnnotation"),
-                TargetAnnotation.class);
+        retrievedAnnotations =
+                AnnotationProcessingUtils.getAnnotations(
+                        getTest(DerivedClassWithoutAnnotation.class, "methodWithTargetAnnotation"),
+                        TargetAnnotation.class);
         // We should not look at the base implementation of the method. Mostly it should not happen
         // in the context of tests.
         assertEquals(2, retrievedAnnotations.size());
@@ -175,9 +195,10 @@ public class AnnotationProcessingUtilsTest {
     public void testGetAllTargetAnnotations_OnDerivedParentAndParentClass() {
         List<TargetAnnotation> retrievedAnnotations;
 
-        retrievedAnnotations = AnnotationProcessingUtils.getAnnotations(
-                getTest(DerivedClassWithAnnotation.class, "methodWithoutAnnotation"),
-                TargetAnnotation.class);
+        retrievedAnnotations =
+                AnnotationProcessingUtils.getAnnotations(
+                        getTest(DerivedClassWithAnnotation.class, "methodWithoutAnnotation"),
+                        TargetAnnotation.class);
         assertEquals(2, retrievedAnnotations.size());
         assertEquals(Location.Class, retrievedAnnotations.get(0).value());
         assertEquals(Location.DerivedClass, retrievedAnnotations.get(1).value());
@@ -187,10 +208,12 @@ public class AnnotationProcessingUtilsTest {
     public void testGetAllAnnotations() {
         List<Annotation> annotations;
 
-        AnnotationExtractor annotationExtractor = new AnnotationExtractor(
-                TargetAnnotation.class, MetaAnnotation.class, AnnotatedAnnotation.class);
-        annotations = annotationExtractor.getMatchingAnnotations(
-                getTest(DerivedClassWithAnnotation.class, "methodWithTwoAnnotations"));
+        AnnotationExtractor annotationExtractor =
+                new AnnotationExtractor(
+                        TargetAnnotation.class, MetaAnnotation.class, AnnotatedAnnotation.class);
+        annotations =
+                annotationExtractor.getMatchingAnnotations(
+                        getTest(DerivedClassWithAnnotation.class, "methodWithTwoAnnotations"));
         assertEquals(5, annotations.size());
 
         // Retrieved annotation order:
@@ -220,7 +243,8 @@ public class AnnotationProcessingUtilsTest {
         List<Class<? extends Annotation>> testList =
                 Arrays.asList(Rule.class, Test.class, Override.class, Target.class, Rule.class);
         testList.sort(comparator);
-        assertThat("Unknown annotations should not be reordered and come before the known ones.",
+        assertThat(
+                "Unknown annotations should not be reordered and come before the known ones.",
                 testList,
                 contains(Rule.class, Test.class, Override.class, Rule.class, Target.class));
     }
@@ -256,7 +280,14 @@ public class AnnotationProcessingUtilsTest {
     }
 
     // region Test Data: Annotations and dummy test classes
-    private enum Location { Unspecified, Class, Method, Rule, DerivedClass, DerivedMethod }
+    private enum Location {
+        Unspecified,
+        Class,
+        Method,
+        Rule,
+        DerivedClass,
+        DerivedMethod
+    }
 
     @Retention(RetentionPolicy.RUNTIME)
     @Target({ElementType.TYPE, ElementType.METHOD})
@@ -333,8 +364,7 @@ public class AnnotationProcessingUtilsTest {
     }
 
     private static class ClassWithRule {
-        @Rule
-        Rule1 mRule = new Rule1();
+        @Rule Rule1 mRule = new Rule1();
 
         @Test
         public void methodWithoutAnnotation() {}
@@ -374,4 +404,4 @@ public class AnnotationProcessingUtilsTest {
     }
 
     // endregion
-    }
+}

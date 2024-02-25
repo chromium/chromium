@@ -7,6 +7,8 @@
 #include <sys/stat.h>
 
 #include <map>
+#include <optional>
+#include <string_view>
 
 #include "base/containers/contains.h"
 #include "base/files/file_path.h"
@@ -39,7 +41,7 @@ constexpr char kCookiesPath[] = "Cookies";
 constexpr char kCachePath[] = "Cache";
 constexpr char kCodeCachePath[] = "Code Cache";
 constexpr char kCodeCacheUMAName[] = "CodeCache";
-constexpr base::StringPiece kTextFileContent = "Hello, World!";
+constexpr std::string_view kTextFileContent = "Hello, World!";
 constexpr char kMoveExtensionId[] = "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx";
 
 // ID of an extension that runs in both Lacros and Ash chrome.
@@ -208,7 +210,7 @@ TEST(BrowserDataMigratorUtilTest, NoPathOverlaps) {
                             base::span<const char* const> paths_group_b) {
     for (const char* path_a : paths_group_a) {
       for (const char* path_b : paths_group_b) {
-        if (base::StringPiece(path_a) == base::StringPiece(path_b)) {
+        if (std::string_view(path_a) == std::string_view(path_b)) {
           LOG(ERROR) << "The following path appears in multiple sets: "
                      << path_a;
           return false;
@@ -881,7 +883,7 @@ TEST(BrowserDataMigratorUtilTest, MigratePreferencesContents) {
   auto contents = MigratePreferencesContents(original_contents);
   EXPECT_TRUE(contents.has_value());
 
-  absl::optional<base::Value> ash_root = base::JSONReader::Read(contents->ash);
+  std::optional<base::Value> ash_root = base::JSONReader::Read(contents->ash);
   EXPECT_TRUE(ash_root.has_value());
   base::Value::Dict* ash_root_dict = ash_root->GetIfDict();
   EXPECT_NE(nullptr, ash_root_dict);
@@ -901,7 +903,7 @@ TEST(BrowserDataMigratorUtilTest, MigratePreferencesContents) {
   EXPECT_EQ(kExtensionsAshOnly[0], (*ash_extension_list)[0].GetString());
   EXPECT_EQ(GetBothChromesExtensionId(), (*ash_extension_list)[1].GetString());
 
-  absl::optional<base::Value> lacros_root =
+  std::optional<base::Value> lacros_root =
       base::JSONReader::Read(contents->lacros);
   EXPECT_TRUE(lacros_root.has_value());
   base::Value::Dict* lacros_root_dict = lacros_root->GetIfDict();
@@ -954,7 +956,7 @@ TEST(BrowserDataMigratorUtilTest, MigratePreferences) {
   EXPECT_TRUE(
       base::ReadFileToString(lacros_preferences_path, &lacros_contents));
 
-  absl::optional<base::Value> ash_root = base::JSONReader::Read(ash_contents);
+  std::optional<base::Value> ash_root = base::JSONReader::Read(ash_contents);
   EXPECT_TRUE(ash_root.has_value());
   base::Value::Dict* ash_root_dict = ash_root->GetIfDict();
   EXPECT_NE(nullptr, ash_root_dict);
@@ -964,7 +966,7 @@ TEST(BrowserDataMigratorUtilTest, MigratePreferences) {
             *ash_root_dict->FindStringByDottedPath(kAshOnlyPreferencesKeys[0]));
   EXPECT_EQ("test3", *ash_root_dict->FindStringByDottedPath("unrelated.key"));
 
-  absl::optional<base::Value> lacros_root =
+  std::optional<base::Value> lacros_root =
       base::JSONReader::Read(lacros_contents);
   EXPECT_TRUE(lacros_root.has_value());
   base::Value::Dict* lacros_root_dict = lacros_root->GetIfDict();
@@ -975,6 +977,12 @@ TEST(BrowserDataMigratorUtilTest, MigratePreferences) {
                          kLacrosOnlyPreferencesKeys[0]));
   EXPECT_EQ("test3",
             *lacros_root_dict->FindStringByDottedPath("unrelated.key"));
+
+  std::optional<bool> sync_feature_setup_completed =
+      lacros_root_dict->FindBoolByDottedPath(
+          kSyncInitialSyncFeatureSetupCompletePrefName);
+  ASSERT_NE(std::nullopt, sync_feature_setup_completed);
+  EXPECT_TRUE(*sync_feature_setup_completed);
 }
 
 }  // namespace ash::browser_data_migrator_util

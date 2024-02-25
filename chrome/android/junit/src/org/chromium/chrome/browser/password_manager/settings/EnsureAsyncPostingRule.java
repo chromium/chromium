@@ -26,10 +26,10 @@ public class EnsureAsyncPostingRule extends ExternalResource {
         // Pause the scheduler, otherwise tasks which should run asynchronously will run
         // synchronously and confuse the tests.
         mScheduler.pause();
-    };
+    }
 
     @Override
     protected void after() {
         if (!mWasSchedulerPaused) mScheduler.unPause();
-    };
+    }
 }

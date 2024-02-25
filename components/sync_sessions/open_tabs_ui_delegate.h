@@ -8,6 +8,7 @@
 #include <string>
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted_memory.h"
 #include "components/favicon_base/favicon_types.h"
 #include "components/sessions/core/session_id.h"
@@ -23,7 +24,8 @@ class OpenTabsUIDelegate {
   // recent. Caller does NOT own SyncedSession objects.
   // Returns true if foreign sessions were found, false otherwise.
   virtual bool GetAllForeignSessions(
-      std::vector<const SyncedSession*>* sessions) = 0;
+      std::vector<raw_ptr<const SyncedSession, VectorExperimental>>*
+          sessions) = 0;
 
   // Looks up the foreign tab identified by |tab_id| and belonging to foreign
   // session |tag|. Caller does NOT own the SessionTab object.
@@ -35,12 +37,11 @@ class OpenTabsUIDelegate {
   // Delete a foreign session and all its sync data.
   virtual void DeleteForeignSession(const std::string& tag) = 0;
 
-  // Loads all windows for foreign session with session tag |tag|. Caller does
-  // NOT own SessionWindow objects.
-  // Returns true if the foreign session was found, false otherwise.
-  virtual bool GetForeignSession(
-      const std::string& tag,
-      std::vector<const sessions::SessionWindow*>* windows) = 0;
+  // Returns the foreign session windows associated with session tag `tag`.
+  // Returns an empty vector if no windows for `tag`. Caller does NOT own
+  // SessionWindow objects.
+  virtual std::vector<const sessions::SessionWindow*> GetForeignSession(
+      const std::string& tag) = 0;
 
   // Loads all tabs for a foreign session, ignoring window grouping, and
   // ordering by recency (most recent to least recent). Will automatically

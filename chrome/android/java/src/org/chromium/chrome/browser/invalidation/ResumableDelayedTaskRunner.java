@@ -32,21 +32,13 @@ public class ResumableDelayedTaskRunner {
     private final Handler mHandler = new Handler();
     private final Thread mThread = Thread.currentThread();
 
-    /**
-     * Runnable which is added to the handler's message queue.
-     */
-    @Nullable
-    private Runnable mHandlerRunnable;
+    /** Runnable which is added to the handler's message queue. */
+    @Nullable private Runnable mHandlerRunnable;
 
-    /**
-     * User provided task.
-     */
-    @Nullable
-    private Runnable mRunnable;
+    /** User provided task. */
+    @Nullable private Runnable mRunnable;
 
-    /**
-     * Time at which the task is scheduled.
-     */
+    /** Time at which the task is scheduled. */
     private long mScheduledTime;
 
     /**
@@ -54,8 +46,8 @@ public class ResumableDelayedTaskRunner {
      * prepared.
      */
     public ResumableDelayedTaskRunner() {
-        assert Looper.myLooper()
-                != null : "ResumableDelayedTaskRunner can only be used on threads with a Looper";
+        assert Looper.myLooper() != null
+                : "ResumableDelayedTaskRunner can only be used on threads with a Looper";
     }
 
     /**
@@ -72,9 +64,7 @@ public class ResumableDelayedTaskRunner {
         mScheduledTime = SystemClock.elapsedRealtime() + delayMs;
     }
 
-    /**
-     * Blocks the task from being run.
-     */
+    /** Blocks the task from being run. */
     public void pause() {
         checkThread();
         if (mHandlerRunnable == null) {
@@ -96,20 +86,19 @@ public class ResumableDelayedTaskRunner {
         }
 
         long delayMs = Math.max(mScheduledTime - SystemClock.elapsedRealtime(), 0);
-        mHandlerRunnable = new Runnable() {
-            @Override
-            public void run() {
-                mRunnable.run();
-                mRunnable = null;
-                mHandlerRunnable = null;
-            }
-        };
+        mHandlerRunnable =
+                new Runnable() {
+                    @Override
+                    public void run() {
+                        mRunnable.run();
+                        mRunnable = null;
+                        mHandlerRunnable = null;
+                    }
+                };
         mHandler.postDelayed(mHandlerRunnable, delayMs);
     }
 
-    /**
-     * Cancels the scheduled task, if any.
-     */
+    /** Cancels the scheduled task, if any. */
     public void cancel() {
         checkThread();
         pause();
@@ -117,8 +106,7 @@ public class ResumableDelayedTaskRunner {
     }
 
     private void checkThread() {
-        assert mThread
-                == Thread.currentThread()
-            : "ResumableDelayedTaskRunner must only be used on a single Thread.";
+        assert mThread == Thread.currentThread()
+                : "ResumableDelayedTaskRunner must only be used on a single Thread.";
     }
 }

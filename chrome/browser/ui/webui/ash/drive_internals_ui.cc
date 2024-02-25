@@ -41,7 +41,7 @@
 #include "chrome/common/pref_names.h"
 #include "chrome/grit/browser_resources.h"
 #include "chrome/services/file_util/public/cpp/zip_file_creator.h"
-#include "chromeos/ash/components/drivefs/drivefs_pin_manager.h"
+#include "chromeos/ash/components/drivefs/drivefs_pinning_manager.h"
 #include "components/download/content/public/all_download_item_notifier.h"
 #include "components/download/public/common/download_item.h"
 #include "components/drive/drive_notification_manager.h"
@@ -67,7 +67,7 @@ using base::Value;
 using content::BrowserThread;
 using drive::DriveIntegrationService;
 using drive::prefs::kDriveFsBulkPinningEnabled;
-using drivefs::pinning::PinManager;
+using drivefs::pinning::PinningManager;
 
 constexpr char kKey[] = "key";
 constexpr char kValue[] = "value";
@@ -100,6 +100,14 @@ size_t LogMarkToLogLevelNameIndex(char mark) {
 template <typename T>
 std::string ToString(const T x) {
   return (std::ostringstream() << drivefs::pinning::NiceNum << x).str();
+}
+
+std::string ToString(const drive::FileError error) {
+  std::string s = drive::FileErrorToString(error);
+  if (const std::string_view prefix = "FILE_ERROR_"; s.starts_with(prefix)) {
+    s.erase(0, prefix.size());
+  }
+  return s;
 }
 
 template <typename T>
@@ -141,17 +149,18 @@ std::pair<Value::List, Value::Dict> GetGCacheContents(
     const bool is_symbolic_link = base::IsLink(info.GetName());
     const base::Time last_modified = info.GetLastModifiedTime();
 
-    Value::Dict entry;
-    entry.Set("path", current.value());
-    // Use double instead of integer for large files.
-    entry.Set("size", static_cast<double>(size));
-    entry.Set("is_directory", is_directory);
-    entry.Set("is_symbolic_link", is_symbolic_link);
-    entry.Set("last_modified",
-              google_apis::util::FormatTimeAsStringLocaltime(last_modified));
-    // Print lower 9 bits in octal format.
-    entry.Set("permission",
-              base::StringPrintf("%03o", info.stat().st_mode & 0x1ff));
+    auto entry =
+        Value::Dict()
+            .Set("path", current.value())
+            // Use double instead of integer for large files.
+            .Set("size", static_cast<double>(size))
+            .Set("is_directory", is_directory)
+            .Set("is_symbolic_link", is_symbolic_link)
+            .Set("last_modified",
+                 google_apis::util::FormatTimeAsStringLocaltime(last_modified))
+            // Print lower 9 bits in octal format.
+            .Set("permission",
+                 base::StringPrintf("%03o", info.stat().st_mode & 0x1ff));
     files[current] = std::move(entry);
 
     total_size += size;
@@ -172,9 +181,13 @@ void AppendKeyValue(Value::List& list,
                     std::string key,
                     std::string value,
                     std::string clazz = std::string()) {
-  Value::Dict dict;
-  dict.Set(kKey, std::move(key));
-  dict.Set(kValue, std::move(value));
+  // clang-format off
+  auto dict =
+      Value::Dict()
+          .Set(kKey, std::move(key))
+          .Set(kValue, std::move(value));
+  // clang-format on
+
   if (!clazz.empty()) {
     dict.Set(kClass, std::move(clazz));
   }
@@ -253,16 +266,7 @@ void ZipLogs(Profile* profile,
 class DriveInternalsWebUIHandler : public content::WebUIMessageHandler,
                                    DriveIntegrationService::Observer {
  public:
-  ~DriveInternalsWebUIHandler() override {
-    if (DriveIntegrationService* const service = GetIntegrationService()) {
-      service->RemoveObserver(this);
-    }
-  }
-
   DriveInternalsWebUIHandler() = default;
-  DriveInternalsWebUIHandler(const DriveInternalsWebUIHandler&) = delete;
-  DriveInternalsWebUIHandler& operator=(const DriveInternalsWebUIHandler&) =
-      delete;
 
   void DownloadLogsZip(const FilePath& path) {
     web_ui()->GetWebContents()->GetController().LoadURL(
@@ -429,27 +433,9 @@ class DriveInternalsWebUIHandler : public content::WebUIMessageHandler,
   void UpdateConnectionStatusSection() {
     SetSectionEnabled("connection-status-section", true);
 
-    std::string status;
-    switch (drive::util::GetDriveConnectionStatus(profile())) {
-      case drive::util::DRIVE_DISCONNECTED_NOSERVICE:
-        status = "no service";
-        break;
-      case drive::util::DRIVE_DISCONNECTED_NONETWORK:
-        status = "no network";
-        break;
-      case drive::util::DRIVE_DISCONNECTED_NOTREADY:
-        status = "not ready";
-        break;
-      case drive::util::DRIVE_CONNECTED_METERED:
-        status = "metered";
-        break;
-      case drive::util::DRIVE_CONNECTED:
-        status = "connected";
-        break;
-    }
-
     Value::Dict connection_status;
-    connection_status.Set("status", std::move(status));
+    connection_status.Set(
+        "status", ToString(drive::util::GetDriveConnectionStatus(profile())));
     drive::DriveNotificationManager* const manager =
         drive::DriveNotificationManagerFactory::FindForBrowserContext(
             profile());
@@ -564,9 +550,8 @@ class DriveInternalsWebUIHandler : public content::WebUIMessageHandler,
       return;
     }
     for (const FilePath& sync_path : paths) {
-      MaybeCallJavascript(
-          "onAddSyncPath", Value(sync_path.value()),
-          Value(drive::FileErrorToString(drive::FILE_ERROR_OK)));
+      MaybeCallJavascript("onAddSyncPath", Value(sync_path.value()),
+                          Value(ToString(drive::FILE_ERROR_OK)));
     }
   }
 
@@ -594,12 +579,12 @@ class DriveInternalsWebUIHandler : public content::WebUIMessageHandler,
 
   void OnAddSyncPath(const FilePath& sync_path, drive::FileError status) {
     MaybeCallJavascript("onAddSyncPath", Value(sync_path.value()),
-                        Value(drive::FileErrorToString(status)));
+                        Value(ToString(status)));
   }
 
   void OnRemoveSyncPath(const FilePath& sync_path, drive::FileError status) {
     MaybeCallJavascript("onRemoveSyncPath", Value(sync_path.value()),
-                        Value(drive::FileErrorToString(status)));
+                        Value(ToString(status)));
   }
 
   void UpdateBulkPinningDeveloperSection() {
@@ -608,20 +593,19 @@ class DriveInternalsWebUIHandler : public content::WebUIMessageHandler,
       return;
     }
 
-    const bool enabled = drive::util::IsDriveFsBulkPinningEnabled(profile());
+    const bool enabled = drive::util::IsDriveFsBulkPinningAvailable(profile());
     SetSectionEnabled("bulk-pinning-section", enabled);
     if (!enabled) {
       return;
     }
 
-    service->RemoveObserver(this);
-    service->AddObserver(this);
+    Observe(service);
 
     MaybeCallJavascript(
         "updateBulkPinning",
         Value(GetPrefs()->GetBoolean(kDriveFsBulkPinningEnabled)));
 
-    if (PinManager* const manager = service->GetPinManager()) {
+    if (PinningManager* const manager = service->GetPinningManager()) {
       OnBulkPinProgress(manager->GetProgress());
     }
   }
@@ -629,37 +613,40 @@ class DriveInternalsWebUIHandler : public content::WebUIMessageHandler,
   void OnBulkPinProgress(const drivefs::pinning::Progress& progress) override {
     using drivefs::pinning::HumanReadableSize;
 
-    Value::Dict d;
-    d.Set("enabled", GetPrefs()->GetBoolean(kDriveFsBulkPinningEnabled));
-    d.Set("stage", drivefs::pinning::ToString(progress.stage));
-    d.Set("free_space", ToString(HumanReadableSize(progress.free_space)));
-    d.Set("required_space",
-          ToString(HumanReadableSize(progress.required_space)));
-    d.Set("bytes_to_pin", ToString(HumanReadableSize(progress.bytes_to_pin)));
-    d.Set("pinned_bytes", ToString(HumanReadableSize(progress.pinned_bytes)));
-    d.Set("pinned_bytes_percent",
-          ToPercent(progress.pinned_bytes, progress.bytes_to_pin));
-    d.Set("files_to_pin", ToString(progress.files_to_pin));
-    d.Set("pinned_files", ToString(progress.pinned_files));
-    d.Set("pinned_files_percent",
-          ToPercent(progress.pinned_files, progress.files_to_pin));
-    d.Set("failed_files", ToString(progress.failed_files));
-    d.Set("syncing_files", ToString(progress.syncing_files));
-    d.Set("skipped_items", ToString(progress.skipped_items));
-    d.Set("listed_items", ToString(progress.listed_items));
-    d.Set("listed_dirs", ToString(progress.listed_dirs));
-    d.Set("listed_files", ToString(progress.listed_files));
-    d.Set("listed_docs", ToString(progress.listed_docs));
-    d.Set("listed_shortcuts", ToString(progress.listed_shortcuts));
-    d.Set("active_queries", ToString(progress.active_queries));
-    d.Set("max_active_queries", ToString(progress.max_active_queries));
-    d.Set("time_spent_listing_items",
-          drivefs::pinning::ToString(progress.time_spent_listing_items));
-    d.Set("time_spent_pinning_files",
-          drivefs::pinning::ToString(progress.time_spent_pinning_files));
-    d.Set("remaining_time",
-          drivefs::pinning::ToString(progress.remaining_time));
-    MaybeCallJavascript("onBulkPinningProgress", Value(std::move(d)));
+    auto dict =
+        Value::Dict()
+            .Set("enabled", GetPrefs()->GetBoolean(kDriveFsBulkPinningEnabled))
+            .Set("stage", drivefs::pinning::ToString(progress.stage))
+            .Set("free_space", ToString(HumanReadableSize(progress.free_space)))
+            .Set("required_space",
+                 ToString(HumanReadableSize(progress.required_space)))
+            .Set("bytes_to_pin",
+                 ToString(HumanReadableSize(progress.bytes_to_pin)))
+            .Set("pinned_bytes",
+                 ToString(HumanReadableSize(progress.pinned_bytes)))
+            .Set("pinned_bytes_percent",
+                 ToPercent(progress.pinned_bytes, progress.bytes_to_pin))
+            .Set("files_to_pin", ToString(progress.files_to_pin))
+            .Set("pinned_files", ToString(progress.pinned_files))
+            .Set("pinned_files_percent",
+                 ToPercent(progress.pinned_files, progress.files_to_pin))
+            .Set("failed_files", ToString(progress.failed_files))
+            .Set("syncing_files", ToString(progress.syncing_files))
+            .Set("skipped_items", ToString(progress.skipped_items))
+            .Set("listed_items", ToString(progress.listed_items))
+            .Set("listed_dirs", ToString(progress.listed_dirs))
+            .Set("listed_files", ToString(progress.listed_files))
+            .Set("listed_docs", ToString(progress.listed_docs))
+            .Set("listed_shortcuts", ToString(progress.listed_shortcuts))
+            .Set("active_queries", ToString(progress.active_queries))
+            .Set("max_active_queries", ToString(progress.max_active_queries))
+            .Set("time_spent_listing_items",
+                 drivefs::pinning::ToString(progress.time_spent_listing_items))
+            .Set("time_spent_pinning_files",
+                 drivefs::pinning::ToString(progress.time_spent_pinning_files))
+            .Set("remaining_time",
+                 drivefs::pinning::ToString(progress.remaining_time));
+    MaybeCallJavascript("onBulkPinningProgress", Value(std::move(dict)));
   }
 
   // Called when GetDeveloperMode() is complete.
@@ -730,7 +717,7 @@ class DriveInternalsWebUIHandler : public content::WebUIMessageHandler,
     }
 
     const std::vector<drive::EventLogger::Event> log =
-        service->event_logger()->GetHistory();
+        service->GetLogger()->GetHistory();
 
     Value::List list;
     for (const drive::EventLogger::Event& event : log) {
@@ -1114,7 +1101,7 @@ class LogsZipper : public download::AllDownloadItemNotifier::Observer {
     base::SequencedTaskRunner::GetCurrentDefault()->DeleteSoon(FROM_HERE, this);
   }
 
-  const raw_ptr<Profile, ExperimentalAsh> profile_;
+  const raw_ptr<Profile> profile_;
   const FilePath logs_directory_;
   const FilePath zip_path_;
 

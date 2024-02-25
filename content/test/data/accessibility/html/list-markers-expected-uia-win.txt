@@ -13,5 +13,6 @@ Document
 ++++ListItem Name='Some more text.'
 ++++++Text Name='%E2%80%A2 ' IsControlElement=false
 ++++++Text Name='Some ' IsControlElement=false
-++++++Text Name='more' IsControlElement=false
+++++++Text IsControlElement=false
+++++++++Text Name='more'
 ++++++Text Name=' text.' IsControlElement=false

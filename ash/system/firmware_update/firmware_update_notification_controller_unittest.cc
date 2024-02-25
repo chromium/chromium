@@ -5,6 +5,7 @@
 #include "ash/system/firmware_update/firmware_update_notification_controller.h"
 
 #include <memory>
+#include <optional>
 
 #include "ash/public/cpp/test/test_system_tray_client.h"
 #include "ash/shell.h"
@@ -14,7 +15,6 @@
 #include "chromeos/ash/components/fwupd/firmware_update_manager.h"
 #include "components/user_manager/user_type.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/message_center/message_center.h"
 #include "ui/message_center/public/cpp/notification.h"
 
@@ -51,20 +51,20 @@ class FirmwareUpdateNotificationControllerTest : public AshTestBase {
     return GetSystemTrayClient()->show_firmware_update_count();
   }
 
-  void ClickNotification(absl::optional<int> button_index) {
+  void ClickNotification(std::optional<int> button_index) {
     // No button index means the notification body was clicked.
     if (!button_index.has_value()) {
       message_center::Notification* notification =
           MessageCenter::Get()->FindVisibleNotificationById(
               kFirmwareUpdateNotificationId);
-      notification->delegate()->Click(absl::nullopt, absl::nullopt);
+      notification->delegate()->Click(std::nullopt, std::nullopt);
       return;
     }
 
     message_center::Notification* notification =
         MessageCenter::Get()->FindVisibleNotificationById(
             kFirmwareUpdateNotificationId);
-    notification->delegate()->Click(button_index, absl::nullopt);
+    notification->delegate()->Click(button_index, std::nullopt);
   }
 };
 
@@ -92,7 +92,7 @@ TEST_F(FirmwareUpdateNotificationControllerTest, FirmwareUpdateNotification) {
   // Open new notification and click on its body.
   controller()->NotifyFirmwareUpdateAvailable();
   EXPECT_EQ(1u, MessageCenter::Get()->NotificationCount());
-  ClickNotification(absl::nullopt);
+  ClickNotification(std::nullopt);
   EXPECT_EQ(2, GetNumFirmwareUpdateUIOpened());
   EXPECT_EQ(0u, MessageCenter::Get()->NotificationCount());
 }
@@ -144,8 +144,7 @@ class FirmwareUpdateStartupNotificationTest : public NoSessionAshTestBase {
     FirmwareUpdateManager::Get()->RequestAllUpdates();
   }
 
-  raw_ptr<FwupdClient, DanglingUntriaged | ExperimentalAsh> dbus_client_ =
-      nullptr;
+  raw_ptr<FwupdClient, DanglingUntriaged> dbus_client_ = nullptr;
   std::unique_ptr<FirmwareUpdateManager> firmware_update_manager_;
   std::unique_ptr<FirmwareUpdateNotificationController>
       firmware_update_notification_controller_;
@@ -164,7 +163,7 @@ TEST_F(FirmwareUpdateStartupNotificationTest,
 TEST_F(FirmwareUpdateStartupNotificationTest,
        StartupNotificationShownGuestUser) {
   // Notification should not be shown at login if the user is a guest.
-  SimulateUserLogin("user1@email.com", user_manager::USER_TYPE_GUEST);
+  SimulateUserLogin("user1@email.com", user_manager::UserType::kGuest);
   InitializeNotificationController();
   SimulateFetchingUpdates();
   EXPECT_FALSE(message_center()->FindVisibleNotificationById(
@@ -173,7 +172,7 @@ TEST_F(FirmwareUpdateStartupNotificationTest,
 
 TEST_F(FirmwareUpdateStartupNotificationTest, StartupNotificationShownKiosk) {
   // Notification should not be shown at login if the user is in kiosk mode.
-  SimulateUserLogin("user1@email.com", user_manager::USER_TYPE_KIOSK_APP);
+  SimulateUserLogin("user1@email.com", user_manager::UserType::kKioskApp);
   InitializeNotificationController();
   SimulateFetchingUpdates();
   EXPECT_FALSE(message_center()->FindVisibleNotificationById(
@@ -183,7 +182,7 @@ TEST_F(FirmwareUpdateStartupNotificationTest, StartupNotificationShownKiosk) {
 TEST_F(FirmwareUpdateStartupNotificationTest,
        StartupNotificationShownKioskPWA) {
   // Notification should not be shown at login if the user is in kiosk mode.
-  SimulateUserLogin("user1@email.com", user_manager::USER_TYPE_WEB_KIOSK_APP);
+  SimulateUserLogin("user1@email.com", user_manager::UserType::kWebKioskApp);
   InitializeNotificationController();
   SimulateFetchingUpdates();
   EXPECT_FALSE(message_center()->FindVisibleNotificationById(

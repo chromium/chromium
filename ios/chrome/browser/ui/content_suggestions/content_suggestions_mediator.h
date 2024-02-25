@@ -7,101 +7,48 @@
 
 #import <UIKit/UIKit.h>
 
-#include <memory>
-
-#include "components/prefs/pref_service.h"
-#import "ios/chrome/browser/ui/content_suggestions/cells/content_suggestions_gesture_commands.h"
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_commands.h"
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_consumer.h"
+#import "ios/chrome/browser/ui/content_suggestions/magic_stack/magic_stack_ranking_model.h"
+#import "ios/chrome/browser/ui/content_suggestions/magic_stack/magic_stack_ranking_model_delegate.h"
 #import "ios/chrome/browser/ui/start_surface/start_surface_recent_tab_removal_observer_bridge.h"
-
-namespace favicon {
-class LargeIconService;
-}
-
-namespace ntp_tiles {
-class MostVisitedSites;
-}
-
-namespace segmentation_platform {
-class SegmentationPlatformService;
-}
-
-namespace signin {
-class IdentityManager;
-}
-
-namespace syncer {
-class SyncService;
-}  // namespace syncer
 
 namespace user_prefs {
 class PrefRegistrySyncable;
 }  // namespace user_prefs
 
-@protocol ApplicationCommands;
-class AuthenticationService;
 class Browser;
-@protocol BrowserCoordinatorCommands;
 @class ContentSuggestionsMetricsRecorder;
-@protocol FeedDelegate;
-class GURL;
-class LargeIconCache;
+@protocol MagicStackConsumer;
+@class MagicStackRankingModel;
+@class MostVisitedTilesMediator;
 @protocol NewTabPageMetricsDelegate;
-class PromosManager;
-class ReadingListModel;
-@protocol SnackbarCommands;
-class WebStateList;
+@class SetUpListMediator;
+@class ShortcutsMediator;
 
 // Mediator for ContentSuggestions.
 @interface ContentSuggestionsMediator
     : NSObject <ContentSuggestionsCommands,
-                ContentSuggestionsGestureCommands,
-                StartSurfaceRecentTabObserving>
+                StartSurfaceRecentTabObserving,
+                MagicStackRankingModelDelegate>
 
 // Default initializer.
-- (instancetype)
-         initWithLargeIconService:(favicon::LargeIconService*)largeIconService
-                   largeIconCache:(LargeIconCache*)largeIconCache
-                  mostVisitedSite:(std::unique_ptr<ntp_tiles::MostVisitedSites>)
-                                      mostVisitedSites
-                 readingListModel:(ReadingListModel*)readingListModel
-                      prefService:(PrefService*)prefService
-    isGoogleDefaultSearchProvider:(BOOL)isGoogleDefaultSearchProvider
-                      syncService:(syncer::SyncService*)syncService
-            authenticationService:(AuthenticationService*)authService
-                  identityManager:(signin::IdentityManager*)identityManager
-                          browser:(Browser*)browser NS_DESIGNATED_INITIALIZER;
+- (instancetype)initWithBrowser:(Browser*)browser NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)init NS_UNAVAILABLE;
 
 // Registers the feature preferences.
 + (void)registerBrowserStatePrefs:(user_prefs::PrefRegistrySyncable*)registry;
 
-// Dispatcher.
-@property(nonatomic, weak)
-    id<ApplicationCommands, BrowserCoordinatorCommands, SnackbarCommands>
-        dispatcher;
-
-// Command handler for the mediator.
-@property(nonatomic, weak)
-    id<ContentSuggestionsCommands, ContentSuggestionsGestureCommands>
-        commandHandler;
-
-// Delegate used to communicate to communicate events to the feed.
-@property(nonatomic, weak) id<FeedDelegate> feedDelegate;
+// Ranking Model for the Magic Stack.
+@property(nonatomic, weak) MagicStackRankingModel* magicStackRankingModel;
 
 // The consumer that will be notified when the data change.
 @property(nonatomic, weak) id<ContentSuggestionsConsumer> consumer;
 
-// WebStateList associated with this mediator.
-@property(nonatomic, assign) WebStateList* webStateList;
-
-// The web state associated with this NTP.
-@property(nonatomic, assign) web::WebState* webState;
-
-// The promos manager to alert if the user uses What's New.
-@property(nonatomic, assign) PromosManager* promosManager;
+// The consumer that will be notified when the underlying Magic Stack data
+// changes.
+@property(nonatomic, weak) id<MagicStackConsumer> magicStackConsumer;
 
 // Delegate for reporting content suggestions actions to the NTP metrics
 // recorder.
@@ -111,26 +58,12 @@ class WebStateList;
 @property(nonatomic, weak)
     ContentSuggestionsMetricsRecorder* contentSuggestionsMetricsRecorder;
 
-// TODO(crbug.com/1462664): Move to initializer param once
-// kSegmentationPlatformIosModuleRanker is launched. Segmentation Platform
-// Service.
-@property(nonatomic, assign)
-    segmentation_platform::SegmentationPlatformService* segmentationService;
+@property(nonatomic, weak) MostVisitedTilesMediator* mostVisitedTilesMediator;
+@property(nonatomic, weak) SetUpListMediator* setUpListMediator;
+@property(nonatomic, weak) ShortcutsMediator* shortcutsMediator;
 
 // Disconnects the mediator.
 - (void)disconnect;
-
-// Trigger a refresh of the Content Suggestions Most Visited tiles.
-- (void)refreshMostVisitedTiles;
-
-// Block `URL` from Most Visited sites.
-- (void)blockMostVisitedURL:(GURL)URL;
-
-// Always allow `URL` in Most Visited sites.
-- (void)allowMostVisitedURL:(GURL)URL;
-
-// Get the maximum number of sites shown.
-+ (NSUInteger)maxSitesShown;
 
 // Whether the most recent tab tile is being shown. Returns YES if
 // configureMostRecentTabItemWithWebState: has been called.
@@ -142,12 +75,6 @@ class WebStateList;
 
 // Indicates that the "Return to Recent Tab" tile should be hidden.
 - (void)hideRecentTabTile;
-
-// Disable and hide the Set Up List;
-- (void)disableSetUpList;
-
-// Returns all possible items in the Set Up List.
-- (NSArray<SetUpListItemViewData*>*)allSetUpListItems;
 
 @end
 

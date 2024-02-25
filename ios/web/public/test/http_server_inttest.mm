@@ -15,7 +15,7 @@
 #import "ios/web/public/test/http_server/http_server.h"
 #import "ios/web/public/test/http_server/string_response_provider.h"
 #import "ios/web/test/web_int_test.h"
-#import "net/base/mac/url_conversions.h"
+#import "net/base/apple/url_conversions.h"
 #import "net/http/http_response_headers.h"
 #import "testing/gtest/include/gtest/gtest.h"
 #import "testing/gtest_mac.h"
@@ -40,7 +40,8 @@ class HttpServerTest : public web::WebIntTest {
 
     HttpServer& server = HttpServer::GetSharedInstance();
     base::FilePath test_data_dir;
-    ASSERT_TRUE(base::PathService::Get(base::DIR_SOURCE_ROOT, &test_data_dir));
+    ASSERT_TRUE(
+        base::PathService::Get(base::DIR_SRC_TEST_DATA_ROOT, &test_data_dir));
     server.StartOrDie(test_data_dir.Append("."));
     server.AddResponseProvider(std::move(provider));
   }

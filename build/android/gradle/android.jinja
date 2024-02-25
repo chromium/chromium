@@ -1,4 +1,4 @@
-{# Copyright 2016 The Chromium Authors. All rights reserved. #}
+{# Copyright 2016 The Chromium Authors #}
 {# Use of this source code is governed by a BSD-style license that can be #}
 {# found in the LICENSE file. #}
 {% macro expand_sourceset(variables, prefix) %}
@@ -48,6 +48,7 @@ apply plugin: "com.android.application"
 
 android {
     compileSdkVersion "{{ compile_sdk_version }}"
+    namespace = "org.chromium.chrome"
 
     defaultConfig {
         vectorDrawables.useSupportLibrary = true
@@ -56,8 +57,8 @@ android {
     }
 
     compileOptions {
-        sourceCompatibility JavaVersion.VERSION_11
-        targetCompatibility JavaVersion.VERSION_11
+        sourceCompatibility JavaVersion.VERSION_17
+        targetCompatibility JavaVersion.VERSION_17
     }
 
 {% if native is defined %}

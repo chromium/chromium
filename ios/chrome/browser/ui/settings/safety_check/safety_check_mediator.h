@@ -14,6 +14,9 @@
 // Webpage with safe browsing toggle.
 extern const char kSafeBrowsingStringURL[];
 
+namespace password_manager {
+enum class PasswordCheckReferrer;
+}  // namespace password_manager
 namespace syncer {
 class SyncService;
 }  // namespace syncer
@@ -31,16 +34,20 @@ class PrefService;
 
 // Designated initializer. All the parameters should not be null.
 // `userPrefService`: Preference service to access safe browsing state.
+// `localPrefService`: Preference service from the application context.
 // `passwordCheckManager`: Password check manager to enable use of the password
 // check service.
 // `authService`: Authentication service to check users authentication status.
 // `syncService`: Sync service to check sync and sync encryption status.
-- (instancetype)initWithUserPrefService:(PrefService*)userPrefService
-                   passwordCheckManager:
-                       (scoped_refptr<IOSChromePasswordCheckManager>)
-                           passwordCheckManager
-                            authService:(AuthenticationService*)authService
-                            syncService:(syncer::SyncService*)syncService
+// `referrer`: Where in the app the Safety Check is being requested from.
+- (instancetype)
+    initWithUserPrefService:(PrefService*)userPrefService
+           localPrefService:(PrefService*)localPrefService
+       passwordCheckManager:
+           (scoped_refptr<IOSChromePasswordCheckManager>)passwordCheckManager
+                authService:(AuthenticationService*)authService
+                syncService:(syncer::SyncService*)syncService
+                   referrer:(password_manager::PasswordCheckReferrer)referrer
     NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)init NS_UNAVAILABLE;

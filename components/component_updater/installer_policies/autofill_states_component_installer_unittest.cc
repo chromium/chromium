@@ -36,13 +36,15 @@ class AutofillStatesDataComponentInstallerPolicyTest : public ::testing::Test {
   }
 
   void CreateEmptyFiles() {
-    for (const char* filename : filenames_)
+    for (const char* filename : filenames_) {
       base::WriteFile(GetPath().AppendASCII(filename), "");
+    }
   }
 
   void DeleteCreatedFiles() {
-    for (const char* filename : filenames_)
+    for (const char* filename : filenames_) {
       base::DeleteFile(GetPath().AppendASCII(filename));
+    }
   }
 
  protected:

@@ -9,7 +9,9 @@
 #include <string>
 #include <vector>
 
+#include "base/containers/flat_map.h"
 #include "build/build_config.h"
+#include "components/autofill/core/browser/autofill_type.h"
 #include "components/autofill/core/common/field_data_manager.h"
 #include "components/autofill/core/common/form_data.h"
 #include "components/autofill/core/common/password_generation_util.h"
@@ -62,6 +64,14 @@ class PasswordManagerInterface : public FormSubmissionObserver {
       const autofill::FormData& form,
       const std::u16string& generated_password) = 0;
 
+  // Processes the server predictions received from Autofill.
+  virtual void ProcessAutofillPredictions(
+      PasswordManagerDriver* driver,
+      const autofill::FormData& form,
+      const base::flat_map<autofill::FieldGlobalId,
+                           autofill::AutofillType::ServerPrediction>&
+          field_predictions) = 0;
+
   // Getter for the PasswordManagerClient.
   virtual PasswordManagerClient* GetClient() = 0;
 
@@ -87,9 +97,8 @@ class PasswordManagerInterface : public FormSubmissionObserver {
                                       autofill::FieldRendererId field_id,
                                       const std::u16string& field_value) = 0;
 
-  // Stops treating a password as generated. |driver| corresponds to the
-  // form parent frame.
-  virtual void OnPasswordNoLongerGenerated(PasswordManagerDriver* driver) = 0;
+  // Stops treating a password as generated.
+  virtual void OnPasswordNoLongerGenerated() = 0;
 
   // Call when a form is removed so that this class can decide if whether or not
   // the form was submitted.

@@ -89,7 +89,8 @@ class CartDiscountFetcherTest {
       std::vector<CartDB::KeyAndValue> proto_pairs,
       double current_timestamp) {
     return CartDiscountFetcher::generatePostData(
-        std::move(proto_pairs), base::Time::FromDoubleT(current_timestamp));
+        std::move(proto_pairs),
+        base::Time::FromSecondsSinceUnixEpoch(current_timestamp));
   }
 
   static std::unique_ptr<EndpointFetcher> CreateEndpointFetcher(

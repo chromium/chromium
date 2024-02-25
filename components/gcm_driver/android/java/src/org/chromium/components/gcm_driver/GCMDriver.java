@@ -6,11 +6,12 @@ package org.chromium.components.gcm_driver;
 
 import android.os.SystemClock;
 
+import org.jni_zero.CalledByNative;
+import org.jni_zero.JNINamespace;
+import org.jni_zero.NativeMethods;
+
 import org.chromium.base.Log;
 import org.chromium.base.ThreadUtils;
-import org.chromium.base.annotations.CalledByNative;
-import org.chromium.base.annotations.JNINamespace;
-import org.chromium.base.annotations.NativeMethods;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.task.AsyncTask;
 import org.chromium.base.task.PostTask;
@@ -90,10 +91,12 @@ public class GCMDriver {
         long duration = SystemClock.elapsedRealtime() - time;
         // Call RecordHistogram.recordTimesHistogram() on a background thread to avoid
         // expensive JNI calls in the critical path.
-        PostTask.postTask(TaskTraits.BEST_EFFORT_MAY_BLOCK, () -> {
-            RecordHistogram.recordTimesHistogram(
-                    "PushMessaging.TimeToReadPersistedMessages", duration);
-        });
+        PostTask.postTask(
+                TaskTraits.BEST_EFFORT_MAY_BLOCK,
+                () -> {
+                    RecordHistogram.recordTimesHistogram(
+                            "PushMessaging.TimeToReadPersistedMessages", duration);
+                });
     }
 
     @CalledByNative
@@ -110,10 +113,16 @@ public class GCMDriver {
                     return "";
                 }
             }
+
             @Override
             protected void onPostExecute(String registrationId) {
-                GCMDriverJni.get().onRegisterFinished(mNativeGCMDriverAndroid, GCMDriver.this,
-                        appId, registrationId, !registrationId.isEmpty());
+                GCMDriverJni.get()
+                        .onRegisterFinished(
+                                mNativeGCMDriverAndroid,
+                                GCMDriver.this,
+                                appId,
+                                registrationId,
+                                !registrationId.isEmpty());
             }
         }.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
     }
@@ -135,11 +144,11 @@ public class GCMDriver {
 
             @Override
             protected void onPostExecute(Boolean success) {
-                GCMDriverJni.get().onUnregisterFinished(
-                        mNativeGCMDriverAndroid, GCMDriver.this, appId, success);
+                GCMDriverJni.get()
+                        .onUnregisterFinished(
+                                mNativeGCMDriverAndroid, GCMDriver.this, appId, success);
             }
-        }
-                .executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+        }.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
     }
 
     // The caller of this function is responsible for ensuring the browser process is initialized.
@@ -150,10 +159,16 @@ public class GCMDriver {
             throw new RuntimeException("Failed to instantiate GCMDriver.");
         }
 
-        GCMDriverJni.get().onMessageReceived(sInstance.mNativeGCMDriverAndroid, sInstance,
-                message.getAppId(), message.getSenderId(), message.getMessageId(),
-                message.getCollapseKey(), message.getRawData(),
-                message.getDataKeysAndValuesArray());
+        GCMDriverJni.get()
+                .onMessageReceived(
+                        sInstance.mNativeGCMDriverAndroid,
+                        sInstance,
+                        message.getAppId(),
+                        message.getSenderId(),
+                        message.getMessageId(),
+                        message.getCollapseKey(),
+                        message.getRawData(),
+                        message.getDataKeysAndValuesArray());
     }
 
     public static void overrideSubscriberForTesting(GoogleCloudMessagingSubscriber subscriber) {
@@ -164,12 +179,24 @@ public class GCMDriver {
 
     @NativeMethods
     interface Natives {
-        void onRegisterFinished(long nativeGCMDriverAndroid, GCMDriver caller, String appId,
-                String registrationId, boolean success);
+        void onRegisterFinished(
+                long nativeGCMDriverAndroid,
+                GCMDriver caller,
+                String appId,
+                String registrationId,
+                boolean success);
+
         void onUnregisterFinished(
                 long nativeGCMDriverAndroid, GCMDriver caller, String appId, boolean success);
-        void onMessageReceived(long nativeGCMDriverAndroid, GCMDriver caller, String appId,
-                String senderId, String messageId, String collapseKey, byte[] rawData,
+
+        void onMessageReceived(
+                long nativeGCMDriverAndroid,
+                GCMDriver caller,
+                String appId,
+                String senderId,
+                String messageId,
+                String collapseKey,
+                byte[] rawData,
                 String[] dataKeysAndValues);
     }
 }

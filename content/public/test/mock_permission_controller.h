@@ -58,29 +58,27 @@ class MockPermissionController : public PermissionController {
                bool(blink::PermissionType permission,
                     RenderFrameHost* render_frame_host));
   void RequestPermissionFromCurrentDocument(
-      blink::PermissionType permission,
       RenderFrameHost* render_frame_host,
-      bool user_gesture,
+      PermissionRequestDescription request_description,
       base::OnceCallback<void(blink::mojom::PermissionStatus)> callback)
       override;
   void RequestPermissionsFromCurrentDocument(
-      const std::vector<blink::PermissionType>& permission,
       RenderFrameHost* render_frame_host,
-      bool user_gesture,
+      PermissionRequestDescription request_description,
       base::OnceCallback<
           void(const std::vector<blink::mojom::PermissionStatus>&)> callback)
       override;
   void ResetPermission(blink::PermissionType permission,
                        const url::Origin& origin) override;
 
-  MOCK_METHOD4(SubscribePermissionStatusChange,
+  MOCK_METHOD4(SubscribeToPermissionStatusChange,
                SubscriptionId(blink::PermissionType permission,
                               RenderProcessHost* render_process_host,
                               const url::Origin& requesting_origin,
                               const base::RepeatingCallback<void(
                                   blink::mojom::PermissionStatus)>& callback));
 
-  void UnsubscribePermissionStatusChange(
+  void UnsubscribeFromPermissionStatusChange(
       SubscriptionId subscription_id) override;
 };
 

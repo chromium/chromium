@@ -6,6 +6,7 @@
 #define CHROMEOS_ASH_COMPONENTS_DRIVEFS_DRIVEFS_AUTH_H_
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -15,7 +16,6 @@
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "chromeos/ash/components/drivefs/mojom/drivefs.mojom.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 class AccountId;
 class GoogleServiceAuthError;
@@ -31,6 +31,9 @@ class PrimaryAccountAccessTokenFetcher;
 }  // namespace signin
 
 namespace drivefs {
+
+using AccessTokenCallback =
+    mojom::DriveFsDelegate::GetAccessTokenWithExpiryCallback;
 
 class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_DRIVEFS) DriveFsAuth {
  public:
@@ -73,11 +76,9 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_DRIVEFS) DriveFsAuth {
     return delegate_->IsMetricsCollectionEnabled();
   }
 
-  absl::optional<std::string> GetCachedAccessToken();
+  std::optional<std::string> GetCachedAccessToken();
 
-  virtual void GetAccessToken(
-      bool use_cached,
-      mojom::DriveFsDelegate::GetAccessTokenCallback callback);
+  virtual void GetAccessToken(bool use_cached, AccessTokenCallback callback);
 
  private:
   void GotChromeAccessToken(GoogleServiceAuthError error,
@@ -90,16 +91,16 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_DRIVEFS) DriveFsAuth {
   void AuthTimeout();
 
   SEQUENCE_CHECKER(sequence_checker_);
-  const raw_ptr<const base::Clock, ExperimentalAsh> clock_;
+  const raw_ptr<const base::Clock> clock_;
   const base::FilePath profile_path_;
   const std::unique_ptr<base::OneShotTimer> timer_;
-  const raw_ptr<Delegate, DanglingUntriaged | ExperimentalAsh> delegate_;
+  const raw_ptr<Delegate, DanglingUntriaged> delegate_;
 
   std::unique_ptr<signin::PrimaryAccountAccessTokenFetcher>
       access_token_fetcher_;
 
-  // Pending callback for an in-flight GetAccessToken request.
-  mojom::DriveFsDelegate::GetAccessTokenCallback get_access_token_callback_;
+  // Pending callback for an in-flight GetAccessToken{WithExpiry} request.
+  AccessTokenCallback get_access_token_callback_;
 
   std::string last_token_;
   base::Time last_token_expiry_;

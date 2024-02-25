@@ -11,19 +11,14 @@
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/speech/speech_recognition_test_helper.h"
 
-class Browser;
+class GURL;
 class Profile;
-
-namespace content {
-class WebContents;
-}  // namespace content
 
 namespace speech {
 enum class SpeechRecognitionType;
 }  // namespace speech
 
 namespace ui {
-class InputMethod;
 namespace test {
 class EventGenerator;
 }  // namespace test
@@ -31,6 +26,7 @@ class EventGenerator;
 
 namespace ash {
 
+class AutomationTestUtils;
 class ExtensionConsoleErrorObserver;
 class MockIMEInputContextHandler;
 
@@ -52,22 +48,18 @@ class DictationTestUtils {
   DictationTestUtils& operator=(const DictationTestUtils&) = delete;
 
   // Enables and sets up Dictation.
-  void EnableDictation(Browser* browser);
+  void EnableDictation(Profile* profile,
+                       base::OnceCallback<void(const GURL&)> navigate_to_url);
   // Toggles Dictation on or off depending on Dictation's current state.
   void ToggleDictationWithKeystroke();
 
   // Convenience methods for faking speech and waiting for a condition.
   void SendFinalResultAndWaitForEditableValue(
-      content::WebContents* web_contents,
       const std::string& result,
       const std::string& value);
-  void SendFinalResultAndWaitForSelectionChanged(
-      content::WebContents* web_contents,
-      const std::string& result);
-  void SendFinalResultAndWaitForCaretBoundsChanged(
-      content::WebContents* web_contents,
-      ui::InputMethod* input_method,
-      const std::string& result);
+  void SendFinalResultAndWaitForSelection(const std::string& result,
+                                          int start,
+                                          int end);
   void SendFinalResultAndWaitForClipboardChanged(const std::string& result);
 
   // Routers to SpeechRecognitionTestHelper methods.
@@ -80,11 +72,13 @@ class DictationTestUtils {
   std::vector<base::test::FeatureRef> GetDisabledFeatures();
 
   // Script-related methods.
-  std::string ExecuteAccessibilityCommonScript(const std::string& script);
+  void ExecuteAccessibilityCommonScript(const std::string& script);
   void DisablePumpkin();
 
+  std::string GetUrlForEditableType();
+
   // Methods for interacting with the editable.
-  std::string GetEditableValue(content::WebContents* web_contents);
+  std::string GetEditableValue();
   void WaitForEditableValue(const std::string& value);
   void WaitForSelection(int start, int end);
 
@@ -108,19 +102,26 @@ class DictationTestUtils {
     wait_for_accessibility_common_extension_load_ = wait;
   }
 
+  AutomationTestUtils* automation_test_utils() {
+    return automation_test_utils_.get();
+  }
+
   ui::test::EventGenerator* generator() { return generator_.get(); }
 
  private:
   // Set up helper methods.
   void SetUpPumpkinDir();
   void SetUpTestSupport();
+  void WaitForDictationJSReady();
+  void WaitForEditableFocus();
   void WaitForPumpkinTaggerReady();
   void WaitForFocusHandler();
 
   bool wait_for_accessibility_common_extension_load_;
   speech::SpeechRecognitionType speech_recognition_type_;
   EditableType editable_type_;
-  raw_ptr<Profile, ExperimentalAsh> profile_;
+  raw_ptr<Profile, DanglingUntriaged> profile_;
+  std::unique_ptr<AutomationTestUtils> automation_test_utils_;
   std::unique_ptr<SpeechRecognitionTestHelper> test_helper_;
   std::unique_ptr<ExtensionConsoleErrorObserver> console_observer_;
   std::unique_ptr<ui::test::EventGenerator> generator_;

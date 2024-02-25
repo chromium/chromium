@@ -33,7 +33,6 @@
 #include <utility>
 
 #include "base/dcheck_is_on.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_uchar.h"
 #include "third_party/blink/renderer/platform/wtf/wtf_export.h"
 
@@ -118,15 +117,15 @@ bool SortedFirstsAreUnique(const CollectionType& collection) {
 template <typename CollectionType, typename KeyType>
 static auto FindFirstInSortedPairs(const CollectionType& collection,
                                    const KeyType& key)
-    -> absl::optional<decltype(std::begin(collection)->second)> {
+    -> std::optional<decltype(std::begin(collection)->second)> {
   if constexpr (std::is_integral_v<KeyType>) {
     if (key != decltype(std::begin(collection)->first)(key))
-      return absl::nullopt;
+      return std::nullopt;
   }
   auto iterator = std::lower_bound(std::begin(collection), std::end(collection),
                                    MakeFirstAdapter(key), CompareFirst{});
   if (iterator == std::end(collection) || key < iterator->first)
-    return absl::nullopt;
+    return std::nullopt;
   return iterator->second;
 }
 

@@ -18,8 +18,8 @@ ModuleScriptFetcher* WorkletModulatorImpl::CreateModuleScriptFetcher(
   DCHECK_EQ(ModuleScriptCustomFetchType::kWorkletAddModule, custom_fetch_type);
   WorkletGlobalScope* global_scope =
       To<WorkletGlobalScope>(GetExecutionContext());
-  return MakeGarbageCollected<WorkletModuleScriptFetcher>(
-      global_scope->GetModuleResponsesMap(), pass_key);
+  return MakeGarbageCollected<WorkletModuleScriptFetcher>(global_scope,
+                                                          pass_key);
 }
 
 bool WorkletModulatorImpl::IsDynamicImportForbidden(String* reason) {

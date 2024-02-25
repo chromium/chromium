@@ -25,6 +25,7 @@
 
 #include "third_party/blink/renderer/core/layout/layout_custom_scrollbar_part.h"
 
+#include "base/notreached.h"
 #include "third_party/blink/renderer/core/frame/local_frame_view.h"
 #include "third_party/blink/renderer/core/frame/web_feature.h"
 #include "third_party/blink/renderer/core/layout/custom_scrollbar.h"
@@ -55,7 +56,7 @@ static void RecordScrollbarPartStats(Document& document, ScrollbarPart part) {
       UseCounter::Count(
           document,
           WebFeature::kCSSSelectorPseudoScrollbarButtonReversedDirection);
-      U_FALLTHROUGH;
+      [[fallthrough]];
     case kBackButtonStartPart:
     case kForwardButtonEndPart:
       UseCounter::Count(document,
@@ -122,13 +123,13 @@ int LayoutCustomScrollbarPart::ComputeWidth(int container_width) const {
     return 0;
   }
 
-  int width = ComputeSize(style.UsedWidth(), container_width);
-  int min_width = style.UsedMinWidth().IsAuto()
+  int width = ComputeSize(style.Width(), container_width);
+  int min_width = style.MinWidth().IsAuto()
                       ? 0
-                      : ComputeSize(style.UsedMinWidth(), container_width);
-  int max_width = style.UsedMaxWidth().IsNone()
+                      : ComputeSize(style.MinWidth(), container_width);
+  int max_width = style.MaxWidth().IsNone()
                       ? width
-                      : ComputeSize(style.UsedMaxWidth(), container_width);
+                      : ComputeSize(style.MaxWidth(), container_width);
   return std::max(min_width, std::min(max_width, width));
 }
 
@@ -139,13 +140,13 @@ int LayoutCustomScrollbarPart::ComputeHeight(int container_height) const {
     return 0;
   }
 
-  int height = ComputeSize(style.UsedHeight(), container_height);
-  int min_height = style.UsedMinHeight().IsAuto()
+  int height = ComputeSize(style.Height(), container_height);
+  int min_height = style.MinHeight().IsAuto()
                        ? 0
-                       : ComputeSize(style.UsedMinHeight(), container_height);
-  int max_height = style.UsedMaxHeight().IsNone()
+                       : ComputeSize(style.MinHeight(), container_height);
+  int max_height = style.MaxHeight().IsNone()
                        ? height
-                       : ComputeSize(style.UsedMaxHeight(), container_height);
+                       : ComputeSize(style.MaxHeight(), container_height);
   return std::max(min_height, std::min(max_height, height));
 }
 
@@ -171,19 +172,19 @@ int LayoutCustomScrollbarPart::ComputeLength() const {
   return ComputeHeight(visible_content_rect.height());
 }
 
-void LayoutCustomScrollbarPart::SetOverriddenFrameRect(const LayoutRect& rect) {
+void LayoutCustomScrollbarPart::SetOverriddenSize(const PhysicalSize& size) {
   NOT_DESTROYED();
-  overridden_rect_ = rect;
+  overridden_size_ = size;
 }
 
 LayoutPoint LayoutCustomScrollbarPart::LocationInternal() const {
   NOT_DESTROYED();
-  return overridden_rect_.Location();
+  NOTREACHED_NORETURN();
 }
 
 PhysicalSize LayoutCustomScrollbarPart::Size() const {
   NOT_DESTROYED();
-  return PhysicalSizeToBeNoop(overridden_rect_.Size());
+  return overridden_size_;
 }
 
 static LayoutUnit ComputeMargin(const Length& style_margin) {
@@ -194,29 +195,33 @@ static LayoutUnit ComputeMargin(const Length& style_margin) {
 
 LayoutUnit LayoutCustomScrollbarPart::MarginTop() const {
   NOT_DESTROYED();
-  if (scrollbar_->Orientation() == kHorizontalScrollbar)
+  if (scrollbar_ && scrollbar_->Orientation() == kHorizontalScrollbar) {
     return LayoutUnit();
+  }
   return ComputeMargin(StyleRef().MarginTop());
 }
 
 LayoutUnit LayoutCustomScrollbarPart::MarginBottom() const {
   NOT_DESTROYED();
-  if (scrollbar_->Orientation() == kHorizontalScrollbar)
+  if (scrollbar_ && scrollbar_->Orientation() == kHorizontalScrollbar) {
     return LayoutUnit();
+  }
   return ComputeMargin(StyleRef().MarginBottom());
 }
 
 LayoutUnit LayoutCustomScrollbarPart::MarginLeft() const {
   NOT_DESTROYED();
-  if (scrollbar_->Orientation() == kVerticalScrollbar)
+  if (scrollbar_ && scrollbar_->Orientation() == kVerticalScrollbar) {
     return LayoutUnit();
+  }
   return ComputeMargin(StyleRef().MarginLeft());
 }
 
 LayoutUnit LayoutCustomScrollbarPart::MarginRight() const {
   NOT_DESTROYED();
-  if (scrollbar_->Orientation() == kVerticalScrollbar)
+  if (scrollbar_ && scrollbar_->Orientation() == kVerticalScrollbar) {
     return LayoutUnit();
+  }
   return ComputeMargin(StyleRef().MarginRight());
 }
 

@@ -6,13 +6,12 @@ package org.chromium.components.browser_ui.accessibility;
 
 import androidx.annotation.NonNull;
 
-import org.chromium.base.annotations.JNINamespace;
-import org.chromium.base.annotations.NativeMethods;
+import org.jni_zero.JNINamespace;
+import org.jni_zero.NativeMethods;
+
 import org.chromium.content_public.browser.WebContents;
 
-/**
- * Centralizes metrics data collection for Page Zoom.
- */
+/** Centralizes metrics data collection for Page Zoom. */
 @JNINamespace("browser_ui")
 public class PageZoomMetrics {
     /**

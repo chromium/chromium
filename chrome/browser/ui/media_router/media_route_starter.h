@@ -162,7 +162,7 @@ class MediaRouteStarter : public content::PresentationObserver {
 
   // Set to the presentation request corresponding to the presentation cast
   // mode, if supported. Otherwise set to nullopt.
-  absl::optional<content::PresentationRequest> presentation_request_;
+  std::optional<content::PresentationRequest> presentation_request_;
 
   // Registered observers.
   base::ObserverList<PresentationRequestSourceObserver>::Unchecked observers_;

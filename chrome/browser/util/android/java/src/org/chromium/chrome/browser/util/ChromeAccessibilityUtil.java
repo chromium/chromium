@@ -9,9 +9,7 @@ import androidx.annotation.Nullable;
 import org.chromium.ui.accessibility.AccessibilityState;
 import org.chromium.ui.util.AccessibilityUtil;
 
-/**
- * Provides the chrome specific wiring for AccessibilityUtil.
- */
+/** Provides the chrome specific wiring for AccessibilityUtil. */
 public class ChromeAccessibilityUtil extends AccessibilityUtil {
     private static ChromeAccessibilityUtil sInstance;
 

@@ -5,7 +5,8 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_IMAGEBITMAP_IMAGE_BITMAP_SOURCE_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_IMAGEBITMAP_IMAGE_BITMAP_SOURCE_H_
 
-#include "third_party/abseil-cpp/absl/types/optional.h"
+#include <optional>
+
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
@@ -24,7 +25,7 @@ class CORE_EXPORT ImageBitmapSource {
  public:
   virtual gfx::Size BitmapSourceSize() const { return gfx::Size(); }
   virtual ScriptPromise CreateImageBitmap(ScriptState*,
-                                          absl::optional<gfx::Rect>,
+                                          std::optional<gfx::Rect>,
                                           const ImageBitmapOptions*,
                                           ExceptionState&);
 

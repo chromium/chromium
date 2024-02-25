@@ -7,60 +7,60 @@ package org.chromium.chrome.browser.app.flags;
 import android.text.TextUtils;
 
 import androidx.annotation.AnyThread;
+import androidx.annotation.VisibleForTesting;
+
+import org.jni_zero.CalledByNative;
 
 import org.chromium.base.ApplicationStatus;
-import org.chromium.base.FieldTrialList;
-import org.chromium.base.annotations.CalledByNative;
+import org.chromium.base.cached_flags.CachedFieldTrialParameter;
+import org.chromium.base.cached_flags.CachedFlag;
+import org.chromium.base.cached_flags.CachedFlagUtils;
+import org.chromium.base.cached_flags.CachedFlagsSafeMode;
 import org.chromium.base.library_loader.LibraryLoader;
 import org.chromium.build.BuildConfig;
-import org.chromium.chrome.browser.WarmupManager;
-import org.chromium.chrome.browser.app.ChromeActivity;
+import org.chromium.chrome.browser.JankTrackerExperiment;
 import org.chromium.chrome.browser.back_press.BackPressManager;
 import org.chromium.chrome.browser.back_press.MinimizeAppAndCloseTabBackPressHandler;
 import org.chromium.chrome.browser.customtabs.CustomTabActivity;
 import org.chromium.chrome.browser.customtabs.CustomTabIntentDataProvider;
-import org.chromium.chrome.browser.customtabs.features.branding.BrandingController;
+import org.chromium.chrome.browser.customtabs.features.minimizedcustomtab.MinimizedFeatureUtils;
 import org.chromium.chrome.browser.feed.FeedPlaceholderLayout;
 import org.chromium.chrome.browser.firstrun.FirstRunUtils;
-import org.chromium.chrome.browser.flags.CachedFeatureFlags;
-import org.chromium.chrome.browser.flags.CachedFieldTrialParameter;
-import org.chromium.chrome.browser.flags.CachedFlag;
-import org.chromium.chrome.browser.flags.CachedFlagsSafeMode;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.chrome.browser.hub.HubFieldTrial;
+import org.chromium.chrome.browser.magic_stack.HomeModulesMetricsUtils;
+import org.chromium.chrome.browser.multiwindow.MultiWindowUtils;
+import org.chromium.chrome.browser.new_tab_url.DseNewTabUrlManager;
 import org.chromium.chrome.browser.notifications.chime.ChimeFeatures;
 import org.chromium.chrome.browser.omaha.VersionNumberGetter;
 import org.chromium.chrome.browser.omnibox.OmniboxFeatures;
 import org.chromium.chrome.browser.optimization_guide.OptimizationGuidePushNotificationManager;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
-import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
-import org.chromium.chrome.browser.recent_tabs.RestoreTabsFeatureHelper;
-import org.chromium.chrome.browser.tab.state.FilePersistedTabDataStorage;
-import org.chromium.chrome.browser.tabmodel.TabPersistentStore;
+import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
+import org.chromium.chrome.browser.tab.state.ShoppingPersistedTabDataService;
 import org.chromium.chrome.browser.tasks.tab_management.TabManagementFieldTrial;
 import org.chromium.chrome.browser.tasks.tab_management.TabUiFeatureUtilities;
+import org.chromium.chrome.browser.toolbar.ToolbarFeatures;
 import org.chromium.chrome.features.start_surface.StartSurfaceConfiguration;
 
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * Caches the flags that Chrome might require before native is loaded in a later next run.
- */
+/** Caches the flags that Chrome might require before native is loaded in a later next run. */
 public class ChromeCachedFlags {
     private static final ChromeCachedFlags INSTANCE = new ChromeCachedFlags();
 
     private boolean mIsFinishedCachingNativeFlags;
 
-    private static String sReachedCodeProfilerTrialGroup;
-
     /**
      * A list of field trial parameters that will be cached when starting minimal browser mode. See
      * {@link #cacheMinimalBrowserFlags()}.
      */
-    private static final List<CachedFieldTrialParameter> MINIMAL_BROWSER_FIELD_TRIALS = List.of(
-            // This is used by CustomTabsConnection implementation, which does not
-            // necessarily start chrome.
-            CustomTabActivity.EXPERIMENTS_FOR_AGSA_PARAMS);
+    private static final List<CachedFieldTrialParameter> MINIMAL_BROWSER_FIELD_TRIALS =
+            List.of(
+                    // This is used by CustomTabsConnection implementation, which does not
+                    // necessarily start chrome.
+                    CustomTabActivity.EXPERIMENTS_FOR_AGSA_PARAMS);
 
     /**
      * @return The {@link ChromeCachedFlags} singleton.
@@ -78,62 +78,71 @@ public class ChromeCachedFlags {
         if (mIsFinishedCachingNativeFlags) return;
         FirstRunUtils.cacheFirstRunPrefs();
 
-        CachedFeatureFlags.cacheNativeFlags(ChromeFeatureList.sFlagsCachedFullBrowser);
+        CachedFlagUtils.cacheNativeFlags(ChromeFeatureList.sFlagsCachedFullBrowser);
         cacheAdditionalNativeFlags();
 
-        //clang-format off
-        List<CachedFieldTrialParameter> fieldTrialsToCache = List.of(
-                BrandingController.BRANDING_CADENCE_MS,
-                BrandingController.MAX_BLANK_TOOLBAR_TIMEOUT_MS,
-                BrandingController.USE_TEMPORARY_STORAGE,
-                BrandingController.ANIMATE_TOOLBAR_ICON_TRANSITION, ChimeFeatures.ALWAYS_REGISTER,
-                FeedPlaceholderLayout.ENABLE_INSTANT_START_ANIMATION,
-                FilePersistedTabDataStorage.DELAY_SAVES_UNTIL_DEFERRED_STARTUP_PARAM,
-                OptimizationGuidePushNotificationManager.MAX_CACHE_SIZE,
-                OmniboxFeatures.ENABLE_MODERNIZE_VISUAL_UPDATE_ON_TABLET,
-                OmniboxFeatures.MODERNIZE_VISUAL_UPDATE_ACTIVE_COLOR_ON_OMNIBOX,
-                OmniboxFeatures.MODERNIZE_VISUAL_UPDATE_MERGE_CLIPBOARD_ON_NTP,
-                OmniboxFeatures.MODERNIZE_VISUAL_UPDATE_SMALL_BOTTOM_MARGIN,
-                OmniboxFeatures.MODERNIZE_VISUAL_UPDATE_SMALLER_MARGINS,
-                OmniboxFeatures.MODERNIZE_VISUAL_UPDATE_SMALLEST_MARGINS,
-                CustomTabIntentDataProvider.AUTO_TRANSLATE_ALLOW_ALL_FIRST_PARTIES,
-                CustomTabIntentDataProvider.AUTO_TRANSLATE_PACKAGE_NAME_ALLOWLIST,
-                CustomTabIntentDataProvider.THIRD_PARTIES_DEFAULT_POLICY,
-                CustomTabIntentDataProvider.DENYLIST_ENTRIES,
-                CustomTabIntentDataProvider.ALLOWLIST_ENTRIES,
-                WarmupManager.SPARE_TAB_INITIALIZE_RENDERER,
-                RestoreTabsFeatureHelper.RESTORE_TABS_PROMO_SKIP_FEATURE_ENGAGEMENT,
-                StartSurfaceConfiguration.IS_DOODLE_SUPPORTED,
-                StartSurfaceConfiguration.START_SURFACE_RETURN_TIME_SECONDS,
-                StartSurfaceConfiguration.START_SURFACE_RETURN_TIME_ON_TABLET_SECONDS,
-                StartSurfaceConfiguration.START_SURFACE_RETURN_TIME_USE_MODEL,
-                StartSurfaceConfiguration.SHOW_TABS_IN_MRU_ORDER,
-                StartSurfaceConfiguration.SIGNIN_PROMO_NTP_COUNT_LIMIT,
-                StartSurfaceConfiguration.SIGNIN_PROMO_NTP_SINCE_FIRST_TIME_SHOWN_LIMIT_HOURS,
-                StartSurfaceConfiguration.SIGNIN_PROMO_NTP_RESET_AFTER_HOURS,
-                StartSurfaceConfiguration.START_SURFACE_HIDE_INCOGNITO_SWITCH_NO_TAB,
-                StartSurfaceConfiguration.START_SURFACE_LAST_ACTIVE_TAB_ONLY,
-                StartSurfaceConfiguration.START_SURFACE_OPEN_NTP_INSTEAD_OF_START,
-                StartSurfaceConfiguration.START_SURFACE_OPEN_START_AS_HOMEPAGE,
-                StartSurfaceConfiguration.SURFACE_POLISH_OMNIBOX_COLOR,
-                StartSurfaceConfiguration.SURFACE_POLISH_MOVE_DOWN_LOGO,
-                StartSurfaceConfiguration.SURFACE_POLISH_LESS_BRAND_SPACE,
-                StartSurfaceConfiguration.SURFACE_POLISH_USE_MAGIC_SPACE,
-                TabPersistentStore.CRITICAL_PERSISTED_TAB_DATA_SAVE_ONLY_PARAM,
-                TabUiFeatureUtilities.ZOOMING_MIN_MEMORY, TabUiFeatureUtilities.SKIP_SLOW_ZOOMING,
-                TabUiFeatureUtilities.TAB_STRIP_REDESIGN_DISABLE_NTB_ANCHOR,
-                TabUiFeatureUtilities.TAB_STRIP_REDESIGN_DISABLE_BUTTON_STYLE,
-                TabManagementFieldTrial.DELAY_TEMP_STRIP_TIMEOUT_MS,
-                TabManagementFieldTrial.TAB_STRIP_REDESIGN_ENABLE_FOLIO,
-                TabManagementFieldTrial.TAB_STRIP_REDESIGN_ENABLE_DETACHED,
-                VersionNumberGetter.MIN_SDK_VERSION, ChromeActivity.CONTENT_VIS_DELAY_MS,
-                MinimizeAppAndCloseTabBackPressHandler.SYSTEM_BACK,
-                BackPressManager.TAB_HISTORY_RECOVER);
-        // clang-format on
-        tryToCatchMissingParameters(fieldTrialsToCache);
-        CachedFeatureFlags.cacheFieldTrialParameters(fieldTrialsToCache);
+        List<CachedFieldTrialParameter> fieldTrialsToCache =
+                List.of(
+                        BackPressManager.TAB_HISTORY_RECOVER,
+                        ChimeFeatures.ALWAYS_REGISTER,
+                        CustomTabIntentDataProvider.AUTO_TRANSLATE_ALLOW_ALL_FIRST_PARTIES,
+                        CustomTabIntentDataProvider.AUTO_TRANSLATE_PACKAGE_NAME_ALLOWLIST,
+                        CustomTabIntentDataProvider.THIRD_PARTIES_DEFAULT_POLICY,
+                        CustomTabIntentDataProvider.DENYLIST_ENTRIES,
+                        CustomTabIntentDataProvider.ALLOWLIST_ENTRIES,
+                        DseNewTabUrlManager.EEA_COUNTRY_ONLY,
+                        DseNewTabUrlManager.SWAP_OUT_NTP,
+                        FeedPlaceholderLayout.ENABLE_INSTANT_START_ANIMATION,
+                        HubFieldTrial.FLOATING_ACTION_BUTTON,
+                        HubFieldTrial.PANE_SWITCHER_USES_TEXT,
+                        HubFieldTrial.SUPPORTS_OTHER_TABS,
+                        HubFieldTrial.SUPPORTS_SEARCH,
+                        HubFieldTrial.SUPPORTS_BOOKMARKS,
+                        JankTrackerExperiment.JANK_TRACKER_DELAYED_START_MS,
+                        MinimizeAppAndCloseTabBackPressHandler.SYSTEM_BACK,
+                        MinimizedFeatureUtils.ICON_VARIANT,
+                        MinimizedFeatureUtils.MANUFACTURER_EXCLUDE_LIST,
+                        MultiWindowUtils.BACK_TO_BACK_CTA_CREATION_TIMESTAMP_DIFF_THRESHOLD_MS,
+                        OptimizationGuidePushNotificationManager.MAX_CACHE_SIZE,
+                        OmniboxFeatures.ENABLE_MODERNIZE_VISUAL_UPDATE_ON_TABLET,
+                        OmniboxFeatures.MODERNIZE_VISUAL_UPDATE_ACTIVE_COLOR_ON_OMNIBOX,
+                        OmniboxFeatures.MODERNIZE_VISUAL_UPDATE_SMALLEST_MARGINS,
+                        OmniboxFeatures.QUERY_TILES_SHOW_AS_CAROUSEL,
+                        ShoppingPersistedTabDataService
+                                .SKIP_SHOPPING_PERSISTED_TAB_DATA_DELAYED_INITIALIZATION,
+                        StartSurfaceConfiguration.IS_DOODLE_SUPPORTED,
+                        StartSurfaceConfiguration.START_SURFACE_RETURN_TIME_SECONDS,
+                        StartSurfaceConfiguration.START_SURFACE_RETURN_TIME_ON_TABLET_SECONDS,
+                        StartSurfaceConfiguration.START_SURFACE_RETURN_TIME_USE_MODEL,
+                        StartSurfaceConfiguration.SIGNIN_PROMO_NTP_COUNT_LIMIT,
+                        StartSurfaceConfiguration
+                                .SIGNIN_PROMO_NTP_SINCE_FIRST_TIME_SHOWN_LIMIT_HOURS,
+                        StartSurfaceConfiguration.SIGNIN_PROMO_NTP_RESET_AFTER_HOURS,
+                        StartSurfaceConfiguration.START_SURFACE_HIDE_INCOGNITO_SWITCH_NO_TAB,
+                        StartSurfaceConfiguration.START_SURFACE_OPEN_NTP_INSTEAD_OF_START,
+                        StartSurfaceConfiguration.START_SURFACE_OPEN_START_AS_HOMEPAGE,
+                        StartSurfaceConfiguration.SURFACE_POLISH_OMNIBOX_COLOR,
+                        StartSurfaceConfiguration.SURFACE_POLISH_MOVE_DOWN_LOGO,
+                        StartSurfaceConfiguration.SURFACE_POLISH_LESS_BRAND_SPACE,
+                        StartSurfaceConfiguration.SURFACE_POLISH_SCROLLABLE_MVT,
+                        TabManagementFieldTrial.DELAY_TEMP_STRIP_TIMEOUT_MS,
+                        HomeModulesMetricsUtils.HOME_MODULES_SHOW_ALL_MODULES,
+                        TabUiFeatureUtilities.ANIMATION_START_TIMEOUT_MS,
+                        TabUiFeatureUtilities.ZOOMING_MIN_MEMORY,
+                        TabUiFeatureUtilities.SKIP_SLOW_ZOOMING,
+                        TabUiFeatureUtilities.DISABLE_STRIP_TO_CONTENT_DD,
+                        TabUiFeatureUtilities.DISABLE_STRIP_TO_STRIP_DD,
+                        TabUiFeatureUtilities.DISABLE_STRIP_TO_STRIP_DIFF_MODEL_DD,
+                        TabUiFeatureUtilities.DISABLE_DRAG_TO_NEW_INSTANCE_DD,
+                        TabUiFeatureUtilities.ENABLE_NON_SPLIT_MODE_TAB_DRAG_MANUFACTURER_ALLOWLIST,
+                        ToolbarFeatures.DTC_TRANSITION_THRESHOLD_DP,
+                        ToolbarFeatures.USE_TOOLBAR_BG_COLOR_FOR_STRIP_TRANSITION_SCRIM,
+                        VersionNumberGetter.MIN_SDK_VERSION);
 
-        CachedFeatureFlags.onEndCheckpoint();
+        tryToCatchMissingParameters(fieldTrialsToCache);
+        CachedFlagUtils.cacheFieldTrialParameters(fieldTrialsToCache);
+
+        CachedFlagsSafeMode.getInstance().onEndCheckpoint();
         mIsFinishedCachingNativeFlags = true;
     }
 
@@ -151,8 +160,8 @@ public class ChromeCachedFlags {
             omissions.add(trial.getFeatureName() + ":" + trial.getParameterName());
         }
         assert omissions.isEmpty()
-            : "The following trials are not correctly cached: "
-                + TextUtils.join(", ", omissions);
+                : "The following trials are not correctly cached: "
+                        + TextUtils.join(", ", omissions);
     }
 
     /**
@@ -162,9 +171,9 @@ public class ChromeCachedFlags {
      * won't be tagged with their corresponding field trial experiments.
      */
     public void cacheMinimalBrowserFlags() {
-        CachedFeatureFlags.cacheMinimalBrowserFlagsTimeFromNativeTime();
-        CachedFeatureFlags.cacheNativeFlags(ChromeFeatureList.sFlagsCachedInMinimalBrowser);
-        CachedFeatureFlags.cacheFieldTrialParameters(MINIMAL_BROWSER_FIELD_TRIALS);
+        cacheMinimalBrowserFlagsTimeFromNativeTime();
+        CachedFlagUtils.cacheNativeFlags(ChromeFeatureList.sFlagsCachedInMinimalBrowser);
+        CachedFlagUtils.cacheFieldTrialParameters(MINIMAL_BROWSER_FIELD_TRIALS);
     }
 
     /**
@@ -174,17 +183,7 @@ public class ChromeCachedFlags {
      * Do not add new simple boolean flags here, add them to {@link #cacheNativeFlags} instead.
      */
     public static void cacheAdditionalNativeFlags() {
-        CachedFlagsSafeMode.cacheSafeModeForCachedFlagsEnabled();
-        cacheReachedCodeProfilerTrialGroup();
-
-        // Propagate REACHED_CODE_PROFILER feature value to LibraryLoader. This can't be done in
-        // LibraryLoader itself because it lives in //base and can't depend on ChromeFeatureList.
-        LibraryLoader.setReachedCodeProfilerEnabledOnNextRuns(
-                ChromeFeatureList.isEnabled(ChromeFeatureList.REACHED_CODE_PROFILER),
-                ChromeFeatureList.getFieldTrialParamByFeatureAsInt(
-                        ChromeFeatureList.REACHED_CODE_PROFILER, "sampling_interval_us", 0));
-
-        // Similarly, propagate the BACKGROUND_THREAD_POOL feature value to LibraryLoader.
+        // Propagate the BACKGROUND_THREAD_POOL feature value to LibraryLoader.
         LibraryLoader.setBackgroundThreadPoolEnabledOnNextRuns(
                 ChromeFeatureList.isEnabled(ChromeFeatureList.BACKGROUND_THREAD_POOL));
 
@@ -193,31 +192,19 @@ public class ChromeCachedFlags {
                 ChromeFeatureList.isEnabled(ChromeFeatureList.CACHE_ACTIVITY_TASKID));
     }
 
-    /**
-     * Caches the trial group of the reached code profiler feature to be using on next startup.
-     */
-    private static void cacheReachedCodeProfilerTrialGroup() {
-        // Make sure that the existing value is saved in a static variable before overwriting it.
-        if (sReachedCodeProfilerTrialGroup == null) {
-            getReachedCodeProfilerTrialGroup();
-        }
-
-        SharedPreferencesManager.getInstance().writeString(
-                ChromePreferenceKeys.REACHED_CODE_PROFILER_GROUP,
-                FieldTrialList.findFullName(ChromeFeatureList.REACHED_CODE_PROFILER));
+    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+    static void cacheMinimalBrowserFlagsTimeFromNativeTime() {
+        ChromeSharedPreferences.getInstance()
+                .writeLong(
+                        ChromePreferenceKeys.FLAGS_LAST_CACHED_MINIMAL_BROWSER_FLAGS_TIME_MILLIS,
+                        System.currentTimeMillis());
     }
 
-    /**
-     * @return The trial group of the reached code profiler.
-     */
-    @CalledByNative
-    public static String getReachedCodeProfilerTrialGroup() {
-        if (sReachedCodeProfilerTrialGroup == null) {
-            sReachedCodeProfilerTrialGroup = SharedPreferencesManager.getInstance().readString(
-                    ChromePreferenceKeys.REACHED_CODE_PROFILER_GROUP, "");
-        }
-
-        return sReachedCodeProfilerTrialGroup;
+    public static long getLastCachedMinimalBrowserFlagsTimeMillis() {
+        return ChromeSharedPreferences.getInstance()
+                .readLong(
+                        ChromePreferenceKeys.FLAGS_LAST_CACHED_MINIMAL_BROWSER_FLAGS_TIME_MILLIS,
+                        0);
     }
 
     @CalledByNative

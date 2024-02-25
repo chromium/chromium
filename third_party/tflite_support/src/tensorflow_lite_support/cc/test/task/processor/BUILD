@@ -4,7 +4,6 @@ load(
 )
 
 package(
-    default_applicable_licenses = ["//tensorflow_lite_support:license"],
     default_visibility = [
         "//visibility:private",
     ],
@@ -20,7 +19,7 @@ cc_test_with_tflite(
     ],
     tflite_deps = [
         "//tensorflow_lite_support/cc/task/processor:image_preprocessor",
-        "@org_tensorflow//tensorflow/lite/core/shims:cc_shims_test_util",
+        "@org_tensorflow//tensorflow/lite:test_util",
     ],
     deps = [
         "//tensorflow_lite_support/cc/port:gtest_main",
@@ -41,7 +40,7 @@ cc_test_with_tflite(
         "//tensorflow_lite_support/cc/test/testdata/task/vision:test_models",
     ],
     tflite_deps = [
-        "@org_tensorflow//tensorflow/lite/core/shims:cc_shims_test_util",
+        "@org_tensorflow//tensorflow/lite:test_util",
         "//tensorflow_lite_support/cc/task/core:tflite_engine",
     ],
     deps = [

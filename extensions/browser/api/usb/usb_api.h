@@ -438,7 +438,7 @@ class UsbResetDeviceFunction : public UsbConnectionFunction {
 
   void OnComplete(bool success);
 
-  absl::optional<api::usb::ResetDevice::Params> parameters_;
+  std::optional<api::usb::ResetDevice::Params> parameters_;
 };
 }  // namespace extensions
 

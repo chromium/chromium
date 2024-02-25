@@ -5,11 +5,14 @@
 #ifndef UI_VIEWS_EXAMPLES_EXAMPLES_MAIN_PROC_H_
 #define UI_VIEWS_EXAMPLES_EXAMPLES_MAIN_PROC_H_
 
+#include "ui/views/examples/create_examples.h"
+#include "ui/views/examples/example_base.h"
 #include "ui/views/examples/examples_exit_code.h"
 
 namespace views::examples {
 
-ExamplesExitCode ExamplesMainProc(bool under_test = false);
+ExamplesExitCode ExamplesMainProc(bool under_test = false,
+                                  ExampleVector examples = ExampleVector());
 
 }  // namespace views::examples
 

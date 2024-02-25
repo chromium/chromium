@@ -7,6 +7,7 @@
 #include <inttypes.h>
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <utility>
 #include <vector>
@@ -30,9 +31,15 @@
 #include "sql/recovery.h"
 #include "sql/statement.h"
 #include "sql/transaction.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace content {
+
+// When enabled, prefer to use the new recovery module to recover the
+// `FirstPartySetsDatabase` database. See https://crbug.com/1385500 for details.
+// This is a kill switch and is not intended to be used in a field trial.
+BASE_FEATURE(kFirstPartySetsDatabaseUseBuiltInRecoveryIfSupported,
+             "FirstPartySetsDatabaseUseBuiltInRecoveryIfSupported",
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 namespace {
 
@@ -415,15 +422,15 @@ net::GlobalFirstPartySets FirstPartySetsDatabase::GetGlobalSets(
     statement.BindString(0, version);
 
     while (statement.Step()) {
-      absl::optional<net::SchemefulSite> site =
+      std::optional<net::SchemefulSite> site =
           FirstPartySetParser::CanonicalizeRegisteredDomain(
               statement.ColumnString(0), /*emit_errors=*/false);
 
-      absl::optional<net::SchemefulSite> primary =
+      std::optional<net::SchemefulSite> primary =
           FirstPartySetParser::CanonicalizeRegisteredDomain(
               statement.ColumnString(1), /*emit_errors=*/false);
 
-      absl::optional<net::SiteType> site_type =
+      std::optional<net::SiteType> site_type =
           net::FirstPartySetEntry::DeserializeSiteType(statement.ColumnInt(2));
 
       // TODO(crbug.com/1314039): Invalid entries should be rare case but
@@ -432,7 +439,7 @@ net::GlobalFirstPartySets FirstPartySetsDatabase::GetGlobalSets(
         entries.emplace_back(
             std::move(site.value()),
             net::FirstPartySetEntry(primary.value(), site_type.value(),
-                                    /*site_index=*/absl::nullopt));
+                                    /*site_index=*/std::nullopt));
       }
     }
     if (!statement.Succeeded())
@@ -511,7 +518,7 @@ std::vector<net::SchemefulSite> FirstPartySetsDatabase::FetchSitesToClear(
   statement.BindString(0, browser_context_id);
 
   while (statement.Step()) {
-    absl::optional<net::SchemefulSite> site =
+    std::optional<net::SchemefulSite> site =
         FirstPartySetParser::CanonicalizeRegisteredDomain(
             statement.ColumnString(0), /*emit_errors=*/false);
     // TODO(crbug/1314039): Invalid sites should be rare case but possible.
@@ -545,7 +552,7 @@ FirstPartySetsDatabase::FetchAllSitesToClearFilter(
   statement.BindString(0, browser_context_id);
 
   while (statement.Step()) {
-    absl::optional<net::SchemefulSite> site =
+    std::optional<net::SchemefulSite> site =
         FirstPartySetParser::CanonicalizeRegisteredDomain(
             statement.ColumnString(0), /*emit_errors=*/false);
     // TODO(crbug/1314039): Invalid sites should be rare case but possible.
@@ -580,11 +587,11 @@ FirstPartySetsDatabase::FetchPolicyConfigurations(
   statement.BindString(0, browser_context_id);
 
   while (statement.Step()) {
-    absl::optional<net::SchemefulSite> site =
+    std::optional<net::SchemefulSite> site =
         FirstPartySetParser::CanonicalizeRegisteredDomain(
             statement.ColumnString(0), /*emit_errors=*/false);
 
-    absl::optional<net::SchemefulSite> maybe_primary_site;
+    std::optional<net::SchemefulSite> maybe_primary_site;
     if (std::string primary_site = statement.ColumnString(1);
         !primary_site.empty()) {
       maybe_primary_site = FirstPartySetParser::CanonicalizeRegisteredDomain(
@@ -603,7 +610,7 @@ FirstPartySetsDatabase::FetchPolicyConfigurations(
                 // real site_type and site_index in the future, depending on
                 // the design details. Use kAssociated as default site type
                 // and null site index for now.
-                net::SiteType::kAssociated, absl::nullopt));
+                net::SiteType::kAssociated, std::nullopt));
       }
       results.emplace_back(std::move(site.value()), std::move(entry_override));
     }
@@ -653,12 +660,12 @@ FirstPartySetsDatabase::FetchManualConfiguration(
   statement.BindString(0, browser_context_id);
 
   while (statement.Step()) {
-    absl::optional<net::SchemefulSite> site =
+    std::optional<net::SchemefulSite> site =
         FirstPartySetParser::CanonicalizeRegisteredDomain(
             statement.ColumnString(0), /*emit_errors=*/false);
 
-    absl::optional<net::SchemefulSite> maybe_primary_site;
-    absl::optional<net::SiteType> maybe_site_type;
+    std::optional<net::SchemefulSite> maybe_primary_site;
+    std::optional<net::SiteType> maybe_site_type;
     // DB entry for "deleted"  site will have null `primary_site` and
     // `site_type`.
     if (std::string primary_site = statement.ColumnString(1);
@@ -681,7 +688,7 @@ FirstPartySetsDatabase::FetchManualConfiguration(
                 // TODO(https://crbug.com/1219656): May change to use the
                 // real site_index in the future, depending on the design
                 // details. Use null site index for now.
-                maybe_site_type.value(), absl::nullopt));
+                maybe_site_type.value(), std::nullopt));
       }
       results.emplace_back(std::move(site.value()), std::move(entry_override));
     }
@@ -700,8 +707,8 @@ bool FirstPartySetsDatabase::LazyInit() {
     return db_status_ == InitStatus::kSuccess;
 
   CHECK_EQ(db_.get(), nullptr);
-  db_ = std::make_unique<sql::Database>(sql::DatabaseOptions{
-      .exclusive_locking = true, .page_size = 4096, .cache_size = 32});
+  db_ = std::make_unique<sql::Database>(
+      sql::DatabaseOptions{.page_size = 4096, .cache_size = 32});
   db_->set_histogram_tag("FirstPartySets");
   // base::Unretained is safe here because this FirstPartySetsDatabase owns
   // the sql::Database instance that stores and uses the callback. So,
@@ -733,27 +740,21 @@ bool FirstPartySetsDatabase::OpenDatabase() {
 void FirstPartySetsDatabase::DatabaseErrorCallback(int extended_error,
                                                    sql::Statement* stmt) {
   CHECK(db_);
-  // Attempt to recover a corrupt database.
-  if (sql::Recovery::ShouldRecover(extended_error)) {
-    // Prevent reentrant calls.
-    db_->reset_error_callback();
+  // Attempt to recover a corrupt database, if it is eligible to be recovered.
+  if (sql::BuiltInRecovery::RecoverIfPossible(
+          db_.get(), extended_error,
+          sql::BuiltInRecovery::Strategy::kRecoverWithMetaVersionOrRaze,
+          &kFirstPartySetsDatabaseUseBuiltInRecoveryIfSupported)) {
+    // Recovery was attempted. The database handle has been poisoned and the
+    // error callback has been reset.
 
-    // After this call, the |db_| handle is poisoned so that future calls will
-    // return errors until the handle is re-opened.
-    sql::Recovery::RecoverDatabaseWithMetaVersion(db_.get(), db_path_);
-
-    // The DLOG(FATAL) below is intended to draw immediate attention to errors
-    // in newly-written code. Database corruption is generally a result of OS or
-    // hardware issues, not coding errors at the client level, so displaying the
-    // error would probably lead to confusion. The ignored call signals the
-    // test-expectation framework that the error was handled.
+    // Signal the test-expectation framework that the error was handled.
     std::ignore = sql::Database::IsExpectedSqliteError(extended_error);
     return;
   }
 
-  // The default handling is to assert on debug and to ignore on release.
   if (!sql::Database::IsExpectedSqliteError(extended_error))
-    DLOG(FATAL) << db_->GetErrorMessage();
+    DLOG(ERROR) << db_->GetErrorMessage();
 
   // Consider the database closed if we did not attempt to recover so we did not
   // produce further errors.

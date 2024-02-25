@@ -6,14 +6,15 @@
 #define UI_OZONE_PLATFORM_WAYLAND_HOST_WAYLAND_ZCR_COLOR_MANAGER_H_
 
 #include <chrome-color-management-client-protocol.h>
+
 #include <memory>
+#include <optional>
 
 #include "base/containers/flat_map.h"
 #include "base/containers/lru_cache.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/scoped_refptr.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/color_space.h"
 #include "ui/ozone/platform/wayland/common/wayland_object.h"
 #include "ui/ozone/platform/wayland/common/wayland_util.h"
@@ -54,10 +55,12 @@ class WaylandZcrColorManager
   scoped_refptr<WaylandZcrColorSpace> GetColorSpace(
       const gfx::ColorSpace& color_space);
 
+  uint32_t GetVersion() { return version_; }
+
  private:
   void OnColorSpaceCreated(gfx::ColorSpace color_space,
                            scoped_refptr<WaylandZcrColorSpace> zcr_color_space,
-                           absl::optional<uint32_t> error);
+                           std::optional<uint32_t> error);
   void PreloadCommonColorSpaces();
   wl::Object<zcr_color_space_creator_v1> CreateZcrColorSpaceCreator(
       const gfx::ColorSpace& color_space);
@@ -74,6 +77,8 @@ class WaylandZcrColorManager
 
   // Non-owned.
   const raw_ptr<WaylandConnection> connection_;
+
+  uint32_t version_;
 };
 
 }  // namespace ui

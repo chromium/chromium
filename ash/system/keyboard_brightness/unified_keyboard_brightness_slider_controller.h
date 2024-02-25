@@ -36,9 +36,8 @@ class ASH_EXPORT UnifiedKeyboardBrightnessSliderController
                           views::SliderChangeReason reason) override;
 
  private:
-  const raw_ptr<UnifiedSystemTrayModel, ExperimentalAsh> model_;
-  raw_ptr<UnifiedSliderView, DanglingUntriaged | ExperimentalAsh> slider_ =
-      nullptr;
+  const raw_ptr<UnifiedSystemTrayModel> model_;
+  raw_ptr<UnifiedSliderView, DanglingUntriaged> slider_ = nullptr;
 };
 
 }  // namespace ash

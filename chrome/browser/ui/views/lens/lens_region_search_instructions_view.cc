@@ -13,6 +13,7 @@
 #include "components/lens/lens_features.h"
 #include "components/strings/grit/components_strings.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/gfx/font_list.h"
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
@@ -47,14 +48,7 @@ LensRegionSearchInstructionsView::LensRegionSearchInstructionsView(
 
   // Create a close button that is always white instead of conforming to
   // native theme.
-  // TODO(crbug/1353948): Refactor/migrate this callback away from using
-  // base::Passed.
-  close_button_ = views::CreateVectorImageButton(base::BindRepeating(
-      [](base::OnceClosure callback) {
-        DCHECK(callback);
-        std::move(callback).Run();
-      },
-      base::Passed(std::move(close_callback))));
+  close_button_ = views::CreateVectorImageButton(std::move(close_callback));
   close_button_->SetTooltipText(l10n_util::GetStringUTF16(IDS_ACCNAME_CLOSE));
 }
 
@@ -149,5 +143,8 @@ gfx::Rect LensRegionSearchInstructionsView::GetBubbleBounds() {
                         DISTANCE_RELATED_CONTROL_VERTICAL_SMALL));
   return bubble_rect;
 }
+
+BEGIN_METADATA(LensRegionSearchInstructionsView)
+END_METADATA
 
 }  // namespace lens

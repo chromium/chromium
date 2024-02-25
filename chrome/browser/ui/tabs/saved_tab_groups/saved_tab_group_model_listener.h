@@ -43,7 +43,7 @@ class SavedTabGroupModelListener : public BrowserListObserver,
   // corresponding local group.
   void ConnectToLocalTabGroup(
       const SavedTabGroup& saved_tab_group,
-      std::vector<std::pair<content::WebContents*, base::Uuid>> mapping);
+      std::map<content::WebContents*, base::Uuid> web_contents_map);
 
   // Stop updating the saved group corresponding to the local group with id
   // `tab_group_id` when the local group changes.
@@ -63,7 +63,7 @@ class SavedTabGroupModelListener : public BrowserListObserver,
 
   // TabStripModelObserver:
   void OnTabGroupChanged(const TabGroupChange& change) override;
-  void TabGroupedStateChanged(absl::optional<tab_groups::TabGroupId> group,
+  void TabGroupedStateChanged(std::optional<tab_groups::TabGroupId> group,
                               content::WebContents* contents,
                               int index) override;
   void OnTabStripModelChanged(

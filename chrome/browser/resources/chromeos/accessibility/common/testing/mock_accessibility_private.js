@@ -71,10 +71,39 @@ class MockAccessibilityPrivate {
       COPY: 'copy',
     };
 
+    this.SelectToSpeakPanelAction = {
+      PREVIOUS_PARAGRAPH: 'previousParagraph',
+      PREVIOUS_SENTENCE: 'previousSentence',
+      PAUSE: 'pause',
+      RESUME: 'resume',
+      NEXT_SENTENCE: 'nextSentence',
+      NEXT_PARAGRAPH: 'nextParagraph',
+      EXIT: 'exit',
+      CHANGE_SPEED: 'changeSpeed',
+    };
+
     this.SyntheticKeyboardEventType = {KEYDOWN: 'keydown', KEYUP: 'keyup'};
 
     this.ToastType = {
+      DICTATION_MIC_MUTED: 'dictationMicMuted',
       DICTATION_NO_FOCUSED_TEXT_FIELD: 'dictationNoFocusedTextField',
+    };
+
+    this.SyntheticMouseEventType = {
+      PRESS: 'press',
+      RELEASE: 'release',
+      DRAG: 'drag',
+      MOVE: 'move',
+      ENTER: 'enter',
+      EXIT: 'exit',
+    };
+
+    this.SyntheticMouseEventButton = {
+      LEFT: 'left',
+      MIDDLE: 'middle',
+      RIGHT: 'right',
+      BACK: 'back',
+      FOWARD: 'foward',
     };
 
     /** @private {function<number, number>} */
@@ -82,6 +111,9 @@ class MockAccessibilityPrivate {
 
     /** @private {?MockPumpkinData} */
     this.pumpkinData_ = null;
+
+    /** @private {?FaceGazeAssets} */
+    this.faceGazeAssets_ = null;
 
     /**
      * @private {function(!chrome.accessibilityPrivate.SelectToSpeakPanelAction,
@@ -109,6 +141,9 @@ class MockAccessibilityPrivate {
     /** @private {?string} */
     this.highlightColor_ = null;
 
+    /** @private {!chrome.accessibilityPrivate.ScreenRect} */
+    this.selectToSpeakFocus_ = null;
+
     /** @private {function<boolean>} */
     this.dictationToggleListener_ = null;
 
@@ -129,8 +164,17 @@ class MockAccessibilityPrivate {
     /** @private {number} */
     this.spokenFeedbackSilenceCount_ = 0;
 
-    /** @private {?MockPumpkinData} */
-    this.pumpkinData_ = null;
+    /** @private {!Object<chrome.accessibilityPrivate.ToastType, number} */
+    this.showToastData_ = {};
+
+    /** @private {?chrome.accessibilityPrivate.ScreenPoint} */
+    this.latestCursorPosition_ = null;
+
+    /** @private {!Array<chrome.accessibilityPrivate.ScreenRect>} */
+    this.displayBounds_ = [{left: 0, top: 0, width: 1200, height: 800}];
+
+    /** @private {!Array<chrome.accessibilityPrivate.SyntheticMouseEvent> */
+    this.syntheticMouseEvents_ = [];
 
     // Methods from AccessibilityPrivate API. //
 
@@ -155,6 +199,11 @@ class MockAccessibilityPrivate {
     };
 
     this.onMagnifierBoundsChanged = {
+      addListener: listener => {},
+      removeListener: listener => {},
+    };
+
+    this.onSelectToSpeakFocusChanged = {
       addListener: listener => {},
       removeListener: listener => {},
     };
@@ -259,6 +308,14 @@ class MockAccessibilityPrivate {
     this.selectToSpeakPanelState_ = {show, anchor, isPaused, speed};
   }
 
+  /**
+   * Sets the Select to Speak reading focus.
+   * @param {!chrome.accessibilityPrivate.ScreenRect} bounds
+   */
+  setSelectToSpeakFocus(bounds) {
+    this.selectToSpeakFocus_ = bounds;
+  }
+
   /** Called in order to toggle Dictation listening. */
   toggleDictation() {
     this.dictationActivated_ = !this.dictationActivated_;
@@ -284,6 +341,21 @@ class MockAccessibilityPrivate {
   /** @return {?PumpkinData} */
   installPumpkinForDictation(callback) {
     callback(MockAccessibilityPrivate.pumpkinData_);
+  }
+
+  /** @return {?FaceGazeAssets} */
+  installFaceGazeAssets(callback) {
+    callback(this.faceGazeAssets_);
+  }
+
+  /** @param {!chrome.accessibilityPrivate.ScreenPoint} point */
+  setCursorPosition(point) {
+    this.latestCursorPosition_ = point;
+  }
+
+  /** @param {!chrome.accessibilityPrivate.SyntheticMouseEvent} event */
+  sendSyntheticMouseEvent(event) {
+    this.syntheticMouseEvents_.push(event);
   }
 
   // Methods for testing. //
@@ -342,6 +414,10 @@ class MockAccessibilityPrivate {
     return this.highlightRects_;
   }
 
+  clearHighlightRects() {
+    this.highlightRects_ = [];
+  }
+
   /**
    * Gets the color of the last highlight created.
    * @return {?string}
@@ -355,6 +431,17 @@ class MockAccessibilityPrivate {
    */
   getSelectToSpeakPanelState() {
     return this.selectToSpeakPanelState_;
+  }
+
+  /**
+   * @return {?chrome.AccessibilityPrivate.ScreenRect}
+   */
+  getSelectToSpeakFocus() {
+    return this.selectToSpeakFocus_;
+  }
+
+  clearSelectToSpeakFocus() {
+    this.selectToSpeakFocus_ = null;
   }
 
   /**
@@ -429,6 +516,37 @@ class MockAccessibilityPrivate {
     return this.spokenFeedbackSilenceCount_;
   }
 
+  /** @return {!Array<!chrome.accessibilityPrivate.ScreenRect>} */
+  getDisplayBounds(callback) {
+    callback(this.displayBounds_);
+  }
+
+  /**
+   * @param {!chrome.accessibilityPrivate.ToastType} type
+   * @return {number}
+   */
+  getShowToastCount(type) {
+    if (!this.showToastData_[type]) {
+      return 0;
+    }
+
+    return this.showToastData_[type];
+  }
+
+  /** @return {?chrome.accessibilityPrivate.ScreenPoint} */
+  getLatestCursorPosition() {
+    return this.latestCursorPosition_;
+  }
+
+  clearCursorPosition() {
+    this.latestCursorPosition_ = null;
+  }
+
+  /** @param {!Array<!chrome.accessibilityPrivate.ScreenRect>} */
+  setDisplayBounds(bounds) {
+    this.displayBounds_ = bounds;
+  }
+
   /**
    * Enables or disables a feature for testing, causing
    * this.isFeatureEnabled to consider it enabled.
@@ -459,7 +577,7 @@ class MockAccessibilityPrivate {
     };
 
     const data = {};
-    const pumpkinDir = '../../accessibility_common/dictation/parse/pumpkin';
+    const pumpkinDir = '../../accessibility_common/third_party/pumpkin';
     data.js_pumpkin_tagger_bin_js =
         await getFileBytes(`${pumpkinDir}/js_pumpkin_tagger_bin.js`);
     data.tagger_wasm_main_js =
@@ -490,5 +608,34 @@ class MockAccessibilityPrivate {
   }
 
   /** @param {!chrome.accessibilityPrivate.ToastType} type */
-  showToast(type) {}
+  showToast(type) {
+    if (!this.showToastData_[type]) {
+      this.showToastData_[type] = 0;
+    }
+    this.showToastData_[type] += 1;
+  }
+
+  /** @return {!Promise} */
+  async initializeFaceGazeAssets() {
+    /**
+     * @param {string} file
+     * @return {!Promise<!ArrayBuffer>}
+     */
+    const getFileBytes = async (file) => {
+      const response = await fetch(file);
+      if (response.status === 404) {
+        throw `Failed to fetch file: ${file}`;
+      }
+
+      return await response.arrayBuffer();
+    };
+
+    const assets = {};
+    const mediapipeDir =
+        '../../accessibility_common/third_party/mediapipe_task_vision';
+    assets.model = await getFileBytes(`${mediapipeDir}/face_landmarker.task`);
+    assets.wasm =
+        await getFileBytes(`${mediapipeDir}/vision_wasm_internal.wasm`);
+    this.faceGazeAssets_ = assets;
+  }
 }

@@ -18,9 +18,9 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
-#include "chrome/browser/ui/browser_dialogs.h"
 #include "chrome/browser/ui/web_applications/test/web_app_browsertest_util.h"
 #include "chrome/browser/ui/web_applications/web_app_dialog_utils.h"
+#include "chrome/browser/ui/web_applications/web_app_dialogs.h"
 #include "chrome/browser/web_applications/mojom/user_display_mode.mojom.h"
 #include "chrome/browser/web_applications/web_app_command_manager.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
@@ -163,8 +163,8 @@ class MLPromotionBrowserTest : public MLPromotionBrowserTestBase {
     task_runner_ = base::MakeRefCounted<base::TestSimpleTaskRunner>();
     scoped_feature_list_.InitAndEnableFeatureWithParameters(
         webapps::features::kWebAppsEnableMLModelForPromotion,
-        {{kGuardrailResultReportProb.name, "1.0"},
-         {kModelDeclineUserDeclineReportProb.name, "1.0"}});
+        {{features::kWebAppsMLGuardrailResultReportProb.name, "1.0"},
+         {features::kWebAppsMLModelUserDeclineReportProb.name, "1.0"}});
   }
   ~MLPromotionBrowserTest() override = default;
 
@@ -263,7 +263,7 @@ class MLPromotionBrowserTest : public MLPromotionBrowserTestBase {
 
   void ExpectClasificationCallReturnResult(
       GURL site_url,
-      web_app::ManifestId manifest_id,
+      webapps::ManifestId manifest_id,
       std::string label_result,
       TrainingRequestId request_result,
       content::WebContents* custom_web_contents = nullptr) {
@@ -274,7 +274,7 @@ class MLPromotionBrowserTest : public MLPromotionBrowserTestBase {
         {"origin", ProcessedValue(url::Origin::Create(site_url).GetURL())},
         {"site_url", ProcessedValue(site_url)},
         {"manifest_id", ProcessedValue(manifest_id)}};
-    EXPECT_CALL(*GetMockSegmentation(custom_web_contents),
+    EXPECT_CALL(*GetMockSegmentation(),
                 GetClassificationResult(
                     segmentation_platform::kWebAppInstallationPromoKey, _,
                     Pointee(testing::Field(&InputContext::metadata_args,
@@ -291,7 +291,7 @@ class MLPromotionBrowserTest : public MLPromotionBrowserTestBase {
     if (!custom_web_contents) {
       custom_web_contents = web_contents();
     }
-    EXPECT_CALL(*GetMockSegmentation(custom_web_contents),
+    EXPECT_CALL(*GetMockSegmentation(),
                 CollectTrainingData(
                     segmentation_platform::proto::SegmentId::
                         OPTIMIZATION_TARGET_WEB_APP_INSTALLATION_PROMO,
@@ -319,7 +319,7 @@ IN_PROC_BROWSER_TEST_F(MLPromotionBrowserTest, CompletelyFilledManifestUKM) {
       test_ukm_recorder().GetEntriesByName(ManifestUkmEntry::kEntryName);
   ASSERT_EQ(entries.size(), 1u);
 
-  auto* entry = entries[0];
+  auto* entry = entries[0].get();
   test_ukm_recorder().ExpectEntrySourceHasUrl(
       entry, GetUrlWithManifestAllFieldsLoadedForML());
   ukm::TestAutoSetUkmRecorder::ExpectEntryMetric(
@@ -348,7 +348,7 @@ IN_PROC_BROWSER_TEST_F(MLPromotionBrowserTest, PartiallyFilledManifestUKM) {
       test_ukm_recorder().GetEntriesByName(ManifestUkmEntry::kEntryName);
   ASSERT_EQ(entries.size(), 1u);
 
-  auto* entry = entries[0];
+  auto* entry = entries[0].get();
   test_ukm_recorder().ExpectEntrySourceHasUrl(entry, GetInstallableAppURL());
   ukm::TestAutoSetUkmRecorder::ExpectEntryMetric(
       entry, ManifestUkmEntry::kDisplayModeName, /*standalone=*/3);
@@ -376,7 +376,7 @@ IN_PROC_BROWSER_TEST_F(MLPromotionBrowserTest, NoManifestUKM) {
       test_ukm_recorder().GetEntriesByName(ManifestUkmEntry::kEntryName);
   ASSERT_EQ(entries.size(), 1u);
 
-  auto* entry = entries[0];
+  auto* entry = entries[0].get();
   test_ukm_recorder().ExpectEntrySourceHasUrl(entry, GetUrlWithNoManifest());
   ukm::TestAutoSetUkmRecorder::ExpectEntryMetric(
       entry, ManifestUkmEntry::kDisplayModeName, -1);
@@ -412,7 +412,7 @@ IN_PROC_BROWSER_TEST_F(MLPromotionBrowserTest, ManifestUpdateChangesUKM) {
       test_ukm_recorder().GetEntriesByName(ManifestUkmEntry::kEntryName);
   ASSERT_EQ(entries.size(), 1u);
 
-  auto* entry = entries[0];
+  auto* entry = entries[0].get();
 
   // Verify UKM records empty manifest data.
   test_ukm_recorder().ExpectEntrySourceHasUrl(entry, GetUrlWithNoManifest());
@@ -426,7 +426,8 @@ IN_PROC_BROWSER_TEST_F(MLPromotionBrowserTest, ManifestUpdateChangesUKM) {
 
   // Restart the pipeline by navigating to about::blank and then navigating back
   // to the no manifest page.
-  web_app::NavigateToURLAndWait(browser(), GURL(url::kAboutBlankURL));
+  web_app::NavigateViaLinkClickToURLAndWait(browser(),
+                                            GURL(url::kAboutBlankURL));
 
   NavigateUpdateManifestAndAwaitDelayedTaskPending(
       GetUrlWithNoManifest(), GetManifestUrlForNoManifestTestPage());
@@ -435,7 +436,7 @@ IN_PROC_BROWSER_TEST_F(MLPromotionBrowserTest, ManifestUpdateChangesUKM) {
   auto updated_entries =
       test_ukm_recorder().GetEntriesByName(ManifestUkmEntry::kEntryName);
   ASSERT_EQ(updated_entries.size(), 2u);
-  auto* updated_entry = updated_entries[1];
+  auto* updated_entry = updated_entries[1].get();
   test_ukm_recorder().ExpectEntrySourceHasUrl(updated_entry,
                                               GetUrlWithNoManifest());
   ukm::TestAutoSetUkmRecorder::ExpectEntryMetric(
@@ -461,7 +462,7 @@ IN_PROC_BROWSER_TEST_F(MLPromotionBrowserTest, FullyInstalledAppMeasurement) {
       test_ukm_recorder().GetEntriesByName(InstallUkmEntry::kEntryName);
   ASSERT_EQ(entries.size(), 1u);
 
-  auto* entry = entries[0];
+  auto* entry = entries[0].get();
   test_ukm_recorder().ExpectEntrySourceHasUrl(entry, GetInstallableAppURL());
   ukm::TestAutoSetUkmRecorder::ExpectEntryMetric(
       entry, InstallUkmEntry::kIsFullyInstalledName, true);
@@ -483,7 +484,7 @@ IN_PROC_BROWSER_TEST_F(MLPromotionBrowserTest,
       test_ukm_recorder().GetEntriesByName(InstallUkmEntry::kEntryName);
   ASSERT_EQ(entries.size(), 1u);
 
-  auto* entry = entries[0];
+  auto* entry = entries[0].get();
   test_ukm_recorder().ExpectEntrySourceHasUrl(entry, GetInstallableAppURL());
   ukm::TestAutoSetUkmRecorder::ExpectEntryMetric(
       entry, InstallUkmEntry::kIsFullyInstalledName, false);
@@ -614,7 +615,8 @@ IN_PROC_BROWSER_TEST_F(MLPromotionBrowserTest, PageLoadVerifyFaviconUpdate) {
 
   // Navigate to a different page to reset the site URL the pipeline needs to be
   // triggered from.
-  web_app::NavigateToURLAndWait(browser(), GURL(url::kAboutBlankURL));
+  web_app::NavigateViaLinkClickToURLAndWait(browser(),
+                                            GURL(url::kAboutBlankURL));
 
   // Add favicons to page after loading and trigger pipeline for testing.
   UpdateFaviconAndRunPipelinePendingDelayedTask(GetUrlWithNoManifest());
@@ -655,7 +657,7 @@ IN_PROC_BROWSER_TEST_F(MLPromotionBrowserTest,
   provider().command_manager().AwaitAllCommandsCompleteForTesting();
 
   EXPECT_FALSE(provider().registrar_unsafe().is_empty());
-  web_app::AppId app_id = provider().registrar_unsafe().GetAppIds()[0];
+  webapps::AppId app_id = provider().registrar_unsafe().GetAppIds()[0];
   EXPECT_EQ("Web App Test Page with Favicon",
             provider().registrar_unsafe().GetAppShortName(app_id));
   auto user_display_mode =
@@ -680,7 +682,8 @@ IN_PROC_BROWSER_TEST_F(MLPromotionBrowserTest, MLInstallEmptyPageNoIcons) {
   ExpectTrainingResult(TrainingRequestId(1ll),
                        MlInstallResponse::kBlockedGuardrails);
   // Doing another navigation should now trigger the guardrail blocked signal.
-  web_app::NavigateToURLAndWait(browser(), GURL(url::kAboutBlankURL));
+  web_app::NavigateViaLinkClickToURLAndWait(browser(),
+                                            GURL(url::kAboutBlankURL));
 }
 
 // Test for crbug.com/1472629, where an already open dialog would cause
@@ -698,7 +701,7 @@ IN_PROC_BROWSER_TEST_F(MLPromotionBrowserTest,
       web_contents());
 
   views::NamedWidgetShownWaiter waiter(views::test::AnyWidgetTestPasskey{},
-                                       "WebAppConfirmationView");
+                                       "CreateShortcutConfirmationView");
   chrome::ExecuteCommand(browser(), IDC_CREATE_SHORTCUT);
   views::Widget* widget = waiter.WaitIfNeededAndGet();
   EXPECT_TRUE(widget != nullptr);
@@ -706,7 +709,7 @@ IN_PROC_BROWSER_TEST_F(MLPromotionBrowserTest,
   task_runner_->RunPendingTasks();
 
   // Refreshing the page should exit the pipeline early, and should not crash.
-  web_app::NavigateToURLAndWait(browser(), GetInstallableAppURL());
+  web_app::NavigateViaLinkClickToURLAndWait(browser(), GetInstallableAppURL());
   task_runner_->RunPendingTasks();
 }
 
@@ -728,7 +731,7 @@ class MLPromotionInstallDialogBrowserTest
       case InstallDialogState::kDetailedInstallDialog:
         return "WebAppDetailedInstallDialog";
       case InstallDialogState::kCreateShortcutDialog:
-        return "WebAppConfirmationView";
+        return "CreateShortcutConfirmationView";
     }
   }
 
@@ -764,7 +767,7 @@ class MLPromotionInstallDialogBrowserTest
         InstallAppForCurrentWebContents(/*install_locally=*/true);
         break;
       case InstallDialogState::kCreateShortcutDialog:
-        chrome::SetAutoAcceptWebAppDialogForTesting(
+        web_app::SetAutoAcceptWebAppDialogForTesting(
             /*auto_accept=*/true, /*auto_open_in_window=*/false);
         chrome::ExecuteCommand(browser(), IDC_CREATE_SHORTCUT);
         break;
@@ -844,7 +847,8 @@ IN_PROC_BROWSER_TEST_P(MLPromotionInstallDialogBrowserTest,
   ExpectTrainingResult(TrainingRequestId(1ll), MlInstallResponse::kIgnored);
 
   views::test::WidgetDestroyedWaiter destroyed(widget);
-  web_app::NavigateToURLAndWait(browser(), GURL(url::kAboutBlankURL));
+  web_app::NavigateViaLinkClickToURLAndWait(browser(),
+                                            GURL(url::kAboutBlankURL));
   destroyed.Wait();
 
   provider().command_manager().AwaitAllCommandsCompleteForTesting();
@@ -908,7 +912,7 @@ IN_PROC_BROWSER_TEST_P(MLPromotionInstallDialogBrowserTest,
   provider().command_manager().AwaitAllCommandsCompleteForTesting();
 
   EXPECT_FALSE(provider().registrar_unsafe().is_empty());
-  web_app::AppId app_id = provider().registrar_unsafe().GetAppIds()[0];
+  webapps::AppId app_id = provider().registrar_unsafe().GetAppIds()[0];
   EXPECT_EQ(GetAppNameBasedOnDialogState(),
             provider().registrar_unsafe().GetAppShortName(app_id));
 }
@@ -1008,7 +1012,8 @@ IN_PROC_BROWSER_TEST_P(MLPromotionInstallDialogBrowserTest,
   provider().command_manager().AwaitAllCommandsCompleteForTesting();
   EXPECT_TRUE(provider().registrar_unsafe().is_empty());
 
-  web_app::NavigateToURLAndWait(browser(), GURL(url::kAboutBlankURL));
+  web_app::NavigateViaLinkClickToURLAndWait(browser(),
+                                            GURL(url::kAboutBlankURL));
 
   // Test that guardrails now block the install.
   NavigateAndAwaitMetricsCollectionPending(GetUrlBasedOnDialogState());
@@ -1025,7 +1030,8 @@ IN_PROC_BROWSER_TEST_P(MLPromotionInstallDialogBrowserTest,
   ExpectTrainingResult(TrainingRequestId(2ll),
                        MlInstallResponse::kBlockedGuardrails, web_contents());
   // Doing another navigation should now trigger the guardrail blocked signal.
-  web_app::NavigateToURLAndWait(browser(), GURL(url::kAboutBlankURL));
+  web_app::NavigateViaLinkClickToURLAndWait(browser(),
+                                            GURL(url::kAboutBlankURL));
 }
 
 IN_PROC_BROWSER_TEST_P(MLPromotionInstallDialogBrowserTest,
@@ -1062,7 +1068,8 @@ IN_PROC_BROWSER_TEST_P(MLPromotionInstallDialogBrowserTest,
   provider().command_manager().AwaitAllCommandsCompleteForTesting();
   EXPECT_TRUE(provider().registrar_unsafe().is_empty());
 
-  web_app::NavigateToURLAndWait(browser(), GURL(url::kAboutBlankURL));
+  web_app::NavigateViaLinkClickToURLAndWait(browser(),
+                                            GURL(url::kAboutBlankURL));
 
   // Navigate back to the app url to re-trigger the ml pipeline.
   ExpectClasificationCallReturnResult(
@@ -1113,7 +1120,8 @@ IN_PROC_BROWSER_TEST_P(MLPromotionInstallDialogBrowserTest,
   provider().command_manager().AwaitAllCommandsCompleteForTesting();
   EXPECT_TRUE(provider().registrar_unsafe().is_empty());
 
-  web_app::NavigateToURLAndWait(browser(), GURL(url::kAboutBlankURL));
+  web_app::NavigateViaLinkClickToURLAndWait(browser(),
+                                            GURL(url::kAboutBlankURL));
 
   // Navigate back to the app url to re-trigger the ml pipeline.
   ExpectClasificationCallReturnResult(

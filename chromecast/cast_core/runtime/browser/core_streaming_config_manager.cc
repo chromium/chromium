@@ -4,6 +4,7 @@
 
 #include "chromecast/cast_core/runtime/browser/core_streaming_config_manager.h"
 
+#include <string_view>
 #include <utility>
 
 #include "base/containers/contains.h"
@@ -62,9 +63,9 @@ cast_streaming::ReceiverConfig CreateConfig(
     const PlatformInfoSerializer& deserializer) {
   cast_streaming::ReceiverConfig constraints;
 
-  const absl::optional<int> width = deserializer.MaxWidth();
-  const absl::optional<int> height = deserializer.MaxHeight();
-  const absl::optional<int> frame_rate = deserializer.MaxFrameRate();
+  const std::optional<int> width = deserializer.MaxWidth();
+  const std::optional<int> height = deserializer.MaxHeight();
+  const std::optional<int> frame_rate = deserializer.MaxFrameRate();
   if (width && *width && height && *height && frame_rate && *frame_rate) {
     cast_streaming::ReceiverConfig::Display display;
     display.dimensions = gfx::Rect{*width, *height};
@@ -203,13 +204,13 @@ CoreStreamingConfigManager::CoreStreamingConfigManager(
 CoreStreamingConfigManager::~CoreStreamingConfigManager() = default;
 
 bool CoreStreamingConfigManager::OnMessage(
-    base::StringPiece message,
+    std::string_view message,
     std::vector<std::unique_ptr<cast_api_bindings::MessagePort>> ports) {
   DLOG(INFO) << "AV Settings Response Received: " << message;
 
   DCHECK(ports.empty());
 
-  absl::optional<PlatformInfoSerializer> deserializer =
+  std::optional<PlatformInfoSerializer> deserializer =
       PlatformInfoSerializer::Deserialize(message);
   if (!deserializer) {
     LOG(ERROR) << "AV Settings with invalid protobuf received: " << message;

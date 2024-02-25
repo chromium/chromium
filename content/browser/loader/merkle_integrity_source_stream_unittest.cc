@@ -57,7 +57,8 @@ class MerkleIntegritySourceStreamTest
       : output_buffer_size_(GetParam().buffer_size) {}
 
   void Init(const std::string& mi_header_value) {
-    output_buffer_ = base::MakeRefCounted<net::IOBuffer>(output_buffer_size_);
+    output_buffer_ =
+        base::MakeRefCounted<net::IOBufferWithSize>(output_buffer_size_);
     std::unique_ptr<net::MockSourceStream> source(new net::MockSourceStream());
     if (GetParam().read_result_type == ReadResultType::ONE_BYTE_AT_A_TIME)
       source->set_read_one_byte_at_a_time(true);
@@ -122,8 +123,8 @@ class MerkleIntegritySourceStreamTest
   scoped_refptr<net::IOBuffer> output_buffer_;
   int output_buffer_size_;
 
-  raw_ptr<net::MockSourceStream, DanglingUntriaged> source_;
   std::unique_ptr<MerkleIntegritySourceStream> stream_;
+  raw_ptr<net::MockSourceStream> source_;
 };
 
 INSTANTIATE_TEST_SUITE_P(

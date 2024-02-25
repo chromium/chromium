@@ -2,20 +2,21 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import 'chrome://resources/cr_components/app_management/toggle_row.js';
+import './toggle_row.js';
 
 import {App} from 'chrome://resources/cr_components/app_management/app_management.mojom-webui.js';
 import {AppManagementUserAction} from 'chrome://resources/cr_components/app_management/constants.js';
-import {AppManagementToggleRowElement} from 'chrome://resources/cr_components/app_management/toggle_row.js';
 import {recordAppManagementUserAction} from 'chrome://resources/cr_components/app_management/util.js';
-import {assert} from 'chrome://resources/js/assert_ts.js';
+import {assert} from 'chrome://resources/js/assert.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {castExists} from '../../assert_extras.js';
+import {AppManagementBrowserProxy} from '../../common/app_management/browser_proxy.js';
 import {recordSettingChange} from '../../metrics_recorder.js';
+import {Setting} from '../../mojom-webui/setting.mojom-webui.js';
 
-import {AppManagementBrowserProxy} from './browser_proxy.js';
 import {getTemplate} from './resize_lock_item.html.js';
+import {AppManagementToggleRowElement} from './toggle_row.js';
 
 export class AppManagementResizeLockItemElement extends PolymerElement {
   static get is() {
@@ -63,7 +64,7 @@ export class AppManagementResizeLockItemElement extends PolymerElement {
         this.app.id,
         newState,
     );
-    recordSettingChange();
+    recordSettingChange(Setting.kAppResizeLockOnOff, {boolValue: newState});
     const userAction = newState ?
         AppManagementUserAction.RESIZE_LOCK_TURNED_ON :
         AppManagementUserAction.RESIZE_LOCK_TURNED_OFF;

@@ -13,11 +13,16 @@ namespace syncer {
 namespace {
 
 // Subclass of DataTypeManagerImpl to support weak pointers.
-class TestDataTypeManagerImpl
-    : public DataTypeManagerImpl,
-      public base::SupportsWeakPtr<TestDataTypeManagerImpl> {
+class TestDataTypeManagerImpl final : public DataTypeManagerImpl {
  public:
   using DataTypeManagerImpl::DataTypeManagerImpl;
+
+  base::WeakPtr<TestDataTypeManagerImpl> AsWeakPtr() {
+    return weak_ptr_factory_.GetWeakPtr();
+  }
+
+ private:
+  base::WeakPtrFactory<TestDataTypeManagerImpl> weak_ptr_factory_{this};
 };
 
 }  // namespace
@@ -48,15 +53,19 @@ std::unique_ptr<SyncEngine> FakeSyncApiComponentFactory::CreateSyncEngine(
   auto engine = std::make_unique<FakeSyncEngine>(
       allow_fake_engine_init_completion_,
       /*is_first_time_sync_configure=*/!is_first_time_sync_configure_done_,
-      /*sync_transport_data_cleared_cb=*/base::BindLambdaForTesting([this]() {
-        ++clear_transport_data_call_count_;
-      }));
+      /*sync_transport_data_cleared_cb=*/
+      base::BindRepeating(&FakeSyncApiComponentFactory::ClearAllTransportData,
+                          weak_factory_.GetWeakPtr()));
   last_created_engine_ = engine->AsWeakPtr();
   return engine;
 }
 
+bool FakeSyncApiComponentFactory::HasTransportDataIncludingFirstSync() {
+  return is_first_time_sync_configure_done_;
+}
+
 void FakeSyncApiComponentFactory::ClearAllTransportData() {
-  ++clear_transport_data_call_count_;
+  is_first_time_sync_configure_done_ = false;
 }
 
 }  // namespace syncer

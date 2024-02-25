@@ -6,16 +6,17 @@
 
 #import "base/apple/foundation_util.h"
 #import "base/notreached.h"
-#import "ios/chrome/browser/net/crurl.h"
+#import "ios/chrome/browser/net/model/crurl.h"
 #import "ios/chrome/browser/shared/public/commands/application_commands.h"
 #import "ios/chrome/browser/shared/public/commands/open_new_tab_command.h"
-#import "ios/chrome/browser/shared/ui/table_view/chrome_table_view_styler.h"
+#import "ios/chrome/browser/shared/ui/table_view/legacy_chrome_table_view_styler.h"
 #import "ios/chrome/browser/shared/ui/table_view/table_view_utils.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/browser/ui/settings/bar_button_activity_indicator.h"
 #import "ios/chrome/browser/ui/settings/cells/settings_cells_constants.h"
 #import "ios/chrome/browser/ui/settings/settings_navigation_controller.h"
 #import "ios/chrome/browser/ui/settings/settings_root_table_constants.h"
+#import "ios/chrome/browser/ui/settings/settings_table_view_controller_constants.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ui/base/device_form_factor.h"
@@ -59,7 +60,11 @@ const CGFloat kActivityIndicatorDimensionIPhone = 56;
 
 @implementation SettingsRootTableViewController
 
-@synthesize dispatcher = _dispatcher;
+@synthesize applicationHandler = _applicationHandler;
+@synthesize browserHandler = _browserHandler;
+@synthesize browsingDataHandler = _browsingDataHandler;
+@synthesize settingsHandler = _settingsHandler;
+@synthesize snackbarHandler = _snackbarHandler;
 
 #pragma mark - Public
 
@@ -85,6 +90,12 @@ const CGFloat kActivityIndicatorDimensionIPhone = 56;
         self.tableView.editing ? [self createEditModeCancelButton]
                                : self.backButtonItem;
   }
+
+  // The following two lines cause the table view to refresh the cell heights
+  // with animation without reloading the cells. This is needed for
+  // cells that can be significantly taller in edit mode.
+  [self.tableView beginUpdates];
+  [self.tableView endUpdates];
 }
 
 - (void)updatedToolbarForEditState {
@@ -125,6 +136,15 @@ const CGFloat kActivityIndicatorDimensionIPhone = 56;
 - (void)reloadData {
   [self loadModel];
   [self.tableView reloadData];
+}
+
+- (void)configureHandlersForRootViewController:
+    (id<SettingsRootViewControlling>)controller {
+  controller.applicationHandler = self.applicationHandler;
+  controller.browserHandler = self.browserHandler;
+  controller.browsingDataHandler = self.browsingDataHandler;
+  controller.settingsHandler = self.settingsHandler;
+  controller.snackbarHandler = self.snackbarHandler;
 }
 
 #pragma mark - Property
@@ -187,18 +207,26 @@ const CGFloat kActivityIndicatorDimensionIPhone = 56;
   // can leave the new top view controller with a toolbar when it doesn't
   // require one. Disabling editing mode to avoid this. See crbug.com/1404111 as
   // an example.
-  if (parent == nullptr && self.isEditing) {
+  if (!parent && self.isEditing) {
     [self setEditing:NO animated:NO];
   }
 
   [self.navigationController setToolbarHidden:YES animated:YES];
 }
 
+- (void)didMoveToParentViewController:(UIViewController*)parent {
+  [super didMoveToParentViewController:parent];
+  if (!parent && [self respondsToSelector:@selector(settingsWillBeDismissed)]) {
+    [self performSelector:@selector(settingsWillBeDismissed)];
+  }
+}
+
 - (void)setEditing:(BOOL)editing animated:(BOOL)animated {
   [super setEditing:editing animated:animated];
-  if (!editing)
+  if (!editing && self.navigationController.topViewController == self) {
     [self.navigationController setToolbarHidden:self.shouldHideToolbar
                                        animated:YES];
+  }
 }
 
 - (void)viewDidLayoutSubviews {
@@ -244,10 +272,10 @@ const CGFloat kActivityIndicatorDimensionIPhone = 56;
 
 - (void)view:(TableViewLinkHeaderFooterView*)view didTapLinkURL:(CrURL*)URL {
   // Subclass must have a valid dispatcher assigned.
-  DCHECK(self.dispatcher);
+  DCHECK(self.applicationHandler);
   OpenNewTabCommand* command =
       [OpenNewTabCommand commandWithURLFromChrome:URL.gurl];
-  [self.dispatcher closeSettingsUIAndOpenURL:command];
+  [self.applicationHandler closeSettingsUIAndOpenURL:command];
 }
 
 #pragma mark - Private
@@ -364,6 +392,7 @@ const CGFloat kActivityIndicatorDimensionIPhone = 56;
                                activityIndicatorDimension)];
   UIBarButtonItem* waitButton =
       [[UIBarButtonItem alloc] initWithCustomView:indicator];
+  waitButton.accessibilityLabel = kSettingsWaitButtonId;
 
   if (displayActivityIndicatorOnTheRight) {
     // If there is a right bar button item, then it is the "Done" button.
@@ -401,12 +430,13 @@ const CGFloat kActivityIndicatorDimensionIPhone = 56;
   // Removes the veil that prevents user interaction.
   DCHECK(self.veil);
   [UIView animateWithDuration:0.3
-      animations:^{
-        [self.veil removeFromSuperview];
-      }
-      completion:^(BOOL finished) {
-        self.veil = nil;
-      }];
+                   animations:^{
+                     [self.veil removeFromSuperview];
+                   }
+                   completion:nil];
+  // Need to remove `self.veil` to be able immediately, so
+  // `preventUserInteraction` can be called in less than 0.3s after.
+  self.veil = nil;
 
   DCHECK(self.savedBarButtonItem);
   switch (self.savedBarButtonItemPosition) {

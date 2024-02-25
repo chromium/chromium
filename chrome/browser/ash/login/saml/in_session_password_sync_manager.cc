@@ -62,17 +62,17 @@ bool InSessionPasswordSyncManager::IsLockReauthEnabled() {
 }
 
 void InSessionPasswordSyncManager::MaybeForceReauthOnLockScreen(
-    ReauthenticationReason reauth_reason) {
+    LockScreenReauthReason reauth_reason) {
   if (!IsLockReauthEnabled()) {
     // Reauth on lock is disabled by a policy.
     return;
   }
-  if (lock_screen_reauth_reason_ == ReauthenticationReason::kInvalidToken) {
+  if (lock_screen_reauth_reason_ == LockScreenReauthReason::kInvalidToken) {
     // Re-authentication already enforced, no other action is needed.
     return;
   }
-  if (lock_screen_reauth_reason_ == ReauthenticationReason::kPolicy &&
-      reauth_reason == ReauthenticationReason::kInvalidToken) {
+  if (lock_screen_reauth_reason_ == LockScreenReauthReason::kPolicy &&
+      reauth_reason == LockScreenReauthReason::kInvalidToken) {
     // Re-authentication already enforced but need to reset it to trigger token
     // update. No other action is needed.
     lock_screen_reauth_reason_ = reauth_reason;
@@ -104,7 +104,7 @@ void InSessionPasswordSyncManager::OnSessionStateChanged() {
     // We are unlocking the session, no further action required.
     return;
   }
-  if (lock_screen_reauth_reason_ == ReauthenticationReason::kNone) {
+  if (lock_screen_reauth_reason_ == LockScreenReauthReason::kNone) {
     // locking the session but no re-auth flag set - show standard UI.
     return;
   }
@@ -134,7 +134,7 @@ void InSessionPasswordSyncManager::OnTokenCreated(const std::string& token) {
   // Set token value in local state.
   user_manager::KnownUser known_user(g_browser_process->local_state());
   known_user.SetPasswordSyncToken(primary_user_->GetAccountId(), token);
-  lock_screen_reauth_reason_ = ReauthenticationReason::kNone;
+  lock_screen_reauth_reason_ = LockScreenReauthReason::kNone;
 }
 
 void InSessionPasswordSyncManager::FetchTokenAsync() {
@@ -149,7 +149,7 @@ void InSessionPasswordSyncManager::OnTokenFetched(const std::string& token) {
     // Set token fetched from the endpoint in local state.
     user_manager::KnownUser known_user(g_browser_process->local_state());
     known_user.SetPasswordSyncToken(primary_user_->GetAccountId(), token);
-    lock_screen_reauth_reason_ = ReauthenticationReason::kNone;
+    lock_screen_reauth_reason_ = LockScreenReauthReason::kNone;
   } else {
     // This is the first time a sync token is created for the user: we need to
     // initialize its value by calling the API and store it locally.
@@ -256,10 +256,10 @@ void InSessionPasswordSyncManager::OnAuthSuccess(
   }
 
   UpdateOnlineAuth();
-  if (lock_screen_reauth_reason_ == ReauthenticationReason::kInvalidToken) {
+  if (lock_screen_reauth_reason_ == LockScreenReauthReason::kInvalidToken) {
     FetchTokenAsync();
   } else {
-    lock_screen_reauth_reason_ = ReauthenticationReason::kNone;
+    lock_screen_reauth_reason_ = LockScreenReauthReason::kNone;
   }
   if (screenlock_bridge_->IsLocked()) {
     screenlock_bridge_->lock_handler()->Unlock(user_context.GetAccountId());

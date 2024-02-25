@@ -50,8 +50,9 @@ size_t GetDisplayTextMaxLines(const ClipboardHistoryItem* item) {
 
 class ClipboardHistoryTextItemView::TextContentsView
     : public ClipboardHistoryTextItemView::ContentsView {
+  METADATA_HEADER(TextContentsView, ContentsView)
+
  public:
-  METADATA_HEADER(TextContentsView);
   explicit TextContentsView(const ClipboardHistoryTextItemView* container) {
     const auto* item = container->GetClipboardHistoryItem();
     const auto display_text_elide_behavior = GetDisplayTextElideBehavior(item);
@@ -66,8 +67,8 @@ class ClipboardHistoryTextItemView::TextContentsView
         views::Builder<views::BoxLayoutView>()
             .SetOrientation(views::BoxLayout::Orientation::kVertical)
             .SetCrossAxisAlignment(views::BoxLayout::CrossAxisAlignment::kStart)
-            .SetProperty(views::kFlexBehaviorKey,
-                         views::FlexSpecification().WithWeight(1))
+            .SetProperty(views::kBoxLayoutFlexKey,
+                         views::BoxLayoutFlexSpecification())
             .AddChild(views::Builder<views::Label>(
                           std::make_unique<ClipboardHistoryLabel>(
                               container->text_, display_text_elide_behavior,
@@ -134,7 +135,7 @@ class ClipboardHistoryTextItemView::TextContentsView
   }
 };
 
-BEGIN_METADATA(ClipboardHistoryTextItemView, TextContentsView, ContentsView)
+BEGIN_METADATA(ClipboardHistoryTextItemView, TextContentsView)
 END_METADATA
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -156,7 +157,7 @@ ClipboardHistoryTextItemView::CreateContentsView() {
   return std::make_unique<TextContentsView>(this);
 }
 
-BEGIN_METADATA(ClipboardHistoryTextItemView, ClipboardHistoryItemView)
+BEGIN_METADATA(ClipboardHistoryTextItemView)
 END_METADATA
 
 }  // namespace ash

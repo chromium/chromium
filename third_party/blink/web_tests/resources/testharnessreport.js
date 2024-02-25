@@ -183,11 +183,7 @@
             resultStr += failureMetricSummary(resultCounts);
         }
 
-        if (outputDocument.URL.indexOf('/html/dom/reflection') >= 0) {
-            resultStr += compactTestOutput(tests);
-        } else {
-            resultStr += testOutput(tests);
-        }
+        resultStr += testOutput(tests);
 
         resultStr += 'Harness: the test ran to completion.\n';
 
@@ -272,54 +268,28 @@
 
     /** Converts the testharness test status into the corresponding string. */
     function convertResult(resultStatus) {
+        let retVal = '';
         switch (resultStatus) {
             case 0:
-                return 'PASS';
+                retVal = 'PASS';
+                break;
             case 1:
-                return 'FAIL';
+                retVal = 'FAIL';
+                break;
             case 2:
-                return 'TIMEOUT';
+                retVal = 'TIMEOUT';
+                break;
             case 3:
-                return 'NOTRUN';
+                retVal = 'NOTRUN';
+                break;
             case 4:
-                return 'PRECONDITION_FAILED';
+                retVal = 'PRECONDITION_FAILED';
+                break;
             default:
-                return 'NOTRUN';
+                retVal = 'NOTRUN';
+                break;
         }
-    }
-
-    /**
-     * Returns a compact output for reflection test results.
-     *
-     * The reflection tests contain a large number of tests.
-     * This test output merges PASS lines to make baselines smaller.
-     */
-    function compactTestOutput(tests) {
-        let testResults = [];
-        for (let i = 0; i < tests.length; ++i) {
-            if (tests[i].status == 0) {
-                const colon = tests[i].name.indexOf(':');
-                if (colon > 0) {
-                    const prefix = tests[i].name.substring(0, colon + 1);
-                    let j = i + 1;
-                    for (; j < tests.length; ++j) {
-                        if (!tests[j].name.startsWith(prefix) ||
-                            tests[j].status != 0)
-                            break;
-                    }
-                    const numPasses = j - i;
-                    if (numPasses > 1) {
-                        testResults.push(
-                            `${convertResult(tests[i].status)} ` +
-                            `${sanitize(prefix)} ${numPasses} tests\n`);
-                        i = j - 1;
-                        continue;
-                    }
-                }
-            }
-            testResults.push(resultLine(tests[i]));
-        }
-        return testResults.join('');
+        return '[' + retVal + ']';
     }
 
     function testOutput(tests) {
@@ -332,9 +302,15 @@
     }
 
     function resultLine(test) {
+        if (test.status == 0) {
+            return '';
+        }
         let result = `${convertResult(test.status)} ${sanitize(test.name)}`;
+        // include error message when test result is FAIL or PRECONDITION_FAILED
         if (test.message) {
-            result += ' ' + sanitize(test.message).trim();
+            if (test.status == 1 || test.status == 4) {
+                result += '\n  ' + sanitize(test.message).trim();
+            }
         }
         return result + '\n';
     }
@@ -344,10 +320,13 @@
         if (!text) {
             return '';
         }
+        // Change each '\' to '\\'
+        text = text.replace(/\\/g, '\\\\');
         // Escape null characters, otherwise diff will think the file is binary.
         text = text.replace(/\0/g, '\\0');
         // Escape some special characters to improve readability of the output.
         text = text.replace(/\r/g, '\\r');
+        text = text.replace(/\n/g, '\\n');
 
         // Replace machine-dependent path with "...".
         if (localPathRegExp) {
@@ -365,10 +344,7 @@
     }
 
     function failureMetricSummary(resultCounts) {
-        const total = resultCounts[0] + resultCounts[1] + resultCounts[2] + resultCounts[3];
-        return `Found ${total} tests;` +
-            ` ${resultCounts[0]} PASS,` +
-            ` ${resultCounts[1]} FAIL,` +
+        return `Found ${resultCounts[1]} FAIL,` +
             ` ${resultCounts[2]} TIMEOUT,` +
             ` ${resultCounts[3]} NOTRUN.\n`;
     }

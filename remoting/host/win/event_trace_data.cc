@@ -26,15 +26,15 @@ logging::LogSeverity EventTraceLevelToSeverity(uint8_t level) {
   switch (level) {
     case TRACE_LEVEL_NONE:
       NOTREACHED();
-      return logging::LOG_ERROR;
+      return logging::LOGGING_ERROR;
     case TRACE_LEVEL_FATAL:
-      return logging::LOG_FATAL;
+      return logging::LOGGING_FATAL;
     case TRACE_LEVEL_ERROR:
-      return logging::LOG_ERROR;
+      return logging::LOGGING_ERROR;
     case TRACE_LEVEL_WARNING:
-      return logging::LOG_WARNING;
+      return logging::LOGGING_WARNING;
     case TRACE_LEVEL_INFORMATION:
-      return logging::LOG_INFO;
+      return logging::LOGGING_INFO;
     default:
       // These represent VLOG verbosity levels.
       return TRACE_LEVEL_INFORMATION - level;
@@ -64,7 +64,7 @@ EventTraceData EventTraceData::Create(EVENT_TRACE* event) {
   FILETIME event_time = {};
   event_time.dwLowDateTime = event->Header.TimeStamp.LowPart;
   event_time.dwHighDateTime = event->Header.TimeStamp.HighPart;
-  base::Time::FromFileTime(event_time).LocalExplode(&data.time_stamp);
+  data.time_stamp = base::Time::FromFileTime(event_time);
 
   // Parse the MofData.  The structure is defined in //base/logging_win.cc.
   // - For LOG_MESSAGE events, the MofData buffer just contains the message.
@@ -110,13 +110,13 @@ EventTraceData EventTraceData::Create(EVENT_TRACE* event) {
 // static
 std::string EventTraceData::SeverityToString(logging::LogSeverity severity) {
   switch (severity) {
-    case logging::LOG_INFO:
+    case logging::LOGGING_INFO:
       return kInfoSeverity;
-    case logging::LOG_WARNING:
+    case logging::LOGGING_WARNING:
       return kWarningSeverity;
-    case logging::LOG_ERROR:
+    case logging::LOGGING_ERROR:
       return kErrorSeverity;
-    case logging::LOG_FATAL:
+    case logging::LOGGING_FATAL:
       return kFatalSeverity;
     default:
       if (severity < 0) {

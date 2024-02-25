@@ -85,6 +85,12 @@ class AppShimHost : public chrome::mojom::AppShimHost {
     // Invoked by the shim host when the app is about to terminate (for example
     // because the user quit it).
     virtual void OnShimWillTerminate(AppShimHost* host) = 0;
+
+    // Invoked by the shim host when a change to the system level notification
+    // permission status has been detected.
+    virtual void OnNotificationPermissionStatusChanged(
+        AppShimHost* host,
+        mac_notifications::mojom::PermissionStatus status) = 0;
   };
 
   AppShimHost(Client* client,
@@ -153,7 +159,11 @@ class AppShimHost : public chrome::mojom::AppShimHost {
   void OpenAppSettings() override;
   void UrlsOpened(const std::vector<GURL>& urls) override;
   void OpenAppWithOverrideUrl(const GURL& override_url) override;
+  void EnableAccessibilitySupport(
+      chrome::mojom::AppShimScreenReaderSupportMode mode) override;
   void ApplicationWillTerminate() override;
+  void NotificationPermissionStatusChanged(
+      mac_notifications::mojom::PermissionStatus status) override;
 
   // Weak, owns |this|.
   const raw_ptr<Client> client_;

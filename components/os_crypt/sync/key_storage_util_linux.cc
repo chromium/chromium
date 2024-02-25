@@ -7,7 +7,6 @@
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/logging.h"
-#include "base/notreached.h"
 
 namespace {
 
@@ -72,9 +71,6 @@ SelectedLinuxBackend SelectBackend(const std::string& type,
     case base::nix::DESKTOP_ENVIRONMENT_OTHER:
       return SelectedLinuxBackend::BASIC_TEXT;
   }
-
-  NOTREACHED();
-  return SelectedLinuxBackend::BASIC_TEXT;
 }
 
 bool WriteBackendUse(const base::FilePath& user_data_dir, bool use) {

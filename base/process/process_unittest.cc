@@ -6,6 +6,7 @@
 
 #include <memory>
 #include <string>
+#include <string_view>
 #include <utility>
 
 #include "base/at_exit.h"
@@ -14,18 +15,21 @@
 #include "base/test/multiprocess_test.h"
 #include "base/test/test_timeouts.h"
 #include "base/threading/platform_thread.h"
+#include "base/threading/platform_thread_internal_posix.h"
 #include "base/threading/thread_local.h"
 #include "build/build_config.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "testing/multiprocess_func_list.h"
 
 #if BUILDFLAG(IS_CHROMEOS)
+#include <sys/resource.h>
 #include <unistd.h>
 
 #include <vector>
 
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
+#include "base/process/internal_linux.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
@@ -55,7 +59,7 @@ constexpr int kDummyExitCode = 42;
 // Fake port provider that returns the calling process's
 // task port, ignoring its argument.
 class FakePortProvider : public base::PortProvider {
-  mach_port_t TaskForPid(base::ProcessHandle process) const override {
+  mach_port_t TaskForHandle(base::ProcessHandle process_handle) const override {
     return mach_task_self();
   }
 };
@@ -75,10 +79,10 @@ std::string GetProcessCpuCgroup(const base::Process& process) {
     return std::string();
   }
 
-  std::vector<base::StringPiece> lines = SplitStringPiece(
+  std::vector<std::string_view> lines = SplitStringPiece(
       proc, "\n", base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
   for (const auto& line : lines) {
-    std::vector<base::StringPiece> fields = SplitStringPiece(
+    std::vector<std::string_view> fields = SplitStringPiece(
         line, ":", base::TRIM_WHITESPACE, base::SPLIT_WANT_ALL);
     if (fields.size() != 3U) {
       continue;
@@ -376,6 +380,354 @@ TEST_F(ProcessTest, SetProcessPriority) {
   int new_os_priority = process.GetOSPriority();
   EXPECT_EQ(old_os_priority, new_os_priority);
 }
+
+#if BUILDFLAG(IS_CHROMEOS)
+bool IsThreadRT(PlatformThreadId thread_id) {
+  // Check if the thread is running in real-time mode
+  int sched = sched_getscheduler(
+      PlatformThread::CurrentId() == thread_id ? 0 : thread_id);
+  if (sched == -1) {
+    // The thread may disappear for any reason so ignore ESRCH.
+    DPLOG_IF(ERROR, errno != ESRCH)
+        << "Failed to call sched_getscheduler on thread_id=" << thread_id;
+    return false;
+  }
+  return sched == SCHED_RR || sched == SCHED_FIFO;
+}
+
+// Verify that all the threads in a process are RT or not.
+void AssertThreadsRT(int process_id, bool is_rt) {
+  internal::ForEachProcessTask(
+      process_id, [is_rt](PlatformThreadId tid, const FilePath& /* path */) {
+        EXPECT_EQ(IsThreadRT(tid), is_rt);
+      });
+}
+
+void AssertThreadsType(int process_id, ThreadType type) {
+  internal::ForEachProcessTask(process_id, [process_id, type](
+                                               PlatformThreadId tid,
+                                               const FilePath& path) {
+    EXPECT_EQ(PlatformThread::GetThreadTypeFromThreadId(process_id, tid), type);
+  });
+}
+
+void AssertThreadsBgState(int process_id, bool is_bg) {
+  internal::ForEachProcessTask(
+      process_id, [is_bg](PlatformThreadId tid, const FilePath& path) {
+        EXPECT_EQ(PlatformThreadLinux::IsThreadBackgroundedForTest(tid), is_bg);
+      });
+}
+
+namespace {
+
+class FunctionTestThread : public PlatformThread::Delegate {
+ public:
+  FunctionTestThread() = default;
+
+  FunctionTestThread(const FunctionTestThread&) = delete;
+  FunctionTestThread& operator=(const FunctionTestThread&) = delete;
+
+  void ThreadMain() override {
+    PlatformThread::SetCurrentThreadType(ThreadType::kCompositing);
+    while (true) {
+      PlatformThread::Sleep(Milliseconds(100));
+    }
+  }
+};
+
+class RTAudioFunctionTestThread : public PlatformThread::Delegate {
+ public:
+  RTAudioFunctionTestThread() = default;
+
+  RTAudioFunctionTestThread(const RTAudioFunctionTestThread&) = delete;
+  RTAudioFunctionTestThread& operator=(const RTAudioFunctionTestThread&) =
+      delete;
+
+  void ThreadMain() override {
+    PlatformThread::SetCurrentThreadType(ThreadType::kRealtimeAudio);
+    while (true) {
+      PlatformThread::Sleep(Milliseconds(100));
+    }
+  }
+};
+
+class RTDisplayFunctionTestThread : public PlatformThread::Delegate {
+ public:
+  RTDisplayFunctionTestThread() = default;
+
+  RTDisplayFunctionTestThread(const RTDisplayFunctionTestThread&) = delete;
+  RTDisplayFunctionTestThread& operator=(const RTDisplayFunctionTestThread&) =
+      delete;
+
+  void ThreadMain() override {
+    PlatformThread::SetCurrentThreadType(ThreadType::kCompositing);
+    while (true) {
+      PlatformThread::Sleep(Milliseconds(100));
+    }
+  }
+};
+
+int create_threads_after_bg;
+bool bg_threads_created;
+bool prebg_threads_created;
+bool audio_rt_threads_created;
+bool display_rt_threads_created;
+
+void sig_create_threads_after_bg(int signum) {
+  if (signum == SIGUSR1) {
+    create_threads_after_bg = true;
+  }
+}
+
+void sig_prebg_threads_created_handler(int signum) {
+  if (signum == SIGUSR1) {
+    prebg_threads_created = true;
+  }
+}
+
+void sig_bg_threads_created_handler(int signum) {
+  if (signum == SIGUSR2) {
+    bg_threads_created = true;
+  }
+}
+
+void sig_audio_rt_threads_created_handler(int signum) {
+  if (signum == SIGUSR1) {
+    audio_rt_threads_created = true;
+  }
+}
+
+void sig_display_rt_threads_created_handler(int signum) {
+  if (signum == SIGUSR1) {
+    display_rt_threads_created = true;
+  }
+}
+
+}  // namespace
+
+MULTIPROCESS_TEST_MAIN(ProcessThreadBackgroundingMain) {
+  PlatformThreadHandle handle1, handle2, handle3;
+  FunctionTestThread thread1, thread2, thread3;
+  base::test::ScopedFeatureList scoped_feature_list(kSetThreadBgForBgProcess);
+  PlatformThreadChromeOS::InitFeaturesPostFieldTrial();
+  PlatformThread::SetCurrentThreadType(ThreadType::kCompositing);
+
+  // Register signal handler to be notified to create threads after backgrounding.
+  signal(SIGUSR1, sig_create_threads_after_bg);
+
+  if (!PlatformThread::Create(0, &thread1, &handle1)) {
+    ADD_FAILURE() << "ProcessThreadBackgroundingMain: Failed to create thread1";
+    return 1;
+  }
+
+  if (!PlatformThread::Create(0, &thread2, &handle2)) {
+    ADD_FAILURE() << "ProcessThreadBackgroundingMain: Failed to create thread2";
+    return 1;
+  }
+
+  // Signal that the pre-backgrounding threads were created.
+  kill(getppid(), SIGUSR1);
+
+  // Wait for the signal to background.
+  while (create_threads_after_bg == 0) {
+    PlatformThread::Sleep(Milliseconds(100));
+  }
+
+  // Test creation of thread while process is backgrounded.
+  if (!PlatformThread::Create(0, &thread3, &handle3)) {
+    ADD_FAILURE() << "ProcessThreadBackgroundingMain: Failed to create thread3";
+    return 1;
+  }
+
+  // Signal that the thread after backgrounding was created.
+  kill(getppid(), SIGUSR2);
+
+  while (true) {
+    PlatformThread::Sleep(Milliseconds(100));
+  }
+}
+
+// ProcessThreadBackgrounding: A test to create a process and verify
+// that the threads in the process are backgrounded correctly.
+TEST_F(ProcessTest, ProcessThreadBackgrounding) {
+  if (!PlatformThread::CanChangeThreadType(ThreadType::kDefault,
+                                           ThreadType::kCompositing)) {
+    return;
+  }
+
+  base::test::ScopedFeatureList scoped_feature_list(kSetThreadBgForBgProcess);
+  PlatformThreadChromeOS::InitFeaturesPostFieldTrial();
+
+  // Register signal handlers to be notified of events in child process.
+  signal(SIGUSR1, sig_prebg_threads_created_handler);
+  signal(SIGUSR2, sig_bg_threads_created_handler);
+
+  Process process(SpawnChild("ProcessThreadBackgroundingMain"));
+  EXPECT_TRUE(process.IsValid());
+
+  // Wait for the signal that the initial pre-backgrounding
+  // threads were created.
+  while (!prebg_threads_created) {
+    PlatformThread::Sleep(Milliseconds(100));
+  }
+
+  // Verify that the threads are initially in the foreground.
+  AssertThreadsType(process.Pid(), ThreadType::kCompositing);
+  AssertThreadsBgState(process.Pid(), false);
+
+  EXPECT_TRUE(process.SetPriority(Process::Priority::kBestEffort));
+
+  // Send a signal to create a thread while the process is backgrounded.
+  kill(process.Pid(), SIGUSR1);
+
+  // Wait for the signal that backgrounding completed
+  while (!bg_threads_created) {
+    PlatformThread::Sleep(Milliseconds(100));
+  }
+
+  // Verify that the threads are backgrounded.
+  AssertThreadsType(process.Pid(), ThreadType::kCompositing);
+  AssertThreadsBgState(process.Pid(), true);
+
+  EXPECT_TRUE(process.SetPriority(Process::Priority::kUserBlocking));
+  EXPECT_TRUE(process.GetPriority() == base::Process::Priority::kUserBlocking);
+
+  // Verify that the threads are foregrounded.
+  AssertThreadsType(process.Pid(), ThreadType::kCompositing);
+  AssertThreadsBgState(process.Pid(), false);
+}
+
+MULTIPROCESS_TEST_MAIN(ProcessRTAudioBgMain) {
+  PlatformThreadHandle handle1;
+  RTAudioFunctionTestThread thread1;
+  base::test::ScopedFeatureList scoped_feature_list(kSetThreadBgForBgProcess);
+  PlatformThreadChromeOS::InitFeaturesPostFieldTrial();
+  PlatformThread::SetCurrentThreadType(ThreadType::kRealtimeAudio);
+
+  if (!PlatformThread::Create(0, &thread1, &handle1)) {
+    ADD_FAILURE() << "ProcessRTAudioBgMain: Failed to create thread1";
+    return 1;
+  }
+
+  // Signal that the RT thread was created.
+  kill(getppid(), SIGUSR1);
+
+  while (true) {
+    PlatformThread::Sleep(Milliseconds(100));
+  }
+}
+
+// Test the property of kRealTimeAudio threads in a backgrounded process.
+TEST_F(ProcessTest, ProcessRTAudioBg) {
+  if (!PlatformThread::CanChangeThreadType(ThreadType::kDefault,
+                                           ThreadType::kCompositing)) {
+    return;
+  }
+
+  base::test::ScopedFeatureList scoped_feature_list(kSetThreadBgForBgProcess);
+  PlatformThreadChromeOS::InitFeaturesPostFieldTrial();
+
+  // Register signal handler to check if RT thread was created by child process.
+  signal(SIGUSR1, sig_audio_rt_threads_created_handler);
+
+  Process process(SpawnChild("ProcessRTAudioBgMain"));
+  EXPECT_TRUE(process.IsValid());
+
+  // Wait for signal that threads were spawned
+  while (!audio_rt_threads_created) {
+    PlatformThread::Sleep(Milliseconds(100));
+  }
+
+  AssertThreadsRT(process.Pid(), true);
+  AssertThreadsType(process.Pid(), ThreadType::kRealtimeAudio);
+  AssertThreadsBgState(process.Pid(), false);
+
+  EXPECT_TRUE(process.SetPriority(Process::Priority::kBestEffort));
+  EXPECT_TRUE(process.GetPriority() == base::Process::Priority::kBestEffort);
+
+  // Verify that nothing changed when process is kBestEffort
+  AssertThreadsRT(process.Pid(), true);
+  AssertThreadsType(process.Pid(), ThreadType::kRealtimeAudio);
+  AssertThreadsBgState(process.Pid(), false);
+
+  EXPECT_TRUE(process.SetPriority(Process::Priority::kUserBlocking));
+  EXPECT_TRUE(process.GetPriority() == base::Process::Priority::kUserBlocking);
+
+  // Verify that nothing changed when process is kUserBlocking
+  AssertThreadsRT(process.Pid(), true);
+  AssertThreadsType(process.Pid(), ThreadType::kRealtimeAudio);
+  AssertThreadsBgState(process.Pid(), false);
+}
+
+MULTIPROCESS_TEST_MAIN(ProcessRTDisplayBgMain) {
+  PlatformThreadHandle handle1;
+  RTDisplayFunctionTestThread thread1;
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeatures(
+      {kSetThreadBgForBgProcess, kSetRtForDisplayThreads}, {});
+  PlatformThreadChromeOS::InitFeaturesPostFieldTrial();
+
+  PlatformThread::SetCurrentThreadType(ThreadType::kCompositing);
+
+  if (!PlatformThread::Create(0, &thread1, &handle1)) {
+    ADD_FAILURE() << "ProcessRTDisplayBgMain: Failed to create thread1";
+    return 1;
+  }
+
+  // Signal that the RT thread was created.
+  kill(getppid(), SIGUSR1);
+
+  while (true) {
+    PlatformThread::Sleep(Milliseconds(100));
+  }
+}
+
+// Test the property of kCompositing threads in a backgrounded process.
+TEST_F(ProcessTest, ProcessRTDisplayBg) {
+  if (!PlatformThread::CanChangeThreadType(ThreadType::kDefault,
+                                           ThreadType::kCompositing)) {
+    return;
+  }
+
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeatures(
+      {kSetThreadBgForBgProcess, kSetRtForDisplayThreads}, {});
+  PlatformThreadChromeOS::InitFeaturesPostFieldTrial();
+
+  // Register signal handler to check if RT thread was created by child process.
+  signal(SIGUSR1, sig_display_rt_threads_created_handler);
+
+  Process process(SpawnChild("ProcessRTDisplayBgMain"));
+  EXPECT_TRUE(process.IsValid());
+
+  // Wait for signal that threads were spawned
+  while (!display_rt_threads_created) {
+    PlatformThread::Sleep(Milliseconds(100));
+  }
+
+  AssertThreadsRT(process.Pid(), true);
+  AssertThreadsType(process.Pid(), ThreadType::kCompositing);
+  AssertThreadsBgState(process.Pid(), false);
+
+  EXPECT_TRUE(process.SetPriority(Process::Priority::kBestEffort));
+  EXPECT_TRUE(process.GetPriority() == base::Process::Priority::kBestEffort);
+
+  // Verify that the threads transitioned away from RT when process is
+  // kBestEffort
+  AssertThreadsRT(process.Pid(), false);
+  AssertThreadsType(process.Pid(), ThreadType::kCompositing);
+  AssertThreadsBgState(process.Pid(), true);
+
+  EXPECT_TRUE(process.SetPriority(Process::Priority::kUserBlocking));
+  EXPECT_TRUE(process.GetPriority() == base::Process::Priority::kUserBlocking);
+
+  // Verify that it is back to RT when process is kUserBlocking
+  AssertThreadsRT(process.Pid(), true);
+  AssertThreadsType(process.Pid(), ThreadType::kCompositing);
+  AssertThreadsBgState(process.Pid(), false);
+}
+
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 // Consumers can use WaitForExitWithTimeout(base::TimeDelta(), nullptr) to check
 // whether the process is still running. This may not be safe because of the

@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_ASH_POWER_ML_ADAPTIVE_SCREEN_BRIGHTNESS_MANAGER_H_
 
 #include <memory>
+#include <optional>
 
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
@@ -18,7 +19,6 @@
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "services/viz/public/mojom/compositing/video_detector_observer.mojom.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/user_activity/user_activity_detector.h"
 #include "ui/base/user_activity/user_activity_observer.h"
 
@@ -93,15 +93,15 @@ class AdaptiveScreenBrightnessManager
 
   // Updates lid state and tablet mode from received switch states.
   void OnReceiveSwitchStates(
-      absl::optional<chromeos::PowerManagerClient::SwitchStates> switch_states);
+      std::optional<chromeos::PowerManagerClient::SwitchStates> switch_states);
 
   // Updates screen brightness percent from received value.
   void OnReceiveScreenBrightnessPercent(
-      absl::optional<double> screen_brightness_percent);
+      std::optional<double> screen_brightness_percent);
 
   // Returns the night light temperature as a percentage in the range [0, 100].
   // Returns nullopt when the night light is not enabled.
-  const absl::optional<int> GetNightLightTemperaturePercent() const;
+  const std::optional<int> GetNightLightTemperaturePercent() const;
 
   void LogEvent();
 
@@ -118,8 +118,8 @@ class AdaptiveScreenBrightnessManager
                           chromeos::PowerManagerClient::Observer>
       power_manager_client_observation_{this};
 
-  const raw_ptr<AccessibilityManager, ExperimentalAsh> accessibility_manager_;
-  const raw_ptr<MagnificationManager, ExperimentalAsh> magnification_manager_;
+  const raw_ptr<AccessibilityManager> accessibility_manager_;
+  const raw_ptr<MagnificationManager> magnification_manager_;
 
   const mojo::Receiver<viz::mojom::VideoDetectorObserver> receiver_;
 
@@ -135,27 +135,27 @@ class AdaptiveScreenBrightnessManager
   chromeos::PowerManagerClient::TabletMode tablet_mode_ =
       chromeos::PowerManagerClient::TabletMode::UNSUPPORTED;
 
-  absl::optional<power_manager::PowerSupplyProperties::ExternalPower>
+  std::optional<power_manager::PowerSupplyProperties::ExternalPower>
       external_power_;
 
   // Battery percent. This is in the range [0.0, 100.0].
-  absl::optional<float> battery_percent_;
+  std::optional<float> battery_percent_;
 
   // Both |screen_brightness_percent_| and |previous_screen_brightness_percent_|
   // are values reported directly by powerd. They are percentages as double but
   // are in the range of [0, 100]. When we convert these values to the fields in
   // ScreenBrightnessEvent, we cast them to ints.
-  absl::optional<double> screen_brightness_percent_;
-  absl::optional<double> previous_screen_brightness_percent_;
-  absl::optional<base::TimeDelta> last_event_time_since_boot_;
+  std::optional<double> screen_brightness_percent_;
+  std::optional<double> previous_screen_brightness_percent_;
+  std::optional<base::TimeDelta> last_event_time_since_boot_;
 
   // The time (since boot) of the most recent active event. This is the end of
   // the most recent period of activity.
-  absl::optional<base::TimeDelta> last_activity_time_since_boot_;
+  std::optional<base::TimeDelta> last_activity_time_since_boot_;
   // The time (since boot) of the start of the most recent period of activity.
-  absl::optional<base::TimeDelta> start_activity_time_since_boot_;
-  absl::optional<bool> is_video_playing_;
-  absl::optional<ScreenBrightnessEvent_Event_Reason> reason_;
+  std::optional<base::TimeDelta> start_activity_time_since_boot_;
+  std::optional<bool> is_video_playing_;
+  std::optional<ScreenBrightnessEvent_Event_Reason> reason_;
 
   base::WeakPtrFactory<AdaptiveScreenBrightnessManager> weak_ptr_factory_{this};
 };

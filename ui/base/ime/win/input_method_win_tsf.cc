@@ -8,6 +8,7 @@
 #include "ui/base/ime/virtual_keyboard_controller.h"
 #include "ui/base/ime/win/tsf_bridge.h"
 #include "ui/base/ime/win/tsf_event_router.h"
+#include "ui/base/ime/win/tsf_input_scope.h"
 
 namespace ui {
 
@@ -185,6 +186,11 @@ void InputMethodWinTSF::OnUrlChanged() {
   }
 
   ui::TSFBridge::GetInstance()->OnUrlChanged();
+}
+
+void InputMethodWinTSF::SetPrivateInputScope(HWND hwnd) {
+  tsf_inputscope::InitializeForSetInputScope();
+  tsf_inputscope::SetPrivateInputScope(hwnd);
 }
 
 }  // namespace ui

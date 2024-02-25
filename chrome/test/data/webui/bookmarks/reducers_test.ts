@@ -2,7 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {BookmarksPageState, changeFolderOpen, clearSearch, createBookmark, createEmptyState, deselectItems, editBookmark, FolderOpenState, getDisplayedList, isShowingSearch, moveBookmark, NodeMap, reduceAction, removeBookmark, reorderChildren, selectFolder, SelectFolderAction, SelectionState, SelectItemsAction, setSearchResults, setSearchTerm, updateAnchor, updateFolderOpenState, updateNodes, updateSelectedFolder, updateSelection} from 'chrome://bookmarks/bookmarks.js';
+import type {BookmarksPageState, FolderOpenState, NodeMap, SelectFolderAction, SelectionState, SelectItemsAction} from 'chrome://bookmarks/bookmarks.js';
+import {changeFolderOpen, clearSearch, createBookmark, createEmptyState, deselectItems, editBookmark, getDisplayedList, isShowingSearch, moveBookmark, reduceAction, removeBookmark, reorderChildren, selectFolder, setSearchResults, setSearchTerm, updateAnchor, updateFolderOpenState, updateNodes, updateSelectedFolder, updateSelection} from 'chrome://bookmarks/bookmarks.js';
 import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 
 import {createFolder, createItem, normalizeIterable, testTree} from './test_util.js';

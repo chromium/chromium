@@ -81,6 +81,8 @@ class CC_EXPORT ProxyImpl : public LayerTreeHostImplClient,
       base::WritableSharedMemoryMapping ukm_smoothness_data);
   void SetRenderFrameObserver(
       std::unique_ptr<RenderFrameMetadataObserver> observer);
+  void DetachInputDelegateAndRenderFrameObserver(
+      CompletionEvent* completion_event);
 
   void MainFrameWillHappenOnImplForTesting(CompletionEvent* completion,
                                            bool* main_frame_will_happen);
@@ -134,6 +136,7 @@ class CC_EXPORT ProxyImpl : public LayerTreeHostImplClient,
       Scheduler::PaintWorkletState state) override;
   void NotifyThroughputTrackerResults(CustomTrackerResults results) override;
   void DidObserveFirstScrollDelay(
+      int source_frame_number,
       base::TimeDelta first_scroll_delay,
       base::TimeTicks first_scroll_timestamp) override;
   bool IsInSynchronousComposite() const override;

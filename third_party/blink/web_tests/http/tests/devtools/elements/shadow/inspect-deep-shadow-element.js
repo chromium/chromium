@@ -6,10 +6,10 @@ import {TestRunner} from 'test_runner';
 import {ConsoleTestRunner} from 'console_test_runner';
 import {ElementsTestRunner} from 'elements_test_runner';
 
+import * as ElementsModule from 'devtools/panels/elements/elements.js';
+
 (async function() {
   TestRunner.addResult(`Tests that inspect element action works for deep shadow elements.\n`);
-  await TestRunner.loadLegacyModule('console');
-  await TestRunner.loadLegacyModule('elements');
   await TestRunner.showPanel('elements');
   await TestRunner.loadHTML(`
       <div>
@@ -25,7 +25,7 @@ import {ElementsTestRunner} from 'elements_test_runner';
     `);
 
   ElementsTestRunner.firstElementsTreeOutline().addEventListener(
-      Elements.ElementsTreeOutline.Events.SelectedNodeChanged, selectedNodeChanged);
+      ElementsModule.ElementsTreeOutline.ElementsTreeOutline.Events.SelectedNodeChanged, selectedNodeChanged);
 
   var tests = [
     ['shadow', 'inspect(host.shadowRoot.firstChild.firstChild.firstChild)'],
@@ -37,8 +37,8 @@ import {ElementsTestRunner} from 'elements_test_runner';
     if (!node)
       return;
     if (node.getAttribute('id') == tests[0][0]) {
-      TestRunner.addResult(Elements.DOMPath.xPath(node, false));
-      TestRunner.addResult(Elements.DOMPath.jsPath(node, false));
+      TestRunner.addResult(ElementsModule.DOMPath.xPath(node, false));
+      TestRunner.addResult(ElementsModule.DOMPath.jsPath(node, false));
       tests.shift();
       nextTest();
     }

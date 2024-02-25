@@ -14,10 +14,10 @@ import android.view.ViewGroup;
 import androidx.annotation.NonNull;
 
 import org.chromium.base.Log;
+import org.chromium.content_public.browser.WebContents;
+import org.chromium.content_public.browser.WebContentsAccessibility;
 
-/**
- * Provides a fullscreen overlay for immersive AR mode.
- */
+/** Provides a fullscreen overlay for immersive AR mode. */
 public class ArOverlayDelegate implements XrImmersiveOverlay.Delegate {
     private static final String TAG = "ArOverlayDelegate";
     private static final boolean DEBUG_LOGS = false;
@@ -26,12 +26,17 @@ public class ArOverlayDelegate implements XrImmersiveOverlay.Delegate {
     private boolean mUseOverlay;
     private boolean mCanRenderDomContent;
     private boolean mDomSurfaceNeedsConfiguring;
+    private WebContents mWebContents;
 
-    public ArOverlayDelegate(@NonNull ArCompositorDelegate compositorDelegate, boolean useOverlay,
+    public ArOverlayDelegate(
+            @NonNull ArCompositorDelegate compositorDelegate,
+            final WebContents webContents,
+            boolean useOverlay,
             boolean canRenderDomContent) {
         if (DEBUG_LOGS) Log.i(TAG, "constructor");
 
         mArCompositorDelegate = compositorDelegate;
+        mWebContents = webContents;
 
         mUseOverlay = useOverlay;
         mCanRenderDomContent = canRenderDomContent;
@@ -60,6 +65,10 @@ public class ArOverlayDelegate implements XrImmersiveOverlay.Delegate {
         // resulting z-order is undefined. The DOM content's surface will set it to true if
         // |mDomSurfaceNeedsConfiguring| is set so we need to do the opposite here.
         surfaceView.setZOrderMediaOverlay(!mDomSurfaceNeedsConfiguring);
+
+        if (!mUseOverlay) {
+            WebContentsAccessibility.fromWebContents(mWebContents).setObscuredByAnotherView(true);
+        }
     }
 
     @Override
@@ -85,6 +94,10 @@ public class ArOverlayDelegate implements XrImmersiveOverlay.Delegate {
         if (surfaceView == null) return;
         ViewGroup parent = (ViewGroup) surfaceView.getParent();
 
+        if (!mUseOverlay) {
+            WebContentsAccessibility.fromWebContents(mWebContents).setObscuredByAnotherView(false);
+        }
+
         if (parent != null) {
             // Remove the surfaceView before changing the parent's visibility, so that we
             // don't trigger any duplicate destruction events.
@@ -108,5 +121,11 @@ public class ArOverlayDelegate implements XrImmersiveOverlay.Delegate {
     @Override
     public int getDesiredOrientation() {
         return Configuration.ORIENTATION_UNDEFINED;
+    }
+
+    @Override
+    public boolean useDisplaySizes() {
+        // When in AR, it is expected to occupy the entire screen even if there is a notch.
+        return true;
     }
 }

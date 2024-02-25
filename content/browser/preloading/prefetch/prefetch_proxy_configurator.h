@@ -5,6 +5,7 @@
 #ifndef CONTENT_BROWSER_PRELOADING_PREFETCH_PREFETCH_PROXY_CONFIGURATOR_H_
 #define CONTENT_BROWSER_PRELOADING_PREFETCH_PREFETCH_PROXY_CONFIGURATOR_H_
 
+#include <optional>
 #include <string>
 
 #include "base/memory/raw_ptr.h"
@@ -16,10 +17,9 @@
 #include "mojo/public/cpp/bindings/receiver_set.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "mojo/public/cpp/bindings/remote_set.h"
-#include "net/base/proxy_server.h"
+#include "net/base/proxy_chain.h"
 #include "net/http/http_request_headers.h"
 #include "services/network/public/mojom/network_context.mojom.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
 namespace content {
@@ -66,28 +66,28 @@ class CONTENT_EXPORT PrefetchProxyConfigurator
   void SetClockForTesting(const base::Clock* clock);
 
   // mojom::CustomProxyConnectionObserver:
-  void OnFallback(const net::ProxyServer& bad_proxy, int net_error) override;
+  void OnFallback(const net::ProxyChain& bad_chain, int net_error) override;
   void OnTunnelHeadersReceived(
-      const net::ProxyServer& proxy_server,
+      const net::ProxyChain& proxy_chain,
+      uint64_t chain_index,
       const scoped_refptr<net::HttpResponseHeaders>& response_headers) override;
 
  private:
   // Called when an error is detected by the CustomProxyConnectionObserver
   // implementation so that we can throttle requests to the proxy.
-  void OnTunnelProxyConnectionError(
-      absl::optional<base::TimeDelta> retry_after);
+  void OnTunnelProxyConnectionError(std::optional<base::TimeDelta> retry_after);
 
   // The headers used to setup the connect tunnel.
   net::HttpRequestHeaders connect_tunnel_headers_;
 
-  // The proxy server used for prefetch requests.
-  const net::ProxyServer prefetch_proxy_server_;
+  // The proxy chain used for prefetch requests.
+  const net::ProxyChain prefetch_proxy_chain_;
 
   // The time clock used to calculate |prefetch_proxy_not_available_until_|.
   raw_ptr<const base::Clock> clock_;
 
   // If set, the prefetch proxy should not be used until this time.
-  absl::optional<base::Time> prefetch_proxy_not_available_until_;
+  std::optional<base::Time> prefetch_proxy_not_available_until_;
 
   // The set of clients that will get updates about changes to the proxy config.
   mojo::RemoteSet<network::mojom::CustomProxyConfigClient>

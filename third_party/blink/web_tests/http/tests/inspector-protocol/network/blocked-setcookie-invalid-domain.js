@@ -1,4 +1,4 @@
-(async function(testRunner) {
+(async function(/** @type {import('test_runner').TestRunner} */ testRunner) {
   const {page, session, dp} = await testRunner.startBlank(
       `Verifies that setting a cookie with a domain attribute which does not match the current domain sends a Network.ResponseReceivedExtraInfo event with the corresponding blocked cookie.\n`);
   await dp.Network.enable();

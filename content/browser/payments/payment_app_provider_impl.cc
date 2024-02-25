@@ -78,16 +78,13 @@ void AddModifiersToMap(const std::vector<PaymentDetailsModifierPtr>& modifiers,
 }
 
 std::string EncodeIcon(const SkBitmap& app_icon) {
-  std::string string_encoded_icon;
   if (app_icon.empty())
-    return string_encoded_icon;
+    return "";
 
   gfx::Image decoded_image = gfx::Image::CreateFrom1xBitmap(app_icon);
   scoped_refptr<base::RefCountedMemory> raw_data = decoded_image.As1xPNGBytes();
-  base::Base64Encode(
-      base::StringPiece(raw_data->front_as<char>(), raw_data->size()),
-      &string_encoded_icon);
-  return string_encoded_icon;
+  return base::Base64Encode(
+      base::StringPiece(raw_data->front_as<char>(), raw_data->size()));
 }
 
 void CheckRegistrationSuccess(base::OnceCallback<void(bool success)> callback,
@@ -124,9 +121,8 @@ void PaymentAppProviderImpl::InvokePaymentApp(
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   DCHECK(payment_request_web_contents_);
 
-  scoped_refptr<DevToolsBackgroundServicesContextImpl> dev_tools =
-      GetDevTools(sw_origin);
-  if (dev_tools) {
+  if (DevToolsBackgroundServicesContextImpl* dev_tools =
+          GetDevTools(sw_origin)) {
     std::map<std::string, std::string> data = {
         {"Merchant Top Origin", event_data->top_origin.spec()},
         {"Merchant Payment Request Origin",
@@ -150,7 +146,6 @@ void PaymentAppProviderImpl::InvokePaymentApp(
       partition->GetServiceWorkerContext();
 
   event_dispatcher_->InvokePayment(registration_id, sw_origin,
-                                   std::move(dev_tools),
                                    std::move(service_worker_context),
                                    std::move(event_data), std::move(callback));
 }
@@ -180,9 +175,8 @@ void PaymentAppProviderImpl::InstallAndInvokePaymentApp(
   }
 
   url::Origin sw_origin = url::Origin::Create(sw_scope);
-  scoped_refptr<DevToolsBackgroundServicesContextImpl> dev_tools =
-      GetDevTools(sw_origin);
-  if (dev_tools) {
+  if (DevToolsBackgroundServicesContextImpl* dev_tools =
+          GetDevTools(sw_origin)) {
     std::map<std::string, std::string> data = {
         {"Merchant Top Origin", event_data->top_origin.spec()},
         {"Merchant Payment Request Origin",
@@ -238,9 +232,8 @@ void PaymentAppProviderImpl::CanMakePayment(
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   DCHECK(payment_request_web_contents_);
 
-  scoped_refptr<DevToolsBackgroundServicesContextImpl> dev_tools =
-      GetDevTools(sw_origin);
-  if (dev_tools) {
+  if (DevToolsBackgroundServicesContextImpl* dev_tools =
+          GetDevTools(sw_origin)) {
     std::map<std::string, std::string> data = {
         {"Merchant Top Origin", event_data->top_origin.spec()},
         {"Merchant Payment Request Origin",
@@ -260,7 +253,7 @@ void PaymentAppProviderImpl::CanMakePayment(
       partition->GetServiceWorkerContext();
 
   event_dispatcher_->CanMakePayment(registration_id, sw_origin,
-                                    payment_request_id, std::move(dev_tools),
+                                    payment_request_id,
                                     std::move(service_worker_context),
                                     std::move(event_data), std::move(callback));
 }
@@ -272,9 +265,8 @@ void PaymentAppProviderImpl::AbortPayment(int64_t registration_id,
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   DCHECK(payment_request_web_contents_);
 
-  scoped_refptr<DevToolsBackgroundServicesContextImpl> dev_tools =
-      GetDevTools(sw_origin);
-  if (dev_tools) {
+  if (DevToolsBackgroundServicesContextImpl* dev_tools =
+          GetDevTools(sw_origin)) {
     dev_tools->LogBackgroundServiceEvent(
         registration_id, blink::StorageKey::CreateFirstParty(sw_origin),
         DevToolsBackgroundService::kPaymentHandler, "Abort payment",
@@ -288,7 +280,7 @@ void PaymentAppProviderImpl::AbortPayment(int64_t registration_id,
       partition->GetServiceWorkerContext();
 
   event_dispatcher_->AbortPayment(
-      registration_id, sw_origin, payment_request_id, std::move(dev_tools),
+      registration_id, sw_origin, payment_request_id,
       std::move(service_worker_context), std::move(callback));
 }
 
@@ -337,8 +329,8 @@ void PaymentAppProviderImpl::InstallPaymentAppForTesting(
       base::BindOnce(&CheckRegistrationSuccess, std::move(callback)));
 }
 
-scoped_refptr<DevToolsBackgroundServicesContextImpl>
-PaymentAppProviderImpl::GetDevTools(const url::Origin& sw_origin) {
+DevToolsBackgroundServicesContextImpl* PaymentAppProviderImpl::GetDevTools(
+    const url::Origin& sw_origin) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   DCHECK(payment_request_web_contents_);
   auto* storage_partition =
@@ -348,7 +340,7 @@ PaymentAppProviderImpl::GetDevTools(const url::Origin& sw_origin) {
   if (!storage_partition)
     return nullptr;
 
-  scoped_refptr<DevToolsBackgroundServicesContextImpl> dev_tools =
+  DevToolsBackgroundServicesContextImpl* dev_tools =
       static_cast<DevToolsBackgroundServicesContextImpl*>(
           storage_partition->GetDevToolsBackgroundServicesContext());
   return dev_tools && dev_tools->IsRecording(
@@ -381,9 +373,8 @@ void PaymentAppProviderImpl::OnInstallPaymentApp(
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   DCHECK(payment_request_web_contents_);
 
-  scoped_refptr<DevToolsBackgroundServicesContextImpl> dev_tools =
-      GetDevTools(sw_origin);
-  if (dev_tools) {
+  if (DevToolsBackgroundServicesContextImpl* dev_tools =
+          GetDevTools(sw_origin)) {
     std::map<std::string, std::string> data = {
         {"Payment Handler Install Success",
          registration_id >= 0 ? "true" : "false"},

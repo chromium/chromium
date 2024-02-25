@@ -7,14 +7,16 @@
 
 #include <stdint.h>
 
+#include <optional>
 #include <string>
+#include <vector>
 
 #include "base/component_export.h"
 #include "base/containers/flat_map.h"
 #include "base/types/expected.h"
 #include "base/values.h"
+#include "components/attribution_reporting/filters.h"
 #include "components/attribution_reporting/trigger_registration_error.mojom-forward.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace attribution_reporting {
 
@@ -22,10 +24,11 @@ class COMPONENT_EXPORT(ATTRIBUTION_REPORTING) AggregatableValues {
  public:
   using Values = base::flat_map<std::string, uint32_t>;
 
-  static absl::optional<AggregatableValues> Create(Values);
+  static std::optional<AggregatableValues> Create(Values, FilterPair);
 
-  static base::expected<AggregatableValues, mojom::TriggerRegistrationError>
-  FromJSON(const base::Value*);
+  static base::expected<std::vector<AggregatableValues>,
+                        mojom::TriggerRegistrationError>
+  FromJSON(base::Value*);
 
   AggregatableValues();
 
@@ -39,12 +42,21 @@ class COMPONENT_EXPORT(ATTRIBUTION_REPORTING) AggregatableValues {
 
   const Values& values() const { return values_; }
 
+  const FilterPair& filters() const { return filters_; }
+
   base::Value::Dict ToJson() const;
 
+  friend bool operator==(const AggregatableValues&,
+                         const AggregatableValues&) = default;
+
  private:
-  explicit AggregatableValues(Values);
+  AggregatableValues(Values, FilterPair);
 
   Values values_;
+
+  // The filters used to determine whether the values can be used to create
+  // contributions.
+  FilterPair filters_;
 };
 
 }  // namespace attribution_reporting

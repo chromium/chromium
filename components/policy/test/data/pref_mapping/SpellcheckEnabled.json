@@ -1,0 +1,33 @@
+[
+  {
+    "os": [
+      "win",
+      "linux",
+      "mac",
+      "chromeos_ash",
+      "chromeos_lacros",
+      "fuchsia"
+    ],
+    "policy_pref_mapping_tests": [
+      {
+        "note": "Check default values (no policies set)",
+        "prefs": {
+          "browser.enable_spellchecking": {
+            "default_value": true
+          }
+        }
+      },
+      {
+        "note": "Simple value",
+        "policies": {
+          "SpellcheckEnabled": false
+        },
+        "prefs": {
+          "browser.enable_spellchecking": {
+            "value": false
+          }
+        }
+      }
+    ]
+  }
+]

@@ -6,7 +6,8 @@
 
 namespace policy {
 
-MockDlpRulesManager::MockDlpRulesManager() = default;
+MockDlpRulesManager::MockDlpRulesManager(Profile* profile)
+    : DlpRulesManager(profile) {}
 
 MockDlpRulesManager::~MockDlpRulesManager() = default;
 

@@ -8,6 +8,7 @@
 #include "base/functional/callback.h"
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/side_panel/customize_chrome/customize_chrome_tab_helper.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
@@ -20,6 +21,15 @@
 #include "components/vector_icons/vector_icons.h"
 #include "content/public/browser/web_contents_user_data.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/base/ui_base_features.h"
+#include "ui/views/view_class_properties.h"
+
+using SidePanelWebUIViewT_CustomizeChromeUI =
+    SidePanelWebUIViewT<CustomizeChromeUI>;
+BEGIN_TEMPLATE_METADATA(SidePanelWebUIViewT<CustomizeChromeUI>,
+                        SidePanelWebUIViewT)
+END_METADATA
 
 CustomizeChromeSidePanelController::CustomizeChromeSidePanelController(
     content::WebContents* web_contents)
@@ -39,8 +49,10 @@ void CustomizeChromeSidePanelController::CreateAndRegisterEntry() {
   auto entry = std::make_unique<SidePanelEntry>(
       SidePanelEntry::Id::kCustomizeChrome,
       l10n_util::GetStringUTF16(IDS_SIDE_PANEL_CUSTOMIZE_CHROME_TITLE),
-      ui::ImageModel::FromVectorIcon(vector_icons::kEditIcon, ui::kColorIcon,
-                                     icon_size),
+      ui::ImageModel::FromVectorIcon(features::IsChromeRefresh2023()
+                                         ? vector_icons::kEditChromeRefreshIcon
+                                         : vector_icons::kEditIcon,
+                                     ui::kColorIcon, icon_size),
       base::BindRepeating(
           &CustomizeChromeSidePanelController::CreateCustomizeChromeWebView,
           base::Unretained(this)));
@@ -116,12 +128,14 @@ CustomizeChromeSidePanelController::CreateCustomizeChromeWebView() {
   auto customize_chrome_web_view =
       std::make_unique<SidePanelWebUIViewT<CustomizeChromeUI>>(
           base::RepeatingClosure(), base::RepeatingClosure(),
-          std::make_unique<BubbleContentsWrapperT<CustomizeChromeUI>>(
+          std::make_unique<WebUIContentsWrapperT<CustomizeChromeUI>>(
               GURL(chrome::kChromeUICustomizeChromeSidePanelURL),
               Profile::FromBrowserContext(web_contents_->GetBrowserContext()),
               IDS_SIDE_PANEL_CUSTOMIZE_CHROME_TITLE,
               /*webui_resizes_host=*/false,
               /*esc_closes_ui=*/false));
+  customize_chrome_web_view->SetProperty(
+      views::kElementIdentifierKey, kCustomizeChromeSidePanelWebViewElementId);
   customize_chrome_web_view->ShowUI();
   customize_chrome_ui_ = customize_chrome_web_view->contents_wrapper()
                              ->GetWebUIController()
@@ -134,6 +148,6 @@ CustomizeChromeSidePanelController::CreateCustomizeChromeWebView() {
 }
 
 SidePanelUI* CustomizeChromeSidePanelController::GetSidePanelUI() const {
-  auto* browser = chrome::FindBrowserWithWebContents(web_contents_);
+  auto* browser = chrome::FindBrowserWithTab(web_contents_);
   return browser ? SidePanelUI::GetSidePanelUIForBrowser(browser) : nullptr;
 }

@@ -113,7 +113,7 @@ void DevToolsStreamPipe::OnPipeSignalled(
 void DevToolsStreamPipe::DispatchResponse() {
   auto data = std::make_unique<std::string>(std::move(buffer_));
   if (is_binary_ && !data->empty())
-    base::Base64Encode(*data, data.get());
+    *data.get() = base::Base64Encode(*data);
   std::move(read_requests_.front().read_callback)
       .Run(std::move(data), is_binary_, last_status_);
   read_requests_.pop();

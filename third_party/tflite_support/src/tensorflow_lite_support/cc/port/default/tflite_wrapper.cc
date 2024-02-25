@@ -15,7 +15,7 @@ limitations under the License.
 
 #include "tensorflow_lite_support/cc/port/default/tflite_wrapper.h"
 
-#include "absl/status/status.h"       // from @com_google_absl
+#include "absl/status/status.h"  // from @com_google_absl
 #include "absl/strings/str_format.h"  // from @com_google_absl
 #include "tensorflow/lite/acceleration/configuration/flatbuffer_to_proto.h"
 #include "tensorflow/lite/acceleration/configuration/proto_to_flatbuffer.h"
@@ -82,7 +82,7 @@ absl::Status TfLiteInterpreterWrapper::InitializeWithFallback(
           const InterpreterCreationResources& resources,
           std::unique_ptr<tflite::Interpreter>* interpreter_out)
           -> absl::Status {
-        RETURN_IF_ERROR(interpreter_initializer(interpreter_out));
+        TFLITE_RETURN_IF_ERROR(interpreter_initializer(interpreter_out));
         if (*interpreter_out != nullptr &&
             resources.optional_delegate != nullptr) {
           TfLiteStatus status =
@@ -90,7 +90,7 @@ absl::Status TfLiteInterpreterWrapper::InitializeWithFallback(
                   ->ModifyGraphWithDelegate(resources.optional_delegate);
           if (status != kTfLiteOk) {
             *interpreter_out = nullptr;
-            RETURN_IF_ERROR(
+            TFLITE_RETURN_IF_ERROR(
                 absl::InvalidArgumentError("Applying delegate failed"));
           }
         }
@@ -112,7 +112,7 @@ absl::Status TfLiteInterpreterWrapper::InitializeWithFallback(
   interpreter_initializer_ = std::move(interpreter_initializer);
 
   // Sanity check and copy ComputeSettings.
-  RETURN_IF_ERROR(SanityCheckComputeSettings(compute_settings));
+  TFLITE_RETURN_IF_ERROR(SanityCheckComputeSettings(compute_settings));
   compute_settings_ = compute_settings;
   if (compute_settings_.has_settings_to_test_locally()) {
     flatbuffers::FlatBufferBuilder mini_benchmark_settings_fbb;
@@ -174,13 +174,13 @@ absl::Status TfLiteInterpreterWrapper::InitializeWithFallbackAndResize(
     delegate_.reset(nullptr);
   } else {
     // Initialize delegate and add it to 'resources'.
-    RETURN_IF_ERROR(InitializeDelegate());
+    TFLITE_RETURN_IF_ERROR(InitializeDelegate());
     resources.optional_delegate = delegate_.get();
   }
 
   absl::Status status = interpreter_initializer_(resources, &interpreter_);
   if (resources.optional_delegate == nullptr) {
-    RETURN_IF_ERROR(status);
+    TFLITE_RETURN_IF_ERROR(status);
   }
   if (resources.optional_delegate != nullptr && !status.ok()) {
     // Any error when constructing the interpreter is assumed to be a delegate
@@ -191,7 +191,7 @@ absl::Status TfLiteInterpreterWrapper::InitializeWithFallbackAndResize(
     if (fallback_on_compilation_error_) {
       InterpreterCreationResources fallback_resources{};
       fallback_resources.optional_delegate = nullptr;
-      RETURN_IF_ERROR(
+      TFLITE_RETURN_IF_ERROR(
           interpreter_initializer_(fallback_resources, &interpreter_));
     } else {
       // If instructed not to fallback, return error.
@@ -201,7 +201,7 @@ absl::Status TfLiteInterpreterWrapper::InitializeWithFallbackAndResize(
     }
   }
 
-  RETURN_IF_ERROR(resize(interpreter_.get()));
+  TFLITE_RETURN_IF_ERROR(resize(interpreter_.get()));
   if (compute_settings_.tflite_settings().cpu_settings().num_threads() != -1) {
     if (interpreter_->SetNumThreads(
             compute_settings_.tflite_settings().cpu_settings().num_threads()) !=
@@ -229,25 +229,25 @@ absl::Status TfLiteInterpreterWrapper::InitializeDelegate() {
         tflite::ConvertFromProto(compute_settings_, &flatbuffers_builder_);
 
     if (which_delegate == Delegate::NNAPI) {
-      RETURN_IF_ERROR(
+      TFLITE_RETURN_IF_ERROR(
           LoadDelegatePlugin("Nnapi", *compute_settings->tflite_settings()));
     } else if (which_delegate == Delegate::HEXAGON) {
-      RETURN_IF_ERROR(
+      TFLITE_RETURN_IF_ERROR(
           LoadDelegatePlugin("Hexagon", *compute_settings->tflite_settings()));
     } else if (which_delegate == Delegate::GPU) {
-      RETURN_IF_ERROR(
+      TFLITE_RETURN_IF_ERROR(
           LoadDelegatePlugin("Gpu", *compute_settings->tflite_settings()));
     } else if (which_delegate == Delegate::EDGETPU) {
-      RETURN_IF_ERROR(
+      TFLITE_RETURN_IF_ERROR(
           LoadDelegatePlugin("EdgeTpu", *compute_settings->tflite_settings()));
     } else if (which_delegate == Delegate::EDGETPU_CORAL) {
-      RETURN_IF_ERROR(LoadDelegatePlugin("EdgeTpuCoral",
+      TFLITE_RETURN_IF_ERROR(LoadDelegatePlugin("EdgeTpuCoral",
                                          *compute_settings->tflite_settings()));
     } else if (which_delegate == Delegate::XNNPACK) {
-      RETURN_IF_ERROR(
+      TFLITE_RETURN_IF_ERROR(
           LoadDelegatePlugin("XNNPack", *compute_settings->tflite_settings()));
     } else if (which_delegate == Delegate::CORE_ML) {
-      RETURN_IF_ERROR(
+      TFLITE_RETURN_IF_ERROR(
           LoadDelegatePlugin("CoreML", *compute_settings->tflite_settings()));
     }
   }
@@ -257,7 +257,7 @@ absl::Status TfLiteInterpreterWrapper::InitializeDelegate() {
 absl::Status TfLiteInterpreterWrapper::InvokeWithFallback(
     const std::function<absl::Status(tflite::Interpreter* interpreter)>&
         set_inputs) {
-  RETURN_IF_ERROR(set_inputs(interpreter_.get()));
+  TFLITE_RETURN_IF_ERROR(set_inputs(interpreter_.get()));
   if (cancel_flag_.Get()) {
     cancel_flag_.Set(false);
     return absl::CancelledError("cancelled before Invoke() was called");
@@ -310,9 +310,7 @@ absl::Status TfLiteInterpreterWrapper::InvokeWithoutFallback() {
   return absl::OkStatus();
 }
 
-void TfLiteInterpreterWrapper::Cancel() {
-  cancel_flag_.Set(true);
-}
+void TfLiteInterpreterWrapper::Cancel() { cancel_flag_.Set(true); }
 
 void TfLiteInterpreterWrapper::SetTfLiteCancellation() {
   // Create a cancellation check function and set to the TFLite interpreter.
@@ -325,8 +323,7 @@ void TfLiteInterpreterWrapper::SetTfLiteCancellation() {
 }
 
 absl::Status TfLiteInterpreterWrapper::LoadDelegatePlugin(
-    const std::string& name,
-    const tflite::TFLiteSettings& tflite_settings) {
+    const std::string& name, const tflite::TFLiteSettings& tflite_settings) {
   delegate_plugin_ = DelegatePluginRegistry::CreateByName(
       absl::StrFormat("%sPlugin", name), tflite_settings);
 

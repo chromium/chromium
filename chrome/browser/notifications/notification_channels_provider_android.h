@@ -49,6 +49,9 @@ struct NotificationChannel {
 // channels on Android O+. This provider takes precedence over pref-provided
 // content settings, but defers to supervised user and policy settings - see
 // ordering of the ProviderType enum values in HostContentSettingsMap.
+//
+// PartitionKey is ignored by this provider because the content settings should
+// apply across partitions.
 class NotificationChannelsProviderAndroid
     : public content_settings::UserModifiableProvider {
  public:
@@ -90,30 +93,41 @@ class NotificationChannelsProviderAndroid
   // UserModifiableProvider methods.
   std::unique_ptr<content_settings::RuleIterator> GetRuleIterator(
       ContentSettingsType content_type,
-      bool incognito) const override;
-  bool SetWebsiteSetting(const ContentSettingsPattern& primary_pattern,
-                         const ContentSettingsPattern& secondary_pattern,
-                         ContentSettingsType content_type,
-                         base::Value&& value,
-                         const content_settings::ContentSettingConstraints&
-                             constraints = {}) override;
-  void ClearAllContentSettingsRules(ContentSettingsType content_type) override;
+      bool incognito,
+      const content_settings::PartitionKey& partition_key) const override;
+  bool SetWebsiteSetting(
+      const ContentSettingsPattern& primary_pattern,
+      const ContentSettingsPattern& secondary_pattern,
+      ContentSettingsType content_type,
+      base::Value&& value,
+      const content_settings::ContentSettingConstraints& constraints,
+      const content_settings::PartitionKey& partition_key) override;
+  void ClearAllContentSettingsRules(
+      ContentSettingsType content_type,
+      const content_settings::PartitionKey& partition_key) override;
   void ShutdownOnUIThread() override;
-  bool UpdateLastUsedTime(const GURL& primary_url,
-                          const GURL& secondary_url,
-                          ContentSettingsType content_type,
-                          const base::Time time) override;
-  bool ResetLastVisitTime(const ContentSettingsPattern& primary_pattern,
-                          const ContentSettingsPattern& secondary_pattern,
-                          ContentSettingsType content_type) override;
-  bool UpdateLastVisitTime(const ContentSettingsPattern& primary_pattern,
-                           const ContentSettingsPattern& secondary_pattern,
-                           ContentSettingsType content_type) override;
-  bool RenewContentSetting(
+  bool UpdateLastUsedTime(
       const GURL& primary_url,
       const GURL& secondary_url,
       ContentSettingsType content_type,
-      absl::optional<ContentSetting> setting_to_match) override;
+      const base::Time time,
+      const content_settings::PartitionKey& partition_key) override;
+  bool ResetLastVisitTime(
+      const ContentSettingsPattern& primary_pattern,
+      const ContentSettingsPattern& secondary_pattern,
+      ContentSettingsType content_type,
+      const content_settings::PartitionKey& partition_key) override;
+  bool UpdateLastVisitTime(
+      const ContentSettingsPattern& primary_pattern,
+      const ContentSettingsPattern& secondary_pattern,
+      ContentSettingsType content_type,
+      const content_settings::PartitionKey& partition_key) override;
+  std::optional<base::TimeDelta> RenewContentSetting(
+      const GURL& primary_url,
+      const GURL& secondary_url,
+      ContentSettingsType content_type,
+      std::optional<ContentSetting> setting_to_match,
+      const content_settings::PartitionKey& partition_key) override;
   void SetClockForTesting(base::Clock* clock) override;
 
  private:

@@ -1,0 +1,111 @@
+From 3dc1cc4f100d9633736a8937482dcc838d98556a Mon Sep 17 00:00:00 2001
+From: Robert Ogden <robertogden@chromium.org>
+Date: Wed, 30 Nov 2022 10:24:21 -0800
+Subject: [PATCH 06/10] Fix TFLite build errors on linux when using the system
+
+---
+ .../metadata/cc/metadata_extractor.cc                        | 5 +++--
+ .../metadata/cc/metadata_populator.cc                        | 4 ++--
+ .../metadata/cc/utils/zip_readonly_mem_file.cc               | 2 +-
+ .../metadata/cc/utils/zip_readonly_mem_file.h                | 2 +-
+ .../metadata/cc/utils/zip_writable_mem_file.cc               | 2 +-
+ .../metadata/cc/utils/zip_writable_mem_file.h                | 2 +-
+ 6 files changed, 9 insertions(+), 8 deletions(-)
+
+diff --git a/third_party/tflite_support/src/tensorflow_lite_support/metadata/cc/metadata_extractor.cc b/third_party/tflite_support/src/tensorflow_lite_support/metadata/cc/metadata_extractor.cc
+index f4ee9192fe42a..d208da4e03780 100644
+--- a/third_party/tflite_support/src/tensorflow_lite_support/metadata/cc/metadata_extractor.cc
++++ b/third_party/tflite_support/src/tensorflow_lite_support/metadata/cc/metadata_extractor.cc
+@@ -23,13 +23,14 @@ limitations under the License.
+ #include "absl/strings/str_format.h"  // from @com_google_absl
+ #include "absl/strings/string_view.h"  // from @com_google_absl
+ #include "flatbuffers/flatbuffers.h"  // from @flatbuffers
+-#include "contrib/minizip/ioapi.h"
+-#include "contrib/minizip/unzip.h"
+ #include "tensorflow/lite/schema/schema_generated.h"
+ #include "tensorflow_lite_support/cc/common.h"
+ #include "tensorflow_lite_support/cc/port/status_macros.h"
+ #include "tensorflow_lite_support/metadata/cc/utils/zip_readonly_mem_file.h"
+ #include "tensorflow_lite_support/metadata/metadata_schema_generated.h"
++#include "third_party/zlib/contrib/minizip/ioapi.h"
++#include "third_party/zlib/contrib/minizip/unzip.h"
++
+ 
+ namespace tflite {
+ namespace metadata {
+diff --git a/third_party/tflite_support/src/tensorflow_lite_support/metadata/cc/metadata_populator.cc b/third_party/tflite_support/src/tensorflow_lite_support/metadata/cc/metadata_populator.cc
+index 9d256b3322fb0..01c68515afd37 100644
+--- a/third_party/tflite_support/src/tensorflow_lite_support/metadata/cc/metadata_populator.cc
++++ b/third_party/tflite_support/src/tensorflow_lite_support/metadata/cc/metadata_populator.cc
+@@ -20,14 +20,14 @@ limitations under the License.
+ #include <functional>
+ 
+ #include "flatbuffers/flatbuffers.h"  // from @flatbuffers
+-#include "contrib/minizip/ioapi.h"
+-#include "contrib/minizip/zip.h"
+ #include "tensorflow/lite/schema/schema_generated.h"
+ #include "tensorflow_lite_support/cc/common.h"
+ #include "tensorflow_lite_support/cc/port/status_macros.h"
+ #include "tensorflow_lite_support/cc/port/statusor.h"
+ #include "tensorflow_lite_support/metadata/cc/utils/zip_writable_mem_file.h"
+ #include "tensorflow_lite_support/metadata/metadata_schema_generated.h"
++#include "third_party/zlib/contrib/minizip/ioapi.h"
++#include "third_party/zlib/contrib/minizip/unzip.h"
+ 
+ namespace tflite {
+ namespace metadata {
+diff --git a/third_party/tflite_support/src/tensorflow_lite_support/metadata/cc/utils/zip_readonly_mem_file.cc b/third_party/tflite_support/src/tensorflow_lite_support/metadata/cc/utils/zip_readonly_mem_file.cc
+index 3dac8c24af942..65a4638a868ad 100644
+--- a/third_party/tflite_support/src/tensorflow_lite_support/metadata/cc/utils/zip_readonly_mem_file.cc
++++ b/third_party/tflite_support/src/tensorflow_lite_support/metadata/cc/utils/zip_readonly_mem_file.cc
+@@ -19,7 +19,7 @@ limitations under the License.
+ #include <cstdio>
+ 
+ #include "absl/strings/string_view.h"  // from @com_google_absl
+-#include "contrib/minizip/ioapi.h"
++#include "third_party/zlib/contrib/minizip/ioapi.h"
+ 
+ namespace tflite {
+ namespace metadata {
+diff --git a/third_party/tflite_support/src/tensorflow_lite_support/metadata/cc/utils/zip_readonly_mem_file.h b/third_party/tflite_support/src/tensorflow_lite_support/metadata/cc/utils/zip_readonly_mem_file.h
+index 13927a7afa698..1b7bed5987fbc 100644
+--- a/third_party/tflite_support/src/tensorflow_lite_support/metadata/cc/utils/zip_readonly_mem_file.h
++++ b/third_party/tflite_support/src/tensorflow_lite_support/metadata/cc/utils/zip_readonly_mem_file.h
+@@ -19,7 +19,7 @@ limitations under the License.
+ #include <cstdlib>
+ 
+ #include "absl/strings/string_view.h"  // from @com_google_absl
+-#include "contrib/minizip/ioapi.h"
++#include "third_party/zlib/contrib/minizip/ioapi.h"
+ 
+ namespace tflite {
+ namespace metadata {
+diff --git a/third_party/tflite_support/src/tensorflow_lite_support/metadata/cc/utils/zip_writable_mem_file.cc b/third_party/tflite_support/src/tensorflow_lite_support/metadata/cc/utils/zip_writable_mem_file.cc
+index 5999be028689a..73e42b8443cef 100644
+--- a/third_party/tflite_support/src/tensorflow_lite_support/metadata/cc/utils/zip_writable_mem_file.cc
++++ b/third_party/tflite_support/src/tensorflow_lite_support/metadata/cc/utils/zip_writable_mem_file.cc
+@@ -19,7 +19,7 @@ limitations under the License.
+ #include <cstdio>
+ 
+ #include "absl/strings/string_view.h"  // from @com_google_absl
+-#include "contrib/minizip/ioapi.h"
++#include "third_party/zlib/contrib/minizip/ioapi.h"
+ 
+ namespace tflite {
+ namespace metadata {
+diff --git a/third_party/tflite_support/src/tensorflow_lite_support/metadata/cc/utils/zip_writable_mem_file.h b/third_party/tflite_support/src/tensorflow_lite_support/metadata/cc/utils/zip_writable_mem_file.h
+index 762dd58f0fb41..bb27d96aef4b5 100644
+--- a/third_party/tflite_support/src/tensorflow_lite_support/metadata/cc/utils/zip_writable_mem_file.h
++++ b/third_party/tflite_support/src/tensorflow_lite_support/metadata/cc/utils/zip_writable_mem_file.h
+@@ -19,7 +19,7 @@ limitations under the License.
+ #include <cstdlib>
+ 
+ #include "absl/strings/string_view.h"  // from @com_google_absl
+-#include "contrib/minizip/ioapi.h"
++#include "third_party/zlib/contrib/minizip/ioapi.h"
+ 
+ namespace tflite {
+ namespace metadata {
+-- 
+2.42.0.515.g380fc7ccd1-goog
+

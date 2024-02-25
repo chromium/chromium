@@ -22,6 +22,7 @@
 #include "chromeos/ash/services/secure_channel/public/cpp/client/fake_client_channel.h"
 #include "chromeos/ash/services/secure_channel/public/cpp/client/fake_connection_attempt.h"
 #include "chromeos/ash/services/secure_channel/public/cpp/client/fake_secure_channel_client.h"
+#include "chromeos/ash/services/secure_channel/public/cpp/client/fake_secure_channel_structured_metrics_logger.h"
 #include "chromeos/ash/services/secure_channel/public/cpp/client/nearby_metrics_recorder.h"
 #include "chromeos/ash/services/secure_channel/public/mojom/secure_channel_types.mojom.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -113,10 +114,13 @@ class ConnectionManagerImplTest : public testing::Test {
     fake_device_sync_client_.set_local_device_metadata(test_local_device_);
     fake_multidevice_setup_client_.SetHostStatusWithDevice(
         std::make_pair(HostStatus::kHostVerified, test_remote_device_));
+    fake_secure_channel_structured_metrics_logger_ =
+        std::make_unique<FakeSecureChannelStructuredMetricsLogger>();
     connection_manager_ = base::WrapUnique(new ConnectionManagerImpl(
         &fake_multidevice_setup_client_, &fake_device_sync_client_,
         fake_secure_channel_client_.get(), std::move(timer),
         kSecureChannelFeatureName, std::make_unique<TestMetricsRecorder>(),
+        fake_secure_channel_structured_metrics_logger_.get(),
         test_clock_.get()));
     connection_manager_->AddObserver(&fake_observer_);
     EXPECT_EQ(ConnectionManager::Status::kDisconnected, GetStatus());
@@ -172,17 +176,17 @@ class ConnectionManagerImplTest : public testing::Test {
                                         expected_count);
   }
 
-  raw_ptr<base::MockOneShotTimer, DanglingUntriaged | ExperimentalAsh>
-      mock_timer_;
+  raw_ptr<base::MockOneShotTimer, DanglingUntriaged> mock_timer_;
   multidevice::RemoteDeviceRef test_remote_device_;
   multidevice::RemoteDeviceRef test_local_device_;
   device_sync::FakeDeviceSyncClient fake_device_sync_client_;
   multidevice_setup::FakeMultiDeviceSetupClient fake_multidevice_setup_client_;
   std::unique_ptr<FakeSecureChannelClient> fake_secure_channel_client_;
+  std::unique_ptr<FakeSecureChannelStructuredMetricsLogger>
+      fake_secure_channel_structured_metrics_logger_;
   std::unique_ptr<ConnectionManagerImpl> connection_manager_;
   FakeObserver fake_observer_;
-  raw_ptr<FakeConnectionAttempt, DanglingUntriaged | ExperimentalAsh>
-      fake_connection_attempt_;
+  raw_ptr<FakeConnectionAttempt, DanglingUntriaged> fake_connection_attempt_;
   std::unique_ptr<base::SimpleTestClock> test_clock_;
   base::HistogramTester histogram_tester_;
 };
@@ -305,7 +309,7 @@ TEST_F(ConnectionManagerImplTest, AttemptConnectionWithMessageReceived) {
 TEST_F(ConnectionManagerImplTest, AttemptConnectionWithoutLocalDevice) {
   // Simulate a missing local device.
   fake_device_sync_client_.set_local_device_metadata(
-      absl::optional<multidevice::RemoteDeviceRef>());
+      std::optional<multidevice::RemoteDeviceRef>());
   connection_manager_->AttemptNearbyConnection();
 
   // Status is still disconnected since there is a missing device, verify that
@@ -318,7 +322,7 @@ TEST_F(ConnectionManagerImplTest, AttemptConnectionWithoutRemoteDevice) {
   // Simulate a missing remote device.
   fake_multidevice_setup_client_.SetHostStatusWithDevice(
       std::make_pair(HostStatus::kHostVerified,
-                     absl::optional<multidevice::RemoteDeviceRef>()));
+                     std::optional<multidevice::RemoteDeviceRef>()));
   connection_manager_->AttemptNearbyConnection();
 
   // Status is still disconnected since there is a missing device, verify that

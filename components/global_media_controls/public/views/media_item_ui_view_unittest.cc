@@ -351,13 +351,18 @@ TEST_F(MediaItemUIViewTest, SendsDestroyedUpdates) {
 
 TEST_F(MediaItemUIViewTest, SendsClicks) {
   // When the container is clicked directly, it should notify its observers.
-  EXPECT_CALL(observer(), OnMediaItemUIClicked(kTestNotificationId));
+  EXPECT_CALL(observer(),
+              OnMediaItemUIClicked(kTestNotificationId,
+                                   /*activate_original_media=*/true));
   SimulateItemUIClicked();
   testing::Mock::VerifyAndClearExpectations(&observer());
 
   // It should also notify its observers when the header is clicked.
-  EXPECT_CALL(observer(), OnMediaItemUIClicked(kTestNotificationId));
+  EXPECT_CALL(observer(),
+              OnMediaItemUIClicked(kTestNotificationId,
+                                   /*activate_original_media=*/true));
   SimulateHeaderClicked();
+  testing::Mock::VerifyAndClearExpectations(&observer());
 }
 
 TEST_F(MediaItemUIViewTest, GestureScrollDisabledWhenSlidingOut) {

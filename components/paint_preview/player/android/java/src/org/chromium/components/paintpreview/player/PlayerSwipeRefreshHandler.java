@@ -49,12 +49,15 @@ public class PlayerSwipeRefreshHandler implements OverscrollHandler {
                 SemanticColorUtils.getDefaultControlColorActive(context));
         mSwipeRefreshLayout.setEnabled(true);
 
-        mSwipeRefreshLayout.setOnRefreshListener(() -> {
-            mSwipeRefreshLayout.postDelayed(() -> {
-                mSwipeRefreshLayout.setRefreshing(false);
-            }, STOP_REFRESH_ANIMATION_DELAY_MS);
-            mRefreshCallback.run();
-        });
+        mSwipeRefreshLayout.setOnRefreshListener(
+                () -> {
+                    mSwipeRefreshLayout.postDelayed(
+                            () -> {
+                                mSwipeRefreshLayout.setRefreshing(false);
+                            },
+                            STOP_REFRESH_ANIMATION_DELAY_MS);
+                    mRefreshCallback.run();
+                });
         TraceEvent.end("PlayerSwipeRefreshHandler");
     }
 

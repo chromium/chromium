@@ -232,6 +232,13 @@ void PasswordProtectionRequest::FillRequestProto(bool is_sampled_ping) {
       &kHashPrefixRealTimeLookups};
   GetExperimentStatus(kHashRealTimeLookupsFeature,
                       request_proto_->mutable_population());
+  if (password_protection_service_->IsExtendedReporting() &&
+      !password_protection_service_->IsIncognito()) {
+    const std::vector<const base::Feature*> kAsyncChecksFeature = {
+        &kSafeBrowsingAsyncRealTimeCheck};
+    GetExperimentStatus(kAsyncChecksFeature,
+                        request_proto_->mutable_population());
+  }
 
   request_proto_->set_stored_verdict_cnt(
       password_protection_service_->GetStoredVerdictCount(trigger_type_));
@@ -335,9 +342,8 @@ void PasswordProtectionRequest::SendRequest() {
   DCHECK(ui_task_runner()->RunsTasksInCurrentSequence());
   if (password_protection_service_->CanGetAccessToken() &&
       password_protection_service_->token_fetcher()) {
-    password_protection_service_->token_fetcher()->Start(
-        base::BindOnce(&PasswordProtectionRequest::SendRequestWithToken,
-                       weak_factory_.GetWeakPtr()));
+    password_protection_service_->token_fetcher()->Start(base::BindOnce(
+        &PasswordProtectionRequest::SendRequestWithToken, AsWeakPtr()));
     return;
   }
   std::string empty_access_token;

@@ -153,7 +153,7 @@ class PriorityQueue {
     unsigned id = next_id_;
     valid_ids_.insert(id);
     ++next_id_;
-    list.emplace_back(std::make_pair(id, std::move(value)));
+    list.emplace_back(id, std::move(value));
 #else
     list.emplace_back(std::move(value));
 #endif
@@ -171,7 +171,7 @@ class PriorityQueue {
     unsigned id = next_id_;
     valid_ids_.insert(id);
     ++next_id_;
-    list.emplace_front(std::make_pair(id, std::move(value)));
+    list.emplace_front(std::pair(id, std::move(value)));
 #else
     list.emplace_front(std::move(value));
 #endif

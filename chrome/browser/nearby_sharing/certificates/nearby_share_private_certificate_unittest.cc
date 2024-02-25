@@ -2,17 +2,18 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "chrome/browser/nearby_sharing/certificates/nearby_share_private_certificate.h"
+
+#include <optional>
 #include <string>
 
 #include "chrome/browser/nearby_sharing/certificates/constants.h"
 #include "chrome/browser/nearby_sharing/certificates/nearby_share_decrypted_public_certificate.h"
 #include "chrome/browser/nearby_sharing/certificates/nearby_share_encrypted_metadata_key.h"
-#include "chrome/browser/nearby_sharing/certificates/nearby_share_private_certificate.h"
 #include "chrome/browser/nearby_sharing/certificates/test_util.h"
-#include "chrome/browser/nearby_sharing/proto/rpc_resources.pb.h"
 #include "chromeos/ash/services/nearby/public/mojom/nearby_share_settings.mojom.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
+#include "third_party/nearby/sharing/proto/rpc_resources.pb.h"
 
 TEST(NearbySharePrivateCertificateTest, Construction) {
   NearbySharePrivateCertificate private_certificate(
@@ -60,7 +61,7 @@ TEST(NearbySharePrivateCertificateTest, EncryptMetadataKey) {
   NearbySharePrivateCertificate private_certificate(
       nearby_share::mojom::Visibility::kAllContacts,
       GetNearbyShareTestNotBefore(), GetNearbyShareTestMetadata());
-  absl::optional<NearbyShareEncryptedMetadataKey> encrypted_metadata_key =
+  std::optional<NearbyShareEncryptedMetadataKey> encrypted_metadata_key =
       private_certificate.EncryptMetadataKey();
   ASSERT_TRUE(encrypted_metadata_key);
   EXPECT_EQ(kNearbyShareNumBytesMetadataEncryptionKeySalt,
@@ -73,7 +74,7 @@ TEST(NearbySharePrivateCertificateTest, EncryptMetadataKey_FixedData) {
   NearbySharePrivateCertificate private_certificate =
       GetNearbyShareTestPrivateCertificate(
           nearby_share::mojom::Visibility::kAllContacts);
-  absl::optional<NearbyShareEncryptedMetadataKey> encrypted_metadata_key =
+  std::optional<NearbyShareEncryptedMetadataKey> encrypted_metadata_key =
       private_certificate.EncryptMetadataKey();
   EXPECT_EQ(GetNearbyShareTestEncryptedMetadataKey().encrypted_key(),
             encrypted_metadata_key->encrypted_key());
@@ -110,7 +111,7 @@ TEST(NearbySharePrivateCertificateTest, PublicCertificateConversion) {
       GetNearbyShareTestPrivateCertificate(
           nearby_share::mojom::Visibility::kSelectedContacts);
   private_certificate.offset_for_testing() = GetNearbyShareTestValidityOffset();
-  absl::optional<nearbyshare::proto::PublicCertificate> public_certificate =
+  std::optional<nearby::sharing::proto::PublicCertificate> public_certificate =
       private_certificate.ToPublicCertificate();
   ASSERT_TRUE(public_certificate);
   EXPECT_EQ(GetNearbyShareTestPublicCertificate(
@@ -124,7 +125,7 @@ TEST(NearbySharePrivateCertificateTest, EncryptDecryptRoundtrip) {
       GetNearbyShareTestPrivateCertificate(
           nearby_share::mojom::Visibility::kAllContacts);
 
-  absl::optional<NearbyShareDecryptedPublicCertificate>
+  std::optional<NearbyShareDecryptedPublicCertificate>
       decrypted_public_certificate =
           NearbyShareDecryptedPublicCertificate::DecryptPublicCertificate(
               *private_certificate.ToPublicCertificate(),
@@ -139,11 +140,11 @@ TEST(NearbySharePrivateCertificateTest, SignVerifyRoundtrip) {
   NearbySharePrivateCertificate private_certificate =
       GetNearbyShareTestPrivateCertificate(
           nearby_share::mojom::Visibility::kAllContacts);
-  absl::optional<std::vector<uint8_t>> signature =
+  std::optional<std::vector<uint8_t>> signature =
       private_certificate.Sign(GetNearbyShareTestPayloadToSign());
   ASSERT_TRUE(signature);
 
-  absl::optional<NearbyShareDecryptedPublicCertificate>
+  std::optional<NearbyShareDecryptedPublicCertificate>
       decrypted_public_certificate =
           NearbyShareDecryptedPublicCertificate::DecryptPublicCertificate(
               *private_certificate.ToPublicCertificate(),

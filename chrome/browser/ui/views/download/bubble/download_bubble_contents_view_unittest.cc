@@ -13,6 +13,10 @@
 #include "chrome/browser/download/download_ui_model.h"
 #include "chrome/browser/download/offline_item_utils.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/download/download_bubble_info.h"
+#include "chrome/browser/ui/hats/mock_trust_safety_sentiment_service.h"
+#include "chrome/browser/ui/hats/trust_safety_sentiment_service_factory.h"
+#include "chrome/browser/ui/views/download/bubble/download_bubble_primary_view.h"
 #include "chrome/browser/ui/views/download/bubble/download_bubble_row_view.h"
 #include "chrome/browser/ui/views/download/bubble/download_toolbar_button_view.h"
 #include "chrome/test/base/test_browser_window.h"
@@ -25,11 +29,13 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
+#include "ui/views/controls/scroll_view.h"
 #include "ui/views/view.h"
 #include "ui/views/window/dialog_client_view.h"
 
 namespace {
 
+using ::testing::_;
 using ::testing::NiceMock;
 using ::testing::Return;
 using ::testing::ReturnRefOfCopy;
@@ -42,8 +48,16 @@ class MockDownloadBubbleNavigationHandler
   void OpenSecurityDialog(const offline_items_collection::ContentId&) override {
   }
   void CloseDialog(views::Widget::ClosedReason) override {}
+  MOCK_METHOD(void,
+              OnSecurityDialogButtonPress,
+              (const DownloadUIModel& model, DownloadCommands::Command command),
+              (override));
   void ResizeDialog() override {}
   void OnDialogInteracted() override {}
+  std::unique_ptr<views::BubbleDialogDelegate::CloseOnDeactivatePin>
+  PreventDialogCloseOnDeactivate() override {
+    return nullptr;
+  }
   base::WeakPtr<DownloadBubbleNavigationHandler> GetWeakPtr() override {
     return weak_factory_.GetWeakPtr();
   }
@@ -142,8 +156,6 @@ class DownloadBubbleContentsViewTest
     bubble_delegate_ = bubble_delegate.get();
     navigation_handler_ =
         std::make_unique<MockDownloadBubbleNavigationHandler>();
-    views::BubbleDialogDelegate::CreateBubble(std::move(bubble_delegate));
-    bubble_delegate_->GetWidget()->Show();
     bubble_controller_ =
         std::make_unique<DownloadBubbleUIController>(browser_.get());
 
@@ -151,13 +163,35 @@ class DownloadBubbleContentsViewTest
     InitItems(2);
     contents_view_ = std::make_unique<DownloadBubbleContentsView>(
         browser_->AsWeakPtr(), bubble_controller_->GetWeakPtr(),
-        navigation_handler_->GetWeakPtr(), IsPrimaryPartialView(), GetModels(),
+        navigation_handler_->GetWeakPtr(), IsPrimaryPartialView(),
+        std::make_unique<DownloadBubbleContentsViewInfo>(GetModels()),
         bubble_delegate_);
+    // The contents view has to be set up before the bubble is shown, because it
+    // sets initially focused view on the delegate (which cannot be set after
+    // the widget is shown).
+    views::BubbleDialogDelegate::CreateBubble(std::move(bubble_delegate));
+    bubble_delegate_->GetWidget()->Show();
+  }
+
+  void SetUpMockTrustSafetySentimentSurveys() {
+    mock_sentiment_service_ = static_cast<MockTrustSafetySentimentService*>(
+        TrustSafetySentimentServiceFactory::GetInstance()
+            ->SetTestingFactoryAndUse(
+                profile_,
+                base::BindRepeating(&BuildMockTrustSafetySentimentService)));
+  }
+
+  void ExpectInteractedWithDownloadUICalled() {
+    EXPECT_CALL(*mock_sentiment_service_,
+                InteractedWithDownloadWarningUI(
+                    DownloadItemWarningData::WarningSurface::BUBBLE_SUBPAGE,
+                    DownloadItemWarningData::WarningAction::DISCARD));
   }
 
   void TearDown() override {
     profile_ = nullptr;
     bubble_delegate_ = nullptr;
+    mock_sentiment_service_ = nullptr;
     // All windows need to be closed before tear down.
     anchor_widget_.reset();
     ChromeViewsTestBase::TearDown();
@@ -183,6 +217,7 @@ class DownloadBubbleContentsViewTest
   std::unique_ptr<views::Widget> anchor_widget_;
 
   std::unique_ptr<DownloadBubbleContentsView> contents_view_;
+  raw_ptr<MockTrustSafetySentimentService> mock_sentiment_service_ = nullptr;
 };
 
 // The test parameter is whether the primary view is the partial view.
@@ -241,7 +276,7 @@ TEST_P(DownloadBubbleContentsViewTest, SwitchPages) {
 
   // Switch back to primary view. The security view should be reset and not
   // crash.
-  contents_view_->ShowPrimaryPage();
+  EXPECT_EQ(nullptr, contents_view_->ShowPrimaryPage());
   EXPECT_EQ(contents_view_->VisiblePage(),
             DownloadBubbleContentsView::Page::kPrimary);
   EXPECT_FALSE(contents_view_->security_view_for_testing()->IsInitialized());
@@ -258,7 +293,7 @@ TEST_P(DownloadBubbleContentsViewTest, SwitchPages) {
 
   // Switch back to primary view. The security view should be reset and not
   // crash.
-  contents_view_->ShowPrimaryPage();
+  EXPECT_EQ(nullptr, contents_view_->ShowPrimaryPage());
   EXPECT_EQ(contents_view_->VisiblePage(),
             DownloadBubbleContentsView::Page::kPrimary);
   EXPECT_FALSE(contents_view_->security_view_for_testing()->IsInitialized());
@@ -277,15 +312,41 @@ TEST_P(DownloadBubbleContentsViewTest, SwitchPages) {
   contents_view_.reset();
 }
 
+TEST_P(DownloadBubbleContentsViewTest, ShowPrimaryPageSpecifyingContentId) {
+  DownloadBubbleRowView* expected_row =
+      contents_view_->GetPrimaryViewRowForTesting(0);
+  EXPECT_EQ(
+      expected_row,
+      contents_view_->ShowPrimaryPage(
+          OfflineItemUtils::GetContentIdForDownload(download_items_[0].get())));
+  EXPECT_EQ(contents_view_->VisiblePage(),
+            DownloadBubbleContentsView::Page::kPrimary);
+  EXPECT_TRUE(contents_view_->primary_view_for_testing()
+                  ->scroll_view_for_testing()
+                  ->GetVisibleRect()
+                  .Contains(expected_row->bounds()));
+}
+
 TEST_P(DownloadBubbleContentsViewTest, ProcessSecuritySubpageButtonPress) {
   contents_view_->ShowSecurityPage(
       OfflineItemUtils::GetContentIdForDownload(download_items_[0].get()));
   EXPECT_TRUE(contents_view_->security_view_for_testing()->IsInitialized());
 
   EXPECT_CALL(*download_items_[0], Remove());
-  EXPECT_TRUE(contents_view_->ProcessSecuritySubpageButtonPressWithClose(
+  contents_view_->ProcessSecuritySubpageButtonPress(
       OfflineItemUtils::GetContentIdForDownload(download_items_[0].get()),
-      DownloadCommands::Command::DISCARD));
+      DownloadCommands::Command::DISCARD);
+}
+
+TEST_P(DownloadBubbleContentsViewTest,
+       TrustSafetySentimentInteractedWithDownloadWarningUI) {
+  SetUpMockTrustSafetySentimentSurveys();
+  ExpectInteractedWithDownloadUICalled();
+  contents_view_->ShowSecurityPage(
+      OfflineItemUtils::GetContentIdForDownload(download_items_[0].get()));
+  contents_view_->ProcessSecuritySubpageButtonPress(
+      OfflineItemUtils::GetContentIdForDownload(download_items_[0].get()),
+      DownloadCommands::Command::DISCARD);
 }
 
 TEST_P(DownloadBubbleContentsViewTest, AddSecuritySubpageWarningActionEvent) {
@@ -307,6 +368,61 @@ TEST_P(DownloadBubbleContentsViewTest, AddSecuritySubpageWarningActionEvent) {
       DownloadItemWarningData::GetWarningActionEvents(download_items_[0].get());
   ASSERT_EQ(events.size(), 1u);
   EXPECT_EQ(events[0].action, DownloadItemWarningData::WarningAction::BACK);
+}
+
+TEST_P(DownloadBubbleContentsViewTest, LogDismissOnDestroyed) {
+  contents_view_->ShowSecurityPage(
+      OfflineItemUtils::GetContentIdForDownload(download_items_[0].get()));
+  EXPECT_TRUE(contents_view_->security_view_for_testing()->IsInitialized());
+
+  // First action is required to be SHOWN.
+  DownloadItemWarningData::AddWarningActionEvent(
+      download_items_[0].get(),
+      DownloadItemWarningData::WarningSurface::BUBBLE_MAINPAGE,
+      DownloadItemWarningData::WarningAction::SHOWN);
+
+  contents_view_.reset();
+
+  std::vector<DownloadItemWarningData::WarningActionEvent> events =
+      DownloadItemWarningData::GetWarningActionEvents(download_items_[0].get());
+  ASSERT_EQ(events.size(), 1u);
+  EXPECT_EQ(events[0].action, DownloadItemWarningData::WarningAction::DISMISS);
+}
+
+TEST_P(DownloadBubbleContentsViewTest,
+       DontLogDismissOnDestroyedIfSecurityViewNotShown) {
+  contents_view_->ShowSecurityPage(
+      OfflineItemUtils::GetContentIdForDownload(download_items_[0].get()));
+  EXPECT_TRUE(contents_view_->security_view_for_testing()->IsInitialized());
+
+  // First action is required to be SHOWN.
+  DownloadItemWarningData::AddWarningActionEvent(
+      download_items_[0].get(),
+      DownloadItemWarningData::WarningSurface::BUBBLE_MAINPAGE,
+      DownloadItemWarningData::WarningAction::SHOWN);
+
+  contents_view_->ShowPrimaryPage();
+
+  contents_view_.reset();
+
+  std::vector<DownloadItemWarningData::WarningActionEvent> events =
+      DownloadItemWarningData::GetWarningActionEvents(download_items_[0].get());
+  EXPECT_TRUE(events.empty());
+}
+
+TEST_P(DownloadBubbleContentsViewTest,
+       ProcessSecuritySubpageButtonPressCallsOnSecurityDialogButtonPress) {
+  contents_view_->ShowSecurityPage(
+      OfflineItemUtils::GetContentIdForDownload(download_items_[0].get()));
+  EXPECT_TRUE(contents_view_->security_view_for_testing()->IsInitialized());
+
+  EXPECT_CALL(*download_items_[0], Remove());
+  EXPECT_CALL(*navigation_handler_, OnSecurityDialogButtonPress(
+                                        _, DownloadCommands::Command::DISCARD))
+      .Times(1);
+  contents_view_->ProcessSecuritySubpageButtonPress(
+      OfflineItemUtils::GetContentIdForDownload(download_items_[0].get()),
+      DownloadCommands::Command::DISCARD);
 }
 
 }  // namespace

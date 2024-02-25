@@ -5,13 +5,10 @@
 #ifndef CHROME_BROWSER_ASH_ACCESSIBILITY_FULLSCREEN_MAGNIFIER_TEST_HELPER_H_
 #define CHROME_BROWSER_ASH_ACCESSIBILITY_FULLSCREEN_MAGNIFIER_TEST_HELPER_H_
 
-#include <string>
-
 #include "base/functional/callback_forward.h"
 #include "base/memory/weak_ptr.h"
 #include "content/public/browser/web_contents.h"
 
-class Browser;
 class Profile;
 
 namespace ash {
@@ -19,18 +16,16 @@ namespace ash {
 // Helper class for fullscreen magnifier tests.
 class FullscreenMagnifierTestHelper {
  public:
+  static void WaitForMagnifierJSReady(Profile* profile);
+
   // Set `center_position_on_load` to a non-zero point to load the magnifier
-  // centered at a certain viewport each time LoadMagnifier/LoadURLAndMagnifier
-  // are called.
+  // centered at a certain viewport each time LoadMagnifier is called.
   FullscreenMagnifierTestHelper(
       gfx::Point center_position_on_load = gfx::Point(0, 0));
   FullscreenMagnifierTestHelper(const FullscreenMagnifierTestHelper&) = delete;
   FullscreenMagnifierTestHelper& operator=(
       const FullscreenMagnifierTestHelper&) = delete;
   ~FullscreenMagnifierTestHelper();
-
-  // Loads a page with the given URL and then starts up Magnifier.
-  void LoadURLAndMagnifier(Browser* browser, const std::string& url);
 
   // Loads the magnifier and waits for load complete before returning.
   void LoadMagnifier(Profile* profile);
@@ -43,7 +38,6 @@ class FullscreenMagnifierTestHelper {
 
  private:
   void WaitForMagnifierBoundsChangedTo(gfx::Point center_point);
-  void WaitForMagnifierJSReady(Profile* profile);
   void OnMagnifierBoundsChanged();
 
   gfx::Point center_position_on_load_;

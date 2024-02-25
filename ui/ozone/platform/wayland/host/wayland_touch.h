@@ -41,56 +41,56 @@ class WaylandTouch {
   uint32_t id() const { return obj_.id(); }
 
  private:
-  // wl_touch_listener
-  static void Down(void* data,
-                   wl_touch* obj,
-                   uint32_t serial,
-                   uint32_t time,
-                   struct wl_surface* surface,
-                   int32_t id,
-                   wl_fixed_t x,
-                   wl_fixed_t y);
-  static void Up(void* data,
-                 wl_touch* obj,
-                 uint32_t serial,
-                 uint32_t time,
-                 int32_t id);
-  static void Motion(void* data,
-                     wl_touch* obj,
-                     uint32_t time,
-                     int32_t id,
-                     wl_fixed_t x,
-                     wl_fixed_t y);
-  static void Shape(void* data,
-                    wl_touch* obj,
-                    int32_t id,
-                    wl_fixed_t major,
-                    wl_fixed_t minor);
-  static void Orientation(void* data,
-                          wl_touch* obj,
+  // wl_touch_listener callbacks:
+  static void OnTouchDown(void* data,
+                          wl_touch* touch,
+                          uint32_t serial,
+                          uint32_t time,
+                          struct wl_surface* surface,
                           int32_t id,
-                          wl_fixed_t orientation);
-  static void Cancel(void* data, wl_touch* obj);
-  static void Frame(void* data, wl_touch* obj);
+                          wl_fixed_t x,
+                          wl_fixed_t y);
+  static void OnTouchUp(void* data,
+                        wl_touch* touch,
+                        uint32_t serial,
+                        uint32_t time,
+                        int32_t id);
+  static void OnTouchMotion(void* data,
+                            wl_touch* touch,
+                            uint32_t time,
+                            int32_t id,
+                            wl_fixed_t x,
+                            wl_fixed_t y);
+  static void OnTouchShape(void* data,
+                           wl_touch* touch,
+                           int32_t id,
+                           wl_fixed_t major,
+                           wl_fixed_t minor);
+  static void OnTouchOrientation(void* data,
+                                 wl_touch* touch,
+                                 int32_t id,
+                                 wl_fixed_t orientation);
+  static void OnTouchCancel(void* data, wl_touch* touch);
+  static void OnTouchFrame(void* data, wl_touch* touch);
 
   void SetupStylus();
 
-  // zcr_touch_stylus_v2_listener
-  static void Tool(void* data,
-                   struct zcr_touch_stylus_v2* obj,
-                   uint32_t id,
-                   uint32_t type);
-  static void Force(void* data,
-                    struct zcr_touch_stylus_v2* obj,
-                    uint32_t time,
-                    uint32_t id,
-                    wl_fixed_t force);
-  static void Tilt(void* data,
-                   struct zcr_touch_stylus_v2* obj,
-                   uint32_t time,
-                   uint32_t id,
-                   wl_fixed_t tilt_x,
-                   wl_fixed_t tilt_y);
+  // zcr_touch_stylus_v2_listener callbacks:
+  static void OnTouchStylusTool(void* data,
+                                struct zcr_touch_stylus_v2* stylus,
+                                uint32_t id,
+                                uint32_t type);
+  static void OnTouchStylusForce(void* data,
+                                 struct zcr_touch_stylus_v2* stylus,
+                                 uint32_t time,
+                                 uint32_t id,
+                                 wl_fixed_t force);
+  static void OnTouchStylusTilt(void* data,
+                                struct zcr_touch_stylus_v2* stylus,
+                                uint32_t time,
+                                uint32_t id,
+                                wl_fixed_t tilt_x,
+                                wl_fixed_t tilt_y);
 
   wl::Object<wl_touch> obj_;
   wl::Object<zcr_touch_stylus_v2> zcr_touch_stylus_v2_;

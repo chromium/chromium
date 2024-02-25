@@ -16,7 +16,7 @@ window.addEventListener('unload', function() {
  */
 window.addEventListener('message', function(message: MessageEvent) {
   const payload = message.data;
-  if (typeof payload !== 'object') {
+  if (!payload || typeof payload !== 'object') {
     return;
   }
   if (payload.hasOwnProperty('type') &&

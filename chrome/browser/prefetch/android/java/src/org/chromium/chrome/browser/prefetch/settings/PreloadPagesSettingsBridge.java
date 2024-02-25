@@ -4,12 +4,11 @@
 
 package org.chromium.chrome.browser.prefetch.settings;
 
-import org.chromium.base.annotations.JNINamespace;
-import org.chromium.base.annotations.NativeMethods;
+import org.jni_zero.JNINamespace;
+import org.jni_zero.NativeMethods;
 
-/**
- * Reads and writes preferences related to preloading.
- */
+/** Reads and writes preferences related to preloading. */
+// TODO(crbug.com/1410601): Pass in the profile and remove GetActiveUserProfile in C++.
 @JNINamespace("prefetch")
 public class PreloadPagesSettingsBridge {
     /**
@@ -42,7 +41,9 @@ public class PreloadPagesSettingsBridge {
     public interface Natives {
         @PreloadPagesState
         int getState();
+
         void setState(@PreloadPagesState int mode);
+
         boolean isNetworkPredictionManaged();
     }
 }

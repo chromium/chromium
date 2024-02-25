@@ -15,6 +15,8 @@
 #import "ui/base/clipboard/clipboard_util_mac.h"
 #import "ui/base/dragdrop/drag_drop_types.h"
 #import "ui/base/dragdrop/mojom/drag_drop_types.mojom.h"
+#include "ui/base/metadata/metadata_header_macros.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/compositor/layer_tree_owner.h"
 #include "ui/gfx/image/image_unittest_util.h"
 #import "ui/views/cocoa/native_widget_mac_ns_window_host.h"
@@ -123,6 +125,8 @@ using ::ui::mojom::DragOperation;
 
 // View object that will receive and process dropped data from the test.
 class DragDropView : public View {
+  METADATA_HEADER(DragDropView, View)
+
  public:
   DragDropView() = default;
 
@@ -160,19 +164,18 @@ class DragDropView : public View {
   int formats_ = 0;
 };
 
+BEGIN_METADATA(DragDropView)
+END_METADATA
+
 class DragDropClientMacTest : public WidgetTest {
  public:
-  DragDropClientMacTest()
-      : widget_(new Widget),
-        bridge_(nullptr),
-        ns_window_host_(nullptr),
-        target_(nullptr) {}
+  DragDropClientMacTest() = default;
 
   DragDropClientMacTest(const DragDropClientMacTest&) = delete;
   DragDropClientMacTest& operator=(const DragDropClientMacTest&) = delete;
 
   DragDropClientMac* drag_drop_client() {
-    return ns_window_host_->drag_drop_client();
+    return ns_window_host()->drag_drop_client();
   }
 
   NSDragOperation DragUpdate(NSPasteboard* pasteboard) {
@@ -198,35 +201,39 @@ class DragDropClientMacTest : public WidgetTest {
   void SetUp() override {
     WidgetTest::SetUp();
 
-    widget_ = CreateTopLevelPlatformWidget();
+    widget_ = CreateTopLevelPlatformWidget()->GetWeakPtr();
     gfx::Rect bounds(0, 0, 100, 100);
     widget_->SetBounds(bounds);
-
-    ns_window_host_ = NativeWidgetMacNSWindowHost::GetFromNativeWindow(
-        widget_->GetNativeWindow());
-    bridge_ = ns_window_host_->GetInProcessNSWindowBridge();
     widget_->Show();
 
-    target_ = new DragDropView();
-    widget_->non_client_view()->frame_view()->AddChildView(target_.get());
+    target_ = widget_->non_client_view()->frame_view()->AddChildView(
+        std::make_unique<DragDropView>());
     target_->SetBoundsRect(bounds);
 
     drag_drop_client()->source_operation_ = ui::DragDropTypes::DRAG_COPY;
   }
 
   void TearDown() override {
+    target_ = nullptr;
     if (widget_)
       widget_->CloseNow();
     WidgetTest::TearDown();
   }
 
+  remote_cocoa::NativeWidgetNSWindowBridge* bridge() {
+    return ns_window_host()->GetInProcessNSWindowBridge();
+  }
+
+  NativeWidgetMacNSWindowHost* ns_window_host() {
+    return NativeWidgetMacNSWindowHost::GetFromNativeWindow(
+        widget_->GetNativeWindow());
+  }
+
  protected:
-  raw_ptr<Widget, DanglingUntriaged> widget_ = nullptr;
-  raw_ptr<remote_cocoa::NativeWidgetNSWindowBridge, DanglingUntriaged> bridge_ =
-      nullptr;
-  raw_ptr<NativeWidgetMacNSWindowHost, DanglingUntriaged> ns_window_host_ =
-      nullptr;
-  raw_ptr<DragDropView, DanglingUntriaged> target_ = nullptr;
+  base::WeakPtr<Widget> widget_;
+  raw_ptr<DragDropView> target_ = nullptr;
+
+ private:
   MockDraggingInfo* __strong dragging_info_;
 };
 
@@ -253,8 +260,8 @@ TEST_F(DragDropClientMacTest, ReleaseCapture) {
   // Although this is not an interactive UI test, acquiring capture should be OK
   // since the runloop will exit before the system has any opportunity to
   // capture anything.
-  bridge_->AcquireCapture();
-  EXPECT_TRUE(ns_window_host_->IsMouseCaptureActive());
+  bridge()->AcquireCapture();
+  EXPECT_TRUE(ns_window_host()->IsMouseCaptureActive());
 
   // Create the drop data
   std::unique_ptr<OSExchangeData> data(std::make_unique<OSExchangeData>());
@@ -280,7 +287,7 @@ TEST_F(DragDropClientMacTest, ReleaseCapture) {
                                        ui::mojom::DragEventSource::kMouse);
 
   // The capture should be released.
-  EXPECT_FALSE(ns_window_host_->IsMouseCaptureActive());
+  EXPECT_FALSE(ns_window_host()->IsMouseCaptureActive());
 }
 
 // Tests if the drag and drop target rejects the dropped data with the
@@ -320,6 +327,7 @@ TEST_F(DragDropClientMacTest, PasteboardToOSExchangeTest) {
 
 // View object that will close Widget on drop.
 class DragDropCloseView : public DragDropView {
+  METADATA_HEADER(DragDropCloseView, DragDropView)
  public:
   DragDropCloseView() = default;
 
@@ -343,6 +351,9 @@ class DragDropCloseView : public DragDropView {
   }
 };
 
+BEGIN_METADATA(DragDropCloseView)
+END_METADATA
+
 // Tests that closing Widget on drop does not crash.
 TEST_F(DragDropClientMacTest, CloseWidgetOnDrop) {
   OSExchangeData data;
@@ -350,16 +361,16 @@ TEST_F(DragDropClientMacTest, CloseWidgetOnDrop) {
   data.SetString(text);
   SetData(data);
 
-  target_ = new DragDropCloseView();
-  widget_->non_client_view()->frame_view()->AddChildView(target_.get());
-  target_->SetBoundsRect(gfx::Rect(0, 0, 100, 100));
-  target_->set_formats(ui::OSExchangeData::STRING | ui::OSExchangeData::URL);
+  DragDropCloseView* target =
+      widget_->non_client_view()->frame_view()->AddChildView(
+          std::make_unique<DragDropCloseView>());
+  target->SetBoundsRect(gfx::Rect(0, 0, 100, 100));
+  target->set_formats(ui::OSExchangeData::STRING | ui::OSExchangeData::URL);
 
+  // Dropping will destroy target_.
+  target_ = nullptr;
   EXPECT_EQ(DragUpdate(nil), NSDragOperationCopy);
   EXPECT_EQ(Drop(), NSDragOperationMove);
-
-  // Drop callback will have deleted the widget.
-  widget_ = nullptr;
 }
 
 }  // namespace views::test

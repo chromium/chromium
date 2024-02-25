@@ -14,7 +14,6 @@
 #include "chrome/browser/banners/test_app_banner_manager_desktop.h"
 #include "chrome/browser/extensions/extension_browsertest.h"
 #include "chrome/browser/ui/browser_commands.h"
-#include "chrome/browser/ui/browser_dialogs.h"
 #include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/toolbar_button_provider.h"
@@ -22,16 +21,19 @@
 #include "chrome/browser/ui/views/location_bar/star_view.h"
 #include "chrome/browser/ui/views/page_action/page_action_icon_view.h"
 #include "chrome/browser/ui/views/web_apps/pwa_confirmation_bubble_view.h"
+#include "chrome/browser/ui/views/web_apps/web_app_install_dialog_coordinator.h"
 #include "chrome/browser/ui/web_applications/web_app_dialog_utils.h"
+#include "chrome/browser/ui/web_applications/web_app_dialogs.h"
 #include "chrome/browser/web_applications/install_bounce_metric.h"
 #include "chrome/browser/web_applications/mojom/user_display_mode.mojom.h"
 #include "chrome/browser/web_applications/os_integration/os_integration_manager.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
 #include "chrome/browser/web_applications/web_app_install_finalizer.h"
-#include "chrome/browser/web_applications/web_app_prefs_utils.h"
+#include "chrome/browser/web_applications/web_app_pref_guardrails.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_sync_bridge.h"
+#include "chrome/common/chrome_features.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/test/base/in_process_browser_test.h"
@@ -45,13 +47,17 @@
 #include "components/webapps/browser/uninstall_result_code.h"
 #include "content/public/common/referrer.h"
 #include "content/public/test/browser_test.h"
+#include "content/public/test/no_renderer_crashes_assertion.h"
 #include "content/public/test/test_utils.h"
 #include "extensions/common/extension.h"
 #include "net/test/embedded_test_server/http_request.h"
 #include "net/test/embedded_test_server/http_response.h"
 #include "services/network/public/cpp/network_switches.h"
+#include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/gfx/color_utils.h"
+#include "ui/views/test/dialog_test.h"
+#include "ui/views/test/widget_test.h"
 #include "ui/views/view_observer.h"
 #include "ui/views/widget/any_widget_observer.h"
 
@@ -107,24 +113,36 @@ void PwaInstallIconChangeWaiter::VerifyIconVisibility(views::View* iconView,
 
 // Tests various cases that effect the visibility of the install icon in the
 // omnibox.
-class PwaInstallViewBrowserTest : public extensions::ExtensionBrowserTest {
+class PwaInstallViewBrowserTest : public extensions::ExtensionBrowserTest,
+                                  public testing::WithParamInterface<bool> {
  public:
   PwaInstallViewBrowserTest()
       : https_server_(net::EmbeddedTestServer::TYPE_HTTPS) {
     // kIPHDemoMode will bypass IPH framework's triggering validation so that
     // we can test PWA specific triggering logic.
-    features_.InitWithFeaturesAndParameters(
-        {{feature_engagement::kIPHDemoMode,
-          {{feature_engagement::kIPHDemoModeFeatureChoiceParam,
-            feature_engagement::kIPHDesktopPwaInstallFeature.name}}},
-         {feature_engagement::kIPHDesktopPwaInstallFeature, {}}},
+    std::vector<base::test::FeatureRefAndParams> enabled_features{
+        {feature_engagement::kIPHDemoMode,
+         {{feature_engagement::kIPHDemoModeFeatureChoiceParam,
+           feature_engagement::kIPHDesktopPwaInstallFeature.name}}},
+        {feature_engagement::kIPHDesktopPwaInstallFeature, {}}};
+    std::vector<base::test::FeatureRef> disabled_features;
+
+    if (IsUniversalInstallEnabled()) {
+      enabled_features.push_back({features::kWebAppUniversalInstall, {}});
+    } else {
+      disabled_features.push_back(features::kWebAppUniversalInstall);
+    }
 #if BUILDFLAG(IS_CHROMEOS_ASH)
         // TODO(crbug.com/1462253): Also test with Lacros flags enabled.
-        ash::standalone_browser::GetFeatureRefs()
-#else
-        {}
-#endif
-    );
+    const std::vector<base::test::FeatureRef> lacros_disable_flags =
+        ash::standalone_browser::GetFeatureRefs();
+    disabled_features.insert(disabled_features.end(),
+                             lacros_disable_flags.begin(),
+                             lacros_disable_flags.end());
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
+    features_.InitWithFeaturesAndParameters(enabled_features,
+                                            disabled_features);
   }
 
   PwaInstallViewBrowserTest(const PwaInstallViewBrowserTest&) = delete;
@@ -233,32 +251,36 @@ class PwaInstallViewBrowserTest : public extensions::ExtensionBrowserTest {
     app_banner_manager_->WaitForInstallableCheckTearDown();
   }
 
-  web_app::AppId ExecutePwaInstallIcon() {
-    chrome::SetAutoAcceptPWAInstallConfirmationForTesting(true);
-
-    web_app::AppId app_id;
+  webapps::AppId StartPwaInstallFromPageActionViewAndGetInstalledApp() {
+    webapps::AppId app_id;
     base::RunLoop run_loop;
     web_app::SetInstalledCallbackForTesting(base::BindLambdaForTesting(
-        [&app_id, &run_loop](const web_app::AppId& installed_app_id,
+        [&app_id, &run_loop](const webapps::AppId& installed_app_id,
                              webapps::InstallResultCode code) {
           app_id = installed_app_id;
           run_loop.Quit();
         }));
 
-    pwa_install_view_->ExecuteForTesting();
+    {
+      views::Widget* install_dialog_widget =
+          ClickPWAInstallIconAndWaitForBubbleShown();
+      EXPECT_NE(install_dialog_widget, nullptr);
+      views::test::WidgetDestroyedWaiter destroyed_waiter(
+          install_dialog_widget);
+      views::test::AcceptDialog(install_dialog_widget);
+      destroyed_waiter.Wait();
+    }
 
     run_loop.Run();
-
-    chrome::SetAutoAcceptPWAInstallConfirmationForTesting(false);
 
     return app_id;
   }
 
-  void UninstallWebApp(const web_app::AppId& app_id) {
+  void UninstallWebApp(const webapps::AppId& app_id) {
     base::RunLoop run_loop;
     web_app::WebAppProvider::GetForTest(browser()->profile())
         ->scheduler()
-        .UninstallWebApp(
+        .RemoveUserUninstallableManagements(
             app_id, webapps::WebappUninstallSource::kAppMenu,
             base::BindLambdaForTesting([&](webapps::UninstallResultCode code) {
               EXPECT_TRUE(UninstallSucceeded(code));
@@ -279,13 +301,14 @@ class PwaInstallViewBrowserTest : public extensions::ExtensionBrowserTest {
 
     web_app::SetInstallBounceMetricTimeForTesting(test_time);
 
-    const web_app::AppId app_id = ExecutePwaInstallIcon();
+    const webapps::AppId app_id =
+        StartPwaInstallFromPageActionViewAndGetInstalledApp();
 
     web_app::SetInstallBounceMetricTimeForTesting(test_time + install_duration);
 
     UninstallWebApp(app_id);
 
-    web_app::SetInstallBounceMetricTimeForTesting(absl::nullopt);
+    web_app::SetInstallBounceMetricTimeForTesting(std::nullopt);
 
     std::vector<base::Bucket> expected_buckets;
     if (expected_count > 0) {
@@ -297,27 +320,33 @@ class PwaInstallViewBrowserTest : public extensions::ExtensionBrowserTest {
               expected_buckets);
   }
 
-  void WaitPwaConfirmationBubbleViewShown() {
+  views::Widget* ClickPWAInstallIconAndWaitForBubbleShown() {
+    std::string bubble_view_name = IsUniversalInstallEnabled()
+                                       ? "WebAppSimpleInstallDialog"
+                                       : "PWAConfirmationBubbleView";
     views::NamedWidgetShownWaiter pwa_confirmation_bubble_id_waiter(
-                                          views::test::AnyWidgetTestPasskey(),
-                                          "PWAConfirmationBubbleView");
+        views::test::AnyWidgetTestPasskey(), bubble_view_name);
 
     pwa_install_view_->ExecuteForTesting();
-    pwa_confirmation_bubble_id_waiter.WaitIfNeededAndGet();
+    return pwa_confirmation_bubble_id_waiter.WaitIfNeededAndGet();
   }
 
-  void WaitPwaConfirmationBubbleClosed() {
-    if (PWAConfirmationBubbleView::IsShowing()) {
+  void AwaitPwaInstallDialogClosed() {
+    auto* install_dialog_coordinator =
+        web_app::WebAppInstallDialogCoordinator::GetOrCreateForBrowser(
+            browser());
+    if (install_dialog_coordinator->IsShowing()) {
       base::RunLoop run_loop;
-      PWAConfirmationBubbleView::GetBubble()->RegisterDeleteDelegateCallback(
-                                                      run_loop.QuitClosure());
-      PWAConfirmationBubbleView::GetBubble()->GetWidget()->CloseWithReason(
-                                  views::Widget::ClosedReason::kEscKeyPressed);
+      install_dialog_coordinator->GetBubbleView()
+          ->RegisterDeleteDelegateCallback(run_loop.QuitClosure());
+      install_dialog_coordinator->GetBubbleView()->GetWidget()->CloseWithReason(
+          views::Widget::ClosedReason::kEscKeyPressed);
       run_loop.Run();
     }
   }
 
  protected:
+  bool IsUniversalInstallEnabled() { return GetParam(); }
   net::EmbeddedTestServer https_server_;
   std::string intercept_request_path_;
   std::string intercept_request_response_;
@@ -336,25 +365,23 @@ class PwaInstallViewBrowserTest : public extensions::ExtensionBrowserTest {
 
 // Tests that the plus icon is not shown when an existing app is installed and
 // set to open in a window.
-IN_PROC_BROWSER_TEST_F(PwaInstallViewBrowserTest,
+IN_PROC_BROWSER_TEST_P(PwaInstallViewBrowserTest,
                        PwaSetToOpenInWindowIsNotInstallable) {
   bool installable = OpenTab(GetInstallableAppURL()).installable;
   ASSERT_TRUE(installable);
-  ExecutePwaInstallIcon();
+  StartPwaInstallFromPageActionViewAndGetInstalledApp();
 
   // Use a new tab because installed app may have opened in new window.
   OpenTabResult result = OpenTab(GetInstallableAppURL());
 
-  EXPECT_EQ(
-      result.app_banner_manager->GetInstallableWebAppCheckResultForTesting(),
-      webapps::AppBannerManager::InstallableWebAppCheckResult::
-          kNo_AlreadyInstalled);
+  EXPECT_EQ(result.app_banner_manager->GetInstallableWebAppCheckResult(),
+            webapps::InstallableWebAppCheckResult::kNo_AlreadyInstalled);
   EXPECT_FALSE(pwa_install_view_->GetVisible());
 }
 
 // Tests that the plus icon is not shown when an outer app is installed and we
 // navigate to a nested app.
-IN_PROC_BROWSER_TEST_F(PwaInstallViewBrowserTest,
+IN_PROC_BROWSER_TEST_P(PwaInstallViewBrowserTest,
                        NestedPwaIsNotInstallableWhenOuterPwaIsInstalled) {
   // When nothing is installed, the nested PWA should be installable.
   StartNavigateToUrl(GetNestedInstallableAppURL());
@@ -363,26 +390,24 @@ IN_PROC_BROWSER_TEST_F(PwaInstallViewBrowserTest,
 
   // Install the outer PWA.
   ASSERT_TRUE(OpenTab(GetInstallableAppURL()).installable);
-  ExecutePwaInstallIcon();
+  StartPwaInstallFromPageActionViewAndGetInstalledApp();
 
   // Use a new tab because installed app may have opened in new window.
   OpenTabResult result = OpenTab(GetNestedInstallableAppURL());
 
   // The nested PWA should now not be installable.
-  EXPECT_EQ(
-      result.app_banner_manager->GetInstallableWebAppCheckResultForTesting(),
-      webapps::AppBannerManager::InstallableWebAppCheckResult::
-          kNo_AlreadyInstalled);
+  EXPECT_EQ(result.app_banner_manager->GetInstallableWebAppCheckResult(),
+            webapps::InstallableWebAppCheckResult::kNo_AlreadyInstalled);
   EXPECT_FALSE(pwa_install_view_->GetVisible());
 }
 
 // Tests that the install icon is shown when an existing app is installed and
 // set to open in a tab.
-IN_PROC_BROWSER_TEST_F(PwaInstallViewBrowserTest,
+IN_PROC_BROWSER_TEST_P(PwaInstallViewBrowserTest,
                        PwaSetToOpenInTabIsInstallable) {
   bool installable = OpenTab(GetInstallableAppURL()).installable;
   ASSERT_TRUE(installable);
-  web_app::AppId app_id = ExecutePwaInstallIcon();
+  webapps::AppId app_id = StartPwaInstallFromPageActionViewAndGetInstalledApp();
 
   // Change launch container to open in tab.
   web_app::WebAppProvider::GetForTest(browser()->profile())
@@ -393,27 +418,14 @@ IN_PROC_BROWSER_TEST_F(PwaInstallViewBrowserTest,
   // Use a new tab because installed app may have opened in new window.
   OpenTabResult result = OpenTab(GetInstallableAppURL());
 
-  EXPECT_EQ(
-      result.app_banner_manager->GetInstallableWebAppCheckResultForTesting(),
-      webapps::AppBannerManager::InstallableWebAppCheckResult::kYes_Promotable);
+  EXPECT_EQ(result.app_banner_manager->GetInstallableWebAppCheckResult(),
+            webapps::InstallableWebAppCheckResult::kYes_Promotable);
   EXPECT_TRUE(pwa_install_view_->GetVisible());
-}
-
-// Test that the accept metrics is reported correctly.
-IN_PROC_BROWSER_TEST_F(PwaInstallViewBrowserTest, PwaInstalledMetricRecorded) {
-  bool installable = OpenTab(GetInstallableAppURL()).installable;
-  ASSERT_TRUE(installable);
-
-  base::HistogramTester histograms;
-  ExecutePwaInstallIcon();
-  histograms.ExpectUniqueSample(
-      "WebApp.InstallConfirmation.CloseReason",
-      views::Widget::ClosedReason::kAcceptButtonClicked, 1);
 }
 
 // Tests that the plus icon updates its visibility when switching between
 // installable/non-installable tabs.
-IN_PROC_BROWSER_TEST_F(PwaInstallViewBrowserTest,
+IN_PROC_BROWSER_TEST_P(PwaInstallViewBrowserTest,
                        IconVisibilityAfterTabSwitching) {
   content::WebContents* installable_web_contents;
   {
@@ -440,8 +452,9 @@ IN_PROC_BROWSER_TEST_F(PwaInstallViewBrowserTest,
 
 // Tests that the plus icon updates its visibility when PWAConfirmationBubbleView is showing in
 // installable tab and switching to non-installable tab.
-IN_PROC_BROWSER_TEST_F(PwaInstallViewBrowserTest,
-                       IconVisibilityAfterTabSwitchingWhenPWAConfirmationBubbleViewShowing) {
+IN_PROC_BROWSER_TEST_P(
+    PwaInstallViewBrowserTest,
+    IconVisibilityAfterTabSwitchingWhenPWAConfirmationBubbleViewShowing) {
   content::WebContents* installable_web_contents;
   {
     OpenTabResult result = OpenTab(GetInstallableAppURL());
@@ -458,17 +471,20 @@ IN_PROC_BROWSER_TEST_F(PwaInstallViewBrowserTest,
   ASSERT_EQ(installable_web_contents, GetCurrentTab());
   EXPECT_TRUE(pwa_install_view_->GetVisible());
 
-  WaitPwaConfirmationBubbleViewShown();
+  EXPECT_NE(ClickPWAInstallIconAndWaitForBubbleShown(), nullptr);
 
   chrome::SelectNextTab(browser());
-  WaitPwaConfirmationBubbleClosed();
+  AwaitPwaInstallDialogClosed();
   ASSERT_EQ(non_installable_web_contents, GetCurrentTab());
-  EXPECT_FALSE(PWAConfirmationBubbleView::IsShowing());
+
+  EXPECT_FALSE(
+      web_app::WebAppInstallDialogCoordinator::GetOrCreateForBrowser(browser())
+          ->IsShowing());
   EXPECT_FALSE(pwa_install_view_->GetVisible());
 }
 
 // Tests that the install icon updates its visibility when tab crashes.
-IN_PROC_BROWSER_TEST_F(PwaInstallViewBrowserTest,
+IN_PROC_BROWSER_TEST_P(PwaInstallViewBrowserTest,
                        IconVisibilityAfterTabCrashed) {
   StartNavigateToUrl(GetInstallableAppURL());
   ASSERT_TRUE(app_banner_manager_->WaitForInstallableCheck());
@@ -487,7 +503,7 @@ IN_PROC_BROWSER_TEST_F(PwaInstallViewBrowserTest,
 
 // Tests that the plus icon updates its visibility once the installability check
 // completes.
-IN_PROC_BROWSER_TEST_F(PwaInstallViewBrowserTest,
+IN_PROC_BROWSER_TEST_P(PwaInstallViewBrowserTest,
                        IconVisibilityAfterInstallabilityCheck) {
   StartNavigateToUrl(GetInstallableAppURL());
   EXPECT_FALSE(pwa_install_view_->GetVisible());
@@ -501,7 +517,7 @@ IN_PROC_BROWSER_TEST_F(PwaInstallViewBrowserTest,
 }
 
 // Tests that the plus icon updates its visibility after installation.
-IN_PROC_BROWSER_TEST_F(PwaInstallViewBrowserTest,
+IN_PROC_BROWSER_TEST_P(PwaInstallViewBrowserTest,
                        IconVisibilityAfterInstallation) {
   StartNavigateToUrl(GetInstallableAppURL());
   content::WebContents* first_tab = GetCurrentTab();
@@ -512,14 +528,14 @@ IN_PROC_BROWSER_TEST_F(PwaInstallViewBrowserTest,
   OpenTabResult result = OpenTab(GetInstallableAppURL());
   EXPECT_TRUE(result.installable);
   EXPECT_NE(first_tab, GetCurrentTab());
-  ExecutePwaInstallIcon();
+  StartPwaInstallFromPageActionViewAndGetInstalledApp();
   EXPECT_EQ(first_tab, GetCurrentTab());
   EXPECT_FALSE(pwa_install_view_->GetVisible());
 }
 
 // Tests that the plus icon animates its label when the installability check
 // passes but doesn't animate more than once for the same installability check.
-IN_PROC_BROWSER_TEST_F(PwaInstallViewBrowserTest, LabelAnimation) {
+IN_PROC_BROWSER_TEST_P(PwaInstallViewBrowserTest, LabelAnimation) {
   StartNavigateToUrl(GetInstallableAppURL());
   EXPECT_FALSE(pwa_install_view_->GetVisible());
   ASSERT_TRUE(app_banner_manager_->WaitForInstallableCheck());
@@ -536,7 +552,7 @@ IN_PROC_BROWSER_TEST_F(PwaInstallViewBrowserTest, LabelAnimation) {
 
 // Tests that the plus icon becomes invisible when the user is typing in the
 // omnibox.
-IN_PROC_BROWSER_TEST_F(PwaInstallViewBrowserTest, InputInOmnibox) {
+IN_PROC_BROWSER_TEST_P(PwaInstallViewBrowserTest, InputInOmnibox) {
   StartNavigateToUrl(GetInstallableAppURL());
   ASSERT_TRUE(app_banner_manager_->WaitForInstallableCheck());
   EXPECT_TRUE(pwa_install_view_->GetVisible());
@@ -550,7 +566,7 @@ IN_PROC_BROWSER_TEST_F(PwaInstallViewBrowserTest, InputInOmnibox) {
 
 // Tests that the icon persists while loading the same scope and omits running
 // the label animation again.
-IN_PROC_BROWSER_TEST_F(PwaInstallViewBrowserTest, NavigateToSameScope) {
+IN_PROC_BROWSER_TEST_P(PwaInstallViewBrowserTest, NavigateToSameScope) {
   StartNavigateToUrl(https_server_.GetURL("/banners/scope_a/page_1.html"));
   EXPECT_FALSE(pwa_install_view_->GetVisible());
   ASSERT_TRUE(app_banner_manager_->WaitForInstallableCheck());
@@ -566,7 +582,7 @@ IN_PROC_BROWSER_TEST_F(PwaInstallViewBrowserTest, NavigateToSameScope) {
 
 // Tests that the icon persists while loading the same scope but goes away when
 // the installability check fails.
-IN_PROC_BROWSER_TEST_F(PwaInstallViewBrowserTest,
+IN_PROC_BROWSER_TEST_P(PwaInstallViewBrowserTest,
                        NavigateToSameScopeNonInstallable) {
   StartNavigateToUrl(https_server_.GetURL("/banners/scope_a/page_1.html"));
   EXPECT_FALSE(pwa_install_view_->GetVisible());
@@ -583,21 +599,20 @@ IN_PROC_BROWSER_TEST_F(PwaInstallViewBrowserTest,
 }
 
 // Tests that the icon updates its state after uninstallation.
-IN_PROC_BROWSER_TEST_F(PwaInstallViewBrowserTest,
+IN_PROC_BROWSER_TEST_P(PwaInstallViewBrowserTest,
                        IconStateAfterUnInstallation) {
   GURL app_url = GetInstallableAppURL();
   bool installable = OpenTab(app_url).installable;
   ASSERT_TRUE(installable);
-  const web_app::AppId app_id = ExecutePwaInstallIcon();
+  const webapps::AppId app_id =
+      StartPwaInstallFromPageActionViewAndGetInstalledApp();
 
   // Use a new tab because installed app may have opened in new window.
   OpenTabResult result = OpenTab(app_url);
 
   // Validate that state is set to already installed.
-  EXPECT_EQ(
-      result.app_banner_manager->GetInstallableWebAppCheckResultForTesting(),
-      webapps::AppBannerManager::InstallableWebAppCheckResult::
-          kNo_AlreadyInstalled);
+  EXPECT_EQ(result.app_banner_manager->GetInstallableWebAppCheckResult(),
+            webapps::InstallableWebAppCheckResult::kNo_AlreadyInstalled);
   EXPECT_FALSE(pwa_install_view_->GetVisible());
 
   // Uninstall app and wait for completion.
@@ -609,7 +624,7 @@ IN_PROC_BROWSER_TEST_F(PwaInstallViewBrowserTest,
 }
 
 // Tests that the icon and animation resets while loading a different scope.
-IN_PROC_BROWSER_TEST_F(PwaInstallViewBrowserTest, NavigateToDifferentScope) {
+IN_PROC_BROWSER_TEST_P(PwaInstallViewBrowserTest, NavigateToDifferentScope) {
   StartNavigateToUrl(https_server_.GetURL("/banners/scope_a/page_1.html"));
   EXPECT_FALSE(pwa_install_view_->GetVisible());
   ASSERT_TRUE(app_banner_manager_->WaitForInstallableCheck());
@@ -625,7 +640,7 @@ IN_PROC_BROWSER_TEST_F(PwaInstallViewBrowserTest, NavigateToDifferentScope) {
 
 // Tests that the icon and animation resets while loading a different empty
 // scope.
-IN_PROC_BROWSER_TEST_F(PwaInstallViewBrowserTest,
+IN_PROC_BROWSER_TEST_P(PwaInstallViewBrowserTest,
                        NavigateToDifferentEmptyScope) {
   StartNavigateToUrl(https_server_.GetURL("/banners/scope_a/page_1.html"));
   EXPECT_FALSE(pwa_install_view_->GetVisible());
@@ -642,7 +657,7 @@ IN_PROC_BROWSER_TEST_F(PwaInstallViewBrowserTest,
 
 // Tests that the animation is suppressed for navigations within the same scope
 // for an exponentially increasing period of time.
-IN_PROC_BROWSER_TEST_F(PwaInstallViewBrowserTest, AnimationSuppression) {
+IN_PROC_BROWSER_TEST_P(PwaInstallViewBrowserTest, AnimationSuppression) {
   std::vector<bool> animation_shown_for_day = {
       true,  true,  false, true,  false, false, false, true,
       false, false, false, false, false, false, false, true,
@@ -661,7 +676,7 @@ IN_PROC_BROWSER_TEST_F(PwaInstallViewBrowserTest, AnimationSuppression) {
 
 // Tests that the icon label is visible against the omnibox background after the
 // native widget becomes active.
-IN_PROC_BROWSER_TEST_F(PwaInstallViewBrowserTest, TextContrast) {
+IN_PROC_BROWSER_TEST_P(PwaInstallViewBrowserTest, TextContrast) {
   StartNavigateToUrl(GetInstallableAppURL());
   ASSERT_TRUE(app_banner_manager_->WaitForInstallableCheck());
   EXPECT_TRUE(pwa_install_view_->GetVisible());
@@ -678,17 +693,17 @@ IN_PROC_BROWSER_TEST_F(PwaInstallViewBrowserTest, TextContrast) {
             color_utils::kMinimumReadableContrastRatio);
 }
 
-IN_PROC_BROWSER_TEST_F(PwaInstallViewBrowserTest, BouncedInstallMeasured) {
+IN_PROC_BROWSER_TEST_P(PwaInstallViewBrowserTest, BouncedInstallMeasured) {
   TestInstallBounce(base::Minutes(50), 1);
 }
 
-IN_PROC_BROWSER_TEST_F(PwaInstallViewBrowserTest, BouncedInstallIgnored) {
+IN_PROC_BROWSER_TEST_P(PwaInstallViewBrowserTest, BouncedInstallIgnored) {
   TestInstallBounce(base::Minutes(70), 0);
 }
 
 // Omnibox install promotion should show if there are no viable related apps
 // even if prefer_related_applications is true.
-IN_PROC_BROWSER_TEST_F(PwaInstallViewBrowserTest, PreferRelatedAppUnknown) {
+IN_PROC_BROWSER_TEST_P(PwaInstallViewBrowserTest, PreferRelatedAppUnknown) {
   StartNavigateToUrl(
       https_server_.GetURL("/banners/manifest_test_page.html?manifest="
                            "manifest_prefer_related_apps_unknown.json"));
@@ -699,7 +714,7 @@ IN_PROC_BROWSER_TEST_F(PwaInstallViewBrowserTest, PreferRelatedAppUnknown) {
 
 // Omnibox install promotion should not show if prefer_related_applications is
 // false but a related Chrome app is installed.
-IN_PROC_BROWSER_TEST_F(PwaInstallViewBrowserTest, PreferRelatedChromeApp) {
+IN_PROC_BROWSER_TEST_P(PwaInstallViewBrowserTest, PreferRelatedChromeApp) {
   StartNavigateToUrl(
       https_server_.GetURL("/banners/manifest_test_page.html?manifest="
                            "manifest_prefer_related_chrome_app.json"));
@@ -713,7 +728,7 @@ IN_PROC_BROWSER_TEST_F(PwaInstallViewBrowserTest, PreferRelatedChromeApp) {
 
 // Omnibox install promotion should not show if prefer_related_applications is
 // true and a Chrome app listed as related.
-IN_PROC_BROWSER_TEST_F(PwaInstallViewBrowserTest,
+IN_PROC_BROWSER_TEST_P(PwaInstallViewBrowserTest,
                        ListedRelatedChromeAppInstalled) {
   const extensions::Extension* extension =
       LoadExtension(test_data_dir_.AppendASCII("app"));
@@ -754,7 +769,7 @@ IN_PROC_BROWSER_TEST_F(PwaInstallViewBrowserTest,
 }
 
 // TODO(crbug.com/1258062): Flaky.
-IN_PROC_BROWSER_TEST_F(PwaInstallViewBrowserTest,
+IN_PROC_BROWSER_TEST_P(PwaInstallViewBrowserTest,
                        DISABLED_PwaIntallIphSiteEngagement) {
   GURL app_url = GetInstallableAppURL();
   bool installable = OpenTab(app_url).installable;
@@ -774,17 +789,16 @@ IN_PROC_BROWSER_TEST_F(PwaInstallViewBrowserTest,
       feature_engagement::kIPHDesktopPwaInstallFeature));
 }
 
-IN_PROC_BROWSER_TEST_F(PwaInstallViewBrowserTest, PwaIntallIphIgnored) {
+IN_PROC_BROWSER_TEST_P(PwaInstallViewBrowserTest, PwaIntallIphIgnored) {
   GURL app_url = GetInstallableAppURL();
   site_engagement::SiteEngagementService::Get(profile())->AddPointsForTesting(
       app_url, web_app::kIphFieldTrialParamDefaultSiteEngagementThreshold + 1);
   // Manually set IPH ignored here, because the IPH demo mode only let IPH be
   // shown once in an user session.
-  web_app::RecordInstallIphIgnored(
-      profile()->GetPrefs(),
-      web_app::GenerateAppId(/*manifest_id_path=*/absl::nullopt,
-                             GetInstallableAppURL()),
-      base::Time::Now());
+  web_app::WebAppPrefGuardrails::GetForDesktopInstallIph(profile()->GetPrefs())
+      .RecordIgnore(web_app::GenerateAppId(/*manifest_id_path=*/std::nullopt,
+                                           GetInstallableAppURL()),
+                    base::Time::Now());
   bool installable = OpenTab(app_url).installable;
   ASSERT_TRUE(installable);
 
@@ -795,7 +809,7 @@ IN_PROC_BROWSER_TEST_F(PwaInstallViewBrowserTest, PwaIntallIphIgnored) {
       feature_engagement::kIPHDesktopPwaInstallFeature));
 }
 
-IN_PROC_BROWSER_TEST_F(PwaInstallViewBrowserTest, IconViewAccessibleName) {
+IN_PROC_BROWSER_TEST_P(PwaInstallViewBrowserTest, IconViewAccessibleName) {
   const std::u16string& web_app_name =
       webapps::AppBannerManager::GetInstallableWebAppName(web_contents_);
   EXPECT_EQ(pwa_install_view_->GetAccessibleName(),
@@ -809,7 +823,7 @@ IN_PROC_BROWSER_TEST_F(PwaInstallViewBrowserTest, IconViewAccessibleName) {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 // Omnibox install promotion should not show if prefer_related_applications is
 // true and an ARC app listed as related.
-IN_PROC_BROWSER_TEST_F(PwaInstallViewBrowserTest,
+IN_PROC_BROWSER_TEST_P(PwaInstallViewBrowserTest,
                        ListedRelatedAndroidAppInstalled) {
   arc::SetArcPlayStoreEnabledForProfile(browser()->profile(), true);
   ArcAppListPrefs* arc_app_list_prefs =
@@ -835,3 +849,11 @@ IN_PROC_BROWSER_TEST_F(PwaInstallViewBrowserTest,
       "Manifest listing related android app"));
 }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         PwaInstallViewBrowserTest,
+                         testing::Bool(),
+                         [](const testing::TestParamInfo<bool>& info) {
+                           return info.param ? "WebAppSimpleInstallDialog"
+                                             : "PWAConfirmationBubbleView";
+                         });

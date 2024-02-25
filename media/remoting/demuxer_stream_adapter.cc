@@ -99,13 +99,13 @@ int64_t DemuxerStreamAdapter::GetBytesWrittenAndReset() {
   return current_count;
 }
 
-absl::optional<uint32_t> DemuxerStreamAdapter::SignalFlush(bool flushing) {
+std::optional<uint32_t> DemuxerStreamAdapter::SignalFlush(bool flushing) {
   DCHECK(media_task_runner_->RunsTasksInCurrentSequence());
   DEMUXER_VLOG(2) << "flushing=" << flushing;
 
   // Ignores if |pending_flush_| states is same.
   if (pending_flush_ == flushing)
-    return absl::nullopt;
+    return std::nullopt;
 
   // Invalidates pending Read() tasks.
   request_buffer_weak_factory_.InvalidateWeakPtrs();

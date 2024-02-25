@@ -27,7 +27,7 @@ class AppListEventTargeter : public aura::WindowTargeter {
                                        const ui::LocatedEvent& event) override;
 
  private:
-  const raw_ptr<AppListViewDelegate, ExperimentalAsh> delegate_;
+  const raw_ptr<AppListViewDelegate> delegate_;
 };
 
 }  // namespace ash

@@ -40,7 +40,7 @@ class ASH_EXPORT SessionStateAnimatorImpl : public SessionStateAnimator {
     bool RootWindowIsAnimated(SessionStateAnimator::AnimationType type) const;
 
    private:
-    raw_ptr<SessionStateAnimatorImpl, ExperimentalAsh> animator_;  // not owned
+    raw_ptr<SessionStateAnimatorImpl> animator_;  // not owned
   };
 
   SessionStateAnimatorImpl();

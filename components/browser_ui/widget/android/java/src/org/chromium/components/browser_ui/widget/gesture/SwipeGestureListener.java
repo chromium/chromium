@@ -39,15 +39,20 @@ import java.lang.annotation.RetentionPolicy;
  *          event stream from the initial #onDown event. This always returns false by default, as
  *          {@link SimpleOnGestureListener} does by default.
  * </ul>
-
+ *
  * Internally, this class uses a {@link GestureDetector} to recognize swipe gestures.
  * For convenience, this class also extends {@link SimpleOnGestureListener} which
  * is passed to the {@link GestureDetector}. This means that this class can also be
  * used to detect simple gestures defined in {@link GestureDetector}.
  */
 public class SwipeGestureListener extends SimpleOnGestureListener {
-    @IntDef({ScrollDirection.UNKNOWN, ScrollDirection.LEFT, ScrollDirection.RIGHT,
-            ScrollDirection.UP, ScrollDirection.DOWN})
+    @IntDef({
+        ScrollDirection.UNKNOWN,
+        ScrollDirection.LEFT,
+        ScrollDirection.RIGHT,
+        ScrollDirection.UP,
+        ScrollDirection.DOWN
+    })
     @Retention(RetentionPolicy.SOURCE)
     public @interface ScrollDirection {
         int UNKNOWN = 0;
@@ -76,9 +81,7 @@ public class SwipeGestureListener extends SimpleOnGestureListener {
         default void onSwipeUpdated(
                 MotionEvent current, float tx, float ty, float distanceX, float distanceY) {}
 
-        /**
-         * @param end The last motion event canceling the swipe.
-         */
+        /** @param end The last motion event canceling the swipe. */
         default void onSwipeFinished() {}
 
         /**
@@ -91,8 +94,13 @@ public class SwipeGestureListener extends SimpleOnGestureListener {
          * @param velocityY The velocity of this fling measured in pixels per second along the y
          *         axis.
          */
-        default void onFling(@ScrollDirection int direction, MotionEvent current, float tx,
-                float ty, float velocityX, float velocityY) {}
+        default void onFling(
+                @ScrollDirection int direction,
+                MotionEvent current,
+                float tx,
+                float ty,
+                float velocityX,
+                float velocityY) {}
 
         /**
          * @param direction The direction of the on-going swipe.
@@ -103,23 +111,17 @@ public class SwipeGestureListener extends SimpleOnGestureListener {
         }
     }
 
-    /**
-     * The internal {@link GestureDetector} used to recognize swipe gestures.
-     */
+    /** The internal {@link GestureDetector} used to recognize swipe gestures. */
     private final GestureDetector mGestureDetector;
+
     private final PointF mMotionStartPoint = new PointF();
-    @ScrollDirection
-    private int mDirection = ScrollDirection.UNKNOWN;
+    @ScrollDirection private int mDirection = ScrollDirection.UNKNOWN;
     private final SwipeHandler mHandler;
 
-    /**
-     * The threshold for a vertical swipe gesture, in px.
-     */
+    /** The threshold for a vertical swipe gesture, in px. */
     private final int mSwipeVerticalDragThreshold;
 
-    /**
-     * The threshold for a horizontal swipe gesture, in px.
-     */
+    /** The threshold for a horizontal swipe gesture, in px. */
     private final int mSwipeHorizontalDragThreshold;
 
     /**
@@ -128,10 +130,12 @@ public class SwipeGestureListener extends SimpleOnGestureListener {
      */
     public SwipeGestureListener(Context context, SwipeHandler handler) {
         mGestureDetector = new GestureDetector(context, this, ThreadUtils.getUiThreadHandler());
-        mSwipeVerticalDragThreshold = context.getResources().getDimensionPixelOffset(
-                R.dimen.swipe_vertical_drag_threshold);
-        mSwipeHorizontalDragThreshold = context.getResources().getDimensionPixelOffset(
-                R.dimen.swipe_horizontal_drag_threshold);
+        mSwipeVerticalDragThreshold =
+                context.getResources()
+                        .getDimensionPixelOffset(R.dimen.swipe_vertical_drag_threshold);
+        mSwipeHorizontalDragThreshold =
+                context.getResources()
+                        .getDimensionPixelOffset(R.dimen.swipe_horizontal_drag_threshold);
         mHandler = handler;
     }
 
@@ -195,8 +199,7 @@ public class SwipeGestureListener extends SimpleOnGestureListener {
             float tx = e2.getRawX() - e1.getRawX();
             float ty = e2.getRawY() - e1.getRawY();
 
-            @ScrollDirection
-            int direction = ScrollDirection.UNKNOWN;
+            @ScrollDirection int direction = ScrollDirection.UNKNOWN;
 
             if (Math.abs(tx) < mSwipeHorizontalDragThreshold
                     && Math.abs(ty) < mSwipeVerticalDragThreshold) {
@@ -216,8 +219,12 @@ public class SwipeGestureListener extends SimpleOnGestureListener {
         }
 
         if (mDirection != ScrollDirection.UNKNOWN) {
-            mHandler.onSwipeUpdated(e2, e2.getRawX() - mMotionStartPoint.x,
-                    e2.getRawY() - mMotionStartPoint.y, -distanceX, -distanceY);
+            mHandler.onSwipeUpdated(
+                    e2,
+                    e2.getRawX() - mMotionStartPoint.x,
+                    e2.getRawY() - mMotionStartPoint.y,
+                    -distanceX,
+                    -distanceY);
             return true;
         }
 
@@ -229,8 +236,13 @@ public class SwipeGestureListener extends SimpleOnGestureListener {
         if (mHandler == null) return false;
 
         if (mDirection != ScrollDirection.UNKNOWN) {
-            mHandler.onFling(mDirection, e2, e2.getRawX() - mMotionStartPoint.x,
-                    e2.getRawY() - mMotionStartPoint.y, velocityX, velocityY);
+            mHandler.onFling(
+                    mDirection,
+                    e2,
+                    e2.getRawX() - mMotionStartPoint.x,
+                    e2.getRawY() - mMotionStartPoint.y,
+                    velocityX,
+                    velocityY);
             return true;
         }
 

@@ -5,13 +5,13 @@
 #ifndef NET_URL_REQUEST_REDIRECT_INFO_H_
 #define NET_URL_REQUEST_REDIRECT_INFO_H_
 
+#include <optional>
 #include <string>
 
 #include "base/time/time.h"
 #include "net/base/net_export.h"
 #include "net/cookies/site_for_cookies.h"
 #include "net/url_request/referrer_policy.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
 namespace net {
@@ -47,7 +47,7 @@ struct NET_EXPORT RedirectInfo {
       // The new location URL of the redirect response.
       const GURL& new_location,
       // Referrer-Policy header of the redirect response.
-      const absl::optional<std::string>& referrer_policy_header,
+      const std::optional<std::string>& referrer_policy_header,
       // Whether the URL was upgraded to HTTPS due to upgrade-insecure-requests.
       bool insecure_scheme_was_upgraded,
       // This method copies the URL fragment of the original URL to the new URL

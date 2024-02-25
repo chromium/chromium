@@ -44,7 +44,7 @@ struct IntentTestCase {
   apps::IntentPtr intent;
   bool contains_hosted_document;
   bool should_show_action;
-  absl::optional<TextAttachment::Type> text_attachment_type;
+  std::optional<TextAttachment::Type> text_attachment_type;
   int file_count;
 };
 
@@ -125,7 +125,7 @@ class NearbyShareActionTest : public testing::Test {
     test_cases.push_back({apps_util::MakeShareIntent(
                               {GetFileSystemUrl(kImageFile)}, {kMimeTypeJPG}),
                           /*contains_hosted_document=*/false,
-                          /*should_show_action=*/true, absl::nullopt,
+                          /*should_show_action=*/true, std::nullopt,
                           /*file_count=*/1});
     // File share, two text files
     test_cases.push_back(
@@ -133,7 +133,7 @@ class NearbyShareActionTest : public testing::Test {
              {GetFileSystemUrl(kTextFile1), GetFileSystemUrl(kTextFile2)},
              {kMimeTypeText, kMimeTypeText}),
          /*contains_hosted_document=*/false,
-         /*should_show_action=*/true, absl::nullopt,
+         /*should_show_action=*/true, std::nullopt,
          /*file_count=*/2});
     // File share, two mixed files
     test_cases.push_back(
@@ -141,14 +141,14 @@ class NearbyShareActionTest : public testing::Test {
              {GetFileSystemUrl(kTextFile1), GetFileSystemUrl(kImageFile)},
              {kMimeTypeText, kMimeTypeJPG}),
          /*contains_hosted_document=*/false,
-         /*should_show_action=*/true, absl::nullopt,
+         /*should_show_action=*/true, std::nullopt,
          /*file_count=*/2});
     // File share, one file with title
     test_cases.push_back(
         {apps_util::MakeShareIntent({GetFileSystemUrl(kImageFile)},
                                     {kMimeTypeJPG}, kEmpty, kTitle),
          /*contains_hosted_document=*/false, /*should_show_action=*/true,
-         absl::nullopt, /*file_count=*/1});
+         std::nullopt, /*file_count=*/1});
     // Invalid: File share with text body
     test_cases.push_back(
         {apps_util::MakeShareIntent(
@@ -162,7 +162,7 @@ class NearbyShareActionTest : public testing::Test {
 
   content::BrowserTaskEnvironment task_environment_;
   std::unique_ptr<TestingProfileManager> profile_manager_;
-  raw_ptr<Profile, ExperimentalAsh> profile_;
+  raw_ptr<Profile> profile_;
   std::unique_ptr<NearbyShareAction> nearby_share_action_;
 };
 

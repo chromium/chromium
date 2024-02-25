@@ -26,8 +26,8 @@ public class TaskRemovedMonitorService extends Service {
     @VisibleForTesting
     static final String SESSION_KEY = "sessionId";
 
-    public String mRootSessionId;
-    public String mSessionId;
+    public String mRootSessionId = "";
+    public String mSessionId = "";
 
     public static void start(String rootSessionId, String sessionId) {
         Context ctx = ContextUtils.getApplicationContext();
@@ -41,12 +41,6 @@ public class TaskRemovedMonitorService extends Service {
         Context ctx = ContextUtils.getApplicationContext();
         Intent serviceIntent = new Intent(ctx, TaskRemovedMonitorService.class);
         ctx.stopService(serviceIntent);
-    }
-
-    @Override
-    public void onCreate() {
-        mRootSessionId = "";
-        mRootSessionId = "";
     }
 
     @Override

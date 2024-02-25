@@ -30,9 +30,8 @@ import androidx.test.uiautomator.UiObject2;
 import org.chromium.base.Log;
 
 import java.util.concurrent.TimeUnit;
-/**
- * Helper functions returning {@link ViewAction}s that can be performed on a {@link WebView}.
- */
+
+/** Helper functions returning {@link ViewAction}s that can be performed on a {@link WebView}. */
 public class PerformActions {
     private UiDevice mDevice;
     private CapturedSitesTestRule mWebViewActivityRule;
@@ -43,45 +42,59 @@ public class PerformActions {
     private static final int ACTION_RETRIES = 2;
     private static final int MARGIN =
             49; // TODO (crbug/1470296) Replace with automatic margin detection.
-    /**
-     * Maps between relative [0, 1] coordinates to screen size.
-     */
+
+    /** Maps between relative [0, 1] coordinates to screen size. */
     public static class ElementCoordinates implements CoordinatesProvider {
         private final double mX;
         private final double mY;
+
         private ElementCoordinates(double x, double y) {
             this.mX = x;
             this.mY = y;
-            Log.d(TAG,
-                    "ElementCoordinates: x = " + Double.toString(this.mX)
-                            + ", y = " + Double.toString(this.mY));
+            Log.d(
+                    TAG,
+                    "ElementCoordinates: x = "
+                            + Double.toString(this.mX)
+                            + ", y = "
+                            + Double.toString(this.mY));
         }
+
         @Override
         public float[] calculateCoordinates(View view) {
             final int[] xy = {0, 0};
             view.getLocationOnScreen(xy);
-            Log.d(TAG,
-                    "WebView: top = " + Integer.toString(view.getTop())
-                            + ", left = " + Integer.toString(view.getLeft())
-                            + ", bottom = " + Integer.toString(view.getBottom())
-                            + ", right = " + Integer.toString(view.getRight())
-                            + ", width = " + Integer.toString(view.getWidth())
-                            + ", height =" + Integer.toString(view.getHeight()));
+            Log.d(
+                    TAG,
+                    "WebView: top = "
+                            + Integer.toString(view.getTop())
+                            + ", left = "
+                            + Integer.toString(view.getLeft())
+                            + ", bottom = "
+                            + Integer.toString(view.getBottom())
+                            + ", right = "
+                            + Integer.toString(view.getRight())
+                            + ", width = "
+                            + Integer.toString(view.getWidth())
+                            + ", height ="
+                            + Integer.toString(view.getHeight()));
             xy[0] = (int) (mX * view.getWidth());
             xy[1] = (int) (mY * view.getHeight());
             Log.d(TAG, "x = " + Integer.toString(xy[0]) + ", y = " + Integer.toString(xy[1]));
             return new float[] {xy[0], xy[1]};
         }
     }
+
     public PerformActions(UiDevice device, CapturedSitesTestRule webViewActivityRule) {
         this.mDevice = device;
         this.mWebViewActivityRule = webViewActivityRule;
     }
+
     // Loads the webpage at the given url into the webview.
     public void loadUrl(String url) throws Exception {
         TimeUnit.SECONDS.sleep(TIME_BETWEEN_ACTIONS_SECONDS);
         mWebViewActivityRule.loadUrlSync(url);
     }
+
     // Clicks on the element at the given id.
     public boolean selectElement(String xPath) throws Throwable {
         TimeUnit.SECONDS.sleep(TIME_BETWEEN_ACTIONS_SECONDS);
@@ -91,14 +104,19 @@ public class PerformActions {
         double elemX = getWidthRelative(xPath);
         double elemY = getHeightRelative(xPath);
         try {
-            myView.perform(actionWithAssertions(new GeneralClickAction(
-                    Tap.SINGLE, new ElementCoordinates(elemX, elemY), Press.FINGER)));
+            myView.perform(
+                    actionWithAssertions(
+                            new GeneralClickAction(
+                                    Tap.SINGLE,
+                                    new ElementCoordinates(elemX, elemY),
+                                    Press.FINGER)));
             return true;
         } catch (PerformException e) {
             Log.e(TAG, "Could not select" + e.getMessage());
             return false;
         }
     }
+
     // Clicks on the field at the given xPath, then select the autofill pop-up box.
     public boolean autofill(String xPath) throws Throwable {
         TimeUnit.SECONDS.sleep(TIME_BETWEEN_ACTIONS_SECONDS);
@@ -115,6 +133,7 @@ public class PerformActions {
             return true;
         }
     }
+
     // Checks that the field at the given Xpath matches the expected result after autofill.
     public boolean verifyAutofill(String xPath, String expected) throws Throwable {
         TimeUnit.SECONDS.sleep(TIME_BETWEEN_ACTIONS_SECONDS);
@@ -124,23 +143,27 @@ public class PerformActions {
         Log.d(TAG, "Javascript Callback: " + callback);
         return callback.equals(expected);
     }
+
     // Runs javascript command to scroll element into view.
     @VisibleForTesting
     void scrollToElement(String xPath) throws Throwable {
         String js = getElemToXPath(xPath) + "elem.scrollIntoView();";
         onMyWebView().perform(this.getViewAction(js));
     }
+
     // Returns the relative height [0, 1] of the given element on the current webview.
     @VisibleForTesting
     double getHeightRelative(String xPath) throws Throwable {
         final String topJS = getElemToXPath(xPath) + "elem.getBoundingClientRect().top;";
-        final String bottomJS = getElemToXPath(xPath) + "elem.getBoundingClientRect().bottom + "
-                + Integer.toString(MARGIN
-                        * 2) // TODO (crbug/1470296) remove and replace with margin detection;
-                + ";";
+        final String bottomJS =
+                getElemToXPath(xPath)
+                        + "elem.getBoundingClientRect().bottom + "
+                        + (MARGIN * 2) // TODO (crbug/1470296): Replace with margin detection.
+                        + ";";
         final String heightJS = "window.innerHeight";
         return getRelativePos(topJS, bottomJS, heightJS, xPath);
     }
+
     // Returns the relative width [0, 1] of the given element on the current webview.
     @VisibleForTesting
     double getWidthRelative(String xPath) throws Throwable {
@@ -149,6 +172,7 @@ public class PerformActions {
         final String widthJS = "window.innerWidth";
         return getRelativePos(leftJS, rightJS, widthJS, xPath);
     }
+
     // Generalizable helper for width and height that computes where the element lies relative to
     // webview.
     @VisibleForTesting
@@ -167,12 +191,14 @@ public class PerformActions {
 
         return ((lower + higher) / 2) / size;
     }
+
     // Runs javascript and returns callback if present, fails with default error message otherwise.
     @VisibleForTesting
     String findCallbackAndFailIfNull(String js) throws Throwable {
         String errorMessage = "from javascript " + js;
         return findCallbackAndFailIfNull(js, errorMessage);
     }
+
     // Runs javascript and returns callback if present, fails with message otherwise.
     @VisibleForTesting
     String findCallbackAndFailIfNull(String js, String errorMessage) throws Throwable {
@@ -183,6 +209,7 @@ public class PerformActions {
         }
         return callback;
     }
+
     // Sets the element at xPath to a JS variable elem.
     @VisibleForTesting
     String getElemToXPath(String xPath) {
@@ -192,7 +219,9 @@ public class PerformActions {
                 + "(path, document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null)"
                 + ".singleNodeValue;}"
                 + "var elem = "
-                + "getElementByXpath(\"" + xPath + "\");";
+                + "getElementByXpath(\""
+                + xPath
+                + "\");";
     }
 
     // Adds necessary backlashes to escape quotes in Javascript code.
@@ -226,12 +255,16 @@ public class PerformActions {
         }
         return false;
     }
+
     // Get a ViewInteraction that takes place on the current Webview.
     @VisibleForTesting
     ViewInteraction onMyWebView() {
-        return onView(allOf(isAssignableFrom(WebView.class),
-                withEffectiveVisibility(ViewMatchers.Visibility.VISIBLE)));
+        return onView(
+                allOf(
+                        isAssignableFrom(WebView.class),
+                        withEffectiveVisibility(ViewMatchers.Visibility.VISIBLE)));
     }
+
     /**
      * Returns a {@link ViewAction} for the given JavaScript.
      *

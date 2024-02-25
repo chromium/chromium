@@ -29,8 +29,7 @@ class LacrosFileSystemProvider;
 class KioskSessionServiceLacros;
 class FieldTrialObserver;
 class NetworkChangeManagerBridge;
-class QuickAnswersController;
-class StandaloneBrowserTestController;
+class NetworkSettingsObserver;
 class TabletModePageBehavior;
 class UiMetricRecorderLacros;
 class VpnExtensionTrackerLacros;
@@ -42,8 +41,14 @@ namespace arc {
 class ArcIconCacheDelegateProvider;
 }  // namespace arc
 
+namespace chromeos {
+class ReadWriteCardsManager;
+}  // namespace chromeos
+
 namespace crosapi {
 class ClipboardHistoryLacros;
+class DebugInterfaceLacros;
+class DeskProfilesLacros;
 class SearchControllerLacros;
 class TaskManagerLacros;
 class WebAppProviderBridgeLacros;
@@ -57,6 +62,10 @@ class ScreenOrientationDelegate;
 namespace drive {
 class DriveFsNativeMessageHostBridge;
 }  // namespace drive
+
+namespace guest_os {
+class VmSkForwardingService;
+}
 
 namespace video_conference {
 class VideoConferenceManagerClientImpl;
@@ -159,14 +168,6 @@ class ChromeBrowserMainExtraPartsLacros : public ChromeBrowserMainExtraParts {
   // Receives extension events from ash.
   std::unique_ptr<LacrosExtensionAppsController> extensions_controller_;
 
-  // A test controller that is registered with the ash-chrome's test controller
-  // service over crosapi to let tests running in ash-chrome control this Lacros
-  // instance. It is only instantiated in Linux builds AND only when Ash's test
-  // controller is available (practically, just test binaries), so this will
-  // remain null in production builds.
-  std::unique_ptr<StandaloneBrowserTestController>
-      standalone_browser_test_controller_;
-
   // Receiver of field trial updates.
   std::unique_ptr<FieldTrialObserver> field_trial_observer_;
 
@@ -178,8 +179,8 @@ class ChromeBrowserMainExtraPartsLacros : public ChromeBrowserMainExtraParts {
   std::unique_ptr<WebAuthnRequestRegistrarLacros>
       webauthn_request_registrar_lacros_;
 
-  // Handles Quick answers requests from the Lacros browser.
-  std::unique_ptr<QuickAnswersController> quick_answers_controller_;
+  // Handles read write cards requests from the Lacros browser.
+  std::unique_ptr<chromeos::ReadWriteCardsManager> read_write_cards_manager_;
 
   // Updates Blink preferences on tablet mode state change.
   std::unique_ptr<TabletModePageBehavior> tablet_mode_page_behavior_;
@@ -209,6 +210,19 @@ class ChromeBrowserMainExtraPartsLacros : public ChromeBrowserMainExtraParts {
   // Caches the clipboard history item descriptors in Lacros. Used only when
   // the clipboard history refresh feature is enabled.
   std::unique_ptr<crosapi::ClipboardHistoryLacros> clipboard_history_lacros_;
+
+  // Forwards messages between VMs and the gnubbyd extension.
+  std::unique_ptr<guest_os::VmSkForwardingService> vm_sk_forwarding_service_;
+
+  // Observes profile information updates and sends summary info to ash. Used
+  // only when the desk profiles feature is enabled.
+  std::unique_ptr<crosapi::DeskProfilesLacros> desk_profiles_lacros_;
+
+  // Observers network updates from the NetworkSettingsService.
+  std::unique_ptr<NetworkSettingsObserver> network_settings_observer_;
+
+  // Handles debug commands sent from ash-chrome.
+  std::unique_ptr<crosapi::DebugInterfaceLacros> debug_interface_;
 };
 
 #endif  // CHROME_BROWSER_LACROS_CHROME_BROWSER_MAIN_EXTRA_PARTS_LACROS_H_

@@ -42,8 +42,7 @@ class ASH_EXPORT TabletModeMultitaskMenu
   // is true, otherwise a slide up animation.
   void Animate(bool show);
 
-  // Performs a fade out animation and closes the menu. Called when tap outside
-  // the menu dismisses it.
+  // Performs a fade out animation and closes the menu.
   void AnimateFadeOut();
 
   // Actions called by the event handler, where `initial_y` and `current_y` are
@@ -69,7 +68,7 @@ class ASH_EXPORT TabletModeMultitaskMenu
  private:
   // The event handler that created this multitask menu. Guaranteed to outlive
   // `this`.
-  raw_ptr<TabletModeMultitaskMenuController, ExperimentalAsh> controller_;
+  raw_ptr<TabletModeMultitaskMenuController> controller_;
 
   // Widget implementation that is created and maintained by `this`.
   views::UniqueWidgetPtr widget_ = std::make_unique<views::Widget>();

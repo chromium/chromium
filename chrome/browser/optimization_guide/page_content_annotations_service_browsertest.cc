@@ -2,6 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "components/optimization_guide/content/browser/page_content_annotations_service.h"
+
+#include <optional>
+
 #include "base/functional/callback.h"
 #include "base/path_service.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -20,7 +24,6 @@
 #include "components/history/core/browser/history_db_task.h"
 #include "components/history/core/browser/history_service.h"
 #include "components/history/core/test/history_service_test_util.h"
-#include "components/optimization_guide/content/browser/page_content_annotations_service.h"
 #include "components/optimization_guide/content/browser/test_page_content_annotator.h"
 #include "components/optimization_guide/core/execution_status.h"
 #include "components/optimization_guide/core/optimization_guide_enums.h"
@@ -37,7 +40,6 @@
 #include "services/metrics/public/cpp/ukm_source.h"
 #include "services/metrics/public/mojom/ukm_interface.mojom-forward.h"
 #include "testing/gmock/include/gmock/gmock.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chrome/browser/ash/login/test/device_state_mixin.h"
@@ -64,7 +66,7 @@ class TestPageContentAnnotationsObserver
       const PageContentAnnotationsResult& result) override {
     last_page_content_annotations_result_ = result;
   }
-  absl::optional<PageContentAnnotationsResult>
+  std::optional<PageContentAnnotationsResult>
       last_page_content_annotations_result_;
 };
 
@@ -78,7 +80,7 @@ class GetContentAnnotationsTask : public history::HistoryDBTask {
   GetContentAnnotationsTask(
       const GURL& url,
       base::OnceCallback<void(
-          const absl::optional<history::VisitContentAnnotations>&)> callback)
+          const std::optional<history::VisitContentAnnotations>&)> callback)
       : url_(url), callback_(std::move(callback)) {}
   ~GetContentAnnotationsTask() override = default;
 
@@ -110,10 +112,10 @@ class GetContentAnnotationsTask : public history::HistoryDBTask {
   const GURL url_;
   // The callback to invoke when the database call has completed.
   base::OnceCallback<void(
-      const absl::optional<history::VisitContentAnnotations>&)>
+      const std::optional<history::VisitContentAnnotations>&)>
       callback_;
   // The content annotations that were stored for |url_|.
-  absl::optional<history::VisitContentAnnotations> stored_content_annotations_;
+  std::optional<history::VisitContentAnnotations> stored_content_annotations_;
 };
 
 class PageContentAnnotationsServiceDisabledBrowserTest
@@ -222,6 +224,12 @@ class PageContentAnnotationsServiceBrowserTest : public InProcessBrowserTest {
   }
   ~PageContentAnnotationsServiceBrowserTest() override = default;
 
+  // TODO(crbug.com/1491942): This fails with the field trial testing config.
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    InProcessBrowserTest::SetUpCommandLine(command_line);
+    command_line->AppendSwitch("disable-field-trial-config");
+  }
+
   void set_load_model_on_startup(bool load_model_on_startup) {
     load_model_on_startup_ = load_model_on_startup;
   }
@@ -246,7 +254,7 @@ class PageContentAnnotationsServiceBrowserTest : public InProcessBrowserTest {
 
   void LoadAndWaitForModel() {
     base::FilePath source_root_dir;
-    base::PathService::Get(base::DIR_SOURCE_ROOT, &source_root_dir);
+    base::PathService::Get(base::DIR_SRC_TEST_DATA_ROOT, &source_root_dir);
     base::FilePath model_file_path =
         source_root_dir.AppendASCII("components")
             .AppendASCII("test")
@@ -272,16 +280,16 @@ class PageContentAnnotationsServiceBrowserTest : public InProcessBrowserTest {
 #endif
   }
 
-  absl::optional<history::VisitContentAnnotations> GetContentAnnotationsForURL(
+  std::optional<history::VisitContentAnnotations> GetContentAnnotationsForURL(
       const GURL& url) {
     history::HistoryService* history_service =
         HistoryServiceFactory::GetForProfile(
             browser()->profile(), ServiceAccessType::IMPLICIT_ACCESS);
     if (!history_service)
-      return absl::nullopt;
+      return std::nullopt;
 
     std::unique_ptr<base::RunLoop> run_loop = std::make_unique<base::RunLoop>();
-    absl::optional<history::VisitContentAnnotations> got_content_annotations;
+    std::optional<history::VisitContentAnnotations> got_content_annotations;
 
     base::CancelableTaskTracker task_tracker;
     history_service->ScheduleDBTask(
@@ -289,9 +297,9 @@ class PageContentAnnotationsServiceBrowserTest : public InProcessBrowserTest {
         std::make_unique<GetContentAnnotationsTask>(
             url, base::BindOnce(
                      [](base::RunLoop* run_loop,
-                        absl::optional<history::VisitContentAnnotations>*
+                        std::optional<history::VisitContentAnnotations>*
                             out_content_annotations,
-                        const absl::optional<history::VisitContentAnnotations>&
+                        const std::optional<history::VisitContentAnnotations>&
                             content_annotations) {
                        *out_content_annotations = content_annotations;
                        run_loop->Quit();
@@ -304,7 +312,7 @@ class PageContentAnnotationsServiceBrowserTest : public InProcessBrowserTest {
   }
 
   bool ModelAnnotationsFieldsAreSetForURL(const GURL& url) {
-    absl::optional<history::VisitContentAnnotations> got_content_annotations =
+    std::optional<history::VisitContentAnnotations> got_content_annotations =
         GetContentAnnotationsForURL(url);
     // No content annotations -> no model annotations fields.
     if (!got_content_annotations)
@@ -348,7 +356,7 @@ IN_PROC_BROWSER_TEST_F(PageContentAnnotationsServiceBrowserTest,
   base::HistogramTester histogram_tester;
   ukm::TestAutoSetUkmRecorder ukm_recorder;
 
-  GURL url(embedded_test_server()->GetURL("a.com", "/random_title.html"));
+  GURL url(embedded_test_server()->GetURL("a.test", "/random_title.html"));
 
   // Navigate to the page for the first time.
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
@@ -369,7 +377,7 @@ IN_PROC_BROWSER_TEST_F(PageContentAnnotationsServiceBrowserTest,
       expected_count);
 
 #if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
-  absl::optional<history::VisitContentAnnotations> got_content_annotations =
+  std::optional<history::VisitContentAnnotations> got_content_annotations =
       GetContentAnnotationsForURL(url);
   ASSERT_TRUE(got_content_annotations.has_value());
   EXPECT_TRUE(got_content_annotations->model_annotations.categories.empty());
@@ -403,11 +411,11 @@ IN_PROC_BROWSER_TEST_F(PageContentAnnotationsServiceBrowserTest,
 
 #if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
   TestPageContentAnnotator test_annotator;
-  test_annotator.UseVisibilityScores(absl::nullopt, {{"Test Page", 0.5}});
+  test_annotator.UseVisibilityScores(std::nullopt, {{"Test Page", 0.5}});
   service()->OverridePageContentAnnotatorForTesting(&test_annotator);
 #endif
 
-  GURL url(embedded_test_server()->GetURL("a.com", "/hello.html"));
+  GURL url(embedded_test_server()->GetURL("a.test", "/hello.html"));
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
 
 #if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
@@ -435,7 +443,7 @@ IN_PROC_BROWSER_TEST_F(PageContentAnnotationsServiceBrowserTest,
 
 #if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
   WaitForHistoryServiceToFinish();
-  absl::optional<history::VisitContentAnnotations> got_content_annotations =
+  std::optional<history::VisitContentAnnotations> got_content_annotations =
       GetContentAnnotationsForURL(url);
   ASSERT_TRUE(got_content_annotations.has_value());
   EXPECT_NE(-1.0, got_content_annotations->model_annotations.visibility_score);
@@ -445,6 +453,24 @@ IN_PROC_BROWSER_TEST_F(PageContentAnnotationsServiceBrowserTest,
       ukm::builders::PageContentAnnotations2::kEntryName);
   EXPECT_EQ(1u, entries.size());
 #endif  // BUILDFLAG(BUILD_WITH_TFLITE_LIB)
+}
+
+IN_PROC_BROWSER_TEST_F(PageContentAnnotationsServiceBrowserTest,
+                       NonHttpUrlIgnored) {
+  base::HistogramTester histogram_tester;
+  ukm::TestAutoSetUkmRecorder ukm_recorder;
+
+#if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
+  TestPageContentAnnotator test_annotator;
+  test_annotator.UseVisibilityScores(std::nullopt, {{std::string(), 0.5}});
+  service()->OverridePageContentAnnotatorForTesting(&test_annotator);
+#endif
+
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GURL("data:,")));
+  base::RunLoop().RunUntilIdle();
+
+  histogram_tester.ExpectTotalCount(
+      "OptimizationGuide.PageContentAnnotationsService.ContentAnnotated", 0);
 }
 
 #if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
@@ -489,7 +515,7 @@ IN_PROC_BROWSER_TEST_F(PageContentAnnotationsServiceBrowserTest,
   history_visit.text_to_annotate = "sometext";
 
   TestPageContentAnnotator test_annotator;
-  test_annotator.UseVisibilityScores(absl::nullopt, {{"sometext", 0.5}});
+  test_annotator.UseVisibilityScores(std::nullopt, {{"sometext", 0.5}});
   service()->OverridePageContentAnnotatorForTesting(&test_annotator);
 
   {
@@ -540,13 +566,13 @@ IN_PROC_BROWSER_TEST_F(PageContentAnnotationsServiceBrowserTest,
                        RegisterPageContentAnnotationsObserver) {
   base::HistogramTester histogram_tester;
   TestPageContentAnnotator test_annotator;
-  test_annotator.UseVisibilityScores(absl::nullopt, {{"Test Page", 0.5}});
+  test_annotator.UseVisibilityScores(std::nullopt, {{"Test Page", 0.5}});
   service()->OverridePageContentAnnotatorForTesting(&test_annotator);
 
   TestPageContentAnnotationsObserver observer;
   service()->AddObserver(AnnotationType::kContentVisibility, &observer);
 
-  GURL url(embedded_test_server()->GetURL("a.com", "/hello.html"));
+  GURL url(embedded_test_server()->GetURL("a.test", "/hello.html"));
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
 
   RetryForHistogramUntilCountReached(
@@ -568,7 +594,10 @@ class PageContentAnnotationsServiceRemoteMetadataBrowserTest
     // enabled.
     scoped_feature_list_.InitWithFeaturesAndParameters(
         {{features::kOptimizationHints, {}},
-         {features::kRemotePageMetadata, {{"min_page_category_score", "80"}}}},
+         {features::kRemotePageMetadata,
+          {{"min_page_category_score", "80"},
+           {"supported_countries", "*"},
+           {"supported_locales", "*"}}}},
         /*disabled_features=*/{{features::kPageContentAnnotations}});
     set_load_model_on_startup(false);
   }
@@ -582,7 +611,7 @@ IN_PROC_BROWSER_TEST_F(PageContentAnnotationsServiceRemoteMetadataBrowserTest,
                        StoresAllTheThingsFromRemoteService) {
   base::HistogramTester histogram_tester;
 
-  GURL url(embedded_test_server()->GetURL("a.com", "/hello.html"));
+  GURL url(embedded_test_server()->GetURL("a.test", "/hello.html"));
 
   proto::PageEntitiesMetadata page_entities_metadata;
   proto::Entity* entity = page_entities_metadata.add_entities();
@@ -603,7 +632,7 @@ IN_PROC_BROWSER_TEST_F(PageContentAnnotationsServiceRemoteMetadataBrowserTest,
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
   WaitForHistoryServiceToFinish();
 
-  absl::optional<history::VisitContentAnnotations> got_content_annotations =
+  std::optional<history::VisitContentAnnotations> got_content_annotations =
       GetContentAnnotationsForURL(url);
   ASSERT_TRUE(got_content_annotations.has_value());
   EXPECT_THAT(
@@ -621,7 +650,7 @@ IN_PROC_BROWSER_TEST_F(PageContentAnnotationsServiceRemoteMetadataBrowserTest,
                        StoresPageEntitiesAndCategoriesFromRemoteService) {
   base::HistogramTester histogram_tester;
 
-  GURL url(embedded_test_server()->GetURL("a.com", "/hello.html"));
+  GURL url(embedded_test_server()->GetURL("a.test", "/hello.html"));
 
   proto::PageEntitiesMetadata page_entities_metadata;
   proto::Entity* entity = page_entities_metadata.add_entities();
@@ -641,7 +670,7 @@ IN_PROC_BROWSER_TEST_F(PageContentAnnotationsServiceRemoteMetadataBrowserTest,
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
   WaitForHistoryServiceToFinish();
 
-  absl::optional<history::VisitContentAnnotations> got_content_annotations =
+  std::optional<history::VisitContentAnnotations> got_content_annotations =
       GetContentAnnotationsForURL(url);
   ASSERT_TRUE(got_content_annotations.has_value());
   EXPECT_THAT(
@@ -658,7 +687,7 @@ IN_PROC_BROWSER_TEST_F(PageContentAnnotationsServiceRemoteMetadataBrowserTest,
                        StoresAlternateTitleFromRemoteService) {
   base::HistogramTester histogram_tester;
 
-  GURL url(embedded_test_server()->GetURL("a.com", "/hello.html"));
+  GURL url(embedded_test_server()->GetURL("a.test", "/hello.html"));
 
   proto::PageEntitiesMetadata page_entities_metadata;
   page_entities_metadata.set_alternative_title("alternative title");
@@ -670,7 +699,7 @@ IN_PROC_BROWSER_TEST_F(PageContentAnnotationsServiceRemoteMetadataBrowserTest,
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
   WaitForHistoryServiceToFinish();
 
-  absl::optional<history::VisitContentAnnotations> got_content_annotations =
+  std::optional<history::VisitContentAnnotations> got_content_annotations =
       GetContentAnnotationsForURL(url);
   ASSERT_TRUE(got_content_annotations.has_value());
   EXPECT_EQ(got_content_annotations->alternative_title, "alternative title");
@@ -680,7 +709,7 @@ IN_PROC_BROWSER_TEST_F(PageContentAnnotationsServiceRemoteMetadataBrowserTest,
                        EmptyMetadataNotStored) {
   base::HistogramTester histogram_tester;
 
-  GURL url(embedded_test_server()->GetURL("a.com", "/hello.html"));
+  GURL url(embedded_test_server()->GetURL("a.test", "/hello.html"));
 
   proto::PageEntitiesMetadata page_entities_metadata;
   OptimizationMetadata metadata;
@@ -704,7 +733,8 @@ class PageContentAnnotationsServiceSalientImageMetadataBrowserTest
     scoped_feature_list_.InitWithFeaturesAndParameters(
         {{features::kOptimizationHints, {}},
          {features::kPageContentAnnotations, {}},
-         {features::kPageContentAnnotationsPersistSalientImageMetadata, {}}},
+         {features::kPageContentAnnotationsPersistSalientImageMetadata,
+          {{"supported_countries", "*"}, {"supported_locales", "*"}}}},
         /*disabled_features=*/{});
     set_load_model_on_startup(false);
   }
@@ -720,7 +750,7 @@ IN_PROC_BROWSER_TEST_F(
     EmptyMetadataNotStored) {
   base::HistogramTester histogram_tester;
 
-  GURL url(embedded_test_server()->GetURL("a.com", "/hello.html"));
+  GURL url(embedded_test_server()->GetURL("a.test", "/hello.html"));
 
   proto::SalientImageMetadata salient_image_metadata;
   OptimizationMetadata metadata;
@@ -742,7 +772,7 @@ IN_PROC_BROWSER_TEST_F(
     MetadataWithNoNonEmptyUrlNotStored) {
   base::HistogramTester histogram_tester;
 
-  GURL url(embedded_test_server()->GetURL("a.com", "/hello.html"));
+  GURL url(embedded_test_server()->GetURL("a.test", "/hello.html"));
 
   proto::SalientImageMetadata salient_image_metadata;
   salient_image_metadata.add_thumbnails();
@@ -766,7 +796,7 @@ IN_PROC_BROWSER_TEST_F(
     MetadataWithNonEmptyUrlStored) {
   base::HistogramTester histogram_tester;
 
-  GURL url(embedded_test_server()->GetURL("a.com", "/hello.html"));
+  GURL url(embedded_test_server()->GetURL("a.test", "/hello.html"));
 
   proto::SalientImageMetadata salient_image_metadata;
   salient_image_metadata.add_thumbnails();
@@ -780,7 +810,7 @@ IN_PROC_BROWSER_TEST_F(
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
   WaitForHistoryServiceToFinish();
 
-  absl::optional<history::VisitContentAnnotations> got_content_annotations =
+  std::optional<history::VisitContentAnnotations> got_content_annotations =
       GetContentAnnotationsForURL(url);
   ASSERT_TRUE(got_content_annotations.has_value());
   EXPECT_TRUE(got_content_annotations->has_url_keyed_image);
@@ -808,12 +838,12 @@ class PageContentAnnotationsServiceNoHistoryTest
 IN_PROC_BROWSER_TEST_F(PageContentAnnotationsServiceNoHistoryTest,
                        ModelExecutesButDoesntWriteToHistory) {
   TestPageContentAnnotator test_annotator;
-  test_annotator.UseVisibilityScores(absl::nullopt, {{"Test Page", 0.5}});
+  test_annotator.UseVisibilityScores(std::nullopt, {{"Test Page", 0.5}});
   service()->OverridePageContentAnnotatorForTesting(&test_annotator);
 
   base::HistogramTester histogram_tester;
 
-  GURL url(embedded_test_server()->GetURL("a.com", "/hello.html"));
+  GURL url(embedded_test_server()->GetURL("a.test", "/hello.html"));
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
 
   RetryForHistogramUntilCountReached(
@@ -840,13 +870,13 @@ IN_PROC_BROWSER_TEST_F(PageContentAnnotationsServiceNoHistoryTest,
 IN_PROC_BROWSER_TEST_F(PageContentAnnotationsServiceNoHistoryTest,
                        ModelExecutesAndUsesCachedResult) {
   TestPageContentAnnotator test_annotator;
-  test_annotator.UseVisibilityScores(absl::nullopt, {{"Test Page", 0.5}});
+  test_annotator.UseVisibilityScores(std::nullopt, {{"Test Page", 0.5}});
   service()->OverridePageContentAnnotatorForTesting(&test_annotator);
 
   {
     base::HistogramTester histogram_tester;
 
-    GURL url(embedded_test_server()->GetURL("a.com", "/hello.html"));
+    GURL url(embedded_test_server()->GetURL("a.test", "/hello.html"));
     ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
 
     RetryForHistogramUntilCountReached(
@@ -859,7 +889,7 @@ IN_PROC_BROWSER_TEST_F(PageContentAnnotationsServiceNoHistoryTest,
   }
   {
     base::HistogramTester histogram_tester;
-    GURL url2(embedded_test_server()->GetURL("a.com", "/hello.html"));
+    GURL url2(embedded_test_server()->GetURL("a.test", "/hello.html"));
     ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url2));
 
     RetryForHistogramUntilCountReached(
@@ -887,6 +917,7 @@ class PageContentAnnotationsServiceBatchVisitTest
          {features::kPageContentAnnotations,
           {{"write_to_history_service", "false"},
            {"annotate_visit_batch_size", "2"}}},
+         {features::kPageEntitiesPageContentAnnotations, {}},
          {features::kPageVisibilityPageContentAnnotations, {}}},
         /*disabled_features=*/{});
   }
@@ -899,28 +930,17 @@ class PageContentAnnotationsServiceBatchVisitTest
         PageContentAnnotationsServiceFactory::GetForProfile(
             browser()->profile());
 
-    annotator_.UsePageEntities(
-        /*model_info=*/absl::nullopt,
-        {
-            {
-                "Test Page",
-                {
-                    ScoredEntityMetadata(0.6,
-                                         EntityMetadata("test", "test", {})),
-                    ScoredEntityMetadata(0.4,
-                                         EntityMetadata("page", "page", {})),
-                },
-            },
-            {
-                "sometext",
-                {
-                    ScoredEntityMetadata(0.7,
-                                         EntityMetadata("some", "some", {})),
-                    ScoredEntityMetadata(0.3,
-                                         EntityMetadata("text", "text", {})),
-                },
-            },
-        });
+    annotator_.UseVisibilityScores(
+        /*model_info=*/std::nullopt, {
+                                         {
+                                             "Test Page",
+                                             0.5,
+                                         },
+                                         {
+                                             "sometext",
+                                             0.7,
+                                         },
+                                     });
     service->OverridePageContentAnnotatorForTesting(&annotator_);
   }
 
@@ -933,14 +953,14 @@ IN_PROC_BROWSER_TEST_F(PageContentAnnotationsServiceBatchVisitTest,
                        ModelExecutesWithFullBatch) {
   base::HistogramTester histogram_tester;
 
-  GURL url(embedded_test_server()->GetURL("a.com", "/hello.html"));
+  GURL url(embedded_test_server()->GetURL("a.test", "/hello.html"));
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
 
   RetryForHistogramUntilCountReached(
       &histogram_tester,
       "PageContentAnnotations.AnnotateVisit.AnnotationRequested", 1);
 
-  GURL url2(embedded_test_server()->GetURL("b.com", "/hello.html"));
+  GURL url2(embedded_test_server()->GetURL("b.test", "/hello.html"));
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url2));
 
   RetryForHistogramUntilCountReached(
@@ -1034,7 +1054,7 @@ IN_PROC_BROWSER_TEST_F(PageContentAnnotationsServiceBatchVisitTest,
                        NoModelExecutionWithoutFullBatch) {
   base::HistogramTester histogram_tester;
 
-  GURL url(embedded_test_server()->GetURL("a.com", "/hello.html"));
+  GURL url(embedded_test_server()->GetURL("a.test", "/hello.html"));
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
 
   RetryForHistogramUntilCountReached(

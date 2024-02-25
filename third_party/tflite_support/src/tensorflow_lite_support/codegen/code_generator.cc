@@ -144,8 +144,7 @@ std::string CodeGenerator::NameTensor(const TensorMetadata& tensor,
 }
 
 void CodeGenerator::ResolveConflictedInputAndOutputNames(
-    std::vector<std::string>* inputs,
-    std::vector<std::string>* outputs) {
+    std::vector<std::string>* inputs, std::vector<std::string>* outputs) {
   std::unordered_set<std::string> io_conflict;
   auto& input_names = *inputs;
   auto& output_names = *outputs;

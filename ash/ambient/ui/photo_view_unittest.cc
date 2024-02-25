@@ -11,6 +11,7 @@
 #include "ash/ambient/ui/ambient_container_view.h"
 #include "ash/assistant/ui/assistant_view_ids.h"
 #include "ash/public/cpp/ambient/proto/photo_cache_entry.pb.h"
+#include "ash/webui/personalization_app/mojom/personalization_app.mojom-shared.h"
 #include "ui/display/manager/display_manager.h"
 #include "ui/display/test/display_manager_test_api.h"
 #include "ui/gfx/geometry/rect.h"
@@ -23,7 +24,7 @@ class AmbientPhotoViewTest : public AmbientAshTestBase {
  protected:
   void SetUp() override {
     AmbientAshTestBase::SetUp();
-    SetAmbientTheme(AmbientTheme::kSlideshow);
+    SetAmbientTheme(personalization_app::mojom::AmbientTheme::kSlideshow);
   }
 };
 

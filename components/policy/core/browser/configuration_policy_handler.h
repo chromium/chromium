@@ -6,6 +6,7 @@
 #define COMPONENTS_POLICY_CORE_BROWSER_CONFIGURATION_POLICY_HANDLER_H_
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -15,7 +16,6 @@
 #include "components/policy/core/common/policy_map.h"
 #include "components/policy/core/common/schema.h"
 #include "components/policy/policy_export.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 class PrefValueMap;
 
@@ -81,7 +81,7 @@ class POLICY_EXPORT ConfigurationPolicyHandler {
 // subclassed to handle policies that have a name.
 class POLICY_EXPORT NamedPolicyHandler : public ConfigurationPolicyHandler {
  public:
-  // TODO: migrate named policy handlers from char* to base::StringPiece
+  // TODO: migrate named policy handlers from char* to std::string_view
   explicit NamedPolicyHandler(const char* policy_name);
   ~NamedPolicyHandler() override;
   NamedPolicyHandler(const NamedPolicyHandler&) = delete;
@@ -170,7 +170,7 @@ class POLICY_EXPORT ListPolicyHandler : public TypeCheckingPolicyHandler {
   // |errors| is not nullptr.
   bool CheckAndGetList(const policy::PolicyMap& policies,
                        policy::PolicyErrorMap* errors,
-                       absl::optional<base::Value::List>& filtered_list);
+                       std::optional<base::Value::List>& filtered_list);
 
   // Expected value type for list entries. All other types are filtered out.
   base::Value::Type list_entry_type_;
@@ -233,6 +233,36 @@ class POLICY_EXPORT SimplePolicyHandler : public TypeCheckingPolicyHandler {
  private:
   // The DictionaryValue path of the preference the policy maps to.
   const char* pref_path_;
+};
+
+// ConfigurationPolicyHandler for policies that rely on another policy to take
+// effect.
+class POLICY_EXPORT PolicyWithDependencyHandler : public NamedPolicyHandler {
+ public:
+  PolicyWithDependencyHandler(const char* required_policy_name,
+                              std::unique_ptr<NamedPolicyHandler> handler);
+  PolicyWithDependencyHandler(const PolicyWithDependencyHandler&) = delete;
+  PolicyWithDependencyHandler& operator=(const PolicyWithDependencyHandler&) =
+      delete;
+  ~PolicyWithDependencyHandler() override;
+
+  // ConfigurationPolicyHandler methods:
+  bool CheckPolicySettings(const PolicyMap& policies,
+                           PolicyErrorMap* errors) override;
+
+  void ApplyPolicySettingsWithParameters(
+      const policy::PolicyMap& policies,
+      const policy::PolicyHandlerParameters& parameters,
+      PrefValueMap* prefs) override;
+
+ protected:
+  // ConfigurationPolicyHandler methods:
+  void ApplyPolicySettings(const PolicyMap& policies,
+                           PrefValueMap* prefs) override;
+
+ private:
+  const char* required_policy_name_;
+  std::unique_ptr<NamedPolicyHandler> handler_;
 };
 
 // Base class that encapsulates logic for mapping from a string enum list

@@ -1,0 +1,86 @@
+<style include="cr-shared-style settings-shared iron-flex">
+  .cr-padded-text {
+    flex: 1;
+  }
+
+  .list-frame {
+    padding-inline-start: var(--cr-section-indent-width);
+  }
+
+  #outer > tab-discard-exception-entry:not(:first-of-type) {
+    border-top: var(--cr-separator-line);
+  }
+
+  #expandButton {
+    padding-inline-end: 0;
+    padding-inline-start: 0;
+    --cr-icon-button-margin-end: 0;
+  }
+</style>
+<div class="cr-row">
+  <div class="cr-padded-text">
+    $i18n{tabDiscardingExceptionsHeader}
+    <div class="secondary">$i18n{tabDiscardingExceptionsDescription}</div>
+  </div>
+  <cr-button id="addButton" on-click="onAddClick_"
+      aria-label="$i18n{tabDiscardingExceptionsAddButtonAriaLabel}">
+    $i18n{add}
+  </cr-button>
+</div>
+<div id="noSitesAdded" class="list-frame" hidden$="[[hasSites_(siteList_.*)]]">
+  <div class="list-item secondary">$i18n{noSitesAdded}</div>
+</div>
+<div id="outer" class="layout vertical list-frame" role="list"
+    hidden$="[[!hasSites_(siteList_.*)]]">
+  <template is="dom-repeat" id="list" items="[[getSiteList_(siteList_.*)]]">
+    <tab-discard-exception-entry prefs="[[prefs]]" entry="[[item]]"
+        role="listitem"
+        on-menu-click="onMenuClick_" on-show-tooltip="onShowTooltip_">
+    </tab-discard-exception-entry>
+  </template>
+  <cr-expand-button id="expandButton" no-hover class="hr"
+      hidden$="[[!hasOverflowSites_(siteList_.*)]]"
+      expanded="{{overflowSiteListExpanded}}">
+    <div>$i18n{tabDiscardingExceptionsAdditionalSites}</div>
+  </cr-expand-button>
+  <iron-collapse id="collapse" hidden$="[[!hasOverflowSites_(siteList_.*)]]"
+      opened="[[overflowSiteListExpanded]]">
+    <template is="dom-repeat" id="overflowList"
+        items="[[getOverflowSiteList_(siteList_.*)]]">
+      <div class="hr">
+        <tab-discard-exception-entry prefs="[[prefs]]" entry="[[item]]"
+            role="listitem"
+            on-menu-click="onMenuClick_" on-show-tooltip="onShowTooltip_">
+        </tab-discard-exception-entry>
+      </div>
+    </template>
+  </iron-collapse>
+</div>
+<paper-tooltip id="tooltip"
+    fit-to-visible-bounds manual-mode position="top">
+  [[tooltipText_]]
+</paper-tooltip>
+<cr-lazy-render id="menu">
+  <template>
+    <cr-action-menu role-description="$i18n{menu}">
+      <button id="edit" class="dropdown-item" role="menuitem"
+          on-click="onEditClick_">
+        $i18n{edit}
+      </button>
+      <button id="delete" class="dropdown-item" role="menuitem"
+          on-click="onDeleteClick_">
+        $i18n{siteSettingsActionReset}
+      </button>
+    </cr-action-menu>
+  </template>
+</cr-lazy-render>
+<template is="dom-if" if="[[showTabbedAddDialog_]]" restamp>
+  <tab-discard-exception-tabbed-add-dialog prefs="{{prefs}}"
+      on-close="onTabbedAddDialogClose_">
+  </tab-discard-exception-tabbed-add-dialog>
+</template>
+<template is="dom-if" if="[[showEditDialog_]]" restamp>
+  <tab-discard-exception-edit-dialog prefs="{{prefs}}"
+      on-close="onEditDialogClose_" rule-to-edit="[[selectedRule_]]">
+  </tab-discard-exception-edit-dialog>
+</template>

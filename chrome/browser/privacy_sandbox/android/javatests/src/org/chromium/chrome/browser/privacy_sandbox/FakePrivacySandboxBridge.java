@@ -11,17 +11,15 @@ import java.util.HashMap;
 import java.util.LinkedHashSet;
 import java.util.Set;
 
-/**
- * Java implementation of PrivacySandboxBridge for testing.
- */
+/** Java implementation of PrivacySandboxBridge for testing. */
 public class FakePrivacySandboxBridge implements PrivacySandboxBridge.Natives {
-    private boolean mIsPrivacySandboxEnabled = true;
     private boolean mIsPrivacySandboxRestricted /* = false*/;
     private boolean mIsRestrictedNoticeEnabled /* = false*/;
 
     private final HashMap<String, Topic> mTopics = new HashMap<>();
     private final Set<Topic> mCurrentTopTopics = new LinkedHashSet<>();
     private final Set<Topic> mBlockedTopics = new LinkedHashSet<>();
+    private final Set<Topic> mFirstLevelTopics = new LinkedHashSet<>();
     private final Set<String> mCurrentFledgeSites = new LinkedHashSet<>();
     private final Set<String> mBlockedFledgeSites = new LinkedHashSet<>();
     private @PromptType int mPromptType = PromptType.NONE;
@@ -42,6 +40,13 @@ public class FakePrivacySandboxBridge implements PrivacySandboxBridge.Natives {
         }
     }
 
+    public void setFirstLevelTopics(String... topics) {
+        mFirstLevelTopics.clear();
+        for (String name : topics) {
+            mFirstLevelTopics.add(getOrCreateTopic(name));
+        }
+    }
+
     public void setCurrentFledgeSites(String... sites) {
         mCurrentFledgeSites.clear();
         mCurrentFledgeSites.addAll(Arrays.asList(sites));
@@ -59,16 +64,6 @@ public class FakePrivacySandboxBridge implements PrivacySandboxBridge.Natives {
             mTopics.put(name, t);
         }
         return t;
-    }
-
-    @Override
-    public boolean isPrivacySandboxEnabled() {
-        return mIsPrivacySandboxEnabled;
-    }
-
-    @Override
-    public boolean isPrivacySandboxManaged() {
-        return false;
     }
 
     @Override
@@ -97,11 +92,6 @@ public class FakePrivacySandboxBridge implements PrivacySandboxBridge.Natives {
     }
 
     @Override
-    public void setPrivacySandboxEnabled(boolean enabled) {
-        mIsPrivacySandboxEnabled = enabled;
-    }
-
-    @Override
     public void setFirstPartySetsDataAccessEnabled(boolean enabled) {}
 
     @Override
@@ -125,6 +115,16 @@ public class FakePrivacySandboxBridge implements PrivacySandboxBridge.Natives {
     @Override
     public Topic[] getBlockedTopics() {
         return mBlockedTopics.toArray(new Topic[] {});
+    }
+
+    @Override
+    public Topic[] getFirstLevelTopics() {
+        return mFirstLevelTopics.toArray(new Topic[] {});
+    }
+
+    @Override
+    public Topic[] getChildTopicsCurrentlyAssigned(int topicId, int taxonomyVersion) {
+        return new Topic[] {};
     }
 
     @Override
@@ -195,4 +195,7 @@ public class FakePrivacySandboxBridge implements PrivacySandboxBridge.Natives {
     public boolean getLastTopicsToggleValue() {
         return mLastTopicsToggleValue;
     }
+
+    @Override
+    public void setAllPrivacySandboxAllowedForTesting() {}
 }

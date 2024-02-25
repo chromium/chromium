@@ -6,14 +6,13 @@
 #define EXTENSIONS_BROWSER_EXTENSION_HOST_TEST_HELPER_H_
 
 #include <map>
-
+#include <optional>
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
 #include "extensions/browser/extension_host_registry.h"
 #include "extensions/common/extension_id.h"
 #include "extensions/common/mojom/view_type.mojom.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace content {
 class BrowserContext;
@@ -109,7 +108,7 @@ class ExtensionHostTestHelper : public ExtensionHostRegistry::Observer {
   void EventSeen(ExtensionHost* host, HostEvent event);
 
   // The event we're currently waiting for, if any.
-  absl::optional<HostEvent> waiting_for_;
+  std::optional<HostEvent> waiting_for_;
 
   // A closure to quit an active run loop, if we're waiting on a given event.
   base::OnceClosure quit_loop_;
@@ -124,7 +123,7 @@ class ExtensionHostTestHelper : public ExtensionHostRegistry::Observer {
 
   // The specific type of host this helper is waiting on, if any (nullopt
   // implies waiting on any kind of ExtensionHost).
-  absl::optional<mojom::ViewType> restrict_to_type_;
+  std::optional<mojom::ViewType> restrict_to_type_;
 
   // The specific host this helper is waiting on, if any (null implies
   // waiting on any host).

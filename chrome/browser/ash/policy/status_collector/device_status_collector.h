@@ -161,6 +161,13 @@ class DeviceStatusCollector : public StatusCollector,
       const EMMCLifetimeFetcher& emmc_lifetime_fetcher,
       const StatefulPartitionInfoFetcher& stateful_partition_info_fetcher,
       const GraphicsStatusFetcher& graphics_status_fetcher,
+      // Please do not add new code that uses the crashes reported here. These
+      // crashes are now reported via the Encrypted Reporting Pipeline (ERP)
+      // located at
+      // chrome/browser/ash/policy/reporting/metrics_reporting/fatal_crash/.
+      // However, the crash reported via this pipeline may still be used by the
+      // server and some customers. Please consult relevant parties if cleaning
+      // up crash reporting here is desired.
       const CrashReportInfoFetcher& crash_report_info_fetcher,
       base::Clock* clock = base::DefaultClock::GetInstance());
 
@@ -233,7 +240,7 @@ class DeviceStatusCollector : public StatusCollector,
   void ClearCachedMemoryUsage();
 
   // Callbacks from chromeos::VersionLoader.
-  void OnOSVersion(const absl::optional<std::string>& version);
+  void OnOSVersion(const std::optional<std::string>& version);
   void OnOSFirmware(std::pair<const std::string&, const std::string&> version);
 
   // Callbacks from `chromeos::TpmManagerClient`.
@@ -342,7 +349,7 @@ class DeviceStatusCollector : public StatusCollector,
   bool IncludeEmailsInActivityReports() const;
 
   // Pref service that is mainly used to store activity periods for reporting.
-  const raw_ptr<PrefService, ExperimentalAsh> pref_service_;
+  const raw_ptr<PrefService> pref_service_;
 
   const raw_ptr<ReportingUserTracker> reporting_user_tracker_;
 
@@ -424,7 +431,7 @@ class DeviceStatusCollector : public StatusCollector,
   PowerStatusCallback power_status_callback_;
 
   // Power manager client. Used to listen to power changed events.
-  const raw_ptr<chromeos::PowerManagerClient, ExperimentalAsh> power_manager_;
+  const raw_ptr<chromeos::PowerManagerClient> power_manager_;
 
   base::ScopedObservation<chromeos::PowerManagerClient,
                           chromeos::PowerManagerClient::Observer>

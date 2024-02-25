@@ -6,10 +6,10 @@
  * @fileoverview The element for displaying a list of albums.
  */
 
+import 'chrome://resources/ash/common/personalization/common.css.js';
 import 'chrome://resources/polymer/v3_0/iron-list/iron-list.js';
-import '../../css/common.css.js';
 
-import {assert} from 'chrome://resources/js/assert_ts.js';
+import {assert} from 'chrome://resources/js/assert.js';
 import {IronListElement} from 'chrome://resources/polymer/v3_0/iron-list/iron-list.js';
 
 import {AmbientModeAlbum, TopicSource} from '../../personalization_app.mojom-webui.js';
@@ -18,7 +18,7 @@ import {getCountText, isRecentHighlightsAlbum} from '../utils.js';
 
 import {getTemplate} from './album_list_element.html.js';
 
-export interface AlbumList {
+export interface AlbumListElement {
   $: {grid: IronListElement};
 }
 
@@ -30,7 +30,7 @@ declare global {
   }
 }
 
-export class AlbumList extends WithPersonalizationStore {
+export class AlbumListElement extends WithPersonalizationStore {
   static get is() {
     return 'album-list';
   }
@@ -64,7 +64,7 @@ export class AlbumList extends WithPersonalizationStore {
   albums: AmbientModeAlbum[]|null;
   private albumsForDisplay_: AmbientModeAlbum[];
 
-  private onAlbumsChanged_(albums: AlbumList['albums']) {
+  private onAlbumsChanged_(albums: AlbumListElement['albums']) {
     if (!albums) {
       return;
     }
@@ -149,4 +149,4 @@ export class AlbumList extends WithPersonalizationStore {
   }
 }
 
-customElements.define(AlbumList.is, AlbumList);
+customElements.define(AlbumListElement.is, AlbumListElement);

@@ -6,6 +6,7 @@
 
 #include <cstdint>
 #include <memory>
+#include <optional>
 #include <utility>
 #include <vector>
 
@@ -19,7 +20,6 @@
 #include "chromeos/crosapi/mojom/nullable_primitives.mojom.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ash {
 
@@ -196,7 +196,7 @@ TEST_F(DiagnosticsServiceAshTest, RunAcPowerRoutineSuccess) {
   base::test::TestFuture<crosapi::mojom::DiagnosticsRunRoutineResponsePtr>
       future;
   diagnostics_service()->RunAcPowerRoutine(
-      crosapi::mojom::DiagnosticsAcPowerStatusEnum::kConnected, absl::nullopt,
+      crosapi::mojom::DiagnosticsAcPowerStatusEnum::kConnected, std::nullopt,
       future.GetCallback());
 
   ASSERT_TRUE(future.Wait());
@@ -473,6 +473,19 @@ TEST_F(DiagnosticsServiceAshTest, RunEmmcLifetimeRoutineSuccess) {
   const auto& result = future.Get();
   ValidateResponse(result,
                    cros_healthd::mojom::DiagnosticRoutineEnum::kEmmcLifetime);
+}
+
+TEST_F(DiagnosticsServiceAshTest, RunFanRoutineSuccess) {
+  // Configure FakeCrosHealthd.
+  SetSuccessfulRoutineResponse();
+
+  base::test::TestFuture<crosapi::mojom::DiagnosticsRunRoutineResponsePtr>
+      future;
+  diagnostics_service()->RunFanRoutine(future.GetCallback());
+
+  ASSERT_TRUE(future.Wait());
+  const auto& result = future.Get();
+  ValidateResponse(result, cros_healthd::mojom::DiagnosticRoutineEnum::kFan);
 }
 
 TEST_F(DiagnosticsServiceAshTest, RunFingerprintAliveRoutineSuccess) {

@@ -60,7 +60,7 @@ void TextTrackCue::CueDidChange(CueMutationAffectsOrder affects_order) {
 }
 
 TextTrack* TextTrackCue::track() const {
-  return track_;
+  return track_.Get();
 }
 
 void TextTrackCue::SetTrack(TextTrack* track) {

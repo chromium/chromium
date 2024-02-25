@@ -64,7 +64,7 @@ void ReduceAcceptLanguageThrottle::WillStartRequest(
 void ReduceAcceptLanguageThrottle::BeforeWillRedirectRequest(
     net::RedirectInfo* redirect_info,
     const network::mojom::URLResponseHead& response_head,
-    bool* defer,
+    RestartWithURLReset* restart_with_url_reset,
     std::vector<std::string>* to_be_removed_request_headers,
     net::HttpRequestHeaders* modified_request_headers,
     net::HttpRequestHeaders* modified_cors_exempt_request_headers) {
@@ -80,7 +80,7 @@ void ReduceAcceptLanguageThrottle::BeforeWillRedirectRequest(
   // to A with the new preferred language and expect A responses a different
   // redirect. For detail example, see
   // https://github.com/Tanych/accept-language/issues/3.
-  MaybeRestartWithLanguageNegotiation(response_head);
+  MaybeRestartWithLanguageNegotiation(response_head, restart_with_url_reset);
   // Update the url with the redirect new url to make sure last_request_url_
   // with be the response_url.
   last_request_url_ = redirect_info->new_url;
@@ -89,13 +89,14 @@ void ReduceAcceptLanguageThrottle::BeforeWillRedirectRequest(
 void ReduceAcceptLanguageThrottle::BeforeWillProcessResponse(
     const GURL& response_url,
     const network::mojom::URLResponseHead& response_head,
-    bool* defer) {
+    RestartWithURLReset* restart_with_url_reset) {
   DCHECK_EQ(response_url, last_request_url_);
-  MaybeRestartWithLanguageNegotiation(response_head);
+  MaybeRestartWithLanguageNegotiation(response_head, restart_with_url_reset);
 }
 
 void ReduceAcceptLanguageThrottle::MaybeRestartWithLanguageNegotiation(
-    const network::mojom::URLResponseHead& response_head) {
+    const network::mojom::URLResponseHead& response_head,
+    RestartWithURLReset* restart_with_url_reset) {
   // For responses that don't contains content-language and variants header, we
   // skip language negotiation for them since we don't know whether we can get a
   // better representation.
@@ -155,7 +156,7 @@ void ReduceAcceptLanguageThrottle::MaybeRestartWithLanguageNegotiation(
     // restarts starting from the original request URL. However, for cross
     // origin redirects, it won't pass the SiteForCookies equivalent check on
     // URLLoader when using RestartWithFlags.
-    delegate_->RestartWithURLResetAndFlags(/*additional_load_flags=*/0);
+    *restart_with_url_reset = RestartWithURLReset(true);
     return;
   }
 }

@@ -10,6 +10,7 @@
 #include <limits>
 #include <string>
 
+#include <optional>
 #include "base/containers/contains.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
@@ -17,6 +18,7 @@
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram.h"
+#include "base/metrics/histogram_macros.h"
 #include "base/notreached.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/ranges/algorithm.h"
@@ -42,7 +44,6 @@
 #include "cc/tiles/tile_priority.h"
 #include "cc/tiles/tiles_with_resource_iterator.h"
 #include "components/viz/common/resources/resource_sizes.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/geometry/axis_transform2d.h"
 #include "ui/gfx/geometry/rect_conversions.h"
 
@@ -1057,6 +1058,16 @@ TileManager::PrioritizedWorkToSchedule TileManager::AssignGpuMemoryToTiles() {
   }
 
   did_oom_on_last_assign_ = !had_enough_memory_to_schedule_tiles_needed_now;
+  // Since this is recorded once per frame, subsample these metrics.
+  if (metrics_sub_sampler_.ShouldSample(0.01)) {
+    UMA_HISTOGRAM_BOOLEAN("Compositing.TileManager.EnoughMemory",
+                          had_enough_memory_to_schedule_tiles_needed_now);
+    if (did_oom_on_last_assign_) {
+      UMA_HISTOGRAM_MEMORY_MEDIUM_MB(
+          "Compositing.TileManager.LimitWhenNotEnoughMemory",
+          hard_memory_limit.memory_bytes() / (1024 * 1024));
+    }
+  }
 
   memory_stats_from_last_assign_.total_budget_in_bytes =
       global_state_.hard_memory_limit_in_bytes;
@@ -1398,6 +1409,8 @@ scoped_refptr<TileTask> TileManager::CreateRasterTask(
   playback_settings.msaa_sample_count = msaa_sample_count;
   playback_settings.visible =
       tile->required_for_activation() || tile->required_for_draw();
+  playback_settings.hdr_headroom =
+      target_color_params.hdr_max_luminance_relative;
 
   // Create and queue all image decode tasks that this tile depends on. Note
   // that we need to store the images for decode tasks in
@@ -1471,7 +1484,7 @@ scoped_refptr<TileTask> TileManager::CreateRasterTask(
           has_at_raster_images, has_hardware_accelerated_jpeg_candidates,
           has_hardware_accelerated_webp_candidates);
 
-  absl::optional<PlaybackImageProvider::Settings> settings;
+  std::optional<PlaybackImageProvider::Settings> settings;
   if (!skip_images) {
     settings.emplace();
     settings->images_to_skip = std::move(images_to_skip);
@@ -1550,7 +1563,8 @@ void TileManager::OnRasterTaskCompleted(
 
   // Once raster is done, allow the resource to be exported to the display
   // compositor, by giving it a ResourceId.
-  bool exported = resource_pool_->PrepareForExport(resource);
+  bool exported = resource_pool_->PrepareForExport(
+      resource, viz::TransferableResource::ResourceSource::kTileRasterTask);
 
   // In SMOOTHNESS_TAKES_PRIORITY mode, we wait for GPU work to complete for a
   // tile before setting it as ready to draw.
@@ -2035,7 +2049,7 @@ void TileManager::SetOverridesForTesting(
 bool TileManager::OnMemoryDump(const base::trace_event::MemoryDumpArgs& args,
                                base::trace_event::ProcessMemoryDump* pmd) {
   if (args.level_of_detail !=
-          base::trace_event::MemoryDumpLevelOfDetail::DETAILED ||
+          base::trace_event::MemoryDumpLevelOfDetail::kDetailed ||
       !resource_pool_) {
     return true;
   }

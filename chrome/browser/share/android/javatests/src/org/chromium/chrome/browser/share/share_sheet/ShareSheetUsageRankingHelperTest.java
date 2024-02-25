@@ -30,23 +30,22 @@ import org.robolectric.annotation.LooperMode;
 import org.chromium.base.UnownedUserDataHost;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.CallbackHelper;
+import org.chromium.base.test.util.Features;
 import org.chromium.base.test.util.JniMocker;
 import org.chromium.chrome.R;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.share.ChromeShareExtras.DetailedContentType;
 import org.chromium.chrome.browser.share.ShareContentTypeHelper;
 import org.chromium.chrome.browser.share.link_to_text.LinkToTextCoordinator.LinkGeneration;
 import org.chromium.chrome.browser.share.share_sheet.ShareSheetLinkToggleCoordinator.LinkToggleState;
 import org.chromium.chrome.browser.share.share_sheet.ShareSheetLinkToggleMetricsHelper.LinkToggleMetricsDetails;
-import org.chromium.chrome.test.util.browser.Features;
-import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.share.ShareParams;
 import org.chromium.components.dom_distiller.core.DomDistillerUrlUtils;
 import org.chromium.components.dom_distiller.core.DomDistillerUrlUtilsJni;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.modelutil.PropertyModel;
+import org.chromium.url.GURL;
 import org.chromium.url.JUnitTestGURLs;
 
 import java.lang.ref.WeakReference;
@@ -56,37 +55,23 @@ import java.util.Set;
 import java.util.concurrent.TimeoutException;
 import java.util.concurrent.atomic.AtomicReference;
 
-/**
- * Tests {@link ShareSheetUsageRankingHelper}.
- */
+/** Tests {@link ShareSheetUsageRankingHelper}. */
 @RunWith(BaseRobolectricTestRunner.class)
-@EnableFeatures({ChromeFeatureList.PREEMPTIVE_LINK_TO_TEXT_GENERATION})
 @LooperMode(LooperMode.Mode.LEGACY)
-
 public class ShareSheetUsageRankingHelperTest {
-    private static final String MOCK_URL = JUnitTestGURLs.EXAMPLE_URL;
+    private static final String MOCK_URL = JUnitTestGURLs.EXAMPLE_URL.getSpec();
 
-    @Rule
-    public TestRule mFeatureProcessor = new Features.JUnitProcessor();
-    @Rule
-    public JniMocker mJniMocker = new JniMocker();
+    @Rule public TestRule mFeatureProcessor = new Features.JUnitProcessor();
+    @Rule public JniMocker mJniMocker = new JniMocker();
 
-    @Mock
-    private DomDistillerUrlUtils.Natives mDistillerUrlUtilsJniMock;
-    @Mock
-    private BottomSheetController mBottomSheetController;
-    @Mock
-    private ShareSheetBottomSheetContent mBottomSheet;
-    @Mock
-    private ShareSheetPropertyModelBuilder mPropertyModelBuilder;
-    @Mock
-    private Set<Integer> mContentTypes;
-    @Mock
-    private Profile mProfile;
-    @Mock
-    private ShareParams.TargetChosenCallback mTargetChosenCallback;
-    @Mock
-    private WindowAndroid mWindow;
+    @Mock private DomDistillerUrlUtils.Natives mDistillerUrlUtilsJniMock;
+    @Mock private BottomSheetController mBottomSheetController;
+    @Mock private ShareSheetBottomSheetContent mBottomSheet;
+    @Mock private ShareSheetPropertyModelBuilder mPropertyModelBuilder;
+    @Mock private Set<Integer> mContentTypes;
+    @Mock private Profile mProfile;
+    @Mock private ShareParams.TargetChosenCallback mTargetChosenCallback;
+    @Mock private WindowAndroid mWindow;
 
     private Activity mActivity;
     private ShareParams mParams;
@@ -104,16 +89,23 @@ public class ShareSheetUsageRankingHelperTest {
         when(mWindow.getActivity()).thenReturn(new WeakReference<>(mActivity));
         when(mWindow.getUnownedUserDataHost()).thenReturn(new UnownedUserDataHost());
         when(mDistillerUrlUtilsJniMock.getOriginalUrlFromDistillerUrl(anyString()))
-                .thenReturn(JUnitTestGURLs.getGURL(MOCK_URL));
+                .thenReturn(new GURL(MOCK_URL));
         when(mContentTypes.contains(ShareContentTypeHelper.ContentType.IMAGE)).thenReturn(true);
 
-        mParams = new ShareParams.Builder(mWindow, "title", MOCK_URL)
-                          .setCallback(mTargetChosenCallback)
-                          .build();
+        mParams =
+                new ShareParams.Builder(mWindow, "title", MOCK_URL)
+                        .setCallback(mTargetChosenCallback)
+                        .build();
 
-        mShareSheetUsageRankingHelper = new ShareSheetUsageRankingHelper(mBottomSheetController,
-                mBottomSheet, /* shareStartTime=*/1234, mLinkGenerationStatusForMetrics,
-                mLinkToggleMetricsDetails, mPropertyModelBuilder, mProfile);
+        mShareSheetUsageRankingHelper =
+                new ShareSheetUsageRankingHelper(
+                        mBottomSheetController,
+                        mBottomSheet,
+                        /* shareStartTime= */ 1234,
+                        mLinkGenerationStatusForMetrics,
+                        mLinkToggleMetricsDetails,
+                        mPropertyModelBuilder,
+                        mProfile);
     }
 
     @Test
@@ -127,7 +119,11 @@ public class ShareSheetUsageRankingHelperTest {
 
         mShareSheetUsageRankingHelper.setTargetsForTesting(targets);
         mShareSheetUsageRankingHelper.createThirdPartyPropertyModelsFromUsageRanking(
-                mActivity, mParams, mContentTypes, /*saveLastUsed=*/false, models -> {
+                mActivity,
+                mParams,
+                mContentTypes,
+                /* saveLastUsed= */ false,
+                models -> {
                     resultPropertyModels.set(models);
                     helper.notifyCalled();
                 });
@@ -135,10 +131,12 @@ public class ShareSheetUsageRankingHelperTest {
         List<PropertyModel> propertyModels = resultPropertyModels.get();
 
         assertEquals("Incorrect number of property models.", 2, propertyModels.size());
-        assertEquals("First property model isn't More.",
+        assertEquals(
+                "First property model isn't More.",
                 mActivity.getResources().getString(R.string.sharing_more_icon_label),
                 propertyModels.get(0).get(ShareSheetItemViewProperties.LABEL));
-        assertEquals("Second property model isn't More.",
+        assertEquals(
+                "Second property model isn't More.",
                 mActivity.getResources().getString(R.string.sharing_more_icon_label),
                 propertyModels.get(1).get(ShareSheetItemViewProperties.LABEL));
     }
@@ -153,7 +151,11 @@ public class ShareSheetUsageRankingHelperTest {
 
         mShareSheetUsageRankingHelper.setTargetsForTesting(targets);
         mShareSheetUsageRankingHelper.createThirdPartyPropertyModelsFromUsageRanking(
-                mActivity, mParams, mContentTypes, /*saveLastUsed=*/false, models -> {
+                mActivity,
+                mParams,
+                mContentTypes,
+                /* saveLastUsed= */ false,
+                models -> {
                     resultPropertyModels.set(models);
                     helper.notifyCalled();
                 });
@@ -179,11 +181,13 @@ public class ShareSheetUsageRankingHelperTest {
     @Test
     @SmallTest
     public void testFilteringRemovesCtsShims() {
-        List<ResolveInfo> infos = List.of(resolveInfoForPackage("org.chromium.a"),
-                resolveInfoForPackage("com.android.cts.ctsshim"),
-                resolveInfoForPackage("org.chromium.b"),
-                resolveInfoForPackage("com.android.cts.priv.ctsshim"),
-                resolveInfoForPackage("org.chromium.c"));
+        List<ResolveInfo> infos =
+                List.of(
+                        resolveInfoForPackage("org.chromium.a"),
+                        resolveInfoForPackage("com.android.cts.ctsshim"),
+                        resolveInfoForPackage("org.chromium.b"),
+                        resolveInfoForPackage("com.android.cts.priv.ctsshim"),
+                        resolveInfoForPackage("org.chromium.c"));
 
         List<ResolveInfo> result =
                 ShareSheetUsageRankingHelper.filterOutBlocklistedResolveInfos(infos);

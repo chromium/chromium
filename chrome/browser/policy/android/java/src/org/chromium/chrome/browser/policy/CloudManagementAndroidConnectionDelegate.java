@@ -4,9 +4,7 @@
 
 package org.chromium.chrome.browser.policy;
 
-/**
- * Delegate for cloud management functions implemented downstream for Google Chrome.
- */
+/** Delegate for cloud management functions implemented downstream for Google Chrome. */
 public interface CloudManagementAndroidConnectionDelegate {
     /** Returns the value of Gservices Android ID. */
     String getGservicesAndroidId();

@@ -6,9 +6,10 @@ package org.chromium.chrome.browser.autofill;
 
 import androidx.annotation.VisibleForTesting;
 
-import org.chromium.base.annotations.CalledByNative;
-import org.chromium.base.annotations.JNINamespace;
-import org.chromium.base.annotations.NativeMethods;
+import org.jni_zero.CalledByNative;
+import org.jni_zero.JNINamespace;
+import org.jni_zero.NativeMethods;
+
 import org.chromium.chrome.browser.ui.messages.snackbar.Snackbar;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManagerProvider;
@@ -68,9 +69,13 @@ public class AutofillSnackbarController implements SnackbarManager.SnackbarContr
      */
     @CalledByNative
     void show(String message, String action) {
-        Snackbar snackBar = Snackbar.make(message, this, Snackbar.TYPE_ACTION,
-                                            Snackbar.UMA_AUTOFILL_VIRTUAL_CARD_FILLED)
-                                    .setAction(action, /*objectData=*/null);
+        Snackbar snackBar =
+                Snackbar.make(
+                                message,
+                                this,
+                                Snackbar.TYPE_ACTION,
+                                Snackbar.UMA_AUTOFILL_VIRTUAL_CARD_FILLED)
+                        .setAction(action, /* objectData= */ null);
         // Wrap the message text if it doesn't fit on a single line. The action text will not wrap
         // though.
         snackBar.setSingleLine(false);
@@ -88,6 +93,7 @@ public class AutofillSnackbarController implements SnackbarManager.SnackbarContr
     @NativeMethods
     public interface Natives {
         void onActionClicked(long nativeAutofillSnackbarViewAndroid);
+
         void onDismissed(long nativeAutofillSnackbarViewAndroid);
     }
 }

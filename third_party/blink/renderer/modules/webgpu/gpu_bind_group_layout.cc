@@ -8,11 +8,13 @@
 #include "third_party/blink/renderer/bindings/modules/v8/v8_gpu_bind_group_layout_entry.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_gpu_buffer_binding_layout.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_gpu_external_texture_binding_layout.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_gpu_feature_name.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_gpu_sampler_binding_layout.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_gpu_storage_texture_binding_layout.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_gpu_texture_binding_layout.h"
 #include "third_party/blink/renderer/modules/webgpu/dawn_conversions.h"
 #include "third_party/blink/renderer/modules/webgpu/gpu_device.h"
+#include "third_party/blink/renderer/modules/webgpu/gpu_supported_features.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 
 namespace blink {

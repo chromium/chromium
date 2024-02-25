@@ -9,7 +9,6 @@
 
 #include "ash/accessibility/accessibility_observer.h"
 #include "ash/ash_export.h"
-#include "ash/public/cpp/tablet_mode_observer.h"
 #include "ash/public/cpp/wallpaper/wallpaper_controller_observer.h"
 #include "ash/public/cpp/window_backdrop.h"
 #include "ash/public/cpp/window_properties.h"
@@ -24,15 +23,15 @@
 
 namespace aura {
 class Window;
-}
+}  // namespace aura
 
 namespace views {
 class Widget;
-}
+}  // namespace views
 
 namespace ui {
 class EventHandler;
-}
+}  // namespace ui
 
 namespace ash {
 
@@ -49,7 +48,6 @@ class ASH_EXPORT BackdropController : public AccessibilityObserver,
                                       public OverviewObserver,
                                       public SplitViewObserver,
                                       public WallpaperControllerObserver,
-                                      public TabletModeObserver,
                                       public WindowBackdrop::Observer {
  public:
   explicit BackdropController(aura::Window* container);
@@ -65,6 +63,7 @@ class ASH_EXPORT BackdropController : public AccessibilityObserver,
   void OnWindowStackingChanged(aura::Window* window);
   void OnPostWindowStateTypeChange(aura::Window* window);
   void OnDisplayMetricsChanged();
+  void OnTabletModeChanged();
 
   // Called when the desk content is changed in order to update the state of the
   // backdrop even if overview mode is active.
@@ -99,10 +98,6 @@ class ASH_EXPORT BackdropController : public AccessibilityObserver,
 
   // WallpaperControllerObserver:
   void OnWallpaperPreviewStarted() override;
-
-  // TabletModeObserver:
-  void OnTabletModeStarted() override;
-  void OnTabletModeEnded() override;
 
   // WindowBackdrop::Observer:
   void OnWindowBackdropPropertyChanged(aura::Window* window) override;
@@ -157,21 +152,19 @@ class ASH_EXPORT BackdropController : public AccessibilityObserver,
   // visibility and availability.
   bool DoesWindowCauseBackdropUpdates(aura::Window* window) const;
 
-  raw_ptr<aura::Window, ExperimentalAsh> root_window_;
+  raw_ptr<aura::Window> root_window_;
 
   // The backdrop which covers the rest of the screen.
   std::unique_ptr<views::Widget> backdrop_;
 
   // aura::Window for |backdrop_|.
-  raw_ptr<aura::Window, DanglingUntriaged | ExperimentalAsh> backdrop_window_ =
-      nullptr;
+  raw_ptr<aura::Window, DanglingUntriaged> backdrop_window_ = nullptr;
 
   // The window for which a backdrop has been installed.
-  raw_ptr<aura::Window, DanglingUntriaged | ExperimentalAsh>
-      window_having_backdrop_ = nullptr;
+  raw_ptr<aura::Window, DanglingUntriaged> window_having_backdrop_ = nullptr;
 
   // The container of the window that should have a backdrop.
-  raw_ptr<aura::Window, ExperimentalAsh> container_;
+  raw_ptr<aura::Window> container_;
 
   // If |window_having_backdrop_| is animating while we're trying to show the
   // backdrop, we postpone showing it until the animation completes.
@@ -179,8 +172,8 @@ class ASH_EXPORT BackdropController : public AccessibilityObserver,
 
   // Event hanlder used to implement actions for accessibility.
   std::unique_ptr<ui::EventHandler> backdrop_event_handler_;
-  raw_ptr<ui::EventHandler, DanglingUntriaged | ExperimentalAsh>
-      original_event_handler_ = nullptr;
+  raw_ptr<ui::EventHandler, DanglingUntriaged> original_event_handler_ =
+      nullptr;
 
   // If true, skip updating background. Used to avoid recursive update
   // when updating the window stack, or delay hiding the backdrop

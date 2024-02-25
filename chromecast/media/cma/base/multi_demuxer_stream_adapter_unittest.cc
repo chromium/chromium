@@ -44,6 +44,7 @@ class MultiDemuxerStreamAdaptersTest : public testing::Test {
   ~MultiDemuxerStreamAdaptersTest() override;
 
   void Start();
+  void Run();
 
  protected:
   void OnTestTimeout();
@@ -73,6 +74,8 @@ class MultiDemuxerStreamAdaptersTest : public testing::Test {
   int running_stream_count_;
 
   scoped_refptr<BalancedMediaTaskRunnerFactory> media_task_runner_factory_;
+
+  base::OnceClosure quit_closure_;
 };
 
 MultiDemuxerStreamAdaptersTest::MultiDemuxerStreamAdaptersTest() {
@@ -80,7 +83,11 @@ MultiDemuxerStreamAdaptersTest::MultiDemuxerStreamAdaptersTest() {
 
 MultiDemuxerStreamAdaptersTest::~MultiDemuxerStreamAdaptersTest() {
 }
-
+void MultiDemuxerStreamAdaptersTest::Run() {
+  base::RunLoop loop;
+  quit_closure_ = loop.QuitWhenIdleClosure();
+  loop.Run();
+}
 void MultiDemuxerStreamAdaptersTest::Start() {
   base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
       FROM_HERE,
@@ -143,7 +150,7 @@ void MultiDemuxerStreamAdaptersTest::OnEos() {
   ASSERT_GE(running_stream_count_, 0);
   if (running_stream_count_ == 0) {
     ASSERT_EQ(frame_received_count_, total_expected_frames_);
-    base::RunLoop::QuitCurrentWhenIdleDeprecated();
+    std::move(quit_closure_).Run();
   }
 }
 
@@ -167,7 +174,7 @@ TEST_F(MultiDemuxerStreamAdaptersTest, EarlyEos) {
   base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindOnce(&MultiDemuxerStreamAdaptersTest::Start,
                                 base::Unretained(this)));
-  base::RunLoop().Run();
+  Run();
 }
 }  // namespace media
 }  // namespace chromecast

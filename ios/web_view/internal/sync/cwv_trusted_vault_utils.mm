@@ -5,6 +5,7 @@
 #import "ios/web_view/public/cwv_trusted_vault_utils.h"
 
 #import "components/trusted_vault/trusted_vault_histograms.h"
+#import "components/trusted_vault/trusted_vault_server_constants.h"
 
 namespace {
 trusted_vault::TrustedVaultDeviceRegistrationStateForUMA
@@ -45,8 +46,9 @@ CWVConvertTrustedVaultState(CWVTrustedVaultState state) {
 
 + (void)logTrustedVaultDidReceiveHTTPStatusCode:(NSInteger)statusCode {
   trusted_vault::RecordTrustedVaultURLFetchResponse(
-      statusCode, /*net_error=*/0,
-      trusted_vault::TrustedVaultURLFetchReasonForUMA::kUnspecified);
+      trusted_vault::SecurityDomainId::kChromeSync,
+      trusted_vault::TrustedVaultURLFetchReasonForUMA::kUnspecified, statusCode,
+      /*net_error=*/0);
 }
 
 + (void)logTrustedVaultDidFailKeyDistribution:(NSError*)error {

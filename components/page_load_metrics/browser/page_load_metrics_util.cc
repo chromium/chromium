@@ -6,7 +6,6 @@
 
 #include <algorithm>
 
-#include "base/metrics/histogram_functions.h"
 #include "components/page_load_metrics/common/page_load_timing.h"
 #include "components/page_load_metrics/common/page_visit_final_status.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
@@ -116,7 +115,7 @@ void UmaMaxCumulativeShiftScoreHistogram10000x(
 }
 
 bool WasStartedInForegroundOptionalEventInForeground(
-    const absl::optional<base::TimeDelta>& event,
+    const std::optional<base::TimeDelta>& event,
     const PageLoadMetricsObserverDelegate& delegate) {
   return delegate.StartedInForeground() && event &&
          (!delegate.GetTimeToFirstBackground() ||
@@ -126,7 +125,7 @@ bool WasStartedInForegroundOptionalEventInForeground(
 // There is a copy of this function in prerender_page_load_metrics_observer.cc.
 // Please keep this consistent with the function.
 bool WasActivatedInForegroundOptionalEventInForeground(
-    const absl::optional<base::TimeDelta>& event,
+    const std::optional<base::TimeDelta>& event,
     const PageLoadMetricsObserverDelegate& delegate) {
   return delegate.WasPrerenderedThenActivatedInForeground() && event &&
          (!delegate.GetTimeToFirstBackground() ||
@@ -134,12 +133,12 @@ bool WasActivatedInForegroundOptionalEventInForeground(
 }
 
 bool WasStartedInForegroundOptionalEventInForegroundAfterBackForwardCacheRestore(
-    const absl::optional<base::TimeDelta>& event,
+    const std::optional<base::TimeDelta>& event,
     const PageLoadMetricsObserverDelegate& delegate,
     size_t index) {
   const auto& back_forward_cache_restore =
       delegate.GetBackForwardCacheRestore(index);
-  absl::optional<base::TimeDelta> first_background_time =
+  std::optional<base::TimeDelta> first_background_time =
       back_forward_cache_restore.first_background_time;
   return back_forward_cache_restore.was_in_foreground && event &&
          (!first_background_time ||
@@ -147,7 +146,7 @@ bool WasStartedInForegroundOptionalEventInForegroundAfterBackForwardCacheRestore
 }
 
 bool WasStartedInBackgroundOptionalEventInForeground(
-    const absl::optional<base::TimeDelta>& event,
+    const std::optional<base::TimeDelta>& event,
     const PageLoadMetricsObserverDelegate& delegate) {
   return !delegate.StartedInForeground() && event &&
          delegate.GetTimeToFirstForeground() &&
@@ -160,10 +159,11 @@ bool WasInForeground(const PageLoadMetricsObserverDelegate& delegate) {
   return delegate.StartedInForeground() || delegate.GetTimeToFirstForeground();
 }
 
-absl::optional<base::TimeDelta> GetNonPrerenderingBackgroundStartTiming(
+std::optional<base::TimeDelta> GetNonPrerenderingBackgroundStartTiming(
     const PageLoadMetricsObserverDelegate& delegate) {
   switch (delegate.GetPrerenderingState()) {
     case PrerenderingState::kNoPrerendering:
+    case PrerenderingState::kInPreview:
       if (delegate.StartedInForeground()) {
         return delegate.GetTimeToFirstBackground();
       } else {
@@ -171,7 +171,7 @@ absl::optional<base::TimeDelta> GetNonPrerenderingBackgroundStartTiming(
       }
     case PrerenderingState::kInPrerendering:
     case PrerenderingState::kActivatedNoActivationStart:
-      return absl::nullopt;
+      return std::nullopt;
     case PrerenderingState::kActivated:
       if (delegate.GetVisibilityAtActivation() == PageVisibility::kForeground) {
         return delegate.GetTimeToFirstBackground();
@@ -209,6 +209,7 @@ base::TimeDelta CorrectEventAsNavigationOrActivationOrigined(
 
   switch (delegate.GetPrerenderingState()) {
     case PrerenderingState::kNoPrerendering:
+    case PrerenderingState::kInPreview:
       return event;
     case PrerenderingState::kInPrerendering:
     case PrerenderingState::kActivatedNoActivationStart:
@@ -250,13 +251,13 @@ PageAbortInfo GetPageAbortInfo(
           delegate.GetTimeToPageEnd().value()};
 }
 
-absl::optional<base::TimeDelta> GetInitialForegroundDuration(
+std::optional<base::TimeDelta> GetInitialForegroundDuration(
     const PageLoadMetricsObserverDelegate& delegate,
     base::TimeTicks app_background_time) {
   if (!delegate.StartedInForeground())
-    return absl::optional<base::TimeDelta>();
+    return std::optional<base::TimeDelta>();
 
-  absl::optional<base::TimeDelta> time_on_page = OptionalMin(
+  std::optional<base::TimeDelta> time_on_page = OptionalMin(
       delegate.GetTimeToFirstBackground(), delegate.GetTimeToPageEnd());
 
   // If we don't have a time_on_page value yet, and we have an app background
@@ -282,7 +283,7 @@ bool DidObserveLoadingBehaviorInAnyFrame(
 }
 
 bool IsGoogleSearchHostname(const GURL& url) {
-  absl::optional<std::string> result =
+  std::optional<std::string> result =
       page_load_metrics::GetGoogleHostnamePrefix(url);
   return result && result.value() == "www";
 }
@@ -365,8 +366,6 @@ PageVisitFinalStatus RecordPageVisitFinalStatusForTiming(
                             ? PageVisitFinalStatus::kReachedFCP
                             : PageVisitFinalStatus::kAborted;
   }
-  UMA_HISTOGRAM_ENUMERATION("UserPerceivedPageVisit.PageVisitFinalStatus",
-                            page_visit_status);
   ukm::builders::UserPerceivedPageVisit pageVisitBuilder(source_id);
   pageVisitBuilder.SetPageVisitFinalStatus(static_cast<int>(page_visit_status));
   pageVisitBuilder.Record(ukm::UkmRecorder::Get());

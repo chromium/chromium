@@ -18,17 +18,15 @@ limitations under the License.
 #include <string>
 
 #include "absl/status/status.h"  // from @com_google_absl
-#include "absl/strings/cord.h"   // from @com_google_absl
+#include "absl/strings/cord.h"  // from @com_google_absl
 #include "tensorflow_lite_support/cc/common.h"
 
 namespace tflite {
 namespace support {
 
 void CreateTfLiteSupportError(enum TfLiteSupportErrorCode code,
-                              const char* message,
-                              TfLiteSupportError** error) {
-  if (error == nullptr)
-    return;
+                              const char* message, TfLiteSupportError** error) {
+  if (error == nullptr) return;
 
   *error = new TfLiteSupportError;
   (*error)->code = code;
@@ -37,8 +35,7 @@ void CreateTfLiteSupportError(enum TfLiteSupportErrorCode code,
 
 void CreateTfLiteSupportErrorWithStatus(const absl::Status& status,
                                         TfLiteSupportError** error) {
-  if (status.ok() || error == nullptr)
-    return;
+  if (status.ok() || error == nullptr) return;
 
   // Payload of absl::Status created by the tflite task library stores an
   // appropriate value of the enum TfLiteSupportStatus. The integer value

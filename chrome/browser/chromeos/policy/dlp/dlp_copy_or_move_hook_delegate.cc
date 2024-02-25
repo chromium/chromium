@@ -1,4 +1,4 @@
-// Copyright 2022 The Chromium Authors. All rights reserved.
+// Copyright 2022 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -100,10 +100,8 @@ void DlpCopyOrMoveHookDelegate::OnBeginProcessFile(
       base::BindPostTaskToCurrentDefault(std::move(callback));
   content::GetUIThreadTaskRunner({})->PostTask(
       FROM_HERE,
-      base::BindOnce(
-          &RequestCopyAccess,
-          base::SupportsWeakPtr<DlpCopyOrMoveHookDelegate>::AsWeakPtr(),
-          source_url, destination_url, std::move(continuation)));
+      base::BindOnce(&RequestCopyAccess, weak_ptr_factory_.GetWeakPtr(),
+                     source_url, destination_url, std::move(continuation)));
 }
 
 void DlpCopyOrMoveHookDelegate::OnEndCopy(
@@ -121,8 +119,10 @@ void DlpCopyOrMoveHookDelegate::OnEndMove(
 void DlpCopyOrMoveHookDelegate::OnError(
     const storage::FileSystemURL& source_url,
     const storage::FileSystemURL& destination_url,
-    base::File::Error error) {
+    base::File::Error error,
+    ErrorCallback callback) {
   OnEnd(source_url, destination_url);
+  std::move(callback).Run(ErrorAction::kDefault);
 }
 
 void DlpCopyOrMoveHookDelegate::OnEnd(

@@ -29,6 +29,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 
 #if BUILDFLAG(IS_ANDROID)
+#include "media/audio/android/aaudio_stream_wrapper.h"
 #include "media/audio/android/audio_manager_android.h"
 #endif
 
@@ -47,9 +48,9 @@ class AudioOutputTest : public testing::TestWithParam<bool> {
     if (should_use_aaudio_) {
       features_.InitAndEnableFeature(features::kUseAAudioDriver);
 
-      aaudio_is_supported_ =
-          reinterpret_cast<AudioManagerAndroid*>(audio_manager_.get())
-              ->IsUsingAAudioForTesting();
+      if (__builtin_available(android AAUDIO_MIN_API, *)) {
+        aaudio_is_supported_ = true;
+      }
     }
 #endif
     base::RunLoop().RunUntilIdle();
@@ -138,7 +139,14 @@ TEST_P(AudioOutputTest, StopTwice) {
 }
 
 // This test produces actual audio for .25 seconds on the default device.
-TEST_P(AudioOutputTest, Play200HzTone) {
+#if BUILDFLAG(IS_IOS)
+// TODO(crbug.com/1489278): audio output unit startup fails with partition
+// alloc.
+#define MAYBE_Play200HzTone DISABLED_Play200HzTone
+#else
+#define MAYBE_Play200HzTone Play200HzTone
+#endif
+TEST_P(AudioOutputTest, MAYBE_Play200HzTone) {
   if (should_use_aaudio_ && !aaudio_is_supported_)
     return;
 

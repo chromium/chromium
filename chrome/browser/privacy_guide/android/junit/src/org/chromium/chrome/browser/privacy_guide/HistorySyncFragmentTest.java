@@ -13,7 +13,6 @@ import static org.mockito.Mockito.when;
 
 import android.os.Bundle;
 
-import androidx.appcompat.widget.SwitchCompat;
 import androidx.fragment.app.testing.FragmentScenario;
 
 import org.junit.After;
@@ -30,15 +29,14 @@ import org.mockito.junit.MockitoRule;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.UserActionTester;
 import org.chromium.chrome.browser.sync.SyncServiceFactory;
+import org.chromium.components.browser_ui.widget.MaterialSwitchWithText;
 import org.chromium.components.sync.SyncService;
 import org.chromium.components.sync.UserSelectableType;
 
 import java.util.HashSet;
 import java.util.Set;
 
-/**
- * JUnit tests of the class {@link HistorySyncFragment}.
- */
+/** JUnit tests of the class {@link HistorySyncFragment}. */
 @RunWith(BaseRobolectricTestRunner.class)
 public class HistorySyncFragmentTest {
     private static final String CHANGE_HISTORY_SYNC_ON_USER_ACTION =
@@ -46,17 +44,14 @@ public class HistorySyncFragmentTest {
     private static final String CHANGE_HISTORY_SYNC_OFF_USER_ACTION =
             "Settings.PrivacyGuide.ChangeHistorySyncOff";
 
-    @Rule
-    public MockitoRule mMockitoRule = MockitoJUnit.rule();
+    @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
-    @Mock
-    private SyncService mSyncService;
+    @Mock private SyncService mSyncService;
 
-    @Captor
-    private ArgumentCaptor<Set<Integer>> mSetCaptor;
+    @Captor private ArgumentCaptor<Set<Integer>> mSetCaptor;
 
     private FragmentScenario mScenario;
-    private SwitchCompat mHistorySyncButton;
+    private MaterialSwitchWithText mHistorySyncButton;
     private final UserActionTester mActionTester = new UserActionTester();
 
     @Before
@@ -74,10 +69,13 @@ public class HistorySyncFragmentTest {
 
     private void initFragmentWithSyncState(boolean syncAll, boolean historySync) {
         initSyncState(syncAll, historySync);
-        mScenario = FragmentScenario.launchInContainer(
-                HistorySyncFragment.class, Bundle.EMPTY, R.style.Theme_MaterialComponents);
-        mScenario.onFragment(fragment
-                -> mHistorySyncButton = fragment.getView().findViewById(R.id.history_sync_switch));
+        mScenario =
+                FragmentScenario.launchInContainer(
+                        HistorySyncFragment.class, Bundle.EMPTY, R.style.Theme_MaterialComponents);
+        mScenario.onFragment(
+                fragment ->
+                        mHistorySyncButton =
+                                fragment.getView().findViewById(R.id.history_sync_switch));
     }
 
     private void initSyncState(boolean syncAll, boolean historySync) {

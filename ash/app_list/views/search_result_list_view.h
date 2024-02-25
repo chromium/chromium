@@ -6,6 +6,8 @@
 #define ASH_APP_LIST_VIEWS_SEARCH_RESULT_LIST_VIEW_H_
 
 #include <stddef.h>
+
+#include <optional>
 #include <set>
 #include <string>
 #include <vector>
@@ -15,7 +17,7 @@
 #include "ash/public/cpp/app_list/app_list_types.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
+#include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/view.h"
 
 namespace views {
@@ -34,6 +36,8 @@ class SearchResultPageDialogController;
 // SearchResultListView displays SearchResultList with a list of
 // SearchResultView.
 class ASH_EXPORT SearchResultListView : public SearchResultContainerView {
+  METADATA_HEADER(SearchResultListView, SearchResultContainerView)
+
  public:
   enum class SearchResultListType {
     // kAnswerCard list view contains a single result that has an extremely high
@@ -75,7 +79,7 @@ class ASH_EXPORT SearchResultListView : public SearchResultContainerView {
       AppListViewDelegate* view_delegate,
       SearchResultPageDialogController* dialog_controller,
       SearchResultView::SearchResultViewType search_result_view_type,
-      absl::optional<size_t> productivity_launcher_index);
+      std::optional<size_t> productivity_launcher_index);
 
   SearchResultListView(const SearchResultListView&) = delete;
   SearchResultListView& operator=(const SearchResultListView&) = delete;
@@ -93,7 +97,6 @@ class ASH_EXPORT SearchResultListView : public SearchResultContainerView {
 
   // Overridden from views::View:
   gfx::Size CalculatePreferredSize() const override;
-  const char* GetClassName() const override;
 
   // Overridden from SearchResultContainerView:
   SearchResultView* GetResultViewAt(size_t index) override;
@@ -107,7 +110,9 @@ class ASH_EXPORT SearchResultListView : public SearchResultContainerView {
 
   // This should not be called on a disabled list view as list_type_ will be
   // reset.
-  SearchResultListType list_type_for_test() { return list_type_.value(); }
+  const std::optional<SearchResultListType>& list_type_for_test() const {
+    return list_type_;
+  }
 
   views::Label* title_label_for_test() { return title_label_; }
 
@@ -122,7 +127,7 @@ class ASH_EXPORT SearchResultListView : public SearchResultContainerView {
   std::vector<views::View*> GetViewsToAnimate() override;
 
   // Overridden from views::View:
-  void Layout() override;
+  void Layout(PassKey) override;
   int GetHeightForWidth(int w) const override;
 
   // Fetches the category of results this view should show.
@@ -143,21 +148,21 @@ class ASH_EXPORT SearchResultListView : public SearchResultContainerView {
   bool FilterSearchResultsByCategory(const SearchResult::Category& category,
                                      const SearchResult& result) const;
 
-  raw_ptr<views::View, ExperimentalAsh> results_container_;
+  raw_ptr<views::View> results_container_;
 
-  std::vector<SearchResultView*> search_result_views_;  // Not owned.
+  std::vector<raw_ptr<SearchResultView, VectorExperimental>>
+      search_result_views_;  // Not owned.
 
   // The SearchResultListViewType dictates what kinds of results will be shown.
-  absl::optional<SearchResultListType> list_type_ =
+  std::optional<SearchResultListType> list_type_ =
       SearchResultListType::kBestMatch;
-  raw_ptr<views::Label, ExperimentalAsh> title_label_ =
-      nullptr;  // Owned by view hierarchy.
+  raw_ptr<views::Label> title_label_ = nullptr;  // Owned by view hierarchy.
 
   // The search result list view's location in the
   // productivity_launcher_search_view_'s list of 'search_result_list_view_'.
   // Not set if productivity_launcher is disabled or if the position of the
   // category is const as for kBestMatch.
-  const absl::optional<size_t> productivity_launcher_index_;
+  const std::optional<size_t> productivity_launcher_index_;
 
   const SearchResultView::SearchResultViewType search_result_view_type_;
 

@@ -9,7 +9,9 @@
 #include "testing/perf/perf_result_reporter.h"
 #include "testing/perf/perf_test.h"
 #include "third_party/blink/renderer/core/css/container_query_data.h"
+#include "third_party/blink/renderer/core/css/parser/css_parser.h"
 #include "third_party/blink/renderer/core/css/parser/css_parser_fast_paths.h"
+#include "third_party/blink/renderer/core/execution_context/security_context.h"
 #include "third_party/blink/renderer/platform/testing/unit_test_helpers.h"
 #include "third_party/googletest/src/googletest/include/gtest/gtest.h"
 
@@ -337,13 +339,15 @@ TEST(StyleFastPathPerfTest, MotionMarkMultiply) {
   int parse_iterations =
       parse_iterations_str.empty() ? 10000 : stoi(parse_iterations_str);
   constexpr int kNumCases = sizeof(kCases) / sizeof(kCases[0]);
+  auto* context = MakeGarbageCollected<CSSParserContext>(
+      kHTMLStandardMode, SecureContextMode::kInsecureContext);
 
   base::ElapsedTimer timer;
   for (int i = 0; i < parse_iterations; ++i) {
     int num_fast = 0;
     for (const FastPathSampleCase& c : kCases) {
-      const CSSValue* value = CSSParserFastPaths::MaybeParseValue(
-          c.property_id, c.str, kHTMLStandardMode);
+      const CSSValue* value =
+          CSSParserFastPaths::MaybeParseValue(c.property_id, c.str, context);
       if (value) {
         ++num_fast;
       }

@@ -9,7 +9,7 @@ in TensorFlow Lite.
 The Coral Edge TPU delegate plugin used in the
 [acceleration library](https://github.com/tensorflow/tflite-support/blob/master/tensorflow_lite_support/cc/port/default/tflite_wrapper.h).
 See
-[CoralSettings](https://github.com/tensorflow/tensorflow/blob/896fecee319ffeb4af2a3c0b5436f3a55ab058fa/tensorflow/lite/experimental/acceleration/configuration/configuration.proto#L323)
+[CoralSettings](https://github.com/tensorflow/tensorflow/blob/491681a5620e41bf079a582ac39c585cc86878b9/tensorflow/lite/acceleration/configuration/configuration.proto#L601)
 about how to configure the Coral Edge TPU plugin. You can use the acceleration
 library together with
 [Task Library](https://github.com/tensorflow/tflite-support/tree/master/tensorflow_lite_support/cc/task).

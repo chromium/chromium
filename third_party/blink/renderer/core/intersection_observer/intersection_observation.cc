@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/core/intersection_observer/intersection_observation.h"
 
+#include "base/debug/stack_trace.h"
 #include "third_party/blink/renderer/core/dom/element_rare_data_vector.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/intersection_observer/element_intersection_observer_data.h"
@@ -32,53 +33,16 @@ IntersectionObservation::IntersectionObservation(IntersectionObserver& observer,
                                                  Element& target)
     : observer_(observer),
       target_(&target),
-      last_run_time_(-observer.GetEffectiveDelay()),
-      last_is_visible_(false),
-      needs_update_(true),
-      // Note that the spec says the initial value of last_threshold_index_
-      // should be -1, but since last_threshold_index_ is unsigned, we use a
-      // different sentinel value.
-      last_threshold_index_(kMaxThresholdIndex - 1) {
-  if (!observer.RootIsImplicit() ||
-      RuntimeEnabledFeatures::IntersectionOptimizationEnabled()) {
-    // TODO(crbug.com/1400495): Avoid unique_ptr for IntersectionOptimization.
-    cached_rects_ = std::make_unique<IntersectionGeometry::CachedRects>();
-  }
-}
-
-int64_t IntersectionObservation::ComputeIntersection(
-    const IntersectionGeometry::RootGeometry& root_geometry,
-    unsigned compute_flags,
-    absl::optional<base::TimeTicks>& monotonic_time) {
-  return ComputeIntersectionInternal(
-      [this, &root_geometry](unsigned geometry_flags) {
-        return IntersectionGeometry(root_geometry, *observer_->root(),
-                                    *Target(), observer_->thresholds(),
-                                    observer_->TargetMargin(), geometry_flags,
-                                    cached_rects_.get());
-      },
-      compute_flags, monotonic_time);
-}
+      last_run_time_(-observer.GetEffectiveDelay()) {}
 
 int64_t IntersectionObservation::ComputeIntersection(
     unsigned compute_flags,
-    absl::optional<base::TimeTicks>& monotonic_time) {
-  return ComputeIntersectionInternal(
-      [this](unsigned geometry_flags) {
-        return IntersectionGeometry(
-            observer_->root(), *Target(), observer_->RootMargin(),
-            observer_->thresholds(), observer_->TargetMargin(), geometry_flags,
-            cached_rects_.get());
-      },
-      compute_flags, monotonic_time);
-}
-
-int64_t IntersectionObservation::ComputeIntersectionInternal(
-    base::FunctionRef<IntersectionGeometry(unsigned geometry_flags)>
-        geometry_creator,
-    unsigned compute_flags,
-    absl::optional<base::TimeTicks>& monotonic_time) {
+    gfx::Vector2dF accumulated_scroll_delta_since_last_update,
+    std::optional<base::TimeTicks>& monotonic_time,
+    std::optional<IntersectionGeometry::RootGeometry>& root_geometry) {
   DCHECK(Observer());
+  cached_rects_.min_scroll_delta_to_update -=
+      accumulated_scroll_delta_since_last_update;
   if (compute_flags &
       (observer_->RootIsImplicit() ? kImplicitRootObserversNeedUpdate
                                    : kExplicitRootObserversNeedUpdate)) {
@@ -91,8 +55,46 @@ int64_t IntersectionObservation::ComputeIntersectionInternal(
   DOMHighResTimeStamp timestamp = observer_->GetTimeStamp(*monotonic_time);
   if (MaybeDelayAndReschedule(compute_flags, timestamp))
     return 0;
+
+#if CHECK_SKIPPED_UPDATE_ON_SCROLL()
+  std::optional<IntersectionGeometry::CachedRects> cached_rects_backup;
+#endif
+  if (RuntimeEnabledFeatures::IntersectionOptimizationEnabled() &&
+      cached_rects_.valid && cached_rects_.min_scroll_delta_to_update.x() > 0 &&
+      cached_rects_.min_scroll_delta_to_update.y() > 0) {
+#if CHECK_SKIPPED_UPDATE_ON_SCROLL()
+    cached_rects_backup.emplace(cached_rects_);
+#else
+    return 0;
+#endif
+  }
+
   unsigned geometry_flags = GetIntersectionGeometryFlags(compute_flags);
-  IntersectionGeometry geometry = geometry_creator(geometry_flags);
+  // The policy for honoring margins is the same as that for reporting root
+  // bounds, so this flag can be used for both.
+  bool honor_margins =
+      geometry_flags & IntersectionGeometry::kShouldReportRootBounds;
+  Vector<Length> empty_margin;
+  IntersectionGeometry geometry(
+      observer_->root(), *Target(),
+      honor_margins ? observer_->RootMargin() : empty_margin,
+      observer_->thresholds(),
+      honor_margins ? observer_->TargetMargin() : empty_margin,
+      honor_margins ? observer_->ScrollMargin() : empty_margin, geometry_flags,
+      root_geometry, &cached_rects_);
+
+#if CHECK_SKIPPED_UPDATE_ON_SCROLL()
+  if (cached_rects_backup) {
+    // A skipped update on scroll should generate the same result.
+    CHECK_EQ(last_threshold_index_, geometry.ThresholdIndex())
+        << "Previous: " << cached_rects_backup->ToString()
+        << "\nNew: " << cached_rects_.ToString();
+    CHECK_EQ(last_is_visible_, geometry.IsVisible());
+    cached_rects_ = cached_rects_backup.value();
+    return 0;
+  }
+#endif
+
   ProcessIntersectionGeometry(geometry, timestamp);
   last_run_time_ = timestamp;
   needs_update_ = false;
@@ -100,8 +102,8 @@ int64_t IntersectionObservation::ComputeIntersectionInternal(
 }
 
 gfx::Vector2dF IntersectionObservation::MinScrollDeltaToUpdate() const {
-  if (cached_rects_ && cached_rects_->valid) {
-    return cached_rects_->min_scroll_delta_to_update;
+  if (cached_rects_.valid) {
+    return cached_rects_.min_scroll_delta_to_update;
   }
   return gfx::Vector2dF();
 }
@@ -130,11 +132,6 @@ void IntersectionObservation::Disconnect() {
   observer_.Clear();
 }
 
-void IntersectionObservation::InvalidateCachedRects() {
-  if (cached_rects_)
-    cached_rects_->valid = false;
-}
-
 void IntersectionObservation::Trace(Visitor* visitor) const {
   visitor->Trace(observer_);
   visitor->Trace(entries_);
@@ -143,12 +140,17 @@ void IntersectionObservation::Trace(Visitor* visitor) const {
 
 bool IntersectionObservation::CanUseCachedRectsForTesting() const {
   // This is to avoid the side effects of IntersectionGeometry.
-  IntersectionGeometry::CachedRects cached_rects_copy;
-  if (cached_rects_) {
-    cached_rects_copy = *cached_rects_;
-  }
-  IntersectionGeometry geometry(observer_->root(), *target_, {}, {0}, {}, 0,
-                                cached_rects_ ? &cached_rects_copy : nullptr);
+  IntersectionGeometry::CachedRects cached_rects_copy = cached_rects_;
+
+  std::optional<IntersectionGeometry::RootGeometry> root_geometry;
+  IntersectionGeometry geometry(observer_->root(), *target_,
+                                /* root_margin */ {},
+                                /* thresholds */ {0},
+                                /* target_margin */ {},
+                                /* scroll_margin */ {},
+                                /* flags */ 0, root_geometry,
+                                &cached_rects_copy);
+
   return geometry.CanUseCachedRectsForTesting();
 }
 
@@ -209,21 +211,26 @@ unsigned IntersectionObservation::GetIntersectionGeometryFlags(
     geometry_flags |= IntersectionGeometry::kShouldTrackFractionOfRoot;
   if (Observer()->UseOverflowClipEdge())
     geometry_flags |= IntersectionGeometry::kUseOverflowClipEdge;
+  if (Observer()->IsInternal()) {
+    // TODO(wangxianzhu): Let internal clients decide whether to respect
+    // filters.
+    geometry_flags |= IntersectionGeometry::kRespectFilters;
+  }
   return geometry_flags;
 }
 
 void IntersectionObservation::ProcessIntersectionGeometry(
     const IntersectionGeometry& geometry,
     DOMHighResTimeStamp timestamp) {
-  CHECK_LT(geometry.ThresholdIndex(), kMaxThresholdIndex - 1);
+  CHECK_LT(geometry.ThresholdIndex(), kNotFound);
 
   if (last_threshold_index_ != geometry.ThresholdIndex() ||
       last_is_visible_ != geometry.IsVisible()) {
     entries_.push_back(MakeGarbageCollected<IntersectionObserverEntry>(
         geometry, timestamp, Target()));
     Observer()->ReportUpdates(*this);
-    SetLastThresholdIndex(geometry.ThresholdIndex());
-    SetWasVisible(geometry.IsVisible());
+    last_threshold_index_ = geometry.ThresholdIndex();
+    last_is_visible_ = geometry.IsVisible();
   }
 }
 

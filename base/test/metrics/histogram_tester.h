@@ -211,7 +211,7 @@ struct Bucket {
   Bucket(MetricEnum min, HistogramBase::Count count)
       : Bucket(static_cast<std::underlying_type_t<MetricEnum>>(min), count) {}
 
-  bool operator==(const Bucket& other) const;
+  friend bool operator==(const Bucket&, const Bucket&) = default;
 
   HistogramBase::Sample min;
   HistogramBase::Count count;

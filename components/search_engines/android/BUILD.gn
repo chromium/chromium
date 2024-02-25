@@ -3,19 +3,51 @@
 # found in the LICENSE file.
 
 import("//build/config/android/rules.gni")
+import("//third_party/jni_zero/jni_zero.gni")
+
+android_library("delegate_java") {
+  deps = [
+    "//base:base_java",
+    "//third_party/androidx:androidx_annotation_annotation_java",
+  ]
+
+  sources = [
+    "java/src/org/chromium/components/search_engines/SearchEngineCountryDelegate.java",
+    "java/src/org/chromium/components/search_engines/SearchEngineCountryDelegateImpl.java",
+  ]
+
+  # Add the actual implementation where necessary so that downstream targets
+  # can provide their own implementations.
+  jar_excluded_patterns = [ "*/SearchEngineCountryDelegateImpl.class" ]
+}
+
+android_library("delegate_public_impl_java") {
+  deps = [
+    ":delegate_java",
+    "//base:base_java",
+    "//third_party/androidx:androidx_annotation_annotation_java",
+  ]
+
+  sources = [ "java/src/org/chromium/components/search_engines/SearchEngineCountryDelegateImpl.java" ]
+}
 
 android_library("java") {
   deps = [
+    ":delegate_java",
     "//base:base_java",
-    "//base:jni_java",
     "//build/android:build_java",
     "//content/public/android:content_java",
     "//third_party/androidx:androidx_annotation_annotation_java",
+    "//third_party/jni_zero:jni_zero_java",
     "//url:gurl_java",
   ]
 
-  srcjar_deps = [ ":jni_headers" ]
+  srcjar_deps = [
+    ":jni_headers",
+    "//components/search_engines:search_engine_enums_java",
+  ]
   sources = [
+    "java/src/org/chromium/components/search_engines/SearchEngineChoiceService.java",
     "java/src/org/chromium/components/search_engines/TemplateUrl.java",
     "java/src/org/chromium/components/search_engines/TemplateUrlService.java",
   ]
@@ -23,7 +55,30 @@ android_library("java") {
 
 generate_jni("jni_headers") {
   sources = [
+    "java/src/org/chromium/components/search_engines/SearchEngineChoiceService.java",
     "java/src/org/chromium/components/search_engines/TemplateUrl.java",
     "java/src/org/chromium/components/search_engines/TemplateUrlService.java",
+  ]
+}
+
+generate_jni("test_utils_jni_headers") {
+  testonly = true
+  sources = [ "java/src/org/chromium/components/search_engines/test/util/SearchEngineChoiceServiceTestUtil.java" ]
+}
+
+android_library("test_utils_java") {
+  testonly = true
+  sources = [
+    "java/src/org/chromium/components/search_engines/FakeTemplateUrl.java",
+    "java/src/org/chromium/components/search_engines/TemplateUrlTestHelpers.java",
+    "java/src/org/chromium/components/search_engines/test/util/SearchEngineChoiceServiceTestUtil.java",
+  ]
+  deps = [
+    ":delegate_java",
+    ":java",
+    "//base:base_java",
+    "//base:base_java_test_support",
+    "//third_party/jni_zero:jni_zero_java",
+    "//third_party/mockito:mockito_java",
   ]
 }

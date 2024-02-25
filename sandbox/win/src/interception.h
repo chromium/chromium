@@ -17,16 +17,14 @@
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr_exclusion.h"
 #include "base/memory/raw_ref.h"
+#include "base/types/expected.h"
+#include "sandbox/win/src/interception_internal.h"
 #include "sandbox/win/src/interceptors.h"
 #include "sandbox/win/src/sandbox_types.h"
 
 namespace sandbox {
 
 class TargetProcess;
-
-// Internal structures used for communication between the broker and the target.
-struct DllPatchInfo;
-struct DllInterceptionData;
 
 // The InterceptionManager executes on the parent application, and it is in
 // charge of setting up the desired interceptions, and placing the Interception
@@ -200,12 +198,11 @@ class InterceptionManager {
   ResultCode PatchNtdll(bool hot_patch_needed);
 
   // Peforms the actual interceptions on ntdll.
-  // thunks is the memory to store all the thunks for this dll (on the child),
-  // and dll_data is a local buffer to hold global dll interception info.
-  // Returns SBOX_ALL_OK on success.
-  ResultCode PatchClientFunctions(DllInterceptionData* thunks,
-                                  size_t thunk_bytes,
-                                  DllInterceptionData* dll_data);
+  // thunks is the memory to store all the thunks for this dll (on the child).
+  // On success, returns info about the intercepted functions.
+  base::expected<PatchClientResultData, ResultCode> PatchClientFunctions(
+      DllInterceptionData* thunks,
+      size_t thunk_bytes);
 
   // The process to intercept.
   const raw_ref<TargetProcess> child_;

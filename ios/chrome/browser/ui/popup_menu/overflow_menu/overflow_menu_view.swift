@@ -4,7 +4,6 @@
 
 import SwiftUI
 
-@available(iOS 15, *)
 struct OverflowMenuView: View {
   @ObservedObject var model: OverflowMenuModel
 
@@ -24,13 +23,12 @@ struct OverflowMenuView: View {
         spacing: 0
       ) {
         OverflowMenuDestinationList(
-          destinations: $model.destinations, metricsHandler: metricsHandler,
+          destinations: $model.destinations,
+          width: geometry.size.width,
+          metricsHandler: metricsHandler,
           uiConfiguration: uiConfiguration, namespace: namespace
         )
         .matchedGeometryEffect(id: MenuCustomizationAnimationID.destinations, in: namespace)
-        .frame(
-          height: OverflowMenuListStyle.destinationListHeight
-            + OverflowMenuListStyle.destinationListGrabberHeight)
         Divider()
         OverflowMenuActionList(
           actionGroups: model.actionGroups, metricsHandler: metricsHandler, namespace: namespace)

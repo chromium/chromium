@@ -24,6 +24,7 @@
 #include "absl/base/attributes.h"
 #include "absl/base/config.h"
 #include "absl/base/log_severity.h"
+#include "absl/log/internal/vlog_config.h"
 #include "absl/strings/string_view.h"
 
 namespace absl {
@@ -151,6 +152,28 @@ ABSL_MUST_USE_RESULT bool ShouldPrependLogPrefix();
 // Updates the value of the Prepend Log Prefix option.
 // This function is async-signal-safe.
 void EnableLogPrefix(bool on_off);
+
+//------------------------------------------------------------------------------
+// Set Global VLOG Level
+//------------------------------------------------------------------------------
+//
+// Sets the global `(ABSL_)VLOG(_IS_ON)` level to `log_level`.  This level is
+// applied to any sites whose filename doesn't match any `module_pattern`.
+// Returns the prior value.
+inline int SetGlobalVLogLevel(int log_level) {
+  return absl::log_internal::UpdateGlobalVLogLevel(log_level);
+}
+
+//------------------------------------------------------------------------------
+// Set VLOG Level
+//------------------------------------------------------------------------------
+//
+// Sets `(ABSL_)VLOG(_IS_ON)` level for `module_pattern` to `log_level`.  This
+// allows programmatic control of what is normally set by the --vmodule flag.
+// Returns the level that previously applied to `module_pattern`.
+inline int SetVLogLevel(absl::string_view module_pattern, int log_level) {
+  return absl::log_internal::PrependVModule(module_pattern, log_level);
+}
 
 //------------------------------------------------------------------------------
 // Configure Android Native Log Tag

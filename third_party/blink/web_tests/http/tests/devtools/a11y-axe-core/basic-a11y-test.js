@@ -1,15 +1,16 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 import {TestRunner} from 'test_runner';
 import {AxeCoreTestRunner} from 'axe_core_test_runner';
+import * as UI from 'devtools/ui/legacy/legacy.js';
 
 (async function() {
   const locationsToTest =
     [
       // elements
-      'elements.domProperties',
+      'elements.dom-properties',
       // Performance Monitor
       'performance.monitor',
       // Sensors
@@ -29,8 +30,8 @@ import {AxeCoreTestRunner} from 'axe_core_test_runner';
 
   async function loadViewAndTestElementViolations(view) {
     TestRunner.addResult(`Tests accessibility in the ${view} view using the axe-core linter.`);
-    await UI.viewManager.showView(view);
-    const widget = await UI.viewManager.view(view).widget();
+    await UI.ViewManager.ViewManager.instance().showView(view);
+    const widget = await UI.ViewManager.ViewManager.instance().view(view).widget();
     const ruleset = view === 'performance.monitor' ? NO_SCROLLABLE_REGION_FOCUSABLE_RULESET : {};
     await AxeCoreTestRunner.runValidation(widget.element, ruleset);
   }

@@ -20,7 +20,7 @@ namespace mojo {
 //     static bool IsNull(const CustomString& input);
 //     static void SetToNull(CustomString* output);
 //
-//     // This doesn't need to be a base::StringPiece; it simply needs to be a
+//     // This doesn't need to be a std::string_view; it simply needs to be a
 //     // type that exposes a data() method that returns a pointer to the UTF-8
 //     // bytes and a size() method that returns the length of the UTF-8 bytes.
 //     static std::span<char> GetUTF8(const CustomString& input);

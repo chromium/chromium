@@ -38,6 +38,8 @@ source_set("printing") {
     "printing_init.h",
   ]
 
+  configs += [ "//build/config/compiler:wexit_time_destructors" ]
+
   public_deps = [
     ":printing_buildflags",
     "//printing/backend",

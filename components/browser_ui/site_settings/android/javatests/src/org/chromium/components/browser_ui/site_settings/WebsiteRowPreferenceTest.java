@@ -29,9 +29,7 @@ import org.chromium.components.browser_ui.settings.PlaceholderSettingsForTest;
 
 import java.util.Arrays;
 
-/**
- * Tests for WebsiteRowPreference.
- */
+/** Tests for WebsiteRowPreference. */
 @RunWith(BaseJUnit4ClassRunner.class)
 @Batch(Batch.PER_CLASS)
 public class WebsiteRowPreferenceTest {
@@ -39,20 +37,16 @@ public class WebsiteRowPreferenceTest {
     public final BlankUiTestActivitySettingsTestRule mSettingsRule =
             new BlankUiTestActivitySettingsTestRule();
 
-    @Rule
-    public JniMocker mJniMocker = new JniMocker();
+    @Rule public JniMocker mJniMocker = new JniMocker();
 
-    @Mock
-    private WebsitePreferenceBridge.Natives mBridgeMock;
+    @Mock private WebsitePreferenceBridge.Natives mBridgeMock;
 
     private WebsiteRowPreference mPreference;
     private Activity mActivity;
 
-    @Mock
-    private SiteSettingsDelegate mDelegate;
+    @Mock private SiteSettingsDelegate mDelegate;
 
-    @Mock
-    private Runnable mOnDeleteCallback;
+    @Mock private Runnable mOnDeleteCallback;
 
     @BeforeClass
     public static void setupSuite() {
@@ -72,8 +66,9 @@ public class WebsiteRowPreferenceTest {
     @SmallTest
     public void testClearCallbackWebsite() {
         Website website = new Website(WebsiteAddress.create("https://test.com"), null);
-        mPreference = new WebsiteRowPreference(
-                mActivity, mDelegate, website, LayoutInflater.from(mActivity));
+        mPreference =
+                new WebsiteRowPreference(
+                        mActivity, mDelegate, website, LayoutInflater.from(mActivity));
         mPreference.setOnDeleteCallback(mOnDeleteCallback);
         mPreference.resetEntry();
         verify(mOnDeleteCallback).run();
@@ -84,10 +79,13 @@ public class WebsiteRowPreferenceTest {
     public void testClearCallbackWebsiteGroup() {
         Website origin1 = new Website(WebsiteAddress.create("https://one.test.com"), null);
         Website origin2 = new Website(WebsiteAddress.create("https://two.test.com"), null);
-        WebsiteGroup group = new WebsiteGroup(
-                origin1.getAddress().getDomainAndRegistry(), Arrays.asList(origin1, origin2));
-        mPreference = new WebsiteRowPreference(
-                mActivity, mDelegate, group, LayoutInflater.from(mActivity));
+        WebsiteGroup group =
+                new WebsiteGroup(
+                        origin1.getAddress().getDomainAndRegistry(),
+                        Arrays.asList(origin1, origin2));
+        mPreference =
+                new WebsiteRowPreference(
+                        mActivity, mDelegate, group, LayoutInflater.from(mActivity));
         mPreference.setOnDeleteCallback(mOnDeleteCallback);
         mPreference.resetEntry();
         verify(mOnDeleteCallback).run();

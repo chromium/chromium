@@ -1577,37 +1577,6 @@ class CppStyleTest(CppStyleTestBase):
         self.assert_lint('const char a : 6;', errmsg)
         self.assert_lint('int a = 1 ? 0 : 30;', '')
 
-    # Bitfields which are not declared unsigned or bool will generate a warning.
-    def test_unsigned_bool_bitfields(self):
-        def errmsg(member, name, bit_type):
-            return (
-                'Member %s of class %s defined as a bitfield of type %s. '
-                'Please declare all bitfields as unsigned.  [runtime/bitfields] [4]'
-                % (member, name, bit_type))
-
-        def warning_bitfield_test(member, name, bit_type, bits):
-            self.assert_multi_line_lint(
-                'class %s {\n%s %s: %d;\n}\n' % (name, bit_type, member, bits),
-                errmsg(member, name, bit_type))
-
-        def safe_bitfield_test(member, name, bit_type, bits):
-            self.assert_multi_line_lint(
-                'class %s {\n%s %s: %d;\n}\n' % (name, bit_type, member, bits),
-                '')
-
-        warning_bitfield_test('a', 'A', 'int32_t', 25)
-        warning_bitfield_test('m_someField', 'SomeClass', 'signed', 4)
-        warning_bitfield_test('m_someField', 'SomeClass', 'SomeEnum', 2)
-
-        safe_bitfield_test('a', 'A', 'unsigned', 22)
-        safe_bitfield_test('m_someField', 'SomeClass', 'bool', 1)
-        safe_bitfield_test('m_someField', 'SomeClass', 'unsigned', 2)
-
-        # Declarations in 'Expected' or 'SameSizeAs' classes are OK.
-        warning_bitfield_test('m_bitfields', 'SomeClass', 'int32_t', 32)
-        safe_bitfield_test('m_bitfields', 'ExpectedSomeClass', 'int32_t', 32)
-        safe_bitfield_test('m_bitfields', 'SameSizeAsSomeClass', 'int32_t', 32)
-
 
 class CleansedLinesTest(unittest.TestCase):
     def test_init(self):

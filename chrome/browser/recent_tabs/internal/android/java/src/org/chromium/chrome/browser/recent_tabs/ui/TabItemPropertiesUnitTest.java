@@ -29,8 +29,8 @@ public class TabItemPropertiesUnitTest {
 
     @Before
     public void setUp() {
-        mTab = new ForeignSessionTab(JUnitTestGURLs.getGURL(JUnitTestGURLs.URL_1), "title", 32L, 0);
-        mModel = TabItemProperties.create(/*tab=*/mTab, /*isSelected=*/true);
+        mTab = new ForeignSessionTab(JUnitTestGURLs.URL_1, "title", 32L, 32L, 0);
+        mModel = TabItemProperties.create(/* tab= */ mTab, /* isSelected= */ true);
     }
 
     @After

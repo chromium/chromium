@@ -19,7 +19,7 @@ GlobalScopeCreationParams::GlobalScopeCreationParams(
     mojom::blink::ScriptType script_type,
     const String& global_scope_name,
     const String& user_agent,
-    const absl::optional<UserAgentMetadata>& ua_metadata,
+    const std::optional<UserAgentMetadata>& ua_metadata,
     scoped_refptr<WebWorkerFetchContext> web_worker_fetch_context,
     Vector<network::mojom::blink::ContentSecurityPolicyPtr>
         outside_content_security_policies,
@@ -31,7 +31,7 @@ GlobalScopeCreationParams::GlobalScopeCreationParams(
     HttpsState starter_https_state,
     WorkerClients* worker_clients,
     std::unique_ptr<WebContentSettingsClient> content_settings_client,
-    const Vector<OriginTrialFeature>* inherited_trial_features,
+    const Vector<mojom::blink::OriginTrialFeature>* inherited_trial_features,
     const base::UnguessableToken& parent_devtools_token,
     std::unique_ptr<WorkerSettings> worker_settings,
     mojom::blink::V8CacheOptions v8_cache_options,
@@ -44,13 +44,15 @@ GlobalScopeCreationParams::GlobalScopeCreationParams(
     const PermissionsPolicy* parent_permissions_policy,
     base::UnguessableToken agent_cluster_id,
     ukm::SourceId ukm_source_id,
-    const absl::optional<ExecutionContextToken>& parent_context_token,
+    const std::optional<ExecutionContextToken>& parent_context_token,
     bool parent_cross_origin_isolated_capability,
     bool parent_is_isolated_context,
     InterfaceRegistry* interface_registry,
     scoped_refptr<base::SingleThreadTaskRunner>
         agent_group_scheduler_compositor_task_runner,
-    const SecurityOrigin* top_level_frame_security_origin)
+    const SecurityOrigin* top_level_frame_security_origin,
+    bool parent_has_storage_access,
+    bool require_cross_site_request_for_cookies)
     : script_url(script_url),
       script_type(script_type),
       global_scope_name(global_scope_name),
@@ -98,12 +100,16 @@ GlobalScopeCreationParams::GlobalScopeCreationParams(
       top_level_frame_security_origin(
           top_level_frame_security_origin
               ? top_level_frame_security_origin->IsolatedCopy()
-              : nullptr) {
+              : nullptr),
+      parent_has_storage_access(parent_has_storage_access),
+      require_cross_site_request_for_cookies(
+          require_cross_site_request_for_cookies) {
   this->inherited_trial_features =
-      std::make_unique<Vector<OriginTrialFeature>>();
+      std::make_unique<Vector<mojom::blink::OriginTrialFeature>>();
   if (inherited_trial_features) {
-    for (OriginTrialFeature feature : *inherited_trial_features)
+    for (mojom::blink::OriginTrialFeature feature : *inherited_trial_features) {
       this->inherited_trial_features->push_back(feature);
+    }
   }
 }
 

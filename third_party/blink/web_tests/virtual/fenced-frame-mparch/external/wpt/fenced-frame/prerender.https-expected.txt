@@ -1,4 +1,0 @@
-This is a testharness.js-based test.
-PASS Fenced Frame must not load prerendered page.
-Harness: the test ran to completion.
-

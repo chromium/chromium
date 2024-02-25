@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_UI_GLOBAL_MEDIA_CONTROLS_SUPPLEMENTAL_DEVICE_PICKER_PRODUCER_H_
 
 #include <memory>
+#include <optional>
 #include <string>
 
 #include "base/memory/raw_ptr.h"
@@ -21,7 +22,6 @@
 #include "mojo/public/cpp/bindings/receiver_set.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "mojo/public/cpp/bindings/remote_set.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace global_media_controls {
 class MediaItemManager;
@@ -97,7 +97,7 @@ class SupplementalDevicePickerProducer final
   const raw_ptr<global_media_controls::MediaItemManager> item_manager_;
 
   // The notification managed by this producer, if there is one.
-  absl::optional<SupplementalDevicePickerItem> item_;
+  std::optional<SupplementalDevicePickerItem> item_;
 
   bool is_item_shown_ = false;
 

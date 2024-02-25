@@ -8,7 +8,7 @@
 
 namespace ui::wayland {
 
-absl::optional<TextInputType> ConvertToTextInputType(
+std::optional<TextInputType> ConvertToTextInputType(
     zcr_extended_text_input_v1_input_type wayland_input_type) {
   switch (wayland_input_type) {
 #define MAP_ENTRY(name)                              \
@@ -19,10 +19,10 @@ absl::optional<TextInputType> ConvertToTextInputType(
 #undef MAP_ENTRY
   }
 
-  return absl::nullopt;
+  return std::nullopt;
 }
 
-absl::optional<TextInputMode> ConvertToTextInputMode(
+std::optional<TextInputMode> ConvertToTextInputMode(
     zcr_extended_text_input_v1_input_mode wayland_input_mode) {
   switch (wayland_input_mode) {
 #define MAP_ENTRY(name)                              \
@@ -33,7 +33,7 @@ absl::optional<TextInputMode> ConvertToTextInputMode(
 #undef MAP_ENTRY
   }
 
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 std::pair<uint32_t, uint32_t> ConvertToTextInputFlags(

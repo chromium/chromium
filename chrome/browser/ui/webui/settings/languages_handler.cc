@@ -80,7 +80,7 @@ void LanguagesHandler::HandleSetProspectiveUILanguage(
   const std::string& language_code = args[0].GetString();
   if (user &&
       user->GetAccountId() == user_manager->GetPrimaryUser()->GetAccountId() &&
-      user->GetType() != user_manager::USER_TYPE_PUBLIC_ACCOUNT) {
+      user->GetType() != user_manager::UserType::kPublicAccount) {
     profile_->ChangeAppLocale(language_code,
                               Profile::APP_LOCALE_CHANGED_VIA_SETTINGS);
   }

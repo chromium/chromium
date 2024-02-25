@@ -7,11 +7,11 @@
 
 #include <deque>
 #include <memory>
+#include <optional>
 
 #include "base/memory/weak_ptr.h"
 #include "components/query_tiles/internal/tile_service_impl.h"
 #include "components/query_tiles/tile_service.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace query_tiles {
 
@@ -35,7 +35,7 @@ class InitAwareTileService : public TileService {
   void PurgeDb() override;
   void SetServerUrl(const std::string& base_url) override;
   void OnTileClicked(const std::string& tile_id) override;
-  void OnQuerySelected(const absl::optional<std::string>& parent_tile_id,
+  void OnQuerySelected(const std::optional<std::string>& parent_tile_id,
                        const std::u16string& query_text) override;
   Logger* GetLogger() override;
 
@@ -52,7 +52,7 @@ class InitAwareTileService : public TileService {
   std::deque<base::OnceClosure> cached_api_calls_;
 
   // The initialization result of |tile_service_|.
-  absl::optional<bool> init_success_;
+  std::optional<bool> init_success_;
 
   base::WeakPtrFactory<InitAwareTileService> weak_ptr_factory_{this};
 };

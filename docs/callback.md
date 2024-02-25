@@ -383,6 +383,25 @@ error. If you're passing between threads, be sure it's RefCountedThreadSafe! See
 "Advanced binding of member functions" below if you don't want to use reference
 counting.
 
+Binding a non-const method with a const object is not allowed, for example:
+
+```cpp
+class MyClass {
+ public:
+  base::OnceClosure GetCallback() const {
+    base::BindOnce(
+        // A template error will prevent the non-const method from being bound
+        // to the the WeakPtr<const MyClass>.
+        &MyClass::OnCallback,
+        weak_factory_.GetWeakPtr());
+  }
+
+ private:
+  void OnCallback(); // non-const
+  base::WeakPtrFactory<MyClass> weak_factory_{this};
+}
+```
+
 ### Running A Callback
 
 Callbacks can be run with their `Run` method, which has the same signature as
@@ -692,19 +711,26 @@ base::RepeatingClosure void_cb = base::BindRepeating(base::IgnoreResult(cb));
 
 ### Ignoring Arguments Values
 
-Sometimes you want to pass a function that doesn't take any arguments in a
-place that expects a callback that takes some arguments
+Sometimes you want to use a function that takes fewer arguments than the
+designated callback type expects. The extra arguments can be ignored as long
+as they are leading.
 
 ```cpp
-void DoSomething() {
-  cout << "Hello!" << endl;
+void LogError(char* error_message) {
+  if (error_message)
+    cout << "Log: " << error_message << endl;
 }
-base::RepeatingCallback<void(int)> cb =
-    base::IgnoreArgs<int>(base::BindRepeating(&DoSomething));
+base::RepeatingCallback<void(int, char*)> cb =
+    base::IgnoreArgs<int>(base::BindRepeating(&LogError));
+cb.Run(42, nullptr);
 ```
 
-Similarly, you may want to use an existing closure in a place that expects a
-value-accepting callback.
+Note in the example above that the type(s) passed to `IgnoreArgs` represent
+the additional prepended parameters (those which will be "ignored"). The other
+arguments to `cb` are inferred from the callback that is being wrapped.
+
+`IgnoreArgs` can be used to adapt a closure to a callback, ignoring all the
+arguments that are eventually passed:
 
 ```cpp
 base::OnceClosure closure = base::BindOnce([](){ cout << "Hello!" << endl; });
@@ -847,12 +873,10 @@ of its implementation.
 namespace base {
 
 template <typename Receiver>
-struct IsWeakReceiver {
-  static constexpr bool value = false;
-};
+struct IsWeakReceiver : std::false_type {};
 
 template <typename Obj>
-struct UnwrapTraits {
+struct BindUnwrapTraits {
   template <typename T>
   T&& Unwrap(T&& obj) {
     return std::forward<T>(obj);
@@ -867,7 +891,7 @@ If `base::IsWeakReceiver<Receiver>::value` is true on a receiver of a method,
 if it's evaluated to false. You can specialize `base::IsWeakReceiver` to make
 an external smart pointer as a weak pointer.
 
-`base::UnwrapTraits<BoundObject>::Unwrap()` is called for each bound argument
+`base::BindUnwrapTraits<BoundObject>::Unwrap()` is called for each bound argument
 right before the callback calls the target function. You can specialize this to
 define an argument wrapper such as `base::Unretained`, `base::Owned`,
 `base::RetainedRef` and `base::Passed`.

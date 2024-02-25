@@ -1,6 +1,7 @@
 Name: PSM (Private Set Membership) client side
-URL: None
-Version: 31-Mar-2022
+URL: N/A - The repository is internal to Google
+Version: N/A
+Date: 2023-09-15
 License: Apache Version 2.0
 License File: LICENSE
 Security Critical: yes
@@ -32,8 +33,43 @@ Applying local modifications live in //third_party/private_membership/patches/
 can be done by running the following commands:
 
 $ export PSM_CLIENT_PATH=<path-to-chromium>/src/third_party/private_membership/patches
+$ cd <path-to-chromium>/src
 $ for patch in $PSM_CLIENT_PATH/patches/*; do patch -s -p1 < $patch; done
 
 In case of conflict, update those patches accordingly and save them back in
-//third_party/private_membership/patches/.
+//third_party/private_membership/patches/. The most recent patch has been
+produced automatically from the lastest version of the PSM library using the
+following commands:
 
+$ export PATH_TO_CHROMIUM=<path-to-chromium>
+$ export PATH_TO_PSM_LIB=<path-to-psm-lib>
+$
+$ # Remove old version and prepare empty directory in Chromium codebase.
+$ cd $PATH_TO_CHROMIUM/src/third_party/private_membership
+$ rm -rf src && mkdir src
+$
+$ # Copy client C++ and proto files to Chromium.
+$ cp $PATH_TO_PSM_LIB/private_membership/rlwe/client/proto/*.proto src
+$ cp $PATH_TO_PSM_LIB/private_membership/rlwe/client/cpp/private_membership_rlwe_client* src
+$ cp -a $PATH_TO_PSM_LIB/private_membership/rlwe/client/cpp/internal src
+$
+$ # Remove BUILD files since Chromium uses GN (see BUILD.gn).
+$ rm src/**/BUILD
+$
+$ # Fix C++ includes.
+$ find src \( -name '*.h' -o -name '*.cc' \) -type f -print0 | xargs -0 sed -i 's/#include "private_membership\/rlwe\/client\/cpp/#include "third_party\/private_membership\/src/g'
+$ find src \( -name '*.h' -o -name '*.cc' \) -type f -print0 | xargs -0 sed -i 's/#include "private_membership\/rlwe\/client\/proto/#include "third_party\/private_membership\/src/g'
+$ find src \( -name '*.h' -o -name '*.cc' \) -type f -print0 | xargs -0 sed -i 's/#include "shell_encryption\//#include "third_party\/shell-encryption\/src\//g'
+$ find src \( -name '*.h' -o -name '*.cc' \) -type f -print0 | xargs -0 sed -i 's/#include "private_join_and_compute\//#include "third_party\/private-join-and-compute\/src\//g'
+$ find src \( -name '*.h' -o -name '*.cc' \) -type f -print0 | xargs -0 sed -i 's/#include "third_party\/private_membership\/src\/open_source\/chromium\/private_membership_export.h"/#include "third_party\/private_membership\/base\/private_membership_export.h"/g'
+$
+$ # Fix C++ header guards.
+$ find src -name '*.h' -type f -print0 | xargs -0 sed -i 's/PRIVATE_MEMBERSHIP_RLWE_CLIENT_CPP/THIRD_PARTY_PRIVATE_MEMBERSHIP_SRC/g'
+$
+$ # Fix proto imports.
+$ find src -name '*.proto' -type f -print0 | xargs -0 sed -i 's/import "shell_encryption\/serialization.proto";/import "serialization.proto";/g'
+$ find src -name '*.proto' -type f -print0 | xargs -0 sed -i 's/import "private_membership\/rlwe\/client\/proto\//import "/g'
+$
+$ # Generate updated patch.
+$ git diff > new.patch
+$ mv new.patch patches/0001-Chromium-fixes-for-PSM-client-library.patch

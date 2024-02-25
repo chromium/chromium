@@ -6,12 +6,12 @@
 #define COMPONENTS_REPORTING_METRICS_PERIODIC_EVENT_COLLECTOR_H_
 
 #include <memory>
+#include <optional>
 #include <string>
 
 #include "components/reporting/metrics/collector_base.h"
 #include "components/reporting/metrics/metric_event_observer.h"
 #include "components/reporting/proto/synced/metric_data.pb.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base {
 
@@ -39,8 +39,8 @@ class PeriodicEventCollector : public MetricEventObserver,
     // Check if there is a new event present in `current_metric_data` and return
     // it if found, `previous_metric_data` will be nullopt for first metric
     // collection.
-    virtual absl::optional<MetricEventType> DetectEvent(
-        absl::optional<MetricData> previous_metric_data,
+    virtual std::optional<MetricEventType> DetectEvent(
+        std::optional<MetricData> previous_metric_data,
         const MetricData& current_metric_data) = 0;
   };
 
@@ -63,7 +63,7 @@ class PeriodicEventCollector : public MetricEventObserver,
  protected:
   // CollectorBase:
   void OnMetricDataCollected(bool is_event_driven,
-                             absl::optional<MetricData> metric_data) override;
+                             std::optional<MetricData> metric_data) override;
   bool CanCollect() const override;
 
  private:
@@ -71,7 +71,7 @@ class PeriodicEventCollector : public MetricEventObserver,
 
   const std::unique_ptr<EventDetector> event_detector_;
 
-  absl::optional<MetricData> last_collected_data_;
+  std::optional<MetricData> last_collected_data_;
 
   const std::unique_ptr<MetricRateController> rate_controller_;
 };

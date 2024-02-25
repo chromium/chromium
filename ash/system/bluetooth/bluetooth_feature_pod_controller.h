@@ -5,26 +5,26 @@
 #ifndef ASH_SYSTEM_BLUETOOTH_BLUETOOTH_FEATURE_POD_CONTROLLER_H_
 #define ASH_SYSTEM_BLUETOOTH_BLUETOOTH_FEATURE_POD_CONTROLLER_H_
 
+#include <optional>
 #include <string>
 
 #include "ash/constants/quick_settings_catalogs.h"
+#include "ash/public/mojom/hid_preserving_bluetooth_state_controller.mojom.h"
 #include "ash/system/unified/feature_pod_controller_base.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "chromeos/ash/services/bluetooth_config/public/mojom/cros_bluetooth_config.mojom.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/vector_icon_types.h"
 
 namespace ash {
 
-class FeaturePodButton;
 class UnifiedSystemTrayController;
 
-// Controller of the feature pod button that allows users to toggle whether
-// Bluetooth is enabled or disabled, and that allows users to navigate to a more
-// detailed page with a Bluetooth device list.
+// Controller of the feature tile that allows users to toggle whether Bluetooth
+// is enabled or disabled, and that allows users to navigate to a more detailed
+// page with a Bluetooth device list.
 class ASH_EXPORT BluetoothFeaturePodController
     : public FeaturePodControllerBase,
       public bluetooth_config::mojom::SystemPropertiesObserver {
@@ -37,7 +37,6 @@ class ASH_EXPORT BluetoothFeaturePodController
   ~BluetoothFeaturePodController() override;
 
   // FeaturePodControllerBase:
-  FeaturePodButton* CreateButton() override;
   std::unique_ptr<FeatureTile> CreateTile(bool compact = false) override;
   QsFeatureCatalogName GetCatalogName() override;
   void OnIconPressed() override;
@@ -63,16 +62,11 @@ class ASH_EXPORT BluetoothFeaturePodController
   std::u16string ComputeButtonSubLabel() const;
   std::u16string ComputeTooltip() const;
 
-  // Returns true if `button_` or `tile_` is enabled, depending on feature
-  // QsRevamp.
+  // Returns true if `tile_` is enabled, otherwise false.
   bool IsButtonEnabled() const;
 
-  // Returns true if `button_` or `tile_` is toggled, depending on feature
-  // QsRevamp.
+  // Returns true if `tile_` is toggled, otherwise false.
   bool IsButtonToggled() const;
-
-  // Updates |button_| state to reflect the cached Bluetooth state.
-  void UpdateButtonStateIfExists();
 
   // Updates `tile_` state to reflect the cached Bluetooth state.
   void UpdateTileStateIfExists();
@@ -86,17 +80,18 @@ class ASH_EXPORT BluetoothFeaturePodController
   mojo::Receiver<bluetooth_config::mojom::SystemPropertiesObserver>
       cros_system_properties_observer_receiver_{this};
 
+  mojo::Remote<mojom::HidPreservingBluetoothStateController>
+      remote_hid_preserving_bluetooth_;
+
   size_t connected_device_count_ = 0;
-  absl::optional<BluetoothDeviceNameAndBatteryInfo> first_connected_device_;
+  std::optional<BluetoothDeviceNameAndBatteryInfo> first_connected_device_;
   bluetooth_config::mojom::BluetoothModificationState modification_state_ =
       bluetooth_config::mojom::BluetoothModificationState::
           kCannotModifyBluetooth;
   bluetooth_config::mojom::BluetoothSystemState system_state_;
-  raw_ptr<FeaturePodButton, DanglingUntriaged | ExperimentalAsh> button_ =
+  raw_ptr<FeatureTile, DanglingUntriaged> tile_ =
       nullptr;  // Owned by views hierarchy.
-  raw_ptr<FeatureTile, DanglingUntriaged | ExperimentalAsh> tile_ =
-      nullptr;  // Owned by views hierarchy.
-  raw_ptr<UnifiedSystemTrayController, ExperimentalAsh> tray_controller_;
+  raw_ptr<UnifiedSystemTrayController> tray_controller_;
 
   base::WeakPtrFactory<BluetoothFeaturePodController> weak_factory_{this};
 };

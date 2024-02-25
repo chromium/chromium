@@ -6,9 +6,10 @@
 
 #include <stddef.h>
 
+#include <string_view>
+
 #include "base/check.h"
 #include "base/strings/string_number_conversions.h"
-#include "base/strings/string_piece.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
@@ -243,7 +244,7 @@ std::string NormalizeShortcutSuggestion(const std::string& suggestion,
   if (!normalize)
     return suggestion;
 
-  std::vector<base::StringPiece> tokens = base::SplitStringPiece(
+  std::vector<std::string_view> tokens = base::SplitStringPiece(
       suggestion, "+", base::TRIM_WHITESPACE, base::SPLIT_WANT_ALL);
   for (size_t i = 0; i < tokens.size(); i++) {
     if (tokens[i] == values::kKeyCtrl)
@@ -432,7 +433,7 @@ bool Command::Parse(const base::Value::Dict& command,
   }
 
   // We'll build up a map of platform-to-shortcut suggestions.
-  typedef std::map<const std::string, std::string> SuggestionMap;
+  using SuggestionMap = std::map<const std::string, std::string>;
   SuggestionMap suggestions;
 
   // First try to parse the |suggested_key| as a dictionary.

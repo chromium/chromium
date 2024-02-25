@@ -4,13 +4,14 @@
 
 #include "chrome/browser/webid/federated_identity_account_keyed_permission_context.h"
 
+#include <optional>
+
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/values.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/content_settings/core/common/content_settings_types.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/origin.h"
 
 namespace {
@@ -30,8 +31,8 @@ void AddToAccountList(base::Value::Dict& dict, const std::string& account_id) {
   dict.Set(kAccountIdsKey, base::Value(std::move(new_list)));
 }
 
-std::string BuildKey(const absl::optional<std::string>& relying_party_requester,
-                     const absl::optional<std::string>& relying_party_embedder,
+std::string BuildKey(const std::optional<std::string>& relying_party_requester,
+                     const std::optional<std::string>& relying_party_embedder,
                      const std::string& identity_provider) {
   if (relying_party_requester && relying_party_embedder &&
       *relying_party_requester != *relying_party_embedder) {
@@ -58,10 +59,9 @@ std::string BuildKey(const url::Origin& relying_party_requester,
 FederatedIdentityAccountKeyedPermissionContext::
     FederatedIdentityAccountKeyedPermissionContext(
         content::BrowserContext* browser_context,
-        ContentSettingsType content_settings_type,
         const std::string& idp_origin_key)
     : ObjectPermissionContextBase(
-          content_settings_type,
+          ContentSettingsType::FEDERATED_IDENTITY_SHARING,
           HostContentSettingsMapFactory::GetForProfile(
               Profile::FromBrowserContext(browser_context))),
       idp_origin_key_(idp_origin_key) {}
@@ -82,7 +82,7 @@ bool FederatedIdentityAccountKeyedPermissionContext::HasPermission(
     const url::Origin& relying_party_requester,
     const url::Origin& relying_party_embedder,
     const url::Origin& identity_provider,
-    const absl::optional<std::string>& account_id) {
+    const std::optional<std::string>& account_id) {
   // TODO(crbug.com/1334019): This is currently origin-bound, but we would like
   // this grant to apply at the 'site' (aka eTLD+1) level. We should override
   // GetGrantedObject to find a grant that matches the RP's site rather
@@ -146,16 +146,16 @@ void FederatedIdentityAccountKeyedPermissionContext::RevokePermission(
   std::string key = BuildKey(relying_party_requester, relying_party_embedder,
                              identity_provider);
   const auto object = GetGrantedObject(relying_party_requester, key);
-  // TODO(crbug.com/1311268): If the provided `account_id` does not match the
-  // one we used when granting the permission, early return will leave an entry
-  // in the storage that cannot be removed afterwards.
   if (!object)
     return;
 
   base::Value::Dict new_object = object->value.Clone();
   base::Value::List* account_ids = new_object.FindList(kAccountIdsKey);
-  if (account_ids)
-    account_ids->EraseValue(base::Value(account_id));
+  if (account_ids) {
+    if (!account_ids->EraseValue(base::Value(account_id))) {
+      account_ids->clear();
+    }
+  }
 
   // Remove the permission object if there is no account left.
   if (!account_ids || account_ids->size() == 0) {
@@ -173,10 +173,10 @@ std::string FederatedIdentityAccountKeyedPermissionContext::GetKeyForObject(
   const std::string* rp_embedder_origin = object.FindString(kRpEmbedderKey);
   const std::string* idp_origin = object.FindString(idp_origin_key_);
   return BuildKey(
-      rp_requester_origin ? absl::optional<std::string>(*rp_requester_origin)
-                          : absl::nullopt,
-      rp_embedder_origin ? absl::optional<std::string>(*rp_embedder_origin)
-                         : absl::nullopt,
+      rp_requester_origin ? std::optional<std::string>(*rp_requester_origin)
+                          : std::nullopt,
+      rp_embedder_origin ? std::optional<std::string>(*rp_embedder_origin)
+                         : std::nullopt,
       *idp_origin);
 }
 
@@ -190,4 +190,42 @@ FederatedIdentityAccountKeyedPermissionContext::GetObjectDisplayName(
     const base::Value::Dict& object) {
   DCHECK(IsValidObject(object));
   return base::UTF8ToUTF16(*object.FindString(idp_origin_key_));
+}
+
+void FederatedIdentityAccountKeyedPermissionContext::GetAllDataKeys(
+    base::OnceCallback<void(
+        std::vector<webid::FederatedIdentityDataModel::DataKey>)> callback) {
+  auto granted_objects = GetAllGrantedObjects();
+  std::vector<webid::FederatedIdentityDataModel::DataKey> data_keys;
+  for (const auto& obj : granted_objects) {
+    const base::Value::List* accounts = obj->value.FindList(kAccountIdsKey);
+    const std::string* rp_requester_origin =
+        obj->value.FindString(kRpRequesterKey);
+    const std::string* rp_embedder_origin =
+        obj->value.FindString(kRpEmbedderKey);
+    const std::string* idp_origin = obj->value.FindString(idp_origin_key_);
+
+    if (!accounts || accounts->empty()) {
+      continue;
+    }
+
+    CHECK(idp_origin && rp_requester_origin && rp_embedder_origin);
+    for (const auto& account : *accounts) {
+      data_keys.emplace_back(url::Origin::Create(GURL(*rp_requester_origin)),
+                             url::Origin::Create(GURL(*rp_embedder_origin)),
+                             url::Origin::Create(GURL(*idp_origin)),
+                             account.GetString());
+    }
+  }
+  std::move(callback).Run(std::move(data_keys));
+}
+
+void FederatedIdentityAccountKeyedPermissionContext::
+    RemoveFederatedIdentityDataByDataKey(
+        const webid::FederatedIdentityDataModel::DataKey& data_key,
+        base::OnceClosure callback) {
+  RevokePermission(data_key.relying_party_requester(),
+                   data_key.relying_party_embedder(),
+                   data_key.identity_provider(), data_key.account_id());
+  std::move(callback).Run();
 }

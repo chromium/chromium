@@ -34,10 +34,10 @@ class SyncScheduler : public SyncCycle::Delegate {
   SyncScheduler() = default;
   ~SyncScheduler() override = default;
 
-  // Start the scheduler with the given mode.  If the scheduler is
-  // already started, switch to the given mode, although some
-  // scheduled tasks from the old mode may still run. |last_poll_time| will
-  // be used to decide what the poll timer should be initialized with.
+  // Start the scheduler with the given mode.  If the scheduler is already
+  // started, switch to the given mode, although some scheduled tasks from the
+  // old mode may still run. |last_poll_time| is used to schedule the initial
+  // poll timer.
   virtual void Start(Mode mode, base::Time last_poll_time) = 0;
 
   // Schedules the configuration task. |ready_task| is invoked when the

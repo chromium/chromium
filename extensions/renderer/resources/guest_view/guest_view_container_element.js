@@ -83,15 +83,44 @@ function registerElement(elementName, containerElementType) {
 
 // Forward public API methods from |containerElementType|'s prototype to their
 // internal implementations. If the method is defined on |containerType|, we
-// forward to that. Otherwise, we forward to the method on |internalApi|.
+// forward to that. Otherwise, we forward to the method on |internalApi|. For
+// APIs in |promiseMethodDetails|, the forwarded API will return a Promise that
+// resolves with the result of the API or rejects with the error that is
+// produced if the callback parameter is not defined.
 function forwardApiMethods(
-    containerElementType, containerType, internalApi, methodNames) {
+    containerElementType, containerType, internalApi, methodNames,
+    promiseMethodDetails) {
   var createContainerImplHandler = function(m) {
     return function(var_args) {
       var internal = privates(this).internal;
       return $Function.apply(internal[m], internal, arguments);
     };
   };
+
+  // Add a version of the container handler function defined above which returns
+  // a Promise.
+  let createContainerImplPromiseHandler =
+      function(m) {
+    return function(var_args) {
+      const internal = privates(this).internal;
+      const args = [...arguments];
+      if (args[m.callbackIndex] != undefined) {
+        return $Function.apply(internal[m], internal, arguments);
+      }
+      return new $Promise.self((resolve, reject) => {
+          const callback = function(result) {
+            if (bindingUtil.hasLastError()) {
+              reject(bindingUtil.getLastErrorMessage());
+              bindingUtil.clearLastError();
+              return;
+            }
+            resolve(result);
+          };
+          args[m.callbackIndex] = callback;
+        $Function.apply(internal[m.name], internal, args);
+      });
+    }
+  }
 
   var createInternalApiHandler = function(m) {
     return function(var_args) {
@@ -106,6 +135,42 @@ function forwardApiMethods(
     };
   };
 
+  // Add a version of the internal handler function defined above which returns
+  // a Promise.
+  let createInternalApiPromiseHandler =
+      function(m) {
+    return function(var_args) {
+      const internal = privates(this).internal;
+      const instanceId = internal.guest.getId();
+      var args = $Array.slice(arguments);
+      if (args[m.callbackIndex] !== undefined) {
+        if (!instanceId) {
+          return false;
+        }
+        args = $Array.concat([instanceId], args);
+        $Function.apply(internalApi[m.name], null, args)
+        return true;
+      }
+      return new $Promise.self((resolve, reject) => {
+        if (!instanceId) {
+          reject();
+          return;
+        }
+          const callback = function(result) {
+            if (bindingUtil.hasLastError()) {
+              reject(bindingUtil.getLastErrorMessage());
+              bindingUtil.clearLastError();
+              return;
+            }
+            resolve(result);
+          };
+          args[m.callbackIndex] = callback;
+        args = $Array.concat([instanceId], args);
+        $Function.apply(internalApi[m.name], null, args);
+      });
+    }
+  }
+
   for (var m of methodNames) {
     if (!containerElementType.prototype[m]) {
       if (containerType.prototype[m]) {
@@ -114,6 +179,20 @@ function forwardApiMethods(
         containerElementType.prototype[m] = createInternalApiHandler(m);
       } else {
         logging.DCHECK(false, m + ' has no implementation.');
+      }
+    }
+  }
+
+  for (let m of promiseMethodDetails) {
+    if (!containerElementType.prototype[m.name]) {
+      if (containerType.prototype[m.name]) {
+        containerElementType.prototype[m.name] =
+            createContainerImplPromiseHandler(m);
+      } else if (internalApi && internalApi[m.name]) {
+        containerElementType.prototype[m.name] =
+            createInternalApiPromiseHandler(m);
+      } else {
+        logging.DCHECK(false, m.name + 'has no implementation.');
       }
     }
   }

@@ -1,4 +1,4 @@
-(async function(testRunner) {
+(async function(/** @type {import('test_runner').TestRunner} */ testRunner) {
   const pageURL = 'http://127.0.0.1:8000/inspector-protocol/resources/inspector-protocol-page.html';
   const {session, dp} = await testRunner.startURL(pageURL,
     'Tests enabling auto-attach on Browser with filter allowing both tab and page results in an error.');

@@ -29,8 +29,12 @@ import javax.inject.Inject;
 @ActivityScope
 public class CustomTabActivityClientConnectionKeeper implements StartStopWithNativeObserver {
 
-    @IntDef({ConnectionStatus.DISCONNECTED, ConnectionStatus.DISCONNECTED_KEEP_ALIVE,
-            ConnectionStatus.CONNECTED, ConnectionStatus.CONNECTED_KEEP_ALIVE})
+    @IntDef({
+        ConnectionStatus.DISCONNECTED,
+        ConnectionStatus.DISCONNECTED_KEEP_ALIVE,
+        ConnectionStatus.CONNECTED,
+        ConnectionStatus.CONNECTED_KEEP_ALIVE
+    })
     @Retention(RetentionPolicy.SOURCE)
     private @interface ConnectionStatus {
         int DISCONNECTED = 0;
@@ -47,7 +51,8 @@ public class CustomTabActivityClientConnectionKeeper implements StartStopWithNat
     private boolean mIsKeepingAlive;
 
     @Inject
-    public CustomTabActivityClientConnectionKeeper(CustomTabsConnection connection,
+    public CustomTabActivityClientConnectionKeeper(
+            CustomTabsConnection connection,
             BrowserServicesIntentDataProvider intentDataProvider,
             ActivityLifecycleDispatcher lifecycleDispatcher,
             CustomTabActivityTabProvider tabProvider) {
@@ -59,8 +64,10 @@ public class CustomTabActivityClientConnectionKeeper implements StartStopWithNat
 
     @Override
     public void onStartWithNative() {
-        mIsKeepingAlive = mConnection.keepAliveForSession(
-                mIntentDataProvider.getSession(), mIntentDataProvider.getKeepAliveServiceIntent());
+        mIsKeepingAlive =
+                mConnection.keepAliveForSession(
+                        mIntentDataProvider.getSession(),
+                        mIntentDataProvider.getKeepAliveServiceIntent());
     }
 
     @Override
@@ -69,9 +76,7 @@ public class CustomTabActivityClientConnectionKeeper implements StartStopWithNat
         mIsKeepingAlive = false;
     }
 
-    /**
-     * Records current client connection status.
-     */
+    /** Records current client connection status. */
     public void recordClientConnectionStatus() {
         Tab tab = mTabProvider.getTab();
         String packageName = tab == null ? null : TabAssociatedApp.getAppId(tab);
@@ -97,11 +102,15 @@ public class CustomTabActivityClientConnectionKeeper implements StartStopWithNat
         assert status >= 0;
 
         if (GSAState.isGsaPackageName(packageName)) {
-            RecordHistogram.recordEnumeratedHistogram("CustomTabs.ConnectionStatusOnReturn.GSA",
-                    status, ConnectionStatus.NUM_ENTRIES);
+            RecordHistogram.recordEnumeratedHistogram(
+                    "CustomTabs.ConnectionStatusOnReturn.GSA",
+                    status,
+                    ConnectionStatus.NUM_ENTRIES);
         } else {
-            RecordHistogram.recordEnumeratedHistogram("CustomTabs.ConnectionStatusOnReturn.NonGSA",
-                    status, ConnectionStatus.NUM_ENTRIES);
+            RecordHistogram.recordEnumeratedHistogram(
+                    "CustomTabs.ConnectionStatusOnReturn.NonGSA",
+                    status,
+                    ConnectionStatus.NUM_ENTRIES);
         }
     }
 }

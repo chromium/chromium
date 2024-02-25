@@ -4,12 +4,10 @@
 
 package org.chromium.base.test;
 
-import org.chromium.base.annotations.JNINamespace;
-import org.chromium.base.annotations.NativeMethods;
+import org.jni_zero.JNINamespace;
+import org.jni_zero.NativeMethods;
 
-/**
- * Class containing static methods for Clang profiling.
- */
+/** Class containing static methods for Clang profiling. */
 @JNINamespace("base")
 public class ClangProfiler {
     private ClangProfiler() {}

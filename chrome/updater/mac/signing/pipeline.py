@@ -89,6 +89,34 @@ def _package_dmg(paths, config):
     return dmg_path
 
 
+def _package_and_sign_pkg(paths, config):
+    """Packages, signs, and verifies a PKG.
+
+    Args:
+        paths: A |model.Paths| object.
+        config: The |config.CodeSignConfig| object.
+
+    Returns:
+        The path to the signed PKG file.
+    """
+    pkg_path = os.path.join(paths.output,
+                            '{}.pkg'.format(config.packaging_basename))
+    commands.run_command([
+        'pkgbuild',
+        '--component',
+        os.path.join(paths.work, config.app_dir),
+        '--install-location',
+        '/tmp',
+        '--scripts',
+        os.path.join(paths.input, config.packaging_dir, 'signing', 'pkg'),
+        '--sign',
+        config.installer_identity,
+        '--timestamp',
+        pkg_path,
+    ])
+    return pkg_path
+
+
 def _package_zip(paths, config):
     """Packages an Updater application bundle into a ZIP.
 
@@ -163,11 +191,11 @@ def sign_all(orig_paths,
             os.path.join(notary_paths.work, config.packaging_basename))
         _package_zip(package_paths, config)
         dmg_path = _package_and_sign_dmg(package_paths, config)
+        pkg_path = _package_and_sign_pkg(package_paths, config)
 
-        # Notarize the package, then staple.
-        if config.notarize.should_wait():
-            for _ in notarize.wait_for_results(
-                [notarize.submit(dmg_path, config)], config):
-                pass  # We are only waiting for a single notarization.
-            if config.notarize.should_staple():
-                notarize.staple(dmg_path)
+        # Notarize the packages, then staple.
+        uuid_to_path = {}
+        uuid_to_path[notarize.submit(pkg_path, config)] = pkg_path
+        uuid_to_path[notarize.submit(dmg_path, config)] = dmg_path
+        for uuid in notarize.wait_for_results(uuid_to_path.keys(), config):
+            notarize.staple(uuid_to_path[uuid])

@@ -84,14 +84,13 @@ void FrameReceiver::RequestEncodedFrame(ReceiveEncodedFrameCallback callback) {
 bool FrameReceiver::ProcessPacket(std::unique_ptr<Packet> packet) {
   DCHECK(cast_environment_->CurrentlyOn(CastEnvironment::MAIN));
 
-  if (IsRtcpPacket(&packet->front(), packet->size())) {
-    rtcp_.IncomingRtcpPacket(&packet->front(), packet->size());
+  if (IsRtcpPacket(*packet)) {
+    rtcp_.IncomingRtcpPacket(*packet);
   } else {
     RtpCastHeader rtp_header;
     const uint8_t* payload_data;
     size_t payload_size;
-    if (!packet_parser_.ParsePacket(&packet->front(), packet->size(),
-                                    &rtp_header, &payload_data,
+    if (!packet_parser_.ParsePacket(*packet, &rtp_header, &payload_data,
                                     &payload_size)) {
       return false;
     }

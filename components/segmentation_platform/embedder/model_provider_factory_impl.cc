@@ -22,7 +22,7 @@ class DummyModelProvider : public ModelProvider {
 
   void ExecuteModelWithInput(const ModelProvider::Request& inputs,
                              ExecutionCallback callback) override {
-    std::move(callback).Run(absl::nullopt);
+    std::move(callback).Run(std::nullopt);
   }
 
   bool ModelAvailable() override { return false; }

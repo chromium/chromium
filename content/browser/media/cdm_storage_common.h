@@ -6,16 +6,36 @@
 #define CONTENT_BROWSER_MEDIA_CDM_STORAGE_COMMON_H_
 
 #include <stdint.h>
+
+#include <optional>
 #include <string>
 #include <vector>
 
+#include "base/files/file_path.h"
 #include "base/functional/callback.h"
 #include "content/common/content_export.h"
 #include "media/cdm/cdm_type.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
 
 namespace content {
+
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+enum class CdmStorageOpenError {
+  kOk = -1,
+  kNoFileSpecified = 0,    // No file was specified.
+  kInvalidFileName = 1,    // File name specified was invalid.
+  kDatabaseOpenError = 2,  // Error occurred at the Database level.
+  kDatabaseRazeError = 3,  // The database was in an invalid state and failed
+                           // to be razed.
+  kSQLExecutionError = 4,  // Error executing the SQL statement.
+  kAlterTableError = 5,    // Error altering cdm_storage table.
+  kMaxValue = kAlterTableError
+};
+
+// The file name of the database storing cdm storage data.
+const base::FilePath::CharType kCdmStorageDatabaseFileName[] =
+    FILE_PATH_LITERAL("CdmStorage.db");
 
 // CdmStorage provides per-storage key, per-CDM type storage.
 struct CONTENT_EXPORT CdmStorageBindingContext {
@@ -43,6 +63,30 @@ struct CONTENT_EXPORT CdmFileId {
 
   const std::string name;
   const media::CdmType cdm_type;
+};
+
+// As above.
+// Only used in the CdmStorage implementation, remove `Two` from name once
+// MediaLicense* code is removed.
+struct CONTENT_EXPORT CdmFileIdTwo {
+  CdmFileIdTwo(const std::string& name,
+               const media::CdmType& cdm_type,
+               const blink::StorageKey& storage_key);
+  CdmFileIdTwo(const CdmFileIdTwo&);
+  ~CdmFileIdTwo();
+
+  bool operator==(const CdmFileIdTwo& rhs) const {
+    return (name == rhs.name) && (cdm_type == rhs.cdm_type) &&
+           (storage_key == rhs.storage_key);
+  }
+  bool operator<(const CdmFileIdTwo& rhs) const {
+    return std::tie(name, cdm_type, storage_key) <
+           std::tie(rhs.name, rhs.cdm_type, rhs.storage_key);
+  }
+
+  const std::string name;
+  const media::CdmType cdm_type;
+  const blink::StorageKey storage_key;
 };
 
 struct CONTENT_EXPORT CdmFileIdAndContents {

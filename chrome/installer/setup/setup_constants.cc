@@ -9,7 +9,7 @@ namespace installer {
 // Elements that make up install paths.
 const wchar_t kChromeArchive[] = L"chrome.7z";
 const wchar_t kChromeCompressedArchive[] = L"chrome.packed.7z";
-const wchar_t kVisualElements[] = L"VisualElements";
+const char kVisualElements[] = "VisualElements";
 const wchar_t kVisualElementsManifest[] = L"chrome.VisualElementsManifest.xml";
 
 // Sub directory of install source package under install temporary directory.
@@ -36,9 +36,6 @@ const char kSetDisplayVersionValue[] = "set-display-version-value";
 // A handle number for an event to be signaled when the process is ready for
 // work.
 const char kStartupEventHandle[] = "startup-event-handle";
-
-// Run setup.exe to conduct a post-update experiment.
-const char kUserExperiment[] = "user-experiment";
 
 // Sets the operation to do for the downgrade cleanup. Only the values "revert"
 // and "cleanup" are accepted. If the operation is "cleanup", cleans up the

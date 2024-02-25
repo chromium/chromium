@@ -13,12 +13,15 @@ FakeNearbyConnectionBroker::FakeNearbyConnectionBroker(
     mojo::PendingReceiver<mojom::NearbyFilePayloadHandler>
         file_payload_handler_receiver,
     mojo::PendingRemote<mojom::NearbyMessageReceiver> message_receiver_remote,
+    mojo::PendingRemote<mojom::NearbyConnectionStateListener>
+        nearby_connection_state_listener,
     base::OnceClosure on_connected_callback,
     base::OnceClosure on_disconnected_callback)
     : NearbyConnectionBroker(bluetooth_public_address,
                              std::move(message_sender_receiver),
                              std::move(file_payload_handler_receiver),
                              std::move(message_receiver_remote),
+                             std::move(nearby_connection_state_listener),
                              std::move(on_connected_callback),
                              std::move(on_disconnected_callback)) {}
 

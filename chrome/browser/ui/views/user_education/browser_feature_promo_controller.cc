@@ -6,18 +6,29 @@
 
 #include <string>
 
+#include "base/feature_list.h"
 #include "build/build_config.h"
+#include "build/chromecast_buildflags.h"
 #include "chrome/app/chrome_command_ids.h"
+#include "chrome/browser/feature_engagement/tracker_factory.h"
+#include "chrome/browser/headless/headless_mode_util.h"
 #include "chrome/browser/privacy_sandbox/privacy_sandbox_service.h"
 #include "chrome/browser/privacy_sandbox/privacy_sandbox_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/search_engine_choice/search_engine_choice_service.h"
+#include "chrome/browser/profiles/profiles_state.h"
+#include "chrome/browser/search_engine_choice/search_engine_choice_dialog_service.h"
+#include "chrome/browser/search_engine_choice/search_engine_choice_dialog_service_factory.h"
+#include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
+#include "chrome/browser/ui/views/toolbar/toolbar_controller.h"
+#include "chrome/browser/ui/views/user_education/browser_user_education_service.h"
+#include "chrome/browser/ui/web_applications/app_browser_controller.h"
+#include "chrome/browser/user_education/user_education_service.h"
+#include "chrome/browser/user_education/user_education_service_factory.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/feature_engagement/public/event_constants.h"
 #include "components/feature_engagement/public/feature_constants.h"
-#include "components/user_education/views/help_bubble_factory_views.h"
-#include "components/user_education/views/help_bubble_view.h"
+#include "components/search_engines/search_engine_choice_utils.h"
 #include "ui/base/interaction/element_tracker.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/views/accessible_pane_view.h"
@@ -25,21 +36,78 @@
 #include "ui/views/view.h"
 #include "ui/views/view_utils.h"
 
+#if BUILDFLAG(IS_CHROMEOS)
+#include "chromeos/components/mgs/managed_guest_session_utils.h"
+#endif
+
 BrowserFeaturePromoController::BrowserFeaturePromoController(
     BrowserView* browser_view,
     feature_engagement::Tracker* feature_engagement_tracker,
     user_education::FeaturePromoRegistry* registry,
     user_education::HelpBubbleFactoryRegistry* help_bubble_registry,
-    user_education::FeaturePromoSnoozeService* snooze_service,
-    user_education::TutorialService* tutorial_service)
+    user_education::FeaturePromoStorageService* storage_service,
+    user_education::FeaturePromoSessionPolicy* session_policy,
+    user_education::TutorialService* tutorial_service,
+    user_education::ProductMessagingController* messaging_controller)
     : FeaturePromoControllerCommon(feature_engagement_tracker,
                                    registry,
                                    help_bubble_registry,
-                                   snooze_service,
-                                   tutorial_service),
+                                   storage_service,
+                                   session_policy,
+                                   tutorial_service,
+                                   messaging_controller),
       browser_view_(browser_view) {}
 
 BrowserFeaturePromoController::~BrowserFeaturePromoController() = default;
+
+// static
+std::unique_ptr<BrowserFeaturePromoController>
+BrowserFeaturePromoController::MaybeCreateForBrowserView(
+    BrowserView* browser_view) {
+  // In order to do feature promos, the browser must have a UI and not be an
+  // "off-the-record" or in a demo or guest mode.
+  if (browser_view->GetIncognito() || browser_view->GetGuestSession() ||
+      profiles::IsDemoSession() || profiles::IsChromeAppKioskSession()) {
+    return nullptr;
+  }
+#if BUILDFLAG(IS_CHROMEOS)
+  if (chromeos::IsManagedGuestSession()) {
+    return nullptr;
+  }
+#endif
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  if (profiles::IsWebKioskSession()) {
+    return nullptr;
+  }
+#endif
+  if (headless::IsHeadlessMode()) {
+    return nullptr;
+  }
+
+  // Get the user education service.
+  Profile* const profile = browser_view->GetProfile();
+  UserEducationService* const user_education_service =
+      UserEducationServiceFactory::GetForBrowserContext(profile);
+  if (!user_education_service) {
+    return nullptr;
+  }
+
+  // Consider registering factories, etc.
+  RegisterChromeHelpBubbleFactories(
+      user_education_service->help_bubble_factory_registry());
+  MaybeRegisterChromeFeaturePromos(
+      user_education_service->feature_promo_registry());
+  MaybeRegisterChromeTutorials(user_education_service->tutorial_registry());
+  return std::make_unique<BrowserFeaturePromoController>(
+      browser_view,
+      feature_engagement::TrackerFactory::GetForBrowserContext(profile),
+      &user_education_service->feature_promo_registry(),
+      &user_education_service->help_bubble_factory_registry(),
+      &user_education_service->feature_promo_storage_service(),
+      &user_education_service->feature_promo_session_policy(),
+      &user_education_service->tutorial_service(),
+      &user_education_service->product_messaging_controller());
+}
 
 // static
 BrowserFeaturePromoController* BrowserFeaturePromoController::GetForView(
@@ -62,20 +130,16 @@ ui::ElementContext BrowserFeaturePromoController::GetAnchorContext() const {
   return views::ElementTrackerViews::GetContextForView(browser_view_);
 }
 
-bool BrowserFeaturePromoController::CanShowPromo(
+bool BrowserFeaturePromoController::CanShowPromoForElement(
     ui::TrackedElement* anchor_element) const {
-  // Temporarily turn off IPH in incognito as a concern was raised that
-  // the IPH backend ignores incognito and writes to the parent profile.
-  // See https://bugs.chromium.org/p/chromium/issues/detail?id=1128728#c30
-  if (browser_view_->GetProfile()->IsIncognitoProfile())
-    return false;
+  auto* const profile = browser_view_->GetProfile();
 
   // Turn off IPH while a required privacy interstitial is visible or pending.
   // TODO(dfried): with Desktop User Education 2.0, filtering of IPH may need to
   // be more nuanced; also a contention scheme between required popups may be
   // required. See go/desktop-user-education-2.0 for details.
   auto* const privacy_sandbox_service =
-      PrivacySandboxServiceFactory::GetForProfile(browser_view_->GetProfile());
+      PrivacySandboxServiceFactory::GetForProfile(profile);
   if (privacy_sandbox_service &&
       privacy_sandbox_service->GetRequiredPromptType() !=
           PrivacySandboxService::PromptType::kNone) {
@@ -84,22 +148,45 @@ bool BrowserFeaturePromoController::CanShowPromo(
 
   // Turn off IPH while a required search engine choice dialog is visible or
   // pending.
-#if BUILDFLAG(ENABLE_SEARCH_ENGINE_CHOICE)
-  if (SearchEngineChoiceService::ShouldDisplayDialog(
-          (*browser_view_->browser()))) {
-    return false;
+  if (search_engines::IsChoiceScreenFlagEnabled(
+          search_engines::ChoicePromo::kDialog)) {
+    Browser& browser = *browser_view_->browser();
+    SearchEngineChoiceDialogService* search_engine_choice_dialog_service =
+        SearchEngineChoiceDialogServiceFactory::GetForProfile(
+            browser.profile());
+    if (search_engine_choice_dialog_service &&
+        search_engine_choice_dialog_service->HasPendingDialog(browser)) {
+      return false;
+    }
   }
-#endif
+
+  // Don't show IPH if the toolbar is collapsed in Responsive Mode/the overflow
+  // button is visible.
+  //
+  // TODO(dfried): make this more specific for certain types of promos. For
+  // example, a toast IPH anchored to an element that's actually visible should
+  // be fine, but we might want to avoid Tutorial and Custom Action IPH even if
+  // the initial anchor is present.
+  if (base::FeatureList::IsEnabled(features::kResponsiveToolbar)) {
+    if (const auto* const controller =
+            browser_view_->toolbar()->toolbar_controller()) {
+      if (controller->InOverflowMode()) {
+        return false;
+      }
+    }
+  }
 
   // Don't show IPH if the anchor view is in an inactive window.
   auto* const anchor_view = anchor_element->AsA<views::TrackedElementViews>();
   auto* const anchor_widget = anchor_view ? anchor_view->view()->GetWidget()
                                           : browser_view_->GetWidget();
-  if (!anchor_widget)
+  if (!anchor_widget) {
     return false;
+  }
 
-  if (!active_window_check_blocked() && !anchor_widget->ShouldPaintAsActive())
+  if (!active_window_check_blocked() && !anchor_widget->ShouldPaintAsActive()) {
     return false;
+  }
 
   return true;
 }
@@ -185,4 +272,12 @@ BrowserFeaturePromoController::GetScreenReaderPromptPromoFeature() const {
 const char* BrowserFeaturePromoController::GetScreenReaderPromptPromoEventName()
     const {
   return feature_engagement::events::kFocusHelpBubbleAcceleratorPromoRead;
+}
+
+std::string BrowserFeaturePromoController::GetAppId() const {
+  if (const web_app::AppBrowserController* const controller =
+          browser_view_->browser()->app_controller()) {
+    return controller->app_id();
+  }
+  return std::string();
 }

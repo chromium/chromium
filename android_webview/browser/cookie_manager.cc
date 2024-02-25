@@ -10,6 +10,7 @@
 #include <utility>
 #include <vector>
 
+#include <optional>
 #include "android_webview/browser/aw_browser_context.h"
 #include "android_webview/browser/aw_browser_context_store.h"
 #include "android_webview/browser/aw_client_hints_controller_delegate.h"
@@ -20,6 +21,7 @@
 #include "base/android/callback_android.h"
 #include "base/android/jni_string.h"
 #include "base/android/path_utils.h"
+#include "base/android/scoped_java_ref.h"
 #include "base/command_line.h"
 #include "base/containers/circular_deque.h"
 #include "base/files/file_util.h"
@@ -53,7 +55,6 @@
 #include "services/network/cookie_access_delegate_impl.h"
 #include "services/network/network_service.h"
 #include "services/network/public/mojom/cookie_manager.mojom.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/url_constants.h"
 
 using base::WaitableEvent;
@@ -347,7 +348,8 @@ net::CookieStore* CookieManager::GetCookieStore() {
       cookie_store_created_ = true;
     }
 
-    cookie_store_ = content::CreateCookieStore(cookie_config, nullptr);
+    cookie_store_ =
+        content::CreateCookieStore(std::move(cookie_config), nullptr);
     auto cookie_access_delegate_type =
         base::CommandLine::ForCurrentProcess()->HasSwitch(
             switches::kWebViewEnableModernCookieSameSite)
@@ -407,6 +409,16 @@ void CookieManager::SwapMojoCookieManagerAsync(
                      base::Unretained(this)));
   std::move(complete).Run();  // unblock content initialization
   RunPendingCookieTasks();
+}
+
+base::android::ScopedJavaLocalRef<jobject>
+CookieManager::GetJavaCookieManager() {
+  if (!java_obj_) {
+    JNIEnv* env = base::android::AttachCurrentThread();
+    java_obj_ =
+        Java_AwCookieManager_create(env, reinterpret_cast<intptr_t>(this));
+  }
+  return base::android::ScopedJavaLocalRef<jobject>(java_obj_);
 }
 
 void CookieManager::SetWorkaroundHttpSecureCookiesForTesting(
@@ -477,7 +489,7 @@ void CookieManager::SetCookieHelper(const GURL& host,
       host, value, workaround_http_secure_cookies_, &should_allow_cookie);
 
   std::unique_ptr<net::CanonicalCookie> cc(net::CanonicalCookie::Create(
-      new_host, value, base::Time::Now(), absl::nullopt /* server_time */,
+      new_host, value, base::Time::Now(), std::nullopt /* server_time */,
       net::CookiePartitionKey::FromWire(net::SchemefulSite(new_host))));
 
   if (!cc || !should_allow_cookie) {

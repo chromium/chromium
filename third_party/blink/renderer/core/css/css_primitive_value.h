@@ -148,8 +148,9 @@ class CORE_EXPORT CSSPrimitiveValue : public CSSValue {
     kDotsPerInch,
     kDotsPerCentimeter,
     // Other units
-    kFraction,
+    kFlex,
     kInteger,
+    kIdent,
 
     // This value is used to handle quirky margins in reflow roots (body, td,
     // and th) like WinIE. The basic idea is that a stylesheet can use the value
@@ -335,7 +336,7 @@ class CORE_EXPORT CSSPrimitiveValue : public CSSValue {
            type <= UnitType::kDotsPerCentimeter;
   }
   bool IsResolution() const;
-  static bool IsFlex(UnitType unit) { return unit == UnitType::kFraction; }
+  static bool IsFlex(UnitType unit) { return unit == UnitType::kFlex; }
   bool IsFlex() const;
 
   // https://drafts.css-houdini.org/css-properties-values-api-1/#computationally-independent
@@ -355,6 +356,8 @@ class CORE_EXPORT CSSPrimitiveValue : public CSSValue {
   double ComputeDegrees() const;
   double ComputeSeconds() const;
   double ComputeDotsPerPixel() const;
+
+  double ComputeDegrees(const CSSLengthResolver&) const;
 
   // Computes a length in pixels, resolving relative lengths
   template <typename T>
@@ -384,9 +387,12 @@ class CORE_EXPORT CSSPrimitiveValue : public CSSValue {
   }
 
   template <typename T>
-  inline T ConvertTo() const;  // Defined in CSSPrimitiveValueMappings.h
+  inline T ConvertTo(const CSSLengthResolver&)
+      const;  // Defined in CSSPrimitiveValueMappings.h
 
   int ComputeInteger(const CSSLengthResolver&) const;
+  double ComputeNumber(const CSSLengthResolver&) const;
+  double ComputePercentage(const CSSLengthResolver&) const;
 
   static const char* UnitTypeToString(UnitType);
   static UnitType StringToUnitType(StringView string) {
@@ -417,6 +423,12 @@ class CORE_EXPORT CSSPrimitiveValue : public CSSValue {
   static UnitType StringToUnitType(const UChar*, unsigned length);
 
   double ComputeLengthDouble(const CSSLengthResolver&) const;
+
+ protected:
+  bool IsResolvableLength() const;
+
+ private:
+  bool InvolvesPercentage() const;
 };
 
 using CSSLengthArray = CSSPrimitiveValue::CSSLengthArray;

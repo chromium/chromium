@@ -20,9 +20,10 @@
 #include "chrome/browser/notifications/win/notification_launch_id.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/notifications/notification_image_retainer.h"
-#include "chrome/grit/chromium_strings.h"
+#include "chrome/grit/branded_strings.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/url_formatter/elide_url.h"
+#include "third_party/icu/source/i18n/unicode/timezone.h"
 #include "third_party/libxml/chromium/xml_writer.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/message_center/public/cpp/notification.h"
@@ -128,13 +129,11 @@ void StartToastElement(XmlWriter* xml_writer,
   if (notification.timestamp().is_null())
     return;
 
-  base::Time::Exploded exploded;
-  notification.timestamp().UTCExplode(&exploded);
   xml_writer->AddAttribute(
       kToastElementDisplayTimestamp,
-      base::StringPrintf("%04d-%02d-%02dT%02d:%02d:%02dZ", exploded.year,
-                         exploded.month, exploded.day_of_month, exploded.hour,
-                         exploded.minute, exploded.second));
+      base::UnlocalizedTimeFormatWithPattern(notification.timestamp(),
+                                             "yyyy-MM-dd'T'HH:mm:ssX",
+                                             icu::TimeZone::getGMT()));
 }
 
 void EndToastElement(XmlWriter* xml_writer) {
@@ -188,8 +187,8 @@ void WriteItems(XmlWriter* xml_writer,
   std::string item_list;
   for (size_t i = 0; i < entries; ++i) {
     const auto& item = items[i];
-    item_list += base::UTF16ToUTF8(item.title) + " - " +
-                 base::UTF16ToUTF8(item.message) + "\n";
+    item_list += base::UTF16ToUTF8(item.title()) + " - " +
+                 base::UTF16ToUTF8(item.message()) + "\n";
   }
   WriteTextElement(xml_writer, item_list, TextType::NORMAL);
 }

@@ -8,6 +8,7 @@
 #include "base/test/gmock_callback_support.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
+#include "chrome/browser/optimization_guide/mock_optimization_guide_keyed_service.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
 #include "chrome/browser/predictors/loading_predictor.h"
@@ -28,6 +29,7 @@
 #include "third_party/blink/public/mojom/loader/resource_load_info.mojom.h"
 
 using ::testing::_;
+using ::testing::An;
 using ::testing::ByRef;
 using ::testing::DoAll;
 using ::testing::Eq;
@@ -53,29 +55,13 @@ class MockLoadingDataCollector : public LoadingDataCollector {
                void(NavigationId, const blink::mojom::ResourceLoadInfo&));
   MOCK_METHOD2(RecordMainFrameLoadComplete,
                void(NavigationId,
-                    const absl::optional<OptimizationGuidePrediction>&));
+                    const std::optional<OptimizationGuidePrediction>&));
   MOCK_METHOD2(RecordFirstContentfulPaint, void(NavigationId, base::TimeTicks));
 };
 
 MockLoadingDataCollector::MockLoadingDataCollector(
     const LoadingPredictorConfig& config)
     : LoadingDataCollector(nullptr, nullptr, config) {}
-
-class MockOptimizationGuideKeyedService : public OptimizationGuideKeyedService {
- public:
-  explicit MockOptimizationGuideKeyedService(
-      content::BrowserContext* browser_context)
-      : OptimizationGuideKeyedService(browser_context) {}
-  ~MockOptimizationGuideKeyedService() override = default;
-
-  MOCK_METHOD1(
-      RegisterOptimizationTypes,
-      void(const std::vector<optimization_guide::proto::OptimizationType>&));
-  MOCK_METHOD3(CanApplyOptimization,
-               void(const GURL&,
-                    optimization_guide::proto::OptimizationType,
-                    optimization_guide::OptimizationGuideDecisionCallback));
-};
 
 class LoadingPredictorTabHelperTest : public ChromeRenderViewHostTestHarness {
  public:
@@ -109,7 +95,7 @@ void LoadingPredictorTabHelperTest::SetUp() {
                   base::BindRepeating([](content::BrowserContext* context)
                                           -> std::unique_ptr<KeyedService> {
                     return std::make_unique<
-                        NiceMock<MockOptimizationGuideKeyedService>>(context);
+                        NiceMock<MockOptimizationGuideKeyedService>>();
                   })));
   LoadingPredictorTabHelper::CreateForWebContents(web_contents());
   tab_helper_ = LoadingPredictorTabHelper::FromWebContents(web_contents());
@@ -348,10 +334,10 @@ TEST_F(LoadingPredictorTabHelperOptimizationGuideDeciderTest,
 
   base::HistogramTester histogram_tester;
 
-  EXPECT_CALL(
-      *mock_optimization_guide_keyed_service_,
-      CanApplyOptimization(_, optimization_guide::proto::LOADING_PREDICTOR,
-                           base::test::IsNotNullCallback()))
+  EXPECT_CALL(*mock_optimization_guide_keyed_service_,
+              CanApplyOptimization(
+                  _, optimization_guide::proto::LOADING_PREDICTOR,
+                  An<optimization_guide::OptimizationGuideDecisionCallback>()))
       .Times(0);
   NavigateAndCommitInMainFrameAndVerifyMetrics("http://test.org/otherpage");
 
@@ -361,7 +347,7 @@ TEST_F(LoadingPredictorTabHelperOptimizationGuideDeciderTest,
       content::RenderFrameHostTester::For(main_rfh())->AppendChild("subframe");
   NavigateAndCommitInFrame("http://sub.test.org", subframe);
 
-  const absl::optional<OptimizationGuidePrediction>
+  const std::optional<OptimizationGuidePrediction>
       null_optimization_guide_prediction;
   EXPECT_CALL(*mock_collector_, RecordMainFrameLoadComplete(
                                     _, null_optimization_guide_prediction));
@@ -383,10 +369,10 @@ TEST_F(LoadingPredictorTabHelperOptimizationGuideDeciderTest,
   lp_metadata.add_subresources()->set_url("http://other.org/resource2");
   lp_metadata.add_subresources()->set_url("http://other.org/resource3");
   optimization_metadata.set_loading_predictor_metadata(lp_metadata);
-  EXPECT_CALL(
-      *mock_optimization_guide_keyed_service_,
-      CanApplyOptimization(_, optimization_guide::proto::LOADING_PREDICTOR,
-                           base::test::IsNotNullCallback()))
+  EXPECT_CALL(*mock_optimization_guide_keyed_service_,
+              CanApplyOptimization(
+                  _, optimization_guide::proto::LOADING_PREDICTOR,
+                  An<optimization_guide::OptimizationGuideDecisionCallback>()))
       .WillOnce(base::test::RunOnceCallback<2>(
           optimization_guide::OptimizationGuideDecision::kTrue,
           ByRef(optimization_metadata)));
@@ -398,7 +384,7 @@ TEST_F(LoadingPredictorTabHelperOptimizationGuideDeciderTest,
       content::RenderFrameHostTester::For(main_rfh())->AppendChild("subframe");
   NavigateAndCommitInFrame("http://sub.test.org", subframe);
 
-  absl::optional<OptimizationGuidePrediction> prediction =
+  std::optional<OptimizationGuidePrediction> prediction =
       OptimizationGuidePrediction();
   prediction->decision = optimization_guide::OptimizationGuideDecision::kTrue;
   net::SchemefulSite main_frame_site =
@@ -432,10 +418,10 @@ TEST_F(LoadingPredictorTabHelperOptimizationGuideDeciderTest,
   lp_metadata.add_subresources()->set_url("http://other.org/resource3");
   optimization_metadata.set_loading_predictor_metadata(lp_metadata);
   optimization_guide::OptimizationGuideDecisionCallback callback;
-  EXPECT_CALL(
-      *mock_optimization_guide_keyed_service_,
-      CanApplyOptimization(_, optimization_guide::proto::LOADING_PREDICTOR,
-                           base::test::IsNotNullCallback()))
+  EXPECT_CALL(*mock_optimization_guide_keyed_service_,
+              CanApplyOptimization(
+                  _, optimization_guide::proto::LOADING_PREDICTOR,
+                  An<optimization_guide::OptimizationGuideDecisionCallback>()))
       .WillOnce(WithArg<2>(
           Invoke([&](optimization_guide::OptimizationGuideDecisionCallback
                          got_callback) -> void {
@@ -453,7 +439,7 @@ TEST_F(LoadingPredictorTabHelperOptimizationGuideDeciderTest,
       content::RenderFrameHostTester::For(main_rfh())->AppendChild("subframe");
   NavigateAndCommitInFrame("http://sub.test.org", subframe);
 
-  absl::optional<OptimizationGuidePrediction> prediction =
+  std::optional<OptimizationGuidePrediction> prediction =
       OptimizationGuidePrediction();
   prediction->decision = optimization_guide::OptimizationGuideDecision::kTrue;
   net::SchemefulSite main_frame_site =
@@ -496,10 +482,10 @@ TEST_F(LoadingPredictorTabHelperOptimizationGuideDeciderTest,
   lp_metadata.add_subresources()->set_url("http://other.org/resource3");
   optimization_metadata.set_loading_predictor_metadata(lp_metadata);
   optimization_guide::OptimizationGuideDecisionCallback callback;
-  EXPECT_CALL(
-      *mock_optimization_guide_keyed_service_,
-      CanApplyOptimization(_, optimization_guide::proto::LOADING_PREDICTOR,
-                           base::test::IsNotNullCallback()))
+  EXPECT_CALL(*mock_optimization_guide_keyed_service_,
+              CanApplyOptimization(
+                  _, optimization_guide::proto::LOADING_PREDICTOR,
+                  An<optimization_guide::OptimizationGuideDecisionCallback>()))
       .Times(3)
       .WillOnce(WithArg<2>(
           Invoke([&](optimization_guide::OptimizationGuideDecisionCallback
@@ -521,7 +507,7 @@ TEST_F(LoadingPredictorTabHelperOptimizationGuideDeciderTest,
 
   // Prediction decision should be unknown since what came in was for the wrong
   // navigation ID.
-  absl::optional<OptimizationGuidePrediction> optimization_guide_prediction =
+  std::optional<OptimizationGuidePrediction> optimization_guide_prediction =
       OptimizationGuidePrediction();
   optimization_guide_prediction->decision =
       optimization_guide::OptimizationGuideDecision::kUnknown;
@@ -539,10 +525,10 @@ TEST_F(LoadingPredictorTabHelperOptimizationGuideDeciderTest,
        DocumentOnLoadCompletedOptimizationGuidePredictionHasNotArrived) {
   base::HistogramTester histogram_tester;
 
-  EXPECT_CALL(
-      *mock_optimization_guide_keyed_service_,
-      CanApplyOptimization(_, optimization_guide::proto::LOADING_PREDICTOR,
-                           base::test::IsNotNullCallback()));
+  EXPECT_CALL(*mock_optimization_guide_keyed_service_,
+              CanApplyOptimization(
+                  _, optimization_guide::proto::LOADING_PREDICTOR,
+                  An<optimization_guide::OptimizationGuideDecisionCallback>()));
   NavigateAndCommitInMainFrameAndVerifyMetrics("http://test.org");
 
   // Adding subframe navigation to ensure that the committed main frame url will
@@ -551,7 +537,7 @@ TEST_F(LoadingPredictorTabHelperOptimizationGuideDeciderTest,
       content::RenderFrameHostTester::For(main_rfh())->AppendChild("subframe");
   NavigateAndCommitInFrame("http://sub.test.org", subframe);
 
-  absl::optional<OptimizationGuidePrediction> prediction =
+  std::optional<OptimizationGuidePrediction> prediction =
       OptimizationGuidePrediction();
   prediction->decision =
       optimization_guide::OptimizationGuideDecision::kUnknown;
@@ -578,10 +564,10 @@ TEST_F(
   lp_metadata.add_subresources()->set_url("http://other.org/resource3");
   optimization_metadata.set_loading_predictor_metadata(lp_metadata);
   optimization_guide::OptimizationGuideDecisionCallback callback;
-  EXPECT_CALL(
-      *mock_optimization_guide_keyed_service_,
-      CanApplyOptimization(_, optimization_guide::proto::LOADING_PREDICTOR,
-                           base::test::IsNotNullCallback()))
+  EXPECT_CALL(*mock_optimization_guide_keyed_service_,
+              CanApplyOptimization(
+                  _, optimization_guide::proto::LOADING_PREDICTOR,
+                  An<optimization_guide::OptimizationGuideDecisionCallback>()))
       .WillOnce(WithArg<2>(
           Invoke([&](optimization_guide::OptimizationGuideDecisionCallback
                          got_callback) -> void {
@@ -595,7 +581,7 @@ TEST_F(
       content::RenderFrameHostTester::For(main_rfh())->AppendChild("subframe");
   NavigateAndCommitInFrame("http://sub.test.org", subframe);
 
-  absl::optional<OptimizationGuidePrediction> prediction =
+  std::optional<OptimizationGuidePrediction> prediction =
       OptimizationGuidePrediction();
   prediction->decision =
       optimization_guide::OptimizationGuideDecision::kUnknown;
@@ -623,10 +609,10 @@ TEST_F(LoadingPredictorTabHelperOptimizationGuideDeciderTest,
   // TOOO(ahemery): Consider refactoring this to rely on loading events
   // in NavigationSimulator.
   optimization_guide::OptimizationMetadata optimization_metadata;
-  EXPECT_CALL(
-      *mock_optimization_guide_keyed_service_,
-      CanApplyOptimization(_, optimization_guide::proto::LOADING_PREDICTOR,
-                           base::test::IsNotNullCallback()))
+  EXPECT_CALL(*mock_optimization_guide_keyed_service_,
+              CanApplyOptimization(
+                  _, optimization_guide::proto::LOADING_PREDICTOR,
+                  An<optimization_guide::OptimizationGuideDecisionCallback>()))
       .WillOnce(base::test::RunOnceCallback<2>(
           optimization_guide::OptimizationGuideDecision::kFalse,
           ByRef(optimization_metadata)));
@@ -638,7 +624,7 @@ TEST_F(LoadingPredictorTabHelperOptimizationGuideDeciderTest,
       content::RenderFrameHostTester::For(main_rfh())->AppendChild("subframe");
   NavigateAndCommitInFrame("http://sub.test.org", subframe);
 
-  absl::optional<OptimizationGuidePrediction> prediction =
+  std::optional<OptimizationGuidePrediction> prediction =
       OptimizationGuidePrediction();
   prediction->decision = optimization_guide::OptimizationGuideDecision::kFalse;
   EXPECT_CALL(*mock_collector_, RecordMainFrameLoadComplete(_, prediction));
@@ -663,10 +649,10 @@ TEST_F(
   // TOOO(ahemery): Consider refactoring this to rely on loading events
   // in NavigationSimulator.
   optimization_guide::OptimizationMetadata optimization_metadata;
-  EXPECT_CALL(
-      *mock_optimization_guide_keyed_service_,
-      CanApplyOptimization(_, optimization_guide::proto::LOADING_PREDICTOR,
-                           base::test::IsNotNullCallback()))
+  EXPECT_CALL(*mock_optimization_guide_keyed_service_,
+              CanApplyOptimization(
+                  _, optimization_guide::proto::LOADING_PREDICTOR,
+                  An<optimization_guide::OptimizationGuideDecisionCallback>()))
       .WillOnce(base::test::RunOnceCallback<2>(
           optimization_guide::OptimizationGuideDecision::kTrue,
           ByRef(optimization_metadata)));
@@ -679,7 +665,7 @@ TEST_F(
   NavigateAndCommitInFrame("http://sub.test.org", subframe);
 
   // Decision should be unknown since we got invalid data.
-  absl::optional<OptimizationGuidePrediction> optimization_guide_prediction =
+  std::optional<OptimizationGuidePrediction> optimization_guide_prediction =
       OptimizationGuidePrediction();
   optimization_guide_prediction->decision =
       optimization_guide::OptimizationGuideDecision::kUnknown;
@@ -727,10 +713,10 @@ TEST_F(LoadingPredictorTabHelperOptimizationGuideDeciderWithPrefetchTest,
   preconnect_only_resource->set_url("http://preconnectonly.com/");
   preconnect_only_resource->set_preconnect_only(true);
   optimization_metadata.set_loading_predictor_metadata(lp_metadata);
-  EXPECT_CALL(
-      *mock_optimization_guide_keyed_service_,
-      CanApplyOptimization(_, optimization_guide::proto::LOADING_PREDICTOR,
-                           base::test::IsNotNullCallback()))
+  EXPECT_CALL(*mock_optimization_guide_keyed_service_,
+              CanApplyOptimization(
+                  _, optimization_guide::proto::LOADING_PREDICTOR,
+                  An<optimization_guide::OptimizationGuideDecisionCallback>()))
       .WillOnce(base::test::RunOnceCallback<2>(
           optimization_guide::OptimizationGuideDecision::kTrue,
           ByRef(optimization_metadata)));
@@ -742,7 +728,7 @@ TEST_F(LoadingPredictorTabHelperOptimizationGuideDeciderWithPrefetchTest,
       content::RenderFrameHostTester::For(main_rfh())->AppendChild("subframe");
   NavigateAndCommitInFrame("http://sub.test.org", subframe);
 
-  absl::optional<OptimizationGuidePrediction> prediction =
+  std::optional<OptimizationGuidePrediction> prediction =
       OptimizationGuidePrediction();
   prediction->decision = optimization_guide::OptimizationGuideDecision::kTrue;
   net::SchemefulSite main_frame_site =
@@ -797,7 +783,7 @@ class TestLoadingDataCollector : public LoadingDataCollector {
 
   void RecordMainFrameLoadComplete(
       NavigationId navigation_id,
-      const absl::optional<OptimizationGuidePrediction>&
+      const std::optional<OptimizationGuidePrediction>&
           optimization_guide_prediction) override {}
 
   void RecordFirstContentfulPaint(

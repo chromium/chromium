@@ -9,17 +9,25 @@
 #include "base/no_destructor.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
+#include "chrome/browser/browser_process.h"
 #include "chrome/browser/password_manager/account_password_store_factory.h"
-#include "chrome/browser/password_manager/password_store_factory.h"
+#include "chrome/browser/password_manager/profile_password_store_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
+#include "components/password_manager/core/browser/features/password_features.h"
+#include "components/password_manager/core/browser/password_reuse_detector_impl.h"
 #include "components/password_manager/core/browser/password_reuse_manager_impl.h"
-#include "components/password_manager/core/browser/password_store_interface.h"
+#include "components/password_manager/core/browser/password_store/password_store_interface.h"
 #include "components/password_manager/core/browser/password_store_signin_notifier_impl.h"
+#include "components/password_manager/core/browser/shared_preferences_delegate.h"
 #include "components/password_manager/core/common/password_manager_features.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/storage_partition.h"
+
+#if BUILDFLAG(IS_ANDROID)
+#include "chrome/browser/password_manager/android/shared_preferences_delegate_android.h"
+#endif
 
 namespace {
 
@@ -32,7 +40,7 @@ SignInState GetSignInStateForMetrics(Profile* profile) {
     return SignInState::kSignedOut;
   }
 
-  // TODO(crbug.com/1462552): Simplify once kSync becomes unreachable or is
+  // TODO(crbug.com/40066949): Simplify once kSync becomes unreachable or is
   // deleted from the codebase. See ConsentLevel::kSync documentation for
   // details.
   const std::string sync_username =
@@ -60,7 +68,7 @@ PasswordReuseManagerFactory::PasswordReuseManagerFactory()
               .WithGuest(ProfileSelection::kRedirectedToOriginal)
               .Build()) {
   DependsOn(IdentityManagerFactory::GetInstance());
-  DependsOn(PasswordStoreFactory::GetInstance());
+  DependsOn(ProfilePasswordStoreFactory::GetInstance());
   DependsOn(AccountPasswordStoreFactory::GetInstance());
 }
 
@@ -91,23 +99,37 @@ PasswordReuseManagerFactory::BuildServiceInstanceForBrowserContext(
   Profile* profile = Profile::FromBrowserContext(context);
 
   password_manager::PasswordStoreInterface* store =
-      PasswordStoreFactory::GetForProfile(profile,
-                                          ServiceAccessType::EXPLICIT_ACCESS)
+      ProfilePasswordStoreFactory::GetForProfile(
+          profile, ServiceAccessType::EXPLICIT_ACCESS)
           .get();
   // Incognito, guest, or system profiles doesn't have PasswordStore so
   // PasswordReuseManager shouldn't be created as well.
   if (!store)
     return nullptr;
 
+  signin::IdentityManager* identity_manager =
+      IdentityManagerFactory::GetForProfile(profile);
+  std::unique_ptr<password_manager::SharedPreferencesDelegate>
+      shared_pref_delegate;
+
+#if BUILDFLAG(IS_ANDROID)
+  if (base::FeatureList::IsEnabled(
+          password_manager::features::kFetchGaiaHashOnSignIn)) {
+    shared_pref_delegate = std::make_unique<SharedPreferencesDelegateAndroid>();
+  }
+#endif
   auto reuse_manager =
       std::make_unique<password_manager::PasswordReuseManagerImpl>();
-  reuse_manager->Init(profile->GetPrefs(),
-                      PasswordStoreFactory::GetForProfile(
-                          profile, ServiceAccessType::EXPLICIT_ACCESS)
-                          .get(),
-                      AccountPasswordStoreFactory::GetForProfile(
-                          profile, ServiceAccessType::EXPLICIT_ACCESS)
-                          .get());
+  reuse_manager->Init(
+      profile->GetPrefs(), g_browser_process->local_state(),
+      ProfilePasswordStoreFactory::GetForProfile(
+          profile, ServiceAccessType::EXPLICIT_ACCESS)
+          .get(),
+      AccountPasswordStoreFactory::GetForProfile(
+          profile, ServiceAccessType::EXPLICIT_ACCESS)
+          .get(),
+      std::make_unique<password_manager::PasswordReuseDetectorImpl>(),
+      identity_manager, std::move(shared_pref_delegate));
 
   // Prepare password hash data for reuse detection.
   reuse_manager->PreparePasswordHashData(GetSignInStateForMetrics(profile));

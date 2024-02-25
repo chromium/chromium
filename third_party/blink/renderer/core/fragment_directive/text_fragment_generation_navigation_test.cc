@@ -46,10 +46,10 @@ class TextFragmentGenerationNavigationTest
   GenerateAndNavigate(std::string html_content,
                       std::string* start_parent_id,
                       int start_offset_in_parent,
-                      absl::optional<int> start_text_offset,
+                      std::optional<int> start_text_offset,
                       std::string* end_parent_id,
                       int end_offset_in_parent,
-                      absl::optional<int> end_text_offset,
+                      std::optional<int> end_text_offset,
                       std::string selected_text,
                       std::string* highlight_text) override;
 
@@ -57,10 +57,10 @@ class TextFragmentGenerationNavigationTest
 
   RangeInFlatTree* GetSelectionRange(std::string* start_parent_id,
                                      int start_offset_in_parent,
-                                     absl::optional<int> start_text_offset,
+                                     std::optional<int> start_text_offset,
                                      std::string* end_parent_id,
                                      int end_offset_in_parent,
-                                     absl::optional<int> end_text_offset);
+                                     std::optional<int> end_text_offset);
 
   String GenerateSelector(const RangeInFlatTree& selection_range);
 
@@ -101,10 +101,10 @@ void TextFragmentGenerationNavigationTest::LoadHTML(String url,
 RangeInFlatTree* TextFragmentGenerationNavigationTest::GetSelectionRange(
     std::string* start_parent_id,
     int start_offset_in_parent,
-    absl::optional<int> start_text_offset,
+    std::optional<int> start_text_offset,
     std::string* end_parent_id,
     int end_offset_in_parent,
-    absl::optional<int> end_text_offset) {
+    std::optional<int> end_text_offset) {
   // Parent of start node will be the node with `start_parent_id` id
   // or the DOM body if no `start_parent_id`.
   Node* start_parent_node = start_parent_id == nullptr
@@ -171,10 +171,10 @@ TextFragmentGenerationNavigationTest::GenerateAndNavigate(
     std::string html_content,
     std::string* start_parent_id,
     int start_offset_in_parent,
-    absl::optional<int> start_text_offset,
+    std::optional<int> start_text_offset,
     std::string* end_parent_id,
     int end_offset_in_parent,
-    absl::optional<int> end_text_offset,
+    std::optional<int> end_text_offset,
     std::string selected_text,
     std::string* highlight_text) {
   String base_url = "https://example.com/test.html";

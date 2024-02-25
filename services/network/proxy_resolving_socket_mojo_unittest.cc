@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include <string>
+#include <string_view>
 #include <utility>
 #include <vector>
 
@@ -113,8 +114,8 @@ class ProxyResolvingSocketTestBase {
         net::MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS),
         std::move(receiver), std::move(socket_observer),
         base::BindLambdaForTesting(
-            [&](int result, const absl::optional<net::IPEndPoint>& local_addr,
-                const absl::optional<net::IPEndPoint>& peer_addr,
+            [&](int result, const std::optional<net::IPEndPoint>& local_addr,
+                const std::optional<net::IPEndPoint>& peer_addr,
                 mojo::ScopedDataPipeConsumerHandle receive_pipe_handle,
                 mojo::ScopedDataPipeProducerHandle send_pipe_handle) {
               net_error = result;
@@ -338,9 +339,9 @@ TEST_F(ProxyResolvingSocketMojoTest, ConnectWithFakeTLSHandshake) {
   Init("DIRECT");
   set_fake_tls_handshake(true);
 
-  base::StringPiece client_hello =
+  std::string_view client_hello =
       webrtc::FakeSSLClientSocket::GetSslClientHello();
-  base::StringPiece server_hello =
+  std::string_view server_hello =
       webrtc::FakeSSLClientSocket::GetSslServerHello();
   std::vector<net::MockRead> reads = {
       net::MockRead(net::ASYNC, server_hello.data(), server_hello.length(), 1),
@@ -390,8 +391,8 @@ TEST_F(ProxyResolvingSocketMojoTest, SocketDestroyedBeforeConnectCompletes) {
       socket.InitWithNewPipeAndPassReceiver(),
       mojo::NullRemote() /* observer */,
       base::BindLambdaForTesting(
-          [&](int result, const absl::optional<net::IPEndPoint>& local_addr,
-              const absl::optional<net::IPEndPoint>& peer_addr,
+          [&](int result, const std::optional<net::IPEndPoint>& local_addr,
+              const std::optional<net::IPEndPoint>& peer_addr,
               mojo::ScopedDataPipeConsumerHandle receive_pipe_handle,
               mojo::ScopedDataPipeProducerHandle send_pipe_handle) {
             net_error = result;

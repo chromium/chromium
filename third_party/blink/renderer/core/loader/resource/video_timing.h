@@ -57,12 +57,14 @@ class VideoTiming final : public GarbageCollected<VideoTiming>,
 
   void SetContentSizeForEntropy(size_t length) { content_size_ = length; }
 
-  absl::optional<WebURLRequest::Priority> RequestPriority() const override {
+  std::optional<WebURLRequest::Priority> RequestPriority() const override {
     // No priority data are reported for LCP videos as initially we focus on LCP
     // images (crbug.com/1378698).
     // TODO(crbug.com/1379728): Revisit priority reporting also for videos.
-    return absl::nullopt;
+    return std::nullopt;
   }
+
+  bool IsBroken() const override { return false; }
   // Video timing does not have information about load start/end time. The
   // functions return 0 Timeticks as placeholders which would not be reported to
   // UKM.

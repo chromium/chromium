@@ -108,8 +108,7 @@ class DataOffer final : public ui::PropertyHandler {
   void OnPickledUrlsResolved(SendDataCallback callback,
                              const std::vector<GURL>& urls);
 
-  const raw_ptr<DataOfferDelegate, DanglingUntriaged | ExperimentalAsh>
-      delegate_;
+  const raw_ptr<DataOfferDelegate, DanglingUntriaged> delegate_;
 
   // Data for a given mime type may not ever be requested, or may be requested
   // more than once. Using callbacks and a cache allows us to delay any
@@ -144,8 +143,8 @@ class ScopedDataOffer {
   DataOffer* get() { return data_offer_; }
 
  private:
-  const raw_ptr<DataOffer, ExperimentalAsh> data_offer_;
-  const raw_ptr<DataOfferObserver, ExperimentalAsh> observer_;
+  const raw_ptr<DataOffer> data_offer_;
+  const raw_ptr<DataOfferObserver> observer_;
 };
 
 }  // namespace exo

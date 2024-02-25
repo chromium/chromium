@@ -37,7 +37,7 @@
 #include "chrome/browser/upgrade_detector/upgrade_detector.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/common/url_constants.h"
-#include "chrome/grit/chromium_strings.h"
+#include "chrome/grit/branded_strings.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/google/core/common/google_util.h"
 #include "components/policy/core/common/management/management_service.h"
@@ -53,6 +53,8 @@
 #include "v8/include/v8-version-string.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
+#include <optional>
+
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_switches.h"
 #include "ash/public/cpp/new_window_delegate.h"
@@ -65,6 +67,7 @@
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/ash/settings/cros_settings.h"
 #include "chrome/browser/ash/tpm_firmware_update.h"
+#include "chrome/browser/ui/webui/ash/extended_updates/extended_updates_dialog.h"
 #include "chrome/browser/ui/webui/ash/image_source.h"
 #include "chrome/browser/ui/webui/help/help_utils_chromeos.h"
 #include "chrome/browser/ui/webui/help/version_updater_chromeos.h"
@@ -77,7 +80,6 @@
 #include "chromeos/dbus/power/power_manager_client.h"
 #include "chromeos/version/version_loader.h"
 #include "components/user_manager/user_manager.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/icu/source/i18n/unicode/timezone.h"
 #include "ui/chromeos/devicetype_utils.h"
 #endif
@@ -171,7 +173,7 @@ base::FilePath GetRegulatoryLabelDirForRegion(base::StringPiece region) {
 base::FilePath FindRegulatoryLabelDir() {
   base::FilePath region_path;
   // Use the VPD region code to find the label dir.
-  const absl::optional<base::StringPiece> region =
+  const std::optional<base::StringPiece> region =
       ash::system::StatisticsProvider::GetInstance()->GetMachineStatistic(
           ash::system::kRegionKey);
   if (region && !region->empty()) {
@@ -202,7 +204,7 @@ std::string ReadRegulatoryLabelText(const base::FilePath& label_dir_path) {
 
 base::Value::Dict GetVersionInfo() {
   base::Value::Dict version_info;
-  absl::optional<std::string> version = chromeos::version_loader::GetVersion(
+  std::optional<std::string> version = chromeos::version_loader::GetVersion(
       chromeos::version_loader::VERSION_FULL);
   version_info.Set("osVersion", version.value_or("0.0.0.0"));
   version_info.Set("arcVersion", chromeos::version_loader::GetArcVersion());
@@ -287,6 +289,11 @@ void AboutHandler::RegisterMessages() {
       "openHelpPage", base::BindRepeating(&AboutHandler::HandleOpenHelpPage,
                                           base::Unretained(this)));
 #if BUILDFLAG(IS_CHROMEOS_ASH)
+  web_ui()->RegisterMessageCallback(
+      "openExtendedUpdatesDialog",
+      base::BindRepeating(&AboutHandler::HandleOpenExtendedUpdatesDialog,
+                          base::Unretained(this)));
+
   web_ui()->RegisterMessageCallback(
       "openDiagnostics",
       base::BindRepeating(&AboutHandler::HandleOpenDiagnostics,
@@ -386,7 +393,7 @@ void AboutHandler::RegisterMessages() {
 
 void AboutHandler::OnJavascriptAllowed() {
   apply_changes_from_upgrade_observer_ = true;
-  version_updater_.reset(VersionUpdater::Create(web_ui()->GetWebContents()));
+  version_updater_ = VersionUpdater::Create(web_ui()->GetWebContents());
   policy_registrar_ = std::make_unique<policy::PolicyChangeRegistrar>(
       g_browser_process->policy_service(),
       policy::PolicyNamespace(policy::POLICY_DOMAIN_CHROME, std::string()));
@@ -394,7 +401,7 @@ void AboutHandler::OnJavascriptAllowed() {
   policy_registrar_->Observe(
       policy::key::kDeviceAutoUpdateDisabled,
       base::BindRepeating(&AboutHandler::OnDeviceAutoUpdatePolicyChanged,
-                          base::Unretained(this)));
+                          weak_factory_.GetWeakPtr()));
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 }
 
@@ -402,6 +409,7 @@ void AboutHandler::OnJavascriptDisallowed() {
   apply_changes_from_upgrade_observer_ = false;
   version_updater_.reset();
   policy_registrar_.reset();
+  weak_factory_.InvalidateWeakPtrs();
 }
 
 void AboutHandler::OnUpgradeRecommended() {
@@ -446,7 +454,7 @@ void AboutHandler::RefreshUpdateStatus() {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   static_cast<VersionUpdaterCros*>(version_updater_.get())
       ->GetUpdateStatus(base::BindRepeating(&AboutHandler::SetUpdateStatus,
-                                            base::Unretained(this)));
+                                            weak_factory_.GetWeakPtr()));
 #else
   RequestUpdate();
 #endif
@@ -460,20 +468,24 @@ void AboutHandler::PromoteUpdater(const base::Value::List& args) {
 
 void AboutHandler::HandleOpenFeedbackDialog(const base::Value::List& args) {
   DCHECK(args.empty());
-  Browser* browser =
-      chrome::FindBrowserWithWebContents(web_ui()->GetWebContents());
+  Browser* browser = chrome::FindBrowserWithTab(web_ui()->GetWebContents());
   chrome::OpenFeedbackDialog(browser,
                              chrome::kFeedbackSourceMdSettingsAboutPage);
 }
 
 void AboutHandler::HandleOpenHelpPage(const base::Value::List& args) {
   DCHECK(args.empty());
-  Browser* browser =
-      chrome::FindBrowserWithWebContents(web_ui()->GetWebContents());
+  Browser* browser = chrome::FindBrowserWithTab(web_ui()->GetWebContents());
   chrome::ShowHelp(browser, chrome::HELP_SOURCE_WEBUI);
 }
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
+void AboutHandler::HandleOpenExtendedUpdatesDialog(
+    const base::Value::List& args) {
+  DCHECK(args.empty());
+  ash::extended_updates::ExtendedUpdatesDialog::Show();
+}
+
 void AboutHandler::HandleOpenDiagnostics(const base::Value::List& args) {
   DCHECK(args.empty());
   chrome::ShowDiagnosticsApp(profile_);
@@ -506,8 +518,7 @@ void AboutHandler::HandleLaunchReleaseNotes(const base::Value::List& args) {
 
 void AboutHandler::HandleOpenOsHelpPage(const base::Value::List& args) {
   DCHECK(args.empty());
-  Browser* browser =
-      chrome::FindBrowserWithWebContents(web_ui()->GetWebContents());
+  Browser* browser = chrome::FindBrowserWithTab(web_ui()->GetWebContents());
   chrome::ShowHelp(browser, chrome::HELP_SOURCE_WEBUI_CHROME_OS);
 }
 
@@ -531,7 +542,7 @@ void AboutHandler::HandleSetChannel(const base::Value::List& args) {
     // Check for update after switching release channel.
     version_updater_->CheckForUpdate(
         base::BindRepeating(&AboutHandler::SetUpdateStatus,
-                            base::Unretained(this)),
+                            weak_factory_.GetWeakPtr()),
         VersionUpdater::PromoteCallback());
   }
 }
@@ -644,7 +655,7 @@ void AboutHandler::RequestUpdateOverCellular(const std::string& update_version,
                                              int64_t update_size) {
   version_updater_->SetUpdateOverCellularOneTimePermission(
       base::BindRepeating(&AboutHandler::SetUpdateStatus,
-                          base::Unretained(this)),
+                          weak_factory_.GetWeakPtr()),
       update_version, update_size);
 }
 
@@ -681,14 +692,13 @@ void AboutHandler::OnGetEndOfLifeInfo(
     int eol_string_id =
         has_eol_passed ? IDS_SETTINGS_ABOUT_PAGE_END_OF_LIFE_MESSAGE_PAST
                        : IDS_SETTINGS_ABOUT_PAGE_END_OF_LIFE_MESSAGE_FUTURE;
-    response.Set(
-        "aboutPageEndOfLifeMessage",
-        l10n_util::GetStringFUTF16(
-            eol_string_id,
-            base::TimeFormatMonthAndYearForTimeZone(eol_info.eol_date,
-                                                    icu::TimeZone::getGMT()),
-            base::ASCIIToUTF16(has_eol_passed ? chrome::kEolNotificationURL
-                                              : chrome::kAutoUpdatePolicyURL)));
+    response.Set("aboutPageEndOfLifeMessage",
+                 l10n_util::GetStringFUTF16(
+                     eol_string_id,
+                     base::TimeFormatMonthAndYearForTimeZone(
+                         eol_info.eol_date, icu::TimeZone::getGMT()),
+                     has_eol_passed ? chrome::kEolNotificationURL
+                                    : chrome::kAutoUpdatePolicyURL));
     const ash::eol_incentive_util::EolIncentiveType eolIncentiveType =
         ash::eol_incentive_util::ShouldShowEolIncentive(
             profile_, eol_info.eol_date, clock_->Now());
@@ -747,7 +757,7 @@ void AboutHandler::HandleIsConsumerAutoUpdateEnabled(
 
 void AboutHandler::OnIsConsumerAutoUpdateEnabled(std::string callback_id,
                                                  std::string feature,
-                                                 absl::optional<bool> enabled) {
+                                                 std::optional<bool> enabled) {
   if (!enabled.has_value()) {
     LOG(ERROR) << "Failed to get feature value for " << feature
                << " defaulting to enabled";
@@ -781,10 +791,10 @@ void AboutHandler::HandleOpenProductLicenseOther(
 void AboutHandler::RequestUpdate() {
   version_updater_->CheckForUpdate(
       base::BindRepeating(&AboutHandler::SetUpdateStatus,
-                          base::Unretained(this)),
+                          weak_factory_.GetWeakPtr()),
 #if BUILDFLAG(IS_MAC)
       base::BindRepeating(&AboutHandler::SetPromotionState,
-                          base::Unretained(this)));
+                          weak_factory_.GetWeakPtr()));
 #else
       VersionUpdater::PromoteCallback());
 #endif  // BUILDFLAG(IS_MAC)

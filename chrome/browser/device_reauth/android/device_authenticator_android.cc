@@ -5,6 +5,7 @@
 #include "chrome/browser/device_reauth/android/device_authenticator_android.h"
 
 #include <memory>
+#include <optional>
 #include <utility>
 
 #include "base/feature_list.h"
@@ -12,6 +13,7 @@
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
 #include "base/location.h"
+#include "base/memory/ptr_util.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/notreached.h"
@@ -24,7 +26,6 @@
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/web_contents.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/android/view_android.h"
 
 using content::WebContents;
@@ -55,47 +56,22 @@ DeviceAuthFinalResult MapUIResultToFinal(DeviceAuthUIResult result) {
   }
 }
 
-// Checks whether authentication request was made by the password manager on
-// Android.
-bool isAndroidPasswordManagerRequester(
-    const device_reauth::DeviceAuthRequester& requester) {
-  switch (requester) {
-    case device_reauth::DeviceAuthRequester::kTouchToFill:
-    case device_reauth::DeviceAuthRequester::kAutofillSuggestion:
-    case device_reauth::DeviceAuthRequester::kFallbackSheet:
-    case device_reauth::DeviceAuthRequester::kAllPasswordsList:
-    case device_reauth::DeviceAuthRequester::kAccountChooserDialog:
-    case device_reauth::DeviceAuthRequester::kPasswordCheckAutoPwdChange:
-      return true;
-    case device_reauth::DeviceAuthRequester::kIncognitoReauthPage:
-    // kPasswordsInSettings flag is used only for desktop.
-    case device_reauth::DeviceAuthRequester::kPasswordsInSettings:
-    case device_reauth::DeviceAuthRequester::kLocalCardAutofill:
-    case device_reauth::DeviceAuthRequester::kDeviceLockPage:
-    case device_reauth::DeviceAuthRequester::kPaymentMethodsReauthInSettings:
-    case device_reauth::DeviceAuthRequester::kVirtualCardAutofill:
-    case device_reauth::DeviceAuthRequester::kPaymentsAutofillOptIn:
-      return false;
-  }
-}
-
-void LogAuthResult(const device_reauth::DeviceAuthRequester& requester,
-                   const DeviceAuthFinalResult& result) {
-  if (isAndroidPasswordManagerRequester(requester)) {
+void LogAuthResult(device_reauth::DeviceAuthSource source,
+                   DeviceAuthFinalResult result) {
+  if (device_reauth::DeviceAuthSource::kPasswordManager == source) {
     base::UmaHistogramEnumeration(
         "PasswordManager.BiometricAuthPwdFill.AuthResult", result);
-  } else if (device_reauth::DeviceAuthRequester::kIncognitoReauthPage ==
-             requester) {
+  } else if (device_reauth::DeviceAuthSource::kIncognito == source) {
     base::UmaHistogramEnumeration("Android.IncognitoReauth.AuthResult", result);
   }
 }
 
-void LogAuthRequester(const device_reauth::DeviceAuthRequester& requester) {
-  base::UmaHistogramEnumeration("Android.BiometricAuth.AuthRequester",
-                                requester);
+void LogAuthSource(device_reauth::DeviceAuthSource source) {
+  base::UmaHistogramEnumeration("Android.DeviceAuthenticator.AuthSource",
+                                source);
 }
 
-void LogCanAuthenticate(const BiometricsAvailability& availability) {
+void LogCanAuthenticate(BiometricsAvailability availability) {
   base::UmaHistogramEnumeration(
       "PasswordManager.BiometricAuthPwdFill.CanAuthenticate", availability);
 }
@@ -103,8 +79,14 @@ void LogCanAuthenticate(const BiometricsAvailability& availability) {
 }  // namespace
 
 DeviceAuthenticatorAndroid::DeviceAuthenticatorAndroid(
-    std::unique_ptr<DeviceAuthenticatorBridge> bridge)
-    : bridge_(std::move(bridge)) {}
+    std::unique_ptr<DeviceAuthenticatorBridge> bridge,
+    DeviceAuthenticatorProxy* proxy,
+    const device_reauth::DeviceAuthParams& params)
+    : DeviceAuthenticatorCommon(proxy,
+                                params.GetAuthenticationValidityPeriod(),
+                                params.GetAuthResultHistogram()),
+      bridge_(std::move(bridge)),
+      source_(params.GetDeviceAuthSource()) {}
 
 DeviceAuthenticatorAndroid::~DeviceAuthenticatorAndroid() = default;
 
@@ -118,24 +100,26 @@ bool DeviceAuthenticatorAndroid::CanAuthenticateWithBiometricOrScreenLock() {
   return bridge_->CanAuthenticateWithBiometricOrScreenLock();
 }
 
-void DeviceAuthenticatorAndroid::Authenticate(
-    device_reauth::DeviceAuthRequester requester,
-    AuthenticateCallback callback,
-    bool use_last_valid_auth) {
+void DeviceAuthenticatorAndroid::AuthenticateWithMessage(
+    const std::u16string& message,
+    AuthenticateCallback callback) {
+  CHECK(message.empty())
+      << "Android doesn't support messages for authentication dialog";
+
   // Previous authentication is not yet completed, so return.
-  if (callback_ || requester_.has_value()) {
+  if (callback_) {
     return;
   }
 
   callback_ = std::move(callback);
-  requester_ = requester;
 
-  LogAuthRequester(requester);
+  LogAuthSource(source_);
 
-  if (use_last_valid_auth && !NeedsToAuthenticate()) {
-    LogAuthResult(requester, DeviceAuthFinalResult::kAuthStillValid);
+  if (!NeedsToAuthenticate()) {
+    LogAuthResult(source_, DeviceAuthFinalResult::kAuthStillValid);
+    // No code should be run after the callback as the callback could already be
+    // destroying "this".
     std::move(callback_).Run(/*success=*/true);
-    requester_ = absl::nullopt;
     return;
   }
   // `this` owns the bridge so it's safe to use base::Unretained.
@@ -144,33 +128,15 @@ void DeviceAuthenticatorAndroid::Authenticate(
                      base::Unretained(this)));
 }
 
-void DeviceAuthenticatorAndroid::AuthenticateWithMessage(
-    const std::u16string& message,
-    AuthenticateCallback callback) {
-  NOTIMPLEMENTED();
-}
-
-void DeviceAuthenticatorAndroid::Cancel(
-    device_reauth::DeviceAuthRequester requester) {
-  // The object cancelling the auth is not the same as the one to which
-  // the ongoing auth corresponds.
-  if (!requester_.has_value() || requester != requester_.value()) {
+void DeviceAuthenticatorAndroid::Cancel() {
+  // There is no ongoing reauth to cancel.
+  if (!callback_) {
     return;
   }
-
-  LogAuthResult(requester, DeviceAuthFinalResult::kCanceledByChrome);
+  LogAuthResult(source_, DeviceAuthFinalResult::kCanceledByChrome);
 
   callback_.Reset();
-  requester_ = absl::nullopt;
   bridge_->Cancel();
-}
-
-// static
-scoped_refptr<DeviceAuthenticatorAndroid>
-DeviceAuthenticatorAndroid::CreateForTesting(
-    std::unique_ptr<DeviceAuthenticatorBridge> bridge) {
-  return base::WrapRefCounted(
-      new DeviceAuthenticatorAndroid(std::move(bridge)));
 }
 
 void DeviceAuthenticatorAndroid::OnAuthenticationCompleted(
@@ -185,7 +151,8 @@ void DeviceAuthenticatorAndroid::OnAuthenticationCompleted(
   bool success = IsSuccessfulResult(ui_result);
   RecordAuthenticationTimeIfSuccessful(success);
 
-  LogAuthResult(requester_.value(), MapUIResultToFinal(ui_result));
+  LogAuthResult(source_, MapUIResultToFinal(ui_result));
+  // No code should be run after the callback as the callback could already be
+  // destroying "this".
   std::move(callback_).Run(success);
-  requester_ = absl::nullopt;
 }

@@ -18,6 +18,7 @@
 #include "mojo/public/cpp/bindings/remote_set.h"
 #include "net/base/net_errors.h"
 #include "services/network/public/cpp/p2p_param_traits.h"
+#include "services/network/public/mojom/network_context.mojom.h"
 
 using content::BrowserMessageFilter;
 using content::BrowserThread;

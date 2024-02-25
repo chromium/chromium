@@ -18,7 +18,6 @@
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
-#include "base/memory/weak_ptr.h"
 #include "base/notreached.h"
 #include "build/build_config.h"
 #include "gpu/command_buffer/service/feature_info.h"
@@ -52,19 +51,9 @@ class TextureRef;
 // all references have been released.
 class GPU_GLES2_EXPORT TexturePassthrough final
     : public TextureBase,
-      public base::RefCounted<TexturePassthrough>,
-      public base::SupportsWeakPtr<TexturePassthrough> {
+      public base::RefCounted<TexturePassthrough> {
  public:
   TexturePassthrough(GLuint service_id, GLenum target);
-  TexturePassthrough(GLuint service_id,
-                     GLenum target,
-                     GLenum internal_format,
-                     GLsizei width,
-                     GLsizei height,
-                     GLsizei depth,
-                     GLint border,
-                     GLenum format,
-                     GLenum type);
 
   TexturePassthrough(const TexturePassthrough&) = delete;
   TexturePassthrough& operator=(const TexturePassthrough&) = delete;
@@ -82,14 +71,6 @@ class GPU_GLES2_EXPORT TexturePassthrough final
   void BindToServiceId(GLuint service_id);
 #endif
 
-#if BUILDFLAG(IS_APPLE)
-  // Return true if and only if the decoder should BindTexImage / CopyTexImage
-  // us before sampling.
-  bool is_bind_pending() const { return is_bind_pending_; }
-  void set_bind_pending() { is_bind_pending_ = true; }
-  void clear_bind_pending() { is_bind_pending_ = false; }
-#endif
-
   void SetEstimatedSize(size_t size);
   size_t estimated_size() const { return estimated_size_; }
 
@@ -97,37 +78,13 @@ class GPU_GLES2_EXPORT TexturePassthrough final
   ~TexturePassthrough() override;
 
  private:
-  bool LevelInfoExists(GLenum target, GLint level, size_t* out_face_idx) const;
-
   friend class base::RefCounted<TexturePassthrough>;
 
   const GLuint owned_service_id_ = 0;
 
   bool have_context_;
-#if BUILDFLAG(IS_APPLE)
-  bool is_bind_pending_ = false;
-#endif
 
   size_t estimated_size_ = 0;
-
-  // Bound images divided into faces and then levels
-  struct LevelInfo {
-    LevelInfo();
-    LevelInfo(const LevelInfo& rhs);
-    ~LevelInfo();
-
-    GLenum internal_format = 0;
-    GLsizei width = 0;
-    GLsizei height = 0;
-    GLsizei depth = 0;
-    GLint border = 0;
-    GLenum format = 0;
-    GLenum type = 0;
-  };
-
-  LevelInfo* GetLevelInfo(GLenum target, GLint level);
-
-  std::vector<std::vector<LevelInfo>> level_images_;
 };
 
 // Info about Textures currently in the system.
@@ -352,9 +309,6 @@ class GPU_GLES2_EXPORT Texture final : public TextureBase {
   bool IsDefined() const {
     return estimated_size() > 0;
   }
-
-  // Initialize TEXTURE_MAX_ANISOTROPY to 1 if we haven't done so yet.
-  void InitTextureMaxAnisotropyIfNeeded(GLenum target);
 
   void DumpLevelMemory(base::trace_event::ProcessMemoryDump* pmd,
                        uint64_t client_tracing_id,
@@ -666,9 +620,6 @@ class GPU_GLES2_EXPORT Texture final : public TextureBase {
   // Cache of the computed CanRenderCondition flag.
   CanRenderCondition can_render_condition_ = CAN_RENDER_ALWAYS;
 
-  // Whether we have initialized TEXTURE_MAX_ANISOTROPY to 1.
-  bool texture_max_anisotropy_initialized_ = false;
-
   raw_ptr<const CompatibilitySwizzle> compatibility_swizzle_ = nullptr;
 };
 
@@ -753,7 +704,6 @@ struct DecoderTextureState {
   bool force_int_or_srgb_cube_texture_complete;
   bool unpack_alignment_workaround_with_unpack_buffer;
   bool unpack_overlapping_rows_separately_unpack_buffer;
-  bool unpack_image_height_workaround_with_unpack_buffer;
 };
 
 // This class keeps track of the textures and their sizes so we can do NPOT and
@@ -1256,7 +1206,8 @@ class GPU_GLES2_EXPORT TextureManager
 
   scoped_refptr<FeatureInfo> feature_info_;
 
-  std::vector<FramebufferManager*> framebuffer_managers_;
+  std::vector<raw_ptr<FramebufferManager, VectorExperimental>>
+      framebuffer_managers_;
 
   // Info for each texture in the system.
   typedef std::unordered_map<GLuint, scoped_refptr<TextureRef>> TextureMap;
@@ -1290,7 +1241,8 @@ class GPU_GLES2_EXPORT TextureManager
   // The default textures for each target (texture name = 0)
   scoped_refptr<TextureRef> default_textures_[kNumDefaultTextures];
 
-  std::vector<DestructionObserver*> destruction_observers_;
+  std::vector<raw_ptr<DestructionObserver, VectorExperimental>>
+      destruction_observers_;
 
   uint32_t current_service_id_generation_;
 

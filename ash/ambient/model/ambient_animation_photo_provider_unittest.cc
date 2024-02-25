@@ -4,7 +4,9 @@
 
 #include "ash/ambient/model/ambient_animation_photo_provider.h"
 
+#include <optional>
 #include <string>
+#include <string_view>
 #include <utility>
 #include <vector>
 
@@ -14,6 +16,7 @@
 #include "ash/ambient/resources/ambient_animation_static_resources.h"
 #include "ash/ambient/test/ambient_test_util.h"
 #include "ash/ambient/test/fake_ambient_animation_static_resources.h"
+#include "ash/webui/personalization_app/mojom/personalization_app.mojom-shared.h"
 #include "base/check.h"
 #include "base/files/file_path.h"
 #include "base/memory/scoped_refptr.h"
@@ -25,7 +28,6 @@
 #include "cc/paint/skottie_resource_metadata.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/image/image_skia.h"
 #include "ui/gfx/image/image_skia_rep.h"
@@ -113,7 +115,7 @@ class AmbientAnimationPhotoProviderTest : public ::testing::Test {
     for (int i = 0; i < kNumDynamicAssets; ++i) {
       CHECK(resource_metadata.RegisterAsset(
           "dummy-resource-path", "dummy-resource-name", dynamic_asset_ids_[i],
-          /*size=*/absl::nullopt));
+          /*size=*/std::nullopt));
     }
     return resource_metadata;
   }
@@ -127,8 +129,8 @@ class AmbientAnimationPhotoProviderTest : public ::testing::Test {
   }
 
   scoped_refptr<ImageAsset> LoadAsset(
-      base::StringPiece asset_id,
-      absl::optional<gfx::Size> size = absl::nullopt) {
+      std::string_view asset_id,
+      std::optional<gfx::Size> size = std::nullopt) {
     scoped_refptr<ImageAsset> asset = provider_.LoadImageAsset(
         asset_id, base::FilePath("dummy-resource-path/dummy-resource-name"),
         std::move(size));
@@ -137,8 +139,8 @@ class AmbientAnimationPhotoProviderTest : public ::testing::Test {
   }
 
   std::vector<scoped_refptr<ImageAsset>> LoadAllDynamicAssets(
-      std::array<absl::optional<gfx::Size>, kNumDynamicAssets> asset_sizes =
-          std::array<absl::optional<gfx::Size>, kNumDynamicAssets>()) {
+      std::array<std::optional<gfx::Size>, kNumDynamicAssets> asset_sizes =
+          std::array<std::optional<gfx::Size>, kNumDynamicAssets>()) {
     std::vector<scoped_refptr<ImageAsset>> all_assets;
     char position_id = 'A';
     for (int asset_idx = 0; asset_idx < kNumDynamicAssets;
@@ -707,8 +709,8 @@ TEST_F(AmbientAnimationPhotoProviderTestMultipleAssetsPerPosition,
 }
 
 TEST_F(AmbientAnimationPhotoProviderTest, RecordsPhotoOrientationMatch) {
-  static_resources_.set_ui_settings(
-      AmbientUiSettings(AmbientTheme::kFeelTheBreeze));
+  static_resources_.set_ui_settings(AmbientUiSettings(
+      personalization_app::mojom::AmbientTheme::kFeelTheBreeze));
 
   // 2 landscape 2 portrait
   AddImageToModel(gfx::test::CreateImageSkia(/*width=*/10, /*height=*/20));

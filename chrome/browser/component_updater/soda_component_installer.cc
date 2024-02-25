@@ -4,6 +4,10 @@
 
 #include "chrome/browser/component_updater/soda_component_installer.h"
 
+#include <memory>
+#include <optional>
+#include <utility>
+
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
@@ -24,10 +28,6 @@
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "crypto/sha2.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
-
-#include <memory>
-#include <utility>
 
 #if BUILDFLAG(IS_WIN)
 #include <aclapi.h>
@@ -83,8 +83,7 @@ SodaComponentInstallerPolicy::SodaComponentInstallerPolicy(
 SodaComponentInstallerPolicy::~SodaComponentInstallerPolicy() = default;
 
 const std::string SodaComponentInstallerPolicy::GetExtensionId() {
-  return crx_file::id_util::GenerateIdFromHash(kSodaPublicKeySHA256,
-                                               sizeof(kSodaPublicKeySHA256));
+  return crx_file::id_util::GenerateIdFromHash(kSodaPublicKeySHA256);
 }
 
 void SodaComponentInstallerPolicy::UpdateSodaComponentOnDemand() {
@@ -94,10 +93,11 @@ void SodaComponentInstallerPolicy::UpdateSodaComponentOnDemand() {
       crx_id, component_updater::OnDemandUpdater::Priority::FOREGROUND,
       base::BindOnce([](update_client::Error error) {
         if (error != update_client::Error::NONE &&
-            error != update_client::Error::UPDATE_IN_PROGRESS)
+            error != update_client::Error::UPDATE_IN_PROGRESS) {
           LOG(ERROR) << "On demand update of the SODA component failed "
                         "with error: "
                      << static_cast<int>(error);
+        }
       }));
 }
 
@@ -105,7 +105,7 @@ update_client::CrxInstaller::Result
 SodaComponentInstallerPolicy::SetComponentDirectoryPermission(
     const base::FilePath& install_dir) {
 #if BUILDFLAG(IS_WIN)
-  const absl::optional<base::win::Sid> users_sid =
+  const std::optional<base::win::Sid> users_sid =
       base::win::Sid::FromKnownSid(base::win::WellKnownSid::kBuiltinUsers);
   if (!users_sid) {
     return update_client::CrxInstaller::Result(
@@ -188,11 +188,13 @@ void SodaComponentInstallerPolicy::ComponentReady(
     base::Value::Dict manifest) {
   VLOG(1) << "Component ready, version " << version.GetString() << " in "
           << install_dir.value();
-  if (on_installed_callback_)
+  if (on_installed_callback_) {
     on_installed_callback_.Run(install_dir);
+  }
 
-  if (on_ready_callback_)
+  if (on_ready_callback_) {
     std::move(on_ready_callback_).Run();
+  }
 }
 
 base::FilePath SodaComponentInstallerPolicy::GetRelativeInstallDir() const {
@@ -254,7 +256,7 @@ void RegisterSodaLanguageComponent(
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
   if (captions::IsLiveCaptionFeatureSupported()) {
-    absl::optional<speech::SodaLanguagePackComponentConfig> config =
+    std::optional<speech::SodaLanguagePackComponentConfig> config =
         speech::GetLanguageComponentConfig(language);
     if (config) {
       RegisterSodaLanguagePackComponent(config.value(), cus, global_prefs,

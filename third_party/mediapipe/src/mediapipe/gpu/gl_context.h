@@ -15,13 +15,12 @@
 #ifndef MEDIAPIPE_GPU_GL_CONTEXT_H_
 #define MEDIAPIPE_GPU_GL_CONTEXT_H_
 
-#include <pthread.h>
-
 #include <atomic>
 #include <functional>
 #include <memory>
 
 #include "absl/container/flat_hash_map.h"
+#include "absl/log/absl_check.h"
 #include "absl/synchronization/mutex.h"
 #include "mediapipe/framework/executor.h"
 #include "mediapipe/framework/mediapipe_profiling.h"
@@ -37,7 +36,6 @@
 #include <CoreVideo/CoreVideo.h>
 
 #include "mediapipe/objc/CFHolder.h"
-#include "absl/log/absl_check.h"
 
 #if TARGET_OS_OSX
 
@@ -71,6 +69,8 @@ typedef std::function<void()> GlVoidFunction;
 typedef std::function<absl::Status()> GlStatusFunction;
 
 class GlContext;
+// TODO: remove after glWaitSync crashes are resolved.
+class GlSyncWrapper;
 
 // Generic interface for synchronizing access to a shared resource from a
 // different context. This is an abstract class to keep users from
@@ -190,8 +190,7 @@ class GlContext : public std::enable_shared_from_this<GlContext> {
   // Like Run, but does not wait.
   void RunWithoutWaiting(GlVoidFunction gl_func);
 
-  // Returns a synchronization token.
-  // This should not be called outside of the GlContext thread.
+  // Returns a synchronization token for this GlContext.
   std::shared_ptr<GlSyncPoint> CreateSyncToken();
 
   // If another part of the framework calls glFinish, it should call this
@@ -277,8 +276,9 @@ class GlContext : public std::enable_shared_from_this<GlContext> {
   //
   // Therefore, instead of using std::function<void(void)>, we use a template
   // that only accepts arguments with a void result type.
-  template <typename T, typename = typename std::enable_if<std::is_void<
-                            typename std::result_of<T()>::type>::value>::type>
+  template <typename T,
+            typename = typename std::enable_if<std::is_void<
+                typename std::invoke_result<T>::type>::value>::type>
   void Run(T f) {
     Run([f] {
       f();
@@ -330,6 +330,9 @@ class GlContext : public std::enable_shared_from_this<GlContext> {
       SyncTokenTypeForTest type);
 
  private:
+  // TODO: remove after glWaitSync crashes are resolved.
+  friend GlSyncWrapper;
+
   GlContext();
 
   bool ShouldUseFenceSync() const;
@@ -487,6 +490,18 @@ ABSL_DEPRECATED(
     "GlContext::GetGlVersion)")
 const GlTextureInfo& GlTextureInfoForGpuBufferFormat(GpuBufferFormat format,
                                                      int plane);
+
+namespace internal_gl_context {
+
+struct OpenGlVersion {
+  int major;
+  int minor;
+};
+
+bool IsOpenGlVersionSameOrAbove(const OpenGlVersion& version,
+                                const OpenGlVersion& expected_version);
+
+}  // namespace internal_gl_context
 
 }  // namespace mediapipe
 

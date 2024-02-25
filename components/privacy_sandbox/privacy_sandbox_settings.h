@@ -5,7 +5,9 @@
 #ifndef COMPONENTS_PRIVACY_SANDBOX_PRIVACY_SANDBOX_SETTINGS_H_
 #define COMPONENTS_PRIVACY_SANDBOX_PRIVACY_SANDBOX_SETTINGS_H_
 
+#include "components/browsing_topics/common/common_types.h"
 #include "components/keyed_service/core/keyed_service.h"
+#include "components/privacy_sandbox/tpcd_experiment_eligibility.h"
 #include "content/public/browser/interest_group_api_operation.h"
 
 #include "base/time/time.h"
@@ -84,6 +86,26 @@ class PrivacySandboxSettings : public KeyedService {
     // Whether the profile is subject to being given notice of restrictions to
     // the standard set of Privacy Sandbox APIs.
     virtual bool IsSubjectToM1NoticeRestricted() const = 0;
+
+    // Whether the profile is eligible for 3PCD experiment. The eligibility
+    // applies for both mode A and mode B experiments.
+    virtual bool IsCookieDeprecationExperimentEligible() const = 0;
+
+    // Returns the profile's computed eligibility for 3PCD experiment. The
+    // eligibility applies for both mode A and mode B experiments. Unlike
+    // `IsCookieDeprecationExperimentEligible` this method returns the real time
+    // eligibility.
+    virtual TpcdExperimentEligibility
+    GetCookieDeprecationExperimentCurrentEligibility() const = 0;
+
+    // Whether cookie deprecation label is allowed.
+    virtual bool IsCookieDeprecationLabelAllowed() const = 0;
+
+    // Whether third-party cookies are blocked due to cookie deprecation
+    // experiment. Also returns false if users explicitly block third-party
+    // cookies.
+    virtual bool AreThirdPartyCookiesBlockedByCookieDeprecationExperiment()
+        const = 0;
   };
 
   // Returns whether the Topics API is allowed at all. If false, Topics API
@@ -106,6 +128,9 @@ class PrivacySandboxSettings : public KeyedService {
   // current epoch, or provided to a website as a previous / current epochs
   // site assigned topic.
   virtual bool IsTopicAllowed(const CanonicalTopic& topic) = 0;
+
+  // Returns whether |topic| is prioritized by Finch settings.
+  virtual bool IsTopicPrioritized(const CanonicalTopic& topic) = 0;
 
   // Sets |topic| to |allowed|. Whether a topic is allowed or not is made
   // available through IsTopicAllowed().
@@ -152,6 +177,19 @@ class PrivacySandboxSettings : public KeyedService {
       const url::Origin& reporting_origin,
       content::RenderFrameHost* console_frame = nullptr) const = 0;
 
+  // Determines whether Attribution Reporting API's transitional debug reporting
+  // is allowable in a particular context. Note that
+  // `IsAttributionReportingAllowed()` should be called prior to this.
+  // |can_bypass| indicates whether the result can be bypassed which is set to
+  // true when it's disallowed due to the cookie deprecation experiment.
+  //
+  // TODO(https://crbug.com/1501357): Clean up `can_bypass` after the cookie
+  // deprecation experiment.
+  virtual bool IsAttributionReportingTransitionalDebuggingAllowed(
+      const url::Origin& top_frame_origin,
+      const url::Origin& reporting_origin,
+      bool& can_bypass) const = 0;
+
   // Sets the ability for |top_frame_etld_plus1| to join the profile to interest
   // groups to |allowed|. This information is stored in preferences, and is made
   // available to the API via IsFledgeJoiningAllowed(). |top_frame_etld_plus1|
@@ -189,22 +227,32 @@ class PrivacySandboxSettings : public KeyedService {
   // Determines whether Shared Storage is allowable in a particular context.
   // `top_frame_origin` can be the same as `accessing_origin` in the case of a
   // top-level document calling Shared Storage.
+  //
+  // If non-null, `out_debug_message` is updated in this call to relay details
+  // back to the caller about how the returned boolean result was obtained.
+  //
   // If provided, `console_frame` is used to log errors to the console upon
   // attestation failure.
   virtual bool IsSharedStorageAllowed(
       const url::Origin& top_frame_origin,
       const url::Origin& accessing_origin,
+      std::string* out_debug_message = nullptr,
       content::RenderFrameHost* console_frame = nullptr) const = 0;
 
   // Controls whether Shared Storage SelectURL is allowable for
   // `accessing_origin` in the context of `top_frame_origin`. Does not override
   // a false return value from IsSharedStorageAllowed.
+  //
+  // If non-null, `out_debug_message` is updated in this call to relay details
+  // back to the caller about how the returned boolean result was obtained.
+  //
   // TODO(crbug.com/1378703): This just redirects to the general
   // IsSharedStorageAllowed(). The implementation needs to be updated to reflect
   // the M1 preferences when release 4 is enabled.
   virtual bool IsSharedStorageSelectURLAllowed(
       const url::Origin& top_frame_origin,
-      const url::Origin& accessing_origin) const = 0;
+      const url::Origin& accessing_origin,
+      std::string* out_debug_message = nullptr) const = 0;
 
   // Determines whether the Private Aggregation API is allowable in a particular
   // context. `top_frame_origin` is the associated top-frame origin of the
@@ -213,12 +261,32 @@ class PrivacySandboxSettings : public KeyedService {
       const url::Origin& top_frame_origin,
       const url::Origin& reporting_origin) const = 0;
 
-  // Returns whether the profile has the Privacy Sandbox enabled. This consults
-  // the main preference, as well as the delegate to check whether the sandbox
-  // is restricted. It does not consider any cookie settings. A return value of
-  // false means that no Privacy Sandbox operations can occur. A return value of
-  // true must be followed up with the appropriate IsXAllowed() call.
-  virtual bool IsPrivacySandboxEnabled() const = 0;
+  // Determines whether the Private Aggregation API's debug mode is allowable in
+  // a particular context. Note that if IsPrivateAggregationAllowed() is false,
+  // this will always be false too. `top_frame_origin` is the associated
+  // top-frame origin of the calling context. Applicable to all uses of Private
+  // Aggregation.
+  virtual bool IsPrivateAggregationDebugModeAllowed(
+      const url::Origin& top_frame_origin,
+      const url::Origin& reporting_origin) const = 0;
+
+  // Returns the profile computed eligibility for 3PCD experiments.
+  // This consults the delegate for the real time eligibility of the profile.
+  // The eligibility applies for both mode A and mode B experiments.
+  virtual TpcdExperimentEligibility
+  GetCookieDeprecationExperimentCurrentEligibility() const = 0;
+
+  // Determines whether cookie deprecation label is allowable. This consults
+  // whether the profile is eligible for 3PCD experiments. If true, the more
+  // specific function, IsCookieDeprecationLabelAllowed(), should be consulted
+  // for the relevant context.
+  virtual bool IsCookieDeprecationLabelAllowed() const = 0;
+
+  // Determines whether cookie deprecation label is allowable for
+  // `context_origin` in the context of `top_frame_origin`.
+  virtual bool IsCookieDeprecationLabelAllowedForContext(
+      const url::Origin& top_frame_origin,
+      const url::Origin& context_origin) const = 0;
 
   // Allows all Privacy Sandbox prefs for testing. This should be used if tests
   // don't depend on specific access control and just would like to have Privacy
@@ -228,14 +296,6 @@ class PrivacySandboxSettings : public KeyedService {
 
   // Blocks Topics pref for testing.
   virtual void SetTopicsBlockedForTesting() = 0;
-
-  // Disables the Privacy Sandbox completely if |enabled| is false, if |enabled|
-  // is true, more granular checks will still be performed, and the delegate
-  // consulted, to determine if specific APIs are available in specific
-  // contexts.
-  // DEPRECATED: Use `SetAllPrivacySandboxAllowedForTesting()` to allow all
-  // Privacy Sandbox prefs or per-API block-for-testing functions.
-  virtual void SetPrivacySandboxEnabled(bool enabled) = 0;
 
   // Returns whether the Privacy Sandbox is being restricted by the associated
   // delegate. Forwards directly to the corresponding delegate function.
@@ -267,6 +327,9 @@ class PrivacySandboxSettings : public KeyedService {
 
   // Overrides the internal delegate for test purposes.
   virtual void SetDelegateForTesting(std::unique_ptr<Delegate> delegate) = 0;
+
+  // Source of truth for whether related websites are enabled.
+  virtual bool AreRelatedWebsiteSetsEnabled() const = 0;
 };
 
 }  // namespace privacy_sandbox

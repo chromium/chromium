@@ -237,7 +237,6 @@ class CAPTURE_EXPORT VideoCaptureDevice
     // contains the captured content.
     virtual void OnIncomingCapturedExternalBuffer(
         CapturedExternalVideoBuffer buffer,
-        std::vector<CapturedExternalVideoBuffer> scaled_buffers,
         base::TimeTicks reference_time,
         base::TimeDelta timestamp,
         const gfx::Rect& visible_rect) = 0;
@@ -347,22 +346,29 @@ class CAPTURE_EXPORT VideoCaptureDevice
   // StopAndDeAllocate(). Otherwise, its behavior is undefined.
   virtual void Resume() {}
 
-  // Start/stop cropping.
+  // Start/stop cropping or restricting a tab-caputre video track.
   //
-  // Non-empty |crop_id| sets (or changes) the crop-target.
-  // Empty |crop_id| reverts the capture to its original, uncropped state.
+  // Non-empty |target| sets (or changes) the target, and |type| determines
+  // which type of sub-capture mutation is expected.
   //
-  // |crop_version| must be incremented by at least one for each call.
-  // By including it in frame's metadata, Viz informs Blink what was the
-  // latest invocation of cropTo() before a given frame was produced.
+  // Empty |target| reverts the capture to its original state.
+  // In that case, |type| is not generally useful, and is ignored. It can
+  // be expected to match the method called from JS - cropTo() or restrictTo().
+  //
+  // |sub_capture_target_version| must be incremented by at least one for each
+  // call. By including it in frame's metadata, Viz informs Blink what was the
+  // latest invocation of cropTo() or restrictTo() before a given frame was
+  // produced.
   //
   // The callback reports success/failure. It is called on an unspecified
   // thread, it's the caller's responsibility to wrap it (i.e. via BindPostTask)
   // as needed.
-  virtual void Crop(
-      const base::Token& crop_id,
-      uint32_t crop_version,
-      base::OnceCallback<void(media::mojom::CropRequestResult)> callback);
+  virtual void ApplySubCaptureTarget(
+      mojom::SubCaptureTargetType type,
+      const base::Token& target,
+      uint32_t sub_capture_target_version,
+      base::OnceCallback<void(media::mojom::ApplySubCaptureTargetResult)>
+          callback);
 
   // Deallocates the video capturer, possibly asynchronously.
   //

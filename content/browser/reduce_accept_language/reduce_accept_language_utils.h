@@ -36,7 +36,7 @@ class CONTENT_EXPORT ReduceAcceptLanguageUtils {
 
   // Create and return a ReduceAcceptLanguageUtils instance based on provided
   // `browser_context`.
-  static absl::optional<ReduceAcceptLanguageUtils> Create(
+  static std::optional<ReduceAcceptLanguageUtils> Create(
       BrowserContext* browser_context);
 
   // Returns true if `accept_language` matches `content_language` using the
@@ -47,11 +47,11 @@ class CONTENT_EXPORT ReduceAcceptLanguageUtils {
 
   // Starting from each preferred language in `preferred_languages` in order,
   // return the first matched language if the language matches any language in
-  // `available_languages`, otherwise return absl::nullopt. The matching
+  // `available_languages`, otherwise return std::nullopt. The matching
   // algorithm is that if any language in `available_languages` is a wildcard or
   // matches the language `preferred_languages`, return the matched language as
   // preferred language.
-  static absl::optional<std::string> GetFirstMatchPreferredLanguage(
+  static std::optional<std::string> GetFirstMatchPreferredLanguage(
       const std::vector<std::string>& preferred_languages,
       const std::vector<std::string>& available_languages);
 
@@ -77,7 +77,7 @@ class CONTENT_EXPORT ReduceAcceptLanguageUtils {
   // the NavigationRequest was created.
   //
   // See `OriginCanReduceAcceptLanguage` for `request_origin`.
-  absl::optional<std::string> AddNavigationRequestAcceptLanguageHeaders(
+  std::optional<std::string> AddNavigationRequestAcceptLanguageHeaders(
       const url::Origin& request_origin,
       FrameTreeNode* frame_tree_node,
       net::HttpRequestHeaders* headers);
@@ -104,7 +104,7 @@ class CONTENT_EXPORT ReduceAcceptLanguageUtils {
   //   retrieved via `frame_tree_node`.
   //
   // See `OriginCanReduceAcceptLanguage` for `request_origin`.
-  absl::optional<std::string> LookupReducedAcceptLanguage(
+  std::optional<std::string> LookupReducedAcceptLanguage(
       const url::Origin& request_origin,
       FrameTreeNode* frame_tree_node);
 
@@ -128,7 +128,7 @@ class CONTENT_EXPORT ReduceAcceptLanguageUtils {
     // If true, navigation request needs to resend the requests with the
     // modified accept language header.
     bool should_resend_request = false;
-    absl::optional<std::string> language_to_persist = absl::nullopt;
+    std::optional<std::string> language_to_persist = std::nullopt;
   };
 
   // Returns whether to persist a language selection based on the given language
@@ -154,7 +154,7 @@ class CONTENT_EXPORT ReduceAcceptLanguageUtils {
   // Fenced Frames should be treated as an internally-consistent Page, with
   // language negotiation for the inner main document and/or subframes
   // that match the main document.
-  absl::optional<url::Origin> GetOriginForLanguageLookup(
+  std::optional<url::Origin> GetOriginForLanguageLookup(
       const url::Origin& request_origin,
       FrameTreeNode* frame_tree_node);
 

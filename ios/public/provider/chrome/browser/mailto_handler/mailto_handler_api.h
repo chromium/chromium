@@ -7,7 +7,7 @@
 
 #import <memory>
 
-#import "ios/chrome/browser/mailto_handler/mailto_handler_configuration.h"
+#import "ios/chrome/browser/mailto_handler/model/mailto_handler_configuration.h"
 
 class MailtoHandlerService;
 

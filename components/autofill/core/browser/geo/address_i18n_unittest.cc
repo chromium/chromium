@@ -43,7 +43,7 @@ using ::i18n::addressinput::SORTING_CODE;
 using ::i18n::addressinput::STREET_ADDRESS;
 
 struct FieldTypeMirrorConversionsTestCase {
-  ServerFieldType server_field;
+  FieldType server_field;
   AddressField address_field;
 };
 
@@ -56,7 +56,7 @@ TEST_P(FieldTypeMirrorConversionsTest, FieldTypeMirrorConversions) {
   EXPECT_TRUE(FieldForType(test_data.server_field, &address_field));
   EXPECT_EQ(test_data.address_field, address_field);
 
-  ServerFieldType server_field = TypeForField(test_data.address_field);
+  FieldType server_field = TypeForField(test_data.address_field);
   EXPECT_EQ(test_data.server_field, server_field);
 }
 
@@ -78,7 +78,7 @@ INSTANTIATE_TEST_SUITE_P(
         FieldTypeMirrorConversionsTestCase{NAME_FULL, RECIPIENT}));
 
 struct FieldTypeUnidirectionalConversionsTestCase {
-  ServerFieldType server_field;
+  FieldType server_field;
   AddressField expected_address_field;
 };
 
@@ -108,7 +108,7 @@ TEST(AddressI18nTest, UnconvertableServerFields) {
 }
 
 TEST(AddressI18nTest, CreateAddressDataFromAutofillProfile) {
-  AutofillProfile profile;
+  AutofillProfile profile(i18n_model_definition::kLegacyHierarchyCountryCode);
   test::SetProfileInfo(&profile, "John", "H.", "Doe", "johndoe@hades.com",
                        "Underworld", "666 Erebus St.", "Apt 8", "Elysium", "CA",
                        "91111", "US", "16502111111");

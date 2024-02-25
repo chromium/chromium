@@ -4,10 +4,14 @@
 
 static_library("default_model") {
   sources = [
+    "android_home_module_ranker.cc",
+    "android_home_module_ranker.h",
     "contextual_page_actions_model.cc",
     "contextual_page_actions_model.h",
     "cross_device_user_segment.cc",
     "cross_device_user_segment.h",
+    "database_api_clients.cc",
+    "database_api_clients.h",
     "device_switcher_model.cc",
     "device_switcher_model.h",
     "device_switcher_result_dispatcher.cc",
@@ -18,6 +22,8 @@ static_library("default_model") {
     "ios_module_ranker.h",
     "low_user_engagement_model.cc",
     "low_user_engagement_model.h",
+    "most_visited_tiles_user.cc",
+    "most_visited_tiles_user.h",
     "optimization_target_segmentation_dummy.cc",
     "optimization_target_segmentation_dummy.h",
     "password_manager_user_segment.cc",
@@ -39,6 +45,7 @@ static_library("default_model") {
     "//components/segmentation_platform/internal/proto",
     "//components/segmentation_platform/public",
     "//components/sync/service",
+    "//components/sync_device_info",
     "//services/metrics/public/cpp:ukm_builders",
     "//ui/base",
   ]
@@ -52,12 +59,9 @@ static_library("default_model") {
       "intentional_user_model.h",
       "power_user_segment.cc",
       "power_user_segment.h",
-      "query_tiles_model.cc",
-      "query_tiles_model.h",
       "tablet_productivity_user_model.cc",
       "tablet_productivity_user_model.h",
     ]
-    deps += [ "//components/query_tiles:public" ]
   }
 }
 
@@ -67,13 +71,16 @@ source_set("unit_tests") {
   # IMPORTANT NOTE: When adding new tests, also remember to update the list of
   # tests in //components/segmentation_platform/components_unittests.filter
   sources = [
+    "android_home_module_ranker_unittest.cc",
     "contextual_page_actions_model_unittest.cc",
     "cross_device_user_segment_unittest.cc",
+    "database_api_clients_unittest.cc",
     "device_switcher_model_unittest.cc",
     "device_switcher_result_dispatcher_unittest.cc",
     "feed_user_segment_unittest.cc",
     "ios_module_ranker_unittest.cc",
     "low_user_engagement_model_unittest.cc",
+    "most_visited_tiles_user_unittest.cc",
     "optimization_target_segmentation_dummy_unittest.cc",
     "password_manager_user_segment_unittest.cc",
     "resume_heavy_user_model_unittest.cc",
@@ -88,7 +95,6 @@ source_set("unit_tests") {
       "frequent_feature_user_model_unittest.cc",
       "intentional_user_model_unittest.cc",
       "power_user_segment_unittest.cc",
-      "query_tiles_model_unittest.cc",
       "tablet_productivity_user_model_unittest.cc",
     ]
   }
@@ -106,6 +112,8 @@ source_set("unit_tests") {
     "//components/segmentation_platform/public:test_support",
     "//components/segmentation_platform/public/proto",
     "//components/sync:test_support",
+    "//components/sync_device_info",
+    "//components/sync_device_info:test_support",
     "//testing/gtest",
   ]
 }

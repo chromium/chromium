@@ -9,8 +9,6 @@ import {SourcesTestRunner} from 'sources_test_runner';
 (async function() {
   TestRunner.addResult(
       `Tests that DOM debugger will not crash when editing DOM nodes from the Web Inspector. Chromium bug 249655\n`);
-  await TestRunner.loadLegacyModule('elements');
-  await TestRunner.loadLegacyModule('sources');
   await TestRunner.showPanel('sources');
   await TestRunner.loadHTML(`
       <div id="rootElement" style="color: red">

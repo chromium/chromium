@@ -13,6 +13,8 @@
 #include "base/json/json_reader.h"
 #include "base/lazy_instance.h"
 #include "base/memory/ptr_util.h"
+#include "base/memory/raw_ptr.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
 #include "components/viz/common/buildflags.h"
@@ -26,6 +28,7 @@
 #include "content/browser/devtools/protocol/background_service_handler.h"
 #include "content/browser/devtools/protocol/browser_handler.h"
 #include "content/browser/devtools/protocol/device_access_handler.h"
+#include "content/browser/devtools/protocol/device_orientation_handler.h"
 #include "content/browser/devtools/protocol/dom_handler.h"
 #include "content/browser/devtools/protocol/emulation_handler.h"
 #include "content/browser/devtools/protocol/fedcm_handler.h"
@@ -214,7 +217,7 @@ bool RenderFrameDevToolsAgentHost::IsDebuggerAttached(
 void RenderFrameDevToolsAgentHost::AddAllAgentHosts(
     DevToolsAgentHost::List* result) {
   for (WebContentsImpl* wc : WebContentsImpl::GetAllWebContents()) {
-    // Inner web contents such as portals or guestviews are already handled by
+    // Inner web contents such as guestviews are already handled by
     // ForEachRenderFrameHost.
     if (wc->GetOutermostWebContents() != wc)
       continue;
@@ -325,12 +328,17 @@ bool RenderFrameDevToolsAgentHost::AttachSession(DevToolsSession* session,
     frame_host_->DidAccessInitialMainDocument();
   }
 
+  if (!navigation_requests_.empty()) {
+    session->SuspendSendingMessagesToAgent();
+  }
+
   session->CreateAndAddHandler<protocol::AuditsHandler>();
   session->CreateAndAddHandler<protocol::BackgroundServiceHandler>();
   auto* browser_handler =
       session->CreateAndAddHandler<protocol::BrowserHandler>(
           session->GetClient()->MayWriteLocalFiles());
   session->CreateAndAddHandler<protocol::DeviceAccessHandler>();
+  session->CreateAndAddHandler<protocol::DeviceOrientationHandler>();
   session->CreateAndAddHandler<protocol::DOMHandler>(
       session->GetClient()->MayReadLocalFiles());
   auto* emulation_handler =
@@ -354,7 +362,8 @@ bool RenderFrameDevToolsAgentHost::AttachSession(DevToolsSession* session,
       base::BindRepeating(
           &RenderFrameDevToolsAgentHost::UpdateResourceLoaderFactories,
           base::Unretained(this)),
-      session->GetClient()->MayReadLocalFiles());
+      session->GetClient()->MayReadLocalFiles(),
+      session->GetClient()->IsTrusted());
   session->CreateAndAddHandler<protocol::FetchHandler>(
       GetIOContext(), base::BindRepeating(
                           [](RenderFrameDevToolsAgentHost* self,
@@ -439,12 +448,6 @@ void RenderFrameDevToolsAgentHost::InspectElement(RenderFrameHost* frame_host,
     }
   }
   host->GetRendererChannel()->InspectElement(point);
-}
-
-void RenderFrameDevToolsAgentHost::GetUniqueFormControlId(
-    int node_id,
-    GetUniqueFormControlIdCallback callback) {
-  GetRendererChannel()->GetUniqueFormControlId(node_id, std::move(callback));
 }
 
 RenderFrameDevToolsAgentHost::~RenderFrameDevToolsAgentHost() {
@@ -758,7 +761,7 @@ std::string RenderFrameDevToolsAgentHost::GetOpenerId() {
 std::string RenderFrameDevToolsAgentHost::GetOpenerFrameId() {
   if (!frame_tree_node_)
     return std::string();
-  const absl::optional<base::UnguessableToken>& opener_devtools_frame_token =
+  const std::optional<base::UnguessableToken>& opener_devtools_frame_token =
       frame_tree_node_->opener_devtools_frame_token();
   return opener_devtools_frame_token ? opener_devtools_frame_token->ToString()
                                      : std::string();
@@ -773,10 +776,6 @@ std::string RenderFrameDevToolsAgentHost::GetType() {
     return kTypeFrame;
   if (frame_tree_node_ && frame_tree_node_->IsFencedFrameRoot())
     return kTypeFrame;
-  if (web_contents() &&
-      static_cast<WebContentsImpl*>(web_contents())->IsPortal()) {
-    return kTypePage;
-  }
   if (web_contents() &&
       static_cast<WebContentsImpl*>(web_contents())->GetOuterWebContents()) {
     return kTypeGuest;
@@ -872,6 +871,9 @@ base::TimeTicks RenderFrameDevToolsAgentHost::GetLastActivityTime() {
 }
 
 void RenderFrameDevToolsAgentHost::UpdateRendererChannel(bool force) {
+  is_debugger_paused_ = false;
+  is_debugger_pause_situation_recorded_ = false;
+
   mojo::PendingAssociatedRemote<blink::mojom::DevToolsAgent> agent_remote;
   mojo::PendingAssociatedReceiver<blink::mojom::DevToolsAgentHost>
       host_receiver;
@@ -897,7 +899,6 @@ protocol::TargetAutoAttacher* RenderFrameDevToolsAgentHost::auto_attacher() {
 namespace {
 
 constexpr char kSubtypeDisconnected[] = "disconnected";
-constexpr char kSubtypePortal[] = "portal";
 constexpr char kSubtypePrerender[] = "prerender";
 constexpr char kSubtypeFenced[] = "fenced";
 
@@ -909,10 +910,6 @@ std::string RenderFrameDevToolsAgentHost::GetSubtype() {
 
   switch (frame_tree_node_->GetFrameType()) {
     case FrameType::kPrimaryMainFrame:
-      if (WebContentsImpl::FromFrameTreeNode(frame_tree_node_)->IsPortal()) {
-        return kSubtypePortal;
-      }
-      [[fallthrough]];
     // TODO(caseq): figure out what's best to return for subframes in a tree
     // other than primary.
     case FrameType::kSubframe:
@@ -926,6 +923,58 @@ std::string RenderFrameDevToolsAgentHost::GetSubtype() {
 
 RenderProcessHost* RenderFrameDevToolsAgentHost::GetProcessHost() {
   return frame_host_ ? frame_host_->GetProcess() : nullptr;
+}
+
+void RenderFrameDevToolsAgentHost::MainThreadDebuggerPaused() {
+  is_debugger_paused_ = true;
+
+  if (!GetWebContents() || is_debugger_pause_situation_recorded_) {
+    return;
+  }
+
+  if (GetWebContents() != GetWebContents()->GetOutermostWebContents()) {
+    return;
+  }
+
+  url::Origin our_origin =
+      url::Origin::Create(GetWebContents()->GetLastCommittedURL());
+
+  bool is_same_origin_debugger_attached_in_another_renderer = false;
+  bool is_same_origin_debugger_paused_in_another_renderer = false;
+  for (const auto& entry : g_agent_host_instances.Get()) {
+    RenderFrameDevToolsAgentHost* agent_host = entry.second;
+    if (agent_host == this || !agent_host->GetWebContents()) {
+      continue;
+    }
+    if (agent_host->GetWebContents() !=
+        agent_host->GetWebContents()->GetOutermostWebContents()) {
+      continue;
+    }
+    if (!our_origin.IsSameOriginWith(
+            agent_host->GetWebContents()->GetLastCommittedURL())) {
+      continue;
+    }
+
+    if (agent_host->IsAttached()) {
+      is_same_origin_debugger_attached_in_another_renderer = true;
+    }
+    if (agent_host->is_debugger_paused_) {
+      is_same_origin_debugger_paused_in_another_renderer = true;
+    }
+  }
+
+  base::UmaHistogramBoolean(
+      "DevTools.IsSameOriginDebuggerAttachedInAnotherRenderer",
+      is_same_origin_debugger_attached_in_another_renderer);
+  base::UmaHistogramBoolean(
+      "DevTools.IsSameOriginDebuggerPausedInAnotherRenderer",
+      is_same_origin_debugger_paused_in_another_renderer);
+
+  is_debugger_pause_situation_recorded_ = true;
+}
+
+void RenderFrameDevToolsAgentHost::MainThreadDebuggerResumed() {
+  is_debugger_paused_ = false;
 }
 
 bool RenderFrameDevToolsAgentHost::IsChildFrame() {
@@ -963,45 +1012,45 @@ void RenderFrameDevToolsAgentHost::UpdateResourceLoaderFactories() {
   });
 }
 
-absl::optional<network::CrossOriginEmbedderPolicy>
+std::optional<network::CrossOriginEmbedderPolicy>
 RenderFrameDevToolsAgentHost::cross_origin_embedder_policy(
     const std::string& id) {
   FrameTreeNode* frame_tree_node =
       protocol::FrameTreeNodeFromDevToolsFrameToken(
           frame_host_->frame_tree_node(), id);
   if (!frame_tree_node) {
-    return absl::nullopt;
+    return std::nullopt;
   }
   RenderFrameHostImpl* rfhi = frame_tree_node->current_frame_host();
   return rfhi->cross_origin_embedder_policy();
 }
 
-absl::optional<network::CrossOriginOpenerPolicy>
+std::optional<network::CrossOriginOpenerPolicy>
 RenderFrameDevToolsAgentHost::cross_origin_opener_policy(
     const std::string& id) {
   FrameTreeNode* frame_tree_node =
       protocol::FrameTreeNodeFromDevToolsFrameToken(
           frame_host_->frame_tree_node(), id);
   if (!frame_tree_node) {
-    return absl::nullopt;
+    return std::nullopt;
   }
   RenderFrameHostImpl* rfhi = frame_tree_node->current_frame_host();
   return rfhi->cross_origin_opener_policy();
 }
 
-absl::optional<std::vector<network::mojom::ContentSecurityPolicyHeader>>
+std::optional<std::vector<network::mojom::ContentSecurityPolicyHeader>>
 RenderFrameDevToolsAgentHost::content_security_policy(const std::string& id) {
   FrameTreeNode* frame_tree_node =
       protocol::FrameTreeNodeFromDevToolsFrameToken(
           frame_host_->frame_tree_node(), id);
   if (!frame_tree_node) {
-    return absl::nullopt;
+    return std::nullopt;
   }
   RenderFrameHostImpl* rfhi = frame_tree_node->current_frame_host();
   const PolicyContainerPolicies& policies =
       rfhi->policy_container_host()->policies();
   if (policies.content_security_policies.empty()) {
-    return absl::nullopt;
+    return std::nullopt;
   } else {
     std::vector<network::mojom::ContentSecurityPolicyHeader> csp_headers;
     for (const auto& content_security_policy :
@@ -1013,7 +1062,7 @@ RenderFrameDevToolsAgentHost::content_security_policy(const std::string& id) {
 }
 
 bool RenderFrameDevToolsAgentHost::HasSessionsWithoutTabTargetSupport() const {
-  const std::vector<DevToolsSession*>& sessions =
+  const std::vector<raw_ptr<DevToolsSession, VectorExperimental>>& sessions =
       DevToolsAgentHostImpl::sessions();
 
   return std::any_of(sessions.begin(), sessions.end(), [](DevToolsSession* s) {

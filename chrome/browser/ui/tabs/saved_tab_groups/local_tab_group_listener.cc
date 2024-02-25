@@ -14,18 +14,15 @@
 #include "chrome/browser/ui/tabs/tab_group_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "components/saved_tab_groups/saved_tab_group_model.h"
-
-namespace content {
-class WebContents;
-}
+#include "content/public/browser/web_contents.h"
 
 LocalTabGroupListener::LocalTabGroupListener(
     const tab_groups::TabGroupId local_id,
     const base::Uuid saved_guid,
     SavedTabGroupModel* const model,
-    std::vector<std::pair<content::WebContents*, base::Uuid>> mapping)
+    std::map<content::WebContents*, base::Uuid> web_contents_to_uuid)
     : model_(model), local_id_(local_id), saved_guid_(saved_guid) {
-  for (const auto& [contents, saved_tab_guid] : mapping) {
+  for (const auto& [contents, saved_tab_guid] : web_contents_to_uuid) {
     const base::Token local_tab_id = base::Token::CreateRandom();
 
     web_contents_to_tab_id_map_.try_emplace(contents, contents, local_tab_id,
@@ -69,6 +66,10 @@ void LocalTabGroupListener::ResumeTracking() {
   }
 }
 
+bool LocalTabGroupListener::IsTrackingPaused() const {
+  return paused_;
+}
+
 void LocalTabGroupListener::UpdateVisualDataFromLocal(
     const TabGroupChange::VisualsChange* visual_change) {
   if (paused_) {
@@ -78,6 +79,19 @@ void LocalTabGroupListener::UpdateVisualDataFromLocal(
   if (*(visual_change->old_visuals) != *(visual_change->new_visuals)) {
     model_->UpdateVisualData(local_id_, visual_change->new_visuals);
   }
+}
+
+void LocalTabGroupListener::OnReplaceWebContents(
+    content::WebContents* old_web_contents,
+    content::WebContents* new_web_contents) {
+  CHECK(web_contents_to_tab_id_map_.find(old_web_contents) !=
+        web_contents_to_tab_id_map_.end());
+  base::Token local_tab_id =
+      web_contents_to_tab_id_map_.at(old_web_contents).token();
+  web_contents_to_tab_id_map_.erase(old_web_contents);
+
+  web_contents_to_tab_id_map_.try_emplace(new_web_contents, new_web_contents,
+                                          local_tab_id, model_);
 }
 
 void LocalTabGroupListener::AddWebContentsFromLocal(
@@ -91,7 +105,7 @@ void LocalTabGroupListener::AddWebContentsFromLocal(
   CHECK(model_->Contains(saved_guid_));
   CHECK(tab_strip_model->group_model()->ContainsTabGroup(local_id_));
 
-  const absl::optional<int> tabstrip_index_of_first_tab_in_group =
+  const std::optional<int> tabstrip_index_of_first_tab_in_group =
       tab_strip_model->group_model()->GetTabGroup(local_id_)->GetFirstTab();
   CHECK(tabstrip_index_of_first_tab_in_group.has_value());
 
@@ -105,6 +119,9 @@ void LocalTabGroupListener::AddWebContentsFromLocal(
   SavedTabGroupTab tab =
       SavedTabGroupUtils::CreateSavedTabGroupTabFromWebContents(web_contents,
                                                                 saved_guid_);
+  if (!SavedTabGroupUtils::IsURLValidForSavedTabGroups(tab.url())) {
+    tab.SetURL(GURL(chrome::kChromeUINewTabURL));
+  }
   tab.SetLocalTabID(token);
   tab.SetPosition(relative_index_of_tab_in_group);
   model_->AddTabToGroupLocally(saved_guid_, std::move(tab));
@@ -129,7 +146,7 @@ void LocalTabGroupListener::MoveWebContentsFromLocal(
   // at index 2. For the tab group, C is at index 0.
   // Moving C to index 4 in the tabstrip means it will now have an index of 2 in
   // the tab group and SavedTabGroupModel.
-  const absl::optional<int> tabstrip_index_of_first_tab_in_group =
+  const std::optional<int> tabstrip_index_of_first_tab_in_group =
       tab_strip_model->group_model()->GetTabGroup(local_id_)->GetFirstTab();
   CHECK(tabstrip_index_of_first_tab_in_group.has_value());
 
@@ -185,7 +202,7 @@ void LocalTabGroupListener::GroupRemovedFromSync() {
     contentses.push_back(contents);
   }
   for (content::WebContents* const contents : contentses) {
-    RemoveWebContentsFromSync(contents);
+    RemoveWebContentsFromSync(contents, /*should_close_tab=*/false);
   }
 
   ResumeTracking();
@@ -269,8 +286,13 @@ void LocalTabGroupListener::MatchLocalTabToSavedTab(
 void LocalTabGroupListener::OpenWebContentsFromSync(SavedTabGroupTab tab,
                                                     Browser* browser,
                                                     int index_in_tabstrip) {
+  GURL url_to_open = tab.url();
+  if (!SavedTabGroupUtils::IsURLValidForSavedTabGroups(url_to_open)) {
+    url_to_open = GURL(chrome::kChromeUINewTabURL);
+  }
+
   content::WebContents* opened_contents = SavedTabGroupUtils::OpenTabInBrowser(
-      tab.url(), browser, browser->profile(),
+      url_to_open, browser, browser->profile(),
       WindowOpenDisposition::NEW_BACKGROUND_TAB, index_in_tabstrip, local_id_);
 
   // Listen to navigations.
@@ -288,13 +310,14 @@ void LocalTabGroupListener::RemoveLocalWebContentsNotInSavedGroup() {
     const auto& it = web_contents_to_tab_id_map_.find(contents);
     CHECK(it != web_contents_to_tab_id_map_.end());
     if (!saved_group->ContainsTab(it->second.token())) {
-      RemoveWebContentsFromSync(contents);
+      RemoveWebContentsFromSync(contents, /*should_close_tab=*/true);
     }
   }
 }
 
 void LocalTabGroupListener::RemoveWebContentsFromSync(
-    content::WebContents* contents) {
+    content::WebContents* contents,
+    bool should_close_tab) {
   web_contents_to_tab_id_map_.erase(contents);
 
   Browser* const browser =
@@ -309,9 +332,11 @@ void LocalTabGroupListener::RemoveWebContentsFromSync(
   // this happens.
   browser->tab_strip_model()->RemoveFromGroup({model_index});
 
-  // Removing the tab from the group may have moved the tab to maintain group
-  // contiguity. Find the tab again and close it.
-  model_index = browser->tab_strip_model()->GetIndexOfWebContents(contents);
-  browser->tab_strip_model()->CloseWebContentsAt(
-      model_index, TabCloseTypes::CLOSE_CREATE_HISTORICAL_TAB);
+  if (should_close_tab) {
+    // Removing the tab from the group may have moved the tab to maintain group
+    // contiguity. Find the tab again and close it.
+    model_index = browser->tab_strip_model()->GetIndexOfWebContents(contents);
+    browser->tab_strip_model()->CloseWebContentsAt(
+        model_index, TabCloseTypes::CLOSE_CREATE_HISTORICAL_TAB);
+  }
 }

@@ -8,15 +8,15 @@
 #include <functional>
 #include <memory>
 #include <numeric>
+#include <optional>
 #include <utility>
 
 #include "base/check_op.h"
+#include "base/containers/span.h"
 #include "base/memory/raw_ptr.h"
-#include "base/memory/raw_ptr_exclusion.h"
 #include "base/notreached.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/ranges/algorithm.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/views/layout/layout_types.h"
 #include "ui/views/view.h"
@@ -189,23 +189,25 @@ class TableLayout::Column : public LayoutElement {
 
   // Determines the max size of all linked columns, and sets each column to that
   // size.
-  void UnifyLinkedColumnSizes(const absl::optional<int>& size_limit) {
+  void UnifyLinkedColumnSizes(const std::optional<int>& size_limit) {
     if (linked_columns_.empty() || linked_columns_.front() != this)
       return;
 
     // Accumulate the size first.
     int size = 0;
-    for (auto* column : linked_columns_) {
+    for (views::TableLayout::Column* column : linked_columns_) {
       if (!size_limit || column->size() <= *size_limit)
         size = std::max(size, column->size());
     }
 
     // Then apply it.
-    for (auto* column : linked_columns_)
+    for (views::TableLayout::Column* column : linked_columns_) {
       column->set_size(std::max(size, column->size()));
+    }
   }
 
-  void set_linked_columns(const std::vector<Column*>& linked_columns) {
+  void set_linked_columns(
+      const std::vector<raw_ptr<Column, VectorExperimental>>& linked_columns) {
     DCHECK(linked_columns_.empty()) << "Cannot link a column twice";
     linked_columns_ = linked_columns;
   }
@@ -223,7 +225,7 @@ class TableLayout::Column : public LayoutElement {
   int fixed_width_;
   int min_width_;
   bool is_padding_;
-  std::vector<Column*> linked_columns_;
+  std::vector<raw_ptr<Column, VectorExperimental>> linked_columns_;
 };
 
 class TableLayout::Row : public LayoutElement {
@@ -283,9 +285,7 @@ struct TableLayout::ViewState {
     DCHECK_GT(row_span, 0u);
   }
 
-  // This field is not a raw_ptr<> because it was filtered by the rewriter for:
-  // #constexpr-ctor-field-initializer
-  RAW_PTR_EXCLUSION View* view = nullptr;
+  raw_ptr<View, DanglingUntriaged> view = nullptr;
   size_t start_col = 0;
   size_t start_row = 0;
   size_t col_span = 0;
@@ -309,7 +309,7 @@ struct TableLayout::ViewState {
 
   // The baseline. Only used if the view is vertically aligned along the
   // baseline.
-  absl::optional<int> baseline;
+  std::optional<int> baseline;
 };
 
 TableLayout::TableLayout() = default;
@@ -351,12 +351,13 @@ TableLayout& TableLayout::LinkColumnSizes(std::vector<size_t> columns) {
     DCHECK_LT(columns.back(), columns_.size())
         << "Cannot link an unspecified column";
 
-    std::vector<Column*> linked_columns;
+    std::vector<raw_ptr<Column, VectorExperimental>> linked_columns;
     base::ranges::transform(columns, std::back_inserter(linked_columns),
                             [&](size_t index) { return &columns_[index]; });
 
-    for (auto* column : linked_columns)
+    for (views::TableLayout::Column* column : linked_columns) {
       column->set_linked_columns(linked_columns);
+    }
   }
 
   return *this;
@@ -374,12 +375,6 @@ TableLayout& TableLayout::SetMinimumSize(const gfx::Size& size) {
   return *this;
 }
 
-TableLayout& TableLayout::SetIncludeHidden(bool include_hidden) {
-  include_hidden_ = include_hidden;
-  OnLayoutChanged();
-  return *this;
-}
-
 ProposedLayout TableLayout::CalculateProposedLayout(
     const SizeBounds& size_bounds) const {
   ProposedLayout layout;
@@ -387,8 +382,9 @@ ProposedLayout TableLayout::CalculateProposedLayout(
   layout.host_size.SetToMax(minimum_size_);
 
   for (View* child : GetChildViewsInPaintOrder(host_view())) {
-    if (!IsChildViewIgnoredByLayout(child))
+    if (!child->GetProperty(kViewIgnoredByLayoutKey)) {
       layout.child_layouts.push_back({child, true, {}, {}});
+    }
   }
 
   // Size each view.
@@ -429,8 +425,9 @@ void TableLayout::SetViewStates() const {
   size_t col = 0, row = 0;
   std::vector<ViewState*> row_spans;
   for (View* child : GetChildViewsInPaintOrder(host_view())) {
-    if (!IsChildIncludedInLayout(child, include_hidden_))
+    if (!IsChildIncludedInLayout(child)) {
       continue;
+    }
 
     // Move (col, row) to next open cell.
     for (; row < rows_.size(); ++row) {
@@ -584,40 +581,26 @@ gfx::Size TableLayout::SizeRowsAndColumns(const SizeBounds& bounds) const {
 }
 
 void TableLayout::DistributeRemainingHeight(ViewState& view_state) const {
-  int height = view_state.remaining_height;
-  if (height <= 0)
+  if (view_state.remaining_height <= 0) {
     return;
+  }
 
   // Determine the number of resizable rows the view touches.
-  size_t start_row = view_state.start_row;
-  size_t max_row = view_state.start_row + view_state.row_span;
-  const ptrdiff_t resizable_rows =
-      std::count_if(rows_.cbegin() + static_cast<ptrdiff_t>(start_row),
-                    rows_.cbegin() + static_cast<ptrdiff_t>(max_row),
-                    [](const auto& row) { return row.resizable(); });
-
-  const auto adjust_row = [&height](Row& row, int delta) {
-    height -= delta;
-    // If there is slop, we're on the last row; give it all the slop.
-    if (height < delta)
-      delta += height;
-    row.set_size(row.size() + delta);
-  };
-
-  if (resizable_rows > 0) {
-    // There are resizable rows, give the remaining height to them.
-    int row_delta = height / static_cast<int>(resizable_rows);
-    for (size_t i = start_row; i < max_row; ++i) {
-      if (rows_[i].resizable())
-        adjust_row(rows_[i], row_delta);
+  const base::span<Row> rows_to_resize = base::make_span(
+      rows_.begin() + static_cast<ptrdiff_t>(view_state.start_row),
+      view_state.row_span);
+  const auto resizable_rows = static_cast<size_t>(
+      base::ranges::count_if(rows_to_resize, &Row::resizable));
+  size_t remaining_rows =
+      resizable_rows ? resizable_rows : rows_to_resize.size();
+  for (Row& row : rows_to_resize) {
+    if (!resizable_rows || row.resizable()) {
+      const int delta = base::ClampRound(
+          static_cast<float>(view_state.remaining_height) / remaining_rows);
+      row.set_size(row.size() + delta);
+      view_state.remaining_height -= delta;
+      --remaining_rows;
     }
-  } else {
-    // None of the rows are resizable, divvy the remaining height up equally
-    // among all rows the view touches.
-    int row_delta = height / static_cast<int>(view_state.row_span);
-    for (size_t i = start_row; i < max_row; ++i)
-      adjust_row(rows_[i], row_delta);
-    view_state.remaining_height = 0;
   }
 }
 
@@ -690,9 +673,10 @@ int TableLayout::LayoutWidth() const {
 
 void TableLayout::CalculateSize(
     SizeCalculationType type,
-    const std::vector<ViewState*>& view_states) const {
+    const std::vector<raw_ptr<ViewState, VectorExperimental>>& view_states)
+    const {
   // Reset the size and remaining sizes.
-  for (auto* view_state : view_states) {
+  for (views::TableLayout::ViewState* view_state : view_states) {
     gfx::Size size;
     if (type == SizeCalculationType::kMinimum && CanUseMinimum(*view_state)) {
       // If the min size is bigger than the preferred, use the preferred.
@@ -783,7 +767,8 @@ void TableLayout::ResizeUsingMin(int total_delta) const {
   // modifications to them aren't reflected in the members.
   const size_t num_states = view_states_by_col_span_.size();
   std::vector<ViewState> view_states(num_states);
-  std::vector<ViewState*> view_state_ptrs(num_states);
+  std::vector<raw_ptr<ViewState, VectorExperimental>> view_state_ptrs(
+      num_states);
   for (size_t i = 0; i < num_states; ++i) {
     view_states[i] = *view_states_by_col_span_[i];
     view_state_ptrs[i] = &view_states[i];

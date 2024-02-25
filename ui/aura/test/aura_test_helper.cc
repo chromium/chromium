@@ -67,7 +67,8 @@ AuraTestHelper::AuraTestHelper(ui::ContextFactory* context_factory) {
   ui::test::EnableTestConfigForPlatformWindows();
 #endif
 
-#if BUILDFLAG(IS_OZONE) && BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_OZONE) && BUILDFLAG(IS_CHROMEOS_ASH) && \
+    !BUILDFLAG(IS_CHROMEOS_DEVICE)
   ui::DisableNativeUiEventDispatchForTest();
 #endif
 
@@ -89,6 +90,8 @@ AuraTestHelper::AuraTestHelper(ui::ContextFactory* context_factory) {
   else
     env_ = Env::CreateInstance();
   Env* env = GetEnv();
+  CHECK(env) << "No Aura env is set - confirm your test system is set up to "
+                "display graphics";
 
   if (!context_factory) {
     context_factories_ = std::make_unique<ui::TestContextFactories>(false);

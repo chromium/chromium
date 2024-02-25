@@ -1,0 +1,4 @@
+This is a testharness.js-based test.
+[FAIL] coop reporting test A test with both COOP and COOP report only setup to CROSS_ORIGIN with same-origin-allow-popups; report-to="coop-popup-report-endpoint", require-corp, same-origin; report-to="coop-popup-report-only-endpoint", require-corp
+  promise_test: Unhandled rejection with value: "No report matched the expected report for endpoint: coop-report-endpoint, expected report: {\"body\":{\"disposition\":\"enforce\",\"effectivePolicy\":\"same-origin-allow-popups\",\"nextResponseURL\":\"/uuid=(uuid)$/\",\"type\":\"navigation-from-response\"},\"url\":\"https://web-platform.test:8444/html/cross-origin-opener-policy/reporting/navigation-reporting/report-only-four-reports.https.html\",\"type\":\"coop\"}, within available reports: []"
+Harness: the test ran to completion.

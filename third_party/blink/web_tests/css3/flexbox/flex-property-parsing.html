@@ -150,11 +150,11 @@ shouldBeEqualToString('flexitem.style.flex', '1 2 3px');
 shouldBeEqualToString('getComputedStyle(flexitem).flex', '1 2 3px');
 
 flexitem.style.flex = 'calc(20px + 40%) 4 3';
-shouldBeEqualToString('flexitem.style.flex', '4 3 calc(20px + 40%)');
+shouldBeEqualToString('flexitem.style.flex', '4 3 calc(40% + 20px)');
 shouldBeEqualToString('getComputedStyle(flexitem).flex', '4 3 calc(40% + 20px)');
 
 flexitem.style.flex = '1 2 calc(10px + 50%)';
-shouldBeEqualToString('flexitem.style.flex', '1 2 calc(10px + 50%)');
+shouldBeEqualToString('flexitem.style.flex', '1 2 calc(50% + 10px)');
 shouldBeEqualToString('getComputedStyle(flexitem).flex', '1 2 calc(50% + 10px)');
 
 flexitem.style.flex = 'auto 0 0';

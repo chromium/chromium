@@ -5,11 +5,10 @@
 import("../build_webui_tests.gni")
 
 build_webui_tests("build") {
-  resource_path_prefix = "settings"
-
   files = [
     "about_page_test.ts",
     "advanced_page_test.ts",
+    "ai_page_test.ts",
     "all_sites_test.ts",
     "anti_abuse_page_test.ts",
     "appearance_fonts_page_test.ts",
@@ -22,6 +21,7 @@ build_webui_tests("build") {
     "battery_page_test.ts",
     "category_setting_exceptions_test.ts",
     "checkbox_test.ts",
+    "checkbox_list_entry_test.ts",
     "chooser_exception_list_entry_test.ts",
     "chooser_exception_list_test.ts",
     "clear_browsing_data_test.ts",
@@ -33,6 +33,7 @@ build_webui_tests("build") {
     "downloads_page_test.ts",
     "dropdown_menu_test.ts",
     "extension_controlled_indicator_test.ts",
+    "file_system_site_details_test.ts",
     "file_system_site_entry_test.ts",
     "file_system_site_entry_item_test.ts",
     "file_system_site_list_test.ts",
@@ -46,7 +47,6 @@ build_webui_tests("build") {
     "payments_section_iban_test.ts",
     "payments_section_interactive_test.ts",
     "payments_section_test.ts",
-    "payments_section_upi_test.ts",
     "payments_section_utils.ts",
     "people_page_sync_controls_test.ts",
     "people_page_sync_page_interactive_test.ts",
@@ -54,14 +54,12 @@ build_webui_tests("build") {
     "people_page_test.ts",
     "performance_page_test.ts",
     "personalization_options_test.ts",
-    "preloading_page_test.ts",
     "privacy_guide_fragments_test.ts",
     "privacy_guide_integration_test.ts",
     "privacy_guide_page_test.ts",
     "privacy_guide_test_util.ts",
     "privacy_page_test.ts",
     "privacy_sandbox_page_test.ts",
-    "privacy_sandbox_test.ts",
     "protocol_handlers_test.ts",
     "recent_site_permissions_test.ts",
     "reset_page_test.ts",
@@ -75,8 +73,11 @@ build_webui_tests("build") {
     "safety_hub_card_test.ts",
     "safety_hub_entry_point_test.ts",
     "safety_hub_module_test.ts",
+    "safety_hub_notification_permissions_module_test.ts",
+    "safety_hub_extensions_module_test.ts",
     "safety_hub_page_test.ts",
     "safety_hub_unused_site_permissions_module_test.ts",
+    "search_engine_entry_test.ts",
     "search_engines_page_test.ts",
     "search_page_test.ts",
     "search_settings_test.ts",
@@ -111,6 +112,7 @@ build_webui_tests("build") {
     "site_list_entry_test.ts",
     "site_list_test.ts",
     "site_settings_page_test.ts",
+    "speed_page_test.ts",
     "startup_urls_page_test.ts",
     "storage_access_static_site_list_entry_test.ts",
     "storage_access_site_list_entry_test.ts",
@@ -144,11 +146,7 @@ build_webui_tests("build") {
   ]
 
   if (is_chromeos_ash) {
-    files += [
-      "people_page_test_cros.ts",
-      "site_list_tests_cros.ts",
-      "test_android_info_browser_proxy.ts",
-    ]
+    files += [ "people_page_test_cros.ts" ]
   } else {
     files += [
       "fake_language_settings_private.ts",
@@ -190,6 +188,13 @@ build_webui_tests("build") {
     files += [ "passkeys_subpage_test.ts" ]
   }
 
+  if (is_win || is_mac || is_linux) {
+    files += [
+      "a11y_page_test.ts",
+      "pdf_ocr_toggle_test.ts",
+    ]
+  }
+
   if (is_win && is_chrome_branded) {
     files += [ "incompatible_applications_page_test.ts" ]
   }
@@ -198,6 +203,9 @@ build_webui_tests("build") {
     files += [ "get_most_chrome_page_test.ts" ]
   }
 
+  # Using custom config to turn off useDefineForClassFields TS compiler flag
+  # which is necessary when defining Polymer elements.
+  ts_tsconfig_base = "tsconfig_base.json"
   ts_path_mappings = [
     # Settings tests should only be importing from one of the URLs below, so
     # that tests work both in optimize_webui=true/false modes.
@@ -227,7 +235,6 @@ build_webui_tests("build") {
         [ "//tools/typescript/definitions/quick_unlock_private.d.ts" ]
   }
 
-  ts_tsconfig_base = "tsconfig_base.json"
   ts_deps = [
     "//chrome/browser/resources/settings:build_ts",
     "//third_party/polymer/v3_0:library",

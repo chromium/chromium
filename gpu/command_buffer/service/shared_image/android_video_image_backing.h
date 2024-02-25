@@ -7,10 +7,10 @@
 
 #include <memory>
 
+#include <optional>
 #include "gpu/command_buffer/service/shared_image/android_image_backing.h"
 #include "gpu/gpu_gles2_export.h"
 #include "gpu/ipc/common/vulkan_ycbcr_info.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace viz {
 class VulkanContextProvider;
@@ -41,7 +41,7 @@ class GPU_GLES2_EXPORT AndroidVideoImageBacking : public AndroidImageBacking {
 
   // Returns ycbcr information. This is only valid in vulkan context and
   // nullopt for other context.
-  static absl::optional<VulkanYCbCrInfo> GetYcbcrInfo(
+  static std::optional<VulkanYCbCrInfo> GetYcbcrInfo(
       TextureOwner* texture_owner,
       viz::VulkanContextProvider* vulkan_context_provider);
 
@@ -56,6 +56,7 @@ class GPU_GLES2_EXPORT AndroidVideoImageBacking : public AndroidImageBacking {
   gfx::Rect ClearedRect() const override;
   void SetClearedRect(const gfx::Rect& cleared_rect) override;
   void Update(std::unique_ptr<gfx::GpuFence> in_fence) override;
+  size_t GetEstimatedSizeForMemoryDump() const override;
 
  protected:
   AndroidVideoImageBacking(const Mailbox& mailbox,

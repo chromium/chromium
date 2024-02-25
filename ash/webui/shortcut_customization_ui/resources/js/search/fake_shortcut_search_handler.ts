@@ -5,7 +5,7 @@
 import {FakeMethodResolver} from 'chrome://resources/ash/common/fake_method_resolver.js';
 import {String16} from 'chrome://resources/mojo/mojo/public/mojom/base/string16.mojom-webui.js';
 
-import {SearchResultsAvailabilityObserverRemote} from '../../mojom-webui/ash/webui/shortcut_customization_ui/backend/search/search.mojom-webui.js';
+import {SearchResultsAvailabilityObserverRemote} from '../../mojom-webui/search.mojom-webui.js';
 import {MojoSearchResult} from '../shortcut_types';
 import {ShortcutSearchHandlerInterface} from '../shortcut_types.js';
 

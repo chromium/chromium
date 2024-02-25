@@ -42,13 +42,13 @@ bool UIImagesAreEqual(UIImage* image_1, UIImage* image_2) {
       CGDataProviderCopyData(CGImageGetDataProvider(image_1.CGImage)));
   base::apple::ScopedCFTypeRef<CFDataRef> data_ref_2(
       CGDataProviderCopyData(CGImageGetDataProvider(image_2.CGImage)));
-  CFIndex length_1 = CFDataGetLength(data_ref_1);
-  CFIndex length_2 = CFDataGetLength(data_ref_2);
+  CFIndex length_1 = CFDataGetLength(data_ref_1.get());
+  CFIndex length_2 = CFDataGetLength(data_ref_2.get());
   if (length_1 != length_2) {
     return false;
   }
-  const UInt8* ptr_1 = CFDataGetBytePtr(data_ref_1);
-  const UInt8* ptr_2 = CFDataGetBytePtr(data_ref_2);
+  const UInt8* ptr_1 = CFDataGetBytePtr(data_ref_1.get());
+  const UInt8* ptr_2 = CFDataGetBytePtr(data_ref_2.get());
 
   // memcmp returns 0 if length is 0.
   return memcmp(ptr_1, ptr_2, length_1) == 0;

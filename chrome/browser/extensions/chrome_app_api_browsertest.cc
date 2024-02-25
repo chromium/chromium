@@ -133,7 +133,7 @@ IN_PROC_BROWSER_TEST_F(ChromeAppAPITest, IsInstalled) {
       content::EvalJs(browser()->tab_strip_model()->GetActiveWebContents(),
                       kGetAppDetails)
           .ExtractString();
-  absl::optional<base::Value> result_value = base::JSONReader::Read(result);
+  std::optional<base::Value> result_value = base::JSONReader::Read(result);
   ASSERT_TRUE(result_value && result_value->is_dict());
   base::Value::Dict& app_details = result_value.value().GetDict();
 

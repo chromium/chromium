@@ -315,7 +315,7 @@ namespace enterprise.reportingPrivate {
   interface Functions {
     // Gets the identity of device that Chrome browser is running on. The ID is
     // retrieved from the local device and used by the Google admin console.
-    [platforms = ("win", "mac", "linux"), supportsPromises]
+    [platforms = ("win", "mac", "linux")]
     static void getDeviceId(optional GetDeviceIdCallback callback);
 
     // Gets a randomly generated persistent secret (symmetric key) that
@@ -323,43 +323,45 @@ namespace enterprise.reportingPrivate {
     // optional parameter |forceCreation| is set to true the secret is recreated
     // in case of any failure to retrieve the currently stored one. Sets
     // $(ref:runtime.lastError) on failure.
-    [platforms = ("win", "mac"), supportsPromises]
+    [platforms = ("win", "mac")]
     static void getPersistentSecret(
         optional boolean resetSecret,
         GetPersistentSecretCallback callback);
 
     // Gets the device data for |id|. Sets $(ref:runtime.lastError) on failure.
-    [platforms = ("win", "mac", "linux"), supportsPromises]
+    [platforms = ("win", "mac", "linux")]
     static void getDeviceData(DOMString id, GetDeviceDataCallback callback);
 
     // Sets the device data for |id|. Sets $(ref:runtime.lastError) on failure.
     // If the |data| parameter is undefined and there is already data
     // associated with |id| it will be cleared.
-    [platforms = ("win", "mac", "linux"), supportsPromises]
-    static void setDeviceData(DOMString id,
-                              optional ArrayBuffer data,
-                              optional DoneCallback callback);
+    [platforms = ("win", "mac", "linux")]
+    static void setDeviceData(
+        DOMString id,
+        optional ArrayBuffer data,
+        optional DoneCallback callback);
 
     // Gets the device information (including disk encryption status,
     // screen lock status, serial number, model).
-    [platforms = ("win", "mac", "linux"), supportsPromises]
+    [platforms = ("win", "mac", "linux")]
     static void getDeviceInfo(GetDeviceInfoCallback callback);
 
     // Gets the context information (including management status of the browser,
     // state of key security policies, browser version).
-    [supportsPromises] static void getContextInfo(
+    static void getContextInfo(
         GetContextInfoCallback callback);
 
     // Returns the certificate that would be selected by the filters in the
     // AutoSelectCertificateForUrls policy for <code>url</code>.
-    [supportsPromises] static void getCertificate(DOMString url,
-                                                  CertificateCallback callback);
+    static void getCertificate(
+        DOMString url,
+        CertificateCallback callback);
 
     // Enqueues a record for upload to the reporting service
     // |request|: Composite object that captures everything
     // we need for uploading records.
     // |callback|: Callback that is triggered upon completion
-    [platforms = ("chromeos", "lacros"), supportsPromises]
+    [platforms = ("chromeos", "lacros")]
     static void enqueueRecord(
         EnqueueRecordRequest request,
         optional DoneCallback callback);
@@ -370,7 +372,7 @@ namespace enterprise.reportingPrivate {
     // user's organization and the organization managing the browser. If the
     // management or affiliation states are not suitable, no results will be
     // returned.
-    [platforms = ("win", "mac", "linux"), supportsPromises]
+    [platforms = ("win", "mac", "linux")]
     static void getFileSystemInfo(
         GetFileSystemInfoRequest request,
         FileSystemInfoCallback callback);
@@ -380,7 +382,7 @@ namespace enterprise.reportingPrivate {
     // used to verify the affiliation between the user's organization and the
     // organization managing the browser. If the management or affiliation
     // states are not suitable, no results will be returned.
-    [platforms = ("win", "mac"), supportsPromises]
+    [platforms = ("win", "mac")]
     static void getSettings(
         GetSettingsRequest request,
         SettingsCallback callback);
@@ -390,7 +392,7 @@ namespace enterprise.reportingPrivate {
     // between the user's organization and the organization managing the
     // browser. If the management, or affiliation, state is not suitable, no
     // results will be returned.
-    [platforms = ("win"), supportsPromises]
+    [platforms = ("win")]
     static void getAvInfo(UserContext userContext, AvInfoCallback callback);
 
     // Gets information about hotfix system updates installed on the current
@@ -398,7 +400,7 @@ namespace enterprise.reportingPrivate {
     // between the user's organization and the organization managing the
     // browser. If the management, or affiliation, state is not suitable, no
     // results will be returned.
-    [platforms = ("win"), supportsPromises]
+    [platforms = ("win")]
     static void getHotfixes(UserContext userContext, HotfixesCallback callback);
   };
 

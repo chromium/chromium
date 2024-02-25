@@ -9,6 +9,7 @@
 
 #include "base/files/file_path.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_observer.h"
@@ -64,11 +65,11 @@ class IsolatedWebAppURLLoaderFactory
 
  private:
   static mojo::PendingRemote<network::mojom::URLLoaderFactory> CreateInternal(
-      absl::optional<int> frame_tree_node_id,
+      std::optional<int> frame_tree_node_id,
       content::BrowserContext* browser_context);
 
   IsolatedWebAppURLLoaderFactory(
-      absl::optional<int> frame_tree_node_id,
+      std::optional<int> frame_tree_node_id,
       Profile* profile,
       mojo::PendingReceiver<network::mojom::URLLoaderFactory> factory_receiver);
 
@@ -102,14 +103,24 @@ class IsolatedWebAppURLLoaderFactory
       const net::MutableNetworkTrafficAnnotationTag& traffic_annotation)
       override;
 
+  void HandleRequest(
+      const IsolatedWebAppUrlInfo& url_info,
+      const IsolatedWebAppLocation& location,
+      bool is_pending_install,
+      mojo::PendingReceiver<network::mojom::URLLoader> loader_receiver,
+      const network::ResourceRequest& resource_request,
+      mojo::PendingRemote<network::mojom::URLLoaderClient> loader_client,
+      const net::MutableNetworkTrafficAnnotationTag& traffic_annotation);
+
   // ProfileObserver:
   void OnProfileWillBeDestroyed(Profile* profile) override;
 
-  const absl::optional<int> frame_tree_node_id_;
+  const std::optional<int> frame_tree_node_id_;
   // It is safe to store a pointer to a `Profile` here, since `this` is freed
   // via `profile_observation_` when the `Profile` is destroyed.
   const raw_ptr<Profile> profile_;
   base::ScopedObservation<Profile, ProfileObserver> profile_observation_{this};
+  base::WeakPtrFactory<IsolatedWebAppURLLoaderFactory> weak_factory_{this};
 };
 
 }  // namespace web_app

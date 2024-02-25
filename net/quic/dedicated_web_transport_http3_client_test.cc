@@ -46,7 +46,7 @@ class MockVisitor : public WebTransportClientVisitor {
   MOCK_METHOD(void, OnConnectionFailed, (const WebTransportError&), (override));
   MOCK_METHOD(void,
               OnClosed,
-              (const absl::optional<WebTransportCloseInfo>&),
+              (const std::optional<WebTransportCloseInfo>&),
               (override));
   MOCK_METHOD(void, OnError, (const WebTransportError&), (override));
 
@@ -55,7 +55,7 @@ class MockVisitor : public WebTransportClientVisitor {
   MOCK_METHOD1(OnDatagramReceived, void(base::StringPiece));
   MOCK_METHOD0(OnCanCreateNewOutgoingBidirectionalStream, void());
   MOCK_METHOD0(OnCanCreateNewOutgoingUnidirectionalStream, void());
-  MOCK_METHOD1(OnDatagramProcessed, void(absl::optional<quic::MessageStatus>));
+  MOCK_METHOD1(OnDatagramProcessed, void(std::optional<quic::MessageStatus>));
 };
 
 // A clock that only mocks out WallNow(), but uses real Now() and
@@ -199,7 +199,7 @@ TEST_F(DedicatedWebTransportHttp3Test, Connect) {
   Run();
   ASSERT_TRUE(client_->session() != nullptr);
 
-  client_->Close(absl::nullopt);
+  client_->Close(std::nullopt);
   EXPECT_CALL(visitor_, OnClosed(_)).WillOnce(StopRunning());
   Run();
 }
@@ -231,7 +231,7 @@ TEST_F(DedicatedWebTransportHttp3Test, MAYBE_CloseTimeout) {
   noop_socket->AllowAddressReuse();
   ASSERT_GE(noop_socket->Listen(bind_address), 0);
 
-  client_->Close(absl::nullopt);
+  client_->Close(std::nullopt);
   EXPECT_CALL(visitor_, OnError(_)).WillOnce(StopRunning());
   Run();
 }
@@ -254,7 +254,7 @@ TEST_F(DedicatedWebTransportHttp3Test, CloseReason) {
   EXPECT_TRUE(stream->SendFin());
 
   WebTransportCloseInfo close_info(42, "test error");
-  absl::optional<WebTransportCloseInfo> received_close_info;
+  std::optional<WebTransportCloseInfo> received_close_info;
   EXPECT_CALL(visitor_, OnClosed(_))
       .WillOnce(DoAll(StopRunning(), SaveArg<0>(&received_close_info)));
   Run();

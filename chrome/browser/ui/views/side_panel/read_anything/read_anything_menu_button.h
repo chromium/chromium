@@ -16,8 +16,9 @@ class MenuRunner;
 class ReadAnythingMenuModel;
 
 class ReadAnythingMenuButton : public views::MenuButton {
+  METADATA_HEADER(ReadAnythingMenuButton, views::MenuButton)
+
  public:
-  METADATA_HEADER(ReadAnythingMenuButton);
   ReadAnythingMenuButton(base::RepeatingCallback<void()> callback,
                          const gfx::VectorIcon& icon,
                          const std::u16string& tooltip,
@@ -31,7 +32,7 @@ class ReadAnythingMenuButton : public views::MenuButton {
 
   void SetMenuModel(ReadAnythingMenuModel* menu_model);
   ReadAnythingMenuModel* GetMenuModel() const;
-  absl::optional<size_t> GetSelectedIndex() const;
+  std::optional<size_t> GetSelectedIndex() const;
   void SetIcon(const gfx::VectorIcon& icon,
                int icon_size,
                ui::ColorId icon_color,

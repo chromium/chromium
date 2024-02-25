@@ -8,6 +8,7 @@
 
 #include <cstring>
 #include <string>
+#include <string_view>
 #include <utility>
 
 #include "base/memory/raw_ptr.h"
@@ -66,9 +67,9 @@ class CupsPrinterImpl : public CupsPrinter {
   }
 
   // CupsOptionProvider
-  std::vector<base::StringPiece> GetSupportedOptionValueStrings(
+  std::vector<std::string_view> GetSupportedOptionValueStrings(
       const char* option_name) const override {
-    std::vector<base::StringPiece> values;
+    std::vector<std::string_view> values;
     ipp_attribute_t* attr = GetSupportedOptionValues(option_name);
     if (!attr)
       return values;

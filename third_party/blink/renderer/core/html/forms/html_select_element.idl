@@ -57,4 +57,7 @@
     void setCustomValidity(DOMString error);
 
     readonly attribute NodeList labels;
+
+    // https://html.spec.whatwg.org/multipage/input.html#dom-select-showpicker
+    [RaisesException, RuntimeEnabled=HTMLSelectElementShowPicker] void showPicker();
 };

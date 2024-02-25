@@ -27,10 +27,12 @@ class AwWebMessageHost : public js_injection::WebMessageHost {
  public:
   AwWebMessageHost(js_injection::WebMessageReplyProxy* reply_proxy,
                    const base::android::ScopedJavaGlobalRef<jobject>& listener,
+                   const std::string& top_level_origin_string,
                    const std::string& origin_string,
                    bool is_main_frame)
       : reply_proxy_(reply_proxy),
         listener_(listener),
+        top_level_origin_string_(top_level_origin_string),
         origin_string_(origin_string),
         is_main_frame_(is_main_frame) {}
 
@@ -45,6 +47,7 @@ class AwWebMessageHost : public js_injection::WebMessageHost {
     Java_WebMessageListenerHolder_onPostMessage(
         env, listener_,
         content::android::ConvertWebMessagePayloadToJava(message->message),
+        base::android::ConvertUTF8ToJavaString(env, top_level_origin_string_),
         base::android::ConvertUTF8ToJavaString(env, origin_string_),
         is_main_frame_, jports, reply_proxy_.GetJavaPeer());
   }
@@ -52,6 +55,7 @@ class AwWebMessageHost : public js_injection::WebMessageHost {
  private:
   JsReplyProxy reply_proxy_;
   base::android::ScopedJavaGlobalRef<jobject> listener_;
+  const std::string top_level_origin_string_;
   const std::string origin_string_;
   const bool is_main_frame_;
 };
@@ -90,11 +94,12 @@ AwWebMessageHostFactory::GetWebMessageListenerInfo(
 }
 
 std::unique_ptr<js_injection::WebMessageHost>
-AwWebMessageHostFactory::CreateHost(const std::string& origin_string,
+AwWebMessageHostFactory::CreateHost(const std::string& top_level_origin_string,
+                                    const std::string& origin_string,
                                     bool is_main_frame,
                                     js_injection::WebMessageReplyProxy* proxy) {
-  return std::make_unique<AwWebMessageHost>(proxy, listener_, origin_string,
-                                            is_main_frame);
+  return std::make_unique<AwWebMessageHost>(
+      proxy, listener_, top_level_origin_string, origin_string, is_main_frame);
 }
 
 }  // namespace android_webview

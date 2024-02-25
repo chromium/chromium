@@ -17,9 +17,6 @@
 // Invoked when the branding icon has performed the "pop" animation.
 - (void)brandingIconDidPerformPopAnimation;
 
-// Invoked when the user has tapped on any action in the keyboard accessory.
-- (void)keyboardAccessoryDidTap;
-
 @end
 
 #endif  // IOS_CHROME_BROWSER_UI_AUTOFILL_BRANDING_BRANDING_VIEW_CONTROLLER_DELEGATE_H_

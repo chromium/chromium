@@ -13,6 +13,7 @@
 #include <vector>
 
 #include "base/component_export.h"
+#include "base/containers/flat_map.h"
 #include "base/containers/span.h"
 #include "gpu/vulkan/semaphore_handle.h"
 #include "gpu/vulkan/vulkan_device_queue.h"
@@ -22,6 +23,8 @@ namespace gpu {
 constexpr uint32_t kVendorARM = 0x13b5;
 constexpr uint32_t kVendorQualcomm = 0x5143;
 constexpr uint32_t kVendorImagination = 0x1010;
+constexpr uint32_t kVendorGoogle = 0x1AE0;
+constexpr uint32_t kDeviceSwiftShader = 0xC0DE;
 
 struct GPUInfo;
 class VulkanInfo;
@@ -106,9 +109,10 @@ VKAPI_ATTR VkResult VKAPI_CALL
 VulkanQueuePresentKHRHook(VkQueue queue, const VkPresentInfoKHR* pPresentInfo);
 
 COMPONENT_EXPORT(VULKAN)
-bool CheckVulkanCompabilities(const VulkanInfo& vulkan_info,
-                              const GPUInfo& gpu_info,
-                              std::string enable_by_device_name);
+bool CheckVulkanCompatibilities(const VulkanInfo& vulkan_info,
+                                const GPUInfo& gpu_info,
+                                const std::string& enable_by_device_name,
+                                bool disabled);
 
 COMPONENT_EXPORT(VULKAN)
 VkImageLayout GLImageLayoutToVkImageLayout(uint32_t layout);
@@ -141,6 +145,16 @@ VkSemaphore CreateVkOpaqueExternalSemaphore(VkDevice vk_device);
 COMPONENT_EXPORT(VULKAN)
 SemaphoreHandle ExportVkOpaqueExternalSemaphore(VkDevice vk_device,
                                                 VkSemaphore vk_semaphore);
+
+COMPONENT_EXPORT(VULKAN)
+std::vector<VkDrmFormatModifierPropertiesEXT>
+QueryVkDrmFormatModifierPropertiesEXT(VkPhysicalDevice physical_device,
+                                      VkFormat format);
+
+COMPONENT_EXPORT(VULKAN)
+void PopulateVkDrmFormatsAndModifiers(
+    VulkanDeviceQueue* device_queue,
+    base::flat_map<uint32_t, std::vector<uint64_t>>& drm_formats_and_modifiers);
 
 }  // namespace gpu
 

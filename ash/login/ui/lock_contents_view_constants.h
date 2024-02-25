@@ -66,8 +66,6 @@ constexpr int kInfoIconSizeDp = 20;
 constexpr int kHorizontalPaddingLoginTooltipViewDp = 8;
 constexpr int kVerticalPaddingLoginTooltipViewDp = 8;
 
-constexpr char kAuthErrorContainerName[] = "AuthErrorContainer";
-
 }  // namespace
 
 }  // namespace ash

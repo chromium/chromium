@@ -196,7 +196,7 @@ class LayerTest : public testing::Test {
 
  protected:
   void SetUp() override {
-    animation_host_ = AnimationHost::CreateForTesting(ThreadInstance::MAIN);
+    animation_host_ = AnimationHost::CreateForTesting(ThreadInstance::kMain);
 
     LayerTreeHost::InitParams params;
     params.client = &fake_client_;
@@ -239,6 +239,7 @@ class LayerTest : public testing::Test {
         /*completion=*/nullptr, /*has_updates=*/true);
     layer->PushPropertiesTo(layer_impl, *commit_state, unsafe_state);
     layer_tree_host_->CommitComplete(
+        commit_state->source_frame_number,
         {base::TimeTicks(), base::TimeTicks::Now()});
   }
 
@@ -362,10 +363,11 @@ TEST_F(LayerTest, LayerPropertyChangedForSubtree) {
   EXPECT_CALL_MOCK_DELEGATE(*layer_tree_host_, SetNeedsFullTreeSync());
   EXPECT_CALL_MOCK_DELEGATE(*layer_tree_host_, SetNeedsCommit())
       .Times(AtLeast(1));
-  layer_tree_host_->WillCommit(/*completion=*/nullptr,
-                               /*has_updates=*/true);
+  auto commit_state = layer_tree_host_->WillCommit(/*completion=*/nullptr,
+                                                   /*has_updates=*/true);
   EXECUTE_AND_VERIFY_SUBTREE_CHANGED(top->SetMaskLayer(mask_layer1));
-  layer_tree_host_->CommitComplete({base::TimeTicks(), base::TimeTicks::Now()});
+  layer_tree_host_->CommitComplete(commit_state->source_frame_number,
+                                   {base::TimeTicks(), base::TimeTicks::Now()});
   layer_tree_host_->VerifyAndClearExpectations();
 
   // Set up the impl layers after the full tree is constructed, including the
@@ -386,7 +388,7 @@ TEST_F(LayerTest, LayerPropertyChangedForSubtree) {
       host_impl_.active_tree()->source_frame_number() + 1);
 
   auto& unsafe_state = layer_tree_host_->GetThreadUnsafeCommitState();
-  std::unique_ptr<CommitState> commit_state = layer_tree_host_->WillCommit(
+  layer_tree_host_->WillCommit(
       /*completion=*/nullptr, /*has_updates=*/true);
   EXECUTE_AND_VERIFY_SUBTREE_CHANGES_RESET(
       top->PushPropertiesTo(top_impl.get(), *commit_state, unsafe_state);
@@ -396,7 +398,8 @@ TEST_F(LayerTest, LayerPropertyChangedForSubtree) {
                                     unsafe_state);
       mask_layer1->PushPropertiesTo(mask_layer1_impl.get(), *commit_state,
                                     unsafe_state););
-  layer_tree_host_->CommitComplete({base::TimeTicks(), base::TimeTicks::Now()});
+  layer_tree_host_->CommitComplete(commit_state->source_frame_number,
+                                   {base::TimeTicks(), base::TimeTicks::Now()});
 
   // Once there is a mask layer, resizes require subtree properties to update.
   arbitrary_size = gfx::Size(11, 22);
@@ -418,7 +421,8 @@ TEST_F(LayerTest, LayerPropertyChangedForSubtree) {
       child2->PushPropertiesTo(child2_impl.get(), *commit_state, unsafe_state);
       grand_child->PushPropertiesTo(grand_child_impl.get(), *commit_state,
                                     unsafe_state));
-  layer_tree_host_->CommitComplete({base::TimeTicks(), base::TimeTicks::Now()});
+  layer_tree_host_->CommitComplete(commit_state->source_frame_number,
+                                   {base::TimeTicks(), base::TimeTicks::Now()});
 
   EXPECT_CALL_MOCK_DELEGATE(*layer_tree_host_, SetNeedsCommit()).Times(1);
   EXECUTE_AND_VERIFY_SUBTREE_CHANGED(top->SetContentsOpaque(true));
@@ -432,7 +436,8 @@ TEST_F(LayerTest, LayerPropertyChangedForSubtree) {
       child2->PushPropertiesTo(child2_impl.get(), *commit_state, unsafe_state);
       grand_child->PushPropertiesTo(grand_child_impl.get(), *commit_state,
                                     unsafe_state));
-  layer_tree_host_->CommitComplete({base::TimeTicks(), base::TimeTicks::Now()});
+  layer_tree_host_->CommitComplete(commit_state->source_frame_number,
+                                   {base::TimeTicks(), base::TimeTicks::Now()});
 
   EXPECT_CALL_MOCK_DELEGATE(*layer_tree_host_, SetNeedsCommit()).Times(1);
   EXECUTE_AND_VERIFY_SUBTREE_CHANGED(top->SetTrilinearFiltering(true));
@@ -446,7 +451,8 @@ TEST_F(LayerTest, LayerPropertyChangedForSubtree) {
       child2->PushPropertiesTo(child2_impl.get(), *commit_state, unsafe_state);
       grand_child->PushPropertiesTo(grand_child_impl.get(), *commit_state,
                                     unsafe_state));
-  layer_tree_host_->CommitComplete({base::TimeTicks(), base::TimeTicks::Now()});
+  layer_tree_host_->CommitComplete(commit_state->source_frame_number,
+                                   {base::TimeTicks(), base::TimeTicks::Now()});
 
   EXPECT_CALL_MOCK_DELEGATE(*layer_tree_host_, SetNeedsCommit()).Times(1);
   EXECUTE_AND_VERIFY_SUBTREE_CHANGED(top->SetTrilinearFiltering(false));
@@ -460,7 +466,8 @@ TEST_F(LayerTest, LayerPropertyChangedForSubtree) {
       child2->PushPropertiesTo(child2_impl.get(), *commit_state, unsafe_state);
       grand_child->PushPropertiesTo(grand_child_impl.get(), *commit_state,
                                     unsafe_state));
-  layer_tree_host_->CommitComplete({base::TimeTicks(), base::TimeTicks::Now()});
+  layer_tree_host_->CommitComplete(commit_state->source_frame_number,
+                                   {base::TimeTicks(), base::TimeTicks::Now()});
 
   EXPECT_CALL_MOCK_DELEGATE(*layer_tree_host_, SetNeedsCommit()).Times(2);
   top->SetRoundedCorner({1, 2, 3, 4});
@@ -475,7 +482,8 @@ TEST_F(LayerTest, LayerPropertyChangedForSubtree) {
       child2->PushPropertiesTo(child2_impl.get(), *commit_state, unsafe_state);
       grand_child->PushPropertiesTo(grand_child_impl.get(), *commit_state,
                                     unsafe_state));
-  layer_tree_host_->CommitComplete({base::TimeTicks(), base::TimeTicks::Now()});
+  layer_tree_host_->CommitComplete(commit_state->source_frame_number,
+                                   {base::TimeTicks(), base::TimeTicks::Now()});
 
   EXPECT_CALL_MOCK_DELEGATE(*layer_tree_host_, SetNeedsCommit()).Times(1);
   EXECUTE_AND_VERIFY_SUBTREE_CHANGED(top->SetHideLayerAndSubtree(true));
@@ -489,7 +497,8 @@ TEST_F(LayerTest, LayerPropertyChangedForSubtree) {
       child2->PushPropertiesTo(child2_impl.get(), *commit_state, unsafe_state);
       grand_child->PushPropertiesTo(grand_child_impl.get(), *commit_state,
                                     unsafe_state));
-  layer_tree_host_->CommitComplete({base::TimeTicks(), base::TimeTicks::Now()});
+  layer_tree_host_->CommitComplete(commit_state->source_frame_number,
+                                   {base::TimeTicks(), base::TimeTicks::Now()});
 
   EXPECT_CALL_MOCK_DELEGATE(*layer_tree_host_, SetNeedsCommit()).Times(1);
   EXECUTE_AND_VERIFY_SUBTREE_CHANGED(top->SetBlendMode(arbitrary_blend_mode));
@@ -503,7 +512,8 @@ TEST_F(LayerTest, LayerPropertyChangedForSubtree) {
       child2->PushPropertiesTo(child2_impl.get(), *commit_state, unsafe_state);
       grand_child->PushPropertiesTo(grand_child_impl.get(), *commit_state,
                                     unsafe_state));
-  layer_tree_host_->CommitComplete({base::TimeTicks(), base::TimeTicks::Now()});
+  layer_tree_host_->CommitComplete(commit_state->source_frame_number,
+                                   {base::TimeTicks(), base::TimeTicks::Now()});
 
   // Should be a different size than previous call, to ensure it marks tree
   // changed.
@@ -521,7 +531,8 @@ TEST_F(LayerTest, LayerPropertyChangedForSubtree) {
       child2->PushPropertiesTo(child2_impl.get(), *commit_state, unsafe_state);
       grand_child->PushPropertiesTo(grand_child_impl.get(), *commit_state,
                                     unsafe_state));
-  layer_tree_host_->CommitComplete({base::TimeTicks(), base::TimeTicks::Now()});
+  layer_tree_host_->CommitComplete(commit_state->source_frame_number,
+                                   {base::TimeTicks(), base::TimeTicks::Now()});
 
   FilterOperations arbitrary_filters;
   arbitrary_filters.Append(FilterOperation::CreateOpacityFilter(0.5f));
@@ -537,7 +548,8 @@ TEST_F(LayerTest, LayerPropertyChangedForSubtree) {
       child2->PushPropertiesTo(child2_impl.get(), *commit_state, unsafe_state);
       grand_child->PushPropertiesTo(grand_child_impl.get(), *commit_state,
                                     unsafe_state));
-  layer_tree_host_->CommitComplete({base::TimeTicks(), base::TimeTicks::Now()});
+  layer_tree_host_->CommitComplete(commit_state->source_frame_number,
+                                   {base::TimeTicks(), base::TimeTicks::Now()});
 
   EXPECT_CALL_MOCK_DELEGATE(*layer_tree_host_, SetNeedsCommit()).Times(2);
   EXECUTE_AND_VERIFY_SUBTREE_CHANGED(
@@ -551,7 +563,8 @@ TEST_F(LayerTest, LayerPropertyChangedForSubtree) {
       child2->PushPropertiesTo(child2_impl.get(), *commit_state, unsafe_state);
       grand_child->PushPropertiesTo(grand_child_impl.get(), *commit_state,
                                     unsafe_state));
-  layer_tree_host_->CommitComplete({base::TimeTicks(), base::TimeTicks::Now()});
+  layer_tree_host_->CommitComplete(commit_state->source_frame_number,
+                                   {base::TimeTicks(), base::TimeTicks::Now()});
   layer_tree_host_->VerifyAndClearExpectations();
 
   gfx::PointF arbitrary_point_f = gfx::PointF(0.125f, 0.25f);
@@ -571,7 +584,8 @@ TEST_F(LayerTest, LayerPropertyChangedForSubtree) {
       grand_child->PushPropertiesTo(grand_child_impl.get(), *commit_state,
                                     unsafe_state);
       layer_tree_host_->property_trees()->ResetAllChangeTracking());
-  layer_tree_host_->CommitComplete({base::TimeTicks(), base::TimeTicks::Now()});
+  layer_tree_host_->CommitComplete(commit_state->source_frame_number,
+                                   {base::TimeTicks(), base::TimeTicks::Now()});
   EXPECT_FALSE(node->transform_changed);
   layer_tree_host_->VerifyAndClearExpectations();
 
@@ -589,7 +603,8 @@ TEST_F(LayerTest, LayerPropertyChangedForSubtree) {
       grand_child->PushPropertiesTo(grand_child_impl.get(), *commit_state,
                                     unsafe_state);
       layer_tree_host_->property_trees()->ResetAllChangeTracking());
-  layer_tree_host_->CommitComplete({base::TimeTicks(), base::TimeTicks::Now()});
+  layer_tree_host_->CommitComplete(commit_state->source_frame_number,
+                                   {base::TimeTicks(), base::TimeTicks::Now()});
   node = layer_tree_host_->property_trees()->transform_tree_mutable().Node(
       child->transform_tree_index());
   EXPECT_FALSE(node->transform_changed);
@@ -611,7 +626,8 @@ TEST_F(LayerTest, LayerPropertyChangedForSubtree) {
       grand_child->PushPropertiesTo(grand_child_impl.get(), *commit_state,
                                     unsafe_state);
       layer_tree_host_->property_trees()->ResetAllChangeTracking());
-  layer_tree_host_->CommitComplete({base::TimeTicks(), base::TimeTicks::Now()});
+  layer_tree_host_->CommitComplete(commit_state->source_frame_number,
+                                   {base::TimeTicks(), base::TimeTicks::Now()});
 
   gfx::Transform arbitrary_transform;
   arbitrary_transform.Scale3d(0.1f, 0.2f, 0.3f);
@@ -1290,7 +1306,7 @@ TEST_F(LayerLayerTreeHostTest, EnteringTree) {
 
   LayerTreeHostFactory factory;
 
-  auto animation_host = AnimationHost::CreateForTesting(ThreadInstance::MAIN);
+  auto animation_host = AnimationHost::CreateForTesting(ThreadInstance::kMain);
   std::unique_ptr<LayerTreeHost> layer_tree_host =
       factory.Create(animation_host.get());
   // Setting the root layer should set the host pointer for all layers in the
@@ -1310,7 +1326,7 @@ TEST_F(LayerLayerTreeHostTest, AddingLayerSubtree) {
   scoped_refptr<Layer> parent = Layer::Create();
   LayerTreeHostFactory factory;
 
-  auto animation_host = AnimationHost::CreateForTesting(ThreadInstance::MAIN);
+  auto animation_host = AnimationHost::CreateForTesting(ThreadInstance::kMain);
   std::unique_ptr<LayerTreeHost> layer_tree_host =
       factory.Create(animation_host.get());
 
@@ -1346,7 +1362,7 @@ TEST_F(LayerLayerTreeHostTest, ChangeHost) {
   child->SetMaskLayer(mask);
 
   LayerTreeHostFactory factory;
-  auto animation_host1 = AnimationHost::CreateForTesting(ThreadInstance::MAIN);
+  auto animation_host1 = AnimationHost::CreateForTesting(ThreadInstance::kMain);
   std::unique_ptr<LayerTreeHost> first_layer_tree_host =
       factory.Create(animation_host1.get());
   first_layer_tree_host->SetRootLayer(parent.get());
@@ -1357,7 +1373,7 @@ TEST_F(LayerLayerTreeHostTest, ChangeHost) {
   // Now re-root the tree to a new host (simulating what we do on a context
   // lost event). This should update the host pointers for all layers in the
   // tree.
-  auto animation_host2 = AnimationHost::CreateForTesting(ThreadInstance::MAIN);
+  auto animation_host2 = AnimationHost::CreateForTesting(ThreadInstance::kMain);
   std::unique_ptr<LayerTreeHost> second_layer_tree_host =
       factory.Create(animation_host2.get());
   second_layer_tree_host->SetRootLayer(parent.get());
@@ -1381,7 +1397,7 @@ TEST_F(LayerLayerTreeHostTest, ChangeHostInSubtree) {
   first_parent->AddChild(second_child);
 
   LayerTreeHostFactory factory;
-  auto animation_host1 = AnimationHost::CreateForTesting(ThreadInstance::MAIN);
+  auto animation_host1 = AnimationHost::CreateForTesting(ThreadInstance::kMain);
   std::unique_ptr<LayerTreeHost> first_layer_tree_host =
       factory.Create(animation_host1.get());
   first_layer_tree_host->SetRootLayer(first_parent.get());
@@ -1391,7 +1407,7 @@ TEST_F(LayerLayerTreeHostTest, ChangeHostInSubtree) {
 
   // Now reparent the subtree starting at second_child to a layer in a
   // different tree.
-  auto animation_host2 = AnimationHost::CreateForTesting(ThreadInstance::MAIN);
+  auto animation_host2 = AnimationHost::CreateForTesting(ThreadInstance::kMain);
   std::unique_ptr<LayerTreeHost> second_layer_tree_host =
       factory.Create(animation_host2.get());
   second_layer_tree_host->SetRootLayer(second_parent.get());
@@ -1420,7 +1436,7 @@ TEST_F(LayerLayerTreeHostTest, ReplaceMaskLayer) {
   mask->AddChild(mask_child);
 
   LayerTreeHostFactory factory;
-  auto animation_host = AnimationHost::CreateForTesting(ThreadInstance::MAIN);
+  auto animation_host = AnimationHost::CreateForTesting(ThreadInstance::kMain);
   std::unique_ptr<LayerTreeHost> layer_tree_host =
       factory.Create(animation_host.get());
   layer_tree_host->SetRootLayer(parent.get());
@@ -1442,7 +1458,7 @@ TEST_F(LayerLayerTreeHostTest, DestroyHostWithNonNullRootLayer) {
   scoped_refptr<Layer> child = Layer::Create();
   root->AddChild(child);
   LayerTreeHostFactory factory;
-  auto animation_host = AnimationHost::CreateForTesting(ThreadInstance::MAIN);
+  auto animation_host = AnimationHost::CreateForTesting(ThreadInstance::kMain);
   std::unique_ptr<LayerTreeHost> layer_tree_host =
       factory.Create(animation_host.get());
   layer_tree_host->SetRootLayer(root);
@@ -1450,7 +1466,7 @@ TEST_F(LayerLayerTreeHostTest, DestroyHostWithNonNullRootLayer) {
 
 TEST_F(LayerTest, SafeOpaqueBackgroundColor) {
   LayerTreeHostFactory factory;
-  auto animation_host = AnimationHost::CreateForTesting(ThreadInstance::MAIN);
+  auto animation_host = AnimationHost::CreateForTesting(ThreadInstance::kMain);
   std::unique_ptr<LayerTreeHost> layer_tree_host =
       factory.Create(animation_host.get());
 

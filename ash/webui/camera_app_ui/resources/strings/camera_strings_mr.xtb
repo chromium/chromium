@@ -5,7 +5,6 @@
 <translation id="1076394037877376434"><ph name="PAGE_NUMBER" /> पेज हटवा</translation>
 <translation id="1113173431709655881">कॅमेरा मोड</translation>
 <translation id="1153190633558910465">ग्रिड बंद करा</translation>
-<translation id="1175958423215084756">लिंक डिटेक्ट केली. <ph name="HOSTNAME" /></translation>
 <translation id="1197694886744716213"><ph name="PAGE_NUMBER" /> पेज हटवले</translation>
 <translation id="1258009455399840361">घड्याळाच्या काट्याच्या दिशेने ९० अंशात फिरवा</translation>
 <translation id="1417314334557041815"><ph name="INDEX" /> पेज संपादित करा</translation>
@@ -47,6 +46,7 @@
 <translation id="3067436040345934772">उजवीकडे पॅन करा</translation>
 <translation id="3081586908890909590">व्हिडिओ रेकॉर्ड करण्यासाठी स्विच करा</translation>
 <translation id="313467653172006084">३० FPS</translation>
+<translation id="3158534262962737808">"<ph name="WIFINAME" />" मध्ये सामील व्हा</translation>
 <translation id="3227137524299004712">मायक्रोफोन</translation>
 <translation id="3240426699337459095">लिंक कॉपी केला</translation>
 <translation id="3354465018370944241">फोटो सेटिंग्ज</translation>
@@ -60,14 +60,12 @@
 <translation id="3642192109456033823">व्हिडिओवर प्रक्रिया करत आहे...</translation>
 <translation id="3789724198583203151">घड्याळाच्‍या काट्याच्या उलट दिशेने ९० अंश फिरवा</translation>
 <translation id="3810838688059735925">व्हिडिओ</translation>
-<translation id="3892148308691398805">मजकूर कॉपी करा</translation>
 <translation id="4060608699153044055">कमी डिव्हाइस स्टोरेज जागेमुळे तुम्ही रेकॉर्ड करू शकत नाही. रेकॉर्डिंग सुरू करण्यासाठी, तुम्हाला तुमच्या डिव्हाइसवरील जागा मोकळी करावी लागेल.</translation>
 <translation id="4061162772429051350"><ph name="MAGAPIXELS_AMOUNT" /> MP</translation>
 <translation id="4118525110028899586">रेकॉर्डिंग थांबवा</translation>
 <translation id="4121305183798804752">दस्तऐवज डिटेक्ट केले</translation>
 <translation id="414641094616694804">हा कॅमेरा रेझोल्यूशन बदलू शकत नाही</translation>
 <translation id="4176463684765177261">अक्षम केले</translation>
-<translation id="4269820728363426813">लिंकचा पत्ता कॉपी करा</translation>
 <translation id="428234092390943511">पेज थंबनेल</translation>
 <translation id="4349714250734879769">Chrome द्वारे फ्रेम स्केल करा</translation>
 <translation id="4383571725254449280">परफॉर्मन्स लॉग प्रिंट करा</translation>
@@ -81,14 +79,15 @@
 <translation id="4705093842003735294">पूर्ण रेझोल्यूशन</translation>
 <translation id="4864143361253542638">स्कॅन केलेली पेज सूची</translation>
 <translation id="4890010094662541459">३ x ३</translation>
+<translation id="4892746741161549733">लिंकचा अ‍ॅड्रेस <ph name="URL" /> कॉपी करा</translation>
 <translation id="491895758387112773">मल्टिस्ट्रीम व्हिडिओ रेकॉर्डिंग</translation>
 <translation id="495170559598752135">क्रिया</translation>
 <translation id="4984613436295737187">Quad HD (1440p)</translation>
 <translation id="5034763830503483128">फोटोचा आस्पेक्ट रेशो</translation>
 <translation id="5057360777601936059">तुमचा कॅमेरा सध्या उपलब्ध नाही.
         कॅमेरा योग्य प्रकारे कनेक्ट केला आहे का ते तपासा.</translation>
+<translation id="5157591164390831335">URL डिटेक्ट केली आहे.</translation>
 <translation id="5163387177077603948">उजव्या दिशेने हलत आहे</translation>
-<translation id="5219374179772385066">टाइम लॅप्स मोड आता उपलब्ध आहे!</translation>
 <translation id="5235304959032763950">सोळास नऊ</translation>
 <translation id="5266635337630551423">दस्तऐवजाचा सर्वात वरील डावीकडील कोपरा</translation>
 <translation id="5317780077021120954">सेव्ह करा</translation>
@@ -114,6 +113,7 @@
 <translation id="6353688143752491039">Camera अ‍ॅपचा फीडबॅक दिल्याबद्दल धन्यवाद.
 
 तुमचा फीडबॅक इमेज किंवा व्हिडिओच्या गुणवत्तेबाबत असल्यास, कृपया एखादा फोटो किंवा व्हिडिओ नमुना म्हणून अटॅच करा आणि समस्येचे वर्णन करा. (उदाहरणार्थ, फोटो खूपच गडद आहे किंवा ज्या गोष्टीचा फोटो घ्यायचा त्यावर फोकस नाही)</translation>
+<translation id="6519884562954018934"><ph name="WIFINAME" /> मध्ये सामील व्हा</translation>
 <translation id="6527303717912515753">शेअर करा</translation>
 <translation id="6617916774429601017">सर्व रेझोल्यूशन दाखवा</translation>
 <translation id="6631515515009660915">मिरर करणे बंद करा</translation>
@@ -133,6 +133,7 @@
 <translation id="7450541714075000668">मजकूर कॉपी केला</translation>
 <translation id="7488619942230388918">GIF व्हिडिओ रेकॉर्ड करा</translation>
 <translation id="7557677699350329807">पुढील कॅमेर्‍यावर स्विच करा</translation>
+<translation id="7562584071994185503"><ph name="TEXT" /> हा मजकूर कॉपी करा</translation>
 <translation id="7607002721634913082">विराम द्या</translation>
 <translation id="7608223098072244877">४ बाय ४</translation>
 <translation id="761421184377987513">तळाशी डाव्या दिशेने हलत आहे</translation>
@@ -155,10 +156,12 @@
 <translation id="8346544573713510785">Camera HAL द्वारे फ्रेम स्केल करा</translation>
 <translation id="8425673304802773841">खाली टिल्ट करा</translation>
 <translation id="8428213095426709021">सेटिंग्ज</translation>
+<translation id="8609951387004618906"><ph name="URL" /> उघडा</translation>
 <translation id="8629662593426079630">360p</translation>
 <translation id="8711011893539266636">मायक्रोफोन म्यूट टॉगल करा. म्यूट सुरू आहे</translation>
 <translation id="8730621377337864115">पूर्ण झाले</translation>
 <translation id="8732462232047530626">मेटाडेटाचे पूर्वावलोकन करा</translation>
+<translation id="874854738381978209">वाय-फाय नेटवर्क डिटेक्ट केले आहे.</translation>
 <translation id="8815966864175525708">पोर्ट्रेट फोटो काढण्यासाठी स्विच करा</translation>
 <translation id="8828441885228359828">रेकॉर्डिंग पुन्‍हा सुरू करा</translation>
 <translation id="8870695351537079478">रेकॉर्डिंग सुरू करता आले नाही</translation>

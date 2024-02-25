@@ -32,9 +32,7 @@ class MockVideoFrameHandler : public mojom::VideoFrameHandler {
   void OnFrameAccessHandlerReady(
       mojo::PendingRemote<video_capture::mojom::VideoFrameAccessHandler>
           frame_access_handler_proxy) override;
-  void OnFrameReadyInBuffer(
-      mojom::ReadyFrameInBufferPtr buffer,
-      std::vector<mojom::ReadyFrameInBufferPtr> scaled_buffers) override;
+  void OnFrameReadyInBuffer(mojom::ReadyFrameInBufferPtr buffer) override;
   void OnBufferRetired(int32_t buffer_id) override;
 
   MOCK_METHOD0(OnCaptureConfigurationChanged, void());
@@ -47,7 +45,7 @@ class MockVideoFrameHandler : public mojom::VideoFrameHandler {
   MOCK_METHOD1(DoOnBufferRetired, void(int32_t));
   MOCK_METHOD1(OnError, void(media::VideoCaptureError));
   MOCK_METHOD1(OnFrameDropped, void(media::VideoCaptureFrameDropReason));
-  MOCK_METHOD1(OnNewCropVersion, void(uint32_t));
+  MOCK_METHOD1(OnNewSubCaptureTargetVersion, void(uint32_t));
   MOCK_METHOD0(OnFrameWithEmptyRegionCapture, void());
   MOCK_METHOD1(OnLog, void(const std::string&));
   MOCK_METHOD0(OnStarted, void());

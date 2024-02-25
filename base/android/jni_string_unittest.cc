@@ -12,7 +12,7 @@
 namespace base {
 namespace android {
 
-TEST(JniString, BasicConversionsUTF8) {
+TEST(JniString, FastConversionsUTF8) {
   const std::string kSimpleString = "SimpleTest8";
   JNIEnv* env = AttachCurrentThread();
   std::string result =
@@ -20,12 +20,42 @@ TEST(JniString, BasicConversionsUTF8) {
   EXPECT_EQ(kSimpleString, result);
 }
 
-TEST(JniString, BasicConversionsUTF16) {
+TEST(JniString, FastConversionsUTF16) {
   const std::u16string kSimpleString = u"SimpleTest16";
   JNIEnv* env = AttachCurrentThread();
   std::u16string result =
       ConvertJavaStringToUTF16(ConvertUTF16ToJavaString(env, kSimpleString));
   EXPECT_EQ(kSimpleString, result);
+}
+
+TEST(JniString, SlowConversionsUTF8) {
+  constexpr auto length = 2048;
+  std::array<char, length> kLongArray;
+  for (int i = 0; i < length; i++) {
+    kLongArray[i] = 'a';
+  }
+  std::string kLongString;
+  kLongString.assign(reinterpret_cast<const char*>(kLongArray.data()),
+                     static_cast<size_t>(length));
+  JNIEnv* env = AttachCurrentThread();
+  std::string result =
+      ConvertJavaStringToUTF8(ConvertUTF8ToJavaString(env, kLongString));
+  EXPECT_EQ(kLongString, result);
+}
+
+TEST(JniString, SlowConversionsUTF16) {
+  constexpr auto length = 2048;
+  std::array<char16_t, length> kLongArray;
+  for (int i = 0; i < length; i++) {
+    kLongArray[i] = u'a';
+  }
+  std::u16string kLongString;
+  kLongString.assign(reinterpret_cast<const char16_t*>(kLongArray.data()),
+                     static_cast<size_t>(length));
+  JNIEnv* env = AttachCurrentThread();
+  std::u16string result =
+      ConvertJavaStringToUTF16(ConvertUTF16ToJavaString(env, kLongString));
+  EXPECT_EQ(kLongString, result);
 }
 
 TEST(JniString, EmptyConversionUTF8) {

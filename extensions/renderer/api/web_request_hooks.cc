@@ -54,7 +54,7 @@ bool WebRequestHooks::CreateCustomEvent(v8::Local<v8::Context> context,
                    gin::StringToSymbol(isolate, "createWebRequestEvent"))
              .ToLocal(&get_event_value) ||
         !get_event_value->IsFunction()) {
-      NOTREACHED();
+      DUMP_WILL_BE_NOTREACHED_NORETURN();
       return false;
     }
   }

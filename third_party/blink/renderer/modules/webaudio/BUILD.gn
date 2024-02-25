@@ -12,8 +12,6 @@ blink_modules_sources("webaudio") {
     "analyser_node.h",
     "async_audio_decoder.cc",
     "async_audio_decoder.h",
-    "audio_basic_inspector_node.cc",
-    "audio_basic_inspector_node.h",
     "audio_basic_processor_handler.cc",
     "audio_basic_processor_handler.h",
     "audio_buffer.cc",

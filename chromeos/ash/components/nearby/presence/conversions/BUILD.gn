@@ -24,6 +24,7 @@ static_library("conversions") {
     "//third_party/nearby:connections_credential_proto",
     "//third_party/nearby:connections_local_credential_proto",
     "//third_party/nearby:connections_metadata_proto",
+    "//third_party/nearby:platform_api_comm",
   ]
 }
 

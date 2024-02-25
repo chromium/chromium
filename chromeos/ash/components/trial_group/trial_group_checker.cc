@@ -4,6 +4,8 @@
 
 #include "chromeos/ash/components/trial_group/trial_group_checker.h"
 
+#include <optional>
+
 #include "base/functional/bind.h"
 #include "base/json/json_reader.h"
 #include "base/json/json_writer.h"
@@ -13,7 +15,6 @@
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/public/cpp/simple_url_loader.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace {
 
@@ -59,7 +60,7 @@ void TrialGroupChecker::OnRequestComplete(
     return;
   }
 
-  absl::optional<int> member_status =
+  std::optional<int> member_status =
       membership_info->GetDict().FindInt("membership_info");
   if (!member_status) {
     std::move(callback_).Run(false);

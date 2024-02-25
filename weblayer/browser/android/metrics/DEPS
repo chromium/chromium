@@ -1,5 +1,0 @@
-include_rules = [
-  "+components/metrics",
-  "+google_apis/google_api_keys.h",
-  "+third_party/metrics_proto"
-]

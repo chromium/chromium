@@ -26,9 +26,9 @@ class StaticSelection final : public ScriptWrappable {
   StaticSelection(const StaticSelection&) = delete;
   StaticSelection& operator=(const StaticSelection&) = delete;
 
-  Node* anchorNode() const { return anchor_node_; }
+  Node* anchorNode() const { return anchor_node_.Get(); }
   unsigned anchorOffset() const { return anchor_offset_; }
-  Node* focusNode() const { return focus_node_; }
+  Node* focusNode() const { return focus_node_.Get(); }
   unsigned focusOffset() const { return focus_offset_; }
   bool isCollapsed() const;
 

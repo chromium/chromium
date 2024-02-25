@@ -1,0 +1,18 @@
+# Copyright 2016 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("model") {
+  sources = [
+    "create_clipboard_recent_content.h",
+    "create_clipboard_recent_content.mm",
+  ]
+  deps = [
+    "//base",
+    "//components/open_from_clipboard",
+    "//ios/chrome/browser/shared/model/url:constants",
+    "//ios/chrome/browser/shared/public/features",
+    "//ios/chrome/common/app_group",
+    "//ios/components/webui:url_constants",
+  ]
+}

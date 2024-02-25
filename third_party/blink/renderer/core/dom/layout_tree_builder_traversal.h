@@ -73,6 +73,9 @@ class CORE_EXPORT LayoutTreeBuilderTraversal {
   static inline Element* ParentElement(const Node& node) {
     return DynamicTo<Element>(Parent(node));
   }
+  static inline Element* LayoutParentElement(const Node& node) {
+    return DynamicTo<Element>(LayoutParent(node));
+  }
   // Compares positions of two nodes in preorder tree traversal.
   // Return -1 if the first one goes first, 0 if they are the same
   // and 1 if the second goes first.

@@ -40,6 +40,7 @@ message LicenseType {
 // is currently logged in.
 // This enum is used in the response payload of the
 // `FETCH_CRD_AVAILABILITY_INFO` remote command.
+// NOTE: Please DO NOT rename enum entries as they are used by external APIs.
 enum UserSessionType {
   USER_SESSION_TYPE_UNKNOWN = 0;
   AUTO_LAUNCHED_KIOSK_SESSION = 1;
@@ -66,6 +67,7 @@ enum CrdSessionType {
 // Enum indicating why a CRD session is or is not available.
 // This enum is used in the response payload of the
 // `FETCH_CRD_AVAILABILITY_INFO` remote command.
+// NOTE: Please DO NOT rename enum entries as they are used by external APIs.
 enum CrdSessionAvailability {
   CRD_SESSION_AVAILABILITY_UNKNOWN = 0;
   // The CRD session is available and the admin can start a CRD session.
@@ -77,6 +79,70 @@ enum CrdSessionAvailability {
   UNAVAILABLE_UNMANAGED_ENVIRONMENT = 3;
   // The CRD session type is unsupported by device os version
   UNAVAILABLE_UNSUPPORTED_DEVICE_OS_VERSION = 4;
+  // CRD is disabled on the device by the 'enterprise remote support connection'
+  // policy.
+  UNAVAILABLE_DISABLED_BY_POLICY = 5;
+}
+
+// Result code used in the response payload of the `START_CRD_SESSION` remote
+// command. This is used because it is more granular than the normal
+// `ResultType` enum used as the result code for a remote command.
+enum StartCrdSessionResultCode {
+  START_CRD_SESSION_RESULT_UNKNOWN = -1;
+  // Successfully obtained access code.
+  START_CRD_SESSION_SUCCESS = 0;
+  // Failed as required services are not launched on the device.
+  SERVICES_NOT_READY = 1;
+  // Failure as the current user type does not support remotely starting CRD.
+  FAILURE_UNSUPPORTED_USER_TYPE = 2;
+  // Failed as device is currently in use and no interruptUser flag is set.
+  FAILURE_NOT_IDLE = 3;
+  // Failed as we could not get OAuth token for whatever reason.
+  FAILURE_NO_OAUTH_TOKEN = 4;
+  // Failed as we could not get ICE configuration for whatever reason.
+  // deprecated
+  FAILURE_NO_ICE_CONFIG = 5;
+  // Failure during attempt to start CRD host and obtain CRD token.
+  FAILURE_CRD_HOST_ERROR = 6;
+  // Failure to start a curtained session as we're not in a managed environment.
+  FAILURE_UNMANAGED_ENVIRONMENT = 7;
+  // Failed because RemoteAccessHostAllowEnterpriseRemoteSupportConnections
+  // policy is disabled.
+  FAILURE_DISABLED_BY_POLICY = 8;
+}
+
+// Result code used in the response payload of the `FETCH_SUPPORT_PACKET` remote
+// command. The response payload will be a JSON string as follows:
+// {
+//   "result": <FetchSupportPacketResultCode enum>,
+//   (optional) "notes": [<FetchSupportPacketResultNote enums>]
+// }
+enum FetchSupportPacketResultCode {
+  // Unspecified result.
+  FETCH_SUPPORT_PACKET_RESULT_CODE_UNSPECIFIED = 0;
+  // Success.
+  FETCH_SUPPORT_PACKET_RESULT_SUCCESS = 1;
+  // Command is not enabled for the device or the user.
+  FAILURE_COMMAND_NOT_ENABLED = 2;
+  // Failed to create the file to upload.
+  FAILURE_EXPORTING_FILE = 3;
+  // Internal failure at reporting pipeline. LogUploadEvent can't be enqueued.
+  FAILURE_REPORTING_PIPELINE = 4;
+  // File upload to File Storage Server has failed.
+  FAILURE_LOG_UPLOAD = 5;
+}
+
+// Result payload field that will used for FETCH_SUPPORT_PACKET remote command.
+// This field represents the warnings or notes that the device sends along with
+// the command result. This enum will be used to attach optional notes to
+// successful execution. Failure details will be send to the server in
+// FetchSupportPacketResultCode enum.
+enum FetchSupportPacketResultNote {
+  FETCH_SUPPORT_PACKET_RESULT_PAYLOAD_UNSPECIFIED = 0;
+  // Warning that the requested PII is not allowed to be included in the
+  // collected logs due to privacy issues. This is not an error but a warning to
+  // the admin. The log file will be created and uploaded without PII.
+  WARNING_PII_NOT_ALLOWED = 1;
 }
 
 // Data along with a cryptographic signature verifying their authenticity.
@@ -203,6 +269,13 @@ message DeviceRegisterRequest {
     // Attestation re-enrollment just failed, attempt manual enrollment as
     // fallback.
     FLAVOR_ENROLLMENT_ATTESTATION_ROLLBACK_MANUAL_FALLBACK = 17;
+    // Device state downloaded from the server indicated that initial enrollment
+    // is mandatory and should be token-based.
+    FLAVOR_ENROLLMENT_TOKEN_INITIAL_SERVER_FORCED = 18;
+    // Device state downloaded from the server indicated that initial
+    // token-based enrollment is mandatory, but it failed and we are doing
+    // fallback to manual enrollment.
+    FLAVOR_ENROLLMENT_TOKEN_INITIAL_MANUAL_FALLBACK = 19;
   }
 
   // Indicates the registration flavor. This is passed to the server FYI when
@@ -372,6 +445,29 @@ message DeviceRegisterResponse {
   // registering for policy is affiliated on the device.
   // Only sent if DeviceRegisterRequest.Type == USER
   repeated string user_affiliation_ids = 5;
+
+  // The display name Chrome should use when setting up the profile, used for
+  // OIDC managed profile only.
+  optional string user_display_name = 7;
+
+  // The email of the user who logged into this profile, used for OIDC managed
+  // profile only.
+  optional string user_email = 8;
+
+  // Enum listing the possible types of the third party identity used for OIDC
+  // managed profiles.
+  enum ThirdPartyIdentityType {
+    // The profile does not have third party identity.
+    NONE = 0;
+    // The third party identity is synced to Google (Dasher) and there is an
+    // associated GAIA ID for it.
+    DASHER_BASED = 1;
+    // The third party identity is not synced to Google and there is no
+    // associated GAIA ID for it.
+    DASHERLESS = 2;
+  }
+  optional ThirdPartyIdentityType third_party_identity_type = 9
+      [default = NONE];
 }
 
 // Request from device to server to unregister device.
@@ -823,6 +919,13 @@ message PolicyFetchResponse {
   // to new_public_key_verification_data_signature, but is computed over
   // DEPRECATEDPolicyPublicKeyAndDomain (which is equivalent to
   // PublicKeyVerificationData proto with version field unset).
+  //
+  // Do not remove this unless you know for sure that this is not required by
+  // managed devices any more, including devices that might be pinned to
+  // milestones older than current Stable.
+  // Note: As of February 2024, this is still strictly required by
+  // CloudPolicyValidator, see
+  // https://source.chromium.org/chromium/chromium/src/+/main:components/policy/core/common/cloud/cloud_policy_validator.cc;drc=08b91b49531894cbe9061a1148fd535155c2554b;l=407
   optional bytes new_public_key_verification_signature_deprecated = 7
       [deprecated = true];
 
@@ -904,6 +1007,48 @@ message DevicePolicyRequest {
   // from a non-TT client.  The repeated field allows clients to request
   // multiple policies for better performance.
   repeated PolicyFetchRequest requests = 3;
+
+  // Reason for the requesting policies, to help with monitoring and alerting
+  // (e.g. to detect an increase in fetch failures during enrollment).
+  enum Reason {
+    UNSPECIFIED = 0;
+    // Required policy fetch during device enrollment.
+    DEVICE_ENROLLMENT = 1;
+    // Policy fetch triggered by incoming FCM invalidation.
+    INVALIDATION = 2;
+    // CloudPolicyClient registration changed (e.g. during startup).
+    REGISTRATION_CHANGED = 3;
+    // Retry after previous policy fetch failure.
+    RETRY = 4;
+    // Various retry reasons based on DMServer status, see
+    // `CloudPolicyRefreshScheduler`.
+    RETRY_AFTER_STATUS_SERVICE_ACTIVATION_PENDING = 5;
+    RETRY_AFTER_STATUS_SERVICE_POLICY_NOT_FOUND = 6;
+    RETRY_AFTER_STATUS_SERVICE_TOO_MANY_REQUESTS = 7;
+    RETRY_AFTER_STATUS_REQUEST_FAILED = 8;
+    RETRY_AFTER_STATUS_TEMPORARY_UNAVAILABLE = 9;
+    RETRY_AFTER_STATUS_CANNOT_SIGN_REQUEST = 10;
+    RETRY_AFTER_STATUS_REQUEST_INVALID = 11;
+    RETRY_AFTER_STATUS_HTTP_STATUS_ERROR = 12;
+    RETRY_AFTER_STATUS_RESPONSE_DECODING_ERROR = 13;
+    RETRY_AFTER_STATUS_SERVICE_MANAGEMENT_NOT_SUPPORTED = 14;
+    RETRY_AFTER_STATUS_REQUEST_TOO_LARGE = 15;
+    // Scheduled policy refresh (e.g. once per day).
+    SCHEDULED = 16;
+    // Policy fetch triggered by sign-in.
+    SIGNIN = 17;
+    // A placeholder reason used for tests (should not occur in production).
+    TEST = 18;
+    // Policy fetched at browser start, e.g. device policies at Ash start.
+    BROWSER_START = 19;
+    // ChromeOS Policy fetch request from Lacros to Ash.
+    LACROS = 20;
+    // Policy fetched as requested by the user, e.g. through chrome://policy.
+    USER_REQUEST = 21;
+    // Policy fetches triggered by the Chrome Remote Desktop policy watcher.
+    CRD_HOST_POLICY_WATCHER = 22;
+  }
+  optional Reason reason = 4;
 }
 
 // Response from server to device for reading policies.
@@ -2222,7 +2367,7 @@ message PolicyValueValidationIssue {
   // Policy name of the faulty value.
   optional string policy_name = 1;
 
-  // # LINT.IfChange
+  // LINT.IfChange
   enum ValueValidationIssueSeverity {
     // Default value for when a severity is not specified.
     VALUE_VALIDATION_ISSUE_SEVERITY_UNSPECIFIED = 0;
@@ -2233,8 +2378,8 @@ message PolicyValueValidationIssue {
     // This result is an error. The policy blob was rejected completely and not
     // updated on the device.
     VALUE_VALIDATION_ISSUE_SEVERITY_ERROR = 2;
-  }  // LINT.ThenChange(
-  // //depot/google3/chrome/cros/reporting/api/proto/policy_validation_report.proto)
+  }
+  // LINT.ThenChange(//depot/google3/chrome/cros/reporting/api/proto/policy_validation_report.proto)
 
   // Severity of this policy value validation result.
   optional ValueValidationIssueSeverity severity = 2;
@@ -2324,8 +2469,8 @@ message PolicyValidationReportRequest {
     // payload validation errors, and zero or more payload validation warnings.
     // Client behavior: Policy blob rejected.
     VALIDATION_RESULT_TYPE_VALUE_ERROR = 15;
-  }  // LINT.ThenChange(
-  // //depot/google3/chrome/cros/reporting/api/proto/policy_validation_report.proto)
+  }
+  // LINT.ThenChange(//depot/google3/chrome/cros/reporting/api/proto/policy_validation_report.proto)
 
   // The validation result.
   optional ValidationResultType validation_result_type = 3;
@@ -2562,6 +2707,11 @@ message DeviceAutoEnrollmentResponse {
 // and secondary state enrollment. In this case, this request can also be sent
 // by brand new devices and the server would not know their serial number and
 // brand code, hence the values are supplied as part of the request.
+//
+// Another device state retrieval scenario is Flex Auto Enrollment initial
+// state determination, in which case the Flex enrollment token is included
+// (along with brand code and serial number) to retrieve token-keyed state
+// from the server.
 message DeviceStateRetrievalRequest {
   // Opaque, client-determined, unpredictable, stable and unique device
   // identifier to retrieve state for. This field contains 32 bytes of data that
@@ -2575,6 +2725,9 @@ message DeviceStateRetrievalRequest {
 
   // The 4-character brand code of the device.
   optional string brand_code = 3;
+
+  // The enrollment token for Flex Auto Enrollment.
+  optional string enrollment_token = 4;
 }
 
 // Sent by the client to the server when in registered state to update the
@@ -2653,6 +2806,8 @@ message DeviceInitialEnrollmentStateResponse {
     // The device has been disabled by its owner. The device will show a warning
     // screen and prevent the user from proceeding further.
     INITIAL_ENROLLMENT_MODE_DISABLED = 3;
+    // Token-based enrollment is enforced and cannot be skipped.
+    INITIAL_ENROLLMENT_MODE_TOKEN_ENROLLMENT_ENFORCED = 4;
   }
 
   // The server-indicated initial enrollment mode.
@@ -2873,6 +3028,13 @@ message RemoteCommand {
   // |DEVICE_GET_DIAGNOSTIC_ROUTINE_UPDATE|: {"id" : id_integer, "command" :
   // command, "includeOutput" : include_output_bool}, where command must be a
   // valid `ash::cros_healthd::mojom::DiagnosticRoutineCommandEnum`.
+  // |DEVICE_REBOOT|: {"user_session_delay_s": delay_integer}, where delay value
+  // represents seconds until reboot in user session.
+  // |FETCH_SUPPORT_PACKET|:
+  // {"supportPacketDetails":{ "issueCaseId": optional_support_case_id_string,
+  // "issueDescription": optional_issue_description_string,
+  // "requestedDataCollectors": [<list of `support_tool::DataCollectorType`
+  // enums>], "requestedPiiTypes": [<list of `support_tool::PiiType` enums>]}}
   optional string payload = 4;
 
   // An identifier for the target this command is for. This is the same as
@@ -2925,6 +3087,11 @@ message DeviceRemoteCommandRequest {
   // What type of signature to use. Only valid if send_secure_commmands is true.
   // If NONE is passed, SHA1_RSA will be used instead for compatibility.
   optional PolicyFetchRequest.SignatureType signature_type = 4;
+
+  // A string that represents the type of RemoteCommands that need to be
+  // fetched. This type helps the server redirect the request to different
+  // handlers.
+  optional string type = 5;
 }
 
 message DeviceRemoteCommandResponse {
@@ -3009,6 +3176,18 @@ message CertificateBasedDeviceRegisterRequest {
   // signed_request.signature field is a signature of the data field signed
   // with the enrollment certificate's private key.
   optional SignedData signed_request = 1;
+}
+
+// Request from device to server to register a device (authenticated with an
+// enrollment token).
+message TokenBasedDeviceRegisterRequest {
+  optional DeviceRegisterRequest device_register_request = 1;
+}
+
+// Response to a token-based device registration request
+// (@code `TokenBasedDeviceRegisterRequest`).
+message TokenBasedDeviceRegisterResponse {
+  optional DeviceRegisterResponse device_register_response = 1;
 }
 
 // Requested configuration to be passed along a registration request.
@@ -4200,6 +4379,23 @@ message CertProvBackendError {
     CA_UNAVAILABLE = 8;
     // The CA exhibited an internal server error.
     CA_FAILURE = 9;
+    // The referenced certificate provisioning profile does not exist.
+    PROFILE_NOT_FOUND = 10;
+    // The user primary email cannot be found.
+    USER_PRIMARY_EMAIL_NOT_FOUND = 11;
+    // The certificate provisioning profile is referencing a non-existent CA
+    // connection.
+    CA_CONNECTION_NOT_FOUND = 12;
+    // The CA connection referenced by the certificate provisioning profile
+    // is referencing a non-existent PubSub topic, or the system does not have
+    // permission to publish to that PubSub topic.
+    PUBSUB_TOPIC_NOT_FOUND = 13;
+    // The Adapter uploaded a certificate that cannot be parsed or was issued
+    // for a wrong public key.
+    BAD_ADAPTER_CERTIFICATE_RECEIVED = 14;
+    // The requested certificate provisioning process cannot be found on
+    // Spanner.
+    CERTIFICATE_PROVISIONING_PROCESS_NOT_FOUND = 15;
   }
 
   // The specific error type.
@@ -4287,13 +4483,20 @@ message BrowserPublicKeyUploadRequest {
 
   // Public key in EC_NID_X9_62_PRIME256V1_PUBLIC_DER format.
   optional bytes public_key = 1;
+
   // Signature of the new public key signed using the existing key, empty for
   // initial upload.
   optional bytes signature = 2;
+
   // Trust Level of the key.
   optional KeyTrustLevel key_trust_level = 3;
+
   // Type of the key.
   optional KeyType key_type = 4;
+
+  // Whether the server should create a client certificate for that public key
+  // and return it as part of the response or not.
+  optional bool provision_certificate = 5;
 }
 
 // Response from server to device for cert upload request.
@@ -4306,6 +4509,10 @@ message BrowserPublicKeyUploadResponse {
     INVALID_SIGNATURE = 2;
   }
   optional ResponseCode response_code = 1;
+
+  // If the request had `provision_certificate` as true, this property will
+  // contain the X.509 client certificate in PEM format.
+  optional string pem_encoded_certificate = 2;
 }
 
 // Additional detail about the error which can be used to clarify user messaging
@@ -4366,7 +4573,7 @@ enum DeviceManagementErrorDetail {
 //   * deviceid: MUST BE no more than 64-char in [\x21-\x7E].
 //   * agent: MUST BE no more than 64-char long.
 // * HTTP Authorization header MUST be in the following formats:
-//   * For register for Chrome browsers
+//   * For register for Chrome browsers and token_based_register requests.
 //     Authorization: GoogleEnrollmentToken token=<enrollment token>
 //
 //   * For unregister, policy, status, cert_upload, remote_commands,
@@ -4551,7 +4758,12 @@ message DeviceManagementRequest {
   // HTTP query parameter 'request': 'chrome_profile_report'
   optional ChromeProfileReportRequest chrome_profile_report_request = 40;
 
-  // Next id: 41.
+  // Request to register a device with an enrollment token.
+  // HTTP query parameter 'request': 'token_based_register'
+  optional TokenBasedDeviceRegisterRequest token_based_device_register_request =
+      41;
+
+  // Next id: 42.
 }
 
 // Response from server to device.
@@ -4564,7 +4776,8 @@ message DeviceManagementRequest {
 // Possible HTTP status codes:
 // 200 OK: valid response is returned to client.
 // 400 Bad Request: invalid argument or payload.
-// 401 Unauthorized: invalid auth cookie/OAuth token or DMToken.
+// 401 Unauthorized: invalid auth cookie/OAuth token, DMToken or enrollment
+//     token.
 // 402 Missing license.
 // 403 Forbidden: device management is not allowed (e.g. user may not enroll).
 // 404 Not Found: the request URL is invalid.
@@ -4706,7 +4919,11 @@ message DeviceManagementResponse {
   // Response to a Chrome Profile report request.
   optional ChromeProfileReportResponse chrome_profile_report_response = 38;
 
-  // Next id: 40.
+  // Response to a token-based register request.
+  optional TokenBasedDeviceRegisterResponse
+      token_based_device_register_response = 40;
+
+  // Next id: 41.
 }
 
 // Device State Information stored in the server is retrieval at

@@ -1,0 +1,7 @@
+This is a testharness.js-based test.
+[FAIL] pointermove after pointerup which deletes the overlay should not keep expanding selection
+  promise_test: Unhandled rejection with value: object "Error: element event-dispatch intercepted error"
+[FAIL] pointermove after pointerup which deletes the overlay and move focus to the button should not keep expanding selection
+  promise_test: Unhandled rejection with value: object "Error: element event-dispatch intercepted error"
+Harness: the test ran to completion.
+

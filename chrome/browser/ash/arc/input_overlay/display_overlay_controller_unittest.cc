@@ -4,12 +4,21 @@
 
 #include "chrome/browser/ash/arc/input_overlay/display_overlay_controller.h"
 
-#include "ash/game_dashboard/game_dashboard_utils.h"
-#include "ash/game_dashboard/game_dashboard_widget.h"
+#include <vector>
+
 #include "ash/public/cpp/arc_game_controls_flag.h"
 #include "chrome/browser/ash/arc/input_overlay/test/game_controls_test_base.h"
+#include "chrome/browser/ash/arc/input_overlay/test/overlay_view_test_base.h"
 #include "chrome/browser/ash/arc/input_overlay/touch_injector.h"
+#include "chrome/browser/ash/arc/input_overlay/ui/button_options_menu.h"
+#include "chrome/browser/ash/arc/input_overlay/ui/delete_edit_shortcut.h"
+#include "chrome/browser/ash/arc/input_overlay/ui/editing_list.h"
+#include "chrome/browser/ash/arc/input_overlay/ui/input_mapping_view.h"
+#include "chrome/browser/ash/arc/input_overlay/util.h"
 #include "ui/aura/window.h"
+#include "ui/events/event_constants.h"
+#include "ui/views/accessibility/view_accessibility.h"
+#include "ui/views/widget/widget.h"
 
 namespace arc::input_overlay {
 
@@ -22,6 +31,18 @@ class DisplayOverlayControllerTest : public GameControlsTestBase {
     for (const auto& action : touch_injector_->actions()) {
       controller_->RemoveAction(action.get());
     }
+  }
+
+  void EnableGIO(aura::Window* window, bool enable) {
+    // In GD, once Game Controls feature is turned on or off, the
+    // mapping hint is also set to on or off.
+    window->SetProperty(
+        ash::kArcGameControlsFlagsKey,
+        UpdateFlag(window->GetProperty(ash::kArcGameControlsFlagsKey),
+                   static_cast<ash::ArcGameControlsFlag>(
+                       ash::ArcGameControlsFlag::kEnabled |
+                       ash::ArcGameControlsFlag::kHint),
+                   /*enable_flag=*/enable));
   }
 
   void CheckWidgets(bool has_input_mapping_widget,
@@ -43,23 +64,17 @@ TEST_F(DisplayOverlayControllerTest, TestDisableEnableFeature) {
   EXPECT_TRUE(CanRewriteEvent());
 
   auto* window = touch_injector_->window();
-  auto flags = window->GetProperty(ash::kArcGameControlsFlagsKey);
 
   // 1. Disable and enable GIO in `kView` mode. All the widgets shouldn't show
   // up when GIO is disabled.
-  // Disable GIO.
-  window->SetProperty(
-      ash::kArcGameControlsFlagsKey,
-      ash::game_dashboard_utils::UpdateFlag(
-          flags, ash::ArcGameControlsFlag::kEnabled, /*enable_flag=*/false));
+  // Disable GIO. In GD, once Game Controls feature is turned on or off, the
+  // mapping hint is also set to on or off.
+  EnableGIO(window, /*enable=*/false);
   CheckWidgets(/*has_input_mapping_widget=*/false,
                /*hint_visible=*/false, /*has_editing_list_widget=*/false);
   EXPECT_FALSE(CanRewriteEvent());
   // Enable GIO back.
-  window->SetProperty(
-      ash::kArcGameControlsFlagsKey,
-      ash::game_dashboard_utils::UpdateFlag(
-          flags, ash::ArcGameControlsFlag::kEnabled, /*enable_flag=*/true));
+  EnableGIO(window, /*enable=*/true);
   CheckWidgets(/*has_input_mapping_widget=*/true, /*hint_visible=*/true,
                /*has_editing_list_widget=*/false);
   EXPECT_TRUE(CanRewriteEvent());
@@ -71,17 +86,11 @@ TEST_F(DisplayOverlayControllerTest, TestDisableEnableFeature) {
   CheckWidgets(/*has_input_mapping_widget=*/true, /*hint_visible=*/true,
                /*has_editing_list_widget=*/true);
   // Disable GIO.
-  window->SetProperty(
-      ash::kArcGameControlsFlagsKey,
-      ash::game_dashboard_utils::UpdateFlag(
-          flags, ash::ArcGameControlsFlag::kEnabled, /*enable_flag=*/false));
+  EnableGIO(window, /*enable=*/false);
   CheckWidgets(/*has_input_mapping_widget=*/false, /*hint_visible=*/false,
                /*has_editing_list_widget=*/false);
   // Enable GIO and overlay is displayed as view mode.
-  window->SetProperty(
-      ash::kArcGameControlsFlagsKey,
-      ash::game_dashboard_utils::UpdateFlag(
-          flags, ash::ArcGameControlsFlag::kEnabled, /*enable_flag=*/true));
+  EnableGIO(window, /*enable=*/true);
   CheckWidgets(/*has_input_mapping_widget=*/true, /*hint_visible=*/true,
                /*has_editing_list_widget=*/false);
   EXPECT_TRUE(CanRewriteEvent());
@@ -97,9 +106,8 @@ TEST_F(DisplayOverlayControllerTest, TestHideMappingHint) {
   auto* window = touch_injector_->window();
   window->SetProperty(
       ash::kArcGameControlsFlagsKey,
-      ash::game_dashboard_utils::UpdateFlag(
-          window->GetProperty(ash::kArcGameControlsFlagsKey),
-          ash::ArcGameControlsFlag::kHint, /*enable_flag=*/false));
+      UpdateFlag(window->GetProperty(ash::kArcGameControlsFlagsKey),
+                 ash::ArcGameControlsFlag::kHint, /*enable_flag=*/false));
   CheckWidgets(/*has_input_mapping_widget=*/true,
                /*hint_visible=*/false, /*has_editing_list_widget=*/false);
   EXPECT_TRUE(CanRewriteEvent());
@@ -134,6 +142,183 @@ TEST_F(DisplayOverlayControllerTest, TestRemoveAllActions) {
                /*has_editing_list_widget=*/false);
   // `TouchInjector` stop rewriting events if there is no active action.
   EXPECT_FALSE(CanRewriteEvent());
+}
+
+// -----------------------------------------------------------------------------
+// EditModeDisplayOverlayControllerTest:
+// For test in the edit mode.
+class EditModeDisplayOverlayControllerTest : public OverlayViewTestBase {
+ public:
+  EditModeDisplayOverlayControllerTest() = default;
+  ~EditModeDisplayOverlayControllerTest() override = default;
+
+  void CheckWidgetsVisible(bool input_mapping_visible,
+                           bool editing_list_visible,
+                           bool button_options_visible,
+                           bool delete_edit_menu_visible) {
+    EXPECT_EQ(
+        input_mapping_visible,
+        input_mapping_view_ && input_mapping_view_->GetWidget()->IsVisible());
+
+    auto* editing_list = GetEditingList();
+    EXPECT_EQ(editing_list_visible,
+              editing_list && editing_list->GetWidget()->IsVisible());
+
+    auto* button_options_menu = GetButtonOptionsMenu();
+    EXPECT_EQ(
+        button_options_visible,
+        button_options_menu && button_options_menu->GetWidget()->IsVisible());
+
+    auto* delete_edit_view = GetDeleteEditShortcut();
+    EXPECT_EQ(delete_edit_menu_visible,
+              delete_edit_view && delete_edit_view->GetWidget()->IsVisible());
+  }
+
+  // Helper that takes in a list of widgets (in a specific order) and checks
+  // that the accessibility tree among the list of widgets is a loop.
+  void CheckAccessibilityTree(std::vector<views::Widget*> widgets) {
+    const size_t widget_list_size = widgets.size();
+    for (size_t i = 0; i < widget_list_size; i++) {
+      auto* curr_view = widgets[i]->GetContentsView();
+      auto& view_accessibility = curr_view->GetViewAccessibility();
+      const size_t prev_index = (i + widget_list_size - 1u) % widget_list_size;
+      const size_t next_index = (i + 1u) % widget_list_size;
+
+      EXPECT_EQ(widgets[prev_index],
+                view_accessibility.GetPreviousWindowFocus());
+      EXPECT_EQ(widgets[next_index], view_accessibility.GetNextWindowFocus());
+    }
+  }
+
+  // Presses key tab until it focuses on the first focusable view in
+  // `contents_view` when `reverse` is true, or the last focusable view on
+  // `contents_view` when `reverse` is false.
+  void PressTabKeyToFirstOrLastElement(views::View* contents_view,
+                                       bool reverse) {
+    auto* event_generator = GetEventGenerator();
+    auto* focus_manager = contents_view->GetFocusManager();
+
+    while (true) {
+      auto* next_focus = focus_manager->GetNextFocusableView(
+          /*starting_view=*/focus_manager->GetFocusedView(),
+          /*starting_widget=*/contents_view->GetWidget(), reverse,
+          /*dont_loop=*/true);
+      if (!next_focus) {
+        break;
+      }
+      event_generator->PressAndReleaseKey(
+          ui::KeyboardCode::VKEY_TAB,
+          (reverse ? ui::EF_SHIFT_DOWN : ui::EF_NONE));
+      EXPECT_TRUE(focus_manager->GetFocusedView());
+    }
+  }
+};
+
+TEST_F(EditModeDisplayOverlayControllerTest, TestFocusCycler) {
+  CheckWidgetsVisible(
+      /*input_mapping_visible=*/true, /*editing_list_visible=*/true,
+      /*button_options_visible=*/false, /*delete_edit_menu_visible=*/false);
+
+  // These UIs are never destroyed or re-created before finishing the test.
+  auto* editing_list = GetEditingList();
+  auto* editing_list_widget = editing_list->GetWidget();
+  auto* input_mapping_widget = input_mapping_view_->GetWidget();
+  CheckAccessibilityTree(
+      std::vector<views::Widget*>{editing_list_widget, input_mapping_widget});
+
+  // Case 1: in edit mode default view. The tab focus will cycle between the
+  // editing list and input mapping. Press key tab to the last element of the
+  // editing list.
+  PressTabKeyToFirstOrLastElement(editing_list, /*reverse=*/false);
+  auto* list_focus_manager = editing_list->GetFocusManager();
+  EXPECT_TRUE(list_focus_manager->GetFocusedView());
+
+  // Press key tab to focus on the input mapping.
+  auto* event_generator = GetEventGenerator();
+  event_generator->PressAndReleaseKey(ui::KeyboardCode::VKEY_TAB);
+  EXPECT_FALSE(list_focus_manager->GetFocusedView());
+  auto* mapping_focus_manager = input_mapping_view_->GetFocusManager();
+  EXPECT_TRUE(mapping_focus_manager->GetFocusedView());
+
+  // Keep pressing key tap to the last element of the input mapping.
+  PressTabKeyToFirstOrLastElement(input_mapping_view_, /*reverse=*/false);
+  EXPECT_TRUE(mapping_focus_manager->GetFocusedView());
+  EXPECT_FALSE(list_focus_manager->GetFocusedView());
+
+  // Press key tab to focus on the editing list.
+  event_generator->PressAndReleaseKey(ui::KeyboardCode::VKEY_TAB);
+  EXPECT_FALSE(mapping_focus_manager->GetFocusedView());
+  EXPECT_TRUE(list_focus_manager->GetFocusedView());
+
+  // Press tab + shift and it focuses back to the input mapping.
+  event_generator->PressAndReleaseKey(ui::KeyboardCode::VKEY_TAB,
+                                      ui::EF_SHIFT_DOWN);
+  EXPECT_TRUE(mapping_focus_manager->GetFocusedView());
+  EXPECT_FALSE(list_focus_manager->GetFocusedView());
+
+  // Case 2: show button options menu. The tab focus cycles between the
+  // button options menu and input mapping. (editing list is hidden when button
+  // options menu shows up.)
+  ShowButtonOptionsMenu(tap_action_);
+  CheckWidgetsVisible(
+      /*input_mapping_visible=*/true, /*editing_list_visible=*/false,
+      /*button_options_visible=*/true, /*delete_edit_menu_visible=*/false);
+
+  auto* button_options_menu = GetButtonOptionsMenu();
+  auto* button_options_widget = button_options_menu->GetWidget();
+  CheckAccessibilityTree(
+      std::vector<views::Widget*>{button_options_widget, input_mapping_widget});
+
+  auto* options_focus_manager = button_options_menu->GetFocusManager();
+  EXPECT_FALSE(mapping_focus_manager->GetFocusedView());
+  EXPECT_FALSE(list_focus_manager->GetFocusedView());
+  EXPECT_FALSE(options_focus_manager->GetFocusedView());
+
+  // Keep pressing key tap to the last element of the button options menu.
+  PressTabKeyToFirstOrLastElement(button_options_menu, /*reverse=*/false);
+  EXPECT_FALSE(mapping_focus_manager->GetFocusedView());
+  EXPECT_TRUE(options_focus_manager->GetFocusedView());
+
+  // Press key tab to focus on the input mapping.
+  event_generator->PressAndReleaseKey(ui::KeyboardCode::VKEY_TAB);
+  EXPECT_TRUE(mapping_focus_manager->GetFocusedView());
+  EXPECT_FALSE(options_focus_manager->GetFocusedView());
+
+  // Close button options menu and editing list shows back.
+  PressDeleteButtonOnButtonOptionsMenu();
+  CheckWidgetsVisible(
+      /*input_mapping_visible=*/true, /*editing_list_visible=*/true,
+      /*button_options_visible=*/false, /*delete_edit_menu_visible=*/false);
+
+  CheckAccessibilityTree(
+      std::vector<views::Widget*>{editing_list_widget, input_mapping_widget});
+
+  // Case 3: show delete-edit menu. The tab focus cycles among the delete-edit
+  // menu, editing list and input mapping.
+  HoverAtActionViewListItem(/*index=*/1u);
+  CheckWidgetsVisible(
+      /*input_mapping_visible=*/true, /*editing_list_visible=*/true,
+      /*button_options_visible=*/false, /*delete_edit_menu_visible=*/true);
+
+  auto* delete_edit_shortcut = GetDeleteEditShortcut();
+  auto* delete_edit_widget = delete_edit_shortcut->GetWidget();
+  CheckAccessibilityTree(std::vector<views::Widget*>{
+      editing_list_widget, delete_edit_widget, input_mapping_widget});
+
+  auto* delete_edit_focus_manager = delete_edit_shortcut->GetFocusManager();
+  EXPECT_FALSE(mapping_focus_manager->GetFocusedView());
+  EXPECT_FALSE(list_focus_manager->GetFocusedView());
+  EXPECT_FALSE(delete_edit_focus_manager->GetFocusedView());
+
+  PressTabKeyToFirstOrLastElement(delete_edit_shortcut, /*reverse=*/false);
+  EXPECT_FALSE(mapping_focus_manager->GetFocusedView());
+  EXPECT_FALSE(list_focus_manager->GetFocusedView());
+  EXPECT_TRUE(delete_edit_focus_manager->GetFocusedView());
+  // Press key tab to focus on the input mapping.
+  event_generator->PressAndReleaseKey(ui::KeyboardCode::VKEY_TAB);
+  EXPECT_TRUE(mapping_focus_manager->GetFocusedView());
+  EXPECT_FALSE(list_focus_manager->GetFocusedView());
+  EXPECT_FALSE(delete_edit_focus_manager->GetFocusedView());
 }
 
 }  // namespace arc::input_overlay

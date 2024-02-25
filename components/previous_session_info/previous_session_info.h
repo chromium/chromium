@@ -34,6 +34,8 @@ extern NSString* const kPreviousSessionInfoParamsPrefix;
 extern NSString* const kPreviousSessionInfoMemoryFootprint;
 // Key in the UserDefaults for the number of open tabs.
 extern NSString* const kPreviousSessionInfoTabCount;
+// Key in the UserDefaults for the number of open inactive tabs.
+extern NSString* const kPreviousSessionInfoInactiveTabCount;
 // Key in the UserDefaults for the number of open "off the record" tabs.
 extern NSString* const kPreviousSessionInfoOTRTabCount;
 
@@ -143,6 +145,9 @@ enum class DeviceBatteryState {
 // Number of open tabs in the previous session.
 @property(nonatomic, readonly) NSInteger tabCount;
 
+// Number of open inactive tabs in the previous session.
+@property(nonatomic, readonly) NSInteger inactiveTabCount;
+
 // Number of open "off the record" tabs in the previous session.
 @property(nonatomic, readonly) NSInteger OTRTabCount;
 
@@ -170,9 +175,6 @@ enum class DeviceBatteryState {
 // Stops memory usage data recording. No-op if
 // startRecordingMemoryFootprintWithInterval was no called.
 - (void)stopRecordingMemoryFootprint;
-
-// Updates the currently available device storage, in kilobytes.
-- (void)updateAvailableDeviceStorage:(NSInteger)availableStorage;
 
 // Updates the saved last known session time.
 - (void)updateSessionEndTime;
@@ -218,8 +220,10 @@ enum class DeviceBatteryState {
 // gets destructed.
 - (void)resetSessionRestorationFlag;
 
-// Records number of regular (non off the record) tabs.
+// Records number of regular (non off the record and non inactive) tabs.
 - (void)updateCurrentSessionTabCount:(NSInteger)count;
+// Records number of inactive tabs.
+- (void)updateCurrentSessionInactiveTabCount:(NSInteger)count;
 // Records number of off the record tabs.
 - (void)updateCurrentSessionOTRTabCount:(NSInteger)count;
 

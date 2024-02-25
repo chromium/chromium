@@ -1,0 +1,90 @@
+// Copyright 2023 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module trace_report.mojom;
+
+import "mojo/public/mojom/base/big_buffer.mojom";
+import "mojo/public/mojom/base/time.mojom";
+import "mojo/public/mojom/base/token.mojom";
+
+// Keep in sync with ReportUploadState from
+// content/browser/tracing/trace_report/trace_report_database.h
+enum ReportUploadState {
+  kNotUploaded = 0,
+  kPending = 1,
+  kPending_UserRequested = 2,
+  kUploaded = 3
+};
+
+// Keep in sync with SkipUploadReason from
+// content/browser/tracing/trace_report/trace_report_database.h
+// TODO: update once the skip reasons have been established.
+enum SkipUploadReason {
+  kNoSkip = 0,
+  kSizeLimitExceeded = 1,
+  kNotAnonymized = 2,
+  kScenarioQuotaExceeded = 3,
+  kUploadTimedOut = 4,
+};
+
+// Information about a single trace to display
+struct ClientTraceReport {
+  // A unique identifier for each trace recorded.
+  mojo_base.mojom.Token uuid;
+
+  // The time at which the report was created.
+  mojo_base.mojom.Time creation_time;
+
+  // The name of the scenario that trigger this trace to be collected and
+  // report to be created.
+  string scenario_name;
+
+  // The upload rule name this report needs to respect or this report to be
+  // uploaded.
+  string upload_rule_name;
+
+  // The total size in bytes taken by the report.
+  int64 total_size;
+
+  // The current upload state for this report represented by
+  // ReportUploadState enum.
+  ReportUploadState upload_state;
+
+  // The time at which the report was successfully uploaded to a server.
+  mojo_base.mojom.Time upload_time;
+
+  // The reason for which a report was not uploaded even if the upload rules
+  // were met.
+  SkipUploadReason skip_reason;
+};
+
+// Used by the WebUI page to bootstrap bidirectional communication.
+interface TraceReportHandlerFactory {
+  // The WebUI calls this method when the page is first initialized.
+  CreatePageHandler(pending_remote<Page> page,
+                    pending_receiver<PageHandler> handler);
+};
+
+// Browser-side handler for requests from WebUI page.
+interface PageHandler {
+  // Get visual data for all the traces currently stored locally.
+  GetAllTraceReports() => (array<ClientTraceReport> reports);
+
+  // Delete a single trace from the database.
+  DeleteSingleTrace(mojo_base.mojom.Token uuid) => (bool success);
+
+  // Delete all traces from the database.
+  DeleteAllTraces() => (bool success);
+
+  // Manually upload a trace.
+  UserUploadSingleTrace(mojo_base.mojom.Token uuid) => (bool success);
+
+  // Download locally the trace file.
+  DownloadTrace(mojo_base.mojom.Token uuid)
+    => (mojo_base.mojom.BigBuffer? trace);
+};
+
+// WebUI-side handler for requests from the browser.
+interface Page {
+};

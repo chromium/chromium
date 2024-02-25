@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_ASH_ATTESTATION_TPM_CHALLENGE_KEY_H_
 
 #include <memory>
+#include <optional>
 #include <string>
 
 #include "base/memory/weak_ptr.h"
@@ -15,7 +16,6 @@
 #include "chromeos/ash/components/dbus/attestation/attestation_ca.pb.h"
 #include "chromeos/ash/components/dbus/attestation/keystore.pb.h"
 #include "chromeos/ash/components/dbus/constants/attestation_constants.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 class Profile;
 class AttestationFlow;
@@ -88,7 +88,7 @@ class TpmChallengeKey {
                              bool register_key,
                              ::attestation::KeyType key_crypto_type,
                              const std::string& key_name,
-                             const absl::optional<std::string>& signals) = 0;
+                             const std::optional<std::string>& signals) = 0;
 
  protected:
   // Use TpmChallengeKeyFactory for creation.
@@ -117,7 +117,7 @@ class TpmChallengeKeyImpl final : public TpmChallengeKey {
                      bool register_key,
                      ::attestation::KeyType key_crypto_type,
                      const std::string& key_name,
-                     const absl::optional<std::string>& signals) override;
+                     const std::optional<std::string>& signals) override;
 
  private:
   void OnPrepareKeyDone(const TpmChallengeKeyResult& prepare_key_result);

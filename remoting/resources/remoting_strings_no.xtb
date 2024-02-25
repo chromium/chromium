@@ -4,7 +4,6 @@
 <translation id="1002108253973310084">Det ble oppdaget en ikke-kompatibel protokollversjon. Kontroller at du har nyeste programvareversjon installert på begge datamaskinene, og prøv igjen.</translation>
 <translation id="1008557486741366299">Ikke nå</translation>
 <translation id="1201402288615127009">Neste</translation>
-<translation id="1296511125400541222">Copyright 2023 The Chromium Authors. Med enerett.</translation>
 <translation id="1297009705180977556">Det oppsto en feil ved tilkobling til <ph name="HOSTNAME" /></translation>
 <translation id="1450760146488584666">Det forespurte elementet finnes ikke.</translation>
 <translation id="1480046233931937785">Medvirkende</translation>
@@ -89,7 +88,6 @@ Hvis det allerede er merket av for «<ph name="SERVICE_SCRIPT_NAME" />», fjerne
 <translation id="4808503597364150972">Skriv inn PIN-koden for <ph name="HOSTNAME" />.</translation>
 <translation id="4812684235631257312">Vert</translation>
 <translation id="4867841927763172006">Send PrtScn</translation>
-<translation id="4960795469833295568">Copyright 2023 Google LLC. Med enerett.</translation>
 <translation id="4974476491460646149">Koblet fra <ph name="HOSTNAME" /></translation>
 <translation id="4985296110227979402">Du må først konfigurere en datamaskin for ekstern tilgang.</translation>
 <translation id="4987330545941822761">Chrome Eksternt skrivebord kan ikke fastslå hvilken nettleser som skal brukes til å åpne nettadresser lokalt. Velg den på listen under.</translation>
@@ -154,6 +152,7 @@ Hvis det allerede er merket av for «<ph name="SERVICE_SCRIPT_NAME" />», fjerne
 <translation id="7693372326588366043">Oppdater vertslisten</translation>
 <translation id="7714222945760997814">Rapportér dette</translation>
 <translation id="7868137160098754906">Skriv inn PIN-koden for den eksterne datamaskinen.</translation>
+<translation id="7881455334687220899">Copyright 2024 The Chromium Authors. Med enerett.</translation>
 <translation id="7895403300744144251">Sikkerhetsinnstillingene på den eksterne datamaskinen tillater ikke tilkoblinger fra kontoen din.</translation>
 <translation id="7936528439960309876">Fest til høyre</translation>
 <translation id="7970576581263377361">Autentiseringen mislyktes. Logg på Chromium på nytt.</translation>
@@ -185,6 +184,7 @@ Hvis det allerede er merket av for «<ph name="SERVICE_SCRIPT_NAME" />», fjerne
 <translation id="8747048596626351634">Økten krasjet eller kunne ikke starte. Hvis ~/.chrome-remote-desktop-session eksisterer på den eksterne datamaskinen, må du sørge for at den starter en prosess i forgrunnen som kjører lenge – for eksempel et skrivebordsmiljø eller en vindusbehandler.</translation>
 <translation id="8804164990146287819">Personvernregler</translation>
 <translation id="8906511416443321782">Mikrofontilgang kreves for å ta opp lyd og strømme den til Chrome Eksternt skrivebord-klienten.</translation>
+<translation id="9042277333359847053">Copyright 2024 Google LLC. Med enerett.</translation>
 <translation id="9111855907838866522">Du er koblet til den eksterne enheten. For å åpne menyen, trykk på skjermen med fire fingre.</translation>
 <translation id="9126115402994542723">Ikke be om PIN-kode igjen når du kobler til denne verten fra denne enheten.</translation>
 <translation id="916856682307586697">Start standard XSession</translation>

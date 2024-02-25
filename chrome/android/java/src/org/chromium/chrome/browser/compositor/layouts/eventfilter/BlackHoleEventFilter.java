@@ -9,9 +9,7 @@ import android.view.MotionEvent;
 
 import org.chromium.chrome.browser.layouts.EventFilter;
 
-/**
- * A {@link BlackHoleEventFilter} eats all the events coming its way with no side effects.
- */
+/** A {@link BlackHoleEventFilter} eats all the events coming its way with no side effects. */
 public class BlackHoleEventFilter extends EventFilter {
     /**
      * Creates a {@link BlackHoleEventFilter}.

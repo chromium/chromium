@@ -57,12 +57,12 @@ void H264POC::Reset() {
   pending_mmco5_ = false;
 }
 
-absl::optional<int32_t> H264POC::ComputePicOrderCnt(
+std::optional<int32_t> H264POC::ComputePicOrderCnt(
     const H264SPS* sps,
     const H264SliceHeader& slice_hdr) {
   if (slice_hdr.field_pic_flag) {
     DLOG(ERROR) << "Interlaced frames are not supported";
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   int32_t pic_order_cnt = 0;
@@ -166,7 +166,7 @@ absl::optional<int32_t> H264POC::ComputePicOrderCnt(
         // Moved inside 8-9 to avoid division when this check is not done.
         if (sps->num_ref_frames_in_pic_order_cnt_cycle == 0) {
           DLOG(ERROR) << "Invalid num_ref_frames_in_pic_order_cnt_cycle";
-          return absl::nullopt;
+          return std::nullopt;
         }
 
         // H264Parser checks that num_ref_frames_in_pic_order_cnt_cycle < 255.
@@ -246,7 +246,7 @@ absl::optional<int32_t> H264POC::ComputePicOrderCnt(
 
     default:
       DLOG(ERROR) << "Invalid pic_order_cnt_type: " << sps->pic_order_cnt_type;
-      return absl::nullopt;
+      return std::nullopt;
   }
 
   return pic_order_cnt;

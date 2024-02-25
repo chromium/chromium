@@ -34,8 +34,11 @@ class WebRTCInternalsIntegrationBrowserTest;
 
 namespace content {
 class BrowserContext;
-class NetworkConnectionTracker;
 }  // namespace content
+
+namespace network {
+class NetworkConnectionTracker;
+}  // namespace network
 
 FORWARD_DECLARE_TEST(WebRtcEventLogCollectionAllowedPolicyTest, RunTest);
 
@@ -111,8 +114,7 @@ class WebRtcEventLogManager final
                              int lid,
                              base::ProcessId pid,
                              const std::string& url,
-                             const std::string& rtc_configuration,
-                             const std::string& constraints) override;
+                             const std::string& rtc_configuration) override;
   void OnPeerConnectionRemoved(content::GlobalRenderFrameHostId frame_id,
                                int lid) override;
   void OnPeerConnectionUpdated(content::GlobalRenderFrameHostId frame_id,

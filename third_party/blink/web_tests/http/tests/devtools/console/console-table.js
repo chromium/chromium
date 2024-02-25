@@ -10,7 +10,6 @@ import {ConsoleTestRunner} from 'console_test_runner';
     `Tests that console.table is properly rendered on tables with more than 20 columns(maxColumnsToRender).\n`
   );
 
-  await TestRunner.loadLegacyModule('console');
   await TestRunner.showPanel('console');
   await TestRunner.evaluateInPagePromise(`
     a = {};

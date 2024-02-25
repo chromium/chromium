@@ -1,0 +1,112 @@
+// Copyright 2023 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = "proto3";
+
+option optimize_for = LITE_RUNTIME;
+
+package commerce;
+
+// Keep the content of this file in sync with the server side proto.
+message ParcelIdentifier {
+  // Carrier-provided tracking ID of the parcel.
+  string tracking_id = 1;
+
+  // The carrier of the parcel.
+  enum Carrier {
+    UNKNOWN = 0;
+    FEDEX = 1;
+    UPS = 2;
+    DHL = 3;
+    USPS = 4;
+    CANADA_POST = 5;
+    ONTRAC = 6;
+    YAMATO = 7;
+    SAGAWA = 8;
+    JAPAN_POST = 9;
+    LASERSHIP = 10;
+    HANJIN = 11;
+    HYUNDAI = 12;
+    ILYANG = 13;
+    ISRAEL_POST = 14;
+    KOREA_EMS = 15;
+    KOREA_POST = 16;
+    LOGEN = 17;
+    OLD_DOMINION = 18;
+    ROYAL_MAIL = 19;
+    SWISS_POST = 20;
+    YELLOW_CAP = 21;
+    CORREIOS = 22;
+    DAEHAN = 23;
+    DONGBU = 24;
+    GLS = 25;
+    TAKKYUBIN = 26;
+    PELICAN = 27;
+    LA_POSTE = 28;
+    HERMES = 29;
+    MSC = 30;
+    PUROLATOR = 31;
+    GLOBEGISTICS = 32;
+    INDIA_POST = 33;
+    AMAZON = 34;
+    AUSTRALIA_POST = 35;
+    AN_POST = 36;
+    DELHIVERY = 37;
+    BLUE_DART = 38;
+    GENERAL_LOGISTICS_SYSTEMS = 39;
+    YURTICI = 40;
+    GOJAVAS = 41;
+    ARAMEX = 42;
+    TNT = 43;
+    I_PARCEL = 44;
+    PARCEL_FORCE = 45;
+    XPO = 46;
+    JNE = 47;
+    DTDC = 48;
+    LAZADA = 49;
+    KERRY = 50;
+    NZPOST = 51;
+    ZOOM2U = 52;
+    JT = 53;
+    RXO = 54;
+    JB_HUNT = 55;
+  }
+  Carrier carrier = 2;
+}
+
+message ParcelStatus {
+  // The identifier for this parcel.
+  ParcelIdentifier parcel_identifier = 1;
+
+  // The current state of the parcel, as reported by the carrier.
+  // LINT.IfChange
+  enum ParcelState {
+    UNKNOWN = 0;
+    NEW = 18;
+    LABEL_CREATED = 1;
+    PICKED_UP = 2;
+    FINISHED = 3;
+    DELIVERY_FAILED = 4;
+    ERROR = 6;
+    CANCELLED = 11;
+    ORDER_TOO_OLD = 12;
+    HANDED_OFF = 13;
+    WITH_CARRIER = 14;
+    OUT_FOR_DELIVERY = 15;
+    AT_PICKUP_LOCATION = 20;
+    RETURN_TO_SENDER = 16;
+    RETURN_COMPLETED = 19;
+    UNDELIVERABLE = 17;
+    reserved 5, 7 to 10;
+  }
+  // LINT.ThenChange(tools/metrics/histograms/enums.xml)
+  ParcelState parcel_state = 2;
+
+  // The tracking URL, if available.
+  string tracking_url = 3;
+
+  // Estimated delivery time of the parcel in epoch microseconds, in local time
+  // zone.
+  int64 estimated_delivery_time_usec = 4;
+}

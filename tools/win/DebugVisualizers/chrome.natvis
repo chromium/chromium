@@ -300,4 +300,7 @@
         </ArrayItems>
     </Expand>
   </Type>
+  <Type Name="base::StrongAlias&lt;*,*&gt;">
+    <DisplayString>{value_}</DisplayString>
+  </Type>
 </AutoVisualizer>

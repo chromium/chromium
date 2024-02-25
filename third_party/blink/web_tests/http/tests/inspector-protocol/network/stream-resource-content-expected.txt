@@ -1,0 +1,87 @@
+Test that fetch and XHR responses can be streamed
+Number of discovered service workers: 1
+
+Test fetch:
+
+Data received #1: {
+    method : Network.dataReceived
+    params : {
+        dataLength : 11
+        encodedDataLength : 0
+        requestId : <string>
+        timestamp : <number>
+    }
+    sessionId : <string>
+}
+Network.streamResourceContent response: {
+    id : <number>
+    result : {
+        bufferedData : ZGF0YTogdGVzdDE=
+    }
+    sessionId : <string>
+}
+Data received #2: {
+    method : Network.dataReceived
+    params : {
+        data : ZGF0YTogdGVzdDI=
+        dataLength : 11
+        encodedDataLength : 0
+        requestId : <string>
+        timestamp : <number>
+    }
+    sessionId : <string>
+}
+Data received #3: {
+    method : Network.dataReceived
+    params : {
+        data : ZGF0YTogdGVzdDM=
+        dataLength : 11
+        encodedDataLength : 0
+        requestId : <string>
+        timestamp : <number>
+    }
+    sessionId : <string>
+}
+
+Test XHR:
+
+Data received #1: {
+    method : Network.dataReceived
+    params : {
+        dataLength : 11
+        encodedDataLength : 0
+        requestId : <string>
+        timestamp : <number>
+    }
+    sessionId : <string>
+}
+Network.streamResourceContent response: {
+    id : <number>
+    result : {
+        bufferedData : ZGF0YTogdGVzdDE=
+    }
+    sessionId : <string>
+}
+Data received #2: {
+    method : Network.dataReceived
+    params : {
+        data : ZGF0YTogdGVzdDI=
+        dataLength : 11
+        encodedDataLength : 0
+        requestId : <string>
+        timestamp : <number>
+    }
+    sessionId : <string>
+}
+Data received #3: {
+    method : Network.dataReceived
+    params : {
+        data : ZGF0YTogdGVzdDM=
+        dataLength : 11
+        encodedDataLength : 0
+        requestId : <string>
+        timestamp : <number>
+    }
+    sessionId : <string>
+}
+

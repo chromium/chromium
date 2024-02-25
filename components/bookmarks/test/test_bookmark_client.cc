@@ -13,7 +13,6 @@
 #include "base/functional/callback_helpers.h"
 #include "base/notreached.h"
 #include "base/time/time.h"
-#include "components/bookmarks/browser/bookmark_load_details.h"
 #include "components/bookmarks/browser/bookmark_model.h"
 #include "components/bookmarks/browser/bookmark_node.h"
 #include "components/bookmarks/browser/bookmark_storage.h"
@@ -33,16 +32,9 @@ std::unique_ptr<BookmarkModel> TestBookmarkClient::CreateModel() {
 
 // static
 std::unique_ptr<BookmarkModel> TestBookmarkClient::CreateModelWithClient(
-    std::unique_ptr<BookmarkClient> client) {
-  BookmarkClient* client_ptr = client.get();
-  std::unique_ptr<BookmarkModel> bookmark_model(
-      new BookmarkModel(std::move(client)));
-  std::unique_ptr<BookmarkLoadDetails> details =
-      std::make_unique<BookmarkLoadDetails>(client_ptr);
-  details->LoadManagedNode();
-  details->index()->AddPath(details->other_folder_node());
-  details->CreateUrlIndex();
-  bookmark_model->DoneLoading(std::move(details));
+    std::unique_ptr<TestBookmarkClient> client) {
+  auto bookmark_model = std::make_unique<BookmarkModel>(std::move(client));
+  bookmark_model->LoadEmptyForTest();
   return bookmark_model;
 }
 
@@ -56,10 +48,6 @@ BookmarkPermanentNode* TestBookmarkClient::EnableManagedNode() {
 
 bool TestBookmarkClient::IsManagedNodeRoot(const BookmarkNode* node) {
   return unowned_managed_node_ == node;
-}
-
-bool TestBookmarkClient::IsAManagedNode(const BookmarkNode* node) {
-  return node && node->HasAncestor(unowned_managed_node_.get());
 }
 
 bool TestBookmarkClient::SimulateFaviconLoaded(const GURL& page_url,
@@ -97,27 +85,9 @@ bool TestBookmarkClient::HasFaviconLoadTasks() const {
   return !requests_per_page_url_.empty();
 }
 
-void TestBookmarkClient::SetStorageStateForUma(
-    metrics::StorageStateForUma storage_state) {
-  storage_state_for_uma_ = storage_state;
-}
-
-bool TestBookmarkClient::IsPermanentNodeVisibleWhenEmpty(
-    BookmarkNode::Type type) {
-  switch (type) {
-    case bookmarks::BookmarkNode::URL:
-      NOTREACHED();
-      return false;
-    case bookmarks::BookmarkNode::BOOKMARK_BAR:
-    case bookmarks::BookmarkNode::OTHER_NODE:
-      return true;
-    case bookmarks::BookmarkNode::FOLDER:
-    case bookmarks::BookmarkNode::MOBILE:
-      return false;
-  }
-
-  NOTREACHED();
-  return false;
+void TestBookmarkClient::SetIsSyncFeatureEnabledIncludingBookmarksForUma(
+    bool value) {
+  is_sync_feature_enabled_including_bookmarks_for_uma = value;
 }
 
 LoadManagedNodeCallback TestBookmarkClient::GetLoadManagedNodeCallback() {
@@ -125,8 +95,8 @@ LoadManagedNodeCallback TestBookmarkClient::GetLoadManagedNodeCallback() {
                         std::move(managed_node_));
 }
 
-metrics::StorageStateForUma TestBookmarkClient::GetStorageStateForUma() {
-  return storage_state_for_uma_;
+bool TestBookmarkClient::IsSyncFeatureEnabledIncludingBookmarksForUma() {
+  return is_sync_feature_enabled_including_bookmarks_for_uma;
 }
 
 bool TestBookmarkClient::CanSetPermanentNodeTitle(
@@ -134,19 +104,23 @@ bool TestBookmarkClient::CanSetPermanentNodeTitle(
   return IsManagedNodeRoot(permanent_node);
 }
 
-bool TestBookmarkClient::CanSyncNode(const BookmarkNode* node) {
-  return !IsAManagedNode(node);
+bool TestBookmarkClient::IsNodeManaged(const BookmarkNode* node) {
+  return node && node->HasAncestor(unowned_managed_node_.get());
 }
 
-bool TestBookmarkClient::CanBeEditedByUser(const BookmarkNode* node) {
-  return !IsAManagedNode(node);
-}
-
-std::string TestBookmarkClient::EncodeBookmarkSyncMetadata() {
+std::string TestBookmarkClient::EncodeLocalOrSyncableBookmarkSyncMetadata() {
   return std::string();
 }
 
-void TestBookmarkClient::DecodeBookmarkSyncMetadata(
+std::string TestBookmarkClient::EncodeAccountBookmarkSyncMetadata() {
+  return std::string();
+}
+
+void TestBookmarkClient::DecodeLocalOrSyncableBookmarkSyncMetadata(
+    const std::string& metadata_str,
+    const base::RepeatingClosure& schedule_save_closure) {}
+
+void TestBookmarkClient::DecodeAccountBookmarkSyncMetadata(
     const std::string& metadata_str,
     const base::RepeatingClosure& schedule_save_closure) {}
 

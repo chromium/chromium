@@ -8,7 +8,7 @@
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
-#include "content/browser/renderer_host/input/synthetic_gesture_target.h"
+#include "content/common/input/synthetic_gesture_target.h"
 #include "ui/gfx/geometry/point_f.h"
 
 namespace ui {

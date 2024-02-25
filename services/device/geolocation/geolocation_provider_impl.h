@@ -43,6 +43,24 @@ class GeolocationManager;
 using CustomLocationProviderCallback =
     base::RepeatingCallback<std::unique_ptr<LocationProvider>()>;
 
+// This class implements the GeolocationProvider interface, which is the main
+// API of the geolocation subsystem. Clients subscribe for location updates
+// with AddLocationUpdateCallback and cancel their subscription by destroying
+// the returned subscription object.
+//
+// THREADING
+//
+// GeolocationProviderImpl is constructed on the main thread and its public
+// methods (except OnLocationUpdate) must also be called on the main thread.
+//
+// GeolocationProviderImpl extends base::Thread. This thread, called the
+// "geolocation thread", runs background tasks when acquiring new position
+// estimates.
+//
+// GeolocationProviderImpl owns one or more LocationProvider implementations
+// which generate new position estimates. LocationProviders must only run on
+// the geolocation thread. Providers report new position estimates by calling
+// OnLocationUpdate on the geolocation thread.
 class GeolocationProviderImpl : public GeolocationProvider,
                                 public mojom::GeolocationControl,
                                 public mojom::GeolocationInternals,
@@ -150,11 +168,32 @@ class GeolocationProviderImpl : public GeolocationProvider,
   // called on the main thread.
   void NotifyInternalsUpdated(mojom::GeolocationDiagnosticsPtr diagnostics);
 
+  // Notifies internals observers that a request was sent to the location
+  // service.
+  void NotifyNetworkLocationRequested(
+      std::vector<mojom::AccessPointDataPtr> request);
+
+  // Notifies internals observers that a response was received from the location
+  // service.
+  void NotifyNetworkLocationReceived(
+      mojom::NetworkLocationResponsePtr response);
+
   // Called on the main thread when an internals observer disconnects.
   void OnInternalsObserverDisconnected(mojo::RemoteSetElementId element_id);
 
   // Called on the geolocation thread when new diagnostic data is available.
   void OnInternalsUpdated();
+
+  // Called on the geolocation thread when a request is sent to the location
+  // service. `request` contains the information about nearby access points
+  // sent to the service.
+  void OnNetworkLocationRequested(
+      std::vector<mojom::AccessPointDataPtr> request);
+
+  // Called on the geolocation thread when a response is received from the
+  // location service. `response` is the received location estimate, or nullptr
+  // if no location estimate was received.
+  void OnNetworkLocationReceived(mojom::NetworkLocationResponsePtr response);
 
   // Enables geolocation diagnostics and returns the most recent diagnostic
   // data. Must be called on the geolocation thread.

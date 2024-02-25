@@ -43,25 +43,26 @@
 #import "components/variations/service/variations_service.h"
 #import "components/version_info/channel.h"
 #import "ios/chrome/app/tests_hook.h"
-#import "ios/chrome/browser/browser_state/chrome_browser_state_manager_impl.h"
-#import "ios/chrome/browser/browser_state/ios_chrome_io_thread.h"
-#import "ios/chrome/browser/component_updater/ios_component_updater_configurator.h"
-#import "ios/chrome/browser/crash_report/breadcrumbs/application_breadcrumbs_logger.h"
-#import "ios/chrome/browser/default_browser/utils.h"
-#import "ios/chrome/browser/gcm/ios_chrome_gcm_profile_service_factory.h"
-#import "ios/chrome/browser/history/history_service_factory.h"
-#import "ios/chrome/browser/metrics/ios_chrome_metrics_services_manager_client.h"
-#import "ios/chrome/browser/policy/browser_policy_connector_ios.h"
-#import "ios/chrome/browser/policy/configuration_policy_handler_list_factory.h"
-#import "ios/chrome/browser/prefs/ios_chrome_pref_service_factory.h"
-#import "ios/chrome/browser/push_notification/push_notification_service.h"
-#import "ios/chrome/browser/segmentation_platform/otr_web_state_observer.h"
+#import "ios/chrome/browser/browser_state/model/chrome_browser_state_manager_impl.h"
+#import "ios/chrome/browser/browser_state/model/ios_chrome_io_thread.h"
+#import "ios/chrome/browser/component_updater/model/ios_component_updater_configurator.h"
+#import "ios/chrome/browser/crash_report/model/breadcrumbs/application_breadcrumbs_logger.h"
+#import "ios/chrome/browser/default_browser/model/utils.h"
+#import "ios/chrome/browser/gcm/model/ios_chrome_gcm_profile_service_factory.h"
+#import "ios/chrome/browser/history/model/history_service_factory.h"
+#import "ios/chrome/browser/metrics/model/ios_chrome_metrics_services_manager_client.h"
+#import "ios/chrome/browser/policy/model/browser_policy_connector_ios.h"
+#import "ios/chrome/browser/policy/model/configuration_policy_handler_list_factory.h"
+#import "ios/chrome/browser/prefs/model/ios_chrome_pref_service_factory.h"
+#import "ios/chrome/browser/push_notification/model/push_notification_service.h"
+#import "ios/chrome/browser/segmentation_platform/model/otr_web_state_observer.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/shared/model/paths/paths.h"
 #import "ios/chrome/browser/shared/model/prefs/browser_prefs.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
-#import "ios/chrome/browser/update_client/ios_chrome_update_query_params_delegate.h"
+#import "ios/chrome/browser/update_client/model/ios_chrome_update_query_params_delegate.h"
+#import "ios/chrome/browser/upgrade/model/upgrade_center.h"
 #import "ios/chrome/common/channel_info.h"
 #import "ios/components/security_interstitials/safe_browsing/safe_browsing_service_impl.h"
 #import "ios/public/provider/chrome/browser/app_distribution/app_distribution_api.h"
@@ -162,7 +163,7 @@ void ApplicationContextImpl::PreMainMessageLoopRun() {
                                    GetSharedURLLoaderFactory());
   }
 
-  if (breadcrumbs::IsEnabled()) {
+  if (breadcrumbs::MaybeEnableBasedOnChannel(GetLocalState(), ::GetChannel())) {
     // Start crash reporter listening for breadcrumb events. Collected
     // breadcrumbs will be attached to crash reports.
     breadcrumbs::CrashReporterBreadcrumbObserver::GetInstance();
@@ -177,6 +178,7 @@ void ApplicationContextImpl::PreMainMessageLoopRun() {
 
 void ApplicationContextImpl::StartTearDown() {
   DCHECK(thread_checker_.CalledOnValidThread());
+  tearing_down_ = true;
 
   // Destroy the segmentation OTR observer before
   // `chrome_browser_state_manager_`. `segmentation_otr_web_state_observer_` may
@@ -246,56 +248,16 @@ void ApplicationContextImpl::PostDestroyThreads() {
 
 void ApplicationContextImpl::OnAppEnterForeground() {
   DCHECK(thread_checker_.CalledOnValidThread());
+  DCHECK(!tearing_down_);
 
-  // Tell the metrics services that the application resumes.
-  PrefService* local_state = GetLocalState();
-  metrics::MetricsService* metrics_service = GetMetricsService();
-  if (metrics_service && local_state) {
-    metrics_service->OnAppEnterForeground();
-    local_state->CommitPendingWrite();
-  }
-
-  variations::VariationsService* variations_service = GetVariationsService();
-  if (variations_service) {
-    variations_service->OnAppEnterForeground();
-  }
-  ukm::UkmService* ukm_service = GetMetricsServicesManager()->GetUkmService();
-  if (ukm_service) {
-    ukm_service->OnAppEnterForeground();
-  }
+  OnAppEnterState(AppState::kForeground);
 }
 
 void ApplicationContextImpl::OnAppEnterBackground() {
   DCHECK(thread_checker_.CalledOnValidThread());
-  // Mark all the ChromeBrowserStates as clean and persist history.
-  std::vector<ChromeBrowserState*> loaded_browser_state =
-      GetChromeBrowserStateManager()->GetLoadedBrowserStates();
-  for (ChromeBrowserState* browser_state : loaded_browser_state) {
-    if (history::HistoryService* history_service =
-            ios::HistoryServiceFactory::GetForBrowserStateIfExists(
-                browser_state, ServiceAccessType::EXPLICIT_ACCESS)) {
-      history_service->HandleBackgrounding();
-    }
+  DCHECK(!tearing_down_);
 
-    PrefService* browser_state_prefs = browser_state->GetPrefs();
-    if (browser_state_prefs) {
-      browser_state_prefs->CommitPendingWrite();
-    }
-  }
-
-  // Tell the metrics services they were cleanly shutdown.
-  metrics::MetricsService* metrics_service = GetMetricsService();
-  if (metrics_service) {
-    metrics_service->OnAppEnterBackground(
-        /*keep_recording_in_background=*/true);
-  }
-  ukm::UkmService* ukm_service = GetMetricsServicesManager()->GetUkmService();
-  if (ukm_service) {
-    ukm_service->OnAppEnterBackground();
-  }
-
-  // Persisting to disk is protected by a critical task, so no other special
-  // handling is necessary on iOS.
+  OnAppEnterState(AppState::kBackground);
 }
 
 bool ApplicationContextImpl::WasLastShutdownClean() {
@@ -357,7 +319,9 @@ ApplicationContextImpl::GetChromeBrowserStateManager() {
 metrics_services_manager::MetricsServicesManager*
 ApplicationContextImpl::GetMetricsServicesManager() {
   DCHECK(thread_checker_.CalledOnValidThread());
-  if (!metrics_services_manager_) {
+  // Only create the objects if teardown hasn't started yet, as otherwise these
+  // may have already been destroyed.
+  if (!metrics_services_manager_ && !tearing_down_) {
     metrics_services_manager_.reset(
         new metrics_services_manager::MetricsServicesManager(
             std::make_unique<IOSChromeMetricsServicesManagerClient>(
@@ -368,17 +332,29 @@ ApplicationContextImpl::GetMetricsServicesManager() {
 
 metrics::MetricsService* ApplicationContextImpl::GetMetricsService() {
   DCHECK(thread_checker_.CalledOnValidThread());
-  return GetMetricsServicesManager()->GetMetricsService();
+  auto* metrics_services_manager = GetMetricsServicesManager();
+  if (metrics_services_manager_) {
+    return metrics_services_manager->GetMetricsService();
+  }
+  return nullptr;
 }
 
 ukm::UkmRecorder* ApplicationContextImpl::GetUkmRecorder() {
   DCHECK(thread_checker_.CalledOnValidThread());
-  return GetMetricsServicesManager()->GetUkmService();
+  auto* metrics_services_manager = GetMetricsServicesManager();
+  if (metrics_services_manager_) {
+    return metrics_services_manager->GetUkmService();
+  }
+  return nullptr;
 }
 
 variations::VariationsService* ApplicationContextImpl::GetVariationsService() {
   DCHECK(thread_checker_.CalledOnValidThread());
-  return GetMetricsServicesManager()->GetVariationsService();
+  auto* metrics_services_manager = GetMetricsServicesManager();
+  if (metrics_services_manager_) {
+    return metrics_services_manager->GetVariationsService();
+  }
+  return nullptr;
 }
 
 net::NetLog* ApplicationContextImpl::GetNetLog() {
@@ -401,7 +377,7 @@ ApplicationContextImpl::GetNetworkTimeTracker() {
     network_time_tracker_.reset(new network_time::NetworkTimeTracker(
         base::WrapUnique(new base::DefaultClock),
         base::WrapUnique(new base::DefaultTickClock), GetLocalState(),
-        GetSharedURLLoaderFactory()));
+        GetSharedURLLoaderFactory(), std::nullopt));
   }
   return network_time_tracker_.get();
 }
@@ -539,6 +515,99 @@ PushNotificationService* ApplicationContextImpl::GetPushNotificationService() {
   return push_notification_service_.get();
 }
 
+UpgradeCenter* ApplicationContextImpl::GetUpgradeCenter() {
+  DCHECK(thread_checker_.CalledOnValidThread());
+  if (!upgrade_center_) {
+    upgrade_center_ = [[UpgradeCenter alloc] init];
+    DCHECK(upgrade_center_);
+  }
+  return upgrade_center_;
+}
+
+void ApplicationContextImpl::OnAppEnterState(AppState app_state) {
+  DCHECK(thread_checker_.CalledOnValidThread());
+  DCHECK(!tearing_down_);
+
+  // Tell the metrics services that the application state changes (taking
+  // care not to create the services if they have not been created yet).
+  if (metrics_services_manager_) {
+    if (metrics::MetricsService* metrics_service =
+            metrics_services_manager_->GetMetricsService()) {
+      switch (app_state) {
+        case AppState::kForeground:
+          metrics_service->OnAppEnterForeground();
+          break;
+
+        case AppState::kBackground:
+          metrics_service->OnAppEnterBackground();
+          break;
+      }
+    }
+
+    if (variations::VariationsService* variations_service =
+            metrics_services_manager_->GetVariationsService()) {
+      switch (app_state) {
+        case AppState::kForeground:
+          variations_service->OnAppEnterForeground();
+          break;
+
+        case AppState::kBackground:
+          // Nothing to do for VariationsService when entering background.
+          break;
+      }
+    }
+
+    if (ukm::UkmService* ukm_service =
+            metrics_services_manager_->GetUkmService()) {
+      switch (app_state) {
+        case AppState::kForeground:
+          ukm_service->OnAppEnterForeground();
+          break;
+
+        case AppState::kBackground:
+          ukm_service->OnAppEnterBackground();
+          break;
+      }
+    }
+  }
+
+  // Request saving the local state prefs and all loaded ChromeBrowserStates'
+  // prefs (taking care not to create the objects if they have not been created
+  // yet).
+  if (chrome_browser_state_manager_) {
+    std::vector<ChromeBrowserState*> loaded_browser_states =
+        chrome_browser_state_manager_->GetLoadedBrowserStates();
+
+    for (ChromeBrowserState* browser_state : loaded_browser_states) {
+      switch (app_state) {
+        case AppState::kForeground:
+          // Nothing extra to do when entering foreground.
+          break;
+
+        case AppState::kBackground:
+          if (history::HistoryService* history_service =
+                  ios::HistoryServiceFactory::GetForBrowserStateIfExists(
+                      browser_state, ServiceAccessType::EXPLICIT_ACCESS)) {
+            history_service->HandleBackgrounding();
+          }
+          break;
+      }
+
+      // No need to check that `GetPrefs()` returns non-null value since the
+      // ChromeBrowserState owns its PrefService and thus the method cannot
+      // return null.
+      browser_state->GetPrefs()->CommitPendingWrite();
+    }
+  }
+
+  if (local_state_) {
+    local_state_->CommitPendingWrite();
+  }
+
+  // Persisting to disk is protected by a critical task, so no other special
+  // handling is necessary on iOS.
+}
+
 void ApplicationContextImpl::SetApplicationLocale(const std::string& locale) {
   DCHECK(thread_checker_.CalledOnValidThread());
   application_locale_ = locale;
@@ -570,17 +639,17 @@ void ApplicationContextImpl::CreateLocalState() {
 
   sessions::SessionIdGenerator::GetInstance()->Init(local_state_.get());
 
-  net::ClientSocketPoolManager::set_max_sockets_per_proxy_server(
+  net::ClientSocketPoolManager::set_max_sockets_per_proxy_chain(
       net::HttpNetworkSession::NORMAL_SOCKET_POOL,
-      std::max(std::min<int>(net::kDefaultMaxSocketsPerProxyServer, 99),
+      std::max(std::min<int>(net::kDefaultMaxSocketsPerProxyChain, 99),
                net::ClientSocketPoolManager::max_sockets_per_group(
                    net::HttpNetworkSession::NORMAL_SOCKET_POOL)));
 
   // Cleanup obsolete preferences.
   MigrateObsoleteLocalStatePrefs(local_state_.get());
 
-  // Delete obsolete data from user storage.
-  CleanupUnusedStorage();
+  // Delete obsolete data from NSUserDefaults.
+  MigrateObsoleteUserDefault();
 }
 
 void ApplicationContextImpl::CreateGCMDriver() {

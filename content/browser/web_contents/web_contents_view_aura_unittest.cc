@@ -5,6 +5,7 @@
 #include "content/browser/web_contents/web_contents_view_aura.h"
 
 #include <memory>
+#include <optional>
 #include <string>
 
 #include "base/command_line.h"
@@ -20,7 +21,6 @@
 #include "content/public/common/content_features.h"
 #include "content/public/test/test_renderer_host.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/aura/client/drag_drop_client.h"
 #include "ui/aura/test/test_windows.h"
@@ -31,24 +31,23 @@
 #include "ui/base/dragdrop/drop_target_event.h"
 #include "ui/base/dragdrop/mojom/drag_drop_types.mojom.h"
 #include "ui/base/dragdrop/os_exchange_data.h"
+#include "ui/base/ozone_buildflags.h"
 #include "ui/display/display_switches.h"
 #include "ui/events/base_event_utils.h"
 #include "ui/gfx/geometry/rect.h"
+#include "url/origin.h"
 
 #if BUILDFLAG(IS_WIN)
 #include "ui/base/dragdrop/os_exchange_data_provider_win.h"
 #endif
 
-#if BUILDFLAG(IS_LINUX)
-#include "ui/ozone/buildflags.h"
-#if BUILDFLAG(OZONE_PLATFORM_X11)
+#if BUILDFLAG(IS_LINUX) && BUILDFLAG(IS_OZONE_X11)
 #include "ui/base/x/selection_utils.h"
 #include "ui/base/x/x11_os_exchange_data_provider.h"
-#include "ui/gfx/x/x11_atom_cache.h"
-#include "ui/gfx/x/xproto_util.h"
+#include "ui/gfx/x/atom_cache.h"
+#include "ui/gfx/x/connection.h"
 #include "ui/ozone/public/ozone_platform.h"
-#endif  // BUILDFLAG(OZONE_PLATFORM_X11)
-#endif  // BUILDFLAG(IS_LINUX)
+#endif  // BUILDFLAG(IS_LINUX) && BUILDFLAG(IS_OZONE_X11)
 
 namespace content {
 namespace {
@@ -387,7 +386,7 @@ TEST_F(WebContentsViewAuraTest, MAYBE_DragDropFilesOriginateFromRenderer) {
   // Simulate the drag originating in the renderer process, in which case
   // any file data should be filtered out (anchor drag scenario) except in
   // CHROMEOS_ASH.
-  data->MarkOriginatedFromRenderer();
+  data->MarkRendererTaintedFromOrigin(url::Origin());
 
   ui::DropTargetEvent event(*data.get(), kClientPt, kScreenPt,
                             ui::DragDropTypes::DRAG_COPY);
@@ -407,7 +406,6 @@ TEST_F(WebContentsViewAuraTest, MAYBE_DragDropFilesOriginateFromRenderer) {
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  // CHROMEOS_ASH always returns false for DidOriginateFromRenderer().
   ASSERT_FALSE(view->current_drag_data_->filenames.empty());
 #else
   ASSERT_TRUE(view->current_drag_data_->filenames.empty());
@@ -440,7 +438,8 @@ TEST_F(WebContentsViewAuraTest, MAYBE_DragDropFilesOriginateFromRenderer) {
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  // CHROMEOS_ASH always returns false for DidOriginateFromRenderer().
+  // CHROMEOS_ASH never filters out files from a drop, even if the drag
+  // originated from a renderer, because otherwise, it breaks the Files app.
   ASSERT_FALSE(drop_complete_data_->drop_data.filenames.empty());
 #else
   ASSERT_TRUE(drop_complete_data_->drop_data.filenames.empty());
@@ -460,22 +459,21 @@ TEST_F(WebContentsViewAuraTest, MAYBE_DragDropImageFromRenderer) {
 
   auto data = std::make_unique<ui::OSExchangeData>();
 
-#if BUILDFLAG(IS_LINUX)
-#if BUILDFLAG(OZONE_PLATFORM_X11)
+#if BUILDFLAG(IS_LINUX) && BUILDFLAG(IS_OZONE_X11)
   // FileContents drag-drop in X relies on XDragDropClient::InitDrag() setting
   // window property 'XdndDirectSave0' to filename. Since XDragDropClient is not
   // created in this unittest, we will set this property manually to allow
   // XOSExchangeDataProvider::GetFileContents() to succeed.
   if (ui::OzonePlatform::GetPlatformNameForTest() == "x11") {
-    x11::Window xwindow = x11::CreateDummyWindow("Test Window");
-    x11::SetStringProperty(xwindow, x11::GetAtom("XdndDirectSave0"),
-                           x11::GetAtom("text/plain"), "image.jpg");
+    auto* connection = x11::Connection::Get();
+    x11::Window xwindow = connection->CreateDummyWindow("Test Window");
+    connection->SetStringProperty(xwindow, x11::GetAtom("XdndDirectSave0"),
+                                  x11::GetAtom("text/plain"), "image.jpg");
     data = std::make_unique<ui::OSExchangeData>(
         std::make_unique<ui::XOSExchangeDataProvider>(
             xwindow, xwindow, ui::SelectionFormatMap()));
   }
-#endif  // BUILDFLAG(OZONE_PLATFORM_X11)
-#endif  // BUILDFLAG(IS_LINUX)
+#endif  // BUILDFLAG(IS_LINUX) && BUILDFLAG(IS_OZONE_X11)
 
   // As per WebContentsViewAura::PrepareDragData(), we must call
   // SetFileContents() before SetURL() to get the expected contents since
@@ -483,7 +481,7 @@ TEST_F(WebContentsViewAuraTest, MAYBE_DragDropImageFromRenderer) {
   data->SetFileContents(filename, file_contents);
   data->SetURL(url, url_title);
   data->SetHtml(html, GURL());
-  data->MarkOriginatedFromRenderer();
+  data->MarkRendererTaintedFromOrigin(url::Origin());
 
   ui::DropTargetEvent event(*data.get(), kClientPt, kScreenPt,
                             ui::DragDropTypes::DRAG_COPY);
@@ -642,7 +640,7 @@ TEST_F(WebContentsViewAuraTest, DragDropVirtualFilesOriginateFromRenderer) {
 
   // Simulate the drag originating in the renderer process, in which case
   // any file data should be filtered out (anchor drag scenario).
-  data->MarkOriginatedFromRenderer();
+  data->MarkRendererTaintedFromOrigin(url::Origin());
 
   ui::DropTargetEvent event(*data.get(), kClientPt, kScreenPt,
                             ui::DragDropTypes::DRAG_COPY);
@@ -682,7 +680,7 @@ TEST_F(WebContentsViewAuraTest, DragDropVirtualFilesOriginateFromRenderer) {
 TEST_F(WebContentsViewAuraTest, DragDropUrlData) {
   WebContentsViewAura* view = GetView();
   auto data = std::make_unique<ui::OSExchangeData>();
-  data->MarkOriginatedFromRenderer();
+  data->MarkRendererTaintedFromOrigin(url::Origin());
 
   const std::string url_spec = "https://www.wikipedia.org/";
   const GURL url(url_spec);
@@ -761,7 +759,8 @@ TEST_F(WebContentsViewAuraTest, StartDragging) {
 
   DropData drop_data;
   drop_data.text.emplace(u"Hello World!");
-  view->StartDragging(drop_data, blink::DragOperationsMask::kDragOperationNone,
+  view->StartDragging(drop_data, url::Origin(),
+                      blink::DragOperationsMask::kDragOperationNone,
                       gfx::ImageSkia(), gfx::Vector2d(), gfx::Rect(),
                       blink::mojom::DragEventSourceInfo(),
                       RenderWidgetHostImpl::From(rvh()->GetWidget()));
@@ -832,7 +831,8 @@ TEST_F(WebContentsViewAuraTest, StartDragFromPrivilegedWebContents) {
   view->drag_in_progress_ = true;
 
   DropData drop_data;
-  view->StartDragging(drop_data, blink::DragOperationsMask::kDragOperationNone,
+  view->StartDragging(drop_data, url::Origin(),
+                      blink::DragOperationsMask::kDragOperationNone,
                       gfx::ImageSkia(), gfx::Vector2d(), gfx::Rect(),
                       blink::mojom::DragEventSourceInfo(),
                       RenderWidgetHostImpl::From(rvh()->GetWidget()));

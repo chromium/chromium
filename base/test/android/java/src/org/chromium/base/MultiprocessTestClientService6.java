@@ -4,7 +4,5 @@
 
 package org.chromium.base;
 
-/**
- * A subclass used only to differentiate different test client service process instances.
- */
+/** A subclass used only to differentiate different test client service process instances. */
 public class MultiprocessTestClientService6 extends MultiprocessTestClientService {}

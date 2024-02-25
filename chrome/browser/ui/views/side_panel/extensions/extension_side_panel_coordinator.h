@@ -111,6 +111,14 @@ class ExtensionSidePanelCoordinator : public ExtensionViewViews::Observer,
   // Loads the extension's icon for its SidePanelEntry.
   void LoadExtensionIcon();
 
+  // Adds the icon of the extension to the action item. This action item is
+  // later retrieved by the side panel coordinator to show the side panel.
+  void UpdateActionItemIcon();
+
+  // Returns `browser_` if it is a global coordinator and otherwise it returns
+  // the browser associated with `web_contents_`.
+  Browser* GetBrowser();
+
   // The profile associated with either `browser_` or `web_contents_`.
   raw_ptr<Profile> profile_;
 

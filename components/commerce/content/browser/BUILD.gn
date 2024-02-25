@@ -10,16 +10,35 @@ static_library("browser") {
     "commerce_tab_helper.h",
     "web_contents_wrapper.cc",
     "web_contents_wrapper.h",
+    "web_extractor_impl.cc",
+    "web_extractor_impl.h",
   ]
 
   deps = [
     "//base",
     "//components/commerce/core:shopping_service",
+    "//components/commerce/core/mojom:mojo_bindings",
+    "//components/resources:components_resources_grit",
     "//content/public/browser",
+    "//mojo/public/cpp/bindings",
     "//ui/webui",
   ]
 
   public_deps = [ "//components/commerce/core/internals" ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "web_extractor_impl_unittest.cc" ]
+  deps = [
+    ":browser",
+    "//base",
+    "//base/test:test_support",
+    "//components/commerce/core/mojom:mojo_bindings",
+    "//content/public/browser",
+    "//content/test:test_support",
+    "//testing/gtest",
+  ]
 }
 
 if (!is_android) {

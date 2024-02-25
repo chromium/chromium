@@ -82,7 +82,8 @@ class DnsLatencyRoutineTest : public ::testing::Test {
   }
 
   void SetUpDnsLatencyRoutine() {
-    dns_latency_routine_ = std::make_unique<DnsLatencyRoutine>();
+    dns_latency_routine_ = std::make_unique<DnsLatencyRoutine>(
+        mojom::RoutineCallSource::kDiagnosticsUI);
     dns_latency_routine_->set_network_context_for_testing(
         fake_network_context_.get());
     dns_latency_routine_->set_profile_for_testing(test_profile_);
@@ -127,7 +128,7 @@ class DnsLatencyRoutineTest : public ::testing::Test {
  private:
   content::BrowserTaskEnvironment task_environment_;
   std::unique_ptr<FakeNetworkContext> fake_network_context_;
-  raw_ptr<Profile, DanglingUntriaged | ExperimentalAsh> test_profile_;
+  raw_ptr<Profile, DanglingUntriaged> test_profile_;
   std::unique_ptr<FakeTickClock> fake_tick_clock_;
   session_manager::SessionManager session_manager_;
   TestingProfileManager profile_manager_;
@@ -142,7 +143,7 @@ TEST_F(DnsLatencyRoutineTest, TestSuccessfulResolutions) {
   auto fake_dns_result = std::make_unique<FakeNetworkContext::DnsResult>(
       net::OK, net::ResolveErrorInfo(net::OK),
       net::AddressList(FakeIPAddress()),
-      /*endpoint_results_with_metadata=*/absl::nullopt);
+      /*endpoint_results_with_metadata=*/std::nullopt);
   SetUpAndRunRoutine(std::move(fake_dns_result),
                      kSuccessfulDnsResolutionDelayMs,
                      mojom::RoutineVerdict::kNoProblem, {});
@@ -154,8 +155,8 @@ TEST_F(DnsLatencyRoutineTest, TestUnsuccessfulResolution) {
   auto fake_dns_result = std::make_unique<FakeNetworkContext::DnsResult>(
       net::ERR_NAME_NOT_RESOLVED,
       net::ResolveErrorInfo(net::ERR_NAME_NOT_RESOLVED),
-      /*resolved_addresses=*/absl::nullopt,
-      /*endpoint_results_with_metadata=*/absl::nullopt);
+      /*resolved_addresses=*/std::nullopt,
+      /*endpoint_results_with_metadata=*/std::nullopt);
   // The time taken to complete the resolution is not important for this test,
   // because a failed resolution attempt already results in a problem.
   SetUpAndRunRoutine(std::move(fake_dns_result),
@@ -171,7 +172,7 @@ TEST_F(DnsLatencyRoutineTest, TestLatencySlightlyAboveThreshold) {
   auto fake_dns_result = std::make_unique<FakeNetworkContext::DnsResult>(
       net::OK, net::ResolveErrorInfo(net::OK),
       net::AddressList(FakeIPAddress()),
-      /*endpoint_results_with_metadata=*/absl::nullopt);
+      /*endpoint_results_with_metadata=*/std::nullopt);
   SetUpAndRunRoutine(std::move(fake_dns_result), kSlightlyAboveThresholdDelayMs,
                      mojom::RoutineVerdict::kProblem,
                      {mojom::DnsLatencyProblem::kSlightlyAboveThreshold});
@@ -184,7 +185,7 @@ TEST_F(DnsLatencyRoutineTest, TestLatencySignificantlyAboveThreshold) {
   auto fake_dns_result = std::make_unique<FakeNetworkContext::DnsResult>(
       net::OK, net::ResolveErrorInfo(net::OK),
       net::AddressList(FakeIPAddress()),
-      /*endpoint_results_with_metadata=*/absl::nullopt);
+      /*endpoint_results_with_metadata=*/std::nullopt);
   SetUpAndRunRoutine(std::move(fake_dns_result),
                      kSignificantlyAboveThresholdDelayMs,
                      mojom::RoutineVerdict::kProblem,

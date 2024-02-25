@@ -32,6 +32,7 @@ class COMPONENT_EXPORT(CHROMEOS_PRINTING) UsbPrinterId {
   const std::string& make() const { return make_; }
   const std::string& model() const { return model_; }
   const std::vector<std::string>& command_set() const { return command_set_; }
+  const std::string& raw_id() const { return raw_id_; }
 
   // Setters (only used in testing).
   void set_make(std::string make) { make_ = make; }
@@ -41,6 +42,7 @@ class COMPONENT_EXPORT(CHROMEOS_PRINTING) UsbPrinterId {
   }
 
  private:
+  std::string raw_id_;
   std::string make_;
   std::string model_;
 

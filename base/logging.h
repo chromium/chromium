@@ -17,9 +17,9 @@
 #include "base/compiler_specific.h"
 #include "base/dcheck_is_on.h"
 #include "base/functional/callback_forward.h"
-#include "base/logging_buildflags.h"
+#include "base/memory/raw_ptr.h"
 #include "base/scoped_clear_last_error.h"
-#include "base/strings/string_piece_forward.h"
+#include "base/strings/string_piece.h"
 #include "base/strings/utf_ostream_operators.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
@@ -92,16 +92,7 @@
 //
 // These always log at the INFO log level (when they log at all).
 //
-// There is a build flag USE_RUNTIME_VLOG that controls whether verbose
-// logging is processed at runtime or at build time.
-//
-// When USE_RUNTIME_VLOG is not set, the verbose logging is processed at
-// build time. VLOG(n) is only included and compiled when `n` is less than or
-// equal to the verbose level defined by ENABLED_VLOG_LEVEL macro. Command line
-// switch --v and --vmodule are ignored in this mode.
-//
-// When USE_RUNTIME_VLOG is set, the verbose logging is controlled at
-// runtime and can be turned on module-by-module.  For instance,
+// The verbose logging can also be turned on module-by-module.  For instance,
 //    --vmodule=profile=2,icon_loader=1,browser_*=3,*/chromeos/*=4 --v=0
 // will cause:
 //   a. VLOG(2) and lower messages to be printed from profile.{h,cc}
@@ -253,7 +244,7 @@ struct BASE_EXPORT LoggingSettings {
   // |log_file_path| will be ignored, and the logging system will take ownership
   // of the FILE. If there's an error writing to this file, no fallback paths
   // will be opened.
-  FILE* log_file = nullptr;
+  raw_ptr<FILE> log_file = nullptr;
   // ChromeOS uses the syslog log format by default.
   LogFormat log_format = LogFormat::LOG_FORMAT_SYSLOG;
 #endif
@@ -384,16 +375,6 @@ constexpr LogSeverity LOGGING_DFATAL = LOGGING_FATAL;
 constexpr LogSeverity LOGGING_DFATAL = LOGGING_ERROR;
 #endif
 
-// This block duplicates the above entries to facilitate incremental conversion
-// from LOG_FOO to LOGGING_FOO.
-// TODO(thestig): Convert existing users to LOGGING_FOO and remove this block.
-constexpr LogSeverity LOG_VERBOSE = LOGGING_VERBOSE;
-constexpr LogSeverity LOG_INFO = LOGGING_INFO;
-constexpr LogSeverity LOG_WARNING = LOGGING_WARNING;
-constexpr LogSeverity LOG_ERROR = LOGGING_ERROR;
-constexpr LogSeverity LOG_FATAL = LOGGING_FATAL;
-constexpr LogSeverity LOG_DFATAL = LOGGING_DFATAL;
-
 // A few definitions of macros that don't generate much code. These are used
 // by LOG() and LOG_IF, etc. Since these are used all over our code, it's
 // better to have compact code for these operations.
@@ -406,14 +387,11 @@ constexpr LogSeverity LOG_DFATAL = LOGGING_DFATAL;
 #define COMPACT_GOOGLE_LOG_EX_ERROR(ClassName, ...)                  \
   ::logging::ClassName(__FILE__, __LINE__, ::logging::LOGGING_ERROR, \
                        ##__VA_ARGS__)
-#define COMPACT_GOOGLE_LOG_EX_FATAL(ClassName, ...)                  \
-  ::logging::ClassName(__FILE__, __LINE__, ::logging::LOGGING_FATAL, \
-                       ##__VA_ARGS__)
+#define COMPACT_GOOGLE_LOG_EX_FATAL(ClassName, ...)                         \
+  ::logging::ClassName##Fatal(__FILE__, __LINE__, ::logging::LOGGING_FATAL, \
+                              ##__VA_ARGS__)
 #define COMPACT_GOOGLE_LOG_EX_DFATAL(ClassName, ...)                  \
   ::logging::ClassName(__FILE__, __LINE__, ::logging::LOGGING_DFATAL, \
-                       ##__VA_ARGS__)
-#define COMPACT_GOOGLE_LOG_EX_DCHECK(ClassName, ...)                  \
-  ::logging::ClassName(__FILE__, __LINE__, ::logging::LOGGING_DCHECK, \
                        ##__VA_ARGS__)
 
 #define COMPACT_GOOGLE_LOG_INFO COMPACT_GOOGLE_LOG_EX_INFO(LogMessage)
@@ -421,7 +399,6 @@ constexpr LogSeverity LOG_DFATAL = LOGGING_DFATAL;
 #define COMPACT_GOOGLE_LOG_ERROR COMPACT_GOOGLE_LOG_EX_ERROR(LogMessage)
 #define COMPACT_GOOGLE_LOG_FATAL COMPACT_GOOGLE_LOG_EX_FATAL(LogMessage)
 #define COMPACT_GOOGLE_LOG_DFATAL COMPACT_GOOGLE_LOG_EX_DFATAL(LogMessage)
-#define COMPACT_GOOGLE_LOG_DCHECK COMPACT_GOOGLE_LOG_EX_DCHECK(LogMessage)
 
 #if BUILDFLAG(IS_WIN)
 // wingdi.h defines ERROR to be 0. When we call LOG(ERROR), it gets
@@ -440,57 +417,28 @@ constexpr LogSeverity LOGGING_0 = LOGGING_ERROR;
 // As special cases, we can assume that LOG_IS_ON(FATAL) always holds. Also,
 // LOG_IS_ON(DFATAL) always holds in debug mode. In particular, CHECK()s will
 // always fire if they fail.
-#define LOG_IS_ON(severity) \
-  (::logging::ShouldCreateLogMessage(::logging::LOGGING_##severity))
+// FATAL is always enabled and required to be resolved in compile time for
+// LOG(FATAL) to be properly understood as [[noreturn]].
+#define LOG_IS_ON(severity)                                     \
+  (::logging::LOGGING_##severity == ::logging::LOGGING_FATAL || \
+   ::logging::ShouldCreateLogMessage(::logging::LOGGING_##severity))
 
-#if !BUILDFLAG(USE_RUNTIME_VLOG)
-
-// When USE_RUNTIME_VLOG is not set, --vmodule is completely ignored and
-// ENABLED_VLOG_LEVEL macro is used to determine the enabled VLOG levels
-// at build time.
-//
-// Files that need VLOG would need to redefine ENABLED_VLOG_LEVEL to a desired
-// VLOG level number,
-// e.g.
-//   To enable VLOG(1) output,
-//
-//   For a source cc file:
-//
-//     #undef ENABLED_VLOG_LEVEL
-//     #define ENABLED_VLOG_LEVEL 1
-//
-//   For all cc files in a build target of a BUILD.gn:
-//
-//     source_set("build_target") {
-//       ...
-//
-//       defines = ["ENABLED_VLOG_LEVEL=1"]
-//     }
-
-// Returns a vlog level that suppresses all vlogs. Using this function so that
-// compiler cannot calculate VLOG_IS_ON() and generate unreached code
-// warnings.
-BASE_EXPORT int GetDisableAllVLogLevel();
-
-// Define the default ENABLED_VLOG_LEVEL if it is not defined. This is to
-// allow ENABLED_VLOG_LEVEL to be overridden from defines in cc flags.
+// Define a default ENABLED_VLOG_LEVEL if it is not defined. The macros allows
+// code to enable vlog level at build time without the need of --vmodule
+// switch at runtime. This is intended for VLOGs that needed from production
+// code without the cpu overhead to match vmodule patterns on every VLOG
+// instance.
 #if !defined(ENABLED_VLOG_LEVEL)
-#define ENABLED_VLOG_LEVEL (logging::GetDisableAllVLogLevel())
+#define ENABLED_VLOG_LEVEL -1
 #endif  // !defined(ENABLED_VLOG_LEVEL)
-
-#define VLOG_IS_ON(verboselevel) ((verboselevel) <= (ENABLED_VLOG_LEVEL))
-
-#else  // !BUILDFLAG(USE_RUNTIME_VLOG)
 
 // We don't do any caching tricks with VLOG_IS_ON() like the
 // google-glog version since it increases binary size.  This means
 // that using the v-logging functions in conjunction with --vmodule
 // may be slow.
-
-#define VLOG_IS_ON(verboselevel) \
-  ((verboselevel) <= ::logging::GetVlogLevel(__FILE__))
-
-#endif  // !BUILDFLAG(USE_RUNTIME_VLOG)
+#define VLOG_IS_ON(verboselevel)             \
+  ((verboselevel) <= (ENABLED_VLOG_LEVEL) || \
+   (verboselevel) <= ::logging::GetVlogLevel(__FILE__))
 
 // Helper macro which avoids evaluating the arguments to a stream if
 // the condition doesn't hold. Condition is evaluated once and only once.
@@ -583,12 +531,22 @@ BASE_EXPORT extern std::ostream* g_swallow_stream;
 
 #if DCHECK_IS_ON()
 
-#define DLOG_IS_ON(severity) LOG_IS_ON(severity)
-#define DLOG_IF(severity, condition) LOG_IF(severity, condition)
-#define DLOG_ASSERT(condition) LOG_ASSERT(condition)
-#define DPLOG_IF(severity, condition) PLOG_IF(severity, condition)
+// All of these definitions use DLOG_IS_ON() rather than define to their LOG()
+// equivalents, as DLOG(FATAL) and friends can't be understood as [[noreturn]]
+// but LOG(FATAL) is.
+#define DLOG_IS_ON(severity) \
+  (::logging::ShouldCreateLogMessage(::logging::LOGGING_##severity))
+
+#define DLOG(severity) LAZY_STREAM(LOG_STREAM(severity), DLOG_IS_ON(severity))
+#define DLOG_IF(severity, condition) \
+  LAZY_STREAM(LOG_STREAM(severity), DLOG_IS_ON(severity) && (condition))
+#define DPLOG(severity) LAZY_STREAM(PLOG_STREAM(severity), DLOG_IS_ON(severity))
+#define DPLOG_IF(severity, condition) \
+  LAZY_STREAM(PLOG_STREAM(severity), DLOG_IS_ON(severity) && (condition))
 #define DVLOG_IF(verboselevel, condition) VLOG_IF(verboselevel, condition)
 #define DVPLOG_IF(verboselevel, condition) VPLOG_IF(verboselevel, condition)
+#define DLOG_ASSERT(condition) \
+  DLOG_IF(FATAL, !(condition)) << "Assert failed: " #condition ". "
 
 #else  // DCHECK_IS_ON()
 
@@ -597,26 +555,24 @@ BASE_EXPORT extern std::ostream* g_swallow_stream;
 // Contrast this with DCHECK et al., which has different behavior.
 
 #define DLOG_IS_ON(severity) false
+#define DLOG(severity) EAT_STREAM_PARAMETERS
 #define DLOG_IF(severity, condition) EAT_STREAM_PARAMETERS
-#define DLOG_ASSERT(condition) EAT_STREAM_PARAMETERS
+#define DPLOG(severity) EAT_STREAM_PARAMETERS
 #define DPLOG_IF(severity, condition) EAT_STREAM_PARAMETERS
 #define DVLOG_IF(verboselevel, condition) EAT_STREAM_PARAMETERS
 #define DVPLOG_IF(verboselevel, condition) EAT_STREAM_PARAMETERS
+#define DLOG_ASSERT(condition) EAT_STREAM_PARAMETERS
 
 #endif  // DCHECK_IS_ON()
 
-#define DLOG(severity)                                          \
-  LAZY_STREAM(LOG_STREAM(severity), DLOG_IS_ON(severity))
-
-#define DPLOG(severity)                                         \
-  LAZY_STREAM(PLOG_STREAM(severity), DLOG_IS_ON(severity))
-
 #define DVLOG(verboselevel) DVLOG_IF(verboselevel, true)
-
 #define DVPLOG(verboselevel) DVPLOG_IF(verboselevel, true)
 
 // Definitions for DCHECK et al.
 
+// TODO(pbos): Move this to check.h. Probably find a better name. Maybe this
+// means that we want LogSeverity in a separate file, but maybe we can just have
+// this as a bool DCHECK_IS_FATAL.
 #if BUILDFLAG(DCHECK_IS_CONFIGURABLE)
 BASE_EXPORT extern LogSeverity LOGGING_DCHECK;
 #else
@@ -656,8 +612,13 @@ class BASE_EXPORT LogMessage {
   // Gets file:line: message in a format suitable for crash reporting.
   std::string BuildCrashString() const;
 
+ protected:
+  void Flush();
+
  private:
   void Init(const char* file, int line);
+
+  void HandleFatal(size_t stack_start, const std::string& str_newline) const;
 
   const LogSeverity severity_;
   std::ostringstream stream_;
@@ -683,6 +644,12 @@ class BASE_EXPORT LogMessage {
                             bool enable_timestamp,
                             bool enable_tickcount);
 #endif
+};
+
+class BASE_EXPORT LogMessageFatal final : public LogMessage {
+ public:
+  using LogMessage::LogMessage;
+  [[noreturn]] ~LogMessageFatal() override;
 };
 
 // This class is used to explicitly ignore values in the conditional
@@ -720,9 +687,20 @@ class BASE_EXPORT Win32ErrorLogMessage : public LogMessage {
   // Appends the error message before destructing the encapsulated class.
   ~Win32ErrorLogMessage() override;
 
+ protected:
+  void AppendError();
+
  private:
   SystemErrorCode err_;
 };
+
+class BASE_EXPORT Win32ErrorLogMessageFatal final
+    : public Win32ErrorLogMessage {
+ public:
+  using Win32ErrorLogMessage::Win32ErrorLogMessage;
+  [[noreturn]] ~Win32ErrorLogMessageFatal() override;
+};
+
 #elif BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_FUCHSIA)
 // Appends a formatted system message of the errno type
 class BASE_EXPORT ErrnoLogMessage : public LogMessage {
@@ -736,9 +714,19 @@ class BASE_EXPORT ErrnoLogMessage : public LogMessage {
   // Appends the error message before destructing the encapsulated class.
   ~ErrnoLogMessage() override;
 
+ protected:
+  void AppendError();
+
  private:
   SystemErrorCode err_;
 };
+
+class BASE_EXPORT ErrnoLogMessageFatal final : public ErrnoLogMessage {
+ public:
+  using ErrnoLogMessage::ErrnoLogMessage;
+  [[noreturn]] ~ErrnoLogMessageFatal() override;
+};
+
 #endif  // BUILDFLAG(IS_WIN)
 
 // Closes the log file explicitly if open.

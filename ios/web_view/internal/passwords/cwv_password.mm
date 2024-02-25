@@ -9,6 +9,7 @@
 #include "base/strings/sys_string_conversions.h"
 #include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_ui_utils.h"
+#import "components/password_manager/core/browser/ui/credential_ui_entry.h"
 #import "ios/web_view/internal/utils/nsobject_description_utils.h"
 
 @implementation CWVPassword {
@@ -20,10 +21,12 @@
   self = [super init];
   if (self) {
     _passwordForm = passwordForm;
-    auto name_and_link =
-        password_manager::GetShownOriginAndLinkUrl(_passwordForm);
-    _title = base::SysUTF8ToNSString(name_and_link.first);
-    _site = base::SysUTF8ToNSString(name_and_link.second.spec());
+    _title = base::SysUTF8ToNSString(password_manager::GetShownOrigin(
+        password_manager::CredentialUIEntry(_passwordForm)));
+    _site = base::SysUTF8ToNSString(
+        password_manager::GetShownUrl(
+            password_manager::CredentialUIEntry(_passwordForm))
+            .spec());
   }
   return self;
 }

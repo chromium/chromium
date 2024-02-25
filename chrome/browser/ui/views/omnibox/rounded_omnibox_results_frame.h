@@ -15,8 +15,9 @@ class LocationBarView;
 
 // A class that wraps a Widget's content view to provide a custom results frame.
 class RoundedOmniboxResultsFrame : public views::View {
+  METADATA_HEADER(RoundedOmniboxResultsFrame, views::View)
+
  public:
-  METADATA_HEADER(RoundedOmniboxResultsFrame);
   RoundedOmniboxResultsFrame(views::View* contents,
                              LocationBarView* location_bar);
   RoundedOmniboxResultsFrame(const RoundedOmniboxResultsFrame&) = delete;
@@ -38,7 +39,7 @@ class RoundedOmniboxResultsFrame : public views::View {
   static gfx::Insets GetShadowInsets();
 
   // views::View:
-  void Layout() override;
+  void Layout(PassKey) override;
   void AddedToWidget() override;
 #if !defined(USE_AURA)
   void OnMouseMoved(const ui::MouseEvent& event) override;

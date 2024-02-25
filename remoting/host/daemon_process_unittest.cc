@@ -131,10 +131,11 @@ class DaemonProcessTest : public testing::Test {
       base::test::SingleThreadTaskEnvironment::MainThreadType::IO};
 
   std::unique_ptr<MockDaemonProcess> daemon_process_;
-  int terminal_id_;
+  int terminal_id_ = 0;
+  base::RunLoop run_loop_;
 };
 
-DaemonProcessTest::DaemonProcessTest() : terminal_id_(0) {}
+DaemonProcessTest::DaemonProcessTest() = default;
 
 DaemonProcessTest::~DaemonProcessTest() = default;
 
@@ -162,7 +163,7 @@ void DaemonProcessTest::SetUp() {
 
 void DaemonProcessTest::TearDown() {
   daemon_process_->Stop();
-  base::RunLoop().Run();
+  run_loop_.Run();
 }
 
 DesktopSession* DaemonProcessTest::DoCreateDesktopSession(int terminal_id) {
@@ -180,7 +181,7 @@ void DaemonProcessTest::DeleteDaemonProcess() {
 
 void DaemonProcessTest::QuitMessageLoop() {
   task_environment_.GetMainThreadTaskRunner()->PostTask(
-      FROM_HERE, base::RunLoop::QuitCurrentWhenIdleClosureDeprecated());
+      FROM_HERE, run_loop_.QuitWhenIdleClosure());
 }
 
 void DaemonProcessTest::StartDaemonProcess() {

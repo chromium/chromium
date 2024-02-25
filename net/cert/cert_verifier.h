@@ -7,11 +7,11 @@
 
 #include <memory>
 #include <string>
+#include <string_view>
 #include <vector>
 
 #include "base/memory/scoped_refptr.h"
 #include "base/observer_list_types.h"
-#include "base/strings/string_piece.h"
 #include "net/base/completion_once_callback.h"
 #include "net/base/hash_value.h"
 #include "net/base/net_export.h"
@@ -68,18 +68,6 @@ class NET_EXPORT CertVerifier {
     // Disable enforcement of the policies described at
     // https://security.googleblog.com/2017/09/chromes-plan-to-distrust-symantec.html
     bool disable_symantec_enforcement = false;
-
-    // Additional trust anchors to consider during path validation. Ordinarily,
-    // implementations of CertVerifier use trust anchors from the configured
-    // system store. This is implementation-specific plumbing for passing
-    // additional anchors through.
-    CertificateList additional_trust_anchors;
-
-    // Additional temporary certs to consider as intermediates during path
-    // validation. Ordinarily, implementations of CertVerifier use intermediate
-    // certs from the configured system store. This is implementation-specific
-    // plumbing for passing additional intermediates through.
-    CertificateList additional_untrusted_authorities;
   };
 
   class Request {
@@ -132,10 +120,10 @@ class NET_EXPORT CertVerifier {
    public:
     RequestParams();
     RequestParams(scoped_refptr<X509Certificate> certificate,
-                  base::StringPiece hostname,
+                  std::string_view hostname,
                   int flags,
-                  base::StringPiece ocsp_response,
-                  base::StringPiece sct_list);
+                  std::string_view ocsp_response,
+                  std::string_view sct_list);
     RequestParams(const RequestParams& other);
     ~RequestParams();
 
@@ -241,7 +229,8 @@ class NET_EXPORT CertVerifierWithUpdatableProc : public CertVerifier {
   // Update the CertVerifyProc with a new set of parameters.
   virtual void UpdateVerifyProcData(
       scoped_refptr<CertNetFetcher> cert_net_fetcher,
-      const net::CertVerifyProcFactory::ImplParams& impl_params) = 0;
+      const net::CertVerifyProc::ImplParams& impl_params,
+      const net::CertVerifyProc::InstanceParams& instance_params) = 0;
 };
 
 }  // namespace net

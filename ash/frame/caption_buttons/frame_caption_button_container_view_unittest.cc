@@ -6,22 +6,23 @@
 
 #include "ash/constants/ash_switches.h"
 #include "ash/frame/non_client_frame_view_ash.h"
-#include "ash/shell.h"
 #include "ash/test/ash_test_base.h"
 #include "ash/wm/float/float_controller.h"
-#include "ash/wm/tablet_mode/tablet_mode_controller.h"
+#include "ash/wm/tablet_mode/tablet_mode_controller_test_api.h"
 #include "ash/wm/window_state.h"
 #include "ash/wm/wm_event.h"
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
+#include "chromeos/strings/grit/chromeos_strings.h"
 #include "chromeos/ui/base/window_properties.h"
 #include "chromeos/ui/base/window_state_type.h"
 #include "chromeos/ui/frame/header_view.h"
 #include "chromeos/ui/vector_icons/vector_icons.h"
-#include "chromeos/ui/wm/features.h"
 #include "ui/aura/client/aura_constants.h"
+#include "ui/base/l10n/l10n_util.h"
 #include "ui/events/test/event_generator.h"
 #include "ui/gfx/geometry/rect.h"
+#include "ui/strings/grit/ui_strings.h"
 #include "ui/views/test/test_views.h"
 #include "ui/views/test/views_test_utils.h"
 #include "ui/views/widget/widget.h"
@@ -189,7 +190,7 @@ TEST_F(FrameCaptionButtonContainerViewTest,
 
   // Size and minimize buttons are hidden in tablet mode and the other buttons
   // should shift accordingly.
-  Shell::Get()->tablet_mode_controller()->SetEnabledForTest(true);
+  ash::TabletModeControllerTestApi().EnterTabletMode();
   container.UpdateCaptionButtonState(/*animate=*/false);
   test.EndAnimations();
   // Parent needs to layout in response to size change.
@@ -209,7 +210,7 @@ TEST_F(FrameCaptionButtonContainerViewTest,
             container.GetPreferredSize().width());
 
   // Button positions should be the same when leaving tablet mode.
-  Shell::Get()->tablet_mode_controller()->SetEnabledForTest(false);
+  ash::TabletModeControllerTestApi().LeaveTabletMode();
   container.UpdateCaptionButtonState(/*animate=*/false);
   // Calling code needs to layout in response to size change.
   views::test::RunScheduledLayout(&container);
@@ -235,6 +236,59 @@ TEST_F(FrameCaptionButtonContainerViewTest, ShouldShowCloseButtonTrue) {
   FrameCaptionButtonContainerView::TestApi testApi(&container);
   EXPECT_TRUE(testApi.close_button()->GetVisible());
   EXPECT_TRUE(testApi.close_button()->GetEnabled());
+}
+
+// Test that the close button is disabled and has correct Tooltip when
+// `is_close_button_enabled` is `false`.
+TEST_F(FrameCaptionButtonContainerViewTest, CloseButtonIsDisabled) {
+  FrameCaptionButtonContainerView container(
+      CreateTestWidget(MAXIMIZE_ALLOWED, MINIMIZE_ALLOWED,
+                       CLOSE_BUTTON_VISIBLE),
+      false /*=is_close_button_enabled*/);
+  InitContainer(&container);
+  views::test::RunScheduledLayout(&container);
+  FrameCaptionButtonContainerView::TestApi testApi(&container);
+  EXPECT_TRUE(testApi.close_button()->GetVisible());
+  EXPECT_FALSE(testApi.close_button()->GetEnabled());
+  EXPECT_EQ(testApi.close_button()->GetTooltipText(),
+            l10n_util::GetStringUTF16(IDS_APP_CLOSE_BUTTON_DISABLED_BY_ADMIN));
+}
+
+// Test that the close button is enabled and has correct Tooltip when
+// `is_close_button_enabled` is `true`.
+TEST_F(FrameCaptionButtonContainerViewTest, CloseButtonIsEnabled) {
+  FrameCaptionButtonContainerView container(
+      CreateTestWidget(MAXIMIZE_ALLOWED, MINIMIZE_ALLOWED,
+                       CLOSE_BUTTON_VISIBLE),
+      true /*=is_close_button_enabled*/);
+  InitContainer(&container);
+  views::test::RunScheduledLayout(&container);
+  FrameCaptionButtonContainerView::TestApi testApi(&container);
+  EXPECT_TRUE(testApi.close_button()->GetVisible());
+  EXPECT_TRUE(testApi.close_button()->GetEnabled());
+  EXPECT_EQ(testApi.close_button()->GetTooltipText(),
+            l10n_util::GetStringUTF16(IDS_APP_ACCNAME_CLOSE));
+}
+
+// Test that the close button enablement is changed.
+TEST_F(FrameCaptionButtonContainerViewTest, CloseButtonChanged) {
+  FrameCaptionButtonContainerView container(
+      CreateTestWidget(MAXIMIZE_ALLOWED, MINIMIZE_ALLOWED,
+                       CLOSE_BUTTON_VISIBLE),
+      true /*=is_close_button_enabled*/);
+  InitContainer(&container);
+  views::test::RunScheduledLayout(&container);
+  FrameCaptionButtonContainerView::TestApi testApi(&container);
+  EXPECT_TRUE(testApi.close_button()->GetVisible());
+  EXPECT_TRUE(testApi.close_button()->GetEnabled());
+  EXPECT_EQ(testApi.close_button()->GetTooltipText(),
+            l10n_util::GetStringUTF16(IDS_APP_ACCNAME_CLOSE));
+
+  container.SetCloseButtonEnabled(false);
+  EXPECT_TRUE(testApi.close_button()->GetVisible());
+  EXPECT_FALSE(testApi.close_button()->GetEnabled());
+  EXPECT_EQ(testApi.close_button()->GetTooltipText(),
+            l10n_util::GetStringUTF16(IDS_APP_CLOSE_BUTTON_DISABLED_BY_ADMIN));
 }
 
 // Test that the close button is not visible when
@@ -342,26 +396,8 @@ TEST_F(FrameCaptionButtonContainerViewTest, ResizeButtonRestoreBehavior) {
   EXPECT_TRUE(window_state->IsSnapped());
 }
 
-// Test float button requires `kWindowLayoutMenu` feature to be enabled during
-// setup.
-class FrameCaptionButtonContainerViewWithFloatTest
-    : public FrameCaptionButtonContainerViewTest {
- public:
-  FrameCaptionButtonContainerViewWithFloatTest()
-      : scoped_feature_list_(chromeos::wm::features::kWindowLayoutMenu) {}
-  FrameCaptionButtonContainerViewWithFloatTest(
-      const FrameCaptionButtonContainerViewWithFloatTest&) = delete;
-  FrameCaptionButtonContainerViewWithFloatTest& operator=(
-      const FrameCaptionButtonContainerViewWithFloatTest&) = delete;
-  ~FrameCaptionButtonContainerViewWithFloatTest() override = default;
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
-};
-
-TEST_F(FrameCaptionButtonContainerViewWithFloatTest,
-       TabletSizeButtonVisibility) {
-  Shell::Get()->tablet_mode_controller()->SetEnabledForTest(true);
+TEST_F(FrameCaptionButtonContainerViewTest, TabletSizeButtonVisibility) {
+  ash::TabletModeControllerTestApi().EnterTabletMode();
 
   // Create a window in tablet mode. It should be maximized and the size button
   // should be hidden.
@@ -385,7 +421,7 @@ TEST_F(FrameCaptionButtonContainerViewWithFloatTest,
 }
 
 // Test how the allowed actions affect the visibility of the float button.
-TEST_F(FrameCaptionButtonContainerViewWithFloatTest, FloatButtonVisibility) {
+TEST_F(FrameCaptionButtonContainerViewTest, FloatButtonVisibility) {
   // The float button should not be visible when minimizing and maximizing are
   // allowed.
   auto* widget1 = CreateTestWidget(MAXIMIZE_ALLOWED, MINIMIZE_ALLOWED,
@@ -421,7 +457,7 @@ TEST_F(FrameCaptionButtonContainerViewWithFloatTest, FloatButtonVisibility) {
                                   *t2.close_button()));
 }
 
-TEST_F(FrameCaptionButtonContainerViewWithFloatTest, TestFloatButtonBehavior) {
+TEST_F(FrameCaptionButtonContainerViewTest, TestFloatButtonBehavior) {
   auto* widget = CreateTestWidget(MAXIMIZE_DISALLOWED, MINIMIZE_ALLOWED,
                                   CLOSE_BUTTON_VISIBLE);
   auto* window = widget->GetNativeWindow();

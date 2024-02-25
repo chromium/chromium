@@ -119,8 +119,10 @@
 - (void)updateLoadingState {
   if (!self.restorationHasFinished)
     return;
+  if (!self.consumer) {
+    return;
+  }
   DCHECK(self.webState);
-  DCHECK(self.consumer);
 
   BOOL isLoading = self.webState->IsLoading();
   [self.consumer setLoadingState:isLoading];

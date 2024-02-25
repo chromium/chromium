@@ -8,25 +8,29 @@
 #include <string>
 
 #include "base/logging.h"
-#include "base/strings/stringprintf.h"
+#include "base/strings/strcat_win.h"
 #include "base/win/registry.h"
-#include "remoting/host/win/omaha.h"
 
 namespace {
 
 // The following strings are used to construct the registry key names where
 // we record whether the user has consented to crash dump collection.
 // the user's consent to collect crash dumps is recorded.
-const wchar_t kOmahaClientStateKeyFormat[] =
-    L"Software\\Google\\Update\\%ls\\%ls";
-const wchar_t kOmahaClientState[] = L"ClientState";
 const wchar_t kOmahaClientStateMedium[] = L"ClientStateMedium";
 const wchar_t kOmahaUsagestatsValue[] = L"usagestats";
 
+std::wstring GetClientState(const wchar_t* state_key) {
+  return base::StrCat(
+      {L"Software\\Google\\Update\\", state_key,
+       // The Omaha Appid of the host. It should be kept in sync
+       // with $(var.OmahaAppid) defined in remoting/host/win/chromoting.wxs and
+       // the Omaha server configuration.
+       L"\\{b210701e-ffc4-49e3-932b-370728c72662}"});
+}
+
 LONG ReadUsageStatsValue(const wchar_t* state_key, DWORD* usagestats_out) {
   // presubmit: allow wstring
-  std::wstring client_state = base::StringPrintf(
-      kOmahaClientStateKeyFormat, state_key, remoting::kHostOmahaAppid);
+  std::wstring client_state = GetClientState(state_key);
   base::win::RegKey key;
   LONG result = key.Open(HKEY_LOCAL_MACHINE, client_state.c_str(), KEY_READ);
   if (result != ERROR_SUCCESS) {
@@ -53,7 +57,7 @@ bool GetUsageStatsConsent(bool* allowed, bool* set_by_policy) {
     *allowed = value != 0;
     return true;
   }
-  if (ReadUsageStatsValue(kOmahaClientState, &value) == ERROR_SUCCESS) {
+  if (ReadUsageStatsValue(L"ClientState", &value) == ERROR_SUCCESS) {
     *allowed = value != 0;
     return true;
   }
@@ -72,8 +76,7 @@ bool IsUsageStatsAllowed() {
 bool SetUsageStatsConsent(bool allowed) {
   DWORD value = allowed;
   // presubmit: allow wstring
-  std::wstring client_state = base::StringPrintf(
-      kOmahaClientStateKeyFormat, kOmahaClientStateMedium, kHostOmahaAppid);
+  std::wstring client_state = GetClientState(kOmahaClientStateMedium);
   base::win::RegKey key;
   LONG result =
       key.Create(HKEY_LOCAL_MACHINE, client_state.c_str(), KEY_SET_VALUE);

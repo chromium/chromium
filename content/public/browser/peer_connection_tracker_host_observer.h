@@ -35,8 +35,7 @@ class CONTENT_EXPORT PeerConnectionTrackerHostObserver
       int lid,
       base::ProcessId pid,
       const std::string& url,
-      const std::string& rtc_configuration,
-      const std::string& constraints) {}
+      const std::string& rtc_configuration) {}
 
   // This method is called when a peer connection is destroyed.
   // - |render_frame_host_id| identifies the RenderFrameHost.

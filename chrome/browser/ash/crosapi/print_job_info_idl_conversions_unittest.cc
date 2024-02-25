@@ -71,24 +71,24 @@ TEST(PrintJobInfoIdlConversionsTest, PrintJobInfoProtoToIdl) {
 
   EXPECT_EQ(kId, print_job_info.id);
   EXPECT_EQ(kTitle, print_job_info.title);
-  EXPECT_EQ(idl::PRINT_JOB_SOURCE_PRINT_PREVIEW, print_job_info.source);
-  EXPECT_EQ(absl::nullopt, print_job_info.source_id);
-  EXPECT_EQ(idl::PRINT_JOB_STATUS_FAILED, print_job_info.status);
+  EXPECT_EQ(idl::PrintJobSource::kPrintPreview, print_job_info.source);
+  EXPECT_EQ(std::nullopt, print_job_info.source_id);
+  EXPECT_EQ(idl::PrintJobStatus::kFailed, print_job_info.status);
   EXPECT_DOUBLE_EQ(static_cast<double>(kJobCreationTime),
                    print_job_info.creation_time);
   EXPECT_DOUBLE_EQ(static_cast<double>(kJobCompletionTime),
                    print_job_info.completion_time);
   EXPECT_EQ(kName, printer.name);
   EXPECT_EQ(kUri, printer.uri);
-  EXPECT_EQ(idl::PRINTER_SOURCE_POLICY, printer.source);
-  EXPECT_EQ(idl::COLOR_MODE_COLOR, settings.color);
-  EXPECT_EQ(idl::DUPLEX_MODE_ONE_SIDED, settings.duplex);
+  EXPECT_EQ(idl::PrinterSource::kPolicy, printer.source);
+  EXPECT_EQ(idl::ColorMode::kColor, settings.color);
+  EXPECT_EQ(idl::DuplexMode::kOneSided, settings.duplex);
   EXPECT_EQ(kCopies, settings.copies);
   EXPECT_EQ(kWidth, media_size.width);
   EXPECT_EQ(kHeight, media_size.height);
   EXPECT_EQ(kVendorId, media_size.vendor_id);
   EXPECT_EQ(kPagesNumber, print_job_info.number_of_pages);
-  EXPECT_EQ(api::printing::PRINTER_STATUS_OUT_OF_PAPER,
+  EXPECT_EQ(api::printing::PrinterStatus::kOutOfPaper,
             print_job_info.printer_status);
 }
 

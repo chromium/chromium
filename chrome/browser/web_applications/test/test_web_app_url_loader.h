@@ -12,9 +12,7 @@
 #include "base/containers/queue.h"
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
-#include "base/memory/raw_ptr.h"
 #include "chrome/browser/web_applications/web_contents/web_app_url_loader.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
 namespace web_app {
@@ -42,8 +40,8 @@ class TestWebAppUrlLoader : public WebAppUrlLoader {
   void AddNextLoadUrlResults(const GURL& url,
                              const std::vector<Result>& results);
 
-  // WebAppUrlLoader
-  void LoadUrl(const GURL& url,
+  // `WebAppUrlLoader`:
+  void LoadUrl(content::NavigationController::LoadURLParams load_url_params,
                content::WebContents* web_contents,
                UrlComparison url_comparison,
                ResultCallback callback) override;

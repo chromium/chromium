@@ -12,7 +12,24 @@
 
 namespace blink {
 namespace {
+
 using ShadowIncludingTreeOrderTraversalTest = PageTestBase;
+using ::testing::ElementsAre;
+
+// Traverses `traversal_range` and collects the element ids of the `Element`s it
+// discovers. If a node is a shadow root, it collects the string "shadow"
+// instead.
+Vector<String> GatherElementIdsFromTraversalRange(auto traversal_range) {
+  Vector<String> ids;
+  for (Node& node : traversal_range) {
+    if (auto* el = DynamicTo<Element>(node)) {
+      ids.push_back(el->GetIdAttribute());
+    } else if (node.IsShadowRoot()) {
+      ids.push_back("shadow");
+    }
+  }
+  return ids;
+}
 
 void RemoveWhiteSpaceOnlyTextNodes(ContainerNode& container) {
   HeapVector<Member<Text>> to_remove;
@@ -28,7 +45,7 @@ void RemoveWhiteSpaceOnlyTextNodes(ContainerNode& container) {
 }
 
 TEST_F(ShadowIncludingTreeOrderTraversalTest, Next) {
-  GetDocument().body()->setInnerHTMLWithDeclarativeShadowDOMForTesting(R"HTML(
+  GetDocument().body()->setHTMLUnsafe(R"HTML(
     <div id="c0">
       <div id="c00">
         <template shadowrootmode="open"></template>
@@ -116,7 +133,7 @@ TEST_F(ShadowIncludingTreeOrderTraversalTest, Next) {
 }
 
 TEST_F(ShadowIncludingTreeOrderTraversalTest, DescendantsOf) {
-  GetDocument().body()->setInnerHTMLWithDeclarativeShadowDOMForTesting(R"HTML(
+  GetDocument().body()->setHTMLUnsafe(R"HTML(
     <div id="a0">
       <div id="a00"></div>
       <div id="a01"></div>
@@ -127,19 +144,53 @@ TEST_F(ShadowIncludingTreeOrderTraversalTest, DescendantsOf) {
           <div id="b00"></div>
         </div>
       </template>
-      <div id="a10">
+      <div id="a10"></div>
     </div>
     <div id="a2"></div>
   )HTML");
 
-  Vector<String> traversed_ids;
-  for (const Node& node : ShadowIncludingTreeOrderTraversal::DescendantsOf(
-           *GetDocument().body())) {
-    if (auto* el = DynamicTo<Element>(node))
-      traversed_ids.push_back(el->GetIdAttribute());
-  }
-  EXPECT_THAT(traversed_ids, ::testing::ElementsAre("a0", "a00", "a01", "a1",
-                                                    "b0", "b00", "a10", "a2"));
+  EXPECT_THAT(GatherElementIdsFromTraversalRange(
+                  ShadowIncludingTreeOrderTraversal::DescendantsOf(
+                      *GetDocument().body())),
+              ElementsAre("a0", "a00", "a01", "a1", "shadow", "b0", "b00",
+                          "a10", "a2"));
 }
+
+TEST_F(ShadowIncludingTreeOrderTraversalTest, ChildrenOf) {
+  GetDocument().body()->setHTMLUnsafe(R"HTML(
+    <div id="a0">
+      <div id="a00"></div>
+      <div id="a01"></div>
+    </div>
+    <div id="a1">
+      <template shadowrootmode="open">
+        <div id="b0">
+          <div id="b00"></div>
+        </div>
+      </template>
+      <div id="a10"></div>
+    </div>
+    <div id="a2">
+      <template shadowrootmode="open">
+        <slot></slot>
+      </template>
+      <div id="a20"></div>
+    </div>
+  )HTML");
+
+  EXPECT_THAT(
+      GatherElementIdsFromTraversalRange(
+          ShadowIncludingTreeOrderTraversal::ChildrenOf(*GetDocument().body())),
+      ElementsAre("a0", "a1", "a2"));
+  EXPECT_THAT(
+      GatherElementIdsFromTraversalRange(
+          ShadowIncludingTreeOrderTraversal::ChildrenOf(*GetElementById("a1"))),
+      ElementsAre("shadow", "a10"));
+  EXPECT_THAT(
+      GatherElementIdsFromTraversalRange(
+          ShadowIncludingTreeOrderTraversal::ChildrenOf(*GetElementById("a2"))),
+      ElementsAre("shadow", "a20"));
+}
+
 }  // namespace
 }  // namespace blink

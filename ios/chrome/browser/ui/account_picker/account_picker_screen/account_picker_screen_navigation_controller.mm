@@ -161,10 +161,10 @@ constexpr CGFloat kCornerRadius = 12.;
 // Updates the view according to the trait collection.
 - (void)updateViewWithTraitCollection:(UITraitCollection*)collection {
   switch ([self displayStyleWithTraitCollection:collection]) {
-    case kAccountPickerSheetDisplayStyleBottom:
+    case AccountPickerSheetDisplayStyle::kBottom:
       self.view.layer.cornerRadius = 0;
       break;
-    case kAccountPickerSheetDisplayStyleCentered:
+    case AccountPickerSheetDisplayStyle::kCentered:
       self.view.layer.cornerRadius = kCornerRadius;
       break;
   }
@@ -178,8 +178,8 @@ constexpr CGFloat kCornerRadius = 12.;
   BOOL hasAtLeastOneCompactSize =
       (collection.horizontalSizeClass == UIUserInterfaceSizeClassCompact) ||
       (collection.verticalSizeClass == UIUserInterfaceSizeClassCompact);
-  return hasAtLeastOneCompactSize ? kAccountPickerSheetDisplayStyleBottom
-                                  : kAccountPickerSheetDisplayStyleCentered;
+  return hasAtLeastOneCompactSize ? AccountPickerSheetDisplayStyle::kBottom
+                                  : AccountPickerSheetDisplayStyle::kCentered;
 }
 
 @end

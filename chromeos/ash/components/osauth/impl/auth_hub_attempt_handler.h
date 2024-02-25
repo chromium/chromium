@@ -5,6 +5,8 @@
 #ifndef CHROMEOS_ASH_COMPONENTS_OSAUTH_IMPL_AUTH_HUB_ATTEMPT_HANDLER_H_
 #define CHROMEOS_ASH_COMPONENTS_OSAUTH_IMPL_AUTH_HUB_ATTEMPT_HANDLER_H_
 
+#include <optional>
+
 #include "base/callback_list.h"
 #include "base/containers/flat_map.h"
 #include "base/functional/callback.h"
@@ -15,7 +17,6 @@
 #include "chromeos/ash/components/osauth/public/auth_factor_engine.h"
 #include "chromeos/ash/components/osauth/public/auth_factor_status_consumer.h"
 #include "chromeos/ash/components/osauth/public/common_types.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ash {
 
@@ -126,7 +127,7 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_OSAUTH) AuthHubAttemptHandler
 
   base::flat_map<AshAuthFactor, FactorAttemptState> factor_state_;
 
-  absl::optional<AshAuthFactor> ongoing_attempt_factor_;
+  std::optional<AshAuthFactor> ongoing_attempt_factor_;
   bool authenticated_ = false;
 
   bool shutting_down_ = false;

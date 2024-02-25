@@ -1,4 +1,4 @@
-(async function(testRunner) {
+(async function(/** @type {import('test_runner').TestRunner} */ testRunner) {
   var {page, session, dp} = await testRunner.startBlank(`Tests to ensure response interception works with cross origin redirects.`);
   dp.Network.onRequestIntercepted(event => {
       testRunner.log('Request Intercepted: ' + event.params.request.url);

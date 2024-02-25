@@ -5,10 +5,11 @@
 #ifndef CHROME_BROWSER_ASH_GUEST_OS_GUEST_OS_EXTERNAL_PROTOCOL_HANDLER_H_
 #define CHROME_BROWSER_ASH_GUEST_OS_GUEST_OS_EXTERNAL_PROTOCOL_HANDLER_H_
 
+#include <optional>
+#include <string_view>
+
 #include "base/functional/callback.h"
-#include "base/strings/string_piece.h"
 #include "base/time/time.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
 class Profile;
@@ -21,11 +22,10 @@ class GuestOsUrlHandler {
   using HandlerCallback = base::RepeatingCallback<void(Profile*, const GURL&)>;
 
   // Returns handler for `url` if one exists.
-  static absl::optional<GuestOsUrlHandler> GetForUrl(Profile* profile,
-                                                     const GURL& url);
+  static std::optional<GuestOsUrlHandler> GetForUrl(Profile* profile,
+                                                    const GURL& url);
 
-  GuestOsUrlHandler(const base::StringPiece name,
-                    const HandlerCallback handler);
+  GuestOsUrlHandler(const std::string_view name, const HandlerCallback handler);
   GuestOsUrlHandler(const GuestOsUrlHandler& other);
   ~GuestOsUrlHandler();
 

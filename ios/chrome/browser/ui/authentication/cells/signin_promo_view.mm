@@ -11,15 +11,13 @@
 #import "build/branding_buildflags.h"
 #import "components/signin/public/base/signin_metrics.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
+#import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/browser/ui/authentication/cells/signin_promo_view_constants.h"
 #import "ios/chrome/browser/ui/authentication/cells/signin_promo_view_delegate.h"
-#import "ios/chrome/browser/ui/content_suggestions/content_suggestions_feature.h"
-#import "ios/chrome/common/button_configuration_util.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
 #import "ios/chrome/common/ui/util/pointer_interaction_util.h"
-#import "ios/chrome/common/ui/util/sdk_forward_declares.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ui/base/l10n/l10n_util.h"
 
@@ -71,8 +69,8 @@ const PromoStyleValues kCompactVerticalStyle = {
     42.0,  // kButtonTitleHorizontalContentInset
     9.0,   // kButtonTitleVerticalContentInset
     8.0,   // kButtonCornerRadius
-    -8.0,  // kCloseButtonTrailingMargin
-    8.0,   // kCloseButtonTopMargin
+    -9.0,  // kCloseButtonTrailingMargin
+    9.0,   // kCloseButtonTopMargin
     12.0,  // kMainPromoSubViewSpacing
     5.0,   // kButtonStackViewSubViewSpacing
 };
@@ -84,7 +82,7 @@ const PromoStyleValues kCompactHorizontalStyle = {
     14.0,  // kContentStackViewSubViewSpacing
     0.0,   // kTextStackViewSubViewSpacing
     0.0,   // kButtonTitleHorizontalContentInset
-    0.0,   // kButtonTitleVerticalContentInset
+    3.0,   // kButtonTitleVerticalContentInset
     0.0,   // kButtonCornerRadius
     -9.0,  // kCloseButtonTrailingMargin
     9.0,   // kCloseButtonTopMargin
@@ -99,7 +97,7 @@ constexpr CGFloat kStackViewHorizontalPadding = 16.0;
 // Non-profile icon background corner radius.
 constexpr CGFloat kNonProfileIconCornerRadius = 14;
 // Size for the close button width and height.
-constexpr CGFloat kCloseButtonWidthHeight = 24;
+constexpr CGFloat kCloseButtonWidthHeight = 16;
 // Sizes of the signin promo image.
 constexpr CGFloat kProfileImageHeightWidth = 32.0;
 constexpr CGFloat kProfileImageCompactHeightWidth = 48.0;
@@ -172,18 +170,10 @@ constexpr CGFloat kCompactStyleTextSize = 15.0;
 
     // Create and setup primary button.
     _primaryButton = [[UIButton alloc] init];
-    if (IsUIButtonConfigurationEnabled()) {
-      UIButtonConfiguration* buttonConfiguration =
-          [UIButtonConfiguration plainButtonConfiguration];
-      buttonConfiguration.titleLineBreakMode = NSLineBreakByTruncatingTail;
-      _primaryButton.configuration = buttonConfiguration;
-    } else {
-      [_primaryButton.titleLabel
-          setFont:[UIFont preferredFontForTextStyle:UIFontTextStyleHeadline]];
-      _primaryButton.titleLabel.adjustsFontSizeToFitWidth = YES;
-      _primaryButton.titleLabel.minimumScaleFactor = 0.7;
-      _primaryButton.titleLabel.lineBreakMode = NSLineBreakByTruncatingTail;
-    }
+    UIButtonConfiguration* buttonConfiguration =
+        [UIButtonConfiguration plainButtonConfiguration];
+    buttonConfiguration.titleLineBreakMode = NSLineBreakByTruncatingTail;
+    _primaryButton.configuration = buttonConfiguration;
 
     _primaryButton.accessibilityIdentifier = kSigninPromoPrimaryButtonId;
     _primaryButton.translatesAutoresizingMaskIntoConstraints = NO;
@@ -242,8 +232,13 @@ constexpr CGFloat kCompactStyleTextSize = 15.0;
     [_closeButton addTarget:self
                      action:@selector(onCloseButtonAction:)
            forControlEvents:UIControlEventTouchUpInside];
-    [_closeButton setImage:[UIImage imageNamed:@"signin_promo_close_gray"]
-                  forState:UIControlStateNormal];
+    UIImageSymbolConfiguration* config = [UIImageSymbolConfiguration
+        configurationWithPointSize:kCloseButtonWidthHeight
+                            weight:UIImageSymbolWeightSemibold];
+    UIImage* closeButtonImage =
+        DefaultSymbolWithConfiguration(@"xmark", config);
+    [_closeButton setImage:closeButtonImage forState:UIControlStateNormal];
+    _closeButton.tintColor = [UIColor colorNamed:kTextTertiaryColor];
     _closeButton.hidden = YES;
     _closeButton.pointerInteractionEnabled = YES;
     [self addSubview:_closeButton];
@@ -315,7 +310,7 @@ constexpr CGFloat kCompactStyleTextSize = 15.0;
           [UIColor colorNamed:kPrimaryBackgroundColor];
       // TODO(b/287118358): Cleanup IsMagicStackEnabled() code from the sync
       // promo after experiment.
-      if (IsMagicStackEnabled()) {
+      if (IsMagicStackEnabled() && !IsFeedContainmentEnabled()) {
         self.imageView.backgroundColor = [UIColor colorNamed:kGrey100Color];
       }
       self.imageView.layer.cornerRadius = kNonProfileIconCornerRadius;
@@ -389,40 +384,33 @@ constexpr CGFloat kCompactStyleTextSize = 15.0;
 
 // Configures primary button with a standard font.
 - (void)configurePrimaryButtonWithTitle:(NSString*)title {
-  if (IsUIButtonConfigurationEnabled()) {
-    // Declaring variables that are used throughout different switch cases.
-    UIFont* font;
-    NSAttributedString* attributedTitle;
-    NSDictionary* attributes;
-    UIButtonConfiguration* buttonConfiguration =
-        self.primaryButton.configuration;
+  // Declaring variables that are used throughout different switch cases.
+  UIFont* font;
+  NSAttributedString* attributedTitle;
+  NSDictionary* attributes;
+  UIButtonConfiguration* buttonConfiguration = self.primaryButton.configuration;
 
-    // Customize UIButton based on SigninPromoViewStyle.
-    switch (self.promoViewStyle) {
-      case SigninPromoViewStyleCompactVertical:
-        font = [[UIFont preferredFontForTextStyle:UIFontTextStyleHeadline]
-            fontWithSize:kSignInPromoHeadlineFontSize];
-        attributes = @{NSFontAttributeName : font};
-        attributedTitle =
-            [[NSAttributedString alloc] initWithString:title
-                                            attributes:attributes];
-        buttonConfiguration.attributedTitle = attributedTitle;
-        break;
-      case SigninPromoViewStyleStandard:
-      case SigninPromoViewStyleCompactHorizontal:
-      case SigninPromoViewStyleOnlyButton:
-        font = [UIFont preferredFontForTextStyle:UIFontTextStyleHeadline];
-        attributes = @{NSFontAttributeName : font};
-        attributedTitle =
-            [[NSAttributedString alloc] initWithString:title
-                                            attributes:attributes];
-        buttonConfiguration.attributedTitle = attributedTitle;
-        break;
-    }
-    self.primaryButton.configuration = buttonConfiguration;
-  } else {
-    [self.primaryButton setTitle:title forState:UIControlStateNormal];
+  // Customize UIButton based on SigninPromoViewStyle.
+  switch (self.promoViewStyle) {
+    case SigninPromoViewStyleCompactVertical:
+      font = [[UIFont preferredFontForTextStyle:UIFontTextStyleHeadline]
+          fontWithSize:kSignInPromoHeadlineFontSize];
+      attributes = @{NSFontAttributeName : font};
+      attributedTitle = [[NSAttributedString alloc] initWithString:title
+                                                        attributes:attributes];
+      buttonConfiguration.attributedTitle = attributedTitle;
+      break;
+    case SigninPromoViewStyleStandard:
+    case SigninPromoViewStyleCompactHorizontal:
+    case SigninPromoViewStyleOnlyButton:
+      font = [UIFont preferredFontForTextStyle:UIFontTextStyleHeadline];
+      attributes = @{NSFontAttributeName : font};
+      attributedTitle = [[NSAttributedString alloc] initWithString:title
+                                                        attributes:attributes];
+      buttonConfiguration.attributedTitle = attributedTitle;
+      break;
   }
+  self.primaryButton.configuration = buttonConfiguration;
 }
 
 #pragma mark - NSObject(Accessibility)
@@ -497,8 +485,8 @@ constexpr CGFloat kCompactStyleTextSize = 15.0;
     case SigninPromoViewModeSigninWithAccount:
       [self activateSigninWithAccountMode];
       return;
-    case SigninPromoViewModeSyncWithPrimaryAccount:
-      [self activateSyncWithPrimaryAccountMode];
+    case SigninPromoViewModeSignedInWithPrimaryAccount:
+      [self activateSignedInWithPrimaryAccountMode];
       return;
   }
 }
@@ -599,6 +587,7 @@ constexpr CGFloat kCompactStyleTextSize = 15.0;
       // Lays out content vertically for standard view.
       self.buttonVerticalStackView.spacing =
           kStandardPromoStyle.kButtonStackViewSubViewSpacing;
+      self.buttonVerticalStackView.alignment = UIStackViewAlignmentFill;
       self.mainPromoStackView.spacing =
           kStandardPromoStyle.kMainPromoSubViewSpacing;
       self.contentStackView.axis = UILayoutConstraintAxisVertical;
@@ -621,29 +610,16 @@ constexpr CGFloat kCompactStyleTextSize = 15.0;
           kStandardPromoStyle.kButtonCornerRadius;
       self.primaryButton.clipsToBounds = YES;
 
-      if (IsUIButtonConfigurationEnabled()) {
-        UIButtonConfiguration* buttonConfiguration =
-            self.primaryButton.configuration;
-        buttonConfiguration.baseForegroundColor =
-            [UIColor colorNamed:kSolidButtonTextColor];
-        buttonConfiguration.contentInsets = NSDirectionalEdgeInsetsMake(
-            kStandardPromoStyle.kButtonTitleVerticalContentInset,
-            kStandardPromoStyle.kButtonTitleHorizontalContentInset,
-            kStandardPromoStyle.kButtonTitleVerticalContentInset,
-            kStandardPromoStyle.kButtonTitleHorizontalContentInset);
-        self.primaryButton.configuration = buttonConfiguration;
-      } else {
-        [self.primaryButton
-            setTitleColor:[UIColor colorNamed:kSolidButtonTextColor]
-                 forState:UIControlStateNormal];
-        UIEdgeInsets contentEdgeInsets = UIEdgeInsetsMake(
-            kStandardPromoStyle.kButtonTitleVerticalContentInset,
-            kStandardPromoStyle.kButtonTitleHorizontalContentInset,
-            kStandardPromoStyle.kButtonTitleVerticalContentInset,
-            kStandardPromoStyle.kButtonTitleHorizontalContentInset);
-        SetContentEdgeInsets(self.primaryButton, contentEdgeInsets);
-      }
-
+      UIButtonConfiguration* buttonConfiguration =
+          self.primaryButton.configuration;
+      buttonConfiguration.baseForegroundColor =
+          [UIColor colorNamed:kSolidButtonTextColor];
+      buttonConfiguration.contentInsets = NSDirectionalEdgeInsetsMake(
+          kStandardPromoStyle.kButtonTitleVerticalContentInset,
+          kStandardPromoStyle.kButtonTitleHorizontalContentInset,
+          kStandardPromoStyle.kButtonTitleVerticalContentInset,
+          kStandardPromoStyle.kButtonTitleHorizontalContentInset);
+      self.primaryButton.configuration = buttonConfiguration;
       constraintsToActivate = self.standardLayoutConstraints;
       break;
     }
@@ -677,32 +653,20 @@ constexpr CGFloat kCompactStyleTextSize = 15.0;
           kCompactHorizontalStyle.kButtonCornerRadius;
       self.primaryButton.clipsToBounds = NO;
 
-      if (IsUIButtonConfigurationEnabled()) {
-        UIButtonConfiguration* buttonConfiguration =
-            self.primaryButton.configuration;
-        buttonConfiguration.baseForegroundColor =
-            [UIColor colorNamed:kBlueColor];
-        buttonConfiguration.contentInsets = NSDirectionalEdgeInsetsMake(
-            kCompactHorizontalStyle.kButtonTitleVerticalContentInset + 3,
-            kCompactHorizontalStyle.kButtonTitleHorizontalContentInset,
-            kCompactHorizontalStyle.kButtonTitleVerticalContentInset + 3,
-            kCompactHorizontalStyle.kButtonTitleHorizontalContentInset);
-        self.primaryButton.configuration = buttonConfiguration;
-      } else {
-        [self.primaryButton setTitleColor:[UIColor colorNamed:kBlueColor]
-                                 forState:UIControlStateNormal];
-        UIEdgeInsets contentEdgeInsets = UIEdgeInsetsMake(
-            kCompactHorizontalStyle.kButtonTitleVerticalContentInset,
-            kCompactHorizontalStyle.kButtonTitleHorizontalContentInset,
-            kCompactHorizontalStyle.kButtonTitleVerticalContentInset,
-            kCompactHorizontalStyle.kButtonTitleHorizontalContentInset);
-        SetContentEdgeInsets(self.primaryButton, contentEdgeInsets);
-      }
-
+      UIButtonConfiguration* buttonConfiguration =
+          self.primaryButton.configuration;
+      buttonConfiguration.baseForegroundColor = [UIColor colorNamed:kBlueColor];
+      buttonConfiguration.contentInsets = NSDirectionalEdgeInsetsMake(
+          kCompactHorizontalStyle.kButtonTitleVerticalContentInset,
+          kCompactHorizontalStyle.kButtonTitleHorizontalContentInset,
+          kCompactHorizontalStyle.kButtonTitleVerticalContentInset,
+          kCompactHorizontalStyle.kButtonTitleHorizontalContentInset);
+      self.primaryButton.configuration = buttonConfiguration;
       constraintsToActivate = self.compactHorizontalLayoutConstraints;
       break;
     }
     case SigninPromoViewStyleCompactVertical: {
+      self.buttonVerticalStackView.alignment = UIStackViewAlignmentFill;
       self.contentStackView.axis = UILayoutConstraintAxisVertical;
       self.contentStackView.spacing =
           kCompactVerticalStyle.kContentStackViewSubViewSpacing;
@@ -725,7 +689,7 @@ constexpr CGFloat kCompactStyleTextSize = 15.0;
           [UIColor colorNamed:kBackgroundColor];
       // TODO(b/287118358): Cleanup IsMagicStackEnabled() code from the sync
       // promo after experiment.
-      if (IsMagicStackEnabled()) {
+      if (IsMagicStackEnabled() && !IsFeedContainmentEnabled()) {
         self.primaryButton.backgroundColor =
             [UIColor colorNamed:kBlueHaloColor];
       }
@@ -733,35 +697,20 @@ constexpr CGFloat kCompactStyleTextSize = 15.0;
           kCompactVerticalStyle.kButtonCornerRadius;
       self.primaryButton.clipsToBounds = YES;
 
-      if (IsUIButtonConfigurationEnabled()) {
-        UIButtonConfiguration* buttonConfiguration =
-            self.primaryButton.configuration;
-        buttonConfiguration.baseForegroundColor =
-            [UIColor colorNamed:kBlueColor];
-        buttonConfiguration.contentInsets = NSDirectionalEdgeInsetsMake(
-            kCompactVerticalStyle.kButtonTitleVerticalContentInset,
-            kCompactVerticalStyle.kButtonTitleHorizontalContentInset,
-            kCompactVerticalStyle.kButtonTitleVerticalContentInset,
-            kCompactVerticalStyle.kButtonTitleHorizontalContentInset);
-        self.primaryButton.configuration = buttonConfiguration;
-      } else {
-        [self.primaryButton setTitleColor:[UIColor colorNamed:kBlueColor]
-                                 forState:UIControlStateNormal];
-        self.primaryButton.titleLabel.font =
-            [[UIFont preferredFontForTextStyle:UIFontTextStyleHeadline]
-                fontWithSize:kSignInPromoHeadlineFontSize];
-        UIEdgeInsets contentEdgeInsets = UIEdgeInsetsMake(
-            kCompactVerticalStyle.kButtonTitleVerticalContentInset,
-            kCompactVerticalStyle.kButtonTitleHorizontalContentInset,
-            kCompactVerticalStyle.kButtonTitleVerticalContentInset,
-            kCompactVerticalStyle.kButtonTitleHorizontalContentInset);
-        SetContentEdgeInsets(self.primaryButton, contentEdgeInsets);
-      }
-
+      UIButtonConfiguration* buttonConfiguration =
+          self.primaryButton.configuration;
+      buttonConfiguration.baseForegroundColor = [UIColor colorNamed:kBlueColor];
+      buttonConfiguration.contentInsets = NSDirectionalEdgeInsetsMake(
+          kCompactVerticalStyle.kButtonTitleVerticalContentInset,
+          kCompactVerticalStyle.kButtonTitleHorizontalContentInset,
+          kCompactVerticalStyle.kButtonTitleVerticalContentInset,
+          kCompactVerticalStyle.kButtonTitleHorizontalContentInset);
+      self.primaryButton.configuration = buttonConfiguration;
       constraintsToActivate = self.compactVerticalLayoutConstraints;
       break;
     }
     case SigninPromoViewStyleOnlyButton: {
+      self.buttonVerticalStackView.alignment = UIStackViewAlignmentCenter;
       self.textVerticalStackView.hidden = YES;
       self.secondaryButton.hidden = YES;
       self.imageView.hidden = YES;
@@ -774,27 +723,16 @@ constexpr CGFloat kCompactStyleTextSize = 15.0;
           kStandardPromoStyle.kButtonCornerRadius;
       self.primaryButton.clipsToBounds = YES;
 
-      if (IsUIButtonConfigurationEnabled()) {
-        self.primaryButton.configuration.baseForegroundColor =
-            [UIColor colorNamed:kSolidButtonTextColor];
-        self.primaryButton.configuration.contentInsets =
-            NSDirectionalEdgeInsetsMake(
-                kStandardPromoStyle.kButtonTitleVerticalContentInset,
-                kStandardPromoStyle.kButtonTitleHorizontalContentInset,
-                kStandardPromoStyle.kButtonTitleVerticalContentInset,
-                kStandardPromoStyle.kButtonTitleHorizontalContentInset);
-      } else {
-        [self.primaryButton
-            setTitleColor:[UIColor colorNamed:kSolidButtonTextColor]
-                 forState:UIControlStateNormal];
-        UIEdgeInsets contentEdgeInsets = UIEdgeInsetsMake(
-            kStandardPromoStyle.kButtonTitleVerticalContentInset,
-            kStandardPromoStyle.kButtonTitleHorizontalContentInset,
-            kStandardPromoStyle.kButtonTitleVerticalContentInset,
-            kStandardPromoStyle.kButtonTitleHorizontalContentInset);
-        SetContentEdgeInsets(self.primaryButton, contentEdgeInsets);
-      }
-
+      UIButtonConfiguration* buttonConfiguration =
+          self.primaryButton.configuration;
+      buttonConfiguration.baseForegroundColor =
+          [UIColor colorNamed:kSolidButtonTextColor];
+      buttonConfiguration.contentInsets = NSDirectionalEdgeInsetsMake(
+          kStandardPromoStyle.kButtonTitleVerticalContentInset,
+          kHorizontalPadding,
+          kStandardPromoStyle.kButtonTitleVerticalContentInset,
+          kHorizontalPadding);
+      self.primaryButton.configuration = buttonConfiguration;
       constraintsToActivate = self.standardLayoutConstraints;
       break;
     }
@@ -835,9 +773,9 @@ constexpr CGFloat kCompactStyleTextSize = 15.0;
   self.secondaryButton.hidden = NO;
 }
 
-// Updates promo for sync with account mode.
-- (void)activateSyncWithPrimaryAccountMode {
-  DCHECK_EQ(_mode, SigninPromoViewModeSyncWithPrimaryAccount);
+// Updates promo for a signed-in account mode.
+- (void)activateSignedInWithPrimaryAccountMode {
+  DCHECK_EQ(_mode, SigninPromoViewModeSignedInWithPrimaryAccount);
   self.secondaryButton.hidden = YES;
 }
 
@@ -864,8 +802,8 @@ constexpr CGFloat kCompactStyleTextSize = 15.0;
       [self.delegate signinPromoViewDidTapSigninWithNewAccount:self];
       break;
     case SigninPromoViewModeSigninWithAccount:
-    case SigninPromoViewModeSyncWithPrimaryAccount:
-      [self.delegate signinPromoViewDidTapSigninWithDefaultAccount:self];
+    case SigninPromoViewModeSignedInWithPrimaryAccount:
+      [self.delegate signinPromoViewDidTapPrimaryButtonWithDefaultAccount:self];
       break;
   }
 }

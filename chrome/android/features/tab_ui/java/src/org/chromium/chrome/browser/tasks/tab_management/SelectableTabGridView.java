@@ -18,9 +18,7 @@ import androidx.vectordrawable.graphics.drawable.AnimatedVectorDrawableCompat;
 import org.chromium.chrome.tab_ui.R;
 import org.chromium.components.browser_ui.widget.selectable_list.SelectableItemView;
 
-/**
- * Holds the view for a selectable tab grid.
- */
+/** Holds the view for a selectable tab grid. */
 public class SelectableTabGridView extends SelectableItemView<Integer> {
     public SelectableTabGridView(Context context, AttributeSet attrs) {
         super(context, attrs);
@@ -30,37 +28,52 @@ public class SelectableTabGridView extends SelectableItemView<Integer> {
     @Override
     protected void onFinishInflate() {
         super.onFinishInflate();
+        var resources = getResources();
 
-        Drawable selectionListIcon = ResourcesCompat.getDrawable(
-                getResources(), R.drawable.tab_grid_selection_list_icon, getContext().getTheme());
+        Drawable selectionListIcon =
+                ResourcesCompat.getDrawable(
+                        resources,
+                        R.drawable.tab_grid_selection_list_icon,
+                        getContext().getTheme());
         ImageView actionButton = (ImageView) fastFindViewById(R.id.action_button);
 
         if (actionButton != null) {
-            InsetDrawable drawable = new InsetDrawable(selectionListIcon,
-                    (int) getContext().getResources().getDimension(
-                            R.dimen.selection_tab_grid_toggle_button_inset));
+            InsetDrawable drawable =
+                    new InsetDrawable(
+                            selectionListIcon,
+                            (int)
+                                    resources.getDimension(
+                                            R.dimen.selection_tab_grid_toggle_button_inset));
             actionButton.setBackground(drawable);
             // Remove the original content from SelectableItemView since we are not using them.
             removeView(mContentView);
         } else {
             actionButton = mEndButtonView;
             actionButton.setVisibility(View.VISIBLE);
-            InsetDrawable drawable = new InsetDrawable(selectionListIcon,
-                    (int) getResources().getDimension(
-                            R.dimen.selection_tab_list_toggle_button_lateral_inset),
-                    (int) getResources().getDimension(
-                            R.dimen.selection_tab_list_toggle_button_vertical_inset),
-                    (int) getResources().getDimension(
-                            R.dimen.selection_tab_list_toggle_button_lateral_inset),
-                    (int) getResources().getDimension(
-                            R.dimen.selection_tab_list_toggle_button_vertical_inset));
+            int lateralInset =
+                    (int)
+                            resources.getDimension(
+                                    R.dimen.selection_tab_list_toggle_button_lateral_inset);
+            int verticalInset =
+                    (int)
+                            resources.getDimension(
+                                    R.dimen.selection_tab_list_toggle_button_vertical_inset);
+            InsetDrawable drawable =
+                    new InsetDrawable(
+                            selectionListIcon,
+                            lateralInset,
+                            verticalInset,
+                            lateralInset,
+                            verticalInset);
             actionButton.setBackground(drawable);
             mStartIconView.setBackground(null);
         }
-        actionButton.getBackground().setLevel(
-                getResources().getInteger(R.integer.list_item_level_default));
-        actionButton.setImageDrawable(AnimatedVectorDrawableCompat.create(
-                getContext(), R.drawable.ic_check_googblue_20dp_animated));
+        actionButton
+                .getBackground()
+                .setLevel(resources.getInteger(R.integer.list_item_level_default));
+        actionButton.setImageDrawable(
+                AnimatedVectorDrawableCompat.create(
+                        getContext(), R.drawable.ic_check_googblue_20dp_animated));
     }
 
     @Override

@@ -5,8 +5,9 @@
 package org.chromium.chrome.browser.download;
 
 import org.chromium.base.ObserverList;
+import org.chromium.base.shared_preferences.SharedPreferencesManager;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
-import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
+import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.components.offline_items_collection.ContentId;
 
 import java.util.ArrayList;
@@ -15,9 +16,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
-/**
- * Class for maintaining all entries of DownloadSharedPreferenceEntry.
- */
+/** Class for maintaining all entries of DownloadSharedPreferenceEntry. */
 public class DownloadSharedPreferenceHelper {
     /** Observes modifications to the SharedPreferences for {@link DownloadItem}s. */
     public interface Observer {
@@ -37,15 +36,13 @@ public class DownloadSharedPreferenceHelper {
                 new DownloadSharedPreferenceHelper();
     }
 
-    /**
-     * Creates DownloadSharedPreferenceHelper.
-     */
+    /** Creates DownloadSharedPreferenceHelper. */
     public static DownloadSharedPreferenceHelper getInstance() {
         return LazyHolder.INSTANCE;
     }
 
     private DownloadSharedPreferenceHelper() {
-        mSharedPrefs = SharedPreferencesManager.getInstance();
+        mSharedPrefs = ChromeSharedPreferences.getInstance();
         parseDownloadSharedPrefs();
     }
 
@@ -92,7 +89,7 @@ public class DownloadSharedPreferenceHelper {
      * @param pendingEntry  The DownloadSharedPreference entry to be added/replaced.
      */
     public void addOrReplaceSharedPreferenceEntry(DownloadSharedPreferenceEntry pendingEntry) {
-        addOrReplaceSharedPreferenceEntry(pendingEntry, false /* forceCommit */);
+        addOrReplaceSharedPreferenceEntry(pendingEntry, /* forceCommit= */ false);
     }
 
     /**
@@ -124,15 +121,14 @@ public class DownloadSharedPreferenceHelper {
         return mDownloadSharedPreferenceEntries;
     }
 
-    /**
-     * Parse a list of the DownloadSharedPreferenceEntry from |mSharedPrefs|.
-     */
+    /** Parse a list of the DownloadSharedPreferenceEntry from |mSharedPrefs|. */
     private void parseDownloadSharedPrefs() {
         if (!mSharedPrefs.contains(ChromePreferenceKeys.DOWNLOAD_PENDING_DOWNLOAD_NOTIFICATIONS)) {
             return;
         }
-        Set<String> entries = DownloadManagerService.getStoredDownloadInfo(
-                mSharedPrefs, ChromePreferenceKeys.DOWNLOAD_PENDING_DOWNLOAD_NOTIFICATIONS);
+        Set<String> entries =
+                DownloadManagerService.getStoredDownloadInfo(
+                        mSharedPrefs, ChromePreferenceKeys.DOWNLOAD_PENDING_DOWNLOAD_NOTIFICATIONS);
         for (String entryString : entries) {
             DownloadSharedPreferenceEntry entry =
                     DownloadSharedPreferenceEntry.parseFromString(entryString);
@@ -182,7 +178,10 @@ public class DownloadSharedPreferenceHelper {
         for (int i = 0; i < mDownloadSharedPreferenceEntries.size(); ++i) {
             entries.add(mDownloadSharedPreferenceEntries.get(i).getSharedPreferenceString());
         }
-        DownloadManagerService.storeDownloadInfo(mSharedPrefs,
-                ChromePreferenceKeys.DOWNLOAD_PENDING_DOWNLOAD_NOTIFICATIONS, entries, forceCommit);
+        DownloadManagerService.storeDownloadInfo(
+                mSharedPrefs,
+                ChromePreferenceKeys.DOWNLOAD_PENDING_DOWNLOAD_NOTIFICATIONS,
+                entries,
+                forceCommit);
     }
 }

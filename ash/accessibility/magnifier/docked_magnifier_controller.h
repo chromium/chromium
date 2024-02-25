@@ -187,7 +187,7 @@ class ASH_EXPORT DockedMagnifierController
   // The current root window of the source display from which we are reflecting
   // and magnifying into the viewport. It is set to |nullptr| when the magnifier
   // is disabled. The viewport is placed on the same display.
-  raw_ptr<aura::Window, ExperimentalAsh> current_source_root_window_ = nullptr;
+  raw_ptr<aura::Window> current_source_root_window_ = nullptr;
 
   // The height below which the point of interest is not allowed to go. This is
   // so that we can avoid mirroring the magnifier viewport into itself.
@@ -201,7 +201,7 @@ class ASH_EXPORT DockedMagnifierController
 
   // The viewport widget which occupies the top 1/4th of the current display on
   // which it is shown. It contains all the magnifier related layer.
-  raw_ptr<views::Widget, ExperimentalAsh> viewport_widget_ = nullptr;
+  raw_ptr<views::Widget> viewport_widget_ = nullptr;
 
   // A solid color layer that shows a dark gray background behind the magnifier
   // layer.
@@ -218,7 +218,7 @@ class ASH_EXPORT DockedMagnifierController
 
   // The pref service of the currently active user. Can be null in
   // ash_unittests.
-  raw_ptr<PrefService, ExperimentalAsh> active_user_pref_service_ = nullptr;
+  raw_ptr<PrefService> active_user_pref_service_ = nullptr;
 
   std::unique_ptr<PrefChangeRegistrar> pref_change_registrar_;
 

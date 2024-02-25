@@ -51,12 +51,11 @@
 #include "net/dns/mock_host_resolver.h"
 #include "net/test/embedded_test_server/controllable_http_response.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
-#include "services/network/public/cpp/corb/corb_impl.h"
-#include "services/network/public/cpp/corb/orb_impl.h"
 #include "services/network/public/cpp/features.h"
 #include "services/network/public/cpp/network_switches.h"
 #include "services/network/test/test_url_loader_client.h"
 #include "testing/gmock/include/gmock/gmock.h"
+#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/web_preferences/web_preferences.h"
 #include "third_party/blink/public/mojom/loader/resource_load_info.mojom-shared.h"
 
@@ -64,8 +63,6 @@ namespace content {
 
 using testing::Not;
 using testing::HasSubstr;
-using Action = network::corb::CrossOriginReadBlocking::Action;
-using CorbMimeType = network::corb::CrossOriginReadBlocking::MimeType;
 
 namespace {
 
@@ -171,7 +168,7 @@ class RequestInterceptor {
       EXPECT_EQ(0, completion_status().decoded_body_length);
 
       // Verify that the console message would have been printed.
-      EXPECT_TRUE(completion_status().should_report_corb_blocking);
+      EXPECT_TRUE(completion_status().should_report_orb_blocking);
 
       // Verify the response code & headers, which depends on whether the
       // response is blocked as an error, or as an empty response.
@@ -193,7 +190,7 @@ class RequestInterceptor {
       }
     } else {
       ASSERT_EQ(net::OK, completion_status().error_code);
-      EXPECT_FALSE(completion_status().should_report_corb_blocking);
+      EXPECT_FALSE(completion_status().should_report_orb_blocking);
       EXPECT_EQ(expected_resource_body, response_body());
     }
   }
@@ -319,7 +316,7 @@ class RequestInterceptor {
                                      consumer_handle),
                 MOJO_RESULT_OK);
       original_client_->OnReceiveResponse(
-          std::move(response_head), std::move(consumer_handle), absl::nullopt);
+          std::move(response_head), std::move(consumer_handle), std::nullopt);
 
       uint32_t num_bytes = response_body.size();
       EXPECT_EQ(MOJO_RESULT_OK,
@@ -337,8 +334,8 @@ class RequestInterceptor {
   const GURL url_to_intercept_;
   URLLoaderInterceptor interceptor_;
 
-  absl::optional<url::Origin> request_initiator_to_inject_;
-  absl::optional<network::mojom::RequestMode> request_mode_to_inject_;
+  std::optional<url::Origin> request_initiator_to_inject_;
+  std::optional<network::mojom::RequestMode> request_mode_to_inject_;
 
   // |pending_test_client_remote_| below is used to transition results of
   // |test_client_.CreateRemote()| into IO thread.
@@ -730,8 +727,11 @@ IN_PROC_BROWSER_TEST_P(CrossSiteDocumentBlockingTest, AllowCorsFetches) {
 
     base::HistogramTester histograms;
     // Fetch and verify results of the fetch.
-    EXPECT_EQ(false, EvalJs(shell(), base::StringPrintf("sendRequest('%s');",
-                                                        resource)));
+    EXPECT_EQ(
+        false,
+        EvalJs(shell(), base::StringPrintf(
+                            "sendRequest('http://bar.com/site_isolation/%s');",
+                            resource)));
   }
 }
 
@@ -1113,8 +1113,8 @@ IN_PROC_BROWSER_TEST_P(CrossSiteDocumentBlockingTest, SharedWorker) {
         port.postMessage('WORKER READY');
       };
   )";
-  std::string worker_script;
-  base::Base64Encode(JsReplace(kWorkerScriptTemplate, bar_url), &worker_script);
+  std::string worker_script =
+      base::Base64Encode(JsReplace(kWorkerScriptTemplate, bar_url));
   const char kWorkerStartTemplate[] = R"(
       new Promise(function (resolve, reject) {
           const worker_url = 'data:application/javascript;base64,' + $1;
@@ -1184,7 +1184,7 @@ IN_PROC_BROWSER_TEST_P(CrossSiteDocumentBlockingTest,
   // avoid injecting net errors).
   FetchHistogramsFromChildProcesses();
   base::HistogramTester histograms;
-  const char* prefetch_injection_script_template = R"(
+  static constexpr char kPrefetchInjectionScriptTemplate[] = R"(
       var link = document.createElement("link");
       link.rel = "prefetch";
       link.href = "/cross-site/b.com%s";
@@ -1197,7 +1197,7 @@ IN_PROC_BROWSER_TEST_P(CrossSiteDocumentBlockingTest,
       document.getElementsByTagName('head')[0].appendChild(link);
   )";
   std::string prefetch_injection_script = base::StringPrintf(
-      prefetch_injection_script_template, kPrefetchResourcePath);
+      kPrefetchInjectionScriptTemplate, kPrefetchResourcePath);
   EXPECT_TRUE(ExecJs(shell()->web_contents(), prefetch_injection_script));
 
   // Respond to the prefetch request in a way that:
@@ -1249,7 +1249,7 @@ IN_PROC_BROWSER_TEST_P(CrossSiteDocumentBlockingTest,
   // Verify that the cached response is available to the same-origin subframe
   // (e.g. that the network cache in the browser process got populated despite
   // CORB blocking).
-  const char* fetch_script_template = R"(
+  static constexpr char kFetchScriptTemplate[] = R"(
       fetch('%s')
           .then(response => response.text())
           .catch(error => {
@@ -1258,7 +1258,7 @@ IN_PROC_BROWSER_TEST_P(CrossSiteDocumentBlockingTest,
               return errorMessage;
           }); )";
   std::string fetch_script =
-      base::StringPrintf(fetch_script_template, kPrefetchResourcePath);
+      base::StringPrintf(kFetchScriptTemplate, kPrefetchResourcePath);
   EXPECT_EQ("<p>contents of the response</p>",
             EvalJs(ChildFrameAt(shell()->web_contents(), 0), fetch_script));
 }
@@ -1365,7 +1365,7 @@ IN_PROC_BROWSER_TEST_F(CrossSiteDocumentBlockingServiceWorkerTest,
   // Build a script for XHR-ing a cross-origin, nosniff HTML document.
   GURL cross_origin_url =
       GetURLOnCrossOriginServer("/site_isolation/nosniff.txt");
-  const char* script_template = R"(
+  static constexpr char kScriptTemplate[] = R"(
       fetch('%s', { mode: 'no-cors' })
           .then(response => response.text())
           .catch(error => {
@@ -1373,7 +1373,7 @@ IN_PROC_BROWSER_TEST_F(CrossSiteDocumentBlockingServiceWorkerTest,
               return errorMessage;
           }); )";
   std::string script =
-      base::StringPrintf(script_template, cross_origin_url.spec().c_str());
+      base::StringPrintf(kScriptTemplate, cross_origin_url.spec().c_str());
 
   // Make sure that base::HistogramTester below starts with a clean slate.
   FetchHistogramsFromChildProcesses();
@@ -1412,8 +1412,73 @@ IN_PROC_BROWSER_TEST_F(CrossSiteDocumentBlockingDisableWebSecurityTest,
   GURL foo_url("http://foo.com/cross_site_document_blocking/request.html");
   EXPECT_TRUE(NavigateToURL(shell(), foo_url));
 
-  ASSERT_EQ(false, EvalJs(shell(), "sendRequest(\"valid.html\");"));
+  ASSERT_EQ(
+      false,
+      EvalJs(shell(),
+             "sendRequest(\"http://bar.com/site_isolation/valid.html\");"));
 }
+
+// Test class to verify that documents are blocked for sandboxed iframes (opaque
+// origins) as well.
+class CrossSiteDocumentBlockingSandboxedIframeTest
+    : public CrossSiteDocumentBlockingTestBase,
+      public ::testing::WithParamInterface<bool> {
+ public:
+  CrossSiteDocumentBlockingSandboxedIframeTest() {
+    if (GetParam()) {
+      feature_list_.InitAndEnableFeature(
+          blink::features::kIsolateSandboxedIframes);
+    } else {
+      feature_list_.InitAndDisableFeature(
+          blink::features::kIsolateSandboxedIframes);
+    }
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+// Tests that documents are blocked from an opaque origin in a sandboxed iframe
+// whose precursor is the same as the parent frame's origin.
+IN_PROC_BROWSER_TEST_P(CrossSiteDocumentBlockingSandboxedIframeTest,
+                       BlockDocumentsFromOpaqueOriginInSameOriginEmbedder) {
+  embedded_test_server()->StartAcceptingConnections();
+  // Load frame at foo.com, then use it to load a same-origin sandboxed iframe
+  // with request.html.
+  GURL foo_url("http://foo.com/title1.html");
+  GURL sandboxed_frame_url(
+      "http://foo.com/cross_site_document_blocking/request.html");
+  EXPECT_TRUE(NavigateToURL(shell(), foo_url));
+
+  TestNavigationObserver observer(shell()->web_contents());
+  const char kScriptTemplate[] = R"(
+      const frm = document.createElement('iframe');
+      frm.sandbox='allow-scripts';
+      frm.src = $1;
+      document.body.append(frm);
+  )";
+  EXPECT_TRUE(ExecJs(shell(), JsReplace(kScriptTemplate, sandboxed_frame_url)));
+  observer.Wait();
+  EXPECT_EQ(sandboxed_frame_url, observer.last_navigation_url());
+
+  RenderFrameHost* child = ChildFrameAt(shell(), 0);
+  ASSERT_TRUE(child);
+  ASSERT_TRUE(child->GetLastCommittedOrigin().opaque());
+
+  ASSERT_EQ(
+      true,
+      EvalJs(child,
+             "sendRequest(\"http://foo.com/site_isolation/valid.html\");"));
+}
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         CrossSiteDocumentBlockingSandboxedIframeTest,
+                         ::testing::Bool(),
+                         [](const testing::TestParamInfo<bool>& info) {
+                           return info.param
+                                      ? "kIsolateSandboxedIframesEnabled"
+                                      : "kIsolateSandboxedIframesDisabled";
+                         });
 
 // Test class to verify that documents are blocked for isolated origins as well.
 class CrossSiteDocumentBlockingIsolatedOriginTest
@@ -1441,7 +1506,10 @@ IN_PROC_BROWSER_TEST_F(CrossSiteDocumentBlockingIsolatedOriginTest,
   GURL foo_url("http://foo.com/cross_site_document_blocking/request.html");
   EXPECT_TRUE(NavigateToURL(shell(), foo_url));
 
-  ASSERT_EQ(true, EvalJs(shell(), "sendRequest(\"valid.html\");"));
+  ASSERT_EQ(
+      true,
+      EvalJs(shell(),
+             "sendRequest(\"http://bar.com/site_isolation/valid.html\");"));
 }
 
 IN_PROC_BROWSER_TEST_F(ContentBrowserTest, CorpVsBrowserInitiatedRequest) {

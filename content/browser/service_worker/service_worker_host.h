@@ -70,6 +70,7 @@ class CONTENT_EXPORT ServiceWorkerHost : public BucketContext {
 
   int worker_process_id() const { return worker_process_id_; }
   ServiceWorkerVersion* version() const { return version_; }
+  const blink::ServiceWorkerToken& token() const { return token_; }
 
   service_manager::InterfaceProvider& remote_interfaces() {
     return remote_interfaces_;
@@ -143,6 +144,13 @@ class CONTENT_EXPORT ServiceWorkerHost : public BucketContext {
   // The service worker being hosted. Raw pointer is safe because the version
   // owns |this|.
   const raw_ptr<ServiceWorkerVersion> version_;
+
+  // A unique identifier for this service worker instance. This is unique across
+  // the browser process, but not persistent across service worker restarts.
+  // This token is generated every time the worker starts (i.e.,
+  // ServiceWorkerHost is created), and is plumbed through to the corresponding
+  // ServiceWorkerGlobalScope in the renderer process.
+  const blink::ServiceWorkerToken token_;
 
   // BrowserInterfaceBroker implementation through which this
   // ServiceWorkerHost exposes worker-scoped Mojo services to the corresponding

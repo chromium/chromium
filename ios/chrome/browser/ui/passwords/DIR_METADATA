@@ -1,0 +1,8 @@
+monorail: {
+  component: "UI>Browser>Passwords"
+}
+team_email: "bling-transactions@google.com"
+os: IOS
+buganizer_public: {
+  component_id: 1457410
+}

@@ -50,7 +50,7 @@ NetworkStateInformer::State GetStateForNetwork(const NetworkState* network) {
     case NetworkState::PortalState::kProxyAuthRequired:
       return NetworkStateInformer::PROXY_AUTH_REQUIRED;
     case NetworkState::PortalState::kNoInternet:
-      return NetworkStateInformer::CAPTIVE_PORTAL;
+      return NetworkStateInformer::OFFLINE;
   }
 }
 

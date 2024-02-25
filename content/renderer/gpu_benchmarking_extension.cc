@@ -19,6 +19,7 @@
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
+#include "base/memory/raw_ptr.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
 #include "build/build_config.h"
@@ -50,7 +51,7 @@
 #include "third_party/blink/public/common/input/web_coalesced_input_event.h"
 #include "third_party/blink/public/common/input/web_mouse_event.h"
 #include "third_party/blink/public/mojom/page/page_visibility_state.mojom.h"
-#include "third_party/blink/public/web/blink.h"
+#include "third_party/blink/public/platform/scheduler/web_agent_group_scheduler.h"
 #include "third_party/blink/public/web/modules/canvas/canvas_test_utils.h"
 #include "third_party/blink/public/web/web_frame_widget.h"
 #include "third_party/blink/public/web/web_image_cache.h"
@@ -62,8 +63,10 @@
 #include "third_party/skia/include/core/SkPicture.h"
 #include "third_party/skia/include/core/SkPictureRecorder.h"
 #include "third_party/skia/include/core/SkRefCnt.h"
+#include "third_party/skia/include/core/SkSerialProcs.h"
 #include "third_party/skia/include/core/SkStream.h"
 #include "third_party/skia/include/docs/SkXPSDocument.h"
+#include "third_party/skia/include/encode/SkPngEncoder.h"
 // Note that headers in third_party/skia/src are fragile.  This is
 // an experimental, fragile, and diagnostic-only document type.
 #include "third_party/skia/src/utils/SkMultiPictureDocument.h"
@@ -120,10 +123,10 @@ class GpuBenchmarkingContext {
   }
 
  private:
-  WebLocalFrame* web_frame_;
-  WebView* web_view_;
-  WebFrameWidget* frame_widget_;
-  cc::LayerTreeHost* layer_tree_host_;
+  raw_ptr<WebLocalFrame> web_frame_;
+  raw_ptr<WebView> web_view_;
+  raw_ptr<WebFrameWidget> frame_widget_;
+  raw_ptr<cc::LayerTreeHost> layer_tree_host_;
 };
 
 }  // namespace blink
@@ -182,7 +185,14 @@ class SkPictureSerializer {
       SkFILEWStream file(filepath.c_str());
       DCHECK(file.isValid());
 
-      auto data = picture->serialize();
+      SkSerialProcs procs{
+          .fImageProc = [](SkImage* img, void*) -> sk_sp<SkData> {
+            // Note: if the picture contains texture-backed (gpu) images, they
+            // will fail to be read-back and therefore fail to be encoded unless
+            // we can thread the correct GrDirectContext through to here.
+            return SkPngEncoder::Encode(nullptr, img, SkPngEncoder::Options{});
+          }};
+      auto data = picture->serialize(&procs);
       file.write(data->data(), data->size());
       file.fsync();
     }
@@ -252,13 +262,13 @@ class CallbackAndContext : public base::RefCounted<CallbackAndContext> {
     context_.Reset();
   }
 
-  v8::Isolate* isolate_;
+  raw_ptr<v8::Isolate> isolate_;
   v8::Persistent<v8::Function> callback_;
   v8::Persistent<v8::Context> context_;
 };
 
 void RunCallbackHelper(CallbackAndContext* callback_and_context,
-                       absl::optional<base::Value> value) {
+                       std::optional<base::Value> value) {
   v8::Isolate* isolate = callback_and_context->isolate();
   v8::HandleScope scope(isolate);
   v8::Local<v8::Context> context = callback_and_context->GetContext();
@@ -283,7 +293,7 @@ void RunCallbackHelper(CallbackAndContext* callback_and_context,
 void OnMicroBenchmarkCompleted(CallbackAndContext* callback_and_context,
                                base::Value::Dict result) {
   RunCallbackHelper(callback_and_context,
-                    absl::optional<base::Value>(std::move(result)));
+                    std::optional<base::Value>(std::move(result)));
 }
 
 #if BUILDFLAG(IS_MAC)
@@ -291,7 +301,7 @@ void OnSwapCompletedWithCoreAnimationErrorCode(
     CallbackAndContext* callback_and_context,
     gfx::CALayerResult error_code) {
   RunCallbackHelper(callback_and_context,
-                    absl::optional<base::Value>(base::Value(error_code)));
+                    std::optional<base::Value>(base::Value(error_code)));
 }
 #endif
 
@@ -319,8 +329,8 @@ bool ThrowIfPointOutOfBounds(GpuBenchmarkingContext* context,
   return false;
 }
 
-absl::optional<gfx::Vector2dF> ToVector(const std::string& direction,
-                                        float distance) {
+std::optional<gfx::Vector2dF> ToVector(const std::string& direction,
+                                       float distance) {
   if (direction == "down") {
     return gfx::Vector2dF(0, distance);
   } else if (direction == "up") {
@@ -338,7 +348,7 @@ absl::optional<gfx::Vector2dF> ToVector(const std::string& direction,
   } else if (direction == "downright") {
     return gfx::Vector2dF(distance, distance);
   }
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 int ToKeyModifiers(const base::StringPiece& key) {
@@ -393,7 +403,9 @@ bool BeginSmoothScroll(GpuBenchmarkingContext* context,
                        bool scroll_by_page,
                        bool cursor_visible,
                        bool scroll_by_percentage,
-                       int modifiers) {
+                       int modifiers,
+                       float vsync_offset_ms,
+                       int input_event_pattern) {
   DCHECK(!(precise_scrolling_deltas && scroll_by_page));
   DCHECK(!(precise_scrolling_deltas && scroll_by_percentage));
   DCHECK(!(scroll_by_page && scroll_by_percentage));
@@ -433,6 +445,9 @@ bool BeginSmoothScroll(GpuBenchmarkingContext* context,
       static_cast<content::mojom::GestureSourceType>(gesture_source_type);
 
   gesture_params.speed_in_pixels_s = speed_in_pixels_s;
+  gesture_params.vsync_offset_ms = vsync_offset_ms;
+  gesture_params.input_event_pattern =
+      static_cast<content::mojom::InputEventPattern>(input_event_pattern);
   gesture_params.prevent_fling = prevent_fling;
 
   if (scroll_by_page)
@@ -477,7 +492,9 @@ bool BeginSmoothDrag(GpuBenchmarkingContext* context,
                      float end_y,
                      v8::Local<v8::Function> callback,
                      int gesture_source_type,
-                     float speed_in_pixels_s) {
+                     float speed_in_pixels_s,
+                     float vsync_offset_ms,
+                     int input_event_pattern) {
   if (ThrowIfPointOutOfBounds(context, args, gfx::Point(start_x, start_y),
                               "Start point not in bounds")) {
     return false;
@@ -494,6 +511,9 @@ bool BeginSmoothDrag(GpuBenchmarkingContext* context,
   gfx::Vector2dF distance = end_point - gesture_params.start_point;
   gesture_params.distances.push_back(distance);
   gesture_params.speed_in_pixels_s = speed_in_pixels_s;
+  gesture_params.vsync_offset_ms = vsync_offset_ms;
+  gesture_params.input_event_pattern =
+      static_cast<content::mojom::InputEventPattern>(input_event_pattern);
   gesture_params.gesture_source_type =
       static_cast<content::mojom::GestureSourceType>(gesture_source_type);
 
@@ -581,7 +601,8 @@ gin::WrapperInfo GpuBenchmarking::kWrapperInfo = {gin::kEmbedderNativeGin};
 
 // static
 void GpuBenchmarking::Install(base::WeakPtr<RenderFrameImpl> frame) {
-  v8::Isolate* isolate = blink::MainThreadIsolate();
+  v8::Isolate* isolate =
+      frame->GetWebFrame()->GetAgentGroupScheduler()->Isolate();
   v8::HandleScope handle_scope(isolate);
   v8::Local<v8::Context> context =
       frame->GetWebFrame()->MainWorldScriptContext();
@@ -640,6 +661,18 @@ gin::ObjectTemplateBuilder GpuBenchmarking::GetObjectTemplateBuilder(
                     content::mojom::GestureSourceType::kTouchpadInput))
       .SetValue("PEN_INPUT", GestureSourceTypeAsInt(
                                  content::mojom::GestureSourceType::kPenInput))
+      .SetValue(
+          "DEFAULT_INPUT_PATTERN",
+          static_cast<int>(content::mojom::InputEventPattern::kDefaultPattern))
+      .SetValue(
+          "ONE_PER_VSYNC_INPUT_PATTERN",
+          static_cast<int>(content::mojom::InputEventPattern::kOnePerVsync))
+      .SetValue(
+          "TWO_PER_VSYNC_INPUT_PATTERN",
+          static_cast<int>(content::mojom::InputEventPattern::kTwoPerVsync))
+      .SetValue(
+          "EVERY_OTHER_VSYNC_INPUT_PATTERN",
+          static_cast<int>(content::mojom::InputEventPattern::kEveryOtherVsync))
       .SetMethod("gestureSourceTypeSupported",
                  &GpuBenchmarking::GestureSourceTypeSupported)
       .SetMethod("smoothScrollBy", &GpuBenchmarking::SmoothScrollBy)
@@ -773,6 +806,9 @@ bool GpuBenchmarking::SmoothScrollBy(gin::Arguments* args) {
   bool cursor_visible = true;
   bool scroll_by_percentage = false;
   std::string keys_value;
+  float vsync_offset_ms = 0.0f;
+  int input_event_pattern =
+      static_cast<int>(content::mojom::InputEventPattern::kDefaultPattern);
 
   if (!GetOptionalArg(args, &pixels_to_scroll) ||
       !GetOptionalArg(args, &callback) || !GetOptionalArg(args, &start_x) ||
@@ -784,7 +820,9 @@ bool GpuBenchmarking::SmoothScrollBy(gin::Arguments* args) {
       !GetOptionalArg(args, &scroll_by_page) ||
       !GetOptionalArg(args, &cursor_visible) ||
       !GetOptionalArg(args, &scroll_by_percentage) ||
-      !GetOptionalArg(args, &keys_value)) {
+      !GetOptionalArg(args, &keys_value) ||
+      !GetOptionalArg(args, &vsync_offset_ms) ||
+      !GetOptionalArg(args, &input_event_pattern)) {
     return false;
   }
 
@@ -806,7 +844,7 @@ bool GpuBenchmarking::SmoothScrollBy(gin::Arguments* args) {
   // Scroll by percentage does not require speed in pixels
   DCHECK(!scroll_by_percentage || (speed_in_pixels_s == 800));
 
-  absl::optional<gfx::Vector2dF> pixels_to_scrol_vector =
+  std::optional<gfx::Vector2dF> pixels_to_scrol_vector =
       ToVector(direction, pixels_to_scroll);
   if (!pixels_to_scrol_vector.has_value())
     return false;
@@ -827,7 +865,8 @@ bool GpuBenchmarking::SmoothScrollBy(gin::Arguments* args) {
       &context, args, input_injector_, pixels_to_scrol_vector.value(), callback,
       gesture_source_type, speed_in_pixels_s, true /* prevent_fling */, start_x,
       start_y, fling_velocity, precise_scrolling_deltas, scroll_by_page,
-      cursor_visible, scroll_by_percentage, modifiers);
+      cursor_visible, scroll_by_percentage, modifiers, vsync_offset_ms,
+      input_event_pattern);
 }
 
 // SmoothScrollByXY does not take direction as one of the arguments, and
@@ -859,6 +898,9 @@ bool GpuBenchmarking::SmoothScrollByXY(gin::Arguments* args) {
   // ToButtonModifiers, multiple values are expressed as a string separated by
   // comma.
   std::string buttons_value;
+  float vsync_offset_ms = 0.0f;
+  int input_event_pattern =
+      static_cast<int>(content::mojom::InputEventPattern::kDefaultPattern);
 
   if (!GetOptionalArg(args, &pixels_to_scroll_x) ||
       !GetOptionalArg(args, &pixels_to_scroll_y) ||
@@ -871,7 +913,9 @@ bool GpuBenchmarking::SmoothScrollByXY(gin::Arguments* args) {
       !GetOptionalArg(args, &cursor_visible) ||
       !GetOptionalArg(args, &scroll_by_percentage) ||
       !GetOptionalArg(args, &keys_value) ||
-      !GetOptionalArg(args, &buttons_value)) {
+      !GetOptionalArg(args, &buttons_value) ||
+      !GetOptionalArg(args, &vsync_offset_ms) ||
+      !GetOptionalArg(args, &input_event_pattern)) {
     return false;
   }
 
@@ -919,7 +963,7 @@ bool GpuBenchmarking::SmoothScrollByXY(gin::Arguments* args) {
       &context, args, input_injector_, distances, callback, gesture_source_type,
       speed_in_pixels_s, true /* prevent_fling */, start_x, start_y,
       fling_velocity, precise_scrolling_deltas, scroll_by_page, cursor_visible,
-      scroll_by_percentage, modifiers);
+      scroll_by_percentage, modifiers, vsync_offset_ms, input_event_pattern);
 }
 
 bool GpuBenchmarking::SmoothDrag(gin::Arguments* args) {
@@ -932,19 +976,25 @@ bool GpuBenchmarking::SmoothDrag(gin::Arguments* args) {
   int gesture_source_type =
       GestureSourceTypeAsInt(content::mojom::GestureSourceType::kDefaultInput);
   float speed_in_pixels_s = 800;
+  float vsync_offset_ms = 0.0f;
+  int input_event_pattern =
+      static_cast<int>(content::mojom::InputEventPattern::kDefaultPattern);
 
   if (!GetArg(args, &start_x) || !GetArg(args, &start_y) ||
       !GetArg(args, &end_x) || !GetArg(args, &end_y) ||
       !GetOptionalArg(args, &callback) ||
       !GetOptionalArg(args, &gesture_source_type) ||
-      !GetOptionalArg(args, &speed_in_pixels_s)) {
+      !GetOptionalArg(args, &speed_in_pixels_s) ||
+      !GetOptionalArg(args, &vsync_offset_ms) ||
+      !GetOptionalArg(args, &input_event_pattern)) {
     return false;
   }
 
   EnsureRemoteInterface();
   return BeginSmoothDrag(&context, args, input_injector_, start_x, start_y,
                          end_x, end_y, callback, gesture_source_type,
-                         speed_in_pixels_s);
+                         speed_in_pixels_s, vsync_offset_ms,
+                         input_event_pattern);
 }
 
 // TODO(lanwei): Swipe takes pixels_to_scroll and direction. When the
@@ -964,6 +1014,9 @@ bool GpuBenchmarking::Swipe(gin::Arguments* args) {
   float fling_velocity = 0;
   int gesture_source_type =
       GestureSourceTypeAsInt(content::mojom::GestureSourceType::kTouchInput);
+  float vsync_offset_ms = 0.0f;
+  int input_event_pattern =
+      static_cast<int>(content::mojom::InputEventPattern::kDefaultPattern);
 
   if (!GetOptionalArg(args, &direction) ||
       !GetOptionalArg(args, &pixels_to_scroll) ||
@@ -971,7 +1024,9 @@ bool GpuBenchmarking::Swipe(gin::Arguments* args) {
       !GetOptionalArg(args, &start_y) ||
       !GetOptionalArg(args, &speed_in_pixels_s) ||
       !GetOptionalArg(args, &fling_velocity) ||
-      !GetOptionalArg(args, &gesture_source_type)) {
+      !GetOptionalArg(args, &gesture_source_type) ||
+      !GetOptionalArg(args, &vsync_offset_ms) ||
+      !GetOptionalArg(args, &input_event_pattern)) {
     return false;
   }
 
@@ -985,9 +1040,9 @@ bool GpuBenchmarking::Swipe(gin::Arguments* args) {
     fling_velocity = 1000;
   }
 
-  absl::optional<gfx::Vector2dF> pixels_to_scrol_vector =
+  std::optional<gfx::Vector2dF> pixels_to_scrol_vector =
       ToVector(direction, pixels_to_scroll);
-  absl::optional<gfx::Vector2dF> fling_velocity_vector =
+  std::optional<gfx::Vector2dF> fling_velocity_vector =
       ToVector(direction, fling_velocity);
   if (!pixels_to_scrol_vector.has_value() ||
       !fling_velocity_vector.has_value()) {
@@ -1001,7 +1056,8 @@ bool GpuBenchmarking::Swipe(gin::Arguments* args) {
       false /* prevent_fling */, start_x, start_y,
       fling_velocity_vector.value(), true /* precise_scrolling_deltas */,
       false /* scroll_by_page */, true /* cursor_visible */,
-      false /* scroll_by_percentage */, 0 /* modifiers */);
+      false /* scroll_by_percentage */, 0 /* modifiers */, vsync_offset_ms,
+      input_event_pattern);
 }
 
 bool GpuBenchmarking::ScrollBounce(gin::Arguments* args) {
@@ -1016,6 +1072,9 @@ bool GpuBenchmarking::ScrollBounce(gin::Arguments* args) {
   float start_x = content_rect.width() / 2;
   float start_y = content_rect.height() / 2;
   float speed_in_pixels_s = 800;
+  float vsync_offset_ms = 0.0f;
+  int input_event_pattern =
+      static_cast<int>(content::mojom::InputEventPattern::kDefaultPattern);
 
   if (!GetOptionalArg(args, &direction) ||
       !GetOptionalArg(args, &distance_length) ||
@@ -1023,7 +1082,9 @@ bool GpuBenchmarking::ScrollBounce(gin::Arguments* args) {
       !GetOptionalArg(args, &repeat_count) ||
       !GetOptionalArg(args, &callback) || !GetOptionalArg(args, &start_x) ||
       !GetOptionalArg(args, &start_y) ||
-      !GetOptionalArg(args, &speed_in_pixels_s)) {
+      !GetOptionalArg(args, &speed_in_pixels_s) ||
+      !GetOptionalArg(args, &vsync_offset_ms) ||
+      !GetOptionalArg(args, &input_event_pattern)) {
     return false;
   }
 
@@ -1039,6 +1100,9 @@ bool GpuBenchmarking::ScrollBounce(gin::Arguments* args) {
   SyntheticSmoothScrollGestureParams gesture_params;
 
   gesture_params.speed_in_pixels_s = speed_in_pixels_s;
+  gesture_params.vsync_offset_ms = vsync_offset_ms;
+  gesture_params.input_event_pattern =
+      static_cast<content::mojom::InputEventPattern>(input_event_pattern);
 
   gesture_params.anchor.SetPoint(start_x, start_y);
 
@@ -1082,11 +1146,16 @@ bool GpuBenchmarking::PinchBy(gin::Arguments* args) {
   float relative_pointer_speed_in_pixels_s = 800;
   int gesture_source_type =
       GestureSourceTypeAsInt(content::mojom::GestureSourceType::kDefaultInput);
+  float vsync_offset_ms = 0.0f;
+  int input_event_pattern =
+      static_cast<int>(content::mojom::InputEventPattern::kDefaultPattern);
 
   if (!GetArg(args, &scale_factor) || !GetArg(args, &anchor_x) ||
       !GetArg(args, &anchor_y) || !GetOptionalArg(args, &callback) ||
       !GetOptionalArg(args, &relative_pointer_speed_in_pixels_s) ||
-      !GetOptionalArg(args, &gesture_source_type)) {
+      !GetOptionalArg(args, &gesture_source_type) ||
+      !GetOptionalArg(args, &vsync_offset_ms) ||
+      !GetOptionalArg(args, &input_event_pattern)) {
     return false;
   }
 
@@ -1112,6 +1181,9 @@ bool GpuBenchmarking::PinchBy(gin::Arguments* args) {
 
   gesture_params.gesture_source_type =
       static_cast<content::mojom::GestureSourceType>(gesture_source_type);
+  gesture_params.vsync_offset_ms = vsync_offset_ms;
+  gesture_params.input_event_pattern =
+      static_cast<content::mojom::InputEventPattern>(input_event_pattern);
 
   switch (gesture_params.gesture_source_type) {
     case content::mojom::GestureSourceType::kDefaultInput:
@@ -1353,7 +1425,7 @@ bool GpuBenchmarking::HasGpuChannel() {
 
 bool GpuBenchmarking::HasGpuProcess() {
   bool has_gpu_process = false;
-  if (!RenderThreadImpl::current()->render_message_filter()->HasGpuProcess(
+  if (!RenderThreadImpl::current()->GetRendererHost()->HasGpuProcess(
           &has_gpu_process)) {
     return false;
   }
@@ -1445,7 +1517,7 @@ bool GpuBenchmarking::AddSwapCompletionEventListener(gin::Arguments* args) {
 
   auto callback_and_context = base::MakeRefCounted<CallbackAndContext>(
       args->isolate(), callback, context.web_frame()->MainWorldScriptContext());
-  context.web_frame()->FrameWidget()->NotifyPresentationTime(base::BindOnce(
+  context.frame_widget()->NotifyPresentationTime(base::BindOnce(
       &OnSwapCompletedHelper, base::RetainedRef(callback_and_context)));
   // Request a begin frame explicitly, as the test-api expects a 'swap' to
   // happen for the above queued swap promise even if there is no actual update.
@@ -1462,7 +1534,7 @@ int GpuBenchmarking::AddCoreAnimationStatusEventListener(gin::Arguments* args) {
 
   auto callback_and_context = base::MakeRefCounted<CallbackAndContext>(
       args->isolate(), callback, context.web_frame()->MainWorldScriptContext());
-  context.web_frame()->FrameWidget()->NotifyCoreAnimationErrorCode(
+  context.frame_widget()->NotifyCoreAnimationErrorCode(
       base::BindOnce(&OnSwapCompletedWithCoreAnimationErrorCode,
                      base::RetainedRef(callback_and_context)));
   // Request a begin frame explicitly, as the test-api expects a 'swap' to

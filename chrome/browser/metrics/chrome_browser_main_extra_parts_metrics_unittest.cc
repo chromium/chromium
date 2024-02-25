@@ -18,20 +18,15 @@
 #include "ui/display/test/test_screen.h"
 #include "ui/gfx/geometry/size.h"
 
-#if BUILDFLAG(IS_OZONE)
-#include "ui/events/devices/device_data_manager_test_api.h"
-#endif
-
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chromeos/dbus/u2f/u2f_client.h"  // nogncheck
 #endif
 
 namespace {
 
-const char kTouchEventFeatureDetectionEnabledHistogramName[] =
-    "Touchscreen.TouchEventsEnabled";
 const char kSupportsHDRHistogramName[] = "Hardware.Display.SupportsHDR";
 constexpr char kEnableBenchmarkingPrefId[] = "enable_benchmarking_countdown";
+constexpr char kFlagMultiValue[] = "enable-benchmarking@1";
 
 // This is a fake that causes HandleEnableBenchmarkingCountdownAsync() to do
 // nothing. A full implementation of HandleEnableBenchmarkingCountdownAsync
@@ -81,10 +76,6 @@ class ChromeBrowserMainExtraPartsMetricsTest : public testing::Test {
 #endif
   }
 
-#if BUILDFLAG(IS_OZONE)
-  ui::DeviceDataManagerTestApi device_data_manager_test_api_;
-#endif
-
  private:
   // Provides a message loop and allows the use of the task scheduler
   content::BrowserTaskEnvironment task_environment_;
@@ -102,96 +93,6 @@ ChromeBrowserMainExtraPartsMetricsTest::
     ~ChromeBrowserMainExtraPartsMetricsTest() {
   display::Screen::SetScreenInstance(nullptr);
 }
-
-// Verify a TouchEventsEnabled value isn't recorded during construction.
-TEST_F(ChromeBrowserMainExtraPartsMetricsTest,
-       VerifyTouchEventsEnabledIsNotRecordedAfterConstruction) {
-  base::HistogramTester histogram_tester;
-  ChromeBrowserMainExtraPartsMetrics test_target;
-  histogram_tester.ExpectTotalCount(
-      kTouchEventFeatureDetectionEnabledHistogramName, 0);
-}
-
-#if BUILDFLAG(IS_OZONE)
-
-// Verify a TouchEventsEnabled value isn't recorded during PostBrowserStart if
-// the device scan hasn't completed yet.
-// TODO(https://crbug.com/940076): Consistently flaky.
-TEST_F(ChromeBrowserMainExtraPartsMetricsTest,
-       DISABLED_VerifyTouchEventsEnabledIsNotRecordedAfterPostBrowserStart) {
-  base::HistogramTester histogram_tester;
-
-  ChromeBrowserMainExtraPartsMetricsFake test_target;
-
-  test_target.PostBrowserStart();
-  histogram_tester.ExpectTotalCount(
-      kTouchEventFeatureDetectionEnabledHistogramName, 0);
-}
-
-// Verify a TouchEventsEnabled value is recorded during PostBrowserStart if the
-// device scan has already completed.
-TEST_F(ChromeBrowserMainExtraPartsMetricsTest,
-       VerifyTouchEventsEnabledIsRecordedAfterPostBrowserStart) {
-  base::HistogramTester histogram_tester;
-
-  device_data_manager_test_api_.OnDeviceListsComplete();
-
-  ChromeBrowserMainExtraPartsMetricsFake test_target;
-
-  test_target.PostBrowserStart();
-  histogram_tester.ExpectTotalCount(
-      kTouchEventFeatureDetectionEnabledHistogramName, 1);
-}
-
-// Verify a TouchEventsEnabled value is recorded when an asynchronous device
-// scan completes.
-TEST_F(ChromeBrowserMainExtraPartsMetricsTest,
-       VerifyTouchEventsEnabledIsRecordedWhenDeviceListsComplete) {
-  base::HistogramTester histogram_tester;
-  ChromeBrowserMainExtraPartsMetricsFake test_target;
-
-  test_target.PostBrowserStart();
-  device_data_manager_test_api_.NotifyObserversDeviceListsComplete();
-  histogram_tester.ExpectTotalCount(
-      kTouchEventFeatureDetectionEnabledHistogramName, 1);
-}
-
-// Verify a TouchEventsEnabled value is only recorded once if multiple
-// asynchronous device scans happen.
-TEST_F(ChromeBrowserMainExtraPartsMetricsTest,
-       VerifyTouchEventsEnabledIsOnlyRecordedOnce) {
-  base::HistogramTester histogram_tester;
-  ChromeBrowserMainExtraPartsMetricsFake test_target;
-
-  test_target.PostBrowserStart();
-  device_data_manager_test_api_.NotifyObserversDeviceListsComplete();
-  device_data_manager_test_api_.NotifyObserversDeviceListsComplete();
-  histogram_tester.ExpectTotalCount(
-      kTouchEventFeatureDetectionEnabledHistogramName, 1);
-}
-
-#else
-
-// Verify a TouchEventsEnabled value is recorded during PostBrowserStart.
-// Flaky on Win only.  http://crbug.com/1026946
-#if BUILDFLAG(IS_WIN)
-#define MAYBE_VerifyTouchEventsEnabledIsRecordedAfterPostBrowserStart \
-  DISABLED_VerifyTouchEventsEnabledIsRecordedAfterPostBrowserStart
-#else
-#define MAYBE_VerifyTouchEventsEnabledIsRecordedAfterPostBrowserStart \
-  VerifyTouchEventsEnabledIsRecordedAfterPostBrowserStart
-#endif
-TEST_F(ChromeBrowserMainExtraPartsMetricsTest,
-       MAYBE_VerifyTouchEventsEnabledIsRecordedAfterPostBrowserStart) {
-  base::HistogramTester histogram_tester;
-  ChromeBrowserMainExtraPartsMetricsFake test_target;
-
-  test_target.PostBrowserStart();
-  histogram_tester.ExpectTotalCount(
-      kTouchEventFeatureDetectionEnabledHistogramName, 1);
-}
-
-#endif  // BUILDFLAG(IS_OZONE)
 
 // Verify a Hardware.Display.SupportsHDR value is recorded during
 // PostBrowserStart.
@@ -235,8 +136,7 @@ TEST_F(ChromeBrowserMainExtraPartsMetricsTest,
   flags_ui::PrefServiceFlagsStorage storage(&pref_service);
 
   // Once a flag is set we should see an effect.
-  std::set<std::string> flags = {variations::switches::kEnableBenchmarking};
-  storage.SetFlags(flags);
+  storage.SetFlags({kFlagMultiValue});
   ChromeBrowserMainExtraPartsMetricsFake::
       HandleEnableBenchmarkingCountdownPublic(
           &pref_service,
@@ -256,8 +156,7 @@ TEST_F(ChromeBrowserMainExtraPartsMetricsTest,
 
   flags_ui::PrefServiceFlagsStorage storage(&pref_service);
 
-  std::set<std::string> flags = {variations::switches::kEnableBenchmarking};
-  storage.SetFlags(flags);
+  storage.SetFlags({kFlagMultiValue});
 
   // Set initial state:
   pref_service.SetInteger(kEnableBenchmarkingPrefId, 2);
@@ -281,8 +180,7 @@ TEST_F(ChromeBrowserMainExtraPartsMetricsTest,
 
   flags_ui::PrefServiceFlagsStorage storage(&pref_service);
 
-  std::set<std::string> flags = {variations::switches::kEnableBenchmarking};
-  storage.SetFlags(flags);
+  storage.SetFlags({kFlagMultiValue});
 
   // Set initial state:
   pref_service.SetInteger(kEnableBenchmarkingPrefId, 1);

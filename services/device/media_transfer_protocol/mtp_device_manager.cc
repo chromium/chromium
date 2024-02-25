@@ -319,7 +319,7 @@ void MtpDeviceManager::OnGetStorageInfo(
     // attachments, which should not be in |storage_info_map_|, or for
     // storage detachments, which do not add to |storage_info_map_|.
     // Return to avoid giving client phantom detach events.
-    NOTREACHED();
+    DUMP_WILL_BE_NOTREACHED_NORETURN();
     return;
   }
 

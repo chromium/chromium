@@ -28,16 +28,14 @@ class V4L2VideoDecoderDelegateVP9 : public VP9Decoder::VP9Accelerator {
 
   // VP9Decoder::VP9Accelerator implementation.
   scoped_refptr<VP9Picture> CreateVP9Picture() override;
+  scoped_refptr<VP9Picture> CreateVP9PictureSecure(
+      uint64_t secure_handle) override;
   Status SubmitDecode(scoped_refptr<VP9Picture> pic,
                       const Vp9SegmentationParams& segm_params,
                       const Vp9LoopFilterParams& lf_params,
-                      const Vp9ReferenceFrameVector& reference_frames,
-                      base::OnceClosure done_cb) override;
+                      const Vp9ReferenceFrameVector& reference_frames) override;
   bool OutputPicture(scoped_refptr<VP9Picture> pic) override;
-  bool GetFrameContext(scoped_refptr<VP9Picture> pic,
-                       Vp9FrameContext* frame_ctx) override;
   bool NeedsCompressedHeaderParsed() const override;
-  bool SupportsContextProbabilityReadback() const override;
 
  private:
   raw_ptr<V4L2DecodeSurfaceHandler> const surface_handler_;

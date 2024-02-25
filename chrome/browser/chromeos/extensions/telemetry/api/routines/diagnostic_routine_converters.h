@@ -12,6 +12,7 @@
 #include "base/uuid.h"
 #include "chrome/common/chromeos/extensions/api/diagnostics.h"
 #include "chromeos/crosapi/mojom/telemetry_diagnostic_routine_service.mojom.h"
+#include "chromeos/crosapi/mojom/telemetry_extension_exception.mojom.h"
 
 // This file contains helper functions used by the routine API to convert its
 // types to/from telemetry service types.
@@ -44,13 +45,29 @@ api::os_diagnostics::MemoryRoutineFinishedInfo UncheckedConvertPtr(
     base::Uuid uuid,
     bool has_passed);
 
+api::os_diagnostics::VolumeButtonRoutineFinishedInfo UncheckedConvertPtr(
+    crosapi::mojom::TelemetryDiagnosticVolumeButtonRoutineDetailPtr input,
+    base::Uuid uuid,
+    bool has_passed);
+
+api::os_diagnostics::FanRoutineFinishedInfo UncheckedConvertPtr(
+    crosapi::mojom::TelemetryDiagnosticFanRoutineDetailPtr input,
+    base::Uuid uuid,
+    bool has_passed);
+
 }  // namespace unchecked
+
+api::os_diagnostics::ExceptionReason Convert(
+    crosapi::mojom::TelemetryExtensionException::Reason input);
 
 api::os_diagnostics::RoutineWaitingReason Convert(
     crosapi::mojom::TelemetryDiagnosticRoutineStateWaiting::Reason input);
 
 api::os_diagnostics::MemtesterTestItemEnum Convert(
     crosapi::mojom::TelemetryDiagnosticMemtesterTestItemEnum input);
+
+api::os_diagnostics::HardwarePresenceStatus Convert(
+    crosapi::mojom::TelemetryDiagnosticHardwarePresenceStatus input);
 
 template <class InputT,
           class OutputT = decltype(Convert(std::declval<InputT>())),

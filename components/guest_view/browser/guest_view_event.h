@@ -6,10 +6,10 @@
 #define COMPONENTS_GUEST_VIEW_BROWSER_GUEST_VIEW_EVENT_H_
 
 #include <memory>
+#include <optional>
 #include <string>
 
 #include "base/values.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace guest_view {
 
@@ -34,7 +34,7 @@ class GuestViewEvent {
 
 private:
   const std::string name_;
-  absl::optional<base::Value::Dict> args_;
+  std::optional<base::Value::Dict> args_;
 };
 
 }  // namespace guest_view

@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_WEB_APPLICATIONS_APP_SERVICE_LACROS_WEB_APPS_CONTROLLER_H_
 #define CHROME_BROWSER_WEB_APPLICATIONS_APP_SERVICE_LACROS_WEB_APPS_CONTROLLER_H_
 
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -16,14 +17,13 @@
 #include "base/time/time.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/web_applications/app_service/web_app_publisher_helper.h"
-#include "chrome/browser/web_applications/web_app_id.h"
 #include "chromeos/crosapi/mojom/app_service.mojom.h"
 #include "components/content_settings/core/common/content_settings_types.h"
 #include "components/services/app_service/public/cpp/app_types.h"
 #include "components/services/app_service/public/cpp/icon_types.h"
 #include "components/services/app_service/public/cpp/permission.h"
+#include "components/webapps/common/web_app_id.h"
 #include "mojo/public/cpp/bindings/receiver.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 static_assert(BUILDFLAG(IS_CHROMEOS_LACROS), "For Lacros only");
 
@@ -65,6 +65,7 @@ class LacrosWebAppsController : public crosapi::mojom::AppController,
                  bool report_abuse) override;
   void PauseApp(const std::string& app_id) override;
   void UnpauseApp(const std::string& app_id) override;
+  void StopApp(const std::string& app_id) override;
   void GetMenuModel(const std::string& app_id,
                     GetMenuModelCallback callback) override;
   void DEPRECATED_LoadIcon(const std::string& app_id,
@@ -77,6 +78,7 @@ class LacrosWebAppsController : public crosapi::mojom::AppController,
                          ui::ResourceScaleFactor scale_factor,
                          apps::LoadIconCallback callback) override;
   void OpenNativeSettings(const std::string& app_id) override;
+  void UpdateAppSize(const std::string& app_id) override;
   void SetWindowMode(const std::string& app_id,
                      apps::WindowMode window_mode) override;
   void Launch(crosapi::mojom::LaunchParamsPtr launch_params,
@@ -85,7 +87,6 @@ class LacrosWebAppsController : public crosapi::mojom::AppController,
       const std::string& app_id,
       const std::string& id,
       ExecuteContextMenuCommandCallback callback) override;
-  void StopApp(const std::string& app_id) override;
   void SetPermission(const std::string& app_id,
                      apps::PermissionPtr permission) override;
 
@@ -94,12 +95,12 @@ class LacrosWebAppsController : public crosapi::mojom::AppController,
   void ExecuteContextMenuCommandInternal(
       const std::string& app_id,
       const std::string& id,
-      base::OnceCallback<void(const std::vector<content::WebContents*>&)>
+      base::OnceCallback<void(std::vector<content::WebContents*>)>
           launch_finished_callback);
   void LaunchInternal(
       const std::string& app_id,
       apps::AppLaunchParams params,
-      base::OnceCallback<void(const std::vector<content::WebContents*>&)>
+      base::OnceCallback<void(std::vector<content::WebContents*>)>
           launch_finished_callback);
 
   // WebAppPublisherHelper::Delegate:
@@ -107,14 +108,14 @@ class LacrosWebAppsController : public crosapi::mojom::AppController,
   void PublishWebApp(apps::AppPtr app) override;
   void ModifyWebAppCapabilityAccess(
       const std::string& app_id,
-      absl::optional<bool> accessing_camera,
-      absl::optional<bool> accessing_microphone) override;
+      std::optional<bool> accessing_camera,
+      std::optional<bool> accessing_microphone) override;
 
   void ReturnLaunchResults(
       base::OnceCallback<void(crosapi::mojom::LaunchResultPtr)> callback,
-      const std::vector<content::WebContents*>& web_contents);
+      std::vector<content::WebContents*> web_contents);
 
-  const WebApp* GetWebApp(const AppId& app_id) const;
+  const WebApp* GetWebApp(const webapps::AppId& app_id) const;
 
   void OnShortcutsMenuIconsRead(
       const std::string& app_id,

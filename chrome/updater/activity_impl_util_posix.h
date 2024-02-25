@@ -22,4 +22,4 @@ base::FilePath GetActiveFile(const base::FilePath& home_dir,
 
 }  // namespace updater
 
-#endif  // CHROME_UPDATER_ACTIVITY_ACTIVITY_IMPL_UTIL_POSIX_H_
+#endif  // CHROME_UPDATER_ACTIVITY_IMPL_UTIL_POSIX_H_

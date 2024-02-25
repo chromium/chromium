@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import './lit/components/index.js';
+
 import {
   ColorChangeUpdater,
 } from
@@ -24,15 +26,14 @@ import {ModeConstraints} from './device/type.js';
 import * as dom from './dom.js';
 import {reportError} from './error.js';
 import * as expert from './expert.js';
-import {Flag} from './flag.js';
-import {GalleryButton} from './gallerybutton.js';
-import {I18nString} from './i18n_string.js';
 import {Intent} from './intent.js';
 import * as Comlink from './lib/comlink.js';
+import {startMeasuringMemoryUsage} from './memory_usage.js';
 import * as metrics from './metrics.js';
 import * as filesystem from './models/file_system.js';
 import * as loadTimeData from './models/load_time_data.js';
 import * as localStorage from './models/local_storage.js';
+import {DefaultResultSaver} from './models/result_saver.js';
 import {ChromeHelper} from './mojo/chrome_helper.js';
 import {DeviceOperator} from './mojo/device_operator.js';
 import {WindowStateType} from './mojo/type.js';
@@ -40,6 +41,7 @@ import {WindowInstance} from './multi_window_manager.js';
 import * as nav from './nav.js';
 import {PerfLogger} from './perf.js';
 import {preloadImagesList} from './preload_images.js';
+import {preloadSounds} from './sound.js';
 import * as state from './state.js';
 import * as toast from './toast.js';
 import * as tooltip from './tooltip.js';
@@ -64,421 +66,143 @@ import {WaitableEvent} from './waitable_event.js';
 import {windowController} from './window_controller.js';
 
 /**
- * Creates the Camera App main object.
+ * Sets up tooltips for elements having `i18n-label` attribute. This method
+ * also setup tooltips for the elements:
+ * * Added to the DOM and have a `i18n-label` attribute.
+ * * Newly set with a `i18n-label` attribute.
+ *
+ * Note `i18n-label` attribute should not be removed from elements.
  */
-export class App {
-  private readonly perfLogger: PerfLogger;
-
-  private readonly intent: Intent|null;
-
-  private readonly cameraManager: CameraManager;
-
-  private readonly galleryButton = new GalleryButton();
-
-  private readonly cameraView: Camera;
-
-  constructor({perfLogger, intent, facing, mode}: {
-    perfLogger: PerfLogger,
-    intent: Intent|null,
-    facing: Facing|null,
-    mode: Mode|null,
-  }) {
-    this.perfLogger = perfLogger;
-
-    this.intent = intent;
-    const shouldHandleIntentResult = this.intent?.shouldHandleResult === true;
-    state.set(
-        state.State.SHOULD_HANDLE_INTENT_RESULT, shouldHandleIntentResult);
-
-    const modeConstraints: ModeConstraints = {
-      kind: shouldHandleIntentResult && mode !== null ? 'exact' : 'default',
-      mode: mode ?? Mode.PHOTO,
-    };
-    this.cameraManager =
-        new CameraManager(this.perfLogger, facing, modeConstraints);
-
-    this.cameraView = (() => {
-      if (shouldHandleIntentResult) {
-        // If shouldHandleIntentResult is true, then this.intent is definitely
-        // not null.
-        assert(this.intent !== null);
-        return new CameraIntent(
-            this.intent, this.cameraManager, this.perfLogger);
-      } else {
-        return new Camera(
-            this.galleryButton, this.cameraManager, this.perfLogger);
+function setupTooltip() {
+  tooltip.init();
+  const tooltipAttribute = 'i18n-label';
+  const tooltipAttributeSelector = `[${tooltipAttribute}]`;
+  const elements =
+      Array.from(dom.getAll(tooltipAttributeSelector, HTMLElement));
+  tooltip.setupElements(elements);
+  const observer = new MutationObserver((mutations) => {
+    const elements: HTMLElement[] = [];
+    for (const mutation of mutations) {
+      if (mutation.type === 'attributes') {
+        // Check newly added attributes on existing elements.
+        const {target, oldValue} = mutation;
+        if (target instanceof HTMLElement && oldValue === null) {
+          elements.push(target);
+        }
+      } else if (mutation.type === 'childList') {
+        const {target} = mutation;
+        if (target instanceof HTMLElement) {
+          elements.push(
+              ...dom.getAllFrom(target, tooltipAttributeSelector, HTMLElement),
+          );
+        }
       }
-    })();
-
-    document.body.addEventListener(
-        'keydown', (event) => this.onKeyPressed(event));
-
-    // Disable the zoom in-out gesture which is triggered by wheel and pinch on
-    // trackpad.
-    document.body.addEventListener('wheel', (event) => {
-      if (event.ctrlKey) {
-        event.preventDefault();
-      }
-    }, {passive: false, capture: true});
-
-    window.addEventListener('resize', () => nav.layoutShownViews());
-    windowController.addWindowStateListener(() => nav.layoutShownViews());
-
-    customEffect.setup();
-    util.setupI18nElements(document.body);
-    this.setupTooltip();
-    this.setupToggles();
-    localStorage.cleanup();
-    this.setupEffect();
-    this.showNewFeatureToast();
-    this.setupExperimentalFeatures();
-
-    // Set up views navigation by their DOM z-order.
-    nav.setup([
-      this.cameraView,
-      new Warning(),
-      new View(ViewName.SPLASH),
-    ]);
-
-    nav.open(ViewName.SPLASH);
-  }
-
-  /**
-   * Sets up tooltips for elements having `i18n-label` attribute. This method
-   * also setup tooltips for the elements:
-   * * Added to the DOM and have a `i18n-label` attribute.
-   * * Newly set with a `i18n-label` attribute.
-   *
-   * Note `i18n-label` attribute should not be removed from elements.
-   */
-  private setupTooltip() {
-    tooltip.init();
-    const tooltipAttribute = 'i18n-label';
-    const tooltipAttributeSelector = `[${tooltipAttribute}]`;
-    const elements =
-        Array.from(dom.getAll(tooltipAttributeSelector, HTMLElement));
+    }
     tooltip.setupElements(elements);
-    const observer = new MutationObserver((mutations) => {
-      const elements: HTMLElement[] = [];
-      for (const mutation of mutations) {
-        if (mutation.type === 'attributes') {
-          // Check newly added attributes on existing elements.
-          const {target, oldValue} = mutation;
-          if (target instanceof HTMLElement && oldValue === null) {
-            elements.push(target);
-          }
-        } else if (mutation.type === 'childList') {
-          const {target} = mutation;
-          if (target instanceof HTMLElement) {
-            elements.push(
-                ...dom.getAllFrom(
-                    target, tooltipAttributeSelector, HTMLElement),
-            );
-          }
-        }
-      }
-      tooltip.setupElements(elements);
-    });
-    observer.observe(document.body, {
-      subtree: true,
-      childList: true,
-      attributeFilter: [tooltipAttribute],
-      attributes: true,
-      attributeOldValue: true,
-    });
-  }
+  });
+  observer.observe(document.body, {
+    subtree: true,
+    childList: true,
+    attributeFilter: [tooltipAttribute],
+    attributes: true,
+    attributeOldValue: true,
+  });
+}
 
-  /**
-   * Sets up toggles (checkbox and radio) by data attributes.
-   */
-  private setupToggles() {
-    for (const element of dom.getAll('input', HTMLInputElement)) {
-      element.addEventListener('keypress', (event) => {
-        const e = assertInstanceof(event, KeyboardEvent);
-        if (util.getKeyboardShortcut(e) === 'Enter') {
-          element.click();
-        }
-      });
-      function getKey(element: HTMLInputElement) {
-        return element.dataset['key'] === undefined ?
-            null :
-            assertEnumVariant(LocalStorageKey, element.dataset['key']);
+/**
+ * Sets up toggles (checkbox and radio) by data attributes.
+ */
+function setupToggles() {
+  for (const element of dom.getAll('input', HTMLInputElement)) {
+    element.addEventListener('keypress', (event) => {
+      if (util.getKeyboardShortcut(event) === 'Enter') {
+        element.click();
       }
-      const stateKey = element.dataset['state'] === undefined ?
+    });
+    function getKey(element: HTMLInputElement) {
+      return element.dataset['key'] === undefined ?
           null :
-          state.assertState(element.dataset['state']);
+          assertEnumVariant(LocalStorageKey, element.dataset['key']);
+    }
+    const stateKey = element.dataset['state'] === undefined ?
+        null :
+        state.assertState(element.dataset['state']);
 
-      function save(element: HTMLInputElement) {
-        const localStorageKey = getKey(element);
-        if (localStorageKey !== null) {
-          localStorage.set(localStorageKey, element.checked);
-        }
-      }
-      element.addEventListener('change', (event) => {
-        if (stateKey !== null) {
-          state.set(stateKey, element.checked);
-        }
-        // Check if event is triggered by user on UI.
-        if (event.isTrusted) {
-          save(element);
-          if (element.type === 'radio' && element.checked) {
-            // Handle unchecked grouped sibling radios.
-            const grouped =
-                `input[type=radio][name=${element.name}]:not(:checked)`;
-            for (const radio of dom.getAll(grouped, HTMLInputElement)) {
-              radio.dispatchEvent(new Event('change'));
-              save(radio);
-            }
-          }
-        }
-      });
-      if (stateKey !== null) {
-        state.set(stateKey, element.checked);
-        state.addObserver(stateKey, (value) => {
-          if (value !== element.checked) {
-            util.toggleChecked(element, value);
-          }
-        });
-      }
+    function save(element: HTMLInputElement) {
       const localStorageKey = getKey(element);
       if (localStorageKey !== null) {
-        const value = localStorage.getBool(localStorageKey, element.checked);
-        util.toggleChecked(element, value);
+        localStorage.set(localStorageKey, element.checked);
       }
     }
-  }
-
-  /**
-   * Sets up visual effect for all applicable elements.
-   */
-  private setupEffect() {
-    for (const el of dom.getAll('.inkdrop', HTMLElement)) {
-      util.setInkdropEffect(el);
-    }
-
-    const observer = new MutationObserver((mutationList) => {
-      for (const mutation of mutationList) {
-        assert(mutation.type === 'childList');
-        // Only the newly added nodes with inkdrop class are considered here. So
-        // simply adding class attribute on existing element will not work.
-        for (const node of mutation.addedNodes) {
-          if (!(node instanceof HTMLElement)) {
-            continue;
-          }
-          if (node.classList.contains('inkdrop')) {
-            util.setInkdropEffect(node);
+    element.addEventListener('change', (event) => {
+      if (stateKey !== null) {
+        state.set(stateKey, element.checked);
+      }
+      // Check if event is triggered by user on UI.
+      if (event.isTrusted) {
+        save(element);
+        if (element.type === 'radio' && element.checked) {
+          // Handle unchecked grouped sibling radios.
+          const grouped =
+              `input[type=radio][name=${element.name}]:not(:checked)`;
+          for (const radio of dom.getAll(grouped, HTMLInputElement)) {
+            radio.dispatchEvent(new Event('change'));
+            save(radio);
           }
         }
       }
     });
-    observer.observe(document.body, {
-      subtree: true,
-      childList: true,
-    });
-  }
-
-  private showNewFeatureToast() {
-    // TODO(b/236800499): Remove the toast around 3 milestones after the feature
-    // is launched.
-    const showTimeLapseToast = () => this.cameraManager.registerCameraUI({
-      onUpdateConfig: async () => {
-        if (localStorage.getBool(LocalStorageKey.TIME_LAPSE_DIALOG_SHOWN) ||
-            state.get(Mode.VIDEO)) {
-          return;
+    if (stateKey !== null) {
+      state.set(stateKey, element.checked);
+      state.addObserver(stateKey, (value) => {
+        if (value !== element.checked) {
+          util.toggleChecked(element, value);
         }
-        customEffect.showTimeLapseIntroToast(this.cameraView.root);
-        // Do not show the toast to users who has already seen it.
-        localStorage.set(LocalStorageKey.TIME_LAPSE_DIALOG_SHOWN, true);
-      },
-    });
-
-    if (loadTimeData.getChromeFlag(Flag.TIME_LAPSE)) {
-      showTimeLapseToast();
-    }
-  }
-
-  private setupExperimentalFeatures() {
-    if (loadTimeData.getChromeFlag(Flag.TIME_LAPSE)) {
-      const modeButton = dom.get('#time-lapse-mode', HTMLDivElement);
-      modeButton.classList.remove('hidden');
-    }
-  }
-
-  /**
-   * Starts the app by loading the model and opening the camera-view.
-   */
-  async start(launchType: metrics.LaunchType): Promise<void> {
-    await DeviceOperator.initializeInstance();
-    document.documentElement.dir = loadTimeData.getTextDirection();
-    try {
-      await filesystem.initialize();
-      const cameraDir = filesystem.getCameraDirectory();
-
-      // There are three possible cases:
-      // 1. Regular instance
-      //      (intent === null)
-      // 2. STILL_CAPTURE_CAMERA and VIDEO_CAMERA intents
-      //      (intent !== null && shouldHandleResult === false)
-      // 3. Other intents
-      //      (intent !== null && shouldHandleResult === true)
-      // Only (1) and (2) will show gallery button on the UI.
-      if (this.intent === null || !this.intent.shouldHandleResult) {
-        this.galleryButton.initialize(cameraDir);
-      }
-    } catch (error) {
-      reportError(ErrorType.FILE_SYSTEM_FAILURE, ErrorLevel.ERROR, error);
-      nav.open(ViewName.WARNING, WarningType.FILESYSTEM_FAILURE);
-    }
-
-    const showWindow = (async () => {
-      // For intent only requiring open camera with specific mode without
-      // returning the capture result, finish it directly.
-      if (this.intent !== null && !this.intent.shouldHandleResult) {
-        await this.intent.finish();
-      }
-    })();
-
-    const cameraResourceInitialized = new WaitableEvent();
-    await this.setupMultiWindowHandling(cameraResourceInitialized);
-
-    let cameraStartSuccessful = false;
-
-    const startCamera = (async () => {
-      await cameraResourceInitialized.wait();
-      cameraStartSuccessful = await this.cameraManager.requestResume();
-
-      if (cameraStartSuccessful) {
-        const {aspectRatio} = this.cameraManager.getPreviewResolution();
-        const {width, height} = getDefaultWindowSize(aspectRatio);
-        window.resizeTo(width, height);
-      }
-    })();
-
-    preloadImages();
-
-    for (const el of dom.getAll('[data-svg]', HTMLElement)) {
-      const imageName = assertExists(el.dataset['svg']);
-      const svg = document.createElement('svg-wrapper');
-      svg.setAttribute('name', imageName);
-      // Prepend the svg so it's on the bottom-most layer and won't be covering
-      // other possible children (e.g. inkdrop effect).
-      el.prepend(svg);
-    }
-
-    metrics.sendLaunchEvent({launchType});
-    await Promise.all([showWindow, startCamera]);
-
-    nav.close(ViewName.SPLASH);
-    nav.open(ViewName.CAMERA);
-
-    const windowCreationTime = window.windowCreationTime;
-    this.perfLogger.start(
-        PerfEvent.LAUNCHING_FROM_WINDOW_CREATION, windowCreationTime);
-    this.perfLogger.stop(
-        PerfEvent.LAUNCHING_FROM_WINDOW_CREATION,
-        {hasError: !cameraStartSuccessful});
-
-    window.appWindow?.onAppLaunched();
-    metrics.sendOpenCameraEvent(this.cameraManager.getVidPid());
-  }
-
-  /**
-   * Handles pressed keys.
-   *
-   * @param event Key press event.
-   */
-  private onKeyPressed(event: Event) {
-    tooltip.hide();  // Hide shown tooltip on any keypress.
-    nav.onKeyPressed(assertInstanceof(event, KeyboardEvent));
-  }
-
-  /**
-   * Suspends app and hides app window.
-   */
-  async suspend(): Promise<void> {
-    timertick.cancel();
-    await this.cameraManager.requestSuspend();
-    nav.open(ViewName.WARNING, WarningType.CAMERA_PAUSED);
-  }
-
-  /**
-   * Resumes app from suspension and shows app window.
-   */
-  resume(): void {
-    this.cameraManager.requestResume();
-    nav.close(ViewName.WARNING, WarningType.CAMERA_PAUSED);
-  }
-
-  /**
-   * Begins to take photo or recording with the current options, e.g. timer.
-   *
-   * @param shutterType The shutter is triggered by which shutter type.
-   * @return Promise resolved when take action completes.
-   *     Returns null if CCA can't start take action.
-   */
-  beginTake(shutterType: metrics.ShutterType): Promise<void>|null {
-    return this.cameraView.beginTake(shutterType);
-  }
-
-  async setupMultiWindowHandling(cameraResourceInitialized: WaitableEvent):
-      Promise<void> {
-    const exploitUsage = async () => {
-      if (cameraResourceInitialized.isSignaled()) {
-        this.resume();
-      } else {
-        // CCA must get camera usage for completing its initialization when
-        // first launched.
-        await this.cameraManager.initialize(this.cameraView);
-        await this.cameraView.initialize();
-        cameraResourceInitialized.signal();
-      }
-    };
-    const releaseUsage = async () => {
-      assert(cameraResourceInitialized.isSignaled());
-      await this.suspend();
-    };
-
-    const multiWindowManagerWorker = new SharedWorker(
-        getSanitizedScriptUrl('/js/multi_window_manager.js'), {type: 'module'});
-    const windowInstance =
-        Comlink.wrap<WindowInstance>(multiWindowManagerWorker.port);
-    addUnloadCallback(() => {
-      windowInstance.onWindowClosed().catch((e) => {
-        reportError(
-            ErrorType.MULTI_WINDOW_HANDLING_FAILURE, ErrorLevel.ERROR,
-            assertInstanceof(e, Error));
       });
-    });
-    await windowInstance.init(
-        Comlink.proxy(releaseUsage), Comlink.proxy(exploitUsage));
-    await ChromeHelper.getInstance().initCameraWindowController();
-    windowController.addWindowStateListener(
-        (states) => {
-          const isMinimizing = states.includes(WindowStateType.MINIMIZED);
-          // If the window is minimized while recording time-lapse, the camera
-          // usage will not be paused to keep recording.
-          if (isMinimizing && state.get(state.State.RECORDING) &&
-              state.get(state.State.RECORD_TYPE_TIME_LAPSE)) {
-            return;
-          }
-          windowInstance.onVisibilityChanged(!isMinimizing).catch((e) => {
-            reportError(
-                ErrorType.MULTI_WINDOW_HANDLING_FAILURE, ErrorLevel.ERROR,
-                assertInstanceof(e, Error));
-          });
-        });
-    windowController.addWindowFocusListener((isFocused) => {
-      // If we change the focus to another CCA window, it should get the camera
-      // ownership.
-      if (isFocused) {
-        windowInstance.onVisibilityChanged(true).catch((e) => {
-          reportError(
-              ErrorType.MULTI_WINDOW_HANDLING_FAILURE, ErrorLevel.ERROR,
-              assertInstanceof(e, Error));
-        });
-      }
-    });
+    }
+    const localStorageKey = getKey(element);
+    if (localStorageKey !== null) {
+      const value = localStorage.getBool(localStorageKey, element.checked);
+      util.toggleChecked(element, value);
+    }
   }
+}
+
+/**
+ * Sets up visual effect for all applicable elements.
+ */
+function setupEffect() {
+  for (const el of dom.getAll('.inkdrop', HTMLElement)) {
+    util.setInkdropEffect(el);
+  }
+
+  const observer = new MutationObserver((mutationList) => {
+    for (const mutation of mutationList) {
+      assert(mutation.type === 'childList');
+      // Only the newly added nodes with inkdrop class are considered here. So
+      // simply adding class attribute on existing element will not work.
+      for (const node of mutation.addedNodes) {
+        if (!(node instanceof HTMLElement)) {
+          continue;
+        }
+        if (node.classList.contains('inkdrop')) {
+          util.setInkdropEffect(node);
+        }
+      }
+    }
+  });
+  observer.observe(document.body, {
+    subtree: true,
+    childList: true,
+  });
+}
+
+/**
+ * Handles pressed keys.
+ */
+function onKeyPressed(event: KeyboardEvent) {
+  tooltip.hide();  // Hide shown tooltip on any keypress.
+  nav.onKeyPressed(event);
 }
 
 /**
@@ -546,50 +270,97 @@ async function setupDynamicColor(): Promise<void> {
       document.head.appendChild(link);
     });
   }
-  if (loadTimeData.getChromeFlag(Flag.JELLY)) {
-    ColorChangeUpdater.forDocument().start();
-    await loadCSS('chrome://theme/colors.css?sets=ref,sys');
-  } else {
-    await loadCSS(util.expandPath('/css/colors_default.css'));
-  }
+  ColorChangeUpdater.forDocument().start();
+  // Note that this has to be loaded after
+  // ColorChangeUpdater.forDocument.start() is called, since we override the
+  // force dark theme on the color_change_listener BindInterface in
+  // camera_app_ui.cc
+  // TODO(pihsun): Check if there's way to override color scheme earlier before
+  // HTML load, so the CSS can be put into .html file instead of being injected
+  // by JS.
+  await loadCSS('chrome://theme/colors.css?sets=ref,sys');
 }
 
-/**
- * Singleton of the App object.
- */
-let instance: App|null = null;
-
-/**
- * Creates the App object and starts camera stream.
- */
-(async () => {
-  if (instance !== null) {
-    return;
+async function setupMultiWindowHandling(
+    cameraManager: CameraManager, cameraView: Camera,
+    cameraResourceInitialized: WaitableEvent): Promise<void> {
+  async function handleResume() {
+    try {
+      if (cameraResourceInitialized.isSignaled()) {
+        await cameraManager.requestResume();
+        nav.close(ViewName.WARNING, WarningType.CAMERA_PAUSED);
+      } else {
+        // CCA must get camera usage for completing its initialization when
+        // first launched.
+        await cameraManager.initialize(cameraView);
+        await cameraView.initialize();
+        cameraResourceInitialized.signal();
+      }
+    } catch (e) {
+      reportError(
+          ErrorType.RESUME_CAMERA_FAILURE, ErrorLevel.ERROR,
+          assertInstanceof(e, Error));
+    }
+  }
+  async function handleSuspend() {
+    try {
+      assert(cameraResourceInitialized.isSignaled());
+      timertick.cancel();
+      await cameraManager.requestSuspend();
+      nav.open(ViewName.WARNING, WarningType.CAMERA_PAUSED);
+    } catch (e) {
+      reportError(
+          ErrorType.SUSPEND_CAMERA_FAILURE, ErrorLevel.ERROR,
+          assertInstanceof(e, Error));
+    }
   }
 
+  const multiWindowManagerWorker = new SharedWorker(
+      getSanitizedScriptUrl('/js/multi_window_manager.js'), {type: 'module'});
+  const windowInstance =
+      Comlink.wrap<WindowInstance>(multiWindowManagerWorker.port);
+  addUnloadCallback(() => {
+    windowInstance.onWindowClosed().catch((e) => {
+      reportError(
+          ErrorType.MULTI_WINDOW_HANDLING_FAILURE, ErrorLevel.ERROR,
+          assertInstanceof(e, Error));
+    });
+  });
+  await windowInstance.init(
+      Comlink.proxy(handleSuspend), Comlink.proxy(handleResume));
+  await ChromeHelper.getInstance().initCameraWindowController();
+  windowController.addWindowStateListener((states) => {
+    const isMinimizing = states.includes(WindowStateType.kMinimized);
+    // If the window is minimized while recording time-lapse, the camera
+    // usage will not be paused to keep recording.
+    if (isMinimizing && state.get(state.State.RECORDING) &&
+        state.get(state.State.RECORD_TYPE_TIME_LAPSE)) {
+      return;
+    }
+    windowInstance.onVisibilityChanged(!isMinimizing).catch((e) => {
+      reportError(
+          ErrorType.MULTI_WINDOW_HANDLING_FAILURE, ErrorLevel.ERROR,
+          assertInstanceof(e, Error));
+    });
+  });
+  windowController.addWindowFocusListener((isFocused) => {
+    // If we change the focus to another CCA window, it should get the camera
+    // ownership.
+    if (isFocused) {
+      windowInstance.onVisibilityChanged(true).catch((e) => {
+        reportError(
+            ErrorType.MULTI_WINDOW_HANDLING_FAILURE, ErrorLevel.ERROR,
+            assertInstanceof(e, Error));
+      });
+    }
+  });
+}
+
+function createPerfLogger(): PerfLogger {
   const perfLogger = new PerfLogger();
 
-  await setupDynamicColor();
-
-  const {intent, facing, mode, autoTake, openFrom} = parseSearchParams();
-
-  state.set(state.State.INTENT, intent !== null);
-
-  addUnloadCallback(() => {
-    // For SWA, we don't cancel the unhandled intent here since there is no
-    // guarantee that asynchronous calls in unload listener can be executed
-    // properly. Therefore, we moved the logic for canceling unhandled intent to
-    // Chrome (CameraAppHelper).
-    window.appWindow?.notifyClosed();
-  });
-
-  metrics.initMetrics();
-  if (window.appWindow !== null) {
-    metrics.setEnabled(false);
-  }
-
   // Setup listener for performance events.
-  perfLogger.addListener(({event, duration, perfInfo}) => {
+  perfLogger.addListener(async ({event, duration, perfInfo}) => {
     metrics.sendPerfEvent({event, duration, perfInfo});
 
     // Setup for console perf logger.
@@ -602,7 +373,7 @@ let instance: App|null = null;
     }
 
     // Setup for Tast tests logger.
-    window.appWindow?.reportPerf({event, duration, perfInfo});
+    await window.appWindow?.reportPerf({event, duration, perfInfo});
   });
 
   state.addObserver(state.State.TAKING, (val, extras) => {
@@ -632,6 +403,49 @@ let instance: App|null = null;
     });
   }
 
+  return perfLogger;
+}
+
+function setupSvgs() {
+  for (const el of dom.getAll('[data-svg]', HTMLElement)) {
+    const imageName = assertExists(el.dataset['svg']);
+    const svg = document.createElement('svg-wrapper');
+    svg.setAttribute('name', imageName);
+    // Prepend the svg so it's on the bottom-most layer and won't be covering
+    // other possible children (e.g. inkdrop effect).
+    el.prepend(svg);
+  }
+}
+
+/**
+ * Setup Camera App and starts camera stream.
+ */
+async function main() {
+  const {intent, facing, mode, autoTake, openFrom} = parseSearchParams();
+
+  state.set(state.State.INTENT, intent !== null);
+
+  addUnloadCallback(async () => {
+    // For SWA, we don't cancel the unhandled intent here since there is no
+    // guarantee that asynchronous calls in unload listener can be executed
+    // properly. Therefore, we moved the logic for canceling unhandled intent to
+    // Chrome (CameraAppHelper).
+    await window.appWindow?.notifyClosed();
+  });
+
+  // metrics.ts handle it's ready state inside the module, and we don't want to
+  // block CCA by metrics initialization.
+  void metrics.initMetrics();
+  if (window.appWindow !== null) {
+    // Disable metrics when in testing.
+    void metrics.setEnabled(false);
+  }
+
+  const perfLogger = createPerfLogger();
+
+  // toast and splash style depends on dynamic color css being imported.
+  await setupDynamicColor();
+
   if (DEPLOYED_VERSION !== undefined) {
     // eslint-disable-next-line no-console
     console.log(
@@ -641,21 +455,133 @@ let instance: App|null = null;
     toast.showDebugMessage(`Local override enabled (${DEPLOYED_VERSION})`);
   }
 
-  instance = new App({perfLogger, intent, facing, mode});
-  await instance.start(
-      openFrom === 'assistant' ? metrics.LaunchType.ASSISTANT :
-                                 metrics.LaunchType.DEFAULT);
+  // There are three possible cases:
+  // 1. Regular instance
+  //      (intent === null)
+  // 2. STILL_CAPTURE_CAMERA and VIDEO_CAMERA intents
+  //      (intent !== null && shouldHandleResult === false)
+  // 3. Other intents
+  //      (intent !== null && shouldHandleResult === true)
+  // `shouldHandleIntentResult` will be false in (1) and (2), and gallery
+  // button will be shown on the UI.
+  const shouldHandleIntentResult = intent?.shouldHandleResult === true;
+  state.set(state.State.SHOULD_HANDLE_INTENT_RESULT, shouldHandleIntentResult);
+
+  const modeConstraints: ModeConstraints = {
+    kind: shouldHandleIntentResult && mode !== null ? 'exact' : 'default',
+    mode: mode ?? Mode.PHOTO,
+  };
+  const cameraManager = new CameraManager(perfLogger, facing, modeConstraints);
+
+  const resultSaver = new DefaultResultSaver();
+
+  const cameraView = shouldHandleIntentResult ?
+      new CameraIntent(intent, cameraManager, perfLogger) :
+      new Camera(resultSaver, cameraManager, perfLogger);
+
+  // Set up views navigation by their DOM z-order.
+  nav.setup([
+    cameraView,
+    new Warning(),
+    new View(ViewName.SPLASH),
+  ]);
+
+  nav.open(ViewName.SPLASH);
+
+  document.documentElement.dir = loadTimeData.getTextDirection();
+  // Disable the zoom in-out gesture which is triggered by wheel and pinch on
+  // trackpad.
+  document.body.addEventListener('wheel', (event) => {
+    if (event.ctrlKey) {
+      event.preventDefault();
+    }
+  }, {passive: false, capture: true});
+
+  window.addEventListener('resize', () => nav.layoutShownViews());
+  windowController.addWindowStateListener(() => nav.layoutShownViews());
+
+  customEffect.setup();
+  util.setupI18nElements(document.body);
+  setupTooltip();
+  setupToggles();
+  localStorage.cleanup();
+  setupEffect();
+  preloadImages();
+  preloadSounds();
+  setupSvgs();
+
+  const launchType = openFrom === 'assistant' ? metrics.LaunchType.ASSISTANT :
+                                                metrics.LaunchType.DEFAULT;
+
+  await DeviceOperator.initializeInstance();
+  try {
+    await filesystem.initialize();
+    const cameraDir = filesystem.getCameraDirectory();
+    if (!shouldHandleIntentResult) {
+      await resultSaver.initialize(cameraDir);
+    }
+  } catch (error) {
+    reportError(ErrorType.FILE_SYSTEM_FAILURE, ErrorLevel.ERROR, error);
+    nav.open(ViewName.WARNING, WarningType.FILESYSTEM_FAILURE);
+  }
+
+  // Create a promise to finish the intent, that runs in parallel with starting
+  // camera.
+  const finishIntent = (async () => {
+    // For intent only requiring open camera with specific mode without
+    // returning the capture result, finish it directly.
+    if (intent !== null && !intent.shouldHandleResult) {
+      await intent.finish();
+    }
+  })();
+
+  const cameraResourceInitialized = new WaitableEvent();
+  await setupMultiWindowHandling(
+      cameraManager, cameraView, cameraResourceInitialized);
+
+  // Key handler (in particular, back button) depends on windowController being
+  // initialized by setupMultiWindowHandling.
+  document.body.addEventListener('keydown', (event) => onKeyPressed(event));
+
+  metrics.sendLaunchEvent({launchType});
+
+  await cameraResourceInitialized.wait();
+  const cameraStartSuccessful = await cameraManager.requestResume();
+
+  if (cameraStartSuccessful) {
+    const {aspectRatio} = cameraManager.getPreviewResolution();
+    const {width, height} = getDefaultWindowSize(aspectRatio);
+    window.resizeTo(width, height);
+  }
+
+  // Waits for the intent to finish before switching to main camera view.
+  // TODO(pihsun): Check if the performance gain for running this in parallel
+  // is significant, and simplify this by inlining the promise if it isn't.
+  await finishIntent;
+
+  nav.close(ViewName.SPLASH);
+  nav.open(ViewName.CAMERA);
+
+  perfLogger.start(
+      PerfEvent.LAUNCHING_FROM_WINDOW_CREATION, window.windowCreationTime);
+  perfLogger.stop(
+      PerfEvent.LAUNCHING_FROM_WINDOW_CREATION,
+      {hasError: !cameraStartSuccessful});
+
+  // Start the memory measurement when the camera preview is ready. The first
+  // measurement is performed immediately. The following measurements are
+  // performed periodically, or triggered by specific behaviors.
+  startMeasuringMemoryUsage();
+
+  await window.appWindow?.onAppLaunched();
+  metrics.sendOpenCameraEvent(cameraManager.getVidPid());
 
   if (autoTake) {
-    const takePromise = instance.beginTake(
+    cameraView.beginTake(
         openFrom === 'assistant' ? metrics.ShutterType.ASSISTANT :
                                    metrics.ShutterType.UNKNOWN);
-    if (takePromise === null) {
-      toast.show(
-          mode === Mode.VIDEO ? I18nString.ERROR_MSG_RECORD_START_FAILED :
-                                I18nString.ERROR_MSG_TAKE_PHOTO_FAILED);
-    } else {
-      await takePromise;
-    }
   }
-})();
+}
+
+// This is the entry point of CCA so the returned promise is not awaited.
+void main();

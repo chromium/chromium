@@ -20,11 +20,9 @@ import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import java.util.List;
 import java.util.concurrent.TimeoutException;
 
-/**
- * Custom ChromeBrowserTestRule to test Autofill.
- */
-class AutofillTestRule
-        extends ChromeBrowserTestRule implements EditorObserverForTest, Callback<Fragment> {
+/** Custom ChromeBrowserTestRule to test Autofill. */
+class AutofillTestRule extends ChromeBrowserTestRule
+        implements EditorObserverForTest, Callback<Fragment> {
     final CallbackHelper mClickUpdate;
     final CallbackHelper mEditorTextUpdate;
     final CallbackHelper mPreferenceUpdate;
@@ -48,12 +46,13 @@ class AutofillTestRule
 
     protected void setTextInEditorAndWait(final String[] values) throws TimeoutException {
         int callCount = mEditorTextUpdate.getCallCount();
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            List<EditText> fields = mEditorDialog.getEditableTextFieldsForTest();
-            for (int i = 0; i < values.length; i++) {
-                fields.get(i).setText(values[i]);
-            }
-        });
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    List<EditText> fields = mEditorDialog.getEditableTextFieldsForTest();
+                    for (int i = 0; i < values.length; i++) {
+                        fields.get(i).setText(values[i]);
+                    }
+                });
         mEditorTextUpdate.waitForCallback(callCount);
     }
 
@@ -62,25 +61,44 @@ class AutofillTestRule
         mFragmentShown.waitForCallback(callCount);
     }
 
-    protected void clickInEditorAndWait(final int resourceId) throws TimeoutException {
+    protected void clickInEditorAndWait(final int resourceId, boolean waitForPreferenceUpdate)
+            throws TimeoutException {
         int callCount = mClickUpdate.getCallCount();
-        TestThreadUtils.runOnUiThreadBlockingNoException(
-                () -> mEditorDialog.findViewById(resourceId).performClick());
+        int updateCallCount =
+                TestThreadUtils.runOnUiThreadBlockingNoException(
+                        () -> {
+                            int updateCallCountBeforeButtonClick = mPreferenceUpdate.getCallCount();
+                            mEditorDialog.findViewById(resourceId).performClick();
+                            return updateCallCountBeforeButtonClick;
+                        });
         mClickUpdate.waitForCallback(callCount);
+        if (waitForPreferenceUpdate) {
+            mPreferenceUpdate.waitForCallback(updateCallCount);
+        }
     }
 
     /**
      * @param button see {@link android.content.DialogInterface} for button int constants.
      */
-    protected void clickInConfirmationDialogAndWait(final int button) throws TimeoutException {
+    protected void clickInConfirmationDialogAndWait(
+            final int button, boolean waitForPreferenceUpdate) throws TimeoutException {
         if (mEditorDialog.getConfirmationDialogForTest() != null) {
             int callCount = mClickUpdate.getCallCount();
-            TestThreadUtils.runOnUiThreadBlockingNoException(
-                    ()
-                            -> mEditorDialog.getConfirmationDialogForTest()
-                                       .getButton(button)
-                                       .performClick());
+            int updateCallCount =
+                    TestThreadUtils.runOnUiThreadBlockingNoException(
+                            () -> {
+                                int updateCallCountBeforeButtonClick =
+                                        mPreferenceUpdate.getCallCount();
+                                mEditorDialog
+                                        .getConfirmationDialogForTest()
+                                        .getButton(button)
+                                        .performClick();
+                                return updateCallCountBeforeButtonClick;
+                            });
             mClickUpdate.waitForCallback(callCount);
+            if (waitForPreferenceUpdate) {
+                mPreferenceUpdate.waitForCallback(updateCallCount);
+            }
         }
     }
 
@@ -103,18 +121,15 @@ class AutofillTestRule
     protected void sendKeycodeToTextFieldInEditorAndWait(
             final int keycode, final int textFieldIndex) throws TimeoutException {
         int callCount = mClickUpdate.getCallCount();
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            List<EditText> fields = mEditorDialog.getEditableTextFieldsForTest();
-            fields.get(textFieldIndex)
-                    .dispatchKeyEvent(new KeyEvent(KeyEvent.ACTION_DOWN, keycode));
-            fields.get(textFieldIndex).dispatchKeyEvent(new KeyEvent(KeyEvent.ACTION_UP, keycode));
-        });
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    List<EditText> fields = mEditorDialog.getEditableTextFieldsForTest();
+                    fields.get(textFieldIndex)
+                            .dispatchKeyEvent(new KeyEvent(KeyEvent.ACTION_DOWN, keycode));
+                    fields.get(textFieldIndex)
+                            .dispatchKeyEvent(new KeyEvent(KeyEvent.ACTION_UP, keycode));
+                });
         mClickUpdate.waitForCallback(callCount);
-    }
-
-    protected void waitForThePreferenceUpdate() throws TimeoutException {
-        int callCount = mPreferenceUpdate.getCallCount();
-        mPreferenceUpdate.waitForCallback(callCount);
     }
 
     protected void setEditorDialogAndWait(EditorDialogView editorDialog) throws TimeoutException {
@@ -138,6 +153,7 @@ class AutofillTestRule
         ThreadUtils.assertOnUiThread();
         mEditorTextUpdate.notifyCalled();
     }
+
     @Override
     public void onEditorReadyToEdit() {
         ThreadUtils.assertOnUiThread();

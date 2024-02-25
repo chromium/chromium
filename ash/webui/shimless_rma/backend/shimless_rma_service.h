@@ -6,25 +6,27 @@
 #define ASH_WEBUI_SHIMLESS_RMA_BACKEND_SHIMLESS_RMA_SERVICE_H_
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <vector>
 
+#include "ash/webui/shimless_rma/backend/shimless_rma_delegate.h"
 #include "ash/webui/shimless_rma/backend/version_updater.h"
 #include "ash/webui/shimless_rma/mojom/shimless_rma.mojom.h"
 #include "base/containers/flat_set.h"
+#include "base/memory/raw_ptr.h"
 #include "chromeos/ash/components/dbus/rmad/rmad.pb.h"
 #include "chromeos/ash/components/dbus/rmad/rmad_client.h"
 #include "chromeos/ash/components/dbus/update_engine/update_engine.pb.h"
+#include "chromeos/ash/services/cros_healthd/public/mojom/cros_healthd_probe.mojom.h"
 #include "chromeos/services/network_config/public/mojom/cros_network_config.mojom.h"
+#include "components/web_package/signed_web_bundles/signed_web_bundle_id.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote_set.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ash {
 namespace shimless_rma {
-
-class ShimlessRmaDelegate;
 
 class ShimlessRmaService : public mojom::ShimlessRmaService,
                            public RmadClient::Observer {
@@ -84,12 +86,13 @@ class ShimlessRmaService : public mojom::ShimlessRmaService,
       ContinueFinalizationAfterRestockCallback callback) override;
   void GetRegionList(GetRegionListCallback callback) override;
   void GetSkuList(GetSkuListCallback callback) override;
-  void GetWhiteLabelList(GetWhiteLabelListCallback callback) override;
+  void GetCustomLabelList(GetCustomLabelListCallback callback) override;
+  void GetSkuDescriptionList(GetSkuDescriptionListCallback callback) override;
   void GetOriginalSerialNumber(
       GetOriginalSerialNumberCallback callback) override;
   void GetOriginalRegion(GetOriginalRegionCallback callback) override;
   void GetOriginalSku(GetOriginalSkuCallback callback) override;
-  void GetOriginalWhiteLabel(GetOriginalWhiteLabelCallback callback) override;
+  void GetOriginalCustomLabel(GetOriginalCustomLabelCallback callback) override;
   void GetOriginalDramPartNumber(
       GetOriginalDramPartNumberCallback callback) override;
   void GetOriginalFeatureLevel(
@@ -97,7 +100,7 @@ class ShimlessRmaService : public mojom::ShimlessRmaService,
   void SetDeviceInformation(const std::string& serial_number,
                             int32_t region_index,
                             int32_t sku_index,
-                            int32_t white_label_index,
+                            int32_t custom_label_index,
                             const std::string& dram_part_number,
                             bool is_chassis_branded,
                             int32_t hw_compliance_version,
@@ -128,6 +131,16 @@ class ShimlessRmaService : public mojom::ShimlessRmaService,
       CriticalErrorExitToLoginCallback callback) override;
   void CriticalErrorReboot(CriticalErrorRebootCallback callback) override;
   void ShutDownAfterHardwareError() override;
+  void Get3pDiagnosticsProvider(
+      Get3pDiagnosticsProviderCallback callback) override;
+  void GetInstallable3pDiagnosticsAppPath(
+      GetInstallable3pDiagnosticsAppPathCallback callback) override;
+  void InstallLastFound3pDiagnosticsApp(
+      InstallLastFound3pDiagnosticsAppCallback callback) override;
+  void CompleteLast3pDiagnosticsInstallation(
+      bool is_approved,
+      CompleteLast3pDiagnosticsInstallationCallback callback) override;
+  void Show3pDiagnosticsApp(Show3pDiagnosticsAppCallback callback) override;
   void ObserveError(
       ::mojo::PendingRemote<mojom::ErrorObserver> observer) override;
   void ObserveOsUpdateProgress(
@@ -207,21 +220,21 @@ class ShimlessRmaService : public mojom::ShimlessRmaService,
   template <class Callback>
   void OnGetStateResponse(Callback callback,
                           StateResponseCalledFrom called_from,
-                          absl::optional<rmad::GetStateReply> response);
+                          std::optional<rmad::GetStateReply> response);
   void OnAbortRmaResponse(AbortRmaCallback callback,
                           bool reboot,
-                          absl::optional<rmad::AbortRmaReply> response);
+                          std::optional<rmad::AbortRmaReply> response);
   void AbortRmaForgetNetworkResponse(
       AbortRmaCallback callback,
       bool reboot,
-      absl::optional<rmad::AbortRmaReply> response);
+      std::optional<rmad::AbortRmaReply> response);
   void EndRmaForgetNetworkResponse(
       rmad::RepairCompleteState::ShutdownMethod shutdown_method,
       EndRmaCallback callback);
   void OnGetLog(GetLogCallback callback,
-                absl::optional<rmad::GetLogReply> response);
+                std::optional<rmad::GetLogReply> response);
   void OnSaveLog(SaveLogCallback callback,
-                 absl::optional<rmad::SaveLogReply> response);
+                 std::optional<rmad::SaveLogReply> response);
   void OnDiagnosticsLogReady(SaveLogCallback callback,
                              const std::string& diagnostics_log_text);
 
@@ -260,12 +273,42 @@ class ShimlessRmaService : public mojom::ShimlessRmaService,
 
   // Handles responses from the platform to diagnostics requests.
   void OnMetricsReply(
-      absl::optional<rmad::RecordBrowserActionMetricReply> response);
+      std::optional<rmad::RecordBrowserActionMetricReply> response);
 
   // Handles the response when the RSU QR code is generated.
   void OnQrCodeGenerated(
       GetRsuDisableWriteProtectChallengeQrCodeCallback callback,
       const std::string& qr_code_image);
+
+  // Handles the response from cros_healthd for 3p diag provider.
+  void OnGetSystemInfoFor3pDiag(
+      Get3pDiagnosticsProviderCallback callback,
+      ash::cros_healthd::mojom::TelemetryInfoPtr telemetry_info);
+
+  // Handles the response from rmad when the 3p diag app is extracted.
+  void OnExtractExternalDiagnosticsApp(
+      GetInstallable3pDiagnosticsAppPathCallback callback,
+      std::optional<rmad::ExtractExternalDiagnosticsAppReply> response);
+
+  // Handles the response from rmad for getting the installed 3p diag app.
+  void GetInstalledDiagnosticsApp(
+      Show3pDiagnosticsAppCallback callback,
+      std::optional<rmad::GetInstalledDiagnosticsAppReply> response);
+
+  // Handles the response when the 3p diag app is loaded for show.
+  void On3pDiagnosticsAppLoadForShow(
+      Show3pDiagnosticsAppCallback callback,
+      base::expected<
+          ShimlessRmaDelegate::PrepareDiagnosticsAppBrowserContextResult,
+          std::string> result);
+
+  // Handles the response when a new 3p diag app is loaded for a pending
+  // installation.
+  void On3pDiagnosticsAppLoadForInstallation(
+      InstallLastFound3pDiagnosticsAppCallback callback,
+      base::expected<
+          ShimlessRmaDelegate::PrepareDiagnosticsAppBrowserContextResult,
+          std::string> result);
 
   // Remote for sending requests to the CrosNetworkConfig service.
   mojo::Remote<chromeos::network_config::mojom::CrosNetworkConfig>
@@ -274,7 +317,7 @@ class ShimlessRmaService : public mojom::ShimlessRmaService,
   // The GUIDs of the saved network configurations prior to starting RMA. Needed
   // to track network connections added during RMA. This only gets created if
   // the user gets to the `kConfigureNetwork` state.
-  absl::optional<base::flat_set<std::string>> existing_saved_network_guids_;
+  std::optional<base::flat_set<std::string>> existing_saved_network_guids_;
 
   // The set of guids for networks to be removed from the device before RMA
   // exit. After each response from ForgetNetwork(), the corresponding guid is
@@ -295,18 +338,17 @@ class ShimlessRmaService : public mojom::ShimlessRmaService,
   // corresponding variables, in case if the rmad client has already sent them,
   // but the front end observer isn't connected yet. The value will be passed to
   // the front end observer when it connects.
-  absl::optional<rmad::CalibrationComponentStatus> last_calibration_progress_;
-  absl::optional<rmad::CalibrationOverallStatus>
+  std::optional<rmad::CalibrationComponentStatus> last_calibration_progress_;
+  std::optional<rmad::CalibrationOverallStatus>
       last_calibration_overall_progress_;
-  absl::optional<rmad::ProvisionStatus> last_provisioning_progress_;
-  absl::optional<bool> last_hardware_protection_state_;
-  absl::optional<bool> last_power_cable_state_;
-  absl::optional<bool> last_external_disk_state_;
-  absl::optional<rmad::HardwareVerificationResult>
+  std::optional<rmad::ProvisionStatus> last_provisioning_progress_;
+  std::optional<bool> last_hardware_protection_state_;
+  std::optional<bool> last_power_cable_state_;
+  std::optional<bool> last_external_disk_state_;
+  std::optional<rmad::HardwareVerificationResult>
       last_hardware_verification_result_;
-  absl::optional<rmad::FinalizeStatus> last_finalization_progress_;
-  absl::optional<rmad::UpdateRoFirmwareStatus>
-      last_update_ro_firmware_progress_;
+  std::optional<rmad::FinalizeStatus> last_finalization_progress_;
+  std::optional<rmad::UpdateRoFirmwareStatus> last_update_ro_firmware_progress_;
 
   mojo::Remote<mojom::ErrorObserver> error_observer_;
   mojo::Remote<mojom::OsUpdateObserver> os_update_observer_;
@@ -336,6 +378,15 @@ class ShimlessRmaService : public mojom::ShimlessRmaService,
   // It is used to allow abort requests to reboot or exit to login, even if the
   // request fails.
   bool critical_error_occurred_ = false;
+
+  // Paths of the last extracted 3p diag app files.
+  base::FilePath extracted_3p_diag_swbn_path_;
+  base::FilePath extracted_3p_diag_crx_path_;
+  // The browser context for showing the 3p diagnostics app.
+  raw_ptr<content::BrowserContext> shimless_app_browser_context_ = nullptr;
+  // The 3p diagnostics app info.
+  std::optional<web_package::SignedWebBundleId> shimless_3p_diag_iwa_id_;
+  std::string shimless_3p_diag_app_name_;
 
   // Task runner for tasks posted by the Shimless service. Used to ensure
   // posted tasks are handled while this service is in scope to stop

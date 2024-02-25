@@ -1,10 +1,10 @@
+dfried@chromium.org
 ellyjones@chromium.org
+estalin@chromium.org
 msw@chromium.org
 pbos@chromium.org
 pkasting@chromium.org
 sky@chromium.org
-tapted@chromium.org
-dfried@chromium.org
 # NOTE: Do not use the above owners when you're in a subdirectory that has
 # OWNERS file. Prefer these instead as these OWNERS will be more familiar, and
 # to load balance. Only use the above for subdirectories when doing refactorings

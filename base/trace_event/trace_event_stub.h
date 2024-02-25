@@ -10,9 +10,9 @@
 #include <cstdint>
 #include <memory>
 #include <string>
+#include <string_view>
 
 #include "base/base_export.h"
-#include "base/strings/string_piece.h"
 #include "base/trace_event/common/trace_event_common.h"
 #include "base/trace_event/memory_allocator_dump_guid.h"
 #include "base/values.h"
@@ -102,24 +102,23 @@ class BASE_EXPORT TracedValue : public ConvertableToTraceFormat {
   void SetInteger(const char* name, int value) {}
   void SetDouble(const char* name, double value) {}
   void SetBoolean(const char* name, bool value) {}
-  void SetString(const char* name, base::StringPiece value) {}
+  void SetString(const char* name, std::string_view value) {}
   void SetValue(const char* name, TracedValue* value) {}
   void BeginDictionary(const char* name) {}
   void BeginArray(const char* name) {}
 
-  void SetIntegerWithCopiedName(base::StringPiece name, int value) {}
-  void SetDoubleWithCopiedName(base::StringPiece name, double value) {}
-  void SetBooleanWithCopiedName(base::StringPiece name, bool value) {}
-  void SetStringWithCopiedName(base::StringPiece name,
-                               base::StringPiece value) {}
-  void SetValueWithCopiedName(base::StringPiece name, TracedValue* value) {}
-  void BeginDictionaryWithCopiedName(base::StringPiece name) {}
-  void BeginArrayWithCopiedName(base::StringPiece name) {}
+  void SetIntegerWithCopiedName(std::string_view name, int value) {}
+  void SetDoubleWithCopiedName(std::string_view name, double value) {}
+  void SetBooleanWithCopiedName(std::string_view name, bool value) {}
+  void SetStringWithCopiedName(std::string_view name, std::string_view value) {}
+  void SetValueWithCopiedName(std::string_view name, TracedValue* value) {}
+  void BeginDictionaryWithCopiedName(std::string_view name) {}
+  void BeginArrayWithCopiedName(std::string_view name) {}
 
   void AppendInteger(int) {}
   void AppendDouble(double) {}
   void AppendBoolean(bool) {}
-  void AppendString(base::StringPiece) {}
+  void AppendString(std::string_view) {}
   void BeginArray() {}
   void BeginDictionary() {}
 

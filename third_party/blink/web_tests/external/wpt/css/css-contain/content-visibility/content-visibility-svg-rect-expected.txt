@@ -1,0 +1,7 @@
+This is a testharness.js-based test.
+[FAIL] isPointInFill() should return true in a c-v:hidden subtree.
+  Failed to execute 'isPointInFill' on 'SVGGeometryElement': parameter 1 is not of type 'SVGPoint'.
+[FAIL] isPointInStroke() should return true in a c-v:hidden subtree.
+  Failed to execute 'isPointInStroke' on 'SVGGeometryElement': parameter 1 is not of type 'SVGPoint'.
+Harness: the test ran to completion.
+

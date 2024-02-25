@@ -1,0 +1,5 @@
+include_rules = [
+  "+ios/chrome/browser/shared/coordinator/chrome_coordinator",
+  "+ios/chrome/browser/autofill/model/bottom_sheet",
+  "+ios/chrome/browser/url_loading/model",
+]

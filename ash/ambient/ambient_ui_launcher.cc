@@ -3,6 +3,8 @@
 // found in the LICENSE file.
 
 #include "ash/ambient/ambient_ui_launcher.h"
+#include "ash/ambient/ambient_ui_settings.h"
+#include "ash/ambient/metrics/ambient_consumer_session_metrics_delegate.h"
 
 namespace ash {
 
@@ -24,6 +26,13 @@ bool AmbientUiLauncher::IsReady() {
 void AmbientUiLauncher::SetObserver(Observer* observer) {
   CHECK(!observer_);
   observer_ = observer;
+}
+
+std::unique_ptr<AmbientSessionMetricsRecorder::Delegate>
+AmbientUiLauncher::CreateMetricsDelegate(
+    AmbientUiSettings current_ui_settings) {
+  return std::make_unique<AmbientConsumerSessionMetricsDelegate>(
+      std::move(current_ui_settings));
 }
 
 }  // namespace ash

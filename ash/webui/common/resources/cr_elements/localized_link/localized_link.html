@@ -1,0 +1,39 @@
+<style include="cr-shared-style">
+  :host {
+    --cr-localized-link-display: inline;
+    display: block;
+  }
+
+  :host([link-disabled]) {
+    cursor: pointer;
+    opacity: var(--cr-disabled-opacity);
+    pointer-events: none;
+  }
+
+  a {
+    display: var(--cr-localized-link-display);
+  }
+
+  /* TODO(b/324903595) Use CrOS tokens directly. */
+  a[href] {
+    color: var(--cr-link-color);
+  }
+
+  a[href]:focus {
+    outline-color: var(--cros-sys-focus_ring);
+  }
+
+  /**
+   * Prevent action-links from being selected to avoid accidental
+   * selection when trying to click it.
+   */
+  a[is=action-link] {
+    user-select: none;
+  }
+
+  #container {
+    display: contents;
+  }
+</style>
+<!-- innerHTML is set via setContainerInnerHtml_. -->
+<div id="container"></div>

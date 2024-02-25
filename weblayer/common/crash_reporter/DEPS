@@ -1,4 +1,0 @@
-include_rules = [
-  "+components/crash",
-  "+components/version_info",
-]

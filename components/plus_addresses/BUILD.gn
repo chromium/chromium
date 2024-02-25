@@ -2,23 +2,45 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//build/buildflag_header.gni")
+import("//components/plus_addresses/buildflags.gni")
+
+source_set("types") {
+  sources = [ "plus_address_types.h" ]
+  public_deps = [
+    "//base",
+    "//components/autofill/core/browser",
+  ]
+}
+
 source_set("plus_addresses") {
   sources = [
-    "plus_address_client.cc",
-    "plus_address_client.h",
+    "plus_address_http_client.cc",
+    "plus_address_http_client.h",
+    "plus_address_metrics.cc",
+    "plus_address_metrics.h",
+    "plus_address_parser.cc",
+    "plus_address_parser.h",
+    "plus_address_prefs.cc",
+    "plus_address_prefs.h",
     "plus_address_service.cc",
     "plus_address_service.h",
   ]
   deps = [
+    "//components/prefs",
     "//components/signin/public/identity_manager",
     "//net",
+    "//services/data_decoder/public/cpp",
+    "//services/network/public/cpp",
   ]
   public_deps = [
     # While not strictly public by h file inclusion, this is a temporary move
     # of features.h out of sources. Allowing those depending on
     # :plus_addresses to also depend on its features to reduce churn.
     ":features",
+    ":types",
     "//base",
+    "//components/autofill/core/browser",
     "//components/keyed_service/core",
     "//third_party/abseil-cpp:absl",
     "//url",
@@ -35,17 +57,41 @@ component("features") {
   public_deps = [ "//base" ]
 }
 
+buildflag_header("plus_addresses_buildflags") {
+  header = "plus_addresses_buildflags.h"
+  flags = [ "PLUS_ADDRESSES_USE_INTERNAL_ANDROID_RESOURCES=$plus_addresses_use_internal_android_resources" ]
+}
+
 source_set("unit_tests") {
   testonly = true
   sources = [
-    "plus_address_client_unittest.cc",
+    "plus_address_http_client_unittest.cc",
+    "plus_address_parser_unittest.cc",
     "plus_address_service_unittest.cc",
   ]
 
   deps = [
     ":features",
     ":plus_addresses",
+    ":test_support",
     "//base/test:test_support",
+    "//components/autofill/core/browser:test_support",
+    "//components/prefs:test_support",
     "//components/signin/public/identity_manager:test_support",
+    "//services/data_decoder/public/cpp:test_support",
+    "//services/network:test_support",
+  ]
+}
+
+static_library("test_support") {
+  testonly = true
+  sources = [
+    "plus_address_test_utils.cc",
+    "plus_address_test_utils.h",
+    "plus_address_types.h",
+  ]
+  deps = [
+    "//base",
+    "//components/autofill/core/browser",
   ]
 }

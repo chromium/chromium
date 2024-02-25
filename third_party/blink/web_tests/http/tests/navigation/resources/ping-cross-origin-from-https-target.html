@@ -5,25 +5,23 @@
 var testCalled = false;
 
 function test() {
-    if (!testCalled) {
-        if (window.testRunner) {
-            testRunner.dumpAsText();
-            testRunner.overridePreference("WebKitHyperlinkAuditingEnabled", 1);
-            testRunner.waitUntilDone();
-            testRunner.dumpPingLoaderCallbacks();
-            testRunner.overridePreference("WebKitAllowRunningInsecureContent", false);
-            testRunner.setAllowRunningOfInsecureContent(false);
-        }
-        testCalled = true;
-        return;
+  if (!testCalled) {
+    if (window.testRunner) {
+      testRunner.dumpAsText();
+      testRunner.overridePreference("WebKitHyperlinkAuditingEnabled", 1);
+      testRunner.waitUntilDone();
+      testRunner.dumpPingLoaderCallbacks();
+      testRunner.overridePreference("WebKitAllowRunningInsecureContent", false);
+      testRunner.setAllowRunningOfInsecureContent(false);
     }
-
-    if (window.eventSender) {
-        var a = document.getElementById("a");
-        eventSender.mouseMoveTo(a.offsetLeft + 2, a.offsetTop + 2);
-        eventSender.mouseDown();
-        eventSender.mouseUp();
-    }
+    testCalled = true;
+    return;
+  }
+  requestAnimationFrame(() => {
+    requestAnimationFrame(() => {
+      document.getElementById("a").click();
+    });
+  });
 }
 
 </script>

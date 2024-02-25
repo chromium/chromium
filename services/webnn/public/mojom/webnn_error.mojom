@@ -1,0 +1,23 @@
+// Copyright 2024 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module webnn.mojom;
+
+// Error message that can be exposed to JS for debugging use. It should be used
+// in a union as a return value that represents expected<result, error>, or
+// used on its own if the operation has no expected return result.
+struct Error {
+  // Error code maps to DOMException code.
+  enum Code {
+    // Internal error from backend.
+    kUnknownError,
+    // The configuration (e.g. platform, parameters, methods, etc.) is not
+    // supported.
+    kNotSupportedError,
+  };
+
+  Code code;
+  // Specific error message.
+  string message;
+};

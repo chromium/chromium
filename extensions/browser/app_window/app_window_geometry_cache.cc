@@ -18,6 +18,7 @@
 #include "extensions/browser/extension_prefs_factory.h"
 #include "extensions/browser/extensions_browser_client.h"
 #include "extensions/common/extension.h"
+#include "extensions/common/extension_id.h"
 
 namespace {
 
@@ -43,7 +44,7 @@ AppWindowGeometryCache* AppWindowGeometryCache::Get(
   return Factory::GetForContext(context, true /* create */);
 }
 
-void AppWindowGeometryCache::SaveGeometry(const std::string& extension_id,
+void AppWindowGeometryCache::SaveGeometry(const ExtensionId& extension_id,
                                           const std::string& window_id,
                                           const gfx::Rect& bounds,
                                           const gfx::Rect& screen_bounds,
@@ -94,11 +95,11 @@ void AppWindowGeometryCache::SaveGeometry(const std::string& extension_id,
 }
 
 void AppWindowGeometryCache::SyncToStorage() {
-  std::set<std::string> tosync;
+  std::set<ExtensionId> tosync;
   tosync.swap(unsynced_extensions_);
   for (auto sync_it = tosync.cbegin(), sync_eit = tosync.cend();
        sync_it != sync_eit; ++sync_it) {
-    const std::string& extension_id = *sync_it;
+    const ExtensionId& extension_id = *sync_it;
     const ExtensionData& extension_data = cache_[extension_id];
 
     base::Value::Dict dict;
@@ -131,12 +132,12 @@ void AppWindowGeometryCache::SyncToStorage() {
   }
 }
 
-bool AppWindowGeometryCache::GetGeometry(const std::string& extension_id,
+bool AppWindowGeometryCache::GetGeometry(const ExtensionId& extension_id,
                                          const std::string& window_id,
                                          gfx::Rect* bounds,
                                          gfx::Rect* screen_bounds,
                                          ui::WindowShowState* window_state) {
-  std::map<std::string, ExtensionData>::const_iterator extension_data_it =
+  std::map<ExtensionId, ExtensionData>::const_iterator extension_data_it =
       cache_.find(extension_id);
 
   // Not in the map means loading data for the extension didn't finish yet or
@@ -196,7 +197,7 @@ void AppWindowGeometryCache::SetSyncDelayForTests(int timeout_ms) {
 }
 
 void AppWindowGeometryCache::LoadGeometryFromStorage(
-    const std::string& extension_id) {
+    const ExtensionId& extension_id) {
   ExtensionData& extension_data = cache_[extension_id];
 
   const base::Value::Dict* stored_windows =
@@ -217,24 +218,33 @@ void AppWindowGeometryCache::LoadGeometryFromStorage(
       continue;
 
     WindowData& window_data = extension_data[window_id];
-    if (absl::optional<int> i = stored_window->FindInt("x"))
+    if (std::optional<int> i = stored_window->FindInt("x")) {
       window_data.bounds.set_x(*i);
-    if (absl::optional<int> i = stored_window->FindInt("y"))
+    }
+    if (std::optional<int> i = stored_window->FindInt("y")) {
       window_data.bounds.set_y(*i);
-    if (absl::optional<int> i = stored_window->FindInt("w"))
+    }
+    if (std::optional<int> i = stored_window->FindInt("w")) {
       window_data.bounds.set_width(*i);
-    if (absl::optional<int> i = stored_window->FindInt("h"))
+    }
+    if (std::optional<int> i = stored_window->FindInt("h")) {
       window_data.bounds.set_height(*i);
-    if (absl::optional<int> i = stored_window->FindInt("screen_bounds_x"))
+    }
+    if (std::optional<int> i = stored_window->FindInt("screen_bounds_x")) {
       window_data.screen_bounds.set_x(*i);
-    if (absl::optional<int> i = stored_window->FindInt("screen_bounds_y"))
+    }
+    if (std::optional<int> i = stored_window->FindInt("screen_bounds_y")) {
       window_data.screen_bounds.set_y(*i);
-    if (absl::optional<int> i = stored_window->FindInt("screen_bounds_w"))
+    }
+    if (std::optional<int> i = stored_window->FindInt("screen_bounds_w")) {
       window_data.screen_bounds.set_width(*i);
-    if (absl::optional<int> i = stored_window->FindInt("screen_bounds_h"))
+    }
+    if (std::optional<int> i = stored_window->FindInt("screen_bounds_h")) {
       window_data.screen_bounds.set_height(*i);
-    if (absl::optional<int> i = stored_window->FindInt("state"))
+    }
+    if (std::optional<int> i = stored_window->FindInt("state")) {
       window_data.window_state = static_cast<ui::WindowShowState>(*i);
+    }
     if (const std::string* ts_as_string = stored_window->FindString("ts")) {
       int64_t ts;
       if (base::StringToInt64(*ts_as_string, &ts)) {

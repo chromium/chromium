@@ -30,20 +30,20 @@ include_rules = [
   "+chrome/services/machine_learning/public",
   "+chrome/services/media_gallery_util/public",
   "+chrome/services/printing/public",
-  "+chrome/services/qrcode_generator/public",
   "+chrome/services/sharing/public",
   "+chrome/services/removable_storage_writer/public",
   "+chrome/services/util_win/public",
   "+chrome/updater/app/server/win/updater_legacy_idl.h",
   "+chromeos",
   "+components/about_ui",
+  "+components/access_code_cast",
   "+components/account_id",
+  "+components/account_manager_core",
+  "+components/allocation_recorder",
   "+components/app_constants/constants.h",
-  "+components/federated_learning",
+  "+components/affiliations",
   # TODO(b/129295708): Remove after move is complete.
   "+components/arc",
-  "+components/access_code_cast",
-  "+components/account_manager_core",
   "+components/app_restore",
   "+components/assist_ranker",
   "+components/autofill/android",
@@ -85,19 +85,18 @@ include_rules = [
   "+components/cdm/browser",
   "+components/certificate_matching",
   "+components/certificate_transparency",
-  "+components/chrome_cleaner/public",
-  "+components/chrome_cleaner/test",
   "+components/chromeos_camera",
   "+components/client_hints/browser",
   "+components/client_hints/common",
   "+components/cloud_devices/common",
+  "+components/color",
   "+components/commerce",
   "+components/component_updater",
   "+components/component_updater/installer_policies",
+  "+components/compose",
   "+components/consent_auditor",
   "+components/constrained_window",
   "+components/content_capture/browser",
-  "+components/content_creation/notes/core",
   "+components/content_settings/browser",
   "+components/content_settings/core/browser",
   "+components/content_settings/core/test",
@@ -106,7 +105,6 @@ include_rules = [
   "+components/contextual_search/core/browser",
   "+components/cookie_config",
   "+components/country_codes",
-  "+components/crash/content/app",
   "+components/crash/content/browser",
   "+components/crash/core/app",
   "+components/crash/core/browser",
@@ -120,6 +118,7 @@ include_rules = [
   "+components/device_signals/core/browser",
   "+components/device_signals/core/common",
   "+components/content_relationship_verification",
+  "+components/data_sharing/public",
   "+components/digital_goods",
   "+components/domain_reliability",
   "+components/dom_distiller/content/browser",
@@ -137,15 +136,16 @@ include_rules = [
   "+components/embedder_support",
   "+components/encrypted_messages",
   "+components/enterprise",
-  "+components/environment_integrity/android",
   "+components/error_page/content/browser",
   "+components/exo",
   "+components/external_intents",
+  "+components/facilitated_payments/core/features",
   "+components/favicon_base",
   "+components/favicon/android",
   "+components/favicon/content",
   "+components/favicon/core",
   "+components/feature_engagement",
+  "+components/federated_learning",
   "+components/feed",
   "+components/feedback",
   "+components/file_access",
@@ -174,6 +174,7 @@ include_rules = [
   "+components/installedapp",
   "+components/invalidation/impl",
   "+components/invalidation/public",
+  "+components/ip_protection",
   "+components/javascript_dialogs",
   "+components/keep_alive_registry",
   "+components/keyed_service/content",
@@ -196,6 +197,9 @@ include_rules = [
   "+components/media_router/browser",
   "+components/history_clusters",
   "+components/history_clusters/history_clusters_internals",
+  "+components/history_embeddings",
+  "+components/manta",
+  "+components/media_effects",
   "+components/memory_pressure",
   "+components/messages/android",
   "+components/metal_util",
@@ -205,6 +209,7 @@ include_rules = [
   "+components/mirroring/browser",
   "+components/mirroring/mojom",
   "+components/mirroring/service",
+  "+components/ml/webnn/features.mojom-features.h",
   "+components/module_installer/android",
   "+components/nacl/broker",
   "+components/nacl/browser",
@@ -233,6 +238,7 @@ include_rules = [
   "+components/optimization_guide",
   "+components/optimization_guide/optimization_guide_internals",
   "+components/origin_trials",
+  "+components/os_crypt/async",
   "+components/os_crypt/sync",
   "+components/ownership",
   "+components/page_image_service",
@@ -254,8 +260,10 @@ include_rules = [
   "+components/performance_manager/test_support",
   "+components/performance_manager/performance_manager_impl.h",
   "+components/permissions",
+  "+components/webid",
   "+components/pdf/browser",
   "+components/pdf/common",
+  "+components/plus_addresses",
   "+components/policy",
   "+components/power_bookmarks",
   "+components/power_metrics",
@@ -268,6 +276,7 @@ include_rules = [
   "+components/privacy_sandbox",
   "+components/profile_metrics",
   "+components/proxy_config",
+  "+components/qr_code_generator",
   "+components/query_parser",
   "+components/query_tiles",
   "+components/quirks",
@@ -286,6 +295,8 @@ include_rules = [
   "+components/safe_browsing/content/common",
   "+components/safe_browsing/core/browser",
   "+components/safe_browsing/core/common",
+  "+components/tpcd/metadata",
+  "+components/tpcd/support",
   "+components/safe_search_api",
   "+components/saved_tab_groups",
   "+components/schema_org",
@@ -410,6 +421,7 @@ include_rules = [
   "+media/base",  # For media switches
   "+media/capabilities", # For InMemoryVideoDecodeStatsDB
   "+media/cdm",
+  "+media/gpu/buildflags.h",
   "+media/remoting/device_capability_checker.h",
   "+media/capture",
   "+media/midi",  # For midi switches
@@ -433,12 +445,12 @@ include_rules = [
   "+services/media_session/public",
   "+services/metrics/metrics_mojo_service.h",
   "+services/metrics/public",
-  "+services/network/cert_verifier_with_trust_anchors.h",
   "+services/network/network_service.h",
   "+services/network/public",
   "+services/network/test",
   "+services/network/url_request_context_owner.h",
   "+services/network/url_request_context_builder_mojo.h",
+  "+services/on_device_model/public",
   "+services/preferences/public/cpp",
   "+services/preferences/public/mojom",
   "+services/proxy_resolver",  # Android runs the packaged proxy resolver
@@ -484,7 +496,6 @@ include_rules = [
   # cc/base here, if this is needed these files need to move to base/
   "+cc/base/features.h",
   "+cc/base/switches.h",
-  "+cc/slim/features.h",
 
   # Unsafe to use from //chrome, see http://goo.gl/QQG5wo
   "-content/public/test/test_browser_context.h",
@@ -492,12 +503,14 @@ include_rules = [
   "+storage/browser",
   "+storage/common",
 
+  # Ensure flags are usable anywhere.
+  "+chrome/browser/flags",
+
   # chrome/browser/ui/views/ is an implementation, not a public interface.
   # Parent directories should not depend on it directly.
   # TODO(crbug.com/1112591): Remove the exceptions below.
   "-chrome/browser/ui/views",
   "+chrome/browser/ui/views/ash/chrome_browser_main_extra_parts_ash.h",
-  "+chrome/browser/ui/views/bubble/bubble_contents_wrapper_service_factory.h",
   "+chrome/browser/ui/views/chrome_browser_main_extra_parts_views.h",
   "+chrome/browser/ui/views/chrome_browser_main_extra_parts_views_lacros.h",
   "+chrome/browser/ui/views/chrome_browser_main_extra_parts_views_linux.h",
@@ -506,7 +519,7 @@ include_rules = [
   "+chrome/browser/ui/views/frame/browser_view.h",
   "+chrome/browser/ui/views/frame/picture_in_picture_browser_frame_view.h",
   "+chrome/browser/ui/views/notifications/request_pin_view_chromeos.h",
-  "+chrome/browser/ui/views/try_chrome_dialog_win/try_chrome_dialog.h",
+  "+chrome/browser/ui/views/webui/webui_contents_wrapper_service_factory.h",
 
   # Ensure that only the public interface of performance_manager gets used.
   "-chrome/browser/performance_manager",
@@ -532,7 +545,6 @@ include_rules = [
   "+third_party/protobuf/src/google/protobuf",
   "+third_party/re2",
   "+third_party/smhasher",
-  "+third_party/sqlite",
   "+third_party/zlib",
 
   # No inclusion of WebKit from the browser, other than the ones in
@@ -573,6 +585,9 @@ specific_include_rules = {
     # For GetVirtualKeyboardController.
     "+ash/keyboard/ui/keyboard_ui_controller.h",
   ],
+  "chrome_back_forward_cache_browsertest.cc": [
+    "+pdf/pdf_features.h",
+  ],
   "chrome_browsing_data_remover_delegate_unittest.cc": [
     "+services/network/network_context.h",
     "+services/network/network_service.h",
@@ -589,6 +604,9 @@ specific_include_rules = {
   "chrome_navigation_browsertest.cc" : [
     "+content/common/content_navigation_policy.h",
   ],
+  "chrome_web_platform_security_metrics_browsertest.cc" : [
+    "+pdf/pdf_features.h",
+  ],
   "about_flags\.cc" : [
     "+mojo/core/embedder/features.h",
     "+pdf/pdf_features.h",
@@ -596,6 +614,9 @@ specific_include_rules = {
   ],
   "dbus_memory_pressure_evaluator_linux(_unittest)?\.(cc|h)" : [
     "+dbus",
+  ],
+  "permission_element_browsertest.cc": [
+    "+chrome/browser/ui/views/permissions/embedded_permission_prompt_content_scrim_view.h",
   ],
   "browsing_data_model_browsertest.cc" : [
     "+components/services/storage/shared_storage/shared_storage_manager.h",

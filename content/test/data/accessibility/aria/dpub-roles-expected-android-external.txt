@@ -1,4 +1,4 @@
-WebView focusable focused scrollable actions:[CLEAR_FOCUS, AX_FOCUS] bundle:[chromeRole="rootWebArea", hasImage="true"]
+WebView focusable focused actions:[CLEAR_FOCUS, AX_FOCUS] bundle:[chromeRole="rootWebArea", hasImage="true"]
 ++View text:"doc-abstract" actions:[AX_FOCUS, NEXT, PREVIOUS] bundle:[chromeRole="docAbstract", roleDescription="abstract"]
 ++View text:"doc-acknowledgments" actions:[AX_FOCUS, NEXT, PREVIOUS] bundle:[chromeRole="docAcknowledgments", roleDescription="acknowledgments"]
 ++View text:"doc-afterword" actions:[AX_FOCUS, NEXT, PREVIOUS] bundle:[chromeRole="docAfterword", roleDescription="afterword"]

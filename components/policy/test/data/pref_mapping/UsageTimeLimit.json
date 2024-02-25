@@ -1,0 +1,89 @@
+[
+  {
+    "os": [
+      "chromeos_ash"
+    ],
+    "policy_pref_mapping_tests": [
+      {
+        "policies": {
+          "UsageTimeLimit": {
+            "time_usage_limit": {
+              "friday": {
+                "last_updated_millis": "1200000",
+                "usage_quota_mins": 120
+              },
+              "monday": {
+                "last_updated_millis": "1200000",
+                "usage_quota_mins": 120
+              },
+              "reset_at": {
+                "hour": 6,
+                "minute": 0
+              },
+              "saturday": {
+                "last_updated_millis": "1200000",
+                "usage_quota_mins": 120
+              },
+              "sunday": {
+                "last_updated_millis": "1200000",
+                "usage_quota_mins": 120
+              },
+              "thursday": {
+                "last_updated_millis": "1200000",
+                "usage_quota_mins": 120
+              },
+              "tuesday": {
+                "last_updated_millis": "1200000",
+                "usage_quota_mins": 120
+              },
+              "wednesday": {
+                "last_updated_millis": "1200000",
+                "usage_quota_mins": 120
+              }
+            }
+          }
+        },
+        "prefs": {
+          "screen_time.limit": {
+            "value": {
+              "time_usage_limit": {
+                "friday": {
+                  "last_updated_millis": "1200000",
+                  "usage_quota_mins": 120
+                },
+                "monday": {
+                  "last_updated_millis": "1200000",
+                  "usage_quota_mins": 120
+                },
+                "reset_at": {
+                  "hour": 6,
+                  "minute": 0
+                },
+                "saturday": {
+                  "last_updated_millis": "1200000",
+                  "usage_quota_mins": 120
+                },
+                "sunday": {
+                  "last_updated_millis": "1200000",
+                  "usage_quota_mins": 120
+                },
+                "thursday": {
+                  "last_updated_millis": "1200000",
+                  "usage_quota_mins": 120
+                },
+                "tuesday": {
+                  "last_updated_millis": "1200000",
+                  "usage_quota_mins": 120
+                },
+                "wednesday": {
+                  "last_updated_millis": "1200000",
+                  "usage_quota_mins": 120
+                }
+              }
+            }
+          }
+        }
+      }
+    ]
+  }
+]

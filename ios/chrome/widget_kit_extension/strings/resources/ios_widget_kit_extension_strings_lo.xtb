@@ -1,10 +1,10 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="lo">
+<translation id="1324575488877808473">ເປີດ Chrome ເພື່ອເບິ່ງເວັບໄຊທີ່ທ່ານເຂົ້າເບິ່ງຫຼາຍທີ່ສຸດບ່ອນນີ້.</translation>
 <translation id="2513892053093488070">ຊອກຫາດ້ວຍສຽງ</translation>
 <translation id="2535710892645968259">ໄປທີ່ເກມ Chrome Dino ຈາກໜ້າຈໍລັອກຂອງທ່ານ.</translation>
 <translation id="2542770169955243077">ເກມ Chrome Dino</translation>
-<translation id="2803429804752388720">ຊອກຫາລະຫັດຜ່ານ</translation>
 <translation id="2922313168575194078">ຊອກຫາລະຫັດຜ່ານທີ່ທ່ານບັນທຶກໄວ້ໄດ້ຢ່າງປອດໄພໃນຕົວຈັດການລະຫັດຜ່ານ Google</translation>
 <translation id="302608144225178783">ໄປທີ່ເກມ Chrome Dino ຈາກໜ້າຈໍຫຼັກຂອງທ່ານ.</translation>
 <translation id="3296938369177810197">ຊອກຫາດ້ວຍສຽງ</translation>
@@ -29,6 +29,7 @@
 <translation id="6691821786147477657">ເລີ່ມການຊອກຫາໃໝ່ ຫຼື ເປີດເວັບໄຊທີ່ທ່ານເຂົ້າເບິ່ງຫຼາຍທີ່ສຸດຈາກໜ້າຫຼັກໃນ iPad ຂອງທ່ານ.</translation>
 <translation id="6721566127904256183">ເວັບໄຊທີ່ທ່ານເຂົ້າເບິ່ງຫຼາຍທີ່ສຸດຈະປາກົດຢູ່ບ່ອນນີ້.</translation>
 <translation id="6855322554930231468">ຊອກຫາ</translation>
+<translation id="6973491011026415905">ຊອກຫາລະຫັດຜ່ານຢູ່ຕົວຈັດການລະຫັດຜ່ານ Google</translation>
 <translation id="7010831364920321713">ການຊອກຫາແບບບໍ່ເປີດເຜີຍຕົວຕົນ</translation>
 <translation id="7048549665319929185">ຊອກຫາ ຫຼື
 ພິມ URL</translation>

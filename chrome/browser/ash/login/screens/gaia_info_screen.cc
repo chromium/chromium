@@ -14,15 +14,20 @@ namespace ash {
 namespace {
 
 constexpr char kUserActionBack[] = "back";
-constexpr char kUserActionNext[] = "next";
+constexpr char kUserActionManual[] = "manual";
+constexpr char kUserActionEnterQuickStart[] = "quickstart";
 
 }  // namespace
 
 // static
 std::string GaiaInfoScreen::GetResultString(Result result) {
   switch (result) {
-    case Result::kNext:
-      return "Next";
+    case Result::kManual:
+      return "Manual";
+    case Result::kEnterQuickStart:
+      return "Enter Quick Start";
+    case Result::kQuickStartOngoing:
+      return "Quick Start ongoing";
     case Result::kBack:
       return "Back";
     case Result::kNotApplicable:
@@ -54,6 +59,21 @@ void GaiaInfoScreen::ShowImpl() {
     return;
   }
 
+  // Continue QuickStart flow if there is an ongoing setup. This is checked in
+  // the GaiaScreen as well in case the GaiaInfoScreen is not shown to a Quick
+  // Start user.
+  if (context()->quick_start_setup_ongoing) {
+    exit_callback_.Run(Result::kQuickStartOngoing);
+    return;
+  }
+
+  // Determine the QuickStart entrypoint button visibility
+  WizardController::default_controller()
+      ->quick_start_controller()
+      ->DetermineEntryPointVisibility(
+          base::BindOnce(&GaiaInfoScreen::SetQuickStartButtonVisibility,
+                         weak_ptr_factory_.GetWeakPtr()));
+
   view_->Show();
 }
 
@@ -63,10 +83,18 @@ void GaiaInfoScreen::OnUserAction(const base::Value::List& args) {
   const std::string& action_id = args[0].GetString();
   if (action_id == kUserActionBack) {
     exit_callback_.Run(Result::kBack);
-  } else if (action_id == kUserActionNext) {
-    exit_callback_.Run(Result::kNext);
+  } else if (action_id == kUserActionManual) {
+    exit_callback_.Run(Result::kManual);
+  } else if (action_id == kUserActionEnterQuickStart) {
+    exit_callback_.Run(Result::kEnterQuickStart);
   } else {
     BaseScreen::OnUserAction(args);
+  }
+}
+
+void GaiaInfoScreen::SetQuickStartButtonVisibility(bool visible) {
+  if (visible && view_) {
+    view_->SetQuickStartVisible();
   }
 }
 

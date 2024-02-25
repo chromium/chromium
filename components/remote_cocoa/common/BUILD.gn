@@ -11,6 +11,8 @@ mojom("mojo") {
     "alert.mojom",
     "application.mojom",
     "color_panel.mojom",
+    "font.mojom",
+    "menu.mojom",
     "native_widget_ns_window.mojom",
     "native_widget_ns_window_host.mojom",
     "select_file_dialog.mojom",
@@ -26,7 +28,44 @@ mojom("mojo") {
     "//ui/display/mojom",
     "//ui/events/mojom",
     "//ui/gfx/geometry/mojom",
+    "//ui/gfx/image/mojom",
     "//ui/gfx/mojom",
     "//ui/gfx/range/mojom",
+  ]
+
+  cpp_typemaps = [
+    {
+      types = [
+        {
+          mojom = "remote_cocoa.mojom.SystemFont"
+          cpp = "gfx::PlatformFontMac::SystemFontType"
+        },
+        {
+          mojom = "remote_cocoa.mojom.FontWeight"
+          cpp = "gfx::Font::Weight"
+        },
+        {
+          mojom = "remote_cocoa.mojom.Font"
+          cpp = "gfx::Font"
+        },
+      ]
+      traits_headers = [
+        "font_mojom_traits.h",
+        "//ui/gfx/font.h",
+        "//ui/gfx/platform_font_mac.h",
+      ]
+      traits_sources = [ "font_mojom_traits.cc" ]
+      traits_public_deps = [ "//ui/gfx" ]
+    },
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "font_mojom_traits_unittests.cc" ]
+  deps = [
+    ":mojo",
+    "//mojo/public/cpp/test_support:test_utils",
+    "//testing/gtest",
   ]
 }

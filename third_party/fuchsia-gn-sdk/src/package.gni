@@ -2,7 +2,8 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//build/config/fuchsia/gn_configs.gni")
+import("gn_configs.gni")
+import("gn_sdk_configs.gni")
 import("package_tool.gni")
 
 # Define a Fuchsia component package target.
@@ -134,7 +135,7 @@ template("fuchsia_package") {
 
   action(_manifest_target) {
     forward_variables_from(invoker, [ "testonly" ])
-    script = "${fuchsia_sdk}/build/prepare_package_inputs.py"
+    script = gn_sdk_root + "/prepare_package_inputs.py"
 
     inputs = [
       _runtime_deps_file,

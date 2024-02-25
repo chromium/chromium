@@ -216,7 +216,7 @@ TEST_F(AndroidPageLoadMetricsObserverTest, LoadEvents) {
   page_load_metrics::InitPageLoadTimingForTest(&timing);
   // Note this navigation start does not effect the start that is reported to
   // us.
-  timing.navigation_start = base::Time::FromDoubleT(1);
+  timing.navigation_start = base::Time::FromSecondsSinceUnixEpoch(1);
   timing.document_timing->load_event_start = base::Milliseconds(30);
   timing.parse_timing->parse_start = base::Milliseconds(20);
   timing.paint_timing->first_contentful_paint = base::Milliseconds(20);

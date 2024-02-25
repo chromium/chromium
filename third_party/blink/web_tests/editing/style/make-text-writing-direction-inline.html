@@ -26,7 +26,7 @@ testIt('^abc| xyz',
        'ltr-01 natural first word');
 testIt('^abc| xyz',
        'MakeTextWritingDirectionLeftToRight',
-       '<span style="unicode-bidi: isolate;">^abc|</span> xyz',
+       '^abc| xyz',
        'ltr-02 ltr first word');
 testIt('^abc| xyz',
        'MakeTextWritingDirectionRightToLeft',
@@ -38,7 +38,7 @@ testIt('<b>abc ^xyz</b> wxy|',
        'ltr-03 natural second and third words');
 testIt('<b>abc ^xyz</b> wxy|',
        'MakeTextWritingDirectionLeftToRight',
-       '<b>abc <span style="unicode-bidi: isolate;">^xyz</span></b><span style="unicode-bidi: isolate;"> wxy|</span>',
+       '<b>abc <span style="unicode-bidi: isolate;">^xyz</span></b> wxy|',
        'ltr-04 ltr second and third words');
 testIt('<b>abc ^xyz</b> wxy|',
        'MakeTextWritingDirectionRightToLeft',
@@ -69,7 +69,7 @@ testIt(`^${kRtl0}| ${kRtl1} ${kRtl2} ${kRtl3}`,
        'rtl-01 natural first word');
 testIt(`^${kRtl0}| ${kRtl1} ${kRtl2} ${kRtl3}`,
        'MakeTextWritingDirectionLeftToRight',
-       `<span style="unicode-bidi: isolate;">^${kRtl0}|</span> ${kRtl1} ${kRtl2} ${kRtl3}`,
+       `^${kRtl0}| ${kRtl1} ${kRtl2} ${kRtl3}`,
        'rtl-02 ltr first word');
 testIt(`^${kRtl0}| ${kRtl1} ${kRtl2} ${kRtl3}`,
        'MakeTextWritingDirectionRightToLeft',
@@ -82,7 +82,7 @@ testIt(`<b>${kRtl0} ^${kRtl1}</b> ${kRtl2}| ${kRtl3}`,
        'rtl-04 natural second and third words');
 testIt(`<b>${kRtl0} ^${kRtl1}</b> ${kRtl2}| ${kRtl3}`,
        'MakeTextWritingDirectionLeftToRight',
-       `<b>${kRtl0} <span style="unicode-bidi: isolate;">^${kRtl1}</span></b><span style="unicode-bidi: isolate;"> ${kRtl2}|</span> ${kRtl3}`,
+       `<b>${kRtl0} <span style="unicode-bidi: isolate;">^${kRtl1}</span></b> ${kRtl2}| ${kRtl3}`,
        'rtl-05 ltr second and third words');
 testIt(`<b>${kRtl0} ^${kRtl1}</b> ${kRtl2}| ${kRtl3}`,
        'MakeTextWritingDirectionRightToLeft',
@@ -138,7 +138,7 @@ testIt(`^${kCjk0}|${kCjk1}`,
        'cjk-ltr-1 natural');
 testIt(`^${kCjk0}|${kCjk1}`,
        'MakeTextWritingDirectionLeftToRight',
-       `<span style="unicode-bidi: isolate;">^${kCjk0}|</span>${kCjk1}`,
+       `^${kCjk0}|${kCjk1}`,
        'cjk-ltr-2 ltr');
 testIt(`^${kCjk0}|${kCjk1}`,
        'MakeTextWritingDirectionRightToLeft',

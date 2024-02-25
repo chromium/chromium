@@ -15,7 +15,6 @@ features:
   per_profile: true
 future_on:
 - fuchsia
-- ios
 items:
 - caption: Enable merging of user-level cloud policies.
   value: true
@@ -29,5 +28,6 @@ schema:
 supported_on:
 - chrome.*:92-
 - android:97-
+- ios:121-
 tags: []
 type: main

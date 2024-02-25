@@ -32,6 +32,8 @@
 
 namespace blink {
 
+using mojom::blink::FormControlType;
+
 namespace {
 
 enum class AutoCompleteCategory {
@@ -146,7 +148,7 @@ bool HTMLFormControlElementWithState::ShouldAutocomplete() const {
 }
 
 bool HTMLFormControlElementWithState::IsWearingAutofillAnchorMantle() const {
-  return FormControlType() == input_type_names::kHidden;
+  return FormControlType() == FormControlType::kInputHidden;
 }
 
 String HTMLFormControlElementWithState::IDLExposedAutofillValue() const {
@@ -341,6 +343,11 @@ void HTMLFormControlElementWithState::DispatchInputEvent() {
 }
 
 void HTMLFormControlElementWithState::DispatchChangeEvent() {
+  if (UserHasEditedTheField()) {
+    // Start matching :user-valid, but only if the user has already edited the
+    // field.
+    SetUserHasEditedTheFieldAndBlurred();
+  }
   DispatchScopedEvent(*Event::CreateBubble(event_type_names::kChange));
 }
 
@@ -358,11 +365,36 @@ bool HTMLFormControlElementWithState::IsFormControlElementWithState() const {
 }
 
 void HTMLFormControlElementWithState::ResetImpl() {
-  user_has_edited_the_field_ = false;
+  ClearUserHasEditedTheField();
 }
 
 int HTMLFormControlElementWithState::DefaultTabIndex() const {
   return 0;
+}
+
+void HTMLFormControlElementWithState::SetUserHasEditedTheField() {
+  if (interacted_state_ < InteractedState::kInteractedAndStillFocused) {
+    interacted_state_ = InteractedState::kInteractedAndStillFocused;
+  }
+}
+
+void HTMLFormControlElementWithState::SetUserHasEditedTheFieldAndBlurred() {
+  if (interacted_state_ >= InteractedState::kInteractedAndBlurred) {
+    return;
+  }
+  interacted_state_ = InteractedState::kInteractedAndBlurred;
+  PseudoStateChanged(CSSSelector::kPseudoUserInvalid);
+  PseudoStateChanged(CSSSelector::kPseudoUserValid);
+}
+
+bool HTMLFormControlElementWithState::MatchesUserInvalidPseudo() {
+  return (UserHasEditedTheFieldAndBlurred() || force_user_valid_) &&
+         MatchesValidityPseudoClasses() && !ListedElement::IsValidElement();
+}
+
+bool HTMLFormControlElementWithState::MatchesUserValidPseudo() {
+  return (UserHasEditedTheFieldAndBlurred() || force_user_valid_) &&
+         MatchesValidityPseudoClasses() && ListedElement::IsValidElement();
 }
 
 }  // namespace blink

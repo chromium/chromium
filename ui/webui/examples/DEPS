@@ -5,6 +5,9 @@ include_rules = [
   "+chrome/grit/webui_gallery_resources.h",
   "+chrome/grit/webui_gallery_resources_map.h",
 
+  # The GuestView supports the WebView element.
+  "+components/guest_view",
+
   # The WebUI examples is a simple embedder, so it only uses content's public API.
   "+content/public",
 

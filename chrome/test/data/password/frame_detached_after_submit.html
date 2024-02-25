@@ -1,0 +1,12 @@
+<html>
+  <body>
+    <iframe src="frame_detached_after_submit_iframe_form.html" title="Reset password" id="password_reset_iframe" name="password_reset_iframepassword_reset_iframe">
+    </iframe>
+    <script type="text/javascript">
+      window.addEventListener("message", (event) => {
+        var iframe = document.getElementById('password_reset_iframe');
+        iframe.parentNode.removeChild(iframe);
+      });
+    </script>
+  </body>
+</html>

@@ -15,7 +15,7 @@ constexpr char kParentAccessSuffixWebApprovals[] = "WebApprovals";
 
 std::string GetHistogramTitleForFlowType(
     base::StringPiece parent_access_histogram_base,
-    absl::optional<parent_access_ui::mojom::ParentAccessParams::FlowType>
+    std::optional<parent_access_ui::mojom::ParentAccessParams::FlowType>
         flow_type) {
   const std::string separator = ".";
   if (!flow_type.has_value()) {

@@ -13,17 +13,18 @@ import android.widget.TextView;
 
 import androidx.annotation.Nullable;
 
+import org.jni_zero.NativeMethods;
+
 import org.chromium.base.Log;
-import org.chromium.base.annotations.NativeMethods;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.compositor.bottombar.ephemeraltab.EphemeralTabCoordinator;
 import org.chromium.chrome.browser.compositor.bottombar.ephemeraltab.EphemeralTabObserver;
 import org.chromium.chrome.browser.compositor.bottombar.ephemeraltab.EphemeralTabSheetContent;
+import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tab.TabUtils;
 import org.chromium.chrome.browser.tabmodel.TabCreator;
-import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.page_info.PageInfoAction;
 import org.chromium.components.page_info.PageInfoControllerDelegate;
 import org.chromium.components.page_info.PageInfoMainController;
@@ -37,9 +38,7 @@ import org.chromium.ui.base.PageTransition;
 import org.chromium.ui.base.ViewUtils;
 import org.chromium.url.GURL;
 
-/**
- * Class for controlling the page info 'About This Site' section.
- */
+/** Class for controlling the page info 'About This Site' section. */
 public class PageInfoAboutThisSiteController {
     public static final int ROW_ID = View.generateViewId();
     private static final String TAG = "PageInfo";
@@ -50,6 +49,7 @@ public class PageInfoAboutThisSiteController {
     private final PageInfoControllerDelegate mDelegate;
     private final WebContents mWebContents;
     private @Nullable SiteInfo mSiteInfo;
+    private EphemeralTabCoordinator mEphemeralTabCoordinator;
     private EphemeralTabObserver mEphemeralTabObserver;
     private final TabCreator mTabCreator;
 
@@ -57,9 +57,12 @@ public class PageInfoAboutThisSiteController {
         return PageInfoAboutThisSiteControllerJni.get().isFeatureEnabled();
     }
 
-    public PageInfoAboutThisSiteController(PageInfoMainController mainController,
+    public PageInfoAboutThisSiteController(
+            PageInfoMainController mainController,
             Supplier<EphemeralTabCoordinator> ephemeralTabCoordinatorSupplier,
-            PageInfoRowView rowView, PageInfoControllerDelegate delegate, WebContents webContents,
+            PageInfoRowView rowView,
+            PageInfoControllerDelegate delegate,
+            WebContents webContents,
             TabCreator tabCreator) {
         mMainController = mainController;
         mEphemeralTabCoordinatorSupplier = ephemeralTabCoordinatorSupplier;
@@ -72,21 +75,24 @@ public class PageInfoAboutThisSiteController {
 
     private void openUrl(String url, @PageInfoAction int action) {
         mMainController.recordAction(action);
-        if (mEphemeralTabCoordinatorSupplier != null
-                && mEphemeralTabCoordinatorSupplier.get() != null) {
+        mEphemeralTabCoordinator =
+                mEphemeralTabCoordinatorSupplier != null
+                        ? mEphemeralTabCoordinatorSupplier.get()
+                        : null;
+        if (mEphemeralTabCoordinator != null) {
             // Append parameter to open the page with reduced UI elements in the bottomsheet.
             Uri.Builder builder = Uri.parse(url).buildUpon();
             if (mSiteInfo.hasMoreAbout() && url.equals(mSiteInfo.getMoreAbout().getUrl())) {
-                    builder.appendQueryParameter("ilrm", "minimal,nohead");
+                builder.appendQueryParameter("ilrm", "minimal,nohead");
             }
             GURL bottomSheetUrl = new GURL(builder.toString());
             GURL fullPageUrl = new GURL(url);
 
-                createEphemeralTabObserver(bottomSheetUrl);
-                mEphemeralTabCoordinatorSupplier.get().addObserver(mEphemeralTabObserver);
+            createEphemeralTabObserver(bottomSheetUrl);
+            mEphemeralTabCoordinator.addObserver(mEphemeralTabObserver);
 
-            mEphemeralTabCoordinatorSupplier.get().requestOpenSheetWithFullPageUrl(
-                    bottomSheetUrl, fullPageUrl, getTitle(), /*isIncognito=*/false);
+            mEphemeralTabCoordinator.requestOpenSheetWithFullPageUrl(
+                    bottomSheetUrl, fullPageUrl, getTitle(), Profile.fromWebContents(mWebContents));
 
             mMainController.dismiss();
         } else {
@@ -94,44 +100,46 @@ public class PageInfoAboutThisSiteController {
         }
     }
 
-    public void createEphemeralTabObserver(GURL originUrl) {
-        mEphemeralTabObserver = new EphemeralTabObserver() {
-            @Override
-            public void onToolbarCreated(ViewGroup toolbarView) {
-                TextView origin = toolbarView.findViewById(R.id.origin);
-                origin.setVisibility(View.GONE);
+    private void createEphemeralTabObserver(GURL originUrl) {
+        assert mEphemeralTabCoordinator != null;
+        mEphemeralTabObserver =
+                new EphemeralTabObserver() {
+                    @Override
+                    public void onToolbarCreated(ViewGroup toolbarView) {
+                        TextView origin = toolbarView.findViewById(R.id.origin);
+                        origin.setVisibility(View.GONE);
 
-                ImageView securityIcon = toolbarView.findViewById(R.id.security_icon);
-                securityIcon.setVisibility(View.GONE);
+                        ImageView securityIcon = toolbarView.findViewById(R.id.security_icon);
+                        securityIcon.setVisibility(View.GONE);
 
-                TextView title = toolbarView.findViewById(R.id.title);
-                title.setTextAppearance(R.style.TextAppearance_TextLarge_Primary);
-                // Style change affects the toolbar height. Requests layout again.
-                ViewUtils.requestLayout(
-                        toolbarView, "PageInfoAboutThisSiteController.onToolbarCreated");
-            }
+                        TextView title = toolbarView.findViewById(R.id.title);
+                        title.setTextAppearance(R.style.TextAppearance_TextLarge_Primary);
+                        // Style change affects the toolbar height. Requests layout again.
+                        ViewUtils.requestLayout(
+                                toolbarView, "PageInfoAboutThisSiteController.onToolbarCreated");
+                    }
 
-            @Override
-            public void onNavigationStarted(GURL clickedUrl,
-                    BottomSheetController bottomSheetController,
-                    EphemeralTabSheetContent ephemeralTabSheetContent) {
-                if (!clickedUrl.equals(originUrl)) {
-                    bottomSheetController.hideContent(ephemeralTabSheetContent, /* animate= */ true,
-                            BottomSheetController.StateChangeReason.PROMOTE_TAB);
-                    openInNewTab(clickedUrl.getSpec());
-                }
-            }
+                    @Override
+                    public void onNavigationStarted(GURL clickedUrl) {
+                        if (!clickedUrl.equals(originUrl)) {
+                            mEphemeralTabCoordinator.close();
+                            mEphemeralTabCoordinator.removeObserver(this);
+                            openInNewTab(clickedUrl.getSpec());
+                        }
+                    }
 
-            @Override
-            public void onTitleSet(EphemeralTabSheetContent sheetContent, String title) {
-                sheetContent.updateTitle(getTitle());
-            }
-        };
+                    @Override
+                    public void onTitleSet(EphemeralTabSheetContent sheetContent, String title) {
+                        sheetContent.updateTitle(getTitle());
+                    }
+                };
     }
 
     private void openInNewTab(String url) {
-        mTabCreator.createNewTab(new LoadUrlParams(url, PageTransition.LINK),
-                TabLaunchType.FROM_LINK, TabUtils.fromWebContents(mWebContents));
+        mTabCreator.createNewTab(
+                new LoadUrlParams(url, PageTransition.LINK),
+                TabLaunchType.FROM_LINK,
+                TabUtils.fromWebContents(mWebContents));
     }
 
     private void setupRow() {
@@ -149,9 +157,11 @@ public class PageInfoAboutThisSiteController {
         }
 
         Resources resources = mRowView.getContext().getResources();
-        String subtitle = mSiteInfo.hasDescription()
-                ? mSiteInfo.getDescription().getDescription()
-                : resources.getString(R.string.page_info_about_this_page_description_placeholder);
+        String subtitle =
+                mSiteInfo.hasDescription()
+                        ? mSiteInfo.getDescription().getDescription()
+                        : resources.getString(
+                                R.string.page_info_about_this_page_description_placeholder);
         PageInfoRowView.ViewParams rowParams = new PageInfoRowView.ViewParams();
         rowParams.title = getTitle();
         rowParams.subtitle = subtitle;
@@ -164,13 +174,18 @@ public class PageInfoAboutThisSiteController {
     }
 
     private String getTitle() {
-        return mRowView.getContext().getResources().getString(
-                R.string.page_info_about_this_page_title);
+        return mRowView.getContext()
+                .getResources()
+                .getString(R.string.page_info_about_this_page_title);
     }
 
     private @Nullable SiteInfo getSiteInfo() {
-        byte[] result = PageInfoAboutThisSiteControllerJni.get().getSiteInfo(
-                mMainController.getBrowserContext(), mMainController.getURL(), mWebContents);
+        byte[] result =
+                PageInfoAboutThisSiteControllerJni.get()
+                        .getSiteInfo(
+                                mMainController.getBrowserContext(),
+                                mMainController.getURL(),
+                                mWebContents);
         if (result == null) return null;
         SiteInfo info = null;
         try {
@@ -183,17 +198,21 @@ public class PageInfoAboutThisSiteController {
     }
 
     private void onAboutThisSiteRowClicked() {
-        openUrl(mSiteInfo.getMoreAbout().getUrl(),
+        openUrl(
+                mSiteInfo.getMoreAbout().getUrl(),
                 PageInfoAction.PAGE_INFO_ABOUT_THIS_SITE_PAGE_OPENED);
-        PageInfoAboutThisSiteControllerJni.get().onAboutThisSiteRowClicked(
-                mSiteInfo.hasDescription());
+        PageInfoAboutThisSiteControllerJni.get()
+                .onAboutThisSiteRowClicked(mSiteInfo.hasDescription());
     }
 
     @NativeMethods
     interface Natives {
         boolean isFeatureEnabled();
+
         int getJavaDrawableIconId();
+
         byte[] getSiteInfo(BrowserContextHandle browserContext, GURL url, WebContents webContents);
+
         void onAboutThisSiteRowClicked(boolean withDescription);
     }
 }

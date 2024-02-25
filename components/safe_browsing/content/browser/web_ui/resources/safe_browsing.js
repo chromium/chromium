@@ -5,7 +5,7 @@
 import 'chrome://resources/cr_elements/cr_tab_box/cr_tab_box.js';
 
 import {addWebUiListener, sendWithPromise} from 'chrome://resources/js/cr.js';
-import {$} from 'chrome://resources/js/util_ts.js';
+import {$} from 'chrome://resources/js/util.js';
 
 /**
  * Asks the C++ SafeBrowsingUIHandler to get the lists of Safe Browsing
@@ -202,6 +202,16 @@ function initialize() {
   // </if>
 
   $('get-referrer-chain-form').addEventListener('submit', addReferrerChain);
+
+  sendWithPromise('getTailoredVerdictOverride', [])
+      .then(displayTailoredVerdictOverride);
+  addWebUiListener(
+      'tailored-verdict-override-update', displayTailoredVerdictOverride);
+
+  $('tailored-verdict-override-form')
+      .addEventListener('submit', setTailoredVerdictOverride);
+  $('tailored-verdict-override-clear')
+      .addEventListener('click', clearTailoredVerdictOverride);
 
   // Allow tabs to be navigated to by fragment. The fragment with be of the
   // format "#tab-<tab id>"
@@ -460,6 +470,48 @@ function addReferringAppInfo(info) {
   $('referring-app-info').textContent = info;
 }
 // </if>
+
+// Format the browser's response nicely.
+function displayTailoredVerdictOverride(response) {
+  let displayString = `Status: ${response.status}`;
+  if (response.override_value) {
+    displayString +=
+        `\nOverride value: ${JSON.stringify(response.override_value)}`;
+  }
+  $('tailored-verdict-override-content').innerHTML = trustedTypes.emptyHTML;
+  $('tailored-verdict-override-content').textContent = displayString;
+}
+
+function setTailoredVerdictOverride(e) {
+  // Don't navigate
+  e.preventDefault();
+
+  const inputs = $('tailored-verdict-override-form').elements;
+
+  // The structured data to send to the browser.
+  const inputValue = {
+    tailored_verdict_type: inputs['tailored_verdict_type'].value,
+    adjustments: [],
+  };
+  inputs['adjustments'].forEach((checkbox) => {
+    if (checkbox.checked) {
+      inputValue.adjustments.push(checkbox.value);
+    }
+  });
+
+  sendWithPromise('setTailoredVerdictOverride', inputValue)
+      .then(displayTailoredVerdictOverride);
+}
+
+function clearTailoredVerdictOverride(e) {
+  // Don't navigate
+  e.preventDefault();
+
+  $('tailored-verdict-override-form').reset();
+
+  sendWithPromise('clearTailoredVerdictOverride')
+      .then(displayTailoredVerdictOverride);
+}
 
 function showTab(tabId) {
   const tabs = document.querySelectorAll('div[slot=\'tab\']');

@@ -1,0 +1,15 @@
+{
+  "name": "content_script_activity_log",
+  "key": "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAuI9XCmiRiqlOKmuzDxMEy5JJGJYTfrqvmkuxpi/a0UNdHMkh48db4Z2CGB0ad04Vigb9Bo6RlYbGqeGP30RaFFrtBvux/PQvMueS8nzCW8nZrqn2eiElTudCVm+Q2Kv+SAhx+Qclx8kCV9gb5FbDdinYu06MhyEwq7FFZjyU0gRVMbYpL6pp08MxnRr0ZXzhbWM/4M+iMLMvEIXWI+Kz01Xs4EBvMZthIimUK6ySWsW2Pn8BQUa0DN+fF8FG7IbVc7/jp9m3hAuUYJdfgcgqsPkwCEr/waa1ajDuHMNMfFgivUVcCypQ4Ngl2G9tiMGcPfL1ISI/PZNR4oay5y+hxQIDAQAB",
+  "version": "1.0",
+  "manifest_version": 2,
+  "description": "Tests that content script executions are reported correctly in the activity log",
+  "background": {
+    "scripts": [
+      "test.js"
+    ]
+  },
+  "permissions": [
+    "activityLogPrivate"
+  ]
+}

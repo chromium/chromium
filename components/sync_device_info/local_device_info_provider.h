@@ -10,7 +10,7 @@
 
 #include "base/callback_list.h"
 #include "components/sync/base/model_type.h"
-#include "components/version_info/version_info.h"
+#include "components/version_info/channel.h"
 
 namespace syncer {
 
@@ -50,7 +50,7 @@ class MutableLocalDeviceInfoProvider : public LocalDeviceInfoProvider {
       const std::string& manufacturer_name,
       const std::string& model_name,
       const std::string& full_hardware_class,
-      std::unique_ptr<DeviceInfo> device_info_restored_from_store) = 0;
+      const DeviceInfo* device_info_restored_from_store) = 0;
   virtual void Clear() = 0;
 
   // Updates the local device's client name. Initialize() must be called before

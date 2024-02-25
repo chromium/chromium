@@ -30,6 +30,7 @@
 #include "components/policy/core/common/cloud/cloud_policy_constants.h"
 #include "components/policy/core/common/cloud/test/policy_builder.h"
 #include "components/policy/core/common/policy_service.h"
+#include "components/policy/core/common/policy_types.h"
 #include "components/policy/policy_constants.h"
 #include "components/prefs/pref_service.h"
 #include "components/session_manager/session_manager_types.h"
@@ -134,7 +135,7 @@ class LoginApitest : public LoginScreenApitestBase {
   void RefreshPolicies() {
     base::RunLoop run_loop;
     g_browser_process->policy_service()->RefreshPolicies(
-        run_loop.QuitClosure());
+        run_loop.QuitClosure(), policy::PolicyFetchReason::kTest);
     run_loop.Run();
   }
 
@@ -209,7 +210,7 @@ IN_PROC_BROWSER_TEST_F(LoginApitest, LaunchManagedGuestSession) {
   // for managed guest sessions.
   user_manager::UserManager* user_manager = user_manager::UserManager::Get();
   EXPECT_TRUE(user_manager->GetActiveUser()->GetType() ==
-              user_manager::USER_TYPE_PUBLIC_ACCOUNT);
+              user_manager::UserType::kPublicAccount);
   EXPECT_FALSE(user_manager->CanCurrentUserLock());
 }
 

@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/web_applications/test/isolated_web_app_test_utils.h"
 
 #include <memory>
+#include <string>
 
 #include "base/files/file_path.h"
 #include "base/test/test_future.h"
@@ -18,7 +19,6 @@
 #include "chrome/browser/web_applications/web_app.h"
 #include "chrome/browser/web_applications/web_app_command_scheduler.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
-#include "chrome/browser/web_applications/web_app_id.h"
 #include "chrome/browser/web_applications/web_app_install_manager.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
@@ -26,8 +26,14 @@
 #include "chrome/common/chrome_features.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/web_package/signed_web_bundles/signed_web_bundle_id.h"
+#include "components/webapps/common/web_app_id.h"
 #include "content/public/common/content_features.h"
+#include "content/public/test/browser_test_utils.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
+#include "third_party/blink/public/common/features_generated.h"
+#include "third_party/skia/include/core/SkBitmap.h"
+#include "third_party/skia/include/core/SkStream.h"
+#include "third_party/skia/include/encode/SkPngEncoder.h"
 #include "ui/base/page_transition_types.h"
 #include "ui/base/window_open_disposition.h"
 #include "url/gurl.h"
@@ -37,7 +43,9 @@ namespace web_app {
 
 IsolatedWebAppBrowserTestHarness::IsolatedWebAppBrowserTestHarness() {
   iwa_scoped_feature_list_.InitWithFeatures(
-      {features::kIsolatedWebApps, features::kIsolatedWebAppDevMode}, {});
+      {features::kIsolatedWebApps, features::kIsolatedWebAppDevMode,
+       blink::features::kUnrestrictedUsb},
+      {});
 }
 
 IsolatedWebAppBrowserTestHarness::~IsolatedWebAppBrowserTestHarness() = default;
@@ -56,15 +64,16 @@ IsolatedWebAppBrowserTestHarness::InstallDevModeProxyIsolatedWebApp(
 
 Browser* IsolatedWebAppBrowserTestHarness::GetBrowserFromFrame(
     content::RenderFrameHost* frame) {
-  Browser* browser = chrome::FindBrowserWithWebContents(
+  Browser* browser = chrome::FindBrowserWithTab(
       content::WebContents::FromRenderFrameHost(frame));
   EXPECT_TRUE(browser);
   return browser;
 }
 
 content::RenderFrameHost* IsolatedWebAppBrowserTestHarness::OpenApp(
-    const AppId& app_id) {
-  return OpenIsolatedWebApp(profile(), app_id);
+    const webapps::AppId& app_id,
+    base::StringPiece path) {
+  return OpenIsolatedWebApp(profile(), app_id, path);
 }
 
 content::RenderFrameHost*
@@ -102,7 +111,7 @@ IsolatedWebAppUrlInfo InstallDevModeProxyIsolatedWebApp(
       web_package::SignedWebBundleId::CreateRandomForDevelopment());
   WebAppProvider::GetForWebApps(profile)->scheduler().InstallIsolatedWebApp(
       url_info, DevModeProxy{.proxy_url = proxy_origin},
-      /*expected_version=*/absl::nullopt,
+      /*expected_version=*/std::nullopt,
       /*optional_keep_alive=*/nullptr,
       /*optional_profile_keep_alive=*/nullptr, future.GetCallback());
 
@@ -112,13 +121,14 @@ IsolatedWebAppUrlInfo InstallDevModeProxyIsolatedWebApp(
 }
 
 content::RenderFrameHost* OpenIsolatedWebApp(Profile* profile,
-                                             const AppId& app_id) {
+                                             const webapps::AppId& app_id,
+                                             base::StringPiece path) {
   WebAppRegistrar& registrar =
       WebAppProvider::GetForWebApps(profile)->registrar_unsafe();
   const WebApp* app = registrar.GetAppById(app_id);
   EXPECT_TRUE(app);
 
-  NavigateParams params(profile, app->start_url(),
+  NavigateParams params(profile, app->start_url().Resolve(path),
                         ui::PAGE_TRANSITION_GENERATED);
   params.app_id = app->app_id();
   params.window_action = NavigateParams::SHOW_WINDOW;
@@ -153,7 +163,7 @@ void CreateIframe(content::RenderFrameHost* parent_frame,
 // by that function does not currently allow setting the `WebApp::IsolationData`
 // (which is good for non-test-code, as all real IWA installs must go through
 // the `InstallIsolatedWebAppCommand`).
-AppId AddDummyIsolatedAppToRegistry(
+webapps::AppId AddDummyIsolatedAppToRegistry(
     Profile* profile,
     const GURL& start_url,
     const std::string& name,
@@ -163,7 +173,7 @@ AppId AddDummyIsolatedAppToRegistry(
   CHECK(provider);
 
   std::unique_ptr<WebApp> isolated_web_app = test::CreateWebApp(start_url);
-  const AppId app_id = isolated_web_app->app_id();
+  const webapps::AppId app_id = isolated_web_app->app_id();
   isolated_web_app->SetName(name);
   isolated_web_app->SetScope(isolated_web_app->start_url());
   isolated_web_app->SetIsolationData(isolation_data);
@@ -178,4 +188,5 @@ AppId AddDummyIsolatedAppToRegistry(
   provider->install_manager().NotifyWebAppInstalled(app_id);
   return app_id;
 }
+
 }  // namespace web_app

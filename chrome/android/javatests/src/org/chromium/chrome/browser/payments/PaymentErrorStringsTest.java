@@ -18,9 +18,7 @@ import org.chromium.components.payments.ErrorStrings;
 
 import java.lang.reflect.Field;
 
-/**
- * Tests for generated {@link ErrorStrings.java}.
- **/
+/** Tests for generated {@link ErrorStrings.java}. */
 @RunWith(ChromeJUnit4ClassRunner.class)
 public class PaymentErrorStringsTest {
     // Tests that error strings are generated successfully and have non-empty values.

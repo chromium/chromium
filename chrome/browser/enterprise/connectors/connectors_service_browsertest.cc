@@ -236,7 +236,7 @@ class ConnectorsServiceProfileBrowserTest
         AccountId::FromUserEmailGaiaId(kTestEmail, kTestGaiaId);
     fake_user_manager->AddUserWithAffiliationAndTypeAndProfile(
         account_id, management_status() == ManagementStatus::AFFILIATED,
-        user_manager::USER_TYPE_REGULAR,
+        user_manager::UserType::kRegular,
         static_cast<TestingProfile*>(browser()->profile()));
     fake_user_manager->LoginUser(account_id);
 #else
@@ -331,49 +331,36 @@ IN_PROC_BROWSER_TEST_P(ConnectorsServiceReportingProfileBrowserTest, Test) {
   std::string management_domain =
       ConnectorsServiceFactory::GetForBrowserContext(browser()->profile())
           ->GetManagementDomain();
-  switch (management_status()) {
-    case ManagementStatus::UNAFFILIATED:
-      EXPECT_FALSE(settings.has_value());
-      ASSERT_TRUE(management_domain.empty());
-      break;
-    case ManagementStatus::AFFILIATED:
-      EXPECT_TRUE(settings.has_value());
-      ASSERT_EQ(kFakeProfileDMToken, settings.value().dm_token);
-      ASSERT_TRUE(settings.value().per_profile);
-      ASSERT_EQ(kDomain1, management_domain);
-      break;
-    case ManagementStatus::UNMANAGED:
-      EXPECT_TRUE(settings.has_value());
-      ASSERT_EQ(kFakeProfileDMToken, settings.value().dm_token);
-      ASSERT_TRUE(settings.value().per_profile);
-      ASSERT_EQ(kDomain1, management_domain);
-      break;
-  }
+  // expected state is the same regardless of management_status() value.
+  EXPECT_TRUE(settings.has_value());
+  ASSERT_EQ(kFakeProfileDMToken, settings.value().dm_token);
+  ASSERT_TRUE(settings.value().per_profile);
+  ASSERT_EQ(kDomain1, management_domain);
 #endif
 }
 
 class ConnectorsServiceAnalysisProfileBrowserTest
     : public ConnectorsServiceProfileBrowserTest,
       public testing::WithParamInterface<
-          std::tuple<AnalysisConnector, ManagementStatus, const char*, bool>> {
+          std::tuple<ManagementStatus, const char*, bool>> {
  public:
   ConnectorsServiceAnalysisProfileBrowserTest()
-      : ConnectorsServiceProfileBrowserTest(std::get<1>(GetParam())) {
+      : ConnectorsServiceProfileBrowserTest(std::get<0>(GetParam())) {
+    std::vector<base::test::FeatureRef> enabled_features;
+    std::vector<base::test::FeatureRef> disabled_features;
     if (enterprise_connectors_enabled_on_mgs()) {
-      scoped_feature_list_.InitWithFeatures({kEnterpriseConnectorsEnabledOnMGS},
-                                            {});
+      enabled_features.push_back(kEnterpriseConnectorsEnabledOnMGS);
     } else {
-      scoped_feature_list_.InitWithFeatures(
-          {}, {kEnterpriseConnectorsEnabledOnMGS});
+      disabled_features.push_back(kEnterpriseConnectorsEnabledOnMGS);
     }
+    scoped_feature_list_.InitWithFeatures(enabled_features, disabled_features);
   }
-  AnalysisConnector connector() { return std::get<0>(GetParam()); }
-  const char* settings_value() { return std::get<2>(GetParam()); }
+  const char* settings_value() { return std::get<1>(GetParam()); }
 
   // Returns whether the kEnterpriseConnectorsEnabledOnMGS feature should be
   // enabled or not.
   bool enterprise_connectors_enabled_on_mgs() {
-    return std::get<3>(GetParam());
+    return std::get<2>(GetParam());
   }
 
   bool is_cloud() {
@@ -516,7 +503,6 @@ INSTANTIATE_TEST_SUITE_P(
     ,
     ConnectorsServiceAnalysisProfileBrowserTest,
     testing::Combine(
-        testing::Values(FILE_ATTACHED, FILE_DOWNLOADED, BULK_DATA_ENTRY, PRINT),
         testing::Values(ManagementStatus::AFFILIATED,
                         ManagementStatus::UNAFFILIATED,
                         ManagementStatus::UNMANAGED),
@@ -526,14 +512,14 @@ INSTANTIATE_TEST_SUITE_P(
 
 IN_PROC_BROWSER_TEST_P(ConnectorsServiceAnalysisProfileBrowserTest,
                        DeviceReporting) {
-  SetPrefs(ConnectorPref(connector()), ConnectorScopePref(connector()),
+  SetPrefs(ConnectorPref(FILE_ATTACHED), ConnectorScopePref(FILE_ATTACHED),
            settings_value(), /*profile_scope*/ false);
   SetPrefs(ConnectorPref(ReportingConnector::SECURITY_EVENT),
            ConnectorScopePref(ReportingConnector::SECURITY_EVENT),
            settings_value(), /*profile_scope*/ false);
   auto settings =
       ConnectorsServiceFactory::GetForBrowserContext(browser()->profile())
-          ->GetAnalysisSettings(GURL(kTestUrl), connector());
+          ->GetAnalysisSettings(GURL(kTestUrl), FILE_ATTACHED);
 
   // Expect no local analysis settings on platforms where it is unsupported.
 #if !BUILDFLAG(ENTERPRISE_LOCAL_CONTENT_ANALYSIS)
@@ -574,14 +560,14 @@ IN_PROC_BROWSER_TEST_P(ConnectorsServiceAnalysisProfileBrowserTest,
 
 IN_PROC_BROWSER_TEST_P(ConnectorsServiceAnalysisProfileBrowserTest,
                        ProfileReporting) {
-  SetPrefs(ConnectorPref(connector()), ConnectorScopePref(connector()),
+  SetPrefs(ConnectorPref(FILE_DOWNLOADED), ConnectorScopePref(FILE_DOWNLOADED),
            settings_value());
   SetPrefs(ConnectorPref(ReportingConnector::SECURITY_EVENT),
            ConnectorScopePref(ReportingConnector::SECURITY_EVENT),
            kNormalReportingSettingsPref);
   auto settings =
       ConnectorsServiceFactory::GetForBrowserContext(browser()->profile())
-          ->GetAnalysisSettings(GURL(kTestUrl), connector());
+          ->GetAnalysisSettings(GURL(kTestUrl), FILE_DOWNLOADED);
 
   // Expect no local analysis settings on platforms where it is unsupported.
 #if !BUILDFLAG(ENTERPRISE_LOCAL_CONTENT_ANALYSIS)
@@ -622,10 +608,18 @@ IN_PROC_BROWSER_TEST_P(ConnectorsServiceAnalysisProfileBrowserTest,
         ASSERT_EQ("path_user",
                   settings.value().cloud_or_local_settings.local_path());
         ASSERT_TRUE(settings.value().cloud_or_local_settings.user_specific());
+        ASSERT_FALSE(management_domain.empty());
       } else {
-        ASSERT_FALSE(settings.has_value());
+        EXPECT_TRUE(settings.has_value());
+        ASSERT_TRUE(
+            settings.value().cloud_or_local_settings.is_cloud_analysis());
+        ASSERT_EQ(kFakeProfileDMToken,
+                  settings.value().cloud_or_local_settings.dm_token());
+        ValidateClientMetadata(*settings.value().client_metadata, is_cloud(),
+                               /*profile_reporting*/ true);
+        ASSERT_TRUE(settings.value().per_profile);
+        ASSERT_EQ(kDomain1, management_domain);
       }
-      ASSERT_TRUE(management_domain.empty());
       break;
     case ManagementStatus::AFFILIATED:
       EXPECT_TRUE(settings.has_value());
@@ -662,11 +656,10 @@ IN_PROC_BROWSER_TEST_P(ConnectorsServiceAnalysisProfileBrowserTest,
 
 IN_PROC_BROWSER_TEST_P(ConnectorsServiceAnalysisProfileBrowserTest,
                        NoReporting) {
-  SetPrefs(ConnectorPref(connector()), ConnectorScopePref(connector()),
-           settings_value());
+  SetPrefs(ConnectorPref(PRINT), ConnectorScopePref(PRINT), settings_value());
   auto settings =
       ConnectorsServiceFactory::GetForBrowserContext(browser()->profile())
-          ->GetAnalysisSettings(GURL(kTestUrl), connector());
+          ->GetAnalysisSettings(GURL(kTestUrl), PRINT);
 
   // Expect no local analysis settings on platforms where it is unsupported.
 #if !BUILDFLAG(ENTERPRISE_LOCAL_CONTENT_ANALYSIS)
@@ -704,10 +697,18 @@ IN_PROC_BROWSER_TEST_P(ConnectorsServiceAnalysisProfileBrowserTest,
         ASSERT_EQ("path_user",
                   settings.value().cloud_or_local_settings.local_path());
         ASSERT_TRUE(settings.value().cloud_or_local_settings.user_specific());
+        ASSERT_NE(management_domain.empty(), true);
       } else {
-        ASSERT_FALSE(settings.has_value());
+        EXPECT_TRUE(settings.has_value());
+        ASSERT_EQ(kFakeProfileDMToken,
+                  settings.value().cloud_or_local_settings.dm_token());
+        if (enterprise_connectors_enabled_on_mgs()) {
+          ASSERT_FALSE(ContainsClientId(settings.value()));
+        } else {
+          ASSERT_FALSE(settings.value().client_metadata);
+        }
+        ASSERT_EQ(management_domain, kDomain1);
       }
-      ASSERT_TRUE(management_domain.empty());
       break;
     case ManagementStatus::AFFILIATED:
       EXPECT_TRUE(settings.has_value());
@@ -751,13 +752,15 @@ IN_PROC_BROWSER_TEST_P(ConnectorsServiceAnalysisProfileBrowserTest,
 #endif
 }
 
+// TODO(b/302576851): Consider removing after EnableRelaxedAffiliationCheck
+// is cleaned up.
 IN_PROC_BROWSER_TEST_P(ConnectorsServiceAnalysisProfileBrowserTest,
                        Affiliation) {
-  SetPrefs(ConnectorPref(connector()), ConnectorScopePref(connector()),
+  SetPrefs(ConnectorPref(BULK_DATA_ENTRY), ConnectorScopePref(BULK_DATA_ENTRY),
            settings_value());
   auto settings =
       ConnectorsServiceFactory::GetForBrowserContext(browser()->profile())
-          ->GetAnalysisSettings(GURL(kTestUrl), connector());
+          ->GetAnalysisSettings(GURL(kTestUrl), BULK_DATA_ENTRY);
 
   if (settings_value() == kNormalLocalAnalysisSettingsPref) {
     // Expect no local analysis settings on platforms where it is unsupported.
@@ -788,8 +791,6 @@ IN_PROC_BROWSER_TEST_P(ConnectorsServiceAnalysisProfileBrowserTest,
 #else
     switch (management_status()) {
       case ManagementStatus::UNAFFILIATED:
-        ASSERT_FALSE(settings.has_value());
-        break;
       case ManagementStatus::AFFILIATED:
         EXPECT_TRUE(settings.has_value());
         ASSERT_TRUE(
@@ -858,27 +859,12 @@ IN_PROC_BROWSER_TEST_P(ConnectorsServiceRealtimeURLCheckProfileBrowserTest,
   std::string management_domain =
       ConnectorsServiceFactory::GetForBrowserContext(browser()->profile())
           ->GetManagementDomain();
-  switch (management_status()) {
-    case ManagementStatus::UNAFFILIATED:
-      ASSERT_FALSE(maybe_dm_token.has_value());
-      ASSERT_EQ(safe_browsing::REAL_TIME_CHECK_DISABLED, url_check_pref);
-      ASSERT_TRUE(management_domain.empty());
-      break;
-    case ManagementStatus::AFFILIATED:
-      ASSERT_TRUE(maybe_dm_token.has_value());
-      ASSERT_EQ(kFakeProfileDMToken, maybe_dm_token.value());
-      ASSERT_EQ(safe_browsing::REAL_TIME_CHECK_FOR_MAINFRAME_ENABLED,
-                url_check_pref);
-      ASSERT_EQ(kDomain1, management_domain);
-      break;
-    case ManagementStatus::UNMANAGED:
-      ASSERT_TRUE(maybe_dm_token.has_value());
-      ASSERT_EQ(kFakeProfileDMToken, maybe_dm_token.value());
-      ASSERT_EQ(safe_browsing::REAL_TIME_CHECK_FOR_MAINFRAME_ENABLED,
-                url_check_pref);
-      ASSERT_EQ(kDomain1, management_domain);
-      break;
-  }
+  // expected state is the same regardless of management_status() value.
+  ASSERT_TRUE(maybe_dm_token.has_value());
+  ASSERT_EQ(kFakeProfileDMToken, maybe_dm_token.value());
+  ASSERT_EQ(safe_browsing::REAL_TIME_CHECK_FOR_MAINFRAME_ENABLED,
+            url_check_pref);
+  ASSERT_EQ(kDomain1, management_domain);
 #endif
 }
 

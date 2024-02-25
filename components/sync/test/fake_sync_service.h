@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_SYNC_TEST_FAKE_SYNC_SERVICE_H_
 #define COMPONENTS_SYNC_TEST_FAKE_SYNC_SERVICE_H_
 
+#include <map>
 #include <memory>
 #include <string>
 #include <vector>
@@ -57,9 +58,6 @@ class FakeSyncService : public SyncService {
   GoogleServiceAuthError GetAuthError() const override;
   base::Time GetAuthErrorTime() const override;
   bool RequiresClientUpgrade() const override;
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  bool IsSyncFeatureDisabledViaDashboard() const override;
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
   void DataTypePreconditionChanged(syncer::ModelType type) override;
   SyncTokenStatus GetSyncTokenStatusForDebugging() const override;
   bool QueryDetailedSyncStatusForDebugging(SyncStatus* result) const override;
@@ -77,15 +75,23 @@ class FakeSyncService : public SyncService {
   void GetAllNodesForDebugging(
       base::OnceCallback<void(base::Value::List)> callback) override;
   ModelTypeDownloadStatus GetDownloadStatusFor(ModelType type) const override;
+  void RecordReasonIfWaitingForUpdates(
+      ModelType type,
+      const std::string& histogram_name) const override;
   void SetInvalidationsForSessionsEnabled(bool enabled) override;
+  bool SupportsExplicitPassphrasePlatformClient() override;
+  void SendExplicitPassphraseToPlatformClient() override;
   void GetTypesWithUnsyncedData(
+      ModelTypeSet requested_types,
       base::OnceCallback<void(ModelTypeSet)> cb) const override;
+  void GetLocalDataDescriptions(
+      ModelTypeSet types,
+      base::OnceCallback<void(std::map<ModelType, LocalDataDescription>)>
+          callback) override;
+  void TriggerLocalDataMigration(ModelTypeSet types) override;
 
   // KeyedService implementation.
   void Shutdown() override;
-
- protected:
-  bool IsSyncFeatureConsideredRequested() const override;
 
  private:
   GURL sync_service_url_;

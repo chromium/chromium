@@ -15,31 +15,38 @@ namespace payments {
 enum class MandatoryReauthAuthenticationMethod;
 }
 
+enum class NonInteractivePaymentMethodType;
+
 namespace autofill_metrics {
 
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
 enum class MandatoryReauthOfferOptInDecision {
+  // Opt-in is offered.
   kOffered = 0,
-  // Opt-in is not offered for the detailed reason below:
+  // Opt-in is not offered in incognito mode.
   kIncognitoMode = 1,
+  // The user does not have a valid auth method on the device (e.g. screenlock),
+  // so opt-in will not be offered.
   kNoSupportedReauthMethod = 2,
-  kNoCardExtractedFromForm = 3,
-  // We only offer opt-in after user experienced non-interactive authentication.
+  // Deprecated: kNoCardExtractedFromForm = 3,
+  // We only offer opt-in whenever the user experiences a non-interactive
+  // authentication.
   kWentThroughInteractiveAuthentication = 4,
   // For corner cases when a user goes through a non-interactive authentication
   // flow with a card that is not a local/server/virtual card, then types in a
   // local/server/virtual card manually into the form.
-  kManuallyFilledLocalCard = 5,
-  kManuallyFilledServerCard = 6,
-  kManuallyFilledVirtualCard = 7,
+  // Deprecated: kManuallyFilledLocalCard = 5,
+  // Deprecated: kManuallyFilledServerCard = 6,
+  // Deprecated: kManuallyFilledVirtualCard = 7,
   // For corner cases when there is no stored card for the extracted card.
-  kNoStoredCardForExtractedCard = 8,
+  // Deprecated: kNoStoredCardForExtractedCard = 8,
   // Currently reauth opt-in is only supported for local and virtual cards.
-  kUnsupportedCardType = 9,
+  // Deprecated: kUnsupportedCardType = 9,
   // Opt-in is never re-offered once the user has opted in or out.
   kAlreadyOptedIn = 10,
   kAlreadyOptedOut = 11,
+  // Opt-in is not offered if it is blocked by the strike database.
   kBlockedByStrikeDatabase = 12,
   kMaxValue = kBlockedByStrikeDatabase,
 };
@@ -91,7 +98,9 @@ enum class MandatoryReauthAuthenticationFlowEvent {
   kFlowSucceeded = 2,
   // User authentication flow failed.
   kFlowFailed = 3,
-  kMaxValue = kFlowFailed,
+  // User authentication flow was skipped because of previous auth success.
+  kFlowSkipped = 4,
+  kMaxValue = kFlowSkipped,
 };
 
 // All the sources that can trigger the OptIn or OptOut flow for mandatory
@@ -100,12 +109,21 @@ enum class MandatoryReauthOptInOrOutSource {
   kUnknown = 0,
   // The OptIn or OptOut process is triggered from the settings page.
   kSettingsPage = 1,
-  // The OptIn is triggered after using local card during checkout.
+  // The OptIn is triggered after using a local card during checkout.
   kCheckoutLocalCard = 2,
-  // The OptIn is triggered after using green pathed virtual card during
+  // The OptIn is triggered after using a green-pathed virtual card during
   // checkout.
   kCheckoutVirtualCard = 3,
-  kMaxValue = kCheckoutVirtualCard,
+  // The OptIn is triggered after filling a full server card.
+  kCheckoutFullServerCard = 4,
+  // The OptIn is triggered after using a green-pathed masked server card during
+  // checkout.
+  kCheckoutMaskedServerCard = 5,
+  // The OptIn is triggered after using a local IBAN during checkout.
+  kCheckoutLocalIban = 6,
+  // The OptIn is triggered after using a server IBAN during checkout.
+  kCheckoutServerIban = 7,
+  kMaxValue = kCheckoutServerIban,
 };
 
 void LogMandatoryReauthOfferOptInDecision(
@@ -138,16 +156,22 @@ void LogMandatoryReauthOptInOrOutUpdateEvent(
     MandatoryReauthAuthenticationFlowEvent event);
 
 // Logs the status of a mandatory reauth occurrence, such as flow
-// started/succeeded/failed, when the user tries to edit a local card in
+// started/succeeded/failed, when the user tries to edit a local card on the
 // Settings page.
 void LogMandatoryReauthSettingsPageEditCardEvent(
     MandatoryReauthAuthenticationFlowEvent event);
 
+// Logs the status of a mandatory reauth occurrence, such as flow
+// started/succeeded/failed, when the user tries to delete a local card on the
+// Settings page.
+void LogMandatoryReauthSettingsPageDeleteCardEvent(
+    MandatoryReauthAuthenticationFlowEvent event);
+
 // Logs the status of a mandatory reauth occurrence during checkout flow, such
-// as flow started/succeeded/failed, break down by `card_type` and
-// `authentication_method`.
+// as flow started/succeeded/failed, broken down by
+// `non_interactive_payment_method_type` and `authentication_method`.
 void LogMandatoryReauthCheckoutFlowUsageEvent(
-    CreditCard::RecordType card_type,
+    NonInteractivePaymentMethodType non_interactive_payment_method_type,
     payments::MandatoryReauthAuthenticationMethod authentication_method,
     MandatoryReauthAuthenticationFlowEvent event);
 

@@ -19,9 +19,9 @@ limitations under the License.
 #include <memory>
 #include <vector>
 
-#include "absl/status/status.h"   // from @com_google_absl
+#include "absl/status/status.h"  // from @com_google_absl
 #include "absl/types/optional.h"  // from @com_google_absl
-#include "absl/types/variant.h"   // from @com_google_absl
+#include "absl/types/variant.h"  // from @com_google_absl
 #include "tensorflow_lite_support/cc/port/integral_types.h"
 #include "tensorflow_lite_support/cc/task/vision/core/frame_buffer.h"
 #include "tensorflow_lite_support/cc/task/vision/proto/bounding_box_proto_inc.h"
@@ -45,10 +45,7 @@ BoundingBox OrientBoundingBox(const BoundingBox& from_box,
 
 // Same as OrientBoundingBox but from normalized coordinates.
 BoundingBox OrientAndDenormalizeBoundingBox(
-    float from_left,
-    float from_top,
-    float from_right,
-    float from_bottom,
+    float from_left, float from_top, float from_right, float from_bottom,
     FrameBuffer::Orientation from_orientation,
     FrameBuffer::Orientation to_orientation,
     FrameBuffer::Dimension from_dimension);
@@ -56,12 +53,10 @@ BoundingBox OrientAndDenormalizeBoundingBox(
 // Rotates `(from_x, from_y)` coordinates from an image of dimension
 // `from_dimension` and orientation `from_orientation` into `(to_x, to_y)`
 // coordinates with orientation `to_orientation`.
-void OrientCoordinates(int from_x,
-                       int from_y,
+void OrientCoordinates(int from_x, int from_y,
                        FrameBuffer::Orientation from_orientation,
                        FrameBuffer::Orientation to_orientation,
-                       FrameBuffer::Dimension from_dimension,
-                       int* to_x,
+                       FrameBuffer::Dimension from_dimension, int* to_x,
                        int* to_y);
 
 // Returns whether the conversion from from_orientation to to_orientation
@@ -97,8 +92,7 @@ OrientParams GetOrientParams(FrameBuffer::Orientation from_orientation,
 // To perform just cropping, the `crop_width` and `crop_height` should be the
 // same as `resize_width` `and resize_height`.
 struct CropResizeOperation {
-  CropResizeOperation(int crop_origin_x,
-                      int crop_origin_y,
+  CropResizeOperation(int crop_origin_x, int crop_origin_y,
                       FrameBuffer::Dimension crop_dimension,
                       FrameBuffer::Dimension resize_dimension)
       : crop_origin_x(crop_origin_x),
@@ -130,8 +124,7 @@ struct CropResizeOperation {
 // The resized region is aligned to the upper left pixel of the output buffer.
 // The unfilled area of the output buffer remains untouched.
 struct UniformCropResizeOperation {
-  UniformCropResizeOperation(int crop_origin_x,
-                             int crop_origin_y,
+  UniformCropResizeOperation(int crop_origin_x, int crop_origin_y,
                              FrameBuffer::Dimension crop_dimension,
                              FrameBuffer::Dimension output_dimension)
       : crop_origin_x(crop_origin_x),
@@ -161,10 +154,9 @@ struct OrientOperation {
 
 // A variant of the supported operations on FrameBuffers. Alias for user
 // convenience.
-using FrameBufferOperation = absl::variant<CropResizeOperation,
-                                           ConvertOperation,
-                                           OrientOperation,
-                                           UniformCropResizeOperation>;
+using FrameBufferOperation =
+    absl::variant<CropResizeOperation, ConvertOperation, OrientOperation,
+                  UniformCropResizeOperation>;
 
 // Image processing utility. This utility provides both basic image buffer
 // manipulations (e.g. rotation, format conversion, resizing, etc) as well as
@@ -220,11 +212,7 @@ class FrameBufferUtils {
   // should be big enough to store the operation result. If the `output_buffer`
   // size dimension does not match with crop dimension, then a resize is
   // automatically performed.
-  absl::Status Crop(const FrameBuffer& buffer,
-                    int x0,
-                    int y0,
-                    int x1,
-                    int y1,
+  absl::Status Crop(const FrameBuffer& buffer, int x0, int y0, int x1, int y1,
                     FrameBuffer* output_buffer);
 
   // Performs resizing operation with bilinear interpolation.
@@ -250,8 +238,7 @@ class FrameBufferUtils {
   //
   // The output_buffer should have metadata populated and its backing buffer
   // should be big enough to store the operation result.
-  absl::Status Rotate(const FrameBuffer& buffer,
-                      RotationDegree rotation,
+  absl::Status Rotate(const FrameBuffer& buffer, RotationDegree rotation,
                       FrameBuffer* output_buffer);
 
   // Performs horizontal flip operation.
@@ -327,8 +314,7 @@ class FrameBufferUtils {
 
   // Returns the new FrameBuffer orientation after command is processed.
   FrameBuffer::Orientation GetOrientation(
-      const FrameBuffer& buffer,
-      const FrameBufferOperation& operation);
+      const FrameBuffer& buffer, const FrameBufferOperation& operation);
 
   // Returns the new FrameBuffer format after command is processed.
   FrameBuffer::Format GetFormat(const FrameBuffer& buffer,

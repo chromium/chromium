@@ -37,9 +37,9 @@ class MockCastSessionClient : public CastSessionClient {
   MOCK_METHOD0(Init, mojom::RoutePresentationConnectionPtr());
   MOCK_METHOD1(SendMessageToClient,
                void(blink::mojom::PresentationConnectionMessagePtr message));
-  MOCK_METHOD2(SendMediaStatusToClient,
-               void(const base::Value::Dict& media_status,
-                    absl::optional<int> request_id));
+  MOCK_METHOD2(SendMediaMessageToClient,
+               void(const base::Value::Dict& payload,
+                    std::optional<int> request_id));
   MOCK_METHOD1(
       CloseConnection,
       void(blink::mojom::PresentationConnectionCloseReason close_reason));
@@ -49,7 +49,7 @@ class MockCastSessionClient : public CastSessionClient {
   MOCK_METHOD3(SendErrorCodeToClient,
                void(int sequence_number,
                     CastInternalMessage::ErrorCode error_code,
-                    absl::optional<std::string> description));
+                    std::optional<std::string> description));
   MOCK_METHOD2(SendErrorToClient,
                void(int sequence_number, base::Value::Dict error));
   MOCK_METHOD1(OnMessage,

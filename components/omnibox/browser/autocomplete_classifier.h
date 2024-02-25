@@ -8,7 +8,6 @@
 #include <memory>
 #include <string>
 
-#include "base/compiler_specific.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/omnibox/browser/autocomplete_scheme_classifier.h"
 #include "third_party/metrics_proto/omnibox_event.pb.h"
@@ -36,7 +35,11 @@ class AutocompleteClassifier : public KeyedService {
   // Bitmap of AutocompleteProvider::Type values describing the default set of
   // providers queried for the omnibox.  Intended to be passed to
   // AutocompleteController().
-  static int DefaultOmniboxProviders();
+  // The parameter |is_low_memory_device| permits suppression of certain
+  // Autocomplete providers on devices where memory is scarce. This is
+  // particularly relevant for Android, where visually rich suggestions should
+  // be suppressed to reduce memory pressure.
+  static int DefaultOmniboxProviders(bool is_low_memory_device = false);
 
   // Given some string |text| that the user wants to use for navigation,
   // determines how it should be interpreted.

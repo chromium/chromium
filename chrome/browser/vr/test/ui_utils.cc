@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "chrome/browser/vr/test/ui_utils.h"
+
 #include "base/functional/bind.h"
 #include "base/run_loop.h"
 #include "base/task/single_thread_task_runner.h"
@@ -10,32 +12,22 @@
 #if BUILDFLAG(IS_WIN)
 #include "chrome/browser/vr/win/vr_browser_renderer_thread_win.h"
 #endif  // BUILDFLAG(IS_WIN)
-#include "chrome/browser/vr/test/browser_test_browser_renderer_browser_interface.h"
-#include "chrome/browser/vr/test/ui_utils.h"
 #include "chrome/browser/vr/test/xr_browser_test.h"
 
 namespace vr {
 
 UiUtils::UiUtils()
-    : ui_operation_results_(std::vector<UiTestOperationResult>(
-          static_cast<int>(UiTestOperationType::kNumUiTestOperationTypes))),
-      ui_operation_callbacks_(std::vector<base::OnceCallback<void()>>(
-          static_cast<int>(UiTestOperationType::kNumUiTestOperationTypes))),
-      main_thread_task_runner_(
+    : main_thread_task_runner_(
           base::SingleThreadTaskRunner::GetCurrentDefault()) {
   auto* renderer = GetBrowserRenderer();
   DCHECK(renderer) << "Failed to get a BrowserRenderer. Consider using "
                    << "UiUtils::Create() instead.";
-
-  interface_ =
-      std::make_unique<BrowserTestBrowserRendererBrowserInterface>(this);
-  renderer->SetBrowserRendererBrowserInterfaceForTesting(interface_.get());
 }
 
 UiUtils::~UiUtils() {
   auto* renderer = GetBrowserRenderer();
   if (renderer != nullptr) {
-    renderer->SetBrowserRendererBrowserInterfaceForTesting(nullptr);
+    renderer->WatchElementForVisibilityStatusForTesting(std::nullopt);
   }
 }
 
@@ -58,54 +50,46 @@ void UiUtils::PollForBrowserRenderer(base::RunLoop* wait_loop) {
   wait_loop->Quit();
 }
 
-void UiUtils::PerformActionAndWaitForVisibilityStatus(
+void UiUtils::WaitForVisibilityStatus(
     const UserFriendlyElementName& element_name,
-    const bool& visible,
-    base::OnceCallback<void()> action) {
-  ui_operation_results_[static_cast<int>(
-      UiTestOperationType::kElementVisibilityStatus)] =
-      UiTestOperationResult::kUnreported;
+    const bool& visible) {
   base::RunLoop wait_loop(base::RunLoop::Type::kNestableTasksAllowed);
-  ui_operation_callbacks_[static_cast<int>(
-      UiTestOperationType::kElementVisibilityStatus)] =
-      base::BindOnce([](base::RunLoop* loop) { loop->Quit(); }, &wait_loop);
 
-  VisibilityChangeExpectation visibility_expectation;
-  visibility_expectation.element_name = element_name;
-  visibility_expectation.timeout_ms = kDefaultUiQuiescenceTimeout;
-  visibility_expectation.visibility = visible;
+  std::optional<UiVisibilityState> visibility_expectation =
+      std::make_optional<UiVisibilityState>();
+  visibility_expectation->element_to_watch = element_name;
+  visibility_expectation->timeout_ms =
+      base::Milliseconds(kDefaultUiQuiescenceTimeout);
+  visibility_expectation->expected_visibile = visible;
+  visibility_expectation->on_visibility_change_result = base::BindOnce(
+      [](base::RunLoop* loop, bool visibility_matched) {
+        CHECK(visibility_matched)
+            << "Ui reported non-visibility-matched result";
+        loop->Quit();
+      },
+      &wait_loop);
 
   main_thread_task_runner_->PostTask(
       FROM_HERE,
       base::BindOnce(&UiUtils::WatchElementForVisibilityStatusForTesting,
-                     base::Unretained(this), visibility_expectation));
+                     base::Unretained(this),
+                     std::move(visibility_expectation)));
 
   wait_loop.Run();
-
-  auto result = ui_operation_results_[static_cast<int>(
-      UiTestOperationType::kElementVisibilityStatus)];
-  CHECK(result == UiTestOperationResult::kVisibilityMatch)
-      << "UI reported non-visibility-matched result '"
-      << UiTestOperationResultToString(result) << "'";
 }
 
 void UiUtils::WatchElementForVisibilityStatusForTesting(
-    VisibilityChangeExpectation visibility_expectation) {
+    std::optional<UiVisibilityState> visibility_expectation) {
   BrowserRenderer* browser_renderer = UiUtils::GetBrowserRenderer();
   if (browser_renderer) {
-    interface_ =
-        std::make_unique<BrowserTestBrowserRendererBrowserInterface>(this);
-    browser_renderer->SetBrowserRendererBrowserInterfaceForTesting(
-        interface_.get());
+    // Reset the start time to now so that we don't count the time it took to
+    // potentially post this task in the timeout.
+    if (visibility_expectation.has_value()) {
+      visibility_expectation->start_time = base::TimeTicks::Now();
+    }
     browser_renderer->WatchElementForVisibilityStatusForTesting(
-        visibility_expectation);
+        std::move(visibility_expectation));
   }
-}
-
-void UiUtils::ReportUiOperationResult(const UiTestOperationType& action_type,
-                                      const UiTestOperationResult& result) {
-  ui_operation_results_[static_cast<int>(action_type)] = result;
-  std::move(ui_operation_callbacks_[static_cast<int>(action_type)]).Run();
 }
 
 void UiUtils::DisableFrameTimeoutForTesting() {
@@ -114,24 +98,6 @@ void UiUtils::DisableFrameTimeoutForTesting() {
 #else
   NOTREACHED();
 #endif  // BUILDFLAG(IS_WIN)
-}
-
-std::string UiUtils::UiTestOperationResultToString(
-    UiTestOperationResult& result) {
-  switch (result) {
-    case UiTestOperationResult::kUnreported:
-      return "Unreported";
-    case UiTestOperationResult::kQuiescent:
-      return "Quiescent";
-    case UiTestOperationResult::kTimeoutNoStart:
-      return "Timeout (UI activity not started)";
-    case UiTestOperationResult::kTimeoutNoEnd:
-      return "Timeout (UI activity not stopped)";
-    case UiTestOperationResult::kVisibilityMatch:
-      return "Visibility match";
-    case UiTestOperationResult::kTimeoutNoVisibilityMatch:
-      return "Timeout (Element visibility did not match)";
-  }
 }
 
 VRBrowserRendererThreadWin* UiUtils::GetRendererThread() {

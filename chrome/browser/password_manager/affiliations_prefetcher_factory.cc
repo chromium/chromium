@@ -5,8 +5,8 @@
 #include "chrome/browser/password_manager/affiliations_prefetcher_factory.h"
 
 #include "base/no_destructor.h"
-#include "chrome/browser/password_manager/affiliation_service_factory.h"
-#include "chrome/browser/password_manager/password_store_factory.h"
+#include "chrome/browser/affiliations/affiliation_service_factory.h"
+#include "chrome/browser/password_manager/profile_password_store_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/password_manager/core/browser/affiliation/affiliations_prefetcher.h"
 #include "content/public/browser/browser_context.h"
@@ -46,9 +46,6 @@ AffiliationsPrefetcherFactory::BuildServiceInstanceForBrowserContext(
   DCHECK(!profile->IsOffTheRecord());
   DCHECK(profile->IsRegularProfile());
 
-  password_manager::AffiliationService* affiliation_service =
-      AffiliationServiceFactory::GetForProfile(profile);
-
   return std::make_unique<password_manager::AffiliationsPrefetcher>(
-      affiliation_service);
+      AffiliationServiceFactory::GetForProfile(profile));
 }

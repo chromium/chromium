@@ -2,9 +2,6 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//build/config/chromeos/ui_mode.gni")
-import("//build/config/ui.gni")
-
 declare_args() {
   # Whether to make account and service names for the crypto key storage
   # configurable at runtime for embedders.

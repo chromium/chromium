@@ -1,0 +1,13 @@
+[document web]
+++[paragraph]
+++++[static] name='color'
+++[heading] name='text size'
+++++[static] name='text size'
+++[heading] name='text style'
+++++[static] name='text style'
+++[paragraph]
+++++[static]
+++++++[static] name='strong'
+++[static] name='italic'
+++[static] name=' '
+++[static] name='bold'

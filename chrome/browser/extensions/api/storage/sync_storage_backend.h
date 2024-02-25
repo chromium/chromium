@@ -11,11 +11,13 @@
 #include <string>
 
 #include "base/memory/ref_counted.h"
+#include "base/memory/weak_ptr.h"
 #include "base/values.h"
 #include "components/sync/model/syncable_service.h"
 #include "components/value_store/value_store_factory.h"
 #include "extensions/browser/api/storage/settings_observer.h"
 #include "extensions/browser/api/storage/settings_storage_quota_enforcer.h"
+#include "extensions/common/extension_id.h"
 
 namespace value_store {
 class ValueStoreFactory;
@@ -29,7 +31,7 @@ class SyncableSettingsStorage;
 // Manages ValueStore objects for extensions, including routing
 // changes from sync to them.
 // Lives entirely on the FILE thread.
-class SyncStorageBackend : public syncer::SyncableService {
+class SyncStorageBackend final : public syncer::SyncableService {
  public:
   // |storage_factory| is use to create leveldb storage areas.
   // |observers| is the list of observers to settings changes.
@@ -45,31 +47,32 @@ class SyncStorageBackend : public syncer::SyncableService {
 
   ~SyncStorageBackend() override;
 
-  virtual value_store::ValueStore* GetStorage(const std::string& extension_id);
-  virtual void DeleteStorage(const std::string& extension_id);
+  virtual value_store::ValueStore* GetStorage(const ExtensionId& extension_id);
+  virtual void DeleteStorage(const ExtensionId& extension_id);
 
   // syncer::SyncableService implementation.
   void WaitUntilReadyToSync(base::OnceClosure done) override;
   syncer::SyncDataList GetAllSyncDataForTesting(syncer::ModelType type) const;
-  absl::optional<syncer::ModelError> MergeDataAndStartSyncing(
+  std::optional<syncer::ModelError> MergeDataAndStartSyncing(
       syncer::ModelType type,
       const syncer::SyncDataList& initial_sync_data,
       std::unique_ptr<syncer::SyncChangeProcessor> sync_processor) override;
-  absl::optional<syncer::ModelError> ProcessSyncChanges(
+  std::optional<syncer::ModelError> ProcessSyncChanges(
       const base::Location& from_here,
       const syncer::SyncChangeList& change_list) override;
   void StopSyncing(syncer::ModelType type) override;
+  base::WeakPtr<SyncableService> AsWeakPtr() override;
 
  private:
   // Gets a weak reference to the storage area for a given extension,
   // initializing sync with some initial data if sync enabled.
   SyncableSettingsStorage* GetOrCreateStorageWithSyncData(
-      const std::string& extension_id,
+      const ExtensionId& extension_id,
       base::Value::Dict sync_data) const;
 
   // Creates a new SettingsSyncProcessor for an extension.
   std::unique_ptr<SettingsSyncProcessor> CreateSettingsSyncProcessor(
-      const std::string& extension_id) const;
+      const ExtensionId& extension_id) const;
 
   // The Factory to use for creating new ValueStores.
   const scoped_refptr<value_store::ValueStoreFactory> storage_factory_;
@@ -83,7 +86,7 @@ class SyncStorageBackend : public syncer::SyncableService {
   // A cache of ValueStore objects that have already been created.
   // Ensure that there is only ever one created per extension.
   using StorageObjMap =
-      std::map<std::string, std::unique_ptr<SyncableSettingsStorage>>;
+      std::map<ExtensionId, std::unique_ptr<SyncableSettingsStorage>>;
   mutable StorageObjMap storage_objs_;
 
   // Current sync model type. Either EXTENSION_SETTINGS or APP_SETTINGS.
@@ -93,6 +96,8 @@ class SyncStorageBackend : public syncer::SyncableService {
   std::unique_ptr<syncer::SyncChangeProcessor> sync_processor_;
 
   syncer::SyncableService::StartSyncFlare flare_;
+
+  base::WeakPtrFactory<SyncStorageBackend> weak_ptr_factory_{this};
 };
 
 }  // namespace extensions

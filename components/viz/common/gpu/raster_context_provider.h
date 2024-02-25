@@ -11,7 +11,7 @@
 #include <memory>
 
 #include "base/functional/callback.h"
-#include "base/memory/raw_ptr_exclusion.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/synchronization/lock.h"
 #include "components/viz/common/gpu/context_cache_controller.h"
@@ -41,6 +41,10 @@ class RasterInterface;
 }
 }  // namespace gpu
 
+namespace media {
+class VideoResourceUpdater;
+}
+
 namespace viz {
 
 class VIZ_COMMON_EXPORT RasterContextProvider {
@@ -56,9 +60,7 @@ class VIZ_COMMON_EXPORT RasterContextProvider {
     }
 
    private:
-    // This field is not a raw_ptr<> because it was filtered by the rewriter
-    // for: #union
-    RAW_PTR_EXCLUSION RasterContextProvider* const context_provider_;
+    const raw_ptr<RasterContextProvider> context_provider_;
     base::AutoLock context_lock_;
     std::unique_ptr<ContextCacheController::ScopedBusy> busy_;
   };
@@ -116,12 +118,6 @@ class VIZ_COMMON_EXPORT RasterContextProvider {
   // calling this.
   virtual const gpu::GpuFeatureInfo& GetGpuFeatureInfo() const = 0;
 
-  // TODO(vmiura): Hide ContextGL() & GrContext() behind some kind of lock.
-
-  // Get a GLES2 interface to the 3d context.  The context provider must have
-  // been successfully bound to a thread before calling this.
-  virtual gpu::gles2::GLES2Interface* ContextGL() = 0;
-
   // Get a Raster interface to the 3d context.  The context provider must have
   // been successfully bound to a thread before calling this.
   virtual gpu::raster::RasterInterface* RasterInterface() = 0;
@@ -131,6 +127,13 @@ class VIZ_COMMON_EXPORT RasterContextProvider {
 
  protected:
   virtual ~RasterContextProvider() = default;
+
+ private:
+  friend media::VideoResourceUpdater;
+  // Get a GLES2 interface to the 3d context.  The context provider must have
+  // been successfully bound to a thread before calling this.
+  // Used only by VideoResourceUpdater, remove once that is removed.
+  virtual gpu::gles2::GLES2Interface* ContextGL() = 0;
 };
 
 }  // namespace viz

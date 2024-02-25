@@ -13,7 +13,6 @@
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/x/keysyms/keysyms.h"
 #include "ui/gfx/x/xproto.h"
-#include "ui/gfx/x/xproto_util.h"
 
 namespace ui {
 namespace {
@@ -31,24 +30,23 @@ unsigned button_down_mask = 0;
 // The root and time fields of |xevent| may be modified.
 template <typename T>
 void PostEventToWindowTreeHost(gfx::AcceleratedWidget widget, T* xevent) {
-  auto* connection = x11::Connection::Get();
   x11::Window xwindow = static_cast<x11::Window>(widget);
   xevent->event = xwindow;
 
-  xevent->root = connection->default_root();
+  xevent->root = x11::Connection::Get()->default_root();
   xevent->time = x11::Time::CurrentTime;
 
-  x11::SendEvent(*xevent, xwindow, x11::EventMask::NoEvent);
-  connection->Flush();
+  x11::Connection::Get()->SendEvent(*xevent, xwindow, x11::EventMask::NoEvent);
+  x11::Connection::Get()->Flush();
 }
 
 }  // namespace
 
 X11UIControlsTestHelper::X11UIControlsTestHelper()
-    : connection_(x11::Connection::Get()),
+    : connection_(*x11::Connection::Get()),
       x_root_window_(ui::GetX11RootWindow()),
-      x_window_(
-          x11::CreateDummyWindow("Chromium X11UIControlsTestHelper Window")) {}
+      x_window_(connection_->CreateDummyWindow(
+          "Chromium X11UIControlsTestHelper Window")) {}
 
 X11UIControlsTestHelper::~X11UIControlsTestHelper() {
   connection_->DestroyWindow({x_window_});
@@ -117,11 +115,11 @@ void X11UIControlsTestHelper::SendKeyEvents(gfx::AcceleratedWidget widget,
 void X11UIControlsTestHelper::SendMouseMotionNotifyEvent(
     gfx::AcceleratedWidget widget,
     const gfx::Point& mouse_loc,
-    const gfx::Point& mouse_loc_in_screen_px,
+    const gfx::Point& mouse_loc_in_connection_px,
     base::OnceClosure closure) {
   x11::MotionNotifyEvent xevent{
-      .root_x = static_cast<int16_t>(mouse_loc_in_screen_px.x()),
-      .root_y = static_cast<int16_t>(mouse_loc_in_screen_px.y()),
+      .root_x = static_cast<int16_t>(mouse_loc_in_connection_px.x()),
+      .root_y = static_cast<int16_t>(mouse_loc_in_connection_px.y()),
       .event_x = static_cast<int16_t>(mouse_loc.x()),
       .event_y = static_cast<int16_t>(mouse_loc.y()),
       .state = static_cast<x11::KeyButMask>(button_down_mask),
@@ -139,13 +137,13 @@ void X11UIControlsTestHelper::SendMouseEvent(
     int button_state,
     int accelerator_state,
     const gfx::Point& mouse_loc,
-    const gfx::Point& mouse_loc_in_screen_px,
+    const gfx::Point& mouse_loc_in_connection_px,
     base::OnceClosure closure) {
   x11::ButtonEvent xevent;
   xevent.event_x = mouse_loc.x();
   xevent.event_y = mouse_loc.y();
-  xevent.root_x = mouse_loc_in_screen_px.x();
-  xevent.root_y = mouse_loc_in_screen_px.y();
+  xevent.root_x = mouse_loc_in_connection_px.x();
+  xevent.root_y = mouse_loc_in_connection_px.y();
   switch (type) {
     case LEFT:
       xevent.detail = static_cast<x11::Button>(1);

@@ -14,6 +14,7 @@
 #include "components/search_engines/search_terms_data.h"
 #include "url/android/gurl_android.h"
 
+using base::android::ConvertJavaStringToUTF8;
 using base::android::JavaParamRef;
 using base::android::JavaRef;
 using RequestSource = SearchTermsData::RequestSource;

@@ -1,0 +1,56 @@
+# Copyright 2023 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("prefs") {
+  sources = [
+    "ios_chrome_syncable_prefs_database.cc",
+    "ios_chrome_syncable_prefs_database.h",
+  ]
+  deps = [
+    "//base",
+    "//components/handoff",
+    "//components/sync_preferences",
+    "//components/sync_preferences:common_syncable_prefs_database",
+    "//ios/chrome/browser/shared/model/prefs:browser_prefs",
+    "//ios/chrome/browser/shared/model/prefs:pref_names",
+    "//ios/chrome/browser/voice/model:prefs",
+  ]
+}
+
+source_set("eg2_tests") {
+  configs += [ "//build/config/ios:xctest_config" ]
+  testonly = true
+  sources = [ "sync_preferences_egtest.mm" ]
+  deps = [
+    "//base",
+    "//base/test:test_support",
+    "//components/sync/base",
+    "//components/sync/base:features",
+    "//ios/chrome/browser/shared/model/prefs:pref_names",
+    "//ios/chrome/browser/signin/model:fake_system_identity",
+    "//ios/chrome/browser/ui/authentication:eg_test_support+eg2",
+    "//ios/chrome/test/earl_grey:eg_test_support+eg2",
+    "//ios/testing/earl_grey:eg_test_support+eg2",
+    "//ios/web/public/test/http_server",
+    "//net:test_support",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "ios_chrome_syncable_prefs_database_unittest.cc" ]
+  deps = [
+    ":prefs",
+    ":test_data",
+    "//base/test:test_support",
+    "//testing/gtest",
+  ]
+}
+
+# Copy over enums.xml for tests.
+bundle_data("test_data") {
+  testonly = true
+  sources = [ "//tools/metrics/histograms/metadata/sync/enums.xml" ]
+  outputs = [ "{{bundle_resources_dir}}/{{source_root_relative_dir}}/{{source_file_part}}" ]
+}

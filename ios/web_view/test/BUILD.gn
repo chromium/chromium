@@ -4,33 +4,25 @@
 
 import("//build/config/ios/rules.gni")
 import("//ios/build/config.gni")
-import("//ios/web_view/features.gni")
 import("//testing/test.gni")
 
 source_set("inttests") {
   testonly = true
-  sources = []
 
-  # All those test files use framework import, thus they depend on the name
-  # of the framework. If some bot build the framework with a different name,
-  # their compilation fail. So only build those files if the framework has
-  # not be renamed.
-  if (ios_web_view_output_name == "ChromeWebView") {
-    sources += [
-      "navigation_delegate_inttest.mm",
-      "scroll_view_kvo_inttest.mm",
-      "ui_delegate_inttest.mm",
-      "web_view_autofill_inttest.mm",
-      "web_view_back_forward_list_inttest.mm",
-      "web_view_from_wk_web_view_configuration_inttest.mm",
-      "web_view_inttest.mm",
-      "web_view_inttest_base.h",
-      "web_view_inttest_base.mm",
-      "web_view_kvo_inttest.mm",
-      "web_view_restorable_state_inttest.mm",
-      "web_view_script_message_handler_inttest.mm",
-    ]
-  }
+  sources = [
+    "navigation_delegate_inttest.mm",
+    "scroll_view_kvo_inttest.mm",
+    "ui_delegate_inttest.mm",
+    "web_view_autofill_inttest.mm",
+    "web_view_back_forward_list_inttest.mm",
+    "web_view_from_wk_web_view_configuration_inttest.mm",
+    "web_view_inttest.mm",
+    "web_view_inttest_base.h",
+    "web_view_inttest_base.mm",
+    "web_view_kvo_inttest.mm",
+    "web_view_restorable_state_inttest.mm",
+    "web_view_script_message_handler_inttest.mm",
+  ]
 
   deps = [
     ":test_support",

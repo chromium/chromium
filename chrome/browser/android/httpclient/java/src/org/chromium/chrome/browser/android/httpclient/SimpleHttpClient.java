@@ -6,12 +6,18 @@ package org.chromium.chrome.browser.android.httpclient;
 
 import androidx.annotation.VisibleForTesting;
 
+import org.jni_zero.CalledByNative;
+import org.jni_zero.JNINamespace;
+import org.jni_zero.NativeMethods;
+
 import org.chromium.base.Callback;
 import org.chromium.base.JNIUtils;
-import org.chromium.base.annotations.CalledByNative;
-import org.chromium.base.annotations.JNINamespace;
-import org.chromium.base.annotations.NativeMethods;
+import org.chromium.base.ThreadUtils;
+import org.chromium.base.lifetime.Destroyable;
+import org.chromium.base.task.PostTask;
+import org.chromium.base.task.TaskTraits;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.profiles.ProfileKeyedMap;
 import org.chromium.net.NetworkTrafficAnnotationTag;
 import org.chromium.url.GURL;
 
@@ -22,17 +28,19 @@ import java.util.function.Consumer;
 /**
  * A very simple http client
  *
- * This client only supports small (<4MB) one way requests/responses. No
- * bidirectional connections or streams support. Only use this if you need a
- * small network request for a java feature with no other native code.
+ * <p>This client only supports small (<4MB) one way requests/responses. No bidirectional
+ * connections or streams support. Only use this if you need a small network request for a java
+ * feature with no other native code.
  *
- * If your feature already has a native component, it might be better for you to
- * use chrome's network stack from native within your own native code instead.
+ * <p>If your feature already has a native component, it might be better for you to use chrome's
+ * network stack from native within your own native code instead.
  */
 @JNINamespace("httpclient")
-public class SimpleHttpClient {
+public class SimpleHttpClient implements Destroyable {
+    private static final ProfileKeyedMap<SimpleHttpClient> sClients =
+            ProfileKeyedMap.createMapOfDestroyables();
+
     private long mNativeBridge;
-    private static SimpleHttpClient sInstance;
 
     /**
      * Data structure representing HTTP response. Used between native and Java.
@@ -65,22 +73,22 @@ public class SimpleHttpClient {
     }
 
     public SimpleHttpClient(Profile profile) {
+        ThreadUtils.assertOnUiThread();
         mNativeBridge = SimpleHttpClientJni.get().init(profile);
     }
 
-    public static SimpleHttpClient get() {
-        if (sInstance == null) {
-            sInstance = new SimpleHttpClient(Profile.getLastUsedRegularProfile());
-        }
-        return sInstance;
+    public static SimpleHttpClient getForProfile(Profile profile) {
+        return sClients.getForProfile(profile, () -> new SimpleHttpClient((profile)));
     }
 
     /**
      * Destroy the HTTP client. If there are pending requests sent through this client, the response
      * will be ignored and no callback will be invoked.
      */
+    @Override
     public void destroy() {
         SimpleHttpClientJni.get().destroy(mNativeBridge);
+        mNativeBridge = 0;
     }
 
     /**
@@ -93,8 +101,13 @@ public class SimpleHttpClient {
      * @param responseConsumer The {@link Consumer} which will be invoked after the request is send
      *         when some response comes back.
      */
-    public void send(GURL gurl, String requestType, byte[] body, Map<String, String> headers,
-            NetworkTrafficAnnotationTag annotation, Callback<HttpResponse> responseConsumer) {
+    public void send(
+            GURL gurl,
+            String requestType,
+            byte[] body,
+            Map<String, String> headers,
+            NetworkTrafficAnnotationTag annotation,
+            Callback<HttpResponse> responseConsumer) {
         assert mNativeBridge != 0;
         assert gurl.isValid();
 
@@ -102,8 +115,20 @@ public class SimpleHttpClient {
         String[] headerValues = new String[headerKeys.length];
         JNIUtils.splitMap(headers, headerKeys, headerValues);
 
-        SimpleHttpClientJni.get().sendNetworkRequest(mNativeBridge, gurl, requestType, body,
-                headerKeys, headerValues, annotation.getHashCode(), responseConsumer);
+        PostTask.runOrPostTask(
+                TaskTraits.UI_DEFAULT,
+                () -> {
+                    SimpleHttpClientJni.get()
+                            .sendNetworkRequest(
+                                    mNativeBridge,
+                                    gurl,
+                                    requestType,
+                                    body,
+                                    headerKeys,
+                                    headerValues,
+                                    annotation.getHashCode(),
+                                    responseConsumer);
+                });
     }
 
     /**
@@ -120,8 +145,12 @@ public class SimpleHttpClient {
      */
     @VisibleForTesting
     @CalledByNative
-    public static HttpResponse createHttpResponse(int responseCode, int netErrorCode, byte[] body,
-            String[] headerKeys, String[] headerValues) {
+    public static HttpResponse createHttpResponse(
+            int responseCode,
+            int netErrorCode,
+            byte[] body,
+            String[] headerKeys,
+            String[] headerValues) {
         assert headerKeys.length == headerValues.length;
 
         Map<String, String> responseHeaders = new HashMap<>();
@@ -141,9 +170,17 @@ public class SimpleHttpClient {
     @NativeMethods
     interface Natives {
         long init(Profile profile);
+
         void destroy(long nativeHttpClientBridge);
-        void sendNetworkRequest(long nativeHttpClientBridge, GURL gurl, String requestType,
-                byte[] body, String[] headerKeys, String[] headerValues, int annotation,
+
+        void sendNetworkRequest(
+                long nativeHttpClientBridge,
+                GURL gurl,
+                String requestType,
+                byte[] body,
+                String[] headerKeys,
+                String[] headerValues,
+                int annotation,
                 Callback<HttpResponse> responseCallback);
     }
 }

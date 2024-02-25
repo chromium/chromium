@@ -4,12 +4,12 @@
 
 #include "chrome/browser/ash/child_accounts/time_limit_test_utils.h"
 
+#include <optional>
 #include <utility>
 
 #include "base/json/json_writer.h"
 #include "base/logging.h"
 #include "base/ranges/algorithm.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ash {
 namespace time_limit_test_utils {
@@ -141,7 +141,7 @@ void AddOverride(base::Value::Dict* policy,
   base::Value::List* overrides = policy->EnsureList(
       usage_time_limit::TimeLimitOverride::kOverridesDictKey);
   usage_time_limit::TimeLimitOverride new_override(action, created_at,
-                                                   absl::nullopt);
+                                                   std::nullopt);
   overrides->Append(new_override.ToDictionary());
 }
 

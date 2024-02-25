@@ -7,11 +7,11 @@
 
 #include <map>
 #include <memory>
+#include <optional>
 #include <string>
 #include <vector>
-
 #include "base/functional/callback_forward.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
+#include "extensions/common/extension_id.h"
 #include "url/gurl.h"
 
 namespace extensions {
@@ -64,18 +64,18 @@ struct UpdateManifestResult {
   UpdateManifestResult(const UpdateManifestResult& other);
   ~UpdateManifestResult();
 
-  std::string extension_id;
+  ExtensionId extension_id;
   std::string version;
   std::string browser_min_version;
   std::string app_status;
 
   // Error occurred while parsing manifest.
-  absl::optional<ManifestParseFailure> parse_error;
+  std::optional<ManifestParseFailure> parse_error;
 
   // Attribute for no update: server may provide additional info about why there
   // is no updates, eg. “bandwidth limit” if client is downloading extensions
   // too aggressive.
-  absl::optional<std::string> info;
+  std::optional<std::string> info;
 
   // Indicates the outcome of the update check.
   std::string status;
@@ -92,7 +92,7 @@ struct UpdateManifestResult {
   int diff_size = 0;
 };
 
-constexpr int kNoDaystart = -1;
+inline constexpr int kNoDaystart = -1;
 struct UpdateManifestResults {
   UpdateManifestResults();
   UpdateManifestResults(const UpdateManifestResults& other);
@@ -141,7 +141,7 @@ struct UpdateManifestResults {
 // The result of parsing one <app> tag in an xml update check manifest.
 using ParseUpdateManifestCallback = base::OnceCallback<void(
     std::unique_ptr<UpdateManifestResults> results,
-    const absl::optional<ManifestParseFailure>& failure)>;
+    const std::optional<ManifestParseFailure>& failure)>;
 void ParseUpdateManifest(const std::string& xml,
                          ParseUpdateManifestCallback callback);
 

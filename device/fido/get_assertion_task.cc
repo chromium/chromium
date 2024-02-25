@@ -246,7 +246,7 @@ void GetAssertionTask::U2fSign() {
 void GetAssertionTask::HandleResponse(
     std::vector<PublicKeyCredentialDescriptor> allow_list,
     CtapDeviceResponseCode response_code,
-    absl::optional<AuthenticatorGetAssertionResponse> response_data) {
+    std::optional<AuthenticatorGetAssertionResponse> response_data) {
   if (canceled_) {
     return;
   }
@@ -268,50 +268,84 @@ void GetAssertionTask::HandleResponse(
     return;
   }
 
-  if (response_code == CtapDeviceResponseCode::kSuccess) {
-    if (response_data->user_selected && !allow_list.empty()) {
-      // The userSelected signal is only valid if the request had an empty
-      // allowList.
-      return LogAndFail(
-          "Assertion response has userSelected for non-empty allowList");
-    }
+  if (response_code != CtapDeviceResponseCode::kSuccess) {
+    std::move(callback_).Run(response_code, {});
+    return;
+  }
 
-    if (!SetResponseCredential(&response_data.value(), allow_list)) {
-      return LogAndFail(
-          "Assertion response has invalid credential information");
-    }
+  if (response_data->user_selected && !allow_list.empty()) {
+    // The userSelected signal is only valid if the request had an empty
+    // allowList.
+    return LogAndFail(
+        "Assertion response has userSelected for non-empty allowList");
+  }
 
-    // Extract any hmac-secret or prf response.
-    const absl::optional<cbor::Value>& extensions_cbor =
-        response_data->authenticator_data.extensions();
-    if (extensions_cbor) {
-      // Parsing has already checked that |extensions_cbor| is a map.
-      const cbor::Value::MapValue& extensions = extensions_cbor->GetMap();
-      auto it = extensions.find(cbor::Value(kExtensionHmacSecret));
-      if (it != extensions.end()) {
-        if (!hmac_secret_request_ || !it->second.is_bytestring()) {
-          return LogAndFail("Unexpected or invalid hmac-secret extension");
-        }
-        if (response_data->hmac_secret.has_value()) {
-          return LogAndFail(
-              "Assertion response has both hmac-secret and prf extensions");
-        }
-        absl::optional<std::vector<uint8_t>> plaintext =
-            hmac_secret_request_->Decrypt(it->second.GetBytestring());
-        if (!plaintext) {
-          return LogAndFail("Failed to decrypt hmac-secret extension");
-        }
-        response_data->hmac_secret = std::move(plaintext.value());
+  if (!SetResponseCredential(&response_data.value(), allow_list)) {
+    return LogAndFail("Assertion response has invalid credential information");
+  }
+
+  uint8_t num_responses = response_data->num_credentials.value_or(1u);
+  if (num_responses == 0 || (num_responses > 1 && !allow_list.empty())) {
+    std::move(callback_).Run(CtapDeviceResponseCode::kCtap2ErrInvalidCBOR, {});
+    return;
+  }
+
+  HandleNextResponse(num_responses, response_code, std::move(response_data));
+}
+
+void GetAssertionTask::HandleNextResponse(
+    uint8_t num_responses,
+    CtapDeviceResponseCode response_code,
+    std::optional<AuthenticatorGetAssertionResponse> response_data) {
+  if (response_code != CtapDeviceResponseCode::kSuccess) {
+    std::move(callback_).Run(response_code, {});
+  }
+
+  // Extract any hmac-secret or prf response.
+  const std::optional<cbor::Value>& extensions_cbor =
+      response_data->authenticator_data.extensions();
+  if (extensions_cbor) {
+    // Parsing has already checked that |extensions_cbor| is a map.
+    const cbor::Value::MapValue& extensions = extensions_cbor->GetMap();
+    auto it = extensions.find(cbor::Value(kExtensionHmacSecret));
+    if (it != extensions.end()) {
+      if (!hmac_secret_request_ || !it->second.is_bytestring()) {
+        return LogAndFail("Unexpected or invalid hmac-secret extension");
       }
+      if (response_data->hmac_secret.has_value()) {
+        return LogAndFail(
+            "Assertion response has both hmac-secret and prf extensions");
+      }
+      std::optional<std::vector<uint8_t>> plaintext =
+          hmac_secret_request_->Decrypt(it->second.GetBytestring());
+      if (!plaintext) {
+        return LogAndFail("Failed to decrypt hmac-secret extension");
+      }
+      response_data->hmac_secret = std::move(plaintext.value());
     }
   }
 
-  std::move(callback_).Run(response_code, std::move(response_data));
+  responses_.emplace_back(std::move(*response_data));
+
+  if (responses_.size() < num_responses) {
+    // Read the next response.
+    next_assertion_operation_ = std::make_unique<Ctap2DeviceOperation<
+        CtapGetNextAssertionRequest, AuthenticatorGetAssertionResponse>>(
+        device(), CtapGetNextAssertionRequest(),
+        base::BindOnce(&GetAssertionTask::HandleNextResponse,
+                       weak_factory_.GetWeakPtr(), num_responses),
+        base::BindOnce(&ReadCTAPGetAssertionResponse,
+                       device()->DeviceTransport()),
+        GetAssertionTask::StringFixupPredicate);
+    next_assertion_operation_->Start();
+    return;
+  }
+  std::move(callback_).Run(response_code, std::move(responses_));
 }
 
 void GetAssertionTask::HandleResponseToSilentRequest(
     CtapDeviceResponseCode response_code,
-    absl::optional<AuthenticatorGetAssertionResponse> response_data) {
+    std::optional<AuthenticatorGetAssertionResponse> response_data) {
   DCHECK(request_.allow_list.size() > 0);
   DCHECK(allow_list_batches_.size() > 0);
   DCHECK(0 < current_allow_list_batch_ &&
@@ -383,9 +417,8 @@ void GetAssertionTask::HandleResponseToSilentRequest(
 
 void GetAssertionTask::HandleDummyMakeCredentialComplete(
     CtapDeviceResponseCode response_code,
-    absl::optional<AuthenticatorMakeCredentialResponse> response_data) {
-  std::move(callback_).Run(CtapDeviceResponseCode::kCtap2ErrNoCredentials,
-                           absl::nullopt);
+    std::optional<AuthenticatorMakeCredentialResponse> response_data) {
+  std::move(callback_).Run(CtapDeviceResponseCode::kCtap2ErrNoCredentials, {});
 }
 
 void GetAssertionTask::MaybeSetPRFParameters(CtapGetAssertionRequest* request,
@@ -399,25 +432,32 @@ void GetAssertionTask::MaybeSetPRFParameters(CtapGetAssertionRequest* request,
       maybe_inputs->salt2);
   request->hmac_secret.emplace(hmac_secret_request_->public_key_x962,
                                hmac_secret_request_->encrypted_salts,
-                               hmac_secret_request_->salts_auth);
+                               hmac_secret_request_->salts_auth,
+                               // The correct PIN protocol will be inserted
+                               // automatically when needed.
+                               /*pin_protocol=*/std::nullopt);
 }
 
 void GetAssertionTask::MaybeRevertU2fFallbackAndInvokeCallback(
     CtapDeviceResponseCode status,
-    absl::optional<AuthenticatorGetAssertionResponse> response) {
+    std::optional<AuthenticatorGetAssertionResponse> response) {
   DCHECK_EQ(ProtocolVersion::kU2f, device()->supported_protocol());
   if (device()->device_info()) {
     // This was actually a CTAP2 device, but the protocol version was set to U2F
     // in order to execute a sign command.
     device()->set_supported_protocol(ProtocolVersion::kCtap2);
   }
-  std::move(callback_).Run(status, std::move(response));
+  if (status != CtapDeviceResponseCode::kSuccess) {
+    std::move(callback_).Run(status, {});
+    return;
+  }
+  responses_.emplace_back(std::move(*response));
+  std::move(callback_).Run(status, std::move(responses_));
 }
 
 void GetAssertionTask::LogAndFail(const char* error) {
   FIDO_LOG(DEBUG) << error;
-  std::move(callback_).Run(CtapDeviceResponseCode::kCtap2ErrOther,
-                           absl::nullopt);
+  std::move(callback_).Run(CtapDeviceResponseCode::kCtap2ErrOther, {});
 }
 
 }  // namespace device

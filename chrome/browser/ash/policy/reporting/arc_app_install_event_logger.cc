@@ -148,7 +148,7 @@ void ArcAppInstallEventLogger::OnComplianceReportReceived(
   std::set<std::string> noncompliant_apps_in_report;
   for (const auto& detail : *details) {
     const base::Value::Dict& details_dict = detail.GetDict();
-    const absl::optional<int> reason =
+    const std::optional<int> reason =
         details_dict.FindInt("nonComplianceReason");
     if (!reason || *reason != kNonComplianceReasonAppNotInstalled) {
       continue;

@@ -67,7 +67,7 @@ class COMPONENT_EXPORT(ASSISTANT_SERVICE) AssistantManagerService
   // If the user is nullopt, the service will be started in signed-out mode.
   // If you want to know when the service is started, use
   // |AddAndFireStateObserver| to add an observer.
-  virtual void Start(const absl::optional<UserInfo>& user,
+  virtual void Start(const std::optional<UserInfo>& user,
                      bool enable_hotword) = 0;
 
   // Stop the Assistant.
@@ -79,7 +79,7 @@ class COMPONENT_EXPORT(ASSISTANT_SERVICE) AssistantManagerService
   // Set user information for Assistant. Passing a nullopt will reconfigure
   // Libassistant to run in signed-out mode, and passing a valid non-empty value
   // will switch the mode back to normal.
-  virtual void SetUser(const absl::optional<UserInfo>& user) = 0;
+  virtual void SetUser(const std::optional<UserInfo>& user) = 0;
 
   // Turn on / off all listening, including hotword and voice query.
   virtual void EnableListening(bool enable) = 0;

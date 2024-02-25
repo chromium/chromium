@@ -15,6 +15,8 @@
 
 namespace blink {
 
+class DOMException;
+
 class MockMediaStreamTrack : public blink::MediaStreamTrack {
  public:
   String kind() const override { return kind_; }
@@ -40,14 +42,14 @@ class MockMediaStreamTrack : public blink::MediaStreamTrack {
   void SetReadyState(const String& ready_state) { ready_state_ = ready_state; }
 
   MediaTrackCapabilities* getCapabilities() const override {
-    return capabilities_;
+    return capabilities_.Get();
   }
   void SetCapabilities(MediaTrackCapabilities* capabilities) {
     capabilities_ = capabilities;
   }
 
   MediaTrackConstraints* getConstraints() const override {
-    return constraints_;
+    return constraints_.Get();
   }
   void SetConstraints(MediaTrackConstraints* constraints) {
     constraints_ = constraints;
@@ -62,10 +64,12 @@ class MockMediaStreamTrack : public blink::MediaStreamTrack {
     applyConstraintsResolver(resolver, constraints);
   }
 
-  MediaTrackSettings* getSettings() const override { return settings_; }
+  MediaTrackSettings* getSettings() const override { return settings_.Get(); }
   void SetSettings(MediaTrackSettings* settings) { settings_ = settings; }
 
-  CaptureHandle* getCaptureHandle() const override { return capture_handle_; }
+  CaptureHandle* getCaptureHandle() const override {
+    return capture_handle_.Get();
+  }
   void SetCaptureHandle(CaptureHandle* capture_handle) {
     capture_handle_ = capture_handle;
   }
@@ -77,7 +81,7 @@ class MockMediaStreamTrack : public blink::MediaStreamTrack {
     ready_state_enum_ = ready_state_enum;
   }
 
-  MediaStreamComponent* Component() const override { return component_; }
+  MediaStreamComponent* Component() const override { return component_.Get(); }
   void SetComponent(MediaStreamComponent* component) { component_ = component; }
 
   bool Ended() const override { return ended_; }
@@ -85,26 +89,29 @@ class MockMediaStreamTrack : public blink::MediaStreamTrack {
 
   const AtomicString& InterfaceName() const override;
 
-  ExecutionContext* GetExecutionContext() const override { return context_; }
+  ExecutionContext* GetExecutionContext() const override {
+    return context_.Get();
+  }
   void SetExecutionContext(ExecutionContext* context) { context_ = context; }
 
   bool HasPendingActivity() const override { return false; }
 
   std::unique_ptr<AudioSourceProvider> CreateWebAudioSource(
-      int context_sample_rate) override {
+      int context_sample_rate,
+      uint32_t context_buffer_size) override {
     return nullptr;
   }
 
   ImageCapture* GetImageCapture() override { return nullptr; }
 
-  absl::optional<const MediaStreamDevice> device() const override {
+  std::optional<const MediaStreamDevice> device() const override {
     return device_;
   }
   void SetDevice(const MediaStreamDevice& device) { device_ = device; }
 
   MOCK_METHOD1(stopTrack, void(ExecutionContext*));
   MOCK_METHOD1(clone, MediaStreamTrack*(ExecutionContext*));
-  MOCK_CONST_METHOD1(getFrameStats, ScriptPromise(ScriptState*));
+  MOCK_METHOD0(stats, MediaStreamTrackVideoStats*());
   MOCK_METHOD2(applyConstraintsScriptState,
                ScriptPromise(ScriptState*, const MediaTrackConstraints*));
   MOCK_METHOD2(applyConstraintsResolver,
@@ -119,7 +126,15 @@ class MockMediaStreamTrack : public blink::MediaStreamTrack {
   MOCK_CONST_METHOD1(TransferAllowed, bool(String&));
 
 #if !BUILDFLAG(IS_ANDROID)
+  MOCK_METHOD5(
+      SendWheel,
+      void(double, double, int, int, base::OnceCallback<void(DOMException*)>));
+  MOCK_METHOD1(
+      GetZoomLevel,
+      void(base::OnceCallback<void(std::optional<int>, const String&)>));
   MOCK_METHOD0(CloseFocusWindowOfOpportunity, void());
+  MOCK_METHOD2(SetZoomLevel,
+               void(int, base::OnceCallback<void(DOMException*)>));
 #endif
 
   MOCK_METHOD1(AddObserver, void(Observer*));
@@ -149,7 +164,7 @@ class MockMediaStreamTrack : public blink::MediaStreamTrack {
   MediaStreamSource::ReadyState ready_state_enum_;
   Member<MediaStreamComponent> component_;
   bool ended_;
-  absl::optional<MediaStreamDevice> device_;
+  std::optional<MediaStreamDevice> device_;
   WeakMember<ExecutionContext> context_;
 };
 

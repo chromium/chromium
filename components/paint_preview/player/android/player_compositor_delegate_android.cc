@@ -274,7 +274,7 @@ jint PlayerCompositorDelegateAndroid::RequestBitmap(
               ScopedJavaGlobalRef<jobject>(j_error_callback), request_id_))));
   ++request_id_;
 
-  absl::optional<base::UnguessableToken> frame_guid;
+  std::optional<base::UnguessableToken> frame_guid;
   if (j_frame_guid) {
     frame_guid =
         base::android::UnguessableTokenAndroid::FromJavaUnguessableToken(
@@ -341,7 +341,7 @@ ScopedJavaLocalRef<jstring> PlayerCompositorDelegateAndroid::OnClick(
     const JavaParamRef<jobject>& j_frame_guid,
     jint j_x,
     jint j_y) {
-  absl::optional<base::UnguessableToken> frame_guid =
+  std::optional<base::UnguessableToken> frame_guid =
       base::android::UnguessableTokenAndroid::FromJavaUnguessableToken(
           env, j_frame_guid);
   if (!frame_guid.has_value()) {

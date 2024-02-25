@@ -1,0 +1,27 @@
+# Copyright 2023 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+# Configuration for an Android-14 (U, API 34) AVD on google_apis on x86_64
+
+emulator_package {
+  package_name: "chromium/third_party/android_sdk/public/emulator"
+  version: "48pXhOfYdEZY2qiZHQVtrEPqagmUV7rXmz-Tb7MFhJAC"  # 33.1.23
+  dest_path: "android_34_google_apis_x64"
+}
+
+system_image_package {
+  package_name: "chromium/third_party/android_sdk/public/system-images/android-34/google_apis/x86_64"
+  version: "HSv4iRzPdQc_0JuEaHj--5bwX5PvqS49wCV7GWYiWuwC"  # r12, UE1A.230829.036.A1
+  dest_path: "android_34_google_apis_x64"
+}
+system_image_name: "system-images;android-34;google_apis;x86_64"
+
+avd_package {
+  package_name: "chromium/third_party/android_sdk/public/avds/android-34/google_apis/x86_64"
+  # Created in https://ci.chromium.org/ui/b/8759901800706657601
+  # Patched gmscore version 23.45.23 in https://crrev.com/c/5125838
+  version: "F1sQF5nDG9ce4Ww--RRW6Pd4uB8Hhx3Cu29RrmAKDhIC"
+  dest_path: "android_34_google_apis_x64"
+}
+avd_name: "android_34_google_apis_x64"

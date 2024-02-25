@@ -27,14 +27,18 @@ NavigationRequestInfo::NavigationRequestInfo(
     const base::UnguessableToken& devtools_frame_token,
     net::HttpRequestHeaders cors_exempt_headers,
     network::mojom::ClientSecurityStatePtr client_security_state,
-    const absl::optional<std::vector<net::SourceStream::SourceType>>&
+    const std::optional<std::vector<net::SourceStream::SourceType>>&
         devtools_accepted_stream_types,
     bool is_pdf,
-    WeakDocumentPtr initiator_document,
+    int initiator_process_id,
+    std::optional<blink::DocumentToken> initiator_document_token,
     const GlobalRenderFrameHostId& previous_render_frame_host_id,
+    base::WeakPtr<PrefetchServingPageMetricsContainer>
+        prefetch_serving_page_metrics_container,
     bool allow_cookies_from_browser,
     int64_t navigation_id,
-    bool shared_storage_writable)
+    bool shared_storage_writable_eligible,
+    bool is_ad_tagged)
     : common_params(std::move(common_params)),
       begin_params(std::move(begin_params)),
       sandbox_flags(sandbox_flags),
@@ -53,11 +57,15 @@ NavigationRequestInfo::NavigationRequestInfo(
       client_security_state(std::move(client_security_state)),
       devtools_accepted_stream_types(devtools_accepted_stream_types),
       is_pdf(is_pdf),
-      initiator_document(std::move(initiator_document)),
+      initiator_process_id(initiator_process_id),
+      initiator_document_token(std::move(initiator_document_token)),
       previous_render_frame_host_id(previous_render_frame_host_id),
+      prefetch_serving_page_metrics_container(
+          std::move(prefetch_serving_page_metrics_container)),
       allow_cookies_from_browser(allow_cookies_from_browser),
       navigation_id(navigation_id),
-      shared_storage_writable(shared_storage_writable) {}
+      shared_storage_writable_eligible(shared_storage_writable_eligible),
+      is_ad_tagged(is_ad_tagged) {}
 
 NavigationRequestInfo::~NavigationRequestInfo() {}
 

@@ -7,6 +7,7 @@
 #include <utility>
 
 #include "base/functional/bind.h"
+#include "gpu/GLES2/gl2extchromium.h"
 #include "gpu/command_buffer/client/gles2_cmd_helper.h"
 #include "gpu/command_buffer/client/gles2_implementation.h"
 #include "gpu/command_buffer/common/mailbox.h"
@@ -43,23 +44,6 @@ VideoDecoderResource::ShmBuffer::ShmBuffer(
 VideoDecoderResource::ShmBuffer::~ShmBuffer() {
 }
 
-VideoDecoderResource::Texture::Texture(uint32_t texture_target,
-                                       const PP_Size& size)
-    : texture_target(texture_target), size(size) {
-}
-
-VideoDecoderResource::Texture::~Texture() {
-}
-
-VideoDecoderResource::Picture::Picture(int32_t decode_id,
-                                       uint32_t texture_id,
-                                       const PP_Rect& visible_rect)
-    : decode_id(decode_id), texture_id(texture_id), visible_rect(visible_rect) {
-}
-
-VideoDecoderResource::Picture::~Picture() {
-}
-
 VideoDecoderResource::VideoDecoderResource(Connection connection,
                                            PP_Instance instance)
     : PluginResource(connection, instance),
@@ -82,9 +66,17 @@ VideoDecoderResource::VideoDecoderResource(Connection connection,
 
 VideoDecoderResource::~VideoDecoderResource() {
   // Destroy any textures which haven't been dismissed.
-  TextureMap::iterator it = textures_.begin();
-  for (; it != textures_.end(); ++it)
-    DeleteGLTexture(it->first);
+  if (initialized_) {
+    if (!testing_) {
+      CHECK(gles2_impl_);
+      for (const auto& shared_image : used_shared_images_) {
+        gles2_impl_->EndSharedImageAccessDirectCHROMIUM(shared_image.first);
+        gles2_impl_->DeleteTextures(1, &shared_image.first);
+      }
+
+      gles2_impl_->ShallowFlushCHROMIUM();
+    }
+  }
 }
 
 PPB_VideoDecoder_API* VideoDecoderResource::AsPPB_VideoDecoder_API() {
@@ -278,18 +270,24 @@ int32_t VideoDecoderResource::GetPicture0_1(
 int32_t VideoDecoderResource::GetPicture(
     PP_VideoPicture* picture,
     scoped_refptr<TrackedCallback> callback) {
-  if (decoder_last_error_)
-    return decoder_last_error_;
-  if (reset_callback_.get())
+  if (!initialized_) {
     return PP_ERROR_FAILED;
-  if (get_picture_callback_.get())
+  }
+  if (decoder_last_error_) {
+    return decoder_last_error_;
+  }
+  if (reset_callback_.get()) {
+    return PP_ERROR_FAILED;
+  }
+  if (get_picture_callback_.get()) {
     return PP_ERROR_INPROGRESS;
+  }
 
   get_picture_ = picture;
 
-  // If the next picture is ready, return it synchronously.
-  if (!received_pictures_.empty()) {
-    WriteNextPicture();
+  // If the next shared image is ready, return it synchronously.
+  if (!received_shared_images_.empty()) {
+    WriteNextSharedImage();
     return PP_OK;
   }
 
@@ -299,10 +297,28 @@ int32_t VideoDecoderResource::GetPicture(
 }
 
 void VideoDecoderResource::RecyclePicture(const PP_VideoPicture* picture) {
-  if (decoder_last_error_)
+  if (!initialized_) {
     return;
+  }
+  if (decoder_last_error_) {
+    return;
+  }
 
-  Post(RENDERER, PpapiHostMsg_VideoDecoder_RecyclePicture(picture->texture_id));
+  auto it = used_shared_images_.find(picture->texture_id);
+  if (it != used_shared_images_.end()) {
+    gpu::Mailbox mailbox = it->second.mailbox;
+
+    if (!testing_) {
+      CHECK(gles2_impl_);
+      gles2_impl_->EndSharedImageAccessDirectCHROMIUM(picture->texture_id);
+      gles2_impl_->DeleteTextures(1, &picture->texture_id);
+      gles2_impl_->ShallowFlushCHROMIUM();
+    }
+
+    used_shared_images_.erase(it);
+
+    Post(RENDERER, PpapiHostMsg_VideoDecoder_RecycleSharedImage(mailbox));
+  }
 }
 
 int32_t VideoDecoderResource::Flush(scoped_refptr<TrackedCallback> callback) {
@@ -350,11 +366,8 @@ void VideoDecoderResource::OnReplyReceived(
     const IPC::Message& msg) {
   PPAPI_BEGIN_MESSAGE_MAP(VideoDecoderResource, msg)
     PPAPI_DISPATCH_PLUGIN_RESOURCE_CALL(
-        PpapiPluginMsg_VideoDecoder_RequestTextures, OnPluginMsgRequestTextures)
-    PPAPI_DISPATCH_PLUGIN_RESOURCE_CALL(
-        PpapiPluginMsg_VideoDecoder_PictureReady, OnPluginMsgPictureReady)
-    PPAPI_DISPATCH_PLUGIN_RESOURCE_CALL(
-        PpapiPluginMsg_VideoDecoder_DismissPicture, OnPluginMsgDismissPicture)
+        PpapiPluginMsg_VideoDecoder_SharedImageReady,
+        OnPluginMsgSharedImageReady)
     PPAPI_DISPATCH_PLUGIN_RESOURCE_CALL(
         PpapiPluginMsg_VideoDecoder_NotifyError, OnPluginMsgNotifyError)
     PPAPI_DISPATCH_PLUGIN_RESOURCE_CALL_UNHANDLED(
@@ -366,82 +379,22 @@ void VideoDecoderResource::SetForTest() {
   testing_ = true;
 }
 
-void VideoDecoderResource::OnPluginMsgRequestTextures(
-    const ResourceMessageReplyParams& params,
-    uint32_t num_textures,
-    const PP_Size& size,
-    uint32_t texture_target) {
-  DCHECK(num_textures);
-  DCHECK(num_textures >= min_picture_count_);
-  std::vector<uint32_t> texture_ids(num_textures);
-  std::vector<gpu::Mailbox> mailboxes(num_textures);
-  if (gles2_impl_) {
-    gles2_impl_->GenTextures(num_textures, texture_ids.data());
-    for (uint32_t i = 0; i < num_textures; ++i) {
-      gles2_impl_->ActiveTexture(GL_TEXTURE0);
-      gles2_impl_->BindTexture(texture_target, texture_ids[i]);
-      gles2_impl_->TexParameteri(
-          texture_target, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-      gles2_impl_->TexParameteri(
-          texture_target, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-      gles2_impl_->TexParameterf(
-          texture_target, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-      gles2_impl_->TexParameterf(
-          texture_target, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-
-      if (texture_target == GL_TEXTURE_2D) {
-        gles2_impl_->TexImage2D(texture_target,
-                                0,
-                                GL_RGBA,
-                                size.width,
-                                size.height,
-                                0,
-                                GL_RGBA,
-                                GL_UNSIGNED_BYTE,
-                                NULL);
-      }
-      gles2_impl_->ProduceTextureDirectCHROMIUM(texture_ids[i],
-                                                mailboxes[i].name);
-
-      textures_.insert(
-          std::make_pair(texture_ids[i], Texture(texture_target, size)));
-    }
-    gles2_impl_->Flush();
-  } else {
-    DCHECK(testing_);
-    // Create some fake texture ids so we can test picture handling.
-    for (uint32_t i = 0; i < num_textures; ++i) {
-      texture_ids[i] = i + 1;
-      textures_.insert(
-          std::make_pair(texture_ids[i], Texture(texture_target, size)));
-    }
-  }
-
-  Post(RENDERER, PpapiHostMsg_VideoDecoder_AssignTextures(
-                     size, std::move(texture_ids), std::move(mailboxes)));
-}
-
-void VideoDecoderResource::OnPluginMsgPictureReady(
+void VideoDecoderResource::OnPluginMsgSharedImageReady(
     const ResourceMessageReplyParams& params,
     int32_t decode_id,
-    uint32_t texture_id,
+    const gpu::Mailbox& mailbox,
+    const PP_Size& size,
     const PP_Rect& visible_rect) {
-  received_pictures_.push(Picture(decode_id, texture_id, visible_rect));
+  received_shared_images_.push(
+      ReceivedSharedImage{decode_id, mailbox, size, visible_rect});
 
   if (TrackedCallback::IsPending(get_picture_callback_)) {
     // The plugin may call GetPicture in its callback.
     scoped_refptr<TrackedCallback> callback;
     callback.swap(get_picture_callback_);
-    WriteNextPicture();
+    WriteNextSharedImage();
     callback->Run(PP_OK);
   }
-}
-
-void VideoDecoderResource::OnPluginMsgDismissPicture(
-    const ResourceMessageReplyParams& params,
-    uint32_t texture_id) {
-  DeleteGLTexture(texture_id);
-  textures_.erase(texture_id);
 }
 
 void VideoDecoderResource::OnPluginMsgNotifyError(
@@ -460,8 +413,9 @@ void VideoDecoderResource::OnPluginMsgNotifyError(
 void VideoDecoderResource::OnPluginMsgInitializeComplete(
     const ResourceMessageReplyParams& params) {
   decoder_last_error_ = params.result();
-  if (decoder_last_error_ == PP_OK)
+  if (decoder_last_error_ == PP_OK) {
     initialized_ = true;
+  }
 
   // Let the plugin call Initialize again from its callback in case of failure.
   scoped_refptr<TrackedCallback> callback;
@@ -506,11 +460,12 @@ void VideoDecoderResource::OnPluginMsgResetComplete(
     const ResourceMessageReplyParams& params) {
   // All shm buffers should have been made available by now.
   DCHECK_EQ(shm_buffers_.size(), available_shm_buffers_.size());
+
   // Recycle any pictures which haven't been passed to the plugin.
-  while (!received_pictures_.empty()) {
-    Post(RENDERER, PpapiHostMsg_VideoDecoder_RecyclePicture(
-        received_pictures_.front().texture_id));
-    received_pictures_.pop();
+  while (!received_shared_images_.empty()) {
+    Post(RENDERER, PpapiHostMsg_VideoDecoder_RecycleSharedImage(
+                       received_shared_images_.front().mailbox));
+    received_shared_images_.pop();
   }
 
   scoped_refptr<TrackedCallback> callback;
@@ -523,49 +478,59 @@ void VideoDecoderResource::RunCallbackWithError(
   SafeRunCallback(callback, decoder_last_error_);
 }
 
-void VideoDecoderResource::DeleteGLTexture(uint32_t id) {
-  if (gles2_impl_) {
-    gles2_impl_->DeleteTextures(1, &id);
-    gles2_impl_->Flush();
-  }
-}
-
-void VideoDecoderResource::WriteNextPicture() {
-  DCHECK(!received_pictures_.empty());
-  Picture& picture = received_pictures_.front();
+void VideoDecoderResource::WriteNextSharedImage() {
+  CHECK(!received_shared_images_.empty());
+  auto& shared_image = received_shared_images_.front();
 
   // Internally, we identify decodes by a unique id, which the host returns
   // to us in the picture. Use this to get the plugin's decode_id.
-  uint32_t decode_id = decode_ids_[picture.decode_id % kMaximumPictureDelay];
-  uint32_t texture_id = picture.texture_id;
-  uint32_t texture_target = 0;
-  PP_Size texture_size = PP_MakeSize(0, 0);
-  TextureMap::iterator it = textures_.find(picture.texture_id);
-  if (it != textures_.end()) {
-    texture_target = it->second.texture_target;
-    texture_size = it->second.size;
+  uint32_t decode_id =
+      decode_ids_[shared_image.decode_id % kMaximumPictureDelay];
+  uint32_t texture_id;
+
+  if (testing_) {
+    // In unit tests we don't have gles2_impl_, so just generate ids
+    // sequentially.
+    static uint32_t texture_ids_for_testing = 1;
+    texture_id = texture_ids_for_testing++;
   } else {
-    NOTREACHED();
+    CHECK(gles2_impl_);
+    // Plugin's GLES2Interface and Renderer's RasterInterface are synchronized
+    // by issued `ShallowFlushCHROMIUM` after each work. We get shared image
+    // here after VideoDecoderShim copies new content to it on RasterInterface
+    // and the context provider is flushed, so we don't need to wait on
+    // SyncToken here.
+    texture_id = base::strict_cast<uint32_t>(
+        gles2_impl_->CreateAndTexStorage2DSharedImageCHROMIUM(
+            shared_image.mailbox.name));
+    gles2_impl_->BeginSharedImageAccessDirectCHROMIUM(
+        texture_id, GL_SHARED_IMAGE_ACCESS_MODE_READWRITE_CHROMIUM);
+
+    // Flush our GLES2Interface to synchronize with the one that the plugin has.
+    // They are in a same share group.
+    gles2_impl_->Flush();
   }
 
   if (get_picture_) {
     DCHECK(!get_picture_0_1_);
     get_picture_->decode_id = decode_id;
     get_picture_->texture_id = texture_id;
-    get_picture_->texture_target = texture_target;
-    get_picture_->texture_size = texture_size;
-    get_picture_->visible_rect = picture.visible_rect;
-    get_picture_ = NULL;
+    get_picture_->texture_target = GL_TEXTURE_2D;
+    get_picture_->texture_size = shared_image.size;
+    get_picture_->visible_rect = shared_image.visible_rect;
+    get_picture_ = nullptr;
   } else {
     DCHECK(get_picture_0_1_);
     get_picture_0_1_->decode_id = decode_id;
     get_picture_0_1_->texture_id = texture_id;
-    get_picture_0_1_->texture_target = texture_target;
-    get_picture_0_1_->texture_size = texture_size;
-    get_picture_0_1_ = NULL;
+    get_picture_0_1_->texture_target = GL_TEXTURE_2D;
+    get_picture_0_1_->texture_size = shared_image.size;
+    get_picture_0_1_ = nullptr;
   }
 
-  received_pictures_.pop();
+  used_shared_images_.insert(std::make_pair(texture_id, shared_image));
+
+  received_shared_images_.pop();
 }
 
 }  // namespace proxy

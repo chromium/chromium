@@ -23,7 +23,7 @@ class MockSSLConfigService : public SSLConfigService {
   SSLContextConfig GetSSLContextConfig() override { return config_; }
 
   bool CanShareConnectionWithClientCerts(
-      const std::string& hostname) const override {
+      std::string_view hostname) const override {
     return false;
   }
 

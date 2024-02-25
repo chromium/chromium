@@ -8,10 +8,11 @@
 #include <stdint.h>
 
 #include <string>
+#include <string_view>
 #include <vector>
 
 #include "base/containers/span.h"
-#include "base/strings/string_piece_forward.h"
+#include "base/strings/string_piece.h"
 #include "third_party/blink/public/platform/web_crypto_algorithm.h"
 #include "third_party/blink/public/platform/web_crypto_key.h"
 
@@ -48,7 +49,7 @@ Status CreateWebCryptoSecretKey(base::span<const uint8_t> key_data,
 //  * extractable: The JWK extractability (i.e. "ext")
 //  * usages: The JWK usages (i.e. "key_ops")
 void WriteSecretKeyJwk(base::span<const uint8_t> raw_key_data,
-                       base::StringPiece algorithm,
+                       std::string_view algorithm,
                        bool extractable,
                        blink::WebCryptoKeyUsageMask usages,
                        std::vector<uint8_t>* jwk_key_data);

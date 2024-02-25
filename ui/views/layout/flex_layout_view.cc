@@ -145,7 +145,7 @@ FlexRule FlexLayoutView::GetDefaultFlexRule() const {
   return layout_->GetDefaultFlexRule();
 }
 
-BEGIN_METADATA(FlexLayoutView, View)
+BEGIN_METADATA(FlexLayoutView)
 ADD_PROPERTY_METADATA(LayoutOrientation, Orientation)
 ADD_PROPERTY_METADATA(LayoutAlignment, MainAxisAlignment)
 ADD_PROPERTY_METADATA(LayoutAlignment, CrossAxisAlignment)

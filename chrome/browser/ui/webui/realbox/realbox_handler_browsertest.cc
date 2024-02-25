@@ -12,6 +12,7 @@
 #include <gtest/gtest.h>
 #include "base/check.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/strings/utf_string_conversions.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/browser_features.h"
 #include "chrome/browser/preloading/prefetch/search_prefetch/field_trial_settings.h"
@@ -162,6 +163,12 @@ class RealboxSearchPreloadBrowserTest : public SearchPrefetchBaseBrowserTest {
         /*disabled_features=*/{kSearchPrefetchBlockBeforeHeaders});
   }
 
+  // TODO(crbug.com/1491942): This fails with the field trial testing config.
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    SearchPrefetchBaseBrowserTest::SetUpCommandLine(command_line);
+    command_line->AppendSwitch("disable-field-trial-config");
+  }
+
  private:
   content::test::PrerenderTestHelper prerender_helper_;
   base::test::ScopedFeatureList scoped_feature_list_;
@@ -174,6 +181,7 @@ class RealboxSearchBrowserTestPage : public omnibox::mojom::Page {
   void AutocompleteResultChanged(
       omnibox::mojom::AutocompleteResultPtr result) override {}
   void UpdateSelection(
+      omnibox::mojom::OmniboxPopupSelectionPtr old_selection,
       omnibox::mojom::OmniboxPopupSelectionPtr selection) override {}
   mojo::PendingRemote<omnibox::mojom::Page> GetRemotePage() {
     return receiver_.BindNewPipeAndPassRemote();

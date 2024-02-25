@@ -157,7 +157,8 @@ DEFINE_TEXT_PROTO_FUZZER(
   }();
 
   // Request a full GC upon returning.
-  auto scoped_gc = MakeScopedGarbageCollectionRequest();
+  auto scoped_gc =
+      MakeScopedGarbageCollectionRequest(test_support.GetIsolate());
 
 #if HAS_AAC_ENCODER
   base::test::ScopedFeatureList platform_aac(media::kPlatformAudioEncoder);
@@ -224,7 +225,8 @@ DEFINE_TEXT_PROTO_FUZZER(
             break;
           }
           case wc_fuzzer::AudioEncoderApiInvocation::kEncode: {
-            AudioData* data = MakeAudioData(invocation.encode().data());
+            AudioData* data =
+                MakeAudioData(script_state, invocation.encode().data());
             if (!data)
               return;
 

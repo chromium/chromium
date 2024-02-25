@@ -15,7 +15,7 @@ namespace autofill {
 
 class AddressNormalizationManagerTest : public testing::Test {
  protected:
-  AddressNormalizationManagerTest() {}
+  AddressNormalizationManagerTest() = default;
 
   void Initialize(const std::string& app_locale) {
     manager_ = std::make_unique<AddressNormalizationManager>(
@@ -38,7 +38,8 @@ class AddressNormalizationManagerTest : public testing::Test {
 TEST_F(AddressNormalizationManagerTest, SynchronousResult) {
   Initialize("en-US");
 
-  AutofillProfile profile_to_normalize;
+  AutofillProfile profile_to_normalize(
+      i18n_model_definition::kLegacyHierarchyCountryCode);
   manager_->NormalizeAddressUntilFinalized(&profile_to_normalize);
 
   EXPECT_FALSE(completion_callback_called_);
@@ -50,7 +51,8 @@ TEST_F(AddressNormalizationManagerTest, AsynchronousResult) {
   Initialize("en-US");
   address_normalizer_.DelayNormalization();
 
-  AutofillProfile profile_to_normalize;
+  AutofillProfile profile_to_normalize(
+      i18n_model_definition::kLegacyHierarchyCountryCode);
   manager_->NormalizeAddressUntilFinalized(&profile_to_normalize);
 
   EXPECT_FALSE(completion_callback_called_);

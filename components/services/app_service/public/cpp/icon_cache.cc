@@ -8,7 +8,6 @@
 
 #include "base/functional/callback.h"
 #include "base/metrics/histogram_functions.h"
-#include "components/services/app_service/public/cpp/app_types.h"
 
 namespace apps {
 
@@ -33,14 +32,13 @@ IconCache::IconCache(IconLoader* wrapped_loader,
 
 IconCache::~IconCache() = default;
 
-absl::optional<IconKey> IconCache::GetIconKey(const std::string& app_id) {
+std::optional<IconKey> IconCache::GetIconKey(const std::string& id) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return wrapped_loader_ ? wrapped_loader_->GetIconKey(app_id) : absl::nullopt;
+  return wrapped_loader_ ? wrapped_loader_->GetIconKey(id) : std::nullopt;
 }
 
 std::unique_ptr<IconLoader::Releaser> IconCache::LoadIconFromIconKey(
-    AppType app_type,
-    const std::string& app_id,
+    const std::string& id,
     const IconKey& icon_key,
     IconType icon_type,
     int32_t size_hint_in_dip,
@@ -48,7 +46,7 @@ std::unique_ptr<IconLoader::Releaser> IconCache::LoadIconFromIconKey(
     apps::LoadIconCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   IconLoader::Key key(
-      app_type, app_id, icon_key, icon_type, size_hint_in_dip,
+      id, icon_key, icon_type, size_hint_in_dip,
       // We pass false instead of allow_placeholder_icon, as the Value
       // already records placeholder-ness. If the allow_placeholder_icon
       // arg to this function is true, we can re-use a cache hit regardless
@@ -80,8 +78,7 @@ std::unique_ptr<IconLoader::Releaser> IconCache::LoadIconFromIconKey(
     std::move(callback).Run(cache_hit->AsIconValue(icon_type));
   } else if (wrapped_loader_) {
     releaser = wrapped_loader_->LoadIconFromIconKey(
-        app_type, app_id, icon_key, icon_type, size_hint_in_dip,
-        allow_placeholder_icon,
+        id, icon_key, icon_type, size_hint_in_dip, allow_placeholder_icon,
         base::BindOnce(&IconCache::OnLoadIcon, weak_ptr_factory_.GetWeakPtr(),
                        key, std::move(callback)));
   } else {
@@ -114,7 +111,7 @@ void IconCache::SweepReleasedIcons() {
   }
 }
 
-void IconCache::RemoveIcon(AppType app_type, const std::string& app_id) {
+void IconCache::RemoveIcon(const std::string& id) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (gc_policy_ != GarbageCollectionPolicy::kExplicit) {
     return;
@@ -122,7 +119,7 @@ void IconCache::RemoveIcon(AppType app_type, const std::string& app_id) {
 
   auto iter = map_.begin();
   while (iter != map_.end()) {
-    if (iter->first.app_type_ == app_type && iter->first.app_id_ == app_id) {
+    if (iter->first.id_ == id) {
       iter = map_.erase(iter);
     } else {
       ++iter;

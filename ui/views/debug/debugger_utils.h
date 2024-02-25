@@ -5,13 +5,13 @@
 #ifndef UI_VIEWS_DEBUG_DEBUGGER_UTILS_H_
 #define UI_VIEWS_DEBUG_DEBUGGER_UTILS_H_
 
+#include <optional>
 #include <ostream>
 #include <string>
 #include <tuple>
 #include <vector>
 
 #include "base/functional/callback.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace views::debug {
 
@@ -38,7 +38,7 @@ class ViewDebugWrapper {
   virtual bool GetEnabled() = 0;
   virtual std::vector<ViewDebugWrapper*> GetChildren() = 0;
   virtual void ForAllProperties(PropCallback callback) {}
-  virtual absl::optional<intptr_t> GetAddress();
+  virtual std::optional<intptr_t> GetAddress();
 };
 
 void PrintViewHierarchy(std::ostream* out,

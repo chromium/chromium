@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 import {COLOR_PROVIDER_CHANGED, ColorChangeUpdater} from 'chrome://resources/cr_components/color_change_listener/colors_css_updater.js';
+import {assert} from 'chrome://resources/js/assert.js';
 
 import {getRGBAFromComputedStyle} from './utils.js';
 import {startObservingWallpaperColors} from './wallpaper_colors.js';
@@ -98,7 +99,8 @@ function onColorChange() {
     minute: 'numeric',
     second: 'numeric',
   });
-  const span = document.querySelector('#last-updated') as HTMLSpanElement;
+  const span = document.querySelector<HTMLElement>('#last-updated');
+  assert(span);
   span.innerText = formatter.format(new Date());
 }
 

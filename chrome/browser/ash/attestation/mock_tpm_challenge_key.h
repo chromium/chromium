@@ -33,7 +33,7 @@ class MockTpmChallengeKey : public TpmChallengeKey {
                bool register_key,
                ::attestation::KeyType key_crypto_type,
                const std::string& key_name_for_spkac,
-               const absl::optional<std::string>& signals),
+               const std::optional<std::string>& signals),
               (override));
 
   void FakeBuildResponseSuccess(TpmChallengeKeyCallback callback);

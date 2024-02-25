@@ -114,8 +114,11 @@ void WebAppLaunchQueue::Enqueue(WebAppLaunchParams launch_params) {
   // App scope is a web app concept that is not applicable for extensions.
   // Therefore this check will be skipped when launching an extension URL.
   if (!IsExtensionURL(launch_params.target_url)) {
-    CHECK(registrar_->IsUrlInAppExtendedScope(launch_params.target_url,
-                                              launch_params.app_id));
+    // TODO(dmurph): Figure out why this is failing.
+    // https://crbug.com/2546057
+    DCHECK(registrar_->IsUrlInAppExtendedScope(launch_params.target_url,
+                                               launch_params.app_id))
+        << launch_params.target_url.spec();
   }
 
   DCHECK(launch_params.dir.empty() ||
@@ -138,13 +141,21 @@ void WebAppLaunchQueue::Enqueue(WebAppLaunchParams launch_params) {
   }
 }
 
+bool WebAppLaunchQueue::IsInScope(const WebAppLaunchParams& launch_params,
+                                  const GURL& current_url) {
+  // WebAppLaunchQueue is used by extensions with file handlers, extensions
+  // don't have a concept of scope.
+  return IsExtensionURL(current_url) ||
+         registrar_->IsUrlInAppExtendedScope(current_url, launch_params.app_id);
+}
+
 void WebAppLaunchQueue::Reset() {
   queue_.clear();
   pending_navigation_ = false;
   last_sent_queued_launch_params_.reset();
 }
 
-const AppId* WebAppLaunchQueue::GetPendingLaunchAppId() const {
+const webapps::AppId* WebAppLaunchQueue::GetPendingLaunchAppId() const {
   if (queue_.empty())
     return nullptr;
   return &(queue_.front().app_id);
@@ -157,17 +168,11 @@ void WebAppLaunchQueue::DidFinishNavigation(content::NavigationHandle* handle) {
   }
 
   if (pending_navigation_) {
-    pending_navigation_ = false;
-    // The launch navigation may have redirected out of the app scope.
-    // App scope is a web app concept that is not applicable for extensions.
-    // Therefore this check will be skipped when launching an extension URL.
-    if (!IsExtensionURL(handle->GetURL()) &&
-        !registrar_->IsUrlInAppExtendedScope(handle->GetURL(),
-                                             queue_.front().app_id)) {
+    if (!IsInScope(queue_.front(), handle->GetURL())) {
       Reset();
       return;
     }
-
+    pending_navigation_ = false;
     SendQueuedLaunchParams(handle->GetURL());
     return;
   }
@@ -176,6 +181,10 @@ void WebAppLaunchQueue::DidFinishNavigation(content::NavigationHandle* handle) {
   // file handles that should persist across reloads.
   if (last_sent_queued_launch_params_ &&
       handle->GetReloadType() != content::ReloadType::NONE) {
+    if (!IsInScope(*last_sent_queued_launch_params_, handle->GetURL())) {
+      Reset();
+      return;
+    }
     SendLaunchParams(*last_sent_queued_launch_params_, handle->GetURL());
     return;
   }
@@ -198,9 +207,9 @@ void WebAppLaunchQueue::SendQueuedLaunchParams(const GURL& current_url) {
 
 void WebAppLaunchQueue::SendLaunchParams(WebAppLaunchParams launch_params,
                                          const GURL& current_url) {
-  // App scope is a web app concept that is not applicable for extensions.
-  CHECK(IsExtensionURL(current_url) ||
-        registrar_->IsUrlInAppExtendedScope(current_url, launch_params.app_id));
+  // TODO(dmurph): Figure out why this is failing.
+  // https://crbug.com/2546057
+  DCHECK(IsInScope(launch_params, current_url)) << current_url.spec();
   mojo::AssociatedRemote<blink::mojom::WebLaunchService> launch_service;
   web_contents()
       ->GetPrimaryMainFrame()

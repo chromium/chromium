@@ -12,6 +12,7 @@
 
 #include "base/functional/bind.h"
 #include "base/location.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/raw_ptr_exclusion.h"
 #include "base/memory/weak_ptr.h"
 #include "base/run_loop.h"
@@ -22,12 +23,9 @@
 #include "base/threading/simple_thread.h"
 #include "base/time/clock.h"
 #include "base/time/time.h"
-#include "media/base/fake_text_track_stream.h"
 #include "media/base/media_util.h"
 #include "media/base/mock_filters.h"
 #include "media/base/test_helpers.h"
-#include "media/base/text_renderer.h"
-#include "media/base/text_track_config.h"
 #include "media/base/time_delta_interpolator.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/gfx/geometry/size.h"
@@ -118,7 +116,7 @@ class PipelineImplTest : public ::testing::Test {
 
     // SetDemuxerExpectations() adds overriding expectations for expected
     // non-NULL streams.
-    std::vector<DemuxerStream*> empty;
+    std::vector<raw_ptr<DemuxerStream, VectorExperimental>> empty;
     EXPECT_CALL(*demuxer_, GetAllStreams()).WillRepeatedly(Return(empty));
 
     EXPECT_CALL(*demuxer_, GetTimelineOffset())
@@ -297,7 +295,7 @@ class PipelineImplTest : public ::testing::Test {
   }
 
   std::unique_ptr<Renderer> TakeRenderer(
-      absl::optional<RendererType> /* renderer_type */) {
+      std::optional<RendererType> /* renderer_type */) {
     return std::move(scoped_renderer_);
   }
 
@@ -367,7 +365,7 @@ class PipelineImplTest : public ::testing::Test {
   base::WeakPtr<MockRenderer> renderer_;
   std::unique_ptr<StrictMock<MockDemuxerStream>> audio_stream_;
   std::unique_ptr<StrictMock<MockDemuxerStream>> video_stream_;
-  std::vector<DemuxerStream*> streams_;
+  std::vector<raw_ptr<DemuxerStream, VectorExperimental>> streams_;
   // This field is not a raw_ptr<> because it was filtered by the rewriter for:
   // #addr-of
   RAW_PTR_EXCLUSION RendererClient* renderer_client_ = nullptr;

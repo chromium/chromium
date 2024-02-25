@@ -440,10 +440,11 @@ class _IRBuilder(object):
         assert isinstance(interface_identifier, Identifier)
         child_nodes = list(node.GetChildren())
         arguments = self._take_arguments(child_nodes)
+        extended_attributes = self._take_extended_attributes(child_nodes)
         types = list(map(self._build_type, child_nodes))
         assert len(types) == 1 or len(types) == 2
         iter_ops = self._create_async_iterable_operations(
-            node, interface_identifier, arguments)
+            node, interface_identifier, arguments, extended_attributes)
         if len(types) == 1:  # value iterator
             key_type, value_type = (None, types[0])
             iter_ops[Identifier('values')].is_async_iterator = True
@@ -456,6 +457,7 @@ class _IRBuilder(object):
                                 value_type=value_type,
                                 operations=operations,
                                 arguments=arguments,
+                                extended_attributes=extended_attributes,
                                 debug_info=self._build_debug_info(node))
 
     def _build_constant_value(self, node):
@@ -540,7 +542,9 @@ class _IRBuilder(object):
     def _build_iterable(self, node, interface_identifier):
         assert node.GetClass() == 'Iterable'
         assert isinstance(interface_identifier, Identifier)
-        types = list(map(self._build_type, node.GetChildren()))
+        child_nodes = list(node.GetChildren())
+        extended_attributes = self._take_extended_attributes(child_nodes)
+        types = list(map(self._build_type, child_nodes))
         assert len(types) == 1 or len(types) == 2
         if len(types) == 1:  # value iterator
             key_type, value_type = (None, types[0])
@@ -548,14 +552,14 @@ class _IRBuilder(object):
         else:  # pair iterator
             key_type, value_type = types
             iter_ops = self._create_iterable_operations(
-                node, interface_identifier)
+                node, interface_identifier, extended_attributes)
             iter_ops[Identifier('entries')].is_iterator = True
             operations = list(iter_ops.values())
-        return Iterable.IR(
-            key_type=key_type,
-            value_type=value_type,
-            operations=operations,
-            debug_info=self._build_debug_info(node))
+        return Iterable.IR(key_type=key_type,
+                           value_type=value_type,
+                           operations=operations,
+                           extended_attributes=extended_attributes,
+                           debug_info=self._build_debug_info(node))
 
     def _build_literal_constant(self, node):
         assert not node.GetChildren()
@@ -1009,45 +1013,59 @@ class _IRBuilder(object):
         return arguments
 
     def _create_async_iterable_operations(self, node, interface_identifier,
-                                          arguments):
+                                          arguments, extended_attributes):
         """
         Constructs a set of async iterable operations.
 
         https://webidl.spec.whatwg.org/#define-the-asynchronous-iteration-methods
         """
+        def make_ext_attrs(key_values):
+            return ExtendedAttributes(
+                list(extended_attributes or []) +
+                list(self._create_extended_attributes(key_values)))
+
         return {
             Identifier('entries'):
             self._create_operation(
                 Identifier('entries'),
                 arguments=make_copy(arguments),
                 return_type=AsyncIterator.identifier_for(interface_identifier),
-                extended_attributes={
-                    'CallWith': 'ScriptState',
-                    'RaisesException': None,
-                    'ImplementedAs': 'entriesForBinding',
-                },
+                extended_attributes=make_ext_attrs({
+                    'CallWith':
+                    'ScriptState',
+                    'RaisesException':
+                    None,
+                    'ImplementedAs':
+                    'entriesForBinding',
+                }),
                 node=node),
             Identifier('keys'):
             self._create_operation(
                 Identifier('keys'),
                 arguments=make_copy(arguments),
                 return_type=AsyncIterator.identifier_for(interface_identifier),
-                extended_attributes={
-                    'CallWith': 'ScriptState',
-                    'RaisesException': None,
-                    'ImplementedAs': 'keysForBinding',
-                },
+                extended_attributes=make_ext_attrs({
+                    'CallWith':
+                    'ScriptState',
+                    'RaisesException':
+                    None,
+                    'ImplementedAs':
+                    'keysForBinding',
+                }),
                 node=node),
             Identifier('values'):
             self._create_operation(
                 Identifier('values'),
                 arguments=make_copy(arguments),
                 return_type=AsyncIterator.identifier_for(interface_identifier),
-                extended_attributes={
-                    'CallWith': 'ScriptState',
-                    'RaisesException': None,
-                    'ImplementedAs': 'valuesForBinding',
-                },
+                extended_attributes=make_ext_attrs({
+                    'CallWith':
+                    'ScriptState',
+                    'RaisesException':
+                    None,
+                    'ImplementedAs':
+                    'valuesForBinding',
+                }),
                 node=node),
         }
 
@@ -1084,12 +1102,20 @@ class _IRBuilder(object):
             for key, values in key_values.items()
         ])
 
-    def _create_iterable_operations(self, node, interface_identifier):
+    def _create_iterable_operations(self,
+                                    node,
+                                    interface_identifier,
+                                    extended_attributes=None):
         """
         Constructs a set of iterable operations.
 
         https://webidl.spec.whatwg.org/#define-the-iteration-methods
         """
+        def make_ext_attrs(key_values):
+            return ExtendedAttributes(
+                list(extended_attributes or []) +
+                list(self._create_extended_attributes(key_values)))
+
         return {
             Identifier('forEach'):
             self._create_operation(Identifier('forEach'),
@@ -1098,42 +1124,53 @@ class _IRBuilder(object):
                                         Identifier('ForEachIteratorCallback')),
                                        (Identifier('thisArg'), 'any', 'null'),
                                    ]),
-                                   extended_attributes={
+                                   extended_attributes=make_ext_attrs({
                                        'CallWith':
                                        ('ScriptState', 'ThisValue'),
-                                       'RaisesException': None,
-                                       'ImplementedAs': 'forEachForBinding',
-                                   },
+                                       'RaisesException':
+                                       None,
+                                       'ImplementedAs':
+                                       'forEachForBinding',
+                                   }),
                                    node=node),
             Identifier('entries'):
             self._create_operation(
                 Identifier('entries'),
                 return_type=SyncIterator.identifier_for(interface_identifier),
-                extended_attributes={
-                    'CallWith': 'ScriptState',
-                    'RaisesException': None,
-                    'ImplementedAs': 'entriesForBinding',
-                },
+                extended_attributes=make_ext_attrs({
+                    'CallWith':
+                    'ScriptState',
+                    'RaisesException':
+                    None,
+                    'ImplementedAs':
+                    'entriesForBinding',
+                }),
                 node=node),
             Identifier('keys'):
             self._create_operation(
                 Identifier('keys'),
                 return_type=SyncIterator.identifier_for(interface_identifier),
-                extended_attributes={
-                    'CallWith': 'ScriptState',
-                    'RaisesException': None,
-                    'ImplementedAs': 'keysForBinding',
-                },
+                extended_attributes=make_ext_attrs({
+                    'CallWith':
+                    'ScriptState',
+                    'RaisesException':
+                    None,
+                    'ImplementedAs':
+                    'keysForBinding',
+                }),
                 node=node),
             Identifier('values'):
             self._create_operation(
                 Identifier('values'),
                 return_type=SyncIterator.identifier_for(interface_identifier),
-                extended_attributes={
-                    'CallWith': 'ScriptState',
-                    'RaisesException': None,
-                    'ImplementedAs': 'valuesForBinding',
-                },
+                extended_attributes=make_ext_attrs({
+                    'CallWith':
+                    'ScriptState',
+                    'RaisesException':
+                    None,
+                    'ImplementedAs':
+                    'valuesForBinding',
+                }),
                 node=node),
         }
 
@@ -1156,7 +1193,7 @@ class _IRBuilder(object):
                           node=None):
         """Constructs a new Operation.IR from simple parameters."""
         if not return_type:
-            return_type = self._create_type('void')
+            return_type = self._create_type('undefined')
         elif isinstance(return_type, str):
             return_type = self._create_type(return_type)
         if isinstance(extended_attributes, dict):

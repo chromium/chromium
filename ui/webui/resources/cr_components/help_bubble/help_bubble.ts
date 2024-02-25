@@ -16,15 +16,17 @@ import '//resources/cr_elements/icons.html.js';
 import '//resources/polymer/v3_0/iron-icon/iron-icon.js';
 import './help_bubble_icons.html.js';
 
-import {CrButtonElement} from '//resources/cr_elements/cr_button/cr_button.js';
-import {CrIconButtonElement} from '//resources/cr_elements/cr_icon_button/cr_icon_button.js';
-import {assert, assertNotReached} from '//resources/js/assert_ts.js';
+import type {CrButtonElement} from '//resources/cr_elements/cr_button/cr_button.js';
+import type {CrIconButtonElement} from '//resources/cr_elements/cr_icon_button/cr_icon_button.js';
+import {assert, assertNotReached} from '//resources/js/assert.js';
 import {isWindows} from '//resources/js/platform.js';
-import {DomRepeat, DomRepeatEvent, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import {InsetsF} from 'chrome://resources/mojo/ui/gfx/geometry/mojom/geometry.mojom-webui.js';
+import type {DomRepeat, DomRepeatEvent} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import type {InsetsF} from 'chrome://resources/mojo/ui/gfx/geometry/mojom/geometry.mojom-webui.js';
 
 import {getTemplate} from './help_bubble.html.js';
-import {HelpBubbleArrowPosition, HelpBubbleButtonParams, Progress} from './help_bubble.mojom-webui.js';
+import type {HelpBubbleButtonParams, Progress} from './help_bubble.mojom-webui.js';
+import {HelpBubbleArrowPosition} from './help_bubble.mojom-webui.js';
 
 const ACTION_BUTTON_ID_PREFIX = 'action-button-';
 
@@ -107,8 +109,9 @@ export class HelpBubbleElement extends PolymerElement {
   timeoutMs: number|null = null;
   timeoutTimerId: number|null = null;
   debouncedUpdate: (() => void)|null = null;
-  padding: InsetsF = new InsetsF();
+  padding: InsetsF = {top: 0, bottom: 0, left: 0, right: 0};
   fixed: boolean = false;
+  focusAnchor: boolean = false;
 
   /**
    * HTMLElement corresponding to |this.nativeId|.
@@ -233,12 +236,26 @@ export class HelpBubbleElement extends PolymerElement {
    * Focuses a button in the bubble.
    */
   override focus() {
+    // First try to focus either the default button or any action button.
     this.$.buttonlist.render();
-    const button: HTMLElement =
+    const defaultButton =
         this.$.buttons.querySelector('cr-button.default-button') ||
-        this.$.buttons.querySelector('cr-button') || this.$.close;
-    assert(button);
-    button.focus();
+        this.$.buttons.querySelector('cr-button');
+    if (defaultButton instanceof HTMLElement) {
+      defaultButton.focus();
+      return;
+    }
+
+    // As a fallback, focus the close button before trying to focus the anchor;
+    // this will allow the focus to stay on the close button if the anchor
+    // cannot be focused.
+    this.$.close!.focus();
+
+    // Maybe try to focus the anchor. This is preferable to focusing the close
+    // button, but not every element can be focused.
+    if (this.anchorElement_ && this.focusAnchor) {
+      this.anchorElement_.focus();
+    }
   }
 
   /**

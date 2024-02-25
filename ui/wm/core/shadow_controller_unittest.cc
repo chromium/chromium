@@ -318,8 +318,10 @@ class TestShadowControllerDelegate : public wm::ShadowControllerDelegate {
     return window->parent();
   }
 
-  bool ShouldHaveRoundedShadowForWindow(const aura::Window* window) override {
-    return true;
+  bool ShouldUpdateShadowOnWindowPropertyChange(const aura::Window* window,
+                                                const void* key,
+                                                intptr_t old) override {
+    return false;
   }
 
   void ApplyColorThemeToWindowShadow(aura::Window* window) override {}

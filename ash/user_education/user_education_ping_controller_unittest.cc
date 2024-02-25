@@ -76,8 +76,7 @@ class UserEducationPingControllerTest : public UserEducationAshTestBase {
     // feature is enabled. Controller existence is verified in test coverage for
     // the controller's owner.
     std::vector<base::test::FeatureRef> enabled_features;
-    enabled_features.emplace_back(features::kCaptureModeTour);
-    enabled_features.emplace_back(features::kHoldingSpaceTour);
+    enabled_features.emplace_back(features::kHoldingSpaceWallpaperNudge);
     enabled_features.emplace_back(features::kWelcomeTour);
     scoped_feature_list_.InitWithFeatures(enabled_features, {});
   }
@@ -92,13 +91,13 @@ class UserEducationPingControllerTest : public UserEducationAshTestBase {
 
   // Creates a ping for the specified view, returning `true` if successful.
   bool CreatePing(PingId ping_id = PingId::kTest1,
-                  const absl::optional<views::View*>& v = absl::nullopt) {
+                  const std::optional<views::View*>& v = std::nullopt) {
     return controller()->CreatePing(ping_id, v.value_or(this->view()));
   }
 
   // Expects that no ping exists for the specified view. No ping exists for a
   // view if the view does not have any associated ping layers.
-  void ExpectNoPing(const absl::optional<views::View*>& v = absl::nullopt) {
+  void ExpectNoPing(const std::optional<views::View*>& v = std::nullopt) {
     views::View* const view = v.value_or(this->view());
     EXPECT_THAT(
         view->GetLayersInOrder(),
@@ -108,8 +107,9 @@ class UserEducationPingControllerTest : public UserEducationAshTestBase {
   // Asserts that a ping exists for the specified view. A ping exists for a view
   // if the view has ping layers configured with expected properties.
   void AssertPingProperties(
-      const absl::optional<views::View*>& v = absl::nullopt) {
+      const std::optional<views::View*>& v = std::nullopt) {
     views::View* const view = v.value_or(this->view());
+    using testing::Pointee;
     ASSERT_THAT(
         view->GetLayersInOrder(),
         ElementsAre(
@@ -121,27 +121,27 @@ class UserEducationPingControllerTest : public UserEducationAshTestBase {
                 Property(
                     &ui::Layer::children,
                     ElementsAre(AllOf(
-                        Property(&ui::Layer::name,
-                                 Eq(UserEducationPingController::
-                                        kPingChildLayerName)),
-                        Property(&ui::Layer::background_color,
-                                 Eq(DarkLightModeController::Get()
-                                            ->IsDarkModeEnabled()
-                                        ? SK_ColorWHITE
-                                        : SK_ColorBLACK)),
-                        Property(
+                        Pointee(Property(&ui::Layer::name,
+                                         Eq(UserEducationPingController::
+                                                kPingChildLayerName))),
+                        Pointee(Property(&ui::Layer::background_color,
+                                         Eq(DarkLightModeController::Get()
+                                                    ->IsDarkModeEnabled()
+                                                ? SK_ColorWHITE
+                                                : SK_ColorBLACK))),
+                        Pointee(Property(
                             &ui::Layer::bounds,
                             Eq(Inset(gfx::Rect(view->layer()->bounds().size()),
-                                     view->GetProperty(kPingInsetsKey)))),
-                        Property(
+                                     view->GetProperty(kPingInsetsKey))))),
+                        Pointee(Property(
                             &ui::Layer::rounded_corner_radii,
                             Eq(gfx::RoundedCornersF(
                                 Inset(gfx::Rect(view->layer()->bounds().size()),
                                       view->GetProperty(kPingInsetsKey))
                                     .width() /
-                                2.f))),
-                        Property(&ui::Layer::type,
-                                 Eq(ui::LAYER_SOLID_COLOR)))))),
+                                2.f)))),
+                        Pointee(Property(&ui::Layer::type,
+                                         Eq(ui::LAYER_SOLID_COLOR))))))),
             Eq(view->layer())));
   }
 

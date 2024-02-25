@@ -36,7 +36,9 @@ FakeSecureChannelClient::InitiateConnectionToDevice(
     multidevice::RemoteDeviceRef local_device,
     const std::string& feature,
     ConnectionMedium connection_medium,
-    ConnectionPriority connection_priority) {
+    ConnectionPriority connection_priority,
+    SecureChannelStructuredMetricsLogger*
+        secure_channel_structured_metrics_logger) {
   auto remote_local_pair = std::make_pair(device_to_connect, local_device);
   std::unique_ptr<ConnectionAttempt> connection_attempt = std::move(
       device_pair_to_next_initiate_connection_attempt_[remote_local_pair]);
@@ -60,8 +62,8 @@ FakeSecureChannelClient::ListenForConnectionFromDevice(
 
 void FakeSecureChannelClient::GetLastSeenTimestamp(
     const std::string& remote_device_id,
-    base::OnceCallback<void(absl::optional<base::Time>)> callback) {
-  std::move(callback).Run(absl::nullopt);
+    base::OnceCallback<void(std::optional<base::Time>)> callback) {
+  std::move(callback).Run(std::nullopt);
 }
 
 }  // namespace ash::secure_channel

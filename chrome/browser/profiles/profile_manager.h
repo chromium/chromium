@@ -158,9 +158,6 @@ class ProfileManager : public Profile::Delegate {
                          bool incognito,
                          ProfileLoadedCallback callback);
 
-  // Whether a new profile can be created at |path|.
-  bool CanCreateProfileAtPath(const base::FilePath& path) const;
-
   // Creates or loads the profile located at |profile_path|.
   // Should be called on the UI thread.
   // Params:
@@ -274,7 +271,7 @@ class ProfileManager : public Profile::Delegate {
   // Searches for the latest active profile that respects |predicate|, already
   // loaded preferably. Returns nullopt if no existing profile respects all the
   // conditions.
-  absl::optional<base::FilePath> FindLastActiveProfile(
+  std::optional<base::FilePath> FindLastActiveProfile(
       base::RepeatingCallback<bool(ProfileAttributesEntry*)> predicate);
 
   DeleteProfileHelper& GetDeleteProfileHelper();
@@ -490,6 +487,9 @@ class ProfileManager : public Profile::Delegate {
   // should be used carefully.
   Profile* GetProfileByPathInternal(const base::FilePath& path) const;
 
+  // Whether a new profile can be created at |path|.
+  bool CanCreateProfileAtPath(const base::FilePath& path) const;
+
   // Adds |profile| to the profile attributes storage if it hasn't been added
   // yet.
   void AddProfileToStorage(Profile* profile);
@@ -586,7 +586,7 @@ class ProfileManager : public Profile::Delegate {
   std::map<Profile*, int> browser_counts_;
   // On startup we launch the active profiles in the order they became active
   // during the last run. This is why they are kept in a list, not in a set.
-  std::vector<Profile*> active_profiles_;
+  std::vector<raw_ptr<Profile, VectorExperimental>> active_profiles_;
   bool closing_all_browsers_ = false;
 
   // Tracks whether the the list of last opened Profiles has been updated for

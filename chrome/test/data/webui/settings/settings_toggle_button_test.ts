@@ -5,9 +5,12 @@
 // clang-format off
 import 'chrome://settings/settings.js';
 
+import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import {DEFAULT_CHECKED_VALUE, DEFAULT_UNCHECKED_VALUE, SettingsToggleButtonElement} from 'chrome://settings/settings.js';
+import type {SettingsToggleButtonElement} from 'chrome://settings/settings.js';
+import {DEFAULT_CHECKED_VALUE, DEFAULT_UNCHECKED_VALUE} from 'chrome://settings/settings.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {eventToPromise} from 'chrome://webui-test/test_util.js';
 // clang-format on
 
 /** @fileoverview Suite of tests for settings-toggle-button. */
@@ -73,16 +76,25 @@ suite('SettingsToggleButton', () => {
     testElement.$.control.click();
   });
 
-  test('fires a single change event per tap', () => {
+  test('fires a single change event per tap', async () => {
     let counter = 0;
     testElement.addEventListener('change', () => {
       ++counter;
     });
+    let whenFired = eventToPromise('change', testElement);
+
     testElement.click();
+    await whenFired;
     assertEquals(1, counter);
+
+    whenFired = eventToPromise('change', testElement);
     testElement.$.labelWrapper.click();
+    await whenFired;
     assertEquals(2, counter);
+
+    whenFired = eventToPromise('change', testElement);
     testElement.$.control.click();
+    await whenFired;
     assertEquals(3, counter);
   });
 
@@ -136,40 +148,49 @@ suite('SettingsToggleButton', () => {
     assertEquals(DEFAULT_CHECKED_VALUE, prefNum.value);
   });
 
-  const CUSTOM_UNCHECKED_VALUE = 5;
-  const CUSTOM_CHECKED_VALUE = 2;
-  const UNKNOWN_VALUE = 3;
-
   test('numerical pref with custom values', () => {
+    const UNCHECKED_VALUE_1 = 1;
+    const UNCHECKED_VALUE_2 = 2;
+    const CHECKED_VALUE = 3;
+
     const prefNum = {
       key: 'test',
       type: chrome.settingsPrivate.PrefType.NUMBER,
-      value: CUSTOM_UNCHECKED_VALUE,
+      value: UNCHECKED_VALUE_2,
     };
 
-    testElement.numericUncheckedValue = CUSTOM_UNCHECKED_VALUE;
-    testElement.numericCheckedValue = CUSTOM_CHECKED_VALUE;
+    testElement.numericUncheckedValues = [UNCHECKED_VALUE_1, UNCHECKED_VALUE_2];
+    testElement.numericCheckedValue = CHECKED_VALUE;
 
+    // Test initial 'off' case.
     testElement.set('pref', prefNum);
     assertFalse(testElement.checked);
+    assertEquals(UNCHECKED_VALUE_2, prefNum.value);
 
+    // Test 'off' -> 'on' case.
     testElement.click();
     assertTrue(testElement.checked);
-    assertEquals(CUSTOM_CHECKED_VALUE, prefNum.value);
+    assertEquals(CHECKED_VALUE, prefNum.value);
 
+    // Test 'on' -> 'off' case.
     testElement.click();
     assertFalse(testElement.checked);
-    assertEquals(CUSTOM_UNCHECKED_VALUE, prefNum.value);
+    assertEquals(UNCHECKED_VALUE_1, prefNum.value);
   });
 
+  const UNKNOWN_VALUE = 3;
+
   test('numerical pref with unknown initial value', () => {
+    const CUSTOM_UNCHECKED_VALUE = 5;
+    const CUSTOM_CHECKED_VALUE = 2;
+
     const prefNum = {
       key: 'test',
       type: chrome.settingsPrivate.PrefType.NUMBER,
       value: UNKNOWN_VALUE,
     };
 
-    testElement.numericUncheckedValue = CUSTOM_UNCHECKED_VALUE;
+    testElement.numericUncheckedValues = [CUSTOM_UNCHECKED_VALUE];
     testElement.numericCheckedValue = CUSTOM_CHECKED_VALUE;
 
     testElement.set('pref', prefNum);
@@ -260,6 +281,17 @@ suite('SettingsToggleButton', () => {
 
     learnMoreLink!.click();
     assertTrue(testElement.checked);
+  });
+
+  test('learn more link should indicate it opens in new tab', () => {
+    testElement.set('learnMoreUrl', 'www.google.com');
+    flush();
+    const learnMoreLink =
+        testElement.shadowRoot!.querySelector<HTMLElement>('#learn-more');
+    assertTrue(!!learnMoreLink);
+    assertEquals(
+        learnMoreLink.getAttribute('aria-description'),
+        loadTimeData.getString('opensInNewTab'));
   });
 
   test('set label text should update aria-label of toggle', () => {

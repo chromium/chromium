@@ -64,6 +64,32 @@ bool VP9SuperFrameBitstreamFilter::EnqueueBuffer(
   return BuildSuperFrame();
 }
 
+base::apple::ScopedCFTypeRef<CMBlockBufferRef>
+VP9SuperFrameBitstreamFilter::CreatePassthroughBuffer(
+    scoped_refptr<DecoderBuffer> buffer) {
+  base::apple::ScopedCFTypeRef<CMBlockBufferRef> data;
+
+  // The created CMBlockBuffer owns a ref on DecoderBuffer to avoid a copy.
+  CMBlockBufferCustomBlockSource source = {0};
+  source.refCon = buffer.get();
+  source.FreeBlock = &ReleaseDecoderBuffer;
+
+  // Create a memory-backed CMBlockBuffer for the translated data.
+  OSStatus status = CMBlockBufferCreateWithMemoryBlock(
+      kCFAllocatorDefault,
+      static_cast<void*>(const_cast<uint8_t*>(buffer->data())),
+      buffer->data_size(), kCFAllocatorDefault, &source, 0, buffer->data_size(),
+      0, data.InitializeInto());
+  if (status != noErr) {
+    OSSTATUS_DLOG(ERROR, status)
+        << "CMBlockBufferCreateWithMemoryBlock failed.";
+    data.reset();
+    return data;
+  }
+  buffer->AddRef();
+  return data;
+}
+
 void VP9SuperFrameBitstreamFilter::Flush() {
   partial_buffers_.clear();
   data_.reset();
@@ -90,25 +116,8 @@ bool VP9SuperFrameBitstreamFilter::ShouldShowFrame(Vp9RawBitsReader* reader) {
 
 bool VP9SuperFrameBitstreamFilter::PreparePassthroughBuffer(
     scoped_refptr<DecoderBuffer> buffer) {
-  // The created CMBlockBuffer owns a ref on DecoderBuffer to avoid a copy.
-  CMBlockBufferCustomBlockSource source = {0};
-  source.refCon = buffer.get();
-  source.FreeBlock = &ReleaseDecoderBuffer;
-
-  // Create a memory-backed CMBlockBuffer for the translated data.
-  OSStatus status = CMBlockBufferCreateWithMemoryBlock(
-      kCFAllocatorDefault,
-      static_cast<void*>(const_cast<uint8_t*>(buffer->data())),
-      buffer->data_size(), kCFAllocatorDefault, &source, 0, buffer->data_size(),
-      0, data_.InitializeInto());
-  if (status != noErr) {
-    OSSTATUS_DLOG(ERROR, status)
-        << "CMBlockBufferCreateWithMemoryBlock failed.";
-    return false;
-  }
-
-  buffer->AddRef();
-  return true;
+  data_ = CreatePassthroughBuffer(std::move(buffer));
+  return !!data_;
 }
 
 bool VP9SuperFrameBitstreamFilter::AllocateCombinedBlock(size_t total_size) {
@@ -123,7 +132,7 @@ bool VP9SuperFrameBitstreamFilter::AllocateCombinedBlock(size_t total_size) {
     return false;
   }
 
-  status = CMBlockBufferAssureBlockMemory(data_);
+  status = CMBlockBufferAssureBlockMemory(data_.get());
   if (status != noErr) {
     OSSTATUS_DLOG(ERROR, status) << "CMBlockBufferAssureBlockMemory failed.";
     return false;
@@ -134,8 +143,8 @@ bool VP9SuperFrameBitstreamFilter::AllocateCombinedBlock(size_t total_size) {
 
 bool VP9SuperFrameBitstreamFilter::MergeBuffer(const DecoderBuffer& buffer,
                                                size_t offset) {
-  OSStatus status = CMBlockBufferReplaceDataBytes(buffer.data(), data_, offset,
-                                                  buffer.data_size());
+  OSStatus status = CMBlockBufferReplaceDataBytes(buffer.data(), data_.get(),
+                                                  offset, buffer.data_size());
   if (status != noErr) {
     OSSTATUS_DLOG(ERROR, status) << "CMBlockBufferReplaceDataBytes failed.";
     return false;
@@ -158,7 +167,7 @@ bool VP9SuperFrameBitstreamFilter::BuildSuperFrame() {
   }
 
   const uint8_t bytes_per_frame_size =
-      base::bits::AlignUp(
+      base::bits::AlignUpDeprecatedDoNotUse(
           base::bits::Log2Ceiling(base::checked_cast<uint32_t>(max_size)), 8) /
       8;
   DCHECK_GT(bytes_per_frame_size, 0);
@@ -198,8 +207,8 @@ bool VP9SuperFrameBitstreamFilter::BuildSuperFrame() {
   DCHECK_EQ(trailer_offset, trailer_size - 1);
   trailer[trailer_offset] = marker;
 
-  OSStatus status =
-      CMBlockBufferReplaceDataBytes(trailer.get(), data_, offset, trailer_size);
+  OSStatus status = CMBlockBufferReplaceDataBytes(trailer.get(), data_.get(),
+                                                  offset, trailer_size);
   if (status != noErr) {
     OSSTATUS_DLOG(ERROR, status) << "CMBlockBufferReplaceDataBytes failed.";
     return false;

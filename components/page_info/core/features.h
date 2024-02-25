@@ -12,13 +12,6 @@
 
 namespace page_info {
 
-#if BUILDFLAG(IS_ANDROID)
-// Enables the history sub page for Page Info.
-BASE_DECLARE_FEATURE(kPageInfoHistory);
-// Enables the store info row for Page Info.
-BASE_DECLARE_FEATURE(kPageInfoStoreInfo);
-#endif
-
 // Enables the "About this site" section in Page Info.
 extern bool IsAboutThisSiteFeatureEnabled(const std::string& locale);
 

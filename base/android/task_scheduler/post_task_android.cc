@@ -10,7 +10,7 @@ namespace base {
 
 // static
 void PostTaskAndroid::SignalNativeSchedulerReady() {
-  Java_PostTask_onNativeSchedulerReady(base::android::AttachCurrentThread());
+  Java_PostTask_onNativeSchedulerReady(jni_zero::AttachCurrentThread());
 }
 
 }  // namespace base

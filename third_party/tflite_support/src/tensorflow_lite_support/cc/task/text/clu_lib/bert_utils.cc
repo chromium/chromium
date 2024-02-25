@@ -17,8 +17,8 @@ limitations under the License.
 
 #include <string>
 
-#include "absl/status/status.h"    // from @com_google_absl
-#include "absl/strings/ascii.h"    // from @com_google_absl
+#include "absl/status/status.h"  // from @com_google_absl
+#include "absl/strings/ascii.h"  // from @com_google_absl
 #include "absl/strings/str_cat.h"  // from @com_google_absl
 #include "tensorflow_lite_support/cc/port/status_macros.h"
 #include "tensorflow_lite_support/cc/task/text/clu_lib/constants.h"
@@ -46,13 +46,10 @@ constexpr int kTurnIdForCurrentUtterance = 0;
 absl::Status BertPreprocessing(
     const tflite::support::text::tokenizer::BertTokenizer* tokenizer,
     const std::vector<absl::string_view>& utterances_in_reverse_order,
-    int max_seq_length,
-    int max_history_turns,
-    std::vector<int>* out_token_ids,
+    int max_seq_length, int max_history_turns, std::vector<int>* out_token_ids,
     std::vector<std::pair<int, int>>* out_token_alignments,
     std::vector<int>* out_token_first_subword_indicators,
-    std::vector<int>* out_segment_id_list,
-    std::vector<int>* out_turn_id_list) {
+    std::vector<int>* out_segment_id_list, std::vector<int>* out_turn_id_list) {
   int cls_id;
   if (!tokenizer->LookupId(kClsToken, &cls_id)) {
     return absl::InternalError(
@@ -186,8 +183,7 @@ absl::Status BertPreprocessing(
     out_turn_id_list->push_back(turn_id);
 
     // Break if reaching max_seq_length.
-    if (out_token_ids->size() >= max_seq_length)
-      break;
+    if (out_token_ids->size() >= max_seq_length) break;
   }
   if (out_token_ids->size() != out_token_alignments->size()) {
     return absl::InternalError(absl::StrCat(

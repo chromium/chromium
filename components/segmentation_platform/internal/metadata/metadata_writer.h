@@ -7,12 +7,12 @@
 
 #include <cinttypes>
 #include <cstddef>
+#include <optional>
 
 #include "base/memory/raw_ptr.h"
 #include "base/memory/raw_ptr_exclusion.h"
 #include "components/segmentation_platform/internal/database/ukm_types.h"
 #include "components/segmentation_platform/public/proto/model_metadata.pb.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace segmentation_platform {
 
@@ -89,10 +89,10 @@ class MetadataWriter {
     const char* const sql{nullptr};
     struct EventAndMetrics {
       const UkmEventHash event_hash;
-      const raw_ptr<const UkmMetricHash> metrics{nullptr};
+      const raw_ptr<const UkmMetricHash, AllowPtrArithmetic> metrics{nullptr};
       const size_t metrics_size{0};
     };
-    const raw_ptr<const EventAndMetrics> events{nullptr};
+    const raw_ptr<const EventAndMetrics, AllowPtrArithmetic> events{nullptr};
     const size_t events_size{0};
   };
 
@@ -102,7 +102,7 @@ class MetadataWriter {
     const proto::CustomInput::FillPolicy fill_policy{
         proto::CustomInput_FillPolicy_UNKNOWN_FILL_POLICY};
     const size_t default_values_size{0};
-    const raw_ptr<const float> default_values = nullptr;
+    const raw_ptr<const float, AllowPtrArithmetic> default_values = nullptr;
     const char* name{nullptr};
 
     using Arg = std::pair<const char*, const char*>;
@@ -169,7 +169,7 @@ class MetadataWriter {
   void AddOutputConfigForMultiClassClassifier(const char* const* class_labels,
                                               size_t class_labels_length,
                                               int top_k_outputs,
-                                              absl::optional<float> threshold);
+                                              std::optional<float> threshold);
 
   // Adds a MultiClassClassifier with one threshold per label.
   void AddOutputConfigForMultiClassClassifier(

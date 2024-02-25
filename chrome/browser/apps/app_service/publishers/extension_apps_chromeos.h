@@ -12,7 +12,6 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
-#include "chrome/browser/apps/app_service/app_icon/icon_key_util.h"
 #include "chrome/browser/apps/app_service/app_notifications.h"
 #include "chrome/browser/apps/app_service/launch_result_type.h"
 #include "chrome/browser/apps/app_service/media_requests.h"
@@ -102,6 +101,7 @@ class ExtensionAppsChromeOs : public ExtensionAppsBase,
   // apps::AppPublisher overrides.
   void PauseApp(const std::string& app_id) override;
   void UnpauseApp(const std::string& app_id) override;
+  void UpdateAppSize(const std::string& app_id) override;
 
   // Overridden from AppWindowRegistry::Observer:
   void OnAppWindowAdded(extensions::AppWindow* app_window) override;
@@ -160,6 +160,8 @@ class ExtensionAppsChromeOs : public ExtensionAppsBase,
   AppPtr CreateApp(const extensions::Extension* extension,
                    Readiness readiness) override;
 
+  void OnSizeCalculated(const std::string& app_id, const int64_t size);
+
   // Calculate the icon effects for the extension.
   IconEffects GetIconEffects(const extensions::Extension* extension,
                              bool paused);
@@ -190,17 +192,16 @@ class ExtensionAppsChromeOs : public ExtensionAppsBase,
                        WindowInfoPtr window_info,
                        LaunchCallback callback);
 
-  // This is called after maybe presenting a file dialog permission UI to ensure
-  // that the extension is confirmed to be able to open the relevant file type.
-  void LaunchAppWithIntentCallback(LaunchSource launch_source,
-                                   const std::string& app_id,
-                                   int32_t event_flags,
-                                   IntentPtr intent,
-                                   WindowInfoPtr window_info,
-                                   LaunchCallback callback,
-                                   bool should_run);
+  // See LacrosExtensionAppsController::LaunchAppWithArgumentsCallback().
+  void LaunchAppWithArgumentsCallback(LaunchSource launch_source,
+                                      const std::string& app_id,
+                                      int32_t event_flags,
+                                      IntentPtr intent,
+                                      WindowInfoPtr window_info,
+                                      LaunchCallback callback,
+                                      bool should_run);
 
-  const raw_ptr<apps::InstanceRegistry, ExperimentalAsh> instance_registry_;
+  const raw_ptr<apps::InstanceRegistry> instance_registry_;
   base::ScopedObservation<extensions::AppWindowRegistry,
                           extensions::AppWindowRegistry::Observer>
       app_window_registry_{this};
@@ -216,7 +217,7 @@ class ExtensionAppsChromeOs : public ExtensionAppsBase,
 
   std::map<extensions::AppWindow*, aura::Window*> app_window_to_aura_window_;
 
-  raw_ptr<ArcAppListPrefs, ExperimentalAsh> arc_prefs_ = nullptr;
+  raw_ptr<ArcAppListPrefs> arc_prefs_ = nullptr;
 
   // Registrar used to monitor the profile prefs.
   PrefChangeRegistrar profile_pref_change_registrar_;

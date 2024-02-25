@@ -151,9 +151,9 @@ class WallpaperControllerClientImpl
   void ObserveVolumeManagerForAccountId(const AccountId& account_id);
 
   // WallpaperController interface in ash.
-  raw_ptr<ash::WallpaperController, ExperimentalAsh> wallpaper_controller_;
+  raw_ptr<ash::WallpaperController> wallpaper_controller_;
 
-  raw_ptr<PrefService, ExperimentalAsh> local_state_;
+  raw_ptr<PrefService> local_state_;
 
   // The registrar used to watch DeviceWallpaperImageFilePath pref changes.
   PrefChangeRegistrar pref_registrar_;
@@ -163,8 +163,9 @@ class WallpaperControllerClientImpl
   // wallpaper should be shown.
   base::CallbackListSubscription show_user_names_on_signin_subscription_;
 
-  std::unique_ptr<wallpaper_handlers::BackdropSurpriseMeImageFetcher>
-      surprise_me_image_fetcher_;
+  std::map<std::string,
+           std::unique_ptr<wallpaper_handlers::BackdropSurpriseMeImageFetcher>>
+      surprise_me_image_fetchers_;
 
   std::map<AccountId,
            std::unique_ptr<wallpaper_handlers::GooglePhotosPhotosFetcher>>

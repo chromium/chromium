@@ -2,13 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {assert, assertNotReached} from 'chrome://resources/js/assert_ts.js';
+import {assert, assertNotReached} from 'chrome://resources/js/assert.js';
 
 
 // Trusted script URLs used by the Files app.
 const ALLOWED_SCRIPT_URLS = new Set([
   'foreground/js/main.js',
-  'runtime_loaded_test_util_swa.js',
+  'background/js/runtime_loaded_test_util.js',
   'foreground/js/deferred_elements.js',
   'foreground/js/metadata/metadata_dispatcher.js',
 ]);

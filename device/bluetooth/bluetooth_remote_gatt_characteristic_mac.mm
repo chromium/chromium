@@ -288,7 +288,7 @@ void BluetoothRemoteGattCharacteristicMac::DidUpdateValue(NSError* error) {
     }
     DVLOG(1) << *this << ": Read request arrived.";
     UpdateValue();
-    std::move(read_callback).Run(/*error_code=*/absl::nullopt, value_);
+    std::move(read_callback).Run(/*error_code=*/std::nullopt, value_);
   } else if (IsNotifying()) {
     DVLOG(1) << *this << ": Notification arrived.";
     UpdateValue();

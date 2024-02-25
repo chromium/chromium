@@ -12,6 +12,9 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_list.h"
+#include "chrome/browser/ui/tabs/organization/tab_organization_service.h"
+#include "chrome/browser/ui/tabs/organization/tab_organization_service_factory.h"
+#include "chrome/browser/ui/tabs/organization/tab_organization_session.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/test/base/in_process_browser_test.h"
@@ -22,15 +25,20 @@
 #include "components/ukm/test_ukm_recorder.h"
 #include "content/public/common/content_paths.h"
 #include "content/public/test/browser_test.h"
-#include "net/cookies/cookie_util.h"
+#include "content/public/test/browser_test_utils.h"
 #include "net/dns/mock_host_resolver.h"
+#include "ui/base/ui_base_features.h"
 
 namespace chrome {
 
 class BrowserCommandsTest : public InProcessBrowserTest {
  public:
-  BrowserCommandsTest() : https_server_(net::EmbeddedTestServer::TYPE_HTTPS) {}
+  BrowserCommandsTest() : https_server_(net::EmbeddedTestServer::TYPE_HTTPS) {
+    feature_list_.InitWithFeatures(
+        {features::kTabOrganization, features::kChromeRefresh2023}, {});
+  }
 
+  base::test::ScopedFeatureList feature_list_;
   net::test_server::EmbeddedTestServer https_server_;
 
   void SetUpOnMainThread() override {
@@ -74,12 +82,9 @@ class BrowserCommandsTest : public InProcessBrowserTest {
                                   bool blocked,
                                   bool settings_blocked) {
     auto entries = ukm_recorder.GetEntries(
-        "ThirdPartyCookies.BreakageIndicator",
-        {"BreakageIndicatorType", "TPCBlocked", "TPCBlockedInSettings"});
+        "ThirdPartyCookies.BreakageIndicator.UserReload",
+        {"TPCBlocked", "TPCBlockedInSettings"});
     EXPECT_EQ(entries.size(), size);
-    EXPECT_EQ(
-        entries.at(index).metrics.at("BreakageIndicatorType"),
-        static_cast<int>(net::cookie_util::BreakageIndicatorType::USER_RELOAD));
     EXPECT_EQ(entries.at(index).metrics.at("TPCBlocked"), blocked);
     EXPECT_EQ(entries.at(index).metrics.at("TPCBlockedInSettings"),
               settings_blocked);
@@ -235,7 +240,10 @@ IN_PROC_BROWSER_TEST_F(BrowserCommandsTest, MoveToExistingWindow) {
   };
 
   // Create another window, and add tabs.
+  ui_test_utils::BrowserChangeObserver second_browser_observer(
+      nullptr, ui_test_utils::BrowserChangeObserver::ChangeType::kAdded);
   chrome::NewEmptyWindow(browser()->profile());
+  ui_test_utils::WaitForBrowserSetLastActive(second_browser_observer.Wait());
   Browser* second_window = BrowserList::GetInstance()->GetLastActive();
   AddTabs(browser(), 2);
   AddTabs(second_window, 1);
@@ -277,7 +285,10 @@ IN_PROC_BROWSER_TEST_F(BrowserCommandsTest, MoveActiveTabToNewWindow) {
   EXPECT_EQ(browser()->tab_strip_model()->GetActiveWebContents()->GetURL(),
             url2);
 
+  ui_test_utils::BrowserChangeObserver new_browser_observer(
+      nullptr, ui_test_utils::BrowserChangeObserver::ChangeType::kAdded);
   chrome::ExecuteCommand(browser(), IDC_MOVE_TAB_TO_NEW_WINDOW);
+  ui_test_utils::WaitForBrowserSetLastActive(new_browser_observer.Wait());
 
   // Now we should have: two browsers, each with one tab (url1 in browser(),
   // and url2 in the new one).
@@ -307,7 +318,11 @@ IN_PROC_BROWSER_TEST_F(BrowserCommandsTest,
   EXPECT_FALSE(browser()->tab_strip_model()->IsTabSelected(1));
   EXPECT_TRUE(browser()->tab_strip_model()->IsTabSelected(2));
 
+  ui_test_utils::BrowserChangeObserver new_browser_observer(
+      nullptr, ui_test_utils::BrowserChangeObserver::ChangeType::kAdded);
   chrome::ExecuteCommand(browser(), IDC_MOVE_TAB_TO_NEW_WINDOW);
+  ui_test_utils::WaitForBrowserSetLastActive(new_browser_observer.Wait());
+
   // Now we should have two browsers:
   // The original, now with only a single tab: url2
   // The new one with the two tabs we moved: url1 and url3. This one should
@@ -324,6 +339,25 @@ IN_PROC_BROWSER_TEST_F(BrowserCommandsTest,
             url1);
   EXPECT_EQ(active_browser->tab_strip_model()->GetWebContentsAt(1)->GetURL(),
             url3);
+}
+
+IN_PROC_BROWSER_TEST_F(BrowserCommandsTest, StartsOrganizationRequest) {
+  base::HistogramTester histogram_tester;
+
+  chrome::ExecuteCommand(browser(), IDC_ORGANIZE_TABS);
+
+  TabOrganizationService* service =
+      TabOrganizationServiceFactory::GetForProfile(browser()->profile());
+  const TabOrganizationSession* session =
+      service->GetSessionForBrowser(browser());
+
+  EXPECT_EQ(TabOrganizationRequest::State::NOT_STARTED,
+            session->request()->state());
+
+  histogram_tester.ExpectUniqueSample("Tab.Organization.AllEntrypoints.Clicked",
+                                      true, 1);
+  histogram_tester.ExpectUniqueSample("Tab.Organization.ThreeDotMenu.Clicked",
+                                      true, 1);
 }
 
 }  // namespace chrome

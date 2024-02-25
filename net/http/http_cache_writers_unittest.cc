@@ -11,7 +11,7 @@
 #include <vector>
 
 #include "base/functional/bind.h"
-#include "base/memory/raw_ptr_exclusion.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "crypto/secure_hash.h"
 #include "net/http/http_cache.h"
@@ -58,7 +58,7 @@ class TestHttpCache : public HttpCache {
                 std::unique_ptr<BackendFactory> backend_factory)
       : HttpCache(std::move(network_layer), std::move(backend_factory)) {}
 
-  void WritersDoneWritingToEntry(ActiveEntry* entry,
+  void WritersDoneWritingToEntry(scoped_refptr<ActiveEntry> entry,
                                  bool success,
                                  bool should_keep_entry,
                                  TransactionSet make_readers) override {
@@ -95,16 +95,19 @@ class WritersTest : public TestWithTaskEnvironment {
   }
 
   ~WritersTest() override {
-    if (disk_entry_)
+    if (disk_entry_) {
       disk_entry_->Close();
+    }
   }
 
   void CreateWriters() {
     cache_.CreateBackendEntry(GenerateCacheKey(kSimpleGET_Transaction.url),
-                              &disk_entry_, nullptr);
-    entry_ = std::make_unique<HttpCache::ActiveEntry>(disk_entry_, false);
+                              &disk_entry_.AsEphemeralRawAddr(), nullptr);
+    entry_ =
+        new HttpCache::ActiveEntry(cache_.GetWeakPtr(), disk_entry_, false);
     (static_cast<MockDiskEntry*>(disk_entry_))->AddRef();
-    writers_ = std::make_unique<HttpCache::Writers>(&test_cache_, entry_.get());
+    writers_ = std::make_unique<HttpCache::Writers>(
+        &test_cache_, base::WrapRefCounted(entry_.get()));
   }
 
   std::unique_ptr<HttpTransaction> CreateNetworkTransaction() {
@@ -127,8 +130,9 @@ class WritersTest : public TestWithTaskEnvironment {
                                NetLogWithSource());
     base::RunLoop().RunUntilIdle();
     response_info_ = *(network_transaction->GetResponseInfo());
-    if (content_encoding_present)
+    if (content_encoding_present) {
       response_info_.headers->AddHeader("Content-Encoding", "gzip");
+    }
 
     // Create a mock cache transaction.
     std::unique_ptr<TestHttpCacheTransaction> transaction =
@@ -183,8 +187,7 @@ class WritersTest : public TestWithTaskEnvironment {
     std::string content;
     int rv = 0;
     do {
-      scoped_refptr<IOBuffer> buf =
-          base::MakeRefCounted<IOBuffer>(kDefaultBufferSize);
+      auto buf = base::MakeRefCounted<IOBufferWithSize>(kDefaultBufferSize);
       rv = writers_->Read(buf.get(), kDefaultBufferSize, callback.callback(),
                           transaction);
       if (rv == ERR_IO_PENDING) {
@@ -192,10 +195,11 @@ class WritersTest : public TestWithTaskEnvironment {
         base::RunLoop().RunUntilIdle();
       }
 
-      if (rv > 0)
+      if (rv > 0) {
         content.append(buf->data(), rv);
-      else if (rv < 0)
+      } else if (rv < 0) {
         return rv;
+      }
     } while (rv > 0);
 
     result->swap(content);
@@ -209,17 +213,18 @@ class WritersTest : public TestWithTaskEnvironment {
 
     std::string content;
     int rv = 0;
-    scoped_refptr<IOBuffer> buf = base::MakeRefCounted<IOBuffer>(5);
+    auto buf = base::MakeRefCounted<IOBufferWithSize>(5);
     rv = writers_->Read(buf.get(), 5, callback.callback(), transaction);
     if (rv == ERR_IO_PENDING) {
       rv = callback.WaitForResult();
       base::RunLoop().RunUntilIdle();
     }
 
-    if (rv > 0)
+    if (rv > 0) {
       result->append(buf->data(), rv);
-    else if (rv < 0)
+    } else if (rv < 0) {
       return rv;
+    }
 
     return OK;
   }
@@ -239,8 +244,9 @@ class WritersTest : public TestWithTaskEnvironment {
     int rv = 0;
 
     std::vector<scoped_refptr<IOBuffer>> bufs;
-    for (auto buffer_length : buffer_lengths)
-      bufs.push_back(base::MakeRefCounted<IOBuffer>(buffer_length));
+    for (auto buffer_length : buffer_lengths) {
+      bufs.push_back(base::MakeRefCounted<IOBufferWithSize>(buffer_length));
+    }
 
     std::vector<TestCompletionCallback> callbacks(buffer_lengths.size());
 
@@ -299,17 +305,20 @@ class WritersTest : public TestWithTaskEnvironment {
       std::vector<TestCompletionCallback> callbacks(transactions_.size());
 
       for (size_t i = 0; i < transactions_.size(); i++) {
-        bufs.push_back(base::MakeRefCounted<IOBuffer>(kDefaultBufferSize));
+        bufs.push_back(
+            base::MakeRefCounted<IOBufferWithSize>(kDefaultBufferSize));
 
         // If we have deleted a transaction in the first iteration, then do not
         // invoke Read on it, in subsequent iterations.
         if (!first_iter && deleteType != DeleteTransactionType::NONE &&
-            i == delete_index)
+            i == delete_index) {
           continue;
+        }
 
         // For it to be an idle transaction, do not invoke Read.
-        if (deleteType == DeleteTransactionType::IDLE && i == delete_index)
+        if (deleteType == DeleteTransactionType::IDLE && i == delete_index) {
           continue;
+        }
 
         rv = writers_->Read(bufs[i].get(), kDefaultBufferSize,
                             callbacks[i].callback(), transactions_[i].get());
@@ -326,8 +335,9 @@ class WritersTest : public TestWithTaskEnvironment {
 
       std::vector<int> rvs;
       for (size_t i = 0; i < callbacks.size(); i++) {
-        if (i == delete_index && deleteType != DeleteTransactionType::NONE)
+        if (i == delete_index && deleteType != DeleteTransactionType::NONE) {
           continue;
+        }
         rv = callbacks[i].WaitForResult();
         rvs.push_back(rv);
       }
@@ -370,13 +380,13 @@ class WritersTest : public TestWithTaskEnvironment {
 
     // Read a few bytes so that truncation is possible.
     TestCompletionCallback callback;
-    scoped_refptr<IOBuffer> buf = base::MakeRefCounted<IOBuffer>(5);
+    auto buf = base::MakeRefCounted<IOBufferWithSize>(5);
     int rv = writers_->Read(buf.get(), 5, callback.callback(), transaction);
     EXPECT_EQ(ERR_IO_PENDING, rv);  // Since the default is asynchronous.
     EXPECT_EQ(5, callback.GetResult(rv));
 
     // Start reading a few more bytes and return.
-    buf = base::MakeRefCounted<IOBuffer>(5);
+    buf = base::MakeRefCounted<IOBufferWithSize>(5);
     rv = writers_->Read(buf.get(), 5, base::BindOnce([](int rv) {}),
                         transaction);
     EXPECT_EQ(ERR_IO_PENDING, rv);
@@ -402,10 +412,11 @@ class WritersTest : public TestWithTaskEnvironment {
       en->Close();
 
       for (size_t i = 0; i < transactions_.size(); i++) {
-        bufs.push_back(base::MakeRefCounted<IOBuffer>(30));
+        bufs.push_back(base::MakeRefCounted<IOBufferWithSize>(30));
 
-        if (!first_iter && i > 0)
+        if (!first_iter && i > 0) {
           break;
+        }
         rv = writers_->Read(bufs[i].get(), 30, callbacks[i].callback(),
                             transactions_[i].get());
         EXPECT_EQ(ERR_IO_PENDING, rv);  // Since the default is asynchronous.
@@ -435,7 +446,7 @@ class WritersTest : public TestWithTaskEnvironment {
     std::vector<TestCompletionCallback> callbacks(results->size());
 
     for (size_t i = 0; i < transactions_.size(); i++) {
-      bufs.push_back(base::MakeRefCounted<IOBuffer>(30));
+      bufs.push_back(base::MakeRefCounted<IOBufferWithSize>(30));
 
       rv = writers_->Read(bufs[i].get(), 30, callbacks[i].callback(),
                           transactions_[i].get());
@@ -472,12 +483,12 @@ class WritersTest : public TestWithTaskEnvironment {
   bool Truncated() const {
     const int kResponseInfoIndex = 0;  // Keep updated with HttpCache.
     TestCompletionCallback callback;
-    int io_buf_len = entry_->disk_entry->GetDataSize(kResponseInfoIndex);
-    if (io_buf_len == 0)
+    int io_buf_len = entry_->GetEntry()->GetDataSize(kResponseInfoIndex);
+    if (io_buf_len == 0) {
       return false;
+    }
 
-    scoped_refptr<IOBuffer> read_buffer =
-        base::MakeRefCounted<IOBuffer>(io_buf_len);
+    auto read_buffer = base::MakeRefCounted<IOBufferWithSize>(io_buf_len);
     int rv = disk_entry_->ReadData(kResponseInfoIndex, 0, read_buffer.get(),
                                    io_buf_len, callback.callback());
     rv = callback.GetResult(rv);
@@ -498,10 +509,8 @@ class WritersTest : public TestWithTaskEnvironment {
   ScopedMockTransaction scoped_transaction_;
   MockHttpCache cache_;
   std::unique_ptr<HttpCache::Writers> writers_;
-  // This field is not a raw_ptr<> because it was filtered by the rewriter for:
-  // #addr-of
-  RAW_PTR_EXCLUSION disk_cache::Entry* disk_entry_ = nullptr;
-  std::unique_ptr<HttpCache::ActiveEntry> entry_;
+  raw_ptr<disk_cache::Entry> disk_entry_ = nullptr;
+  raw_ptr<HttpCache::ActiveEntry> entry_ = nullptr;
   TestHttpCache test_cache_;
 
   // Should be before transactions_ since it is accessed in the network
@@ -530,8 +539,9 @@ TEST_F(WritersTest, AddManyTransactions) {
   CreateWritersAddTransaction();
   EXPECT_FALSE(writers_->IsEmpty());
 
-  for (int i = 0; i < 5; i++)
+  for (int i = 0; i < 5; i++) {
     AddTransactionToExistingWriters();
+  }
 
   EXPECT_EQ(6, writers_->GetTransactionsCount());
 }

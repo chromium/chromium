@@ -94,7 +94,7 @@ AboutThisSiteStatus ValidateSiteInfo(const proto::SiteInfo& site_info) {
 }
 
 AboutThisSiteStatus ValidateMetadata(
-    const absl::optional<proto::AboutThisSiteMetadata>& metadata) {
+    const std::optional<proto::AboutThisSiteMetadata>& metadata) {
   if (!metadata)
     return AboutThisSiteStatus::kNoResult;
   if (!metadata->has_site_info())

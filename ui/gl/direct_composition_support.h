@@ -19,15 +19,9 @@
 
 namespace gl {
 
-class GLDisplayEGL;
-
 // Initialize direct composition with the given d3d11 device.
 GL_EXPORT void InitializeDirectComposition(
     Microsoft::WRL::ComPtr<ID3D11Device> d3d11_device);
-
-// Initialize direct composition with the given ANGLE egl display. It calls
-// InitializeDirectComposition() with ANGLE's d3d11 device internally.
-GL_EXPORT void InitializeDirectCompositionANGLE(GLDisplayEGL* display);
 
 GL_EXPORT void ShutdownDirectComposition();
 
@@ -69,6 +63,12 @@ GL_EXPORT bool DirectCompositionScaledOverlaysSupported();
 
 // Returns preferred overlay format set when detecting overlay support.
 GL_EXPORT DXGI_FORMAT GetDirectCompositionSDROverlayFormat();
+
+// Returns true if video processor auto HDR feature is supported.
+GL_EXPORT bool VideoProcessorAutoHDRSupported();
+
+// Returns true if video processor support handling the given format.
+GL_EXPORT bool CheckVideoProcessorFormatSupport(DXGI_FORMAT format);
 
 // Returns overlay support flags for the given format.
 // Caller should check for DXGI_OVERLAY_SUPPORT_FLAG_DIRECT and

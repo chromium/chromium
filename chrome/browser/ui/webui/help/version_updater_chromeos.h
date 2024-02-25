@@ -5,10 +5,11 @@
 #ifndef CHROME_BROWSER_UI_WEBUI_HELP_VERSION_UPDATER_CHROMEOS_H_
 #define CHROME_BROWSER_UI_WEBUI_HELP_VERSION_UPDATER_CHROMEOS_H_
 
+#include <optional>
+
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ui/webui/help/version_updater.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace content {
 class BrowserContext;
@@ -18,8 +19,10 @@ class WebContents;
 class VersionUpdaterCros : public VersionUpdater,
                            public ash::UpdateEngineClient::Observer {
  public:
+  explicit VersionUpdaterCros(content::WebContents* web_contents);
   VersionUpdaterCros(const VersionUpdaterCros&) = delete;
   VersionUpdaterCros& operator=(const VersionUpdaterCros&) = delete;
+  ~VersionUpdaterCros() override;
 
   // VersionUpdater implementation.
   void CheckForUpdate(StatusCallback callback, PromoteCallback) override;
@@ -38,13 +41,6 @@ class VersionUpdaterCros : public VersionUpdater,
 
   // Gets the last update status, without triggering a new check or download.
   void GetUpdateStatus(StatusCallback callback);
-
- protected:
-  friend class VersionUpdater;
-
-  // Clients must use VersionUpdater::Create().
-  explicit VersionUpdaterCros(content::WebContents* web_contents);
-  ~VersionUpdaterCros() override;
 
  private:
   // UpdateEngineClient::Observer implementation.
@@ -65,10 +61,10 @@ class VersionUpdaterCros : public VersionUpdater,
 
   // Callback from UpdateEngineClient::IsFeatureEnabled().
   void OnIsFeatureEnabled(IsFeatureEnabledCallback callback,
-                          absl::optional<bool> enabled);
+                          std::optional<bool> enabled);
 
   // BrowserContext in which the class was instantiated.
-  raw_ptr<content::BrowserContext, ExperimentalAsh> context_;
+  raw_ptr<content::BrowserContext> context_;
 
   // Callback used to communicate update status to the client.
   StatusCallback callback_;

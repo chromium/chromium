@@ -76,7 +76,7 @@ class ASH_EXPORT AutozoomControllerImpl
 
   // The pref service of the currently active user. Can be null in
   // ash_unittests.
-  raw_ptr<PrefService, ExperimentalAsh> active_user_pref_service_ = nullptr;
+  raw_ptr<PrefService> active_user_pref_service_ = nullptr;
 
   // The registrar used to watch Autozoom prefs changes in the above
   // |active_user_pref_service_| from outside ash.

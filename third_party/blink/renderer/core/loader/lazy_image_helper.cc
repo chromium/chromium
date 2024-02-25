@@ -31,16 +31,17 @@ namespace {
                               base::saturated_cast<int>((bytes) / 1024), 1, \
                               64 * 1024, 50)
 
-Document* GetRootDocumentOrNull(Element* element) {
-  if (LocalFrame* frame = element->GetDocument().GetFrame())
+Document* GetRootDocumentOrNull(Node* node) {
+  if (LocalFrame* frame = node->GetDocument().GetFrame()) {
     return frame->LocalFrameRoot().GetDocument();
+  }
   return nullptr;
 }
 
 }  // namespace
 
 // static
-void LazyImageHelper::StartMonitoring(blink::Element* element) {
+void LazyImageHelper::StartMonitoring(Element* element) {
   if (Document* document = GetRootDocumentOrNull(element)) {
     document->EnsureLazyLoadImageObserver().StartMonitoringNearViewport(
         document, element);
@@ -51,6 +52,15 @@ void LazyImageHelper::StopMonitoring(Element* element) {
   if (Document* document = GetRootDocumentOrNull(element)) {
     document->EnsureLazyLoadImageObserver().StopMonitoring(element);
   }
+}
+
+// static
+bool LazyImageHelper::LoadAllImagesAndBlockLoadEvent(Document& document) {
+  if (Document* root_document = GetRootDocumentOrNull(&document)) {
+    return root_document->EnsureLazyLoadImageObserver()
+        .LoadAllImagesAndBlockLoadEvent(document);
+  }
+  return false;
 }
 
 // static

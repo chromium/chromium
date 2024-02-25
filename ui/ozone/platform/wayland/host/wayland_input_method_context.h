@@ -54,8 +54,8 @@ class WaylandInputMethodContext : public LinuxInputMethodContext,
       const std::u16string& text,
       const gfx::Range& text_range,
       const gfx::Range& selection_range,
-      const absl::optional<GrammarFragment>& fragment,
-      const absl::optional<AutocorrectInfo>& autocorrect) override;
+      const std::optional<GrammarFragment>& fragment,
+      const std::optional<AutocorrectInfo>& autocorrect) override;
   void WillUpdateFocus(TextInputClient* old_client,
                        TextInputClient* new_client) override;
   void UpdateFocus(bool has_client,
@@ -82,7 +82,10 @@ class WaylandInputMethodContext : public LinuxInputMethodContext,
   void OnCommitString(base::StringPiece text) override;
   void OnCursorPosition(int32_t index, int32_t anchor) override;
   void OnDeleteSurroundingText(int32_t index, uint32_t length) override;
-  void OnKeysym(uint32_t keysym, uint32_t state, uint32_t modifiers) override;
+  void OnKeysym(uint32_t keysym,
+                uint32_t state,
+                uint32_t modifiers,
+                uint32_t time) override;
   void OnSetPreeditRegion(int32_t index,
                           uint32_t length,
                           const std::vector<SpanStyle>& spans) override;

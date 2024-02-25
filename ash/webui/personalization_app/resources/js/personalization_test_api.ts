@@ -2,17 +2,17 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {assert} from 'chrome://resources/js/assert_ts.js';
+import {isNonEmptyArray} from 'chrome://resources/ash/common/sea_pen/sea_pen_utils.js';
+import {assert} from 'chrome://resources/js/assert.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 
 import {isGooglePhotosIntegrationEnabled, isPersonalizationJellyEnabled, isTimeOfDayWallpaperEnabled} from './load_time_booleans.js';
-import {Paths, PersonalizationRouter} from './personalization_router_element.js';
+import {Paths, PersonalizationRouterElement} from './personalization_router_element.js';
 import {PersonalizationStore} from './personalization_store.js';
 import {getThemeProvider} from './theme/theme_interface_provider.js';
 import {DEFAULT_COLOR_SCHEME} from './theme/utils.js';
-import {isNonEmptyArray} from './utils.js';
 import {setFullscreenEnabledAction} from './wallpaper/wallpaper_actions.js';
-import {selectWallpaper} from './wallpaper/wallpaper_controller.js';
+import {selectGooglePhotosAlbum, selectWallpaper, setDailyRefreshCollectionId} from './wallpaper/wallpaper_controller.js';
 import {getWallpaperProvider} from './wallpaper/wallpaper_interface_provider.js';
 
 /**
@@ -44,7 +44,7 @@ async function reset() {
         colorScheme === DEFAULT_COLOR_SCHEME, 'reset to default color scheme');
   }
 
-  const router = PersonalizationRouter.instance();
+  const router = PersonalizationRouterElement.instance();
   router.goToRoute(Paths.ROOT);
 }
 
@@ -59,6 +59,25 @@ async function selectTimeOfDayWallpaper() {
   await selectWallpaper(image, getWallpaperProvider(), store);
 }
 
+async function enableDailyRefresh(collectionId: string) {
+  const store = PersonalizationStore.getInstance();
+  assert(!!store);
+  await setDailyRefreshCollectionId(
+      collectionId, getWallpaperProvider(), store);
+}
+
+async function disableDailyRefresh() {
+  const store = PersonalizationStore.getInstance();
+  assert(!!store);
+  await setDailyRefreshCollectionId('', getWallpaperProvider(), store);
+}
+
+async function enableDailyGooglePhotosRefresh(albumId: string) {
+  const store = PersonalizationStore.getInstance();
+  assert(!!store);
+  await selectGooglePhotosAlbum(albumId, getWallpaperProvider(), store);
+}
+
 declare global {
   interface Window {
     personalizationTestApi: {
@@ -67,6 +86,9 @@ declare global {
       makeTransparent: () => void,
       reset: () => Promise<void>,
       selectTimeOfDayWallpaper: () => Promise<void>,
+      enableDailyRefresh: (collectionId: string) => Promise<void>,
+      disableDailyRefresh: () => Promise<void>,
+      enableDailyGooglePhotosRefresh: (albumId: string) => Promise<void>,
     };
   }
 }
@@ -77,4 +99,7 @@ window.personalizationTestApi = {
   makeTransparent,
   reset,
   selectTimeOfDayWallpaper,
+  enableDailyRefresh,
+  disableDailyRefresh,
+  enableDailyGooglePhotosRefresh,
 };

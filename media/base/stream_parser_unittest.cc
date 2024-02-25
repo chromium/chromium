@@ -22,8 +22,6 @@ const int kEnd = -1;
 const uint8_t kFakeData[] = {0xFF};
 const TrackId kAudioTrackId = 0;
 const TrackId kVideoTrackId = 1;
-const TrackId kTextTrackIdA = 2;
-const TrackId kTextTrackIdB = 3;
 
 static bool IsAudio(scoped_refptr<StreamParserBuffer> buffer) {
   return buffer->type() == DemuxerStream::AUDIO;
@@ -31,10 +29,6 @@ static bool IsAudio(scoped_refptr<StreamParserBuffer> buffer) {
 
 static bool IsVideo(scoped_refptr<StreamParserBuffer> buffer) {
   return buffer->type() == DemuxerStream::VIDEO;
-}
-
-static bool IsText(scoped_refptr<StreamParserBuffer> buffer) {
-  return buffer->type() == DemuxerStream::TEXT;
 }
 
 // Creates and appends a sequence of StreamParserBuffers to the provided
@@ -90,40 +84,16 @@ class StreamParserTest : public testing::Test {
                     &buffer_queue_map_[kVideoTrackId]);
   }
 
-  // Current tests only need up to two distinct text BufferQueues. This helper
-  // conditionally appends buffers to the underlying |buffer_queue_map_| keyed
-  // by the respective track ID. If |decode_timestamps_{a,b}|
-  // is NULL, then the corresponding BufferQueue is not changed at all.
-  // Note that key collision on map insertion does not replace the previous
-  // value.
-  void GenerateTextBuffers(const int* decode_timestamps_a,
-                           const int* decode_timestamps_b) {
-    if (decode_timestamps_a) {
-      GenerateBuffers(decode_timestamps_a, DemuxerStream::TEXT, kTextTrackIdA,
-                      &buffer_queue_map_[kTextTrackIdA]);
-    }
-
-    if (decode_timestamps_b) {
-      GenerateBuffers(decode_timestamps_b, DemuxerStream::TEXT, kTextTrackIdB,
-                      &buffer_queue_map_[kTextTrackIdB]);
-    }
-  }
-
   // Returns a string that describes the sequence of buffers in
   // |merged_buffers_|. The string is a concatenation of space-delimited buffer
   // descriptors in the same sequence as |merged_buffers_|. Each descriptor is
   // the concatenation of
   // 1) a single character that describes the buffer's type(), e.g. A, V, or T
-  //    for audio, video, or text, respectively
+  //    for audio, video respectively
   // 2) the buffer's track_id()
   // 3) ":"
   // 4) the buffer's decode timestamp.
-  // If |include_type_and_text_track| is false, then items 1, 2, and 3 are
-  // not included in descriptors. This is useful when buffers with different
-  // media types but the same decode timestamp are expected, and the exact
-  // sequence of media types for the tying timestamps is not subject to
-  // verification.
-  std::string MergedBufferQueueString(bool include_type_and_text_track) {
+  std::string MergedBufferQueueString(bool include_type) {
     std::stringstream results_stream;
     for (BufferQueue::const_iterator itr = merged_buffers_.begin();
          itr != merged_buffers_.end();
@@ -131,17 +101,13 @@ class StreamParserTest : public testing::Test {
       if (itr != merged_buffers_.begin())
         results_stream << " ";
       const StreamParserBuffer& buffer = *(itr->get());
-      if (include_type_and_text_track) {
+      if (include_type) {
         switch (buffer.type()) {
           case DemuxerStream::AUDIO:
             results_stream << "A";
             break;
           case DemuxerStream::VIDEO:
             results_stream << "V";
-            break;
-          case DemuxerStream::TEXT:
-            results_stream << "T";
-
             break;
           default:
             NOTREACHED();
@@ -155,40 +121,36 @@ class StreamParserTest : public testing::Test {
   }
 
   // Verifies that MergeBufferQueues() of the current |audio_buffers_|,
-  // |video_buffers_|, |text_map_|, and |merged_buffers_| returns true and
+  // |video_buffers_|, and |merged_buffers_| returns true and
   // results in an updated |merged_buffers_| that matches expectation. The
   // expectation, specified in |expected|, is compared to the string resulting
   // from MergedBufferQueueString() (see comments for that method) with
-  // |verify_type_and_text_track_sequence| passed. |merged_buffers_| is appended
+  // |verify_type_and_sequence| passed. |merged_buffers_| is appended
   // to by the merge, and may be setup by the caller to have some pre-existing
   // buffers; it is both an input and output of this method.
-  // Regardless of |verify_type_and_text_track_sequence|, the marginal number
-  // of buffers of each type (audio, video, text) resulting from the merge is
-  // also verified to match the number of buffers in |audio_buffers_|,
-  // |video_buffers_|, and |text_map_|, respectively.
+  // Regardless of |verify_type_and_sequence|, the marginal number
+  // of buffers of each type (audio, video) resulting from the merge is
+  // also verified to match the number of buffers in |audio_buffers_| and
+  // |video_buffers_| respectively.
   void VerifyMergeSuccess(const std::string& expected,
-                          bool verify_type_and_text_track_sequence) {
+                          bool verify_type_and_sequence) {
     // |merged_buffers| may already have some buffers. Count them by type for
     // later inclusion in verification.
     size_t original_audio_in_merged = CountMatchingMergedBuffers(IsAudio);
     size_t original_video_in_merged = CountMatchingMergedBuffers(IsVideo);
-    size_t original_text_in_merged = CountMatchingMergedBuffers(IsText);
 
     EXPECT_TRUE(MergeBufferQueues(buffer_queue_map_, &merged_buffers_));
 
     // Verify resulting contents of |merged_buffers| matches |expected|.
-    EXPECT_EQ(expected,
-              MergedBufferQueueString(verify_type_and_text_track_sequence));
+    EXPECT_EQ(expected, MergedBufferQueueString(verify_type_and_sequence));
 
     // Verify that the correct number of each type of buffer is in the merge
     // result.
     size_t audio_in_merged = CountMatchingMergedBuffers(IsAudio);
     size_t video_in_merged = CountMatchingMergedBuffers(IsVideo);
-    size_t text_in_merged = CountMatchingMergedBuffers(IsText);
 
     EXPECT_GE(audio_in_merged, original_audio_in_merged);
     EXPECT_GE(video_in_merged, original_video_in_merged);
-    EXPECT_GE(text_in_merged, original_text_in_merged);
 
     EXPECT_EQ(buffer_queue_map_[kAudioTrackId].size(),
               audio_in_merged - original_audio_in_merged);
@@ -198,16 +160,6 @@ class StreamParserTest : public testing::Test {
               video_in_merged - original_video_in_merged);
     if (buffer_queue_map_[kVideoTrackId].empty())
       buffer_queue_map_.erase(kVideoTrackId);
-
-    size_t expected_text_buffer_count = 0;
-    expected_text_buffer_count += buffer_queue_map_[kTextTrackIdA].size();
-    if (buffer_queue_map_[kTextTrackIdA].empty())
-      buffer_queue_map_.erase(kTextTrackIdA);
-    expected_text_buffer_count += buffer_queue_map_[kTextTrackIdB].size();
-    if (buffer_queue_map_[kTextTrackIdB].empty())
-      buffer_queue_map_.erase(kTextTrackIdB);
-    EXPECT_EQ(expected_text_buffer_count,
-              text_in_merged - original_text_in_merged);
   }
 
   // Verifies that MergeBufferQueues() of the current |buffer_queue_map_| and
@@ -245,40 +197,12 @@ TEST_F(StreamParserTest, MergeBufferQueues_SingleVideoBuffer) {
   VerifyMergeSuccess(expected, true);
 }
 
-TEST_F(StreamParserTest, MergeBufferQueues_SingleTextBuffer) {
-  std::string expected = "T2:100";
-  int text_timestamps[] = { 100, kEnd };
-  GenerateTextBuffers(text_timestamps, NULL);
-  VerifyMergeSuccess(expected, true);
-}
-
 TEST_F(StreamParserTest, MergeBufferQueues_OverlappingAudioVideo) {
   std::string expected = "A0:100 V1:101 V1:102 A0:103 A0:104 V1:105";
   int audio_timestamps[] = { 100, 103, 104, kEnd };
   GenerateAudioBuffers(audio_timestamps);
   int video_timestamps[] = { 101, 102, 105, kEnd };
   GenerateVideoBuffers(video_timestamps);
-  VerifyMergeSuccess(expected, true);
-}
-
-TEST_F(StreamParserTest, MergeBufferQueues_OverlappingMultipleText) {
-  std::string expected = "T2:100 T2:101 T3:103 T2:104 T3:105 T3:106";
-  int text_timestamps_a[] = { 100, 101, 104, kEnd };
-  int text_timestamps_b[] = { 103, 105, 106, kEnd };
-  GenerateTextBuffers(text_timestamps_a, text_timestamps_b);
-  VerifyMergeSuccess(expected, true);
-}
-
-TEST_F(StreamParserTest, MergeBufferQueues_OverlappingAudioVideoText) {
-  std::string expected = "A0:100 V1:101 T2:102 V1:103 T3:104 A0:105 V1:106 "
-                         "T2:107";
-  int audio_timestamps[] = { 100, 105, kEnd };
-  GenerateAudioBuffers(audio_timestamps);
-  int video_timestamps[] = { 101, 103, 106, kEnd };
-  GenerateVideoBuffers(video_timestamps);
-  int text_timestamps_a[] = { 102, 107, kEnd };
-  int text_timestamps_b[] = { 104, kEnd };
-  GenerateTextBuffers(text_timestamps_a, text_timestamps_b);
   VerifyMergeSuccess(expected, true);
 }
 
@@ -296,13 +220,11 @@ TEST_F(StreamParserTest, MergeBufferQueues_CrossStreamDuplicates) {
   // Interface keeps the choice undefined of which stream's buffer wins the
   // selection when timestamps are tied. Verify at least the right number of
   // each kind of buffer results, and that buffers are in nondecreasing order.
-  std::string expected = "100 100 100 100 100 100 102 102 102 102 102 102 102";
+  std::string expected = "100 100 100 100 100 102 102 102 102";
   int audio_timestamps[] = { 100, 100, 100, 102, kEnd };
   GenerateAudioBuffers(audio_timestamps);
   int video_timestamps[] = { 100, 100, 102, 102, 102, kEnd };
   GenerateVideoBuffers(video_timestamps);
-  int text_timestamps[] = { 100, 102, 102, 102, kEnd };
-  GenerateTextBuffers(text_timestamps, NULL);
   VerifyMergeSuccess(expected, false);
 }
 
@@ -321,41 +243,31 @@ TEST_F(StreamParserTest, MergeBufferQueues_InvalidDecreasingMultipleStreams) {
 }
 
 TEST_F(StreamParserTest, MergeBufferQueues_ValidAppendToExistingMerge) {
-  std::string expected = "A0:100 V1:101 T2:102 V1:103 T3:104 A0:105 V1:106 "
-                         "T2:107";
+  std::string expected = "A0:100 V1:101 V1:103 A0:105 V1:106";
   int audio_timestamps[] = { 100, 105, kEnd };
   GenerateAudioBuffers(audio_timestamps);
   int video_timestamps[] = { 101, 103, 106, kEnd };
   GenerateVideoBuffers(video_timestamps);
-  int text_timestamps_a[] = { 102, 107, kEnd };
-  int text_timestamps_b[] = { 104, kEnd };
-  GenerateTextBuffers(text_timestamps_a, text_timestamps_b);
   VerifyMergeSuccess(expected, true);
 
   ClearBufferQueuesButKeepAnyMergedBuffers();
 
-  expected = "A0:100 V1:101 T2:102 V1:103 T3:104 A0:105 V1:106 T2:107 "
-             "A0:107 V1:111 T2:112 V1:113 T3:114 A0:115 V1:116 T2:117";
+  expected =
+      "A0:100 V1:101 V1:103 A0:105 V1:106 "
+      "A0:107 V1:111 V1:113 A0:115 V1:116";
   int more_audio_timestamps[] = { 107, 115, kEnd };
   GenerateAudioBuffers(more_audio_timestamps);
   int more_video_timestamps[] = { 111, 113, 116, kEnd };
   GenerateVideoBuffers(more_video_timestamps);
-  int more_text_timestamps_a[] = { 112, 117, kEnd };
-  int more_text_timestamps_b[] = { 114, kEnd };
-  GenerateTextBuffers(more_text_timestamps_a, more_text_timestamps_b);
   VerifyMergeSuccess(expected, true);
 }
 
 TEST_F(StreamParserTest, MergeBufferQueues_InvalidAppendToExistingMerge) {
-  std::string expected = "A0:100 V1:101 T2:102 V1:103 T3:104 A0:105 V1:106 "
-                         "T2:107";
+  std::string expected = "A0:100 V1:101 V1:103 A0:105 V1:106 V1:107";
   int audio_timestamps[] = { 100, 105, kEnd };
   GenerateAudioBuffers(audio_timestamps);
-  int video_timestamps[] = { 101, 103, 106, kEnd };
+  int video_timestamps[] = {101, 103, 106, 107, kEnd};
   GenerateVideoBuffers(video_timestamps);
-  int text_timestamps_a[] = { 102, 107, kEnd };
-  int text_timestamps_b[] = { 104, kEnd };
-  GenerateTextBuffers(text_timestamps_a, text_timestamps_b);
   VerifyMergeSuccess(expected, true);
 
   // Appending empty buffers to pre-existing merge result should succeed and not

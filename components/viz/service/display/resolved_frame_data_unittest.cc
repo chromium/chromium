@@ -17,6 +17,8 @@
 #include "components/viz/test/compositor_frame_helpers.h"
 #include "components/viz/test/draw_quad_matchers.h"
 #include "components/viz/test/test_surface_id_allocator.h"
+#include "gpu/command_buffer/service/shared_image/shared_image_manager.h"
+#include "gpu/command_buffer/service/sync_point_manager.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -44,8 +46,9 @@ void AddRenderPassQuad(CompositorRenderPass* render_pass,
                        CompositorRenderPassId render_pass_id) {
   auto* sqs = render_pass->CreateAndAppendSharedQuadState();
   sqs->SetAll(gfx::Transform(), kOutputRect, kOutputRect, gfx::MaskFilterInfo(),
-              absl::nullopt, /*are_contents_opaque=*/false, 1,
-              SkBlendMode::kSrcOver, 0);
+              /*clip=*/std::nullopt, /*contents_opaque=*/false, 1,
+              SkBlendMode::kSrcOver, /*sorting_context=*/0,
+              /*layer_id=*/0u, /*fast_rounded_corner=*/false);
   auto* quad =
       render_pass->CreateAndAppendDrawQuad<CompositorRenderPassDrawQuad>();
   quad->SetNew(sqs, kOutputRect, kOutputRect, render_pass_id,
@@ -79,7 +82,11 @@ class ResolvedFrameDataTest : public testing::Test {
   }
 
   ServerSharedBitmapManager shared_bitmap_manager_;
-  DisplayResourceProviderSoftware resource_provider_{&shared_bitmap_manager_};
+  gpu::SharedImageManager shared_image_manager_;
+  gpu::SyncPointManager sync_point_manager_;
+
+  DisplayResourceProviderSoftware resource_provider_{
+      &shared_bitmap_manager_, &shared_image_manager_, &sync_point_manager_};
   FrameSinkManagerImpl frame_sink_manager_{
       FrameSinkManagerImpl::InitParams(&shared_bitmap_manager_)};
 

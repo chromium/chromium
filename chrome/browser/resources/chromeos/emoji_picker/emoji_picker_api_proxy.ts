@@ -3,76 +3,44 @@
 // found in the LICENSE file.
 import {Url} from 'chrome://resources/mojo/url/mojom/url.mojom-webui.js';
 
-import {PageHandlerFactory, PageHandlerRemote, Status, TenorGifResponse} from './emoji_picker.mojom-webui.js';
+import {Category, PageHandlerFactory, PageHandlerRemote, Status, TenorGifResponse} from './emoji_picker.mojom-webui.js';
+import {EmojiSearch} from './emoji_search.mojom-webui.js';
 import {NewWindowProxy} from './new_window_proxy.mojom-webui.js';
 import {EmojiVariants, GifSubcategoryData, VisualContent} from './types.js';
 
 const HELP_CENTRE_URL = 'https://support.google.com/chrome?p=palette';
 
-/** @interface */
-export interface EmojiPickerApiProxy {
-  showUi(): void;
-
-  insertEmoji(emoji: string, isVariant: boolean, searchLength: number): void;
-
-  insertGif(gif: Url): void;
-
-  isIncognitoTextField(): Promise<{incognito: boolean}>;
-
-  getFeatureList(): Promise<{featureList: number[]}>;
-
-  getCategories(): Promise<{gifCategories: GifSubcategoryData[]}>;
-
-  getFeaturedGifs(pos?: string):
-      Promise<{status: Status, featuredGifs: TenorGifResponse}>;
-
-  searchGifs(query: string, pos?: string):
-      Promise<{status: Status, searchGifs: TenorGifResponse}>;
-
-  getGifsByIds(ids: string[]):
-      Promise<{status: Status, selectedGifs: VisualContent[]}>;
-
-  convertTenorGifsToEmoji(gifs: TenorGifResponse): EmojiVariants[];
-
-  openHelpCentreArticle(): void;
-
-  onUiFullyLoaded(): void;
-}
-
-export class EmojiPickerApiProxyImpl implements EmojiPickerApiProxy {
+export class EmojiPickerApiProxy {
   handler = new PageHandlerRemote();
   newWindowProxy = NewWindowProxy.getRemote();
+  // TODO(b/309343774): Once search is always on, remove function wrapper.
+  searchProxy = () => EmojiSearch.getRemote();
   static instance: EmojiPickerApiProxy|null = null;
   constructor() {
     const factory = PageHandlerFactory.getRemote();
     factory.createPageHandler(this.handler.$.bindNewPipeAndPassReceiver());
   }
 
-  /** @override */
   showUi() {
     this.handler.showUI();
   }
-  /** @override */
+
   insertEmoji(emoji: string, isVariant: boolean, searchLength: number) {
     this.handler.insertEmoji(emoji, isVariant, searchLength);
   }
 
-  /** @override */
   insertGif(gif: Url) {
     this.handler.insertGif(gif);
   }
 
-  /** @override */
   isIncognitoTextField() {
     return this.handler.isIncognitoTextField();
   }
 
-  /** @override */
   getFeatureList() {
     return this.handler.getFeatureList();
   }
 
-  /** @override */
   async getCategories(): Promise<{gifCategories: GifSubcategoryData[]}> {
     const {gifCategories} = await this.handler.getCategories();
     return {
@@ -80,7 +48,6 @@ export class EmojiPickerApiProxyImpl implements EmojiPickerApiProxy {
     };
   }
 
-  /** @override */
   getFeaturedGifs(pos?: string):
       Promise<{status: Status, featuredGifs: TenorGifResponse}> {
     if (!navigator.onLine) {
@@ -95,7 +62,6 @@ export class EmojiPickerApiProxyImpl implements EmojiPickerApiProxy {
     return this.handler.getFeaturedGifs(pos || null);
   }
 
-  /** @override */
   searchGifs(query: string, pos?: string):
       Promise<{status: Status, searchGifs: TenorGifResponse}> {
     if (!navigator.onLine) {
@@ -122,17 +88,24 @@ export class EmojiPickerApiProxyImpl implements EmojiPickerApiProxy {
     return this.handler.searchGifs(query, pos || null);
   }
 
+  searchEmoji(query: string) {
+    return this.searchProxy().searchEmoji(query);
+  }
+
   /** @override */
   getGifsByIds(ids: string[]):
       Promise<{status: Status, selectedGifs: VisualContent[]}> {
     return this.handler.getGifsByIds(ids);
   }
 
-  /** @override */
   openHelpCentreArticle(): void {
     this.newWindowProxy.openUrl({
       url: HELP_CENTRE_URL,
     });
+  }
+
+  getInitialCategory(): Promise<{category: Category}> {
+    return this.handler.getInitialCategory();
   }
 
   onUiFullyLoaded(): void {
@@ -159,13 +132,13 @@ export class EmojiPickerApiProxyImpl implements EmojiPickerApiProxy {
   }
 
   static getInstance(): EmojiPickerApiProxy {
-    if (EmojiPickerApiProxyImpl.instance === null) {
-      EmojiPickerApiProxyImpl.instance = new EmojiPickerApiProxyImpl();
+    if (EmojiPickerApiProxy.instance === null) {
+      EmojiPickerApiProxy.instance = new EmojiPickerApiProxy();
     }
-    return EmojiPickerApiProxyImpl.instance;
+    return EmojiPickerApiProxy.instance;
   }
 
   static setInstance(instance: EmojiPickerApiProxy): void {
-    EmojiPickerApiProxyImpl.instance = instance;
+    EmojiPickerApiProxy.instance = instance;
   }
 }

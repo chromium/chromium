@@ -113,7 +113,6 @@ class CmdBufFuzz : public base::TestSuite {
     wgpu::Queue queue = device.GetQueue();
     bool done = false;
     queue.OnSubmittedWorkDone(
-        0u,
         [](WGPUQueueWorkDoneStatus, void* userdata) {
           *static_cast<bool*>(userdata) = true;
         },

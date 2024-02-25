@@ -11,6 +11,7 @@
 namespace blink {
 
 namespace style_change_reason {
+const char kAccessibility[] = "Accessibility";
 const char kActiveStylesheetsUpdate[] = "ActiveStylesheetsUpdate";
 const char kAnimation[] = "Animation";
 const char kAttribute[] = "Attribute";
@@ -57,6 +58,7 @@ const char kZoom[] = "Zoom";
 
 namespace style_change_extra_data {
 DEFINE_GLOBAL(AtomicString, g_active);
+DEFINE_GLOBAL(AtomicString, g_active_view_transition);
 DEFINE_GLOBAL(AtomicString, g_disabled);
 DEFINE_GLOBAL(AtomicString, g_drag);
 DEFINE_GLOBAL(AtomicString, g_focus);
@@ -64,13 +66,14 @@ DEFINE_GLOBAL(AtomicString, g_focus_visible);
 DEFINE_GLOBAL(AtomicString, g_focus_within);
 DEFINE_GLOBAL(AtomicString, g_hover);
 DEFINE_GLOBAL(AtomicString, g_past);
-DEFINE_GLOBAL(AtomicString, g_toggle);
 DEFINE_GLOBAL(AtomicString, g_unresolved);
 
 void Init() {
   DCHECK(IsMainThread());
 
   new (WTF::NotNullTag::kNotNull, (void*)&g_active) AtomicString(":active");
+  new (WTF::NotNullTag::kNotNull, (void*)&g_active_view_transition)
+      AtomicString(":active_view_transition");
   new (WTF::NotNullTag::kNotNull, (void*)&g_disabled) AtomicString(":disabled");
   new (WTF::NotNullTag::kNotNull, (void*)&g_drag) AtomicString(":-webkit-drag");
   new (WTF::NotNullTag::kNotNull, (void*)&g_focus) AtomicString(":focus");
@@ -80,7 +83,6 @@ void Init() {
       AtomicString(":focus-within");
   new (WTF::NotNullTag::kNotNull, (void*)&g_hover) AtomicString(":hover");
   new (WTF::NotNullTag::kNotNull, (void*)&g_past) AtomicString(":past");
-  new (WTF::NotNullTag::kNotNull, (void*)&g_toggle) AtomicString(":toggle");
   new (WTF::NotNullTag::kNotNull, (void*)&g_unresolved)
       AtomicString(":unresolved");
 }

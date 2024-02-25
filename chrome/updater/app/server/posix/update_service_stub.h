@@ -68,6 +68,7 @@ class UpdateServiceStub : public mojom::UpdateService {
 
  private:
   FRIEND_TEST_ALL_PREFIXES(UpdaterIPCTestCase, AllRpcsComplete);
+  FRIEND_TEST_ALL_PREFIXES(KSAdminTest, Register);
   // Creates an `UpdateServiceStub` and invokes a callback when the server
   // endpoint is created. This is useful for tests.
   UpdateServiceStub(

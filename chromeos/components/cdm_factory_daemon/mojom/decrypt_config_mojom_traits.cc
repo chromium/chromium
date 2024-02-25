@@ -123,7 +123,7 @@ bool StructTraits<chromeos::cdm::mojom::DecryptConfigDataView,
   if (!input.ReadSubsamples(&subsamples))
     return false;
 
-  absl::optional<media::EncryptionPattern> encryption_pattern;
+  std::optional<media::EncryptionPattern> encryption_pattern;
   if (!input.ReadEncryptionPattern(&encryption_pattern))
     return false;
 

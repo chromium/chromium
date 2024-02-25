@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ash/policy/reporting/metrics_reporting/network/network_info_sampler.h"
 
+#include <optional>
 #include <string>
 #include <utility>
 
@@ -20,7 +21,6 @@
 #include "chromeos/ash/components/network/network_state_handler.h"
 #include "dbus/object_path.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/cros_system_api/dbus/shill/dbus-constants.h"
 
 namespace reporting {
@@ -53,8 +53,7 @@ class NetworkInfoSamplerTest : public ::testing::Test {
     base::RunLoop().RunUntilIdle();
   }
 
-  raw_ptr<::ash::ShillDeviceClient::TestInterface,
-          DanglingUntriaged | ExperimentalAsh>
+  raw_ptr<::ash::ShillDeviceClient::TestInterface, DanglingUntriaged>
       device_client_;
 
  private:
@@ -98,7 +97,7 @@ TEST_F(NetworkInfoSamplerTest, AllTypes) {
   MetricData result;
   NetworkInfoSampler sampler;
   sampler.MaybeCollect(
-      base::BindLambdaForTesting([&](absl::optional<MetricData> metric_data) {
+      base::BindLambdaForTesting([&](std::optional<MetricData> metric_data) {
         ASSERT_TRUE(metric_data.has_value());
         result = std::move(metric_data.value());
       }));
@@ -174,7 +173,7 @@ TEST_F(NetworkInfoSamplerTest, NoDevices) {
   bool callback_called = false;
   NetworkInfoSampler sampler;
   sampler.MaybeCollect(
-      base::BindLambdaForTesting([&](absl::optional<MetricData> metric_data) {
+      base::BindLambdaForTesting([&](std::optional<MetricData> metric_data) {
         ASSERT_FALSE(metric_data.has_value());
         callback_called = true;
       }));

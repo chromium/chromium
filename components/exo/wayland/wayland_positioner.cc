@@ -4,6 +4,7 @@
 
 #include "components/exo/wayland/wayland_positioner.h"
 
+#include <numeric>
 #include <ostream>
 
 namespace exo::wayland {
@@ -110,7 +111,7 @@ struct Range1D {
     return {start + offset, end + offset};
   }
 
-  int32_t center() const { return (start + end) / 2; }
+  int32_t center() const { return std::midpoint(start, end); }
 };
 
 // Works out the range's position that results from using exactly the

@@ -42,11 +42,11 @@ class RendererControlMultiplexer : public media::mojom::Renderer {
   void StartPlayingFrom(::base::TimeDelta time) override;
   void SetPlaybackRate(double playback_rate) override;
   void SetVolume(float volume) override;
-  void SetCdm(const absl::optional<::base::UnguessableToken>& cdm_id,
+  void SetCdm(const std::optional<::base::UnguessableToken>& cdm_id,
               SetCdmCallback callback) override;
   void Initialize(
       mojo::PendingAssociatedRemote<media::mojom::RendererClient> client,
-      absl::optional<
+      std::optional<
           std::vector<::mojo::PendingRemote<::media::mojom::DemuxerStream>>>
           streams,
       media::mojom::MediaUrlParamsPtr media_url_params,

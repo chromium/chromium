@@ -8,7 +8,6 @@ import {ConsoleTestRunner} from 'console_test_runner';
 (async function() {
   TestRunner.addResult(`Tests exception message contains stack with correct function name.\n`);
 
-  await TestRunner.loadLegacyModule('console');
   await TestRunner.showPanel('console');
   await TestRunner.evaluateInPagePromise(`
     var foo = function ()

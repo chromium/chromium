@@ -28,7 +28,7 @@ class ManageMirrorSyncDialog : public SystemWebDialogDelegate {
   void OnCloseContents(content::WebContents* source,
                        bool* out_close_dialog) override;
   void OnWebContentsFinishedLoad() override;
-  raw_ptr<ManageMirrorSyncUI, ExperimentalAsh> mirrorsync_ui_ = nullptr;
+  raw_ptr<ManageMirrorSyncUI> mirrorsync_ui_ = nullptr;
 };
 
 }  // namespace ash

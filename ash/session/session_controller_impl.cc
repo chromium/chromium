@@ -5,6 +5,7 @@
 #include "ash/session/session_controller_impl.h"
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <utility>
 
@@ -32,12 +33,31 @@
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
 #include "components/user_manager/user_type.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/message_center/message_center.h"
 
 using session_manager::SessionState;
 
 namespace ash {
+namespace {
+
+void SetTimeOfLastSessionActivation(PrefService* user_pref_service) {
+  if (!user_pref_service) {
+    return;
+  }
+
+  // NOTE: Round down to the nearest day since Windows epoch to reduce syncs.
+  const base::Time time_of_last_session_activation =
+      base::Time::FromDeltaSinceWindowsEpoch(
+          base::Days(base::Time::Now().ToDeltaSinceWindowsEpoch().InDays()));
+
+  if (user_pref_service->GetTime(prefs::kTimeOfLastSessionActivation) !=
+      time_of_last_session_activation) {
+    user_pref_service->SetTime(prefs::kTimeOfLastSessionActivation,
+                               time_of_last_session_activation);
+  }
+}
+
+}  // namespace
 
 class SessionControllerImpl::ScopedScreenLockBlockerImpl
     : public ScopedScreenLockBlocker {
@@ -191,7 +211,7 @@ bool SessionControllerImpl::IsUserChild() const {
     return false;
 
   user_manager::UserType active_user_type = GetUserSession(0)->user_info.type;
-  return active_user_type == user_manager::USER_TYPE_CHILD;
+  return active_user_type == user_manager::UserType::kChild;
 }
 
 bool SessionControllerImpl::IsUserGuest() const {
@@ -200,7 +220,7 @@ bool SessionControllerImpl::IsUserGuest() const {
   }
 
   user_manager::UserType active_user_type = GetUserSession(0)->user_info.type;
-  return active_user_type == user_manager::USER_TYPE_GUEST;
+  return active_user_type == user_manager::UserType::kGuest;
 }
 
 bool SessionControllerImpl::IsUserPublicAccount() const {
@@ -208,15 +228,15 @@ bool SessionControllerImpl::IsUserPublicAccount() const {
     return false;
 
   user_manager::UserType active_user_type = GetUserSession(0)->user_info.type;
-  return active_user_type == user_manager::USER_TYPE_PUBLIC_ACCOUNT;
+  return active_user_type == user_manager::UserType::kPublicAccount;
 }
 
-absl::optional<user_manager::UserType> SessionControllerImpl::GetUserType()
+std::optional<user_manager::UserType> SessionControllerImpl::GetUserType()
     const {
   if (!IsActiveUserSessionStarted())
-    return absl::nullopt;
+    return std::nullopt;
 
-  return absl::make_optional(GetUserSession(0)->user_info.type);
+  return std::make_optional(GetUserSession(0)->user_info.type);
 }
 
 bool SessionControllerImpl::IsUserPrimary() const {
@@ -237,9 +257,9 @@ bool SessionControllerImpl::IsEnterpriseManaged() const {
   return client_ && client_->IsEnterpriseManaged();
 }
 
-absl::optional<int> SessionControllerImpl::GetExistingUsersCount() const {
-  return client_ ? absl::optional<int>(client_->GetExistingUsersCount())
-                 : absl::nullopt;
+std::optional<int> SessionControllerImpl::GetExistingUsersCount() const {
+  return client_ ? std::optional<int>(client_->GetExistingUsersCount())
+                 : std::nullopt;
 }
 
 bool SessionControllerImpl::ShouldDisplayManagedUI() const {
@@ -298,6 +318,11 @@ PrefService* SessionControllerImpl::GetSigninScreenPrefService() const {
 PrefService* SessionControllerImpl::GetUserPrefServiceForUser(
     const AccountId& account_id) const {
   return client_ ? client_->GetUserPrefService(account_id) : nullptr;
+}
+
+base::FilePath SessionControllerImpl::GetProfilePath(
+    const AccountId& account_id) const {
+  return client_ ? client_->GetProfilePath(account_id) : base::FilePath();
 }
 
 PrefService* SessionControllerImpl::GetPrimaryUserPrefService() const {
@@ -424,9 +449,8 @@ void SessionControllerImpl::SetUserSessionOrder(
     // NOTE: This pref is intentionally set *after* notifying observers of
     // active user session changes so observers can use time of last activation
     // during event handling.
-    if (state_ == SessionState::ACTIVE && user_pref_service) {
-      user_pref_service->SetTime(prefs::kTimeOfLastSessionActivation,
-                                 base::Time::Now());
+    if (state_ == SessionState::ACTIVE) {
+      SetTimeOfLastSessionActivation(user_pref_service);
     }
 
     UpdateLoginStatus();
@@ -544,10 +568,8 @@ void SessionControllerImpl::SetSessionState(SessionState state) {
   // NOTE: This pref is intentionally set *after* notifying observers of state
   // changes so observers can use time of last activation during event handling.
   if (state_ == SessionState::ACTIVE) {
-    if (auto* pref_service = GetUserPrefServiceForUser(GetActiveAccountId())) {
-      pref_service->SetTime(prefs::kTimeOfLastSessionActivation,
-                            base::Time::Now());
-    }
+    SetTimeOfLastSessionActivation(
+        GetUserPrefServiceForUser(GetActiveAccountId()));
   }
 
   UpdateLoginStatus();
@@ -619,24 +641,20 @@ LoginStatus SessionControllerImpl::CalculateLoginStatusForActiveSession()
     return LoginStatus::USER;
 
   switch (user_sessions_[0]->user_info.type) {
-    case user_manager::USER_TYPE_REGULAR:
+    case user_manager::UserType::kRegular:
       return LoginStatus::USER;
-    case user_manager::USER_TYPE_GUEST:
+    case user_manager::UserType::kGuest:
       return LoginStatus::GUEST;
-    case user_manager::USER_TYPE_PUBLIC_ACCOUNT:
+    case user_manager::UserType::kPublicAccount:
       return LoginStatus::PUBLIC;
-    case user_manager::USER_TYPE_KIOSK_APP:
+    case user_manager::UserType::kKioskApp:
       return LoginStatus::KIOSK_APP;
-    case user_manager::USER_TYPE_CHILD:
+    case user_manager::UserType::kChild:
       return LoginStatus::CHILD;
-    case user_manager::USER_TYPE_ARC_KIOSK_APP:
+    case user_manager::UserType::kArcKioskApp:
       return LoginStatus::KIOSK_APP;
-    case user_manager::USER_TYPE_WEB_KIOSK_APP:
+    case user_manager::UserType::kWebKioskApp:
       return LoginStatus::KIOSK_APP;
-    case user_manager::NUM_USER_TYPES:
-      // Avoid having a "default" case so the compiler catches new enum values.
-      NOTREACHED();
-      return LoginStatus::USER;
   }
   NOTREACHED();
   return LoginStatus::USER;

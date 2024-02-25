@@ -5,10 +5,12 @@
 #ifndef MEDIA_FILTERS_MANIFEST_DEMUXER_H_
 #define MEDIA_FILTERS_MANIFEST_DEMUXER_H_
 
+#include <optional>
 #include <vector>
 
 #include "base/cancelable_callback.h"
 #include "base/containers/flat_map.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/threading/sequence_bound.h"
@@ -22,7 +24,7 @@
 #include "media/base/pipeline_status.h"
 #include "media/filters/chunk_demuxer.h"
 #include "media/filters/hls_data_source_provider.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
+#include "media/filters/stream_parser_factory.h"
 
 namespace media {
 
@@ -38,8 +40,7 @@ class MEDIA_EXPORT ManifestDemuxerEngineHost {
 
   // Adds a new role to the chunk demuxer, and returns true if it succeeded.
   virtual bool AddRole(base::StringPiece role,
-                       std::string container,
-                       std::string codec) = 0;
+                       RelaxedParserSupportedType mime) = 0;
 
   // Removes a role (on the media thread) to ensure that there are no
   // media-thread-bound weak references.
@@ -95,6 +96,9 @@ class MEDIA_EXPORT ManifestDemuxerEngineHost {
 
   virtual void SetGroupStartTimestamp(base::StringPiece role,
                                       base::TimeDelta time) = 0;
+
+  virtual void SetEndOfStream() = 0;
+  virtual void UnsetEndOfStream() = 0;
 };
 
 // A Demuxer designed to allow implementation of media demuxers which don't
@@ -105,6 +109,18 @@ class MEDIA_EXPORT ManifestDemuxerEngineHost {
 class MEDIA_EXPORT ManifestDemuxer : public Demuxer, ManifestDemuxerEngineHost {
  public:
   using DelayCallback = base::OnceCallback<void(base::TimeDelta)>;
+
+  // Seeks respond with either:
+  //  - an error
+  //  - kIsReady: buffers are full and chunk demuxer can seek normally.
+  //  - kNeedsData: buffers are empty and need more data before chunk demuxer
+  //                would otherwise finish seeking.
+  enum class SeekState {
+    kIsReady,
+    kNeedsData,
+  };
+  using SeekResponse = PipelineStatus::Or<SeekState>;
+  using SeekCallback = base::OnceCallback<void(SeekResponse)>;
 
   class Engine {
    public:
@@ -128,7 +144,7 @@ class MEDIA_EXPORT ManifestDemuxer : public Demuxer, ManifestDemuxerEngineHost {
 
     // A synchronous seek, mostly intended to reset parts of the chunk
     // demuxer. returns whether the chunk demuxer needs more data.
-    virtual bool Seek(base::TimeDelta time) = 0;
+    virtual void Seek(base::TimeDelta time, SeekCallback cb) = 0;
 
     // Start waiting for seek, usually means canceling outstanding events
     // and network fetches.
@@ -139,7 +155,7 @@ class MEDIA_EXPORT ManifestDemuxer : public Demuxer, ManifestDemuxerEngineHost {
 
     // Returns whether this engine supports seeking. Some live stream content
     // can't be seeked.
-    virtual bool IsSeekable() = 0;
+    virtual bool IsSeekable() const = 0;
 
     // Gets the memory usage of the engine.
     virtual int64_t GetMemoryUsage() const = 0;
@@ -158,7 +174,8 @@ class MEDIA_EXPORT ManifestDemuxer : public Demuxer, ManifestDemuxerEngineHost {
   ~ManifestDemuxer() override;
 
   // `media::Demuxer` implementation
-  std::vector<DemuxerStream*> GetAllStreams() override;
+  std::vector<raw_ptr<DemuxerStream, VectorExperimental>> GetAllStreams()
+      override;
   std::string GetDisplayName() const override;
   DemuxerType GetDemuxerType() const override;
   void Initialize(DemuxerHost* host, PipelineStatusCallback status_cb) override;
@@ -172,7 +189,7 @@ class MEDIA_EXPORT ManifestDemuxer : public Demuxer, ManifestDemuxerEngineHost {
   base::Time GetTimelineOffset() const override;
   int64_t GetMemoryUsage() const override;
   void SetPlaybackRate(double rate) override;
-  absl::optional<container_names::MediaContainerName> GetContainerForMetrics()
+  std::optional<container_names::MediaContainerName> GetContainerForMetrics()
       const override;
 
   void OnEnabledAudioTracksChanged(const std::vector<MediaTrack::Id>& track_ids,
@@ -184,8 +201,7 @@ class MEDIA_EXPORT ManifestDemuxer : public Demuxer, ManifestDemuxerEngineHost {
 
   // `ManifestDemuxerEngineHost` implementation
   bool AddRole(base::StringPiece role,
-               std::string container,
-               std::string codec) override;
+               RelaxedParserSupportedType mime) override;
   void RemoveRole(base::StringPiece role) override;
   void SetSequenceMode(base::StringPiece role, bool sequence_mode) override;
   void SetDuration(double duration) override;
@@ -210,9 +226,10 @@ class MEDIA_EXPORT ManifestDemuxer : public Demuxer, ManifestDemuxerEngineHost {
                           size_t data_size) override;
   void OnError(PipelineStatus status) override;
   void RequestSeek(base::TimeDelta time) override;
-
   void SetGroupStartTimestamp(base::StringPiece role,
                               base::TimeDelta time) override;
+  void SetEndOfStream() override;
+  void UnsetEndOfStream() override;
 
   // Allow unit tests to grab the chunk demuxer.
   ChunkDemuxer* GetChunkDemuxerForTesting();
@@ -253,9 +270,9 @@ class MEDIA_EXPORT ManifestDemuxer : public Demuxer, ManifestDemuxerEngineHost {
   void OnProgress();
   void OnEncryptedMediaData(EmeInitDataType type,
                             const std::vector<uint8_t>& data);
-  void OnChunkDemuxerParseWarning(base::StringPiece role,
+  void OnChunkDemuxerParseWarning(std::string role,
                                   SourceBufferParseWarning warning);
-  void OnChunkDemuxerTracksChanged(base::StringPiece role,
+  void OnChunkDemuxerTracksChanged(std::string role,
                                    std::unique_ptr<MediaTracks> tracks);
 
   void OnDemuxerStreamRead(DemuxerStream::ReadCB wrapped_read_cb,
@@ -265,9 +282,9 @@ class MEDIA_EXPORT ManifestDemuxer : public Demuxer, ManifestDemuxerEngineHost {
   // Helper for the `Seek` call, so that returning from an event when a seek
   // is pending can continue the seek process.
   void SeekInternal();
+  void OnEngineSeeked(SeekResponse seek_status);
   void OnChunkDemuxerSeeked(PipelineStatus seek_status);
-  void OnEngineSeekComplete(base::TimeDelta delay_time);
-  void TryCompletePendingSeek();
+  void OnSeekBuffered(base::TimeDelta delay_time);
 
   // Allows for both the chunk demuxer and the engine to be required for
   // initialization.
@@ -314,9 +331,7 @@ class MEDIA_EXPORT ManifestDemuxer : public Demuxer, ManifestDemuxerEngineHost {
   bool demuxer_opened_ = false;
   bool engine_impl_ready_ = false;
 
-  // Flag for the two-cb wait for finishing a seek.
-  bool seek_waiting_on_engine_ = false;
-  bool seek_waiting_on_demuxer_ = false;
+  bool can_complete_seek_ = true;
 
   // Pending an event. Don't trigger a new event chain while one is in
   // progress.

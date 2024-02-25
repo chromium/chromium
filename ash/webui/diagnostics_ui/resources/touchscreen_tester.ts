@@ -2,11 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import 'chrome://resources/cr_elements/cr_dialog/cr_dialog.js';
+import 'chrome://resources/ash/common/cr_elements/cr_dialog/cr_dialog.js';
 
-import {CrDialogElement} from 'chrome://resources/cr_elements/cr_dialog/cr_dialog.js';
-import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
-import {assert} from 'chrome://resources/js/assert_ts.js';
+import {CrDialogElement} from 'chrome://resources/ash/common/cr_elements/cr_dialog/cr_dialog.js';
+import {I18nMixin} from 'chrome://resources/ash/common/cr_elements/i18n_mixin.js';
+import {assert} from 'chrome://resources/js/assert.js';
 import {EventTracker} from 'chrome://resources/js/event_tracker.js';
 import {PolymerElementProperties} from 'chrome://resources/polymer/v3_0/polymer/interfaces.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
@@ -199,8 +199,7 @@ export class TouchscreenTesterElement extends TouchscreenTesterElementBase {
    * Set up canvas width, height and drawing context.
    */
   private setupCanvas(): void {
-    const canvas =
-        this.shadowRoot!.querySelector('canvas') as HTMLCanvasElement;
+    const canvas = this.shadowRoot!.querySelector('canvas');
     assert(canvas);
 
     canvas.width = SCREEN_MAX_LENGTH;
@@ -208,9 +207,8 @@ export class TouchscreenTesterElement extends TouchscreenTesterElementBase {
 
     // CSS in .html file does not have access to this element,
     // therefore adjust it here to make the canvas cover the whole screen.
-    const topContainer =
-        this.getDialog(DialogType.CANVAS)!.shadowRoot!.querySelector(
-            '.top-container') as HTMLElement;
+    const topContainer = this.getDialog(DialogType.CANVAS)!.shadowRoot!
+                             .querySelector<HTMLElement>('.top-container');
     topContainer!.style.display = 'none';
 
     const ctx = canvas.getContext('2d');

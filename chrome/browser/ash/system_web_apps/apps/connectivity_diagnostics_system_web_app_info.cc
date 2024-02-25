@@ -53,6 +53,7 @@ bool ConnectivityDiagnosticsSystemAppDelegate::ShouldShowInLauncher() const {
   return false;
 }
 
-bool ConnectivityDiagnosticsSystemAppDelegate::ShouldShowInSearch() const {
+bool ConnectivityDiagnosticsSystemAppDelegate::ShouldShowInSearchAndShelf()
+    const {
   return false;
 }

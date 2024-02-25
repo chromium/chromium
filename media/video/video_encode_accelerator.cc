@@ -37,70 +37,77 @@ BitstreamBufferMetadata::BitstreamBufferMetadata(size_t payload_size_bytes,
     : payload_size_bytes(payload_size_bytes),
       key_frame(key_frame),
       timestamp(timestamp) {}
-BitstreamBufferMetadata::~BitstreamBufferMetadata() = default;
 
-bool BitstreamBufferMetadata::end_of_picture() const {
-  if (vp9) {
-    return vp9->end_of_picture;
-  }
-  return true;
+bool BitstreamBufferMetadata::dropped_frame() const {
+  return payload_size_bytes == 0;
 }
 
-absl::optional<uint8_t> BitstreamBufferMetadata::spatial_idx() const {
+BitstreamBufferMetadata::~BitstreamBufferMetadata() = default;
+
+std::optional<uint8_t> BitstreamBufferMetadata::spatial_idx() const {
   if (vp9) {
     return vp9->spatial_idx;
   }
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 VideoEncodeAccelerator::Config::Config()
-    : input_format(PIXEL_FORMAT_UNKNOWN),
-      output_profile(VIDEO_CODEC_PROFILE_UNKNOWN),
-      bitrate(Bitrate::ConstantBitrate(0u)),
-      content_type(ContentType::kCamera) {}
+    : Config(PIXEL_FORMAT_UNKNOWN,
+             gfx::Size(),
+             VIDEO_CODEC_PROFILE_UNKNOWN,
+             Bitrate::ConstantBitrate(0u),
+             kDefaultFramerate,
+             StorageType::kShmem,
+             ContentType::kCamera) {}
 
 VideoEncodeAccelerator::Config::Config(const Config& config) = default;
 
-VideoEncodeAccelerator::Config::Config(
-    VideoPixelFormat input_format,
-    const gfx::Size& input_visible_size,
-    VideoCodecProfile output_profile,
-    const Bitrate& bitrate,
-    absl::optional<uint32_t> initial_framerate,
-    absl::optional<uint32_t> gop_length,
-    absl::optional<uint8_t> h264_output_level,
-    bool is_constrained_h264,
-    absl::optional<StorageType> storage_type,
-    ContentType content_type,
-    const std::vector<SpatialLayer>& spatial_layers,
-    SVCInterLayerPredMode inter_layer_pred)
+VideoEncodeAccelerator::Config::Config(VideoPixelFormat input_format,
+                                       const gfx::Size& input_visible_size,
+                                       VideoCodecProfile output_profile,
+                                       const Bitrate& bitrate,
+                                       uint32_t framerate,
+                                       StorageType storage_type,
+                                       ContentType content_type)
     : input_format(input_format),
       input_visible_size(input_visible_size),
       output_profile(output_profile),
       bitrate(bitrate),
-      initial_framerate(initial_framerate.value_or(
-          VideoEncodeAccelerator::kDefaultFramerate)),
-      gop_length(gop_length),
-      h264_output_level(h264_output_level),
-      is_constrained_h264(is_constrained_h264),
+      framerate(framerate),
       storage_type(storage_type),
-      content_type(content_type),
-      spatial_layers(spatial_layers),
-      inter_layer_pred(inter_layer_pred) {}
+      content_type(content_type) {}
 
 VideoEncodeAccelerator::Config::~Config() = default;
 
 std::string VideoEncodeAccelerator::Config::AsHumanReadableString() const {
   std::string str = base::StringPrintf(
       "input_format: %s, input_visible_size: %s, output_profile: %s, "
-      "bitrate: %s",
+      "bitrate: %s, framerate: %u",
       VideoPixelFormatToString(input_format).c_str(),
       input_visible_size.ToString().c_str(),
-      GetProfileName(output_profile).c_str(), bitrate.ToString().c_str());
-  if (initial_framerate) {
-    str += base::StringPrintf(", initial_framerate: %u",
-                              initial_framerate.value());
+      GetProfileName(output_profile).c_str(), bitrate.ToString().c_str(),
+      framerate);
+
+  str += ", storage_type: ";
+  switch (storage_type) {
+    case StorageType::kShmem:
+      str += "SharedMemory";
+      break;
+    case StorageType::kGpuMemoryBuffer:
+      str += "GpuMemoryBuffer";
+      break;
   }
+
+  str += ", content_type: ";
+  switch (content_type) {
+    case ContentType::kCamera:
+      str += "camera";
+      break;
+    case ContentType::kDisplay:
+      str += "display";
+      break;
+  }
+
   if (gop_length)
     str += base::StringPrintf(", gop_length: %u", gop_length.value());
 
@@ -123,16 +130,6 @@ std::string VideoEncodeAccelerator::Config::AsHumanReadableString() const {
       break;
     case EncoderType::kNoPreference:
       str += "no-preference";
-      break;
-  }
-
-  str += ", content_type: ";
-  switch (content_type) {
-    case ContentType::kCamera:
-      str += "camera";
-      break;
-    case ContentType::kDisplay:
-      str += "display";
       break;
   }
 
@@ -232,9 +229,11 @@ bool VideoEncodeAccelerator::IsGpuFrameResizeSupported() {
 
 void VideoEncodeAccelerator::RequestEncodingParametersChange(
     const VideoBitrateAllocation& bitrate_allocation,
-    uint32_t framerate) {
+    uint32_t framerate,
+    const std::optional<gfx::Size>& size) {
   RequestEncodingParametersChange(
-      Bitrate::ConstantBitrate(bitrate_allocation.GetSumBps()), framerate);
+      Bitrate::ConstantBitrate(bitrate_allocation.GetSumBps()), framerate,
+      size);
 }
 
 bool operator==(const VideoEncodeAccelerator::SupportedProfile& l,
@@ -267,7 +266,6 @@ bool operator==(const Vp9Metadata& l, const Vp9Metadata& r) {
          l.referenced_by_upper_spatial_layers ==
              r.referenced_by_upper_spatial_layers &&
          l.reference_lower_spatial_layers == r.reference_lower_spatial_layers &&
-         l.end_of_picture == r.end_of_picture &&
          l.temporal_idx == r.temporal_idx && l.spatial_idx == r.spatial_idx &&
          l.spatial_layer_resolutions == r.spatial_layer_resolutions &&
          l.p_diffs == r.p_diffs;
@@ -281,8 +279,9 @@ bool operator==(const BitstreamBufferMetadata& l,
                 const BitstreamBufferMetadata& r) {
   return l.payload_size_bytes == r.payload_size_bytes &&
          l.key_frame == r.key_frame && l.timestamp == r.timestamp &&
-         l.vp8 == r.vp8 && l.vp9 == r.vp9 && l.h264 == r.h264 &&
-         l.av1 == r.av1 && l.h265 == r.h265;
+         l.end_of_picture == r.end_of_picture && l.vp8 == r.vp8 &&
+         l.vp9 == r.vp9 && l.h264 == r.h264 && l.av1 == r.av1 &&
+         l.h265 == r.h265;
 }
 
 bool operator==(const VideoEncodeAccelerator::Config::SpatialLayer& l,
@@ -298,8 +297,7 @@ bool operator==(const VideoEncodeAccelerator::Config& l,
   return l.input_format == r.input_format &&
          l.input_visible_size == r.input_visible_size &&
          l.output_profile == r.output_profile && l.bitrate == r.bitrate &&
-         l.initial_framerate == r.initial_framerate &&
-         l.gop_length == r.gop_length &&
+         l.framerate == r.framerate && l.gop_length == r.gop_length &&
          l.h264_output_level == r.h264_output_level &&
          l.storage_type == r.storage_type && l.content_type == r.content_type &&
          l.spatial_layers == r.spatial_layers &&

@@ -1,4 +1,4 @@
-// Copyright 2022 The Chromium Authors. All rights reserved.
+// Copyright 2022 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,9 +9,10 @@
 #include "third_party/blink/renderer/core/css/container_query_data.h"
 #include "third_party/blink/renderer/core/css/cssom/inline_style_property_map.h"
 #include "third_party/blink/renderer/core/css/inline_css_style_declaration.h"
+#include "third_party/blink/renderer/core/css/out_of_flow_data.h"
+#include "third_party/blink/renderer/core/css/style_scope_data.h"
 #include "third_party/blink/renderer/core/display_lock/display_lock_context.h"
 #include "third_party/blink/renderer/core/dom/attr.h"
-#include "third_party/blink/renderer/core/dom/css_toggle_map.h"
 #include "third_party/blink/renderer/core/dom/dataset_dom_string_map.h"
 #include "third_party/blink/renderer/core/dom/dom_token_list.h"
 #include "third_party/blink/renderer/core/dom/has_invalidation_flags.h"
@@ -52,7 +53,7 @@ unsigned ElementRareDataVector::GetFieldIndex(FieldId field_id) const {
 ElementRareDataField* ElementRareDataVector::GetField(FieldId field_id) const {
   if (fields_bitfield_ &
       (static_cast<BitfieldType>(1) << static_cast<unsigned>(field_id)))
-    return fields_[GetFieldIndex(field_id)];
+    return fields_[GetFieldIndex(field_id)].Get();
   return nullptr;
 }
 
@@ -303,6 +304,21 @@ void ElementRareDataVector::ClearContainerQueryData() {
   SetField(FieldId::kContainerQueryData, nullptr);
 }
 
+StyleScopeData& ElementRareDataVector::EnsureStyleScopeData() {
+  return EnsureField<StyleScopeData>(FieldId::kStyleScopeData);
+}
+StyleScopeData* ElementRareDataVector::GetStyleScopeData() const {
+  return static_cast<StyleScopeData*>(GetField(FieldId::kStyleScopeData));
+}
+
+OutOfFlowData& ElementRareDataVector::EnsureOutOfFlowData() {
+  return EnsureField<OutOfFlowData>(FieldId::kOutOfFlowData);
+}
+
+OutOfFlowData* ElementRareDataVector::GetOutOfFlowData() const {
+  return static_cast<OutOfFlowData*>(GetField(FieldId::kOutOfFlowData));
+}
+
 const RegionCaptureCropId* ElementRareDataVector::GetRegionCaptureCropId()
     const {
   auto* value = GetWrappedField<std::unique_ptr<RegionCaptureCropId>>(
@@ -316,6 +332,21 @@ void ElementRareDataVector::SetRegionCaptureCropId(
   CHECK(!crop_id->value().is_zero());
   SetWrappedField<std::unique_ptr<RegionCaptureCropId>>(
       FieldId::kRegionCaptureCropId, std::move(crop_id));
+}
+
+const RestrictionTargetId* ElementRareDataVector::GetRestrictionTargetId()
+    const {
+  auto* value = GetWrappedField<std::unique_ptr<RestrictionTargetId>>(
+      FieldId::kRestrictionTargetId);
+  return value ? value->get() : nullptr;
+}
+void ElementRareDataVector::SetRestrictionTargetId(
+    std::unique_ptr<RestrictionTargetId> id) {
+  CHECK(!GetRestrictionTargetId());
+  CHECK(id);
+  CHECK(!id->value().is_zero());
+  SetWrappedField<std::unique_ptr<RestrictionTargetId>>(
+      FieldId::kRestrictionTargetId, std::move(id));
 }
 
 ElementRareDataVector::ResizeObserverDataMap*
@@ -340,19 +371,19 @@ CustomElementDefinition* ElementRareDataVector::GetCustomElementDefinition()
 }
 
 void ElementRareDataVector::SetLastRememberedBlockSize(
-    absl::optional<LayoutUnit> size) {
+    std::optional<LayoutUnit> size) {
   SetOptionalField(FieldId::kLastRememberedBlockSize, size);
 }
 void ElementRareDataVector::SetLastRememberedInlineSize(
-    absl::optional<LayoutUnit> size) {
+    std::optional<LayoutUnit> size) {
   SetOptionalField(FieldId::kLastRememberedInlineSize, size);
 }
 
-absl::optional<LayoutUnit> ElementRareDataVector::LastRememberedBlockSize()
+std::optional<LayoutUnit> ElementRareDataVector::LastRememberedBlockSize()
     const {
   return GetOptionalField<LayoutUnit>(FieldId::kLastRememberedBlockSize);
 }
-absl::optional<LayoutUnit> ElementRareDataVector::LastRememberedInlineSize()
+std::optional<LayoutUnit> ElementRareDataVector::LastRememberedInlineSize()
     const {
   return GetOptionalField<LayoutUnit>(FieldId::kLastRememberedInlineSize);
 }
@@ -365,14 +396,6 @@ PopoverData& ElementRareDataVector::EnsurePopoverData() {
 }
 void ElementRareDataVector::RemovePopoverData() {
   SetField(FieldId::kPopoverData, nullptr);
-}
-
-CSSToggleMap* ElementRareDataVector::GetToggleMap() const {
-  return static_cast<CSSToggleMap*>(GetField(FieldId::kToggleMap));
-}
-CSSToggleMap& ElementRareDataVector::EnsureToggleMap(Element* owner_element) {
-  DCHECK(!GetToggleMap() || GetToggleMap()->OwnerElement() == owner_element);
-  return EnsureField<CSSToggleMap>(FieldId::kToggleMap, owner_element);
 }
 
 AnchorPositionScrollData* ElementRareDataVector::GetAnchorPositionScrollData()

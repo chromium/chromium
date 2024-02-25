@@ -20,6 +20,7 @@
 #include "base/version.h"
 #include "base/win/scoped_handle.h"
 #include "base/win/windows_types.h"
+#include "chrome/credential_provider/gaiacp/internet_availability_checker.h"
 #include "chrome/credential_provider/gaiacp/scoped_lsa_policy.h"
 #include "chrome/credential_provider/gaiacp/win_http_url_fetcher.h"
 #include "url/gurl.h"
@@ -43,7 +44,9 @@ class FilePath;
 namespace credential_provider {
 
 // Windows supports a maximum of 20 characters plus null in username.
-constexpr int kWindowsUsernameBufferLength = 21;
+inline constexpr int kWindowsUsernameBufferLength = 21;
+
+inline constexpr int kWindowsPasswordBufferLength = 32;
 
 // Maximum domain length is 256 characters including null.
 // https://support.microsoft.com/en-ca/help/909264/naming-conventions-in-active-directory-for-computers-domains-sites-and
@@ -337,6 +340,8 @@ struct FakesForTesting {
   raw_ptr<OSUserManager> os_user_manager_for_testing = nullptr;
   raw_ptr<OSProcessManager> os_process_manager_for_testing = nullptr;
   WinHttpUrlFetcher::CreatorCallback fake_win_http_url_fetcher_creator;
+  raw_ptr<InternetAvailabilityChecker>
+      internet_availability_checker_for_testing = nullptr;
 };
 
 // DLL entrypoint signature for settings testing fakes.  This is used by

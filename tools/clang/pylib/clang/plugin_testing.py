@@ -7,6 +7,7 @@ from __future__ import print_function
 
 import glob
 import os
+import re
 import subprocess
 import sys
 
@@ -14,7 +15,12 @@ import sys
 class ClangPluginTest(object):
   """Test harness for clang plugins."""
 
-  def __init__(self, test_base, clang_path, plugin_name, reset_results):
+  def __init__(self,
+               test_base,
+               clang_path,
+               plugin_name,
+               reset_results,
+               filename_regex=None):
     """Constructor.
 
     Args:
@@ -22,11 +28,13 @@ class ClangPluginTest(object):
       clang_path: Path to the clang binary.
       plugin_name: Name of the plugin.
       reset_results: If true, resets expected results to the actual test output.
+      filename_regex: If present, only runs tests that match the regex pattern.
     """
     self._test_base = test_base
     self._clang_path = clang_path
     self._plugin_name = plugin_name
     self._reset_results = reset_results
+    self._filename_regex = filename_regex
 
   def AddPluginArg(self, clang_cmd, plugin_arg):
     """Helper to add an argument for the tested plugin."""
@@ -49,7 +57,7 @@ class ClangPluginTest(object):
 
     os.chdir(self._test_base)
 
-    clang_cmd = [self._clang_path, '-c', '-std=c++14']
+    clang_cmd = [self._clang_path, '-c', '-std=c++20']
 
     # Use the traditional diagnostics format (see crbug.com/1450229).
     clang_cmd.extend([
@@ -63,6 +71,9 @@ class ClangPluginTest(object):
     failing = []
     tests = glob.glob('*.cpp') + glob.glob('*.mm')
     for test in tests:
+      if self._filename_regex and not re.search(self._filename_regex, test):
+        continue
+
       sys.stdout.write('Testing %s... ' % test)
       test_name, _ = os.path.splitext(test)
 

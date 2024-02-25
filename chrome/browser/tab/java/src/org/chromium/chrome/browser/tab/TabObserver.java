@@ -8,6 +8,8 @@ import android.graphics.Bitmap;
 
 import androidx.annotation.Nullable;
 
+import org.chromium.base.Token;
+import org.chromium.chrome.browser.tab.Tab.LoadUrlResult;
 import org.chromium.components.find_in_page.FindMatchRectsDetails;
 import org.chromium.components.find_in_page.FindNotificationDetails;
 import org.chromium.content_public.browser.LoadUrlParams;
@@ -17,9 +19,7 @@ import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.mojom.VirtualKeyboardMode;
 import org.chromium.url.GURL;
 
-/**
- * An observer that is notified of changes to a {@link Tab} object.
- */
+/** An observer that is notified of changes to a {@link Tab} object. */
 public interface TabObserver {
     /**
      * Called when a {@link Tab} finished initialization. The {@link TabState} contains,
@@ -65,14 +65,12 @@ public interface TabObserver {
 
     /**
      * Called when loadUrl is triggered on a a {@link Tab}.
-     * @param tab      The notifying {@link Tab}.
-     * @param params   The params describe the page being loaded.
-     * @param loadType The type of load that was performed.
      *
-     * @see Tab$TabLoadStatus#PAGE_LOAD_FAILED
-     * @see Tab$TabLoadStatus#DEFAULT_PAGE_LOAD
+     * @param tab The notifying {@link Tab}.
+     * @param params The params describe the page being loaded.
+     * @param loadUrlResult The result of the loadUrl.
      */
-    void onLoadUrl(Tab tab, LoadUrlParams params, int loadType);
+    void onLoadUrl(Tab tab, LoadUrlParams params, LoadUrlResult loadUrlResult);
 
     /**
      * Called when a tab has started to load a page.
@@ -328,8 +326,12 @@ public interface TabObserver {
      * @param topControlsMinHeightOffsetY The Y offset of the current top controls min-height.
      * @param bottomControlsMinHeightOffsetY The Y offset of the current bottom controls min-height.
      */
-    void onBrowserControlsOffsetChanged(Tab tab, int topControlsOffsetY, int bottomControlsOffsetY,
-            int contentOffsetY, int topControlsMinHeightOffsetY,
+    void onBrowserControlsOffsetChanged(
+            Tab tab,
+            int topControlsOffsetY,
+            int bottomControlsOffsetY,
+            int contentOffsetY,
+            int topControlsMinHeightOffsetY,
             int bottomControlsMinHeightOffsetY);
 
     /**
@@ -338,8 +340,39 @@ public interface TabObserver {
      */
     void onContentViewScrollingStateChanged(boolean scrolling);
 
-    /**
-     * Back press refactor related. Called when navigation state is invalidated.
-     */
+    /** Back press refactor related. Called when navigation state is invalidated. */
     void onNavigationStateChanged();
+
+    /**
+     * CloseWatcher web API support. If the currently focused frame has a CloseWatcher registered in
+     * JavaScript, the CloseWatcher should receive the next "close" operation, based on what the OS
+     * convention for closing is. This function is called when the focused frame changes or a
+     * CloseWatcher registered/unregistered to update whether the CloseWatcher should intercept.
+     */
+    void onDidChangeCloseSignalInterceptStatus();
+
+    /**
+     * Broadcast that the timestamp on a {@link Tab} has changed
+     * @param tab {@link Tab} timestamp has changed on
+     * @param timestampMillis new value of the timestamp
+     */
+    default void onTimestampChanged(Tab tab, long timestampMillis) {}
+
+    // TODO(crbug/1524345): deprecate RootId once TabGroupId has finished replacing it.
+    /**
+     * Broadcast that root identifier on a {@link Tab} has changed. This method will be functionally
+     * replaced by onTabGroupIdChanged as part of https://crbug.com/1523745.
+     *
+     * @param tab {@link Tab} root identifier has changed on
+     * @param newRootId new value of new root id
+     */
+    default void onRootIdChanged(Tab tab, int newRootId) {}
+
+    /**
+     * Broadcast that tab group ID on a {@link Tab} has changed.
+     *
+     * @param tab The {@link Tab} root identifier has changed on
+     * @param tabGroupId The new tab group ID, may be null.
+     */
+    default void onTabGroupIdChanged(Tab tab, @Nullable Token tabGroupId) {}
 }

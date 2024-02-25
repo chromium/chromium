@@ -6,6 +6,7 @@
 
 #include "ash/constants/ash_pref_names.h"
 #include "chrome/browser/ash/accessibility/accessibility_manager.h"
+#include "chrome/browser/ash/accessibility/automation_test_utils.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/common/extensions/extension_constants.h"
@@ -17,13 +18,13 @@
 namespace ash {
 namespace sts_test_utils {
 
-void TurnOnSelectToSpeakForTest(Browser* browser) {
+void TurnOnSelectToSpeakForTest(Profile* profile) {
   // Pretend that enhanced network voices dialog has been accepted so that the
   // dialog does not block.
-  browser->profile()->GetPrefs()->SetBoolean(
+  profile->GetPrefs()->SetBoolean(
       prefs::kAccessibilitySelectToSpeakEnhancedVoicesDialogShown, true);
   extensions::ExtensionHostTestHelper host_helper(
-      browser->profile(), extension_misc::kSelectToSpeakExtensionId);
+      profile, extension_misc::kSelectToSpeakExtensionId);
   AccessibilityManager::Get()->SetSelectToSpeakEnabled(true);
   host_helper.WaitForHostCompletedFirstLoad();
   base::ScopedAllowBlockingForTesting allow_blocking;
@@ -40,15 +41,19 @@ void TurnOnSelectToSpeakForTest(Browser* browser) {
     )JS");
   base::Value result =
       extensions::browsertest_util::ExecuteScriptInBackgroundPage(
-          browser->profile(), extension_misc::kSelectToSpeakExtensionId,
-          script);
+          profile, extension_misc::kSelectToSpeakExtensionId, script);
   CHECK_EQ("ready", result);
 }
 
-void StartSelectToSpeakInBrowserWindow(Browser* browser,
-                                       ui::test::EventGenerator* generator) {
-  gfx::Rect bounds = browser->window()->GetBounds();
-  bounds.Inset(gfx::Insets::TLBR(8, 8, 8, 75));
+void StartSelectToSpeakInBrowserWithUrl(const std::string& url,
+                                        AutomationTestUtils* test_utils,
+                                        ui::test::EventGenerator* generator) {
+  gfx::Rect bounds = test_utils->GetBoundsOfRootWebArea(url);
+  StartSelectToSpeakWithBounds(bounds, generator);
+}
+
+void StartSelectToSpeakWithBounds(const gfx::Rect& bounds,
+                                  ui::test::EventGenerator* generator) {
   generator->PressKey(ui::VKEY_LWIN, 0 /* flags */);
   generator->MoveMouseTo(bounds.x(), bounds.y());
   generator->PressLeftButton();

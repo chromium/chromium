@@ -4,6 +4,7 @@
 
 module blink.mojom;
 
+import "mojo/public/mojom/base/byte_string.mojom";
 import "mojo/public/mojom/base/time.mojom";
 import "mojo/public/mojom/base/unguessable_token.mojom";
 import "mojo/public/mojom/base/values.mojom";
@@ -29,12 +30,13 @@ import "third_party/blink/public/mojom/messaging/task_attribution_id.mojom";
 import "third_party/blink/public/mojom/navigation/navigation_api_history_entry_arrays.mojom";
 import "third_party/blink/public/mojom/navigation/navigation_policy.mojom";
 import "third_party/blink/public/mojom/navigation/prefetched_signed_exchange_info.mojom";
+import "third_party/blink/public/mojom/navigation/renderer_content_settings.mojom";
 import "third_party/blink/public/mojom/navigation/system_entropy.mojom";
 import "third_party/blink/public/mojom/navigation/was_activated_option.mojom";
 import "third_party/blink/public/mojom/page/browsing_context_group_info.mojom";
 import "third_party/blink/public/mojom/page/page.mojom";
 import "third_party/blink/public/mojom/permissions_policy/permissions_policy.mojom";
-import "third_party/blink/public/mojom/runtime_feature_state/runtime_feature_state.mojom";
+import "third_party/blink/public/mojom/runtime_feature_state/runtime_feature.mojom";
 import "third_party/blink/public/mojom/storage_key/storage_key.mojom";
 import "third_party/blink/public/mojom/tokens/tokens.mojom";
 import "url/mojom/origin.mojom";
@@ -70,6 +72,14 @@ enum NavigationType {
 
   // Navigation to another document.
   DIFFERENT_DOCUMENT,
+};
+
+// Maps to https://html.spec.whatwg.org/multipage/nav-history-apis.html#dom-navigateevent-navigationtype-dev.
+enum NavigationTypeForNavigationApi {
+  kPush,
+  kTraverse,
+  kReplace,
+  kReload
 };
 
 // Used by the renderer to indicate a case where a standard navigation that
@@ -321,9 +331,9 @@ struct NavigationTiming {
 // page's pagehide and visibilitychange handlers are run before the new page
 // runs (which is what happens on other same-site main frame navigations).
 struct OldPageInfo {
-  // |routing_id_for_old_main_frame| contains the routing ID of the old page's
-  // main RenderFrameHost.
-  int32 routing_id_for_old_main_frame = -1;
+  // |frame_token_for_old_main_frame| contains the frame token of the old page's
+  // main WebLocalFrame.
+  blink.mojom.LocalFrameToken frame_token_for_old_main_frame;
   // |new_lifecycle_state_for_old_page| contains the latest PageLifecycleState
   // of the old page to ensure the PageVisibilityState gets properly updated,
   // the "persisted" property of the pagehide event is set correctly, and
@@ -386,7 +396,7 @@ struct CommitNavigationParams {
 
   // Encoded version of blink::PageState, opaque history state (received by
   // UpdateState Mojo message).
-  string page_state;
+  mojo_base.mojom.ByteString page_state;
 
   // For browser-initiated navigations, this is the unique id of the
   // NavigationEntry being navigated to. (For renderer-initiated navigations it
@@ -565,10 +575,12 @@ struct CommitNavigationParams {
   // `PerformanceNavigationTiming` APIs.
   network.mojom.NavigationDeliveryType navigation_delivery_type = kDefault;
 
-  // Holds texture references (stored in the GPU process) and geometry state for
-  // the previous Document displayed by this frame. This is used to support
-  // transitions when navigating between same-origin Documents.
-  // See https://drafts.csswg.org/css-view-transitions-1/ for details.
+  // Holds texture references (stored in the GPU process), geometry state, and
+  // select CSS property values from the previous Document displayed by this
+  // frame. This is used to support transitions when navigating between
+  // same-origin Documents. Note that this is only set and used for same-origin
+  // navigations. See https://drafts.csswg.org/css-view-transitions-2/ for
+  // details.
   blink.mojom.ViewTransitionState? view_transition_state;
 
   // If any, the task ID of the initiator of the navigation. This is restricted
@@ -579,7 +591,7 @@ struct CommitNavigationParams {
   // Maps the blink runtime-enabled features modified in the browser process to
   // their new enabled/disabled status:
   // <enum_representing_runtime_enabled_feature, enabled/disabled>
-  map<blink.mojom.RuntimeFeatureState, bool> modified_runtime_features;
+  map<blink.mojom.RuntimeFeature, bool> modified_runtime_features;
 
   // A collection of properties that determines the behavior of a fenced frame.
   // Only non-null for embedder-initiated navigations of a fenced frame root,
@@ -604,4 +616,25 @@ struct CommitNavigationParams {
 
   // LCP Critical Path Predictor hint data available at navigation timing.
   blink.mojom.LCPCriticalPathPredictorNavigationTimeHint? lcpp_hint;
+
+  // Some content settings must be enforced by the renderer. See
+  // ContentSettingsType for more details.
+  RendererContentSettings content_settings;
+
+  // The cookie deprecation label for cookie deprecation facilitated testing.
+  string? cookie_deprecation_label;
+};
+
+// Parameters used to dispatch the `pageconceal` event on the old Document for
+// a navigation. Only generated for same-origin navigations.
+struct PageConcealEventParams {
+  // The URL of the destination page.
+  url.mojom.Url url;
+
+  // Used to retrieve the destination history item to create a
+  // NavigationHistoryEntry. Only provided for traverse navigations.
+  mojo_base.mojom.ByteString page_state;
+
+  // The type of navigation which will hide/unload this Document.
+  NavigationTypeForNavigationApi navigation_type;
 };

@@ -79,11 +79,10 @@ TEST(SiteForCookiesTest, Default) {
   SiteForCookies should_match_none;
   EXPECT_FALSE(should_match_none.IsFirstParty(GURL("http://example.com")));
   EXPECT_FALSE(should_match_none.IsFirstParty(GURL("file:///home/me/.bashrc")));
-  EXPECT_FALSE(should_match_none.IsFirstParty(GURL::EmptyGURL()));
+  EXPECT_FALSE(should_match_none.IsFirstParty(GURL()));
 
   // Before SiteForCookies existed, empty URL would represent match-none
-  EXPECT_TRUE(should_match_none.IsEquivalent(
-      SiteForCookies::FromUrl(GURL::EmptyGURL())));
+  EXPECT_TRUE(should_match_none.IsEquivalent(SiteForCookies::FromUrl(GURL())));
   EXPECT_TRUE(should_match_none.RepresentativeUrl().is_empty());
   EXPECT_TRUE(should_match_none.IsEquivalent(
       SiteForCookies::FromOrigin(url::Origin())));

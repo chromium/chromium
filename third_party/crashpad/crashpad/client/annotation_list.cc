@@ -77,7 +77,7 @@ Annotation* AnnotationList::Iterator::operator*() const {
 
 AnnotationList::Iterator& AnnotationList::Iterator::operator++() {
   CHECK_NE(curr_, tail_);
-  curr_ = curr_->link_node();
+  curr_ = curr_->GetLinkNode();
   return *this;
 }
 
@@ -86,12 +86,42 @@ bool AnnotationList::Iterator::operator==(
   return curr_ == other.curr_;
 }
 
+AnnotationList::ConstIterator::ConstIterator(const Annotation* head,
+                                             const Annotation* tail)
+    : curr_(head), tail_(tail) {}
+
+AnnotationList::ConstIterator::~ConstIterator() = default;
+
+const Annotation* AnnotationList::ConstIterator::operator*() const {
+  CHECK_NE(curr_, tail_);
+  return curr_;
+}
+
+AnnotationList::ConstIterator& AnnotationList::ConstIterator::operator++() {
+  CHECK_NE(curr_, tail_);
+  curr_ = curr_->GetLinkNode();
+  return *this;
+}
+
+bool AnnotationList::ConstIterator::operator==(
+    const AnnotationList::ConstIterator& other) const {
+  return curr_ == other.curr_;
+}
+
 AnnotationList::Iterator AnnotationList::begin() {
-  return Iterator(head_.link_node(), tail_pointer_);
+  return Iterator(head_.GetLinkNode(), tail_pointer_);
+}
+
+AnnotationList::ConstIterator AnnotationList::cbegin() const {
+  return ConstIterator(head_.GetLinkNode(), tail_pointer_);
 }
 
 AnnotationList::Iterator AnnotationList::end() {
   return Iterator(&tail_, tail_pointer_);
+}
+
+AnnotationList::ConstIterator AnnotationList::cend() const {
+  return ConstIterator(&tail_, tail_pointer_);
 }
 
 }  // namespace crashpad

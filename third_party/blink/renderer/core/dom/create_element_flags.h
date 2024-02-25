@@ -34,6 +34,11 @@ class CreateElementFlags {
   // https://dom.spec.whatwg.org/#dom-document-createelement
   static CreateElementFlags ByCreateElement() { return CreateElementFlags(); }
 
+  // https://wicg.github.io/webcomponents/proposals/Scoped-Custom-Element-Registries
+  static CreateElementFlags ByShadowRootCreateElement() {
+    return CreateElementFlags().SetAsyncCustomElements();
+  }
+
   // https://html.spec.whatwg.org/C/#create-an-element-for-the-token
   static CreateElementFlags ByFragmentParser(Document* document) {
     return CreateElementFlags()

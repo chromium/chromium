@@ -9,6 +9,7 @@
 #include <atomic>
 #include <limits>
 #include <memory>
+#include <optional>
 
 #include "base/apple/call_with_eh_frame.h"
 #include "base/apple/scoped_cftyperef.h"
@@ -18,13 +19,14 @@
 #include "base/feature_list.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_policy.h"
+#include "base/memory/stack_allocated.h"
 #include "base/metrics/histogram_samples.h"
 #include "base/notreached.h"
 #include "base/run_loop.h"
+#include "base/task/task_features.h"
 #include "base/threading/platform_thread.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 #if !BUILDFLAG(IS_IOS)
 #import <AppKit/AppKit.h>
@@ -32,30 +34,18 @@
 
 namespace base {
 
-const CFStringRef kMessageLoopExclusiveRunLoopMode =
-    CFSTR("kMessageLoopExclusiveRunLoopMode");
-
 namespace {
 
-// Enables two optimizations in MessagePumpCFRunLoop:
-// - Skip calling CFRunLoopTimerSetNextFireDate if the next delayed wake up
-//  time hasn't changed.
-// - Cancel an already scheduled timer wake up if there is no delayed work.
-BASE_FEATURE(kMessagePumpMacDelayedWorkOptimizations,
-             "MessagePumpMacDelayedWorkOptimizations",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
-// Caches the state of the "MessagePumpMacDelayedWorkOptimizations"
-// feature for efficiency.
-std::atomic_bool g_enable_optimizations = false;
+// Caches the state of the "TimerSlackMac" feature for efficiency.
+std::atomic_bool g_timer_slack = false;
 
 // Mask that determines which modes to use.
-enum { kCommonModeMask = 0x1, kAllModesMask = 0xf };
+enum { kCommonModeMask = 0b0000'0001, kAllModesMask = 0b0000'0111 };
 
 // Modes to use for MessagePumpNSApplication that are considered "safe".
-// Currently just common and exclusive modes. Ideally, messages would be pumped
-// in all modes, but that interacts badly with app modal dialogs (e.g. NSAlert).
-enum { kNSApplicationModalSafeModeMask = 0x3 };
+// Currently just the common mode. Ideally, messages would be pumped in all
+// modes, but that interacts badly with app modal dialogs (e.g. NSAlert).
+enum { kNSApplicationModalSafeModeMask = 0b0000'0001 };
 
 void NoOp(void* info) {}
 
@@ -75,6 +65,8 @@ MessagePumpNSApplication* g_app_pump;
 
 // A scoper for an optional autorelease pool.
 class OptionalAutoreleasePool {
+  STACK_ALLOCATED();
+
  public:
   explicit OptionalAutoreleasePool(MessagePumpCFRunLoopBase* pump) {
     if (pump->ShouldCreateAutoreleasePool()) {
@@ -86,35 +78,37 @@ class OptionalAutoreleasePool {
   OptionalAutoreleasePool& operator=(const OptionalAutoreleasePool&) = delete;
 
  private:
-  absl::optional<base::apple::ScopedNSAutoreleasePool> pool_;
+  std::optional<base::apple::ScopedNSAutoreleasePool> pool_;
 };
 
 class MessagePumpCFRunLoopBase::ScopedModeEnabler {
  public:
   ScopedModeEnabler(MessagePumpCFRunLoopBase* owner, int mode_index)
       : owner_(owner), mode_index_(mode_index) {
-    CFRunLoopRef loop = owner_->run_loop_;
-    CFRunLoopAddTimer(loop, owner_->delayed_work_timer_, mode());
-    CFRunLoopAddSource(loop, owner_->work_source_, mode());
-    CFRunLoopAddSource(loop, owner_->nesting_deferred_work_source_, mode());
-    CFRunLoopAddObserver(loop, owner_->pre_wait_observer_, mode());
-    CFRunLoopAddObserver(loop, owner_->after_wait_observer_, mode());
-    CFRunLoopAddObserver(loop, owner_->pre_source_observer_, mode());
-    CFRunLoopAddObserver(loop, owner_->enter_exit_observer_, mode());
+    CFRunLoopRef loop = owner_->run_loop_.get();
+    CFRunLoopAddTimer(loop, owner_->delayed_work_timer_.get(), mode());
+    CFRunLoopAddSource(loop, owner_->work_source_.get(), mode());
+    CFRunLoopAddSource(loop, owner_->nesting_deferred_work_source_.get(),
+                       mode());
+    CFRunLoopAddObserver(loop, owner_->pre_wait_observer_.get(), mode());
+    CFRunLoopAddObserver(loop, owner_->after_wait_observer_.get(), mode());
+    CFRunLoopAddObserver(loop, owner_->pre_source_observer_.get(), mode());
+    CFRunLoopAddObserver(loop, owner_->enter_exit_observer_.get(), mode());
   }
 
   ScopedModeEnabler(const ScopedModeEnabler&) = delete;
   ScopedModeEnabler& operator=(const ScopedModeEnabler&) = delete;
 
   ~ScopedModeEnabler() {
-    CFRunLoopRef loop = owner_->run_loop_;
-    CFRunLoopRemoveObserver(loop, owner_->enter_exit_observer_, mode());
-    CFRunLoopRemoveObserver(loop, owner_->pre_source_observer_, mode());
-    CFRunLoopRemoveObserver(loop, owner_->pre_wait_observer_, mode());
-    CFRunLoopRemoveObserver(loop, owner_->after_wait_observer_, mode());
-    CFRunLoopRemoveSource(loop, owner_->nesting_deferred_work_source_, mode());
-    CFRunLoopRemoveSource(loop, owner_->work_source_, mode());
-    CFRunLoopRemoveTimer(loop, owner_->delayed_work_timer_, mode());
+    CFRunLoopRef loop = owner_->run_loop_.get();
+    CFRunLoopRemoveObserver(loop, owner_->enter_exit_observer_.get(), mode());
+    CFRunLoopRemoveObserver(loop, owner_->pre_source_observer_.get(), mode());
+    CFRunLoopRemoveObserver(loop, owner_->pre_wait_observer_.get(), mode());
+    CFRunLoopRemoveObserver(loop, owner_->after_wait_observer_.get(), mode());
+    CFRunLoopRemoveSource(loop, owner_->nesting_deferred_work_source_.get(),
+                          mode());
+    CFRunLoopRemoveSource(loop, owner_->work_source_.get(), mode());
+    CFRunLoopRemoveTimer(loop, owner_->delayed_work_timer_.get(), mode());
   }
 
   // This function knows about the AppKit RunLoop modes observed to potentially
@@ -128,9 +122,6 @@ class MessagePumpCFRunLoopBase::ScopedModeEnabler {
         // The standard Core Foundation "common modes" constant. Must always be
         // first in this list to match the value of kCommonModeMask.
         kCFRunLoopCommonModes,
-
-        // Mode that only sees Chrome work sources.
-        kMessageLoopExclusiveRunLoopMode,
 
         // Process work when NSMenus are fading out.
         CFSTR("com.apple.hitoolbox.windows.windowfadingmode"),
@@ -181,8 +172,8 @@ void MessagePumpCFRunLoopBase::OnDidQuit() {
 
 // May be called on any thread.
 void MessagePumpCFRunLoopBase::ScheduleWork() {
-  CFRunLoopSourceSignal(work_source_);
-  CFRunLoopWakeUp(run_loop_);
+  CFRunLoopSourceSignal(work_source_.get());
+  CFRunLoopWakeUp(run_loop_.get());
 }
 
 // Must be called on the run loop thread.
@@ -190,32 +181,45 @@ void MessagePumpCFRunLoopBase::ScheduleDelayedWork(
     const Delegate::NextWorkInfo& next_work_info) {
   DCHECK(!next_work_info.is_immediate());
 
-  if (g_enable_optimizations.load(std::memory_order_relaxed)) {
-    // No-op if the delayed run time hasn't changed.
-    if (next_work_info.delayed_run_time == delayed_work_scheduled_at_) {
-      return;
+  // The tolerance needs to be set before the fire date or it may be ignored.
+  if (g_timer_slack.load(std::memory_order_relaxed) &&
+      !next_work_info.delayed_run_time.is_max() &&
+      delayed_work_leeway_ != next_work_info.leeway) {
+    if (!next_work_info.leeway.is_zero()) {
+      // Specify slack based on |next_work_info|.
+      CFRunLoopTimerSetTolerance(delayed_work_timer_.get(),
+                                 next_work_info.leeway.InSecondsF());
+    } else {
+      CFRunLoopTimerSetTolerance(delayed_work_timer_.get(), 0);
     }
-  } else {
-    // Preserve the old behavior of not adjusting the timer when
-    // `delayed_run_time.is_max()`.
-    //
-    // TODO(crbug.com/1335524): Remove this once the
-    // "MessagePumpMacDelayedWorkOptimizations" feature is shipped.
+    delayed_work_leeway_ = next_work_info.leeway;
+  }
+
+  // No-op if the delayed run time hasn't changed.
+  if (next_work_info.delayed_run_time != delayed_work_scheduled_at_) {
     if (next_work_info.delayed_run_time.is_max()) {
-      return;
+      CFRunLoopTimerSetNextFireDate(delayed_work_timer_.get(),
+                                    kCFTimeIntervalMax);
+    } else {
+      const double delay_seconds =
+          next_work_info.remaining_delay().InSecondsF();
+      CFRunLoopTimerSetNextFireDate(delayed_work_timer_.get(),
+                                    CFAbsoluteTimeGetCurrent() + delay_seconds);
     }
+
+    delayed_work_scheduled_at_ = next_work_info.delayed_run_time;
   }
+}
 
-  if (next_work_info.delayed_run_time.is_max()) {
-    CFRunLoopTimerSetNextFireDate(delayed_work_timer_, kCFTimeIntervalMax);
-  } else {
-    const double delay_seconds = next_work_info.remaining_delay().InSecondsF();
-
-    CFRunLoopTimerSetNextFireDate(delayed_work_timer_,
-                                  CFAbsoluteTimeGetCurrent() + delay_seconds);
+TimeTicks MessagePumpCFRunLoopBase::AdjustDelayedRunTime(
+    TimeTicks earliest_time,
+    TimeTicks run_time,
+    TimeTicks latest_time) {
+  if (g_timer_slack.load(std::memory_order_relaxed)) {
+    return earliest_time;
   }
-
-  delayed_work_scheduled_at_ = next_work_info.delayed_run_time;
+  return MessagePump::AdjustDelayedRunTime(earliest_time, run_time,
+                                           latest_time);
 }
 
 #if BUILDFLAG(IS_IOS)
@@ -241,7 +245,6 @@ MessagePumpCFRunLoopBase::MessagePumpCFRunLoopBase(int initial_mode_mask) {
                            /*order=*/0,
                            /*callout=*/RunDelayedWorkTimer,
                            /*context=*/&timer_context));
-  CFRunLoopTimerSetTolerance(delayed_work_timer_, 0);
 
   CFRunLoopSourceContext source_context = {0};
   source_context.info = this;
@@ -297,9 +300,8 @@ MessagePumpCFRunLoopBase::~MessagePumpCFRunLoopBase() {
 
 // static
 void MessagePumpCFRunLoopBase::InitializeFeatures() {
-  g_enable_optimizations.store(
-      base::FeatureList::IsEnabled(kMessagePumpMacDelayedWorkOptimizations),
-      std::memory_order_relaxed);
+  g_timer_slack.store(FeatureList::IsEnabled(kTimerSlackMac),
+                      std::memory_order_relaxed);
 }
 
 #if BUILDFLAG(IS_IOS)
@@ -334,7 +336,7 @@ void MessagePumpCFRunLoopBase::SetDelegate(Delegate* delegate) {
     // delegate, set it up for dispatch again now that a delegate is
     // available.
     if (delegateless_work_) {
-      CFRunLoopSourceSignal(work_source_);
+      CFRunLoopSourceSignal(work_source_.get());
       delegateless_work_ = false;
     }
   }
@@ -383,7 +385,7 @@ void MessagePumpCFRunLoopBase::PushWorkItemScope() {
   if (delegate_) {
     stack_.push(delegate_->BeginWorkItem());
   } else {
-    stack_.push(absl::nullopt);
+    stack_.push(std::nullopt);
   }
 }
 
@@ -445,7 +447,7 @@ bool MessagePumpCFRunLoopBase::RunWork() {
   PushWorkItemScope();
 
   if (next_work_info.is_immediate()) {
-    CFRunLoopSourceSignal(work_source_);
+    CFRunLoopSourceSignal(work_source_.get());
     return true;
   } else {
     // This adjusts the next delayed wake up time (potentially cancels an
@@ -472,7 +474,7 @@ void MessagePumpCFRunLoopBase::RunIdleWork() {
   OptionalAutoreleasePool autorelease_pool(this);
   bool did_work = delegate_->DoIdleWork();
   if (did_work) {
-    CFRunLoopSourceSignal(work_source_);
+    CFRunLoopSourceSignal(work_source_.get());
   }
 }
 
@@ -520,7 +522,7 @@ void MessagePumpCFRunLoopBase::MaybeScheduleNestingDeferredWork() {
   // was disallowed.
   if (deepest_nesting_level_ > nesting_level_) {
     deepest_nesting_level_ = nesting_level_;
-    CFRunLoopSourceSignal(nesting_deferred_work_source_);
+    CFRunLoopSourceSignal(nesting_deferred_work_source_.get());
   }
 }
 
@@ -699,11 +701,11 @@ MessagePumpNSRunLoop::MessagePumpNSRunLoop()
   quit_source_.reset(CFRunLoopSourceCreate(/*allocator=*/nullptr,
                                            /*order=*/0,
                                            /*context=*/&source_context));
-  CFRunLoopAddSource(run_loop(), quit_source_, kCFRunLoopCommonModes);
+  CFRunLoopAddSource(run_loop(), quit_source_.get(), kCFRunLoopCommonModes);
 }
 
 MessagePumpNSRunLoop::~MessagePumpNSRunLoop() {
-  CFRunLoopRemoveSource(run_loop(), quit_source_, kCFRunLoopCommonModes);
+  CFRunLoopRemoveSource(run_loop(), quit_source_.get(), kCFRunLoopCommonModes);
 }
 
 void MessagePumpNSRunLoop::DoRun(Delegate* delegate) {
@@ -715,7 +717,7 @@ void MessagePumpNSRunLoop::DoRun(Delegate* delegate) {
 }
 
 bool MessagePumpNSRunLoop::DoQuit() {
-  CFRunLoopSourceSignal(quit_source_);
+  CFRunLoopSourceSignal(quit_source_.get());
   CFRunLoopWakeUp(run_loop());
   return true;
 }

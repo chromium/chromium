@@ -4,18 +4,15 @@
 
 package org.chromium.chrome.browser.enterprise.util;
 
-import org.chromium.base.annotations.JNINamespace;
-import org.chromium.base.annotations.NativeMethods;
+import org.jni_zero.JNINamespace;
+import org.jni_zero.NativeMethods;
+
 import org.chromium.chrome.browser.profiles.Profile;
 
-/**
- * Util methods for interacting with managed browser (enterprise) state.
- */
+/** Util methods for interacting with managed browser (enterprise) state. */
 @JNINamespace("chrome::enterprise_util")
 public class ManagedBrowserUtils {
-    /**
-     * Wrapper around native call to determine if the browser is managed.
-     */
+    /** Wrapper around native call to determine if the browser is managed. */
     public static boolean isBrowserManaged(Profile profile) {
         return ManagedBrowserUtilsJni.get().isBrowserManaged(profile);
     }
@@ -25,9 +22,17 @@ public class ManagedBrowserUtils {
         return (profile != null) ? ManagedBrowserUtilsJni.get().getBrowserManagerName(profile) : "";
     }
 
+    /** Wrapper around native call to get if cloud reporting is enabled. */
+    public static boolean isReportingEnabled() {
+        return ManagedBrowserUtilsJni.get().isReportingEnabled();
+    }
+
     @NativeMethods
     public interface Natives {
         boolean isBrowserManaged(Profile profile);
+
         String getBrowserManagerName(Profile profile);
+
+        boolean isReportingEnabled();
     }
 }

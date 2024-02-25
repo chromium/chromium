@@ -58,22 +58,24 @@ import java.util.concurrent.atomic.AtomicReference;
 public class OfflinePageAutoFetchTest {
     private static final String TAG = "AutoFetchTest";
     private static final long WAIT_TIMEOUT_MS = 20000;
+
     @Rule
     public ChromeTabbedActivityTestRule mActivityTestRule = new ChromeTabbedActivityTestRule();
 
     @Rule
-    public TestWatcher mTestWatcher = new TestWatcher() {
-        @Override
-        protected void failed(Throwable e, Description description) {
-            try {
-                logAdditionalContext();
-            } catch (Exception ex) {
-                // Exceptions here are typical if the test failed to start. Catch them, or it will
-                // obscure the actual failure.
-                Log.w(TAG, "Failed to log additional context: " + ex.toString());
-            }
-        }
-    };
+    public TestWatcher mTestWatcher =
+            new TestWatcher() {
+                @Override
+                protected void failed(Throwable e, Description description) {
+                    try {
+                        logAdditionalContext();
+                    } catch (Exception ex) {
+                        // Exceptions here are typical if the test failed to start. Catch them, or
+                        // it will obscure the actual failure.
+                        Log.w(TAG, "Failed to log additional context: " + ex.toString());
+                    }
+                }
+            };
 
     private Profile mProfile;
     private OfflinePageBridge mOfflinePageBridge;
@@ -92,6 +94,7 @@ public class OfflinePageAutoFetchTest {
             mLastInProgressCancelButtonIntent = cancelButtonIntent;
             mLastInProgressDeleteIntent = deleteIntent;
         }
+
         @Override
         public void completeNotificationShown(Intent clickIntent, Intent deleteIntent) {
             mLastCompleteClickIntent = clickIntent;
@@ -100,6 +103,7 @@ public class OfflinePageAutoFetchTest {
     }
 
     private static final String DEFAULT_BODY = "<html><title>MyTestPage</title>Hello World!</html>";
+
     private void startWebServer() throws Exception {
         Assert.assertTrue(mWebServer == null);
         mWebServer = new WebServer(0, false);
@@ -108,38 +112,44 @@ public class OfflinePageAutoFetchTest {
 
     private void useDefaultWebServerResponse() {
         Assert.assertTrue(mWebServer != null);
-        mWebServer.setRequestHandler((HTTPRequest request, OutputStream stream) -> {
-            try {
-                WebServer.writeResponse(stream, WebServer.STATUS_OK, DEFAULT_BODY.getBytes());
-            } catch (IOException e) {
-            }
-        });
+        mWebServer.setRequestHandler(
+                (HTTPRequest request, OutputStream stream) -> {
+                    try {
+                        WebServer.writeResponse(
+                                stream, WebServer.STATUS_OK, DEFAULT_BODY.getBytes());
+                    } catch (IOException e) {
+                    }
+                });
     }
 
     private void useAlternateWebServerResponse() {
         Assert.assertTrue(mWebServer != null);
         String body = "<html><title>A Different Page</title>Alternate page!</html>";
-        mWebServer.setRequestHandler((HTTPRequest request, OutputStream stream) -> {
-            try {
-                WebServer.writeResponse(stream, WebServer.STATUS_OK, body.getBytes());
-            } catch (IOException e) {
-            }
-        });
+        mWebServer.setRequestHandler(
+                (HTTPRequest request, OutputStream stream) -> {
+                    try {
+                        WebServer.writeResponse(stream, WebServer.STATUS_OK, body.getBytes());
+                    } catch (IOException e) {
+                    }
+                });
     }
 
     private void useRedirectWebServerResponse() {
         Assert.assertTrue(mWebServer != null);
         String redirectBody =
                 "<html><meta http-equiv=\"refresh\" content=\"0; url=/redirect_target\">"
-                + "<title>RedirectingFromHere</title>redirect</html>";
-        mWebServer.setRequestHandler((HTTPRequest request, OutputStream stream) -> {
-            try {
-                String body =
-                        request.getURI().endsWith("redirect_from") ? redirectBody : DEFAULT_BODY;
-                WebServer.writeResponse(stream, WebServer.STATUS_OK, body.getBytes());
-            } catch (IOException e) {
-            }
-        });
+                        + "<title>RedirectingFromHere</title>redirect</html>";
+        mWebServer.setRequestHandler(
+                (HTTPRequest request, OutputStream stream) -> {
+                    try {
+                        String body =
+                                request.getURI().endsWith("redirect_from")
+                                        ? redirectBody
+                                        : DEFAULT_BODY;
+                        WebServer.writeResponse(stream, WebServer.STATUS_OK, body.getBytes());
+                    } catch (IOException e) {
+                    }
+                });
     }
 
     @Before
@@ -148,23 +158,25 @@ public class OfflinePageAutoFetchTest {
 
         AutoFetchNotifier.mTestHooks = new NotifierHooks();
 
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            mProfile = Profile.fromWebContents(activityTab().getWebContents());
-            mOfflinePageBridge = OfflinePageBridge.getForProfile(mProfile);
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    mProfile = activityTab().getProfile();
+                    mOfflinePageBridge = OfflinePageBridge.getForProfile(mProfile);
 
-            if (!NetworkChangeNotifier.isInitialized()) {
-                NetworkChangeNotifier.init();
-            }
+                    if (!NetworkChangeNotifier.isInitialized()) {
+                        NetworkChangeNotifier.init();
+                    }
 
-            OfflinePageBridge.getForProfile(mProfile).addObserver(
-                    new OfflinePageBridge.OfflinePageModelObserver() {
-                        @Override
-                        public void offlinePageAdded(OfflinePageItem addedPage) {
-                            mAddedPage = addedPage;
-                            mPageAddedHelper.notifyCalled();
-                        }
-                    });
-        });
+                    OfflinePageBridge.getForProfile(mProfile)
+                            .addObserver(
+                                    new OfflinePageBridge.OfflinePageModelObserver() {
+                                        @Override
+                                        public void offlinePageAdded(OfflinePageItem addedPage) {
+                                            mAddedPage = addedPage;
+                                            mPageAddedHelper.notifyCalled();
+                                        }
+                                    });
+                });
         forceConnectivityState(false);
     }
 
@@ -225,10 +237,12 @@ public class OfflinePageAutoFetchTest {
         sendBroadcast(mLastCompleteClickIntent);
 
         // A new tab should open, and it should load the offline page.
-        pollInstrumentationThread(() -> {
-            return getCurrentTabModel().getCount() == 2
-                    && ChromeTabUtils.getTitleOnUiThread(getCurrentTab()).equals("MyTestPage");
-        });
+        pollInstrumentationThread(
+                () -> {
+                    return getCurrentTabModel().getCount() == 2
+                            && ChromeTabUtils.getTitleOnUiThread(getCurrentTab())
+                                    .equals("MyTestPage");
+                });
     }
 
     @Test
@@ -266,12 +280,15 @@ public class OfflinePageAutoFetchTest {
         useAlternateWebServerResponse();
         sendBroadcast(mLastCompleteClickIntent);
 
-        pollInstrumentationThread(() -> {
-            // No new tab is opened, because the URL of the tab matches the original URL.
-            return getCurrentTabModel().getCount() == 1
-                    // The title matches the original page, not the 'AlternativeWebServerResponse'.
-                    && ChromeTabUtils.getTitleOnUiThread(getCurrentTab()).equals("MyTestPage");
-        });
+        pollInstrumentationThread(
+                () -> {
+                    // No new tab is opened, because the URL of the tab matches the original URL.
+                    return getCurrentTabModel().getCount() == 1
+                            // The title matches the original page, not the
+                            // 'AlternativeWebServerResponse'.
+                            && ChromeTabUtils.getTitleOnUiThread(getCurrentTab())
+                                    .equals("MyTestPage");
+                });
     }
 
     @Test
@@ -423,17 +440,22 @@ public class OfflinePageAutoFetchTest {
     // successfully.
     private void attemptLoadPage(String url) {
         Tab tab = activityTab();
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            tab.loadUrl(
-                    new LoadUrlParams(url, PageTransition.TYPED | PageTransition.FROM_ADDRESS_BAR));
-        });
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    tab.loadUrl(
+                            new LoadUrlParams(
+                                    url, PageTransition.TYPED | PageTransition.FROM_ADDRESS_BAR));
+                });
     }
 
     // Attempts to create a new tab and load |url| in it.
     private Tab attemptLoadPageInNewTab(String url) throws Exception {
         ChromeActivity activity = mActivityTestRule.getActivity();
-        Tab tab = TestThreadUtils.runOnUiThreadBlocking(
-                () -> activity.getTabCreator(false).launchUrl(url, TabLaunchType.FROM_LINK));
+        Tab tab =
+                TestThreadUtils.runOnUiThreadBlocking(
+                        () ->
+                                activity.getTabCreator(false)
+                                        .launchUrl(url, TabLaunchType.FROM_LINK));
         ChromeTabUtils.waitForInteractable(tab);
         return tab;
     }
@@ -450,27 +472,35 @@ public class OfflinePageAutoFetchTest {
 
         // Attempt to close the tab, which will delay closing until the undo timeout goes away.
         TestThreadUtils.runOnUiThreadBlocking(
-                () -> { TabModelUtils.closeTabById(model, tab.getId(), true); });
+                () -> {
+                    TabModelUtils.closeTabById(model, tab.getId(), true);
+                });
     }
 
     private void forceConnectivityState(boolean connected) {
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            NetworkChangeNotifier.forceConnectivityState(connected);
-            DeviceConditions.sForceConnectionTypeForTesting = !connected;
-        });
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    NetworkChangeNotifier.forceConnectivityState(connected);
+                    DeviceConditions.sForceConnectionTypeForTesting = !connected;
+                });
         OfflineTestUtil.waitForConnectivityState(connected);
     }
 
     private void sendBroadcast(Intent intent) {
         TestThreadUtils.runOnUiThreadBlocking(
-                () -> { ContextUtils.getApplicationContext().sendBroadcast(intent); });
+                () -> {
+                    ContextUtils.getApplicationContext().sendBroadcast(intent);
+                });
     }
+
     private TabModel getCurrentTabModel() {
         return mActivityTestRule.getActivity().getCurrentTabModel();
     }
+
     private Tab getCurrentTab() {
         return TabModelUtils.getCurrentTab(getCurrentTabModel());
     }
+
     private void logAdditionalContext() {
         TabModel tabModel = getCurrentTabModel();
         // Return early if the test setup didn't complete.
@@ -486,11 +516,13 @@ public class OfflinePageAutoFetchTest {
             Log.d(TAG, "Tab " + String.valueOf(i) + " '" + title + "' " + current);
         }
         try {
-            Log.d(TAG,
+            Log.d(
+                    TAG,
                     "Request Coordinator state:" + OfflineTestUtil.dumpRequestCoordinatorState());
         } catch (TimeoutException e) {
         }
     }
+
     private void pollInstrumentationThread(final Callable<Boolean> criteria) {
         CriteriaHelper.pollInstrumentationThread(
                 criteria, "Criteria not met", WAIT_TIMEOUT_MS, 100);

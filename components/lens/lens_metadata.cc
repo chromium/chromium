@@ -28,10 +28,10 @@ void AddDownscaleData(lens::proto::lens_latencies_metadata::
 
 void AddEncodeData(lens::proto::lens_latencies_metadata::
                        ChromeSpecificPhaseLatenciesMetadata::Phase* phase,
-                   lens::mojom::ImageFormat image_format) {
+                   lens::mojom::ImageFormat image_format,
+                   size_t encoded_image_size_bytes) {
   lens::proto::lens_latencies_metadata::ChromeSpecificPhaseLatenciesMetadata::
       Phase::ImageEncodeData* encode = phase->mutable_image_encode_data();
-
   switch (image_format) {
     case (lens::mojom::ImageFormat::ORIGINAL):
       encode->set_original_image_type(
@@ -54,6 +54,8 @@ void AddEncodeData(lens::proto::lens_latencies_metadata::
               ChromeSpecificPhaseLatenciesMetadata::WEBP);
       break;
   }
+
+  encode->set_encoded_image_size_bytes(encoded_image_size_bytes);
 }
 
 }  // namespace
@@ -72,7 +74,7 @@ std::string CreateProto(
         Phase::Timestamp* timestamp = phase->mutable_timestamp();
     int64_t nanoseconds_in_milliseconds = 1e6;
     int64_t time_nanoseconds =
-        log->time.ToJavaTime() * nanoseconds_in_milliseconds;
+        log->time.InMillisecondsSinceUnixEpoch() * nanoseconds_in_milliseconds;
     timestamp->set_seconds(time_nanoseconds /
                            base::Time::kNanosecondsPerSecond);
     timestamp->set_nanos(time_nanoseconds % base::Time::kNanosecondsPerSecond);
@@ -103,7 +105,7 @@ std::string CreateProto(
         phase->set_phase_type(
             lens::proto::lens_latencies_metadata::
                 ChromeSpecificPhaseLatenciesMetadata::Phase::IMAGE_ENCODE_END);
-        AddEncodeData(phase, log->image_format);
+        AddEncodeData(phase, log->image_format, log->encoded_bytes_size);
         break;
     }
   }
@@ -111,10 +113,7 @@ std::string CreateProto(
   std::string serialized_proto;
   metadata.SerializeToString(&serialized_proto);
 
-  std::string serialize_and_encoded_proto;
-  base::Base64Encode(serialized_proto, &serialize_and_encoded_proto);
-
-  return serialize_and_encoded_proto;
+  return base::Base64Encode(serialized_proto);
 }
 
 }  // namespace LensMetadata

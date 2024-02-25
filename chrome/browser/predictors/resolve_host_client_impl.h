@@ -5,6 +5,8 @@
 #ifndef CHROME_BROWSER_PREDICTORS_RESOLVE_HOST_CLIENT_IMPL_H_
 #define CHROME_BROWSER_PREDICTORS_RESOLVE_HOST_CLIENT_IMPL_H_
 
+#include <optional>
+
 #include "base/functional/bind.h"
 #include "base/time/time.h"
 #include "mojo/public/cpp/bindings/receiver.h"
@@ -12,7 +14,6 @@
 #include "net/dns/public/host_resolver_results.h"
 #include "services/network/public/cpp/resolve_host_client_base.h"
 #include "services/network/public/mojom/host_resolver.mojom-forward.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 class GURL;
 
@@ -51,8 +52,8 @@ class ResolveHostClientImpl : public network::ResolveHostClientBase {
   // network::mojom::ResolveHostClient:
   void OnComplete(int result,
                   const net::ResolveErrorInfo& resolve_error_info,
-                  const absl::optional<net::AddressList>& resolved_addresses,
-                  const absl::optional<net::HostResolverEndpointResults>&
+                  const std::optional<net::AddressList>& resolved_addresses,
+                  const std::optional<net::HostResolverEndpointResults>&
                       endpoint_results_with_metadata) override;
 
   void OnConnectionError();

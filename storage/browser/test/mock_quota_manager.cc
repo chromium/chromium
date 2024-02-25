@@ -58,6 +58,9 @@ MockQuotaManager::MockQuotaManager(
 void MockQuotaManager::UpdateOrCreateBucket(
     const BucketInitParams& params,
     base::OnceCallback<void(QuotaErrorOr<BucketInfo>)> callback) {
+  // Make sure serialization doesn't fail.
+  params.storage_key.Serialize();
+
   if (db_disabled_) {
     std::move(callback).Run(base::unexpected(QuotaError::kDatabaseError));
     return;
@@ -387,8 +390,13 @@ QuotaErrorOr<BucketInfo> MockQuotaManager::FindAndUpdateBucket(
   return base::unexpected(QuotaError::kNotFound);
 }
 
-void MockQuotaManager::UpdateUsage(const BucketLocator& bucket, int64_t delta) {
-  usage_map_[bucket].usage += delta;
+void MockQuotaManager::UpdateUsage(const BucketLocator& bucket,
+                                   std::optional<int64_t> delta) {
+  if (delta) {
+    usage_map_[bucket].usage += *delta;
+  } else {
+    usage_map_[bucket].usage = 0;
+  }
 }
 
 void MockQuotaManager::DidGetBucket(

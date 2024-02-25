@@ -66,6 +66,7 @@
 #include "ui/views/animation/animation_builder.h"
 #include "ui/views/animation/ink_drop.h"
 #include "ui/views/background.h"
+#include "ui/views/controls/button/button_controller.h"
 #include "ui/views/controls/focus_ring.h"
 #include "ui/views/controls/highlight_path_generator.h"
 #include "ui/views/controls/menu/menu_runner.h"
@@ -138,13 +139,9 @@ gfx::Insets GetMirroredBackgroundInsets(bool is_shelf_horizontal) {
       -ash::ShelfConfig::Get()->status_area_hit_region_padding();
 
   if (is_shelf_horizontal) {
-    insets =
-        gfx::Insets::TLBR(secondary_padding, primary_padding, secondary_padding,
-                          primary_padding + ash::kTraySeparatorWidth);
+    insets = gfx::Insets::VH(secondary_padding, primary_padding);
   } else {
-    insets = gfx::Insets::TLBR(primary_padding, secondary_padding,
-                               primary_padding + ash::kTraySeparatorWidth,
-                               secondary_padding);
+    insets = gfx::Insets::VH(primary_padding, secondary_padding);
   }
   MirrorInsetsIfNecessary(&insets);
   return insets;
@@ -170,18 +167,31 @@ class HighlightPathGenerator : public views::HighlightPathGenerator {
   HighlightPathGenerator& operator=(const HighlightPathGenerator&) = delete;
 
   // HighlightPathGenerator:
-  absl::optional<gfx::RRectF> GetRoundRect(const gfx::RectF& rect) override {
+  std::optional<gfx::RRectF> GetRoundRect(const gfx::RectF& rect) override {
     gfx::RectF bounds(tray_background_view_->GetBackgroundBounds());
     bounds.Inset(gfx::InsetsF(insets_));
     return gfx::RRectF(bounds, tray_background_view_->GetRoundedCorners());
   }
 
  private:
-  const raw_ptr<TrayBackgroundView, ExperimentalAsh> tray_background_view_;
+  const raw_ptr<TrayBackgroundView> tray_background_view_;
   const gfx::Insets insets_;
 };
 
 }  // namespace
+
+TrayBackgroundView::TrayButtonControllerDelegate::TrayButtonControllerDelegate(
+    views::Button* button,
+    TrayBackgroundViewCatalogName catalogue_name)
+    : views::Button::DefaultButtonControllerDelegate(button),
+      catalog_name_(catalogue_name) {}
+
+void TrayBackgroundView::TrayButtonControllerDelegate::NotifyClick(
+    const ui::Event& event) {
+  base::UmaHistogramEnumeration("Ash.StatusArea.TrayBackgroundView.Pressed",
+                                catalog_name_);
+  DefaultButtonControllerDelegate::NotifyClick(event);
+}
 
 // Used to track when the anchor widget changes position on screen so that the
 // bubble position can be updated.
@@ -204,7 +214,7 @@ class TrayBackgroundView::TrayWidgetObserver : public views::WidgetObserver {
   void Add(views::Widget* widget) { observations_.AddObservation(widget); }
 
  private:
-  raw_ptr<TrayBackgroundView, ExperimentalAsh> host_;
+  raw_ptr<TrayBackgroundView> host_;
   base::ScopedMultiSourceObservation<views::Widget, views::WidgetObserver>
       observations_{this};
 };
@@ -240,7 +250,7 @@ class TrayBackgroundView::TrayBackgroundViewSessionChangeHandler
         FROM_HERE, callback.Release());
   }
 
-  const raw_ptr<TrayBackgroundView, ExperimentalAsh> tray_;
+  const raw_ptr<TrayBackgroundView> tray_;
   ScopedSessionObserver session_observer_{this};
 };
 
@@ -251,9 +261,7 @@ TrayBackgroundView::TrayBackgroundView(
     Shelf* shelf,
     const TrayBackgroundViewCatalogName catalog_name,
     RoundedCornerBehavior corner_behavior)
-    // Note the ink drop style is ignored.
-    : ActionableView(TrayPopupInkDropStyle::FILL_BOUNDS),
-      shelf_(shelf),
+    : shelf_(shelf),
       catalog_name_(catalog_name),
       tray_container_(new TrayContainer(shelf, this)),
       is_active_(false),
@@ -266,6 +274,9 @@ TrayBackgroundView::TrayBackgroundView(
       handler_(new TrayBackgroundViewSessionChangeHandler(this)),
       should_close_bubble_on_lock_state_change_(true) {
   DCHECK(shelf_);
+  SetButtonController(std::make_unique<views::ButtonController>(
+      this,
+      std::make_unique<TrayButtonControllerDelegate>(this, catalog_name)));
   SetNotifyEnterExitOnChild(true);
 
   // Override the settings of inkdrop ripple only since others like Highlight
@@ -279,18 +290,17 @@ TrayBackgroundView::TrayBackgroundView(
   SetLayoutManager(std::make_unique<views::FillLayout>());
   SetInstallFocusRingOnFocus(true);
 
-  views::FocusRing::Get(this)->SetPathGenerator(
-      std::make_unique<HighlightPathGenerator>(this,
-                                               kTrayBackgroundFocusPadding));
-  views::FocusRing::Get(this)->SetColorId(ui::kColorAshFocusRing);
+  views::FocusRing* focus_ring = views::FocusRing::Get(this);
+  focus_ring->SetOutsetFocusRingDisabled(true);
+  focus_ring->SetPathGenerator(std::make_unique<HighlightPathGenerator>(
+      this, kTrayBackgroundFocusPadding));
+  focus_ring->SetColorId(ui::kColorAshFocusRing);
   SetFocusPainter(nullptr);
 
   views::HighlightPathGenerator::Install(
       this, std::make_unique<HighlightPathGenerator>(this));
 
   AddChildView(tray_container_.get());
-
-  tray_event_filter_ = std::make_unique<TrayEventFilter>();
 
   // Use layer color to provide background color. Note that children views
   // need to have their own layers to be visible.
@@ -309,13 +319,6 @@ void TrayBackgroundView::AddTrayBackgroundViewObserver(Observer* observer) {
 void TrayBackgroundView::RemoveTrayBackgroundViewObserver(Observer* observer) {
   observers_.RemoveObserver(observer);
 }
-
-void TrayBackgroundView::SetPressedCallback(
-    base::RepeatingCallback<void(const ui::Event& event)> pressed_callback) {
-  pressed_callback_ = std::move(pressed_callback);
-}
-
-void TrayBackgroundView::OnTrayActivated(const ui::Event& event) {}
 
 TrayBackgroundView::~TrayBackgroundView() {
   StopPulseAnimation();
@@ -600,7 +603,7 @@ void TrayBackgroundView::AboutToRequestFocusFromTabTraversal(bool reverse) {
 }
 
 void TrayBackgroundView::GetAccessibleNodeData(ui::AXNodeData* node_data) {
-  ActionableView::GetAccessibleNodeData(node_data);
+  views::Button::GetAccessibleNodeData(node_data);
   node_data->SetName(GetAccessibleNameForTray());
 
   if (LockScreen::HasInstance()) {
@@ -627,7 +630,7 @@ std::unique_ptr<ui::Layer> TrayBackgroundView::RecreateLayer() {
 }
 
 void TrayBackgroundView::OnThemeChanged() {
-  ActionableView::OnThemeChanged();
+  views::Button::OnThemeChanged();
   UpdateBackground();
   if (!chromeos::features::IsJellyEnabled()) {
     StyleUtil::ConfigureInkDropAttributes(
@@ -669,10 +672,6 @@ void TrayBackgroundView::UpdateAfterLoginStatusChange() {
 void TrayBackgroundView::UpdateAfterStatusAreaCollapseChange() {
   views::View::SetVisible(GetEffectiveVisibility());
 }
-
-void TrayBackgroundView::OnAnyBubbleVisibilityChanged(
-    views::Widget* bubble_widget,
-    bool visible) {}
 
 void TrayBackgroundView::UpdateBackground() {
   layer()->SetRoundedCornerRadius(GetRoundedCorners());
@@ -720,7 +719,7 @@ void TrayBackgroundView::FadeInAnimation() {
 
   ui::AnimationThroughputReporter reporter(
       layer()->GetAnimator(),
-      metrics_util::ForSmoothness(base::BindRepeating([](int smoothness) {
+      metrics_util::ForSmoothnessV3(base::BindRepeating([](int smoothness) {
         DCHECK(0 <= smoothness && smoothness <= 100);
         base::UmaHistogramPercentage(kFadeInAnimationSmoothnessHistogramName,
                                      smoothness);
@@ -755,106 +754,6 @@ void TrayBackgroundView::FadeInAnimation() {
       .SetTransform(this, gfx::Transform());
 }
 
-void TrayBackgroundView::BounceInAnimation() {
-  gfx::Vector2dF bounce_up_location;
-  gfx::Vector2dF bounce_down_location;
-
-  switch (shelf_->alignment()) {
-    case ShelfAlignment::kLeft:
-      bounce_up_location = gfx::Vector2dF(kAnimationBounceUpDistance, 0);
-      bounce_down_location = gfx::Vector2dF(-kAnimationBounceDownDistance, 0);
-      break;
-    case ShelfAlignment::kRight:
-      bounce_up_location = gfx::Vector2dF(-kAnimationBounceUpDistance, 0);
-      bounce_down_location = gfx::Vector2dF(kAnimationBounceDownDistance, 0);
-      break;
-    case ShelfAlignment::kBottom:
-    case ShelfAlignment::kBottomLocked:
-    default:
-      bounce_up_location = gfx::Vector2dF(0, -kAnimationBounceUpDistance);
-      bounce_down_location = gfx::Vector2dF(0, kAnimationBounceDownDistance);
-  }
-
-  gfx::Transform initial_scale;
-  initial_scale.Scale3d(kAnimationBounceScaleFactor,
-                        kAnimationBounceScaleFactor, 1);
-
-  const gfx::Transform initial_state = gfx::TransformAboutPivot(
-      gfx::RectF(GetLocalBounds()).CenterPoint(), initial_scale);
-
-  gfx::Transform scale_about_pivot = gfx::TransformAboutPivot(
-      gfx::RectF(GetLocalBounds()).CenterPoint(), gfx::Transform());
-  scale_about_pivot.Translate(bounce_up_location);
-
-  gfx::Transform move_down;
-  move_down.Translate(bounce_down_location);
-
-  ui::AnimationThroughputReporter reporter(
-      layer()->GetAnimator(),
-      metrics_util::ForSmoothness(base::BindRepeating([](int smoothness) {
-        DCHECK(0 <= smoothness && smoothness <= 100);
-        base::UmaHistogramPercentage(kBounceInAnimationSmoothnessHistogramName,
-                                     smoothness);
-      })));
-
-  // Alias to avoid difficult to read line wrapping below.
-  using ConstantTransform = ui::InterpolatedConstantTransform;
-  using MatrixTransform = ui::InterpolatedMatrixTransform;
-
-  // NOTE: It is intentional that `ui::InterpolatedTransform`s be used below
-  // rather than `gfx::Transform`s which could otherwise be used to accomplish
-  // the same animation.
-  //
-  // This is because the latter only informs layer delegates of transform
-  // changes on animation completion whereas the former informs layer delegates
-  // of transform changes at each animation step [1].
-  //
-  // Failure to inform layer delegates of transform changes at each animation
-  // step can result in the ink drop layer going out of sync if the
-  // `TrayBackgroundView`s activation state changes while an animation is in
-  // progress.
-  //
-  // [1] See discussion in https://crrev.com/c/4304899.
-  views::AnimationBuilder()
-      .SetPreemptionStrategy(
-          ui::LayerAnimator::IMMEDIATELY_ANIMATE_TO_NEW_TARGET)
-      .OnAborted(base::BindOnce(
-          [](base::WeakPtr<TrayBackgroundView> view) {
-            if (view) {
-              view->OnAnimationAborted();
-            }
-          },
-          weak_factory_.GetWeakPtr()))
-      .OnEnded(base::BindOnce(
-          [](base::WeakPtr<TrayBackgroundView> view) {
-            if (view) {
-              view->OnAnimationEnded();
-            }
-          },
-          weak_factory_.GetWeakPtr()))
-      .Once()
-      .SetDuration(base::TimeDelta())
-      .SetOpacity(this, 1.0)
-      .SetInterpolatedTransform(
-          this, std::make_unique<ConstantTransform>(initial_state))
-      .Then()
-      .SetDuration(kAnimationDurationForBounceElement)
-      .SetInterpolatedTransform(
-          this,
-          std::make_unique<MatrixTransform>(initial_state, scale_about_pivot),
-          gfx::Tween::FAST_OUT_SLOW_IN_3)
-      .Then()
-      .SetDuration(kAnimationDurationForBounceElement)
-      .SetInterpolatedTransform(
-          this, std::make_unique<MatrixTransform>(scale_about_pivot, move_down),
-          gfx::Tween::EASE_OUT_4)
-      .Then()
-      .SetDuration(kAnimationDurationForBounceElement)
-      .SetInterpolatedTransform(
-          this, std::make_unique<MatrixTransform>(move_down, gfx::Transform()),
-          gfx::Tween::FAST_OUT_SLOW_IN_3);
-}
-
 // Any visibility updates should be called after the hide animation is
 // finished, otherwise the view will disappear immediately without animation
 // once the view's visibility is set to false.
@@ -867,7 +766,7 @@ void TrayBackgroundView::HideAnimation() {
 
   ui::AnimationThroughputReporter reporter(
       layer()->GetAnimator(),
-      metrics_util::ForSmoothness(base::BindRepeating([](int smoothness) {
+      metrics_util::ForSmoothnessV3(base::BindRepeating([](int smoothness) {
         DCHECK(0 <= smoothness && smoothness <= 100);
         base::UmaHistogramPercentage(kHideAnimationSmoothnessHistogramName,
                                      smoothness);
@@ -949,32 +848,10 @@ gfx::Rect TrayBackgroundView::GetBackgroundBounds() const {
   return bounds;
 }
 
-bool TrayBackgroundView::PerformAction(const ui::Event& event) {
-  base::UmaHistogramEnumeration("Ash.StatusArea.TrayBackgroundView.Pressed",
-                                catalog_name_);
-
-  base::ScopedClosureRunner scoped_runner(
-      base::BindOnce(&TrayBackgroundView::OnTrayActivated,
-                     base::Unretained(this), std::cref(event)));
-
-  // `pressed_callback_` can be provided to override default press handling.
-  if (pressed_callback_) {
-    pressed_callback_.Run(event);
-    return true;
-  }
-
-  if (GetBubbleWidget()) {
-    CloseBubble();
-  } else {
-    ShowBubble();
-  }
-  return true;
-}
-
 void TrayBackgroundView::OnBoundsChanged(const gfx::Rect& previous_bounds) {
   UpdateBackground();
 
-  ActionableView::OnBoundsChanged(previous_bounds);
+  views::Button::OnBoundsChanged(previous_bounds);
 }
 
 bool TrayBackgroundView::ShouldEnterPushedState(const ui::Event& event) {
@@ -982,16 +859,7 @@ bool TrayBackgroundView::ShouldEnterPushedState(const ui::Event& event) {
     return false;
   }
 
-  return ActionableView::ShouldEnterPushedState(event);
-}
-
-void TrayBackgroundView::HandlePerformActionResult(bool action_performed,
-                                                   const ui::Event& event) {
-  // When an action is performed, ink drop ripple is handled in SetIsActive().
-  if (action_performed) {
-    return;
-  }
-  ActionableView::HandlePerformActionResult(action_performed, event);
+  return views::Button::ShouldEnterPushedState(event);
 }
 
 std::unique_ptr<ui::SimpleMenuModel>
@@ -1020,6 +888,106 @@ void TrayBackgroundView::StopPulseAnimation() {
       gfx::RectF(GetLocalBounds()).CenterPoint(), kNormalScaleFactor);
   layer()->SetTransform(normal_transform);
   RemoveRippleLayer();
+}
+
+void TrayBackgroundView::BounceInAnimation() {
+  gfx::Vector2dF bounce_up_location;
+  gfx::Vector2dF bounce_down_location;
+
+  switch (shelf_->alignment()) {
+    case ShelfAlignment::kLeft:
+      bounce_up_location = gfx::Vector2dF(kAnimationBounceUpDistance, 0);
+      bounce_down_location = gfx::Vector2dF(-kAnimationBounceDownDistance, 0);
+      break;
+    case ShelfAlignment::kRight:
+      bounce_up_location = gfx::Vector2dF(-kAnimationBounceUpDistance, 0);
+      bounce_down_location = gfx::Vector2dF(kAnimationBounceDownDistance, 0);
+      break;
+    case ShelfAlignment::kBottom:
+    case ShelfAlignment::kBottomLocked:
+    default:
+      bounce_up_location = gfx::Vector2dF(0, -kAnimationBounceUpDistance);
+      bounce_down_location = gfx::Vector2dF(0, kAnimationBounceDownDistance);
+  }
+
+  gfx::Transform initial_scale;
+  initial_scale.Scale3d(kAnimationBounceScaleFactor,
+                        kAnimationBounceScaleFactor, 1);
+
+  const gfx::Transform initial_state = gfx::TransformAboutPivot(
+      gfx::RectF(GetLocalBounds()).CenterPoint(), initial_scale);
+
+  gfx::Transform scale_about_pivot = gfx::TransformAboutPivot(
+      gfx::RectF(GetLocalBounds()).CenterPoint(), gfx::Transform());
+  scale_about_pivot.Translate(bounce_up_location);
+
+  gfx::Transform move_down;
+  move_down.Translate(bounce_down_location);
+
+  ui::AnimationThroughputReporter reporter(
+      layer()->GetAnimator(),
+      metrics_util::ForSmoothnessV3(base::BindRepeating([](int smoothness) {
+        DCHECK(0 <= smoothness && smoothness <= 100);
+        base::UmaHistogramPercentage(kBounceInAnimationSmoothnessHistogramName,
+                                     smoothness);
+      })));
+
+  // Alias to avoid difficult to read line wrapping below.
+  using ConstantTransform = ui::InterpolatedConstantTransform;
+  using MatrixTransform = ui::InterpolatedMatrixTransform;
+
+  // NOTE: It is intentional that `ui::InterpolatedTransform`s be used below
+  // rather than `gfx::Transform`s which could otherwise be used to accomplish
+  // the same animation.
+  //
+  // This is because the latter only informs layer delegates of transform
+  // changes on animation completion whereas the former informs layer delegates
+  // of transform changes at each animation step [1].
+  //
+  // Failure to inform layer delegates of transform changes at each animation
+  // step can result in the ink drop layer going out of sync if the
+  // `TrayBackgroundView`s activation state changes while an animation is in
+  // progress.
+  //
+  // [1] See discussion in https://crrev.com/c/4304899.
+  views::AnimationBuilder()
+      .SetPreemptionStrategy(
+          ui::LayerAnimator::IMMEDIATELY_ANIMATE_TO_NEW_TARGET)
+      .OnAborted(base::BindOnce(
+          [](base::WeakPtr<TrayBackgroundView> view) {
+            if (view) {
+              view->OnAnimationAborted();
+            }
+          },
+          weak_factory_.GetWeakPtr()))
+      .OnEnded(base::BindOnce(
+          [](base::WeakPtr<TrayBackgroundView> view) {
+            if (view) {
+              view->OnAnimationEnded();
+            }
+          },
+          weak_factory_.GetWeakPtr()))
+      .Once()
+      .SetDuration(base::TimeDelta())
+      .SetOpacity(this, 1.0)
+      .SetInterpolatedTransform(
+          this, std::make_unique<ConstantTransform>(initial_state))
+      .Then()
+      .SetDuration(kAnimationDurationForBounceElement)
+      .SetInterpolatedTransform(
+          this,
+          std::make_unique<MatrixTransform>(initial_state, scale_about_pivot),
+          gfx::Tween::FAST_OUT_SLOW_IN_3)
+      .Then()
+      .SetDuration(kAnimationDurationForBounceElement)
+      .SetInterpolatedTransform(
+          this, std::make_unique<MatrixTransform>(scale_about_pivot, move_down),
+          gfx::Tween::EASE_OUT_4)
+      .Then()
+      .SetDuration(kAnimationDurationForBounceElement)
+      .SetInterpolatedTransform(
+          this, std::make_unique<MatrixTransform>(move_down, gfx::Transform()),
+          gfx::Tween::FAST_OUT_SLOW_IN_3);
 }
 
 void TrayBackgroundView::TrackVisibilityUMA(bool visible_preferred) const {
@@ -1123,7 +1091,14 @@ void TrayBackgroundView::AddRippleLayer() {
 void TrayBackgroundView::RemoveRippleLayer() {
   CHECK(!pulse_animation_cool_down_timer_.IsRunning());
   if (ripple_layer_) {
-    layer()->parent()->Remove(ripple_layer_.get());
+    // The `parent_layer` will be null during `StatusAreaWidgetDelegate`
+    // shutdown (ie. after display disconnect).
+    // `views::view::RemoveAllChildViews()` is called, which recursively orphans
+    // layers prior to destroying the view.
+    auto* parent_layer = layer()->parent();
+    if (parent_layer) {
+      parent_layer->Remove(ripple_layer_.get());
+    }
     ripple_layer_.reset();
   }
 }
@@ -1206,7 +1181,7 @@ void TrayBackgroundView::StartPulseAnimationCoolDownTimer() {
                      base::Unretained(this)));
 }
 
-BEGIN_METADATA(TrayBackgroundView, ActionableView)
+BEGIN_METADATA(TrayBackgroundView)
 END_METADATA
 
 }  // namespace ash

@@ -9,6 +9,7 @@
 #include <stdint.h>
 
 #include <memory>
+#include <optional>
 
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
@@ -26,7 +27,6 @@
 #include "ppapi/c/private/ppb_net_address_private.h"
 #include "ppapi/host/resource_message_filter.h"
 #include "services/network/public/mojom/tcp_socket.mojom.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace network {
 namespace mojom {
@@ -102,13 +102,13 @@ class CONTENT_EXPORT PepperTCPServerSocketMessageFilter
 
   void OnListenCompleted(const ppapi::host::ReplyMessageContext& context,
                          int net_result,
-                         const absl::optional<net::IPEndPoint>& local_addr);
+                         const std::optional<net::IPEndPoint>& local_addr);
   void OnAcceptCompleted(
       const ppapi::host::ReplyMessageContext& context,
       mojo::PendingReceiver<network::mojom::SocketObserver>
           socket_observer_receiver,
       int net_result,
-      const absl::optional<net::IPEndPoint>& remote_addr,
+      const std::optional<net::IPEndPoint>& remote_addr,
       mojo::PendingRemote<network::mojom::TCPConnectedSocket> connected_socket,
       mojo::ScopedDataPipeConsumerHandle receive_stream,
       mojo::ScopedDataPipeProducerHandle send_stream);

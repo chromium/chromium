@@ -11,9 +11,7 @@ import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.url.GURL;
 
-/**
- * Properties defined here reflect the visible state of the WebsiteApproval components.
- */
+/** Properties defined here reflect the visible state of the WebsiteApproval components. */
 class WebsiteApprovalProperties {
     static final PropertyModel.WritableObjectPropertyKey<String> CHILD_NAME =
             new PropertyModel.WritableObjectPropertyKey<>("child_name");
@@ -27,5 +25,6 @@ class WebsiteApprovalProperties {
             new PropertyModel.WritableObjectPropertyKey<>("on_click_deny");
 
     public static final PropertyKey[] ALL_KEYS = {
-            CHILD_NAME, FAVICON, URL, ON_CLICK_APPROVE, ON_CLICK_DENY};
+        CHILD_NAME, FAVICON, URL, ON_CLICK_APPROVE, ON_CLICK_DENY
+    };
 }

@@ -62,7 +62,8 @@ void CrosSodaClient::MarkDone() {
 void CrosSodaClient::Reset(
     chromeos::machine_learning::mojom::SodaConfigPtr soda_config,
     CrosSodaClient::TranscriptionResultCallback transcription_callback,
-    CrosSodaClient::OnStopCallback stop_callback) {
+    CrosSodaClient::OnStopCallback stop_callback,
+    CrosSodaClient::OnLanguageIdentificationEventCallback langid_callback) {
   sample_rate_ = soda_config->sample_rate;
   channel_count_ = soda_config->channel_count;
   if (is_initialized_) {
@@ -87,6 +88,7 @@ void CrosSodaClient::Reset(
 
   transcription_callback_ = transcription_callback;
   stop_callback_ = stop_callback;
+  langid_callback_ = langid_callback;
 
   // Ensure this one is started.
   soda_recognizer_->Start();
@@ -113,6 +115,13 @@ void CrosSodaClient::OnSpeechRecognizerEvent(
       transcription_callback_.Run(
           media::SpeechRecognitionResult(partial_hyp, false));
     }
+  } else if (event->is_langid_event()) {
+    const auto& langid_event = event->get_langid_event();
+    langid_callback_.Run(langid_event->language,
+                         static_cast<media::mojom::ConfidenceLevel>(
+                             langid_event->confidence_level),
+                         static_cast<media::mojom::AsrSwitchResult>(
+                             langid_event->asr_switch_result));
   } else if (!event->is_endpointer_event() && !event->is_audio_event()) {
     LOG(ERROR) << "Some kind of other soda event, ignoring completely. Tag is '"
                << static_cast<uint32_t>(event->which()) << "'";

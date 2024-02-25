@@ -79,6 +79,7 @@ namespace container_internal {
 #ifdef ABSL_BTREE_ENABLE_GENERATIONS
 #error ABSL_BTREE_ENABLE_GENERATIONS cannot be directly set
 #elif defined(ABSL_HAVE_ADDRESS_SANITIZER) || \
+    defined(ABSL_HAVE_HWADDRESS_SANITIZER) || \
     defined(ABSL_HAVE_MEMORY_SANITIZER)
 // When compiled in sanitizer mode, we add generation integers to the nodes and
 // iterators. When iterators are used, we validate that the container has not
@@ -572,13 +573,6 @@ class btree_node {
   btree_node(btree_node const &) = delete;
   btree_node &operator=(btree_node const &) = delete;
 
-  // Public for EmptyNodeType.
-  constexpr static size_type Alignment() {
-    static_assert(LeafLayout(1).Alignment() == InternalLayout().Alignment(),
-                  "Alignment of all nodes must be equal.");
-    return InternalLayout().Alignment();
-  }
-
  protected:
   btree_node() = default;
 
@@ -651,6 +645,12 @@ class btree_node {
   }
   constexpr static size_type InternalSize() {
     return InternalLayout().AllocSize();
+  }
+
+  constexpr static size_type Alignment() {
+    static_assert(LeafLayout(1).Alignment() == InternalLayout().Alignment(),
+                  "Alignment of all nodes must be equal.");
+    return InternalLayout().Alignment();
   }
 
   // N is the index of the type in the Layout definition.
@@ -1122,8 +1122,11 @@ class btree_iterator : private btree_iterator_generation_info {
   using const_reference = typename params_type::const_reference;
   using slot_type = typename params_type::slot_type;
 
-  using iterator =
-     btree_iterator<normal_node, normal_reference, normal_pointer>;
+  // In sets, all iterators are const.
+  using iterator = absl::conditional_t<
+      is_map_container::value,
+      btree_iterator<normal_node, normal_reference, normal_pointer>,
+      btree_iterator<normal_node, const_reference, const_pointer>>;
   using const_iterator =
       btree_iterator<const_node, const_reference, const_pointer>;
 
@@ -1318,7 +1321,7 @@ class btree {
 
   // We use a static empty node for the root/leftmost/rightmost of empty btrees
   // in order to avoid branching in begin()/end().
-  struct alignas(node_type::Alignment()) EmptyNodeType : node_type {
+  struct EmptyNodeType : node_type {
     using field_type = typename node_type::field_type;
     node_type *parent;
 #ifdef ABSL_BTREE_ENABLE_GENERATIONS
@@ -1331,25 +1334,12 @@ class btree {
     // as a leaf node). max_count() is never called when the tree is empty.
     field_type max_count = node_type::kInternalNodeMaxCount + 1;
 
-#ifdef _MSC_VER
-    // MSVC has constexpr code generations bugs here.
-    EmptyNodeType() : parent(this) {}
-#else
-    explicit constexpr EmptyNodeType(node_type *p) : parent(p) {}
-#endif
+    constexpr EmptyNodeType() : parent(this) {}
   };
 
   static node_type *EmptyNode() {
-#ifdef _MSC_VER
-    static EmptyNodeType *empty_node = new EmptyNodeType;
-    // This assert fails on some other construction methods.
-    assert(empty_node->parent == empty_node);
-    return empty_node;
-#else
-    static constexpr EmptyNodeType empty_node(
-        const_cast<EmptyNodeType *>(&empty_node));
+    alignas(node_type::Alignment()) static constexpr EmptyNodeType empty_node;
     return const_cast<EmptyNodeType *>(&empty_node);
-#endif
   }
 
   enum : uint32_t {
@@ -2420,7 +2410,7 @@ auto btree<P>::operator=(btree &&other) noexcept -> btree & {
 
     using std::swap;
     if (absl::allocator_traits<
-            allocator_type>::propagate_on_container_copy_assignment::value) {
+            allocator_type>::propagate_on_container_move_assignment::value) {
       swap(root_, other.root_);
       // Note: `rightmost_` also contains the allocator and the key comparator.
       swap(rightmost_, other.rightmost_);
@@ -2534,6 +2524,10 @@ auto btree<P>::rebalance_after_delete(iterator iter) -> iterator {
   return res;
 }
 
+// Note: we tried implementing this more efficiently by erasing all of the
+// elements in [begin, end) at once and then doing rebalancing once at the end
+// (rather than interleaving deletion and rebalancing), but that adds a lot of
+// complexity, which seems to outweigh the performance win.
 template <typename P>
 auto btree<P>::erase_range(iterator begin, iterator end)
     -> std::pair<size_type, iterator> {
@@ -2863,7 +2857,8 @@ inline auto btree<P>::internal_emplace(iterator iter, Args &&...args)
     }
   }
   (void)replaced_node;
-#ifdef ABSL_HAVE_ADDRESS_SANITIZER
+#if defined(ABSL_HAVE_ADDRESS_SANITIZER) || \
+    defined(ABSL_HAVE_HWADDRESS_SANITIZER)
   if (!replaced_node) {
     assert(iter.node_->is_leaf());
     if (iter.node_->is_root()) {

@@ -11,9 +11,9 @@
 
 #include "base/functional/callback_forward.h"
 #include "base/gtest_prod_util.h"
+#include "base/memory/raw_ptr.h"
 #include "components/account_id/account_id.h"
 #include "components/user_manager/user_image/user_image.h"
-#include "components/user_manager/user_info.h"
 #include "components/user_manager/user_manager_export.h"
 #include "components/user_manager/user_type.h"
 
@@ -52,7 +52,7 @@ class FakeUserManager;
 //   Displayed emails are for use in UI only, anywhere else users must be
 // referred to by |GetAccountId()|. Internal details of AccountId should not
 // be relied on unless you have special knowledge of the account type.
-class USER_MANAGER_EXPORT User : public UserInfo {
+class USER_MANAGER_EXPORT User {
  public:
   // User OAuth token status according to the last check.
   // Please note that enum values 1 and 2 were used for OAuth1 status and are
@@ -82,53 +82,47 @@ class USER_MANAGER_EXPORT User : public UserInfo {
   // Returns true if user represents any type of the kiosk.
   static bool TypeIsKiosk(UserType user_type);
 
-  explicit User(const AccountId& account_id);
-
   User(const User&) = delete;
   User& operator=(const User&) = delete;
 
-  ~User() override;
+  ~User();
 
-  // UserInfo
-  std::string GetDisplayEmail() const override;
-  std::u16string GetDisplayName() const override;
-  std::u16string GetGivenName() const override;
-  const gfx::ImageSkia& GetImage() const override;
-  const AccountId& GetAccountId() const override;
+  std::string GetDisplayEmail() const;
+  std::u16string GetDisplayName() const;
+  std::u16string GetGivenName() const;
+  const gfx::ImageSkia& GetImage() const;
+  const AccountId& GetAccountId() const;
 
   // Returns the user type.
-  virtual UserType GetType() const = 0;
+  UserType GetType() const { return type_; }
 
   // Will LOG(FATAL) unless overridden.
-  virtual void UpdateType(UserType user_type);
+  void UpdateType(UserType new_type);
 
   // Returns true if user has gaia account. True for users of types
-  // USER_TYPE_REGULAR and USER_TYPE_CHILD.
-  virtual bool HasGaiaAccount() const;
+  // UserType::kRegular and UserType::kChild.
+  bool HasGaiaAccount() const;
 
   // Returns true if it's Active Directory user.
-  virtual bool IsActiveDirectoryUser() const;
+  bool IsActiveDirectoryUser() const;
 
   // Returns true if user is child.
-  virtual bool IsChild() const;
-
-  // True if user image can be synced.
-  virtual bool CanSyncImage() const;
+  bool IsChild() const;
 
   // The displayed (non-canonical) user email.
-  virtual std::string display_email() const;
+  std::string display_email() const;
 
   // True if the user is affiliated to the device. Returns false if the
   // affiliation is not known. Use IsAffiliatedAsync if it's possible the call
   // is done before affiliation is established.
-  virtual bool IsAffiliated() const;
+  bool IsAffiliated() const;
 
   // Runs the callback immediately if the affiliation is known, otherwise later
   // when the affiliation is established.
   void IsAffiliatedAsync(base::OnceCallback<void(bool)> is_affiliated_callback);
 
   // True if the user is a device local account user.
-  virtual bool IsDeviceLocalAccount() const;
+  bool IsDeviceLocalAccount() const;
 
   // True if the user is a kiosk.
   bool IsKioskType() const;
@@ -214,7 +208,7 @@ class USER_MANAGER_EXPORT User : public UserInfo {
   }
 
   static User* CreateRegularUserForTesting(const AccountId& account_id) {
-    User* user = CreateRegularUser(account_id, USER_TYPE_REGULAR);
+    User* user = CreateRegularUser(account_id, UserType::kRegular);
     user->SetImage(std::unique_ptr<UserImage>(new UserImage), 0);
     return user;
   }
@@ -245,6 +239,8 @@ class USER_MANAGER_EXPORT User : public UserInfo {
   static User* CreateWebKioskAppUser(const AccountId& web_kiosk_account_id);
   static User* CreatePublicAccountUser(const AccountId& account_id,
                                        bool is_using_saml = false);
+
+  User(const AccountId& account_id, UserType type);
 
   const std::string* GetAccountLocale() const { return account_locale_.get(); }
 
@@ -300,10 +296,11 @@ class USER_MANAGER_EXPORT User : public UserInfo {
 
   void SetProfilePrefs(PrefService* prefs) { profile_prefs_ = prefs; }
 
-  virtual void SetAffiliation(bool is_affiliated);
+  void SetAffiliation(bool is_affiliated);
 
  private:
   AccountId account_id_;
+  UserType type_;
   std::u16string display_name_;
   std::u16string given_name_;
   // User email for display, which may include capitals and non-significant
@@ -351,7 +348,7 @@ class USER_MANAGER_EXPORT User : public UserInfo {
   raw_ptr<PrefService> profile_prefs_ = nullptr;
 
   // True if the user is affiliated to the device.
-  absl::optional<bool> is_affiliated_;
+  std::optional<bool> is_affiliated_;
 
   std::vector<base::OnceClosure> on_profile_created_observers_;
   std::vector<base::OnceCallback<void(bool is_affiliated)>>
@@ -359,7 +356,7 @@ class USER_MANAGER_EXPORT User : public UserInfo {
 };
 
 // List of known users.
-using UserList = std::vector<User*>;
+using UserList = std::vector<raw_ptr<User, VectorExperimental>>;
 
 }  // namespace user_manager
 

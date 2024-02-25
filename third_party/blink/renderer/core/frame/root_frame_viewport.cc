@@ -309,7 +309,7 @@ void RootFrameViewport::ApplyPendingHistoryRestoreScrollOffset() {
   pending_view_state_.reset();
 }
 
-void RootFrameViewport::SetScrollOffset(
+bool RootFrameViewport::SetScrollOffset(
     const ScrollOffset& offset,
     mojom::blink::ScrollType scroll_type,
     mojom::blink::ScrollBehavior scroll_behavior,
@@ -320,20 +320,20 @@ void RootFrameViewport::SetScrollOffset(
     scroll_behavior = ScrollBehaviorStyle();
 
   if (scroll_type == mojom::blink::ScrollType::kAnchoring) {
-    DistributeScrollBetweenViewports(offset, scroll_type, scroll_behavior,
-                                     kLayoutViewport, std::move(on_finish));
-    return;
+    return DistributeScrollBetweenViewports(offset, scroll_type,
+                                            scroll_behavior, kLayoutViewport,
+                                            std::move(on_finish));
   }
 
   if (scroll_behavior == mojom::blink::ScrollBehavior::kSmooth) {
-    DistributeScrollBetweenViewports(offset, scroll_type, scroll_behavior,
-                                     kVisualViewport, std::move(on_finish));
-    return;
+    return DistributeScrollBetweenViewports(offset, scroll_type,
+                                            scroll_behavior, kVisualViewport,
+                                            std::move(on_finish));
   }
 
   ScrollOffset clamped_offset = ClampScrollOffset(offset);
-  ScrollableArea::SetScrollOffset(clamped_offset, scroll_type, scroll_behavior,
-                                  std::move(on_finish));
+  return ScrollableArea::SetScrollOffset(clamped_offset, scroll_type,
+                                         scroll_behavior, std::move(on_finish));
 }
 
 mojom::blink::ScrollBehavior RootFrameViewport::ScrollBehaviorStyle() const {
@@ -417,7 +417,7 @@ void RootFrameViewport::UpdateScrollOffset(
                                    kVisualViewport);
 }
 
-void RootFrameViewport::DistributeScrollBetweenViewports(
+bool RootFrameViewport::DistributeScrollBetweenViewports(
     const ScrollOffset& offset,
     mojom::blink::ScrollType scroll_type,
     mojom::blink::ScrollBehavior behavior,
@@ -437,7 +437,7 @@ void RootFrameViewport::DistributeScrollBetweenViewports(
       std::move(on_finish).Run(
           ScrollableArea::ScrollCompletionMode::kZeroDelta);
     }
-    return;
+    return false;
   }
 
   ScrollableArea& primary =
@@ -467,12 +467,13 @@ void RootFrameViewport::DistributeScrollBetweenViewports(
 
   // Actually apply the scroll the layout viewport first so that the DOM event
   // is dispatched to the DOMWindow before the VisualViewport.
-  LayoutViewport().SetScrollOffset(
+  bool did_scroll = LayoutViewport().SetScrollOffset(
       scroll_first == kLayoutViewport ? primary_offset : secondary_offset,
       scroll_type, behavior, all_done);
-  GetVisualViewport().SetScrollOffset(
+  did_scroll |= GetVisualViewport().SetScrollOffset(
       scroll_first == kVisualViewport ? primary_offset : secondary_offset,
       scroll_type, behavior, all_done);
+  return did_scroll;
 }
 
 gfx::Vector2d RootFrameViewport::ScrollOffsetInt() const {
@@ -703,7 +704,7 @@ const cc::SnapContainerData* RootFrameViewport::GetSnapContainerData() const {
 }
 
 void RootFrameViewport::SetSnapContainerData(
-    absl::optional<cc::SnapContainerData> data) {
+    std::optional<cc::SnapContainerData> data) {
   LayoutViewport().SetSnapContainerData(data);
 }
 
@@ -720,7 +721,7 @@ void RootFrameViewport::SetSnapContainerDataNeedsUpdate(bool needs_update) {
   LayoutViewport().SetSnapContainerDataNeedsUpdate(needs_update);
 }
 
-absl::optional<gfx::PointF> RootFrameViewport::GetSnapPositionAndSetTarget(
+std::optional<gfx::PointF> RootFrameViewport::GetSnapPositionAndSetTarget(
     const cc::SnapSelectionStrategy& strategy) {
   return LayoutViewport().GetSnapPositionAndSetTarget(strategy);
 }
@@ -739,6 +740,49 @@ void RootFrameViewport::Trace(Visitor* visitor) const {
   visitor->Trace(visual_viewport_);
   visitor->Trace(layout_viewport_);
   ScrollableArea::Trace(visitor);
+}
+
+void RootFrameViewport::UpdateSnappedTargetsAndEnqueueSnapChanged() {
+  LayoutViewport().UpdateSnappedTargetsAndEnqueueSnapChanged();
+}
+
+const cc::SnappedTargetData* RootFrameViewport::GetSnapChangingTargetData()
+    const {
+  return LayoutViewport().GetSnapChangingTargetData();
+}
+
+void RootFrameViewport::SetSnapChangingTargetData(
+    std::optional<cc::SnappedTargetData> data) {
+  LayoutViewport().SetSnapChangingTargetData(data);
+}
+
+void RootFrameViewport::UpdateSnapChangingTargetsAndEnqueueSnapChanging(
+    const gfx::PointF& scroll_offset) {
+  LayoutViewport().UpdateSnapChangingTargetsAndEnqueueSnapChanging(
+      scroll_offset);
+}
+
+const cc::SnapSelectionStrategy* RootFrameViewport::GetImplSnapStrategy()
+    const {
+  return LayoutViewport().GetImplSnapStrategy();
+}
+
+void RootFrameViewport::SetImplSnapStrategy(
+    std::unique_ptr<cc::SnapSelectionStrategy> strategy) {
+  LayoutViewport().SetImplSnapStrategy(std::move(strategy));
+}
+
+void RootFrameViewport::EnqueueSnapChangingEventFromImplIfNeeded() {
+  LayoutViewport().EnqueueSnapChangingEventFromImplIfNeeded();
+}
+
+std::optional<cc::ElementId> RootFrameViewport::GetTargetedSnapAreaId() {
+  return LayoutViewport().GetTargetedSnapAreaId();
+}
+
+void RootFrameViewport::SetTargetedSnapAreaId(
+    const std::optional<cc::ElementId>& id) {
+  LayoutViewport().SetTargetedSnapAreaId(id);
 }
 
 }  // namespace blink

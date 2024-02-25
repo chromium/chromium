@@ -63,7 +63,8 @@ void InitializeTimeout(const char* switch_name,
 #elif defined(ADDRESS_SANITIZER) && BUILDFLAG(IS_CHROMEOS_ASH)
   // A number of tests on ChromeOS run very close to the 2x limit, so ChromeOS
   // gets 3x.
-  constexpr int kTimeoutMultiplier = 3;
+  // TODO(b:318608561) Reduce back to 3x once OOBE load time is lower.
+  constexpr int kTimeoutMultiplier = 4;
 #elif defined(ADDRESS_SANITIZER) || defined(THREAD_SANITIZER)
   constexpr int kTimeoutMultiplier = 2;
 #elif BUILDFLAG(CLANG_PROFILING)
@@ -73,10 +74,17 @@ void InitializeTimeout(const char* switch_name,
   // TODO(crbug.com/1058022): reduce the multiplier back to 2x.
   // A number of tests on ChromeOS run very close to the base limit, so ChromeOS
   // gets 3x.
-  constexpr int kTimeoutMultiplier = 3;
+  // TODO(b:318608561) Reduce back to 3x once OOBE load time is lower.
+  constexpr int kTimeoutMultiplier = 4;
 #elif !defined(NDEBUG) && BUILDFLAG(IS_MAC)
   // A lot of browser_tests on Mac debug time out.
   constexpr int kTimeoutMultiplier = 2;
+#elif BUILDFLAG(IS_CHROMEOS) && BUILDFLAG(IS_CHROMEOS_DEVICE)
+  // For test running on ChromeOS device/VM, they could be slower. We should not
+  // add too many ChromeOS details into //base. Say in the future if we want to
+  // set different values for a set of low spec ChromeOS boards, we should move
+  // the logic somewhere.
+  constexpr int kTimeoutMultiplier = 3;
 #else
   constexpr int kTimeoutMultiplier = 1;
 #endif

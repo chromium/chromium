@@ -11,9 +11,10 @@ import org.chromium.chrome.browser.multiwindow.MultiWindowUtils;
 import org.chromium.chrome.browser.offlinepages.OfflinePageBridge;
 import org.chromium.chrome.browser.offlinepages.RequestCoordinatorBridge;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.chrome.browser.suggestions.SuggestionsNavigationDelegate;
 import org.chromium.chrome.browser.tab.Tab;
-import org.chromium.chrome.browser.tabmodel.document.TabDelegate;
+import org.chromium.chrome.browser.tabmodel.document.ChromeAsyncTabLauncher;
 import org.chromium.chrome.browser.tasks.ReturnToChromeUtil;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.ui.base.PageTransition;
@@ -25,7 +26,7 @@ import org.chromium.ui.mojom.WindowOpenDisposition;
  */
 public class MostVisitedTileNavigationDelegate extends SuggestionsNavigationDelegate {
     private final Supplier<Tab> mParentTabSupplier;
-    private final TabDelegate mTabDelegate;
+    private final ChromeAsyncTabLauncher mChromeAsyncTabLauncher;
 
     /**
      * Creates a new {@link MostVisitedTileNavigationDelegate}.
@@ -35,9 +36,9 @@ public class MostVisitedTileNavigationDelegate extends SuggestionsNavigationDele
      */
     public MostVisitedTileNavigationDelegate(
             Activity activity, Profile profile, Supplier<Tab> parentTabSupplier) {
-        super(activity, profile, /*host=*/null, /*tabModelSelector=*/null, /*tab=*/null);
+        super(activity, profile, /* host= */ null, /* tabModelSelector= */ null, /* tab= */ null);
         mParentTabSupplier = parentTabSupplier;
-        mTabDelegate = new TabDelegate(false);
+        mChromeAsyncTabLauncher = new ChromeAsyncTabLauncher(false);
     }
 
     @Override
@@ -61,11 +62,13 @@ public class MostVisitedTileNavigationDelegate extends SuggestionsNavigationDele
                         new LoadUrlParams(url, PageTransition.AUTO_BOOKMARK),
                         windowOpenDisposition
                                 == org.chromium.ui.mojom.WindowOpenDisposition.NEW_BACKGROUND_TAB,
-                        /*incognito=*/null, mParentTabSupplier.get());
+                        /* incognito= */ null,
+                        mParentTabSupplier.get());
                 break;
             case WindowOpenDisposition.OFF_THE_RECORD:
                 ReturnToChromeUtil.handleLoadUrlFromStartSurface(
-                        new LoadUrlParams(url, PageTransition.AUTO_BOOKMARK), true /*incognito*/,
+                        new LoadUrlParams(url, PageTransition.AUTO_BOOKMARK),
+                        /* incognito= */ true,
                         mParentTabSupplier.get());
                 break;
             case WindowOpenDisposition.NEW_WINDOW:
@@ -84,13 +87,17 @@ public class MostVisitedTileNavigationDelegate extends SuggestionsNavigationDele
     private void saveUrlForOffline(String url) {
         // TODO(crbug.com/1193816): Namespace shouldn't be NTP_SUGGESTIONS_NAMESPACE since it's
         // not on NTP.
-        RequestCoordinatorBridge.getForProfile(Profile.getLastUsedRegularProfile())
+        RequestCoordinatorBridge.getForProfile(ProfileManager.getLastUsedRegularProfile())
                 .savePageLater(
-                        url, OfflinePageBridge.NTP_SUGGESTIONS_NAMESPACE, true /* userRequested */);
+                        url,
+                        OfflinePageBridge.NTP_SUGGESTIONS_NAMESPACE,
+                        /* userRequested= */ true);
     }
 
     private void openUrlInNewWindow(LoadUrlParams loadUrlParams) {
-        mTabDelegate.createTabInOtherWindow(loadUrlParams, mActivity,
+        mChromeAsyncTabLauncher.launchTabInOtherWindow(
+                loadUrlParams,
+                mActivity,
                 mParentTabSupplier.get() == null ? -1 : mParentTabSupplier.get().getId(),
                 MultiWindowUtils.getAdjacentWindowActivity(mActivity));
     }

@@ -8,10 +8,15 @@
 // XDG refers to http://en.wikipedia.org/wiki/Freedesktop.org .
 // This file contains utilities found across free desktop environments.
 
+#include <optional>
+#include <string>
+#include <vector>
+
 #include "base/base_export.h"
 
 namespace base {
 
+class CommandLine;
 class Environment;
 class FilePath;
 
@@ -62,6 +67,13 @@ BASE_EXPORT extern const char kXdgCurrentDesktopEnvVar[];
 // The XDG session type environment variable.
 BASE_EXPORT extern const char kXdgSessionTypeEnvVar[];
 
+// The XDG activation token environment variable.
+BASE_EXPORT extern const char kXdgActivationTokenEnvVar[];
+
+// Internally used to communicate the activation token between a newly launched
+// process and an existing browser process.
+BASE_EXPORT extern const char kXdgActivationTokenSwitch[];
+
 // Utility function for getting XDG directories.
 // |env_name| is the name of an environment variable that we want to use to get
 // a directory path. |fallback_dir| is the directory relative to $HOME that we
@@ -75,6 +87,17 @@ BASE_EXPORT FilePath GetXDGDirectory(Environment* env, const char* env_name,
 // folder. Examples of |dir_name| are DESKTOP and MUSIC.
 BASE_EXPORT FilePath GetXDGUserDirectory(const char* dir_name,
                                          const char* fallback_dir);
+
+// Get the path to write user-specific application data files to, as specified
+// in the XDG Base Directory Specification:
+// http://standards.freedesktop.org/basedir-spec/latest/
+BASE_EXPORT FilePath GetXDGDataWriteLocation(Environment* env);
+
+// Get the list of paths to search for application data files, in order of
+// preference, as specified in the XDG Base Directory Specification:
+// http://standards.freedesktop.org/basedir-spec/latest/
+// Called on the FILE thread.
+BASE_EXPORT std::vector<FilePath> GetXDGDataSearchLocations(Environment* env);
 
 // Return an entry from the DesktopEnvironment enum with a best guess
 // of which desktop environment we're using.  We use this to know when
@@ -91,6 +114,20 @@ BASE_EXPORT const char* GetDesktopEnvironmentName(Environment* env);
 // Return an entry from the SessionType enum with a best guess
 // of which session type we're using.
 BASE_EXPORT SessionType GetSessionType(Environment& env);
+
+// Sets the global activation token from the environment and returns it if it
+// exists, and removes it from the environment to prevent it from leaking into
+// child processes.
+BASE_EXPORT std::optional<std::string> ExtractXdgActivationTokenFromEnv(
+    Environment& env);
+
+// Sets the global activation token from the command line if it exists and
+// removes it from the command line.
+BASE_EXPORT void ExtractXdgActivationTokenFromCmdLine(
+    base::CommandLine& cmd_line);
+
+// Transfers ownership of the currently set global activation token if set.
+BASE_EXPORT std::optional<std::string> TakeXdgActivationToken();
 
 }  // namespace nix
 }  // namespace base

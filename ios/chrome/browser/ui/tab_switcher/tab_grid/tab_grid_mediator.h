@@ -7,26 +7,22 @@
 
 #import <Foundation/Foundation.h>
 
+#import "ios/chrome/browser/ui/tab_switcher/tab_grid/tab_grid_mediator_provider_wrangler.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/tab_grid_mutator.h"
 
+@protocol GridToolbarsMutator;
 @protocol TabGridConsumer;
 @protocol TabGridPageMutator;
 
+namespace feature_engagement {
+class Tracker;
+}  // namespace feature_engagement
+
 class PrefService;
 
-// Delegate allowing the tab grid coordinator to update the incognito tab grid.
-@protocol TabGridMediatorDelegate
-// Repopulates the incognito tab grid with incognito tabs if applicable.
-- (void)updateIncognitoTabGridState;
-@end
-
 // Mediates between model layer and tab grid UI layer.
-@interface TabGridMediator : NSObject <TabGridMutator>
-
-- (instancetype)initWithPrefService:(PrefService*)prefService
-    NS_DESIGNATED_INITIALIZER;
-
-- (instancetype)init NS_UNAVAILABLE;
+@interface TabGridMediator
+    : NSObject <TabGridMediatorProviderWrangler, TabGridMutator>
 
 // Mutator for regular Tabs.
 @property(nonatomic, weak) id<TabGridPageMutator> regularPageMutator;
@@ -35,12 +31,22 @@ class PrefService;
 // Mutator for remote Tabs.
 @property(nonatomic, weak) id<TabGridPageMutator> remotePageMutator;
 
+// Mutator to handle toolbars modification.
+@property(nonatomic, weak) id<GridToolbarsMutator> toolbarsMutator;
+
 // Consumer for state changes in tab grid.
 @property(nonatomic, weak) id<TabGridConsumer> consumer;
-// Delegate allowing the mediator to update the incognito tab grid.
-@property(nonatomic, weak) id<TabGridMediatorDelegate> delegate;
+
+- (instancetype)initWithPrefService:(PrefService*)prefService
+           featureEngagementTracker:(feature_engagement::Tracker*)tracker
+    NS_DESIGNATED_INITIALIZER;
+
+- (instancetype)init NS_UNAVAILABLE;
 // Set the current displayed page (incognito, regular or remote).
 - (void)setPage:(TabGridPage)page;
+// Set the current mode (normal/selection/search/inactive) on the currently
+// displayed page.
+- (void)setModeOnCurrentPage:(TabGridMode)mode;
 // Stops mediating and disconnects from backend models.
 - (void)disconnect;
 

@@ -7,6 +7,7 @@
 #include "ash/frame/non_client_frame_view_ash.h"
 #include "chromeos/ui/frame/caption_buttons/caption_button_model.h"
 #include "chromeos/ui/frame/default_frame_header.h"
+#include "ui/views/view_utils.h"
 #include "ui/views/widget/widget.h"
 #include "ui/views/window/caption_button_types.h"
 #include "ui/views/window/frame_caption_button.h"
@@ -79,8 +80,8 @@ void AssistantWebViewDelegateImpl::UpdateBackButtonVisibility(
 
   auto* non_client_view = widget->non_client_view();
 
-  DCHECK_EQ(NonClientFrameViewAsh::kViewClassName,
-            non_client_view->frame_view()->GetClassName());
+  DCHECK(
+      views::IsViewClass<NonClientFrameViewAsh>(non_client_view->frame_view()));
 
   auto* frame_view_ash =
       static_cast<NonClientFrameViewAsh*>(non_client_view->frame_view());

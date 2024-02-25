@@ -11,6 +11,7 @@
 
 #include <algorithm>
 #include <memory>
+#include <optional>
 #include <vector>
 
 #include "base/functional/bind.h"
@@ -22,7 +23,6 @@
 #include "components/device_signals/core/system_signals/win/com_fakes.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 using Microsoft::WRL::ComPtr;
 
@@ -45,7 +45,7 @@ class WmiClientImplTest : public testing::Test {
                                         base::Unretained(this))) {}
 
  protected:
-  absl::optional<base::win::WmiError> RunQuery(
+  std::optional<base::win::WmiError> RunQuery(
       const std::wstring& server_name,
       const std::wstring& query,
       ComPtr<IEnumWbemClassObject>* enumerator) {
@@ -57,7 +57,7 @@ class WmiClientImplTest : public testing::Test {
       return query_error_.value();
     }
     *enumerator = &fake_enumerator_;
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   void ExpectHotfixQueryRan() {
@@ -67,7 +67,7 @@ class WmiClientImplTest : public testing::Test {
   }
 
   FakeEnumWbemClassObject fake_enumerator_;
-  absl::optional<base::win::WmiError> query_error_;
+  std::optional<base::win::WmiError> query_error_;
 
   std::wstring captured_server_name_;
   std::wstring captured_query_;
@@ -106,7 +106,7 @@ TEST_F(WmiClientImplTest, GetInstalledHotfixes_ParsingItems) {
   auto hotfix_response = wmi_client_.GetInstalledHotfixes();
 
   ExpectHotfixQueryRan();
-  EXPECT_EQ(hotfix_response.query_error, absl::nullopt);
+  EXPECT_EQ(hotfix_response.query_error, std::nullopt);
 
   // Success item.
   ASSERT_EQ(hotfix_response.hotfixes.size(), 1U);

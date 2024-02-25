@@ -4,7 +4,7 @@
 
 // TTS api test running from Lacros with Ash.
 // build/lacros/test_runner.py test
-//     {path_to_lacros_build}/lacros_chrome_browsertests_run_in_series
+//     {path_to_lacros_build}/lacros_chrome_browsertests
 //     --gtest_filter=LacrosTtsApiTest.PauseBeforeSpeakWithLacrosTtsEngine
 //     --ash-chrome-path {path_to_ash_build}/test_ash_chrome
 

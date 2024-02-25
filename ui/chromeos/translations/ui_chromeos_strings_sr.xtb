@@ -2,12 +2,14 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="sr">
 <translation id="1000498691615767391">Избор директоријума за отварање</translation>
+<translation id="1014208178561091457">Копирање фајла <ph name="FILE_NAME" /> није успело зато што је шифрован.</translation>
 <translation id="1047956942837015229">Брисање ставки (<ph name="COUNT" />)...</translation>
 <translation id="1049926623896334335">Word документ</translation>
 <translation id="1056775291175587022">Нема мрежа</translation>
 <translation id="1056898198331236512">Упозорење</translation>
 <translation id="1060368002126861100">Да бисте отварали датотеке помоћу апликације <ph name="APP_NAME" />, прво их преместите у фолдер са Windows датотекама.</translation>
 <translation id="1062407476771304334">Замени</translation>
+<translation id="1119383441774809183">Прикажи текстуалне поруке</translation>
 <translation id="1119447706177454957">Интерна грешка</translation>
 <translation id="1120073797882051782">Хангул ромаџа</translation>
 <translation id="112387589102719461">енглески (САД) са тастатуром Programmer Dvorak</translation>
@@ -54,6 +56,7 @@
 <translation id="1435838927755162558">Делите фолдер са Parallels Desktop-ом</translation>
 <translation id="1439919885608649279">Особа са цвећем</translation>
 <translation id="1458457385801829801">Избаци <ph name="TARGET_NAME" /></translation>
+<translation id="146691674290220697">Копирање фајлова (<ph name="NUMBER_OF_FILES" />) није успело зато што су шифровани.</translation>
 <translation id="1471718551822868769">словачки</translation>
 <translation id="1482884275703521657">фински</translation>
 <translation id="148466539719134488">швајцарска</translation>
@@ -73,7 +76,6 @@
 <translation id="162175252992296058">португалски са америчком интернационалном тастатуром</translation>
 <translation id="1629521517399325891">Кориснички сертификат није доступан за потврду идентитета мреже.</translation>
 <translation id="1641780993263690097">кинески пинјин</translation>
-<translation id="1646019627374511909">Омогућава се коришћење фајлова офлајн (<ph name="NUMBER_OF_ITEMS" />)</translation>
 <translation id="164969095109328410">Chrome уређај</translation>
 <translation id="1661207570040737402">Искористили сте сав Google Workspace меморијски простор на дељеном диску.</translation>
 <translation id="1661867754829461514">Недостаје PIN</translation>
@@ -171,7 +173,7 @@
 <translation id="23721837607121582">Преузмите профил за мобилне уређаје, <ph name="NETWORK_INDEX" />. мрежа од <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" /></translation>
 <translation id="2377319039870049694">Пређи на приказ листе</translation>
 <translation id="2377590462528165447">Директоријуми (<ph name="NUMBER_OF_ITEMS" />) се деле са Linux-ом</translation>
-<translation id="2379576081295865700">Проверава се меморијски простор... пронађена је 1 ставка</translation>
+<translation id="2379576081295865700">Проверава се меморијски простор… пронађена је 1 ставка</translation>
 <translation id="2383454254762599978">Премести у отпад</translation>
 <translation id="2387458720915042159">Тип везе са проксијем</translation>
 <translation id="2389832672041313158">бурмански (Мијанмар)</translation>
@@ -275,9 +277,11 @@
 <translation id="3253225298092156258">Није доступно</translation>
 <translation id="3254434849914415189">Изаберите подразумевану апликацију за датотеке <ph name="FILE_TYPE" />:</translation>
 <translation id="3255159654094949700">арапски</translation>
+<translation id="326396468955264502">Премештање фајлова (<ph name="NUMBER_OF_FILES" />) није успело зато што су шифровани.</translation>
 <translation id="3264582393905923483">Контекст</translation>
 <translation id="3272909651715601089">Није успело отварање архиве „<ph name="PATH" />“</translation>
 <translation id="3280431534455935878">Припрема</translation>
+<translation id="3280719573299097127">Користите мрежу са ограничењем. Синхронизација фајлова је паузирана.</translation>
 <translation id="3280987981688031357">Грамофонска плоча</translation>
 <translation id="3290356915286466215">Незаштићено</translation>
 <translation id="3291218047831493686">Повежите се на ову мрежу да бисте променили подешавање закључавања SIM картице</translation>
@@ -304,13 +308,13 @@
 <translation id="3475447146579922140">Google табела</translation>
 <translation id="3479552764303398839">Не сада</translation>
 <translation id="3486821258960016770">монголски</translation>
-<translation id="3495304270784461826"><ph name="COUNT" /> грешака.</translation>
 <translation id="3509680540198371098"><ph name="NETWORK_INDEX" />. мрежа од <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, јачина сигнала <ph name="SIGNAL_STRENGTH" />%, детаљи</translation>
 <translation id="3511705761158917664">Припрема се синхронизација ставки (<ph name="NUMBER_OF_ITEMS" />)…</translation>
 <translation id="3522708245912499433">португалски</translation>
 <translation id="3523225005467146490">1 фолдер се дели са услугом <ph name="VM_NAME" /></translation>
 <translation id="3524311639100184459">Опрез: Ове датотеке су привремене и могу да се избришу аутоматски како би се ослободио простор на диску.  <ph name="BEGIN_LINK" />Сазнајте више<ph name="END_LINK" /></translation>
 <translation id="3527085408025491307">Фолдер</translation>
+<translation id="3529424493985988200">Обратите се администратору за детаље.</translation>
 <translation id="3548125359243647069">Превише пута сте унели погрешан PIN.</translation>
 <translation id="3549797760399244642">Иди на drive.google.com...</translation>
 <translation id="3553048479571901246">Да бисте отварали датотеке помоћу апликације <ph name="APP_NAME" />, прво их копирајте у фолдер са Windows датотекама.</translation>
@@ -325,8 +329,9 @@
 <translation id="3606220979431771195">турска F</translation>
 <translation id="3616113530831147358">Аудио</translation>
 <translation id="3619115746895587757">Капучино</translation>
-<translation id="3619593063686672873">Нема недавних видео снимака</translation>
+<translation id="3619593063686672873">Нема недавних видеа</translation>
 <translation id="3634507049637220048"><ph name="NETWORK_INDEX" />. мрежа од <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, управља администратор, детаљи</translation>
+<translation id="36451918667380448">Услуга овог мобилног провајдера је закључана. Затражите подршку од њега.</translation>
 <translation id="3645233063072417428">Премештених ставки: <ph name="NUMBER_OF_ITEMS" />.</translation>
 <translation id="3658269352872031728">Изабраних фајлова: <ph name="SELECTED_FILE_COUNT" /></translation>
 <translation id="3685122418104378273">Синхронизација са Google диском је подразумевано онемогућена када се користи мобилна веза за пренос података.</translation>
@@ -498,6 +503,7 @@
 <translation id="4935975195727477204">Цвет газаније</translation>
 <translation id="4943368462779413526">Фудбалска лопта</translation>
 <translation id="4961158930123534723">1 фолдер се дели са Parallels Desktop-ом</translation>
+<translation id="4965874878399872778">Проверава се да ли су фајлови у складу са безбедносним смерницама организације…</translation>
 <translation id="496656650103537022">Враћен је фајл <ph name="FILE_NAME" /></translation>
 <translation id="4969785127455456148">Албум</translation>
 <translation id="4972330214479971536">Завршавање подешавања синхронизације фајлова није успело</translation>
@@ -553,9 +559,7 @@
 <translation id="5275973617553375938">Враћене датотеке са Google диска</translation>
 <translation id="5278111733643988471">Да бисте вратили ову ставку, превуците је у нов фолдер изван отпада. Првобитни фолдер <ph name="PARENT_FOLDER_NAME" /> за ову ставку је избрисан.</translation>
 <translation id="5283101102242354279">Укључите додатак у режиму без архивирања:</translation>
-<translation id="5286194356314741248">Скенирање</translation>
 <translation id="5288441970121584418">Пљескавица</translation>
-<translation id="5288481194217812690"><ph name="FILENAME" /></translation>
 <translation id="5293615890992542006">Смернице администратора блокирају премештање овог фајла</translation>
 <translation id="5305688511332277257">Ништа није инсталирано</translation>
 <translation id="5317780077021120954">Сачувај</translation>
@@ -632,6 +636,7 @@
 <translation id="5838451609423551646">Уклонили сте све ставке из избора.</translation>
 <translation id="5838825566232597749">Америчка Workman интернационална</translation>
 <translation id="5845721951356578987">Медицинска сестра</translation>
+<translation id="5858478190805449225">Уштеда батерије је укључена. Пробајте поново када искључите Уштеду батерије.</translation>
 <translation id="5860491529813859533">Укључи</translation>
 <translation id="5861477046012235702">Гејмер</translation>
 <translation id="5864471791310927901">Проналажење DHCP-а није успело</translation>
@@ -666,7 +671,7 @@
 <translation id="6164412158936057769">Лептири</translation>
 <translation id="6165508094623778733">Сазнајте више</translation>
 <translation id="6170470584681422115">Сендвич</translation>
-<translation id="6177854567773392726">Проверава се меморијски простор... број пронађених ставки је <ph name="ITEMS_FOUND" /></translation>
+<translation id="6177854567773392726">Проверава се меморијски простор… број пронађених ставки је <ph name="ITEMS_FOUND" /></translation>
 <translation id="6181912134988520389">Дозволите да <ph name="VM_NAME" /> приступа фајловима на Google диску. Промене ће се синхронизовати са другим уређајима.</translation>
 <translation id="6187719147498869044">мађарски</translation>
 <translation id="6198252989419008588">Промени PIN</translation>
@@ -698,11 +703,13 @@
 <translation id="637062427944097960">Ова датотека је отворена на другом профилу. Пређите на <ph name="USER_NAME" /> (<ph name="MAIL_ADDRESS" />) да бисте је погледали.</translation>
 <translation id="6394388407447716302">Само за читање</translation>
 <translation id="6395575651121294044">Ставки: <ph name="NUMBER_OF_FILES" /></translation>
+<translation id="6407769893376380348">Премештање фајла <ph name="FILE_NAME" /> није успело зато што је шифрован.</translation>
 <translation id="642282551015776456">Овај назив не може да се користи као назив датотеке или директоријума</translation>
 <translation id="6423031066725912715">вијетнамски са тастатуром TCVN</translation>
 <translation id="6430271654280079150">Имате још 1 покушај.</translation>
 <translation id="643243556292470964">Избрисани фајлови су сада премештени у отпад</translation>
 <translation id="6438480100790416671">Проверава се меморијски простор…</translation>
+<translation id="6451527188465304418">Проверава се да ли је фајл у складу са безбедносним смерницама организације…</translation>
 <translation id="6485131920355264772">Преузимање информација о простору није успело</translation>
 <translation id="6495925982925244349"><ph name="NETWORK_INDEX" />. мрежа од <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, јачина сигнала <ph name="SIGNAL_STRENGTH" />%, управља администратор, детаљи</translation>
 <translation id="649877868557234318">Издваја се <ph name="FILE_NAME" /> у <ph name="FOLDER_NAME" /></translation>
@@ -710,7 +717,6 @@
 <translation id="6503285896705205014">Смернице администратора блокирају копирање фајлова (<ph name="COUNT" />)</translation>
 <translation id="6509122719576673235">норвешки</translation>
 <translation id="6528513914570774834">Дозволите другим корисницима овог уређаја да користе ову мрежу</translation>
-<translation id="653019979737152879">Синхронизује се <ph name="FILE_NAME" />...</translation>
 <translation id="6549689063733911810">Недавно</translation>
 <translation id="6558280019477628686">Дошло је до грешке. Неке ставке можда нису избрисане.</translation>
 <translation id="656398493051028875">Брисање „<ph name="FILENAME" />“...</translation>
@@ -844,7 +850,6 @@
 <translation id="7553492409867692754">Дозволите да Linux апликације приступају фајловима у фолдеру <ph name="FOLDER_NAME" /></translation>
 <translation id="7555339735447658365">Тренутно сте офлајн. Синхронизација ће се наставити када се повежете на интернет</translation>
 <translation id="7589661784326793847">Сачекајте тренутак</translation>
-<translation id="7592775719802218421">Омогућава се да фајл <ph name="FILE_NAME" /> буде доступан фајл</translation>
 <translation id="7600126690270271294">српски</translation>
 <translation id="7603724359189955920">Мреже</translation>
 <translation id="7627790789328695202">Упс, <ph name="FILE_NAME" /> већ постоји. Преименујте датотеку и покушајте поново.</translation>
@@ -898,7 +903,6 @@
 <translation id="7911118814695487383">Linux</translation>
 <translation id="7920501309908018401">Фајлови на Мом диску ће се аутоматски синхронизовати са Chromebook-ом, па можете да им приступате без интернет везе.</translation>
 <translation id="7925247922861151263">Провера потврде идентитета, овлашћења и приступа није успела</translation>
-<translation id="7925686952655276919">Не користи податке за мобилне уређаје за синхронизацију</translation>
 <translation id="7928710562641958568">Избаци уређај</translation>
 <translation id="7933875256234974853">Припрема се синхронизација фајлова са Диска...</translation>
 <translation id="7943385054491506837">америчка Colemak</translation>
@@ -921,6 +925,7 @@
 <translation id="8087576439476816834">Преузмите, <ph name="PROFILE_NAME" /></translation>
 <translation id="8106045200081704138">Дељено са мном</translation>
 <translation id="8116072619078571545">Вода са ледом</translation>
+<translation id="8120392982188717723">Дозволи синхронизацију на мрежама са ограничењем</translation>
 <translation id="8124093710070495550">Проблем са синхронизацијом</translation>
 <translation id="8128733386027980860">енглески (САД) са тастатуром Dvorak</translation>
 <translation id="8137331602592933310">„<ph name="FILENAME" />“ се дели са вама. Не можете да је избришете јер није у вашем власништву.</translation>
@@ -928,6 +933,7 @@
 <translation id="813913629614996137">Покреће се…</translation>
 <translation id="8147028810663464959">Ширина знакова је пуна</translation>
 <translation id="8151638057146502721">Конфигуриши</translation>
+<translation id="8154666764013920974">{NUM_ERROR,plural, =1{1 грешка.}one{# грешка.}few{# грешке.}other{# грешака.}}</translation>
 <translation id="8154842056504218462">Изабрали сте све ставке.</translation>
 <translation id="8157684860301034423">Преузимање информација о апликацији није успело.</translation>
 <translation id="8175731104491895765">француски (Белгија)</translation>
@@ -961,6 +967,7 @@
 <translation id="83651606385705612">Дозволите да <ph name="VM_NAME" /> приступа фајловима у фолдеру <ph name="FOLDER_NAME" /></translation>
 <translation id="8372369524088641025">Неисправна WEP шифра</translation>
 <translation id="8372852072747894550">грчки</translation>
+<translation id="8377269993083688872">Изгледи имејла</translation>
 <translation id="8386903983509584791">Скенирање је завршено</translation>
 <translation id="8387733224523483503">Фајл <ph name="FILE_NAME" /> је изведен.</translation>
 <translation id="8395901698320285466">Димензије</translation>
@@ -999,7 +1006,6 @@
 <translation id="8569764466147087991">Избор датотеке за отварање</translation>
 <translation id="8577897833047451336">хрватски</translation>
 <translation id="8578308463707544055">индонежански</translation>
-<translation id="8579285237314169903">Синхронизују се ставке (<ph name="NUMBER_OF_FILES" />)...</translation>
 <translation id="8600173386174225982">Листа датотека се променила у приказ сличица.</translation>
 <translation id="8601932370724196034">Crostini датотека слике</translation>
 <translation id="8609695766746872526">исландски</translation>
@@ -1012,6 +1018,7 @@
 <translation id="8698877009525468705">Овај фајл је поверљив и подлеже ограничењима смерница администратора.</translation>
 <translation id="8712637175834984815">Важи</translation>
 <translation id="8713112442029511308">малтешки</translation>
+<translation id="8714138378966541668">Закључао је добављач</translation>
 <translation id="8714406895390098252">Бицикл</translation>
 <translation id="8719721339511222681">Изабрали сте ставку <ph name="ENTRY_NAME" />.</translation>
 <translation id="872537912056138402">хрватски</translation>
@@ -1019,6 +1026,7 @@
 <translation id="8787254343425541995">Дозволи проксије за дељене мреже</translation>
 <translation id="8790981080411996443">Особа залива биљке</translation>
 <translation id="8798099450830957504">Подразумевано</translation>
+<translation id="8806832560029769670">{NUM_WARNING,plural, =1{1 упозорење.}one{# упозорење.}few{# упозорења.}other{# упозорења.}}</translation>
 <translation id="8808686172382650546">Мачка</translation>
 <translation id="8810671769985673465">Додавање у zip датотеку није успело, ставка постоји: „<ph name="FILE_NAME" />“</translation>
 <translation id="8813284582615685103">шпански (Шпанија)</translation>
@@ -1049,7 +1057,6 @@
 <translation id="9038620279323455325">Датотека „<ph name="FILE_NAME" />“ већ постоји. Одаберите други назив.</translation>
 <translation id="9046895021617826162">Повезивање није успело</translation>
 <translation id="9065512565307033593">Ако верификација не успе, приступ мрежи ће бити онемогућен.</translation>
-<translation id="9083722265619106011">{0,plural, =1{1 упозорење.}one{<ph name="COUNT" /> упозорење.}few{<ph name="COUNT" /> упозорења.}other{<ph name="COUNT" /> упозорења.}}</translation>
 <translation id="908378762078012445">руски са фонетском тастатуром AATSEEL</translation>
 <translation id="9086302186042011942">Синхронизовање</translation>
 <translation id="9099674669267916096">Број страница</translation>

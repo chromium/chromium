@@ -8,7 +8,6 @@ import {ConsoleTestRunner} from 'console_test_runner';
 
 (async function() {
   TestRunner.addResult(`Tests disabling cache from inspector.\n`);
-  await TestRunner.loadLegacyModule('console');
   await TestRunner.showPanel('network');
   await TestRunner.navigatePromise('resources/random-script-page.html');
 

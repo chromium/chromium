@@ -102,6 +102,11 @@ void DeferredSequencedTaskRunner::StartWithTaskRunner(
   StartImpl();
 }
 
+bool DeferredSequencedTaskRunner::Started() const {
+  AutoLock lock(lock_);
+  return started_;
+}
+
 DeferredSequencedTaskRunner::~DeferredSequencedTaskRunner() = default;
 
 void DeferredSequencedTaskRunner::QueueDeferredTask(const Location& from_here,

@@ -4,10 +4,11 @@
 
 #include "chrome/browser/ui/views/file_system_access/file_system_access_restricted_directory_dialog.h"
 
+#include <optional>
+
 #include "base/test/bind.h"
 #include "chrome/test/base/browser_with_test_window_test.h"
 #include "content/public/browser/file_system_access_permission_context.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/test/test_dialog_model_host.h"
 #include "url/origin.h"
 
@@ -40,7 +41,7 @@ class TestFileSystemAccessRestrictedDirectoryDialog {
       url::Origin::Create(GURL("https://example.com"));
   const HandleType kTestHandleType = HandleType::kDirectory;
 
-  absl::optional<SensitiveEntryResult> result_ = absl::nullopt;
+  std::optional<SensitiveEntryResult> result_ = std::nullopt;
 };
 
 TEST_F(FileSystemAccessRestrictedDirectoryDialogTest, Accept) {

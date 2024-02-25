@@ -43,6 +43,8 @@
 #include "v8/include/v8-inspector.h"
 
 namespace blink {
+
+using mojom::blink::FormControlType;
 using protocol::Maybe;
 
 namespace {
@@ -192,7 +194,7 @@ int LegacyDOMSnapshotAgent::VisitNode(Node* node,
     if (!node->parentNode()) {
       owned_value->setOriginURL(std::move(origin_url));
     } else {
-      DOMNodeId parent_id = DOMNodeIds::IdForNode(node->parentNode());
+      DOMNodeId parent_id = node->parentNode()->GetDomNodeId();
       auto it = origin_url_map_->find(parent_id);
       String parent_url = it != origin_url_map_->end() ? it->value : String();
       if (parent_url != origin_url)
@@ -255,8 +257,9 @@ int LegacyDOMSnapshotAgent::VisitNode(Node* node,
 
     if (auto* input_element = DynamicTo<HTMLInputElement>(*element)) {
       value->setInputValue(input_element->Value());
-      if ((input_element->type() == input_type_names::kRadio) ||
-          (input_element->type() == input_type_names::kCheckbox)) {
+      if ((input_element->FormControlType() == FormControlType::kInputRadio) ||
+          (input_element->FormControlType() ==
+           FormControlType::kInputCheckbox)) {
         value->setInputChecked(input_element->Checked());
       }
     }
@@ -407,7 +410,7 @@ int LegacyDOMSnapshotAgent::VisitLayoutTreeNode(LayoutObject* layout_object,
 
   if (layout_object->IsText()) {
     auto* layout_text = To<LayoutText>(layout_object);
-    layout_tree_node->setLayoutText(layout_text->GetText());
+    layout_tree_node->setLayoutText(layout_text->TransformedText());
     Vector<LayoutText::TextBoxInfo> text_boxes = layout_text->GetTextBoxInfo();
     if (!text_boxes.empty()) {
       auto inline_text_nodes = std::make_unique<

@@ -8,7 +8,7 @@
 <translation id="2575169127313449202">می‌توانید برگه‌ها را از دستگاه فهرست‌شده در زیر دریافت کنید</translation>
 <translation id="3575801299326994724">برگه‌های انتخاب‌شده را برای بازیابی از دستگاه انتخاب‌شده کنونی مرور کنید.</translation>
 <translation id="3665329097964129553">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> برگه، آخرین به‌روزرسانی: <ph name="TIME_SINCE_MODIFIED" />}one{<ph name="TABS_COUNT_MANY" /> برگه، آخرین به‌روزرسانی: <ph name="TIME_SINCE_MODIFIED" />}other{<ph name="TABS_COUNT_MANY" /> برگه، آخرین به‌روزرسانی: <ph name="TIME_SINCE_MODIFIED" />}}</translation>
-<translation id="385051799172605136">بازگشت</translation>
+<translation id="385051799172605136">برگشتن</translation>
 <translation id="3983305234037158273">دستگاه‌های همگام‌سازی‌شده برای بازیابی برگه که برای تغییر با لمس دردسترس هستند. برای مرور یا بازیابی برگه‌های انتخاب‌شده برای دستگاه لمس‌شده کنونی، پیمایش کنید. صفحه‌کلید پنهان است.</translation>
 <translation id="4386361164755260473">{TABS_COUNT,plural, =1{باز کردن <ph name="TABS_COUNT_ONE" /> برگه}one{باز کردن <ph name="TABS_COUNT_MANY" /> برگه}other{باز کردن <ph name="TABS_COUNT_MANY" /> برگه}}</translation>
 <translation id="4509609396389120020">دریافت برگه‌ها از دستگاه‌های دیگر</translation>

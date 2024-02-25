@@ -1,4 +1,4 @@
-(async function(testRunner) {
+(async function(/** @type {import('test_runner').TestRunner} */ testRunner) {
   const {page, session, dp} = await testRunner.startBlank('Tests DOMSnapshot.getSnapshot method on a mobile page.');
   const DeviceEmulator = await testRunner.loadScript('../resources/device-emulator.js');
   const deviceEmulator = new DeviceEmulator(testRunner, session);

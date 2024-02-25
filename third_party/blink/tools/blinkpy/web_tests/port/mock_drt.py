@@ -211,6 +211,8 @@ class MockDRT(object):
             0,
             checksum,
             wpt_print_mode=self._port.is_wpt_print_reftest(test_name),
+            trace_file=None,
+            startup_trace_file=None,
             args=[])
 
     def output_for_test(self, test_input, is_reftest):

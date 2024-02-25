@@ -1,7 +1,7 @@
 {
   "layers": [
     {
-      "name": "Scrolling background of LayoutNGView #document",
+      "name": "Scrolling background of LayoutView #document",
       "bounds": [800, 600],
       "contentsOpaque": true,
       "backgroundColor": "#FFFFFF"
@@ -40,18 +40,18 @@
       "transform": 1
     },
     {
+      "name": "LayoutNGBlockFlow DIV class='scroller'",
+      "position": [5, 5],
+      "bounds": [285, 290],
+      "drawsContent": false,
+      "transform": 2
+    },
+    {
       "name": "LayoutNGBlockFlow (positioned) DIV class='icon'",
       "bounds": [40, 40],
       "contentsOpaque": true,
       "backgroundColor": "#FFDDBB",
       "transform": 3
-    },
-    {
-      "name": "LayoutNGBlockFlow (relative positioned) DIV class='list'",
-      "position": [25, 25],
-      "bounds": [180, 250],
-      "drawsContent": false,
-      "transform": 2
     }
   ],
   "transforms": [

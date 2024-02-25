@@ -63,7 +63,7 @@ void PasswordUpdateFlow::ContinueWithAuthSession(
     AuthErrorCallback error_callback,
     bool user_exists,
     std::unique_ptr<UserContext> user_context,
-    absl::optional<AuthenticationError> error) {
+    std::optional<AuthenticationError> error) {
   DCHECK(user_context);
 
   if (error.has_value()) {

@@ -9,6 +9,7 @@
 #include "base/memory/read_only_shared_memory_region.h"
 #include "base/memory/weak_ptr.h"
 #include "base/types/id_type.h"
+#include "base/types/optional_ref.h"
 #include "chrome/browser/enterprise/connectors/analysis/analysis_settings.h"
 #include "components/enterprise/common/proto/connectors.pb.h"
 #include "components/keyed_service/core/keyed_service.h"
@@ -21,8 +22,7 @@ namespace safe_browsing {
 
 // This class encapsulates the process of getting data scanned through a generic
 // interface.
-class BinaryUploadService : public KeyedService,
-                            public base::SupportsWeakPtr<BinaryUploadService> {
+class BinaryUploadService : public KeyedService {
  public:
   // The maximum size of data that can be uploaded via this service.
   constexpr static size_t kMaxUploadSizeBytes = 50 * 1024 * 1024;  // 50 MB
@@ -54,8 +54,9 @@ class BinaryUploadService : public KeyedService,
     // Some or all parts of the file are encrypted.
     FILE_ENCRYPTED = 7,
 
-    // The file's type is not supported and the file was not uploaded.
-    DLP_SCAN_UNSUPPORTED_FILE_TYPE = 8,
+    // Deprecated: The file's type is not supported and the file was not
+    // uploaded.
+    // DLP_SCAN_UNSUPPORTED_FILE_TYPE = 8,
 
     // The server returned a 429 HTTP status indicating too many requests are
     // being sent.
@@ -198,7 +199,7 @@ class BinaryUploadService : public KeyedService,
     const std::string& printer_name() const;
     uint64_t user_action_requests_count() const;
     GURL tab_url() const;
-    const std::string& password() const;
+    base::optional_ref<const std::string> password() const;
     enterprise_connectors::ContentAnalysisRequest::Reason reason() const;
 
     // Called when beginning to try upload.
@@ -319,6 +320,9 @@ class BinaryUploadService : public KeyedService,
   // approach only, since it is possible that requests have been started in a
   // way that they are no longer cancelable.
   virtual void MaybeCancelRequests(std::unique_ptr<CancelRequests> cancel) = 0;
+
+  // Get a WeakPtr to the instance.
+  virtual base::WeakPtr<BinaryUploadService> AsWeakPtr() = 0;
 };
 
 }  // namespace safe_browsing

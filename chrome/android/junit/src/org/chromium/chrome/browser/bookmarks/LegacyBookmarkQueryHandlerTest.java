@@ -15,6 +15,7 @@ import static org.chromium.chrome.browser.bookmarks.SharedBookmarkModelMocks.DES
 import static org.chromium.chrome.browser.bookmarks.SharedBookmarkModelMocks.FOLDER_BOOKMARK_ID_A;
 import static org.chromium.chrome.browser.bookmarks.SharedBookmarkModelMocks.MOBILE_BOOKMARK_ID;
 import static org.chromium.chrome.browser.bookmarks.SharedBookmarkModelMocks.OTHER_BOOKMARK_ID;
+import static org.chromium.chrome.browser.bookmarks.SharedBookmarkModelMocks.PARTNER_BOOKMARK_ID;
 import static org.chromium.chrome.browser.bookmarks.SharedBookmarkModelMocks.READING_LIST_BOOKMARK_ID;
 import static org.chromium.chrome.browser.bookmarks.SharedBookmarkModelMocks.ROOT_BOOKMARK_ID;
 import static org.chromium.chrome.browser.bookmarks.SharedBookmarkModelMocks.URL_BOOKMARK_ID_A;
@@ -36,13 +37,15 @@ import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Batch;
+import org.chromium.base.test.util.Features;
+import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.browser.bookmarks.BookmarkListEntry.ViewType;
 import org.chromium.chrome.browser.commerce.ShoppingFeatures;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.profiles.Profile;
-import org.chromium.chrome.test.util.browser.Features;
-import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
+import org.chromium.chrome.browser.profiles.ProfileManager;
+import org.chromium.components.commerce.core.ShoppingService;
 import org.chromium.components.feature_engagement.Tracker;
 import org.chromium.components.sync.SyncService;
 import org.chromium.components.sync.SyncService.SyncStateChangedListener;
@@ -57,37 +60,31 @@ import java.util.List;
 @Config(manifest = Config.NONE)
 @EnableFeatures(ChromeFeatureList.ANDROID_IMPROVED_BOOKMARKS)
 public class LegacyBookmarkQueryHandlerTest {
-    @Rule
-    public MockitoRule mMockitoRule = MockitoJUnit.rule();
-    @Rule
-    public TestRule mProcessor = new Features.JUnitProcessor();
+    @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
+    @Rule public TestRule mProcessor = new Features.JUnitProcessor();
 
-    @Mock
-    private BookmarkModel mBookmarkModel;
-    @Mock
-    private SyncService mSyncService;
-    @Mock
-    private Tracker mTracker;
-    @Mock
-    private Profile mProfile;
-    @Mock
-    private BookmarkUiPrefs mBookmarkUiPrefs;
+    @Mock private BookmarkModel mBookmarkModel;
+    @Mock private SyncService mSyncService;
+    @Mock private Tracker mTracker;
+    @Mock private Profile mProfile;
+    @Mock private BookmarkUiPrefs mBookmarkUiPrefs;
+    @Mock private ShoppingService mShoppingService;
 
-    @Captor
-    private ArgumentCaptor<Runnable> mFinishLoadingBookmarkModelCaptor;
-    @Captor
-    private ArgumentCaptor<SyncStateChangedListener> mSyncStateChangedListenerCaptor;
+    @Captor private ArgumentCaptor<Runnable> mFinishLoadingBookmarkModelCaptor;
+    @Captor private ArgumentCaptor<SyncStateChangedListener> mSyncStateChangedListenerCaptor;
 
     private LegacyBookmarkQueryHandler mHandler;
 
     @Before
     public void setup() {
         TrackerFactory.setTrackerForTests(mTracker);
-        Profile.setLastUsedProfileForTesting(mProfile);
+        ProfileManager.setLastUsedProfileForTesting(mProfile);
         SharedBookmarkModelMocks.initMocks(mBookmarkModel);
         ShoppingFeatures.setShoppingListEligibleForTesting(false);
 
-        mHandler = new LegacyBookmarkQueryHandler(mBookmarkModel, mBookmarkUiPrefs, mSyncService);
+        mHandler =
+                new LegacyBookmarkQueryHandler(
+                        mBookmarkModel, mBookmarkUiPrefs, mSyncService, mShoppingService);
     }
 
     @Test
@@ -99,22 +96,14 @@ public class LegacyBookmarkQueryHandlerTest {
     }
 
     @Test
-    public void testBuildBookmarkListForParent_rootFolder_isFolderVisible() {
+    public void testBuildBookmarkListForParent_rootFolder() {
         verify(mBookmarkModel)
                 .finishLoadingBookmarkModel(mFinishLoadingBookmarkModelCaptor.capture());
         doReturn(true).when(mBookmarkModel).isBookmarkModelLoaded();
         mFinishLoadingBookmarkModelCaptor.getValue().run();
 
         List<BookmarkListEntry> result = mHandler.buildBookmarkListForParent(ROOT_BOOKMARK_ID);
-        assertEquals(3, result.size());
-
-        doReturn(true).when(mBookmarkModel).isFolderVisible(OTHER_BOOKMARK_ID);
-        verify(mSyncService).addSyncStateChangedListener(mSyncStateChangedListenerCaptor.capture());
-        mSyncStateChangedListenerCaptor.getValue().syncStateChanged();
-
-        List<BookmarkListEntry> updatedResult =
-                mHandler.buildBookmarkListForParent(ROOT_BOOKMARK_ID);
-        assertEquals(4, updatedResult.size());
+        assertEquals(5, result.size());
     }
 
     @Test
@@ -139,12 +128,14 @@ public class LegacyBookmarkQueryHandlerTest {
         mFinishLoadingBookmarkModelCaptor.getValue().run();
 
         List<BookmarkListEntry> result = mHandler.buildBookmarkListForParent(ROOT_BOOKMARK_ID);
-        assertEquals(5, result.size());
-        assertEquals(READING_LIST_BOOKMARK_ID, result.get(0).getBookmarkItem().getId());
-        assertEquals(MOBILE_BOOKMARK_ID, result.get(1).getBookmarkItem().getId());
-        assertEquals(DESKTOP_BOOKMARK_ID, result.get(2).getBookmarkItem().getId());
-        assertEquals(ViewType.DIVIDER, result.get(3).getViewType());
-        assertEquals(ViewType.SHOPPING_FILTER, result.get(4).getViewType());
+        assertEquals(7, result.size());
+        assertEquals(DESKTOP_BOOKMARK_ID, result.get(0).getBookmarkItem().getId());
+        assertEquals(OTHER_BOOKMARK_ID, result.get(1).getBookmarkItem().getId());
+        assertEquals(MOBILE_BOOKMARK_ID, result.get(2).getBookmarkItem().getId());
+        assertEquals(PARTNER_BOOKMARK_ID, result.get(3).getBookmarkItem().getId());
+        assertEquals(READING_LIST_BOOKMARK_ID, result.get(4).getBookmarkItem().getId());
+        assertEquals(ViewType.DIVIDER, result.get(5).getViewType());
+        assertEquals(ViewType.SHOPPING_FILTER, result.get(6).getViewType());
 
         assertFalse(mHandler.buildBookmarkListForParent(ROOT_BOOKMARK_ID).isEmpty());
     }

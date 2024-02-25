@@ -78,10 +78,12 @@ void DecryptingDemuxerStream::Read(uint32_t count, ReadCB read_cb) {
   DCHECK_EQ(state_, kIdle) << state_;
   DCHECK(read_cb);
   CHECK(!read_cb_) << "Overlapping reads are not supported.";
-  DCHECK_EQ(count, 1u) << "DecryptingDemuxerStream only reads a single-buffer.";
 
   read_cb_ = base::BindPostTaskToCurrentDefault(std::move(read_cb));
   state_ = kPendingDemuxerRead;
+
+  // TODO(https://crbugs.com/1501730): Enable batch decoding for encrypted
+  // stream. It is allowed to only read 1 sample when requested multiple.
   demuxer_stream_->Read(
       1,
       base::BindOnce(&DecryptingDemuxerStream::OnBuffersReadFromDemuxerStream,
@@ -272,14 +274,11 @@ void DecryptingDemuxerStream::DecryptPendingBuffer() {
     return;
   }
 
-  if (HasClearLead()) {
-    if (pending_buffer_to_decrypt_->decrypt_config()->encryption_scheme() !=
-            EncryptionScheme::kUnencrypted &&
-        !switched_clear_to_encrypted_) {
-      MEDIA_LOG(INFO, media_log_)
-          << "Stream switched from clear to encrypted buffers.";
-      switched_clear_to_encrypted_ = true;
-    }
+  if (HasClearLead() && !switched_clear_to_encrypted_ &&
+      pending_buffer_to_decrypt_->is_encrypted()) {
+    MEDIA_LOG(INFO, media_log_)
+        << "First switch from clear to encrypted buffers.";
+    switched_clear_to_encrypted_ = true;
   }
 
   decryptor_->Decrypt(GetDecryptorStreamType(), pending_buffer_to_decrypt_,
@@ -324,7 +323,7 @@ void DecryptingDemuxerStream::OnBufferDecrypted(
     std::string key_id = pending_buffer_to_decrypt_->decrypt_config()->key_id();
 
     std::string log_message =
-        "no key for key ID " + base::HexEncode(key_id.data(), key_id.size()) +
+        "no key for key ID " + base::HexEncode(key_id) +
         "; will resume decrypting after new usable key is available";
     DVLOG(1) << __func__ << ": " << log_message;
     MEDIA_LOG(INFO, media_log_) << GetDisplayName() << ": " << log_message;

@@ -59,7 +59,7 @@ class VideoCaptureDeviceChromeOSDelegate::PowerManagerClientProxy
   friend class base::RefCountedThreadSafe<PowerManagerClientProxy>;
 
   using PendingTask = std::pair<base::OnceCallback<void()>,
-                                absl::optional<base::UnguessableToken>>;
+                                std::optional<base::UnguessableToken>>;
 
   ~PowerManagerClientProxy() override = default;
 
@@ -81,7 +81,7 @@ class VideoCaptureDeviceChromeOSDelegate::PowerManagerClientProxy
 
   // chromeos::PowerManagerClient::Observer:
   void SuspendImminent(power_manager::SuspendImminent::Reason reason) final {
-    absl::optional<base::UnguessableToken> token =
+    std::optional<base::UnguessableToken> token =
         base::UnguessableToken::Create();
     chromeos::PowerManagerClient::Get()->BlockSuspend(
         *token, "VideoCaptureDeviceChromeOSDelegate");
@@ -94,8 +94,7 @@ class VideoCaptureDeviceChromeOSDelegate::PowerManagerClientProxy
     }
     device_task_runner_->PostTask(
         FROM_HERE,
-        base::BindOnce(&PowerManagerClientProxy::TryOpenOrCloseDevice,
-                       weak_ptr_factory_.GetWeakPtr()));
+        base::BindOnce(&PowerManagerClientProxy::TryOpenOrCloseDevice, this));
   }
 
   // chromeos::PowerManagerClient::Observer:
@@ -105,12 +104,11 @@ class VideoCaptureDeviceChromeOSDelegate::PowerManagerClientProxy
       task_queue_.push(
           {base::BindOnce(&VideoCaptureDeviceChromeOSDelegate::OpenDevice,
                           device_),
-           absl::nullopt});
+           std::nullopt});
     }
     device_task_runner_->PostTask(
         FROM_HERE,
-        base::BindOnce(&PowerManagerClientProxy::TryOpenOrCloseDevice,
-                       weak_ptr_factory_.GetWeakPtr()));
+        base::BindOnce(&PowerManagerClientProxy::TryOpenOrCloseDevice, this));
   }
 
   void TryOpenOrCloseDevice() {
@@ -142,8 +140,6 @@ class VideoCaptureDeviceChromeOSDelegate::PowerManagerClientProxy
   base::WeakPtr<VideoCaptureDeviceChromeOSDelegate> device_;
   scoped_refptr<base::SingleThreadTaskRunner> device_task_runner_;
   scoped_refptr<base::SingleThreadTaskRunner> dbus_task_runner_;
-
-  base::WeakPtrFactory<PowerManagerClientProxy> weak_ptr_factory_{this};
 };
 
 VideoCaptureDeviceChromeOSDelegate::VideoCaptureDeviceChromeOSDelegate(
@@ -183,7 +179,9 @@ void VideoCaptureDeviceChromeOSDelegate::Shutdown() {
   DCHECK(capture_task_runner_->BelongsToCurrentThread());
   if (!HasDeviceClient()) {
     DCHECK(!camera_device_ipc_thread_.IsRunning());
-    capture_task_runner_->PostTask(FROM_HERE, std::move(cleanup_callback_));
+    // |cleanup_callback_| will call the destructor, so any access to |this|
+    // after executing |cleanup_callback_| in this function is unsafe.
+    std::move(cleanup_callback_).Run();
   }
 }
 
@@ -342,11 +340,10 @@ void VideoCaptureDeviceChromeOSDelegate::CloseDevice(
     power_manager_client_proxy_->UnblockSuspend(unblock_suspend_token);
 }
 
-void VideoCaptureDeviceChromeOSDelegate::SetDisplayRotation(
-    const display::Display& display) {
+void VideoCaptureDeviceChromeOSDelegate::SetInternalDisplayRotation(
+    int rotation) {
   DCHECK(capture_task_runner_->BelongsToCurrentThread());
-  if (display.IsInternal())
-    SetRotation(display.rotation() * 90);
+  SetRotation(rotation);
 }
 
 void VideoCaptureDeviceChromeOSDelegate::SetRotation(int rotation) {

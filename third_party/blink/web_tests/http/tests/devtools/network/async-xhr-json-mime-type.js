@@ -10,7 +10,6 @@ import {ConsoleTestRunner} from 'console_test_runner';
   TestRunner.addResult(`Tests that the content of resources with JSON MIME types can be accessed.`);
   TestRunner.addResult('When loaded by asynchronous XHR requests (Bug 80684) or within iframes/documents.\n');
 
-  await TestRunner.loadLegacyModule('console');
   await TestRunner.showPanel('network');
 
   NetworkTestRunner.recordNetwork();

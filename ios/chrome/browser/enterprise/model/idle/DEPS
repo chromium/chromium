@@ -1,0 +1,16 @@
+# Copyright 2023 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+include_rules = [
+    "+ios/chrome/browser/browsing_data/model",
+    "+ios/chrome/browser/discover_feed/model",
+    "+ios/chrome/browser/signin/model/authentication_service.h",
+    "+ios/chrome/browser/signin/model/authentication_service_factory.h",
+]
+
+specific_include_rules = {
+"action.mm": [
+      "+ios/chrome/browser/web_state_list/model",
+]
+}

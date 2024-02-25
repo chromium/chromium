@@ -49,7 +49,7 @@ class BASE_EXPORT ThreadControllerImpl : public ThreadController,
   void ScheduleWork() override;
   void BindToCurrentThread(std::unique_ptr<MessagePump> message_pump) override;
   void SetNextDelayedDoWork(LazyNow* lazy_now,
-                            absl::optional<WakeUp> wake_up) override;
+                            std::optional<WakeUp> wake_up) override;
   void SetSequencedTaskSource(SequencedTaskSource* sequence) override;
   bool RunsTasksInCurrentSequence() override;
   void SetDefaultTaskRunner(scoped_refptr<SingleThreadTaskRunner>) override;
@@ -78,10 +78,8 @@ class BASE_EXPORT ThreadControllerImpl : public ThreadController,
                        scoped_refptr<SingleThreadTaskRunner> task_runner,
                        const TickClock* time_source);
 
-  // TODO(altimin): Make these const. Blocked on removing
-  // lazy initialisation support.
-  raw_ptr<SequenceManagerImpl> funneled_sequence_manager_;
-  scoped_refptr<SingleThreadTaskRunner> task_runner_;
+  const raw_ptr<SequenceManagerImpl> funneled_sequence_manager_;
+  const scoped_refptr<SingleThreadTaskRunner> task_runner_;
 
   raw_ptr<RunLoop::NestingObserver> nesting_observer_ = nullptr;
 

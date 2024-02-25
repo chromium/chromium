@@ -18,9 +18,9 @@ class PillButton;
 // game capture session. The bar only includes a start recording button, the
 // settings and close buttons.
 class ASH_EXPORT GameCaptureBarView : public CaptureModeBarView {
- public:
-  METADATA_HEADER(GameCaptureBarView);
+  METADATA_HEADER(GameCaptureBarView, CaptureModeBarView)
 
+ public:
   GameCaptureBarView();
   GameCaptureBarView(const GameCaptureBarView&) = delete;
   GameCaptureBarView& operator=(const GameCaptureBarView&) = delete;
@@ -33,7 +33,7 @@ class ASH_EXPORT GameCaptureBarView : public CaptureModeBarView {
   // Called when clicking on the start recording button inside the bar.
   void StartRecording();
 
-  raw_ptr<PillButton, ExperimentalAsh> start_recording_button_;
+  raw_ptr<PillButton> start_recording_button_;
 };
 
 }  // namespace ash

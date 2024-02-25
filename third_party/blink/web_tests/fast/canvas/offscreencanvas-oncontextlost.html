@@ -7,20 +7,21 @@
 </head>
 <body>
 <script>
-var ctx;
-var lostEventHasFired = false;
-var contextLostTest;
 async_test(t => {
     if (window.internals) {
-        var canvas = new OffscreenCanvas(500, 500);
-        canvas.oncontextlost = contextLost;
-        canvas.oncontextrestored = contextRestored;
-        ctx = canvas.getContext('2d');
+        const canvas = new OffscreenCanvas(500, 500);
+        const ctx = canvas.getContext('2d');
+        canvas.oncontextlost = t.step_func(() => {
+            contextLost(ctx);
+        });
+        canvas.oncontextrestored = t.step_func_done(() => {
+            contextRestored(ctx);
+        });
 
         ctx.fillRect(0, 0, 1, 1);
         // setTimeout creates a frame barrier that locks the canvas into gpu
         // acceleration mode when running under virtual/gpu
-        setTimeout(() => {
+        t.step_timeout(() => {
             // Now it is safe to use verifyContextLost without fearing side-effects
             // because a rendering mode was fixed.
             verifyContextLost(false, ctx);
@@ -28,26 +29,14 @@ async_test(t => {
             internals.forceLoseCanvasContext(canvas, "2d");
             if (!ctx.isContextLost()) {
                 assert_true(false, "canvas context is not lost properly.");
-                t.done();
             } else {
                 verifyContextLost(true, ctx);
             }
         }, 0);
-        t.done();
     } else {
         assert_true(false, "This test requires window.internals.");
-        t.done();
     }
 }, "Test the behavior of disconneced canvas recovery after a gpu context loss");
-
-function contextLost() {
-    contextLost(lostEventHasFired, ctx);
-}
-
-function contextRestored() {
-    contextRestored(lostEventHasFired, ctx);
-}
-
 </script>
 </body>
 </html>

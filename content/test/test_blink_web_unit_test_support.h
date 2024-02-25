@@ -38,7 +38,8 @@ class TestBlinkWebUnitTestSupport : public BlinkPlatformImpl {
   };
 
   explicit TestBlinkWebUnitTestSupport(
-      SchedulerType scheduler_type = SchedulerType::kMockScheduler);
+      SchedulerType scheduler_type,
+      std::string additional_v8_flags = std::string());
 
   TestBlinkWebUnitTestSupport(const TestBlinkWebUnitTestSupport&) = delete;
   TestBlinkWebUnitTestSupport& operator=(const TestBlinkWebUnitTestSupport&) =

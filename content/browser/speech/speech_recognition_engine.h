@@ -33,13 +33,17 @@ namespace base {
 class TimeDelta;
 }
 
+namespace blink {
+namespace mojom {
+class SpeechRecognitionError;
+}  // namespace mojom
+}  // namespace blink
+
 namespace network {
 class SharedURLLoaderFactory;
 }
 
 namespace content {
-
-struct SpeechRecognitionError;
 
 // A speech recognition engine supporting continuous recognition by means of
 // interaction with the Google streaming speech recognition webservice.

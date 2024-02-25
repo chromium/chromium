@@ -5,6 +5,7 @@
 #include "third_party/blink/renderer/platform/media/video_decode_stats_reporter.h"
 
 #include <memory>
+#include <optional>
 
 #include "base/functional/bind.h"
 #include "base/memory/ptr_util.h"
@@ -24,7 +25,6 @@
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/geometry/rect.h"
 
 namespace blink {
@@ -180,7 +180,7 @@ class VideoDecodeStatsReporterTest : public ::testing::Test {
   void MakeReporter(
       media::VideoCodecProfile profile = kDefaultProfile,
       const gfx::Size& natural_size = gfx::Size(kDefaultWidth, kDefaultHeight),
-      const absl::optional<media::CdmConfig> cdm_config = kDefaultCdmConfig) {
+      const std::optional<media::CdmConfig> cdm_config = kDefaultCdmConfig) {
     reporter_ = std::make_unique<VideoDecodeStatsReporter>(
         SetupRecordInterceptor(&interceptor_),
         base::BindRepeating(&VideoDecodeStatsReporterTest::GetPipelineStatsCB,
@@ -865,7 +865,7 @@ TEST_F(VideoDecodeStatsReporterTest, VaryEmeProperties) {
                                                  kNonDefaultHwSecureCodecs};
 
   // Make reporter with no EME properties.
-  MakeReporter(kDefaultProfile, kDefaultSize, absl::nullopt);
+  MakeReporter(kDefaultProfile, kDefaultSize, std::nullopt);
   // Verify the empty key system and non-default hw_secure_codecs.
   StartPlayingAndStabilizeFramerate(kDefaultProfile, kDefaultSize, kDefaultFps,
                                     kEmptyKeySystem, kNonDefaultHwSecureCodecs);

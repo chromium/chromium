@@ -6,24 +6,20 @@
 #define CHROME_BROWSER_UI_AUTOFILL_DELETE_ADDRESS_PROFILE_DIALOG_VIEW_H_
 
 #include "base/memory/weak_ptr.h"
-#include "chrome/browser/ui/autofill/delete_address_profile_dialog_controller.h"
-
-namespace views {
-class Widget;
-}  // namespace views
 
 namespace content {
 class WebContents;
 }  // namespace content
 
-namespace autofill::dialogs {
+namespace autofill {
+class DeleteAddressProfileDialogController;
 
 // Shows a modal dialog prompting to user whether they want to delete their
 // profile address.
-views::Widget* ShowDeleteAddressProfileDialogView(
+void ShowDeleteAddressProfileDialogView(
     content::WebContents* web_contents,
     base::WeakPtr<DeleteAddressProfileDialogController> controller);
 
-}  // namespace autofill::dialogs
+}  // namespace autofill
 
 #endif  // CHROME_BROWSER_UI_AUTOFILL_DELETE_ADDRESS_PROFILE_DIALOG_VIEW_H_

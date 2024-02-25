@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ash/login/quick_unlock/fingerprint_storage.h"
 #include <memory>
+#include <optional>
 
 #include "ash/constants/ash_pref_names.h"
 #include "base/metrics/histogram_functions.h"
@@ -19,7 +20,6 @@
 #include "components/prefs/pref_service.h"
 #include "content/public/browser/device_service.h"
 #include "services/device/public/mojom/fingerprint.mojom.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ash {
 namespace quick_unlock {
@@ -76,7 +76,7 @@ bool FingerprintStorage::IsEligible() const {
   return IsFingerprintSupported();
 }
 
-absl::optional<bool> FingerprintStorage::IsAccessible() const {
+std::optional<bool> FingerprintStorage::IsAccessible() const {
   return legacy_fingerprint_engine_.IsFingerprintEnabled(
       *profile_->GetPrefs(), LegacyFingerprintEngine::Purpose::kAny);
 }

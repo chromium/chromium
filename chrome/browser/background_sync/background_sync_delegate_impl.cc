@@ -70,7 +70,7 @@ BackgroundSyncDelegateImpl::CreateBackgroundSyncEventKeepAlive() {
 
 void BackgroundSyncDelegateImpl::GetUkmSourceId(
     const url::Origin& origin,
-    base::OnceCallback<void(absl::optional<ukm::SourceId>)> callback) {
+    base::OnceCallback<void(std::optional<ukm::SourceId>)> callback) {
   ukm_background_service_->GetBackgroundSourceIdIfAllowed(origin,
                                                           std::move(callback));
 }

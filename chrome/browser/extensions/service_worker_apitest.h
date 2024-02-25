@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_EXTENSIONS_SERVICE_WORKER_APITEST_H_
 
 #include "chrome/browser/extensions/extension_apitest.h"
+#include "content/public/common/page_type.h"
 #include "extensions/browser/process_manager.h"
 
 class GURL;
@@ -71,9 +72,9 @@ class ServiceWorkerBasedBackgroundTest : public ServiceWorkerTest {
   void SetUpOnMainThread() override;
 
   // Returns the only running worker id for |extension_id|.
-  // Returns absl::nullopt if there isn't any worker running or more than one
+  // Returns std::nullopt if there isn't any worker running or more than one
   // worker is running for |extension_id|.
-  absl::optional<WorkerId> GetUniqueRunningWorkerId(
+  std::optional<WorkerId> GetUniqueRunningWorkerId(
       const ExtensionId& extension_id);
 
   bool ExtensionHasRenderProcessHost(const ExtensionId& extension_id);

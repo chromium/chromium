@@ -9,6 +9,7 @@
 
 #include <algorithm>
 #include <map>
+#include <optional>
 #include <vector>
 
 #include "base/auto_reset.h"
@@ -29,7 +30,6 @@
 #include "components/crash/core/app/crash_reporter_client.h"
 #include "components/crash/core/common/crash_key.h"
 #include "third_party/abseil-cpp/absl/base/internal/raw_logging.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/crashpad/crashpad/client/annotation.h"
 #include "third_party/crashpad/crashpad/client/annotation_list.h"
 #include "third_party/crashpad/crashpad/client/crash_report_database.h"
@@ -58,7 +58,7 @@ void AbslAbortHook(const char* file,
   // This simulates that a CHECK(false) was done at file:line instead of here.
   // This is used instead of base::ImmediateCrash() to give better error
   // messages locally (printed stack for one).
-  logging::LogMessage check_failure(file, line, logging::LOGGING_FATAL);
+  logging::LogMessageFatal check_failure(file, line, logging::LOGGING_FATAL);
   check_failure.stream() << "Check failed: false. " << prefix_end;
 }
 
@@ -322,7 +322,7 @@ void RequestSingleCrashUpload(const std::string& local_id) {
 #endif
 }
 
-absl::optional<base::FilePath> GetCrashpadDatabasePath() {
+std::optional<base::FilePath> GetCrashpadDatabasePath() {
 #if BUILDFLAG(IS_WIN)
   base::FilePath::StringType::const_pointer path =
       GetCrashpadDatabasePath_ExportThunk();
@@ -331,7 +331,7 @@ absl::optional<base::FilePath> GetCrashpadDatabasePath() {
       GetCrashpadDatabasePathImpl();
 #endif
   if (!path) {
-    return absl::nullopt;
+    return std::nullopt;
   }
   return base::FilePath(path);
 }

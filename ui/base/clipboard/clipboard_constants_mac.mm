@@ -43,4 +43,6 @@ NSString* const kUTTypeWebKitWebSmartPaste =
 NSString* const kUTTypeWebKitWebURLsWithTitles =
     @"dyn.ah62d4rv4gu8zs3pcnzme2641rf4guzdmsv0gn64uqm10c6xenv61a3k";
 
+NSString* const kUTTypeChromiumSourceURL = @"org.chromium.source-url";
+
 }  // namespace ui

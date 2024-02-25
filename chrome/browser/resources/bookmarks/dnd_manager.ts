@@ -5,7 +5,7 @@
 import './folder_node.js';
 import './item.js';
 
-import {assert} from 'chrome://resources/js/assert_ts.js';
+import {assert} from 'chrome://resources/js/assert.js';
 import {EventTracker} from 'chrome://resources/js/event_tracker.js';
 
 import {changeFolderOpen, deselectItems, selectItem} from './actions.js';
@@ -13,9 +13,9 @@ import {highlightUpdatedItems, trackUpdatedItems} from './api_listener.js';
 import {BookmarkManagerApiProxyImpl} from './bookmark_manager_api_proxy.js';
 import {DropPosition, ROOT_NODE_ID} from './constants.js';
 import {Debouncer} from './debouncer.js';
-import {BookmarksFolderNodeElement} from './folder_node.js';
+import type {BookmarksFolderNodeElement} from './folder_node.js';
 import {Store} from './store.js';
-import {BookmarkElement, BookmarkNode, DragData, DropDestination, NodeMap, ObjectMap, TimerProxy} from './types.js';
+import type {BookmarkElement, BookmarkNode, DragData, DropDestination, NodeMap, ObjectMap, TimerProxy} from './types.js';
 import {canEditNode, canReorderChildren, getDisplayedList, hasChildFolders, isShowingSearch, normalizeNode} from './util.js';
 
 interface NormalizedDragData {

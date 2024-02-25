@@ -4,9 +4,12 @@
 
 package org.chromium.chrome.browser.webapps;
 
+import android.os.Build;
+
 import androidx.annotation.NonNull;
 
-import org.chromium.base.BuildInfo;
+import dagger.Lazy;
+
 import org.chromium.chrome.browser.browserservices.InstalledWebappRegistrar;
 import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider;
 import org.chromium.chrome.browser.browserservices.permissiondelegation.PermissionUpdater;
@@ -19,11 +22,9 @@ import org.chromium.components.embedder_support.util.Origin;
 
 import javax.inject.Inject;
 
-import dagger.Lazy;
-
 /**
- * Coordinator for the WebAPK activity component.
- * Add methods here if other components need to communicate with the WebAPK activity component.
+ * Coordinator for the WebAPK activity component. Add methods here if other components need to
+ * communicate with the WebAPK activity component.
  */
 @ActivityScope
 public class WebApkActivityCoordinator implements DestroyObserver {
@@ -34,7 +35,8 @@ public class WebApkActivityCoordinator implements DestroyObserver {
     @Inject
     public WebApkActivityCoordinator(
             WebappDeferredStartupWithStorageHandler deferredStartupWithStorageHandler,
-            WebappDisclosureController disclosureController, DisclosureInfobar disclosureInfobar,
+            WebappDisclosureController disclosureController,
+            DisclosureInfobar disclosureInfobar,
             WebApkActivityLifecycleUmaTracker webApkActivityLifecycleUmaTracker,
             ActivityLifecycleDispatcher lifecycleDispatcher,
             BrowserServicesIntentDataProvider intendDataProvider,
@@ -48,11 +50,12 @@ public class WebApkActivityCoordinator implements DestroyObserver {
         mWebApkUpdateManager = webApkUpdateManager;
         mInstalledWebappRegistrar = installedWebappRegistrar;
 
-        deferredStartupWithStorageHandler.addTask((storage, didCreateStorage) -> {
-            if (lifecycleDispatcher.isActivityFinishingOrDestroyed()) return;
+        deferredStartupWithStorageHandler.addTask(
+                (storage, didCreateStorage) -> {
+                    if (lifecycleDispatcher.isActivityFinishingOrDestroyed()) return;
 
-            onDeferredStartupWithStorage(storage, didCreateStorage);
-        });
+                    onDeferredStartupWithStorage(storage, didCreateStorage);
+                });
         lifecycleDispatcher.register(this);
     }
 
@@ -61,9 +64,10 @@ public class WebApkActivityCoordinator implements DestroyObserver {
         assert storage != null;
         storage.incrementLaunchCount();
 
+        WebApkSyncService.onWebApkUsed(mIntentDataProvider, storage);
         mWebApkUpdateManager.get().updateIfNeeded(storage, mIntentDataProvider);
 
-        if (!BuildInfo.isAtLeastT()) {
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU) {
             return;
         }
 
@@ -82,6 +86,6 @@ public class WebApkActivityCoordinator implements DestroyObserver {
     public void onDestroy() {
         // The common case is to be connected to just one WebAPK's services. For the sake of
         // simplicity disconnect from the services of all WebAPKs.
-        ChromeWebApkHost.disconnectFromAllServices(true /* waitForPendingWork */);
+        ChromeWebApkHost.disconnectFromAllServices(/* waitForPendingWork= */ true);
     }
 }

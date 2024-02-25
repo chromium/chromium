@@ -64,10 +64,8 @@ class ConnectionManagerTest : public testing::Test {
       return nullptr;
     }
 
-    raw_ptr<content::FakeServiceWorkerContext, ExperimentalAsh>
-        new_url_service_worker_;
-    raw_ptr<content::FakeServiceWorkerContext, ExperimentalAsh>
-        old_url_service_worker_;
+    raw_ptr<content::FakeServiceWorkerContext> new_url_service_worker_;
+    raw_ptr<content::FakeServiceWorkerContext> old_url_service_worker_;
   };
 
   enum class PwaState { kEnabledWithNewUrl, kEnabledWithOldUrl, kDisabled };
@@ -158,7 +156,7 @@ class ConnectionManagerTest : public testing::Test {
 
   void SetPwaState(PwaState pwa_state) {
     if (pwa_state == PwaState::kDisabled) {
-      fake_android_sms_app_manager_->SetInstalledAppUrl(absl::nullopt);
+      fake_android_sms_app_manager_->SetInstalledAppUrl(std::nullopt);
       fake_multidevice_setup_client_->SetFeatureState(
           multidevice_setup::mojom::Feature::kMessages,
           multidevice_setup::mojom::FeatureState::kDisabledByUser);
@@ -192,9 +190,9 @@ class ConnectionManagerTest : public testing::Test {
   std::unique_ptr<multidevice_setup::FakeMultiDeviceSetupClient>
       fake_multidevice_setup_client_;
   std::unique_ptr<FakeAndroidSmsAppManager> fake_android_sms_app_manager_;
-  raw_ptr<FakeConnectionEstablisher, DanglingUntriaged | ExperimentalAsh>
+  raw_ptr<FakeConnectionEstablisher, DanglingUntriaged>
       fake_connection_establisher_;
-  raw_ptr<TestServiceWorkerProvider, DanglingUntriaged | ExperimentalAsh>
+  raw_ptr<TestServiceWorkerProvider, DanglingUntriaged>
       test_service_worker_provider_;
 
   std::unique_ptr<ConnectionManager> connection_manager_;

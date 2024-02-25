@@ -5,12 +5,13 @@
 #ifndef COMPONENTS_REMOTE_COCOA_APP_SHIM_NATIVE_WIDGET_NS_WINDOW_FULLSCREEN_CONTROLLER_H_
 #define COMPONENTS_REMOTE_COCOA_APP_SHIM_NATIVE_WIDGET_NS_WINDOW_FULLSCREEN_CONTROLLER_H_
 
+#include <optional>
+
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "components/remote_cocoa/app_shim/remote_cocoa_app_shim_export.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/display/types/display_constants.h"
 #include "ui/gfx/geometry/rect.h"
 
@@ -168,14 +169,14 @@ class REMOTE_COCOA_APP_SHIM_EXPORT NativeWidgetNSWindowFullscreenController {
 
   // If a call to EnterFullscreen or ExitFullscreen happens during a
   // transition, then that final requested state is stored in `pending_state_`.
-  absl::optional<PendingState> pending_state_;
+  std::optional<PendingState> pending_state_;
 
   // If we call setFrame while in fullscreen transitions, then we will need to
   // restore the original window frame when we return to windowed mode. We save
   // that original frame in `windowed_frame_`, and set set
   // `restore_windowed_frame_` to true if we call setFrame.
   bool restore_windowed_frame_ = false;
-  absl::optional<gfx::Rect> windowed_frame_;
+  std::optional<gfx::Rect> windowed_frame_;
 
   // Trying to close an NSWindow during a fullscreen transition will cause the
   // window to lock up. Use this to track if CloseWindow was called during a

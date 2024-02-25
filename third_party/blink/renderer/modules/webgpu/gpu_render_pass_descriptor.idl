@@ -8,7 +8,7 @@ dictionary GPURenderPassDescriptor : GPUObjectDescriptorBase {
     required sequence<GPURenderPassColorAttachment?> colorAttachments;
     GPURenderPassDepthStencilAttachment depthStencilAttachment;
     GPUQuerySet occlusionQuerySet;
-    GPURenderPassTimestampWritesCompat timestampWrites;
+    GPURenderPassTimestampWrites timestampWrites;
     GPUSize64 maxDrawCount;
 };
 
@@ -21,6 +21,3 @@ enum GPUStoreOp {
     "store",
     "discard",
 };
-
-// TODO(dawn:1800): Remove after a deprecation period;
-typedef (GPURenderPassTimestampWrites or sequence<GPURenderPassTimestampWrite>) GPURenderPassTimestampWritesCompat;

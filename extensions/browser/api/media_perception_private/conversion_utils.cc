@@ -560,9 +560,9 @@ bool NamedTemplateArgumentProtoToIdl(
   base::Value value =
       NamedTemplateArgumentValueProtoToValue(named_template_argument_proto);
 
-  named_template_argument->value.emplace();
-  if (!NamedTemplateArgument::Value::Populate(
-          value, *named_template_argument->value)) {
+  named_template_argument->value =
+      NamedTemplateArgument::Value::FromValue(value);
+  if (!named_template_argument->value) {
     return false;
   }
 

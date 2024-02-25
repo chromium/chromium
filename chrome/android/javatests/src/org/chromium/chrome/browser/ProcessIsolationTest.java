@@ -28,9 +28,7 @@ import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.HashSet;
 
-/**
- * Test to make sure browser and renderer are seperated process.
- */
+/** Test to make sure browser and renderer are seperated process. */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 public class ProcessIsolationTest {
@@ -38,8 +36,8 @@ public class ProcessIsolationTest {
     public ChromeTabbedActivityTestRule mActivityTestRule = new ChromeTabbedActivityTestRule();
 
     /**
-     * Verifies that process isolation works, i.e., that the browser and
-     * renderer processes use different user IDs.
+     * Verifies that process isolation works, i.e., that the browser and renderer processes use
+     * different user IDs.
      */
     @Test
     @MediumTest
@@ -52,7 +50,8 @@ public class ProcessIsolationTest {
         // (see b/7724486, closed as "Working as intended").
         // So we have to resort to parsing the ps output.
         String packageName = ContextUtils.getApplicationContext().getPackageName();
-        Assert.assertFalse("Failed to retrieve package name for current version of Chrome.",
+        Assert.assertFalse(
+                "Failed to retrieve package name for current version of Chrome.",
                 TextUtils.isEmpty(packageName));
 
         ArrayList<String> uids = new ArrayList<String>();
@@ -113,12 +112,14 @@ public class ProcessIsolationTest {
 
         // We should have the same number of process as tabs count. Sometimes
         // there can be extra utility sandbox process so we check for greater than.
-        Assert.assertTrue("Renderer processes not found in ps output: \n" + sb.toString(),
+        Assert.assertTrue(
+                "Renderer processes not found in ps output: \n" + sb.toString(),
                 rendererProcessesCount >= tabsCount);
 
         Assert.assertEquals(
                 "Found at least two processes with the same UID in ps output: \n" + sb.toString(),
-                uids.size(), new HashSet<String>(uids).size());
+                uids.size(),
+                new HashSet<String>(uids).size());
     }
 
     @Before

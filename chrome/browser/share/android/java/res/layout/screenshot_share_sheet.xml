@@ -45,17 +45,6 @@ found in the LICENSE file.
                 android:layout_gravity="start|bottom">
 
                 <TextView
-                    android:id="@+id/edit"
-                    android:text="@string/screenshot_edit_title"
-                    style="@style/SplitToolbarButton"
-                    android:drawableTop="@drawable/edit_icon"
-                    android:drawableTint="@color/default_icon_color_tint_list"
-                    android:layout_weight="1"
-                    android:gravity="center"
-                    android:layout_gravity="end|bottom"
-                    android:background="?attr/selectableItemBackgroundBorderless" />
-
-                <TextView
                     android:id="@+id/delete"
                     android:text="@string/screenshot_delete_title"
                     style="@style/SplitToolbarButton"

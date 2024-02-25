@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <tuple>
 #include <utility>
@@ -41,6 +42,7 @@
 #include "chromeos/ash/components/login/auth/public/key.h"
 #include "chromeos/ash/components/login/auth/public/user_context.h"
 #include "chromeos/ash/components/login/auth/stub_authenticator_builder.h"
+#include "chromeos/ash/components/login/login_state/login_state.h"
 #include "chromeos/ash/components/settings/cros_settings_names.h"
 #include "chromeos/dbus/missive/missive_client.h"
 #include "chromeos/dbus/missive/missive_client_test_observer.h"
@@ -59,7 +61,6 @@
 #include "net/dns/mock_host_resolver.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 using chromeos::MissiveClient;
 using chromeos::MissiveClientTestObserver;
@@ -87,7 +88,7 @@ Record GetNextLoginLogoutRecord(MissiveClientTestObserver* observer) {
   return record;
 }
 
-absl::optional<Record> MaybeGetEnqueudLoginLogoutRecord() {
+std::optional<Record> MaybeGetEnqueuedLoginLogoutRecord() {
   const std::vector<Record>& records =
       MissiveClient::Get()->GetTestInterface()->GetEnqueuedRecords(
           Priority::SECURITY);
@@ -96,7 +97,7 @@ absl::optional<Record> MaybeGetEnqueudLoginLogoutRecord() {
       return record;
     }
   }
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 class PublicSessionUserCreationWaiter
@@ -294,7 +295,7 @@ IN_PROC_BROWSER_TEST_F(LoginLogoutReporterBrowserTest, GuestLogin) {
 
   // Check if the record is already enqueued in case it was enqueued before the
   // |observer| initialization.
-  absl::optional<Record> login_record = MaybeGetEnqueudLoginLogoutRecord();
+  std::optional<Record> login_record = MaybeGetEnqueuedLoginLogoutRecord();
 
   if (!login_record.has_value()) {
     // Record is not enqueued yet, so wait for it.
@@ -419,17 +420,7 @@ IN_PROC_BROWSER_TEST_F(LoginLogoutReporterPublicSessionBrowserTest,
 
 class LoginLogoutReporterKioskBrowserTest
     : public MixinBasedInProcessBrowserTest {
- public:
-  LoginLogoutReporterKioskBrowserTest(
-      const LoginLogoutReporterKioskBrowserTest&) = delete;
-  LoginLogoutReporterKioskBrowserTest& operator=(
-      const LoginLogoutReporterKioskBrowserTest&) = delete;
-
  protected:
-  LoginLogoutReporterKioskBrowserTest() = default;
-
-  ~LoginLogoutReporterKioskBrowserTest() override = default;
-
   void SetUp() override {
     skip_splash_wait_override_ =
         KioskLaunchController::SkipSplashScreenWaitForTesting();
@@ -449,7 +440,6 @@ class LoginLogoutReporterKioskBrowserTest
     MixinBasedInProcessBrowserTest::SetUpInProcessBrowserTestFixture();
 
     host_resolver()->AddRule("*", "127.0.0.1");
-    SessionManagerClient::InitializeFakeInMemory();
 
     ChromeDeviceSettingsProto& proto(policy_helper_.device_policy()->payload());
     KioskAppsMixin::AppendAutoLaunchKioskAccount(&proto);
@@ -478,16 +468,12 @@ class LoginLogoutReporterKioskBrowserTest
 
 IN_PROC_BROWSER_TEST_F(LoginLogoutReporterKioskBrowserTest,
                        LoginSuccessfulThenLogout) {
+  ASSERT_TRUE(::ash::LoginState::Get()->IsKioskSession());
   MissiveClientTestObserver observer(Destination::LOGIN_LOGOUT_EVENTS);
-  test::WaitForPrimaryUserSessionStart();
-
-  user_manager::UserManager* user_manager = user_manager::UserManager::Get();
-  ASSERT_TRUE(user_manager->IsLoggedInAsKioskApp());
 
   // Check if the record is already enqueued in case it was enqueued before the
   // |observer| initialization.
-  absl::optional<Record> login_record = MaybeGetEnqueudLoginLogoutRecord();
-
+  std::optional<Record> login_record = MaybeGetEnqueuedLoginLogoutRecord();
   if (!login_record.has_value()) {
     // Record is not enqueued yet, so wait for it.
     login_record = GetNextLoginLogoutRecord(&observer);
@@ -543,7 +529,8 @@ class LoginLogoutReporterKioskFailedBrowserTest
     UserDataAuthClient::InitializeFake();
     FakeUserDataAuthClient::Get()->SetNextOperationError(
         FakeUserDataAuthClient::Operation::kStartAuthSession,
-        user_data_auth::CRYPTOHOME_ERROR_MOUNT_FATAL);
+        cryptohome::ErrorWrapper::CreateFromErrorCodeOnly(
+            user_data_auth::CRYPTOHOME_ERROR_MOUNT_FATAL));
   }
 };
 
@@ -561,7 +548,7 @@ IN_PROC_BROWSER_TEST_F(LoginLogoutReporterKioskFailedBrowserTest,
 
   // Check if the record is already enqueued in case it was enqueued before the
   // |observer| initialization.
-  absl::optional<Record> login_record = MaybeGetEnqueudLoginLogoutRecord();
+  std::optional<Record> login_record = MaybeGetEnqueuedLoginLogoutRecord();
 
   if (!login_record.has_value()) {
     // Record is not enqueued yet, so wait for it.

@@ -65,5 +65,5 @@ void RingProgressBar::AnimationProgressed(const gfx::Animation* animation) {
   SchedulePaint();
 }
 
-BEGIN_METADATA(RingProgressBar, views::View)
+BEGIN_METADATA(RingProgressBar)
 END_METADATA

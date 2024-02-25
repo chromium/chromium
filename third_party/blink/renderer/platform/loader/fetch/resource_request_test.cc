@@ -84,11 +84,11 @@ TEST(ResourceRequestTest, IsFeatureEnabledForSubresourceRequestAssumingOptIn) {
   request_with_topics_opt_in.SetBrowsingTopics(true);
 
   ResourceRequest request_with_shared_storage_opt_in;
-  request_with_shared_storage_opt_in.SetSharedStorageWritable(true);
+  request_with_shared_storage_opt_in.SetSharedStorageWritableOptedIn(true);
 
   ResourceRequest request_with_both_opt_in;
   request_with_both_opt_in.SetBrowsingTopics(true);
-  request_with_both_opt_in.SetSharedStorageWritable(true);
+  request_with_both_opt_in.SetSharedStorageWritableOptedIn(true);
 
   const url::Origin origin_a =
       url::Origin::Create(GURL("https://example.com/"));
@@ -262,12 +262,12 @@ TEST(ResourceRequestTest, IsFeatureEnabledForSubresourceRequestAssumingOptIn) {
     policy->SetHeaderPolicy(
         {{{mojom::blink::PermissionsPolicyFeature::kBrowsingTopics,
            /*allowed_origins=*/{},
-           /*self_if_matches=*/absl::nullopt,
+           /*self_if_matches=*/std::nullopt,
            /*matches_all_origins=*/false,
            /*matches_opaque_src=*/false},
           {mojom::blink::PermissionsPolicyFeature::kSharedStorage,
            /*allowed_origins=*/{},
-           /*self_if_matches=*/absl::nullopt,
+           /*self_if_matches=*/std::nullopt,
            /*matches_all_origins=*/false,
            /*matches_opaque_src=*/false}}});
 
@@ -345,12 +345,12 @@ TEST(ResourceRequestTest, IsFeatureEnabledForSubresourceRequestAssumingOptIn) {
     policy->SetHeaderPolicy(
         {{{mojom::blink::PermissionsPolicyFeature::kBrowsingTopics,
            /*allowed_origins=*/{},
-           /*self_if_matches=*/absl::nullopt,
+           /*self_if_matches=*/std::nullopt,
            /*matches_all_origins=*/true,
            /*matches_opaque_src=*/false},
           {mojom::blink::PermissionsPolicyFeature::kSharedStorage,
            /*allowed_origins=*/{},
-           /*self_if_matches=*/absl::nullopt,
+           /*self_if_matches=*/std::nullopt,
            /*matches_all_origins=*/true,
            /*matches_opaque_src=*/false}}});
 
@@ -429,13 +429,13 @@ TEST(ResourceRequestTest, IsFeatureEnabledForSubresourceRequestAssumingOptIn) {
         {{{mojom::blink::PermissionsPolicyFeature::
                kBrowsingTopics, /*allowed_origins=*/
            {*blink::OriginWithPossibleWildcards::FromOrigin(origin_b)},
-           /*self_if_matches=*/absl::nullopt,
+           /*self_if_matches=*/std::nullopt,
            /*matches_all_origins=*/false,
            /*matches_opaque_src=*/false},
           {mojom::blink::PermissionsPolicyFeature::
                kSharedStorage, /*allowed_origins=*/
            {*blink::OriginWithPossibleWildcards::FromOrigin(origin_b)},
-           /*self_if_matches=*/absl::nullopt,
+           /*self_if_matches=*/std::nullopt,
            /*matches_all_origins=*/false,
            /*matches_opaque_src=*/false}}});
 

@@ -5,11 +5,10 @@
 #import "ios/chrome/browser/ui/download/vcard_coordinator.h"
 
 #import "base/test/task_environment.h"
-#import "ios/chrome/browser/download/vcard_tab_helper.h"
-#import "ios/chrome/browser/download/vcard_tab_helper_delegate.h"
+#import "ios/chrome/browser/download/model/vcard_tab_helper.h"
+#import "ios/chrome/browser/download/model/vcard_tab_helper_delegate.h"
 #import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
 #import "ios/chrome/browser/shared/model/browser_state/test_chrome_browser_state.h"
-#import "ios/chrome/browser/shared/model/web_state_list/test/fake_web_state_list_delegate.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_opener.h"
 #import "ios/chrome/test/scoped_key_window.h"
@@ -48,9 +47,7 @@ TEST_F(VcardCoordinatorTest, InstallDelegates) {
   auto* web_state_ptr2 = web_state2.get();
   VcardTabHelper::CreateForWebState(web_state_ptr2);
   EXPECT_FALSE(VcardTabHelper::FromWebState(web_state_ptr2)->delegate());
-  browser_->GetWebStateList()->InsertWebState(0, std::move(web_state2),
-                                              WebStateList::INSERT_NO_FLAGS,
-                                              WebStateOpener());
+  browser_->GetWebStateList()->InsertWebState(std::move(web_state2));
   EXPECT_TRUE(VcardTabHelper::FromWebState(web_state_ptr2)->delegate());
 
   // Coordinator should install itself as delegate for a web state replacing an

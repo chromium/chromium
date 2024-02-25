@@ -1,5 +1,3 @@
-# META: timeout=long
-
 import pytest
 
 from webdriver.error import InvalidArgumentException, NoSuchWindowException, StaleElementReferenceException
@@ -74,18 +72,53 @@ def test_context_menu_at_coordinates(session, test_actions_page, mouse_chain):
         .pointer_down(button=2) \
         .pointer_up(button=2) \
         .perform()
+
     events = get_events(session)
-    expected = [
-        {"type": "mousedown", "button": 2},
-        {"type": "contextmenu", "button": 2},
-    ]
     assert len(events) == 4
+
+    expected = [
+        {"type": "mousedown", "button": 2, "buttons": 2},
+        {"type": "contextmenu", "button": 2, "buttons": 2},
+    ]
+    # Some browsers in some platforms may dispatch `contextmenu` event as a
+    # a default action of `mouseup`.  In the case, `.buttons` of the event
+    # should be 0.
+    anotherExpected = [
+        {"type": "mousedown", "button": 2, "buttons": 2},
+        {"type": "contextmenu", "button": 2, "buttons": 0},
+    ]
     filtered_events = [filter_dict(e, expected[0]) for e in events]
     mousedown_contextmenu_events = [
         x for x in filtered_events
         if x["type"] in ["mousedown", "contextmenu"]
     ]
-    assert expected == mousedown_contextmenu_events
+    assert mousedown_contextmenu_events in [expected, anotherExpected]
+
+
+def test_middle_click(session, test_actions_page, mouse_chain):
+    div_point = {
+        "x": 82,
+        "y": 187,
+    }
+    mouse_chain \
+        .pointer_move(div_point["x"], div_point["y"]) \
+        .pointer_down(button=1) \
+        .pointer_up(button=1) \
+        .perform()
+
+    events = get_events(session)
+    assert len(events) == 3
+
+    expected = [
+        {"type": "mousedown", "button": 1, "buttons": 4},
+        {"type": "mouseup", "button": 1, "buttons": 0},
+    ]
+    filtered_events = [filter_dict(e, expected[0]) for e in events]
+    mousedown_mouseup_events = [
+        x for x in filtered_events
+        if x["type"] in ["mousedown", "mouseup"]
+    ]
+    assert expected == mousedown_mouseup_events
 
 
 def test_click_element_center(session, test_actions_page, mouse_chain):
@@ -151,6 +184,24 @@ def test_click_navigation(session, url, inline):
     session.url = start
     click(session.find.css("#link", all=False))
     Poll(session, message=error_message).until(lambda s: s.url == destination)
+
+
+@pytest.mark.parametrize("x, y, event_count", [
+    (0, 0, 0),
+    (1, 0, 1),
+    (0, 1, 1),
+], ids=["default value", "x", "y"])
+def test_move_to_position_in_viewport(
+    session, test_actions_page, mouse_chain, x, y, event_count
+):
+    mouse_chain.pointer_move(x, y).perform()
+    events = get_events(session)
+    assert len(events) == event_count
+
+    # Move again to check that no further mouse move event is emitted.
+    mouse_chain.pointer_move(x, y).perform()
+    events = get_events(session)
+    assert len(events) == event_count
 
 
 @pytest.mark.parametrize("drag_duration", [0, 300, 800])

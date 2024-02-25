@@ -4,6 +4,7 @@
 
 #include "components/segmentation_platform/internal/scheduler/model_execution_scheduler_impl.h"
 
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/test/simple_test_clock.h"
 #include "base/test/task_environment.h"
@@ -27,7 +28,6 @@ using testing::SaveArg;
 namespace segmentation_platform {
 using SignalType = proto::SignalType;
 using SignalIdentifier = std::pair<uint64_t, SignalType>;
-using CleanupItem = std::tuple<uint64_t, SignalType, base::Time>;
 
 namespace {
 constexpr auto kTestSegmentId =
@@ -67,8 +67,8 @@ class ModelExecutionSchedulerTest : public testing::Test {
 
   void SetUp() override {
     clock_.SetNow(base::Time::Now());
-    std::vector<ModelExecutionScheduler::Observer*> observers = {&observer1_,
-                                                                 &observer2_};
+    std::vector<raw_ptr<ModelExecutionScheduler::Observer, VectorExperimental>>
+        observers = {&observer1_, &observer2_};
     segment_database_ = std::make_unique<test::TestSegmentInfoDatabase>();
     base::flat_set<SegmentId> segment_ids;
     segment_ids.insert(kTestSegmentId);
@@ -90,7 +90,7 @@ class ModelExecutionSchedulerTest : public testing::Test {
 };
 
 MATCHER_P(IsForTarget, segment_id, "") {
-  return arg->segment_info->segment_id() == segment_id;
+  return arg->segment_id == segment_id;
 }
 
 TEST_F(ModelExecutionSchedulerTest, OnNewModelInfoReady) {

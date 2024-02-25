@@ -1,13 +1,11 @@
 <!DOCTYPE html>
-<html>
-<head>
+<meta name=fuzzy content="maxDifference=0-3; totalPixels=0-1000">
 <script src='../../../resources/testharness.js'></script>
 <script src='../../../resources/testharnessreport.js'></script>
 <script src="../../../resources/testdriver.js"></script>
 <script src="../../../resources/testdriver-vendor.js"></script>
 <script src='../../../fast/forms/resources/picker-common.js'></script>
-</head>
-<body>
+
 <input type='color' id='color1' value='#000000' oninput='inputEventCount++;' onchange='changeEventCount++;'>
 <script>
 'use strict';
@@ -51,5 +49,3 @@ promise_test(() => {
 }, "Color picker: Test firing change and input events");
 
 </script>
-</body>
-</html>

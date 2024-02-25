@@ -4,7 +4,7 @@
 
 package org.chromium.chrome.modules.stack_unwinder;
 
-import org.chromium.base.annotations.NativeMethods;
+import org.jni_zero.NativeMethods;
 
 /**
  * Provides access to the stack unwinder native code functions within the dynamic feature module.
@@ -40,7 +40,9 @@ public class StackUnwinderModuleContentsImpl implements StackUnwinderModuleConte
     @NativeMethods("stack_unwinder")
     interface Natives {
         long getCreateMemoryRegionsMapFunction();
+
         long getCreateNativeUnwinderFunction();
+
         long getCreateLibunwindstackUnwinderFunction();
     }
 }

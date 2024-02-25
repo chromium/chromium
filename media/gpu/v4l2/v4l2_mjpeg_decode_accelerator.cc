@@ -18,6 +18,7 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/page_size.h"
+#include "base/memory/raw_ptr_exclusion.h"
 #include "base/memory/shared_memory_mapping.h"
 #include "base/memory/unsafe_shared_memory_region.h"
 #include "base/numerics/safe_conversions.h"
@@ -206,7 +207,6 @@ class JobRecordDmaBuf : public V4L2MjpegDecodeAccelerator::JobRecord {
         dmabuf_fd_(std::move(src_dmabuf_fd)),
         size_(src_size),
         offset_(src_offset),
-        mapped_addr_(nullptr),
         out_frame_(std::move(dst_frame)) {}
 
   JobRecordDmaBuf(const JobRecordDmaBuf&) = delete;
@@ -250,7 +250,11 @@ class JobRecordDmaBuf : public V4L2MjpegDecodeAccelerator::JobRecord {
   base::ScopedFD dmabuf_fd_;
   size_t size_;
   uint64_t offset_;
-  void* mapped_addr_;
+
+  // This field is not a raw_ptr<> because it always points to a mmap'd
+  // region of memory outside of the PA heap. Thus, there would be overhead
+  // involved with using a raw_ptr<> but no safety gains.
+  RAW_PTR_EXCLUSION void* mapped_addr_ = nullptr;
   scoped_refptr<VideoFrame> out_frame_;
 };
 
@@ -791,7 +795,7 @@ void V4L2MjpegDecodeAccelerator::DevicePollTask() {
 bool V4L2MjpegDecodeAccelerator::DequeueSourceChangeEvent() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(decoder_sequence_);
 
-  if (absl::optional<struct v4l2_event> event = device_->DequeueEvent()) {
+  if (std::optional<struct v4l2_event> event = device_->DequeueEvent()) {
     if (event->type == V4L2_EVENT_SOURCE_CHANGE) {
       VLOGF(2) << ": got source change event: " << event->u.src_change.changes;
       if (event->u.src_change.changes & V4L2_EVENT_SRC_CH_RESOLUTION) {
@@ -893,9 +897,11 @@ bool V4L2MjpegDecodeAccelerator::ConvertOutputImage(
 
   // Dmabuf-backed frame needs to be mapped for SW access.
   if (dst_frame->HasDmaBufs()) {
+    // We should never need Intel media compressed buffers with V4L2.
     std::unique_ptr<VideoFrameMapper> frame_mapper =
-        VideoFrameMapperFactory::CreateMapper(dst_frame->format(),
-                                              VideoFrame::STORAGE_DMABUFS);
+        VideoFrameMapperFactory::CreateMapper(
+            dst_frame->format(), VideoFrame::STORAGE_DMABUFS,
+            /*must_support_intel_media_compressed_buffers=*/false);
     if (!frame_mapper) {
       VLOGF(1) << "Failed to create video frame mapper";
       return false;

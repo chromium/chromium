@@ -298,7 +298,7 @@ class LayerTreeHostAnimationTestCheckerboardDoesNotStarveDraws
   DrawResult PrepareToDrawOnThread(LayerTreeHostImpl* host_impl,
                                    LayerTreeHostImpl::FrameData* frame,
                                    DrawResult draw_result) override {
-    return DRAW_ABORTED_CHECKERBOARD_ANIMATIONS;
+    return DrawResult::kAbortedCheckerboardAnimations;
   }
 
  private:
@@ -744,7 +744,7 @@ class LayerTreeHostAnimationTestCheckerboardDoesntStartAnimations
     ++prevented_draw_;
     if (prevented_draw_ > 2)
       EndTest();
-    return DRAW_ABORTED_CHECKERBOARD_ANIMATIONS;
+    return DrawResult::kAbortedCheckerboardAnimations;
   }
 
   void DidCommitAndDrawFrame() override {
@@ -1084,7 +1084,7 @@ class LayerTreeHostPresentationDuringAnimation
   void OnPresentation(base::TimeTicks presentation_timestamp) { EndTest(); }
 
   // Disable sub-sampling to deterministically record histograms under test.
-  base::MetricsSubSampler::ScopedDisableForTesting no_subsampling_;
+  base::MetricsSubSampler::ScopedAlwaysSampleForTesting no_subsampling_;
 
   FakeContentLayerClient client_;
   scoped_refptr<FakePictureLayer> scroll_layer_;
@@ -1730,7 +1730,12 @@ class LayerTreeHostAnimationTestIsAnimating
   FakeContentLayerClient client_;
 };
 
+// Disabled on ASAN/debug due to test flakiness. See https://crbug.com/1517464
+#if defined(ADDRESS_SANITIZER) || !defined(NDEBUG)
+SINGLE_THREAD_TEST_F(LayerTreeHostAnimationTestIsAnimating);
+#else
 SINGLE_AND_MULTI_THREAD_TEST_F(LayerTreeHostAnimationTestIsAnimating);
+#endif
 
 class LayerTreeHostAnimationTestAnimationFinishesDuringCommit
     : public LayerTreeHostAnimationTest {

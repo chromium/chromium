@@ -59,13 +59,13 @@ class FakeScreen : public display::ScreenBase {
  private:
   int64_t current_display_override_ = display::kInvalidDisplayId;
   // Return the overridden display object if set and exists, nullopt otherwise.
-  absl::optional<display::Display> GetCurrentDisplayOverride() const {
+  std::optional<display::Display> GetCurrentDisplayOverride() const {
     if (display::Display display;
         current_display_override_ != display::kInvalidDisplayId &&
         GetDisplayWithDisplayId(current_display_override_, &display)) {
       return display;
     }
-    return absl::nullopt;
+    return std::nullopt;
   }
 };
 
@@ -82,8 +82,7 @@ class MAYBE_WindowManagementTest
  public:
   MAYBE_WindowManagementTest() {
     scoped_feature_list_.InitWithFeatureState(
-        permissions::features::kWindowManagementPermissionAlias,
-        AliasEnabled());
+        permissions::features::kWindowPlacementPermissionAlias, AliasEnabled());
   }
 
   void SetUp() override {
@@ -137,7 +136,7 @@ class MAYBE_WindowManagementTest
       frame1.setAttribute('allow', '$1');
       const frame2 = document.getElementById('iframe2');
       frame2.setAttribute('allow', '$1');)",
-            {UseAlias() ? kNewPermissionName : kOldPermissionName}, nullptr),
+            {UseAlias() ? kOldPermissionName : kNewPermissionName}, nullptr),
         content::EXECUTE_SCRIPT_NO_USER_GESTURE));
 
     GURL subframe_url1(https_test_server_->GetURL("a.test", "/title1.html"));

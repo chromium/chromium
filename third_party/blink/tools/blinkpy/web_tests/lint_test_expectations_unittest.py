@@ -26,9 +26,11 @@
 # (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
+import json
 import optparse
 import textwrap
 import unittest
+from unittest import mock
 
 from blinkpy.common import exit_codes
 from blinkpy.common.host_mock import MockHost

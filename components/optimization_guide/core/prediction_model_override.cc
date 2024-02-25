@@ -111,16 +111,16 @@ void OnModelOverrideVerified(proto::OptimizationTarget optimization_target,
 
 }  // namespace
 
-void BuildPredictionModelFromCommandLineForOptimizationTarget(
+bool BuildPredictionModelFromCommandLineForOptimizationTarget(
     proto::OptimizationTarget optimization_target,
     const base::FilePath& base_model_dir,
     OnPredictionModelBuiltCallback callback) {
-  absl::optional<std::pair<std::string, absl::optional<proto::Any>>>
+  std::optional<std::pair<std::string, std::optional<proto::Any>>>
       model_file_path_and_metadata =
           GetModelOverrideForOptimizationTarget(optimization_target);
   if (!model_file_path_and_metadata) {
     std::move(callback).Run(nullptr);
-    return;
+    return false;
   }
 
   if (base::EndsWith(model_file_path_and_metadata->first, ".crx3")) {
@@ -142,7 +142,7 @@ void BuildPredictionModelFromCommandLineForOptimizationTarget(
         base::BindOnce(&OnModelOverrideVerified, optimization_target,
                        *StringToFilePath(model_file_path_and_metadata->first),
                        base_model_dir, std::move(callback)));
-    return;
+    return true;
   }
 
   std::unique_ptr<proto::PredictionModel> prediction_model =
@@ -157,6 +157,7 @@ void BuildPredictionModelFromCommandLineForOptimizationTarget(
   prediction_model->mutable_model()->set_download_url(
       model_file_path_and_metadata->first);
   std::move(callback).Run(std::move(prediction_model));
+  return true;
 }
 
 }  // namespace optimization_guide

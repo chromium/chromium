@@ -32,6 +32,10 @@
 #include "ui/wm/public/activation_client.h"
 #endif
 
+#if BUILDFLAG(IS_OZONE)
+#include "ui/ozone/public/ozone_platform.h"
+#endif
+
 #if BUILDFLAG(IS_MAC)
 #include "base/message_loop/message_pump_apple.h"
 #endif
@@ -222,6 +226,18 @@ gfx::Size ExtensionPopup::GetMinBounds() {
 }
 
 gfx::Size ExtensionPopup::GetMaxBounds() {
+#if BUILDFLAG(IS_OZONE)
+  // Some platforms like wayland don't allow clients to know the global
+  // coordinates of the window. This means in those platforms we have no way to
+  // calculate exact space available based on the position of the parent window.
+  // So simply fall back on default max.
+  if (!ui::OzonePlatform::GetInstance()
+           ->GetPlatformProperties()
+           .supports_global_screen_coordinates) {
+    return kMaxSize;
+  }
+#endif
+
   gfx::Size max_size = kMaxSize;
   max_size.SetToMin(
       BubbleDialogDelegate::GetMaxAvailableScreenSpaceToPlaceBubble(
@@ -359,7 +375,8 @@ void ExtensionPopup::ShowBubble() {
 
   if (show_action_ == PopupShowAction::kShowAndInspect) {
     DevToolsWindow::OpenDevToolsWindow(
-        host_->host_contents(), DevToolsToggleAction::ShowConsolePanel());
+        host_->host_contents(), DevToolsToggleAction::ShowConsolePanel(),
+        DevToolsOpenedByAction::kContextMenuInspect);
   }
 
   if (shown_callback_)
@@ -396,5 +413,5 @@ void ExtensionPopup::HandleCloseExtensionHost(extensions::ExtensionHost* host) {
   CloseDeferredIfNecessary();
 }
 
-BEGIN_METADATA(ExtensionPopup, views::BubbleDialogDelegateView)
+BEGIN_METADATA(ExtensionPopup)
 END_METADATA

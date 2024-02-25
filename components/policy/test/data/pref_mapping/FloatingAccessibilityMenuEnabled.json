@@ -1,0 +1,28 @@
+[
+  {
+    "os": [
+      "chromeos_ash"
+    ],
+    "policy_pref_mapping_tests": [
+      {
+        "note": "Check default values (no policies set).",
+        "prefs": {
+          "settings.a11y.floating_menu": {
+            "default_value": false
+          }
+        }
+      },
+      {
+        "note": "Simple value.",
+        "policies": {
+          "FloatingAccessibilityMenuEnabled": true
+        },
+        "prefs": {
+          "settings.a11y.floating_menu": {
+            "value": true
+          }
+        }
+      }
+    ]
+  }
+]

@@ -19,6 +19,7 @@ using AccountSelectionCallback =
     content::IdentityRequestDialogController::AccountSelectionCallback;
 using DismissCallback =
     content::IdentityRequestDialogController::DismissCallback;
+using TokenError = content::IdentityCredentialTokenError;
 
 // The IdentityDialogController controls the views that are used across
 // browser-mediated federated sign-in flows.
@@ -40,24 +41,38 @@ class IdentityDialogController
   // content::IdentityRequestDialogController
   void ShowAccountsDialog(
       const std::string& top_frame_for_display,
-      const absl::optional<std::string>& iframe_for_display,
+      const std::optional<std::string>& iframe_for_display,
       const std::vector<content::IdentityProviderData>& identity_provider_data,
       content::IdentityRequestAccount::SignInMode sign_in_mode,
-      bool show_auto_reauthn_checkbox,
+      blink::mojom::RpMode rp_mode,
+      const std::optional<content::IdentityProviderData>& new_account_idp,
       AccountSelectionCallback on_selected,
-      DismissCallback dismiss_callback) override;
+      LoginToIdPCallback on_add_account,
+      DismissCallback dismiss_callback,
+      AccountsDisplayedCallback accounts_displayed_callback) override;
   void ShowFailureDialog(const std::string& top_frame_for_display,
-                         const absl::optional<std::string>& iframe_for_display,
+                         const std::optional<std::string>& iframe_for_display,
                          const std::string& idp_for_display,
-                         const blink::mojom::RpContext& rp_context,
+                         blink::mojom::RpContext rp_context,
+                         blink::mojom::RpMode rp_mode,
                          const content::IdentityProviderMetadata& idp_metadata,
                          DismissCallback dismiss_callback,
-                         SigninToIdPCallback signin_callback) override;
+                         LoginToIdPCallback login_callback) override;
+  void ShowErrorDialog(const std::string& top_frame_for_display,
+                       const std::optional<std::string>& iframe_for_display,
+                       const std::string& idp_for_display,
+                       blink::mojom::RpContext rp_context,
+                       blink::mojom::RpMode rp_mode,
+                       const content::IdentityProviderMetadata& idp_metadata,
+                       const std::optional<TokenError>& error,
+                       DismissCallback dismiss_callback,
+                       MoreDetailsCallback more_details_callback) override;
   void ShowIdpSigninFailureDialog(base::OnceClosure dismiss_callback) override;
 
   std::string GetTitle() const override;
-  absl::optional<std::string> GetSubtitle() const override;
+  std::optional<std::string> GetSubtitle() const override;
 
+  void ShowUrl(LinkType type, const GURL& url) override;
   // Show a modal dialog that loads content from the IdP in a WebView.
   content::WebContents* ShowModalDialog(
       const GURL& url,
@@ -68,7 +83,10 @@ class IdentityDialogController
   void OnAccountSelected(const GURL& idp_config_url,
                          const Account& account) override;
   void OnDismiss(DismissReason dismiss_reason) override;
-  void OnSigninToIdP() override;
+  void OnLoginToIdP(const GURL& idp_config_url,
+                    const GURL& idp_login_url) override;
+  void OnMoreDetails() override;
+  void OnAccountsDisplayed() override;
   gfx::NativeView GetNativeView() override;
   content::WebContents* GetWebContents() override;
 
@@ -76,7 +94,9 @@ class IdentityDialogController
   std::unique_ptr<AccountSelectionView> account_view_{nullptr};
   AccountSelectionCallback on_account_selection_;
   DismissCallback on_dismiss_;
-  SigninToIdPCallback on_signin_;
+  LoginToIdPCallback on_login_;
+  MoreDetailsCallback on_more_details_;
+  AccountsDisplayedCallback on_accounts_displayed_;
   raw_ptr<content::WebContents> rp_web_contents_;
 };
 

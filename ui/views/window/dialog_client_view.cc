@@ -9,6 +9,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/check.h"
 #include "base/memory/raw_ptr.h"
 #include "base/ranges/algorithm.h"
 #include "build/build_config.h"
@@ -75,8 +76,9 @@ ui::ElementIdentifier GetButtonId(ui::DialogButton type) {
 
 // Simple container to bubble child view changes up the view hierarchy.
 class DialogClientView::ButtonRowContainer : public View {
+  METADATA_HEADER(ButtonRowContainer, View)
+
  public:
-  METADATA_HEADER(ButtonRowContainer);
   explicit ButtonRowContainer(DialogClientView* owner) : owner_(owner) {}
   ButtonRowContainer(const ButtonRowContainer&) = delete;
   ButtonRowContainer& operator=(const ButtonRowContainer&) = delete;
@@ -93,7 +95,7 @@ class DialogClientView::ButtonRowContainer : public View {
   const raw_ptr<DialogClientView> owner_;
 };
 
-BEGIN_METADATA(DialogClientView, ButtonRowContainer, View)
+BEGIN_METADATA(DialogClientView, ButtonRowContainer)
 END_METADATA
 
 DialogClientView::DialogClientView(Widget* owner, View* contents_view)
@@ -107,6 +109,7 @@ DialogClientView::DialogClientView(Widget* owner, View* contents_view)
   AddAccelerator(ui::Accelerator(ui::VKEY_ESCAPE, ui::EF_NONE));
   button_row_container_ =
       AddChildView(std::make_unique<ButtonRowContainer>(this));
+  SetProperty(views::kElementIdentifierKey, kTopViewId);
 }
 
 DialogClientView::~DialogClientView() {
@@ -178,7 +181,23 @@ void DialogClientView::VisibilityChanged(View* starting_from, bool is_visible) {
   input_protector_->VisibilityChanged(is_visible);
 }
 
-void DialogClientView::Layout() {
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+
+void DialogClientView::UpdateWindowRoundedCorners(int corner_radius) {
+  DCHECK(GetWidget());
+
+  const gfx::RoundedCornersF radii(0, 0, corner_radius, corner_radius);
+
+  // Chromeos has rounded windows. A dialog can use native frame i.e look like
+  // a top-level window. For ChromeOS, dialogs use `NonClientFrameViewAsh`
+  // as native frame. The top corners will be rounded by the frame_view and
+  // client-view is responsible for rounding the bottom corners.
+  SetBackgroundRadii(radii);
+}
+
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
+void DialogClientView::Layout(PassKey) {
   button_row_container_->SetSize(
       gfx::Size(width(), button_row_container_->GetHeightForWidth(width())));
   button_row_container_->SetY(height() - button_row_container_->height());
@@ -240,14 +259,8 @@ void DialogClientView::ViewHierarchyChanged(
 
 void DialogClientView::OnThemeChanged() {
   ClientView::OnThemeChanged();
-  // The old dialog style needs an explicit background color, while the new
-  // dialog style simply inherits the bubble's frame view color.
-  const DialogDelegate* dialog = GetDialogDelegate();
 
-  if (dialog && !dialog->use_custom_frame()) {
-    SetBackground(views::CreateSolidBackground(
-        GetColorProvider()->GetColor(ui::kColorDialogBackground)));
-  }
+  UpdateBackground();
 }
 
 void DialogClientView::UpdateInputProtectorTimeStamp() {
@@ -264,6 +277,27 @@ bool DialogClientView::IsPossiblyUnintendedInteraction(const ui::Event& event) {
 
 DialogDelegate* DialogClientView::GetDialogDelegate() const {
   return GetWidget()->widget_delegate()->AsDialogDelegate();
+}
+
+void DialogClientView::SetBackgroundRadii(const gfx::RoundedCornersF& radii) {
+  if (background_radii_ == radii) {
+    return;
+  }
+
+  background_radii_ = radii;
+  UpdateBackground();
+}
+
+void DialogClientView::UpdateBackground() {
+  // The old dialog style needs an explicit background color, while the new
+  // dialog style simply inherits the bubble's frame view color.
+  const DialogDelegate* dialog = GetDialogDelegate();
+
+  if (dialog && !dialog->use_custom_frame()) {
+    SetBackground(views::CreateRoundedRectBackground(
+        GetColorProvider()->GetColor(ui::kColorDialogBackground),
+        background_radii_));
+  }
 }
 
 void DialogClientView::OnButtonVisibilityChanged(View* child) {
@@ -287,8 +321,9 @@ void DialogClientView::UpdateDialogButtons() {
   InvalidateLayout();
 }
 
-void DialogClientView::UpdateDialogButton(MdTextButton** member,
-                                          ui::DialogButton type) {
+void DialogClientView::UpdateDialogButton(
+    raw_ptr<MdTextButton, DanglingUntriaged>* member,
+    ui::DialogButton type) {
   DialogDelegate* const delegate = GetDialogDelegate();
   if (!(delegate->GetDialogButtons() & type)) {
     if (*member) {
@@ -323,7 +358,6 @@ void DialogClientView::UpdateDialogButton(MdTextButton** member,
               .SetText(title)
               .SetProperty(views::kElementIdentifierKey, GetButtonId(type))
               .SetStyle(style)
-              .SetProminent(is_default)
               .SetIsDefault(is_default)
               .SetEnabled(delegate->IsDialogButtonEnabled(type))
               .SetMinSize(gfx::Size(minimum_width, 0))
@@ -414,12 +448,13 @@ void DialogClientView::SetupLayout() {
   auto* layout = button_row_container_->SetLayoutManager(
       std::make_unique<views::TableLayout>());
   layout->SetMinimumSize(minimum_size_);
-  if (extra_view_ && !extra_view_->GetVisible()) {
+  if (extra_view_) {
     // TableLayout will force its child views to be visible if they aren't
     // explicitly ignored, which will cause the extra view the client supplied
     // to be shown when they don't want it to.
     // TODO(https://crbug.com/1474952): Remove this workaround.
-    layout->SetChildViewIgnoredByLayout(extra_view_, true);
+    extra_view_->SetProperty(kViewIgnoredByLayoutKey,
+                             !extra_view_->GetVisible());
   }
 
   // The |resize_percent| constants. There's only one stretchy column (padding
@@ -517,9 +552,10 @@ void DialogClientView::RemoveFillerView(size_t view_index) {
   }
 }
 
-BEGIN_METADATA(DialogClientView, ClientView)
+BEGIN_METADATA(DialogClientView)
 END_METADATA
 
+DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(DialogClientView, kTopViewId);
 DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(DialogClientView, kOkButtonElementId);
 DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(DialogClientView, kCancelButtonElementId);
 

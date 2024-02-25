@@ -31,8 +31,9 @@
  * '#cr-container-shadow-[top/bottom].has-shadow', or define their own styles.
  */
 
-import {assert} from '//resources/js/assert_ts.js';
-import {dedupingMixin, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {assert} from '//resources/js/assert.js';
+import type {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {dedupingMixin} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 export enum CrContainerShadowSide {
   TOP = 'top',

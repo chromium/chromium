@@ -201,12 +201,6 @@ bool FileSystemAccessSafeMoveHelper::RequireAfterWriteChecks() const {
   if (dest_url().type() == storage::kFileSystemTypeTemporary)
     return false;
 
-  if (!base::FeatureList::IsEnabled(
-          features::
-              kFileSystemAccessSkipAfterWriteChecksIfUnchangingExtension)) {
-    return true;
-  }
-
   if (!source_url().IsInSameFileSystem(dest_url()))
     return true;
 

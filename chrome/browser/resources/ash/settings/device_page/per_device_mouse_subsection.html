@@ -5,32 +5,44 @@
 
   :host([allow-scroll-settings_]) .settings-box,
   :host([allow-scroll-settings_]) #mouseAcceleration,
-  #mouseScrollAcceleration {
+  #mouseControlledScrolling {
     margin-left:  var(--cr-section-indent-width);
   }
 
   :host([allow-scroll-settings_]) #mouseReverseScrollRow {
     border-top: none;
   }
+
+  .subsection-subtitle {
+    padding-top: 15px;
+  }
 </style>
 <div id="mouse">
   <h2 class="subsection-header" id="mouseName">[[mouse.name]]</h2>
+  <template is="dom-if" if="[[showSwapToggleButton(
+      customizationRestriction, isPeripheralCustomizationEnabled_)]]">
+    <settings-toggle-button id="mouseSwapToggleButton"
+        label="$i18n{mouseSwapButtonsLabel}" pref="{{primaryRightPref}}">
+    </settings-toggle-button>
+  </template>
   <div class="subsection">
     <template is="dom-if" if="[[allowScrollSettings_]]">
-      <h2>$i18n{mouseCursor}</h2>
+      <h2 class="subsection-subtitle">$i18n{mouseCursor}</h2>
     </template>
-    <div class="settings-box">
-      <div class="start settings-box-text" id="mouseSwapButtonLabel">
-        $i18n{mouseSwapButtonsLabel}
+    <template is="dom-if" if="[[!isPeripheralCustomizationEnabled_]]">
+      <div class="settings-box">
+        <div class="start settings-box-text" id="mouseSwapButtonLabel">
+          $i18n{mouseSwapButtonsLabel}
+        </div>
+        <settings-dropdown-menu id="mouseSwapButtonDropdown"
+            aria-describedby="mouseName"
+            label="$i18n{mouseSwapButtonsLabel}"
+            pref="{{primaryRightPref}}"
+            menu-options="[[swapPrimaryOptions]]"
+            deep-link-focus-id$="[[Setting.kMouseSwapPrimaryButtons]]">
+        </settings-dropdown-menu>
       </div>
-      <settings-dropdown-menu id="mouseSwapButtonDropdown"
-          aria-describedby="mouseName"
-          label="$i18n{mouseSwapButtonsLabel}"
-          pref="{{primaryRightPref}}"
-          menu-options="[[swapPrimaryOptions]]"
-          deep-link-focus-id$="[[Setting.kMouseSwapPrimaryButtons]]">
-      </settings-dropdown-menu>
-    </div>
+    </template>
     <settings-toggle-button id="mouseAcceleration"
         class="hr"
         pref="{{accelerationPref}}"
@@ -79,22 +91,22 @@
       </cr-toggle>
     </div>
     <template is="dom-if" if="[[allowScrollSettings_]]" restamp>
-      <div class="settings-box bottom-divider" id="mouseScrollAccelerationRow"
-            on-click="onMouseScrollAccelerationRowClicked_">
+      <div class="settings-box bottom-divider" id="mouseControlledScrollingRow"
+            on-click="onMouseControlledScrollingRowClicked_">
         <div class="start settings-box-text">
           <localized-link
               aria-describedby="mouseName"
               on-click="onLearnMoreLinkClicked_"
-              id="enableMouseScrollAccelerationLabel"
-              localized-string="$i18n{mouseScrollAccelerationLabel}"
-              link-url="$i18n{scrollAccelerationLearnMoreLink}">
+              id="enableMouseControlledScrollingLabel"
+              localized-string="$i18n{mouseControlledScrollingLabel}"
+              link-url="$i18n{controlledScrollingLearnMoreLink}">
           </localized-link>
         </div>
-        <cr-toggle id="mouseScrollAcceleration"
-            checked="{{scrollAccelerationValue}}"
+        <cr-toggle id="mouseControlledScrolling"
+            checked="{{!scrollAccelerationValue}}"
             aria-describedby="mouseName"
             aria-label=
-                "[[getLabelWithoutLearnMore('mouseScrollAccelerationLabel')]]"
+                "[[getLabelWithoutLearnMore('mouseControlledScrollingLabel')]]"
             deep-link-focus-id$="[[Setting.kMouseScrollAcceleration]]">
         </cr-toggle>
       </div>
@@ -114,7 +126,8 @@
         </settings-slider>
       </div>
     </template>
-    <template is="dom-if" if="[[isPeripheralCustomizationEnabled_]]">
+    <template is="dom-if" if="[[showCustomizeButtonRow(
+        customizationRestriction,isPeripheralCustomizationEnabled_)]]">
       <cr-link-row id="customizeMouseButtons"
         class="hr bottom-divider" on-click="onCustomizeButtonsClick"
         aria-describedby="mouseName"

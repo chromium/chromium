@@ -7,6 +7,7 @@
 #import "base/apple/foundation_util.h"
 #import "base/format_macros.h"
 #import "base/ios/block_types.h"
+#import "base/memory/raw_ptr.h"
 #import "base/strings/sys_string_conversions.h"
 #import "components/autofill/core/browser/autofill_data_util.h"
 #import "components/autofill/core/browser/data_model/credit_card.h"
@@ -28,9 +29,8 @@
 #import "ios/chrome/browser/ui/autofill/cells/autofill_edit_item.h"
 #import "ios/chrome/browser/ui/settings/autofill/autofill_constants.h"
 #import "ios/chrome/browser/ui/settings/autofill/autofill_credit_card_util.h"
-#import "ios/chrome/browser/ui/settings/autofill/autofill_edit_table_view_controller+protected.h"
 #import "ios/chrome/browser/ui/settings/cells/copied_to_chrome_item.h"
-#import "ios/chrome/grit/ios_chromium_strings.h"
+#import "ios/chrome/grit/ios_branded_strings.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ui/base/l10n/l10n_util.h"
 #import "url/gurl.h"
@@ -59,7 +59,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
 @end
 
 @implementation AutofillCreditCardEditTableViewController {
-  autofill::PersonalDataManager* _personalDataManager;  // weak
+  raw_ptr<autofill::PersonalDataManager> _personalDataManager;  // weak
   autofill::CreditCard _creditCard;
 }
 
@@ -101,7 +101,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
     GURL paymentsURL = autofill::payments::GetManageInstrumentsUrl();
     OpenNewTabCommand* command =
         [OpenNewTabCommand commandWithURLFromChrome:paymentsURL];
-    [self.dispatcher closeSettingsUIAndOpenURL:command];
+    [self.applicationHandler closeSettingsUIAndOpenURL:command];
 
     // Don't call [super editButtonPressed] because edit mode is not actually
     // entered in this case.
@@ -150,7 +150,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
                 itemsInSectionWithIdentifier:SectionIdentifierFields]];
 }
 
-#pragma mark - ChromeTableViewController
+#pragma mark - LegacyChromeTableViewController
 
 - (void)loadModel {
   [super loadModel];

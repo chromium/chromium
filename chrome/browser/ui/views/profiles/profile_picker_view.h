@@ -5,6 +5,8 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_PROFILES_PROFILE_PICKER_VIEW_H_
 #define CHROME_BROWSER_UI_VIEWS_PROFILES_PROFILE_PICKER_VIEW_H_
 
+#include <optional>
+
 #include "base/functional/callback_forward.h"
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
@@ -17,7 +19,6 @@
 #include "chrome/browser/ui/views/profiles/profile_picker_force_signin_dialog_host.h"
 #include "chrome/browser/ui/views/profiles/profile_picker_web_contents_host.h"
 #include "components/keep_alive_registry/scoped_keep_alive.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/views/controls/webview/unhandled_keyboard_event_handler.h"
 #include "ui/views/controls/webview/webview.h"
 #include "ui/views/view.h"
@@ -74,6 +75,7 @@ class ProfilePickerView : public views::WidgetDelegateView,
 
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
   void SetNativeToolbarVisible(bool visible) override;
+  bool IsNativeToolbarVisibleForTesting() const;
   SkColor GetPreferredBackgroundColor() const override;
 #endif
 
@@ -117,6 +119,9 @@ class ProfilePickerView : public views::WidgetDelegateView,
   };
 
   State state_for_testing() { return state_; }
+  content::WebContents* get_dialog_web_contents_for_testing() const {
+    return dialog_host_.get_web_contents_for_testing();
+  }
 
  protected:
   // To display the Profile picker, use ProfilePicker::Show().
@@ -174,10 +179,10 @@ class ProfilePickerView : public views::WidgetDelegateView,
   void FinishInit();
 
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
-  // Switches the layout to the sign-in screen (and creates a new profile).
-  // absl::nullopt `profile_color` corresponds to the default theme.
+  // Switches the layout to the sign-in screen (and creates a new profile or
+  // load an existing one based on the `profile_info` content).
   void SwitchToDiceSignIn(
-      absl::optional<SkColor> profile_color,
+      ProfilePicker::ProfileInfo profile_info,
       base::OnceCallback<void(bool)> switch_finished_callback);
 
   // Starts the forced sign-in flow (and creates a new profile).
@@ -190,11 +195,19 @@ class ProfilePickerView : public views::WidgetDelegateView,
   void OnProfileForDiceForcedSigninCreated(
       base::OnceCallback<void(bool)> switch_finished_callback,
       Profile* new_profile);
+  // Switches the profile picker layout to display the reauth page to the main
+  // account of the given `profile` if needed. On success the `profile` is
+  // unlocked and a browser is opend. On failure the user is redirected to the
+  // profile picker main page with an popup error dialog displayed through
+  // `on_error_callback`.
+  void SwitchToReauth(
+      Profile* profile,
+      base::OnceCallback<void(ReauthUIError)> on_error_callback);
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
   void SwitchToSignedInFlow(Profile* signed_in_profile,
-                            absl::optional<SkColor> profile_color,
+                            std::optional<SkColor> profile_color,
                             std::unique_ptr<content::WebContents> contents);
 #endif
 

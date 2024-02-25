@@ -92,8 +92,7 @@ TEST(IndexerTest, SquaredL2AsymmetricReconstruct1) {
   indexer.EncodeDatapoint(datapoint, absl::MakeSpan(result));
 
   vector<float> datapoint_recon(5, 0);
-  SUPPORT_EXPECT_OK(
-      indexer.DecodeDatapoint(result, absl::MakeSpan(datapoint_recon)));
+  SUPPORT_EXPECT_OK(indexer.DecodeDatapoint(result, absl::MakeSpan(datapoint_recon)));
 
   EXPECT_EQ(std::vector<float>({0.1, 0.2, -0.1, -0.2, -0.3}), datapoint_recon);
 }
@@ -123,8 +122,7 @@ TEST(IndexerTest, SquaredL2AsymmetricReconstruct2) {
   indexer.EncodeDatapoint(datapoint, absl::MakeSpan(result));
 
   vector<float> datapoint_recon = {0.1, 0.2, -0.1, -0.2, -0.3};
-  SUPPORT_EXPECT_OK(
-      indexer.DecodeDatapoint(result, absl::MakeSpan(datapoint_recon)));
+  SUPPORT_EXPECT_OK(indexer.DecodeDatapoint(result, absl::MakeSpan(datapoint_recon)));
 
   EXPECT_EQ(std::vector<float>({0.9, 0.8, -0.3, -0.2, -0.1}), datapoint_recon);
 }

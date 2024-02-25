@@ -1,0 +1,60 @@
+# Copyright 2023 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+# @generated from third_party/rust/chromium_crates_io/BUILD.gn.hbs by
+# tools/crates/gnrt.
+# Do not edit!
+
+import("//build/rust/cargo_crate.gni")
+
+cargo_crate("lib") {
+  crate_name = "strum_macros"
+  epoch = "0.25"
+  crate_type = "proc-macro"
+  crate_root = "//third_party/rust/chromium_crates_io/vendor/strum_macros-0.25.3/src/lib.rs"
+  sources = [
+    "//third_party/rust/chromium_crates_io/vendor/strum_macros-0.25.3/src/helpers/case_style.rs",
+    "//third_party/rust/chromium_crates_io/vendor/strum_macros-0.25.3/src/helpers/metadata.rs",
+    "//third_party/rust/chromium_crates_io/vendor/strum_macros-0.25.3/src/helpers/mod.rs",
+    "//third_party/rust/chromium_crates_io/vendor/strum_macros-0.25.3/src/helpers/type_props.rs",
+    "//third_party/rust/chromium_crates_io/vendor/strum_macros-0.25.3/src/helpers/variant_props.rs",
+    "//third_party/rust/chromium_crates_io/vendor/strum_macros-0.25.3/src/lib.rs",
+    "//third_party/rust/chromium_crates_io/vendor/strum_macros-0.25.3/src/macros/enum_count.rs",
+    "//third_party/rust/chromium_crates_io/vendor/strum_macros-0.25.3/src/macros/enum_discriminants.rs",
+    "//third_party/rust/chromium_crates_io/vendor/strum_macros-0.25.3/src/macros/enum_is.rs",
+    "//third_party/rust/chromium_crates_io/vendor/strum_macros-0.25.3/src/macros/enum_iter.rs",
+    "//third_party/rust/chromium_crates_io/vendor/strum_macros-0.25.3/src/macros/enum_messages.rs",
+    "//third_party/rust/chromium_crates_io/vendor/strum_macros-0.25.3/src/macros/enum_properties.rs",
+    "//third_party/rust/chromium_crates_io/vendor/strum_macros-0.25.3/src/macros/enum_try_as.rs",
+    "//third_party/rust/chromium_crates_io/vendor/strum_macros-0.25.3/src/macros/enum_variant_names.rs",
+    "//third_party/rust/chromium_crates_io/vendor/strum_macros-0.25.3/src/macros/from_repr.rs",
+    "//third_party/rust/chromium_crates_io/vendor/strum_macros-0.25.3/src/macros/mod.rs",
+    "//third_party/rust/chromium_crates_io/vendor/strum_macros-0.25.3/src/macros/strings/as_ref_str.rs",
+    "//third_party/rust/chromium_crates_io/vendor/strum_macros-0.25.3/src/macros/strings/display.rs",
+    "//third_party/rust/chromium_crates_io/vendor/strum_macros-0.25.3/src/macros/strings/from_string.rs",
+    "//third_party/rust/chromium_crates_io/vendor/strum_macros-0.25.3/src/macros/strings/mod.rs",
+    "//third_party/rust/chromium_crates_io/vendor/strum_macros-0.25.3/src/macros/strings/to_string.rs",
+  ]
+  inputs = []
+
+  build_native_rust_unit_tests = false
+  edition = "2018"
+  cargo_pkg_version = "0.25.3"
+  cargo_pkg_authors = "Peter Glotfelty <peter.glotfelty@microsoft.com>"
+  cargo_pkg_name = "strum_macros"
+  cargo_pkg_description = "Helpful macros for working with enums and strings"
+  library_configs -= [ "//build/config/compiler:chromium_code" ]
+  library_configs += [ "//build/config/compiler:no_chromium_code" ]
+  executable_configs -= [ "//build/config/compiler:chromium_code" ]
+  executable_configs += [ "//build/config/compiler:no_chromium_code" ]
+  proc_macro_configs -= [ "//build/config/compiler:chromium_code" ]
+  proc_macro_configs += [ "//build/config/compiler:no_chromium_code" ]
+  deps = [
+    "//third_party/rust/heck/v0_4:lib",
+    "//third_party/rust/proc_macro2/v1:lib",
+    "//third_party/rust/quote/v1:lib",
+    "//third_party/rust/rustversion/v1:lib",
+    "//third_party/rust/syn/v2:lib",
+  ]
+}

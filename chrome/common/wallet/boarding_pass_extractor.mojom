@@ -1,0 +1,21 @@
+// Copyright 2023 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module wallet.mojom;
+
+// Render-side handler for boarding pass extractor.
+interface BoardingPassExtractor {
+    // Extracts boarding pass and returns boarding pass raw string.
+    //
+    // A boarding pass is a string that conforms to BCBP (Bar Coded
+    // Boarding Pass) format. It is needed to reproduce the QR code.
+    // https://www.iata.org/en/programs/passenger/common-use/
+    //
+    // There will be an allowlist of URLs, the browser process checks
+    // whether current web page's URL is allowed, if allowed, the browser
+    // process triggers this IPC.
+    //
+    // The extraction JavaScript will run in an isolated world.
+    ExtractBoardingPass() => (array<string> boarding_passes);
+};

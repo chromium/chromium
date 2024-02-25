@@ -147,12 +147,6 @@ void FakeCommandBufferHelper::DestroyTexture(GLuint service_id) {
   service_ids_.erase(service_id);
 }
 
-void FakeCommandBufferHelper::SetCleared(GLuint service_id) {
-  DVLOG(2) << __func__;
-  DCHECK(task_runner_->BelongsToCurrentThread());
-  DCHECK(service_ids_.count(service_id));
-}
-
 gpu::Mailbox FakeCommandBufferHelper::CreateLegacyMailbox(GLuint service_id) {
   DVLOG(2) << __func__ << "(" << service_id << ")";
   DCHECK(task_runner_->BelongsToCurrentThread());

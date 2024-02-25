@@ -5,16 +5,22 @@
 import 'chrome://os-settings/lazy_load.js';
 import 'chrome://resources/polymer/v3_0/iron-test-helpers/mock-interactions.js';
 
-import {CustomizeButtonRowElement} from 'chrome://os-settings/lazy_load.js';
-import {fakeGraphicsTabletButtonActions, fakeGraphicsTablets} from 'chrome://os-settings/os_settings.js';
-import {assert} from 'chrome://resources/js/assert_ts.js';
-import {assertDeepEquals, assertEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {CustomizeButtonRowElement, CustomizeButtonSelectElement} from 'chrome://os-settings/lazy_load.js';
+import {fakeGraphicsTabletButtonActions, fakeGraphicsTablets, FakeInputDeviceSettingsProvider, fakeMice, fakeMouseButtonActions, getInputDeviceSettingsProvider, setupFakeInputDeviceSettingsProvider} from 'chrome://os-settings/os_settings.js';
+import {assert} from 'chrome://resources/js/assert.js';
+import {getDeepActiveElement} from 'chrome://resources/js/util.js';
+import {assertDeepEquals, assertEquals, assertNotEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 
 suite('<customize-button-row>', () => {
   let customizeButtonRow: CustomizeButtonRowElement;
+  let provider: FakeInputDeviceSettingsProvider;
 
   setup(() => {
+    setupFakeInputDeviceSettingsProvider();
+    provider =
+        getInputDeviceSettingsProvider() as FakeInputDeviceSettingsProvider;
+
     assert(window.trustedTypes);
     document.body.innerHTML = window.trustedTypes.emptyHTML;
   });
@@ -27,30 +33,49 @@ suite('<customize-button-row>', () => {
     await flushTasks();
   });
 
-  function initializeCustomizeButtonRow() {
+  async function initializeCustomizeButtonRow() {
     customizeButtonRow = document.createElement(CustomizeButtonRowElement.is);
     customizeButtonRow.set('actionList', fakeGraphicsTabletButtonActions);
-    document.body.appendChild(customizeButtonRow);
-    return flushTasks();
-  }
-
-  function getSelectedValue(): string {
-    const dropdown: HTMLSelectElement|null =
-        customizeButtonRow.shadowRoot!.querySelector(
-            '#remappingActionDropdown');
-    assertTrue(!!dropdown);
-    return dropdown!.value;
-  }
-
-  test('Initialize customize button row', async () => {
-    await initializeCustomizeButtonRow();
     customizeButtonRow.set(
         'buttonRemappingList',
         fakeGraphicsTablets[0]!.settings.tabletButtonRemappings);
     customizeButtonRow.set('remappingIndex', 0);
     await flushTasks();
-    let expectedRemapping =
-        fakeGraphicsTablets[0]!.settings.tabletButtonRemappings[0];
+
+    document.body.appendChild(customizeButtonRow);
+    customizeButtonRow.blur();
+    return flushTasks();
+  }
+
+  async function initializeMouseCustomizeButtonRow() {
+    customizeButtonRow = document.createElement(CustomizeButtonRowElement.is);
+    customizeButtonRow.set('actionList', fakeMouseButtonActions);
+    customizeButtonRow.set(
+        'buttonRemappingList', fakeMice[0]!.settings.buttonRemappings);
+    customizeButtonRow.set('remappingIndex', 0);
+    await flushTasks();
+
+    document.body.appendChild(customizeButtonRow);
+    return flushTasks();
+  }
+
+  function getSelectedValue(): string {
+    const dropdown: CustomizeButtonSelectElement|null =
+        customizeButtonRow.shadowRoot!.querySelector(
+            '#remappingActionDropdown');
+    assertTrue(!!dropdown);
+    return dropdown!.get('selectedValue');
+  }
+
+  function getSelectDropdownElement() {
+    const dropdownElement =
+        customizeButtonRow.$.remappingActionDropdown!.$.selectDropdown;
+    return dropdownElement;
+  }
+
+  test('Initialize mouse customize button row', async () => {
+    await initializeMouseCustomizeButtonRow();
+    let expectedRemapping = fakeMice[0]!.settings.buttonRemappings[0];
     assertDeepEquals(
         customizeButtonRow.get('buttonRemapping_'), expectedRemapping);
     assertEquals(
@@ -59,44 +84,68 @@ suite('<customize-button-row>', () => {
         expectedRemapping!.name);
     assertEquals(
         getSelectedValue(),
-        expectedRemapping!.remappingAction?.action!.toString());
+        'staticShortcutAction' +
+            expectedRemapping!.remappingAction?.staticShortcutAction!
+                .toString());
 
     // Change buttonRemapping data to display.
     customizeButtonRow.set('remappingIndex', 1);
     customizeButtonRow.set(
-        'buttonRemappingList',
-        fakeGraphicsTablets[1]!.settings.tabletButtonRemappings);
+        'buttonRemappingList', fakeMice[0]!.settings.buttonRemappings);
     await flushTasks();
-    expectedRemapping =
-        fakeGraphicsTablets[1]!.settings.tabletButtonRemappings[1];
+    expectedRemapping = fakeMice[0]!.settings.buttonRemappings[1];
     assertEquals(
         customizeButtonRow.shadowRoot!.querySelector(
                                           '#buttonLabel')!.textContent,
         expectedRemapping!.name);
     assertEquals(
         getSelectedValue(),
-        expectedRemapping!.remappingAction?.action!.toString());
+        'acceleratorAction' +
+            expectedRemapping!.remappingAction?.acceleratorAction!.toString());
   });
 
-  test('Initialize key combination string', async () => {
+  test('Focus current row correct button', async () => {
     await initializeCustomizeButtonRow();
     customizeButtonRow.set(
         'buttonRemappingList',
-        fakeGraphicsTablets[0]!.settings.penButtonRemappings);
+        fakeGraphicsTablets[0]!.settings.tabletButtonRemappings);
     customizeButtonRow.set('remappingIndex', 0);
     await flushTasks();
 
-    assertEquals(getSelectedValue(), 'key combination');
-    assertEquals(customizeButtonRow.get('keyCombinationLabel_'), 'ctrl + z');
-
-    // Switch to another button remapping.
-    customizeButtonRow.set(
-        'buttonRemappingList',
-        fakeGraphicsTablets[1]!.settings.penButtonRemappings);
-    customizeButtonRow.set('remappingIndex', 1);
+    assertNotEquals(
+        getDeepActiveElement(),
+        customizeButtonRow.shadowRoot!.querySelector(
+            '#remappingActionDropdown'));
+    provider.sendButtonPress(
+        fakeGraphicsTablets[0]!.settings.tabletButtonRemappings[0]!.button);
     await flushTasks();
 
-    assertEquals(getSelectedValue(), 'key combination');
-    assertEquals(customizeButtonRow.get('keyCombinationLabel_'), 'ctrl + v');
+    assertEquals(
+        getDeepActiveElement(),
+        // customizeButtonRow.shadowRoot!.querySelector(
+        //     '#remappingActionDropdown'))
+        getSelectDropdownElement());
+  });
+
+  test('Focus row wrong button, not focused', async () => {
+    await initializeCustomizeButtonRow();
+    customizeButtonRow.set(
+        'buttonRemappingList',
+        fakeGraphicsTablets[0]!.settings.tabletButtonRemappings);
+    customizeButtonRow.set('remappingIndex', 0);
+    await flushTasks();
+
+    assertNotEquals(
+        getDeepActiveElement(),
+        customizeButtonRow.shadowRoot!.querySelector(
+            '#remappingActionDropdown'));
+    provider.sendButtonPress(
+        fakeGraphicsTablets[0]!.settings.tabletButtonRemappings[1]!.button);
+    await flushTasks();
+
+    assertNotEquals(
+        getDeepActiveElement(),
+        customizeButtonRow.shadowRoot!.querySelector(
+            '#remappingActionDropdown'));
   });
 });

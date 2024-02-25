@@ -71,7 +71,7 @@ void WebTestCookieManager::GetNamedCookie(
                 return;
               }
             }
-            std::move(callback).Run(absl::nullopt);
+            std::move(callback).Run(std::nullopt);
           },
           name, std::move(callback)));
 }

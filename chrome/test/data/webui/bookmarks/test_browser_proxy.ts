@@ -2,7 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {BrowserProxy, IncognitoAvailability} from 'chrome://bookmarks/bookmarks.js';
+import type {BrowserProxy} from 'chrome://bookmarks/bookmarks.js';
+import {IncognitoAvailability} from 'chrome://bookmarks/bookmarks.js';
 import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
 
 /**

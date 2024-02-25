@@ -15,7 +15,6 @@
 #include "build/chromeos_buildflags.h"
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/browser_process.h"
-#include "chrome/browser/chrome_notification_types.h"
 #include "chrome/browser/net/system_network_context_manager.h"
 #include "chrome/browser/renderer_context_menu/render_view_context_menu.h"
 #include "chrome/browser/renderer_context_menu/render_view_context_menu_browsertest_util.h"
@@ -30,7 +29,6 @@
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/navigation_entry.h"
-#include "content/public/browser/notification_service.h"
 #include "content/public/browser/render_view_host.h"
 #include "content/public/browser/render_widget_host.h"
 #include "content/public/browser/storage_partition.h"
@@ -318,7 +316,7 @@ class ReferrerPolicyTest : public InProcessBrowserTest {
   };
 
   base::Lock check_on_requests_lock_;
-  absl::optional<RequestCheck> check_on_requests_
+  std::optional<RequestCheck> check_on_requests_
       GUARDED_BY(check_on_requests_lock_);
 };
 
@@ -777,7 +775,7 @@ IN_PROC_BROWSER_TEST_F(ReferrerPolicyTest,
 //
 // These tests assume a default policy of no-referrer-when-downgrade.
 struct ReferrerOverrideParams {
-  absl::optional<base::test::FeatureRef> feature_to_enable;
+  std::optional<base::test::FeatureRef> feature_to_enable;
   network::mojom::ReferrerPolicy baseline_policy;
   network::mojom::ReferrerPolicy expected_policy;
 

@@ -12,6 +12,7 @@
 #include "third_party/blink/renderer/modules/payments/payment_request.h"
 #include "third_party/blink/renderer/modules/payments/payment_test_helper.h"
 #include "third_party/blink/renderer/platform/bindings/exception_code.h"
+#include "third_party/blink/renderer/platform/testing/task_environment.h"
 
 namespace blink {
 namespace {
@@ -19,6 +20,7 @@ namespace {
 // If request.abort() is called without calling request.show() first, then
 // abort() should reject with exception.
 TEST(AbortTest, CannotAbortBeforeShow) {
+  test::TaskEnvironment task_environment;
   PaymentRequestV8TestingScope scope;
   PaymentRequest* request = PaymentRequest::Create(
       scope.GetExecutionContext(), BuildPaymentMethodDataForTest(),
@@ -32,6 +34,7 @@ TEST(AbortTest, CannotAbortBeforeShow) {
 // If request.abort() is called again before the previous abort() resolved, then
 // the second abort() should reject with exception.
 TEST(AbortTest, CannotAbortTwiceConcurrently) {
+  test::TaskEnvironment task_environment;
   PaymentRequestV8TestingScope scope;
   PaymentRequest* request = PaymentRequest::Create(
       scope.GetExecutionContext(), BuildPaymentMethodDataForTest(),
@@ -51,6 +54,7 @@ TEST(AbortTest, CannotAbortTwiceConcurrently) {
 // If request.abort() is called after calling request.show(), then abort()
 // should not reject with exception.
 TEST(AbortTest, CanAbortAfterShow) {
+  test::TaskEnvironment task_environment;
   PaymentRequestV8TestingScope scope;
   MockFunctionScope funcs(scope.GetScriptState());
   PaymentRequest* request = PaymentRequest::Create(
@@ -68,6 +72,7 @@ TEST(AbortTest, CanAbortAfterShow) {
 // If the browser is unable to abort the payment, then the request.abort()
 // promise should be rejected.
 TEST(AbortTest, FailedAbortShouldRejectAbortPromise) {
+  test::TaskEnvironment task_environment;
   PaymentRequestV8TestingScope scope;
   MockFunctionScope funcs(scope.GetScriptState());
   PaymentRequest* request = PaymentRequest::Create(
@@ -88,6 +93,7 @@ TEST(AbortTest, FailedAbortShouldRejectAbortPromise) {
 // After the browser is unable to abort the payment once, the second abort()
 // call should not be rejected, as it's not a duplicate request anymore.
 TEST(AbortTest, CanAbortAgainAfterFirstAbortRejected) {
+  test::TaskEnvironment task_environment;
   PaymentRequestV8TestingScope scope;
   MockFunctionScope funcs(scope.GetScriptState());
   PaymentRequest* request = PaymentRequest::Create(
@@ -109,6 +115,7 @@ TEST(AbortTest, CanAbortAgainAfterFirstAbortRejected) {
 // If the browser successfully aborts the payment, then the request.show()
 // promise should be rejected, and request.abort() promise should be resolved.
 TEST(AbortTest, SuccessfulAbortShouldRejectShowPromiseAndResolveAbortPromise) {
+  test::TaskEnvironment task_environment;
   PaymentRequestV8TestingScope scope;
   MockFunctionScope funcs(scope.GetScriptState());
   PaymentRequest* request = PaymentRequest::Create(

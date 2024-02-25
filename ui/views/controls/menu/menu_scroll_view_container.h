@@ -24,9 +24,9 @@ class SubmenuView;
 // and two scroll buttons. The scroll buttons are only visible and enabled if
 // the preferred height of the SubmenuView is bigger than our bounds.
 class VIEWS_EXPORT MenuScrollViewContainer : public View {
- public:
-  METADATA_HEADER(MenuScrollViewContainer);
+  METADATA_HEADER(MenuScrollViewContainer, View)
 
+ public:
   explicit MenuScrollViewContainer(SubmenuView* content_view);
 
   MenuScrollViewContainer(const MenuScrollViewContainer&) = delete;
@@ -46,7 +46,7 @@ class VIEWS_EXPORT MenuScrollViewContainer : public View {
   void OnPaintBackground(gfx::Canvas* canvas) override;
   void OnThemeChanged() override;
 
-  void SetBorderColorId(absl::optional<ui::ColorId> border_color_id) {
+  void SetBorderColorId(std::optional<ui::ColorId> border_color_id) {
     border_color_id_ = border_color_id;
   }
 
@@ -117,7 +117,7 @@ class VIEWS_EXPORT MenuScrollViewContainer : public View {
   // Whether the menu uses ash system UI layout.
   const bool use_ash_system_ui_layout_;
 
-  absl::optional<ui::ColorId> border_color_id_;
+  std::optional<ui::ColorId> border_color_id_;
 };
 
 }  // namespace views

@@ -41,7 +41,6 @@ WebMClusterParser::WebMClusterParser(
     base::TimeDelta audio_default_duration,
     int video_track_num,
     base::TimeDelta video_default_duration,
-    const WebMTracksParser::TextTracks& text_tracks,
     const std::set<int64_t>& ignored_tracks,
     const std::string& audio_encryption_key_id,
     const std::string& video_encryption_key_id,
@@ -64,11 +63,6 @@ WebMClusterParser::WebMClusterParser(
              media_log),
       ready_buffer_upper_bound_(kNoDecodeTimestamp),
       media_log_(media_log) {
-  for (auto it = text_tracks.begin(); it != text_tracks.end(); ++it) {
-    text_track_map_.insert(std::make_pair(
-        it->first,
-        Track(it->first, TrackType::TEXT, kNoTimestamp, media_log_)));
-  }
 }
 
 WebMClusterParser::~WebMClusterParser() = default;
@@ -81,14 +75,12 @@ void WebMClusterParser::Reset() {
   parser_.Reset();
   audio_.Reset();
   video_.Reset();
-  ResetTextTracks();
   ready_buffer_upper_bound_ = kNoDecodeTimestamp;
 }
 
 int WebMClusterParser::Parse(const uint8_t* buf, int size) {
   audio_.ClearReadyBuffers();
   video_.ClearReadyBuffers();
-  ClearTextTrackReadyBuffers();
   ready_buffer_upper_bound_ = kNoDecodeTimestamp;
 
   int result = parser_.Parse(buf, size);
@@ -124,25 +116,6 @@ int WebMClusterParser::Parse(const uint8_t* buf, int size) {
   return result;
 }
 
-const WebMClusterParser::TextBufferQueueMap&
-WebMClusterParser::GetTextBuffers() {
-  if (ready_buffer_upper_bound_ == kNoDecodeTimestamp)
-    UpdateReadyBuffers();
-
-  // Translate our |text_track_map_| into |text_buffers_map_|, inserting rows in
-  // the output only for non-empty ready_buffer() queues in |text_track_map_|.
-  text_buffers_map_.clear();
-  for (TextTrackMap::const_iterator itr = text_track_map_.begin();
-       itr != text_track_map_.end();
-       ++itr) {
-    const BufferQueue& text_buffers = itr->second.ready_buffers();
-    if (!text_buffers.empty())
-      text_buffers_map_.insert(std::make_pair(itr->first, text_buffers));
-  }
-
-  return text_buffers_map_;
-}
-
 void WebMClusterParser::GetBuffers(StreamParser::BufferQueueMap* buffers) {
   DCHECK(buffers->empty());
   if (ready_buffer_upper_bound_ == kNoDecodeTimestamp)
@@ -154,11 +127,6 @@ void WebMClusterParser::GetBuffers(StreamParser::BufferQueueMap* buffers) {
   const BufferQueue& video_buffers = video_.ready_buffers();
   if (!video_buffers.empty()) {
     buffers->insert(std::make_pair(video_.track_num(), video_buffers));
-  }
-  const WebMClusterParser::TextBufferQueueMap& text_buffers = GetTextBuffers();
-  for (const auto& it : text_buffers) {
-    DCHECK(!it.second.empty());
-    buffers->insert(it);
   }
 }
 
@@ -479,13 +447,6 @@ bool WebMClusterParser::OnBlock(bool is_simple_block,
     buffer_type = DemuxerStream::VIDEO;
   } else if (ignored_tracks_.find(track_num) != ignored_tracks_.end()) {
     return true;
-  } else if (Track* const text_track = FindTextTrack(track_num)) {
-    if (is_simple_block)  // BlockGroup is required for WebVTT cues
-      return false;
-    if (block_duration < 0)  // not specified
-      return false;
-    track = text_track;
-    buffer_type = DemuxerStream::TEXT;
   } else {
     MEDIA_LOG(ERROR, media_log_) << "Unexpected track number " << track_num;
     return false;
@@ -509,43 +470,32 @@ bool WebMClusterParser::OnBlock(bool is_simple_block,
     return false;
   }
 
-  scoped_refptr<StreamParserBuffer> buffer;
-  if (buffer_type != DemuxerStream::TEXT) {
-    // Every encrypted Block has a signal byte and IV prepended to it.
-    // See: http://www.webmproject.org/docs/webm-encryption/
-    std::unique_ptr<DecryptConfig> decrypt_config;
-    int data_offset = 0;
-    if (!encryption_key_id.empty() &&
-        !WebMCreateDecryptConfig(
-             data, size,
-             reinterpret_cast<const uint8_t*>(encryption_key_id.data()),
-             encryption_key_id.size(),
-             &decrypt_config, &data_offset)) {
-      MEDIA_LOG(ERROR, media_log_) << "Failed to extract decrypt config.";
-      return false;
-    }
+  // Every encrypted Block has a signal byte and IV prepended to it.
+  // See: http://www.webmproject.org/docs/webm-encryption/
+  std::unique_ptr<DecryptConfig> decrypt_config;
+  int data_offset = 0;
+  if (!encryption_key_id.empty() &&
+      !WebMCreateDecryptConfig(
+          data, size,
+          reinterpret_cast<const uint8_t*>(encryption_key_id.data()),
+          encryption_key_id.size(), &decrypt_config, &data_offset)) {
+    MEDIA_LOG(ERROR, media_log_) << "Failed to extract decrypt config.";
+    return false;
+  }
 
-    // TODO(wolenetz/acolwell): Validate and use a common cross-parser TrackId
-    // type with remapped bytestream track numbers and allow multiple tracks as
-    // applicable. See https://crbug.com/341581.
-    buffer =
-        StreamParserBuffer::CopyFrom(data + data_offset, size - data_offset,
-                                     is_keyframe, buffer_type, track_num);
-    if (additional_size) {
-      buffer->WritableSideData().alpha_data.assign(
-          additional, additional + additional_size);
-    }
+  // TODO(wolenetz/acolwell): Validate and use a common cross-parser TrackId
+  // type with remapped bytestream track numbers and allow multiple tracks as
+  // applicable. See https://crbug.com/341581.
+  auto buffer =
+      StreamParserBuffer::CopyFrom(data + data_offset, size - data_offset,
+                                   is_keyframe, buffer_type, track_num);
+  if (additional_size) {
+    buffer->WritableSideData().alpha_data.assign(additional,
+                                                 additional + additional_size);
+  }
 
-    if (decrypt_config)
-      buffer->set_decrypt_config(std::move(decrypt_config));
-  } else {
-    std::string id, settings, content;
-    WebMWebVTTParser::Parse(data, size, &id, &settings, &content);
-
-    // TODO(crbug.com/1471504): This is now broken without side data; remove.
-    buffer = StreamParserBuffer::CopyFrom(
-        reinterpret_cast<const uint8_t*>(content.data()), content.length(),
-        true, buffer_type, track_num);
+  if (decrypt_config) {
+    buffer->set_decrypt_config(std::move(decrypt_config));
   }
 
   buffer->set_timestamp(timestamp);
@@ -594,7 +544,6 @@ bool WebMClusterParser::OnBlock(bool is_simple_block,
   } else if (block_duration_time_delta != kNoTimestamp) {
     buffer->set_duration(block_duration_time_delta);
   } else {
-    DCHECK_NE(buffer_type, DemuxerStream::TEXT);
     buffer->set_duration(track->default_duration());
   }
 
@@ -782,7 +731,7 @@ base::TimeDelta WebMClusterParser::Track::GetDurationEstimate() {
     if (track_type_ == TrackType::AUDIO) {
       duration = base::Milliseconds(kDefaultAudioBufferDurationInMs);
     } else {
-      // Text and video tracks can both use the larger video default duration.
+      // Video tracks use the larger video default duration.
       duration = base::Milliseconds(kDefaultVideoBufferDurationInMs);
     }
   } else {
@@ -797,30 +746,12 @@ base::TimeDelta WebMClusterParser::Track::GetDurationEstimate() {
   return duration;
 }
 
-void WebMClusterParser::ClearTextTrackReadyBuffers() {
-  text_buffers_map_.clear();
-  for (auto it = text_track_map_.begin(); it != text_track_map_.end(); ++it) {
-    it->second.ClearReadyBuffers();
-  }
-}
-
-void WebMClusterParser::ResetTextTracks() {
-  ClearTextTrackReadyBuffers();
-  for (auto it = text_track_map_.begin(); it != text_track_map_.end(); ++it) {
-    it->second.Reset();
-  }
-}
-
 void WebMClusterParser::UpdateReadyBuffers() {
   DCHECK(ready_buffer_upper_bound_ == kNoDecodeTimestamp);
-  DCHECK(text_buffers_map_.empty());
 
   if (cluster_ended_) {
     audio_.ApplyDurationEstimateIfNeeded();
     video_.ApplyDurationEstimateIfNeeded();
-    // Per OnBlock(), all text buffers should already have valid durations, so
-    // there is no need to call ApplyDurationEstimateIfNeeded() on text tracks
-    // here.
     ready_buffer_upper_bound_ = kMaxDecodeTimestamp;
     DCHECK(ready_buffer_upper_bound_ == audio_.GetReadyUpperBound());
     DCHECK(ready_buffer_upper_bound_ == video_.GetReadyUpperBound());
@@ -833,20 +764,6 @@ void WebMClusterParser::UpdateReadyBuffers() {
   // Prepare each track's ready buffers for retrieval.
   audio_.ExtractReadyBuffers(ready_buffer_upper_bound_);
   video_.ExtractReadyBuffers(ready_buffer_upper_bound_);
-  for (auto itr = text_track_map_.begin(); itr != text_track_map_.end();
-       ++itr) {
-    itr->second.ExtractReadyBuffers(ready_buffer_upper_bound_);
-  }
-}
-
-WebMClusterParser::Track*
-WebMClusterParser::FindTextTrack(int track_num) {
-  const TextTrackMap::iterator it = text_track_map_.find(track_num);
-
-  if (it == text_track_map_.end())
-    return NULL;
-
-  return &it->second;
 }
 
 }  // namespace media

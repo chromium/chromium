@@ -8,7 +8,7 @@
 #include "crypto/random.h"
 
 NearbyConnectionImpl::NearbyConnectionImpl(
-    NearbyConnectionsManager* nearby_connections_manager,
+    base::WeakPtr<NearbyConnectionsManager> nearby_connections_manager,
     const std::string& endpoint_id)
     : nearby_connections_manager_(nearby_connections_manager),
       endpoint_id_(endpoint_id) {}
@@ -19,7 +19,7 @@ NearbyConnectionImpl::~NearbyConnectionImpl() {
     std::move(disconnect_listener_).Run();
 
   if (read_callback_)
-    std::move(read_callback_).Run(absl::nullopt);
+    std::move(read_callback_).Run(std::nullopt);
 }
 
 void NearbyConnectionImpl::Read(ReadCallback callback) {

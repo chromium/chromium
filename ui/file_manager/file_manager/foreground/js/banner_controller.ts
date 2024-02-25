@@ -2,30 +2,25 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-/**
- * @fileoverview
- * This file is checked via TS, so we suppress Closure checks.
- * @suppress {checkTypes}
- */
-
 import {NativeEventTarget as EventTarget} from 'chrome://resources/ash/common/event_target.js';
 
+import type {Crostini} from '../../background/js/crostini.js';
+import type {VolumeInfo} from '../../background/js/volume_info.js';
+import type {VolumeManager} from '../../background/js/volume_manager.js';
 import {getDriveQuotaMetadata, getSizeStats} from '../../common/js/api.js';
 import {RateLimiter} from '../../common/js/async_util.js';
-import {DialogType} from '../../common/js/dialog_type.js';
+import {getTeamDriveName, isFakeEntry} from '../../common/js/entry_utils.js';
+import type {FakeEntry, FilesAppDirEntry} from '../../common/js/files_app_entry_types.js';
+import {isGoogleOneOfferFilesBannerEligibleAndEnabled} from '../../common/js/flags.js';
 import {storage} from '../../common/js/storage.js';
-import {util} from '../../common/js/util.js';
-import {VolumeManagerCommon} from '../../common/js/volume_manager_types.js';
-import {Crostini} from '../../externs/background/crostini.js';
-import {FakeEntry, FilesAppDirEntry} from '../../externs/files_app_entry_interfaces.js';
-import {State} from '../../externs/ts/state.js';
-import {Store} from '../../externs/ts/store.js';
-import {VolumeInfo} from '../../externs/volume_info.js';
-import {VolumeManager} from '../../externs/volume_manager.js';
-import {getStore} from '../../state/store.js';
+import {isNullOrUndefined} from '../../common/js/util.js';
+import type {RootType} from '../../common/js/volume_manager_types.js';
+import {VolumeType} from '../../common/js/volume_manager_types.js';
+import {DialogType, type State} from '../../state/state.js';
+import {getStore, type Store} from '../../state/store.js';
 
-import {constants} from './constants.js';
-import {DirectoryModel} from './directory_model.js';
+import {DEFAULT_CROSTINI_VM, PLUGIN_VM} from './constants.js';
+import type {DirectoryModel} from './directory_model.js';
 import {TAG_NAME as DlpRestrictedBannerName} from './ui/banners/dlp_restricted_banner.js';
 import {TAG_NAME as DriveBulkPinningBannerTagName} from './ui/banners/drive_bulk_pinning_banner.js';
 import {TAG_NAME as DriveLowIndividualSpaceBanner} from './ui/banners/drive_low_individual_space_banner.js';
@@ -42,7 +37,8 @@ import {TAG_NAME as LocalDiskLowSpaceBannerTagName} from './ui/banners/local_dis
 import {TAG_NAME as PhotosWelcomeBannerTagName} from './ui/banners/photos_welcome_banner.js';
 import {TAG_NAME as SharedWithCrostiniPluginVmBanner} from './ui/banners/shared_with_crostini_pluginvm_banner.js';
 import {TAG_NAME as TrashBannerTagName} from './ui/banners/trash_banner.js';
-import {AllowedVolumeOrType, Banner, BANNER_INFINITE_TIME, BannerEvent, MinDiskThreshold} from './ui/banners/types.js';
+import type {Banner} from './ui/banners/types.js';
+import {type AllowedVolumeOrType, BANNER_INFINITE_TIME, BannerEvent, type MinDiskThreshold} from './ui/banners/types.js';
 
 /**
  * Local storage key suffix for how many times a banner was shown.
@@ -144,7 +140,7 @@ export class BannerController extends EventTarget {
    * Maintains the currently navigated root type. This is updated by the
    * directory-changed event.
    */
-  private currentRootType_: VolumeManagerCommon.RootType|null = null;
+  private currentRootType_: RootType|null = null;
 
   /**
    * Maintains the currently navigated shared drive if any. This is updated
@@ -156,7 +152,8 @@ export class BannerController extends EventTarget {
    * Maintains the currently navigated directory entry. This is updated when
    * a reconcile event is called.
    */
-  private currentEntry_: DirectoryEntry|FakeEntry|FilesAppDirEntry|null = null;
+  private currentEntry_: DirectoryEntry|FakeEntry|FilesAppDirEntry|undefined =
+      undefined;
 
   /**
    * Maintains a cache of the current size for all observed volumes. If a
@@ -246,9 +243,14 @@ export class BannerController extends EventTarget {
       MIN_INTERVAL_BETWEEN_DIRECTORY_SIZE_CHANGED_EVENTS);
 
   /**
-   * Whether the DriveBulkPinning preference is enabled.
+   * Whether the Drive bulk-pinning feature is available on this device.
    */
-  private isDriveBulkPinningPrefEnabled_ = false;
+  private bulkPinningAvailable_ = false;
+
+  /**
+   * Whether the Drive bulk-pinning feature is currently enabled.
+   */
+  private bulkPinningEnabled_ = false;
 
   constructor(
       private directoryModel_: DirectoryModel,
@@ -264,8 +266,7 @@ export class BannerController extends EventTarget {
     if (!this.disableBanners_) {
       storage.onChanged.addListener(this.onStorageChanged_.bind(this));
       this.directoryModel_.addEventListener(
-          'directory-changed',
-          (event: Event) => this.onDirectoryChanged_(event));
+          'directory-changed', (_event: Event) => this.onDirectoryChanged_());
     }
 
     chrome.fileManagerPrivate.onPreferencesChanged.addListener(
@@ -275,14 +276,12 @@ export class BannerController extends EventTarget {
 
   private onPreferencesChanged_() {
     chrome.fileManagerPrivate.getPreferences(pref => {
-      if (this.isDriveBulkPinningPrefEnabled_ ===
-          pref.driveFsBulkPinningEnabled) {
-        // The driveFsBulkPinningEnabled preference did not change.
-        return;
+      if (this.bulkPinningAvailable_ !== pref.driveFsBulkPinningAvailable ||
+          this.bulkPinningEnabled_ !== pref.driveFsBulkPinningEnabled) {
+        this.bulkPinningAvailable_ = pref.driveFsBulkPinningAvailable;
+        this.bulkPinningEnabled_ = pref.driveFsBulkPinningEnabled;
+        this.reconcile();
       }
-
-      this.isDriveBulkPinningPrefEnabled_ = pref.driveFsBulkPinningEnabled;
-      this.reconcile();
     });
   }
 
@@ -321,16 +320,13 @@ export class BannerController extends EventTarget {
       ]);
 
       const educationalBanners =
-          util.isGoogleOneOfferFilesBannerEligibleAndEnabled() ?
+          isGoogleOneOfferFilesBannerEligibleAndEnabled() ?
           [GoogleOneOfferBannerTagName] :
           [DriveWelcomeBannerTagName];
-      if (util.isDriveFsBulkPinningEnabled()) {
-        educationalBanners.push(DriveBulkPinningBannerTagName);
-      }
+
+      educationalBanners.push(DriveBulkPinningBannerTagName);
       educationalBanners.push(HoldingSpaceWelcomeBannerTagName);
-      if (!util.isDriveFsBulkPinningEnabled()) {
-        educationalBanners.push(DriveOfflinePinningBannerTagName);
-      }
+      educationalBanners.push(DriveOfflinePinningBannerTagName);
       educationalBanners.push(PhotosWelcomeBannerTagName);
       this.setEducationalBannersInOrder(educationalBanners);
 
@@ -346,26 +342,29 @@ export class BannerController extends EventTarget {
       this.registerCustomBannerFilter(SharedWithCrostiniPluginVmBanner, {
         shouldShow: () =>
             isPathSharedWithVm(
-                this.crostini_, this.currentEntry_,
-                constants.DEFAULT_CROSTINI_VM) &&
-            isPathSharedWithVm(
-                this.crostini_, this.currentEntry_, constants.PLUGIN_VM),
-        context: () =>
-            ({type: constants.DEFAULT_CROSTINI_VM + constants.PLUGIN_VM}),
+                this.crostini_, this.currentEntry_, DEFAULT_CROSTINI_VM) &&
+            isPathSharedWithVm(this.crostini_, this.currentEntry_, PLUGIN_VM),
+        context: () => ({type: DEFAULT_CROSTINI_VM + PLUGIN_VM}),
       });
       this.registerCustomBannerFilter(SharedWithCrostiniPluginVmBanner, {
         shouldShow: () => isPathSharedWithVm(
-            this.crostini_, this.currentEntry_, constants.DEFAULT_CROSTINI_VM),
-        context: () => ({type: constants.DEFAULT_CROSTINI_VM}),
+            this.crostini_, this.currentEntry_, DEFAULT_CROSTINI_VM),
+        context: () => ({type: DEFAULT_CROSTINI_VM}),
       });
       this.registerCustomBannerFilter(SharedWithCrostiniPluginVmBanner, {
-        shouldShow: () => isPathSharedWithVm(
-            this.crostini_, this.currentEntry_, constants.PLUGIN_VM),
-        context: () => ({type: constants.PLUGIN_VM}),
+        shouldShow: () =>
+            isPathSharedWithVm(this.crostini_, this.currentEntry_, PLUGIN_VM),
+        context: () => ({type: PLUGIN_VM}),
       });
 
       this.registerCustomBannerFilter(DriveBulkPinningBannerTagName, {
-        shouldShow: () => !this.isDriveBulkPinningPrefEnabled_,
+        shouldShow: () =>
+            this.bulkPinningAvailable_ && !this.bulkPinningEnabled_,
+        context: () => ({}),
+      });
+
+      this.registerCustomBannerFilter(DriveOfflinePinningBannerTagName, {
+        shouldShow: () => !this.bulkPinningAvailable_,
         context: () => ({}),
       });
 
@@ -472,7 +471,7 @@ export class BannerController extends EventTarget {
     const previousSharedDrive = this.currentSharedDrive_;
     this.currentEntry_ = this.directoryModel_.getCurrentDirEntry();
     if (this.currentEntry_) {
-      this.currentSharedDrive_ = util.getTeamDriveName(this.currentEntry_);
+      this.currentSharedDrive_ = getTeamDriveName(this.currentEntry_);
     }
     this.currentRootType_ = this.directoryModel_.getCurrentRootType();
     this.currentVolume_ = this.directoryModel_.getCurrentVolumeInfo();
@@ -484,7 +483,9 @@ export class BannerController extends EventTarget {
         this.volumeSizeObservers_[this.currentVolume_.volumeType];
     const sharedDriveChanged = this.currentSharedDrive_ !== previousSharedDrive;
     if (volumeChanged || sharedDriveChanged) {
-      this.pendingVolumeSizeUpdates_.add(this.currentVolume_);
+      if (this.currentVolume_) {
+        this.pendingVolumeSizeUpdates_.add(this.currentVolume_);
+      }
       this.updateVolumeSizeStatsDebounced_.runImmediately();
 
       // updateVolumeSizeStats will call reconcile at its end. Return here to
@@ -835,7 +836,7 @@ export class BannerController extends EventTarget {
    * Invoked when a directory has been changed, used to update the local cache
    * and reconcile the current banners being shown.
    */
-  private async onDirectoryChanged_(_: Event) {
+  private async onDirectoryChanged_() {
     const previousVolume = this.currentVolume_;
     await this.reconcile();
 
@@ -912,9 +913,9 @@ export class BannerController extends EventTarget {
       return;
     }
     for (const {volumeType, volumeId} of this.pendingVolumeSizeUpdates_) {
-      if (volumeType === VolumeManagerCommon.VolumeType.DRIVE) {
+      if (volumeType === VolumeType.DRIVE) {
         try {
-          if (!this.currentEntry_) {
+          if (!this.currentEntry_ || isFakeEntry(this.currentEntry_)) {
             continue;
           }
           this.driveQuotaMetadata_ =
@@ -967,8 +968,7 @@ export class BannerController extends EventTarget {
  * array for a specific banner.
  */
 export function isAllowedVolume(
-    currentVolume: VolumeInfo|null,
-    currentRootType: VolumeManagerCommon.RootType|null,
+    currentVolume: VolumeInfo|null, currentRootType: RootType|null,
     allowedVolumes: AllowedVolumeOrType[]) {
   let currentVolumeType = null;
   let currentVolumeId = null;
@@ -1005,8 +1005,8 @@ export function isBelowThreshold(
   if (!threshold || !sizeStats) {
     return false;
   }
-  if (util.isNullOrUndefined(sizeStats.remainingSize) ||
-      util.isNullOrUndefined(sizeStats.totalSize)) {
+  if (isNullOrUndefined(sizeStats.remainingSize) ||
+      isNullOrUndefined(sizeStats.totalSize)) {
     return false;
   }
   if (('minSize' in threshold) && threshold.minSize < sizeStats.remainingSize) {
@@ -1024,7 +1024,8 @@ export function isBelowThreshold(
  * curried function that takes the vm type.
  */
 function isPathSharedWithVm(
-    crostini: Crostini, entry: DirectoryEntry|FakeEntry|FilesAppDirEntry|null,
+    crostini: Crostini,
+    entry: DirectoryEntry|FakeEntry|FilesAppDirEntry|undefined,
     vmType: string) {
   if (!crostini.isEnabled(vmType)) {
     return false;

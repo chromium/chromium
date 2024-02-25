@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {assert} from './assert_ts.js';
+import {assert} from './assert.js';
 
 /**
  * @return Whether the passed tagged template literal is a valid array.

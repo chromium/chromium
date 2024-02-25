@@ -5,10 +5,10 @@
 package org.chromium.chrome.browser.toolbar;
 
 import android.content.Context;
-import android.content.res.ColorStateList;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
+import android.graphics.ColorFilter;
 import android.graphics.Paint.Align;
 import android.graphics.Rect;
 import android.graphics.Typeface;
@@ -22,9 +22,7 @@ import org.chromium.components.browser_ui.widget.TintedDrawable;
 
 import java.util.Locale;
 
-/**
- * A drawable for the tab switcher icon.
- */
+/** A drawable for the tab switcher icon. */
 public class TabSwitcherDrawable extends TintedDrawable {
     private final float mSingleDigitTextSize;
     private final float mDoubleDigitTextSize;
@@ -44,8 +42,9 @@ public class TabSwitcherDrawable extends TintedDrawable {
      */
     public static TabSwitcherDrawable createTabSwitcherDrawable(
             Context context, @BrandedColorScheme int brandedColorScheme) {
-        Bitmap icon = BitmapFactory.decodeResource(
-                context.getResources(), R.drawable.btn_tabswitcher_modern);
+        Bitmap icon =
+                BitmapFactory.decodeResource(
+                        context.getResources(), R.drawable.btn_tabswitcher_modern);
         return new TabSwitcherDrawable(context, brandedColorScheme, icon);
     }
 
@@ -82,8 +81,10 @@ public class TabSwitcherDrawable extends TintedDrawable {
 
             Rect drawableBounds = getBounds();
             int textX = drawableBounds.width() / 2;
-            int textY = drawableBounds.height() / 2 + (mTextBounds.bottom - mTextBounds.top) / 2
-                    - mTextBounds.bottom;
+            int textY =
+                    drawableBounds.height() / 2
+                            + (mTextBounds.bottom - mTextBounds.top) / 2
+                            - mTextBounds.bottom;
 
             canvas.drawText(textString, textX, textY, mTextPaint);
         }
@@ -124,9 +125,13 @@ public class TabSwitcherDrawable extends TintedDrawable {
         return mTint.getColorForState(getState(), 0);
     }
 
-    @Override
-    public void setTint(ColorStateList tint) {
-        super.setTint(tint);
+    private void updatePaint() {
         if (mTextPaint != null) mTextPaint.setColor(getColorForState());
+    }
+
+    @Override
+    public void setColorFilter(ColorFilter colorFilter) {
+        super.setColorFilter(colorFilter);
+        updatePaint();
     }
 }

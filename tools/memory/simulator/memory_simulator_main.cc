@@ -5,6 +5,7 @@
 #include <cstdint>
 #include <iostream>
 #include <limits>
+#include <optional>
 
 #include "base/command_line.h"
 #include "base/functional/bind.h"
@@ -17,7 +18,6 @@
 #include "base/strings/stringprintf.h"
 #include "base/task/single_thread_task_executor.h"
 #include "base/timer/timer.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "tools/memory/simulator/memory_simulator.h"
 #include "tools/memory/simulator/metrics_printer.h"
 #include "tools/memory/simulator/simulator_metrics_provider.h"
@@ -82,9 +82,9 @@ enum StatusCode {
   kStatusRuntimeError = 3,
 };
 
-absl::optional<int64_t> GetInt64Switch(const base::CommandLine& command_line,
-                                       const std::string& switch_name,
-                                       int64_t default_value) {
+std::optional<int64_t> GetInt64Switch(const base::CommandLine& command_line,
+                                      const std::string& switch_name,
+                                      int64_t default_value) {
   if (!command_line.HasSwitch(switch_name)) {
     return default_value;
   }
@@ -100,20 +100,20 @@ absl::optional<int64_t> GetInt64Switch(const base::CommandLine& command_line,
       switch_value_int64 < 0) {
     PrintUsageError(base::StringPrintf("Switch %s must be a positive integer",
                                        switch_name.c_str()));
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   return switch_value_int64;
 }
 
-absl::optional<base::TimeDelta> GetSecondsSwitch(
+std::optional<base::TimeDelta> GetSecondsSwitch(
     const base::CommandLine& command_line,
     const std::string& switch_name,
     int64_t default_value) {
-  absl::optional<int64_t> seconds =
+  std::optional<int64_t> seconds =
       GetInt64Switch(command_line, switch_name, default_value);
   if (!seconds.has_value()) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   if (seconds.value() == std::numeric_limits<int64_t>::max()) {
@@ -143,55 +143,55 @@ int main(int argc, char** argv) {
     return kStatusUsage;
   }
 
-  absl::optional<int64_t> mb_alloc_per_sec =
+  std::optional<int64_t> mb_alloc_per_sec =
       GetInt64Switch(command_line, kSwitchAllocPerSec, 512);
   if (!mb_alloc_per_sec.has_value()) {
     return kStatusInvalidParam;
   }
 
-  absl::optional<int64_t> mb_read_per_sec =
+  std::optional<int64_t> mb_read_per_sec =
       GetInt64Switch(command_line, kSwitchReadPerSec, 1024);
   if (!mb_read_per_sec.has_value()) {
     return kStatusInvalidParam;
   }
 
-  absl::optional<int64_t> mb_write_per_sec =
+  std::optional<int64_t> mb_write_per_sec =
       GetInt64Switch(command_line, kSwitchWritePerSec, 1024);
   if (!mb_write_per_sec.has_value()) {
     return kStatusInvalidParam;
   }
 
-  absl::optional<int64_t> mb_alloc_limit =
+  std::optional<int64_t> mb_alloc_limit =
       GetInt64Switch(command_line, kSwitchAllocLimit, 10 * 1024);
   if (!mb_alloc_limit.has_value()) {
     return kStatusInvalidParam;
   }
 
-  absl::optional<base::TimeDelta> start_timeout =
+  std::optional<base::TimeDelta> start_timeout =
       GetSecondsSwitch(command_line, kSwitchStartTimeout, 0);
   if (!start_timeout.has_value()) {
     return kStatusInvalidParam;
   }
 
-  absl::optional<base::TimeDelta> read_timeout =
+  std::optional<base::TimeDelta> read_timeout =
       GetSecondsSwitch(command_line, kSwitchReadTimeout, 5 * 60);
   if (!read_timeout.has_value()) {
     return kStatusInvalidParam;
   }
 
-  absl::optional<base::TimeDelta> write_timeout =
+  std::optional<base::TimeDelta> write_timeout =
       GetSecondsSwitch(command_line, kSwitchWriteTimeout, 5 * 60);
   if (!write_timeout.has_value()) {
     return kStatusInvalidParam;
   }
 
-  absl::optional<base::TimeDelta> free_timeout =
+  std::optional<base::TimeDelta> free_timeout =
       GetSecondsSwitch(command_line, kSwitchFreeTimeout, 10 * 60);
   if (!free_timeout.has_value()) {
     return kStatusInvalidParam;
   }
 
-  absl::optional<base::TimeDelta> exit_timeout =
+  std::optional<base::TimeDelta> exit_timeout =
       GetSecondsSwitch(command_line, kSwitchExitTimeout, 5 * 60);
   if (!exit_timeout.has_value()) {
     return kStatusInvalidParam;

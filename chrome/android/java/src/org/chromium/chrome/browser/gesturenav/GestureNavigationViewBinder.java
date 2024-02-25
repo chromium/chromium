@@ -18,9 +18,7 @@ import org.chromium.chrome.browser.gesturenav.NavigationHandler.GestureAction;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 
-/**
- * This class responsible for pushing updates to gesture navigation view.
- */
+/** This class responsible for pushing updates to gesture navigation view. */
 class GestureNavigationViewBinder {
     /**
      * view binder that associates a view with a model.

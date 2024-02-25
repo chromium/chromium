@@ -4,27 +4,10 @@
 <dict>
 	<key>headers</key>
 	<array>
-		<string>ios/search_widget_extension/grit/ios_search_widget_extension_strings.h</string>
-		<string>ios/search_widget_extension/grit/ios_search_widget_extension_chromium_strings.h</string>
+		<string>ios/search_widget_extension/grit/ios_search_widget_extension_branded_strings.h</string>
 	</array>
 	<key>outputs</key>
 	<array>
-		<dict>
-			<key>name</key>
-			<string>Localizable.strings</string>
-			<key>strings</key>
-			<array>
-				<string>IDS_IOS_NEW_SEARCH</string>
-				<string>IDS_IOS_INCOGNITO_SEARCH</string>
-				<string>IDS_IOS_VOICE_SEARCH</string>
-				<string>IDS_IOS_SCAN_QR_CODE</string>
-				<string>IDS_IOS_NO_COPIED_CONTENT_TITLE</string>
-				<string>IDS_IOS_NO_COPIED_CONTENT_MESSAGE</string>
-				<string>IDS_IOS_OPEN_COPIED_LINK</string>
-				<string>IDS_IOS_OPEN_COPIED_TEXT</string>
-				<string>IDS_IOS_OPEN_COPIED_IMAGE</string>
-			</array>
-		</dict>
 		<dict>
 			<key>name</key>
 			<string>InfoPlist.strings</string>
@@ -36,6 +19,14 @@
 					<key>output</key>
 					<string>CFBundleDisplayName</string>
 				</dict>
+			</array>
+		</dict>
+		<dict>
+			<key>name</key>
+			<string>Localizable.strings</string>
+			<key>strings</key>
+			<array>
+				<string>IDS_IOS_SEARCH_WIDGET_LABEL</string>
 			</array>
 		</dict>
 	</array>

@@ -6,6 +6,7 @@ import("//build/config/android/config.gni")
 import("//build/config/arm.gni")
 import("//build/config/chromeos/ui_mode.gni")
 import("//build/config/sanitizers/sanitizers.gni")
+import("//testing/test.gni")
 import("//third_party/libvpx/libvpx_srcs.gni")
 import("//third_party/nasm/nasm_assemble.gni")
 
@@ -30,11 +31,10 @@ if (current_cpu == "x86") {
     cpu_arch_full = "arm"
   }
 } else if (current_cpu == "arm64") {
-  if (is_chromeos || is_mac) {
+  if (is_win || is_chromeos || is_mac) {
     # This is necessary for CrOS and macOS as they reuse the Linux
     # configuration, of which there are two (see the later definition of
-    # os_category). Windows is configured with highbd enabled in its arm64
-    # path.
+    # os_category).
     cpu_arch_full = "arm64-highbd"
   } else {
     cpu_arch_full = current_cpu
@@ -98,7 +98,10 @@ config("libvpx_config") {
 
 # This config is applied to targets that depend on libvpx.
 config("libvpx_external_config") {
-  include_dirs = [ "source/libvpx" ]
+  include_dirs = [
+    "source/libvpx",
+    platform_include_dir,
+  ]
 }
 
 if (current_cpu == "x86" || (current_cpu == "x64" && !is_msan)) {
@@ -263,13 +266,88 @@ if (current_cpu == "loong64") {
   }
 }
 
-if (cpu_arch_full == "arm-neon-cpu-detect") {
-  static_library("libvpx_intrinsics_neon") {
-    configs -= [ "//build/config/compiler:compiler_arm_fpu" ]
+if (current_cpu == "arm" || current_cpu == "arm64") {
+  source_set("libvpx_intrinsics_neon") {
+    check_includes = false
+    configs -= [ "//build/config/compiler:chromium_code" ]
+    configs += [ "//build/config/compiler:no_chromium_code" ]
     configs += [ ":libvpx_config" ]
-    cflags = [ "-mfpu=neon" ]
-    sources = libvpx_srcs_arm_neon_cpu_detect_neon
-    deps = [ ":libvpx_arm_neon_cpu_detect_headers" ]
+    if (current_cpu == "arm") {
+      configs -= [ "//build/config/compiler:compiler_arm_fpu" ]
+      cflags = [ "-mfpu=neon" ]
+    }
+    if (cpu_arch_full == "arm-neon") {
+      sources = libvpx_srcs_arm_neon_neon
+      deps = [ ":libvpx_arm_neon_headers" ]
+    } else if (cpu_arch_full == "arm-neon-highbd") {
+      sources = libvpx_srcs_arm_neon_highbd_neon
+      deps = [ ":libvpx_arm_neon_highbd_headers" ]
+    } else if (cpu_arch_full == "arm-neon-cpu-detect") {
+      sources = libvpx_srcs_arm_neon_cpu_detect_neon
+      deps = [ ":libvpx_arm_neon_cpu_detect_headers" ]
+    } else if (cpu_arch_full == "arm64") {
+      sources = libvpx_srcs_arm64_neon
+      deps = [ ":libvpx_arm64_headers" ]
+    } else if (cpu_arch_full == "arm64-highbd") {
+      sources = libvpx_srcs_arm64_highbd_neon
+      deps = [ ":libvpx_arm64_highbd_headers" ]
+    }
+  }
+}
+
+if (current_cpu == "arm64") {
+  source_set("libvpx_intrinsics_neon_dotprod") {
+    check_includes = false
+    configs -= [ "//build/config/compiler:chromium_code" ]
+    configs += [ "//build/config/compiler:no_chromium_code" ]
+    configs += [ ":libvpx_config" ]
+    if (!is_win || is_clang) {
+      cflags = [ "-march=armv8.2-a+dotprod" ]
+    }
+    if (cpu_arch_full == "arm64") {
+      sources = libvpx_srcs_arm64_neon_dotprod
+      deps = [ ":libvpx_arm64_headers" ]
+    } else if (cpu_arch_full == "arm64-highbd") {
+      sources = libvpx_srcs_arm64_highbd_neon_dotprod
+      deps = [ ":libvpx_arm64_highbd_headers" ]
+    }
+  }
+
+  source_set("libvpx_intrinsics_neon_i8mm") {
+    check_includes = false
+    configs -= [ "//build/config/compiler:chromium_code" ]
+    configs += [ "//build/config/compiler:no_chromium_code" ]
+    configs += [ ":libvpx_config" ]
+    if (!is_win || is_clang) {
+      cflags = [ "-march=armv8.2-a+i8mm" ]
+    }
+    if (cpu_arch_full == "arm64") {
+      sources = libvpx_srcs_arm64_neon_i8mm
+      deps = [ ":libvpx_arm64_headers" ]
+    } else if (cpu_arch_full == "arm64-highbd") {
+      sources = libvpx_srcs_arm64_highbd_neon_i8mm
+      deps = [ ":libvpx_arm64_highbd_headers" ]
+    }
+  }
+
+  # SVE is disabled for Windows due to a limitation with clang-cl-18:
+  # third_party\llvm-build\Release+Asserts\lib\clang\18\include\arm_sve.h(271,1):
+  # error: cannot mangle this built-in __SVInt8_t type yet
+  if (!is_win) {
+    source_set("libvpx_intrinsics_sve") {
+      check_includes = false
+      configs -= [ "//build/config/compiler:chromium_code" ]
+      configs += [ "//build/config/compiler:no_chromium_code" ]
+      configs += [ ":libvpx_config" ]
+      cflags = [ "-march=armv8.2-a+dotprod+i8mm+sve" ]
+      if (cpu_arch_full == "arm64") {
+        sources = libvpx_srcs_arm64_sve
+        deps = [ ":libvpx_arm64_headers" ]
+      } else if (cpu_arch_full == "arm64-highbd") {
+        sources = libvpx_srcs_arm64_highbd_sve
+        deps = [ ":libvpx_arm64_highbd_headers" ]
+      }
+    }
   }
 }
 
@@ -447,8 +525,16 @@ static_library("libvpx") {
       ":libvpx_intrinsics_ssse3",
     ]
   }
-  if (cpu_arch_full == "arm-neon-cpu-detect") {
+  if (cpu_arch_full == "arm-neon-highbd" || cpu_arch_full == "arm-neon" ||
+      cpu_arch_full == "arm-neon-cpu-detect" || current_cpu == "arm64") {
     deps += [ ":libvpx_intrinsics_neon" ]
+  }
+  if (current_cpu == "arm64") {
+    deps += [ ":libvpx_intrinsics_neon_dotprod" ]
+    deps += [ ":libvpx_intrinsics_neon_i8mm" ]
+    if (!is_win) {
+      deps += [ ":libvpx_intrinsics_sve" ]
+    }
   }
   if (is_android) {
     deps += [ "//third_party/cpu_features:ndk_compat" ]
@@ -483,4 +569,34 @@ static_library("libvpxrc") {
   public_deps = [ ":libvpx" ]
 
   public_configs = [ ":libvpx_external_config" ]
+}
+
+if (fuzztest_supported) {
+  test("vp8_encoder_fuzz_test") {
+    sources = [ "tests/fuzzer/vp8_encoder_fuzz_test.cc" ]
+
+    fuzztests = [
+      "VP8EncodeFuzzTest.VP8EncodeArbitraryCallSequenceSucceeds",
+      "VP8EncodeFuzzTest.VP8EncodeSucceeds",
+    ]
+
+    deps = [
+      ":libvpx",
+      "//third_party/fuzztest:fuzztest_gtest_main",
+    ]
+  }
+
+  test("vp9_encoder_fuzz_test") {
+    sources = [ "tests/fuzzer/vp9_encoder_fuzz_test.cc" ]
+
+    fuzztests = [
+      "VP9EncodeFuzzTest.VP9EncodeArbitraryCallSequenceSucceeds",
+      "VP9EncodeFuzzTest.VP9EncodeSucceeds",
+    ]
+
+    deps = [
+      ":libvpx",
+      "//third_party/fuzztest:fuzztest_gtest_main",
+    ]
+  }
 }

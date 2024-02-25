@@ -39,7 +39,9 @@ import java.util.List;
 
 /** Unit tests for {@link ApplicationStatus}. */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(manifest = Config.NONE, shadows = {ApplicationStatusTest.TrackingShadowActivity.class})
+@Config(
+        manifest = Config.NONE,
+        shadows = {ApplicationStatusTest.TrackingShadowActivity.class})
 public class ApplicationStatusTest {
     private static class WindowCallbackWrapper implements Window.Callback {
         final Window.Callback mWrapped;
@@ -243,20 +245,24 @@ public class ApplicationStatusTest {
 
     @Test
     public void testSingleWrappedCallback() {
-        Assert.assertTrue(ApplicationStatus.reachesWindowCallback(
-                new WindowCallbackWrapper(createWindowCallbackProxy())));
+        Assert.assertTrue(
+                ApplicationStatus.reachesWindowCallback(
+                        new WindowCallbackWrapper(createWindowCallbackProxy())));
     }
 
     @Test
     public void testDoubleWrappedCallback() {
-        Assert.assertTrue(ApplicationStatus.reachesWindowCallback(
-                new WindowCallbackWrapper(new WindowCallbackWrapper(createWindowCallbackProxy()))));
+        Assert.assertTrue(
+                ApplicationStatus.reachesWindowCallback(
+                        new WindowCallbackWrapper(
+                                new WindowCallbackWrapper(createWindowCallbackProxy()))));
     }
 
     @Test
     public void testSubclassWrappedCallback() {
-        Assert.assertTrue(ApplicationStatus.reachesWindowCallback(
-                new SubclassedCallbackWrapper(createWindowCallbackProxy())));
+        Assert.assertTrue(
+                ApplicationStatus.reachesWindowCallback(
+                        new SubclassedCallbackWrapper(createWindowCallbackProxy())));
     }
 
     @Test

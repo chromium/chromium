@@ -5,11 +5,11 @@
 #ifndef TOOLS_MAC_POWER_POWER_SAMPLER_MAIN_DISPLAY_SAMPLER_H_
 #define TOOLS_MAC_POWER_POWER_SAMPLER_MAIN_DISPLAY_SAMPLER_H_
 
-#include <memory>
-
 #include <CoreGraphics/CoreGraphics.h>
 
-#include "third_party/abseil-cpp/absl/types/optional.h"
+#include <memory>
+#include <optional>
+
 #include "tools/mac/power/power_sampler/sampler.h"
 
 namespace power_sampler {
@@ -37,7 +37,7 @@ class MainDisplaySampler : public Sampler {
 
  protected:
   // Virtual for testing.
-  virtual absl::optional<float> GetDisplayBrightness();
+  virtual std::optional<float> GetDisplayBrightness();
   virtual bool GetIsDisplaySleeping();
 
   MainDisplaySampler(CGDirectDisplayID main_display);

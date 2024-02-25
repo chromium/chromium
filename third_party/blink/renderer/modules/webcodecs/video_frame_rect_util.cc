@@ -114,53 +114,6 @@ gfx::Rect ToGfxRect(const DOMRectInit* rect,
   return gfx_rect;
 }
 
-bool ValidateCropAlignment(media::VideoPixelFormat format,
-                           const char* format_str,
-                           const gfx::Rect& rect,
-                           const char* rect_name,
-                           ExceptionState& exception_state) {
-  const wtf_size_t num_planes =
-      static_cast<wtf_size_t>(media::VideoFrame::NumPlanes(format));
-  for (wtf_size_t i = 0; i < num_planes; i++) {
-    const gfx::Size sample_size = media::VideoFrame::SampleSize(format, i);
-    if (rect.x() % sample_size.width() != 0) {
-      exception_state.ThrowTypeError(String::Format(
-          "Invalid %s. Expected x to be a multiple of %u in plane %u for "
-          "format %s; was %u. Consider rounding %s inward or outward to a "
-          "sample boundary.",
-          rect_name, sample_size.width(), i, format_str, rect.x(), rect_name));
-      return false;
-    }
-    if (rect.y() % sample_size.height() != 0) {
-      exception_state.ThrowTypeError(String::Format(
-          "Invalid %s. Expected y to be a multiple of %u in plane %u for "
-          "format %s; was %u. Consider rounding %s inward or outward to a "
-          "sample boundary.",
-          rect_name, sample_size.height(), i, format_str, rect.y(), rect_name));
-      return false;
-    }
-    if (rect.width() % sample_size.width() != 0) {
-      exception_state.ThrowTypeError(String::Format(
-          "Invalid %s. Expected width to be a multiple of %u in plane %u for "
-          "format %s; was %u. Consider rounding %s inward or outward to a "
-          "sample boundary.",
-          rect_name, sample_size.width(), i, format_str, rect.width(),
-          rect_name));
-      return false;
-    }
-    if (rect.height() % sample_size.height() != 0) {
-      exception_state.ThrowTypeError(String::Format(
-          "Invalid %s. Expected height to be a multiple of %u in plane %u for "
-          "format %s; was %u. Consider rounding %s inward or outward to a "
-          "sample boundary.",
-          rect_name, sample_size.height(), i, format_str, rect.height(),
-          rect_name));
-      return false;
-    }
-  }
-  return true;
-}
-
 bool ValidateOffsetAlignment(media::VideoPixelFormat format,
                              const gfx::Rect& rect,
                              const char* rect_name,
@@ -183,18 +136,17 @@ bool ValidateOffsetAlignment(media::VideoPixelFormat format,
   return true;
 }
 
-gfx::Rect AlignCrop(media::VideoPixelFormat format, const gfx::Rect& rect) {
-  gfx::Rect result = rect;
-  const wtf_size_t num_planes =
-      static_cast<wtf_size_t>(media::VideoFrame::NumPlanes(format));
-  for (wtf_size_t i = 0; i < num_planes; i++) {
-    const gfx::Size sample_size = media::VideoFrame::SampleSize(format, i);
-    int width_ub = result.width() + sample_size.width() - 1;
-    result.set_width(width_ub - width_ub % sample_size.width());
-    int height_ub = result.height() + sample_size.height() - 1;
-    result.set_height(height_ub - height_ub % sample_size.height());
-  }
-  return result;
+int PlaneSize(int frame_size, int sample_size) {
+  return (frame_size + sample_size - 1) / sample_size;
+}
+
+gfx::Rect PlaneRect(gfx::Rect frame_rect, gfx::Size sample_size) {
+  DCHECK_EQ(frame_rect.x() % sample_size.width(), 0);
+  DCHECK_EQ(frame_rect.y() % sample_size.height(), 0);
+  return gfx::Rect(frame_rect.x() / sample_size.width(),
+                   frame_rect.y() / sample_size.height(),
+                   PlaneSize(frame_rect.width(), sample_size.width()),
+                   PlaneSize(frame_rect.height(), sample_size.height()));
 }
 
 }  // namespace blink

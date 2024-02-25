@@ -20,7 +20,7 @@ TEST(MonotoneCubicSpline, Interpolation) {
                                   100, 500, 1000, 2000, 3000};
   const std::vector<double> ys = {0, 5, 10, 15, 20, 25, 30, 40, 60, 80, 1000};
 
-  const absl::optional<MonotoneCubicSpline> spline =
+  const std::optional<MonotoneCubicSpline> spline =
       MonotoneCubicSpline::CreateMonotoneCubicSpline(xs, ys);
   DCHECK(spline);
   EXPECT_EQ(spline->GetControlPointsY().size(), xs.size());
@@ -67,7 +67,7 @@ TEST(MonotoneCubicSpline, Monotonicity) {
 
   std::sort(ys.begin(), ys.end());
 
-  const absl::optional<MonotoneCubicSpline> spline =
+  const std::optional<MonotoneCubicSpline> spline =
       MonotoneCubicSpline::CreateMonotoneCubicSpline(xs, ys);
   DCHECK(spline);
 
@@ -85,12 +85,12 @@ TEST(MonotoneCubicSpline, Monotonicity) {
 
 TEST(MonotoneCubicSpline, FromStringCorrectFormat) {
   const std::string data("1,10\n2,20\n3,30");
-  const absl::optional<MonotoneCubicSpline> spline_from_string =
+  const std::optional<MonotoneCubicSpline> spline_from_string =
       MonotoneCubicSpline::FromString(data);
   DCHECK(spline_from_string);
   const std::vector<double> xs = {1, 2, 3};
   const std::vector<double> ys = {10, 20, 30};
-  const absl::optional<MonotoneCubicSpline> expected_spline =
+  const std::optional<MonotoneCubicSpline> expected_spline =
       MonotoneCubicSpline::CreateMonotoneCubicSpline(xs, ys);
   DCHECK(expected_spline);
   EXPECT_EQ(*expected_spline, *spline_from_string);
@@ -98,7 +98,7 @@ TEST(MonotoneCubicSpline, FromStringCorrectFormat) {
 
 TEST(MonotoneCubicSpline, FromStringTooFewRows) {
   const std::string data("1,10");
-  const absl::optional<MonotoneCubicSpline> spline_from_string =
+  const std::optional<MonotoneCubicSpline> spline_from_string =
       MonotoneCubicSpline::FromString(data);
   EXPECT_FALSE(spline_from_string.has_value());
 }
@@ -106,7 +106,7 @@ TEST(MonotoneCubicSpline, FromStringTooFewRows) {
 TEST(MonotoneCubicSpline, ToString) {
   const std::vector<double> xs = {1, 2, 3};
   const std::vector<double> ys = {10, 20, 30};
-  const absl::optional<MonotoneCubicSpline> spline =
+  const std::optional<MonotoneCubicSpline> spline =
       MonotoneCubicSpline::CreateMonotoneCubicSpline(xs, ys);
   DCHECK(spline);
   const std::string string_from_spline = spline->ToString();
@@ -120,12 +120,12 @@ TEST(MonotoneCubicSpline, AssignmentAndEquality) {
   const std::vector<double> xs1 = {0,   10,  20,   40,   60,  80,
                                    100, 500, 1000, 2000, 3000};
   const std::vector<double> ys1 = {0, 5, 10, 15, 20, 25, 30, 40, 60, 80, 1000};
-  absl::optional<MonotoneCubicSpline> spline1 =
+  std::optional<MonotoneCubicSpline> spline1 =
       MonotoneCubicSpline::CreateMonotoneCubicSpline(xs1, ys1);
 
   const std::vector<double> xs2 = {1, 2, 3};
   const std::vector<double> ys2 = {10, 20, 30};
-  const absl::optional<MonotoneCubicSpline> spline2 =
+  const std::optional<MonotoneCubicSpline> spline2 =
       MonotoneCubicSpline::CreateMonotoneCubicSpline(xs2, ys2);
 
   EXPECT_NE(*spline1, *spline2);

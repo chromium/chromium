@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<!-- Generate token with the command:
+tools/origin_trials/generate_token.py http://127.0.0.1:8000 FetchLaterAPI --expire-timestamp=2000000000
+-- -->
+<meta http-equiv="origin-trial"
+      content="A6d9HYEfU65pOYg2yT+wjrMXYxmWCpyXeY7zJUm7mY3/X7NaT7tdVowmhNmdSBVGdAUTqZSLepAwdNSssfw/NQIAAABVeyJvcmlnaW4iOiAiaHR0cDovLzEyNy4wLjAuMTo4MDAwIiwgImZlYXR1cmUiOiAiRmV0Y2hMYXRlckFQSSIsICJleHBpcnkiOiAyMDAwMDAwMDAwfQ==" />
+<link rel="help"
+      href="http://crbug.com/1465781">
+<title>FetchLater API - interfaces and properties exposed by origin trial</title>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/resources/origin-trials-helper.js"></script>
+<script>
+  // The following Web APIs are only enabled in one of the following scenarios:
+  // 1. The Chromium flag kFetchLaterAPI is enabled, which overrides everything. This is covered in
+  //    `third_party/blink/tools/run_web_tests.py -t Debug virtual/fetch-later/http/tests/origin_trials/webexposed/fetch-later-origin-trial-interfaces.html`
+  // 2. The RuntimeEnabledFeature FetchLaterAPI is enabled via an OT token, which is covered by
+  //    the tests in this file. It can be run with
+  //    `third_party/blink/tools/run_web_tests.py -t Debug http/tests/origin_trials/webexposed/fetch-later-origin-trial-interfaces.html`
+  test(t => {
+    OriginTrialsHelper.check_interfaces_exist(this, ['fetchLater']);
+  }, 'FetchLater API interface in Origin-Trial enabled document.');
+</script>

@@ -64,7 +64,7 @@ class QuirksClient {
   RequestFinishedCallback on_request_finished_;
 
   // Weak pointer owned by manager, guaranteed to outlive this client object.
-  raw_ptr<QuirksManager, ExperimentalAsh> manager_;
+  raw_ptr<QuirksManager> manager_;
 
   // Full path to icc file.
   const base::FilePath icc_path_;

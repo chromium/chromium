@@ -4,6 +4,7 @@
 
 #include "chrome/browser/chromeos/extensions/vpn_provider/vpn_service.h"
 
+#include <optional>
 #include <utility>
 
 #include "base/containers/contains.h"
@@ -19,7 +20,6 @@
 #include "extensions/browser/unloaded_extension_reason.h"
 #include "extensions/common/permissions/permissions_data.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chrome/browser/ash/crosapi/crosapi_ash.h"
@@ -52,8 +52,8 @@ void RunSuccessCallback(chromeos::VpnService::SuccessCallback success) {
 }
 
 void RunFailureCallback(chromeos::VpnService::FailureCallback failure,
-                        const absl::optional<std::string>& error_name,
-                        const absl::optional<std::string>& error_message) {
+                        const std::optional<std::string>& error_name,
+                        const std::optional<std::string>& error_message) {
   std::move(failure).Run(error_name.value_or(std::string{}),
                          error_message.value_or(std::string{}));
 }
@@ -163,7 +163,7 @@ void VpnServiceForExtension::OnAddDialog() {
   DispatchEvent(std::make_unique<extensions::Event>(
       extensions::events::HistogramValue::VPN_PROVIDER_ON_UI_EVENT,
       api_vpn::OnUIEvent::kEventName,
-      api_vpn::OnUIEvent::Create(api_vpn::UI_EVENT_SHOWADDDIALOG,
+      api_vpn::OnUIEvent::Create(api_vpn::UIEvent::kShowAddDialog,
                                  std::string()),
       browser_context_));
 }
@@ -173,7 +173,7 @@ void VpnServiceForExtension::OnConfigureDialog(
   DispatchEvent(std::make_unique<extensions::Event>(
       extensions::events::HistogramValue::VPN_PROVIDER_ON_UI_EVENT,
       api_vpn::OnUIEvent::kEventName,
-      api_vpn::OnUIEvent::Create(api_vpn::UI_EVENT_SHOWCONFIGUREDIALOG,
+      api_vpn::OnUIEvent::Create(api_vpn::UIEvent::kShowConfigureDialog,
                                  configuration_name),
       browser_context_));
 }
@@ -189,7 +189,7 @@ void VpnServiceForExtension::OnConfigRemoved(
 void VpnServiceForExtension::OnPlatformMessage(
     const std::string& configuration_name,
     int32_t platform_message,
-    const absl::optional<std::string>& error) {
+    const std::optional<std::string>& error) {
   DispatchEvent(std::make_unique<extensions::Event>(
       extensions::events::VPN_PROVIDER_ON_PLATFORM_MESSAGE,
       api_vpn::OnPlatformMessage::kEventName,

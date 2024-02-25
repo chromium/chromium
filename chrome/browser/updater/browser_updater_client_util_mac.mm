@@ -7,10 +7,11 @@
 #include <Foundation/Foundation.h>
 #import <OpenDirectory/OpenDirectory.h>
 #import <ServiceManagement/ServiceManagement.h>
-
 #include <string.h>
 #include <sys/stat.h>
 #include <unistd.h>
+
+#include <optional>
 
 #include "base/apple/bridging.h"
 #include "base/apple/bundle_locations.h"
@@ -31,14 +32,16 @@
 #include "base/strings/sys_string_conversions.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
+#include "base/threading/scoped_blocking_call.h"
 #include "base/time/time.h"
 #include "build/buildflag.h"
 #include "chrome/browser/updater/browser_updater_client.h"
 #include "chrome/browser/updater/browser_updater_client_util.h"
 #include "chrome/browser/updater/browser_updater_helper_client_mac.h"
 #include "chrome/common/chrome_version.h"
-#include "chrome/grit/chromium_strings.h"
+#include "chrome/grit/branded_strings.h"
 #include "chrome/grit/generated_resources.h"
+#include "chrome/updater/constants.h"
 #include "chrome/updater/updater_scope.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/l10n/l10n_util_mac.h"
@@ -54,28 +57,20 @@ base::FilePath GetUpdaterExecutablePath() {
       .Append(kUpdaterName);
 }
 
-bool BundleOwnedByUser(uid_t user_uid) {
+std::optional<uid_t> GetBundleOwner() {
   const base::FilePath path = base::apple::OuterBundlePath();
   base::stat_wrapper_t stat_info = {};
   if (base::File::Lstat(path.value().c_str(), &stat_info) != 0) {
     VPLOG(2) << "Failed to get information on path " << path.value();
-    return false;
+    return std::nullopt;
   }
 
   if (S_ISLNK(stat_info.st_mode)) {
     VLOG(2) << "Path " << path.value() << " is a symbolic link.";
-    return false;
+    return std::nullopt;
   }
 
-  return stat_info.st_uid == user_uid;
-}
-
-bool BundleOwnedByRoot() {
-  return BundleOwnedByUser(0);
-}
-
-bool BundleOwnedByCurrentUser() {
-  return BundleOwnedByUser(geteuid());
+  return stat_info.st_uid;
 }
 
 bool IsEffectiveUserAdmin() {
@@ -123,24 +118,31 @@ bool IsEffectiveUserAdmin() {
 }
 
 bool ShouldPromoteUpdater() {
+  std::optional<uid_t> owner = GetBundleOwner();
+
   // 1) Should promote if browser is owned by root and not installed. The not
   // installed part of this case is handled in version_updater_mac.mm
-  if (BundleOwnedByRoot())
+  if (owner && *owner == 0) {
     return true;
+  }
 
   // 2) If the effective user is root and the browser is not owned by root (i.e.
   // if the current user has run with sudo).
-  if (geteuid() == 0)
+  if (geteuid() == 0) {
     return true;
+  }
 
   // 3) If effective user is not the owner of the browser and is an
   // administrator.
-  return !BundleOwnedByCurrentUser() && IsEffectiveUserAdmin();
+  return owner && *owner != geteuid() && IsEffectiveUserAdmin();
 }
 
 int RunCommand(const base::FilePath& exe_path, const char* cmd_switch) {
   base::CommandLine command(exe_path);
   command.AppendSwitch(cmd_switch);
+  command.AppendSwitch(updater::kEnableLoggingSwitch);
+  command.AppendSwitchASCII(updater::kLoggingModuleSwitch,
+                            updater::kLoggingModuleSwitchValue);
 
   int exit_code = -1;
   auto process = base::LaunchProcess(command, {});
@@ -197,9 +199,30 @@ void InstallUpdaterAndRegisterBrowser(base::OnceClosure complete) {
           std::move(complete)));
 }
 
+// Marks the browser as active, and schedules a call 1 hour later to mark the
+// browser as active again.
+void SetActive() {
+  base::FilePath actives_dir =
+      base::GetHomeDir()
+          .AppendASCII("Library")
+          .Append(FILE_PATH_LITERAL(COMPANY_SHORTNAME_STRING))
+          .Append(FILE_PATH_LITERAL(COMPANY_SHORTNAME_STRING "SoftwareUpdate"))
+          .AppendASCII("Actives");
+  if (!CreateDirectory(actives_dir)) {
+    return;
+  }
+  base::WriteFile(actives_dir.Append(base::apple::BaseBundleID()), "");
+  base::ThreadPool::PostDelayedTask(
+      FROM_HERE,
+      {base::MayBlock(), base::TaskPriority::BEST_EFFORT,
+       base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN},
+      base::BindOnce(&SetActive), base::Hours(1));
+}
+
 }  // namespace
 
 std::string CurrentlyInstalledVersion() {
+  base::ScopedBlockingCall blocks(FROM_HERE, base::BlockingType::WILL_BLOCK);
   base::FilePath outer_bundle = base::apple::OuterBundlePath();
   base::FilePath plist_path =
       outer_bundle.Append("Contents").Append("Info.plist");
@@ -210,13 +233,22 @@ std::string CurrentlyInstalledVersion() {
 }
 
 updater::UpdaterScope GetUpdaterScope() {
-  return BundleOwnedByRoot() ? updater::UpdaterScope::kSystem
-                             : updater::UpdaterScope::kUser;
+  std::optional<uid_t> owner = GetBundleOwner();
+  return owner && (*owner == 0 || *owner != geteuid())
+             ? updater::UpdaterScope::kSystem
+             : updater::UpdaterScope::kUser;
 }
 
 void EnsureUpdater(base::OnceClosure prompt, base::OnceClosure complete) {
+  base::ThreadPool::PostTask(FROM_HERE,
+                             {base::MayBlock(), base::TaskPriority::BEST_EFFORT,
+                              base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN},
+                             base::BindOnce(&SetActive));
   base::ThreadPool::PostTaskAndReplyWithResult(
-      FROM_HERE, {base::MayBlock()}, base::BindOnce(&GetUpdaterScope),
+      FROM_HERE,
+      {base::MayBlock(), base::TaskPriority::BEST_EFFORT,
+       base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN},
+      base::BindOnce(&GetUpdaterScope),
       base::BindOnce(
           [](base::OnceClosure prompt, base::OnceClosure complete,
              updater::UpdaterScope scope) {
@@ -276,14 +308,15 @@ void SetupSystemUpdater() {
   }
 
   base::apple::ScopedCFTypeRef<CFErrorRef> error;
-  Boolean result = SMJobBless(kSMDomainSystemLaunchd,
-                              base::SysUTF8ToCFStringRef(kPrivilegedHelperName),
-                              authorization, error.InitializeInto());
+  Boolean result =
+      SMJobBless(kSMDomainSystemLaunchd,
+                 base::SysUTF8ToCFStringRef(kPrivilegedHelperName).get(),
+                 authorization, error.InitializeInto());
   if (!result) {
     base::apple::ScopedCFTypeRef<CFStringRef> desc(
-        CFErrorCopyDescription(error));
+        CFErrorCopyDescription(error.get()));
     VLOG(0) << "Could not bless the privileged helper. Resulting error: "
-            << base::SysCFStringRefToUTF8(desc);
+            << base::SysCFStringRefToUTF8(desc.get());
   }
 
   base::MakeRefCounted<BrowserUpdaterHelperClientMac>()->SetupSystemUpdater(

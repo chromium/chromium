@@ -21,6 +21,7 @@
 
 #include "base/command_line.h"
 #include "base/compiler_specific.h"
+#include "base/containers/cxx20_erase_vector.h"
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
 #include "base/location.h"
@@ -91,7 +92,7 @@ class HistoryService::BackendDelegate : public HistoryBackend::Delegate {
         can_add_url_(can_add_url) {}
 
   bool CanAddURL(const GURL& url) const override {
-    return can_add_url_ ? can_add_url_.Run(url) : true;
+    return can_add_url_ ? can_add_url_.Run(url) : url.is_valid();
   }
 
   void NotifyProfileError(sql::InitStatus init_status,
@@ -120,7 +121,7 @@ class HistoryService::BackendDelegate : public HistoryBackend::Delegate {
 
   void NotifyURLVisited(const URLRow& url_row,
                         const VisitRow& visit_row,
-                        absl::optional<int64_t> local_navigation_id) override {
+                        std::optional<int64_t> local_navigation_id) override {
     service_task_runner_->PostTask(
         FROM_HERE,
         base::BindOnce(&HistoryService::NotifyURLVisited, history_service_,
@@ -293,6 +294,7 @@ void HistoryService::SetOnCloseContextAnnotationsForVisit(
 base::CancelableTaskTracker::TaskId HistoryService::GetAnnotatedVisits(
     const QueryOptions& options,
     bool compute_redirect_chain_start_properties,
+    bool get_unclustered_visits_only,
     GetAnnotatedVisitsCallback callback,
     base::CancelableTaskTracker* tracker) const {
   DCHECK(backend_task_runner_) << "History service being called after cleanup";
@@ -300,7 +302,23 @@ base::CancelableTaskTracker::TaskId HistoryService::GetAnnotatedVisits(
   return tracker->PostTaskAndReplyWithResult(
       backend_task_runner_.get(), FROM_HERE,
       base::BindOnce(&HistoryBackend::GetAnnotatedVisits, history_backend_,
-                     options, compute_redirect_chain_start_properties, nullptr),
+                     options, compute_redirect_chain_start_properties,
+                     get_unclustered_visits_only, nullptr),
+      std::move(callback));
+}
+
+base::CancelableTaskTracker::TaskId HistoryService::ToAnnotatedVisits(
+    const VisitVector& visit_rows,
+    bool compute_redirect_chain_start_properties,
+    ToAnnotatedVisitsCallback callback,
+    base::CancelableTaskTracker* tracker) const {
+  DCHECK(backend_task_runner_) << "History service being called after cleanup";
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  return tracker->PostTaskAndReplyWithResult(
+      backend_task_runner_.get(), FROM_HERE,
+      base::BindOnce(&HistoryBackend::ToAnnotatedVisitsFromRows,
+                     history_backend_, visit_rows,
+                     compute_redirect_chain_start_properties),
       std::move(callback));
 }
 
@@ -469,7 +487,8 @@ void HistoryService::OnDeviceInfoChange() {
 
   SyncDeviceInfoMap sync_device_info;
 
-  for (const auto& device_info : device_info_tracker_->GetAllDeviceInfo()) {
+  for (const syncer::DeviceInfo* device_info :
+       device_info_tracker_->GetAllDeviceInfo()) {
     sync_device_info[device_info->guid()] = {device_info->os_type(),
                                              device_info->form_factor()};
   }
@@ -572,7 +591,7 @@ void HistoryService::AddPage(const GURL& url,
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   AddPage(HistoryAddPageArgs(
       url, time, context_id, nav_entry_id,
-      /*local_navigation_id=*/absl::nullopt, referrer, redirects, transition,
+      /*local_navigation_id=*/std::nullopt, referrer, redirects, transition,
       !ui::PageTransitionIsMainFrame(transition), visit_source,
       did_replace_entry, /*consider_for_ntp_most_visited=*/true));
 }
@@ -583,19 +602,24 @@ void HistoryService::AddPage(const GURL& url,
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   AddPage(HistoryAddPageArgs(
       url, time, /*context_id=*/0, /*nav_entry_id=*/0,
-      /*local_navigation_id=*/absl::nullopt,
+      /*local_navigation_id=*/std::nullopt,
       /*referrer=*/GURL(), RedirectList(), ui::PAGE_TRANSITION_LINK,
       /*hidden=*/false, visit_source,
       /*did_replace_entry=*/false, /*consider_for_ntp_most_visited=*/true));
 }
 
-void HistoryService::AddPage(const HistoryAddPageArgs& add_page_args) {
+void HistoryService::AddPage(HistoryAddPageArgs add_page_args) {
   TRACE_EVENT0("browser", "HistoryService::AddPage");
   DCHECK(backend_task_runner_) << "History service being called after cleanup";
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   if (!CanAddURL(add_page_args.url))
     return;
+
+  DCHECK(add_page_args.url.is_valid());
+
+  base::EraseIf(add_page_args.redirects,
+                [this](const GURL& url) { return !CanAddURL(url); });
 
   // Inform VisitedDelegate of all links and redirects.
   if (visit_delegate_) {
@@ -631,6 +655,8 @@ void HistoryService::AddPageNoVisitForBookmark(const GURL& url,
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!CanAddURL(url))
     return;
+
+  DCHECK(url.is_valid());
 
   ScheduleTask(PRIORITY_NORMAL,
                base::BindOnce(&HistoryBackend::AddPageNoVisitForBookmark,
@@ -767,6 +793,8 @@ void HistoryService::AddPageWithDetails(const GURL& url,
   // Filter out unwanted URLs.
   if (!CanAddURL(url))
     return;
+
+  DCHECK(url.is_valid());
 
   // Inform VisitDelegate of the URL.
   if (visit_delegate_) {
@@ -1058,6 +1086,20 @@ base::CancelableTaskTracker::TaskId HistoryService::QueryURL(
   return tracker->PostTaskAndReplyWithResult(
       backend_task_runner_.get(), FROM_HERE,
       base::BindOnce(&HistoryBackend::QueryURL, history_backend_, url,
+                     want_visits),
+      std::move(callback));
+}
+
+base::CancelableTaskTracker::TaskId HistoryService::QueryURLs(
+    const std::vector<GURL>& urls,
+    bool want_visits,
+    QueryURLsCallback callback,
+    base::CancelableTaskTracker* tracker) {
+  DCHECK(backend_task_runner_) << "History service being called after cleanup";
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  return tracker->PostTaskAndReplyWithResult(
+      backend_task_runner_.get(), FROM_HERE,
+      base::BindOnce(&HistoryBackend::QueryURLs, history_backend_, urls,
                      want_visits),
       std::move(callback));
 }
@@ -1459,18 +1501,6 @@ HistoryService::GetDeleteDirectivesSyncableService() {
 }
 
 std::unique_ptr<syncer::ModelTypeControllerDelegate>
-HistoryService::GetTypedURLSyncControllerDelegate() {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  // Note that a callback is bound for GetTypedURLSyncControllerDelegate()
-  // because this getter itself must also run in the backend sequence, and the
-  // proxy object below will take care of that.
-  return std::make_unique<syncer::ProxyModelTypeControllerDelegate>(
-      backend_task_runner_,
-      base::BindRepeating(&HistoryBackend::GetTypedURLSyncControllerDelegate,
-                          base::Unretained(history_backend_.get())));
-}
-
-std::unique_ptr<syncer::ModelTypeControllerDelegate>
 HistoryService::GetHistorySyncControllerDelegate() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   // Note that a callback is bound for GetHistorySyncControllerDelegate()
@@ -1525,6 +1555,7 @@ void HistoryService::DeleteURLs(const std::vector<GURL>& urls) {
 
 void HistoryService::ExpireHistoryBetween(
     const std::set<GURL>& restrict_urls,
+    std::optional<std::string> restrict_app_id,
     Time begin_time,
     Time end_time,
     bool user_initiated,
@@ -1535,7 +1566,8 @@ void HistoryService::ExpireHistoryBetween(
   tracker->PostTaskAndReply(
       backend_task_runner_.get(), FROM_HERE,
       base::BindOnce(&HistoryBackend::ExpireHistoryBetween, history_backend_,
-                     restrict_urls, begin_time, end_time, user_initiated),
+                     restrict_urls, restrict_app_id, begin_time, end_time,
+                     user_initiated),
       std::move(callback));
 }
 
@@ -1568,6 +1600,7 @@ void HistoryService::DeleteLocalAndRemoteHistoryBetween(
     WebHistoryService* web_history,
     Time begin_time,
     Time end_time,
+    std::optional<std::string> app_id,
     base::OnceClosure callback,
     base::CancelableTaskTracker* tracker) {
   // TODO(crbug.com/929111): This should be factored out into a separate class
@@ -1609,7 +1642,7 @@ void HistoryService::DeleteLocalAndRemoteHistoryBetween(
         /*restrict_urls=*/{}, begin_time, end_time, base::DoNothing(),
         partial_traffic_annotation);
   }
-  ExpireHistoryBetween(/*restrict_urls=*/{}, begin_time, end_time,
+  ExpireHistoryBetween(/*restrict_urls=*/{}, app_id, begin_time, end_time,
                        /*user_initiated=*/true, std::move(callback), tracker);
 }
 
@@ -1661,7 +1694,7 @@ void HistoryService::OnDBLoaded() {
 void HistoryService::NotifyURLVisited(
     const URLRow& url_row,
     const VisitRow& new_visit,
-    absl::optional<int64_t> local_navigation_id) {
+    std::optional<int64_t> local_navigation_id) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   for (HistoryServiceObserver& observer : observers_) {
     observer.OnURLVisited(this, url_row, new_visit);
@@ -1746,7 +1779,7 @@ void HistoryService::NotifyFaviconsChanged(const std::set<GURL>& page_urls,
 
 bool HistoryService::CanAddURL(const GURL& url) {
   if (!history_client_) {
-    return true;
+    return url.is_valid();
   }
   return history_client_->GetThreadSafeCanAddURLCallback().Run(url);
 }

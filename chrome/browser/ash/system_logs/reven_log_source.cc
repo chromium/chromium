@@ -4,10 +4,11 @@
 
 #include "chrome/browser/ash/system_logs/reven_log_source.h"
 
+#include <string_view>
+
 #include "base/functional/bind.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
-#include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/task/thread_pool.h"
@@ -62,7 +63,7 @@ constexpr char kRevenWirelessIdKey[] = "chromeosflex_wireless_id";
 constexpr char kRevenWirelessNameKey[] = "chromeosflex_wireless_name";
 
 // Format a gradually-accumulated, comma-separated list.
-void StrListAppend(std::string* list, const base::StringPiece value) {
+void StrListAppend(std::string* list, const std::string_view value) {
   if (!list->empty()) {
     base::StrAppend(list, {", "});
   }
@@ -160,7 +161,7 @@ void PopulateSystemInfo(SystemLogsResponse& psd, const TelemetryInfoPtr& info) {
 // Constructs key names based on the passed label. Collects data from all passed
 // devices into each value.
 void PopulateBusDevicesInfo(SystemLogsResponse& psd,
-                            const base::StringPiece label,
+                            const std::string_view label,
                             const std::vector<healthd::BusDevicePtr>& devices) {
   if (devices.empty()) {
     return;

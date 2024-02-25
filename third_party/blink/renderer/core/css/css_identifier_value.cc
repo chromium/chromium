@@ -58,6 +58,7 @@ CSSIdentifierValue::CSSIdentifierValue(const Length& length)
     case Length::kPercent:
     case Length::kFixed:
     case Length::kCalculated:
+    case Length::kFlex:
     case Length::kDeviceWidth:
     case Length::kDeviceHeight:
     case Length::kMinIntrinsic:

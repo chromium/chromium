@@ -255,7 +255,7 @@ class ASH_EXPORT FullscreenMagnifierController
   void MoveCursorTo(const gfx::Point& root_location);
 
   // Target root window. This must not be NULL.
-  raw_ptr<aura::Window, ExperimentalAsh> root_window_;
+  raw_ptr<aura::Window> root_window_;
 
   // True if the magnified window is currently animating a change. Otherwise,
   // false.

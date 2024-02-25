@@ -7,6 +7,7 @@
 
 #import "ios/web/public/init/web_main_runner.h"
 
+#import "base/memory/raw_ptr.h"
 #import "ios/web/public/web_client.h"
 
 namespace web {
@@ -36,7 +37,7 @@ class WebMainRunnerImpl : public WebMainRunner {
   bool completed_basic_startup_;
 
   // The delegate will outlive this object.
-  WebMainDelegate* delegate_;
+  raw_ptr<WebMainDelegate> delegate_;
 
   // Used if the embedder doesn't set one.
   WebClient empty_web_client_;

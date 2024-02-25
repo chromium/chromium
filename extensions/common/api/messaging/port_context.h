@@ -7,10 +7,10 @@
 
 #include <stddef.h>
 
+#include <optional>
 #include <string>
-
 #include "base/debug/crash_logging.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
+#include "extensions/common/extension_id.h"
 
 namespace extensions {
 
@@ -39,25 +39,25 @@ struct PortContext {
     WorkerContext();
     WorkerContext(int thread_id,
                   int64_t version_id,
-                  const std::string& extension_id);
+                  const ExtensionId& extension_id);
 
     int thread_id;
     int64_t version_id;
-    std::string extension_id;
+    ExtensionId extension_id;
   };
 
   static PortContext ForFrame(int routing_id);
   static PortContext ForWorker(int thread_id,
                                int64_t version_id,
-                               const std::string& extension_id);
+                               const ExtensionId& extension_id);
   static PortContext ForNativeHost();
 
   bool is_for_render_frame() const { return frame.has_value(); }
   bool is_for_service_worker() const { return worker.has_value(); }
   bool is_for_native_host() const { return !frame && !worker; }
 
-  absl::optional<FrameContext> frame;
-  absl::optional<WorkerContext> worker;
+  std::optional<FrameContext> frame;
+  std::optional<WorkerContext> worker;
 };
 
 namespace debug {
@@ -68,7 +68,7 @@ class ScopedPortContextCrashKeys {
   ~ScopedPortContextCrashKeys();
 
  private:
-  absl::optional<base::debug::ScopedCrashKeyString> extension_id_;
+  std::optional<base::debug::ScopedCrashKeyString> extension_id_;
 };
 
 }  // namespace debug

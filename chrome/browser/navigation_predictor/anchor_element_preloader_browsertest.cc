@@ -12,8 +12,8 @@
 #include "chrome/browser/predictors/loading_predictor.h"
 #include "chrome/browser/predictors/loading_predictor_factory.h"
 #include "chrome/browser/predictors/preconnect_manager.h"
-#include "chrome/browser/prefetch/prefetch_prefs.h"
 #include "chrome/browser/preloading/chrome_preloading.h"
+#include "chrome/browser/preloading/preloading_prefs.h"
 #include "chrome/browser/subresource_filter/subresource_filter_browser_test_harness.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/test/base/in_process_browser_test.h"
@@ -442,13 +442,8 @@ class AnchorElementPreloaderLimitedBrowserTest
 };
 
 // TODO(crbug.com/1383953): Re-enable this test
-#if BUILDFLAG(IS_WIN)
-#define MAYBE_LimitExceeded DISABLED_LimitExceeded
-#else
-#define MAYBE_LimitExceeded LimitExceeded
-#endif
 IN_PROC_BROWSER_TEST_F(AnchorElementPreloaderLimitedBrowserTest,
-                       MAYBE_LimitExceeded) {
+                       DISABLED_LimitExceeded) {
   const GURL& url = GetTestURL("/many_anchors.html");
 
   EXPECT_TRUE(ui_test_utils::NavigateToURL(browser(), url));

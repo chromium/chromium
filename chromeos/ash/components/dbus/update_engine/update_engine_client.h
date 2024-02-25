@@ -7,6 +7,7 @@
 
 #include <stdint.h>
 
+#include <optional>
 #include <string>
 
 #include "base/component_export.h"
@@ -15,7 +16,6 @@
 #include "chromeos/ash/components/dbus/update_engine/update_engine.pb.h"
 #include "chromeos/dbus/common/dbus_client.h"
 #include "dbus/message.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/cros_system_api/dbus/update_engine/dbus-constants.h"
 
 namespace ash {
@@ -185,7 +185,7 @@ class COMPONENT_EXPORT(ASH_DBUS_UPDATE_ENGINE) UpdateEngineClient
 
   // Gets the value of a feature in Update Engine. Returns null result on error.
   using IsFeatureEnabledCallback =
-      base::OnceCallback<void(absl::optional<bool> result)>;
+      base::OnceCallback<void(std::optional<bool> result)>;
   virtual void IsFeatureEnabled(const std::string& feature,
                                 IsFeatureEnabledCallback callback) = 0;
 

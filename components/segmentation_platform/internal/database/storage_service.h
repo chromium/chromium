@@ -6,6 +6,7 @@
 #define COMPONENTS_SEGMENTATION_PLATFORM_INTERNAL_DATABASE_STORAGE_SERVICE_H_
 
 #include <memory>
+#include <optional>
 
 #include "base/check.h"
 #include "base/containers/flat_set.h"
@@ -14,11 +15,11 @@
 #include "components/leveldb_proto/public/proto_database.h"
 #include "components/segmentation_platform/internal/database/cached_result_provider.h"
 #include "components/segmentation_platform/internal/database/cached_result_writer.h"
+#include "components/segmentation_platform/internal/database/client_result_prefs.h"
 #include "components/segmentation_platform/internal/database/config_holder.h"
 #include "components/segmentation_platform/internal/execution/model_manager.h"
 #include "components/segmentation_platform/internal/execution/model_manager_impl.h"
 #include "components/segmentation_platform/public/proto/segmentation_platform.pb.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 class PrefService;
 
@@ -86,6 +87,7 @@ class StorageService {
           signal_db,
       std::unique_ptr<leveldb_proto::ProtoDatabase<proto::SignalStorageConfigs>>
           signal_storage_config_db,
+      scoped_refptr<base::SequencedTaskRunner> task_runner,
       base::Clock* clock,
       UkmDataManager* ukm_data_manager,
       std::vector<std::unique_ptr<Config>> configs,
@@ -145,6 +147,10 @@ class StorageService {
 
   UkmDataManager* ukm_data_manager() { return ukm_data_manager_; }
 
+  ClientResultPrefs* client_result_prefs() {
+    return client_result_prefs_.get();
+  }
+
   void set_cached_result_writer_for_testing(
       std::unique_ptr<CachedResultWriter> writer) {
     cached_result_writer_ = std::move(writer);
@@ -163,6 +169,8 @@ class StorageService {
 
   // All client Configs.
   std::unique_ptr<ConfigHolder> config_holder_;
+
+  std::unique_ptr<ClientResultPrefs> client_result_prefs_;
 
   // Result cache.
   std::unique_ptr<CachedResultProvider> cached_result_provider_;
@@ -188,9 +196,9 @@ class StorageService {
   std::unique_ptr<DatabaseMaintenanceImpl> database_maintenance_;
 
   // Database initialization statuses.
-  absl::optional<bool> segment_info_database_initialized_;
-  absl::optional<bool> signal_database_initialized_;
-  absl::optional<bool> signal_storage_config_initialized_;
+  std::optional<bool> segment_info_database_initialized_;
+  std::optional<bool> signal_database_initialized_;
+  std::optional<bool> signal_storage_config_initialized_;
   SuccessCallback init_callback_;
 
   base::WeakPtrFactory<StorageService> weak_ptr_factory_{this};

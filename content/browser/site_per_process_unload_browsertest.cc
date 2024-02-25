@@ -2,8 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "content/browser/site_per_process_browsertest.h"
-
 #include <list>
 #include <memory>
 #include <string>
@@ -14,14 +12,17 @@
 #include "base/json/json_reader.h"
 #include "base/location.h"
 #include "base/memory/ptr_util.h"
+#include "base/memory/weak_ptr.h"
 #include "base/ranges/algorithm.h"
-#include "base/run_loop.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/bind.h"
+#include "base/test/run_until.h"
 #include "base/test/scoped_run_loop_timeout.h"
 #include "base/test/test_timeouts.h"
+#include "base/test/with_feature_override.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
+#include "content/browser/fenced_frame/fenced_frame_url_mapping.h"
 #include "content/browser/renderer_host/cross_process_frame_connector.h"
 #include "content/browser/renderer_host/frame_tree.h"
 #include "content/browser/renderer_host/navigation_controller_impl.h"
@@ -29,6 +30,7 @@
 #include "content/browser/renderer_host/navigator.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/browser/renderer_host/render_widget_host_view_child_frame.h"
+#include "content/browser/site_per_process_browsertest.h"
 #include "content/browser/web_contents/web_contents_impl.h"
 #include "content/common/content_navigation_policy.h"
 #include "content/public/browser/navigation_handle.h"
@@ -54,9 +56,9 @@ namespace content {
 
 namespace {
 
-void UnloadPrint(const ToRenderFrameHost& target, const char* message) {
+void AddPagehideHandler(const ToRenderFrameHost& target, const char* message) {
   EXPECT_TRUE(
-      ExecJs(target, JsReplace("window.onunload = function() { "
+      ExecJs(target, JsReplace("window.onpagehide = function() { "
                                "  window.domAutomationController.send($1);"
                                "}",
                                message)));
@@ -64,9 +66,9 @@ void UnloadPrint(const ToRenderFrameHost& target, const char* message) {
 
 }  // namespace
 
-// Tests that there are no crashes if a subframe is detached in its unload
+// Tests that there are no crashes if a subframe is detached in its pagehide
 // handler. See https://crbug.com/590054.
-IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest, DetachInUnloadHandler) {
+IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest, DetachInPagehideHandler) {
   GURL main_url(embedded_test_server()->GetURL(
       "a.com", "/cross_site_iframe_factory.html?a(b(b))"));
   EXPECT_TRUE(NavigateToURL(shell(), main_url));
@@ -88,11 +90,11 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest, DetachInUnloadHandler) {
   RenderFrameDeletedObserver deleted_observer(
       root->child_at(0)->child_at(0)->current_frame_host());
 
-  // Add an unload handler to the grandchild that causes it to be synchronously
+  // Add a pagehide handler to the grandchild that causes it to be synchronously
   // detached, then navigate it.
   EXPECT_TRUE(
       ExecJs(root->child_at(0)->child_at(0),
-             "window.onunload=function(e){\n"
+             "window.onpagehide=function(e){\n"
              "    window.parent.document.getElementById('child-0').remove();\n"
              "};\n"));
   auto script = JsReplace("window.document.getElementById('child-0').src = $1",
@@ -112,9 +114,9 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest, DetachInUnloadHandler) {
       DepictFrameTree(root));
 }
 
-// Tests that trying to navigate in the unload handler doesn't crash the
+// Tests that trying to navigate in the pagehide handler doesn't crash the
 // browser.
-IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest, NavigateInUnloadHandler) {
+IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest, NavigateInPagehideHandler) {
   GURL main_url(embedded_test_server()->GetURL(
       "a.com", "/cross_site_iframe_factory.html?a(b(b))"));
   EXPECT_TRUE(NavigateToURL(shell(), main_url));
@@ -134,9 +136,9 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest, NavigateInUnloadHandler) {
   EXPECT_EQ(1,
             EvalJs(root->child_at(0)->current_frame_host(), "frames.length;"));
 
-  // Add an unload handler to B's subframe.
+  // Add a pagehide handler to B's subframe.
   EXPECT_TRUE(ExecJs(root->child_at(0)->child_at(0)->current_frame_host(),
-                     "window.onunload=function(e){\n"
+                     "window.onpagehide=function(e){\n"
                      "    window.location = '#navigate';\n"
                      "};\n"));
 
@@ -151,7 +153,7 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest, NavigateInUnloadHandler) {
   // Wait until B's subframe RenderFrameHost is destroyed.
   deleted_observer.WaitUntilDeleted();
 
-  // Check that C's subframe is alive and the navigation in the unload handler
+  // Check that C's subframe is alive and the navigation in the pagehide handler
   // was ignored.
   EXPECT_EQ(0, EvalJs(root->child_at(0)->child_at(0)->current_frame_host(),
                       "frames.length;"));
@@ -203,12 +205,8 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
   ASSERT_TRUE(
       ExecJs(web_contents(),
              "document.querySelector('iframe').style.visibility = 'hidden';"));
-  while (!frame_connector_delegate->IsHidden()) {
-    base::RunLoop run_loop;
-    base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
-        FROM_HERE, run_loop.QuitClosure(), TestTimeouts::tiny_timeout());
-    run_loop.Run();
-  }
+  EXPECT_TRUE(base::test::RunUntil(
+      [&]() { return frame_connector_delegate->IsHidden(); }));
 
   // Now we navigate the child to about:blank, but since we do not proceed with
   // the navigation, the OOPIF should stay alive and RemoteFrameView intact.
@@ -228,19 +226,15 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
   ASSERT_TRUE(
       ExecJs(web_contents(),
              "document.querySelector('iframe').style.visibility = 'visible';"));
-  while (frame_connector_delegate->IsHidden()) {
-    base::RunLoop run_loop;
-    base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
-        FROM_HERE, run_loop.QuitClosure(), TestTimeouts::tiny_timeout());
-    run_loop.Run();
-  }
+  EXPECT_TRUE(base::test::RunUntil(
+      [&]() { return !frame_connector_delegate->IsHidden(); }));
 }
 
 // Ensure that after a main frame with an OOPIF is navigated cross-site, the
-// unload handler in the OOPIF sees correct main frame origin, namely the old
+// pagehide handler in the OOPIF sees correct main frame origin, namely the old
 // and not the new origin.  See https://crbug.com/825283.
 IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
-                       ParentOriginDoesNotChangeInUnloadHandler) {
+                       ParentOriginDoesNotChangeInPagehideHandler) {
   GURL main_url(embedded_test_server()->GetURL(
       "a.com", "/cross_site_iframe_factory.html?a(b)"));
   EXPECT_TRUE(NavigateToURL(shell(), main_url));
@@ -249,7 +243,7 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
                             .root();
 
   // Open a popup on b.com.  The b.com subframe on the main frame will use this
-  // in its unload handler.
+  // in its pagehide handler.
   GURL b_url(embedded_test_server()->GetURL("b.com", "/title1.html"));
 
   // Save the WebContents instance created via the popup to be able to listen
@@ -257,19 +251,19 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
   auto* popup_shell = OpenPopup(shell()->web_contents(), b_url, "popup");
   WebContents* popup_web_contents = popup_shell->web_contents();
 
-  // Add an unload handler to b.com subframe, which will look up the top
+  // Add a pagehide handler to b.com subframe, which will look up the top
   // frame's origin and send it via domAutomationController.  Unfortunately,
   // the subframe's browser-side state will have been torn down when it runs
-  // the unload handler, so to ensure that the message can be received, send it
-  // through the popup.
+  // the pagehide handler, so to ensure that the message can be received, send
+  // it through the popup.
   EXPECT_TRUE(ExecJs(root->child_at(0),
-                     "window.onunload = function(e) {"
+                     "window.onpagehide = function(e) {"
                      "  window.open('','popup').domAutomationController.send("
                      "      'top-origin ' + location.ancestorOrigins[0]);"
                      "};"));
 
   // Navigate the main frame to c.com and wait for the message from the
-  // subframe's unload handler.
+  // subframe's pagehide handler.
   GURL c_url(embedded_test_server()->GetURL("c.com", "/title1.html"));
 
   // NOTE: The message occurs in the WebContents for the popup.
@@ -392,7 +386,7 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
   NavigationRequest::SetCommitTimeoutForTesting(base::TimeDelta());
 }
 
-// Test that unload handlers in iframes are run, even when the removed subtree
+// Test that pagehide handlers in iframes are run, even when the removed subtree
 // is complicated with nested iframes in different processes.
 //     A1                         A1
 //    / \                        / \
@@ -403,28 +397,26 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
 // B2  A2
 //     |
 //     C3
-// TODO(crbug.com/1012185): Flaky timeouts on Linux and Mac.
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_MAC)
-#define MAYBE_UnloadHandlerSubframes DISABLED_UnloadHandlerSubframes
-#else
-#define MAYBE_UnloadHandlerSubframes UnloadHandlerSubframes
-#endif
-IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
-                       MAYBE_UnloadHandlerSubframes) {
+IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest, PagehideHandlerSubframes) {
+  // The test expects the previous document to be deleted on navigation.
+  DisableBackForwardCacheForTesting(
+      web_contents(), content::BackForwardCache::TEST_REQUIRES_NO_CACHING);
+
   GURL main_url(embedded_test_server()->GetURL(
       "a.com", "/cross_site_iframe_factory.html?a(b(c(b),c(a(c))),d)"));
   EXPECT_TRUE(NavigateToURL(shell(), main_url));
 
-  // Add a unload handler to every frames. It notifies the browser using the
+  // Add a pagehide handler to every frames. It notifies the browser using the
   // DomAutomationController it has been executed.
   FrameTreeNode* root = web_contents()->GetPrimaryFrameTree().root();
-  UnloadPrint(root, "A1");
-  UnloadPrint(root->child_at(0), "B1");
-  UnloadPrint(root->child_at(0)->child_at(0), "C1");
-  UnloadPrint(root->child_at(0)->child_at(1), "C2");
-  UnloadPrint(root->child_at(0)->child_at(0)->child_at(0), "B2");
-  UnloadPrint(root->child_at(0)->child_at(1)->child_at(0), "A2");
-  UnloadPrint(root->child_at(0)->child_at(1)->child_at(0)->child_at(0), "C3");
+  AddPagehideHandler(root, "A1");
+  AddPagehideHandler(root->child_at(0), "B1");
+  AddPagehideHandler(root->child_at(0)->child_at(0), "C1");
+  AddPagehideHandler(root->child_at(0)->child_at(1), "C2");
+  AddPagehideHandler(root->child_at(0)->child_at(0)->child_at(0), "B2");
+  AddPagehideHandler(root->child_at(0)->child_at(1)->child_at(0), "A2");
+  AddPagehideHandler(root->child_at(0)->child_at(1)->child_at(0)->child_at(0),
+                     "C3");
   DOMMessageQueue dom_message_queue(
       WebContents::FromRenderFrameHost(web_contents()->GetPrimaryMainFrame()));
 
@@ -444,7 +436,7 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
   GURL e_url(embedded_test_server()->GetURL("e.com", "/title1.html"));
   NavigateFrameToURL(root->child_at(0), e_url);
 
-  // Collect unload handler messages.
+  // Collect pagehide handler messages.
   std::string message;
   std::vector<std::string> messages;
   for (int i = 0; i < 6; ++i) {
@@ -454,7 +446,8 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
   }
   EXPECT_FALSE(dom_message_queue.PopMessage(&message));
 
-  // Check every frame in the replaced subtree has executed its unload handler.
+  // Check every frame in the replaced subtree has executed its pagehide
+  // handler.
   EXPECT_THAT(messages,
               WhenSorted(ElementsAre("A2", "B1", "B2", "C1", "C2", "C3")));
 
@@ -509,13 +502,12 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest, SlowUnloadHandlerInIframe) {
   deleted_observer.WaitUntilDeleted();
 }
 
-// Navigate from A(B(A(B)) to C. Check the unload handler are executed, executed
-// in the right order and the processes for A and B are removed.
-IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest, Unload_ABAB) {
-  // With BackForwardCache, old document doesn't fire unload handlers as the
-  // page is stored in BackForwardCache on navigation.
-  web_contents()->GetController().GetBackForwardCache().DisableForTesting(
-      content::BackForwardCache::TEST_USES_UNLOAD_EVENT);
+// Navigate from A(B(A(B)) to C. Check the pagehide handler are executed,
+// executed in the right order and the processes for A and B are removed.
+IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest, PagehideHandlerABAB) {
+  // The test expects the previous document to be deleted on navigation.
+  DisableBackForwardCacheForTesting(
+      web_contents(), content::BackForwardCache::TEST_REQUIRES_NO_CACHING);
 
   GURL initial_url(embedded_test_server()->GetURL(
       "a.com", "/cross_site_iframe_factory.html?a(b(a(b)))"));
@@ -524,12 +516,12 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest, Unload_ABAB) {
   // 1) Navigate on a page with an iframe.
   EXPECT_TRUE(NavigateToURL(shell(), initial_url));
 
-  // 2) Add unload handler on every frame.
+  // 2) Add pagehide handler on every frame.
   FrameTreeNode* root = web_contents()->GetPrimaryFrameTree().root();
-  UnloadPrint(root, "A1");
-  UnloadPrint(root->child_at(0), "B1");
-  UnloadPrint(root->child_at(0)->child_at(0), "A2");
-  UnloadPrint(root->child_at(0)->child_at(0)->child_at(0), "B2");
+  AddPagehideHandler(root, "A1");
+  AddPagehideHandler(root->child_at(0), "B1");
+  AddPagehideHandler(root->child_at(0)->child_at(0), "A2");
+  AddPagehideHandler(root->child_at(0)->child_at(0)->child_at(0), "B2");
   root->current_frame_host()->DisableUnloadTimerForTesting();
 
   DOMMessageQueue dom_message_queue(
@@ -544,7 +536,7 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest, Unload_ABAB) {
   // 3) Navigate cross process.
   EXPECT_TRUE(NavigateToURL(shell(), next_url));
 
-  // 4) Wait for unload handler messages and check they are sent in order.
+  // 4) Wait for pagehide handler messages and check they are sent in order.
   std::vector<std::string> messages;
   std::string message;
   for (int i = 0; i < 4; ++i) {
@@ -655,14 +647,13 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest, UnloadNestedPendingDeletion) {
 }
 
 // A set of nested frames A1(B1(A2)) are pending deletion because of a
-// navigation. This tests what happens if only A2 has an unload handler.
+// navigation. This tests what happens if only A2 has a pagehide handler.
 // If B1's mojom::FrameHost::Detach is called before A2, it should not destroy
 // itself and its children, but rather wait for A2.
-IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest, PartialUnloadHandler) {
-  // With BackForwardCache, old document doesn't fire unload handlers as the
-  // page is stored in BackForwardCache on navigation.
-  web_contents()->GetController().GetBackForwardCache().DisableForTesting(
-      content::BackForwardCache::TEST_USES_UNLOAD_EVENT);
+IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest, PartialPagehideHandler) {
+  // The test expects the previous document to be deleted on navigation.
+  DisableBackForwardCacheForTesting(
+      web_contents(), content::BackForwardCache::TEST_REQUIRES_NO_CACHING);
 
   GURL url_aba(embedded_test_server()->GetURL(
       "a.com", "/cross_site_iframe_factory.html?a(b(a))"));
@@ -691,8 +682,8 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest, PartialUnloadHandler) {
   // fire before we call OnDetach().
   b1->SetSubframeUnloadTimeoutForTesting(base::Seconds(30));
 
-  // Add unload handler on A2, but not on the other frames.
-  UnloadPrint(a2->frame_tree_node(), "A2");
+  // Add pagehide handler on A2, but not on the other frames.
+  AddPagehideHandler(a2->frame_tree_node(), "A2");
 
   DOMMessageQueue dom_message_queue(
       WebContents::FromRenderFrameHost(web_contents()->GetPrimaryMainFrame()));
@@ -700,7 +691,7 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest, PartialUnloadHandler) {
   // 2) Navigate cross process.
   EXPECT_TRUE(NavigateToURL(shell(), url_c));
 
-  // Check that unload handlers are executed.
+  // Check that pagehide handlers are executed.
   std::string message, message_unused;
   EXPECT_TRUE(dom_message_queue.WaitForMessage(&message));
   EXPECT_FALSE(dom_message_queue.PopMessage(&message_unused));
@@ -748,13 +739,13 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest, PartialUnloadHandler) {
 
 // Test RenderFrameHostImpl::PendingDeletionCheckCompletedOnSubtree.
 //
-// After a navigation commit, some children with no unload handler may be
+// After a navigation commit, some children with no pagehide handler may be
 // eligible for immediate deletion. Several configurations are tested:
 //
 // Before navigation commit
 //
-//              0               |  N  : No unload handler
-//   ‑‑‑‑‑‑‑‑‑‑‑‑‑‑‑‑‑‑‑‑‑      | [N] : Unload handler
+//              0               |  N  : No pagehide handler
+//   ‑‑‑‑‑‑‑‑‑‑‑‑‑‑‑‑‑‑‑‑‑      | [N] : Pagehide handler
 //  |  |  |  |  |   |     |     |
 // [1] 2 [3] 5  7   9     12    |
 //        |  |  |  / \   / \    |
@@ -762,18 +753,17 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest, PartialUnloadHandler) {
 //
 // After navigation commit (expected)
 //
-//              0               |  N  : No unload handler
-//   ---------------------      | [N] : Unload handler
+//              0               |  N  : No pagehide handler
+//   ---------------------      | [N] : Pagehide handler
 //  |     |  |            |     |
 // [1]   [3] 5            12    |
 //           |             \    |
 //          [6]            [14] |
 IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
                        PendingDeletionCheckCompletedOnSubtree) {
-  // With BackForwardCache, old document doesn't fire unload handlers as the
-  // page is stored in BackForwardCache on navigation.
-  web_contents()->GetController().GetBackForwardCache().DisableForTesting(
-      content::BackForwardCache::TEST_USES_UNLOAD_EVENT);
+  // The test expects the previous document to be deleted on navigation.
+  DisableBackForwardCacheForTesting(
+      web_contents(), content::BackForwardCache::TEST_REQUIRES_NO_CACHING);
 
   GURL url_1(embedded_test_server()->GetURL(
       "a.com",
@@ -806,11 +796,11 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
       delete_a10(rfh_10), delete_a11(rfh_11), delete_a12(rfh_12),
       delete_a13(rfh_13), delete_a14(rfh_14);
 
-  // Add the unload handlers.
-  UnloadPrint(rfh_1->frame_tree_node(), "");
-  UnloadPrint(rfh_3->frame_tree_node(), "");
-  UnloadPrint(rfh_6->frame_tree_node(), "");
-  UnloadPrint(rfh_14->frame_tree_node(), "");
+  // Add the pagehide handlers.
+  AddPagehideHandler(rfh_1->frame_tree_node(), "");
+  AddPagehideHandler(rfh_3->frame_tree_node(), "");
+  AddPagehideHandler(rfh_6->frame_tree_node(), "");
+  AddPagehideHandler(rfh_14->frame_tree_node(), "");
 
   // Disable Detach and mojo::AgentSchedulingGroupHost::DidUnloadRenderFrame.
   auto unload_ack_filter = base::BindRepeating([] { return true; });
@@ -844,10 +834,10 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
   EXPECT_FALSE(delete_a14.deleted());
 }
 
-// When an iframe is detached, check that unload handlers execute in all of its
-// child frames. Start from A(B(C)) and delete B from A.
+// When an iframe is detached, check that pagehide handlers execute in all of
+// its child frames. Start from A(B(C)) and delete B from A.
 IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
-                       DetachedIframeUnloadHandlerABC) {
+                       DetachedIframePagehideHandlerABC) {
   GURL initial_url(embedded_test_server()->GetURL(
       "a.com", "/cross_site_iframe_factory.html?a(b(c))"));
 
@@ -858,9 +848,9 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
   RenderFrameHostImpl* rfh_b = rfh_a->child_at(0)->current_frame_host();
   RenderFrameHostImpl* rfh_c = rfh_b->child_at(0)->current_frame_host();
 
-  // 2) Add unload handlers on B and C.
-  UnloadPrint(rfh_b->frame_tree_node(), "B");
-  UnloadPrint(rfh_c->frame_tree_node(), "C");
+  // 2) Add pagehide handlers on B and C.
+  AddPagehideHandler(rfh_b->frame_tree_node(), "B");
+  AddPagehideHandler(rfh_c->frame_tree_node(), "C");
 
   DOMMessageQueue dom_message_queue(web_contents());
   RenderProcessHostWatcher shutdown_B(
@@ -871,7 +861,7 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
   // 3) Detach B from A.
   ExecuteScriptAsync(root, "document.querySelector('iframe').remove();");
 
-  // 4) Wait for unload handler.
+  // 4) Wait for pagehide handler.
   std::vector<std::string> messages(2);
   EXPECT_TRUE(dom_message_queue.WaitForMessage(&messages[0]));
   EXPECT_TRUE(dom_message_queue.WaitForMessage(&messages[1]));
@@ -887,21 +877,24 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
   shutdown_C.Wait();
 }
 
-#if defined(ADDRESS_SANITIZER) || defined(THREAD_SANITIZER) || !defined(NDEBUG)
+#if defined(ADDRESS_SANITIZER) || defined(THREAD_SANITIZER) || \
+    !defined(NDEBUG) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_ANDROID)
 // Too slow under sanitizers and debug builds, even with increased timeout:
 // https://crbug.com/1096612
-#define MAYBE_DetachedIframeUnloadHandlerABCB \
-  DISABLED_DetachedIframeUnloadHandlerABCB
+// Disabled for Linux/Android due to failures: https://crbug.com/1494811
+#define MAYBE_DetachedIframePagehideHandlerABCB \
+  DISABLED_DetachedIframePagehideHandlerABCB
 #else
-#define MAYBE_DetachedIframeUnloadHandlerABCB DetachedIframeUnloadHandlerABCB
+#define MAYBE_DetachedIframePagehideHandlerABCB \
+  DetachedIframePagehideHandlerABCB
 #endif
 
-// When an iframe is detached, check that unload handlers execute in all of its
-// child frames. Start from A(B1(C(B2))) and delete B1 from A.
+// When an iframe is detached, check that pagehide handlers execute in all of
+// its child frames. Start from A(B1(C(B2))) and delete B1 from A.
 IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
-                       MAYBE_DetachedIframeUnloadHandlerABCB) {
+                       MAYBE_DetachedIframePagehideHandlerABCB) {
   // This test takes longer to run, because multiple processes are waiting on
-  // each other's documents to execute unload handler before destroying their
+  // each other's documents to execute pagehide handler before destroying their
   // documents. https://crbug.com/1311985
   base::test::ScopedRunLoopTimeout increase_timeout(
       FROM_HERE, TestTimeouts::action_max_timeout());
@@ -912,15 +905,18 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
   // 1) Navigate to a(b(c(b)))
   EXPECT_TRUE(NavigateToURL(shell(), initial_url));
   FrameTreeNode* root = web_contents()->GetPrimaryFrameTree().root();
-  RenderFrameHostImpl* rfh_a = root->current_frame_host();
-  RenderFrameHostImpl* rfh_b1 = rfh_a->child_at(0)->current_frame_host();
-  RenderFrameHostImpl* rfh_c = rfh_b1->child_at(0)->current_frame_host();
-  RenderFrameHostImpl* rfh_b2 = rfh_c->child_at(0)->current_frame_host();
+  RenderFrameHostImplWrapper rfh_a(root->current_frame_host());
+  RenderFrameHostImplWrapper rfh_b1(rfh_a->child_at(0)->current_frame_host());
+  RenderFrameHostImplWrapper rfh_c(rfh_b1->child_at(0)->current_frame_host());
+  RenderFrameHostImplWrapper rfh_b2(rfh_c->child_at(0)->current_frame_host());
 
-  // 2) Add unload handlers on B1, B2 and C.
-  UnloadPrint(rfh_b1->frame_tree_node(), "B1");
-  UnloadPrint(rfh_b2->frame_tree_node(), "B2");
-  UnloadPrint(rfh_c->frame_tree_node(), "C");
+  // 2) Add pagehide handlers on B1, B2 and C.
+  AddPagehideHandler(rfh_b1->frame_tree_node(), "B1");
+  rfh_b1->DisableUnloadTimerForTesting();
+  AddPagehideHandler(rfh_b2->frame_tree_node(), "B2");
+  rfh_b2->DisableUnloadTimerForTesting();
+  AddPagehideHandler(rfh_c->frame_tree_node(), "C");
+  rfh_c->DisableUnloadTimerForTesting();
 
   DOMMessageQueue dom_message_queue(web_contents());
   RenderProcessHostWatcher shutdown_B(
@@ -931,7 +927,7 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
   // 3) Detach B from A.
   ExecuteScriptAsync(root, "document.querySelector('iframe').remove();");
 
-  // 4) Wait for unload handler.
+  // 4) Wait for pagehide handler.
   std::vector<std::string> messages(3);
   EXPECT_TRUE(dom_message_queue.WaitForMessage(&messages[0]));
   EXPECT_TRUE(dom_message_queue.WaitForMessage(&messages[1]));
@@ -949,10 +945,10 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
   shutdown_C.Wait();
 }
 
-// When an iframe is detached, check that unload handlers execute in all of its
-// child frames. Start from A1(A2(B)), delete A2 from itself.
+// When an iframe is detached, check that pagehide handlers execute in all of
+// its child frames. Start from A1(A2(B)), delete A2 from itself.
 IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
-                       DetachedIframeUnloadHandlerAAB) {
+                       DetachedIframePagehideHandlerAAB) {
   GURL initial_url(embedded_test_server()->GetURL(
       "a.com", "/cross_site_iframe_factory.html?a(a(b))"));
 
@@ -963,9 +959,9 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
   RenderFrameHostImpl* rfh_a2 = rfh_a1->child_at(0)->current_frame_host();
   RenderFrameHostImpl* rfh_b = rfh_a2->child_at(0)->current_frame_host();
 
-  // 2) Add unload handlers on A2 ad B.
-  UnloadPrint(rfh_a2->frame_tree_node(), "A2");
-  UnloadPrint(rfh_b->frame_tree_node(), "B");
+  // 2) Add pagehide handlers on A2 ad B.
+  AddPagehideHandler(rfh_a2->frame_tree_node(), "A2");
+  AddPagehideHandler(rfh_b->frame_tree_node(), "B");
 
   DOMMessageQueue dom_message_queue(web_contents());
   RenderProcessHostWatcher shutdown_B(
@@ -975,7 +971,7 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
   ExecuteScriptAsync(rfh_a2->frame_tree_node(),
                      "parent.document.querySelector('iframe').remove();");
 
-  // 4) Wait for unload handler.
+  // 4) Wait for pagehide handler.
   std::vector<std::string> messages(2);
   EXPECT_TRUE(dom_message_queue.WaitForMessage(&messages[0]));
   EXPECT_TRUE(dom_message_queue.WaitForMessage(&messages[1]));
@@ -990,26 +986,26 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
   shutdown_B.Wait();
 }
 
-// Tests that running layout from an unload handler inside teardown of the
+// Tests that running layout from an pagehide handler inside teardown of the
 // RenderWidget (inside WidgetMsg_Close) can succeed.
 IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
-                       RendererInitiatedWindowCloseWithUnload) {
+                       RendererInitiatedWindowCloseWithPagehide) {
   GURL main_url(embedded_test_server()->GetURL("a.com", "/empty.html"));
   EXPECT_TRUE(NavigateToURL(shell(), main_url));
 
   FrameTreeNode* root = web_contents()->GetPrimaryFrameTree().root();
 
   // We will window.open() another URL on the same domain so they share a
-  // renderer. This window has an unload handler that forces layout to occur.
+  // renderer. This window has an pagehide handler that forces layout to occur.
   // Then we (in a new stack) close that window causing that layout. If all
   // goes well the window closes. If it goes poorly, the renderer may crash.
   //
   // This path is special because the unload results from window.close() which
   // avoids the user-initiated close path through ViewMsg_ClosePage. In that
-  // path the unload handlers are run early, before the actual teardown of
+  // path the pagehide handlers are run early, before the actual teardown of
   // the closing RenderWidget.
   GURL open_url = embedded_test_server()->GetURL(
-      "a.com", "/unload_handler_force_layout.html");
+      "a.com", "/pagehide_handler_force_layout.html");
 
   // Listen for messages from the window that the test opens, and convert them
   // into the document title, which we can wait on in the main test window.
@@ -1019,7 +1015,7 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
                      "});"));
 
   // This performs window.open() and waits for the title of the original
-  // document to change to signal that the unload handler has been registered.
+  // document to change to signal that the pagehide handler has been registered.
   {
     std::u16string title_when_loaded = u"loaded";
     TitleWatcher title_watcher(shell()->web_contents(), title_when_loaded);
@@ -1028,7 +1024,7 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
   }
 
   // The closes the window and waits for the title of the original document to
-  // change again to signal that the unload handler has run.
+  // change again to signal that the pagehide handler has run.
   {
     std::u16string title_when_done = u"unloaded";
     TitleWatcher title_watcher(shell()->web_contents(), title_when_done);
@@ -1321,7 +1317,7 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
   RenderFrameHostImpl* A2 = A1->child_at(0)->current_frame_host();
   RenderFrameDeletedObserver delete_A1(A2);
   EXPECT_TRUE(ExecJs(A2, R"(
-    window.addEventListener("unload", function() {
+    window.addEventListener("pagehide", function() {
       window.parent.postMessage("A2 message", "*");
     });
   )"));
@@ -1366,15 +1362,16 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
 
 #if BUILDFLAG(IS_LINUX) && defined(THREAD_SANITIZER)
 // See crbug.com/1275848.
-#define MAYBE_NestedSubframeWithUnloadHandler \
-  DISABLED_NestedSubframeWithUnloadHandler
+#define MAYBE_NestedSubframeWithPagehideHandler \
+  DISABLED_NestedSubframeWithPagehideHandler
 #else
-#define MAYBE_NestedSubframeWithUnloadHandler NestedSubframeWithUnloadHandler
+#define MAYBE_NestedSubframeWithPagehideHandler \
+  NestedSubframeWithPagehideHandler
 #endif
-// After a same-origin iframe navigation, check that gradchild iframe are
-// properly deleted and their unload handler executed.
+// After a same-origin iframe navigation, check that grandchild iframe are
+// properly deleted and their pagehide handler executed.
 IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
-                       MAYBE_NestedSubframeWithUnloadHandler) {
+                       MAYBE_NestedSubframeWithPagehideHandler) {
   GURL main_url = embedded_test_server()->GetURL(
       "a.com", "/cross_site_iframe_factory.html?a(b(b,c))");
   GURL iframe_new_url = embedded_test_server()->GetURL("b.com", "/title1.html");
@@ -1390,9 +1387,9 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
   RenderFrameDeletedObserver delete_B3(B3);
   RenderFrameDeletedObserver delete_C4(C4);
 
-  UnloadPrint(B2, "B2");
-  UnloadPrint(B3, "B3");
-  UnloadPrint(C4, "C4");
+  AddPagehideHandler(B2, "B2");
+  AddPagehideHandler(B3, "B3");
+  AddPagehideHandler(C4, "C4");
 
   // Navigate the iframe same-process.
   bool will_delete_b2 = B2->ShouldChangeRenderFrameHostOnSameSiteNavigation();
@@ -1408,7 +1405,7 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
   delete_B3.WaitUntilDeleted();
   delete_C4.WaitUntilDeleted();
 
-  // The unload handlers must have run:
+  // The pagehide handlers must have run:
   std::string message;
   std::vector<std::string> messages;
   for (int i = 0; i < 3; ++i) {
@@ -1455,7 +1452,7 @@ class SitePerProcessSSLBrowserTest : public SitePerProcessBrowserTest {
   net::EmbeddedTestServer https_server_{net::EmbeddedTestServer::TYPE_HTTPS};
 };
 
-// Unload handlers should be able to do things that might require for instance
+// Pagehide handlers should be able to do things that might require for instance
 // the RenderFrameHostImpl to stay alive.
 // - use console.log (handled via RFHI::DidAddMessageToConsole).
 // - use history.replaceState (handled via RFHI::OnUpdateState).
@@ -1463,20 +1460,21 @@ class SitePerProcessSSLBrowserTest : public SitePerProcessBrowserTest {
 // - use localStorage
 //
 // Test case:
-//  1. Start on A1(B2). B2 has an unload handler.
+//  1. Start on A1(B2). B2 has a pagehide handler.
 //  2. Go to A3.
 //  3. Go back to A4(B5).
 //
 // TODO(https://crbug.com/960976): history.replaceState is broken in OOPIFs.
 //
-// This test is similar to UnloadHandlersArePowerfulGrandChild, but with a
+// This test is similar to PagehideHandlersArePowerfulGrandChild, but with a
 // different frame hierarchy.
+//
+// TODO(crbug/1488371): investigate test flakes and re-enable test.
 IN_PROC_BROWSER_TEST_P(SitePerProcessSSLBrowserTest,
-                       UnloadHandlersArePowerful) {
-  // With BackForwardCache, old document doesn't fire unload handlers as the
-  // page is stored in BackForwardCache on navigation.
+                       DISABLED_PagehideHandlersArePowerful) {
+  // The test expects the previous document to be deleted on navigation.
   DisableBackForwardCacheForTesting(
-      web_contents(), content::BackForwardCache::TEST_USES_UNLOAD_EVENT);
+      web_contents(), content::BackForwardCache::TEST_REQUIRES_NO_CACHING);
   // Navigate to a page hosting a cross-origin frame.
   GURL url =
       https_server()->GetURL("a.com", "/cross_site_iframe_factory.html?a(b)");
@@ -1486,14 +1484,14 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessSSLBrowserTest,
   RenderFrameHostImpl* B2 = A1->child_at(0)->current_frame_host();
 
   // Increase Unload timeout to prevent the previous document from
-  // being deleleted before it has finished running B2 unload handler.
+  // being deleted before it has finished running B2 pagehide handler.
   A1->DisableUnloadTimerForTesting();
   B2->SetSubframeUnloadTimeoutForTesting(base::Seconds(30));
 
-  // Add an unload handler to the subframe and try in that handler to preserve
+  // Add a pagehide handler to the subframe and try in that handler to preserve
   // state that we will try to recover later.
   ASSERT_TRUE(ExecJs(B2, R"(
-    window.addEventListener("unload", function() {
+    window.addEventListener("pagehide", function() {
       // Waiting for 100ms, to give more time for browser-side things to go bad
       // and delete RenderFrameHostImpl prematurely.
       var start = (new Date()).getTime();
@@ -1546,7 +1544,7 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessSSLBrowserTest,
   RenderFrameHostImpl* B5 = A4->child_at(0)->current_frame_host();
 
   // Verify that we can recover the data that should have been persisted by the
-  // unload handler.
+  // pagehide handler.
   EXPECT_EQ("localstorage_test_value",
             EvalJs(B5, "localStorage.localstorage_test_key"));
   EXPECT_EQ("cookie_test_key=cookie_test_value", EvalJs(B5, "document.cookie"));
@@ -1559,7 +1557,7 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessSSLBrowserTest,
   }
 }
 
-// Unload handlers should be able to do things that might require for instance
+// Pagehide handlers should be able to do things that might require for instance
 // the RenderFrameHostImpl to stay alive.
 // - use console.log (handled via RFHI::DidAddMessageToConsole).
 // - use history.replaceState (handled via RFHI::OnUpdateState).
@@ -1573,14 +1571,15 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessSSLBrowserTest,
 //
 // TODO(https://crbug.com/960976): history.replaceState is broken in OOPIFs.
 //
-// This test is similar to UnloadHandlersArePowerful, but with a different frame
-// hierarchy.
+// This test is similar to PagehideHandlersArePowerful, but with a different
+// frame hierarchy.
+//
+// TODO(crbug/1488371): investigate test flakes and re-enable test.
 IN_PROC_BROWSER_TEST_P(SitePerProcessSSLBrowserTest,
-                       UnloadHandlersArePowerfulGrandChild) {
-  // With BackForwardCache, old document doesn't fire unload handlers as the
-  // page is stored in BackForwardCache on navigation.
+                       DISABLED_PagehideHandlersArePowerfulGrandChild) {
+  // The test expects the previous document to be deleted on navigation.
   DisableBackForwardCacheForTesting(
-      web_contents(), content::BackForwardCache::TEST_USES_UNLOAD_EVENT);
+      web_contents(), content::BackForwardCache::TEST_REQUIRES_NO_CACHING);
   // Navigate to a page hosting a cross-origin frame.
   GURL url = https_server()->GetURL("a.com",
                                     "/cross_site_iframe_factory.html?a(b(c))");
@@ -1596,10 +1595,10 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessSSLBrowserTest,
   B2->SetSubframeUnloadTimeoutForTesting(base::Seconds(30));
   C3->SetSubframeUnloadTimeoutForTesting(base::Seconds(30));
 
-  // Add an unload handler to the subframe and try in that handler to preserve
+  // Add a pagehide handler to the subframe and try in that handler to preserve
   // state that we will try to recover later.
   ASSERT_TRUE(ExecJs(C3, R"(
-    window.addEventListener("unload", function() {
+    window.addEventListener("pagehide", function() {
       // Waiting for 100ms, to give more time for browser-side things to go bad
       // and delete RenderFrameHostImpl prematurely.
       var start = (new Date()).getTime();
@@ -1655,7 +1654,7 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessSSLBrowserTest,
   RenderFrameHostImpl* C7 = B6->child_at(0)->current_frame_host();
 
   // Verify that we can recover the data that should have been persisted by the
-  // unload handler.
+  // pagehide handler.
   EXPECT_EQ("localstorage_test_value",
             EvalJs(C7, "localStorage.localstorage_test_key"));
   EXPECT_EQ("cookie_test_key=cookie_test_value", EvalJs(C7, "document.cookie"));
@@ -1668,11 +1667,11 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessSSLBrowserTest,
   }
 }
 
-// Execute an unload handler from the initial empty document.
+// Execute a pagehide handler from the initial empty document.
 //
 // Start from A1(B2(B3)).
-// B3 is the initial empty document created by B2. An unload handler is added to
-// B3. A1 deletes B2.
+// B3 is the initial empty document created by B2. A pagehide handler is added
+// to B3. A1 deletes B2.
 IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
                        UnloadInInitialEmptyDocument) {
   // 1. Start from A1(B2).
@@ -1688,27 +1687,27 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
   EXPECT_TRUE(ExecJs(b2, R"(
     let iframe = document.createElement("iframe");
     document.body.appendChild(iframe);
-    iframe.contentWindow.onunload = () => {
+    iframe.contentWindow.onpagehide = () => {
       window.domAutomationController.send("B3 unloaded");
     }
   )"));
   ASSERT_EQ(1u, b2->child_count());
   RenderFrameHostImpl* b3 = b2->child_at(0)->current_frame_host();
 
-  auto has_unload_handler = [](RenderFrameHostImpl* rfh) {
+  auto has_pagehide_handler = [](RenderFrameHostImpl* rfh) {
     return rfh->GetSuddenTerminationDisablerState(
-        blink::mojom::SuddenTerminationDisablerType::kUnloadHandler);
+        blink::mojom::SuddenTerminationDisablerType::kPageHideHandler);
   };
-  EXPECT_FALSE(has_unload_handler(a1));
-  EXPECT_FALSE(has_unload_handler(b2));
-  EXPECT_TRUE(has_unload_handler(b3));
+  EXPECT_FALSE(has_pagehide_handler(a1));
+  EXPECT_FALSE(has_pagehide_handler(b2));
+  EXPECT_TRUE(has_pagehide_handler(b3));
 
-  // 3. A1 deletes B2. This triggers the unload handler from B3.
+  // 3. A1 deletes B2. This triggers the pagehide handler from B3.
   DOMMessageQueue dom_message_queue(
       WebContents::FromRenderFrameHost(web_contents()->GetPrimaryMainFrame()));
   ExecuteScriptAsync(a1, "document.querySelector('iframe').remove();");
 
-  // Check the unload handler is executed.
+  // Check the pagehide handler is executed.
   std::string message;
   EXPECT_TRUE(dom_message_queue.WaitForMessage(&message));
   EXPECT_EQ("\"B3 unloaded\"", message);
@@ -1717,4 +1716,61 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
 INSTANTIATE_TEST_SUITE_P(All,
                          SitePerProcessSSLBrowserTest,
                          testing::ValuesIn(RenderDocumentFeatureLevelValues()));
+
+// This test sets up a main frame which has an OOPIF. The main frame commits a
+// same-site navigation. The test then stops at the stage where the unload
+// handler of the OOPIF is running and the main frame RenderFrameHost's
+// `DocumentAssociatedData` is retrieved from the OOPIF. The test shows that
+// the `DocumentAssociatedData` is different from the one before navigation if
+// RenderDocument feature is not enabled for all frames. One place we have seen
+// this issue is in Protected Audience auctions. Please see crbug.com/1422301.
+IN_PROC_BROWSER_TEST_P(
+    SitePerProcessBrowserTest,
+    MainFrameDocumentAssociatedDataChangesOnSameSiteNavigation) {
+  GURL initial_url(embedded_test_server()->GetURL(
+      "a.com", "/cross_site_iframe_factory.html?a(b)"));
+  GURL next_url(embedded_test_server()->GetURL("login.a.com", "/title1.html"));
+
+  // 1) Navigate on a page with an OOPIF.
+  EXPECT_TRUE(NavigateToURL(shell(), initial_url));
+
+  FrameTreeNode* root_ftn = web_contents()->GetPrimaryFrameTree().root();
+  RenderFrameHostImpl* main_rfh = root_ftn->current_frame_host();
+
+  // 2) Act as if there was an infinite unload handler in the OOPIF.
+  RenderFrameHostImpl* child_rfh = root_ftn->child_at(0)->current_frame_host();
+
+  child_rfh->DoNotDeleteForTesting();
+
+  // Set an arbitrarily long timeout to ensure the subframe unload timer doesn't
+  // fire before we call OnDetach().
+  child_rfh->SetSubframeUnloadTimeoutForTesting(base::Seconds(30));
+
+  // With BackForwardCache, old document doesn't fire unload handlers as the
+  // page is stored in BackForwardCache on navigation.
+  DisableBackForwardCacheForTesting(web_contents(),
+                                    BackForwardCache::TEST_USES_UNLOAD_EVENT);
+
+  // 3) Retrieve the weak pointer to the owned page by the main
+  // RenderFrameHost's `DocumentAssociatedData`.
+  base::WeakPtr<PageImpl> weak_ptr_page = child_rfh->GetPage().GetWeakPtrImpl();
+
+  // 4) Navigate the main frame to a same-site url. The unload handler of the
+  // OOPIF is running.
+  EXPECT_TRUE(NavigateToURL(shell(), next_url));
+  EXPECT_TRUE(child_rfh->IsPendingDeletion());
+
+  // 5) If RenderDocument feature is not enabled for all frames, the main frame
+  // RenderFrameHost will be the same.
+  EXPECT_EQ(
+      main_rfh ==
+          web_contents()->GetPrimaryFrameTree().root()->current_frame_host(),
+      GetRenderDocumentLevel() < RenderDocumentLevel::kAllFrames);
+
+  // 6) If RenderDocument feature is not enabled for all frames, verify
+  // `PageImpl` has changed by checking the weak pointer.
+  EXPECT_EQ(weak_ptr_page == nullptr,
+            GetRenderDocumentLevel() < RenderDocumentLevel::kAllFrames);
+}
+
 }  // namespace content

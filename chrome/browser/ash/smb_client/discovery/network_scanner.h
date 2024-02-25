@@ -13,8 +13,7 @@
 #include "chrome/browser/ash/smb_client/discovery/host_locator.h"
 #include "net/base/ip_address.h"
 
-namespace ash {
-namespace smb_client {
+namespace ash::smb_client {
 
 // Holds the number of in-flight requests and the callback to call once all the
 // HostLocators are finished. Also holds the hosts found from the HostLocators
@@ -38,7 +37,7 @@ struct RequestInfo {
 // used to register HostLocators that are responsible for finding hosts.
 // FindHostsInNetwork is called to get a list of discoverable hosts in the
 // network. ResolveHost is used to get the IP address of a given host.
-class NetworkScanner : public base::SupportsWeakPtr<NetworkScanner> {
+class NetworkScanner {
  public:
   NetworkScanner();
 
@@ -102,9 +101,10 @@ class NetworkScanner : public base::SupportsWeakPtr<NetworkScanner> {
   // FindHostsInNetwork() from concurrently executing. Used only for DCHECKing
   // if FindHostsInNetwork() is already running.
   bool running_ = false;
+
+  base::WeakPtrFactory<NetworkScanner> weak_ptr_factory_{this};
 };
 
-}  // namespace smb_client
-}  // namespace ash
+}  // namespace ash::smb_client
 
 #endif  // CHROME_BROWSER_ASH_SMB_CLIENT_DISCOVERY_NETWORK_SCANNER_H_

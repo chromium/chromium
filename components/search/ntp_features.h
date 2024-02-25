@@ -24,10 +24,19 @@ BASE_DECLARE_FEATURE(kConfirmSuggestionRemovals);
 BASE_DECLARE_FEATURE(kCacheOneGoogleBar);
 BASE_DECLARE_FEATURE(kCustomizeChromeColorExtraction);
 BASE_DECLARE_FEATURE(kCustomizeChromeSidePanelExtensionsCard);
+BASE_DECLARE_FEATURE(kCustomizeChromeWallpaperSearch);
+BASE_DECLARE_FEATURE(kCustomizeChromeWallpaperSearchButton);
+BASE_DECLARE_FEATURE(kCustomizeChromeWallpaperSearchInspirationCard);
 BASE_DECLARE_FEATURE(kCwsDarkLogo);
 BASE_DECLARE_FEATURE(kDismissPromos);
 BASE_DECLARE_FEATURE(kIframeOneGoogleBar);
 BASE_DECLARE_FEATURE(kOneGoogleBarModalOverlays);
+BASE_DECLARE_FEATURE(kRealboxCr23All);
+BASE_DECLARE_FEATURE(kRealboxCr23ConsistentRowHeight);
+BASE_DECLARE_FEATURE(kRealboxCr23ExpandedStateIcons);
+BASE_DECLARE_FEATURE(kRealboxCr23ExpandedStateLayout);
+BASE_DECLARE_FEATURE(kRealboxCr23HoverFillShape);
+BASE_DECLARE_FEATURE(kRealboxCr23Theming);
 BASE_DECLARE_FEATURE(kRealboxMatchOmniboxTheme);
 BASE_DECLARE_FEATURE(kRealboxMatchSearchboxTheme);
 BASE_DECLARE_FEATURE(kRealboxUseGoogleGIcon);
@@ -43,7 +52,6 @@ BASE_DECLARE_FEATURE(kNtpDriveModuleShowSixFiles);
 BASE_DECLARE_FEATURE(kNtpDummyModules);
 #endif
 BASE_DECLARE_FEATURE(kNtpComprehensiveTheming);
-BASE_DECLARE_FEATURE(kNtpComprehensiveThemeRealbox);
 BASE_DECLARE_FEATURE(kNtpLogo);
 BASE_DECLARE_FEATURE(kNtpReducedLogoSpace);
 BASE_DECLARE_FEATURE(kNtpMiddleSlotPromo);
@@ -64,7 +72,6 @@ BASE_DECLARE_FEATURE(kNtpPhotosModuleCustomizedOptInArtWork);
 BASE_DECLARE_FEATURE(kNtpPhotosModuleSplitSvgOptInArtWork);
 BASE_DECLARE_FEATURE(kNtpFeedModule);
 BASE_DECLARE_FEATURE(kNtpOneGoogleBar);
-BASE_DECLARE_FEATURE(kNtpRealboxLensSearch);
 BASE_DECLARE_FEATURE(kNtpLensDirectUpload);
 BASE_DECLARE_FEATURE(kNtpRecipeTasksModule);
 BASE_DECLARE_FEATURE(kNtpSafeBrowsingModule);
@@ -78,6 +85,7 @@ BASE_DECLARE_FEATURE(kNtpHistoryClustersModuleMinimumImagesRequired);
 BASE_DECLARE_FEATURE(kNtpHistoryClustersModuleCategories);
 BASE_DECLARE_FEATURE(kNtpHistoryClustersModuleLoad);
 BASE_DECLARE_FEATURE(kNtpHistoryClustersModuleMaxClusters);
+BASE_DECLARE_FEATURE(kNtpHistoryClustersModuleRankingMetricsQueryDays);
 BASE_DECLARE_FEATURE(kNtpHistoryClustersModuleSuggestionChipHeader);
 BASE_DECLARE_FEATURE(kNtpHistoryClustersModuleTextOnly);
 BASE_DECLARE_FEATURE(kNtpModulesHeaderIcon);
@@ -87,7 +95,10 @@ BASE_DECLARE_FEATURE(kNtpChromeCartHistoryClusterCoexist);
 BASE_DECLARE_FEATURE(kNtpHistoryClustersModuleFetchClustersUntilExhausted);
 BASE_DECLARE_FEATURE(kNtpHistoryClustersModuleIncludeSyncedVisits);
 BASE_DECLARE_FEATURE(kNtpHistoryClustersModuleEnableContentClustering);
-BASE_DECLARE_FEATURE(kNtpHistoryClustersModuleDiscounts);
+BASE_DECLARE_FEATURE(kNtpTabResumptionModule);
+BASE_DECLARE_FEATURE(kNtpTabResumptionModuleCategories);
+BASE_DECLARE_FEATURE(kNtpTabResumptionModuleTimeLimit);
+BASE_DECLARE_FEATURE(kNtpWallpaperSearchButton);
 
 // Parameter for controlling the luminosity difference for NTP elements on light
 // backgrounds.
@@ -99,6 +110,11 @@ extern const base::FeatureParam<double>
 extern const base::FeatureParam<double>
     kNtpElementLuminosityChangeForDarkBackgroundParam;
 
+// Parameter determining the ignore based survey launch delay time.
+extern const char kNtpModuleIgnoredHaTSDelayTimeParam[];
+// Parameter determining the number of times a module must have loaded with no
+// interaction by the user before it's considered as ignored.
+extern const char kNtpModuleIgnoredCriteriaThreshold[];
 // Parameter determining the module load timeout.
 extern const char kNtpModulesLoadTimeoutMillisecondsParam[];
 // Parameter determining the module order.
@@ -131,8 +147,11 @@ extern const char kNtpHistoryClustersModuleDataParam[];
 extern const char kNtpChromeCartInHistoryClustersModuleDataParam[];
 // Parameter determining the type of middle slot promo data to render.
 extern const char kNtpMiddleSlotPromoDismissalParam[];
-// Parameter determining the modules that are eligigle for HATS.
+// Parameter determining the modules that are eligigle for HaTS.
 extern const char kNtpModulesEligibleForHappinessTrackingSurveyParam[];
+// Parameter determining module trigger ids for HaTS for eligible module ids for
+// a given module interaction type.
+extern const char kNtpModulesInteractionBasedSurveyEligibleIdsParam[];
 // Parameter determining the type of Photos data to render.
 extern const char kNtpPhotosModuleDataParam[];
 // Parameter determining the art work in opt-in card.
@@ -175,7 +194,34 @@ extern const char kNtpHistoryClustersModuleCategoriesBoostlistParam[];
 // Parameter for setting the maximum number of candidate clusters for the
 // History Clusters Service to return.
 extern const char kNtpHistoryClustersModuleMaxClustersParam[];
+// Parameter for setting the maximum number of category ids associated with a
+// cluster that will be recorded and queried to determine if a cluster belongs
+// to the most frequently seen or used category.
+extern const char kNtpHistoryClustersModuleMaxCategoriesToRecordParam[];
+// Parameter for setting the minimum category weight required for a category
+// associated with a cluster to be recorded and queried at a later time to
+// determine if a cluster belongs to the most frequently seen or used category.
+extern const char kNtpHistoryClustersModuleMinCategoryWeightToRecordParam[];
+// Parameter for setting the number of days to query for cluster metric data
+// that is used to compute metrics used cluster ranking.
+extern const char kNtpHistoryClustersModuleRankingMetricsQueryDaysParam[];
+extern const char kNtpHistoryClustersModuleScoreThresholdParam[];
 extern const char kNtpRealboxWidthBehaviorParam[];
+// Parameter for determining the categories a tab must not fall into
+// to be shown.
+extern const char kNtpTabResumptionModuleCategoriesBlocklistParam[];
+extern const char kNtpTabResumptionModuleDataParam[];
+// Parameter determining the recency of tabs in the Tab Resumption module.
+extern const char kNtpTabResumptionModuleTimeLimitParam[];
+extern const char kNtpTabResumptionModuleVisibilityThresholdDataParam[];
+// Parameter determining the trigger delay of the Wallpaper Search HaTS survey.
+extern const char kWallpaperSearchHatsDelayParam[];
+
+// Parameter determining the background color of the expanded state realbox.
+extern const base::FeatureParam<bool>
+    kNtpRealboxCr23ExpandedStateBgMatchesOmnibox;
+// Parameter determining the whether the steady state realbox has a shadow.
+extern const base::FeatureParam<bool> kNtpRealboxCr23SteadyStateShadow;
 
 // Returns the timeout after which the load of a module should be aborted.
 base::TimeDelta GetModulesLoadTimeout();
@@ -183,6 +229,11 @@ base::TimeDelta GetModulesLoadTimeout();
 // Returns the maximum number of columns to show on the redesigned modules UI
 // experience.
 int GetModulesMaxColumnCount();
+
+// Returns the maximum number of instances to render for a given module when the
+// module has loaded with other modules. A sentinel value of -1 implies there is
+// no limit.
+int GetMultipleLoadedModulesMaxModuleInstanceCount();
 
 // Returns a list of module IDs ordered by how they should appear on the NTP.
 std::vector<std::string> GetModulesOrder();

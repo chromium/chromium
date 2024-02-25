@@ -7,6 +7,7 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
+#include "components/autofill/core/browser/autofill_manager.h"
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/common/form_data.h"
 #include "components/autofill/core/common/mojom/autofill_types.mojom.h"
@@ -32,8 +33,8 @@ class AutofillProvider : public content::WebContentsUserData<AutofillProvider> {
  public:
   ~AutofillProvider() override;
 
-  static bool is_download_manager_disabled_for_testing();
-  static void set_is_download_manager_disabled_for_testing();
+  static bool is_crowdsourcing_manager_disabled_for_testing();
+  static void set_is_crowdsourcing_manager_disabled_for_testing();
 
   virtual void OnAskForValuesToFill(
       AndroidAutofillManager* manager,
@@ -77,15 +78,17 @@ class AutofillProvider : public content::WebContentsUserData<AutofillProvider> {
 
   virtual void OnHidePopup(AndroidAutofillManager* manager) = 0;
 
-  virtual void OnServerPredictionsAvailable(FormGlobalId form) = 0;
+  virtual void OnServerPredictionsAvailable(AndroidAutofillManager& manager,
+                                            FormGlobalId form_id) = 0;
 
-  virtual void OnServerQueryRequestError(AndroidAutofillManager* manager,
-                                         FormSignature form_signature) = 0;
-
-  virtual void Reset(AndroidAutofillManager* manager) = 0;
+  // Reacts to a reset or destruction of `manager`, e.g., by submitting forms
+  // for suspected navigations.
+  virtual void OnManagerResetOrDestroyed(AndroidAutofillManager* manager) = 0;
 
   // Returns autofilled state from AutofillProvider's cache.
   virtual bool GetCachedIsAutofilled(const FormFieldData& field) const = 0;
+
+  virtual void MaybeInitKeyboardSuppressor() = 0;
 
   void FillOrPreviewForm(AndroidAutofillManager* manager,
                          const FormData& form_data,
@@ -102,8 +105,6 @@ class AutofillProvider : public content::WebContentsUserData<AutofillProvider> {
   // WebContents takes the ownership of AutofillProvider.
   explicit AutofillProvider(content::WebContents* web_contents);
   friend class content::WebContentsUserData<AutofillProvider>;
-
-  content::WebContents* web_contents() { return &GetWebContents(); }
 
  private:
   WEB_CONTENTS_USER_DATA_KEY_DECL();

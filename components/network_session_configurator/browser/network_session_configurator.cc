@@ -25,6 +25,7 @@
 #include "components/network_session_configurator/common/network_features.h"
 #include "components/network_session_configurator/common/network_switches.h"
 #include "components/variations/variations_switches.h"
+#include "net/base/features.h"
 #include "net/base/host_mapping_rules.h"
 #include "net/http/http_network_session.h"
 #include "net/http/http_stream_factory.h"
@@ -73,6 +74,18 @@ const std::string& GetVariationParam(
     return base::EmptyString();
 
   return it->second;
+}
+
+bool GetVariationBoolParamOrFeatureSetting(const VariationParameters& params,
+                                           const std::string& key,
+                                           bool feature_setting) {
+  // Don't override feature setting if variation param doesn't exist.
+  if (params.find(key) == params.end()) {
+    return feature_setting;
+  }
+
+  return base::EqualsCaseInsensitiveASCII(GetVariationParam(params, key),
+                                          "true");
 }
 
 spdy::SettingsMap GetHttp2Settings(
@@ -151,7 +164,7 @@ void ConfigureHttp2Params(const base::CommandLine& command_line,
         (length > 0) ? base::RandBytesAsString(length) : std::string();
 
     params->greased_http2_frame =
-        absl::optional<net::SpdySessionPool::GreasedHttp2Frame>(
+        std::optional<net::SpdySessionPool::GreasedHttp2Frame>(
             {type, flags, payload});
   }
 
@@ -226,7 +239,7 @@ bool ShouldQuicGoAwaySessionsOnIpChange(
       "true");
 }
 
-absl::optional<bool> GetExponentialBackOffOnInitialDelay(
+std::optional<bool> GetExponentialBackOffOnInitialDelay(
     const VariationParameters& quic_trial_params) {
   if (base::EqualsCaseInsensitiveASCII(
           GetVariationParam(quic_trial_params,
@@ -240,7 +253,7 @@ absl::optional<bool> GetExponentialBackOffOnInitialDelay(
           "true")) {
     return true;
   }
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 int GetQuicIdleConnectionTimeoutSeconds(
@@ -297,10 +310,17 @@ bool ShouldQuicEstimateInitialRtt(
 
 bool ShouldQuicMigrateSessionsOnNetworkChangeV2(
     const VariationParameters& quic_trial_params) {
-  return base::EqualsCaseInsensitiveASCII(
-      GetVariationParam(quic_trial_params,
-                        "migrate_sessions_on_network_change_v2"),
-      "true");
+  return GetVariationBoolParamOrFeatureSetting(
+      quic_trial_params, "migrate_sessions_on_network_change_v2",
+      base::FeatureList::IsEnabled(
+          net::features::kMigrateSessionsOnNetworkChangeV2));
+}
+
+bool ShouldQuicUseNewAlpsCodepoint(
+    const VariationParameters& quic_trial_params) {
+  return GetVariationBoolParamOrFeatureSetting(
+      quic_trial_params, "use_new_alps_codepoint",
+      base::FeatureList::IsEnabled(net::features::kUseNewAlpsCodepointQUIC));
 }
 
 bool ShouldQuicMigrateSessionsEarlyV2(
@@ -314,6 +334,16 @@ bool ShouldQuicAllowPortMigration(
     const VariationParameters& quic_trial_params) {
   return !base::EqualsCaseInsensitiveASCII(
       GetVariationParam(quic_trial_params, "allow_port_migration"), "false");
+}
+
+int GetMultiPortProbingInterval(const VariationParameters& quic_trial_params) {
+  int value;
+  if (base::StringToInt(
+          GetVariationParam(quic_trial_params, "multi_port_probing_interval"),
+          &value)) {
+    return value;
+  }
+  return 0;
 }
 
 bool ShouldQuicRetryOnAlternateNetworkBeforeHandshake(
@@ -588,6 +618,8 @@ void ConfigureQuicParams(const base::CommandLine& command_line,
         ShouldQuicEstimateInitialRtt(quic_trial_params);
     quic_params->migrate_sessions_on_network_change_v2 =
         ShouldQuicMigrateSessionsOnNetworkChangeV2(quic_trial_params);
+    quic_params->use_new_alps_codepoint =
+        ShouldQuicUseNewAlpsCodepoint(quic_trial_params);
     quic_params->migrate_sessions_early_v2 =
         ShouldQuicMigrateSessionsEarlyV2(quic_trial_params);
     quic_params->allow_port_migration =
@@ -620,6 +652,11 @@ void ConfigureQuicParams(const base::CommandLine& command_line,
     if (idle_session_migration_period_seconds > 0) {
       quic_params->idle_session_migration_period =
           base::Seconds(idle_session_migration_period_seconds);
+    }
+    int multi_port_probing_interval =
+        GetMultiPortProbingInterval(quic_trial_params);
+    if (multi_port_probing_interval > 0) {
+      quic_params->multi_port_probing_interval = multi_port_probing_interval;
     }
     int max_time_on_non_default_network_seconds =
         GetQuicMaxTimeOnNonDefaultNetworkSeconds(quic_trial_params);
@@ -753,9 +790,6 @@ void ParseCommandLineAndFieldTrials(const base::CommandLine& command_line,
   if (command_line.HasSwitch(switches::kIgnoreCertificateErrors)) {
     params->ignore_certificate_errors = true;
   }
-  UMA_HISTOGRAM_BOOLEAN(
-      "Net.Certificate.IgnoreErrors",
-      command_line.HasSwitch(switches::kIgnoreCertificateErrors));
   if (command_line.HasSwitch(switches::kTestingFixedHttpPort)) {
     params->testing_fixed_http_port =
         GetSwitchValueAsInt(command_line, switches::kTestingFixedHttpPort);

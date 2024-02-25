@@ -9,31 +9,35 @@ import static org.junit.Assert.assertTrue;
 
 import androidx.test.filters.SmallTest;
 
+import org.jni_zero.JNINamespace;
 import org.junit.After;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.junit.runners.Parameterized;
+import org.junit.runners.Parameterized.UseParametersRunnerFactory;
 
 import org.chromium.android_webview.common.SafeModeAction;
+import org.chromium.android_webview.common.SafeModeActionIds;
 import org.chromium.android_webview.common.SafeModeController;
 import org.chromium.android_webview.common.origin_trial.DisableOriginTrialsSafeModeAction;
 import org.chromium.android_webview.test.util.DisableOriginTrialsSafeModeTestUtilsJni;
-import org.chromium.base.annotations.JNINamespace;
 import org.chromium.base.test.util.Feature;
 
 import java.util.Set;
 
-/**
- * Tests for WebView DisableOriginTrialsSafeMode.
- */
-
+/** Tests for WebView DisableOriginTrialsSafeMode. */
 @JNINamespace("android_webview")
-@RunWith(AwJUnit4ClassRunner.class)
-public class DisableOriginTrialsSafeModeTest {
+@RunWith(Parameterized.class)
+@UseParametersRunnerFactory(AwJUnit4ClassRunnerWithParameters.Factory.class)
+public class DisableOriginTrialsSafeModeTest extends AwParameterizedTest {
     public static final String TAG = "DisableOriginTrialsSafeModeTest";
 
-    @Rule
-    public AwActivityTestRule mRule = new AwActivityTestRule();
+    @Rule public AwActivityTestRule mRule;
+
+    public DisableOriginTrialsSafeModeTest(AwSettingsMutation param) {
+        this.mRule = new AwActivityTestRule(param.getMutation());
+    }
 
     @After
     public void tearDown() {
@@ -62,16 +66,20 @@ public class DisableOriginTrialsSafeModeTest {
         SafeModeController safeModeController = SafeModeController.getInstance();
         safeModeController.registerActions(
                 new SafeModeAction[] {new DisableOriginTrialsSafeModeAction()});
-        safeModeController.executeActions(Set.of(DisableOriginTrialsSafeModeAction.ID));
+        safeModeController.executeActions(Set.of(SafeModeActionIds.DISABLE_ORIGIN_TRIALS));
 
         // Then
-        assertTrue("Expect a valid origin trial policy",
+        assertTrue(
+                "Expect a valid origin trial policy",
                 DisableOriginTrialsSafeModeTestUtilsJni.get().doesPolicyExist());
-        assertTrue("Expect a allow_only_deprecation_trial flag set true",
+        assertTrue(
+                "Expect a allow_only_deprecation_trial flag set true",
                 DisableOriginTrialsSafeModeTestUtilsJni.get().isFlagSet());
-        assertTrue("Expect a non-deprecation trial disabled.",
+        assertTrue(
+                "Expect a non-deprecation trial disabled.",
                 DisableOriginTrialsSafeModeTestUtilsJni.get().isNonDeprecationTrialDisabled());
-        assertFalse("Expect a deprecation trial enabled.",
+        assertFalse(
+                "Expect a deprecation trial enabled.",
                 DisableOriginTrialsSafeModeTestUtilsJni.get().isDeprecationTrialDisabled());
     }
 
@@ -80,13 +88,17 @@ public class DisableOriginTrialsSafeModeTest {
     @Feature(("AndroidWebview"))
     public void testSafeModeOffOriginTrialPolicy() throws Throwable {
         // Then
-        assertTrue("Expect a valid origin trial policy",
+        assertTrue(
+                "Expect a valid origin trial policy",
                 DisableOriginTrialsSafeModeTestUtilsJni.get().doesPolicyExist());
-        assertFalse("Expect a allow_only_deprecation_trial flag set false",
+        assertFalse(
+                "Expect a allow_only_deprecation_trial flag set false",
                 DisableOriginTrialsSafeModeTestUtilsJni.get().isFlagSet());
-        assertFalse("Expect a non-deprecation trial enabled.",
+        assertFalse(
+                "Expect a non-deprecation trial enabled.",
                 DisableOriginTrialsSafeModeTestUtilsJni.get().isNonDeprecationTrialDisabled());
-        assertFalse("Expect a deprecation trial enabled.",
+        assertFalse(
+                "Expect a deprecation trial enabled.",
                 DisableOriginTrialsSafeModeTestUtilsJni.get().isDeprecationTrialDisabled());
     }
 }

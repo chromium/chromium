@@ -346,4 +346,19 @@ TEST(EntropyProviderTest, NormalizedMurmurHashEntropyIsUniform) {
   }
 }
 
+TEST(EntropyProviderTest, InstantiationWithLimitedEntropyRandomizationSource) {
+  const EntropyProviders entropy_providers(
+      "client_id", {0, 8000}, "limited_entropy_randomization_source");
+  EXPECT_TRUE(entropy_providers.has_limited_entropy());
+}
+
+TEST(EntropyProviderTest,
+     InstantiationWithLimitedEntropyRandomizationSourceAsEmptyString) {
+  const EntropyProviders without_limited_entropy_randomization_source(
+      "client_id", {0, 8000},
+      /*limited_entropy_randomization_source=*/std::string_view());
+  EXPECT_FALSE(
+      without_limited_entropy_randomization_source.has_limited_entropy());
+}
+
 }  // namespace variations

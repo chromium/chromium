@@ -12,10 +12,12 @@
 
 @property(nonatomic, copy) NSString* siteURL;
 @property(nonatomic, copy) NSString* status;
+@property(nonatomic, copy) NSString* securityStatus;
 @property(nonatomic, copy) NSString* message;
 @property(nonatomic, strong) UIImage* iconImage;
 @property(nonatomic, strong) UIColor* iconBackgroundColor;
 @property(nonatomic, assign) BOOL isEmpty;
+@property(nonatomic, assign) BOOL secure;
 
 @end
 

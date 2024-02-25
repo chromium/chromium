@@ -8,6 +8,7 @@
 
 #include "base/base64.h"
 #include "base/big_endian.h"
+#include "base/containers/span.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/strings/strcat.h"
@@ -363,8 +364,8 @@ void GCMEncryptionProvider::EncryptMessageWithKey(
 
   // Creates a cryptographically secure salt of |salt_size| octets in size,
   // and calculate the shared secret for the message.
-  std::string salt;
-  crypto::RandBytes(base::WriteInto(&salt, 16 + 1), 16);
+  std::string salt(16, '\0');
+  crypto::RandBytes(base::as_writable_byte_span(salt));
 
   std::string shared_secret;
   if (!ComputeSharedP256Secret(*key, p256dh, &shared_secret)) {

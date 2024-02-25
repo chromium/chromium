@@ -46,7 +46,6 @@ class GLSurfaceEglReadbackWayland : public GLSurfaceEglReadback,
               float scale_factor,
               const gfx::ColorSpace& color_space,
               bool has_alpha) override;
-  bool IsOffscreen() override;
   gfx::SwapResult SwapBuffers(PresentationCallback callback,
                               gfx::FrameData data) override;
   bool SupportsAsyncSwap() override;

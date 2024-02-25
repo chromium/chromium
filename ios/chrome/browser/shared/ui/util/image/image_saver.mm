@@ -18,8 +18,8 @@
 #import "ios/chrome/browser/shared/coordinator/alert/alert_coordinator.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/ui/util/image/image_util.h"
-#import "ios/chrome/browser/web/image_fetch/image_fetch_tab_helper.h"
-#import "ios/chrome/grit/ios_chromium_strings.h"
+#import "ios/chrome/browser/web/model/image_fetch/image_fetch_tab_helper.h"
+#import "ios/chrome/grit/ios_branded_strings.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "net/base/mime_util.h"
 #import "ui/base/l10n/l10n_util.h"
@@ -139,11 +139,8 @@
                            title:title
                          message:message];
 
-  __weak ImageSaver* weakSelf = self;
   [self.alertCoordinator addItemWithTitle:l10n_util::GetNSString(IDS_CANCEL)
-                                   action:^{
-                                     [weakSelf stopAlertCoordinator];
-                                   }
+                                   action:nil
                                     style:UIAlertActionStyleCancel];
 
   [_alertCoordinator
@@ -153,7 +150,6 @@
                   [[UIApplication sharedApplication] openURL:settingURL
                                                      options:@{}
                                            completionHandler:nil];
-                  [weakSelf stopAlertCoordinator];
                 }
                  style:UIAlertActionStyleDefault];
 
@@ -183,11 +179,8 @@
                          browser:_browser
                            title:title
                          message:errorContent];
-  __weak ImageSaver* weakSelf = self;
   [self.alertCoordinator addItemWithTitle:l10n_util::GetNSString(IDS_OK)
-                                   action:^{
-                                     [weakSelf stopAlertCoordinator];
-                                   }
+                                   action:nil
                                     style:UIAlertActionStyleDefault];
   [self.alertCoordinator start];
 }
@@ -207,13 +200,6 @@
     // TODO(crbug.com/797277): Provide a way for the user to easily reach the
     // photos app.
   }
-}
-
-// Stops the alert coordinator.
-- (void)stopAlertCoordinator {
-  CHECK(self.alertCoordinator);
-  [self.alertCoordinator stop];
-  self.alertCoordinator = nil;
 }
 
 @end

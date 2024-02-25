@@ -77,13 +77,18 @@ class PasswordFeatureManager {
 
   // Returns the "usage level" of the account-scoped password storage. See
   // definition of PasswordAccountStorageUsageLevel.
-  virtual metrics_util::PasswordAccountStorageUsageLevel
+  virtual features_util::PasswordAccountStorageUsageLevel
   ComputePasswordAccountStorageUsageLevel() const = 0;
 
 #if !BUILDFLAG(IS_IOS) && !BUILDFLAG(IS_ANDROID)
   // Sets opt-in to using account storage for passwords for the current
   // signed-in user (unconsented primary account).
   virtual void OptInToAccountStorage() = 0;
+
+  // Opts-out from using account storage for passwords for the
+  // current signed-in user (unconsented primary account). Addditionally it sets
+  // the default password store to kProfileStore.
+  virtual void OptOutOfAccountStorage() = 0;
 
   // Clears the opt-in to using account storage for passwords for the
   // current signed-in user (unconsented primary account), as well as all other
@@ -100,17 +105,11 @@ class PasswordFeatureManager {
   // used for saving new credentials and adding blacking listing entries.
   virtual void SetDefaultPasswordStore(const PasswordForm::Store& store) = 0;
 
-  // Increases the count of how many times Chrome automatically offered a user
-  // not opted-in to the account-scoped passwords storage to move a password to
-  // their account. Should only be called if the user is signed-in and not
-  // opted-in.
-  virtual void RecordMoveOfferedToNonOptedInUser() = 0;
+  // Whether the default store value should be changed to match the account
+  // store setting. This is used to migrate users from having different
+  // `GetDefaultPasswordStore` and `IsOptedInForAccountStorage` values.
+  virtual bool ShouldChangeDefaultPasswordStore() const = 0;
 
-  // Gets the count of how many times Chrome automatically offered a user
-  // not opted-in to the account-scoped passwords storage to move a password to
-  // their account. Should only be called if the user is signed-in and not
-  // opted-in.
-  virtual int GetMoveOfferedToNonOptedInUserCount() const = 0;
 #endif  // !BUILDFLAG(IS_IOS) && !BUILDFLAG(IS_ANDROID)
 };
 

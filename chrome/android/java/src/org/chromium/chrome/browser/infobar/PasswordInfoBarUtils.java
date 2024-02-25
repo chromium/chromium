@@ -13,9 +13,7 @@ import android.widget.TextView;
 import org.chromium.chrome.R;
 import org.chromium.components.browser_ui.widget.RoundedCornerImageView;
 
-/**
- * Provides helper methods for Android Infobars.
- */
+/** Provides helper methods for Android Infobars. */
 class PasswordInfoBarUtils {
     private PasswordInfoBarUtils() {}
 
@@ -32,8 +30,9 @@ class PasswordInfoBarUtils {
         int smallIconSize =
                 context.getResources().getDimensionPixelSize(R.dimen.infobar_small_icon_size);
         int padding = context.getResources().getDimensionPixelOffset(R.dimen.infobar_padding);
-        LinearLayout footer = (LinearLayout) LayoutInflater.from(context).inflate(
-                R.layout.infobar_footer, null, false);
+        LinearLayout footer =
+                (LinearLayout)
+                        LayoutInflater.from(context).inflate(R.layout.infobar_footer, null, false);
 
         TextView emailView = (TextView) footer.findViewById(R.id.infobar_footer_email);
         emailView.setText(email);

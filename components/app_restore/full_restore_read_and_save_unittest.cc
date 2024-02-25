@@ -118,7 +118,7 @@ class FullRestoreReadHandlerTestApi {
   }
 
  private:
-  raw_ptr<FullRestoreReadHandler, ExperimentalAsh> read_handler_;
+  raw_ptr<FullRestoreReadHandler> read_handler_;
 };
 
 class FullRestoreSaveHandlerTestApi {
@@ -204,7 +204,7 @@ class FullRestoreSaveHandlerTestApi {
     return save_handler_->arc_save_handler_.get();
   }
 
-  raw_ptr<FullRestoreSaveHandler, ExperimentalAsh> save_handler_;
+  raw_ptr<FullRestoreSaveHandler> save_handler_;
 };
 
 // Unit tests for restore data.
@@ -273,12 +273,12 @@ class FullRestoreReadAndSaveTest : public testing::Test {
 
   void AddBrowserLaunchInfo(const base::FilePath& file_path,
                             int32_t id,
-                            std::vector<GURL> urls,
+                            const std::vector<GURL>& urls,
                             int32_t active_tab_index = 0) {
     auto launch_info = std::make_unique<app_restore::AppLaunchInfo>(
         app_constants::kChromeAppId, id);
-    launch_info->urls = urls;
-    launch_info->active_tab_index = active_tab_index;
+    launch_info->browser_extra_info.urls = urls;
+    launch_info->browser_extra_info.active_tab_index = active_tab_index;
     SaveAppLaunchInfo(file_path, std::move(launch_info));
   }
 
@@ -311,26 +311,9 @@ class FullRestoreReadAndSaveTest : public testing::Test {
     params.init_properties_container.SetProperty(
         app_restore::kRestoreWindowIdKey, restore_window_id);
 
-    auto widget = std::make_unique<views::Widget>();
-    widget->Init(std::move(params));
-
+    auto widget = std::make_unique<views::Widget>(std::move(params));
     widget->Show();
     return widget;
-  }
-
-  std::unique_ptr<aura::Window> CreateLacrosWindow(
-      const std::string& lacros_window_id,
-      int32_t restore_session_id,
-      int32_t restore_window_id) {
-    auto window = std::make_unique<aura::Window>(
-        nullptr, aura::client::WINDOW_TYPE_NORMAL);
-    window->SetProperty(aura::client::kAppType,
-                        static_cast<int>(ash::AppType::LACROS));
-    window->SetProperty(app_restore::kLacrosWindowId,
-                        std::string(lacros_window_id));
-    window->SetProperty(app_restore::kWindowIdKey, restore_session_id);
-    window->SetProperty(app_restore::kRestoreWindowIdKey, restore_window_id);
-    return window;
   }
 
   void SaveWindowInfo(aura::Window* window, int32_t activation_index) {
@@ -347,10 +330,10 @@ class FullRestoreReadAndSaveTest : public testing::Test {
       base::Uuid desk_guid = base::Uuid()) {
     std::unique_ptr<aura::Window> window(
         aura::test::CreateTestWindowWithId(id, nullptr));
-    app_restore::WindowInfo window_info;
-    window_info.window = window.get();
     window->SetProperty(aura::client::kAppType, static_cast<int>(app_type));
     window->SetProperty(app_restore::kWindowIdKey, id);
+    app_restore::WindowInfo window_info;
+    window_info.window = window.get();
     window_info.activation_index = index;
     window_info.desk_guid = desk_guid;
     full_restore::SaveWindowInfo(window_info);
@@ -388,8 +371,7 @@ class FullRestoreReadAndSaveTest : public testing::Test {
     EXPECT_TRUE(app_restore_data_it != launch_list_it->second.end());
 
     const auto& data = app_restore_data_it->second;
-    EXPECT_TRUE(data->activation_index.has_value());
-    EXPECT_EQ(index, data->activation_index.value());
+    EXPECT_THAT(data->window_info.activation_index, testing::Optional(index));
   }
 
   content::BrowserTaskEnvironment& task_environment() {
@@ -398,6 +380,7 @@ class FullRestoreReadAndSaveTest : public testing::Test {
 
  private:
   content::BrowserTaskEnvironment task_environment_;
+
   base::ScopedTempDir tmp_dir_;
 
   base::test::ScopedFeatureList scoped_feature_list_;
@@ -405,6 +388,7 @@ class FullRestoreReadAndSaveTest : public testing::Test {
   std::unique_ptr<app_restore::RestoreData> restore_data_;
 
   views::TestViewsDelegate test_views_delegate_;
+
   aura::test::AuraTestHelper aura_test_helper_;
 };
 
@@ -454,19 +438,10 @@ TEST_F(FullRestoreReadAndSaveTest, StopSavingWhenShutdown) {
   ASSERT_TRUE(restore_data);
 
   const auto& launch_list = restore_data->app_id_to_launch_list();
-  EXPECT_EQ(1u, launch_list.size());
-
-  // Verify for |kAppId|.
-  const auto launch_list_it = launch_list.find(kAppId);
-  EXPECT_TRUE(launch_list_it != launch_list.end());
-  EXPECT_EQ(1u, launch_list_it->second.size());
-
-  // Verify the restore data for `kId1` exists.
-  EXPECT_TRUE(base::Contains(launch_list_it->second, kId1));
-
-  // Verify the restore data for `kId2` and `kId3` doesn't exist.
-  EXPECT_FALSE(base::Contains(launch_list_it->second, kId2));
-  EXPECT_FALSE(base::Contains(launch_list_it->second, kId3));
+  // Verify the restore data for `kAppId` exists, and that it contains data for
+  // `kId1` but none for `kId2` and `kId3`.
+  EXPECT_THAT(launch_list,
+              ElementsAre(Pair(kAppId, ElementsAre(Pair(kId1, testing::_)))));
 }
 
 TEST_F(FullRestoreReadAndSaveTest, StartSaveTimer) {
@@ -499,19 +474,11 @@ TEST_F(FullRestoreReadAndSaveTest, StartSaveTimer) {
   auto* restore_data = GetRestoreData(GetPath());
   ASSERT_TRUE(restore_data);
 
+  // Verify the restore data for `kAppId` exists, and that it contains data for
+  // `kId1` but none for `kId2`.
   auto& launch_list1 = restore_data->app_id_to_launch_list();
-  EXPECT_EQ(1u, launch_list1.size());
-
-  // Verify for |kAppId|.
-  auto launch_list_it = launch_list1.find(kAppId);
-  EXPECT_TRUE(launch_list_it != launch_list1.end());
-  EXPECT_EQ(1u, launch_list_it->second.size());
-
-  // Verify the restore data for `kId1` exists.
-  EXPECT_TRUE(base::Contains(launch_list_it->second, kId1));
-
-  // Verify the restore data for `kId2` doesn't exist.
-  EXPECT_FALSE(base::Contains(launch_list_it->second, kId2));
+  EXPECT_THAT(launch_list1,
+              ElementsAre(Pair(kAppId, ElementsAre(Pair(kId1, testing::_)))));
 
   // Simulate the system reboots.
   FullRestoreReadHandlerTestApi(read_handler).ClearRestoreData();
@@ -523,19 +490,11 @@ TEST_F(FullRestoreReadAndSaveTest, StartSaveTimer) {
   restore_data = GetRestoreData(GetPath());
   ASSERT_TRUE(restore_data);
 
+  // Verify the restore data for `kAppId` exists, and that it contains data for
+  // `kId1` but none for `kId2`.
   auto& launch_list2 = restore_data->app_id_to_launch_list();
-  EXPECT_EQ(1u, launch_list2.size());
-
-  // Verify for |kAppId|.
-  launch_list_it = launch_list2.find(kAppId);
-  EXPECT_TRUE(launch_list_it != launch_list2.end());
-  EXPECT_EQ(1u, launch_list_it->second.size());
-
-  // Verify the restore data for `kId1` exists.
-  EXPECT_TRUE(base::Contains(launch_list_it->second, kId1));
-
-  // Verify the restore data for `kId2` doesn't exist.
-  EXPECT_FALSE(base::Contains(launch_list_it->second, kId2));
+  EXPECT_THAT(launch_list2,
+              ElementsAre(Pair(kAppId, ElementsAre(Pair(kId1, testing::_)))));
 }
 
 TEST_F(FullRestoreReadAndSaveTest, SaveAndReadRestoreData) {
@@ -597,19 +556,19 @@ TEST_F(FullRestoreReadAndSaveTest, SaveAndReadRestoreData) {
   EXPECT_TRUE(app_restore_data_it1 != launch_list_it->second.end());
 
   const auto& data1 = app_restore_data_it1->second;
-  EXPECT_TRUE(data1->activation_index.has_value());
-  EXPECT_EQ(kActivationIndex1, data1->activation_index.value());
+  EXPECT_THAT(data1->window_info.activation_index,
+              testing::Optional(kActivationIndex1));
 
   // Verify the restore data for |kId2| doesn't exist.
-  EXPECT_TRUE(!base::Contains(launch_list_it->second, kId2));
+  EXPECT_FALSE(base::Contains(launch_list_it->second, kId2));
 
   // Verify the restore data for |kId2| is moved to |kId3|.
   const auto app_restore_data_it3 = launch_list_it->second.find(kId3);
   ASSERT_NE(app_restore_data_it3, launch_list_it->second.end());
 
   const auto& data3 = app_restore_data_it3->second;
-  EXPECT_TRUE(data3->activation_index.has_value());
-  EXPECT_EQ(kActivationIndex2, data3->activation_index.value());
+  EXPECT_THAT(data3->window_info.activation_index,
+              testing::Optional(kActivationIndex2));
 }
 
 TEST_F(FullRestoreReadAndSaveTest, MultipleFilePaths) {
@@ -678,17 +637,11 @@ TEST_F(FullRestoreReadAndSaveTest, ClearRestoreData) {
   const auto* restore_data = GetRestoreData(GetPath());
   ASSERT_TRUE(restore_data);
 
-  const auto& launch_list = restore_data->app_id_to_launch_list();
-  EXPECT_EQ(1u, launch_list.size());
-
-  // Verify for `kAppId`.
-  const auto launch_list_it = launch_list.find(kAppId);
-  EXPECT_TRUE(launch_list_it != launch_list.end());
-  EXPECT_EQ(1u, launch_list_it->second.size());
-
-  // Verify for `kId1`.
-  const auto app_restore_data_it1 = launch_list_it->second.find(kId1);
-  EXPECT_TRUE(app_restore_data_it1 != launch_list_it->second.end());
+  // Verify the restore data for `kAppId` exists, and that it contains data for
+  // `kId1`.
+  auto& launch_list = restore_data->app_id_to_launch_list();
+  EXPECT_THAT(launch_list,
+              ElementsAre(Pair(kAppId, ElementsAre(Pair(kId1, testing::_)))));
 
   // Simulate timeout to clear restore data.
   timer->FireNow();
@@ -758,11 +711,10 @@ TEST_F(FullRestoreReadAndSaveTest, ArcLaunchWithoutTask) {
   // Add an ARC app launch info.
   AddArcAppLaunchInfo(GetPath());
 
-  // Verify the ARC app launch info is saved to |arc_session_id_map|.
+  // Verify the ARC app launch info is saved to `arc_session_id_map`.
   const auto& arc_session_id_map = test_api.GetArcSessionIdMap();
-  EXPECT_EQ(1u, arc_session_id_map.size());
-  auto session_it = arc_session_id_map.find(kArcSessionId1);
-  EXPECT_TRUE(session_it != arc_session_id_map.end());
+  EXPECT_THAT(arc_session_id_map,
+              ElementsAre(Pair(kArcSessionId1, testing::_)));
 
   // Verify the ARC check timer starts running.
   base::RepeatingTimer* arc_check_timer = test_api.GetArcCheckTimer();
@@ -834,13 +786,13 @@ TEST_F(FullRestoreReadAndSaveTest, ArcWindowRestore) {
   ASSERT_TRUE(read_test_api.GetArcReadHander());
   EXPECT_EQ(1u, read_test_api.GetArcWindowIdMap().size());
 
-  // Verify the map from app ids to launch list:
-  // std::map<app_id, std::map<window_id, std::unique_ptr<AppRestoreData>>>
-  const auto& launch_list = restore_data->app_id_to_launch_list();
+  // Verify the map from app ids to launch list.
+  const std::map<std::string,
+                 std::map<int, std::unique_ptr<app_restore::AppRestoreData>>>&
+      launch_list = restore_data->app_id_to_launch_list();
   EXPECT_EQ(1u, launch_list.size());
 
   // Verify the launch list for |kAppId|:
-  // std::map<window_id, std::unique_ptr<AppRestoreData>>
   const auto launch_list_it = launch_list.find(kAppId);
   EXPECT_TRUE(launch_list_it != launch_list.end());
   EXPECT_EQ(1u, launch_list_it->second.size());
@@ -852,8 +804,8 @@ TEST_F(FullRestoreReadAndSaveTest, ArcWindowRestore) {
   // Verify the AppRestoreData.
   const std::unique_ptr<app_restore::AppRestoreData>& data =
       app_restore_data_it->second;
-  EXPECT_TRUE(data->activation_index.has_value());
-  EXPECT_EQ(kActivationIndex1, data->activation_index.value());
+  EXPECT_THAT(data->window_info.activation_index,
+              testing::Optional(kActivationIndex1));
 
   // Simulate the ARC app launching, and set the arc session id kArcSessionId2
   // for the restore window id |kArcTaskId1|.
@@ -923,14 +875,12 @@ TEST_F(FullRestoreReadAndSaveTest, ReadBrowserRestoreData) {
   const auto app_restore_data_it = launch_list_it->second.find(kId1);
   EXPECT_TRUE(app_restore_data_it != launch_list_it->second.end());
 
-  const auto& data = app_restore_data_it->second;
-  EXPECT_FALSE(data->urls.empty());
-  EXPECT_EQ(data->urls.size(), 2u);
-  EXPECT_EQ(data->urls[0], GURL(kExampleUrl1));
-  EXPECT_EQ(data->urls[1], GURL(kExampleUrl2));
-
-  EXPECT_TRUE(data->active_tab_index.has_value());
-  EXPECT_EQ(data->active_tab_index.value(), active_tab_index);
+  const app_restore::BrowserExtraInfo browser_info =
+      app_restore_data_it->second->browser_extra_info;
+  EXPECT_THAT(browser_info.urls,
+              ElementsAre(GURL(kExampleUrl1), GURL(kExampleUrl2)));
+  EXPECT_THAT(browser_info.active_tab_index,
+              testing::Optional(active_tab_index));
 }
 
 TEST_F(FullRestoreReadAndSaveTest, ReadChromeAppRestoreData) {
@@ -957,12 +907,10 @@ TEST_F(FullRestoreReadAndSaveTest, ReadChromeAppRestoreData) {
   EXPECT_TRUE(app_restore_data_it != launch_list_it->second.end());
 
   const auto& data = app_restore_data_it->second;
+  EXPECT_THAT(data->file_paths, ElementsAre(base::FilePath(kFilePath1),
+                                            base::FilePath(kFilePath2)));
   EXPECT_TRUE(data->handler_id.has_value());
   EXPECT_EQ(kHandlerId, data->handler_id.value());
-  EXPECT_FALSE(data->file_paths.empty());
-  EXPECT_EQ(2u, data->file_paths.size());
-  EXPECT_EQ(base::FilePath(kFilePath1), data->file_paths[0]);
-  EXPECT_EQ(base::FilePath(kFilePath2), data->file_paths[1]);
 }
 
 // Verify the Lacros browser window is saved correctly when the window is
@@ -1025,25 +973,25 @@ TEST_F(FullRestoreReadAndSaveTest,
   ASSERT_TRUE(lacros_save_handler);
 
   // OnLacrosWindowAdded is called first, then init the browser window later.
-  auto window = CreateLacrosWindow(kLacrosWindowId, kBrowserSessionId,
+  auto widget = CreateLacrosWidget(kLacrosWindowId, kBrowserSessionId,
                                    /*restored_browser_session_id=*/0);
-  window->Init(ui::LAYER_NOT_DRAWN);
+  aura::Window* window = widget->GetNativeWindow();
 
-  SaveWindowInfo(window.get(), kActivationIndex1);
+  SaveWindowInfo(window, kActivationIndex1);
 
   // Verify the browser window is saved.
-  EXPECT_EQ(app_constants::kLacrosAppId, save_handler->GetAppId(window.get()));
+  EXPECT_EQ(app_constants::kLacrosAppId, save_handler->GetAppId(window));
   auto window_info = save_handler->GetWindowInfo(
       GetPath(), app_constants::kLacrosAppId, kBrowserSessionId);
   EXPECT_EQ(kActivationIndex1, window_info->activation_index.value());
 
   // Modify the window info.
-  SaveWindowInfo(window.get(), kActivationIndex2);
+  SaveWindowInfo(window, kActivationIndex2);
   window_info = save_handler->GetWindowInfo(
       GetPath(), app_constants::kLacrosAppId, kBrowserSessionId);
   EXPECT_EQ(kActivationIndex2, window_info->activation_index.value());
 
-  window.reset();
+  widget.reset();
 
   // Wait for `save_handler` to fresh the full restore file.
   timer->FireNow();

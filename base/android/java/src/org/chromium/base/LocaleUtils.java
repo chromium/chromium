@@ -13,20 +13,15 @@ import android.text.TextUtils;
 import androidx.annotation.RequiresApi;
 import androidx.annotation.VisibleForTesting;
 
-import org.chromium.base.annotations.CalledByNative;
+import org.jni_zero.CalledByNative;
 
 import java.util.ArrayList;
 import java.util.Locale;
 
-/**
- * This class provides the locale related methods.
- */
+/** This class provides the locale related methods. */
 public class LocaleUtils {
-    /**
-     * Guards this class from being instantiated.
-     */
-    private LocaleUtils() {
-    }
+    /** Guards this class from being instantiated. */
+    private LocaleUtils() {}
 
     /**
      * Java keeps deprecated language codes for Hebrew, Yiddish and Indonesian but Chromium uses
@@ -106,39 +101,12 @@ public class LocaleUtils {
 
     /**
      * This function creates a Locale object from xx-XX style string where xx is language code
-     * and XX is a country code. This works for API level lower than 21.
-     * @return the locale that best represents the language tag.
-     */
-    public static Locale forLanguageTagCompat(String languageTag) {
-        String[] tag = languageTag.split("-");
-        if (tag.length == 0) {
-            return new Locale("");
-        }
-        String language = getUpdatedLanguageForAndroid(tag[0]);
-        if ((language.length() != 2 && language.length() != 3)) {
-            return new Locale("");
-        }
-        if (tag.length == 1) {
-            return new Locale(language);
-        }
-        String country = tag[1];
-        if (country.length() != 2 && country.length() != 3) {
-            return new Locale(language);
-        }
-        return new Locale(language, country);
-    }
-
-    /**
-     * This function creates a Locale object from xx-XX style string where xx is language code
      * and XX is a country code.
      * @return the locale that best represents the language tag.
      */
     public static Locale forLanguageTag(String languageTag) {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            Locale locale = Locale.forLanguageTag(languageTag);
-            return getUpdatedLocaleForAndroid(locale);
-        }
-        return forLanguageTagCompat(languageTag);
+        Locale locale = Locale.forLanguageTag(languageTag);
+        return getUpdatedLocaleForAndroid(locale);
     }
 
     /**
@@ -227,7 +195,7 @@ public class LocaleUtils {
      * @return The default country code set during install.
      */
     @CalledByNative
-    private static String getDefaultCountryCode() {
+    public static String getDefaultCountryCode() {
         CommandLine commandLine = CommandLine.getInstance();
         return commandLine.hasSwitch(BaseSwitches.DEFAULT_COUNTRY_CODE_AT_INSTALL)
                 ? commandLine.getSwitchValue(BaseSwitches.DEFAULT_COUNTRY_CODE_AT_INSTALL)
@@ -282,15 +250,14 @@ public class LocaleUtils {
         }
     }
 
-    /**
-     * Helper class for N only code that is not validated on pre-N devices.
-     */
+    /** Helper class for N only code that is not validated on pre-N devices. */
     @RequiresApi(Build.VERSION_CODES.N)
     @VisibleForTesting
     static class ApisN {
         static void setConfigLocales(Context base, Configuration config, String language) {
-            LocaleList updatedLocales = prependToLocaleList(
-                    language, base.getResources().getConfiguration().getLocales());
+            LocaleList updatedLocales =
+                    prependToLocaleList(
+                            language, base.getResources().getConfiguration().getLocales());
             config.setLocales(updatedLocales);
         }
 

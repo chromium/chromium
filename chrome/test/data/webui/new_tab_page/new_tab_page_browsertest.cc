@@ -47,7 +47,8 @@ IN_PROC_BROWSER_TEST_F(NewTabPageTest, VoiceSearchOverlay) {
   RunTest("new_tab_page/voice_search_overlay_test.js", "mocha.run()");
 }
 
-IN_PROC_BROWSER_TEST_F(NewTabPageTest, LensForm) {
+// TODO(crbug.com/1485755):  Re-enable once no longer fails.
+IN_PROC_BROWSER_TEST_F(NewTabPageTest, DISABLED_LensForm) {
   RunTest("new_tab_page/lens_form_test.js", "mocha.run()");
 }
 
@@ -146,7 +147,13 @@ IN_PROC_BROWSER_TEST_F(NewTabPageModulesTest, RecipesModule) {
   RunTest("new_tab_page/modules/recipes/module_test.js", "mocha.run()");
 }
 
-IN_PROC_BROWSER_TEST_F(NewTabPageModulesTest, ChromeCartModule) {
+// TODO(crbug.com/1485080): Fails on Linux Debug bots.
+#if BUILDFLAG(IS_LINUX) && !defined(NDEBUG)
+#define MAYBE_ChromeCartModule DISABLED_ChromeCartModule
+#else
+#define MAYBE_ChromeCartModule ChromeCartModule
+#endif
+IN_PROC_BROWSER_TEST_F(NewTabPageModulesTest, MAYBE_ChromeCartModule) {
   RunTest("new_tab_page/modules/cart/module_test.js", "mocha.run()");
 }
 
@@ -226,13 +233,18 @@ IN_PROC_BROWSER_TEST_F(NewTabPageAppTest, LensUploadDialog) {
           "runMochaSuite('NewTabPageAppTest LensUploadDialog')");
 }
 
+IN_PROC_BROWSER_TEST_F(NewTabPageAppTest, WallpaperSearch) {
+  RunTest("new_tab_page/app_test.js",
+          "runMochaSuite('NewTabPageAppTest WallpaperSearch')");
+}
+
 class NewTabPageModulesHistoryClustersModuleTest
     : public NewTabPageBrowserTest {
  protected:
   NewTabPageModulesHistoryClustersModuleTest() {
     scoped_feature_list_.InitWithFeatures(
         /*enabled_features=*/{ntp_features::kNtpHistoryClustersModule},
-        /*disabled_features=*/{history_clusters::kRenameJourneys});
+        /*disabled_features=*/{});
   }
 
  private:
@@ -254,6 +266,12 @@ IN_PROC_BROWSER_TEST_F(NewTabPageModulesHistoryClustersModuleTest, CartTileV2) {
           "mocha.run()");
 }
 
+IN_PROC_BROWSER_TEST_F(NewTabPageModulesHistoryClustersModuleTest, DiscountV2) {
+  RunTest("new_tab_page/modules/v2/history_clusters/module_test.js",
+          "runMochaSuite('NewTabPageModulesHistoryClustersV2ModuleTest "
+          "Discounts')");
+}
+
 IN_PROC_BROWSER_TEST_F(NewTabPageModulesHistoryClustersModuleTest, Layouts) {
   RunTest(
       "new_tab_page/modules/history_clusters/module_test.js",
@@ -261,17 +279,31 @@ IN_PROC_BROWSER_TEST_F(NewTabPageModulesHistoryClustersModuleTest, Layouts) {
 }
 
 IN_PROC_BROWSER_TEST_F(NewTabPageModulesHistoryClustersModuleTest,
-                       UnloadMetricImageDisplayStateNone) {
+                       PagehideMetricImageDisplayStateNone) {
   RunTest("new_tab_page/modules/history_clusters/module_test.js",
           "runMochaSuite('NewTabPageModulesHistoryClustersModuleTest "
-          "UnloadMetricNoImages')");
+          "PagehideMetricNoImages')");
 }
 
 IN_PROC_BROWSER_TEST_F(NewTabPageModulesHistoryClustersModuleTest,
-                       UnloadMetricImageDisplayStateAll) {
+                       PagehideMetricImageDisplayStateNoneV2) {
+  RunTest("new_tab_page/modules/v2/history_clusters/module_test.js",
+          "runMochaSuite('NewTabPageModulesHistoryClustersV2ModuleTest "
+          "PagehideMetricNoImages')");
+}
+
+IN_PROC_BROWSER_TEST_F(NewTabPageModulesHistoryClustersModuleTest,
+                       PagehideMetricImageDisplayStateAll) {
   RunTest("new_tab_page/modules/history_clusters/module_test.js",
           "runMochaSuite('NewTabPageModulesHistoryClustersModuleTest "
-          "UnloadMetricAllImages')");
+          "PagehideMetricAllImages')");
+}
+
+IN_PROC_BROWSER_TEST_F(NewTabPageModulesHistoryClustersModuleTest,
+                       PagehideMetricImageDisplayStateAllV2) {
+  RunTest("new_tab_page/modules/v2/history_clusters/module_test.js",
+          "runMochaSuite('NewTabPageModulesHistoryClustersV2ModuleTest "
+          "PagehideMetricAllImages')");
 }
 
 IN_PROC_BROWSER_TEST_F(NewTabPageModulesHistoryClustersModuleTest,
@@ -301,4 +333,21 @@ IN_PROC_BROWSER_TEST_F(NewTabPageModulesHistoryClustersModuleTest,
 IN_PROC_BROWSER_TEST_F(NewTabPageModulesHistoryClustersModuleTest, CartTile) {
   RunTest("new_tab_page/modules/history_clusters/cart/cart_tile_test.js",
           "mocha.run()");
+}
+
+class NewTabPageModulesTabResumptionModuleTest : public NewTabPageBrowserTest {
+ protected:
+  NewTabPageModulesTabResumptionModuleTest() {
+    scoped_feature_list_.InitWithFeatures(
+        /*enabled_features=*/{ntp_features::kNtpTabResumptionModule},
+        /*disabled_features=*/{});
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(NewTabPageModulesTabResumptionModuleTest, Core) {
+  RunTest("new_tab_page/modules/v2/tab_resumption/module_test.js",
+          "runMochaSuite('NewTabPageModulesTabResumptionModuleTest Core')");
 }

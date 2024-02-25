@@ -20,7 +20,9 @@ class EventModulesFactory final : public EventFactoryBase {
     return std::make_unique<EventModulesFactory>();
   }
 
-  Event* Create(ExecutionContext*, const String& event_type) override;
+  Event* Create(ScriptState*,
+                ExecutionContext*,
+                const String& event_type) override;
 };
 
 }  // namespace blink

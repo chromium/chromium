@@ -9,6 +9,7 @@
 #include "base/memory/ptr_util.h"
 #include "device/base/synchronization/shared_memory_seqlock_buffer.h"
 #include "services/device/public/cpp/generic_sensor/sensor_reading.h"
+#include "services/device/public/cpp/generic_sensor/sensor_reading_shared_buffer.h"
 
 namespace {
 

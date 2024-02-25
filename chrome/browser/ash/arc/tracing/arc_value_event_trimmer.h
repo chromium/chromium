@@ -34,7 +34,7 @@ class ArcValueEventTrimmer {
   // In case value has changed, insert last trimmed value.
   void Flush();
 
-  const raw_ptr<ValueEvents, ExperimentalAsh> events_;
+  const raw_ptr<ValueEvents> events_;
   const ArcValueEvent::Type type_;
   // Indicate if this is first event that would never be trimmed.
   bool first_event_ = true;

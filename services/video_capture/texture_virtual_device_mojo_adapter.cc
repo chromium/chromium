@@ -94,18 +94,15 @@ void TextureVirtualDeviceMojoAdapter::OnFrameReadyInBuffer(
       video_frame_handler_has_forwarder_ = true;
     }
 
-    video_frame_handler_->OnFrameReadyInBuffer(
-        mojom::ReadyFrameInBuffer::New(buffer_id, 0 /* frame_feedback_id */,
-                                       std::move(frame_info)),
-        {});
+    video_frame_handler_->OnFrameReadyInBuffer(mojom::ReadyFrameInBuffer::New(
+        buffer_id, 0 /* frame_feedback_id */, std::move(frame_info)));
   } else if (video_frame_handler_in_process_) {
     video_frame_handler_has_forwarder_ = true;
     video_frame_handler_in_process_->OnFrameReadyInBuffer(
         media::ReadyFrameInBuffer(buffer_id, 0 /* frame_feedback_id */,
                                   std::make_unique<ScopedBufferPoolReservation>(
                                       frame_access_handler_remote_, buffer_id),
-                                  std::move(frame_info)),
-        {});
+                                  std::move(frame_info)));
   }
 }
 
@@ -140,7 +137,9 @@ void TextureVirtualDeviceMojoAdapter::Start(
 
 void TextureVirtualDeviceMojoAdapter::StartInProcess(
     const media::VideoCaptureParams& requested_settings,
-    const base::WeakPtr<media::VideoFrameReceiver>& frame_handler) {
+    const base::WeakPtr<media::VideoFrameReceiver>& frame_handler,
+    mojo::PendingRemote<video_capture::mojom::VideoEffectsManager>
+        video_effects_manager) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   video_frame_handler_in_process_ = std::move(frame_handler);
   video_frame_handler_in_process_->OnStarted();

@@ -49,10 +49,12 @@ bool TestSyncUserSettings::IsInitialSyncFeatureSetupComplete() const {
   return initial_sync_feature_setup_complete_;
 }
 
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
 void TestSyncUserSettings::SetInitialSyncFeatureSetupComplete(
     SyncFirstSetupCompleteSource source) {
   SetInitialSyncFeatureSetupComplete();
 }
+#endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
 
 bool TestSyncUserSettings::IsSyncEverythingEnabled() const {
   return sync_everything_enabled_;
@@ -106,6 +108,12 @@ bool TestSyncUserSettings::IsTypeManagedByCustodian(
   return false;
 }
 
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+int TestSyncUserSettings::GetNumberOfAccountsWithPasswordsSelected() const {
+  return selected_types_.Has(UserSelectableType::kPasswords) ? 1 : 0;
+}
+#endif
+
 ModelTypeSet TestSyncUserSettings::GetPreferredDataTypes() const {
   ModelTypeSet types = UserSelectableTypesToModelTypes(GetSelectedTypes());
   types.PutAll(AlwaysPreferredUserTypes());
@@ -123,6 +131,15 @@ UserSelectableTypeSet TestSyncUserSettings::GetRegisteredSelectableTypes()
 }
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
+bool TestSyncUserSettings::IsSyncFeatureDisabledViaDashboard() const {
+  return sync_feature_disabled_via_dashboard_;
+}
+
+void TestSyncUserSettings::SetSyncFeatureDisabledViaDashboard(
+    bool disabled_via_dashboard) {
+  sync_feature_disabled_via_dashboard_ = disabled_via_dashboard;
+}
+
 bool TestSyncUserSettings::IsSyncAllOsTypesEnabled() const {
   return sync_all_os_types_enabled_;
 }
@@ -232,7 +249,7 @@ base::Time TestSyncUserSettings::GetExplicitPassphraseTime() const {
   return base::Time();
 }
 
-absl::optional<PassphraseType> TestSyncUserSettings::GetPassphraseType() const {
+std::optional<PassphraseType> TestSyncUserSettings::GetPassphraseType() const {
   return IsUsingExplicitPassphrase() ? PassphraseType::kCustomPassphrase
                                      : PassphraseType::kImplicitPassphrase;
 }
@@ -245,10 +262,11 @@ bool TestSyncUserSettings::SetDecryptionPassphrase(
   return false;
 }
 
-void TestSyncUserSettings::SetDecryptionNigoriKey(
+void TestSyncUserSettings::SetExplicitPassphraseDecryptionNigoriKey(
     std::unique_ptr<Nigori> nigori) {}
 
-std::unique_ptr<Nigori> TestSyncUserSettings::GetDecryptionNigoriKey() const {
+std::unique_ptr<Nigori>
+TestSyncUserSettings::GetExplicitPassphraseDecryptionNigoriKey() const {
   return nullptr;
 }
 

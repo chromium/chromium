@@ -36,7 +36,10 @@ enum class FastCheckoutTriggerOutcome {
   // FastCheckout is not supported for this field type. This value is not logged
   // to UMA.
   kUnsupportedFieldType = 9,
-  kMaxValue = kUnsupportedFieldType
+  // FastCheckout is not supported for this country.
+  kUnsupportedCountry = 10,
+
+  kMaxValue = kUnsupportedCountry
 };
 
 // Enum defining possible outcomes of a Fast Checkout run.

@@ -47,9 +47,9 @@ class ASH_EXPORT AppListFolderView : public views::View,
                                      public AppListModelObserver,
                                      public views::ViewObserver,
                                      public AppsGridViewFolderDelegate {
- public:
-  METADATA_HEADER(AppListFolderView);
+  METADATA_HEADER(AppListFolderView, views::View)
 
+ public:
   // The maximum number of columns a folder can have.
   static constexpr int kMaxFolderColumns = 4;
 
@@ -108,7 +108,7 @@ class ASH_EXPORT AppListFolderView : public views::View,
 
   // views::View
   void AddedToWidget() override;
-  void Layout() override;
+  void Layout(PassKey) override;
   void ChildPreferredSizeChanged(View* child) override;
   void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
   void OnGestureEvent(ui::GestureEvent* event) override;
@@ -226,38 +226,34 @@ class ASH_EXPORT AppListFolderView : public views::View,
   void OnHideAnimationDone(bool hide_for_reparent);
 
   // Controller interface implemented by the container for this view.
-  const raw_ptr<AppListFolderController, ExperimentalAsh> folder_controller_;
+  const raw_ptr<AppListFolderController> folder_controller_;
 
   // The root (non-folder) apps grid view.
-  const raw_ptr<AppsGridView, ExperimentalAsh> root_apps_grid_view_;
+  const raw_ptr<AppsGridView> root_apps_grid_view_;
 
   // Used to send accessibility alerts. Owned by the parent apps container.
-  const raw_ptr<AppListA11yAnnouncer, ExperimentalAsh> a11y_announcer_;
+  const raw_ptr<AppListA11yAnnouncer> a11y_announcer_;
 
   // The view is used to draw a background with corner radius.
-  raw_ptr<views::View, ExperimentalAsh> background_view_;
-  raw_ptr<views::View, ExperimentalAsh> animating_background_;
+  raw_ptr<views::View> background_view_;
+  raw_ptr<views::View> animating_background_;
 
   // The view is used as a container for all following views.
-  raw_ptr<views::View, ExperimentalAsh>
-      contents_container_;  // Owned by views hierarchy.
+  raw_ptr<views::View> contents_container_;  // Owned by views hierarchy.
 
-  raw_ptr<FolderHeaderView, ExperimentalAsh>
-      folder_header_view_;  // Owned by views hierarchy.
-  raw_ptr<AppsGridView, ExperimentalAsh>
-      items_grid_view_;  // Owned by views hierarchy.
+  raw_ptr<FolderHeaderView> folder_header_view_;  // Owned by views hierarchy.
+  raw_ptr<AppsGridView> items_grid_view_;         // Owned by views hierarchy.
 
   // Owned by views hierarchy.
-  raw_ptr<views::ScrollView, ExperimentalAsh> scroll_view_ = nullptr;
+  raw_ptr<views::ScrollView> scroll_view_ = nullptr;
 
   std::unique_ptr<SystemShadow> shadow_;
 
   // Adds fade in/out gradients to `scroll_view_`.
   std::unique_ptr<ScrollViewGradientHelper> gradient_helper_;
 
-  const raw_ptr<AppListViewDelegate, ExperimentalAsh> view_delegate_;
-  raw_ptr<AppListFolderItem, ExperimentalAsh> folder_item_ =
-      nullptr;  // Not owned.
+  const raw_ptr<AppListViewDelegate> view_delegate_;
+  raw_ptr<AppListFolderItem> folder_item_ = nullptr;  // Not owned.
 
   // Whether the folder view is currently shown, or showing.
   bool shown_ = false;
@@ -267,7 +263,7 @@ class ASH_EXPORT AppListFolderView : public views::View,
   base::OnceClosure hide_callback_;
 
   // The folder item in the root apps grid associated with this folder.
-  raw_ptr<AppListItemView, ExperimentalAsh> folder_item_view_ = nullptr;
+  raw_ptr<AppListItemView> folder_item_view_ = nullptr;
 
   // The bounds of the activated folder item icon relative to this view.
   gfx::Rect folder_item_icon_bounds_;
@@ -282,7 +278,7 @@ class ASH_EXPORT AppListFolderView : public views::View,
   std::vector<std::unique_ptr<Animation>> folder_visibility_animations_;
 
   // Records smoothness of the folder show/hide animation.
-  absl::optional<ui::ThroughputTracker> show_hide_metrics_tracker_;
+  std::optional<ui::ThroughputTracker> show_hide_metrics_tracker_;
 
   base::ScopedObservation<AppListModel, AppListModelObserver>
       model_observation_{this};

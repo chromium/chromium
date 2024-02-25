@@ -5,6 +5,7 @@
 #include "components/services/storage/indexed_db/scopes/leveldb_scopes_coding.h"
 
 #include <sstream>
+#include <string_view>
 #include <utility>
 
 #include "base/big_endian.h"
@@ -20,9 +21,9 @@ void EncodeBigEndianFixed64(uint64_t number, std::string* output) {
   base::WriteBigEndian(&(*output)[start_index], number);
 }
 
-base::StringPiece MakeStringPiece(base::span<const uint8_t> bytes) {
-  return base::StringPiece(reinterpret_cast<const char*>(bytes.data()),
-                           bytes.size());
+std::string_view MakeStringView(base::span<const uint8_t> bytes) {
+  return std::string_view(reinterpret_cast<const char*>(bytes.data()),
+                          bytes.size());
 }
 
 }  // namespace
@@ -49,7 +50,7 @@ std::tuple<bool, int64_t> ParseScopeMetadataId(
     return std::make_tuple(false, 0);
 
   int64_t scope_id = 0;
-  base::StringPiece part(key.data() + prefix_size, key.size() - prefix_size);
+  std::string_view part(key.data() + prefix_size, key.size() - prefix_size);
   bool decode_success = DecodeVarInt(&part, &scope_id);
   DCHECK_GE(scope_id, 0);
   return std::make_tuple(decode_success, scope_id);
@@ -63,8 +64,8 @@ std::string KeyToDebugString(base::span<const uint8_t> key_without_prefix) {
     return result.str();
   }
   char type_byte = key_without_prefix[0];
-  base::StringPiece key_after_type =
-      MakeStringPiece(key_without_prefix.subspan(1));
+  std::string_view key_after_type =
+      MakeStringView(key_without_prefix.subspan(1));
   switch (type_byte) {
     case kGlobalMetadataByte:
       result << "GlobalMetadata";

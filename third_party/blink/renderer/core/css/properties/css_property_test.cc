@@ -6,6 +6,7 @@
 #include <cstring>
 #include "base/memory/values_equivalent.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/mojom/origin_trial_feature/origin_trial_feature.mojom-shared.h"
 #include "third_party/blink/renderer/core/css/css_property_names.h"
 #include "third_party/blink/renderer/core/css/css_test_helpers.h"
 #include "third_party/blink/renderer/core/css/properties/css_bitset.h"
@@ -197,7 +198,7 @@ TEST_F(CSSPropertyTest, OriginTrialTestPropertyWithContext) {
   // Enable it:
   LocalDOMWindow* window = GetFrame().DomWindow();
   OriginTrialContext* context = window->GetOriginTrialContext();
-  context->AddFeature(OriginTrialFeature::kOriginTrialsSampleAPI);
+  context->AddFeature(mojom::blink::OriginTrialFeature::kOriginTrialsSampleAPI);
 
   // Context-aware exposure functions should now report the property as
   // exposed.
@@ -214,8 +215,11 @@ TEST_F(CSSPropertyTest, OriginTrialTestPropertyWithContext) {
 TEST_F(CSSPropertyTest, AlternativePropertyData) {
   for (CSSPropertyID property_id : CSSPropertyIDList()) {
     const CSSProperty& property = CSSProperty::Get(property_id);
+    // TODO(pdr): Remove this IsPropertyAlias check, and properly handle aliases
+    // in this test.
     if (CSSPropertyID alternative_id = property.GetAlternative();
-        alternative_id != CSSPropertyID::kInvalid) {
+        alternative_id != CSSPropertyID::kInvalid &&
+        !IsPropertyAlias(alternative_id)) {
       SCOPED_TRACE(property.GetPropertyName());
 
       const CSSProperty& alternative = CSSProperty::Get(alternative_id);
@@ -242,7 +246,10 @@ TEST_F(CSSPropertyTest, AlternativePropertyData) {
 TEST_F(CSSPropertyTest, AlternativePropertyExposure) {
   for (CSSPropertyID property_id : CSSPropertyIDList()) {
     const CSSProperty& property = CSSProperty::Get(property_id);
-    if (CSSPropertyID alternative_id = property.GetAlternative();
+    // TODO(pdr): Remove this call to `ResolveCSSPropertyID` by properly
+    // handling aliases in this test.
+    if (CSSPropertyID alternative_id =
+            ResolveCSSPropertyID(property.GetAlternative());
         alternative_id != CSSPropertyID::kInvalid) {
       SCOPED_TRACE(property.GetPropertyName());
 
@@ -281,7 +288,10 @@ TEST_F(CSSPropertyTest, AlternativePropertyCycle) {
     CSSBitset seen_properties;
     for (CSSPropertyID current_id = property_id;
          current_id != CSSPropertyID::kInvalid;
-         current_id = CSSProperty::Get(current_id).GetAlternative()) {
+         // TODO(pdr): Remove this call to `ResolveCSSPropertyID` by properly
+         // handling aliases in this test.
+         current_id = ResolveCSSPropertyID(
+             CSSProperty::Get(current_id).GetAlternative())) {
       ASSERT_FALSE(seen_properties.Has(current_id));
       seen_properties.Set(current_id);
     }

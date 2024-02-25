@@ -45,6 +45,9 @@ class MockRenderFrameHostDelegate : public RenderFrameHostDelegate {
   const blink::web_pref::WebPreferences& GetOrCreateWebPreferences() override {
     return mock_web_preferences_;
   }
+  blink::ColorProviderColorMaps GetColorProviderColorMaps() const override {
+    return mock_color_provider_colors_;
+  }
   MOCK_METHOD2(RequestMediaAccessPermission,
                void(const MediaStreamRequest& request,
                     MediaResponseCallback* callback));
@@ -55,6 +58,7 @@ class MockRenderFrameHostDelegate : public RenderFrameHostDelegate {
 
  private:
   blink::web_pref::WebPreferences mock_web_preferences_;
+  blink::ColorProviderColorMaps mock_color_provider_colors_;
 };
 
 class MockResponseCallback {
@@ -121,21 +125,24 @@ class MediaStreamUIProxyTest : public testing::Test {
 };
 
 MATCHER_P(SameRequest, expected, "") {
-  return
-    expected->render_process_id == arg.render_process_id &&
-    expected->render_frame_id == arg.render_frame_id &&
-    expected->security_origin == arg.security_origin &&
-    expected->request_type == arg.request_type &&
-    expected->requested_audio_device_id == arg.requested_audio_device_id &&
-    expected->requested_video_device_id == arg.requested_video_device_id &&
-    expected->audio_type == arg.audio_type &&
-    expected->video_type == arg.video_type;
+  return expected->render_process_id == arg.render_process_id &&
+         expected->render_frame_id == arg.render_frame_id &&
+         expected->security_origin == arg.security_origin &&
+         expected->request_type == arg.request_type &&
+         expected->requested_audio_device_ids ==
+             arg.requested_audio_device_ids &&
+         expected->requested_video_device_ids ==
+             arg.requested_video_device_ids &&
+         expected->audio_type == arg.audio_type &&
+         expected->video_type == arg.video_type;
 }
 
 TEST_F(MediaStreamUIProxyTest, Deny) {
   auto request = std::make_unique<MediaStreamRequest>(
-      0, 0, 0, GURL("http://origin/"), false, blink::MEDIA_GENERATE_STREAM,
-      std::string(), std::string(),
+      0, 0, 0, url::Origin::Create(GURL("http://origin/")), false,
+      blink::MEDIA_GENERATE_STREAM,
+      /*requested_audio_device_ids=*/std::vector<std::string>{},
+      /*requested_video_device_ids=*/std::vector<std::string>{},
       blink::mojom::MediaStreamType::DEVICE_AUDIO_CAPTURE,
       blink::mojom::MediaStreamType::DEVICE_VIDEO_CAPTURE,
       /*disable_local_echo=*/false, /*request_pan_tilt_zoom_permission=*/false);
@@ -173,8 +180,10 @@ TEST_F(MediaStreamUIProxyTest, Deny) {
 
 TEST_F(MediaStreamUIProxyTest, AcceptAndStart) {
   auto request = std::make_unique<MediaStreamRequest>(
-      0, 0, 0, GURL("http://origin/"), false, blink::MEDIA_GENERATE_STREAM,
-      std::string(), std::string(),
+      0, 0, 0, url::Origin::Create(GURL("http://origin/")), false,
+      blink::MEDIA_GENERATE_STREAM,
+      /*requested_audio_device_ids=*/std::vector<std::string>{},
+      /*requested_video_device_ids=*/std::vector<std::string>{},
       blink::mojom::MediaStreamType::DEVICE_AUDIO_CAPTURE,
       blink::mojom::MediaStreamType::DEVICE_VIDEO_CAPTURE,
       /*disable_local_echo=*/false, /*request_pan_tilt_zoom_permission=*/false);
@@ -224,8 +233,10 @@ TEST_F(MediaStreamUIProxyTest, AcceptAndStart) {
 // Verify that the proxy can be deleted before the request is processed.
 TEST_F(MediaStreamUIProxyTest, DeleteBeforeAccepted) {
   auto request = std::make_unique<MediaStreamRequest>(
-      0, 0, 0, GURL("http://origin/"), false, blink::MEDIA_GENERATE_STREAM,
-      std::string(), std::string(),
+      0, 0, 0, url::Origin::Create(GURL("http://origin/")), false,
+      blink::MEDIA_GENERATE_STREAM,
+      /*requested_audio_device_ids=*/std::vector<std::string>{},
+      /*requested_video_device_ids=*/std::vector<std::string>{},
       blink::mojom::MediaStreamType::DEVICE_AUDIO_CAPTURE,
       blink::mojom::MediaStreamType::DEVICE_VIDEO_CAPTURE,
       /*disable_local_echo=*/false, /*request_pan_tilt_zoom_permission=*/false);
@@ -256,8 +267,10 @@ TEST_F(MediaStreamUIProxyTest, DeleteBeforeAccepted) {
 
 TEST_F(MediaStreamUIProxyTest, StopFromUI) {
   auto request = std::make_unique<MediaStreamRequest>(
-      0, 0, 0, GURL("http://origin/"), false, blink::MEDIA_GENERATE_STREAM,
-      std::string(), std::string(),
+      0, 0, 0, url::Origin::Create(GURL("http://origin/")), false,
+      blink::MEDIA_GENERATE_STREAM,
+      /*requested_audio_device_ids=*/std::vector<std::string>{},
+      /*requested_video_device_ids=*/std::vector<std::string>{},
       blink::mojom::MediaStreamType::DEVICE_AUDIO_CAPTURE,
       blink::mojom::MediaStreamType::DEVICE_VIDEO_CAPTURE,
       /*disable_local_echo=*/false, /*request_pan_tilt_zoom_permission=*/false);
@@ -321,8 +334,11 @@ TEST_F(MediaStreamUIProxyTest, StopFromUI) {
 
 TEST_F(MediaStreamUIProxyTest, WindowIdCallbackCalled) {
   auto request = std::make_unique<MediaStreamRequest>(
-      0, 0, 0, GURL("http://origin/"), false, blink::MEDIA_GENERATE_STREAM,
-      std::string(), std::string(), blink::mojom::MediaStreamType::NO_SERVICE,
+      0, 0, 0, url::Origin::Create(GURL("http://origin/")), false,
+      blink::MEDIA_GENERATE_STREAM,
+      /*requested_audio_device_ids=*/std::vector<std::string>{},
+      /*requested_video_device_ids=*/std::vector<std::string>{},
+      blink::mojom::MediaStreamType::NO_SERVICE,
       blink::mojom::MediaStreamType::GUM_DESKTOP_VIDEO_CAPTURE,
       /*disable_local_echo=*/false, /*request_pan_tilt_zoom_permission=*/false);
   MediaStreamRequest* request_ptr = request.get();
@@ -366,8 +382,10 @@ TEST_F(MediaStreamUIProxyTest, WindowIdCallbackCalled) {
 
 TEST_F(MediaStreamUIProxyTest, ChangeSourceFromUI) {
   auto request = std::make_unique<MediaStreamRequest>(
-      0, 0, 0, GURL("http://origin/"), false, blink::MEDIA_GENERATE_STREAM,
-      std::string(), std::string(),
+      0, 0, 0, url::Origin::Create(GURL("http://origin/")), false,
+      blink::MEDIA_GENERATE_STREAM,
+      /*requested_audio_device_ids=*/std::vector<std::string>{},
+      /*requested_video_device_ids=*/std::vector<std::string>{},
       blink::mojom::MediaStreamType::GUM_DESKTOP_AUDIO_CAPTURE,
       blink::mojom::MediaStreamType::GUM_DESKTOP_VIDEO_CAPTURE,
       /*disable_local_echo=*/false, /*request_pan_tilt_zoom_permission=*/false);
@@ -432,8 +450,10 @@ TEST_F(MediaStreamUIProxyTest, ChangeSourceFromUI) {
 
 TEST_F(MediaStreamUIProxyTest, ChangeTabSourceFromUI) {
   auto request = std::make_unique<MediaStreamRequest>(
-      0, 0, 0, GURL("http://origin/"), false, blink::MEDIA_GENERATE_STREAM,
-      std::string(), std::string(),
+      0, 0, 0, url::Origin::Create(GURL("http://origin/")), false,
+      blink::MEDIA_GENERATE_STREAM,
+      /*requested_audio_device_ids=*/std::vector<std::string>{},
+      /*requested_video_device_ids=*/std::vector<std::string>{},
       blink::mojom::MediaStreamType::GUM_TAB_AUDIO_CAPTURE,
       blink::mojom::MediaStreamType::GUM_TAB_VIDEO_CAPTURE,
       /*disable_local_echo=*/false, /*request_pan_tilt_zoom_permission=*/false);
@@ -500,8 +520,10 @@ TEST_F(MediaStreamUIProxyTest, ChangeTabSourceFromUI) {
 
   // Switching source tab will trigger another MediaStreamRequest
   request = std::make_unique<MediaStreamRequest>(
-      0, 0, 0, GURL("http://origin/"), false, blink::MEDIA_GENERATE_STREAM,
-      std::string(), std::string(),
+      0, 0, 0, url::Origin::Create(GURL("http://origin/")), false,
+      blink::MEDIA_GENERATE_STREAM,
+      /*requested_audio_device_ids=*/std::vector<std::string>{},
+      /*requested_video_device_ids=*/std::vector<std::string>{},
       blink::mojom::MediaStreamType::GUM_TAB_AUDIO_CAPTURE,
       blink::mojom::MediaStreamType::GUM_TAB_VIDEO_CAPTURE,
       /*disable_local_echo=*/false, /*request_pan_tilt_zoom_permission=*/false);
@@ -556,7 +578,7 @@ class MediaStreamUIProxyPermissionsPolicyTest
     auto navigation = NavigationSimulator::CreateRendererInitiated(
         main_rfh()->GetLastCommittedURL(), main_rfh());
     navigation->SetPermissionsPolicyHeader(
-        {{feature, /*allowed_origins=*/{}, /*self_if_matches=*/absl::nullopt,
+        {{feature, /*allowed_origins=*/{}, /*self_if_matches=*/std::nullopt,
           /*matches_all_origins=*/false,
           /*matches_opaque_src=*/false}});
     navigation->Commit();
@@ -583,8 +605,11 @@ class MediaStreamUIProxyPermissionsPolicyTest
       blink::mojom::MediaStreamType cam_type) {
     return std::make_unique<MediaStreamRequest>(
         rfh->GetProcess()->GetID(), rfh->GetRoutingID(), 0,
-        rfh->GetLastCommittedURL(), false, blink::MEDIA_GENERATE_STREAM,
-        std::string(), std::string(), mic_type, cam_type,
+        url::Origin::Create(rfh->GetLastCommittedURL()), false,
+        blink::MEDIA_GENERATE_STREAM,
+        /*requested_audio_device_ids=*/std::vector<std::string>{},
+        /*requested_video_device_ids=*/std::vector<std::string>{}, mic_type,
+        cam_type,
         /*disable_local_echo=*/false,
         /*request_pan_tilt_zoom_permission=*/false);
   }
@@ -621,8 +646,13 @@ class MediaStreamUIProxyPermissionsPolicyTest
       return mock_web_preferences_;
     }
 
+    blink::ColorProviderColorMaps GetColorProviderColorMaps() const override {
+      return mock_color_provider_colors_;
+    }
+
    private:
     blink::web_pref::WebPreferences mock_web_preferences_;
+    blink::ColorProviderColorMaps mock_color_provider_colors_;
   };
 
   void GetResultForRequestOnIOThread(

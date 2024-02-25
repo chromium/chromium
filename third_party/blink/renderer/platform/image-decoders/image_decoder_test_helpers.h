@@ -6,6 +6,8 @@
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_IMAGE_DECODERS_IMAGE_DECODER_TEST_HELPERS_H_
 
 #include <memory>
+
+#include "base/metrics/histogram_base.h"
 #include "third_party/blink/renderer/platform/image-decoders/image_decoder.h"
 #include "third_party/blink/renderer/platform/wtf/shared_buffer.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_view.h"
@@ -112,6 +114,14 @@ void TestUpdateRequiredPreviousFrameAfterFirstDecode(DecoderCreator,
 // Verifies that result of alpha blending is similar for AlphaPremultiplied and
 // AlphaNotPremultiplied cases.
 void TestAlphaBlending(DecoderCreatorWithAlpha, const char*);
+
+// image_type must be "Avif", "Jpeg", or "WebP". If histogram_name is a null
+// pointer, the test should not emit to any histogram and `sample` is ignored.
+void TestBppHistogram(DecoderCreator create_decoder,
+                      const char* image_type,
+                      const char* image_name,
+                      const char* histogram_name,
+                      base::HistogramBase::Sample sample);
 
 }  // namespace blink
 

@@ -14,7 +14,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ash/borealis/borealis_features.h"
-#include "chrome/browser/ash/borealis/borealis_metrics.h"
+#include "chrome/browser/ash/borealis/borealis_types.mojom.h"
 #include "chrome/browser/ash/borealis/borealis_util.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/settings_window_manager_chromeos.h"
@@ -46,7 +46,7 @@ namespace views::borealis {
 
 namespace {
 
-using InstallResult = ::borealis::BorealisInstallResult;
+using ::borealis::mojom::InstallResult;
 
 // Optionally, the dialog has an extra button so the user can act on the error.
 enum class CallToAction {

@@ -30,7 +30,27 @@ IdlConvert::Status MakeRecordConversionFailure(
       try_catch, error_prefix, error_subject, "record<DOMString, USVString>");
 }
 
+IdlConvert::Status MakeIterFailure(
+    std::string_view error_prefix,
+    std::initializer_list<std::string_view> error_subject,
+    const v8::TryCatch& catcher) {
+  if (catcher.HasTerminated()) {
+    return IdlConvert::Status::MakeTimeout(
+        base::StrCat({error_prefix, "Timeout iterating over ",
+                      base::StrCat(error_subject), "."}));
+  } else if (catcher.HasCaught()) {
+    return IdlConvert::Status::MakeException(catcher.Exception(),
+                                             catcher.Message());
+  } else {
+    return IdlConvert::Status::MakeErrorMessage(
+        base::StrCat({error_prefix, "Trouble iterating over ",
+                      base::StrCat(error_subject), "."}));
+  }
+}
+
 }  // namespace
+
+const size_t IdlConvert::kSequenceLengthLimit;
 
 IdlConvert::Status::Status() : value_(Success::kSuccessTag) {}
 IdlConvert::Status::Status(Status&& other) = default;
@@ -387,8 +407,6 @@ IdlConvert::Status ConvertRecord(
   return IdlConvert::Status::MakeSuccess();
 }
 
-const size_t DictConverter::kSequenceLengthLimit;
-
 DictConverter::DictConverter(AuctionV8Helper* v8_helper,
                              AuctionV8Helper::TimeLimitScope& time_limit_scope,
                              std::string error_prefix,
@@ -410,7 +428,8 @@ DictConverter::~DictConverter() = default;
 bool DictConverter::GetOptionalSequence(
     std::string_view field,
     base::OnceClosure exists_callback,
-    base::RepeatingCallback<bool(v8::Local<v8::Value>)> item_callback) {
+    base::RepeatingCallback<IdlConvert::Status(v8::Local<v8::Value>)>
+        item_callback) {
   if (is_failed()) {
     return false;
   }
@@ -426,7 +445,33 @@ bool DictConverter::GetOptionalSequence(
 
   std::move(exists_callback).Run();
 
-  return ConvertSequence(field, val, std::move(item_callback));
+  std::initializer_list<std::string_view> field_info = {"field '", field, "'"};
+
+  // If Type(V) is not Object, throw a TypeError.
+  if (!val->IsObject()) {
+    status_ = IdlConvert::Status::MakeErrorMessage(base::StrCat(
+        {error_prefix_, "Sequence field '", field, "' must be an Object."}));
+    return false;
+  }
+
+  v8::Local<v8::Object> iterable = val.As<v8::Object>();
+  v8::Local<v8::Object> iterator_factory;
+  status_ =
+      IdlConvert::CheckForSequence(v8_helper_->isolate(), error_prefix_,
+                                   field_info, iterable, iterator_factory);
+  if (iterator_factory.IsEmpty()) {
+    if (status_.is_success()) {
+      status_ = IdlConvert::Status::MakeErrorMessage(
+          base::StrCat({error_prefix_, "Trouble iterating over field '", field,
+                        "' as it does not appear to be a sequence."}));
+    }
+    return false;
+  }
+
+  status_ = IdlConvert::ConvertSequence(v8_helper_.get(), error_prefix_,
+                                        field_info, iterable, iterator_factory,
+                                        std::move(item_callback));
+  return is_success();
 }
 
 std::string DictConverter::ErrorMessage() const {
@@ -480,50 +525,67 @@ v8::Local<v8::Value> DictConverter::GetMember(std::string_view field) {
   return val;
 }
 
-bool DictConverter::ConvertSequence(
-    std::string_view field,
-    v8::Local<v8::Value> value,
-    base::RepeatingCallback<bool(v8::Local<v8::Value>)> item_callback) {
+// static
+IdlConvert::Status IdlConvert::CheckForSequence(
+    v8::Isolate* isolate,
+    std::string_view error_prefix,
+    std::initializer_list<std::string_view> error_subject,
+    v8::Local<v8::Object> maybe_iterable,
+    v8::Local<v8::Object>& result) {
+  v8::Local<v8::Context> current_context = isolate->GetCurrentContext();
+  v8::TryCatch try_catch(isolate);
+  // Both converting a known sequence and resolving a union for a sequence
+  // relies on the following spec step, as basically implemented in this
+  // method:
+  //    "Let method be ? GetMethod(V, @@iterator)."
+  // We just have to be a bit careful to distinguish cases where the step hard
+  // fails with an exception, or just says it's not a sequence, as the union
+  // case behaves differently between the two.
+  v8::Local<v8::Value> method_val;
+  if (!maybe_iterable->Get(current_context, v8::Symbol::GetIterator(isolate))
+           .ToLocal(&method_val)) {
+    return MakeIterFailure(error_prefix, error_subject, try_catch);
+  }
+
+  if (method_val->IsNullOrUndefined()) {
+    // This is a non-error, non-iterable case.
+    return Status::MakeSuccess();
+  }
+
+  if (!method_val->IsObject()) {
+    return MakeIterFailure(error_prefix, error_subject, try_catch);
+  }
+  v8::Local<v8::Object> method = method_val.As<v8::Object>();
+  if (!method->IsCallable()) {
+    return MakeIterFailure(error_prefix, error_subject, try_catch);
+  }
+  result = method;
+  return Status::MakeSuccess();
+}
+
+// static
+IdlConvert::Status IdlConvert::ConvertSequence(
+    AuctionV8Helper* v8_helper,
+    std::string_view error_prefix,
+    std::initializer_list<std::string_view> error_subject,
+    v8::Local<v8::Object> iterable,
+    v8::Local<v8::Object> method,
+    base::RepeatingCallback<IdlConvert::Status(v8::Local<v8::Value>)>
+        item_callback) {
   // This is based on https://webidl.spec.whatwg.org/#es-sequence and its
   // implementation in
   // third_party/blink/renderer/bindings/core/v8/script_iterator.cc
   //
   // It's probably best understood from:
   //   https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Iteration_protocols
-  v8::Isolate* isolate = v8_helper_->isolate();
+  v8::Isolate* isolate = v8_helper->isolate();
   v8::Local<v8::Context> current_context = isolate->GetCurrentContext();
   v8::TryCatch try_catch(isolate);
 
-  // If Type(V) is not Object, throw a TypeError.
-  if (!value->IsObject()) {
-    MarkFailed(
-        base::StrCat({"Sequence field '", field, "' must be an Object."}));
-    return false;
-  }
-  v8::Local<v8::Object> iterable = value.As<v8::Object>();
-
-  v8::Local<v8::String> next_name = v8_helper_->CreateStringFromLiteral("next");
-  v8::Local<v8::String> done_name = v8_helper_->CreateStringFromLiteral("done");
+  v8::Local<v8::String> next_name = v8_helper->CreateStringFromLiteral("next");
+  v8::Local<v8::String> done_name = v8_helper->CreateStringFromLiteral("done");
   v8::Local<v8::String> value_name =
-      v8_helper_->CreateStringFromLiteral("value");
-
-  // Let method be ? GetMethod(V, @@iterator).
-  // If method is undefined, throw a TypeError.
-  v8::Local<v8::Value> method_val;
-  if (!iterable->Get(current_context, v8::Symbol::GetIterator(isolate))
-           .ToLocal(&method_val)) {
-    MarkFailedIter(field, try_catch);
-    return false;
-  }
-  if (!method_val->IsObject()) {  // subsumes the undefined/null check.
-    MarkFailedIter(field, try_catch);
-    return false;
-  }
-  v8::Local<v8::Object> method = method_val.As<v8::Object>();
-  if (!method->IsCallable()) {
-    MarkFailedIter(field, try_catch);
-    return false;
-  }
+      v8_helper->CreateStringFromLiteral("value");
 
   // Let iter be ? GetIterator(iterable, sync, method)
   v8::Local<v8::Value> iterator_val;
@@ -532,21 +594,18 @@ bool DictConverter::ConvertSequence(
                             /*argv=*/nullptr)
            .ToLocal(&iterator_val) ||
       !iterator_val->IsObject()) {
-    MarkFailedIter(field, try_catch);
-    return false;
+    return MakeIterFailure(error_prefix, error_subject, try_catch);
   }
   v8::Local<v8::Object> iterator = iterator_val.As<v8::Object>();
 
   v8::Local<v8::Value> next_method_val;
   if (!iterator->Get(current_context, next_name).ToLocal(&next_method_val) ||
       !next_method_val->IsObject()) {
-    MarkFailedIter(field, try_catch);
-    return false;
+    return MakeIterFailure(error_prefix, error_subject, try_catch);
   }
   v8::Local<v8::Object> next_method = next_method_val.As<v8::Object>();
   if (!next_method->IsCallable()) {
-    MarkFailedIter(field, try_catch);
-    return false;
+    return MakeIterFailure(error_prefix, error_subject, try_catch);
   }
 
   size_t out_size = 0;
@@ -557,8 +616,7 @@ bool DictConverter::ConvertSequence(
                               /*argv=*/nullptr)
              .ToLocal(&result_val) ||
         !result_val->IsObject()) {
-      MarkFailedIter(field, try_catch);
-      return false;
+      return MakeIterFailure(error_prefix, error_subject, try_catch);
     }
     v8::Local<v8::Object> result = result_val.As<v8::Object>();
 
@@ -568,8 +626,7 @@ bool DictConverter::ConvertSequence(
       // Can use our Convert() since it doesn't fail for bools.
       IdlConvert::Convert(isolate, "", {}, done_val, done);
     } else if (try_catch.HasCaught() || try_catch.HasTerminated()) {
-      MarkFailedIter(field, try_catch);
-      return false;
+      return MakeIterFailure(error_prefix, error_subject, try_catch);
     }
 
     if (done) {
@@ -580,29 +637,23 @@ bool DictConverter::ConvertSequence(
     // would put us over).
     ++out_size;
     if (out_size > kSequenceLengthLimit) {
-      MarkFailed(base::StrCat(
-          {"Length limit for sequence field '", field, "' exceeded."}));
-      return false;
+      return Status::MakeErrorMessage(
+          base::StrCat({error_prefix, "Length limit for sequence ",
+                        base::StrCat(error_subject), " exceeded."}));
     }
 
     v8::Local<v8::Value> next_item;
     if (!result->Get(current_context, value_name).ToLocal(&next_item)) {
-      MarkFailedIter(field, try_catch);
-      return false;
+      return MakeIterFailure(error_prefix, error_subject, try_catch);
     }
 
-    if (!item_callback.Run(next_item)) {
-      // It's possible that the callback already propagated an error to us;
-      // if not, set one ourselves.
-      if (!is_failed()) {
-        MarkFailed(base::StrCat({"Conversion for an item for sequence field '",
-                                 field, "' failed."}));
-      }
-      return false;
+    Status entry_status = item_callback.Run(next_item);
+    if (!entry_status.is_success()) {
+      return entry_status;
     }
   }
 
-  return true;
+  return Status::MakeSuccess();
 }
 
 void DictConverter::MarkFailed(std::string_view fail_message) {
@@ -621,18 +672,6 @@ void DictConverter::MarkFailedWithException(const v8::TryCatch& catcher) {
   DCHECK(!is_failed());
   status_ =
       IdlConvert::Status::MakeException(catcher.Exception(), catcher.Message());
-}
-
-void DictConverter::MarkFailedIter(std::string_view field,
-                                   const v8::TryCatch& catcher) {
-  if (catcher.HasTerminated()) {
-    MarkFailedWithTimeout(
-        base::StrCat({"Timeout iterating over '", field, "'."}));
-  } else if (catcher.HasCaught()) {
-    MarkFailedWithException(catcher);
-  } else {
-    MarkFailed(base::StrCat({"Trouble iterating over '", field, "'."}));
-  }
 }
 
 ArgsConverter::ArgsConverter(AuctionV8Helper* v8_helper,

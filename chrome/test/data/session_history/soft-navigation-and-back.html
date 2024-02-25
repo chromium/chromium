@@ -1,0 +1,36 @@
+<!--
+Copyright 2023 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<html>
+
+<head>
+  <style>
+    #button {
+      width: 200px;
+      height: 200px;
+    }
+  </style>
+</head>
+
+<body>
+  <main>
+    <button id="button">Click me!</button>
+  </main>
+  <script>
+    const button = document.getElementById("button");
+    let first = true;
+    button.addEventListener("click", e => {
+      history.pushState({}, "", "#whatever");
+      history.replaceState({}, "", "soft-navigation-back-page.html");
+      const content = document.createElement("div");
+      content.innerHTML = "This is some content";
+      document.getElementsByTagName("main")[0].insertBefore(content, button);
+      first = false;
+    });
+  </script>
+</body>
+
+</html>

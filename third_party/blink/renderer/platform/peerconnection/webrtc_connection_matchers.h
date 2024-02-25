@@ -1,4 +1,4 @@
-// Copyright 2023 The Chromium Authors. All rights reserved.
+// Copyright 2023 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -28,7 +28,7 @@ inline void PrintTo(const Connection* conn, std::ostream* os) {
 }
 
 // Pretty prints an optional connection object for tests.
-inline void PrintTo(absl::optional<const Connection*> conn, std::ostream* os) {
+inline void PrintTo(std::optional<const Connection*> conn, std::ostream* os) {
   if (conn.has_value()) {
     PrintTo(conn.value(), os);
   } else {
@@ -115,8 +115,8 @@ MATCHER_P(ConnectionEq,
 // Tests the equality of two optionals containing a blink::IceConnection and a
 // cricket::Connection each.
 MATCHER_P(ConnectionOptionalsEq,
-          /* const absl::optional<blink::IceConnection> arg, */
-          /* const absl::optional<cricket::Connection*> */ conn,
+          /* const std::optional<blink::IceConnection> arg, */
+          /* const std::optional<cricket::Connection*> */ conn,
           "") {
   if (arg.has_value()) {
     return ExplainMatchResult(ConnectionEq(conn.value_or(nullptr)), arg.value(),
@@ -139,7 +139,7 @@ MATCHER(CricketBlinkConnectionTupleEq,
 // cricket::Connection objects each, ignoring null cricket::Connections and
 // ordering.
 MATCHER_P(ConnectionSequenceEq,
-          /* std::vector<const blink::IceConnection> arg, */
+          /* std::vector<blink::IceConnection> arg, */
           /* std::vector<const cricket::Connection*> */ connections,
           "") {
   std::vector<const cricket::Connection*> non_null_connections;

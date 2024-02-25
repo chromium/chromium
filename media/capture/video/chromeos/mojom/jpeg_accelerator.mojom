@@ -1,0 +1,23 @@
+// Copyright 2023 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+// Next min version: 1
+
+module cros.mojom;
+
+import "components/chromeos_camera/common/jpeg_encode_accelerator.mojom";
+import "components/chromeos_camera/common/mjpeg_decode_accelerator.mojom";
+
+// JpegAcceleratorProvider is an interface that Ash-Chrome serves Jpeg
+// accelerator for ChromeOS platform.
+//
+// Next method ID: 2
+interface JpegAcceleratorProvider {
+  // Get a Jpeg accelerator from the provider.
+  GetJpegEncodeAccelerator@0(
+      pending_receiver<chromeos_camera.mojom.JpegEncodeAccelerator> jea);
+  // Get a Mjpeg accelerator from the provider.
+  GetMjpegDecodeAccelerator@1(
+      pending_receiver<chromeos_camera.mojom.MjpegDecodeAccelerator> jda);
+};

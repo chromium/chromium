@@ -16,10 +16,10 @@ namespace ash {
 
 std::vector<aura::WindowTreeHost*> MirrorWindowTestApi::GetHosts() const {
   std::vector<aura::WindowTreeHost*> hosts;
-  for (auto* window : Shell::Get()
-                          ->window_tree_host_manager()
-                          ->mirror_window_controller()
-                          ->GetAllRootWindows()) {
+  for (aura::Window* window : Shell::Get()
+                                  ->window_tree_host_manager()
+                                  ->mirror_window_controller()
+                                  ->GetAllRootWindows()) {
     hosts.emplace_back(window->GetHost());
   }
   return hosts;

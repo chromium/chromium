@@ -10,8 +10,8 @@ cycle.
 
 Chromium has [public commitments](severity-guidelines.md) to fix security issues
 within certain timeframes. Please treat security issues as high-priority
-interrupts to your work, especially if they are **Severity-High** or
-**Severity-Critical**. However, the expectation is that you handle security
+interrupts to your work, especially if they are **High Severity (S1)** or
+**Critical Severity (S0)**. However, the expectation is that you handle security
 issues within your normal working hours, not after-hours, weeknights, or on
 vacation. Everyone shares the responsibility of keeping our users safe!
 
@@ -28,8 +28,10 @@ shepherd assigned you the bug because either:
 
 In either case, if you are not the correct owner, please suggest a more
 appropriate person and re-assign it to that person. Or, if you do not know the
-correct owner, set the bug’s status back to **Untriaged**, so that it reenters
-the shepherd’s queue.
+correct owner, remove yourself from the Assignee field so that the bug
+re-enters the shepherd’s queue. Setting a component alone will not grant view
+access or alert the component owners, so the shepherd's queue is the best
+way to ensure the bug is properly triaged.
 
 In the case where the shepherd is asking you technical questions, they will
 further triage the bug after considering your responses.
@@ -47,14 +49,14 @@ the bug is valid. The shepherd may also try to determine if the bug is mitigated
 meaning that the security impact is smaller or greater than described by the
 reporter. As the developer, you may have questions about certain preconditions
 assumed by the reporter. We encourage you to interact with the reporter and the
-shepherd, directly in the bug tracker, as much as you need in order to identify
+shepherd, directly in the issue tracker, as much as you need in order to identify
 and fix the issue.
 
-Please do _not_ adjust any of the [security labels](security-labels.md) on the
-bug (namely **Security\_Severity** and **Security\_Impact**). If you think a bug
-is not a security issue or its severity should be downgraded, discuss it with
-the security team and let them adjust the labels. However, you can adjust the
-**FoundIn** label if you know the versions a bug affects.
+Please do _not_ adjust any of the [security metadata](security-labels.md) on the
+bug (namely the **Severity** field and **Security\_Impact** hotlists). If you think a
+bug is not a security issue or its severity should be downgraded, discuss it with
+the security team and let them adjust the metadata. However, you can adjust the
+**Found In** field if you know the versions a bug affects.
 
 ## 3. Fix the bug
 
@@ -81,7 +83,8 @@ team) will request merge to the applicable release branches. Once the merge
 questionnaire is posted to the bug, please respond to the questions.
 
 If the merge is approved, it is your responsibility to merge the CL to the
-approved branches.
+approved branches. The merge approval will show up as the 'Merge' custom field as
+"Approved-&lt;Milestone&gt;".
 
 ## 5. Think about patterns
 
@@ -110,5 +113,5 @@ bug may exist in other places. For example:
 
 * Panic
 * Communicate with the reporter about the issue outside of the bug tracker
-* Adjust the [security labels](security-labels.md) like **Security\_Severity**
-  or **Security\_Impact**
+* Adjust the [security labels](security-labels.md) like the **Severity** field
+  or **Security\_Impact** hotlists.

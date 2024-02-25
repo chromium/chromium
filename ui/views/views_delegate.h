@@ -31,7 +31,6 @@ namespace ui {
 #if BUILDFLAG(IS_MAC)
 class ContextFactory;
 #endif
-class TouchEditingControllerFactory;
 }  // namespace ui
 
 namespace views {
@@ -130,6 +129,14 @@ class VIEWS_EXPORT ViewsDelegate {
   // this returns true.
   virtual bool ShouldCloseMenuIfMouseCaptureLost() const;
 
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  // Returns true if the native `window` should have rounded corners. The
+  // decision can be based on multiple factors, including the window's current
+  // state.
+  virtual bool ShouldWindowHaveRoundedCorners(
+      const gfx::NativeWindow window) const;
+#endif
+
 #if BUILDFLAG(IS_WIN)
   // Retrieves the default window icon to use for windows if none is specified.
   virtual HICON GetDefaultWindowIcon() const;
@@ -195,9 +202,6 @@ class VIEWS_EXPORT ViewsDelegate {
 #endif
 
  private:
-  std::unique_ptr<ui::TouchEditingControllerFactory>
-      editing_controller_factory_;
-
 #if defined(USE_AURA)
   std::unique_ptr<TouchSelectionMenuRunnerViews> touch_selection_menu_runner_;
 #endif

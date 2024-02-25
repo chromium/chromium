@@ -17,29 +17,30 @@
 #include "chrome/browser/web_applications/locks/app_lock.h"
 #include "chrome/browser/web_applications/os_integration/os_integration_manager.h"
 #include "chrome/browser/web_applications/web_app_constants.h"
-#include "chrome/browser/web_applications/web_app_id.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
 #include "chrome/browser/web_applications/web_app_registry_update.h"
 #include "chrome/browser/web_applications/web_app_sync_bridge.h"
 #include "chrome/browser/web_applications/web_app_utils.h"
+#include "components/webapps/common/web_app_id.h"
 
 namespace web_app {
 
 UpdateProtocolHandlerApprovalCommand::UpdateProtocolHandlerApprovalCommand(
-    const AppId& app_id,
+    const webapps::AppId& app_id,
     const std::string& protocol_scheme,
     ApiApprovalState approval_state,
     base::OnceClosure callback)
-    : WebAppCommandTemplate<AppLock>("UpdateProtocolHandlerApprovalCommand"),
-      lock_description_(std::make_unique<AppLockDescription>(app_id)),
+    : WebAppCommand<AppLock>("UpdateProtocolHandlerApprovalCommand",
+                             AppLockDescription(app_id),
+                             std::move(callback)),
       app_id_(app_id),
       protocol_scheme_(protocol_scheme),
-      approval_state_(approval_state),
-      callback_(std::move(callback)) {
-  debug_info_.Set("name", "UpdateProtocolHandlerApprovalCommand");
-  debug_info_.Set("app_id", app_id_);
-  debug_info_.Set("api_approval_state", base::ToString(approval_state_));
-  debug_info_.Set("protocol_scheme", protocol_scheme);
+      approval_state_(approval_state) {
+  GetMutableDebugValue().Set("name", "UpdateProtocolHandlerApprovalCommand");
+  GetMutableDebugValue().Set("app_id", app_id_);
+  GetMutableDebugValue().Set("api_approval_state",
+                             base::ToString(approval_state_));
+  GetMutableDebugValue().Set("protocol_scheme", protocol_scheme);
   DCHECK(!protocol_scheme.empty());
 }
 
@@ -66,9 +67,8 @@ void UpdateProtocolHandlerApprovalCommand::StartWithLock(
       // If this command is scheduled after an uninstallation, the
       // app will no longer exist, in which case we should gracefully terminate
       // the command and run the final callback.
-      debug_info_.Set("failure_reason", "app_not_found");
-      SignalCompletionAndSelfDestruct(CommandResult::kFailure,
-                                      std::move(callback_));
+      GetMutableDebugValue().Set("failure_reason", "app_not_found");
+      CompleteAndSelfDestruct(CommandResult::kFailure);
       return;
     }
 
@@ -116,11 +116,11 @@ void UpdateProtocolHandlerApprovalCommand::
   // OS protocol registration does not need to be updated.
   if (original_protocol_handlers ==
       os_integration_manager.GetAppProtocolHandlers(app_id_)) {
-    debug_info_.Set("was_update_required", false);
+    GetMutableDebugValue().Set("was_update_required", false);
     OnProtocolHandlersUpdated();
     return;
   }
-  debug_info_.Set("was_update_required", true);
+  GetMutableDebugValue().Set("was_update_required", true);
 
   // TODO(https://crbug.com/1251062): Can we avoid the delay of startup, if the
   // action as allowed?
@@ -131,23 +131,8 @@ void UpdateProtocolHandlerApprovalCommand::
           weak_factory_.GetWeakPtr()));
 }
 
-const LockDescription& UpdateProtocolHandlerApprovalCommand::lock_description()
-    const {
-  return *lock_description_;
-}
-
-base::Value UpdateProtocolHandlerApprovalCommand::ToDebugValue() const {
-  return base::Value(debug_info_.Clone());
-}
-
 void UpdateProtocolHandlerApprovalCommand::OnProtocolHandlersUpdated() {
-  SignalCompletionAndSelfDestruct(CommandResult::kSuccess,
-                                  std::move(callback_));
-}
-
-void UpdateProtocolHandlerApprovalCommand::OnShutdown() {
-  SignalCompletionAndSelfDestruct(CommandResult::kShutdown,
-                                  std::move(callback_));
+  CompleteAndSelfDestruct(CommandResult::kSuccess);
 }
 
 }  // namespace web_app

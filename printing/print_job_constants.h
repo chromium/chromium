@@ -17,6 +17,7 @@ COMPONENT_EXPORT(PRINTING_BASE) extern const char kIsFirstRequest[];
 COMPONENT_EXPORT(PRINTING_BASE)
 extern const char kPreviewRequestID[];
 COMPONENT_EXPORT(PRINTING_BASE) extern const char kPreviewUIID[];
+COMPONENT_EXPORT(PRINTING_BASE) extern const char kSettingBorderless[];
 COMPONENT_EXPORT(PRINTING_BASE)
 extern const char kSettingCapabilities[];
 COMPONENT_EXPORT(PRINTING_BASE) extern const char kSettingCollate[];
@@ -40,8 +41,6 @@ COMPONENT_EXPORT(PRINTING_BASE)
 extern const char kSettingDpiVertical[];
 COMPONENT_EXPORT(PRINTING_BASE)
 extern const char kSettingDuplexMode[];
-COMPONENT_EXPORT(PRINTING_BASE)
-extern const char kSettingFitToPageScaling[];
 COMPONENT_EXPORT(PRINTING_BASE)
 extern const char kSettingHeaderFooterEnabled[];
 COMPONENT_EXPORT(PRINTING_BASE)

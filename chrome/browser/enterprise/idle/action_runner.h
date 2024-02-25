@@ -48,6 +48,7 @@ class ActionRunner {
   // off the next action (if there's one).
   void OnActionFinished(ActionQueue remaining_actions, bool succeeded);
 
+  base::TimeTicks actions_start_time_;
   raw_ptr<Profile> profile_;
   raw_ptr<ActionFactory> action_factory_;
   base::WeakPtrFactory<ActionRunner> weak_ptr_factory_{this};

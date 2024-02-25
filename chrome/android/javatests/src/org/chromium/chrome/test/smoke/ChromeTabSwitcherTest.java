@@ -32,9 +32,7 @@ import org.chromium.chrome.test.pagecontroller.utils.UiAutomatorUtils;
 import org.chromium.chrome.test.smoke.utilities.FirstRunNavigator;
 import org.chromium.net.test.EmbeddedTestServerRule;
 
-/**
- * Basic Test for Chrome Android to switch Tabs.
- */
+/** Basic Test for Chrome Android to switch Tabs. */
 @LargeTest
 @RunWith(BaseJUnit4ClassRunner.class)
 public class ChromeTabSwitcherTest {
@@ -48,7 +46,9 @@ public class ChromeTabSwitcherTest {
     private IUi2Locator mTabSwitcherToolbar =
             Ui2Locators.withAnyResEntry(R.id.tab_switcher_toolbar);
 
-    private IUi2Locator mTabList = Ui2Locators.withAnyResEntry(R.id.tab_list_view);
+    private IUi2Locator mHubToolbar = Ui2Locators.withAnyResEntry(R.id.hub_toolbar);
+
+    private IUi2Locator mTabList = Ui2Locators.withAnyResEntry(R.id.tab_list_recycler_view);
 
     private FirstRunNavigator mFirstRunNavigator = new FirstRunNavigator();
 
@@ -57,16 +57,18 @@ public class ChromeTabSwitcherTest {
     private String mPackageName;
     public ChromeUiAutomatorTestRule mRule = new ChromeUiAutomatorTestRule();
     public ChromeUiApplicationTestRule mChromeUiRule = new ChromeUiApplicationTestRule();
-    @Rule
-    public final TestRule mChain = RuleChain.outerRule(mChromeUiRule).around(mRule);
+    @Rule public final TestRule mChain = RuleChain.outerRule(mChromeUiRule).around(mRule);
 
     @ClassRule
     public static EmbeddedTestServerRule sEmbeddedTestServerRule = new EmbeddedTestServerRule();
 
     @Before
     public void setUp() throws Exception {
-        mPackageName = InstrumentationRegistry.getArguments().getString(
-                ChromeUiApplicationTestRule.PACKAGE_NAME_ARG, "org.chromium.chrome");
+        mPackageName =
+                InstrumentationRegistry.getArguments()
+                        .getString(
+                                ChromeUiApplicationTestRule.PACKAGE_NAME_ARG,
+                                "org.chromium.chrome");
     }
 
     @Test
@@ -101,7 +103,7 @@ public class ChromeTabSwitcherTest {
 
         Log.i(TAG, "Activating tab switcher.");
         UiAutomatorUtils.getInstance().click(mTabSwitcherButton);
-        UiAutomatorUtils.getInstance().getLocatorHelper().verifyOnScreen(mTabSwitcherToolbar);
+        UiAutomatorUtils.getInstance().waitUntilAnyVisible(mTabSwitcherToolbar, mHubToolbar);
         UiAutomatorUtils.getInstance().getLocatorHelper().verifyOnScreen(mTabList);
 
         Log.i(TAG, "Test complete.");

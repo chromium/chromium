@@ -6,27 +6,27 @@
  * @fileoverview 'settings-google-assistant-subpage' is the settings page
  * containing Google Assistant settings.
  */
-import 'chrome://resources/cr_elements/cr_link_row/cr_link_row.js';
-import 'chrome://resources/cr_elements/md_select.css.js';
-import 'chrome://resources/cr_elements/policy/cr_policy_pref_indicator.js';
-import '/shared/settings/controls/controlled_button.js';
-import '/shared/settings/controls/settings_toggle_button.js';
+import 'chrome://resources/ash/common/cr_elements/cr_link_row/cr_link_row.js';
+import 'chrome://resources/ash/common/cr_elements/md_select.css.js';
+import 'chrome://resources/ash/common/cr_elements/policy/cr_policy_pref_indicator.js';
+import '../controls/controlled_button.js';
+import '../controls/settings_toggle_button.js';
 import 'chrome://resources/cr_components/settings_prefs/prefs.js';
 import 'chrome://resources/cr_components/settings_prefs/pref_util.js';
 import '../settings_shared.css.js';
 
-import {SettingsToggleButtonElement} from '/shared/settings/controls/settings_toggle_button.js';
 import {PrefsMixin} from 'chrome://resources/cr_components/settings_prefs/prefs_mixin.js';
-import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
-import {WebUiListenerMixin} from 'chrome://resources/cr_elements/web_ui_listener_mixin.js';
+import {I18nMixin} from 'chrome://resources/ash/common/cr_elements/i18n_mixin.js';
+import {WebUiListenerMixin} from 'chrome://resources/ash/common/cr_elements/web_ui_listener_mixin.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {cast, castExists} from '../assert_extras.js';
-import {DeepLinkingMixin} from '../deep_linking_mixin.js';
+import {DeepLinkingMixin} from '../common/deep_linking_mixin.js';
+import {RouteObserverMixin} from '../common/route_observer_mixin.js';
+import {SettingsToggleButtonElement} from '../controls/settings_toggle_button.js';
 import {recordSettingChange} from '../metrics_recorder.js';
 import {Setting} from '../mojom-webui/setting.mojom-webui.js';
-import {RouteObserverMixin} from '../route_observer_mixin.js';
 import {Route, routes} from '../router.js';
 
 import {GoogleAssistantBrowserProxy, GoogleAssistantBrowserProxyImpl} from './google_assistant_browser_proxy.js';
@@ -166,7 +166,7 @@ export class SettingsGoogleAssistantSubpageElement extends
     this.browserProxy_ = GoogleAssistantBrowserProxyImpl.getInstance();
   }
 
-  override ready() {
+  override ready(): void {
     super.ready();
 
     this.addWebUiListener('hotwordDeviceUpdated', (hasHotword: boolean) => {
@@ -176,7 +176,7 @@ export class SettingsGoogleAssistantSubpageElement extends
     chrome.send('initializeGoogleAssistantPage');
   }
 
-  override currentRouteChanged(route: Route, _oldRoute?: Route) {
+  override currentRouteChanged(route: Route, _oldRoute?: Route): void {
     // Does not apply to this page.
     if (route !== routes.GOOGLE_ASSISTANT) {
       return;
@@ -190,24 +190,23 @@ export class SettingsGoogleAssistantSubpageElement extends
         toggleValue ? 'searchGoogleAssistantOn' : 'searchGoogleAssistantOff');
   }
 
-  private onGoogleAssistantSettingsTapped_() {
+  private onGoogleAssistantSettingsClick_(): void {
     this.browserProxy_.showGoogleAssistantSettings();
-    recordSettingChange();
   }
 
-  private onRetrainVoiceModelTapped_() {
+  private onRetrainVoiceModelClick_(): void {
     this.browserProxy_.retrainAssistantVoiceModel();
-    recordSettingChange();
+    recordSettingChange(Setting.kTrainAssistantVoiceModel);
   }
 
-  private onEnableHotwordChange_(event: Event) {
+  private onEnableHotwordChange_(event: Event): void {
     const target = cast(event.target, SettingsToggleButtonElement);
     if (target.checked) {
       this.browserProxy_.syncVoiceModelStatus();
     }
   }
 
-  private onDspHotwordStateChange_() {
+  private onDspHotwordStateChange_(): void {
     const dspHotwordStateEl =
         castExists(this.shadowRoot!.querySelector<HTMLSelectElement>(
             '#dsp-hotword-state'));
@@ -238,7 +237,7 @@ export class SettingsGoogleAssistantSubpageElement extends
     return state === this.dspHotwordState_;
   }
 
-  private onPrefsChanged_() {
+  private onPrefsChanged_(): void {
     if (this.getPref('settings.assistant.disabled_by_policy').value) {
       this.setPrefValue('settings.voice_interaction.enabled', false);
       return;
@@ -261,7 +260,7 @@ export class SettingsGoogleAssistantSubpageElement extends
             chrome.settingsPrivate.ControlledBy.CHILD_RESTRICTION;
   }
 
-  private refreshDspHotwordState_() {
+  private refreshDspHotwordState_(): void {
     if (!this.getPref('settings.voice_interaction.hotword.enabled').value) {
       this.dspHotwordState_ = DspHotwordState.OFF;
     } else if (this.getPref('settings.voice_interaction.hotword.always_on')

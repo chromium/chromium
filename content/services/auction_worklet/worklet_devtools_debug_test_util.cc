@@ -160,7 +160,7 @@ void TestDevToolsAgentClient::LogEvent(
 
   // Now make it into a base::Value, to make it easy to look stuff up in it,
   // and queue it.
-  absl::optional<base::Value> val = base::JSONReader::Read(payload_json);
+  std::optional<base::Value> val = base::JSONReader::Read(payload_json);
   CHECK(val.has_value());
   Event event;
   event.type = type;

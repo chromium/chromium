@@ -31,19 +31,19 @@
 #include "third_party/blink/renderer/core/inspector/inspector_page_agent.h"
 
 #include <memory>
+#include <optional>
 #include <utility>
 
 #include "base/containers/span.h"
 #include "base/numerics/safe_conversions.h"
 #include "build/build_config.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/frame/frame_ad_evidence.h"
 #include "third_party/blink/public/common/origin_trials/trial_token.h"
 #include "third_party/blink/public/common/web_preferences/web_preferences.h"
 #include "third_party/blink/public/mojom/ad_tagging/ad_evidence.mojom-blink.h"
+#include "third_party/blink/renderer/bindings/core/v8/local_window_proxy.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_controller.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_evaluation_result.h"
-#include "third_party/blink/renderer/bindings/core/v8/script_regexp.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/document_timing.h"
 #include "third_party/blink/renderer/core/dom/dom_node_ids.h"
@@ -82,6 +82,8 @@
 #include "third_party/blink/renderer/core/script/classic_script.h"
 #include "third_party/blink/renderer/core/style/computed_style.h"
 #include "third_party/blink/renderer/platform/bindings/dom_wrapper_world.h"
+#include "third_party/blink/renderer/platform/bindings/script_regexp.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/loader/fetch/memory_cache.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_fetcher.h"
@@ -144,6 +146,8 @@ String NavigationPolicyToProtocol(NavigationPolicy policy) {
       return DispositionEnum::NewWindow;
     case kNavigationPolicyPictureInPicture:
       return DispositionEnum::NewWindow;
+    case kNavigationPolicyLinkPreview:
+      NOTREACHED_NORETURN();
   }
   return DispositionEnum::CurrentTab;
 }
@@ -294,14 +298,9 @@ static void MaybeEncodeTextContent(const String& text_content,
     *result =
         Base64Encode(base::as_bytes(base::make_span(buffer_data, buffer_size)));
     *base64_encoded = true;
-  } else if (text_content.IsNull()) {
+  } else {
     *result = "";
     *base64_encoded = false;
-  } else {
-    DCHECK(!text_content.Is8Bit());
-    *result = Base64Encode(
-        base::as_bytes(base::make_span(StringUTF8Adaptor(text_content))));
-    *base64_encoded = true;
   }
 }
 
@@ -496,10 +495,12 @@ InspectorPageAgent::InspectorPageAgent(
       screencast_enabled_(&agent_state_, /*default_value=*/false),
       lifecycle_events_enabled_(&agent_state_, /*default_value=*/false),
       bypass_csp_enabled_(&agent_state_, /*default_value=*/false),
+      pending_script_to_evaluate_on_load_once_(&agent_state_,
+                                               /*default_value=*/String()),
       scripts_to_evaluate_on_load_(&agent_state_,
-                                   /*default_value=*/WTF::String()),
+                                   /*default_value=*/String()),
       worlds_to_evaluate_on_load_(&agent_state_,
-                                  /*default_value=*/WTF::String()),
+                                  /*default_value=*/String()),
       include_command_line_api_for_scripts_to_evaluate_on_load_(
           &agent_state_,
           /*default_value=*/false),
@@ -545,7 +546,7 @@ protocol::Response InspectorPageAgent::disable() {
   agent_state_.ClearAllFields();
   pending_isolated_worlds_.clear();
   script_to_evaluate_on_load_once_ = String();
-  pending_script_to_evaluate_on_load_once_ = String();
+  pending_script_to_evaluate_on_load_once_.Set(String());
   instrumenting_agents_->RemoveInspectorPageAgent(this);
   inspector_resource_content_loader_->Cancel(
       resource_content_loader_client_id_);
@@ -671,9 +672,10 @@ protocol::Response InspectorPageAgent::setAdBlockingEnabled(bool enable) {
 protocol::Response InspectorPageAgent::reload(
     Maybe<bool> optional_bypass_cache,
     Maybe<String> optional_script_to_evaluate_on_load) {
-  pending_script_to_evaluate_on_load_once_ =
-      optional_script_to_evaluate_on_load.value_or("");
+  pending_script_to_evaluate_on_load_once_.Set(
+      optional_script_to_evaluate_on_load.value_or(""));
   v8_session_->setSkipAllPauses(true);
+  v8_session_->resume(true /* terminate on resume */);
   return protocol::Response::Success();
 }
 
@@ -897,7 +899,7 @@ protocol::Response InspectorPageAgent::getPermissionsPolicyState(
     if (blink::DisabledByOriginTrial(feature_name, frame->DomWindow()))
       continue;
 
-    absl::optional<blink::PermissionsPolicyBlockLocator> locator =
+    std::optional<blink::PermissionsPolicyBlockLocator> locator =
         blink::TracePermissionsPolicyBlockSource(frame, feature);
 
     std::unique_ptr<protocol::Page::PermissionsPolicyFeatureState>
@@ -942,19 +944,19 @@ void InspectorPageAgent::DidNavigateWithinDocument(LocalFrame* frame) {
   }
 }
 
-scoped_refptr<DOMWrapperWorld> InspectorPageAgent::EnsureDOMWrapperWorld(
+DOMWrapperWorld* InspectorPageAgent::EnsureDOMWrapperWorld(
     LocalFrame* frame,
     const String& world_name,
     bool grant_universal_access) {
   if (!isolated_worlds_.Contains(frame))
-    isolated_worlds_.Set(frame, FrameIsolatedWorlds());
-  FrameIsolatedWorlds& frame_worlds = isolated_worlds_.find(frame)->value;
+    isolated_worlds_.Set(frame, MakeGarbageCollected<FrameIsolatedWorlds>());
+  FrameIsolatedWorlds& frame_worlds = *isolated_worlds_.find(frame)->value;
 
   auto world_it = frame_worlds.find(world_name);
   if (world_it != frame_worlds.end())
     return world_it->value;
   LocalDOMWindow* window = frame->DomWindow();
-  scoped_refptr<DOMWrapperWorld> world =
+  DOMWrapperWorld* world =
       window->GetScriptController().CreateNewInspectorIsolatedWorld(world_name);
   if (!world)
     return nullptr;
@@ -987,22 +989,22 @@ void InspectorPageAgent::DidCreateMainWorldContext(LocalFrame* frame) {
     EvaluateScriptOnNewDocument(*frame, key);
   }
 
-  if (!script_to_evaluate_on_load_once_.empty()) {
-    ClassicScript::CreateUnspecifiedScript(script_to_evaluate_on_load_once_)
-        ->RunScript(frame->DomWindow(),
-                    ExecuteScriptPolicy::kExecuteScriptWhenScriptsDisabled);
+  if (script_to_evaluate_on_load_once_.empty()) {
+    return;
   }
+  ScriptState* script_state = ToScriptStateForMainWorld(frame);
+  if (!script_state) {
+    return;
+  }
+
+  v8_session_->evaluate(
+      script_state->GetContext(),
+      ToV8InspectorStringView(script_to_evaluate_on_load_once_));
 }
 
 void InspectorPageAgent::EvaluateScriptOnNewDocument(
     LocalFrame& frame,
     const String& script_identifier) {
-  // Throughout this method,
-  // `ExecuteScriptPolicy::kExecuteScriptWhenScriptsDisabled` is used because
-  // `inspector-protocol/page/add-script-to-evaluate-on-load-disabled-js.js`
-  // requires that the scripts here should be evaluated on pages with scripting
-  // disabled.
-
   auto* window = frame.DomWindow();
   v8::HandleScope handle_scope(window->GetIsolate());
 
@@ -1010,7 +1012,7 @@ void InspectorPageAgent::EvaluateScriptOnNewDocument(
   const String world_name = worlds_to_evaluate_on_load_.Get(script_identifier);
   if (world_name.empty()) {
     script_state = ToScriptStateForMainWorld(window->GetFrame());
-  } else if (scoped_refptr<DOMWrapperWorld> world = EnsureDOMWrapperWorld(
+  } else if (DOMWrapperWorld* world = EnsureDOMWrapperWorld(
                  &frame, world_name, true /* grant_universal_access */)) {
     script_state =
         ToScriptState(window->GetFrame(),
@@ -1021,18 +1023,12 @@ void InspectorPageAgent::EvaluateScriptOnNewDocument(
     return;
   }
 
-  std::unique_ptr<v8_inspector::V8InspectorSession::CommandLineAPIScope> scope;
-  if (include_command_line_api_for_scripts_to_evaluate_on_load_.Get(
-          script_identifier)) {
-    scope = v8_session_->initializeCommandLineAPIScope(
-        v8_inspector::V8ContextInfo::executionContextId(
-            script_state->GetContext()));
-    DCHECK(scope);
-  }
-  ClassicScript::CreateUnspecifiedScript(
-      scripts_to_evaluate_on_load_.Get(script_identifier))
-      ->RunScriptOnScriptState(
-          script_state, ExecuteScriptPolicy::kExecuteScriptWhenScriptsDisabled);
+  v8_session_->evaluate(
+      script_state->GetContext(),
+      ToV8InspectorStringView(
+          scripts_to_evaluate_on_load_.Get(script_identifier)),
+      include_command_line_api_for_scripts_to_evaluate_on_load_.Get(
+          script_identifier));
 }
 
 void InspectorPageAgent::DomContentLoadedEventFired(LocalFrame* frame) {
@@ -1053,8 +1049,9 @@ void InspectorPageAgent::LoadEventFired(LocalFrame* frame) {
 
 void InspectorPageAgent::WillCommitLoad(LocalFrame*, DocumentLoader* loader) {
   if (loader->GetFrame() == inspected_frames_->Root()) {
-    script_to_evaluate_on_load_once_ = pending_script_to_evaluate_on_load_once_;
-    pending_script_to_evaluate_on_load_once_ = String();
+    script_to_evaluate_on_load_once_ =
+        pending_script_to_evaluate_on_load_once_.Get();
+    pending_script_to_evaluate_on_load_once_.Set(String());
   }
   GetFrontend()->frameNavigated(BuildObjectForFrame(loader->GetFrame()),
                                 protocol::Page::NavigationTypeEnum::Navigation);
@@ -1075,7 +1072,7 @@ void InspectorPageAgent::DidOpenDocument(LocalFrame* frame,
 
 void InspectorPageAgent::FrameAttachedToParent(
     LocalFrame* frame,
-    const absl::optional<AdScriptIdentifier>& ad_script_on_stack) {
+    const std::optional<AdScriptIdentifier>& ad_script_on_stack) {
   // TODO(crbug.com/1217041): If an ad script on the stack caused this frame to
   // be tagged as an ad, send the script's ID to the frontend.
   Frame* parent_frame = frame->Tree().Parent();
@@ -1110,13 +1107,9 @@ bool InspectorPageAgent::ScreencastEnabled() {
   return enabled_.Get() && screencast_enabled_.Get();
 }
 
-void InspectorPageAgent::FrameStartedLoading(LocalFrame* frame) {
-  GetFrontend()->frameStartedLoading(IdentifiersFactory::FrameId(frame));
-  GetFrontend()->flush();
-}
-
 void InspectorPageAgent::FrameStoppedLoading(LocalFrame* frame) {
-  GetFrontend()->frameStoppedLoading(IdentifiersFactory::FrameId(frame));
+  // The actual event is reported by the browser, but let's make sure
+  // earlier events from the commit make their way to client first.
   GetFrontend()->flush();
 }
 
@@ -1124,6 +1117,11 @@ void InspectorPageAgent::FrameRequestedNavigation(Frame* target_frame,
                                                   const KURL& url,
                                                   ClientNavigationReason reason,
                                                   NavigationPolicy policy) {
+  // TODO(b:303396822): Support Link Preview
+  if (policy == kNavigationPolicyLinkPreview) {
+    return;
+  }
+
   GetFrontend()->frameRequestedNavigation(
       IdentifiersFactory::FrameId(target_frame),
       ClientNavigationReasonToProtocol(reason), url.GetString(),
@@ -1325,7 +1323,7 @@ std::unique_ptr<protocol::Page::OriginTrialToken> CreateOriginTrialToken(
                      ->ToRawString())
       .setIsThirdParty(blink_trial_token.is_third_party())
       .setMatchSubDomains(blink_trial_token.match_subdomains())
-      .setExpiryTime(blink_trial_token.expiry_time().ToDoubleT())
+      .setExpiryTime(blink_trial_token.expiry_time().InSecondsFSinceUnixEpoch())
       .setTrialName(blink_trial_token.feature_name().c_str())
       .setUsageRestriction(CreateOriginTrialUsageRestriction(
           blink_trial_token.usage_restriction()))
@@ -1502,10 +1500,12 @@ InspectorPageAgent::BuildObjectForResourceTree(LocalFrame* frame) {
             .setMimeType(cached_resource->GetResponse().MimeType())
             .setContentSize(cached_resource->GetResponse().DecodedBodyLength())
             .build();
-    absl::optional<base::Time> last_modified =
+    std::optional<base::Time> last_modified =
         cached_resource->GetResponse().LastModified();
-    if (last_modified)
-      resource_object->setLastModified(last_modified.value().ToDoubleT());
+    if (last_modified) {
+      resource_object->setLastModified(
+          last_modified.value().InSecondsFSinceUnixEpoch());
+    }
     if (cached_resource->WasCanceled())
       resource_object->setCanceled(true);
     else if (cached_resource->GetStatus() == ResourceStatus::kLoadError)
@@ -1686,7 +1686,7 @@ void InspectorPageAgent::CreateIsolatedWorldImpl(
     bool grant_universal_access,
     std::unique_ptr<CreateIsolatedWorldCallback> callback) {
   DCHECK(!frame.IsProvisional());
-  scoped_refptr<DOMWrapperWorld> world =
+  DOMWrapperWorld* world =
       EnsureDOMWrapperWorld(&frame, world_name, grant_universal_access);
   if (!world) {
     callback->sendFailure(
@@ -1696,7 +1696,7 @@ void InspectorPageAgent::CreateIsolatedWorldImpl(
 
   LocalWindowProxy* isolated_world_window_proxy =
       frame.DomWindow()->GetScriptController().WindowProxy(*world);
-  v8::HandleScope handle_scope(V8PerIsolateData::MainThreadIsolate());
+  v8::HandleScope handle_scope(frame.DomWindow()->GetIsolate());
 
   callback->sendSuccess(v8_inspector::V8ContextInfo::executionContextId(
       isolated_world_window_proxy->ContextIfInitialized()));
@@ -1867,7 +1867,7 @@ void InspectorPageAgent::FileChooserOpened(LocalFrame* frame,
       IdentifiersFactory::FrameId(frame),
       multiple ? protocol::Page::FileChooserOpened::ModeEnum::SelectMultiple
                : protocol::Page::FileChooserOpened::ModeEnum::SelectSingle,
-      element ? Maybe<int>(DOMNodeIds::IdForNode(element)) : Maybe<int>());
+      element ? Maybe<int>(element->GetDomNodeId()) : Maybe<int>());
 }
 
 protocol::Response InspectorPageAgent::produceCompilationCache(

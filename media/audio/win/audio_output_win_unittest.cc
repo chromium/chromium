@@ -151,7 +151,7 @@ class ReadOnlyMappedFile {
 
  private:
   HANDLE fmap_;
-  raw_ptr<char> start_;
+  raw_ptr<char, AllowPtrArithmetic> start_;
   uint32_t size_;
 };
 

@@ -27,10 +27,9 @@
 #include "base/task/thread_pool.h"
 #include "base/time/time.h"
 #include "ui/base/x/x11_util.h"
+#include "ui/gfx/x/atom_cache.h"
 #include "ui/gfx/x/connection.h"
-#include "ui/gfx/x/x11_atom_cache.h"
 #include "ui/gfx/x/xproto.h"
-#include "ui/gfx/x/xproto_util.h"
 
 #if BUILDFLAG(IS_LINUX)
 #include "ui/linux/linux_ui.h"
@@ -290,25 +289,22 @@ std::vector<XCursorLoader::Image> ReadCursorImages(
 
 }  // namespace
 
-XCursorLoader::XCursorLoader(x11::Connection* connection)
-    : connection_(connection) {
-  auto ver_cookie = connection_->render().QueryVersion(
-      {x11::Render::major_version, x11::Render::minor_version});
+XCursorLoader::XCursorLoader(x11::Connection* connection,
+                             base::RepeatingClosure on_cursor_config_changed)
+    : connection_(connection),
+      on_cursor_config_changed_(std::move(on_cursor_config_changed)),
+      rm_cache_(connection,
+                connection->default_root(),
+                {x11::Atom::RESOURCE_MANAGER},
+                base::BindRepeating(&XCursorLoader::OnPropertyChanged,
+                                    base::Unretained(this))) {
   auto pf_cookie = connection_->render().QueryPictFormats();
   cursor_font_ = connection_->GenerateId<x11::Font>();
   connection_->OpenFont({cursor_font_, "cursor"});
 
-  std::vector<char> resource_manager;
-  if (GetArrayProperty(connection_->default_root(), x11::Atom::RESOURCE_MANAGER,
-                       &resource_manager)) {
-    ParseXResources(
-        base::StringPiece(resource_manager.data(), resource_manager.size()));
-  }
-
-  if (auto reply = ver_cookie.Sync()) {
-    render_version_ =
-        base::Version({reply->major_version, reply->minor_version});
-  }
+  // Fetch the initial property value which will call `OnPropertyChanged` and
+  // initialize `rm_xcursor_theme_`, `rm_xcursor_size_`, and `rm_xft_dpi_`.
+  rm_cache_.Get(x11::Atom::RESOURCE_MANAGER);
 
   if (auto pf_reply = pf_cookie.Sync())
     pict_format_ = GetRenderARGBFormat(*pf_reply.reply);
@@ -440,20 +436,23 @@ uint32_t XCursorLoader::GetPreferredCursorSize() const {
 
   // Allow the XCURSOR_SIZE environment variable to override GTK settings.
   int size;
-  if (base::StringToInt(GetEnv(kXcursorSizeEnv), &size) && size > 0)
+  if (base::StringToInt(GetEnv(kXcursorSizeEnv), &size) && size > 0) {
     return size;
+  }
 
 #if BUILDFLAG(IS_LINUX)
   // Let the toolkit have the next say.
   auto* linux_ui = LinuxUi::instance();
   size = linux_ui ? linux_ui->GetCursorThemeSize() : 0;
-  if (size > 0)
+  if (size > 0) {
     return size;
+  }
 #endif
 
   // Use Xcursor.size from RESOURCE_MANAGER if available.
-  if (rm_xcursor_size_)
+  if (rm_xcursor_size_) {
     return rm_xcursor_size_;
+  }
 
   // Guess the cursor size based on the DPI.
   if (rm_xft_dpi_)
@@ -496,12 +495,32 @@ uint16_t XCursorLoader::CursorNamesToChar(
 
 bool XCursorLoader::SupportsCreateCursor() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return render_version_.IsValid() && render_version_ >= base::Version("0.5");
+  return connection_->render_version() >= std::pair<uint32_t, uint32_t>{0, 5};
 }
 
 bool XCursorLoader::SupportsCreateAnimCursor() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return render_version_.IsValid() && render_version_ >= base::Version("0.8");
+  return connection_->render_version() >= std::pair<uint32_t, uint32_t>{0, 8};
+}
+
+void XCursorLoader::OnPropertyChanged(x11::Atom property,
+                                      const x11::GetPropertyResponse& value) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  DCHECK_EQ(property, x11::Atom::RESOURCE_MANAGER);
+
+  rm_xcursor_theme_ = "";
+  rm_xcursor_size_ = 0;
+  rm_xft_dpi_ = 0;
+
+  size_t size = 0;
+  if (const char* resource_manager =
+          x11::PropertyCache::GetAs<char>(value, &size)) {
+    ParseXResources(base::StringPiece(resource_manager, size));
+  }
+
+  if (on_cursor_config_changed_) {
+    on_cursor_config_changed_.Run();
+  }
 }
 
 // This is ported from libxcb-cursor's parse_cursor_file.c:

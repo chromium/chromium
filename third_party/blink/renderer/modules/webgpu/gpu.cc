@@ -39,11 +39,13 @@
 #include "third_party/blink/renderer/platform/graphics/gpu/dawn_control_client_holder.h"
 #include "third_party/blink/renderer/platform/graphics/gpu/webgpu_callback.h"
 #include "third_party/blink/renderer/platform/graphics/web_graphics_context_3d_provider_util.h"
+#include "third_party/blink/renderer/platform/heap/cross_thread_handle.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/heap/thread_state.h"
 #include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
 #include "third_party/blink/renderer/platform/privacy_budget/identifiability_digest_helpers.h"
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"
+#include "third_party/blink/renderer/platform/wtf/cross_thread_functional.h"
 
 namespace blink {
 
@@ -91,13 +93,21 @@ WGPURequestAdapterOptions AsDawnType(
 //     ExecutionContextToken.
 WebGPUExecutionContextToken GetExecutionContextToken(
     const ExecutionContext* execution_context) {
-  // WebGPU only supports 2 types of context tokens, DocumentTokens and
-  // DedicatedWorkerTokens. The token is sent to the GPU process so that it can
-  // be cross-referenced against the browser process to get an isolation key for
-  // caching purposes.
+  // WebGPU only supports the following types of context tokens: DocumentTokens,
+  // DedicatedWorkerTokens, SharedWorkerTokens, and ServiceWorkerTokens. The
+  // token is sent to the GPU process so that it can be cross-referenced against
+  // the browser process to get an isolation key for caching purposes.
   if (execution_context->IsDedicatedWorkerGlobalScope()) {
     return execution_context->GetExecutionContextToken()
         .GetAs<DedicatedWorkerToken>();
+  }
+  if (execution_context->IsSharedWorkerGlobalScope()) {
+    return execution_context->GetExecutionContextToken()
+        .GetAs<SharedWorkerToken>();
+  }
+  if (execution_context->IsServiceWorkerGlobalScope()) {
+    return execution_context->GetExecutionContextToken()
+        .GetAs<ServiceWorkerToken>();
   }
   if (execution_context->IsWindow()) {
     return To<LocalDOMWindow>(execution_context)->document()->Token();
@@ -124,16 +134,15 @@ GPU* GPU::gpu(NavigatorBase& navigator) {
 GPU::GPU(NavigatorBase& navigator)
     : Supplement<NavigatorBase>(navigator),
       ExecutionContextLifecycleObserver(navigator.GetExecutionContext()),
-      wgsl_language_features_(MakeGarbageCollected<WGSLLanguageFeatures>()),
+      wgsl_language_features_(
+          MakeGarbageCollected<WGSLLanguageFeatures>(GatherWGSLFeatures())),
       mappable_buffer_handles_(
-          base::MakeRefCounted<BoxedMappableWGPUBufferHandles>()) {
-  DCHECK(wgsl_language_features_->FeatureNameSet().empty());
-}
+          base::MakeRefCounted<BoxedMappableWGPUBufferHandles>()) {}
 
 GPU::~GPU() = default;
 
 WGSLLanguageFeatures* GPU::wgslLanguageFeatures() const {
-  return wgsl_language_features_;
+  return wgsl_language_features_.Get();
 }
 
 void GPU::Trace(Visitor* visitor) const {
@@ -300,9 +309,19 @@ void GPU::RequestAdapterImpl(ScriptState* script_state,
     CreateWebGPUGraphicsContext3DProviderAsync(
         execution_context->Url(),
         execution_context->GetTaskRunner(TaskType::kWebGPU),
-        WTF::BindOnce(
-            [](GPU* gpu, ExecutionContext* execution_context,
+        CrossThreadBindOnce(
+            [](CrossThreadHandle<GPU> gpu_handle,
+               CrossThreadHandle<ExecutionContext> execution_context_handle,
                std::unique_ptr<WebGraphicsContext3DProvider> context_provider) {
+              auto unwrap_gpu = MakeUnwrappingCrossThreadHandle(gpu_handle);
+              auto unwrap_execution_context =
+                  MakeUnwrappingCrossThreadHandle(execution_context_handle);
+              if (!unwrap_gpu || !unwrap_execution_context) {
+                return;
+              }
+              auto* gpu = unwrap_gpu.GetOnCreationThread();
+              auto* execution_context =
+                  unwrap_execution_context.GetOnCreationThread();
               const KURL& url = execution_context->Url();
               context_provider =
                   CheckContextProvider(url, std::move(context_provider));
@@ -324,17 +343,17 @@ void GPU::RequestAdapterImpl(ScriptState* script_state,
                 std::move(callback).Run();
               }
             },
-            WrapPersistent(this), WrapPersistent(execution_context)));
+            MakeCrossThreadHandle(this),
+            MakeCrossThreadHandle(execution_context)));
     return;
   }
 
   DCHECK_NE(dawn_control_client_, nullptr);
 
   WGPURequestAdapterOptions dawn_options = AsDawnType(options);
-  auto* callback =
-      BindWGPUOnceCallback(&GPU::OnRequestAdapterCallback, WrapPersistent(this),
-                           WrapPersistent(script_state),
-                           WrapPersistent(options), WrapPersistent(resolver));
+  auto* callback = MakeWGPUOnceCallback(resolver->WrapCallbackInScriptScope(
+      WTF::BindOnce(&GPU::OnRequestAdapterCallback, WrapPersistent(this),
+                    WrapPersistent(script_state), WrapPersistent(options))));
 
   dawn_control_client_->GetProcs().instanceRequestAdapter(
       dawn_control_client_->GetWGPUInstance(), &dawn_options,

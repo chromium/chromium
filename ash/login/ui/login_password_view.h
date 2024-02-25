@@ -54,14 +54,13 @@ class LoginArrowNavigationDelegate;
 //
 //  1 2 3 4 5 6    (o)  (=>)
 //  ------------------
-class ASH_EXPORT LoginPasswordView
-    : public views::View,
-      public views::TextfieldController,
-      public ImeControllerImpl::Observer,
-      public ui::ImplicitAnimationObserver,
-      public base::SupportsWeakPtr<LoginPasswordView> {
+class ASH_EXPORT LoginPasswordView : public views::View,
+                                     public views::TextfieldController,
+                                     public ImeControllerImpl::Observer,
+                                     public ui::ImplicitAnimationObserver {
+  METADATA_HEADER(LoginPasswordView, views::View)
+
  public:
-  METADATA_HEADER(LoginPasswordView);
   // TestApi is used for tests to get internal implementation details.
   class ASH_EXPORT TestApi {
    public:
@@ -79,7 +78,7 @@ class ASH_EXPORT LoginPasswordView
     }
 
    private:
-    raw_ptr<LoginPasswordView, ExperimentalAsh> view_;
+    raw_ptr<LoginPasswordView> view_;
   };
 
   using OnPasswordSubmit =
@@ -165,6 +164,10 @@ class ASH_EXPORT LoginPasswordView
   // Sets the delegate of the arrow keys navigation.
   void SetLoginArrowNavigationDelegate(LoginArrowNavigationDelegate* delegate);
 
+  base::WeakPtr<LoginPasswordView> AsWeakPtr() {
+    return weak_ptr_factory_.GetWeakPtr();
+  }
+
  private:
   class DisplayPasswordButton;
   class LoginPasswordRow;
@@ -191,7 +194,7 @@ class ASH_EXPORT LoginPasswordView
   bool enabled_on_empty_password_ = false;
 
   // Arrow keystrokes delegate.
-  raw_ptr<LoginArrowNavigationDelegate, DanglingUntriaged | ExperimentalAsh>
+  raw_ptr<LoginArrowNavigationDelegate, DanglingUntriaged>
       arrow_navigation_delegate_ = nullptr;
 
   // Clears the password field after a time without action if the display
@@ -203,14 +206,15 @@ class ASH_EXPORT LoginPasswordView
   // through the password and make the characters read out loud one by one).
   base::RetainingOneShotTimer hide_password_timer_;
 
-  raw_ptr<LoginPasswordRow, ExperimentalAsh> password_row_ = nullptr;
-  raw_ptr<LoginTextfield, ExperimentalAsh> textfield_ = nullptr;
-  raw_ptr<ArrowButtonView, ExperimentalAsh> submit_button_ = nullptr;
-  raw_ptr<DisplayPasswordButton, ExperimentalAsh> display_password_button_ =
-      nullptr;
-  raw_ptr<views::ImageView, ExperimentalAsh> capslock_icon_ = nullptr;
+  raw_ptr<LoginPasswordRow> password_row_ = nullptr;
+  raw_ptr<LoginTextfield> textfield_ = nullptr;
+  raw_ptr<ArrowButtonView> submit_button_ = nullptr;
+  raw_ptr<DisplayPasswordButton> display_password_button_ = nullptr;
+  raw_ptr<views::ImageView> capslock_icon_ = nullptr;
 
   bool is_capslock_higlight_ = false;
+
+  base::WeakPtrFactory<LoginPasswordView> weak_ptr_factory_{this};
 };
 
 }  // namespace ash

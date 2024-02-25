@@ -22,7 +22,8 @@ FocusManagerEventHandler::~FocusManagerEventHandler() {
 }
 
 void FocusManagerEventHandler::OnKeyEvent(ui::KeyEvent* event) {
-  if (widget_ && widget_->GetFocusManager()->GetFocusedView() &&
+  if (widget_ && widget_->GetFocusManager() &&
+      widget_->GetFocusManager()->GetFocusedView() &&
       !widget_->GetFocusManager()->OnKeyEvent(*event)) {
     event->StopPropagation();
   }

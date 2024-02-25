@@ -6,46 +6,28 @@
 
 #include "android_webview/browser/metrics/aw_metrics_service_client.h"
 #include "android_webview/browser/tracing/background_tracing_field_trial.h"
+#include "base/i18n/rtl.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/string_piece.h"
 #include "base/task/thread_pool.h"
 #include "components/metrics/field_trials_provider.h"
 #include "components/metrics/metrics_features.h"
+#include "components/metrics/metrics_log.h"
 #include "components/metrics/metrics_service.h"
+#include "components/metrics/version_utils.h"
+#include "components/version_info/android/channel_getter.h"
 #include "third_party/metrics_proto/trace_log.pb.h"
 #include "third_party/zlib/google/compression_utils.h"
 
 namespace tracing {
-
-namespace {
-
-void OnProvideEmbedderMetrics(base::OnceCallback<void(bool)> done_callback,
-                              bool success) {
-  // TODO(crbug/1428679): Remove the UMA timer code, which is currently used to
-  // determine if it is worth to finalize independent logs in the background
-  // by measuring the time it takes to execute the callback
-  // MetricsService::PrepareProviderMetricsLogDone().
-  base::TimeTicks start_time = base::TimeTicks::Now();
-  std::move(done_callback).Run(success);
-  if (success) {
-    // We don't use the SCOPED_UMA_HISTOGRAM_TIMER macro because we want to
-    // measure the time it takes to finalize an independent log, and that only
-    // happens when |success| is true.
-    base::UmaHistogramTimes(
-        "UMA.IndependentLog.AwBackgroundTracingMetricsProvider.FinalizeTime",
-        base::TimeTicks::Now() - start_time);
-  }
-}
-
-}  // namespace
 
 AwBackgroundTracingMetricsProvider::AwBackgroundTracingMetricsProvider() =
     default;
 AwBackgroundTracingMetricsProvider::~AwBackgroundTracingMetricsProvider() =
     default;
 
-void AwBackgroundTracingMetricsProvider::Init() {
-  android_webview::MaybeSetupWebViewOnlyTracing();
+void AwBackgroundTracingMetricsProvider::DoInit() {
+  android_webview::MaybeSetupWebViewOnlyTracingFromFieldTrial();
 
   metrics::MetricsService* metrics =
       android_webview::AwMetricsServiceClient::GetInstance()
@@ -57,63 +39,29 @@ void AwBackgroundTracingMetricsProvider::Init() {
           metrics->GetSyntheticTrialRegistry(), base::StringPiece()));
 }
 
-void AwBackgroundTracingMetricsProvider::ProvideEmbedderMetrics(
-    metrics::ChromeUserMetricsExtension* uma_proto,
-    std::string&& serialized_trace,
-    metrics::TraceLog* log,
-    base::HistogramSnapshotManager* snapshot_manager,
-    base::OnceClosure serialize_log_callback,
-    base::OnceCallback<void(bool)> done_callback) {
-  base::ThreadPool::PostTaskAndReplyWithResult(
-      FROM_HERE,
-      {base::TaskPriority::BEST_EFFORT,
-       // CONTINUE_ON_SHUTDOWN because the work done is only useful once the
-       // reply task is run (and there are no side effects). So, no need to
-       // block shutdown since the reply task won't be run anyway.
-       base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN},
-      base::BindOnce(&AwBackgroundTracingMetricsProvider::Compress,
-                     std::move(serialized_trace), uma_proto, log,
-                     std::move(serialize_log_callback)),
-      base::BindOnce(&OnProvideEmbedderMetrics, std::move(done_callback)));
+base::OnceCallback<bool(metrics::ChromeUserMetricsExtension*, std::string&&)>
+AwBackgroundTracingMetricsProvider::GetEmbedderMetricsProvider() {
+  return base::BindOnce([](metrics::ChromeUserMetricsExtension* uma_proto,
+                           std::string&& compressed_trace) {
+    if (compressed_trace.size() > kCompressedUploadLimitBytes) {
+      return false;
+    }
+    SetTrace(uma_proto->add_trace_log(), std::move(compressed_trace));
+
+    // Remove the package name according to the privacy requirements.
+    // See go/public-webview-trace-collection.
+    auto* system_profile = uma_proto->mutable_system_profile();
+    system_profile->clear_app_package_name();
+    return true;
+  });
 }
 
-// static
-bool AwBackgroundTracingMetricsProvider::Compress(
-    std::string&& serialized_trace,
-    metrics::ChromeUserMetricsExtension* uma_proto,
-    metrics::TraceLog* log,
-    base::OnceClosure serialize_log_callback) {
-  std::string deflated;
-  deflated.resize(kCompressedUploadLimitBytes);
-  size_t compressed_size;
-
-  if (!compression::GzipCompress(serialized_trace,
-                                 reinterpret_cast<char*>(deflated.data()),
-                                 kCompressedUploadLimitBytes, &compressed_size,
-                                 /* malloc_fn= */ nullptr,
-                                 /* free_fn= */ nullptr)) {
-    return false;
-  }
-
-  deflated.resize(compressed_size);
-
-  SetTrace(log, std::move(deflated));
-  log->set_compression_type(metrics::TraceLog::COMPRESSION_TYPE_ZLIB);
-
-  // Remove the package name according to the privacy requirements.
-  // See go/public-webview-trace-collection.
-  auto* system_profile = uma_proto->mutable_system_profile();
-  system_profile->clear_app_package_name();
-
-  // If |kMetricsServiceAsyncIndependentLogs| is enabled, serialize the log
-  // while we are still in the background, instead of on the callback that runs
-  // on the main thread.
-  if (base::FeatureList::IsEnabled(
-          metrics::features::kMetricsServiceAsyncIndependentLogs)) {
-    std::move(serialize_log_callback).Run();
-  }
-
-  return true;
+void AwBackgroundTracingMetricsProvider::RecordCoreSystemProfileMetrics(
+    metrics::SystemProfileProto* system_profile_proto) {
+  metrics::MetricsLog::RecordCoreSystemProfile(
+      metrics::GetVersionString(),
+      metrics::AsProtobufChannel(version_info::android::GetChannel()), false,
+      base::i18n::GetConfiguredLocale(), std::string(), system_profile_proto);
 }
 
 }  // namespace tracing

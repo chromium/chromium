@@ -5,15 +5,20 @@
 #include "third_party/blink/renderer/core/loader/document_load_timing.h"
 
 #include <memory>
+
 #include "base/time/time.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/loader/document_loader.h"
 #include "third_party/blink/renderer/core/testing/dummy_page_holder.h"
+#include "third_party/blink/renderer/platform/testing/task_environment.h"
 
 namespace blink {
 
-class DocumentLoadTimingTest : public testing::Test {};
+class DocumentLoadTimingTest : public testing::Test {
+ private:
+  test::TaskEnvironment task_environment_;
+};
 
 TEST_F(DocumentLoadTimingTest, ensureValidNavigationStartAfterEmbedder) {
   auto dummy_page = std::make_unique<DummyPageHolder>();
@@ -25,7 +30,7 @@ TEST_F(DocumentLoadTimingTest, ensureValidNavigationStartAfterEmbedder) {
   timing.SetNavigationStart(base::TimeTicks() +
                             base::Seconds(embedder_navigation_start));
 
-  double real_wall_time = base::Time::Now().ToDoubleT();
+  double real_wall_time = base::Time::Now().InSecondsFSinceUnixEpoch();
   base::TimeDelta adjusted_wall_time =
       timing.MonotonicTimeToPseudoWallTime(timing.NavigationStart());
 
@@ -48,7 +53,8 @@ TEST_F(DocumentLoadTimingTest, correctTimingDeltas) {
   // Super quick load! Expect the wall time reported by this event to be
   // dominated by the navigationStartDelta, but similar to currentTime().
   timing.MarkLoadEventEnd();
-  double real_wall_load_event_end = base::Time::Now().ToDoubleT();
+  double real_wall_load_event_end =
+      base::Time::Now().InSecondsFSinceUnixEpoch();
   base::TimeDelta adjusted_load_event_end =
       timing.MonotonicTimeToPseudoWallTime(timing.LoadEventEnd());
 

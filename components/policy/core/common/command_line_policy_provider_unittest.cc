@@ -8,6 +8,7 @@
 
 #include "base/values.h"
 #include "build/build_config.h"
+#include "components/policy/core/common/cloud/cloud_policy_client.h"
 #include "components/policy/core/common/policy_bundle.h"
 #include "components/policy/core/common/policy_switches.h"
 #include "components/policy/core/common/policy_types.h"
@@ -60,7 +61,7 @@ TEST_F(CommandLinePolicyProviderTest, LoadAndRefresh) {
       CreatePolicyProvider();
   VerifyPolicyProvider(policy_provider.get());
 
-  policy_provider->RefreshPolicies();
+  policy_provider->RefreshPolicies(PolicyFetchReason::kTest);
   VerifyPolicyProvider(policy_provider.get());
 }
 

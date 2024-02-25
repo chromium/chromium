@@ -26,8 +26,6 @@ struct CertVerifierConfig {
   bool require_rev_checking_local_anchors;
   bool enable_sha1_local_anchors;
   bool disable_symantec_enforcement;
-  array<network.mojom.X509Certificate> additional_trust_anchors;
-  array<network.mojom.X509Certificate> additional_untrusted_authorities;
 };
 
 // Allows the CertVerifierService to connect a new URLLoaderFactory if its

@@ -5,13 +5,25 @@
 #ifndef COMPONENTS_PERFORMANCE_MANAGER_TEST_SUPPORT_PERFORMANCE_MANAGER_BROWSERTEST_HARNESS_H_
 #define COMPONENTS_PERFORMANCE_MANAGER_TEST_SUPPORT_PERFORMANCE_MANAGER_BROWSERTEST_HARNESS_H_
 
-#include "base/run_loop.h"
+#include <set>
+
+#include "base/memory/raw_ptr.h"
 #include "base/strings/string_piece.h"
-#include "base/test/bind.h"
 #include "components/performance_manager/embedder/graph_features.h"
-#include "components/performance_manager/public/performance_manager.h"
 #include "content/public/test/content_browser_test.h"
 #include "testing/gtest/include/gtest/gtest.h"
+
+class GURL;
+
+namespace base {
+class CommandLine;
+}
+
+namespace content {
+class BrowserContext;
+class Shell;
+class WebContents;
+}  // namespace content
 
 namespace performance_manager {
 
@@ -36,6 +48,7 @@ class PerformanceManagerBrowserTestHarness
 
   // content::BrowserTestBase:
   void PreRunTestOnMainThread() override;
+  void PostRunTestOnMainThread() override;
   void SetUpCommandLine(base::CommandLine* command_line) override;
 
   // An additional seam that gets invoked as part of the PM initialization. This
@@ -68,21 +81,6 @@ class PerformanceManagerBrowserTestHarness
   // Waits for an ongoing navigation to terminate on the given |contents|.
   void WaitForLoad(content::WebContents* contents);
 
-  // Helper function for running a task on the graph, and waiting for it to
-  // complete. The signature of OnGraphCallback is expected to be void(Graph*).
-  template <typename OnGraphCallback>
-  void RunInGraph(OnGraphCallback on_graph_callback) {
-    base::RunLoop run_loop;
-    PerformanceManager::CallOnGraph(
-        FROM_HERE,
-        base::BindLambdaForTesting([quit_loop = run_loop.QuitClosure(),
-                                    &on_graph_callback](Graph* graph) {
-          on_graph_callback(graph);
-          quit_loop.Run();
-        }));
-    run_loop.Run();
-  }
-
   // Allows configuring which Graph features are initialized during "SetUp".
   // This defaults to initializing no features. Features will be initialized
   // before "OnGraphCreated" is called.
@@ -94,6 +92,8 @@ class PerformanceManagerBrowserTestHarness
   void OnGraphCreatedImpl(Graph* graph);
 
   GraphFeatures graph_features_;
+
+  std::set<raw_ptr<content::BrowserContext>> tracked_browser_contexts_;
 };
 
 }  // namespace performance_manager

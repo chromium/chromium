@@ -2,8 +2,4 @@ SUCCESS!
 
 
 
-text
-block
-more
-text
-ruby text 2
+text block more textruby text 2

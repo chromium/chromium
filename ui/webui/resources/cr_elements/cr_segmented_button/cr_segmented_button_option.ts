@@ -6,19 +6,15 @@ import '../cr_shared_vars.css.js';
 import '//resources/cr_elements/icons.html.js';
 import '//resources/polymer/v3_0/iron-icon/iron-icon.js';
 
-import {PaperRippleBehavior} from '//resources/polymer/v3_0/paper-behaviors/paper-ripple-behavior.js';
-import {mixinBehaviors, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {PaperRippleMixin} from '//resources/polymer/v3_0/paper-behaviors/paper-ripple-mixin.js';
+import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {CrRadioButtonMixin, CrRadioButtonMixinInterface} from '../cr_radio_button/cr_radio_button_mixin.js';
+import {CrRadioButtonMixin} from '../cr_radio_button/cr_radio_button_mixin.js';
 
 import {getTemplate} from './cr_segmented_button_option.html.js';
 
 const CrSegmentedButtonElementBase =
-    mixinBehaviors([PaperRippleBehavior], CrRadioButtonMixin(PolymerElement)) as
-    {
-      new (): PolymerElement & CrRadioButtonMixinInterface &
-          PaperRippleBehavior,
-    };
+    PaperRippleMixin(CrRadioButtonMixin(PolymerElement));
 
 export class CrSegmentedButtonOptionElement extends
     CrSegmentedButtonElementBase {
@@ -35,7 +31,7 @@ export class CrSegmentedButtonOptionElement extends
     return this.getRipple();
   }
 
-  // Overridden from PaperRippleBehavior
+  // Overridden from PaperRippleMixin
   /* eslint-disable-next-line @typescript-eslint/naming-convention */
   override _createRipple() {
     this._rippleContainer = this.shadowRoot!.querySelector('#button');

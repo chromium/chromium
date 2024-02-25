@@ -74,19 +74,16 @@ class StorageAccessGrantPermissionContext
 
   // Exposes `DecidePermission` for tests.
   void DecidePermissionForTesting(
-      const permissions::PermissionRequestID& id,
-      const GURL& requesting_origin,
-      const GURL& embedding_origin,
-      bool user_gesture,
+      permissions::PermissionRequestData request_data,
       permissions::BrowserPermissionCallback callback);
+
+  static int GetImplicitGrantLimitForTesting();
+  static void SetImplicitGrantLimitForTesting(int limit);
 
  private:
   // PermissionContextBase:
   void DecidePermission(
-      const permissions::PermissionRequestID& id,
-      const GURL& requesting_origin,
-      const GURL& embedding_origin,
-      bool user_gesture,
+      permissions::PermissionRequestData request_data,
       permissions::BrowserPermissionCallback callback) override;
   ContentSetting GetPermissionStatusInternal(
       content::RenderFrameHost* render_frame_host,
@@ -120,29 +117,14 @@ class StorageAccessGrantPermissionContext
   // this tries to to use an implicit grant, and finally may prompt the user if
   // necessary.
   void CheckForAutoGrantOrAutoDenial(
-      const permissions::PermissionRequestID& id,
-      const GURL& requesting_origin,
-      const GURL& embedding_origin,
-      bool user_gesture,
+      permissions::PermissionRequestData request_data,
       permissions::BrowserPermissionCallback callback,
       net::FirstPartySetMetadata metadata);
-
-  // Determines whether an implicit grant is available, and otherwise may prompt
-  // the user.
-  void UseImplicitGrantOrPrompt(
-      const permissions::PermissionRequestID& id,
-      const GURL& requesting_origin,
-      const GURL& embedding_origin,
-      bool user_gesture,
-      permissions::BrowserPermissionCallback callback);
 
   // Determines whether the top-level user-interaction heuristic was satisfied,
   // and if so, prompts the user.
   void OnCheckedUserInteractionHeuristic(
-      const permissions::PermissionRequestID& id,
-      const GURL& requesting_origin,
-      const GURL& embedding_origin,
-      bool user_gesture,
+      permissions::PermissionRequestData request_data,
       permissions::BrowserPermissionCallback callback,
       bool had_top_level_user_interaction);
 

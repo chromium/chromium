@@ -29,6 +29,7 @@
 #include "net/base/test_completion_callback.h"
 #include "net/base/upload_bytes_element_reader.h"
 #include "net/base/upload_file_element_reader.h"
+#include "net/http/http_connection_info.h"
 #include "net/http/http_request_headers.h"
 #include "net/http/http_request_info.h"
 #include "net/http/http_response_headers.h"
@@ -731,8 +732,7 @@ TEST(HttpStreamParser, AsyncSingleChunkAndAsyncSocket) {
   ASSERT_THAT(callback.WaitForResult(), IsOk());
 
   // Finally, attempt to read the response body.
-  scoped_refptr<IOBuffer> body_buffer =
-      base::MakeRefCounted<IOBuffer>(kBodySize);
+  auto body_buffer = base::MakeRefCounted<IOBufferWithSize>(kBodySize);
   ASSERT_EQ(ERR_IO_PENDING,
             parser.ReadResponseBody(body_buffer.get(), kBodySize,
                                     callback.callback()));
@@ -808,8 +808,7 @@ TEST(HttpStreamParser, SyncSingleChunkAndAsyncSocket) {
   ASSERT_THAT(callback.WaitForResult(), IsOk());
 
   // Finally, attempt to read the response body.
-  scoped_refptr<IOBuffer> body_buffer =
-      base::MakeRefCounted<IOBuffer>(kBodySize);
+  auto body_buffer = base::MakeRefCounted<IOBufferWithSize>(kBodySize);
   ASSERT_EQ(ERR_IO_PENDING,
             parser.ReadResponseBody(body_buffer.get(), kBodySize,
                                     callback.callback()));
@@ -908,8 +907,7 @@ TEST(HttpStreamParser, AsyncChunkAndAsyncSocketWithMultipleChunks) {
   ASSERT_THAT(callback.WaitForResult(), IsOk());
 
   // Finally, attempt to read the response body.
-  scoped_refptr<IOBuffer> body_buffer =
-      base::MakeRefCounted<IOBuffer>(kBodySize);
+  auto body_buffer = base::MakeRefCounted<IOBufferWithSize>(kBodySize);
   ASSERT_EQ(ERR_IO_PENDING,
             parser.ReadResponseBody(body_buffer.get(), kBodySize,
                                     callback.callback()));
@@ -985,8 +983,7 @@ TEST(HttpStreamParser, AsyncEmptyChunkedUpload) {
   ASSERT_THAT(callback.WaitForResult(), IsOk());
 
   // Finally, attempt to read the response body.
-  scoped_refptr<IOBuffer> body_buffer =
-      base::MakeRefCounted<IOBuffer>(kBodySize);
+  auto body_buffer = base::MakeRefCounted<IOBufferWithSize>(kBodySize);
   ASSERT_EQ(ERR_IO_PENDING,
             parser.ReadResponseBody(body_buffer.get(), kBodySize,
                                     callback.callback()));
@@ -1061,8 +1058,7 @@ TEST(HttpStreamParser, SyncEmptyChunkedUpload) {
   ASSERT_THAT(callback.WaitForResult(), IsOk());
 
   // Finally, attempt to read the response body.
-  scoped_refptr<IOBuffer> body_buffer =
-      base::MakeRefCounted<IOBuffer>(kBodySize);
+  auto body_buffer = base::MakeRefCounted<IOBufferWithSize>(kBodySize);
   ASSERT_EQ(ERR_IO_PENDING,
             parser.ReadResponseBody(body_buffer.get(), kBodySize,
                                     callback.callback()));
@@ -1256,6 +1252,11 @@ class SimpleGetRunner {
                         sequence_number_++);
   }
 
+  void AddAsyncRead(base::StringPiece string_piece) {
+    reads_.emplace_back(ASYNC, string_piece.data(), string_piece.length(),
+                        sequence_number_++);
+  }
+
   void SetupParserAndSendRequest() {
     reads_.emplace_back(SYNCHRONOUS, 0, sequence_number_++);  // EOF
 
@@ -1286,8 +1287,7 @@ class SimpleGetRunner {
 
   std::string ReadBody(int user_buf_len, int* read_lengths) {
     TestCompletionCallback callback;
-    scoped_refptr<IOBuffer> buffer =
-        base::MakeRefCounted<IOBuffer>(user_buf_len);
+    auto buffer = base::MakeRefCounted<IOBufferWithSize>(user_buf_len);
     int rv;
     int i = 0;
     std::string body;
@@ -1295,6 +1295,11 @@ class SimpleGetRunner {
       rv = parser_->ReadResponseBody(
           buffer.get(), user_buf_len, callback.callback());
       EXPECT_EQ(read_lengths[i], rv);
+      if (rv == ERR_IO_PENDING) {
+        rv = callback.WaitForResult();
+        i++;
+        EXPECT_EQ(read_lengths[i], rv);
+      }
       if (rv > 0)
         body.append(buffer->data(), rv);
       i++;
@@ -1370,7 +1375,7 @@ TEST(HttpStreamParser, Http09PortTests) {
     get_runner.ReadBody(kResponse.size(), read_lengths);
     EXPECT_EQ(kResponse.size(),
               static_cast<size_t>(get_runner.parser()->received_bytes()));
-    EXPECT_EQ(HttpResponseInfo::CONNECTION_INFO_HTTP0_9,
+    EXPECT_EQ(HttpConnectionInfo::kHTTP0_9,
               get_runner.response_info()->connection_info);
   }
 
@@ -1395,7 +1400,7 @@ TEST(HttpStreamParser, Http09PortTests) {
     get_runner.ReadBody(kShoutcastResponse.size(), read_lengths);
     EXPECT_EQ(kShoutcastResponse.size(),
               static_cast<size_t>(get_runner.parser()->received_bytes()));
-    EXPECT_EQ(HttpResponseInfo::CONNECTION_INFO_HTTP0_9,
+    EXPECT_EQ(HttpConnectionInfo::kHTTP0_9,
               get_runner.response_info()->connection_info);
   }
 }
@@ -1508,7 +1513,7 @@ TEST(HttpStreamParser, ReceivedBytesNormal) {
   get_runner.ReadBody(body_size, read_lengths);
   int64_t response_size = response.size();
   EXPECT_EQ(response_size, get_runner.parser()->received_bytes());
-  EXPECT_EQ(HttpResponseInfo::CONNECTION_INFO_HTTP1_0,
+  EXPECT_EQ(HttpConnectionInfo::kHTTP1_0,
             get_runner.response_info()->connection_info);
 }
 
@@ -1534,9 +1539,8 @@ TEST(HttpStreamParser, ReceivedBytesExcludesNextResponse) {
   get_runner.ReadBody(body_size, read_lengths);
   int64_t response_size = response.size();
   EXPECT_EQ(response_size, get_runner.parser()->received_bytes());
-  int64_t next_response_size = next_response.size();
-  EXPECT_EQ(next_response_size, get_runner.read_buffer()->offset());
-  EXPECT_EQ(HttpResponseInfo::CONNECTION_INFO_HTTP1_1,
+  EXPECT_EQ(0, get_runner.read_buffer()->offset());
+  EXPECT_EQ(HttpConnectionInfo::kHTTP1_1,
             get_runner.response_info()->connection_info);
 }
 
@@ -1545,8 +1549,8 @@ TEST(HttpStreamParser, ReceivedBytesExcludesNextResponse) {
 // We send data in two reads:
 // 1) Headers + beginning of response
 // 2) remaining part of response + next response start
-// We setup user read buffer so it fully accepts the beginnig of response
-// body, but it is larger that remaining part of body.
+// We setup user read buffer so it fully accepts the beginning of response
+// body, but it is larger than remaining part of body.
 TEST(HttpStreamParser, ReceivedBytesMultiReadExcludesNextResponse) {
   std::string headers = "HTTP/1.1 200 OK\r\n"
       "Content-Length: 36\r\n\r\n";
@@ -1571,8 +1575,118 @@ TEST(HttpStreamParser, ReceivedBytesMultiReadExcludesNextResponse) {
   get_runner.ReadBody(body_start_size, read_lengths);
   int64_t response_size = response_start.size() + body_end_size;
   EXPECT_EQ(response_size, get_runner.parser()->received_bytes());
-  int64_t next_response_size = next_response.size();
-  EXPECT_EQ(next_response_size, get_runner.read_buffer()->offset());
+  EXPECT_EQ(0, get_runner.read_buffer()->offset());
+  EXPECT_FALSE(get_runner.parser()->CanReuseConnection());
+}
+
+TEST(HttpStreamParser, ReceivedBytesMultiReadExcludesExtraData) {
+  const std::string headers =
+      "HTTP/1.1 200 OK\r\n"
+      "Content-Length: 36\r\n\r\n";
+  const int64_t user_buf_len = 32;
+  const std::string body_start = std::string(user_buf_len, '#');
+  const int body_start_size = body_start.size();
+  EXPECT_EQ(user_buf_len, body_start_size);
+  const std::string body_end = "abcd";
+  const int body_end_size = body_end.size();
+  const std::string body = body_start + body_end;
+  const int body_size = body.size();
+  const std::string extra_data = "HTTP/1.1 200 OK\r\n\r\nFOO";
+  const std::string read_data = body + extra_data;
+
+  SimpleGetRunner get_runner;
+  get_runner.AddRead(headers);
+  get_runner.AddRead(read_data);
+  get_runner.SetupParserAndSendRequest();
+  get_runner.ReadHeaders();
+  const int headers_size = headers.size();
+  EXPECT_EQ(headers_size, get_runner.parser()->received_bytes());
+  int read_lengths[] = {body_start_size, body_end_size, 0};
+  get_runner.ReadBody(body_start_size, read_lengths);
+  const int response_size = headers_size + body_size;
+  EXPECT_EQ(response_size, get_runner.parser()->received_bytes());
+  EXPECT_EQ(0, get_runner.read_buffer()->offset());
+  EXPECT_FALSE(get_runner.parser()->CanReuseConnection());
+}
+
+TEST(HttpStreamParser, ReceivedBytesAsyncMultiReadExcludesExtraData) {
+  base::test::SingleThreadTaskEnvironment task_environment;
+
+  const std::string headers =
+      "HTTP/1.1 200 OK\r\n"
+      "Content-Length: 36\r\n\r\n";
+  const int64_t user_buf_len = 32;
+  const std::string body_start = std::string(user_buf_len, '#');
+  const int body_start_size = body_start.size();
+  EXPECT_EQ(user_buf_len, body_start_size);
+  const std::string body_end = "abcd";
+  const int body_end_size = body_end.size();
+  const std::string body = body_start + body_end;
+  const int body_size = body.size();
+  const std::string extra_data = "HTTP/1.1 200 OK\r\n\r\nFOO";
+  const std::string read_data = body_end + extra_data;
+
+  SimpleGetRunner get_runner;
+  get_runner.AddRead(headers);
+  get_runner.AddRead(body_start);
+  get_runner.AddAsyncRead(read_data);
+  get_runner.SetupParserAndSendRequest();
+  get_runner.ReadHeaders();
+  const int headers_size = headers.size();
+  EXPECT_EQ(headers_size, get_runner.parser()->received_bytes());
+  int read_lengths[] = {body_start_size, -1, body_end_size, 0};
+  get_runner.ReadBody(body_start_size, read_lengths);
+  const int response_size = headers_size + body_size;
+  EXPECT_EQ(response_size, get_runner.parser()->received_bytes());
+  EXPECT_EQ(0, get_runner.read_buffer()->offset());
+  EXPECT_FALSE(get_runner.parser()->CanReuseConnection());
+}
+
+TEST(HttpStreamParser, ReceivedBytesExcludesExtraDataLargeBuffer) {
+  const std::string headers =
+      "HTTP/1.1 200 OK\r\n"
+      "Content-Length: 36\r\n\r\n";
+  const std::string body = std::string(36, '#');
+  const int body_size = body.size();
+  const std::string extra_data = std::string(14, '!');
+  const std::string response = headers + body + extra_data;
+  const int response_size = response.size();
+
+  SimpleGetRunner get_runner;
+  get_runner.AddRead(response);
+  get_runner.SetupParserAndSendRequest();
+  get_runner.ReadHeaders();
+  const int headers_size = headers.size();
+  EXPECT_EQ(headers_size, get_runner.parser()->received_bytes());
+  int read_lengths[] = {body_size, 0};
+  get_runner.ReadBody(response_size, read_lengths);
+  const int actual_response_size = headers_size + body_size;
+  EXPECT_EQ(actual_response_size, get_runner.parser()->received_bytes());
+  EXPECT_EQ(0, get_runner.read_buffer()->offset());
+  EXPECT_FALSE(get_runner.parser()->CanReuseConnection());
+}
+
+TEST(HttpStreamParser, ReceivedBytesExcludesExtraDataSmallBuffer) {
+  const std::string headers =
+      "HTTP/1.1 200 OK\r\n"
+      "Content-Length: 36\r\n\r\n";
+  const std::string body = std::string(36, '#');
+  const int body_size = body.size();
+  const std::string extra_data = std::string(14, '!');
+  const std::string response = headers + body + extra_data;
+
+  SimpleGetRunner get_runner;
+  get_runner.AddRead(response);
+  get_runner.SetupParserAndSendRequest();
+  get_runner.ReadHeaders();
+  const int headers_size = headers.size();
+  EXPECT_EQ(headers_size, get_runner.parser()->received_bytes());
+  int read_lengths[] = {10, 10, 10, 6, 0};
+  get_runner.ReadBody(10, read_lengths);
+  const int actual_response_size = headers_size + body_size;
+  EXPECT_EQ(actual_response_size, get_runner.parser()->received_bytes());
+  EXPECT_EQ(0, get_runner.read_buffer()->offset());
+  EXPECT_FALSE(get_runner.parser()->CanReuseConnection());
 }
 
 // Test that "received_bytes" calculation works fine when there is no
@@ -1598,8 +1712,8 @@ TEST(HttpStreamParser, ReceivedBytesFromReadBufExcludesNextResponse) {
   get_runner.ReadBody(body_size, read_lengths);
   int64_t response_size = response.size();
   EXPECT_EQ(response_size, get_runner.parser()->received_bytes());
-  int64_t next_response_size = next_response.size();
-  EXPECT_EQ(next_response_size, get_runner.read_buffer()->offset());
+  EXPECT_EQ(0, get_runner.read_buffer()->offset());
+  EXPECT_FALSE(get_runner.parser()->CanReuseConnection());
 }
 
 // Test calculating "received_bytes" when part of request has been already
@@ -1747,8 +1861,8 @@ TEST(HttpStreamParser, NonInformationalResponseStart) {
             first_response_start_time);
 
   // [seq=4] The parser reads the response body.
-  scoped_refptr<IOBuffer> body_buffer =
-      base::MakeRefCounted<IOBuffer>(response_body.size());
+  auto body_buffer =
+      base::MakeRefCounted<IOBufferWithSize>(response_body.size());
   int result = parser.ReadResponseBody(body_buffer.get(), response_body.size(),
                                        callback.callback());
   EXPECT_THAT(callback.GetResult(result), response_body.size());
@@ -1872,8 +1986,8 @@ TEST(HttpStreamParser, ReceivedBytesIncludesContinueHeader) {
             parser.non_informational_response_start_time());
 
   // [seq=8] The parser reads the non-informational response body.
-  scoped_refptr<IOBuffer> body_buffer =
-      base::MakeRefCounted<IOBuffer>(response_body.size());
+  auto body_buffer =
+      base::MakeRefCounted<IOBufferWithSize>(response_body.size());
   int result = parser.ReadResponseBody(body_buffer.get(), response_body.size(),
                                        callback.callback());
   EXPECT_THAT(callback.GetResult(result), response_body.size());
@@ -2013,8 +2127,8 @@ TEST(HttpStreamParser, EarlyHints) {
             parser.non_informational_response_start_time());
 
   // [seq=10] The parser reads the non-informational response body.
-  scoped_refptr<IOBuffer> body_buffer =
-      base::MakeRefCounted<IOBuffer>(response_body.size());
+  auto body_buffer =
+      base::MakeRefCounted<IOBufferWithSize>(response_body.size());
   int result = parser.ReadResponseBody(body_buffer.get(), response_body.size(),
                                        callback.callback());
   EXPECT_THAT(callback.GetResult(result), response_body.size());
@@ -2130,8 +2244,8 @@ TEST(HttpStreamParser, MixedResponseHeaders) {
             parser.non_informational_response_start_time());
 
   // [seq=6] The parser reads the non-informational response body.
-  scoped_refptr<IOBuffer> body_buffer =
-      base::MakeRefCounted<IOBuffer>(response_body.size());
+  auto body_buffer =
+      base::MakeRefCounted<IOBufferWithSize>(response_body.size());
   int result = parser.ReadResponseBody(body_buffer.get(), response_body.size(),
                                        callback.callback());
   EXPECT_THAT(callback.GetResult(result), response_body.size());
@@ -2186,8 +2300,7 @@ TEST(HttpStreamParser, ReadAfterUnownedObjectsDestroyed) {
   request_headers.reset();
   response_info.reset();
 
-  scoped_refptr<IOBuffer> body_buffer =
-      base::MakeRefCounted<IOBuffer>(kBodySize);
+  auto body_buffer = base::MakeRefCounted<IOBufferWithSize>(kBodySize);
   ASSERT_EQ(kBodySize, parser.ReadResponseBody(
       body_buffer.get(), kBodySize, callback.callback()));
 

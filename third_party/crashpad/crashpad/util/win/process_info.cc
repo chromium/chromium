@@ -23,6 +23,7 @@
 #include <new>
 #include <type_traits>
 
+#include "base/check_op.h"
 #include "base/logging.h"
 #include "base/memory/free_deleter.h"
 #include "base/process/memory.h"

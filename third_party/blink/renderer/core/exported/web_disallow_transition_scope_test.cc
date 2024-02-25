@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "third_party/blink/public/web/web_disallow_transition_scope.h"
+#include "third_party/blink/renderer/platform/testing/task_environment.h"
 
 #if DCHECK_IS_ON()
 
@@ -20,6 +21,7 @@ class WebDisallowTransitionScopeTest : public testing::Test {
   Document* TopDocument() const;
   WebDocument TopWebDocument() const;
 
+  test::TaskEnvironment task_environment_;
   WebViewHelper web_view_helper_;
 };
 
@@ -37,7 +39,7 @@ WebDocument WebDisallowTransitionScopeTest::TopWebDocument() const {
 TEST_F(WebDisallowTransitionScopeTest, TestDisallowTransition) {
   // Make the death test thread-safe. For more info, see:
   // https://github.com/google/googletest/blob/main/googletest/docs/advanced.md#death-tests-and-threads
-  ::testing::FLAGS_gtest_death_test_style = "threadsafe";
+  GTEST_FLAG_SET(death_test_style, "threadsafe");
 
   web_view_helper_.InitializeAndLoad("about:blank");
 

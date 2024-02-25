@@ -8,13 +8,13 @@
 #include <list>
 #include <map>
 #include <memory>
+#include <optional>
 #include <set>
 #include <string>
 #include <vector>
 
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/base/class_property.h"
@@ -40,9 +40,9 @@ class LinkFragment;
 // whitespace is respected, provided not only whitespace fits in the first line.
 // In this case, leading whitespace is ignored.
 class VIEWS_EXPORT StyledLabel : public View {
- public:
-  METADATA_HEADER(StyledLabel);
+  METADATA_HEADER(StyledLabel, View)
 
+ public:
   // Parameters that define label style for a styled label's text range.
   struct VIEWS_EXPORT RangeStyleInfo {
     RangeStyleInfo();
@@ -56,17 +56,17 @@ class VIEWS_EXPORT StyledLabel : public View {
 
     // Allows full customization of the font used in the range. Ignores the
     // StyledLabel's default text context and |text_style|.
-    absl::optional<gfx::FontList> custom_font;
+    std::optional<gfx::FontList> custom_font;
 
     // The style::TextStyle for this range.
-    absl::optional<int> text_style;
+    std::optional<int> text_style;
 
     // Overrides the text color given by |text_style| for this range.
     // DEPRECATED: Use TextStyle.
-    absl::optional<SkColor> override_color;
+    std::optional<SkColor> override_color;
 
     // Overrides the text color given by |text_style| for this range.
-    absl::optional<ui::ColorId> override_color_id;
+    std::optional<ui::ColorId> override_color_id;
 
     // A callback to be called when this link is clicked. Only used if
     // |text_style| is style::STYLE_LINK.
@@ -80,7 +80,7 @@ class VIEWS_EXPORT StyledLabel : public View {
 
     // A custom view shown instead of the underlying text. Ownership of custom
     // views must be passed to StyledLabel via AddCustomView().
-    raw_ptr<View, DanglingUntriaged> custom_view = nullptr;
+    raw_ptr<View> custom_view = nullptr;
   };
 
   // Sizing information for laying out the label based on a particular width.
@@ -141,6 +141,10 @@ class VIEWS_EXPORT StyledLabel : public View {
   int GetDefaultTextStyle() const;
   void SetDefaultTextStyle(int text_style);
 
+  // Set the default enabled color id.
+  std::optional<ui::ColorId> GetDefaultEnabledColorId() const;
+  void SetDefaultEnabledColorId(std::optional<ui::ColorId> enabled_color_id);
+
   // Get or set the distance in pixels between baselines of multi-line text.
   // Default is 0, indicating the distance between lines should be the standard
   // one for the label's text, font list, and platform.
@@ -173,10 +177,19 @@ class VIEWS_EXPORT StyledLabel : public View {
   // wrapped).  If 0, no fixed width is enforced.
   void SizeToFit(int fixed_width);
 
+  // If true, the preferred size is dependent on the last set width.
+  // See the comment on `use_legacy_preferred_size_`.
+  void set_use_legacy_preferred_size(bool use_legacy_preferred_size) {
+    use_legacy_preferred_size_ = use_legacy_preferred_size;
+  }
+
   // View:
-  gfx::Size CalculatePreferredSize() const override;
+  gfx::Size CalculatePreferredSize() const final;
+  gfx::Size CalculatePreferredSize(
+      const SizeBounds& available_size) const override;
+  void OnBoundsChanged(const gfx::Rect& previous_bounds) override;
   int GetHeightForWidth(int w) const override;
-  void Layout() override;
+  void Layout(PassKey) override;
   void PreferredSizeChanged() override;
 
   // Sets the horizontal alignment; the argument value is mirrored in RTL UI.
@@ -189,7 +202,7 @@ class VIEWS_EXPORT StyledLabel : public View {
   // one such child exists.
   void ClickFirstLinkForTesting();
 
-  // Get the first child that is a link.
+  // Gets the first child that is a link. Returns nullptr if there isn't any.
   views::Link* GetFirstLinkForTesting();
 
  private:
@@ -235,21 +248,31 @@ class VIEWS_EXPORT StyledLabel : public View {
   // delete the rest.
   void RemoveOrDeleteAllChildViews();
 
+  void RecreateChildViews();
+
   // The text to display.
   std::u16string text_;
 
   int text_context_ = style::CONTEXT_LABEL;
   int default_text_style_ = style::STYLE_PRIMARY;
+  std::optional<ui::ColorId> default_enabled_color_id_;
 
-  absl::optional<int> line_height_;
-
-  // The ranges that should be linkified, sorted by start position.
-  StyleRanges style_ranges_;
+  std::optional<int> line_height_;
+  int fixed_width_ = 0;
+  // If true, the preferred size is dependent on the last set width.
+  // This is a deprecated behavior because we want the preferred size
+  // to be "stateless", meaning that the previous layout result
+  // shouldn't affect future layouts.
+  // TODO(322715559): remove this after fixing the ChromeOS tast failure.
+  bool use_legacy_preferred_size_ = false;
 
   // Temporarily owns the custom views until they've been been placed into the
   // StyledLabel's child list. This list also holds the custom views during
   // layout.
   std::list<std::unique_ptr<View>> custom_views_;
+
+  // The ranges that should be linkified, sorted by start position.
+  StyleRanges style_ranges_;
 
   // Saves the effects of the last CalculateLayout() call to avoid repeated
   // calculation.  |layout_size_info_| can then be cached until the next
@@ -267,6 +290,12 @@ class VIEWS_EXPORT StyledLabel : public View {
   // Controls whether subpixel rendering is enabled.
   bool subpixel_rendering_enabled_ = true;
 
+  // Controls whether subviews need to be recreated. Recreating subviews can
+  // cause some functionality to break under certain circumstances.
+  // eg: If re-creating the subview occurs after OnMousePressed() and before
+  // OnMouseRelease(), the link will not be clickable.
+  bool need_recreate_child_ = true;
+
   // The horizontal alignment. This value is flipped for RTL. The default
   // behavior is to align left in LTR UI and right in RTL UI.
   gfx::HorizontalAlignment horizontal_alignment_ =
@@ -281,6 +310,7 @@ VIEW_BUILDER_PROPERTY(int, LineHeight)
 VIEW_BUILDER_PROPERTY(StyledLabel::ColorVariant, DisplayedOnBackgroundColor)
 VIEW_BUILDER_PROPERTY(bool, AutoColorReadabilityEnabled)
 VIEW_BUILDER_PROPERTY(gfx::HorizontalAlignment, HorizontalAlignment)
+VIEW_BUILDER_PROPERTY(std::optional<ui::ColorId>, DefaultEnabledColorId)
 VIEW_BUILDER_METHOD(SizeToFit, int)
 VIEW_BUILDER_METHOD(AddStyleRange, gfx::Range, StyledLabel::RangeStyleInfo)
 END_VIEW_BUILDER

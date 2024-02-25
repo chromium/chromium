@@ -8,9 +8,10 @@ import android.util.SparseArray;
 
 import androidx.annotation.VisibleForTesting;
 
+import org.jni_zero.CalledByNative;
+
 import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.base.ResettersForTesting;
-import org.chromium.base.annotations.CalledByNative;
 import org.chromium.content_public.browser.BrowserContextHandle;
 
 import java.security.InvalidKeyException;
@@ -43,25 +44,23 @@ class PackageHash {
     // This map stores salts that have been calculated for different browser sessions (i.e. Browser
     // Contexts). A SparseArray is used instead of a HashMap to avoid holding a reference to the key
     // object.
-    private static SparseArray<byte[]> sSaltMap;
+    private static final SparseArray<byte[]> sSaltMap = new SparseArray<byte[]>();
 
     private static byte[] sGlobalSaltForTesting;
 
     @VisibleForTesting
     static byte[] getSaltBytes(BrowserContextHandle browserContext) {
         if (sGlobalSaltForTesting != null) return sGlobalSaltForTesting;
+        SparseArray<byte[]> saltMap = sSaltMap;
+        synchronized (saltMap) {
+            byte[] salt = saltMap.get(browserContext.hashCode());
+            if (salt != null) return salt;
 
-        if (sSaltMap == null) {
-            sSaltMap = new SparseArray<byte[]>();
+            salt = new byte[20];
+            new SecureRandom().nextBytes(salt);
+            saltMap.put(browserContext.hashCode(), salt);
+            return salt;
         }
-
-        byte[] salt = sSaltMap.get(browserContext.hashCode());
-        if (salt != null) return salt;
-
-        salt = new byte[20];
-        new SecureRandom().nextBytes(salt);
-        sSaltMap.put(browserContext.hashCode(), salt);
-        return salt;
     }
 
     static void setGlobalSaltForTesting(byte[] salt) {
@@ -69,9 +68,7 @@ class PackageHash {
         ResettersForTesting.register(() -> sGlobalSaltForTesting = null);
     }
 
-    /**
-     * Returns a SHA-256 hash of the package name, truncated to a 16-bit integer.
-     */
+    /** Returns a SHA-256 hash of the package name, truncated to a 16-bit integer. */
     static short hashForPackage(String packageName, BrowserContextHandle browserContext) {
         byte[] salt = getSaltBytes(browserContext);
         Mac hasher;
@@ -99,8 +96,9 @@ class PackageHash {
 
     @CalledByNative
     public static void onCookiesDeleted(BrowserContextHandle browserContext) {
-        if (sSaltMap != null) {
-            sSaltMap.delete(browserContext.hashCode());
+        SparseArray<byte[]> saltMap = sSaltMap;
+        synchronized (saltMap) {
+            saltMap.delete(browserContext.hashCode());
         }
     }
 }

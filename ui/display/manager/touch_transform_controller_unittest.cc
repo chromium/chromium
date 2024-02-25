@@ -161,7 +161,7 @@ class TouchTransformControllerTest : public testing::Test {
  private:
   std::unique_ptr<DisplayManager> display_manager_;
   std::unique_ptr<TouchTransformController> touch_transform_controller_;
-  raw_ptr<TouchDeviceManager, ExperimentalAsh> touch_device_manager_;
+  raw_ptr<TouchDeviceManager> touch_device_manager_;
 };
 
 TEST_F(TouchTransformControllerTest, MirrorModeLetterboxing) {

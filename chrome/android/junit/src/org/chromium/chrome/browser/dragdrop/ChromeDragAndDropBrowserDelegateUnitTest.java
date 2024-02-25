@@ -11,9 +11,12 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 import android.app.Activity;
+import android.content.ClipData;
+import android.content.ClipDescription;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
@@ -40,30 +43,28 @@ import org.chromium.base.FeatureList;
 import org.chromium.base.FeatureList.TestValues;
 import org.chromium.base.IntentUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.chrome.browser.DragAndDropLauncherActivity;
 import org.chromium.chrome.browser.IntentHandler;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.chrome.browser.price_tracking.PriceTrackingFeatures;
+import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.tab.MockTab;
+import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.tasks.tab_management.TabUiFeatureUtilities;
 import org.chromium.content_public.common.ContentFeatures;
+import org.chromium.ui.base.MimeTypeUtils;
+import org.chromium.ui.dragdrop.DragDropMetricUtils.UrlIntentSource;
 import org.chromium.url.JUnitTestGURLs;
 
-/**
- * Unit test for {@link ChromeDragAndDropBrowserDelegate}.
- */
+/** Unit test for {@link ChromeDragAndDropBrowserDelegate}. */
 @RunWith(BaseRobolectricTestRunner.class)
 public class ChromeDragAndDropBrowserDelegateUnitTest {
-    @Rule
-    public MockitoRule mMockitoRule = MockitoJUnit.rule();
+    @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
-    @Mock
-    private Activity mActivity;
-    @Mock
-    private DragEvent mDragEvent;
-    @Mock
-    private DragAndDropPermissions mDragAndDropPermissions;
-    @Mock
-    private ActivityInfo mActivityInfo;
-    @Mock
-    private PackageManager mPackageManager;
+    @Mock private Activity mActivity;
+    @Mock private DragEvent mDragEvent;
+    @Mock private DragAndDropPermissions mDragAndDropPermissions;
+    @Mock private ActivityInfo mActivityInfo;
+    @Mock private PackageManager mPackageManager;
 
     private ChromeDragAndDropBrowserDelegate mDelegate;
     private FeatureList.TestValues mTestValues;
@@ -90,11 +91,14 @@ public class ChromeDragAndDropBrowserDelegateUnitTest {
 
     @Test
     public void testDragAndDropBrowserDelegate_getDragAndDropPermissions() {
-        mTestValues.addFieldTrialParamOverride(ContentFeatures.TOUCH_DRAG_AND_CONTEXT_MENU,
-                ChromeDragAndDropBrowserDelegate.PARAM_DROP_IN_CHROME, "true");
+        mTestValues.addFieldTrialParamOverride(
+                ContentFeatures.TOUCH_DRAG_AND_CONTEXT_MENU,
+                ChromeDragAndDropBrowserDelegate.PARAM_DROP_IN_CHROME,
+                "true");
         mDelegate = new ChromeDragAndDropBrowserDelegate(mActivity);
         assertTrue("SupportDropInChrome should be true.", mDelegate.getSupportDropInChrome());
-        assertFalse("SupportAnimatedImageDragShadow should be false.",
+        assertFalse(
+                "SupportAnimatedImageDragShadow should be false.",
                 mDelegate.getSupportAnimatedImageDragShadow());
 
         DragAndDropPermissions permissions = mDelegate.getDragAndDropPermissions(mDragEvent);
@@ -103,8 +107,10 @@ public class ChromeDragAndDropBrowserDelegateUnitTest {
 
     @Test
     public void testDragAndDropBrowserDelegate_NotSupportDropInChrome() {
-        mTestValues.addFieldTrialParamOverride(ContentFeatures.TOUCH_DRAG_AND_CONTEXT_MENU,
-                ChromeDragAndDropBrowserDelegate.PARAM_DROP_IN_CHROME, "false");
+        mTestValues.addFieldTrialParamOverride(
+                ContentFeatures.TOUCH_DRAG_AND_CONTEXT_MENU,
+                ChromeDragAndDropBrowserDelegate.PARAM_DROP_IN_CHROME,
+                "false");
         mDelegate = new ChromeDragAndDropBrowserDelegate(mActivity);
         assertFalse("SupportDropInChrome should be false.", mDelegate.getSupportDropInChrome());
 
@@ -115,7 +121,8 @@ public class ChromeDragAndDropBrowserDelegateUnitTest {
             error = e;
         }
 
-        assertNotNull("getDragAndDropPermissions should raise assert exception "
+        assertNotNull(
+                "getDragAndDropPermissions should raise assert exception "
                         + "when accessed with drop in Chrome disabled.",
                 error);
     }
@@ -124,26 +131,102 @@ public class ChromeDragAndDropBrowserDelegateUnitTest {
     @Config(sdk = 30)
     public void testDragAndDropBrowserDelegate_createLinkIntent_PostR() {
         mActivityInfo.launchMode = ActivityInfo.LAUNCH_SINGLE_INSTANCE_PER_TASK;
-        Intent intent = mDelegate.createLinkIntent(JUnitTestGURLs.EXAMPLE_URL);
-        assertEquals("The intent flags should match.",
+        Intent intent =
+                mDelegate.createUrlIntent(
+                        JUnitTestGURLs.EXAMPLE_URL.getSpec(), UrlIntentSource.TAB_IN_STRIP);
+        assertEquals(
+                "The intent flags should match.",
                 Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_MULTIPLE_TASK,
                 intent.getFlags());
-        assertEquals("The intent class should be DragAndDropLauncherActivity.",
-                DragAndDropLauncherActivity.class.getName(), intent.getComponent().getClassName());
-        assertTrue("The intent should contain the CATEGORY_BROWSABLE category.",
+        assertEquals(
+                "The intent class should be DragAndDropLauncherActivity.",
+                DragAndDropLauncherActivity.class.getName(),
+                intent.getComponent().getClassName());
+        assertTrue(
+                "The intent should contain the CATEGORY_BROWSABLE category.",
                 intent.getCategories().contains(Intent.CATEGORY_BROWSABLE));
-        assertTrue("preferNew extra should be true.",
+        assertTrue(
+                "preferNew extra should be true.",
                 intent.getBooleanExtra(IntentHandler.EXTRA_PREFER_NEW, false));
-        assertEquals("The intent should contain Uri data.", Uri.parse(JUnitTestGURLs.EXAMPLE_URL),
+        assertEquals(
+                "The intent should contain Uri data.",
+                Uri.parse(JUnitTestGURLs.EXAMPLE_URL.getSpec()),
                 intent.getData());
-        assertFalse("The intent should not contain the trusted application extra.",
+        assertFalse(
+                "The intent should not contain the trusted application extra.",
                 intent.hasExtra(IntentUtils.TRUSTED_APPLICATION_CODE_EXTRA));
+        assertEquals(
+                "The UrlIntentSource extra should match.",
+                UrlIntentSource.TAB_IN_STRIP,
+                intent.getIntExtra(IntentHandler.EXTRA_URL_DRAG_SOURCE, UrlIntentSource.UNKNOWN));
     }
 
     @Test
     @Config(sdk = 29)
     public void testDragAndDropBrowserDelegate_createLinkIntent_PreR() {
-        Intent intent = mDelegate.createLinkIntent(JUnitTestGURLs.EXAMPLE_URL);
+        Intent intent =
+                mDelegate.createUrlIntent(
+                        JUnitTestGURLs.EXAMPLE_URL.getSpec(), UrlIntentSource.LINK);
         assertNull("The intent should be null on R- versions.", intent);
+    }
+
+    @Test
+    @Config(sdk = 30)
+    public void testBuildClipData() {
+        mActivityInfo.launchMode = ActivityInfo.LAUNCH_SINGLE_INSTANCE_PER_TASK;
+        PriceTrackingFeatures.setPriceTrackingEnabledForTesting(false);
+        Profile profile = mock(Profile.class);
+        Tab tab = MockTab.createAndInitialize(1, profile);
+        ChromeDropDataAndroid dropData = new ChromeDropDataAndroid.Builder().withTab(tab).build();
+        ClipData data = mDelegate.buildClipData(dropData);
+        assertEquals(
+                "The browser clip data is not as expected",
+                dropData.buildTabClipDataText(),
+                data.getItemAt(0).getText());
+        assertNotNull("The clip data should have intent set.", data.getItemAt(0).getIntent());
+        assertTrue(
+                "The clip data should contain chrome/tab mimetype.",
+                data.getDescription().hasMimeType(MimeTypeUtils.CHROME_MIMETYPE_TAB));
+        assertTrue(
+                "The clip data should contain chrome/link mimetype.",
+                data.getDescription().hasMimeType(MimeTypeUtils.CHROME_MIMETYPE_LINK));
+        assertTrue(
+                "The clip data should contain text/plain mimetype.",
+                data.getDescription().hasMimeType(ClipDescription.MIMETYPE_TEXT_PLAIN));
+        assertTrue(
+                "The clip data should contain text/vnd.android.intent mimetype.",
+                data.getDescription().hasMimeType(ClipDescription.MIMETYPE_TEXT_INTENT));
+    }
+
+    @Test
+    @Config(sdk = 30)
+    public void testBuildClipData_DisableDragToOpenNewInstance() {
+        mActivityInfo.launchMode = ActivityInfo.LAUNCH_SINGLE_INSTANCE_PER_TASK;
+        TabUiFeatureUtilities.DISABLE_DRAG_TO_NEW_INSTANCE_DD.setForTesting(true);
+        mDelegate = new ChromeDragAndDropBrowserDelegate(mActivity);
+
+        PriceTrackingFeatures.setPriceTrackingEnabledForTesting(false);
+        Profile profile = mock(Profile.class);
+        Tab tab = MockTab.createAndInitialize(1, profile);
+        ChromeDropDataAndroid dropData = new ChromeDropDataAndroid.Builder().withTab(tab).build();
+        ClipData data = mDelegate.buildClipData(dropData);
+        assertEquals(
+                "The browser clip data is not as expected",
+                dropData.buildTabClipDataText(),
+                data.getItemAt(0).getText());
+        assertNull("The clip data should not have intent set.", data.getItemAt(0).getIntent());
+        assertTrue(
+                "The clip data should contain chrome/tab mimetype.",
+                data.getDescription().hasMimeType(MimeTypeUtils.CHROME_MIMETYPE_TAB));
+
+        assertFalse(
+                "The clip data should not contain chrome/link mimetype.",
+                data.getDescription().hasMimeType(MimeTypeUtils.CHROME_MIMETYPE_LINK));
+        assertFalse(
+                "The clip data should not contain text/plain mimetype.",
+                data.getDescription().hasMimeType(ClipDescription.MIMETYPE_TEXT_PLAIN));
+        assertFalse(
+                "The clip data should not contain text/vnd.android.intent mimetype.",
+                data.getDescription().hasMimeType(ClipDescription.MIMETYPE_TEXT_INTENT));
     }
 }

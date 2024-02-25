@@ -38,7 +38,7 @@ class TeleportWarningDialog : public views::DialogDelegateView {
  private:
   void InitDialog();
 
-  raw_ptr<views::Checkbox, ExperimentalAsh> never_show_again_checkbox_;
+  raw_ptr<views::Checkbox> never_show_again_checkbox_;
 
   OnAcceptCallback on_accept_;
 };

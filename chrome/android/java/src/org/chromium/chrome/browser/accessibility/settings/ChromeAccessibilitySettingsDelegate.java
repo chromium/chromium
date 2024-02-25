@@ -4,33 +4,27 @@
 
 package org.chromium.chrome.browser.accessibility.settings;
 
+import android.content.Context;
+import android.os.Bundle;
+
 import androidx.preference.PreferenceFragmentCompat;
 
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.image_descriptions.ImageDescriptionsController;
-import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.Pref;
-import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
 import org.chromium.chrome.browser.profiles.Profile;
-import org.chromium.chrome.browser.util.ChromeAccessibilityUtil;
+import org.chromium.chrome.browser.settings.SettingsLauncherImpl;
 import org.chromium.components.browser_ui.accessibility.AccessibilitySettingsDelegate;
 import org.chromium.components.browser_ui.accessibility.PageZoomUtils;
+import org.chromium.components.browser_ui.settings.SettingsLauncher;
+import org.chromium.components.browser_ui.site_settings.AllSiteSettings;
+import org.chromium.components.browser_ui.site_settings.SingleCategorySettings;
+import org.chromium.components.browser_ui.site_settings.SiteSettingsCategory;
 import org.chromium.components.user_prefs.UserPrefs;
 import org.chromium.content_public.browser.BrowserContextHandle;
 
 /** The Chrome implementation of AccessibilitySettingsDelegate. */
 public class ChromeAccessibilitySettingsDelegate implements AccessibilitySettingsDelegate {
-    private static class AccessibilityTabSwitcherDelegate implements BooleanPreferenceDelegate {
-        @Override
-        public boolean isEnabled() {
-            return SharedPreferencesManager.getInstance().readBoolean(
-                    ChromePreferenceKeys.ACCESSIBILITY_TAB_SWITCHER, true);
-        }
-
-        @Override
-        public void setEnabled(boolean value) {}
-    }
-
     private static class ReaderForAccessibilityDelegate implements BooleanPreferenceDelegate {
         private final Profile mProfile;
 
@@ -46,6 +40,27 @@ public class ChromeAccessibilitySettingsDelegate implements AccessibilitySetting
         @Override
         public void setEnabled(boolean value) {
             UserPrefs.get(mProfile).setBoolean(Pref.READER_FOR_ACCESSIBILITY, (Boolean) value);
+        }
+    }
+
+    private static class TextSizeContrastAccessibilityDelegate
+            implements IntegerPreferenceDelegate {
+        private final BrowserContextHandle mBrowserContextHandle;
+
+        public TextSizeContrastAccessibilityDelegate(BrowserContextHandle mBrowserContextHandle) {
+            this.mBrowserContextHandle = mBrowserContextHandle;
+        }
+
+        @Override
+        public int getValue() {
+            return UserPrefs.get(mBrowserContextHandle)
+                    .getInteger(Pref.ACCESSIBILITY_TEXT_SIZE_CONTRAST_FACTOR);
+        }
+
+        @Override
+        public void setValue(int value) {
+            UserPrefs.get(mBrowserContextHandle)
+                    .setInteger(Pref.ACCESSIBILITY_TEXT_SIZE_CONTRAST_FACTOR, value);
         }
     }
 
@@ -65,16 +80,13 @@ public class ChromeAccessibilitySettingsDelegate implements AccessibilitySetting
     }
 
     @Override
-    public BooleanPreferenceDelegate getAccessibilityTabSwitcherDelegate() {
-        if (!ChromeAccessibilityUtil.get().isAccessibilityEnabled()) {
-            return null;
-        }
-        return new AccessibilityTabSwitcherDelegate();
+    public BooleanPreferenceDelegate getReaderForAccessibilityDelegate() {
+        return new ReaderForAccessibilityDelegate(mProfile);
     }
 
     @Override
-    public BooleanPreferenceDelegate getReaderForAccessibilityDelegate() {
-        return new ReaderForAccessibilityDelegate(mProfile);
+    public IntegerPreferenceDelegate getTextSizeContrastAccessibilityDelegate() {
+        return new TextSizeContrastAccessibilityDelegate(getBrowserContextHandle());
     }
 
     @Override
@@ -87,5 +99,15 @@ public class ChromeAccessibilitySettingsDelegate implements AccessibilitySetting
     @Override
     public boolean showPageZoomSettingsUI() {
         return PageZoomUtils.shouldShowSettingsUI();
+    }
+
+    @Override
+    public void launchSiteSettingsZoomActivity(Context context) {
+        Bundle initialArguments = new Bundle();
+        initialArguments.putString(
+                SingleCategorySettings.EXTRA_CATEGORY,
+                SiteSettingsCategory.preferenceKey(SiteSettingsCategory.Type.ZOOM));
+        SettingsLauncher settingsLauncher = new SettingsLauncherImpl();
+        settingsLauncher.launchSettingsActivity(context, AllSiteSettings.class, initialArguments);
     }
 }

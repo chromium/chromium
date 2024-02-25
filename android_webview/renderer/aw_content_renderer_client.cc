@@ -5,6 +5,7 @@
 #include "android_webview/renderer/aw_content_renderer_client.h"
 
 #include <memory>
+#include <string_view>
 #include <vector>
 
 #include "android_webview/common/aw_switches.h"
@@ -43,6 +44,7 @@
 #include "third_party/blink/public/platform/web_url.h"
 #include "third_party/blink/public/platform/web_url_request.h"
 #include "third_party/blink/public/web/web_frame.h"
+#include "third_party/blink/public/web/web_local_frame.h"
 #include "third_party/blink/public/web/web_navigation_type.h"
 #include "third_party/blink/public/web/web_security_policy.h"
 #include "url/gurl.h"
@@ -159,12 +161,13 @@ void AwContentRendererClient::RenderFrameCreated(
   if (main_frame && main_frame != render_frame) {
     // Avoid any race conditions from having the browser's UI thread tell the IO
     // thread that a subframe was created.
-    GetRenderMessageFilter()->SubFrameCreated(main_frame->GetRoutingID(),
-                                              render_frame->GetRoutingID());
+    GetRenderMessageFilter()->SubFrameCreated(
+        main_frame->GetWebFrame()->GetLocalFrameToken(),
+        render_frame->GetWebFrame()->GetLocalFrameToken());
   }
 
 #if BUILDFLAG(ENABLE_SPELLCHECK)
-  new SpellCheckProvider(render_frame, spellcheck_.get(), this);
+  new SpellCheckProvider(render_frame, spellcheck_.get());
 #endif
 
   // Owned by |render_frame|.
@@ -206,9 +209,9 @@ void AwContentRendererClient::PrepareErrorPage(
   android_system_error_page::PopulateErrorPageHtml(error, error_html);
 }
 
-uint64_t AwContentRendererClient::VisitedLinkHash(const char* canonical_url,
-                                                  size_t length) {
-  return visited_link_reader_->ComputeURLFingerprint(canonical_url, length);
+uint64_t AwContentRendererClient::VisitedLinkHash(
+    std::string_view canonical_url) {
+  return visited_link_reader_->ComputeURLFingerprint(canonical_url);
 }
 
 bool AwContentRendererClient::IsLinkVisited(uint64_t link_hash) {
@@ -253,8 +256,8 @@ void AwContentRendererClient::GetInterface(
 
 mojom::RenderMessageFilter* AwContentRendererClient::GetRenderMessageFilter() {
   if (!render_message_filter_) {
-    RenderThread::Get()->GetChannel()->GetRemoteAssociatedInterface(
-        &render_message_filter_);
+    browser_interface_broker_->GetInterface(
+        render_message_filter_.BindNewPipeAndPassReceiver());
   }
   return render_message_filter_.get();
 }

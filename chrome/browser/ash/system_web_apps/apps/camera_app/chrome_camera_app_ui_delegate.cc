@@ -7,7 +7,6 @@
 #include <vector>
 
 #include "ash/constants/ash_features.h"
-#include "ash/public/cpp/tablet_mode.h"
 #include "ash/webui/camera_app_ui/url_constants.h"
 #include "ash/webui/settings/public/constants/routes.mojom.h"
 #include "base/feature_list.h"
@@ -36,6 +35,7 @@
 #include "chrome/browser/ui/ash/system_web_apps/system_web_app_ui_utils.h"
 #include "chrome/browser/ui/chrome_pages.h"
 #include "chrome/browser/ui/settings_window_manager_chromeos.h"
+#include "chrome/browser/ui/webui/ash/internet_config_dialog.h"
 #include "chrome/browser/web_applications/web_app_id_constants.h"
 #include "chrome/browser/web_applications/web_app_launch_queue.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
@@ -56,6 +56,8 @@
 #include "url/gurl.h"
 
 namespace {
+
+using SecurityType = chromeos::network_config::mojom::SecurityType;
 
 std::string DeviceTypeToString(chromeos::DeviceType device_type) {
   switch (device_type) {
@@ -89,24 +91,16 @@ void ChromeCameraAppUIDelegate::CameraAppDialog::ShowIntent(
 ChromeCameraAppUIDelegate::CameraAppDialog::CameraAppDialog(
     const std::string& url)
     : ash::SystemWebDialogDelegate(GURL(url),
-                                   /*title=*/std::u16string()) {}
+                                   /*title=*/std::u16string()) {
+  set_can_maximize(true);
+  // For customizing the title bar.
+  set_dialog_frame_kind(ui::WebDialogDelegate::FrameKind::kNonClient);
+  set_dialog_modal_type(ui::MODAL_TYPE_WINDOW);
+  set_dialog_size(
+      gfx::Size(kChromeCameraAppDefaultWidth, kChromeCameraAppDefaultHeight));
+}
 
 ChromeCameraAppUIDelegate::CameraAppDialog::~CameraAppDialog() = default;
-
-ui::ModalType ChromeCameraAppUIDelegate::CameraAppDialog::GetDialogModalType()
-    const {
-  return ui::MODAL_TYPE_WINDOW;
-}
-
-bool ChromeCameraAppUIDelegate::CameraAppDialog::CanMaximizeDialog() const {
-  return !ash::TabletMode::Get()->InTabletMode();
-}
-
-ui::WebDialogDelegate::FrameKind
-ChromeCameraAppUIDelegate::CameraAppDialog::GetWebDialogFrameKind() const {
-  // For customizing the title bar.
-  return ui::WebDialogDelegate::FrameKind::kNonClient;
-}
 
 void ChromeCameraAppUIDelegate::CameraAppDialog::AdjustWidgetInitParams(
     views::Widget::InitParams* params) {
@@ -121,11 +115,6 @@ void ChromeCameraAppUIDelegate::CameraAppDialog::AdjustWidgetInitParams(
       chromeos::kFrameInactiveColorKey, grey_900);
 }
 
-void ChromeCameraAppUIDelegate::CameraAppDialog::GetDialogSize(
-    gfx::Size* size) const {
-  size->SetSize(kChromeCameraAppDefaultWidth, kChromeCameraAppDefaultHeight);
-}
-
 void ChromeCameraAppUIDelegate::CameraAppDialog::RequestMediaAccessPermission(
     content::WebContents* web_contents,
     const content::MediaStreamRequest& request,
@@ -136,7 +125,7 @@ void ChromeCameraAppUIDelegate::CameraAppDialog::RequestMediaAccessPermission(
 
 bool ChromeCameraAppUIDelegate::CameraAppDialog::CheckMediaAccessPermission(
     content::RenderFrameHost* render_frame_host,
-    const GURL& security_origin,
+    const url::Origin& security_origin,
     blink::mojom::MediaStreamType type) {
   return MediaCaptureDevicesDispatcher::GetInstance()
       ->CheckMediaAccessPermission(render_frame_host, security_origin, type);
@@ -151,13 +140,13 @@ void ChromeCameraAppUIDelegate::FileMonitor::Monitor(
     base::OnceCallback<void(FileMonitorResult)> callback) {
   // Cancel the previous monitor callback if it hasn't been notified.
   if (!callback_.is_null()) {
-    std::move(callback_).Run(FileMonitorResult::CANCELED);
+    std::move(callback_).Run(FileMonitorResult::kCanceled);
   }
 
   // There is chance that the file is deleted during the task is scheduled and
   // executed. Therefore, check here before watching it.
   if (!base::PathExists(file_path)) {
-    std::move(callback).Run(FileMonitorResult::DELETED);
+    std::move(callback).Run(FileMonitorResult::kDeleted);
     return;
   }
 
@@ -168,7 +157,7 @@ void ChromeCameraAppUIDelegate::FileMonitor::Monitor(
           base::BindRepeating(
               &ChromeCameraAppUIDelegate::FileMonitor::OnFileDeletion,
               base::Unretained(this)))) {
-    std::move(callback_).Run(FileMonitorResult::ERROR);
+    std::move(callback_).Run(FileMonitorResult::kError);
   }
 }
 
@@ -180,10 +169,10 @@ void ChromeCameraAppUIDelegate::FileMonitor::OnFileDeletion(
   }
 
   if (error) {
-    std::move(callback_).Run(FileMonitorResult::ERROR);
+    std::move(callback_).Run(FileMonitorResult::kError);
     return;
   }
-  std::move(callback_).Run(FileMonitorResult::DELETED);
+  std::move(callback_).Run(FileMonitorResult::kDeleted);
 }
 
 ChromeCameraAppUIDelegate::StorageMonitor::StorageMonitor(
@@ -229,13 +218,14 @@ ChromeCameraAppUIDelegate::StorageMonitor::GetWeakPtr() {
 ChromeCameraAppUIDelegate::StorageMonitorStatus
 ChromeCameraAppUIDelegate::StorageMonitor::GetCurrentStatus() {
   auto current_storage = base::SysInfo::AmountOfFreeDiskSpace(monitor_path_);
-  auto status = StorageMonitorStatus::NORMAL;
+  auto status = StorageMonitorStatus::kNormal;
   if (current_storage < 0) {
-    status = StorageMonitorStatus::ERROR;
+    LOG(ERROR) << "Failed to get the amount of free disk space.";
+    status = StorageMonitorStatus::kError;
   } else if (current_storage < kStorageCriticallyLowThreshold) {
-    status = StorageMonitorStatus::CRITICALLY_LOW;
+    status = StorageMonitorStatus::kCriticallyLow;
   } else if (current_storage < kStorageLowThreshold) {
-    status = StorageMonitorStatus::LOW;
+    status = StorageMonitorStatus::kLow;
   }
   return status;
 }
@@ -301,7 +291,7 @@ void ChromeCameraAppUIDelegate::SetLaunchDirectory() {
     return;
   }
 
-  absl::optional<web_app::AppId> app_id =
+  std::optional<webapps::AppId> app_id =
       swa_manager->GetAppIdForSystemApp(ash::SystemWebAppType::CAMERA);
   if (!app_id.has_value()) {
     return;
@@ -325,13 +315,17 @@ void ChromeCameraAppUIDelegate::SetLaunchDirectory() {
 void ChromeCameraAppUIDelegate::PopulateLoadTimeData(
     content::WebUIDataSource* source) {
   // Add strings that can be pulled in.
+  //
+  // Please also update the mocked value in _handle_strings_m_js in
+  // ash/webui/camera_app_ui/resources/utils/cca/commands/dev.py when adding or
+  // removing keys here.
   source->AddString("board_name", base::SysInfo::GetLsbReleaseBoard());
   source->AddString("device_type",
                     DeviceTypeToString(chromeos::GetDeviceType()));
-  source->AddBoolean("timeLapse", base::FeatureList::IsEnabled(
-                                      ash::features::kCameraAppTimeLapse));
-  source->AddBoolean("jelly",
-                     base::FeatureList::IsEnabled(chromeos::features::kJelly));
+  source->AddBoolean("auto_qr", base::FeatureList::IsEnabled(
+                                    ash::features::kCameraAppAutoQRDetection));
+  source->AddBoolean("digital_zoom", base::FeatureList::IsEnabled(
+                                         ash::features::kCameraAppDigitalZoom));
 
   const PrefService* prefs = Profile::FromWebUI(web_ui_)->GetPrefs();
   source->AddBoolean("video_capture_disallowed",
@@ -348,6 +342,7 @@ void ChromeCameraAppUIDelegate::PopulateLoadTimeData(
 
   source->AddString("browser_version",
                     std::string(version_info::GetVersionNumber()));
+  source->AddString("os_version", base::SysInfo::OperatingSystemVersion());
 }
 
 bool ChromeCameraAppUIDelegate::IsMetricsAndCrashReportingEnabled() {
@@ -409,8 +404,8 @@ std::string ChromeCameraAppUIDelegate::GetFilePathInArcByName(
 
 void ChromeCameraAppUIDelegate::OpenDevToolsWindow(
     content::WebContents* web_contents) {
-  DevToolsWindow::OpenDevToolsWindow(web_contents,
-                                     DevToolsToggleAction::NoOp());
+  DevToolsWindow::OpenDevToolsWindow(web_contents, DevToolsToggleAction::NoOp(),
+                                     DevToolsOpenedByAction::kUnknown);
 }
 
 void ChromeCameraAppUIDelegate::MonitorFileDeletion(
@@ -419,11 +414,11 @@ void ChromeCameraAppUIDelegate::MonitorFileDeletion(
   auto file_path = GetFilePathByName(name);
   if (file_path.empty()) {
     LOG(ERROR) << "Unexpected file name: " << name;
-    std::move(callback).Run(FileMonitorResult::ERROR);
+    std::move(callback).Run(FileMonitorResult::kError);
     return;
   }
   if (!file_monitor_) {
-    std::move(callback).Run(FileMonitorResult::ERROR);
+    std::move(callback).Run(FileMonitorResult::kError);
     return;
   }
 
@@ -450,7 +445,9 @@ void ChromeCameraAppUIDelegate::MaybeTriggerSurvey() {
 void ChromeCameraAppUIDelegate::StartStorageMonitor(
     base::RepeatingCallback<void(StorageMonitorStatus)> monitor_callback) {
   if (!storage_monitor_) {
-    monitor_callback.Run(StorageMonitorStatus::ERROR);
+    LOG(ERROR) << "Failed to start monitoring storage due to missing monitor "
+                  "instance.";
+    monitor_callback.Run(StorageMonitorStatus::kError);
     return;
   }
 
@@ -535,3 +532,44 @@ ChromeCameraAppUIDelegate::GetMediaDeviceSaltService(
   return MediaDeviceSaltServiceFactory::GetInstance()->GetForBrowserContext(
       context);
 }
+
+void ChromeCameraAppUIDelegate::OpenWifiDialog(WifiConfig wifi_config) {
+  auto config = chromeos::network_config::mojom::WiFiConfigProperties::New();
+  config->ssid = wifi_config.ssid;
+  if (wifi_config.security.empty()) {
+    config->security = SecurityType::kNone;
+  } else if (wifi_config.security == onc::wifi::kWPA_PSK) {
+    config->security = SecurityType::kWpaPsk;
+  } else if (wifi_config.security == onc::wifi::kWEP_PSK) {
+    config->security = SecurityType::kWepPsk;
+  } else if (wifi_config.security == onc::wifi::kWPA_EAP) {
+    config->security = SecurityType::kWpaEap;
+  } else {
+    NOTREACHED() << "Unexpected network security type: "
+                 << wifi_config.security;
+  }
+  config->passphrase = wifi_config.password;
+  if (config->security == SecurityType::kWpaEap) {
+    auto eap_config =
+        chromeos::network_config::mojom::EAPConfigProperties::New();
+    eap_config->outer = wifi_config.eap_method;
+    eap_config->inner = wifi_config.eap_phase2_method;
+    eap_config->identity = wifi_config.eap_identity;
+    eap_config->anonymous_identity = wifi_config.eap_anonymous_identity;
+    eap_config->password = wifi_config.password;
+    config->eap = std::move(eap_config);
+  }
+  ash::InternetConfigDialog::ShowDialogForNetworkWithWifiConfig(
+      std::move(config));
+}
+
+ash::CameraAppUIDelegate::WifiConfig::WifiConfig() = default;
+
+ash::CameraAppUIDelegate::WifiConfig::WifiConfig(
+    const ash::CameraAppUIDelegate::WifiConfig&) = default;
+
+ash::CameraAppUIDelegate::WifiConfig&
+ash::CameraAppUIDelegate::WifiConfig::operator=(
+    const ash::CameraAppUIDelegate::WifiConfig&) = default;
+
+ash::CameraAppUIDelegate::WifiConfig::~WifiConfig() = default;

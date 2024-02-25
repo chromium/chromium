@@ -1,4 +1,5 @@
 This is a testharness.js-based test.
-FAIL HTMLMediaElement.srcObject blob assert_unreached: TypeError: Failed to set the 'srcObject' property on 'HTMLMediaElement': The provided value is not of type '(MediaSourceHandle or MediaStream)'. Reached unreachable code
+[FAIL] HTMLMediaElement.srcObject blob
+  assert_unreached: TypeError: Failed to set the 'srcObject' property on 'HTMLMediaElement': The provided value is not of type '(MediaSourceHandle or MediaStream)'. Reached unreachable code
 Harness: the test ran to completion.
 

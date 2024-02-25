@@ -15,7 +15,11 @@
 WebSocketHandshakeThrottleProviderImpl::WebSocketHandshakeThrottleProviderImpl(
     blink::ThreadSafeBrowserInterfaceBrokerProxy* broker) {
   DETACH_FROM_THREAD(thread_checker_);
-  broker->GetInterface(safe_browsing_remote_.InitWithNewPipeAndPassReceiver());
+  broker->GetInterface(pending_safe_browsing_.InitWithNewPipeAndPassReceiver());
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+  broker->GetInterface(
+      pending_extension_web_request_reporter_.InitWithNewPipeAndPassReceiver());
+#endif
 }
 
 WebSocketHandshakeThrottleProviderImpl::
@@ -28,27 +32,51 @@ WebSocketHandshakeThrottleProviderImpl::WebSocketHandshakeThrottleProviderImpl(
   DETACH_FROM_THREAD(thread_checker_);
   DCHECK(other.safe_browsing_);
   other.safe_browsing_->Clone(
-      safe_browsing_remote_.InitWithNewPipeAndPassReceiver());
+      pending_safe_browsing_.InitWithNewPipeAndPassReceiver());
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+  DCHECK(other.extension_web_request_reporter_);
+  other.extension_web_request_reporter_->Clone(
+      pending_extension_web_request_reporter_.InitWithNewPipeAndPassReceiver());
+#endif
 }
 
 std::unique_ptr<blink::WebSocketHandshakeThrottleProvider>
 WebSocketHandshakeThrottleProviderImpl::Clone(
     scoped_refptr<base::SingleThreadTaskRunner> task_runner) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-  if (safe_browsing_remote_)
-    safe_browsing_.Bind(std::move(safe_browsing_remote_),
-                        std::move(task_runner));
+  if (pending_safe_browsing_) {
+    safe_browsing_.Bind(std::move(pending_safe_browsing_), task_runner);
+  }
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+  if (pending_extension_web_request_reporter_) {
+    extension_web_request_reporter_.Bind(
+        std::move(pending_extension_web_request_reporter_), task_runner);
+  }
+#endif
   return base::WrapUnique(new WebSocketHandshakeThrottleProviderImpl(*this));
 }
 
 std::unique_ptr<blink::WebSocketHandshakeThrottle>
 WebSocketHandshakeThrottleProviderImpl::CreateThrottle(
-    int render_frame_id,
+    base::optional_ref<const blink::LocalFrameToken> local_frame_token,
     scoped_refptr<base::SingleThreadTaskRunner> task_runner) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-  if (safe_browsing_remote_)
-    safe_browsing_.Bind(std::move(safe_browsing_remote_),
+  if (pending_safe_browsing_) {
+    safe_browsing_.Bind(std::move(pending_safe_browsing_),
                         std::move(task_runner));
-  return std::make_unique<safe_browsing::WebSocketSBHandshakeThrottle>(
-      safe_browsing_.get(), render_frame_id);
+  }
+
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+  if (pending_extension_web_request_reporter_) {
+    extension_web_request_reporter_.Bind(
+        std::move(pending_extension_web_request_reporter_));
+  }
+  auto throttle = std::make_unique<safe_browsing::WebSocketSBHandshakeThrottle>(
+      safe_browsing_.get(), local_frame_token,
+      extension_web_request_reporter_.get());
+#else
+  auto throttle = std::make_unique<safe_browsing::WebSocketSBHandshakeThrottle>(
+      safe_browsing_.get(), local_frame_token);
+#endif
+  return throttle;
 }

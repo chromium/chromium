@@ -24,7 +24,8 @@ class AutocompleteControllerAndroid : public AutocompleteController::Observer {
       JNIEnv* env,
       const base::android::JavaParamRef<jobject>& jcontroller,
       Profile* profile,
-      std::unique_ptr<ChromeAutocompleteProviderClient> client);
+      std::unique_ptr<ChromeAutocompleteProviderClient> client,
+      bool is_low_memory_device);
 
   AutocompleteControllerAndroid(const AutocompleteControllerAndroid&) = delete;
   AutocompleteControllerAndroid& operator=(
@@ -46,8 +47,7 @@ class AutocompleteControllerAndroid : public AutocompleteController::Observer {
                      jint j_page_classification);
   base::android::ScopedJavaLocalRef<jobject> Classify(
       JNIEnv* env,
-      const base::android::JavaParamRef<jstring>& j_text,
-      bool focused_from_fakebox);
+      const base::android::JavaParamRef<jstring>& j_text);
   void OnOmniboxFocused(
       JNIEnv* env,
       const base::android::JavaParamRef<jstring>& j_omnibox_text,
@@ -69,26 +69,29 @@ class AutocompleteControllerAndroid : public AutocompleteController::Observer {
       const base::android::JavaParamRef<jobject>& j_web_contents);
   jboolean OnSuggestionTouchDown(
       JNIEnv* env,
-      jint match_index,
+      uintptr_t match_ptr,
+      int match_index,
       const base::android::JavaParamRef<jobject>& j_web_contents);
   void DeleteMatch(JNIEnv* env, uintptr_t match_ptr);
   void DeleteMatchElement(JNIEnv* env, uintptr_t match_ptr, jint element_index);
   base::android::ScopedJavaLocalRef<jobject>
-  UpdateMatchDestinationURLWithAdditionalAssistedQueryStats(
+  UpdateMatchDestinationURLWithAdditionalSearchboxStats(
       JNIEnv* env,
       uintptr_t match_ptr,
-      jlong elapsed_time_since_input_change,
-      const base::android::JavaParamRef<jstring>& jnew_query_text,
-      const base::android::JavaParamRef<jobjectArray>& jnew_query_params);
+      jlong elapsed_time_since_input_change);
   base::android::ScopedJavaLocalRef<jobject> GetMatchingTabForSuggestion(
       JNIEnv* env,
-      jint match_index);
+      uintptr_t match_ptr);
 
   // Pass detected voice matches down to VoiceSuggestionsProvider.
   void SetVoiceMatches(
       JNIEnv* env,
       const base::android::JavaParamRef<jobjectArray>& j_voice_matches,
       const base::android::JavaParamRef<jfloatArray>& j_confidence_scores);
+
+  void CreateNavigationObserver(JNIEnv* env,
+                                uintptr_t navigation_handle_ptr,
+                                uintptr_t match_ptr);
 
   base::android::ScopedJavaLocalRef<jobject> GetJavaObject() const;
 
@@ -132,11 +135,6 @@ class AutocompleteControllerAndroid : public AutocompleteController::Observer {
   // C++ AutocompleteControllerAndroid and Java AutocompleteController objects.
   // Guaranteed to be non-null.
   const base::android::ScopedJavaGlobalRef<jobject> java_controller_;
-
-  // Associated AutocompleteProviderClient.
-  // Guaranteed to be non-null.
-  const raw_ptr<ChromeAutocompleteProviderClient, DanglingUntriaged>
-      provider_client_;
 
   // AutocompleteController associated with this client. As this is directly
   // associated with the |provider_client_| and indirectly with |profile_|

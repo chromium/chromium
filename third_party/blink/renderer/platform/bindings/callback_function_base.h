@@ -13,12 +13,16 @@
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 
 namespace blink {
+namespace scheduler {
+class TaskAttributionInfo;
+}
 
 // CallbackFunctionBase is the common base class of all the callback function
 // classes. Most importantly this class provides a way of type dispatching (e.g.
 // overload resolutions, SFINAE technique, etc.) so that it's possible to
 // distinguish callback functions from anything else. Also it provides a common
 // implementation of callback functions.
+//
 // This base class does not provide support for task attribution, so the
 // callback that require such a functionality should inherit from
 // CallbackFunctionWithTaskAttributionBase class.
@@ -39,12 +43,7 @@ class PLATFORM_EXPORT CallbackFunctionBase
   }
 
   v8::Isolate* GetIsolate() const {
-    if (!cached_data_) {
-      // It's generally faster to get Isolate from the ScriptState object but
-      // as long as we don't have one load the Isolate from the callback.
-      return v8::Object::GetIsolate(callback_function_);
-    }
-    return cached_data_->incumbent_script_state_->GetIsolate();
+    return incumbent_script_state_->GetIsolate();
   }
 
   // Returns the ScriptState of the relevant realm of the callback object.
@@ -54,9 +53,8 @@ class PLATFORM_EXPORT CallbackFunctionBase
   // |CallbackRelevantScriptStateOrReportError| or
   // |CallbackRelevantScriptStateOrThrowException| must be used instead.
   ScriptState* CallbackRelevantScriptState() const {
-    ScriptState* script_state = CallbackRelevantScriptStateImpl();
-    DCHECK(script_state);
-    return script_state;
+    DCHECK(callback_relevant_script_state_);
+    return callback_relevant_script_state_;
   }
 
   // Returns the ScriptState of the relevant realm of the callback object iff
@@ -64,23 +62,18 @@ class PLATFORM_EXPORT CallbackFunctionBase
   // returns nullptr.
   ScriptState* CallbackRelevantScriptStateOrReportError(
       const char* interface_name,
-      const char* operation_name);
+      const char* operation_name) const;
 
   // Returns the ScriptState of the relevant realm of the callback object iff
   // the callback is the same origin-domain. Otherwise, throws an exception and
   // returns nullptr.
   ScriptState* CallbackRelevantScriptStateOrThrowException(
       const char* interface_name,
-      const char* operation_name);
+      const char* operation_name) const;
 
-  ScriptState* IncumbentScriptState() const {
-    if (!cached_data_) {
-      MakeCachedData();
-    }
-    return cached_data_->incumbent_script_state_;
-  }
+  ScriptState* IncumbentScriptState() const { return incumbent_script_state_; }
 
-  DOMWrapperWorld& GetWorld() const { return IncumbentScriptState()->World(); }
+  DOMWrapperWorld& GetWorld() const { return incumbent_script_state_->World(); }
 
   // Returns true if the ES function has a [[Construct]] internal method.
   bool IsConstructor() const { return CallbackFunction()->IsConstructor(); }
@@ -91,7 +84,7 @@ class PLATFORM_EXPORT CallbackFunctionBase
   //
   // NOTE: Do not abuse this function.  Let |Invoke| method defined in a
   // subclass do the right thing.  This function is rarely needed.
-  void EvaluateAsPartOfCallback(base::OnceCallback<void()> closure);
+  void EvaluateAsPartOfCallback(base::OnceCallback<void(ScriptState*)> closure);
 
   // Makes the underlying V8 function collectable by V8 Scavenger GC.  Do not
   // use this function unless you really need a hacky performance optimization.
@@ -111,52 +104,19 @@ class PLATFORM_EXPORT CallbackFunctionBase
   }
 
  private:
-  ScriptState* CallbackRelevantScriptStateImpl() const {
-    if (!cached_data_) {
-      MakeCachedData();
-    }
-    return cached_data_->callback_relevant_script_state_;
-  }
-
-  inline void MakeCachedData(ScriptState* callback_relevant_script_state,
-                             ScriptState* incumbent_script_state) const;
-
-  // Computes callback relevant script state and stores it in the cached data.
-  // If the cached data wasn't created in constructor then the incumbent
-  // script state is the same as the relevant script state.
-  void MakeCachedData() const;
-
-  // This object is a container for rarely necessary fields which are needed
-  // only when
-  //  - the callback is actually called,
-  //  - the incumbent script state is different from the relevant script state,
-  //  - task attribution tracking is enabled.
-  class CachedData final : public GarbageCollected<CachedData> {
-   public:
-    CachedData(ScriptState* callback_relevant_script_state,
-               ScriptState* incumbent_script_state)
-        : callback_relevant_script_state_(callback_relevant_script_state),
-          incumbent_script_state_(incumbent_script_state) {}
-
-    void Trace(Visitor* visitor) const;
-
-    // The associated Realm of the callback function type value iff it's the
-    // same origin-domain. Otherwise, nullptr.
-    Member<ScriptState> callback_relevant_script_state_;
-    // The callback context, i.e. the incumbent Realm when an ECMAScript value
-    // is converted to an IDL value.
-    // https://webidl.spec.whatwg.org/#dfn-callback-context
-    Member<ScriptState> incumbent_script_state_;
-  };
-
   // The "callback function type" value.
   // Use v8::Object instead of v8::Function in order to handle
   // [LegacyTreatNonObjectAsNull].
   // TODO(1420942): consider storing either v8::Function or v8::Context in this
   // field in order to simplify lazy creation of CachedData object.
   TraceWrapperV8Reference<v8::Object> callback_function_;
-  // Pointer to lazily computed data which is not needed in most of the cases.
-  mutable Member<CachedData> cached_data_;
+  // The associated Realm of the callback function type value iff it's the same
+  // origin-domain. Otherwise, nullptr.
+  Member<ScriptState> callback_relevant_script_state_;
+  // The callback context, i.e. the incumbent Realm when an ECMAScript value is
+  // converted to an IDL value.
+  // https://webidl.spec.whatwg.org/#dfn-callback-context
+  Member<ScriptState> incumbent_script_state_;
 };
 
 // CallbackFunctionWithTaskAttributionBase is the common base class of callback
@@ -168,20 +128,22 @@ class PLATFORM_EXPORT CallbackFunctionWithTaskAttributionBase
  public:
   ~CallbackFunctionWithTaskAttributionBase() override = default;
 
-  absl::optional<scheduler::TaskAttributionId> GetParentTaskId() const {
-    return parent_task_id_;
+  scheduler::TaskAttributionInfo* GetParentTask() const {
+    return parent_task_.Get();
   }
 
-  void SetParentTaskId(absl::optional<scheduler::TaskAttributionId> task_id) {
-    parent_task_id_ = task_id;
+  void SetParentTask(scheduler::TaskAttributionInfo* task) {
+    parent_task_ = task;
   }
+
+  void Trace(Visitor* visitor) const override;
 
  protected:
   explicit CallbackFunctionWithTaskAttributionBase(v8::Local<v8::Object> object)
       : CallbackFunctionBase(object) {}
 
  private:
-  absl::optional<scheduler::TaskAttributionId> parent_task_id_;
+  Member<scheduler::TaskAttributionInfo> parent_task_;
 };
 
 }  // namespace blink

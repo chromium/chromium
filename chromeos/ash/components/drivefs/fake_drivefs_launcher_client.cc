@@ -4,6 +4,7 @@
 
 #include "chromeos/ash/components/drivefs/fake_drivefs_launcher_client.h"
 
+#include <string_view>
 #include <utility>
 #include <vector>
 
@@ -85,7 +86,7 @@ base::FilePath FakeDriveFsLauncherClient::MaybeMountDriveFs(
   for (const auto& option : mount_options) {
     if (base::StartsWith(option, "datadir=", base::CompareCase::SENSITIVE)) {
       auto datadir =
-          base::FilePath(base::StringPiece(option).substr(strlen("datadir=")));
+          base::FilePath(std::string_view(option).substr(strlen("datadir=")));
       CHECK(datadir.IsAbsolute());
       CHECK(!datadir.ReferencesParent());
       datadir_suffix = datadir.BaseName().value();

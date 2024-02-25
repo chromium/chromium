@@ -1,0 +1,7 @@
+WebView textSize:16.0 style:0 htmlInfo:[{htmlTag="#document"}, {display=""}]
+++View textSize:16.0 style:0 htmlInfo:[{htmlTag="body"}, {display="block"}]
+++++View textSize:16.0 style:0 htmlInfo:[{htmlTag="span"}, {display="inline"}, {id="s1"}]
+++++++TextView text:"Some text" textSize:16.0 style:0 htmlInfo:[{htmlTag=""}, {display=""}]
+++++TextView text:" " textSize:16.0 style:0 htmlInfo:[{htmlTag=""}, {display=""}]
+++++View textSize:16.0 style:0 htmlInfo:[{htmlTag="span"}, {display="inline"}, {id="s2"}]
+++++++TextView text:"3.14159" textSize:16.0 style:0 htmlInfo:[{htmlTag=""}, {display=""}]

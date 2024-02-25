@@ -67,12 +67,13 @@ class LegacyAppCommandWebImplTest : public testing::Test {
     CreateAppCommandRegistry(GetTestScope(), app_id, command_id,
                              command_line_format);
     return MakeAndInitializeComObject<LegacyAppCommandWebImpl>(
-        app_command_web, GetTestScope(), app_id, command_id);
+        app_command_web, GetTestScope(), app_id, command_id,
+        /*send_pings=*/false);
   }
 
   void WaitForUpdateCompletion(
       Microsoft::WRL::ComPtr<LegacyAppCommandWebImpl>& app_command_web) {
-    EXPECT_TRUE(test::WaitFor([&]() {
+    EXPECT_TRUE(test::WaitFor([&] {
       UINT status = 0;
       EXPECT_HRESULT_SUCCEEDED(app_command_web->get_status(&status));
       return status == COMMAND_STATUS_COMPLETE;
@@ -86,14 +87,16 @@ class LegacyAppCommandWebImplTest : public testing::Test {
 TEST_F(LegacyAppCommandWebImplTest, NoApp) {
   Microsoft::WRL::ComPtr<LegacyAppCommandWebImpl> app_command_web;
   EXPECT_HRESULT_FAILED(MakeAndInitializeComObject<LegacyAppCommandWebImpl>(
-      app_command_web, GetTestScope(), kAppId1, kCmdId1));
+      app_command_web, GetTestScope(), kAppId1, kCmdId1,
+      /*send_pings=*/false));
 }
 
 TEST_F(LegacyAppCommandWebImplTest, NoCmd) {
   Microsoft::WRL::ComPtr<LegacyAppCommandWebImpl> app_command_web;
   CreateAppCommandRegistry(GetTestScope(), kAppId1, kCmdId1, kCmdLineValid);
   EXPECT_HRESULT_FAILED(MakeAndInitializeComObject<LegacyAppCommandWebImpl>(
-      app_command_web, GetTestScope(), kAppId1, kCmdId2));
+      app_command_web, GetTestScope(), kAppId1, kCmdId2,
+      /*send_pings=*/false));
 }
 
 TEST_F(LegacyAppCommandWebImplTest, Execute) {
@@ -108,7 +111,7 @@ TEST_F(LegacyAppCommandWebImplTest, Execute) {
   EXPECT_HRESULT_SUCCEEDED(app_command_web->get_status(&status));
   EXPECT_EQ(status, COMMAND_STATUS_INIT);
   DWORD exit_code = 0;
-  EXPECT_HRESULT_FAILED(app_command_web->get_exitCode(&exit_code));
+  EXPECT_EQ(app_command_web->get_exitCode(&exit_code), S_FALSE);
 
   ASSERT_HRESULT_SUCCEEDED(
       app_command_web->execute(base::win::ScopedVariant::kEmptyVariant,
@@ -171,7 +174,7 @@ TEST_F(LegacyAppCommandWebImplTest, FailedToLaunchStatus) {
                                base::win::ScopedVariant::kEmptyVariant));
 
   DWORD exit_code = 0;
-  EXPECT_HRESULT_FAILED(app_command_web->get_exitCode(&exit_code));
+  EXPECT_EQ(app_command_web->get_exitCode(&exit_code), S_FALSE);
 }
 
 TEST_F(LegacyAppCommandWebImplTest, CommandRunningStatus) {

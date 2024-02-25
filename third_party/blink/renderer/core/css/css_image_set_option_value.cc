@@ -5,49 +5,12 @@
 #include "third_party/blink/renderer/core/css/css_image_set_option_value.h"
 
 #include "base/memory/values_equivalent.h"
-#include "third_party/blink/renderer/core/css/css_gradient_value.h"
-#include "third_party/blink/renderer/core/css/css_image_value.h"
+#include "third_party/blink/renderer/core/css/css_image_set_type_value.h"
 #include "third_party/blink/renderer/core/css/css_numeric_literal_value.h"
-#include "third_party/blink/renderer/core/style/style_generated_image.h"
+#include "third_party/blink/renderer/core/css/css_primitive_value.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
 
 namespace blink {
-
-namespace {
-
-const CSSValue* ComputeImage(const CSSValue* value,
-                             const ComputedStyle& style,
-                             const bool allow_visited_style) {
-  if (auto* image = DynamicTo<CSSImageValue>(value)) {
-    return image->ComputedCSSValue();
-  }
-
-  if (!RuntimeEnabledFeatures::CSSImageSetEnabled()) {
-    return value;
-  }
-
-  if (auto* gradient = DynamicTo<cssvalue::CSSGradientValue>(value)) {
-    return gradient->ComputedCSSValue(style, allow_visited_style);
-  }
-
-  NOTREACHED();
-
-  return value;
-}
-
-const CSSPrimitiveValue* ComputeResolution(
-    const CSSPrimitiveValue* resolution) {
-  if (RuntimeEnabledFeatures::CSSImageSetEnabled() && resolution &&
-      resolution->IsResolution()) {
-    return CSSNumericLiteralValue::Create(
-        resolution->ComputeDotsPerPixel(),
-        CSSPrimitiveValue::UnitType::kDotsPerPixel);
-  }
-
-  return resolution;
-}
-
-}  // namespace
 
 CSSImageSetOptionValue::CSSImageSetOptionValue(
     const CSSValue* image,
@@ -67,31 +30,6 @@ CSSImageSetOptionValue::CSSImageSetOptionValue(
 
 CSSImageSetOptionValue::~CSSImageSetOptionValue() = default;
 
-StyleImage* CSSImageSetOptionValue::CacheImage(
-    const Document& document,
-    const FetchParameters::ImageRequestBehavior image_request_behavior,
-    const CrossOriginAttributeValue cross_origin,
-    const CSSToLengthConversionData::ContainerSizes& container_sizes) const {
-  if (auto* image =
-          const_cast<CSSImageValue*>(DynamicTo<CSSImageValue>(image_.Get()))) {
-    return image->CacheImage(document, image_request_behavior, cross_origin,
-                             ComputedResolution());
-  }
-
-  if (!RuntimeEnabledFeatures::CSSImageSetEnabled()) {
-    return nullptr;
-  }
-
-  if (auto* gradient = DynamicTo<cssvalue::CSSGradientValue>(image_.Get())) {
-    return MakeGarbageCollected<StyleGeneratedImage>(*gradient,
-                                                     container_sizes);
-  }
-
-  NOTREACHED();
-
-  return nullptr;
-}
-
 double CSSImageSetOptionValue::ComputedResolution() const {
   return resolution_->ComputeDotsPerPixel();
 }
@@ -99,6 +37,18 @@ double CSSImageSetOptionValue::ComputedResolution() const {
 bool CSSImageSetOptionValue::IsSupported() const {
   return (!type_ || type_->IsSupported()) &&
          (resolution_->ComputeDotsPerPixel() > 0.0);
+}
+
+CSSValue& CSSImageSetOptionValue::GetImage() const {
+  return const_cast<CSSValue&>(*image_);
+}
+
+const CSSPrimitiveValue& CSSImageSetOptionValue::GetResolution() const {
+  return *resolution_;
+}
+
+const CSSImageSetTypeValue* CSSImageSetOptionValue::GetType() const {
+  return type_.Get();
 }
 
 String CSSImageSetOptionValue::CustomCSSText() const {
@@ -119,14 +69,6 @@ bool CSSImageSetOptionValue::Equals(const CSSImageSetOptionValue& other) const {
   return base::ValuesEquivalent(image_, other.image_) &&
          base::ValuesEquivalent(resolution_, other.resolution_) &&
          base::ValuesEquivalent(type_, other.type_);
-}
-
-CSSImageSetOptionValue* CSSImageSetOptionValue::ComputedCSSValue(
-    const ComputedStyle& style,
-    const bool allow_visited_style) const {
-  return MakeGarbageCollected<CSSImageSetOptionValue>(
-      ComputeImage(image_, style, allow_visited_style),
-      ComputeResolution(resolution_), type_);
 }
 
 void CSSImageSetOptionValue::TraceAfterDispatch(blink::Visitor* visitor) const {

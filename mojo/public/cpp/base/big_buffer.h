@@ -6,13 +6,13 @@
 #define MOJO_PUBLIC_CPP_BASE_BIG_BUFFER_H_
 
 #include <cstdint>
+#include <optional>
 #include <vector>
 
 #include "base/component_export.h"
 #include "base/containers/span.h"
 #include "mojo/public/cpp/bindings/struct_traits.h"
 #include "mojo/public/cpp/system/buffer.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace mojo_base {
 
@@ -135,7 +135,7 @@ class COMPONENT_EXPORT(MOJO_BASE) BigBuffer {
   StorageType storage_type_;
   std::unique_ptr<uint8_t[]> bytes_;
   size_t bytes_size_;
-  absl::optional<internal::BigBufferSharedMemoryRegion> shared_memory_;
+  std::optional<internal::BigBufferSharedMemoryRegion> shared_memory_;
 };
 
 // Similar to BigBuffer, but doesn't *necessarily* own the buffer storage.
@@ -191,7 +191,7 @@ class COMPONENT_EXPORT(MOJO_BASE) BigBufferView {
  private:
   BigBuffer::StorageType storage_type_ = BigBuffer::StorageType::kBytes;
   base::span<const uint8_t> bytes_;
-  absl::optional<internal::BigBufferSharedMemoryRegion> shared_memory_;
+  std::optional<internal::BigBufferSharedMemoryRegion> shared_memory_;
 };
 
 }  // namespace mojo_base

@@ -51,11 +51,6 @@ COMPONENT_EXPORT(CERTIFICATE_TRANSPARENCY) base::Time GetLogListTimestamp();
 COMPONENT_EXPORT(CERTIFICATE_TRANSPARENCY)
 std::vector<CTLogInfo> GetKnownLogs();
 
-// Returns the log IDs of all logs that are operated by Google, sorted.  The log
-// ID is the SHA-256 hash of the log's |log_key|.
-COMPONENT_EXPORT(CERTIFICATE_TRANSPARENCY)
-std::vector<std::string> GetLogsOperatedByGoogle();
-
 // Returns pairs of (log ID, disqualification date) for all disqualified logs,
 // where the log ID is the SHA-256 hash of the log's |log_key|).  The list is
 // sorted by log ID.  The disqualification date is expressed as seconds since

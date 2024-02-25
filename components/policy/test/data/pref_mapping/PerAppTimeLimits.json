@@ -1,0 +1,87 @@
+[
+  {
+    "os": [
+      "chromeos_ash"
+    ],
+    "policy_pref_mapping_tests": [
+      {
+        "policies": {
+          "PerAppTimeLimits": {
+            "activity_reporting_enabled": true,
+            "app_limits": [
+              {
+                "app_info": {
+                  "app_id": "com.example.myapp",
+                  "app_type": "ARC"
+                },
+                "daily_limit_mins": 30,
+                "last_updated_millis": "1570223060437",
+                "restriction": "TIME_LIMIT"
+              },
+              {
+                "app_info": {
+                  "app_id": "pjkljhegncpnkpknbcohdijeoejaedia",
+                  "app_type": "EXTENSION"
+                },
+                "daily_limit_mins": 10,
+                "last_updated_millis": "1570223000000",
+                "restriction": "TIME_LIMIT"
+              },
+              {
+                "app_info": {
+                  "app_id": "iniodglblcgmngkgdipeiclkdjjpnlbn",
+                  "app_type": "BUILT-IN"
+                },
+                "last_updated_millis": "1570223000000",
+                "restriction": "BLOCK"
+              }
+            ],
+            "reset_at": {
+              "hour": 6,
+              "minute": 0
+            }
+          }
+        },
+        "prefs": {
+          "child_user.per_app_time_limits.policy": {
+            "value": {
+              "activity_reporting_enabled": true,
+              "app_limits": [
+                {
+                  "app_info": {
+                    "app_id": "com.example.myapp",
+                    "app_type": "ARC"
+                  },
+                  "daily_limit_mins": 30,
+                  "last_updated_millis": "1570223060437",
+                  "restriction": "TIME_LIMIT"
+                },
+                {
+                  "app_info": {
+                    "app_id": "pjkljhegncpnkpknbcohdijeoejaedia",
+                    "app_type": "EXTENSION"
+                  },
+                  "daily_limit_mins": 10,
+                  "last_updated_millis": "1570223000000",
+                  "restriction": "TIME_LIMIT"
+                },
+                {
+                  "app_info": {
+                    "app_id": "iniodglblcgmngkgdipeiclkdjjpnlbn",
+                    "app_type": "BUILT-IN"
+                  },
+                  "last_updated_millis": "1570223000000",
+                  "restriction": "BLOCK"
+                }
+              ],
+              "reset_at": {
+                "hour": 6,
+                "minute": 0
+              }
+            }
+          }
+        }
+      }
+    ]
+  }
+]

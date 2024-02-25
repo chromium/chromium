@@ -1,0 +1,2 @@
+WebView textSize:16.0 style:0 htmlInfo:[{htmlTag="#document"}, {display=""}]
+++ProgressBar textSize:16.0 style:0 htmlInfo:[{htmlTag="div"}, {display="block"}, {aria-valuenow="3"}, {role="progressbar"}]

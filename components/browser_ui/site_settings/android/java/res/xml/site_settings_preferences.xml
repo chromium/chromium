@@ -1,14 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-Copyright 2015 The Chromium Authors
+Copyright 2022 The Chromium Authors
 Use of this source code is governed by a BSD-style license that can be
 found in the LICENSE file.
 -->
 
 <!--
 The order of the following items is from: http://crbug.com/610358.
-Used when PrivacySandboxSettingsV4 is disabled.
-Also add new settings to site_settings_preferences_with_categories.xml!
 -->
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
@@ -19,10 +17,9 @@ Also add new settings to site_settings_preferences_with_categories.xml!
         android:title="@string/all_sites"
         android:icon="@drawable/settings_all_sites"
         app:iconTint="@macro/default_icon_color" />
-    <!-- Cookies -->
-    <org.chromium.components.browser_ui.settings.ChromeBasePreference
-        android:key="cookies"
-        android:fragment="org.chromium.components.browser_ui.site_settings.SingleCategorySettings" />
+
+    <!-- PERMISSIONS section -->
+    <PreferenceCategory android:title="@string/site_settings_permission_category"/>
     <!-- Location -->
     <org.chromium.components.browser_ui.settings.ChromeBasePreference
         android:fragment="org.chromium.components.browser_ui.site_settings.SingleCategorySettings"
@@ -35,51 +32,18 @@ Also add new settings to site_settings_preferences_with_categories.xml!
     <org.chromium.components.browser_ui.settings.ChromeBasePreference
         android:fragment="org.chromium.components.browser_ui.site_settings.SingleCategorySettings"
         android:key="microphone" />
-    <!-- Sensors -->
-    <org.chromium.components.browser_ui.settings.ChromeBasePreference
-        android:fragment="org.chromium.components.browser_ui.site_settings.SingleCategorySettings"
-        android:key="sensors" />
     <!-- Notifications -->
     <org.chromium.components.browser_ui.settings.ChromeBasePreference
         android:fragment="org.chromium.components.browser_ui.site_settings.SingleCategorySettings"
         android:key="notifications" />
-    <!-- JavaScript -->
+    <!-- StorageAccess -->
     <org.chromium.components.browser_ui.settings.ChromeBasePreference
         android:fragment="org.chromium.components.browser_ui.site_settings.SingleCategorySettings"
-        android:key="javascript" />
-    <!-- Popups -->
+        android:key="storage_access" />
+    <!-- Sensors -->
     <org.chromium.components.browser_ui.settings.ChromeBasePreference
         android:fragment="org.chromium.components.browser_ui.site_settings.SingleCategorySettings"
-        android:key="popups" />
-    <!-- Ads -->
-    <org.chromium.components.browser_ui.settings.ChromeBasePreference
-        android:fragment="org.chromium.components.browser_ui.site_settings.SingleCategorySettings"
-        android:key="ads" />
-    <!-- Background sync -->
-    <org.chromium.components.browser_ui.settings.ChromeBasePreference
-        android:fragment="org.chromium.components.browser_ui.site_settings.SingleCategorySettings"
-        android:key="background_sync" />
-    <!-- Automatic Downloads -->
-    <org.chromium.components.browser_ui.settings.ChromeBasePreference
-        android:fragment="org.chromium.components.browser_ui.site_settings.SingleCategorySettings"
-        android:key="automatic_downloads" />
-    <!-- Protected content -->
-    <org.chromium.components.browser_ui.settings.ChromeBasePreference
-        android:fragment="org.chromium.components.browser_ui.site_settings.SingleCategorySettings"
-        android:key="protected_content" />
-    <!-- Sound -->
-    <org.chromium.components.browser_ui.settings.ChromeBasePreference
-        android:fragment="org.chromium.components.browser_ui.site_settings.SingleCategorySettings"
-        android:key="sound" />
-    <!-- Storage -->
-    <!-- TODO(finnur): Move this over to the new Usage screen, once it exists.
-                       Also update site_settings_preferences_with_categories.xml. -->
-    <org.chromium.components.browser_ui.settings.ChromeBasePreference
-        android:fragment="org.chromium.components.browser_ui.site_settings.AllSiteSettings"
-        android:key="use_storage"
-        android:title="@string/website_settings_storage"
-        android:icon="@drawable/ic_storage"
-        app:iconTint="@macro/default_icon_color" />
+        android:key="sensors" />
     <!-- NFC -->
     <org.chromium.components.browser_ui.settings.ChromeBasePreference
         android:fragment="org.chromium.components.browser_ui.site_settings.SingleCategorySettings"
@@ -112,6 +76,43 @@ Also add new settings to site_settings_preferences_with_categories.xml!
     <org.chromium.components.browser_ui.settings.ChromeBasePreference
         android:fragment="org.chromium.components.browser_ui.site_settings.SingleCategorySettings"
         android:key="idle_detection" />
+
+    <!-- CONTENT SETTINGS section -->
+    <PreferenceCategory android:title="@string/site_settings_content_category"/>
+    <!-- Third party cookies -->
+    <org.chromium.components.browser_ui.settings.ChromeBasePreference
+        android:key="third_party_cookies"
+        android:icon="@drawable/permission_cookie"
+        app:iconTint="@macro/default_icon_color"
+        android:fragment="org.chromium.components.browser_ui.site_settings.SingleCategorySettings" />
+    <!-- Tracking protection settings -->
+    <org.chromium.components.browser_ui.settings.ChromeBasePreference
+        android:key="tracking_protection"
+        android:icon="@drawable/ic_eye_crossed"
+        app:iconTint="@macro/default_icon_color"
+        android:fragment="org.chromium.components.privacy_sandbox.TrackingProtectionSettings"
+        android:title="@string/tracking_protection_settings_title"
+        app:isPreferenceVisible="false" />
+    <!-- JavaScript -->
+    <org.chromium.components.browser_ui.settings.ChromeBasePreference
+        android:fragment="org.chromium.components.browser_ui.site_settings.SingleCategorySettings"
+        android:key="javascript" />
+    <!-- Popups -->
+    <org.chromium.components.browser_ui.settings.ChromeBasePreference
+        android:fragment="org.chromium.components.browser_ui.site_settings.SingleCategorySettings"
+        android:key="popups" />
+    <!-- Sound -->
+    <org.chromium.components.browser_ui.settings.ChromeBasePreference
+        android:fragment="org.chromium.components.browser_ui.site_settings.SingleCategorySettings"
+        android:key="sound" />
+    <!-- Ads -->
+    <org.chromium.components.browser_ui.settings.ChromeBasePreference
+        android:fragment="org.chromium.components.browser_ui.site_settings.SingleCategorySettings"
+        android:key="ads" />
+    <!-- Protected content -->
+    <org.chromium.components.browser_ui.settings.ChromeBasePreference
+        android:fragment="org.chromium.components.browser_ui.site_settings.SingleCategorySettings"
+        android:key="protected_content" />
     <!-- Federated Identity API -->
     <org.chromium.components.browser_ui.settings.ChromeBasePreference
         android:fragment="org.chromium.components.browser_ui.site_settings.SingleCategorySettings"
@@ -120,10 +121,26 @@ Also add new settings to site_settings_preferences_with_categories.xml!
     <org.chromium.components.browser_ui.settings.ChromeBasePreference
         android:fragment="org.chromium.components.browser_ui.site_settings.SingleCategorySettings"
         android:key="anti_abuse"/>
+    <!-- Site data -->
+    <org.chromium.components.browser_ui.settings.ChromeBasePreference
+        android:key="site_data"
+        android:fragment="org.chromium.components.browser_ui.site_settings.SingleCategorySettings" />
+    <!-- Request Desktop Site -->
+    <org.chromium.components.browser_ui.settings.ChromeBasePreference
+        android:fragment="org.chromium.components.browser_ui.site_settings.SingleCategorySettings"
+        android:key="request_desktop_site" />
     <!-- Auto-dark Web Content -->
     <org.chromium.components.browser_ui.settings.ChromeBasePreference
         android:fragment="org.chromium.components.browser_ui.site_settings.SingleCategorySettings"
         android:key="auto_dark_web_content" />
+    <!-- Background sync -->
+    <org.chromium.components.browser_ui.settings.ChromeBasePreference
+        android:fragment="org.chromium.components.browser_ui.site_settings.SingleCategorySettings"
+        android:key="background_sync" />
+    <!-- Automatic Downloads -->
+    <org.chromium.components.browser_ui.settings.ChromeBasePreference
+        android:fragment="org.chromium.components.browser_ui.site_settings.SingleCategorySettings"
+        android:key="automatic_downloads" />
     <!-- Zoom -->
     <org.chromium.components.browser_ui.settings.ChromeBasePreference
         android:fragment="org.chromium.components.browser_ui.site_settings.AllSiteSettings"
@@ -131,10 +148,13 @@ Also add new settings to site_settings_preferences_with_categories.xml!
         android:title="@string/page_zoom_menu_title"
         android:icon="@drawable/ic_zoom"
         app:iconTint="@macro/default_icon_color" />
-    <!-- Request Desktop Site -->
-    <!-- TODO(crbug.com/1243758): Update the location of this setting once approved.
-                                  Also update site_settings_preferences_with_categories.xml. -->
+
+    <!-- Storage -->
+    <!-- TODO(finnur): Move this over to the new Usage screen, once it exists.-->
     <org.chromium.components.browser_ui.settings.ChromeBasePreference
-        android:fragment="org.chromium.components.browser_ui.site_settings.SingleCategorySettings"
-        android:key="request_desktop_site" />
+        android:fragment="org.chromium.components.browser_ui.site_settings.AllSiteSettings"
+        android:key="use_storage"
+        android:title="@string/website_settings_storage"
+        android:icon="@drawable/ic_storage"
+        app:iconTint="@macro/default_icon_color" />
 </PreferenceScreen>

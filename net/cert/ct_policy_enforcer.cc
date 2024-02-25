@@ -11,7 +11,7 @@ namespace net {
 ct::CTPolicyCompliance DefaultCTPolicyEnforcer::CheckCompliance(
     X509Certificate* cert,
     const ct::SCTList& verified_scts,
-    const NetLogWithSource& net_log) {
+    const NetLogWithSource& net_log) const {
   return ct::CTPolicyCompliance::CT_POLICY_BUILD_NOT_TIMELY;
 }
 

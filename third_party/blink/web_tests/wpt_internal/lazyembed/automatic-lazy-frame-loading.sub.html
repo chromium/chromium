@@ -63,9 +63,14 @@
       appendFrame(id, src, atf);
     };
 
-    const appendFrameToBelowTheFold = ({ isLazy }) => {
+    const appendFrameToBelowTheFold = ({ isLazy, isAd }) => {
       const id = isLazy ? "btf_lazy" : "btf_default";
       const src = isLazy ? EMBED_URL_LAZY : EMBED_URL;
+
+      if (isAd) {
+        appendAdFrame(id, src, btf);
+        return;
+      }
       appendFrame(id, src, btf);
     };
 
@@ -100,12 +105,6 @@
           resolve(isElementLoaded(id));
         }, ms);
       })
-    };
-
-    const waitUntilIdle = () => {
-      return new Promise(resolve => {
-        window.requestIdleCallback(() => resolve());
-      });
     };
 
     setup(cleanup);
@@ -151,13 +150,13 @@
       t.add_cleanup(cleanup);
 
       appendFrameToBelowTheFold({ isLazy: true });
+      // LazyEmbeds timeout is set as 1000ms.
       const timeoutMs = 1000;
       let result;
       // To detect the frame src is not loaded, wait until the timeout.
       result = await wait(t, timeoutMs, FRAME_IDS.BTF_LAZY);
       assert_false(result, "iframe is not loaded yet right after the timeout");
 
-      await waitUntilIdle();
       result = await waitForElementLoad(FRAME_IDS.BTF_LAZY);
       assert_true(result, "iframe with lazy loadable url below the fold is " +
                           "loaded when after the timeout and idle");
@@ -166,21 +165,16 @@
     promise_test(async t => {
       t.add_cleanup(cleanup);
 
-      appendFrameToBelowTheFold({ isLazy: true });
+      appendFrameToBelowTheFold({ isLazy: true, isAd: true });
 
-      // The timeout setting of LazyEmbeds.
-      // LazyAds timeout is set as 5000ms in VirtualTestSuites.
-      const timeoutMs = 1000;
-      let result;
-      // To detect the frame src is not loaded, wait until the timeout.
-      result = await wait(t, timeoutMs, FRAME_IDS.BTF_LAZY);
-      assert_false(result, "iframe is not loaded yet right after the timeout");
-
-      await waitUntilIdle();
-      result = await waitForElementLoad(FRAME_IDS.BTF_LAZY);
+      // LazyEmbeds timeout is set as 1000ms, LazyAds timeout is set as 5000ms
+      // in VirtualTestSuites. Expecting loading has started before the LazyAds
+      // timeout.
+      const timeoutMs = 1300;
+      const result = await wait(t, timeoutMs, FRAME_IDS.BTF_LAZY);
       assert_true(
         result, "iframe is loaded after passing the LazyEmbeds timeout");
-    }, "LazyEmbeds timeout is prioritized than LazyAds whtn the frame is " +
+    }, "LazyEmbeds timeout is prioritized than LazyAds when the frame is " +
        "eligible for both");
   </script>
 </body>

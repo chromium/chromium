@@ -3,7 +3,9 @@
 <script src='../../resources/testharnessreport.js'></script>
 <script src='../../resources/gesture-util.js'></script>
 <script src="resources/hover-on-scroll-checker.js"></script>
-<script src="../../virtual/percent-based-scrolling/resources/percent-based-util.js">
+<script src="../../resources/testdriver.js"></script>
+<script src="../../resources/testdriver-actions.js"></script>
+<script src="../../resources/testdriver-vendor.js"></script>
 </script>
 
 <style>
@@ -47,25 +49,10 @@
     }
 
     promise_test(async () => {
-      const elementHeight = 50;
-      const mouse = GestureSourceType.MOUSE_INPUT;
-      const scrollSpeed = 350;
       const postScrollHoverIndex = 3;
-      let scrollAmount = postScrollHoverIndex * elementHeight;
-
-      // The scrollAmount is converted to wheel ticks, and the number of pixels
-      // per tick depends on whether percent-based scrolling is enabled.
-      // To get an accurate scroll amount, we need to conditionally adjust for
-      // the variable tick increment.
-      if (isPercentBasedScrollingEnabled()) {
-        const expectedScroll =
-            calculateExpectedScroll(document.scrollingElement, 0,
-                                    scrollAmount).y;
-        scrollAmount *= scrollAmount / expectedScroll;
-      }
+      const scrollAmount = postScrollHoverIndex * elementHeight();
       const scrollCallback = (x, y) => {
-        return smoothScroll(Math.floor(scrollAmount), x, y, mouse, 'down',
-                            scrollSpeed, !isPercentBasedScrollingEnabled());
+        return wheelScroll(x, y, 0, scrollAmount);
       };
       return runHoverStateOnScrollTest(scrollCallback, postScrollHoverIndex);
     }, 'Mouse wheel scroll on the page, no hover update during scrolling, ' +

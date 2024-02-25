@@ -31,7 +31,7 @@
 namespace {
 using GotDbCallback =
     base::OnceCallback<void(unsigned long private_slot_id,
-                            absl::optional<unsigned long> system_slot_id)>;
+                            std::optional<unsigned long> system_slot_id)>;
 
 void GotCertDbOnIOThread(GotDbCallback ui_callback,
                          net::NSSCertDatabase* cert_db) {
@@ -44,7 +44,7 @@ void GotCertDbOnIOThread(GotDbCallback ui_callback,
   unsigned long private_slot_id =
       PK11_GetSlotID(cert_db->GetPrivateSlot().get());
 
-  absl::optional<unsigned long> system_slot_id;
+  std::optional<unsigned long> system_slot_id;
   crypto::ScopedPK11Slot system_slot = cert_db->GetSystemSlot();
   if (system_slot)
     system_slot_id = PK11_GetSlotID(system_slot.get());
@@ -156,7 +156,7 @@ void CertDatabaseAsh::WaitForCertDatabaseReady(
 void CertDatabaseAsh::OnCertDatabaseReady(
     GetCertDatabaseInfoCallback callback,
     unsigned long private_slot_id,
-    absl::optional<unsigned long> system_slot_id) {
+    std::optional<unsigned long> system_slot_id) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
   is_cert_database_ready_ = true;

@@ -4,13 +4,13 @@
 
 #include "services/network/public/cpp/variants_header_parser.h"
 
+#include <optional>
 #include <utility>
 #include <vector>
 
 #include "base/containers/flat_set.h"
 #include "base/no_destructor.h"
 #include "net/http/structured_headers.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace network {
 // Add Support Variants for existing content negotiation mechanisms, See
@@ -27,14 +27,14 @@ const SupportedVariantsNameSet& GetSupportedVariantsNameSet() {
   return *set;
 }
 
-absl::optional<std::vector<mojom::VariantsHeaderPtr>> ParseVariantsHeaders(
+std::optional<std::vector<mojom::VariantsHeaderPtr>> ParseVariantsHeaders(
     const std::string& header) {
   // Variants is a sh-dictionary of tokens to header; see:
   // https://datatracker.ietf.org/doc/html/draft-ietf-httpbis-variants-06#section-2
-  absl::optional<net::structured_headers::Dictionary> maybe_dictionary =
+  std::optional<net::structured_headers::Dictionary> maybe_dictionary =
       net::structured_headers::ParseDictionary(base::ToLowerASCII(header));
   if (!maybe_dictionary.has_value())
-    return absl::nullopt;
+    return std::nullopt;
 
   std::vector<mojom::VariantsHeaderPtr> parsed_headers;
 
@@ -54,7 +54,7 @@ absl::optional<std::vector<mojom::VariantsHeaderPtr>> ParseVariantsHeaders(
                                              std::move(parsed_values));
     parsed_headers.push_back(std::move(parsed));
   }
-  return absl::make_optional(std::move(parsed_headers));
+  return std::make_optional(std::move(parsed_headers));
 }
 
 }  // namespace network

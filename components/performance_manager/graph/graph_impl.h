@@ -137,11 +137,11 @@ class GraphImpl : public Graph {
   const NodeSet& nodes() { return nodes_; }
 
   // Retrieves the process node with PID |pid|, if any.
-  ProcessNodeImpl* GetProcessNodeByPid(base::ProcessId pid) const;
+  ProcessNodeImpl* GetProcessNodeByPid(base::ProcessId pid);
 
   // Retrieves the frame node with the routing ids of the process and the frame.
   FrameNodeImpl* GetFrameNodeById(RenderProcessHostId render_process_id,
-                                  int render_frame_id) const;
+                                  int render_frame_id);
 
   // Returns true if |node| is in this graph.
   bool NodeInGraph(const NodeBase* node);

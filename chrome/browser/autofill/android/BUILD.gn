@@ -3,6 +3,7 @@
 # found in the LICENSE file.
 
 import("//build/config/android/rules.gni")
+import("//third_party/jni_zero/jni_zero.gni")
 
 java_cpp_enum("autofill_generated_enums") {
   sources = [
@@ -15,10 +16,12 @@ android_library("java") {
     "java/src/org/chromium/chrome/browser/autofill/AddressNormalizerFactory.java",
     "java/src/org/chromium/chrome/browser/autofill/AutofillAddress.java",
     "java/src/org/chromium/chrome/browser/autofill/AutofillEditorBase.java",
+    "java/src/org/chromium/chrome/browser/autofill/AutofillImageFetcher.java",
     "java/src/org/chromium/chrome/browser/autofill/AutofillProfileBridge.java",
     "java/src/org/chromium/chrome/browser/autofill/AutofillUiUtils.java",
     "java/src/org/chromium/chrome/browser/autofill/PersonalDataManager.java",
     "java/src/org/chromium/chrome/browser/autofill/PhoneNumberUtil.java",
+    "java/src/org/chromium/chrome/browser/autofill/SubKeyRequesterFactory.java",
     "java/src/org/chromium/chrome/browser/autofill/editors/AddressEditorCoordinator.java",
     "java/src/org/chromium/chrome/browser/autofill/editors/AddressEditorMediator.java",
     "java/src/org/chromium/chrome/browser/autofill/editors/DropdownFieldAdapter.java",
@@ -47,7 +50,6 @@ android_library("java") {
     ":java_resources",
     ":jni_headers",
     "//base:base_java",
-    "//base:jni_java",
     "//build/android:build_java",
     "//chrome/android:chrome_app_java_resources",
     "//chrome/browser/android/customtabs/branding:java",
@@ -92,6 +94,7 @@ android_library("java") {
     "//third_party/androidx:androidx_lifecycle_lifecycle_livedata_core_java",
     "//third_party/androidx:androidx_preference_preference_java",
     "//third_party/androidx:androidx_vectordrawable_vectordrawable_java",
+    "//third_party/jni_zero:jni_zero_java",
     "//ui/android:ui_no_recycler_view_java",
     "//ui/android:ui_utils_java",
     "//url:gurl_java",
@@ -119,9 +122,11 @@ android_library("bottom_sheet_utils_java") {
 generate_jni("jni_headers") {
   sources = [
     "java/src/org/chromium/chrome/browser/autofill/AddressNormalizerFactory.java",
+    "java/src/org/chromium/chrome/browser/autofill/AutofillImageFetcher.java",
     "java/src/org/chromium/chrome/browser/autofill/AutofillProfileBridge.java",
     "java/src/org/chromium/chrome/browser/autofill/PersonalDataManager.java",
     "java/src/org/chromium/chrome/browser/autofill/PhoneNumberUtil.java",
+    "java/src/org/chromium/chrome/browser/autofill/SubKeyRequesterFactory.java",
   ]
 }
 
@@ -148,13 +153,15 @@ android_library("test_java") {
   testonly = true
   resources_package = "org.chromium.chrome.browser.autofill"
 
-  sources = [ "javatest/src/org/chromium/chrome/browser/autofill/editors/AddressEditorRenderTest.java" ]
+  sources = [
+    "javatest/src/org/chromium/chrome/browser/autofill/editors/AddressEditorRenderTest.java",
+    "javatest/src/org/chromium/chrome/browser/autofill/editors/DropdownFieldViewTest.java",
+  ]
 
   deps = [
     ":java",
     "//base:base_java",
     "//base:base_java_test_support",
-    "//base:jni_java",
     "//chrome/android:chrome_java",
     "//chrome/android:chrome_test_java",
     "//chrome/android:chrome_test_util_java",
@@ -170,8 +177,10 @@ android_library("test_java") {
     "//components/signin/public/android:java",
     "//components/sync/android:sync_java",
     "//content/public/test/android:content_java_test_support",
+    "//third_party/android_deps:material_design_java",
     "//third_party/androidx:androidx_test_runner_java",
     "//third_party/hamcrest:hamcrest_java",
+    "//third_party/jni_zero:jni_zero_java",
     "//third_party/junit",
     "//third_party/mockito:mockito_java",
     "//ui/android:ui_full_java",
@@ -185,6 +194,8 @@ robolectric_library("junit") {
 
   sources = [
     "junit/src/org/chromium/chrome/browser/autofill/editors/AddressEditorTest.java",
+    "junit/src/org/chromium/chrome/browser/autofill/editors/DropdownFieldViewUnitTest.java",
+    "junit/src/org/chromium/chrome/browser/autofill/editors/TextFieldViewUnitTest.java",
     "junit/src/org/chromium/chrome/browser/autofill/options/AutofillOptionsTest.java",
   ]
 
@@ -194,7 +205,6 @@ robolectric_library("junit") {
     "//base:base_java",
     "//base:base_java_test_support",
     "//base:base_junit_test_support",
-    "//base:jni_java",
     "//chrome/browser/feedback/android:java",
     "//chrome/browser/flags:java",
     "//chrome/browser/preferences:java",
@@ -210,6 +220,7 @@ robolectric_library("junit") {
     "//components/sync/android:sync_java",
     "//components/user_prefs/android:java",
     "//content/public/android:content_full_java",
+    "//third_party/android_deps:material_design_java",
     "//third_party/androidx:androidx_annotation_annotation_java",
     "//third_party/androidx:androidx_appcompat_appcompat_java",
     "//third_party/androidx:androidx_core_core_java",
@@ -222,6 +233,7 @@ robolectric_library("junit") {
     "//third_party/androidx:androidx_test_ext_junit_java",
     "//third_party/androidx:androidx_test_runner_java",
     "//third_party/hamcrest:hamcrest_java",
+    "//third_party/jni_zero:jni_zero_java",
     "//third_party/junit",
     "//third_party/mockito:mockito_java",
     "//ui/android:ui_full_java",

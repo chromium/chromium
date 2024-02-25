@@ -74,5 +74,3 @@
 
 # crbug.com/1392774
 -org.chromium.chrome.browser.display_cutout.DisplayCutoutTest.testViewportFitCover*
-
-

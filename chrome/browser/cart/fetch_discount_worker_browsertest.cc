@@ -53,7 +53,7 @@ cart_db::ChromeCartContentProto BuildCartProto(const char* domain,
   cart_db::ChromeCartContentProto proto;
   proto.set_key(domain);
   proto.set_merchant_cart_url(merchant_url);
-  proto.set_timestamp(base::Time::Now().ToDoubleT());
+  proto.set_timestamp(base::Time::Now().InSecondsFSinceUnixEpoch());
   return proto;
 }
 
@@ -420,17 +420,19 @@ IN_PROC_BROWSER_TEST_F(FetchFLCodeDiscountWorkerBrowserTest,
       coupon_service_->GetFreeListingCouponsForUrl(
           GURL("https://www.merchant1.com/cart")),
       ElementsAre(testing::AllOf(
-          testing::Property("offer_id",
-                            &autofill::AutofillOfferData::GetOfferId,
-                            testing::Eq(1)),
-          testing::Property("promo_code",
-                            &autofill::AutofillOfferData::GetPromoCode,
-                            testing::Eq("SAVE$10")),
-          testing::Property("expiry", &autofill::AutofillOfferData::GetExpiry,
-                            testing::Eq(base::Time::FromDoubleT(1635204292))),
-          testing::Property("display_strings",
-                            &autofill::AutofillOfferData::GetDisplayStrings,
-                            EqualsDisplayStrings(expected_display_string)))));
+          testing::Pointee(testing::Property(
+              "offer_id", &autofill::AutofillOfferData::GetOfferId,
+              testing::Eq(1))),
+          testing::Pointee(testing::Property(
+              "promo_code", &autofill::AutofillOfferData::GetPromoCode,
+              testing::Eq("SAVE$10"))),
+          testing::Pointee(testing::Property(
+              "expiry", &autofill::AutofillOfferData::GetExpiry,
+              testing::Eq(base::Time::FromSecondsSinceUnixEpoch(1635204292)))),
+          testing::Pointee(testing::Property(
+              "display_strings",
+              &autofill::AutofillOfferData::GetDisplayStrings,
+              EqualsDisplayStrings(expected_display_string))))));
 }
 
 IN_PROC_BROWSER_TEST_F(FetchFLCodeDiscountWorkerBrowserTest,
@@ -446,21 +448,23 @@ IN_PROC_BROWSER_TEST_F(FetchFLCodeDiscountWorkerBrowserTest,
   // Verify discounts.
   autofill::DisplayStrings expected_display_string;
   expected_display_string.value_prop_text = "Save 10% on Running shoes.";
-  EXPECT_THAT(
-      coupon_service_->GetFreeListingCouponsForUrl(
-          GURL("https://www.merchant2.com/cart")),
-      ElementsAre(testing::AllOf(
-          testing::Property("offer_id",
-                            &autofill::AutofillOfferData::GetOfferId,
-                            testing::Eq(1)),
-          testing::Property("promo_code",
-                            &autofill::AutofillOfferData::GetPromoCode,
-                            testing::Eq("SAVE10")),
-          testing::Property("expiry", &autofill::AutofillOfferData::GetExpiry,
-                            testing::Eq(base::Time::FromDoubleT(1635204292.2))),
-          testing::Property("display_strings",
-                            &autofill::AutofillOfferData::GetDisplayStrings,
-                            EqualsDisplayStrings(expected_display_string)))));
+  EXPECT_THAT(coupon_service_->GetFreeListingCouponsForUrl(
+                  GURL("https://www.merchant2.com/cart")),
+              ElementsAre(testing::AllOf(
+                  testing::Pointee(testing::Property(
+                      "offer_id", &autofill::AutofillOfferData::GetOfferId,
+                      testing::Eq(1))),
+                  testing::Pointee(testing::Property(
+                      "promo_code", &autofill::AutofillOfferData::GetPromoCode,
+                      testing::Eq("SAVE10"))),
+                  testing::Pointee(testing::Property(
+                      "expiry", &autofill::AutofillOfferData::GetExpiry,
+                      testing::Eq(base::Time::FromSecondsSinceUnixEpoch(
+                          1635204292.2)))),
+                  testing::Pointee(testing::Property(
+                      "display_strings",
+                      &autofill::AutofillOfferData::GetDisplayStrings,
+                      EqualsDisplayStrings(expected_display_string))))));
 }
 
 IN_PROC_BROWSER_TEST_F(FetchFLCodeDiscountWorkerBrowserTest,
@@ -554,17 +558,19 @@ IN_PROC_BROWSER_TEST_F(FetchCodeBasedDiscountWorkerBrowserTest,
       coupon_service_->GetFreeListingCouponsForUrl(
           GURL("https://www.merchant1.com/cart")),
       ElementsAre(testing::AllOf(
-          testing::Property("offer_id",
-                            &autofill::AutofillOfferData::GetOfferId,
-                            testing::Eq(1)),
-          testing::Property("promo_code",
-                            &autofill::AutofillOfferData::GetPromoCode,
-                            testing::Eq("SAVE$10")),
-          testing::Property("expiry", &autofill::AutofillOfferData::GetExpiry,
-                            testing::Eq(base::Time::FromDoubleT(1635204292))),
-          testing::Property("display_strings",
-                            &autofill::AutofillOfferData::GetDisplayStrings,
-                            EqualsDisplayStrings(expected_display_string)))));
+          testing::Pointee(testing::Property(
+              "offer_id", &autofill::AutofillOfferData::GetOfferId,
+              testing::Eq(1))),
+          testing::Pointee(testing::Property(
+              "promo_code", &autofill::AutofillOfferData::GetPromoCode,
+              testing::Eq("SAVE$10"))),
+          testing::Pointee(testing::Property(
+              "expiry", &autofill::AutofillOfferData::GetExpiry,
+              testing::Eq(base::Time::FromSecondsSinceUnixEpoch(1635204292)))),
+          testing::Pointee(testing::Property(
+              "display_strings",
+              &autofill::AutofillOfferData::GetDisplayStrings,
+              EqualsDisplayStrings(expected_display_string))))));
 }
 
 IN_PROC_BROWSER_TEST_F(FetchCodeBasedDiscountWorkerBrowserTest,
@@ -580,21 +586,23 @@ IN_PROC_BROWSER_TEST_F(FetchCodeBasedDiscountWorkerBrowserTest,
   // Verify discounts.
   autofill::DisplayStrings expected_display_string;
   expected_display_string.value_prop_text = "Save 10% on Running shoes.";
-  EXPECT_THAT(
-      coupon_service_->GetFreeListingCouponsForUrl(
-          GURL("https://www.merchant2.com/cart")),
-      ElementsAre(testing::AllOf(
-          testing::Property("offer_id",
-                            &autofill::AutofillOfferData::GetOfferId,
-                            testing::Eq(1)),
-          testing::Property("promo_code",
-                            &autofill::AutofillOfferData::GetPromoCode,
-                            testing::Eq("SAVE10")),
-          testing::Property("expiry", &autofill::AutofillOfferData::GetExpiry,
-                            testing::Eq(base::Time::FromDoubleT(1635204292.2))),
-          testing::Property("display_strings",
-                            &autofill::AutofillOfferData::GetDisplayStrings,
-                            EqualsDisplayStrings(expected_display_string)))));
+  EXPECT_THAT(coupon_service_->GetFreeListingCouponsForUrl(
+                  GURL("https://www.merchant2.com/cart")),
+              ElementsAre(testing::AllOf(
+                  testing::Pointee(testing::Property(
+                      "offer_id", &autofill::AutofillOfferData::GetOfferId,
+                      testing::Eq(1))),
+                  testing::Pointee(testing::Property(
+                      "promo_code", &autofill::AutofillOfferData::GetPromoCode,
+                      testing::Eq("SAVE10"))),
+                  testing::Pointee(testing::Property(
+                      "expiry", &autofill::AutofillOfferData::GetExpiry,
+                      testing::Eq(base::Time::FromSecondsSinceUnixEpoch(
+                          1635204292.2)))),
+                  testing::Pointee(testing::Property(
+                      "display_strings",
+                      &autofill::AutofillOfferData::GetDisplayStrings,
+                      EqualsDisplayStrings(expected_display_string))))));
 }
 
 IN_PROC_BROWSER_TEST_F(
@@ -618,17 +626,19 @@ IN_PROC_BROWSER_TEST_F(
       coupon_service_->GetFreeListingCouponsForUrl(
           GURL("https://www.merchant3.com/cart")),
       ElementsAre(testing::AllOf(
-          testing::Property("offer_id",
-                            &autofill::AutofillOfferData::GetOfferId,
-                            testing::Eq(1)),
-          testing::Property("promo_code",
-                            &autofill::AutofillOfferData::GetPromoCode,
-                            testing::Eq("SAVE10")),
-          testing::Property("expiry", &autofill::AutofillOfferData::GetExpiry,
-                            testing::Eq(base::Time::FromDoubleT(1635204293))),
-          testing::Property("display_strings",
-                            &autofill::AutofillOfferData::GetDisplayStrings,
-                            EqualsDisplayStrings(expected_display_string)))));
+          testing::Pointee(testing::Property(
+              "offer_id", &autofill::AutofillOfferData::GetOfferId,
+              testing::Eq(1))),
+          testing::Pointee(testing::Property(
+              "promo_code", &autofill::AutofillOfferData::GetPromoCode,
+              testing::Eq("SAVE10"))),
+          testing::Pointee(testing::Property(
+              "expiry", &autofill::AutofillOfferData::GetExpiry,
+              testing::Eq(base::Time::FromSecondsSinceUnixEpoch(1635204293)))),
+          testing::Pointee(testing::Property(
+              "display_strings",
+              &autofill::AutofillOfferData::GetDisplayStrings,
+              EqualsDisplayStrings(expected_display_string))))));
 
   EXPECT_THAT(coupon_service_->GetFreeListingCouponsForUrl(
                   GURL("https://www.merchant4.com/cart")),

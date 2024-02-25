@@ -16,12 +16,12 @@ TEST(SignaturesTest, StripDigits) {
   actual_form.name = u"form_name_12345";
 
   FormFieldData field1;
-  field1.form_control_type = "text";
+  field1.form_control_type = FormControlType::kInputText;
   field1.name = u"field_name_12345";
   actual_form.fields.push_back(field1);
 
   FormFieldData field2;
-  field2.form_control_type = "text";
+  field2.form_control_type = FormControlType::kInputText;
   field2.name = u"field_name_1234";
   actual_form.fields.push_back(field2);
 
@@ -42,19 +42,19 @@ TEST(SignaturesTest, AlternativeFormSignatureLarge) {
   large_form.url = GURL("http://foo.com/login?q=a#ref");
 
   FormFieldData field1;
-  field1.form_control_type = "text";
+  field1.form_control_type = FormControlType::kInputText;
   large_form.fields.push_back(field1);
 
   FormFieldData field2;
-  field2.form_control_type = "text";
+  field2.form_control_type = FormControlType::kInputText;
   large_form.fields.push_back(field2);
 
   FormFieldData field3;
-  field3.form_control_type = "email";
+  field3.form_control_type = FormControlType::kInputEmail;
   large_form.fields.push_back(field3);
 
   FormFieldData field4;
-  field4.form_control_type = "tel";
+  field4.form_control_type = FormControlType::kInputTelephone;
   large_form.fields.push_back(field4);
 
   // Alternative form signature string of a form with more than two fields
@@ -68,11 +68,11 @@ TEST(SignaturesTest, AlternativeFormSignatureSmallPath) {
   small_form_path.url = GURL("http://foo.com/login?q=a#ref");
 
   FormFieldData field1;
-  field1.form_control_type = "text";
+  field1.form_control_type = FormControlType::kInputText;
   small_form_path.fields.push_back(field1);
 
   FormFieldData field2;
-  field2.form_control_type = "text";
+  field2.form_control_type = FormControlType::kInputText;
   small_form_path.fields.push_back(field2);
 
   // Alternative form signature string of a form with 2 fields or less should
@@ -86,11 +86,11 @@ TEST(SignaturesTest, AlternativeFormSignatureSmallRef) {
   small_form_ref.url = GURL("http://foo.com?q=a#ref");
 
   FormFieldData field1;
-  field1.form_control_type = "text";
+  field1.form_control_type = FormControlType::kInputText;
   small_form_ref.fields.push_back(field1);
 
   FormFieldData field2;
-  field2.form_control_type = "text";
+  field2.form_control_type = FormControlType::kInputText;
   small_form_ref.fields.push_back(field2);
 
   // Alternative form signature string of a form with 2 fields or less and
@@ -105,11 +105,11 @@ TEST(SignaturesTest, AlternativeFormSignatureSmallQuery) {
   small_form_query.url = GURL("http://foo.com?q=a");
 
   FormFieldData field1;
-  field1.form_control_type = "text";
+  field1.form_control_type = FormControlType::kInputText;
   small_form_query.fields.push_back(field1);
 
   FormFieldData field2;
-  field2.form_control_type = "text";
+  field2.form_control_type = FormControlType::kInputText;
   small_form_query.fields.push_back(field2);
 
   // Alternative form signature string of a form with 2 fields or less and

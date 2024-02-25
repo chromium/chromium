@@ -17,8 +17,11 @@ public class DynamicResourceSnapshot implements Resource {
     private final Rect mBitmapSize;
     private final long mNativeResourceId;
 
-    public DynamicResourceSnapshot(Bitmap bitmap, boolean shouldRemoveResourceOnNullBitmap,
-            Rect bitmapSize, long nativeResourceId) {
+    public DynamicResourceSnapshot(
+            Bitmap bitmap,
+            boolean shouldRemoveResourceOnNullBitmap,
+            Rect bitmapSize,
+            long nativeResourceId) {
         mBitmap = bitmap;
         mShouldRemoveResourceOnNullBitmap = shouldRemoveResourceOnNullBitmap;
         mBitmapSize = bitmapSize;

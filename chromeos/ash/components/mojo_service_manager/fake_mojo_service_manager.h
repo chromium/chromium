@@ -66,7 +66,7 @@ class COMPONENT_EXPORT(CHROMEOS_MOJO_SERVICE_MANAGER) FakeMojoServiceManager
                     chromeos::mojo_service_manager::mojom::ServiceProvider>
                     service_provider) override;
   void Request(const std::string& service_name,
-               absl::optional<base::TimeDelta> timeout,
+               std::optional<base::TimeDelta> timeout,
                mojo::ScopedMessagePipeHandle receiver) override;
   void Query(const std::string& service_name, QueryCallback callback) override;
   void AddServiceObserver(

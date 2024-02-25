@@ -57,7 +57,7 @@ constexpr char kResponseTransportHistogram[] =
 
 using TestGetAssertionRequestCallback = test::StatusAndValuesCallbackReceiver<
     GetAssertionStatus,
-    absl::optional<std::vector<AuthenticatorGetAssertionResponse>>,
+    std::optional<std::vector<AuthenticatorGetAssertionResponse>>,
     FidoAuthenticator*>;
 
 }  // namespace

@@ -5,11 +5,11 @@
 #ifndef CHROMEOS_ASH_COMPONENTS_QUICK_START_TYPES_H_
 #define CHROMEOS_ASH_COMPONENTS_QUICK_START_TYPES_H_
 
+#include <optional>
 #include <string>
 #include <vector>
 
 #include "base/types/strong_alias.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 // This file contains user defined type aliases that are used throughout Quick
 // Start to ensure strong typing of encoded data. Using types like `std::string`
@@ -28,14 +28,23 @@ using Base64UrlString =
 // A PEM encoded certificate chain.
 using PEMCertChain = base::StrongAlias<class PEMCertChainTag, std::string>;
 
+// A string containing the PIN to be shown on the QuickStart UI.
+using PinString = base::StrongAlias<class PinStringTag, std::string>;
+
+// A string containing the user's email being transferred from the phone.
+using EmailString = base::StrongAlias<class EmailStringTag, std::string>;
+
 // Encodes a byte array to a Base64Url encoded string. Omits padding characters
 // in the output.
 Base64UrlString Base64UrlEncode(const std::vector<uint8_t>& data);
 
+// Same as above - except that it accepts `data` as `std::string`.
+Base64UrlString Base64UrlEncode(const std::string& data);
+
 // Transcodes a Base64 encoded string to Base64Url. Returns an empty optional if
 // the input string is incorrectly encoded. Omits padding characters in the
 // output.
-absl::optional<Base64UrlString> Base64UrlTranscode(const Base64String& data);
+std::optional<Base64UrlString> Base64UrlTranscode(const Base64String& data);
 
 }  // namespace ash::quick_start
 

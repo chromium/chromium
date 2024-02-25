@@ -14,6 +14,7 @@
 
 namespace history {
 struct Cluster;
+class HistoryService;
 }  // namespace history
 
 namespace history_clusters {
@@ -28,15 +29,22 @@ class HistoryClustersModuleRankingSignals;
 class OptimizationGuideKeyedService;
 class TemplateURLService;
 
+namespace segmentation_platform {
+class SegmentationPlatformService;
+}
+
 // Handles requests to get clusters for the History Clusters Module.
 class HistoryClustersModuleService : public KeyedService {
  public:
   HistoryClustersModuleService(const HistoryClustersModuleService&) = delete;
   HistoryClustersModuleService(
       history_clusters::HistoryClustersService* history_clusters_service,
+      history::HistoryService* history_service,
       CartService* cart_service,
       TemplateURLService* template_url_service,
-      OptimizationGuideKeyedService* optimization_guide_keyed_service);
+      OptimizationGuideKeyedService* optimization_guide_keyed_service,
+      segmentation_platform::SegmentationPlatformService*
+          segmentation_platform_service);
   ~HistoryClustersModuleService() override;
 
   using GetClustersCallback = base::OnceCallback<void(
@@ -76,7 +84,8 @@ class HistoryClustersModuleService : public KeyedService {
   // Callback invoked when `module_ranker_` returns ranked clusters.
   void OnGetRankedClusters(
       GetClustersCallback callback,
-      std::vector<history::Cluster> clusters,
+      std::vector<std::pair<history::Cluster, std::optional<float>>>
+          clusters_with_scores,
       base::flat_map<int64_t, HistoryClustersModuleRankingSignals>
           ranking_signals);
 

@@ -11,25 +11,28 @@ import org.junit.Assert;
 import org.chromium.chrome.browser.app.ChromeActivity;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 
-/**
- * Utility methods and classes for testing modal dialogs.
- */
+/** Utility methods and classes for testing modal dialogs. */
 public class ChromeModalDialogTestUtils {
     /**
      * Checks whether the browser controls and tab obscured state is appropriately set.
+     *
      * @param activity The activity to use to query for appropriate state
      * @param restricted If true, the menu should be enabled and the tabs should be obscured.
      */
     public static void checkBrowserControls(ChromeActivity activity, boolean restricted) {
-        boolean isViewObscuringTabContent = TestThreadUtils.runOnUiThreadBlockingNoException(
-                () -> activity.getTabObscuringHandler().isTabContentObscured());
-        boolean isViewObscuringToolbar = TestThreadUtils.runOnUiThreadBlockingNoException(
-                () -> activity.getTabObscuringHandler().isToolbarObscured());
-        boolean isMenuEnabled = TestThreadUtils.runOnUiThreadBlockingNoException(() -> {
-            View menu = activity.getToolbarManager().getMenuButtonView();
-            Assert.assertNotNull("Toolbar menu is incorrectly null.", menu);
-            return menu.isEnabled();
-        });
+        boolean isViewObscuringTabContent =
+                TestThreadUtils.runOnUiThreadBlockingNoException(
+                        () -> activity.getTabObscuringHandler().isTabContentObscured());
+        boolean isViewObscuringToolbar =
+                TestThreadUtils.runOnUiThreadBlockingNoException(
+                        () -> activity.getTabObscuringHandler().isToolbarObscured());
+        boolean isMenuEnabled =
+                TestThreadUtils.runOnUiThreadBlockingNoException(
+                        () -> {
+                            View menu = activity.getToolbarManager().getMenuButtonView();
+                            Assert.assertNotNull("Toolbar menu is incorrectly null.", menu);
+                            return menu.isEnabled();
+                        });
 
         if (restricted) {
             Assert.assertTrue("All tabs should be obscured", isViewObscuringTabContent);

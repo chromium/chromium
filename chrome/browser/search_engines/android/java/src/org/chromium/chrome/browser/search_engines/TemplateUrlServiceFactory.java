@@ -4,9 +4,10 @@
 
 package org.chromium.chrome.browser.search_engines;
 
+import org.jni_zero.NativeMethods;
+
 import org.chromium.base.ResettersForTesting;
 import org.chromium.base.ThreadUtils;
-import org.chromium.base.annotations.NativeMethods;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.components.search_engines.TemplateUrlService;
 

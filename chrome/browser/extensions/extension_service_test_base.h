@@ -28,9 +28,10 @@
 #include "testing/gtest/include/gtest/gtest.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "chrome/browser/ash/app_mode/kiosk_app_manager.h"
-#include "chrome/browser/ash/login/users/scoped_test_user_manager.h"
+#include "chrome/browser/ash/app_mode/kiosk_chrome_app_manager.h"
+#include "chrome/browser/ash/login/users/chrome_user_manager_impl.h"
 #include "chrome/browser/ash/settings/scoped_cros_settings_test_helper.h"
+#include "components/user_manager/scoped_user_manager.h"
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
@@ -43,7 +44,7 @@ class TestingProfile;
 namespace content {
 class BrowserContext;
 class BrowserTaskEnvironment;
-}
+}  // namespace content
 
 namespace sync_preferences {
 class TestingPrefServiceSyncable;
@@ -67,7 +68,7 @@ class ExtensionServiceTestBase : public testing::Test {
     // directory with the given content, and initializes user prefs store
     // referring the file.
     // If not, sync_preferences::TestingPrefServiceSyncable is used.
-    absl::optional<std::string> prefs_content;
+    std::optional<std::string> prefs_content;
 
     // If not empty, copies both directories to the profile directory.
     base::FilePath extensions_dir;
@@ -103,7 +104,7 @@ class ExtensionServiceTestBase : public testing::Test {
 
   // Public because parameterized test cases need it to be, or else the compiler
   // barfs.
-  static void SetUpTestCase();  // faux-verride (static override).
+  static void SetUpTestSuite();  // faux-verride (static override).
 
  protected:
   ExtensionServiceTestBase();
@@ -137,10 +138,9 @@ class ExtensionServiceTestBase : public testing::Test {
   // Helpers to check the existence and values of extension prefs.
   size_t GetPrefKeyCount();
   void ValidatePrefKeyCount(size_t count);
-  testing::AssertionResult ValidateBooleanPref(
-      const std::string& extension_id,
-      const std::string& pref_path,
-      bool expected_val);
+  testing::AssertionResult ValidateBooleanPref(const std::string& extension_id,
+                                               const std::string& pref_path,
+                                               bool expected_val);
   void ValidateIntegerPref(const std::string& extension_id,
                            const std::string& pref_path,
                            int expected_val);
@@ -238,8 +238,9 @@ class ExtensionServiceTestBase : public testing::Test {
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   ash::ScopedCrosSettingsTestHelper cros_settings_test_helper_;
-  std::unique_ptr<ash::KioskAppManager> kiosk_app_manager_;
-  ash::ScopedTestUserManager test_user_manager_;
+  std::unique_ptr<ash::KioskChromeAppManager> kiosk_chrome_app_manager_;
+  user_manager::ScopedUserManager test_user_manager_{
+      ash::ChromeUserManagerImpl::CreateChromeUserManager()};
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)

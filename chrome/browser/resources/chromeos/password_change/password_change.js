@@ -7,9 +7,9 @@
  * with cryptohome password.
  */
 
-import 'chrome://resources/cr_elements/cr_dialog/cr_dialog.js';
-import 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.js';
-import 'chrome://resources/cr_elements/icons.html.js';
+import 'chrome://resources/ash/common/cr_elements/cr_dialog/cr_dialog.js';
+import 'chrome://resources/ash/common/cr_elements/cr_icon_button/cr_icon_button.js';
+import 'chrome://resources/ash/common/cr_elements/icons.html.js';
 
 import {assert} from 'chrome://resources/ash/common/assert.js';
 import {I18nBehavior, I18nBehaviorInterface} from 'chrome://resources/ash/common/i18n_behavior.js';
@@ -67,7 +67,7 @@ export class PasswordChangeElement extends PasswordChangeElementBase {
    * Loads auth extension.
    * @param {Object} data Parameters for auth extension.
    */
-  loadAuthExtension(data) {
+  loadAuthenticator(data) {
     this.authenticator_.load(data);
   }
 

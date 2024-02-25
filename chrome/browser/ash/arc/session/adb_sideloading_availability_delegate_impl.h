@@ -33,7 +33,7 @@ class AdbSideloadingAvailabilityDelegateImpl
 
  private:
   // Unowned pointer. Keeps current profile.
-  raw_ptr<Profile, DanglingUntriaged | ExperimentalAsh> profile_ = nullptr;
+  raw_ptr<Profile, DanglingUntriaged> profile_ = nullptr;
 };
 
 }  // namespace arc

@@ -1,4 +1,4 @@
-(async function(testRunner) {
+(async function(/** @type {import('test_runner').TestRunner} */ testRunner) {
   var {page, session, dp} = await testRunner.startBlank(
       `Test that page performance metrics are retrieved and the list is stable.\n` +
       `DO NOT modify the list, it's exposed over public protocol.`);

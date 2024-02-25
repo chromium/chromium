@@ -96,7 +96,9 @@ class TestSharedImageBackingFactory : public SharedImageBackingFactory {
                    base::span<const uint8_t> pixel_data) override {
     return true;
   }
-
+  SharedImageBackingType GetBackingType() override {
+    return SharedImageBackingType::kTest;
+  }
   using SharedImageBackingFactory::InvalidateWeakPtrsForTesting;
 
   void SetAllocationsShouldFail(bool allocations_should_fail) {
@@ -353,7 +355,7 @@ TEST_F(CompoundImageBackingTest, NoUploadOnOverlayMemoryAccess) {
   auto access = overlay_rep->BeginScopedReadAccess();
 
 #if BUILDFLAG(IS_WIN)
-  absl::optional<gl::DCLayerOverlayImage> overlay_image =
+  std::optional<gl::DCLayerOverlayImage> overlay_image =
       access->GetDCLayerOverlayImage();
   ASSERT_TRUE(overlay_image);
   EXPECT_EQ(overlay_image->type(), gl::DCLayerOverlayType::kNV12Pixmap);

@@ -196,14 +196,14 @@ bool VideoDecodeStatsDBImpl::AreStatsUsable(
       stats_proto->unweighted_average_frames_dropped() <= 1 &&
       stats_proto->unweighted_average_frames_efficient() <= 1 &&
 
-      // |last_write_date| represents base::Time::ToJsTime(), a number of msec
-      // since the epoch, so it should never be negative (zero is valid, as a
-      // default for this field, indicating the last write was made before we
-      // added time stamping). The converted time should also never be in the
-      // future.
+      // |last_write_date| represents
+      // base::Time::InMillisecondsFSinceUnixEpoch(), so it should never be
+      // negative (zero is valid, as a default for this field, indicating the
+      // last write was made before we added time stamping). The converted time
+      // should also never be in the future.
       stats_proto->last_write_date() >= 0 &&
-      base::Time::FromJsTime(stats_proto->last_write_date()) <=
-          wall_clock_->Now();
+      base::Time::FromMillisecondsSinceUnixEpoch(
+          stats_proto->last_write_date()) <= wall_clock_->Now();
 
   UMA_HISTOGRAM_BOOLEAN("Media.VideoDecodeStatsDB.OpSuccess.Validate",
                         are_stats_valid);
@@ -219,13 +219,14 @@ bool VideoDecodeStatsDBImpl::AreStatsUsable(
   if (last_write_date == 0) {
     // Set a default time if the write date is zero (no write since proto was
     // updated to include the time stamp).
-    last_write_date = default_write_time_.ToJsTime();
+    last_write_date = default_write_time_.InMillisecondsFSinceUnixEpoch();
   }
 
   const int kMaxDaysToKeepStats = GetMaxDaysToKeepStats();
   DCHECK_GT(kMaxDaysToKeepStats, 0);
 
-  return wall_clock_->Now() - base::Time::FromJsTime(last_write_date) <=
+  return wall_clock_->Now() -
+             base::Time::FromMillisecondsSinceUnixEpoch(last_write_date) <=
          base::Days(kMaxDaysToKeepStats);
 }
 
@@ -364,7 +365,8 @@ void VideoDecodeStatsDBImpl::WriteUpdatedEntry(
   }
 
   // Update the time stamp for the current write.
-  stats_proto->set_last_write_date(wall_clock_->Now().ToJsTime());
+  stats_proto->set_last_write_date(
+      wall_clock_->Now().InMillisecondsFSinceUnixEpoch());
 
   // Make sure we never write bogus stats into the DB! While its possible the DB
   // may experience some corruption (disk), we should have detected that above

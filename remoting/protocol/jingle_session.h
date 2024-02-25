@@ -103,6 +103,7 @@ class JingleSession : public Session {
                        ReplyCallback reply_callback);
   void OnTerminate(std::unique_ptr<JingleMessage> message,
                    ReplyCallback reply_callback);
+  void OnAuthenticatorStateChangeAfterAccepted();
 
   // Called from OnAccept() to initialize session config.
   bool InitializeConfigFromDescription(const ContentDescription* description);
@@ -180,7 +181,7 @@ class JingleSession : public Session {
   std::vector<PendingMessage> pending_transport_info_;
 
   // The SessionPlugins attached to this session.
-  std::vector<SessionPlugin*> plugins_;
+  std::vector<raw_ptr<SessionPlugin, VectorExperimental>> plugins_;
 
   THREAD_CHECKER(thread_checker_);
 

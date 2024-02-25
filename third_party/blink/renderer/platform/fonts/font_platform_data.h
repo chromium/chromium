@@ -39,6 +39,8 @@
 #include "third_party/blink/renderer/platform/fonts/font_orientation.h"
 #include "third_party/blink/renderer/platform/fonts/resolved_font_features.h"
 #include "third_party/blink/renderer/platform/fonts/small_caps_iterator.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
+#include "third_party/blink/renderer/platform/heap/member.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/forward.h"
@@ -54,19 +56,12 @@
 typedef const struct __CTFont* CTFontRef;
 #endif  // BUILDFLAG(IS_MAC)
 
-class SkFont;
-class SkTypeface;
-typedef uint32_t SkFontID;
-
 namespace blink {
 
-class Font;
 class HarfBuzzFace;
-class OpenTypeVerticalData;
 
-class PLATFORM_EXPORT FontPlatformData {
-  USING_FAST_MALLOC(FontPlatformData);
-
+class PLATFORM_EXPORT FontPlatformData
+    : public GarbageCollected<FontPlatformData> {
  public:
   // Used for deleted values in the font cache's hash tables. The hash table
   // will create us with this structure, and it will compare other values
@@ -87,6 +82,8 @@ class PLATFORM_EXPORT FontPlatformData {
                    FontOrientation = FontOrientation::kHorizontal);
   ~FontPlatformData();
 
+  void Trace(Visitor*) const;
+
 #if BUILDFLAG(IS_MAC)
   // Returns nullptr for FreeType backed SkTypefaces, compare
   // FontCustomPlatformData, which are used for variable fonts on Mac OS
@@ -103,7 +100,7 @@ class PLATFORM_EXPORT FontPlatformData {
   SkTypeface* Typeface() const;
   HarfBuzzFace* GetHarfBuzzFace() const;
   bool HasSpaceInLigaturesOrKerning(TypesettingFeatures) const;
-  SkFontID UniqueID() const;
+  SkTypefaceID UniqueID() const;
   unsigned GetHash() const;
 
   FontOrientation Orientation() const { return orientation_; }
@@ -131,7 +128,7 @@ class PLATFORM_EXPORT FontPlatformData {
 
   bool IsHashTableDeletedValue() const { return is_hash_table_deleted_value_; }
 #if !BUILDFLAG(IS_MAC)
-  bool FontContainsCharacter(UChar32 character);
+  bool FontContainsCharacter(UChar32 character) const;
 #endif
 
 #if !BUILDFLAG(IS_WIN) && !BUILDFLAG(IS_MAC)
@@ -139,8 +136,6 @@ class PLATFORM_EXPORT FontPlatformData {
 #endif
 
   SkFont CreateSkFont(const FontDescription* = nullptr) const;
-
-  scoped_refptr<OpenTypeVerticalData> CreateVerticalData() const;
 
   // Computes a digest from the typeface. The digest only depends on the
   // underlying font itself, and does not vary by the style (size, weight,
@@ -187,7 +182,7 @@ class PLATFORM_EXPORT FontPlatformData {
   WebFontRenderStyle style_;
 #endif
 
-  mutable scoped_refptr<HarfBuzzFace> harfbuzz_face_;
+  mutable Member<HarfBuzzFace> harfbuzz_face_;
   bool is_hash_table_deleted_value_ = false;
 };
 

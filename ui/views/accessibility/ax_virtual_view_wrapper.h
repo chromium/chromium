@@ -28,7 +28,8 @@ class AXVirtualViewWrapper : public AXAuraObjWrapper {
 
   // AXAuraObjWrapper:
   AXAuraObjWrapper* GetParent() override;
-  void GetChildren(std::vector<AXAuraObjWrapper*>* out_children) override;
+  void GetChildren(std::vector<raw_ptr<AXAuraObjWrapper, VectorExperimental>>*
+                       out_children) override;
   void Serialize(ui::AXNodeData* out_node_data) override;
   ui::AXNodeID GetUniqueId() const override;
   bool HandleAccessibleAction(const ui::AXActionData& action) override;

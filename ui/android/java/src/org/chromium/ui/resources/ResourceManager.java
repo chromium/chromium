@@ -9,9 +9,10 @@ import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.util.SparseArray;
 
-import org.chromium.base.annotations.CalledByNative;
-import org.chromium.base.annotations.JNINamespace;
-import org.chromium.base.annotations.NativeMethods;
+import org.jni_zero.CalledByNative;
+import org.jni_zero.JNINamespace;
+import org.jni_zero.NativeMethods;
+
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.display.DisplayAndroid;
 import org.chromium.ui.resources.ResourceLoader.ResourceLoaderCallback;
@@ -38,12 +39,10 @@ public class ResourceManager implements ResourceLoaderCallback {
             Resources resources, int minScreenSideLength, long staticResourceManagerPtr) {
         mPxToDp = 1.f / resources.getDisplayMetrics().density;
 
-        registerResourceLoader(new StaticResourceLoader(
-                AndroidResourceType.STATIC, this, resources));
-        registerResourceLoader(new DynamicResourceLoader(
-                AndroidResourceType.DYNAMIC, this));
-        registerResourceLoader(new DynamicResourceLoader(
-                AndroidResourceType.DYNAMIC_BITMAP, this));
+        registerResourceLoader(
+                new StaticResourceLoader(AndroidResourceType.STATIC, this, resources));
+        registerResourceLoader(new DynamicResourceLoader(AndroidResourceType.DYNAMIC, this));
+        registerResourceLoader(new DynamicResourceLoader(AndroidResourceType.DYNAMIC_BITMAP, this));
         registerResourceLoader(
                 new SystemResourceLoader(AndroidResourceType.SYSTEM, this, minScreenSideLength));
 
@@ -80,8 +79,7 @@ public class ResourceManager implements ResourceLoaderCallback {
      *         {@link Resource} objects to this class.
      */
     public DynamicResourceLoader getDynamicResourceLoader() {
-        return (DynamicResourceLoader) mResourceLoaders.get(
-                AndroidResourceType.DYNAMIC);
+        return (DynamicResourceLoader) mResourceLoaders.get(AndroidResourceType.DYNAMIC);
     }
 
     /**
@@ -89,8 +87,7 @@ public class ResourceManager implements ResourceLoaderCallback {
      *         {@link BitmapDynamicResource} objects to this class.
      */
     public DynamicResourceLoader getBitmapDynamicResourceLoader() {
-        return (DynamicResourceLoader) mResourceLoaders.get(
-                AndroidResourceType.DYNAMIC_BITMAP);
+        return (DynamicResourceLoader) mResourceLoaders.get(AndroidResourceType.DYNAMIC_BITMAP);
     }
 
     /**
@@ -132,8 +129,9 @@ public class ResourceManager implements ResourceLoaderCallback {
         Bitmap bitmap = resource.getBitmap();
         if (bitmap == null) {
             if (resource.shouldRemoveResourceOnNullBitmap() && mNativeResourceManagerPtr != 0) {
-                ResourceManagerJni.get().removeResource(
-                        mNativeResourceManagerPtr, ResourceManager.this, resType, resId);
+                ResourceManagerJni.get()
+                        .removeResource(
+                                mNativeResourceManagerPtr, ResourceManager.this, resType, resId);
             }
             return;
         }
@@ -142,9 +140,16 @@ public class ResourceManager implements ResourceLoaderCallback {
 
         if (mNativeResourceManagerPtr == 0) return;
 
-        ResourceManagerJni.get().onResourceReady(mNativeResourceManagerPtr, ResourceManager.this,
-                resType, resId, bitmap, resource.getBitmapSize().width(),
-                resource.getBitmapSize().height(), resource.createNativeResource());
+        ResourceManagerJni.get()
+                .onResourceReady(
+                        mNativeResourceManagerPtr,
+                        ResourceManager.this,
+                        resType,
+                        resId,
+                        bitmap,
+                        resource.getBitmapSize().width(),
+                        resource.getBitmapSize().height(),
+                        resource.createNativeResource());
     }
 
     @Override
@@ -157,17 +162,15 @@ public class ResourceManager implements ResourceLoaderCallback {
 
         if (mNativeResourceManagerPtr == 0) return;
 
-        ResourceManagerJni.get().removeResource(
-                mNativeResourceManagerPtr, ResourceManager.this, resType, resId);
+        ResourceManagerJni.get()
+                .removeResource(mNativeResourceManagerPtr, ResourceManager.this, resType, resId);
     }
 
-    /**
-     * Clear the cache of tinted assets that the native manager holds.
-     */
+    /** Clear the cache of tinted assets that the native manager holds. */
     public void clearTintedResourceCache() {
         if (mNativeResourceManagerPtr == 0) return;
-        ResourceManagerJni.get().clearTintedResourceCache(
-                mNativeResourceManagerPtr, ResourceManager.this);
+        ResourceManagerJni.get()
+                .clearTintedResourceCache(mNativeResourceManagerPtr, ResourceManager.this);
     }
 
     private void saveMetadataForLoadedResource(
@@ -209,10 +212,19 @@ public class ResourceManager implements ResourceLoaderCallback {
 
     @NativeMethods
     interface Natives {
-        void onResourceReady(long nativeResourceManagerImpl, ResourceManager caller, int resType,
-                int resId, Bitmap bitmap, int width, int height, long nativeResource);
+        void onResourceReady(
+                long nativeResourceManagerImpl,
+                ResourceManager caller,
+                int resType,
+                int resId,
+                Bitmap bitmap,
+                int width,
+                int height,
+                long nativeResource);
+
         void removeResource(
                 long nativeResourceManagerImpl, ResourceManager caller, int resType, int resId);
+
         void clearTintedResourceCache(long nativeResourceManagerImpl, ResourceManager caller);
     }
 }

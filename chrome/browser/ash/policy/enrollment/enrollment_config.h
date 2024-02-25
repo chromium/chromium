@@ -124,9 +124,11 @@ struct EnrollmentConfig {
   // |config.management_domain| may be non-empty even if |config.mode| is
   // MODE_NONE.
   // |statistics_provider| would also be const if it had const access methods.
+  // May alter the enrollment recovery flag in local state if it discovers
+  // inconsistency there.
   static EnrollmentConfig GetPrescribedEnrollmentConfig();
   static EnrollmentConfig GetPrescribedEnrollmentConfig(
-      const PrefService& local_state,
+      PrefService* local_state,
       const ash::InstallAttributes& install_attributes,
       ash::system::StatisticsProvider* statistics_provider);
 

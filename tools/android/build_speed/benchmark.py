@@ -13,7 +13,6 @@ Example Output:
     gn gen: 6.7s
     chrome_java_nosig: 36.1s avg (35.9s, 36.3s)
     chrome_java_sig: 38.9s avg (38.8s, 39.1s)
-    chrome_java_res: 22.5s avg (22.5s, 22.4s)
     base_java_nosig: 41.0s avg (41.1s, 40.9s)
     base_java_sig: 93.1s avg (93.1s, 93.2s)
 
@@ -69,6 +68,7 @@ _SUPPORTED_EMULATORS = {
     'generic_android31.textpb': 'x64',
     'generic_android32_foldable.textpb': 'x64',
     'generic_android33': 'x64',
+    'generic_android34': 'x64',
 }
 
 _GN_ARGS = [
@@ -88,7 +88,6 @@ _SUITES = {
     'all_incremental': [
         'chrome_java_nosig',
         'chrome_java_sig',
-        'chrome_java_res',
         'module_java_public_sig',
         'module_java_internal_nosig',
         'base_java_nosig',
@@ -97,7 +96,6 @@ _SUITES = {
     'all_chrome_java': [
         'chrome_java_nosig',
         'chrome_java_sig',
-        'chrome_java_res',
     ],
     'all_module_java': [
         'module_java_public_sig',
@@ -141,12 +139,6 @@ _BENCHMARKS = [
         'AppHooksImpl sInstanceForTesting;public void NewInterfaceMethod(){}',
         change_file=
         'chrome/android/java/src/org/chromium/chrome/browser/AppHooks.java',
-    ),
-    Benchmark(
-        name='chrome_java_res',
-        from_string='14181C',
-        to_string='14181D',
-        change_file='chrome/android/java/res/values/colors.xml',
     ),
     Benchmark(
         name='module_java_public_sig',

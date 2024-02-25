@@ -119,6 +119,10 @@ void HeadlessShell::OnBrowserStart(HeadlessBrowser* browser) {
   // driven by a debugger.
   base::CommandLine::StringVector args =
       base::CommandLine::ForCurrentProcess()->GetArgs();
+  args.erase(
+      std::remove(args.begin(), args.end(), base::CommandLine::StringType()),
+      args.end());
+
   if (args.empty() && !devtools_enabled) {
     args.push_back(kAboutBlank);
   }
@@ -171,7 +175,7 @@ void HeadlessShell::OnProcessCommandsDone(
         static_cast<int>(result));
     return;
   }
-  browser_->Shutdown();
+  Shutdown();
 }
 #endif
 
@@ -182,7 +186,7 @@ void HeadlessShell::ShutdownSoon() {
 }
 
 void HeadlessShell::Shutdown() {
-  browser_->Shutdown();
+  browser_.ExtractAsDangling()->Shutdown();
 }
 
 void HeadlessChildMain(content::ContentMainParams params) {

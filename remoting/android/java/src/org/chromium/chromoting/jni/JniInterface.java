@@ -4,9 +4,10 @@
 
 package org.chromium.chromoting.jni;
 
+import org.jni_zero.JNINamespace;
+import org.jni_zero.NativeMethods;
+
 import org.chromium.base.Log;
-import org.chromium.base.annotations.JNINamespace;
-import org.chromium.base.annotations.NativeMethods;
 
 /**
  * Initializes the Chromium remoting library, and provides JNI calls into it.

@@ -8,7 +8,7 @@
 #include "base/notreached.h"
 #include "base/strings/sys_string_conversions.h"
 #include "build/build_config.h"
-#include "net/base/mac/url_conversions.h"
+#include "net/base/apple/url_conversions.h"
 
 #if BUILDFLAG(IS_IOS)
 #include "components/handoff/pref_names_ios.h"
@@ -34,7 +34,6 @@
 
 @implementation HandoffManager {
   GURL _activeURL;
-  handoff::Origin _origin;
 }
 
 @synthesize userActivity = _userActivity;
@@ -48,17 +47,7 @@
 #endif
 
 - (instancetype)init {
-  self = [super init];
-  if (self) {
-#if BUILDFLAG(IS_MAC)
-    _origin = handoff::ORIGIN_MAC;
-#elif BUILDFLAG(IS_IOS)
-    _origin = handoff::ORIGIN_IOS;
-#else
-    NOTREACHED();
-#endif
-  }
-  return self;
+  return [super init];
 }
 
 - (void)updateActiveURL:(const GURL&)url {
@@ -97,9 +86,6 @@
   self.userActivity = [[NSUserActivity alloc]
       initWithActivityType:NSUserActivityTypeBrowsingWeb];
   self.userActivity.webpageURL = net::NSURLWithGURL(_activeURL);
-  NSString* origin = handoff::StringFromOrigin(_origin);
-  DCHECK(origin);
-  self.userActivity.userInfo = @{handoff::kOriginKey : origin};
   [self.userActivity becomeCurrent];
 }
 

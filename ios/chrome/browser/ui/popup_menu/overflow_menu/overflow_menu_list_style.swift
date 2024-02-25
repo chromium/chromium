@@ -8,9 +8,6 @@ import SwiftUI
 struct OverflowMenuListStyle: ViewModifier {
   /// Height of the destination list
   static let destinationListHeight: CGFloat = 113
-  /// Extra height of the destination list when displayed in a view with a
-  /// grabber.
-  static let destinationListGrabberHeight: CGFloat = 10
 
   /// Default height if no other header or footer. This spaces the sections
   /// out properly.

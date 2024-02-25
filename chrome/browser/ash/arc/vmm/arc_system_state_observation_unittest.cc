@@ -33,8 +33,8 @@ ArcAppListPrefs::AppInfo MakePlayStoreInfo(bool ready) {
       true /* resize_lock_needs_confirmation */,
       ArcAppListPrefs::WindowLayout(), ready /* ready */, false /* suspended */,
       true /* show_in_launcher*/, false /* shortcut */, true /* launchable */,
-      false /* need_fixup */, absl::nullopt /* app_size */,
-      absl::nullopt /* data_size */,
+      false /* need_fixup */, std::nullopt /* app_size */,
+      std::nullopt /* data_size */,
       mojom::AppCategory::kUndefined /* app_category */);
 }
 }  // namespace
@@ -74,12 +74,10 @@ class ArcSystemStateObservationTest : public testing::Test {
 
   std::unique_ptr<ArcSystemStateObservation> observation_;
 
-  raw_ptr<ash::ThrottleObserver, DanglingUntriaged | ExperimentalAsh>
-      active_window_observer_;
-  raw_ptr<ash::ThrottleObserver, DanglingUntriaged | ExperimentalAsh>
+  raw_ptr<ash::ThrottleObserver, DanglingUntriaged> active_window_observer_;
+  raw_ptr<ash::ThrottleObserver, DanglingUntriaged>
       background_service_observer_;
-  raw_ptr<ash::ThrottleObserver, DanglingUntriaged | ExperimentalAsh>
-      arc_window_observer_;
+  raw_ptr<ash::ThrottleObserver, DanglingUntriaged> arc_window_observer_;
 };
 
 TEST_F(ArcSystemStateObservationTest, TestConstructDestruct) {}
@@ -98,12 +96,12 @@ TEST_F(ArcSystemStateObservationTest, NotPeaceIfArcNotConnected) {
   observation()->ThrottleInstance(true);
 
   base::RunLoop().RunUntilIdle();
-  EXPECT_EQ(absl::nullopt, observation()->GetPeaceDuration());
+  EXPECT_EQ(std::nullopt, observation()->GetPeaceDuration());
 
   observation()->OnAppStatesChanged(kPlayStoreAppId, MakePlayStoreInfo(true));
   observation()->ThrottleInstance(true);
   base::RunLoop().RunUntilIdle();
-  EXPECT_NE(absl::nullopt, observation()->GetPeaceDuration());
+  EXPECT_NE(std::nullopt, observation()->GetPeaceDuration());
 }
 // TODO(sstan): Test the ARC system running state update from mojo.
 

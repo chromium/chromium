@@ -8,22 +8,17 @@ import 'chrome://resources/cr_elements/cr_action_menu/cr_action_menu.js';
 import 'chrome://resources/cr_elements/cr_shared_style.css.js';
 import 'chrome://resources/polymer/v3_0/iron-icon/iron-icon.js';
 
+import type {Url} from 'chrome://resources/mojo/url/mojom/url.mojom-webui.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {I18nMixin, loadTimeData} from '../../../i18n_setup.js';
-import {MenuItem, ModuleHeaderElementV2} from '../module_header.js';
+import type {MenuItem, ModuleHeaderElementV2} from '../module_header.js';
 
 import {getTemplate} from './header_tile.html.js';
 
-export interface HistoryClustersHeaderElementV2 {
-  $: {
-    moduleHeaderElementV2: ModuleHeaderElementV2,
-  };
-}
-
 /** Element that displays a header inside a module. */
-export class HistoryClustersHeaderElementV2 extends I18nMixin
-(PolymerElement) {
+const ElementBase = I18nMixin(PolymerElement);
+export class HistoryClustersHeaderElementV2 extends ElementBase {
   static get is() {
     return 'history-clusters-header-v2';
   }
@@ -36,21 +31,42 @@ export class HistoryClustersHeaderElementV2 extends I18nMixin
     return {
       clusterLabel: String,
 
-      /** Whether suggestion chip header will show. */
+      /** Whether suggestion chip header style will show. */
       suggestionChipHeaderEnabled_: {
         type: Boolean,
+        reflectToAttribute: true,
         value: () => loadTimeData.getBoolean(
             'historyClustersSuggestionChipHeaderEnabled'),
-        reflectToAttribute: true,
       },
     };
   }
 
+  clusterId: number;
   clusterLabel: string;
-  private suggestionChipHeaderEnabled_: boolean;
+  normalizedUrl: Url;
+
+  private onClick_(e: Event) {
+    e.stopPropagation();
+    this.dispatchEvent(new CustomEvent(
+        'show-all-button-click', {bubbles: true, composed: true}));
+  }
+
+  private onDoneClick_(e: Event) {
+    e.stopPropagation();
+    this.dispatchEvent(
+        new CustomEvent('done-button-click', {bubbles: true, composed: true}));
+  }
+
+  private onSuggestClick_(e: Event) {
+    e.stopPropagation();
+    this.dispatchEvent(
+        new CustomEvent('suggest-click', {bubbles: true, composed: true}));
+  }
 
   private onMenuButtonClick_(e: Event) {
-    this.$.moduleHeaderElementV2.showAt(e);
+    const moduleHeader = this.shadowRoot!.querySelector<ModuleHeaderElementV2>(
+        'ntp-module-header-v2')!;
+    moduleHeader.showAt(e);
   }
 
   private getMenuItemGroups_(): MenuItem[][] {
@@ -59,7 +75,7 @@ export class HistoryClustersHeaderElementV2 extends I18nMixin
         {
           action: 'done',
           icon: 'modules:done',
-          text: this.i18n('modulesJourneysDoneButton'),
+          text: this.i18n('modulesHistoryDoneButton'),
         },
         {
           action: 'dismiss',
@@ -70,11 +86,11 @@ export class HistoryClustersHeaderElementV2 extends I18nMixin
           action: 'disable',
           icon: 'modules:block',
           text: this.i18nRecursive(
-              '', 'modulesDisableButtonTextV2', 'modulesJourneyDisable'),
+              '', 'modulesDisableButtonTextV2', 'modulesThisTypeOfCardText'),
         },
         {
           action: 'show-all',
-          icon: 'modules:right_panel_open',
+          icon: 'modules:dock_to_left',
           text: this.i18n('modulesJourneysShowAllButton'),
         },
         {
@@ -91,12 +107,6 @@ export class HistoryClustersHeaderElementV2 extends I18nMixin
         },
       ],
     ];
-  }
-}
-
-declare global {
-  interface HTMLElementTagNameMap {
-    'history-clusters-header-v2': HistoryClustersHeaderElementV2;
   }
 }
 

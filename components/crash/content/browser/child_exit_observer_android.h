@@ -134,6 +134,11 @@ class ChildExitObserver : public content::BrowserChildProcessObserver,
       const content::ChildProcessTerminationInfo& info) override;
 
   // RenderProcessHostObserver implementation.
+  // RenderProcessHostDestroyed() corresponds to death of an underlying
+  // RenderProcess. RenderProcessExited() corresponds to when the
+  // RenderProcessHost's lifetime is ending. Ideally, we'd only listen to the
+  // former, but if the RenderProcessHost is destroyed before the RenderProcess,
+  // then the former is never observed.
   void RenderProcessExited(
       content::RenderProcessHost* host,
       const content::ChildProcessTerminationInfo& info) override;

@@ -4,17 +4,14 @@
 
 package org.chromium.chrome.browser.ntp;
 
-import org.chromium.chrome.browser.query_tiles.QueryTileSection.QueryInfo;
 import org.chromium.chrome.browser.suggestions.SuggestionsUiDelegate;
 
-/**
- * Manages the view interaction with the rest of the system.
- */
+/** Manages the view interaction with the rest of the system. */
 public interface NewTabPageManager extends SuggestionsUiDelegate {
-    /** @return Whether the location bar is shown in the NTP. */
-    boolean isLocationBarShownInNTP();
+    /** Returns whether the location bar is shown in the NTP. */
+    boolean isLocationBarShownInNtp();
 
-    /** @return Whether voice search is enabled and the microphone should be shown. */
+    /** Returns whether voice search is enabled and the microphone should be shown. */
     boolean isVoiceSearchEnabled();
 
     /**
@@ -25,13 +22,7 @@ public interface NewTabPageManager extends SuggestionsUiDelegate {
     void focusSearchBox(boolean beginVoiceSearch, String pastedText);
 
     /**
-     * Performs a search query on the current {@link Tab}.
-     * @param queryInfo Object containing the query text and additional search params.
-     */
-    void performSearchQuery(QueryInfo queryInfo);
-
-    /**
-     * @return whether the {@link NewTabPage} associated with this manager is the current page
+     * Returns whether the {@link NewTabPage} associated with this manager is the current page
      * displayed to the user.
      */
     boolean isCurrentPage();

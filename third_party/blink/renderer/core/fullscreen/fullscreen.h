@@ -136,10 +136,10 @@ class CORE_EXPORT Fullscreen final : public GarbageCollected<Fullscreen>,
     virtual ~PendingRequest();
     virtual void Trace(Visitor* visitor) const;
 
-    Element* element() { return element_; }
+    Element* element() { return element_.Get(); }
     FullscreenRequestType type() { return type_; }
-    const FullscreenOptions* options() { return options_; }
-    ScriptPromiseResolver* resolver() { return resolver_; }
+    const FullscreenOptions* options() { return options_.Get(); }
+    ScriptPromiseResolver* resolver() { return resolver_.Get(); }
 
    private:
     Member<Element> element_;

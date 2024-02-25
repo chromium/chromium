@@ -199,22 +199,21 @@ void AssistantOnboardingSuggestionView::InitLayout(
       AddChildView(std::make_unique<views::InkDropContainerView>());
 
   // Layout.
-  auto& layout =
-      SetLayoutManager(std::make_unique<views::FlexLayout>())
-          ->SetCollapseMargins(true)
-          .SetCrossAxisAlignment(views::LayoutAlignment::kCenter)
-          .SetDefault(views::kFlexBehaviorKey, views::FlexSpecification())
-          .SetDefault(views::kMarginsKey, gfx::Insets::VH(0, 2 * kSpacingDip))
-          .SetInteriorMargin(gfx::Insets::VH(0, 2 * kMarginDip))
-          .SetOrientation(views::LayoutOrientation::kHorizontal);
+  SetLayoutManager(std::make_unique<views::FlexLayout>())
+      ->SetCollapseMargins(true)
+      .SetCrossAxisAlignment(views::LayoutAlignment::kCenter)
+      .SetDefault(views::kFlexBehaviorKey, views::FlexSpecification())
+      .SetDefault(views::kMarginsKey, gfx::Insets::VH(0, 2 * kSpacingDip))
+      .SetInteriorMargin(gfx::Insets::VH(0, 2 * kMarginDip))
+      .SetOrientation(views::LayoutOrientation::kHorizontal);
 
-  // NOTE: Our |layout| ignores the view for drawing focus as it is a special
-  // view which lays out itself. Removing this would cause it *not* to paint.
-  layout.SetChildViewIgnoredByLayout(views::FocusRing::Get(this), true);
+  // Ignore the focus ring, which lays out itself.
+  views::FocusRing::Get(this)->SetProperty(views::kViewIgnoredByLayoutKey,
+                                           true);
 
-  // NOTE: Our |ink_drop_container_| serves only to hold reference to ink drop
-  // layers for painting purposes. It can be completely ignored by our |layout|.
-  layout.SetChildViewIgnoredByLayout(ink_drop_container_, true);
+  // Ignore the `ink_drop_container_`, which serves only to hold reference to
+  // ink drop layers for painting purposes.
+  ink_drop_container_->SetProperty(views::kViewIgnoredByLayoutKey, true);
 
   // Icon.
   icon_ = AddChildView(std::make_unique<views::ImageView>());
@@ -262,7 +261,7 @@ void AssistantOnboardingSuggestionView::OnButtonPressed() {
   delegate_->OnSuggestionPressed(suggestion_id_);
 }
 
-BEGIN_METADATA(AssistantOnboardingSuggestionView, views::Button)
+BEGIN_METADATA(AssistantOnboardingSuggestionView)
 END_METADATA
 
 }  // namespace ash

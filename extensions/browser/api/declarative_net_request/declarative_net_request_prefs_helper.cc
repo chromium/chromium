@@ -7,7 +7,6 @@
 #include <string>
 
 #include "base/containers/contains.h"
-#include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
 #include "extensions/browser/api/declarative_net_request/utils.h"
 #include "extensions/browser/extension_prefs.h"
@@ -77,8 +76,8 @@ DeclarativeNetRequestPrefsHelper::DeclarativeNetRequestPrefsHelper(
 DeclarativeNetRequestPrefsHelper::~DeclarativeNetRequestPrefsHelper() = default;
 
 DeclarativeNetRequestPrefsHelper::RuleIdsToUpdate::RuleIdsToUpdate(
-    const absl::optional<std::vector<int>>& ids_to_disable,
-    const absl::optional<std::vector<int>>& ids_to_enable) {
+    const std::optional<std::vector<int>>& ids_to_disable,
+    const std::optional<std::vector<int>>& ids_to_enable) {
   if (ids_to_disable)
     this->ids_to_disable.insert(ids_to_disable->begin(), ids_to_disable->end());
 

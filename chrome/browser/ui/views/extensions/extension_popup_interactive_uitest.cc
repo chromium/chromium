@@ -114,9 +114,9 @@ IN_PROC_BROWSER_TEST_F(ExtensionPopupInteractiveUiTest,
   // If so, click on the chip to open the bubble.
   BrowserView* browser_view = BrowserView::GetBrowserViewForBrowser(browser());
   LocationBarView* lbv = browser_view->toolbar()->location_bar();
-  if (lbv->chip_controller()->IsPermissionPromptChipVisible() &&
-      !lbv->chip_controller()->IsBubbleShowing()) {
-    views::test::ButtonTestApi(lbv->chip_controller()->chip())
+  if (lbv->GetChipController()->IsPermissionPromptChipVisible() &&
+      !lbv->GetChipController()->IsBubbleShowing()) {
+    views::test::ButtonTestApi(lbv->GetChipController()->chip())
         .NotifyClick(ui::MouseEvent(ui::ET_MOUSE_PRESSED, gfx::Point(),
                                     gfx::Point(), ui::EventTimeForNow(),
                                     ui::EF_LEFT_MOUSE_BUTTON, 0));

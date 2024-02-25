@@ -5,14 +5,13 @@
 #ifndef CHROME_BROWSER_ASH_LOGIN_SCREENS_DRIVE_PINNING_SCREEN_H_
 #define CHROME_BROWSER_ASH_LOGIN_SCREENS_DRIVE_PINNING_SCREEN_H_
 
-#include <memory>
 #include <string>
 
 #include "base/functional/callback.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ash/drive/drive_integration_service.h"
 #include "chrome/browser/ash/login/screens/base_screen.h"
-#include "chromeos/ash/components/drivefs/drivefs_pin_manager.h"
+#include "chromeos/ash/components/drivefs/drivefs_pinning_manager.h"
 
 class Profile;
 
@@ -21,7 +20,7 @@ class DrivePinningScreenView;
 
 // Controller for the Drive Pinning Screen.
 class DrivePinningScreen : public BaseScreen,
-                           drive::DriveIntegrationServiceObserver {
+                           drive::DriveIntegrationService::Observer {
  public:
   using TView = DrivePinningScreenView;
 
@@ -70,7 +69,7 @@ class DrivePinningScreen : public BaseScreen,
   void OnUserAction(const base::Value::List& args) override;
   ScreenSummary GetScreenSummary() override;
 
-  // drive::DriveIntegrationServiceObserver
+  // DriveIntegrationService::Observer implementation.
   void OnBulkPinProgress(const drivefs::pinning::Progress& progress) override;
   void OnBulkPinInitialized() override;
 

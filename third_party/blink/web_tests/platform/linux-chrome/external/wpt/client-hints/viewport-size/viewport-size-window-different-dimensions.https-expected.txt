@@ -1,0 +1,4 @@
+This is a testharness.js-based test.
+[FAIL] viewport-size-window-different-dimensions
+  assert_equals: expected "614" but got "600"
+Harness: the test ran to completion.

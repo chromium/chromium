@@ -137,7 +137,7 @@ class InstallLimiterTest : public extensions::ExtensionServiceTestBase {
     return crx_info;
   }
 
-  raw_ptr<InstallLimiter, ExperimentalAsh> install_limiter_;
+  raw_ptr<InstallLimiter> install_limiter_;
   scoped_refptr<extensions::MockCrxInstaller> mock_installer_;
 };
 
@@ -239,7 +239,7 @@ TEST_F(InstallLimiterTest, InstallSmallBeforeLargeExtensions) {
         *mock_installer_,
         InstallCrxFile(Field(&extensions::CRXFileInfo::path, crx_path_small)))
         .WillOnce(Invoke([&] {
-          absl::optional<CrxInstallError> error;
+          std::optional<CrxInstallError> error;
           task_environment()->GetMainThreadTaskRunner()->PostTask(
               FROM_HERE, base::BindOnce(std::move(installer_callback), error));
         }));

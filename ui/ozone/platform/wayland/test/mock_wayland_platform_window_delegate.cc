@@ -13,7 +13,7 @@ gfx::Rect MockWaylandPlatformWindowDelegate::ConvertRectToPixels(
     const gfx::Rect& rect_in_dp) const {
   float scale =
       wayland_window_ ? wayland_window_->applied_state().window_scale : 1.0f;
-  return gfx::ScaleToEnclosingRect(rect_in_dp, scale);
+  return gfx::ScaleToEnclosingRectIgnoringError(rect_in_dp, scale);
 }
 
 gfx::Rect MockWaylandPlatformWindowDelegate::ConvertRectToDIP(
@@ -39,6 +39,10 @@ int64_t MockWaylandPlatformWindowDelegate::OnStateUpdate(
       old.window_scale != latest.window_scale) {
     bool origin_changed = old.bounds_dip.origin() != latest.bounds_dip.origin();
     OnBoundsChanged({origin_changed});
+  }
+
+  if (old.occlusion_state != latest.occlusion_state) {
+    OnOcclusionStateChanged(latest.occlusion_state);
   }
 
   if (!latest.ProducesFrameOnUpdateFrom(old)) {

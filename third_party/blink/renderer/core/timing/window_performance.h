@@ -32,8 +32,9 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_TIMING_WINDOW_PERFORMANCE_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_TIMING_WINDOW_PERFORMANCE_H_
 
+#include <optional>
+
 #include "base/time/time.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/mojom/timing/resource_timing.mojom-blink-forward.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/events/pointer_event.h"
@@ -65,44 +66,40 @@ class CORE_EXPORT WindowPerformance final : public Performance,
   class EventData : public GarbageCollected<EventData> {
    public:
     EventData(PerformanceEventTiming* event_timing,
-              uint64_t frame,
               uint64_t presentation_index,
               base::TimeTicks event_timestamp,
-              absl::optional<int> key_code,
-              absl::optional<PointerId> pointer_id)
+              std::optional<int> key_code,
+              std::optional<PointerId> pointer_id)
         : event_timing_(event_timing),
-          frame_(frame),
           presentation_index_(presentation_index),
           event_timestamp_(event_timestamp),
           key_code_(key_code),
           pointer_id_(pointer_id) {}
 
     static EventData* Create(PerformanceEventTiming* event_timing,
-                             uint64_t frame,
                              uint64_t presentation_index,
                              base::TimeTicks event_timestamp,
-                             absl::optional<int> key_code,
-                             absl::optional<PointerId> pointer_id) {
-      return MakeGarbageCollected<EventData>(
-          event_timing, frame, presentation_index, event_timestamp, key_code,
-          pointer_id);
+                             std::optional<int> key_code,
+                             std::optional<PointerId> pointer_id) {
+      return MakeGarbageCollected<EventData>(event_timing, presentation_index,
+                                             event_timestamp, key_code,
+                                             pointer_id);
     }
     ~EventData() = default;
     void Trace(Visitor*) const;
-    PerformanceEventTiming* GetEventTiming() const { return event_timing_; }
-    uint64_t GetFrameIndex() const { return frame_; }
+    PerformanceEventTiming* GetEventTiming() const {
+      return event_timing_.Get();
+    }
     uint64_t GetPresentationIndex() const { return presentation_index_; }
     base::TimeTicks GetEventTimestamp() const { return event_timestamp_; }
-    absl::optional<int> GetKeyCode() const { return key_code_; }
-    absl::optional<PointerId> GetPointerId() const { return pointer_id_; }
+    std::optional<int> GetKeyCode() const { return key_code_; }
+    std::optional<PointerId> GetPointerId() const { return pointer_id_; }
 
    private:
     // Event PerformanceEventTiming entry that has not been sent to observers
     // yet: the event dispatch has been completed but the presentation promise
     // used to determine |duration| has not yet been resolved.
     Member<PerformanceEventTiming> event_timing_;
-    // Frame index in which the entry in |event_timing_| were added.
-    uint64_t frame_;
     // Presentation promise index in which the entry in |event_timing_| was
     // added.
     uint64_t presentation_index_;
@@ -110,10 +107,10 @@ class CORE_EXPORT WindowPerformance final : public Performance,
     base::TimeTicks event_timestamp_;
     // Keycode for the event. If the event is not a keyboard event, the keycode
     // wouldn't be set.
-    absl::optional<int> key_code_;
+    std::optional<int> key_code_;
     // PointerId for the event. If the event is not a pointer event, the
     // PointerId wouldn't be set.
-    absl::optional<PointerId> pointer_id_;
+    std::optional<PointerId> pointer_id_;
   };
 
  public:
@@ -133,10 +130,13 @@ class CORE_EXPORT WindowPerformance final : public Performance,
 
   bool FirstInputDetected() const { return !!first_input_timing_; }
 
+  void WillShowModalDialog();
+
   // This method creates a PerformanceEventTiming and if needed creates a
   // presentation promise to calculate the |duration| attribute when such
   // promise is resolved.
   void RegisterEventTiming(const Event& event,
+                           EventTarget* event_target,
                            base::TimeTicks start_time,
                            base::TimeTicks processing_start,
                            base::TimeTicks processing_end);
@@ -191,7 +191,7 @@ class CORE_EXPORT WindowPerformance final : public Performance,
   void SetCurrentEventTimingEvent(const Event* event) {
     current_event_ = event;
   }
-  const Event* GetCurrentEventTimingEvent() { return current_event_; }
+  const Event* GetCurrentEventTimingEvent() { return current_event_.Get(); }
 
   void CreateNavigationTimingInstance(
       mojom::blink::ResourceTimingInfoPtr navigation_resource_timing);
@@ -209,11 +209,6 @@ class CORE_EXPORT WindowPerformance final : public Performance,
   // Report buffered events with presentation time following their registered
   // order; stop as soon as seeing an event with pending presentation promise.
   void ReportEventTimings();
-  // Method called once presentation promise for a frame is resolved. It will
-  // add all event timings that have not been added since the last presentation
-  // promise.
-  void ReportEventTimingsWithFrameIndex(uint64_t frame_index,
-                                        base::TimeTicks presentation_timestamp);
   void ReportEvent(InteractiveDetector* interactive_detector,
                    Member<EventData> event_data,
                    base::TimeTicks presentation_timestamp);
@@ -225,42 +220,40 @@ class CORE_EXPORT WindowPerformance final : public Performance,
   // in PerformanceObservers and the Performance Timeline
   bool SetInteractionIdAndRecordLatency(
       PerformanceEventTiming* entry,
-      absl::optional<int> key_code,
-      absl::optional<PointerId> pointer_id,
+      std::optional<int> key_code,
+      std::optional<PointerId> pointer_id,
       ResponsivenessMetrics::EventTimestamps event_timestamps);
 
   // Notify observer that an event timing entry is ready and add it to the event
   // timing buffer if needed.
   void NotifyAndAddEventTimingBuffer(PerformanceEventTiming* entry);
 
+  // Return a valid fallback time in event timing if there's one; otherwise
+  // return nullopt.
+  std::optional<base::TimeTicks> GetFallbackTime(
+      PerformanceEventTiming* entry,
+      base::TimeTicks event_timestamp,
+      base::TimeTicks presentation_timestamp);
+
   // The last time the page visibility was changed.
   base::TimeTicks last_visibility_change_timestamp_;
 
-  // Counter of the current frame index, based on calls to OnPaintFinished().
-  uint64_t frame_index_ = 1;
-  // Monotonically increasing value with the last frame index on which a
-  // presentation promise was queued;
-  uint64_t last_registered_frame_index_ = 0;
-  // Number of pending presentation promises.
-  uint16_t pending_presentation_promise_count_ = 0;
+  // A list of timestamps that javascript modal dialogs was showing. These are
+  // timestamps right before start showing each dialog.
+  Deque<base::TimeTicks> show_modal_dialog_timestamps_;
 
   // Controls if we register a new presentation promise upon events arrival.
   bool need_new_promise_for_event_presentation_time_ = true;
   // Counts the total number of presentation promises we've registered for
   // events' presentation feedback since the beginning.
   uint64_t event_presentation_promise_count_ = 0;
-  // Record presentation promise index when a painted one got resolved. We
-  // believe painted presentation promise should always resolve follow their
-  // creation order. Thus, any unresolved promise with a smaller index should be
-  // reported without waiting for their callback.
-  uint64_t last_resolved_painted_event_presentation_promise_index_ = 0;
   // Map from presentation promise index to pending event presentation
   // timestamp. It gets emptied consistently once corresponding entries are
   // reported.
   HashMap<uint64_t, base::TimeTicks> pending_event_presentation_time_map_;
   // Store all event timing and latency related data, including
-  // PerformanceEventTiming, frame_index, presentation_index, keycode and
-  // pointerId. We use the data to calculate events latencies.
+  // PerformanceEventTiming, presentation_index, keycode and pointerId.
+  // We use the data to calculate events latencies.
   HeapDeque<Member<EventData>> events_data_;
   Member<PerformanceEventTiming> first_pointer_down_event_timing_;
   Member<EventCounts> event_counts_;
@@ -268,9 +261,8 @@ class CORE_EXPORT WindowPerformance final : public Performance,
   mutable Member<PerformanceTiming> timing_;
   mutable Member<PerformanceTimingForReporting> timing_for_reporting_;
   DOMHighResTimeStamp pending_pointer_down_start_time_;
-  absl::optional<base::TimeDelta> pending_pointer_down_input_delay_;
-  absl::optional<base::TimeDelta> pending_pointer_down_processing_time_;
-  absl::optional<base::TimeDelta> pending_pointer_down_time_to_next_paint_;
+  std::optional<base::TimeDelta> pending_pointer_down_processing_time_;
+  std::optional<base::TimeDelta> pending_pointer_down_time_to_next_paint_;
 
   // Calculate responsiveness metrics and record UKM for them.
   Member<ResponsivenessMetrics> responsiveness_metrics_;

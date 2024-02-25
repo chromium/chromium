@@ -130,6 +130,5 @@ bool DownloadBubbleStartedAnimationViews::WebContentsTooSmall(
   return web_contents_bounds().height() < image_size.height() + 40;
 }
 
-BEGIN_METADATA(DownloadBubbleStartedAnimationViews,
-               DownloadStartedAnimationViews)
+BEGIN_METADATA(DownloadBubbleStartedAnimationViews)
 END_METADATA

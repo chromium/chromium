@@ -95,7 +95,7 @@ TEST_F(ManagedBookmarksPolicyHandlerTest, ApplyPolicySettings) {
 
   // Note the protocols and ending slashes added to urls, which were not in the
   // value set earlier.
-  absl::optional<base::Value> expected = base::JSONReader::Read(R"(
+  std::optional<base::Value> expected = base::JSONReader::Read(R"(
     [
       {
         "name": "Google",
@@ -160,7 +160,7 @@ TEST_F(ManagedBookmarksPolicyHandlerTest, ApplyPolicySettingsNoTitle) {
 
   // Note the protocol and ending slash added to url, which was not in the value
   // set earlier.
-  absl::optional<base::Value> expected = base::JSONReader::Read(R"(
+  std::optional<base::Value> expected = base::JSONReader::Read(R"(
     [
       {
         "name": "Google",
@@ -207,7 +207,7 @@ TEST_F(ManagedBookmarksPolicyHandlerTest, UnknownKeys) {
 
   // Note the protocol and ending slash added to url, which was not in the value
   // set earlier.
-  absl::optional<base::Value> expected = base::JSONReader::Read(R"(
+  std::optional<base::Value> expected = base::JSONReader::Read(R"(
     [
       {
         "name": "Google",

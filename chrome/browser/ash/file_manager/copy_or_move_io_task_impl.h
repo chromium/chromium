@@ -7,6 +7,7 @@
 
 #include <cstdint>
 #include <memory>
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -26,7 +27,6 @@
 #include "storage/browser/file_system/file_system_context.h"
 #include "storage/browser/file_system/file_system_operation_runner.h"
 #include "storage/browser/file_system/file_system_url.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace file_manager::io_task {
 
@@ -85,6 +85,10 @@ class CopyOrMoveIOTaskImpl {
   // method, make sure to explicitly call CopyOrMoveIOTaskImpl::Complete.
   virtual void Complete(State state);
 
+  // Aborts the copy or move because of policy error (does not run completion
+  // callback).
+  void CompleteWithError(PolicyError policy_error);
+
   // Helper function for copy or move tasks that determines whether or not
   // entries identified by their URLs should be considered as being on the
   // different file systems or not. The entries are seen as being on different
@@ -97,7 +101,18 @@ class CopyOrMoveIOTaskImpl {
       const storage::FileSystemURL& source_url,
       const storage::FileSystemURL& destination_url);
 
+  // Helper function to generate FILE_ERROR_NO_SPACE errors in testing.
+  static void SetDestinationNoSpaceForTesting(bool destination_no_space);
+
  protected:
+  // A helper for `GetHookDelegate`.
+  bool ShouldSkipEncryptedFiles();
+
+  // Returns the storage::CopyOrMoveHookDelegate to be used for the copy or move
+  // operation.
+  virtual std::unique_ptr<storage::CopyOrMoveHookDelegate> GetHookDelegate(
+      size_t idx);
+
   // Starts the actual file transfer. Should be called after the checks of
   // `VerifyTransfer` are completed. Protected to be called from child classes.
   void StartTransfer();
@@ -115,7 +130,7 @@ class CopyOrMoveIOTaskImpl {
   // The current progress state.
   // The reference is allowed here, as the owning object (CopyOrMoveIOTask) is
   // guaranteed to outlive the CopyOrMoveIOTaskImpl.
-  const raw_ref<ProgressStatus, ExperimentalAsh> progress_;
+  const raw_ref<ProgressStatus> progress_;
 
   // ProgressCallback for this operation, used to notify the UI of the current
   // progress.
@@ -130,10 +145,6 @@ class CopyOrMoveIOTaskImpl {
   virtual void VerifyTransfer();
   // Returns the error behavior to be used for the copy or move operation.
   virtual storage::FileSystemOperation::ErrorBehavior GetErrorBehavior();
-  // Returns the storage::CopyOrMoveHookDelegate to be used for the copy or move
-  // operation.
-  virtual std::unique_ptr<storage::CopyOrMoveHookDelegate> GetHookDelegate(
-      size_t idx);
 
   void GetFileSize(size_t idx);
   void GotFileSize(size_t idx,
@@ -164,7 +175,9 @@ class CopyOrMoveIOTaskImpl {
   void SetCurrentOperationID(
       storage::FileSystemOperationRunner::OperationID id);
 
-  raw_ptr<Profile, ExperimentalAsh> profile_;
+  void OnEncryptedFileSkipped(size_t idx, storage::FileSystemURL url);
+
+  raw_ptr<Profile> profile_;
   scoped_refptr<storage::FileSystemContext> file_system_context_;
 
   // Specifies whether the operation is already completed.
@@ -204,7 +217,7 @@ class CopyOrMoveIOTaskImpl {
 
   // Stores the id of the copy or move operation if one is in progress. Used so
   // the transfer can be cancelled.
-  absl::optional<storage::FileSystemOperationRunner::OperationID> operation_id_;
+  std::optional<storage::FileSystemOperationRunner::OperationID> operation_id_;
 
   // Speedometer for this operation, used to calculate the remaining time to
   // finish the operation.

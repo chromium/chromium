@@ -245,7 +245,7 @@ class DownloadRequestLimiter
   void CanDownload(const content::WebContents::Getter& web_contents_getter,
                    const GURL& url,
                    const std::string& request_method,
-                   absl::optional<url::Origin> request_initiator,
+                   std::optional<url::Origin> request_initiator,
                    bool from_download_cross_origin_redirect,
                    Callback callback);
 
@@ -288,7 +288,7 @@ class DownloadRequestLimiter
   // potentially prompting the user.
   void CanDownloadImpl(content::WebContents* originating_contents,
                        const std::string& request_method,
-                       absl::optional<url::Origin> request_initiator,
+                       std::optional<url::Origin> request_initiator,
                        bool from_download_cross_origin_redirect,
                        Callback callback);
 
@@ -296,7 +296,7 @@ class DownloadRequestLimiter
   void OnCanDownloadDecided(
       const content::WebContents::Getter& web_contents_getter,
       const std::string& request_method,
-      absl::optional<url::Origin> request_initiator,
+      std::optional<url::Origin> request_initiator,
       bool from_download_cross_origin_redirect,
       Callback orig_callback,
       bool allow);

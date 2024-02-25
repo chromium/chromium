@@ -67,10 +67,6 @@ QuicSimpleServer::QuicSimpleServer(
 }
 
 void QuicSimpleServer::Initialize() {
-#if MMSG_MORE
-  use_recvmmsg_ = true;
-#endif
-
   // If an initial flow control window has not explicitly been set, then use a
   // sensible value for a server: 1 MB for session, 64 KB for each stream.
   const uint32_t kInitialSessionFlowControlWindow = 1 * 1024 * 1024;  // 1 MB

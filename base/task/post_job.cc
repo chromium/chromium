@@ -170,8 +170,9 @@ JobHandle PostJob(const Location& from_here,
   const bool queued =
       static_cast<internal::ThreadPoolImpl*>(ThreadPoolInstance::Get())
           ->EnqueueJobTaskSource(task_source);
-  if (queued)
+  if (queued) {
     return internal::JobTaskSource::CreateJobHandle(std::move(task_source));
+  }
   return JobHandle();
 }
 

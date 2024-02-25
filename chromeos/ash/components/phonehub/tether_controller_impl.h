@@ -157,10 +157,9 @@ class TetherControllerImpl
   void UpdateStatus();
   TetherController::Status ComputeStatus() const;
 
-  raw_ptr<PhoneModel, ExperimentalAsh> phone_model_;
-  raw_ptr<UserActionRecorder, ExperimentalAsh> user_action_recorder_;
-  raw_ptr<multidevice_setup::MultiDeviceSetupClient, ExperimentalAsh>
-      multidevice_setup_client_;
+  raw_ptr<PhoneModel> phone_model_;
+  raw_ptr<UserActionRecorder> user_action_recorder_;
+  raw_ptr<multidevice_setup::MultiDeviceSetupClient> multidevice_setup_client_;
   ConnectDisconnectStatus connect_disconnect_status_ =
       ConnectDisconnectStatus::kIdle;
   Status status_ = Status::kIneligibleForFeature;

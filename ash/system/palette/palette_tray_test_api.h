@@ -44,8 +44,7 @@ class PaletteTrayTestApi {
   void SetDisplayHasStylus() { palette_tray_->SetDisplayHasStylusForTesting(); }
 
  private:
-  raw_ptr<PaletteTray, DanglingUntriaged | ExperimentalAsh> palette_tray_ =
-      nullptr;
+  raw_ptr<PaletteTray, DanglingUntriaged> palette_tray_ = nullptr;
 };
 
 }  // namespace ash

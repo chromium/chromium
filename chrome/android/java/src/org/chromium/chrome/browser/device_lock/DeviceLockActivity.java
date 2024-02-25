@@ -16,7 +16,9 @@ import androidx.annotation.CallSuper;
 import androidx.annotation.Nullable;
 
 import org.chromium.chrome.browser.SynchronousInitializationActivity;
+import org.chromium.chrome.browser.device_reauth.ReauthenticatorBridge;
 import org.chromium.chrome.browser.ui.device_lock.DeviceLockCoordinator;
+import org.chromium.components.browser_ui.device_lock.DeviceLockActivityLauncher;
 import org.chromium.components.signin.AccountUtils;
 import org.chromium.ui.base.ActivityWindowAndroid;
 import org.chromium.ui.base.IntentRequestTracker;
@@ -27,11 +29,14 @@ import org.chromium.ui.modaldialog.ModalDialogManager;
  * Informs the user on using a device lock to protect their privacy and data on the device. If
  * the device does not currently have a device lock, the user will be prompted to create one.
  */
-public class DeviceLockActivity
-        extends SynchronousInitializationActivity implements DeviceLockCoordinator.Delegate {
+public class DeviceLockActivity extends SynchronousInitializationActivity
+        implements DeviceLockCoordinator.Delegate {
     private static final String ARGUMENT_FRAGMENT_ARGS = "DeviceLockActivity.FragmentArgs";
     private static final String ARGUMENT_SELECTED_ACCOUNT =
             "DeviceLockActivity.FragmentArgs.SelectedAccount";
+    private static final String ARGUMENT_SOURCE = "DeviceLockActivity.FragmentArgs.Source";
+    private static final String ARGUMENT_REQUIRE_DEVICE_LOCK_REAUTHENTICATION =
+            "DeviceLockActivity.FragmentArgs.RequireDeviceLockReauthentication";
 
     private FrameLayout mFrameLayout;
     private WindowAndroid mWindowAndroid;
@@ -55,19 +60,31 @@ public class DeviceLockActivity
         super.onCreate(savedInstanceState);
         mFrameLayout = new FrameLayout(this);
         setContentView(mFrameLayout);
-        mWindowAndroid = new ActivityWindowAndroid(this, /* listenToActivityState= */ true,
-                IntentRequestTracker.createFromActivity(this));
+        mWindowAndroid =
+                new ActivityWindowAndroid(
+                        this,
+                        /* listenToActivityState= */ true,
+                        IntentRequestTracker.createFromActivity(this));
         mIntentRequestTracker = mWindowAndroid.getIntentRequestTracker();
 
         Bundle fragmentArgs = getIntent().getBundleExtra(ARGUMENT_FRAGMENT_ARGS);
         @Nullable
         String selectedAccountName = fragmentArgs.getString(ARGUMENT_SELECTED_ACCOUNT, null);
+        boolean requireDeviceLockReauthentication =
+                fragmentArgs.getBoolean(ARGUMENT_REQUIRE_DEVICE_LOCK_REAUTHENTICATION, true);
         @Nullable
-        Account selectedAccount = selectedAccountName != null
-                ? AccountUtils.createAccountFromName(selectedAccountName)
-                : null;
+        Account selectedAccount =
+                selectedAccountName != null
+                        ? AccountUtils.createAccountFromName(selectedAccountName)
+                        : null;
+
+        ReauthenticatorBridge reauthenticatorBridge =
+                requireDeviceLockReauthentication
+                        ? DeviceLockCoordinator.createDeviceLockAuthenticatorBridge()
+                        : null;
         mDeviceLockCoordinator =
-                new DeviceLockCoordinator(this, mWindowAndroid, this, selectedAccount);
+                new DeviceLockCoordinator(
+                        this, mWindowAndroid, reauthenticatorBridge, this, selectedAccount);
     }
 
     @CallSuper
@@ -83,19 +100,29 @@ public class DeviceLockActivity
         return null;
     }
 
-    protected static Bundle createArguments(@Nullable String selectedAccount) {
+    protected static Bundle createArguments(
+            @Nullable String selectedAccount,
+            @DeviceLockActivityLauncher.Source String source,
+            boolean requireDeviceLockReauthentication) {
         Bundle result = new Bundle();
         result.putString(ARGUMENT_SELECTED_ACCOUNT, selectedAccount);
+        result.putString(ARGUMENT_SOURCE, source);
+        result.putBoolean(
+                ARGUMENT_REQUIRE_DEVICE_LOCK_REAUTHENTICATION, requireDeviceLockReauthentication);
         return result;
     }
 
-    /**
-     * Creates a new intent to start the {@link DeviceLockActivity}.
-     */
-    protected static Intent createIntent(Context context, @Nullable String selectedAccount) {
+    /** Creates a new intent to start the {@link DeviceLockActivity}. */
+    protected static Intent createIntent(
+            Context context,
+            @Nullable String selectedAccount,
+            boolean requireDeviceLockReauthentication,
+            @DeviceLockActivityLauncher.Source String source) {
         Intent intent = new Intent(context, DeviceLockActivity.class);
         intent.putExtra(
-                ARGUMENT_FRAGMENT_ARGS, DeviceLockActivity.createArguments(selectedAccount));
+                ARGUMENT_FRAGMENT_ARGS,
+                DeviceLockActivity.createArguments(
+                        selectedAccount, source, requireDeviceLockReauthentication));
         return intent;
     }
 
@@ -117,5 +144,10 @@ public class DeviceLockActivity
         Intent intent = new Intent();
         setResult(Activity.RESULT_CANCELED, intent);
         finish();
+    }
+
+    @Override
+    public @DeviceLockActivityLauncher.Source String getSource() {
+        return getIntent().getBundleExtra(ARGUMENT_FRAGMENT_ARGS).getString(ARGUMENT_SOURCE);
     }
 }

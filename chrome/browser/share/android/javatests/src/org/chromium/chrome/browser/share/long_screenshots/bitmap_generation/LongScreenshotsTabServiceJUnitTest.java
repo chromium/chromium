@@ -35,19 +35,15 @@ import org.chromium.chrome.browser.tab.Tab;
 public class LongScreenshotsTabServiceJUnitTest {
     public static final long FAKE_NATIVE_ADDR = 345L;
 
-    @Rule
-    public JniMocker mJniMocker = new JniMocker();
+    @Rule public JniMocker mJniMocker = new JniMocker();
 
-    @Mock
-    private Tab mTab;
+    @Mock private Tab mTab;
     private LongScreenshotsTabService mLongScreenshotsTabService;
-    @Mock
-    private LongScreenshotsTabService.Natives mLongScreenshotsTabServiceJniMock;
+    @Mock private LongScreenshotsTabService.Natives mLongScreenshotsTabServiceJniMock;
     private TestCaptureProcessor mProcessor;
 
     class TestCaptureProcessor implements LongScreenshotsTabService.CaptureProcessor {
-        @Status
-        private int mActualStatus;
+        @Status private int mActualStatus;
         private boolean mProcessCapturedTabCalled;
         private long mNativeCaptureResultPtr;
 
@@ -88,9 +84,7 @@ public class LongScreenshotsTabServiceJUnitTest {
         assertEquals(0, mLongScreenshotsTabService.getNativeBaseService());
     }
 
-    /**
-     * Verifies that an error status is propagated.
-     */
+    /** Verifies that an error status is propagated. */
     @Test
     public void testCapturedTabHasErrorStatus() {
         mLongScreenshotsTabService.processCaptureTabStatus(Status.CAPTURE_FAILED);
@@ -99,9 +93,7 @@ public class LongScreenshotsTabServiceJUnitTest {
         assertEquals(0, mProcessor.getNativeCaptureResultPtr());
     }
 
-    /**
-     * Verifies that a response won't crash if there is no processor.
-     */
+    /** Verifies that a response won't crash if there is no processor. */
     @Test
     public void testCapturedNoProcessor() {
         final long fakeAddr = 123L;

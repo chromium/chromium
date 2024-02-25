@@ -113,7 +113,7 @@ ValidateAndConvertToTtsVoiceVector(const extensions::Extension* extension,
         continue;
       }
     }
-    if (absl::optional<bool> remote =
+    if (std::optional<bool> remote =
             voice_data.FindBool(constants::kRemoteKey)) {
       voice.remote = remote.value();
     }
@@ -568,7 +568,7 @@ ExtensionTtsEngineSendTtsAudioFunction::Run() {
   EXTENSION_FUNCTION_VALIDATE(char_index_value->is_int());
   char_index = char_index_value->GetInt();
 
-  absl::optional<bool> is_last_buffer =
+  std::optional<bool> is_last_buffer =
       audio->FindBool(tts_extension_api_constants::kIsLastBufferKey);
   EXTENSION_FUNCTION_VALIDATE(is_last_buffer);
 

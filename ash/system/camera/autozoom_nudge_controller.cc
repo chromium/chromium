@@ -6,14 +6,19 @@
 
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
+#include "ash/constants/notifier_catalogs.h"
+#include "ash/public/cpp/system/anchored_nudge_data.h"
+#include "ash/public/cpp/system/anchored_nudge_manager.h"
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
+#include "ash/strings/grit/ash_strings.h"
 #include "ash/system/camera/autozoom_controller_impl.h"
 #include "ash/system/camera/autozoom_nudge.h"
 #include "base/json/values_util.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
 #include "components/prefs/scoped_user_pref_update.h"
+#include "ui/base/l10n/l10n_util.h"
 
 namespace ash {
 namespace {
@@ -21,6 +26,7 @@ namespace {
 constexpr char kShownCount[] = "shown_count";
 constexpr char kLastTimeShown[] = "last_time_shown";
 constexpr char kHadEnabled[] = "had_enabled";
+constexpr char kAutozoomNudgeId[] = "AutozoomNudge";
 constexpr int kNotificationLimit = 3;
 constexpr base::TimeDelta kMinInterval = base::Days(1);
 }  // namespace
@@ -85,7 +91,7 @@ int AutozoomNudgeController::GetShownCount(PrefService* prefs) {
 
 base::Time AutozoomNudgeController::GetLastShownTime(PrefService* prefs) {
   const base::Value::Dict& dictionary = prefs->GetDict(prefs::kAutozoomNudges);
-  absl::optional<base::Time> last_shown_time =
+  std::optional<base::Time> last_shown_time =
       base::ValueToTime(dictionary.Find(kLastTimeShown));
   return last_shown_time.value_or(base::Time());
 }
@@ -120,10 +126,20 @@ void AutozoomNudgeController::OnAutozoomControlEnabledChanged(bool enabled) {
 
   PrefService* prefs =
       Shell::Get()->session_controller()->GetLastActiveUserPrefService();
-  if (!ShouldShowNudge(prefs))
+  if (!ShouldShowNudge(prefs)) {
     return;
+  }
 
-  ShowNudge();
+  if (features::IsSystemNudgeMigrationEnabled()) {
+    AnchoredNudgeData nudge_data(
+        kAutozoomNudgeId, NudgeCatalogName::kAutozoom,
+        l10n_util::GetStringUTF16(
+            IDS_ASH_STATUS_TRAY_AUTOZOOM_EDUCATIONAL_NUDGE_TEXT));
+    AnchoredNudgeManager::Get()->Show(nudge_data);
+  } else {
+    ShowNudge();
+  }
+
   HandleNudgeShown();
 }
 

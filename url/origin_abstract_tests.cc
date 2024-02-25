@@ -29,7 +29,7 @@ void ExpectParsedUrlsEqual(const GURL& a, const GURL& b) {
 }
 
 // static
-Origin UrlOriginTestTraits::CreateOriginFromString(base::StringPiece s) {
+Origin UrlOriginTestTraits::CreateOriginFromString(std::string_view s) {
   return Origin::Create(GURL(s));
 }
 
@@ -40,7 +40,7 @@ Origin UrlOriginTestTraits::CreateUniqueOpaqueOrigin() {
 
 // static
 Origin UrlOriginTestTraits::CreateWithReferenceOrigin(
-    base::StringPiece url,
+    std::string_view url,
     const Origin& reference_origin) {
   return Origin::Resolve(GURL(url), reference_origin);
 }
@@ -94,7 +94,7 @@ std::string UrlOriginTestTraits::Serialize(const Origin& origin) {
 }
 
 // static
-bool UrlOriginTestTraits::IsValidUrl(base::StringPiece str) {
+bool UrlOriginTestTraits::IsValidUrl(std::string_view str) {
   return GURL(str).is_valid();
 }
 

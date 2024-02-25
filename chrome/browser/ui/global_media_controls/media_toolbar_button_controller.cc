@@ -30,7 +30,12 @@ void MediaToolbarButtonController::OnMediaDialogOpened() {
 
 void MediaToolbarButtonController::OnMediaDialogClosed() {
   UpdateToolbarButtonState();
+  // Triggered when media playback is active and a casting session is initiated,
+  // prompting the user to manage their casting session.
   delegate_->MaybeShowStopCastingPromo();
+  // Triggered exclusively for local media content, encourages the user to begin
+  // casting if a compatible sink is available.
+  delegate_->MaybeShowLocalMediaCastingPromo();
 }
 
 void MediaToolbarButtonController::ShowToolbarButton() {

@@ -1,0 +1,7 @@
+monorail: {
+  component: "Privacy>Heuristics"
+}
+team_email: "tpcd-mitigations-team@google.com"
+buganizer_public: {
+  component_id: 1457311
+}

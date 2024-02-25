@@ -51,14 +51,6 @@ AutofillBubbleBase* TestAutofillBubbleHandler::ShowOfferNotificationBubble(
   return offer_notification_bubble_view_.get();
 }
 
-SaveUPIBubble* TestAutofillBubbleHandler::ShowSaveUPIBubble(
-    content::WebContents* contents,
-    SaveUPIBubbleController* controller) {
-  if (!save_upi_bubble_)
-    save_upi_bubble_ = std::make_unique<TestSaveUPIBubble>();
-  return save_upi_bubble_.get();
-}
-
 AutofillBubbleBase* TestAutofillBubbleHandler::ShowSaveAddressProfileBubble(
     content::WebContents* contents,
     SaveUpdateAddressProfileBubbleController* controller,
@@ -77,14 +69,6 @@ AutofillBubbleBase* TestAutofillBubbleHandler::ShowUpdateAddressProfileBubble(
         std::make_unique<TestAutofillBubble>();
   }
   return update_address_profile_bubble_view_.get();
-}
-
-AutofillBubbleBase* TestAutofillBubbleHandler::ShowEditAddressProfileDialog(
-    content::WebContents* contents,
-    EditAddressProfileDialogController* controller) {
-  if (!edit_address_profile_bubble_view_)
-    edit_address_profile_bubble_view_ = std::make_unique<TestAutofillBubble>();
-  return edit_address_profile_bubble_view_.get();
 }
 
 AutofillBubbleBase*
@@ -109,6 +93,17 @@ AutofillBubbleBase* TestAutofillBubbleHandler::ShowVirtualCardEnrollBubble(
   return virtual_card_enroll_bubble_view_.get();
 }
 
+AutofillBubbleBase*
+TestAutofillBubbleHandler::ShowVirtualCardEnrollConfirmationBubble(
+    content::WebContents* web_contents,
+    VirtualCardEnrollBubbleController* controller) {
+  if (!virtual_card_enroll_confirmation_bubble_view_) {
+    virtual_card_enroll_confirmation_bubble_view_ =
+        std::make_unique<TestAutofillBubble>();
+  }
+  return virtual_card_enroll_confirmation_bubble_view_.get();
+}
+
 AutofillBubbleBase* TestAutofillBubbleHandler::ShowMandatoryReauthBubble(
     content::WebContents* web_contents,
     MandatoryReauthBubbleController* controller,
@@ -120,6 +115,16 @@ AutofillBubbleBase* TestAutofillBubbleHandler::ShowMandatoryReauthBubble(
   return mandatory_reauth_bubble_view_.get();
 }
 
-void TestAutofillBubbleHandler::OnPasswordSaved() {}
+AutofillBubbleBase* TestAutofillBubbleHandler::ShowSaveCardConfirmationBubble(
+    content::WebContents* web_contents,
+    SaveCardBubbleController* controller) {
+  save_card_confirmation_bubble_shown_count_++;
+
+  if (!save_card_confirmation_bubble_view_) {
+    save_card_confirmation_bubble_view_ =
+        std::make_unique<TestAutofillBubble>();
+  }
+  return save_card_confirmation_bubble_view_.get();
+}
 
 }  // namespace autofill

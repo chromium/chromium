@@ -9,13 +9,14 @@
 #include <string>
 
 #include "base/functional/callback.h"
-#include "components/sessions/core/session_id.h"
+#import "base/memory/raw_ptr.h"
 #include "ios/chrome/browser/shared/model/web_state_list/web_state_list_observer.h"
 
 class WebStateList;
 
 namespace web {
 class WebState;
+class WebStateID;
 }  // namespace web
 
 // A WebStateListObserver that track the dirty state of the WebStateList and
@@ -46,7 +47,7 @@ class SessionRestorationWebStateListObserver final
 
   // Returns the set of identifiers of detached WebState that may be adopted
   // by other WebStateList (i.e. whose state on disk is still up-to-date).
-  const std::set<SessionID>& detached_web_states() const {
+  const std::set<web::WebStateID>& detached_web_states() const {
     return detached_web_states_;
   }
 
@@ -54,8 +55,15 @@ class SessionRestorationWebStateListObserver final
   // adopted by this WebStateList (i.e. whose state cannot be serialized
   // and instead need to be copied from another WebStateList's state on
   // disk).
-  const std::set<SessionID>& inserted_web_states() const {
+  const std::set<web::WebStateID>& inserted_web_states() const {
     return inserted_web_states_;
+  }
+
+  // Returns the set of identifiers of detached WebState that are scheduled
+  // to be closed (i.e. they cannot be adopted and their state on disk can
+  // be deleted).
+  const std::set<web::WebStateID>& closed_web_states() const {
+    return closed_web_states_;
   }
 
   // Should be called after saving the state of the WebStateList and of
@@ -87,13 +95,14 @@ class SessionRestorationWebStateListObserver final
   // saved to disk. May invoke the callback passed to the constructor
   void MarkDirty();
 
-  WebStateList* const web_state_list_;
+  const raw_ptr<WebStateList> web_state_list_;
   WebStateListDirtyCallback callback_;
 
   bool is_web_state_list_dirty_ = false;
   std::set<web::WebState*> dirty_web_states_;
-  std::set<SessionID> detached_web_states_;
-  std::set<SessionID> inserted_web_states_;
+  std::set<web::WebStateID> detached_web_states_;
+  std::set<web::WebStateID> inserted_web_states_;
+  std::set<web::WebStateID> closed_web_states_;
 };
 
 #endif  // IOS_CHROME_BROWSER_SESSIONS_SESSION_RESTORATION_WEB_STATE_LIST_OBSERVER_H_

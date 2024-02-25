@@ -20,6 +20,7 @@
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chromeos/constants/chromeos_features.h"
 #include "content/public/test/browser_test.h"
+#include "content/public/test/browser_test_utils.h"
 #include "content/public/test/theme_change_waiter.h"
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
@@ -69,7 +70,7 @@ class ChromeOsWebAppExperimentsBrowserTest
   }
 
  protected:
-  AppId app_id_;
+  webapps::AppId app_id_;
   GURL extended_scope_;
   GURL extended_scope_page_;
   std::vector<const char* const> extended_scopes_;
@@ -84,7 +85,7 @@ IN_PROC_BROWSER_TEST_F(ChromeOsWebAppExperimentsBrowserTest,
   // Check that the out of scope banner doesn't show after navigating to the
   // different scope in the web app window.
   Browser* app_browser = LaunchWebAppBrowser(app_id_);
-  NavigateToURLAndWait(app_browser, extended_scope_page_);
+  NavigateViaLinkClickToURLAndWait(app_browser, extended_scope_page_);
   EXPECT_FALSE(app_browser->app_controller()->ShouldShowCustomTabBar());
 }
 

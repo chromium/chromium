@@ -29,7 +29,15 @@ Intended consumers of this code are organized as follows:
 
 * content/browser/payments/ -- PaymentApps implementation
 
-* ios/chrome/browser/payments/ -- iOS UI implementation
+The payment flow initiates in Blink:
 
-* ios/web/payments/ and ios/web/public/payments/ -- iOS communication layer,
-                                                    replacing Mojo
+* third_party/blink/renderer/modules/payments/payment_request.h
+
+The Blink module communicates to the browser via Mojo:
+
+* third_party/blink/public/mojom/payments/payment_request.mojom
+
+There are two implementations for the Mojo service in the browser:
+
+* Desktop: components/payments/content/payment_request.h
+* Android: components/payments/content/android/java/src/org/chromium/components/payments/PaymentRequestService.java

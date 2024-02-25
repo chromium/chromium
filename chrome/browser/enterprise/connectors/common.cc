@@ -6,6 +6,7 @@
 
 #include "base/notreached.h"
 #include "base/ranges/algorithm.h"
+#include "base/strings/utf_string_conversions.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/enterprise/connectors/analysis/content_analysis_delegate_base.h"
 #include "chrome/browser/enterprise/connectors/analysis/content_analysis_dialog.h"
@@ -15,7 +16,10 @@
 #include "chrome/browser/enterprise/util/affiliation.h"
 #include "chrome/browser/policy/dm_token_utils.h"
 #include "chrome/browser/profiles/profile.h"
+#include "components/download/public/common/download_danger_type.h"
+#include "components/download/public/common/download_item.h"
 #include "components/enterprise/browser/controller/browser_dm_token_storage.h"
+#include "ui/base/l10n/l10n_util.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chrome/browser/ash/profiles/profile_helper.h"
@@ -28,12 +32,21 @@
 #include "components/policy/core/common/policy_loader_lacros.h"
 #endif
 
+using safe_browsing::BinaryUploadService;
+
 namespace enterprise_connectors {
 
-namespace {
+RequestHandlerResult::RequestHandlerResult() = default;
+RequestHandlerResult::~RequestHandlerResult() = default;
+RequestHandlerResult::RequestHandlerResult(RequestHandlerResult&&) = default;
+RequestHandlerResult& RequestHandlerResult::operator=(RequestHandlerResult&&) =
+    default;
+RequestHandlerResult::RequestHandlerResult(const RequestHandlerResult&) =
+    default;
+RequestHandlerResult& RequestHandlerResult::operator=(
+    const RequestHandlerResult&) = default;
 
-constexpr char kDlpTag[] = "dlp";
-constexpr char kMalwareTag[] = "malware";
+namespace {
 
 bool ContentAnalysisActionAllowsDataUse(TriggeredRule::Action action) {
   switch (action) {
@@ -62,40 +75,44 @@ ContentAnalysisAcknowledgement::FinalAction RuleActionToAckAction(
 
 }  // namespace
 
-bool ResultShouldAllowDataUse(
-    const AnalysisSettings& settings,
-    safe_browsing::BinaryUploadService::Result upload_result) {
-  using safe_browsing::BinaryUploadService;
+bool ResultShouldAllowDataUse(const AnalysisSettings& settings,
+                              BinaryUploadService::Result upload_result) {
+  bool default_action_allow_data_use =
+      settings.default_action == DefaultAction::kAllow;
+
   // Keep this implemented as a switch instead of a simpler if statement so that
   // new values added to BinaryUploadService::Result cause a compiler error.
   switch (upload_result) {
     case BinaryUploadService::Result::SUCCESS:
-    case BinaryUploadService::Result::UPLOAD_FAILURE:
-    case BinaryUploadService::Result::TIMEOUT:
-    case BinaryUploadService::Result::FAILED_TO_GET_TOKEN:
-    case BinaryUploadService::Result::TOO_MANY_REQUESTS:
     // UNAUTHORIZED allows data usage since it's a result only obtained if the
     // browser is not authorized to perform deep scanning. It does not make
     // sense to block data in this situation since no actual scanning of the
     // data was performed, so it's allowed.
     case BinaryUploadService::Result::UNAUTHORIZED:
-    case BinaryUploadService::Result::UNKNOWN:
       return true;
+
+    case BinaryUploadService::Result::UPLOAD_FAILURE:
+    case BinaryUploadService::Result::TIMEOUT:
+    case BinaryUploadService::Result::FAILED_TO_GET_TOKEN:
+    case BinaryUploadService::Result::TOO_MANY_REQUESTS:
+    case BinaryUploadService::Result::UNKNOWN:
+      DVLOG(1) << __func__
+               << ": handled by fail-closed settings, "
+                  "default_action_allow_data_use="
+               << default_action_allow_data_use;
+      return default_action_allow_data_use;
 
     case BinaryUploadService::Result::FILE_TOO_LARGE:
       return !settings.block_large_files;
 
     case BinaryUploadService::Result::FILE_ENCRYPTED:
       return !settings.block_password_protected_files;
-
-    case BinaryUploadService::Result::DLP_SCAN_UNSUPPORTED_FILE_TYPE:
-      return !settings.block_unsupported_file_types;
   }
 }
 
 RequestHandlerResult CalculateRequestHandlerResult(
     const AnalysisSettings& settings,
-    safe_browsing::BinaryUploadService::Result upload_result,
+    BinaryUploadService::Result upload_result,
     const ContentAnalysisResponse& response) {
   std::string tag;
   auto action = GetHighestPrecedenceAction(response, &tag);
@@ -107,22 +124,69 @@ RequestHandlerResult CalculateRequestHandlerResult(
   result.complies = file_complies;
   result.request_token = response.request_token();
   result.tag = tag;
-  if (!file_complies) {
-    if (upload_result ==
-        safe_browsing::BinaryUploadService::Result::FILE_TOO_LARGE) {
-      result.final_result = FinalContentAnalysisResult::LARGE_FILES;
-    } else if (upload_result ==
-               safe_browsing::BinaryUploadService::Result::FILE_ENCRYPTED) {
-      result.final_result = FinalContentAnalysisResult::ENCRYPTED_FILES;
-    } else if (action == TriggeredRule::WARN) {
-      result.final_result = FinalContentAnalysisResult::WARNING;
-    } else {
-      result.final_result = FinalContentAnalysisResult::FAILURE;
-    }
-  } else {
+
+  if (file_complies) {
     result.final_result = FinalContentAnalysisResult::SUCCESS;
+    return result;
+  }
+
+  // If file is non-compliant, map it to the specific case.
+  if (ResultIsFailClosed(upload_result)) {
+    DVLOG(1) << __func__ << ": result mapped to fail-closed.";
+    result.final_result = FinalContentAnalysisResult::FAIL_CLOSED;
+  } else if (upload_result == BinaryUploadService::Result::FILE_TOO_LARGE) {
+    result.final_result = FinalContentAnalysisResult::LARGE_FILES;
+  } else if (upload_result == BinaryUploadService::Result::FILE_ENCRYPTED) {
+    result.final_result = FinalContentAnalysisResult::ENCRYPTED_FILES;
+  } else if (action == TriggeredRule::WARN) {
+    result.final_result = FinalContentAnalysisResult::WARNING;
+  } else {
+    result.final_result = FinalContentAnalysisResult::FAILURE;
+  }
+
+  for (const auto& response_result : response.results()) {
+    if (!response_result.has_status() ||
+        response_result.status() != ContentAnalysisResponse::Result::SUCCESS) {
+      continue;
+    }
+    for (const auto& rule : response_result.triggered_rules()) {
+      // Ensures that lower precedence actions custom messages are skipped. The
+      // message shown is arbitrary for rules with the same precedence.
+      if (rule.action() == action && rule.has_custom_rule_message()) {
+        result.custom_rule_message = rule.custom_rule_message();
+      }
+    }
   }
   return result;
+}
+
+std::u16string GetCustomRuleString(
+    const ContentAnalysisResponse::Result::TriggeredRule::CustomRuleMessage&
+        custom_rule_message) {
+  std::u16string custom_message;
+  for (const auto& custom_segment : custom_rule_message.message_segments()) {
+    base::StrAppend(&custom_message,
+                    {base::UTF8ToUTF16(custom_segment.text())});
+  }
+  return custom_message;
+}
+
+std::vector<std::pair<gfx::Range, GURL>> GetCustomRuleStyles(
+    const ContentAnalysisResponse::Result::TriggeredRule::CustomRuleMessage&
+        custom_rule_message,
+    size_t offset) {
+  std::vector<std::pair<gfx::Range, GURL>> linked_ranges;
+  for (const auto& custom_segment : custom_rule_message.message_segments()) {
+    if (custom_segment.has_link()) {
+      GURL url(custom_segment.link());
+      if (url.is_valid()) {
+        linked_ranges.emplace_back(
+            gfx::Range(offset, offset + custom_segment.text().length()), url);
+      }
+    }
+    offset += custom_segment.text().length();
+  }
+  return linked_ranges;
 }
 
 safe_browsing::EventResult CalculateEventResult(
@@ -367,13 +431,69 @@ bool IncludeDeviceInfo(Profile* profile, bool per_profile) {
 #endif
 }
 
-bool ShouldPromptReviewForDownload(Profile* profile,
-                                   download::DownloadDangerType danger_type) {
-  // Review dialog only appears if custom UI has been set by the admin.
+ContentAnalysisResponse::Result::TriggeredRule::CustomRuleMessage
+CreateSampleCustomRuleMessage(const std::u16string& msg,
+                              const std::string& url) {
+  ContentAnalysisResponse::Result::TriggeredRule::CustomRuleMessage
+      custom_message;
+  auto* custom_segment = custom_message.add_message_segments();
+  custom_segment->set_text(base::UTF16ToUTF8(msg));
+  custom_segment->set_link(url);
+  return custom_message;
+}
+
+std::optional<ContentAnalysisResponse::Result::TriggeredRule::CustomRuleMessage>
+GetDownloadsCustomRuleMessage(const download::DownloadItem* download_item,
+                              download::DownloadDangerType danger_type) {
+  if (!download_item) {
+    return std::nullopt;
+  }
+
+  // Custom rule message is currently only present for either warning or block
+  // danger types.
+  TriggeredRule::Action current_action;
+  if (danger_type == download::DOWNLOAD_DANGER_TYPE_SENSITIVE_CONTENT_WARNING) {
+    current_action = TriggeredRule::WARN;
+  } else if (danger_type ==
+             download::DOWNLOAD_DANGER_TYPE_SENSITIVE_CONTENT_BLOCK) {
+    current_action = TriggeredRule::BLOCK;
+  } else {
+    return std::nullopt;
+  }
+
+  enterprise_connectors::ScanResult* scan_result =
+      static_cast<enterprise_connectors::ScanResult*>(
+          download_item->GetUserData(enterprise_connectors::ScanResult::kKey));
+  if (!scan_result) {
+    return std::nullopt;
+  }
+  for (const auto& metadata : scan_result->file_metadata) {
+    for (const auto& result : metadata.scan_response.results()) {
+      for (const auto& rule : result.triggered_rules()) {
+        if (rule.action() == current_action && rule.has_custom_rule_message()) {
+          return rule.custom_rule_message();
+        }
+      }
+    }
+  }
+  return std::nullopt;
+}
+
+bool ShouldPromptReviewForDownload(
+    Profile* profile,
+    const download::DownloadItem* download_item) {
+  // Review dialog only appears if custom UI has been set by the admin or custom
+  // rule message present in download item.
+  if (!download_item) {
+    return false;
+  }
+  download::DownloadDangerType danger_type = download_item->GetDangerType();
   if (danger_type == download::DOWNLOAD_DANGER_TYPE_SENSITIVE_CONTENT_WARNING ||
       danger_type == download::DOWNLOAD_DANGER_TYPE_SENSITIVE_CONTENT_BLOCK) {
     return ConnectorsServiceFactory::GetForBrowserContext(profile)
-        ->HasExtraUiToDisplay(AnalysisConnector::FILE_DOWNLOADED, kDlpTag);
+               ->HasExtraUiToDisplay(AnalysisConnector::FILE_DOWNLOADED,
+                                     kDlpTag) ||
+           GetDownloadsCustomRuleMessage(download_item, danger_type);
   } else if (danger_type == download::DOWNLOAD_DANGER_TYPE_DANGEROUS_FILE ||
              danger_type == download::DOWNLOAD_DANGER_TYPE_DANGEROUS_URL ||
              danger_type == download::DOWNLOAD_DANGER_TYPE_DANGEROUS_CONTENT) {
@@ -387,10 +507,11 @@ void ShowDownloadReviewDialog(const std::u16string& filename,
                               Profile* profile,
                               download::DownloadItem* download_item,
                               content::WebContents* web_contents,
-                              download::DownloadDangerType danger_type,
                               base::OnceClosure keep_closure,
                               base::OnceClosure discard_closure) {
   auto state = FinalContentAnalysisResult::FAILURE;
+  download::DownloadDangerType danger_type = download_item->GetDangerType();
+
   if (danger_type == download::DOWNLOAD_DANGER_TYPE_SENSITIVE_CONTENT_WARNING) {
     state = FinalContentAnalysisResult::WARNING;
   }
@@ -425,22 +546,31 @@ void ShowDownloadReviewDialog(const std::u16string& filename,
       std::make_unique<ContentAnalysisDownloadsDelegate>(
           filename, custom_message, learn_more_url,
           bypass_justification_required, std::move(keep_closure),
-          std::move(discard_closure), download_item),
+          std::move(discard_closure), download_item,
+          GetDownloadsCustomRuleMessage(download_item, danger_type)
+              .value_or(ContentAnalysisResponse::Result::TriggeredRule::
+                            CustomRuleMessage())),
       true,  // Downloads are always cloud-based for now.
       web_contents, safe_browsing::DeepScanAccessPoint::DOWNLOAD,
       /* file_count */ 1, state, download_item);
 }
 
-bool CloudResultIsFailure(safe_browsing::BinaryUploadService::Result result) {
-  return result != safe_browsing::BinaryUploadService::Result::SUCCESS;
+bool CloudResultIsFailure(BinaryUploadService::Result result) {
+  return result != BinaryUploadService::Result::SUCCESS;
 }
 
-bool LocalResultIsFailure(safe_browsing::BinaryUploadService::Result result) {
-  return result != safe_browsing::BinaryUploadService::Result::SUCCESS &&
-         result != safe_browsing::BinaryUploadService::Result::FILE_TOO_LARGE &&
-         result != safe_browsing::BinaryUploadService::Result::FILE_ENCRYPTED &&
-         result != safe_browsing::BinaryUploadService::Result::
-                       DLP_SCAN_UNSUPPORTED_FILE_TYPE;
+bool LocalResultIsFailure(BinaryUploadService::Result result) {
+  return result != BinaryUploadService::Result::SUCCESS &&
+         result != BinaryUploadService::Result::FILE_TOO_LARGE &&
+         result != BinaryUploadService::Result::FILE_ENCRYPTED;
+}
+
+bool ResultIsFailClosed(BinaryUploadService::Result result) {
+  return result == BinaryUploadService::Result::UPLOAD_FAILURE ||
+         result == BinaryUploadService::Result::TIMEOUT ||
+         result == BinaryUploadService::Result::FAILED_TO_GET_TOKEN ||
+         result == BinaryUploadService::Result::TOO_MANY_REQUESTS ||
+         result == BinaryUploadService::Result::UNKNOWN;
 }
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)

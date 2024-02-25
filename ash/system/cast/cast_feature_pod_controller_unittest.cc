@@ -4,7 +4,6 @@
 
 #include "ash/system/cast/cast_feature_pod_controller.h"
 
-#include "ash/constants/ash_features.h"
 #include "ash/public/cpp/test/test_cast_config_controller.h"
 #include "ash/system/unified/feature_tile.h"
 #include "ash/system/unified/unified_system_tray.h"
@@ -25,9 +24,7 @@ SinkAndRoute MakeLocalSinkAndRoute() {
 
 class CastFeaturePodControllerTest : public AshTestBase {
  public:
-  CastFeaturePodControllerTest() {
-    feature_list_.InitAndEnableFeature(features::kQsRevamp);
-  }
+  CastFeaturePodControllerTest() = default;
 
   // AshTestBase:
   void SetUp() override {
@@ -117,7 +114,7 @@ TEST_F(CastFeaturePodControllerTest, CompactTileStateWhenCastingScreen) {
   std::unique_ptr<FeatureTile> tile = controller_->CreateTile(/*compact=*/true);
   EXPECT_TRUE(tile->IsToggled());
   EXPECT_EQ(tile->label()->GetText(), u"Casting screen");
-  EXPECT_FALSE(tile->sub_label());
+  EXPECT_FALSE(tile->sub_label()->GetVisible());
 }
 
 TEST_F(CastFeaturePodControllerTest, TileStateWhenCastingTab) {

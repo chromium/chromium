@@ -11,18 +11,19 @@
 #include "base/memory/raw_ptr.h"
 #include "ui/webui/resources/cr_components/app_management/app_management.mojom.h"
 
-class AppManagementPageHandler;
+class AppManagementPageHandlerChromeOs;
 class ShelfControllerHelper;
 class Profile;
 
-// This is a helper class used by the AppManagementPageHandler to manage
+// This is a helper class used by the AppManagementPageHandlerBase to manage
 // shelf-related functionality, which is only meaningful when running Chrome OS.
-// It observes the ShelfModel, and notifies the AppManagementPageHandler when
-// apps are pinned or unpinned.
+// It observes the ShelfModel, and notifies the AppManagementPageHandlerBase
+// when apps are pinned or unpinned.
 class AppManagementShelfDelegate : public ash::ShelfModelObserver {
  public:
-  explicit AppManagementShelfDelegate(AppManagementPageHandler* page_handler,
-                                      Profile* profile);
+  explicit AppManagementShelfDelegate(
+      AppManagementPageHandlerChromeOs* page_handler,
+      Profile* profile);
 
   AppManagementShelfDelegate(const AppManagementShelfDelegate&) = delete;
   AppManagementShelfDelegate& operator=(const AppManagementShelfDelegate&) =
@@ -31,8 +32,7 @@ class AppManagementShelfDelegate : public ash::ShelfModelObserver {
   ~AppManagementShelfDelegate() override;
 
   bool IsPinned(const std::string& app_id);
-  void SetPinned(const std::string& app_id,
-                 app_management::mojom::OptionalBool pinned);
+  void SetPinned(const std::string& app_id, bool pinned);
 
   bool IsPolicyPinned(const std::string& app_id) const;
 
@@ -42,7 +42,7 @@ class AppManagementShelfDelegate : public ash::ShelfModelObserver {
   void ShelfItemRemoved(int index, const ash::ShelfItem& old_item) override;
   void ShelfItemChanged(int index, const ash::ShelfItem& old_item) override;
 
-  raw_ptr<AppManagementPageHandler> page_handler_;
+  raw_ptr<AppManagementPageHandlerChromeOs> page_handler_;
   std::unique_ptr<ShelfControllerHelper> shelf_controller_helper_;
 };
 

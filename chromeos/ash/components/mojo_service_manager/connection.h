@@ -38,6 +38,14 @@ void SetServiceManagerRemoteForTesting(
     mojo::PendingRemote<chromeos::mojo_service_manager::mojom::ServiceManager>
         remote);
 
+// Return a pending receiver which is bound to the service manager proxy in an
+// utility process. The pending receiver should be passed to ash via
+// |UtilityProcessHost::BindHostReceiver| and be bound to an
+// UtilityProcessBridge.
+COMPONENT_EXPORT(CHROMEOS_MOJO_SERVICE_MANAGER)
+mojo::PendingReceiver<chromeos::mojo_service_manager::mojom::ServiceManager>
+BootstrapServiceManagerInUtilityProcess();
+
 }  // namespace ash::mojo_service_manager
 
 #endif  // CHROMEOS_ASH_COMPONENTS_MOJO_SERVICE_MANAGER_CONNECTION_H_

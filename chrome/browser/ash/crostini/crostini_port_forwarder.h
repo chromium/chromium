@@ -111,7 +111,7 @@ class CrostiniPortForwarder : public KeyedService {
   base::Value::List GetActiveNetworkInfo();
 
   size_t GetNumberOfForwardedPortsForTesting();
-  absl::optional<base::Value> ReadPortPreferenceForTesting(
+  std::optional<base::Value> ReadPortPreferenceForTesting(
       const PortRuleKey& key);
   void ActiveNetworksChanged(const std::string& interface,
                              const std::string& ip_address);
@@ -138,7 +138,7 @@ class CrostiniPortForwarder : public KeyedService {
                                 const guest_os::GuestId& container_id);
   void AddNewPortPreference(const PortRuleKey& key, const std::string& label);
   bool RemovePortPreference(const PortRuleKey& key);
-  absl::optional<base::Value> ReadPortPreference(const PortRuleKey& key);
+  std::optional<base::Value> ReadPortPreference(const PortRuleKey& key);
 
   void OnActivatePortCompleted(ResultCallback result_callback,
                                PortRuleKey key,
@@ -165,7 +165,7 @@ class CrostiniPortForwarder : public KeyedService {
 
   base::ObserverList<Observer> observers_;
 
-  raw_ptr<Profile, ExperimentalAsh> profile_;
+  raw_ptr<Profile> profile_;
 
   base::WeakPtrFactory<CrostiniPortForwarder> weak_ptr_factory_{this};
 

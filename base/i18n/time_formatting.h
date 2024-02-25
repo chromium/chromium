@@ -9,6 +9,7 @@
 #define BASE_I18N_TIME_FORMATTING_H_
 
 #include <string>
+#include <string_view>
 
 #include "base/i18n/base_i18n_export.h"
 #include "build/build_config.h"
@@ -119,12 +120,17 @@ BASE_I18N_EXPORT std::u16string TimeFormatFriendlyDate(const Time& time);
 // use case.
 BASE_I18N_EXPORT std::u16string LocalizedTimeFormatWithPattern(
     const Time& time,
-    const char* pattern);
+    std::string_view pattern);
 
 // Formats a time using a pattern to produce en-US-like output, e.g. "Feb. 2,
 // 18:00". See
 // https://unicode-org.github.io/icu/userguide/format_parse/datetime/#datetime-format-syntax
-// for pattern details. `time_zone` can be set to a desired time zone (e.g.
+// for pattern details. NOTE: While ICU only supports millisecond precision
+// (fractional second patterns "SSS..." will be filled with zeroes after the
+// third 'S'), this supports microsecond precision (up to six 'S's may become
+// non-zero values), since some callers need that.
+//
+// `time_zone` can be set to a desired time zone (e.g.
 // icu::TimeZone::getGMT()); if left as null, the local time zone will be used.
 //
 // Use this version when you want to control the output format precisely, e.g.
@@ -135,8 +141,15 @@ BASE_I18N_EXPORT std::u16string LocalizedTimeFormatWithPattern(
 // `std::u16string` under the assumption that it will not be used in UI.
 BASE_I18N_EXPORT std::string UnlocalizedTimeFormatWithPattern(
     const Time& time,
-    const char* pattern,
+    std::string_view pattern,
     const icu::TimeZone* time_zone = nullptr);
+
+// Formats a time compliant to ISO 8601 in UTC, e.g. "2020-12-31T23:59:59.999Z".
+BASE_I18N_EXPORT std::string TimeFormatAsIso8601(const Time& time);
+
+// Formats a time in the IMF-fixdate format defined by RFC 7231 (satisfying its
+// HTTP-date format), e.g. "Sun, 06 Nov 1994 08:49:37 GMT".
+BASE_I18N_EXPORT std::string TimeFormatHTTP(const Time& time);
 
 // Formats a time duration of hours and minutes into various formats, e.g.,
 // "3:07" or "3 hours, 7 minutes", and returns true on success. See

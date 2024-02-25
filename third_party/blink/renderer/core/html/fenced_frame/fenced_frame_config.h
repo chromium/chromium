@@ -60,9 +60,9 @@ class CORE_EXPORT FencedFrameConfig final : public ScriptWrappable {
                                    uint32_t width,
                                    uint32_t height,
                                    const String& shared_storage_context,
-                                   absl::optional<KURL> urn_uuid,
-                                   absl::optional<gfx::Size> container_size,
-                                   absl::optional<gfx::Size> content_size,
+                                   std::optional<KURL> urn_uuid,
+                                   std::optional<gfx::Size> container_size,
+                                   std::optional<gfx::Size> content_size,
                                    AttributeVisibility url_visibility,
                                    AttributeVisibility size_visibility,
                                    bool freeze_initial_size);
@@ -77,9 +77,9 @@ class CORE_EXPORT FencedFrameConfig final : public ScriptWrappable {
                              uint32_t width,
                              uint32_t height,
                              const String& shared_storage_context,
-                             absl::optional<KURL> urn_uuid,
-                             absl::optional<gfx::Size> container_size,
-                             absl::optional<gfx::Size> content_size,
+                             std::optional<KURL> urn_uuid,
+                             std::optional<gfx::Size> container_size,
+                             std::optional<gfx::Size> content_size,
                              AttributeVisibility url_visibility,
                              AttributeVisibility size_visibility,
                              bool freeze_initial_size);
@@ -114,36 +114,35 @@ class CORE_EXPORT FencedFrameConfig final : public ScriptWrappable {
     NOTREACHED();
   }
 
-  absl::optional<KURL> urn_uuid(base::PassKey<HTMLFencedFrameElement>) {
+  std::optional<KURL> urn_uuid(base::PassKey<HTMLFencedFrameElement>) {
     return urn_uuid_;
   }
 
-  absl::optional<KURL> urn_uuid(base::PassKey<V8ScriptValueSerializer>) {
+  std::optional<KURL> urn_uuid(base::PassKey<V8ScriptValueSerializer>) {
     return urn_uuid_;
   }
 
   // Temporary accessor for `deprecatedURNToURL` and `deprecatedReplaceInURN`.
   // TODO(crbug.com/1347953): Remove when those functions are removed.
-  absl::optional<KURL> urn_uuid(base::PassKey<NavigatorAuction>) {
+  std::optional<KURL> urn_uuid(base::PassKey<NavigatorAuction>) {
     return urn_uuid_;
   }
 
-  absl::optional<gfx::Size> container_size(
+  std::optional<gfx::Size> container_size(
       base::PassKey<HTMLFencedFrameElement>) {
     return container_size_;
   }
 
-  absl::optional<gfx::Size> container_size(
+  std::optional<gfx::Size> container_size(
       base::PassKey<V8ScriptValueSerializer>) {
     return container_size_;
   }
 
-  absl::optional<gfx::Size> content_size(
-      base::PassKey<HTMLFencedFrameElement>) {
+  std::optional<gfx::Size> content_size(base::PassKey<HTMLFencedFrameElement>) {
     return content_size_;
   }
 
-  absl::optional<gfx::Size> content_size(
+  std::optional<gfx::Size> content_size(
       base::PassKey<V8ScriptValueSerializer>) {
     return content_size_;
   }
@@ -231,12 +230,12 @@ class CORE_EXPORT FencedFrameConfig final : public ScriptWrappable {
   // we navigate a fenced frame using a `FencedFrameConfig` object that has a
   // non-null `urn_`, we navigate to that URN instead of the platform-provided
   // URL. This value is never exposed to the web platform.
-  absl::optional<KURL> urn_uuid_;
+  std::optional<KURL> urn_uuid_;
 
   // The intended size for the fenced frame. If <fencedframe> doesn't have a
   // specified size, this will override the default size. If it does have a
   // specified size, this will do nothing.
-  absl::optional<gfx::Size> container_size_;
+  std::optional<gfx::Size> container_size_;
 
   // `content_size` and `deprecated_should_freeze_initial_size` temporarily need
   // to be treated differently than other fields, because for implementation
@@ -247,14 +246,14 @@ class CORE_EXPORT FencedFrameConfig final : public ScriptWrappable {
 
   // The size that the inner frame of the fenced frame should be frozen to (if
   // any).
-  absl::optional<gfx::Size> content_size_;
+  std::optional<gfx::Size> content_size_;
 
   // Whether we should use the old size freezing behavior (coerce the size at
   // navigation time to an allowlist, then freeze it) for backwards
   // compatibility.
   bool deprecated_should_freeze_initial_size_ = false;
 
-  static_assert(__LINE__ == 257, R"(
+  static_assert(__LINE__ == 256, R"(
 If adding or modifying a field in FencedFrameConfig, be sure to also make
 the field serializable. To do that:
 
@@ -275,7 +274,7 @@ the field serializable. To do that:
 };
 
 template <>
-struct FencedFrameConfig::AttributeUnion<String> {
+struct FencedFrameConfig::AttributeUnion<AtomicString> {
   using Type = V8UnionOpaquePropertyOrUSVString;
 };
 template <>

@@ -9,20 +9,20 @@
 #include <memory>
 #include <string>
 
-#include "base/strings/string_piece_forward.h"
+#include "base/strings/string_piece.h"
 #include "build/chromeos_buildflags.h"
+#include "chrome/browser/web_applications/os_integration/os_integration_sub_manager.h"
 #include "chrome/browser/web_applications/web_app_constants.h"
-#include "chrome/browser/web_applications/web_app_id.h"
 #include "chrome/browser/web_applications/web_app_install_params.h"
 #include "chrome/browser/web_applications/web_app_sync_bridge.h"
 #include "components/prefs/pref_service.h"
+#include "components/webapps/common/web_app_id.h"
 #include "content/public/browser/service_worker_context.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
 
 class Browser;
 class Profile;
-struct WebAppInstallInfo;
 
 namespace content {
 class StoragePartition;
@@ -72,7 +72,7 @@ void TestDeclineDialogCallback(
     std::unique_ptr<WebAppInstallInfo> web_app_info,
     WebAppInstallationAcceptanceCallback acceptance_callback);
 
-AppId InstallPwaForCurrentUrl(Browser* browser);
+webapps::AppId InstallPwaForCurrentUrl(Browser* browser);
 
 void CheckServiceWorkerStatus(const GURL& url,
                               content::StoragePartition* storage_partition,
@@ -82,16 +82,21 @@ void SetWebAppSettingsListPref(Profile* profile, base::StringPiece pref);
 
 void AddInstallUrlData(PrefService* pref_service,
                        WebAppSyncBridge* sync_bridge,
-                       const AppId& app_id,
+                       const webapps::AppId& app_id,
                        const GURL& url,
                        const ExternalInstallSource& source);
 
 void AddInstallUrlAndPlaceholderData(PrefService* pref_service,
                                      WebAppSyncBridge* sync_bridge,
-                                     const AppId& app_id,
+                                     const webapps::AppId& app_id,
                                      const GURL& url,
                                      const ExternalInstallSource& source,
                                      bool is_placeholder);
+
+void SynchronizeOsIntegration(
+    Profile* profile,
+    const webapps::AppId& app_id,
+    std::optional<SynchronizeOsOptions> options = std::nullopt);
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
 class ScopedSkipMainProfileCheck {

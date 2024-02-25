@@ -9,12 +9,12 @@ static_library("common") {
   sources = [
     "no_state_prefetch_final_status.cc",
     "no_state_prefetch_final_status.h",
+    "no_state_prefetch_url_loader_throttle.cc",
+    "no_state_prefetch_url_loader_throttle.h",
     "no_state_prefetch_utils.cc",
     "no_state_prefetch_utils.h",
     "prerender_origin.cc",
     "prerender_origin.h",
-    "prerender_url_loader_throttle.cc",
-    "prerender_url_loader_throttle.h",
   ]
   deps = [
     ":mojo_bindings",
@@ -39,4 +39,18 @@ mojom("mojo_bindings") {
     "render_frame_prerender_messages.mojom",
   ]
   deps = [ "//url/mojom:url_mojom_gurl" ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "no_state_prefetch_url_loader_throttle_unittest.cc" ]
+
+  deps = [
+    ":mojo_bindings",
+    "//base",
+    "//components/no_state_prefetch/common",
+    "//content/test:test_support",
+    "//testing/gtest",
+    "//url:url",
+  ]
 }

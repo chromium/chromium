@@ -17,14 +17,12 @@ cast_source_set("service") {
   public_deps = [
     "//media/mojo/mojom",
     "//media/mojo/services",
-    "//services/service_manager/public/cpp",
   ]
 
   deps = [
     "//base",
     "//chromecast/base",
     "//chromecast/common/mojom",
-    "//chromecast/external_mojo/external_service_support:external_service",
     "//chromecast/media",
     "//chromecast/media/service/mojom",
     "//media",

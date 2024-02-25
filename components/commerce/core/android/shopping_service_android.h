@@ -49,6 +49,11 @@ class ShoppingServiceAndroid : public base::SupportsUserData::Data,
                              const JavaParamRef<jobject>& j_gurl,
                              const JavaParamRef<jobject>& j_callback);
 
+  void GetPriceInsightsInfoForUrl(JNIEnv* env,
+                                  const JavaParamRef<jobject>& obj,
+                                  const JavaParamRef<jobject>& j_gurl,
+                                  const JavaParamRef<jobject>& j_callback);
+
   void FetchPriceEmailPref(JNIEnv* env, const JavaParamRef<jobject>& obj);
 
   void ScheduleSavedProductUpdate(JNIEnv* env,
@@ -99,18 +104,26 @@ class ShoppingServiceAndroid : public base::SupportsUserData::Data,
   bool IsCommercePriceTrackingEnabled(JNIEnv* env,
                                       const JavaParamRef<jobject>& obj);
 
+  bool IsPriceInsightsEligible(JNIEnv* env, const JavaParamRef<jobject>& obj);
+
   ScopedJavaGlobalRef<jobject> java_ref() { return java_ref_; }
 
  private:
   void HandleProductInfoCallback(JNIEnv* env,
                                  const ScopedJavaGlobalRef<jobject>& callback,
                                  const GURL& url,
-                                 const absl::optional<const ProductInfo>& info);
+                                 const std::optional<const ProductInfo>& info);
 
   void HandleMerchantInfoCallback(JNIEnv* env,
                                   const ScopedJavaGlobalRef<jobject>& callback,
                                   const GURL& url,
-                                  absl::optional<MerchantInfo> info);
+                                  std::optional<MerchantInfo> info);
+
+  void HandlePriceInsightsInfoCallback(
+      JNIEnv* env,
+      const ScopedJavaGlobalRef<jobject>& callback,
+      const GURL& url,
+      const std::optional<PriceInsightsInfo>& info);
 
   void OnSubscribe(const CommerceSubscription& sub, bool succeeded) override;
   void OnUnsubscribe(const CommerceSubscription& sub, bool succeeded) override;

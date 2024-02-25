@@ -73,11 +73,11 @@ enum GroupId {
   GROUP_VISITED_DOC_RELATED = 10005;
   GROUP_POLARIS_RESERVED_MAX = 19999;
 
-  // Mobile-specific auxiliary suggestions. These suggestions are placed on top
-  // of any other content.
+  // Mobile-specific auxiliary suggestions.
   GROUP_MOBILE_SEARCH_READY_OMNIBOX = 30000;
   GROUP_MOBILE_MOST_VISITED = 30001;
   GROUP_MOBILE_CLIPBOARD = 30002;
+  GROUP_MOBILE_QUERY_TILES = 30003;  // E.g. "News", "Films", "Sports", ...
 
   // Reserved for personalized zero-prefix suggestions.
   // Produced by LocalHistoryZeroSuggestProvider and maybe ZeroSuggestProvider.
@@ -136,6 +136,9 @@ enum GroupSection {
   SECTION_REMOTE_ZPS_8 = 12;
   SECTION_REMOTE_ZPS_9 = 13;
   SECTION_REMOTE_ZPS_10 = 14;
+
+  // Query tiles - a carousel with high-level query recommendations.
+  SECTION_MOBILE_QUERY_TILES = 15;
 
   // Cross platform suggestions with vanilla visual representation (i.e.
   // vertical, primary column, and no header), but useful for sorting.

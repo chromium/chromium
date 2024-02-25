@@ -5,6 +5,8 @@
 #ifndef CHROME_BROWSER_NEARBY_SHARING_TCP_SOCKET_NEARBY_CONNECTIONS_TCP_SOCKET_FACTORY_H_
 #define CHROME_BROWSER_NEARBY_SHARING_TCP_SOCKET_NEARBY_CONNECTIONS_TCP_SOCKET_FACTORY_H_
 
+#include <optional>
+
 #include "base/functional/callback.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
@@ -17,9 +19,9 @@
 #include "mojo/public/cpp/system/data_pipe.h"
 #include "net/base/address_list.h"
 #include "net/base/ip_endpoint.h"
+#include "services/network/public/cpp/network_context_getter.h"
 #include "services/network/public/mojom/network_context.mojom.h"
 #include "services/network/public/mojom/tcp_socket.mojom.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ash {
 namespace nearby {
@@ -39,8 +41,6 @@ class IPAddress;
 class NearbyConnectionsTcpSocketFactory
     : public sharing::mojom::TcpSocketFactory {
  public:
-  using NetworkContextGetter =
-      base::RepeatingCallback<network::mojom::NetworkContext*()>;
 
   // A class used to run NetworkContext::CreateTCPConnectedSocket with a
   // user-defined |timeout|. There is timeout logic in the networking stack, but
@@ -51,7 +51,7 @@ class NearbyConnectionsTcpSocketFactory
    public:
     ConnectTask(
         network::mojom::NetworkContext* network_context,
-        const absl::optional<net::IPEndPoint>& local_addr,
+        const std::optional<net::IPEndPoint>& local_addr,
         const net::AddressList& remote_addr_list,
         network::mojom::TCPConnectedSocketOptionsPtr
             tcp_connected_socket_options,
@@ -66,8 +66,8 @@ class NearbyConnectionsTcpSocketFactory
 
    private:
     void OnFinished(int32_t result,
-                    const absl::optional<net::IPEndPoint>& local_addr,
-                    const absl::optional<net::IPEndPoint>& peer_addr,
+                    const std::optional<net::IPEndPoint>& local_addr,
+                    const std::optional<net::IPEndPoint>& peer_addr,
                     mojo::ScopedDataPipeConsumerHandle receive_stream,
                     mojo::ScopedDataPipeProducerHandle send_stream);
     void OnTimeout();
@@ -81,7 +81,7 @@ class NearbyConnectionsTcpSocketFactory
   };
 
   explicit NearbyConnectionsTcpSocketFactory(
-      NetworkContextGetter network_context_getter);
+      network::NetworkContextGetter network_context_getter);
   NearbyConnectionsTcpSocketFactory(const NearbyConnectionsTcpSocketFactory&) =
       delete;
   NearbyConnectionsTcpSocketFactory& operator=(
@@ -98,7 +98,7 @@ class NearbyConnectionsTcpSocketFactory
       CreateTCPServerSocketCallback callback) override;
   void CreateTCPConnectedSocket(
       base::TimeDelta timeout,
-      const absl::optional<net::IPEndPoint>& local_addr,
+      const std::optional<net::IPEndPoint>& local_addr,
       const net::AddressList& remote_addr_list,
       network::mojom::TCPConnectedSocketOptionsPtr tcp_connected_socket_options,
       const net::MutableNetworkTrafficAnnotationTag& traffic_annotation,
@@ -112,17 +112,17 @@ class NearbyConnectionsTcpSocketFactory
   void OnTcpServerSocketCreated(
       CreateTCPServerSocketCallback callback,
       int32_t result,
-      const absl::optional<net::IPEndPoint>& local_addr);
+      const std::optional<net::IPEndPoint>& local_addr);
   void OnTcpConnectedSocketCreated(
       base::UnguessableToken task_id,
       CreateTCPConnectedSocketCallback callback,
       int32_t result,
-      const absl::optional<net::IPEndPoint>& local_addr,
-      const absl::optional<net::IPEndPoint>& peer_addr,
+      const std::optional<net::IPEndPoint>& local_addr,
+      const std::optional<net::IPEndPoint>& peer_addr,
       mojo::ScopedDataPipeConsumerHandle receive_stream,
       mojo::ScopedDataPipeProducerHandle send_stream);
 
-  NetworkContextGetter network_context_getter_;
+  network::NetworkContextGetter network_context_getter_;
   base::flat_map<base::UnguessableToken, std::unique_ptr<ConnectTask>>
       connect_tasks_;
   base::WeakPtrFactory<NearbyConnectionsTcpSocketFactory> weak_ptr_factory_{

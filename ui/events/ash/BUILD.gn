@@ -11,12 +11,23 @@ assert(is_chromeos_ash)
 source_set("ash") {
   output_name = "ui_events_ash"
   sources = [
+    "event_property.cc",
+    "event_property.h",
     "event_rewriter_ash.cc",
     "event_rewriter_ash.h",
+    "event_rewriter_metrics.cc",
+    "event_rewriter_metrics.h",
+    "event_rewriter_utils.h",
     "keyboard_capability.cc",
     "keyboard_capability.h",
+    "keyboard_device_id_event_rewriter.cc",
+    "keyboard_device_id_event_rewriter.h",
+    "keyboard_info_metrics.cc",
+    "keyboard_info_metrics.h",
     "keyboard_layout_util.cc",
     "keyboard_layout_util.h",
+    "keyboard_modifier_event_rewriter.cc",
+    "keyboard_modifier_event_rewriter.h",
     "pref_names.h",
   ]
   deps = [
@@ -39,4 +50,34 @@ source_set("ash") {
       "//ui/events/keycodes:x11",
     ]
   }
+}
+
+source_set("unit_tests") {
+  sources = [
+    "keyboard_device_id_event_rewriter_unittest.cc",
+    "keyboard_info_metrics_unittest.cc",
+  ]
+
+  deps = [
+    ":ash",
+    "//base",
+    "//base/test:test_support",
+    "//testing/gtest",
+    "//ui/events",
+    "//ui/events/devices",
+    "//ui/events/devices:test_support",
+  ]
+  testonly = true
+}
+
+source_set("test_support") {
+  sources = [
+    "fake_event_rewriter_ash_delegate.cc",
+    "fake_event_rewriter_ash_delegate.h",
+  ]
+  deps = [
+    ":ash",
+    "//base",
+  ]
+  testonly = true
 }

@@ -38,11 +38,6 @@ namespace web_navigation_api_helpers {
 
 namespace {
 
-// Returns |time| as milliseconds since the epoch.
-double MilliSecondsFromTime(const base::Time& time) {
-  return 1000 * time.ToDoubleT();
-}
-
 // Dispatches events to the extension message service.
 void DispatchEvent(content::BrowserContext* browser_context,
                    std::unique_ptr<Event> event,
@@ -85,7 +80,7 @@ std::unique_ptr<Event> CreateOnBeforeNavigateEvent(
   details.frame_type = ExtensionApiFrameIdMap::GetFrameType(navigation_handle);
   details.document_lifecycle =
       ExtensionApiFrameIdMap::GetDocumentLifecycle(navigation_handle);
-  details.time_stamp = MilliSecondsFromTime(base::Time::Now());
+  details.time_stamp = base::Time::Now().InMillisecondsFSinceUnixEpoch();
 
   auto event = std::make_unique<Event>(
       events::WEB_NAVIGATION_ON_BEFORE_NAVIGATE,
@@ -162,7 +157,7 @@ void DispatchOnCommitted(events::HistogramValue histogram_value,
   dict.Set(web_navigation_api_constants::kTransitionQualifiersKey,
            std::move(qualifiers));
   dict.Set(web_navigation_api_constants::kTimeStampKey,
-           MilliSecondsFromTime(base::Time::Now()));
+           base::Time::Now().InMillisecondsFSinceUnixEpoch());
   args.Append(std::move(dict));
 
   content::BrowserContext* browser_context =
@@ -194,7 +189,7 @@ void DispatchOnDOMContentLoaded(content::WebContents* web_contents,
   details.frame_type = ExtensionApiFrameIdMap::GetFrameType(frame_host);
   details.document_lifecycle =
       ExtensionApiFrameIdMap::GetDocumentLifecycle(frame_host);
-  details.time_stamp = MilliSecondsFromTime(base::Time::Now());
+  details.time_stamp = base::Time::Now().InMillisecondsFSinceUnixEpoch();
 
   content::BrowserContext* browser_context = web_contents->GetBrowserContext();
   auto event = std::make_unique<Event>(
@@ -226,7 +221,7 @@ void DispatchOnCompleted(content::WebContents* web_contents,
   details.frame_type = ExtensionApiFrameIdMap::GetFrameType(frame_host);
   details.document_lifecycle =
       ExtensionApiFrameIdMap::GetDocumentLifecycle(frame_host);
-  details.time_stamp = MilliSecondsFromTime(base::Time::Now());
+  details.time_stamp = base::Time::Now().InMillisecondsFSinceUnixEpoch();
 
   content::BrowserContext* browser_context = web_contents->GetBrowserContext();
   auto event = std::make_unique<Event>(
@@ -257,7 +252,7 @@ void DispatchOnCreatedNavigationTarget(
   details.source_frame_id = source_extension_frame_id;
   details.url = target_url.possibly_invalid_spec();
   details.tab_id = ExtensionTabUtil::GetTabId(target_web_contents);
-  details.time_stamp = MilliSecondsFromTime(base::Time::Now());
+  details.time_stamp = base::Time::Now().InMillisecondsFSinceUnixEpoch();
 
   auto event = std::make_unique<Event>(
       events::WEB_NAVIGATION_ON_CREATED_NAVIGATION_TARGET,
@@ -297,7 +292,7 @@ void DispatchOnErrorOccurred(content::WebContents* web_contents,
   details.frame_type = ExtensionApiFrameIdMap::GetFrameType(frame_host);
   details.document_lifecycle =
       ExtensionApiFrameIdMap::GetDocumentLifecycle(frame_host);
-  details.time_stamp = MilliSecondsFromTime(base::Time::Now());
+  details.time_stamp = base::Time::Now().InMillisecondsFSinceUnixEpoch();
 
   content::BrowserContext* browser_context = web_contents->GetBrowserContext();
   auto event =
@@ -331,7 +326,7 @@ void DispatchOnErrorOccurred(content::NavigationHandle* navigation_handle) {
   details.frame_type = ExtensionApiFrameIdMap::GetFrameType(navigation_handle);
   details.document_lifecycle =
       ExtensionApiFrameIdMap::GetDocumentLifecycle(navigation_handle);
-  details.time_stamp = MilliSecondsFromTime(base::Time::Now());
+  details.time_stamp = base::Time::Now().InMillisecondsFSinceUnixEpoch();
 
   content::BrowserContext* browser_context =
       navigation_handle->GetWebContents()->GetBrowserContext();
@@ -350,7 +345,7 @@ void DispatchOnTabReplaced(
   web_navigation::OnTabReplaced::Details details;
   details.replaced_tab_id = ExtensionTabUtil::GetTabId(old_web_contents);
   details.tab_id = ExtensionTabUtil::GetTabId(new_web_contents);
-  details.time_stamp = MilliSecondsFromTime(base::Time::Now());
+  details.time_stamp = base::Time::Now().InMillisecondsFSinceUnixEpoch();
 
   auto event = std::make_unique<Event>(
       events::WEB_NAVIGATION_ON_TAB_REPLACED,

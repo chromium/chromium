@@ -27,13 +27,11 @@
 #include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
 #include "media/base/media_switches.h"
-#include "media/base/scopedfd_helper.h"
 #include "media/base/video_frame_layout.h"
 #include "media/base/video_types.h"
 #include "media/gpu/chromeos/fourcc.h"
 #include "media/gpu/chromeos/platform_video_frame_utils.h"
 #include "media/gpu/macros.h"
-#include "media/gpu/v4l2/legacy/v4l2_stateful_workaround.h"
 #include "media/gpu/v4l2/v4l2_image_processor_backend.h"
 #include "media/gpu/v4l2/v4l2_utils.h"
 #include "media/gpu/v4l2/v4l2_vda_helpers.h"
@@ -156,7 +154,7 @@ V4L2VideoDecodeAccelerator::V4L2VideoDecodeAccelerator(
       child_task_runner_(base::SingleThreadTaskRunner::GetCurrentDefault()),
       decoder_thread_("V4L2DecoderThread"),
       decoder_state_(kUninitialized),
-      output_mode_(Config::OutputMode::ALLOCATE),
+      output_mode_(Config::OutputMode::kAllocate),
       device_(std::move(device)),
       decoder_delay_bitstream_buffer_id_(-1),
       decoder_decode_buffer_tasks_scheduled_(0),
@@ -204,8 +202,8 @@ bool V4L2VideoDecodeAccelerator::Initialize(const Config& config,
     return false;
   }
 
-  if (config.output_mode != Config::OutputMode::ALLOCATE &&
-      config.output_mode != Config::OutputMode::IMPORT) {
+  if (config.output_mode != Config::OutputMode::kAllocate &&
+      config.output_mode != Config::OutputMode::kImport) {
     NOTREACHED() << "Only ALLOCATE and IMPORT OutputModes are supported";
     return false;
   }
@@ -336,9 +334,6 @@ bool V4L2VideoDecodeAccelerator::CheckConfig(const Config& config) {
     return false;
   }
 
-  workarounds_ =
-      CreateV4L2StatefulWorkarounds(V4L2Device::Type::kDecoder, config.profile);
-
   output_mode_ = config.output_mode;
 
   input_queue_ = device_->GetQueue(V4L2_BUF_TYPE_VIDEO_OUTPUT_MPLANE);
@@ -422,7 +417,7 @@ void V4L2VideoDecodeAccelerator::AssignPictureBuffersTask(
 #endif
   enum v4l2_memory memory;
   if (!image_processor_device_ && !prefer_software_mt21 &&
-      output_mode_ == Config::OutputMode::IMPORT) {
+      output_mode_ == Config::OutputMode::kImport) {
     memory = V4L2_MEMORY_DMABUF;
   } else {
     memory = V4L2_MEMORY_MMAP;
@@ -444,7 +439,7 @@ void V4L2VideoDecodeAccelerator::AssignPictureBuffersTask(
   DCHECK(output_buffer_map_.empty());
   DCHECK(output_wait_map_.empty());
   output_buffer_map_.resize(buffers.size());
-  if (image_processor_device_ && output_mode_ == Config::OutputMode::ALLOCATE) {
+  if (image_processor_device_ && output_mode_ == Config::OutputMode::kAllocate) {
     if (!CreateImageProcessor())
       return;
   }
@@ -464,14 +459,12 @@ void V4L2VideoDecodeAccelerator::AssignPictureBuffersTask(
     DCHECK(!output_record.cleared);
 
     output_record.picture_id = buffers[i].id();
-    output_record.texture_id = buffers[i].service_texture_ids().empty()
-                                   ? 0
-                                   : buffers[i].service_texture_ids()[0];
+    output_record.texture_id = buffers[i].service_texture_id();
 
     // We move the buffer into output_wait_map_, so get a reference to
     // its video frame if we need it to create the native pixmap for import.
     scoped_refptr<VideoFrame> video_frame;
-    if (output_mode_ == Config::OutputMode::ALLOCATE &&
+    if (output_mode_ == Config::OutputMode::kAllocate &&
         !image_processor_device_)
       video_frame = buffer.GetVideoFrame();
 
@@ -480,7 +473,7 @@ void V4L2VideoDecodeAccelerator::AssignPictureBuffersTask(
     DCHECK_EQ(output_wait_map_.count(buffers[i].id()), 0u);
     output_wait_map_.emplace(buffers[i].id(), std::move(buffer));
 
-    if (output_mode_ == Config::OutputMode::ALLOCATE) {
+    if (output_mode_ == Config::OutputMode::kAllocate) {
       gfx::NativePixmapHandle native_pixmap;
 
       // If we are using an image processor, the DMABufs that we need to import
@@ -497,7 +490,7 @@ void V4L2VideoDecodeAccelerator::AssignPictureBuffersTask(
     DVLOGF(3) << "buffer[" << i << "]: picture_id=" << output_record.picture_id;
   }
 
-  if (output_mode_ == Config::OutputMode::ALLOCATE) {
+  if (output_mode_ == Config::OutputMode::kAllocate) {
     ScheduleDecodeBufferTaskIfNeeded();
   }
 }
@@ -598,7 +591,7 @@ void V4L2VideoDecodeAccelerator::ImportBufferForPicture(
     gfx::GpuMemoryBufferHandle gpu_memory_buffer_handle) {
   DVLOGF(3) << "picture_buffer_id=" << picture_buffer_id;
   DCHECK(child_task_runner_->BelongsToCurrentThread());
-  if (output_mode_ != Config::OutputMode::IMPORT) {
+  if (output_mode_ != Config::OutputMode::kImport) {
     LOG(ERROR) << "Cannot import in non-import mode";
     NOTIFY_ERROR(INVALID_ARGUMENT);
     return;
@@ -671,7 +664,7 @@ void V4L2VideoDecodeAccelerator::ImportBufferForPictureTask(
   // communicate the actual buffer size. If we are importing, make sure that the
   // actual buffer size is coherent with what we expect, and adjust our size if
   // needed.
-  if (output_mode_ == Config::OutputMode::IMPORT) {
+  if (output_mode_ == Config::OutputMode::kImport) {
     DCHECK_GT(handle.planes.size(), 0u);
     const gfx::Size handle_size = v4l2_vda_helpers::NativePixmapSizeFromHandle(
         handle, *egl_image_format_fourcc_, egl_image_size_);
@@ -723,7 +716,7 @@ void V4L2VideoDecodeAccelerator::ImportBufferForPictureTask(
 
   // If we are importing, create the output VideoFrame that we will render
   // into.
-  if (output_mode_ == Config::OutputMode::IMPORT) {
+  if (output_mode_ == Config::OutputMode::kImport) {
     DCHECK_GT(handle.planes.size(), 0u);
     DCHECK(!iter->output_frame);
     // Duplicate the buffer FDs for the VideoFrame instance.
@@ -751,8 +744,8 @@ void V4L2VideoDecodeAccelerator::ImportBufferForPictureTask(
     }
 
     iter->output_frame = VideoFrame::WrapExternalDmabufs(
-        *layout, gfx::Rect(visible_size_), visible_size_,
-        DuplicateFDs(duped_fds), base::TimeDelta());
+        *layout, gfx::Rect(visible_size_), visible_size_, std::move(duped_fds),
+        base::TimeDelta());
   }
 
   if (iter->texture_id != 0) {
@@ -1001,15 +994,6 @@ void V4L2VideoDecodeAccelerator::DecodeBufferTask() {
         buffer->data() + decoder_current_bitstream_buffer_->bytes_used;
     const size_t data_size =
         buffer->data_size() - decoder_current_bitstream_buffer_->bytes_used;
-
-    for (auto& workaround : workarounds_) {
-      auto result = workaround->Apply(data, data_size);
-      if (result == V4L2StatefulWorkaround::Result::NotifyError) {
-        LOG(ERROR) << "Failed applying a workaround";
-        NOTIFY_ERROR(PLATFORM_FAILURE);
-        return;
-      }
-    }
 
     if (!frame_splitter_->AdvanceFrameFragment(data, data_size,
                                                &decoded_size)) {
@@ -1450,7 +1434,7 @@ bool V4L2VideoDecodeAccelerator::DequeueResolutionChangeEvent() {
   DCHECK_NE(decoder_state_, kUninitialized);
   DVLOGF(3);
 
-  while (absl::optional<struct v4l2_event> event = device_->DequeueEvent()) {
+  while (std::optional<struct v4l2_event> event = device_->DequeueEvent()) {
     if (event->type == V4L2_EVENT_SOURCE_CHANGE) {
       if (event->u.src_change.changes & V4L2_EVENT_SRC_CH_RESOLUTION) {
         VLOGF(2) << "got resolution change event.";
@@ -1931,7 +1915,6 @@ void V4L2VideoDecodeAccelerator::DestroyTask() {
   output_queue_ = nullptr;
 
   frame_splitter_ = nullptr;
-  workarounds_.clear();
 
   // Clear the V4L2 devices in the decoder thread so the V4L2Device's
   // destructor is called from the thread that used it.
@@ -2395,7 +2378,7 @@ bool V4L2VideoDecodeAccelerator::CreateImageProcessor() {
   DCHECK(decoder_thread_.task_runner()->BelongsToCurrentThread());
   DCHECK(!image_processor_);
   const ImageProcessor::OutputMode image_processor_output_mode =
-      (output_mode_ == Config::OutputMode::ALLOCATE
+      (output_mode_ == Config::OutputMode::kAllocate
            ? ImageProcessor::OutputMode::ALLOCATE
            : ImageProcessor::OutputMode::IMPORT);
 
@@ -2444,7 +2427,7 @@ bool V4L2VideoDecodeAccelerator::ProcessFrame(int32_t bitstream_buffer_id,
       return false;
     }
 
-    if (output_mode_ != Config::OutputMode::IMPORT) {
+    if (output_mode_ != Config::OutputMode::kImport) {
       LOG(ERROR) << "Software MT21 does not support ALLOCATE output mode!";
       NOTIFY_ERROR(PLATFORM_FAILURE);
       return false;
@@ -2456,12 +2439,17 @@ bool V4L2VideoDecodeAccelerator::ProcessFrame(int32_t bitstream_buffer_id,
       return false;
     }
 
+    // We should never need Intel media compressed buffers with V4L2.
     std::unique_ptr<VideoFrameMapper> output_frame_mapper;
     output_frame_mapper = VideoFrameMapperFactory::CreateMapper(
-        PIXEL_FORMAT_NV12, VideoFrame::STORAGE_DMABUFS, true);
+        PIXEL_FORMAT_NV12, VideoFrame::STORAGE_DMABUFS,
+        /*force_linear_buffer_mapper=*/true,
+        /*must_support_intel_media_compressed_buffers=*/false);
     if (!output_frame_mapper) {
       output_frame_mapper = VideoFrameMapperFactory::CreateMapper(
-          PIXEL_FORMAT_NV12, VideoFrame::STORAGE_GPU_MEMORY_BUFFER, true);
+          PIXEL_FORMAT_NV12, VideoFrame::STORAGE_GPU_MEMORY_BUFFER,
+          /*force_linear_buffer_mapper=*/true,
+          /*must_support_intel_media_compressed_buffers=*/false);
     }
     if (!output_frame_mapper) {
       LOG(ERROR) << "Failed to instantiate MT21 frame mapper!";
@@ -2570,14 +2558,14 @@ bool V4L2VideoDecodeAccelerator::CreateOutputBuffers() {
   // With ALLOCATE mode the client can sample it as RGB and doesn't need to
   // know the precise format.
   VideoPixelFormat pixel_format =
-      (output_mode_ == Config::OutputMode::IMPORT)
+      (output_mode_ == Config::OutputMode::kImport)
           ? egl_image_format_fourcc_->ToVideoPixelFormat()
           : PIXEL_FORMAT_UNKNOWN;
 
   child_task_runner_->PostTask(
       FROM_HERE,
       base::BindOnce(&Client::ProvidePictureBuffersWithVisibleRect, client_,
-                     buffer_count, pixel_format, 1, egl_image_size_,
+                     buffer_count, pixel_format, egl_image_size_,
                      gfx::Rect(visible_size_), device_->GetTextureTarget()));
 
   // Go into kAwaitingPictureBuffers to prevent us from doing any more decoding

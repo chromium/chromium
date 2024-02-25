@@ -1,0 +1,11 @@
+This is a testharness.js-based test.
+[FAIL] [keepalive][new window][unload] same-origin redirect
+  assert_equals: token should be on (stashed). expected (string) "on" but got (object) null
+[FAIL] [keepalive][new window][unload] same-origin redirect + preflight
+  assert_equals: token should be on (stashed). expected (string) "on" but got (object) null
+[FAIL] [keepalive][new window][unload] cross-origin redirect
+  assert_equals: token should be on (stashed). expected (string) "on" but got (object) null
+[FAIL] [keepalive][new window][unload] cross-origin redirect + preflight
+  assert_equals: token should be on (stashed). expected (string) "on" but got (object) null
+Harness: the test ran to completion.
+

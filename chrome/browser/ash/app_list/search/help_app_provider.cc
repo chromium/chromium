@@ -15,6 +15,7 @@
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/ash/app_list/search/common/icon_constants.h"
+#include "chrome/browser/ash/app_list/search/types.h"
 #include "chrome/browser/ash/app_list/vector_icons/vector_icons.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/ash/system_web_apps/system_web_app_ui_utils.h"
@@ -95,7 +96,9 @@ void HelpAppResult::Open(int event_flags) {
 
 HelpAppProvider::HelpAppProvider(Profile* profile,
                                  ash::help_app::SearchHandler* search_handler)
-    : profile_(profile), search_handler_(search_handler) {
+    : SearchProvider(SearchCategory::kHelp),
+      profile_(profile),
+      search_handler_(search_handler) {
   DCHECK(profile_);
 
   app_registry_cache_observer_.Observe(
@@ -216,7 +219,6 @@ void HelpAppProvider::OnLoadIcon(apps::IconValuePtr icon_value) {
 void HelpAppProvider::LoadIcon() {
   auto* proxy = apps::AppServiceProxyFactory::GetForProfile(profile_);
   proxy->LoadIcon(
-      proxy->AppRegistryCache().GetAppType(web_app::kHelpAppId),
       web_app::kHelpAppId, apps::IconType::kStandard,
       ash::SharedAppListConfig::instance().suggestion_chip_icon_dimension(),
       /*allow_placeholder_icon=*/false,

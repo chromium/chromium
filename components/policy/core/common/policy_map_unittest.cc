@@ -5,6 +5,7 @@
 #include "components/policy/core/common/policy_map.h"
 
 #include <memory>
+#include <optional>
 #include <utility>
 
 #include "base/functional/bind.h"
@@ -23,7 +24,6 @@
 #include "components/policy/policy_constants.h"
 #include "components/strings/grit/components_strings.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace policy {
 
@@ -52,7 +52,7 @@ void SetPolicy(PolicyMap* map,
                const char* name,
                std::unique_ptr<ExternalDataFetcher> external_data_fetcher) {
   map->Set(name, POLICY_LEVEL_MANDATORY, POLICY_SCOPE_USER, POLICY_SOURCE_CLOUD,
-           absl::nullopt, std::move(external_data_fetcher));
+           std::nullopt, std::move(external_data_fetcher));
 }
 
 template <class T>
@@ -142,7 +142,7 @@ TEST_F(PolicyMapTest, SetAndGet) {
       ExternalDataFetcher::Equals(entry->external_data_fetcher.get(),
                                   CreateExternalDataFetcher("dummy").get()));
   map.Set(kTestPolicyName1, POLICY_LEVEL_RECOMMENDED, POLICY_SCOPE_MACHINE,
-          POLICY_SOURCE_ENTERPRISE_DEFAULT, absl::nullopt, nullptr);
+          POLICY_SOURCE_ENTERPRISE_DEFAULT, std::nullopt, nullptr);
   EXPECT_FALSE(map.IsPolicySet(kTestPolicyName1));
   EXPECT_EQ(nullptr, map.GetValueUnsafe(kTestPolicyName1));
   entry = map.Get(kTestPolicyName1);
@@ -449,7 +449,6 @@ TEST_F(PolicyMapTest, MergeFrom_CloudMetapolicies) {
   auto conflicting_policy_3 = policy_map_2.Get(kTestPolicyName3)->DeepCopy();
   auto conflicting_policy_4 = policy_map_1.Get(kTestPolicyName4)->DeepCopy();
 
-  policy_map_1.MergeFrom(policy_map_2, /*merge_precedence_metapolicies=*/true);
   policy_map_1.MergeFrom(policy_map_2);
 
   PolicyMap policy_map_expected;
@@ -1354,7 +1353,7 @@ class PolicyMapMergeTest
         ->AddConflictingPolicy(policy_map_2.Get(kTestPolicyName2)->DeepCopy());
     policy_map_expected.Set(kTestPolicyName3, POLICY_LEVEL_MANDATORY,
                             POLICY_SCOPE_MACHINE,
-                            POLICY_SOURCE_ENTERPRISE_DEFAULT, absl::nullopt,
+                            POLICY_SOURCE_ENTERPRISE_DEFAULT, std::nullopt,
                             CreateExternalDataFetcher("a"));
     policy_map_expected.GetMutable(kTestPolicyName3)
         ->AddMessage(PolicyMap::MessageType::kWarning,
@@ -1589,7 +1588,7 @@ TEST_P(PolicyMapMergeTest, MergeFrom) {
                    nullptr);
   policy_map_1.Set(kTestPolicyName3, POLICY_LEVEL_MANDATORY,
                    POLICY_SCOPE_MACHINE, POLICY_SOURCE_ENTERPRISE_DEFAULT,
-                   absl::nullopt, CreateExternalDataFetcher("a"));
+                   std::nullopt, CreateExternalDataFetcher("a"));
   policy_map_1.Set(kTestPolicyName4, POLICY_LEVEL_RECOMMENDED,
                    POLICY_SCOPE_USER, POLICY_SOURCE_PLATFORM,
                    base::Value(false), nullptr);
@@ -1623,7 +1622,7 @@ TEST_P(PolicyMapMergeTest, MergeFrom) {
                    base::Value(false), nullptr);
   policy_map_2.Set(kTestPolicyName3, POLICY_LEVEL_MANDATORY,
                    POLICY_SCOPE_MACHINE, POLICY_SOURCE_ENTERPRISE_DEFAULT,
-                   absl::nullopt, CreateExternalDataFetcher("b"));
+                   std::nullopt, CreateExternalDataFetcher("b"));
   policy_map_2.Set(kTestPolicyName4, POLICY_LEVEL_RECOMMENDED,
                    POLICY_SCOPE_MACHINE, POLICY_SOURCE_CLOUD, base::Value(true),
                    nullptr);
@@ -1645,7 +1644,6 @@ TEST_P(PolicyMapMergeTest, MergeFrom) {
   policy_map_1.GetMutable(kTestPolicyName7)->SetBlocked();
   policy_map_2.GetMutable(kTestPolicyName7)->SetBlocked();
   policy_map_1.GetMutable(kTestPolicyName8)->SetBlocked();
-  policy_map_1.MergeFrom(policy_map_2, /*merge_precedence_metapolicies=*/true);
   policy_map_1.MergeFrom(policy_map_2);
 
   EXPECT_TRUE(policy_map_1.Equals(policy_map_expected));
@@ -1695,7 +1693,6 @@ TEST_P(PolicyMapMergeTest, MergeFrom_Metapolicies) {
                                 std::move(merge_list_1),
                                 std::move(merge_list_2));
 
-  policy_map_1.MergeFrom(policy_map_2, /*merge_precedence_metapolicies=*/true);
   policy_map_1.MergeFrom(policy_map_2);
 
   EXPECT_TRUE(policy_map_1.Equals(policy_map_expected));
@@ -1830,8 +1827,7 @@ TEST_P(PolicyMapPriorityTest, PriorityCheck) {
       base::Value(CloudUserPolicyOverridesCloudMachinePolicy()), nullptr);
   // Causes the stored metapolicy values to be updated.
   PolicyMap policy_map_empty;
-  policy_map.MergeFrom(policy_map_empty,
-                       /*merge_precedence_metapolicies=*/true);
+  policy_map.MergeFrom(policy_map_empty);
 
   if (IsUserAffiliated()) {
     base::flat_set<std::string> affiliation_ids;

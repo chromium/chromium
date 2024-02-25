@@ -23,6 +23,7 @@ int GetMaxChannelCount(media::ChannelLayout channel_layout) {
       return 1;
     case media::CHANNEL_LAYOUT_STEREO:
     case media::CHANNEL_LAYOUT_STEREO_DOWNMIX:
+    case media::CHANNEL_LAYOUT_1_1:
       return 2;
     case media::CHANNEL_LAYOUT_2_1:
     case media::CHANNEL_LAYOUT_SURROUND:
@@ -33,6 +34,7 @@ int GetMaxChannelCount(media::ChannelLayout channel_layout) {
     case media::CHANNEL_LAYOUT_2_2:
     case media::CHANNEL_LAYOUT_QUAD:
     case media::CHANNEL_LAYOUT_3_1:
+    case media::CHANNEL_LAYOUT_3_1_BACK:
       return 4;
     case media::CHANNEL_LAYOUT_5_0:
     case media::CHANNEL_LAYOUT_5_0_BACK:

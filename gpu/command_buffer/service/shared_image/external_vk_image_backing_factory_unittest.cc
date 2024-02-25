@@ -71,32 +71,23 @@ class ExternalVkImageBackingFactoryDawnTest
 
     dawnProcSetProcs(&dawn::native::GetProcs());
 
-    // Create a Dawn Vulkan device
-    dawn_instance_.DiscoverDefaultPhysicalDevices();
-
-    std::vector<dawn::native::Adapter> adapters = dawn_instance_.GetAdapters();
-    auto adapter_it = base::ranges::find(adapters, wgpu::BackendType::Vulkan,
-                                         [](dawn::native::Adapter adapter) {
-                                           wgpu::AdapterProperties properties;
-                                           adapter.GetProperties(&properties);
-                                           return properties.backendType;
-                                         });
-    ASSERT_NE(adapter_it, adapters.end());
+    // Find a Dawn Vulkan adapter
+    wgpu::RequestAdapterOptions adapter_options;
+    adapter_options.backendType = wgpu::BackendType::Vulkan;
+    std::vector<dawn::native::Adapter> adapters =
+        dawn_instance_.EnumerateAdapters(&adapter_options);
+    ASSERT_GT(adapters.size(), 0u);
 
     // We need to request internal usage to be able to do operations with
     // internal methods that would need specific usages.
     wgpu::FeatureName dawn_internal_usage =
         wgpu::FeatureName::DawnInternalUsages;
     wgpu::DeviceDescriptor device_descriptor;
-#ifdef WGPU_BREAKING_CHANGE_COUNT_RENAME
     device_descriptor.requiredFeatureCount = 1;
-#else
-    device_descriptor.requiredFeaturesCount = 1;
-#endif
     device_descriptor.requiredFeatures = &dawn_internal_usage;
 
     dawn_device_ =
-        wgpu::Device::Acquire(adapter_it->CreateDevice(&device_descriptor));
+        wgpu::Device::Acquire(adapters[0].CreateDevice(&device_descriptor));
     DCHECK(dawn_device_) << "Failed to create Dawn device";
   }
 
@@ -116,8 +107,9 @@ TEST_F(ExternalVkImageBackingFactoryDawnTest, DawnWrite_SkiaVulkanRead) {
   const auto format = viz::SinglePlaneFormat::kRGBA_8888;
   const gfx::Size size(4, 4);
   const auto color_space = gfx::ColorSpace::CreateSRGB();
-  const uint32_t usage =
-      SHARED_IMAGE_USAGE_DISPLAY_READ | SHARED_IMAGE_USAGE_WEBGPU;
+  const uint32_t usage = SHARED_IMAGE_USAGE_DISPLAY_READ |
+                         SHARED_IMAGE_USAGE_WEBGPU_READ |
+                         SHARED_IMAGE_USAGE_WEBGPU_WRITE;
   const gpu::SurfaceHandle surface_handle = gpu::kNullSurfaceHandle;
   auto backing = backing_factory_->CreateSharedImage(
       mailbox, format, surface_handle, size, color_space,
@@ -131,7 +123,7 @@ TEST_F(ExternalVkImageBackingFactoryDawnTest, DawnWrite_SkiaVulkanRead) {
   {
     // Create a Dawn representation to clear the texture contents to a green.
     auto dawn_representation = shared_image_representation_factory_.ProduceDawn(
-        mailbox, dawn_device_, wgpu::BackendType::Vulkan, {});
+        mailbox, dawn_device_, wgpu::BackendType::Vulkan, {}, context_state_);
     ASSERT_TRUE(dawn_representation);
 
     auto dawn_scoped_access = dawn_representation->BeginScopedAccess(
@@ -229,8 +221,9 @@ TEST_F(ExternalVkImageBackingFactoryDawnTest, SkiaVulkanWrite_DawnRead) {
   const auto format = viz::SinglePlaneFormat::kRGBA_8888;
   const gfx::Size size(4, 4);
   const auto color_space = gfx::ColorSpace::CreateSRGB();
-  const uint32_t usage =
-      SHARED_IMAGE_USAGE_DISPLAY_READ | SHARED_IMAGE_USAGE_WEBGPU;
+  const uint32_t usage = SHARED_IMAGE_USAGE_DISPLAY_READ |
+                         SHARED_IMAGE_USAGE_WEBGPU_READ |
+                         SHARED_IMAGE_USAGE_WEBGPU_WRITE;
   const gpu::SurfaceHandle surface_handle = gpu::kNullSurfaceHandle;
   auto backing = backing_factory_->CreateSharedImage(
       mailbox, format, surface_handle, size, color_space,
@@ -283,7 +276,7 @@ TEST_F(ExternalVkImageBackingFactoryDawnTest, SkiaVulkanWrite_DawnRead) {
   {
     // Create a Dawn representation
     auto dawn_representation = shared_image_representation_factory_.ProduceDawn(
-        mailbox, dawn_device_, wgpu::BackendType::Vulkan, {});
+        mailbox, dawn_device_, wgpu::BackendType::Vulkan, {}, context_state_);
     ASSERT_TRUE(dawn_representation);
 
     // Begin access to copy the data out. Skia should have initialized the
@@ -377,7 +370,9 @@ TEST_P(ExternalVkImageBackingFactoryWithFormatTest, Basic) {
   auto color_space = gfx::ColorSpace::CreateSRGB();
   GrSurfaceOrigin surface_origin = kTopLeft_GrSurfaceOrigin;
   SkAlphaType alpha_type = kPremul_SkAlphaType;
-  uint32_t usage = SHARED_IMAGE_USAGE_DISPLAY_READ | SHARED_IMAGE_USAGE_GLES2;
+  uint32_t usage = SHARED_IMAGE_USAGE_DISPLAY_READ |
+                   SHARED_IMAGE_USAGE_GLES2_READ |
+                   SHARED_IMAGE_USAGE_GLES2_WRITE;
 
   bool supported = backing_factory_->CanCreateSharedImage(
       usage, format, size, /*thread_safe=*/false, gfx::EMPTY_BUFFER,
@@ -509,8 +504,8 @@ TEST_P(ExternalVkImageBackingFactoryWithFormatTest, Upload) {
   auto color_space = gfx::ColorSpace::CreateSRGB();
   GrSurfaceOrigin surface_origin = kTopLeft_GrSurfaceOrigin;
   SkAlphaType alpha_type = kPremul_SkAlphaType;
-  uint32_t usage = SHARED_IMAGE_USAGE_DISPLAY_READ | SHARED_IMAGE_USAGE_RASTER |
-                   SHARED_IMAGE_USAGE_CPU_UPLOAD;
+  uint32_t usage =
+      SHARED_IMAGE_USAGE_DISPLAY_READ | SHARED_IMAGE_USAGE_CPU_UPLOAD;
 
   // Verify backing can be created.
   auto backing = backing_factory_->CreateSharedImage(

@@ -13,15 +13,22 @@
 #include "chrome/browser/signin/signin_features.h"
 #include "chrome/common/chrome_features.h"
 #include "components/signin/public/base/signin_buildflags.h"
+#include "components/signin/public/identity_manager/account_capabilities_test_mutator.h"
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
 #include "components/signin/public/identity_manager/identity_test_utils.h"
+#include "components/signin/public/identity_manager/tribool.h"
 #include "ui/base/ui_base_features.h"
 #include "ui/base/ui_base_switches.h"
+#include "ui/gfx/image/image_skia.h"
+#include "ui/gfx/image/image_unittest_util.h"
 
 namespace {
-AccountInfo FillAccountInfo(const CoreAccountInfo& core_info,
-                            AccountManagementStatus management_status) {
+AccountInfo FillAccountInfo(
+    const CoreAccountInfo& core_info,
+    AccountManagementStatus management_status,
+    signin::Tribool
+        can_show_history_sync_opt_ins_without_minor_mode_restrictions) {
   const char kHostedDomain[] = "example.com";
   AccountInfo account_info;
 
@@ -38,31 +45,51 @@ AccountInfo FillAccountInfo(const CoreAccountInfo& core_info,
           : kNoHostedDomainFound;
   account_info.locale = "en";
   account_info.picture_url = "https://example.com";
+
+  if (can_show_history_sync_opt_ins_without_minor_mode_restrictions !=
+      signin::Tribool::kUnknown) {
+    AccountCapabilitiesTestMutator mutator(&account_info.capabilities);
+    mutator.set_can_show_history_sync_opt_ins_without_minor_mode_restrictions(
+        signin::TriboolToBoolOrDie(
+            can_show_history_sync_opt_ins_without_minor_mode_restrictions));
+  }
+
   return account_info;
 }
 }  // namespace
 
-AccountInfo SignInWithPrimaryAccount(
+AccountInfo SignInWithAccount(
     signin::IdentityTestEnvironment& identity_test_env,
-    AccountManagementStatus management_status) {
+    AccountManagementStatus management_status,
+    std::optional<signin::ConsentLevel> consent_level,
+    signin::Tribool
+        can_show_history_sync_opt_ins_without_minor_mode_restrictions) {
   auto* identity_manager = identity_test_env.identity_manager();
 
   const std::string email =
       management_status == AccountManagementStatus::kManaged
           ? "joe.consumer@example.com"
           : "joe.consumer@gmail.com";
-  AccountInfo base_account_info = identity_test_env.MakePrimaryAccountAvailable(
-      email, signin::ConsentLevel::kSignin);
 
-  identity_test_env.UpdateAccountInfoForAccount(
-      FillAccountInfo(base_account_info, management_status));
+  AccountInfo base_account_info = identity_test_env.MakeAccountAvailable(
+      email,
+      {.primary_account_consent_level = consent_level, .set_cookie = true});
 
-  AccountInfo primary_account_info =
+  identity_test_env.UpdateAccountInfoForAccount(FillAccountInfo(
+      base_account_info, management_status,
+      can_show_history_sync_opt_ins_without_minor_mode_restrictions));
+
+  // Set account image
+  SimulateAccountImageFetch(identity_manager, base_account_info.account_id,
+                            "GAIA_IMAGE_URL_WITH_SIZE",
+                            gfx::Image(gfx::test::CreatePlatformImage()));
+
+  AccountInfo account_info =
       identity_manager->FindExtendedAccountInfoByEmailAddress(email);
-  CHECK_EQ(primary_account_info.account_id, base_account_info.account_id);
-  CHECK(primary_account_info.IsValid());
+  CHECK_EQ(account_info.account_id, base_account_info.account_id);
+  CHECK(account_info.IsValid());
 
-  return primary_account_info;
+  return account_info;
 }
 
 void SetUpPixelTestCommandLine(

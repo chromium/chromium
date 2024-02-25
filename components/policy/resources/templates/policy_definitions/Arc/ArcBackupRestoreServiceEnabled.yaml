@@ -1,11 +1,12 @@
 caption: Control Android backup and restore service
+default: 0
 default_for_enterprise_users: 0
 desc: |-
   Setting the policy to <ph name="BR_ENABLED">BackupAndRestoreEnabled</ph> means Android backup and restore is initially on. Setting the policy to <ph name="BR_DISABLED">BackupAndRestoreDisabled</ph> or leaving it unset keeps backup and restore off during setup.
 
-        Setting the policy to <ph name="BR_UNDER_USER_CONTROL">BackupAndRestoreUnderUserControl</ph> means users see prompts to use backup and restore. If they turn on backup and restore, Android app data is uploaded to Android backup servers and restored during reinstallations of compatible apps.
+  Setting the policy to <ph name="BR_UNDER_USER_CONTROL">BackupAndRestoreUnderUserControl</ph> means users see prompts to use backup and restore. If they turn on backup and restore, Android app data is uploaded to Android backup servers and restored during reinstallations of compatible apps.
 
-        After initial setup, users can turn backup and restore on or off.
+  After initial setup, users can turn backup and restore on or off.
 example_value: 1
 features:
   dynamic_refresh: false

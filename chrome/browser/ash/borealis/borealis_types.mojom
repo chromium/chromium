@@ -1,0 +1,24 @@
+// Copyright 2023 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module borealis.mojom;
+
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+enum InstallResult {
+  kSuccess = 0,
+  kCancelled = 1,
+  kBorealisNotAllowed = 2,
+  kBorealisInstallInProgress = 3,
+  kDlcInternalError = 4,
+  kDlcUnsupportedError = 5,
+  kDlcBusyError = 6,
+  kDlcNeedRebootError = 7,
+  kDlcNeedSpaceError = 8,
+  kDlcUnknownError = 9,
+  kOffline = 10,
+  kDlcNeedUpdateError = 11,
+  kStartupFailed = 12,
+  kMainAppNotPresent = 13,
+};

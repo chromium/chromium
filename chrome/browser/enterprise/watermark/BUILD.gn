@@ -1,0 +1,41 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("watermark_view_lib") {
+  sources = [
+    "watermark_view.cc",
+    "watermark_view.h",
+  ]
+
+  deps = [ "//ui/views" ]
+}
+
+executable("watermark_app") {
+  testonly = true
+
+  sources = [
+    "example_app.cc",
+    "watermark_example.cc",
+    "watermark_example.h",
+  ]
+
+  deps = [
+    ":watermark_view_lib",
+    "//base",
+    "//base/test:test_support",
+    "//build/win:default_exe_manifest",
+    "//ui/base/metadata:metadata",
+    "//ui/color:mixers",
+    "//ui/gfx:gfx",
+    "//ui/resources:ui_test_pak",
+    "//ui/views/examples:views_examples_lib",
+    "//ui/views/examples:views_examples_proc",
+  ]
+
+  if (is_win) {
+    deps += [ "//ui/native_theme:native_theme_browser" ]
+  }
+
+  defines = [ "VIEWS_EXAMPLES_IMPLEMENTATION" ]
+}

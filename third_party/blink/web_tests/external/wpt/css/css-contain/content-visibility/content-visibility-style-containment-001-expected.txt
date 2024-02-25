@@ -1,0 +1,11 @@
+This is a testharness.js-based test.
+[FAIL] switching content-visibility from visible to hidden
+  assert_true: expected true got false
+[FAIL] switching content-visibility from hidden to visible
+  assert_false: expected false got true
+[FAIL] switching content-visibility from visible to auto
+  assert_true: expected true got false
+[FAIL] switching content-visibility from auto to visible
+  assert_false: expected false got true
+Harness: the test ran to completion.
+

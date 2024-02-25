@@ -1,0 +1,29 @@
+/* Copyright 2024 The Chromium Authors
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file. */
+
+/* #css_wrapper_metadata_start
+ * #type=style-lit
+ * #import=../cr_shared_vars.css.js
+ * #import=../cr_actionable_row_style_lit.css.js
+ * #scheme=relative
+ * #include=cr-actionable-row-style-lit
+ * #css_wrapper_metadata_end */
+:host([disabled]) {
+  opacity: 0.65;
+  pointer-events: none;
+}
+
+:host([disabled]) cr-icon-button {
+  display: var(--cr-expand-button-disabled-display, initial);
+}
+
+#label {
+  flex: 1;
+  padding: var(--cr-section-vertical-padding) 0;
+}
+
+cr-icon-button {
+  --cr-icon-button-icon-size: var(--cr-expand-button-icon-size, 20px);
+  --cr-icon-button-size: var(--cr-expand-button-size, 36px);
+}

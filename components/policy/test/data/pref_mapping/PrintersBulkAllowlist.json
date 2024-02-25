@@ -1,0 +1,27 @@
+[
+  {
+    "os": [
+      "chromeos_ash"
+    ],
+    "policy_pref_mapping_tests": [
+      {
+        "policies": {
+          "PrintersBulkAllowlist": [
+            "id4",
+            "id7",
+            "id10"
+          ]
+        },
+        "prefs": {
+          "native_printing.recommended_printers_whitelist": {
+            "value": [
+              "id4",
+              "id7",
+              "id10"
+            ]
+          }
+        }
+      }
+    ]
+  }
+]

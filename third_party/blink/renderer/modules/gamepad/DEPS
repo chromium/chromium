@@ -1,5 +1,4 @@
 include_rules = [
-    "+device/base/synchronization/shared_memory_seqlock_buffer.h",
     # NOTE: These files are POD structs used to interpret shared memory across
     # the Device Gamepad implementation and the Blink client.
     "+device/gamepad/public/cpp/gamepad.h",

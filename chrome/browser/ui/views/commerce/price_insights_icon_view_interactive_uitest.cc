@@ -2,23 +2,24 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/test/scoped_feature_list.h"
 #include "chrome/browser/ui/views/commerce/price_insights_icon_view.h"
 
 #include "base/test/metrics/histogram_tester.h"
-#include "base/test/simple_test_clock.h"
 #include "chrome/browser/commerce/shopping_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
-#include "chrome/browser/ui/commerce/price_tracking/mock_shopping_list_ui_tab_helper.h"
+#include "chrome/browser/ui/commerce/commerce_ui_tab_helper.h"
+#include "chrome/browser/ui/commerce/mock_commerce_ui_tab_helper.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/interactive_test_utils.h"
 #include "chrome/test/base/ui_test_utils.h"
-#include "chrome/test/interaction/interactive_browser_test.h"
+#include "chrome/test/user_education/interactive_feature_promo_test.h"
 #include "components/commerce/core/commerce_feature_list.h"
 #include "components/commerce/core/mock_shopping_service.h"
 #include "components/commerce/core/test_utils.h"
 #include "components/feature_engagement/public/feature_constants.h"
-#include "components/user_education/test/feature_promo_test_util.h"
+#include "components/search/ntp_features.h"
 #include "content/public/test/browser_test.h"
 #include "net/dns/mock_host_resolver.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
@@ -30,7 +31,6 @@ DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kShoppingTab);
 const char kShoppingURL[] = "/shopping.html";
 const char kNonShoppingURL[] = "/non-shopping.html";
 const char kProductClusterTitle[] = "Product Cluster Title";
-int kIconExpandedMaxTimesLast28days = 3;
 
 std::unique_ptr<net::test_server::HttpResponse> BasicResponse(
     const net::test_server::HttpRequest& request) {
@@ -41,12 +41,23 @@ std::unique_ptr<net::test_server::HttpResponse> BasicResponse(
 }
 }  // namespace
 
-class PriceInsightsIconViewInteractiveTest : public InteractiveBrowserTest {
+class PriceInsightsIconViewInteractiveTest
+    : public InteractiveFeaturePromoTest {
  public:
+  explicit PriceInsightsIconViewInteractiveTest(
+      std::vector<base::test::FeatureRef> iph_features = {})
+      : InteractiveFeaturePromoTest(
+            UseDefaultTrackerAllowingPromos(std::move(iph_features))) {
+    test_features_.InitWithFeatures(
+        /*enabled_features=*/{commerce::kCommerceAllowChipExpansion,
+                              commerce::kPriceInsights},
+        /*disabled_features*/ {});
+  }
+
   void SetUp() override {
     set_open_about_blank_on_browser_launch(true);
     ASSERT_TRUE(embedded_test_server()->InitializeAndListen());
-    InteractiveBrowserTest::SetUp();
+    InteractiveFeaturePromoTest::SetUp();
   }
 
   void SetUpOnMainThread() override {
@@ -55,60 +66,66 @@ class PriceInsightsIconViewInteractiveTest : public InteractiveBrowserTest {
         base::BindRepeating(&BasicResponse));
     embedded_test_server()->StartAcceptingConnections();
 
-    InteractiveBrowserTest::SetUpOnMainThread();
+    InteractiveFeaturePromoTest::SetUpOnMainThread();
 
     SetUpTabHelperAndShoppingService();
+  }
+
+  void SetUpInProcessBrowserTestFixture() override {
+    create_services_subscription_ =
+        BrowserContextDependencyManager::GetInstance()
+            ->RegisterCreateServicesCallbackForTesting(
+                base::BindRepeating(&PriceInsightsIconViewInteractiveTest::
+                                        OnWillCreateBrowserContextServices,
+                                    weak_ptr_factory_.GetWeakPtr()));
+  }
+
+  void TearDownInProcessBrowserTestFixture() override {
+    is_browser_context_services_created = false;
+  }
+
+  void OnWillCreateBrowserContextServices(content::BrowserContext* context) {
+    is_browser_context_services_created = true;
+    commerce::ShoppingServiceFactory::GetInstance()->SetTestingFactory(
+        context, base::BindRepeating([](content::BrowserContext* context) {
+          return commerce::MockShoppingService::Build();
+        }));
   }
 
  protected:
   raw_ptr<commerce::MockShoppingService, AcrossTasksDanglingUntriaged>
       mock_shopping_service_;
-  raw_ptr<MockShoppingListUiTabHelper, AcrossTasksDanglingUntriaged>
-      mock_tab_helper_;
-  absl::optional<commerce::PriceInsightsInfo> price_insights_info_;
+  std::optional<commerce::PriceInsightsInfo> price_insights_info_;
+  std::optional<commerce::ProductInfo> product_info_;
+  base::CallbackListSubscription create_services_subscription_;
+  bool is_browser_context_services_created{false};
 
  private:
-  base::test::ScopedFeatureList test_features_{commerce::kPriceInsights};
+  base::test::ScopedFeatureList test_features_;
 
   void SetUpTabHelperAndShoppingService() {
-    // Remove the original tab helper so we don't get into a bad situation when
-    // we go to replace the shopping service with the mock one. The old tab
-    // helper is still holding a reference to the original shopping service and
-    // other dependencies which we switch out below (leaving some dangling
-    // pointers on destruction).
-    browser()->tab_strip_model()->GetActiveWebContents()->RemoveUserData(
-        commerce::ShoppingListUiTabHelper::UserDataKey());
-
+    EXPECT_TRUE(is_browser_context_services_created);
     mock_shopping_service_ = static_cast<commerce::MockShoppingService*>(
-        commerce::ShoppingServiceFactory::GetInstance()
-            ->SetTestingFactoryAndUse(
-                browser()->profile(),
-                base::BindRepeating([](content::BrowserContext* context) {
-                  return commerce::MockShoppingService::Build();
-                })));
-
-    MockShoppingListUiTabHelper::CreateForWebContents(
-        browser()->tab_strip_model()->GetActiveWebContents());
-    mock_tab_helper_ = static_cast<MockShoppingListUiTabHelper*>(
-        MockShoppingListUiTabHelper::FromWebContents(
-            browser()->tab_strip_model()->GetActiveWebContents()));
-    EXPECT_CALL(*mock_tab_helper_, ShouldShowPriceInsightsIconView)
-        .Times(testing::AnyNumber());
-    ON_CALL(*mock_tab_helper_, ShouldShowPriceInsightsIconView)
-        .WillByDefault(testing::Return(true));
+        commerce::ShoppingServiceFactory::GetForBrowserContext(
+            browser()->profile()));
 
     price_insights_info_ = commerce::CreateValidPriceInsightsInfo(
         true, true, commerce::PriceBucket::kLowPrice);
-    EXPECT_CALL(*mock_tab_helper_, GetPriceInsightsInfo)
-        .Times(testing::AnyNumber());
-    ON_CALL(*mock_tab_helper_, GetPriceInsightsInfo)
-        .WillByDefault(testing::ReturnRef(price_insights_info_));
+    mock_shopping_service_->SetResponseForGetPriceInsightsInfoForUrl(
+        price_insights_info_);
+
+    product_info_ = commerce::ProductInfo();
+    product_info_->title = "Product";
+    product_info_->product_cluster_title = "Product";
+    product_info_->product_cluster_id = 12345L;
+    mock_shopping_service_->SetResponseForGetProductInfoForUrl(product_info_);
 
     EXPECT_CALL(*mock_shopping_service_, IsPriceInsightsEligible)
         .Times(testing::AnyNumber());
 
-    mock_tab_helper_->SetShoppingServiceForTesting(mock_shopping_service_);
     mock_shopping_service_->SetIsPriceInsightsEligible(true);
+    mock_shopping_service_->SetIsShoppingListEligible(false);
+    mock_shopping_service_->SetIsDiscountEligibleToShowOnNavigation(false);
 
     MockGetProductInfoForUrlResponse();
     MockGetPriceInsightsInfoForUrlResponse();
@@ -121,22 +138,21 @@ class PriceInsightsIconViewInteractiveTest : public InteractiveBrowserTest {
   }
 
   void MockGetPriceInsightsInfoForUrlResponse() {
-    absl::optional<commerce::PriceInsightsInfo> price_insights_info =
+    std::optional<commerce::PriceInsightsInfo> price_insights_info =
         commerce::CreateValidPriceInsightsInfo(
             true, true, commerce::PriceBucket::kLowPrice);
     mock_shopping_service_->SetResponseForGetPriceInsightsInfoForUrl(
         price_insights_info);
   }
+
+  base::WeakPtrFactory<PriceInsightsIconViewInteractiveTest> weak_ptr_factory_{
+      this};
 };
 
 IN_PROC_BROWSER_TEST_F(PriceInsightsIconViewInteractiveTest,
                        SidePanelShownOnPress) {
   EXPECT_CALL(*mock_shopping_service_, GetProductInfoForUrl);
   EXPECT_CALL(*mock_shopping_service_, GetPriceInsightsInfoForUrl);
-
-  base::HistogramTester histogram_tester;
-  histogram_tester.ExpectTotalCount(
-      "Commerce.PriceInsights.OmniboxIconClickedAfterLabelShown", 0);
 
   RunTestSequence(
       InstrumentTab(kShoppingTab),
@@ -151,9 +167,6 @@ IN_PROC_BROWSER_TEST_F(PriceInsightsIconViewInteractiveTest,
       // Click on the action chip again to close the side panel
       PressButton(kPriceInsightsChipElementId),
       WaitForHide(kSidePanelElementId), FlushEvents());
-
-  histogram_tester.ExpectTotalCount(
-      "Commerce.PriceInsights.OmniboxIconClickedAfterLabelShown", 2);
 }
 
 IN_PROC_BROWSER_TEST_F(PriceInsightsIconViewInteractiveTest,
@@ -180,30 +193,20 @@ IN_PROC_BROWSER_TEST_F(PriceInsightsIconViewInteractiveTest,
 class PriceInsightsIconViewEngagementTest
     : public PriceInsightsIconViewInteractiveTest {
  public:
-  PriceInsightsIconViewEngagementTest() {
-    test_features_.InitAndEnableFeatures(
-        {commerce::kPriceInsights,
-         feature_engagement::kIPHPriceInsightsPageActionIconLabelFeature},
-        {});
+  PriceInsightsIconViewEngagementTest()
+      : PriceInsightsIconViewInteractiveTest(
+            {feature_engagement::kIPHPriceInsightsPageActionIconLabelFeature}) {
   }
-
-  void SetUp() override { PriceInsightsIconViewInteractiveTest::SetUp(); }
 
   void SetUpOnMainThread() override {
     PriceInsightsIconViewInteractiveTest::SetUpOnMainThread();
-
-    BrowserFeaturePromoController* const promo_controller =
-        BrowserView::GetBrowserViewForBrowser(browser())
-            ->GetFeaturePromoController();
-    EXPECT_TRUE(
-        user_education::test::WaitForFeatureEngagementReady(promo_controller));
-    EXPECT_TRUE(user_education::test::SetClock(promo_controller, test_clock_));
     RunTestSequence(InstrumentTab(kShoppingTab));
   }
 
   void NavigateToANonShoppingPage() {
-    ON_CALL(*mock_tab_helper_, ShouldShowPriceInsightsIconView)
-        .WillByDefault(testing::Return(false));
+    mock_shopping_service_->SetResponseForGetProductInfoForUrl(std::nullopt);
+    mock_shopping_service_->SetResponseForGetPriceInsightsInfoForUrl(
+        std::nullopt);
     RunTestSequence(
         NavigateWebContents(kShoppingTab,
                             embedded_test_server()->GetURL(kNonShoppingURL)),
@@ -211,8 +214,9 @@ class PriceInsightsIconViewEngagementTest
   }
 
   void NavigateToAShoppingPage(bool expected_to_show_label) {
-    ON_CALL(*mock_tab_helper_, ShouldShowPriceInsightsIconView)
-        .WillByDefault(testing::Return(true));
+    mock_shopping_service_->SetResponseForGetProductInfoForUrl(product_info_);
+    mock_shopping_service_->SetResponseForGetPriceInsightsInfoForUrl(
+        price_insights_info_);
     RunTestSequence(
         NavigateWebContents(kShoppingTab,
                             embedded_test_server()->GetURL(kShoppingURL)),
@@ -222,72 +226,44 @@ class PriceInsightsIconViewEngagementTest
                           expected_to_show_label));
   }
 
-  void VerifyIconExpandedOncePerDay() {
+  void VerifyIconExpanded() {
     base::HistogramTester histogram_tester;
-    histogram_tester.ExpectTotalCount(
-        "Commerce.PriceInsights.OmniboxIconShownLabel", 0);
+    histogram_tester.ExpectTotalCount("Commerce.PriceInsights.OmniboxIconShown",
+                                      0);
 
     NavigateToANonShoppingPage();
-    histogram_tester.ExpectTotalCount(
-        "Commerce.PriceInsights.OmniboxIconShownLabel", 0);
+    histogram_tester.ExpectTotalCount("Commerce.PriceInsights.OmniboxIconShown",
+                                      0);
 
     NavigateToAShoppingPage(/*expected_to_show_label=*/true);
-    histogram_tester.ExpectTotalCount(
-        "Commerce.PriceInsights.OmniboxIconShownLabel", 1);
+    histogram_tester.ExpectTotalCount("Commerce.PriceInsights.OmniboxIconShown",
+                                      1);
     histogram_tester.ExpectBucketCount(
-        "Commerce.PriceInsights.OmniboxIconShownLabel", 1, 1);
+        "Commerce.PriceInsights.OmniboxIconShown", 1, 1);
 
     NavigateToANonShoppingPage();
-    histogram_tester.ExpectTotalCount(
-        "Commerce.PriceInsights.OmniboxIconShownLabel", 1);
+    histogram_tester.ExpectTotalCount("Commerce.PriceInsights.OmniboxIconShown",
+                                      1);
     histogram_tester.ExpectBucketCount(
-        "Commerce.PriceInsights.OmniboxIconShownLabel", 1, 1);
+        "Commerce.PriceInsights.OmniboxIconShown", 1, 1);
 
-    NavigateToAShoppingPage(/*expected_to_show_label=*/false);
-    histogram_tester.ExpectTotalCount(
-        "Commerce.PriceInsights.OmniboxIconShownLabel", 2);
+    NavigateToAShoppingPage(/*expected_to_show_label=*/true);
+    histogram_tester.ExpectTotalCount("Commerce.PriceInsights.OmniboxIconShown",
+                                      2);
     histogram_tester.ExpectBucketCount(
-        "Commerce.PriceInsights.OmniboxIconShownLabel", 0, 1);
+        "Commerce.PriceInsights.OmniboxIconShown", 1, 2);
     EXPECT_THAT(
         histogram_tester.GetAllSamples(
-            "Commerce.PriceInsights.OmniboxIconShownLabel"),
-        BucketsAre(base::Bucket(0, 1), base::Bucket(1, 1), base::Bucket(2, 0)));
+            "Commerce.PriceInsights.OmniboxIconShown"),
+        BucketsAre(base::Bucket(0, 0), base::Bucket(1, 2), base::Bucket(2, 0)));
   }
-
- protected:
-  base::SimpleTestClock test_clock_;
-
- private:
-  feature_engagement::test::ScopedIphFeatureList test_features_;
 };
 
-IN_PROC_BROWSER_TEST_F(PriceInsightsIconViewEngagementTest,
-                       ExpandedIconShownOncePerDayOnly) {
+IN_PROC_BROWSER_TEST_F(PriceInsightsIconViewEngagementTest, ExpandedIconShown) {
   EXPECT_CALL(*mock_shopping_service_, GetProductInfoForUrl)
       .Times(testing::AnyNumber());
   EXPECT_CALL(*mock_shopping_service_, GetPriceInsightsInfoForUrl)
       .Times(testing::AnyNumber());
 
-  VerifyIconExpandedOncePerDay();
-}
-
-IN_PROC_BROWSER_TEST_F(PriceInsightsIconViewEngagementTest,
-                       ExpandedIconShownMaxTimesLast28days) {
-  EXPECT_CALL(*mock_shopping_service_, GetProductInfoForUrl)
-      .Times(testing::AnyNumber());
-  EXPECT_CALL(*mock_shopping_service_, GetPriceInsightsInfoForUrl)
-      .Times(testing::AnyNumber());
-  while (kIconExpandedMaxTimesLast28days--) {
-    VerifyIconExpandedOncePerDay();
-    // Advance one day
-    test_clock_.Advance(base::Days(1));
-  }
-  // Icon should not expanded after the max has reach.
-  NavigateToANonShoppingPage();
-  NavigateToAShoppingPage(/*expected_to_show_label=*/false);
-
-  // Advance 28 days, icon should expand again.
-  test_clock_.Advance(base::Days(28));
-  NavigateToANonShoppingPage();
-  NavigateToAShoppingPage(/*expected_to_show_label=*/true);
+  VerifyIconExpanded();
 }

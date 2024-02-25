@@ -48,7 +48,8 @@ class MODULES_EXPORT PresentationRequest final
 
   ScriptPromise start(ScriptState*, ExceptionState&);
   ScriptPromise reconnect(ScriptState*, const String& id, ExceptionState&);
-  ScriptPromise getAvailability(ScriptState*, ExceptionState&);
+  ScriptPromiseTyped<PresentationAvailability> getAvailability(ScriptState*,
+                                                               ExceptionState&);
 
   const Vector<KURL>& Urls() const;
 

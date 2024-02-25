@@ -13,7 +13,7 @@ export class DeviceInfoTableElement extends CustomElement {
 
   addRow(property: string, value: string) {
     const table =
-        this.getRequiredElement<HTMLTableElement>('#device-info-list');
+        this.getRequiredElement<HTMLTableElement>('#device-info-table');
 
     const newRow = table.insertRow();
     const propertyCell = newRow.insertCell();

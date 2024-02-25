@@ -10,12 +10,17 @@
 #include "base/memory/ptr_util.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/singleton.h"
+#include "base/task/bind_post_task.h"
+#include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/policy/messaging_layer/public/report_client.h"
+#include "chrome/browser/policy/messaging_layer/storage_selector/storage_selector.h"
 #include "components/reporting/storage/storage_module_interface.h"
 #include "components/reporting/storage/test_storage_module.h"
 
 namespace reporting {
 
+#if !BUILDFLAG(IS_CHROMEOS)
 // static
 std::unique_ptr<ReportingClient::TestEnvironment>
 ReportingClient::TestEnvironment::CreateWithLocalStorage(
@@ -27,14 +32,19 @@ ReportingClient::TestEnvironment::CreateWithLocalStorage(
          base::OnceCallback<void(
              StatusOr<scoped_refptr<StorageModuleInterface>>)>
              storage_created_cb) {
-        ReportingClient::CreateLocalStorageModule(
+        StorageSelector::CreateLocalStorageModule(
             reporting_path, verification_key,
             CompressionInformation::COMPRESSION_SNAPPY,
-            base::BindRepeating(&ReportingClient::AsyncStartUploader),
+            base::BindPostTask(
+                ReportQueueProvider::GetInstance()->sequenced_task_runner(),
+                base::BindRepeating(
+                    &ReportingClient::AsyncStartUploader,
+                    ReportQueueProvider::GetInstance()->GetWeakPtr())),
             std::move(storage_created_cb));
       },
       reporting_path, verification_key)));
 }
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 // static
 std::unique_ptr<ReportingClient::TestEnvironment>
@@ -52,14 +62,12 @@ ReportingClient::TestEnvironment::CreateWithStorageModule(
 
 ReportingClient::TestEnvironment::TestEnvironment(
     ReportingClient::StorageModuleCreateCallback storage_create_cb)
-    : saved_storage_create_cb_(
-          std::move(ReportingClient::GetInstance()->storage_create_cb_)) {
-  ReportingClient::GetInstance()->storage_create_cb_ = storage_create_cb;
+    // Below we convert ReportingClient::SmartPtr to std::unique_ptr.
+    : client_(ReportingClient::Create(
+                  base::SequencedTaskRunner::GetCurrentDefault())
+                  .release()) {
+  client_->storage_create_cb_ = storage_create_cb;
 }
 
-ReportingClient::TestEnvironment::~TestEnvironment() {
-  ReportingClient::GetInstance()->storage_create_cb_ =
-      std::move(saved_storage_create_cb_);
-  base::Singleton<ReportingClient>::OnExit(nullptr);
-}
+ReportingClient::TestEnvironment::~TestEnvironment() = default;
 }  // namespace reporting

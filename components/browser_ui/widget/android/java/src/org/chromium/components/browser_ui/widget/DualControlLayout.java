@@ -13,7 +13,9 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 
+import androidx.annotation.IdRes;
 import androidx.annotation.IntDef;
+import androidx.annotation.StyleRes;
 
 import org.chromium.ui.widget.ButtonCompat;
 
@@ -44,8 +46,11 @@ import java.lang.annotation.RetentionPolicy;
  */
 public final class DualControlLayout extends ViewGroup {
     // When changing these values, you need to update ui/android/java/res/values/attrs.xml
-    @IntDef({DualControlLayoutAlignment.START, DualControlLayoutAlignment.END,
-            DualControlLayoutAlignment.APART})
+    @IntDef({
+        DualControlLayoutAlignment.START,
+        DualControlLayoutAlignment.END,
+        DualControlLayoutAlignment.APART
+    })
     @Retention(RetentionPolicy.SOURCE)
     public @interface DualControlLayoutAlignment {
         int START = 0;
@@ -53,37 +58,82 @@ public final class DualControlLayout extends ViewGroup {
         int APART = 2;
     }
 
+    @IntDef({ButtonType.PRIMARY_FILLED, ButtonType.PRIMARY_TEXT, ButtonType.SECONDARY})
+    @Retention(RetentionPolicy.SOURCE)
+    public @interface ButtonType {
+        int PRIMARY_FILLED = 0;
+        int PRIMARY_TEXT = 1;
+        int SECONDARY = 2;
+    }
+
     /**
      * Creates a standardized Button that can be used for DualControlLayouts showing buttons.
      *
      * @param isPrimary Whether or not the button is meant to act as a "Confirm" button.
-     * @param text      Text to display on the button.
-     * @param listener  Listener to alert when the button has been clicked.
+     * @param text Text to display on the button.
+     * @param listener Listener to alert when the button has been clicked.
+     * @return Button that can be used in the view.
+     * @deprecated Use the Button createButtonForLayout( Context context, @ButtonType int
+     *     buttonType, String text, OnClickListener listener) version instead.
+     */
+    @Deprecated
+    public static Button createButtonForLayout(
+            Context context, boolean isPrimary, String text, OnClickListener listener) {
+        // TODO(b/325429764): migrate clients and remove this deprecated method.
+        if (isPrimary) {
+            return createButtonForLayout(context, ButtonType.PRIMARY_FILLED, text, listener);
+        } else {
+            return createButtonForLayout(context, ButtonType.SECONDARY, text, listener);
+        }
+    }
+
+    /**
+     * Creates a standardized Button that can be used for DualControlLayouts showing buttons.
+     *
+     * @param buttonType Determines button's function and appearance.
+     * @param text Text to display on the button.
+     * @param listener Listener to alert when the button has been clicked.
      * @return Button that can be used in the view.
      */
     public static Button createButtonForLayout(
-            Context context, boolean isPrimary, String text, OnClickListener listener) {
-        if (isPrimary) {
-            ButtonCompat primaryButton =
-                    new ButtonCompat(context, R.style.FilledButtonThemeOverlay_Flat);
-            primaryButton.setId(R.id.button_primary);
-            primaryButton.setOnClickListener(listener);
-            primaryButton.setText(text);
-            return primaryButton;
-        } else {
-            Button secondaryButton = new ButtonCompat(context, R.style.TextButtonThemeOverlay);
-            secondaryButton.setId(R.id.button_secondary);
-            secondaryButton.setOnClickListener(listener);
-            secondaryButton.setText(text);
-            return secondaryButton;
+            Context context, @ButtonType int buttonType, String text, OnClickListener listener) {
+        ButtonCompat button = new ButtonCompat(context, getButtonTheme(buttonType));
+        button.setId(getButtonId(buttonType));
+        button.setOnClickListener(listener);
+        button.setText(text);
+        return button;
+    }
+
+    private static @StyleRes int getButtonTheme(@ButtonType int buttonType) {
+        switch (buttonType) {
+            case ButtonType.PRIMARY_FILLED:
+                return R.style.FilledButtonThemeOverlay_Flat;
+            case ButtonType.PRIMARY_TEXT:
+                return R.style.TextButtonThemeOverlay;
+            case ButtonType.SECONDARY:
+                return R.style.TextButtonThemeOverlay;
+            default:
+                throw new IllegalArgumentException("Unknown button type");
+        }
+    }
+
+    private static @IdRes int getButtonId(@ButtonType int buttonType) {
+        switch (buttonType) {
+            case ButtonType.PRIMARY_FILLED:
+                return R.id.button_primary;
+            case ButtonType.PRIMARY_TEXT:
+                return R.id.button_primary;
+            case ButtonType.SECONDARY:
+                return R.id.button_secondary;
+            default:
+                throw new IllegalArgumentException("Unknown button type");
         }
     }
 
     private final int mHorizontalMarginBetweenViews;
 
     /** Define how the controls will be laid out. */
-    @DualControlLayoutAlignment
-    private int mAlignment = DualControlLayoutAlignment.START;
+    @DualControlLayoutAlignment private int mAlignment = DualControlLayoutAlignment.START;
 
     /** Margin between the controls when they're stacked.  By default, there is no margin. */
     private int mStackedMargin;
@@ -147,15 +197,23 @@ public final class DualControlLayout extends ViewGroup {
     }
 
     @Override
+    public void removeAllViews() {
+        mPrimaryView = null;
+        mSecondaryView = null;
+        super.removeAllViews();
+    }
+
+    @Override
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
         mIsStacked = false;
         int sidePadding = getPaddingLeft() + getPaddingRight();
         int verticalPadding = getPaddingTop() + getPaddingBottom();
 
         // Measure the primary View, allowing it to be as wide as the Layout.
-        int maxWidth = MeasureSpec.getMode(widthMeasureSpec) == MeasureSpec.UNSPECIFIED
-                ? Integer.MAX_VALUE
-                : (MeasureSpec.getSize(widthMeasureSpec) - sidePadding);
+        int maxWidth =
+                MeasureSpec.getMode(widthMeasureSpec) == MeasureSpec.UNSPECIFIED
+                        ? Integer.MAX_VALUE
+                        : (MeasureSpec.getSize(widthMeasureSpec) - sidePadding);
         int unspecifiedSpec = MeasureSpec.makeMeasureSpec(0, MeasureSpec.UNSPECIFIED);
         measureChild(mPrimaryView, unspecifiedSpec, unspecifiedSpec);
 
@@ -179,8 +237,10 @@ public final class DualControlLayout extends ViewGroup {
                 mSecondaryView.measure(widthSpec, unspecifiedSpec);
 
                 layoutWidth = maxWidth;
-                layoutHeight = mPrimaryView.getMeasuredHeight() + mStackedMargin
-                        + mSecondaryView.getMeasuredHeight();
+                layoutHeight =
+                        mPrimaryView.getMeasuredHeight()
+                                + mStackedMargin
+                                + mSecondaryView.getMeasuredHeight();
             } else {
                 // The Views fit side by side.  Check which is taller to find the layout height.
                 layoutWidth = combinedWidth;
@@ -190,7 +250,8 @@ public final class DualControlLayout extends ViewGroup {
         layoutWidth += sidePadding;
         layoutHeight += verticalPadding;
 
-        setMeasuredDimension(resolveSize(layoutWidth, widthMeasureSpec),
+        setMeasuredDimension(
+                resolveSize(layoutWidth, widthMeasureSpec),
                 resolveSize(layoutHeight, heightMeasureSpec));
     }
 
@@ -201,16 +262,19 @@ public final class DualControlLayout extends ViewGroup {
 
         int width = right - left;
         boolean isRtl = getLayoutDirection() == LAYOUT_DIRECTION_RTL;
-        boolean isPrimaryOnRight = (isRtl && mAlignment == DualControlLayoutAlignment.START)
-                || (!isRtl
-                        && (mAlignment == DualControlLayoutAlignment.APART
-                                || mAlignment == DualControlLayoutAlignment.END));
+        boolean isPrimaryOnRight =
+                (isRtl && mAlignment == DualControlLayoutAlignment.START)
+                        || (!isRtl
+                                && (mAlignment == DualControlLayoutAlignment.APART
+                                        || mAlignment == DualControlLayoutAlignment.END));
 
         // If primary view visibility is GONE, do not take into account the space it would occupy.
         int primaryViewMeasuredWidth =
                 mPrimaryView.getVisibility() != View.GONE ? mPrimaryView.getMeasuredWidth() : 0;
-        int primaryRight = isPrimaryOnRight ? (width - rightPadding)
-                                            : (primaryViewMeasuredWidth + leftPadding);
+        int primaryRight =
+                isPrimaryOnRight
+                        ? (width - rightPadding)
+                        : (primaryViewMeasuredWidth + leftPadding);
         int primaryLeft = primaryRight - primaryViewMeasuredWidth;
         int primaryTop = getPaddingTop();
         int primaryBottom = primaryTop + mPrimaryView.getMeasuredHeight();
@@ -220,8 +284,11 @@ public final class DualControlLayout extends ViewGroup {
             // Fill out the row.  onMeasure() should have already applied the correct width.
             int secondaryTop = primaryBottom + mStackedMargin;
             int secondaryBottom = secondaryTop + mSecondaryView.getMeasuredHeight();
-            mSecondaryView.layout(leftPadding, secondaryTop,
-                    leftPadding + mSecondaryView.getMeasuredWidth(), secondaryBottom);
+            mSecondaryView.layout(
+                    leftPadding,
+                    secondaryTop,
+                    leftPadding + mSecondaryView.getMeasuredWidth(),
+                    secondaryBottom);
         } else if (mSecondaryView != null) {
             // Center the secondary View vertically with the primary View.
             int secondaryHeight = mSecondaryView.getMeasuredHeight();
@@ -234,9 +301,10 @@ public final class DualControlLayout extends ViewGroup {
             int secondaryRight;
             if (mAlignment == DualControlLayoutAlignment.APART) {
                 // Put the second View on the other side of the Layout from the primary View.
-                secondaryLeft = isPrimaryOnRight
-                        ? leftPadding
-                        : width - rightPadding - mSecondaryView.getMeasuredWidth();
+                secondaryLeft =
+                        isPrimaryOnRight
+                                ? leftPadding
+                                : width - rightPadding - mSecondaryView.getMeasuredWidth();
                 secondaryRight = secondaryLeft + mSecondaryView.getMeasuredWidth();
             } else if (isPrimaryOnRight) {
                 // Sit to the left of the primary View.
@@ -274,7 +342,9 @@ public final class DualControlLayout extends ViewGroup {
             primaryButtonText = a.getString(R.styleable.DualControlLayout_primaryButtonText);
         }
         if (!TextUtils.isEmpty(primaryButtonText)) {
-            addView(createButtonForLayout(getContext(), true, primaryButtonText, null));
+            addView(
+                    createButtonForLayout(
+                            getContext(), ButtonType.PRIMARY_FILLED, primaryButtonText, null));
         }
 
         // Build the secondary button, but only if there's a primary button set.
@@ -283,13 +353,17 @@ public final class DualControlLayout extends ViewGroup {
             secondaryButtonText = a.getString(R.styleable.DualControlLayout_secondaryButtonText);
         }
         if (!TextUtils.isEmpty(primaryButtonText) && !TextUtils.isEmpty(secondaryButtonText)) {
-            addView(createButtonForLayout(getContext(), false, secondaryButtonText, null));
+            addView(
+                    createButtonForLayout(
+                            getContext(), ButtonType.SECONDARY, secondaryButtonText, null));
         }
 
         // Set the alignment.
         if (a.hasValue(R.styleable.DualControlLayout_buttonAlignment)) {
-            setAlignment(a.getInt(R.styleable.DualControlLayout_buttonAlignment,
-                    DualControlLayoutAlignment.START));
+            setAlignment(
+                    a.getInt(
+                            R.styleable.DualControlLayout_buttonAlignment,
+                            DualControlLayoutAlignment.START));
         }
 
         a.recycle();

@@ -37,7 +37,7 @@ class WidgetAnimationSmoothnessInspector : ui::LayerAnimationObserver {
 
  private:
   // Unowned
-  raw_ptr<views::Widget, ExperimentalAsh> widget_;
+  raw_ptr<views::Widget> widget_;
 
   std::vector<gfx::Rect> bound_history_;
 };

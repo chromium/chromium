@@ -5,6 +5,9 @@
 import {TestRunner} from 'test_runner';
 import {DeviceModeTestRunner} from 'device_mode_test_runner';
 
+import * as Emulation from 'devtools/panels/emulation/emulation.js';
+import * as UIModule from 'devtools/ui/legacy/legacy.js';
+
 (async function() {
   TestRunner.addResult(`Test preservation of orientation and scale when that switching devices in device mode.\n`);
 
@@ -18,10 +21,10 @@ import {DeviceModeTestRunner} from 'device_mode_test_runner';
     }
   });
 
-  var view = new Emulation.DeviceModeView();
+  var view = new Emulation.DeviceModeView.DeviceModeView();
   var toolbar = view.toolbar;
   var model = view.model;
-  var viewportSize = new UI.Size(800, 600);
+  var viewportSize = new UIModule.Geometry.Size(800, 600);
   model.setAvailableSize(viewportSize, viewportSize);
 
   TestRunner.addResult('\nTest that devices automatically zoom to fit.');

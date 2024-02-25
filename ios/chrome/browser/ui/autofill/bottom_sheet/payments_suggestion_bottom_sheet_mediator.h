@@ -6,6 +6,7 @@
 #define IOS_CHROME_BROWSER_UI_AUTOFILL_BOTTOM_SHEET_PAYMENTS_SUGGESTION_BOTTOM_SHEET_MEDIATOR_H_
 
 #import "ios/chrome/browser/ui/autofill/bottom_sheet/payments_suggestion_bottom_sheet_delegate.h"
+#import "ios/chrome/browser/ui/autofill/bottom_sheet/payments_suggestion_bottom_sheet_exit_reason.h"
 
 #import <Foundation/Foundation.h>
 
@@ -40,6 +41,9 @@ class WebStateList;
 
 // Return the credit card associated with the backend identifier.
 - (autofill::CreditCard*)creditCardForIdentifier:(NSString*)identifier;
+
+// Logs bottom sheet exit reasons, like dismissal or using a payment method.
+- (void)logExitReason:(PaymentsSuggestionBottomSheetExitReason)exitReason;
 
 @end
 

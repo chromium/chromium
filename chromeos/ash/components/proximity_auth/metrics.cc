@@ -9,6 +9,7 @@
 #include <algorithm>
 
 #include "base/check_op.h"
+#include "base/containers/span.h"
 #include "base/hash/md5.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
@@ -38,7 +39,7 @@ int32_t DigestToInt32(const base::MD5Digest& digest) {
 // Returns a hash of the given |name|, encoded as a 32-bit signed integer.
 int32_t HashDeviceModelName(const std::string& name) {
   base::MD5Digest digest;
-  base::MD5Sum(name.c_str(), name.size(), &digest);
+  base::MD5Sum(base::as_byte_span(name), &digest);
   return DigestToInt32(digest);
 }
 

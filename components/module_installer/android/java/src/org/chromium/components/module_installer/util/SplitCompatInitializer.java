@@ -10,9 +10,7 @@ import org.chromium.base.ContextUtils;
 import org.chromium.base.StrictModeContext;
 import org.chromium.base.ThreadUtils;
 
-/**
- * PlayCore SplitCompat initializer for installing modules in the application context.
- */
+/** PlayCore SplitCompat initializer for installing modules in the application context. */
 class SplitCompatInitializer {
     private static volatile boolean sIsInitialized;
 

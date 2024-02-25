@@ -9,6 +9,7 @@
 #include <os/availability.h>
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -20,33 +21,32 @@
 #include "device/fido/fido_constants.h"
 #include "device/fido/mac/credential_metadata.h"
 #include "device/fido/p256_public_key.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace device::fido::mac {
 
 // MakeAttestedCredentialData returns an AttestedCredentialData instance for
-// the Touch ID authenticator credential ID and public key or |absl::nullopt|
+// the Touch ID authenticator credential ID and public key or |std::nullopt|
 // on failure.
 COMPONENT_EXPORT(DEVICE_FIDO)
-absl::optional<AttestedCredentialData> MakeAttestedCredentialData(
+std::optional<AttestedCredentialData> MakeAttestedCredentialData(
     std::vector<uint8_t> credential_id,
     std::unique_ptr<PublicKey> public_key);
 
 // MakeAuthenticatorData returns an AuthenticatorData instance for the Touch ID
 // authenticator with the given Relying Party ID and AttestedCredentialData,
-// which may be |absl::nullopt| in GetAssertion operations.
+// which may be |std::nullopt| in GetAssertion operations.
 COMPONENT_EXPORT(DEVICE_FIDO)
 AuthenticatorData MakeAuthenticatorData(
     CredentialMetadata::SignCounter counter_type,
     const std::string& rp_id,
-    absl::optional<AttestedCredentialData> attested_credential_data,
+    std::optional<AttestedCredentialData> attested_credential_data,
     bool has_uv);
 
 // GenerateSignature signs the concatenation of the serialization of the given
 // authenticator data and the given client data hash, as required for
-// (self-)attestation and assertion. Returns |absl::nullopt| if the operation
+// (self-)attestation and assertion. Returns |std::nullopt| if the operation
 // fails.
-absl::optional<std::vector<uint8_t>> GenerateSignature(
+std::optional<std::vector<uint8_t>> GenerateSignature(
     const AuthenticatorData& authenticator_data,
     base::span<const uint8_t, kClientDataHashLength> client_data_hash,
     SecKeyRef private_key);

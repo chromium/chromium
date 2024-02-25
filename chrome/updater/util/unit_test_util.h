@@ -5,6 +5,7 @@
 #ifndef CHROME_UPDATER_UTIL_UNIT_TEST_UTIL_H_
 #define CHROME_UPDATER_UTIL_UNIT_TEST_UTIL_H_
 
+#include <optional>
 #include <string>
 
 #include "base/files/file_path.h"
@@ -15,7 +16,6 @@
 #include "base/process/process_iterator.h"
 #include "base/synchronization/waitable_event.h"
 #include "chrome/updater/tag.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base {
 class TimeDelta;
@@ -58,7 +58,7 @@ std::string GetTestName();
 // - the file does not exist.
 // - the directory is not empty.
 bool DeleteFileAndEmptyParentDirectories(
-    const absl::optional<base::FilePath>& file_path);
+    const std::optional<base::FilePath>& file_path);
 
 // Fetches the path to the ${ISOLATED_OUTDIR} env var.
 // ResultDB reads logs and test artifacts info from there.
@@ -101,7 +101,7 @@ std::string PrintProcesses(const base::FilePath::StringType& executable_name);
 // predicate becomes true before a timeout, otherwise returns false.
 [[nodiscard]] bool WaitFor(
     base::FunctionRef<bool()> predicate,
-    base::FunctionRef<void()> still_waiting = []() {});
+    base::FunctionRef<void()> still_waiting = [] {});
 
 struct EventHolder {
   base::WaitableEvent event;

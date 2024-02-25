@@ -49,7 +49,9 @@ struct WebPreferences;
 }  // namespace blink
 
 namespace display {
+#if BUILDFLAG(IS_ANDROID)
 class Screen;
+#endif
 class ScopedNativeScreen;
 }  // namespace display
 
@@ -256,7 +258,7 @@ class RenderViewHostTestHarness : public ::testing::Test {
   NavigationController& controller();
 
   // The contents under test.
-  WebContents* web_contents();
+  WebContents* web_contents() const;
 
   // RVH/RFH getters are shorthand for oft-used bits of web_contents().
 
@@ -295,6 +297,10 @@ class RenderViewHostTestHarness : public ::testing::Test {
   // Sets the focused frame to the main frame of the WebContents for tests that
   // rely on the focused frame not being null.
   void FocusWebContentsOnMainFrame();
+
+  // Sets the focused frame to the `rfh` for tests that rely on the focused
+  // frame not being null.
+  void FocusWebContentsOnFrame(content::RenderFrameHost* rfh);
 
  protected:
   // testing::Test

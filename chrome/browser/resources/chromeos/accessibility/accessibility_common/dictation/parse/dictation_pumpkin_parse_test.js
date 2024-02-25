@@ -18,14 +18,6 @@ DictationPumpkinParseTest = class extends DictationE2ETestBase {
     this.getPumpkinParseStrategy().init_();
 
     await super.setUpDeferred();
-    await Promise.all([
-      importModule(
-          'SpeechParser',
-          '/accessibility_common/dictation/parse/speech_parser.js'),
-      importModule(
-          'SUPPORTED_LOCALES',
-          '/accessibility_common/dictation/parse/pumpkin/pumpkin_constants.js'),
-    ]);
 
     // By default, Dictation JS tests use regex parsing. Enable Pumpkin for
     // this test suite.
@@ -92,7 +84,7 @@ AX_TEST_F('DictationPumpkinParseTest', 'Parse', async function() {
     new ParseTestCase('deselect selection', {name: 'UNSELECT_TEXT'}),
     new ParseTestCase('what can I say', {name: 'LIST_COMMANDS'}),
     new ParseTestCase('new line', {}),
-    new ParseTestCase('avada kedavra', {name: 'STOP_LISTENING'}),
+    new ParseTestCase('avada kedavra', {name: 'TOGGLE_DICTATION'}),
     new ParseTestCase('clear one word', {name: 'DELETE_PREV_WORD'}),
     new ParseTestCase('erase sentence', {name: 'DELETE_PREV_SENT'}),
     new ParseTestCase('right one word', {name: 'NAV_NEXT_WORD'}),

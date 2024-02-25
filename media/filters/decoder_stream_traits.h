@@ -10,13 +10,13 @@
 
 #include "base/containers/flat_map.h"
 #include "base/memory/raw_ptr.h"
+#include "base/moving_window.h"
 #include "base/time/time.h"
 #include "media/base/audio_decoder.h"
 #include "media/base/audio_decoder_config.h"
 #include "media/base/channel_layout.h"
 #include "media/base/demuxer_stream.h"
 #include "media/base/media_log_properties.h"
-#include "media/base/moving_average.h"
 #include "media/base/pipeline_status.h"
 #include "media/base/sample_format.h"
 #include "media/base/video_decoder.h"
@@ -148,7 +148,8 @@ class MEDIA_EXPORT DecoderStreamTraits<DemuxerStream::VIDEO> {
 
  private:
   base::TimeDelta last_keyframe_timestamp_;
-  MovingAverage keyframe_distance_average_;
+  base::MovingAverage<base::TimeDelta, base::TimeDelta>
+      keyframe_distance_average_;
 
   // Tracks the duration of incoming packets over time.
   struct FrameMetadata {

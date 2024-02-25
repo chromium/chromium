@@ -83,10 +83,11 @@ public class FlingingControllerAdapter implements FlingingController, MediaContr
 
         mLoaded = true;
 
-        MediaInfo mediaInfo = new MediaInfo.Builder(mMediaUrl)
-                                      .setContentType("*/*")
-                                      .setStreamType(MediaInfo.STREAM_TYPE_BUFFERED)
-                                      .build();
+        MediaInfo mediaInfo =
+                new MediaInfo.Builder(mMediaUrl)
+                        .setContentType("*/*")
+                        .setStreamType(MediaInfo.STREAM_TYPE_BUFFERED)
+                        .build();
         mSessionController.getRemoteMediaClient().load(mediaInfo, autoplay, position);
     }
 
@@ -103,29 +104,37 @@ public class FlingingControllerAdapter implements FlingingController, MediaContr
             return;
         }
 
-        mSessionController.getRemoteMediaClient().play().setResultCallback(
-                this::onMediaCommandResult);
+        mSessionController
+                .getRemoteMediaClient()
+                .play()
+                .setResultCallback(this::onMediaCommandResult);
     }
 
     @Override
     public void pause() {
         if (!mSessionController.isConnected()) return;
-        mSessionController.getRemoteMediaClient().pause().setResultCallback(
-                this::onMediaCommandResult);
+        mSessionController
+                .getRemoteMediaClient()
+                .pause()
+                .setResultCallback(this::onMediaCommandResult);
     }
 
     @Override
     public void setMute(boolean mute) {
         if (!mSessionController.isConnected()) return;
-        mSessionController.getRemoteMediaClient().setStreamMute(mute).setResultCallback(
-                this::onMediaCommandResult);
+        mSessionController
+                .getRemoteMediaClient()
+                .setStreamMute(mute)
+                .setResultCallback(this::onMediaCommandResult);
     }
 
     @Override
     public void setVolume(double volume) {
         if (!mSessionController.isConnected()) return;
-        mSessionController.getRemoteMediaClient().setStreamVolume(volume).setResultCallback(
-                this::onMediaCommandResult);
+        mSessionController
+                .getRemoteMediaClient()
+                .setStreamVolume(volume)
+                .setResultCallback(this::onMediaCommandResult);
     }
 
     @Override
@@ -137,8 +146,10 @@ public class FlingingControllerAdapter implements FlingingController, MediaContr
             return;
         }
 
-        mSessionController.getRemoteMediaClient().seek(position).setResultCallback(
-                this::onMediaCommandResult);
+        mSessionController
+                .getRemoteMediaClient()
+                .seek(position)
+                .setResultCallback(this::onMediaCommandResult);
         mStreamPositionExtrapolator.onSeek(position);
     }
 
@@ -159,9 +170,11 @@ public class FlingingControllerAdapter implements FlingingController, MediaContr
                 mLoaded = false;
                 mStreamPositionExtrapolator.onFinish();
             } else {
-                mStreamPositionExtrapolator.update(remoteMediaClient.getStreamDuration(),
+                mStreamPositionExtrapolator.update(
+                        remoteMediaClient.getStreamDuration(),
                         remoteMediaClient.getApproximateStreamPosition(),
-                        remoteMediaClient.isPlaying(), mediaStatus.getPlaybackRate());
+                        remoteMediaClient.isPlaying(),
+                        mediaStatus.getPlaybackRate());
             }
 
             mMediaStatusObserver.onMediaStatusUpdate(new MediaStatusBridge(mediaStatus));
@@ -183,7 +196,9 @@ public class FlingingControllerAdapter implements FlingingController, MediaContr
         // onResult() called, so we should not rely on onResult() being called for every API call.
         // See https://crbug.com/853923.
         if (!result.getStatus().isSuccess()) {
-            Log.e(TAG, "Error when sending command. Status code: %d",
+            Log.e(
+                    TAG,
+                    "Error when sending command. Status code: %d",
                     result.getStatus().getStatusCode());
         }
     }

@@ -22,11 +22,11 @@ InputDeviceCapabilities* InputDeviceCapabilitiesConstants::FiresTouchEvents(
   if (fires_touch) {
     if (!fires_touch_events_)
       fires_touch_events_ = InputDeviceCapabilities::Create(true);
-    return fires_touch_events_;
+    return fires_touch_events_.Get();
   }
   if (!doesnt_fire_touch_events_)
     doesnt_fire_touch_events_ = InputDeviceCapabilities::Create(false);
-  return doesnt_fire_touch_events_;
+  return doesnt_fire_touch_events_.Get();
 }
 
 }  // namespace blink

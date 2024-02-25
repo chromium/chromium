@@ -9,6 +9,7 @@
 #include "base/command_line.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
+#include "base/json/json_writer.h"
 #include "base/path_service.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_tokenizer.h"
@@ -137,13 +138,13 @@ bool GetAppIdsFromUpdateUrl(const GURL& update_url,
 
 // The detail request has an URL in form of
 // https://<domain>/chromeos/app_mode/webstore/inlineinstall/detail/<id>.
-// Returns absl::nullopt if the `request_path` doesn't look like request for
+// Returns std::nullopt if the `request_path` doesn't look like request for
 // extension details.
-absl::optional<std::string> GetExtensionIdFromDetailRequest(
+std::optional<std::string> GetExtensionIdFromDetailRequest(
     const std::string& request_path) {
   size_t prefix_length = strlen(kDetailsURLPrefix);
   if (request_path.substr(0, prefix_length) != kDetailsURLPrefix) {
-    return absl::nullopt;
+    return std::nullopt;
   }
   return request_path.substr(prefix_length);
 }
@@ -250,7 +251,7 @@ void FakeCWS::SetUpdateCrx(const std::string& app_id,
   }
 
   const std::string sha256 = crypto::SHA256HashString(crx_content);
-  const std::string sha256_hex = base::HexEncode(sha256.c_str(), sha256.size());
+  const std::string sha256_hex = base::HexEncode(sha256);
 
   id_to_update_check_content_map_[app_id] =
       base::BindRepeating(&ApplyHasUpdateTemplate, app_id, crx_download_url,
@@ -360,7 +361,7 @@ std::unique_ptr<HttpResponse> FakeCWS::HandleRequest(
     }
   }
 
-  absl::optional details_id = GetExtensionIdFromDetailRequest(request_path);
+  std::optional details_id = GetExtensionIdFromDetailRequest(request_path);
   if (details_id) {
     auto it = id_to_details_map_.find(*details_id);
     if (it != id_to_details_map_.end()) {

@@ -9,17 +9,12 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import androidx.appcompat.widget.SwitchCompat;
-import androidx.fragment.app.Fragment;
-
 import org.chromium.chrome.browser.preferences.Pref;
-import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.components.browser_ui.widget.MaterialSwitchWithText;
 import org.chromium.components.user_prefs.UserPrefs;
 
-/**
- * Controls the behaviour of the search suggestions privacy guide page.
- */
-public class SearchSuggestionsFragment extends Fragment {
+/** Controls the behaviour of the search suggestions privacy guide page. */
+public class SearchSuggestionsFragment extends PrivacyGuideBasePage {
     @Override
     public View onCreateView(
             LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -28,13 +23,15 @@ public class SearchSuggestionsFragment extends Fragment {
 
     @Override
     public void onViewCreated(View view, Bundle savedInstanceState) {
-        SwitchCompat searchSuggestionsSwitch = view.findViewById(R.id.search_suggestions_switch);
-        searchSuggestionsSwitch.setChecked(PrivacyGuideUtils.isSearchSuggestionsEnabled());
+        MaterialSwitchWithText searchSuggestionsSwitch =
+                view.findViewById(R.id.search_suggestions_switch);
+        searchSuggestionsSwitch.setChecked(
+                PrivacyGuideUtils.isSearchSuggestionsEnabled(getProfile()));
 
-        searchSuggestionsSwitch.setOnCheckedChangeListener((button, isChecked) -> {
-            PrivacyGuideMetricsDelegate.recordMetricsOnSearchSuggestionsChange(isChecked);
-            UserPrefs.get(Profile.getLastUsedRegularProfile())
-                    .setBoolean(Pref.SEARCH_SUGGEST_ENABLED, isChecked);
-        });
+        searchSuggestionsSwitch.setOnCheckedChangeListener(
+                (button, isChecked) -> {
+                    PrivacyGuideMetricsDelegate.recordMetricsOnSearchSuggestionsChange(isChecked);
+                    UserPrefs.get(getProfile()).setBoolean(Pref.SEARCH_SUGGEST_ENABLED, isChecked);
+                });
     }
 }

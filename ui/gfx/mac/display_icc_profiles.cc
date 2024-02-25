@@ -66,11 +66,11 @@ void DisplayICCProfiles::UpdateIfNeeded() {
     if (!cg_color_space)
       continue;
     base::apple::ScopedCFTypeRef<CFDataRef> icc_data(
-        CGColorSpaceCopyICCData(cg_color_space));
+        CGColorSpaceCopyICCData(cg_color_space.get()));
     if (!icc_data)
       continue;
-    ICCProfile icc_profile = ICCProfile::FromData(CFDataGetBytePtr(icc_data),
-                                                  CFDataGetLength(icc_data));
+    ICCProfile icc_profile = ICCProfile::FromData(
+        CFDataGetBytePtr(icc_data.get()), CFDataGetLength(icc_data.get()));
     ColorSpace color_space = icc_profile.GetColorSpace();
     // If the ICC profile isn't accurately parametrically approximated, then
     // don't store its data (we will assign the best parametric fit to

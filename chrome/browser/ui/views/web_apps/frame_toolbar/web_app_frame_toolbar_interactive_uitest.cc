@@ -7,7 +7,7 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_command_controller.h"
 #include "chrome/browser/ui/browser_commands.h"
-#include "chrome/browser/ui/view_ids.h"
+#include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/views/extensions/extensions_toolbar_container.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/web_apps/frame_toolbar/web_app_frame_toolbar_test_helper.h"
@@ -16,15 +16,19 @@
 #include "chrome/common/chrome_features.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/interactive_test_utils.h"
+#include "chrome/test/interaction/interactive_browser_test.h"
 #include "content/public/test/browser_test.h"
+#include "ui/base/interaction/element_identifier.h"
 #include "ui/views/focus/focus_manager.h"
 #include "ui/views/layout/animating_layout_manager_test_util.h"
 #include "ui/views/view.h"
 #include "url/gurl.h"
 
+namespace {
+
 // Param: DesktopPWAsElidedExtensionsMenu feature.
 class WebAppFrameToolbarInteractiveUITest
-    : public extensions::ExtensionBrowserTest,
+    : public InteractiveBrowserTestT<extensions::ExtensionBrowserTest>,
       public testing::WithParamInterface<bool> {
  public:
   WebAppFrameToolbarInteractiveUITest() {
@@ -32,14 +36,71 @@ class WebAppFrameToolbarInteractiveUITest
         ::features::kDesktopPWAsElidedExtensionsMenu, IsExtensionsMenuElided());
   }
 
+  void LoadAndLaunchExtension() {
+    ASSERT_TRUE(LoadExtension(test_data_dir_.AppendASCII("simple_with_icon/")));
+
+    const GURL app_url("https://test.org");
+    helper()->InstallAndLaunchWebApp(browser(), app_url);
+  }
+
+  auto SetUpExtensionsContainer() {
+    return Do([this]() {
+      ExtensionsToolbarContainer* const extensions_container =
+          helper()->web_app_frame_toolbar()->GetExtensionsToolbarContainer();
+      views::test::ReduceAnimationDuration(extensions_container);
+      views::test::WaitForAnimatingLayoutManager(extensions_container);
+    });
+  }
+
+  // Send focus to the toolbar as if the user pressed Alt+Shift+T.
+  // TODO(b/319234054): Use Kombucha API SendAccelerator() once the keyboard
+  // shortcuts for IDC_FOCUS_TOOLBAR is supported on Mac.
+  auto FocusToolbar() {
+    return Do([this]() {
+      helper()->app_browser()->command_controller()->ExecuteCommand(
+          IDC_FOCUS_TOOLBAR);
+    });
+  }
+
+  auto CycleFocusForward() {
+    return Do([this]() {
+      helper()->browser_view()->GetFocusManager()->AdvanceFocus(false);
+    });
+  }
+
+  // Simulate the user pressing Shift-Tab to cycle backwards.
+  auto CycleFocusBackward() {
+    return Do([this]() {
+      helper()->browser_view()->GetFocusManager()->AdvanceFocus(true);
+    });
+  }
+
+  auto VerifyExtensionsMenuButtonIfNeeded(bool go_forward) {
+    if (IsExtensionsMenuElided()) {
+      return Steps(Do([]() { base::DoNothing(); }));
+    }
+
+    if (go_forward) {
+      return Steps(CycleFocusForward(),
+                   CheckViewProperty(kExtensionsMenuButtonElementId,
+                                     &views::View::HasFocus, true));
+    } else {
+      return Steps(CycleFocusBackward(),
+                   CheckViewProperty(kExtensionsMenuButtonElementId,
+                                     &views::View::HasFocus, true));
+    }
+  }
+
+  ui::ElementContext GetAppWindowElementContext() {
+    return helper()->app_browser()->window()->GetElementContext();
+  }
+
+ private:
   WebAppFrameToolbarTestHelper* helper() {
     return &web_app_frame_toolbar_helper_;
   }
-
- protected:
   bool IsExtensionsMenuElided() const { return GetParam(); }
 
- private:
   WebAppFrameToolbarTestHelper web_app_frame_toolbar_helper_;
   base::test::ScopedFeatureList feature_list_;
 };
@@ -47,67 +108,57 @@ class WebAppFrameToolbarInteractiveUITest
 // Verifies that for minimal-ui web apps, the toolbar keyboard focus cycles
 // among the toolbar buttons: the reload button, the extensions menu button, and
 // the app menu button, in that order.
-//
-// TODO(https://crbug.com/1176121): Re-enable after fixing flakiness.
+IN_PROC_BROWSER_TEST_P(WebAppFrameToolbarInteractiveUITest, CycleFocusForward) {
+  LoadAndLaunchExtension();
+
+  RunTestSequenceInContext(
+      GetAppWindowElementContext(), SetUpExtensionsContainer(), FocusToolbar(),
+      CheckViewProperty(kReloadButtonElementId, &views::View::HasFocus, true),
+      VerifyExtensionsMenuButtonIfNeeded(/*go_forward=*/true),
+      CycleFocusForward(),
+      CheckViewProperty(kToolbarAppMenuButtonElementId, &views::View::HasFocus,
+                        true),
+      CycleFocusForward(),
+      CheckViewProperty(kReloadButtonElementId, &views::View::HasFocus, true));
+}
+
 IN_PROC_BROWSER_TEST_P(WebAppFrameToolbarInteractiveUITest,
-                       DISABLED_CycleFocus) {
-  ASSERT_TRUE(LoadExtension(test_data_dir_.AppendASCII("simple_with_icon/")));
+                       CycleFocusBackwards) {
+  LoadAndLaunchExtension();
 
-  const GURL app_url("https://test.org");
-  helper()->InstallAndLaunchWebApp(browser(), app_url);
+  RunTestSequenceInContext(
+      GetAppWindowElementContext(), SetUpExtensionsContainer(), FocusToolbar(),
+      CheckViewProperty(kReloadButtonElementId, &views::View::HasFocus, true),
+      VerifyExtensionsMenuButtonIfNeeded(/*go_forward=*/true),
+      CycleFocusForward(),
+      CheckViewProperty(kToolbarAppMenuButtonElementId, &views::View::HasFocus,
+                        true),
+      CycleFocusForward(),
+      CheckViewProperty(kReloadButtonElementId, &views::View::HasFocus, true),
+      CycleFocusBackward(),
+      CheckViewProperty(kToolbarAppMenuButtonElementId, &views::View::HasFocus,
+                        true),
+      VerifyExtensionsMenuButtonIfNeeded(/*go_forward=*/false),
+      CycleFocusBackward(),
+      CheckViewProperty(kReloadButtonElementId, &views::View::HasFocus, true));
+}
 
-  // Test relies on browser window activation, while platform such as Linux's
-  // window activation is asynchronous.
-  ui_test_utils::BrowserActivationWaiter waiter(helper()->app_browser());
-  waiter.WaitForActivation();
+IN_PROC_BROWSER_TEST_P(WebAppFrameToolbarInteractiveUITest,
+                       NavigationShowsBackButton) {
+  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kAppWindowId);
+  LoadAndLaunchExtension();
 
-  // Wait for the extensions menu button to appear.
-  ExtensionsToolbarContainer* extensions_container =
-      helper()->web_app_frame_toolbar()->GetExtensionsToolbarContainer();
-  views::test::ReduceAnimationDuration(extensions_container);
-  views::test::WaitForAnimatingLayoutManager(extensions_container);
-
-  // Send focus to the toolbar as if the user pressed Alt+Shift+T.
-  helper()->app_browser()->command_controller()->ExecuteCommand(
-      IDC_FOCUS_TOOLBAR);
-
-  // After focusing the toolbar, the reload button should immediately have focus
-  // because the back button is disabled (no navigation yet).
-  views::FocusManager* const focus_manager =
-      helper()->browser_view()->GetFocusManager();
-  EXPECT_EQ(focus_manager->GetFocusedView()->GetID(), VIEW_ID_RELOAD_BUTTON);
-
-  // Press Tab to cycle through controls until we end up back where we started.
-  // This approach is similar to ToolbarViewTest::RunToolbarCycleFocusTest().
-  if (!IsExtensionsMenuElided()) {
-    focus_manager->AdvanceFocus(false);
-    EXPECT_EQ(focus_manager->GetFocusedView()->GetID(),
-              VIEW_ID_EXTENSIONS_MENU_BUTTON);
-  }
-  focus_manager->AdvanceFocus(false);
-  EXPECT_EQ(focus_manager->GetFocusedView()->GetID(), VIEW_ID_APP_MENU);
-  focus_manager->AdvanceFocus(false);
-  EXPECT_EQ(focus_manager->GetFocusedView()->GetID(), VIEW_ID_RELOAD_BUTTON);
-
-  // Now press Shift-Tab to cycle backwards.
-  focus_manager->AdvanceFocus(true);
-  EXPECT_EQ(focus_manager->GetFocusedView()->GetID(), VIEW_ID_APP_MENU);
-  if (!IsExtensionsMenuElided()) {
-    focus_manager->AdvanceFocus(true);
-    EXPECT_EQ(focus_manager->GetFocusedView()->GetID(),
-              VIEW_ID_EXTENSIONS_MENU_BUTTON);
-  }
-  focus_manager->AdvanceFocus(true);
-  EXPECT_EQ(focus_manager->GetFocusedView()->GetID(), VIEW_ID_RELOAD_BUTTON);
-
-  // Test that back button is enabled after navigating to another page
-  const GURL another_url("https://anothertest.org");
-  web_app::NavigateToURLAndWait(helper()->app_browser(), another_url);
-  helper()->app_browser()->command_controller()->ExecuteCommand(
-      IDC_FOCUS_TOOLBAR);
-  EXPECT_EQ(focus_manager->GetFocusedView()->GetID(), VIEW_ID_BACK_BUTTON);
+  RunTestSequenceInContext(
+      GetAppWindowElementContext(), SetUpExtensionsContainer(),
+      InstrumentTab(kAppWindowId),
+      NavigateWebContents(kAppWindowId, GURL("https://anothertest.org")),
+      FocusToolbar(),
+      CheckViewProperty(kToolbarBackButtonElementId, &views::View::HasFocus,
+                        true));
 }
 
 INSTANTIATE_TEST_SUITE_P(All,
                          WebAppFrameToolbarInteractiveUITest,
                          ::testing::Bool());
+
+}  // namespace

@@ -10,6 +10,7 @@
 
 #include <functional>
 #include <memory>
+#include <optional>
 #include <ostream>
 #include <string>
 #include <type_traits>
@@ -26,7 +27,6 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/accessibility/ax_common.h"
 #include "ui/accessibility/ax_enum_util.h"
 #include "ui/accessibility/ax_enums.mojom.h"
@@ -91,6 +91,12 @@ struct AXMovementOptions {
 
   AXBoundaryBehavior boundary_behavior;
   AXBoundaryDetection boundary_detection;
+
+  // If true, indicates that an upstream position should not be crossed when
+  // moving forward and should skip its initial check when moving backward. This
+  // primarily applies to getting a pair of positions around a line from an
+  // upstream caret.
+  bool upstream_bounded = false;
 };
 
 // Describes in further detail what type of boundary a current position is on.
@@ -487,6 +493,14 @@ class AXPosition {
     if (!node.IsEmptyLeaf())
       return false;
 
+    // While atomic text fields from web content have a text node descendant,
+    // atomic text fields from Views don't. Their text value is set in the value
+    // attribute of the text field node directly.
+    if (node.IsView() && node.data().IsAtomicTextField() &&
+        !node.GetValueForControl().empty()) {
+      return false;
+    }
+
     // One exception to the above rule that all empty leaf nodes are empty
     // objects in AXPosition are <embed> and <object> elements that have
     // children. They should not be treated as empty objects even when their
@@ -824,8 +838,14 @@ class AXPosition {
           return true;
         }
 
+        // If the anchor is ignored, then by default it will not have a
+        // PreviousOnLineID set since we only set this on unignored nodes.
+        // However, it could still have something previous to it on the same
+        // line, like for example if we have some text on the same line, and a
+        // text node in the middle is set to aria-hidden.
         return text_position->GetPreviousOnLineID() == kInvalidAXNodeID &&
-               text_position->AtStartOfAnchor();
+               text_position->AtStartOfAnchor() &&
+               !text_position->GetAnchor()->IsIgnored();
     }
   }
 
@@ -2815,6 +2835,8 @@ class AXPosition {
   bool AllowsCharacterStopsOnGeneratedNewline() const {
     return g_ax_embedded_object_behavior ==
                AXEmbeddedObjectBehavior::kExposeCharacterForHypertext ||
+           g_ax_embedded_object_behavior ==
+               AXEmbeddedObjectBehavior::kUIAExposeCharacterForTextContent ||
            !IsInUnignoredEmptyObject();
   }
 
@@ -2897,8 +2919,9 @@ class AXPosition {
       return Clone();
 
     AXPositionInstance leaf_text_position = AsLeafTextPosition();
-    if (leaf_text_position->IsFollowedByGeneratedNewline())
+    if (leaf_text_position->IsFollowedByGeneratedNewline()) {
       return leaf_text_position;
+    }
 
     AXPositionInstance text_position = AsTextPosition();
 
@@ -3030,8 +3053,9 @@ class AXPosition {
       return text_position;
     }
 
-    if (text_position->IsFollowedByGeneratedNewline())
+    if (text_position->IsFollowedByGeneratedNewline()) {
       return CreateNextPositionAtAnchorWithText();
+    }
 
     // Calling "AsLeafTextPositionBeforeCharacter" should have created a text
     // position that is either at a grapheme boundary, or a null position. If
@@ -3219,6 +3243,7 @@ class AXPosition {
 
   AXPositionInstance CreateNextLineStartPosition(
       AXMovementOptions options) const {
+    options.upstream_bounded = true;
     return CreateBoundaryStartPosition(
         options, ax::mojom::MoveDirection::kForward,
         base::BindRepeating(&AtStartOfLinePredicate),
@@ -3227,6 +3252,7 @@ class AXPosition {
 
   AXPositionInstance CreatePreviousLineStartPosition(
       AXMovementOptions options) const {
+    options.upstream_bounded = true;
     return CreateBoundaryStartPosition(
         options, ax::mojom::MoveDirection::kBackward,
         base::BindRepeating(&AtStartOfLinePredicate),
@@ -3425,24 +3451,41 @@ class AXPosition {
       text_position = AsLeafTextPosition();
     }
 
-    if (text_position->IsNullPosition())
+    if (text_position->IsNullPosition()) {
       return text_position;
+    }
 
-    if (options.boundary_detection ==
-        AXBoundaryDetection::kDontCheckInitialPosition) {
+    // If true, we should not move the position any further.
+    bool forward_upstream =
+        options.upstream_bounded &&
+        move_direction == ax::mojom::MoveDirection::kForward &&
+        affinity() == ax::mojom::TextAffinity::kUpstream;
+
+    // If true, we should skip the initial position and move at least once.
+    bool backward_upstream =
+        options.upstream_bounded &&
+        move_direction == ax::mojom::MoveDirection::kBackward &&
+        affinity() == ax::mojom::TextAffinity::kUpstream;
+
+    if (backward_upstream ||
+        (options.boundary_detection ==
+             AXBoundaryDetection::kDontCheckInitialPosition &&
+         !forward_upstream)) {
       text_position =
           text_position->CreateAdjacentLeafTextPosition(move_direction);
       if (text_position->IsNullPosition()) {
         // There is no adjacent position to move to; in such case, CrossBoundary
         // behavior shall return a null position, while any other behavior shall
         // fallback to return the initial position.
-        if (options.boundary_behavior == AXBoundaryBehavior::kCrossBoundary)
+        if (options.boundary_behavior == AXBoundaryBehavior::kCrossBoundary) {
           return text_position;
+        }
+
         return Clone();
       }
     }
 
-    if (!at_start_condition.Run(text_position)) {
+    if (!forward_upstream && !at_start_condition.Run(text_position)) {
       text_position = text_position->CreatePositionAtNextOffsetBoundary(
           move_direction, get_start_offsets);
 
@@ -3528,21 +3571,29 @@ class AXPosition {
           NOTREACHED();
           return CreateNullPosition();
         case ax::mojom::MoveDirection::kBackward:
-          return CreatePositionAtStartOfAnchor()->AsUnignoredPosition(
+          text_position = CreatePositionAtStartOfAnchor()->AsUnignoredPosition(
               AXPositionAdjustmentBehavior::kMoveBackward);
+          break;
         case ax::mojom::MoveDirection::kForward:
-          return CreatePositionAtEndOfAnchor()->AsUnignoredPosition(
+          text_position = CreatePositionAtEndOfAnchor()->AsUnignoredPosition(
               AXPositionAdjustmentBehavior::kMoveForward);
       }
+
+      // Preserve affinity for forward upstream positions.
+      if (forward_upstream) {
+        text_position->affinity_ = ax::mojom::TextAffinity::kUpstream;
+      }
+
+      return text_position;
     }
 
-    // Affinity is only upstream at the end of a line, and so a start boundary
-    // will never have an upstream affinity.
-    text_position->affinity_ = ax::mojom::TextAffinity::kDownstream;
-    if (IsTreePosition())
+    if (IsTreePosition()) {
       text_position = text_position->AsTreePosition();
+    }
+
     AXPositionInstance unignored_position = text_position->AsUnignoredPosition(
         AXPositionAdjustmentBehavior::kMoveForward);
+
     // If there are no unignored positions then `text_position` is anchored in
     // ignored content at the end of the whole content. For
     // `kStopAtLastAnchorBoundary`, try to adjust in the opposite direction to
@@ -3554,6 +3605,11 @@ class AXPosition {
       unignored_position = text_position->AsUnignoredPosition(
           AXPositionAdjustmentBehavior::kMoveBackward);
     }
+
+    unignored_position->affinity_ = forward_upstream
+                                        ? ax::mojom::TextAffinity::kUpstream
+                                        : ax::mojom::TextAffinity::kDownstream;
+
     return unignored_position;
   }
 
@@ -3749,11 +3805,11 @@ class AXPosition {
   //    0: if this position is logically equivalent to the other position
   //   <0: if this position is logically less than the other position
   //   >0: if this position is logically greater than the other position
-  absl::optional<int> CompareTo(const AXPosition& other) const {
+  std::optional<int> CompareTo(const AXPosition& other) const {
     if (IsNullPosition() || other.IsNullPosition()) {
       if (IsNullPosition() && other.IsNullPosition())
         return 0;
-      return absl::nullopt;
+      return std::nullopt;
     }
     // Valid positions are required for comparison. Use `AsValidPosition`
     // or `SnapToMaxTextOffsetIfBeyond` before calling `CompareTo` or making
@@ -3833,7 +3889,7 @@ class AXPosition {
     }
 
     if (!common_anchor)
-      return absl::nullopt;
+      return std::nullopt;
 
     // If each position has an uncommon ancestor node, we can compare those
     // instead of needing to compute ancestor positions. Otherwise we need to
@@ -3934,17 +3990,17 @@ class AXPosition {
   // A less optimized, but much slower version of "CompareTo". Should only be
   // used when optimizations cannot be applied, e.g. when comparing ignored
   // positions. See "CompareTo" for an explanation of the return values.
-  absl::optional<int> SlowCompareTo(const AXPosition& other) const {
+  std::optional<int> SlowCompareTo(const AXPosition& other) const {
     if (IsNullPosition() && other.IsNullPosition())
       return 0;
     if (IsNullPosition() || other.IsNullPosition())
-      return absl::nullopt;
+      return std::nullopt;
 
     // If both positions share an anchor and either one is a text position, or
     // both are tree positions, we can do a straight comparison of text offsets
     // or child indices.
     if (GetAnchor() == other.GetAnchor()) {
-      absl::optional<int> optional_result;
+      std::optional<int> optional_result;
       ax::mojom::TextAffinity this_affinity;
       ax::mojom::TextAffinity other_affinity;
 
@@ -4005,14 +4061,14 @@ class AXPosition {
 
     const AXNode* common_anchor = this->LowestCommonAnchor(other);
     if (!common_anchor)
-      return absl::nullopt;
+      return std::nullopt;
 
     // If either of the two positions is a text position, and if one position is
     // an ancestor of the other, we need to compare using text positions,
     // because converting to tree positions will potentially lose information if
     // the text offset is anything other than 0 or `MaxTextOffset()`.
     if (IsTextPosition() || other.IsTextPosition()) {
-      absl::optional<int> optional_result;
+      std::optional<int> optional_result;
       ax::mojom::TextAffinity this_affinity;
       ax::mojom::TextAffinity other_affinity;
 
@@ -4241,6 +4297,18 @@ class AXPosition {
     return GetAnchor() && !GetAnchor()->IsIgnored() && IsInEmptyObject();
   }
 
+  // Returns whether the position is anchored in an unignored and empty object,
+  // has an author specified name that is not empty, and it is not anchored in
+  // an image. This is because in UIA we want to expose embedded object
+  // characters for image elements, even if they have an author specified name.
+  // Only used for UIA.
+  bool EmptyObjectShouldProvideNameFromAttribute() const {
+    DCHECK(IsInUnignoredEmptyObject());
+    return GetAnchor()->GetNameFrom() == ax::mojom::NameFrom::kAttribute &&
+           !IsImage(GetAnchor()->GetRole()) &&
+           !GetAnchor()->GetNameUTF16().empty();
+  }
+
   AXNode* GetEmptyObjectAncestorNode() const {
     if (!GetAnchor())
       return nullptr;
@@ -4295,15 +4363,12 @@ class AXPosition {
   // text representation. Some platforms use an embedded object replacement
   // character that replaces the text coming from most child nodes and empty
   // objects.
-  const std::u16string& GetText(
+  std::u16string GetText(
       const AXEmbeddedObjectBehavior embedded_object_behavior =
           g_ax_embedded_object_behavior) const {
-    // Note that the use of `base::EmptyString16()` is a special case here. For
-    // performance reasons `base::EmptyString16()` should only be used when
-    // returning a const reference to a string and there is an error condition,
-    // not in any other case when an empty string16 is required.
-    if (IsNullPosition())
-      return base::EmptyString16();
+    if (IsNullPosition()) {
+      return std::u16string();
+    }
 
     static const base::NoDestructor<std::u16string> embedded_character_str(
         AXNode::kEmbeddedObjectCharacterUTF16);
@@ -4327,7 +4392,29 @@ class AXPosition {
         // text navigation purposes. I.e. when AT's need to navigate around
         // nodes and elements which are empty and should then be exposed as
         // embedded object characters.
+        //
+        // According to the spec, we should favor author supplied names over
+        // names from content. However, trying to fulfill this in every case
+        // leads to bugs in the UIA implementation in the TextRangeProvider
+        // since we create leaf text positions, which means that they will
+        // always have name from content. As such, for now we are
+        // implementing this special case where we will only return the author
+        // specified name if NameFrom is kAttribute and the name is not empty.
+        // Even though a case like:
+        // <button aria-label="label">hello</button>
+        // Should have its name exposed as "label" according to the spec
+        // but we will expose "hello" instead.
+        // Exposing the aria label here would make us expose text that isn't on
+        // a leaf position, and throughout our UIA implementation, we always
+        // assume and expect to be on leaf positions. Exposing the label
+        // when it has text from content would effectively hide the subtree
+        // from UIA ATs
+        // https://www.w3.org/TR/accname-1.1/#mapping_additional_nd_te
+
         if (IsInUnignoredEmptyObject()) {
+          if (EmptyObjectShouldProvideNameFromAttribute()) {
+            return GetAnchor()->GetNameUTF16();
+          }
           return *embedded_character_str;
         }
         // However, for UIA, we don't want to expose the Hypertext like the
@@ -4375,6 +4462,14 @@ class AXPosition {
     if (IsNullPosition())
       return false;
     return GetAnchor()->IsText();
+  }
+
+  // Determines if the anchor containing this position is a text field object.
+  bool IsInTextField() const {
+    if (IsNullPosition()) {
+      return false;
+    }
+    return GetAnchor()->data().IsTextField();
   }
 
   // Determines if the text representation of this position's anchor contains
@@ -4432,7 +4527,18 @@ class AXPosition {
         // embedded object characters, and as such we need to return the length
         // of the embedded object character when calculating the `MaxTextOffset`
         // for these nodes.
+        //
+        // According to the spec, we should favor author supplied names over
+        // names from content. However, trying to fulfill this in every case
+        // leads to bugs in the UIA implementation in the TextRangeProvider
+        // since we create leaf text positions, which means that they will
+        // always have name from content. As such, for now we are
+        // implementing this special case where we will only return the author
+        // specified name if NameFrom is kAttribute and the name is not empty.
         if (IsInUnignoredEmptyObject()) {
+          if (EmptyObjectShouldProvideNameFromAttribute()) {
+            return (int)GetAnchor()->GetNameUTF16().length();
+          }
           return AXNode::kEmbeddedObjectCharacterLengthUTF16;
         }
         // However, for UIA, we don't want to expose the Hypertext like the
@@ -4694,7 +4800,6 @@ class AXPosition {
       case AXEmbeddedObjectBehavior::kSuppressCharacter:
         return false;
       case AXEmbeddedObjectBehavior::kExposeCharacterForHypertext:
-      case AXEmbeddedObjectBehavior::kUIAExposeCharacterForTextContent:
         // We expose an "object replacement character" for all nodes except:
         // A) Textual nodes, such as static text, inline text boxes and line
         // breaks, and B) Nodes that are invisible to platform APIs.
@@ -4724,6 +4829,9 @@ class AXPosition {
         // `AXPosition::IsInUnignoredEmptyObject()`.
         return !IsNullPosition() && !GetAnchor()->IsIgnored() &&
                !GetAnchor()->IsText() && !GetAnchor()->IsChildOfLeaf();
+      case AXEmbeddedObjectBehavior::kUIAExposeCharacterForTextContent:
+        return !IsNullPosition() && !GetAnchor()->IsIgnored() &&
+               GetAnchor()->IsLeaf() && IsInUnignoredEmptyObject();
     }
   }
 
@@ -4757,9 +4865,16 @@ class AXPosition {
     // control has no text, no word start offsets are present in the
     // `ax::mojom::IntListAttribute::kWordStarts` attribute, so we need to
     // special case them here.
-    if (g_ax_embedded_object_behavior ==
-            AXEmbeddedObjectBehavior::kExposeCharacterForHypertext &&
-        IsInUnignoredEmptyObject()) {
+    //
+    // For the kUIAExposeCharacterForHypertext case, we only want to return a
+    // vector with {0} if the empty object does not have an author specified
+    // name that we are exposing.
+    if (IsInUnignoredEmptyObject() &&
+        (g_ax_embedded_object_behavior ==
+             AXEmbeddedObjectBehavior::kExposeCharacterForHypertext ||
+         (g_ax_embedded_object_behavior ==
+              AXEmbeddedObjectBehavior::kUIAExposeCharacterForTextContent &&
+          !EmptyObjectShouldProvideNameFromAttribute()))) {
       // Using braces ensures that the vector will contain the given value, and
       // not create a vector of size 0.
       static const base::NoDestructor<std::vector<int32_t>>
@@ -4789,9 +4904,12 @@ class AXPosition {
     // is positioned at 1. Because we want to treat embedded object replacement
     // characters as ordinary characters, it wouldn't be consistent to assume
     // they have no length and return 0 instead of 1.
-    if (g_ax_embedded_object_behavior ==
-            AXEmbeddedObjectBehavior::kExposeCharacterForHypertext &&
-        IsInUnignoredEmptyObject()) {
+    if (IsInUnignoredEmptyObject() &&
+        (g_ax_embedded_object_behavior ==
+             AXEmbeddedObjectBehavior::kExposeCharacterForHypertext ||
+         (g_ax_embedded_object_behavior ==
+              AXEmbeddedObjectBehavior::kUIAExposeCharacterForTextContent &&
+          !EmptyObjectShouldProvideNameFromAttribute()))) {
       // Using braces ensures that the vector will contain the given value, and
       // not create a vector of size 1.
       static const base::NoDestructor<std::vector<int32_t>> embedded_word_ends{
@@ -4813,6 +4931,36 @@ class AXPosition {
                                      &next_on_line_id)) {
       return static_cast<AXNodeID>(next_on_line_id);
     }
+    AXNode* parent = GetAnchor()->GetUnignoredParent();
+
+    if (!parent) {
+      return kInvalidAXNodeID;
+    }
+
+    // We should not need to bubble up to find the NextOnLine if we are not
+    // in an InlineTextBox, because the only cases where the relevant NextOnLine
+    // information is stored in the parent is in cases where we have text inside
+    // inline-block elements.
+    //
+    // We only want to bubble up to the parent to find the nextOnLine
+    // if we are in a leaf that is a last child.
+    // This is because if we have a structure where there are multiple
+    // InlineTextBox children that are in different lines, and the parent's
+    // NextOnLine only applies to the last child.
+    if (GetAnchor()->GetRole() != ax::mojom::Role::kInlineTextBox ||
+        parent->GetLastUnignoredChild() != GetAnchor()) {
+      return kInvalidAXNodeID;
+    }
+
+    while (parent &&
+           !parent->GetIntAttribute(ax::mojom::IntAttribute::kNextOnLineId,
+                                    &next_on_line_id)) {
+      parent = parent->GetUnignoredParent();
+    }
+
+    if (parent) {
+      return static_cast<AXNodeID>(next_on_line_id);
+    }
     return kInvalidAXNodeID;
   }
 
@@ -4824,6 +4972,42 @@ class AXPosition {
     int previous_on_line_id;
     if (GetAnchor()->GetIntAttribute(ax::mojom::IntAttribute::kPreviousOnLineId,
                                      &previous_on_line_id)) {
+      return static_cast<AXNodeID>(previous_on_line_id);
+    }
+    AXNode* parent = GetAnchor()->GetUnignoredParent();
+
+    if (!parent) {
+      return kInvalidAXNodeID;
+    }
+
+    // We should not need to bubble up to find the PreviousOnLine if we are not
+    // in an InlineTextBox, because the only cases where the relevant
+    // PreviousOnLine information is stored in the parent is in cases where we
+    // have text inside inline-block elements.
+    //
+    // We have some expectations that
+    // line break elements are not expected to have a previous on line element.
+    //
+    // We only want to bubble up to the parent to find the previousOnLine
+    // if we are in a leaf that is a first child.
+    // This is because if we have a structure where there are multiple
+    // InlineTextBox children that are in different lines, and the parent's
+    // PreviousOnLine only applies to the first child.
+    parent->GetIntAttribute(ax::mojom::IntAttribute::kPreviousOnLineId,
+                            &previous_on_line_id);
+    if (GetAnchor()->GetRole() != ax::mojom::Role::kInlineTextBox ||
+        parent->GetRole() == ax::mojom::Role::kLineBreak ||
+        parent->GetFirstUnignoredChild() != GetAnchor()) {
+      return kInvalidAXNodeID;
+    }
+
+    while (parent &&
+           !parent->GetIntAttribute(ax::mojom::IntAttribute::kPreviousOnLineId,
+                                    &previous_on_line_id)) {
+      parent = parent->GetUnignoredParent();
+    }
+
+    if (parent) {
       return static_cast<AXNodeID>(previous_on_line_id);
     }
     return kInvalidAXNodeID;
@@ -5691,14 +5875,14 @@ const int AXPosition<AXPositionType, AXNodeType>::INVALID_OFFSET;
 template <class AXPositionType, class AXNodeType>
 bool operator==(const AXPosition<AXPositionType, AXNodeType>& first,
                 const AXPosition<AXPositionType, AXNodeType>& second) {
-  const absl::optional<int> compare_to_optional = first.CompareTo(second);
+  const std::optional<int> compare_to_optional = first.CompareTo(second);
   return compare_to_optional.has_value() && compare_to_optional.value() == 0;
 }
 
 template <class AXPositionType, class AXNodeType>
 bool operator!=(const AXPosition<AXPositionType, AXNodeType>& first,
                 const AXPosition<AXPositionType, AXNodeType>& second) {
-  const absl::optional<int> compare_to_optional = first.CompareTo(second);
+  const std::optional<int> compare_to_optional = first.CompareTo(second);
   // It makes sense to also return false if the positions are not comparable,
   // because by definition non-comparable positions are uniqual. Positions are
   // not comparable when one position is null and the other is not or if the
@@ -5709,28 +5893,28 @@ bool operator!=(const AXPosition<AXPositionType, AXNodeType>& first,
 template <class AXPositionType, class AXNodeType>
 bool operator<(const AXPosition<AXPositionType, AXNodeType>& first,
                const AXPosition<AXPositionType, AXNodeType>& second) {
-  const absl::optional<int> compare_to_optional = first.CompareTo(second);
+  const std::optional<int> compare_to_optional = first.CompareTo(second);
   return compare_to_optional.has_value() && compare_to_optional.value() < 0;
 }
 
 template <class AXPositionType, class AXNodeType>
 bool operator<=(const AXPosition<AXPositionType, AXNodeType>& first,
                 const AXPosition<AXPositionType, AXNodeType>& second) {
-  const absl::optional<int> compare_to_optional = first.CompareTo(second);
+  const std::optional<int> compare_to_optional = first.CompareTo(second);
   return compare_to_optional.has_value() && compare_to_optional.value() <= 0;
 }
 
 template <class AXPositionType, class AXNodeType>
 bool operator>(const AXPosition<AXPositionType, AXNodeType>& first,
                const AXPosition<AXPositionType, AXNodeType>& second) {
-  const absl::optional<int> compare_to_optional = first.CompareTo(second);
+  const std::optional<int> compare_to_optional = first.CompareTo(second);
   return compare_to_optional.has_value() && compare_to_optional.value() > 0;
 }
 
 template <class AXPositionType, class AXNodeType>
 bool operator>=(const AXPosition<AXPositionType, AXNodeType>& first,
                 const AXPosition<AXPositionType, AXNodeType>& second) {
-  const absl::optional<int> compare_to_optional = first.CompareTo(second);
+  const std::optional<int> compare_to_optional = first.CompareTo(second);
   return compare_to_optional.has_value() && compare_to_optional.value() >= 0;
 }
 

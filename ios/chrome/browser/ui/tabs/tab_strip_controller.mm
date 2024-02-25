@@ -12,6 +12,7 @@
 #import "base/apple/foundation_util.h"
 #import "base/i18n/rtl.h"
 #import "base/ios/ios_util.h"
+#import "base/memory/raw_ptr.h"
 #import "base/metrics/histogram_functions.h"
 #import "base/metrics/user_metrics.h"
 #import "base/metrics/user_metrics_action.h"
@@ -22,12 +23,11 @@
 #import "components/feature_engagement/public/event_constants.h"
 #import "components/feature_engagement/public/tracker.h"
 #import "ios/chrome/browser/bookmarks/model/local_or_syncable_bookmark_model_factory.h"
-#import "ios/chrome/browser/drag_and_drop/drag_item_util.h"
-#import "ios/chrome/browser/drag_and_drop/url_drag_drop_handler.h"
-#import "ios/chrome/browser/feature_engagement/tracker_factory.h"
-#import "ios/chrome/browser/ntp/new_tab_page_util.h"
+#import "ios/chrome/browser/drag_and_drop/model/drag_item_util.h"
+#import "ios/chrome/browser/drag_and_drop/model/url_drag_drop_handler.h"
+#import "ios/chrome/browser/feature_engagement/model/tracker_factory.h"
+#import "ios/chrome/browser/ntp/model/new_tab_page_util.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
-#import "ios/chrome/browser/shared/coordinator/scene/scene_state_browser_agent.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/shared/model/web_state_list/all_web_state_observation_forwarder.h"
@@ -47,11 +47,8 @@
 #import "ios/chrome/browser/shared/ui/util/rtl_geometry.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/browser/shared/ui/util/util_swift.h"
-#import "ios/chrome/browser/snapshots/snapshot_tab_helper.h"
-#import "ios/chrome/browser/tabs/features.h"
-#import "ios/chrome/browser/tabs/tab_title_util.h"
-#import "ios/chrome/browser/ui/bubble/bubble_util.h"
-#import "ios/chrome/browser/ui/bubble/bubble_view.h"
+#import "ios/chrome/browser/snapshots/model/snapshot_tab_helper.h"
+#import "ios/chrome/browser/tabs/model/tab_title_util.h"
 #import "ios/chrome/browser/ui/fullscreen/scoped_fullscreen_disabler.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_utils.h"
 #import "ios/chrome/browser/ui/tabs/requirements/tab_strip_constants.h"
@@ -61,10 +58,9 @@
 #import "ios/chrome/browser/ui/tabs/tab_strip_view.h"
 #import "ios/chrome/browser/ui/tabs/tab_view.h"
 #import "ios/chrome/browser/ui/tabs/target_frame_cache.h"
-#import "ios/chrome/browser/url_loading/url_loading_browser_agent.h"
-#import "ios/chrome/browser/url_loading/url_loading_params.h"
-#import "ios/chrome/browser/web_state_list/web_state_list_favicon_driver_observer.h"
-#import "ios/chrome/common/button_configuration_util.h"
+#import "ios/chrome/browser/url_loading/model/url_loading_browser_agent.h"
+#import "ios/chrome/browser/url_loading/model/url_loading_params.h"
+#import "ios/chrome/browser/web_state_list/model/web_state_list_favicon_driver_observer.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/util/ui_util.h"
 #import "ios/chrome/grit/ios_strings.h"
@@ -184,8 +180,8 @@ const CGFloat kSymbolSize = 18;
                                   UIGestureRecognizerDelegate,
                                   UIScrollViewDelegate,
                                   URLDropDelegate> {
-  Browser* _browser;
-  WebStateList* _webStateList;
+  raw_ptr<Browser> _browser;
+  raw_ptr<WebStateList> _webStateList;
   TabStripContainerView* _view;
   TabStripView* _tabStripView;
   UIButton* _buttonNewTab;
@@ -466,9 +462,7 @@ const CGFloat kSymbolSize = 18;
 
     // `self.view` setup.
     _useTabStacking = [self shouldUseTabStacking];
-    CGRect tabStripFrame = SceneStateBrowserAgent::FromBrowser(browser)
-                               ->GetSceneState()
-                               .window.bounds;
+    CGRect tabStripFrame = browser->GetSceneState().window.bounds;
     tabStripFrame.size.height = kTabStripHeight;
     _view = [[TabStripContainerView alloc] initWithFrame:tabStripFrame];
     _view.autoresizingMask = (UIViewAutoresizingFlexibleWidth |
@@ -506,39 +500,31 @@ const CGFloat kSymbolSize = 18;
     UIImage* buttonNewTabImage =
         DefaultSymbolWithPointSize(kPlusSymbol, kSymbolSize);
 
-    if (IsUIButtonConfigurationEnabled()) {
-      UIButtonConfiguration* buttonConfiguration =
-          [UIButtonConfiguration plainButtonConfiguration];
-      buttonConfiguration.contentInsets = NSDirectionalEdgeInsetsMake(
-          0, kNewTabButtonLeadingImageInset, kNewTabButtonBottomImageInset, 0);
-      buttonConfiguration.image = buttonNewTabImage;
-      buttonConfiguration.baseForegroundColor =
-          [UIColor colorNamed:kGrey500Color];
-      _buttonNewTab.configurationUpdateHandler = ^(UIButton* incomingButton) {
-        UIButtonConfiguration* updatedConfig = incomingButton.configuration;
-        switch (incomingButton.state) {
-          case UIControlStateHighlighted: {
-            updatedConfig.baseForegroundColor =
-                [UIColor colorNamed:kGrey700Color];
-            break;
-          }
-          case UIControlStateNormal:
-            updatedConfig.baseForegroundColor =
-                [UIColor colorNamed:kGrey500Color];
-            break;
-          default:
-            break;
+    UIButtonConfiguration* buttonConfiguration =
+        [UIButtonConfiguration plainButtonConfiguration];
+    buttonConfiguration.contentInsets = NSDirectionalEdgeInsetsMake(
+        0, kNewTabButtonLeadingImageInset, kNewTabButtonBottomImageInset, 0);
+    buttonConfiguration.image = buttonNewTabImage;
+    buttonConfiguration.baseForegroundColor =
+        [UIColor colorNamed:kGrey500Color];
+    _buttonNewTab.configurationUpdateHandler = ^(UIButton* incomingButton) {
+      UIButtonConfiguration* updatedConfig = incomingButton.configuration;
+      switch (incomingButton.state) {
+        case UIControlStateHighlighted: {
+          updatedConfig.baseForegroundColor =
+              [UIColor colorNamed:kGrey700Color];
+          break;
         }
-        incomingButton.configuration = updatedConfig;
-      };
-      _buttonNewTab.configuration = buttonConfiguration;
-    } else {
-      UIEdgeInsets imageInsets = UIEdgeInsetsMake(
-          0, kNewTabButtonLeadingImageInset, kNewTabButtonBottomImageInset, 0);
-      SetImageEdgeInsets(_buttonNewTab, imageInsets);
-      [_buttonNewTab setImage:buttonNewTabImage forState:UIControlStateNormal];
-      [_buttonNewTab.imageView setTintColor:[UIColor colorNamed:kGrey500Color]];
-    }
+        case UIControlStateNormal:
+          updatedConfig.baseForegroundColor =
+              [UIColor colorNamed:kGrey500Color];
+          break;
+        default:
+          break;
+      }
+      incomingButton.configuration = updatedConfig;
+    };
+    _buttonNewTab.configuration = buttonConfiguration;
 
     _buttonNewTabSpotlightView = [[UIView alloc] init];
     _buttonNewTabSpotlightView.hidden = YES;
@@ -636,15 +622,9 @@ const CGFloat kSymbolSize = 18;
 #pragma mark - TabStripCommands
 
 - (void)setNewTabButtonOnTabStripIPHHighlighted:(BOOL)IPHHighlighted {
-  if (IsUIButtonConfigurationEnabled()) {
-    _buttonNewTab.tintColor = IPHHighlighted
-                                  ? [UIColor colorNamed:kSolidWhiteColor]
-                                  : [UIColor colorNamed:kGrey500Color];
-  } else {
-    _buttonNewTab.imageView.tintColor =
-        IPHHighlighted ? [UIColor colorNamed:kSolidWhiteColor]
-                       : [UIColor colorNamed:kGrey500Color];
-  }
+  _buttonNewTab.tintColor = IPHHighlighted
+                                ? [UIColor colorNamed:kSolidWhiteColor]
+                                : [UIColor colorNamed:kGrey500Color];
   _buttonNewTabSpotlightView.backgroundColor =
       IPHHighlighted ? [UIColor colorNamed:kBlueColor] : nil;
   _buttonNewTabSpotlightView.hidden = !IPHHighlighted;
@@ -1200,9 +1180,13 @@ const CGFloat kSymbolSize = 18;
       // The activation is handled after this switch statement.
       break;
     case WebStateListChange::Type::kDetach: {
+      const WebStateListChangeDetach& detachChange =
+          change.As<WebStateListChangeDetach>();
+
       // Keep the actual view around while it is animating out.  Once the
       // animation is done, remove the view.
-      NSUInteger index = [self indexForWebStateListIndex:status.index];
+      NSUInteger index =
+          [self indexForWebStateListIndex:detachChange.detached_from_index()];
       TabView* view = [_tabArray objectAtIndex:index];
       [_closingTabs addObject:view];
       _targetFrames.RemoveFrame(view);
@@ -1244,7 +1228,7 @@ const CGFloat kSymbolSize = 18;
           [self indexForWebStateListIndex:moveChange.moved_from_index()];
       TabView* view = [_tabArray objectAtIndex:arrayIndex];
       [_tabArray removeObject:view];
-      [_tabArray insertObject:view atIndex:status.index];
+      [_tabArray insertObject:view atIndex:moveChange.moved_to_index()];
       [self setNeedsLayoutWithAnimation];
       break;
     }
@@ -1262,13 +1246,15 @@ const CGFloat kSymbolSize = 18;
       TabView* view =
           [self createTabViewForWebState:insertChange.inserted_web_state()
                               isSelected:status.active_web_state_change()];
-      [_tabArray insertObject:view
-                      atIndex:[self indexForWebStateListIndex:status.index]];
+      [_tabArray
+          insertObject:view
+               atIndex:[self indexForWebStateListIndex:insertChange.index()]];
       [[self tabStripView] addSubview:view];
 
       [self updateContentSizeAndRepositionViews];
       [self setNeedsLayoutWithAnimation];
-      [self updateContentOffsetForWebStateIndex:status.index isNewWebState:YES];
+      [self updateContentOffsetForWebStateIndex:insertChange.index()
+                                  isNewWebState:YES];
       break;
     }
   }

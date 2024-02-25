@@ -6,8 +6,8 @@
 
 #include "base/test/scoped_feature_list.h"
 #include "components/content_settings/core/common/content_settings.h"
-#include "components/permissions/features.h"
 #include "components/permissions/test/test_permissions_client.h"
+#include "content/public/common/content_features.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/test_browser_context.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -138,6 +138,14 @@ TEST_F(MidiPermissionContextTests, TestSynchronizingPermissions) {
                      CONTENT_SETTING_ALLOW);
 
   for (auto test : tests) {
+    // Reset previous settings.
+    settings_map->SetContentSettingDefaultScope(secure_url, secure_url,
+                                                ContentSettingsType::MIDI_SYSEX,
+                                                CONTENT_SETTING_DEFAULT);
+    settings_map->SetContentSettingDefaultScope(secure_url, secure_url,
+                                                ContentSettingsType::MIDI,
+                                                CONTENT_SETTING_DEFAULT);
+
     // First set the SysEx permission, and verify it is set correctly:
     settings_map->SetContentSettingDefaultScope(secure_url, secure_url,
                                                 ContentSettingsType::MIDI_SYSEX,

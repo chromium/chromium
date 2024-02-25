@@ -60,7 +60,8 @@ class CastWindowManagerAura : public CastWindowManager,
 
   // aura::client::WindowParentingClient implementation:
   aura::Window* GetDefaultParent(aura::Window* window,
-                                 const gfx::Rect& bounds) override;
+                                 const gfx::Rect& bounds,
+                                 const int64_t display_id) override;
 
   CastWindowTreeHostAura* window_tree_host() const;
   CastGestureHandler* GetGestureHandler() const;

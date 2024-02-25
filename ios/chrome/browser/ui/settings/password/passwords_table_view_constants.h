@@ -6,42 +6,75 @@
 #define IOS_CHROME_BROWSER_UI_SETTINGS_PASSWORD_PASSWORDS_TABLE_VIEW_CONSTANTS_H_
 
 #import <Foundation/Foundation.h>
+
 #import "ios/chrome/browser/shared/ui/list_model/list_model.h"
 
-// The accessibility identifier of the password details table view.
-extern NSString* const kPasswordsTableViewId;
-extern NSString* const kPasswordsSearchBarId;
-extern NSString* const kPasswordsScrimViewId;
+// The accessibility identifier of the Password Manager table view.
+extern NSString* const kPasswordsTableViewID;
+extern NSString* const kPasswordsSearchBarID;
+extern NSString* const kPasswordsScrimViewID;
 
 // The accessibility identifier of the password details table view.
-extern NSString* const kPasswordDetailsTableViewId;
-extern NSString* const kPasswordDetailsDeletionAlertViewId;
-extern NSString* const kPasswordsAddPasswordSaveButtonId;
-extern NSString* const kPasswordsAddPasswordCancelButtonId;
+extern NSString* const kPasswordDetailsTableViewID;
+extern NSString* const kPasswordDetailsDeletionAlertViewID;
+extern NSString* const kPasswordsAddPasswordSaveButtonID;
+extern NSString* const kPasswordsAddPasswordCancelButtonID;
 
 // The accessibility identifier of the password issues table view.
-extern NSString* const kPasswordIssuesTableViewId;
+extern NSString* const kPasswordIssuesTableViewID;
 
 // The accessibility identifier of the "Dismissed Warnings" cell in the password
 // issues table view.
-extern NSString* const kDismissedWarningsCellId;
+extern NSString* const kDismissedWarningsCellID;
 
 // The accessibility identifier of the large "Add Password..." button when
 // displayed in the table.
-extern NSString* const kAddPasswordButtonId;
+extern NSString* const kAddPasswordButtonID;
 
 // Username text field accessibility identifier for Password Details.
-extern NSString* const kUsernameTextfieldForPasswordDetailsId;
+extern NSString* const kUsernameTextfieldForPasswordDetailsID;
 
 // Password text field accessibility identifier for Password Details.
-extern NSString* const kPasswordTextfieldForPasswordDetailsId;
+extern NSString* const kPasswordTextfieldForPasswordDetailsID;
 
 // Delete button accessibility identifier for Password Details.
-extern NSString* const kDeleteButtonForPasswordDetailsId;
+extern NSString* const kDeleteButtonForPasswordDetailsID;
 
 // The accessibility identifier of the icon that informs the user a password is
 // only stored locally and not backed up to any account.
-extern NSString* const kLocalOnlyPasswordIconId;
+extern NSString* const kLocalOnlyPasswordIconID;
+
+// Name of the image shown in the Password Manager widget promo that's presented
+// in the Password Manager.
+extern NSString* const kWidgetPromoImageName;
+
+// Name of the image shown in the Password Manager widget promo that's presented
+// in the Password Manager when the promo cell is disabled.
+extern NSString* const kWidgetPromoDisabledImageName;
+
+// Accessibility identifier for the Password Manager widget promo.
+extern NSString* const kWidgetPromoID;
+
+// Accessibility identifier for the Password Manager widget promo's close
+// button.
+extern NSString* const kWidgetPromoCloseButtonID;
+
+// Accessibility identifier for the Password Manager widget promo's image.
+extern NSString* const kWidgetPromoImageID;
+
+// Name of histogram tracking actions taken on the Password Manager widget
+// promo.
+extern const char kPasswordManagerWidgetPromoActionHistogram[];
+
+// Enum for the IOS.PasswordManager.WidgetPromo.Action histogram. Keep in sync
+// with the "PromoWithInstructionsAction" enum.
+// LINT.IfChange
+enum class PasswordManagerWidgetPromoAction {
+  kClose = 0,             // The user closed the promo.
+  kOpenInstructions = 1,  // The user opened the instruction view.
+  kMaxValue = kOpenInstructions,
+};
+// LINT.ThenChange(/tools/metrics/histograms/metadata/ios/enums.xml:PromoWithInstructionsAction)
 
 // Sections of the password settings
 typedef NS_ENUM(NSInteger, PasswordSectionIdentifier) {
@@ -50,6 +83,7 @@ typedef NS_ENUM(NSInteger, PasswordSectionIdentifier) {
   SectionIdentifierPasswordCheck,
   SectionIdentifierAddPasswordButton,
   SectionIdentifierManageAccountHeader,
+  SectionIdentifierWidgetPromo,
 };
 
 // Enum with all possible UI states for the Password Manager's Password Checkup

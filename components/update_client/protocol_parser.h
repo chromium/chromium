@@ -140,7 +140,7 @@ class ProtocolParser {
     std::string min_os_version;  // major.minor.
   };
 
-  static const int kNoDaystart = -1;
+  static constexpr int kNoDaystart = -1;
   struct Results {
     Results();
     Results(const Results& other);

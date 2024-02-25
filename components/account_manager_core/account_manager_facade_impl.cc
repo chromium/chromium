@@ -5,6 +5,7 @@
 #include "components/account_manager_core/account_manager_facade_impl.h"
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <utility>
 #include <vector>
@@ -27,7 +28,6 @@
 #include "google_apis/gaia/oauth2_access_token_consumer.h"
 #include "google_apis/gaia/oauth2_access_token_fetcher.h"
 #include "google_apis/gaia/oauth2_access_token_fetcher_immediate_error.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace account_manager {
 
@@ -52,7 +52,7 @@ void UnmarshalAccounts(
     std::vector<crosapi::mojom::AccountPtr> mojo_accounts) {
   std::vector<Account> accounts;
   for (const auto& mojo_account : mojo_accounts) {
-    absl::optional<Account> maybe_account = FromMojoAccount(mojo_account);
+    std::optional<Account> maybe_account = FromMojoAccount(mojo_account);
     if (!maybe_account) {
       // Skip accounts we couldn't unmarshal. No logging, as it would produce
       // a lot of noise.
@@ -66,7 +66,7 @@ void UnmarshalAccounts(
 void UnmarshalPersistentError(
     base::OnceCallback<void(const GoogleServiceAuthError&)> callback,
     crosapi::mojom::GoogleServiceAuthErrorPtr mojo_error) {
-  absl::optional<GoogleServiceAuthError> maybe_error =
+  std::optional<GoogleServiceAuthError> maybe_error =
       FromMojoGoogleServiceAuthError(mojo_error);
   if (!maybe_error) {
     // Couldn't unmarshal GoogleServiceAuthError, report the account as not
@@ -237,7 +237,7 @@ class AccountManagerFacadeImpl::AccessTokenFetcher
     is_request_pending_ = false;
 
     if (result->is_error()) {
-      absl::optional<GoogleServiceAuthError> maybe_error =
+      std::optional<GoogleServiceAuthError> maybe_error =
           account_manager::FromMojoGoogleServiceAuthError(result->get_error());
 
       if (!maybe_error.has_value()) {
@@ -295,11 +295,11 @@ class AccountManagerFacadeImpl::AccessTokenFetcher
 AccountManagerFacadeImpl::AccountManagerFacadeImpl(
     mojo::Remote<crosapi::mojom::AccountManager> account_manager_remote,
     uint32_t remote_version,
-    AccountManager* account_manager_for_tests,
+    base::WeakPtr<AccountManager> account_manager_for_tests,
     base::OnceClosure init_finished)
     : remote_version_(remote_version),
       account_manager_remote_(std::move(account_manager_remote)),
-      account_manager_for_tests_(account_manager_for_tests) {
+      account_manager_for_tests_(std::move(account_manager_for_tests)) {
   DCHECK(init_finished);
   initialization_callbacks_.emplace_back(std::move(init_finished));
 
@@ -505,12 +505,14 @@ void AccountManagerFacadeImpl::ReportAuthError(
 void AccountManagerFacadeImpl::UpsertAccountForTesting(
     const Account& account,
     const std::string& token_value) {
+  CHECK(account_manager_for_tests_);
   account_manager_for_tests_->UpsertAccount(account.key, account.raw_email,
                                             token_value);
 }
 
 void AccountManagerFacadeImpl::RemoveAccountForTesting(
     const AccountKey& account) {
+  CHECK(account_manager_for_tests_);
   account_manager_for_tests_->RemoveAccount(account);
 }
 
@@ -544,7 +546,7 @@ void AccountManagerFacadeImpl::OnSigninDialogActionFinished(
     base::OnceCallback<
         void(const account_manager::AccountUpsertionResult& result)> callback,
     crosapi::mojom::AccountUpsertionResultPtr mojo_result) {
-  absl::optional<account_manager::AccountUpsertionResult> result =
+  std::optional<account_manager::AccountUpsertionResult> result =
       account_manager::FromMojoAccountUpsertionResult(mojo_result);
   if (!result.has_value()) {
     FinishUpsertAccount(
@@ -566,7 +568,7 @@ void AccountManagerFacadeImpl::FinishUpsertAccount(
 
 void AccountManagerFacadeImpl::OnTokenUpserted(
     crosapi::mojom::AccountPtr account) {
-  absl::optional<Account> maybe_account = FromMojoAccount(account);
+  std::optional<Account> maybe_account = FromMojoAccount(account);
   if (!maybe_account) {
     LOG(WARNING) << "Can't unmarshal account of type: "
                  << account->key->account_type;
@@ -579,7 +581,7 @@ void AccountManagerFacadeImpl::OnTokenUpserted(
 
 void AccountManagerFacadeImpl::OnAccountRemoved(
     crosapi::mojom::AccountPtr account) {
-  absl::optional<Account> maybe_account = FromMojoAccount(account);
+  std::optional<Account> maybe_account = FromMojoAccount(account);
   if (!maybe_account) {
     LOG(WARNING) << "Can't unmarshal account of type: "
                  << account->key->account_type;
@@ -593,14 +595,14 @@ void AccountManagerFacadeImpl::OnAccountRemoved(
 void AccountManagerFacadeImpl::OnAuthErrorChanged(
     crosapi::mojom::AccountKeyPtr account,
     crosapi::mojom::GoogleServiceAuthErrorPtr error) {
-  absl::optional<AccountKey> maybe_account_key = FromMojoAccountKey(account);
+  std::optional<AccountKey> maybe_account_key = FromMojoAccountKey(account);
   if (!maybe_account_key) {
     LOG(WARNING) << "Can't unmarshal account key of type: "
                  << account->account_type;
     return;
   }
 
-  absl::optional<GoogleServiceAuthError> maybe_error =
+  std::optional<GoogleServiceAuthError> maybe_error =
       FromMojoGoogleServiceAuthError(error);
   if (!maybe_error) {
     LOG(WARNING) << "Can't unmarshal error with state: " << error->state;

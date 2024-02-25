@@ -7,14 +7,14 @@
 #import <QuartzCore/QuartzCore.h>
 
 #import "base/strings/sys_string_conversions.h"
-#import "ios/chrome/browser/crash_report/crash_helper.h"
-#import "ios/chrome/browser/safe_mode/safe_mode_crashing_modules_config.h"
-#import "ios/chrome/browser/safe_mode/safe_mode_util.h"
+#import "ios/chrome/browser/crash_report/model/crash_helper.h"
+#import "ios/chrome/browser/safe_mode/model/safe_mode_crashing_modules_config.h"
+#import "ios/chrome/browser/safe_mode/model/safe_mode_util.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/common/crash_report/crash_helper.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/util/button_util.h"
-#import "ios/chrome/grit/ios_chromium_strings.h"
+#import "ios/chrome/grit/ios_branded_strings.h"
 #import "ui/base/device_form_factor.h"
 #import "ui/gfx/ios/NSString+CrStringDrawing.h"
 
@@ -208,10 +208,14 @@ const NSTimeInterval kUploadTotalTime = 5;
   _startButton = PrimaryActionButton(YES);
   NSString* startText =
       NSLocalizedString(@"IDS_IOS_SAFE_MODE_RELOAD_CHROME", @"");
-  [_startButton setTitle:startText forState:UIControlStateNormal];
-  [_startButton titleLabel].textAlignment = NSTextAlignmentCenter;
-  [_startButton titleLabel].lineBreakMode = NSLineBreakByWordWrapping;
-  [_startButton titleLabel].adjustsFontSizeToFitWidth = YES;
+  SetConfigurationTitle(_startButton, startText);
+
+  UIButtonConfiguration* buttonConfiguration = _startButton.configuration;
+  buttonConfiguration.titleAlignment =
+      UIButtonConfigurationTitleAlignmentCenter;
+  buttonConfiguration.titleLineBreakMode = NSLineBreakByWordWrapping;
+  _startButton.configuration = buttonConfiguration;
+
   frame = [_startButton frame];
   frame.size.width =
       (ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_TABLET)

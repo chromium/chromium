@@ -1,0 +1,275 @@
+<style include="cr-hidden-style">
+  .trace-card {
+    display: grid;
+    grid-auto-columns: 1fr;
+    grid-auto-flow: column;
+    grid-column-gap: 12px;
+    grid-row-gap: 0px;
+    padding: 8px 16px;
+    margin-bottom: 12px;
+    background-color: var(--cr-card-background-color);
+    box-shadow: rgba(0, 0, 0, 0.16) 0px 1px 4px;
+    border-radius: 4px;
+    height: 52px;
+    align-items: center;
+    min-width: 0;
+    position: relative;
+  }
+
+  .trace-card > div {
+    white-space: nowrap;
+    overflow: hidden;
+    min-width: 0;
+  }
+
+  .trace-id-container,
+  .trace-upload-state-container {
+    grid-column: span 2;
+  }
+
+  .trace-size-container {
+    width: 120px;
+  }
+
+  /* remove default button styling */
+  .clickable-field {
+    background: none;
+    color: inherit;
+    border: none;
+    padding: 0;
+    font: inherit;
+    outline: inherit;
+    color: var(--cr-primary-text-color);
+  }
+
+  .clickable-field.copiable {
+    cursor: copy;
+  }
+
+  .trace-upload-state-container {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .upload-state-card {
+    border-radius: 1000px;
+    font-size: 14px;
+    display: flex;
+    height: 34px;
+    align-items: center;
+    padding: 0 16px;
+  }
+
+  .upload-state-card:disabled {
+    opacity: var(--cr-disabled-opacity);
+    pointer-events: none;
+  }
+
+  .upload-state-card > iron-icon {
+    --iron-icon-width: 18px;
+    --iron-icon-height: 18px;
+    margin-inline-start: 16px;
+    margin-inline-end: 8px;
+  }
+
+  .state-default {
+    border: none;
+    color: blue;
+    background-color: lightblue;
+  }
+
+  .state-default > iron-icon {
+    --iron-icon-fill-color: blue;
+  }
+
+  .state-success {
+    background-color: rgb(173, 255, 173);
+    color: rgb(6, 95, 6);
+  }
+
+  .state-success > iron-icon {
+    --iron-icon-fill-color: rgb(6, 95, 6);
+  }
+
+  .state-pending {
+    background-color: orange;
+    color: rgb(204, 85, 0);
+  }
+
+  .state-pending > iron-icon {
+    --iron-icon-fill-color: rgb(204, 85, 0);
+  }
+
+  @media (prefers-color-scheme: dark) {
+    .action-button {
+      border: 1px solid DarkGray;
+      color: DarkGray;
+      background-color: transparent;
+    }
+
+    .action-button:hover {
+      --cr-icon-button-fill-color: var(--cr-card-background-color);
+      background-color: DarkGray;
+    }
+  }
+
+  @media (prefers-color-scheme: light) {
+    .action-button {
+      border-color: transparent;
+      color: DarkGray;
+      background-color: rgb(239, 239, 239);
+    }
+
+    .action-button:hover {
+      --cr-icon-button-fill-color: black;
+    }
+  }
+
+  .skip-reason {
+    margin-top: 4px;
+    margin-left: 2px;
+    font-size: 10px;
+    color: var(--cr-secondary-text-color);
+  }
+
+  .upload-action {
+    display: flex;
+    width: 64px;
+    justify-content: flex-end;
+  }
+
+  .upload-action > .action-button {
+    margin-left: 0;
+    margin-right: 4px;
+  }
+
+  .actions-container {
+    width: 160px;
+  }
+
+  .action-button {
+    height: 40px;
+    width: 40px;
+    cursor: pointer;
+    border-radius: 100%;
+  }
+
+  .action-button:active {
+    background-color: WhiteSmoke;
+  }
+
+  .upload-button-container {
+    width: 50px;
+    display: inline-block;
+  }
+
+  .info {
+    font-size: 13px;
+    color: var(--cr-secondary-text-color);
+  }
+
+  .date-creation-value,
+  .trace-skip-value,
+  .trace-size-value {
+    color: var(--cr-primary-text-color)
+  }
+
+
+  .trace-upload-state-container {
+    font-weight: bold;
+  }
+
+  .trace-spinner {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    left: 0;
+    align-items: center;
+    justify-content: center;
+    background-color: rgba(0, 0, 0, 0.4);
+    border-radius: 4px;
+  }
+
+  .trace-spinner > paper-spinner-lite {
+    width: 20px;
+    height: 20px;
+  }
+</style>
+<div class="trace-card">
+  <template is="dom-if" if="[[isLoading]]">
+    <div class="trace-spinner">
+      <paper-spinner-lite active>
+      </paper-spinner-lite>
+    </div>
+  </template>
+  <div class="trace-id-container">
+    <button class="clickable-field copiable" on-click="onCopyUuidClick_">
+      [[tokenToString_(trace.uuid)]]
+    </button>
+    <div class="info">Trace ID</div>
+  </div>
+  <div class="trace-date-created-container">
+    <div class="date-creation-value">[[dateToString_(trace.creationTime)]]</div>
+    <div class="info">Date created</div>
+  </div>
+  <div class="trace-scenario-container">
+    <button class="clickable-field copiable" on-click="onCopyScenarioClick_">
+      [[trace.scenarioName]]
+    </button>
+  </div>
+  <div class="trace-trigger-container">
+    <button class="clickable-field copiable" on-click="onCopyUploadRuleClick_">
+      [[trace.uploadRuleName]]
+    </button>
+    <div class="info">Trigger rule</div>
+  </div>
+  <div class="trace-size-container">
+    <div class="trace-size-value">[[getTraceSize_(trace.totalSize)]]</div>
+    <div class="info">Uncompressed size</div>
+  </div>
+  <div class="trace-upload-state-container">
+    <div class="upload-state-card state-default"
+        hidden$="[[!uploadStateEqual(trace.uploadState,
+            uploadStateEnum_.NOT_UPLOADED)]]"
+        title$="Skip reason: [[getSkipReason_(trace.skipReason)]]">
+      Skip reason: [[getSkipReason_(trace.skipReason)]]
+    </div>
+    <div class="upload-state-card state-pending"
+        hidden$="[[!uploadStateEqual(trace.uploadState,
+            uploadStateEnum_.PENDING)]]">
+      Pending upload
+    </div>
+    <div class="upload-state-card state-pending"
+        hidden$="[[!uploadStateEqual(trace.uploadState,
+            uploadStateEnum_.USER_REQUEST)]]">
+      Pending upload: User requested
+    </div>
+    <div class="upload-state-card state-success"
+        hidden$="[[!uploadStateEqual(trace.uploadState,
+            uploadStateEnum_.UPLOADED)]]">
+      Uploaded: [[dateToString_(trace.uploadTime)]]
+    </div>
+  </div>
+  <div class="actions-container">
+    <div class="upload-button-container">
+      <cr-icon-button class="action-button" title="Upload Trace"
+          iron-icon="trace-report-icons:cloud_upload" aria-label="Upload Trace"
+          on-click="onUploadTraceClick_"
+          hidden="[[!uploadStateEqual(trace.uploadState,
+              uploadStateEnum_.NOT_UPLOADED)]]"
+          disabled="[[!isManualUploadPermitted_(trace.skipReason)]]">
+      </cr-icon-button>
+    </div>
+    <cr-icon-button class="action-button" iron-icon="cr:file-download"
+        title="Download Trace" on-click="onDownloadTraceClick_"
+        disabled="[[isDownloadDisabled_(isLoading, trace.uploadState)]]"
+        aria-label="Download Trace">
+    </cr-icon-button>
+    <cr-icon-button class="action-button" iron-icon="cr:delete"
+        title="Delete Trace" on-click="onDeleteTraceClick_"
+        disabled="[[isLoading]]"
+        aria-label="Delete Trace">
+    </cr-icon-button>
+  </div>
+</div>

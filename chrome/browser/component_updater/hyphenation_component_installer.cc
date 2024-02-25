@@ -38,16 +38,18 @@ class HyphenationDirectory {
     DVLOG(1) << __func__;
     DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
     callbacks_.push_back(std::move(callback));
-    if (!dir_.empty())
+    if (!dir_.empty()) {
       FireCallbacks();
+    }
   }
 
   void Set(const base::FilePath& new_dir) {
     DVLOG(1) << __func__ << "\"" << new_dir << "\"";
     DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
     CHECK(!new_dir.empty());
-    if (new_dir == dir_)
+    if (new_dir == dir_) {
       return;
+    }
     dir_ = new_dir;
     FireCallbacks();
   }

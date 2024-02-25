@@ -11,7 +11,7 @@
 #include "content/public/renderer/v8_value_converter.h"
 #include "gin/object_template_builder.h"
 #include "third_party/blink/public/common/web_preferences/web_preferences.h"
-#include "third_party/blink/public/web/blink.h"
+#include "third_party/blink/public/platform/scheduler/web_agent_group_scheduler.h"
 #include "third_party/blink/public/web/web_dom_message_event.h"
 #include "third_party/blink/public/web/web_element.h"
 #include "third_party/blink/public/web/web_local_frame.h"
@@ -28,20 +28,20 @@ const char kPluginPlaceholderDataURL[] = "data:text/html,pluginplaceholderdata";
 
 PluginPlaceholderBase::PluginPlaceholderBase(
     content::RenderFrame* render_frame,
-    const blink::WebPluginParams& params,
-    const std::string& html_data)
-    : content::RenderFrameObserver(render_frame),
-      plugin_params_(params),
-      plugin_(WebViewPlugin::Create(render_frame->GetWebFrame()->View(),
-                                    this,
-                                    render_frame
-                                        ? render_frame->GetBlinkPreferences()
-                                        : blink::web_pref::WebPreferences(),
-                                    html_data,
-                                    GURL(kPluginPlaceholderDataURL))),
-      hidden_(false) {}
+    const blink::WebPluginParams& params)
+    : content::RenderFrameObserver(render_frame), plugin_params_(params) {}
 
-PluginPlaceholderBase::~PluginPlaceholderBase() {
+PluginPlaceholderBase::~PluginPlaceholderBase() = default;
+
+void PluginPlaceholderBase::Init(const std::string& html_data) {
+  CHECK(!plugin_);
+  auto* frame = render_frame();
+  // The `WebViewPlugin::Delegate` represented by `this` can get called during
+  // the Create method, so this can't be in the constructor.
+  plugin_ = WebViewPlugin::Create(
+      frame->GetWebFrame()->View(), this,
+      frame ? frame->GetBlinkPreferences() : blink::web_pref::WebPreferences(),
+      html_data, GURL(kPluginPlaceholderDataURL));
 }
 
 const blink::WebPluginParams& PluginPlaceholderBase::GetPluginParams() const {
@@ -127,13 +127,13 @@ void PluginPlaceholderBase::NotifyPlaceholderReadyForTestingCallback() {
   blink::WebElement element = plugin()->Container()->GetElement();
   element.SetAttribute("placeholderReady", "true");
 
+  blink::WebLocalFrame* frame = element.GetDocument().GetFrame();
   base::Value value("placeholderReady");
   blink::WebSerializedScriptValue message_data =
       blink::WebSerializedScriptValue::Serialize(
-          blink::MainThreadIsolate(),
+          frame->GetAgentGroupScheduler()->Isolate(),
           content::V8ValueConverter::Create()->ToV8Value(
-              value,
-              element.GetDocument().GetFrame()->MainWorldScriptContext()));
+              value, frame->MainWorldScriptContext()));
   blink::WebDOMMessageEvent msg_event(message_data);
 
   plugin()->Container()->EnqueueMessageEvent(msg_event);
@@ -145,9 +145,8 @@ void PluginPlaceholderBase::OnDestruct() {}
 gin::WrapperInfo PluginPlaceholder::kWrapperInfo = {gin::kEmbedderNativeGin};
 
 PluginPlaceholder::PluginPlaceholder(content::RenderFrame* render_frame,
-                                     const blink::WebPluginParams& params,
-                                     const std::string& html_data)
-    : PluginPlaceholderBase(render_frame, params, html_data) {}
+                                     const blink::WebPluginParams& params)
+    : PluginPlaceholderBase(render_frame, params) {}
 
 PluginPlaceholder::~PluginPlaceholder() {
 }
@@ -165,6 +164,16 @@ gin::ObjectTemplateBuilder PluginPlaceholder::GetObjectTemplateBuilder(
   return gin::Wrappable<PluginPlaceholder>::GetObjectTemplateBuilder(isolate)
       .SetMethod<void (plugins::PluginPlaceholder::*)()>(
           "hide", &PluginPlaceholder::HideCallback);
+}
+
+// static
+PluginPlaceholder* PluginPlaceholder::Create(
+    content::RenderFrame* render_frame,
+    const blink::WebPluginParams& params,
+    const std::string& html_data) {
+  auto* placeholder = new PluginPlaceholder(render_frame, params);
+  placeholder->Init(html_data);
+  return placeholder;
 }
 
 }  // namespace plugins

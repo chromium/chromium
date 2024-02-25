@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "base/test/bind.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/web_applications/test/web_app_browsertest_util.h"
 #include "chrome/browser/ui/web_applications/web_app_browser_controller.h"
@@ -12,6 +13,7 @@
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
 #include "chrome/browser/web_applications/web_app.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
+#include "chrome/test/base/ui_test_utils.h"
 #include "components/embedder_support/switches.h"
 #include "components/page_load_metrics/browser/page_load_metrics_test_waiter.h"
 #include "content/public/test/browser_test.h"
@@ -34,7 +36,7 @@ class WebAppDarkModeBrowserTest : public WebAppControllerBrowserTest {
       delete;
   ~WebAppDarkModeBrowserTest() override = default;
 
-  AppId InstallWebAppFromInfo() {
+  webapps::AppId InstallWebAppFromInfo() {
     auto web_app_info = std::make_unique<WebAppInstallInfo>();
     // We want to hang so WebContents does not update the background color.
     web_app_info->start_url = https_server()->GetURL("/hung");
@@ -48,7 +50,8 @@ class WebAppDarkModeBrowserTest : public WebAppControllerBrowserTest {
     return web_app::test::InstallWebApp(profile(), std::move(web_app_info));
   }
 
-  AppId InstallWebAppFromPath(const char* path, bool await_metric = true) {
+  webapps::AppId InstallWebAppFromPath(const char* path,
+                                       bool await_metric = true) {
     GURL start_url = https_server()->GetURL(path);
     page_load_metrics::PageLoadMetricsTestWaiter metrics_waiter(
         browser()->tab_strip_model()->GetActiveWebContents());
@@ -56,7 +59,7 @@ class WebAppDarkModeBrowserTest : public WebAppControllerBrowserTest {
       metrics_waiter.AddWebFeatureExpectation(
           blink::mojom::WebFeature::kWebAppManifestUserPreferences);
 
-    AppId app_id = InstallWebAppFromPage(browser(), start_url);
+    webapps::AppId app_id = InstallWebAppFromPage(browser(), start_url);
     if (await_metric)
       metrics_waiter.Wait();
 
@@ -71,7 +74,7 @@ class WebAppDarkModeBrowserTest : public WebAppControllerBrowserTest {
 };
 
 IN_PROC_BROWSER_TEST_F(WebAppDarkModeBrowserTest, DarkColors) {
-  AppId app_id = InstallWebAppFromInfo();
+  webapps::AppId app_id = InstallWebAppFromInfo();
 
   WebAppBrowserController* controller;
   Browser* app_browser = LaunchWebAppBrowser(app_id);
@@ -87,7 +90,7 @@ IN_PROC_BROWSER_TEST_F(WebAppDarkModeBrowserTest, DarkColors) {
 }
 
 IN_PROC_BROWSER_TEST_F(WebAppDarkModeBrowserTest, ColorSchemeDarkSet) {
-  AppId app_id = InstallWebAppFromPath(
+  webapps::AppId app_id = InstallWebAppFromPath(
       "/web_apps/get_manifest.html?color_scheme_dark.json");
 
   histogram_tester_.ExpectBucketCount(
@@ -110,7 +113,7 @@ IN_PROC_BROWSER_TEST_F(WebAppDarkModeBrowserTest, ColorSchemeDarkSet) {
 }
 
 IN_PROC_BROWSER_TEST_F(WebAppDarkModeBrowserTest, NoUserPreferences) {
-  AppId app_id =
+  webapps::AppId app_id =
       InstallWebAppFromPath("/web_apps/basic.html", /*await_metric=*/false);
 
   histogram_tester_.ExpectBucketCount(
@@ -221,7 +224,7 @@ IN_PROC_BROWSER_TEST_F(WebAppDarkModeOriginTrialBrowserTest, OriginTrial) {
       }));
 
   // Install web app with origin trial token.
-  AppId app_id =
+  webapps::AppId app_id =
       web_app::InstallWebAppFromPage(browser(), GURL(kTestWebAppUrl));
 
   // Origin trial should grant the app access.
@@ -239,7 +242,7 @@ IN_PROC_BROWSER_TEST_F(WebAppDarkModeOriginTrialBrowserTest, OriginTrial) {
     UpdateAwaiter update_awaiter(provider.install_manager());
 
     serve_token = false;
-    NavigateToURLAndWait(browser(), GURL(kTestWebAppUrl));
+    EXPECT_TRUE(ui_test_utils::NavigateToURL(browser(), GURL(kTestWebAppUrl)));
 
     update_awaiter.AwaitUpdate();
   }
@@ -248,11 +251,11 @@ IN_PROC_BROWSER_TEST_F(WebAppDarkModeOriginTrialBrowserTest, OriginTrial) {
   // the origin trial.
   EXPECT_EQ(
       provider.registrar_unsafe().GetAppById(app_id)->dark_mode_theme_color(),
-      absl::nullopt);
+      std::nullopt);
   EXPECT_EQ(provider.registrar_unsafe()
                 .GetAppById(app_id)
                 ->dark_mode_background_color(),
-            absl::nullopt);
+            std::nullopt);
 }
 
 }  // namespace web_app

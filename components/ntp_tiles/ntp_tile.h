@@ -33,6 +33,12 @@ struct NTPTile {
   // item. Used for debugging.
   bool from_most_visited = false;
 
+  // The visit count of a Most Visited item. Used for debugging.
+  int visit_count = 0;
+
+  // The last visit time of a Most Visited item. Used for debugging.
+  base::Time last_visit_time;
+
   NTPTile();
   NTPTile(const NTPTile&);
   ~NTPTile();

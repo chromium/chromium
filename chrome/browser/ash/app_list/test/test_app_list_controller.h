@@ -41,10 +41,10 @@ class TestAppListController : public ash::AppListController {
   ash::AppListShowSource LastAppListShowSource() override;
   void DismissAppList() override;
   aura::Window* GetWindow() override;
-  bool IsVisible(const absl::optional<int64_t>& display_id) override;
+  bool IsVisible(const std::optional<int64_t>& display_id) override;
   bool IsVisible() override;
   void UpdateAppListWithNewTemporarySortOrder(
-      const absl::optional<ash::AppListSortOrder>& new_order,
+      const std::optional<ash::AppListSortOrder>& new_order,
       bool animate,
       base::OnceClosure update_position_closure) override;
 
@@ -55,7 +55,7 @@ class TestAppListController : public ash::AppListController {
   bool visible_ = false;
 
   // Tracks the most recent show source for the app list.
-  absl::optional<ash::AppListShowSource> last_open_source_;
+  std::optional<ash::AppListShowSource> last_open_source_;
 
   base::ObserverList<ash::AppListControllerObserver> observers_;
 };

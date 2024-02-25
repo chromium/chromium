@@ -11,13 +11,20 @@
 
 namespace blink {
 
-class AXObject;
-
 // Friendly output of a subtree, useful for debugging.
-std::string TreeToStringHelper(const AXObject* obj, bool verbose = true);
+std::string TreeToStringHelper(const AXObject* obj,
+                               int indent = 2,
+                               bool verbose = true);
 std::string TreeToStringWithMarkedObjectHelper(const AXObject* obj,
                                                const AXObject* marked_object,
                                                bool verbose = true);
+std::string ParentChainToStringHelper(const AXObject* obj);
+
+// Ensure the tree serializer expects to serializer the same number of included
+// nodes as the AXObjectCache thinks exists.
+void CheckTreeConsistency(
+    AXObjectCacheImpl& cache,
+    ui::AXTreeSerializer<AXObject*, HeapVector<Member<AXObject>>>& serializer);
 
 }  // namespace blink
 

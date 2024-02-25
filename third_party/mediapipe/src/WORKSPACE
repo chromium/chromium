@@ -21,20 +21,18 @@ bazel_skylib_workspace()
 load("@bazel_skylib//lib:versions.bzl", "versions")
 versions.check(minimum_bazel_version = "3.7.2")
 
-# ABSL cpp library lts_2023_01_25.
+# ABSL on 2023-10-18
 http_archive(
     name = "com_google_absl",
-    urls = [
-        "https://github.com/abseil/abseil-cpp/archive/refs/tags/20230125.0.tar.gz",
-    ],
+    urls = ["https://github.com/abseil/abseil-cpp/archive//9687a8ea750bfcddf790372093245a1d041b21a3.tar.gz"],
     patches = [
         "@//third_party:com_google_absl_windows_patch.diff"
     ],
     patch_args = [
         "-p1",
     ],
-    strip_prefix = "abseil-cpp-20230125.0",
-    sha256 = "3ea49a7d97421b88a8c48a0de16c16048e17725c7ec0f1d3ea2683a2a75adc21"
+    strip_prefix = "abseil-cpp-9687a8ea750bfcddf790372093245a1d041b21a3",
+    sha256 = "f841f78243f179326f2a80b719f2887c38fe226d288ecdc46e2aa091e6aa43bc",
 )
 
 http_archive(
@@ -68,17 +66,22 @@ http_archive(
     ],
 )
 
+# TODO: This is an are indirect depedency. We should factor it out.
+http_archive(
+    name = "pthreadpool",
+    sha256 = "a4cf06de57bfdf8d7b537c61f1c3071bce74e57524fe053e0bbd2332feca7f95",
+    strip_prefix = "pthreadpool-4fe0e1e183925bf8cfa6aae24237e724a96479b8",
+    urls = ["https://github.com/Maratyszcza/pthreadpool/archive/4fe0e1e183925bf8cfa6aae24237e724a96479b8.zip"],
+)
+
 # Load Zlib before initializing TensorFlow and the iOS build rules to guarantee
 # that the target @zlib//:mini_zlib is available
 http_archive(
     name = "zlib",
     build_file = "@//third_party:zlib.BUILD",
-    sha256 = "c3e5e9fdd5004dcb542feda5ee4f0ff0744628baf8ed2dd5d66f8ca1197cb1a1",
-    strip_prefix = "zlib-1.2.11",
-    urls = [
-        "http://mirror.bazel.build/zlib.net/fossils/zlib-1.2.11.tar.gz",
-        "http://zlib.net/fossils/zlib-1.2.11.tar.gz",  # 2017-01-15
-    ],
+    sha256 = "b3a24de97a8fdbc835b9833169501030b8977031bcb54b3b3ac13740f846ab30",
+    strip_prefix = "zlib-1.2.13",
+    url = "http://zlib.net/fossils/zlib-1.2.13.tar.gz",
     patches = [
         "@//third_party:zlib.diff",
     ],
@@ -157,22 +160,41 @@ http_archive(
 # 2020-08-21
 http_archive(
     name = "com_github_glog_glog",
-    strip_prefix = "glog-3a0d4d22c5ae0b9a2216988411cfa6bf860cc372",
-    sha256 = "170d08f80210b82d95563f4723a15095eff1aad1863000e8eeb569c96a98fefb",
+    strip_prefix = "glog-0.6.0",
+    sha256 = "8a83bf982f37bb70825df71a9709fa90ea9f4447fb3c099e1d720a439d88bad6",
     urls = [
-        "https://github.com/google/glog/archive/3a0d4d22c5ae0b9a2216988411cfa6bf860cc372.zip",
+        "https://github.com/google/glog/archive/v0.6.0.tar.gz",
     ],
 )
 http_archive(
     name = "com_github_glog_glog_no_gflags",
-    strip_prefix = "glog-3a0d4d22c5ae0b9a2216988411cfa6bf860cc372",
-    sha256 = "170d08f80210b82d95563f4723a15095eff1aad1863000e8eeb569c96a98fefb",
+    strip_prefix = "glog-0.6.0",
+    sha256 = "8a83bf982f37bb70825df71a9709fa90ea9f4447fb3c099e1d720a439d88bad6",
     build_file = "@//third_party:glog_no_gflags.BUILD",
     urls = [
-        "https://github.com/google/glog/archive/3a0d4d22c5ae0b9a2216988411cfa6bf860cc372.zip",
+        "https://github.com/google/glog/archive/v0.6.0.tar.gz",
     ],
     patches = [
         "@//third_party:com_github_glog_glog.diff",
+    ],
+    patch_args = [
+        "-p1",
+    ],
+)
+
+# 2023-06-05
+# This version of Glog is required for Windows support, but currently causes
+# crashes on some Android devices.
+http_archive(
+    name = "com_github_glog_glog_windows",
+    strip_prefix = "glog-3a0d4d22c5ae0b9a2216988411cfa6bf860cc372",
+    sha256 = "170d08f80210b82d95563f4723a15095eff1aad1863000e8eeb569c96a98fefb",
+    urls = [
+      "https://github.com/google/glog/archive/3a0d4d22c5ae0b9a2216988411cfa6bf860cc372.zip",
+    ],
+    patches = [
+        "@//third_party:com_github_glog_glog.diff",
+        "@//third_party:com_github_glog_glog_windows_patch.diff",
     ],
     patch_args = [
         "-p1",
@@ -228,16 +250,14 @@ http_archive(
 # sentencepiece
 http_archive(
     name = "com_google_sentencepiece",
-    strip_prefix = "sentencepiece-1.0.0",
-    sha256 = "c05901f30a1d0ed64cbcf40eba08e48894e1b0e985777217b7c9036cac631346",
+    strip_prefix = "sentencepiece-0.1.96",
+    sha256 = "8409b0126ebd62b256c685d5757150cf7fcb2b92a2f2b98efb3f38fc36719754",
     urls = [
-        "https://github.com/google/sentencepiece/archive/1.0.0.zip",
+        "https://github.com/google/sentencepiece/archive/refs/tags/v0.1.96.zip"
     ],
-    patches = [
-        "@//third_party:com_google_sentencepiece_no_gflag_no_gtest.diff",
-    ],
+    build_file = "@//third_party:sentencepiece.BUILD",
+    patches = ["@//third_party:com_google_sentencepiece.diff"],
     patch_args = ["-p1"],
-    repo_mapping = {"@com_google_glog" : "@com_github_glog_glog_no_gflags"},
 )
 
 http_archive(
@@ -485,10 +505,10 @@ http_archive(
 )
 
 # TensorFlow repo should always go after the other external dependencies.
-# TF on 2023-06-13.
-_TENSORFLOW_GIT_COMMIT = "491681a5620e41bf079a582ac39c585cc86878b9"
+# TF on 2023-07-26.
+_TENSORFLOW_GIT_COMMIT = "e92261fd4cec0b726692081c4d2966b75abf31dd"
 # curl -L https://github.com/tensorflow/tensorflow/archive/<TENSORFLOW_GIT_COMMIT>.tar.gz | shasum -a 256
-_TENSORFLOW_SHA256 = "9f76389af7a2835e68413322c1eaabfadc912f02a76d71dc16be507f9ca3d3ac"
+_TENSORFLOW_SHA256 = "478a229bd4ec70a5b568ac23b5ea013d9fca46a47d6c43e30365a0412b9febf4"
 http_archive(
     name = "org_tensorflow",
     urls = [
@@ -496,8 +516,13 @@ http_archive(
     ],
     patches = [
         "@//third_party:org_tensorflow_compatibility_fixes.diff",
+        "@//third_party:org_tensorflow_system_python.diff",
         # Diff is generated with a script, don't update it manually.
         "@//third_party:org_tensorflow_custom_ops.diff",
+        # Works around Bazel issue with objc_library.
+        # See https://github.com/bazelbuild/bazel/issues/19912
+        "@//third_party:org_tensorflow_objc_build_fixes.diff",
+        "@//third_party:org_tensorflow_absl_import_fixes.diff",
     ],
     patch_args = [
         "-p1",

@@ -59,6 +59,7 @@ const char kPermissionTypeDownload[] = "download";
 const char kPermissionTypeFileSystem[] = "filesystem";
 const char kPermissionTypeFullscreen[] = "fullscreen";
 const char kPermissionTypeGeolocation[] = "geolocation";
+const char kPermissionTypeHid[] = "hid";
 const char kPermissionTypeLoadPlugin[] = "loadplugin";
 const char kPermissionTypeMedia[] = "media";
 const char kPermissionTypeNewWindow[] = "newwindow";

@@ -170,3 +170,23 @@ TEST_F(IsClientInSampleTest, UsesPostFREFixFeatureWhenPrefSet) {
   }
 }
 #endif  // BUILDFLAG(IS_ANDROID)
+
+#if BUILDFLAG(IS_WIN)
+TEST_F(IsClientInSampleTest, IsClientInSampleCrashTest) {
+  {
+    base::test::ScopedFeatureList feature_list;
+    feature_list.InitAndEnableFeature(
+        metrics::internal::kMetricsReportingFeature);
+    EXPECT_TRUE(ChromeMetricsServicesManagerClient::IsClientInSampleForCrash());
+  }
+
+  {
+    base::test::ScopedFeatureList feature_list;
+    feature_list.InitAndEnableFeatureWithParameters(
+        metrics::internal::kMetricsReportingFeature,
+        {{"disable_crashes", "true"}});
+    EXPECT_FALSE(
+        ChromeMetricsServicesManagerClient::IsClientInSampleForCrash());
+  }
+}
+#endif  // BUILDFLAG(IS_WIN)

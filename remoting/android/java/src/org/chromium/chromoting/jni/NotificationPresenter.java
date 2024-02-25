@@ -16,9 +16,10 @@ import android.widget.CheckBox;
 import androidx.annotation.IntDef;
 import androidx.appcompat.app.AlertDialog;
 
-import org.chromium.base.annotations.CalledByNative;
-import org.chromium.base.annotations.JNINamespace;
-import org.chromium.base.annotations.NativeMethods;
+import org.jni_zero.CalledByNative;
+import org.jni_zero.JNINamespace;
+import org.jni_zero.NativeMethods;
+
 import org.chromium.chromoting.Preconditions;
 import org.chromium.chromoting.R;
 

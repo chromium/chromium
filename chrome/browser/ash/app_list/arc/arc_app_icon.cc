@@ -164,12 +164,12 @@ class ArcAppIcon::DecodeRequest : public ImageDecoder::ImageRequest {
   void OnDecodeImageFailed() override;
 
  private:
-  const raw_ref<ArcAppIcon, ExperimentalAsh> host_;
+  const raw_ref<ArcAppIcon> host_;
   const ArcAppIconDescriptor descriptor_;
   const bool resize_allowed_;
   const bool retain_padding_;
-  const raw_ref<gfx::ImageSkia, ExperimentalAsh> image_skia_;
-  const raw_ref<std::map<ui::ResourceScaleFactor, base::Time>, ExperimentalAsh>
+  const raw_ref<gfx::ImageSkia> image_skia_;
+  const raw_ref<std::map<ui::ResourceScaleFactor, base::Time>>
       incomplete_scale_factors_;
 };
 
@@ -274,7 +274,7 @@ ArcAppIcon::ArcAppIcon(content::BrowserContext* context,
       background_image_skia_ = gfx::ImageSkia(
           std::make_unique<Source>(nullptr, resource_size_in_dip),
           resource_size);
-      for (const auto& scale_factor : scale_factors) {
+      for (const auto scale_factor : scale_factors) {
         foreground_incomplete_scale_factors_.insert(
             {scale_factor, base::Time::Now()});
         background_incomplete_scale_factors_.insert(
@@ -293,7 +293,7 @@ ArcAppIcon::ArcAppIcon(content::BrowserContext* context,
       // |incomplete_scale_factors_|.
       [[fallthrough]];
     case IconType::kCompressed:
-      for (const auto& scale_factor : scale_factors) {
+      for (const auto scale_factor : scale_factors) {
         incomplete_scale_factors_.insert({scale_factor, base::Time::Now()});
         if (icon_type != IconType::kAdaptive)
           is_adaptive_icons_.insert({scale_factor, false});

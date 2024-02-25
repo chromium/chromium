@@ -103,6 +103,9 @@ class LockToSingleUserManagerTest : public BrowserWithTestWindowTest {
     arc_session_manager_->Shutdown();
     arc_session_manager_.reset();
 
+    // Must reset browser context reference before profile destruction.
+    arc_service_manager_->set_browser_context(nullptr);
+
     // Destruction order matters here.
     //
     // This line destroys profile, thus indirectly destroys
@@ -112,7 +115,6 @@ class LockToSingleUserManagerTest : public BrowserWithTestWindowTest {
     // ArcServiceManager must still be alive at this line.
     BrowserWithTestWindowTest::TearDown();
 
-    arc_service_manager_->set_browser_context(nullptr);
     arc_service_manager_.reset();
     ash::VmPluginDispatcherClient::Shutdown();
     ash::CryptohomeMiscClient::Shutdown();
@@ -125,6 +127,16 @@ class LockToSingleUserManagerTest : public BrowserWithTestWindowTest {
     ash::CiceroneClient::Shutdown();
     ash::ChunneldClient::Shutdown();
   }
+
+  // BrowserWithTestWindowTest:
+  // Override to do nothing to inject this test's specific behavior.
+  // TODO(b/40286020): Consider migrating into BrowserWithTestWindowTest
+  // in better way. Current test implementation is different from
+  // what we're seeing in production.
+  void LogIn(const std::string& email) override {}
+  void OnUserProfileCreated(const std::string& email,
+                            Profile* profile) override {}
+  void SwitchActiveUser(const std::string& email) override {}
 
   void LogInUser(bool is_affiliated) {
     base::RunLoop run_loop;
@@ -145,8 +157,8 @@ class LockToSingleUserManagerTest : public BrowserWithTestWindowTest {
 
     // Set up ChromeShelfController to avoid a crash in LaunchPluginVm().
     shelf_model_ = std::make_unique<ash::ShelfModel>();
-    chrome_shelf_controller_ = std::make_unique<ChromeShelfController>(
-        profile(), shelf_model_.get(), /*shelf_item_factory=*/nullptr);
+    chrome_shelf_controller_ =
+        std::make_unique<ChromeShelfController>(profile(), shelf_model_.get());
     chrome_shelf_controller_->SetProfileForTest(profile());
     chrome_shelf_controller_->SetShelfControllerHelperForTest(
         std::make_unique<ShelfControllerHelper>(profile()));
@@ -197,8 +209,8 @@ class LockToSingleUserManagerTest : public BrowserWithTestWindowTest {
   base::test::ScopedFeatureList scoped_feature_list_;
   ash::ScopedCrosSettingsTestHelper settings_helper_{
       /* create_settings_service= */ false};
-  raw_ptr<ash::FakeChromeUserManager, DanglingUntriaged | ExperimentalAsh>
-      fake_user_manager_{new ash::FakeChromeUserManager()};
+  raw_ptr<ash::FakeChromeUserManager, DanglingUntriaged> fake_user_manager_{
+      new ash::FakeChromeUserManager()};
   user_manager::ScopedUserManager scoped_user_manager_{
       base::WrapUnique(fake_user_manager_.get())};
   std::unique_ptr<arc::ArcServiceManager> arc_service_manager_;

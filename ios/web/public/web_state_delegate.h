@@ -12,6 +12,7 @@
 
 #include "base/functional/callback.h"
 #include "build/blink_buildflags.h"
+#import "ios/web/public/navigation/form_warning_type.h"
 #import "ios/web/public/permissions/permissions.h"
 #import "ios/web/public/web_state.h"
 
@@ -53,6 +54,7 @@ class WebStateDelegate {
   // method is not implemented then WebState will repost the form.
   virtual void ShowRepostFormWarningDialog(
       WebState* source,
+      FormWarningType warning_type,
       base::OnceCallback<void(bool)> callback);
 
   // Returns a pointer to a service to manage dialogs. May return nullptr in
@@ -70,7 +72,7 @@ class WebStateDelegate {
   virtual void HandlePermissionsDecisionRequest(
       WebState* source,
       NSArray<NSNumber*>* permissions,
-      WebStatePermissionDecisionHandler handler) API_AVAILABLE(ios(15.0));
+      WebStatePermissionDecisionHandler handler);
 
   // Called when a request receives an authentication challenge specified by
   // `protection_space`, and is unable to respond using cached credentials.

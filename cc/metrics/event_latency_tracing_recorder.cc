@@ -17,6 +17,13 @@ namespace cc {
 namespace {
 
 constexpr char kTracingCategory[] = "cc,benchmark,input,input.scrolling";
+
+bool IsTracingEnabled() {
+  bool enabled;
+  TRACE_EVENT_CATEGORY_GROUP_ENABLED(kTracingCategory, &enabled);
+  return enabled;
+}
+
 constexpr base::TimeDelta high_latency_threshold = base::Milliseconds(90);
 
 constexpr perfetto::protos::pbzero::EventLatency::EventType ToProtoEnum(
@@ -203,6 +210,23 @@ const char* EventLatencyTracingRecorder::GetDispatchToTerminationBreakdownName(
 void EventLatencyTracingRecorder::RecordEventLatencyTraceEvent(
     EventMetrics* event_metrics,
     base::TimeTicks termination_time,
+    base::TimeDelta vsync_interval,
+    const std::vector<CompositorFrameReporter::StageData>* stage_history,
+    const CompositorFrameReporter::ProcessedVizBreakdown* viz_breakdown) {
+  // As there are multiple teardown paths for EventMetrics, we want to denote
+  // the attempt to trace, even if tracing is currently disabled.
+  if (IsTracingEnabled()) {
+    RecordEventLatencyTraceEventInternal(event_metrics, termination_time,
+                                         vsync_interval, stage_history,
+                                         viz_breakdown);
+  }
+  event_metrics->tracing_recorded();
+}
+
+void EventLatencyTracingRecorder::RecordEventLatencyTraceEventInternal(
+    const EventMetrics* event_metrics,
+    base::TimeTicks termination_time,
+    base::TimeDelta vsync_interval,
     const std::vector<CompositorFrameReporter::StageData>* stage_history,
     const CompositorFrameReporter::ProcessedVizBreakdown* viz_breakdown) {
   DCHECK(event_metrics);
@@ -235,13 +259,14 @@ void EventLatencyTracingRecorder::RecordEventLatencyTraceEvent(
               event_metrics->trace_id()->value());
         }
 
-        ScrollUpdateEventMetrics* scroll_update =
+        const ScrollUpdateEventMetrics* scroll_update =
             event_metrics->AsScrollUpdate();
         if (scroll_update &&
             scroll_update->is_janky_scrolled_frame().has_value()) {
           event_latency->set_is_janky_scrolled_frame(
               scroll_update->is_janky_scrolled_frame().value());
         }
+        event_latency->set_vsync_interval_ms(vsync_interval.InMillisecondsF());
       });
 
   // Event dispatch stages.
@@ -348,8 +373,6 @@ void EventLatencyTracingRecorder::RecordEventLatencyTraceEvent(
     TRACE_EVENT_END(kTracingCategory, trace_track, termination_time);
   }
   TRACE_EVENT_END(kTracingCategory, trace_track, termination_time);
-
-  event_metrics->tracing_recorded();
 }
 
 }  // namespace cc

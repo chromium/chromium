@@ -18,6 +18,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import org.chromium.base.BuildInfo;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
@@ -34,9 +35,7 @@ import org.chromium.media.MediaSwitches;
 
 import java.util.ArrayList;
 
-/**
- * Tests for MediaSession.
- */
+/** Tests for MediaSession. */
 @RunWith(ContentJUnit4ClassRunner.class)
 @CommandLineFlags.Add(MediaSwitches.AUTOPLAY_NO_GESTURE_REQUIRED_POLICY)
 public class MediaSessionTest {
@@ -52,12 +51,14 @@ public class MediaSessionTest {
     private static final String SHORT_VIDEO = "short-video";
     private static final String LONG_VIDEO = "long-video";
     private static final String LONG_VIDEO_SILENT = "long-video-silent";
-    private static final int AUDIO_FOCUS_CHANGE_TIMEOUT = 500;  // ms
+    private static final int AUDIO_FOCUS_CHANGE_TIMEOUT = 500; // ms
 
     private AudioManager getAudioManager() {
-        return (AudioManager) mActivityTestRule.getActivity()
-                .getApplicationContext()
-                .getSystemService(Context.AUDIO_SERVICE);
+        return (AudioManager)
+                mActivityTestRule
+                        .getActivity()
+                        .getApplicationContext()
+                        .getSystemService(Context.AUDIO_SERVICE);
     }
 
     private class MockAudioFocusChangeListener implements AudioManager.OnAudioFocusChangeListener {
@@ -73,8 +74,8 @@ public class MediaSessionTest {
         }
 
         public void requestAudioFocus(int focusType) {
-            int result = getAudioManager().requestAudioFocus(
-                    this, AudioManager.STREAM_MUSIC, focusType);
+            int result =
+                    getAudioManager().requestAudioFocus(this, AudioManager.STREAM_MUSIC, focusType);
             if (result != AudioManager.AUDIOFOCUS_REQUEST_GRANTED) {
                 Assert.fail("Did not get audio focus");
             } else {
@@ -137,15 +138,19 @@ public class MediaSessionTest {
         }
 
         mAudioFocusChangeListener = new MockAudioFocusChangeListener();
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            mObserver = new MediaSessionObserver(
-                    MediaSession.fromWebContents(mActivityTestRule.getWebContents())) {
-                @Override
-                public void mediaSessionStateChanged(boolean isControllable, boolean isSuspended) {
-                    mStateRecords.add(new StateRecord(isControllable, isSuspended));
-                }
-            };
-        });
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    mObserver =
+                            new MediaSessionObserver(
+                                    MediaSession.fromWebContents(
+                                            mActivityTestRule.getWebContents())) {
+                                @Override
+                                public void mediaSessionStateChanged(
+                                        boolean isControllable, boolean isSuspended) {
+                                    mStateRecords.add(new StateRecord(isControllable, isSuspended));
+                                }
+                            };
+                });
     }
 
     @After
@@ -211,8 +216,13 @@ public class MediaSessionTest {
         DOMUtils.playMedia(mActivityTestRule.getWebContents(), VERY_SHORT_VIDEO);
         DOMUtils.waitForMediaPlay(mActivityTestRule.getWebContents(), VERY_SHORT_VIDEO);
 
-        mAudioFocusChangeListener.waitForFocusStateChange(
-                AudioManager.AUDIOFOCUS_LOSS_TRANSIENT_CAN_DUCK);
+        // AUDIOFOCUS_LOSS_TRANSIENT_CAN_DUCK is not reliably set by automotive devices, as
+        // ducking is often handled by the hardware instead on Android Automotive OS.
+        if (!BuildInfo.getInstance().isAutomotive) {
+            mAudioFocusChangeListener.waitForFocusStateChange(
+                    AudioManager.AUDIOFOCUS_LOSS_TRANSIENT_CAN_DUCK);
+        }
+
         mAudioFocusChangeListener.waitForFocusStateChange(AudioManager.AUDIOFOCUS_GAIN);
     }
 
@@ -279,8 +289,13 @@ public class MediaSessionTest {
 
         DOMUtils.playMedia(mActivityTestRule.getWebContents(), SHORT_AUDIO);
         DOMUtils.waitForMediaPlay(mActivityTestRule.getWebContents(), SHORT_AUDIO);
-        mAudioFocusChangeListener.waitForFocusStateChange(
-                AudioManager.AUDIOFOCUS_LOSS_TRANSIENT_CAN_DUCK);
+
+        // AUDIOFOCUS_LOSS_TRANSIENT_CAN_DUCK is not reliably set by automotive devices, as
+        // ducking is often handled by the hardware instead on Android Automotive OS.
+        if (!BuildInfo.getInstance().isAutomotive) {
+            mAudioFocusChangeListener.waitForFocusStateChange(
+                    AudioManager.AUDIOFOCUS_LOSS_TRANSIENT_CAN_DUCK);
+        }
 
         DOMUtils.playMedia(mActivityTestRule.getWebContents(), LONG_AUDIO);
         DOMUtils.waitForMediaPlay(mActivityTestRule.getWebContents(), LONG_AUDIO);
@@ -299,8 +314,13 @@ public class MediaSessionTest {
 
         DOMUtils.playMedia(mActivityTestRule.getWebContents(), SHORT_VIDEO);
         DOMUtils.waitForMediaPlay(mActivityTestRule.getWebContents(), SHORT_VIDEO);
-        mAudioFocusChangeListener.waitForFocusStateChange(
-                AudioManager.AUDIOFOCUS_LOSS_TRANSIENT_CAN_DUCK);
+
+        // AUDIOFOCUS_LOSS_TRANSIENT_CAN_DUCK is not reliably set by automotive devices, as
+        // ducking is often handled by the hardware instead on Android Automotive OS.
+        if (!BuildInfo.getInstance().isAutomotive) {
+            mAudioFocusChangeListener.waitForFocusStateChange(
+                    AudioManager.AUDIOFOCUS_LOSS_TRANSIENT_CAN_DUCK);
+        }
 
         DOMUtils.playMedia(mActivityTestRule.getWebContents(), LONG_VIDEO);
         DOMUtils.waitForMediaPlay(mActivityTestRule.getWebContents(), LONG_VIDEO);
@@ -427,7 +447,8 @@ public class MediaSessionTest {
 
         mAudioFocusChangeListener.requestAudioFocus(
                 AudioManager.AUDIOFOCUS_GAIN_TRANSIENT_MAY_DUCK);
-        Assert.assertEquals(AudioManager.AUDIOFOCUS_GAIN_TRANSIENT_MAY_DUCK,
+        Assert.assertEquals(
+                AudioManager.AUDIOFOCUS_GAIN_TRANSIENT_MAY_DUCK,
                 mAudioFocusChangeListener.getAudioFocusState());
 
         // TODO(zqzhang): Currently, the volume change cannot be observed. If it could, the volume
@@ -468,7 +489,8 @@ public class MediaSessionTest {
         mAudioFocusChangeListener.waitForFocusStateChange(AudioManager.AUDIOFOCUS_LOSS);
 
         mAudioFocusChangeListener.requestAudioFocus(AudioManager.AUDIOFOCUS_GAIN_TRANSIENT);
-        Assert.assertEquals(AudioManager.AUDIOFOCUS_GAIN_TRANSIENT,
+        Assert.assertEquals(
+                AudioManager.AUDIOFOCUS_GAIN_TRANSIENT,
                 mAudioFocusChangeListener.getAudioFocusState());
 
         DOMUtils.waitForMediaPauseBeforeEnd(mActivityTestRule.getWebContents(), LONG_AUDIO);

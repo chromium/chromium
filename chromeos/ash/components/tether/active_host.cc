@@ -56,7 +56,7 @@ ActiveHost::ActiveHostChangeInfo::ActiveHostChangeInfo()
 ActiveHost::ActiveHostChangeInfo::ActiveHostChangeInfo(
     ActiveHostStatus new_status,
     ActiveHostStatus old_status,
-    absl::optional<multidevice::RemoteDeviceRef> new_active_host,
+    std::optional<multidevice::RemoteDeviceRef> new_active_host,
     std::string old_active_host_id,
     std::string new_tether_network_guid,
     std::string old_tether_network_guid,
@@ -123,7 +123,7 @@ void ActiveHost::GetActiveHost(ActiveHostCallback active_host_callback) {
 
   if (status == ActiveHostStatus::DISCONNECTED) {
     std::move(active_host_callback)
-        .Run(status, absl::nullopt /* active_host */,
+        .Run(status, std::nullopt /* active_host */,
              "" /* tether_network_guid */, "" /* wifi_network_guid */);
     return;
   }
@@ -196,7 +196,7 @@ void ActiveHost::SetActiveHost(ActiveHostStatus active_host_status,
 
 void ActiveHost::OnTetherHostFetched(
     ActiveHostCallback active_host_callback,
-    absl::optional<multidevice::RemoteDeviceRef> active_host) {
+    std::optional<multidevice::RemoteDeviceRef> active_host) {
   if (GetActiveHostDeviceId().empty() || !active_host) {
     DCHECK(GetActiveHostStatus() == ActiveHostStatus::DISCONNECTED);
     DCHECK(GetTetherNetworkGuid().empty());
@@ -205,7 +205,7 @@ void ActiveHost::OnTetherHostFetched(
     // If the active host became disconnected while the tether host was being
     // fetched, forward this information to the callback.
     std::move(active_host_callback)
-        .Run(ActiveHostStatus::DISCONNECTED, absl::nullopt /* active_host */,
+        .Run(ActiveHostStatus::DISCONNECTED, std::nullopt /* active_host */,
              "" /* wifi_network_guid */, "" /* tether_network_guid */);
     return;
   }
@@ -241,7 +241,7 @@ void ActiveHost::SendActiveHostChangedUpdate(
     const std::string& old_tether_network_guid,
     const std::string& old_wifi_network_guid,
     ActiveHostStatus new_status,
-    absl::optional<multidevice::RemoteDeviceRef> new_active_host,
+    std::optional<multidevice::RemoteDeviceRef> new_active_host,
     const std::string& new_tether_network_guid,
     const std::string& new_wifi_network_guid) {
   ActiveHostChangeInfo info;

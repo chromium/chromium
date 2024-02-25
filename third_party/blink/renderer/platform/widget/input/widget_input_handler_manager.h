@@ -15,7 +15,6 @@
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/shared_remote.h"
-#include "third_party/blink/public/mojom/input/input_handler.mojom-blink-forward.h"
 #include "third_party/blink/public/mojom/input/input_handler.mojom-blink.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
 #include "third_party/blink/renderer/platform/widget/input/input_handler_proxy.h"
@@ -109,17 +108,8 @@ class PLATFORM_EXPORT WidgetInputHandlerManager final
 
   // InputHandlerProxyClient overrides.
   void WillShutdown() override;
-  void DispatchNonBlockingEventToMainThread(
-      std::unique_ptr<WebCoalescedInputEvent> event,
-      const WebInputEventAttribution& attribution,
-      std::unique_ptr<cc::EventMetrics> metrics) override;
-
   void DidAnimateForInput() override;
   void DidStartScrollingViewport() override;
-  void GenerateScrollBeginAndSendToMainThread(
-      const WebGestureEvent& update_event,
-      const WebInputEventAttribution& attribution,
-      const cc::EventMetrics* update_metrics) override;
   void SetAllowedTouchAction(cc::TouchAction touch_action) override;
   bool AllowsScrollResampling() override { return allow_scroll_resampling_; }
 
@@ -176,7 +166,6 @@ class PLATFORM_EXPORT WidgetInputHandlerManager final
   using ElementAtPointCallback = base::OnceCallback<void(cc::ElementId)>;
   void FindScrollTargetOnMainThread(const gfx::PointF& point,
                                     ElementAtPointCallback callback);
-  void SendDroppedPointerDownCounts();
 
   void ClearClient();
 
@@ -247,8 +236,7 @@ class PLATFORM_EXPORT WidgetInputHandlerManager final
       std::unique_ptr<WebCoalescedInputEvent> event,
       std::unique_ptr<InputHandlerProxy::DidOverscrollParams> overscroll_params,
       const WebInputEventAttribution& attribution,
-      std::unique_ptr<cc::EventMetrics> metrics,
-      mojom::blink::ScrollResultDataPtr scroll_result_data);
+      std::unique_ptr<cc::EventMetrics> metrics);
 
   // Similar to the above; this is used by the main thread input handler to
   // communicate back the result of handling the event. Note: this may be
@@ -256,11 +244,11 @@ class PLATFORM_EXPORT WidgetInputHandlerManager final
   // will be ACKed immediately when added to the main thread event queue.
   void DidHandleInputEventSentToMain(
       mojom::blink::WidgetInputHandler::DispatchEventCallback callback,
-      absl::optional<cc::TouchAction> touch_action_from_compositor,
+      std::optional<cc::TouchAction> touch_action_from_compositor,
       mojom::blink::InputEventResultState ack_state,
       const ui::LatencyInfo& latency_info,
       mojom::blink::DidOverscrollParamsPtr overscroll_params,
-      absl::optional<cc::TouchAction> touch_action_from_main);
+      std::optional<cc::TouchAction> touch_action_from_main);
 
   // This method calls into DidHandleInputEventSentToMain but has a
   // slightly different signature. TODO(dtapuska): Remove this
@@ -272,7 +260,7 @@ class PLATFORM_EXPORT WidgetInputHandlerManager final
       const ui::LatencyInfo& latency_info,
       std::unique_ptr<blink::InputHandlerProxy::DidOverscrollParams>
           overscroll_params,
-      absl::optional<cc::TouchAction> touch_action);
+      std::optional<cc::TouchAction> touch_action);
 
   void ObserveGestureEventOnInputHandlingThread(
       const WebGestureEvent& gesture_event,
@@ -280,6 +268,8 @@ class PLATFORM_EXPORT WidgetInputHandlerManager final
 
   void HandleInputEventWithLatencyOnInputHandlingThread(
       std::unique_ptr<WebCoalescedInputEvent>);
+
+  void SendDroppedPointerDownCounts();
 
   // The kInputBlocking task runner is for tasks which are on the critical path
   // of showing the effect of an already-received input event, and should be
@@ -293,7 +283,11 @@ class PLATFORM_EXPORT WidgetInputHandlerManager final
 
   void LogInputTimingUMA();
 
-  void RecordMetricsForDroppedEventsBeforePaint(const base::TimeTicks&);
+  // Records event UMA using the given `first_paint_time`.  If no paint occurred
+  // before this method is called, `first_paint_time` must be passed as
+  // `TimeTicks` zero.
+  void RecordEventMetricsForPaintTiming(
+      const base::TimeTicks& first_paint_time);
 
   // Helpers for FlushEventQueuesForTesting.
   void FlushCompositorQueueForTesting();
@@ -304,6 +298,10 @@ class PLATFORM_EXPORT WidgetInputHandlerManager final
   base::WeakPtr<mojom::blink::FrameWidgetInputHandler>
       frame_widget_input_handler_;
   scoped_refptr<scheduler::WidgetScheduler> widget_scheduler_;
+
+  // This caches `widget_->is_embedded()` value for access from outside the main
+  // thread (where `widget_` is not usable).
+  const bool widget_is_embedded_;
 
   // InputHandlerProxy is only interacted with on the compositor
   // thread.
@@ -323,7 +321,7 @@ class PLATFORM_EXPORT WidgetInputHandlerManager final
 
   // The touch action that InputHandlerProxy has asked us to allow. This should
   // only be accessed on the compositor thread!
-  absl::optional<cc::TouchAction> compositor_allowed_touch_action_;
+  std::optional<cc::TouchAction> compositor_allowed_touch_action_;
 
   // Callback used to respond to the WaitForInputProcessed Mojo message. This
   // callback is set from and must be invoked from the Mojo-bound thread (i.e.
@@ -393,6 +391,11 @@ class PLATFORM_EXPORT WidgetInputHandlerManager final
 
   // Timer for count dropped events.
   std::unique_ptr<base::OneShotTimer> dropped_event_counts_timer_;
+
+  // Timer to detect if first visibly non-empty paint happened after an
+  // acceptable maximum delay.  This timer is allocated and run on the main
+  // thread.
+  std::unique_ptr<base::OneShotTimer> first_paint_max_delay_timer_;
 
   unsigned dropped_pointer_down_ = 0;
 

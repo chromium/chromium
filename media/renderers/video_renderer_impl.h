@@ -80,7 +80,7 @@ class MEDIA_EXPORT VideoRendererImpl
   void StartPlayingFrom(base::TimeDelta timestamp) override;
   void OnTimeProgressing() override;
   void OnTimeStopped() override;
-  void SetLatencyHint(absl::optional<base::TimeDelta> latency_hint) override;
+  void SetLatencyHint(std::optional<base::TimeDelta> latency_hint) override;
 
   void SetTickClockForTesting(const base::TickClock* tick_clock);
   size_t frames_queued_for_testing() const {
@@ -366,11 +366,11 @@ class MEDIA_EXPORT VideoRendererImpl
   FrameRateEstimator fps_estimator_;
 
   // Last FPS, if any, reported to the client.
-  absl::optional<int> last_reported_fps_;
+  std::optional<int> last_reported_fps_;
 
   // Value saved from last call to SetLatencyHint(). Used to recompute buffering
   // limits as framerate fluctuates.
-  absl::optional<base::TimeDelta> latency_hint_;
+  std::optional<base::TimeDelta> latency_hint_;
 
   // When latency_hint_ > 0, we make regular adjustments to buffering caps as
   // |algorithm_->average_frame_duration()| fluctuates, but we only want to emit

@@ -12,7 +12,8 @@
 #include "base/memory/raw_ref.h"
 #include "content/common/content_export.h"
 #include "content/services/auction_worklet/auction_v8_helper.h"
-#include "v8/include/v8-external.h"
+#include "content/services/auction_worklet/lazy_filler.h"
+#include "v8/include/v8-context.h"
 #include "v8/include/v8-forward.h"
 
 namespace auction_worklet {
@@ -21,6 +22,7 @@ namespace mojom {
 class AuctionSharedStorageHost;
 }  // namespace mojom
 
+class AuctionV8Logger;
 class ForDebuggingOnlyBindings;
 class PrivateAggregationBindings;
 class SharedStorageBindings;
@@ -55,48 +57,23 @@ class Bindings {
 // points to input data (in that case we return overly fresh data, but that's
 // safe, and it doesn't seem worth the effort to aid in misuse).
 //
-// API for implementers is as follows:
+// In addition to the basic LazyFillter pattern, implementors must also
+// implement Reset(), which adjusts state for recycling.
 //
-// 1) In FillInObject, call DefineLazyAttribute for all relevant attributes.
-// 2) In the static helpers registered with DefineLazyAttribute
-//    (which take (v8::Local<v8::Name> name,
-//                 const v8::PropertyCallbackInfo<v8::Value>& info)
-//    Use GetSelf and SetResult() to provide value.
-//    The implementation must be careful of `this` being in recycled state,
-//    and also re-check that the field itself is still there (the check in
-//    FillInObject may have been from pre-recycling).
+// Implementations must be careful of `this` being in a recycled state, and
+// re-check that the fields themselves are still present on access (values may
+// have changed between defining an attribute and the invocation of the
+// attribute's callback).
 //
-//    If you use the JSON parser, make sure to eat exceptions with v8::TryCatch.
-//
-// 3) In Reset(), adjust state for recycling.
-//
-// Users should get one from ContextRecycler and call FillInObject on it, after
-// ContextRecyclerScope is active.
-class LazyFiller {
+// Users should get PersistedLazyFiller from ContextRecycler and use it to
+// populate objects only after ContextRecyclerScope is active.
+class PersistedLazyFiller : public LazyFiller {
  public:
-  virtual ~LazyFiller();
-  // Return success/failure.
-  virtual bool FillInObject(v8::Local<v8::Object> object) = 0;
+  ~PersistedLazyFiller() override;
   virtual void Reset() = 0;
 
  protected:
-  explicit LazyFiller(AuctionV8Helper* v8_helper);
-  AuctionV8Helper* v8_helper() { return v8_helper_.get(); }
-
-  template <typename T>
-  static T* GetSelf(const v8::PropertyCallbackInfo<v8::Value>& info) {
-    return static_cast<T*>(v8::External::Cast(*info.Data())->Value());
-  }
-
-  static void SetResult(const v8::PropertyCallbackInfo<v8::Value>& info,
-                        v8::Local<v8::Value> result);
-
-  bool DefineLazyAttribute(v8::Local<v8::Object> object,
-                           base::StringPiece name,
-                           v8::AccessorNameGetterCallback getter);
-
- private:
-  const raw_ptr<AuctionV8Helper> v8_helper_;
+  PersistedLazyFiller(AuctionV8Helper* v8_helper);
 };
 
 // This helps manage the state of bindings on a context should we chose to
@@ -177,6 +154,10 @@ class CONTENT_EXPORT ContextRecycler {
   const raw_ptr<AuctionV8Helper> v8_helper_;
   v8::Global<v8::Context> context_;
 
+  // Must be after `v8_helper` and `context_`, but before lazy bindings, which
+  // may use it.
+  std::unique_ptr<AuctionV8Logger> v8_logger_;
+
   std::unique_ptr<ForDebuggingOnlyBindings> for_debugging_only_bindings_;
   std::unique_ptr<PrivateAggregationBindings> private_aggregation_bindings_;
   std::unique_ptr<SharedStorageBindings> shared_storage_bindings_;
@@ -189,7 +170,7 @@ class CONTENT_EXPORT ContextRecycler {
       set_priority_signals_override_bindings_;
 
   // everything here is owned by one of the unique_ptr's above.
-  std::vector<Bindings*> bindings_list_;
+  std::vector<raw_ptr<Bindings, VectorExperimental>> bindings_list_;
 
   std::unique_ptr<InterestGroupLazyFiller> interest_group_lazy_filler_;
   std::unique_ptr<BiddingBrowserSignalsLazyFiller>

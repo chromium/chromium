@@ -16,7 +16,7 @@ Local changes:
 * copy .gitignore from https://git.xiph.org/?p=opus.git;a=tree
 * set 'x' flags: "chmod 750 win32/genversion.bat"
 * remove assertion messages in release builds (see crbug/1053572)
-* add workaround to ignore some int-overflows when fuzzing (see crbug/1146174)
+* add workaround to ignore some int-overflows when fuzzing (see crbug/1146174, crbug/1491812)
 
 Opus' own unit tests are located in ./src/tests
 Additional chromium tests are located in ./tests, and require chromium

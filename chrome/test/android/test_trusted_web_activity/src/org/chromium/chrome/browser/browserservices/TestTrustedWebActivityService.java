@@ -15,9 +15,7 @@ import androidx.browser.trusted.TokenStore;
 import androidx.browser.trusted.TrustedWebActivityCallbackRemote;
 import androidx.browser.trusted.TrustedWebActivityService;
 
-/**
- * A TrustedWebActivityService to be used in TrustedWebActivityClientTest.
- */
+/** A TrustedWebActivityService to be used in TrustedWebActivityClientTest. */
 public class TestTrustedWebActivityService extends TrustedWebActivityService {
     public static final String COMMAND_SET_RESPONSE = "setResponse";
     public static final String SET_RESPONSE_NAME = "setResponse.name";
@@ -55,10 +53,10 @@ public class TestTrustedWebActivityService extends TrustedWebActivityService {
     }
 
     @Override
-    public boolean onNotifyNotificationWithChannel(String platformTag, int platformId,
-            Notification notification, String channelName) {
-        MessengerService.sMessageHandler
-                .recordNotifyNotification(platformTag, platformId, channelName);
+    public boolean onNotifyNotificationWithChannel(
+            String platformTag, int platformId, Notification notification, String channelName) {
+        MessengerService.sMessageHandler.recordNotifyNotification(
+                platformTag, platformId, channelName);
         return true;
     }
 
@@ -122,8 +120,8 @@ public class TestTrustedWebActivityService extends TrustedWebActivityService {
         return executionResult;
     }
 
-    private static void runCallback(TrustedWebActivityCallbackRemote callback, String name,
-            Bundle args) {
+    private static void runCallback(
+            TrustedWebActivityCallbackRemote callback, String name, Bundle args) {
         if (callback == null) return;
         try {
             callback.runExtraCallback(name, args);

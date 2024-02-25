@@ -6,8 +6,10 @@
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_MEDIA_CAPABILITIES_MEDIA_CAPABILITIES_H_
 
 #include "base/gtest_prod_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
 #include "media/base/video_codecs.h"  // for media::VideoCodecProfile
+#include "media/base/video_color_space.h"
 #include "media/learning/mojo/public/cpp/mojo_learning_task_controller.h"
 #include "media/learning/mojo/public/mojom/learning_task_controller.mojom-blink.h"
 #include "media/mojo/mojom/video_decode_perf_history.mojom-blink.h"
@@ -71,20 +73,20 @@ class MODULES_EXPORT MediaCapabilities final
     PendingCallbackState(ScriptPromiseResolver* resolver,
                          MediaKeySystemAccess* access,
                          const base::TimeTicks& request_time,
-                         absl::optional<IdentifiableToken> input_token);
+                         std::optional<IdentifiableToken> input_token);
     virtual void Trace(blink::Visitor* visitor) const;
 
     Member<ScriptPromiseResolver> resolver;
     Member<MediaKeySystemAccess> key_system_access;
-    absl::optional<bool> is_supported;
-    absl::optional<bool> is_bad_window_prediction_smooth;
-    absl::optional<bool> is_nnr_prediction_smooth;
-    absl::optional<bool> db_is_smooth;
-    absl::optional<bool> db_is_power_efficient;
-    absl::optional<bool> is_gpu_factories_supported;
-    absl::optional<bool> is_builtin_video_codec;
+    std::optional<bool> is_supported;
+    std::optional<bool> is_bad_window_prediction_smooth;
+    std::optional<bool> is_nnr_prediction_smooth;
+    std::optional<bool> db_is_smooth;
+    std::optional<bool> db_is_power_efficient;
+    std::optional<bool> is_gpu_factories_supported;
+    std::optional<bool> is_builtin_video_codec;
     base::TimeTicks request_time;
-    absl::optional<IdentifiableToken> input_token;
+    std::optional<IdentifiableToken> input_token;
   };
 
   FRIEND_TEST_ALL_PREFIXES(MediaCapabilitiesTests,
@@ -150,12 +152,12 @@ class MODULES_EXPORT MediaCapabilities final
   // Callback for predictions from |bad_window_predictor_|.
   void OnBadWindowPrediction(
       int callback_id,
-      const absl::optional<::media::learning::TargetHistogram>& histogram);
+      const std::optional<::media::learning::TargetHistogram>& histogram);
 
   // Callback for predictions from |nnr_predictor_|.
   void OnNnrPrediction(
       int callback_id,
-      const absl::optional<::media::learning::TargetHistogram>& histogram);
+      const std::optional<::media::learning::TargetHistogram>& histogram);
 
   // Callback for GetGpuFactoriesSupport().
   void OnGpuFactoriesSupport(int callback_id,
@@ -215,10 +217,12 @@ class MODULES_EXPORT MediaCapabilities final
   HeapHashMap<int, Member<PendingCallbackState>> pending_cb_map_;
 
   // Makes it possible to override the WebrtcDecodingInfoHandler in tests.
-  WebrtcDecodingInfoHandler* webrtc_decoding_info_handler_for_test_ = nullptr;
+  raw_ptr<WebrtcDecodingInfoHandler> webrtc_decoding_info_handler_for_test_ =
+      nullptr;
 
   // Makes it possible to override the WebrtcEncodingInfoHandler in tests.
-  WebrtcEncodingInfoHandler* webrtc_encoding_info_handler_for_test_ = nullptr;
+  raw_ptr<WebrtcEncodingInfoHandler> webrtc_encoding_info_handler_for_test_ =
+      nullptr;
 };
 
 }  // namespace blink

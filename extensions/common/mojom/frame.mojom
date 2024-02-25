@@ -6,31 +6,19 @@ module extensions.mojom;
 
 import "mojo/public/mojom/base/uuid.mojom";
 import "extensions/common/mojom/code_injection.mojom";
+import "extensions/common/mojom/context_type.mojom";
 import "extensions/common/mojom/extra_response_data.mojom";
 import "extensions/common/mojom/host_id.mojom";
 import "extensions/common/mojom/injection_type.mojom";
+import "extensions/common/mojom/message_port.mojom";
 import "extensions/common/mojom/run_location.mojom";
 import "extensions/common/mojom/stack_frame.mojom";
 import "extensions/common/mojom/view_type.mojom";
 import "mojo/public/mojom/base/string16.mojom";
 import "mojo/public/mojom/base/values.mojom";
+import "ui/gfx/geometry/mojom/geometry.mojom";
 import "url/mojom/url.mojom";
 import "third_party/blink/public/mojom/devtools/console_message.mojom";
-
-// The context type associated with a running JS context.
-// This should match the values in Feature::Context.
-enum ContextType {
-  kPrivilegedExtension,
-  kUnprivilegedExtension,
-  kContentScript,
-  kWebPage,
-  kPrivilegedWebPage,
-  kWebUi,
-  kUntrustedWebUi,
-  kLockscreenExtension,
-  kOffscreenExtension,
-  kUserScript,
-};
 
 // Allows an extension to execute code in a tab.
 struct ExecuteCodeParams {
@@ -85,6 +73,13 @@ struct RequestParams {
   int64 service_worker_version_id;
 };
 
+// Region articulated from the renderer to the browser that is a draggable
+// hotspot.
+struct DraggableRegion{
+  bool draggable;
+  gfx.mojom.Rect bounds;
+};
+
 // Implemented in the renderer, this interface defines the local frame specific
 // methods.
 interface LocalFrame {
@@ -129,6 +124,17 @@ interface LocalFrame {
 
   // Tell the render view which browser window it's being attached to.
   UpdateBrowserWindowId(int32 window_id);
+
+  // Dispatch the Port.onConnect event for message channels.
+  DispatchOnConnect(
+    extensions.mojom.PortId port_id,
+    extensions.mojom.ChannelType channel_type,
+    string channel_name,
+    extensions.mojom.TabConnectionInfo tab_info,
+    extensions.mojom.ExternalConnectionInfo external_connection_info,
+    pending_associated_receiver<extensions.mojom.MessagePort> port,
+    pending_associated_remote<extensions.mojom.MessagePortHost> port_host) =>
+    (bool success);
 };
 
 // Implemented in the browser, this interface defines the local frame host
@@ -179,4 +185,49 @@ interface LocalFrameHost {
                               mojo_base.mojom.String16 source,
                               array<StackFrame> stack_trace,
                               blink.mojom.ConsoleMessageLevel level);
+
+  // Notifies the browser that content scripts are running in the renderer
+  // that the IPC originated from.
+  ContentScriptsExecuting(map<string, array<string>> extension_id_to_scripts,
+                          url.mojom.Url frame_url);
+
+  // Informs the browser to increment the keepalive count for the lazy
+  // background page, keeping it alive.
+  IncrementLazyKeepaliveCount();
+
+  // Informs the browser there is one less thing keeping the lazy background
+  // page alive.
+  DecrementLazyKeepaliveCount();
+
+  // Sent by the renderer when the draggable regions are updated.
+  UpdateDraggableRegions(array<DraggableRegion> regions);
+
+  // Notify the browser that an app window is ready and can resume resource
+  // requests.
+  AppWindowReady();
+
+  // Open a channel to all listening contexts owned by the extension with
+  // the given ID.
+  OpenChannelToExtension(
+    extensions.mojom.ExternalConnectionInfo info,
+    extensions.mojom.ChannelType channel_type,
+    string channel_name, extensions.mojom.PortId port_id,
+    pending_associated_remote<extensions.mojom.MessagePort> port,
+    pending_associated_receiver<extensions.mojom.MessagePortHost> port_host);
+
+  // Get a port handle to the native application.  The handle can be used for
+  // sending messages to the extension.
+  OpenChannelToNativeApp(
+    string native_app_name, extensions.mojom.PortId port_id,
+    pending_associated_remote<extensions.mojom.MessagePort> port,
+    pending_associated_receiver<extensions.mojom.MessagePortHost> port_host);
+
+  // Get a port handle to the given tab.  The handle can be used for sending
+  // messages to the extension.
+  OpenChannelToTab(
+    int32 tab_id, int32 frame_id, string? document_id,
+    extensions.mojom.ChannelType channel_type,
+    string channel_name, extensions.mojom.PortId port_id,
+    pending_associated_remote<extensions.mojom.MessagePort> port,
+    pending_associated_receiver<extensions.mojom.MessagePortHost> port_host);
 };

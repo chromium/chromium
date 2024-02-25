@@ -6,6 +6,7 @@
 #define COMPONENTS_VIZ_SERVICE_DISPLAY_EXTERNAL_USE_CLIENT_H_
 
 #include <memory>
+#include <optional>
 #include <utility>
 #include <vector>
 
@@ -15,7 +16,6 @@
 #include "components/viz/service/viz_service_export.h"
 #include "gpu/command_buffer/common/mailbox_holder.h"
 #include "gpu/ipc/common/vulkan_ycbcr_info.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/skia/include/core/SkImage.h"
 #include "third_party/skia/include/core/SkImageInfo.h"
 #include "third_party/skia/include/core/SkRefCnt.h"
@@ -42,7 +42,7 @@ class VIZ_SERVICE_EXPORT ExternalUseClient {
     ImageContext(const gpu::MailboxHolder& mailbox_holder,
                  const gfx::Size& size,
                  SharedImageFormat format,
-                 const absl::optional<gpu::VulkanYCbCrInfo>& ycbcr_info,
+                 const std::optional<gpu::VulkanYCbCrInfo>& ycbcr_info,
                  sk_sp<SkColorSpace> color_space);
 
     ImageContext(const ImageContext&) = delete;
@@ -75,7 +75,7 @@ class VIZ_SERVICE_EXPORT ExternalUseClient {
       origin_ = origin;
     }
 
-    absl::optional<gpu::VulkanYCbCrInfo> ycbcr_info() { return ycbcr_info_; }
+    std::optional<gpu::VulkanYCbCrInfo> ycbcr_info() { return ycbcr_info_; }
 
     bool has_image() { return !!image_; }
     sk_sp<SkImage> image() { return image_; }
@@ -97,10 +97,8 @@ class VIZ_SERVICE_EXPORT ExternalUseClient {
     void set_paint_op_buffer(const cc::PaintOpBuffer* buffer) {
       paint_op_buffer_ = buffer;
     }
-    const absl::optional<SkColor4f>& clear_color() const {
-      return clear_color_;
-    }
-    void set_clear_color(const absl::optional<SkColor4f>& color) {
+    const std::optional<SkColor4f>& clear_color() const { return clear_color_; }
+    void set_clear_color(const std::optional<SkColor4f>& color) {
       clear_color_ = color;
     }
 
@@ -116,14 +114,14 @@ class VIZ_SERVICE_EXPORT ExternalUseClient {
 
     // Sampler conversion information which is used in vulkan context for
     // android video.
-    absl::optional<gpu::VulkanYCbCrInfo> ycbcr_info_;
+    std::optional<gpu::VulkanYCbCrInfo> ycbcr_info_;
 
     // The promise image which is used on display thread.
     sk_sp<SkImage> image_;
     std::vector<GrBackendFormat> backend_formats_;
     std::vector<skgpu::graphite::TextureInfo> texture_infos_;
     raw_ptr<const cc::PaintOpBuffer> paint_op_buffer_ = nullptr;
-    absl::optional<SkColor4f> clear_color_;
+    std::optional<SkColor4f> clear_color_;
   };
 
   // If |maybe_concurrent_reads| is true then there can be concurrent reads to
@@ -133,7 +131,7 @@ class VIZ_SERVICE_EXPORT ExternalUseClient {
       const gfx::Size& size,
       SharedImageFormat format,
       bool maybe_concurrent_reads,
-      const absl::optional<gpu::VulkanYCbCrInfo>& ycbcr_info,
+      const std::optional<gpu::VulkanYCbCrInfo>& ycbcr_info,
       sk_sp<SkColorSpace> color_space,
       bool raw_draw_if_possible) = 0;
 

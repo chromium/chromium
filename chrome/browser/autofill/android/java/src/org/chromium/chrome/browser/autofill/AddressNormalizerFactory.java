@@ -4,13 +4,12 @@
 
 package org.chromium.chrome.browser.autofill;
 
-import org.chromium.base.annotations.JNINamespace;
-import org.chromium.base.annotations.NativeMethods;
+import org.jni_zero.JNINamespace;
+import org.jni_zero.NativeMethods;
+
 import org.chromium.components.autofill.AddressNormalizer;
 
-/**
- * Provides access to AddressNormalizer with the necessary //chrome dependencies.
- */
+/** Provides access to AddressNormalizer with the necessary //chrome dependencies. */
 @JNINamespace("autofill")
 public class AddressNormalizerFactory {
     private AddressNormalizerFactory() {}

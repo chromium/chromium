@@ -26,7 +26,6 @@
 #include "chrome/browser/ui/content_settings/fake_owner.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/chrome_switches.h"
-#include "chrome/common/pref_names.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "chrome/test/base/testing_browser_process.h"
@@ -44,7 +43,6 @@
 #include "components/infobars/core/infobar_delegate.h"
 #include "components/permissions/permission_decision_auto_blocker.h"
 #include "components/permissions/permission_recovery_success_rate_tracker.h"
-#include "components/prefs/pref_service.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/url_formatter/elide_url.h"
 #include "content/public/browser/web_contents.h"
@@ -56,7 +54,7 @@
 #include "third_party/blink/public/mojom/mediastream/media_stream.mojom.h"
 #include "ui/base/l10n/l10n_util.h"
 
-#if BUILDFLAG(IS_MAC)
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_CHROMEOS)
 #include "services/device/public/cpp/geolocation/geolocation_manager.h"
 #include "services/device/public/cpp/geolocation/location_system_permission_status.h"
 #include "services/device/public/cpp/test/fake_geolocation_manager.h"
@@ -94,16 +92,6 @@ class ContentSettingBubbleModelTest : public ChromeRenderViewHostTestHarness {
   TestingProfile::TestingFactories GetTestingFactories() const override {
     return {{HistoryServiceFactory::GetInstance(),
              HistoryServiceFactory::GetDefaultFactory()}};
-  }
-
-  std::string GetDefaultAudioDevice() {
-    PrefService* prefs = profile()->GetPrefs();
-    return prefs->GetString(prefs::kDefaultAudioCaptureDevice);
-  }
-
-  std::string GetDefaultVideoDevice() {
-    PrefService* prefs = profile()->GetPrefs();
-    return prefs->GetString(prefs::kDefaultVideoCaptureDevice);
   }
 };
 
@@ -143,8 +131,8 @@ TEST_F(ContentSettingBubbleModelTest, Cookies) {
   std::u16string title = bubble_content.title;
   EXPECT_FALSE(title.empty());
   ASSERT_EQ(2U, bubble_content.radio_group.radio_items.size());
-  EXPECT_FALSE(bubble_content.custom_link.empty());
-  EXPECT_TRUE(bubble_content.custom_link_enabled);
+  EXPECT_TRUE(bubble_content.custom_link.empty());
+  EXPECT_FALSE(bubble_content.custom_link_enabled);
   EXPECT_FALSE(bubble_content.manage_text.empty());
 
   WebContentsTester::For(web_contents())
@@ -161,15 +149,13 @@ TEST_F(ContentSettingBubbleModelTest, Cookies) {
   EXPECT_FALSE(bubble_content_2.title.empty());
   EXPECT_NE(title, bubble_content_2.title);
   ASSERT_EQ(2U, bubble_content_2.radio_group.radio_items.size());
-  EXPECT_EQ(bubble_content_2.radio_group.radio_items[0],
-            l10n_util::GetStringUTF16(IDS_ALLOWED_COOKIES_NO_ACTION));
   EXPECT_EQ(
-      bubble_content_2.radio_group.radio_items[1],
-      l10n_util::GetStringFUTF16(IDS_ALLOWED_COOKIES_BLOCK,
-                                 url_formatter::FormatUrlForSecurityDisplay(
-                                     web_contents()->GetLastCommittedURL())));
-  EXPECT_FALSE(bubble_content_2.custom_link.empty());
-  EXPECT_TRUE(bubble_content_2.custom_link_enabled);
+      bubble_content_2.radio_group.radio_items[0],
+      l10n_util::GetStringUTF16(IDS_ALLOWED_ON_DEVICE_SITE_DATA_NO_ACTION));
+  EXPECT_EQ(bubble_content_2.radio_group.radio_items[1],
+            l10n_util::GetStringUTF16(IDS_ALLOWED_ON_DEVICE_SITE_DATA_BLOCK));
+  EXPECT_TRUE(bubble_content_2.custom_link.empty());
+  EXPECT_FALSE(bubble_content_2.custom_link_enabled);
   EXPECT_FALSE(bubble_content_2.manage_text.empty());
 }
 
@@ -190,11 +176,7 @@ TEST_F(ContentSettingBubbleModelTest, MediastreamMicAndCamera) {
       PageSpecificContentSettings::kCameraAccessed,
   };
   content_settings->OnMediaStreamPermissionSet(security_origin,
-                                               microphone_camera_state,
-                                               GetDefaultAudioDevice(),
-                                               GetDefaultVideoDevice(),
-                                               std::string(),
-                                               std::string());
+                                               microphone_camera_state);
 
   std::unique_ptr<ContentSettingBubbleModel> content_setting_bubble_model(
       new ContentSettingMediaStreamBubbleModel(nullptr, web_contents()));
@@ -216,7 +198,6 @@ TEST_F(ContentSettingBubbleModelTest, MediastreamMicAndCamera) {
   EXPECT_TRUE(bubble_content.custom_link.empty());
   EXPECT_FALSE(bubble_content.custom_link_enabled);
   EXPECT_FALSE(bubble_content.manage_text.empty());
-  EXPECT_EQ(2U, bubble_content.media_menus.size());
 }
 
 TEST_F(ContentSettingBubbleModelTest, BlockedMediastreamMicAndCamera) {
@@ -245,12 +226,7 @@ TEST_F(ContentSettingBubbleModelTest, BlockedMediastreamMicAndCamera) {
       PageSpecificContentSettings::kMicrophoneBlocked,
       PageSpecificContentSettings::kCameraBlocked,
   };
-  content_settings->OnMediaStreamPermissionSet(url,
-                                               microphone_camera_state,
-                                               GetDefaultAudioDevice(),
-                                               GetDefaultVideoDevice(),
-                                               std::string(),
-                                               std::string());
+  content_settings->OnMediaStreamPermissionSet(url, microphone_camera_state);
 
   std::unique_ptr<ContentSettingBubbleModel> content_setting_bubble_model(
       new ContentSettingMediaStreamBubbleModel(nullptr, web_contents()));
@@ -307,12 +283,7 @@ TEST_F(ContentSettingBubbleModelTest, MediastreamContentBubble) {
       PageSpecificContentSettings::kMicrophoneAccessed,
       PageSpecificContentSettings::kMicrophoneBlocked,
   };
-  content_settings->OnMediaStreamPermissionSet(url,
-                                               microphone_camera_state,
-                                               GetDefaultAudioDevice(),
-                                               std::string(),
-                                               std::string(),
-                                               std::string());
+  content_settings->OnMediaStreamPermissionSet(url, microphone_camera_state);
   {
     std::unique_ptr<ContentSettingBubbleModel> content_setting_bubble_model(
         new ContentSettingMediaStreamBubbleModel(nullptr, web_contents()));
@@ -368,163 +339,6 @@ TEST_F(ContentSettingBubbleModelTest, MediastreamContentBubble) {
   }
 }
 
-// Tests whether the media menu settings are correctly persisted in the bubble.
-TEST_F(ContentSettingBubbleModelTest, MediastreamContentBubbleMediaMenus) {
-  // Required to break dependency on BrowserMainLoop.
-  MediaCaptureDevicesDispatcher::GetInstance()->
-      DisableDeviceEnumerationForTesting();
-
-  WebContentsTester::For(web_contents())->
-      NavigateAndCommit(GURL("https://www.example.com"));
-  GURL url = web_contents()->GetLastCommittedURL();
-
-  blink::MediaStreamDevices audio_devices;
-  blink::MediaStreamDevice fake_audio_device1(
-      blink::mojom::MediaStreamType::DEVICE_AUDIO_CAPTURE, "fake_dev1",
-      "Fake Audio Device 1");
-  audio_devices.push_back(fake_audio_device1);
-  blink::MediaStreamDevice fake_audio_device2(
-      blink::mojom::MediaStreamType::DEVICE_AUDIO_CAPTURE, "fake_dev2",
-      "Fake Audio Device 2");
-  audio_devices.push_back(fake_audio_device2);
-  blink::MediaStreamDevice fake_audio_device3(
-      blink::mojom::MediaStreamType::DEVICE_AUDIO_CAPTURE, "fake_dev3",
-      "Fake Audio Device 3");
-  audio_devices.push_back(fake_audio_device3);
-
-  MediaCaptureDevicesDispatcher::GetInstance()->SetTestAudioCaptureDevices(
-      audio_devices);
-
-  PageSpecificContentSettings* content_settings =
-      PageSpecificContentSettings::GetForFrame(
-          web_contents()->GetPrimaryMainFrame());
-  PageSpecificContentSettings::MicrophoneCameraState microphone_camera_state{
-      PageSpecificContentSettings::kMicrophoneAccessed,
-      PageSpecificContentSettings::kMicrophoneBlocked,
-  };
-  content_settings->OnMediaStreamPermissionSet(url,
-                                               microphone_camera_state,
-                                               GetDefaultAudioDevice(),
-                                               std::string(),
-                                               std::string(),
-                                               std::string());
-  {
-    std::unique_ptr<ContentSettingBubbleModel> content_setting_bubble_model(
-        new ContentSettingMediaStreamBubbleModel(nullptr, web_contents()));
-    const ContentSettingBubbleModel::BubbleContent& bubble_content =
-        content_setting_bubble_model->bubble_content();
-    std::unique_ptr<FakeOwner> owner = FakeOwner::Create(
-        *content_setting_bubble_model, bubble_content.radio_group.default_item);
-    EXPECT_TRUE(bubble_content.custom_link.empty());
-
-    EXPECT_EQ(1U, bubble_content.media_menus.size());
-    EXPECT_EQ(blink::mojom::MediaStreamType::DEVICE_AUDIO_CAPTURE,
-              bubble_content.media_menus.begin()->first);
-    EXPECT_FALSE(bubble_content.media_menus.begin()->second.disabled);
-    // The first audio device should be selected by default.
-    EXPECT_TRUE(fake_audio_device1.IsSameDevice(
-        bubble_content.media_menus.begin()->second.selected_device));
-  }
-  {
-    std::unique_ptr<ContentSettingBubbleModel> content_setting_bubble_model(
-        new ContentSettingMediaStreamBubbleModel(nullptr, web_contents()));
-    const ContentSettingBubbleModel::BubbleContent& bubble_content =
-        content_setting_bubble_model->bubble_content();
-    std::unique_ptr<FakeOwner> owner = FakeOwner::Create(
-        *content_setting_bubble_model, bubble_content.radio_group.default_item);
-    EXPECT_EQ(1U, bubble_content.media_menus.size());
-    EXPECT_EQ(blink::mojom::MediaStreamType::DEVICE_AUDIO_CAPTURE,
-              bubble_content.media_menus.begin()->first);
-    EXPECT_FALSE(bubble_content.media_menus.begin()->second.disabled);
-  }
-
-  // Simulate that an audio stream is being captured.
-  scoped_refptr<MediaStreamCaptureIndicator> indicator =
-      MediaCaptureDevicesDispatcher::GetInstance()->
-        GetMediaStreamCaptureIndicator();
-  std::unique_ptr<content::MediaStreamUI> media_stream_ui =
-      indicator->RegisterMediaStream(
-          web_contents(),
-          blink::mojom::StreamDevices(fake_audio_device1,
-                                      /*video_device=*/absl::nullopt));
-  media_stream_ui->OnStarted(base::RepeatingClosure(),
-                             content::MediaStreamUI::SourceCallback(),
-                             /*label=*/std::string(), /*screen_capture_ids=*/{},
-                             content::MediaStreamUI::StateChangeCallback());
-  microphone_camera_state.Remove(
-      PageSpecificContentSettings::kMicrophoneBlocked);
-  content_settings->OnMediaStreamPermissionSet(url,
-                                               microphone_camera_state,
-                                               GetDefaultAudioDevice(),
-                                               std::string(),
-                                               std::string(),
-                                               std::string());
-
-  {
-    std::unique_ptr<ContentSettingBubbleModel> content_setting_bubble_model(
-        new ContentSettingMediaStreamBubbleModel(nullptr, web_contents()));
-    const ContentSettingBubbleModel::BubbleContent& bubble_content =
-        content_setting_bubble_model->bubble_content();
-    std::unique_ptr<FakeOwner> owner = FakeOwner::Create(
-        *content_setting_bubble_model, bubble_content.radio_group.default_item);
-    // Settings not changed yet, so the "settings changed" message should not be
-    // shown.
-    EXPECT_TRUE(bubble_content.custom_link.empty());
-
-    EXPECT_EQ(1U, bubble_content.media_menus.size());
-    EXPECT_EQ(blink::mojom::MediaStreamType::DEVICE_AUDIO_CAPTURE,
-              bubble_content.media_menus.begin()->first);
-    EXPECT_FALSE(bubble_content.media_menus.begin()->second.disabled);
-    // Select a different different device.
-    content_setting_bubble_model->OnMediaMenuClicked(
-        blink::mojom::MediaStreamType::DEVICE_AUDIO_CAPTURE,
-        fake_audio_device2.id);
-    content_setting_bubble_model->CommitChanges();
-  }
-
-  {
-    std::unique_ptr<ContentSettingBubbleModel> content_setting_bubble_model(
-        new ContentSettingMediaStreamBubbleModel(nullptr, web_contents()));
-    const ContentSettingBubbleModel::BubbleContent& bubble_content =
-        content_setting_bubble_model->bubble_content();
-    std::unique_ptr<FakeOwner> owner = FakeOwner::Create(
-        *content_setting_bubble_model, bubble_content.radio_group.default_item);
-    // Test that the reload hint is displayed.
-    EXPECT_FALSE(bubble_content.custom_link_enabled);
-    EXPECT_EQ(
-        bubble_content.custom_link,
-        l10n_util::GetStringUTF16(IDS_MEDIASTREAM_SETTING_CHANGED_MESSAGE));
-  }
-
-  // Simulate that yet another audio stream capture request was initiated.
-  microphone_camera_state.Put(PageSpecificContentSettings::kMicrophoneBlocked);
-  content_settings->OnMediaStreamPermissionSet(url,
-                                               microphone_camera_state,
-                                               GetDefaultAudioDevice(),
-                                               std::string(),
-                                               std::string(),
-                                               std::string());
-
-  {
-    std::unique_ptr<ContentSettingBubbleModel> content_setting_bubble_model(
-        new ContentSettingMediaStreamBubbleModel(nullptr, web_contents()));
-    const ContentSettingBubbleModel::BubbleContent& bubble_content =
-        content_setting_bubble_model->bubble_content();
-    std::unique_ptr<FakeOwner> owner = FakeOwner::Create(
-        *content_setting_bubble_model, bubble_content.radio_group.default_item);
-    // Test that the reload hint is not displayed any more, because this is a
-    // new permission request.
-    EXPECT_FALSE(bubble_content.custom_link_enabled);
-    EXPECT_TRUE(bubble_content.custom_link.empty());
-
-    // Though the audio menu setting should have persisted.
-    EXPECT_EQ(1U, bubble_content.media_menus.size());
-    EXPECT_EQ(blink::mojom::MediaStreamType::DEVICE_AUDIO_CAPTURE,
-              bubble_content.media_menus.begin()->first);
-    EXPECT_FALSE(bubble_content.media_menus.begin()->second.disabled);
-  }
-}
-
 TEST_F(ContentSettingBubbleModelTest, MediastreamMic) {
   WebContentsTester::For(web_contents())
       ->NavigateAndCommit(GURL("https://www.example.com"));
@@ -540,11 +354,7 @@ TEST_F(ContentSettingBubbleModelTest, MediastreamMic) {
   PageSpecificContentSettings::MicrophoneCameraState microphone_camera_state{
       PageSpecificContentSettings::kMicrophoneAccessed};
   content_settings->OnMediaStreamPermissionSet(security_origin,
-                                               microphone_camera_state,
-                                               GetDefaultAudioDevice(),
-                                               std::string(),
-                                               std::string(),
-                                               std::string());
+                                               microphone_camera_state);
 
   std::unique_ptr<ContentSettingBubbleModel> content_setting_bubble_model(
       new ContentSettingMediaStreamBubbleModel(nullptr, web_contents()));
@@ -565,18 +375,11 @@ TEST_F(ContentSettingBubbleModelTest, MediastreamMic) {
   EXPECT_TRUE(bubble_content.custom_link.empty());
   EXPECT_FALSE(bubble_content.custom_link_enabled);
   EXPECT_FALSE(bubble_content.manage_text.empty());
-  EXPECT_EQ(1U, bubble_content.media_menus.size());
-  EXPECT_EQ(blink::mojom::MediaStreamType::DEVICE_AUDIO_CAPTURE,
-            bubble_content.media_menus.begin()->first);
 
   // Change the microphone access.
   microphone_camera_state.Put(PageSpecificContentSettings::kMicrophoneBlocked);
   content_settings->OnMediaStreamPermissionSet(security_origin,
-                                               microphone_camera_state,
-                                               GetDefaultAudioDevice(),
-                                               std::string(),
-                                               std::string(),
-                                               std::string());
+                                               microphone_camera_state);
   content_setting_bubble_model =
       std::make_unique<ContentSettingMediaStreamBubbleModel>(nullptr,
                                                              web_contents());
@@ -597,9 +400,6 @@ TEST_F(ContentSettingBubbleModelTest, MediastreamMic) {
   EXPECT_TRUE(new_bubble_content.custom_link.empty());
   EXPECT_FALSE(new_bubble_content.custom_link_enabled);
   EXPECT_FALSE(new_bubble_content.manage_text.empty());
-  EXPECT_EQ(1U, new_bubble_content.media_menus.size());
-  EXPECT_EQ(blink::mojom::MediaStreamType::DEVICE_AUDIO_CAPTURE,
-            new_bubble_content.media_menus.begin()->first);
 }
 
 TEST_F(ContentSettingBubbleModelTest, MediastreamCamera) {
@@ -617,11 +417,7 @@ TEST_F(ContentSettingBubbleModelTest, MediastreamCamera) {
   PageSpecificContentSettings::MicrophoneCameraState microphone_camera_state{
       PageSpecificContentSettings::kCameraAccessed};
   content_settings->OnMediaStreamPermissionSet(security_origin,
-                                               microphone_camera_state,
-                                               std::string(),
-                                               GetDefaultVideoDevice(),
-                                               std::string(),
-                                               std::string());
+                                               microphone_camera_state);
 
   std::unique_ptr<ContentSettingBubbleModel> content_setting_bubble_model(
       new ContentSettingMediaStreamBubbleModel(nullptr, web_contents()));
@@ -642,18 +438,11 @@ TEST_F(ContentSettingBubbleModelTest, MediastreamCamera) {
   EXPECT_TRUE(bubble_content.custom_link.empty());
   EXPECT_FALSE(bubble_content.custom_link_enabled);
   EXPECT_FALSE(bubble_content.manage_text.empty());
-  EXPECT_EQ(1U, bubble_content.media_menus.size());
-  EXPECT_EQ(blink::mojom::MediaStreamType::DEVICE_VIDEO_CAPTURE,
-            bubble_content.media_menus.begin()->first);
 
   // Change the camera access.
   microphone_camera_state.Put(PageSpecificContentSettings::kCameraBlocked);
   content_settings->OnMediaStreamPermissionSet(security_origin,
-                                               microphone_camera_state,
-                                               std::string(),
-                                               GetDefaultVideoDevice(),
-                                               std::string(),
-                                               std::string());
+                                               microphone_camera_state);
   content_setting_bubble_model =
       std::make_unique<ContentSettingMediaStreamBubbleModel>(nullptr,
                                                              web_contents());
@@ -675,9 +464,6 @@ TEST_F(ContentSettingBubbleModelTest, MediastreamCamera) {
   EXPECT_TRUE(new_bubble_content.custom_link.empty());
   EXPECT_FALSE(new_bubble_content.custom_link_enabled);
   EXPECT_FALSE(new_bubble_content.manage_text.empty());
-  EXPECT_EQ(1U, new_bubble_content.media_menus.size());
-  EXPECT_EQ(blink::mojom::MediaStreamType::DEVICE_VIDEO_CAPTURE,
-            new_bubble_content.media_menus.begin()->first);
 }
 
 TEST_F(ContentSettingBubbleModelTest, AccumulateMediastreamMicAndCamera) {
@@ -697,11 +483,7 @@ TEST_F(ContentSettingBubbleModelTest, AccumulateMediastreamMicAndCamera) {
   PageSpecificContentSettings::MicrophoneCameraState microphone_camera_state{
       PageSpecificContentSettings::kMicrophoneAccessed};
   content_settings->OnMediaStreamPermissionSet(security_origin,
-                                               microphone_camera_state,
-                                               GetDefaultAudioDevice(),
-                                               std::string(),
-                                               std::string(),
-                                               std::string());
+                                               microphone_camera_state);
 
   std::unique_ptr<ContentSettingBubbleModel> content_setting_bubble_model(
       new ContentSettingMediaStreamBubbleModel(nullptr, web_contents()));
@@ -719,18 +501,11 @@ TEST_F(ContentSettingBubbleModelTest, AccumulateMediastreamMicAndCamera) {
   EXPECT_EQ(bubble_content.radio_group.radio_items[1],
             l10n_util::GetStringUTF16(IDS_ALLOWED_MEDIASTREAM_MIC_BLOCK));
   EXPECT_EQ(0, bubble_content.radio_group.default_item);
-  EXPECT_EQ(1U, bubble_content.media_menus.size());
-  EXPECT_EQ(blink::mojom::MediaStreamType::DEVICE_AUDIO_CAPTURE,
-            bubble_content.media_menus.begin()->first);
 
   // Then add camera access.
   microphone_camera_state.Put(PageSpecificContentSettings::kCameraAccessed);
   content_settings->OnMediaStreamPermissionSet(security_origin,
-                                               microphone_camera_state,
-                                               GetDefaultAudioDevice(),
-                                               GetDefaultVideoDevice(),
-                                               std::string(),
-                                               std::string());
+                                               microphone_camera_state);
 
   content_setting_bubble_model =
       std::make_unique<ContentSettingMediaStreamBubbleModel>(nullptr,
@@ -750,11 +525,10 @@ TEST_F(ContentSettingBubbleModelTest, AccumulateMediastreamMicAndCamera) {
       new_bubble_content.radio_group.radio_items[1],
       l10n_util::GetStringUTF16(IDS_ALLOWED_MEDIASTREAM_MIC_AND_CAMERA_BLOCK));
   EXPECT_EQ(0, new_bubble_content.radio_group.default_item);
-  EXPECT_EQ(2U, new_bubble_content.media_menus.size());
 }
 
 TEST_F(ContentSettingBubbleModelTest, Geolocation) {
-#if BUILDFLAG(IS_MAC)
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_CHROMEOS)
   auto fake_geolocation_manager =
       std::make_unique<device::FakeGeolocationManager>();
   device::FakeGeolocationManager* geolocation_manager =
@@ -775,7 +549,7 @@ TEST_F(ContentSettingBubbleModelTest, Geolocation) {
                                          CONTENT_SETTING_ALLOW);
   content_settings->OnContentAllowed(ContentSettingsType::GEOLOCATION);
 
-#if BUILDFLAG(IS_MAC)
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_CHROMEOS)
   // System-level geolocation permission is blocked.
   {
     auto content_setting_bubble_model =
@@ -785,8 +559,13 @@ TEST_F(ContentSettingBubbleModelTest, Geolocation) {
         FakeOwner::Create(*content_setting_bubble_model, 0);
     const auto& bubble_content = content_setting_bubble_model->bubble_content();
 
+#if BUILDFLAG(IS_MAC)
     EXPECT_EQ(bubble_content.title,
               l10n_util::GetStringUTF16(IDS_GEOLOCATION_TURNED_OFF_IN_MACOS));
+#else
+    EXPECT_EQ(bubble_content.title,
+              l10n_util::GetStringUTF16(IDS_GEOLOCATION_TURNED_OFF_IN_OS));
+#endif
     EXPECT_TRUE(bubble_content.message.empty());
     EXPECT_EQ(bubble_content.radio_group.radio_items.size(), 0U);
 
@@ -807,8 +586,13 @@ TEST_F(ContentSettingBubbleModelTest, Geolocation) {
     geolocation_manager->SetSystemPermission(
         device::LocationSystemPermissionStatus::kAllowed);
 
+#if BUILDFLAG(IS_MAC)
     EXPECT_EQ(bubble_content.title,
               l10n_util::GetStringUTF16(IDS_GEOLOCATION_TURNED_OFF_IN_MACOS));
+#else
+    EXPECT_EQ(bubble_content.title,
+              l10n_util::GetStringUTF16(IDS_GEOLOCATION_TURNED_OFF_IN_OS));
+#endif
     EXPECT_TRUE(bubble_content.message.empty());
     EXPECT_EQ(bubble_content.radio_group.radio_items.size(), 0U);
 
@@ -1217,7 +1001,6 @@ TEST_F(ContentSettingBubbleModelTest, SubresourceFilter) {
   EXPECT_FALSE(bubble_content.custom_link_enabled);
   EXPECT_EQ(bubble_content.manage_text,
             l10n_util::GetStringUTF16(IDS_ALWAYS_ALLOW_ADS));
-  EXPECT_EQ(0U, bubble_content.media_menus.size());
 }
 
 class GenericSensorContentSettingBubbleModelTest

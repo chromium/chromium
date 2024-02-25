@@ -5,6 +5,7 @@
 #ifndef CHROMEOS_ASH_COMPONENTS_DBUS_SHILL_SHILL_PROFILE_CLIENT_H_
 #define CHROMEOS_ASH_COMPONENTS_DBUS_SHILL_SHILL_PROFILE_CLIENT_H_
 
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -12,7 +13,6 @@
 #include "base/functional/callback.h"
 #include "chromeos/ash/components/dbus/shill/fake_shill_simulated_result.h"
 #include "chromeos/ash/components/dbus/shill/shill_client_helper.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace dbus {
 class Bus;
@@ -78,7 +78,7 @@ class COMPONENT_EXPORT(SHILL_CLIENT) ShillProfileClient {
     // |profile_path| to the path of the profile the service was found in.
     // Profiles are searched starting with the most recently added profile.
     // If the service does not exist in any profile, nullopt is returned.
-    virtual absl::optional<base::Value::Dict> GetService(
+    virtual std::optional<base::Value::Dict> GetService(
         const std::string& service_path,
         std::string* profile_path) = 0;
 

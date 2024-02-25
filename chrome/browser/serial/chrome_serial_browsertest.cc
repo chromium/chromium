@@ -48,6 +48,8 @@ class SerialTest : public InProcessBrowserTest {
     ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
   }
 
+  void TearDownOnMainThread() override { context_ = nullptr; }
+
   void TearDown() override {
     // Because SerialBlocklist is a singleton it must be cleared after tests run
     // to prevent leakage between tests.
@@ -72,7 +74,7 @@ class SerialTest : public InProcessBrowserTest {
  private:
   base::test::ScopedFeatureList feature_list_;
   device::FakeSerialPortManager port_manager_;
-  raw_ptr<SerialChooserContext, DanglingUntriaged> context_;
+  raw_ptr<SerialChooserContext> context_ = nullptr;
 };
 
 IN_PROC_BROWSER_TEST_F(SerialTest, NavigateWithChooserCrossOrigin) {

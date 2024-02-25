@@ -109,3 +109,10 @@ export function querySelectorShadow(
   }
   return root.querySelector(lastSelector);
 }
+
+/**
+ * Clears the document body HTML.
+ */
+export function clearBody() {
+  document.body.innerHTML = window.trustedTypes!.emptyHTML;
+}

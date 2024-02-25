@@ -84,10 +84,6 @@ class TabletModeControllerTestApi {
     return tablet_mode_controller_->CanUseUnstableLidAngle();
   }
 
-  bool IsTabletModeStarted() const {
-    return tablet_mode_controller_->InTabletMode();
-  }
-
   bool AreEventsBlocked() const {
     return tablet_mode_controller_->AreInternalInputDeviceEventsBlocked();
   }
@@ -103,8 +99,7 @@ class TabletModeControllerTestApi {
   float GetLidAngle() const { return tablet_mode_controller_->lid_angle(); }
 
  private:
-  raw_ptr<TabletModeController, DanglingUntriaged | ExperimentalAsh>
-      tablet_mode_controller_;
+  raw_ptr<TabletModeController> tablet_mode_controller_;
 };
 
 }  // namespace ash

@@ -14,6 +14,7 @@
 #include "base/component_export.h"
 #include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
+#include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/view.h"
 
 namespace views {
@@ -30,6 +31,8 @@ class COMPONENT_EXPORT(ASSISTANT_UI) AssistantOnboardingView
       public AssistantControllerObserver,
       public AssistantSuggestionsModelObserver,
       public AssistantUiModelObserver {
+  METADATA_HEADER(AssistantOnboardingView, views::View)
+
  public:
   explicit AssistantOnboardingView(AssistantViewDelegate* delegate);
   AssistantOnboardingView(const AssistantOnboardingView&) = delete;
@@ -37,7 +40,6 @@ class COMPONENT_EXPORT(ASSISTANT_UI) AssistantOnboardingView
   ~AssistantOnboardingView() override;
 
   // views::View:
-  const char* GetClassName() const override;
   gfx::Size CalculatePreferredSize() const override;
   void ChildPreferredSizeChanged(views::View* child) override;
   void OnThemeChanged() override;
@@ -53,21 +55,19 @@ class COMPONENT_EXPORT(ASSISTANT_UI) AssistantOnboardingView
   void OnUiVisibilityChanged(
       AssistantVisibility new_visibility,
       AssistantVisibility old_visibility,
-      absl::optional<AssistantEntryPoint> entry_point,
-      absl::optional<AssistantExitPoint> exit_point) override;
+      std::optional<AssistantEntryPoint> entry_point,
+      std::optional<AssistantExitPoint> exit_point) override;
 
  private:
   void InitLayout();
   void UpdateGreeting();
   void UpdateSuggestions();
 
-  const raw_ptr<AssistantViewDelegate, ExperimentalAsh>
-      delegate_;  // Owned by AssistantController.
-  raw_ptr<views::Label, ExperimentalAsh> greeting_ =
-      nullptr;  // Owned by view hierarchy.
-  raw_ptr<views::Label, ExperimentalAsh> intro_ =
-      nullptr;  // Owned by view hierarchy.
-  raw_ptr<views::TableLayoutView, DanglingUntriaged | ExperimentalAsh> table_ =
+  const raw_ptr<AssistantViewDelegate>
+      delegate_;                              // Owned by AssistantController.
+  raw_ptr<views::Label> greeting_ = nullptr;  // Owned by view hierarchy.
+  raw_ptr<views::Label> intro_ = nullptr;     // Owned by view hierarchy.
+  raw_ptr<views::TableLayoutView, DanglingUntriaged> table_ =
       nullptr;  // Owned by view hierarchy.
 
   base::ScopedObservation<AssistantController, AssistantControllerObserver>

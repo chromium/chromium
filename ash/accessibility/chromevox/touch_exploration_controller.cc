@@ -8,12 +8,11 @@
 #include <string>
 #include <utility>
 
-#include "ash/accessibility/accessibility_controller_impl.h"
+#include "ash/accessibility/accessibility_controller.h"
 #include "ash/accessibility/chromevox/touch_accessibility_enabler.h"
 #include "ash/public/cpp/shell_window_ids.h"
 #include "ash/shell.h"
 #include "ash/wm/container_finder.h"
-#include "ash/wm/tablet_mode/tablet_mode_controller.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/ranges/algorithm.h"
@@ -24,6 +23,7 @@
 #include "ui/aura/window_event_dispatcher.h"
 #include "ui/aura/window_targeter.h"
 #include "ui/aura/window_tree_host.h"
+#include "ui/display/screen.h"
 #include "ui/events/event.h"
 #include "ui/events/event_processor.h"
 #include "ui/events/event_utils.h"
@@ -51,7 +51,7 @@ const base::TimeDelta kLongPressTimerDelay = base::Seconds(5);
 void SetTouchAccessibilityFlag(ui::Event* event) {
   // This flag is used to identify mouse move events that were generated from
   // touch exploration in Chrome code.
-  event->set_flags(event->flags() | ui::EF_TOUCH_ACCESSIBILITY);
+  event->SetFlags(event->flags() | ui::EF_TOUCH_ACCESSIBILITY);
 }
 
 std::unique_ptr<ui::GestureProviderAura> BuildGestureProviderAura(
@@ -190,7 +190,7 @@ ui::EventDispatchDetails TouchExplorationController::RewriteEvent(
                                  touch_event.pointer_details());
         new_event.set_location(location);
         new_event.set_root_location(root_location);
-        new_event.set_flags(touch_event.flags());
+        new_event.SetFlags(touch_event.flags());
         return SendEventFinally(continuation, &new_event);
       }
 
@@ -1230,7 +1230,7 @@ bool TouchExplorationController::ShouldEnableVolumeSlideGesture(
   int edge = FindEdgesWithinInset(event.location(), kMaxDistanceFromEdge);
   return edge & RIGHT_EDGE && edge != BOTTOM_RIGHT_CORNER &&
          (!Shell::HasInstance() ||
-          Shell::Get()->tablet_mode_controller()->InTabletMode() ||
+          display::Screen::GetScreen()->InTabletMode() ||
           Shell::Get()
               ->accessibility_controller()
               ->enable_chromevox_volume_slide_gesture());

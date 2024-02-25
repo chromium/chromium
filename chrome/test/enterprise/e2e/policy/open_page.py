@@ -12,6 +12,9 @@ FLAGS = flags.FLAGS
 flags.DEFINE_string('url', None, 'The url to open in Chrome.')
 flags.mark_flag_as_required('url')
 
+flags.DEFINE_integer('wait_before_page_load', 0,
+                     'How many seconds to wait before loading the page.')
+
 flags.DEFINE_integer(
     'wait', 0,
     'How many seconds to wait between loading the page and printing the source.'
@@ -27,6 +30,10 @@ flags.DEFINE_bool(
 
 def main(argv):
   driver = create_chrome_webdriver(incognito=FLAGS.incognito)
+
+  if FLAGS.wait_before_page_load > 0:
+    time.sleep(FLAGS.wait_before_page_load)
+
   driver.get(FLAGS.url)
 
   if FLAGS.wait > 0:

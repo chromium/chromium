@@ -8,16 +8,24 @@
 #import "ios/chrome/app/application_delegate/app_state_agent.h"
 #import "ios/chrome/app/application_delegate/app_state_observer.h"
 
+namespace signin {
+class IdentityManager;
+}  // namespace signin
+
 class AuthenticationService;
 class PrefService;
 class PromosManager;
 
 // App agent that displays the Post Restore UI when needed.
+// TODO(crbug.com/325616341): This needs to handle multiple browser states in
+// some way. All of the services passed in are specific to a single browser
+// state, so the functionality needs to be clarified for multiple identities.
 @interface PostRestoreAppAgent : NSObject <AppStateAgent>
 
 - (instancetype)initWithPromosManager:(PromosManager*)promosManager
                 authenticationService:
                     (AuthenticationService*)authenticationService
+                      identityManager:(signin::IdentityManager*)identityManager
                            localState:(PrefService*)localState;
 
 @end

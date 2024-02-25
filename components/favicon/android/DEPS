@@ -3,5 +3,7 @@ include_rules = [
   "+components/embedder_support",
   "+content/public/android/java/src/org/chromium/content_public/browser",
   "+content/public/browser",
+  "+net/traffic_annotation",
+  "+net/android",
   "+third_party/skia",
 ]

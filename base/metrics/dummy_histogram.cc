@@ -56,6 +56,10 @@ class DummyHistogramSamples : public HistogramSamples {
   std::unique_ptr<SampleCountIterator> ExtractingIterator() override {
     return std::make_unique<DummySampleCountIterator>();
   }
+  bool IsDefinitelyEmpty() const override {
+    NOTREACHED();
+    return true;
+  }
   bool AddSubtractImpl(SampleCountIterator* iter, Operator op) override {
     return true;
   }

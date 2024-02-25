@@ -5,6 +5,7 @@
 #include "chrome/browser/ash/arc/print_spooler/print_session_impl.h"
 
 #include <limits>
+#include <optional>
 #include <string>
 #include <utility>
 
@@ -38,7 +39,6 @@
 #include "printing/print_settings.h"
 #include "printing/print_settings_conversion.h"
 #include "printing/units.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/aura/window.h"
 #include "ui/gfx/geometry/size.h"
 
@@ -54,7 +54,7 @@ constexpr int kMinimumPdfSize = 50;
 
 // Converts a color mode to its Mojo type.
 mojom::PrintColorMode ToArcColorMode(int color_mode) {
-  absl::optional<bool> is_color = printing::IsColorModelSelected(
+  std::optional<bool> is_color = printing::IsColorModelSelected(
       printing::ColorModeToColorModel(color_mode));
   return is_color.value() ? mojom::PrintColorMode::COLOR
                           : mojom::PrintColorMode::MONOCHROME;
@@ -89,14 +89,14 @@ mojom::PrintAttributesPtr GetPrintAttributes(
   if (vendor_id && !vendor_id->empty()) {
     id = *vendor_id;
   }
-  absl::optional<int> width_microns =
+  std::optional<int> width_microns =
       media_size_value->FindInt(printing::kSettingMediaSizeWidthMicrons);
-  absl::optional<int> height_microns =
+  std::optional<int> height_microns =
       media_size_value->FindInt(printing::kSettingMediaSizeHeightMicrons);
   if (!width_microns.has_value() || !height_microns.has_value())
     return nullptr;
   // Swap the width and height if layout is landscape.
-  absl::optional<bool> landscape =
+  std::optional<bool> landscape =
       job_settings.FindBool(printing::kSettingLandscape);
   if (!landscape.has_value())
     return nullptr;
@@ -124,13 +124,13 @@ mojom::PrintAttributesPtr GetPrintAttributes(
   mojom::PrintMarginsPtr margins = mojom::PrintMargins::New(0, 0, 0, 0);
 
   // PrintColorMode:
-  absl::optional<int> color = job_settings.FindInt(printing::kSettingColor);
+  std::optional<int> color = job_settings.FindInt(printing::kSettingColor);
   if (!color.has_value())
     return nullptr;
   mojom::PrintColorMode color_mode = ToArcColorMode(color.value());
 
   // PrintDuplexMode:
-  absl::optional<int> duplex =
+  std::optional<int> duplex =
       job_settings.FindInt(printing::kSettingDuplexMode);
   if (!duplex.has_value())
     return nullptr;
@@ -348,9 +348,11 @@ void PrintSessionImpl::OnPreviewDocumentRead(
 
 void PrintSessionImpl::OnPdfFlattened(
     int request_id,
-    base::ReadOnlySharedMemoryRegion flattened_document_region) {
+    printing::mojom::FlattenPdfResultPtr result) {
   auto it = callbacks_.find(request_id);
-  std::move(it->second).Run(std::move(flattened_document_region));
+  std::move(it->second)
+      .Run(result ? std::move(result->flattened_pdf_region)
+                  : base::ReadOnlySharedMemoryRegion());
   callbacks_.erase(it);
 }
 

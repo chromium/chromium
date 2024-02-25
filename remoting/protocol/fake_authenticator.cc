@@ -15,6 +15,7 @@
 #include "net/base/net_errors.h"
 #include "net/traffic_annotation/network_traffic_annotation_test_helper.h"
 #include "remoting/base/constants.h"
+#include "remoting/protocol/authenticator.h"
 #include "remoting/protocol/p2p_stream_socket.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/libjingle_xmpp/xmllite/xmlelement.h"
@@ -39,8 +40,7 @@ void FakeChannelAuthenticator::SecureAndAuthenticate(
       // ordering deterministic.
       did_write_bytes_ = true;
     } else {
-      scoped_refptr<net::IOBuffer> write_buf =
-          base::MakeRefCounted<net::IOBuffer>(1);
+      auto write_buf = base::MakeRefCounted<net::IOBufferWithSize>(1);
       write_buf->data()[0] = 0;
       int result = socket_->Write(
           write_buf.get(), 1,
@@ -54,8 +54,7 @@ void FakeChannelAuthenticator::SecureAndAuthenticate(
       }
     }
 
-    scoped_refptr<net::IOBuffer> read_buf =
-        base::MakeRefCounted<net::IOBuffer>(1);
+    auto read_buf = base::MakeRefCounted<net::IOBufferWithSize>(1);
     int result =
         socket_->Read(read_buf.get(), 1,
                       base::BindOnce(&FakeChannelAuthenticator::OnAuthBytesRead,
@@ -184,6 +183,7 @@ void FakeAuthenticator::ProcessMessage(const jingle_xmpp::XmlElement* message,
   }
 
   ++messages_;
+  SubscribeRejectedAfterAcceptedIfNecessary();
   if (messages_ == pause_message_index_) {
     resume_closure_ = std::move(resume_callback);
     return;
@@ -211,13 +211,13 @@ std::unique_ptr<jingle_xmpp::XmlElement> FakeAuthenticator::GetNextMessage() {
     auth_key_ = base::RandBytesAsString(16);
     jingle_xmpp::XmlElement* key = new jingle_xmpp::XmlElement(
         jingle_xmpp::QName(kChromotingXmlNamespace, "key"));
-    std::string key_base64;
-    base::Base64Encode(auth_key_, &key_base64);
+    std::string key_base64 = base::Base64Encode(auth_key_);
     key->AddText(key_base64);
     result->AddElement(key);
   }
 
   ++messages_;
+  SubscribeRejectedAfterAcceptedIfNecessary();
   return result;
 }
 
@@ -232,6 +232,18 @@ FakeAuthenticator::CreateChannelAuthenticator() const {
   EXPECT_EQ(ACCEPTED, state());
   return std::make_unique<FakeChannelAuthenticator>(
       config_.action != REJECT_CHANNEL, config_.async);
+}
+
+void FakeAuthenticator::SubscribeRejectedAfterAcceptedIfNecessary() {
+  if (state() == ACCEPTED && config_.reject_after_accepted) {
+    reject_after_accepted_subscription_ =
+        config_.reject_after_accepted->Add(base::BindRepeating(
+            [](FakeAuthenticator* self) {
+              self->config_.action = REJECT;
+              self->NotifyStateChangeAfterAccepted();
+            },
+            base::Unretained(this)));
+  }
 }
 
 FakeHostAuthenticatorFactory::FakeHostAuthenticatorFactory(

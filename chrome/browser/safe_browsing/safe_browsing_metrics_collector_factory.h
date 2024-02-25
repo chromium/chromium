@@ -43,7 +43,7 @@ class SafeBrowsingMetricsCollectorFactory : public ProfileKeyedServiceFactory {
   ~SafeBrowsingMetricsCollectorFactory() override = default;
 
   // BrowserContextKeyedServiceFactory:
-  KeyedService* BuildServiceInstanceFor(
+  std::unique_ptr<KeyedService> BuildServiceInstanceForBrowserContext(
       content::BrowserContext* context) const override;
 };
 

@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_EXO_DATA_SOURCE_H_
 #define COMPONENTS_EXO_DATA_SOURCE_H_
 
+#include <optional>
 #include <string>
 
 #include "base/containers/flat_set.h"
@@ -12,7 +13,6 @@
 #include "base/memory/raw_ptr.h"
 #include "base/observer_list.h"
 #include "components/exo/surface.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace exo {
 
@@ -53,7 +53,7 @@ class DataSource {
 
   // Notifies the client of the mime type that will be used by the
   // recipient. Only used during drag drop operations.
-  void Target(const absl::optional<std::string>& mime_type);
+  void Target(const std::optional<std::string>& mime_type);
 
   // Notifies the client of the dnd action that will be performed if the
   // currently running drag operation ends now. Only used during drag drop
@@ -99,8 +99,10 @@ class DataSource {
       ReadDataCallback web_custom_data_reader,
       base::RepeatingClosure failure_callback);
 
-  void ReadDataForTesting(const std::string& mime_type,
-                          ReadDataCallback callback);
+  void ReadDataForTesting(
+      const std::string& mime_type,
+      ReadDataCallback callback,
+      base::RepeatingClosure failure_callback = base::DoNothing());
 
   bool CanBeDataSourceForCopy(Surface* surface) const;
 
@@ -112,10 +114,11 @@ class DataSource {
                 ReadDataCallback callback,
                 base::OnceClosure failure_callback);
 
-  void OnDataRead(ReadDataCallback callback,
-                  const std::string& mime_type,
-                  base::OnceClosure failure_callback,
-                  const absl::optional<std::vector<uint8_t>>& data);
+  static void OnDataRead(base::WeakPtr<DataSource> data_source_ptr,
+                         ReadDataCallback callback,
+                         const std::string& mime_type,
+                         base::OnceClosure failure_callback,
+                         const std::optional<std::vector<uint8_t>>& data);
 
   void OnTextRead(ReadTextDataCallback callback,
                   const std::string& mime_type,
@@ -125,8 +128,10 @@ class DataSource {
                           const std::string& mime_type,
                           const std::vector<uint8_t>& data);
 
-  const raw_ptr<DataSourceDelegate, ExperimentalAsh> delegate_;
-  base::ObserverList<DataSourceObserver>::Unchecked observers_;
+  // This can be a dangling pointer with AutoclickBrowserTest.ClickAndDrag
+  // when run in browser_tests_require_lacros.
+  const raw_ptr<DataSourceDelegate, DanglingUntriaged> delegate_;
+  base::ObserverList<DataSourceObserver> observers_;
 
   // Mime types which has been offered.
   std::set<std::string> mime_types_;
@@ -148,8 +153,8 @@ class ScopedDataSource {
   DataSource* get() { return data_source_; }
 
  private:
-  const raw_ptr<DataSource, ExperimentalAsh> data_source_;
-  const raw_ptr<DataSourceObserver, ExperimentalAsh> observer_;
+  const raw_ptr<DataSource> data_source_;
+  const raw_ptr<DataSourceObserver> observer_;
 };
 
 }  // namespace exo

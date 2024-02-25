@@ -38,10 +38,11 @@ class EventAckData {
                               int64_t version_id,
                               int event_id,
                               base::TimeTicks dispatch_start_time,
-                              EventDispatchSource dispatch_source);
+                              EventDispatchSource dispatch_source,
+                              bool lazy_background_active_on_dispatch);
   // Clears the record of our knowledge of an in-flight event with |event_id|.
   //
-  // On failure, |failure_callback| is called synchronously or asynchronously.
+  // On failure, |failure_callback| is called synchronously.
   void DecrementInflightEvent(content::ServiceWorkerContext* context,
                               int render_process_id,
                               int64_t version_id,
@@ -56,12 +57,15 @@ class EventAckData {
               int render_process_id,
               bool start_ok,
               base::TimeTicks dispatch_start_time,
-              EventDispatchSource dispatch_source)
+              EventDispatchSource dispatch_source,
+              bool lazy_background_active_on_dispatch)
         : request_uuid(request_uuid),
           render_process_id(render_process_id),
           start_ok(start_ok),
           dispatch_start_time(dispatch_start_time),
-          dispatch_source(dispatch_source) {}
+          dispatch_source(dispatch_source),
+          lazy_background_active_on_dispatch(
+              lazy_background_active_on_dispatch) {}
     EventInfo(const EventInfo&) = delete;
     EventInfo(EventInfo&&) = default;
     EventInfo& operator=(const EventInfo&) = delete;
@@ -76,12 +80,18 @@ class EventAckData {
     base::TimeTicks dispatch_start_time;
     // The event dispatching processing flow that was followed for this event.
     EventDispatchSource dispatch_source;
+    // `true` if the event was dispatched to a active/running lazy background.
+    bool lazy_background_active_on_dispatch;
   };
 
   // Emits a stale event ack metric if an event with `event_id` is not present
   // in `unacked_events_`. Meaning that the event was not yet acked by the
   // renderer to the browser.
   void EmitLateAckedEventTask(int event_id);
+
+  // Emit all the time related event dispatch metrics when an event is acked
+  // from the renderer.
+  static void EmitDispatchTimeMetrics(EventInfo& event_info);
 
   // TODO(crbug.com/1441221): Mark events that are not acked within 5 minutes
   // (if the worker is still around) as stale, and emit

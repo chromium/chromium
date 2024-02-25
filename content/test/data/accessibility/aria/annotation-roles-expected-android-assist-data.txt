@@ -1,0 +1,8 @@
+WebView textSize:16.0 style:0 htmlInfo:[{htmlTag="#document"}, {display=""}]
+++View text:"comment" textSize:16.0 style:0 htmlInfo:[{htmlTag="div"}, {display="block"}, {aria-label="comment"}, {role="comment"}]
+++View text:"suggestion" textSize:16.0 style:0 htmlInfo:[{htmlTag="div"}, {display="block"}, {aria-label="suggestion"}, {role="suggestion"}]
+++View textSize:16.0 style:0 htmlInfo:[{htmlTag="p"}, {display="block"}]
+++++TextView text:"This is " textSize:16.0 style:0 htmlInfo:[{htmlTag=""}, {display=""}]
+++++View textSize:16.0 style:0 htmlInfo:[{htmlTag="span"}, {display="inline"}, {role="mark"}]
+++++++TextView text:"highlighted" textSize:16.0 style:0 htmlInfo:[{htmlTag=""}, {display=""}]
+++++TextView text:"." textSize:16.0 style:0 htmlInfo:[{htmlTag=""}, {display=""}]

@@ -5,6 +5,7 @@
 #ifndef UI_OZONE_PLATFORM_WAYLAND_HOST_WAYLAND_SCREEN_H_
 #define UI_OZONE_PLATFORM_WAYLAND_HOST_WAYLAND_SCREEN_H_
 
+#include <optional>
 #include <ostream>
 #include <set>
 #include <vector>
@@ -14,7 +15,6 @@
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/values.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/display/display_list.h"
 #include "ui/display/display_observer.h"
 #include "ui/display/tablet_state.h"
@@ -48,6 +48,7 @@ class WaylandScreen : public PlatformScreen {
   void OnOutputRemoved(uint32_t output_id);
 
   WaylandOutput::Id GetOutputIdForDisplayId(int64_t display_id);
+  WaylandOutput* GetWaylandOutputForDisplayId(int64_t display_id);
 
   // Returns id of the output that matches the bounds in screen coordinates.
   WaylandOutput::Id GetOutputIdMatching(const gfx::Rect& match_rect);
@@ -123,9 +124,9 @@ class WaylandScreen : public PlatformScreen {
 
   base::ObserverList<display::DisplayObserver> observers_;
 
-  absl::optional<gfx::BufferFormat> image_format_alpha_;
-  absl::optional<gfx::BufferFormat> image_format_no_alpha_;
-  absl::optional<gfx::BufferFormat> image_format_hdr_;
+  std::optional<gfx::BufferFormat> image_format_alpha_;
+  std::optional<gfx::BufferFormat> image_format_no_alpha_;
+  std::optional<gfx::BufferFormat> image_format_hdr_;
 
 #if defined(USE_DBUS)
   mutable std::unique_ptr<OrgGnomeMutterIdleMonitor>

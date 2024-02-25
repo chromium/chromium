@@ -11,16 +11,15 @@
 #include "net/base/io_buffer.h"
 #include "net/base/net_errors.h"
 
-namespace ash {
-namespace file_system_provider {
+namespace ash::file_system_provider {
 
 BufferingFileStreamWriter::BufferingFileStreamWriter(
     std::unique_ptr<storage::FileStreamWriter> file_stream_writer,
     int intermediate_buffer_length)
     : file_stream_writer_(std::move(file_stream_writer)),
       intermediate_buffer_length_(intermediate_buffer_length),
-      intermediate_buffer_(
-          base::MakeRefCounted<net::IOBuffer>(intermediate_buffer_length_)),
+      intermediate_buffer_(base::MakeRefCounted<net::IOBufferWithSize>(
+          intermediate_buffer_length_)),
       buffered_bytes_(0) {}
 
 BufferingFileStreamWriter::~BufferingFileStreamWriter() {
@@ -178,5 +177,4 @@ void BufferingFileStreamWriter::OnFlushIntermediateBufferForFlushCompleted(
   DCHECK_EQ(net::ERR_IO_PENDING, flush_result);
 }
 
-}  // namespace file_system_provider
-}  // namespace ash
+}  // namespace ash::file_system_provider

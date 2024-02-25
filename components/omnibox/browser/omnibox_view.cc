@@ -56,6 +56,14 @@ bool RichAutocompletionEitherNonPrefixEnabled() {
              kRichAutocompletionAutocompleteNonPrefixShortcutProvider.Get();
 }
 
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+// Return true if the given match uses a vector icon with a background.
+bool HasVectorIconBackground(const AutocompleteMatch& match) {
+  return match.type == AutocompleteMatchType::HISTORY_CLUSTER ||
+         match.type == AutocompleteMatchType::PEDAL;
+}
+#endif
+
 }  // namespace
 
 OmniboxView::State::State() = default;
@@ -182,6 +190,7 @@ ui::ImageModel OmniboxView::GetIcon(int dip_size,
                                     SkColor color_current_page_icon,
                                     SkColor color_vectors,
                                     SkColor color_bright_vectors,
+                                    SkColor color_vectors_with_background,
                                     IconFetchedCallback on_icon_fetched,
                                     bool dark_mode) const {
 #if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
@@ -256,7 +265,10 @@ ui::ImageModel OmniboxView::GetIcon(int dip_size,
                        match.type == AutocompleteMatchType::STARTER_PACK)
                           ? color_bright_vectors
                           : color_vectors;
-  return ui::ImageModel::FromVectorIcon(vector_icon, color, dip_size);
+  return ui::ImageModel::FromVectorIcon(
+      vector_icon,
+      HasVectorIconBackground(match) ? color_vectors_with_background : color,
+      dip_size);
 #endif  // BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
 }
 
@@ -270,31 +282,21 @@ void OmniboxView::SetUserText(const std::u16string& text, bool update_popup) {
 }
 
 void OmniboxView::RevertAll() {
-  // TODO(manukh): Remove this histogram when `kRedoCurrentMatch` &
-  //   `kRevertModelBeforeClosingPopup` launch or are abandoned.
-  SCOPED_UMA_HISTOGRAM_TIMER_MICROS("Omnibox.OmniboxViewRevertAll");
+  // This will clear the model's `user_input_in_progress_`.
+  model()->Revert();
 
-  if (base::FeatureList::IsEnabled(omnibox::kRevertModelBeforeClosingPopup)) {
-    // This will clear the model's `user_input_in_progress_`.
-    model()->Revert();
-
-    // This will stop the `AutocompleteController`. This should happen after
-    // `user_input_in_progress_` is cleared above; otherwise, closing the popup
-    // will trigger unnecessary `AutocompleteClassifier::Classify()` calls to
-    // try to update the views which are unnecessary since they'll be thrown
-    // away during the model revert anyways.
-    CloseOmniboxPopup();
-  } else {
-    // Same as above, but in reverse order.
-    CloseOmniboxPopup();
-    model()->Revert();
-  }
+  // This will stop the `AutocompleteController`. This should happen after
+  // `user_input_in_progress_` is cleared above; otherwise, closing the popup
+  // will trigger unnecessary `AutocompleteClassifier::Classify()` calls to
+  // try to update the views which are unnecessary since they'll be thrown
+  // away during the model revert anyways.
+  CloseOmniboxPopup();
 
   TextChanged();
 }
 
 void OmniboxView::CloseOmniboxPopup() {
-  model()->StopAutocomplete();
+  controller()->StopAutocomplete(/*clear_result=*/true);
 }
 
 bool OmniboxView::IsImeShowingPopup() const {

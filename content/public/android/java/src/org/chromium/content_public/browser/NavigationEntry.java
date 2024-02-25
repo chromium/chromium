@@ -10,9 +10,7 @@ import androidx.annotation.NonNull;
 
 import org.chromium.url.GURL;
 
-/**
- * Represents one entry in the navigation history of a page.
- */
+/** Represents one entry in the navigation history of a page. */
 public class NavigationEntry {
 
     private final int mIndex;
@@ -25,11 +23,16 @@ public class NavigationEntry {
     private long mTimestamp;
     private final boolean mIsInitialEntry;
 
-    /**
-     * Default constructor.
-     */
-    public NavigationEntry(int index, @NonNull GURL url, @NonNull GURL virtualUrl,
-            @NonNull GURL originalUrl, String title, Bitmap favicon, int transition, long timestamp,
+    /** Default constructor. */
+    public NavigationEntry(
+            int index,
+            @NonNull GURL url,
+            @NonNull GURL virtualUrl,
+            @NonNull GURL originalUrl,
+            String title,
+            Bitmap favicon,
+            int transition,
+            long timestamp,
             boolean isInitialEntry) {
         mIndex = index;
         mUrl = url;

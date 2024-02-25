@@ -36,9 +36,14 @@ public class LanguageSplitInstaller {
 
     // Constants used to log UMA enum histogram, must stay in sync with
     // LanguageSettingsSplitInstallStatus from enums.xml
-    @IntDef({LanguageSplitInstallStatus.SUCCESS, LanguageSplitInstallStatus.ALREADY_INSTALLED,
-            LanguageSplitInstallStatus.CANCELED, LanguageSplitInstallStatus.DOWNLOADED,
-            LanguageSplitInstallStatus.FAILED, LanguageSplitInstallStatus.UNEXPECTED_STATUS})
+    @IntDef({
+        LanguageSplitInstallStatus.SUCCESS,
+        LanguageSplitInstallStatus.ALREADY_INSTALLED,
+        LanguageSplitInstallStatus.CANCELED,
+        LanguageSplitInstallStatus.DOWNLOADED,
+        LanguageSplitInstallStatus.FAILED,
+        LanguageSplitInstallStatus.UNEXPECTED_STATUS
+    })
     @Retention(RetentionPolicy.SOURCE)
     @interface LanguageSplitInstallStatus {
         int SUCCESS = 0;
@@ -50,9 +55,7 @@ public class LanguageSplitInstaller {
         int NUM_ENTRIES = 6;
     }
 
-    /**
-     * Broadcast listener for language split downloads.
-     */
+    /** Broadcast listener for language split downloads. */
     public interface InstallListener {
         /**
          * Called when the language split install is completed.
@@ -117,12 +120,17 @@ public class LanguageSplitInstaller {
                 SplitInstallRequest.newBuilder().addLanguage(installLocale).build();
 
         mIsLanguageSplitInstalled = isLanguageSplitInstalled(languageName);
-        mSplitInstallManager.startInstall(installRequest)
-                .addOnSuccessListener(sessionId -> { mInstallSessionId = sessionId; })
-                .addOnFailureListener(exception -> {
-                    Log.i(TAG, "Language Split Failure:", exception);
-                    installFinished(false);
-                });
+        mSplitInstallManager
+                .startInstall(installRequest)
+                .addOnSuccessListener(
+                        sessionId -> {
+                            mInstallSessionId = sessionId;
+                        })
+                .addOnFailureListener(
+                        exception -> {
+                            Log.i(TAG, "Language Split Failure:", exception);
+                            installFinished(false);
+                        });
 
         // Schedule a deferred install if the live install fails the play store will install the
         // language split in the background at the next hygiene run. If the install succeeds the
@@ -177,8 +185,9 @@ public class LanguageSplitInstaller {
             @SplitInstallSessionStatus int status) {
         switch (status) {
             case SplitInstallSessionStatus.INSTALLED:
-                return (mIsLanguageSplitInstalled) ? LanguageSplitInstallStatus.ALREADY_INSTALLED
-                                                   : LanguageSplitInstallStatus.SUCCESS;
+                return (mIsLanguageSplitInstalled)
+                        ? LanguageSplitInstallStatus.ALREADY_INSTALLED
+                        : LanguageSplitInstallStatus.SUCCESS;
             case SplitInstallSessionStatus.CANCELED:
                 return LanguageSplitInstallStatus.CANCELED;
             case SplitInstallSessionStatus.DOWNLOADED:
@@ -191,10 +200,11 @@ public class LanguageSplitInstaller {
     }
 
     private void recordLanguageSplitInstallStatus(@SplitInstallSessionStatus int status) {
-        @LanguageSplitInstallStatus
-        int enumCode = getEnumCodeFromStatus(status);
-        RecordHistogram.recordEnumeratedHistogram("LanguageSettings.SplitInstallFinalStatus",
-                enumCode, LanguageSplitInstallStatus.NUM_ENTRIES);
+        @LanguageSplitInstallStatus int enumCode = getEnumCodeFromStatus(status);
+        RecordHistogram.recordEnumeratedHistogram(
+                "LanguageSettings.SplitInstallFinalStatus",
+                enumCode,
+                LanguageSplitInstallStatus.NUM_ENTRIES);
     }
 
     /**

@@ -7,8 +7,6 @@ import collections
 import logging
 import json
 import os
-import re
-import sys
 import time
 from typing import Any, List, Optional, Set, Tuple
 
@@ -19,7 +17,9 @@ from gpu_tests import common_typing as ct
 from gpu_tests import gpu_helper
 from gpu_tests import gpu_integration_test
 from gpu_tests import webgl_test_util
+from gpu_tests.util import host_information
 from gpu_tests.util import websocket_server as wss
+from gpu_tests.util import websocket_utils
 
 import gpu_path_util
 
@@ -32,6 +32,11 @@ WEBSOCKET_JAVASCRIPT_TIMEOUT_S = 5
 HEARTBEAT_TIMEOUT_S = 15
 ASAN_MULTIPLIER = 2
 SLOW_MULTIPLIER = 4
+WEBENGINE_MULTIPLIER = 4
+
+# Thresholds for how slow parts of the test have to be for the test to be
+# considered slow overall.
+SLOW_HEARTBEAT_THRESHOLD = 0.5
 
 # Non-standard timeouts that can't be handled by a Slow expectation, likely due
 # to being particularly long or not specific to a configuration. Try to use
@@ -83,6 +88,10 @@ class WebGLConformanceIntegrationTestBase(
   _extension_harness_additional_script: Optional[str] = None
 
   websocket_server: Optional[wss.WebsocketServer] = None
+
+  def __init__(self, *args, **kwargs):
+    super().__init__(*args, **kwargs)
+    self._longest_time_between_heartbeats = 0
 
   @classmethod
   def _SuiteSupportsParallelTests(cls) -> bool:
@@ -139,8 +148,13 @@ class WebGLConformanceIntegrationTestBase(
     if not cls._conformance_harness_script:
       with open(
           os.path.join(gpu_path_util.GPU_TEST_HARNESS_JAVASCRIPT_DIR,
-                       'webgl_conformance_harness_script.js')) as f:
+                       'websocket_heartbeat.js')) as f:
         cls._conformance_harness_script = f.read()
+      cls._conformance_harness_script += '\n'
+      with open(
+          os.path.join(gpu_path_util.GPU_TEST_HARNESS_JAVASCRIPT_DIR,
+                       'webgl_conformance_harness_script.js')) as f:
+        cls._conformance_harness_script += f.read()
     if not cls._extension_harness_additional_script:
       with open(
           os.path.join(
@@ -195,7 +209,7 @@ class WebGLConformanceIntegrationTestBase(
   @classmethod
   def _ModifyBrowserEnvironment(cls) -> None:
     super()._ModifyBrowserEnvironment()
-    if (sys.platform == 'darwin'
+    if (host_information.IsMac()
         and cls.GetOriginalFinderOptions().enable_metal_debug_layers):
       if cls._original_environ is None:
         cls._original_environ = os.environ.copy()
@@ -207,13 +221,29 @@ class WebGLConformanceIntegrationTestBase(
   @classmethod
   def _RestoreBrowserEnvironment(cls) -> None:
     if cls._original_environ is not None:
-      os.environ = cls._original_environ.copy()
+      os.environ.clear()
+      os.environ.update(cls._original_environ)
     super()._RestoreBrowserEnvironment()
 
   def _ShouldForceRetryOnFailureFirstTest(self) -> bool:
+    retry_from_super = super()._ShouldForceRetryOnFailureFirstTest()
     # Force RetryOnFailure of the first test on a shard on ChromeOS VMs.
     # See crbug.com/1079244.
-    return 'chromeos-board-amd64-generic' in self.GetPlatformTags(self.browser)
+    try:
+      retry_on_amd64_generic = ('chromeos-board-amd64-generic'
+                                in self.GetPlatformTags(self.browser))
+    except Exception:  # pylint: disable=broad-except
+      logging.warning(
+          'Failed to determine if running on a ChromeOS VM, assuming no')
+      retry_on_amd64_generic = False
+    return retry_from_super or retry_on_amd64_generic
+
+  def _TestWasSlow(self) -> bool:
+    # Consider the test slow if it had a relatively long time between
+    # heartbeats.
+    heartbeat_fraction = (self._longest_time_between_heartbeats /
+                          self._GetNonSlowHeartbeatTimeout())
+    return heartbeat_fraction > SLOW_HEARTBEAT_THRESHOLD
 
   def RunActualGpuTest(self, test_path: str, args: ct.TestArgs) -> None:
     # This indirection allows these tests to trampoline through
@@ -311,8 +341,12 @@ class WebGLConformanceIntegrationTestBase(
     start_time = time.time()
     try:
       while True:
+        response_start_time = time.time()
         response = self.__class__.websocket_server.Receive(
             self._GetHeartbeatTimeout())
+        self._longest_time_between_heartbeats = max(
+            self._longest_time_between_heartbeats,
+            time.time() - response_start_time)
         response = json.loads(response)
         response_type = response['type']
 
@@ -335,40 +369,34 @@ class WebGLConformanceIntegrationTestBase(
           break
         raise RuntimeError('Received unknown message type %s' % response_type)
     except wss.WebsocketReceiveMessageTimeoutError:
-      logging.error(
-          'Timed out waiting for websocket message (%.3f seconds since test '
-          'start), checking for hung renderer',
-          time.time() - start_time)
-      # Telemetry has some code to automatically crash the renderer and GPU
-      # processes if it thinks that the renderer is hung. So, execute some
-      # trivial JavaScript now to hit that code if we got the timeout because of
-      # a hung renderer. If we do detect a hung renderer, this will raise
-      # another exception and prevent the following line about the renderer not
-      # being hung from running.
-      self.tab.action_runner.EvaluateJavaScript('let somevar = undefined;',
-                                                timeout=5)
-      logging.error('Timeout does *not* appear to be due to a hung renderer')
+      websocket_utils.HandleWebsocketReceiveTimeoutError(self.tab, start_time)
       raise
     except wss.ClientClosedConnectionError as e:
-      raise RuntimeError(
-          'Detected closed websocket (%.3f seconds since test start) - likely '
-          'caused by a renderer crash' % (time.time() - start_time)) from e
+      websocket_utils.HandlePrematureSocketClose(e, start_time)
 
   def _GetHeartbeatTimeout(self) -> int:
-    return int(
-        NON_STANDARD_HEARTBEAT_TIMEOUTS.get(self.shortName(),
-                                            HEARTBEAT_TIMEOUT_S) *
-        self._GetTimeoutMultiplier())
+    return int(self._GetNonSlowHeartbeatTimeout() * self._GetSlowMultiplier())
 
-  def _GetTimeoutMultiplier(self) -> float:
+  def _GetNonSlowHeartbeatTimeout(self) -> float:
+    return (NON_STANDARD_HEARTBEAT_TIMEOUTS.get(self.shortName(),
+                                                HEARTBEAT_TIMEOUT_S) *
+            self._GetBrowserTimeoutMultiplier())
+
+  def _GetBrowserTimeoutMultiplier(self) -> float:
+    """Compute the multiplier to account for overall browser slowness."""
     # Parallel jobs increase load and can slow down test execution, so scale
     # based on the number of jobs. Target 2x increase with 4 jobs.
     multiplier = 1 + (self.child.jobs - 1) / 3.0
     if self.is_asan:
       multiplier *= ASAN_MULTIPLIER
-    if self._IsSlowTest():
-      multiplier *= SLOW_MULTIPLIER
+    if self._finder_options.browser_type == 'web-engine-shell':
+      multiplier *= WEBENGINE_MULTIPLIER
     return multiplier
+
+  def _GetSlowMultiplier(self) -> float:
+    if self._IsSlowTest():
+      return SLOW_MULTIPLIER
+    return 1
 
   def _IsSlowTest(self) -> bool:
     # We access the expectations directly instead of using
@@ -606,33 +634,6 @@ class WebGLConformanceIntegrationTestBase(
       gpu_info = system_info.gpu
       cls.is_asan = gpu_info.aux_attributes.get('is_asan', False)
 
-    if gpu_helper.EXPECTATIONS_DRIVER_TAGS and gpu_info:
-      driver_vendor = gpu_helper.GetGpuDriverVendor(gpu_info)
-      driver_version = gpu_helper.GetGpuDriverVersion(gpu_info)
-      if driver_vendor and driver_version:
-        driver_vendor = driver_vendor.lower()
-        driver_version = driver_version.lower()
-
-        # Extract the string of vendor from 'angle (vendor)'
-        matcher = re.compile(r'^angle \(([a-z]+)\)$')
-        match = matcher.match(driver_vendor)
-        if match:
-          driver_vendor = match.group(1)
-
-        # Extract the substring before first space/dash/underscore
-        matcher = re.compile(r'^([a-z\d]+)([\s\-_]+[a-z\d]+)+$')
-        match = matcher.match(driver_vendor)
-        if match:
-          driver_vendor = match.group(1)
-
-        for tag in gpu_helper.EXPECTATIONS_DRIVER_TAGS:
-          match = gpu_helper.MatchDriverTag(tag)
-          assert match
-          if (driver_vendor == match.group(1)
-              and gpu_helper.EvaluateVersionComparison(
-                  driver_version, match.group(2), match.group(3),
-                  browser.platform.GetOSName(), driver_vendor)):
-            tags.append(tag)
     return tags
 
   @classmethod

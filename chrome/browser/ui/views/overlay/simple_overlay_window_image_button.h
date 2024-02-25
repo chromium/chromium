@@ -15,9 +15,9 @@ struct VectorIcon;
 
 // A simple image button with a custom icon and label.
 class SimpleOverlayWindowImageButton : public OverlayWindowImageButton {
- public:
-  METADATA_HEADER(SimpleOverlayWindowImageButton);
+  METADATA_HEADER(SimpleOverlayWindowImageButton, OverlayWindowImageButton)
 
+ public:
   explicit SimpleOverlayWindowImageButton(PressedCallback callback,
                                           const gfx::VectorIcon& icon,
                                           std::u16string label);

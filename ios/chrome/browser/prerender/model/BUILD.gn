@@ -1,0 +1,106 @@
+# Copyright 2017 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("prerender_pref") {
+  public = [ "prerender_pref.h" ]
+}
+
+source_set("model") {
+  public = [
+    "preload_controller_delegate.h",
+    "prerender_service.h",
+    "prerender_service_factory.h",
+  ]
+  sources = [
+    "preload_controller.h",
+    "preload_controller.mm",
+    "prerender_service_factory.mm",
+    "prerender_service_impl.h",
+    "prerender_service_impl.mm",
+  ]
+
+  friend = [ ":unit_tests" ]
+
+  public_deps = [ "//base" ]
+  deps = [
+    ":prerender_pref",
+    "//components/keyed_service/core",
+    "//components/keyed_service/ios",
+    "//components/prefs",
+    "//components/prefs/ios",
+    "//components/signin/ios/browser",
+    "//components/supervised_user/core/browser",
+    "//components/supervised_user/core/common",
+    "//ios/chrome/browser/app_launcher/model:model",
+    "//ios/chrome/browser/crash_report/model:model_internal",
+    "//ios/chrome/browser/download/model:mime_types",
+    "//ios/chrome/browser/geolocation/model",
+    "//ios/chrome/browser/history/model:tab_helper",
+    "//ios/chrome/browser/itunes_urls/model",
+    "//ios/chrome/browser/net/model",
+    "//ios/chrome/browser/ntp/model:util",
+    "//ios/chrome/browser/sessions:session_restoration_service",
+    "//ios/chrome/browser/sessions:session_restoration_service_factory",
+    "//ios/chrome/browser/shared/model/browser",
+    "//ios/chrome/browser/shared/model/browser_state",
+    "//ios/chrome/browser/shared/model/prefs:pref_names",
+    "//ios/chrome/browser/shared/model/web_state_list",
+    "//ios/chrome/browser/signin/model",
+    "//ios/chrome/browser/supervised_user/model",
+    "//ios/chrome/browser/tabs/model",
+    "//ios/chrome/browser/web/model",
+    "//ui/base",
+    "//url",
+  ]
+}
+
+source_set("test_support") {
+  sources = [
+    "fake_prerender_service.h",
+    "fake_prerender_service.mm",
+  ]
+
+  deps = [ ":model" ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+
+  sources = [
+    "preload_controller_unittest.mm",
+    "prerender_service_impl_unittest.mm",
+  ]
+  deps = [
+    ":model",
+    ":prerender_pref",
+    "//base",
+    "//components/prefs",
+    "//components/supervised_user/core/browser",
+    "//components/supervised_user/core/common:features",
+    "//ios/chrome/browser/shared/model/browser_state:test_support",
+    "//ios/chrome/browser/shared/model/prefs:pref_names",
+    "//ios/web/public/test",
+    "//ios/web/public/test/fakes",
+    "//net:test_support",
+    "//testing/gtest",
+  ]
+}
+
+source_set("eg2_tests") {
+  configs += [ "//build/config/ios:xctest_config" ]
+  testonly = true
+  sources = [ "prerender_egtest.mm" ]
+  deps = [
+    "//build:branding_buildflags",
+    "//components/version_info",
+    "//ios/chrome/browser/shared/public/features",
+    "//ios/chrome/browser/ui/content_suggestions:constants",
+    "//ios/chrome/browser/ui/popup_menu:constants",
+    "//ios/chrome/test/earl_grey:eg_test_support+eg2",
+    "//ios/testing/earl_grey:eg_test_support+eg2",
+    "//ios/web/common:user_agent",
+    "//net:test_support",
+  ]
+  frameworks = [ "UIKit.framework" ]
+}

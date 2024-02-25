@@ -51,7 +51,7 @@ class MojoSafeBrowsingImpl : public mojom::SafeBrowsing,
 
   // mojom::SafeBrowsing implementation.
   void CreateCheckerAndCheck(
-      int32_t render_frame_id,
+      const std::optional<blink::LocalFrameToken>& frame_token,
       mojo::PendingReceiver<mojom::SafeBrowsingUrlChecker> receiver,
       const GURL& url,
       const std::string& method,

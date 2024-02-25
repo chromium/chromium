@@ -28,6 +28,9 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_REPORT) CohortImpl
   // UseCase:
   void Run(base::OnceCallback<void()> callback) override;
 
+  // Used by ReportController to destruct pending callbacks appropriately.
+  base::WeakPtr<device_metrics::CohortImpl> GetWeakPtr();
+
  protected:
   // UseCase:
   void CheckMembershipOprf() override;
@@ -44,7 +47,7 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_REPORT) CohortImpl
   void SetLastPingTimestamp(base::Time ts) override;
   std::vector<private_membership::rlwe::RlwePlaintextId>
   GetPsmIdentifiersToQuery() override;
-  absl::optional<FresnelImportDataRequest> GenerateImportRequestBody() override;
+  std::optional<FresnelImportDataRequest> GenerateImportRequestBody() override;
 
  private:
   // Grant friend access for comprehensive testing of private/protected members.

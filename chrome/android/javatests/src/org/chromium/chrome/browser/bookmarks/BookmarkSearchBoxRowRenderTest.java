@@ -25,10 +25,10 @@ import org.chromium.base.test.params.ParameterSet;
 import org.chromium.base.test.params.ParameterizedRunner;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.Feature;
+import org.chromium.base.test.util.Features;
 import org.chromium.chrome.R;
 import org.chromium.chrome.test.ChromeJUnit4RunnerDelegate;
 import org.chromium.chrome.test.util.ChromeRenderTestRule;
-import org.chromium.chrome.test.util.browser.Features;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
@@ -50,16 +50,18 @@ public class BookmarkSearchBoxRowRenderTest {
 
     @Rule
     public final DisableAnimationsTestRule mDisableAnimationsRule = new DisableAnimationsTestRule();
+
     @Rule
     public BaseActivityTestRule<BlankUiTestActivity> mActivityTestRule =
             new BaseActivityTestRule<>(BlankUiTestActivity.class);
+
     @Rule
     public ChromeRenderTestRule mRenderTestRule =
             ChromeRenderTestRule.Builder.withPublicCorpus()
                     .setBugComponent(ChromeRenderTestRule.Component.UI_BROWSER_BOOKMARKS)
                     .build();
-    @Rule
-    public TestRule mProcessor = new Features.JUnitProcessor();
+
+    @Rule public TestRule mProcessor = new Features.JUnitProcessor();
 
     private LinearLayout mContentView;
     private PropertyModel mPropertyModel;
@@ -74,31 +76,41 @@ public class BookmarkSearchBoxRowRenderTest {
         mActivityTestRule.launchActivity(null);
         mActivityTestRule.getActivity().setTheme(R.style.Theme_BrowserUI_DayNight);
 
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            mContentView = new LinearLayout(mActivityTestRule.getActivity());
-            mContentView.setBackgroundColor(Color.WHITE);
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    mContentView = new LinearLayout(mActivityTestRule.getActivity());
+                    mContentView.setBackgroundColor(Color.WHITE);
 
-            FrameLayout.LayoutParams params = new FrameLayout.LayoutParams(
-                    ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
-            mActivityTestRule.getActivity().setContentView(mContentView, params);
+                    FrameLayout.LayoutParams params =
+                            new FrameLayout.LayoutParams(
+                                    ViewGroup.LayoutParams.MATCH_PARENT,
+                                    ViewGroup.LayoutParams.WRAP_CONTENT);
+                    mActivityTestRule.getActivity().setContentView(mContentView, params);
 
-            LayoutInflater.from(mActivityTestRule.getActivity())
-                    .inflate(org.chromium.chrome.R.layout.bookmark_search_box_row, mContentView);
+                    LayoutInflater.from(mActivityTestRule.getActivity())
+                            .inflate(R.layout.bookmark_search_box_row, mContentView);
 
-            BookmarkSearchBoxRow bookmarkSearchBoxRow =
-                    mContentView.findViewById(R.id.bookmark_toolbar);
-            mPropertyModel =
-                    new PropertyModel.Builder(BookmarkSearchBoxRowProperties.ALL_KEYS)
-                            .with(BookmarkSearchBoxRowProperties.SHOPPING_CHIP_TEXT_RES,
-                                    R.string.price_tracking_bookmarks_filter_title)
-                            .with(BookmarkSearchBoxRowProperties.SHOPPING_CHIP_START_ICON_RES,
-                                    R.drawable.notifications_active)
-                            .with(BookmarkSearchBoxRowProperties.SHOPPING_CHIP_VISIBILITY, false)
-                            .build();
+                    BookmarkSearchBoxRow bookmarkSearchBoxRow =
+                            mContentView.findViewById(R.id.bookmark_toolbar);
+                    mPropertyModel =
+                            new PropertyModel.Builder(BookmarkSearchBoxRowProperties.ALL_KEYS)
+                                    .with(
+                                            BookmarkSearchBoxRowProperties.SHOPPING_CHIP_TEXT_RES,
+                                            R.string.price_tracking_bookmarks_filter_title)
+                                    .with(
+                                            BookmarkSearchBoxRowProperties
+                                                    .SHOPPING_CHIP_START_ICON_RES,
+                                            R.drawable.notifications_active)
+                                    .with(
+                                            BookmarkSearchBoxRowProperties.SHOPPING_CHIP_VISIBILITY,
+                                            false)
+                                    .build();
 
-            PropertyModelChangeProcessor.create(
-                    mPropertyModel, bookmarkSearchBoxRow, BookmarkSearchBoxRowViewBinder::bind);
-        });
+                    PropertyModelChangeProcessor.create(
+                            mPropertyModel,
+                            bookmarkSearchBoxRow,
+                            BookmarkSearchBoxRowViewBinder.createViewBinder());
+                });
     }
 
     @Test
@@ -113,9 +125,23 @@ public class BookmarkSearchBoxRowRenderTest {
     @Feature({"RenderTest"})
     public void testWithChip() throws IOException {
         TestThreadUtils.runOnUiThreadBlocking(
-                ()
-                        -> mPropertyModel.set(
+                () ->
+                        mPropertyModel.set(
                                 BookmarkSearchBoxRowProperties.SHOPPING_CHIP_VISIBILITY, true));
         mRenderTestRule.render(mContentView, "withShoppingChip");
+    }
+
+    @Test
+    @MediumTest
+    @Feature({"RenderTest"})
+    public void testWithSearchText() throws IOException {
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    mPropertyModel.set(BookmarkSearchBoxRowProperties.SEARCH_TEXT, "foo");
+                    mPropertyModel.set(
+                            BookmarkSearchBoxRowProperties.CLEAR_SEARCH_TEXT_BUTTON_VISIBILITY,
+                            true);
+                });
+        mRenderTestRule.render(mContentView, "searchText");
     }
 }

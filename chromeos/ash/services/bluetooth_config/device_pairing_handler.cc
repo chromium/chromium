@@ -32,7 +32,7 @@ std::string PasskeyToString(uint32_t passkey) {
 }
 
 mojom::PairingResult GetPairingResult(
-    absl::optional<device::ConnectionFailureReason> failure_reason) {
+    std::optional<device::ConnectionFailureReason> failure_reason) {
   if (!failure_reason) {
     return mojom::PairingResult::kSuccess;
   }
@@ -132,7 +132,7 @@ void DevicePairingHandler::SendAuthorizePairing() {
 }
 
 void DevicePairingHandler::FinishCurrentPairingRequest(
-    absl::optional<device::ConnectionFailureReason> failure_reason) {
+    std::optional<device::ConnectionFailureReason> failure_reason) {
   PerformFinishCurrentPairingRequest(
       failure_reason, base::Time::Now() - pairing_start_timestamp_);
   current_pairing_device_id_.clear();
@@ -169,8 +169,14 @@ void DevicePairingHandler::PairDevice(
     PairDeviceCallback callback) {
   BLUETOOTH_LOG(USER) << "Attempting to pair with device " << device_id;
 
-  // There should only be one PairDevice request at a time.
-  CHECK(current_pairing_device_id_.empty());
+  // In certain situations, such as when the pairing dialog is initiated from
+  // both the system tray and ChromeOS settings, an active pairing request
+  // might be underway when the pairDevice function is called. In such
+  // instances, cancel the second pairing request. (See b/311813249)
+  if (!current_pairing_device_id_.empty()) {
+    std::move(callback).Run(mojom::PairingResult::kNonAuthFailure);
+    return;
+  }
 
   pairing_start_timestamp_ = base::Time::Now();
   pair_device_callback_ = std::move(callback);

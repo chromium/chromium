@@ -5,8 +5,9 @@
 #ifndef UI_GFX_GEOMETRY_AXIS_TRANSFORM2D_H_
 #define UI_GFX_GEOMETRY_AXIS_TRANSFORM2D_H_
 
+#include <optional>
+
 #include "base/check_op.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/geometry/clamp_float_geometry.h"
 #include "ui/gfx/geometry/geometry_export.h"
 #include "ui/gfx/geometry/rect_f.h"

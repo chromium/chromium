@@ -18,7 +18,7 @@ namespace policy {
 // assign your own command id if more control is needed.
 class RemoteCommandBuilder {
  public:
-  RemoteCommandBuilder();
+  RemoteCommandBuilder() = default;
 
   RemoteCommandBuilder(const RemoteCommandBuilder&) = default;
   RemoteCommandBuilder& operator=(const RemoteCommandBuilder&) = default;
@@ -37,10 +37,6 @@ class RemoteCommandBuilder {
 
  private:
   enterprise_management::RemoteCommand result_;
-
-  // The last assigned command id, which is used to assign a higher command id
-  // to the next created remote command.
-  static int64_t g_last_command_id_;
 };
 
 // Builder class to construct `enterprise_management::SignedData`.

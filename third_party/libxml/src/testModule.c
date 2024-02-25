@@ -6,12 +6,12 @@
  * joelwreed@comcast.net
  */
 
-#include "libxml.h"
-#ifdef LIBXML_MODULES_ENABLED
+#include <stdio.h>
 #include <libxml/xmlversion.h>
 
+#ifdef LIBXML_MODULES_ENABLED
+
 #include <limits.h>
-#include <stdio.h>
 #include <string.h>
 #include <stdarg.h>
 
@@ -74,7 +74,6 @@ int main(int argc ATTRIBUTE_UNUSED, char **argv ATTRIBUTE_UNUSED) {
 }
 
 #else
-#include <stdio.h>
 int main(int argc ATTRIBUTE_UNUSED, char **argv ATTRIBUTE_UNUSED) {
     printf("%s : Module support not compiled in\n", argv[0]);
     return(0);

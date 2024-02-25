@@ -47,7 +47,10 @@ DeviceType GetDeviceType() {
     return DeviceType::kChromebit;
   if (value == "CHROMEBOX")
     return DeviceType::kChromebox;
-
+  // Don't log errors for VMs, which are type "OTHER".
+  if (value == "OTHER") {
+    return DeviceType::kUnknown;
+  }
   LOG(ERROR) << "Unknown device type \"" << value << "\"";
   return DeviceType::kUnknown;
 

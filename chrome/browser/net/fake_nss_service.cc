@@ -1,4 +1,4 @@
-// Copyright 2022 The Chromium Authors. All rights reserved.
+// Copyright 2022 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -61,4 +61,16 @@ FakeNssService::~FakeNssService() = default;
 
 NssCertDatabaseGetter FakeNssService::CreateNSSCertDatabaseGetterForIOThread() {
   return base::BindOnce(&NssGetterForIOThread, nss_cert_database_.get());
+}
+
+PK11SlotInfo* FakeNssService::GetPublicSlot() const {
+  return public_slot_->slot();
+}
+
+PK11SlotInfo* FakeNssService::GetPrivateSlot() const {
+  return private_slot_->slot();
+}
+
+PK11SlotInfo* FakeNssService::GetSystemSlot() const {
+  return system_slot_->slot();
 }

@@ -13,6 +13,7 @@ import "third_party/blink/public/mojom/permissions/permission_status.mojom";
 import "third_party/blink/public/mojom/webpreferences/web_preferences.mojom";
 import "ui/gfx/geometry/mojom/geometry.mojom";
 import "url/mojom/url.mojom";
+import "third_party/blink/public/mojom/tokens/tokens.mojom";
 
 struct WebTestRunTestConfiguration {
   // The current working directory.
@@ -131,11 +132,7 @@ interface WebTestRenderFrame {
   // potentially-renderer-visible changes it needed to make. The frame may now
   // perform any initialization and start running the test.
   StartTest();
-};
 
-// Web test messages related runtime flags sent from the browser process to the
-// renderer. This interface is associated with RenderProcessHost.
-interface WebTestRenderThread {
   // Sets up a renderer in a window other than the main test window. This may
   // be for a window opened by javascript (window.open()) or by the test harness
   // (devtools inspector). This should be called as early as possible (as soon
@@ -207,9 +204,14 @@ interface WebTestControlHost {
   // avoid having them closed at the end of the test before the leak checker.
   CheckForLeakedWindows();
 
-  // Show or hide the window. This mimics the user switching tabs in a
+  // Show or hide the primary window. This mimics the user switching tabs in a
   // multi-tab window, or occluding the window.
   SetMainWindowHidden(bool hidden);
+
+  // Show or hide the window hosting the frame corresponding to `frame_token`.
+  // This mimics the user switching tabs in a multi-tab window, or occluding the
+  // window.
+  SetFrameWindowHidden(blink.mojom.LocalFrameToken frame_token, bool hidden);
 
   // Trigger a GoToOffset navigation on the main WebView.
   GoToOffset(int32 offset);
@@ -235,9 +237,9 @@ interface WebTestControlHost {
   // Trigger a loadURL navigation on the main WebView.
   LoadURLForFrame(url.mojom.Url url, string frame_name);
 
-  // Mark the orientation changed in the browser process for the layout tests
+  // Simulate an orientation change in the browser process for the layout tests
   // that request fullscreen on screen orientation change.
-  SetScreenOrientationChanged();
+  SimulateScreenOrientationChanged();
 
   // Sets the permission for |name| to |status| when queried or requested in
   // |origin| from |embedding_origin|.
@@ -339,6 +341,20 @@ interface WebTestControlHost {
 
   // Set Accept Languages via RendererPreferences on the WebContents.
   SetAcceptLanguages(string accept_languages);
+
+  // Enumeration of possible values for automated operation modes in APIs
+  enum AutoResponseMode {
+    kNone = 0,
+    kAutoAccept = 1,
+    kAutoReject = 2,
+  };
+
+  // This method implements the Set RPH Registration Mode WebDriver extension
+  // command.
+  // https://html.spec.whatwg.org/#set-rph-registration-mode
+  // Emulates the ChromeDrivers's SetRPHRegistrationMode method, implemented
+  // via CDP
+  SetRegisterProtocolHandlerMode(AutoResponseMode mode);
 
   // Enable Auto Resize mode. This will cause a layout of the content and
   // the new size will be determined by the renderer after it dispatches

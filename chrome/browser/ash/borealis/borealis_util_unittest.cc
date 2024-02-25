@@ -4,12 +4,17 @@
 
 #include "chrome/browser/ash/borealis/borealis_util.h"
 
+#include <string_view>
+
 #include "base/json/json_reader.h"
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
+#include "base/values.h"
 #include "chrome/browser/ash/borealis/testing/apps.h"
 #include "chrome/browser/ash/borealis/testing/windows.h"
+#include "chrome/browser/ash/guest_os/guest_os_pref_names.h"
+#include "chrome/browser/ash/guest_os/guest_os_registry_service.h"
 #include "chrome/test/base/testing_profile.h"
 #include "content/public/test/browser_task_environment.h"
 #include "net/base/url_util.h"
@@ -33,7 +38,7 @@ class BorealisUtilTest : public testing::Test {
 }  // namespace
 
 TEST_F(BorealisUtilTest, GetBorealisAppIdReturnsEmptyOnFailure) {
-  EXPECT_EQ(ParseSteamGameId("foo"), absl::nullopt);
+  EXPECT_EQ(ParseSteamGameId("foo"), std::nullopt);
 }
 
 TEST_F(BorealisUtilTest, GetBorealisAppIdReturnsId) {
@@ -43,7 +48,7 @@ TEST_F(BorealisUtilTest, GetBorealisAppIdReturnsId) {
 TEST_F(BorealisUtilTest, GetBorealisAppIdFromWindowReturnsEmptyOnFailure) {
   std::unique_ptr<aura::Window> window =
       MakeWindow("org.chromium.guest_os.borealis.wmclass.foo");
-  EXPECT_EQ(SteamGameId(window.get()), absl::nullopt);
+  EXPECT_EQ(SteamGameId(window.get()), std::nullopt);
 }
 
 TEST_F(BorealisUtilTest, GetBorealisAppIdFromWindowReturnsId) {
@@ -97,7 +102,7 @@ TEST_F(BorealisUtilTest, SteamGameIdWithAnonGame) {
 }
 
 TEST_F(BorealisUtilTest, ProtonTitleUnknownBorealisAppId) {
-  absl::optional<int> game_id;
+  std::optional<int> game_id;
   std::string output =
       "GameID: 123, Proton: Proton 1.2, SLR: SLR - Name, "
       "Timestamp: 2021-01-01 00:00:00";
@@ -110,7 +115,7 @@ TEST_F(BorealisUtilTest, ProtonTitleUnknownBorealisAppId) {
 }
 
 TEST_F(BorealisUtilTest, ProtonTitleKnownBorealisAppId) {
-  absl::optional<int> game_id = 123;
+  std::optional<int> game_id = 123;
   std::string output =
       "GameID: 123, Proton: Proton 1.2, SLR: SLR - Name, "
       "Timestamp: 2021-01-01 00:00:00";
@@ -123,7 +128,7 @@ TEST_F(BorealisUtilTest, ProtonTitleKnownBorealisAppId) {
 }
 
 TEST_F(BorealisUtilTest, ProtonTitleMultiLineUnknownBorealisAppId) {
-  absl::optional<int> game_id;
+  std::optional<int> game_id;
   std::string output =
       "GameID: 123, Proton: Proton 1.2, SLR: SLR - Name, "
       "Timestamp: 2021-01-01 00:00:00\n"
@@ -138,7 +143,7 @@ TEST_F(BorealisUtilTest, ProtonTitleMultiLineUnknownBorealisAppId) {
 }
 
 TEST_F(BorealisUtilTest, ProtonTitleMultiLineKnownBorealisAppId) {
-  absl::optional<int> game_id = 123;
+  std::optional<int> game_id = 123;
   std::string output =
       "GameID: 123, Proton: Proton 1.2, SLR: SLR - Name, "
       "Timestamp: 2021-01-01 00:00:00\n"
@@ -153,7 +158,7 @@ TEST_F(BorealisUtilTest, ProtonTitleMultiLineKnownBorealisAppId) {
 }
 
 TEST_F(BorealisUtilTest, ProtonTitleGameIdMismatch) {
-  absl::optional<int> game_id = 123;
+  std::optional<int> game_id = 123;
   std::string output =
       "GameID: 456, Proton: Proton 1.2, SLR: SLR - Name, "
       "Timestamp: 2021-01-01 00:00:00";
@@ -166,7 +171,7 @@ TEST_F(BorealisUtilTest, ProtonTitleGameIdMismatch) {
 }
 
 TEST_F(BorealisUtilTest, SLRTitleUnknownBorealisAppId) {
-  absl::optional<int> game_id;
+  std::optional<int> game_id;
   std::string output =
       "GameID: 123, Proton: None, SLR: SLR - Name, "
       "Timestamp: 2021-01-01 00:00:00";
@@ -179,7 +184,7 @@ TEST_F(BorealisUtilTest, SLRTitleUnknownBorealisAppId) {
 }
 
 TEST_F(BorealisUtilTest, SLRTitleKnownBorealisAppId) {
-  absl::optional<int> game_id = 123;
+  std::optional<int> game_id = 123;
   std::string output =
       "GameID: 123, Proton: None, SLR: SLR - Name, "
       "Timestamp: 2021-01-01 00:00:00";
@@ -192,7 +197,7 @@ TEST_F(BorealisUtilTest, SLRTitleKnownBorealisAppId) {
 }
 
 TEST_F(BorealisUtilTest, SLRTitleGameIdMismatch) {
-  absl::optional<int> game_id = 123;
+  std::optional<int> game_id = 123;
   std::string output =
       "GameID: 456, Proton: None, SLR: SLR - Name, "
       "Timestamp: 2021-01-01 00:00:00";
@@ -205,7 +210,7 @@ TEST_F(BorealisUtilTest, SLRTitleGameIdMismatch) {
 }
 
 TEST_F(BorealisUtilTest, LinuxTitleUnknownBorealisAppId) {
-  absl::optional<int> game_id;
+  std::optional<int> game_id;
   std::string output =
       "GameID: 123, Proton: None, SLR: None, "
       "Timestamp: 2021-01-01 00:00:00";
@@ -218,7 +223,7 @@ TEST_F(BorealisUtilTest, LinuxTitleUnknownBorealisAppId) {
 }
 
 TEST_F(BorealisUtilTest, LinuxTitleKnownBorealisAppId) {
-  absl::optional<int> game_id = 123;
+  std::optional<int> game_id = 123;
   std::string output =
       "GameID: 123, Proton: None, SLR: None, "
       "Timestamp: 2021-01-01 00:00:00";
@@ -231,7 +236,7 @@ TEST_F(BorealisUtilTest, LinuxTitleKnownBorealisAppId) {
 }
 
 TEST_F(BorealisUtilTest, LinuxTitleAfterProtonTitle) {
-  absl::optional<int> game_id;
+  std::optional<int> game_id;
   std::string output =
       "GameID: 123, Proton: None, SLR: None, "
       "Timestamp: 2021-01-01 00:00:00\n"
@@ -243,6 +248,38 @@ TEST_F(BorealisUtilTest, LinuxTitleAfterProtonTitle) {
   EXPECT_EQ(info.game_id, 123);
   EXPECT_EQ(info.proton, "None");
   EXPECT_EQ(info.slr, "None");
+}
+
+guest_os::GuestOsRegistryService::Registration CreateRegistration(
+    std::string guest_os_app_id,
+    std::string_view name,
+    std::string_view exec) {
+  base::Value pref(base::Value::Type::DICT);
+  base::Value::Dict localized_name;
+  localized_name.Set("" /* locale */, base::Value(name));
+  pref.GetDict().Set(guest_os::prefs::kAppNameKey, std::move(localized_name));
+  pref.GetDict().Set(guest_os::prefs::kAppExecKey, exec);
+  return guest_os::GuestOsRegistryService::Registration(guest_os_app_id,
+                                                        std::move(pref));
+}
+
+TEST_F(BorealisUtilTest, HidesFutureProtonTools) {
+  EXPECT_TRUE(ShouldHideIrrelevantApp(CreateRegistration(
+      "fake app id", "Proton 9.0", "steam://rungameid/999")));
+}
+
+TEST_F(BorealisUtilTest, HidesToolsById) {
+  EXPECT_TRUE(ShouldHideIrrelevantApp(CreateRegistration(
+      "fake app id", "A bold new name for an existing tool",
+      "steam://rungameid/1391110"  // Soldier SLR
+      )));
+}
+
+TEST_F(BorealisUtilTest, DoesNotHideGames) {
+  // "Proton Rush" reads like a Proton version, but isn't, so don't hide it.
+  // It's also not an actual game (yet?), this is just an example.
+  EXPECT_FALSE(ShouldHideIrrelevantApp(CreateRegistration(
+      "fake app id", "Proton Rush", "steam://rungameid/123456789")));
 }
 
 }  // namespace borealis

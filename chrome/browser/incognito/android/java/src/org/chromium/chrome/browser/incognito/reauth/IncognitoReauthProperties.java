@@ -6,7 +6,7 @@ package org.chromium.chrome.browser.incognito.reauth;
 
 import androidx.annotation.Nullable;
 
-import org.chromium.components.browser_ui.widget.listmenu.ListMenuButtonDelegate;
+import org.chromium.ui.listmenu.ListMenuButtonDelegate;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModel.ReadableBooleanPropertyKey;
@@ -22,8 +22,9 @@ class IncognitoReauthProperties {
     public static final ReadableObjectPropertyKey<ListMenuButtonDelegate> MENU_BUTTON_DELEGATE =
             new ReadableObjectPropertyKey<>();
 
-    public static final PropertyKey[] ALL_KEYS = {ON_UNLOCK_INCOGNITO_CLICKED,
-            ON_SEE_OTHER_TABS_CLICKED, IS_FULL_SCREEN, MENU_BUTTON_DELEGATE};
+    public static final PropertyKey[] ALL_KEYS = {
+        ON_UNLOCK_INCOGNITO_CLICKED, ON_SEE_OTHER_TABS_CLICKED, IS_FULL_SCREEN, MENU_BUTTON_DELEGATE
+    };
 
     /**
      * Creates an instance of {@link PropertyModel} for the incognito re-auth view.
@@ -41,11 +42,14 @@ class IncognitoReauthProperties {
      * @return A {@link PropertyModel} instance for the incognito re-auth view with the above
      *         attributes.
      */
-    public static PropertyModel createPropertyModel(Runnable unlockIncognitoRunnable,
-            Runnable seeOtherTabsRunnable, boolean fullscreen,
+    public static PropertyModel createPropertyModel(
+            Runnable unlockIncognitoRunnable,
+            Runnable seeOtherTabsRunnable,
+            boolean fullscreen,
             @Nullable ListMenuButtonDelegate menuButtonDelegate) {
         return new PropertyModel.Builder(IncognitoReauthProperties.ALL_KEYS)
-                .with(IncognitoReauthProperties.ON_UNLOCK_INCOGNITO_CLICKED,
+                .with(
+                        IncognitoReauthProperties.ON_UNLOCK_INCOGNITO_CLICKED,
                         unlockIncognitoRunnable)
                 .with(IncognitoReauthProperties.ON_SEE_OTHER_TABS_CLICKED, seeOtherTabsRunnable)
                 .with(IncognitoReauthProperties.IS_FULL_SCREEN, fullscreen)

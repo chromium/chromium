@@ -23,7 +23,6 @@ cc_component("debug") {
   deps = [
     "//base",
     "//skia",
-    "//ui/gfx/codec",
   ]
 
   defines = [ "CC_DEBUG_IMPLEMENTATION=1" ]

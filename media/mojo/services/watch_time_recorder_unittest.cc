@@ -33,10 +33,6 @@
 
 using UkmEntry = ukm::builders::Media_BasicPlayback;
 
-namespace content {
-class RenderFrameHostDelegate;
-}  // namespace content
-
 namespace media {
 
 constexpr char kTestOrigin[] = "https://test.google.com/";
@@ -70,9 +66,6 @@ class WatchTimeRecorderTest : public testing::Test {
         MediaMetricsProvider::FrameStatus::kTopFrame, GetSourceId(),
         learning::FeatureValue(0), VideoDecodePerfHistory::SaveCallback(),
         MediaMetricsProvider::GetLearningSessionCallback(),
-        base::BindRepeating(
-            &WatchTimeRecorderTest::GetRecordAggregateWatchTimeCallback,
-            base::Unretained(this)),
         base::BindRepeating(&WatchTimeRecorderTest::IsShuttingDown,
                             base::Unretained(this)),
         provider_.BindNewPipeAndPassReceiver());
@@ -163,7 +156,7 @@ class WatchTimeRecorderTest : public testing::Test {
     const auto& entries =
         test_recorder_->GetEntriesByName(UkmEntry::kEntryName);
     EXPECT_EQ(1u, entries.size());
-    for (const auto* entry : entries) {
+    for (const ukm::mojom::UkmEntry* entry : entries) {
       test_recorder_->ExpectEntrySourceHasUrl(entry, GURL(kTestOrigin));
       for (auto key : keys) {
         test_recorder_->ExpectEntryMetric(entry, key.data(),
@@ -189,17 +182,6 @@ class WatchTimeRecorderTest : public testing::Test {
   }
 
   ukm::SourceId GetSourceId() { return source_id_; }
-
-  MediaMetricsProvider::RecordAggregateWatchTimeCallback
-  GetRecordAggregateWatchTimeCallback() {
-    return base::BindRepeating(
-        [](base::WeakPtr<content::RenderFrameHostDelegate> delegate,
-           GURL last_committed_url, base::TimeDelta total_watch_time,
-           base::TimeDelta time_stamp, bool has_video, bool has_audio) {
-          // Do nothing as this mock callback will never be called.
-        },
-        nullptr, GURL());
-  }
 
   MOCK_METHOD(bool, IsShuttingDown, ());
   MOCK_METHOD0(GetCurrentMediaTime, base::TimeDelta());
@@ -684,7 +666,7 @@ TEST_F(WatchTimeRecorderTest, TestFinalizeNoDuplication) {
   base::RunLoop().RunUntilIdle();
   const auto& entries = test_recorder_->GetEntriesByName(UkmEntry::kEntryName);
   EXPECT_EQ(1u, entries.size());
-  for (const auto* entry : entries) {
+  for (const ukm::mojom::UkmEntry* entry : entries) {
     test_recorder_->ExpectEntrySourceHasUrl(entry, GURL(kTestOrigin));
 
     EXPECT_UKM(UkmEntry::kIsBackgroundName, properties->is_background);
@@ -766,7 +748,7 @@ TEST_F(WatchTimeRecorderTest, FinalizeWithoutWatchTime) {
   base::RunLoop().RunUntilIdle();
   const auto& entries = test_recorder_->GetEntriesByName(UkmEntry::kEntryName);
   EXPECT_EQ(1u, entries.size());
-  for (const auto* entry : entries) {
+  for (const ukm::mojom::UkmEntry* entry : entries) {
     test_recorder_->ExpectEntrySourceHasUrl(entry, GURL(kTestOrigin));
 
     EXPECT_UKM(UkmEntry::kIsBackgroundName, properties->is_background);
@@ -839,7 +821,7 @@ TEST_F(WatchTimeRecorderTest, BasicUkmAudioVideo) {
 
   const auto& entries = test_recorder_->GetEntriesByName(UkmEntry::kEntryName);
   EXPECT_EQ(1u, entries.size());
-  for (const auto* entry : entries) {
+  for (const ukm::mojom::UkmEntry* entry : entries) {
     test_recorder_->ExpectEntrySourceHasUrl(entry, GURL(kTestOrigin));
 
     EXPECT_UKM(UkmEntry::kWatchTimeName, kWatchTime.InMilliseconds());
@@ -940,7 +922,7 @@ TEST_F(WatchTimeRecorderTest, BasicUkmAudioVideoWithExtras) {
 
   const auto& entries = test_recorder_->GetEntriesByName(UkmEntry::kEntryName);
   EXPECT_EQ(1u, entries.size());
-  for (const auto* entry : entries) {
+  for (const ukm::mojom::UkmEntry* entry : entries) {
     test_recorder_->ExpectEntrySourceHasUrl(entry, GURL(kTestOrigin));
     EXPECT_UKM(UkmEntry::kWatchTimeName, kWatchTime2.InMilliseconds());
     EXPECT_UKM(UkmEntry::kWatchTime_ACName, kWatchTime.InMilliseconds());
@@ -1024,7 +1006,7 @@ TEST_F(WatchTimeRecorderTest, BasicUkmAudioVideoBackgroundMuted) {
 
   const auto& entries = test_recorder_->GetEntriesByName(UkmEntry::kEntryName);
   EXPECT_EQ(1u, entries.size());
-  for (const auto* entry : entries) {
+  for (const ukm::mojom::UkmEntry* entry : entries) {
     test_recorder_->ExpectEntrySourceHasUrl(entry, GURL(kTestOrigin));
 
     EXPECT_UKM(UkmEntry::kWatchTimeName, kWatchTime.InMilliseconds());
@@ -1095,7 +1077,7 @@ TEST_F(WatchTimeRecorderTest, BasicUkmAudioVideoDuration) {
 
   const auto& entries = test_recorder_->GetEntriesByName(UkmEntry::kEntryName);
   EXPECT_EQ(1u, entries.size());
-  for (const auto* entry : entries) {
+  for (const ukm::mojom::UkmEntry* entry : entries) {
     test_recorder_->ExpectEntrySourceHasUrl(entry, GURL(kTestOrigin));
 
     EXPECT_UKM(UkmEntry::kIsBackgroundName, properties->is_background);
@@ -1167,7 +1149,7 @@ TEST_F(WatchTimeRecorderTest, BasicUkmAudioVideoDurationInfinite) {
 
   const auto& entries = test_recorder_->GetEntriesByName(UkmEntry::kEntryName);
   EXPECT_EQ(1u, entries.size());
-  for (const auto* entry : entries) {
+  for (const ukm::mojom::UkmEntry* entry : entries) {
     test_recorder_->ExpectEntrySourceHasUrl(entry, GURL(kTestOrigin));
 
     EXPECT_UKM(UkmEntry::kIsBackgroundName, properties->is_background);
@@ -1247,7 +1229,7 @@ TEST_F(WatchTimeRecorderTest, BasicUkmMediaStreamType) {
     ASSERT_EQ(1u, entries.size());
 
     // Check that the media stream type is set correctly.
-    for (const auto* entry : entries) {
+    for (const ukm::mojom::UkmEntry* entry : entries) {
       EXPECT_UKM(UkmEntry::kMediaStreamTypeName,
                  static_cast<int64_t>(media_stream_type));
     }
@@ -1302,7 +1284,7 @@ TEST_F(WatchTimeRecorderTest, SingleSecondaryPropertiesUnknownToKnown) {
   // only a single UKM entry.
   const auto& entries = test_recorder_->GetEntriesByName(UkmEntry::kEntryName);
   EXPECT_EQ(1u, entries.size());
-  for (const auto* entry : entries) {
+  for (const ukm::mojom::UkmEntry* entry : entries) {
     test_recorder_->ExpectEntrySourceHasUrl(entry, GURL(kTestOrigin));
     EXPECT_UKM(UkmEntry::kIsBackgroundName, properties->is_background);
     EXPECT_UKM(UkmEntry::kIsMutedName, properties->is_muted);
@@ -1398,7 +1380,7 @@ TEST_F(WatchTimeRecorderTest, MultipleSecondaryPropertiesNoFinalize) {
   // All records should have the following:
   const auto& entries = test_recorder_->GetEntriesByName(UkmEntry::kEntryName);
   EXPECT_EQ(2u, entries.size());
-  for (const auto* entry : entries) {
+  for (const ukm::mojom::UkmEntry* entry : entries) {
     test_recorder_->ExpectEntrySourceHasUrl(entry, GURL(kTestOrigin));
     EXPECT_UKM(UkmEntry::kIsBackgroundName, properties->is_background);
     EXPECT_UKM(UkmEntry::kIsMutedName, properties->is_muted);
@@ -1417,7 +1399,7 @@ TEST_F(WatchTimeRecorderTest, MultipleSecondaryPropertiesNoFinalize) {
   }
 
   // The first record should have...
-  auto* entry = entries[0];
+  auto* entry = entries[0].get();
   EXPECT_UKM(UkmEntry::kWatchTimeName, kWatchTime1.InMilliseconds());
   EXPECT_UKM(UkmEntry::kMeanTimeBetweenRebuffersName,
              kWatchTime1.InMilliseconds() / kUnderflowCount1);
@@ -1522,7 +1504,7 @@ TEST_F(WatchTimeRecorderTest, MultipleSecondaryPropertiesNoFinalizeNo2ndWT) {
   // All records should have the following:
   const auto& entries = test_recorder_->GetEntriesByName(UkmEntry::kEntryName);
   EXPECT_EQ(2u, entries.size());
-  for (const auto* entry : entries) {
+  for (const ukm::mojom::UkmEntry* entry : entries) {
     test_recorder_->ExpectEntrySourceHasUrl(entry, GURL(kTestOrigin));
     EXPECT_UKM(UkmEntry::kIsBackgroundName, properties->is_background);
     EXPECT_UKM(UkmEntry::kIsMutedName, properties->is_muted);
@@ -1539,7 +1521,7 @@ TEST_F(WatchTimeRecorderTest, MultipleSecondaryPropertiesNoFinalizeNo2ndWT) {
   }
 
   // The first record should have...
-  auto* entry = entries[0];
+  auto* entry = entries[0].get();
   EXPECT_UKM(UkmEntry::kWatchTimeName, kWatchTime1.InMilliseconds());
   EXPECT_UKM(UkmEntry::kMeanTimeBetweenRebuffersName,
              kWatchTime1.InMilliseconds() / kUnderflowCount1);
@@ -1649,7 +1631,7 @@ TEST_F(WatchTimeRecorderTest, MultipleSecondaryPropertiesWithFinalize) {
   // All records should have the following:
   const auto& entries = test_recorder_->GetEntriesByName(UkmEntry::kEntryName);
   EXPECT_EQ(2u, entries.size());
-  for (const auto* entry : entries) {
+  for (const ukm::mojom::UkmEntry* entry : entries) {
     test_recorder_->ExpectEntrySourceHasUrl(entry, GURL(kTestOrigin));
     EXPECT_UKM(UkmEntry::kIsBackgroundName, properties->is_background);
     EXPECT_UKM(UkmEntry::kIsMutedName, properties->is_muted);
@@ -1668,7 +1650,7 @@ TEST_F(WatchTimeRecorderTest, MultipleSecondaryPropertiesWithFinalize) {
   }
 
   // The first record should have...
-  auto* entry = entries[0];
+  auto* entry = entries[0].get();
   EXPECT_UKM(UkmEntry::kWatchTimeName, kWatchTime1.InMilliseconds());
   EXPECT_UKM(UkmEntry::kMeanTimeBetweenRebuffersName,
              kWatchTime1.InMilliseconds() / kUnderflowCount1);
@@ -1784,7 +1766,7 @@ TEST_F(WatchTimeRecorderTest, MultipleSecondaryPropertiesRebufferCarryover) {
   // All records should have the following:
   const auto& entries = test_recorder_->GetEntriesByName(UkmEntry::kEntryName);
   EXPECT_EQ(2u, entries.size());
-  for (const auto* entry : entries) {
+  for (const ukm::mojom::UkmEntry* entry : entries) {
     test_recorder_->ExpectEntrySourceHasUrl(entry, GURL(kTestOrigin));
     EXPECT_UKM(UkmEntry::kIsBackgroundName, properties->is_background);
     EXPECT_UKM(UkmEntry::kIsMutedName, properties->is_muted);
@@ -1803,7 +1785,7 @@ TEST_F(WatchTimeRecorderTest, MultipleSecondaryPropertiesRebufferCarryover) {
   }
 
   // The first record should have...
-  auto* entry = entries[0];
+  auto* entry = entries[0].get();
   EXPECT_UKM(UkmEntry::kWatchTimeName, kWatchTime1.InMilliseconds());
   EXPECT_UKM(UkmEntry::kMeanTimeBetweenRebuffersName,
              kWatchTime1.InMilliseconds() / kUnderflowCount1);

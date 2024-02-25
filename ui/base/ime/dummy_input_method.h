@@ -25,7 +25,6 @@ class DummyInputMethod : public InputMethod {
   void SetImeKeyEventDispatcher(
       ImeKeyEventDispatcher* ime_key_event_dispatcher) override;
   void OnFocus() override;
-  void OnTouch(ui::EventPointerType pointerType) override;
   void OnBlur() override;
 
 #if BUILDFLAG(IS_WIN)
@@ -33,6 +32,7 @@ class DummyInputMethod : public InputMethod {
                                 NativeEventResult* result) override;
   void OnInputLocaleChanged() override;
   bool IsInputLocaleCJK() const override;
+  void OnUrlChanged() override;
 #endif
 
   void SetFocusedTextInputClient(TextInputClient* client) override;
@@ -49,6 +49,8 @@ class DummyInputMethod : public InputMethod {
   void AddObserver(InputMethodObserver* observer) override;
   void RemoveObserver(InputMethodObserver* observer) override;
   VirtualKeyboardController* GetVirtualKeyboardController() override;
+  void SetVirtualKeyboardControllerForTesting(
+      std::unique_ptr<VirtualKeyboardController> controller) override;
 };
 
 }  // namespace ui

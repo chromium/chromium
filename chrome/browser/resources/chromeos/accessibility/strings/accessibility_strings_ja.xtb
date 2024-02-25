@@ -99,6 +99,7 @@
 <translation id="1559739829547075274">逆方向にナビゲート</translation>
 <translation id="1565432156062359693">次のリストはありません</translation>
 <translation id="1571643229714746283">ChromeVox 対応</translation>
+<translation id="1588252353131492116">固定モードがオンの場合、パススルーは使用できません</translation>
 <translation id="1594072653727561613">メニュー</translation>
 <translation id="1610130962244179598">6 点点字に切り替え</translation>
 <translation id="161042844686301425">シアン</translation>
@@ -194,6 +195,7 @@
 <translation id="2318372665160196757">本文</translation>
 <translation id="2329324941084714723">タブ パネル</translation>
 <translation id="2347456970887948350">リンク</translation>
+<translation id="2363753371702255035">ドット</translation>
 <translation id="2365384324219615024">Enter キーを押して項目を有効にすることもできます。たとえば、フォームでテキストを送信する際に Enter キーを使用できます。次へ進むには Enter キーを押してください。</translation>
 <translation id="2381733276052567791">読み上げの有効と無効を切り替えます</translation>
 <translation id="2390264819538553347">次に進むには Enter キー、前に戻るには Backspace キーを押します。</translation>
@@ -521,6 +523,7 @@
 <translation id="4457472090507035117">現在の音声を選択:</translation>
 <translation id="4476183483923481720">新しい行</translation>
 <translation id="4479068155583208887">ファイア ブリック</translation>
+<translation id="4481524099194084725">システム音声を使用</translation>
 <translation id="4482330759234983253">前の表</translation>
 <translation id="4491109536499578614">画像</translation>
 <translation id="4507332368061453500">現在の項目を長押し</translation>

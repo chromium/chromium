@@ -32,6 +32,7 @@ struct ProtobufHttpRequestConfig {
   std::unique_ptr<google::protobuf::MessageLite> request_message;
   std::string path;
   bool authenticated = true;
+  bool provide_certificate = false;
 
   // Optional. Only needed when the request requires an API key.
   std::string api_key;

@@ -147,5 +147,5 @@ void CrostiniUninstallerView::RecordUninstallResultHistogram(
   has_logged_result_ = true;
 }
 
-BEGIN_METADATA(CrostiniUninstallerView, views::BubbleDialogDelegateView)
+BEGIN_METADATA(CrostiniUninstallerView)
 END_METADATA

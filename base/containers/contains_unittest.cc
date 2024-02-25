@@ -4,11 +4,11 @@
 
 #include "base/containers/contains.h"
 
+#include <functional>
 #include <set>
 #include <string>
 
 #include "base/containers/flat_set.h"
-#include "base/functional/identity.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -40,7 +40,7 @@ TEST(ContainsTest, GenericSetContainsWithProjection) {
   std::set<std::string> set = {"foo", "bar", "baz"};
 
   // Opt into a linear search by explicitly providing a projection:
-  EXPECT_TRUE(Contains(set, kFoo, identity{}));
+  EXPECT_TRUE(Contains(set, kFoo, std::identity{}));
 }
 
 TEST(ContainsTest, ContainsWithFindAndNpos) {

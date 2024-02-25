@@ -54,7 +54,7 @@ RESULTS_SUBQUERY = """\
   )"""
 
 FINAL_SELECTOR_QUERY = """\
-SELECT *
+SELECT id, test_id, status, duration, step_name, timeout, typ_tags, expectation_files
 FROM results
 WHERE
   "Failure" IN UNNEST(typ_expectations)
@@ -190,6 +190,7 @@ ACTIVE_INTERNAL_BUILDER_SUBQUERY = """\
 KNOWN_TEST_ID_PREFIXES = [
     'ninja://:blink_web_tests/',
     'ninja://:blink_wpt_tests/',
+    'ninja://:chrome_wpt_tests/',
     'ninja://:webgpu_blink_web_tests/',
 ]
 

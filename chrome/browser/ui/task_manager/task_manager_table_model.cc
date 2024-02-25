@@ -630,7 +630,11 @@ int TaskManagerTableModel::CompareValues(size_t row1,
       return ValueCompare(proc1_fd_count, proc2_fd_count);
     }
 #endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_MAC)
-
+    case IDS_TASK_MANAGER_KEEPALIVE_COUNT_COLUMN: {
+      return ValueCompare(
+          observed_task_manager()->GetKeepaliveCount(tasks_[row1]),
+          observed_task_manager()->GetKeepaliveCount(tasks_[row2]));
+    }
     default:
       NOTREACHED();
       return 0;
@@ -880,19 +884,20 @@ void TaskManagerTableModel::StoreColumnsSettings() {
 
 void TaskManagerTableModel::ToggleColumnVisibility(int column_id) {
   bool new_visibility = !table_view_delegate_->IsColumnVisible(column_id);
-  table_view_delegate_->SetColumnVisibility(column_id, new_visibility);
-  columns_settings_.SetByDottedPath(GetColumnIdAsString(column_id),
-                                    new_visibility);
-  UpdateRefreshTypes(column_id, new_visibility);
+  if (table_view_delegate_->SetColumnVisibility(column_id, new_visibility)) {
+    columns_settings_.SetByDottedPath(GetColumnIdAsString(column_id),
+                                      new_visibility);
+    UpdateRefreshTypes(column_id, new_visibility);
+  }
 }
 
-absl::optional<size_t> TaskManagerTableModel::GetRowForWebContents(
+std::optional<size_t> TaskManagerTableModel::GetRowForWebContents(
     content::WebContents* web_contents) {
   TaskId task_id =
       observed_task_manager()->GetTaskIdForWebContents(web_contents);
   auto index = base::ranges::find(tasks_, task_id);
   if (index == tasks_.end())
-    return absl::nullopt;
+    return std::nullopt;
   return static_cast<size_t>(index - tasks_.begin());
 }
 

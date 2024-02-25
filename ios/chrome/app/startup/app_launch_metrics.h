@@ -11,6 +11,7 @@ const char kAppLaunchSource[] = "IOS.LaunchSource";
 // Values of the UMA IOS.LaunchSource histogram.
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
+// LINT.IfChange
 enum class AppLaunchSource {
   APP_ICON = 0,
   LONG_PRESS_ON_APP_ICON = 1,
@@ -22,7 +23,9 @@ enum class AppLaunchSource {
   X_CALLBACK = 7,
   HANDOFF = 8,
   NOTIFICATION = 9,
-  kMaxValue = NOTIFICATION,
+  EXTERNAL_ACTION = 10,
+  kMaxValue = EXTERNAL_ACTION,
 };
+// LINT.ThenChange(//tools/metrics/histograms/metadata/ios/enums.xml)
 
 #endif  // IOS_CHROME_APP_STARTUP_APP_LAUNCH_METRICS_H_

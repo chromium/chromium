@@ -19,26 +19,6 @@ ChromeVoxPanelTest = class extends ChromeVoxPanelTestBase {
   async setUpDeferred() {
     await super.setUpDeferred();
 
-    await Promise.all([
-      // Alphabetical based on file path.
-      importModule(
-          'ChromeVoxRange', '/chromevox/background/chromevox_range.js'),
-      importModule(
-          'CommandHandlerInterface',
-          '/chromevox/background/command_handler_interface.js'),
-      importModule('EventSource', '/chromevox/background/event_source.js'),
-      importModule('EventSourceType', '/chromevox/common/event_source_type.js'),
-      importModule(
-          'LocaleOutputHelper', '/chromevox/common/locale_output_helper.js'),
-      importModule(
-          ['PanelCommand', 'PanelCommandType'],
-          '/chromevox/common/panel_command.js'),
-      importModule('MenuManager', '/chromevox/panel/menu_manager.js'),
-      importModule('CursorRange', '/common/cursors/range.js'),
-      importModule('LocalStorage', '/common/local_storage.js'),
-      importModule('SettingsManager', '/chromevox/common/settings_manager.js'),
-    ]);
-
     globalThis.Gesture = chrome.accessibilityPrivate.Gesture;
     globalThis.RoleType = chrome.automation.RoleType;
 
@@ -82,19 +62,6 @@ ChromeVoxPanelTest = class extends ChromeVoxPanelTestBase {
       evt.target.value = query;
       this.getPanel().instance.menuManager_.onSearchBarQuery(evt);
     }.bind(this);
-  }
-
-  async waitForMenu(menuMsg) {
-    const menuManager = this.getPanel().instance.menuManager_;
-
-    // Menu and menu item updates occur in a different js context, so tests need
-    // to wait until an update has been made.
-    return new Promise(
-        resolve =>
-            this.addCallbackPostMethod(menuManager, 'activateMenu', () => {
-              assertEquals(menuMsg, menuManager.activeMenu_.menuMsg);
-              resolve();
-            }, () => true));
   }
 
   assertActiveMenuItem(menuMsg, menuItemTitle, opt_menuItemShortcut) {

@@ -61,7 +61,7 @@ std::vector<history::Cluster> Clusterer::CreateInitialClustersFromVisits(
   base::flat_map<history::VisitID, size_t> visit_id_to_cluster_map;
   std::vector<history::Cluster> clusters;
   for (auto& visit : visits) {
-    absl::optional<size_t> cluster_idx;
+    std::optional<size_t> cluster_idx;
     std::vector<history::VisitID> previous_visit_ids_to_check;
     if (visit.annotated_visit.opener_visit_of_redirect_chain_start != 0) {
       previous_visit_ids_to_check.push_back(
@@ -106,7 +106,7 @@ std::vector<history::Cluster> Clusterer::CreateInitialClustersFromVisits(
 
         // Reset the working cluster index so we start a new cluster for this
         // visit.
-        cluster_idx = absl::nullopt;
+        cluster_idx = std::nullopt;
       }
     }
 

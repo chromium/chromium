@@ -1,0 +1,8 @@
+WebView textSize:16.0 style:0 htmlInfo:[{htmlTag="#document"}, {display=""}]
+++View textSize:16.0 style:0 htmlInfo:[{htmlTag="aside"}, {display="block"}]
+++++View textSize:16.0 style:0 htmlInfo:[{htmlTag="p"}, {display="block"}]
+++++++TextView text:"aside inside section with role presentational." textSize:16.0 style:0 htmlInfo:[{htmlTag=""}, {display=""}]
+++View textSize:16.0 style:0 htmlInfo:[{htmlTag="section"}, {display="block"}, {role="generic"}]
+++++View textSize:16.0 style:0 htmlInfo:[{htmlTag="aside"}, {display="block"}]
+++++++View textSize:16.0 style:0 htmlInfo:[{htmlTag="p"}, {display="block"}]
+++++++++TextView text:"aside inside section with role generic." textSize:16.0 style:0 htmlInfo:[{htmlTag=""}, {display=""}]

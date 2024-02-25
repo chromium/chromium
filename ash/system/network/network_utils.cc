@@ -24,23 +24,6 @@ using chromeos::network_config::mojom::DeviceStateProperties;
 using chromeos::network_config::mojom::InhibitReason;
 using chromeos::network_config::mojom::NetworkType;
 
-std::string GetNetworkTypeName(NetworkType network_type) {
-  switch (network_type) {
-    case NetworkType::kCellular:
-      [[fallthrough]];
-    case NetworkType::kTether:
-      [[fallthrough]];
-    case NetworkType::kMobile:
-      return "Mobile";
-    case NetworkType::kWiFi:
-      return "WiFi";
-    default:
-      // A network type of other is unexpected, and no success
-      // metric for it exists.
-      NOTREACHED_NORETURN();
-  }
-}
-
 }  // namespace
 
 int GetStringIdForNetworkDetailedViewTitleRow(
@@ -85,34 +68,14 @@ int GetAddESimTooltipMessageId() {
   }
 }
 
-void RecordNetworkRowClickedAction(NetworkRowClickedAction action) {
-  base::UmaHistogramEnumeration("ChromeOS.SystemTray.Network.RowClickedAction",
-                                action);
-}
-
-void RecordDetailedViewSection(DetailedViewSection section) {
-  base::UmaHistogramEnumeration("ChromeOS.SystemTray.Network.SectionShown",
-                                section);
-}
-
-void RecordNetworkTypeToggled(NetworkType network_type, bool new_state) {
-  const std::string network_name = GetNetworkTypeName(network_type);
-
-  DCHECK(!network_name.empty());
-
-  base::UmaHistogramBoolean(
-      base::StrCat({"ChromeOS.SystemTray.Network.", network_name, ".Toggled"}),
-      new_state);
-}
-
-absl::optional<std::u16string> GetPortalStateSubtext(
+std::optional<std::u16string> GetPortalStateSubtext(
     const chromeos::network_config::mojom::PortalState& portal_state) {
   using chromeos::network_config::mojom::PortalState;
   switch (portal_state) {
     case PortalState::kUnknown:
       [[fallthrough]];
     case PortalState::kOnline:
-      return absl::nullopt;
+      return std::nullopt;
     case PortalState::kPortalSuspected:
       [[fallthrough]];
     case PortalState::kNoInternet:

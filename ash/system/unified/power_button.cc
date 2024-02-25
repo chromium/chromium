@@ -4,6 +4,8 @@
 
 #include "ash/system/unified/power_button.h"
 
+#include <utility>
+
 #include "ash/constants/quick_settings_catalogs.h"
 #include "ash/public/cpp/ash_view_ids.h"
 #include "ash/public/cpp/session/session_controller.h"
@@ -28,6 +30,7 @@
 #include "chromeos/dbus/power/power_manager_client.h"
 #include "components/user_manager/user_type.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/models/image_model.h"
 #include "ui/base/models/menu_separator_types.h"
 #include "ui/base/models/simple_menu_model.h"
@@ -103,7 +106,7 @@ class HighlightPathGenerator : public views::HighlightPathGenerator {
 
  private:
   // HighlightPathGenerator:
-  absl::optional<gfx::RRectF> GetRoundRect(const gfx::RectF& rect) override {
+  std::optional<gfx::RRectF> GetRoundRect(const gfx::RectF& rect) override {
     gfx::RectF bounds(power_button_->GetLocalBounds());
     gfx::RoundedCornersF rounded = kAllRoundedCorners;
     if (power_button_->IsMenuShowing()) {
@@ -116,7 +119,7 @@ class HighlightPathGenerator : public views::HighlightPathGenerator {
   }
 
   // Owned by views hierarchy.
-  const raw_ptr<PowerButton, ExperimentalAsh> power_button_;
+  const raw_ptr<PowerButton> power_button_;
 };
 
 // Returns whether the user's email address should be shown in the power menu.
@@ -128,15 +131,14 @@ bool ShouldShowEmailMenuItem() {
     return false;
   }
   switch (user_session->user_info.type) {
-    case user_manager::USER_TYPE_REGULAR:
-    case user_manager::USER_TYPE_CHILD:
+    case user_manager::UserType::kRegular:
+    case user_manager::UserType::kChild:
       return true;
-    case user_manager::USER_TYPE_GUEST:
-    case user_manager::USER_TYPE_PUBLIC_ACCOUNT:
-    case user_manager::USER_TYPE_KIOSK_APP:
-    case user_manager::USER_TYPE_ARC_KIOSK_APP:
-    case user_manager::USER_TYPE_WEB_KIOSK_APP:
-    case user_manager::NUM_USER_TYPES:
+    case user_manager::UserType::kGuest:
+    case user_manager::UserType::kPublicAccount:
+    case user_manager::UserType::kKioskApp:
+    case user_manager::UserType::kArcKioskApp:
+    case user_manager::UserType::kWebKioskApp:
       return false;
   }
 }
@@ -233,12 +235,14 @@ class PowerButton::MenuController : public ui::SimpleMenuModel::Delegate,
         context_menu_model_.get(),
         base::BindRepeating(&MenuController::OnMenuClosed,
                             base::Unretained(this)));
-    root_menu_item_view_ = menu_model_adapter_->CreateMenu();
+    std::unique_ptr<views::MenuItemView> menu =
+        menu_model_adapter_->CreateMenu();
+    root_menu_item_view_ = menu.get();
     int run_types = views::MenuRunner::USE_ASH_SYS_UI_LAYOUT |
                     views::MenuRunner::CONTEXT_MENU |
                     views::MenuRunner::FIXED_ANCHOR;
     menu_runner_ =
-        std::make_unique<views::MenuRunner>(root_menu_item_view_, run_types);
+        std::make_unique<views::MenuRunner>(std::move(menu), run_types);
 
     menu_runner_->RunMenuAt(source->GetWidget(), /*button_controller=*/nullptr,
                             source->GetBoundsInScreen(),
@@ -314,9 +318,9 @@ class PowerButton::MenuController : public ui::SimpleMenuModel::Delegate,
   // Called when the context menu is closed. Used as a callback for
   // `menu_model_adapter_`.
   void OnMenuClosed() {
+    root_menu_item_view_ = nullptr;
     menu_runner_.reset();
     context_menu_model_.reset();
-    root_menu_item_view_ = nullptr;
     menu_model_adapter_.reset();
     power_button_->UpdateView();
   }
@@ -329,15 +333,14 @@ class PowerButton::MenuController : public ui::SimpleMenuModel::Delegate,
   std::unique_ptr<views::MenuRunner> menu_runner_;
 
   // The root menu item view of `context_menu_model_`. Cached for testing.
-  raw_ptr<views::MenuItemView, DanglingUntriaged | ExperimentalAsh>
-      root_menu_item_view_ = nullptr;
+  raw_ptr<views::MenuItemView> root_menu_item_view_ = nullptr;
 
   // Owned by views hierarchy.
-  raw_ptr<PowerButton, ExperimentalAsh> power_button_ = nullptr;
+  raw_ptr<PowerButton> power_button_ = nullptr;
 };
 
 PowerButtonContainer::PowerButtonContainer(PressedCallback callback)
-    : Button(callback) {
+    : Button(std::move(callback)) {
   auto* layout = SetLayoutManager(std::make_unique<views::BoxLayout>());
   layout->SetOrientation(views::BoxLayout::Orientation::kHorizontal);
 
@@ -372,6 +375,9 @@ void PowerButtonContainer::UpdateIconColor(bool is_active) {
   arrow_icon_->SetImage(ui::ImageModel::FromVectorIcon(
       is_active ? kChevronUpSmallIcon : kChevronDownSmallIcon, icon_color_id));
 }
+
+BEGIN_METADATA(PowerButtonContainer)
+END_METADATA
 
 PowerButton::PowerButton(UnifiedSystemTrayController* tray_controller)
     : background_view_(AddChildView(std::make_unique<View>())),
@@ -408,7 +414,9 @@ PowerButton::PowerButton(UnifiedSystemTrayController* tray_controller)
                                    /*highlight_on_focus=*/false);
 }
 
-PowerButton::~PowerButton() = default;
+PowerButton::~PowerButton() {
+  set_context_menu_controller(nullptr);
+}
 
 bool PowerButton::IsMenuShowing() {
   auto* menu_runner = context_menu_->menu_runner_.get();
@@ -473,5 +481,8 @@ void PowerButton::OnButtonActivated(const ui::Event& event) {
 
   UpdateView();
 }
+
+BEGIN_METADATA(PowerButton)
+END_METADATA
 
 }  // namespace ash

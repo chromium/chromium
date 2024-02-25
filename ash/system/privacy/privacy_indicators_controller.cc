@@ -16,7 +16,6 @@
 #include "ash/system/notification_center/notification_center_tray.h"
 #include "ash/system/privacy/privacy_indicators_tray_item_view.h"
 #include "ash/system/status_area_widget.h"
-#include "ash/system/unified/unified_system_tray.h"
 #include "base/functional/callback_forward.h"
 #include "base/metrics/histogram_functions.h"
 #include "chromeos/ash/components/audio/cras_audio_handler.h"
@@ -37,7 +36,7 @@ PrivacyIndicatorsController* g_controller_instance = nullptr;
 std::unique_ptr<message_center::Notification>
 CreatePrivacyIndicatorsNotification(
     const std::string& app_id,
-    absl::optional<std::u16string> app_name,
+    std::optional<std::u16string> app_name,
     bool is_camera_used,
     bool is_microphone_used,
     scoped_refptr<PrivacyIndicatorsNotificationDelegate> delegate) {
@@ -103,11 +102,11 @@ CreatePrivacyIndicatorsNotification(
 // `app_id`.
 void ModifyPrivacyIndicatorsNotification(
     const std::string& app_id,
-    absl::optional<std::u16string> app_name,
+    std::optional<std::u16string> app_name,
     bool is_camera_used,
     bool is_microphone_used,
     scoped_refptr<PrivacyIndicatorsNotificationDelegate> delegate) {
-  if (!features::IsPrivacyIndicatorsEnabled()) {
+  if (features::IsVideoConferenceEnabled()) {
     return;
   }
 
@@ -136,9 +135,10 @@ void UpdatePrivacyIndicatorsView(bool is_camera_used,
                                  bool is_new_app,
                                  bool was_camera_in_use,
                                  bool was_microphone_in_use) {
-  if (!features::IsPrivacyIndicatorsEnabled()) {
+  if (features::IsVideoConferenceEnabled()) {
     return;
   }
+
   DCHECK(Shell::HasInstance());
   for (auto* root_window_controller :
        Shell::Get()->GetAllRootWindowControllers()) {
@@ -147,11 +147,8 @@ void UpdatePrivacyIndicatorsView(bool is_camera_used,
     DCHECK(status_area_widget);
 
     auto* privacy_indicators_view =
-        features::IsQsRevampEnabled()
-            ? status_area_widget->notification_center_tray()
-                  ->privacy_indicators_view()
-            : status_area_widget->unified_system_tray()
-                  ->privacy_indicators_view();
+        status_area_widget->notification_center_tray()
+            ->privacy_indicators_view();
 
     DCHECK(privacy_indicators_view);
     privacy_indicators_view->OnCameraAndMicrophoneAccessStateChanged(
@@ -165,7 +162,7 @@ void UpdateAccessStatus(
     const std::string& app_id,
     bool is_accessed,
     std::map<std::string, ash::PrivacyIndicatorsAppInfo>& access_map,
-    absl::optional<std::u16string> app_name,
+    std::optional<std::u16string> app_name,
     scoped_refptr<ash::PrivacyIndicatorsNotificationDelegate> delegate) {
   if (access_map.contains(app_id) == is_accessed) {
     return;
@@ -190,11 +187,8 @@ void UpdatePrivacyIndicatorsVisibility() {
     CHECK(status_area_widget);
 
     auto* privacy_indicators_view =
-        features::IsQsRevampEnabled()
-            ? status_area_widget->notification_center_tray()
-                  ->privacy_indicators_view()
-            : status_area_widget->unified_system_tray()
-                  ->privacy_indicators_view();
+        status_area_widget->notification_center_tray()
+            ->privacy_indicators_view();
     CHECK(privacy_indicators_view);
 
     privacy_indicators_view->UpdateVisibility();
@@ -204,8 +198,8 @@ void UpdatePrivacyIndicatorsVisibility() {
 }  // namespace
 
 PrivacyIndicatorsNotificationDelegate::PrivacyIndicatorsNotificationDelegate(
-    absl::optional<base::RepeatingClosure> launch_app_callback,
-    absl::optional<base::RepeatingClosure> launch_settings_settings)
+    std::optional<base::RepeatingClosure> launch_app_callback,
+    std::optional<base::RepeatingClosure> launch_settings_settings)
     : launch_app_callback_(launch_app_callback),
       launch_settings_callback_(launch_settings_settings) {
   UpdateButtonIndices();
@@ -227,8 +221,8 @@ void PrivacyIndicatorsNotificationDelegate::SetLaunchSettingsCallback(
 }
 
 void PrivacyIndicatorsNotificationDelegate::Click(
-    const absl::optional<int>& button_index,
-    const absl::optional<std::u16string>& reply) {
+    const std::optional<int>& button_index,
+    const std::optional<std::u16string>& reply) {
   // Click on the notification body is no-op.
   if (!button_index) {
     return;
@@ -290,7 +284,7 @@ PrivacyIndicatorsController* PrivacyIndicatorsController::Get() {
 
 void PrivacyIndicatorsController::UpdatePrivacyIndicators(
     const std::string& app_id,
-    absl::optional<std::u16string> app_name,
+    std::optional<std::u16string> app_name,
     bool is_camera_used,
     bool is_microphone_used,
     scoped_refptr<PrivacyIndicatorsNotificationDelegate> delegate,
@@ -384,8 +378,9 @@ bool PrivacyIndicatorsController::IsMicrophoneUsed() const {
 }
 
 void UpdatePrivacyIndicatorsScreenShareStatus(bool is_screen_sharing) {
-  if (!features::IsPrivacyIndicatorsEnabled())
+  if (features::IsVideoConferenceEnabled()) {
     return;
+  }
 
   DCHECK(Shell::HasInstance());
   for (auto* root_window_controller :
@@ -395,11 +390,8 @@ void UpdatePrivacyIndicatorsScreenShareStatus(bool is_screen_sharing) {
     DCHECK(status_area_widget);
 
     auto* privacy_indicators_view =
-        features::IsQsRevampEnabled()
-            ? status_area_widget->notification_center_tray()
-                  ->privacy_indicators_view()
-            : status_area_widget->unified_system_tray()
-                  ->privacy_indicators_view();
+        status_area_widget->notification_center_tray()
+            ->privacy_indicators_view();
 
     DCHECK(privacy_indicators_view);
 

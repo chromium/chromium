@@ -28,8 +28,8 @@ NS_ASSUME_NONNULL_BEGIN
  * @return Segmentation Result of type TFLSegmentationResult to be returned by
  * inference methods of the iOS TF Lite Task Image Segmentation task.
  */
-+ (TFLSegmentationResult*)segmentationResultWithCResult:
-    (TfLiteSegmentationResult*)cSegmentationResult;
++ (TFLSegmentationResult *)segmentationResultWithCResult:
+    (TfLiteSegmentationResult *)cSegmentationResult;
 @end
 
 NS_ASSUME_NONNULL_END

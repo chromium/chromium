@@ -108,7 +108,7 @@ ExclusiveAccessBubbleViews::ExclusiveAccessBubbleViews(
       bubble_view_context_->GetExclusiveAccessManager()
           ->fullscreen_controller());
 
-  UpdateMouseWatcher();
+  UpdateMousePointerWatcher();
 }
 
 ExclusiveAccessBubbleViews::~ExclusiveAccessBubbleViews() {
@@ -145,7 +145,8 @@ void ExclusiveAccessBubbleViews::UpdateContent(
   // notification, a notification was visible earlier, and the earlier
   // notification was either a non-download one, or was one about an override
   // itself.
-  notify_overridden_ = notify_download && IsVisible() &&
+  notify_overridden_ = notify_download &&
+                       (IsVisible() || animation_->IsShowing()) &&
                        (!notify_download_ || notify_overridden_);
   notify_download_ = notify_download;
 
@@ -166,12 +167,12 @@ void ExclusiveAccessBubbleViews::UpdateContent(
   popup_->SetBounds(GetPopupRect());
   Show();
 
-  // Stop watching the mouse even if UpdateMouseWatcher() will start watching
-  // it again so that the popup with the new content is visible for at least
-  // |kInitialDelayMs|.
-  StopWatchingMouse();
+  // Stop watching the mouse pointer even if UpdateMousePointerWatcher() will
+  // start watching it again so that the popup with the new content is visible
+  // for at least |kInitialDelayMs|.
+  StopWatchingMousePointer();
 
-  UpdateMouseWatcher();
+  UpdateMousePointerWatcher();
 }
 
 void ExclusiveAccessBubbleViews::RepositionIfVisible() {
@@ -197,16 +198,18 @@ views::View* ExclusiveAccessBubbleViews::GetView() {
   return view_;
 }
 
-void ExclusiveAccessBubbleViews::UpdateMouseWatcher() {
-  bool should_watch_mouse = popup_->IsVisible() || CanTriggerOnMouse();
+void ExclusiveAccessBubbleViews::UpdateMousePointerWatcher() {
+  bool should_watch_pointer = popup_->IsVisible() || CanTriggerOnMousePointer();
 
-  if (should_watch_mouse == IsWatchingMouse())
+  if (should_watch_pointer == IsWatchingMousePointer()) {
     return;
+  }
 
-  if (should_watch_mouse)
-    StartWatchingMouse();
-  else
-    StopWatchingMouse();
+  if (should_watch_pointer) {
+    StartWatchingMousePointer();
+  } else {
+    StopWatchingMousePointer();
+  }
 }
 
 void ExclusiveAccessBubbleViews::UpdateBounds() {
@@ -279,8 +282,9 @@ gfx::Rect ExclusiveAccessBubbleViews::GetPopupRect() const {
   int x = widget_bounds.x() + (widget_bounds.width() - size.width()) / 2;
 
   int top_container_bottom = widget_bounds.y();
+#if !BUILDFLAG(IS_MAC)
   if (bubble_view_context_->IsImmersiveModeEnabled()) {
-    // Skip querying the top container height in non-immersive fullscreen
+    // Skip querying the top container height in CrOS non-immersive fullscreen
     // because:
     // - The top container height is always zero in non-immersive fullscreen.
     // - Querying the top container height may return the height before entering
@@ -292,6 +296,7 @@ gfx::Rect ExclusiveAccessBubbleViews::GetPopupRect() const {
     top_container_bottom =
         bubble_view_context_->GetTopContainerBoundsInScreen().bottom();
   }
+#endif
   // |desired_top| is the top of the bubble area including the shadow.
   const int desired_top = kSimplifiedPopupTopPx - view_->GetInsets().top();
   const int y = top_container_bottom + desired_top;
@@ -333,12 +338,12 @@ bool ExclusiveAccessBubbleViews::IsAnimating() {
   return animation_->is_animating();
 }
 
-bool ExclusiveAccessBubbleViews::CanTriggerOnMouse() const {
-  return bubble_view_context_->CanTriggerOnMouse();
+bool ExclusiveAccessBubbleViews::CanTriggerOnMousePointer() const {
+  return bubble_view_context_->CanTriggerOnMousePointer();
 }
 
 void ExclusiveAccessBubbleViews::OnFullscreenStateChanged() {
-  UpdateMouseWatcher();
+  UpdateMousePointerWatcher();
 }
 
 void ExclusiveAccessBubbleViews::OnWidgetDestroyed(views::Widget* widget) {
@@ -361,7 +366,7 @@ void ExclusiveAccessBubbleViews::OnWidgetDestroyed(views::Widget* widget) {
 void ExclusiveAccessBubbleViews::OnWidgetVisibilityChanged(
     views::Widget* widget,
     bool visible) {
-  UpdateMouseWatcher();
+  UpdateMousePointerWatcher();
 }
 
 void ExclusiveAccessBubbleViews::RunHideCallbackIfNeeded(

@@ -9,7 +9,6 @@ android_library("java") {
     ":*",
     "../test:*",
     "//chrome/android:chrome_all_java",
-    "//weblayer/browser/java:java",
   ]
 
   sources = [

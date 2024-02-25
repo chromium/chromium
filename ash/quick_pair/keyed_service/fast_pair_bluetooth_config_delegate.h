@@ -5,12 +5,13 @@
 #ifndef ASH_QUICK_PAIR_KEYED_SERVICE_FAST_PAIR_BLUETOOTH_CONFIG_DELEGATE_H_
 #define ASH_QUICK_PAIR_KEYED_SERVICE_FAST_PAIR_BLUETOOTH_CONFIG_DELEGATE_H_
 
+#include <optional>
+
 #include "ash/quick_pair/common/device.h"
 #include "base/memory/raw_ptr.h"
 #include "base/observer_list.h"
 #include "base/observer_list_types.h"
 #include "chromeos/ash/services/bluetooth_config/fast_pair_delegate.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ash::bluetooth_config {
 class AdapterStateController;
@@ -47,7 +48,7 @@ class FastPairBluetoothConfigDelegate
   ~FastPairBluetoothConfigDelegate() override;
 
   // bluetooth_config::FastPairDelegate
-  absl::optional<bluetooth_config::DeviceImageInfo> GetDeviceImageInfo(
+  std::optional<bluetooth_config::DeviceImageInfo> GetDeviceImageInfo(
       const std::string& device_id) override;
   void ForgetDevice(const std::string& mac_address) override;
   void UpdateDeviceNickname(const std::string& mac_address,
@@ -102,11 +103,10 @@ class FastPairBluetoothConfigDelegate
   std::vector<bluetooth_config::mojom::PairedBluetoothDevicePropertiesPtr>
       fast_pairable_device_properties_;
 
-  raw_ptr<Delegate, ExperimentalAsh> delegate_;
-  raw_ptr<bluetooth_config::AdapterStateController, ExperimentalAsh>
-      adapter_state_controller_ = nullptr;
-  raw_ptr<bluetooth_config::DeviceNameManager, ExperimentalAsh>
-      device_name_manager_ = nullptr;
+  raw_ptr<Delegate> delegate_;
+  raw_ptr<bluetooth_config::AdapterStateController> adapter_state_controller_ =
+      nullptr;
+  raw_ptr<bluetooth_config::DeviceNameManager> device_name_manager_ = nullptr;
 };
 
 }  // namespace quick_pair

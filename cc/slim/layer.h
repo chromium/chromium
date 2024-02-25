@@ -7,25 +7,22 @@
 
 #include <vector>
 
+#include <optional>
 #include "base/component_export.h"
+#include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/scoped_refptr.h"
 #include "cc/paint/filter_operations.h"
 #include "cc/slim/filter.h"
 #include "cc/slim/frame_data.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/skia/include/core/SkColor.h"
-#include "ui/gfx/geometry/point3_f.h"
+#include "ui/gfx/geometry/linear_gradient.h"
 #include "ui/gfx/geometry/point_f.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/rounded_corners_f.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/geometry/transform.h"
-
-namespace cc {
-class Layer;
-}
 
 namespace viz {
 class CompositorRenderPass;
@@ -108,13 +105,12 @@ class COMPONENT_EXPORT(CC_SLIM) Layer : public base::RefCounted<Layer> {
   // ancestor layers. The root layer's position is not used as it always
   // appears at the origin of the viewport.
   void SetPosition(const gfx::PointF& position);
-  // TODO(crbug.com/1408128): Return by reference after no longer wrapping cc.
-  const gfx::PointF position() const;
+  const gfx::PointF& position() const { return position_; }
 
   // Set and get the layers bounds. This is specified in layer space, which
   // ignores transforms for this layer or ancestor layers.
   void SetBounds(const gfx::Size& bounds);
-  const gfx::Size& bounds() const;
+  const gfx::Size& bounds() const { return bounds_; }
 
   // Set or get the transform to be used when compositing this layer into its
   // target. The transform is inherited by this layers children.
@@ -123,7 +119,7 @@ class COMPONENT_EXPORT(CC_SLIM) Layer : public base::RefCounted<Layer> {
   // translate, and shear in the x-y plane, as well as rotation about the z
   // axis.
   void SetTransform(const gfx::Transform& transform);
-  const gfx::Transform& transform() const;
+  const gfx::Transform& transform() const { return transform_; }
 
   // Set or get the origin to be used when applying the transform. The value is
   // a position in layer space, relative to the top left corner of this layer.
@@ -132,8 +128,8 @@ class COMPONENT_EXPORT(CC_SLIM) Layer : public base::RefCounted<Layer> {
   // center of the layer, leaving it occupying the same space. Whereas set to
   // the top left of the layer, the rotation wouldoccur around the top of the
   // layer, moving it vertically while flipping it.
-  void SetTransformOrigin(const gfx::Point3F& origin);
-  gfx::Point3F transform_origin() const;
+  void SetTransformOrigin(const gfx::PointF& origin);
+  const gfx::PointF& transform_origin() const { return transform_origin_; }
 
   // When true the layer may contribute to the compositor's output. When false,
   // it does not. This property does not apply to children of the layer, they
@@ -146,7 +142,7 @@ class COMPONENT_EXPORT(CC_SLIM) Layer : public base::RefCounted<Layer> {
   // calculate the safe opaque background color. Subclasses may also use the
   // color for other purposes.
   virtual void SetBackgroundColor(SkColor4f color);
-  SkColor4f background_color() const;
+  SkColor4f background_color() const { return background_color_; }
 
   // Set or get an optimization hint that the contents of this layer are fully
   // opaque or not. If true, every pixel of content inside the layer's bounds
@@ -154,7 +150,7 @@ class COMPONENT_EXPORT(CC_SLIM) Layer : public base::RefCounted<Layer> {
   // and not to children, and does not imply the layer should be composited
   // opaquely, as effects may be applied such as opacity() or filters().
   void SetContentsOpaque(bool opaque);
-  bool contents_opaque() const;
+  bool contents_opaque() const { return contents_opaque_; }
 
   // Set or get the opacity which should be applied to the contents of the layer
   // and its subtree (together as a single composited entity) when blending them
@@ -162,13 +158,13 @@ class COMPONENT_EXPORT(CC_SLIM) Layer : public base::RefCounted<Layer> {
   // layer, which may be opaque or not (see contents_opaque()). Note that the
   // opacity is cumulative since it applies to the layer's subtree.
   virtual void SetOpacity(float opacity);
-  float opacity() const;
+  float opacity() const { return opacity_; }
 
   // Is true if the layer will contribute content to the compositor's output.
   // Will be false if SetIsDrawable(false) is called. But will also be false if
   // the layer itself has no content to contribute, even though the layer was
   // given SetIsDrawable(true).
-  bool draws_content() const;
+  bool draws_content() const { return draws_content_; }
 
   // Returns the number of layers in this layers subtree (excluding itself) for
   // which DrawsContent() is true.
@@ -179,12 +175,12 @@ class COMPONENT_EXPORT(CC_SLIM) Layer : public base::RefCounted<Layer> {
   // to the user, but still remains part of the tree with all its normal drawing
   // properties.
   void SetHideLayerAndSubtree(bool hide);
-  bool hide_layer_and_subtree() const;
+  bool hide_layer_and_subtree() const { return hide_layer_and_subtree_; }
 
   // Set or get that this layer clips its subtree to within its bounds. Content
   // of children will be intersected with the bounds of this layer when true.
   void SetMasksToBounds(bool masks_to_bounds);
-  bool masks_to_bounds() const;
+  bool masks_to_bounds() const { return masks_to_bounds_; }
 
   // Set or get the list of filter effects to be applied to the contents of the
   // layer and its subtree (together as a single composited entity) when
@@ -197,23 +193,36 @@ class COMPONENT_EXPORT(CC_SLIM) Layer : public base::RefCounted<Layer> {
   // is applied to the layer and its subtree. Setting this to non-empty also has
   // similar effect as `SetMasksToBounds(true)` that the subtree is clipped to
   // its bounds (with rounded corner).
+  // This is stored in the same structure as `SetGradientMask`. It is more
+  // efficient to avoid setting multiple rounded corner or linear gradient in
+  // the same subtree.
   void SetRoundedCorner(const gfx::RoundedCornersF& corner_radii);
-  const gfx::RoundedCornersF& corner_radii() const;
-  // Returns true if any of the corner has a non-zero radius set.
-  bool HasRoundedCorner() const;
+  const gfx::RoundedCornersF& corner_radii() const { return rounded_corners_; }
+
+  // Set the linear gradient mask, applied to this layer's bounds. It is applied
+  // to the layer and its subtree. Setting this to non-empty also has similar
+  // effect as `SetMasksToBounds(true)` that the subtree is clipped to its
+  // bounds.
+  // This is stored in the same structure as `SetRoundedCorner`. It is more
+  // efficient to avoid setting multiple rounded corner or linear gradient in
+  // the same subtree.
+  void SetGradientMask(const gfx::LinearGradient& gradient_mask);
+  const gfx::LinearGradient& gradient_mask() const { return gradient_mask_; }
 
  protected:
   friend class LayerTreeCcWrapper;
   friend class LayerTreeImpl;
+  FRIEND_TEST_ALL_PREFIXES(SlimLayerTest, LayerProperties);
 
-  explicit Layer(scoped_refptr<cc::Layer> cc_layer);
+  Layer();
   virtual ~Layer();
 
   // Called by LayerTree.
   gfx::Transform ComputeTransformToParent() const;
-  absl::optional<gfx::Transform> ComputeTransformFromParent() const;
+  std::optional<gfx::Transform> ComputeTransformFromParent() const;
   bool HasFilters() const;
   cc::FilterOperations GetFilters() const;
+  bool HasNonTrivialMaskFilterInfo() const;
   // This method counts this layer, This is different from
   // `NumDescendantsThatDrawContent` which counts descendent layers only.
   int GetNumDrawingLayersInSubtree() const;
@@ -256,12 +265,8 @@ class COMPONENT_EXPORT(CC_SLIM) Layer : public base::RefCounted<Layer> {
   void NotifySubtreeChanged();
   void NotifyPropertyChanged();
 
-  const scoped_refptr<cc::Layer> cc_layer_;
-
  private:
   friend class base::RefCounted<Layer>;
-
-  cc::Layer* cc_layer() const { return cc_layer_.get(); }
 
   void WillAddChildSlim(Layer* child);
   void InsertChildSlim(scoped_refptr<Layer> child, size_t position);
@@ -273,32 +278,33 @@ class COMPONENT_EXPORT(CC_SLIM) Layer : public base::RefCounted<Layer> {
   raw_ptr<Layer> parent_ = nullptr;
   std::vector<scoped_refptr<Layer>> children_;
 
-  raw_ptr<LayerTree, DanglingUntriaged> layer_tree_ = nullptr;
+  raw_ptr<LayerTree> layer_tree_ = nullptr;
 
   int num_descendants_that_draw_content_ = 0;
 
   gfx::PointF position_;
   gfx::Size bounds_;
   gfx::Transform transform_;
-  gfx::Point3F transform_origin_;
+  gfx::PointF transform_origin_;
 
   std::vector<Filter> filters_;
   gfx::RoundedCornersF rounded_corners_;
+  gfx::LinearGradient gradient_mask_;
 
   SkColor4f background_color_ = SkColors::kTransparent;
   float opacity_ = 1.0f;
-  bool is_drawable_ : 1;
-  bool contents_opaque_ : 1;
-  bool draws_content_ : 1;
-  bool hide_layer_and_subtree_ : 1;
-  bool masks_to_bounds_ : 1;
+  bool is_drawable_ : 1 = false;
+  bool contents_opaque_ : 1 = false;
+  bool draws_content_ : 1 = false;
+  bool hide_layer_and_subtree_ : 1 = false;
+  bool masks_to_bounds_ : 1 = false;
 
   // Indicates there is damage for this layer.
-  bool property_changed_ : 1;
+  bool property_changed_ : 1 = false;
   // Indicates there is damage for the entire subtree. This is tracked
   // only at the root of the subtree, and is applied recursively to the entire
   // subtree at draw time.
-  bool subtree_property_changed_ : 1;
+  bool subtree_property_changed_ : 1 = false;
 };
 
 }  // namespace cc::slim

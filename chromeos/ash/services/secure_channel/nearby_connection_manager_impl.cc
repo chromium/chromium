@@ -4,11 +4,15 @@
 
 #include "chromeos/ash/services/secure_channel/nearby_connection_manager_impl.h"
 
+#include <optional>
+
 #include "base/containers/contains.h"
 #include "base/memory/ptr_util.h"
 #include "chromeos/ash/components/multidevice/logging/logging.h"
 #include "chromeos/ash/services/secure_channel/authenticated_channel_impl.h"
+#include "chromeos/ash/services/secure_channel/device_id_pair.h"
 #include "chromeos/ash/services/secure_channel/nearby_connection.h"
+#include "chromeos/ash/services/secure_channel/public/mojom/secure_channel.mojom-shared.h"
 #include "chromeos/ash/services/secure_channel/public/mojom/secure_channel.mojom.h"
 #include "chromeos/ash/services/secure_channel/secure_channel_disconnector.h"
 
@@ -75,7 +79,6 @@ void NearbyConnectionManagerImpl::PerformCancelNearbyInitiatorConnectionAttempt(
   // authenticated channel, that request was not actually active.
   if (notifying_remote_device_id_ == device_id_pair.remote_device_id())
     return;
-
   ble_scanner_->RemoveScanRequest(ConnectionAttemptDetails(
       device_id_pair, ConnectionMedium::kNearbyConnections,
       ConnectionRole::kInitiatorRole));
@@ -96,9 +99,20 @@ void NearbyConnectionManagerImpl::OnReceivedAdvertisement(
   std::unique_ptr<Connection> connection = NearbyConnection::Factory::Create(
       remote_device, eid, GetNearbyConnector());
 
+  NotifyBleDiscoveryStateChanged(
+      ChooseChannelRecipient(remote_device.GetDeviceId()),
+      mojom::DiscoveryResult::kSuccess, std::nullopt);
   SetAuthenticatingChannel(
       remote_device.GetDeviceId(),
       SecureChannel::Factory::Create(std::move(connection)));
+}
+
+void NearbyConnectionManagerImpl::OnDiscoveryFailed(
+    const DeviceIdPair& device_id_pair,
+    mojom::DiscoveryResult discovery_result,
+    std::optional<mojom::DiscoveryErrorCode> potential_error_code) {
+  NotifyBleDiscoveryStateChanged(device_id_pair, discovery_result,
+                                 potential_error_code);
 }
 
 void NearbyConnectionManagerImpl::OnSecureChannelStatusChanged(
@@ -117,6 +131,25 @@ void NearbyConnectionManagerImpl::OnSecureChannelStatusChanged(
 
   if (new_status == SecureChannel::Status::AUTHENTICATED)
     HandleChannelAuthenticated(remote_device_id);
+}
+
+void NearbyConnectionManagerImpl::OnNearbyConnectionStateChanged(
+    SecureChannel* secure_channel,
+    mojom::NearbyConnectionStep step,
+    mojom::NearbyConnectionStepResult result) {
+  std::string remote_device_id =
+      GetRemoteDeviceIdForSecureChannel(secure_channel);
+  NotifyNearbyConnectionStateChanged(ChooseChannelRecipient(remote_device_id),
+                                     step, result);
+}
+
+void NearbyConnectionManagerImpl::OnSecureChannelAuthenticationStateChanged(
+    SecureChannel* secure_channel,
+    mojom::SecureChannelState secure_channel_state) {
+  std::string remote_device_id =
+      GetRemoteDeviceIdForSecureChannel(secure_channel);
+  NotifySecureChannelAuthenticationStateChanged(
+      ChooseChannelRecipient(remote_device_id), secure_channel_state);
 }
 
 bool NearbyConnectionManagerImpl::DoesAuthenticatingChannelExist(

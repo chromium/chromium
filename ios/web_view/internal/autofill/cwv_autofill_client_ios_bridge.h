@@ -18,12 +18,7 @@
 namespace autofill {
 class AutofillProfile;
 class CreditCard;
-class FormStructure;
 }  // namespace autofill
-
-namespace web {
-class WebFrame;
-}  // namespace web
 
 // WebView extension of AutofillClientIOSBridge.
 @protocol CWVAutofillClientIOSBridge<AutofillClientIOSBridge>
@@ -52,13 +47,8 @@ class WebFrame;
 - (void)didReceiveUnmaskVerificationResult:
     (autofill::AutofillClient::PaymentsRpcResult)result;
 
-// Bridge for AutofillClient's method |LoadRiskData|.
+// Bridge for PaymentsAutofillClient's method `LoadRiskData`.
 - (void)loadRiskData:(base::OnceCallback<void(const std::string&)>)callback;
-
-// Bridge for AutofillClient's method |PropagateAutofillPredictionsDeprecated|.
-- (void)propagateAutofillPredictionsForForms:
-            (const std::vector<autofill::FormStructure*>&)forms
-                                     inFrame:(web::WebFrame*)frame;
 
 // Bridge for AutofillClient's method |ConfirmSaveAddressProfile|.
 - (void)

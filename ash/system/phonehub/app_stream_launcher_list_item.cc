@@ -7,8 +7,8 @@
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/style_util.h"
 #include "ash/style/typography.h"
-#include "chromeos/constants/chromeos_features.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
 #include "ui/color/color_id.h"
 #include "ui/gfx/image/image.h"
@@ -27,10 +27,8 @@ AppStreamLauncherListItem::AppStreamLauncherListItem(
     PressedCallback callback,
     const phonehub::Notification::AppMetadata& app_metadata)
     : LabelButton(std::move(callback), app_metadata.visible_app_name) {
-  if (chromeos::features::IsJellyrollEnabled()) {
-    TypographyProvider::Get()->StyleLabel(ash::TypographyToken::kCrosBody2,
-                                          *label());
-  }
+  TypographyProvider::Get()->StyleLabel(ash::TypographyToken::kCrosBody2,
+                                        *label());
 
   gfx::ImageSkia resized_app_icon =
       gfx::ImageSkiaOperations::CreateResizedImage(
@@ -38,20 +36,19 @@ AppStreamLauncherListItem::AppStreamLauncherListItem(
           skia::ImageOperations::RESIZE_BEST,
           gfx::Size(kEcheAppLIstItemIconSize, kEcheAppLIstItemIconSize));
 
-  SetImage(STATE_NORMAL, resized_app_icon);
+  SetImageModel(STATE_NORMAL, ui::ImageModel::FromImageSkia(resized_app_icon));
   // Fade the image in order to make it look like grayed out.
-  SetImage(views::Button::ButtonState::STATE_DISABLED,
-           gfx::ImageSkiaOperations::CreateTransparentImage(
-               resized_app_icon, kAlphaValueForInhibitedIconOpacity));
+  SetImageModel(views::Button::ButtonState::STATE_DISABLED,
+                ui::ImageModel::FromImageSkia(
+                    gfx::ImageSkiaOperations::CreateTransparentImage(
+                        resized_app_icon, kAlphaValueForInhibitedIconOpacity)));
 
-  if (chromeos::features::IsJellyrollEnabled()) {
-    ash::StyleUtil::SetUpInkDropForButton(this, gfx::Insets(),
-                                          /*highlight_on_hover=*/false,
-                                          /*highlight_on_focus=*/true);
-    views::FocusRing::Get(this)->SetColorId(
-        static_cast<ui::ColorId>(cros_tokens::kCrosSysFocusRing));
-    views::InstallRectHighlightPathGenerator(this);
-  }
+  ash::StyleUtil::SetUpInkDropForButton(this, gfx::Insets(),
+                                        /*highlight_on_hover=*/false,
+                                        /*highlight_on_focus=*/true);
+  views::FocusRing::Get(this)->SetColorId(
+      static_cast<ui::ColorId>(cros_tokens::kCrosSysFocusRing));
+  views::InstallRectHighlightPathGenerator(this);
 
   SetTooltipText(GetAppAccessibleName(app_metadata));
   SetEnabled(app_metadata.app_streamability_status ==
@@ -74,8 +71,7 @@ std::u16string AppStreamLauncherListItem::GetAppAccessibleName(
   }
 }
 
-const char* AppStreamLauncherListItem::GetClassName() const {
-  return "AppStreamLauncherListItem";
-}
+BEGIN_METADATA(AppStreamLauncherListItem)
+END_METADATA
 
 }  // namespace ash

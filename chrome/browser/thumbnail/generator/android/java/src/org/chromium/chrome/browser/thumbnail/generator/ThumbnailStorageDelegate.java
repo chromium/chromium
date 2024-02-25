@@ -16,5 +16,5 @@ public interface ThumbnailStorageDelegate {
      * @param contentId Content ID of the thumbnail retrieved.
      * @param bitmap The thumbnail retrieved.
      */
-    default void onThumbnailRetrieved(@NonNull String contentId, @Nullable Bitmap bitmap){};
+    default void onThumbnailRetrieved(@NonNull String contentId, @Nullable Bitmap bitmap) {}
 }

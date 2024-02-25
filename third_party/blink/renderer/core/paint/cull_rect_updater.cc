@@ -9,7 +9,8 @@
 #include "third_party/blink/renderer/core/frame/local_frame_view.h"
 #include "third_party/blink/renderer/core/layout/layout_embedded_content.h"
 #include "third_party/blink/renderer/core/layout/layout_view.h"
-#include "third_party/blink/renderer/core/layout/ng/ng_physical_box_fragment.h"
+#include "third_party/blink/renderer/core/layout/physical_box_fragment.h"
+#include "third_party/blink/renderer/core/paint/fragment_data_iterator.h"
 #include "third_party/blink/renderer/core/paint/object_paint_properties.h"
 #include "third_party/blink/renderer/core/paint/paint_layer.h"
 #include "third_party/blink/renderer/core/paint/paint_layer_paint_order_iterator.h"
@@ -144,7 +145,7 @@ bool ShouldUseInfiniteCullRect(
   }
 
   if (view_transition_supplement) {
-    auto* transition = view_transition_supplement->GetActiveTransition();
+    auto* transition = view_transition_supplement->GetTransition();
 
     // This means that the contents of the object are drawn elsewhere, so we
     // shouldn't cull it.
@@ -272,8 +273,7 @@ void CullRectUpdater::UpdateRecursively(const Context& parent_context,
   }
 
   if (!context.current.subtree_is_out_of_cull_rect &&
-      object.ShouldClipOverflowAlongBothAxis() &&
-      !object.FirstFragment().NextFragment()) {
+      object.ShouldClipOverflowAlongBothAxis() && !object.IsFragmented()) {
     const auto* box = layer.GetLayoutBox();
     DCHECK(box);
     PhysicalRect clip_rect =
@@ -346,10 +346,7 @@ void CullRectUpdater::UpdateForDescendants(const Context& context,
 }
 
 bool CullRectUpdater::UpdateForSelf(Context& context, PaintLayer& layer) {
-  const auto& first_parent_fragment =
-      context.current.container->GetLayoutObject().FirstFragment();
-  auto& first_fragment =
-      layer.GetLayoutObject().GetMutableForPainting().FirstFragment();
+  const auto& parent_object = context.current.container->GetLayoutObject();
   // If the containing layer is fragmented, try to match fragments from the
   // container to |layer|, so that any fragment clip for
   // |context.current.container|'s fragment matches |layer|'s.
@@ -358,7 +355,7 @@ bool CullRectUpdater::UpdateForSelf(Context& context, PaintLayer& layer) {
   // correctly here. In order to fix that, we most likely need to move over to
   // some sort of fragment tree traversal (rather than pure PaintLayer tree
   // traversal).
-  bool should_match_fragments = first_parent_fragment.NextFragment();
+  bool should_match_fragments = parent_object.IsFragmented();
   bool force_update_children = false;
   bool should_use_infinite_cull_rect =
       !context.current.subtree_is_out_of_cull_rect &&
@@ -366,8 +363,8 @@ bool CullRectUpdater::UpdateForSelf(Context& context, PaintLayer& layer) {
           layer, view_transition_supplement_,
           context.current.subtree_should_use_infinite_cull_rect);
 
-  for (auto* fragment = &first_fragment; fragment;
-       fragment = fragment->NextFragment()) {
+  for (FragmentData& fragment :
+       MutableFragmentDataIterator(layer.GetLayoutObject())) {
     CullRect cull_rect;
     CullRect contents_cull_rect;
     if (context.current.subtree_is_out_of_cull_rect) {
@@ -378,13 +375,15 @@ bool CullRectUpdater::UpdateForSelf(Context& context, PaintLayer& layer) {
       const FragmentData* parent_fragment = nullptr;
       if (!should_use_infinite_cull_rect) {
         if (should_match_fragments) {
-          for (parent_fragment = &first_parent_fragment; parent_fragment;
-               parent_fragment = parent_fragment->NextFragment()) {
-            if (parent_fragment->FragmentID() == fragment->FragmentID())
+          for (const FragmentData& walker :
+               FragmentDataIterator(parent_object)) {
+            parent_fragment = &walker;
+            if (parent_fragment->FragmentID() == fragment.FragmentID()) {
               break;
+            }
           }
         } else {
-          parent_fragment = &first_parent_fragment;
+          parent_fragment = &parent_object.FirstFragment();
         }
       }
 
@@ -392,16 +391,16 @@ bool CullRectUpdater::UpdateForSelf(Context& context, PaintLayer& layer) {
         cull_rect = CullRect::Infinite();
         contents_cull_rect = CullRect::Infinite();
       } else {
-        cull_rect = ComputeFragmentCullRect(context, layer, *fragment,
-                                            *parent_fragment);
+        cull_rect =
+            ComputeFragmentCullRect(context, layer, fragment, *parent_fragment);
         contents_cull_rect = ComputeFragmentContentsCullRect(
-            context, layer, *fragment, cull_rect);
+            context, layer, fragment, cull_rect);
       }
     }
 
-    SetFragmentCullRect(layer, *fragment, cull_rect);
+    SetFragmentCullRect(layer, fragment, cull_rect);
     force_update_children |=
-        SetFragmentContentsCullRect(layer, *fragment, contents_cull_rect);
+        SetFragmentContentsCullRect(layer, fragment, contents_cull_rect);
   }
 
   return force_update_children;
@@ -437,7 +436,7 @@ CullRect CullRectUpdater::ComputeFragmentCullRect(
   }
 
   if (parent_state != local_state) {
-    absl::optional<CullRect> old_cull_rect;
+    std::optional<CullRect> old_cull_rect;
     // Not using |old_cull_rect| will force the cull rect to be updated
     // (skipping |ChangedEnough|) in |ApplyPaintProperties|.
     if (!ShouldProactivelyUpdate(context, layer))
@@ -460,7 +459,7 @@ CullRect CullRectUpdater::ComputeFragmentContentsCullRect(
   CullRect contents_cull_rect = cull_rect;
   auto contents_state = fragment.ContentsProperties().Unalias();
   if (contents_state != local_state) {
-    absl::optional<CullRect> old_contents_cull_rect;
+    std::optional<CullRect> old_contents_cull_rect;
     // Not using |old_cull_rect| will force the cull rect to be updated
     // (skipping |CullRect::ChangedEnough|) in |ApplyPaintProperties|.
     if (!ShouldProactivelyUpdate(context, layer))

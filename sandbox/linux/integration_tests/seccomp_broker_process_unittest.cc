@@ -592,7 +592,7 @@ class BPFTesterBrokerDelegate : public BPFTesterDelegate {
     BrokerTestDelegate::BrokerParams broker_params =
         broker_test_delegate_->ChildSetUpPreSandbox();
 
-    auto policy = absl::make_optional<syscall_broker::BrokerSandboxConfig>(
+    auto policy = std::make_optional<syscall_broker::BrokerSandboxConfig>(
         broker_params.allowed_command_set, broker_params.permissions,
         broker_params.denied_errno);
     broker_process_ = std::make_unique<BrokerProcess>(

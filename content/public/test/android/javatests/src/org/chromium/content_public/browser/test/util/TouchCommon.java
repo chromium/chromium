@@ -36,14 +36,21 @@ public class TouchCommon {
      * @param stepCount How many move steps to include in the drag.
      * @param duration The amount of time that will be simulated for the event stream in ms.
      */
-    public static void performDrag(View view, float fromX, float toX, float fromY, float toY,
-            int stepCount, long duration) {
+    public static void performDrag(
+            View view,
+            float fromX,
+            float toX,
+            float fromY,
+            float toY,
+            int stepCount,
+            long duration) {
         // Use the current time as the base to add to.
         final long downTime = SystemClock.uptimeMillis();
         float[] windowXY = screenToWindowCoordinates(view, fromX, fromY);
 
         // Start by sending the down event.
-        dispatchTouchEvent(view,
+        dispatchTouchEvent(
+                view,
                 MotionEvent.obtain(
                         downTime, downTime, MotionEvent.ACTION_DOWN, windowXY[0], windowXY[1], 0));
 
@@ -59,14 +66,21 @@ public class TouchCommon {
             x += xStep;
             eventTime += i * duration / stepCount;
             windowXY = screenToWindowCoordinates(view, x, y);
-            dispatchTouchEvent(view,
-                    MotionEvent.obtain(downTime, eventTime, MotionEvent.ACTION_MOVE, windowXY[0],
-                            windowXY[1], 0));
+            dispatchTouchEvent(
+                    view,
+                    MotionEvent.obtain(
+                            downTime,
+                            eventTime,
+                            MotionEvent.ACTION_MOVE,
+                            windowXY[0],
+                            windowXY[1],
+                            0));
         }
 
         // Finally send the up event.
         windowXY = screenToWindowCoordinates(view, toX, toY);
-        dispatchTouchEvent(view,
+        dispatchTouchEvent(
+                view,
                 MotionEvent.obtain(
                         downTime, eventTime, MotionEvent.ACTION_UP, windowXY[0], windowXY[1], 0));
     }
@@ -83,8 +97,14 @@ public class TouchCommon {
      * @param stepCount How many move steps to include in the drag.
      * @param duration The amount of time that will be simulated for the event stream in ms.
      */
-    public static void performDrag(Activity activity, float fromX, float toX, float fromY,
-            float toY, int stepCount, long duration) {
+    public static void performDrag(
+            Activity activity,
+            float fromX,
+            float toX,
+            float fromY,
+            float toY,
+            int stepCount,
+            long duration) {
         performDrag(getRootViewForActivity(activity), fromX, toX, fromY, toY, stepCount, duration);
     }
 
@@ -102,8 +122,9 @@ public class TouchCommon {
         float[] windowXY = screenToWindowCoordinates(view, x, y);
         float windowX = windowXY[0];
         float windowY = windowXY[1];
-        MotionEvent event = MotionEvent.obtain(
-                downTime, downTime, MotionEvent.ACTION_DOWN, windowX, windowY, 0);
+        MotionEvent event =
+                MotionEvent.obtain(
+                        downTime, downTime, MotionEvent.ACTION_DOWN, windowX, windowY, 0);
         dispatchTouchEvent(view, event);
     }
 
@@ -120,8 +141,14 @@ public class TouchCommon {
      * @param downTime When the drag was started, in millis since the epoch.
      */
     @Deprecated
-    public static void dragTo(Activity activity, float fromX, float toX, float fromY, float toY,
-            int stepCount, long downTime) {
+    public static void dragTo(
+            Activity activity,
+            float fromX,
+            float toX,
+            float fromY,
+            float toY,
+            int stepCount,
+            long downTime) {
         View view = getRootViewForActivity(activity);
         float x = fromX;
         float y = fromY;
@@ -134,8 +161,9 @@ public class TouchCommon {
             float[] windowXY = screenToWindowCoordinates(view, x, y);
             float windowX = windowXY[0];
             float windowY = windowXY[1];
-            MotionEvent event = MotionEvent.obtain(
-                    downTime, eventTime, MotionEvent.ACTION_MOVE, windowX, windowY, 0);
+            MotionEvent event =
+                    MotionEvent.obtain(
+                            downTime, eventTime, MotionEvent.ACTION_MOVE, windowX, windowY, 0);
             dispatchTouchEvent(view, event);
         }
     }
@@ -185,21 +213,21 @@ public class TouchCommon {
      */
     /* package */ static boolean singleClickViewThroughTarget(
             View view, View target, int x, int y) {
-        int windowXY[] = viewToWindowCoordinates(view, x, y);
+        int[] windowXY = viewToWindowCoordinates(view, x, y);
         int windowX = windowXY[0];
         int windowY = windowXY[1];
         return singleClickInternal(target, windowX, windowY);
     }
 
-    /**
-     * Sends (synchronously) a single click to the center of the View.
-     */
+    /** Sends (synchronously) a single click to the center of the View. */
     public static void singleClickView(View v) {
         int width = v.getWidth();
         int height = v.getHeight();
         if (width <= 0 || height <= 0) {
-            throw new IllegalStateException(String.format(
-                    "Cannot click view with dimensions w%d x h%d, view=%s", width, height, v));
+            throw new IllegalStateException(
+                    String.format(
+                            "Cannot click view with dimensions w%d x h%d, view=%s",
+                            width, height, v));
         }
         singleClickView(v, width / 2, height / 2);
     }
@@ -208,8 +236,9 @@ public class TouchCommon {
         long downTime = SystemClock.uptimeMillis();
         long eventTime = SystemClock.uptimeMillis();
 
-        MotionEvent event = MotionEvent.obtain(
-                downTime, eventTime, MotionEvent.ACTION_DOWN, windowX, windowY, 0);
+        MotionEvent event =
+                MotionEvent.obtain(
+                        downTime, eventTime, MotionEvent.ACTION_DOWN, windowX, windowY, 0);
         if (!dispatchTouchEvent(view, event)) return false;
 
         eventTime = SystemClock.uptimeMillis();
@@ -225,7 +254,7 @@ public class TouchCommon {
      * @param y Y coordinate, relative to v.
      */
     public static void longPressView(View v, int x, int y) {
-        int windowXY[] = viewToWindowCoordinates(v, x, y);
+        int[] windowXY = viewToWindowCoordinates(v, x, y);
         int windowX = windowXY[0];
         int windowY = windowXY[1];
         longPressInternal(v.getRootView(), windowX, windowY);
@@ -251,7 +280,7 @@ public class TouchCommon {
      * @param downTime When the drag was started, in millis since the epoch.
      */
     public static void longPressViewWithoutUp(View v, int x, int y, long downTime) {
-        int windowXY[] = viewToWindowCoordinates(v, x, y);
+        int[] windowXY = viewToWindowCoordinates(v, x, y);
         int windowX = windowXY[0];
         int windowY = windowXY[1];
         longPressWithoutUpInternal(v.getRootView(), windowX, windowY, downTime);
@@ -261,8 +290,9 @@ public class TouchCommon {
             View view, float windowX, float windowY, long downTime) {
         long eventTime = SystemClock.uptimeMillis();
 
-        MotionEvent event = MotionEvent.obtain(
-                downTime, eventTime, MotionEvent.ACTION_DOWN, windowX, windowY, 0);
+        MotionEvent event =
+                MotionEvent.obtain(
+                        downTime, eventTime, MotionEvent.ACTION_DOWN, windowX, windowY, 0);
         dispatchTouchEvent(view, event);
 
         int longPressTimeout = ViewConfiguration.getLongPressTimeout();
@@ -283,12 +313,15 @@ public class TouchCommon {
 
     private static View getRootViewForActivity(final Activity activity) {
         try {
-            View view = TestThreadUtils.runOnUiThreadBlocking(new Callable<View>() {
-                @Override
-                public View call() {
-                    return activity.findViewById(android.R.id.content).getRootView();
-                }
-            });
+            View view =
+                    TestThreadUtils.runOnUiThreadBlocking(
+                            new Callable<View>() {
+                                @Override
+                                public View call() {
+                                    return activity.findViewById(android.R.id.content)
+                                            .getRootView();
+                                }
+                            });
             assert view != null : "Failed to find root view for activity";
             return view;
         } catch (ExecutionException e) {
@@ -303,12 +336,13 @@ public class TouchCommon {
      */
     private static boolean dispatchTouchEvent(final View view, final MotionEvent event) {
         try {
-            return TestThreadUtils.runOnUiThreadBlocking(new Callable<Boolean>() {
-                @Override
-                public Boolean call() {
-                    return view.dispatchTouchEvent(event);
-                }
-            });
+            return TestThreadUtils.runOnUiThreadBlocking(
+                    new Callable<Boolean>() {
+                        @Override
+                        public Boolean call() {
+                            return view.dispatchTouchEvent(event);
+                        }
+                    });
         } catch (Throwable e) {
             throw new RuntimeException("Dispatching touch event failed", e);
         }
@@ -322,7 +356,7 @@ public class TouchCommon {
      * @return The coordinates relative to the window as a 2-element array.
      */
     private static int[] viewToWindowCoordinates(View v, int x, int y) {
-        int windowXY[] = new int[2];
+        int[] windowXY = new int[2];
         v.getLocationInWindow(windowXY);
         windowXY[0] += x;
         windowXY[1] += y;

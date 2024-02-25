@@ -211,7 +211,7 @@ void SocketExtensionWithDnsLookupFunction::StartDnsLookup(
       ->GetDefaultStoragePartition()
       ->GetNetworkContext()
       ->CreateHostResolver(
-          absl::nullopt,
+          std::nullopt,
           pending_host_resolver_.InitWithNewPipeAndPassReceiver());
   DCHECK(pending_host_resolver_);
 
@@ -229,8 +229,8 @@ void SocketExtensionWithDnsLookupFunction::StartDnsLookup(
   receiver_.set_disconnect_handler(base::BindOnce(
       &SocketExtensionWithDnsLookupFunction::OnComplete, base::Unretained(this),
       net::ERR_NAME_NOT_RESOLVED, net::ResolveErrorInfo(net::ERR_FAILED),
-      /*resolved_addresses=*/absl::nullopt,
-      /*endpoint_results_with_metadata=*/absl::nullopt));
+      /*resolved_addresses=*/std::nullopt,
+      /*endpoint_results_with_metadata=*/std::nullopt));
 
   // Balanced in OnComplete().
   AddRef();
@@ -239,8 +239,8 @@ void SocketExtensionWithDnsLookupFunction::StartDnsLookup(
 void SocketExtensionWithDnsLookupFunction::OnComplete(
     int result,
     const net::ResolveErrorInfo& resolve_error_info,
-    const absl::optional<net::AddressList>& resolved_addresses,
-    const absl::optional<net::HostResolverEndpointResults>&
+    const std::optional<net::AddressList>& resolved_addresses,
+    const std::optional<net::HostResolverEndpointResults>&
         endpoint_results_with_metadata) {
   host_resolver_.reset();
   receiver_.reset();
@@ -258,7 +258,7 @@ SocketCreateFunction::SocketCreateFunction() = default;
 SocketCreateFunction::~SocketCreateFunction() = default;
 
 ExtensionFunction::ResponseAction SocketCreateFunction::Work() {
-  absl::optional<api::socket::Create::Params> params =
+  std::optional<api::socket::Create::Params> params =
       api::socket::Create::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params);
 
@@ -504,7 +504,7 @@ SocketAcceptFunction::SocketAcceptFunction() = default;
 SocketAcceptFunction::~SocketAcceptFunction() = default;
 
 ExtensionFunction::ResponseAction SocketAcceptFunction::Work() {
-  absl::optional<api::socket::Accept::Params> params =
+  std::optional<api::socket::Accept::Params> params =
       api::socket::Accept::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params);
 
@@ -523,7 +523,7 @@ ExtensionFunction::ResponseAction SocketAcceptFunction::Work() {
 void SocketAcceptFunction::OnAccept(
     int result_code,
     mojo::PendingRemote<network::mojom::TCPConnectedSocket> socket,
-    const absl::optional<net::IPEndPoint>& remote_addr,
+    const std::optional<net::IPEndPoint>& remote_addr,
     mojo::ScopedDataPipeConsumerHandle receive_pipe_handle,
     mojo::ScopedDataPipeProducerHandle send_pipe_handle) {
   base::Value::Dict result;
@@ -542,7 +542,7 @@ SocketReadFunction::SocketReadFunction() = default;
 SocketReadFunction::~SocketReadFunction() = default;
 
 ExtensionFunction::ResponseAction SocketReadFunction::Work() {
-  absl::optional<api::socket::Read::Params> params =
+  std::optional<api::socket::Read::Params> params =
       api::socket::Read::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params);
 
@@ -587,8 +587,8 @@ ExtensionFunction::ResponseAction SocketWriteFunction::Work() {
   int socket_id = socket_id_value.GetInt();
   size_t io_buffer_size = data_value.GetBlob().size();
 
-  scoped_refptr<net::IOBuffer> io_buffer =
-      base::MakeRefCounted<net::IOBuffer>(data_value.GetBlob().size());
+  auto io_buffer =
+      base::MakeRefCounted<net::IOBufferWithSize>(data_value.GetBlob().size());
   base::ranges::copy(data_value.GetBlob(), io_buffer->data());
 
   Socket* socket = GetSocket(socket_id);
@@ -615,7 +615,7 @@ SocketRecvFromFunction::SocketRecvFromFunction() = default;
 SocketRecvFromFunction::~SocketRecvFromFunction() = default;
 
 ExtensionFunction::ResponseAction SocketRecvFromFunction::Work() {
-  absl::optional<api::socket::RecvFrom::Params> params =
+  std::optional<api::socket::RecvFrom::Params> params =
       api::socket::RecvFrom::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params);
 
@@ -676,7 +676,8 @@ ExtensionFunction::ResponseAction SocketSendToFunction::Work() {
 
   io_buffer_size_ = data_value.GetBlob().size();
 
-  io_buffer_ = base::MakeRefCounted<net::IOBuffer>(data_value.GetBlob().size());
+  io_buffer_ =
+      base::MakeRefCounted<net::IOBufferWithSize>(data_value.GetBlob().size());
   base::ranges::copy(data_value.GetBlob(), io_buffer_->data());
 
   Socket* socket = GetSocket(socket_id_);
@@ -727,7 +728,7 @@ SocketSetKeepAliveFunction::SocketSetKeepAliveFunction() = default;
 SocketSetKeepAliveFunction::~SocketSetKeepAliveFunction() = default;
 
 ExtensionFunction::ResponseAction SocketSetKeepAliveFunction::Work() {
-  absl::optional<api::socket::SetKeepAlive::Params> params =
+  std::optional<api::socket::SetKeepAlive::Params> params =
       api::socket::SetKeepAlive::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params);
 
@@ -755,7 +756,7 @@ SocketSetNoDelayFunction::SocketSetNoDelayFunction() = default;
 SocketSetNoDelayFunction::~SocketSetNoDelayFunction() = default;
 
 ExtensionFunction::ResponseAction SocketSetNoDelayFunction::Work() {
-  absl::optional<api::socket::SetNoDelay::Params> params =
+  std::optional<api::socket::SetNoDelay::Params> params =
       api::socket::SetNoDelay::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params);
 
@@ -779,7 +780,7 @@ SocketGetInfoFunction::SocketGetInfoFunction() = default;
 SocketGetInfoFunction::~SocketGetInfoFunction() = default;
 
 ExtensionFunction::ResponseAction SocketGetInfoFunction::Work() {
-  absl::optional<api::socket::GetInfo::Params> params =
+  std::optional<api::socket::GetInfo::Params> params =
       api::socket::GetInfo::Params::Create(args());
 
   Socket* socket = GetSocket(params->socket_id);
@@ -824,7 +825,7 @@ ExtensionFunction::ResponseAction SocketGetNetworkListFunction::Run() {
 }
 
 void SocketGetNetworkListFunction::GotNetworkList(
-    const absl::optional<net::NetworkInterfaceList>& interface_list) {
+    const std::optional<net::NetworkInterfaceList>& interface_list) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   if (!interface_list.has_value()) {
     Respond(Error(kNetworkListError));
@@ -850,7 +851,7 @@ SocketJoinGroupFunction::SocketJoinGroupFunction() = default;
 SocketJoinGroupFunction::~SocketJoinGroupFunction() = default;
 
 ExtensionFunction::ResponseAction SocketJoinGroupFunction::Work() {
-  absl::optional<api::socket::JoinGroup::Params> params =
+  std::optional<api::socket::JoinGroup::Params> params =
       api::socket::JoinGroup::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params);
 
@@ -890,7 +891,7 @@ SocketLeaveGroupFunction::SocketLeaveGroupFunction() = default;
 SocketLeaveGroupFunction::~SocketLeaveGroupFunction() = default;
 
 ExtensionFunction::ResponseAction SocketLeaveGroupFunction::Work() {
-  absl::optional<api::socket::LeaveGroup::Params> params =
+  std::optional<api::socket::LeaveGroup::Params> params =
       api::socket::LeaveGroup::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params);
 
@@ -932,7 +933,7 @@ SocketSetMulticastTimeToLiveFunction::~SocketSetMulticastTimeToLiveFunction() =
     default;
 
 ExtensionFunction::ResponseAction SocketSetMulticastTimeToLiveFunction::Work() {
-  absl::optional<api::socket::SetMulticastTimeToLive::Params> params =
+  std::optional<api::socket::SetMulticastTimeToLive::Params> params =
       api::socket::SetMulticastTimeToLive::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params);
 
@@ -962,7 +963,7 @@ SocketSetMulticastLoopbackModeFunction::
 
 ExtensionFunction::ResponseAction
 SocketSetMulticastLoopbackModeFunction::Work() {
-  absl::optional<api::socket::SetMulticastLoopbackMode::Params> params =
+  std::optional<api::socket::SetMulticastLoopbackMode::Params> params =
       api::socket::SetMulticastLoopbackMode::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params);
 
@@ -989,7 +990,7 @@ SocketGetJoinedGroupsFunction::SocketGetJoinedGroupsFunction() = default;
 SocketGetJoinedGroupsFunction::~SocketGetJoinedGroupsFunction() = default;
 
 ExtensionFunction::ResponseAction SocketGetJoinedGroupsFunction::Work() {
-  absl::optional<api::socket::GetJoinedGroups::Params> params =
+  std::optional<api::socket::GetJoinedGroups::Params> params =
       api::socket::GetJoinedGroups::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params);
 

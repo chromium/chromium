@@ -2,7 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "extensions/common/image_util.h"
+
 #include <string>
+#include <string_view>
 
 #include "base/files/file.h"
 #include "base/files/file_path.h"
@@ -11,7 +14,6 @@
 #include "base/strings/string_split.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "extensions/common/extension_paths.h"
-#include "extensions/common/image_util.h"
 #include "extensions/test/logging_timer.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/skia/include/core/SkBitmap.h"
@@ -214,9 +216,9 @@ TEST(ImageUtilTest, DISABLED_AnalyzeAllDownloadedIcons) {
   base::FilePath downloaded_icons_path = test_dir.AppendASCII("pngs");
   ASSERT_TRUE(base::DirectoryExists(downloaded_icons_path));
 
-  const std::vector<base::StringPiece> urls = base::SplitStringPiece(
+  const std::vector<std::string_view> urls = base::SplitStringPiece(
       file_data, "\n", base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
-  for (const base::StringPiece url : urls) {
+  for (const std::string_view url : urls) {
     const std::string file_name = GURL(url).ExtractFileName();
     base::FilePath icon_path = downloaded_icons_path.AppendASCII(file_name);
     SkBitmap current_icon;

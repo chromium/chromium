@@ -139,7 +139,7 @@ class APP_LIST_MODEL_EXPORT AppListFolderItem
   std::map<AppListConfigType, std::unique_ptr<FolderImage>> folder_images_;
 
   // Set when a folder item is being dragged.
-  raw_ptr<AppListItem, ExperimentalAsh> dragged_item_ = nullptr;
+  raw_ptr<AppListItem> dragged_item_ = nullptr;
 
   base::ScopedObservation<AppListConfigProvider,
                           AppListConfigProvider::Observer>

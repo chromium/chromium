@@ -10,6 +10,8 @@
 #include "chrome/browser/apps/app_service/app_icon/app_icon_util.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
+#include "chrome/browser/apps/app_service/promise_apps/promise_app_metrics.h"
+#include "chrome/browser/apps/app_service/promise_apps/promise_app_service.h"
 #include "chrome/browser/apps/app_service/promise_apps/promise_app_update.h"
 #include "chrome/browser/ash/app_list/app_list_model_updater.h"
 #include "chrome/browser/ash/app_list/app_service/app_service_promise_app_context_menu.h"
@@ -24,22 +26,24 @@ AppServicePromiseAppItem::AppServicePromiseAppItem(
     Profile* profile,
     AppListModelUpdater* model_updater,
     const apps::PromiseAppUpdate& update,
-    const syncer::StringOrdinal position)
+    const std::string& promised_app_id,
+    const app_list::AppListSyncableService::SyncItem* sync_item)
     : ChromeAppListItem(profile, update.PackageId().ToString()),
-      package_id_(update.PackageId()) {
+      package_id_(update.PackageId()),
+      promised_app_id_(promised_app_id) {
   InitializeItem(update);
-
-  SetPromisePackageId(update.PackageId().ToString());
-  SetAppStatus(
-      ShelfControllerHelper::ConvertPromiseStatusToAppStatus(update.Status()));
-  SetProgress(update.Progress().value_or(0));
 
   // Promise icons should not be synced as they are transient and only present
   // during app installations.
   SetIsEphemeral(true);
 
+  const syncer::StringOrdinal position =
+      sync_item ? sync_item->item_ordinal : syncer::StringOrdinal();
   SetPosition(position.IsValid() ? position
                                  : CalculateDefaultPositionIfApplicable());
+  if (sync_item) {
+    SetChromeFolderId(sync_item->parent_id);
+  }
 
   // Set model updater last to avoid being called during construction.
   set_model_updater(model_updater);
@@ -50,7 +54,9 @@ void AppServicePromiseAppItem::ExecuteLaunchCommand(int event_flags) {
 }
 
 void AppServicePromiseAppItem::Activate(int event_flags) {
-  // Promise app items should not be activated.
+  apps::AppServiceProxyFactory::GetForProfile(profile())
+      ->PromiseAppService()
+      ->UpdateInstallPriority(package_id_.ToString());
 }
 
 const char* AppServicePromiseAppItem::GetItemType() const {
@@ -61,25 +67,27 @@ AppServicePromiseAppItem::~AppServicePromiseAppItem() = default;
 
 void AppServicePromiseAppItem::OnPromiseAppUpdate(
     const apps::PromiseAppUpdate& update) {
-  if (update.NameChanged() && update.Name().has_value()) {
-    SetName(update.Name().value());
-  }
-  if (update.ProgressChanged() && update.Progress().has_value()) {
-    SetProgress(update.Progress().value());
-  }
   // Each status has its own set of visual effects.
   if (update.StatusChanged()) {
     SetAppStatus(ShelfControllerHelper::ConvertPromiseStatusToAppStatus(
         update.Status()));
-    LoadIcon();
+    SetName(base::UTF16ToUTF8(
+        ShelfControllerHelper::GetLabelForPromiseStatus(update.Status())));
+    SetAccessibleName(base::UTF16ToUTF8(
+        ShelfControllerHelper::GetAccessibleLabelForPromiseStatus(
+            update.Name(), update.Status())));
   }
+  if (update.ProgressChanged() && update.Progress().has_value()) {
+    SetProgress(update.Progress().value());
+  }
+  LoadIcon();
 }
 
 void AppServicePromiseAppItem::LoadIcon() {
   apps::AppServiceProxyFactory::GetForProfile(profile())->LoadPromiseIcon(
       package_id_,
       ash::SharedAppListConfig::instance().default_grid_icon_dimension(),
-      apps::GetPromiseIconEffectsForAppStatus(app_status()),
+      apps::IconEffects::kCrOsStandardMask,
       base::BindOnce(&AppServicePromiseAppItem::OnLoadIcon,
                      weak_ptr_factory_.GetWeakPtr()));
 }
@@ -95,14 +103,18 @@ void AppServicePromiseAppItem::OnLoadIcon(apps::IconValuePtr icon_value) {
 
 void AppServicePromiseAppItem::InitializeItem(
     const apps::PromiseAppUpdate& update) {
-  CHECK(update.Name().has_value());
   CHECK(update.ShouldShow());
-  SetName(update.Name().value());
-  if (update.Progress().has_value()) {
-    SetProgress(update.Progress().value());
-  }
+  SetPromisePackageId(update.PackageId().ToString());
+  SetName(base::UTF16ToUTF8(
+      ShelfControllerHelper::GetLabelForPromiseStatus(update.Status())));
+  SetAccessibleName(base::UTF16ToUTF8(
+      ShelfControllerHelper::GetAccessibleLabelForPromiseStatus(
+          update.Name(), update.Status())));
+  SetProgress(update.Progress().value_or(0));
   SetAppStatus(
       ShelfControllerHelper::ConvertPromiseStatusToAppStatus(update.Status()));
+  apps::RecordPromiseAppLifecycleEvent(
+      apps::PromiseAppLifecycleEvent::kCreatedInLauncher);
 }
 
 void AppServicePromiseAppItem::GetContextMenuModel(
@@ -115,4 +127,8 @@ void AppServicePromiseAppItem::GetContextMenuModel(
 
 app_list::AppContextMenu* AppServicePromiseAppItem::GetAppContextMenu() {
   return context_menu_.get();
+}
+
+std::string AppServicePromiseAppItem::GetPromisedItemId() const {
+  return promised_app_id_;
 }

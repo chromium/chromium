@@ -41,7 +41,6 @@ class COMPONENT_EXPORT(VULKAN_ANDROID) VulkanImplementationAndroid
   std::unique_ptr<gfx::GpuFence> ExportVkFenceToGpuFence(
       VkDevice vk_device,
       VkFence vk_fence) override;
-  VkExternalMemoryHandleTypeFlagBits GetExternalImageHandleType() override;
   VkExternalSemaphoreHandleTypeFlagBits GetExternalSemaphoreHandleType()
       override;
   bool CanImportGpuMemoryBuffer(

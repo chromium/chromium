@@ -4,7 +4,7 @@
 
 #include "third_party/blink/renderer/platform/wtf/allocator/partition_allocator.h"
 
-#include "base/allocator/partition_allocator/partition_alloc.h"
+#include "base/allocator/partition_allocator/src/partition_alloc/partition_alloc.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/partitions.h"
 
 namespace WTF {

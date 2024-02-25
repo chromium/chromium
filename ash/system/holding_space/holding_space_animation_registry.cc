@@ -11,13 +11,13 @@
 
 #include "ash/public/cpp/holding_space/holding_space_controller.h"
 #include "ash/public/cpp/holding_space/holding_space_controller_observer.h"
+#include "ash/public/cpp/holding_space/holding_space_item_updated_fields.h"
 #include "ash/public/cpp/holding_space/holding_space_model.h"
 #include "ash/public/cpp/holding_space/holding_space_model_observer.h"
 #include "ash/shell.h"
 #include "ash/system/progress_indicator/progress_icon_animation.h"
 #include "ash/system/progress_indicator/progress_ring_animation.h"
 #include "base/containers/contains.h"
-#include "base/containers/cxx20_erase_map.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/no_destructor.h"
@@ -96,11 +96,13 @@ class HoldingSpaceAnimationRegistry::ProgressIndicatorAnimationDelegate
     UpdateAnimations(/*for_removal=*/false);
   }
 
-  void OnHoldingSpaceItemUpdated(const HoldingSpaceItem* item,
-                                 uint32_t updated_fields) override {
+  void OnHoldingSpaceItemUpdated(
+      const HoldingSpaceItem* item,
+      const HoldingSpaceItemUpdatedFields& updated_fields) override {
     // The `item` update can be safely ignored if progress has not been updated.
-    if (!(updated_fields & HoldingSpaceModelObserver::UpdatedField::kProgress))
+    if (!updated_fields.previous_progress) {
       return;
+    }
 
     // If `item` has just progressed to completion, ensure that a pulse
     // animation is created and started.
@@ -129,7 +131,7 @@ class HoldingSpaceAnimationRegistry::ProgressIndicatorAnimationDelegate
       return;
 
     auto* animation = registry_->SetProgressIconAnimationForKey(
-        key, std::make_unique<ProgressIconAnimation>());
+        key, ProgressIconAnimation::Create());
 
     // Only `Start()` the `animation` if it is associated with the holding space
     // `controller_`. In all other cases, the `animation` is associated with a
@@ -300,9 +302,10 @@ class HoldingSpaceAnimationRegistry::ProgressIndicatorAnimationDelegate
             animation));
   }
 
-  const raw_ptr<ProgressIndicatorAnimationRegistry, ExperimentalAsh> registry_;
-  const raw_ptr<HoldingSpaceController, ExperimentalAsh> controller_;
-  raw_ptr<HoldingSpaceModel, ExperimentalAsh> model_ = nullptr;
+  const raw_ptr<ProgressIndicatorAnimationRegistry, LeakedDanglingUntriaged>
+      registry_;
+  const raw_ptr<HoldingSpaceController, LeakedDanglingUntriaged> controller_;
+  raw_ptr<HoldingSpaceModel, LeakedDanglingUntriaged> model_ = nullptr;
 
   // The cumulative progress for the attached `model_`, calculated and cached
   // with each call to `UpdateAnimations()`. This is used to determine when

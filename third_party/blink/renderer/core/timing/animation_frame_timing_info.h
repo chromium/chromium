@@ -19,10 +19,9 @@ class SourceLocation;
 
 class ScriptTimingInfo : public GarbageCollected<ScriptTimingInfo> {
  public:
-  enum class Type {
+  enum class InvokerType {
     kClassicScript,
     kModuleScript,
-    kExecuteScript,
     kUserCallback,
     kEventHandler,
     kPromiseResolve,
@@ -35,11 +34,11 @@ class ScriptTimingInfo : public GarbageCollected<ScriptTimingInfo> {
   struct ScriptSourceLocation {
     WTF::String url;
     WTF::String function_name;
-    int start_position = 0;
+    int char_position = -1;
   };
 
   ScriptTimingInfo(ExecutionContext* context,
-                   Type type,
+                   InvokerType invoker_type,
                    base::TimeTicks start_time,
                    base::TimeTicks execution_start_time,
                    base::TimeTicks end_time,
@@ -47,16 +46,10 @@ class ScriptTimingInfo : public GarbageCollected<ScriptTimingInfo> {
                    base::TimeDelta layout_duration);
 
   void Trace(Visitor* visitor) const;
-  Type GetType() const { return type_; }
+  InvokerType GetInvokerType() const { return invoker_type_; }
   base::TimeTicks StartTime() const { return start_time_; }
   base::TimeTicks ExecutionStartTime() const { return execution_start_time_; }
   base::TimeTicks EndTime() const { return end_time_; }
-  base::TimeTicks DesiredExecutionStartTime() const {
-    return desired_execution_start_time_;
-  }
-  void SetDesiredExecutionStartTime(base::TimeTicks queue_time) {
-    desired_execution_start_time_ = queue_time;
-  }
   base::TimeDelta PauseDuration() const { return pause_duration_; }
   void SetPauseDuration(base::TimeDelta duration) {
     pause_duration_ = duration;
@@ -79,13 +72,13 @@ class ScriptTimingInfo : public GarbageCollected<ScriptTimingInfo> {
   void SetPropertyLikeName(const AtomicString& name) {
     property_like_name_ = name;
   }
-  LocalDOMWindow* Window() const { return window_; }
+  LocalDOMWindow* Window() const { return window_.Get(); }
   const SecurityOrigin* GetSecurityOrigin() const {
     return security_origin_.get();
   }
 
  private:
-  Type type_;
+  InvokerType invoker_type_;
   AtomicString class_like_name_ = WTF::g_empty_atom;
   AtomicString property_like_name_ = WTF::g_empty_atom;
   base::TimeTicks start_time_;
@@ -112,9 +105,6 @@ class AnimationFrameTimingInfo
   }
 
   void SetRenderEndTime(base::TimeTicks time) { render_end_time = time; }
-  void SetDesiredRenderStartTime(base::TimeTicks time) {
-    desired_render_start_time = time;
-  }
   void SetFirstUIEventTime(base::TimeTicks time) { first_ui_event_time = time; }
 
   base::TimeTicks FrameStartTime() const { return frame_start_time; }
@@ -123,9 +113,6 @@ class AnimationFrameTimingInfo
     return style_and_layout_start_time;
   }
   base::TimeTicks RenderEndTime() const { return render_end_time; }
-  base::TimeTicks DesiredRenderStartTime() const {
-    return desired_render_start_time;
-  }
   base::TimeTicks FirstUIEventTime() const { return first_ui_event_time; }
   base::TimeDelta Duration() const {
     return RenderEndTime() - FrameStartTime();
@@ -166,11 +153,6 @@ class AnimationFrameTimingInfo
   // Measured after BeginMainFrame, or at the end of a task that did not trigger
   // a main frame update
   base::TimeTicks render_end_time;
-
-  // The desired time of the frame, when the compositor is ready to receive it.
-  // Should be the same as the timestamp received in requestAnimationFrame()
-  // callbacks.
-  base::TimeTicks desired_render_start_time;
 
   // The event timestamp of the first UI event that coincided with the frame.
   base::TimeTicks first_ui_event_time;

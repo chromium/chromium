@@ -5,8 +5,6 @@
 
 #if !defined(OPENSSL_NO_ASM) && defined(OPENSSL_X86_64) && defined(__ELF__)
 .text	
-.extern	OPENSSL_ia32cap_P
-.hidden OPENSSL_ia32cap_P
 .globl	gcm_init_clmul
 .hidden gcm_init_clmul
 .type	gcm_init_clmul,@function
@@ -165,7 +163,7 @@ _CET_ENDBR
 	movdqu	%xmm0,64(%rdi)
 .byte	102,15,58,15,227,8
 	movdqu	%xmm4,80(%rdi)
-	.byte	0xf3,0xc3
+	ret
 .cfi_endproc	
 
 .size	gcm_init_clmul,.-gcm_init_clmul
@@ -221,7 +219,7 @@ _CET_ENDBR
 	pxor	%xmm1,%xmm0
 .byte	102,15,56,0,197
 	movdqu	%xmm0,(%rdi)
-	.byte	0xf3,0xc3
+	ret
 .cfi_endproc	
 .size	gcm_gmult_clmul,.-gcm_gmult_clmul
 .globl	gcm_ghash_clmul
@@ -244,14 +242,8 @@ _CET_ENDBR
 	jz	.Lodd_tail
 
 	movdqu	16(%rsi),%xmm6
-	leaq	OPENSSL_ia32cap_P(%rip),%rax
-	movl	4(%rax),%eax
 	cmpq	$0x30,%rcx
 	jb	.Lskip4x
-
-	andl	$71303168,%eax
-	cmpl	$4194304,%eax
-	je	.Lskip4x
 
 	subq	$0x30,%rcx
 	movq	$0xA040608020C0E000,%rax
@@ -610,7 +602,7 @@ _CET_ENDBR
 .Ldone:
 .byte	102,65,15,56,0,194
 	movdqu	%xmm0,(%rdi)
-	.byte	0xf3,0xc3
+	ret
 .cfi_endproc	
 
 .size	gcm_ghash_clmul,.-gcm_ghash_clmul
@@ -722,7 +714,7 @@ _CET_ENDBR
 	vmovdqu	%xmm5,-16(%rdi)
 
 	vzeroupper
-	.byte	0xf3,0xc3
+	ret
 
 .cfi_endproc	
 .size	gcm_init_avx,.-gcm_init_avx
@@ -1113,7 +1105,7 @@ _CET_ENDBR
 	vpshufb	%xmm13,%xmm10,%xmm10
 	vmovdqu	%xmm10,(%rdi)
 	vzeroupper
-	.byte	0xf3,0xc3
+	ret
 .cfi_endproc	
 
 .size	gcm_ghash_avx,.-gcm_ghash_avx

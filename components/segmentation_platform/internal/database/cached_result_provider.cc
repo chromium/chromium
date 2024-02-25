@@ -5,33 +5,28 @@
 #include "components/segmentation_platform/internal/database/cached_result_provider.h"
 
 #include "base/logging.h"
-#include "base/task/single_thread_task_runner.h"
 #include "components/segmentation_platform/internal/logging.h"
-#include "components/segmentation_platform/internal/post_processor/post_processor.h"
+#include "components/segmentation_platform/internal/metadata/metadata_utils.h"
 #include "components/segmentation_platform/internal/stats.h"
 #include "components/segmentation_platform/public/config.h"
-#include "components/segmentation_platform/public/constants.h"
 #include "components/segmentation_platform/public/proto/prediction_result.pb.h"
-#include "components/segmentation_platform/public/result.h"
 
 namespace segmentation_platform {
 
 CachedResultProvider::CachedResultProvider(
-    PrefService* pref_service,
-    const std::vector<std::unique_ptr<Config>>& configs)
-    : CachedResultProvider(std::make_unique<ClientResultPrefs>(pref_service),
-                           configs) {}
-
-CachedResultProvider::CachedResultProvider(
-    std::unique_ptr<ClientResultPrefs> prefs,
+    ClientResultPrefs* prefs,
     const std::vector<std::unique_ptr<Config>>& configs)
     : configs_(configs), result_prefs_(std::move(prefs)) {
   for (const auto& config : *configs_) {
-    absl::optional<proto::ClientResult> client_result =
+    const proto::ClientResult* client_result =
         result_prefs_->ReadClientResultFromPrefs(config->segmentation_key);
-    bool has_valid_result = client_result.has_value() &&
+    bool has_valid_result = client_result &&
                             client_result->client_result().result_size() > 0 &&
                             client_result->client_result().has_output_config();
+    has_valid_result = has_valid_result &&
+                       metadata_utils::ValidateOutputConfig(
+                           client_result->client_result().output_config()) ==
+                           metadata_utils::ValidationResult::kValidationSuccess;
     stats::RecordSegmentSelectionFailure(
         *config, has_valid_result ? stats::SegmentationSelectionFailureReason::
                                         kSelectionAvailableInProtoPrefs
@@ -48,33 +43,12 @@ CachedResultProvider::CachedResultProvider(
 
 CachedResultProvider::~CachedResultProvider() = default;
 
-ClassificationResult CachedResultProvider::GetCachedResultForClient(
-    const std::string& segmentation_key) {
-  PostProcessor post_processor;
-  auto prediction_result = GetPredictionResultForClient(segmentation_key);
-
-  if (!prediction_result.has_value()) {
-    return ClassificationResult(PredictionStatus::kFailed);
-  }
-
-  bool has_valid_result = prediction_result->result_size() > 0 &&
-                          prediction_result->has_output_config();
-  PredictionStatus status = has_valid_result ? PredictionStatus::kSucceeded
-                                             : PredictionStatus::kFailed;
-
-  auto post_processed_result =
-      post_processor.GetPostProcessedClassificationResult(
-          prediction_result.value(), status);
-
-  return post_processed_result;
-}
-
-absl::optional<proto::PredictionResult>
+std::optional<proto::PredictionResult>
 CachedResultProvider::GetPredictionResultForClient(
     const std::string& segmentation_key) {
   const auto iter = client_result_from_last_session_map_.find(segmentation_key);
   if (iter == client_result_from_last_session_map_.end()) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   VLOG(1) << "CachedResultProvider loaded prefs with results from previous "

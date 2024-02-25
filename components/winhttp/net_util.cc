@@ -6,6 +6,9 @@
 
 #include <vector>
 
+#include "base/check.h"
+#include "base/check_op.h"
+
 namespace winhttp {
 
 HRESULT HRESULTFromLastError() {
@@ -22,14 +25,15 @@ HRESULT QueryHeadersString(HINTERNET request_handle,
                         WINHTTP_NO_OUTPUT_BUFFER, &num_bytes,
                         WINHTTP_NO_HEADER_INDEX);
   auto hr = HRESULTFromLastError();
-  if (hr != HRESULT_FROM_WIN32(ERROR_INSUFFICIENT_BUFFER))
+  if (hr != HRESULT_FROM_WIN32(ERROR_INSUFFICIENT_BUFFER)) {
     return hr;
+  }
   std::vector<wchar_t> buffer(num_bytes / sizeof(wchar_t));
   if (!::WinHttpQueryHeaders(request_handle, info_level, name, &buffer.front(),
                              &num_bytes, WINHTTP_NO_HEADER_INDEX)) {
     return HRESULTFromLastError();
   }
-  DCHECK_EQ(0u, num_bytes % sizeof(wchar_t));
+  DUMP_WILL_BE_CHECK(num_bytes % sizeof(wchar_t) == 0);
   buffer.resize(num_bytes / sizeof(wchar_t));
   value->assign(buffer.begin(), buffer.end());
   return S_OK;

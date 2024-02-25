@@ -5,11 +5,10 @@
 import {TestRunner} from 'test_runner';
 import {ElementsTestRunner} from 'elements_test_runner';
 import {ConsoleTestRunner} from 'console_test_runner';
+import * as UI from 'devtools/ui/legacy/legacy.js';
 
 (async function() {
   TestRunner.addResult(`Tests DOM update highlights in the DOM tree.\n`);
-  await TestRunner.loadLegacyModule('elements');
-  await TestRunner.loadLegacyModule('console');
   await TestRunner.showPanel('elements');
   await TestRunner.loadHTML(`
       <div id="container">
@@ -130,7 +129,7 @@ import {ConsoleTestRunner} from 'console_test_runner';
     },
 
     async function testAppendChildWhenHidden(next) {
-      await UI.viewManager.showView('console');
+      await UI.ViewManager.ViewManager.instance().showView('console');
       runAndDumpHighlights('appendChild(\'childTest\', \'child1\')', childTestNode, next);
     }
   ]);

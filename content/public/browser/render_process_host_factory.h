@@ -11,7 +11,7 @@ class RenderProcessHost;
 class SiteInstance;
 
 // Factory object for RenderProcessHosts. Using this factory allows tests to
-// swap out a different one to use a TestRenderProcessHost.
+// swap out a different one to use a MockRenderProcessHost.
 class RenderProcessHostFactory {
  public:
   virtual ~RenderProcessHostFactory() {}

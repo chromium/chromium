@@ -6,6 +6,7 @@
 #define COMPONENTS_VIZ_SERVICE_DISPLAY_DISPLAY_SCHEDULER_H_
 
 #include <memory>
+#include <optional>
 
 #include "base/cancelable_callback.h"
 #include "base/memory/raw_ptr.h"
@@ -18,7 +19,6 @@
 #include "components/viz/service/display/display_scheduler_base.h"
 #include "components/viz/service/display/pending_swap_params.h"
 #include "components/viz/service/viz_service_export.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace viz {
 
@@ -120,7 +120,6 @@ class VIZ_SERVICE_EXPORT DisplayScheduler
   bool UpdateHasPendingSurfaces();
   void MaybeCreateHintSession(
       base::flat_set<base::PlatformThreadId> thread_ids);
-  void OnFrameBoostDeadline();
 
   std::unique_ptr<BeginFrameObserver> begin_frame_observer_;
   raw_ptr<BeginFrameSource> begin_frame_source_;
@@ -130,7 +129,6 @@ class VIZ_SERVICE_EXPORT DisplayScheduler
   base::RepeatingClosure begin_frame_deadline_closure_;
   base::DeadlineTimer begin_frame_deadline_timer_;
   base::TimeTicks begin_frame_deadline_task_time_;
-  base::DeadlineTimer frame_boost_deadline_timer_;
 
   base::CancelableOnceClosure missed_begin_frame_task_;
   bool inside_surface_damaged_;
@@ -156,8 +154,8 @@ class VIZ_SERVICE_EXPORT DisplayScheduler
 
   // If set, we are dynamically adjusting our frame deadline, by the percentile
   // of historic draw times to base the adjustment on.
-  const absl::optional<double> dynamic_cc_deadlines_percentile_;
-  const absl::optional<double> dynamic_scheduler_deadlines_percentile_;
+  const std::optional<double> dynamic_cc_deadlines_percentile_;
+  const std::optional<double> dynamic_scheduler_deadlines_percentile_;
 
   base::WeakPtrFactory<DisplayScheduler> weak_ptr_factory_{this};
 };

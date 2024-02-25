@@ -7,104 +7,66 @@
 #include "base/functional/callback_helpers.h"
 #include "base/notreached.h"
 #include "components/viz/common/resources/shared_image_format_utils.h"
-#include "gpu/ipc/common/gpu_memory_buffer_support.h"
+#include "gpu/command_buffer/client/client_shared_image.h"
+
+#if BUILDFLAG(IS_WIN)
+#include "ui/gfx/win/d3d_shared_fence.h"
+#endif
 
 namespace gpu {
 
-Mailbox SharedImageInterface::CreateSharedImage(
-    viz::SharedImageFormat format,
-    const gfx::Size& size,
-    const gfx::ColorSpace& color_space,
-    GrSurfaceOrigin surface_origin,
-    SkAlphaType alpha_type,
-    uint32_t usage,
-    base::StringPiece debug_label,
+SharedImageInterface::SwapChainSharedImages::SwapChainSharedImages(
+    scoped_refptr<gpu::ClientSharedImage> front_buffer,
+    scoped_refptr<gpu::ClientSharedImage> back_buffer)
+    : front_buffer(std::move(front_buffer)),
+      back_buffer(std::move(back_buffer)) {}
+SharedImageInterface::SwapChainSharedImages::SwapChainSharedImages(
+    const SwapChainSharedImages& shared_images) = default;
+SharedImageInterface::SwapChainSharedImages::~SwapChainSharedImages() = default;
+
+SharedImageInterface::SharedImageInterface()
+    : holder_(base::MakeRefCounted<SharedImageInterfaceHolder>(this)) {}
+SharedImageInterface::~SharedImageInterface() = default;
+
+scoped_refptr<ClientSharedImage> SharedImageInterface::CreateSharedImage(
+    const SharedImageInfo& si_info,
     gpu::SurfaceHandle surface_handle,
     gfx::BufferUsage buffer_usage) {
   NOTREACHED();
-  return Mailbox();
-}
-
-SharedImageInterface::ScopedMapping::ScopedMapping() = default;
-SharedImageInterface::ScopedMapping::~ScopedMapping() {
-  if (buffer_) {
-    buffer_->Unmap();
-  }
-}
-
-// static
-std::unique_ptr<SharedImageInterface::ScopedMapping>
-SharedImageInterface::ScopedMapping::Create(gfx::GpuMemoryBufferHandle handle,
-                                            viz::SharedImageFormat format,
-                                            gfx::Size size,
-                                            gfx::BufferUsage buffer_usage) {
-  auto scoped_mapping = base::WrapUnique(new ScopedMapping());
-  if (!scoped_mapping->Init(std::move(handle), format, size, buffer_usage)) {
-    LOG(ERROR) << "ScopedMapping init failed.";
-    return nullptr;
-  }
-  return scoped_mapping;
-}
-
-bool SharedImageInterface::ScopedMapping::Init(
-    gfx::GpuMemoryBufferHandle handle,
-    viz::SharedImageFormat format,
-    gfx::Size size,
-    gfx::BufferUsage buffer_usage) {
-  GpuMemoryBufferSupport support;
-
-  // Only single planar buffer formats are supported currently. Multiplanar will
-  // be supported when Multiplanar SharedImages are fully implemented.
-  CHECK(format.is_single_plane());
-  buffer_ = support.CreateGpuMemoryBufferImplFromHandle(
-      std::move(handle), size,
-      viz::SinglePlaneSharedImageFormatToBufferFormat(format), buffer_usage,
-      base::DoNothing());
-  if (!buffer_) {
-    LOG(ERROR) << "Unable to create GpuMemoruBuffer.";
-    return false;
-  }
-  if (!buffer_->Map()) {
-    LOG(ERROR) << "Failed to map the buffer.";
-    buffer_.reset();
-    return false;
-  }
-  return true;
-}
-
-void* SharedImageInterface::ScopedMapping::Memory(const uint32_t plane_index) {
-  CHECK(buffer_);
-  return buffer_->memory(plane_index);
-}
-
-size_t SharedImageInterface::ScopedMapping::Stride(const uint32_t plane_index) {
-  CHECK(buffer_);
-  return buffer_->stride(plane_index);
-}
-
-gfx::BufferFormat SharedImageInterface::ScopedMapping::Format() {
-  CHECK(buffer_);
-  return buffer_->GetFormat();
+  return base::MakeRefCounted<ClientSharedImage>(
+      Mailbox(), si_info.meta, GenUnverifiedSyncToken(), holder_);
 }
 
 uint32_t SharedImageInterface::UsageForMailbox(const Mailbox& mailbox) {
   return 0u;
 }
 
-void SharedImageInterface::NotifyMailboxAdded(const Mailbox& /*mailbox*/,
-                                              uint32_t /*usage*/) {}
-
-Mailbox SharedImageInterface::CreateSharedImage(
-    gfx::GpuMemoryBuffer* gpu_memory_buffer,
-    GpuMemoryBufferManager* gpu_memory_buffer_manager,
+scoped_refptr<ClientSharedImage>
+SharedImageInterface::AddReferenceToSharedImage(
+    const SyncToken& sync_token,
+    const Mailbox& mailbox,
+    viz::SharedImageFormat format,
+    const gfx::Size& size,
     const gfx::ColorSpace& color_space,
     GrSurfaceOrigin surface_origin,
     SkAlphaType alpha_type,
-    uint32_t usage,
-    base::StringPiece debug_label) {
-  return CreateSharedImage(gpu_memory_buffer, gpu_memory_buffer_manager,
-                           gfx::BufferPlane::DEFAULT, color_space,
-                           surface_origin, alpha_type, usage, debug_label);
+    uint32_t usage) {
+  return ImportSharedImage(ExportedSharedImage(
+      mailbox,
+      SharedImageMetadata{format, size, color_space, surface_origin, alpha_type,
+                          usage},
+      sync_token));
+}
+
+scoped_refptr<ClientSharedImage> SharedImageInterface::NotifyMailboxAdded(
+    const Mailbox& /*mailbox*/,
+    viz::SharedImageFormat /*format*/,
+    const gfx::Size& /*size*/,
+    const gfx::ColorSpace& /*color_space*/,
+    GrSurfaceOrigin /*surface_origin*/,
+    SkAlphaType /*alpha_type*/,
+    uint32_t /*usage*/) {
+  return nullptr;
 }
 
 void SharedImageInterface::CopyToGpuMemoryBuffer(const SyncToken& sync_token,
@@ -112,10 +74,57 @@ void SharedImageInterface::CopyToGpuMemoryBuffer(const SyncToken& sync_token,
   NOTREACHED();
 }
 
-std::unique_ptr<SharedImageInterface::ScopedMapping>
-SharedImageInterface::MapSharedImage(const Mailbox& mailbox) {
-  NOTIMPLEMENTED();
-  return nullptr;
+void SharedImageInterface::Release() const {
+  bool should_destroy = false;
+
+  {
+    base::AutoLock auto_lock(holder_->lock_);
+    if (base::subtle::RefCountedThreadSafeBase::Release()) {
+      ANALYZER_SKIP_THIS_PATH();
+      holder_->OnDestroy();
+      should_destroy = true;
+    }
+  }
+
+  if (should_destroy) {
+    delete this;
+  }
+}
+
+#if BUILDFLAG(IS_WIN)
+void SharedImageInterface::UpdateSharedImage(
+    const SyncToken& sync_token,
+    scoped_refptr<gfx::D3DSharedFence> d3d_shared_fence,
+    const Mailbox& mailbox) {
+  NOTIMPLEMENTED_LOG_ONCE();
+}
+#endif  // BUILDFLAG(IS_WIN)
+
+SharedImageInterface::SharedImageMapping::SharedImageMapping() = default;
+SharedImageInterface::SharedImageMapping::SharedImageMapping(
+    SharedImageInterface::SharedImageMapping&& mapped) = default;
+SharedImageInterface::SharedImageMapping::SharedImageMapping(
+    scoped_refptr<ClientSharedImage> shared_image,
+    base::WritableSharedMemoryMapping mapping)
+    : shared_image(std::move(shared_image)), mapping(std::move(mapping)) {}
+SharedImageInterface::SharedImageMapping&
+SharedImageInterface::SharedImageMapping::operator=(
+    SharedImageInterface::SharedImageMapping&& mapped) = default;
+SharedImageInterface::SharedImageMapping::~SharedImageMapping() = default;
+
+SharedImageInterfaceHolder::SharedImageInterfaceHolder(
+    SharedImageInterface* sii)
+    : sii_(sii) {}
+SharedImageInterfaceHolder::~SharedImageInterfaceHolder() = default;
+
+scoped_refptr<SharedImageInterface> SharedImageInterfaceHolder::Get() {
+  base::AutoLock auto_lock(lock_);
+  return scoped_refptr<SharedImageInterface>(sii_);
+}
+
+void SharedImageInterfaceHolder::OnDestroy() {
+  lock_.AssertAcquired();
+  sii_ = nullptr;
 }
 
 }  // namespace gpu

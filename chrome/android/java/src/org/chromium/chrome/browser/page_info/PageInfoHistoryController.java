@@ -10,7 +10,6 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import org.chromium.base.ResettersForTesting;
-import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.history.BrowsingHistoryBridge;
@@ -29,18 +28,18 @@ import org.chromium.components.page_info.PageInfoSubpageController;
 
 import java.util.Date;
 
-/**
- * Class for controlling the page info history section.
- */
+/** Class for controlling the page info history section. */
 public class PageInfoHistoryController
         implements PageInfoSubpageController, HistoryContentManager.Observer {
     public static final int HISTORY_ROW_ID = View.generateViewId();
 
     private static HistoryProvider sProviderForTests;
+
     /** Clock to use so we can mock time in tests. */
     public interface Clock {
         long currentTimeMillis();
     }
+
     private static Clock sClock = System::currentTimeMillis;
 
     private final PageInfoMainController mMainController;
@@ -54,8 +53,11 @@ public class PageInfoHistoryController
     private HistoryContentManager mContentManager;
     private long mLastVisitedTimestamp;
 
-    public PageInfoHistoryController(PageInfoMainController mainController, PageInfoRowView rowView,
-            PageInfoControllerDelegate delegate, Supplier<Tab> tabSupplier) {
+    public PageInfoHistoryController(
+            PageInfoMainController mainController,
+            PageInfoRowView rowView,
+            PageInfoControllerDelegate delegate,
+            Supplier<Tab> tabSupplier) {
         mMainController = mainController;
         mRowView = rowView;
         mDelegate = delegate;
@@ -79,12 +81,20 @@ public class PageInfoHistoryController
     @Override
     public View createViewForSubpage(ViewGroup parent) {
         assert !mDelegate.isIncognito();
-        mContentManager = new HistoryContentManager(mMainController.getActivity(), this,
-                /* isSeparateActivity */ false,
-                /* isIncognito */ false, /* shouldShowPrivacyDisclaimers */ true,
-                /* shouldShowClearData */ false, mHost,
-                /* selectionDelegate */ null, mTabSupplier, new ObservableSupplierImpl<>(),
-                vg -> null, new BrowsingHistoryBridge(Profile.getLastUsedRegularProfile()));
+        Profile profile = (Profile) mDelegate.getBrowserContext();
+        mContentManager =
+                new HistoryContentManager(
+                        mMainController.getActivity(),
+                        this,
+                        /* isSeparateActivity= */ false,
+                        /* profile= */ profile,
+                        /* shouldShowPrivacyDisclaimers= */ true,
+                        /* shouldShowClearDataIfAvailable= */ false,
+                        mHost,
+                        /* selectionDelegate= */ null,
+                        mTabSupplier,
+                        new BrowsingHistoryBridge(profile),
+                        null);
         mContentManager.startLoadingItems();
         return mContentManager.getRecyclerView();
     }
@@ -98,24 +108,29 @@ public class PageInfoHistoryController
     }
 
     private void updateLastVisit() {
-        mHistoryProvider = sProviderForTests != null
-                ? sProviderForTests
-                : new BrowsingHistoryBridge(Profile.getLastUsedRegularProfile());
-        mHistoryProvider.getLastVisitToHostBeforeRecentNavigations(mHost, (timestamp) -> {
-            mLastVisitedTimestamp = timestamp;
-            if (mHistoryProvider != null) {
-                mHistoryProvider.destroy();
-                mHistoryProvider = null;
-            }
-            setupHistoryRow();
-        });
+        mHistoryProvider =
+                sProviderForTests != null
+                        ? sProviderForTests
+                        : new BrowsingHistoryBridge((Profile) mDelegate.getBrowserContext());
+        mHistoryProvider.getLastVisitToHostBeforeRecentNavigations(
+                mHost,
+                (timestamp) -> {
+                    mLastVisitedTimestamp = timestamp;
+                    if (mHistoryProvider != null) {
+                        mHistoryProvider.destroy();
+                        mHistoryProvider = null;
+                    }
+                    setupHistoryRow();
+                });
     }
 
     private void setupHistoryRow() {
         PageInfoRowView.ViewParams rowParams = new PageInfoRowView.ViewParams();
         rowParams.title = getRowTitle();
-        rowParams.visible = rowParams.title != null && mDelegate.isSiteSettingsAvailable()
-                && !mDelegate.isIncognito();
+        rowParams.visible =
+                rowParams.title != null
+                        && mDelegate.isSiteSettingsAvailable()
+                        && !mDelegate.isIncognito();
         rowParams.iconResId = R.drawable.ic_history_googblue_24dp;
         rowParams.decreaseIconSize = true;
         rowParams.clickCallback = this::launchSubpage;
@@ -140,10 +155,12 @@ public class PageInfoHistoryController
             return resources.getString(R.string.page_info_history_last_visit_yesterday);
         } else if (difference > DateUtils.DAY_IN_MILLIS
                 && difference <= DateUtils.DAY_IN_MILLIS * 7) {
-            return resources.getString(R.string.page_info_history_last_visit_days,
+            return resources.getString(
+                    R.string.page_info_history_last_visit_days,
                     (int) (difference / DateUtils.DAY_IN_MILLIS));
         } else {
-            return resources.getString(R.string.page_info_history_last_visit_date,
+            return resources.getString(
+                    R.string.page_info_history_last_visit_date,
                     StringUtils.dateToHeaderString(new Date(mLastVisitedTimestamp)));
         }
     }
@@ -193,6 +210,10 @@ public class PageInfoHistoryController
         // change the name of the current clear browsing data button.
         return;
     }
+
+    // HistoryContentManager.Observer
+    @Override
+    public void onOpenFullChromeHistoryClicked() {}
 
     // HistoryContentManager.Observer
     @Override

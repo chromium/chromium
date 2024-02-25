@@ -6,9 +6,7 @@ package org.chromium.net;
 
 import java.util.concurrent.Executor;
 
-/**
- * Listener that is notified of throughput observations from the network quality estimator.
- */
+/** Listener that is notified of throughput observations from the network quality estimator. */
 public abstract class NetworkQualityThroughputListener {
     /**
      * The executor on which this listener will be notified. Set as a final field, so it can be
@@ -16,9 +14,7 @@ public abstract class NetworkQualityThroughputListener {
      */
     private final Executor mExecutor;
 
-    /**
-     * @param executor The executor on which the observations are reported.
-     */
+    /** @param executor The executor on which the observations are reported. */
     public NetworkQualityThroughputListener(Executor executor) {
         if (executor == null) {
             throw new IllegalStateException("Executor must not be null");

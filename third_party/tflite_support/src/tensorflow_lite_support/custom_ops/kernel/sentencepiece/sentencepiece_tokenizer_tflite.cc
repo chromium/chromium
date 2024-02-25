@@ -16,6 +16,8 @@ limitations under the License.
 /**
  * Sentencepiece tflite tokenizer implementation.
  */
+#include "tensorflow_lite_support/custom_ops/kernel/sentencepiece/optimized_encoder.h"
+#include "tensorflow_lite_support/custom_ops/kernel/sentencepiece/sentencepiece_tokenizer.h"
 #include "flatbuffers/flexbuffers.h"  // from @flatbuffers
 #include "tensorflow/lite/c/common.h"
 #include "tensorflow/lite/context.h"
@@ -23,8 +25,6 @@ limitations under the License.
 #include "tensorflow/lite/kernels/kernel_util.h"
 #include "tensorflow/lite/model.h"
 #include "tensorflow/lite/string_util.h"
-#include "tensorflow_lite_support/custom_ops/kernel/sentencepiece/optimized_encoder.h"
-#include "tensorflow_lite_support/custom_ops/kernel/sentencepiece/sentencepiece_tokenizer.h"
 
 namespace tflite {
 namespace ops {
@@ -47,8 +47,7 @@ TfLiteIntArray* CreateSizeArray(const std::initializer_list<int>& sizes) {
 }  // namespace
 
 // Initializes text encoder object from serialized parameters.
-void* Initialize(TfLiteContext* /*context*/,
-                 const char* /*buffer*/,
+void* Initialize(TfLiteContext* /*context*/, const char* /*buffer*/,
                  size_t /*length*/) {
   return nullptr;
 }

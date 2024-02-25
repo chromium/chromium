@@ -13,7 +13,7 @@ import './search_engine_entry.js';
 
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {SearchEngine} from './search_engines_browser_proxy.js';
+import type {SearchEngine} from './search_engines_browser_proxy.js';
 import {getTemplate} from './search_engines_list.html.js';
 
 export class SettingsSearchEnginesListElement extends PolymerElement {
@@ -44,11 +44,6 @@ export class SettingsSearchEnginesListElement extends PolymerElement {
       collapseList: {
         type: Boolean,
         value: false,
-        reflectToAttribute: true,
-      },
-
-      nameColumnHeader: {
-        type: String,
         reflectToAttribute: true,
       },
 
@@ -104,7 +99,6 @@ export class SettingsSearchEnginesListElement extends PolymerElement {
   showShortcut: boolean;
   showQueryUrl: boolean;
   collapseList: boolean;
-  nameColumnHeader: string;
   expandListText: string;
   private lastFocused_: HTMLElement;
   private listBlurred_: boolean;

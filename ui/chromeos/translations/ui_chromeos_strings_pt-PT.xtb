@@ -2,12 +2,14 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="pt-PT">
 <translation id="1000498691615767391">Selecionar uma pasta para abrir</translation>
+<translation id="1014208178561091457">Não foi possível copiar o ficheiro <ph name="FILE_NAME" /> porque está encriptado.</translation>
 <translation id="1047956942837015229">A eliminar <ph name="COUNT" /> itens...</translation>
 <translation id="1049926623896334335">Documento do Word</translation>
 <translation id="1056775291175587022">Nenhuma rede</translation>
 <translation id="1056898198331236512">Aviso</translation>
 <translation id="1060368002126861100">Para abrir ficheiros com a app <ph name="APP_NAME" />, mova-os primeiro para a pasta de ficheiros do Windows.</translation>
 <translation id="1062407476771304334">Substituir</translation>
+<translation id="1119383441774809183">Mostrar mensagens de texto</translation>
 <translation id="1119447706177454957">Erro interno</translation>
 <translation id="1120073797882051782">Hangul Romaja</translation>
 <translation id="112387589102719461">Inglês (EUA) com teclado Dvorak de programador</translation>
@@ -54,6 +56,7 @@
 <translation id="1435838927755162558">Partilhe a pasta com o Parallels Desktop</translation>
 <translation id="1439919885608649279">Pessoa com flores</translation>
 <translation id="1458457385801829801">Desmontar <ph name="TARGET_NAME" /></translation>
+<translation id="146691674290220697">Não foi possível copiar <ph name="NUMBER_OF_FILES" /> ficheiros porque estão encriptados.</translation>
 <translation id="1471718551822868769">Eslovaco</translation>
 <translation id="1482884275703521657">Finlandês</translation>
 <translation id="148466539719134488">Suíço</translation>
@@ -73,7 +76,6 @@
 <translation id="162175252992296058">Português com teclado americano internacional</translation>
 <translation id="1629521517399325891">O certificado do utilizador não está disponível para a autenticação de rede.</translation>
 <translation id="1641780993263690097">Chinês pinyin</translation>
-<translation id="1646019627374511909">A disponibilizar <ph name="NUMBER_OF_ITEMS" /> ficheiros offline…</translation>
 <translation id="164969095109328410">Dispositivo Chrome</translation>
 <translation id="1661207570040737402">Usou todo o armazenamento do Google Workspace do disco partilhado.</translation>
 <translation id="1661867754829461514">Falta o PIN</translation>
@@ -165,7 +167,7 @@
 <translation id="2305020378527873881"><ph name="VOLUME_NAME" /> foi ejetado.</translation>
 <translation id="2307462900900812319">Configurar rede</translation>
 <translation id="2312704192806647271">{COUNT,plural, =1{Não é possível localizar uma extensão com o ID <ph name="BEGIN_LIST" /><ph name="END_LIST" />. Contacte o seu administrador.}other{Não é possível localizar as extensões com os IDs <ph name="BEGIN_LIST" /><ph name="END_LIST" />. Contacte o seu administrador.}}</translation>
-<translation id="2325650632570794183">Este tipo de ficheiro não é suportado. Visite a Chrome Web Store para encontrar uma aplicação que abra este tipo de ficheiro.</translation>
+<translation id="2325650632570794183">Este tipo de ficheiro não é suportado. Visite a Web Store do Chrome para encontrar uma aplicação que abra este tipo de ficheiro.</translation>
 <translation id="2326539130272988168">Búlgaro</translation>
 <translation id="233822363739146957">Não existe espaço de armazenamento suficiente para sincronizar todos os seus ficheiros</translation>
 <translation id="23721837607121582">Transferir perfil móvel, rede <ph name="NETWORK_INDEX" /> de <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" /></translation>
@@ -275,9 +277,11 @@
 <translation id="3253225298092156258">Não disponível</translation>
 <translation id="3254434849914415189">Escolha a aplicação predefinida para ficheiros <ph name="FILE_TYPE" />:</translation>
 <translation id="3255159654094949700">Árabe</translation>
+<translation id="326396468955264502">Não foi possível mover <ph name="NUMBER_OF_FILES" /> ficheiros porque estão encriptados.</translation>
 <translation id="3264582393905923483">Contexto</translation>
 <translation id="3272909651715601089">Não foi possível abrir "<ph name="PATH" />".</translation>
 <translation id="3280431534455935878">A preparar</translation>
+<translation id="3280719573299097127">Está a usar uma rede com acesso limitado. A sincronização de ficheiros foi pausada.</translation>
 <translation id="3280987981688031357">Disco de vinil</translation>
 <translation id="3290356915286466215">Não protegida</translation>
 <translation id="3291218047831493686">Estabeleça ligação a esta rede para alterar a definição de bloqueio do SIM</translation>
@@ -304,13 +308,13 @@
 <translation id="3475447146579922140">Folha de cálculo do Google</translation>
 <translation id="3479552764303398839">Agora não</translation>
 <translation id="3486821258960016770">Mongol</translation>
-<translation id="3495304270784461826"><ph name="COUNT" /> erros.</translation>
 <translation id="3509680540198371098">Rede <ph name="NETWORK_INDEX" /> de <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, intensidade do sinal: <ph name="SIGNAL_STRENGTH" />%, detalhes</translation>
 <translation id="3511705761158917664">A preparar a sincronização de <ph name="NUMBER_OF_ITEMS" /> itens…</translation>
 <translation id="3522708245912499433">Português</translation>
 <translation id="3523225005467146490">1 pasta partilhada com <ph name="VM_NAME" />.</translation>
 <translation id="3524311639100184459">Cuidado: estes ficheiros são temporários e podem ser automaticamente eliminados para libertar espaço em disco.  <ph name="BEGIN_LINK" />Saber mais<ph name="END_LINK" /></translation>
 <translation id="3527085408025491307">Pasta</translation>
+<translation id="3529424493985988200">Contacte o administrador para saber os detalhes.</translation>
 <translation id="3548125359243647069">Foi introduzido um PIN incorreto demasiadas vezes.</translation>
 <translation id="3549797760399244642">Aceder a drive.google.com...</translation>
 <translation id="3553048479571901246">Para abrir ficheiros com a app <ph name="APP_NAME" />, copie-os primeiro para a pasta de ficheiros do Windows.</translation>
@@ -327,6 +331,7 @@
 <translation id="3619115746895587757">Cappuccino</translation>
 <translation id="3619593063686672873">Sem vídeos recentes</translation>
 <translation id="3634507049637220048">Rede <ph name="NETWORK_INDEX" /> de <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, gerida pelo administrador, detalhes</translation>
+<translation id="36451918667380448">O fornecedor de rede móvel está bloqueado. Contacte o seu fornecedor para receber apoio técnico.</translation>
 <translation id="3645233063072417428"><ph name="NUMBER_OF_ITEMS" /> itens movidos.</translation>
 <translation id="3658269352872031728"><ph name="SELECTED_FILE_COUNT" /> ficheiros selecionados</translation>
 <translation id="3685122418104378273">Quando utiliza dados móveis, a sincronização do Google Drive é desativada por predefinição.</translation>
@@ -498,6 +503,7 @@
 <translation id="4935975195727477204">Flor</translation>
 <translation id="4943368462779413526">Bola de futebol</translation>
 <translation id="4961158930123534723">1 pasta partilhada com o Parallels Desktop.</translation>
+<translation id="4965874878399872778">A verificar os ficheiros relativamente às políticas de segurança da sua organização…</translation>
 <translation id="496656650103537022"><ph name="FILE_NAME" /> restaurado</translation>
 <translation id="4969785127455456148">Álbum</translation>
 <translation id="4972330214479971536">Não foi possível concluir a configuração da sincronização de ficheiros</translation>
@@ -553,9 +559,7 @@
 <translation id="5275973617553375938">Ficheiros recuperados do Google Drive</translation>
 <translation id="5278111733643988471">Para restaurar este item, arraste-o para uma nova pasta fora do lixo. A pasta original "<ph name="PARENT_FOLDER_NAME" />" para este item foi eliminada.</translation>
 <translation id="5283101102242354279">Ative uma extensão na Navegação anónima:</translation>
-<translation id="5286194356314741248">A procurar</translation>
 <translation id="5288441970121584418">Hambúrguer</translation>
-<translation id="5288481194217812690"><ph name="FILENAME" /></translation>
 <translation id="5293615890992542006">A ação de mover este ficheiro foi bloqueada pela política do administrador</translation>
 <translation id="5305688511332277257">Nenhum instalado</translation>
 <translation id="5317780077021120954">Guardar</translation>
@@ -632,6 +636,7 @@
 <translation id="5838451609423551646">Removeu todas as entradas da seleção.</translation>
 <translation id="5838825566232597749">Workman internacional dos EUA</translation>
 <translation id="5845721951356578987">Enfermeiro</translation>
+<translation id="5858478190805449225">Modo de Poupança de bateria ativado. Tente novamente quando o modo de Poupança de bateria estiver desativado.</translation>
 <translation id="5860491529813859533">Ativar</translation>
 <translation id="5861477046012235702">Jogador</translation>
 <translation id="5864471791310927901">A procura DHCP falhou</translation>
@@ -698,11 +703,13 @@
 <translation id="637062427944097960">Este ficheiro foi aberto num ambiente de trabalho diferente. Mova para <ph name="USER_NAME" /> (<ph name="MAIL_ADDRESS" />) para ver.</translation>
 <translation id="6394388407447716302">Só de leitura</translation>
 <translation id="6395575651121294044"><ph name="NUMBER_OF_FILES" /> itens</translation>
+<translation id="6407769893376380348">Não foi possível mover o ficheiro <ph name="FILE_NAME" /> porque está encriptado.</translation>
 <translation id="642282551015776456">Este nome não pode ser utilizado como um nome de ficheiro ou de pasta</translation>
 <translation id="6423031066725912715">Vietnamita com teclado TCVN</translation>
 <translation id="6430271654280079150">Tem mais 1 tentativa.</translation>
 <translation id="643243556292470964">Os ficheiros eliminados são agora movidos para o lixo</translation>
 <translation id="6438480100790416671">A verificar o espaço de armazenamento…</translation>
+<translation id="6451527188465304418">A verificar o ficheiro relativamente às políticas de segurança da sua organização…</translation>
 <translation id="6485131920355264772">Falha ao obter informações de espaço</translation>
 <translation id="6495925982925244349">Rede <ph name="NETWORK_INDEX" /> de <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, Intensidade do sinal <ph name="SIGNAL_STRENGTH" />%, Gerida pelo administrador, Detalhes</translation>
 <translation id="649877868557234318">A extrair <ph name="FILE_NAME" /> para <ph name="FOLDER_NAME" /></translation>
@@ -710,7 +717,6 @@
 <translation id="6503285896705205014">A ação de mover <ph name="COUNT" /> ficheiros foi bloqueada pela política da pessoa que administra</translation>
 <translation id="6509122719576673235">Norueguês</translation>
 <translation id="6528513914570774834">Permitir que outros utilizadores deste dispositivo utilizem esta rede</translation>
-<translation id="653019979737152879">A sincronizar <ph name="FILE_NAME" />…</translation>
 <translation id="6549689063733911810">Recente</translation>
 <translation id="6558280019477628686">Ocorreu um erro. É possível que alguns itens não tenham sido eliminados.</translation>
 <translation id="656398493051028875">A eliminar "<ph name="FILENAME" />"...</translation>
@@ -844,7 +850,6 @@
 <translation id="7553492409867692754">Conceda autorização às apps Linux para aceder a ficheiros na pasta <ph name="FOLDER_NAME" />.</translation>
 <translation id="7555339735447658365">Está atualmente offline. A sincronização de ficheiros é retomada quando tiver ligação à Internet</translation>
 <translation id="7589661784326793847">Aguarde um momento</translation>
-<translation id="7592775719802218421">A disponibilizar o ficheiro <ph name="FILE_NAME" /> offline…</translation>
 <translation id="7600126690270271294">Sérvio</translation>
 <translation id="7603724359189955920">Grelhas</translation>
 <translation id="7627790789328695202">Ups, <ph name="FILE_NAME" /> já existe. Dê um nome novo e tente novamente.</translation>
@@ -898,7 +903,6 @@
 <translation id="7911118814695487383">Linux</translation>
 <translation id="7920501309908018401">Os seus ficheiros em O meu disco são sincronizados automaticamente com o Chromebook para que possa aceder-lhes sem uma ligação à Internet.</translation>
 <translation id="7925247922861151263">A verificação AAA falhou</translation>
-<translation id="7925686952655276919">Não utilizar dados móveis para sincronização</translation>
 <translation id="7928710562641958568">Ejetar aparelho</translation>
 <translation id="7933875256234974853">A preparar a sincronização de ficheiros do Drive…</translation>
 <translation id="7943385054491506837">EUA Colemak</translation>
@@ -921,6 +925,7 @@
 <translation id="8087576439476816834">Transferir, <ph name="PROFILE_NAME" /></translation>
 <translation id="8106045200081704138">Partilhado comigo</translation>
 <translation id="8116072619078571545">Água gelada</translation>
+<translation id="8120392982188717723">Permitir sincronização em redes com acesso limitado</translation>
 <translation id="8124093710070495550">Problema de sincronização</translation>
 <translation id="8128733386027980860">Inglês (EUA) com teclado Dvorak</translation>
 <translation id="8137331602592933310">"<ph name="FILENAME" />" foi partilhado consigo. Não o pode eliminar porque não lhe pertence.</translation>
@@ -928,6 +933,7 @@
 <translation id="813913629614996137">A inicializar...</translation>
 <translation id="8147028810663464959">A largura de carateres é Completa</translation>
 <translation id="8151638057146502721">Configurar</translation>
+<translation id="8154666764013920974">{NUM_ERROR,plural, =1{1 erro.}other{# erros.}}</translation>
 <translation id="8154842056504218462">Selecionou todas as entradas.</translation>
 <translation id="8157684860301034423">Falha ao obter informações da aplicação.</translation>
 <translation id="8175731104491895765">Francês (Bélgica)</translation>
@@ -961,6 +967,7 @@
 <translation id="83651606385705612">Dar autorização a <ph name="VM_NAME" /> para aceder aos ficheiros na pasta <ph name="FOLDER_NAME" /></translation>
 <translation id="8372369524088641025">Chave WEP incorrecta</translation>
 <translation id="8372852072747894550">Grego</translation>
+<translation id="8377269993083688872">Esquemas de emails</translation>
 <translation id="8386903983509584791">Análise concluída</translation>
 <translation id="8387733224523483503"><ph name="FILE_NAME" /> extraído.</translation>
 <translation id="8395901698320285466">Dimensões</translation>
@@ -999,7 +1006,6 @@
 <translation id="8569764466147087991">Selecione um ficheiro para abrir</translation>
 <translation id="8577897833047451336">Croata</translation>
 <translation id="8578308463707544055">Indonésio</translation>
-<translation id="8579285237314169903">A sincronizar <ph name="NUMBER_OF_FILES" /> itens...</translation>
 <translation id="8600173386174225982">A lista de ficheiros foi alterada para a vista de miniatura.</translation>
 <translation id="8601932370724196034">Ficheiro de imagem do Crostini</translation>
 <translation id="8609695766746872526">Islandês</translation>
@@ -1012,6 +1018,7 @@
 <translation id="8698877009525468705">Este ficheiro é confidencial e está sujeito a restrições pela Política do Administrador.</translation>
 <translation id="8712637175834984815">OK</translation>
 <translation id="8713112442029511308">Maltês</translation>
+<translation id="8714138378966541668">Bloqueada pelo fornecedor</translation>
 <translation id="8714406895390098252">Bicicleta</translation>
 <translation id="8719721339511222681">Selecionou <ph name="ENTRY_NAME" />.</translation>
 <translation id="872537912056138402">Croata</translation>
@@ -1019,6 +1026,7 @@
 <translation id="8787254343425541995">Permitir proxies para redes partilhadas</translation>
 <translation id="8790981080411996443">Pessoa a regar plantas</translation>
 <translation id="8798099450830957504">Predefinição</translation>
+<translation id="8806832560029769670">{NUM_WARNING,plural, =1{1 aviso.}other{# avisos.}}</translation>
 <translation id="8808686172382650546">Gato</translation>
 <translation id="8810671769985673465">Falha ao comprimir; o item existe: "<ph name="FILE_NAME" />".</translation>
 <translation id="8813284582615685103">Espanhol (Espanha)</translation>
@@ -1049,7 +1057,6 @@
 <translation id="9038620279323455325">O ficheiro com o nome "<ph name="FILE_NAME" />" já existe. Escolha um nome diferente.</translation>
 <translation id="9046895021617826162">A ligação falhou</translation>
 <translation id="9065512565307033593">Se não validar, o seu acesso à rede será desativado.</translation>
-<translation id="9083722265619106011">{0,plural, =1{1 aviso.}other{<ph name="COUNT" /> avisos.}}</translation>
 <translation id="908378762078012445">Russo com teclado AATSEEL fonético</translation>
 <translation id="9086302186042011942">A sincronizar</translation>
 <translation id="9099674669267916096">Contagem de páginas</translation>

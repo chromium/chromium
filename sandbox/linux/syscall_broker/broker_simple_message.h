@@ -10,7 +10,7 @@
 
 #include "base/containers/span.h"
 #include "base/files/scoped_file.h"
-#include "base/memory/raw_ptr.h"
+#include "base/memory/raw_ptr_exclusion.h"
 #include "sandbox/sandbox_export.h"
 
 namespace sandbox {
@@ -117,10 +117,12 @@ class SANDBOX_EXPORT BrokerSimpleMessage {
   size_t length_ = 0;
   // The statically allocated buffer of size |kMaxMessageLength|.
   uint8_t message_[kMaxMessageLength];
-  // The pointer to the next location in the |message_| buffer to read from.
-  raw_ptr<uint8_t, AllowPtrArithmetic> read_next_ = message_;
-  // The pointer to the next location in the |message_| buffer to write from.
-  raw_ptr<uint8_t, AllowPtrArithmetic> write_next_ = message_;
+
+  // Next location in the `message_` buffer to read from/write to.
+  // RAW_PTR_EXCLUSION: Point into the `message_` buffer above, so they are
+  // valid whenever `this` is valid.
+  RAW_PTR_EXCLUSION uint8_t* read_next_ = message_;
+  RAW_PTR_EXCLUSION uint8_t* write_next_ = message_;
 };
 
 }  // namespace syscall_broker

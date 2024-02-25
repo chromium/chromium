@@ -74,4 +74,12 @@ void ClientChannel::NotifyMessageReceived(const std::string& payload) {
     observer.OnMessageReceived(payload_copy);
 }
 
+void ClientChannel::NotifyNearbyConnectionStateChanged(
+    mojom::NearbyConnectionStep step,
+    mojom::NearbyConnectionStepResult result) {
+  for (auto& observer : observer_list_) {
+    observer.OnNearbyConnectionStateChagned(step, result);
+  }
+}
+
 }  // namespace ash::secure_channel

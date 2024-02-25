@@ -18,6 +18,10 @@
 #include "chromeos/ash/services/secure_channel/connection_role.h"
 #include "chromeos/ash/services/secure_channel/secure_channel.h"
 
+namespace cross_device {
+class TimerFactory;
+}  // namespace cross_device
+
 namespace device {
 class BluetoothAdapter;
 }
@@ -27,7 +31,6 @@ namespace ash::secure_channel {
 class BleSynchronizerBase;
 class BluetoothHelper;
 class SecureChannelDisconnector;
-class TimerFactory;
 
 // Concrete BleConnectionManager implementation. This class initializes
 // BleAdvertiser and BleScanner objects and utilizes them to bootstrap
@@ -47,7 +50,7 @@ class BleConnectionManagerImpl : public BleConnectionManager,
         BleSynchronizerBase* ble_synchronizer,
         BleScanner* ble_scanner,
         SecureChannelDisconnector* secure_channel_disconnector,
-        TimerFactory* timer_factory,
+        cross_device::TimerFactory* timer_factory,
         base::Clock* clock = base::DefaultClock::GetInstance());
     static void SetFactoryForTesting(Factory* test_factory);
 
@@ -59,7 +62,7 @@ class BleConnectionManagerImpl : public BleConnectionManager,
         BleSynchronizerBase* ble_synchronizer,
         BleScanner* ble_scanner,
         SecureChannelDisconnector* secure_channel_disconnector,
-        TimerFactory* timer_factory,
+        cross_device::TimerFactory* timer_factory,
         base::Clock* clock = base::DefaultClock::GetInstance()) = 0;
 
    private:
@@ -91,7 +94,7 @@ class BleConnectionManagerImpl : public BleConnectionManager,
     void RecordEffectiveSuccessRateMetrics(bool will_continue_to_retry);
 
     const ConnectionRole connection_role_;
-    raw_ptr<base::Clock, ExperimentalAsh> clock_;
+    raw_ptr<base::Clock> clock_;
 
     // Set to the current time when this object is created and updated whenever
     // Reset() is called.
@@ -110,7 +113,7 @@ class BleConnectionManagerImpl : public BleConnectionManager,
       BleSynchronizerBase* ble_synchronizer,
       BleScanner* ble_scanner,
       SecureChannelDisconnector* secure_channel_disconnector,
-      TimerFactory* timer_factory,
+      cross_device::TimerFactory* timer_factory,
       base::Clock* clock);
 
   // BleConnectionManager:
@@ -205,10 +208,9 @@ class BleConnectionManagerImpl : public BleConnectionManager,
       const std::string& remote_device_id);
 
   scoped_refptr<device::BluetoothAdapter> bluetooth_adapter_;
-  raw_ptr<base::Clock, ExperimentalAsh> clock_;
-  raw_ptr<BleScanner, ExperimentalAsh> ble_scanner_;
-  raw_ptr<SecureChannelDisconnector, ExperimentalAsh>
-      secure_channel_disconnector_;
+  raw_ptr<base::Clock> clock_;
+  raw_ptr<BleScanner> ble_scanner_;
+  raw_ptr<SecureChannelDisconnector> secure_channel_disconnector_;
 
   std::unique_ptr<BleAdvertiser> ble_advertiser_;
 
@@ -218,7 +220,7 @@ class BleConnectionManagerImpl : public BleConnectionManager,
       remote_device_id_to_secure_channel_map_;
   base::flat_map<std::string, std::unique_ptr<ConnectionAttemptTimestamps>>
       remote_device_id_to_timestamps_map_;
-  absl::optional<std::string> notifying_remote_device_id_;
+  std::optional<std::string> notifying_remote_device_id_;
 };
 
 }  // namespace ash::secure_channel

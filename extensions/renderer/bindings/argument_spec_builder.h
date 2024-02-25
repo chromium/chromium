@@ -7,9 +7,9 @@
 
 #include <memory>
 #include <set>
+#include <string_view>
 #include <vector>
 
-#include "base/strings/string_piece.h"
 #include "extensions/renderer/bindings/argument_spec.h"
 
 namespace extensions {
@@ -20,7 +20,7 @@ namespace extensions {
 class ArgumentSpecBuilder {
  public:
   explicit ArgumentSpecBuilder(ArgumentType type);
-  ArgumentSpecBuilder(ArgumentType type, base::StringPiece name);
+  ArgumentSpecBuilder(ArgumentType type, std::string_view name);
 
   ArgumentSpecBuilder(const ArgumentSpecBuilder&) = delete;
   ArgumentSpecBuilder& operator=(const ArgumentSpecBuilder&) = delete;
@@ -28,11 +28,11 @@ class ArgumentSpecBuilder {
   ~ArgumentSpecBuilder();
 
   ArgumentSpecBuilder& MakeOptional();
-  ArgumentSpecBuilder& AddProperty(base::StringPiece property_name,
+  ArgumentSpecBuilder& AddProperty(std::string_view property_name,
                                    std::unique_ptr<ArgumentSpec> property_spec);
   ArgumentSpecBuilder& SetMinimum(int minimum);
   ArgumentSpecBuilder& SetListType(std::unique_ptr<ArgumentSpec> list_type);
-  ArgumentSpecBuilder& SetRef(base::StringPiece ref);
+  ArgumentSpecBuilder& SetRef(std::string_view ref);
   ArgumentSpecBuilder& SetChoices(
       std::vector<std::unique_ptr<ArgumentSpec>> choices);
   ArgumentSpecBuilder& SetEnums(std::set<std::string> enum_values);

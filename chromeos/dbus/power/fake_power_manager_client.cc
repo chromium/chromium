@@ -174,7 +174,7 @@ void FakePowerManagerClient::SetKeyboardBrightness(
 
 void FakePowerManagerClient::ToggleKeyboardBacklight() {}
 
-const absl::optional<power_manager::PowerSupplyProperties>&
+const std::optional<power_manager::PowerSupplyProperties>&
 FakePowerManagerClient::GetLastStatus() {
   return props_;
 }
@@ -446,7 +446,7 @@ void FakePowerManagerClient::GetChargeHistoryForAdaptiveCharging(
 }
 
 void FakePowerManagerClient::SetServiceAvailability(
-    absl::optional<bool> availability) {
+    std::optional<bool> availability) {
   service_availability_ = availability;
 
   if (!service_availability_) {
@@ -540,7 +540,7 @@ void FakePowerManagerClient::SetInactivityDelays(
 }
 
 void FakePowerManagerClient::UpdatePowerProperties(
-    absl::optional<power_manager::PowerSupplyProperties> power_props) {
+    std::optional<power_manager::PowerSupplyProperties> power_props) {
   props_ = power_props;
   // Only notify observer when power supply properties are available.
   if (props_.has_value()) {

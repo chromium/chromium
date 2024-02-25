@@ -106,12 +106,16 @@ views::Widget::InitParams GetWidgetInitParams() {
   params.ownership = views::Widget::InitParams::NATIVE_WIDGET_OWNS_WIDGET;
   params.name = kBubbleName;
   params.layer_type = ui::LAYER_NOT_DRAWN;
-  params.parent = nullptr;
   params.shadow_type = views::Widget::InitParams::ShadowType::kDrop;
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
+  // Explicitly setting the parent window is required in Lacros for popup
+  // dismissal to work correctly.
+  params.parent = dlp::GetActiveAuraWindow();
   // WaylandPopups in Lacros need a context window to allow custom positioning.
   // Here, we pass the active Lacros window as context for the bubble widget.
-  params.context = dlp::GetActiveAuraWindow();
+  params.context = params.parent;
+#else
+  params.parent = nullptr;
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
   return params;
 }
@@ -130,7 +134,7 @@ void DlpDataTransferNotifier::ShowBlockBubble(const std::u16string& text) {
   InitWidget();
   ClipboardBlockBubble* bubble =
       widget_->SetContentsView(std::make_unique<ClipboardBlockBubble>(text));
-  bubble->SetDismissCallback(base::BindRepeating(
+  bubble->SetDismissCallback(base::BindOnce(
       &DlpDataTransferNotifier::CloseWidget, base::Unretained(this),
       // This is safe. CloseWidget() has sufficient checks to test its validity.
       base::UnsafeDangling(widget_.get()),
@@ -140,15 +144,15 @@ void DlpDataTransferNotifier::ShowBlockBubble(const std::u16string& text) {
 
 void DlpDataTransferNotifier::ShowWarningBubble(
     const std::u16string& text,
-    base::RepeatingCallback<void(views::Widget*)> proceed_cb,
-    base::RepeatingCallback<void(views::Widget*)> cancel_cb) {
+    base::OnceCallback<void(views::Widget*)> proceed_cb,
+    base::OnceCallback<void(views::Widget*)> cancel_cb) {
   InitWidget();
   ClipboardWarnBubble* bubble =
       widget_->SetContentsView(std::make_unique<ClipboardWarnBubble>(text));
   bubble->SetProceedCallback(
-      base::BindRepeating(std::move(proceed_cb), widget_.get()));
+      base::BindOnce(std::move(proceed_cb), widget_.get()));
   bubble->SetDismissCallback(
-      base::BindRepeating(std::move(cancel_cb), widget_.get()));
+      base::BindOnce(std::move(cancel_cb), widget_.get()));
   ResizeAndShowWidget(bubble->GetBubbleSize(), kClipboardDlpWarnDurationMs);
 }
 

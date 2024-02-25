@@ -3,18 +3,18 @@
 // found in the LICENSE file.
 
 package org.chromium.chrome.browser.tab.state;
+
 import org.chromium.base.test.util.CallbackHelper;
 
 import java.nio.ByteBuffer;
 
-/**
- * Stores a ByteBuffer and notifies when said ByteBuffer acquisition is complete
- */
+/** Stores a ByteBuffer and notifies when said ByteBuffer acquisition is complete */
 public class LoadCallbackHelper extends CallbackHelper {
     private ByteBuffer mRes;
 
     /**
      * Called when ByteBuffer is acquired
+     *
      * @param res ByteBuffer acquired
      */
     public void notifyCalled(ByteBuffer res) {

@@ -9,7 +9,7 @@
 
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state_observer.h"
 #import "ios/chrome/browser/ui/scoped_ui_blocker/ui_blocker_target.h"
-#import "ios/chrome/browser/window_activities/window_activity_helpers.h"
+#import "ios/chrome/browser/window_activities/model/window_activity_helpers.h"
 
 @class AppState;
 @class SceneController;
@@ -48,6 +48,7 @@ typedef NS_ENUM(NSUInteger, SceneActivationLevel) {
 
 // An object containing the state of a UIWindowScene. One state object
 // corresponds to one scene.
+// TODO(b/326186137): This class should implement BrowserProviderInterface.
 @interface SceneState : NSObject <UIBlockerTarget>
 
 - (instancetype)initWithAppState:(AppState*)appState NS_DESIGNATED_INITIALIZER;

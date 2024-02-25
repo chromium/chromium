@@ -8,25 +8,27 @@
 #import "base/ios/ios_util.h"
 #import "base/strings/sys_string_conversions.h"
 #import "components/bookmarks/common/bookmark_features.h"
-#import "components/bookmarks/common/storage_type.h"
 #import "components/policy/core/common/policy_loader_ios_constants.h"
 #import "components/policy/policy_constants.h"
 #import "components/sync/base/features.h"
 #import "components/sync/base/user_selectable_type.h"
-#import "ios/chrome/browser/policy/policy_app_interface.h"
-#import "ios/chrome/browser/policy/policy_earl_grey_utils.h"
-#import "ios/chrome/browser/signin/fake_system_identity.h"
-#import "ios/chrome/browser/signin/test_constants.h"
+#import "ios/chrome/browser/bookmarks/model/bookmark_model_type.h"
+#import "ios/chrome/browser/policy/model/policy_app_interface.h"
+#import "ios/chrome/browser/policy/model/policy_earl_grey_utils.h"
+#import "ios/chrome/browser/shared/public/features/features.h"
+#import "ios/chrome/browser/signin/model/fake_system_identity.h"
+#import "ios/chrome/browser/signin/model/test_constants.h"
 #import "ios/chrome/browser/ui/authentication/authentication_constants.h"
 #import "ios/chrome/browser/ui/authentication/signin/signin_constants.h"
 #import "ios/chrome/browser/ui/authentication/signin_earl_grey.h"
-#import "ios/chrome/browser/ui/authentication/signin_earl_grey_app_interface.h"
 #import "ios/chrome/browser/ui/authentication/signin_earl_grey_ui_test_util.h"
 #import "ios/chrome/browser/ui/authentication/signin_matchers.h"
 #import "ios/chrome/browser/ui/bookmarks/bookmark_earl_grey.h"
 #import "ios/chrome/browser/ui/bookmarks/bookmark_earl_grey_ui.h"
 #import "ios/chrome/browser/ui/bookmarks/bookmark_ui_constants.h"
+#import "ios/chrome/browser/ui/settings/google_services/manage_sync_settings_constants.h"
 #import "ios/chrome/grit/ios_strings.h"
+#import "ios/chrome/test/earl_grey/chrome_actions.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey_ui.h"
 #import "ios/chrome/test/earl_grey/chrome_matchers.h"
@@ -36,9 +38,13 @@
 
 using chrome_test_util::BookmarksHomeDoneButton;
 using chrome_test_util::BookmarksNavigationBarBackButton;
+using chrome_test_util::FakeAddAccountScreenCancelButton;
 using chrome_test_util::IdentityCellMatcherForEmail;
+using chrome_test_util::IdentityChooserScrim;
+using chrome_test_util::ManageSyncSettingsButton;
 using chrome_test_util::PrimarySignInButton;
 using chrome_test_util::SecondarySignInButton;
+using chrome_test_util::SettingsDoneButton;
 
 // Bookmark promo integration tests for Chrome.
 @interface BookmarksPromoTestCase : WebHttpServerChromeTestCase
@@ -57,26 +63,12 @@ using chrome_test_util::SecondarySignInButton;
         "string></array></dict>");
   } else if ([self isRunningTest:@selector
                    (testSigninOnlyPromoWithoutAccount_NoSnackbar)]) {
-    config.features_enabled.push_back(syncer::kEnableBookmarksAccountStorage);
     config.features_enabled.push_back(
         syncer::kReplaceSyncPromosWithSignInPromos);
   } else if ([self isRunningTest:@selector
                    (testSigninOnlyPromoWithoutAccount_WithSnackbar)]) {
-    config.features_enabled.push_back(syncer::kEnableBookmarksAccountStorage);
     config.features_disabled.push_back(
         syncer::kReplaceSyncPromosWithSignInPromos);
-  } else if ([self isRunningTest:@selector(testSigninOnlyPromoWithAccount)] ||
-             [self isRunningTest:@selector(testPromoViewBody)]) {
-    config.features_enabled.push_back(syncer::kEnableBookmarksAccountStorage);
-  } else if ([self isRunningTest:@selector(testPromoViewBodyLegacy)] ||
-             [self isRunningTest:@selector
-                   (testSignInPromoWithIdentitiesUsingPrimaryButton)] ||
-             [self isRunningTest:@selector
-                   (testSignInPromoWithIdentitiesUsingSecondaryButton)] ||
-             [self isRunningTest:@selector
-                   (testSignInPromoWithNoIdentitiesUsingPrimaryButton)]) {
-    // TODO(crbug.com/1455018): Re-enable the flag for non-legacy tests.
-    config.features_disabled.push_back(syncer::kEnableBookmarksAccountStorage);
   } else if ([self isRunningTest:@selector
                    (testSyncPromoIfSyncToSigninDisabled)]) {
     config.features_disabled.push_back(
@@ -85,6 +77,27 @@ using chrome_test_util::SecondarySignInButton;
                    (testNoSyncPromoIfSyncToSigninEnabled)]) {
     config.features_enabled.push_back(
         syncer::kReplaceSyncPromosWithSignInPromos);
+    config.features_disabled.push_back(kEnableReviewAccountSettingsPromo);
+  } else if ([self isRunningTest:@selector
+                   (testSigninWithSyncPassphraseAndTurnOnSync)]) {
+    config.features_disabled.push_back(
+        syncer::kReplaceSyncPromosWithSignInPromos);
+  } else if ([self
+                 isRunningTest:@selector
+                 (testAccountSettingsPromoIfSyncToSigninEnabledWithBookmarksOff
+                     )] ||
+             [self isRunningTest:@selector
+                   (testAccountSettingsViewedFromBookmarksManager)] ||
+             [self isRunningTest:@selector
+                   (testAccountSettingsPromoIfSyncToSigninEnabledWithBookmarksOn
+                       )] ||
+             [self isRunningTest:@selector
+                   (testSignOutFromAccountSettingsFromBookmarksManager)] ||
+             [self isRunningTest:@selector
+                   (testSigninToReviewAccountSettingsPromo)]) {
+    config.features_enabled.push_back(
+        syncer::kReplaceSyncPromosWithSignInPromos);
+    config.features_enabled.push_back(kEnableReviewAccountSettingsPromo);
   }
 
   return config;
@@ -107,28 +120,10 @@ using chrome_test_util::SecondarySignInButton;
 
 #pragma mark - BookmarksPromoTestCase Tests
 
-// Tests the promo view body message for sync with
-// kEnableBookmarksAccountStorage flag disabled.
-- (void)testPromoViewBodyLegacy {
-  [BookmarkEarlGrey
-      setupStandardBookmarksInStorage:bookmarks::StorageType::kLocalOrSyncable];
-  [BookmarkEarlGreyUI openBookmarks];
-
-  // Check that promo is visible.
-  [BookmarkEarlGrey verifyPromoAlreadySeen:NO];
-  [SigninEarlGreyUI
-      verifySigninPromoVisibleWithMode:SigninPromoViewModeNoAccounts];
-  NSString* body =
-      l10n_util::GetNSString(IDS_IOS_SIGNIN_PROMO_BOOKMARKS_WITH_UNITY);
-  [[EarlGrey selectElementWithMatcher:grey_text(body)]
-      assertWithMatcher:grey_sufficientlyVisible()];
-}
-
-// Tests the promo view body message for signin with
-// kEnableBookmarksAccountStorage flag enabled.
+// Tests the promo view body message for signin.
 - (void)testPromoViewBody {
   [BookmarkEarlGrey
-      setupStandardBookmarksInStorage:bookmarks::StorageType::kLocalOrSyncable];
+      setupStandardBookmarksInStorage:BookmarkModelType::kLocalOrSyncable];
   [BookmarkEarlGreyUI openBookmarks];
 
   // Check that promo is visible.
@@ -148,7 +143,7 @@ using chrome_test_util::SecondarySignInButton;
 // child nodes.
 - (void)testPromoViewIsSeenOnlyInRootNode {
   [BookmarkEarlGrey
-      setupStandardBookmarksInStorage:bookmarks::StorageType::kLocalOrSyncable];
+      setupStandardBookmarksInStorage:BookmarkModelType::kLocalOrSyncable];
   [BookmarkEarlGreyUI openBookmarks];
 
   // We are going to set the PromoAlreadySeen preference. Set a teardown handler
@@ -182,7 +177,7 @@ using chrome_test_util::SecondarySignInButton;
 // Tests that tapping No thanks on the promo make it disappear.
 - (void)testPromoNoThanksMakeItDisappear {
   [BookmarkEarlGrey
-      setupStandardBookmarksInStorage:bookmarks::StorageType::kLocalOrSyncable];
+      setupStandardBookmarksInStorage:BookmarkModelType::kLocalOrSyncable];
   [BookmarkEarlGreyUI openBookmarks];
 
   // We are going to set the PromoAlreadySeen preference. Set a teardown handler
@@ -221,13 +216,10 @@ using chrome_test_util::SecondarySignInButton;
       verifySigninPromoVisibleWithMode:SigninPromoViewModeNoAccounts];
 
   // Tap the primary button.
-  [[EarlGrey
-      selectElementWithMatcher:grey_allOf(PrimarySignInButton(),
-                                          grey_sufficientlyVisible(), nil)]
+  [[EarlGrey selectElementWithMatcher:PrimarySignInButton()]
       performAction:grey_tap()];
   // Cancel the sign-in operation.
-  [[EarlGrey selectElementWithMatcher:grey_accessibilityID(
-                                          kSkipSigninAccessibilityIdentifier)]
+  [[EarlGrey selectElementWithMatcher:FakeAddAccountScreenCancelButton()]
       performAction:grey_tap()];
 
   // Check that the bookmarks UI reappeared and the cell is still here.
@@ -236,46 +228,12 @@ using chrome_test_util::SecondarySignInButton;
       verifySigninPromoVisibleWithMode:SigninPromoViewModeNoAccounts];
 }
 
-// Tests the tapping on the primary button of sign-in promo view with identities
-// on device makes the confirmaiton sheet appear, and the promo still appears
-// after dismissing the sheet.
-- (void)testSignInPromoWithIdentitiesUsingPrimaryButton {
-  [BookmarkEarlGrey
-      setupStandardBookmarksInStorage:bookmarks::StorageType::kLocalOrSyncable];
-  [BookmarkEarlGreyUI openBookmarks];
-
-  // Set up a fake identity.
-  [SigninEarlGrey addFakeIdentity:[FakeSystemIdentity fakeIdentity1]];
-
-  // Check that promo is visible.
-  [BookmarkEarlGrey verifyPromoAlreadySeen:NO];
-  [SigninEarlGreyUI
-      verifySigninPromoVisibleWithMode:SigninPromoViewModeSigninWithAccount];
-
-  // Tap the primary button.
-  [[EarlGrey
-      selectElementWithMatcher:grey_allOf(PrimarySignInButton(),
-                                          grey_sufficientlyVisible(), nil)]
-      performAction:grey_tap()];
-
-  // Cancel the sign-in operation.
-  [[EarlGrey selectElementWithMatcher:grey_accessibilityID(
-                                          kSkipSigninAccessibilityIdentifier)]
-      performAction:grey_tap()];
-
-  // Check that the bookmarks UI reappeared and the cell is still here.
-  [SigninEarlGreyUI
-      verifySigninPromoVisibleWithMode:SigninPromoViewModeSigninWithAccount];
-
-  [BookmarkEarlGrey verifyPromoAlreadySeen:NO];
-}
-
 // Tests the tapping on the secondary button of sign-in promo view with
 // identities on device makes the sign-in sheet appear, and the promo still
 // appears after dismissing the sheet.
 - (void)testSignInPromoWithIdentitiesUsingSecondaryButton {
   [BookmarkEarlGrey
-      setupStandardBookmarksInStorage:bookmarks::StorageType::kLocalOrSyncable];
+      setupStandardBookmarksInStorage:BookmarkModelType::kLocalOrSyncable];
   [BookmarkEarlGreyUI openBookmarks];
 
   FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
@@ -287,19 +245,11 @@ using chrome_test_util::SecondarySignInButton;
       verifySigninPromoVisibleWithMode:SigninPromoViewModeSigninWithAccount];
 
   // Tap the secondary button.
-  [[EarlGrey
-      selectElementWithMatcher:grey_allOf(SecondarySignInButton(),
-                                          grey_sufficientlyVisible(), nil)]
+  [[EarlGrey selectElementWithMatcher:SecondarySignInButton()]
       performAction:grey_tap()];
 
-  // Select the identity to dismiss the identity chooser.
-  [[EarlGrey selectElementWithMatcher:IdentityCellMatcherForEmail(
-                                          fakeIdentity.userEmail)]
-      performAction:grey_tap()];
-
-  // Tap the CANCEL button.
-  [[EarlGrey selectElementWithMatcher:grey_accessibilityID(
-                                          kSkipSigninAccessibilityIdentifier)]
+  // Tap the scrim to dismiss the the chooser.
+  [[EarlGrey selectElementWithMatcher:IdentityChooserScrim()]
       performAction:grey_tap()];
 
   // Check that the bookmarks UI reappeared and the cell is still here.
@@ -311,10 +261,9 @@ using chrome_test_util::SecondarySignInButton;
 // Tests that users with a device-level account see a promo whose primary
 // button a) signs in, b) hides the promo, c) shows a snackbar with an 'Undo'
 // button that signs-out the user when tapped.
-// kEnableBookmarksAccountStorage is enabled.
 - (void)testSigninOnlyPromoWithAccount {
   [BookmarkEarlGrey
-      setupStandardBookmarksInStorage:bookmarks::StorageType::kLocalOrSyncable];
+      setupStandardBookmarksInStorage:BookmarkModelType::kLocalOrSyncable];
   [BookmarkEarlGreyUI openBookmarks];
   // Set up a fake identity.
   FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
@@ -325,9 +274,7 @@ using chrome_test_util::SecondarySignInButton;
       verifySigninPromoVisibleWithMode:SigninPromoViewModeSigninWithAccount];
 
   // Tap the primary button.
-  [[EarlGrey
-      selectElementWithMatcher:grey_allOf(PrimarySignInButton(),
-                                          grey_sufficientlyVisible(), nil)]
+  [[EarlGrey selectElementWithMatcher:PrimarySignInButton()]
       performAction:grey_tap()];
 
   // Verify the snackbar is shown after sign-in and tap 'Undo'.
@@ -349,11 +296,10 @@ using chrome_test_util::SecondarySignInButton;
 // Tests that users with no device-level account see a promo that leads to an
 // SSO Auth flow on tap. Concluding the auth successfully hides the promo and
 // shows a snackbar with an 'Undo' button that signs-out the user when tapped.
-// kEnableBookmarksAccountStorage is enabled, kReplaceSyncPromosWithSignInPromos
-// is disabled.
+// kReplaceSyncPromosWithSignInPromos is disabled.
 - (void)testSigninOnlyPromoWithoutAccount_WithSnackbar {
   [BookmarkEarlGrey
-      setupStandardBookmarksInStorage:bookmarks::StorageType::kLocalOrSyncable];
+      setupStandardBookmarksInStorage:BookmarkModelType::kLocalOrSyncable];
   [BookmarkEarlGreyUI openBookmarks];
   // Check that promo is visible.
   [BookmarkEarlGrey verifyPromoAlreadySeen:NO];
@@ -361,9 +307,7 @@ using chrome_test_util::SecondarySignInButton;
       verifySigninPromoVisibleWithMode:SigninPromoViewModeSigninWithAccount];
 
   // Tap the primary button to start add account flow.
-  [[EarlGrey
-      selectElementWithMatcher:grey_allOf(PrimarySignInButton(),
-                                          grey_sufficientlyVisible(), nil)]
+  [[EarlGrey selectElementWithMatcher:PrimarySignInButton()]
       performAction:grey_tap()];
   // Set up a fake identity to add and sign-in with.
   FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
@@ -395,11 +339,10 @@ using chrome_test_util::SecondarySignInButton;
 
 // Tests that users with no device-level account see a promo that leads to an
 // SSO Auth flow on tap. Concluding the auth successfully hides the promo.
-// kEnableBookmarksAccountStorage and kReplaceSyncPromosWithSignInPromos are
-// enabled.
+// kReplaceSyncPromosWithSignInPromos is enabled.
 - (void)testSigninOnlyPromoWithoutAccount_NoSnackbar {
   [BookmarkEarlGrey
-      setupStandardBookmarksInStorage:bookmarks::StorageType::kLocalOrSyncable];
+      setupStandardBookmarksInStorage:BookmarkModelType::kLocalOrSyncable];
   [BookmarkEarlGreyUI openBookmarks];
   // Check that promo is visible.
   [BookmarkEarlGrey verifyPromoAlreadySeen:NO];
@@ -407,9 +350,7 @@ using chrome_test_util::SecondarySignInButton;
       verifySigninPromoVisibleWithMode:SigninPromoViewModeSigninWithAccount];
 
   // Tap the primary button to start add account flow.
-  [[EarlGrey
-      selectElementWithMatcher:grey_allOf(PrimarySignInButton(),
-                                          grey_sufficientlyVisible(), nil)]
+  [[EarlGrey selectElementWithMatcher:PrimarySignInButton()]
       performAction:grey_tap()];
   // Set up a fake identity to add and sign-in with.
   FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
@@ -478,22 +419,21 @@ using chrome_test_util::SecondarySignInButton;
 // kReplaceSyncPromosWithSignInPromos is disabled.
 - (void)testSyncPromoIfSyncToSigninDisabled {
   FakeSystemIdentity* fakeIdentity1 = [FakeSystemIdentity fakeIdentity1];
-  [SigninEarlGreyUI signinWithFakeIdentity:fakeIdentity1 enableSync:NO];
+  [SigninEarlGrey signinWithFakeIdentity:fakeIdentity1];
   [BookmarkEarlGreyUI openBookmarks];
   [SigninEarlGreyUI verifySigninPromoVisibleWithMode:
-                        SigninPromoViewModeSyncWithPrimaryAccount];
+                        SigninPromoViewModeSignedInWithPrimaryAccount];
 }
 
 // Tests that no sync promo is shown if the user is signed in only and
 // kReplaceSyncPromosWithSignInPromos is enabled.
 - (void)testNoSyncPromoIfSyncToSigninEnabled {
   FakeSystemIdentity* fakeIdentity1 = [FakeSystemIdentity fakeIdentity1];
-  [SigninEarlGreyUI signinWithFakeIdentity:fakeIdentity1 enableSync:NO];
+  [SigninEarlGrey signinWithFakeIdentity:fakeIdentity1];
   // By default, `signinWithFakeIdentity` above enables bookmarks data type, so
   // turn it off to ensure that the sync promo isn't ever shown.
-  [SigninEarlGreyAppInterface
-      setSelectedType:(syncer::UserSelectableType::kBookmarks)
-              enabled:NO];
+  [SigninEarlGrey setSelectedType:(syncer::UserSelectableType::kBookmarks)
+                          enabled:NO];
   [BookmarkEarlGreyUI openBookmarks];
   [SigninEarlGreyUI verifySigninPromoNotVisible];
 }
@@ -507,12 +447,10 @@ using chrome_test_util::SecondarySignInButton;
   FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
   [SigninEarlGrey addFakeIdentity:fakeIdentity];
   // Sign-in only.
-  [SigninEarlGreyUI signinWithFakeIdentity:fakeIdentity enableSync:NO];
+  [SigninEarlGrey signinWithFakeIdentity:fakeIdentity];
   [BookmarkEarlGreyUI openBookmarks];
   // Turn on sync using the sign-in promo.
-  [[EarlGrey
-      selectElementWithMatcher:grey_allOf(PrimarySignInButton(),
-                                          grey_sufficientlyVisible(), nil)]
+  [[EarlGrey selectElementWithMatcher:PrimarySignInButton()]
       performAction:grey_tap()];
   [[EarlGrey selectElementWithMatcher:grey_accessibilityID(
                                           kConfirmationAccessibilityIdentifier)]
@@ -522,6 +460,206 @@ using chrome_test_util::SecondarySignInButton;
   [SigninEarlGrey verifySignedInWithFakeIdentity:fakeIdentity];
   [SigninEarlGreyUI verifySigninPromoNotVisible];
   [BookmarkEarlGreyUI verifyEmptyBackgroundAppears];
+}
+
+// Tests that review account settings promo is shown if the user is signed in
+// only but bookmarks account storage is off and gets removed after enabling
+// bookmarks.
+- (void)testAccountSettingsPromoIfSyncToSigninEnabledWithBookmarksOff {
+  FakeSystemIdentity* fakeIdentity1 = [FakeSystemIdentity fakeIdentity1];
+  [SigninEarlGrey signinWithFakeIdentity:fakeIdentity1];
+
+  // By default, `signinWithFakeIdentity` above enables bookmarks data type, so
+  // turn it off.
+  [SigninEarlGrey setSelectedType:(syncer::UserSelectableType::kBookmarks)
+                          enabled:NO];
+  [BookmarkEarlGreyUI openBookmarks];
+  [SigninEarlGreyUI verifySigninPromoVisibleWithMode:
+                        SigninPromoViewModeSignedInWithPrimaryAccount];
+
+  // Open the settings using the sign-in promo.
+  [[EarlGrey
+      selectElementWithMatcher:grey_allOf(PrimarySignInButton(),
+                                          grey_sufficientlyVisible(), nil)]
+      performAction:grey_tap()];
+  [[EarlGrey
+      selectElementWithMatcher:grey_accessibilityID(
+                                   kManageSyncTableViewAccessibilityIdentifier)]
+      assertWithMatcher:grey_sufficientlyVisible()];
+
+  // Turn Bookmarks On.
+  [[EarlGrey
+      selectElementWithMatcher:grey_accessibilityID(kSyncBookmarksIdentifier)]
+      performAction:chrome_test_util::TurnTableViewSwitchOn(/*on=*/YES)];
+  [ChromeEarlGreyUI waitForAppToIdle];
+
+  // Verify that the promo disappears.
+  [[EarlGrey
+      selectElementWithMatcher:grey_allOf(
+                                   chrome_test_util::SettingsDoneButton(),
+                                   grey_sufficientlyVisible(), nil)]
+      performAction:grey_tap()];
+  [SigninEarlGreyUI verifySigninPromoNotVisible];
+}
+
+// Tests that review account settings promo is not shown if the user is signed
+// in only and bookmarks account storage is already enabled.
+- (void)testAccountSettingsPromoIfSyncToSigninEnabledWithBookmarksOn {
+  FakeSystemIdentity* fakeIdentity1 = [FakeSystemIdentity fakeIdentity1];
+  [SigninEarlGrey signinWithFakeIdentity:fakeIdentity1];
+
+  [BookmarkEarlGreyUI openBookmarks];
+  [SigninEarlGreyUI verifySigninPromoNotVisible];
+}
+
+// Tests that account settings are viewed from the bookmarks manager and account
+// gets removed.
+- (void)testAccountSettingsViewedFromBookmarksManager {
+  FakeSystemIdentity* fakeIdentity1 = [FakeSystemIdentity fakeIdentity1];
+  [SigninEarlGrey signinWithFakeIdentity:fakeIdentity1];
+
+  // By default, `signinWithFakeIdentity` above enables bookmarks data type, so
+  // turn it off.
+  [SigninEarlGrey setSelectedType:(syncer::UserSelectableType::kBookmarks)
+                          enabled:NO];
+  [BookmarkEarlGreyUI openBookmarks];
+  [SigninEarlGreyUI verifySigninPromoVisibleWithMode:
+                        SigninPromoViewModeSignedInWithPrimaryAccount];
+
+  // Open the settings using the sign-in promo.
+  [[EarlGrey
+      selectElementWithMatcher:grey_allOf(PrimarySignInButton(),
+                                          grey_sufficientlyVisible(), nil)]
+      performAction:grey_tap()];
+  [[EarlGrey
+      selectElementWithMatcher:grey_accessibilityID(
+                                   kManageSyncTableViewAccessibilityIdentifier)]
+      assertWithMatcher:grey_sufficientlyVisible()];
+
+  // Remove identity from device.
+  [SigninEarlGrey forgetFakeIdentity:fakeIdentity1];
+  [ChromeEarlGreyUI waitForAppToIdle];
+  [SigninEarlGrey verifySignedOut];
+
+  // Verify that Account Settings is closed.
+  [[EarlGrey
+      selectElementWithMatcher:grey_accessibilityID(
+                                   kManageSyncTableViewAccessibilityIdentifier)]
+      assertWithMatcher:grey_notVisible()];
+  // Sign in promo shows.
+  [SigninEarlGreyUI
+      verifySigninPromoVisibleWithMode:SigninPromoViewModeNoAccounts];
+}
+
+// Tests review account settings promo changes to a sign-in promo after signing
+// out from account settings.
+- (void)testSignOutFromAccountSettingsFromBookmarksManager {
+  FakeSystemIdentity* fakeIdentity1 = [FakeSystemIdentity fakeIdentity1];
+  [SigninEarlGrey signinWithFakeIdentity:fakeIdentity1];
+
+  // By default, `signinWithFakeIdentity` above enables bookmarks data type, so
+  // turn it off.
+  [SigninEarlGrey setSelectedType:(syncer::UserSelectableType::kBookmarks)
+                          enabled:NO];
+  [BookmarkEarlGreyUI openBookmarks];
+  [SigninEarlGreyUI verifySigninPromoVisibleWithMode:
+                        SigninPromoViewModeSignedInWithPrimaryAccount];
+
+  // Open the settings using the sign-in promo.
+  [[EarlGrey
+      selectElementWithMatcher:grey_allOf(PrimarySignInButton(),
+                                          grey_sufficientlyVisible(), nil)]
+      performAction:grey_tap()];
+  [[EarlGrey
+      selectElementWithMatcher:grey_accessibilityID(
+                                   kManageSyncTableViewAccessibilityIdentifier)]
+      assertWithMatcher:grey_sufficientlyVisible()];
+
+  // Scroll to the bottom to view the signout button.
+  id<GREYMatcher> scroll_view_matcher =
+      grey_accessibilityID(kManageSyncTableViewAccessibilityIdentifier);
+  [[EarlGrey selectElementWithMatcher:scroll_view_matcher]
+      performAction:grey_scrollToContentEdge(kGREYContentEdgeBottom)];
+
+  // Tap the "Sign out" button.
+  [[EarlGrey selectElementWithMatcher:
+                 grey_accessibilityLabel(l10n_util::GetNSString(
+                     IDS_IOS_GOOGLE_ACCOUNT_SETTINGS_SIGN_OUT_ITEM))]
+      performAction:grey_tap()];
+  [ChromeEarlGreyUI waitForAppToIdle];
+  [SigninEarlGrey verifySignedOut];
+
+  // Verify that Account Settings is closed.
+  [[EarlGrey
+      selectElementWithMatcher:grey_accessibilityID(
+                                   kManageSyncTableViewAccessibilityIdentifier)]
+      assertWithMatcher:grey_notVisible()];
+
+  // Dismiss sign out snackbar.
+  [[EarlGrey
+      selectElementWithMatcher:
+          grey_accessibilityLabel(l10n_util::GetNSString(
+              IDS_IOS_GOOGLE_ACCOUNT_SETTINGS_SIGN_OUT_SNACKBAR_MESSAGE))]
+      performAction:grey_tap()];
+
+  // Sign in promo shows and try to sign in succeeds.
+  [SigninEarlGreyUI
+      verifySigninPromoVisibleWithMode:SigninPromoViewModeSigninWithAccount];
+  [[EarlGrey selectElementWithMatcher:
+                 grey_text(l10n_util::GetNSString(
+                     (IDS_IOS_SIGNIN_PROMO_REVIEW_BOOKMARKS_SETTINGS)))]
+      assertWithMatcher:grey_notVisible()];
+  [[EarlGrey
+      selectElementWithMatcher:grey_allOf(PrimarySignInButton(),
+                                          grey_sufficientlyVisible(), nil)]
+      performAction:grey_tap()];
+  [SigninEarlGrey verifySignedInWithFakeIdentity:fakeIdentity1];
+}
+
+// Tests sign-in promo changes to review account settings promo after signing
+// in.
+- (void)testSigninToReviewAccountSettingsPromo {
+  FakeSystemIdentity* fakeIdentity1 = [FakeSystemIdentity fakeIdentity1];
+  [SigninEarlGrey signinWithFakeIdentity:fakeIdentity1];
+
+  // By default, `signinWithFakeIdentity` above enables bookmarks data type, so
+  // turn it off.
+  [SigninEarlGrey setSelectedType:(syncer::UserSelectableType::kBookmarks)
+                          enabled:NO];
+
+  // Sign out.
+  [SigninEarlGreyUI signOut];
+
+  // Sign in from Bookmarks promo.
+  [BookmarkEarlGreyUI openBookmarks];
+  [SigninEarlGreyUI
+      verifySigninPromoVisibleWithMode:SigninPromoViewModeSigninWithAccount];
+  [[EarlGrey
+      selectElementWithMatcher:grey_allOf(PrimarySignInButton(),
+                                          grey_sufficientlyVisible(), nil)]
+      performAction:grey_tap()];
+  [[EarlGrey
+      selectElementWithMatcher:grey_accessibilityLabel(l10n_util::GetNSStringF(
+                                   IDS_IOS_SIGNIN_SNACKBAR_SIGNED_IN_AS,
+                                   base::SysNSStringToUTF16(
+                                       fakeIdentity1.userEmail)))]
+      performAction:grey_tap()];
+
+  // Verify Account Settings promo shows.
+  [SigninEarlGreyUI verifySigninPromoVisibleWithMode:
+                        SigninPromoViewModeSignedInWithPrimaryAccount];
+
+  // Open the settings using the sign-in promo.
+  [[EarlGrey
+      selectElementWithMatcher:grey_allOf(PrimarySignInButton(),
+                                          grey_sufficientlyVisible(), nil)]
+      performAction:grey_tap()];
+
+  // Verify Account Settings are viewed.
+  [[EarlGrey
+      selectElementWithMatcher:grey_accessibilityID(
+                                   kManageSyncTableViewAccessibilityIdentifier)]
+      assertWithMatcher:grey_sufficientlyVisible()];
 }
 
 @end

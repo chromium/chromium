@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-GEN_INCLUDE(['../../common/testing/accessibility_test_base.js']);
+GEN_INCLUDE(['chromevox_e2e_test_base.js']);
 
 function speak(text, opt_properties) {
   ChromeVox.tts.speak(text, 0, opt_properties);
@@ -21,33 +21,14 @@ function braille(text) {
 /**
  * Test fixture.
  */
-MockFeedbackUnitTest = class extends AccessibilityTestBase {
+MockFeedbackUnitTest = class extends ChromeVoxE2ETest {
   constructor() {
     super();
     this.expectedCalls = [];
   }
-
-  async setUpDeferred() {
-    await super.setUpDeferred();
-
-    await Promise.all([
-      // Alphabetical based on file path.
-      importModule('ChromeVox', '/chromevox/background/chromevox.js'),
-      importModule('NavBraille', '/chromevox/common/braille/nav_braille.js'),
-      importModule('EarconId', '/chromevox/common/earcon_id.js'),
-      importModule('Spannable', '/chromevox/common/spannable.js'),
-      importModule('QueueMode', '/chromevox/common/tts_types.js'),
-    ]);
-  }
 };
 
-MockFeedbackUnitTest.prototype.extraLibraries = [
-  '../../common/testing/assert_additions.js',
-  '../testing/fake_dom.js',  // Must come before other files
-  'mock_feedback.js',
-];
-
-TEST_F('MockFeedbackUnitTest', 'speechAndCallbacks', function() {
+AX_TEST_F('MockFeedbackUnitTest', 'speechAndCallbacks', function() {
   let afterThirdStringCalled = false;
   let spruiousStringEndCallbackCalled = false;
   let finishCalled = false;
@@ -81,7 +62,7 @@ TEST_F('MockFeedbackUnitTest', 'speechAndCallbacks', function() {
   assertTrue(finishCalled);
 });
 
-TEST_F('MockFeedbackUnitTest', 'startAndEndCallbacks', function() {
+AX_TEST_F('MockFeedbackUnitTest', 'startAndEndCallbacks', function() {
   let onlyStartCallbackCalled = false;
   let onlyEndCallbackCalled = false;
   let bothCallbacksStartCalled = false;
@@ -122,7 +103,7 @@ TEST_F('MockFeedbackUnitTest', 'startAndEndCallbacks', function() {
   assertTrue(bothCallbacksEndCalled);
 });
 
-TEST_F('MockFeedbackUnitTest', 'SpeechAndBraille', function() {
+AX_TEST_F('MockFeedbackUnitTest', 'SpeechAndBraille', function() {
   let secondCallbackCalled = false;
   let finishCalled = false;
   const mock = new MockFeedback(function() {
@@ -149,7 +130,7 @@ TEST_F('MockFeedbackUnitTest', 'SpeechAndBraille', function() {
   assertTrue(finishCalled);
 });
 
-TEST_F('MockFeedbackUnitTest', 'expectWithRegex', function() {
+AX_TEST_F('MockFeedbackUnitTest', 'expectWithRegex', function() {
   let done = false;
   const mock = new MockFeedback();
   mock.install();
@@ -164,7 +145,7 @@ TEST_F('MockFeedbackUnitTest', 'expectWithRegex', function() {
   assertTrue(done);
 });
 
-TEST_F('MockFeedbackUnitTest', 'expectAfterReplayThrows', function() {
+AX_TEST_F('MockFeedbackUnitTest', 'expectAfterReplayThrows', function() {
   const mock = new MockFeedback();
   mock.replay();
   assertException('', function() {
@@ -172,7 +153,7 @@ TEST_F('MockFeedbackUnitTest', 'expectAfterReplayThrows', function() {
   }, 'AssertionError');
 });
 
-TEST_F('MockFeedbackUnitTest', 'NoMatchDoesNotFinish', function() {
+AX_TEST_F('MockFeedbackUnitTest', 'NoMatchDoesNotFinish', function() {
   let firstCallbackCalled = false;
   const mock = new MockFeedback(function() {
     throw Error('Should not be called');
@@ -191,7 +172,7 @@ TEST_F('MockFeedbackUnitTest', 'NoMatchDoesNotFinish', function() {
   assertTrue(firstCallbackCalled);
 });
 
-TEST_F('MockFeedbackUnitTest', 'SpeechAndEarcons', function() {
+AX_TEST_F('MockFeedbackUnitTest', 'SpeechAndEarcons', function() {
   let finishCalled = false;
   const mock = new MockFeedback(function() {
     finishCalled = true;
@@ -221,7 +202,7 @@ TEST_F('MockFeedbackUnitTest', 'SpeechAndEarcons', function() {
   assertTrue(finishCalled);
 });
 
-TEST_F('MockFeedbackUnitTest', 'SpeechWithLanguage', function() {
+AX_TEST_F('MockFeedbackUnitTest', 'SpeechWithLanguage', function() {
   let finishCalled = false;
   const mock = new MockFeedback(function() {
     finishCalled = true;

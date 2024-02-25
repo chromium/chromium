@@ -30,6 +30,7 @@
 #include "components/policy/core/common/remote_commands/test_support/remote_command_builders.h"
 #include "components/policy/core/common/remote_commands/test_support/testing_remote_commands_server.h"
 #include "components/policy/proto/device_management_backend.pb.h"
+#include "remote_commands_service.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -191,11 +192,13 @@ class MockJobFactory : public RemoteCommandsFactory {
 class TestingCloudPolicyClientForRemoteCommands : public CloudPolicyClient {
  public:
   explicit TestingCloudPolicyClientForRemoteCommands(
-      TestingRemoteCommandsServer* server)
+      TestingRemoteCommandsServer* server,
+      PolicyInvalidationScope scope)
       : CloudPolicyClient(nullptr /* service */,
                           nullptr /* url_loader_factory */,
                           CloudPolicyClient::DeviceDMTokenCallback()),
-        server_(server) {
+        server_(server),
+        scope_(scope) {
     dm_token_ = kDMToken;
   }
   TestingCloudPolicyClientForRemoteCommands(
@@ -210,9 +213,12 @@ class TestingCloudPolicyClientForRemoteCommands : public CloudPolicyClient {
       std::unique_ptr<RemoteCommandJob::UniqueIDType> last_command_id,
       const std::vector<em::RemoteCommandResult>& command_results,
       em::PolicyFetchRequest::SignatureType signature_type,
+      const std::string& request_type,
       RemoteCommandCallback callback) override {
     std::vector<em::SignedData> commands =
         server_->FetchCommands(std::move(last_command_id), command_results);
+
+    EXPECT_EQ(RemoteCommandsService::GetRequestType(scope_), request_type);
 
     // Asynchronously send the response from the DMServer back to client.
     base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
@@ -221,6 +227,7 @@ class TestingCloudPolicyClientForRemoteCommands : public CloudPolicyClient {
   }
 
   raw_ptr<TestingRemoteCommandsServer> server_;
+  PolicyInvalidationScope scope_;
 };
 
 }  // namespace
@@ -288,7 +295,8 @@ class RemoteCommandsServiceTest
           base::TestMockTimeTaskRunner::Type::kBoundToThread);
 
   TestingRemoteCommandsServer server_;
-  TestingCloudPolicyClientForRemoteCommands cloud_policy_client_{&server_};
+  TestingCloudPolicyClientForRemoteCommands cloud_policy_client_{&server_,
+                                                                 GetScope()};
   MockCloudPolicyStore store_;
   std::unique_ptr<RemoteCommandsService> remote_commands_service_;
 };
@@ -703,10 +711,12 @@ TEST_P(RemoteCommandsServiceHistogramTest, WhenReceivedValidCommandRecordType) {
 INSTANTIATE_TEST_SUITE_P(RemoteCommandsServiceTestInstance,
                          RemoteCommandsServiceTest,
                          testing::Values(PolicyInvalidationScope::kUser,
-                                         PolicyInvalidationScope::kDevice));
+                                         PolicyInvalidationScope::kDevice,
+                                         PolicyInvalidationScope::kCBCM));
 
 INSTANTIATE_TEST_SUITE_P(RemoteCommandsServiceHistogramTestInstance,
                          RemoteCommandsServiceHistogramTest,
                          testing::Values(PolicyInvalidationScope::kUser,
-                                         PolicyInvalidationScope::kDevice));
+                                         PolicyInvalidationScope::kDevice,
+                                         PolicyInvalidationScope::kCBCM));
 }  // namespace policy

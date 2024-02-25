@@ -29,8 +29,7 @@ import java.util.Map;
  * available during launch stage even before native library is ready.
  */
 public class PolicyCache {
-    @VisibleForTesting
-    static final String POLICY_PREF = "Components.Policy";
+    @VisibleForTesting static final String POLICY_PREF = "Components.Policy";
 
     private static PolicyCache sInstance;
 
@@ -167,9 +166,7 @@ public class PolicyCache {
         }
     }
 
-    /**
-     * @return All cached policies.
-     */
+    /** @return All cached policies. */
     public Map<String, ?> getAllPolicies() {
         SharedPreferences sharedPreferences = getSharedPreferences();
         if (sharedPreferences == null) return null;
@@ -197,45 +194,50 @@ public class PolicyCache {
         for (Pair<String, Type> policy : policyNames) {
             String policyName = policy.first;
             switch (policy.second) {
-                case Integer: {
-                    Integer value = policyMap.getIntValue(policyName);
-                    if (value != null) {
-                        sharedPreferencesEditor.putInt(policyName, value.intValue());
+                case Integer:
+                    {
+                        Integer value = policyMap.getIntValue(policyName);
+                        if (value != null) {
+                            sharedPreferencesEditor.putInt(policyName, value.intValue());
+                        }
+                        break;
                     }
-                    break;
-                }
-                case Boolean: {
-                    Boolean value = policyMap.getBooleanValue(policyName);
-                    if (value != null) {
-                        sharedPreferencesEditor.putBoolean(policyName, value.booleanValue());
+                case Boolean:
+                    {
+                        Boolean value = policyMap.getBooleanValue(policyName);
+                        if (value != null) {
+                            sharedPreferencesEditor.putBoolean(policyName, value.booleanValue());
+                        }
+                        break;
                     }
-                    break;
-                }
-                case String: {
-                    String value = policyMap.getStringValue(policyName);
-                    if (value != null) {
-                        sharedPreferencesEditor.putString(policyName, value);
+                case String:
+                    {
+                        String value = policyMap.getStringValue(policyName);
+                        if (value != null) {
+                            sharedPreferencesEditor.putString(policyName, value);
+                        }
+                        break;
                     }
-                    break;
-                }
-                // List and Dict policy values are stored in the native library
-                // as base::Value and converted to JSON string to passed through
-                // the JNI. It's stored to the SharedPreferences as String and
-                // will be converted to JSON object when being read.
-                case List: {
-                    String value = policyMap.getListValueAsString(policyName);
-                    if (value != null) {
-                        sharedPreferencesEditor.putString(policyName, value);
+                    // List and Dict policy values are stored in the native library
+                    // as base::Value and converted to JSON string to passed through
+                    // the JNI. It's stored to the SharedPreferences as String and
+                    // will be converted to JSON object when being read.
+                case List:
+                    {
+                        String value = policyMap.getListValueAsString(policyName);
+                        if (value != null) {
+                            sharedPreferencesEditor.putString(policyName, value);
+                        }
+                        break;
                     }
-                    break;
-                }
-                case Dict: {
-                    String value = policyMap.getDictValueAsString(policyName);
-                    if (value != null) {
-                        sharedPreferencesEditor.putString(policyName, value);
+                case Dict:
+                    {
+                        String value = policyMap.getDictValueAsString(policyName);
+                        if (value != null) {
+                            sharedPreferencesEditor.putString(policyName, value);
+                        }
+                        break;
                     }
-                    break;
-                }
             }
         }
 

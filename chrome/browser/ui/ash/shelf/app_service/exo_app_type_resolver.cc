@@ -4,6 +4,8 @@
 
 #include "chrome/browser/ui/ash/shelf/app_service/exo_app_type_resolver.h"
 
+#include <optional>
+
 #include "ash/components/arc/arc_util.h"
 #include "ash/constants/app_types.h"
 #include "ash/wm/window_properties.h"
@@ -16,7 +18,6 @@
 #include "components/app_restore/window_properties.h"
 #include "components/exo/permission.h"
 #include "components/exo/window_properties.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/base/class_property.h"
 
@@ -28,8 +29,8 @@ bool IsLacrosAppId(base::StringPiece app_id) {
 }
 
 // Adds ARC specific properties.
-void UpdatePropertiesForArc(absl::optional<int> task_id,
-                            absl::optional<int> session_id,
+void UpdatePropertiesForArc(std::optional<int> task_id,
+                            std::optional<int> session_id,
                             exo::ProtectedNativePixmapQueryDelegate*
                                 protected_native_pixmap_query_client,
                             ui::PropertyHandler& out_properties_container) {
@@ -75,9 +76,6 @@ void ExoAppTypeResolver::PopulateProperties(
   if (IsLacrosAppId(params.app_id)) {
     out_properties_container.SetProperty(
         aura::client::kAppType, static_cast<int>(ash::AppType::LACROS));
-    // Make sure Lacros is treated as opaque for occlusion tracking purposes.
-    out_properties_container.SetProperty(
-        chromeos::kWindowManagerManagesOpacityKey, true);
     // Lacros is trusted not to abuse window activation, so grant it a
     // non-expiring permission to activate.
     out_properties_container.SetProperty(

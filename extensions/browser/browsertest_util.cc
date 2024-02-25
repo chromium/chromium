@@ -13,6 +13,7 @@
 #include "extensions/browser/extension_host.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/process_manager.h"
+#include "extensions/common/extension_id.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace extensions::browsertest_util {
@@ -31,7 +32,7 @@ std::string GetScriptToLog(const std::string& script) {
 
 base::Value ExecuteScriptInBackgroundPage(
     content::BrowserContext* context,
-    const std::string& extension_id,
+    const ExtensionId& extension_id,
     const std::string& script,
     ScriptUserActivation script_user_activation) {
   BackgroundScriptExecutor script_executor(context);
@@ -45,16 +46,18 @@ base::Value ExecuteScriptInBackgroundPage(
   return value;
 }
 
-bool ExecuteScriptInBackgroundPageNoWait(content::BrowserContext* context,
-                                         const std::string& extension_id,
-                                         const std::string& script) {
+bool ExecuteScriptInBackgroundPageNoWait(
+    content::BrowserContext* context,
+    const ExtensionId& extension_id,
+    const std::string& script,
+    ScriptUserActivation script_user_activation) {
   return BackgroundScriptExecutor::ExecuteScriptAsync(
-      context, extension_id, script, ScriptUserActivation::kActivate);
+      context, extension_id, script, script_user_activation);
 }
 
 std::string ExecuteScriptInBackgroundPageDeprecated(
     content::BrowserContext* context,
-    const std::string& extension_id,
+    const ExtensionId& extension_id,
     const std::string& script,
     ScriptUserActivation script_user_activation) {
   BackgroundScriptExecutor script_executor(context);
@@ -74,7 +77,7 @@ std::string ExecuteScriptInBackgroundPageDeprecated(
 }
 
 void StopServiceWorkerForExtensionGlobalScope(content::BrowserContext* context,
-                                              const std::string& extension_id) {
+                                              const ExtensionId& extension_id) {
   const Extension* extension =
       ExtensionRegistry::Get(context)->GetExtensionById(
           extension_id, ExtensionRegistry::ENABLED);

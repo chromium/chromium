@@ -1,0 +1,6 @@
+This is a testharness.js-based test.
+[FAIL] Performance interface: attribute interactionCount
+  assert_true: The prototype object must have a property "interactionCount" expected true got false
+[FAIL] Performance interface: performance must inherit property "interactionCount" with the proper type
+  assert_inherits: property "interactionCount" not found in prototype chain
+Harness: the test ran to completion.

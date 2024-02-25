@@ -1,0 +1,19 @@
+[
+  {
+    "os": [
+      "chromeos_ash"
+    ],
+    "policy_pref_mapping_tests": [
+      {
+        "policies": {
+          "PowerSmartDimEnabled": false
+        },
+        "prefs": {
+          "power.smart_dim_enabled": {
+            "value": false
+          }
+        }
+      }
+    ]
+  }
+]

@@ -44,13 +44,13 @@ class BubbleView : public views::View {
   gfx::Size CalculatePreferredSize() const override;
   void OnPaint(gfx::Canvas* canvas) override;
 
-  raw_ptr<views::ImageView, ExperimentalAsh> icon_ = nullptr;
+  raw_ptr<views::ImageView> icon_ = nullptr;
 
-  raw_ptr<views::Label, ExperimentalAsh> text_ = nullptr;
+  raw_ptr<views::Label> text_ = nullptr;
 
   std::vector<gfx::ShadowValue> shadows_;
 
-  raw_ptr<ash::ColorProvider, ExperimentalAsh> color_provider_;  // Not owned.
+  raw_ptr<ash::ColorProvider> color_provider_;  // Not owned.
 };
 
 }  // namespace keyboard_shortcut_viewer

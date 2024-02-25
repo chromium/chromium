@@ -1,5 +1,5 @@
 # -*- bazel-starlark -*-
-# Copyright 2023 The Chromium Authors. All rights reserved.
+# Copyright 2023 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 """Siso configuration for nasm/linux."""
@@ -9,8 +9,8 @@ load("@builtin//struct.star", "module")
 load("./config.star", "config")
 load("./nasm_scandeps.star", "nasm_scandeps")
 
-__filegroups = {
-}
+def __filegroups(ctx):
+    return {}
 
 def __nasm(ctx, cmd):
     inputs = nasm_scandeps.scandeps(ctx, cmd)

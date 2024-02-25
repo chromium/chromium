@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "base/functional/callback.h"
+#include "build/chromeos_buildflags.h"
 #include "components/omnibox/browser/autocomplete_controller.h"
 #include "components/omnibox/browser/autocomplete_scheme_classifier.h"
 #include "components/omnibox/browser/mock_autocomplete_provider_client.h"
@@ -27,7 +28,8 @@ TestOmniboxClient::TestOmniboxClient()
           std::make_unique<AutocompleteController>(
               CreateAutocompleteProviderClient(),
               AutocompleteClassifier::DefaultOmniboxProviders()),
-          std::make_unique<TestSchemeClassifier>()) {}
+          std::make_unique<TestSchemeClassifier>()),
+      last_log_disposition_(WindowOpenDisposition::UNKNOWN) {}
 
 TestOmniboxClient::~TestOmniboxClient() {
   template_url_service_ = nullptr;
@@ -41,11 +43,19 @@ TestOmniboxClient::CreateAutocompleteProviderClient() {
       .WillRepeatedly(testing::Return(std::vector<std::u16string>()));
   EXPECT_CALL(*provider_client, GetSchemeClassifier())
       .WillRepeatedly(testing::ReturnRef(scheme_classifier_));
+  EXPECT_CALL(*provider_client, GetApplicationLocale())
+      .WillRepeatedly(testing::Return("en-US"));
 
   auto template_url_service = std::make_unique<TemplateURLService>(
-      nullptr /* PrefService */, std::make_unique<SearchTermsData>(),
-      nullptr /* KeywordWebDataService */,
-      std::unique_ptr<TemplateURLServiceClient>(), base::RepeatingClosure());
+      /*prefs=*/nullptr, /*search_engine_choice_service=*/nullptr,
+      std::make_unique<SearchTermsData>(),
+      /*web_data_service=*/nullptr, std::unique_ptr<TemplateURLServiceClient>(),
+      base::RepeatingClosure()
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+          ,
+      /*for_lacros_main_profile=*/false
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
+  );
 
   // Save a reference to the created TemplateURLService for test use.
   template_url_service_ = template_url_service.get();
@@ -100,4 +110,12 @@ gfx::Image TestOmniboxClient::GetSizedIcon(
   SkBitmap bitmap;
   bitmap.allocN32Pixels(16, 16);
   return gfx::Image(gfx::ImageSkia::CreateFrom1xBitmap(bitmap));
+}
+
+void TestOmniboxClient::OnURLOpenedFromOmnibox(OmniboxLog* log) {
+  last_log_disposition_ = log->disposition;
+}
+
+base::WeakPtr<OmniboxClient> TestOmniboxClient::AsWeakPtr() {
+  return weak_factory_.GetWeakPtr();
 }

@@ -5,19 +5,20 @@
 import {TestRunner} from 'test_runner';
 import {AxeCoreTestRunner} from 'axe_core_test_runner';
 import {SourcesTestRunner} from 'sources_test_runner';
+import * as UI from 'devtools/ui/legacy/legacy.js';
+import * as Sources from 'devtools/panels/sources/sources.js';
 
 (async function() {
   TestRunner.addResult('Testing accessibility in the threads sidebar pane.');
 
-  await TestRunner.loadLegacyModule('sources');
   await TestRunner.showPanel('sources');
   await SourcesTestRunner.startDebuggerTestPromise(/* quiet */ true);
 
   await TestRunner.evaluateInPagePromise(`new Worker('../../sources/resources/worker-source.js')`);
   await SourcesTestRunner.waitUntilPausedPromise();
-  const sourcesPanel = UI.panels.sources;
+  const sourcesPanel = Sources.SourcesPanel.SourcesPanel.instance();
   sourcesPanel.showThreadsIfNeeded();
-  await UI.viewManager.showView('sources.threads');
+  await UI.ViewManager.ViewManager.instance().showView('sources.threads');
 
   const threadsSidebarPane = await sourcesPanel.threadsSidebarPane.widget();
   const threadsSidebarElement = threadsSidebarPane.contentElement;

@@ -1,0 +1,29 @@
+<!--
+Copyright 2023 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+<html>
+  <head>
+  <style>
+    .preview {
+      /* Mirror the image */
+      -webkit-transform: scaleX(-1);
+      transform: scaleX(-1);
+      position:absolute;
+      top: 0;
+      left: 0;
+    }
+  </style>
+    <title>FaceGaze Camera Stream</title>
+  </head>
+  <body>
+    <button id="startButton" hidden>Click to start FaceGaze</button>
+    <div style="position:relative">
+      <video class="preview" id="cameraStream" autoplay playsinline></video>
+      <canvas class="preview" id="overlay"
+        style="z-index:10;"></canvas>
+    </div>
+       <script type="module" src="camera_stream.js"></script>
+  </body>
+</html>

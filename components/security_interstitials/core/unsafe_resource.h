@@ -5,11 +5,13 @@
 #ifndef COMPONENTS_SECURITY_INTERSTITIALS_CORE_UNSAFE_RESOURCE_H_
 #define COMPONENTS_SECURITY_INTERSTITIALS_CORE_UNSAFE_RESOURCE_H_
 
+#include <optional>
 #include <vector>
 
 #include "base/functional/callback.h"
 #include "base/memory/ref_counted.h"
 #include "base/task/sequenced_task_runner.h"
+#include "base/unguessable_token.h"
 #include "components/safe_browsing/core/browser/db/hit_report.h"
 #include "components/safe_browsing/core/common/proto/realtimeapi.pb.h"
 #include "components/safe_browsing/core/common/safebrowsing_constants.h"
@@ -25,29 +27,38 @@ namespace security_interstitials {
 // Structure that passes parameters between the IO and UI thread when
 // interacting with the safe browsing blocking page.
 struct UnsafeResource {
-  // Passed booleans indicating whether or not it is OK to proceed with
-  // loading an URL and whether or not an interstitial was shown as a result of
-  // the URL load, |showed_interstitial| should only be set to true if the
-  // interstitial was shown as a direct result of the navigation to the URL.
-  // (e.g. it should be set to true if the interstitial will be shown from a
-  // navigation throttle triggered by this navigation, but to false if it will
-  // be shown using LoadPostCommitErrorPage).
-  using UrlCheckCallback =
-      base::RepeatingCallback<void(bool /*proceed*/,
-                                   bool /*showed_interstitial*/)>;
+  // Helper structure returned through UrlCheckCallback.
+  struct UrlCheckResult {
+    UrlCheckResult(bool proceed,
+                   bool showed_interstitial,
+                   bool has_post_commit_interstitial_skipped);
+    // Indicates whether or not it is OK to proceed with loading an URL.
+    bool proceed;
+    // Should only be set to true if the interstitial was shown as a direct
+    // result of the navigation to the URL. (e.g. it should be set to true if
+    // the interstitial will be shown from a navigation throttle triggered by
+    // this navigation, but to false if it will be shown using
+    // LoadPostCommitErrorPage). Only used to control the error code returned in
+    // BrowserUrlLoaderThrottle.
+    bool showed_interstitial;
+    // Should only be set to true if LoadPostCommitErrorPage should be called
+    // but skipped because the main page load is pending. Only consumed by
+    // AsyncCheckTracker.
+    bool has_post_commit_interstitial_skipped;
+  };
+
+  using UrlCheckCallback = base::RepeatingCallback<void(UrlCheckResult)>;
 
   // TODO(crbug.com/1073315): These are content/ specific ids that need to be
   // plumbed through this struct.
   // Equivalent to GlobalRenderFrameHostId.
   using RenderProcessId = int;
-  using RenderFrameId = int;
+  using RenderFrameToken = std::optional<base::UnguessableToken>;
   // See RenderFrameHost::GetFrameTreeNodeId.
   using FrameTreeNodeId = int;
   // Copies of the sentinel values used in content/.
   // Equal to ChildProcessHost::kInvalidUniqueID.
   static constexpr RenderProcessId kNoRenderProcessId = -1;
-  // Equal to MSG_ROUTING_NONE.
-  static constexpr RenderFrameId kNoRenderFrameId = -2;
   // Equal to RenderFrameHost::kNoFrameTreeNodeId.
   static constexpr FrameTreeNodeId kNoFrameTreeNodeId = -1;
 
@@ -55,16 +66,18 @@ struct UnsafeResource {
   UnsafeResource(const UnsafeResource& other);
   ~UnsafeResource();
 
-  // Returns true if this UnsafeResource is a main frame load that was blocked
-  // while the navigation is still pending. Note that a main frame hit may not
-  // be blocking, eg. client side detection happens after the load is
-  // committed.
-  bool IsMainPageLoadBlocked() const;
+  // Returns true if this UnsafeResource is a main frame load while the
+  // navigation is still pending. Note that a main frame hit may not be
+  // blocking, eg. client side detection happens after the load is committed.
+  // Note: If kSafeBrowsingAsyncRealTimeCheck is supported, please call
+  // AsyncCheckTracker::IsMainPageLoadPending instead.
+  bool IsMainPageLoadPendingWithSyncCheck() const;
 
   // Checks if |callback| is not null and posts it to |callback_sequence|.
   void DispatchCallback(const base::Location& from_here,
                         bool proceed,
-                        bool showed_interstitial) const;
+                        bool showed_interstitial,
+                        bool has_post_commit_interstitial_skipped) const;
 
   GURL url;
   GURL original_url;
@@ -84,12 +97,13 @@ struct UnsafeResource {
   // on all other platforms. This struct should be refactored to use only the
   // common functionality can be shared across platforms.
   // These content/ specific ids indicate what triggered safe browsing. In the
-  // case of a frame navigating, we should have its FrameTreeNode id. In the
-  // case of something triggered by a document (e.g. subresource loading), we
-  // should have the RenderFrameHost's id.
+  // case of a frame navigating, we should have its FrameTreeNode id and
+  // navigation id. In the case of something triggered by a document (e.g.
+  // subresource loading), we should have the RenderFrameHost's id.
   RenderProcessId render_process_id = kNoRenderProcessId;
-  RenderFrameId render_frame_id = kNoRenderFrameId;
+  RenderFrameToken render_frame_token;
   FrameTreeNodeId frame_tree_node_id = kNoFrameTreeNodeId;
+  std::optional<int64_t> navigation_id;
 
   base::WeakPtr<web::WebState> weak_web_state;
 
@@ -102,6 +116,14 @@ struct UnsafeResource {
   // If true, this UnsafeResource is created because of the Delayed Warnings
   // experiment.
   bool is_delayed_warning;
+
+  // If false, skip sending Safe Browsing telemetry reports. Default to true.
+  bool should_send_reports;
+
+  // If true, this UnsafeResource is created by a check that doesn't delay
+  // navigation to complete. If false, it can either be the UnsafeResource is
+  // not for navigation or it delays navigation. Default to false.
+  bool is_async_check;
 };
 
 }  // namespace security_interstitials

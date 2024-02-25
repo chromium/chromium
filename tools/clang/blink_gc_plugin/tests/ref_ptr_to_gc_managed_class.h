@@ -15,7 +15,6 @@ class PartObject {
     DISALLOW_NEW();
 private:
     scoped_refptr<HeapObject> m_obj;
-    WeakPtr<HeapObject> m_obj2;
 };
 
 class HeapObject : public GarbageCollected<HeapObject> {

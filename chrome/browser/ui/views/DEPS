@@ -12,8 +12,7 @@ include_rules = [
 
 specific_include_rules = {
   "authenticator_qr_sheet_view\.*": [
-    "+chrome/services/qrcode_generator/public/cpp/qrcode_generator_service.h",
-    "+chrome/services/qrcode_generator/public/mojom/qrcode_generator.mojom.h",
+    "+components/qr_code_generator/bitmap_generator.h",
   ],
   "browser_user_education_service.cc": [
     "+ash/user_education/views/help_bubble_factory_views_ash.h",
@@ -21,9 +20,11 @@ specific_include_rules = {
   "chrome_views_delegate_chromeos\.cc": [
     "+ash/shell.h",
   ],
+  "isolated_web_app_installer_view_browsertest\.cc": [
+    "+ash/shell.h",
+  ],
   "qrcode_generator\.*": [
-    "+chrome/services/qrcode_generator/public/cpp/qrcode_generator_service.h",
-    "+chrome/services/qrcode_generator/public/mojom/qrcode_generator.mojom.h",
+    "+components/qr_code_generator/bitmap_generator.h",
   ],
   "save_card_bubble_views_browsertest\.cc": [
     "+chromeos/ash/services/multidevice_setup/public/cpp/prefs.h",
@@ -46,4 +47,7 @@ specific_include_rules = {
    "+ash/public",
    "+ash/webui/system_apps/public/system_web_app_type.h",
   ],
+  "web_app_frame_toolbar_browsertest\.cc": [
+    "+components/webapps/services/web_app_origin_association/test/test_web_app_origin_association_fetcher.h",
+  ]
 }

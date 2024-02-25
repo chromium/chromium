@@ -19,9 +19,9 @@ class ToggleImageButton;
 // Textfield that also shows a drop-down list with suggestions and can switch
 // between visible and obfuscated text.
 class VIEWS_EXPORT EditablePasswordCombobox : public EditableCombobox {
- public:
-  METADATA_HEADER(EditablePasswordCombobox);
+  METADATA_HEADER(EditablePasswordCombobox, EditableCombobox)
 
+ public:
   static constexpr int kDefaultTextContext = style::CONTEXT_BUTTON;
   static constexpr int kDefaultTextStyle = style::STYLE_PRIMARY;
 

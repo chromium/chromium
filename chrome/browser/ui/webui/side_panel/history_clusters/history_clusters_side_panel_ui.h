@@ -70,6 +70,10 @@ class HistoryClustersSidePanelUI : public ui::MojoBubbleWebUIController,
   void DidFinishNavigation(
       content::NavigationHandle* navigation_handle) override;
 
+  static constexpr std::string GetWebUIName() {
+    return "HistoryClustersSidePanel";
+  }
+
  private:
   std::unique_ptr<ui::ColorChangeHandler> color_provider_handler_;
   std::unique_ptr<history_clusters::HistoryClustersHandler>

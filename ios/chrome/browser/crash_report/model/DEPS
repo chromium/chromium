@@ -1,0 +1,9 @@
+include_rules = [
+  "+components/breadcrumbs/core",
+  "+ios/chrome/browser/metrics/model",
+  "+ios/chrome/browser/overlays/model/public",
+  "+ios/chrome/browser/infobars/model",
+
+  # For fuzzer
+  "+third_party/crashpad/crashpad",
+]

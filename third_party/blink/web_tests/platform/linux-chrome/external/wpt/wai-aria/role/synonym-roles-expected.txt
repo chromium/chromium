@@ -1,0 +1,6 @@
+This is a testharness.js-based test.
+[FAIL] directory role == computedrole list
+  assert_equals: <ul role="directory" id="directory" data-expectedrole="list" data-testname="directory role == computedrole list" class="ex"><li>x</li></ul> expected "list" but got "directory"
+[FAIL] div w/directory role == computedrole list
+  assert_equals: <div role="directory" id="div" data-expectedrole="list" data-testname="div w/directory role == computedrole list" class="ex"><div role="listitem">x</div></div> expected "list" but got "directory"
+Harness: the test ran to completion.

@@ -162,7 +162,7 @@ void ConnectionPreserverImpl::SetPreservedConnection(
 
   preserved_connection_device_id_ = device_id;
 
-  absl::optional<multidevice::RemoteDeviceRef> remote_device =
+  std::optional<multidevice::RemoteDeviceRef> remote_device =
       GetRemoteDevice(preserved_connection_device_id_);
   if (!remote_device) {
     PA_LOG(ERROR) << "Given invalid remote device ID: "
@@ -172,7 +172,7 @@ void ConnectionPreserverImpl::SetPreservedConnection(
     return;
   }
 
-  absl::optional<multidevice::RemoteDeviceRef> local_device =
+  std::optional<multidevice::RemoteDeviceRef> local_device =
       device_sync_client_->GetLocalDeviceMetadata();
   if (!local_device) {
     PA_LOG(ERROR) << "ConnectionPreserverImpl::" << __func__
@@ -210,13 +210,13 @@ void ConnectionPreserverImpl::RemovePreservedConnectionIfPresent() {
   preserved_connection_timer_->Stop();
 }
 
-absl::optional<multidevice::RemoteDeviceRef>
+std::optional<multidevice::RemoteDeviceRef>
 ConnectionPreserverImpl::GetRemoteDevice(const std::string device_id) {
   for (const auto& remote_device : device_sync_client_->GetSyncedDevices()) {
     if (remote_device.GetDeviceId() == device_id)
       return remote_device;
   }
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 void ConnectionPreserverImpl::SetTimerForTesting(

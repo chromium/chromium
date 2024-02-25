@@ -5,19 +5,19 @@
 #ifndef COMPONENTS_CONTENT_SETTINGS_ANDROID_COOKIE_CONTROLS_BRIDGE_H_
 #define COMPONENTS_CONTENT_SETTINGS_ANDROID_COOKIE_CONTROLS_BRIDGE_H_
 
+#include <optional>
+
 #include "base/android/jni_weak_ref.h"
 #include "base/scoped_observation.h"
 #include "components/content_settings/browser/ui/cookie_controls_controller.h"
 #include "components/content_settings/browser/ui/cookie_controls_view.h"
 #include "components/content_settings/core/common/cookie_controls_status.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace content_settings {
 
 // Communicates between CookieControlsController (C++ backend) and PageInfoView
 // (Java UI).
-class CookieControlsBridge : public OldCookieControlsObserver,
-                             public CookieControlsObserver {
+class CookieControlsBridge : public CookieControlsObserver {
  public:
   // Creates a CookeControlsBridge for interaction with a
   // CookieControlsController.
@@ -51,40 +51,34 @@ class CookieControlsBridge : public OldCookieControlsObserver,
 
   int GetCookieControlsStatus(JNIEnv* env);
 
-  int GetBreakageConfidenceLevel(JNIEnv* env);
-
-  // OldCookieControlsObserver:
-  void OnStatusChanged(CookieControlsStatus status,
-                       CookieControlsEnforcement enforcement,
-                       int allowed_cookies,
-                       int blocked_cookies) override;
-  void OnCookiesCountChanged(int allowed_cookies, int blocked_cookies) override;
-  void OnStatefulBounceCountChanged(int bounce_count) override;
-
   // CookieControlsObserver:
+  // TODO(b/317975095): Remove `status` in favor of `control_visible` and
+  // `protections_on`.
   void OnStatusChanged(CookieControlsStatus status,
+                       bool controls_visible,
+                       bool protections_on,
                        CookieControlsEnforcement enforcement,
+                       CookieBlocking3pcdStatus blocking_status,
                        base::Time expiration) override;
   void OnSitesCountChanged(int allowed_third_party_sites_count,
                            int blocked_third_party_sites_count) override;
-  void OnBreakageConfidenceLevelChanged(
-      CookieControlsBreakageConfidenceLevel level) override;
+  void OnCookieControlsIconStatusChanged(
+      bool icon_visible,
+      bool protections_on,
+      CookieBlocking3pcdStatus blocking_status,
+      bool should_highlight) override;
 
  private:
   base::android::ScopedJavaGlobalRef<jobject> jobject_;
   CookieControlsStatus status_ = CookieControlsStatus::kUninitialized;
   CookieControlsEnforcement enforcement_ =
       CookieControlsEnforcement::kNoEnforcement;
-  CookieControlsBreakageConfidenceLevel level_ =
-      CookieControlsBreakageConfidenceLevel::kUninitialized;
-  absl::optional<base::Time> expiration_;
-  absl::optional<int> blocked_cookies_;
-  absl::optional<int> allowed_cookies_;
-  absl::optional<int> blocked_third_party_sites_count_;
-  absl::optional<int> allowed_third_party_sites_count_;
+  std::optional<base::Time> expiration_;
+  std::optional<int> blocked_cookies_;
+  std::optional<int> allowed_cookies_;
+  std::optional<int> blocked_third_party_sites_count_;
+  std::optional<int> allowed_third_party_sites_count_;
   std::unique_ptr<CookieControlsController> controller_;
-  base::ScopedObservation<CookieControlsController, OldCookieControlsObserver>
-      old_observation_{this};
   base::ScopedObservation<CookieControlsController, CookieControlsObserver>
       observation_{this};
 };

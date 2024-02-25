@@ -7,12 +7,11 @@
 #include <utility>
 
 #include "ash/constants/app_types.h"
-#include "ash/constants/ash_switches.h"
 #include "ash/public/cpp/window_properties.h"
 #include "ash/shell.h"
 #include "ash/wm/mru_window_tracker.h"
-#include "base/command_line.h"
 #include "base/logging.h"
+#include "base/memory/raw_ptr.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/string_number_conversions.h"
@@ -26,13 +25,23 @@ namespace ash {
 
 namespace {
 
+std::unique_ptr<ThottleControllerWindowDelegate> instance = nullptr;
+
+viz::FrameSinkId GetFrameSinkId(const aura::Window* window) {
+  if (instance) {
+    return instance->GetFrameSinkIdForWindow(window);
+  }
+  return window->GetFrameSinkId();
+}
+
 void CollectFrameSinkIds(const aura::Window* window,
                          base::flat_set<viz::FrameSinkId>* frame_sink_ids) {
-  if (window->GetFrameSinkId().is_valid()) {
-    frame_sink_ids->insert(window->GetFrameSinkId());
+  auto id = GetFrameSinkId(window);
+  if (id.is_valid()) {
+    frame_sink_ids->insert(id);
     return;
   }
-  for (auto* child : window->children()) {
+  for (aura::Window* child : window->children()) {
     CollectFrameSinkIds(child, frame_sink_ids);
   }
 }
@@ -49,19 +58,24 @@ void CollectBrowserFrameSinkIdsInWindow(
   if (inside_browser || ash::AppType::BROWSER ==
                             static_cast<ash::AppType>(
                                 window->GetProperty(aura::client::kAppType))) {
-    const auto& id = window->GetFrameSinkId();
+    auto id = GetFrameSinkId(window);
     if (id.is_valid() && ids.contains(id))
       frame_sink_ids->insert(id);
     inside_browser = true;
   }
 
-  for (auto* child : window->children()) {
+  for (aura::Window* child : window->children()) {
     CollectBrowserFrameSinkIdsInWindow(child, inside_browser, ids,
                                        frame_sink_ids);
   }
 }
 
 }  // namespace
+
+void SetThottleControllerWindowDelegate(
+    std::unique_ptr<ThottleControllerWindowDelegate> delegate) {
+  instance = std::move(delegate);
+}
 
 ThrottleCandidates::ThrottleCandidates() = default;
 
@@ -90,15 +104,7 @@ FrameThrottlingController::FrameThrottlingController(
     viz::HostFrameSinkManager* host_frame_sink_manager)
     : host_frame_sink_manager_(host_frame_sink_manager) {
   DCHECK(host_frame_sink_manager_);
-  int default_fps = kDefaultThrottleFps;
-  const base::CommandLine* cl = base::CommandLine::ForCurrentProcess();
-  if (cl->HasSwitch(switches::kFrameThrottleFps)) {
-    if (!base::StringToInt(cl->GetSwitchValueASCII(switches::kFrameThrottleFps),
-                           &default_fps)) {
-      default_fps = kDefaultThrottleFps;
-    }
-  }
-  default_throttled_frame_interval_ = base::Hertz(default_fps);
+  default_throttled_frame_interval_ = base::Hertz(kDefaultThrottleFps);
   current_throttled_frame_interval_ = default_throttled_frame_interval_;
 }
 
@@ -107,7 +113,7 @@ FrameThrottlingController::~FrameThrottlingController() {
 }
 
 void FrameThrottlingController::StartThrottling(
-    const std::vector<aura::Window*>& windows,
+    const std::vector<raw_ptr<aura::Window, VectorExperimental>>& windows,
     base::TimeDelta requested_frame_interval) {
   latest_custom_throttled_frame_interval_ = requested_frame_interval;
 
@@ -121,14 +127,13 @@ void FrameThrottlingController::StartThrottling(
   base::ranges::copy_if(
       Shell::Get()->mru_window_tracker()->BuildMruWindowList(kActiveDesk),
       std::back_inserter(all_arc_windows), [](aura::Window* window) {
-        return ash::AppType::ARC_APP ==
-               static_cast<ash::AppType>(
-                   window->GetProperty(aura::client::kAppType));
+        return AppType::ARC_APP == static_cast<AppType>(window->GetProperty(
+                                       aura::client::kAppType));
       });
 
   std::vector<aura::Window*> arc_windows;
   arc_windows.reserve(windows.size());
-  for (auto* window : windows) {
+  for (aura::Window* window : windows) {
     ash::AppType type =
         static_cast<ash::AppType>(window->GetProperty(aura::client::kAppType));
     switch (type) {
@@ -337,7 +342,7 @@ void FrameThrottlingController::CollectLacrosWindowsInWindow(
   }
 
   if (inside_lacros) {
-    const auto& id = window->GetFrameSinkId();
+    auto id = GetFrameSinkId(window);
     if (id.is_valid() && ids.contains(id)) {
       DCHECK(lacros_window);
       candidates->insert(std::make_pair(lacros_window, id));
@@ -347,7 +352,7 @@ void FrameThrottlingController::CollectLacrosWindowsInWindow(
     }
   }
 
-  for (auto* child : window->children()) {
+  for (aura::Window* child : window->children()) {
     CollectLacrosWindowsInWindow(child, inside_lacros, ids, candidates,
                                  lacros_window);
   }
@@ -357,7 +362,7 @@ void FrameThrottlingController::CollectLacrosCandidates(
     aura::Window* window,
     base::flat_map<aura::Window*, viz::FrameSinkId>* candidates,
     aura::Window* lacros_window) {
-  const auto& id = window->GetFrameSinkId();
+  auto id = GetFrameSinkId(window);
   if (id.is_valid()) {
     DCHECK(lacros_window);
     candidates->insert(std::make_pair(lacros_window, id));
@@ -365,8 +370,9 @@ void FrameThrottlingController::CollectLacrosCandidates(
       lacros_window->AddObserver(this);
     return;
   }
-  for (auto* child : window->children())
+  for (aura::Window* child : window->children()) {
     CollectLacrosCandidates(child, candidates, lacros_window);
+  }
 }
 
 bool FrameThrottlingController::HasCompositingBasedThrottling() const {

@@ -8,6 +8,7 @@
 
 #include "base/functional/bind.h"
 #include "base/logging.h"
+#include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "ui/display/manager/configure_displays_task.h"
 #include "ui/display/manager/display_layout_manager.h"
@@ -20,7 +21,8 @@ namespace display {
 namespace {
 
 bool InternalDisplayThrottled(
-    const std::vector<DisplaySnapshot*>& cached_displays) {
+    const std::vector<raw_ptr<DisplaySnapshot, VectorExperimental>>&
+        cached_displays) {
   for (const DisplaySnapshot* display : cached_displays) {
     if (display->type() == DISPLAY_CONNECTION_TYPE_INTERNAL) {
       if (!display->current_mode())
@@ -42,7 +44,8 @@ bool InternalDisplayThrottled(
 
 // Move all internal panel displays to the front of the display list. Otherwise,
 // the list remains in order.
-void MoveInternalDisplaysToTheFront(std::vector<DisplaySnapshot*>& displays) {
+void MoveInternalDisplaysToTheFront(
+    std::vector<raw_ptr<DisplaySnapshot, VectorExperimental>>& displays) {
   DisplayConfigurator::DisplayStateList sorted_displays;
 
   // First pass for internal panels.
@@ -113,7 +116,7 @@ void UpdateDisplayConfigurationTask::OnDisplaySnapshotsInvalidated() {
 }
 
 void UpdateDisplayConfigurationTask::OnDisplaysUpdated(
-    const std::vector<DisplaySnapshot*>& displays) {
+    const std::vector<raw_ptr<DisplaySnapshot, VectorExperimental>>& displays) {
   cached_displays_ = displays;
   MoveInternalDisplaysToTheFront(cached_displays_);
   requesting_displays_ = false;

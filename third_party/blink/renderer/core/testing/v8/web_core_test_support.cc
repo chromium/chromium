@@ -48,13 +48,11 @@ v8::Local<v8::Value> CreateInternalsObject(v8::Local<v8::Context> context) {
   ExecutionContext* execution_context = ExecutionContext::From(script_state);
   if (execution_context->IsWindow()) {
     return ToV8Traits<Internals>::ToV8(
-               script_state, MakeGarbageCollected<Internals>(execution_context))
-        .ToLocalChecked();
+        script_state, MakeGarbageCollected<Internals>(execution_context));
   }
   if (execution_context->IsWorkerGlobalScope()) {
     return ToV8Traits<WorkerInternals>::ToV8(
-               script_state, MakeGarbageCollected<WorkerInternals>())
-        .ToLocalChecked();
+        script_state, MakeGarbageCollected<WorkerInternals>());
   }
   return v8::Local<v8::Value>();
 }

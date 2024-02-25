@@ -19,7 +19,7 @@ import org.chromium.base.ContextUtils;
 import org.chromium.base.TraceEvent;
 import org.chromium.chrome.browser.IntentHandler;
 import org.chromium.chrome.browser.app.tab_activity_glue.ReparentingTask;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.EmptyTabObserver;
 import org.chromium.chrome.browser.tab.RedirectHandlerTabHelper;
 import org.chromium.chrome.browser.tab.Tab;
@@ -63,6 +63,7 @@ public class HiddenTabHolder {
         // This WindowAndroid is "owned" by the Tab and should be destroyed when it is no longer
         // needed by the Tab or when the Tab is destroyed.
         private WindowAndroid mOwnedWindowAndroid;
+
         public HiddenTabObserver(WindowAndroid ownedWindowAndroid) {
             mOwnedWindowAndroid = ownedWindowAndroid;
         }
@@ -96,22 +97,28 @@ public class HiddenTabHolder {
      * Creates a hidden tab and initiates a navigation.
      *
      * @param tabCreatedCallback Callback run with the tab that is created. This is run before the
-     *        url is loaded.
+     *     url is loaded.
      * @param session The {@link CustomTabsSessionToken} for the Tab to be associated with.
+     * @param profile The Profile the tab is associated with.
      * @param clientManager The {@link ClientManager} to get referrer information and link
-     *                      PostMessage.
+     *     PostMessage.
      * @param url The URL to load into the Tab.
      * @param extras Extras to be passed that may contain referrer information.
      */
-    void launchUrlInHiddenTab(Callback<Tab> tabCreatedCallback, CustomTabsSessionToken session,
-            ClientManager clientManager, String url, @Nullable Bundle extras) {
+    void launchUrlInHiddenTab(
+            Callback<Tab> tabCreatedCallback,
+            CustomTabsSessionToken session,
+            Profile profile,
+            ClientManager clientManager,
+            String url,
+            @Nullable Bundle extras) {
         Intent extrasIntent = new Intent();
         if (extras != null) extrasIntent.putExtras(extras);
 
         // Ensures no Browser.EXTRA_HEADERS were in the Intent.
         if (IntentHandler.getExtraHeadersFromIntent(extrasIntent) != null) return;
 
-        Tab tab = buildDetachedTab();
+        Tab tab = buildDetachedTab(profile);
         tabCreatedCallback.onResult(tab);
 
         HiddenTabObserver observer = new HiddenTabObserver(tab.getWindowAndroid());
@@ -129,11 +136,9 @@ public class HiddenTabHolder {
         if (!referrer.isEmpty()) {
             loadParams.setReferrer(new Referrer(referrer, ReferrerPolicy.DEFAULT));
         }
-        if (ChromeFeatureList.isEnabled(ChromeFeatureList.OPAQUE_ORIGIN_FOR_INCOMING_INTENTS)) {
-            // The sender of an intent can't be trusted, so we navigate from an opaque Origin to
-            // avoid sending same-site cookies.
-            loadParams.setInitiatorOrigin(Origin.createOpaqueOrigin());
-        }
+        // The sender of an intent can't be trusted, so we navigate from an opaque Origin to
+        // avoid sending same-site cookies.
+        loadParams.setInitiatorOrigin(Origin.createOpaqueOrigin());
 
         loadParams.setTransitionType(PageTransition.LINK | PageTransition.FROM_API);
         RedirectHandlerTabHelper.getOrCreateHandlerFor(tab).setIsPrefetchLoadForIntent(true);
@@ -142,23 +147,23 @@ public class HiddenTabHolder {
     }
 
     /**
-     * Creates an instance of a {@link Tab} that is fully detached from any activity.
-     * Also performs general tab initialization as well as detached specifics.
+     * Creates an instance of a {@link Tab} that is fully detached from any activity. Also performs
+     * general tab initialization as well as detached specifics.
      *
-     * The current application context must allow the creation of a WindowAndroid.
+     * <p>The current application context must allow the creation of a WindowAndroid.
      *
+     * @param profile The Profile the tab is associated with.
      * @return The newly created and initialized tab.
      */
-    private static Tab buildDetachedTab() {
+    private static Tab buildDetachedTab(Profile profile) {
         Context context = ContextUtils.getApplicationContext();
-        // TODO(crbug.com/1190971): Set isIncognito flag here if hidden tabs are allowed for
-        // incognito mode.
-        Tab tab = new TabBuilder()
-                          .setWindow(new WindowAndroid(context))
-                          .setLaunchType(TabLaunchType.FROM_SPECULATIVE_BACKGROUND_CREATION)
-                          .setDelegateFactory(CustomTabDelegateFactory.createEmpty())
-                          .setInitiallyHidden(true)
-                          .build();
+        Tab tab =
+                new TabBuilder(profile)
+                        .setWindow(new WindowAndroid(context))
+                        .setLaunchType(TabLaunchType.FROM_SPECULATIVE_BACKGROUND_CREATION)
+                        .setDelegateFactory(CustomTabDelegateFactory.createEmpty())
+                        .setInitiallyHidden(true)
+                        .build();
 
         // Resize the webContent to avoid expensive post load resize when attaching the tab.
         Rect bounds = TabUtils.estimateContentSize(context);
@@ -179,8 +184,12 @@ public class HiddenTabHolder {
      * @param referrer The referrer to use for |url|.
      * @return The hidden tab, or null.
      */
-    @Nullable Tab takeHiddenTab(@Nullable CustomTabsSessionToken session, boolean ignoreFragments,
-            String url, @Nullable String referrer) {
+    @Nullable
+    Tab takeHiddenTab(
+            @Nullable CustomTabsSessionToken session,
+            boolean ignoreFragments,
+            String url,
+            @Nullable String referrer) {
         try (TraceEvent e = TraceEvent.scoped("CustomTabsConnection.takeHiddenTab")) {
             if (mSpeculation == null || session == null) return null;
             if (!session.equals(mSpeculation.session)) return null;
@@ -191,39 +200,34 @@ public class HiddenTabHolder {
 
             mSpeculation = null;
 
-            boolean urlsMatch = ignoreFragments
-                    ? UrlUtilities.urlsMatchIgnoringFragments(speculatedUrl, url)
-                    : TextUtils.equals(speculatedUrl, url);
+            boolean urlsMatch =
+                    ignoreFragments
+                            ? UrlUtilities.urlsMatchIgnoringFragments(speculatedUrl, url)
+                            : TextUtils.equals(speculatedUrl, url);
 
             if (referrer == null) referrer = "";
 
             if (urlsMatch && TextUtils.equals(speculationReferrer, referrer)) {
-                CustomTabsConnection.recordSpeculationStatusSwapTabTaken();
                 return tab;
             } else {
-                CustomTabsConnection.recordSpeculationStatusSwapTabNotMatched();
                 tab.destroy();
                 return null;
             }
         }
     }
 
-    @VisibleForTesting
-    public Tab getHiddenTab() {
-        return mSpeculation != null ? mSpeculation.tab : null;
-    }
-
     /** Cancels the speculation for a given session, or any session if null. */
     void destroyHiddenTab(@Nullable CustomTabsSessionToken session) {
         if (mSpeculation == null) return;
-        if (session!= null && !session.equals(mSpeculation.session)) return;
+        if (session != null && !session.equals(mSpeculation.session)) return;
 
         mSpeculation.tab.destroy();
         mSpeculation = null;
     }
 
     /** Gets the url of the current hidden tab, if it exists. */
-    @Nullable String getSpeculatedUrl(CustomTabsSessionToken session) {
+    @Nullable
+    String getSpeculatedUrl(CustomTabsSessionToken session) {
         if (mSpeculation == null || !mSpeculation.session.equals(session)) {
             return null;
         }
@@ -235,7 +239,12 @@ public class HiddenTabHolder {
         return mSpeculation != null;
     }
 
-    @Nullable SpeculationParams getSpeculationParamsForTesting() {
+    public Tab getHiddenTabForTesting() {
+        return mSpeculation != null ? mSpeculation.tab : null;
+    }
+
+    @Nullable
+    SpeculationParams getSpeculationParamsForTesting() {
         return mSpeculation;
     }
 }

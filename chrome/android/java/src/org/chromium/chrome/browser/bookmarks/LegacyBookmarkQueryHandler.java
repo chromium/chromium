@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.bookmarks;
 import org.chromium.chrome.browser.commerce.ShoppingFeatures;
 import org.chromium.components.bookmarks.BookmarkId;
 import org.chromium.components.bookmarks.BookmarkItem;
+import org.chromium.components.commerce.core.ShoppingService;
 import org.chromium.components.power_bookmarks.PowerBookmarkMeta;
 import org.chromium.components.power_bookmarks.PowerBookmarkType;
 import org.chromium.components.sync.SyncService;
@@ -30,12 +31,16 @@ public class LegacyBookmarkQueryHandler implements BookmarkQueryHandler {
      * @param bookmarkUiPrefs Stores display preferences for bookmarks.
      */
     public LegacyBookmarkQueryHandler(
-            BookmarkModel bookmarkModel, BookmarkUiPrefs bookmarkUiPrefs, SyncService syncService) {
+            BookmarkModel bookmarkModel,
+            BookmarkUiPrefs bookmarkUiPrefs,
+            SyncService syncService,
+            ShoppingService shoppingService) {
         mBookmarkModel = bookmarkModel;
         mBookmarkModel.finishLoadingBookmarkModel(this::onBookmarkModelLoaded);
         mSyncService = syncService;
         mSyncService.addSyncStateChangedListener(mSyncStateChangedListener);
-        mBasicBookmarkQueryHandler = new BasicBookmarkQueryHandler(bookmarkModel, bookmarkUiPrefs);
+        mBasicBookmarkQueryHandler =
+                new BasicBookmarkQueryHandler(bookmarkModel, bookmarkUiPrefs, shoppingService);
         mBookmarkUiPrefs = bookmarkUiPrefs;
     }
 
@@ -46,11 +51,12 @@ public class LegacyBookmarkQueryHandler implements BookmarkQueryHandler {
     }
 
     @Override
-    public List<BookmarkListEntry> buildBookmarkListForParent(BookmarkId parentId) {
+    public List<BookmarkListEntry> buildBookmarkListForParent(
+            BookmarkId parentId, Set<PowerBookmarkType> powerFilter) {
         if (parentId.equals(mBookmarkModel.getRootFolderId())) {
             return buildBookmarkListForRootView();
         } else {
-            return mBasicBookmarkQueryHandler.buildBookmarkListForParent(parentId);
+            return mBasicBookmarkQueryHandler.buildBookmarkListForParent(parentId, powerFilter);
         }
     }
 
@@ -60,13 +66,21 @@ public class LegacyBookmarkQueryHandler implements BookmarkQueryHandler {
         return mBasicBookmarkQueryHandler.buildBookmarkListForSearch(query, powerFilter);
     }
 
+    @Override
+    public List<BookmarkListEntry> buildBookmarkListForFolderSelect(BookmarkId parentId) {
+        return mBasicBookmarkQueryHandler.buildBookmarkListForFolderSelect(parentId);
+    }
+
     private List<BookmarkListEntry> buildBookmarkListForRootView() {
         final List<BookmarkListEntry> bookmarkListEntries = new ArrayList<>();
         for (BookmarkId bookmarkId : mTopLevelFolders) {
             PowerBookmarkMeta powerBookmarkMeta = mBookmarkModel.getPowerBookmarkMeta(bookmarkId);
             BookmarkItem bookmarkItem = mBookmarkModel.getBookmarkById(bookmarkId);
-            BookmarkListEntry bookmarkListEntry = BookmarkListEntry.createBookmarkEntry(
-                    bookmarkItem, powerBookmarkMeta, mBookmarkUiPrefs.getBookmarkRowDisplayPref());
+            BookmarkListEntry bookmarkListEntry =
+                    BookmarkListEntry.createBookmarkEntry(
+                            bookmarkItem,
+                            powerBookmarkMeta,
+                            mBookmarkUiPrefs.getBookmarkRowDisplayPref());
             bookmarkListEntries.add(bookmarkListEntry);
         }
 
@@ -90,6 +104,6 @@ public class LegacyBookmarkQueryHandler implements BookmarkQueryHandler {
 
     private void populateTopLevelFoldersList() {
         mTopLevelFolders.clear();
-        mTopLevelFolders.addAll(BookmarkUtils.populateTopLevelFolders(mBookmarkModel));
+        mTopLevelFolders.addAll(mBookmarkModel.getTopLevelFolderIds());
     }
 }

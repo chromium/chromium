@@ -136,17 +136,15 @@ class ExtensionCleanupHandlerUnittest : public testing::Test {
   }
 
   content::BrowserTaskEnvironment task_environment_;
-  raw_ptr<sync_preferences::TestingPrefServiceSyncable,
-          DanglingUntriaged | ExperimentalAsh>
+  raw_ptr<sync_preferences::TestingPrefServiceSyncable, DanglingUntriaged>
       mock_prefs_;
   TestingProfileManager mock_profile_manager_;
-  raw_ptr<FakeChromeUserManager, DanglingUntriaged | ExperimentalAsh>
-      fake_user_manager_;
+  raw_ptr<FakeChromeUserManager, DanglingUntriaged> fake_user_manager_;
   std::unique_ptr<user_manager::ScopedUserManager> user_manager_enabler_;
   std::unique_ptr<ExtensionCleanupHandler> extension_cleanup_handler_;
-  raw_ptr<MockExtensionService, ExperimentalAsh> extension_service_;
-  raw_ptr<extensions::ExtensionRegistry, ExperimentalAsh> extension_registry_;
-  raw_ptr<TestingProfile, ExperimentalAsh> mock_profile_;
+  raw_ptr<MockExtensionService> extension_service_;
+  raw_ptr<extensions::ExtensionRegistry> extension_registry_;
+  raw_ptr<TestingProfile> mock_profile_;
 };
 
 scoped_refptr<const Extension> MakeExtensionNamed(const std::string& name,
@@ -172,8 +170,8 @@ TEST_F(ExtensionCleanupHandlerUnittest, Cleanup) {
 
   base::RunLoop run_loop;
   extension_cleanup_handler_->Cleanup(
-      base::BindLambdaForTesting([&](const absl::optional<std::string>& error) {
-        EXPECT_EQ(error, absl::nullopt);
+      base::BindLambdaForTesting([&](const std::optional<std::string>& error) {
+        EXPECT_EQ(error, std::nullopt);
         run_loop.QuitClosure().Run();
       }));
   run_loop.Run();

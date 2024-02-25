@@ -19,7 +19,7 @@ class FakeDeviceNameManager : public DeviceNameManager {
   ~FakeDeviceNameManager() override;
 
   // DeviceNameManager:
-  absl::optional<std::string> GetDeviceNickname(
+  std::optional<std::string> GetDeviceNickname(
       const std::string& device_id) override;
   void SetDeviceNickname(const std::string& device_id,
                          const std::string& nickname) override;

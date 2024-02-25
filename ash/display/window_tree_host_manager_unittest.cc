@@ -25,8 +25,9 @@
 #include "base/command_line.h"
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
-#include "base/strings/string_piece_forward.h"
+#include "base/strings/string_piece.h"
 #include "base/strings/stringprintf.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "ui/aura/client/cursor_shape_client.h"
 #include "ui/aura/client/focus_change_observer.h"
@@ -84,6 +85,17 @@ class Resetter {
  private:
   T value_;
 };
+
+display::ManagedDisplayInfo CreateDisplayInfo(int64_t id,
+                                              const gfx::Rect& bounds) {
+  display::ManagedDisplayInfo info = display::CreateDisplayInfo(id, bounds);
+  // Each display should have at least one native mode.
+  display::ManagedDisplayMode mode(bounds.size(), /*refresh_rate=*/60.f,
+                                   /*is_interlaced=*/true,
+                                   /*native=*/true);
+  info.SetManagedDisplayModes({mode});
+  return info;
+}
 
 class TestObserver : public WindowTreeHostManager::Observer,
                      public display::DisplayObserver,
@@ -212,7 +224,7 @@ class TestHelper {
   float GetStoredZoomScale(int64_t id);
 
  private:
-  raw_ptr<AshTestBase, ExperimentalAsh> delegate_;  // Not owned
+  raw_ptr<AshTestBase> delegate_;  // Not owned
 };
 
 TestHelper::TestHelper(AshTestBase* delegate) : delegate_(delegate) {}
@@ -350,7 +362,7 @@ class TestEventHandler : public ui::EventHandler {
 
  private:
   gfx::Point mouse_location_;
-  raw_ptr<aura::Window, ExperimentalAsh> target_root_;
+  raw_ptr<aura::Window> target_root_;
 
   float touch_radius_x_;
   float touch_radius_y_;
@@ -413,6 +425,35 @@ class WindowTreeHostManagerRoundedDisplayTest : public AshTestBase {
   display::ManagedDisplayInfo first_display_info_;
 };
 
+class WindowTreeHostManagerHistogramTest : public AshTestBase,
+                                           public TestHelper {
+ public:
+  WindowTreeHostManagerHistogramTest()
+      : AshTestBase(base::test::TaskEnvironment::TimeSource::MOCK_TIME),
+        TestHelper(this) {}
+
+  WindowTreeHostManagerHistogramTest(
+      const WindowTreeHostManagerHistogramTest&) = delete;
+  WindowTreeHostManagerHistogramTest& operator=(
+      const WindowTreeHostManagerHistogramTest&) = delete;
+
+  ~WindowTreeHostManagerHistogramTest() override = default;
+
+  void FastForwardBy(base::TimeDelta delta) {
+    task_environment()->FastForwardBy(delta);
+  }
+
+  void VerifyActiveEffectiveDPIEmitted(const base::HistogramTester& tester,
+                                       bool is_internal_display,
+                                       int bucket,
+                                       int count) {
+    const std::string umaName =
+        is_internal_display ? "Ash.Display.InternalDisplay.ActiveEffectiveDPI"
+                            : "Ash.Display.ExternalDisplay.ActiveEffectiveDPI";
+    tester.ExpectBucketCount(umaName, bucket, count);
+  }
+};
+
 }  // namespace
 
 class WindowTreeHostManagerTest : public AshTestBase, public TestHelper {
@@ -435,6 +476,69 @@ TEST_F(WindowTreeHostManagerStartupTest, Startup) {
   // root window.
   aura::Window::Windows root_windows = Shell::GetAllRootWindows();
   EXPECT_FALSE(root_windows.empty());
+}
+
+TEST_F(WindowTreeHostManagerHistogramTest,
+       EmitInternalDisplayEffectiveDPIHistogram) {
+  const float kDefaultDeviceDPI = 100.f;
+  const float kZoomFactor1 = 1.2f;
+  const float kZoomFactor2 = 1.5f;
+  const int kRepeatingDelay = 30;
+  base::HistogramTester tester;
+
+  display::ManagedDisplayInfo internal_display_info =
+      CreateDisplayInfo(123, gfx::Rect(0, 0, 800, 600));
+  display::ManagedDisplayInfo external_display_info =
+      CreateDisplayInfo(456, gfx::Rect(100, 200, 1024, 768));
+  internal_display_info.set_device_dpi(kDefaultDeviceDPI);
+  external_display_info.set_device_dpi(kDefaultDeviceDPI);
+
+  std::vector<display::ManagedDisplayInfo> display_info_list;
+  display_info_list.push_back(internal_display_info);
+  display_info_list.push_back(external_display_info);
+  display_manager()->OnNativeDisplaysChanged(display_info_list);
+  display::test::DisplayManagerTestApi(display_manager())
+      .SetFirstDisplayAsInternalDisplay();
+
+  // Do not emit right after initialization.
+  VerifyActiveEffectiveDPIEmitted(tester, /*is_internal_display=*/true,
+                                  /*bucket=*/kDefaultDeviceDPI, /*count=*/0);
+  VerifyActiveEffectiveDPIEmitted(tester, /*is_internal_display=*/false,
+                                  /*bucket=*/kDefaultDeviceDPI, /*count=*/0);
+
+  // Firstly emitted after half of delayed time.
+  FastForwardBy(base::Minutes(kRepeatingDelay / 2 + 1));
+  VerifyActiveEffectiveDPIEmitted(tester, /*is_internal_display=*/true,
+                                  /*bucket=*/kDefaultDeviceDPI, /*count=*/1);
+  VerifyActiveEffectiveDPIEmitted(tester, /*is_internal_display=*/false,
+                                  /*bucket=*/kDefaultDeviceDPI, /*count=*/1);
+
+  // Emitted repeatedly after delayed time.
+  FastForwardBy(base::Minutes(kRepeatingDelay - 2));
+  VerifyActiveEffectiveDPIEmitted(tester, /*is_internal_display=*/true,
+                                  /*bucket=*/kDefaultDeviceDPI, /*count=*/1);
+  VerifyActiveEffectiveDPIEmitted(tester, /*is_internal_display=*/false,
+                                  /*bucket=*/kDefaultDeviceDPI, /*count=*/1);
+  FastForwardBy(base::Minutes(2));
+  VerifyActiveEffectiveDPIEmitted(tester, /*is_internal_display=*/true,
+                                  /*bucket=*/kDefaultDeviceDPI, /*count=*/2);
+  VerifyActiveEffectiveDPIEmitted(tester, /*is_internal_display=*/false,
+                                  /*bucket=*/kDefaultDeviceDPI, /*count=*/2);
+
+  // Changing zoom factor will emit to a different bucket.
+  internal_display_info.set_zoom_factor(kZoomFactor1);
+  external_display_info.set_zoom_factor(kZoomFactor2);
+  display_info_list.clear();
+  display_info_list.push_back(internal_display_info);
+  display_info_list.push_back(external_display_info);
+  display_manager()->OnNativeDisplaysChanged(display_info_list);
+  FastForwardBy(base::Minutes(kRepeatingDelay));
+  VerifyActiveEffectiveDPIEmitted(tester, /*is_internal_display=*/true,
+                                  /*bucket=*/kDefaultDeviceDPI / kZoomFactor1,
+                                  /*count=*/1);
+  VerifyActiveEffectiveDPIEmitted(tester, /*is_internal_display=*/false,
+                                  /*bucket=*/kDefaultDeviceDPI / kZoomFactor2,
+                                  /*count=*/1);
 }
 
 TEST_F(WindowTreeHostManagerTest, SecondaryDisplayLayout) {
@@ -583,10 +687,12 @@ TEST_F(WindowTreeHostManagerTest, SecondaryDisplayLayout) {
 
 namespace {
 
-display::ManagedDisplayInfo
-CreateDisplayInfo(int64_t id, int y, display::Display::Rotation rotation) {
+display::ManagedDisplayInfo CreateDisplayInfoWithRotation(
+    int64_t id,
+    int y,
+    display::Display::Rotation rotation) {
   display::ManagedDisplayInfo info =
-      display::CreateDisplayInfo(id, gfx::Rect(0, y, 600, 500));
+      CreateDisplayInfo(id, gfx::Rect(0, y, 600, 500));
   info.SetRotation(rotation, display::Display::RotationSource::ACTIVE);
   return info;
 }
@@ -595,7 +701,7 @@ display::ManagedDisplayInfo CreateMirroredDisplayInfo(
     int64_t id,
     float device_scale_factor) {
   display::ManagedDisplayInfo info =
-      CreateDisplayInfo(id, 0, display::Display::ROTATE_0);
+      CreateDisplayInfoWithRotation(id, 0, display::Display::ROTATE_0);
   info.set_device_scale_factor(device_scale_factor);
   return info;
 }
@@ -971,8 +1077,7 @@ class HostWindowObserver : aura::WindowObserver {
 
  private:
   bool removed_from_host_ = false;
-  raw_ptr<const aura::Window, DanglingUntriaged | ExperimentalAsh>
-      host_window_ = nullptr;
+  raw_ptr<const aura::Window, DanglingUntriaged> host_window_ = nullptr;
 };
 
 // Tests that RoundedDisplayProvider and its host window are correctly deleted
@@ -1156,8 +1261,8 @@ TEST_F(WindowTreeHostManagerTest, SwapPrimaryById) {
   // Deleting 2nd display and adding 2nd display with a different ID.  The 2nd
   // display shouldn't become primary.
   UpdateDisplay("300x200");
-  display::ManagedDisplayInfo third_display_info = display::CreateDisplayInfo(
-      secondary_display.id() + 1, secondary_display.bounds());
+  display::ManagedDisplayInfo third_display_info =
+      CreateDisplayInfo(secondary_display.id() + 1, secondary_display.bounds());
   ASSERT_NE(primary_display.id(), third_display_info.id());
 
   const display::ManagedDisplayInfo& primary_display_info =
@@ -1661,9 +1766,9 @@ TEST_F(WindowTreeHostManagerTest, DockToSingle) {
   const int64_t internal_id = 1;
 
   const display::ManagedDisplayInfo internal_display_info =
-      CreateDisplayInfo(internal_id, 0, display::Display::ROTATE_0);
+      CreateDisplayInfoWithRotation(internal_id, 0, display::Display::ROTATE_0);
   const display::ManagedDisplayInfo external_display_info =
-      CreateDisplayInfo(2, 1, display::Display::ROTATE_90);
+      CreateDisplayInfoWithRotation(2, 1, display::Display::ROTATE_90);
 
   std::vector<display::ManagedDisplayInfo> display_info_list;
   // Extended
@@ -1701,9 +1806,9 @@ TEST_F(WindowTreeHostManagerTest, DockToSingle) {
 // is swapped should not cause a crash. (crbug.com/426292)
 TEST_F(WindowTreeHostManagerTest, ReplaceSwappedPrimary) {
   const display::ManagedDisplayInfo first_display_info =
-      CreateDisplayInfo(111, 0, display::Display::ROTATE_0);
+      CreateDisplayInfoWithRotation(111, 0, display::Display::ROTATE_0);
   const display::ManagedDisplayInfo second_display_info =
-      CreateDisplayInfo(222, 1, display::Display::ROTATE_0);
+      CreateDisplayInfoWithRotation(222, 1, display::Display::ROTATE_0);
 
   std::vector<display::ManagedDisplayInfo> display_info_list;
   // Extended
@@ -1717,9 +1822,9 @@ TEST_F(WindowTreeHostManagerTest, ReplaceSwappedPrimary) {
 
   display_info_list.clear();
   const display::ManagedDisplayInfo new_first_display_info =
-      CreateDisplayInfo(333, 0, display::Display::ROTATE_0);
+      CreateDisplayInfoWithRotation(333, 0, display::Display::ROTATE_0);
   const display::ManagedDisplayInfo new_second_display_info =
-      CreateDisplayInfo(444, 1, display::Display::ROTATE_0);
+      CreateDisplayInfoWithRotation(444, 1, display::Display::ROTATE_0);
   display_info_list.push_back(new_first_display_info);
   display_info_list.push_back(new_second_display_info);
   display_manager()->OnNativeDisplaysChanged(display_info_list);
@@ -1764,10 +1869,10 @@ class RootWindowTestObserver : public aura::WindowObserver {
 // See crbug.com/547280.
 TEST_F(WindowTreeHostManagerTest, ReplacePrimary) {
   display::ManagedDisplayInfo first_display_info =
-      CreateDisplayInfo(10, 0, display::Display::ROTATE_0);
+      CreateDisplayInfoWithRotation(10, 0, display::Display::ROTATE_0);
   first_display_info.SetBounds(gfx::Rect(0, 0, 400, 300));
   const display::ManagedDisplayInfo second_display_info =
-      CreateDisplayInfo(11, 500, display::Display::ROTATE_0);
+      CreateDisplayInfoWithRotation(11, 500, display::Display::ROTATE_0);
 
   std::vector<display::ManagedDisplayInfo> display_info_list;
   // Extended
@@ -1782,7 +1887,8 @@ TEST_F(WindowTreeHostManagerTest, ReplacePrimary) {
 
   display_info_list.clear();
   const display::ManagedDisplayInfo new_first_display_info =
-      CreateDisplayInfo(new_display_id, 0, display::Display::ROTATE_0);
+      CreateDisplayInfoWithRotation(new_display_id, 0,
+                                    display::Display::ROTATE_0);
 
   display_info_list.push_back(new_first_display_info);
   display_manager()->OnNativeDisplaysChanged(display_info_list);
@@ -2096,7 +2202,7 @@ TEST_F(WindowTreeHostManagerTest, GetActiveDisplayWhenReplacingPrimaryDisplay) {
   // Replace the primary display with a newer display with a different device
   // scale factor compared to original display.
   display::ManagedDisplayInfo first_display_info =
-      CreateDisplayInfo(100, 0, display::Display::ROTATE_0);
+      CreateDisplayInfoWithRotation(100, 0, display::Display::ROTATE_0);
   first_display_info.SetBounds(gfx::Rect(0, 0, 700, 500));
   first_display_info.set_device_scale_factor(2.0);
 

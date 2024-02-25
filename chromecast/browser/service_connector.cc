@@ -7,8 +7,6 @@
 #include "base/functional/bind.h"
 #include "base/logging.h"
 #include "chromecast/browser/system_connector.h"
-#include "chromecast/common/mojom/constants.mojom.h"
-#include "chromecast/common/mojom/multiroom.mojom.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 
@@ -79,24 +77,9 @@ void ServiceConnector::Connect(const std::string& service_name,
     return;
   }
 
-  // In the public implementation of this class, the only other client we
-  // support is the Media Service, binding to the MultiroomManager interface in
-  // the Chromecast service.
-  if (client_id != kMediaServiceClientId ||
-      service_name != mojom::kChromecastServiceName) {
-    LOG(ERROR) << "Client " << client_id.GetUnsafeValue()
-               << " attempted to bind " << *receiver.interface_name()
-               << " in inaccessible service " << service_name;
-    return;
-  }
-
-  if (auto r = receiver.As<mojom::MultiroomManager>()) {
-    GetSystemConnector()->BindInterface(service_name, std::move(r));
-    return;
-  }
-
-  LOG(ERROR) << "Media Service attempted to bind inaccessible interface "
-             << *receiver.interface_name() << " in \"chromecast\" service.";
+  LOG(ERROR) << "Client " << client_id.GetUnsafeValue() << " attempted to bind "
+             << *receiver.interface_name() << " in inaccessible service "
+             << service_name;
 }
 
 }  // namespace chromecast

@@ -3,8 +3,6 @@ ccameron@chromium.org
 ellyjones@chromium.org
 lgrey@chromium.org
 mark@chromium.org
-rsesek@chromium.org
-tapted@chromium.org
 thakis@chromium.org
 
 per-file hung_renderer*=file://chrome/browser/ui/hung_renderer/OWNERS

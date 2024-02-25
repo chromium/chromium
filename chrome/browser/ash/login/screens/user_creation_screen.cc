@@ -52,8 +52,6 @@ std::string UserCreationScreen::GetResultString(Result result) {
       return "EnterpriseEnrollShortcut";
     case Result::KIOSK_ENTERPRISE_ENROLL:
       return "KioskEnterpriseEnroll";
-    case Result::CONTINUE_QUICK_START_FLOW:
-      return "ContinueQuickStartFlow";
     case Result::CANCEL:
       return "Cancel";
     case Result::SIGNIN_SCHOOL:
@@ -85,30 +83,20 @@ void UserCreationScreen::SetUserCreationScreenExitTestDelegate(
 }
 
 bool UserCreationScreen::MaybeSkip(WizardContext& context) {
-  if (g_browser_process->platform_part()
-          ->browser_policy_connector_ash()
-          ->IsDeviceEnterpriseManaged() ||
-      context.skip_to_login_for_tests) {
-    context.is_user_creation_enabled = false;
+  const bool is_managed = g_browser_process->platform_part()
+                              ->browser_policy_connector_ash()
+                              ->IsDeviceEnterpriseManaged();
+  context.is_user_creation_enabled = !is_managed;
+  if (context.skip_to_login_for_tests || is_managed) {
     RunExitCallback(Result::SKIPPED);
     return true;
   }
-  context.is_user_creation_enabled = true;
   return false;
 }
 
 void UserCreationScreen::ShowImpl() {
   if (!view_)
     return;
-
-  // Maybe continue QuickStart flow is there is an ongoing setup.
-  const auto quick_start_setup_ongoig = LoginDisplayHost::default_host()
-                                            ->GetWizardContext()
-                                            ->quick_start_setup_ongoing;
-  if (quick_start_setup_ongoig) {
-    RunExitCallback(Result::CONTINUE_QUICK_START_FLOW);
-    return;
-  }
 
   scoped_observation_.Observe(network_state_informer_.get());
 
@@ -181,6 +169,13 @@ bool UserCreationScreen::HandleAccelerator(LoginAcceleratorAction action) {
     return true;
   }
   return false;
+}
+
+void UserCreationScreen::SetDefaultStep() {
+  if (!view_) {
+    return;
+  }
+  view_->SetDefaultStep();
 }
 
 void UserCreationScreen::UpdateState(NetworkError::ErrorReason reason) {

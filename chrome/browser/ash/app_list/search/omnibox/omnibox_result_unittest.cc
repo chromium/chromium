@@ -162,8 +162,7 @@ class OmniboxResultTest : public testing::Test {
         BookmarkModelFactory::GetInstance(),
         BookmarkModelFactory::GetDefaultFactory());
     profile_builder.SetSharedURLLoaderFactory(
-        base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
-            &test_url_loader_factory_));
+        test_url_loader_factory_.GetSafeWeakWrapper());
     profile_ = profile_builder.Build();
 
     app_list_controller_delegate_ =
@@ -235,7 +234,7 @@ class OmniboxResultTest : public testing::Test {
 
   testing::NiceMock<favicon::MockFaviconService> favicon_service_;
 
-  raw_ptr<bookmarks::BookmarkModel, ExperimentalAsh> bookmark_model_;
+  raw_ptr<bookmarks::BookmarkModel> bookmark_model_;
 };
 
 TEST_F(OmniboxResultTest, Basic) {
@@ -300,7 +299,6 @@ TEST_F(OmniboxResultTest, OmniboxSearchResult) {
   // action set.
   const auto search_result = CreateOmniboxResult(
       "https://example.com", AutocompleteMatchType::SEARCH_SUGGEST);
-  EXPECT_TRUE(search_result->CloneMetadata()->is_omnibox_search);
   ASSERT_EQ(1u, search_result->actions().size());
   EXPECT_EQ(ash::SearchResultActionType::kRemove,
             search_result->actions()[0].type);
@@ -308,7 +306,6 @@ TEST_F(OmniboxResultTest, OmniboxSearchResult) {
   // Non-Omnibox-search-type results have no actions.
   const auto non_search_result = CreateOmniboxResult(
       "https://example.com", AutocompleteMatchType::HISTORY_URL);
-  EXPECT_FALSE(non_search_result->CloneMetadata()->is_omnibox_search);
   EXPECT_EQ(0u, non_search_result->actions().size());
 }
 

@@ -34,7 +34,9 @@ void TerminaInstaller::CancelInstall() {
   // TODO(b/277835995): Tests demand concurrent installations despite that they
   // need to be mass cancelled here (which is probably unintended). Consider
   // switching to CachedCallback or similar.
-  installations_.clear();
+  for (auto& installation : installations_) {
+    installation->CancelGracefully();
+  }
 }
 
 void TerminaInstaller::Install(
@@ -97,7 +99,7 @@ void TerminaInstaller::OnInstallDlc(
 void TerminaInstaller::Uninstall(base::OnceCallback<void(bool)> callback) {
   // Unset |termina_location_| now since it will become invalid at some point
   // soon.
-  termina_location_ = absl::nullopt;
+  termina_location_ = std::nullopt;
 
   // This is really a vector of bool, but std::vector<bool> has weird properties
   // that stop us from using it in this way.
@@ -218,7 +220,7 @@ base::FilePath TerminaInstaller::GetInstallLocation() {
   return *termina_location_;
 }
 
-absl::optional<std::string> TerminaInstaller::GetDlcId() {
+std::optional<std::string> TerminaInstaller::GetDlcId() {
   CHECK(termina_location_) << "GetDlcId() called while termina not installed";
   return dlc_id_;
 }

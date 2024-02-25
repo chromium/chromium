@@ -145,23 +145,23 @@ mojom::ResultCode TestPrintBackend::GetPrinterCapsAndDefaults(
   return ReportErrorNotImplemented(FROM_HERE);
 }
 
-absl::optional<gfx::Rect> TestPrintBackend::GetPaperPrintableArea(
+std::optional<gfx::Rect> TestPrintBackend::GetPaperPrintableArea(
     const std::string& printer_name,
     const std::string& paper_vendor_id,
     const gfx::Size& paper_size_um) {
   auto found = printer_map_.find(printer_name);
   if (found == printer_map_.end()) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   const std::unique_ptr<PrinterData>& data = found->second;
   if (data->blocked_by_permissions) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   // Capabilities might not have been provided.
   if (!data->caps) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   // Windows uses non-zero IDs to represent specific standard paper sizes.
@@ -175,7 +175,7 @@ absl::optional<gfx::Rect> TestPrintBackend::GetPaperPrintableArea(
     }
 
     // No match for the specified paper identification.
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   // Custom paper size.  For testing just treat as match to paper size.

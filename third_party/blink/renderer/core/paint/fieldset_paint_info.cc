@@ -10,7 +10,7 @@ namespace blink {
 
 FieldsetPaintInfo::FieldsetPaintInfo(const ComputedStyle& fieldset_style,
                                      const PhysicalSize& fieldset_size,
-                                     const NGPhysicalBoxStrut& fieldset_borders,
+                                     const PhysicalBoxStrut& fieldset_borders,
                                      const PhysicalRect& legend_border_box) {
   if (fieldset_style.IsHorizontalWritingMode()) {
     // horizontal-tb

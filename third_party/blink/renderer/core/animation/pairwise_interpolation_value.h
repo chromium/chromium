@@ -17,26 +17,30 @@ namespace blink {
 struct PairwiseInterpolationValue {
   DISALLOW_NEW();
 
-  PairwiseInterpolationValue(
-      std::unique_ptr<InterpolableValue> start_interpolable_value,
-      std::unique_ptr<InterpolableValue> end_interpolable_value,
-      scoped_refptr<const NonInterpolableValue> non_interpolable_value =
-          nullptr)
-      : start_interpolable_value(std::move(start_interpolable_value)),
-        end_interpolable_value(std::move(end_interpolable_value)),
+  PairwiseInterpolationValue(InterpolableValue* start_interpolable_value,
+                             InterpolableValue* end_interpolable_value,
+                             scoped_refptr<const NonInterpolableValue>
+                                 non_interpolable_value = nullptr)
+      : start_interpolable_value(start_interpolable_value),
+        end_interpolable_value(end_interpolable_value),
         non_interpolable_value(std::move(non_interpolable_value)) {}
 
   PairwiseInterpolationValue(std::nullptr_t) {}
 
   PairwiseInterpolationValue(PairwiseInterpolationValue&& other)
-      : start_interpolable_value(std::move(other.start_interpolable_value)),
-        end_interpolable_value(std::move(other.end_interpolable_value)),
+      : start_interpolable_value(other.start_interpolable_value),
+        end_interpolable_value(other.end_interpolable_value),
         non_interpolable_value(std::move(other.non_interpolable_value)) {}
 
-  operator bool() const { return start_interpolable_value.get(); }
+  operator bool() const { return start_interpolable_value.Get(); }
 
-  std::unique_ptr<InterpolableValue> start_interpolable_value;
-  std::unique_ptr<InterpolableValue> end_interpolable_value;
+  void Trace(Visitor* v) const {
+    v->Trace(start_interpolable_value);
+    v->Trace(end_interpolable_value);
+  }
+
+  Member<InterpolableValue> start_interpolable_value;
+  Member<InterpolableValue> end_interpolable_value;
   scoped_refptr<const NonInterpolableValue> non_interpolable_value;
 };
 

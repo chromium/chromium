@@ -126,7 +126,9 @@ class AshTestBase : public testing::Test {
   // See ash::DisplayManagerTestApi::UpdateDisplay for more details.
   // Note: To properly specify the radii of display's panel upon startup, set it
   // via specifying the command line switch `ash-host-window-bounds`.
-  void UpdateDisplay(const std::string& display_specs);
+  void UpdateDisplay(const std::string& display_specs,
+                     bool from_native_platform = false,
+                     bool generate_new_ids = false);
 
   // Returns a root Window. Usually this is the active root Window, but that
   // method can return NULL sometimes, and in those cases, we fall back on the
@@ -268,9 +270,9 @@ class AshTestBase : public testing::Test {
   static display::Display::Rotation GetCurrentInternalDisplayRotation();
 
   // Creates init params to set up a pixel test. If the test is not pixel
-  // related, returns `absl::nullopt`. This function should be overridden by ash
+  // related, returns `std::nullopt`. This function should be overridden by ash
   // pixel tests.
-  virtual absl::optional<pixel_test::InitParams> CreatePixelTestInitParams()
+  virtual std::optional<pixel_test::InitParams> CreatePixelTestInitParams()
       const;
 
   void set_start_session(bool start_session) { start_session_ = start_session; }
@@ -324,13 +326,13 @@ class AshTestBase : public testing::Test {
   // See the documentation for|AccountId::GetUserEmail| for discussion.
   void SimulateUserLogin(
       const std::string& user_email,
-      user_manager::UserType user_type = user_manager::USER_TYPE_REGULAR);
+      user_manager::UserType user_type = user_manager::UserType::kRegular);
 
   // Simulates a user sign-in. It creates a new user session, adds it to
   // existing user sessions and makes it the active user session.
   void SimulateUserLogin(
       const AccountId& account_id,
-      user_manager::UserType user_type = user_manager::USER_TYPE_REGULAR);
+      user_manager::UserType user_type = user_manager::UserType::kRegular);
 
   // Simular to SimulateUserLogin but for a newly created user first ever login.
   void SimulateNewUserFirstLogin(const std::string& user_email);

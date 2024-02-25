@@ -38,7 +38,7 @@ TEST(PaintedScrollbarLayerImplTest, Occlusion) {
   UIResourceBitmap track_bitmap(track_sk_bitmap);
   impl.host_impl()->CreateUIResource(track_uid, track_bitmap);
 
-  ScrollbarOrientation orientation = ScrollbarOrientation::VERTICAL;
+  ScrollbarOrientation orientation = ScrollbarOrientation::kVertical;
 
   PaintedScrollbarLayerImpl* scrollbar_layer_impl =
       impl.AddLayer<PaintedScrollbarLayerImpl>(orientation, false, false);
@@ -103,12 +103,10 @@ TEST(PaintedScrollbarLayerImplTest, Occlusion) {
     EXPECT_EQ(thumb_quad->visible_rect.ToString(),
               scaled_thumb_rect.ToString());
     EXPECT_TRUE(thumb_quad->needs_blending);
-    EXPECT_EQ(scrollbar_layer_impl->contents_opaque(),
-              thumb_quad->shared_quad_state->are_contents_opaque);
-    for (size_t i = 0; i < 4; ++i) {
-      EXPECT_EQ(painted_opacity_, thumb_quad->vertex_opacity[i]);
-      EXPECT_EQ(1.f, track_quad->vertex_opacity[i]);
-    }
+    EXPECT_FALSE(thumb_quad->shared_quad_state->are_contents_opaque);
+
+    EXPECT_EQ(painted_opacity_, thumb_quad->shared_quad_state->opacity);
+    EXPECT_EQ(1.f, track_quad->shared_quad_state->opacity);
   }
 
   {
@@ -136,7 +134,7 @@ TEST(PaintedScrollbarLayerImplTest, Occlusion) {
 
 TEST(PaintedScrollbarLayerImplTest, PaintedOpacityChangesInvalidate) {
   LayerTreeImplTestBase impl;
-  ScrollbarOrientation orientation = ScrollbarOrientation::VERTICAL;
+  ScrollbarOrientation orientation = ScrollbarOrientation::kVertical;
   PaintedScrollbarLayerImpl* scrollbar_layer_impl =
       impl.AddLayer<PaintedScrollbarLayerImpl>(orientation, false, false);
   EXPECT_FALSE(
@@ -158,35 +156,48 @@ class PaintedScrollbarLayerImplFluentTest : public ::testing::Test {
       bool is_left_side_vertical_scrollbar,
       const gfx::Rect& track_rect,
       int thumb_thickness,
-      int thumb_length) {
+      int thumb_length,
+      bool is_overlay = false) {
     PaintedScrollbarLayerImpl* scrollbar_layer_impl =
         impl_->AddLayer<PaintedScrollbarLayerImpl>(
-            orientation, is_left_side_vertical_scrollbar, /*is_overlay=*/false);
+            orientation, is_left_side_vertical_scrollbar, is_overlay);
     scrollbar_layer_impl->SetTrackRect(track_rect);
     scrollbar_layer_impl->SetThumbThickness(thumb_thickness);
     scrollbar_layer_impl->SetThumbLength(thumb_length);
+    scrollbar_layer_impl->SetBounds(track_rect.size());
     return scrollbar_layer_impl;
   }
 
   std::unique_ptr<LayerTreeImplTestBase> impl_;
 };
 
+class PaintedScrollbarLayerImplFluentOverlayTest
+    : public PaintedScrollbarLayerImplFluentTest {
+ protected:
+  void SetUp() override {
+    LayerTreeSettings settings;
+    settings.enable_fluent_overlay_scrollbar = true;
+    settings.enable_fluent_scrollbar = true;
+    impl_ = std::make_unique<LayerTreeImplTestBase>(settings);
+  }
+};
+
 TEST_F(PaintedScrollbarLayerImplFluentTest, ComputeThumbQuadRect) {
   const PaintedScrollbarLayerImpl* scrollbar_layer_impl_vertical =
-      SetUpScrollbarLayerImpl(ScrollbarOrientation::VERTICAL, false,
+      SetUpScrollbarLayerImpl(ScrollbarOrientation::kVertical, false,
                               gfx::Rect(0, 0, 14, 100), 6, 30);
   EXPECT_EQ(scrollbar_layer_impl_vertical->ComputeThumbQuadRect(),
             gfx::Rect(4, 0, 6, 30));
 
   PaintedScrollbarLayerImpl* scrollbar_layer_impl_vertical_left =
-      SetUpScrollbarLayerImpl(ScrollbarOrientation::VERTICAL, true,
+      SetUpScrollbarLayerImpl(ScrollbarOrientation::kVertical, true,
                               gfx::Rect(0, 0, 14, 100), 6, 30);
   scrollbar_layer_impl_vertical_left->SetBounds(gfx::Size(14, 100));
   EXPECT_EQ(scrollbar_layer_impl_vertical_left->ComputeThumbQuadRect(),
             gfx::Rect(4, 0, 6, 30));
 
   const PaintedScrollbarLayerImpl* scrollbar_layer_impl_horizontal =
-      SetUpScrollbarLayerImpl(ScrollbarOrientation::HORIZONTAL, false,
+      SetUpScrollbarLayerImpl(ScrollbarOrientation::kHorizontal, false,
                               gfx::Rect(0, 0, 100, 14), 6, 30);
   EXPECT_EQ(scrollbar_layer_impl_horizontal->ComputeThumbQuadRect(),
             gfx::Rect(0, 4, 30, 6));
@@ -194,13 +205,13 @@ TEST_F(PaintedScrollbarLayerImplFluentTest, ComputeThumbQuadRect) {
 
 TEST_F(PaintedScrollbarLayerImplFluentTest, ComputeHitTestableThumbQuadRect) {
   const PaintedScrollbarLayerImpl* scrollbar_layer_impl_vertical =
-      SetUpScrollbarLayerImpl(ScrollbarOrientation::VERTICAL, false,
+      SetUpScrollbarLayerImpl(ScrollbarOrientation::kVertical, false,
                               gfx::Rect(0, 0, 14, 100), 6, 30);
   EXPECT_EQ(scrollbar_layer_impl_vertical->ComputeHitTestableThumbQuadRect(),
             gfx::Rect(0, 0, 14, 30));
 
   PaintedScrollbarLayerImpl* scrollbar_layer_impl_vertical_left =
-      SetUpScrollbarLayerImpl(ScrollbarOrientation::VERTICAL, true,
+      SetUpScrollbarLayerImpl(ScrollbarOrientation::kVertical, true,
                               gfx::Rect(0, 0, 14, 100), 6, 30);
   scrollbar_layer_impl_vertical_left->SetBounds(gfx::Size(14, 100));
   EXPECT_EQ(
@@ -208,10 +219,38 @@ TEST_F(PaintedScrollbarLayerImplFluentTest, ComputeHitTestableThumbQuadRect) {
       gfx::Rect(0, 0, 14, 30));
 
   const PaintedScrollbarLayerImpl* scrollbar_layer_impl_horizontal =
-      SetUpScrollbarLayerImpl(ScrollbarOrientation::HORIZONTAL, false,
+      SetUpScrollbarLayerImpl(ScrollbarOrientation::kHorizontal, false,
                               gfx::Rect(0, 0, 100, 14), 6, 30);
   EXPECT_EQ(scrollbar_layer_impl_horizontal->ComputeHitTestableThumbQuadRect(),
             gfx::Rect(0, 0, 30, 14));
+}
+
+// Since the thumb's drawn thickness is smaller than the track's thickness,
+// verify that the computed thickness is the width of the track. This prevents
+// cases where clicking on the margin of the thumb would cause the thumb to not
+// consider itself clicked/captured.
+TEST_F(PaintedScrollbarLayerImplFluentOverlayTest,
+       OverlayFluentThumbHasNoMargin) {
+  {
+    const PaintedScrollbarLayerImpl* scrollbar_layer_impl =
+        SetUpScrollbarLayerImpl(ScrollbarOrientation::kVertical,
+                                /*is_left_side_vertical_scrollbar=*/false,
+                                gfx::Rect(0, 0, 14, 100), 6, 30,
+                                /*is_overlay=*/true);
+    gfx::Rect thumb =
+        scrollbar_layer_impl->ComputeHitTestableExpandedThumbQuadRect();
+    EXPECT_EQ(scrollbar_layer_impl->bounds().width(), thumb.width());
+  }
+  {
+    const PaintedScrollbarLayerImpl* scrollbar_layer_impl =
+        SetUpScrollbarLayerImpl(ScrollbarOrientation::kHorizontal,
+                                /*is_left_side_vertical_scrollbar=*/false,
+                                gfx::Rect(0, 0, 100, 14), 6, 30,
+                                /*is_overlay=*/true);
+    gfx::Rect thumb =
+        scrollbar_layer_impl->ComputeHitTestableExpandedThumbQuadRect();
+    EXPECT_EQ(scrollbar_layer_impl->bounds().height(), thumb.height());
+  }
 }
 
 }  // namespace

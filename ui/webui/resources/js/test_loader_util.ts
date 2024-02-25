@@ -6,8 +6,11 @@ const scriptPolicy: TrustedTypePolicy =
     window.trustedTypes!.createPolicy('webui-test-script', {
       createHTML: () => '',
       createScriptURL: urlString => {
-        const url = new URL(urlString);
-        if (url.protocol === 'chrome:') {
+        // Ensure this is a scheme-relative URL requested by a chrome or
+        // chrome-untrusted host.
+        const url = new URL(window.location.href);
+        if (['chrome:', 'chrome-untrusted:'].includes(url.protocol) &&
+            urlString.startsWith('//')) {
           return urlString;
         }
 
@@ -39,8 +42,8 @@ function loadScript(url: string): Promise<void> {
  *   - In case where a module was not specified, returns false (used for
  *     providing a way for UIs to wait for any test initialization, if run
  *     within the context of a test).
- *   - In case where loading failed (either incorrect URL or incorrect "host="
- *     parameter) a rejected Promise is returned.
+ *   - In case where loading failed (probably incorrect URL) a rejected Promise
+ *     is returned.
  */
 export async function loadTestModule(): Promise<boolean> {
   const params = new URLSearchParams(window.location.search);
@@ -49,12 +52,7 @@ export async function loadTestModule(): Promise<boolean> {
     return Promise.resolve(false);
   }
 
-  const host = params.get('host') || 'webui-test';
-  if (host !== 'test' && host !== 'webui-test') {
-    return Promise.reject(new Error(`Invalid host=${host} parameter`));
-  }
-
-  await loadScript(`chrome://${host}/${module}`);
+  await loadScript(`//webui-test/${module}`);
   return Promise.resolve(true);
 }
 
@@ -65,6 +63,6 @@ export async function loadMochaAdapter(): Promise<boolean> {
     return Promise.reject(new Error(`Invalid adapter=${adapter} parameter`));
   }
 
-  await loadScript(`chrome://webui-test/${adapter}`);
+  await loadScript(`//webui-test/${adapter}`);
   return Promise.resolve(true);
 }

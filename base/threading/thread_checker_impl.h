@@ -30,8 +30,6 @@ class SequenceCheckerImpl;
 // order to support thread_annotations.h.
 class LOCKABLE BASE_EXPORT ThreadCheckerImpl {
  public:
-  static void EnableStackLogging();
-
   ThreadCheckerImpl();
   ~ThreadCheckerImpl();
 
@@ -58,12 +56,11 @@ class LOCKABLE BASE_EXPORT ThreadCheckerImpl {
   void DetachFromThread() LOCKS_EXCLUDED(lock_);
 
  private:
-  // This shares storage with SequenceCheckerImpl.
   friend class SequenceCheckerImpl;
 
-  [[nodiscard]] bool CalledOnValidThreadInternal(
-      std::unique_ptr<debug::StackTrace>* out_bound_at) const
-      EXCLUSIVE_LOCKS_REQUIRED(lock_);
+  // Private because it's only called by
+  // `SequenceCheckerImpl::EnableStackLogging()`.
+  static void EnableStackLogging();
 
   // Returns ownership of a pointer to StackTrace where the ThreadCheckerImpl
   // was bound for debug logs, or nullptr if such logging was not enabled at
@@ -78,12 +75,11 @@ class LOCKABLE BASE_EXPORT ThreadCheckerImpl {
   // Synchronizes access to all members.
   mutable base::Lock lock_;
 
-  // The location where the ThreadChecker was bound to the current
-  // thread/task/sequence. Default-initialized with 0 frames until bound.
+  // Stack from which this was bound (set if `EnableStackLogging()` was called).
   mutable std::unique_ptr<debug::StackTrace> bound_at_ GUARDED_BY(lock_);
 
   // Thread on which CalledOnValidThread() may return true.
-  mutable PlatformThreadRef thread_id_ GUARDED_BY(lock_);
+  mutable PlatformThreadRef thread_ref_ GUARDED_BY(lock_);
 
   // TaskToken for which CalledOnValidThread() always returns true. This allows
   // CalledOnValidThread() to return true when called multiple times from the
@@ -91,16 +87,13 @@ class LOCKABLE BASE_EXPORT ThreadCheckerImpl {
   // (allowing usage of ThreadChecker objects on the stack in the scope of one-
   // off tasks). Note: CalledOnValidThread() may return true even if the current
   // TaskToken is not equal to this.
-  mutable TaskToken task_token_ GUARDED_BY(lock_);
+  mutable internal::TaskToken task_token_ GUARDED_BY(lock_);
 
   // SequenceToken for which CalledOnValidThread() may return true. Used to
   // ensure that CalledOnValidThread() doesn't return true for ThreadPool
   // tasks that happen to run on the same thread but weren't posted to the same
   // SingleThreadTaskRunner.
-  //
-  // Also used for SequenceCheckerImpl's CalledOnValidSequence(), as this shares
-  // storage. See SequenceCheckerImpl.
-  mutable SequenceToken sequence_token_ GUARDED_BY(lock_);
+  mutable internal::SequenceToken sequence_token_ GUARDED_BY(lock_);
 };
 
 }  // namespace base

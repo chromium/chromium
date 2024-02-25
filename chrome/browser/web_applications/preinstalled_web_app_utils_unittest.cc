@@ -52,7 +52,8 @@ class PreinstalledWebAppUtilsTest : public testing::Test {
     testing::Test::SetUp();
 
     base::FilePath source_root_dir;
-    CHECK(base::PathService::Get(base::DIR_SOURCE_ROOT, &source_root_dir));
+    CHECK(
+        base::PathService::Get(base::DIR_SRC_TEST_DATA_ROOT, &source_root_dir));
     file_utils_ = TestFileUtils::Create({
         {base::FilePath(FILE_PATH_LITERAL("test_dir/icon.png")),
          source_root_dir.AppendASCII("chrome/test/data/web_apps/blue-192.png")},
@@ -61,9 +62,9 @@ class PreinstalledWebAppUtilsTest : public testing::Test {
     });
   }
 
-  absl::optional<ExternalInstallOptions> ParseConfig(
+  std::optional<ExternalInstallOptions> ParseConfig(
       const char* app_config_string) {
-    absl::optional<base::Value> app_config =
+    std::optional<base::Value> app_config =
         base::JSONReader::Read(app_config_string);
     DCHECK(app_config);
     auto file_utils = base::MakeRefCounted<FileUtilsWrapper>();
@@ -74,12 +75,12 @@ class PreinstalledWebAppUtilsTest : public testing::Test {
             absl::get_if<ExternalInstallOptions>(&result)) {
       return std::move(*options);
     }
-    return absl::nullopt;
+    return std::nullopt;
   }
 
-  absl::optional<WebAppInstallInfoFactory> ParseOfflineManifest(
+  std::optional<WebAppInstallInfoFactory> ParseOfflineManifest(
       const char* offline_manifest_string) {
-    absl::optional<base::Value> offline_manifest =
+    std::optional<base::Value> offline_manifest =
         base::JSONReader::Read(offline_manifest_string);
     DCHECK(offline_manifest);
     WebAppInstallInfoFactoryOrError result = ::web_app::ParseOfflineManifest(
@@ -90,7 +91,7 @@ class PreinstalledWebAppUtilsTest : public testing::Test {
             absl::get_if<WebAppInstallInfoFactory>(&result)) {
       return std::move(*factory);
     }
-    return absl::nullopt;
+    return std::nullopt;
   }
 
  protected:
@@ -137,7 +138,7 @@ class PreinstalledWebAppUtilsTabletTest
 };
 
 TEST_P(PreinstalledWebAppUtilsTabletTest, DisableIfTabletFormFactor) {
-  absl::optional<ExternalInstallOptions> disable_true_options = ParseConfig(R"(
+  std::optional<ExternalInstallOptions> disable_true_options = ParseConfig(R"(
     {
       "app_url": "https://test.org",
       "launch_container": "window",
@@ -147,7 +148,7 @@ TEST_P(PreinstalledWebAppUtilsTabletTest, DisableIfTabletFormFactor) {
   )");
   EXPECT_TRUE(disable_true_options->disable_if_tablet_form_factor);
 
-  absl::optional<ExternalInstallOptions> disable_false_options = ParseConfig(R"(
+  std::optional<ExternalInstallOptions> disable_false_options = ParseConfig(R"(
     {
       "app_url": "https://test.org",
       "launch_container": "window",
@@ -187,7 +188,7 @@ class PreinstalledWebAppUtilsArcTest
 };
 
 TEST_P(PreinstalledWebAppUtilsArcTest, DisableIfArcSupported) {
-  absl::optional<ExternalInstallOptions> disable_true_options = ParseConfig(R"(
+  std::optional<ExternalInstallOptions> disable_true_options = ParseConfig(R"(
     {
       "app_url": "https://test.org",
       "launch_container": "window",
@@ -197,7 +198,7 @@ TEST_P(PreinstalledWebAppUtilsArcTest, DisableIfArcSupported) {
   )");
   EXPECT_TRUE(disable_true_options->disable_if_arc_supported);
 
-  absl::optional<ExternalInstallOptions> disable_false_options = ParseConfig(R"(
+  std::optional<ExternalInstallOptions> disable_false_options = ParseConfig(R"(
     {
       "app_url": "https://test.org",
       "launch_container": "window",
@@ -527,7 +528,7 @@ TEST_F(PreinstalledWebAppUtilsTest, OfflineManifestThemeColorArgbHex) {
 }
 
 TEST_F(PreinstalledWebAppUtilsTest, ForceReinstallForMilestone) {
-  absl::optional<ExternalInstallOptions> non_number = ParseConfig(R"(
+  std::optional<ExternalInstallOptions> non_number = ParseConfig(R"(
     {
       "app_url": "https://test.org",
       "launch_container": "window",
@@ -537,7 +538,7 @@ TEST_F(PreinstalledWebAppUtilsTest, ForceReinstallForMilestone) {
   )");
   EXPECT_FALSE(non_number.has_value());
 
-  absl::optional<ExternalInstallOptions> number = ParseConfig(R"(
+  std::optional<ExternalInstallOptions> number = ParseConfig(R"(
     {
       "app_url": "https://test.org",
       "launch_container": "window",
@@ -574,7 +575,7 @@ TEST_F(PreinstalledWebAppUtilsTest, IsReinstallPastMilestoneNeeded) {
 }
 
 TEST_F(PreinstalledWebAppUtilsTest, OemInstalled) {
-  absl::optional<ExternalInstallOptions> non_bool = ParseConfig(R"(
+  std::optional<ExternalInstallOptions> non_bool = ParseConfig(R"(
         {
           "app_url": "https://www.test.org",
           "launch_container": "window",
@@ -584,7 +585,7 @@ TEST_F(PreinstalledWebAppUtilsTest, OemInstalled) {
     )");
   EXPECT_FALSE(non_bool.has_value());
 
-  absl::optional<ExternalInstallOptions> no_oem = ParseConfig(R"(
+  std::optional<ExternalInstallOptions> no_oem = ParseConfig(R"(
         {
           "app_url": "https://www.test.org",
           "launch_container": "window",
@@ -593,7 +594,7 @@ TEST_F(PreinstalledWebAppUtilsTest, OemInstalled) {
     )");
   EXPECT_FALSE(no_oem->oem_installed);
 
-  absl::optional<ExternalInstallOptions> oem_set = ParseConfig(R"(
+  std::optional<ExternalInstallOptions> oem_set = ParseConfig(R"(
         {
           "app_url": "https://www.test.org",
           "launch_container": "window",
@@ -606,7 +607,7 @@ TEST_F(PreinstalledWebAppUtilsTest, OemInstalled) {
 
 TEST_F(PreinstalledWebAppUtilsTest,
        DisableIfTouchscreenWithStylusNotSupported) {
-  absl::optional<ExternalInstallOptions> non_bool = ParseConfig(R"(
+  std::optional<ExternalInstallOptions> non_bool = ParseConfig(R"(
         {
           "app_url": "https://www.test.org",
           "launch_container": "window",
@@ -616,7 +617,7 @@ TEST_F(PreinstalledWebAppUtilsTest,
     )");
   EXPECT_FALSE(non_bool.has_value());
 
-  absl::optional<ExternalInstallOptions> default_setting = ParseConfig(R"(
+  std::optional<ExternalInstallOptions> default_setting = ParseConfig(R"(
         {
           "app_url": "https://www.test.org",
           "launch_container": "window",
@@ -626,7 +627,7 @@ TEST_F(PreinstalledWebAppUtilsTest,
   EXPECT_FALSE(
       default_setting->disable_if_touchscreen_with_stylus_not_supported);
 
-  absl::optional<ExternalInstallOptions> touchscreen_set = ParseConfig(R"(
+  std::optional<ExternalInstallOptions> touchscreen_set = ParseConfig(R"(
         {
           "app_url": "https://www.test.org",
           "launch_container": "window",
@@ -639,7 +640,7 @@ TEST_F(PreinstalledWebAppUtilsTest,
 }
 
 TEST_F(PreinstalledWebAppUtilsTest, GateOnFeatureNameOrInstalled) {
-  absl::optional<ExternalInstallOptions> feature_name_set = ParseConfig(R"(
+  std::optional<ExternalInstallOptions> feature_name_set = ParseConfig(R"(
         {
           "app_url": "https://www.test.org",
           "launch_container": "window",
@@ -649,7 +650,7 @@ TEST_F(PreinstalledWebAppUtilsTest, GateOnFeatureNameOrInstalled) {
     )");
   EXPECT_EQ("foobar", feature_name_set->gate_on_feature_or_installed);
 
-  absl::optional<ExternalInstallOptions> no_feature_name = ParseConfig(R"(
+  std::optional<ExternalInstallOptions> no_feature_name = ParseConfig(R"(
         {
           "app_url": "https://www.test.org",
           "launch_container": "window",
@@ -658,7 +659,7 @@ TEST_F(PreinstalledWebAppUtilsTest, GateOnFeatureNameOrInstalled) {
     )");
   EXPECT_FALSE(no_feature_name->gate_on_feature_or_installed.has_value());
 
-  absl::optional<ExternalInstallOptions> non_string_feature = ParseConfig(R"(
+  std::optional<ExternalInstallOptions> non_string_feature = ParseConfig(R"(
         {
           "app_url": "https://www.test.org",
           "launch_container": "window",

@@ -70,11 +70,17 @@ CrosStateSender::CrosStateSender(
 
   connection_manager_->AddObserver(this);
   multidevice_setup_client_->AddObserver(this);
+  if (attestation_certificate_generator_) {
+    attestation_certificate_generator_->AddObserver(this);
+  }
 }
 
 CrosStateSender::~CrosStateSender() {
   connection_manager_->RemoveObserver(this);
   multidevice_setup_client_->RemoveObserver(this);
+  if (attestation_certificate_generator_) {
+    attestation_certificate_generator_->RemoveObserver(this);
+  }
 }
 
 void CrosStateSender::AttemptUpdateCrosState() {
@@ -89,6 +95,7 @@ void CrosStateSender::AttemptUpdateCrosState() {
     PA_LOG(VERBOSE) << "Could not start AttemptUpdateCrosState() because "
                     << "connection manager status is: "
                     << connection_manager_->GetStatus();
+    is_certificate_requested_ = false;
     return;
   }
 
@@ -105,26 +112,19 @@ void CrosStateSender::PerformUpdateCrosState() {
   }
 
   attestation_generating_start_time_ = base::Time::Now();
-  attestation_certificate_generator_->RetrieveCertificate(
-      base::BindOnce(&CrosStateSender::OnAttestationCertificateRetrieved,
-                     weak_ptr_factory_.GetWeakPtr()));
+  is_certificate_requested_ = true;
+  attestation_certificate_generator_->RetrieveCertificate();
 }
 
-void CrosStateSender::OnAttestationCertificateRetrieved(
-    const std::vector<std::string>& attestation_certs,
-    bool is_valid) {
-  if (!is_valid) {
-    base::UmaHistogramLongTimes(
-        "PhoneHub.Attestation.GeneratingTime.Invalid",
-        base::Time::Now() - attestation_generating_start_time_);
-    SendCrosStateMessage(/*attestation_certs=*/nullptr);
-    return;
-  }
-
+void CrosStateSender::RecordResultMetrics(
+    bool is_attestation_certificate_valid) {
   base::UmaHistogramLongTimes(
-      "PhoneHub.Attestation.GeneratingTime",
-      base::Time::Now() - attestation_generating_start_time_);
-  SendCrosStateMessage(std::move(&attestation_certs));
+      is_attestation_certificate_valid
+          ? "PhoneHub.Attestation.GeneratingTime"
+          : "PhoneHub.Attestation.GeneratingTime.Invalid",
+      base::Time::NowFromSystemTime() - attestation_generating_start_time_);
+  base::UmaHistogramBoolean("PhoneHub.Attestation.Result",
+                            is_attestation_certificate_valid);
 }
 
 void CrosStateSender::SendCrosStateMessage(
@@ -141,8 +141,7 @@ void CrosStateSender::SendCrosStateMessage(
                << " and camera roll enabled state as: "
                << is_camera_roll_enabled;
   message_sender_->SendCrosState(are_notifications_enabled,
-                                 is_camera_roll_enabled,
-                                 /*attestation_certs=*/attestation_certs);
+                                 is_camera_roll_enabled, attestation_certs);
 
   retry_timer_->Start(FROM_HERE, retry_delay_,
                       base::BindOnce(&CrosStateSender::OnRetryTimerFired,
@@ -172,6 +171,29 @@ void CrosStateSender::OnFeatureStatesChanged(
     const multidevice_setup::MultiDeviceSetupClient::FeatureStatesMap&
         feature_states_map) {
   AttemptUpdateCrosState();
+}
+
+void CrosStateSender::OnCertificateGenerated(
+    const std::vector<std::string>& attestation_certs,
+    bool is_valid) {
+  if (connection_manager_->GetStatus() !=
+      secure_channel::ConnectionManager::Status::kConnected) {
+    return;
+  }
+
+  // Skip sending CrosState update messages when we don't have a valid
+  // certificate, unless this is the initial connection or there has been a
+  // feature status change.
+  if (!is_valid && !is_certificate_requested_) {
+    return;
+  }
+
+  if (is_certificate_requested_) {
+    is_certificate_requested_ = false;
+    RecordResultMetrics(is_valid);
+  }
+
+  SendCrosStateMessage(&attestation_certs);
 }
 
 }  // namespace phonehub

@@ -12,6 +12,9 @@ namespace metrics::structured {
 // Controls whether app discovery logging is enabled or not.
 BASE_DECLARE_FEATURE(kAppDiscoveryLogging);
 
+// The number of events that need to be recorded before an upload can occur.
+int GetOobeEventUploadCount();
+
 }  // namespace metrics::structured
 
 #endif  // CHROME_BROWSER_METRICS_STRUCTURED_EVENT_LOGGING_FEATURES_H_

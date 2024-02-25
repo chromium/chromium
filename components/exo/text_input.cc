@@ -138,8 +138,8 @@ void TextInput::SetSurroundingText(
     base::StringPiece16 text,
     uint32_t offset,
     const gfx::Range& cursor_pos,
-    const absl::optional<ui::GrammarFragment>& grammar_fragment,
-    const absl::optional<ui::AutocorrectInfo>& autocorrect_info) {
+    const std::optional<ui::GrammarFragment>& grammar_fragment,
+    const std::optional<ui::AutocorrectInfo>& autocorrect_info) {
   surrounding_text_tracker_.Update(text, offset, cursor_pos);
 
   grammar_fragment_at_cursor_ = grammar_fragment;
@@ -217,9 +217,7 @@ size_t TextInput::ConfirmCompositionText(bool keep_selection) {
   const auto& [surrounding_text, utf16_offset, cursor_pos, composition] =
       predicted_state;
 
-  if (!(base::FeatureList::IsEnabled(
-            ash::features::kExoExtendedConfirmComposition) &&
-        delegate_->ConfirmComposition(keep_selection))) {
+  if (!delegate_->ConfirmComposition(keep_selection)) {
     // Fallback to SetCursor and Commit if ConfirmComposition is not supported.
     // TODO(b/265853952): Remove once all versions of Lacros supports
     // ConfirmComposition.
@@ -257,41 +255,17 @@ void TextInput::InsertText(const std::u16string& text,
 }
 
 void TextInput::InsertChar(const ui::KeyEvent& event) {
-  // TODO(crbug.com/1401822): remove the old behavior, once the fix is
-  // stabilized.
-  if (!base::FeatureList::IsEnabled(ash::features::kExoConsumedByImeByFlag)) {
+  if (ConsumedByIme(event)) {
     // TODO(b/240618514): Short term workaround to accept temporary fix in IME
     // for urgent production breakage.
     // We should come up with the proper solution of what to be done.
-    if (event.key_code() == ui::VKEY_UNKNOWN) {
+    if (event.code() == ui::DomCode::NONE) {
       // On some specific cases, IME use InsertChar, even if there's no clear
       // key mapping from key_code. Then, use InsertText().
       InsertText(std::u16string(1u, event.GetCharacter()),
                  InsertTextCursorBehavior::kMoveCursorAfterText);
-      return;
-    }
-    // TextInput is currently used only for Lacros, and this is the
-    // short term workaround not to duplicate KeyEvent there.
-    // This is what we do for ARC, which is being removed in the near
-    // future.
-    // TODO(fukino): Get rid of this, too, when the wl_keyboard::key
-    // and text_input::keysym events are handled properly in Lacros.
-    if (ConsumedByIme(surface_->window(), event)) {
+    } else {
       delegate_->SendKey(event);
-    }
-  } else {
-    if (ConsumedByIme(surface_->window(), event)) {
-      // TODO(b/240618514): Short term workaround to accept temporary fix in IME
-      // for urgent production breakage.
-      // We should come up with the proper solution of what to be done.
-      if (event.code() == ui::DomCode::NONE) {
-        // On some specific cases, IME use InsertChar, even if there's no clear
-        // key mapping from key_code. Then, use InsertText().
-        InsertText(std::u16string(1u, event.GetCharacter()),
-                   InsertTextCursorBehavior::kMoveCursorAfterText);
-      } else {
-        delegate_->SendKey(event);
-      }
     }
   }
 }
@@ -381,7 +355,7 @@ bool TextInput::GetEditableSelectionRange(gfx::Range* range) const {
 
 bool TextInput::SetEditableSelectionRange(const gfx::Range& range) {
   const auto& predicted_state = surrounding_text_tracker_.predicted_state();
-  absl::optional<base::StringPiece16> composition_text =
+  std::optional<base::StringPiece16> composition_text =
       predicted_state.GetCompositionText();
   if (!range.IsBoundedBy(predicted_state.GetSurroundingTextRange()) ||
       !composition_text.has_value()) {
@@ -529,7 +503,7 @@ bool TextInput::SetAutocorrectRange(const gfx::Range& range) {
   return true;
 }
 
-absl::optional<ui::GrammarFragment> TextInput::GetGrammarFragmentAtCursor()
+std::optional<ui::GrammarFragment> TextInput::GetGrammarFragmentAtCursor()
     const {
   return grammar_fragment_at_cursor_;
 }
@@ -571,8 +545,8 @@ bool TextInput::SupportsAlwaysConfirmComposition() {
 }
 
 void GetActiveTextInputControlLayoutBounds(
-    absl::optional<gfx::Rect>* control_bounds,
-    absl::optional<gfx::Rect>* selection_bounds) {
+    std::optional<gfx::Rect>* control_bounds,
+    std::optional<gfx::Rect>* selection_bounds) {
   NOTIMPLEMENTED_LOG_ONCE();
 }
 

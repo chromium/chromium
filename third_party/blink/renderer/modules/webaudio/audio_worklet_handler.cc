@@ -71,9 +71,11 @@ AudioWorkletHandler::AudioWorkletHandler(
     AddOutput(is_output_channel_count_given_ ? options->outputChannelCount()[i]
                                              : kDefaultNumberOfOutputChannels);
   }
-  // Same for the outputs as well.
+  // Same for the outputs and the unconnected ones as well.
   outputs_.ReserveInitialCapacity(options->numberOfOutputs());
   outputs_.resize(options->numberOfOutputs());
+  unconnected_outputs_.ReserveInitialCapacity(options->numberOfOutputs());
+  unconnected_outputs_.resize(options->numberOfOutputs());
 
   if (Context()->GetExecutionContext()) {
     // Cross-thread tasks between AWN/AWP is okay to be throttled, thus
@@ -89,6 +91,7 @@ AudioWorkletHandler::AudioWorkletHandler(
 AudioWorkletHandler::~AudioWorkletHandler() {
   inputs_.clear();
   outputs_.clear();
+  unconnected_outputs_.clear();
   param_handler_map_.clear();
   param_value_map_.clear();
   Uninitialize();
@@ -119,12 +122,27 @@ void AudioWorkletHandler::Process(uint32_t frames_to_process) {
     return;
   }
 
-  // If the input is not connected, inform the processor with nullptr.
+  // If the input or the output is not connected, inform the processor with
+  // nullptr.
   for (unsigned i = 0; i < NumberOfInputs(); ++i) {
     inputs_[i] = Input(i).IsConnected() ? Input(i).Bus() : nullptr;
   }
   for (unsigned i = 0; i < NumberOfOutputs(); ++i) {
-    outputs_[i] = WrapRefCounted(Output(i).Bus());
+    if (Output(i).RenderingFanOutCount() == 0) {
+      // If the output does not have an active outgoing connection, the handler
+      // needs to provide an AudioBus for the AudioWorkletProcessor.
+      if (!unconnected_outputs_[i] ||
+          !unconnected_outputs_[i]->TopologyMatches(*Output(i).Bus())) {
+        unconnected_outputs_[i] =
+            AudioBus::Create(Output(i).Bus()->NumberOfChannels(),
+                             GetDeferredTaskHandler().RenderQuantumFrames());
+      }
+      outputs_[i] = unconnected_outputs_[i];
+    } else {
+      // If there is one or more outgoing connection, use the AudioBus from the
+      // output object.
+      outputs_[i] = WrapRefCounted(Output(i).Bus());
+    }
   }
 
   for (const auto& param_name : param_value_map_.Keys()) {

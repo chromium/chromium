@@ -15,6 +15,7 @@
 #include <memory>
 #include <string>
 
+#include "absl/log/absl_check.h"
 #include "absl/strings/str_replace.h"
 #include "mediapipe/calculators/image/bilateral_filter_calculator.pb.h"
 #include "mediapipe/framework/calculator_framework.h"
@@ -32,7 +33,6 @@
 #include "mediapipe/gpu/gl_calculator_helper.h"
 #include "mediapipe/gpu/gl_simple_shaders.h"
 #include "mediapipe/gpu/shader_util.h"
-#include "absl/log/absl_check.h"
 #endif  // !MEDIAPIPE_DISABLE_GPU
 
 namespace mediapipe {

@@ -43,15 +43,23 @@ const int kMaxColorSpaceConversionColorShift = 40;
 
 }  // namespace
 
-const SkBitmap CreateBitmap(int width, int height) {
+const SkBitmap CreateBitmap(int size, SkColor color) {
+  return CreateBitmap(size, size, color);
+}
+
+const SkBitmap CreateBitmap(int width, int height, SkColor color) {
   SkBitmap bitmap;
   bitmap.allocN32Pixels(width, height);
-  bitmap.eraseARGB(255, 0, 255, 0);
+  bitmap.eraseColor(color);
   return bitmap;
 }
 
-gfx::ImageSkia CreateImageSkia(int width, int height) {
-  return gfx::ImageSkia::CreateFrom1xBitmap(CreateBitmap(width, height));
+gfx::ImageSkia CreateImageSkia(int size, SkColor color) {
+  return CreateImageSkia(size, size, color);
+}
+
+gfx::ImageSkia CreateImageSkia(int width, int height, SkColor color) {
+  return gfx::ImageSkia::CreateFrom1xBitmap(CreateBitmap(width, height, color));
 }
 
 scoped_refptr<base::RefCountedMemory> CreatePNGBytes(int edge_size) {
@@ -61,12 +69,12 @@ scoped_refptr<base::RefCountedMemory> CreatePNGBytes(int edge_size) {
   return bytes;
 }
 
-gfx::Image CreateImage() {
-  return CreateImage(100, 50);
+gfx::Image CreateImage(int size, SkColor color) {
+  return CreateImage(size, size, color);
 }
 
-gfx::Image CreateImage(int width, int height) {
-  return gfx::Image::CreateFrom1xBitmap(CreateBitmap(width, height));
+gfx::Image CreateImage(int width, int height, SkColor color) {
+  return gfx::Image::CreateFrom1xBitmap(CreateBitmap(width, height, color));
 }
 
 bool AreImagesEqual(const gfx::Image& img1, const gfx::Image& img2) {
@@ -194,11 +202,10 @@ PlatformImage CreatePlatformImage() {
   base::apple::ScopedCFTypeRef<CGColorSpaceRef> color_space(
       CGColorSpaceCreateDeviceRGB());
   UIImage* image =
-      skia::SkBitmapToUIImageWithColorSpace(bitmap, scale, color_space);
+      skia::SkBitmapToUIImageWithColorSpace(bitmap, scale, color_space.get());
   return image;
 #elif BUILDFLAG(IS_MAC)
-  NSImage* image = skia::SkBitmapToNSImageWithColorSpace(
-      bitmap, base::mac::GetGenericRGBColorSpace());
+  NSImage* image = skia::SkBitmapToNSImage(bitmap);
   return image;
 #else
   return gfx::ImageSkia::CreateFrom1xBitmap(bitmap);

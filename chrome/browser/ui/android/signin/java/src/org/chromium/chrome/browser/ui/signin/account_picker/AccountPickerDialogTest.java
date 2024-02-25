@@ -42,9 +42,7 @@ import org.chromium.ui.test.util.BlankUiTestActivityTestCase;
 
 import java.io.IOException;
 
-/**
- * Instrumentation tests for account picker dialog.
- */
+/** Instrumentation tests for account picker dialog. */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 @Batch(Batch.PER_CLASS)
@@ -61,8 +59,7 @@ public class AccountPickerDialogTest extends BlankUiTestActivityTestCase {
     @Rule
     public final MockitoRule mMockitoRule = MockitoJUnit.rule().strictness(Strictness.STRICT_STUBS);
 
-    @Mock
-    private AccountPickerCoordinator.Listener mListenerMock;
+    @Mock private AccountPickerCoordinator.Listener mListenerMock;
 
     private final String mFullName1 = "Test Account1";
 
@@ -76,11 +73,16 @@ public class AccountPickerDialogTest extends BlankUiTestActivityTestCase {
     public void setUp() {
         mAccountManagerTestRule.addAccount(mAccountName1, mFullName1, null, null);
         mAccountManagerTestRule.addAccount(mAccountName2, "", null, null);
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            mCoordinator = new AccountPickerDialogCoordinator(getActivity(), mListenerMock,
-                    new ModalDialogManager(
-                            new AppModalPresenter(getActivity()), ModalDialogType.APP));
-        });
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    mCoordinator =
+                            new AccountPickerDialogCoordinator(
+                                    getActivity(),
+                                    mListenerMock,
+                                    new ModalDialogManager(
+                                            new AppModalPresenter(getActivity()),
+                                            ModalDialogType.APP));
+                });
     }
 
     @After

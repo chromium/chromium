@@ -8,6 +8,7 @@
 #include "base/test/task_environment.h"
 #include "content/renderer/media/win/dcomp_texture_factory.h"
 #include "content/renderer/media/win/dcomp_texture_wrapper_impl.h"
+#include "gpu/command_buffer/client/client_shared_image.h"
 #include "gpu/ipc/client/client_shared_image_interface.h"
 #include "gpu/ipc/client/gpu_channel_host.h"
 #include "media/base/mock_filters.h"
@@ -26,19 +27,20 @@ using Microsoft::WRL::ComPtr;
 // which the production versions cannot run in the context of the unittest.
 class StubClientSharedImageInterface : public gpu::ClientSharedImageInterface {
  public:
-  StubClientSharedImageInterface() : gpu::ClientSharedImageInterface(nullptr) {}
+  StubClientSharedImageInterface()
+      : gpu::ClientSharedImageInterface(nullptr, nullptr) {}
   gpu::SyncToken GenVerifiedSyncToken() override { return gpu::SyncToken(); }
 
-  gpu::Mailbox CreateSharedImage(viz::SharedImageFormat format,
-                                 const gfx::Size& size,
-                                 const gfx::ColorSpace& color_space,
-                                 GrSurfaceOrigin surface_origin,
-                                 SkAlphaType alpha_type,
-                                 uint32_t usage,
-                                 base::StringPiece debug_label,
-                                 gfx::GpuMemoryBufferHandle handle) override {
-    return gpu::Mailbox();
+  scoped_refptr<gpu::ClientSharedImage> CreateSharedImage(
+      const gpu::SharedImageInfo& si_info,
+      gfx::GpuMemoryBufferHandle handle) override {
+    return base::MakeRefCounted<gpu::ClientSharedImage>(
+        gpu::Mailbox::GenerateForSharedImage(), si_info.meta, gpu::SyncToken(),
+        holder_);
   }
+
+ protected:
+  ~StubClientSharedImageInterface() override = default;
 };
 
 class TestGpuChannelHost : public gpu::GpuChannelHost {
@@ -48,12 +50,13 @@ class TestGpuChannelHost : public gpu::GpuChannelHost {
             0 /* channel_id */,
             gpu::GPUInfo(),
             gpu::GpuFeatureInfo(),
+            gpu::SharedImageCapabilities(),
             mojo::ScopedMessagePipeHandle(
                 mojo::MessagePipeHandle(mojo::kInvalidHandleValue))) {}
 
-  std::unique_ptr<gpu::ClientSharedImageInterface>
+  scoped_refptr<gpu::ClientSharedImageInterface>
   CreateClientSharedImageInterface() override {
-    return std::make_unique<StubClientSharedImageInterface>();
+    return base::MakeRefCounted<StubClientSharedImageInterface>();
   }
 
  protected:
@@ -100,9 +103,10 @@ void DCOMPTextureWrapperTest::CreateDXBackedVideoFrameTestTask(
 
   dcomp_texture_wrapper->CreateVideoFrame(
       frame_size, std::move(dx_handle),
-      base::BindRepeating(
+      base::BindOnce(
           [](gfx::Size orig_frame_size, base::WaitableEvent* wait_event,
-             scoped_refptr<media::VideoFrame> frame) {
+             scoped_refptr<media::VideoFrame> frame,
+             const gpu::Mailbox& mailbox) {
             EXPECT_EQ(frame->coded_size().width(), orig_frame_size.width());
             EXPECT_EQ(frame->coded_size().height(), orig_frame_size.height());
             wait_event->Signal();

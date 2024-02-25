@@ -5,13 +5,12 @@
 #ifndef EXTENSIONS_BROWSER_API_DECLARATIVE_DECLARATIVE_API_H_
 #define EXTENSIONS_BROWSER_API_DECLARATIVE_DECLARATIVE_API_H_
 
+#include <optional>
 #include <string>
-
 #include "base/memory/scoped_refptr.h"
 #include "extensions/browser/api/declarative/rules_registry.h"
 #include "extensions/browser/extension_function.h"
 #include "extensions/common/api/events.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace extensions {
 
@@ -35,7 +34,7 @@ class RulesFunction : public ExtensionFunction {
   // Concrete implementation of the RulesFunction that is being called
   // on the thread on which the respective RulesRegistry lives.
   // Returns false in case of errors.
-  virtual ResponseValue RunAsyncOnCorrectThread() = 0;
+  virtual ResponseValue RunInternal() = 0;
 
   // Records UMA metrics for the kind of declarative API call.
   virtual void RecordUMA(const std::string& event_name) const = 0;
@@ -57,11 +56,11 @@ class EventsEventAddRulesFunction : public RulesFunction {
 
   // RulesFunction:
   bool CreateParams() override;
-  ResponseValue RunAsyncOnCorrectThread() override;
+  ResponseValue RunInternal() override;
   void RecordUMA(const std::string& event_name) const override;
 
  private:
-  absl::optional<api::events::Event::AddRules::Params> params_;
+  std::optional<api::events::Event::AddRules::Params> params_;
 };
 
 class EventsEventRemoveRulesFunction : public RulesFunction {
@@ -75,11 +74,11 @@ class EventsEventRemoveRulesFunction : public RulesFunction {
 
   // RulesFunction:
   bool CreateParams() override;
-  ResponseValue RunAsyncOnCorrectThread() override;
+  ResponseValue RunInternal() override;
   void RecordUMA(const std::string& event_name) const override;
 
  private:
-  absl::optional<api::events::Event::RemoveRules::Params> params_;
+  std::optional<api::events::Event::RemoveRules::Params> params_;
 };
 
 class EventsEventGetRulesFunction : public RulesFunction {
@@ -93,11 +92,11 @@ class EventsEventGetRulesFunction : public RulesFunction {
 
   // RulesFunction:
   bool CreateParams() override;
-  ResponseValue RunAsyncOnCorrectThread() override;
+  ResponseValue RunInternal() override;
   void RecordUMA(const std::string& event_name) const override;
 
  private:
-  absl::optional<api::events::Event::GetRules::Params> params_;
+  std::optional<api::events::Event::GetRules::Params> params_;
 };
 
 }  // namespace extensions

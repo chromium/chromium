@@ -7,11 +7,11 @@ import {BindingsTestRunner} from 'bindings_test_runner';
 import {SourcesTestRunner} from 'sources_test_runner';
 
 import * as Common from 'devtools/core/common/common.js';
+import * as Workspace from 'devtools/models/workspace/workspace.js';
 
 (async function() {
   TestRunner.addResult(
       `Verify that sourcemap sources are mapped event when sourcemap compiled url matches with one of the source urls.\n`);
-  await TestRunner.loadLegacyModule('sources');
   await TestRunner.showPanel('sources');
   await TestRunner.addScriptTag('resources/sourcemap-name-clash/out.js');
 
@@ -36,7 +36,7 @@ import * as Common from 'devtools/core/common/common.js';
   }
 
   function onFileSystemCreated() {
-    var automappingTest = new BindingsTestRunner.AutomappingTest(Workspace.workspace);
+    var automappingTest = new BindingsTestRunner.AutomappingTest(Workspace.Workspace.WorkspaceImpl.instance());
     automappingTest.waitUntilMappingIsStabilized().then(TestRunner.completeTest.bind(TestRunner));
   }
 

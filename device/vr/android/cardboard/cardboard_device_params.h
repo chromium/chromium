@@ -10,6 +10,8 @@
 #include "device/vr/android/cardboard/scoped_cardboard_objects.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
 
+#include "base/component_export.h"
+
 namespace device {
 
 using OwnedCardboardParams = internal::ScopedCardboardObject<uint8_t*>;
@@ -22,9 +24,14 @@ using OwnedCardboardParams = internal::ScopedCardboardObject<uint8_t*>;
 // a wrapper for the device params and accompanying sizes and a place to expose
 // factories which can internally decide if the stored params are owned or not
 // without needing to pass that information beyond this class.
-class CardboardDeviceParams {
+class COMPONENT_EXPORT(VR_CARDBOARD) CardboardDeviceParams {
  public:
   static CardboardDeviceParams GetDeviceParams();
+  static CardboardDeviceParams GetSavedDeviceParams();
+  static CardboardDeviceParams GetCardboardV1DeviceParams();
+
+  static void set_use_cardboard_v1_device_params_for_testing(bool value);
+
   ~CardboardDeviceParams();
 
   CardboardDeviceParams(const CardboardDeviceParams&) = delete;
@@ -40,6 +47,11 @@ class CardboardDeviceParams {
 
  private:
   CardboardDeviceParams();
+
+  // This flag forces to always return Cardboard Viewer v1 device parameters to
+  // prevent any disk read or write and the QR code scanner activity to be
+  // launched. Meant to be used for testing purposes only.
+  static bool use_cardboard_v1_device_params_for_testing_;
 
   absl::variant<uint8_t*, OwnedCardboardParams> encoded_device_params_ =
       nullptr;

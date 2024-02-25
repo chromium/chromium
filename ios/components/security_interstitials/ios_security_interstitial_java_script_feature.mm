@@ -31,7 +31,7 @@ IOSSecurityInterstitialJavaScriptFeature::
 IOSSecurityInterstitialJavaScriptFeature::
     ~IOSSecurityInterstitialJavaScriptFeature() = default;
 
-absl::optional<std::string>
+std::optional<std::string>
 IOSSecurityInterstitialJavaScriptFeature::GetScriptMessageHandlerName() const {
   return kWebUIMessageHandlerName;
 }

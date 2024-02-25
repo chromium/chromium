@@ -790,7 +790,6 @@ class GLES2DecoderTestBase : public ::testing::TestWithParam<bool>,
     GLuint bound_vertex_array_object_;
   };  // class MockGLStates
 
-  void AddExpectationsForVertexAttribManager();
   void SetupMockGLBehaviors();
 
   GpuPreferences gpu_preferences_;

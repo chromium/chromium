@@ -22,8 +22,6 @@ class FilePath;
 
 namespace audio {
 
-class DebugRecordingFileProvider;
-
 // Client class for using mojom::DebugRecording interface. This class owns
 // mojom::DebugRecordingFileProvider implementation, therefore owners of this
 // class' instances need permission to create files in |file_name_base| path

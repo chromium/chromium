@@ -33,9 +33,7 @@ import org.chromium.chrome.test.ChromeJUnit4RunnerDelegate;
 import java.util.List;
 import java.util.concurrent.Callable;
 
-/**
- * End-to-end tests for testing WebXR for AR's camera access behavior.
- */
+/** End-to-end tests for testing WebXR for AR's camera access behavior. */
 @RunWith(ParameterizedRunner.class)
 @UseRunnerDelegate(ChromeJUnit4RunnerDelegate.class)
 // TODO(https://crbug.com/1112356) Change this to Build.VERSION_CODES.N once N support is added.
@@ -44,8 +42,8 @@ public class WebXrArCameraAccessTest {
     @ClassParameter
     private static List<ParameterSet> sClassParams =
             ArTestRuleUtils.generateDefaultTestRuleParameters();
-    @Rule
-    public RuleChain mRuleChain;
+
+    @Rule public RuleChain mRuleChain;
 
     private ChromeActivityTestRule mTestRule;
     private WebXrArTestFramework mWebXrArTestFramework;
@@ -60,40 +58,38 @@ public class WebXrArCameraAccessTest {
         mWebXrArTestFramework = new WebXrArTestFramework(mTestRule);
     }
 
-    /**
-     * Test that getCameraImage(...) returns a valid GLTexture.
-     */
+    /** Test that getCameraImage(...) returns a valid GLTexture. */
     @Test
     @MediumTest
     @XrActivityRestriction({XrActivityRestriction.SupportedActivity.ALL})
-    @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE,
-            "enable-features=WebXRIncubations,LogJsConsoleMessages"})
+    @CommandLineFlags.Add({
+        ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE,
+        "enable-features=WebXRIncubations,LogJsConsoleMessages"
+    })
     @ArPlaybackFile("chrome/test/data/xr/ar_playback_datasets/floor_session_12s_30fps.mp4")
-    public void
-    testCameraAccessImageTextureNotNull() {
+    public void testCameraAccessImageTextureNotNull() {
         mWebXrArTestFramework.loadFileAndAwaitInitialization(
                 "webxr_test_camera_access", PAGE_LOAD_TIMEOUT_S);
-        mWebXrArTestFramework.enterSessionWithUserGestureOrFail(/*needsCameraPermission=*/true);
+        mWebXrArTestFramework.enterSessionWithUserGestureOrFail(/* needsCameraPermission= */ true);
         mWebXrArTestFramework.runJavaScriptOrFail(
                 "stepStartStoringCameraTexture(1)", POLL_TIMEOUT_SHORT_MS);
         mWebXrArTestFramework.waitOnJavaScriptStep();
         mWebXrArTestFramework.endTest();
     }
 
-    /**
-     * Test that multiple consecutive calls to getCameraImage(...) all return a valid GLTexture.
-     */
+    /** Test that multiple consecutive calls to getCameraImage(...) all return a valid GLTexture. */
     @Test
     @MediumTest
     @XrActivityRestriction({XrActivityRestriction.SupportedActivity.ALL})
-    @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE,
-            "enable-features=WebXRIncubations,LogJsConsoleMessages"})
+    @CommandLineFlags.Add({
+        ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE,
+        "enable-features=WebXRIncubations,LogJsConsoleMessages"
+    })
     @ArPlaybackFile("chrome/test/data/xr/ar_playback_datasets/floor_session_12s_30fps.mp4")
-    public void
-    testConsecutiveCameraAccessImageTexturesNotNull() {
+    public void testConsecutiveCameraAccessImageTexturesNotNull() {
         mWebXrArTestFramework.loadFileAndAwaitInitialization(
                 "webxr_test_camera_access", PAGE_LOAD_TIMEOUT_S);
-        mWebXrArTestFramework.enterSessionWithUserGestureOrFail(/*needsCameraPermission=*/true);
+        mWebXrArTestFramework.enterSessionWithUserGestureOrFail(/* needsCameraPermission= */ true);
         mWebXrArTestFramework.runJavaScriptOrFail(
                 "stepStartStoringCameraTexture(3)", POLL_TIMEOUT_SHORT_MS);
         mWebXrArTestFramework.waitOnJavaScriptStep();
@@ -107,54 +103,53 @@ public class WebXrArCameraAccessTest {
     @Test
     @MediumTest
     @XrActivityRestriction({XrActivityRestriction.SupportedActivity.ALL})
-    @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE,
-            "enable-features=WebXRIncubations,LogJsConsoleMessages"})
+    @CommandLineFlags.Add({
+        ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE,
+        "enable-features=WebXRIncubations,LogJsConsoleMessages"
+    })
     @ArPlaybackFile("chrome/test/data/xr/ar_playback_datasets/floor_session_12s_30fps.mp4")
-    public void
-    testCameraAccessImageTextureCanBeDeleted() {
+    public void testCameraAccessImageTextureCanBeDeleted() {
         mWebXrArTestFramework.loadFileAndAwaitInitialization(
                 "webxr_test_camera_access", PAGE_LOAD_TIMEOUT_S);
-        mWebXrArTestFramework.enterSessionWithUserGestureOrFail(/*needsCameraPermission=*/true);
+        mWebXrArTestFramework.enterSessionWithUserGestureOrFail(/* needsCameraPermission= */ true);
         mWebXrArTestFramework.runJavaScriptOrFail(
                 "stepStartStoreAndDeleteCameraTexture()", POLL_TIMEOUT_SHORT_MS);
         mWebXrArTestFramework.waitOnJavaScriptStep();
         mWebXrArTestFramework.endTest();
     }
 
-    /**
-     * Test the texture lifetime of camera image textures.
-     */
+    /** Test the texture lifetime of camera image textures. */
     @Test
     @MediumTest
     @XrActivityRestriction({XrActivityRestriction.SupportedActivity.ALL})
-    @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE,
-            "enable-features=WebXRIncubations,LogJsConsoleMessages"})
+    @CommandLineFlags.Add({
+        ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE,
+        "enable-features=WebXRIncubations,LogJsConsoleMessages"
+    })
     @ArPlaybackFile("chrome/test/data/xr/ar_playback_datasets/floor_session_12s_30fps.mp4")
-    public void
-    testCameraAccessImageTextureLifetime() {
+    public void testCameraAccessImageTextureLifetime() {
         mWebXrArTestFramework.loadFileAndAwaitInitialization(
                 "webxr_test_camera_access", PAGE_LOAD_TIMEOUT_S);
-        mWebXrArTestFramework.enterSessionWithUserGestureOrFail(/*needsCameraPermission=*/true);
+        mWebXrArTestFramework.enterSessionWithUserGestureOrFail(/* needsCameraPermission= */ true);
         mWebXrArTestFramework.runJavaScriptOrFail(
                 "stepCheckCameraTextureLifetimeLimitedToOneFrame()", POLL_TIMEOUT_SHORT_MS);
         mWebXrArTestFramework.waitOnJavaScriptStep();
         mWebXrArTestFramework.endTest();
     }
 
-    /**
-     * Test whether opaque texture enforcements work fine.
-     */
+    /** Test whether opaque texture enforcements work fine. */
     @Test
     @MediumTest
     @XrActivityRestriction({XrActivityRestriction.SupportedActivity.ALL})
-    @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE,
-            "enable-features=WebXRIncubations,LogJsConsoleMessages"})
+    @CommandLineFlags.Add({
+        ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE,
+        "enable-features=WebXRIncubations,LogJsConsoleMessages"
+    })
     @ArPlaybackFile("chrome/test/data/xr/ar_playback_datasets/floor_session_12s_30fps.mp4")
-    public void
-    testOpaqueTextures() {
+    public void testOpaqueTextures() {
         mWebXrArTestFramework.loadFileAndAwaitInitialization(
                 "webxr_test_camera_access", PAGE_LOAD_TIMEOUT_S);
-        mWebXrArTestFramework.enterSessionWithUserGestureOrFail(/*needsCameraPermission=*/true);
+        mWebXrArTestFramework.enterSessionWithUserGestureOrFail(/* needsCameraPermission= */ true);
         mWebXrArTestFramework.runJavaScriptOrFail(
                 "stepCheckOpaqueTextures()", POLL_TIMEOUT_SHORT_MS);
         mWebXrArTestFramework.waitOnJavaScriptStep();

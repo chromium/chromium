@@ -111,7 +111,7 @@ HTMLElement* MediaControlInputElement::CreateOverflowElement(
                                                   CSSValueID::kNone);
   SetOverflowElementIsWanted(false);
 
-  return overflow_label_element_;
+  return overflow_label_element_.Get();
 }
 
 void MediaControlInputElement::UpdateOverflowSubtitleElement(String text) {
@@ -256,10 +256,6 @@ void MediaControlInputElement::MaybeRecordInteracted() {
 
 bool MediaControlInputElement::IsOverflowElement() const {
   return is_overflow_element_;
-}
-
-bool MediaControlInputElement::IsMouseFocusable() const {
-  return false;
 }
 
 bool MediaControlInputElement::IsMediaControlElement() const {

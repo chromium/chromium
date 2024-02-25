@@ -48,7 +48,7 @@ TEST(ONCUtils, ProxySettingsToProxyConfig) {
         test_case_dict.FindDict("ONC_ProxySettings");
     ASSERT_TRUE(onc_proxy_settings);
 
-    absl::optional<base::Value::Dict> actual_proxy_config =
+    std::optional<base::Value::Dict> actual_proxy_config =
         ConvertOncProxySettingsToProxyConfig(*onc_proxy_settings);
     ASSERT_TRUE(actual_proxy_config.has_value());
     EXPECT_EQ(*expected_proxy_config, actual_proxy_config);
@@ -72,7 +72,7 @@ TEST(ONCUtils, ProxyConfigToOncProxySettings) {
         test_case_dict.FindDict("ONC_ProxySettings");
     ASSERT_TRUE(onc_proxy_settings);
 
-    absl::optional<base::Value::Dict> actual_proxy_settings =
+    std::optional<base::Value::Dict> actual_proxy_settings =
         ConvertProxyConfigToOncProxySettings(*shill_proxy_config);
     ASSERT_TRUE(actual_proxy_settings.has_value());
     EXPECT_TRUE(

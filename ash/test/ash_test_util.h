@@ -7,21 +7,30 @@
 
 #include <cstddef>
 
+#include "chromeos/ui/frame/caption_buttons/frame_size_button.h"
+#include "chromeos/ui/frame/multitask_menu/multitask_menu_metrics.h"
+#include "services/data_decoder/public/mojom/image_decoder.mojom-shared.h"
+#include "third_party/abseil-cpp/absl/types/variant.h"
 #include "third_party/skia/include/core/SkColor.h"
+#include "ui/aura/window.h"
 #include "ui/gfx/image/image_skia.h"
-
-namespace aura {
-class Window;
-}  // namespace aura
 
 namespace base {
 class FilePath;
 class TimeDelta;
 }  // namespace base
 
+namespace chromeos {
+class MultitaskMenu;
+}  // namespace chromeos
+
 namespace gfx {
 class Size;
 }  // namespace gfx
+
+namespace ui::test {
+class EventGenerator;
+}  // namespace ui::test
 
 namespace views {
 class MenuItemView;
@@ -51,6 +60,18 @@ bool IsSystemTrayForRootWindowVisible(size_t root_window_index);
 gfx::ImageSkia CreateSolidColorTestImage(const gfx::Size& image_size,
                                          SkColor color);
 
+// Creates a solid color image with the given `size` and `color`, and returns
+// its encoded representation. `image_out` is filled with the raw decoded image
+// if provided.
+//
+// This function can never fail.
+std::string CreateEncodedImageForTesting(
+    const gfx::Size& size,
+    SkColor color = SK_ColorBLACK,
+    data_decoder::mojom::ImageCodec codec =
+        data_decoder::mojom::ImageCodec::kDefault,
+    gfx::ImageSkia* image_out = nullptr);
+
 // Configures `window` with the specified title and color.
 void DecorateWindow(aura::Window* window,
                     const std::u16string& title,
@@ -59,6 +80,22 @@ void DecorateWindow(aura::Window* window,
 // Waits until there is any visible menu item view with the specified `label`.
 // Returns the pointer to the first found target menu item view.
 views::MenuItemView* WaitForMenuItemWithLabel(const std::u16string& label);
+
+// Shows and returns the clamshell multitask menu which is anchored to the frame
+// size button. Some tests create their own caption button container and
+// therefore their own size button. We use that if it is passed, otherwise try
+// to fetch the size button from the non client frame view ash.
+chromeos::MultitaskMenu* ShowAndWaitMultitaskMenuForWindow(
+    absl::variant<aura::Window*, chromeos::FrameSizeButton*>
+        window_or_size_button,
+    chromeos::MultitaskMenuEntryType entry_type =
+        chromeos::MultitaskMenuEntryType::kFrameSizeButtonHover);
+
+// Sends a press release key combo `count` times.
+void SendKey(ui::KeyboardCode key_code,
+             ui::test::EventGenerator* event_generator = nullptr,
+             int flags = ui::EF_NONE,
+             int count = 1);
 
 }  // namespace ash
 

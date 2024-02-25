@@ -1,8 +1,10 @@
 include_rules = [
   "+components/crash/core/common/crash_key.h",
+  "+components/content_settings/core/common",
   "+components/zoom",
   "+content/public/browser",
   "+content/public/common",
+  "+mojo/public/cpp",
   "+third_party/blink/public/common/page/page_zoom.h",
   "+third_party/blink/public/common/input/web_gesture_event.h",
   "+third_party/blink/public/common/input/web_input_event.h",

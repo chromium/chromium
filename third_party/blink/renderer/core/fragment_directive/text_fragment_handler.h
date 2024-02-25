@@ -35,7 +35,7 @@ class CORE_EXPORT TextFragmentHandler final
   TextFragmentHandler& operator=(const TextFragmentHandler&) = delete;
 
   // Determine if |result| represents a click on an existing highlight.
-  static bool IsOverTextFragment(HitTestResult result);
+  static bool IsOverTextFragment(const HitTestResult& result);
 
   // Called to notify the frame's TextFragmentHandler on context menu open over
   // a selection. Will trigger preemptive generation if needed.
@@ -64,7 +64,7 @@ class CORE_EXPORT TextFragmentHandler final
   void Trace(Visitor*) const;
 
   TextFragmentSelectorGenerator* GetTextFragmentSelectorGenerator() {
-    return text_fragment_selector_generator_;
+    return text_fragment_selector_generator_.Get();
   }
 
   void DidDetachDocumentOrFrame();
@@ -92,7 +92,7 @@ class CORE_EXPORT TextFragmentHandler final
 
   TextFragmentAnchor* GetTextFragmentAnchor();
 
-  LocalFrame* GetFrame() { return frame_; }
+  LocalFrame* GetFrame() { return frame_.Get(); }
 
   HeapVector<Member<AnnotationAgentImpl>> annotation_agents_;
 
@@ -103,7 +103,7 @@ class CORE_EXPORT TextFragmentHandler final
   // The result of preemptively generating on selection changes will be stored
   // in this member when completed. Used only in preemptive link generation
   // mode.
-  absl::optional<TextFragmentSelector> preemptive_generation_result_;
+  std::optional<TextFragmentSelector> preemptive_generation_result_;
 
   // If generation failed, contains the reason that generation failed. Default
   // value is kNone.
@@ -111,7 +111,7 @@ class CORE_EXPORT TextFragmentHandler final
 
   // Reports whether |RequestSelector| was called before or after selector was
   // ready. Used only in preemptive link generation mode.
-  absl::optional<shared_highlighting::LinkGenerationReadyStatus>
+  std::optional<shared_highlighting::LinkGenerationReadyStatus>
       selector_ready_status_;
 
   // This will hold the reply callback to the RequestSelector mojo call. This

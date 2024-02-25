@@ -17,6 +17,7 @@
 #include "base/observer_list.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/trace_event/base_tracing.h"
 #include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
 #include "ui/base/cursor/cursor.h"
@@ -56,6 +57,10 @@
 
 #if BUILDFLAG(IS_LINUX)
 #include "ui/linux/linux_ui.h"
+#endif
+
+#if BUILDFLAG(IS_OZONE)
+#include "ui/ozone/public/ozone_platform.h"
 #endif
 
 namespace views {
@@ -114,14 +119,18 @@ class DefaultWidgetDelegate : public WidgetDelegate {
     // In most situations where a Widget is used without a delegate the Widget
     // is used as a container, so that we want focus to advance to the top-level
     // widget. A good example of this is the find bar.
-    SetOwnedByWidget(true);
     SetFocusTraversesOut(true);
+    RegisterDeleteDelegateCallback(base::BindOnce(
+        &DefaultWidgetDelegate::Destroy, base::Unretained(this)));
   }
 
   DefaultWidgetDelegate(const DefaultWidgetDelegate&) = delete;
   DefaultWidgetDelegate& operator=(const DefaultWidgetDelegate&) = delete;
 
   ~DefaultWidgetDelegate() override = default;
+
+ private:
+  void Destroy() { delete this; }
 };
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -179,6 +188,18 @@ ui::ZOrderLevel Widget::InitParams::EffectiveZOrderLevel() const {
     default:
       return ui::ZOrderLevel::kNormal;
   }
+}
+
+bool Widget::InitParams::ShouldInitAsHeadless() const {
+  if (headless_mode) {
+    return true;
+  }
+
+  if (Widget* top_level_widget = GetTopLevelWidgetForNativeView(parent)) {
+    return top_level_widget->is_headless();
+  }
+
+  return false;
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -342,6 +363,17 @@ bool Widget::RequiresNonClientView(InitParams::Type type) {
   return type == InitParams::TYPE_WINDOW || type == InitParams::TYPE_BUBBLE;
 }
 
+// static
+bool Widget::IsWindowCompositingSupported() {
+#if BUILDFLAG(IS_WIN)
+  return true;
+#elif BUILDFLAG(IS_OZONE)
+  return ui::OzonePlatform::GetInstance()->IsWindowCompositingSupported();
+#else
+  return false;
+#endif
+}
+
 void Widget::Init(InitParams params) {
   TRACE_EVENT0("views", "Widget::Init");
 
@@ -369,34 +401,23 @@ void Widget::Init(InitParams params) {
 
   params.child |= (params.type == InitParams::TYPE_CONTROL);
   is_top_level_ = !params.child;
+  is_headless_ = params.ShouldInitAsHeadless();
 
   if (params.opacity == views::Widget::InitParams::WindowOpacity::kInferred &&
       params.type != views::Widget::InitParams::TYPE_WINDOW) {
     params.opacity = views::Widget::InitParams::WindowOpacity::kOpaque;
   }
 
-  {
-    // ViewsDelegate::OnBeforeWidgetInit() may change `params.delegate` either
-    // by setting it to null or assigning a different value to it, so handle
-    // both cases.
-    // TODO(kylixrd): Rework this to avoid always creating the default delegate
-    // once the widget never owns a provided delegate.
-    owned_widget_delegate_ = std::make_unique<DefaultWidgetDelegate>();
-    widget_delegate_ = params.delegate ? params.delegate->AsWeakPtr()
-                                       : owned_widget_delegate_->AsWeakPtr();
+  // ViewsDelegate::OnBeforeWidgetInit() may change `params.delegate` either by
+  // setting it to null or assigning a different value to it, so handle both
+  // cases.
+  ViewsDelegate::GetInstance()->OnBeforeWidgetInit(&params, this);
 
-    ViewsDelegate::GetInstance()->OnBeforeWidgetInit(&params, this);
-
-    widget_delegate_ = params.delegate ? params.delegate->AsWeakPtr()
-                                       : owned_widget_delegate_->AsWeakPtr();
-    if (widget_delegate_.get() != owned_widget_delegate_.get()) {
-      // TODO(kylixrd): This will be unnecessary once the Widget can no longer
-      // "own" the delegate.
-      if (widget_delegate_->owned_by_widget())
-        owned_widget_delegate_ = base::WrapUnique(widget_delegate_.get());
-      else
-        owned_widget_delegate_.reset();
-    }
+  if (params.delegate) {
+    widget_delegate_ = params.delegate->AsWeakPtr();
+  } else {
+    auto default_delegate = std::make_unique<DefaultWidgetDelegate>();
+    widget_delegate_ = default_delegate.release()->AsWeakPtr();
   }
   DCHECK(widget_delegate_);
 
@@ -408,9 +429,6 @@ void Widget::Init(InitParams params) {
                                     : InitParams::Activatable::kNo;
 
   widget_delegate_->SetCanActivate(can_activate);
-
-  // Henceforth, ensure the delegate outlives the Widget.
-  widget_delegate_->can_delete_this_ = false;
 
   widget_delegate_->WidgetInitializing(this);
 
@@ -442,6 +460,12 @@ void Widget::Init(InitParams params) {
   const gfx::Rect bounds = params.bounds;
   const ui::WindowShowState show_state = params.show_state;
   WidgetDelegate* delegate = params.delegate;
+  bool should_set_initial_bounds = true;
+#if BUILDFLAG(IS_CHROMEOS)
+  // If the target display is specified on ChromeOS, the initial bounds will be
+  // set based on the display.
+  should_set_initial_bounds = !params.display_id.has_value();
+#endif
 
   native_widget_->InitNativeWidget(std::move(params));
   if (type == InitParams::TYPE_MENU)
@@ -452,9 +476,9 @@ void Widget::Init(InitParams params) {
     non_client_view_->SetFrameView(CreateNonClientFrameView());
     non_client_view_->SetOverlayView(widget_delegate_->CreateOverlayView());
 
-    // Bypass the Layout() that happens in Widget::SetContentsView(). Layout()
-    // will occur after setting the initial bounds below. The RootView's size is
-    // not valid until that happens.
+    // Bypass the layout that happens in Widget::SetContentsView().
+    // LayoutImmediately() will occur after setting the initial bounds below.
+    // The RootView's size is not valid until that happens.
     root_view_->SetContentsView(non_client_view_);
 
     // Initialize the window's icon and title before setting the window's
@@ -463,12 +487,14 @@ void Widget::Init(InitParams params) {
     UpdateWindowIcon();
     UpdateWindowTitle();
     non_client_view_->ResetWindowControls();
-    SetInitialBounds(bounds);
+    if (should_set_initial_bounds) {
+      SetInitialBounds(bounds);
+    }
 
     // Perform the initial layout. This handles the case where the size might
     // not actually change when setting the initial bounds. If it did, child
     // views won't have a dirty Layout state, so won't do any work.
-    root_view_->Layout();
+    root_view_->LayoutImmediately();
 
     if (show_state == ui::SHOW_STATE_MAXIMIZED) {
       Maximize();
@@ -476,9 +502,20 @@ void Widget::Init(InitParams params) {
       Minimize();
       saved_show_state_ = ui::SHOW_STATE_MINIMIZED;
     }
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+    // In ChromeOS, rounding window can involve rounding its client view and the
+    // contents. Therefore, wait till the contents are set.
+    // Since on ChromeOS, window can be square or rounded based on the window
+    // state, wait till window is maximized or minimized.
+    non_client_view_->frame_view()->UpdateWindowRoundedCorners();
+#endif
+
   } else if (delegate) {
     SetContentsView(delegate->TransferOwnershipOfContentsView());
-    SetInitialBoundsForFramelessWindow(bounds);
+    if (should_set_initial_bounds) {
+      SetInitialBoundsForFramelessWindow(bounds);
+    }
   }
 
   if (base::FeatureList::IsEnabled(features::kWidgetLayering)) {
@@ -623,7 +660,7 @@ void Widget::SetContentsView(View* view) {
   // containing window's bounds. Note that we call Layout directly rather than
   // calling the widget's size changed handler, since the RootView's bounds may
   // not have changed, which will cause the Layout not to be done otherwise.
-  root_view_->Layout();
+  root_view_->LayoutImmediately();
 }
 
 View* Widget::GetContentsView() {
@@ -656,6 +693,10 @@ void Widget::SetBounds(const gfx::Rect& bounds) {
 void Widget::SetSize(const gfx::Size& size) {
   if (native_widget_)
     native_widget_->SetSize(size);
+}
+
+gfx::Size Widget::GetSize() const {
+  return GetRestoredBounds().size();
 }
 
 void Widget::CenterWindow(const gfx::Size& size) {
@@ -812,9 +853,7 @@ void Widget::Show() {
         !initial_restored_bounds_.IsEmpty() && !IsFullscreen()) {
       native_widget_->Show(ui::SHOW_STATE_MAXIMIZED, initial_restored_bounds_);
     } else {
-      native_widget_->Show(
-          IsFullscreen() ? ui::SHOW_STATE_FULLSCREEN : saved_show_state_,
-          gfx::Rect());
+      native_widget_->Show(saved_show_state_, gfx::Rect());
     }
     // |saved_show_state_| only applies the first time the window is shown.
     // If we don't reset the value the window may be shown maximized every time
@@ -863,6 +902,10 @@ void Widget::Deactivate() {
 
 bool Widget::IsActive() const {
   return native_widget_ ? native_widget_->IsActive() : false;
+}
+
+bool Widget::ShouldViewsStyleFollowWidgetActivation() const {
+  return CanActivate();
 }
 
 void Widget::SetZOrderLevel(ui::ZOrderLevel order) {
@@ -939,7 +982,15 @@ void Widget::SetFullscreen(bool fullscreen, int64_t target_display_id) {
 }
 
 bool Widget::IsFullscreen() const {
-  return native_widget_ ? native_widget_->IsFullscreen() : false;
+  if (native_widget_ && native_widget_->IsFullscreen()) {
+    return true;
+  }
+  // Some widgets are logically the same window as their parent, and thus their
+  // parent must also be checked for fullscreen.
+  if (parent() && check_parent_for_fullscreen_) {
+    return parent()->IsFullscreen();
+  }
+  return false;
 }
 
 void Widget::SetCanAppearInExistingFullscreenSpaces(
@@ -1300,11 +1351,6 @@ void Widget::SynthesizeMouseMoveEvent() {
   root_view_->OnMouseMoved(mouse_event);
 }
 
-bool Widget::IsTranslucentWindowOpacitySupported() const {
-  return native_widget_ ? native_widget_->IsTranslucentWindowOpacitySupported()
-                        : false;
-}
-
 ui::GestureRecognizer* Widget::GetGestureRecognizer() {
   return native_widget_ ? native_widget_->GetGestureRecognizer() : nullptr;
 }
@@ -1314,10 +1360,17 @@ ui::GestureConsumer* Widget::GetGestureConsumer() {
 }
 
 void Widget::OnSizeConstraintsChanged() {
-  if (native_widget_)
+  if (native_widget_) {
     native_widget_->OnSizeConstraintsChanged();
-  if (non_client_view_)
+  }
+
+  if (non_client_view_) {
     non_client_view_->SizeConstraintsChanged();
+  }
+
+  for (WidgetObserver& observer : observers_) {
+    observer.OnWidgetSizeConstraintsChanged(this);
+  }
 }
 
 void Widget::OnOwnerClosing() {}
@@ -1588,17 +1641,9 @@ void Widget::OnNativeWidgetDestroying() {
 void Widget::OnNativeWidgetDestroyed() {
   for (WidgetObserver& observer : observers_)
     observer.OnWidgetDestroyed(this);
-  // TODO(kylixrd): Remove the references to owned_by_widget once widgets cease
-  // being able to "own" the delegate.
+
   if (widget_delegate_) {
-    if (widget_delegate_->owned_by_widget()) {
-      widget_delegate_->DeleteDelegate();
-      widget_delegate_->can_delete_this_ = true;
-      owned_widget_delegate_.reset();
-    } else {
-      widget_delegate_->can_delete_this_ = true;
-      widget_delegate_->DeleteDelegate();
-    }
+    widget_delegate_->DeleteDelegate();
   }
   // Immediately reset the weak ptr. If NATIVE_WIDGET_OWNS_WIDGET destruction of
   // the NativeWidget can destroy the Widget. We don't want to touch the
@@ -1651,6 +1696,10 @@ void Widget::OnNativeWidgetWorkspaceChanged() {}
 
 void Widget::OnNativeWidgetWindowShowStateChanged() {
   SaveWindowPlacementIfInitialized();
+
+  for (WidgetObserver& observer : observers_) {
+    observer.OnWidgetShowStateChanged(this);
+  }
 }
 
 void Widget::OnNativeWidgetBeginUserBoundsChange() {
@@ -1757,8 +1806,9 @@ void Widget::OnMouseEvent(ui::MouseEvent* event) {
           // process it.
           (event->flags() &
            (ui::EF_LEFT_MOUSE_BUTTON | ui::EF_MIDDLE_MOUSE_BUTTON |
-            ui::EF_RIGHT_MOUSE_BUTTON)) != 0)
+            ui::EF_RIGHT_MOUSE_BUTTON)) != 0) {
         event->SetHandled();
+      }
       return;
 
     case ui::ET_MOUSE_MOVED:
@@ -1773,6 +1823,13 @@ void Widget::OnMouseEvent(ui::MouseEvent* event) {
         last_mouse_event_was_move_ = true;
         if (root_view)
           root_view->OnMouseMoved(*event);
+      }
+      return;
+
+    case ui::ET_MOUSE_ENTERED:
+      last_mouse_event_was_move_ = false;
+      if (root_view) {
+        root_view->OnMouseEntered(*event);
       }
       return;
 
@@ -1929,8 +1986,12 @@ bool Widget::ShouldDescendIntoChildForEventHandling(
 }
 
 void Widget::LayoutRootViewIfNecessary() {
-  if (root_view_ && root_view_->needs_layout())
-    root_view_->Layout();
+  if (root_view_ && root_view_->needs_layout()) {
+    // Widget name is only collected in local traces.
+    TRACE_EVENT1("ui", "Widget::LayoutRootViewIfNecessary", "widget name",
+                 GetName());
+    root_view_->LayoutImmediately();
+  }
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -1967,7 +2028,7 @@ void Widget::OnNativeThemeUpdated(ui::NativeTheme* observed_theme) {
 }
 
 void Widget::SetColorModeOverride(
-    absl::optional<ui::ColorProviderKey::ColorMode> color_mode) {
+    std::optional<ui::ColorProviderKey::ColorMode> color_mode) {
   color_mode_override_ = color_mode;
 }
 
@@ -1999,6 +2060,26 @@ ui::ColorProviderKey Widget::GetColorProviderKey() const {
 const ui::ColorProvider* Widget::GetColorProvider() const {
   return ui::ColorProviderManager::Get().GetColorProviderFor(
       GetColorProviderKey());
+}
+
+const ui::RendererColorMap Widget::GetRendererColorMap(
+    ui::ColorProviderKey::ColorMode color_mode,
+    ui::ColorProviderKey::ForcedColors forced_colors) const {
+  auto key = GetColorProviderKey();
+  key.color_mode = color_mode;
+  key.forced_colors = forced_colors;
+  ui::ColorProvider* color_provider =
+      ui::ColorProviderManager::Get().GetColorProviderFor(key);
+  CHECK(color_provider);
+  return ui::CreateRendererColorMap(*color_provider);
+}
+
+ui::ColorProviderKey Widget::GetColorProviderKeyForTesting() const {
+  return GetColorProviderKey();
+}
+
+void Widget::SetCheckParentForFullscreen() {
+  check_parent_for_fullscreen_ = true;
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -2208,6 +2289,7 @@ ADD_PROPERTY_METADATA(int, Width)
 ADD_PROPERTY_METADATA(int, Height)
 ADD_PROPERTY_METADATA(bool, Visible)
 ADD_PROPERTY_METADATA(ui::ZOrderLevel, ZOrderLevel)
+ADD_PROPERTY_METADATA(gfx::Size, Size)
 END_METADATA
 
 namespace internal {

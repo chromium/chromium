@@ -87,7 +87,7 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_SMBFS) SmbFsHost {
                                smbfs::mojom::DeleteRecursivelyError error);
 
   const std::unique_ptr<ash::disks::MountPoint> mount_point_;
-  const raw_ptr<Delegate, ExperimentalAsh> delegate_;
+  const raw_ptr<Delegate> delegate_;
 
   mojo::Remote<mojom::SmbFs> smbfs_;
   std::unique_ptr<mojom::SmbFsDelegate> delegate_impl_;

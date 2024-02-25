@@ -4,16 +4,13 @@
 
 package org.chromium.chrome.browser.bookmarks;
 
-import android.view.View;
-
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 
-/** Responsible for hosting properties of BookmarkToolbar views. */
+/** Responsible for binding properties to BookmarkToolbar views. */
 class BookmarkToolbarViewBinder {
     /** Binds the given property to the given model for the given view. */
-    public static void bind(PropertyModel model, View view, PropertyKey key) {
-        BookmarkToolbar bookmarkToolbar = (BookmarkToolbar) view;
+    public static void bind(PropertyModel model, BookmarkToolbar bookmarkToolbar, PropertyKey key) {
         if (key == BookmarkToolbarProperties.BOOKMARK_MODEL) {
             bookmarkToolbar.setBookmarkModel(model.get(BookmarkToolbarProperties.BOOKMARK_MODEL));
         } else if (key == BookmarkToolbarProperties.BOOKMARK_OPENER) {
@@ -27,8 +24,9 @@ class BookmarkToolbarViewBinder {
         } else if (key == BookmarkToolbarProperties.TITLE) {
             bookmarkToolbar.setTitle(model.get(BookmarkToolbarProperties.TITLE));
         } else if (key == BookmarkToolbarProperties.SOFT_KEYBOARD_VISIBLE) {
-            bookmarkToolbar.setSoftKeyboardVisible(Boolean.TRUE.equals(
-                    model.get(BookmarkToolbarProperties.SOFT_KEYBOARD_VISIBLE)));
+            bookmarkToolbar.setSoftKeyboardVisible(
+                    Boolean.TRUE.equals(
+                            model.get(BookmarkToolbarProperties.SOFT_KEYBOARD_VISIBLE)));
         } else if (key == BookmarkToolbarProperties.IS_DIALOG_UI) {
             bookmarkToolbar.setIsDialogUi(model.get(BookmarkToolbarProperties.IS_DIALOG_UI));
         } else if (key == BookmarkToolbarProperties.DRAG_ENABLED) {
@@ -48,6 +46,11 @@ class BookmarkToolbarViewBinder {
         } else if (key == BookmarkToolbarProperties.NAVIGATION_BUTTON_STATE) {
             bookmarkToolbar.setNavigationButtonState(
                     model.get(BookmarkToolbarProperties.NAVIGATION_BUTTON_STATE));
+        } else if (key == BookmarkToolbarProperties.SORT_MENU_IDS) {
+            bookmarkToolbar.setSortMenuIds(model.get(BookmarkToolbarProperties.SORT_MENU_IDS));
+        } else if (key == BookmarkToolbarProperties.SORT_MENU_IDS_ENABLED) {
+            bookmarkToolbar.setSortMenuIdsEnabled(
+                    model.get(BookmarkToolbarProperties.SORT_MENU_IDS_ENABLED));
         } else if (key == BookmarkToolbarProperties.CHECKED_SORT_MENU_ID) {
             bookmarkToolbar.setCheckedSortMenuId(
                     model.get(BookmarkToolbarProperties.CHECKED_SORT_MENU_ID));

@@ -19,7 +19,7 @@ using MultiStoreCredentialStoreTest = PlatformTest;
 
 ArchivableCredential* TestCredential(NSString* user) {
   return [[ArchivableCredential alloc] initWithFavicon:@"favicon"
-                                    keychainIdentifier:@"keychainIdentifier"
+                                              password:@"qwerty123"
                                                   rank:5
                                       recordIdentifier:@"recordIdentifier"
                                      serviceIdentifier:@"serviceIdentifier"

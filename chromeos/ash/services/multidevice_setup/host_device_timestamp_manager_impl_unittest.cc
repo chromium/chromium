@@ -18,7 +18,8 @@ namespace ash {
 namespace multidevice_setup {
 
 namespace {
-const base::Time kTestTime = base::Time::FromJavaTime(1500000000000);
+const base::Time kTestTime =
+    base::Time::FromMillisecondsSinceUnixEpoch(1500000000000);
 const base::Time kLaterTime = kTestTime + base::Milliseconds(123456789);
 }  // namespace
 
@@ -54,7 +55,7 @@ class HostDeviceTimestampManagerImplTest : public testing::Test {
     if (host_status == mojom::HostStatus::kNoEligibleHosts ||
         host_status == mojom::HostStatus::kEligibleHostExistsButNoHostSet) {
       fake_host_status_provider_->SetHostWithStatus(
-          host_status, absl::nullopt /* host_device */);
+          host_status, std::nullopt /* host_device */);
       return;
     }
     fake_host_status_provider_->SetHostWithStatus(

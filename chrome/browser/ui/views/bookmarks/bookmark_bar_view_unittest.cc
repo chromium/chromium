@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/views/bookmarks/bookmark_bar_view.h"
 
 #include <memory>
+#include <optional>
 
 #include "base/functional/bind.h"
 #include "base/memory/ptr_util.h"
@@ -20,6 +21,7 @@
 #include "chrome/browser/bookmarks/managed_bookmark_service_factory.h"
 #include "chrome/browser/favicon/favicon_utils.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/search_engine_choice/search_engine_choice_service_factory.h"
 #include "chrome/browser/search_engines/template_url_service_factory.h"
 #include "chrome/browser/ui/app_list/app_list_util.h"
 #include "chrome/browser/ui/bookmarks/bookmark_utils.h"
@@ -38,11 +40,11 @@
 #include "components/bookmarks/common/bookmark_pref_names.h"
 #include "components/bookmarks/test/bookmark_test_helpers.h"
 #include "components/prefs/pref_service.h"
+#include "components/search_engines/search_engine_choice/search_engine_choice_service.h"
 #include "components/search_engines/search_terms_data.h"
 #include "components/search_engines/template_url_service.h"
 #include "components/search_engines/template_url_service_client.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/dragdrop/drag_drop_types.h"
 #include "ui/base/dragdrop/mojom/drag_drop_types.mojom.h"
 #include "ui/compositor/layer_tree_owner.h"
@@ -61,7 +63,12 @@ namespace {
 class BookmarkBarViewBaseTest : public ChromeViewsTestBase {
  public:
   BookmarkBarViewBaseTest() {
+    feature_list_.InitAndEnableFeature(features::kTabGroupsSave);
+
     TestingProfile::Builder profile_builder;
+    profile_builder.AddTestingFactory(
+        search_engines::SearchEngineChoiceServiceFactory::GetInstance(),
+        search_engines::SearchEngineChoiceServiceFactory::GetDefaultFactory());
     profile_builder.AddTestingFactory(
         TemplateURLServiceFactory::GetInstance(),
         base::BindRepeating(
@@ -151,12 +158,21 @@ class BookmarkBarViewBaseTest : public ChromeViewsTestBase {
 
  private:
   static std::unique_ptr<KeyedService> CreateTemplateURLService(
-      content::BrowserContext* profile) {
+      content::BrowserContext* context) {
+    Profile* profile = Profile::FromBrowserContext(context);
+    search_engines::SearchEngineChoiceService* search_engine_choice_service =
+        search_engines::SearchEngineChoiceServiceFactory::GetForProfile(
+            profile);
     return std::make_unique<TemplateURLService>(
-        static_cast<Profile*>(profile)->GetPrefs(),
+        profile->GetPrefs(), search_engine_choice_service,
         std::make_unique<SearchTermsData>(),
         nullptr /* KeywordWebDataService */,
-        nullptr /* TemplateURLServiceClient */, base::RepeatingClosure());
+        nullptr /* TemplateURLServiceClient */, base::RepeatingClosure()
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+                                                    ,
+        profile->IsMainProfile()
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
+    );
   }
 };
 
@@ -544,21 +560,22 @@ TEST_F(BookmarkBarViewTest, OnSavedTabGroupUpdateBookmarkBarCallsLayout) {
   // Add 3 saved tab groups.
   keyed_service->model()->Add(SavedTabGroup(std::u16string(u"tab group 1"),
                                             tab_groups::TabGroupColorId::kGrey,
-                                            {}, absl::nullopt));
+                                            {}, std::nullopt));
 
   base::Uuid button_2_id = base::Uuid::GenerateRandomV4();
   keyed_service->model()->Add(SavedTabGroup(std::u16string(u"tab group 2"),
                                             tab_groups::TabGroupColorId::kGrey,
-                                            {}, absl::nullopt, button_2_id));
+                                            {}, std::nullopt, button_2_id));
 
   keyed_service->model()->Add(SavedTabGroup(std::u16string(u"tab group 3"),
                                             tab_groups::TabGroupColorId::kGrey,
-                                            {}, absl::nullopt));
+                                            {}, std::nullopt));
 
   // Save the position of the 3rd button. The 4th button is an overflow menu
   // that is only visible when there are more than 4 groups saved.
   ASSERT_EQ(4u, test_helper_->saved_tab_group_bar()->children().size());
-  const auto* button_3 = test_helper_->saved_tab_group_bar()->children()[2];
+  const auto* button_3 =
+      test_helper_->saved_tab_group_bar()->children()[2].get();
   gfx::Rect bounds_in_screen = button_3->GetBoundsInScreen();
 
   // Remove the middle tab group.

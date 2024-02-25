@@ -5,9 +5,7 @@
 #ifndef CHROME_BROWSER_PRIVATE_NETWORK_ACCESS_CHROME_PRIVATE_NETWORK_DEVICE_CHOOSER_H_
 #define CHROME_BROWSER_PRIVATE_NETWORK_ACCESS_CHROME_PRIVATE_NETWORK_DEVICE_CHOOSER_H_
 
-#include <string>
-
-#include "base/functional/callback.h"
+#include <memory>
 
 namespace content {
 class RenderFrameHost;
@@ -28,9 +26,9 @@ class ChromePrivateNetworkDeviceChooser {
  protected:
   ChromePrivateNetworkDeviceChooser();
 
-  void ShowChooser(
+  virtual void ShowChooser(
       content::RenderFrameHost* render_frame_host,
-      std::unique_ptr<PrivateNetworkDeviceChooserController> controller);
+      std::unique_ptr<PrivateNetworkDeviceChooserController> controller) = 0;
 };
 
 #endif  // CHROME_BROWSER_PRIVATE_NETWORK_ACCESS_CHROME_PRIVATE_NETWORK_DEVICE_CHOOSER_H_

@@ -4,6 +4,7 @@
 
 #include "components/os_crypt/async/common/encryptor.h"
 
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -16,7 +17,6 @@
 #include "crypto/aead.h"
 #include "crypto/random.h"
 #include "mojo/public/cpp/bindings/default_construct_tag.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace os_crypt_async {
 
@@ -89,7 +89,7 @@ std::vector<uint8_t> Encryptor::Key::Encrypt(
   LOG(FATAL) << "Unsupported algorithm" << static_cast<int>(*algorithm_);
 }
 
-absl::optional<std::vector<uint8_t>> Encryptor::Key::Decrypt(
+std::optional<std::vector<uint8_t>> Encryptor::Key::Decrypt(
     base::span<const uint8_t> ciphertext) const {
   if (!algorithm_.has_value()) {
     NOTREACHED_NORETURN();
@@ -97,13 +97,13 @@ absl::optional<std::vector<uint8_t>> Encryptor::Key::Decrypt(
   switch (*algorithm_) {
     case mojom::Algorithm::kAES256GCM: {
       if (ciphertext.size() < kNonceLength) {
-        return absl::nullopt;
+        return std::nullopt;
       }
       crypto::Aead aead(crypto::Aead::AES_256_GCM);
       aead.Init(key_);
 
       // The nonce is at the start of the ciphertext and must be removed.
-      auto nonce = ciphertext.subspan(0, kNonceLength);
+      auto nonce = ciphertext.first(kNonceLength);
       auto data = ciphertext.subspan(kNonceLength);
 
       return aead.Open(data, nonce, /*additional_data=*/{});
@@ -138,7 +138,7 @@ bool Encryptor::DecryptString(const std::string& ciphertext,
   return true;
 }
 
-absl::optional<std::vector<uint8_t>> Encryptor::EncryptString(
+std::optional<std::vector<uint8_t>> Encryptor::EncryptString(
     const std::string& data) const {
   if (data.empty()) {
     return std::vector<uint8_t>();
@@ -153,7 +153,7 @@ absl::optional<std::vector<uint8_t>> Encryptor::EncryptString(
     if (OSCrypt::EncryptString(data, &ciphertext)) {
       return std::vector<uint8_t>(ciphertext.cbegin(), ciphertext.cend());
     }
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   const auto& [provider, key] = *it;
@@ -166,7 +166,7 @@ absl::optional<std::vector<uint8_t>> Encryptor::EncryptString(
   return ciphertext;
 }
 
-absl::optional<std::string> Encryptor::DecryptData(
+std::optional<std::string> Encryptor::DecryptData(
     base::span<const uint8_t> data) const {
   if (data.empty()) {
     return std::string();
@@ -195,7 +195,7 @@ absl::optional<std::string> Encryptor::DecryptData(
     return plaintext;
   }
 
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 Encryptor Encryptor::Clone() const {

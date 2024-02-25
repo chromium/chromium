@@ -34,7 +34,7 @@ void JNI_TestSupport_InvokeCallbackFunction(JNIEnv* env, jlong context) {
 }
 
 FunctionAddressRange callWithJavaFunction(OnceClosure closure) {
-  JNIEnv* env = base::android::AttachCurrentThread();
+  JNIEnv* env = jni_zero::AttachCurrentThread();
   UnwinderJavaTestSupportParams params{std::move(closure), {}};
   base::Java_TestSupport_callWithJavaFunction(
       env, reinterpret_cast<uintptr_t>(&params));

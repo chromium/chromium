@@ -2,9 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "content/browser/webid/federated_auth_request_impl.h"
-
 #include <memory>
+#include <optional>
 #include <ostream>
 #include <set>
 #include <string>
@@ -19,6 +18,7 @@
 #include "base/test/task_environment.h"
 #include "components/ukm/test_ukm_recorder.h"
 #include "content/browser/web_contents/web_contents_impl.h"
+#include "content/browser/webid/federated_auth_request_impl.h"
 #include "content/browser/webid/test/federated_auth_request_request_token_callback_helper.h"
 #include "content/browser/webid/test/mock_api_permission_delegate.h"
 #include "content/browser/webid/test/mock_auto_reauthn_permission_delegate.h"
@@ -38,7 +38,6 @@
 #include "net/http/http_status_code.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/mojom/webid/federated_auth_request.mojom.h"
 #include "ui/base/page_transition_types.h"
 #include "url/gurl.h"
@@ -64,6 +63,7 @@ constexpr char kProviderUrlFull[] = "https://idp.example/fedcm.json";
 constexpr char kTopFrameUrl[] = "https://top-frame.example/";
 constexpr char kAccountsEndpoint[] = "https://idp.example/accounts";
 constexpr char kTokenEndpoint[] = "https://idp.example/token";
+constexpr char kLoginUrl[] = "https://idp.example/login";
 constexpr char kClientId[] = "client_id_123";
 constexpr char kNonce[] = "nonce123";
 constexpr char kAccountId[] = "1234";
@@ -76,7 +76,7 @@ static const std::vector<IdentityRequestAccount> kAccounts{{
     "Ken",                       // given_name
     GURL(),                      // picture
     std::vector<std::string>(),  // login_hints
-    std::vector<std::string>()   // hosted_domains
+    std::vector<std::string>()   // domain_hints
 }};
 
 // IdpNetworkRequestManager which returns valid data from IdP.
@@ -84,14 +84,17 @@ class TestIdpNetworkRequestManager : public MockIdpNetworkRequestManager {
  public:
   void FetchWellKnown(const GURL& provider,
                       FetchWellKnownCallback callback) override {
+    IdpNetworkRequestManager::WellKnown well_known;
     std::set<GURL> well_known_configs;
     well_known_configs.insert(GURL(kProviderUrlFull));
+    well_known.provider_urls = std::move(well_known_configs);
     base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-        FROM_HERE, base::BindOnce(std::move(callback), kFetchStatusSuccess,
-                                  well_known_configs));
+        FROM_HERE,
+        base::BindOnce(std::move(callback), kFetchStatusSuccess, well_known));
   }
 
   void FetchConfig(const GURL& provider,
+                   blink::mojom::RpMode rp_mode,
                    int idp_brand_icon_ideal_size,
                    int idp_brand_icon_minimum_size,
                    FetchConfigCallback callback) override {
@@ -99,9 +102,12 @@ class TestIdpNetworkRequestManager : public MockIdpNetworkRequestManager {
     endpoints.token = GURL(kTokenEndpoint);
     endpoints.accounts = GURL(kAccountsEndpoint);
 
+    IdentityProviderMetadata idp_metadata;
+    idp_metadata.idp_login_url = GURL(kLoginUrl);
+
     base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, base::BindOnce(std::move(callback), kFetchStatusSuccess,
-                                  endpoints, IdentityProviderMetadata()));
+                                  endpoints, idp_metadata));
   }
 
   void SendAccountsRequest(const GURL& accounts_url,
@@ -112,14 +118,18 @@ class TestIdpNetworkRequestManager : public MockIdpNetworkRequestManager {
         base::BindOnce(std::move(callback), kFetchStatusSuccess, kAccounts));
   }
 
-  void SendTokenRequest(const GURL& token_url,
-                        const std::string& account,
-                        const std::string& url_encoded_post_data,
-                        TokenRequestCallback callback,
-                        ContinueOnCallback continue_on) override {
+  void SendTokenRequest(
+      const GURL& token_url,
+      const std::string& account,
+      const std::string& url_encoded_post_data,
+      TokenRequestCallback callback,
+      ContinueOnCallback continue_on,
+      RecordErrorMetricsCallback record_error_metrics_callback) override {
+    TokenResult result;
+    result.token = kToken;
     base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE,
-        base::BindOnce(std::move(callback), kFetchStatusSuccess, kToken));
+        base::BindOnce(std::move(callback), kFetchStatusSuccess, result));
   }
 
  private:
@@ -133,7 +143,7 @@ class TestDialogController
   struct State {
     bool did_show_accounts_dialog{false};
     std::string top_frame_for_display;
-    absl::optional<std::string> iframe_for_display;
+    std::optional<std::string> iframe_for_display;
   };
 
   enum class AccountsDialogAction {
@@ -152,13 +162,16 @@ class TestDialogController
 
   void ShowAccountsDialog(
       const std::string& top_frame_for_display,
-      const absl::optional<std::string>& iframe_for_display,
+      const std::optional<std::string>& iframe_for_display,
       const std::vector<IdentityProviderData>& identity_provider_data,
       IdentityRequestAccount::SignInMode sign_in_mode,
-      bool show_auto_reauthn_checkbox,
+      blink::mojom::RpMode rp_mode,
+      const std::optional<content::IdentityProviderData>& new_account_idp,
       IdentityRequestDialogController::AccountSelectionCallback on_selected,
-      IdentityRequestDialogController::DismissCallback dismiss_callback)
-      override {
+      IdentityRequestDialogController::LoginToIdPCallback on_add_account,
+      IdentityRequestDialogController::DismissCallback dismiss_callback,
+      IdentityRequestDialogController::AccountsDisplayedCallback
+          accounts_displayed_callback) override {
     state_->did_show_accounts_dialog = true;
     state_->top_frame_for_display = top_frame_for_display;
     state_->iframe_for_display = iframe_for_display;
@@ -213,7 +226,7 @@ class FederatedAuthRequestImplMultipleFramesTest
         std::make_unique<TestFederatedIdentityModalDialogViewDelegate>();
     mock_identity_registry_ = std::make_unique<NiceMock<MockIdentityRegistry>>(
         web_contents(), test_modal_dialog_view_delegate_->GetWeakPtr(),
-        url::Origin::Create(GURL(kIdpUrl)));
+        GURL(kIdpUrl));
 
     static_cast<TestWebContents*>(web_contents())
         ->NavigateAndCommit(GURL(kTopFrameUrl), ui::PAGE_TRANSITION_LINK);
@@ -254,8 +267,6 @@ class FederatedAuthRequestImplMultipleFramesTest
                                                dialog_controller_state));
     federated_auth_request_impl->SetNetworkManagerForTests(
         std::make_unique<TestIdpNetworkRequestManager>());
-    federated_auth_request_impl->SetTokenRequestDelayForTests(
-        base::TimeDelta());
     return federated_auth_request_impl;
   }
 
@@ -265,14 +276,15 @@ class FederatedAuthRequestImplMultipleFramesTest
     auto config_ptr = blink::mojom::IdentityProviderConfig::New();
     config_ptr->config_url = GURL(kProviderUrlFull);
     config_ptr->client_id = kClientId;
-    config_ptr->nonce = kNonce;
-    std::vector<blink::mojom::IdentityProviderPtr> idp_ptrs;
-    blink::mojom::IdentityProviderPtr idp_ptr =
-        blink::mojom::IdentityProvider::NewFederated(std::move(config_ptr));
-    idp_ptrs.push_back(std::move(idp_ptr));
+    auto federated = blink::mojom::IdentityProviderRequestOptions::New();
+    federated->config = std::move(config_ptr);
+    federated->nonce = kNonce;
+    std::vector<blink::mojom::IdentityProviderRequestOptionsPtr> idp_ptrs;
+    idp_ptrs.push_back(std::move(federated));
     auto get_params = blink::mojom::IdentityProviderGetParameters::New(
         std::move(idp_ptrs),
-        /*rp_context=*/blink::mojom::RpContext::kSignIn);
+        /*rp_context=*/blink::mojom::RpContext::kSignIn,
+        /*rp_mode=*/blink::mojom::RpMode::kWidget);
     std::vector<blink::mojom::IdentityProviderGetParametersPtr> idp_get_params;
     idp_get_params.push_back(std::move(get_params));
 
@@ -361,7 +373,7 @@ TEST_F(FederatedAuthRequestImplMultipleFramesTest, SameOriginIframe) {
   EXPECT_EQ(RequestTokenStatus::kSuccess, iframe_callback_helper.status());
   EXPECT_TRUE(iframe_dialog_state.did_show_accounts_dialog);
   EXPECT_EQ("top-frame.example", iframe_dialog_state.top_frame_for_display);
-  EXPECT_EQ(absl::nullopt, iframe_dialog_state.iframe_for_display);
+  EXPECT_EQ(std::nullopt, iframe_dialog_state.iframe_for_display);
 }
 
 // Test that only top frame URL is available for display when FedCM is called
@@ -387,7 +399,7 @@ TEST_F(FederatedAuthRequestImplMultipleFramesTest, SameSiteIframe) {
   EXPECT_EQ(RequestTokenStatus::kSuccess, iframe_callback_helper.status());
   EXPECT_TRUE(iframe_dialog_state.did_show_accounts_dialog);
   EXPECT_EQ("top-frame.example", iframe_dialog_state.top_frame_for_display);
-  EXPECT_EQ(absl::nullopt, iframe_dialog_state.iframe_for_display);
+  EXPECT_EQ(std::nullopt, iframe_dialog_state.iframe_for_display);
 }
 
 // Test that both top frame and iframe URLs are available for display when FedCM
@@ -453,7 +465,7 @@ TEST_F(FederatedAuthRequestImplMultipleFramesTest,
 
   auto entries = ukm_recorder_->GetEntriesByName(FedCmEntry::kEntryName);
   ASSERT_FALSE(entries.empty());
-  for (const auto* entry : entries) {
+  for (const ukm::mojom::UkmEntry* entry : entries) {
     const int64_t* metric =
         ukm_recorder_->GetEntryMetric(entry, "PreventSilentAccessFrameType");
     EXPECT_FALSE(metric);
@@ -494,13 +506,12 @@ TEST_F(FederatedAuthRequestImplMultipleFramesTest,
   auto entries = ukm_recorder_->GetEntriesByName(FedCmEntry::kEntryName);
   ASSERT_FALSE(entries.empty());
   bool metric_found = false;
-  for (const auto* entry : entries) {
+  for (const ukm::mojom::UkmEntry* entry : entries) {
     const int64_t* metric =
         ukm_recorder_->GetEntryMetric(entry, "PreventSilentAccessFrameType");
     if (metric) {
       metric_found = true;
-      EXPECT_EQ(*metric,
-                static_cast<int>(PreventSilentAccessFrameType::kMainFrame));
+      EXPECT_EQ(*metric, static_cast<int>(FedCmRequesterFrameType::kMainFrame));
     }
   }
   EXPECT_TRUE(metric_found);
@@ -540,13 +551,13 @@ TEST_F(FederatedAuthRequestImplMultipleFramesTest,
   auto entries = ukm_recorder_->GetEntriesByName(FedCmEntry::kEntryName);
   ASSERT_FALSE(entries.empty());
   bool metric_found = false;
-  for (const auto* entry : entries) {
+  for (const ukm::mojom::UkmEntry* entry : entries) {
     const int64_t* metric =
         ukm_recorder_->GetEntryMetric(entry, "PreventSilentAccessFrameType");
     if (metric) {
       metric_found = true;
-      EXPECT_EQ(*metric, static_cast<int>(
-                             PreventSilentAccessFrameType::kSameSiteIframe));
+      EXPECT_EQ(*metric,
+                static_cast<int>(FedCmRequesterFrameType::kSameSiteIframe));
     }
   }
   EXPECT_TRUE(metric_found);
@@ -585,13 +596,13 @@ TEST_F(FederatedAuthRequestImplMultipleFramesTest,
   auto entries = ukm_recorder_->GetEntriesByName(FedCmEntry::kEntryName);
   ASSERT_FALSE(entries.empty());
   bool metric_found = false;
-  for (const auto* entry : entries) {
+  for (const ukm::mojom::UkmEntry* entry : entries) {
     const int64_t* metric =
         ukm_recorder_->GetEntryMetric(entry, "PreventSilentAccessFrameType");
     if (metric) {
       metric_found = true;
-      EXPECT_EQ(*metric, static_cast<int>(
-                             PreventSilentAccessFrameType::kCrossSiteIframe));
+      EXPECT_EQ(*metric,
+                static_cast<int>(FedCmRequesterFrameType::kCrossSiteIframe));
     }
   }
   EXPECT_TRUE(metric_found);

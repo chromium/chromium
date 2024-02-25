@@ -1,3 +1,0 @@
-Test	http://www.w3.org/2001/DOM-Test-Suite/level2/html/HTMLElement59
-Status	failure
-Message	langLink: assertEquals failed, actual , expected en.

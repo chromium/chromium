@@ -68,8 +68,13 @@ public class PaymentRequestHeader extends FrameLayout {
                 !ColorUtils.shouldUseLightForegroundOnBackground(mBackgroundColor);
         ChromeAutocompleteSchemeClassifier chromeAutocompleteSchemeClassifier =
                 new ChromeAutocompleteSchemeClassifier(profile);
-        OmniboxUrlEmphasizer.emphasizeUrl(url, mContext, chromeAutocompleteSchemeClassifier,
-                securityLevel, useDarkColors, true /* emphasizeHttpsScheme */);
+        OmniboxUrlEmphasizer.emphasizeUrl(
+                url,
+                mContext,
+                chromeAutocompleteSchemeClassifier,
+                securityLevel,
+                useDarkColors,
+                /* emphasizeHttpsScheme= */ true);
         chromeAutocompleteSchemeClassifier.destroy();
         hostName.setText(url);
 
@@ -78,7 +83,9 @@ public class PaymentRequestHeader extends FrameLayout {
             hostName.setCompoundDrawablesRelativeWithIntrinsicBounds(
                     TintedDrawable.constructTintedDrawable(
                             mContext, R.drawable.omnibox_https_valid, R.color.default_green),
-                    null, null, null);
+                    null,
+                    null,
+                    null);
 
             // Remove left padding to align left compound drawable with the title. Note that the
             // left compound drawable has transparent boundary.

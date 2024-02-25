@@ -28,6 +28,7 @@ origin_trials_pb::TrialTokenDbEntries ProtoFromTokens(
   for (const auto& token : tokens) {
     origin_trials_pb::TrialTokenDbEntry* proto = entries.add_tokens();
     proto->set_trial_name(token.trial_name);
+    proto->set_match_subdomains(token.match_subdomains);
     proto->set_token_expiry(
         origin_trials_pb::SerializeTime(token.token_expiry));
     proto->set_token_signature(token.token_signature);

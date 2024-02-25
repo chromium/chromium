@@ -182,9 +182,18 @@ public class TabletCaptureStateTokenTest {
         }
 
         TabletCaptureStateToken build() {
-            return new TabletCaptureStateToken(mHomeButton, mBackwardButton, mForwardButton,
-                    mReloadButton, mSecurityIcon, mVisibleUrlText, mBookmarkButton,
-                    mBookmarkIconRes, mOptionalButton, mTabCount, mViewWidth);
+            return new TabletCaptureStateToken(
+                    mHomeButton,
+                    mBackwardButton,
+                    mForwardButton,
+                    mReloadButton,
+                    mSecurityIcon,
+                    mVisibleUrlText,
+                    mBookmarkButton,
+                    mBookmarkIconRes,
+                    mOptionalButton,
+                    mTabCount,
+                    mViewWidth);
         }
     }
 
@@ -203,61 +212,71 @@ public class TabletCaptureStateTokenTest {
 
     @Test
     public void testDifferentHomeButton() {
-        ImageButton button = new MockImageButtonBuilder()
-                                     .withDrawable(DEFAULT_HOME_BUTTON_DRAWABLE)
-                                     .withVisibility(View.INVISIBLE)
-                                     .build();
+        ImageButton button =
+                new MockImageButtonBuilder()
+                        .withDrawable(DEFAULT_HOME_BUTTON_DRAWABLE)
+                        .withVisibility(View.INVISIBLE)
+                        .build();
         TabletCaptureStateToken tabletToken =
                 new TabletCaptureStateTokenBuilder().withHomeButton(button).build();
-        Assert.assertEquals(ToolbarSnapshotDifference.HOME_BUTTON,
+        Assert.assertEquals(
+                ToolbarSnapshotDifference.HOME_BUTTON,
                 tabletToken.getAnyDifference(mDefaultTabletToken));
     }
 
     @Test
     public void testDifferentBackButton() {
-        ImageButton button = new MockImageButtonBuilder()
-                                     .withDrawable(DEFAULT_BACKWARD_BUTTON_DRAWABLE)
-                                     .withIsEnabled(false)
-                                     .build();
+        ImageButton button =
+                new MockImageButtonBuilder()
+                        .withDrawable(DEFAULT_BACKWARD_BUTTON_DRAWABLE)
+                        .withIsEnabled(false)
+                        .build();
         TabletCaptureStateToken tabletToken =
                 new TabletCaptureStateTokenBuilder().withBackwardButton(button).build();
-        Assert.assertEquals(ToolbarSnapshotDifference.BACK_BUTTON,
+        Assert.assertEquals(
+                ToolbarSnapshotDifference.BACK_BUTTON,
                 tabletToken.getAnyDifference(mDefaultTabletToken));
     }
 
     @Test
     public void testDifferentForwardButton() {
-        ImageButton button = new MockImageButtonBuilder()
-                                     .withDrawable(DEFAULT_FORWARD_BUTTON_DRAWABLE)
-                                     .withIsEnabled(false)
-                                     .build();
+        ImageButton button =
+                new MockImageButtonBuilder()
+                        .withDrawable(DEFAULT_FORWARD_BUTTON_DRAWABLE)
+                        .withIsEnabled(false)
+                        .build();
         TabletCaptureStateToken tabletToken =
                 new TabletCaptureStateTokenBuilder().withForwardButton(button).build();
-        Assert.assertEquals(ToolbarSnapshotDifference.FORWARD_BUTTON,
+        Assert.assertEquals(
+                ToolbarSnapshotDifference.FORWARD_BUTTON,
                 tabletToken.getAnyDifference(mDefaultTabletToken));
     }
 
     @Test
     public void testDifferentReloadButton_Level() {
         TabletCaptureStateTokenBuilder tabletTokenBuilder = new TabletCaptureStateTokenBuilder();
-        ImageButton button = new MockImageButtonBuilder()
-                                     .withDrawable(DEFAULT_RELOAD_BUTTON_DRAWABLE)
-                                     .withLevel(5)
-                                     .build();
+        ImageButton button =
+                new MockImageButtonBuilder()
+                        .withDrawable(DEFAULT_RELOAD_BUTTON_DRAWABLE)
+                        .withLevel(5)
+                        .build();
         TabletCaptureStateToken tabletToken = tabletTokenBuilder.withReloadButton(button).build();
-        Assert.assertEquals(ToolbarSnapshotDifference.RELOAD_BUTTON,
+        Assert.assertEquals(
+                ToolbarSnapshotDifference.RELOAD_BUTTON,
                 tabletToken.getAnyDifference(mDefaultTabletToken));
     }
 
     @Test
     public void testDifferentReloadButton_Enabled() {
-        ImageButton button = new MockImageButtonBuilder()
-                                     .withDrawable(DEFAULT_RELOAD_BUTTON_DRAWABLE)
-                                     .withIsEnabled(false)
-                                     .build();
+        ImageButton button =
+                new MockImageButtonBuilder()
+                        .withDrawable(DEFAULT_RELOAD_BUTTON_DRAWABLE)
+                        .withIsEnabled(false)
+                        .build();
         TabletCaptureStateToken tabletToken =
                 new TabletCaptureStateTokenBuilder().withReloadButton(button).build();
-        Assert.assertEquals(ToolbarSnapshotDifference.RELOAD_BUTTON,
+        Assert.assertEquals(
+                ToolbarSnapshotDifference.RELOAD_BUTTON,
                 tabletToken.getAnyDifference(mDefaultTabletToken));
     }
 
@@ -265,7 +284,8 @@ public class TabletCaptureStateTokenTest {
     public void testDifferentSecurityIcon() {
         TabletCaptureStateToken tabletToken =
                 new TabletCaptureStateTokenBuilder().withSecurityIcon(123).build();
-        Assert.assertEquals(ToolbarSnapshotDifference.SECURITY_ICON,
+        Assert.assertEquals(
+                ToolbarSnapshotDifference.SECURITY_ICON,
                 tabletToken.getAnyDifference(mDefaultTabletToken));
     }
 
@@ -275,7 +295,8 @@ public class TabletCaptureStateTokenTest {
                 new TabletCaptureStateTokenBuilder()
                         .withVisibleUrlText(new VisibleUrlText("foo", "bar"))
                         .build();
-        Assert.assertEquals(ToolbarSnapshotDifference.URL_TEXT,
+        Assert.assertEquals(
+                ToolbarSnapshotDifference.URL_TEXT,
                 tabletToken.getAnyDifference(mDefaultTabletToken));
     }
 
@@ -283,7 +304,8 @@ public class TabletCaptureStateTokenTest {
     public void testDifferentBookmarkButton_IconRes() {
         TabletCaptureStateToken tabletToken =
                 new TabletCaptureStateTokenBuilder().withBookmarkIconRes(123).build();
-        Assert.assertEquals(ToolbarSnapshotDifference.BOOKMARK_BUTTON,
+        Assert.assertEquals(
+                ToolbarSnapshotDifference.BOOKMARK_BUTTON,
                 tabletToken.getAnyDifference(mDefaultTabletToken));
     }
 
@@ -292,15 +314,18 @@ public class TabletCaptureStateTokenTest {
         ImageButton button = new MockImageButtonBuilder().withColor(Color.GREEN).build();
         TabletCaptureStateToken tabletToken =
                 new TabletCaptureStateTokenBuilder().withBookmarkButton(button).build();
-        Assert.assertEquals(ToolbarSnapshotDifference.BOOKMARK_BUTTON,
+        Assert.assertEquals(
+                ToolbarSnapshotDifference.BOOKMARK_BUTTON,
                 tabletToken.getAnyDifference(mDefaultTabletToken));
     }
+
     @Test
     public void testDifferentBookmarkButton_Enabled() {
         ImageButton button = new MockImageButtonBuilder().withIsEnabled(false).build();
         TabletCaptureStateToken tabletToken =
                 new TabletCaptureStateTokenBuilder().withBookmarkButton(button).build();
-        Assert.assertEquals(ToolbarSnapshotDifference.BOOKMARK_BUTTON,
+        Assert.assertEquals(
+                ToolbarSnapshotDifference.BOOKMARK_BUTTON,
                 tabletToken.getAnyDifference(mDefaultTabletToken));
     }
 
@@ -308,7 +333,8 @@ public class TabletCaptureStateTokenTest {
     public void testDifferentOptionalButton_NullButton() {
         TabletCaptureStateToken tabletToken =
                 new TabletCaptureStateTokenBuilder().withOptionalButton(null).build();
-        Assert.assertEquals(ToolbarSnapshotDifference.OPTIONAL_BUTTON,
+        Assert.assertEquals(
+                ToolbarSnapshotDifference.OPTIONAL_BUTTON,
                 tabletToken.getAnyDifference(mDefaultTabletToken));
     }
 
@@ -317,19 +343,22 @@ public class TabletCaptureStateTokenTest {
         ImageButton button = new MockImageButtonBuilder().withDrawable(null).build();
         TabletCaptureStateToken tabletToken =
                 new TabletCaptureStateTokenBuilder().withOptionalButton(button).build();
-        Assert.assertEquals(ToolbarSnapshotDifference.OPTIONAL_BUTTON,
+        Assert.assertEquals(
+                ToolbarSnapshotDifference.OPTIONAL_BUTTON,
                 tabletToken.getAnyDifference(mDefaultTabletToken));
     }
 
     @Test
     public void testDifferentOptionalButton_NullImageTintList() {
-        ImageButton button = new MockImageButtonBuilder()
-                                     .withDrawable(DEFAULT_OPTIONAL_BUTTON_DRAWABLE)
-                                     .withHasImageTintList(false)
-                                     .build();
+        ImageButton button =
+                new MockImageButtonBuilder()
+                        .withDrawable(DEFAULT_OPTIONAL_BUTTON_DRAWABLE)
+                        .withHasImageTintList(false)
+                        .build();
         TabletCaptureStateToken tabletToken =
                 new TabletCaptureStateTokenBuilder().withOptionalButton(button).build();
-        Assert.assertEquals(ToolbarSnapshotDifference.OPTIONAL_BUTTON,
+        Assert.assertEquals(
+                ToolbarSnapshotDifference.OPTIONAL_BUTTON,
                 tabletToken.getAnyDifference(mDefaultTabletToken));
     }
 
@@ -337,7 +366,8 @@ public class TabletCaptureStateTokenTest {
     public void testDifferentTabCount() {
         TabletCaptureStateToken tabletToken =
                 new TabletCaptureStateTokenBuilder().withTabCount(10).build();
-        Assert.assertEquals(ToolbarSnapshotDifference.TAB_COUNT,
+        Assert.assertEquals(
+                ToolbarSnapshotDifference.TAB_COUNT,
                 tabletToken.getAnyDifference(mDefaultTabletToken));
     }
 
@@ -345,7 +375,8 @@ public class TabletCaptureStateTokenTest {
     public void testDifferentViewWidth() {
         TabletCaptureStateToken tabletToken =
                 new TabletCaptureStateTokenBuilder().withViewWidth(2000).build();
-        Assert.assertEquals(ToolbarSnapshotDifference.LOCATION_BAR_WIDTH,
+        Assert.assertEquals(
+                ToolbarSnapshotDifference.LOCATION_BAR_WIDTH,
                 tabletToken.getAnyDifference(mDefaultTabletToken));
     }
 }

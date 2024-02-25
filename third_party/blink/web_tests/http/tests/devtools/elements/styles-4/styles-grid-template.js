@@ -7,7 +7,6 @@ import {ElementsTestRunner} from 'elements_test_runner';
 
 (async function() {
   TestRunner.addResult(`Tests that properties defining grid templates are correct.\n`);
-  await TestRunner.loadLegacyModule('elements');
   await TestRunner.showPanel('elements');
   await TestRunner.loadHTML(`
       <style>
@@ -38,7 +37,7 @@ import {ElementsTestRunner} from 'elements_test_runner';
   function step2() {
     const treeElement = ElementsTestRunner.getElementStylePropertyTreeItem('grid-template-areas');
     TestRunner.addResult('Start editing "grid-template-areas"');
-    treeElement.startEditing(treeElement.valueElement);
+    treeElement.startEditingValue();
 
     TestRunner.addResult(`Prompt text ${treeElement.prompt.text()}`);
 

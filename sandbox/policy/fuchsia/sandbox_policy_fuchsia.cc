@@ -23,7 +23,7 @@
 #include <fuchsia/sysmem/cpp/fidl.h>
 #include <fuchsia/tracing/perfetto/cpp/fidl.h>
 #include <fuchsia/tracing/provider/cpp/fidl.h>
-#include <fuchsia/ui/scenic/cpp/fidl.h>
+#include <fuchsia/ui/composition/cpp/fidl.h>
 #include <lib/sys/cpp/component_context.h>
 #include <lib/sys/cpp/service_directory.h>
 
@@ -106,7 +106,6 @@ constexpr SandboxConfig kGpuConfig = {
         fuchsia::tracing::provider::Registry::Name_,
         fuchsia::ui::composition::Allocator::Name_,
         fuchsia::ui::composition::Flatland::Name_,
-        fuchsia::ui::scenic::Scenic::Name_,
     }),
     kProvideVulkanResources,
 };
@@ -165,7 +164,8 @@ const SandboxConfig* GetConfigForSandboxType(sandbox::mojom::Sandbox type) {
     // Remaining types receive no-access-to-anything.
     case sandbox::mojom::Sandbox::kAudio:
     case sandbox::mojom::Sandbox::kCdm:
-#if BUILDFLAG(ENABLE_PRINTING)
+    case sandbox::mojom::Sandbox::kOnDeviceModelExecution:
+#if BUILDFLAG(ENABLE_OOP_PRINTING)
     case sandbox::mojom::Sandbox::kPrintBackend:
 #endif
     case sandbox::mojom::Sandbox::kPrintCompositor:
@@ -257,12 +257,15 @@ void SandboxPolicyFuchsia::UpdateLaunchOptionsForSandbox(
   options->paths_to_clone.push_back(
       base::FilePath(base::kPackageRootDirectoryPath));
 
-  // If /config/data/tzdata/icu/ exists then it contains up-to-date timezone
+  // If /config/tzdata/icu/ exists then it contains up-to-date timezone
   // data which should be provided to all sub-processes, for consistency.
-  const auto kIcuTimezoneDataPath = base::FilePath("/config/data/tzdata/icu");
+  // LINT.IfChange(icu_time_zone_data_path)
+  const auto kIcuTimezoneDataPath = base::FilePath("/config/tzdata/icu");
+  // LINT.ThenChange(//base/i18n/icu_util.cc:icu_time_zone_data_path)
   static bool icu_timezone_data_exists = base::PathExists(kIcuTimezoneDataPath);
-  if (icu_timezone_data_exists)
+  if (icu_timezone_data_exists) {
     options->paths_to_clone.push_back(kIcuTimezoneDataPath);
+  }
 
   // Clear environmental variables to better isolate the child from
   // this process.
@@ -275,8 +278,9 @@ void SandboxPolicyFuchsia::UpdateLaunchOptionsForSandbox(
   const SandboxConfig* config = GetConfigForSandboxType(type_);
   CHECK(config);
 
-  if (config->features & kProvideSslConfig)
+  if (config->features & kProvideSslConfig) {
     options->paths_to_clone.push_back(base::FilePath("/config/ssl"));
+  }
 
   if (config->features & kProvideVulkanResources) {
     static const char* const kPathsToCloneForVulkan[] = {

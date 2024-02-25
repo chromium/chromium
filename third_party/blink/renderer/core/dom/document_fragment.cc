@@ -27,11 +27,12 @@
 #include "third_party/blink/renderer/core/dom/node_cloning_data.h"
 #include "third_party/blink/renderer/core/dom/part_root.h"
 #include "third_party/blink/renderer/core/dom/tree_scope.h"
+#include "third_party/blink/renderer/core/execution_context/agent.h"
 #include "third_party/blink/renderer/core/html/parser/html_document_parser.h"
 #include "third_party/blink/renderer/core/xml/parser/xml_document_parser.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/bindings/runtime_call_stats.h"
-#include "third_party/blink/renderer/platform/bindings/v8_per_isolate_data.h"
+#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 
 namespace blink {
 
@@ -68,10 +69,17 @@ Node* DocumentFragment::Clone(Document& factory,
   DCHECK_EQ(append_to, nullptr)
       << "DocumentFragment::Clone() doesn't support append_to";
   DocumentFragment* clone = Create(factory);
-  clone->ClonePartsFrom(*this, data);
+  DocumentPartRoot* part_root = nullptr;
+  if (data.Has(CloneOption::kPreserveDOMParts)) {
+    DCHECK(RuntimeEnabledFeatures::DOMPartsAPIEnabled());
+    part_root = &clone->getPartRoot();
+    data.PushPartRoot(*part_root);
+  }
+  PartRoot::CloneParts(*this, *clone, data);
   if (data.Has(CloneOption::kIncludeDescendants)) {
     clone->CloneChildNodesFrom(*this, data);
   }
+  DCHECK(!part_root || &data.CurrentPartRoot() == part_root);
   return clone;
 }
 
@@ -79,7 +87,7 @@ void DocumentFragment::ParseHTML(const String& source,
                                  Element* context_element,
                                  ParserContentPolicy parser_content_policy) {
   RUNTIME_CALL_TIMER_SCOPE(
-      V8PerIsolateData::MainThreadIsolate(),
+      GetDocument().GetAgent().isolate(),
       RuntimeCallStats::CounterId::kDocumentFragmentParseHTML);
   HTMLDocumentParser::ParseDocumentFragment(source, this, context_element,
                                             parser_content_policy);
@@ -87,9 +95,10 @@ void DocumentFragment::ParseHTML(const String& source,
 
 bool DocumentFragment::ParseXML(const String& source,
                                 Element* context_element,
-                                ParserContentPolicy parser_content_policy) {
-  return XMLDocumentParser::ParseDocumentFragment(source, this, context_element,
-                                                  parser_content_policy);
+                                ParserContentPolicy parser_content_policy,
+                                ExceptionState* exception_state) {
+  return XMLDocumentParser::ParseDocumentFragment(
+      source, this, context_element, parser_content_policy, exception_state);
 }
 
 void DocumentFragment::Trace(Visitor* visitor) const {

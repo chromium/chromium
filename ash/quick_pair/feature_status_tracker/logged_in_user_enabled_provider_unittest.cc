@@ -55,27 +55,27 @@ TEST_F(LoggedInUserEnabledProviderTest, LockAndUnlock) {
 }
 
 TEST_F(LoggedInUserEnabledProviderTest, Kiosk) {
-  Login(user_manager::UserType::USER_TYPE_KIOSK_APP);
+  Login(user_manager::UserType::kKioskApp);
   EXPECT_FALSE(provider_->is_enabled());
 }
 
 TEST_F(LoggedInUserEnabledProviderTest, UserLoggedIn) {
-  Login(user_manager::UserType::USER_TYPE_REGULAR);
+  Login(user_manager::UserType::kRegular);
   EXPECT_TRUE(provider_->is_enabled());
 }
 
 TEST_F(LoggedInUserEnabledProviderTest, GuestLoggedIn) {
-  Login(user_manager::UserType::USER_TYPE_GUEST);
+  Login(user_manager::UserType::kGuest);
   EXPECT_TRUE(provider_->is_enabled());
 }
 
 TEST_F(LoggedInUserEnabledProviderTest, PublicAccountLoggedIn) {
-  Login(user_manager::UserType::USER_TYPE_PUBLIC_ACCOUNT);
+  Login(user_manager::UserType::kPublicAccount);
   EXPECT_FALSE(provider_->is_enabled());
 }
 
 TEST_F(LoggedInUserEnabledProviderTest, ChildLoggedIn) {
-  Login(user_manager::UserType::USER_TYPE_CHILD);
+  Login(user_manager::UserType::kChild);
   EXPECT_TRUE(provider_->is_enabled());
 }
 

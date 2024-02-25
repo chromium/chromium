@@ -17,6 +17,7 @@
 #include "base/task/single_thread_task_runner.h"
 #include "base/uuid.h"
 #include "components/feedback/features.h"
+#include "components/feedback/feedback_common.h"
 #include "components/feedback/proto/extension.pb.h"
 
 namespace feedback {
@@ -48,8 +49,10 @@ FeedbackReport::FeedbackReport(
     const base::Time& upload_at,
     std::unique_ptr<std::string> data,
     scoped_refptr<base::SequencedTaskRunner> task_runner,
-    bool has_email)
+    bool has_email,
+    int product_id)
     : has_email_(has_email),
+      product_id_(product_id),
       reports_path_(path),
       upload_at_(upload_at),
       data_(std::move(data)),
@@ -87,9 +90,11 @@ FeedbackReport::FeedbackReport(
     base::FilePath path,
     std::unique_ptr<std::string> data,
     scoped_refptr<base::SequencedTaskRunner> task_runner,
-    bool has_email)
+    bool has_email,
+    int product_id)
     : file_(path),
       has_email_(has_email),
+      product_id_(product_id),
       data_(std::move(data)),
       reports_task_runner_(task_runner) {}
 
@@ -128,7 +133,8 @@ void FeedbackReport::LoadReportsAndQueue(const base::FilePath& user_dir,
                        !parsed.common_data().user_email().empty();
       callback.Run(base::MakeRefCounted<FeedbackReport>(
           std::move(name), std::move(data),
-          base::SingleThreadTaskRunner::GetCurrentDefault(), has_email));
+          base::SingleThreadTaskRunner::GetCurrentDefault(), has_email,
+          parsed.product_id()));
     }
   }
 }
@@ -137,6 +143,12 @@ void FeedbackReport::DeleteReportOnDisk() {
   reports_task_runner_->PostTask(FROM_HERE, base::GetDeleteFileCallback(file_));
 }
 
-FeedbackReport::~FeedbackReport() {}
+bool FeedbackReport::should_include_variations() const {
+  // TODO(b/307804234): Tie this to the report itself via ExtensionSubmit
+  // instead of hardcoding the product IDs here.
+  return product_id_ != kOrcaFeedbackProductId;
+}
+
+FeedbackReport::~FeedbackReport() = default;
 
 }  // namespace feedback

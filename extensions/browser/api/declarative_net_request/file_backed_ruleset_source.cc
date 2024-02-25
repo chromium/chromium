@@ -6,6 +6,7 @@
 
 #include <memory>
 #include <set>
+#include <string_view>
 #include <utility>
 
 #include "base/check_op.h"
@@ -36,8 +37,7 @@
 #include "services/data_decoder/public/cpp/data_decoder.h"
 #include "tools/json_schema_compiler/util.h"
 
-namespace extensions {
-namespace declarative_net_request {
+namespace extensions::declarative_net_request {
 
 namespace {
 
@@ -57,7 +57,7 @@ std::string GetFilename(const base::FilePath& file_path) {
 }
 
 std::string GetErrorWithFilename(const base::FilePath& json_path,
-                                 base::StringPiece error) {
+                                 std::string_view error) {
   return base::StrCat({GetFilename(json_path), ": ", error});
 }
 
@@ -102,18 +102,15 @@ ReadJSONRulesResult ParseRulesFromJSON(const RulesetID& ruleset_id,
   }
 
   for (size_t i = 0; i < rules_list.size(); i++) {
-    dnr_api::Rule parsed_rule;
-    std::u16string parse_error;
-
-    if (dnr_api::Rule::Populate(rules_list[i], parsed_rule, parse_error)) {
-      DCHECK(parse_error.empty());
+    auto parsed_rule = dnr_api::Rule::FromValue(rules_list[i]);
+    if (parsed_rule.has_value()) {
       if (result.rules.size() == rule_limit) {
         result.rule_parse_warnings.push_back(
             CreateInstallWarning(json_path, kRuleCountExceeded));
         break;
       }
 
-      const bool is_regex_rule = !!parsed_rule.condition.regex_filter;
+      const bool is_regex_rule = !!parsed_rule->condition.regex_filter;
       if (is_regex_rule && ++regex_rule_count > GetRegexRuleLimit()) {
         // Only add the install warning once.
         if (!regex_rule_count_exceeded) {
@@ -125,7 +122,7 @@ ReadJSONRulesResult ParseRulesFromJSON(const RulesetID& ruleset_id,
         continue;
       }
 
-      result.rules.push_back(std::move(parsed_rule));
+      result.rules.push_back(std::move(*parsed_rule));
       continue;
     }
 
@@ -140,9 +137,9 @@ ReadJSONRulesResult ParseRulesFromJSON(const RulesetID& ruleset_id,
     }
 
     result.rule_parse_warnings.push_back(CreateInstallWarning(
-        json_path,
-        ErrorUtils::FormatErrorMessage(kRuleNotParsedWarning, rule_location,
-                                       base::UTF16ToUTF8(parse_error))));
+        json_path, ErrorUtils::FormatErrorMessage(
+                       kRuleNotParsedWarning, rule_location,
+                       base::UTF16ToUTF8(parsed_rule.error()))));
   }
 
   DCHECK_LE(result.rules.size(), rule_limit);
@@ -332,7 +329,7 @@ FileBackedRulesetSource FileBackedRulesetSource::CreateDynamic(
   return FileBackedRulesetSource(
       dynamic_ruleset_directory.AppendASCII(kDynamicRulesJSONFilename),
       dynamic_ruleset_directory.AppendASCII(kDynamicIndexedRulesFilename),
-      kDynamicRulesetID, GetDynamicAndSessionRuleLimit(), extension_id,
+      kDynamicRulesetID, GetDynamicRuleLimit(), extension_id,
       true /* enabled_by_default */);
 }
 
@@ -453,9 +450,7 @@ LoadRulesetResult FileBackedRulesetSource::CreateVerifiedMatcher(
     return LoadRulesetResult::kErrorVersionMismatch;
 
   if (expected_ruleset_checksum !=
-      GetChecksum(
-          base::make_span(reinterpret_cast<const uint8_t*>(ruleset_data.data()),
-                          ruleset_data.size()))) {
+      GetChecksum(base::as_byte_span(ruleset_data))) {
     return LoadRulesetResult::kErrorChecksumMismatch;
   }
 
@@ -482,5 +477,4 @@ FileBackedRulesetSource::FileBackedRulesetSource(base::FilePath json_path,
       json_path_(std::move(json_path)),
       indexed_path_(std::move(indexed_path)) {}
 
-}  // namespace declarative_net_request
-}  // namespace extensions
+}  // namespace extensions::declarative_net_request

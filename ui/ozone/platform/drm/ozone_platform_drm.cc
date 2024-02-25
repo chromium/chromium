@@ -47,7 +47,6 @@
 #include "ui/ozone/platform/drm/mojom/drm_device.mojom.h"
 #include "ui/ozone/public/gpu_platform_support_host.h"
 #include "ui/ozone/public/ozone_platform.h"
-#include "ui/ozone/public/ozone_switches.h"
 #include "ui/ozone/public/platform_screen.h"
 #include "ui/platform_window/platform_window_init_properties.h"
 
@@ -233,12 +232,6 @@ class OzonePlatformDrm : public OzonePlatform {
   }
 
   void InitializeGPU(const InitParams& args) override {
-    // Check if buffer bandwidth compression is disabled
-    if (base::CommandLine::ForCurrentProcess()->HasSwitch(
-            switches::kDisableBufferBWCompression)) {
-      setenv("MINIGBM_DEBUG", "nocompression", 1);
-    }
-
     gpu_task_runner_ = base::SingleThreadTaskRunner::GetCurrentDefault();
 
     // NOTE: Can't start the thread here since this is called before sandbox

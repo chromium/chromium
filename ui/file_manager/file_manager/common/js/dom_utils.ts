@@ -2,16 +2,16 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {assert, assertInstanceof} from 'chrome://resources/js/assert_ts.js';
+import {assert, assertInstanceof} from 'chrome://resources/js/assert.js';
+
 // Only import types from the DirectoryTree/DirectoryItem/XfTree/XfTreeItem to
 // prevent circular imports.
 import type {DirectoryItem, DirectoryTree} from '../../foreground/js/ui/directory_tree.js';
-
-import type {CSSResult} from '../../widgets/xf_base.js';
 import type {XfTree} from '../../widgets/xf_tree.js';
 import type {XfTreeItem} from '../../widgets/xf_tree_item.js';
-import {isTree, isTreeItem} from '../../widgets/xf_tree_util.js';
-import {decorate} from './ui.js';
+import {isTreeItem, isXfTree} from '../../widgets/xf_tree_util.js';
+
+import {crInjectTypeAndInit, type DecoratableElement} from './cr_ui.js';
 
 /**
  * Function to be used as event listener for `mouseenter`, it sets the `title`
@@ -103,7 +103,8 @@ export function createChild(
  *     context object for querySelector.
  */
 export function queryRequiredElement(
-    selectors: string, context?: Document|DocumentFragment|Element): Element {
+    selectors: string,
+    context?: Document|DocumentFragment|Element|HTMLElement): HTMLElement {
   const element = (context || document).querySelector(selectors);
   assertInstanceof(
       element, HTMLElement, 'Missing required element: ' + selectors);
@@ -116,10 +117,10 @@ export function queryRequiredElement(
  * @param query Query for the element.
  * @param type Type used to decorate.
  */
-export function queryDecoratedElement<T>(
+export function queryDecoratedElement<T extends DecoratableElement>(
     query: string, type: {new (...args: any): T}): T {
   const element = queryRequiredElement(query);
-  decorate(element, type);
+  crInjectTypeAndInit(element, type);
   return element as any as T;
 }
 
@@ -166,7 +167,6 @@ class UserDomError extends DOMError {
   /**
    * @param name Error name for the file error.
    * @param {string=} message Optional message for this error.
-   * @suppress {checkTypes} Closure externs for DOMError doesn't have
    * constructor with 1 arg.
    */
   constructor(name: string, message?: string) {
@@ -185,36 +185,6 @@ class UserDomError extends DOMError {
   override get message(): string {
     return this.message_;
   }
-}
-
-/**
- * Add prefix selector for the CSS literal.
- * To support both Legacy and Refresh23 styles in the same component, we
- * have 2 style groups defined in each component, for all legacy/refresh23
- * specific styles, we need to prefix all rules to have
- * `[theme=legacy]` and `[theme=refresh23]` so they won't conflict
- * with each other.
- *
- * For example:
- * original style -> p { color: red; }
- * prefix with Legacy -> :host-context([theme="legacy"]) p { color: red }
- * prefix with Refresh23 -> :host-context([theme="refresh23"]) p { color: red }
- */
-export function addCSSPrefixSelector(
-    css: CSSResult, prefixSelector: string): CSSStyleSheet {
-  const prefixedCSS = new CSSStyleSheet();
-  const cssRules = css.styleSheet?.cssRules || [];
-  for (let i = 0; i < cssRules.length; i++) {
-    const cssText = cssRules[i]?.cssText;
-    if (cssText) {
-      // If the existing selector is `:host` or `:host-context`, there should
-      // be no space after the newly added `:host-context`.
-      const noSpace = cssText.startsWith(':host');
-      prefixedCSS.insertRule(
-          `:host-context(${prefixSelector})${noSpace ? '' : ' '}${cssText}`, i);
-    }
-  }
-  return prefixedCSS;
 }
 
 /**
@@ -255,7 +225,7 @@ export function getCrActionMenuTop(
  * TODO(b/285977941): Remove the old tree support.
  */
 export function isDirectoryTree(element: any): element is DirectoryTree|XfTree {
-  return element.typeName === 'directory_tree' || isTree(element);
+  return element.typeName === 'directory_tree' || isXfTree(element);
 }
 export function isDirectoryTreeItem(element: any): element is DirectoryItem|
     XfTreeItem {
@@ -265,7 +235,7 @@ export function getFocusedTreeItem(tree: any): DirectoryItem|XfTreeItem|null {
   if (tree.typeName === 'directory_tree') {
     return tree.selectedItem;
   }
-  if (isTree(tree)) {
+  if (isXfTree(tree)) {
     return tree.focusedItem;
   }
   return null;

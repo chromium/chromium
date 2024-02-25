@@ -14,6 +14,7 @@
 
 #include "util/file/file_reader.h"
 
+#include "base/check_op.h"
 #include "base/logging.h"
 #include "base/numerics/safe_conversions.h"
 #include "build/build_config.h"

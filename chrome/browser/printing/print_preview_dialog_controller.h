@@ -7,9 +7,10 @@
 
 #include <map>
 
+#include "base/check.h"
 #include "base/functional/callback.h"
-#include "base/memory/ref_counted.h"
 #include "chrome/browser/tab_contents/web_contents_collection.h"
+#include "components/printing/common/print.mojom.h"
 
 class GURL;
 
@@ -25,16 +26,19 @@ namespace printing {
 // This class manages print preview dialog creation and destruction, and keeps
 // track of the 1:1 relationship between initiator tabs and print preview
 // dialogs.
-class PrintPreviewDialogController
-    : public base::RefCounted<PrintPreviewDialogController>,
-      public WebContentsCollection::Observer {
+class PrintPreviewDialogController : public WebContentsCollection::Observer {
  public:
+  // Should only be used by `BrowserProcess`-like classes. Call `GetInstance()`
+  // to get the active instance.
   PrintPreviewDialogController();
 
   PrintPreviewDialogController(const PrintPreviewDialogController&) = delete;
   PrintPreviewDialogController& operator=(const PrintPreviewDialogController&) =
       delete;
 
+  ~PrintPreviewDialogController() override;
+
+  // Returns the existing instance in the global `BrowserProcess`.
   static PrintPreviewDialogController* GetInstance();
 
   // Returns true if `url` is a Print Preview dialog URL (has `chrome://print`
@@ -46,17 +50,23 @@ class PrintPreviewDialogController
   static bool IsPrintPreviewContentURL(const GURL& url);
 
   // Initiates print preview for `initiator`.
-  void PrintPreview(content::WebContents* initiator);
+  void PrintPreview(content::WebContents* initiator,
+                    const mojom::RequestPrintPreviewParams& params);
 
   // Returns the preview dialog for `contents`.
   // Returns `contents` if `contents` is a preview dialog.
-  // Returns NULL if no preview dialog exists for `contents`.
+  // Returns nullptr if no preview dialog exists for `contents`.
   content::WebContents* GetPrintPreviewForContents(
       content::WebContents* contents) const;
 
   // Returns the initiator for `preview_dialog`.
-  // Returns NULL if no initiator exists for `preview_dialog`.
+  // Returns nullptr if no initiator exists for `preview_dialog`.
   content::WebContents* GetInitiator(content::WebContents* preview_dialog);
+
+  // Returns the request data associated with `preview_dialog`.
+  // Returns nullptr if no data exists for `preview_dialog`.
+  const mojom::RequestPrintPreviewParams* GetRequestParams(
+      content::WebContents* preview_dialog) const;
 
   // Runs `callback` on the dialog of each active print preview operation.
   void ForEachPreviewDialog(
@@ -69,20 +79,39 @@ class PrintPreviewDialogController
   content::WebContents* GetOrCreatePreviewDialogForTesting(
       content::WebContents* initiator);
 
+#if defined(UNIT_TEST)
+  // Exposes a way for tests to manually specify the initiator to preview_dialog
+  // relationship. For use in tests that create their own preview dialogs.
+  void AssociateWebContentsesForTesting(content::WebContents* initiator,
+                                        content::WebContents* preview_dialog) {
+    CHECK(initiator);
+    CHECK(preview_dialog);
+    preview_dialog_map_[preview_dialog].initiator = initiator;
+    preview_dialog_map_[preview_dialog].request_params.is_modifiable = true;
+  }
+  void DisassociateWebContentsesForTesting(
+      content::WebContents* preview_dialog) {
+    CHECK(preview_dialog);
+    size_t erased_count = preview_dialog_map_.erase(preview_dialog);
+    CHECK(erased_count);
+  }
+#endif
+
   bool is_creating_print_preview_dialog() const {
     return is_creating_print_preview_dialog_;
   }
 
  private:
-  friend class base::RefCounted<PrintPreviewDialogController>;
+  // Tracks the initiator, as well as some of its Print Preview properties.
+  struct InitiatorData {
+    raw_ptr<content::WebContents> initiator;
+    mojom::RequestPrintPreviewParams request_params;
+  };
 
-  // 1:1 relationship between a print preview dialog and its initiator tab.
+  // 1:1 relationship between a print preview dialog and its initiator data.
   // Key: Print preview dialog.
-  // Value: Initiator.
-  using PrintPreviewDialogMap =
-      std::map<content::WebContents*, content::WebContents*>;
-
-  ~PrintPreviewDialogController() override;
+  // Value: Initiator data.
+  using PrintPreviewDialogMap = std::map<content::WebContents*, InitiatorData>;
 
   // WebContentsCollection::Observer:
   // Handles the closing of the RenderProcessHost. This is observed when the
@@ -108,12 +137,14 @@ class PrintPreviewDialogController
 
   // Gets/Creates the print preview dialog for `initiator`.
   content::WebContents* GetOrCreatePreviewDialog(
-      content::WebContents* initiator);
+      content::WebContents* initiator,
+      const mojom::RequestPrintPreviewParams& params);
 
   // Creates a new print preview dialog if GetOrCreatePreviewDialog() cannot
   // find a print preview dialog for `initiator`.
   content::WebContents* CreatePrintPreviewDialog(
-      content::WebContents* initiator);
+      content::WebContents* initiator,
+      const mojom::RequestPrintPreviewParams& params);
 
   // Helper function to store the title of the initiator associated with
   // `preview_dialog` in `preview_dialog`'s PrintPreviewUI.

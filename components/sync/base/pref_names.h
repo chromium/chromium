@@ -24,9 +24,13 @@ inline constexpr char kLocalSyncBackendDir[] = "sync.local_sync_backend_dir";
 // TODO(crbug.com/1435427): Clean up/replace any existing references to these
 // prefs from outside components/sync/.
 namespace internal {
+
 // Boolean specifying whether the user finished setting up sync at least once.
+// On ChromeOS-Ash, the concept of initial-sync-setup doesn't exist.
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
 inline constexpr char kSyncInitialSyncFeatureSetupComplete[] =
     "sync.has_setup_completed";
+#endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
 
 // Boolean specifying whether to automatically sync all data types (including
 // future ones, as they're added).  If this is true, the following preferences
@@ -49,6 +53,9 @@ inline constexpr char kSelectedTypesPerAccount[] =
     "sync.selected_types_per_account";
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
+// Boolean specifying whether sync was disabled due to a dashboard reset event.
+inline constexpr char kSyncDisabledViaDashboard[] =
+    "sync.disabled_via_dashboard";
 
 // Boolean specifying whether to automatically sync all Chrome OS specific data
 // types (including future ones). This includes types like printers, OS-only
@@ -75,26 +82,21 @@ inline constexpr char kSyncApps[] = "sync.apps";
 inline constexpr char kSyncAutofill[] = "sync.autofill";
 inline constexpr char kSyncBookmarks[] = "sync.bookmarks";
 inline constexpr char kSyncExtensions[] = "sync.extensions";
+// Note: The pref for history is called "typed_urls" for historic reasons - not
+// worth the hassle of renaming.
+inline constexpr char kSyncHistory[] = "sync.typed_urls";
 inline constexpr char kSyncPasswords[] = "sync.passwords";
 inline constexpr char kSyncPayments[] = "sync.payments";
 inline constexpr char kSyncPreferences[] = "sync.preferences";
 inline constexpr char kSyncReadingList[] = "sync.reading_list";
+inline constexpr char kSyncSavedTabGroups[] = "sync.saved_tab_groups";
+inline constexpr char kSyncSharedTabGroupData[] = "sync.shared_tab_group_data";
 inline constexpr char kSyncTabs[] = "sync.tabs";
 inline constexpr char kSyncThemes[] = "sync.themes";
-inline constexpr char kSyncTypedUrls[] = "sync.typed_urls";
-inline constexpr char kSyncSavedTabGroups[] = "sync.saved_tab_groups";
 
 // Boolean used by enterprise configuration management in order to lock down
 // sync.
 inline constexpr char kSyncManaged[] = "sync.managed";
-
-// Boolean whether has requested sync to be enabled. This is set early in the
-// sync setup flow, after the user has pressed "turn on sync" but before they
-// have accepted the confirmation dialog (that maps to
-// kSyncInitialSyncFeatureSetupComplete). This is also set to false when sync is
-// disabled by the user in sync settings, or when sync was reset from the
-// dashboard.
-inline constexpr char kSyncRequested[] = "sync.requested";
 
 // The type of encryption passphrase used. Determined and set the first time the
 // engine is successfully initialized.
@@ -108,11 +110,29 @@ inline constexpr char kSyncCachedPassphraseType[] =
 inline constexpr char kSyncEncryptionBootstrapToken[] =
     "sync.encryption_bootstrap_token";
 
+// A dict that can be used to restore per-account the sync encryption
+// infrastructure on startup so that the user doesn't need to provide
+// credentials on each start.
+inline constexpr char kSyncEncryptionBootstrapTokenPerAccount[] =
+    "sync.encryption_bootstrap_token_per_account";
+
 // Stores whether a platform specific passphrase error prompt has been muted by
 // the user (e.g. an Android system notification). Specifically, it stores which
 // major product version was used to mute this error.
 inline constexpr char kSyncPassphrasePromptMutedProductVersion[] =
     "sync.passphrase_prompt_muted_product_version";
+
+// Overall status of Sync-the-feature for the Sync-to-Signin migration,
+// expressed as SyncFeatureStatusForSyncToSigninMigration.
+inline constexpr char kSyncFeatureStatusForSyncToSigninMigration[] =
+    "sync.feature_status_for_sync_to_signin";
+// Prefix for boolean per-data-type statuses, to be suffixed with "." plus
+// GetModelTypeLowerCaseRootTag().
+inline constexpr char kSyncDataTypeStatusForSyncToSigninMigrationPrefix[] =
+    "sync.data_type_status_for_sync_to_signin";
+
+inline constexpr char kMigrateReadingListFromLocalToAccount[] =
+    "sync.migrate_reading_list_from_local_to_account";
 
 }  // namespace internal
 }  // namespace syncer::prefs

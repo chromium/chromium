@@ -4,6 +4,7 @@
 
 #include "services/network/socket_data_pump.h"
 
+#include <optional>
 #include <utility>
 
 #include "base/check_op.h"
@@ -17,7 +18,6 @@
 #include "net/socket/client_socket_factory.h"
 #include "net/socket/client_socket_handle.h"
 #include "services/network/tls_client_socket.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace network {
 
@@ -61,21 +61,21 @@ SocketDataPump::~SocketDataPump() {}
 void SocketDataPump::ReceiveMore() {
   DCHECK(receive_stream_.is_valid());
 
-  uint32_t num_bytes = 0;
   scoped_refptr<NetToMojoPendingBuffer> pending_receive_buffer;
   MojoResult result = NetToMojoPendingBuffer::BeginWrite(
-      &receive_stream_, &pending_receive_buffer, &num_bytes);
-  if (result == MOJO_RESULT_SHOULD_WAIT) {
-    receive_stream_watcher_.ArmOrNotify();
-    return;
+      &receive_stream_, &pending_receive_buffer);
+  switch (result) {
+    case MOJO_RESULT_OK:
+      break;
+    case MOJO_RESULT_SHOULD_WAIT:
+      receive_stream_watcher_.ArmOrNotify();
+      return;
+    default:
+      ShutdownReceive();
+      return;
   }
-  if (result != MOJO_RESULT_OK) {
-    ShutdownReceive();
-    return;
-  }
-  DCHECK(pending_receive_buffer);
-  scoped_refptr<net::IOBuffer> buf =
-      base::MakeRefCounted<NetToMojoIOBuffer>(pending_receive_buffer.get());
+  uint32_t num_bytes = pending_receive_buffer->size();
+  auto buf = base::MakeRefCounted<NetToMojoIOBuffer>(pending_receive_buffer);
   // Use WeakPtr here because |this| doesn't outlive |socket_|.
   int read_result = socket_->ReadIfReady(
       buf.get(), base::saturated_cast<int>(num_bytes),
@@ -156,9 +156,8 @@ void SocketDataPump::SendMore() {
   DCHECK(send_stream_.is_valid());
   DCHECK(!pending_send_buffer_);
 
-  uint32_t num_bytes = 0;
-  MojoResult result = MojoToNetPendingBuffer::BeginRead(
-      &send_stream_, &pending_send_buffer_, &num_bytes);
+  MojoResult result =
+      MojoToNetPendingBuffer::BeginRead(&send_stream_, &pending_send_buffer_);
   if (result == MOJO_RESULT_SHOULD_WAIT) {
     send_stream_watcher_.ArmOrNotify();
     return;
@@ -167,13 +166,11 @@ void SocketDataPump::SendMore() {
     ShutdownSend();
     return;
   }
-  DCHECK_EQ(MOJO_RESULT_OK, result);
-  DCHECK(pending_send_buffer_);
-  scoped_refptr<net::IOBuffer> buf = base::MakeRefCounted<net::WrappedIOBuffer>(
-      pending_send_buffer_->buffer());
+  auto buf = base::MakeRefCounted<net::WrappedIOBuffer>(*pending_send_buffer_);
+
   // Use WeakPtr here because |this| doesn't outlive |socket_|.
   int write_result =
-      socket_->Write(buf.get(), static_cast<int>(num_bytes),
+      socket_->Write(buf.get(), buf->size(),
                      base::BindOnce(&SocketDataPump::OnNetworkWriteCompleted,
                                     weak_factory_.GetWeakPtr()),
                      traffic_annotation_);

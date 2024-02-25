@@ -16,8 +16,12 @@ import java.lang.annotation.RetentionPolicy;
  * See CustomTabsBrandingDecision in tools/metrics/histograms/enums.xml.
  */
 @Retention(RetentionPolicy.SOURCE)
-@IntDef({BrandingDecision.NONE, BrandingDecision.TOOLBAR, BrandingDecision.TOAST,
-        BrandingDecision.NUM_ENTRIES})
+@IntDef({
+    BrandingDecision.NONE,
+    BrandingDecision.TOOLBAR,
+    BrandingDecision.TOAST,
+    BrandingDecision.NUM_ENTRIES
+})
 @interface BrandingDecision {
     int NONE = 0;
     int TOOLBAR = 1;

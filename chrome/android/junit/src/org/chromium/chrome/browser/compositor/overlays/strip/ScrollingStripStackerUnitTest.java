@@ -24,16 +24,11 @@ public final class ScrollingStripStackerUnitTest {
     private static final float CACHED_TAB_WIDTH = 30;
 
     private ScrollingStripStacker mTarget = new ScrollingStripStacker();
-    @Mock
-    private StripLayoutTab mTab1;
-    @Mock
-    private StripLayoutTab mTab2;
-    @Mock
-    private StripLayoutTab mTab3;
-    @Mock
-    private StripLayoutTab mTab4;
-    @Mock
-    private StripLayoutTab mTab5;
+    @Mock private StripLayoutTab mTab1;
+    @Mock private StripLayoutTab mTab2;
+    @Mock private StripLayoutTab mTab3;
+    @Mock private StripLayoutTab mTab4;
+    @Mock private StripLayoutTab mTab5;
     private StripLayoutTab[] mInput;
 
     @Before
@@ -95,8 +90,37 @@ public final class ScrollingStripStackerUnitTest {
 
     @Test
     public void testPerformOcclusionPass() {
-        mTarget.performOcclusionPass(mInput, 2 * TAB_WIDTH);
+        mTarget.performOcclusionPass(mInput, 0, 2 * TAB_WIDTH);
 
+        for (StripLayoutTab tab : mInput) {
+            if (tab == mTab1 || tab == mTab5) {
+                verify(tab).setVisible(false);
+            } else {
+                verify(tab).setVisible(true);
+            }
+        }
+    }
+
+    @Test
+    public void testPerformOcclusionPassWithXOffset() {
+        mTarget.performOcclusionPass(mInput, TAB_WIDTH, 2 * TAB_WIDTH);
+
+        // Move the window with xOffset = TAB_WIDTH, will make TAB_2 invisible, but TAB_5 visible.
+        for (StripLayoutTab tab : mInput) {
+            if (tab == mTab1 || tab == mTab2) {
+                verify(tab).setVisible(false);
+            } else {
+                verify(tab).setVisible(true);
+            }
+        }
+    }
+
+    @Test
+    public void testPerformOcclusionPassWithPartialXOffset() {
+        mTarget.performOcclusionPass(mInput, TAB_WIDTH / 2, 2 * TAB_WIDTH);
+
+        // Move the window with xOffset = TAB_WIDTH / 2, will make both TAB_2 and TAB_4 partially
+        // invisible. TAB_5 will still be invisible in this case.
         for (StripLayoutTab tab : mInput) {
             if (tab == mTab1 || tab == mTab5) {
                 verify(tab).setVisible(false);

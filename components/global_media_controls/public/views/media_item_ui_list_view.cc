@@ -36,23 +36,23 @@ MediaItemUIListView::SeparatorStyle::SeparatorStyle(SkColor separator_color,
       separator_thickness(separator_thickness) {}
 
 MediaItemUIListView::MediaItemUIListView()
-    : MediaItemUIListView(absl::nullopt, /*should_clip_height=*/true) {}
+    : MediaItemUIListView(std::nullopt, /*should_clip_height=*/true) {}
 
 MediaItemUIListView::MediaItemUIListView(
-    const absl::optional<SeparatorStyle>& separator_style,
+    const std::optional<SeparatorStyle>& separator_style,
     bool should_clip_height)
     : separator_style_(separator_style) {
-  SetBackgroundColor(absl::nullopt);
+  SetBackgroundColor(std::nullopt);
   SetContents(std::make_unique<views::View>());
   contents()->SetLayoutManager(std::make_unique<views::BoxLayout>(
       views::BoxLayout::Orientation::kVertical));
   ClipHeightTo(0, should_clip_height ? kMediaListMaxHeight
                                      : std::numeric_limits<int>::max());
 
-  SetVerticalScrollBar(
-      std::make_unique<views::OverlayScrollBar>(/*horizontal=*/false));
-  SetHorizontalScrollBar(
-      std::make_unique<views::OverlayScrollBar>(/*horizontal=*/true));
+  SetVerticalScrollBar(std::make_unique<views::OverlayScrollBar>(
+      views::ScrollBar::Orientation::kVertical));
+  SetHorizontalScrollBar(std::make_unique<views::OverlayScrollBar>(
+      views::ScrollBar::Orientation::kHorizontal));
 }
 
 MediaItemUIListView::~MediaItemUIListView() = default;
@@ -63,15 +63,16 @@ void MediaItemUIListView::ShowItem(const std::string& id,
   DCHECK_NE(nullptr, item.get());
 
 #if BUILDFLAG(IS_CHROMEOS)
-  bool use_cros_updated_ui =
+  bool use_updated_ui =
       base::FeatureList::IsEnabled(media::kGlobalMediaControlsCrOSUpdatedUI);
 #else
-  bool use_cros_updated_ui = false;
+  bool use_updated_ui =
+      base::FeatureList::IsEnabled(media::kGlobalMediaControlsUpdatedUI);
 #endif
 
   // If this isn't the first item, then create a top-sided separator border.
   // No separator border should be drawn for the Chrome OS updated UI.
-  if (!items_.empty() && !use_cros_updated_ui) {
+  if (!items_.empty() && !use_updated_ui) {
     if (separator_style_.has_value()) {
       item->SetBorder(CreateMediaListSeparatorBorder(
           separator_style_->separator_color,
@@ -116,7 +117,7 @@ base::WeakPtr<MediaItemUIListView> MediaItemUIListView::GetWeakPtr() {
   return weak_factory_.GetWeakPtr();
 }
 
-BEGIN_METADATA(MediaItemUIListView, views::ScrollView)
+BEGIN_METADATA(MediaItemUIListView)
 END_METADATA
 
 }  // namespace global_media_controls

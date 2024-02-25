@@ -4,11 +4,12 @@
 
 #include "ash/system/scheduled_feature/schedule_utils.h"
 
+#include <string_view>
+
 #include "ash/public/cpp/schedule_enums.h"
 #include "ash/system/time/time_of_day.h"
 #include "base/logging.h"
 #include "base/strings/strcat.h"
-#include "base/strings/string_piece.h"
 #include "base/test/simple_test_clock.h"
 #include "base/time/time.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -28,19 +29,19 @@ class ScheduleUtilsTest : public ::testing::Test {
     clock_.SetNow(BuildTime("00:00:00"));
   }
 
-  void BuildTimeWithAssert(base::StringPiece time_of_day, base::Time* output) {
+  void BuildTimeWithAssert(std::string_view time_of_day, base::Time* output) {
     // The date here is arbitrary.
     ASSERT_TRUE(base::Time::FromString(
         base::StrCat({"23 Dec 2021 ", time_of_day}).c_str(), output));
   }
 
-  base::Time BuildTime(base::StringPiece time_of_day) {
+  base::Time BuildTime(std::string_view time_of_day) {
     base::Time output;
     BuildTimeWithAssert(time_of_day, &output);
     return output;
   }
 
-  void AdvanceClockTo(base::StringPiece time_of_day) {
+  void AdvanceClockTo(std::string_view time_of_day) {
     const base::Time target_time = BuildTime(time_of_day);
     const base::TimeDelta target_time_adjustment =
         (target_time - clock_.Now()).FloorToMultiple(base::Days(1));

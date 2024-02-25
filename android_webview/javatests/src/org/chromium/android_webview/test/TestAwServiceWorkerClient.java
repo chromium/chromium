@@ -12,14 +12,10 @@ import org.chromium.components.embedder_support.util.WebResourceResponseInfo;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * AwServiceWorkerClient subclass used for testing.
- */
+/** AwServiceWorkerClient subclass used for testing. */
 public class TestAwServiceWorkerClient extends AwServiceWorkerClient {
 
-    /**
-     * Helper class to wait for callbacks on the TestAwServiceWorkerClient.
-     */
+    /** Helper class to wait for callbacks on the TestAwServiceWorkerClient. */
     public static class ShouldInterceptRequestHelper extends CallbackHelper {
         private List<AwWebResourceRequest> mInterceptedRequests =
                 new ArrayList<AwWebResourceRequest>();

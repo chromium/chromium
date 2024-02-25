@@ -65,7 +65,7 @@ class ReadingListPageHandler : public reading_list::mojom::PageHandler,
   void ReadingListModelBeingDeleted(const ReadingListModel* model) override;
   void ReadingListDidApplyChanges(ReadingListModel* model) override;
 
-  const absl::optional<GURL> GetActiveTabURL();
+  const std::optional<GURL> GetActiveTabURL();
   void SetActiveTabURL(const GURL& url);
 
   void set_web_contents_for_testing(content::WebContents* web_contents) {
@@ -107,7 +107,7 @@ class ReadingListPageHandler : public reading_list::mojom::PageHandler,
   const raw_ptr<content::WebUI> web_ui_;
   raw_ptr<content::WebContents, DanglingUntriaged> web_contents_;
 
-  absl::optional<GURL> active_tab_url_;
+  std::optional<GURL> active_tab_url_;
   reading_list::mojom::CurrentPageActionButtonState
       current_page_action_button_state_ =
           reading_list::mojom::CurrentPageActionButtonState::kDisabled;

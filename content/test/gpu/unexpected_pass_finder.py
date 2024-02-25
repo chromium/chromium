@@ -125,9 +125,12 @@ def main() -> None:
       datetime.timedelta(days=args.expectation_grace_period))
   ci_builders = builders_instance.GetCiBuilders()
 
-  querier = gpu_queries.GpuBigQueryQuerier(args.suite, args.project,
+  querier = gpu_queries.GpuBigQueryQuerier(args.suite,
+                                           args.project,
                                            args.num_samples,
-                                           args.large_query_mode, args.jobs)
+                                           args.large_query_mode,
+                                           args.jobs,
+                                           use_batching=args.use_batching)
   # Unmatched results are mainly useful for script maintainers, as they don't
   # provide any additional information for the purposes of finding unexpectedly
   # passing tests or unused expectations.
@@ -177,10 +180,14 @@ def main() -> None:
     orphaned_urls = expectations_instance.FindOrphanedBugs(affected_urls)
     if args.bug_output_file:
       with open(args.bug_output_file, 'w') as bug_outfile:
-        result_output.OutputAffectedUrls(affected_urls, orphaned_urls,
-                                         bug_outfile)
+        result_output.OutputAffectedUrls(affected_urls,
+                                         orphaned_urls,
+                                         bug_outfile,
+                                         auto_close_bugs=args.auto_close_bugs)
     else:
-      result_output.OutputAffectedUrls(affected_urls, orphaned_urls)
+      result_output.OutputAffectedUrls(affected_urls,
+                                       orphaned_urls,
+                                       auto_close_bugs=args.auto_close_bugs)
 # pylint: enable=too-many-locals
 
 

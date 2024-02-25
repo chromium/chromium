@@ -110,11 +110,16 @@ suite('<os-settings-bluetooth-summary>', () => {
     init();
     assertEquals(0, browserProxy.getShowBluetoothRevampHatsSurveyCount());
 
+    const getPairNewDeviceBtn = () =>
+        bluetoothSummary.shadowRoot!.querySelector('#pairNewDeviceBtn');
+
     const enableBluetoothToggle =
         bluetoothSummary.shadowRoot!.querySelector<CrToggleElement>(
             '#enableBluetoothToggle');
     assertTrue(!!enableBluetoothToggle);
     assertFalse(enableBluetoothToggle.checked);
+
+    assertNull(getPairNewDeviceBtn());
 
     // Simulate clicking toggle.
     enableBluetoothToggle.click();
@@ -135,6 +140,7 @@ suite('<os-settings-bluetooth-summary>', () => {
     assertEquals(
         1, browserProxy.getShowBluetoothRevampHatsSurveyCount(),
         'Count failed to remain the same');
+    assertNull(getPairNewDeviceBtn());
 
     // Click again.
     enableBluetoothToggle.click();
@@ -145,6 +151,7 @@ suite('<os-settings-bluetooth-summary>', () => {
     assertEquals(
         2, browserProxy.getShowBluetoothRevampHatsSurveyCount(),
         'Count failed to increase');
+    assertNull(getPairNewDeviceBtn());
 
     // Mock operation success.
     bluetoothConfig.completeSetBluetoothEnabledState(/*success=*/ true);
@@ -155,6 +162,7 @@ suite('<os-settings-bluetooth-summary>', () => {
     assertEquals(
         2, browserProxy.getShowBluetoothRevampHatsSurveyCount(),
         'Count failed to remain the same');
+    assertTrue(!!getPairNewDeviceBtn());
 
     // Mock systemState becoming unavailable.
     bluetoothConfig.setSystemState(BluetoothSystemState.kUnavailable);
@@ -196,6 +204,14 @@ suite('<os-settings-bluetooth-summary>', () => {
         'os-settings:bluetooth-disabled', getBluetoothStatusIcon().icon);
 
     bluetoothConfig.setBluetoothEnabledState(/*enabled=*/ true);
+    await flushTasks();
+
+    assertTrue(!!getBluetoothArrowIconBtn());
+    assertNull(getPairNewDeviceBtn());
+    // Bluetooth Icon should be default because no devices are connected.
+    assertEquals('cr:bluetooth', getBluetoothStatusIcon().icon);
+
+    bluetoothConfig.completeSetBluetoothEnabledState(/*success=*/ true);
     await flushTasks();
 
     assertTrue(!!getBluetoothArrowIconBtn());
@@ -276,6 +292,9 @@ suite('<os-settings-bluetooth-summary>', () => {
   test('start-pairing is fired on pairNewDeviceBtn click', async () => {
     init();
     bluetoothConfig.setBluetoothEnabledState(/*enabled=*/ true);
+    await flushTasks();
+
+    bluetoothConfig.completeSetBluetoothEnabledState(/*success=*/ true);
     await flushTasks();
 
     const toggleBluetoothPairingUiPromise =

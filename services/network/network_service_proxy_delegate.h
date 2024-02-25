@@ -12,8 +12,6 @@
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "net/base/proxy_delegate.h"
-#include "services/network/ip_protection_auth_token_cache.h"
-#include "services/network/network_service_proxy_allow_list.h"
 #include "services/network/public/mojom/network_context.mojom.h"
 
 namespace net {
@@ -34,8 +32,8 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) NetworkServiceProxyDelegate
       mojom::CustomProxyConfigPtr initial_config,
       mojo::PendingReceiver<mojom::CustomProxyConfigClient>
           config_client_receiver,
-      mojo::PendingRemote<mojom::CustomProxyConnectionObserver> observer_remote,
-      NetworkServiceProxyAllowList* network_service_proxy_allow_list);
+      mojo::PendingRemote<mojom::CustomProxyConnectionObserver>
+          observer_remote);
 
   NetworkServiceProxyDelegate(const NetworkServiceProxyDelegate&) = delete;
   NetworkServiceProxyDelegate& operator=(const NetworkServiceProxyDelegate&) =
@@ -43,53 +41,40 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) NetworkServiceProxyDelegate
 
   ~NetworkServiceProxyDelegate() override;
 
-  void SetProxyResolutionService(
-      net::ProxyResolutionService* proxy_resolution_service) {
-    proxy_resolution_service_ = proxy_resolution_service;
-  }
-
-  void SetIpProtectionAuthTokenCache(
-      std::unique_ptr<IpProtectionAuthTokenCache> auth_token_cache) {
-    auth_token_cache_ = std::move(auth_token_cache);
-  }
-
   // net::ProxyDelegate implementation:
-  void OnResolveProxy(const GURL& url,
-                      const GURL& top_frame_url,
-                      const std::string& method,
-                      const net::ProxyRetryInfoMap& proxy_retry_info,
-                      net::ProxyInfo* result) override;
-  void OnFallback(const net::ProxyServer& bad_proxy, int net_error) override;
-  void OnBeforeTunnelRequest(const net::ProxyServer& proxy_server,
+  void OnResolveProxy(
+      const GURL& url,
+      const net::NetworkAnonymizationKey& network_anonymization_key,
+      const std::string& method,
+      const net::ProxyRetryInfoMap& proxy_retry_info,
+      net::ProxyInfo* result) override;
+  void OnFallback(const net::ProxyChain& bad_chain, int net_error) override;
+  void OnBeforeTunnelRequest(const net::ProxyChain& proxy_chain,
+                             size_t chain_index,
                              net::HttpRequestHeaders* extra_headers) override;
   net::Error OnTunnelHeadersReceived(
-      const net::ProxyServer& proxy_server,
+      const net::ProxyChain& proxy_chain,
+      size_t chain_index,
       const net::HttpResponseHeaders& response_headers) override;
-
-  IpProtectionAuthTokenCache* GetAuthTokenCacheForTesting() {
-    return auth_token_cache_.get();
-  }
+  void SetProxyResolutionService(
+      net::ProxyResolutionService* proxy_resolution_service) override;
 
  private:
-  // Checks if this CustomProxyConfig is supporting IP Protection.
-  bool IsForIpProtection();
+  friend class NetworkServiceProxyDelegateTest;
+  FRIEND_TEST_ALL_PREFIXES(NetworkServiceProxyDelegateTest, MergeProxyRules);
 
-  // Checks whether |proxy_server| is present in the current proxy config.
-  bool IsInProxyConfig(const net::ProxyServer& proxy_server) const;
-
-  // Whether the current config may proxy |url|.
-  bool MayProxyURL(const GURL& url) const;
+  // Checks whether `proxy_chain` is present in the current proxy config.
+  bool IsInProxyConfig(const net::ProxyChain& proxy_chain) const;
 
   // Whether the HTTP |method| with current |proxy_info| is eligible to be
   // proxied.
   bool EligibleForProxy(const net::ProxyInfo& proxy_info,
                         const std::string& method) const;
 
-  // Replaces all DIRECT options in `proxy_info`'s proxy_list with the HTTPS
-  // proxy set in `proxy_config_`. No op when the HTTPS proxy list in
-  // `proxy_config_` is empty.
-  void MergeProxyRules(const net::ProxyList& existing_proxy_list,
-                       net::ProxyInfo& proxy_info) const;
+  // Returns the equivalent of replacing all DIRECT proxies in
+  // `existing_proxy_list` with the proxies in `custom_proxy_list`.
+  net::ProxyList MergeProxyRules(const net::ProxyList& existing_proxy_list,
+                                 const net::ProxyList& custom_proxy_list) const;
 
   void OnObserverDisconnect();
 
@@ -97,20 +82,12 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) NetworkServiceProxyDelegate
   void OnCustomProxyConfigUpdated(
       mojom::CustomProxyConfigPtr proxy_config,
       OnCustomProxyConfigUpdatedCallback callback) override;
-  void MarkProxiesAsBad(base::TimeDelta bypass_duration,
-                        const net::ProxyList& bad_proxies,
-                        MarkProxiesAsBadCallback callback) override;
-  void ClearBadProxiesCache() override;
 
   mojom::CustomProxyConfigPtr proxy_config_;
   mojo::Receiver<mojom::CustomProxyConfigClient> receiver_;
   mojo::Remote<mojom::CustomProxyConnectionObserver> observer_;
-  raw_ptr<NetworkServiceProxyAllowList> network_service_proxy_allow_list_;
 
-  raw_ptr<net::ProxyResolutionService, DanglingUntriaged>
-      proxy_resolution_service_ = nullptr;
-
-  std::unique_ptr<IpProtectionAuthTokenCache> auth_token_cache_;
+  raw_ptr<net::ProxyResolutionService> proxy_resolution_service_ = nullptr;
 };
 
 }  // namespace network

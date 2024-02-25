@@ -4,6 +4,7 @@
 
 #include "net/base/ip_address.h"
 
+#include <optional>
 #include <vector>
 
 #include "base/format_macros.h"
@@ -11,7 +12,6 @@
 #include "base/strings/stringprintf.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 using testing::Optional;
 
@@ -681,6 +681,32 @@ TEST(IPAddressTest, IsLinkLocal) {
   }
 }
 
+TEST(IPAddressTest, IsUniqueLocalIPv6) {
+  const char* kPositive[] = {
+      "fc00::1",
+      "fc80::1",
+      "fd00::1",
+  };
+
+  for (const char* literal : kPositive) {
+    IPAddress ip_address;
+    ASSERT_TRUE(ip_address.AssignFromIPLiteral(literal));
+    EXPECT_TRUE(ip_address.IsUniqueLocalIPv6()) << literal;
+  }
+
+  const char* kNegative[] = {
+      "fe00::1",
+      "ff00::1",
+      "252.0.0.1",
+  };
+
+  for (const char* literal : kNegative) {
+    IPAddress ip_address;
+    ASSERT_TRUE(ip_address.AssignFromIPLiteral(literal));
+    EXPECT_FALSE(ip_address.IsUniqueLocalIPv6()) << literal;
+  }
+}
+
 // Tests extraction of the NAT64 translation prefix.
 TEST(IPAddressTest, ExtractPref64FromIpv4onlyArpaAAAA) {
   // Well Known Prefix 64:ff9b::/96.
@@ -851,6 +877,52 @@ TEST(IPAddressTest, FromGarbageValue) {
 TEST(IPAddressTest, FromInvalidValue) {
   base::Value value("1.2.3.4.5");
   EXPECT_FALSE(IPAddress::FromValue(value).has_value());
+}
+
+TEST(IPAddressTest, IPv4Mask) {
+  IPAddress mask;
+  EXPECT_FALSE(
+      IPAddress::CreateIPv4Mask(&mask, IPAddress::kIPv6AddressSize * 8));
+  EXPECT_FALSE(
+      IPAddress::CreateIPv4Mask(&mask, (IPAddress::kIPv4AddressSize + 1) * 8));
+  EXPECT_FALSE(
+      IPAddress::CreateIPv4Mask(&mask, IPAddress::kIPv4AddressSize * 8 + 1));
+  EXPECT_TRUE(
+      IPAddress::CreateIPv4Mask(&mask, IPAddress::kIPv4AddressSize * 8));
+  EXPECT_EQ("255.255.255.255", mask.ToString());
+  EXPECT_TRUE(IPAddress::CreateIPv4Mask(&mask, 31));
+  EXPECT_EQ("255.255.255.254", mask.ToString());
+  EXPECT_TRUE(IPAddress::CreateIPv4Mask(&mask, 24));
+  EXPECT_EQ("255.255.255.0", mask.ToString());
+  EXPECT_TRUE(IPAddress::CreateIPv4Mask(&mask, 23));
+  EXPECT_EQ("255.255.254.0", mask.ToString());
+  EXPECT_TRUE(IPAddress::CreateIPv4Mask(&mask, 18));
+  EXPECT_EQ("255.255.192.0", mask.ToString());
+  EXPECT_TRUE(IPAddress::CreateIPv4Mask(&mask, 16));
+  EXPECT_EQ("255.255.0.0", mask.ToString());
+  EXPECT_TRUE(IPAddress::CreateIPv4Mask(&mask, 8));
+  EXPECT_EQ("255.0.0.0", mask.ToString());
+  EXPECT_TRUE(IPAddress::CreateIPv4Mask(&mask, 1));
+  EXPECT_EQ("128.0.0.0", mask.ToString());
+  EXPECT_TRUE(IPAddress::CreateIPv4Mask(&mask, 0));
+  EXPECT_EQ("0.0.0.0", mask.ToString());
+}
+
+TEST(IPAddressTest, IPv6Mask) {
+  IPAddress mask;
+  EXPECT_FALSE(
+      IPAddress::CreateIPv6Mask(&mask, (IPAddress::kIPv6AddressSize * 8) + 1));
+  EXPECT_TRUE(
+      IPAddress::CreateIPv6Mask(&mask, IPAddress::kIPv6AddressSize * 8));
+  EXPECT_EQ("ffff:ffff:ffff:ffff:ffff:ffff:ffff:ffff", mask.ToString());
+  EXPECT_TRUE(IPAddress::CreateIPv6Mask(&mask, 112));
+  EXPECT_EQ("ffff:ffff:ffff:ffff:ffff:ffff:ffff:0", mask.ToString());
+  EXPECT_TRUE(IPAddress::CreateIPv6Mask(&mask, 32));
+  EXPECT_EQ("ffff:ffff::", mask.ToString());
+  EXPECT_TRUE(IPAddress::CreateIPv6Mask(&mask, 1));
+  EXPECT_EQ("8000::", mask.ToString());
+  EXPECT_TRUE(IPAddress::CreateIPv6Mask(&mask, 0));
+  EXPECT_EQ("::", mask.ToString());
 }
 
 }  // anonymous namespace

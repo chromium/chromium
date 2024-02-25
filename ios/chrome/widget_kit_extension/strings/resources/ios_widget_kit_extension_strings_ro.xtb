@@ -1,10 +1,10 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="ro">
+<translation id="1324575488877808473">Deschide Chrome pentru a vedea aici cele mai accesate site-uri.</translation>
 <translation id="2513892053093488070">Căutare vocală</translation>
 <translation id="2535710892645968259">Accesează jocul Chrome Dino de pe ecranul de blocare.</translation>
 <translation id="2542770169955243077">Jocul cu dinozauri din Chrome</translation>
-<translation id="2803429804752388720">Caută parole</translation>
 <translation id="2922313168575194078">Caută în siguranță parolele salvate în Managerul de parole Google</translation>
 <translation id="302608144225178783">Accesează jocul cu dinozauri din Chrome de pe ecranul de pornire.</translation>
 <translation id="3296938369177810197">Căutare vocală</translation>
@@ -29,6 +29,7 @@
 <translation id="6691821786147477657">Începe o nouă căutare sau deschide cele mai vizitate site-uri de pe pagina ta de pornire iPad.</translation>
 <translation id="6721566127904256183">Site-urile accesate frecvent vor apărea aici.</translation>
 <translation id="6855322554930231468">Caută</translation>
+<translation id="6973491011026415905">Caută în Managerul de parole Google</translation>
 <translation id="7010831364920321713">Căutare incognito</translation>
 <translation id="7048549665319929185">Caută sau introdu adresa URL</translation>
 <translation id="7317302007099170473">Scanează codul QR</translation>

@@ -5,6 +5,8 @@
 #ifndef CONTENT_WEB_TEST_RENDERER_WEB_TEST_CONTENT_SETTINGS_CLIENT_H_
 #define CONTENT_WEB_TEST_RENDERER_WEB_TEST_CONTENT_SETTINGS_CLIENT_H_
 
+#include "base/memory/raw_ptr.h"
+#include "content/public/renderer/render_frame_observer.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "third_party/blink/public/platform/web_content_settings_client.h"
 #include "url/origin.h"
@@ -12,13 +14,15 @@
 namespace content {
 
 class TestRunner;
-class WebTestRuntimeFlags;
+class WebFrameTestProxy;
 
-class WebTestContentSettingsClient : public blink::WebContentSettingsClient {
+class WebTestContentSettingsClient : public RenderFrameObserver,
+                                     public blink::WebContentSettingsClient {
  public:
-  // The |test_runner| and |layout_test_runtime_flags| must outlive this class.
-  WebTestContentSettingsClient(TestRunner* test_runner,
-                               WebTestRuntimeFlags* layout_test_runtime_flags);
+  // The lifecycle of this object is tied to the lifecycle of the provided
+  // `frame`. `test_runner` must outlive this class.
+  WebTestContentSettingsClient(WebFrameTestProxy* frame,
+                               TestRunner* test_runner);
 
   ~WebTestContentSettingsClient() override;
 
@@ -26,20 +30,17 @@ class WebTestContentSettingsClient : public blink::WebContentSettingsClient {
   WebTestContentSettingsClient& operator=(const WebTestContentSettingsClient&) =
       delete;
 
+  // RenderFrameObserver:
+  void OnDestruct() override;
+
   // blink::WebContentSettingsClient:
-  bool AllowImage(bool enabled_per_settings,
-                  const blink::WebURL& image_url) override;
-  bool AllowScript(bool enabled_per_settings) override;
-  bool AllowScriptFromSource(bool enabled_per_settings,
-                             const blink::WebURL& script_url) override;
   bool AllowStorageAccessSync(StorageType storage_type) override;
   bool AllowRunningInsecureContent(bool enabled_per_settings,
                                    const blink::WebURL& url) override;
   bool IncreaseViewTransitionCallbackTimeout() const override;
 
  private:
-  TestRunner* const test_runner_;
-  WebTestRuntimeFlags* const flags_;
+  const raw_ptr<TestRunner> test_runner_;
 };
 
 }  // namespace content

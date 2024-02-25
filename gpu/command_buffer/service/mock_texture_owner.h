@@ -42,6 +42,10 @@ class MockTextureOwner : public TextureOwner {
                     gfx::Rect* visible_rect));
   MOCK_METHOD1(RunWhenBufferIsAvailable, void(base::OnceClosure));
 
+  MOCK_METHOD2(OnMemoryDump,
+               bool(const base::trace_event::MemoryDumpArgs& args,
+                    base::trace_event::ProcessMemoryDump* pmd));
+
   std::unique_ptr<base::android::ScopedHardwareBufferFenceSync>
   GetAHardwareBuffer() override {
     get_a_hardware_buffer_count++;

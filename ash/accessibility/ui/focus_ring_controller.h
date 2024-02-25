@@ -66,7 +66,7 @@ class ASH_EXPORT FocusRingController : public AccessibilityLayerDelegate,
 
   bool visible_ = false;
 
-  raw_ptr<views::Widget, ExperimentalAsh> widget_ = nullptr;
+  raw_ptr<views::Widget> widget_ = nullptr;
   std::unique_ptr<FocusRingLayer> focus_ring_layer_;
 };
 

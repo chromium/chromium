@@ -32,10 +32,18 @@ public class AwScrollOffsetManager {
      */
     public interface Delegate {
         // Call View#overScrollBy on the containerView.
-        void overScrollContainerViewBy(int deltaX, int deltaY, int scrollX, int scrollY,
-                int scrollRangeX, int scrollRangeY, boolean isTouchEvent);
+        void overScrollContainerViewBy(
+                int deltaX,
+                int deltaY,
+                int scrollX,
+                int scrollY,
+                int scrollRangeX,
+                int scrollRangeY,
+                boolean isTouchEvent);
+
         // Call View#scrollTo on the containerView.
         void scrollContainerViewTo(int x, int y);
+
         // Store the scroll offset in the native side. This should really be a simple store
         // operation, the native side shouldn't synchronously alter the scroll offset from within
         // this call.
@@ -50,6 +58,7 @@ public class AwScrollOffsetManager {
         void smoothScroll(int targetX, int targetY, long durationMs);
 
         int getContainerViewScrollX();
+
         int getContainerViewScrollY();
 
         void invalidate();
@@ -84,7 +93,7 @@ public class AwScrollOffsetManager {
         mDelegate = delegate;
     }
 
-    //----- Scroll range and extent calculation methods -------------------------------------------
+    // ----- Scroll range and extent calculation methods -------------------------------------------
 
     public int computeHorizontalScrollRange() {
         return mContainerViewWidth + mMaxHorizontalScrollOffset;
@@ -114,18 +123,14 @@ public class AwScrollOffsetManager {
         return mContainerViewHeight;
     }
 
-    //---------------------------------------------------------------------------------------------
-    /**
-     * Called when the scroll range changes. This needs to be the size of the on-screen content.
-     */
+    // ---------------------------------------------------------------------------------------------
+    /** Called when the scroll range changes. This needs to be the size of the on-screen content. */
     public void setMaxScrollOffset(int width, int height) {
         mMaxHorizontalScrollOffset = width;
         mMaxVerticalScrollOffset = height;
     }
 
-    /**
-     * Called when the physical size of the view changes.
-     */
+    /** Called when the physical size of the view changes. */
     public void setContainerViewSize(int width, int height) {
         mContainerViewWidth = width;
         mContainerViewHeight = height;
@@ -134,8 +139,8 @@ public class AwScrollOffsetManager {
     public void syncScrollOffsetFromOnDraw() {
         // Unfortunately apps override onScrollChanged without calling super which is why we need
         // to sync the scroll offset on every onDraw.
-        onContainerViewScrollChanged(mDelegate.getContainerViewScrollX(),
-                mDelegate.getContainerViewScrollY());
+        onContainerViewScrollChanged(
+                mDelegate.getContainerViewScrollX(), mDelegate.getContainerViewScrollY());
     }
 
     public void setProcessingTouchEvent(boolean processingTouchEvent) {
@@ -162,8 +167,14 @@ public class AwScrollOffsetManager {
 
         // We use overScrollContainerViewBy to be compatible with WebViewClassic which used this
         // method for handling both over-scroll as well as in-bounds scroll.
-        mDelegate.overScrollContainerViewBy(deltaX, deltaY, scrollX, scrollY,
-                scrollRangeX, scrollRangeY, mProcessingTouchEvent);
+        mDelegate.overScrollContainerViewBy(
+                deltaX,
+                deltaY,
+                scrollX,
+                scrollY,
+                scrollRangeX,
+                scrollRangeY,
+                mProcessingTouchEvent);
     }
 
     // Called by the native side to over-scroll the container view.
@@ -186,8 +197,14 @@ public class AwScrollOffsetManager {
 
         // The android.view.View.overScrollBy method is used for both scrolling and over-scrolling
         // which is why we use it here.
-        mDelegate.overScrollContainerViewBy(deltaX, deltaY, scrollX, scrollY,
-                scrollRangeX, scrollRangeY, mProcessingTouchEvent);
+        mDelegate.overScrollContainerViewBy(
+                deltaX,
+                deltaY,
+                scrollX,
+                scrollY,
+                scrollRangeX,
+                scrollRangeY,
+                mProcessingTouchEvent);
     }
 
     private int clampHorizontalScroll(int scrollX) {
@@ -203,8 +220,8 @@ public class AwScrollOffsetManager {
     }
 
     // Called by the View system as a response to the mDelegate.overScrollContainerViewBy call.
-    public void onContainerViewOverScrolled(int scrollX, int scrollY, boolean clampedX,
-            boolean clampedY) {
+    public void onContainerViewOverScrolled(
+            int scrollX, int scrollY, boolean clampedX, boolean clampedY) {
         // Clamp the scroll offset at (0, max).
         scrollX = clampHorizontalScroll(scrollX);
         scrollY = clampVerticalScroll(scrollY);
@@ -280,9 +297,7 @@ public class AwScrollOffsetManager {
         return true;
     }
 
-    /**
-     * See {@link android.webkit.WebView#pageUp(boolean)}
-     */
+    /** See {@link android.webkit.WebView#pageUp(boolean)} */
     public boolean pageUp(boolean top) {
         final int scrollX = mDelegate.getContainerViewScrollX();
         final int scrollY = mDelegate.getContainerViewScrollY();
@@ -300,9 +315,7 @@ public class AwScrollOffsetManager {
         return animateScrollTo(scrollX, scrollY + dy);
     }
 
-    /**
-     * See {@link android.webkit.WebView#pageDown(boolean)}
-     */
+    /** See {@link android.webkit.WebView#pageDown(boolean)} */
     public boolean pageDown(boolean bottom) {
         final int scrollX = mDelegate.getContainerViewScrollX();
         final int scrollY = mDelegate.getContainerViewScrollY();
@@ -319,11 +332,9 @@ public class AwScrollOffsetManager {
         return animateScrollTo(scrollX, scrollY + dy);
     }
 
-    /**
-     * See {@link android.webkit.WebView#requestChildRectangleOnScreen(View, Rect, boolean)}
-     */
-    public boolean requestChildRectangleOnScreen(int childOffsetX, int childOffsetY, Rect rect,
-            boolean immediate) {
+    /** See {@link android.webkit.WebView#requestChildRectangleOnScreen(View, Rect, boolean)} */
+    public boolean requestChildRectangleOnScreen(
+            int childOffsetX, int childOffsetY, Rect rect, boolean immediate) {
         // TODO(mkosiba): WebViewClassic immediately returns false if a zoom animation is
         // in progress. We currently can't tell if one is happening.. should we instead cancel any
         // scroll animation when the size/pageScaleFactor changes?

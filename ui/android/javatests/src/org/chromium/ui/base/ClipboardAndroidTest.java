@@ -57,12 +57,14 @@ public class ClipboardAndroidTest extends BlankUiTestActivityTestCase {
         Clipboard.cleanupNativeForTesting();
 
         // Clear the clipboard to avoid leaving any state.
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            ClipboardManager clipboardManager =
-                    (ClipboardManager) getActivity().getSystemService(Context.CLIPBOARD_SERVICE);
-            ClipData clipData = ClipData.newPlainText("", "");
-            clipboardManager.setPrimaryClip(clipData);
-        });
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    ClipboardManager clipboardManager =
+                            (ClipboardManager)
+                                    getActivity().getSystemService(Context.CLIPBOARD_SERVICE);
+                    ClipData clipData = ClipData.newPlainText("", "");
+                    clipboardManager.setPrimaryClip(clipData);
+                });
         super.tearDownTest();
     }
 
@@ -76,10 +78,12 @@ public class ClipboardAndroidTest extends BlankUiTestActivityTestCase {
     public void internalClipboardInvalidation() throws TimeoutException {
         // Write to the clipboard in native and ensure that is propagated to the platform clipboard.
         final String originalText = "foo";
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            Assert.assertTrue("Original text was not written to the native clipboard.",
-                    ClipboardAndroidTestSupport.writeHtml(originalText));
-        });
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    Assert.assertTrue(
+                            "Original text was not written to the native clipboard.",
+                            ClipboardAndroidTestSupport.writeHtml(originalText));
+                });
 
         CallbackHelper helper = new CallbackHelper();
         ClipboardManager.OnPrimaryClipChangedListener clipboardChangedListener =
@@ -93,37 +97,46 @@ public class ClipboardAndroidTest extends BlankUiTestActivityTestCase {
         // Assert that the ClipboardManager contains the original text. Then simulate another
         // application writing to the clipboard.
         final String invalidatingText = "Hello, World!";
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            ClipboardManager clipboardManager =
-                    (ClipboardManager) getActivity().getSystemService(Context.CLIPBOARD_SERVICE);
-            clipboardManager.addPrimaryClipChangedListener(clipboardChangedListener);
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    ClipboardManager clipboardManager =
+                            (ClipboardManager)
+                                    getActivity().getSystemService(Context.CLIPBOARD_SERVICE);
+                    clipboardManager.addPrimaryClipChangedListener(clipboardChangedListener);
 
-            Assert.assertEquals("Original text not found in ClipboardManager.", originalText,
-                    Clipboard.getInstance().clipDataToHtmlText(clipboardManager.getPrimaryClip()));
+                    Assert.assertEquals(
+                            "Original text not found in ClipboardManager.",
+                            originalText,
+                            Clipboard.getInstance()
+                                    .clipDataToHtmlText(clipboardManager.getPrimaryClip()));
 
-            clipboardManager.setPrimaryClip(ClipData.newPlainText(null, invalidatingText));
-        });
+                    clipboardManager.setPrimaryClip(ClipData.newPlainText(null, invalidatingText));
+                });
 
         helper.waitForCallback("ClipboardManager did not notify of PrimaryClip change.", 0);
 
         // Assert that the overwrite from another application is registered by the native clipboard.
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            Assert.assertTrue("Invalidating text not found in the native clipboard.",
-                    ClipboardAndroidTestSupport.clipboardContains(invalidatingText));
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    Assert.assertTrue(
+                            "Invalidating text not found in the native clipboard.",
+                            ClipboardAndroidTestSupport.clipboardContains(invalidatingText));
 
-            ClipboardManager clipboardManager =
-                    (ClipboardManager) getActivity().getSystemService(Context.CLIPBOARD_SERVICE);
-            clipboardManager.removePrimaryClipChangedListener(clipboardChangedListener);
-        });
+                    ClipboardManager clipboardManager =
+                            (ClipboardManager)
+                                    getActivity().getSystemService(Context.CLIPBOARD_SERVICE);
+                    clipboardManager.removePrimaryClipChangedListener(clipboardChangedListener);
+                });
     }
 
     @Test
     @SmallTest
     public void hasHTMLOrStyledTextForNormalTextTest() {
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            Clipboard.getInstance().setText("SampleTextToCopy");
-            Assert.assertFalse(Clipboard.getInstance().hasHTMLOrStyledText());
-        });
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    Clipboard.getInstance().setText("SampleTextToCopy");
+                    Assert.assertFalse(Clipboard.getInstance().hasHTMLOrStyledText());
+                });
     }
 
     @Test
@@ -133,31 +146,39 @@ public class ClipboardAndroidTest extends BlankUiTestActivityTestCase {
         spanString.setSpan(new BackgroundColorSpan(0), 0, 4, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
         ClipData clipData =
                 ClipData.newPlainText("text", spanString.subSequence(0, spanString.length() - 1));
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            ((ClipboardImpl) Clipboard.getInstance()).setPrimaryClipNoException(clipData);
-            Assert.assertTrue(Clipboard.getInstance().hasHTMLOrStyledText());
-        });
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    ((ClipboardImpl) Clipboard.getInstance()).setPrimaryClipNoException(clipData);
+                    Assert.assertTrue(Clipboard.getInstance().hasHTMLOrStyledText());
+                });
     }
 
     @Test
     @SmallTest
     public void hasHTMLOrStyledTextForHtmlTextTest() {
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            Clipboard.getInstance().setHTMLText(
-                    "<span style=\"color: red;\">HTMLTextToCopy</span>", "HTMLTextToCopy");
-            Assert.assertTrue(Clipboard.getInstance().hasHTMLOrStyledText());
-        });
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    Clipboard.getInstance()
+                            .setHTMLText(
+                                    "<span style=\"color: red;\">HTMLTextToCopy</span>",
+                                    "HTMLTextToCopy");
+                    Assert.assertTrue(Clipboard.getInstance().hasHTMLOrStyledText());
+                });
     }
 
     @Test
     @SmallTest
     public void hasUrlAndGetUrlTest() {
-        TestThreadUtils.runOnUiThreadBlocking(() -> { Clipboard.getInstance().setText(TEXT_URL); });
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    Clipboard.getInstance().setText(TEXT_URL);
+                });
 
-        CriteriaHelper.pollUiThread(() -> {
-            Criteria.checkThat(Clipboard.getInstance().hasUrl(), Matchers.is(true));
-            Criteria.checkThat(Clipboard.getInstance().getUrl(), Matchers.is(TEXT_URL));
-        });
+        CriteriaHelper.pollUiThread(
+                () -> {
+                    Criteria.checkThat(Clipboard.getInstance().hasUrl(), Matchers.is(true));
+                    Criteria.checkThat(Clipboard.getInstance().getUrl(), Matchers.is(TEXT_URL));
+                });
     }
 
     // Only first URL is returned on S+ if clipboard contains multiple URLs.
@@ -166,12 +187,15 @@ public class ClipboardAndroidTest extends BlankUiTestActivityTestCase {
     @MinAndroidSdkLevel(Build.VERSION_CODES.S)
     public void hasUrlAndGetUrlMixTextAndLinkTest() {
         TestThreadUtils.runOnUiThreadBlocking(
-                () -> { Clipboard.getInstance().setText(MIX_TEXT_URL); });
+                () -> {
+                    Clipboard.getInstance().setText(MIX_TEXT_URL);
+                });
 
-        CriteriaHelper.pollUiThread(() -> {
-            Criteria.checkThat(Clipboard.getInstance().hasUrl(), Matchers.is(true));
-            Criteria.checkThat(Clipboard.getInstance().getUrl(), Matchers.is(TEXT_URL));
-        });
+        CriteriaHelper.pollUiThread(
+                () -> {
+                    Criteria.checkThat(Clipboard.getInstance().hasUrl(), Matchers.is(true));
+                    Criteria.checkThat(Clipboard.getInstance().getUrl(), Matchers.is(TEXT_URL));
+                });
     }
 
     // Only first URL is returned on S+ if clipboard contains multiple URLs.
@@ -180,11 +204,14 @@ public class ClipboardAndroidTest extends BlankUiTestActivityTestCase {
     @MinAndroidSdkLevel(Build.VERSION_CODES.S)
     public void hasUrlAndGetUrlMixTextAndLinkWithoutProtocolTest() {
         TestThreadUtils.runOnUiThreadBlocking(
-                () -> { Clipboard.getInstance().setText(MIX_TEXT_URL_NO_PROTOCOL); });
+                () -> {
+                    Clipboard.getInstance().setText(MIX_TEXT_URL_NO_PROTOCOL);
+                });
 
-        CriteriaHelper.pollUiThread(() -> {
-            Criteria.checkThat(Clipboard.getInstance().hasUrl(), Matchers.is(true));
-            Criteria.checkThat(Clipboard.getInstance().getUrl(), Matchers.is(TEXT_URL));
-        });
+        CriteriaHelper.pollUiThread(
+                () -> {
+                    Criteria.checkThat(Clipboard.getInstance().hasUrl(), Matchers.is(true));
+                    Criteria.checkThat(Clipboard.getInstance().getUrl(), Matchers.is(TEXT_URL));
+                });
     }
 }

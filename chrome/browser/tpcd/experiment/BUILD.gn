@@ -1,0 +1,29 @@
+# Copyright 2023 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/chromeos/ui_mode.gni")
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [
+    "eligibility_service_unittest.cc",
+    "experiment_manager_impl_unittest.cc",
+  ]
+
+  deps = [
+    "//base",
+    "//chrome/browser",
+    "//chrome/test:test_support",
+    "//components/privacy_sandbox:privacy_sandbox_settings_headers",
+    "//components/privacy_sandbox:test_support",
+    "//components/privacy_sandbox:tracking_protection_onboarding",
+    "//components/privacy_sandbox:tracking_protection_prefs",
+    "//content/test:test_support",
+    "//testing/gtest",
+  ]
+
+  if (is_chromeos_ash) {
+    deps += [ "//chromeos/ash/components/browser_context_helper" ]
+  }
+}

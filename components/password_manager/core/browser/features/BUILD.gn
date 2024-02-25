@@ -8,4 +8,44 @@ source_set("password_features") {
     "password_features.h",
   ]
   deps = [ "//base" ]
+  configs += [ "//build/config/compiler:wexit_time_destructors" ]
+}
+
+source_set("utils") {
+  sources = [
+    "password_manager_features_util.h",
+    "password_manager_features_util_common.cc",
+  ]
+
+  deps = [
+    ":password_features",
+    "//components/password_manager/core/browser:password_form",
+    "//components/password_manager/core/common",
+    "//components/prefs",
+    "//components/sync/service",
+  ]
+
+  configs += [ "//build/config/compiler:wexit_time_destructors" ]
+
+  if (!is_android && !is_ios) {
+    sources += [ "password_manager_features_util_desktop.cc" ]
+  } else {
+    sources += [ "password_manager_features_util_mobile.cc" ]
+  }
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "password_manager_features_util_unittest.cc" ]
+  deps = [
+    ":password_features",
+    ":utils",
+    "//base/test:test_support",
+    "//components/password_manager/core/common",
+    "//components/prefs",
+    "//components/prefs:test_support",
+    "//components/signin/public/identity_manager",
+    "//components/sync:test_support",
+    "//testing/gtest",
+  ]
 }

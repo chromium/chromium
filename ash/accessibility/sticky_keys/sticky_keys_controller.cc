@@ -42,7 +42,7 @@ ui::EventRewriteStatus RewriteUpdate(
 
   *rewritten_event = event.Clone();
   if (mod_down_flags & ~event.flags()) {
-    (*rewritten_event)->set_flags(event.flags() | mod_down_flags);
+    (*rewritten_event)->SetFlags(event.flags() | mod_down_flags);
   }
 
   if (released)
@@ -335,7 +335,7 @@ StickyKeysHandler::KeyEventType StickyKeysHandler::TranslateKeyEvent(
     is_target_key = (modifier_flag_ == ui::EF_ALTGR_DOWN);
   } else if (key_code == ui::VKEY_OEM_8) {
     is_target_key = (modifier_flag_ == ui::EF_MOD3_DOWN);
-  } else if (key_code == ui::VKEY_LWIN) {
+  } else if (key_code == ui::VKEY_LWIN || key_code == ui::VKEY_RWIN) {
     is_target_key = (modifier_flag_ == ui::EF_COMMAND_DOWN);
   } else {
     return type == ui::ET_KEY_PRESSED ? NORMAL_KEY_DOWN : NORMAL_KEY_UP;

@@ -27,12 +27,20 @@ mojom("mojo_types") {
           cpp = "::autofill::FormData"
         },
         {
+          mojom = "autofill.mojom.FormData_FillData"
+          cpp = "::autofill::FormData::FillData"
+        },
+        {
           mojom = "autofill.mojom.FormDataPredictions"
           cpp = "::autofill::FormDataPredictions"
         },
         {
           mojom = "autofill.mojom.FormFieldData"
           cpp = "::autofill::FormFieldData"
+        },
+        {
+          mojom = "autofill.mojom.FormFieldData_FillData"
+          cpp = "::autofill::FormFieldData::FillData"
         },
         {
           mojom = "autofill.mojom.FormFieldDataPredictions"
@@ -75,6 +83,10 @@ mojom("mojo_types") {
         {
           mojom = "autofill.mojom.PasswordGenerationUIData"
           cpp = "::autofill::password_generation::PasswordGenerationUIData"
+        },
+        {
+          mojom = "autofill.mojom.PasswordSuggestionRequest"
+          cpp = "::autofill::PasswordSuggestionRequest"
         },
       ]
       traits_headers = [ "autofill_types_mojom_traits.h" ]

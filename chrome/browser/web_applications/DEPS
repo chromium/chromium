@@ -9,6 +9,7 @@ include_rules = {
   "+mojo/public/cpp/bindings",
   "+services/network/public/cpp",
   "+third_party/blink/public/common",
+  "+third_party/fuzztest",
   "+third_party/liburlpattern",
   "+url",
 }

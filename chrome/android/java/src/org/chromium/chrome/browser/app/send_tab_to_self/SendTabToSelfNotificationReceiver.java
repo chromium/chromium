@@ -8,7 +8,8 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 
-import org.chromium.base.annotations.CalledByNative;
+import org.jni_zero.CalledByNative;
+
 import org.chromium.chrome.browser.init.BrowserParts;
 import org.chromium.chrome.browser.init.ChromeBrowserInitializer;
 import org.chromium.chrome.browser.init.EmptyBrowserParts;
@@ -18,12 +19,13 @@ import org.chromium.chrome.browser.share.send_tab_to_self.NotificationManager;
 public class SendTabToSelfNotificationReceiver extends BroadcastReceiver {
     @Override
     public void onReceive(Context context, Intent intent) {
-        final BrowserParts parts = new EmptyBrowserParts() {
-            @Override
-            public void finishNativeInitialization() {
-                NotificationManager.handleIntent(intent);
-            }
-        };
+        final BrowserParts parts =
+                new EmptyBrowserParts() {
+                    @Override
+                    public void finishNativeInitialization() {
+                        NotificationManager.handleIntent(intent);
+                    }
+                };
 
         // Try to load native.
         ChromeBrowserInitializer.getInstance().handlePreNativeStartupAndLoadLibraries(parts);

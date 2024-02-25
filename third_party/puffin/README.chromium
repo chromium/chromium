@@ -2,9 +2,9 @@ Name: Puffin deterministic deflate recompressor
 Short Name: Puffin
 URL: https://android.googlesource.com/platform/external/puffin
 Version: 1.0.0
-Date: Tues May 10 13:55:00 2022
+Date: 2022-10-05
 Revision: e0820dcfebfb4df925be2e37ad8f56c00dc624f5
-License: Chromium OS BSD
+License: BSD 3-Clause
 License File: LICENSE
 Security Critical: yes
 Shipped: yes

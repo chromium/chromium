@@ -29,7 +29,7 @@ bool ResourceDataDLL::HasResource(uint16_t resource_id) const {
                                               &data_size);
 }
 
-absl::optional<base::StringPiece> ResourceDataDLL::GetStringPiece(
+std::optional<base::StringPiece> ResourceDataDLL::GetStringPiece(
     uint16_t resource_id) const {
   void* data_ptr;
   size_t data_size;
@@ -39,7 +39,7 @@ absl::optional<base::StringPiece> ResourceDataDLL::GetStringPiece(
                                            &data_size)) {
     return base::StringPiece(static_cast<const char*>(data_ptr), data_size);
   }
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 base::RefCountedStaticMemory* ResourceDataDLL::GetStaticMemory(

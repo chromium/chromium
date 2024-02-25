@@ -5,11 +5,11 @@
 #ifndef CHROMEOS_ASH_SERVICES_SECURE_CHANNEL_FAKE_CONNECTION_ATTEMPT_DELEGATE_H_
 #define CHROMEOS_ASH_SERVICES_SECURE_CHANNEL_FAKE_CONNECTION_ATTEMPT_DELEGATE_H_
 
+#include <optional>
 #include <string>
 
 #include "chromeos/ash/services/secure_channel/connection_attempt_delegate.h"
 #include "chromeos/ash/services/secure_channel/connection_details.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ash::secure_channel {
 
@@ -29,11 +29,11 @@ class FakeConnectionAttemptDelegate : public ConnectionAttemptDelegate {
     return authenticated_channel_.get();
   }
 
-  const absl::optional<ConnectionDetails>& connection_details() const {
+  const std::optional<ConnectionDetails>& connection_details() const {
     return connection_details_;
   }
 
-  const absl::optional<ConnectionAttemptDetails>& connection_attempt_details()
+  const std::optional<ConnectionAttemptDetails>& connection_attempt_details()
       const {
     return connection_attempt_details_;
   }
@@ -46,8 +46,8 @@ class FakeConnectionAttemptDelegate : public ConnectionAttemptDelegate {
   void OnConnectionAttemptFinishedWithoutConnection(
       const ConnectionAttemptDetails& connection_attempt_details) override;
 
-  absl::optional<ConnectionAttemptDetails> connection_attempt_details_;
-  absl::optional<ConnectionDetails> connection_details_;
+  std::optional<ConnectionAttemptDetails> connection_attempt_details_;
+  std::optional<ConnectionDetails> connection_details_;
   std::unique_ptr<AuthenticatedChannel> authenticated_channel_;
 };
 

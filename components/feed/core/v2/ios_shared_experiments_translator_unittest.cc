@@ -36,7 +36,7 @@ TEST_F(ExperimentsTranslatorTest, ExperimentsAreTranslated) {
   exp->set_trial_name("Trial1");
   exp->set_group_name("Group1");
 
-  absl::optional<Experiments> e = TranslateExperiments(metadata.experiments());
+  std::optional<Experiments> e = TranslateExperiments(metadata.experiments());
   ASSERT_TRUE(e.has_value());
 
   EXPECT_EQ(e, expected);
@@ -56,7 +56,7 @@ TEST_F(ExperimentsTranslatorTest, ExperimentsAreTranslatedIDTaggingEnabled) {
   exp2->set_trial_name("Trial1");
   exp2->set_experiment_id("ID2");
 
-  absl::optional<Experiments> e = TranslateExperiments(metadata.experiments());
+  std::optional<Experiments> e = TranslateExperiments(metadata.experiments());
   ASSERT_TRUE(e.has_value());
 
   EXPECT_EQ(e, expected);
@@ -80,7 +80,7 @@ TEST_F(ExperimentsTranslatorTest, ExperimentsAreTranslatedIDTaggingDisabled) {
   exp3->set_trial_name("Trial_NOT_TRANSLATED");
   exp3->set_experiment_id("EXP_ID_NOT_TRANSLATED");
 
-  absl::optional<Experiments> e = TranslateExperiments(metadata.experiments());
+  std::optional<Experiments> e = TranslateExperiments(metadata.experiments());
   ASSERT_TRUE(e.has_value());
 
   EXPECT_EQ(e, expected);
@@ -92,7 +92,7 @@ TEST_F(ExperimentsTranslatorTest,
   auto* exp1 = metadata.add_experiments();
   exp1->set_trial_name("Trial1");
 
-  absl::optional<Experiments> e = TranslateExperiments(metadata.experiments());
+  std::optional<Experiments> e = TranslateExperiments(metadata.experiments());
   ASSERT_FALSE(e.has_value());
 }
 

@@ -56,6 +56,7 @@
 #include "storage/browser/test/test_file_system_context.h"
 #include "storage/common/database/database_identifier.h"
 #include "storage/common/file_system/file_system_types.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "third_party/leveldatabase/leveldb_chrome.h"
@@ -299,7 +300,7 @@ class ObfuscatedFileUtilTest : public testing::Test,
 
     is_non_default_bucket()
         ? sandbox_file_system_.SetUp(file_system_context_, custom_bucket_)
-        : sandbox_file_system_.SetUp(file_system_context_, storage_key_);
+        : sandbox_file_system_.SetUp(file_system_context_, default_bucket_);
 
     change_observers_ = MockFileChangeObserver::CreateList(&change_observer_);
 
@@ -1014,12 +1015,18 @@ TEST_P(ObfuscatedFileUtilTest, TestCreateAndDeleteFile) {
   context = NewContext(nullptr);
   bool exclusive = true;
   bool recursive = true;
-  FileSystemURL directory_url = CreateURLFromUTF8("series/of/directories");
+  FileSystemURL root_url = CreateURLFromUTF8("series");
+  FileSystemURL intermediate_url = FileSystemURLAppendUTF8(root_url, "of");
+  FileSystemURL directory_url =
+      FileSystemURLAppendUTF8(intermediate_url, "directories");
   url = FileSystemURLAppendUTF8(directory_url, "file name");
   EXPECT_EQ(base::File::FILE_OK,
             ofu()->CreateDirectory(context.get(), directory_url, exclusive,
                                    recursive));
-  // The oepration created 3 directories recursively.
+  // The operation created 3 directories recursively.
+  EXPECT_THAT(
+      change_observer()->get_changed_urls(),
+      testing::UnorderedElementsAre(root_url, intermediate_url, directory_url));
   EXPECT_EQ(3, change_observer()->get_and_reset_create_directory_count());
 
   context = NewContext(nullptr);
@@ -1728,7 +1735,7 @@ TEST_P(ObfuscatedFileUtilTest, TestStorageKeyEnumerator) {
   // populates the enumerator being tested. So in a test environment, this
   // enumerator should not have any additional StorageKeys to access via Next().
   if (is_third_party_context() || is_non_default_bucket()) {
-    EXPECT_EQ(absl::nullopt, enumerator->Next());
+    EXPECT_EQ(std::nullopt, enumerator->Next());
     return;
   }
   EXPECT_EQ(storage_key(), enumerator->Next());
@@ -1778,7 +1785,7 @@ TEST_P(ObfuscatedFileUtilTest, TestStorageKeyEnumerator) {
   enumerator = ofu()->CreateStorageKeyEnumerator();
   EXPECT_TRUE(enumerator.get());
   std::set<blink::StorageKey> storage_keys_found;
-  absl::optional<blink::StorageKey> enumerator_storage_key;
+  std::optional<blink::StorageKey> enumerator_storage_key;
   while ((enumerator_storage_key = enumerator->Next()).has_value()) {
     storage_keys_found.insert(enumerator_storage_key.value());
     SCOPED_TRACE(testing::Message()
@@ -2660,7 +2667,7 @@ TEST_P(ObfuscatedFileUtilTest, DeleteDirectoryForBucketAndType_DeleteAll) {
                   .has_value());
 
   // Delete all directories for default_bucket_.
-  ofu()->DeleteDirectoryForBucketAndType(default_bucket_, absl::nullopt);
+  ofu()->DeleteDirectoryForBucketAndType(default_bucket_, std::nullopt);
 
   // The directories for default_bucket_ should be removed.
   ASSERT_THAT(ofu()->GetDirectoryForBucketAndType(default_bucket_,

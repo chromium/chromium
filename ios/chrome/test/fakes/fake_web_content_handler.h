@@ -12,12 +12,16 @@
 // test fake for WebContentCommand callers. Records arguments passed into the
 // command methods for tests to examine.
 @interface FakeWebContentHandler : NSObject <WebContentCommands>
+
 // The most recent dictionary passed into -showAppStoreWithParameters:.
 @property(nonatomic) NSDictionary* productParams;
 
-// All passes passed into -showDialogForPassKitPass. nil passes are represented
-// with NSNull objects.
+// All passes passed into -showDialogForPassKitPasses. nil passes are
+// represented with NSNull objects.
 @property(nonatomic, readonly) NSArray* passes;
+
+// Whether any method on this fake object has been called.
+@property(nonatomic, assign) BOOL called;
 
 @end
 

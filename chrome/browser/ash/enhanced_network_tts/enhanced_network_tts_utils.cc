@@ -233,13 +233,13 @@ mojom::TtsResponsePtr UnpackJsonResponse(const base::Value::List& list_data,
     // If the first item in the timing_info_list does not have a text offset,
     // we default that to 0. If the first item starts with whitespaces, the
     // server will send back the text offset for the item.
-    absl::optional<int> timing_info_text_offset =
+    std::optional<int> timing_info_text_offset =
         timing_info.FindIntByDottedPath("location.textLocation.offset");
-    if (timing_info_text_offset == absl::nullopt && i == 0) {
+    if (timing_info_text_offset == std::nullopt && i == 0) {
       timing_info_text_offset = 0;
     }
 
-    if (timing_info_text_offset == absl::nullopt || !timing_info_text_ptr ||
+    if (timing_info_text_offset == std::nullopt || !timing_info_text_ptr ||
         !timing_info_timeoffset_ptr || !timing_info_duration_ptr) {
       continue;
     }

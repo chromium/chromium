@@ -28,9 +28,9 @@ class EchoDialogListener;
 // extension is not allowed by policy to redeem offers, the dialog informs user
 // about this.
 class EchoDialogView : public views::DialogDelegateView {
- public:
-  METADATA_HEADER(EchoDialogView);
+  METADATA_HEADER(EchoDialogView, views::DialogDelegateView)
 
+ public:
   struct Params {
     bool echo_enabled = false;
     std::u16string service_name;

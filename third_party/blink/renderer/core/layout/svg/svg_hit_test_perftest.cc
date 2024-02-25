@@ -115,19 +115,14 @@ TEST_F(SvgHitTestPerfTest, IntersectsClipPath) {
       HitTestLocation(document_point), container->LocalToSVGParentTransform());
   ASSERT_TRUE(local_location);
 
-  gfx::RectF object_bounding_box = container->ObjectBoundingBox();
-
-  RunTest(
-      "IntersectsClipPath",
-      WTF::BindRepeating(
-          [](const LayoutObject* container, gfx::RectF& container_bounding_box,
-             TransformedHitTestLocation& local_location) {
-            container->HasClipPath() &&
-                ClipPathClipper::HitTest(*container, container_bounding_box,
-                                         *local_location);
-          },
-          WrapPersistent(container), std::ref(object_bounding_box),
-          std::ref(local_location)));
+  RunTest("IntersectsClipPath",
+          WTF::BindRepeating(
+              [](const LayoutObject* container,
+                 TransformedHitTestLocation& local_location) {
+                container->HasClipPath() &&
+                    ClipPathClipper::HitTest(*container, *local_location);
+              },
+              WrapPersistent(container), std::ref(local_location)));
 }
 
 }  // namespace blink

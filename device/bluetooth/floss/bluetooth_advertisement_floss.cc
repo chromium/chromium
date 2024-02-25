@@ -56,25 +56,25 @@ BluetoothAdvertisementFloss::BluetoothAdvertisementFloss(
       params_.connectable ? OwnAddressType::kPublic : OwnAddressType::kRandom;
 
   // Initializing advertise data.
-  absl::optional<UUIDList> service_uuids = data->service_uuids();
+  std::optional<UUIDList> service_uuids = data->service_uuids();
   if (service_uuids) {
     for (auto& uuid : *service_uuids) {
       adv_data_.service_uuids.emplace_back(uuid);
     }
   }
-  absl::optional<ManufacturerData> manuf_data = data->manufacturer_data();
+  std::optional<ManufacturerData> manuf_data = data->manufacturer_data();
   if (manuf_data) {
     for (auto& [key, val] : *manuf_data) {
       adv_data_.manufacturer_data.emplace(key, std::move(val));
     }
   }
-  absl::optional<UUIDList> solicit_uuids = data->solicit_uuids();
+  std::optional<UUIDList> solicit_uuids = data->solicit_uuids();
   if (solicit_uuids) {
     for (auto& uuid : *service_uuids) {
       adv_data_.solicit_uuids.emplace_back(uuid);
     }
   }
-  absl::optional<ServiceData> service_data = data->service_data();
+  std::optional<ServiceData> service_data = data->service_data();
   if (service_data) {
     for (auto& [key, val] : *service_data) {
       adv_data_.service_data.emplace(std::move(key), std::move(val));
@@ -85,7 +85,7 @@ BluetoothAdvertisementFloss::BluetoothAdvertisementFloss(
   adv_data_.include_device_name = false;
 
   // Initializing scan response data.
-  absl::optional<ScanResponseData> scan_response_data =
+  std::optional<ScanResponseData> scan_response_data =
       data->scan_response_data();
   if (scan_response_data) {
     params_.scannable = true;
@@ -133,9 +133,9 @@ void BluetoothAdvertisementFloss::Start(
 
   FlossDBusManager::Get()->GetAdvertiserClient()->StartAdvertisingSet(
       params_, adv_data_,
-      (params_.scannable ? absl::optional<AdvertiseData>(scan_rsp_)
-                         : absl::nullopt),
-      absl::nullopt, absl::nullopt, kUnlimitedDuration, kUnlimitedAdvEvents,
+      (params_.scannable ? std::optional<AdvertiseData>(scan_rsp_)
+                         : std::nullopt),
+      std::nullopt, std::nullopt, kUnlimitedDuration, kUnlimitedAdvEvents,
       base::BindOnce(&BluetoothAdvertisementFloss::OnStartSuccess,
                      weak_ptr_factory_.GetWeakPtr(),
                      std::move(success_callback)),

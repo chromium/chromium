@@ -16,9 +16,7 @@ import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 
-/**
- * Tests that ChromeTabbedActivity is hardware accelerated only high-end devices.
- */
+/** Tests that ChromeTabbedActivity is hardware accelerated only high-end devices. */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 public class ChromeTabbedActivityHWATest {

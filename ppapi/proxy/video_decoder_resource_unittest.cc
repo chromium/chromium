@@ -32,11 +32,6 @@ const PP_Resource kGraphics3D = 7;
 const uint32_t kShmSize = 256;
 const size_t kDecodeBufferSize = 16;
 const uint32_t kDecodeId = 5;
-const uint32_t kTextureId1 = 1;
-#if !BUILDFLAG(IS_WIN) || !defined(ARCH_CPU_64_BITS)
-const uint32_t kTextureId2 = 2;
-#endif
-const uint32_t kNumRequestedTextures = 2;
 
 class MockCompletionCallback {
  public:
@@ -207,12 +202,13 @@ class VideoDecoderResourceTest : public PluginProxyTest {
     SendReply(params, PP_OK, PpapiPluginMsg_VideoDecoder_DecodeReply(shm_id));
   }
 
-  void SendPictureReady(const ResourceMessageCallParams& params,
-                        uint32_t decode_count,
-                        uint32_t texture_id) {
+  void SendSharedImageReady(const ResourceMessageCallParams& params,
+                            uint32_t decode_count,
+                            const gpu::Mailbox& mailbox) {
     PP_Rect visible_rect = PP_MakeRectFromXYWH(0, 0, 640, 480);
-    SendReply(params, PP_OK, PpapiPluginMsg_VideoDecoder_PictureReady(
-                                 decode_count, texture_id, visible_rect));
+    SendReply(params, PP_OK,
+              PpapiPluginMsg_VideoDecoder_SharedImageReady(
+                  decode_count, mailbox, visible_rect.size, visible_rect));
   }
 
   void SendFlushReply(const ResourceMessageCallParams& params) {
@@ -221,12 +217,6 @@ class VideoDecoderResourceTest : public PluginProxyTest {
 
   void SendResetReply(const ResourceMessageCallParams& params) {
     SendReply(params, PP_OK, PpapiPluginMsg_VideoDecoder_ResetReply());
-  }
-
-  void SendRequestTextures(const ResourceMessageCallParams& params) {
-    SendReply(params, PP_OK,
-              PpapiPluginMsg_VideoDecoder_RequestTextures(
-                  kNumRequestedTextures, PP_MakeSize(320, 240), GL_TEXTURE_2D));
   }
 
   void SendNotifyError(const ResourceMessageCallParams& params, int32_t error) {
@@ -246,15 +236,16 @@ class VideoDecoderResourceTest : public PluginProxyTest {
         msg, shm_id, size, decode_id);
   }
 
-  bool CheckRecyclePictureMsg(ResourceMessageCallParams* params,
-                              uint32_t* texture_id) {
+  bool CheckRecycleSharedImageMsg(ResourceMessageCallParams* params,
+                                  gpu::Mailbox& mailbox) {
     IPC::Message msg;
     if (!sink().GetFirstResourceCallMatching(
-            PpapiHostMsg_VideoDecoder_RecyclePicture::ID, params, &msg))
+            PpapiHostMsg_VideoDecoder_RecycleSharedImage::ID, params, &msg)) {
       return false;
+    }
     sink().ClearMessages();
-    return UnpackMessage<PpapiHostMsg_VideoDecoder_RecyclePicture>(msg,
-                                                                   texture_id);
+    return UnpackMessage<PpapiHostMsg_VideoDecoder_RecycleSharedImage>(
+        msg, &mailbox);
   }
 
   bool CheckFlushMsg(ResourceMessageCallParams* params) {
@@ -430,19 +421,22 @@ TEST_F(VideoDecoderResourceTest, DecodeAndGetPicture) {
   ASSERT_EQ(PP_ERROR_INPROGRESS,
             CallGetPicture(decoder.get(), &picture, &uncalled_cb));
   ASSERT_FALSE(uncalled_cb.called());
-  // Send 'request textures' message to initialize textures.
-  SendRequestTextures(params);
-  // Send a picture ready message for Decode call 1. The GetPicture callback
-  // should complete.
-  SendPictureReady(params, 1U, kTextureId1);
+
+  const auto mailbox1 = gpu::Mailbox::GenerateForSharedImage();
+  // Send a shared image ready message for Decode call 1. The GetPicture
+  // callback should complete.
+  SendSharedImageReady(params, 1U, mailbox1);
+
   ASSERT_TRUE(get_picture_cb.called());
   ASSERT_EQ(PP_OK, get_picture_cb.result());
   ASSERT_EQ(kDecodeId, picture.decode_id);
   get_picture_cb.Reset();
 
-  // Send a picture ready message for Decode call 2. Since there is no pending
-  // GetPicture call, the picture should be queued.
-  SendPictureReady(params, 2U, kTextureId2);
+  // Send a shared image ready message for Decode call 2. Since there is no
+  // pending GetPicture call, the picture should be queued.
+  const auto mailbox2 = gpu::Mailbox::GenerateForSharedImage();
+  SendSharedImageReady(params, 2U, mailbox2);
+
   // The next GetPicture should return synchronously.
   ASSERT_EQ(PP_OK, CallGetPicture(decoder.get(), &picture, &uncalled_cb));
   ASSERT_FALSE(uncalled_cb.called());
@@ -467,20 +461,20 @@ TEST_F(VideoDecoderResourceTest, RecyclePicture) {
   int32_t decode_id;
   CheckDecodeMsg(&params, &shm_id, &decode_size, &decode_id);
   SendDecodeReply(params, 0U);
-  // Send 'request textures' message to initialize textures.
-  SendRequestTextures(params);
+
   // Call GetPicture and send 'picture ready' message to get a picture to
   // recycle.
   PP_VideoPicture picture;
   ASSERT_EQ(PP_OK_COMPLETIONPENDING,
             CallGetPicture(decoder.get(), &picture, &get_picture_cb));
-  SendPictureReady(params, 0U, kTextureId1);
-  ASSERT_EQ(kTextureId1, picture.texture_id);
+
+  const auto mailbox = gpu::Mailbox::GenerateForSharedImage();
+  SendSharedImageReady(params, 0U, mailbox);
 
   CallRecyclePicture(decoder.get(), picture);
-  uint32_t texture_id;
-  ASSERT_TRUE(CheckRecyclePictureMsg(&params, &texture_id));
-  ASSERT_EQ(kTextureId1, texture_id);
+  gpu::Mailbox recycle_mailbox;
+  ASSERT_TRUE(CheckRecycleSharedImageMsg(&params, recycle_mailbox));
+  ASSERT_EQ(mailbox, recycle_mailbox);
 
   ClearCallbacks(decoder.get());
 }
@@ -489,7 +483,22 @@ TEST_F(VideoDecoderResourceTest, RecyclePicture) {
 TEST_F(VideoDecoderResourceTest, Flush) {
   LockingResourceReleaser decoder(CreateAndInitializeDecoder());
   ResourceMessageCallParams params, params2;
-  MockCompletionCallback flush_cb, get_picture_cb, uncalled_cb;
+  MockCompletionCallback flush_cb, get_picture_cb, uncalled_cb, decode_cb;
+
+  // Get to a state where we have a picture to recycle.
+  PpapiHostMsg_VideoDecoder_GetShm shm_msg(0U, kDecodeBufferSize);
+  ASSERT_EQ(PP_OK, CallDecode(decoder.get(), &decode_cb, &shm_msg));
+  uint32_t shm_id;
+  uint32_t decode_size;
+  int32_t decode_id;
+  CheckDecodeMsg(&params, &shm_id, &decode_size, &decode_id);
+  SendDecodeReply(params, 0U);
+
+  gpu::Mailbox mailbox = gpu::Mailbox::GenerateForSharedImage();
+  SendSharedImageReady(params, 0U, mailbox);
+
+  PP_VideoPicture picture;
+  ASSERT_EQ(PP_OK, CallGetPicture(decoder.get(), &picture, &get_picture_cb));
 
   ASSERT_EQ(PP_OK_COMPLETIONPENDING, CallFlush(decoder.get(), &flush_cb));
   ASSERT_FALSE(flush_cb.called());
@@ -510,11 +519,11 @@ TEST_F(VideoDecoderResourceTest, Flush) {
   ASSERT_FALSE(uncalled_cb.called());
 
   // Plugin can call RecyclePicture while Flush is pending.
-  PP_VideoPicture picture;
-  picture.texture_id = kTextureId1;
   CallRecyclePicture(decoder.get(), picture);
-  uint32_t texture_id;
-  ASSERT_TRUE(CheckRecyclePictureMsg(&params2, &texture_id));
+
+  gpu::Mailbox recycle_mailbox;
+  ASSERT_TRUE(CheckRecycleSharedImageMsg(&params2, recycle_mailbox));
+  ASSERT_EQ(mailbox, recycle_mailbox);
 
   SendFlushReply(params);
   // Any pending GetPicture call is aborted.

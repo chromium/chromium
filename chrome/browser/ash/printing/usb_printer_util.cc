@@ -8,21 +8,24 @@
 
 #include <algorithm>
 #include <string>
+#include <string_view>
 #include <utility>
 #include <vector>
 
 #include "base/big_endian.h"
+#include "base/containers/contains.h"
+#include "base/containers/fixed_flat_set.h"
 #include "base/containers/span.h"
 #include "base/functional/callback_helpers.h"
 #include "base/hash/md5.h"
 #include "base/strings/strcat.h"
-#include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/grit/generated_resources.h"
 #include "chromeos/printing/printer_configuration.h"
 #include "chromeos/printing/usb_printer_id.h"
+#include "components/device_event_log/device_event_log.h"
 #include "services/device/public/cpp/usb/usb_utils.h"
 #include "services/device/public/mojom/usb_device.mojom.h"
 #include "services/device/public/mojom/usb_enumeration_options.mojom.h"
@@ -50,6 +53,22 @@ constexpr uint8_t kPrinterIppusbProtocol = 4;
 const int kGetDeviceIdRequest = 0;
 const int kDefaultInterface = 0;
 const int kDefaultConfiguration = 0;
+
+// Generic USB make_and_model strings that are reused across device.
+bool IsGenericUsbDescription(const std::string& make_and_model) {
+  static constexpr auto kGenericUsbModels =
+      base::MakeFixedFlatSet<std::string_view>({
+          "canon canon capt usb device",
+          "epson usb1.1 mfp(hi-speed)",
+          "epson usb2.0 mfp(hi-speed)",
+          "epson usb2.0 printer (hi-speed)",
+          "epson usb mfp",
+          "epson usb printer",
+          "seiko epson usb mfp",
+          "oki data corp usb device",
+      });
+  return base::Contains(kGenericUsbModels, make_and_model);
+}
 
 // Callback for device.mojom.UsbDevice.ControlTransferIn.
 // Expects |data| to hold a newly queried Device ID.
@@ -116,7 +135,7 @@ void MD5UpdateBigEndian(base::MD5Context* ctx, T val) {
   static_assert(std::is_integral<T>::value, "Value must be an integer");
   char buf[sizeof(T)];
   base::WriteBigEndian(buf, val);
-  base::MD5Update(ctx, base::StringPiece(buf, sizeof(T)));
+  base::MD5Update(ctx, std::string_view(buf, sizeof(T)));
 }
 
 // Update the hash with the contents of |str|.
@@ -129,7 +148,7 @@ void MD5UpdateBigEndian(base::MD5Context* ctx, T val) {
 // to UTF-8 and hash that", which avoids all of these issues.
 void MD5UpdateString16(base::MD5Context* ctx, const std::u16string& str) {
   std::string tmp = base::UTF16ToUTF8(str);
-  base::MD5Update(ctx, base::StringPiece(tmp.data(), tmp.size()));
+  base::MD5Update(ctx, std::string_view(tmp.data(), tmp.size()));
 }
 
 // Get the usb printer id for |device|.  This is used both as the identifier for
@@ -301,23 +320,7 @@ bool UsbDeviceToPrinter(const UsbDeviceInfo& device_info,
   // Synthesize make-and-model string for printer identification.
   entry->printer.set_make_and_model(GuessEffectiveMakeAndModel(device_info));
 
-  // Construct the display name by however much of the manufacturer/model
-  // information that we have available.
-  if (make.empty() && model.empty()) {
-    entry->printer.set_display_name(
-        l10n_util::GetStringUTF8(IDS_USB_PRINTER_UNKNOWN_DISPLAY_NAME));
-  } else if (!make.empty() && !model.empty()) {
-    entry->printer.set_display_name(l10n_util::GetStringFUTF8(
-        IDS_USB_PRINTER_DISPLAY_NAME, base::UTF8ToUTF16(make),
-        base::UTF8ToUTF16(model)));
-  } else {
-    // Exactly one string is present.
-    DCHECK_NE(make.empty(), model.empty());
-    entry->printer.set_display_name(
-        l10n_util::GetStringFUTF8(IDS_USB_PRINTER_DISPLAY_NAME_MAKE_OR_MODEL,
-                                  base::UTF8ToUTF16(make + model)));
-  }
-
+  entry->printer.set_display_name(MakeDisplayName(make, model));
   entry->printer.set_description(entry->printer.display_name());
   entry->printer.SetUri(UsbPrinterUri(device_info));
   entry->printer.set_id(CreateUsbPrinterId(device_info));
@@ -331,6 +334,58 @@ void GetDeviceId(mojo::Remote<device::mojom::UsbDevice> device,
   auto* device_raw = device.get();
   device_raw->Open(
       base::BindOnce(OnDeviceOpen, std::move(device), std::move(cb)));
+}
+
+std::string MakeDisplayName(const std::string& make, const std::string& model) {
+  // Construct the display name by however much of the manufacturer/model
+  // information that we have available.
+  if (make.empty() && model.empty()) {
+    return l10n_util::GetStringUTF8(IDS_USB_PRINTER_UNKNOWN_DISPLAY_NAME);
+  } else if (!make.empty() && !model.empty()) {
+    return l10n_util::GetStringFUTF8(IDS_USB_PRINTER_DISPLAY_NAME,
+                                     base::UTF8ToUTF16(make),
+                                     base::UTF8ToUTF16(model));
+  } else {
+    // Exactly one string is present.
+    DCHECK_NE(make.empty(), model.empty());
+    return l10n_util::GetStringFUTF8(IDS_USB_PRINTER_DISPLAY_NAME_MAKE_OR_MODEL,
+                                     base::UTF8ToUTF16(make + model));
+  }
+}
+
+void UpdateSearchDataFromDeviceId(const chromeos::UsbPrinterId& device_id,
+                                  PrinterDetector::DetectedPrinter* printer) {
+  // If the IEEE1284 device info looks complete and doesn't match the USB
+  // string descriptors, add an additional PPD search string.  In addition, if
+  // the USB make_and_model matches known generic strings, replace the entire
+  // device description with the values from the IEEE1284 info.
+  const std::string& usb_make = device_id.make();
+  const std::string& usb_model = device_id.model();
+  if (usb_make.empty() || usb_model.empty()) {
+    return;
+  }
+  std::string usb_make_and_model = base::StrCat({usb_make, " ", usb_model});
+  if (base::CompareCaseInsensitiveASCII(printer->printer.make_and_model(),
+                                        usb_make_and_model) == 0) {
+    return;
+  }
+
+  if (IsGenericUsbDescription(
+          base::ToLowerASCII(printer->printer.make_and_model()))) {
+    PRINTER_LOG(EVENT) << printer->printer.make_and_model()
+                       << " replaced with USB device info: "
+                       << usb_make_and_model;
+    printer->printer.set_display_name(MakeDisplayName(usb_make, usb_model));
+    printer->printer.set_description(printer->printer.display_name());
+    printer->printer.set_make_and_model(usb_make_and_model);
+    printer->ppd_search_data.make_and_model.front() =
+        base::ToLowerASCII(usb_make_and_model);
+  } else {
+    // Not a generic string, but still add the IEEE 1284 ID as an additional
+    // possible PPD match.
+    printer->ppd_search_data.make_and_model.push_back(
+        base::ToLowerASCII(usb_make_and_model));
+  }
 }
 
 }  // namespace ash

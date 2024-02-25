@@ -16,6 +16,7 @@
 #include "base/process/process.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/task/thread_pool.h"
+#include "components/services/screen_ai/buildflags/buildflags.h"
 #include "components/services/screen_ai/proto/main_content_extractor_proto_convertor.h"
 #include "components/services/screen_ai/proto/visual_annotator_proto_convertor.h"
 #include "components/services/screen_ai/public/cpp/utilities.h"
@@ -27,72 +28,18 @@
 #include "ui/accessibility/ax_tree_id.h"
 #include "ui/gfx/geometry/rect_f.h"
 
+#if BUILDFLAG(USE_FAKE_SCREEN_AI)
+#include "components/services/screen_ai/screen_ai_library_wrapper_fake.h"
+#else
+#include "components/services/screen_ai/screen_ai_library_wrapper_impl.h"
+#endif
+
 namespace screen_ai {
 
 namespace {
 
-// Returns an empty result if load fails.
-std::unique_ptr<ScreenAILibraryWrapper> LoadLibrary(
-    const base::FilePath& library_path) {
-  DCHECK(!content::BrowserThread::CurrentlyOn(content::BrowserThread::UI));
-  std::unique_ptr<ScreenAILibraryWrapper> library =
-      std::make_unique<ScreenAILibraryWrapper>();
-
-  bool load_sucessful = library->Load(library_path);
-  base::UmaHistogramBoolean("Accessibility.ScreenAI.Library.Initialized",
-                            load_sucessful);
-
-  if (!load_sucessful) {
-    library.reset();
-    return library;
-  }
-
-  uint32_t version_major;
-  uint32_t version_minor;
-  library->GetLibraryVersion(version_major, version_minor);
-  VLOG(2) << "Screen AI library version: " << version_major << "."
-          << version_minor;
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  library->SetLogger();
-#endif
-
-  if (features::IsScreenAIDebugModeEnabled()) {
-    library->EnableDebugMode();
-  }
-
-  return library;
-}
-
-std::vector<char> LoadModelFile(base::File& model_file) {
-  std::vector<char> buffer;
-  int64_t length = model_file.GetLength();
-  if (length < 0) {
-    VLOG(0) << "Could not query Screen AI model file's length.";
-    return buffer;
-  }
-
-  buffer.resize(length);
-  if (model_file.Read(0, buffer.data(), length) != length) {
-    buffer.clear();
-    VLOG(0) << "Could not read Screen AI model file's content.";
-  }
-
-  return buffer;
-}
-
-std::unique_ptr<
-    screen_ai::ScreenAILibraryWrapper::MainContentExtractionModelData>
-LoadMainContentExtractionModelFiles(base::File& model_config_file,
-                                    base::File& model_tflite_file) {
-  auto model_data = std::make_unique<
-      screen_ai::ScreenAILibraryWrapper::MainContentExtractionModelData>(
-      LoadModelFile(model_config_file), LoadModelFile(model_tflite_file));
-  return model_data;
-}
-
 ui::AXTreeUpdate ConvertVisualAnnotationToTreeUpdate(
-    const absl::optional<chrome_screen_ai::VisualAnnotation>& annotation_proto,
+    const std::optional<chrome_screen_ai::VisualAnnotation>& annotation_proto,
     const gfx::Rect& image_rect) {
   if (!annotation_proto) {
     VLOG(0) << "Screen AI library could not process snapshot or no OCR data.";
@@ -104,6 +51,81 @@ ui::AXTreeUpdate ConvertVisualAnnotationToTreeUpdate(
 
 }  // namespace
 
+// The library accepts simple pointers to model data retrieval functions, hence
+// callback functions with linked object are not safe to pass.
+// Since library initialization functions are called in a single thread process,
+// we choose the active model data instance before calling the library
+// initializer and release it when initialization is completed.
+PreloadedModelData* g_active_model_data_instance = nullptr;
+
+// Keeps the content of model files, and replies to calls for copying them.
+class PreloadedModelData {
+ public:
+  PreloadedModelData(const PreloadedModelData&) = delete;
+  PreloadedModelData& operator=(const PreloadedModelData&) = delete;
+  ~PreloadedModelData() { CHECK_NE(g_active_model_data_instance, this); }
+
+  static std::unique_ptr<PreloadedModelData> Create(
+      base::flat_map<base::FilePath, base::File> model_files) {
+    return base::WrapUnique<PreloadedModelData>(
+        new PreloadedModelData(std::move(model_files)));
+  }
+
+  // Returns 0 if file is not found.
+  static uint32_t GetDataSize(const char* relative_file_path) {
+    CHECK(g_active_model_data_instance);
+    return base::Contains(g_active_model_data_instance->data_,
+                          relative_file_path)
+               ? g_active_model_data_instance->data_[relative_file_path].size()
+               : 0;
+  }
+
+  // Assumes that `buffer` has enough size.
+  static void CopyData(const char* relative_file_path,
+                       uint32_t buffer_size,
+                       char* buffer) {
+    CHECK(g_active_model_data_instance);
+    CHECK(base::Contains(g_active_model_data_instance->data_,
+                         relative_file_path));
+    const std::vector<char>& data =
+        g_active_model_data_instance->data_[relative_file_path];
+    CHECK_GE(buffer_size, data.size());
+    memcpy(buffer, data.data(), data.size());
+  }
+
+  void SetAsActive(bool assign) {
+    if (assign) {
+      g_active_model_data_instance = this;
+    } else {
+      g_active_model_data_instance = nullptr;
+    }
+  }
+
+ private:
+  explicit PreloadedModelData(
+      base::flat_map<base::FilePath, base::File> model_files) {
+    for (auto& model_file : model_files) {
+      std::vector<char> buffer;
+      int64_t length = model_file.second.GetLength();
+      if (length < 0) {
+        VLOG(0) << "Could not query Screen AI model file's length: "
+                << model_file.first;
+        continue;
+      }
+
+      buffer.resize(length);
+      if (model_file.second.Read(0, buffer.data(), length) != length) {
+        VLOG(0) << "Could not read Screen AI model file's content: "
+                << model_file.first;
+        continue;
+      }
+      data_[model_file.first.MaybeAsASCII()] = std::move(buffer);
+    }
+  }
+
+  std::map<std::string, std::vector<char>> data_;
+};
+
 ScreenAIService::ScreenAIService(
     mojo::PendingReceiver<mojom::ScreenAIServiceFactory> receiver)
     : factory_receiver_(this, std::move(receiver)),
@@ -112,15 +134,50 @@ ScreenAIService::ScreenAIService(
 
 ScreenAIService::~ScreenAIService() = default;
 
+void ScreenAIService::LoadLibrary(const base::FilePath& library_path) {
+  DCHECK(!content::BrowserThread::CurrentlyOn(content::BrowserThread::UI));
+
+#if BUILDFLAG(USE_FAKE_SCREEN_AI)
+  library_ = std::make_unique<ScreenAILibraryWrapperFake>();
+#else
+  library_ = std::make_unique<ScreenAILibraryWrapperImpl>();
+#endif
+
+  bool load_sucessful = library_->Load(library_path);
+  base::UmaHistogramBoolean("Accessibility.ScreenAI.Library.Initialized",
+                            load_sucessful);
+
+  if (!load_sucessful) {
+    library_.reset();
+    return;
+  }
+
+  uint32_t version_major;
+  uint32_t version_minor;
+  library_->GetLibraryVersion(version_major, version_minor);
+  VLOG(2) << "Screen AI library version: " << version_major << "."
+          << version_minor;
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  library_->SetLogger();
+#endif
+
+  if (features::IsScreenAIDebugModeEnabled()) {
+    library_->EnableDebugMode();
+  }
+
+  library_->SetFileContentFunctions(&PreloadedModelData::GetDataSize,
+                                    &PreloadedModelData::CopyData);
+}
+
 void ScreenAIService::InitializeMainContentExtraction(
-    base::File model_config,
-    base::File model_tflite,
     const base::FilePath& library_path,
+    base::flat_map<base::FilePath, base::File> model_files,
     mojo::PendingReceiver<mojom::MainContentExtractionService>
         main_content_extractor_service_receiver,
     InitializeMainContentExtractionCallback callback) {
   if (!library_) {
-    library_ = LoadLibrary(library_path);
+    LoadLibrary(library_path);
   }
 
   if (!library_) {
@@ -131,9 +188,7 @@ void ScreenAIService::InitializeMainContentExtraction(
   base::ThreadPool::PostTaskAndReplyWithResult(
       FROM_HERE,
       {base::MayBlock(), base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN},
-      base::BindOnce(&LoadMainContentExtractionModelFiles,
-                     base::OwnedRef(std::move(model_config)),
-                     base::OwnedRef(std::move(model_tflite))),
+      base::BindOnce(&PreloadedModelData::Create, std::move(model_files)),
       base::BindOnce(&ScreenAIService::InitializeMainContentExtractionInternal,
                      weak_ptr_factory_.GetWeakPtr(),
                      std::move(main_content_extractor_service_receiver),
@@ -144,9 +199,13 @@ void ScreenAIService::InitializeMainContentExtractionInternal(
     mojo::PendingReceiver<mojom::MainContentExtractionService>
         main_content_extractor_service_receiver,
     InitializeMainContentExtractionCallback callback,
-    std::unique_ptr<ScreenAILibraryWrapper::MainContentExtractionModelData>
-        model_data) {
-  bool init_successful = library_->InitMainContentExtraction(*model_data);
+    std::unique_ptr<PreloadedModelData> model_data) {
+  // `model_data` contains the content of the model files and its accessors are
+  // passed to the library. It should be kept in memory until after library
+  // initialization.
+  model_data->SetAsActive(true);
+  bool init_successful = library_->InitMainContentExtraction();
+  model_data->SetAsActive(false);
   base::UmaHistogramBoolean(
       "Accessibility.ScreenAI.MainContentExtraction.Initialized",
       init_successful);
@@ -166,18 +225,37 @@ void ScreenAIService::InitializeMainContentExtractionInternal(
 
 void ScreenAIService::InitializeOCR(
     const base::FilePath& library_path,
+    base::flat_map<base::FilePath, base::File> model_files,
     mojo::PendingReceiver<mojom::OCRService> ocr_service_receiver,
     InitializeOCRCallback callback) {
   if (!library_) {
-    library_ = LoadLibrary(library_path);
+    LoadLibrary(library_path);
   }
 
   if (!library_) {
     std::move(callback).Run(false);
     base::Process::TerminateCurrentProcessImmediately(-1);
   }
+  base::ThreadPool::PostTaskAndReplyWithResult(
+      FROM_HERE,
+      {base::MayBlock(), base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN},
+      base::BindOnce(&PreloadedModelData::Create, std::move(model_files)),
+      base::BindOnce(&ScreenAIService::InitializeOCRInternal,
+                     weak_ptr_factory_.GetWeakPtr(),
+                     std::move(ocr_service_receiver), std::move(callback)));
+}
 
-  bool init_successful = library_->InitOCR(library_path.DirName());
+void ScreenAIService::InitializeOCRInternal(
+    mojo::PendingReceiver<mojom::OCRService> ocr_service_receiver,
+    InitializeOCRCallback callback,
+    std::unique_ptr<PreloadedModelData> model_data) {
+  // `model_data` contains the content of the model files and its accessors are
+  // passed to the library. It should be kept in memory until after library
+  // initialization.
+  model_data->SetAsActive(true);
+  bool init_successful = library_->InitOCR();
+  model_data->SetAsActive(false);
+
   base::UmaHistogramBoolean("Accessibility.ScreenAI.OCR.Initialized",
                             init_successful);
 
@@ -226,7 +304,7 @@ void ScreenAIService::ExtractSemanticLayout(
     ExtractSemanticLayoutCallback callback) {
   DCHECK(screen_ai_annotator_client_.is_bound());
 
-  absl::optional<chrome_screen_ai::VisualAnnotation> annotation_proto =
+  std::optional<chrome_screen_ai::VisualAnnotation> annotation_proto =
       library_->ExtractLayout(image);
 
   // The original caller is always replied to, and an AXTreeIDUnknown is sent to
@@ -256,23 +334,53 @@ void ScreenAIService::ExtractSemanticLayout(
   screen_ai_annotator_client_->HandleAXTreeUpdate(update);
 }
 
-absl::optional<chrome_screen_ai::VisualAnnotation>
-ScreenAIService::PerformOcrAndRecordMetrics(const SkBitmap& image) {
+std::optional<chrome_screen_ai::VisualAnnotation>
+ScreenAIService::PerformOcrAndRecordMetrics(const SkBitmap& image,
+                                            bool a11y_tree_request) {
   base::TimeTicks start_time = base::TimeTicks::Now();
   auto result = library_->PerformOcr(image);
   base::TimeDelta elapsed_time = base::TimeTicks::Now() - start_time;
+  int lines_count = result ? result->lines_size() : 0;
+  unsigned image_size = image.width() * image.height();
+  VLOG(1) << "OCR returned " << lines_count << " lines in " << elapsed_time;
 
-  base::UmaHistogramTimes("Accessibility.ScreenAI.OCR.Time", elapsed_time);
+  base::UmaHistogramCounts100("Accessibility.ScreenAI.OCR.LinesCount",
+                              lines_count);
   base::UmaHistogramCounts10M("Accessibility.ScreenAI.OCR.ImageSize10M",
-                              image.width() * image.height());
+                              image_size);
+  if (image_size < 500 * 500) {
+    base::UmaHistogramTimes("Accessibility.ScreenAI.OCR.Latency.Small",
+                            elapsed_time);
+  } else if (image_size < 1000 * 1000) {
+    base::UmaHistogramTimes("Accessibility.ScreenAI.OCR.Latency.Medium",
+                            elapsed_time);
+  } else if (image_size < 2000 * 2000) {
+    base::UmaHistogramTimes("Accessibility.ScreenAI.OCR.Latency.Large",
+                            elapsed_time);
+  } else {
+    base::UmaHistogramTimes("Accessibility.ScreenAI.OCR.Latency.XLarge",
+                            elapsed_time);
+  }
+
+  // If needed to extend to more clients, an identifier can be passed from the
+  // client to introduce itself and these metrics can be collected based on it.
+  if (a11y_tree_request) {
+    base::UmaHistogramCounts100("Accessibility.ScreenAI.OCR.LinesCount.PDF",
+                                lines_count);
+    base::UmaHistogramTimes("Accessibility.ScreenAI.OCR.Time.PDF",
+                            elapsed_time);
+    base::UmaHistogramCounts10M("Accessibility.ScreenAI.OCR.ImageSize.PDF",
+                                image.width() * image.height());
+  }
+
   return result;
 }
 
 void ScreenAIService::PerformOcrAndReturnAnnotation(
     const SkBitmap& image,
     PerformOcrAndReturnAnnotationCallback callback) {
-  absl::optional<chrome_screen_ai::VisualAnnotation> annotation_proto =
-      PerformOcrAndRecordMetrics(image);
+  std::optional<chrome_screen_ai::VisualAnnotation> annotation_proto =
+      PerformOcrAndRecordMetrics(image, /*a11y_tree_request=*/false);
 
   if (annotation_proto) {
     std::move(callback).Run(ConvertProtoToVisualAnnotation(*annotation_proto));
@@ -285,11 +393,10 @@ void ScreenAIService::PerformOcrAndReturnAnnotation(
 void ScreenAIService::PerformOcrAndReturnAXTreeUpdate(
     const SkBitmap& image,
     PerformOcrAndReturnAXTreeUpdateCallback callback) {
-  absl::optional<chrome_screen_ai::VisualAnnotation> annotation_proto =
-      PerformOcrAndRecordMetrics(image);
+  std::optional<chrome_screen_ai::VisualAnnotation> annotation_proto =
+      PerformOcrAndRecordMetrics(image, /*a11y_tree_request=*/true);
   ui::AXTreeUpdate update = ConvertVisualAnnotationToTreeUpdate(
       annotation_proto, gfx::Rect(image.width(), image.height()));
-  VLOG(1) << "OCR returned " << update.nodes.size() << " nodes.";
 
   // The original caller is always replied to, and an empty AXTreeUpdate tells
   // that the annotation function was not successful.
@@ -311,7 +418,7 @@ void ScreenAIService::ExtractMainContent(const ui::AXTreeUpdate& snapshot,
   std::string serialized_snapshot = SnapshotToViewHierarchy(snapshot);
 
   base::TimeTicks start_time = base::TimeTicks::Now();
-  absl::optional<std::vector<int32_t>> content_node_ids =
+  std::optional<std::vector<int32_t>> content_node_ids =
       library_->ExtractMainContent(serialized_snapshot);
   base::TimeDelta elapsed_time = base::TimeTicks::Now() - start_time;
 

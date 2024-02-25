@@ -34,14 +34,14 @@ MockReduceAcceptLanguageControllerDelegate::
 MockReduceAcceptLanguageControllerDelegate::
     ~MockReduceAcceptLanguageControllerDelegate() = default;
 
-absl::optional<std::string>
+std::optional<std::string>
 MockReduceAcceptLanguageControllerDelegate::GetReducedLanguage(
     const url::Origin& origin) {
   const auto& iter = reduce_accept_language_map_.find(origin);
   if (iter != reduce_accept_language_map_.end()) {
-    return absl::make_optional(iter->second);
+    return std::make_optional(iter->second);
   }
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 std::vector<std::string>

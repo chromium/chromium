@@ -9,6 +9,7 @@
 
 #include <map>
 #include <memory>
+#include <optional>
 #include <string>
 #include <utility>
 #include <vector>
@@ -22,7 +23,6 @@
 #include "net/nqe/network_quality_estimator.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
 namespace net {
@@ -137,7 +137,7 @@ class TestNetworkQualityEstimator : public NetworkQualityEstimator {
     recent_transport_rtt_ = recent_transport_rtt;
   }
 
-  absl::optional<base::TimeDelta> GetTransportRTT() const override;
+  std::optional<base::TimeDelta> GetTransportRTT() const override;
 
   void set_start_time_null_downlink_throughput_kbps(
       int32_t downlink_throughput_kbps) {
@@ -237,15 +237,15 @@ class TestNetworkQualityEstimator : public NetworkQualityEstimator {
   // network id and signal strength (instead of invoking platform APIs).
   nqe::internal::NetworkID GetCurrentNetworkID() const override;
 
-  absl::optional<net::EffectiveConnectionType> GetOverrideECT() const override;
+  std::optional<net::EffectiveConnectionType> GetOverrideECT() const override;
 
   // Net log observer used to test correctness of NetLog entries.
   net::RecordingNetLogObserver net_log_observer_;
 
   // If set, GetEffectiveConnectionType() and GetRecentEffectiveConnectionType()
   // would return the set values, respectively.
-  absl::optional<EffectiveConnectionType> effective_connection_type_;
-  absl::optional<EffectiveConnectionType> recent_effective_connection_type_;
+  std::optional<EffectiveConnectionType> effective_connection_type_;
+  std::optional<EffectiveConnectionType> recent_effective_connection_type_;
 
   NetworkChangeNotifier::ConnectionType current_network_type_ =
       NetworkChangeNotifier::CONNECTION_UNKNOWN;
@@ -254,27 +254,27 @@ class TestNetworkQualityEstimator : public NetworkQualityEstimator {
   // If set, GetRecentHttpRTT() would return one of the set values.
   // |start_time_null_http_rtt_| is returned if the |start_time| is null.
   // Otherwise, |recent_http_rtt_| is returned.
-  absl::optional<base::TimeDelta> start_time_null_http_rtt_;
-  absl::optional<base::TimeDelta> recent_http_rtt_;
+  std::optional<base::TimeDelta> start_time_null_http_rtt_;
+  std::optional<base::TimeDelta> recent_http_rtt_;
 
   // If set, GetRecentTransportRTT() would return one of the set values.
   // |start_time_null_transport_rtt_| is returned if the |start_time| is null.
   // Otherwise, |recent_transport_rtt_| is returned.
-  absl::optional<base::TimeDelta> start_time_null_transport_rtt_;
-  absl::optional<base::TimeDelta> recent_transport_rtt_;
+  std::optional<base::TimeDelta> start_time_null_transport_rtt_;
+  std::optional<base::TimeDelta> recent_transport_rtt_;
 
   // If set, GetRecentDownlinkThroughputKbps() would return one of the set
   // values. |start_time_null_downlink_throughput_kbps_| is returned if the
   // |start_time| is null. Otherwise, |recent_downlink_throughput_kbps_| is
   // returned.
-  absl::optional<int32_t> start_time_null_downlink_throughput_kbps_;
-  absl::optional<int32_t> recent_downlink_throughput_kbps_;
+  std::optional<int32_t> start_time_null_downlink_throughput_kbps_;
+  std::optional<int32_t> recent_downlink_throughput_kbps_;
 
   // If set, GetRTTEstimateInternal() would return the set value.
-  absl::optional<base::TimeDelta> rtt_estimate_internal_;
+  std::optional<base::TimeDelta> rtt_estimate_internal_;
 
   // If set, GetRTTEstimateInternal() would return the set value.
-  absl::optional<base::TimeDelta> start_time_null_end_to_end_rtt_;
+  std::optional<base::TimeDelta> start_time_null_end_to_end_rtt_;
 
   LocalHttpTestServer embedded_test_server_;
 
@@ -283,7 +283,7 @@ class TestNetworkQualityEstimator : public NetworkQualityEstimator {
 
   size_t ping_rtt_received_count_ = 0;
 
-  absl::optional<size_t> transport_rtt_observation_count_last_ect_computation_;
+  std::optional<size_t> transport_rtt_observation_count_last_ect_computation_;
 };
 
 }  // namespace net

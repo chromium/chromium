@@ -73,11 +73,6 @@ class InputEvent final : public UIEvent {
     kNumberOfInputTypes,
   };
 
-  enum EventCancelable : bool {
-    kNotCancelable = false,
-    kIsCancelable = true,
-  };
-
   enum EventIsComposing : bool {
     kNotComposing = false,
     kIsComposing = true,
@@ -85,12 +80,10 @@ class InputEvent final : public UIEvent {
 
   static InputEvent* CreateBeforeInput(InputType,
                                        const String& data,
-                                       EventCancelable,
                                        EventIsComposing,
                                        const StaticRangeVector*);
   static InputEvent* CreateBeforeInput(InputType,
                                        DataTransfer*,
-                                       EventCancelable,
                                        EventIsComposing,
                                        const StaticRangeVector*);
   static InputEvent* CreateInput(InputType,
@@ -99,6 +92,15 @@ class InputEvent final : public UIEvent {
                                  const StaticRangeVector*);
 
   InputEvent(const AtomicString&, const InputEventInit*);
+  // This variant of the constructor is more efficient than the InputEventInit
+  // variant.
+  InputEvent(const AtomicString& type,
+             const UIEventInit& init,
+             InputType input_type,
+             const String& data,
+             DataTransfer* data_transfer,
+             EventIsComposing is_composing,
+             const StaticRangeVector* ranges);
 
   String inputType() const;
   const String& data() const { return data_; }

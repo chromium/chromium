@@ -5,8 +5,10 @@
 module blink.mojom;
 
 import "third_party/blink/public/mojom/devtools/devtools_agent.mojom";
+import "third_party/blink/public/mojom/origin_trial_feature/origin_trial_feature.mojom";
 import "mojo/public/mojom/base/unguessable_token.mojom";
 import "url/mojom/url.mojom";
+import "url/mojom/origin.mojom";
 
 // Interface implemented in the browser for the worklets to forward
 // ready-for-inspection notification.
@@ -22,6 +24,12 @@ interface WorkletDevToolsHost {
 // worklets starting from a different process.
 struct WorkletGlobalScopeCreationParams {
   url.mojom.Url script_url;
+
+  // The worklet's owning document's origin.
+  url.mojom.Origin starter_origin;
+
+  array<OriginTrialFeature> origin_trial_features;
   mojo_base.mojom.UnguessableToken devtools_token;
   pending_remote<WorkletDevToolsHost> devtools_host;
+  bool wait_for_debugger;
 };

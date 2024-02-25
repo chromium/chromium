@@ -26,6 +26,7 @@ def main():
   parser.add_argument('--test-dir', type=str, required=True)
   parser.add_argument(
       '--trace-processor-shell', type=str, required=True)
+  parser.add_argument("--name-filter", default="", type=str, required=False)
   parser.add_argument("--script", type=str, required=True)
   args, _ = parser.parse_known_args()
 
@@ -38,6 +39,8 @@ def main():
     "--chrome-track-event-descriptor", args.chrome_track_event_descriptor,
     "--override-sql-module", os.path.abspath(args.chrome_stdlib),
     "--test-dir", args.test_dir,
+    "--name-filter",
+    args.name_filter,
     args.trace_processor_shell,
   ]
 
@@ -45,6 +48,7 @@ def main():
   completed_process = subprocess.run(cmd, capture_output=True)
 
   sys.stderr.buffer.write(completed_process.stderr)
+  sys.stdout.buffer.write(completed_process.stdout)
   return completed_process.returncode
 
 if __name__ == '__main__':

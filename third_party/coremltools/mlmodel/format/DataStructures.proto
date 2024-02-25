@@ -1,0 +1,126 @@
+// Copyright (c) 2017, Apple Inc. All rights reserved.
+//
+// Use of this source code is governed by a BSD-3-clause license that can be
+// found in LICENSE.txt or at https://opensource.org/licenses/BSD-3-Clause
+
+syntax = "proto3";
+option optimize_for = LITE_RUNTIME;
+
+import public "FeatureTypes.proto";
+
+package CoreML.Specification;
+
+/*
+ * A mapping from a string
+ * to a 64-bit integer.
+ */
+message StringToInt64Map {
+  map<string, int64> map = 1;
+}
+
+/*
+ * A mapping from a 64-bit integer
+ * to a string.
+ */
+message Int64ToStringMap {
+  map<int64, string> map = 1;
+}
+
+/*
+ * A mapping from a string
+ * to a double-precision floating point number.
+ */
+message StringToDoubleMap {
+  map<string, double> map = 1;
+}
+
+/*
+ * A mapping from a 64-bit integer
+ * to a double-precision floating point number.
+ */
+message Int64ToDoubleMap {
+  map<int64, double> map = 1;
+}
+
+/*
+ * A vector of strings.
+ */
+message StringVector {
+  repeated string vector = 1;
+}
+
+/*
+ * A vector of 64-bit integers.
+ */
+message Int64Vector {
+  repeated int64 vector = 1;
+}
+
+/*
+ * A vector of floating point numbers.
+ */
+message FloatVector {
+  repeated float vector = 1;
+}
+
+/*
+ * A vector of double-precision floating point numbers.
+ */
+message DoubleVector {
+  repeated double vector = 1;
+}
+
+/*
+ * A range of int64 values
+ */
+message Int64Range {
+  int64 minValue = 1;
+  int64 maxValue = 2;
+}
+
+/*
+ * A set of int64 values
+ */
+message Int64Set {
+  repeated int64 values = 1;
+}
+
+/*
+ * A range of double values
+ */
+message DoubleRange {
+  double minValue = 1;
+  double maxValue = 2;
+}
+
+/**
+ * Precision/Recall curve.
+ *
+ * The syntax comprises two tables, one to look up the confidence value
+ * threshold for a given precision, and the other for a given recall.
+ *
+ * Example:
+ * ----------------------+----+----+----+----+----+----+----+----+----
+ * precisionValues       | .1 | .2 | .3 | .4 | .5 | .6 | .7 |
+ * precisionConfidence   | .0 | .0 | .0 | .0 | .1 | .3 | .4 |
+ * ----------------------+----+----+----+----+----+----+----+----+----
+ *
+ * ----------------------+----+----+----+----+----+----+----+----+----
+ * recallValues          | .1 | .2 | .3 | .4 | .5 | .6 | .7 | .8 | .9
+ * recallConfidence      | .7 | .6 | .5 | .4 | .3 | .3 | .2 | .1 | .0
+ * ----------------------+----+----+----+----+----+----+----+----+----
+ *
+ * The application expects that, when it filters out samples with
+ * confidence threshold = 0.1, it gets precision = 0.5. Likewise,
+ * with threshold = 0.2 it gets recall = 0.7.
+ *
+ * The table must have only valid values; do not use `NaN`, `+/- INF`,
+ * or negative values. The application is responsible for inter/extrapolating
+ * approprate confidence threshold based on the application's specifc need.
+ */
+message PrecisionRecallCurve {
+  FloatVector precisionValues = 1;
+  FloatVector precisionConfidenceThresholds = 2;
+  FloatVector recallValues = 3;
+  FloatVector recallConfidenceThresholds = 4;
+}

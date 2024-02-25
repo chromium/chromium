@@ -5,9 +5,11 @@
 #include "chrome/browser/web_applications/jobs/uninstall/web_app_uninstall_and_replace_job.h"
 
 #include <memory>
+#include <optional>
 
 #include "base/containers/flat_set.h"
 #include "base/functional/bind.h"
+#include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
 #include "base/test/bind.h"
 #include "base/test/test_future.h"
@@ -19,62 +21,50 @@
 #include "chrome/browser/web_applications/test/web_app_test.h"
 #include "chrome/browser/web_applications/test/web_app_test_observers.h"
 #include "chrome/browser/web_applications/web_app_command_manager.h"
-#include "chrome/browser/web_applications/web_app_id.h"
+#include "components/webapps/common/web_app_id.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace web_app {
 
 class TestUninstallAndReplaceJobCommand
-    : public WebAppCommandTemplate<AppLock> {
+    : public WebAppCommand<AppLock, bool /*uninstall_triggered*/> {
  public:
   TestUninstallAndReplaceJobCommand(
       Profile* profile,
-      const std::vector<AppId>& from_apps,
-      const AppId& to_app,
+      const std::vector<webapps::AppId>& from_apps,
+      const webapps::AppId& to_app,
       base::OnceCallback<void(bool uninstall_triggered)> on_complete)
-      : WebAppCommandTemplate<AppLock>("TestUninstallAndReplaceJobCommand"),
+      : WebAppCommand<AppLock, bool>("TestUninstallAndReplaceJobCommand",
+                                     AppLockDescription(to_app),
+                                     std::move(on_complete),
+                                     /*args_for_shutdown=*/false),
         profile_(profile),
-        lock_description_(std::make_unique<AppLockDescription>(to_app)),
         from_apps_(from_apps),
-        to_app_(to_app),
-        on_complete_(std::move(on_complete)) {}
+        to_app_(to_app) {}
 
   ~TestUninstallAndReplaceJobCommand() override = default;
 
   void StartWithLock(std::unique_ptr<AppLock> lock) override {
     lock_ = std::move(lock);
     uninstall_and_replace_job_.emplace(
-        profile_, *lock_, from_apps_, to_app_,
+        profile_, GetMutableDebugValue(), *lock_, from_apps_, to_app_,
         base::BindOnce(&TestUninstallAndReplaceJobCommand::OnComplete,
                        base::Unretained(this)));
     uninstall_and_replace_job_->Start();
   }
 
   void OnComplete(bool uninstall_triggered) {
-    SignalCompletionAndSelfDestruct(
-        CommandResult::kSuccess,
-        base::BindOnce(std::move(on_complete_), uninstall_triggered));
+    CompleteAndSelfDestruct(CommandResult::kSuccess, uninstall_triggered);
   }
-
-  const LockDescription& lock_description() const override {
-    return *lock_description_;
-  }
-
-  base::Value ToDebugValue() const override { return base::Value(); }
-
-  void OnShutdown() override {}
 
  private:
-  raw_ptr<Profile> profile_;
-  std::unique_ptr<AppLockDescription> lock_description_;
+  raw_ptr<Profile> profile_ = nullptr;
   std::unique_ptr<AppLock> lock_;
 
-  const std::vector<AppId> from_apps_;
-  const AppId to_app_;
-  base::OnceCallback<void(bool uninstall_triggered)> on_complete_;
+  const std::vector<webapps::AppId> from_apps_;
+  const webapps::AppId to_app_;
 
-  absl::optional<WebAppUninstallAndReplaceJob> uninstall_and_replace_job_;
+  std::optional<WebAppUninstallAndReplaceJob> uninstall_and_replace_job_;
 };
 
 class WebAppUninstallAndReplaceJobTest : public WebAppTest {
@@ -88,8 +78,8 @@ class WebAppUninstallAndReplaceJobTest : public WebAppTest {
   }
 
   void ScheduleUninstallAndReplaceJob(
-      const std::vector<AppId>& from_apps,
-      const AppId& to_app,
+      const std::vector<webapps::AppId>& from_apps,
+      const webapps::AppId& to_app,
       base::OnceCallback<void(bool uninstall_triggered)> on_complete) {
     WebAppProvider::GetForTest(profile())->command_manager().ScheduleCommand(
         std::make_unique<TestUninstallAndReplaceJobCommand>(
@@ -107,7 +97,7 @@ class WebAppUninstallAndReplaceJobTest : public WebAppTest {
   TestShortcutManager* shortcut_manager() { return shortcut_manager_; }
 
  private:
-  raw_ptr<TestShortcutManager, DanglingUntriaged> shortcut_manager_;
+  raw_ptr<TestShortcutManager, DanglingUntriaged> shortcut_manager_ = nullptr;
 };
 
 // `WebAppUninstallAndReplaceJob` uses `AppServiceProxy` to do uninstall, app
@@ -118,13 +108,14 @@ TEST_F(WebAppUninstallAndReplaceJobTest,
        WebAppMigrationPreservesShortcutStates) {
   const GURL kOldAppUrl("https://old.app.com");
   // Install an old app to be replaced.
-  AppId old_app_id = test::InstallDummyWebApp(profile(), "old_app", kOldAppUrl);
+  webapps::AppId old_app_id =
+      test::InstallDummyWebApp(profile(), "old_app", kOldAppUrl);
 
   // Install a new app to migrate the old one to.
-  AppId new_app_id = test::InstallDummyWebApp(profile(), "new_app",
-                                              GURL("https://new.app.com"));
+  webapps::AppId new_app_id = test::InstallDummyWebApp(
+      profile(), "new_app", GURL("https://new.app.com"));
   if (AreOsIntegrationSubManagersEnabled()) {
-    absl::optional<proto::WebAppOsIntegrationState> os_state =
+    std::optional<proto::WebAppOsIntegrationState> os_state =
         provider()->registrar_unsafe().GetAppCurrentOsIntegrationState(
             new_app_id);
     ASSERT_TRUE(os_state.has_value());
@@ -152,7 +143,7 @@ TEST_F(WebAppUninstallAndReplaceJobTest,
   EXPECT_TRUE(options->os_hooks[OsHookType::kRunOnOsLogin]);
   EXPECT_FALSE(options->add_to_quick_launch_bar);
   if (AreOsIntegrationSubManagersEnabled()) {
-    absl::optional<proto::WebAppOsIntegrationState> os_state =
+    std::optional<proto::WebAppOsIntegrationState> os_state =
         provider()->registrar_unsafe().GetAppCurrentOsIntegrationState(
             new_app_id);
     ASSERT_TRUE(os_state.has_value());
@@ -164,11 +155,11 @@ TEST_F(WebAppUninstallAndReplaceJobTest,
 
 TEST_F(WebAppUninstallAndReplaceJobTest, DoubleMigration) {
   // Install an old app to be replaced.
-  AppId old_app_id = test::InstallDummyWebApp(profile(), "old_app",
-                                              GURL("https://old.app.com"));
+  webapps::AppId old_app_id = test::InstallDummyWebApp(
+      profile(), "old_app", GURL("https://old.app.com"));
   // Install a new app to migrate the old one to.
-  AppId new_app_id = test::InstallDummyWebApp(profile(), "new_app",
-                                              GURL("https://new.app.com"));
+  webapps::AppId new_app_id = test::InstallDummyWebApp(
+      profile(), "new_app", GURL("https://new.app.com"));
   {
     WebAppTestUninstallObserver waiter(profile());
     waiter.BeginListening({old_app_id});

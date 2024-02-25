@@ -1,7 +1,7 @@
 {
   "layers": [
     {
-      "name": "Scrolling background of LayoutNGView #document",
+      "name": "Scrolling background of LayoutView #document",
       "bounds": [800, 600],
       "contentsOpaque": true,
       "backgroundColor": "#FFFFFF",
@@ -10,14 +10,14 @@
       ]
     },
     {
-      "name": "LayoutNGTextControlMultiLine TEXTAREA id='editor'",
+      "name": "LayoutTextControlMultiLine (inline) TEXTAREA id='editor'",
       "position": [1, 1],
       "bounds": [179, 19],
       "drawsContent": false,
       "transform": 1
     },
     {
-      "name": "Scroll corner of LayoutNGTextControlMultiLine TEXTAREA id='editor'",
+      "name": "Scroll corner of LayoutTextControlMultiLine (inline) TEXTAREA id='editor'",
       "position": [150, 5],
       "bounds": [30, 30],
       "invalidations": [
@@ -33,7 +33,7 @@
       "transform": 1
     },
     {
-      "name": "LayoutNGTextControlMultiLine TEXTAREA id='editor'",
+      "name": "LayoutTextControlMultiLine (inline) TEXTAREA id='editor'",
       "position": [1, 1],
       "bounds": [472, 19],
       "backgroundColor": "#FFFFFF",
@@ -50,7 +50,7 @@
       "transform": 2
     },
     {
-      "name": "LayoutNGTextControlMultiLine TEXTAREA id='editor'",
+      "name": "LayoutTextControlMultiLine (inline) TEXTAREA id='editor'",
       "position": [-1, -1],
       "bounds": [183, 38],
       "invalidations": [

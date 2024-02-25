@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+Copyright 2024 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<layer-list
+xmlns:android="http://schemas.android.com/apk/res/android" >
+    <item
+        android:id="@+id/color_picker_item_outer_layer"
+        android:width="@dimen/color_picker_color_item_size"
+        android:height="@dimen/color_picker_color_item_size"
+        android:gravity="center">
+        <shape
+            android:shape="oval">
+            <solid android:color="@macro/default_icon_color"/>
+        </shape>
+    </item>
+    <item
+        android:id="@+id/color_picker_item_selection_layer"
+        android:gravity="center"
+        android:bottom="@dimen/color_picker_selection_layer_inset"
+        android:left="@dimen/color_picker_selection_layer_inset"
+        android:right="@dimen/color_picker_selection_layer_inset"
+        android:top="@dimen/color_picker_selection_layer_inset">
+        <shape
+            android:shape="oval">
+            <solid android:color="@macro/default_icon_color"/>
+        </shape>
+    </item>
+    <item
+        android:id="@+id/color_picker_item_inner_layer"
+        android:gravity="center"
+        android:bottom="@dimen/color_picker_inner_layer_inset"
+        android:left="@dimen/color_picker_inner_layer_inset"
+        android:right="@dimen/color_picker_inner_layer_inset"
+        android:top="@dimen/color_picker_inner_layer_inset">
+        <shape
+            android:shape="oval">
+            <solid android:color="@macro/default_icon_color"/>
+        </shape>
+    </item>
+</layer-list>

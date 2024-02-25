@@ -5,14 +5,20 @@
 #import "ios/chrome/browser/ui/autofill/bottom_sheet/payments_suggestion_bottom_sheet_coordinator.h"
 
 #import "components/autofill/ios/form_util/form_activity_params.h"
-#import "ios/chrome/browser/autofill/personal_data_manager_factory.h"
+#import "ios/chrome/browser/autofill/model/personal_data_manager_factory.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
-#import "ios/chrome/browser/shared/public/commands/application_commands.h"
+#import "ios/chrome/browser/shared/public/commands/browser_coordinator_commands.h"
+#import "ios/chrome/browser/shared/public/commands/settings_commands.h"
 #import "ios/chrome/browser/ui/autofill/bottom_sheet/payments_suggestion_bottom_sheet_mediator.h"
 #import "ios/chrome/browser/ui/autofill/bottom_sheet/payments_suggestion_bottom_sheet_view_controller.h"
 #import "ios/web/public/web_state.h"
+
+using PaymentsSuggestionBottomSheetExitReason::kDismissal;
+using PaymentsSuggestionBottomSheetExitReason::kShowPaymentDetails;
+using PaymentsSuggestionBottomSheetExitReason::kShowPaymentMethods;
+using PaymentsSuggestionBottomSheetExitReason::kUsePaymentsSuggestion;
 
 @interface PaymentsSuggestionBottomSheetCoordinator () {
   // Information regarding the triggering form for this bottom sheet.
@@ -83,9 +89,12 @@
 
   self.viewController.parentViewControllerHeight =
       self.baseViewController.view.frame.size.height;
+  __weak __typeof(self) weakSelf = self;
   [self.baseViewController presentViewController:self.viewController
                                         animated:YES
-                                      completion:nil];
+                                      completion:^{
+                                        [weakSelf setInitialVoiceOverFocus];
+                                      }];
 }
 
 - (void)stop {
@@ -99,44 +108,52 @@
 #pragma mark - PaymentsSuggestionBottomSheetHandler
 
 - (void)displayPaymentMethods {
+  _dismissing = YES;
+  [self.mediator logExitReason:kShowPaymentMethods];
   __weak __typeof(self) weakSelf = self;
   [self.baseViewController.presentedViewController
       dismissViewControllerAnimated:NO
                          completion:^{
-                           [weakSelf stop];
-                           [weakSelf.applicationCommandsHandler
-                                   showCreditCardSettings];
+                           [weakSelf.settingsHandler showCreditCardSettings];
+                           [weakSelf.browserCoordinatorCommandsHandler
+                                   dismissPaymentSuggestions];
                          }];
 }
 
 - (void)displayPaymentDetailsForCreditCardIdentifier:
     (NSString*)creditCardIdentifier {
+  _dismissing = YES;
   autofill::CreditCard* creditCard =
       [self.mediator creditCardForIdentifier:creditCardIdentifier];
   if (creditCard) {
+    [self.mediator logExitReason:kShowPaymentDetails];
     __weak __typeof(self) weakSelf = self;
     [self.baseViewController.presentedViewController
         dismissViewControllerAnimated:NO
                            completion:^{
-                             [weakSelf stop];
-                             [weakSelf.applicationCommandsHandler
+                             [weakSelf.settingsHandler
                                  showCreditCardDetails:creditCard];
+                             [weakSelf.browserCoordinatorCommandsHandler
+                                     dismissPaymentSuggestions];
                            }];
   }
 }
 
-- (void)primaryButtonTapped:(NSString*)backendIdentifier {
+- (void)primaryButtonTapped:(CreditCardData*)creditCardData {
   _dismissing = YES;
+  [self.mediator logExitReason:kUsePaymentsSuggestion];
   __weak __typeof(self) weakSelf = self;
   [self.viewController
       dismissViewControllerAnimated:NO
                          completion:^{
-                           [weakSelf didSelectCreditCard:backendIdentifier];
+                           [weakSelf didSelectCreditCard:creditCardData];
+                           [weakSelf.browserCoordinatorCommandsHandler
+                                   dismissPaymentSuggestions];
                          }];
 }
 
 - (void)secondaryButtonTapped {
-  // "No thanks" button, which dismisses the bottom sheet.
+  // "Use Keyboard" button, which dismisses the bottom sheet.
   [self.viewController dismissViewControllerAnimated:YES completion:NULL];
 }
 
@@ -145,15 +162,22 @@
     return;
   }
 
+  [self.mediator logExitReason:kDismissal];
   [self.mediator disconnect];
+  [_browserCoordinatorCommandsHandler dismissPaymentSuggestions];
 }
 
 #pragma mark - Private
 
-- (void)didSelectCreditCard:(NSString*)backendIdentifier {
+- (void)didSelectCreditCard:(CreditCardData*)creditCardData {
   // Send a notification to fill the credit card related fields.
-  [self.mediator didSelectCreditCard:backendIdentifier];
+  [self.mediator didSelectCreditCard:creditCardData];
   [self.mediator disconnect];
+}
+
+- (void)setInitialVoiceOverFocus {
+  UIAccessibilityPostNotification(UIAccessibilityScreenChangedNotification,
+                                  self.viewController.image);
 }
 
 @end

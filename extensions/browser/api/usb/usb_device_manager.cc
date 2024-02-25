@@ -6,8 +6,8 @@
 
 #include <functional>
 #include <memory>
+#include <optional>
 #include <utility>
-
 #include "base/containers/contains.h"
 #include "base/lazy_instance.h"
 #include "base/observer_list.h"
@@ -20,11 +20,11 @@
 #include "extensions/browser/api/extensions_api_client.h"
 #include "extensions/browser/event_router_factory.h"
 #include "extensions/common/api/usb.h"
+#include "extensions/common/mojom/context_type.mojom.h"
 #include "extensions/common/mojom/event_dispatcher.mojom-forward.h"
 #include "extensions/common/permissions/permissions_data.h"
 #include "extensions/common/permissions/usb_device_permission.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace usb = extensions::api::usb;
 
@@ -70,10 +70,10 @@ bool ShouldExposeDevice(const device::mojom::UsbDeviceInfo& device_info) {
 bool WillDispatchDeviceEvent(
     const device::mojom::UsbDeviceInfo& device_info,
     content::BrowserContext* browser_context,
-    Feature::Context target_context,
+    mojom::ContextType target_context,
     const Extension* extension,
     const base::Value::Dict* listener_filter,
-    absl::optional<base::Value::List>& event_args_out,
+    std::optional<base::Value::List>& event_args_out,
     mojom::EventFilteringInfoPtr& event_filtering_info_out) {
   // Check install-time and optional permissions.
   std::unique_ptr<UsbDevicePermission::CheckParam> param =

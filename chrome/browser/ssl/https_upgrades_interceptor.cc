@@ -111,7 +111,7 @@ net::RedirectInfo SetupRedirect(
           : net::RedirectInfo::FirstPartyURLPolicy::NEVER_CHANGE_URL,
       request.referrer_policy, request.referrer.spec(),
       net::HTTP_TEMPORARY_REDIRECT, new_url,
-      /*referrer_policy_header=*/absl::nullopt,
+      /*referrer_policy_header=*/std::nullopt,
       /*insecure_scheme_was_upgraded=*/false);
   return redirect_info;
 }
@@ -190,9 +190,18 @@ HttpsUpgradesInterceptor::MaybeCreateInterceptor(
       !g_browser_process->profile_manager()->IsValidProfile(profile)) {
     return nullptr;
   }
+
   PrefService* prefs = profile->GetPrefs();
   bool https_first_mode_enabled =
       prefs && prefs->GetBoolean(prefs::kHttpsOnlyModeEnabled);
+
+  if (base::FeatureList::IsEnabled(features::kHttpsFirstModeIncognito)) {
+    if (profile->IsIncognitoProfile() && prefs &&
+        prefs->GetBoolean(prefs::kHttpsFirstModeIncognito)) {
+      https_first_mode_enabled = true;
+    }
+  }
+
   return std::make_unique<HttpsUpgradesInterceptor>(
       frame_tree_node_id, https_first_mode_enabled, navigation_ui_data);
 }
@@ -259,8 +268,8 @@ void HttpsUpgradesInterceptor::MaybeCreateLoader(
       security_interstitials::https_only_mode::HttpInterstitialState>();
   interstitial_state_->enabled_by_pref = http_interstitial_enabled_by_pref_;
   // StatefulSSLHostStateDelegate can be null during tests.
-  if (state && state->IsHttpsEnforcedForHost(
-                   tentative_resource_request.url.host(), storage_partition)) {
+  if (state && state->IsHttpsEnforcedForUrl(tentative_resource_request.url,
+                                            storage_partition)) {
     interstitial_state_->enabled_by_engagement_heuristic = true;
   }
 
@@ -301,6 +310,18 @@ void HttpsUpgradesInterceptor::MaybeCreateLoader(
     // Chrome shows the HTTP interstitial before navigation to them.
     // Potentially, these could fast-fail instead and skip directly to the
     // interstitial.
+    //
+    // In any case, record this as a fallback event so that we don't
+    // auto-enable HFM due to typically secure user heuristic and start showing
+    // interstitials on it.
+    // HttpsUpgradesBrowserTest.
+    //   UrlWithHttpScheme_NonUniqueHostname_ShouldNotInterstitial_TypicallySecureUser
+    // should fail when this check is removed.
+    HttpsFirstModeService* hfm_service =
+        HttpsFirstModeServiceFactory::GetForProfile(profile);
+    if (hfm_service) {
+      hfm_service->RecordHttpsUpgradeFallbackEvent();
+    }
     if (base::FeatureList::IsEnabled(features::kHttpsUpgrades) &&
         !IsInterstitialEnabled(*interstitial_state_)) {
       std::move(callback).Run({});
@@ -337,7 +358,7 @@ void HttpsUpgradesInterceptor::MaybeCreateLoader(
   auto query_complete_callback = base::BindOnce(
       &HttpsUpgradesInterceptor::MaybeCreateLoaderOnHstsQueryCompleted,
       weak_factory_.GetWeakPtr(), tentative_resource_request,
-      std::move(callback), profile, web_contents, tab_helper);
+      std::move(callback));
   network::mojom::NetworkContext* network_context =
       profile->GetDefaultStoragePartition()->GetNetworkContext();
   network_context->IsHSTSActiveForHost(
@@ -350,11 +371,27 @@ void HttpsUpgradesInterceptor::MaybeCreateLoader(
 void HttpsUpgradesInterceptor::MaybeCreateLoaderOnHstsQueryCompleted(
     const network::ResourceRequest& tentative_resource_request,
     content::URLLoaderRequestInterceptor::LoaderCallback callback,
-    Profile* profile,
-    content::WebContents* web_contents,
-    HttpsOnlyModeTabHelper* tab_helper,
     bool is_hsts_active_for_host) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  // Reconstruct objects here instead of binding them as parameters to this
+  // callback method.
+  //
+  // It's possible for the WebContents to be destroyed during the
+  // asynchronous HSTS query call, before this callback is run. If it no longer
+  // exists, don't upgrade and return. (See crbug.com/1499515.)
+  content::WebContents* web_contents =
+      content::WebContents::FromFrameTreeNodeId(frame_tree_node_id_);
+  if (!web_contents) {
+    std::move(callback).Run({});
+    return;
+  }
+  Profile* profile =
+      Profile::FromBrowserContext(web_contents->GetBrowserContext());
+  HttpsOnlyModeTabHelper* tab_helper =
+      HttpsOnlyModeTabHelper::FromWebContents(web_contents);
+  CHECK(profile);
+  CHECK(tab_helper);
 
   // Don't upgrade this request if HSTS is active for this host.
   if (is_hsts_active_for_host) {
@@ -511,8 +548,7 @@ void HttpsUpgradesInterceptor::MaybeCreateLoaderOnHstsQueryCompleted(
           HttpsFirstModeServiceFactory::GetForProfile(profile);
       // HttpsFirstModeService can be null in tests.
       if (hfm_service) {
-        hfm_service->MaybeEnableHttpsFirstModeForUser(
-            /*add_fallback_entry=*/true);
+        hfm_service->RecordHttpsUpgradeFallbackEvent();
       }
     }
 
@@ -550,9 +586,7 @@ bool HttpsUpgradesInterceptor::MaybeCreateLoaderForResponse(
     mojo::ScopedDataPipeConsumerHandle* response_body,
     mojo::PendingRemote<network::mojom::URLLoader>* loader,
     mojo::PendingReceiver<network::mojom::URLLoaderClient>* client_receiver,
-    blink::ThrottlingURLLoader* url_loader,
-    bool* skip_other_interceptors,
-    bool* will_return_unsafe_redirect) {
+    blink::ThrottlingURLLoader* url_loader) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   // When an upgraded navigation fails, this method creates a loader to trigger
   // the fallback to HTTP.
@@ -653,8 +687,7 @@ bool HttpsUpgradesInterceptor::MaybeCreateLoaderForResponse(
         HttpsFirstModeServiceFactory::GetForProfile(profile);
     // HttpsFirstModeService can be null in tests.
     if (hfm_service) {
-      hfm_service->MaybeEnableHttpsFirstModeForUser(
-          /*add_fallback_entry=*/true);
+      hfm_service->RecordHttpsUpgradeFallbackEvent();
     }
   }
 

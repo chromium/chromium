@@ -29,7 +29,8 @@ class AccessibilityControllerTestApiImpl
   void AcceptDictationKeyboardDialog() override;
   void DismissDictationKeyboardDialog() override;
   void AddShowToastCallbackForTesting(
-      base::RepeatingClosure callback) const override;
+      base::RepeatingCallback<void(AccessibilityToastType)> callback)
+      const override;
 };
 
 }  // namespace ash

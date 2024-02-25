@@ -17,15 +17,10 @@ extern const char kSharesheetUserActionResultHistogram[];
 extern const char kSharesheetAppCountAllResultHistogram[];
 extern const char kSharesheetAppCountArcResultHistogram[];
 extern const char kSharesheetAppCountWebResultHistogram[];
-extern const char kSharesheetShareActionResultHistogram[];
-extern const char kSharesheetFormFactorResultHistogram[];
 extern const char kSharesheetLaunchSourceResultHistogram[];
 extern const char kSharesheetFileCountResultHistogram[];
-extern const char kSharesheetIsDriveFolderResultHistogram[];
-extern const char kSharesheetIsImagePressedResultHistogram[];
 extern const char kSharesheetMimeTypeResultHistogram[];
 extern const char kSharesheetCopyToClipboardMimeTypeResultHistogram[];
-extern const char kSharesheetCopyToClipboardFormFactorResultHistogram[];
 
 class SharesheetMetrics {
  public:
@@ -42,14 +37,6 @@ class SharesheetMetrics {
     kDriveAction,               // User selected the drive share action.
     kCopyAction,                // User selected the copy share action.
     kMaxValue = kCopyAction,
-  };
-
-  // Device form factor when sharesheet is invoked.
-  // This enum is for recording histograms and must be treated as append-only.
-  enum class FormFactor {
-    kTablet = 0,
-    kClamshell,
-    kMaxValue = kClamshell,
   };
 
   // The mime type that is being shared.
@@ -75,29 +62,18 @@ class SharesheetMetrics {
   static void RecordSharesheetAppCount(const int app_count);
   static void RecordSharesheetArcAppCount(const int app_count);
   static void RecordSharesheetWebAppCount(const int app_count);
-  static void RecordSharesheetShareAction(const UserAction action);
-
-  static void RecordSharesheetFormFactor(const FormFactor form_factor);
 
   static void RecordSharesheetLaunchSource(const LaunchSource source);
 
   static void RecordSharesheetFilesSharedCount(const int file_count);
-  // Records true if the data being shared is a drive folder. False otherwise.
-  static void RecordSharesheetIsDriveFolder(const bool is_drive_folder);
-  // Records true if the image preview was pressed in the current invocation.
-  // False otherwise.
-  static void RecordSharesheetImagePreviewPressed(const bool is_pressed);
   static void RecordSharesheetMimeType(const MimeType mime_type);
   static void RecordCopyToClipboardShareActionMimeType(
       const MimeType mime_type);
-  static void RecordCopyToClipboardShareActionFormFactor(
-      const FormFactor form_factor);
 
   // Utility Functions
   static MimeType ConvertMimeTypeForMetrics(std::string mime_type);
   static base::flat_set<MimeType> GetMimeTypesFromIntentForMetrics(
       const apps::IntentPtr& intent);
-  static FormFactor GetFormFactorForMetrics();
 };
 
 }  // namespace sharesheet

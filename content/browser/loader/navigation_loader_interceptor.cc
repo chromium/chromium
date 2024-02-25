@@ -8,11 +8,6 @@
 
 namespace content {
 
-absl::optional<SubresourceLoaderParams>
-NavigationLoaderInterceptor::MaybeCreateSubresourceLoaderParams() {
-  return absl::nullopt;
-}
-
 bool NavigationLoaderInterceptor::MaybeCreateLoaderForResponse(
     const network::URLLoaderCompletionStatus& status,
     const network::ResourceRequest& request,
@@ -21,13 +16,22 @@ bool NavigationLoaderInterceptor::MaybeCreateLoaderForResponse(
     mojo::PendingRemote<network::mojom::URLLoader>* loader,
     mojo::PendingReceiver<network::mojom::URLLoaderClient>* client_receiver,
     blink::ThrottlingURLLoader* url_loader,
-    bool* skip_other_interceptors,
-    bool* will_return_unsafe_redirect) {
+    bool* skip_other_interceptors) {
   return false;
 }
 
-bool NavigationLoaderInterceptor::ShouldBypassRedirectChecks() {
-  return false;
-}
+NavigationLoaderInterceptor::Result::Result(
+    scoped_refptr<network::SharedURLLoaderFactory> single_request_factory,
+    SubresourceLoaderParams subresource_loader_params,
+    ResponseHeadUpdateParams response_head_update_params)
+    : single_request_factory(std::move(single_request_factory)),
+      subresource_loader_params(std::move(subresource_loader_params)),
+      response_head_update_params(std::move(response_head_update_params)) {}
+NavigationLoaderInterceptor::Result::Result(
+    NavigationLoaderInterceptor::Result&&) = default;
+NavigationLoaderInterceptor::Result&
+NavigationLoaderInterceptor::Result::operator=(
+    NavigationLoaderInterceptor::Result&&) = default;
+NavigationLoaderInterceptor::Result::~Result() = default;
 
 }  // namespace content

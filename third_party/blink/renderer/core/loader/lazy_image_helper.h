@@ -9,6 +9,7 @@
 
 namespace blink {
 
+class Document;
 class Element;
 class HTMLImageElement;
 class LocalFrame;
@@ -20,6 +21,8 @@ class LazyImageHelper final {
  public:
   static void StartMonitoring(Element* element);
   static void StopMonitoring(Element* element);
+
+  static bool LoadAllImagesAndBlockLoadEvent(Document&);
 
   static bool ShouldDeferImageLoad(LocalFrame& frame,
                                    HTMLImageElement* html_image);

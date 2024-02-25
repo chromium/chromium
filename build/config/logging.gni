@@ -2,7 +2,6 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//build/buildflag_header.gni")
 import("//build/config/chromeos/ui_mode.gni")
 import("//build/config/dcheck_always_on.gni")
 
@@ -11,22 +10,4 @@ declare_args() {
   enable_log_error_not_reached =
       is_chromeos_ash && !(is_debug || dcheck_always_on)
   enable_stack_trace_line_numbers = false
-
-  # Use runtime vlog everywhere except for ash-chrome.
-  # When `use_runtime_vlog` is true,
-  #   command line switch `--vmodule=xxx` or `--v=x` could be used to
-  #   control vlog level at runtime.
-  # when `use_runtime_volog` is false,
-  #   verbose log level is controlled by `ENABLE_VLOG_LEVEL` macro. VLOG(n)
-  #   is kept and generate output if `n` is less than or equal to the vlog
-  #   level defined by the macro.
-  #   Command line switch `--vmodule=xxx`, or `--v=x` would have no effect.
-  #
-  # Runtime vlog is used everywhere except on ash-chrome.
-  # Ash-chrome has a few vmodule patterns that need to be used indefinitely
-  # to investigate problems from logs in feedback reports. These vmodule
-  # patterns are using too much cpu cycles (see http://crbug/489441). Turning
-  # off runtime vlog and using build time vlog would avoid paying that cpu tax
-  # and have a nice side effect of a smaller production binary.
-  use_runtime_vlog = !is_chromeos_ash
 }

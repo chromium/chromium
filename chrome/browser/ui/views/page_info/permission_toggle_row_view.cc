@@ -10,6 +10,7 @@
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/app/vector_icons/vector_icons.h"
+#include "chrome/browser/file_system_access/file_system_access_features.h"
 #include "chrome/browser/ui/layout_constants.h"
 #include "chrome/browser/ui/page_info/chrome_page_info_ui_delegate.h"
 #include "chrome/browser/ui/views/accessibility/non_accessible_image_view.h"
@@ -24,6 +25,7 @@
 #include "components/url_formatter/elide_url.h"
 #include "components/vector_icons/vector_icons.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/ui_base_features.h"
 #include "ui/strings/grit/ui_strings.h"
 #include "ui/views/controls/button/image_button.h"
@@ -31,6 +33,7 @@
 #include "ui/views/controls/button/toggle_button.h"
 #include "ui/views/controls/highlight_path_generator.h"
 #include "ui/views/controls/label.h"
+#include "ui/views/controls/styled_label.h"
 #include "ui/views/style/typography.h"
 #include "ui/views/view_class_properties.h"
 
@@ -72,6 +75,25 @@ PermissionToggleRowView::PermissionToggleRowView(
     toggle_accessible_name = l10n_util::GetStringFUTF16(
         IDS_CONCAT_TWO_STRINGS_WITH_COMMA, toggle_accessible_name,
         requesting_origin_string);
+  }
+
+  int settings_text_id = 0, settings_link_id = 0;
+  if (delegate->ShouldShowSettingsLinkForPermission(
+          permission.type, &settings_text_id, &settings_link_id)) {
+    std::u16string settings_text_for_link =
+        l10n_util::GetStringUTF16(settings_link_id);
+    size_t offset;
+    views::StyledLabel* label =
+        row_view_->AddSecondaryStyledLabel(l10n_util::GetStringFUTF16(
+            settings_text_id, settings_text_for_link, &offset));
+    base::RepeatingClosure clicked = base::BindRepeating(
+        [](PermissionToggleRowView* row, ContentSettingsType type) {
+          row->delegate_->SettingsLinkClicked(type);
+        },
+        base::Unretained(this), permission.type);
+    label->AddStyleRange(
+        gfx::Range(offset, offset + settings_text_for_link.length()),
+        views::StyledLabel::RangeStyleInfo::CreateForLink(clicked));
   }
 
   if (permission.source == content_settings::SETTING_SOURCE_USER) {
@@ -141,6 +163,27 @@ void PermissionToggleRowView::InitForUserSource(
   toggle_button_ = row_view_->AddControl(std::move(toggle_button));
 
   const int icon_size = GetLayoutConstant(PAGE_INFO_ICON_SIZE);
+  // TODO(crbug.com/1011533): Remove separate handling of
+  // `FILE_SYSTEM_WRITE_GUARD` when implementing the final version of the
+  // FSA Persistent Permissions Page Info UI, which utilizes the existing
+  // pattern below for One Time Permissions.
+  if (base::FeatureList::IsEnabled(
+          features::kFileSystemAccessPersistentPermissions) &&
+      permission_.type == ContentSettingsType::FILE_SYSTEM_WRITE_GUARD) {
+    auto subpage_button = views::CreateVectorImageButtonWithNativeTheme(
+        base::BindRepeating(
+            [](PermissionToggleRowView* row) {
+              row->delegate_->OpenSiteSettingsFileSystem();
+            },
+            base::Unretained(this)),
+        vector_icons::kLaunchIcon);
+    subpage_button->SetTooltipText(l10n_util::GetStringUTF16(
+        IDS_PAGE_INFO_PERMISSIONS_SUBPAGE_BUTTON_TOOLTIP));
+    views::InstallCircleHighlightPathGenerator(subpage_button.get());
+    subpage_button->SetMinimumImageSize({icon_size, icon_size});
+    subpage_button->SetFlipCanvasOnPaintForRTLUI(false);
+    row_view_->AddControl(std::move(subpage_button));
+  }
   if (permissions::PermissionUtil::CanPermissionBeAllowedOnce(
           permission_.type)) {
     auto subpage_button = views::CreateVectorImageButtonWithNativeTheme(
@@ -180,6 +223,7 @@ void PermissionToggleRowView::InitForManagedSource(
       views::style::CONTEXT_LABEL, views::style::STYLE_SECONDARY);
   if (features::IsChromeRefresh2023()) {
     state_label->SetTextStyle(views::style::STYLE_BODY_5);
+    state_label->SetEnabledColorId(ui::kColorLabelForegroundSecondary);
   }
   state_label->SetProperty(views::kMarginsKey,
                            gfx::Insets::VH(0, icon_label_spacing));
@@ -228,3 +272,10 @@ void PermissionToggleRowView::ResetPermission() {
   permission_.is_one_time = false;
   PermissionChanged();
 }
+
+bool PermissionToggleRowView::GetToggleButtonStateForTesting() const {
+  return toggle_button_->GetIsOn();
+}
+
+BEGIN_METADATA(PermissionToggleRowView)
+END_METADATA

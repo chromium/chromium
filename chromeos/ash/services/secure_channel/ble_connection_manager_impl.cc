@@ -20,6 +20,7 @@
 #include "chromeos/ash/services/secure_channel/public/cpp/shared/ble_constants.h"
 #include "chromeos/ash/services/secure_channel/public/mojom/secure_channel.mojom.h"
 #include "chromeos/ash/services/secure_channel/secure_channel_disconnector.h"
+#include "components/cross_device/timer_factory/timer_factory.h"
 #include "device/bluetooth/public/cpp/bluetooth_uuid.h"
 
 namespace ash::secure_channel {
@@ -59,7 +60,7 @@ std::unique_ptr<BleConnectionManager> BleConnectionManagerImpl::Factory::Create(
     BleSynchronizerBase* ble_synchronizer,
     BleScanner* ble_scanner,
     SecureChannelDisconnector* secure_channel_disconnector,
-    TimerFactory* timer_factory,
+    cross_device::TimerFactory* timer_factory,
     base::Clock* clock) {
   if (test_factory_) {
     return test_factory_->CreateInstance(
@@ -209,7 +210,7 @@ BleConnectionManagerImpl::BleConnectionManagerImpl(
     BleSynchronizerBase* ble_synchronizer,
     BleScanner* ble_scanner,
     SecureChannelDisconnector* secure_channel_disconnector,
-    TimerFactory* timer_factory,
+    cross_device::TimerFactory* timer_factory,
     base::Clock* clock)
     : bluetooth_adapter_(bluetooth_adapter),
       clock_(clock),

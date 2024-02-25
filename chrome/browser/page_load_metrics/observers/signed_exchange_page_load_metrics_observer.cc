@@ -208,23 +208,23 @@ void SignedExchangePageLoadMetricsObserver::OnFirstInputInPage(
   }
 
   // Copied from the UmaPageLoadMetricsObserver implementation.
-  UMA_HISTOGRAM_CUSTOM_TIMES(
+  base::UmaHistogramCustomTimes(
       internal::kHistogramSignedExchangeFirstInputDelay,
       timing.interactive_timing->first_input_delay.value(),
       base::Milliseconds(1), base::Seconds(60), 50);
   if (was_cached_) {
-    UMA_HISTOGRAM_CUSTOM_TIMES(
+    base::UmaHistogramCustomTimes(
         internal::kHistogramCachedSignedExchangeFirstInputDelay,
         timing.interactive_timing->first_input_delay.value(),
         base::Milliseconds(1), base::Seconds(60), 50);
   } else {
-    UMA_HISTOGRAM_CUSTOM_TIMES(
+    base::UmaHistogramCustomTimes(
         internal::kHistogramNotCachedSignedExchangeFirstInputDelay,
         timing.interactive_timing->first_input_delay.value(),
         base::Milliseconds(1), base::Seconds(60), 50);
   }
   if (had_prefetched_alt_sxg_) {
-    UMA_HISTOGRAM_CUSTOM_TIMES(
+    base::UmaHistogramCustomTimes(
         internal::kHistogramAltSubSxgSignedExchangeFirstInputDelay,
         timing.interactive_timing->first_input_delay.value(),
         base::Milliseconds(1), base::Seconds(60), 50);

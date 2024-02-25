@@ -14,6 +14,7 @@
 #include "base/memory/raw_ptr.h"
 #include "ui/base/class_property.h"
 #include "ui/base/metadata/metadata_types.h"
+#include "ui/base/metadata/metadata_utils.h"
 #include "ui/views/debug/debugger_utils.h"
 #include "ui/views/view.h"
 #include "ui/views/views_export.h"
@@ -47,15 +48,7 @@ class ViewDebugWrapperImpl : public debug::ViewDebugWrapper {
 
 template <typename V>
 bool IsViewClass(const View* view) {
-  if (!view) {
-    return false;
-  }
-  static_assert(std::is_base_of<View, V>::value, "Only View classes supported");
-  const ui::metadata::ClassMetaData* child = view->GetClassMetaData();
-  for (const ui::metadata::ClassMetaData* parent = V::MetaData();
-       child && child != parent; child = child->parent_class_meta_data())
-    ;
-  return !!child;
+  return ui::metadata::IsClass<V, View>(view);
 }
 
 template <typename V>

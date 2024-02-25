@@ -10,6 +10,7 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
+#include "base/uuid.h"
 #include "components/bookmarks/browser/base_bookmark_model_observer.h"
 #include "components/bookmarks/browser/bookmark_model.h"
 
@@ -62,27 +63,34 @@ class ShoppingBookmarkModelObserver
                          const bookmarks::BookmarkNode* new_parent,
                          size_t new_index) override;
 
-  void BookmarkNodeRemoved(bookmarks::BookmarkModel* model,
-                           const bookmarks::BookmarkNode* parent,
-                           size_t old_index,
-                           const bookmarks::BookmarkNode* node,
-                           const std::set<GURL>& removed_urls) override;
+  void OnWillRemoveBookmarks(bookmarks::BookmarkModel* model,
+                             const bookmarks::BookmarkNode* parent,
+                             size_t old_index,
+                             const bookmarks::BookmarkNode* node) override;
 
   void BookmarkMetaInfoChanged(bookmarks::BookmarkModel* model,
                                const bookmarks::BookmarkNode* node) override;
 
  private:
+  void HandleFolderDeletion(bookmarks::BookmarkModel* model,
+                            const bookmarks::BookmarkNode* node,
+                            std::set<uint64_t>* unsubscribed_ids);
+  void HandleNodeDeletion(bookmarks::BookmarkModel* model,
+                          const bookmarks::BookmarkNode* node,
+                          const bookmarks::BookmarkNode* folder_being_deleted,
+                          std::set<uint64_t>* unsubscribed_ids);
+
   raw_ptr<ShoppingService> shopping_service_;
 
   raw_ptr<SubscriptionsManager> subscriptions_manager_;
 
-  // A map of bookmark ID to its current URL. This is used to detect incoming
+  // A map of bookmark Uuid to its current URL. This is used to detect incoming
   // changes to the URL since there isn't an explicit event for it.
-  std::map<int64_t, GURL> node_to_url_map_;
+  std::map<base::Uuid, GURL> node_to_url_map_;
 
   // Track the title of the shopping collection if we get a signal that the node
   // will change.
-  absl::optional<std::u16string> shopping_collection_name_before_change_;
+  std::optional<std::u16string> shopping_collection_name_before_change_;
 
   // Automatically remove this observer from its host when destroyed.
   base::ScopedObservation<bookmarks::BookmarkModel,

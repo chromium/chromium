@@ -5,16 +5,20 @@
 #ifndef CHROME_BROWSER_UI_WEBUI_ASH_LOGIN_APP_LAUNCH_SPLASH_SCREEN_HANDLER_H_
 #define CHROME_BROWSER_UI_WEBUI_ASH_LOGIN_APP_LAUNCH_SPLASH_SCREEN_HANDLER_H_
 
+#include <optional>
 #include <set>
 #include <string>
+#include <string_view>
 
 #include "base/memory/raw_ptr.h"
+#include "chrome/browser/ash/app_mode/kiosk_app.h"
 #include "chrome/browser/ash/app_mode/kiosk_app_launch_error.h"
 #include "chrome/browser/ash/app_mode/kiosk_app_manager_base.h"
 #include "chrome/browser/ash/login/screens/error_screen.h"
 #include "chrome/browser/ui/webui/ash/login/base_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/network_state_informer.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
+#include "ui/gfx/image/image_skia.h"
+#include "url/gurl.h"
 
 namespace ash {
 
@@ -30,13 +34,29 @@ class AppLaunchSplashScreenView {
     virtual void OnNetworkConfigFinished() {}
   };
 
+  // The data struct needed to populate this view.
+  struct Data {
+    Data(std::string_view name, gfx::ImageSkia icon, const GURL& url);
+    Data(const Data&) = delete;
+    Data(Data&&);
+    Data& operator=(const Data&) = delete;
+    Data& operator=(Data&&);
+    ~Data();
+
+    // The name of the app.
+    std::string name;
+    // The icon of the app.
+    gfx::ImageSkia icon;
+    // The URL of the app.
+    GURL url;
+  };
+
   enum class AppLaunchState {
     kPreparingProfile,
     kPreparingNetwork,
     kInstallingApplication,
     kInstallingExtension,
     kWaitingAppWindow,
-    kWaitingAppWindowInstallFailed,
     kNetworkWaitTimeout,
     kShowingNetworkConfigureUI,
   };
@@ -49,8 +69,8 @@ class AppLaunchSplashScreenView {
   // Sets screen controller this view belongs to.
   virtual void SetDelegate(Delegate* delegate) = 0;
 
-  // Shows the contents of the screen.
-  virtual void Show(KioskAppManagerBase::App app_data) = 0;
+  // Shows or updates the contents of the screen with the given `data`.
+  virtual void Show(Data data) = 0;
 
   // Hides the contents of the screen.
   virtual void Hide() = 0;
@@ -94,7 +114,7 @@ class AppLaunchSplashScreenHandler : public BaseScreenHandler,
   void DeclareJSCallbacks() override;
 
   // AppLaunchSplashScreenView implementation:
-  void Show(KioskAppManagerBase::App app_data) override;
+  void Show(Data data) override;
   void Hide() override;
   void ToggleNetworkConfig(bool visible) override;
   void UpdateAppLaunchState(AppLaunchState state) override;
@@ -110,18 +130,18 @@ class AppLaunchSplashScreenHandler : public BaseScreenHandler,
   void HandleConfigureNetwork();
   void DoToggleNetworkConfig(bool visible);
 
-  raw_ptr<Delegate, ExperimentalAsh> delegate_ = nullptr;
+  raw_ptr<Delegate> delegate_ = nullptr;
   bool is_shown_ = false;
   AppLaunchState state_ = AppLaunchState::kPreparingProfile;
 
-  raw_ptr<ErrorScreen, DanglingUntriaged | ExperimentalAsh> error_screen_;
+  raw_ptr<ErrorScreen, DanglingUntriaged> error_screen_;
 
   // Whether network configure UI is being shown.
   bool network_config_shown_ = false;
 
   // If this has value it will be populated through ToggleNetworkConfig(value)
   // after screen is shown. Cleared after screen was shown.
-  absl::optional<bool> toggle_network_config_on_show_;
+  std::optional<bool> toggle_network_config_on_show_;
 };
 
 }  // namespace ash

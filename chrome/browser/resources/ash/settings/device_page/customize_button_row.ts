@@ -2,75 +2,58 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import 'chrome://resources/cr_components/settings_prefs/prefs.js';
+import 'chrome://resources/polymer/v3_0/iron-icon/iron-icon.js';
+import 'chrome://resources/ash/common/cr_elements/md_select.css.js';
+import './customize_button_select.js';
+import '../settings_shared.css.js';
+import '../controls/settings_dropdown_menu.js';
+import '../os_settings_icons.html.js';
+
+import {CrIconButtonElement} from 'chrome://resources/ash/common/cr_elements/cr_icon_button/cr_icon_button.js';
+import {I18nMixin} from 'chrome://resources/ash/common/cr_elements/i18n_mixin.js';
+import {strictQuery} from 'chrome://resources/ash/common/typescript_utils/strict_query.js';
+import {assert} from 'chrome://resources/js/assert.js';
+import {PolymerElementProperties} from 'chrome://resources/polymer/v3_0/polymer/interfaces.js';
+import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+
+import {ButtonPressObserverReceiver} from '../mojom-webui/input_device_settings_provider.mojom-webui.js';
+
+import {getTemplate} from './customize_button_row.html.js';
+import {CustomizeButtonSelectElement} from './customize_button_select.js';
+import {setDataTransferOriginIndex} from './drag_and_drop_manager.js';
+import {FakeInputDeviceSettingsProvider} from './fake_input_device_settings_provider.js';
+import {getInputDeviceSettingsProvider} from './input_device_mojo_interface_provider.js';
+import {ActionChoice, Button, ButtonRemapping, InputDeviceSettingsProviderInterface} from './input_device_settings_types.js';
+import {buttonsAreEqual} from './input_device_settings_utils.js';
+
+export interface CustomizeButtonRowElement {
+  $: {
+    container: HTMLDivElement,
+    remappingActionDropdown: CustomizeButtonSelectElement,
+    renameButton: CrIconButtonElement,
+    reorderButton: CrIconButtonElement,
+  };
+}
+
+declare global {
+  interface HTMLElementEventMap {
+    'reorder-button-direction': ReorderButtonDirectionEvent;
+  }
+}
+
 /**
  * @fileoverview
  * 'keyboard-remap-key-row' contains a key with icon label and dropdown menu to
  * allow users to customize the remapped key.
  */
 
-import 'chrome://resources/cr_components/settings_prefs/prefs.js';
-import 'chrome://resources/polymer/v3_0/iron-icon/iron-icon.js';
-import 'chrome://resources/cr_elements/md_select.css.js';
-import '../settings_shared.css.js';
-import '/shared/settings/controls/settings_dropdown_menu.js';
-import '../os_settings_icons.html.js';
-
-import {DropdownMenuOptionList} from '/shared/settings/controls/settings_dropdown_menu.js';
-import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
-import {PolymerElementProperties} from 'chrome://resources/polymer/v3_0/polymer/interfaces.js';
-import {microTask, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-
-import {cast} from '../assert_extras.js';
-
-import {getTemplate} from './customize_button_row.html.js';
-import {ActionChoice, ButtonRemapping, KeyEvent} from './input_device_settings_types.js';
-
-const NO_REMAPPING_OPTION_LABEL = 'none';
-const KEY_COMBINATION_OPTION_LABEL = 'key combination';
-
-/**
- * Bit mask of modifiers.
- * Ordering is according to UX, but values match EventFlags in
- * ui/events/event_constants.h.
- */
-enum Modifier {
-  NONE = 0,
-  CONTROL = 1 << 2,
-  SHIFT = 1 << 1,
-  ALT = 1 << 3,
-  META = 1 << 4,
-}
-
-/**
- * Map the modifier keys to the bit value. Currently the modifiers only
- * contains the following four.
- */
-const modifierBitMaskToString: Map<number, string> = new Map([
-  [Modifier.CONTROL, 'ctrl'],
-  [Modifier.SHIFT, 'shift'],
-  [Modifier.ALT, 'alt'],
-  [Modifier.META, 'meta'],
-]);
-
-function concateKeyString(firstStr: string, secondStr: string): string {
-  return firstStr.length === 0 ? secondStr : firstStr.concat(` + ${secondStr}`);
-}
-
-/**
- * Converts a keyEvent to a string representing all the modifiers and the vkey.
- */
-function getKeyCombinationLabel(keyEvent: KeyEvent): string {
-  let combinationLabel = '';
-  modifierBitMaskToString.forEach((modifierName: string, bitValue: number) => {
-    if ((keyEvent.modifiers & bitValue) !== 0) {
-      combinationLabel = concateKeyString(combinationLabel, modifierName);
-    }
-  });
-  if (keyEvent.keyDisplay !== undefined && keyEvent.keyDisplay.length !== 0) {
-    combinationLabel = concateKeyString(combinationLabel, keyEvent.keyDisplay);
-  }
-  return combinationLabel;
-}
+export type ShowRenamingDialogEvent = CustomEvent<{buttonIndex: number}>;
+export type ShowKeyCustomizationDialogEvent =
+    CustomEvent<{buttonIndex: number}>;
+export type ReorderButtonEvent =
+    CustomEvent<{originIndex: number, destinationIndex: number}>;
+export type ReorderButtonDirectionEvent = CustomEvent<{direction: boolean}>;
 
 const CustomizeButtonRowElementBase = I18nMixin(PolymerElement);
 
@@ -93,163 +76,253 @@ export class CustomizeButtonRowElement extends CustomizeButtonRowElementBase {
         type: Object,
       },
 
-      buttonMapTargets_: {
-        type: Object,
-      },
-
       remappingIndex: {
         type: Number,
       },
 
-      fakePref_: {
-        type: Object,
-        value() {
-          return {
-            key: 'fakeCustomizeKeyPref',
-            type: chrome.settingsPrivate.PrefType.STRING,
-            value: 0,
-          };
-        },
-      },
-
       actionList: {
         type: Array,
-        observer: 'setUpButtonMapTargets_',
       },
 
-      removeTopBorder: {
+      /**
+       * Name of the remapping.
+       */
+      buttonRemappingName_: {
+        type: String,
+        value: '',
+        computed:
+            'getButtonRemappingName_(buttonRemappingList.*, remappingIndex)',
+      },
+
+      /**
+       * True if this element is being dragged by its handle.
+       * This property is used to apply custom styling to the element when it's
+       * being dragged.
+       */
+      isBeingDragged_: {
         type: Boolean,
         reflectToAttribute: true,
       },
 
-      keyCombinationLabel_: {
-        type: String,
+      /**
+       * Reference to the HTML element that was last pressed
+       * on. This property is used to determine if a drag event was started
+       * from this element's drag handle or elsewhere on the element..
+       */
+      lastMouseDownTarget_: {
+        type: Object,
+        value: null,
       },
 
-      /**
-       * The value of the "None" item in dropdown menu.
-       */
-      noRemappingOptionValue_: {
-        type: String,
-        value: NO_REMAPPING_OPTION_LABEL,
-        readOnly: true,
-      },
-
-      /**
-       * The value of the "Key combination" item in dropdown menu.
-       */
-      keyCombinationOptionValue_: {
-        type: String,
-        value: KEY_COMBINATION_OPTION_LABEL,
-        readOnly: true,
+      hasLauncherButton: {
+        type: Boolean,
       },
     };
   }
 
   static get observers(): string[] {
     return [
-      'onSettingsChanged(fakePref_.*)',
-      'initializeCustomizeKey(buttonRemappingList.*, remappingIndex)',
+      'initializeButtonRow_(buttonRemappingList.*, remappingIndex)',
     ];
   }
 
   buttonRemappingList: ButtonRemapping[];
   remappingIndex: number;
   actionList: ActionChoice[];
+  hasLauncherButton: boolean;
+  private buttonPressObserverReceiver: ButtonPressObserverReceiver;
   private buttonRemapping_: ButtonRemapping;
-  private buttonMapTargets_: DropdownMenuOptionList;
-  private fakePref_: chrome.settingsPrivate.PrefObject;
-  private noRemappingOptionValue_: string;
-  private keyCombinationOptionValue_: string;
-  private keyCombinationLabel_: string;
+  private buttonRemappingName_: string;
+  private inputDeviceSettingsProvider_: InputDeviceSettingsProviderInterface =
+      getInputDeviceSettingsProvider();
+  private isBeingDragged_: boolean;
+  private lastMouseDownTarget_: HTMLElement|null;
 
-  /**
-   * Populate dropdown menu choices.
-   */
-  private setUpButtonMapTargets_(): void {
-    this.buttonMapTargets_ = [];
-    if (!this.actionList) {
-      return;
-    }
-    // TODO(yyhyyh@): Get buttonMapTargets_ from provider in customization
-    // pages, and pass it as a value instead of creating fake data here.
-    for (const actionChoice of this.actionList) {
-      this.buttonMapTargets_.push({
-        value: actionChoice.actionId.toString(),
-        name: actionChoice.name,
-      });
-    }
+  override connectedCallback(): void {
+    super.connectedCallback();
+    this.observeButtonPresses();
+    // Focus dropdown right away as this button was just pressed.
+    this.$.remappingActionDropdown!.focus();
+
+    this.$.reorderButton!.addEventListener(
+        'keydown', this.handleKeyDownReorderButton_);
+    this.addEventListener(
+        'reorder-button-direction', this.onButtonReorderDirectEvent_);
+  }
+
+  override disconnectedCallback(): void {
+    super.disconnectedCallback();
+    this.$.reorderButton!.removeEventListener(
+        'keydown', this.handleKeyDownReorderButton_);
+    this.removeEventListener(
+        'reorder-button-direction', this.onButtonReorderDirectEvent_);
   }
 
   /**
-   * Populate the button remapping action according to the existing settings.
+   * Focuses the reordering button for this row.
    */
-  private setUpRemappingActions_(): void {
-    const dropdown = cast(
-        this.shadowRoot!.querySelector('#remappingActionDropdown'),
-        HTMLSelectElement);
+  focusReorderingButton(): void {
+    this.$.reorderButton.focus();
+  }
 
-    // Set the dropdown option label to default 'Key combination'.
-    this.keyCombinationLabel_ = this.i18n('keyCombinationOptionLabel');
+  override focus(): void {
+    assert(this.$.remappingActionDropdown);
+    this.$.remappingActionDropdown.focus();
+  }
 
-    // For accelerator actions, the remappingAction.action value is number.
-    // TODO(yyhyyh@): Add the case when remappingAction is none or Keyboard
-    // events.
-    const action = this.buttonRemapping_.remappingAction?.action;
-    const keyEvent = this.buttonRemapping_.remappingAction?.keyEvent;
-    if (action !== undefined && !isNaN(action)) {
-      const originalAction =
-          this.buttonRemapping_.remappingAction!.action!.toString();
-
-
-      // Initialize fakePref with the tablet settings mapping.
-      this.set('fakePref_.value', originalAction);
-
-      // Initialize dropdown menu selection to match the tablet settings.
-      const option = this.buttonMapTargets_.find((dropdownItem) => {
-        return dropdownItem.value === originalAction;
-      });
-
-      microTask.run(() => {
-        dropdown.value =
-            option === undefined ? NO_REMAPPING_OPTION_LABEL : originalAction;
-      });
-    } else if (keyEvent) {
-      this.set('fakePref_.value', KEY_COMBINATION_OPTION_LABEL);
-      this.keyCombinationLabel_ = getKeyCombinationLabel(keyEvent) ??
-          this.i18n('keyCombinationOptionLabel');
-
-      microTask.run(() => {
-        dropdown.value = KEY_COMBINATION_OPTION_LABEL;
-      });
+  private observeButtonPresses(): void {
+    if (this.inputDeviceSettingsProvider_ instanceof
+        FakeInputDeviceSettingsProvider) {
+      this.inputDeviceSettingsProvider_.observeButtonPresses(this);
+      return;
     }
+
+    this.buttonPressObserverReceiver = new ButtonPressObserverReceiver(this);
+
+    this.inputDeviceSettingsProvider_.observeButtonPresses(
+        this.buttonPressObserverReceiver.$.bindNewPipeAndPassRemote());
   }
 
   /**
    * Initialize the button remapping content and set up fake pref.
    */
-  private initializeCustomizeKey(): void {
+  private initializeButtonRow_(): void {
     if (!this.buttonRemappingList ||
         !this.buttonRemappingList[this.remappingIndex]) {
       return;
     }
-    this.buttonRemapping_ = this.buttonRemappingList[this.remappingIndex];
-    this.setUpButtonMapTargets_();
-    this.setUpRemappingActions_();
-  }
 
-  /**
-   * Update device settings whenever the pref changes.
-   */
-  private onSettingsChanged(): void {
-    // TODO(yyhyyh@): Update remapping settings.
+    if (this.remappingIndex === 0) {
+      this.$.container.classList.add('first');
+    }
+
+    this.buttonRemapping_ = this.buttonRemappingList[this.remappingIndex];
   }
 
   /**
    * Pops out the dialog to edit button label.
    */
   private onEditButtonLabelClicked_(): void {
-    // TODO(yyhyyh@): Implement edit icon clicked function.
+    this.dispatchEvent(new CustomEvent('show-renaming-dialog', {
+      bubbles: true,
+      composed: true,
+      detail: {buttonIndex: this.remappingIndex},
+    }));
+  }
+
+  /**
+   * Get the button remapping name when initializing or users updated it.
+   */
+  private getButtonRemappingName_(): string {
+    if (!!this.buttonRemappingList &&
+        !!this.buttonRemappingList[this.remappingIndex]) {
+      return this.buttonRemappingList[this.remappingIndex].name;
+    }
+    return '';
+  }
+
+  onButtonPressed(button: Button): void {
+    if (buttonsAreEqual(button, this.buttonRemapping_.button)) {
+      this.$.remappingActionDropdown!.focus();
+    }
+  }
+
+  private onContainerMouseDown_(event: Event): void {
+    this.lastMouseDownTarget_ = event.target as HTMLElement;
+  }
+
+  private onDragStart_(event: DragEvent): void {
+    const dragHandle =
+        strictQuery('.move-button', this.shadowRoot, HTMLElement);
+    // Check if the drag event started from the drag handle.
+    if (!dragHandle.contains(this.lastMouseDownTarget_)) {
+      // Drag didn't start from the handle, so don't allow the drag.
+      event.preventDefault();
+      return;
+    }
+
+    this.isBeingDragged_ = true;
+
+    // Create the grey rectangle used as the drag image.
+    // It's necessary to create a canvas element this way, so that we have
+    // full control over the rendering of the drag image.
+    const canvas = document.createElement('canvas');
+
+    document.body.append(canvas);
+    // We won't need the canvas after this function finishes, so
+    // remove it from the DOM.
+    setTimeout(() => canvas.remove(), 100);
+
+    canvas.width = this.offsetWidth;
+    canvas.height = this.offsetHeight;
+
+    // Position the canvas offscreen.
+    canvas.style.position = 'absolute';
+    canvas.style.top = '-200px';
+
+    // Using the canvas context, draw the grey rectangle that will be displayed
+    // while the user is dragging.
+    const context = canvas.getContext('2d');
+    if (context) {
+      // Using getComputedStyle and getPropertyValue is the only
+      // way to use CSS variables with canvas painting.
+      context.fillStyle = getComputedStyle(canvas).getPropertyValue(
+          '--cros-sys-ripple_neutral_on_subtle');
+      context.fillRect(0, 0, canvas.width, canvas.height);
+      context.strokeStyle = getComputedStyle(canvas).getPropertyValue(
+          '--cros-sys-highlight_shape');
+      context.lineWidth = 1;
+      context.strokeRect(0, 0, canvas.width, canvas.height);
+    }
+
+    if (event.dataTransfer) {
+      event.dataTransfer.setDragImage(canvas, event.offsetX, event.offsetY);
+      // dropEffect and effectAllowed affect the cursor that's
+      // displayed during the drag.
+      event.dataTransfer.dropEffect = 'move';
+      event.dataTransfer.effectAllowed = 'move';
+      // Set data on the event that allows the drop receiver to determine
+      // the index of this row.
+      setDataTransferOriginIndex(event, this.remappingIndex);
+    }
+  }
+
+  private onDragEnd_(): void {
+    this.isBeingDragged_ = false;
+  }
+
+  private isDropdownDisabled_(): boolean {
+    return this.isBeingDragged_;
+  }
+
+  private getReorderButtonLabel_(): string {
+    return this.i18n('buttonReorderingAriaLabel', this.buttonRemappingName_);
+  }
+
+  private onButtonReorderDirectEvent_(e: ReorderButtonDirectionEvent): void {
+    const destinationIndex =
+        this.remappingIndex + (e.detail.direction ? -1 : 1);
+    this.dispatchEvent(new CustomEvent('reorder-button', {
+      bubbles: true,
+      composed: true,
+      detail: {originIndex: this.remappingIndex, destinationIndex},
+    }));
+  }
+
+  private handleKeyDownReorderButton_(e: KeyboardEvent): void {
+    if (!e.ctrlKey) {
+      return;
+    }
+
+    const isArrowUp = e.key === 'ArrowUp';
+    const isArrowDown = e.key === 'ArrowDown';
+    if (isArrowUp || isArrowDown) {
+      this.dispatchEvent(new CustomEvent('reorder-button-direction', {
+        bubbles: true,
+        composed: true,
+        detail: {direction: isArrowUp ? true : false},
+      }));
+    }
   }
 }
 

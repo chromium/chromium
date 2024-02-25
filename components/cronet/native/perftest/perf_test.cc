@@ -61,7 +61,7 @@ std::string GetConfigString(const char* key) {
 
 // Return an int configuration option.
 int GetConfigInt(const char* key) {
-  absl::optional<int> config = g_options->FindInt(key);
+  std::optional<int> config = g_options->FindInt(key);
   CHECK(config) << "Cannot find key: " << key;
   return *config;
 }
@@ -412,7 +412,7 @@ void PerfTest(const char* json_args) {
 
   // Parse benchmark options into |g_options|.
   std::string benchmark_options = json_args;
-  absl::optional<base::Value> options_value =
+  std::optional<base::Value> options_value =
       base::JSONReader::Read(benchmark_options);
   CHECK(options_value) << "Parsing benchmark options failed: "
                        << benchmark_options;

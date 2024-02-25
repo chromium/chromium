@@ -56,9 +56,9 @@ void ForwardSmoothness(base::TimeTicks start_tick,
   // *   frame_expected == 1 && frames_produced == 0
   //        when there is one BeginFrame but no frame generated between
   //        start and stop; should not included this case in tests.
-  if (!data.frames_expected ||
-      (!animation_in_test && data.frames_expected == 1 &&
-       data.frames_produced == 0)) {
+  if (!data.frames_expected_v3 ||
+      (!animation_in_test && data.frames_expected_v3 == 1 &&
+       data.frames_expected_v3 == data.frames_dropped_v3)) {
     return;
   }
 
@@ -67,7 +67,7 @@ void ForwardSmoothness(base::TimeTicks start_tick,
   constexpr int kLowSmoothness = 20;
 
   const base::TimeDelta duration = base::TimeTicks::Now() - start_tick;
-  const int smoothness = CalculateSmoothness(data);
+  const int smoothness = CalculateSmoothnessV3(data);
 
   if (duration > kLongAnimation) {
     VLOG(1) << "Ash system animation takes longer than usual, duration= "
@@ -82,8 +82,8 @@ void ForwardSmoothness(base::TimeTicks start_tick,
 
 }  // namespace
 
-ReportCallback ForSmoothness(SmoothnessCallback callback,
-                             bool exclude_from_data_collection) {
+ReportCallback ForSmoothnessV3(SmoothnessCallback callback,
+                               bool exclude_from_data_collection) {
   const base::TimeTicks now = base::TimeTicks::Now();
   auto forward_smoothness =
       base::BindRepeating(&ForwardSmoothness, now, std::move(callback));
@@ -100,7 +100,6 @@ void StartDataCollection() {
 }
 
 std::vector<AnimationData> StopDataCollection() {
-  DCHECK(g_data_collection_enabled);
   g_data_collection_enabled = false;
 
   return GetCollectedData();
@@ -112,15 +111,17 @@ std::vector<AnimationData> GetCollectedData() {
   return data;
 }
 
-int CalculateSmoothness(
+int CalculateSmoothnessV3(
     const cc::FrameSequenceMetrics::CustomReportData& data) {
-  DCHECK(data.frames_expected);
-  return std::floor(100.0f * data.frames_produced / data.frames_expected);
+  DCHECK(data.frames_expected_v3);
+  return std::floor(100.0f *
+                    (data.frames_expected_v3 - data.frames_dropped_v3) /
+                    data.frames_expected_v3);
 }
 
-int CalculateJank(const cc::FrameSequenceMetrics::CustomReportData& data) {
-  DCHECK(data.frames_expected);
-  return std::floor(100.0f * data.jank_count / data.frames_expected);
+int CalculateJankV3(const cc::FrameSequenceMetrics::CustomReportData& data) {
+  DCHECK(data.frames_expected_v3);
+  return std::floor(100.0f * data.jank_count_v3 / data.frames_expected_v3);
 }
 
 }  // namespace ash::metrics_util

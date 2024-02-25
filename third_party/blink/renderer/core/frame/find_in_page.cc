@@ -300,7 +300,7 @@ TextFinder* WebLocalFrameImpl::GetTextFinder() const {
 }
 
 TextFinder* FindInPage::GetTextFinder() const {
-  return text_finder_;
+  return text_finder_.Get();
 }
 
 TextFinder& WebLocalFrameImpl::EnsureTextFinder() {

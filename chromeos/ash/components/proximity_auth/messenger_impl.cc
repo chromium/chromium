@@ -147,7 +147,7 @@ void MessengerImpl::OnMessageReceived(const std::string& payload) {
 
 void MessengerImpl::HandleMessage(const std::string& message) {
   // The decoded message should be a JSON string.
-  absl::optional<base::Value> message_value = base::JSONReader::Read(message);
+  std::optional<base::Value> message_value = base::JSONReader::Read(message);
   if (!message_value || !message_value->is_dict()) {
     PA_LOG(ERROR) << "Unable to parse message as JSON:\n" << message;
     return;
@@ -178,7 +178,8 @@ void MessengerImpl::HandleMessage(const std::string& message) {
   if (pending_message_->type == kMessageTypeUnlockRequest) {
     expected_type = kMessageTypeUnlockResponse;
   } else {
-    NOTREACHED();  // There are no other message types that expect a response.
+    DUMP_WILL_BE_NOTREACHED_NORETURN();  // There are no other message types
+                                         // that expect a response.
   }
 
   if (*type != expected_type) {

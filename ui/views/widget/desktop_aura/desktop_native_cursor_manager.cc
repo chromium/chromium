@@ -45,8 +45,9 @@ void DesktopNativeCursorManager::SetCursor(
   delegate->CommitCursor(new_cursor);
 
   if (delegate->IsCursorVisible()) {
-    for (auto* host : hosts_)
+    for (aura::WindowTreeHost* host : hosts_) {
       host->SetCursor(new_cursor);
+    }
   }
 }
 
@@ -62,12 +63,14 @@ void DesktopNativeCursorManager::SetVisibility(
   } else {
     gfx::NativeCursor invisible_cursor(ui::mojom::CursorType::kNone);
     cursor_loader_.SetPlatformCursor(&invisible_cursor);
-    for (auto* host : hosts_)
+    for (aura::WindowTreeHost* host : hosts_) {
       host->SetCursor(invisible_cursor);
+    }
   }
 
-  for (auto* host : hosts_)
+  for (aura::WindowTreeHost* host : hosts_) {
     host->OnCursorVisibilityChanged(visible);
+  }
 }
 
 void DesktopNativeCursorManager::SetCursorSize(
@@ -87,8 +90,9 @@ void DesktopNativeCursorManager::SetMouseEventsEnabled(
 
   SetVisibility(delegate->IsCursorVisible(), delegate);
 
-  for (auto* host : hosts_)
+  for (aura::WindowTreeHost* host : hosts_) {
     host->dispatcher()->OnMouseEventsEnableStateChanged(enabled);
+  }
 }
 
 void DesktopNativeCursorManager::InitCursorSizeObserver(

@@ -16,6 +16,7 @@
 #include "base/containers/contains.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
+#include "base/memory/raw_ptr.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
@@ -203,7 +204,7 @@ struct DbusAppmenu::HistoryItem {
   // that this is a list of weak references. DbusAppmenu::history_items_
   // is the owner of all items. If it is not a window, then the entry is a
   // single page and the vector will be empty.
-  std::vector<HistoryItem*> tabs;
+  std::vector<raw_ptr<HistoryItem, VectorExperimental>> tabs;
 };
 
 DbusAppmenu::DbusAppmenu(BrowserView* browser_view, uint32_t browser_frame_id)

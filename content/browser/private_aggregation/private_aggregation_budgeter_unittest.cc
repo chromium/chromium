@@ -50,7 +50,8 @@ using BudgetEntryValidityStatus =
 
 using RequestResult = PrivateAggregationBudgeter::RequestResult;
 
-constexpr base::Time kExampleTime = base::Time::FromJavaTime(1652984901234);
+constexpr auto kExampleTime =
+    base::Time::FromMillisecondsSinceUnixEpoch(1652984901234);
 
 class PrivateAggregationBudgeterUnderTest : public PrivateAggregationBudgeter {
  public:
@@ -274,8 +275,7 @@ TEST_F(PrivateAggregationBudgeterTest, DatabaseReopened_DataPersisted) {
 
   PrivateAggregationBudgetKey example_key =
       PrivateAggregationBudgetKey::CreateForTesting(
-          url::Origin::Create(GURL("https://a.example/")),
-          base::Time::FromJavaTime(1652984901234),
+          url::Origin::Create(GURL("https://a.example/")), kExampleTime,
           PrivateAggregationBudgetKey::Api::kProtectedAudience);
   budgeter()->ConsumeBudget(
       PrivateAggregationBudgeter::kSmallerScopeValues.max_budget_per_scope,
@@ -312,8 +312,7 @@ TEST_F(PrivateAggregationBudgeterTest,
 
   PrivateAggregationBudgetKey example_key =
       PrivateAggregationBudgetKey::CreateForTesting(
-          url::Origin::Create(GURL("https://a.example/")),
-          base::Time::FromJavaTime(1652984901234),
+          url::Origin::Create(GURL("https://a.example/")), kExampleTime,
           PrivateAggregationBudgetKey::Api::kProtectedAudience);
   budgeter()->ConsumeBudget(
       PrivateAggregationBudgeter::kSmallerScopeValues.max_budget_per_scope,
@@ -349,8 +348,7 @@ TEST_F(PrivateAggregationBudgeterTest, ConsumeBudgetSameKey) {
 
   PrivateAggregationBudgetKey example_key =
       PrivateAggregationBudgetKey::CreateForTesting(
-          url::Origin::Create(GURL("https://a.example/")),
-          base::Time::FromJavaTime(1652984901234),
+          url::Origin::Create(GURL("https://a.example/")), kExampleTime,
           PrivateAggregationBudgetKey::Api::kProtectedAudience);
 
   // Budget can be increased to below max
@@ -394,7 +392,7 @@ TEST_F(PrivateAggregationBudgeterTest,
 
   CreateAndInitializeBudgeterThenWait();
 
-  base::Time reference_time = base::Time::FromJavaTime(1652984901234);
+  base::Time reference_time = kExampleTime;
 
   // Create 10 min worth of budget keys for a particular site-API pair
   // (with varying time windows) plus one extra.
@@ -457,7 +455,7 @@ TEST_F(PrivateAggregationBudgeterTest,
 
   CreateAndInitializeBudgeterThenWait();
 
-  base::Time reference_time = base::Time::FromJavaTime(1652984901234);
+  base::Time reference_time = kExampleTime;
 
   // Create a day's worth of budget keys for a particular site-API pair
   // (with varying time windows) plus one extra.
@@ -527,14 +525,12 @@ TEST_F(PrivateAggregationBudgeterTest, ConsumeBudgetDifferentApis) {
 
   PrivateAggregationBudgetKey protected_audience_key =
       PrivateAggregationBudgetKey::CreateForTesting(
-          url::Origin::Create(GURL("https://a.example/")),
-          base::Time::FromJavaTime(1652984901234),
+          url::Origin::Create(GURL("https://a.example/")), kExampleTime,
           PrivateAggregationBudgetKey::Api::kProtectedAudience);
 
   PrivateAggregationBudgetKey shared_storage_key =
       PrivateAggregationBudgetKey::CreateForTesting(
-          url::Origin::Create(GURL("https://a.example/")),
-          base::Time::FromJavaTime(1652984901234),
+          url::Origin::Create(GURL("https://a.example/")), kExampleTime,
           PrivateAggregationBudgetKey::Api::kSharedStorage);
 
   budgeter()->ConsumeBudget(
@@ -568,14 +564,12 @@ TEST_F(PrivateAggregationBudgeterTest, ConsumeBudgetDifferentSites) {
 
   PrivateAggregationBudgetKey key_a =
       PrivateAggregationBudgetKey::CreateForTesting(
-          url::Origin::Create(GURL("https://a.example/")),
-          base::Time::FromJavaTime(1652984901234),
+          url::Origin::Create(GURL("https://a.example/")), kExampleTime,
           PrivateAggregationBudgetKey::Api::kProtectedAudience);
 
   PrivateAggregationBudgetKey key_b =
       PrivateAggregationBudgetKey::CreateForTesting(
-          url::Origin::Create(GURL("https://b.example/")),
-          base::Time::FromJavaTime(1652984901234),
+          url::Origin::Create(GURL("https://b.example/")), kExampleTime,
           PrivateAggregationBudgetKey::Api::kProtectedAudience);
 
   budgeter()->ConsumeBudget(
@@ -607,14 +601,12 @@ TEST_F(PrivateAggregationBudgeterTest, ConsumeBudgetDifferentOriginsSameSite) {
 
   PrivateAggregationBudgetKey key_a =
       PrivateAggregationBudgetKey::CreateForTesting(
-          url::Origin::Create(GURL("https://a.domain.example/")),
-          base::Time::FromJavaTime(1652984901234),
+          url::Origin::Create(GURL("https://a.domain.example/")), kExampleTime,
           PrivateAggregationBudgetKey::Api::kProtectedAudience);
 
   PrivateAggregationBudgetKey key_b =
       PrivateAggregationBudgetKey::CreateForTesting(
-          url::Origin::Create(GURL("https://b.domain.example/")),
-          base::Time::FromJavaTime(1652984901234),
+          url::Origin::Create(GURL("https://b.domain.example/")), kExampleTime,
           PrivateAggregationBudgetKey::Api::kProtectedAudience);
 
   budgeter()->ConsumeBudget(
@@ -639,32 +631,13 @@ TEST_F(PrivateAggregationBudgeterTest, ConsumeBudgetDifferentOriginsSameSite) {
   EXPECT_EQ(num_queries_processed, 2);
 }
 
-TEST_F(PrivateAggregationBudgeterTest, ConsumeBudgetExtremeValues) {
-  int num_queries_processed = 0;
-
+TEST_F(PrivateAggregationBudgeterTest, ConsumeBudgetValueTooLarge) {
   CreateAndInitializeBudgeterThenWait();
 
   PrivateAggregationBudgetKey example_key =
       PrivateAggregationBudgetKey::CreateForTesting(
-          url::Origin::Create(GURL("https://a.example/")),
-          base::Time::FromJavaTime(1652984901234),
+          url::Origin::Create(GURL("https://a.example/")), kExampleTime,
           PrivateAggregationBudgetKey::Api::kProtectedAudience);
-
-  // Request will be rejected if budget non-positive
-  budgeter()->ConsumeBudget(
-      /*budget=*/-1, example_key,
-      base::BindLambdaForTesting(
-          [&num_queries_processed](RequestResult result) {
-            EXPECT_EQ(result, RequestResult::kInvalidRequest);
-            ++num_queries_processed;
-          }));
-  budgeter()->ConsumeBudget(
-      /*budget=*/0, example_key,
-      base::BindLambdaForTesting(
-          [&num_queries_processed](RequestResult result) {
-            EXPECT_EQ(result, RequestResult::kInvalidRequest);
-            ++num_queries_processed;
-          }));
 
   base::RunLoop run_loop;
 
@@ -675,12 +648,10 @@ TEST_F(PrivateAggregationBudgeterTest, ConsumeBudgetExtremeValues) {
           1),
       example_key, base::BindLambdaForTesting([&](RequestResult result) {
         EXPECT_EQ(result, RequestResult::kRequestedMoreThanTotalBudget);
-        ++num_queries_processed;
         run_loop.Quit();
       }));
 
   run_loop.Run();
-  EXPECT_EQ(num_queries_processed, 3);
 }
 
 TEST_F(PrivateAggregationBudgeterTest, BudgetValidityMetricsRecorded) {
@@ -770,7 +741,7 @@ TEST_F(PrivateAggregationBudgeterTest, BudgetValidityMetricsRecorded) {
           run_loop.Quit();
         }));
     histograms.ExpectUniqueSample(
-        "PrivacySandbox.PrivateAggregation.Budgeter.BudgetValidityStatus",
+        "PrivacySandbox.PrivateAggregation.Budgeter.BudgetValidityStatus2",
         test_case.expected_status, 1);
     run_loop.Run();
   }
@@ -783,8 +754,7 @@ TEST_F(PrivateAggregationBudgeterTest,
 
   PrivateAggregationBudgetKey example_key =
       PrivateAggregationBudgetKey::CreateForTesting(
-          url::Origin::Create(GURL("https://a.example/")),
-          base::Time::FromJavaTime(1652984901234),
+          url::Origin::Create(GURL("https://a.example/")), kExampleTime,
           PrivateAggregationBudgetKey::Api::kProtectedAudience);
 
   // Queries should be processed in the order they are received.
@@ -861,8 +831,7 @@ TEST_F(PrivateAggregationBudgeterTest,
 
   PrivateAggregationBudgetKey example_key =
       PrivateAggregationBudgetKey::CreateForTesting(
-          url::Origin::Create(GURL("https://a.example/")),
-          base::Time::FromJavaTime(1652984901234),
+          url::Origin::Create(GURL("https://a.example/")), kExampleTime,
           PrivateAggregationBudgetKey::Api::kProtectedAudience);
 
   // Queries should be processed in the order they are received.
@@ -911,8 +880,7 @@ TEST_F(PrivateAggregationBudgeterTest,
 
   PrivateAggregationBudgetKey example_key =
       PrivateAggregationBudgetKey::CreateForTesting(
-          url::Origin::Create(GURL("https://a.example/")),
-          base::Time::FromJavaTime(1652984901234),
+          url::Origin::Create(GURL("https://a.example/")), kExampleTime,
           PrivateAggregationBudgetKey::Api::kProtectedAudience);
 
   int num_queries_succeeded = 0;
@@ -961,8 +929,7 @@ TEST_F(PrivateAggregationBudgeterTest,
 
   PrivateAggregationBudgetKey example_key =
       PrivateAggregationBudgetKey::CreateForTesting(
-          url::Origin::Create(GURL("https://a.example/")),
-          base::Time::FromJavaTime(1652984901234),
+          url::Origin::Create(GURL("https://a.example/")), kExampleTime,
           PrivateAggregationBudgetKey::Api::kProtectedAudience);
 
   int num_consume_queries_succeeded = 0;

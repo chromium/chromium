@@ -30,9 +30,8 @@ bool DeviceHasEnoughMemoryForBackForwardCache() {
   // It is important to check the base::FeatureList to avoid activating any
   // field trial groups if BFCache is disabled due to memory threshold.
   if (base::FeatureList::IsEnabled(features::kBackForwardCacheMemoryControls)) {
-    // On Android, BackForwardCache is only enabled for 2GB+ high memory
-    // devices. The default threshold value is set to 1700 MB to account for all
-    // 2GB devices which report lower RAM due to carveouts.
+    // On Android, BackForwardCache is enabled for devices with 1200MB memory or
+    // above.
     int default_memory_threshold_mb =
 #if BUILDFLAG(IS_ANDROID)
         1200;
@@ -102,64 +101,7 @@ bool IsBackForwardCacheEnabled() {
 }
 
 bool CanCrossSiteNavigationsProactivelySwapBrowsingInstances() {
-  return IsProactivelySwapBrowsingInstanceEnabled() ||
-         IsBackForwardCacheEnabled();
-}
-
-const char kProactivelySwapBrowsingInstanceLevelParameterName[] = "level";
-
-constexpr base::FeatureParam<ProactivelySwapBrowsingInstanceLevel>::Option
-    proactively_swap_browsing_instance_levels[] = {
-        {ProactivelySwapBrowsingInstanceLevel::kDisabled, "Disabled"},
-        {ProactivelySwapBrowsingInstanceLevel::kCrossSiteSwapProcess,
-         "CrossSiteSwapProcess"},
-        {ProactivelySwapBrowsingInstanceLevel::kCrossSiteReuseProcess,
-         "CrossSiteReuseProcess"},
-        {ProactivelySwapBrowsingInstanceLevel::kSameSite, "SameSite"}};
-const base::FeatureParam<ProactivelySwapBrowsingInstanceLevel>
-    proactively_swap_browsing_instance_level{
-        &features::kProactivelySwapBrowsingInstance,
-        kProactivelySwapBrowsingInstanceLevelParameterName,
-        ProactivelySwapBrowsingInstanceLevel::kDisabled,
-        &proactively_swap_browsing_instance_levels};
-
-std::string GetProactivelySwapBrowsingInstanceLevelName(
-    ProactivelySwapBrowsingInstanceLevel level) {
-  return proactively_swap_browsing_instance_level.GetName(level);
-}
-
-std::array<std::string,
-           static_cast<size_t>(ProactivelySwapBrowsingInstanceLevel::kMaxValue)>
-ProactivelySwapBrowsingInstanceFeatureEnabledLevelValues() {
-  return {
-      GetProactivelySwapBrowsingInstanceLevelName(
-          ProactivelySwapBrowsingInstanceLevel::kCrossSiteSwapProcess),
-      GetProactivelySwapBrowsingInstanceLevelName(
-          ProactivelySwapBrowsingInstanceLevel::kCrossSiteReuseProcess),
-      GetProactivelySwapBrowsingInstanceLevelName(
-          ProactivelySwapBrowsingInstanceLevel::kSameSite),
-  };
-}
-
-ProactivelySwapBrowsingInstanceLevel GetProactivelySwapBrowsingInstanceLevel() {
-  if (base::FeatureList::IsEnabled(features::kProactivelySwapBrowsingInstance))
-    return proactively_swap_browsing_instance_level.Get();
-  return ProactivelySwapBrowsingInstanceLevel::kDisabled;
-}
-
-bool IsProactivelySwapBrowsingInstanceEnabled() {
-  return GetProactivelySwapBrowsingInstanceLevel() >=
-         ProactivelySwapBrowsingInstanceLevel::kCrossSiteSwapProcess;
-}
-
-bool IsProactivelySwapBrowsingInstanceWithProcessReuseEnabled() {
-  return GetProactivelySwapBrowsingInstanceLevel() >=
-         ProactivelySwapBrowsingInstanceLevel::kCrossSiteReuseProcess;
-}
-
-bool IsProactivelySwapBrowsingInstanceOnSameSiteNavigationEnabled() {
-  return GetProactivelySwapBrowsingInstanceLevel() >=
-         ProactivelySwapBrowsingInstanceLevel::kSameSite;
+  return IsBackForwardCacheEnabled();
 }
 
 const char kRenderDocumentLevelParameterName[] = "level";
@@ -243,6 +185,15 @@ NavigationQueueingFeatureLevel GetNavigationQueueingFeatureLevel() {
 }
 
 bool ShouldAvoidRedundantNavigationCancellations() {
+  // If the experimental early RenderFrameHost swap for history navigations is
+  // turned on, this must return true so that when the old RFH is unloaded as
+  // part of the early swap, this doesn't cancel the navigation that's still
+  // ongoing in the new RFH.
+  if (base::FeatureList::IsEnabled(
+          features::kEarlyDocumentSwapForBackForwardTransitions)) {
+    return true;
+  }
+
   return GetNavigationQueueingFeatureLevel() >=
          NavigationQueueingFeatureLevel::kAvoidRedundantCancellations;
 }
@@ -253,12 +204,18 @@ bool ShouldQueueNavigationsWhenPendingCommitRFHExists() {
 }
 
 bool ShouldRestrictCanAccessDataForOriginToUIThread() {
-  // Only restrict calls to the UI thread if the feature is enabled, and if the
-  // new blob URL support is enabled.
+  // Only restrict calls to the UI thread if:
+  // - the feature is enabled
+  // - the new blob URL support is enabled
+  // - ChildProcessSecurityPolicy's requested file set is checked in
+  //   CanRequestURL() rather than CanCommitURL(). This feature is required for
+  //   some tests for pass with Citadel checks.
   return base::FeatureList::IsEnabled(
-             kRestrictCanAccessDataForOriginToUIThread) &&
+             features::kRestrictCanAccessDataForOriginToUIThread) &&
          base::FeatureList::IsEnabled(
-             net::features::kSupportPartitionedBlobUrl);
+             net::features::kSupportPartitionedBlobUrl) &&
+         base::FeatureList::IsEnabled(
+             features::kRequestFileSetCheckedInCanRequestURL);
 }
 
 bool ShouldCreateSiteInstanceForDataUrls() {

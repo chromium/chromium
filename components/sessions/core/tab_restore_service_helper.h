@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_SESSIONS_CORE_TAB_RESTORE_SERVICE_HELPER_H_
 #define COMPONENTS_SESSIONS_CORE_TAB_RESTORE_SERVICE_HELPER_H_
 
+#include <optional>
 #include <set>
 #include <vector>
 
@@ -17,7 +18,6 @@
 #include "components/sessions/core/session_types.h"
 #include "components/sessions/core/sessions_export.h"
 #include "components/sessions/core/tab_restore_service.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace sessions {
 
@@ -89,7 +89,7 @@ class SESSIONS_EXPORT TabRestoreServiceHelper
   // Helper methods used to implement TabRestoreService.
   void AddObserver(TabRestoreServiceObserver* observer);
   void RemoveObserver(TabRestoreServiceObserver* observer);
-  absl::optional<SessionID> CreateHistoricalTab(LiveTab* live_tab, int index);
+  std::optional<SessionID> CreateHistoricalTab(LiveTab* live_tab, int index);
   void BrowserClosing(LiveTabContext* context);
   void BrowserClosed(LiveTabContext* context);
   void CreateHistoricalGroup(LiveTabContext* context,
@@ -219,7 +219,7 @@ class SESSIONS_EXPORT TabRestoreServiceHelper
   // Set of contexts that we've received a BrowserClosing method for but no
   // corresponding BrowserClosed. We cache the set of contexts closing to
   // avoid creating historical tabs for them.
-  std::set<LiveTabContext*> closing_contexts_;
+  std::set<raw_ptr<LiveTabContext, SetExperimental>> closing_contexts_;
 
   // Set of groups that we've received a CreateHistoricalGroup method for but no
   // corresponding GroupClosed. We cache the set of groups closing to avoid

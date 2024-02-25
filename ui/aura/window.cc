@@ -6,6 +6,7 @@
 
 #include <stddef.h>
 
+#include <sstream>
 #include <utility>
 
 #include "base/containers/adapters.h"
@@ -82,7 +83,7 @@ namespace metadata {
 template <>
 struct TypeConverter<viz::SurfaceId> : public BaseTypeConverter<true> {
   static std::u16string ToString(const viz::SurfaceId& source_value);
-  static absl::optional<viz::SurfaceId> FromString(
+  static std::optional<viz::SurfaceId> FromString(
       const std::u16string& source_value);
   static ValidStrings GetValidStrings();
 };
@@ -95,9 +96,9 @@ std::u16string TypeConverter<viz::SurfaceId>::ToString(
 }
 
 // static
-absl::optional<viz::SurfaceId> TypeConverter<viz::SurfaceId>::FromString(
+std::optional<viz::SurfaceId> TypeConverter<viz::SurfaceId>::FromString(
     const std::u16string& source_value) {
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 // static
@@ -248,7 +249,7 @@ Window::~Window() {
   if (frame_sink_id_.is_valid() && !embeds_external_client_) {
     auto* context_factory = Env::GetInstance()->context_factory();
     auto* host_frame_sink_manager = context_factory->GetHostFrameSinkManager();
-    host_frame_sink_manager->InvalidateFrameSinkId(frame_sink_id_);
+    host_frame_sink_manager->InvalidateFrameSinkId(frame_sink_id_, this);
   }
 }
 
@@ -839,7 +840,7 @@ bool Window::HasCapture() {
 }
 
 std::unique_ptr<ScopedKeyboardHook> Window::CaptureSystemKeyEvents(
-    absl::optional<base::flat_set<ui::DomCode>> dom_codes) {
+    std::optional<base::flat_set<ui::DomCode>> dom_codes) {
   Window* root_window = GetRootWindow();
   if (!root_window)
     return nullptr;
@@ -884,31 +885,72 @@ void Window::UpdateVisualState() {
     delegate_->UpdateVisualState();
 }
 
-#if DCHECK_IS_ON()
-std::string Window::GetDebugInfo() const {
-  std::string name = GetName();
+void Window::GetDebugInfo(const aura::Window* active_window,
+                          const aura::Window* focused_window,
+                          const aura::Window* capture_window,
+                          std::ostringstream* out) const {
+  std::string name(GetName());
   if (name.empty())
-    name = "Unknown";
-  std::string layer_state = "NoLayer";
-  if (layer()) {
-    layer_state = base::StringPrintf(
-        "%s opacity=%.1f",
-        layer()->GetTargetVisibility() ? "LayerVisible" : "LayerHidden",
-        layer()->opacity());
+    name = "\"\"";
+  const gfx::Vector2dF& subpixel_position_offset = layer()->GetSubpixelOffset();
+  bool can_occlude_others = aura::Env::GetInstance()
+                                ->GetWindowOcclusionTracker()
+                                ->VisibleWindowCanOccludeOtherWindows(this);
+  bool has_opaque_regions = !opaque_regions_for_occlusion().empty();
+  *out << " " << name << "<" << GetId() << ">";
+  *out << " (" << this << ")" << " type=" << GetType();
+  *out << ((this == active_window) ? " [active]" : "")
+       << ((this == focused_window) ? " [focused]" : "")
+       << ((this == capture_window) ? " [capture]" : "")
+       << (GetTransparent() ? " [transparent]" : "")
+       << (IsVisible() ? " [visible]" : "")
+       << (has_opaque_regions ? " [opaque_regions]" : "")
+       << (can_occlude_others ? " [occlude others]" : "")
+       << (GetOcclusionState() != aura::Window::OcclusionState::UNKNOWN
+               ? base::UTF16ToUTF8(
+                     aura::Window::OcclusionStateToString(GetOcclusionState()))
+                     .c_str()
+               : "")
+       << " " << bounds().ToString()
+       << " scale=" + transform().To2dScale().ToString();
+
+  if (!subpixel_position_offset.IsZero()) {
+    *out << " subpixel offset=" + subpixel_position_offset.ToString();
   }
-  return base::StringPrintf(
-      "%s<%d> bounds=%s %s %s occlusion_state=%s", name.c_str(), GetId(),
-      bounds().ToString().c_str(), visible_ ? "WindowVisible" : "WindowHidden",
-      layer_state.c_str(),
-      base::UTF16ToUTF8(OcclusionStateToString(occlusion_state_)).c_str());
+  *out << base::StringPrintf(" opacity=%.1f", layer()->opacity());
+
+  switch (layer()->type()) {
+    case ui::LAYER_NOT_DRAWN:
+      *out << " layer(not_drawn ";
+      break;
+    case ui::LAYER_TEXTURED:
+      *out << " layer(textured ";
+      if (layer()->fills_bounds_opaquely()) {
+        *out << " opaque ";
+      }
+      break;
+    case ui::LAYER_SOLID_COLOR:
+      *out << " layer(solid ";
+      break;
+    case ui::LAYER_NINE_PATCH:
+      *out << " layer(nine_patch ";
+      break;
+  }
+
+  *out << (layer()->GetTargetVisibility() ? " visible)" : " hidden)");
 }
 
+#if DCHECK_IS_ON()
 std::string Window::GetWindowHierarchy(int depth) const {
-  std::string hierarchy =
-      base::StringPrintf("%*s%s\n", depth * 2, "", GetDebugInfo().c_str());
-  for (Window* child : children_)
-    hierarchy += child->GetWindowHierarchy(depth + 1);
-  return hierarchy;
+  std::ostringstream out;
+  std::string indent_str(depth * 2, ' ');
+  out << indent_str;
+  GetDebugInfo(nullptr, nullptr, nullptr, &out);
+  out << std::endl;
+  for (Window* child : children_) {
+    out << child->GetWindowHierarchy(depth + 1);
+  }
+  return out.str();
 }
 
 void Window::PrintWindowHierarchy(int depth) const {
@@ -941,10 +983,17 @@ void Window::AfterPropertyChange(const void* key, int64_t old_value) {
 // Window, private:
 
 void Window::SetEmbedFrameSinkIdImpl(const viz::FrameSinkId& frame_sink_id) {
+  if (frame_sink_id_ == frame_sink_id) {
+    return;
+  }
+
   UnregisterFrameSinkId();
 
-  DCHECK(frame_sink_id.is_valid());
   frame_sink_id_ = frame_sink_id;
+  if (!frame_sink_id_.is_valid()) {
+    return;
+  }
+
   RegisterFrameSinkId();
 }
 
@@ -1234,10 +1283,12 @@ void Window::NotifyWindowVisibilityChangedUp(aura::Window* target,
 }
 
 bool Window::CleanupGestureState() {
-  // If it's in the process already, nothing has to be done. Reentrant can
+  // If it's in the process already, clean up the consumer state. Reentrant can
   // happen through some event handlers for CancelActiveTouches().
-  if (cleaning_up_gesture_state_)
-    return false;
+  Env* env = Env::GetInstance();
+  if (cleaning_up_gesture_state_) {
+    return env->gesture_recognizer()->CleanupStateForConsumer(this);
+  }
   cleaning_up_gesture_state_ = true;
 
   // Cancelling active touches may end up destroying this window. We use a
@@ -1245,11 +1296,11 @@ bool Window::CleanupGestureState() {
   WindowTracker tracking_this({this});
 
   bool state_modified = false;
-  Env* env = Env::GetInstance();
   state_modified |= env->gesture_recognizer()->CancelActiveTouches(this);
-  state_modified |= env->gesture_recognizer()->CleanupStateForConsumer(this);
   if (!tracking_this.Contains(this))
     return state_modified;
+
+  state_modified |= env->gesture_recognizer()->CleanupStateForConsumer(this);
   // Potentially event handlers for CancelActiveTouches() within
   // CleanupGestureState may change the window hierarchy (or reorder the
   // |children_|), and therefore iterating over |children_| is not safe. Use
@@ -1344,7 +1395,7 @@ void Window::InvalidateLocalSurfaceId(bool also_invalidate_allocation_group) {
 }
 
 void Window::UpdateLocalSurfaceIdFromEmbeddedClient(
-    const absl::optional<viz::LocalSurfaceId>&
+    const std::optional<viz::LocalSurfaceId>&
         embedded_client_local_surface_id) {
   if (embedded_client_local_surface_id) {
     parent_local_surface_id_allocator_->UpdateFromChild(
@@ -1385,8 +1436,13 @@ const std::u16string Window::OcclusionStateToString(OcclusionState state) {
 
 void Window::SetOpaqueRegionsForOcclusion(
     const std::vector<gfx::Rect>& opaque_regions_for_occlusion) {
-  // Only transparent windows should try to set opaque regions for occlusion.
-  DCHECK(GetTransparent() || opaque_regions_for_occlusion.empty());
+  // Opaque regions for occlusion do not apply to opaque windows, so only
+  // allow opaque regions for occlusion to be set for them if they are the
+  // same as the window bounds size.
+  DCHECK(GetTransparent() || layer()->type() == ui::LAYER_NOT_DRAWN ||
+         opaque_regions_for_occlusion.empty() ||
+         (opaque_regions_for_occlusion.size() == 1 &&
+          opaque_regions_for_occlusion[0] == gfx::Rect(bounds().size())));
   if (opaque_regions_for_occlusion == opaque_regions_for_occlusion_)
     return;
   opaque_regions_for_occlusion_ = opaque_regions_for_occlusion;
@@ -1459,8 +1515,11 @@ void Window::OnLayerFillsBoundsOpaquelyChanged(
   WindowOcclusionTracker::ScopedPause pause_occlusion_tracking;
 
   // Non-transparent windows should not have opaque regions for occlusion set.
-  if (!GetTransparent())
+#if DCHECK_IS_ON()
+  if (!GetTransparent() && layer()->type() != ui::LAYER_NOT_DRAWN) {
     DCHECK(opaque_regions_for_occlusion_.empty());
+  }
+#endif
 
   for (WindowObserver& observer : observers_)
     observer.OnWindowTransparentChanged(this, reason);

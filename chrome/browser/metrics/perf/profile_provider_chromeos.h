@@ -8,6 +8,7 @@
 #include <vector>
 
 #include "base/memory/weak_ptr.h"
+#include "base/power_monitor/power_observer.h"
 #include "base/time/time.h"
 #include "chrome/browser/sessions/session_restore.h"
 #include "chromeos/ash/components/login/login_state/login_state.h"
@@ -24,7 +25,8 @@ class SampledProfile;
 // mode, or user logging in, which it forwards to the registered collectors.
 class ProfileProvider : public chromeos::PowerManagerClient::Observer,
                         public ash::LoginState::Observer,
-                        public content::JankMonitor::Observer {
+                        public content::JankMonitor::Observer,
+                        public base::PowerThermalObserver {
  public:
   ProfileProvider();
 
@@ -62,6 +64,11 @@ class ProfileProvider : public chromeos::PowerManagerClient::Observer,
   // methods don't run on the UI thread.
   void OnJankStarted() override;
   void OnJankStopped() override;
+
+  // base::PowerThermalObserver overrides.
+  void OnThermalStateChange(
+      base::PowerThermalObserver::DeviceThermalState new_state) override;
+  void OnSpeedLimitChange(int new_limit) override;
 
   // For testing.
   scoped_refptr<content::JankMonitor> jank_monitor() const {

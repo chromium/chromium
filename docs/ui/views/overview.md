@@ -98,6 +98,10 @@ overriding `::OnPaintBackground` or `::OnPaintBorder`. Doing this helps preserve
 the separation of Views into the three parts described above and makes painting
 code easier to understand.
 
+### Debugging
+
+See [page](../ui_devtools/index.md) for details.
+
 ## Widgets
 
 Views need an underlying canvas to paint onto. This has to be supplied by the
@@ -154,7 +158,7 @@ drawn alongside the window controls as part of the Bubble's Widget's
 NonClientFrameView.
 
 [BoxLayout]: https://cs.chromium.org/chromium/src/ui/views/layout/box_layout.h
-[BubbleDialogDelegateView]: https://cs.chromium.org/chromium/src/ui/views/bubble/bubble_dialog_delegate.h
+[BubbleDialogDelegateView]: https://cs.chromium.org/chromium/src/ui/views/bubble/bubble_dialog_delegate_view.h
 [ClientView]: https://cs.chromium.org/chromium/src/ui/views/window/client_view.h
 [DialogDelegate]: https://cs.chromium.org/chromium/src/ui/views/window/dialog_delegate.h
 [DialogDelegateView]: https://cs.chromium.org/chromium/src/ui/views/window/dialog_delegate.h

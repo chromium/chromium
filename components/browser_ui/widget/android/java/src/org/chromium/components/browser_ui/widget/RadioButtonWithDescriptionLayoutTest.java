@@ -34,9 +34,7 @@ import org.chromium.components.browser_ui.widget.test.R;
 import java.util.Arrays;
 import java.util.List;
 
-/**
- * Tests for {@link RadioButtonLayout}.
- */
+/** Tests for {@link RadioButtonLayout}. */
 @RunWith(BaseJUnit4ClassRunner.class)
 @Batch(Batch.UNIT_TESTS)
 public class RadioButtonWithDescriptionLayoutTest {
@@ -60,8 +58,10 @@ public class RadioButtonWithDescriptionLayoutTest {
 
     @Before
     public void setUp() {
-        mContext = new ContextThemeWrapper(
-                InstrumentationRegistry.getTargetContext(), R.style.Theme_BrowserUI_DayNight);
+        mContext =
+                new ContextThemeWrapper(
+                        InstrumentationRegistry.getTargetContext(),
+                        R.style.Theme_BrowserUI_DayNight);
     }
 
     @Test
@@ -72,7 +72,8 @@ public class RadioButtonWithDescriptionLayoutTest {
 
         // Add one set of buttons.
         List<RadioButtonWithDescription> buttons =
-                Arrays.asList(createRadioButtonWithDescription("a", "a_desc", "a_tag"),
+                Arrays.asList(
+                        createRadioButtonWithDescription("a", "a_desc", "a_tag"),
                         createRadioButtonWithDescription("b", "b_desc", "b_tag"),
                         createRadioButtonWithDescription("c", "c_desc", "c_tag"));
         layout.addButtons(buttons);
@@ -87,7 +88,8 @@ public class RadioButtonWithDescriptionLayoutTest {
 
         // Add more buttons.
         List<RadioButtonWithDescription> moreButtons =
-                Arrays.asList(createRadioButtonWithDescription("d", "d_desc", null),
+                Arrays.asList(
+                        createRadioButtonWithDescription("d", "d_desc", null),
                         createRadioButtonWithDescription("e", "e_desc", null),
                         createRadioButtonWithDescription("f", "f_desc", null));
         layout.addButtons(moreButtons);
@@ -109,7 +111,8 @@ public class RadioButtonWithDescriptionLayoutTest {
 
         // Add one set of options.
         List<RadioButtonWithDescription> buttons =
-                Arrays.asList(createRadioButtonWithDescription("a", "a_desc", "a_tag"),
+                Arrays.asList(
+                        createRadioButtonWithDescription("a", "a_desc", "a_tag"),
                         createRadioButtonWithDescription("b", "b_desc", "b_tag"),
                         createRadioButtonWithDescription("c", "c_desc", "c_tag"));
         layout.addButtons(buttons);
@@ -117,9 +120,12 @@ public class RadioButtonWithDescriptionLayoutTest {
 
         for (int i = 0; i < layout.getChildCount(); i++) {
             RadioButtonWithDescription b = (RadioButtonWithDescription) layout.getChildAt(i);
-            Assert.assertEquals(PRIMARY_MATCH_ASSERT_MESSAGE,
-                    buttons.get(i).getPrimaryText().toString(), b.getPrimaryText().toString());
-            Assert.assertEquals(DESCRIPTION_MATCH_ASSERT_MESSAGE,
+            Assert.assertEquals(
+                    PRIMARY_MATCH_ASSERT_MESSAGE,
+                    buttons.get(i).getPrimaryText().toString(),
+                    b.getPrimaryText().toString());
+            Assert.assertEquals(
+                    DESCRIPTION_MATCH_ASSERT_MESSAGE,
                     buttons.get(i).getDescriptionText().toString(),
                     b.getDescriptionText().toString());
             Assert.assertEquals(TAG_MATCH_ASSERT_MESSAGE, buttons.get(i).getTag(), b.getTag());
@@ -127,26 +133,32 @@ public class RadioButtonWithDescriptionLayoutTest {
 
         // Add even more options, but without tags.
         List<RadioButtonWithDescription> moreButtons =
-                Arrays.asList(createRadioButtonWithDescription("d", "d_desc", null),
+                Arrays.asList(
+                        createRadioButtonWithDescription("d", "d_desc", null),
                         createRadioButtonWithDescription("e", "e_desc", null),
                         createRadioButtonWithDescription("f", "f_desc", null));
         layout.addButtons(moreButtons);
         Assert.assertEquals(6, layout.getChildCount());
         for (int i = 0; i < 3; i++) {
             RadioButtonWithDescription b = (RadioButtonWithDescription) layout.getChildAt(i);
-            Assert.assertEquals(PRIMARY_MATCH_ASSERT_MESSAGE,
-                    buttons.get(i).getPrimaryText().toString(), b.getPrimaryText().toString());
-            Assert.assertEquals(DESCRIPTION_MATCH_ASSERT_MESSAGE,
+            Assert.assertEquals(
+                    PRIMARY_MATCH_ASSERT_MESSAGE,
+                    buttons.get(i).getPrimaryText().toString(),
+                    b.getPrimaryText().toString());
+            Assert.assertEquals(
+                    DESCRIPTION_MATCH_ASSERT_MESSAGE,
                     buttons.get(i).getDescriptionText().toString(),
                     b.getDescriptionText().toString());
             Assert.assertEquals(TAG_MATCH_ASSERT_MESSAGE, buttons.get(i).getTag(), b.getTag());
         }
         for (int i = 3; i < 6; i++) {
             RadioButtonWithDescription b = (RadioButtonWithDescription) layout.getChildAt(i);
-            Assert.assertEquals(PRIMARY_MATCH_ASSERT_MESSAGE,
+            Assert.assertEquals(
+                    PRIMARY_MATCH_ASSERT_MESSAGE,
                     moreButtons.get(i - 3).getPrimaryText().toString(),
                     b.getPrimaryText().toString());
-            Assert.assertEquals(DESCRIPTION_MATCH_ASSERT_MESSAGE,
+            Assert.assertEquals(
+                    DESCRIPTION_MATCH_ASSERT_MESSAGE,
                     moreButtons.get(i - 3).getDescriptionText().toString(),
                     b.getDescriptionText().toString());
             Assert.assertEquals(
@@ -163,7 +175,8 @@ public class RadioButtonWithDescriptionLayoutTest {
 
         // Add one set of options.
         List<RadioButtonWithDescription> buttons =
-                Arrays.asList(createRadioButtonWithDescription("a", "a_desc", null),
+                Arrays.asList(
+                        createRadioButtonWithDescription("a", "a_desc", null),
                         createRadioButtonWithDescription("b", "b_desc", null),
                         createRadioButtonWithDescription("c", "c_desc", null));
         layout.addButtons(buttons);
@@ -184,7 +197,8 @@ public class RadioButtonWithDescriptionLayoutTest {
 
         // Add even more options.
         List<RadioButtonWithDescription> moreButtons =
-                Arrays.asList(createRadioButtonWithDescription("d", "d_desc", null),
+                Arrays.asList(
+                        createRadioButtonWithDescription("d", "d_desc", null),
                         createRadioButtonWithDescription("e", "e_desc", null),
                         createRadioButtonWithDescription("f", "f_desc", null));
         layout.addButtons(moreButtons);
@@ -205,7 +219,8 @@ public class RadioButtonWithDescriptionLayoutTest {
                 new RadioButtonWithDescriptionLayout(mContext);
 
         List<RadioButtonWithDescription> buttons =
-                Arrays.asList(createRadioButtonWithDescription("a", "a_desc", null),
+                Arrays.asList(
+                        createRadioButtonWithDescription("a", "a_desc", null),
                         createRadioButtonWithDescription("b", "b_desc", null),
                         createRadioButtonWithDescription("c", "c_desc", null));
         layout.addButtons(buttons);
@@ -215,7 +230,8 @@ public class RadioButtonWithDescriptionLayoutTest {
         layout.attachAccessoryView(accessoryTextView, firstButton);
         Assert.assertEquals(
                 "The accessory view should be right after the position of it's attachment host.",
-                accessoryTextView, layout.getChildAt(1));
+                accessoryTextView,
+                layout.getChildAt(1));
     }
 
     @Test
@@ -226,7 +242,8 @@ public class RadioButtonWithDescriptionLayoutTest {
                 new RadioButtonWithDescriptionLayout(mContext);
 
         List<RadioButtonWithDescription> buttons =
-                Arrays.asList(createRadioButtonWithDescription("a", "a_desc", null),
+                Arrays.asList(
+                        createRadioButtonWithDescription("a", "a_desc", null),
                         createRadioButtonWithDescription("b", "b_desc", null),
                         createRadioButtonWithDescription("c", "c_desc", null));
         layout.addButtons(buttons);
@@ -239,9 +256,12 @@ public class RadioButtonWithDescriptionLayoutTest {
         layout.attachAccessoryView(accessoryTextView, lastButton);
         Assert.assertNotEquals(
                 "The accessory view shouldn't be in the first position it was inserted at.",
-                accessoryTextView, layout.getChildAt(1));
-        Assert.assertEquals("The accessory view should be at the new position it was placed at.",
-                accessoryTextView, layout.getChildAt(layout.getChildCount() - 1));
+                accessoryTextView,
+                layout.getChildAt(1));
+        Assert.assertEquals(
+                "The accessory view should be at the new position it was placed at.",
+                accessoryTextView,
+                layout.getChildAt(layout.getChildCount() - 1));
     }
 
     @Test
@@ -250,8 +270,9 @@ public class RadioButtonWithDescriptionLayoutTest {
     public void testCombinedRadioButtons() {
         // Test if radio buttons are set up correctly when there are multiple classes in the same
         // layout.
-        View content = LayoutInflater.from(mContext).inflate(
-                R.layout.radio_button_with_description_layout_test, null, false);
+        View content =
+                LayoutInflater.from(mContext)
+                        .inflate(R.layout.radio_button_with_description_layout_test, null, false);
 
         RadioButtonWithDescriptionLayout layout =
                 content.findViewById(R.id.test_radio_button_layout);
@@ -271,32 +292,50 @@ public class RadioButtonWithDescriptionLayoutTest {
 
         layout.selectChildAtIndexForTesting(3);
 
-        Assert.assertEquals(PRIMARY_MATCH_FROM_XML_ASSERT_MESSAGE, b1.getPrimaryText().toString(),
+        Assert.assertEquals(
+                PRIMARY_MATCH_FROM_XML_ASSERT_MESSAGE,
+                b1.getPrimaryText().toString(),
                 mContext.getResources().getString(R.string.test_primary_1));
-        Assert.assertEquals(PRIMARY_MATCH_FROM_XML_ASSERT_MESSAGE, b2.getPrimaryText().toString(),
+        Assert.assertEquals(
+                PRIMARY_MATCH_FROM_XML_ASSERT_MESSAGE,
+                b2.getPrimaryText().toString(),
                 mContext.getResources().getString(R.string.test_primary_2));
-        Assert.assertEquals(PRIMARY_MATCH_FROM_XML_ASSERT_MESSAGE, b3.getPrimaryText().toString(),
+        Assert.assertEquals(
+                PRIMARY_MATCH_FROM_XML_ASSERT_MESSAGE,
+                b3.getPrimaryText().toString(),
                 mContext.getResources().getString(R.string.test_primary_3));
-        Assert.assertEquals(PRIMARY_MATCH_FROM_XML_ASSERT_MESSAGE, b4.getPrimaryText().toString(),
+        Assert.assertEquals(
+                PRIMARY_MATCH_FROM_XML_ASSERT_MESSAGE,
+                b4.getPrimaryText().toString(),
                 mContext.getResources().getString(R.string.test_primary_4));
-        Assert.assertEquals(PRIMARY_MATCH_FROM_XML_ASSERT_MESSAGE, b5.getPrimaryText().toString(),
+        Assert.assertEquals(
+                PRIMARY_MATCH_FROM_XML_ASSERT_MESSAGE,
+                b5.getPrimaryText().toString(),
                 mContext.getResources().getString(R.string.test_primary_5));
 
         Assert.assertTrue(
                 DESC_MATCH_FROM_XML_ASSERT_MESSAGE, TextUtils.isEmpty(b1.getDescriptionText()));
-        Assert.assertEquals(DESC_MATCH_FROM_XML_ASSERT_MESSAGE, b2.getDescriptionText().toString(),
+        Assert.assertEquals(
+                DESC_MATCH_FROM_XML_ASSERT_MESSAGE,
+                b2.getDescriptionText().toString(),
                 mContext.getResources().getString(R.string.test_desc_2));
         Assert.assertTrue(
                 DESC_MATCH_FROM_XML_ASSERT_MESSAGE, TextUtils.isEmpty(b3.getDescriptionText()));
-        Assert.assertEquals(DESC_MATCH_FROM_XML_ASSERT_MESSAGE, b4.getDescriptionText().toString(),
+        Assert.assertEquals(
+                DESC_MATCH_FROM_XML_ASSERT_MESSAGE,
+                b4.getDescriptionText().toString(),
                 mContext.getResources().getString(R.string.test_desc_4));
-        Assert.assertEquals(DESC_MATCH_FROM_XML_ASSERT_MESSAGE, b5.getDescriptionText().toString(),
+        Assert.assertEquals(
+                DESC_MATCH_FROM_XML_ASSERT_MESSAGE,
+                b5.getDescriptionText().toString(),
                 mContext.getResources().getString(R.string.test_desc_5));
 
-        Assert.assertEquals(HINT_MATCH_FROM_XML_ASSERT_MESSAGE,
+        Assert.assertEquals(
+                HINT_MATCH_FROM_XML_ASSERT_MESSAGE,
                 ((EditText) b3.getPrimaryTextView()).getHint().toString(),
                 mContext.getResources().getString(R.string.test_uri));
-        Assert.assertEquals(HINT_MATCH_FROM_XML_ASSERT_MESSAGE,
+        Assert.assertEquals(
+                HINT_MATCH_FROM_XML_ASSERT_MESSAGE,
                 ((EditText) b4.getPrimaryTextView()).getHint().toString(),
                 mContext.getResources().getString(R.string.test_uri));
 
@@ -310,8 +349,9 @@ public class RadioButtonWithDescriptionLayoutTest {
     @Test
     @SmallTest
     public void testSetEnable() {
-        View content = LayoutInflater.from(mContext).inflate(
-                R.layout.radio_button_with_description_layout_test, null, false);
+        View content =
+                LayoutInflater.from(mContext)
+                        .inflate(R.layout.radio_button_with_description_layout_test, null, false);
 
         RadioButtonWithDescriptionLayout layout =
                 content.findViewById(R.id.test_radio_button_layout);
@@ -348,8 +388,9 @@ public class RadioButtonWithDescriptionLayoutTest {
     @Test
     @SmallTest
     public void testOnButtonCheckedStateChanged() {
-        View content = LayoutInflater.from(mContext).inflate(
-                R.layout.radio_button_with_description_layout_test, null, false);
+        View content =
+                LayoutInflater.from(mContext)
+                        .inflate(R.layout.radio_button_with_description_layout_test, null, false);
         RadioButtonWithDescriptionLayout layout =
                 content.findViewById(R.id.test_radio_button_layout);
         RadioButtonWithDescription b1 = content.findViewById(R.id.test_radio_description_1);
@@ -365,8 +406,9 @@ public class RadioButtonWithDescriptionLayoutTest {
     @Test
     @SmallTest
     public void testOnButtonCheckedStateChanged_nullObserver() {
-        View content = LayoutInflater.from(mContext).inflate(
-                R.layout.radio_button_with_description_layout_test, null, false);
+        View content =
+                LayoutInflater.from(mContext)
+                        .inflate(R.layout.radio_button_with_description_layout_test, null, false);
         RadioButtonWithDescriptionLayout layout =
                 content.findViewById(R.id.test_radio_button_layout);
         RadioButtonWithDescription b1 = content.findViewById(R.id.test_radio_description_1);

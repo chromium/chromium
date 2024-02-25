@@ -65,7 +65,7 @@ TEST_F(HTMLImageElementTest, width) {
   image->setAttribute(html_names::kWidthAttr, AtomicString("400"));
   // TODO(yoav): `width` does not impact resourceWidth until we resolve
   // https://github.com/ResponsiveImagesCG/picture-element/issues/268
-  EXPECT_EQ(absl::nullopt, image->GetResourceWidth());
+  EXPECT_EQ(std::nullopt, image->GetResourceWidth());
   image->setAttribute(html_names::kSizesAttr, AtomicString("100vw"));
   EXPECT_EQ(500, image->GetResourceWidth());
 }
@@ -209,6 +209,71 @@ TEST_F(HTMLImageElementSimTest,
       << "Expect error that Shared Storage operations are not allowed in "
          "insecure contexts but got: "
       << ConsoleMessages().front();
+}
+
+class HTMLImageElementUseCounterTest : public HTMLImageElementTest {
+ protected:
+  bool IsCounted(WebFeature feature) {
+    return GetDocument().IsUseCounted(feature);
+  }
+};
+
+TEST_F(HTMLImageElementUseCounterTest, AutoSizesUseCountersNoSizes) {
+  SetBodyInnerHTML(R"HTML(
+    <img id="target"
+         loading="lazy">
+    </img>
+  )HTML");
+
+  HTMLImageElement* image = To<HTMLImageElement>(GetElementById("target"));
+  ASSERT_NE(image, nullptr);
+
+  EXPECT_FALSE(IsCounted(WebFeature::kAutoSizesLazy));
+  EXPECT_FALSE(IsCounted(WebFeature::kAutoSizesNonLazy));
+}
+
+TEST_F(HTMLImageElementUseCounterTest, AutoSizesUseCountersNonAutoSizes) {
+  SetBodyInnerHTML(R"HTML(
+    <img id="target"
+         sizes = "33px"
+         loading="lazy">
+    </img>
+  )HTML");
+
+  HTMLImageElement* image = To<HTMLImageElement>(GetElementById("target"));
+  ASSERT_NE(image, nullptr);
+
+  EXPECT_FALSE(IsCounted(WebFeature::kAutoSizesLazy));
+  EXPECT_FALSE(IsCounted(WebFeature::kAutoSizesNonLazy));
+}
+
+TEST_F(HTMLImageElementUseCounterTest, AutoSizesNonLazyUseCounter) {
+  SetBodyInnerHTML(R"HTML(
+    <img id="target"
+         sizes="auto">
+    </img>
+  )HTML");
+
+  HTMLImageElement* image = To<HTMLImageElement>(GetElementById("target"));
+  ASSERT_NE(image, nullptr);
+
+  EXPECT_FALSE(IsCounted(WebFeature::kAutoSizesLazy));
+  EXPECT_TRUE(IsCounted(WebFeature::kAutoSizesNonLazy));
+}
+
+TEST_F(HTMLImageElementUseCounterTest, AutoSizesLazyUseCounter) {
+  SetBodyInnerHTML(R"HTML(
+    <img id="target"
+         sizes="auto"
+         loading="lazy">
+    </img>
+  )HTML");
+
+  HTMLImageElement* image = To<HTMLImageElement>(GetElementById("target"));
+  ASSERT_NE(image, nullptr);
+
+  EXPECT_TRUE(IsCounted(WebFeature::kAutoSizesLazy));
+  EXPECT_FALSE(IsCounted(WebFeature::kAutoSizesNonLazy));
 }
 
 }  // namespace blink

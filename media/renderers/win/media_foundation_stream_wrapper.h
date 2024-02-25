@@ -10,6 +10,7 @@
 #include <wrl.h>
 
 #include <memory>
+#include <optional>
 #include <queue>
 
 #include "base/memory/raw_ptr.h"
@@ -159,6 +160,10 @@ class MediaFoundationStreamWrapper
   bool flushed_ GUARDED_BY(lock_) = false;
 
   int stream_id_;
+
+  bool has_clear_lead_ = false;
+
+  bool switched_clear_to_encrypted_ = false;
 
   // |mf_media_event_queue_| is safe to be called on any thread.
   Microsoft::WRL::ComPtr<IMFMediaEventQueue> mf_media_event_queue_;

@@ -5,9 +5,10 @@
 import {TestRunner} from 'test_runner';
 import {SourcesTestRunner} from 'sources_test_runner';
 
+import * as SourcesModule from 'devtools/panels/sources/sources.js';
+
 (async function() {
   TestRunner.addResult(`Tests that call stack sidebar contains correct labels for async await functions.\n`);
-  await TestRunner.loadLegacyModule('sources');
   await TestRunner.showPanel('sources');
   await TestRunner.evaluateInPagePromise(`
       async function foo()
@@ -37,12 +38,12 @@ import {SourcesTestRunner} from 'sources_test_runner';
       .then(() => SourcesTestRunner.runTestFunctionAndWaitUntilPausedPromise())
       .then(
           () => TestRunner.addSnifferPromise(
-              Sources.CallStackSidebarPane.prototype, 'updatedForTest'))
+              SourcesModule.CallStackSidebarPane.CallStackSidebarPane.prototype, 'updatedForTest'))
       .then(() => dumpCallStackSidebarPane())
       .then(() => SourcesTestRunner.completeDebuggerTest());
 
   function dumpCallStackSidebarPane() {
-    var pane = Sources.CallStackSidebarPane.instance();
+    var pane = SourcesModule.CallStackSidebarPane.CallStackSidebarPane.instance();
     for (var element of pane.contentElement.querySelectorAll('.call-frame-item'))
       TestRunner.addResult(element.deepTextContent().replace(/VM\d+/g, 'VM'));
   }

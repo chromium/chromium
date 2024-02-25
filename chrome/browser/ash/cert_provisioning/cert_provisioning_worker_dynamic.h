@@ -8,6 +8,7 @@
 #include <stddef.h>
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -20,11 +21,11 @@
 #include "chrome/browser/ash/attestation/tpm_challenge_key_subtle.h"
 #include "chrome/browser/ash/cert_provisioning/cert_provisioning_client.h"
 #include "chrome/browser/ash/cert_provisioning/cert_provisioning_common.h"
+#include "chrome/browser/ash/cert_provisioning/cert_provisioning_invalidator.h"
 #include "chrome/browser/ash/cert_provisioning/cert_provisioning_worker.h"
 #include "chrome/browser/chromeos/platform_keys/platform_keys.h"
 #include "components/policy/proto/device_management_backend.pb.h"
 #include "net/base/backoff_entry.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 class Profile;
 class PrefService;
@@ -48,15 +49,17 @@ class CertProvisioningWorkerDynamic : public CertProvisioningWorker {
   void DoStep() override;
   void Stop(CertProvisioningWorkerState state) override;
   void Pause() override;
+  void MarkWorkerForReset() override;
+  bool IsWorkerMarkedForReset() const override;
   bool IsWaiting() const override;
   const CertProfile& GetCertProfile() const override;
   const std::vector<uint8_t>& GetPublicKey() const override;
   CertProvisioningWorkerState GetState() const override;
   CertProvisioningWorkerState GetPreviousState() const override;
   base::Time GetLastUpdateTime() const override;
-  const absl::optional<BackendServerError>& GetLastBackendServerError()
+  const std::optional<BackendServerError>& GetLastBackendServerError()
       const override;
-  const std::string& GetFailureMessage() const override;
+  std::string GetFailureMessage() const override;
 
  private:
   friend class CertProvisioningSerializer;
@@ -124,7 +127,11 @@ class CertProvisioningWorkerDynamic : public CertProvisioningWorker {
   void ScheduleNextStep(base::TimeDelta delay);
   void CancelScheduledTasks();
 
-  enum class ContinueReason { kTimeout, kInvalidation };
+  enum class ContinueReason {
+    kTimeout,
+    kSubscribedToInvalidation,
+    kInvalidationReceived
+  };
   void OnShouldContinue(ContinueReason reason);
 
   // Registers for |invalidation_topic_| that allows to receive notification
@@ -134,6 +141,9 @@ class CertProvisioningWorkerDynamic : public CertProvisioningWorker {
   // or not). Should not be called when the worker is destroyed, but will be
   // deserialized back later.
   void UnregisterFromInvalidationTopic();
+
+  // Callback from invalidations system.
+  void OnInvalidationEvent(InvalidationEvent invalidation_event);
 
   // If it is called with kSucceed or kFailed, it will call the |callback_|. The
   // worker can be destroyed in callback and should not use any member fields
@@ -154,7 +164,6 @@ class CertProvisioningWorkerDynamic : public CertProvisioningWorker {
   // Handles recreation of some internal objects after deserialization. Intended
   // to be called from CertProvisioningDeserializer.
   void InitAfterDeserialization();
-
   void CleanUpAndRunCallback();
   void OnDeleteVaKeyDone(bool delete_result);
   void OnRemoveKeyDone(chromeos::platform_keys::Status status);
@@ -175,8 +184,8 @@ class CertProvisioningWorkerDynamic : public CertProvisioningWorker {
   void ProcessResponseErrors(const CertProvisioningClient::Error& error);
 
   CertScope cert_scope_ = CertScope::kUser;
-  raw_ptr<Profile, ExperimentalAsh> profile_ = nullptr;
-  raw_ptr<PrefService, ExperimentalAsh> pref_service_ = nullptr;
+  raw_ptr<Profile> profile_ = nullptr;
+  raw_ptr<PrefService> pref_service_ = nullptr;
   CertProfile cert_profile_;
   base::RepeatingClosure state_change_callback_;
   CertProvisioningWorkerCallback result_callback_;
@@ -197,8 +206,9 @@ class CertProvisioningWorkerDynamic : public CertProvisioningWorker {
   // but communication with the backend is not possible (e.g. due to server
   // errors or network connectivity issues).
   // The last error received in communicating to the backend server.
-  absl::optional<BackendServerError> last_backend_server_error_;
+  std::optional<BackendServerError> last_backend_server_error_;
   bool is_waiting_ = false;
+  bool is_schedueled_for_reset_ = false;
   // Used for an UMA metric to track situation when the worker did not receive
   // an invalidation for a completed server side task.
   bool is_continued_without_invalidation_for_uma_ = false;
@@ -235,8 +245,15 @@ class CertProvisioningWorkerDynamic : public CertProvisioningWorker {
   std::string pem_encoded_certificate_;
 
   // Holds a message describing the reason for failure when the worker fails.
+  // This may not contain PII or stable identifiers as it will be logged.
   // If the worker did not fail, this message is empty.
   std::string failure_message_;
+  // Optionally holds a message like `failure_message_` but containing PII or
+  // stable identifiers for display on the UI.
+  // If the worker did not fail, this is absent.
+  // If the worker did fail and this is absent, the UI should display
+  // failure_message_.
+  std::optional<std::string> failure_message_ui_;
 
   // IMPORTANT:
   // Increment this when you add/change any member in
@@ -248,12 +265,10 @@ class CertProvisioningWorkerDynamic : public CertProvisioningWorker {
   // observe the PlatformKeysService for shutdown events. Instead, it relies on
   // the CertProvisioningScheduler to destroy all CertProvisioningWorker
   // instances when the corresponding PlatformKeysService is shutting down.
-  raw_ptr<platform_keys::PlatformKeysService, ExperimentalAsh>
-      platform_keys_service_ = nullptr;
+  raw_ptr<platform_keys::PlatformKeysService> platform_keys_service_ = nullptr;
   std::unique_ptr<attestation::TpmChallengeKeySubtle>
       tpm_challenge_key_subtle_impl_;
-  const raw_ptr<CertProvisioningClient, ExperimentalAsh>
-      cert_provisioning_client_;
+  const raw_ptr<CertProvisioningClient> cert_provisioning_client_;
 
   std::unique_ptr<CertProvisioningInvalidator> invalidator_;
 

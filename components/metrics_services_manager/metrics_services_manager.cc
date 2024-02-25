@@ -4,6 +4,7 @@
 
 #include "components/metrics_services_manager/metrics_services_manager.h"
 
+#include <memory>
 #include <utility>
 
 #include "base/check.h"
@@ -14,16 +15,12 @@
 #include "components/metrics/metrics_service_client.h"
 #include "components/metrics/metrics_state_manager.h"
 #include "components/metrics/metrics_switches.h"
+#include "components/metrics/structured/structured_metrics_service.h"  // nogncheck
 #include "components/metrics_services_manager/metrics_services_manager_client.h"
 #include "components/ukm/ukm_service.h"
 #include "components/variations/service/variations_service.h"
-#include "metrics_services_manager.h"
+#include "components/variations/synthetic_trial_registry.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "components/metrics/structured/neutrino_logging.h"  // nogncheck
-#include "components/metrics/structured/structured_metrics_service.h"  // nogncheck
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 namespace metrics_services_manager {
 
@@ -39,11 +36,17 @@ MetricsServicesManager::MetricsServicesManager(
 MetricsServicesManager::~MetricsServicesManager() {}
 
 void MetricsServicesManager::InstantiateFieldTrialList() const {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  metrics::structured::NeutrinoDevicesLog(
-      metrics::structured::NeutrinoDevicesLocation::kCreateEntropyProvider);
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
   client_->GetMetricsStateManager()->InstantiateFieldTrialList();
+}
+
+variations::SyntheticTrialRegistry*
+MetricsServicesManager::GetSyntheticTrialRegistry() {
+  DCHECK(thread_checker_.CalledOnValidThread());
+  if (!synthetic_trial_registry_) {
+    synthetic_trial_registry_ =
+        std::make_unique<variations::SyntheticTrialRegistry>();
+  }
+  return synthetic_trial_registry_.get();
 }
 
 metrics::MetricsService* MetricsServicesManager::GetMetricsService() {
@@ -56,6 +59,12 @@ ukm::UkmService* MetricsServicesManager::GetUkmService() {
   return GetMetricsServiceClient()->GetUkmService();
 }
 
+IdentifiabilityStudyState*
+MetricsServicesManager::GetIdentifiabilityStudyState() {
+  DCHECK(thread_checker_.CalledOnValidThread());
+  return GetMetricsServiceClient()->GetIdentifiabilityStudyState();
+}
+
 metrics::structured::StructuredMetricsService*
 MetricsServicesManager::GetStructuredMetricsService() {
   DCHECK(thread_checker_.CalledOnValidThread());
@@ -64,26 +73,46 @@ MetricsServicesManager::GetStructuredMetricsService() {
 
 variations::VariationsService* MetricsServicesManager::GetVariationsService() {
   DCHECK(thread_checker_.CalledOnValidThread());
-  if (!variations_service_)
-    variations_service_ = client_->CreateVariationsService();
+  if (!variations_service_) {
+    variations_service_ =
+        client_->CreateVariationsService(GetSyntheticTrialRegistry());
+  }
   return variations_service_.get();
 }
 
-void MetricsServicesManager::LoadingStateChanged(bool is_loading) {
-  DCHECK(thread_checker_.CalledOnValidThread());
-  GetMetricsServiceClient()->LoadingStateChanged(is_loading);
+MetricsServicesManager::OnDidStartLoadingCb
+MetricsServicesManager::GetOnDidStartLoadingCb() {
+  return base::BindRepeating(&MetricsServicesManager::LoadingStateChanged,
+                             weak_ptr_factory_.GetWeakPtr(),
+                             /*is_loading=*/true);
+}
+
+MetricsServicesManager::OnDidStopLoadingCb
+MetricsServicesManager::GetOnDidStopLoadingCb() {
+  return base::BindRepeating(&MetricsServicesManager::LoadingStateChanged,
+                             weak_ptr_factory_.GetWeakPtr(),
+                             /*is_loading=*/false);
+}
+
+MetricsServicesManager::OnRendererUnresponsiveCb
+MetricsServicesManager::GetOnRendererUnresponsiveCb() {
+  return base::BindRepeating(&MetricsServicesManager::OnRendererUnresponsive,
+                             weak_ptr_factory_.GetWeakPtr());
 }
 
 std::unique_ptr<const variations::EntropyProviders>
 MetricsServicesManager::CreateEntropyProvidersForTesting() {
-  return client_->GetMetricsStateManager()->CreateEntropyProviders();
+  // Setting enable_limited_entropy_mode=true to maximize code coverage.
+  return client_->GetMetricsStateManager()->CreateEntropyProviders(
+      /*enable_limited_entropy_mode=*/true);
 }
 
 metrics::MetricsServiceClient*
 MetricsServicesManager::GetMetricsServiceClient() {
   DCHECK(thread_checker_.CalledOnValidThread());
   if (!metrics_service_client_) {
-    metrics_service_client_ = client_->CreateMetricsServiceClient();
+    metrics_service_client_ =
+        client_->CreateMetricsServiceClient(GetSyntheticTrialRegistry());
     // base::Unretained is safe since |this| owns the metrics_service_client_.
     metrics_service_client_->SetUpdateRunningServicesCallback(
         base::BindRepeating(&MetricsServicesManager::UpdateRunningServices,
@@ -96,7 +125,7 @@ void MetricsServicesManager::UpdatePermissions(bool current_may_record,
                                                bool current_consent_given,
                                                bool current_may_upload) {
   DCHECK(thread_checker_.CalledOnValidThread());
-  // If the user has opted out of metrics, delete local UKM and SM state.
+  // If the user has opted out of metrics, delete local UKM state.
   // TODO(crbug.com/1445075): Investigate if UMA needs purging logic.
   if (consent_given_ && !current_consent_given) {
     ukm::UkmService* ukm = GetUkmService();
@@ -104,14 +133,18 @@ void MetricsServicesManager::UpdatePermissions(bool current_may_record,
       ukm->Purge();
       ukm->ResetClientState(ukm::ResetReason::kUpdatePermissions);
     }
+  }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+  // If the user has opted out of metrics, purge Structured Metrics if consent
+  // is not granted. On ChromeOS, SM will record specific events when consent is
+  // unknown during primarily OOBE; but these events need to be purged once
+  // consent is confirmed. This feature shouldn't be used on other platforms.
+  if (!current_consent_given) {
     metrics::structured::StructuredMetricsService* sm_service =
         GetStructuredMetricsService();
     if (sm_service) {
       sm_service->Purge();
     }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
   }
 
   // If metrics reporting goes from not consented to consented, create and
@@ -147,6 +180,19 @@ void MetricsServicesManager::UpdatePermissions(bool current_may_record,
   consent_given_ = current_consent_given;
   may_upload_ = current_may_upload;
   UpdateRunningServices();
+}
+
+void MetricsServicesManager::LoadingStateChanged(bool is_loading) {
+  DCHECK(thread_checker_.CalledOnValidThread());
+  GetMetricsServiceClient()->LoadingStateChanged(is_loading);
+  if (is_loading) {
+    GetMetricsService()->OnPageLoadStarted();
+  }
+}
+
+void MetricsServicesManager::OnRendererUnresponsive() {
+  DCHECK(thread_checker_.CalledOnValidThread());
+  GetMetricsService()->OnApplicationNotIdle();
 }
 
 void MetricsServicesManager::UpdateRunningServices() {
@@ -200,7 +246,6 @@ void MetricsServicesManager::UpdateUkmService() {
 }
 
 void MetricsServicesManager::UpdateStructuredMetricsService() {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
   metrics::structured::StructuredMetricsService* service =
       GetStructuredMetricsService();
   if (!service) {
@@ -219,7 +264,6 @@ void MetricsServicesManager::UpdateStructuredMetricsService() {
     service->DisableRecording();
     service->DisableReporting();
   }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 }
 
 void MetricsServicesManager::UpdateUploadPermissions(bool may_upload) {

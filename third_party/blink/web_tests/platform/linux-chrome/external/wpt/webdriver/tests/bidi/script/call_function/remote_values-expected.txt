@@ -1,0 +1,10 @@
+This is a wdspec test.
+[FAIL] test_remote_values[[1, 2][Symbol.iterator]()-expected15-True]
+  AssertionError
+[FAIL] test_remote_values[[1, 2][Symbol.iterator]()-expected15-False]
+  AssertionError
+[FAIL] test_remote_values['mystring'[Symbol.iterator]()-expected16-True]
+  AssertionError
+[FAIL] test_remote_values['mystring'[Symbol.iterator]()-expected16-False]
+  AssertionError
+Harness: the test ran to completion.

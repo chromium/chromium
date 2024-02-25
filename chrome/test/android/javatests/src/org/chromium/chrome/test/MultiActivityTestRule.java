@@ -41,20 +41,25 @@ public class MultiActivityTestRule implements TestRule {
         final Tab tab = activity.getActivityTab();
         assert tab != null;
 
-        CriteriaHelper.pollUiThread(() -> {
-            Criteria.checkThat(ChromeTabUtils.isLoadingAndRenderingDone(tab), Matchers.is(true));
-            Criteria.checkThat(tab.getTitle(), Matchers.is(expectedTitle));
-        });
+        CriteriaHelper.pollUiThread(
+                () -> {
+                    Criteria.checkThat(
+                            ChromeTabUtils.isLoadingAndRenderingDone(tab), Matchers.is(true));
+                    Criteria.checkThat(tab.getTitle(), Matchers.is(expectedTitle));
+                });
     }
 
     private void waitForTabCreation(ChromeActivity activity) throws TimeoutException {
         final CallbackHelper newTabCreatorHelper = new CallbackHelper();
-        activity.getTabModelSelector().addObserver(new TabModelSelectorObserver() {
-            @Override
-            public void onNewTabCreated(Tab tab, @TabCreationState int creationState) {
-                newTabCreatorHelper.notifyCalled();
-            }
-        });
+        activity.getTabModelSelector()
+                .addObserver(
+                        new TabModelSelectorObserver() {
+                            @Override
+                            public void onNewTabCreated(
+                                    Tab tab, @TabCreationState int creationState) {
+                                newTabCreatorHelper.notifyCalled();
+                            }
+                        });
         newTabCreatorHelper.waitForCallback(0);
     }
 

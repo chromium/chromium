@@ -41,6 +41,7 @@ void SecurityInterstitialTabHelper::DidFinishNavigation(
       base::UmaHistogramEnumeration(
           "interstitial.CloseReason",
           InterstitialCloseReason::INTERSTITIAL_SHOWN);
+      blocking_page_for_currently_committed_navigation_->OnInterstitialShown();
     }
   }
 

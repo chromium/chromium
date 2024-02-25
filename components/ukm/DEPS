@@ -13,6 +13,7 @@ include_rules = [
 specific_include_rules = {
   ".*unittest\.cc": [
     "+chromeos/components/kiosk/kiosk_test_utils.h",
+    "+chromeos/components/mgs/managed_guest_session_test_utils.h",
     "+components/sync_preferences/testing_pref_service_syncable.h",
     "+services/metrics/ukm_recorder_interface.h",
     "+services/metrics/ukm_recorder_factory_impl.h",

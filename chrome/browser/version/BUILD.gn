@@ -11,7 +11,7 @@ _chrome_version_java_file = "$target_gen_dir/templates/org/chromium/chrome/brows
 android_library("java") {
   deps = [
     ":chrome_version_constants",
-    "//components/version_info/android:version_constants_java",
+    "//base/version_info/android:version_constants_java",
   ]
 
   sources = [ _chrome_version_java_file ]

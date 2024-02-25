@@ -63,8 +63,8 @@ class BluetoothPairingNotificationDelegate
 
   // message_center::NotificationDelegate overrides.
   void Close(bool by_user) override;
-  void Click(const absl::optional<int>& button_index,
-             const absl::optional<std::u16string>& reply) override;
+  void Click(const std::optional<int>& button_index,
+             const std::optional<std::u16string>& reply) override;
 
  private:
   // Buttons that appear in notifications.
@@ -102,8 +102,8 @@ void BluetoothPairingNotificationDelegate::Close(bool by_user) {
 }
 
 void BluetoothPairingNotificationDelegate::Click(
-    const absl::optional<int>& button_index,
-    const absl::optional<std::u16string>& reply) {
+    const std::optional<int>& button_index,
+    const std::optional<std::u16string>& reply) {
   if (!button_index)
     return;
 
@@ -279,9 +279,12 @@ void BluetoothNotificationController::OnGetAdapter(
 }
 
 void BluetoothNotificationController::NotifyAdapterDiscoverable() {
-  // Do not show toast in kiosk app mode.
-  if (Shell::Get()->session_controller()->IsRunningInAppMode())
+  // Do not show toast in kiosk app mode or if user is not logged in. This
+  // prevents toast from being queued before the session starts.
+  if (Shell::Get()->session_controller()->IsRunningInAppMode() ||
+      !Shell::Get()->session_controller()->IsActiveUserSessionStarted()) {
     return;
+  }
 
   // If Nearby Share has made the local device discoverable, do not
   // unnecessarily display this toast.

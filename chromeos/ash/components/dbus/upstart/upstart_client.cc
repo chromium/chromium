@@ -136,8 +136,8 @@ class UpstartClientImpl : public UpstartClient {
   void OnStartJobWithErrorDetails(StartJobWithErrorDetailsCallback callback,
                                   dbus::Response* response,
                                   dbus::ErrorResponse* error_response) {
-    absl::optional<std::string> error_name;
-    absl::optional<std::string> error_message;
+    std::optional<std::string> error_name;
+    std::optional<std::string> error_message;
     if (!response && error_response) {
       // Error response may contain the error message as string.
       error_name = error_response->GetErrorName();
@@ -169,7 +169,7 @@ class UpstartClientImpl : public UpstartClient {
                << ": " << error_name << ": " << error_message;
   }
 
-  raw_ptr<dbus::Bus, ExperimentalAsh> bus_ = nullptr;
+  raw_ptr<dbus::Bus> bus_ = nullptr;
 
   // Note: This should remain the last member so it'll be destroyed and
   // invalidate its weak pointers before any other members are destroyed.

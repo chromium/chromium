@@ -19,6 +19,7 @@ class WPTGitHubTest(unittest.TestCase):
             'number': pr_number,
             'body': 'description',
             'state': state,
+            'node_id': 'PR_kwDOADc1Vc5jhje_',
             'labels': [{
                 'name': EXPORT_PR_LABEL
             }]
@@ -98,7 +99,9 @@ class WPTGitHubTest(unittest.TestCase):
                 json.dumps({
                     'incomplete_results': False,
                     'items': [self.generate_pr_item(1)]
-                })
+                }),
+                'node_id':
+                'PR_kwDOADc1Vc5jhje_'
             },
             {
                 'status_code':
@@ -110,7 +113,9 @@ class WPTGitHubTest(unittest.TestCase):
                 json.dumps({
                     'incomplete_results': False,
                     'items': [self.generate_pr_item(2)]
-                })
+                }),
+                'node_id':
+                'PR_kwDOADc1Vc5jhje_'
             },
         ]
         self.assertEqual(
@@ -405,8 +410,11 @@ class WPTGitHubTest(unittest.TestCase):
 
     def test_pr_for_chromium_commit_change_id_only(self):
         self.wpt_github.all_pull_requests = lambda: [
-            PullRequest('PR1', 1, 'body\nChange-Id: I00c0ffee', 'open', []),
-            PullRequest('PR2', 2, 'body\nChange-Id: I00decade', 'open', []), ]
+            PullRequest('PR1', 1, 'body\nChange-Id: I00c0ffee', 'open',
+                        'PR_kwDOADc1Vc5jhje_', []),
+            PullRequest('PR2', 2, 'body\nChange-Id: I00decade', 'open',
+                        'PR_kwDOADc1Vc5jhje_', []),
+        ]
         chromium_commit = MockChromiumCommit(
             MockHost(),
             change_id='I00decade',
@@ -419,11 +427,11 @@ class WPTGitHubTest(unittest.TestCase):
             PullRequest(
                 'PR1', 1,
                 'body\nChange-Id: I00c0ffee\nCr-Commit-Position: refs/heads/master@{#10}',
-                'open', []),
+                'open', 'PR_kwDOADc1Vc5jhje_', []),
             PullRequest(
                 'PR2', 2,
                 'body\nChange-Id: I00decade\nCr-Commit-Position: refs/heads/master@{#33}',
-                'open', []),
+                'open', 'PR_kwDOADc1Vc5jhje_', []),
         ]
         chromium_commit = MockChromiumCommit(
             MockHost(),
@@ -436,7 +444,7 @@ class WPTGitHubTest(unittest.TestCase):
         self.wpt_github.all_pull_requests = lambda: [
             PullRequest('PR1', 1,
                         'body\nChange-Id: I00c0ffee\nChange-Id: I00decade',
-                        'open', []),
+                        'open', 'PR_kwDOADc1Vc5jhje_', []),
         ]
 
         chromium_commit = MockChromiumCommit(

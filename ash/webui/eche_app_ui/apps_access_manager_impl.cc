@@ -268,13 +268,13 @@ void AppsAccessManagerImpl::UpdateFeatureEnabledState(
         PA_LOG(INFO) << "Enabling Apps when the access is changed from "
                         "kAvailableButNotGranted to kAccessGranted.";
         multidevice_setup_client_->SetFeatureEnabledState(
-            Feature::kEche, /*enabled=*/true, /*auth_token=*/absl::nullopt,
+            Feature::kEche, /*enabled=*/true, /*auth_token=*/std::nullopt,
             base::DoNothing());
       } else if (IsWaitingForAccessToInitiallyEnableApps()) {
         PA_LOG(INFO) << "Enabling Apps for the first time now "
                      << "that access has been granted by the phone.";
         multidevice_setup_client_->SetFeatureEnabledState(
-            Feature::kEche, /*enabled=*/true, /*auth_token=*/absl::nullopt,
+            Feature::kEche, /*enabled=*/true, /*auth_token=*/std::nullopt,
             base::DoNothing());
       }
       break;
@@ -287,7 +287,7 @@ void AppsAccessManagerImpl::UpdateFeatureEnabledState(
         PA_LOG(INFO) << "Disabling kEche feature.";
         multidevice_setup_client_->SetFeatureEnabledState(
             Feature::kEche, /*enabled=*/false,
-            /*auth_token=*/absl::nullopt, base::DoNothing());
+            /*auth_token=*/std::nullopt, base::DoNothing());
       }
       break;
   }

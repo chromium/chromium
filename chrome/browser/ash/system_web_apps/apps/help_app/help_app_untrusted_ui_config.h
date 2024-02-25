@@ -16,6 +16,7 @@ class HelpAppUntrustedUIConfig : public content::WebUIConfig {
   HelpAppUntrustedUIConfig& operator=(const HelpAppUntrustedUIConfig&) = delete;
   ~HelpAppUntrustedUIConfig() override;
 
+  bool IsWebUIEnabled(content::BrowserContext* browser_context) override;
   std::unique_ptr<content::WebUIController> CreateWebUIController(
       content::WebUI* web_ui,
       const GURL& url) override;

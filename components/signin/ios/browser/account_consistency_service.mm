@@ -10,6 +10,7 @@
 #include "base/command_line.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
+#import "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/sys_string_conversions.h"
@@ -28,7 +29,7 @@
 #import "ios/web/public/navigation/web_state_policy_decider.h"
 #import "ios/web/public/web_state.h"
 #include "ios/web/public/web_state_observer.h"
-#include "net/base/mac/url_conversions.h"
+#include "net/base/apple/url_conversions.h"
 #include "net/base/registry_controlled_domains/registry_controlled_domain.h"
 #include "net/cookies/canonical_cookie.h"
 #include "url/gurl.h"
@@ -137,11 +138,11 @@ class AccountConsistencyService::AccountConsistencyHandler
   // It is required to avoid having the keyboard showing up on top of the web
   // sign-in dialog.
   bool show_consistency_web_signin_ = false;
-  AccountConsistencyService* account_consistency_service_;  // Weak.
-  AccountReconcilor* account_reconcilor_;                   // Weak.
-  signin::IdentityManager* identity_manager_;
-  web::WebState* web_state_;
-  ManageAccountsDelegate* delegate_;  // Weak.
+  raw_ptr<AccountConsistencyService> account_consistency_service_;  // Weak.
+  raw_ptr<AccountReconcilor> account_reconcilor_;                   // Weak.
+  raw_ptr<signin::IdentityManager> identity_manager_;
+  raw_ptr<web::WebState> web_state_;
+  raw_ptr<ManageAccountsDelegate> delegate_;  // Weak.
   base::WeakPtrFactory<AccountConsistencyHandler> weak_ptr_factory_;
 };
 
@@ -452,7 +453,7 @@ void AccountConsistencyService::OnDeleteCookiesFinished(
 }
 
 void AccountConsistencyService::SetChromeConnectedCookieWithUrls(
-    const std::vector<const GURL>& urls) {
+    const std::vector<GURL>& urls) {
   for (const GURL& url : urls) {
     SetChromeConnectedCookieWithUrl(url);
   }
@@ -490,8 +491,8 @@ void AccountConsistencyService::SetChromeConnectedCookieWithUrl(
           /*last_access_time=*/base::Time(),
           /*secure=*/true,
           /*httponly=*/false, net::CookieSameSite::LAX_MODE,
-          net::COOKIE_PRIORITY_DEFAULT, /*same_party=*/false,
-          /*partition_key=*/absl::nullopt);
+          net::COOKIE_PRIORITY_DEFAULT,
+          /*partition_key=*/std::nullopt);
   net::CookieOptions options;
   options.set_include_httponly();
   options.set_same_site_cookie_context(

@@ -5,17 +5,16 @@
 #ifndef CHROME_BROWSER_ASH_LOGIN_OOBE_QUICK_START_CONNECTIVITY_TARGET_DEVICE_CONNECTION_BROKER_H_
 #define CHROME_BROWSER_ASH_LOGIN_OOBE_QUICK_START_CONNECTIVITY_TARGET_DEVICE_CONNECTION_BROKER_H_
 
+#include <optional>
 #include <vector>
 
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/values.h"
-#include "chrome/browser/ash/login/oobe_quick_start/connectivity/random_session_id.h"
 #include "chrome/browser/ash/login/oobe_quick_start/connectivity/session_context.h"
 #include "chromeos/ash/components/quick_start/types.h"
 #include "chromeos/ash/services/nearby/public/mojom/quick_start_decoder_types.mojom-shared.h"
 #include "chromeos/ash/services/nearby/public/mojom/quick_start_decoder_types.mojom.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ash::quick_start {
 
@@ -42,52 +41,53 @@ class TargetDeviceConnectionBroker {
 
   enum class ConnectionClosedReason {
     kComplete,
-    kUserAborted,
+    kUserAborted,  // Based on user selections on target device, which are
+                   // always informed by Chromebook UI.
     kAuthenticationFailed,
     kConnectionLost,
     kRequestTimedOut,
     kTargetDeviceUpdate,
     kResponseTimeout,
     kUnknownError,
+    kConnectionLifecycleListenerDestroyed,
   };
 
   class AuthenticatedConnection {
    public:
     using RequestWifiCredentialsCallback =
-        base::OnceCallback<void(absl::optional<mojom::WifiCredentials>)>;
+        base::OnceCallback<void(std::optional<mojom::WifiCredentials>)>;
     // The ack_successful bool indicates whether the ack was successfully
     // received by the source device. If true, then the target device will
     // prepare to resume the Quick Start connection after it updates.
     using NotifySourceOfUpdateCallback =
         base::OnceCallback<void(/*ack_successful=*/bool)>;
     using RequestAccountTransferAssertionCallback =
-        base::OnceCallback<void(absl::optional<FidoAssertionInfo>)>;
+        base::OnceCallback<void(std::optional<FidoAssertionInfo>)>;
     using AwaitUserVerificationCallback = base::OnceCallback<void(
-        absl::optional<mojom::UserVerificationResponse>)>;
+        std::optional<mojom::UserVerificationResponse>)>;
+    using RequestAccountInfoCallback =
+        base::OnceCallback<void(/*account_email=*/std::string)>;
 
     // Close the connection.
     virtual void Close(
         TargetDeviceConnectionBroker::ConnectionClosedReason reason) = 0;
 
-    // Request wifi credentials from target Android device. The session_id is
-    // used to identify this QuickStart session and is distinct from the
-    // RandomSessionId.
+    // Request wifi credentials from target Android device.
     virtual void RequestWifiCredentials(
-        int32_t session_id,
         RequestWifiCredentialsCallback callback) = 0;
 
     // Notify Android device that the Chromebook will download an update and
-    // reboot. The session_id should be the same as the one sent in
-    // RequestWifiCredentials().
+    // reboot.
     virtual void NotifySourceOfUpdate(
-        int32_t session_id,
         NotifySourceOfUpdateCallback callback) = 0;
 
-    // Begin the account transfer process and retrieve
-    // an Assertion from the source device. The user will be asked to confirm
-    // their lock screen PIN/pattern/etc. on the source device.
-    // This object's client must provide a "challenge" to be sent to the remote
-    // source device.
+    // The first step in the account transfer process which involves retrieving
+    // GAIA account info from the source device.
+    virtual void RequestAccountInfo(RequestAccountInfoCallback callback) = 0;
+
+    // Begin the account transfer process and retrieve an Assertion from the
+    // source device. The caller must provide a "challenge" nonce to be sent to
+    // the remote source device.
     virtual void RequestAccountTransferAssertion(
         const Base64UrlString& challenge,
         RequestAccountTransferAssertionCallback callback) = 0;
@@ -100,14 +100,22 @@ class TargetDeviceConnectionBroker {
     // AuthenticatedConnection caller.
     virtual base::Value::Dict GetPrepareForUpdateInfo() = 0;
 
-    // Retrieve CryptAuth ID from BootstrapConfigurations response.
+    virtual void NotifyPhoneSetupComplete() = 0;
+
+    // Retrieve Instance ID (CryptAuth device ID) from BootstrapConfigurations
+    // response.
     std::string get_phone_instance_id() { return phone_instance_id_; }
+
+    // Retrieve boolean value indicating whether the account in question is a
+    // supervised account (e.g. Unicorn).
+    bool is_supervised_account() { return is_supervised_account_; }
 
    protected:
     AuthenticatedConnection() = default;
     virtual ~AuthenticatedConnection() = default;
 
     std::string phone_instance_id_;
+    bool is_supervised_account_;
   };
 
   // Clients of TargetDeviceConnectionBroker should implement this interface,
@@ -195,7 +203,7 @@ class TargetDeviceConnectionBroker {
       base::OnceClosure on_stop_advertising_callback) = 0;
 
   // Gets the 3 digits of the discoverable name. e.g.: Chromebook (123)
-  virtual std::string GetSessionIdDisplayCode() = 0;
+  virtual std::string GetAdvertisingIdDisplayCode() = 0;
 
  protected:
   void MaybeNotifyFeatureStatus();
@@ -216,12 +224,16 @@ class TargetDeviceConnectionBroker {
   // request pin verification or QR code verification.
   bool use_pin_authentication_ = false;
 
-  raw_ptr<ConnectionLifecycleListener, ExperimentalAsh>
-      connection_lifecycle_listener_ = nullptr;
+  raw_ptr<ConnectionLifecycleListener> connection_lifecycle_listener_ = nullptr;
 
  private:
   std::vector<FeatureSupportStatusCallback> feature_status_callbacks_;
 };
+
+std::ostream& operator<<(
+    std::ostream& stream,
+    const TargetDeviceConnectionBroker::ConnectionClosedReason&
+        connection_closed_reason);
 
 }  // namespace ash::quick_start
 

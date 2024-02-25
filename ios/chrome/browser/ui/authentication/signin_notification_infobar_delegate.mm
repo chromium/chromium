@@ -15,17 +15,17 @@
 #import "components/infobars/core/infobar.h"
 #import "components/infobars/core/infobar_delegate.h"
 #import "components/infobars/core/infobar_manager.h"
-#import "ios/chrome/browser/infobars/infobar_utils.h"
+#import "ios/chrome/browser/infobars/model/infobar_utils.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
-#import "ios/chrome/browser/shared/public/commands/application_commands.h"
+#import "ios/chrome/browser/shared/public/commands/settings_commands.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
-#import "ios/chrome/browser/signin/authentication_service.h"
-#import "ios/chrome/browser/signin/authentication_service_factory.h"
-#import "ios/chrome/browser/signin/chrome_account_manager_service.h"
-#import "ios/chrome/browser/signin/chrome_account_manager_service_factory.h"
-#import "ios/chrome/browser/signin/system_identity.h"
-#import "ios/chrome/grit/ios_chromium_strings.h"
+#import "ios/chrome/browser/signin/model/authentication_service.h"
+#import "ios/chrome/browser/signin/model/authentication_service_factory.h"
+#import "ios/chrome/browser/signin/model/chrome_account_manager_service.h"
+#import "ios/chrome/browser/signin/model/chrome_account_manager_service_factory.h"
+#import "ios/chrome/browser/signin/model/system_identity.h"
+#import "ios/chrome/grit/ios_branded_strings.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ui/base/l10n/l10n_util.h"
 #import "ui/base/models/image_model.h"
@@ -34,7 +34,7 @@
 bool SigninNotificationInfoBarDelegate::Create(
     infobars::InfoBarManager* infobar_manager,
     ChromeBrowserState* browser_state,
-    id<ApplicationSettingsCommands> dispatcher,
+    id<SettingsCommands> dispatcher,
     UIViewController* view_controller) {
   DCHECK(infobar_manager);
   std::unique_ptr<ConfirmInfoBarDelegate> delegate(
@@ -47,7 +47,7 @@ bool SigninNotificationInfoBarDelegate::Create(
 
 SigninNotificationInfoBarDelegate::SigninNotificationInfoBarDelegate(
     ChromeBrowserState* browser_state,
-    id<ApplicationSettingsCommands> dispatcher,
+    id<SettingsCommands> dispatcher,
     UIViewController* view_controller)
     : dispatcher_(dispatcher), base_view_controller_(view_controller) {
   DCHECK(!browser_state->IsOffTheRecord());
@@ -106,7 +106,8 @@ bool SigninNotificationInfoBarDelegate::UseIconBackgroundTint() const {
 }
 
 bool SigninNotificationInfoBarDelegate::Accept() {
-  [dispatcher_ showAccountsSettingsFromViewController:base_view_controller_];
+  [dispatcher_ showAccountsSettingsFromViewController:base_view_controller_
+                                 skipIfUINotAvailable:NO];
   base::RecordAction(base::UserMetricsAction(
       "Settings.GoogleServices.FromSigninNotificationInfobar"));
   return true;

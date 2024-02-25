@@ -5,76 +5,56 @@
 #ifndef COMPONENTS_AUTOFILL_CORE_BROWSER_ML_MODEL_AUTOFILL_MODEL_EXECUTOR_H_
 #define COMPONENTS_AUTOFILL_CORE_BROWSER_ML_MODEL_AUTOFILL_MODEL_EXECUTOR_H_
 
+#include <optional>
 #include <vector>
 
-#include "base/files/file_path.h"
-#include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/ml_model/autofill_model_vectorizer.h"
-#include "components/autofill/core/common/form_field_data.h"
 #include "components/optimization_guide/core/base_model_executor.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace autofill {
 
-// Implements BaseModelExecutor to execute models with FormFieldData input and
-// ServerFieldType output.
+// Maximum number of form fields for which the model can predict types.
+// When calling the executor with a larger form, predictions are only returned
+// for the first `kMaxNumberOfFields` many fields.
+inline constexpr size_t kModelExecutorMaxNumberOfFields = 20;
+
+// The executor maps its inputs into TFLite's tensor format and converts the
+// model output's tensor representation back. See `ModelInput` and `ModelOutput`
+// for descriptions of the inputs and outputs.
 class AutofillModelExecutor
-    : public optimization_guide::BaseModelExecutor<ServerFieldType,
-                                                   const FormFieldData&> {
+    : public optimization_guide::BaseModelExecutor<
+          std::array<std::vector<float>, kModelExecutorMaxNumberOfFields>,
+          const std::vector<
+              std::array<AutofillModelVectorizer::TokenId,
+                         AutofillModelVectorizer::kOutputSequenceLength>>&> {
  public:
+  // A vectorized representation of the form's labels. Each element of the
+  // vector corresponds to a vectorized label. See `AutofillModelVectorizer`,
+  using ModelInput =
+      std::vector<std::array<AutofillModelVectorizer::TokenId,
+                             AutofillModelVectorizer::kOutputSequenceLength>>;
+
+  // The model always returns predictions for `kModelExecutorMaxNumberOfFields`.
+  // If the queried form was smaller, the last
+  // (kModelExecutorMaxNumberOfFields - fields) elements of the output have
+  // unspecified values.
+  // The other indices contain a vector with one entry per supported FieldType,
+  // representing the confidence in that type. The confidences don't have any
+  // meaning per-se, but higher means more confidence. Since the model might not
+  // support all FieldTypes, the indices don't map to field types directly. See
+  // `AutofillMlPredictionModelHandler`.
+  using ModelOutput =
+      std::array<std::vector<float>, kModelExecutorMaxNumberOfFields>;
+
   AutofillModelExecutor();
   ~AutofillModelExecutor() override;
 
  protected:
-  // Array describes how the output of the ML model is interpreted.
-  // Indices 20 and 33 used to hold field types ADDRESS_HOME_SEARCH_WIDGET
-  // and ADDITIONAL_PHONE_NUMBER respectively, but were changed to UNKNOWN_TYPE
-  // since these two server field types are not supported on
-  // client side.
-  // TODO(crbug.com/1465926): Download dynamically from the server instead.
-  static constexpr std::array<ServerFieldType, 34> kSupportedFieldTypes = {
-      UNKNOWN_TYPE,
-      CREDIT_CARD_VERIFICATION_CODE,
-      CREDIT_CARD_NAME_FIRST,
-      NAME_LAST,
-      NAME_FULL,
-      ADDRESS_HOME_LINE2,
-      CREDIT_CARD_EXP_2_DIGIT_YEAR,
-      CREDIT_CARD_NAME_LAST,
-      ADDRESS_HOME_COUNTRY,
-      CREDIT_CARD_EXP_4_DIGIT_YEAR,
-      PHONE_HOME_CITY_AND_NUMBER,
-      COMPANY_NAME,
-      EMAIL_ADDRESS,
-      ADDRESS_HOME_CITY,
-      ADDRESS_HOME_LINE1,
-      ADDRESS_HOME_STREET_ADDRESS,
-      PHONE_HOME_EXTENSION,
-      CREDIT_CARD_TYPE,
-      NAME_HONORIFIC_PREFIX,
-      DELIVERY_INSTRUCTIONS,
-      UNKNOWN_TYPE,
-      ADDRESS_HOME_LINE3,
-      CREDIT_CARD_NUMBER,
-      PHONE_HOME_COUNTRY_CODE,
-      ADDRESS_HOME_STATE,
-      CREDIT_CARD_EXP_DATE_4_DIGIT_YEAR,
-      ADDRESS_HOME_ZIP,
-      PHONE_HOME_WHOLE_NUMBER,
-      NAME_FIRST,
-      CREDIT_CARD_EXP_DATE_2_DIGIT_YEAR,
-      CREDIT_CARD_NAME_FULL,
-      CREDIT_CARD_EXP_MONTH,
-      PHONE_HOME_CITY_AND_NUMBER_WITHOUT_TRUNK_PREFIX,
-      UNKNOWN_TYPE};
-
   // optimization_guide::BaseModelExecutor:
   bool Preprocess(const std::vector<TfLiteTensor*>& input_tensors,
-                  const FormFieldData& input) override;
-  absl::optional<ServerFieldType> Postprocess(
+                  const ModelInput& input) override;
+  std::optional<ModelOutput> Postprocess(
       const std::vector<const TfLiteTensor*>& output_tensors) override;
-
-  std::unique_ptr<AutofillModelVectorizer> vectorizer_;
 };
 
 }  // namespace autofill

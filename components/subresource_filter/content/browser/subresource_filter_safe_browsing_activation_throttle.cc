@@ -4,6 +4,7 @@
 
 #include "components/subresource_filter/content/browser/subresource_filter_safe_browsing_activation_throttle.h"
 
+#include <optional>
 #include <sstream>
 #include <utility>
 #include <vector>
@@ -29,7 +30,6 @@
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "services/metrics/public/cpp/ukm_recorder.h"
 #include "services/metrics/public/cpp/ukm_source.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/mojom/devtools/console_message.mojom.h"
 #include "ui/base/page_transition_types.h"
 #include "url/gurl.h"
@@ -41,7 +41,7 @@ namespace {
 using CheckResults =
     std::vector<SubresourceFilterSafeBrowsingClient::CheckResult>;
 
-absl::optional<RedirectPosition> GetEnforcementRedirectPosition(
+std::optional<RedirectPosition> GetEnforcementRedirectPosition(
     const CheckResults& results) {
   // Safe cast since we have strict limits on HTTP redirects.
   int num_results = static_cast<int>(results.size());
@@ -59,7 +59,7 @@ absl::optional<RedirectPosition> GetEnforcementRedirectPosition(
       return RedirectPosition::kMiddle;
     }
   }
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 }  // namespace
@@ -73,17 +73,14 @@ SubresourceFilterSafeBrowsingActivationThrottle::
             database_manager)
     : NavigationThrottle(handle),
       io_task_runner_(std::move(io_task_runner)),
-      database_client_(new SubresourceFilterSafeBrowsingClient(
-                           std::move(database_manager),
-                           AsWeakPtr(),
-                           io_task_runner_,
-                           base::SingleThreadTaskRunner::GetCurrentDefault()),
+      database_client_(nullptr,
                        base::OnTaskRunnerDeleter(
-                           base::FeatureList::IsEnabled(
-                               safe_browsing::kSafeBrowsingOnUIThread)
-                               ? base::SequencedTaskRunner::GetCurrentDefault()
-                               : io_task_runner_)),
+                           base::SequencedTaskRunner::GetCurrentDefault())),
       delegate_(delegate) {
+  database_client_.reset(new SubresourceFilterSafeBrowsingClient(
+      std::move(database_manager), weak_ptr_factory_.GetWeakPtr(),
+      io_task_runner_, base::SingleThreadTaskRunner::GetCurrentDefault()));
+
   DCHECK(IsInSubresourceFilterRoot(handle));
   CheckCurrentUrl();
   DCHECK(!check_results_.empty());
@@ -159,17 +156,8 @@ void SubresourceFilterSafeBrowsingActivationThrottle::CheckCurrentUrl() {
   DCHECK(database_client_);
   check_results_.emplace_back();
   size_t id = check_results_.size() - 1;
-  if (base::FeatureList::IsEnabled(safe_browsing::kSafeBrowsingOnUIThread)) {
-    database_client_->CheckUrlOnIO(navigation_handle()->GetURL(), id,
-                                   base::TimeTicks::Now());
-  } else {
-    io_task_runner_->PostTask(
-        FROM_HERE,
-        base::BindOnce(&SubresourceFilterSafeBrowsingClient::CheckUrlOnIO,
-                       base::Unretained(database_client_.get()),
-                       navigation_handle()->GetURL(), id,
-                       base::TimeTicks::Now()));
-  }
+  database_client_->CheckUrl(navigation_handle()->GetURL(), id,
+                             base::TimeTicks::Now());
 }
 
 void SubresourceFilterSafeBrowsingActivationThrottle::NotifyResult() {

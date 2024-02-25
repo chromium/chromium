@@ -6,9 +6,7 @@ package org.chromium.chrome.browser.dependency_injection;
 
 import dagger.Subcomponent;
 
-/**
- * Activity-scoped component associated with {@link org.chromium.chrome.browser.ChromeActivity}.
- */
+/** Activity-scoped component associated with {@link org.chromium.chrome.browser.ChromeActivity}. */
 // TODO(crbug.com/954585): Remove this and fix dependencies.
 @Subcomponent(modules = {ChromeActivityCommonsModule.class})
 @ActivityScope

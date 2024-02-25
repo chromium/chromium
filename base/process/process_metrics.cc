@@ -7,7 +7,7 @@
 #include <utility>
 
 #include "base/check.h"
-#include "base/notreached.h"
+#include "base/notimplemented.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/values.h"
 #include "build/build_config.h"
@@ -181,12 +181,5 @@ int ProcessMetrics::CalculatePackageIdleWakeupsPerSecond(
 }
 
 #endif  // BUILDFLAG(IS_APPLE)
-
-#if !BUILDFLAG(IS_WIN)
-uint64_t ProcessMetrics::GetCumulativeDiskUsageInBytes() {
-  // Not implemented.
-  return 0;
-}
-#endif
 
 }  // namespace base

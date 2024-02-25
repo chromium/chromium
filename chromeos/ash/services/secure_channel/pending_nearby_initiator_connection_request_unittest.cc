@@ -57,15 +57,14 @@ class SecureChannelPendingNearbyInitiatorConnectionRequestTest
     EXPECT_TRUE(mock_adapter_->GetObservers().HasObserver(GetRequest()));
   }
 
-  const absl::optional<
-      PendingConnectionRequestDelegate::FailedConnectionReason>&
+  const std::optional<PendingConnectionRequestDelegate::FailedConnectionReason>&
   GetFailedConnectionReason() {
     return fake_pending_connection_request_delegate_
         ->GetFailedConnectionReasonForId(
             pending_nearby_initiator_request_->GetRequestId());
   }
 
-  const absl::optional<mojom::ConnectionAttemptFailureReason>&
+  const std::optional<mojom::ConnectionAttemptFailureReason>&
   GetConnectionAttemptFailureReason() {
     return fake_client_connection_parameters_->failure_reason();
   }
@@ -92,7 +91,7 @@ class SecureChannelPendingNearbyInitiatorConnectionRequestTest
 
   std::unique_ptr<FakePendingConnectionRequestDelegate>
       fake_pending_connection_request_delegate_;
-  raw_ptr<FakeClientConnectionParameters, DanglingUntriaged | ExperimentalAsh>
+  raw_ptr<FakeClientConnectionParameters, DanglingUntriaged>
       fake_client_connection_parameters_;
   scoped_refptr<testing::NiceMock<device::MockBluetoothAdapter>> mock_adapter_;
 

@@ -23,17 +23,26 @@ class CardUnmaskPromptController {
   virtual void OnUnmaskPromptAccepted(const std::u16string& cvc,
                                       const std::u16string& exp_month,
                                       const std::u16string& exp_year,
-                                      bool enable_fido_auth) = 0;
+                                      bool enable_fido_auth,
+                                      bool was_checkbox_visible) = 0;
   virtual void NewCardLinkClicked() = 0;
 
   // State.
+#if BUILDFLAG(IS_IOS)
+  // On IOS, a separate string other than the window title is needed to be shown
+  // as the title of the navigation bar.
+  virtual std::u16string GetNavigationTitle() const = 0;
+#endif
   virtual std::u16string GetWindowTitle() const = 0;
   virtual std::u16string GetInstructionsMessage() const = 0;
   virtual std::u16string GetOkButtonLabel() const = 0;
   virtual int GetCvcImageRid() const = 0;
   virtual bool ShouldRequestExpirationDate() const = 0;
+  // TODO(b/303715882): Should consider removing these detailed information
+  // accessors and instead return the credit card object directly. Only exposing
+  // necessary information is good but this list is growing larger.
 #if BUILDFLAG(IS_ANDROID)
-  virtual std::string GetCardIconString() const = 0;
+  virtual Suggestion::Icon GetCardIcon() const = 0;
   virtual std::u16string GetCardName() const = 0;
   virtual std::u16string GetCardLastFourDigits() const = 0;
   virtual std::u16string GetCardExpiration() const = 0;
@@ -46,6 +55,7 @@ class CardUnmaskPromptController {
   virtual base::TimeDelta GetSuccessMessageDuration() const = 0;
   virtual AutofillClient::PaymentsRpcResult GetVerificationResult() const = 0;
   virtual bool IsVirtualCard() const = 0;
+  virtual const CreditCard& GetCreditCard() const = 0;
 #if !BUILDFLAG(IS_IOS)
   virtual int GetCvcTooltipResourceId() = 0;
 #endif

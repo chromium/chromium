@@ -1,0 +1,20 @@
+source_set("android") {
+  testonly = true
+  sources = [
+    "mock_address_accessory_controller.cc",
+    "mock_address_accessory_controller.h",
+    "mock_credit_card_accessory_controller.cc",
+    "mock_credit_card_accessory_controller.h",
+    "mock_manual_filling_controller.cc",
+    "mock_manual_filling_controller.h",
+    "mock_password_accessory_controller.cc",
+    "mock_password_accessory_controller.h",
+  ]
+  public_deps = [ "../../android:public" ]
+  deps = [
+    "//base",
+    "//components/autofill/core/browser",
+    "//components/autofill/core/common",
+    "//testing/gmock",
+  ]
+}

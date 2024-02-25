@@ -22,12 +22,6 @@ package org.chromium.build;
  */
 public class BuildConfig {
 
-#if defined(ENABLE_MULTIDEX)
-    public static MAYBE_FINAL boolean IS_MULTIDEX_ENABLED = true;
-#else
-    public static MAYBE_FINAL boolean IS_MULTIDEX_ENABLED MAYBE_FALSE;
-#endif
-
 #if defined(_ENABLE_ASSERTS)
     public static MAYBE_FINAL boolean ENABLE_ASSERTS = true;
 #else

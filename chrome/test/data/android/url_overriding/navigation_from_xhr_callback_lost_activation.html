@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta name="viewport"
+    content="width=device-width, initial-scale=1.0, maximum-scale=1.0" />
+  <script>
+    var xmlhttp = new XMLHttpRequest();
+
+    function xhrOnReadyStateChange() {
+      if (xmlhttp.readyState==4 && xmlhttp.status==200) {
+        interval = window.setInterval(function () {
+          if (!navigator.userActivation.isActive) {
+            clearInterval(interval);
+            window.location = 'intent://test/#Intent;scheme=externalappscheme;end';
+          }
+        }, 200);
+      }
+    };
+
+    function xhrAndOpenApp() {
+      xmlhttp.onreadystatechange = xhrOnReadyStateChange;
+      xmlhttp.open("GET", 'hello.html' , true);
+      xmlhttp.send();
+    };
+  </script>
+</head>
+<body style='height:10000px;' onclick='xhrAndOpenApp();'>
+  Click page to open App!!
+</body>
+</html>

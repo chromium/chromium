@@ -12,7 +12,7 @@
 #include "chrome/browser/extensions/api/messaging/native_message_process_host.h"
 #include "content/public/browser/browser_thread.h"
 #include "extensions/common/api/messaging/message.h"
-#include "extensions/common/api/messaging/serialization_format.h"
+#include "extensions/common/mojom/message_port.mojom-shared.h"
 
 namespace extensions {
 
@@ -88,9 +88,8 @@ NativeMessagePort::NativeMessagePort(
     base::WeakPtr<ChannelDelegate> channel_delegate,
     const PortId& port_id,
     std::unique_ptr<NativeMessageHost> native_message_host)
-    : weak_channel_delegate_(channel_delegate),
-      host_task_runner_(native_message_host->task_runner()),
-      port_id_(port_id) {
+    : MessagePort(std::move(channel_delegate), port_id),
+      host_task_runner_(native_message_host->task_runner()) {
   core_ = std::make_unique<Core>(
       std::move(native_message_host), weak_factory_.GetWeakPtr(),
       base::SingleThreadTaskRunner::GetCurrentDefault());
@@ -118,8 +117,8 @@ void NativeMessagePort::PostMessageFromNativeHost(const std::string& message) {
     // Native messaging always uses JSON since a native host doesn't understand
     // structured cloning serialization.
     weak_channel_delegate_->PostMessage(
-        port_id_,
-        Message(message, SerializationFormat::kJson, false /* user_gesture */));
+        port_id_, Message(message, mojom::SerializationFormat::kJson,
+                          false /* user_gesture */));
   }
 }
 

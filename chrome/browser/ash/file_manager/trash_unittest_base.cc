@@ -5,14 +5,13 @@
 #include "chrome/browser/ash/file_manager/trash_unittest_base.h"
 
 #include "base/files/file_util.h"
+#include "base/i18n/time_formatting.h"
 #include "base/strings/strcat.h"
 #include "base/test/bind.h"
-#include "base/time/time_to_iso8601.h"
 #include "chrome/browser/ash/file_manager/path_util.h"
 #include "chrome/browser/ash/file_manager/trash_common_util.h"
 #include "chrome/browser/ash/file_manager/volume_manager.h"
 #include "chrome/browser/ash/file_manager/volume_manager_factory.h"
-#include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
 #include "chromeos/ash/components/dbus/chunneld/chunneld_client.h"
 #include "chromeos/ash/components/dbus/cros_disks/cros_disks_client.h"
 #include "chromeos/ash/components/dbus/seneschal/seneschal_client.h"
@@ -37,18 +36,16 @@ void TrashBaseTest::SetUp() {
   service_factory_for_test_ = std::make_unique<
       drive::DriveIntegrationServiceFactory::ScopedFactoryForTest>(
       &create_drive_integration_service_);
+  fake_user_manager_.Reset(std::make_unique<ash::FakeChromeUserManager>());
   // Create the profile and add it to the user manager for DriveFS.
   profile_ =
       std::make_unique<TestingProfile>(base::FilePath(temp_dir_.GetPath()));
-  auto user_manager = std::make_unique<ash::FakeChromeUserManager>();
   AccountId account_id =
       AccountId::FromUserEmailGaiaId(profile_->GetProfileUserName(), "12345");
-  user_manager->AddUserWithAffiliationAndTypeAndProfile(
-      account_id, /*is_affiliated=*/false, user_manager::USER_TYPE_REGULAR,
+  fake_user_manager_->AddUserWithAffiliationAndTypeAndProfile(
+      account_id, /*is_affiliated=*/false, user_manager::UserType::kRegular,
       profile_.get());
-  user_manager->LoginUser(account_id, true);
-  scoped_user_manager_ = std::make_unique<user_manager::ScopedUserManager>(
-      std::move(user_manager));
+  fake_user_manager_->LoginUser(account_id, true);
 
   file_system_context_ =
       storage::CreateFileSystemContextForTesting(nullptr, temp_dir_.GetPath());
@@ -97,8 +94,8 @@ void TrashBaseTest::SetUp() {
 void TrashBaseTest::TearDown() {
   // Ensure any previously registered mount points for Downloads are revoked.
   storage::ExternalMountPoints::GetSystemInstance()->RevokeAllFileSystems();
-  scoped_user_manager_.reset();
   profile_.reset();
+  fake_user_manager_.Reset();
   ash::SeneschalClient::Shutdown();
   ash::CrosDisksClient::Shutdown();
   ash::ConciergeClient::Shutdown();
@@ -161,7 +158,7 @@ const std::string TrashBaseTest::CreateTrashInfoContentsFromPath(
   return base::StrCat(
       {"[Trash Info]\nPath=", prefix.AsEndingWithSeparator().value(),
        relative_restore_path,
-       "\nDeletionDate=", base::TimeToISO8601(base::Time())});
+       "\nDeletionDate=", base::TimeFormatAsIso8601(base::Time::UnixEpoch())});
 }
 
 const std::string TrashBaseTest::CreateTrashInfoContentsFromPath(

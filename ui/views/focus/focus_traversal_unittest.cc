@@ -10,6 +10,8 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
+#include "ui/base/metadata/metadata_header_macros.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/models/combobox_model.h"
 #include "ui/views/background.h"
 #include "ui/views/border.h"
@@ -102,6 +104,8 @@ class DummyComboboxModel : public ui::ComboboxModel {
 
 // A View that can act as a pane.
 class PaneView : public View, public FocusTraversable {
+  METADATA_HEADER(PaneView, View)
+
  public:
   PaneView() = default;
 
@@ -129,10 +133,15 @@ class PaneView : public View, public FocusTraversable {
   raw_ptr<FocusSearch> focus_search_ = nullptr;
 };
 
+BEGIN_METADATA(PaneView)
+END_METADATA
+
 // BorderView is a view containing a native window with its own view hierarchy.
 // It is interesting to test focus traversal from a view hierarchy to an inner
 // view hierarchy.
 class BorderView : public NativeViewHost {
+  METADATA_HEADER(BorderView, NativeViewHost)
+
  public:
   explicit BorderView(std::unique_ptr<View> child) : child_(std::move(child)) {
     DCHECK(child_);
@@ -156,12 +165,11 @@ class BorderView : public NativeViewHost {
 
     if (details.child == this && details.is_add) {
       if (!widget_) {
-        auto widget = std::make_unique<Widget>();
-        widget_ = widget.get();
+        widget_ = std::make_unique<Widget>();
         Widget::InitParams params(Widget::InitParams::TYPE_CONTROL);
+        params.ownership = Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET;
         params.parent = details.parent->GetWidget()->GetNativeView();
         widget_->Init(std::move(params));
-        widget.release();  // Widget now owned by widget hierarchy.
         widget_->SetFocusTraversableParentView(this);
         widget_->SetContentsView(std::move(child_));
       }
@@ -176,8 +184,11 @@ class BorderView : public NativeViewHost {
 
  private:
   std::unique_ptr<View> child_;
-  raw_ptr<Widget, AcrossTasksDanglingUntriaged> widget_ = nullptr;
+  std::unique_ptr<Widget> widget_;
 };
+
+BEGIN_METADATA(BorderView)
+END_METADATA
 
 }  // namespace
 
@@ -188,6 +199,14 @@ class FocusTraversalTest : public FocusManagerTest {
   ~FocusTraversalTest() override;
 
   void InitContentView() override;
+
+  void TearDown() override {
+    style_tab_ = nullptr;
+    search_border_view_ = nullptr;
+    left_container_ = nullptr;
+    right_container_ = nullptr;
+    FocusManagerTest::TearDown();
+  }
 
  protected:
   FocusTraversalTest();
@@ -231,12 +250,11 @@ class FocusTraversalTest : public FocusManagerTest {
     ReverseChildrenFocusOrderImpl(parent);
   }
 
-  raw_ptr<TabbedPane, AcrossTasksDanglingUntriaged> style_tab_ = nullptr;
-  raw_ptr<BorderView, AcrossTasksDanglingUntriaged> search_border_view_ =
-      nullptr;
+  raw_ptr<TabbedPane> style_tab_ = nullptr;
+  raw_ptr<BorderView> search_border_view_ = nullptr;
   DummyComboboxModel combobox_model_;
-  raw_ptr<PaneView, AcrossTasksDanglingUntriaged> left_container_;
-  raw_ptr<PaneView, AcrossTasksDanglingUntriaged> right_container_;
+  raw_ptr<PaneView> left_container_ = nullptr;
+  raw_ptr<PaneView> right_container_ = nullptr;
 
  private:
   // Implementation of `ReverseChildrenFocusOrder`. |seen_views| should not be
@@ -244,12 +262,13 @@ class FocusTraversalTest : public FocusManagerTest {
   // sure there is no cycle while traversing the children views.
   void ReverseChildrenFocusOrderImpl(View* parent,
                                      base::flat_set<View*> seen_views = {}) {
-    std::vector<View*> children_views = parent->children();
+    std::vector<raw_ptr<View, VectorExperimental>> children_views =
+        parent->children();
     if (children_views.empty())
       return;
 
     View* first_child = children_views[0];
-    std::vector<View*> children_in_focus_order;
+    std::vector<raw_ptr<View, VectorExperimental>> children_in_focus_order;
 
     // Set each child to be before the first child in the focus list.  Do this
     // in reverse so that the last child is the first focusable view.

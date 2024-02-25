@@ -6,6 +6,7 @@
 #define COMPONENTS_AUTOFILL_CORE_BROWSER_PAYMENTS_CREDIT_CARD_FIDO_AUTHENTICATOR_H_
 
 #include <memory>
+#include <optional>
 #include <string>
 
 #include "base/gtest_prod_util.h"
@@ -16,11 +17,10 @@
 #include "components/autofill/core/browser/autofill_driver.h"
 #include "components/autofill/core/browser/data_model/credit_card.h"
 #include "components/autofill/core/browser/payments/full_card_request.h"
-#include "components/autofill/core/browser/payments/payments_client.h"
+#include "components/autofill/core/browser/payments/payments_network_interface.h"
 #include "components/autofill/core/browser/strike_databases/payments/fido_authentication_strike_database.h"
 #include "components/webauthn/core/browser/internal_authenticator.h"
 #include "device/fido/fido_constants.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/mojom/webauthn/authenticator.mojom-forward.h"
 
 namespace autofill {
@@ -98,7 +98,7 @@ class CreditCardFidoAuthenticator
       CreditCard card,
       base::WeakPtr<Requester> requester,
       base::Value::Dict request_options,
-      absl::optional<std::string> context_token = absl::nullopt);
+      std::optional<std::string> context_token = std::nullopt);
 
   // Invokes Registration flow. Sends credentials created from
   // |creation_options| along with the |card_authorization_token| to Payments in
@@ -128,7 +128,7 @@ class CreditCardFidoAuthenticator
   // Return user's opt in/out intention based on unmask detail response and
   // local pref.
   UserOptInIntention GetUserOptInIntention(
-      payments::PaymentsClient::UnmaskDetails& unmask_details);
+      payments::PaymentsNetworkInterface::UnmaskDetails& unmask_details);
 
   // Cancel the ongoing verification process. Used to reset states in this class
   // and in the FullCardRequest if any.
@@ -197,7 +197,7 @@ class CreditCardFidoAuthenticator
   // Sets prefstore to enable credit card authentication if rpc was successful.
   void OnDidGetOptChangeResult(
       AutofillClient::PaymentsRpcResult result,
-      payments::PaymentsClient::OptChangeResponseDetails& response);
+      payments::PaymentsNetworkInterface::OptChangeResponseDetails& response);
 
   // payments::FullCardRequest::ResultDelegate:
   void OnFullCardRequestSucceeded(
@@ -252,7 +252,7 @@ class CreditCardFidoAuthenticator
   webauthn::InternalAuthenticator* authenticator();
 
   // Card being unmasked.
-  absl::optional<CreditCard> card_;
+  std::optional<CreditCard> card_;
 
   // The current flow in progress.
   Flow current_flow_ = NONE_FLOW;
@@ -267,8 +267,8 @@ class CreditCardFidoAuthenticator
   // The associated autofill client. Weak reference.
   const raw_ptr<AutofillClient> autofill_client_;
 
-  // Payments client to make requests to Google Payments.
-  const raw_ptr<payments::PaymentsClient> payments_client_;
+  // Interface to make HTTP-based requests to Google Payments.
+  const raw_ptr<payments::PaymentsNetworkInterface> payments_network_interface_;
 
   // Authenticator pointer to facilitate WebAuthn.
   std::unique_ptr<webauthn::InternalAuthenticator> authenticator_;
@@ -294,7 +294,7 @@ class CreditCardFidoAuthenticator
 
   // The context token used for sharing context between different server
   // requests. Will be populated only for virtual card unmasking.
-  absl::optional<std::string> context_token_;
+  std::optional<std::string> context_token_;
 
   base::WeakPtrFactory<CreditCardFidoAuthenticator> weak_ptr_factory_{this};
 };

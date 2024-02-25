@@ -14,8 +14,6 @@ owners:
 schema:
   minimum: 60000
   type: integer
-supported_chrome_os_management:
-- google_cloud
 supported_on:
 - chrome_os:42-
 tags:

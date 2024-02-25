@@ -44,7 +44,7 @@ class ContextMenuJavaScriptFeature : public JavaScriptFeature,
                          ElementDetailsCallback callback);
 
   // JavaScriptFeature:
-  absl::optional<std::string> GetScriptMessageHandlerName() const override;
+  std::optional<std::string> GetScriptMessageHandlerName() const override;
   void ScriptMessageReceived(WebState* web_state,
                              const ScriptMessage& message) override;
 

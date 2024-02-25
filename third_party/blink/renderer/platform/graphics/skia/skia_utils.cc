@@ -30,11 +30,10 @@
 
 #include "third_party/blink/renderer/platform/graphics/skia/skia_utils.h"
 
-#include "base/allocator/partition_allocator/partition_alloc.h"
+#include "base/allocator/partition_allocator/src/partition_alloc/partition_alloc.h"
 #include "base/numerics/safe_conversions.h"
 #include "build/build_config.h"
 #include "cc/paint/paint_flags.h"
-#include "third_party/blink/renderer/platform/geometry/layout_rect.h"
 #include "third_party/blink/renderer/platform/graphics/graphics_context.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/partitions.h"
 #include "third_party/skia/include/core/SkColorSpace.h"
@@ -391,13 +390,7 @@ bool ApproximatelyEqualSkColorSpaces(sk_sp<SkColorSpace> src_color_space,
   return skcms_ApproximatelyEqualProfiles(&src_profile, &dst_profile);
 }
 
-SkRect LayoutRectToSkRect(const blink::LayoutRect& rect) {
-  return SkRect::MakeXYWH(SkFloatToScalar(rect.X()), SkFloatToScalar(rect.Y()),
-                          SkFloatToScalar(rect.Width()),
-                          SkFloatToScalar(rect.Height()));
-}
-
-static cc::PaintFlags PaintFlagsForFocusRing(SkColor color, float width) {
+static cc::PaintFlags PaintFlagsForFocusRing(SkColor4f color, float width) {
   cc::PaintFlags flags;
   flags.setAntiAlias(true);
   flags.setStyle(cc::PaintFlags::kStroke_Style);
@@ -408,14 +401,14 @@ static cc::PaintFlags PaintFlagsForFocusRing(SkColor color, float width) {
 
 void DrawPlatformFocusRing(const SkRRect& rrect,
                            cc::PaintCanvas* canvas,
-                           SkColor color,
+                           SkColor4f color,
                            float width) {
   canvas->drawRRect(rrect, PaintFlagsForFocusRing(color, width));
 }
 
 void DrawPlatformFocusRing(const SkPath& path,
                            cc::PaintCanvas* canvas,
-                           SkColor color,
+                           SkColor4f color,
                            float width,
                            float corner_radius) {
   cc::PaintFlags path_flags = PaintFlagsForFocusRing(color, width);
@@ -427,10 +420,10 @@ void DrawPlatformFocusRing(const SkPath& path,
 }
 
 sk_sp<SkData> TryAllocateSkData(size_t size) {
-  void* buffer = WTF::Partitions::BufferPartition()->AllocWithFlags(
-      partition_alloc::AllocFlags::kReturnNull |
-          partition_alloc::AllocFlags::kZeroFill,
-      size, "SkData");
+  void* buffer =
+      WTF::Partitions::BufferPartition()
+          ->AllocInline<partition_alloc::AllocFlags::kReturnNull |
+                        partition_alloc::AllocFlags::kZeroFill>(size, "SkData");
   if (!buffer)
     return nullptr;
   return SkData::MakeWithProc(

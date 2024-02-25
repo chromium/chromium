@@ -14,6 +14,12 @@
 
 namespace ash {
 
+// Timeout for the GetAndroidDataInfo D-Bus method of ArcVmDataMigrator.
+// We need to use a longer timeout than the default (25 seconds) because the
+// method can take long when the migration source has a large number of files.
+constexpr base::TimeDelta kArcVmDataMigratorGetAndroidDataInfoTimeout =
+    base::Minutes(10);
+
 // ArcVmDataMigratorClient is used to communicate with arcvm-data-migrator.
 class COMPONENT_EXPORT(ASH_DBUS_ARC) ArcVmDataMigratorClient {
  public:

@@ -15,7 +15,8 @@ namespace cc {
 gfx::Vector2dF ScrollUtils::ResolveScrollPercentageToPixels(
     const gfx::Vector2dF& delta,
     const gfx::SizeF& scroller,
-    const gfx::SizeF& viewport) {
+    const gfx::SizeF& viewport,
+    const bool clamp_delta_to_one) {
   // Work with unsigned values and keep sign information in sign_x / sign_y.
   float sign_x = std::signbit(delta.x()) ? -1 : 1;
   float sign_y = std::signbit(delta.y()) ? -1 : 1;
@@ -29,6 +30,19 @@ gfx::Vector2dF ScrollUtils::ResolveScrollPercentageToPixels(
   // Resolve and clamps vertical scroll.
   if (delta_y > 0)
     delta_y = delta_y * std::min(scroller.height(), viewport.height());
+
+  // Small scrollers (under 8px) yield pixel deltas that are less than one. If
+  // fractional scroll offsets are not supported, the scroller does not scroll
+  // with percent based scrolling enabled. Therefore, clamp the fractional pixel
+  // values to 1px if they are between 0px and 1px.
+  if (clamp_delta_to_one) {
+    if (delta_x > 0) {
+      delta_x = std::max(delta_x, 1.f);
+    }
+    if (delta_y > 0) {
+      delta_y = std::max(delta_y, 1.f);
+    }
+  }
 
   return gfx::Vector2dF(std::copysign(delta_x, sign_x),
                         std::copysign(delta_y, sign_y));

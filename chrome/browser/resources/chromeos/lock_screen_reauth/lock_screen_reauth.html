@@ -316,7 +316,7 @@
   </div>
 </div>
 
-<div id="body" hidden="[[!isSamlPage_]]">
+<div id="body" hidden="[[!isSigninFrameDisplayed_]]">
   <div id="samlContainer">
     <div id="policyCertIndicator"
         hidden="[[!policyProvidedTrustedAnchorsUsed_()]]">
@@ -328,8 +328,8 @@
           tooltip-position="bottom">
       </cr-tooltip-icon>
     </div>
-    <div id="samlHeader" saml-notice-message$="[[showSamlNoticeMessage_]]">
-      <span id="samlNoticeMessage" hidden="[[!showSamlNoticeMessage_]]">
+    <div id="samlHeader" saml-notice-message$="[[isSaml_]]">
+      <span id="samlNoticeMessage" hidden="[[!isSaml_]]">
         [[i18n('samlNotice', authDomain_)]]
       </span>
       <cr-icon-button id="saml-close-button" iron-icon="cr:close"
@@ -347,8 +347,8 @@
         on-click="onChangeSigninProviderClicked_">
     </oobe-text-button>
   </div>
-  <div class="flex layout horizontal button-container"
-      hidden="[[isDefaultSsoProvider]]">
+  <div id="gaia-buttons" class="flex layout horizontal button-container"
+      hidden="[[isSaml_]]">
     <div class="action-buttons">
       <gaia-action-buttons authenticator="[[authenticator_]]"
           rounded-button="True"

@@ -2,9 +2,14 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+if (is_chromeos) {
+  import("//build/config/chromeos/ui_mode.gni")
+}
+
 if (is_android) {
   import("//build/config/android/config.gni")
   import("//build/config/android/rules.gni")
+  import("//third_party/jni_zero/jni_zero.gni")
 }
 
 source_set("public") {
@@ -13,6 +18,8 @@ source_set("public") {
     "configuration.h",
     "configuration_provider.cc",
     "configuration_provider.h",
+    "default_session_controller.cc",
+    "default_session_controller.h",
     "event_constants.cc",
     "event_constants.h",
     "feature_configurations.cc",
@@ -31,6 +38,7 @@ source_set("public") {
     "group_list.h",
     "local_configuration_provider.cc",
     "local_configuration_provider.h",
+    "session_controller.h",
     "stats.cc",
     "stats.h",
     "tracker.cc",
@@ -43,7 +51,9 @@ source_set("public") {
     "//components/feed:feature_list",
     "//components/flags_ui",
     "//components/keyed_service/core",
+    "//extensions/buildflags",
   ]
+  configs += [ "//build/config/compiler:wexit_time_destructors" ]
 
   if (is_android) {
     sources += [
@@ -58,6 +68,17 @@ source_set("public") {
     sources += [
       "ios_promo_feature_configuration.cc",
       "ios_promo_feature_configuration.h",
+    ]
+  }
+
+  if (is_chromeos && is_chromeos_ash) {
+    sources += [
+      "scalable_iph_feature_configurations.cc",
+      "scalable_iph_feature_configurations.h",
+    ]
+    deps += [
+      "//ash/constants",
+      "//chromeos/ash/components/scalable_iph:constants",
     ]
   }
 }
@@ -90,8 +111,8 @@ if (is_android) {
     deps = [
       ":jni_headers",
       "//base:base_java",
-      "//base:jni_java",
       "//third_party/androidx:androidx_annotation_annotation_java",
+      "//third_party/jni_zero:jni_zero_java",
     ]
 
     srcjar_deps = [

@@ -7,6 +7,7 @@
 
 #include <map>
 #include <memory>
+#include <optional>
 #include <vector>
 
 #include "base/containers/flat_set.h"
@@ -16,7 +17,6 @@
 #include "components/segmentation_platform/internal/database/segment_info_database.h"
 #include "components/segmentation_platform/internal/execution/model_manager.h"
 #include "components/segmentation_platform/public/proto/segmentation_platform.pb.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base {
 class Clock;
@@ -67,10 +67,11 @@ class ModelManagerImpl : public ModelManager {
   // Callback for whenever a SegmentationModelHandler is informed that the
   // underlying ML model file has been updated. If there is an available
   // model, this will be called at least once per session.
-  void OnSegmentationModelUpdated(proto::ModelSource model_source,
-                                  proto::SegmentId segment_id,
-                                  proto::SegmentationModelMetadata metadata,
-                                  int64_t model_version);
+  void OnSegmentationModelUpdated(
+      proto::ModelSource model_source,
+      proto::SegmentId segment_id,
+      std::optional<proto::SegmentationModelMetadata> metadata,
+      int64_t model_version);
 
   // Callback after fetching the current SegmentInfo from the
   // SegmentInfoDatabase. This is part of the flow for informing the
@@ -82,12 +83,19 @@ class ModelManagerImpl : public ModelManager {
       proto::ModelSource model_source,
       proto::SegmentationModelMetadata metadata,
       int64_t model_version,
-      absl::optional<proto::SegmentInfo> segment_info);
+      const proto::SegmentInfo* segment_info);
 
   // Callback after storing the updated version of the SegmentInfo.
   // Responsible for invoking the SegmentationModelUpdatedCallback.
   void OnUpdatedSegmentInfoStored(proto::SegmentInfo segment_info,
+                                  std::optional<int64_t> old_model_version,
                                   bool success);
+
+  // Callback after deleting the previous version of the SegmentInfo.
+  void OnSegmentInfoDeleted(SegmentId segment_id,
+                            proto::ModelSource model_source,
+                            int64_t deleted_version,
+                            bool success);
 
   const base::flat_set<SegmentId>& segment_ids_;
 

@@ -47,13 +47,16 @@ class PrefServiceSyncable : public PrefService,
       scoped_refptr<PersistentPrefStore> user_prefs,
       scoped_refptr<PersistentPrefStore> standalone_browser_prefs,
       scoped_refptr<user_prefs::PrefRegistrySyncable> pref_registry,
-      const PrefModelAssociatorClient* pref_model_associator_client,
+      scoped_refptr<PrefModelAssociatorClient> pref_model_associator_client,
       base::RepeatingCallback<void(PersistentPrefStore::PrefReadError)>
           read_error_callback,
       bool async);
 
-  // Note: This must be called iff EnablePreferencesAccountStorage feature is
-  // enabled.
+  // Note: This must be called only if EnablePreferencesAccountStorage feature
+  // is enabled. However, it is possible that the other overload gets called
+  // even if EnablePreferencesAccountStorage is enabled during test when using
+  // TestingPrefServiceSyncable.
+  // TODO(crbug.com/1486803): Fix TestingPrefServiceSyncable or remove usages.
   // Note: Can be done using templates instead of overload but chosen not to for
   // more clarity.
   PrefServiceSyncable(
@@ -62,7 +65,7 @@ class PrefServiceSyncable : public PrefService,
       scoped_refptr<DualLayerUserPrefStore> dual_layer_user_prefs,
       scoped_refptr<PersistentPrefStore> standalone_browser_prefs,
       scoped_refptr<user_prefs::PrefRegistrySyncable> pref_registry,
-      const PrefModelAssociatorClient* pref_model_associator_client,
+      scoped_refptr<PrefModelAssociatorClient> pref_model_associator_client,
       base::RepeatingCallback<void(PersistentPrefStore::PrefReadError)>
           read_error_callback,
       bool async);

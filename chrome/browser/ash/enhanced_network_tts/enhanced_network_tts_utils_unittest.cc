@@ -35,7 +35,7 @@ TEST_F(EnhancedNetworkTtsUtilsTest, FormatJsonRequestWithUtteranceOnly) {
   const float rate = 1.0;
   const std::string expected_text = CreateCorrectRequest(utterance, rate);
   const std::string formatted_text = FormatJsonRequest(
-      mojom::TtsRequest::New(utterance, rate, absl::nullopt, absl::nullopt));
+      mojom::TtsRequest::New(utterance, rate, std::nullopt, std::nullopt));
 
   EXPECT_TRUE(AreRequestsEqual(formatted_text, expected_text));
 }
@@ -47,7 +47,7 @@ TEST_F(EnhancedNetworkTtsUtilsTest, FormatJsonRequestWithQuotes) {
   const std::string expected_text =
       CreateCorrectRequest(quotes_for_template, rate);
   const std::string formatted_text = FormatJsonRequest(
-      mojom::TtsRequest::New(quotes, rate, absl::nullopt, absl::nullopt));
+      mojom::TtsRequest::New(quotes, rate, std::nullopt, std::nullopt));
   EXPECT_TRUE(AreRequestsEqual(formatted_text, expected_text));
 }
 
@@ -56,21 +56,21 @@ TEST_F(EnhancedNetworkTtsUtilsTest, FormatJsonRequestWithDifferentRates) {
   float rate = kMaxRate + 1.0f;
   std::string expected_text = CreateCorrectRequest(utterance, kMaxRate);
   std::string formatted_text = FormatJsonRequest(
-      mojom::TtsRequest::New(utterance, rate, absl::nullopt, absl::nullopt));
+      mojom::TtsRequest::New(utterance, rate, std::nullopt, std::nullopt));
   EXPECT_TRUE(AreRequestsEqual(formatted_text, expected_text));
 
   utterance = "Rate will be floored to kMinRate";
   rate = kMinRate - 0.1f;
   expected_text = CreateCorrectRequest(utterance, kMinRate);
   formatted_text = FormatJsonRequest(
-      mojom::TtsRequest::New(utterance, rate, absl::nullopt, absl::nullopt));
+      mojom::TtsRequest::New(utterance, rate, std::nullopt, std::nullopt));
   EXPECT_TRUE(AreRequestsEqual(formatted_text, expected_text));
 
   utterance = "Rate has precision of 0.1";
   rate = 3.5111111;
   expected_text = CreateCorrectRequest(utterance, 3.5f);
   formatted_text = FormatJsonRequest(
-      mojom::TtsRequest::New(utterance, rate, absl::nullopt, absl::nullopt));
+      mojom::TtsRequest::New(utterance, rate, std::nullopt, std::nullopt));
   EXPECT_TRUE(AreRequestsEqual(formatted_text, expected_text));
 }
 
@@ -146,7 +146,7 @@ TEST_F(EnhancedNetworkTtsUtilsTest, GetResultOnError) {
 TEST_F(EnhancedNetworkTtsUtilsTest, UnpackJsonResponseSucceed) {
   const std::vector<uint8_t> response_data = {1, 2, 5};
   const std::string server_response = CreateServerResponse(response_data);
-  absl::optional<base::Value> json = base::JSONReader::Read(server_response);
+  std::optional<base::Value> json = base::JSONReader::Read(server_response);
 
   mojom::TtsResponsePtr result = UnpackJsonResponse(
       json->GetList(), 0 /* start_index */, true /* is_last_request */);
@@ -176,7 +176,7 @@ TEST_F(EnhancedNetworkTtsUtilsTest, UnpackJsonResponseSucceed) {
 TEST_F(EnhancedNetworkTtsUtilsTest,
        UnpackJsonResponseFailsWithWrongResponseFormat) {
   const std::string encoded_response = "[{}, {}, {}]";
-  absl::optional<base::Value> json = base::JSONReader::Read(encoded_response);
+  std::optional<base::Value> json = base::JSONReader::Read(encoded_response);
 
   mojom::TtsResponsePtr result = UnpackJsonResponse(
       json->GetList(), 0 /* start_index */, true /* is_last_request */);
@@ -193,7 +193,7 @@ TEST_F(EnhancedNetworkTtsUtilsTest,
   const std::string encoded_data(response_data.begin(), response_data.end());
   const std::string encoded_response =
       base::StringPrintf(kTemplateResponse, encoded_data.c_str());
-  absl::optional<base::Value> json = base::JSONReader::Read(encoded_response);
+  std::optional<base::Value> json = base::JSONReader::Read(encoded_response);
 
   mojom::TtsResponsePtr result = UnpackJsonResponse(
       json->GetList(), 0 /* start_index */, true /* is_last_request */);

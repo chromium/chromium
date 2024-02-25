@@ -7,6 +7,7 @@
 #include <utility>
 
 #include "base/lazy_instance.h"
+#include "extensions/common/extension_id.h"
 
 namespace extensions {
 
@@ -26,15 +27,14 @@ int g_next_error_id = 1;
 
 ////////////////////////////////////////////////////////////////////////////////
 // ErrorMap::Filter
-ErrorMap::Filter::Filter(const std::string& restrict_to_extension_id,
+ErrorMap::Filter::Filter(const ExtensionId& restrict_to_extension_id,
                          int restrict_to_type,
                          const std::set<int>& restrict_to_ids,
                          bool restrict_to_incognito)
     : restrict_to_extension_id(restrict_to_extension_id),
       restrict_to_type(restrict_to_type),
       restrict_to_ids(restrict_to_ids),
-      restrict_to_incognito(restrict_to_incognito) {
-}
+      restrict_to_incognito(restrict_to_incognito) {}
 
 ErrorMap::Filter::Filter(const Filter& other) = default;
 
@@ -42,24 +42,24 @@ ErrorMap::Filter::~Filter() {
 }
 
 ErrorMap::Filter ErrorMap::Filter::ErrorsForExtension(
-    const std::string& extension_id) {
+    const ExtensionId& extension_id) {
   return Filter(extension_id, -1, std::set<int>(), false);
 }
 
 ErrorMap::Filter ErrorMap::Filter::ErrorsForExtensionWithType(
-    const std::string& extension_id,
+    const ExtensionId& extension_id,
     ExtensionError::Type type) {
   return Filter(extension_id, type, std::set<int>(), false);
 }
 
 ErrorMap::Filter ErrorMap::Filter::ErrorsForExtensionWithIds(
-    const std::string& extension_id,
+    const ExtensionId& extension_id,
     const std::set<int>& ids) {
   return Filter(extension_id, -1, ids, false);
 }
 
 ErrorMap::Filter ErrorMap::Filter::ErrorsForExtensionWithTypeAndIds(
-    const std::string& extension_id,
+    const ExtensionId& extension_id,
     ExtensionError::Type type,
     const std::set<int>& ids) {
   return Filter(extension_id, type, ids, false);
@@ -173,7 +173,7 @@ ErrorMap::~ErrorMap() {
 }
 
 const ErrorList& ErrorMap::GetErrorsForExtension(
-    const std::string& extension_id) const {
+    const ExtensionId& extension_id) const {
   auto iter = map_.find(extension_id);
   return iter != map_.end() ? *iter->second->list() : g_empty_error_list.Get();
 }
@@ -188,7 +188,7 @@ const ExtensionError* ErrorMap::AddError(
 }
 
 void ErrorMap::RemoveErrors(const Filter& filter,
-                            std::set<std::string>* affected_ids) {
+                            std::set<ExtensionId>* affected_ids) {
   if (!filter.restrict_to_extension_id.empty()) {
     auto iter = map_.find(filter.restrict_to_extension_id);
     if (iter != map_.end()) {

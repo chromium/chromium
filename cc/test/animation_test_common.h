@@ -91,7 +91,8 @@ int AddOpacityTransitionToAnimation(Animation* animation,
                                     float start_opacity,
                                     float end_opacity,
                                     bool use_timing_function,
-                                    absl::optional<int> id = absl::nullopt);
+                                    std::optional<int> id = std::nullopt,
+                                    std::optional<int> group_id = std::nullopt);
 
 int AddAnimatedFilterToAnimation(Animation* animation,
                                  double duration,
@@ -156,6 +157,8 @@ int AddOpacityTransitionToElementWithAnimation(
     float start_opacity,
     float end_opacity,
     bool use_timing_function);
+
+scoped_refptr<Animation> CancelAndReplaceAnimation(Animation& animation);
 
 }  // namespace cc
 

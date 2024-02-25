@@ -5,12 +5,9 @@
 import("//build/config/chromeos/ui_mode.gni")
 import("//build/config/features.gni")
 
-if (is_chromeos) {
-  import("//chromeos/components/sensors/buildflags.gni")
-}
-
 if (is_android) {
-  import("//build/config/android/rules.gni")  # For generate_jni().
+  import("//build/config/android/rules.gni")
+  import("//third_party/jni_zero/jni_zero.gni")
 }
 
 source_set("generic_sensor") {
@@ -49,7 +46,13 @@ source_set("generic_sensor") {
     "sensor_impl.h",
     "sensor_provider_impl.cc",
     "sensor_provider_impl.h",
+    "virtual_platform_sensor.cc",
+    "virtual_platform_sensor.h",
+    "virtual_platform_sensor_provider.cc",
+    "virtual_platform_sensor_provider.h",
   ]
+
+  configs += [ "//build/config/compiler:wexit_time_destructors" ]
 
   deps = [
     "//base",
@@ -88,10 +91,6 @@ source_set("generic_sensor") {
   }
 
   if (is_chromeos) {
-    deps += [ "//chromeos/components/sensors:buildflags" ]
-  }
-
-  if (is_chromeos && use_iioservice) {
     deps += [
       "//chromeos/components/sensors",
       "//chromeos/components/sensors/mojom",
@@ -105,7 +104,7 @@ source_set("generic_sensor") {
       "platform_sensor_provider_linux_base.cc",
       "platform_sensor_provider_linux_base.h",
     ]
-  } else if ((is_linux || is_chromeos) && use_udev) {
+  } else if (is_linux && use_udev) {
     deps += [
       "//device/base",
       "//device/udev_linux",
@@ -171,10 +170,10 @@ if (is_android) {
     sources = device_sensors_jni_sources
     deps = [
       "//base:base_java",
-      "//base:jni_java",
       "//build/android:build_java",
       "//services/device/public/mojom:generic_sensor_java",
       "//third_party/androidx:androidx_annotation_annotation_java",
+      "//third_party/jni_zero:jni_zero_java",
     ]
   }
 }

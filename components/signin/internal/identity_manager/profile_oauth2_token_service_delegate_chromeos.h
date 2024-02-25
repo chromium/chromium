@@ -55,7 +55,8 @@ class ProfileOAuth2TokenServiceDelegateChromeOS
   std::unique_ptr<OAuth2AccessTokenFetcher> CreateAccessTokenFetcher(
       const CoreAccountId& account_id,
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
-      OAuth2AccessTokenConsumer* consumer) override;
+      OAuth2AccessTokenConsumer* consumer,
+      const std::string& token_binding_challenge) override;
   bool RefreshTokenIsAvailable(const CoreAccountId& account_id) const override;
   std::vector<CoreAccountId> GetAccounts() const override;
   void LoadCredentials(const CoreAccountId& primary_account_id,

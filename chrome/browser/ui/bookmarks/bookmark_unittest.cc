@@ -97,7 +97,7 @@ TEST_F(BookmarkTest, NoTabsInGroups) {
   base::flat_map<int, chrome::TabGroupData> groups_by_index;
   for (int i = 0; i < 6; i++) {
     tab_entries.push_back(test_url);
-    groups_by_index.emplace(i, std::make_pair(absl::nullopt, u""));
+    groups_by_index.emplace(i, std::make_pair(std::nullopt, u""));
   }
 
   chrome::GetURLsAndFoldersForTabEntries(&(details.bookmark_data.children),
@@ -122,7 +122,7 @@ TEST_F(BookmarkTest, AllTabsInOneGroup) {
   for (int i = 0; i < 6; i++) {
     tab_entries.push_back(test_url);
     groups_by_index.emplace(i,
-                            std::make_pair(absl::make_optional(group_id), u""));
+                            std::make_pair(std::make_optional(group_id), u""));
   }
 
   chrome::GetURLsAndFoldersForTabEntries(&(details.bookmark_data.children),
@@ -146,9 +146,8 @@ TEST_F(BookmarkTest, AllTabsInMultipleGroups) {
   for (int i = 0; i < 6; i++) {
     tab_entries.push_back(test_url);
     groups_by_index.emplace(
-        i,
-        std::make_pair(
-            absl::make_optional(tab_groups::TabGroupId::GenerateNew()), u""));
+        i, std::make_pair(
+               std::make_optional(tab_groups::TabGroupId::GenerateNew()), u""));
   }
 
   chrome::GetURLsAndFoldersForTabEntries(&(details.bookmark_data.children),
@@ -175,7 +174,7 @@ TEST_F(BookmarkTest, SomeTabsInOneGroup) {
     tab_entries.push_back(test_url);
     groups_by_index.emplace(
         i, std::make_pair(
-               i >= 1 && i <= 3 ? absl::make_optional(group_id) : absl::nullopt,
+               i >= 1 && i <= 3 ? std::make_optional(group_id) : std::nullopt,
                u""));
   }
 
@@ -208,8 +207,8 @@ TEST_F(BookmarkTest, SomeTabsInMultipleGroups) {
     groups_by_index.emplace(
         i, std::make_pair(
                i % 2 == 0
-                   ? absl::make_optional(tab_groups::TabGroupId::GenerateNew())
-                   : absl::nullopt,
+                   ? std::make_optional(tab_groups::TabGroupId::GenerateNew())
+                   : std::nullopt,
                u""));
   }
 

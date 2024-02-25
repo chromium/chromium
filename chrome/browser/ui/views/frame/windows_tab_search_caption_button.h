@@ -12,8 +12,9 @@ class BrowserFrameViewWin;
 class TabSearchBubbleHost;
 
 class WindowsTabSearchCaptionButton : public WindowsCaptionButton {
+  METADATA_HEADER(WindowsTabSearchCaptionButton, WindowsCaptionButton)
+
  public:
-  METADATA_HEADER(WindowsTabSearchCaptionButton);
   WindowsTabSearchCaptionButton(BrowserFrameViewWin* frame_view,
                                 ViewID button_type,
                                 const std::u16string& accessible_name);

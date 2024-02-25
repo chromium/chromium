@@ -15,9 +15,7 @@ import org.chromium.base.task.AsyncTask;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * A worker task to scale bitmaps in the background.
- */
+/** A worker task to scale bitmaps in the background. */
 class BitmapScalerTask extends AsyncTask<Bitmap> {
     private final LruCache<String, PickerCategoryView.Thumbnail> mCache;
     private final String mFilePath;
@@ -26,11 +24,14 @@ class BitmapScalerTask extends AsyncTask<Bitmap> {
     private final String mVideoDuration;
     private final float mRatio;
 
-    /**
-     * A BitmapScalerTask constructor.
-     */
-    public BitmapScalerTask(LruCache<String, PickerCategoryView.Thumbnail> cache, Bitmap bitmap,
-            String filePath, String videoDuration, int size, float ratio) {
+    /** A BitmapScalerTask constructor. */
+    public BitmapScalerTask(
+            LruCache<String, PickerCategoryView.Thumbnail> cache,
+            Bitmap bitmap,
+            String filePath,
+            String videoDuration,
+            int size,
+            float ratio) {
         mCache = cache;
         mFilePath = filePath;
         mSize = size;
@@ -41,6 +42,7 @@ class BitmapScalerTask extends AsyncTask<Bitmap> {
 
     /**
      * Scales the image provided. Called on a non-UI thread.
+     *
      * @return A sorted list of images (by last-modified first).
      */
     @Override
@@ -58,6 +60,7 @@ class BitmapScalerTask extends AsyncTask<Bitmap> {
 
     /**
      * Communicates the results back to the client. Called on the UI thread.
+     *
      * @param bitmap The resulting scaled bitmap.
      */
     @Override
@@ -68,8 +71,9 @@ class BitmapScalerTask extends AsyncTask<Bitmap> {
 
         List<Bitmap> bitmaps = new ArrayList<>(1);
         bitmaps.add(bitmap);
-        mCache.put(mFilePath,
+        mCache.put(
+                mFilePath,
                 new PickerCategoryView.Thumbnail(
-                        bitmaps, mVideoDuration, /*fullWidth=*/false, mRatio));
+                        bitmaps, mVideoDuration, /* fullWidth= */ false, mRatio));
     }
 }

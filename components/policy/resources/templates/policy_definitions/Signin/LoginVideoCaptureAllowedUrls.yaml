@@ -16,8 +16,6 @@ schema:
   items:
     type: string
   type: array
-supported_chrome_os_management:
-- google_cloud
 supported_on:
 - chrome_os:52-
 tags:

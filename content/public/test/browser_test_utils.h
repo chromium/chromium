@@ -6,13 +6,13 @@
 #define CONTENT_PUBLIC_TEST_BROWSER_TEST_UTILS_H_
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <utility>
 #include <vector>
 
 #include "base/containers/flat_set.h"
 #include "base/containers/queue.h"
-#include "base/cxx20_to_address.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/functional/callback.h"
 #include "base/json/json_writer.h"
@@ -28,19 +28,18 @@
 #include "base/types/strong_alias.h"
 #include "build/build_config.h"
 #include "cc/test/pixel_test_utils.h"
-#include "components/viz/common/quads/compositor_frame.h"
-#include "content/public/browser/browser_message_filter.h"
 #include "content/public/browser/commit_deferring_condition.h"
 #include "content/public/browser/devtools_agent_host.h"
+#include "content/public/browser/global_routing_id.h"
 #include "content/public/browser/render_frame_metadata_provider.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/render_process_host_observer.h"
 #include "content/public/browser/render_widget_host.h"
 #include "content/public/browser/web_contents_delegate.h"
+#include "content/public/browser/web_contents_media_capture_id.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/common/isolated_world_ids.h"
 #include "content/public/common/page_type.h"
-#include "content/public/test/fake_frame_widget.h"
 #include "content/public/test/test_utils.h"
 #include "ipc/message_filter.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
@@ -52,7 +51,6 @@
 #include "net/cookies/cookie_partition_key_collection.h"
 #include "storage/common/file_system/file_system_types.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/blob/blob_utils.h"
 #include "third_party/blink/public/common/context_menu_data/untrustworthy_context_menu_params.h"
 #include "third_party/blink/public/common/input/web_input_event.h"
@@ -60,8 +58,6 @@
 #include "third_party/blink/public/common/input/web_mouse_wheel_event.h"
 #include "third_party/blink/public/mojom/blob/blob_url_store.mojom-test-utils.h"
 #include "third_party/blink/public/mojom/blob/blob_url_store.mojom.h"
-#include "third_party/blink/public/mojom/frame/frame.mojom-test-utils.h"
-#include "third_party/blink/public/mojom/frame/remote_frame.mojom-test-utils.h"
 #include "third_party/blink/public/mojom/frame/user_activation_update_types.mojom.h"
 #include "third_party/perfetto/include/perfetto/tracing/traced_value_forward.h"
 #include "ui/accessibility/ax_node_data.h"
@@ -76,6 +72,7 @@
 #if BUILDFLAG(IS_WIN)
 #include "base/win/scoped_handle.h"
 #endif
+
 
 namespace gfx {
 class Point;
@@ -117,7 +114,11 @@ typedef int PROPERTYID;
 
 namespace blink {
 class StorageKey;
-struct FrameVisualProperties;
+
+namespace mojom {
+class FrameWidget;
+}  // namespace mojom
+
 }  // namespace blink
 
 namespace storage {
@@ -126,16 +127,23 @@ class BlobUrlRegistry;
 
 namespace content {
 
-class BoundingBoxUpdateWaiterImpl;
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+class MockCapturedSurfaceController;
+#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+
+#if defined(USE_AURA)
+class SelectionBoundsWaiter;
+#endif  // defined(USE_AURA)
+
 class BrowserContext;
 class FileSystemAccessPermissionContext;
 class FrameTreeNode;
 class NavigationHandle;
 class NavigationRequest;
-class RenderFrameHostImpl;
 class RenderFrameMetadataProviderImpl;
 class RenderFrameProxyHost;
 class RenderWidgetHost;
+class RenderWidgetHostImpl;
 class RenderWidgetHostView;
 class ScopedAllowRendererCrashes;
 class ToRenderFrameHost;
@@ -424,6 +432,36 @@ void SimulateTouchEventAt(WebContents* web_contents,
 
 void SimulateLongTapAt(WebContents* web_contents, const gfx::Point& point);
 
+// Can be used to wait for the caret bounds associated with `web_contents` to
+// have non-zero size.
+class NonZeroCaretSizeWaiter {
+ public:
+  explicit NonZeroCaretSizeWaiter(WebContents* web_contents);
+  NonZeroCaretSizeWaiter(const NonZeroCaretSizeWaiter&) = delete;
+  NonZeroCaretSizeWaiter& operator=(const NonZeroCaretSizeWaiter&) = delete;
+  ~NonZeroCaretSizeWaiter();
+
+  void Wait();
+
+ private:
+  std::unique_ptr<SelectionBoundsWaiter> selection_bounds_waiter_;
+};
+
+// Can be used to wait for an update to the caret bounds associated with
+// `web_contents`.
+class CaretBoundsUpdateWaiter {
+ public:
+  explicit CaretBoundsUpdateWaiter(WebContents* web_contents);
+  CaretBoundsUpdateWaiter(const CaretBoundsUpdateWaiter&) = delete;
+  CaretBoundsUpdateWaiter& operator=(const CaretBoundsUpdateWaiter&) = delete;
+  ~CaretBoundsUpdateWaiter();
+
+  void Wait();
+
+ private:
+  std::unique_ptr<SelectionBoundsWaiter> selection_bounds_waiter_;
+};
+
 // Can be used to wait for updates to the bounding box (i.e. the rectangle
 // enclosing the selection region) associated with `web_contents`.
 class BoundingBoxUpdateWaiter {
@@ -436,7 +474,7 @@ class BoundingBoxUpdateWaiter {
   void Wait();
 
  private:
-  std::unique_ptr<BoundingBoxUpdateWaiterImpl> impl_;
+  std::unique_ptr<SelectionBoundsWaiter> selection_bounds_waiter_;
 };
 #endif
 
@@ -550,15 +588,13 @@ class ToRenderFrameHost {
   // NOLINTNEXTLINE(google-explicit-constructor)
   ToRenderFrameHost(Ptr frame_convertible_value)
       : render_frame_host_(ConvertToRenderFrameHost(
-            base::to_address(frame_convertible_value))) {}
+            std::to_address(frame_convertible_value))) {}
 
   // Extract the underlying frame.
   RenderFrameHost* render_frame_host() const { return render_frame_host_; }
 
  private:
-  // This field is not a raw_ptr<> because it was filtered by the rewriter for:
-  // #union
-  RAW_PTR_EXCLUSION RenderFrameHost* render_frame_host_;
+  raw_ptr<RenderFrameHost, DanglingUntriaged> render_frame_host_;
 };
 
 RenderFrameHost* ConvertToRenderFrameHost(RenderFrameHost* render_view_host);
@@ -619,7 +655,7 @@ struct JsLiteralHelper<url::Origin> {
 template <typename... Args>
 base::Value ListValueOf(Args&&... args) {
   base::Value::List values;
-  (values.Append(JsLiteralHelper<base::remove_cvref_t<Args>>::Convert(
+  (values.Append(JsLiteralHelper<std::remove_cvref_t<Args>>::Convert(
        std::forward<Args>(args))),
    ...);
   return base::Value(std::move(values));
@@ -697,6 +733,12 @@ struct EvalJsResult {
 
   // Copy ctor.
   EvalJsResult(const EvalJsResult& value);
+
+  // Matchers for successful & unsuccessful runs.
+  static auto IsOk() {
+    return testing::Field(&EvalJsResult::error, testing::Eq(""));
+  }
+  static auto IsError() { return testing::Not(IsOk()); }
 
   // Extract a result value of the requested type, or die trying.
   //
@@ -902,6 +944,9 @@ RenderFrameHost* ChildFrameAt(const ToRenderFrameHost& adapter, size_t index);
 // OriginAgentCluster header.
 bool HasOriginKeyedProcess(RenderFrameHost* frame);
 
+// Returns true if `frame` has a sandboxed SiteInstance.
+bool HasSandboxedSiteInstance(RenderFrameHost* frame);
+
 // Returns the frames visited by |RenderFrameHost::ForEachRenderFrameHost| in
 // the same order.
 std::vector<RenderFrameHost*> CollectAllRenderFrameHosts(
@@ -945,23 +990,14 @@ std::vector<net::CanonicalCookie> GetCanonicalCookies(
         net::CookiePartitionKeyCollection::ContainsAll());
 
 // Sets a cookie for the given url. Uses inclusive SameSiteCookieContext by
-// default, which gets cookies regardless of their SameSite attribute. Returns
-// true on success.
+// default, which gets cookies regardless of their SameSite attribute. The
+// cookie is unpartitioned by default. Returns true on success.
 bool SetCookie(BrowserContext* browser_context,
                const GURL& url,
                const std::string& value,
                net::CookieOptions::SameSiteCookieContext context =
-                   net::CookieOptions::SameSiteCookieContext::MakeInclusive());
-
-// Same as `SetCookie`, but sets a Partitioned cookie with the given partition
-// key. `value` is expected to use the `Partitioned` attribute.
-bool SetPartitionedCookie(
-    BrowserContext* browser_context,
-    const GURL& url,
-    const std::string& value,
-    const net::CookiePartitionKey& cookie_partition_key,
-    net::CookieOptions::SameSiteCookieContext context =
-        net::CookieOptions::SameSiteCookieContext::MakeInclusive());
+                   net::CookieOptions::SameSiteCookieContext::MakeInclusive(),
+               net::CookiePartitionKey* cookie_partition_key = nullptr);
 
 // Deletes cookies matching the provided filter. Returns the number of cookies
 // that were deleted.
@@ -1004,9 +1040,6 @@ void SetFileSystemAccessPermissionContext(
 // Waits until all resources have loaded in the given RenderFrameHost.
 [[nodiscard]] bool WaitForRenderFrameReady(RenderFrameHost* rfh);
 
-// Enable accessibility support for all of the frames in this WebContents
-void EnableAccessibilityForWebContents(WebContents* web_contents);
-
 // Wait until the focused accessible node changes in any WebContents.
 void WaitForAccessibilityFocusChange();
 
@@ -1040,8 +1073,8 @@ ui::AXPlatformNodeDelegate* GetRootAccessibilityNode(WebContents* web_contents);
 struct FindAccessibilityNodeCriteria {
   FindAccessibilityNodeCriteria();
   ~FindAccessibilityNodeCriteria();
-  absl::optional<ax::mojom::Role> role;
-  absl::optional<std::string> name;
+  std::optional<ax::mojom::Role> role;
+  std::optional<std::string> name;
 };
 ui::AXPlatformNodeDelegate* FindAccessibilityNode(
     WebContents* web_contents,
@@ -1078,7 +1111,7 @@ RenderWidgetHost* GetMouseLockWidget(WebContents* web_contents);
 // all keys will be considered locked.  If |codes| has a value, then at least
 // one key must be specified.
 bool RequestKeyboardLock(WebContents* web_contents,
-                         absl::optional<base::flat_set<ui::DomCode>> codes);
+                         std::optional<base::flat_set<ui::DomCode>> codes);
 void CancelKeyboardLock(WebContents* web_contents);
 
 // Returns the screen orientation provider that's been set via
@@ -1202,9 +1235,9 @@ class RenderProcessHostKillWaiter {
 
   // Waits until the renderer process exits.  Extracts and returns the bad
   // message reason that should be logged in the |uma_name_| histogram.
-  // Returns |absl::nullopt| if the renderer exited normally or didn't log
+  // Returns |std::nullopt| if the renderer exited normally or didn't log
   // the |uma_name_| histogram.
-  [[nodiscard]] absl::optional<int> Wait();
+  [[nodiscard]] std::optional<int> Wait();
 
  private:
   RenderProcessHostWatcher exit_watcher_;
@@ -1232,15 +1265,15 @@ class RenderProcessHostBadMojoMessageWaiter {
 
   // Waits until |render_process_host| from the constructor is terminated
   // because of a bad/invalid mojo message and returns the associated error
-  // string.  Returns absl::nullopt if the process was terminated for an
+  // string.  Returns std::nullopt if the process was terminated for an
   // unrelated reason.
-  [[nodiscard]] absl::optional<std::string> Wait();
+  [[nodiscard]] std::optional<std::string> Wait();
 
  private:
   void OnBadMojoMessage(int render_process_id, const std::string& error);
 
   int monitored_render_process_id_;
-  absl::optional<std::string> observed_mojo_error_;
+  std::optional<std::string> observed_mojo_error_;
   RenderProcessHostKillWaiter kill_waiter_;
 };
 
@@ -1275,6 +1308,12 @@ class DOMMessageQueue {
   // message. Returns true on success.
   [[nodiscard]] bool WaitForMessage(std::string* message);
 
+  // Facilitates asynchronous use of the DOMMessageQueue. The given callback
+  // will be called once a message was put into the queue (or when there is a
+  // renderer crash).
+  // NOTE: This is incompatible with the DOMMessageQueue(RenderFrameHost*) ctor.
+  void SetOnMessageAvailableCallback(base::OnceClosure callback);
+
   // If there is a message in the queue, then copies it to |message| and returns
   // true.  Otherwise (if the queue is empty), returns false.
   [[nodiscard]] bool PopMessage(std::string* message);
@@ -1296,7 +1335,7 @@ class DOMMessageQueue {
   std::set<std::unique_ptr<MessageObserver>> observers_;
   base::CallbackListSubscription web_contents_creation_subscription_;
   base::queue<std::string> message_queue_;
-  base::OnceClosure quit_closure_;
+  base::OnceClosure callback_;
   bool renderer_crashed_ = false;
   raw_ptr<RenderFrameHost, DanglingUntriaged> render_frame_host_ = nullptr;
 };
@@ -1519,9 +1558,9 @@ class InputEventAckWaiter : public RenderWidgetHost::InputEventObserver {
                        const blink::WebInputEvent& event) override;
 
  private:
-  raw_ptr<RenderWidgetHost> render_widget_host_;
+  base::WeakPtr<RenderWidgetHostImpl> render_widget_host_;
   InputEventAckPredicate predicate_;
-  bool event_received_;
+  bool event_received_ = false;
   base::OnceClosure quit_closure_;
 };
 
@@ -1702,8 +1741,8 @@ class TestNavigationManager : public WebContentsObserver {
   void ResumeIfPaused();
 
   const GURL url_;
-  // This field is not a raw_ptr<> because of incompatibilities with tracing
-  // (TRACE_EVENT*), perfetto::TracedDictionary::Add and gmock/EXPECT_THAT.
+  // RAW_PTR_EXCLUSION: Incompatible with tracing (TRACE_EVENT*),
+  // perfetto::TracedDictionary::Add and gmock/EXPECT_THAT.
   RAW_PTR_EXCLUSION NavigationRequest* request_ = nullptr;
   bool navigation_paused_ = false;
   NavigationState current_state_ = NavigationState::INITIAL;
@@ -1902,7 +1941,7 @@ class WebContentsConsoleObserver : public WebContentsObserver {
       const std::u16string& message,
       int32_t line_no,
       const std::u16string& source_id,
-      const absl::optional<std::u16string>& untrusted_stack_trace) override;
+      const std::optional<std::u16string>& untrusted_stack_trace) override;
 
   Filter filter_;
   std::string pattern_;
@@ -1973,73 +2012,6 @@ void VerifyStaleContentOnFrameEviction(
 
 #endif  // defined(USE_AURA)
 
-// This class intercepts for ShowContextMenu Mojo method called from a
-// renderer process, and allows observing the UntrustworthyContextMenuParams as
-// sent by the renderer.
-class ContextMenuInterceptor
-    : public blink::mojom::LocalFrameHostInterceptorForTesting {
- public:
-  // Whether or not the ContextMenu should be prevented from performing
-  // its default action, preventing the context menu from showing.
-  enum ShowBehavior { kShow, kPreventShow };
-
-  explicit ContextMenuInterceptor(content::RenderFrameHost* render_frame_host,
-                                  ShowBehavior behavior = ShowBehavior::kShow);
-  ContextMenuInterceptor(const ContextMenuInterceptor&) = delete;
-  ContextMenuInterceptor& operator=(const ContextMenuInterceptor&) = delete;
-  ~ContextMenuInterceptor() override;
-
-  blink::mojom::LocalFrameHost* GetForwardingInterface() override;
-
-  void ShowContextMenu(
-      mojo::PendingAssociatedRemote<blink::mojom::ContextMenuClient>
-          context_menu_client,
-      const blink::UntrustworthyContextMenuParams& params) override;
-
-  void Wait();
-  void Reset();
-
-  blink::UntrustworthyContextMenuParams get_params() { return last_params_; }
-
- private:
-  raw_ptr<content::RenderFrameHostImpl> render_frame_host_impl_;
-  mojo::test::ScopedSwapImplForTesting<
-      mojo::AssociatedReceiver<blink::mojom::LocalFrameHost>>
-      swapped_impl_;
-  std::unique_ptr<base::RunLoop> run_loop_;
-  base::OnceClosure quit_closure_;
-  blink::UntrustworthyContextMenuParams last_params_;
-  const ShowBehavior show_behavior_;
-};
-
-class UpdateUserActivationStateInterceptor
-    : public blink::mojom::LocalFrameHostInterceptorForTesting {
- public:
-  explicit UpdateUserActivationStateInterceptor(
-      content::RenderFrameHost* render_frame_host);
-  UpdateUserActivationStateInterceptor(
-      const UpdateUserActivationStateInterceptor&) = delete;
-  UpdateUserActivationStateInterceptor& operator=(
-      const UpdateUserActivationStateInterceptor&) = delete;
-  ~UpdateUserActivationStateInterceptor() override;
-
-  void set_quit_handler(base::OnceClosure handler);
-  bool update_user_activation_state() { return update_user_activation_state_; }
-
-  blink::mojom::LocalFrameHost* GetForwardingInterface() override;
-  void UpdateUserActivationState(
-      blink::mojom::UserActivationUpdateType update_type,
-      blink::mojom::UserActivationNotificationType notification_type) override;
-
- private:
-  raw_ptr<content::RenderFrameHostImpl> render_frame_host_impl_;
-  mojo::test::ScopedSwapImplForTesting<
-      mojo::AssociatedReceiver<blink::mojom::LocalFrameHost>>
-      swapped_impl_;
-  base::OnceClosure quit_handler_;
-  bool update_user_activation_state_ = false;
-};
-
 // Helper class to interpose on Blob URL registrations, replacing the URL
 // contained in incoming registration requests with the specified URL.
 class BlobURLStoreInterceptor
@@ -2063,7 +2035,7 @@ class BlobURLStoreInterceptor
       const GURL& url,
       // TODO(https://crbug.com/1224926): Remove these once experiment is over.
       const base::UnguessableToken& unsafe_agent_cluster_id,
-      const absl::optional<net::SchemefulSite>& unsafe_top_level_site,
+      const std::optional<net::SchemefulSite>& unsafe_top_level_site,
       RegisterCallback callback) override;
 
  private:
@@ -2098,65 +2070,6 @@ void EnsureCookiesFlushed(BrowserContext* browser_context);
 // single response messages back from the guest, with the expected values.
 bool TestGuestAutoresize(WebContents* embedder_web_contents,
                          RenderFrameHost* guest_main_frame);
-
-// Class to intercept SynchronizeVisualProperties method. This allows the
-// message to continue to the target child so that processing can be verified by
-// tests. It also monitors for GesturePinchBegin/End events.
-class SynchronizeVisualPropertiesInterceptor
-    : public blink::mojom::RemoteFrameHostInterceptorForTesting {
- public:
-  explicit SynchronizeVisualPropertiesInterceptor(
-      RenderFrameProxyHost* render_frame_proxy_host);
-
-  SynchronizeVisualPropertiesInterceptor(
-      const SynchronizeVisualPropertiesInterceptor&) = delete;
-  SynchronizeVisualPropertiesInterceptor& operator=(
-      const SynchronizeVisualPropertiesInterceptor&) = delete;
-
-  ~SynchronizeVisualPropertiesInterceptor() override;
-
-  blink::mojom::RemoteFrameHost* GetForwardingInterface() override;
-
-  void SynchronizeVisualProperties(
-      const blink::FrameVisualProperties& visual_properties) override;
-
-  gfx::Rect last_rect() const { return last_rect_; }
-
-  void WaitForRect();
-  void ResetRectRunLoop();
-
-  // Waits for the next viz::LocalSurfaceId be received and returns it.
-  viz::LocalSurfaceId WaitForSurfaceId();
-
-  void WaitForPinchGestureEnd();
-
- private:
-  // |rect| is in DIPs.
-  void OnUpdatedFrameRectOnUI(const gfx::Rect& rect);
-  void OnUpdatedFrameSinkIdOnUI();
-  void OnUpdatedSurfaceIdOnUI(viz::LocalSurfaceId surface_id);
-
-  base::RunLoop run_loop_;
-
-  raw_ptr<RenderFrameProxyHost> render_frame_proxy_host_;
-
-  std::unique_ptr<base::RunLoop> local_root_rect_run_loop_;
-  bool local_root_rect_received_ = false;
-  gfx::Rect last_rect_;
-
-  viz::LocalSurfaceId last_surface_id_;
-  std::unique_ptr<base::RunLoop> surface_id_run_loop_;
-
-  bool last_pinch_gesture_active_ = false;
-  base::RunLoop pinch_end_run_loop_;
-
-  mojo::test::ScopedSwapImplForTesting<
-      mojo::AssociatedReceiver<blink::mojom::RemoteFrameHost>>
-      swapped_impl_;
-
-  base::WeakPtrFactory<SynchronizeVisualPropertiesInterceptor> weak_factory_{
-      this};
-};
 
 // This class allows monitoring of mouse events received by a specific
 // RenderWidgetHost.
@@ -2337,7 +2250,7 @@ class CreateAndLoadWebContentsObserver {
   // be called multiple times.
   void UnregisterIfNeeded();
 
-  absl::optional<LoadStopObserver> load_stop_observer_;
+  std::optional<LoadStopObserver> load_stop_observer_;
   base::CallbackListSubscription creation_subscription_;
 
   raw_ptr<WebContents, DanglingUntriaged> web_contents_ = nullptr;
@@ -2357,17 +2270,22 @@ class CookieChangeObserver : public content::WebContentsObserver {
 
   void Wait();
 
+  int num_read_seen() const { return num_read_seen_; }
+  int num_write_seen() const { return num_write_seen_; }
+
  private:
   void OnCookiesAccessed(content::RenderFrameHost* render_frame_host,
                          const content::CookieAccessDetails& details) override;
   void OnCookiesAccessed(content::NavigationHandle* navigation,
                          const content::CookieAccessDetails& details) override;
 
-  void OnCookieAccessed();
+  void OnCookieAccessed(const content::CookieAccessDetails& details);
 
   base::RunLoop run_loop_;
   int num_seen_ = 0;
   int num_expected_calls_;
+  int num_read_seen_ = 0;
+  int num_write_seen_ = 0;
 };
 
 [[nodiscard]] base::CallbackListSubscription
@@ -2390,6 +2308,14 @@ RegisterWebContentsCreationCallback(
 // is a standalone executable without an Info.plist.
 bool EnableNativeWindowActivation();
 #endif  // BUILDFLAG(IS_MAC)
+
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+// Set the global factory for CapturedSurfaceController objects.
+void SetCapturedSurfaceControllerFactoryForTesting(
+    base::RepeatingCallback<std::unique_ptr<MockCapturedSurfaceController>(
+        GlobalRenderFrameHostId,
+        WebContentsMediaCaptureId)> factory);
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 }  // namespace content
 

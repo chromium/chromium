@@ -15,7 +15,7 @@ LoginScreenUiShowFunction::LoginScreenUiShowFunction() = default;
 LoginScreenUiShowFunction::~LoginScreenUiShowFunction() = default;
 
 ExtensionFunction::ResponseAction LoginScreenUiShowFunction::Run() {
-  absl::optional<login_screen_ui::Show::Params> parameters =
+  std::optional<login_screen_ui::Show::Params> parameters =
       login_screen_ui::Show::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(parameters);
 
@@ -46,7 +46,7 @@ ExtensionFunction::ResponseAction LoginScreenUiCloseFunction::Run() {
 
 void LoginScreenUiCloseFunction::OnClosed(
     bool success,
-    const absl::optional<std::string>& error) {
+    const std::optional<std::string>& error) {
   if (!success) {
     Respond(Error(error.value()));
     return;

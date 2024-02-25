@@ -10,9 +10,7 @@
 #include "content/browser/find_in_page_client.h"
 #include "content/browser/find_request_manager.h"
 #include "content/browser/web_contents/web_contents_impl.h"
-#include "content/public/browser/browser_message_filter.h"
 #include "content/public/browser/content_browser_client.h"
-#include "content/public/browser/notification_types.h"
 #include "content/public/common/content_client.h"
 #include "content/public/common/content_switches.h"
 #include "content/public/test/back_forward_cache_util.h"
@@ -23,6 +21,7 @@
 #include "content/public/test/content_browser_test_utils.h"
 #include "content/public/test/fenced_frame_test_util.h"
 #include "content/public/test/find_test_utils.h"
+#include "content/public/test/no_renderer_crashes_assertion.h"
 #include "content/public/test/prerender_test_util.h"
 #include "content/public/test/test_navigation_observer.h"
 #include "content/public/test/test_utils.h"
@@ -79,6 +78,7 @@ class FindRequestManagerTestBase : public ContentBrowserTest {
   void TearDownOnMainThread() override {
     // Swap the WebContents's delegate back to its usual delegate.
     contents()->SetDelegate(normal_delegate_);
+    normal_delegate_ = nullptr;
   }
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
@@ -162,7 +162,7 @@ class FindRequestManagerTestBase : public ContentBrowserTest {
   }
 
   FindTestWebContentsDelegate test_delegate_;
-  raw_ptr<WebContentsDelegate, DanglingUntriaged> normal_delegate_;
+  raw_ptr<WebContentsDelegate> normal_delegate_;
 
   // The ID of the last find request requested.
   int last_request_id_;
@@ -1211,36 +1211,6 @@ IN_PROC_BROWSER_TEST_P(FindRequestManagerTest, FindInPageDisabledForOrigin) {
   EXPECT_EQ(7, results.number_of_matches);
 }
 
-class FindRequestManagerPortalTest : public FindRequestManagerTest {
- public:
-  FindRequestManagerPortalTest() {
-    scoped_feature_list_.InitAndEnableFeature(blink::features::kPortals);
-  }
-  ~FindRequestManagerPortalTest() override = default;
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
-};
-
-// Tests that find-in-page won't show results inside a portal.
-IN_PROC_BROWSER_TEST_F(FindRequestManagerPortalTest, Portal) {
-  TestNavigationObserver navigation_observer(contents());
-  EXPECT_TRUE(
-      NavigateToURL(shell(), embedded_test_server()->GetURL(
-                                 "a.com", "/find_in_page_with_portal.html")));
-  ASSERT_TRUE(navigation_observer.last_navigation_succeeded());
-
-  auto options = blink::mojom::FindOptions::New();
-  options->run_synchronously_for_testing = true;
-  Find("result", options->Clone());
-  delegate()->WaitForFinalReply();
-
-  FindResults results = delegate()->GetFindResults();
-  EXPECT_EQ(last_request_id(), results.request_id);
-  EXPECT_EQ(2, results.number_of_matches);
-  EXPECT_EQ(1, results.active_match_ordinal);
-}
-
 class FindTestWebContentsPrerenderingDelegate
     : public FindTestWebContentsDelegate {
  public:
@@ -1660,7 +1630,8 @@ INSTANTIATE_TEST_SUITE_P(
 // new results from the new document when we navigate the subframe that
 // hasn't finished the find-in-page session to the new document.
 // TODO(crbug.com/1311444): Fix flakiness and reenable the test.
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || \
+    BUILDFLAG(IS_ANDROID)
 #define MAYBE_NavigateFrameDuringFind DISABLED_NavigateFrameDuringFind
 #else
 #define MAYBE_NavigateFrameDuringFind NavigateFrameDuringFind

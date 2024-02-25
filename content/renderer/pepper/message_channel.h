@@ -9,6 +9,7 @@
 #include <map>
 
 #include "base/containers/circular_deque.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "content/renderer/pepper/v8_var_converter.h"
 #include "gin/handle.h"
@@ -127,7 +128,8 @@ class MessageChannel :
 
   PluginObject* GetPluginObject(v8::Isolate* isolate);
 
-  void EnqueuePluginMessage(v8::Local<v8::Value> v8_value);
+  void EnqueuePluginMessage(v8::Isolate* isolate,
+                            v8::Local<v8::Value> v8_value);
 
   void FromV8ValueComplete(VarConversionResult* result_holder,
                            const ppapi::ScopedPPVar& result_var,
@@ -151,7 +153,7 @@ class MessageChannel :
       const std::string& name,
       void (MessageChannel::*memberFuncPtr)(gin::Arguments* args));
 
-  PepperPluginInstanceImpl* instance_;
+  raw_ptr<PepperPluginInstanceImpl> instance_;
 
   // We pass all non-postMessage calls through to the passthrough_object_.
   // This way, a plugin can use PPB_Class or PPP_Class_Deprecated and also

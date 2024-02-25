@@ -56,11 +56,12 @@ class ASH_PUBLIC_EXPORT TestSavedDeskDelegate : public SavedDeskDelegate {
   desks_storage::DeskModel* GetDeskModel() override;
   desks_storage::AdminTemplateService* GetAdminTemplateService() override;
   bool IsWindowPersistable(aura::Window* window) const override;
-  absl::optional<gfx::ImageSkia> MaybeRetrieveIconForSpecialIdentifier(
+  std::optional<gfx::ImageSkia> MaybeRetrieveIconForSpecialIdentifier(
       const std::string& identifier,
       const ui::ColorProvider* color_provider) const override;
   void GetFaviconForUrl(
       const std::string& page_url,
+      uint64_t lacros_profile_id,
       base::OnceCallback<void(const gfx::ImageSkia&)> callback,
       base::CancelableTaskTracker* tracker) const override;
   void GetIconForAppId(
@@ -74,9 +75,8 @@ class ASH_PUBLIC_EXPORT TestSavedDeskDelegate : public SavedDeskDelegate {
   bool IsAppAvailable(const std::string& app_id) const override;
 
  private:
-  raw_ptr<desks_storage::DeskModel, ExperimentalAsh> desk_model_ = nullptr;
-  raw_ptr<desks_storage::AdminTemplateService,
-          DanglingUntriaged | ExperimentalAsh>
+  raw_ptr<desks_storage::DeskModel> desk_model_ = nullptr;
+  raw_ptr<desks_storage::AdminTemplateService, DanglingUntriaged>
       admin_template_service_ = nullptr;
   std::vector<std::string> unavailable_app_ids_;
 };

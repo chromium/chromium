@@ -28,6 +28,7 @@ PASS oldChildWindow.location.search is newChildWindow.location.search
 PASS oldChildWindow.locationbar.visible is newChildWindow.locationbar.visible
 PASS oldChildWindow.menubar.visible is newChildWindow.menubar.visible
 PASS oldChildWindow.name is newChildWindow.name
+PASS oldChildWindow.navigation.activation is newChildWindow.navigation.activation
 PASS oldChildWindow.navigation.canGoBack is newChildWindow.navigation.canGoBack
 PASS oldChildWindow.navigation.canGoForward is newChildWindow.navigation.canGoForward
 PASS oldChildWindow.navigation.currentEntry is newChildWindow.navigation.currentEntry
@@ -66,6 +67,16 @@ PASS oldChildWindow.navigator.mediaSession.playbackState is newChildWindow.navig
 PASS oldChildWindow.navigator.onLine is newChildWindow.navigator.onLine
 PASS oldChildWindow.navigator.pdfViewerEnabled is newChildWindow.navigator.pdfViewerEnabled
 PASS oldChildWindow.navigator.platform is newChildWindow.navigator.platform
+PASS oldChildWindow.navigator.preferences.colorScheme.override is newChildWindow.navigator.preferences.colorScheme.override
+PASS oldChildWindow.navigator.preferences.colorScheme.value is newChildWindow.navigator.preferences.colorScheme.value
+PASS oldChildWindow.navigator.preferences.contrast.override is newChildWindow.navigator.preferences.contrast.override
+PASS oldChildWindow.navigator.preferences.contrast.value is newChildWindow.navigator.preferences.contrast.value
+PASS oldChildWindow.navigator.preferences.reducedData.override is newChildWindow.navigator.preferences.reducedData.override
+PASS oldChildWindow.navigator.preferences.reducedData.value is newChildWindow.navigator.preferences.reducedData.value
+PASS oldChildWindow.navigator.preferences.reducedMotion.override is newChildWindow.navigator.preferences.reducedMotion.override
+PASS oldChildWindow.navigator.preferences.reducedMotion.value is newChildWindow.navigator.preferences.reducedMotion.value
+PASS oldChildWindow.navigator.preferences.reducedTransparency.override is newChildWindow.navigator.preferences.reducedTransparency.override
+PASS oldChildWindow.navigator.preferences.reducedTransparency.value is newChildWindow.navigator.preferences.reducedTransparency.value
 PASS oldChildWindow.navigator.presentation.defaultRequest is newChildWindow.navigator.presentation.defaultRequest
 PASS oldChildWindow.navigator.presentation.receiver is newChildWindow.navigator.presentation.receiver
 PASS oldChildWindow.navigator.product is newChildWindow.navigator.product
@@ -168,10 +179,13 @@ PASS oldChildWindow.onmouseout is newChildWindow.onmouseout
 PASS oldChildWindow.onmouseover is newChildWindow.onmouseover
 PASS oldChildWindow.onmouseup is newChildWindow.onmouseup
 PASS oldChildWindow.onmousewheel is newChildWindow.onmousewheel
+PASS oldChildWindow.onmove is newChildWindow.onmove
 PASS oldChildWindow.onoffline is newChildWindow.onoffline
 PASS oldChildWindow.ononline is newChildWindow.ononline
 PASS oldChildWindow.onoverscroll is newChildWindow.onoverscroll
+PASS oldChildWindow.onpageconceal is newChildWindow.onpageconceal
 PASS oldChildWindow.onpagehide is newChildWindow.onpagehide
+PASS oldChildWindow.onpagereveal is newChildWindow.onpagereveal
 PASS oldChildWindow.onpageshow is newChildWindow.onpageshow
 PASS oldChildWindow.onpause is newChildWindow.onpause
 PASS oldChildWindow.onplay is newChildWindow.onplay
@@ -201,6 +215,8 @@ PASS oldChildWindow.onselect is newChildWindow.onselect
 PASS oldChildWindow.onselectionchange is newChildWindow.onselectionchange
 PASS oldChildWindow.onselectstart is newChildWindow.onselectstart
 PASS oldChildWindow.onslotchange is newChildWindow.onslotchange
+PASS oldChildWindow.onsnapchanged is newChildWindow.onsnapchanged
+PASS oldChildWindow.onsnapchanging is newChildWindow.onsnapchanging
 PASS oldChildWindow.onstalled is newChildWindow.onstalled
 PASS oldChildWindow.onstorage is newChildWindow.onstorage
 PASS oldChildWindow.onsubmit is newChildWindow.onsubmit

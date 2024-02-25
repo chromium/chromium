@@ -7,6 +7,7 @@
 #include <utility>
 
 #include "base/containers/contains.h"
+#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/observer_list.h"
 #include "base/strings/utf_string_conversions.h"
@@ -14,6 +15,7 @@
 #include "base/values.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/content_settings/core/common/content_settings_pattern.h"
+#include "components/permissions/features.h"
 #include "url/origin.h"
 
 namespace permissions {
@@ -33,7 +35,7 @@ ObjectPermissionContextBase::ObjectPermissionContextBase(
 ObjectPermissionContextBase::ObjectPermissionContextBase(
     ContentSettingsType data_content_settings_type,
     HostContentSettingsMap* host_content_settings_map)
-    : guard_content_settings_type_(absl::nullopt),
+    : guard_content_settings_type_(std::nullopt),
       data_content_settings_type_(data_content_settings_type),
       host_content_settings_map_(host_content_settings_map) {
   DCHECK(host_content_settings_map_);
@@ -69,7 +71,7 @@ ObjectPermissionContextBase::Object::Clone() {
 }
 
 void ObjectPermissionContextBase::PermissionObserver::OnObjectPermissionChanged(
-    absl::optional<ContentSettingsType> guard_content_settings_type,
+    std::optional<ContentSettingsType> guard_content_settings_type,
     ContentSettingsType data_content_settings_type) {}
 
 void ObjectPermissionContextBase::PermissionObserver::OnPermissionRevoked(
@@ -91,8 +93,6 @@ bool ObjectPermissionContextBase::CanRequestObjectPermission(
   ContentSetting content_setting =
       host_content_settings_map_->GetContentSetting(
           origin.GetURL(), GURL(), *guard_content_settings_type_);
-  DCHECK(content_setting == CONTENT_SETTING_ASK ||
-         content_setting == CONTENT_SETTING_BLOCK);
   return content_setting == CONTENT_SETTING_ASK;
 }
 
@@ -226,6 +226,19 @@ void ObjectPermissionContextBase::RevokeObjectPermission(
   NotifyPermissionRevoked(origin);
 }
 
+bool ObjectPermissionContextBase::RevokeObjectPermissions(
+    const url::Origin& origin) {
+  auto origin_objects_it = objects().find(origin);
+  if (origin_objects_it == objects().end()) {
+    return false;
+  }
+
+  origin_objects_it->second.clear();
+  ScheduleSaveWebsiteSetting(origin);
+  NotifyPermissionRevoked(origin);
+  return true;
+}
+
 void ObjectPermissionContextBase::FlushScheduledSaveSettingsCalls() {
   // Persist any pending object updates that did not have the chance to be
   // persisted yet.
@@ -292,9 +305,20 @@ void ObjectPermissionContextBase::SaveWebsiteSetting(
   }
   base::Value::Dict website_setting_value;
   website_setting_value.Set(kObjectListKey, std::move(objects_list));
+
+  content_settings::ContentSettingConstraints constraints;
+#if !BUILDFLAG(IS_ANDROID)
+  if (base::FeatureList::IsEnabled(
+          features::kRecordChooserPermissionLastVisitedTimestamps)) {
+    if (content_settings::CanTrackLastVisit(data_content_settings_type_)) {
+      constraints.set_track_last_visit_for_autoexpiration(true);
+    }
+  }
+#endif  // !BUILDFLAG(IS_ANDROID)
+
   host_content_settings_map_->SetWebsiteSettingDefaultScope(
       origin.GetURL(), GURL(), data_content_settings_type_,
-      base::Value(std::move(website_setting_value)));
+      base::Value(std::move(website_setting_value)), constraints);
 }
 
 void ObjectPermissionContextBase::ScheduleSaveWebsiteSetting(

@@ -48,12 +48,12 @@ class UdpSocket final : public openscreen::UdpSocket,
 
   // network::mojom::UDPSocketListener overrides:
   void OnReceived(int32_t net_result,
-                  const absl::optional<net::IPEndPoint>& source_endpoint,
-                  absl::optional<base::span<const uint8_t>> data) override;
+                  const std::optional<net::IPEndPoint>& source_endpoint,
+                  std::optional<base::span<const uint8_t>> data) override;
 
  private:
   void BindCallback(int32_t result,
-                    const absl::optional<net::IPEndPoint>& address);
+                    const std::optional<net::IPEndPoint>& address);
   void JoinGroupCallback(int32_t result);
   void SendCallback(int32_t result);
 

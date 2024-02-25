@@ -36,6 +36,8 @@ extern GuideName* const kBackButtonGuide;
 extern GuideName* const kForwardButtonGuide;
 // A guide that is constrained to match the frame of the NewTab button.
 extern GuideName* const kNewTabButtonGuide;
+// A guide that is constrained to match the frame of the Share button.
+extern GuideName* const kShareButtonGuide;
 // A guide that is constrained to match the frame of the TabSwitcher button's
 // image.
 extern GuideName* const kTabSwitcherGuide;
@@ -52,5 +54,10 @@ extern GuideName* const kDiscoverFeedHeaderMenuGuide;
 extern GuideName* const kTabGridBottomToolbarGuide;
 // A guide that is constrained to match the frame of the first Autofill result.
 extern GuideName* const kAutofillFirstSuggestionGuide;
+// A guide that is constrained to match the frame of the Lens button in the
+// omnibox keyboard accessory view.
+extern GuideName* const kLensKeyboardButtonGuide;
+// A guide that is constrained to match the frame of the Magic Stack on the NTP.
+extern GuideName* const kMagicStackGuide;
 
 #endif  // IOS_CHROME_BROWSER_SHARED_UI_UTIL_LAYOUT_GUIDE_NAMES_H_

@@ -12,18 +12,19 @@ namespace {
 bool g_mock_elapsed_timers_for_test = false;
 }  // namespace
 
-ElapsedTimer::ElapsedTimer() : begin_(TimeTicks::Now()) {}
+ElapsedTimer::ElapsedTimer() : start_time_(TimeTicks::Now()) {}
 
-ElapsedTimer::ElapsedTimer(ElapsedTimer&& other) : begin_(other.begin_) {}
+ElapsedTimer::ElapsedTimer(ElapsedTimer&& other)
+    : start_time_(other.start_time_) {}
 
 void ElapsedTimer::operator=(ElapsedTimer&& other) {
-  begin_ = other.begin_;
+  start_time_ = other.start_time_;
 }
 
 TimeDelta ElapsedTimer::Elapsed() const {
   if (g_mock_elapsed_timers_for_test)
     return ScopedMockElapsedTimersForTest::kMockElapsedTime;
-  return TimeTicks::Now() - begin_;
+  return TimeTicks::Now() - start_time_;
 }
 
 ElapsedThreadTimer::ElapsedThreadTimer()

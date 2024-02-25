@@ -4,12 +4,12 @@
 
 #include "chrome/browser/ash/policy/reporting/metrics_reporting/cros_healthd_sampler_handlers/cros_healthd_audio_sampler_handler.h"
 
+#include <optional>
 #include <utility>
 
 #include "base/logging.h"
 #include "components/reporting/metrics/sampler.h"
 #include "components/reporting/proto/synced/metric_data.pb.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace reporting {
 
@@ -20,7 +20,7 @@ CrosHealthdAudioSamplerHandler::~CrosHealthdAudioSamplerHandler() = default;
 void CrosHealthdAudioSamplerHandler::HandleResult(
     OptionalMetricCallback callback,
     cros_healthd::TelemetryInfoPtr result) const {
-  absl::optional<MetricData> metric_data;
+  std::optional<MetricData> metric_data;
   const auto& audio_result = result->audio_result;
 
   if (!audio_result.is_null()) {
@@ -38,7 +38,7 @@ void CrosHealthdAudioSamplerHandler::HandleResult(
           break;
         }
 
-        metric_data = absl::make_optional<MetricData>();
+        metric_data = std::make_optional<MetricData>();
         auto* const audio_info_out =
             metric_data->mutable_telemetry_data()->mutable_audio_telemetry();
         audio_info_out->set_output_mute(audio_info->output_mute);

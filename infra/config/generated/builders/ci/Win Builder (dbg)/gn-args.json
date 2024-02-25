@@ -1,0 +1,11 @@
+{
+  "gn_args": {
+    "ffmpeg_branding": "Chrome",
+    "is_component_build": true,
+    "is_debug": true,
+    "proprietary_codecs": true,
+    "symbol_level": 0,
+    "target_cpu": "x86",
+    "use_remoteexec": true
+  }
+}

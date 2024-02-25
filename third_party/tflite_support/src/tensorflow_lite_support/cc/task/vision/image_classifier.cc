@@ -16,9 +16,9 @@ limitations under the License.
 #include "tensorflow_lite_support/cc/task/vision/image_classifier.h"
 
 #include "absl/algorithm/container.h"  // from @com_google_absl
-#include "absl/strings/str_format.h"   // from @com_google_absl
+#include "absl/strings/str_format.h"  // from @com_google_absl
 #include "absl/strings/string_view.h"  // from @com_google_absl
-#include "flatbuffers/flatbuffers.h"   // from @flatbuffers
+#include "flatbuffers/flatbuffers.h"  // from @flatbuffers
 #include "tensorflow_lite_support/cc/common.h"
 #include "tensorflow_lite_support/cc/port/integral_types.h"
 #include "tensorflow_lite_support/cc/port/status_macros.h"
@@ -52,20 +52,20 @@ using ::tflite::task::core::TfLiteEngine;
 StatusOr<std::unique_ptr<ImageClassifier>> ImageClassifier::CreateFromOptions(
     const ImageClassifierOptions& options,
     std::unique_ptr<tflite::OpResolver> resolver) {
-  RETURN_IF_ERROR(SanityCheckOptions(options));
+  TFLITE_RETURN_IF_ERROR(SanityCheckOptions(options));
 
   // Copy options to ensure the ExternalFile outlives the constructed object.
   auto options_copy = absl::make_unique<ImageClassifierOptions>(options);
 
   std::unique_ptr<ImageClassifier> image_classifier;
   if (options_copy->has_model_file_with_metadata()) {
-    ASSIGN_OR_RETURN(
+    TFLITE_ASSIGN_OR_RETURN(
         image_classifier,
         TaskAPIFactory::CreateFromExternalFileProto<ImageClassifier>(
             &options_copy->model_file_with_metadata(), std::move(resolver),
             options_copy->num_threads(), options_copy->compute_settings()));
   } else if (options_copy->base_options().has_model_file()) {
-    ASSIGN_OR_RETURN(image_classifier,
+    TFLITE_ASSIGN_OR_RETURN(image_classifier,
                      TaskAPIFactory::CreateFromBaseOptions<ImageClassifier>(
                          &options_copy->base_options(), std::move(resolver)));
   } else {
@@ -77,7 +77,7 @@ StatusOr<std::unique_ptr<ImageClassifier>> ImageClassifier::CreateFromOptions(
         TfLiteSupportStatus::kInvalidArgumentError);
   }
 
-  RETURN_IF_ERROR(image_classifier->Init(std::move(options_copy)));
+  TFLITE_RETURN_IF_ERROR(image_classifier->Init(std::move(options_copy)));
 
   return image_classifier;
 }
@@ -125,18 +125,18 @@ absl::Status ImageClassifier::Init(
 
   // Perform pre-initialization actions (by default, sets the process engine for
   // image pre-processing to kLibyuv as a sane default).
-  RETURN_IF_ERROR(PreInit());
+  TFLITE_RETURN_IF_ERROR(PreInit());
 
   // Sanity check and set inputs and outputs.
-  RETURN_IF_ERROR(CheckAndSetInputs());
-  RETURN_IF_ERROR(CheckAndSetOutputs());
+  TFLITE_RETURN_IF_ERROR(CheckAndSetInputs());
+  TFLITE_RETURN_IF_ERROR(CheckAndSetOutputs());
 
   // Initialize class whitelisting/blacklisting, if any.
-  RETURN_IF_ERROR(CheckAndSetClassNameSet());
+  TFLITE_RETURN_IF_ERROR(CheckAndSetClassNameSet());
 
   // Perform final initialization (by default, initialize score calibration
   // parameters, if any).
-  RETURN_IF_ERROR(PostInit());
+  TFLITE_RETURN_IF_ERROR(PostInit());
 
   return absl::OkStatus();
 }
@@ -146,9 +146,7 @@ absl::Status ImageClassifier::PreInit() {
   return absl::OkStatus();
 }
 
-absl::Status ImageClassifier::PostInit() {
-  return InitScoreCalibrations();
-}
+absl::Status ImageClassifier::PostInit() { return InitScoreCalibrations(); }
 
 absl::Status ImageClassifier::CheckAndSetOutputs() {
   num_outputs_ = TfLiteEngine::OutputCount(GetTfLiteEngine()->interpreter());
@@ -179,7 +177,7 @@ absl::Status ImageClassifier::CheckAndSetOutputs() {
       const tflite::TensorMetadata* output_tensor =
           output_tensor_metadata->Get(i);
 
-      ASSIGN_OR_RETURN(
+      TFLITE_ASSIGN_OR_RETURN(
           ClassificationHead head,
           BuildClassificationHead(*metadata_extractor, *output_tensor,
                                   options_->display_names_locale()));
@@ -366,7 +364,7 @@ absl::Status ImageClassifier::InitScoreCalibrations() {
           StatusCode::kInternal, "Could not create score calibration object.");
     }
 
-    RETURN_IF_ERROR(score_calibrations_[i]->InitializeFromParameters(
+    TFLITE_RETURN_IF_ERROR(score_calibrations_[i]->InitializeFromParameters(
         classification_heads_[i].calibration_params.value()));
   }
 
@@ -382,15 +380,13 @@ StatusOr<ClassificationResult> ImageClassifier::Classify(
 }
 
 StatusOr<ClassificationResult> ImageClassifier::Classify(
-    const FrameBuffer& frame_buffer,
-    const BoundingBox& roi) {
+    const FrameBuffer& frame_buffer, const BoundingBox& roi) {
   return InferWithFallback(frame_buffer, roi);
 }
 
 StatusOr<ClassificationResult> ImageClassifier::Postprocess(
     const std::vector<const TfLiteTensor*>& output_tensors,
-    const FrameBuffer& /*frame_buffer*/,
-    const BoundingBox& /*roi*/) {
+    const FrameBuffer& /*frame_buffer*/, const BoundingBox& /*roi*/) {
   if (output_tensors.size() != num_outputs_) {
     return CreateStatusWithPayload(
         StatusCode::kInternal,
@@ -411,7 +407,7 @@ StatusOr<ClassificationResult> ImageClassifier::Postprocess(
 
     const TfLiteTensor* output_tensor = output_tensors[i];
     if (has_uint8_outputs_) {
-      ASSIGN_OR_RETURN(const uint8* output_data,
+      TFLITE_ASSIGN_OR_RETURN(const uint8* output_data,
                        AssertAndReturnTypedTensor<uint8>(output_tensor));
       for (int j = 0; j < head.label_map_items.size(); ++j) {
         score_pairs.emplace_back(j, output_tensor->params.scale *
@@ -419,7 +415,7 @@ StatusOr<ClassificationResult> ImageClassifier::Postprocess(
                                          output_tensor->params.zero_point));
       }
     } else {
-      ASSIGN_OR_RETURN(const float* output_data,
+      TFLITE_ASSIGN_OR_RETURN(const float* output_data,
                        AssertAndReturnTypedTensor<float>(output_tensor));
       for (int j = 0; j < head.label_map_items.size(); ++j) {
         score_pairs.emplace_back(j, output_data[j]);
@@ -505,7 +501,7 @@ StatusOr<ClassificationResult> ImageClassifier::Postprocess(
     }
   }
 
-  RETURN_IF_ERROR(FillResultsFromLabelMaps(&result));
+  TFLITE_RETURN_IF_ERROR(FillResultsFromLabelMaps(&result));
 
   return result;
 }

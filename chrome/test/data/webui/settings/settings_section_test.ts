@@ -5,8 +5,8 @@
 import 'chrome://settings/settings.js';
 
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import {CrIconButtonElement} from 'chrome://settings/lazy_load.js';
-import {SettingsSectionElement} from 'chrome://settings/settings.js';
+import type {CrIconButtonElement} from 'chrome://settings/lazy_load.js';
+import type {SettingsSectionElement} from 'chrome://settings/settings.js';
 import {assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {eventToPromise} from 'chrome://webui-test/test_util.js';
 

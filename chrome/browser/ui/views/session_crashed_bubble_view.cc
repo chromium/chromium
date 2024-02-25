@@ -13,7 +13,6 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
-#include "base/metrics/histogram_macros.h"
 #include "build/branding_buildflags.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
@@ -32,10 +31,10 @@
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/toolbar_button_provider.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
-#include "chrome/grit/chromium_strings.h"
+#include "chrome/grit/branded_strings.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/installer/util/google_update_settings.h"
-#include "components/strings/grit/components_chromium_strings.h"
+#include "components/strings/grit/components_branded_strings.h"
 #include "components/strings/grit/components_strings.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_thread.h"
@@ -57,31 +56,11 @@
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chrome/browser/browser_process.h"
-#include "components/metrics/structured/neutrino_logging.h"       // nogncheck
-#include "components/metrics/structured/neutrino_logging_util.h"  // nogncheck
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 namespace {
 
 views::BubbleDialogDelegate* g_instance_for_test = nullptr;
-
-enum SessionCrashedBubbleHistogramValue {
-  SESSION_CRASHED_BUBBLE_SHOWN,
-  SESSION_CRASHED_BUBBLE_ERROR,
-  SESSION_CRASHED_BUBBLE_RESTORED,
-  SESSION_CRASHED_BUBBLE_ALREADY_UMA_OPTIN,
-  SESSION_CRASHED_BUBBLE_UMA_OPTIN,
-  SESSION_CRASHED_BUBBLE_HELP,
-  SESSION_CRASHED_BUBBLE_IGNORED,
-  SESSION_CRASHED_BUBBLE_OPTIN_BAR_SHOWN,
-  SESSION_CRASHED_BUBBLE_STARTUP_PAGES,
-  SESSION_CRASHED_BUBBLE_MAX,
-};
-
-void RecordBubbleHistogramValue(SessionCrashedBubbleHistogramValue value) {
-  UMA_HISTOGRAM_ENUMERATION(
-      "SessionCrashed.Bubble", value, SESSION_CRASHED_BUBBLE_MAX);
-}
 
 bool DoesSupportConsentCheck() {
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
@@ -98,7 +77,6 @@ void OpenUmaLink(Browser* browser, const ui::Event& event) {
       ui::DispositionFromEventFlags(event.flags(),
                                     WindowOpenDisposition::NEW_FOREGROUND_TAB),
       ui::PAGE_TRANSITION_LINK, false));
-  RecordBubbleHistogramValue(SESSION_CRASHED_BUBBLE_HELP);
 }
 
 DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kUmaConsentCheckboxId);
@@ -115,24 +93,15 @@ class SessionCrashedBubbleDelegate : public ui::DialogModelDelegate {
   ~SessionCrashedBubbleDelegate() override { g_instance_for_test = nullptr; }
 
   void OpenStartupPages(Browser* browser) {
-    ignored_ = false;
-
     MaybeEnableUma();
     dialog_model()->host()->Close();
 
-    RecordBubbleHistogramValue(SESSION_CRASHED_BUBBLE_STARTUP_PAGES);
     // Opening tabs has side effects, so it's preferable to do it after the
     // bubble was closed.
     SessionRestore::OpenStartupPagesAfterCrash(browser);
   }
 
-  void OnWindowClosing() {
-    if (ignored_)
-      RecordBubbleHistogramValue(SESSION_CRASHED_BUBBLE_IGNORED);
-  }
-
   void RestorePreviousSession(Browser* browser) {
-    ignored_ = false;
     MaybeEnableUma();
     // The call to Close() deletes this. Grab the lock so that session restore
     // is triggered before the lock is destroyed, otherwise ExitTypeService
@@ -141,7 +110,6 @@ class SessionCrashedBubbleDelegate : public ui::DialogModelDelegate {
         std::move(crashed_lock_);
     dialog_model()->host()->Close();
 
-    RecordBubbleHistogramValue(SESSION_CRASHED_BUBBLE_RESTORED);
     // Restoring tabs has side effects, so it's preferable to do it after the
     // bubble was closed.
     SessionRestore::RestoreSessionAfterCrash(browser);
@@ -150,24 +118,18 @@ class SessionCrashedBubbleDelegate : public ui::DialogModelDelegate {
   void MaybeEnableUma() {
     // Record user's choice for opt-in in to UMA.
     // There's no opt-out choice in the crash restore bubble.
-    if (!dialog_model()->HasField(kUmaConsentCheckboxId))
+    if (!dialog_model()->HasField(kUmaConsentCheckboxId)) {
       return;
+    }
 
     if (dialog_model()
             ->GetCheckboxByUniqueId(kUmaConsentCheckboxId)
             ->is_checked()) {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-      metrics::structured::NeutrinoDevicesLogWithLocalState(
-          g_browser_process->local_state(),
-          metrics::structured::NeutrinoDevicesLocation::kMaybeEnableUma);
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
       ChangeMetricsReportingState(true);
-      RecordBubbleHistogramValue(SESSION_CRASHED_BUBBLE_UMA_OPTIN);
     }
   }
 
  private:
-  bool ignored_ = true;
   std::unique_ptr<ExitTypeService::CrashedLock> crashed_lock_;
 };
 
@@ -189,8 +151,9 @@ class SessionCrashedBubbleView::BrowserRemovalObserver
 
   // Overridden from BrowserListObserver.
   void OnBrowserRemoved(Browser* browser) override {
-    if (browser == browser_)
+    if (browser == browser_) {
       browser_ = nullptr;
+    }
   }
 
   Browser* browser() const { return browser_; }
@@ -204,8 +167,9 @@ void SessionCrashedBubble::ShowIfNotOffTheRecordProfile(
     Browser* browser,
     bool skip_tab_checking) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  if (browser->profile()->IsOffTheRecord())
+  if (browser->profile()->IsOffTheRecord()) {
     return;
+  }
 
   // Observes possible browser removal before Show is called.
   auto browser_observer =
@@ -235,18 +199,17 @@ void SessionCrashedBubbleView::Show(
   // and the preference is modifiable by the user.
   bool offer_uma_optin = false;
 
-  if (DoesSupportConsentCheck() && !uma_opted_in_already)
+  if (DoesSupportConsentCheck() && !uma_opted_in_already) {
     offer_uma_optin = !IsMetricsReportingPolicyManaged();
+  }
 
   Browser* browser = browser_observer->browser();
 
   if (browser && (skip_tab_checking ||
                   browser->tab_strip_model()->GetActiveWebContents())) {
-    ShowBubble(browser, uma_opted_in_already, offer_uma_optin);
+    ShowBubble(browser, offer_uma_optin);
     return;
   }
-
-  RecordBubbleHistogramValue(SESSION_CRASHED_BUBBLE_ERROR);
 }
 
 // static
@@ -256,7 +219,6 @@ views::BubbleDialogDelegate* SessionCrashedBubbleView::GetInstanceForTest() {
 
 views::BubbleDialogDelegate* SessionCrashedBubbleView::ShowBubble(
     Browser* browser,
-    bool uma_opted_in_already,
     bool offer_uma_optin) {
   views::View* anchor_view = BrowserView::GetBrowserViewForBrowser(browser)
                                  ->toolbar_button_provider()
@@ -271,14 +233,9 @@ views::BubbleDialogDelegate* SessionCrashedBubbleView::ShowBubble(
       .SetTitle(l10n_util::GetStringUTF16(IDS_SESSION_CRASHED_BUBBLE_TITLE))
       .DisableCloseOnDeactivate()
       .SetIsAlertDialog()
-      .SetDialogDestroyingCallback(
-          base::BindOnce(&SessionCrashedBubbleDelegate::OnWindowClosing,
-                         base::Unretained(bubble_delegate)))
       .AddParagraph(ui::DialogModelLabel(IDS_SESSION_CRASHED_VIEW_MESSAGE));
 
   if (offer_uma_optin) {
-    RecordBubbleHistogramValue(SESSION_CRASHED_BUBBLE_OPTIN_BAR_SHOWN);
-
     dialog_builder.AddCheckbox(
         kUmaConsentCheckboxId,
         ui::DialogModelLabel::CreateWithReplacement(
@@ -302,7 +259,7 @@ views::BubbleDialogDelegate* SessionCrashedBubbleView::ShowBubble(
   dialog_builder.AddOkButton(
       base::BindOnce(&SessionCrashedBubbleDelegate::RestorePreviousSession,
                      base::Unretained(bubble_delegate), browser),
-      ui::DialogModelButton::Params().SetLabel(
+      ui::DialogModel::Button::Params().SetLabel(
           l10n_util::GetStringUTF16(IDS_SESSION_CRASHED_VIEW_RESTORE_BUTTON)));
 
   auto bubble = std::make_unique<views::BubbleDialogModelHost>(
@@ -312,8 +269,5 @@ views::BubbleDialogDelegate* SessionCrashedBubbleView::ShowBubble(
   g_instance_for_test = bubble_ptr;
   views::BubbleDialogDelegate::CreateBubble(std::move(bubble))->Show();
 
-  RecordBubbleHistogramValue(SESSION_CRASHED_BUBBLE_SHOWN);
-  if (uma_opted_in_already)
-    RecordBubbleHistogramValue(SESSION_CRASHED_BUBBLE_ALREADY_UMA_OPTIN);
   return bubble_ptr;
 }

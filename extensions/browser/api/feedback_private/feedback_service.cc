@@ -9,6 +9,7 @@
 #include <utility>
 
 #include "base/barrier_closure.h"
+#include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
@@ -45,36 +46,57 @@ using system_logs::SystemLogsResponse;
 namespace {
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
+// The paths are relative to "/var/log/" by default, which can be overwritten
+// for testing purpose.
 constexpr base::FilePath::CharType kBluetoothLogsFilePath[] =
-    FILE_PATH_LITERAL("/var/log/bluetooth/log.bz2");
+    FILE_PATH_LITERAL("bluetooth/log.bz2");
 constexpr base::FilePath::CharType kBluetoothLogsFilePathOld[] =
-    FILE_PATH_LITERAL("/var/log/bluetooth/log.bz2.old");
+    FILE_PATH_LITERAL("bluetooth/log.bz2.old");
 constexpr base::FilePath::CharType kBluetoothQualityReportFilePath[] =
-    FILE_PATH_LITERAL("/var/log/bluetooth/bluetooth_quality_report");
+    FILE_PATH_LITERAL("bluetooth/bluetooth_quality_report");
+constexpr base::FilePath::CharType kWifiDebugLogsFilePath[] =
+    FILE_PATH_LITERAL("wifi/iwlwifi_firmware_dumps.tar.zst");
 
 constexpr char kBluetoothLogsAttachmentName[] = "bluetooth_logs.bz2";
 constexpr char kBluetoothLogsAttachmentNameOld[] = "bluetooth_logs.old.bz2";
 constexpr char kBluetoothQualityReportAttachmentName[] =
     "bluetooth_quality_report";
+constexpr char kWifiDebugLogsAttachmentName[] =
+    "iwlwifi_firmware_dumps.tar.zst";
 
 constexpr char kLacrosHistogramsFilename[] = "lacros_histograms.zip";
 
-void LoadBluetoothLogs(scoped_refptr<feedback::FeedbackData> feedback_data) {
-  std::string bluetooth_logs;
-  if (base::ReadFileToString(base::FilePath(kBluetoothLogsFilePath),
-                             &bluetooth_logs)) {
-    feedback_data->AddFile(kBluetoothLogsAttachmentName,
-                           std::move(bluetooth_logs));
+void AddAttachment(scoped_refptr<feedback::FeedbackData> feedback_data,
+                   const base::FilePath& root_path,
+                   const std::string& file_path,
+                   const std::string& attachment_name) {
+  std::string temp_log_content;
+  if (base::ReadFileToString(root_path.Append(file_path), &temp_log_content)) {
+    feedback_data->AddFile(attachment_name, std::move(temp_log_content));
+  } else {
+    LOG(WARNING) << "failed to add attachment " << attachment_name
+                 << ": could not read file: " << file_path << " in "
+                 << root_path.value();
   }
-  if (base::ReadFileToString(base::FilePath(kBluetoothLogsFilePathOld),
-                             &bluetooth_logs)) {
-    feedback_data->AddFile(kBluetoothLogsAttachmentNameOld,
-                           std::move(bluetooth_logs));
+}
+
+void LoadAttachmentsIfRequested(
+    scoped_refptr<feedback::FeedbackData> feedback_data,
+    const base::FilePath& root_path,
+    bool send_bluetooth_logs,
+    bool send_wifi_debug_logs) {
+  if (send_bluetooth_logs) {
+    AddAttachment(feedback_data, root_path, kBluetoothLogsFilePath,
+                  kBluetoothLogsAttachmentName);
+    AddAttachment(feedback_data, root_path, kBluetoothLogsFilePathOld,
+                  kBluetoothLogsAttachmentNameOld);
+    AddAttachment(feedback_data, root_path, kBluetoothQualityReportFilePath,
+                  kBluetoothQualityReportAttachmentName);
   }
-  if (base::ReadFileToString(base::FilePath(kBluetoothQualityReportFilePath),
-                             &bluetooth_logs)) {
-    feedback_data->AddFile(kBluetoothQualityReportAttachmentName,
-                           std::move(bluetooth_logs));
+
+  if (send_wifi_debug_logs) {
+    AddAttachment(feedback_data, root_path, kWifiDebugLogsFilePath,
+                  kWifiDebugLogsAttachmentName);
   }
 }
 #endif
@@ -110,6 +132,13 @@ void FeedbackService::RedactThenSendFeedback(
       base::BindOnce(&FeedbackService::SendFeedback, this, params,
                      feedback_data, std::move(callback)));
 }
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+void FeedbackService::SetLogFilesRootPathForTesting(
+    const base::FilePath& log_file_root) {
+  log_file_root_ = log_file_root;
+}
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 // After the attached file and screenshot if available are fetched, the callback
 // will be invoked. Other further processing will be done in background. The
@@ -147,8 +176,9 @@ void FeedbackService::FetchAttachedFileAndScreenshot(
         },
         feedback_data);
 
-    BlobReader::Read(browser_context_, feedback_data->attached_file_uuid(),
-                     std::move(populate_attached_file).Then(barrier_closure));
+    BlobReader::Read(
+        browser_context_->GetBlobRemote(feedback_data->attached_file_uuid()),
+        std::move(populate_attached_file).Then(barrier_closure));
   }
 
   if (must_attach_screenshot) {
@@ -160,8 +190,9 @@ void FeedbackService::FetchAttachedFileAndScreenshot(
             feedback_data->set_image(std::move(*data));
         },
         feedback_data);
-    BlobReader::Read(browser_context_, feedback_data->screenshot_uuid(),
-                     std::move(populate_screenshot).Then(barrier_closure));
+    BlobReader::Read(
+        browser_context_->GetBlobRemote(feedback_data->screenshot_uuid()),
+        std::move(populate_screenshot).Then(barrier_closure));
   }
 }
 
@@ -260,10 +291,16 @@ void FeedbackService::OnLacrosHistogramsFetched(
     feedback_data->AddFile(kLacrosHistogramsFilename,
                            std::move(compressed_histograms));
   }
-  if (params.send_bluetooth_logs) {
+
+  // If at least one attachment is requested, invoke LoadAttachmentsIfRequested
+  // to add all requested attachments in a separate thread to avoid blocking the
+  // UI thread.
+  if (params.send_bluetooth_logs || params.send_wifi_debug_logs) {
     base::ThreadPool::PostTaskAndReply(
         FROM_HERE, {base::MayBlock()},
-        base::BindOnce(&LoadBluetoothLogs, feedback_data),
+        base::BindOnce(&LoadAttachmentsIfRequested, feedback_data,
+                       log_file_root_, params.send_bluetooth_logs,
+                       params.send_wifi_debug_logs),
         base::BindOnce(&FeedbackService::OnAllLogsFetched, this, params,
                        feedback_data));
   } else {

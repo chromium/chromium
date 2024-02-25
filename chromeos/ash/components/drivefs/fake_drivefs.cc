@@ -4,6 +4,7 @@
 
 #include "chromeos/ash/components/drivefs/fake_drivefs.h"
 
+#include <string_view>
 #include <tuple>
 #include <utility>
 #include <vector>
@@ -65,7 +66,7 @@ base::FilePath MaybeMountDriveFs(
   for (const auto& option : mount_options) {
     if (base::StartsWith(option, "datadir=", base::CompareCase::SENSITIVE)) {
       auto datadir =
-          base::FilePath(base::StringPiece(option).substr(strlen("datadir=")));
+          base::FilePath(std::string_view(option).substr(strlen("datadir=")));
       CHECK(datadir.IsAbsolute());
       CHECK(!datadir.ReferencesParent());
       datadir_suffix = datadir.BaseName().value();
@@ -274,6 +275,9 @@ class FakeDriveFs::SearchQuery : public mojom::SearchQuery {
               });
           break;
 
+        case mojom::QueryParameters::SortField::kSharedWithMe:
+          NOTIMPLEMENTED();
+          break;
         case mojom::QueryParameters::SortField::kFileSize:
           NOTIMPLEMENTED();
           break;
@@ -366,7 +370,7 @@ void FakeDriveFs::SetMetadata(const FakeMetadata& metadata) {
         drivefs::mojom::ShortcutDetails::LookupStatus::kOk;
     if (!metadata.shortcut_target_path.empty()) {
       shortcut_details.target_path =
-          absl::make_optional<base::FilePath>(metadata.shortcut_target_path);
+          std::make_optional<base::FilePath>(metadata.shortcut_target_path);
     }
     stored_metadata.shortcut_details = std::move(shortcut_details);
   }
@@ -381,22 +385,22 @@ void FakeDriveFs::DisplayConfirmDialog(
   delegate_->DisplayConfirmDialog(std::move(reason), std::move(callback));
 }
 
-absl::optional<bool> FakeDriveFs::IsItemPinned(const std::string& path) {
+std::optional<bool> FakeDriveFs::IsItemPinned(const std::string& path) {
   for (const auto& metadata : metadata_) {
     if (metadata.first.value() == path) {
       return metadata.second.pinned;
     }
   }
-  return absl::nullopt;
+  return std::nullopt;
 }
 
-absl::optional<bool> FakeDriveFs::IsItemDirty(const std::string& path) {
+std::optional<bool> FakeDriveFs::IsItemDirty(const std::string& path) {
   for (const auto& metadata : metadata_) {
     if (metadata.first.value() == path) {
       return metadata.second.dirty;
     }
   }
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 bool FakeDriveFs::SetCanPin(const std::string& path, bool can_pin) {
@@ -409,11 +413,11 @@ bool FakeDriveFs::SetCanPin(const std::string& path, bool can_pin) {
   return false;
 }
 
-absl::optional<FakeDriveFs::FileMetadata> FakeDriveFs::GetItemMetadata(
+std::optional<FakeDriveFs::FileMetadata> FakeDriveFs::GetItemMetadata(
     const base::FilePath& path) {
   const auto& metadata = metadata_.find(path);
   if (metadata == metadata_.end()) {
-    return absl::nullopt;
+    return std::nullopt;
   }
   if (metadata->second.stable_id == 0) {
     metadata->second.stable_id = next_stable_id_++;
@@ -467,7 +471,7 @@ void FakeDriveFs::GetMetadata(const base::FilePath& path,
   if (!stored_metadata.alternate_url.empty()) {
     metadata->alternate_url = stored_metadata.alternate_url;
   } else {
-    base::StringPiece prefix;
+    std::string_view prefix;
     if (stored_metadata.hosted) {
       prefix = "https://document_alternate_link/";
     } else if (info.is_directory) {
@@ -523,7 +527,7 @@ void FakeDriveFs::ResetCache(ResetCacheCallback callback) {
 void FakeDriveFs::GetThumbnail(const base::FilePath& path,
                                bool crop_to_square,
                                GetThumbnailCallback callback) {
-  std::move(callback).Run(absl::nullopt);
+  std::move(callback).Run(std::nullopt);
 }
 
 void FakeDriveFs::CopyFile(const base::FilePath& source,
@@ -710,7 +714,8 @@ void FakeDriveFs::CancelUploadByPath(
 void FakeDriveFs::SetDocsOfflineEnabled(
     bool enabled,
     drivefs::mojom::DriveFs::SetDocsOfflineEnabledCallback callback) {
-  std::move(callback).Run(drive::FILE_ERROR_OK);
+  std::move(callback).Run(drive::FILE_ERROR_OK,
+                          drivefs::mojom::DocsOfflineEnableStatus::kSuccess);
 }
 
 void FakeDriveFs::GetDocsOfflineStats(

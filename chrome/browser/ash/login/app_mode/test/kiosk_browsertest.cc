@@ -9,7 +9,7 @@
 #include "ash/public/cpp/login_screen_test_api.h"
 #include "chrome/browser/ash/accessibility/accessibility_manager.h"
 #include "chrome/browser/ash/accessibility/speech_monitor.h"
-#include "chrome/browser/ash/app_mode/kiosk_app_manager.h"
+#include "chrome/browser/ash/app_mode/kiosk_chrome_app_manager.h"
 #include "chrome/browser/ash/login/app_mode/test/kiosk_base_test.h"
 #include "chrome/browser/ash/login/test/device_state_mixin.h"
 #include "chrome/browser/ash/login/test/local_state_mixin.h"
@@ -45,7 +45,7 @@ IN_PROC_BROWSER_TEST_F(KioskBaseTest, KioskEnableCancel) {
   wizard_controller->SkipPostLoginScreensForTesting();
 
   // Check Kiosk mode status.
-  EXPECT_EQ(KioskAppManager::ConsumerKioskAutoLaunchStatus::kConfigurable,
+  EXPECT_EQ(KioskChromeAppManager::ConsumerKioskAutoLaunchStatus::kConfigurable,
             GetConsumerKioskModeStatus());
 
   // Wait for the login UI to come up and switch to the kiosk_enable screen.
@@ -62,7 +62,7 @@ IN_PROC_BROWSER_TEST_F(KioskBaseTest, KioskEnableCancel) {
   OobeScreenWaiter(GetFirstSigninScreen()).Wait();
 
   // Check that the status still says configurable.
-  EXPECT_EQ(KioskAppManager::ConsumerKioskAutoLaunchStatus::kConfigurable,
+  EXPECT_EQ(KioskChromeAppManager::ConsumerKioskAutoLaunchStatus::kConfigurable,
             GetConsumerKioskModeStatus());
 }
 
@@ -73,7 +73,7 @@ IN_PROC_BROWSER_TEST_F(KioskBaseTest, KioskEnableConfirmed) {
   wizard_controller->SkipPostLoginScreensForTesting();
 
   // Check Kiosk mode status.
-  EXPECT_EQ(KioskAppManager::ConsumerKioskAutoLaunchStatus::kConfigurable,
+  EXPECT_EQ(KioskChromeAppManager::ConsumerKioskAutoLaunchStatus::kConfigurable,
             GetConsumerKioskModeStatus());
 
   // Wait for the login UI to come up and switch to the kiosk_enable screen.
@@ -92,7 +92,7 @@ IN_PROC_BROWSER_TEST_F(KioskBaseTest, KioskEnableConfirmed) {
                     ".state_ == 'success'")
       ->Wait();
 
-  EXPECT_EQ(KioskAppManager::ConsumerKioskAutoLaunchStatus::kEnabled,
+  EXPECT_EQ(KioskChromeAppManager::ConsumerKioskAutoLaunchStatus::kEnabled,
             GetConsumerKioskModeStatus());
 }
 
@@ -102,7 +102,7 @@ IN_PROC_BROWSER_TEST_F(KioskBaseTest, KioskEnableAfter2ndSigninScreen) {
   wizard_controller->SkipPostLoginScreensForTesting();
 
   // Check Kiosk mode status.
-  EXPECT_EQ(KioskAppManager::ConsumerKioskAutoLaunchStatus::kConfigurable,
+  EXPECT_EQ(KioskChromeAppManager::ConsumerKioskAutoLaunchStatus::kConfigurable,
             GetConsumerKioskModeStatus());
 
   // Wait for the login UI to come up and switch to the kiosk_enable screen.
@@ -253,12 +253,12 @@ class KioskAutoLaunchViewsTest : public OobeBaseTest,
   void SetUpLocalState() override {
     // Simulate auto login request from the previous session.
     PrefService* prefs = g_browser_process->local_state();
-    ScopedDictPrefUpdate dict_update(prefs,
-                                     KioskAppManager::kKioskDictionaryName);
-    // The AutoLoginState is taken from KioskAppManager::AutoLoginState.
+    ScopedDictPrefUpdate dict_update(
+        prefs, KioskChromeAppManager::kKioskDictionaryName);
+    // The AutoLoginState is taken from KioskChromeAppManager::AutoLoginState.
     dict_update->Set(
-        KioskAppManager::kKeyAutoLoginState,
-        static_cast<int>(KioskAppManager::AutoLoginState::kRequested));
+        KioskChromeAppManager::kKeyAutoLoginState,
+        static_cast<int>(KioskChromeAppManager::AutoLoginState::kRequested));
   }
 
   void TearDownOnMainThread() override {

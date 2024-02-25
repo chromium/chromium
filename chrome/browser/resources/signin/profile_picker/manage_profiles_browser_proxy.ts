@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {AvatarIcon} from 'chrome://resources/cr_elements/cr_profile_avatar_selector/cr_profile_avatar_selector.js';
+import type {AvatarIcon} from 'chrome://resources/cr_elements/cr_profile_avatar_selector/cr_profile_avatar_selector.js';
 import {sendWithPromise} from 'chrome://resources/js/cr.js';
 
 /**
@@ -163,6 +163,15 @@ export interface ManageProfilesBrowserProxy {
    */
   cancelProfileSwitch(): void;
 
+  /**
+   * Sends the profile order changes
+   * @param fromIndex the initial index of the tile that was dragged.
+   * @param toIndex the index to which the profile has been moved/dropped.
+   * All other profiles between `fromIndex` and `toIndex` +/-1 should be shifted
+   * by +/-1 depending on the change direction.
+   */
+  updateProfileOrder(fromIndex: number, toIndex: number): void;
+
   // <if expr="chromeos_lacros">
   /**
    * Gets the available accounts, through WebUIListener.
@@ -261,6 +270,10 @@ export class ManageProfilesBrowserProxyImpl {
 
   cancelProfileSwitch() {
     chrome.send('cancelProfileSwitch');
+  }
+
+  updateProfileOrder(fromIndex: number, toIndex: number) {
+    chrome.send('updateProfileOrder', [fromIndex, toIndex]);
   }
 
   // <if expr="chromeos_lacros">

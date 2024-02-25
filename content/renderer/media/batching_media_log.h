@@ -9,6 +9,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
@@ -75,7 +76,7 @@ class CONTENT_EXPORT BatchingMediaLog : public media::MediaLog {
   // guarantees provided by MediaLog, since SendQueuedMediaEvents must also
   // be synchronized with respect to AddEvent.
   mutable base::Lock lock_;
-  const base::TickClock* tick_clock_ GUARDED_BY(lock_);
+  raw_ptr<const base::TickClock> tick_clock_ GUARDED_BY(lock_);
   base::TimeTicks last_ipc_send_time_ GUARDED_BY(lock_);
   std::vector<media::MediaLogRecord> queued_media_events_ GUARDED_BY(lock_);
 
@@ -89,9 +90,9 @@ class CONTENT_EXPORT BatchingMediaLog : public media::MediaLog {
   bool logged_rate_limit_warning_ GUARDED_BY(lock_);
 
   // Limits the number of events we send over IPC to one.
-  absl::optional<media::MediaLogRecord> last_duration_changed_event_
+  std::optional<media::MediaLogRecord> last_duration_changed_event_
       GUARDED_BY(lock_);
-  absl::optional<media::MediaLogRecord> last_buffering_state_event_
+  std::optional<media::MediaLogRecord> last_buffering_state_event_
       GUARDED_BY(lock_);
 
   // Holds the earliest MEDIA_ERROR_LOG_ENTRY event added to this log. This is
@@ -99,10 +100,10 @@ class CONTENT_EXPORT BatchingMediaLog : public media::MediaLog {
   // any eventual fatal error.
   // TODO(wolenetz): Introduce a reset method to clear this in cases like
   // non-fatal error recovery like decoder fallback.
-  absl::optional<media::MediaLogRecord> cached_media_error_for_message_;
+  std::optional<media::MediaLogRecord> cached_media_error_for_message_;
 
   // Holds a copy of the most recent PIPELINE_ERROR, if any.
-  absl::optional<media::MediaLogRecord> last_pipeline_error_;
+  std::optional<media::MediaLogRecord> last_pipeline_error_;
 
   base::WeakPtr<BatchingMediaLog> weak_this_;
   base::WeakPtrFactory<BatchingMediaLog> weak_factory_{this};

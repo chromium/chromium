@@ -38,6 +38,9 @@ AdaptiveToolbarButtonVariant ActionLabelToAdaptiveToolbarButtonVariant(
   } else if (label ==
              segmentation_platform::kAdaptiveToolbarModelLabelAddToBookmarks) {
     button_variant = AdaptiveToolbarButtonVariant::kAddToBookmarks;
+  } else if (label ==
+             segmentation_platform::kAdaptiveToolbarModelLabelReadAloud) {
+    button_variant = AdaptiveToolbarButtonVariant::kReadAloud;
   }
   return button_variant;
 }

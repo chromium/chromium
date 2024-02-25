@@ -47,8 +47,8 @@ class AddChildScreenTest : public OobeBaseTest {
         WizardController::default_controller()->GetScreen<AddChildScreen>();
 
     original_callback_ = add_child_screen->get_exit_callback_for_testing();
-    add_child_screen->set_exit_callback_for_testing(base::BindRepeating(
-        &AddChildScreenTest::HandleScreenExit, base::Unretained(this)));
+    add_child_screen->set_exit_callback_for_testing(
+        screen_result_waiter_.GetRepeatingCallback());
 
     OobeBaseTest::SetUpOnMainThread();
   }
@@ -69,17 +69,11 @@ class AddChildScreenTest : public OobeBaseTest {
     test::OobeJS().TapOnPath(kNextButton);
   }
 
-  void WaitForScreenExit() {
-    if (result_.has_value()) {
-      return;
-    }
-    base::test::TestFuture<void> waiter;
-    quit_closure_ = waiter.GetCallback();
-    EXPECT_TRUE(waiter.Wait());
+  AddChildScreen::Result WaitForScreenExitResult() {
+    AddChildScreen::Result result = screen_result_waiter_.Take();
+    original_callback_.Run(result);
+    return result;
   }
-
-  AddChildScreen::ScreenExitCallback original_callback_;
-  absl::optional<AddChildScreen::Result> result_;
 
  protected:
   DeviceStateMixin device_state_{
@@ -88,43 +82,35 @@ class AddChildScreenTest : public OobeBaseTest {
   NetworkPortalDetectorMixin network_portal_detector_{&mixin_host_};
 
  private:
-  void HandleScreenExit(AddChildScreen::Result result) {
-    result_ = result;
-    original_callback_.Run(result);
-    if (quit_closure_) {
-      std::move(quit_closure_).Run();
-    }
-  }
-
-  base::OnceClosure quit_closure_;
-
+  base::test::TestFuture<AddChildScreen::Result> screen_result_waiter_;
+  AddChildScreen::ScreenExitCallback original_callback_;
   base::test::ScopedFeatureList feature_list_;
   FakeGaiaMixin fake_gaia_{&mixin_host_};
 };
 
 IN_PROC_BROWSER_TEST_F(AddChildScreenTest, CreateChild) {
   SelectSetUpMethodOnChildScreen(kChildCreateButton);
-  WaitForScreenExit();
+  AddChildScreen::Result result = WaitForScreenExitResult();
   EXPECT_TRUE(LoginDisplayHost::default_host()
                   ->GetWizardContextForTesting()
                   ->sign_in_as_child);
   EXPECT_TRUE(LoginDisplayHost::default_host()
                   ->GetWizardContextForTesting()
                   ->is_child_gaia_account_new);
-  EXPECT_EQ(result_.value(), AddChildScreen::Result::CHILD_ACCOUNT_CREATE);
+  EXPECT_EQ(result, AddChildScreen::Result::CHILD_ACCOUNT_CREATE);
   OobeScreenWaiter(GaiaView::kScreenId).Wait();
 }
 
 IN_PROC_BROWSER_TEST_F(AddChildScreenTest, SignInForChild) {
   SelectSetUpMethodOnChildScreen(kChildSignInButton);
-  WaitForScreenExit();
+  AddChildScreen::Result result = WaitForScreenExitResult();
   EXPECT_TRUE(LoginDisplayHost::default_host()
                   ->GetWizardContextForTesting()
                   ->sign_in_as_child);
   EXPECT_FALSE(LoginDisplayHost::default_host()
                    ->GetWizardContextForTesting()
                    ->is_child_gaia_account_new);
-  EXPECT_EQ(result_.value(), AddChildScreen::Result::CHILD_SIGNIN);
+  EXPECT_EQ(result, AddChildScreen::Result::CHILD_SIGNIN);
   OobeScreenWaiter(GaiaView::kScreenId).Wait();
 }
 
@@ -132,9 +118,9 @@ IN_PROC_BROWSER_TEST_F(AddChildScreenTest, BackButton) {
   ShowAddChildScreen();
   test::OobeJS().ExpectVisiblePath(kAddChildDialog);
   test::OobeJS().ClickOnPath(kBackButton);
-  WaitForScreenExit();
+  AddChildScreen::Result result = WaitForScreenExitResult();
 
-  EXPECT_EQ(result_.value(), AddChildScreen::Result::BACK);
+  EXPECT_EQ(result, AddChildScreen::Result::BACK);
   OobeScreenWaiter(UserCreationView::kScreenId).Wait();
 }
 

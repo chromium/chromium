@@ -35,12 +35,15 @@ namespace blink {
 
 class Event;
 class ExecutionContext;
+class ScriptState;
 
 class EventFactoryBase {
   USING_FAST_MALLOC(EventFactoryBase);
 
  public:
-  virtual Event* Create(ExecutionContext*, const String& event_type) = 0;
+  virtual Event* Create(ScriptState*,
+                        ExecutionContext*,
+                        const String& event_type) = 0;
   virtual ~EventFactoryBase() = default;
 
  protected:
@@ -53,7 +56,9 @@ class EventFactory final : public EventFactoryBase {
     return std::make_unique<EventFactory>();
   }
 
-  Event* Create(ExecutionContext*, const String& event_type) override;
+  Event* Create(ScriptState*,
+                ExecutionContext*,
+                const String& event_type) override;
 };
 
 }  // namespace blink

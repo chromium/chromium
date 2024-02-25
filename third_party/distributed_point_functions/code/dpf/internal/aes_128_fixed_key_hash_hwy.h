@@ -16,7 +16,6 @@
 
 // Highway-specific include guard, ensuring the header can get included once per
 // target architecture.
-#include <memory>
 #if defined(                                                                   \
     DISTRIBUTED_POINT_FUNCTIONS_DPF_INTERNAL_AES_128_FIXED_KEY_HASH_HWY_H_) == \
     defined(HWY_TARGET_TOGGLE)

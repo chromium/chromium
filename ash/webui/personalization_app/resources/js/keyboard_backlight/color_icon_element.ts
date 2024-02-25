@@ -26,7 +26,7 @@ function calculateColorBrightness(hexVal: number): number {
   return (r * 299 + g * 587 + b * 114) / 1000;
 }
 
-export class ColorIcon extends WithPersonalizationStore {
+export class ColorIconElement extends WithPersonalizationStore {
   static get is() {
     return 'color-icon';
   }
@@ -107,4 +107,10 @@ export class ColorIcon extends WithPersonalizationStore {
   }
 }
 
-customElements.define(ColorIcon.is, ColorIcon);
+declare global {
+  interface HTMLElementTagNameMap {
+    'color-icon': ColorIconElement;
+  }
+}
+
+customElements.define(ColorIconElement.is, ColorIconElement);

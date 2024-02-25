@@ -1,5 +1,0 @@
-This is a testharness.js-based test.
-FAIL Test without 'allow-orientation-lock' sandboxing directive assert_equals: screen.lockOrientation() throws a SecurityError expected "SecurityError" but got "error: SecurityError Failed to execute 'lock' on 'ScreenOrientation': The window is sandboxed and lacks the 'allow-orientation-lock' flag."
-PASS Test with 'allow-orientation-lock' sandboxing directive
-Harness: the test ran to completion.
-

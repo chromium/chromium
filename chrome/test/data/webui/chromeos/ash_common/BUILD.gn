@@ -9,24 +9,37 @@ import("//ui/webui/resources/tools/generate_grd.gni")
 ts_library("build_ts") {
   root_dir = "."
   out_dir = "$target_gen_dir/tsc"
-  tsconfig_base = "../../tsconfig_base.json"
+  tsconfig_base = "tsconfig_base.json"
   path_mappings = [ "chrome://webui-test/*|" +
                     rebase_path("$root_gen_dir/chrome/test/data/webui/tsc/*",
                                 target_gen_dir) ]
   in_files = [
     "cr_container_shadow_behavior_test.ts",
-    "cr_deprecated_test.ts",
     "cr_policy_indicator_behavior_test.ts",
     "cr_policy_strings.ts",
     "cr_scrollable_behavior_test.ts",
+    "cr_test.js",
+    "fake_method_resolver_test.js",
+    "fake_observables_test.js",
+    "i18n_behavior_test.js",
+    "keyboard_diagram_test.js",
     "list_property_update_behavior_test.ts",
+    "navigation_selector_test.js",
+    "navigation_view_panel_test.js",
+    "page_toolbar_test.js",
+    "post_message_api/post_message_api_client_test.js",
+    "post_message_api/post_message_api_test.js",
+    "shortcut_input_key_test.ts",
+    "shortcut_input_test.ts",
+    "sea_pen/sea_pen_utils_test.ts",
     "typescript_utils/strict_query_test.ts",
   ]
   deps = [
     "../..:build_ts",
     "//ash/webui/common/resources:build_ts",
+    "//ash/webui/common/resources/sea_pen:build_ts",
     "//third_party/polymer/v3_0:library",
-    "//ui/webui/resources/cr_elements:build_ts",
+    "//ash/webui/common/resources/cr_elements:build_ts",
     "//ui/webui/resources/js:build_ts",
   ]
   extra_deps = [ "//ash/webui/common/resources:generate_definitions" ]
@@ -35,6 +48,12 @@ ts_library("build_ts") {
 generate_grd("build_grdp") {
   grd_prefix = "webui_chromeos_ash_common"
   out_grd = "$target_gen_dir/resources.grdp"
+
+  input_files = [
+    "post_message_api/iframe.html",
+    "cr_test.html",
+  ]
+  input_files_base_dir = rebase_path(".", "//")
 
   deps = [ ":build_ts" ]
   manifest_files =
@@ -57,7 +76,6 @@ js_type_check("closure_compile") {
                     "js_module_root=./gen/chrome/test/data/webui/",
                   ]
   deps = [
-    ":ash_common_unified_test",
     ":fake_method_resolver_test",
     ":fake_observables_test",
     ":navigation_selector_test",
@@ -66,16 +84,12 @@ js_type_check("closure_compile") {
   ]
 }
 
-js_library("ash_common_unified_test") {
-  deps = []
-  externs_list = [ "$externs_path/mocha-2.5.js" ]
-}
-
 js_library("fake_observables_test") {
   deps = [
     "..:chai_assert",
     "//ash/webui/common/resources:fake_observables",
   ]
+  externs_list = [ "$externs_path/mocha-2.5.js" ]
 }
 
 js_library("fake_method_resolver_test") {
@@ -83,6 +97,7 @@ js_library("fake_method_resolver_test") {
     "..:chai_assert",
     "//ash/webui/common/resources:fake_method_resolver",
   ]
+  externs_list = [ "$externs_path/mocha-2.5.js" ]
 }
 
 js_library("keyboard_diagram_test") {
@@ -90,6 +105,7 @@ js_library("keyboard_diagram_test") {
     "..:chai_assert",
     "//ash/webui/common/resources:keyboard_diagram",
   ]
+  externs_list = [ "$externs_path/mocha-2.5.js" ]
 }
 
 js_library("navigation_selector_test") {
@@ -98,6 +114,7 @@ js_library("navigation_selector_test") {
     "//ash/webui/common/resources:navigation_selector",
     "//third_party/polymer/v3_0/components-chromium/iron-collapse:iron-collapse",
   ]
+  externs_list = [ "$externs_path/mocha-2.5.js" ]
 }
 
 js_library("navigation_view_panel_test") {
@@ -106,8 +123,10 @@ js_library("navigation_view_panel_test") {
     "//ash/webui/common/resources:navigation_selector",
     "//ash/webui/common/resources:navigation_view_panel",
   ]
-  externs_list =
-      [ "//ui/webui/resources/cr_elements/cr_drawer/cr_drawer_externs.js" ]
+  externs_list = [
+    "//ash/webui/common/resources/cr_elements/cr_drawer/cr_drawer_externs.js",
+    "$externs_path/mocha-2.5.js",
+  ]
 }
 
 js_library("page_toolbar_test") {
@@ -116,4 +135,5 @@ js_library("page_toolbar_test") {
     "..:test_util",
     "//ash/webui/common/resources:page_toolbar",
   ]
+  externs_list = [ "$externs_path/mocha-2.5.js" ]
 }

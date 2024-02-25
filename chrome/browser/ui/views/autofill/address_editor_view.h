@@ -8,6 +8,7 @@
 #include <memory>
 #include <unordered_map>
 
+#include "base/callback_list.h"
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/autofill/address_editor_controller.h"
 #include "components/autofill/core/browser/data_model/autofill_profile.h"
@@ -21,13 +22,12 @@ class View;
 class Label;
 }  // namespace views
 
-class AddressEditorController;
-
 namespace autofill {
 
 class AddressEditorView : public views::View {
+  METADATA_HEADER(AddressEditorView, views::View)
+
  public:
-  METADATA_HEADER(AddressEditorView);
   explicit AddressEditorView(
       std::unique_ptr<AddressEditorController> controller);
   AddressEditorView(const AddressEditorView&) = delete;
@@ -41,8 +41,8 @@ class AddressEditorView : public views::View {
   // returns it.
   const autofill::AutofillProfile& GetAddressProfile();
 
-  void SetCountryCodeForTesting(const std::string& code);
-  void SetTextInputFieldValueForTesting(autofill::ServerFieldType type,
+  void SelectCountryForTesting(const std::u16string& code);
+  void SetTextInputFieldValueForTesting(autofill::FieldType type,
                                         const std::u16string& value);
   std::u16string GetValidationErrorForTesting() const;
 
@@ -69,19 +69,16 @@ class AddressEditorView : public views::View {
 
   void SaveFieldsToProfile();
 
-  // Combobox callback.
-  void OnPerformAction(views::Combobox* combobox);
-
-  // Called when data changes need to force a view update. The view is updated
-  // synchronously.
-  void OnDataChanged();
+  // Combobox callback. Called when data changes need to force a view update.
+  // The view is updated synchronously.
+  void OnSelectedCountryChanged(views::Combobox* combobox);
 
   // Checks all fields and updates their visual status accordingly.
   void Validate();
 
   std::unique_ptr<AddressEditorController> controller_;
 
-  // Map from TextField to the object that describes it
+  // Map from TextField to the object that describes it.
   std::unordered_map<views::Textfield*, const EditorField> text_fields_;
   const std::string locale_;
   raw_ptr<views::Label> validation_error_ = nullptr;

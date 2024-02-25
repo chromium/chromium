@@ -15,9 +15,9 @@
 #include "services/device/usb/jni_headers/ChromeUsbService_jni.h"
 #include "services/device/usb/usb_device_android.h"
 
-using base::android::AttachCurrentThread;
 using base::android::JavaRef;
 using base::android::ScopedJavaLocalRef;
+using jni_zero::AttachCurrentThread;
 
 namespace device {
 
@@ -73,7 +73,9 @@ void UsbServiceAndroid::DevicePermissionRequestComplete(
     jint device_id,
     jboolean granted) {
   const auto it = devices_by_id_.find(device_id);
-  DCHECK(it != devices_by_id_.end());
+  if (it == devices_by_id_.end()) {
+    return;
+  }
   it->second->PermissionGranted(env, granted);
 }
 

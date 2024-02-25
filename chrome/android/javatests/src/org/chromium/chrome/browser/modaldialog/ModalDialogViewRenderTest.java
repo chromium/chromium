@@ -49,9 +49,7 @@ import java.io.IOException;
 import java.util.Collections;
 import java.util.List;
 
-/**
- * Render tests for {@link ModalDialogView}.
- */
+/** Render tests for {@link ModalDialogView}. */
 @RunWith(ParameterizedRunner.class)
 @ParameterAnnotations.UseRunnerDelegate(ChromeJUnit4RunnerDelegate.class)
 @Batch(Batch.PER_CLASS)
@@ -74,7 +72,7 @@ public class ModalDialogViewRenderTest extends BlankUiTestActivityTestCase {
     @Rule
     public RenderTestRule mRenderTestRule =
             RenderTestRule.Builder.withPublicCorpus()
-                    .setRevision(1)
+                    .setRevision(2)
                     .setBugComponent(RenderTestRule.Component.UI_BROWSER_MOBILE_MESSAGES)
                     .build();
 
@@ -91,46 +89,59 @@ public class ModalDialogViewRenderTest extends BlankUiTestActivityTestCase {
         super.tearDownTest();
     }
 
-    private void setUpViews(int style) {
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            Activity activity = getActivity();
-            mResources = activity.getResources();
-            mModelBuilder = new PropertyModel.Builder(ModalDialogProperties.ALL_KEYS);
+    private void setUpViews(int style, boolean forceWrapContentHeight) {
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    Activity activity = getActivity();
+                    mResources = activity.getResources();
+                    mModelBuilder = new PropertyModel.Builder(ModalDialogProperties.ALL_KEYS);
 
-            mContentView = new FrameLayout(activity);
-            mModalDialogView =
-                    (ModalDialogView) LayoutInflater.from(new ContextThemeWrapper(activity, style))
-                            .inflate(R.layout.modal_dialog_view, null);
-            mModalDialogView.setBackgroundColor(mFakeBgColor);
-            activity.setContentView(mContentView);
-            mContentView.addView(mModalDialogView, MATCH_PARENT, WRAP_CONTENT);
+                    mContentView = new FrameLayout(activity);
+                    mModalDialogView =
+                            (ModalDialogView)
+                                    LayoutInflater.from(new ContextThemeWrapper(activity, style))
+                                            .inflate(R.layout.modal_dialog_view, null);
+                    mModalDialogView.setBackgroundColor(mFakeBgColor);
+                    activity.setContentView(mContentView);
+                    if (forceWrapContentHeight) {
+                        mContentView.addView(mModalDialogView, MATCH_PARENT, WRAP_CONTENT);
+                    } else {
+                        mContentView.addView(mModalDialogView);
+                    }
 
-            mCustomScrollView = new ScrollView(activity);
-            mCustomTextView1 = new TextView(activity);
-            mCustomTextView1.setId(R.id.test_view_one);
-            mCustomTextView2 = new TextView(activity);
-            mCustomTextView2.setId(R.id.test_view_two);
+                    mCustomScrollView = new ScrollView(activity);
+                    mCustomTextView1 = new TextView(activity);
+                    mCustomTextView1.setId(R.id.test_view_one);
+                    mCustomTextView2 = new TextView(activity);
+                    mCustomTextView2.setId(R.id.test_view_two);
 
-            mCustomButtonBar = new RelativeLayout(activity);
-            mCustomButtonBar.setId(R.id.test_button_bar_one);
-            Button button = new Button(activity);
-            button.setText(R.string.ok);
-            RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(
-                    ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
-            params.addRule(RelativeLayout.ALIGN_PARENT_LEFT, RelativeLayout.TRUE);
-            mCustomButtonBar.addView(button, params);
-        });
+                    mCustomButtonBar = new RelativeLayout(activity);
+                    mCustomButtonBar.setId(R.id.test_button_bar_one);
+                    Button button = new Button(activity);
+                    button.setText(R.string.ok);
+                    RelativeLayout.LayoutParams params =
+                            new RelativeLayout.LayoutParams(
+                                    ViewGroup.LayoutParams.WRAP_CONTENT,
+                                    ViewGroup.LayoutParams.WRAP_CONTENT);
+                    params.addRule(RelativeLayout.ALIGN_PARENT_LEFT, RelativeLayout.TRUE);
+                    mCustomButtonBar.addView(button, params);
+                });
     }
 
     @Test
     @MediumTest
     @Feature({"ModalDialog", "RenderTest"})
     public void testRender_TitleAndTitleIcon() throws IOException {
-        setUpViews(R.style.ThemeOverlay_BrowserUI_ModalDialog_TextPrimaryButton);
-        final Drawable icon = UiUtils.getTintedDrawable(
-                getActivity(), R.drawable.ic_add, R.color.default_icon_color_tint_list);
-        createModel(mModelBuilder.with(ModalDialogProperties.TITLE, mResources, R.string.title)
-                            .with(ModalDialogProperties.TITLE_ICON, icon));
+        setUpViews(
+                R.style.ThemeOverlay_BrowserUI_ModalDialog_TextPrimaryButton,
+                /* forceWrapContentHeight= */ true);
+        final Drawable icon =
+                UiUtils.getTintedDrawable(
+                        getActivity(), R.drawable.ic_add, R.color.default_icon_color_tint_list);
+        createModel(
+                mModelBuilder
+                        .with(ModalDialogProperties.TITLE, mResources, R.string.title)
+                        .with(ModalDialogProperties.TITLE_ICON, icon));
         mRenderTestRule.render(mModalDialogView, "title_and_title_icon");
     }
 
@@ -138,14 +149,20 @@ public class ModalDialogViewRenderTest extends BlankUiTestActivityTestCase {
     @MediumTest
     @Feature({"ModalDialog", "RenderTest"})
     public void testRender_TitleAndMessage() throws IOException {
-        setUpViews(R.style.ThemeOverlay_BrowserUI_ModalDialog_TextPrimaryButton);
+        setUpViews(
+                R.style.ThemeOverlay_BrowserUI_ModalDialog_TextPrimaryButton,
+                /* forceWrapContentHeight= */ true);
         createModel(
-                mModelBuilder.with(ModalDialogProperties.TITLE, mResources, R.string.title)
-                        .with(ModalDialogProperties.MESSAGE_PARAGRAPH_1,
+                mModelBuilder
+                        .with(ModalDialogProperties.TITLE, mResources, R.string.title)
+                        .with(
+                                ModalDialogProperties.MESSAGE_PARAGRAPH_1,
                                 TextUtils.join("\n", Collections.nCopies(100, "Message")))
                         .with(ModalDialogProperties.POSITIVE_BUTTON_TEXT, mResources, R.string.ok)
                         .with(ModalDialogProperties.POSITIVE_BUTTON_DISABLED, true)
-                        .with(ModalDialogProperties.NEGATIVE_BUTTON_TEXT, mResources,
+                        .with(
+                                ModalDialogProperties.NEGATIVE_BUTTON_TEXT,
+                                mResources,
                                 R.string.cancel));
         mRenderTestRule.render(mModalDialogView, "title_and_message");
     }
@@ -154,14 +171,20 @@ public class ModalDialogViewRenderTest extends BlankUiTestActivityTestCase {
     @MediumTest
     @Feature({"ModalDialog", "RenderTest"})
     public void testRender_FilledPrimaryButton() throws IOException {
-        setUpViews(R.style.ThemeOverlay_BrowserUI_ModalDialog_FilledPrimaryButton);
+        setUpViews(
+                R.style.ThemeOverlay_BrowserUI_ModalDialog_FilledPrimaryButton,
+                /* forceWrapContentHeight= */ true);
         createModel(
-                mModelBuilder.with(ModalDialogProperties.TITLE, mResources, R.string.title)
-                        .with(ModalDialogProperties.MESSAGE_PARAGRAPH_1,
+                mModelBuilder
+                        .with(ModalDialogProperties.TITLE, mResources, R.string.title)
+                        .with(
+                                ModalDialogProperties.MESSAGE_PARAGRAPH_1,
                                 TextUtils.join("\n", Collections.nCopies(100, "Message")))
                         .with(ModalDialogProperties.POSITIVE_BUTTON_TEXT, mResources, R.string.ok)
                         .with(ModalDialogProperties.POSITIVE_BUTTON_DISABLED, true)
-                        .with(ModalDialogProperties.NEGATIVE_BUTTON_TEXT, mResources,
+                        .with(
+                                ModalDialogProperties.NEGATIVE_BUTTON_TEXT,
+                                mResources,
                                 R.string.cancel));
         mRenderTestRule.render(mModalDialogView, "filled_primary_button");
     }
@@ -170,11 +193,15 @@ public class ModalDialogViewRenderTest extends BlankUiTestActivityTestCase {
     @MediumTest
     @Feature({"ModalDialog", "RenderTest"})
     public void testRender_ScrollableTitle() throws IOException {
-        setUpViews(R.style.ThemeOverlay_BrowserUI_ModalDialog_TextPrimaryButton);
+        setUpViews(
+                R.style.ThemeOverlay_BrowserUI_ModalDialog_TextPrimaryButton,
+                /* forceWrapContentHeight= */ true);
         createModel(
-                mModelBuilder.with(ModalDialogProperties.TITLE, mResources, R.string.title)
+                mModelBuilder
+                        .with(ModalDialogProperties.TITLE, mResources, R.string.title)
                         .with(ModalDialogProperties.TITLE_SCROLLABLE, true)
-                        .with(ModalDialogProperties.MESSAGE_PARAGRAPH_1,
+                        .with(
+                                ModalDialogProperties.MESSAGE_PARAGRAPH_1,
                                 TextUtils.join("\n", Collections.nCopies(100, "Message")))
                         .with(ModalDialogProperties.POSITIVE_BUTTON_TEXT, mResources, R.string.ok));
         mRenderTestRule.render(mModalDialogView, "scrollable_title");
@@ -184,18 +211,22 @@ public class ModalDialogViewRenderTest extends BlankUiTestActivityTestCase {
     @MediumTest
     @Feature({"ModalDialog", "RenderTest"})
     public void testRender_CustomView() throws IOException {
-        setUpViews(R.style.ThemeOverlay_BrowserUI_ModalDialog_TextPrimaryButton);
+        setUpViews(
+                R.style.ThemeOverlay_BrowserUI_ModalDialog_TextPrimaryButton,
+                /* forceWrapContentHeight= */ true);
         var sb = new StringBuilder();
         for (int i = 0; i < 100; i++) {
             sb.append(i).append("\n");
         }
         sb.append(100);
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            mCustomTextView1.setText(sb.toString());
-            mCustomScrollView.addView(mCustomTextView1);
-        });
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    mCustomTextView1.setText(sb.toString());
+                    mCustomScrollView.addView(mCustomTextView1);
+                });
         createModel(
-                mModelBuilder.with(ModalDialogProperties.TITLE, mResources, R.string.title)
+                mModelBuilder
+                        .with(ModalDialogProperties.TITLE, mResources, R.string.title)
                         .with(ModalDialogProperties.CUSTOM_VIEW, mCustomScrollView)
                         .with(ModalDialogProperties.POSITIVE_BUTTON_TEXT, mResources, R.string.ok));
         mRenderTestRule.render(mModalDialogView, "custom_view");
@@ -205,9 +236,12 @@ public class ModalDialogViewRenderTest extends BlankUiTestActivityTestCase {
     @MediumTest
     @Feature({"ModalDialog", "RenderTest"})
     public void testRender_CustomButtonBarView() throws IOException {
-        setUpViews(R.style.ThemeOverlay_BrowserUI_ModalDialog_TextPrimaryButton);
+        setUpViews(
+                R.style.ThemeOverlay_BrowserUI_ModalDialog_TextPrimaryButton,
+                /* forceWrapContentHeight= */ true);
         createModel(
-                mModelBuilder.with(ModalDialogProperties.CUSTOM_BUTTON_BAR_VIEW, mCustomButtonBar)
+                mModelBuilder
+                        .with(ModalDialogProperties.CUSTOM_BUTTON_BAR_VIEW, mCustomButtonBar)
                         .with(ModalDialogProperties.POSITIVE_BUTTON_TEXT, mResources, R.string.ok));
         mRenderTestRule.render(mModalDialogView, "custom_button_bar_view");
     }
@@ -215,19 +249,79 @@ public class ModalDialogViewRenderTest extends BlankUiTestActivityTestCase {
     @Test
     @MediumTest
     @Feature({"ModalDialog", "RenderTest"})
-    public void testRender_FooterMessage() throws IOException {
-        setUpViews(R.style.ThemeOverlay_BrowserUI_ModalDialog_TextPrimaryButton);
+    public void testRender_ButtonGroup() throws IOException {
+        setUpViews(
+                R.style.ThemeOverlay_BrowserUI_ModalDialog_TextPrimaryButton,
+                /* forceWrapContentHeight= */ true);
         createModel(
-                mModelBuilder.with(ModalDialogProperties.TITLE, mResources, R.string.title)
-                        .with(ModalDialogProperties.MESSAGE_PARAGRAPH_1,
+                mModelBuilder.with(
+                        ModalDialogProperties.BUTTON_GROUP_BUTTON_SPEC_LIST,
+                        new ModalDialogProperties.ModalDialogButtonSpec[] {
+                            new ModalDialogProperties.ModalDialogButtonSpec(
+                                    ModalDialogProperties.ButtonType.POSITIVE_EPHEMERAL,
+                                    mResources.getString(R.string.ok)),
+                            new ModalDialogProperties.ModalDialogButtonSpec(
+                                    ModalDialogProperties.ButtonType.POSITIVE,
+                                    mResources.getString(R.string.ok_got_it)),
+                            new ModalDialogProperties.ModalDialogButtonSpec(
+                                    ModalDialogProperties.ButtonType.NEGATIVE,
+                                    mResources.getString(R.string.cancel))
+                        }));
+
+        mRenderTestRule.render(mModalDialogView, "button_group");
+    }
+
+    @Test
+    @MediumTest
+    @Feature({"ModalDialog", "RenderTest"})
+    public void testRender_FooterMessage() throws IOException {
+        setUpViews(
+                R.style.ThemeOverlay_BrowserUI_ModalDialog_TextPrimaryButton,
+                /* forceWrapContentHeight= */ true);
+        createModel(
+                mModelBuilder
+                        .with(ModalDialogProperties.TITLE, mResources, R.string.title)
+                        .with(
+                                ModalDialogProperties.MESSAGE_PARAGRAPH_1,
                                 TextUtils.join("\n", Collections.nCopies(100, "Message")))
                         .with(ModalDialogProperties.POSITIVE_BUTTON_TEXT, mResources, R.string.ok)
                         .with(ModalDialogProperties.POSITIVE_BUTTON_DISABLED, true)
-                        .with(ModalDialogProperties.NEGATIVE_BUTTON_TEXT, mResources,
+                        .with(
+                                ModalDialogProperties.NEGATIVE_BUTTON_TEXT,
+                                mResources,
                                 R.string.cancel)
-                        .with(ModalDialogProperties.FOOTER_MESSAGE,
+                        .with(
+                                ModalDialogProperties.FOOTER_MESSAGE,
                                 mResources.getString(R.string.legal_information_summary)));
         mRenderTestRule.render(mModalDialogView, "footer_message");
+    }
+
+    @Test
+    @MediumTest
+    @Feature({"ModalDialog", "RenderTest"})
+    public void testRender_DialogWhenLarge() throws IOException {
+        // Use the initial ModalDialogView layout params instead of forcing wrap content height,
+        // to ensure that the rendered view with DIALOG_WHEN_LARGE mode takes the full screen height
+        // on a small screen, and that the test fails if it doesn't.
+        setUpViews(
+                R.style.ThemeOverlay_BrowserUI_ModalDialog_TextPrimaryButton_DialogWhenLarge,
+                /* forceWrapContentHeight= */ false);
+        createModel(
+                mModelBuilder
+                        .with(ModalDialogProperties.TITLE, mResources, R.string.title)
+                        .with(ModalDialogProperties.POSITIVE_BUTTON_TEXT, mResources, R.string.ok)
+                        .with(ModalDialogProperties.POSITIVE_BUTTON_DISABLED, true)
+                        .with(
+                                ModalDialogProperties.NEGATIVE_BUTTON_TEXT,
+                                mResources,
+                                R.string.cancel)
+                        .with(
+                                ModalDialogProperties.MESSAGE_PARAGRAPH_1,
+                                TextUtils.join("\n", Collections.nCopies(5, "Message")))
+                        .with(
+                                ModalDialogProperties.DIALOG_STYLES,
+                                ModalDialogProperties.DialogStyles.DIALOG_WHEN_LARGE));
+        mRenderTestRule.render(mModalDialogView, "dialog_when_large");
     }
 
     private PropertyModel createModel(PropertyModel.Builder modelBuilder) {

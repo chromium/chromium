@@ -29,6 +29,7 @@ class DEVICE_BLUETOOTH_EXPORT FakeFlossSocketManager
   void Init(dbus::Bus* bus,
             const std::string& service_name,
             const int adapter_index,
+            base::Version version,
             base::OnceClosure on_ready) override;
   void ListenUsingL2cap(const Security security_level,
                         ResponseCallback<BtifStatus> callback,
@@ -57,7 +58,7 @@ class DEVICE_BLUETOOTH_EXPORT FakeFlossSocketManager
                           const Security security_level,
                           ConnectionCompleted callback) override;
   void Accept(const SocketId id,
-              absl::optional<uint32_t> timeout_ms,
+              std::optional<uint32_t> timeout_ms,
               ResponseCallback<BtifStatus> callback) override;
   void Close(const SocketId id, ResponseCallback<BtifStatus> callback) override;
 

@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<link rel=author href="mailto:jarhar@chromium.org">
+<link rel=help href="https://drafts.csswg.org/selectors-4/#open-state">
+<script src="../../../resources/testharness.js"></script>
+<script src="../../../resources/testharnessreport.js"></script>
+
+<select id=single>
+  <option>one</option>
+</select>
+
+<select id=multiple multiple>
+  <option>one</option>
+</select>
+
+<script>
+test(() => {
+  if (navigator.platform.includes('Mac')) {
+    // ArrowDown and ArrowUp on mac opens the native picker which we can't use
+    // from a web_test, and there is no other way to simulate the user changing
+    // the select's value on mac.
+    return;
+  }
+
+  const select = document.getElementById('single');
+  assert_false(internals.isSelectPopupVisible(select),
+    'internals.isSelectPopupVisibile should be false while popup is closed.');
+  assert_true(select.matches(':closed'),
+    ':closed should match while popup is closed.');
+  assert_false(select.matches(':open'),
+    ':open should not match while popup is closed.');
+
+  select.focus();
+  eventSender.keyDown(' ');
+  assert_true(internals.isSelectPopupVisible(select),
+    'internals.isSelectPopupVisible should be true while the popup is open.');
+  assert_false(select.matches(':closed'),
+    ':closed should not match while popup is open.');
+  assert_true(select.matches(':open'),
+    ':open should match while popup is open.');
+}, 'Single-select with popup should support :open and :closed.');
+
+test(() => {
+  const select = document.getElementById('multiple');
+  assert_false(select.matches(':closed'),
+    ':closed should not match on <select mulitple>.');
+  assert_false(select.matches(':open'),
+    ':open should not match on <select multiple>.');
+}, 'Multi-select without popup should not support :open or :closed.');
+</script>

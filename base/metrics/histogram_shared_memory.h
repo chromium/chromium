@@ -5,66 +5,112 @@
 #ifndef BASE_METRICS_HISTOGRAM_SHARED_MEMORY_H_
 #define BASE_METRICS_HISTOGRAM_SHARED_MEMORY_H_
 
+#include <optional>
+#include <string_view>
+
 #include "base/base_export.h"
-#include "base/memory/writable_shared_memory_region.h"
+#include "base/command_line.h"
+#include "base/feature_list.h"
+#include "base/memory/unsafe_shared_memory_region.h"
 #include "base/metrics/persistent_memory_allocator.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
+#include "base/process/launch.h"
+#include "build/build_config.h"
+
+#if BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_APPLE)
+#include "base/files/platform_file.h"
+#include "base/posix/global_descriptors.h"
+#endif
+
+#if !BUILDFLAG(USE_BLINK)
+#error "This is only intended for platforms that use blink."
+#endif
 
 namespace base {
 
-// Configuration with which to create a histogram shared memory region and
-// allocator.
-struct BASE_EXPORT HistogramSharedMemoryConfig {
-  base::StringPiece allocator_name;
-  size_t memory_size_bytes;
-};
+BASE_EXPORT BASE_DECLARE_FEATURE(kPassHistogramSharedMemoryOnLaunch);
 
 // Helper structure to create and return a shared memory region and a histogram
 // allocator over top of it. Once returned it is expected that the caller will
 // move both the memory regions and the allocator out of the struct and into
 // it's own appropriate state variables. Note that the memory region must
 // outlive the allocator.
-class BASE_EXPORT HistogramSharedMemory {
- public:
-  HistogramSharedMemory();
-  ~HistogramSharedMemory();
+struct BASE_EXPORT HistogramSharedMemory {
+  HistogramSharedMemory() = delete;
+  ~HistogramSharedMemory() = delete;
+  HistogramSharedMemory(HistogramSharedMemory&) = delete;
+  HistogramSharedMemory(HistogramSharedMemory&&) = delete;
+  HistogramSharedMemory& operator=(HistogramSharedMemory&) = delete;
+  HistogramSharedMemory& operator=(HistogramSharedMemory&&) = delete;
 
-  // Move operations are supported.
-  HistogramSharedMemory(HistogramSharedMemory&& other);
-  HistogramSharedMemory& operator=(HistogramSharedMemory&& other);
+  // Configuration with which to create a histogram shared memory region and
+  // allocator. Note the expectation that this be initialized with static
+  // data for the allocator name (i.e., a string literal or static constant
+  // character array).
+  struct BASE_EXPORT Config {
+    const int process_type;  // See: content/public/common/process_type.h
+    const std::string_view allocator_name;
+    const size_t memory_size_bytes;
+  };
 
-  // Copy operations are NOT supported.
-  HistogramSharedMemory(const HistogramSharedMemory&) = delete;
-  HistogramSharedMemory& operator=(const HistogramSharedMemory&) = delete;
+  // Temporary structure used to return the shared memory region and allocator
+  // created by the |Create| factory function. The caller is expected to move
+  // the returned values out of this struct.
+  struct BASE_EXPORT SharedMemory {
+    UnsafeSharedMemoryRegion region;
+    std::unique_ptr<PersistentMemoryAllocator> allocator;
 
-  // Factory to initialize a shared memory region for |unique_process_id|
-  // based on |config|.
-  static absl::optional<HistogramSharedMemory> Create(
-      int unique_process_id,
-      const HistogramSharedMemoryConfig& config);
+    SharedMemory(UnsafeSharedMemoryRegion,
+                 std::unique_ptr<PersistentMemoryAllocator>);
+    ~SharedMemory();
 
-  // Returns true if the memory region and allocator are valid.
-  bool IsValid() const;
+    // Movable
+    SharedMemory(SharedMemory&&);
+    SharedMemory& operator=(SharedMemory&&);
 
-  // Returns, and transfers ownership of, the memory region to the caller.
-  base::WritableSharedMemoryRegion TakeRegion();
+    // Not copyable
+    SharedMemory(SharedMemory&) = delete;
+    SharedMemory& operator=(SharedMemory&) = delete;
+  };
 
-  // Returns, and transfers ownership of, the memory allocator to the caller.
-  std::unique_ptr<base::WritableSharedPersistentMemoryAllocator>
-  TakeAllocator();
+  // Factory to initialize a shared |memory_region| and |allocator| for
+  // |process_id| based on |config|. On success, returns true and updates
+  // the values of |memory_region| and |allocator|. On failure, returns false
+  // and |memory_region| and |allocator| are unchanged.
+  static std::optional<SharedMemory> Create(int process_id,
+                                            const Config& config);
 
- private:
-  // Internal constructor.
-  HistogramSharedMemory(
-      base::WritableSharedMemoryRegion region,
-      std::unique_ptr<base::WritableSharedPersistentMemoryAllocator> allocator);
+#if BUILDFLAG(IS_APPLE)
+  // Exposed for testing.
+  static const MachPortsForRendezvous::key_type kRendezvousKey;
+#endif
 
-  // The shared memory region.
-  base::WritableSharedMemoryRegion region_;
+  // Returns true if passing the shared memory handle via command-line arguments
+  // is enabled.
+  static bool PassOnCommandLineIsEnabled(std::string_view process_type);
 
-  // The shared memory allocator.
-  std::unique_ptr<base::WritableSharedPersistentMemoryAllocator> allocator_;
+  // Updates the launch parameters to share |unsafe_memory_region| to a
+  // child process that is about to be launched. This should be called in the
+  // parent process as a part of setting up the launch conditions of the child.
+  // This call will update the |command_line| and |launch_options|. On posix,
+  // where we prefer to use a zygote instead of using the launch_options to
+  // launch a new process, the platform |descriptor_to_share| is returned. The
+  // caller is expected to transmit the descriptor to the launch flow for the
+  // zygote.
+  static void AddToLaunchParameters(
+      UnsafeSharedMemoryRegion unsafe_memory_region,
+#if BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_APPLE)
+      GlobalDescriptors::Key descriptor_key,
+      ScopedFD& descriptor_to_share,
+#endif
+      CommandLine* command_line,
+      LaunchOptions* launch_options);
+
+  // Initialize the (global) histogram shared memory from the launch parameters.
+  // This should be called in the child process before any histogram samples are
+  // recorded.
+  static void InitFromLaunchParameters(const CommandLine& command_line);
 };
 
 }  // namespace base
+
 #endif  // BASE_METRICS_HISTOGRAM_SHARED_MEMORY_H_

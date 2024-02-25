@@ -81,7 +81,7 @@ TEST_F(GrpcServerStreamingTest, ServerStreamingCallSucceeds) {
   GrpcServer server;
   server.SetHandler<ServerStreamingServiceHandler::StreamingCall>(
       std::move(call_handler));
-  server.Start(endpoint_);
+  ASSERT_THAT(server.Start(endpoint_), StatusIs(grpc::StatusCode::OK));
 
   ServerStreamingServiceStub stub(endpoint_);
   auto call = stub.CreateCall<ServerStreamingServiceStub::StreamingCall>();
@@ -114,7 +114,7 @@ TEST_F(GrpcServerStreamingTest, ServerStreamingCallFailsRightAway) {
             reactor->Write(
                 grpc::Status(grpc::StatusCode::NOT_FOUND, "not found"));
           }));
-  server.Start(endpoint_);
+  ASSERT_THAT(server.Start(endpoint_), StatusIs(grpc::StatusCode::OK));
 
   ServerStreamingServiceStub stub(endpoint_);
   auto call = stub.CreateCall<ServerStreamingServiceStub::StreamingCall>();
@@ -144,7 +144,7 @@ TEST_F(GrpcServerStreamingTest, ServerStreamingCallCancelledIfServerIsStopped) {
                         base::BindLambdaForTesting(
                             [&]() { server_stopped_event.Signal(); }));
           }));
-  server.Start(endpoint_);
+  ASSERT_THAT(server.Start(endpoint_), StatusIs(grpc::StatusCode::OK));
 
   ServerStreamingServiceStub stub(endpoint_);
   auto call = stub.CreateCall<ServerStreamingServiceStub::StreamingCall>();
@@ -196,7 +196,7 @@ TEST_F(GrpcServerStreamingTest, DISABLED_ServerStreamingCallIsCancelledByClient)
   GrpcServer server;
   server.SetHandler<ServerStreamingServiceHandler::StreamingCall>(
       std::move(call_handler));
-  server.Start(endpoint_);
+  ASSERT_THAT(server.Start(endpoint_), StatusIs(grpc::StatusCode::OK));
 
   size_t response_count = 0;
   base::WaitableEvent response_received_event{

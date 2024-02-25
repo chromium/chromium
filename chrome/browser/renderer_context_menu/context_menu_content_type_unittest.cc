@@ -23,6 +23,7 @@ content::ContextMenuParams CreateParams(int contexts) {
   rv.is_editable = false;
   rv.media_type = blink::mojom::ContextMenuDataMediaType::kNone;
   rv.page_url = GURL("http://test.page/");
+  rv.frame_url = rv.page_url;
 
   static const std::u16string selected_text = u"sel";
   if (contexts & MenuItem::SELECTION)
@@ -52,7 +53,7 @@ content::ContextMenuParams CreateParams(int contexts) {
   }
 
   if (contexts & MenuItem::FRAME)
-    rv.frame_url = GURL("http://test.frame/");
+    rv.is_subframe = true;
 
   return rv;
 }

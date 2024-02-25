@@ -50,17 +50,16 @@
             "properties": {
               "populate": {"type": "boolean", "optional": true, "description": "If true, the window object will have a <var>tabs</var> property that contains a list of the $ref:Tab objects" }
             }
-          },
-          {
-            "type": "function",
-            "name": "callback",
-            "parameters": [
-              {
-                "name": "window", "$ref": "Window"
-              }
-            ]
           }
-        ]
+        ],
+        "returns_async": {
+          "name": "callback",
+          "parameters": [
+            {
+              "name": "window", "$ref": "Window"
+            }
+          ]
+        }
       },
       {
         "name": "getCurrent",
@@ -75,17 +74,16 @@
             "properties": {
               "populate": {"type": "boolean", "optional": true, "description": "If true, the window object will have a <var>tabs</var> property that contains a list of the $ref:Tab objects" }
             }
-          },
-          {
-            "type": "function",
-            "name": "callback",
-            "parameters": [
-              {
-                "name": "window", "$ref": "Window"
-              }
-            ]
           }
-        ]
+        ],
+        "returns_async": {
+          "name": "callback",
+          "parameters": [
+            {
+              "name": "window", "$ref": "Window"
+            }
+          ]
+        }
       },
       {
         "name": "getLastFocused",
@@ -100,17 +98,16 @@
             "properties": {
               "populate": {"type": "boolean", "optional": true, "description": "If true, the window object will have a <var>tabs</var> property that contains a list of the $ref:Tab objects" }
             }
-          },
-          {
-            "type": "function",
-            "name": "callback",
-            "parameters": [
-              {
-                "name": "window", "$ref": "Window"
-              }
-            ]
           }
-        ]
+        ],
+        "returns_async": {
+          "name": "callback",
+          "parameters": [
+            {
+              "name": "window", "$ref": "Window"
+            }
+          ]
+        }
       },
       {
         "name": "getAll",
@@ -125,17 +122,16 @@
             "properties": {
               "populate": {"type": "boolean", "optional": true, "description": "If true, each window object will have a <var>tabs</var> property that contains a list of the $ref:Tab objects for that window." }
             }
-          },
-          {
-            "type": "function",
-            "name": "callback",
-            "parameters": [
-              {
-                "name": "windows", "type": "array", "items": { "$ref": "Window" }
-              }
-            ]
           }
-        ]
+        ],
+        "returns_async": {
+          "name": "callback",
+          "parameters": [
+            {
+              "name": "windows", "type": "array", "items": { "$ref": "Window" }
+            }
+          ]
+        }
       },
       {
         "name": "create",
@@ -171,19 +167,18 @@
               }
             },
             "optional": true
-          },
-          {
-            "type": "function",
-            "name": "callback",
-            "optional": true,
-            "parameters": [
-              {
-                "name": "window", "$ref": "Window", "description": "Contains details about the created window.",
-                "optional": true
-              }
-            ]
           }
-        ]
+        ],
+        "returns_async": {
+          "name": "callback",
+          "optional": true,
+          "parameters": [
+            {
+              "name": "window", "$ref": "Window", "description": "Contains details about the created window.",
+              "optional": true
+            }
+          ]
+        }
       },
       {
         "name": "update",
@@ -208,27 +203,34 @@
                 "enum": ["normal", "minimized", "maximized"]
               }
             }
-          },
-          {
-            "type": "function",
-            "name": "callback",
-            "optional": true,
-            "parameters": [
-              {
-                "name": "window", "$ref": "Window"
-              }
-            ]
           }
-        ]
+        ],
+        "returns_async": {
+          "name": "callback",
+          "optional": true,
+          "parameters": [
+            {
+              "name": "window", "$ref": "Window"
+            }
+          ]
+        }
       },
       {
         "name": "remove",
         "type": "function",
         "description": "Removes (closes) a window, and all the tabs inside it.",
         "parameters": [
-          {"type": "integer", "name": "windowId", "minimum": 0},
-          {"type": "function", "name": "callback", "optional": true, "parameters": []}
-        ]
+          {
+            "type": "integer",
+            "name": "windowId",
+            "minimum": 0
+          }
+        ],
+        "returns_async": {
+          "name": "callback",
+          "optional": true,
+          "parameters": []
+        }
       }
     ],
     "events": [

@@ -5,21 +5,23 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_TESTING_INTERNALS_GET_ALL_COOKIES_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_TESTING_INTERNALS_GET_ALL_COOKIES_H_
 
+#include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/forward.h"
 
 namespace blink {
 
 class Internals;
-class ScriptPromise;
+class InternalCookie;
 class ScriptState;
 
 class InternalsGetAllCookies {
   STATIC_ONLY(InternalsGetAllCookies);
 
  public:
-  static ScriptPromise getAllCookies(ScriptState* script_state,
-                                     Internals& internals);
+  static ScriptPromiseTyped<IDLSequence<InternalCookie>> getAllCookies(
+      ScriptState* script_state,
+      Internals& internals);
 };
 
 }  // namespace blink

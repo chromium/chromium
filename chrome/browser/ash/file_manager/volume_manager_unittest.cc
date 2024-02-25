@@ -66,9 +66,8 @@ using ::ash::disks::FakeDiskMountManager;
 using base::FilePath;
 
 std::vector<std::string> arc_volume_ids = {
-    arc::kImagesRootDocumentId, arc::kVideosRootDocumentId,
-    arc::kAudioRootDocumentId, arc::kDocumentsRootDocumentId,
-    "android_files:0"};
+    arc::kImagesRootId, arc::kVideosRootId, arc::kAudioRootId,
+    arc::kDocumentsRootId, "android_files:0"};
 
 class LoggingObserver : public VolumeManagerObserver {
  public:
@@ -1335,6 +1334,7 @@ class VolumeManagerArcTest : public VolumeManagerTest {
   void TearDown() override {
     arc_service_manager_->arc_bridge_service()->file_system()->CloseInstance(
         &file_system_instance_);
+    arc_service_manager_->set_browser_context(nullptr);
     VolumeManagerTest::TearDown();
   }
 

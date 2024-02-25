@@ -39,7 +39,7 @@ class VIZ_SERVICE_EXPORT OverlayProcessorStub
       gfx::Rect* damage_rect,
       std::vector<gfx::Rect>* content_bounds) final {}
   void AdjustOutputSurfaceOverlay(
-      absl::optional<OutputSurfaceOverlayPlane>* output_surface_plane) final {}
+      std::optional<OutputSurfaceOverlayPlane>* output_surface_plane) final {}
   void SetDisplayTransformHint(gfx::OverlayTransform transform) final {}
   void SetViewportSize(const gfx::Size& size) final {}
   gfx::CALayerResult GetCALayerErrorCode() const final;

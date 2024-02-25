@@ -50,6 +50,7 @@ source_set("renderers") {
     "//gpu/command_buffer/client:interface_base",
     "//gpu/command_buffer/client:raster_interface",
     "//gpu/command_buffer/common",
+    "//gpu/ipc/client",
     "//media:media_buildflags",
     "//media/audio",
     "//media/base",

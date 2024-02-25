@@ -15,11 +15,12 @@ FakeDownloadControllerDelegate::FakeDownloadControllerDelegate(
     DownloadController* controller)
     : controller_(controller) {
   DCHECK(controller_);
+  old_delegate_ = controller_->GetDelegate();
   controller_->SetDelegate(this);
 }
 
 FakeDownloadControllerDelegate::~FakeDownloadControllerDelegate() {
-  controller_->SetDelegate(nullptr);
+  controller_->SetDelegate(old_delegate_);
   controller_ = nullptr;
 }
 

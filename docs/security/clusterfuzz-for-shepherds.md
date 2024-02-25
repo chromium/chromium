@@ -74,3 +74,14 @@ gestures if the UI actions can be achieved purely using keystrokes. The relevant
 ClusterFuzz [code is in
 gesture_handler.py](https://github.com/google/clusterfuzz/blob/master/src/clusterfuzz/_internal/fuzzing/gesture_handler.py#L22)
 to figure out the languages for other platforms.
+
+## HTTP(S) headers
+
+If you need to reproduce a test case that involves specific HTTP headers, do this:
+
+1. Make a copy of [page_load_in_process_fuzzer_seed_corpus/network.textproto](https://source.chromium.org/chromium/chromium/src/+/main:chrome/test/fuzzing/page_load_in_process_fuzzer_seed_corpus/network.textproto)
+2. Edit as necessary to give the headers you need
+3. Go to the ClusterFuzz [upload page](https://clusterfuzz.com/upload-testcase)
+4. Select `libfuzzer_chrome_asan` for the job
+5. Select `page_load_in_process_fuzzer` for the fuzzer
+6. Upload `network.textproto` as the test case.

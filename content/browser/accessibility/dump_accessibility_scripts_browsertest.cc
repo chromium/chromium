@@ -146,6 +146,10 @@ class DumpAccessibilityScriptTest : public DumpAccessibilityTestBase {
         }
         actual_contents += "press " + dom_key_string + '\n';
         RunUntilInputProcessed(GetWidgetHost());
+
+        // Input presses could create a11y events. Wait for those to clear
+        // before procceding.
+        WaitForEndOfTest(mode);
       }
       if (printTree) {
         actual_contents += DumpTreeAsString() + '\n';
@@ -180,13 +184,11 @@ class DumpAccessibilityScriptTest : public DumpAccessibilityTestBase {
   }
 };
 
-typedef std::pair<ui::AXApiType::Type, bool> TestParamType;
-
 // Parameterize the tests so that each test-pass is run independently.
 struct TestPassToString {
   std::string operator()(
-      const ::testing::TestParamInfo<TestParamType>& i) const {
-    return std::string(i.param.first) + (i.param.second ? "1" : "0");
+      const ::testing::TestParamInfo<ui::AXApiType::Type>& i) const {
+    return std::string(i.param);
   }
 };
 
@@ -196,12 +198,10 @@ struct TestPassToString {
 
 #if BUILDFLAG(IS_MAC)
 
-INSTANTIATE_TEST_SUITE_P(
-    All,
-    DumpAccessibilityScriptTest,
-    ::testing::Values(TestParamType(ui::AXApiType::kMac, true),
-                      TestParamType(ui::AXApiType::kMac, false)),
-    TestPassToString());
+INSTANTIATE_TEST_SUITE_P(All,
+                         DumpAccessibilityScriptTest,
+                         ::testing::Values(ui::AXApiType::kMac),
+                         TestPassToString());
 
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityScriptTest, AXAccessKey) {
   RunTypedTest<kMacAttributes>("ax-access-key.html");
@@ -311,8 +311,14 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityScriptTest, AXHighestEditableAncestor) {
   RunTypedTest<kMacAttributes>("ax-highest-editable-ancestor.html");
 }
 
+// TODO(crbug.com/1480429): Flaky
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_AXInsertionPointLineNumber DISABLED_AXInsertionPointLineNumber
+#else
+#define MAYBE_AXInsertionPointLineNumber AXInsertionPointLineNumber
+#endif
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityScriptTest,
-                       AXInsertionPointLineNumber) {
+                       MAYBE_AXInsertionPointLineNumber) {
   RunTypedTest<kMacAttributes>("ax-insertion-point-line-number.html");
 }
 
@@ -479,10 +485,11 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityScriptTest, ChromeAXNodeId) {
 // Before macOS 11 aria-description must be exposed in AXHelp, and since macOS
 // 11, it should only be exposed in AXCustomContent.
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityScriptTest, AriaDescription) {
-  if (base::mac::IsAtLeastOS11())
+  if (base::mac::MacOSMajorVersion() >= 11) {
     RunTypedTest<kMacDescription>("aria-description-in-axcustomcontent.html");
-  else
+  } else {
     RunTypedTest<kMacDescription>("aria-description-in-axhelp.html");
+  }
 }
 
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityScriptTest, SelectAllTextarea) {
@@ -607,12 +614,10 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityScriptTest, AXStringForRange) {
 
 #if BUILDFLAG(IS_WIN)
 
-INSTANTIATE_TEST_SUITE_P(
-    All,
-    DumpAccessibilityScriptTest,
-    ::testing::Values(TestParamType(ui::AXApiType::kWinIA2, true),
-                      TestParamType(ui::AXApiType::kWinIA2, false)),
-    TestPassToString());
+INSTANTIATE_TEST_SUITE_P(All,
+                         DumpAccessibilityScriptTest,
+                         ::testing::Values(ui::AXApiType::kWinIA2),
+                         TestPassToString());
 
 // IAccessible
 

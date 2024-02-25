@@ -5,10 +5,13 @@
 #ifndef ASH_QUICK_PAIR_COMMON_QUICK_PAIR_BROWSER_DELEGATE_H_
 #define ASH_QUICK_PAIR_COMMON_QUICK_PAIR_BROWSER_DELEGATE_H_
 
+#include <string>
+
 #include "base/component_export.h"
 #include "base/memory/scoped_refptr.h"
 #include "chromeos/ash/services/quick_pair/public/mojom/quick_pair_service.mojom-forward.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
+#include "url/gurl.h"
 
 class PrefService;
 
@@ -55,6 +58,15 @@ class COMPONENT_EXPORT(QUICK_PAIR_COMMON) QuickPairBrowserDelegate {
   // PendingReceiver for it.
   virtual void RequestService(
       mojo::PendingReceiver<mojom::QuickPairService> receiver) = 0;
+
+  virtual bool CompanionAppInstalled(const std::string& app_id) = 0;
+
+  // Returns true if and only if the app was installed and launched.
+  virtual void LaunchCompanionApp(const std::string& app_id) = 0;
+
+  // Opens the requested link in the Play store app. Assumes that caller has
+  // verified |play_store_uri| is a valid Play Store URL
+  virtual void OpenPlayStorePage(GURL play_store_uri) = 0;
 
  protected:
   static void SetInstance(QuickPairBrowserDelegate* instance);

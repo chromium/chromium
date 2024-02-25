@@ -20,8 +20,8 @@ using EnabledSuggestions = AssistiveSuggesterSwitch::EnabledSuggestions;
 base::RepeatingCallback<void(GetFocusedTabUrlCallback)> ReturnUrl(
     const std::string& url) {
   return base::BindLambdaForTesting([url](GetFocusedTabUrlCallback callback) {
-    absl::optional<GURL> gurl =
-        url.empty() ? absl::nullopt : absl::optional<GURL>(GURL(url));
+    std::optional<GURL> gurl =
+        url.empty() ? std::nullopt : std::optional<GURL>(GURL(url));
     std::move(callback).Run(gurl);
   });
 }

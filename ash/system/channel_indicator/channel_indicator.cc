@@ -20,6 +20,7 @@
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/size.h"
@@ -107,10 +108,6 @@ views::View* ChannelIndicatorView::GetTooltipHandlerForPoint(
 
 std::u16string ChannelIndicatorView::GetTooltipText(const gfx::Point& p) const {
   return tooltip_;
-}
-
-const char* ChannelIndicatorView::GetClassName() const {
-  return "ChannelIndicatorView";
 }
 
 void ChannelIndicatorView::OnThemeChanged() {
@@ -314,7 +311,10 @@ std::u16string ChannelIndicatorView::GetAccessibleNameString() const {
   if (label())
     return label()->GetAccessibleName();
 
-  return base::EmptyString16();
+  return std::u16string();
 }
+
+BEGIN_METADATA(ChannelIndicatorView)
+END_METADATA
 
 }  // namespace ash

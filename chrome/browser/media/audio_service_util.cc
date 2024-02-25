@@ -4,6 +4,7 @@
 
 #include "chrome/browser/media/audio_service_util.h"
 
+#include <optional>
 #include <string>
 
 #include "base/feature_list.h"
@@ -17,7 +18,6 @@
 #include "components/policy/core/common/policy_service.h"
 #include "components/policy/policy_constants.h"
 #include "content/public/common/content_features.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace {
 

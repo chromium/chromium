@@ -201,12 +201,12 @@ TEST_F(TextOffsetMappingTest, RangeOfBlockWithRubyAsBlock) {
   // before "abc" but in DOM tree, order is "abc" then "XYZ".
   // Layout tree:
   //  LayoutNGBlockFlow {BODY} at (8,8) size 784x27
-  //   LayoutNGRubyAsBlock {RUBY} at (0,0) size 784x27
-  //     LayoutNGRubyRun (anonymous) at (0,7) size 22x20
-  //       LayoutNGRubyText {RT} at (0,-10) size 22x12
+  //   LayoutRubyAsBlock {RUBY} at (0,0) size 784x27
+  //     LayoutRubyColumn (anonymous) at (0,7) size 22x20
+  //       LayoutRubyText {RT} at (0,-10) size 22x12
   //         LayoutText {#text} at (2,0) size 18x12
   //           text run at (2,0) width 18: "XYZ"
-  //       LayoutNGRubyBase (anonymous) at (0,0) size 22x20
+  //       LayoutRubyBase (anonymous) at (0,0) size 22x20
   //         LayoutText {#text} at (0,0) size 22x19
   //           text run at (0,0) width 22: "abc"
   InsertStyleElement("ruby { display: block; }");
@@ -231,7 +231,7 @@ TEST_F(TextOffsetMappingTest, RangeOfBlockWithRubyAsInlineBlock) {
 TEST_F(TextOffsetMappingTest, RangeOfBlockWithRUBYandBR) {
   EXPECT_EQ("<ruby>^abc<br>def|<rt>123<br>456</rt></ruby>",
             GetRange("<ruby>|abc<br>def<rt>123<br>456</rt></ruby>"))
-      << "RT(LayoutRubyRun) is a block";
+      << "RT(LayoutRubyColumn) is a block";
   EXPECT_EQ("<ruby>abc<br>def<rt>^123<br>456|</rt></ruby>",
             GetRange("<ruby>abc<br>def<rt>123|<br>456</rt></ruby>"))
       << "RUBY introduce LayoutRuleBase for 'abc'";
@@ -255,7 +255,7 @@ TEST_F(TextOffsetMappingTest, RangeOfEmptyBlock) {
   const PositionInFlatTree position = ToPositionInFlatTree(
       SetSelectionTextToBody(
           "<div><p>abc</p><p id='target'>|</p><p>ghi</p></div>")
-          .Base());
+          .Anchor());
   const LayoutObject* const target_layout_object =
       GetDocument().getElementById(AtomicString("target"))->GetLayoutObject();
   const TextOffsetMapping::InlineContents inline_contents =
@@ -439,19 +439,21 @@ TEST_F(TextOffsetMappingTest, RangeWithNestedPosition) {
             GetRange("<b>abc <i>d|ef</i> ghi</b>xyz"));
 }
 
-// http://crbug.com//834623
+// http://crbug.com/834623
 TEST_F(TextOffsetMappingTest, RangeWithSelect1) {
   SetBodyContent("<select></select>foo");
   Element* select = GetDocument().QuerySelector(AtomicString("select"));
   const auto& expected_outer =
       "^<select>"
-      "<div aria-hidden=\"true\"></div>"
-      "<slot></slot>"
+      "<slot id=\"select-button\"><div aria-hidden=\"true\"></div></slot>"
+      "<slot id=\"select-datalist\"></slot>"
+      "<slot id=\"select-options\"></slot>"
       "</select>foo|";
   const auto& expected_inner =
       "<select>"
-      "<div aria-hidden=\"true\">^|</div>"
-      "<slot></slot>"
+      "<slot id=\"select-button\"><div aria-hidden=\"true\">^|</div></slot>"
+      "<slot id=\"select-datalist\"></slot>"
+      "<slot id=\"select-options\"></slot>"
       "</select>foo";
   EXPECT_EQ(expected_outer, GetRange(PositionInFlatTree::BeforeNode(*select)));
   EXPECT_EQ(expected_inner, GetRange(PositionInFlatTree(select, 0)));
@@ -463,13 +465,15 @@ TEST_F(TextOffsetMappingTest, RangeWithSelect2) {
   Element* select = GetDocument().QuerySelector(AtomicString("select"));
   const auto& expected_outer =
       "^<select>"
-      "<div aria-hidden=\"true\"></div>"
-      "<slot></slot>"
+      "<slot id=\"select-button\"><div aria-hidden=\"true\"></div></slot>"
+      "<slot id=\"select-datalist\"></slot>"
+      "<slot id=\"select-options\"></slot>"
       "</select>foo|";
   const auto& expected_inner =
       "<select>"
-      "<div aria-hidden=\"true\">^|</div>"
-      "<slot></slot>"
+      "<slot id=\"select-button\"><div aria-hidden=\"true\">^|</div></slot>"
+      "<slot id=\"select-datalist\"></slot>"
+      "<slot id=\"select-options\"></slot>"
       "</select>foo";
   EXPECT_EQ(expected_outer, GetRange(PositionInFlatTree::BeforeNode(*select)));
   EXPECT_EQ(expected_inner, GetRange(PositionInFlatTree(select, 0)));

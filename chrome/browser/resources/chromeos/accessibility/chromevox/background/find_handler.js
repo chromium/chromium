@@ -5,7 +5,7 @@
 /**
  * @fileoverview Handles output for Chrome's built-in find.
  */
-import {CursorRange} from '../../common/cursors/range.js';
+import {CursorRange} from '/common/cursors/range.js';
 
 import {ChromeVoxRange} from './chromevox_range.js';
 import {Output} from './output/output.js';
@@ -14,6 +14,10 @@ import {OutputCustomEvent} from './output/output_types.js';
 const MarkerType = chrome.automation.MarkerType;
 const TreeChangeObserverFilter = chrome.automation.TreeChangeObserverFilter;
 
+/**
+ * Handles navigation among the results when using the built-in find behavior
+ * (i.e. Ctrl-F).
+ */
 export class FindHandler {
   /** @private */
   constructor() {

@@ -47,6 +47,8 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
+#include "components/url_formatter/elide_url.h"
+#include "components/web_modal/web_contents_modal_dialog_manager.h"
 #endif
 
 namespace {
@@ -87,21 +89,6 @@ constexpr const char* kDeniedSchemes[] = {
     "vnd.ms.radio",
 };
 
-// Additional entries should not be added to this list. The BlockStateMetric
-// assumees that the only default-allowed scheme is mailto.
-// TODO(rsesek): Remove this list once PromptForExternalNewsSchemes is
-// launched.
-constexpr const char* kAllowedSchemes[] = {
-    "mailto",
-};
-
-// These schemes are considered part of `kAllowedSchemes` when the
-// PromptForExternalNewsSchemes feature is disabled.
-constexpr const char* kNewsSchemes[] = {
-    "news",
-    "snews",
-};
-
 void AddMessageToConsole(const content::WeakDocumentPtr& document,
                          blink::mojom::ConsoleMessageLevel level,
                          const std::string& message) {
@@ -140,7 +127,7 @@ void RunExternalProtocolDialogWithDelegate(
     ui::PageTransition page_transition,
     bool has_user_gesture,
     bool is_in_fenced_frame_tree,
-    const absl::optional<url::Origin>& initiating_origin,
+    const std::optional<url::Origin>& initiating_origin,
     content::WeakDocumentPtr initiator_document,
     const std::u16string& program_name,
     ExternalProtocolHandler::Delegate* delegate) {
@@ -201,7 +188,7 @@ void LaunchUrlWithoutSecurityCheckWithDelegate(
   // Avoid calling CloseContents if the tab is not in this browser's tab strip
   // model; this can happen if the protocol was initiated by something
   // internal to Chrome.
-  Browser* browser = chrome::FindBrowserWithWebContents(web_contents);
+  Browser* browser = chrome::FindBrowserWithTab(web_contents);
   if (browser && web_contents->GetController().IsInitialNavigation() &&
       browser->tab_strip_model()->count() > 1 &&
       browser->tab_strip_model()->GetIndexOfWebContents(web_contents) !=
@@ -222,7 +209,7 @@ void OnDefaultSchemeClientWorkerFinished(
     ui::PageTransition page_transition,
     bool has_user_gesture,
     bool is_in_fenced_frame_tree,
-    const absl::optional<url::Origin>& initiating_origin,
+    const std::optional<url::Origin>& initiating_origin,
     content::WeakDocumentPtr initiator_document,
     ExternalProtocolHandler::Delegate* delegate,
     shell_integration::DefaultWebClientState state,
@@ -262,9 +249,20 @@ void OnDefaultSchemeClientWorkerFinished(
   // If we get here, either we are not the default or we cannot work out
   // what the default is, so we proceed.
   if (prompt_user) {
-    // Never prompt the user without a web_contents.
-    if (!web_contents)
+    // Never prompt the user without a web_contents or dialog manager.
+    if (!web_contents ||
+        !web_modal::WebContentsModalDialogManager::FromWebContents(
+            web_contents)) {
+      LOG(ERROR) << "Skipping ExternalProtocolDialog"
+                 << ", escaped_url=" << escaped_url.possibly_invalid_spec()
+                 << ", initiating_origin="
+                 << url_formatter::FormatOriginForSecurityDisplay(
+                        initiating_origin.value_or(url::Origin()))
+                 << ", web_contents?" << !!web_contents << ", browser?"
+                 << (web_contents && chrome::FindBrowserWithTab(web_contents));
+      base::debug::DumpWithoutCrashing();
       return;
+    }
 
     // Ask the user if they want to allow the protocol. This will call
     // LaunchUrlWithoutSecurityCheck if the user decides to accept the
@@ -316,13 +314,6 @@ bool IsSchemeOriginPairAllowedByPolicy(const std::string& scheme,
 
 }  // namespace
 
-// Treat the news: and snews: schemes as arbitrary, non-default schemes. This
-// means if a handler is present for those, the external protocol handler
-// dialog will be shown.
-BASE_FEATURE(kPromptForExternalNewsSchemes,
-             "PromptForExternalNewsSchemes",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 const char ExternalProtocolHandler::kBlockStateMetric[] =
     "BrowserDialogs.ExternalProtocol.BlockState";
 const char ExternalProtocolHandler::kHandleStateMetric[] =
@@ -366,25 +357,12 @@ ExternalProtocolHandler::BlockState ExternalProtocolHandler::GetBlockState(
     }
   }
 
-  // Always allow the hard-coded allowed schemes.
-  for (const auto* candidate : kAllowedSchemes) {
-    if (candidate == scheme) {
-      base::UmaHistogramEnumeration(kBlockStateMetric,
-                                    BlockStateMetric::kAllowedDefaultMail);
-      return DONT_BLOCK;
-    }
-  }
-  for (const auto* candidate : kNewsSchemes) {
-    if (candidate == scheme) {
-      if (base::FeatureList::IsEnabled(kPromptForExternalNewsSchemes)) {
-        base::UmaHistogramEnumeration(kBlockStateMetric,
-                                      BlockStateMetric::kNewsNotDefault);
-      } else {
-        base::UmaHistogramEnumeration(kBlockStateMetric,
-                                      BlockStateMetric::kAllowedDefaultNews);
-        return DONT_BLOCK;
-      }
-    }
+  // The mailto scheme is allowed explicitly because of its ubiquity on the web
+  // and because every platform provides a default handler for it.
+  if (scheme == "mailto") {
+    base::UmaHistogramEnumeration(kBlockStateMetric,
+                                  BlockStateMetric::kAllowedDefaultMail);
+    return DONT_BLOCK;
   }
 
   PrefService* profile_prefs = profile->GetPrefs();
@@ -405,7 +383,7 @@ ExternalProtocolHandler::BlockState ExternalProtocolHandler::GetBlockState(
           allowed_origin_protocol_pairs.FindDict(
               initiating_origin->Serialize());
       if (allowed_protocols_for_origin) {
-        absl::optional<bool> allow =
+        std::optional<bool> allow =
             allowed_protocols_for_origin->FindBool(scheme);
         if (allow.has_value() && allow.value()) {
           base::UmaHistogramEnumeration(kBlockStateMetric,
@@ -472,7 +450,7 @@ void ExternalProtocolHandler::LaunchUrl(
     ui::PageTransition page_transition,
     bool has_user_gesture,
     bool is_in_fenced_frame_tree,
-    const absl::optional<url::Origin>& initiating_origin,
+    const std::optional<url::Origin>& initiating_origin,
     content::WeakDocumentPtr initiator_document
 #if BUILDFLAG(IS_ANDROID)
     ,
@@ -535,7 +513,7 @@ void ExternalProtocolHandler::LaunchUrl(
   }
   return;
 #else
-  absl::optional<url::Origin> initiating_origin_or_precursor;
+  std::optional<url::Origin> initiating_origin_or_precursor;
   if (initiating_origin) {
     // Transform the initiating origin to its precursor origin if it is
     // opaque. |initiating_origin| is shown in the UI to attribute the external

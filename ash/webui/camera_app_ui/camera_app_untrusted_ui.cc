@@ -33,10 +33,9 @@ void CreateAndAddUntrustedCameraAppUIHTMLSource(
   untrusted_source->OverrideContentSecurityPolicy(
       network::mojom::CSPDirectiveName::WorkerSrc,
       std::string("worker-src 'self';"));
-  // TODO(crbug/948834): Replace 'wasm-eval' with 'wasm-unsafe-eval'.
   untrusted_source->OverrideContentSecurityPolicy(
       network::mojom::CSPDirectiveName::ScriptSrc,
-      std::string("script-src 'self' 'wasm-eval';"));
+      std::string("script-src 'self' 'wasm-unsafe-eval';"));
   untrusted_source->OverrideContentSecurityPolicy(
       network::mojom::CSPDirectiveName::TrustedTypes,
       std::string("trusted-types ga-js-static video-processor-js-static;"));

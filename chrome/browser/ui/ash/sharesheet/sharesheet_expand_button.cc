@@ -69,7 +69,7 @@ void SharesheetExpandButton::SetToExpandedState() {
   SetAccessibleName(display_name);
 }
 
-BEGIN_METADATA(SharesheetExpandButton, views::Button)
+BEGIN_METADATA(SharesheetExpandButton)
 END_METADATA
 
 }  // namespace sharesheet

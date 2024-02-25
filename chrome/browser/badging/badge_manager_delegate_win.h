@@ -22,7 +22,7 @@ class BadgeManagerDelegateWin : public BadgeManagerDelegate {
   explicit BadgeManagerDelegateWin(Profile* profile,
                                    BadgeManager* badge_manager);
 
-  void OnAppBadgeUpdated(const web_app::AppId& app_id) override;
+  void OnAppBadgeUpdated(const webapps::AppId& app_id) override;
 
  private:
   // Determines if a browser is for a specific hosted app, on this profile.

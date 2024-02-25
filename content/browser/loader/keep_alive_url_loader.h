@@ -6,6 +6,7 @@
 #define CONTENT_BROWSER_LOADER_KEEP_ALIVE_URL_LOADER_H_
 
 #include <stdint.h>
+#include <memory>
 #include <queue>
 #include <string>
 #include <vector>
@@ -13,8 +14,10 @@
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/weak_ptr.h"
+#include "base/timer/timer.h"
 #include "base/types/pass_key.h"
 #include "content/common/content_export.h"
+#include "content/public/browser/weak_document_ptr.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
@@ -24,6 +27,7 @@
 #include "services/network/public/mojom/url_loader.mojom.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
 #include "third_party/blink/public/common/loader/url_loader_throttle.h"
+#include "third_party/blink/public/mojom/loader/fetch_later.mojom.h"
 #include "url/gurl.h"
 
 namespace network {
@@ -37,8 +41,11 @@ class URLLoaderThrottle;
 namespace content {
 
 class BrowserContext;
+class KeepAliveAttributionRequestHelper;
 class KeepAliveURLLoaderService;
 class PolicyContainerHost;
+class RenderFrameHostImpl;
+class WeakDocumentPtr;
 
 // A URLLoader for loading a fetch keepalive request via the browser process,
 // including requests generated from the following JS API calls:
@@ -80,7 +87,8 @@ class PolicyContainerHost;
 // https://docs.google.com/document/d/1ZzxMMBvpqn8VZBZKnb7Go8TWjnrGcXuLS_USwVVRUvY
 class CONTENT_EXPORT KeepAliveURLLoader
     : public network::mojom::URLLoader,
-      public network::mojom::URLLoaderClient {
+      public network::mojom::URLLoaderClient,
+      public blink::mojom::FetchLaterLoader {
  public:
   // A callback type to delete this loader immediately on triggered.
   using OnDeleteCallback = base::OnceCallback<void(void)>;
@@ -98,6 +106,8 @@ class CONTENT_EXPORT KeepAliveURLLoader
   // service if it is still connected.
   // `delete_callback` is a callback to delete this object.
   // `policy_container_host` must not be null.
+  // `weak_document_ptr` should point to the document that initiates
+  // `resource_request`.
   KeepAliveURLLoader(
       int32_t request_id,
       uint32_t options,
@@ -106,9 +116,12 @@ class CONTENT_EXPORT KeepAliveURLLoader
       const net::MutableNetworkTrafficAnnotationTag& traffic_annotation,
       scoped_refptr<network::SharedURLLoaderFactory> network_loader_factory,
       scoped_refptr<PolicyContainerHost> policy_container_host,
+      WeakDocumentPtr weak_document_ptr,
       BrowserContext* browser_context,
       std::vector<std::unique_ptr<blink::URLLoaderThrottle>> throttles,
-      base::PassKey<KeepAliveURLLoaderService>);
+      base::PassKey<KeepAliveURLLoaderService>,
+      std::unique_ptr<KeepAliveAttributionRequestHelper>
+          attribution_request_helper);
   ~KeepAliveURLLoader() override;
 
   // Not copyable.
@@ -123,14 +136,16 @@ class CONTENT_EXPORT KeepAliveURLLoader
   // Must be called immediately after creating a KeepAliveLoader.
   void set_on_delete_callback(OnDeleteCallback on_delete_callback);
 
-  // Returns true if request loading has been started, i.e. `Start()` has been
-  // called. Otherwise, returns false by default.
-  bool IsStarted() const;
-
   // Kicks off loading the request, including prepare for requests, and setting
   // up communication with network service.
   // This method must only be called when `IsStarted()` is false.
   void Start();
+
+  // Called when the receiver of URLLoader implemented by this is disconnected.
+  void OnURLLoaderDisconnected();
+
+  // Called when the `browser_context_` is shutting down.
+  void Shutdown();
 
   base::WeakPtr<KeepAliveURLLoader> GetWeakPtr();
 
@@ -164,13 +179,21 @@ class CONTENT_EXPORT KeepAliveURLLoader
   void SetObserverForTesting(scoped_refptr<TestObserver> observer);
 
  private:
+  // Returns true if request loading has been started, i.e. `Start()` has been
+  // called. Otherwise, returns false by default.
+  bool IsStarted() const;
+
+  // Returns a pointer to the RenderFrameHostImpl of the request initiator
+  // document if it is still alive. Otherwise, returns nullptr;
+  RenderFrameHostImpl* GetInitiator() const;
+
   // Receives actions from renderer.
   // `network::mojom::URLLoader` overrides:
   void FollowRedirect(
       const std::vector<std::string>& removed_headers,
       const net::HttpRequestHeaders& modified_headers,
       const net::HttpRequestHeaders& modified_cors_exempt_headers,
-      const absl::optional<GURL>& new_url) override;
+      const std::optional<GURL>& new_url) override;
   void SetPriority(net::RequestPriority priority,
                    int intra_priority_value) override;
   void PauseReadingBodyFromNet() override;
@@ -182,7 +205,7 @@ class CONTENT_EXPORT KeepAliveURLLoader
   void OnReceiveResponse(
       network::mojom::URLResponseHeadPtr head,
       mojo::ScopedDataPipeConsumerHandle body,
-      absl::optional<mojo_base::BigBuffer> cached_metadata) override;
+      std::optional<mojo_base::BigBuffer> cached_metadata) override;
   void OnReceiveRedirect(const net::RedirectInfo& redirect_info,
                          network::mojom::URLResponseHeadPtr head) override;
   void OnUploadProgress(int64_t current_position,
@@ -192,8 +215,13 @@ class CONTENT_EXPORT KeepAliveURLLoader
   void OnComplete(
       const network::URLLoaderCompletionStatus& completion_status) override;
 
+  // `blink::mojom::FetchLaterLoader` overrides:
+  void SendNow() override;
+  void Cancel() override;
+
   // Whether `OnReceiveResponse()` has been called.
   bool HasReceivedResponse() const;
+
   // Forwards the stored chain of redriects, response, completion status to the
   // renderer that initiates this loader, such that the renderer knows what URL
   // the response come from when parsing the response.
@@ -204,20 +232,37 @@ class CONTENT_EXPORT KeepAliveURLLoader
   // See also the "Proposed Call Sequences After Migration" section in
   // https://docs.google.com/document/d/1ZzxMMBvpqn8VZBZKnb7Go8TWjnrGcXuLS_USwVVRUvY/edit?pli=1#heading=h.d006i46pmq9
   void ForwardURLLoad();
+
   // Tells if `ForwardURLLoad()` has ever been called.
   bool IsForwardURLLoadStarted() const;
+
   // Tells if this loader is still able to forward actions to the
   // URLLoaderClient in renderer.
   bool IsRendererConnected() const;
+
+  // Tells if this loader is constructed for a FetchLater request.
+  bool IsFetchLater() const;
+
   // Returns net::OK to allow following the redirect. Otherwise, returns
   // corresponding error code.
   net::Error WillFollowRedirect(const net::RedirectInfo& redirect_info) const;
+
+  // Called when `loader_receiver_`, Browser<-Network pipe, is disconnected.
   void OnNetworkConnectionError();
-  void OnRendererConnectionError();
+
+  // Called when `forwarding_client_`, Browser->Renderer pipe, is disconnected.
+  void OnForwardingClientDisconnected();
+
+  // Called when `disconnected_loader_timer_` is fired.
+  void OnDisconnectedLoaderTimerFired();
+
   void DeleteSelf();
 
   // The ID to identify the request being loaded by this loader.
   const int32_t request_id_;
+
+  // The ID to identify the request used by DevTools
+  const std::string devtools_request_id_;
 
   // A bitfield of the options of the request being loaded.
   // See services/network/public/mojom/url_loader_factory.mojom.
@@ -227,22 +272,30 @@ class CONTENT_EXPORT KeepAliveURLLoader
   // Set in the constructor and updated when redirected.
   network::ResourceRequest resource_request_;
 
-  // Connection with the network service:
+  // Browser -> Network connection:
+  //
   // Connects to the receiver network::URLLoader implemented in the network
   // service that performs actual request loading.
   mojo::Remote<network::mojom::URLLoader> loader_;
-  // Connection with the network service:
+  // Browser <- Network connection:
+  //
   // Receives the result of the request loaded by `loader_` from the network
   // service.
   mojo::Receiver<network::mojom::URLLoaderClient> loader_receiver_{this};
 
-  // Connection with a renderer:
+  // Browser -> Renderer connection:
+  //
   // Connects to the receiver URLLoaderClient implemented in the renderer.
   // It is the client that this loader may forward the URLLoader response from
   // the network service, i.e. message received by `loader_receiver_`, to.
   // It may be disconnected if the renderer is dead. In such case, subsequent
   // URLLoader response may be handled in browser.
   mojo::Remote<network::mojom::URLLoaderClient> forwarding_client_;
+
+  // Browser <- Renderer connection:
+  // Timer used for triggering cleaning up `this` after the receiver is
+  // disconnected from the remote of URLLoader in the renderer.
+  base::OneShotTimer disconnected_loader_timer_;
 
   // The NetworkTrafficAnnotationTag for the request being loaded.
   net::MutableNetworkTrafficAnnotationTag traffic_annotation_;
@@ -261,6 +314,12 @@ class CONTENT_EXPORT KeepAliveURLLoader
   // initiates this loader alive until `this` is destroyed.
   // It is never null.
   scoped_refptr<PolicyContainerHost> policy_container_host_;
+
+  // Points to the document that initiates this loader.
+  // It may become null at any moment whenever the RenderFrameHost it points to
+  // is deleted or navigates to a different document. See its classdoc for more
+  // details.
+  WeakDocumentPtr weak_document_ptr_;
 
   // The BrowserContext that initiates this loader.
   // It is ensured to outlive this because it owns KeepAliveURLLoaderService
@@ -291,6 +350,13 @@ class CONTENT_EXPORT KeepAliveURLLoader
   // Counts the total number when this loader is requested by throttle to pause
   // reading body.
   size_t paused_reading_body_from_net_count_ = 0;
+
+  // Request helper responsible for processing Attribution Reporting API
+  // operations (https://github.com/WICG/attribution-reporting-api). Only set if
+  // the request is related to attribution. When set, responses (redirects &
+  // final) handled by the loader will be forwarded to the helper.
+  std::unique_ptr<KeepAliveAttributionRequestHelper>
+      attribution_request_helper_;
 
   // For testing only:
   // Not owned.

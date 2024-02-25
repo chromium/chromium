@@ -6,15 +6,13 @@
 import 'chrome://settings/lazy_load.js';
 
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import {SettingsPersonalizationOptionsElement} from 'chrome://settings/lazy_load.js';
-import {loadTimeData, PrivacyPageVisibility, PrivacyPageBrowserProxyImpl, StatusAction, SyncBrowserProxyImpl} from 'chrome://settings/settings.js';
-import {assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
-// <if expr="_google_chrome and chromeos_ash">
-import {assertEquals} from 'chrome://webui-test/chai_assert.js';
-// </if>
-import {isChildVisible} from 'chrome://webui-test/test_util.js';
+import type {SettingsPersonalizationOptionsElement} from 'chrome://settings/lazy_load.js';
+import type {CrLinkRowElement, PrivacyPageVisibility, SettingsPrefsElement} from 'chrome://settings/settings.js';
+import {CrSettingsPrefs, loadTimeData, PrivacyPageBrowserProxyImpl, Router, routes, StatusAction, SyncBrowserProxyImpl} from 'chrome://settings/settings.js';
+import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {isChildVisible, isVisible} from 'chrome://webui-test/test_util.js';
 // <if expr="not is_chromeos">
-import {eventToPromise, isVisible} from 'chrome://webui-test/test_util.js';
+import {eventToPromise} from 'chrome://webui-test/test_util.js';
 
 // </if>
 
@@ -28,6 +26,7 @@ suite('AllBuilds', function() {
   let syncBrowserProxy: TestSyncBrowserProxy;
   let customPageVisibility: PrivacyPageVisibility;
   let testElement: SettingsPersonalizationOptionsElement;
+  let settingsPrefs: SettingsPrefsElement;
 
   suiteSetup(function() {
     loadTimeData.overrideValues({
@@ -39,21 +38,15 @@ suite('AllBuilds', function() {
       signinAvailable: true,
       changePriceEmailNotificationsEnabled: true,
     });
+    settingsPrefs = document.createElement('settings-prefs');
+    return CrSettingsPrefs.initialized;
   });
 
   function buildTestElement() {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
     testElement = document.createElement('settings-personalization-options');
-    testElement.prefs = {
-      signin: {
-        allowed_on_next_startup:
-            {type: chrome.settingsPrivate.PrefType.BOOLEAN, value: true},
-      },
-      profile: {password_manager_leak_detection: {value: true}},
-      safebrowsing:
-          {enabled: {value: true}, scout_reporting_enabled: {value: true}},
-      price_tracking: {email_notifications_enabled: {value: false}},
-    };
+    testElement.prefs = settingsPrefs.prefs!;
+    testElement.set('prefs.page_content_collection.enabled.value', false);
     testElement.pageVisibility = customPageVisibility;
     document.body.appendChild(testElement);
     flush();
@@ -282,6 +275,55 @@ suite('AllBuilds', function() {
     assertFalse(!!testElement.shadowRoot!.querySelector(
         '#priceEmailNotificationsToggle'));
   });
+
+  test('pageContentRow', function() {
+    const pageContentRow =
+        testElement.shadowRoot!.querySelector<HTMLElement>('#pageContentRow')!;
+
+    // TODO(crbug/1476887): Remove visibility check once crbug/1476887 launched.
+    assertTrue(isVisible(pageContentRow));
+
+    // The sublabel is dynamic based on the setting state.
+    testElement.set('prefs.page_content_collection.enabled.value', true);
+    const row = testElement.shadowRoot!.querySelector<CrLinkRowElement>(
+        '#pageContentRow')!;
+    assertEquals(
+        loadTimeData.getString('pageContentLinkRowSublabelOn'), row.subLabel);
+    testElement.set('prefs.page_content_collection.enabled.value', false);
+    assertEquals(
+        loadTimeData.getString('pageContentLinkRowSublabelOff'), row.subLabel);
+
+    // A click on the row navigates to the page content page.
+    pageContentRow.click();
+    assertEquals(routes.PAGE_CONTENT, Router.getInstance().getCurrentRoute());
+  });
+});
+
+// TODO(crbug/1476887): Remove once crbug/1476887 launched.
+suite('PageContentSettingOff', function() {
+  let testElement: SettingsPersonalizationOptionsElement;
+
+  suiteSetup(function() {
+    loadTimeData.overrideValues({
+      enablePageContentSetting: false,
+    });
+  });
+
+  setup(function() {
+    document.body.innerHTML = window.trustedTypes!.emptyHTML;
+    testElement = document.createElement('settings-personalization-options');
+    document.body.appendChild(testElement);
+    flush();
+  });
+
+  teardown(function() {
+    testElement.remove();
+  });
+
+  test('pageContentRowNotVisible', function() {
+    assertFalse(
+        isVisible(testElement.shadowRoot!.querySelector('#pageContentRow')));
+  });
 });
 
 // <if expr="_google_chrome">
@@ -311,6 +353,7 @@ suite('OfficialBuild', function() {
       profile: {password_manager_leak_detection: {value: true}},
       safebrowsing:
           {enabled: {value: true}, scout_reporting_enabled: {value: true}},
+      page_content_collection: {enabled: {value: true}},
       spellcheck: {dictionaries: {value: ['en-US']}},
     };
     flush();
@@ -322,6 +365,7 @@ suite('OfficialBuild', function() {
       profile: {password_manager_leak_detection: {value: true}},
       safebrowsing:
           {enabled: {value: true}, scout_reporting_enabled: {value: true}},
+      page_content_collection: {enabled: {value: true}},
       spellcheck: {dictionaries: {value: []}},
     };
     flush();
@@ -332,6 +376,7 @@ suite('OfficialBuild', function() {
       profile: {password_manager_leak_detection: {value: true}},
       safebrowsing:
           {enabled: {value: true}, scout_reporting_enabled: {value: true}},
+      page_content_collection: {enabled: {value: true}},
       browser: {enable_spellchecking: {value: false}},
       spellcheck: {
         dictionaries: {value: ['en-US']},
@@ -351,6 +396,7 @@ suite('OfficialBuild', function() {
       profile: {password_manager_leak_detection: {value: true}},
       safebrowsing:
           {enabled: {value: true}, scout_reporting_enabled: {value: true}},
+      page_content_collection: {enabled: {value: true}},
       spellcheck: {dictionaries: {value: ['en-US']}},
     };
     flush();
@@ -362,6 +408,7 @@ suite('OfficialBuild', function() {
       profile: {password_manager_leak_detection: {value: true}},
       safebrowsing:
           {enabled: {value: true}, scout_reporting_enabled: {value: true}},
+      page_content_collection: {enabled: {value: true}},
       spellcheck: {dictionaries: {value: []}},
     };
     flush();

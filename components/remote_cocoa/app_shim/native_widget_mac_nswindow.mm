@@ -6,11 +6,13 @@
 
 #include "base/apple/foundation_util.h"
 #include "base/auto_reset.h"
+#include "base/check.h"
 #include "base/debug/dump_without_crashing.h"
+#include "base/feature_list.h"
 #include "base/mac/mac_util.h"
 #include "base/memory/raw_ptr_exclusion.h"
 #include "base/trace_event/trace_event.h"
-#import "components/remote_cocoa/app_shim/browser_native_widget_window_mac.h"
+#import "components/remote_cocoa/app_shim/features.h"
 #import "components/remote_cocoa/app_shim/native_widget_ns_window_bridge.h"
 #include "components/remote_cocoa/app_shim/native_widget_ns_window_host_helper.h"
 #import "components/remote_cocoa/app_shim/views_nswindow_delegate.h"
@@ -99,17 +101,6 @@ void OrderChildWindow(NSWindow* child_window,
   }
 }
 
-// A struct to record child window ordering commands.
-struct ChildWindowOrderingCommand {
-  NSWindowOrderingMode windowOrderingMode;
-  NSInteger otherWindowNumber;
-
-  bool operator!=(const ChildWindowOrderingCommand& other) const {
-    return this->windowOrderingMode != other.windowOrderingMode ||
-           this->otherWindowNumber != other.otherWindowNumber;
-  }
-};
-
 }  // namespace
 
 @interface NSWindow (Private)
@@ -118,6 +109,7 @@ struct ChildWindowOrderingCommand {
 - (long long)_resizeDirectionForMouseLocation:(CGPoint)location;
 - (BOOL)_isConsideredOpenForPersistentState;
 - (void)_zoomToScreenEdge:(NSUInteger)edge;
+- (void)_removeFromGroups:(NSWindow*)window;
 @end
 
 // Private API as of at least macOS 13.
@@ -133,16 +125,6 @@ struct ChildWindowOrderingCommand {
 // Private API on NSWindow, determines whether the title is drawn on the title
 // bar. The title is still visible in menus, Expose, etc.
 - (BOOL)_isTitleHidden;
-
-// Completes the processing of child windows whose removal or ordering was
-// deferred while we were fullscreen and not in the active space.
-- (void)processDeferredChildWindowOperations;
-
-// Executes any window ordering commands that were requested while the child
-// window was not on the active space. We collect them rather than execute
-// them to avoid triggering a Space change.
-- (void)processChildWindowOrderingCommands;
-
 @end
 
 // Use this category to implement mouseDown: on multiple frame view classes
@@ -192,8 +174,6 @@ struct ChildWindowOrderingCommand {
   CommandDispatcher* __strong _commandDispatcher;
   id<UserInterfaceItemCommandHandler> __strong _commandHandler;
   id<WindowTouchBarDelegate> __weak _touchBarDelegate;
-  NSMutableArray<NSWindow*>* _childWindowsToRemove;
-  std::vector<ChildWindowOrderingCommand> _windowOrderingCommands;
   uint64_t _bridgedNativeWidgetId;
   // This field is not a raw_ptr<> because it requires @property rewrite.
   RAW_PTR_EXCLUSION remote_cocoa::NativeWidgetNSWindowBridge* _bridge;
@@ -204,7 +184,6 @@ struct ChildWindowOrderingCommand {
   BOOL _isHeadless;
   BOOL _isShufflingForOrdering;
   BOOL _miniaturizationInProgress;
-  BOOL _isOrderingOut;
 }
 @synthesize bridgedNativeWidgetId = _bridgedNativeWidgetId;
 @synthesize bridge = _bridge;
@@ -266,31 +245,13 @@ struct ChildWindowOrderingCommand {
   }
 }
 
-// Overridden to ensure that removing a child window does not trigger a Space
-// change, and to perform post-removal operations.
-- (void)removeChildWindow:(NSWindow*)childWindow {
-  if (self != childWindow.parentWindow) {
+- (void)removeChildWindow:(NSWindow*)childWin {
+  if (self != childWin.parentWindow) {
     return;
   }
-
-  // For any non-Chrome windows (i.e. those created by the frameworks),
-  // remove as usual. Also continue as usual if we're on the active space,
-  // or we happen to be a child of another window.
-  if (![childWindow isKindOfClass:[NativeWidgetMacNSWindow class]] ||
-      [self isOnActiveSpace] || [self parentWindow] != nil) {
-    [super removeChildWindow:childWindow];
-  } else {
-    // Defer removal to avoid triggering a space change.
-    [self removeChildWindowOnActivation:childWindow];
-  }
-
-  // If there's a windowRemoved handler, we'll call it even if we've deferred
-  // the actual NSWindow removal via -removeChildWindowOnActivation:. As far as
-  // Chrome is concerned, the child window no longer exists (for example, it's
-  // no longer in self.ordered_children). The removeChildWindow: that finally
-  // removes the child will happen at some future date.
+  [super removeChildWindow:childWin];
   if (self.childWindowRemovedHandler) {
-    self.childWindowRemovedHandler(childWindow);
+    self.childWindowRemovedHandler(childWin);
   }
 }
 
@@ -523,21 +484,6 @@ struct ChildWindowOrderingCommand {
     return;
   }
 
-  // Calling OrderChildWindow() when we're not on the active Space will
-  // will trigger a Space switch. Instead, save the window ordering command
-  // until we're on the active space.
-  if (![self isOnActiveSpace]) {
-    ChildWindowOrderingCommand newCommand = {orderingMode, otherWindowNumber};
-
-    // Add the command, but ignore any repeats of the last command in the list.
-    if (_windowOrderingCommands.empty() ||
-        _windowOrderingCommands.back() != newCommand) {
-      _windowOrderingCommands.push_back(newCommand);
-    }
-
-    return;
-  }
-
   base::AutoReset<BOOL> shuffling(&_isShufflingForOrdering, YES);
 
   // `otherWindow` is nil if `otherWindowNumber` is 0. In this case, place
@@ -564,7 +510,7 @@ struct ChildWindowOrderingCommand {
 }
 
 - (void)miniaturize:(id)sender {
-  static const BOOL isMacOS13OrHigher = base::mac::IsAtLeastOS13();
+  static const BOOL isMacOS13OrHigher = base::mac::MacOSMajorVersion() >= 13;
   // On macOS 13, the miniaturize operation appears to no longer be "atomic"
   // because of non-blocking roundtrip IPC with the Dock. We want to note here
   // that miniaturization is in progress. The process completes when we
@@ -591,7 +537,7 @@ struct ChildWindowOrderingCommand {
   // _miniaturizationInProgress is NO, the miniaturization process was
   // cancelled by a call to -makeKeyAndOrderFront:. In that case, we don't want
   // to proceed with miniaturization.
-  static const BOOL isMacOS13OrHigher = base::mac::IsAtLeastOS13();
+  static const BOOL isMacOS13OrHigher = base::mac::MacOSMajorVersion() >= 13;
   if (isMacOS13OrHigher && !_miniaturizationInProgress) {
     return;
   }
@@ -607,25 +553,13 @@ struct ChildWindowOrderingCommand {
 
 - (void)orderOut:(id)sender {
   _miniaturizationInProgress = NO;
-  _isOrderingOut = YES;
+  [self maybeRemoveTreeFromOrderingGroups];
+  [super orderOut:sender];
+}
 
-  // If we're a child window and our parent is not on the active space,
-  // arrange for our removal after our parent becomes the active window
-  // to avoid triggering a Space switch.
-  NativeWidgetMacNSWindow* parentWindow =
-      base::apple::ObjCCast<NativeWidgetMacNSWindow>([self parentWindow]);
-  if (parentWindow != nil && ![parentWindow isOnActiveSpace]) {
-    [parentWindow removeChildWindowOnActivation:self];
-  } else {
-    [self processDeferredChildWindowOperations];
-
-    // Throw away our own ordering commands (if we have any).
-    _windowOrderingCommands.clear();
-
-    [super orderOut:sender];
-  }
-
-  _isOrderingOut = NO;
+- (void)close {
+  [self maybeRemoveTreeFromOrderingGroups];
+  [super close];
 }
 
 // NSResponder implementation.
@@ -685,7 +619,7 @@ struct ChildWindowOrderingCommand {
   // https://sector7.computest.nl/post/2022-08-process-injection-breaking-all-macos-security-layers-with-a-single-vulnerability/
   // for more details.
   NSKeyedArchiver* encoder = [[NSKeyedArchiver alloc]
-      initRequiringSecureCoding:base::mac::IsAtLeastOS12()];
+      initRequiringSecureCoding:base::mac::MacOSMajorVersion() >= 12];
   encoder.delegate = self;
   [self encodeRestorableStateWithCoder:encoder];
   [encoder finishEncoding];
@@ -818,81 +752,102 @@ struct ChildWindowOrderingCommand {
   return nil;
 }
 
-- (BOOL)isFullScreen {
-  return (self.styleMask & NSWindowStyleMaskFullScreen) ==
-         NSWindowStyleMaskFullScreen;
-}
-
-- (void)removeChildWindowOnActivation:(NSWindow*)childWindow {
-  if (_childWindowsToRemove == nil) {
-    _childWindowsToRemove = [[NSMutableArray alloc] init];
-  }
-
-  // Ignore if a duplicate request.
-  if ([_childWindowsToRemove containsObject:childWindow]) {
+// During window ordering AppKit rebuilds its internal ordering group for the
+// window tree. A window tree in Chrome's case is the browser window and all of
+// its descendants, which can include Chrome and AppKit created windows. It does
+// this by removing and re-adding each window in the window tree from the
+// ordering group. If a window is re-added to the group while in a non-active
+// space, a space switch can occur. The space switch will only happen if the
+// current window tree has existing windows that are still a part of the
+// ordering group. When there are two levels in the window tree, each window
+// will be removed from the group before windows are re-added to the group. If
+// three or more window levels exist in the tree not all windows will be removed
+// from the group before windows are re-added to the group, causing a space
+// switch to occur. It seems this is an unintentional side effect of AppKit's
+// recursive window tree group rebuilding.
+//
+// To work around this behavior, preemptively remove the window tree from
+// ordering groups. This workaround should be considered low risk, while we are
+// calling an undocumented NSWindow method, removing the window tree from
+// ordering groups is ubiquitous throughout AppKit. Additionally, this
+// preemptive removal is only called before an -orderOut: or -close. AppKit will
+// be doing an ordering group rebuild during those calls. We are also taking
+// care to only apply this workaround when necessary.
+//
+// TODO(http://crbug.com/1454606): Remove this workaround once FB13529873 is
+// fixed in AppKit.
+- (void)maybeRemoveTreeFromOrderingGroups {
+  // This workaround only needed for macOS 13 and greater.
+  if (@available(macOS 13.0, *)) {
+  } else {
     return;
   }
 
-  // Hide `childWindow` by making it transparent and schedule it for deferred
-  // removal.
-  childWindow.alphaValue = 0.0;
-  [_childWindowsToRemove addObject:childWindow];
-}
-
-- (BOOL)willRemoveChildWindowOnActivation:(NSWindow*)aWindow {
-  return [_childWindowsToRemove containsObject:aWindow];
-}
-
-- (BOOL)hasDeferredChildWindowRemovalsForTesting {
-  return _childWindowsToRemove.count > 0;
-}
-
-- (BOOL)hasDeferredChildWindowOrderingCommandsForTesting {
-  return !_windowOrderingCommands.empty();
-}
-
-- (void)processDeferredChildWindowOperations {
-  // Remove any child windows where removal was pending.
-  for (NSWindow* childWindow in _childWindowsToRemove) {
-    [super removeChildWindow:childWindow];
-  }
-  [_childWindowsToRemove removeAllObjects];
-
-  // Process any child window ordering commands, unless we're ordering out.
-  if (_isOrderingOut) {
+  if (!base::FeatureList::IsEnabled(
+          remote_cocoa::features::kImmersiveFullscreenSpaceSwitchMitigation)) {
     return;
   }
 
-  for (NSWindow* childWindow in self.childWindows) {
-    NativeWidgetMacNSWindow* nativeWidgetMacNSWindow =
-        base::apple::ObjCCast<NativeWidgetMacNSWindow>(childWindow);
+  // Only remove from groups if this window is not on the active space.
+  if (self.isOnActiveSpace) {
+    return;
+  }
 
-    [nativeWidgetMacNSWindow
-        performSelector:@selector(processChildWindowOrderingCommands)
-             withObject:nil];
+  // Only remove from groups if the browser is in immersive fullscreen.
+  if (![self immersiveFullscreen]) {
+    return;
+  }
+
+  // Since _removeFromGroups: is not documented it could go away in newer
+  // versions of macOS. If the selector does not exist, DumpWithoutCrashing() so
+  // we hear about the change.
+  if (![NSWindow instancesRespondToSelector:@selector(_removeFromGroups:)]) {
+    base::debug::DumpWithoutCrashing();
+    return;
+  }
+
+  // Iterate instead of recurse. There are other NSWindow types in the tree
+  // besides NativeWidgetMacNSWindow that would not implement our recursion.
+  NSMutableArray* nextWindows = [NSMutableArray array];
+  [nextWindows addObject:[self rootWindow]];
+  while (nextWindows.count) {
+    NSWindow* currentWindow = nextWindows.lastObject;
+    [nextWindows removeLastObject];
+    for (NSWindow* child in currentWindow.childWindows) {
+      [nextWindows addObject:child];
+      [currentWindow _removeFromGroups:child];
+    }
   }
 }
 
-- (void)processChildWindowOrderingCommands {
-  for (const auto& command : _windowOrderingCommands) {
-    [self orderWindowByShuffling:command.windowOrderingMode
-                      relativeTo:command.otherWindowNumber];
+- (NSWindow*)rootWindow {
+  NSWindow* root = self;
+  while (root.parentWindow) {
+    root = root.parentWindow;
   }
-  _windowOrderingCommands.clear();
+  return root;
 }
 
-- (void)becomeMainWindow {
-  [super becomeMainWindow];
-
-  [self processDeferredChildWindowOperations];
+- (BOOL)immersiveFullscreen {
+  NativeWidgetMacNSWindow* rootWidgetWindow =
+      base::apple::ObjCCast<NativeWidgetMacNSWindow>([self rootWindow]);
+  if (rootWidgetWindow &&
+      (rootWidgetWindow.styleMask & NSWindowStyleMaskFullScreen) &&
+      rootWidgetWindow.bridge &&
+      rootWidgetWindow.bridge->ImmersiveFullscreenEnabled()) {
+    return YES;
+  }
+  return NO;
 }
 
-- (void)toggleFullScreen:(id)sender {
-  [super toggleFullScreen:sender];
-
-  // We're either entering fullscreen or exiting - either way, process the
-  // deferred child window operations.
-  [self processDeferredChildWindowOperations];
+#ifndef NDEBUG
+- (NSString*)debugDescription {
+  if (!self.title.length) {
+    return [super debugDescription];
+  }
+  return [NSString
+      stringWithFormat:@"%@ - %@", [super debugDescription], self.title];
 }
+#endif  // NDEBUG
 
 @end

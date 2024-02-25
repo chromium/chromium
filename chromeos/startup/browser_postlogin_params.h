@@ -24,6 +24,9 @@ class COMPONENT_EXPORT(CHROMEOS_STARTUP) BrowserPostLoginParams {
   // before any threads are created in the browser process.
   static void WaitForLogin();
 
+  // Returns true if the user has logged in, false if not.
+  static bool IsLoggedIn();
+
   // Sets `postlogin_params_` to the provided value.
   // Useful for tests that cannot setup a full Lacros test environment with a
   // working Mojo connection to Ash.
@@ -55,6 +58,9 @@ class COMPONENT_EXPORT(CHROMEOS_STARTUP) BrowserPostLoginParams {
 
   // Parameters passed from ash-chrome.
   crosapi::mojom::BrowserPostLoginParamsPtr postlogin_params_;
+
+  // Whether the user has logged in.
+  bool logged_in_ = false;
 };
 
 }  // namespace chromeos

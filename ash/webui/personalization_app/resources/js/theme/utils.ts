@@ -7,7 +7,7 @@
  */
 import {hexColorToSkColor} from 'chrome://resources/js/color_utils.js';
 
-import {ColorScheme} from '../../personalization_app.mojom-webui.js';
+import {ColorScheme} from '../../color_scheme.mojom-webui.js';
 
 export function isAutomaticSeedColorEnabled(colorScheme: ColorScheme|null) {
   return colorScheme === null || colorScheme !== ColorScheme.kStatic;

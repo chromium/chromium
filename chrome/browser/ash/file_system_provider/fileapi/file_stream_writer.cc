@@ -23,8 +23,7 @@
 
 using content::BrowserThread;
 
-namespace ash {
-namespace file_system_provider {
+namespace ash::file_system_provider {
 
 class FileStreamWriter::OperationRunner
     : public base::RefCountedThreadSafe<
@@ -116,7 +115,7 @@ class FileStreamWriter::OperationRunner
       content::BrowserThread::UI>;
   friend class base::DeleteHelper<OperationRunner>;
 
-  virtual ~OperationRunner() {}
+  virtual ~OperationRunner() = default;
 
   // Remembers a file handle for further operations and forwards the result to
   // the IO thread.
@@ -384,5 +383,4 @@ void FileStreamWriter::WriteAfterInitialized(
                                     buffer_length, std::move(callback))));
 }
 
-}  // namespace file_system_provider
-}  // namespace ash
+}  // namespace ash::file_system_provider

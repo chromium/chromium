@@ -7,7 +7,9 @@
 
 #include <stdint.h>
 
-#include <vector>
+#include <concepts>
+#include <memory>
+#include <type_traits>
 
 namespace mojo {
 
@@ -82,40 +84,90 @@ namespace mojo {
 template <typename T, typename U>
 struct TypeConverter;
 
+// The following helper functions are useful shorthand. The compiler can infer
+// the input type, so you can write:
+//   OutputType out = ConvertTo<OutputType>(input);
 template <typename T, typename U>
-inline T ConvertTo(const U& obj);
+  requires requires(U* obj) {
+    { TypeConverter<T, std::remove_cv_t<U>*>::Convert(obj) } -> std::same_as<T>;
+  }
+inline T ConvertTo(U* obj) {
+  return TypeConverter<T, std::remove_cv_t<U>*>::Convert(obj);
+}
 
-// The following specialization is useful when you are converting between
-// Array<POD> and std::vector<POD>.
+template <typename T, typename U>
+  requires requires(const U& obj) {
+    not std::is_pointer_v<U>;
+    { mojo::ConvertTo<T>(std::to_address(obj)) } -> std::same_as<T>;
+  }
+inline T ConvertTo(const U& obj) {
+  return mojo::ConvertTo<T>(std::to_address(obj));
+}
+
+template <typename T, typename U>
+  requires requires(const U& obj) {
+    not std::is_pointer_v<U>;
+    TypeConverter<T, U>::Convert(obj);
+  }
+inline T ConvertTo(const U& obj) {
+  return TypeConverter<T, U>::Convert(obj);
+}
+
 template <typename T>
 struct TypeConverter<T, T> {
   static T Convert(const T& obj) { return obj; }
 };
 
-template <typename T, typename Container>
-struct TypeConverter<std::vector<T>, Container> {
-  static std::vector<T> Convert(const Container& container) {
-    std::vector<T> output;
-    output.reserve(container.size());
-    for (const auto& obj : container) {
-      output.push_back(ConvertTo<T>(obj));
+namespace internal {
+
+template <typename Vec>
+using VecValueType = typename Vec::value_type;
+
+template <typename Vec>
+using VecPtrLikeUnderlyingValueType =
+    std::pointer_traits<VecValueType<Vec>>::element_type;
+
+}  // namespace internal
+
+// Generic specialization for converting between different vector-like
+// containers.
+template <typename OutVec, typename InVec>
+  requires requires(const InVec& in, OutVec& out) {
+    out.reserve(in.size());
+    out.push_back(mojo::ConvertTo<internal::VecValueType<OutVec>>(*in.begin()));
+  }
+struct TypeConverter<OutVec, InVec> {
+  static OutVec Convert(const InVec& in) {
+    OutVec out;
+    out.reserve(in.size());
+    for (const auto& obj : in) {
+      out.push_back(mojo::ConvertTo<internal::VecValueType<OutVec>>(obj));
     }
-    return output;
+    return out;
   }
 };
 
-// The following helper functions are useful shorthand. The compiler can infer
-// the input type, so you can write:
-//   OutputType out = ConvertTo<OutputType>(input);
-template <typename T, typename U>
-inline T ConvertTo(const U& obj) {
-  return TypeConverter<T, U>::Convert(obj);
-}
-
-template <typename T, typename U>
-inline T ConvertTo(const U* obj) {
-  return TypeConverter<T, U*>::Convert(obj);
-}
+// Specialization for converting from Vector<U> to Vector<PtrLike<T>> with only
+// TypeConverter<T*, U> defined.
+template <typename OutVec, typename InVec>
+  requires requires(const InVec& in, OutVec& out) {
+    out.reserve(in.size());
+    out.emplace_back(
+        mojo::ConvertTo<internal::VecPtrLikeUnderlyingValueType<OutVec>*>(
+            *in.begin()));
+  }
+struct TypeConverter<OutVec, InVec> {
+  static OutVec Convert(const InVec& in) {
+    OutVec out;
+    out.reserve(in.size());
+    for (const auto& obj : in) {
+      out.emplace_back(
+          mojo::ConvertTo<internal::VecPtrLikeUnderlyingValueType<OutVec>*>(
+              obj));
+    }
+    return out;
+  }
+};
 
 }  // namespace mojo
 

@@ -1,4 +1,4 @@
-CONSOLE MESSAGE: iframe1: SecurityError: Blocked a frame with origin "null" from accessing a cross-origin frame.
-CONSOLE MESSAGE: iframe1: SecurityError: Blocked a frame with origin "null" from accessing a cross-origin frame.
-CONSOLE MESSAGE: iframe2: SecurityError: Blocked a frame with origin "null" from accessing a cross-origin frame.
+CONSOLE MESSAGE: iframe1: SecurityError: Failed to read a named property 'navigator' from 'Window': Blocked a frame with origin "null" from accessing a cross-origin frame.
+CONSOLE MESSAGE: iframe1: SecurityError: Failed to read a named property 'navigator' from 'Window': Blocked a frame with origin "null" from accessing a cross-origin frame.
+CONSOLE MESSAGE: iframe2: SecurityError: Failed to read a named property 'navigator' from 'Window': Blocked a frame with origin "null" from accessing a cross-origin frame.
  

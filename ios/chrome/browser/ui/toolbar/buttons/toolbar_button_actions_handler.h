@@ -12,6 +12,7 @@
 @protocol PopupMenuCommands;
 @protocol OmniboxCommands;
 
+class TabBasedIPHBrowserAgent;
 class WebNavigationBrowserAgent;
 namespace feature_engagement {
 class Tracker;
@@ -27,6 +28,7 @@ class Tracker;
 @property(nonatomic, weak) id<OmniboxCommands> omniboxHandler;
 
 @property(nonatomic, assign) WebNavigationBrowserAgent* navigationAgent;
+@property(nonatomic, assign) TabBasedIPHBrowserAgent* tabBasedIPHAgent;
 
 // Whether this handler is created in incognito.
 @property(nonatomic, assign) BOOL incognito;

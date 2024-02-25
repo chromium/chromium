@@ -23,7 +23,7 @@ class OneDriveBrowserProxy {
     return instance || (instance = new OneDriveBrowserProxy());
   }
 
-  static setInstance(proxy: OneDriveBrowserProxy) {
+  static setInstance(proxy: OneDriveBrowserProxy): void {
     instance = proxy;
   }
 }

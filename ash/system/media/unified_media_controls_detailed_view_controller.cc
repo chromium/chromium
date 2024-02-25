@@ -13,6 +13,7 @@
 #include "ash/system/tray/detailed_view_delegate.h"
 #include "ash/system/tray/tray_constants.h"
 #include "base/metrics/histogram_functions.h"
+#include "components/global_media_controls/public/constants.h"
 #include "components/media_message_center/notification_theme.h"
 #include "ui/base/l10n/l10n_util.h"
 
@@ -25,9 +26,11 @@ bool UnifiedMediaControlsDetailedViewController::detailed_view_has_shown_ =
 UnifiedMediaControlsDetailedViewController::
     UnifiedMediaControlsDetailedViewController(
         UnifiedSystemTrayController* tray_controller,
+        global_media_controls::GlobalMediaControlsEntryPoint entry_point,
         const std::string& show_devices_for_item_id)
     : detailed_view_delegate_(
           std::make_unique<DetailedViewDelegate>(tray_controller)),
+      entry_point_(entry_point),
       show_devices_for_item_id_(show_devices_for_item_id) {}
 
 UnifiedMediaControlsDetailedViewController::
@@ -61,11 +64,10 @@ UnifiedMediaControlsDetailedViewController::CreateView() {
       "Media.CrosGlobalMediaControls.RepeatUsageInQuickSetting",
       detailed_view_has_shown_);
   detailed_view_has_shown_ = true;
-
   return std::make_unique<UnifiedMediaControlsDetailedView>(
       detailed_view_delegate_.get(),
       MediaNotificationProvider::Get()->GetMediaNotificationListView(
-          kMenuSeparatorWidth, /*should_clip_height=*/false, /*item_id=*/"",
+          kMenuSeparatorWidth, /*should_clip_height=*/false, entry_point_,
           show_devices_for_item_id_));
 }
 

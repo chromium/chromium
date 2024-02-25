@@ -5,9 +5,10 @@
 import {TestRunner} from 'test_runner';
 import {ElementsTestRunner} from 'elements_test_runner';
 
+import * as ElementsModule from 'devtools/panels/elements/elements.js';
+
 (async function() {
   TestRunner.addResult(`Tests elements drag and drop operation internals, verifies post-move selection.\n`);
-  await TestRunner.loadLegacyModule('elements');
   await TestRunner.showPanel('elements');
   await TestRunner.loadHTML(`
       <div id="container">
@@ -34,13 +35,13 @@ import {ElementsTestRunner} from 'elements_test_runner';
 
     function testDragAndDrop(next) {
       var treeOutline = ElementsTestRunner.firstElementsTreeOutline();
-      treeOutline.addEventListener(Elements.ElementsTreeOutline.Events.SelectedNodeChanged, selectionChanged);
+      treeOutline.addEventListener(ElementsModule.ElementsTreeOutline.ElementsTreeOutline.Events.SelectedNodeChanged, selectionChanged);
 
       function selectionChanged() {
         TestRunner.addResult('===== Moved child2 =====');
         ElementsTestRunner.dumpElementsTree(containerNode);
         TestRunner.addResult(
-            'Selection: ' + Elements.DOMPath.fullQualifiedSelector(treeOutline.selectedDOMNode()));
+            'Selection: ' + ElementsModule.DOMPath.fullQualifiedSelector(treeOutline.selectedDOMNode()));
         next();
       }
 

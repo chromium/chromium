@@ -9,7 +9,6 @@
 #include "components/mirroring/service/remoting_sender.h"
 #include "components/mirroring/service/rpc_dispatcher.h"
 #include "media/base/media_switches.h"
-#include "media/cast/net/cast_transport.h"
 #include "third_party/openscreen/src/cast/streaming/sender.h"
 
 using media::cast::Codec;
@@ -46,43 +45,24 @@ void MediaRemoter::StartRpcMessaging(
     scoped_refptr<media::cast::CastEnvironment> cast_environment,
     std::unique_ptr<openscreen::cast::Sender> audio_sender,
     std::unique_ptr<openscreen::cast::Sender> video_sender,
-    absl::optional<FrameSenderConfig> audio_config,
-    absl::optional<FrameSenderConfig> video_config) {
+    std::optional<FrameSenderConfig> audio_config,
+    std::optional<FrameSenderConfig> video_config) {
   DCHECK(audio_sender || video_sender);
   DCHECK(!openscreen_audio_sender_);
   DCHECK(!openscreen_video_sender_);
-  DCHECK(!transport_);
-  DCHECK(base::FeatureList::IsEnabled(media::kOpenscreenCastStreamingSession));
-
   openscreen_audio_sender_ = std::move(audio_sender);
   openscreen_video_sender_ = std::move(video_sender);
   StartRpcMessagingInternal(std::move(cast_environment),
                             std::move(audio_config), std::move(video_config));
 }
 
-void MediaRemoter::StartRpcMessaging(
-    scoped_refptr<media::cast::CastEnvironment> cast_environment,
-    media::cast::CastTransport* transport,
-    absl::optional<FrameSenderConfig> audio_config,
-    absl::optional<FrameSenderConfig> video_config) {
-  DCHECK(!openscreen_audio_sender_);
-  DCHECK(!openscreen_video_sender_);
-  DCHECK(!transport_);
-  DCHECK(!base::FeatureList::IsEnabled(media::kOpenscreenCastStreamingSession));
-
-  transport_ = transport;
-  StartRpcMessagingInternal(std::move(cast_environment),
-                            std::move(audio_config), std::move(video_config));
-}
-
 void MediaRemoter::StartRpcMessagingInternal(
     scoped_refptr<media::cast::CastEnvironment> cast_environment,
-    absl::optional<FrameSenderConfig> audio_config,
-    absl::optional<FrameSenderConfig> video_config) {
+    std::optional<FrameSenderConfig> audio_config,
+    std::optional<FrameSenderConfig> video_config) {
   DCHECK(!cast_environment_);
 
   if (state_ != STARTING_REMOTING) {
-    transport_ = nullptr;
     openscreen_audio_sender_ = nullptr;
     openscreen_video_sender_ = nullptr;
     return;  // Start operation was canceled.
@@ -141,11 +121,10 @@ void MediaRemoter::Stop(media::mojom::RemotingStopReason reason) {
   audio_sender_.reset();
   video_sender_.reset();
   cast_environment_ = nullptr;
-  transport_ = nullptr;
   openscreen_audio_sender_ = nullptr;
   openscreen_video_sender_ = nullptr;
-  audio_config_ = absl::nullopt;
-  video_config_ = absl::nullopt;
+  audio_config_ = std::nullopt;
+  video_config_ = std::nullopt;
 
   // Don't change `state_` if remoting is disabled so that it won't attempt to
   // start remoting again after mirroring resumed.
@@ -181,25 +160,8 @@ void MediaRemoter::StartDataStreams(
         video_sender_receiver) {
   if (state_ != REMOTING_STARTED)
     return;  // Stop() was called before.
-  DCHECK(cast_environment_);
-  if (base::FeatureList::IsEnabled(media::kOpenscreenCastStreamingSession)) {
-    StartOpenscreenDataStreams(std::move(audio_pipe), std::move(video_pipe),
-                               std::move(audio_sender_receiver),
-                               std::move(video_sender_receiver));
-  } else {
-    StartLegacyDataStreams(std::move(audio_pipe), std::move(video_pipe),
-                           std::move(audio_sender_receiver),
-                           std::move(video_sender_receiver));
-  }
-}
 
-void MediaRemoter::StartOpenscreenDataStreams(
-    mojo::ScopedDataPipeConsumerHandle audio_pipe,
-    mojo::ScopedDataPipeConsumerHandle video_pipe,
-    mojo::PendingReceiver<media::mojom::RemotingDataStreamSender>
-        audio_sender_receiver,
-    mojo::PendingReceiver<media::mojom::RemotingDataStreamSender>
-        video_sender_receiver) {
+  DCHECK(cast_environment_);
   DCHECK(openscreen_audio_sender_ || openscreen_video_sender_);
 
   if (audio_pipe.is_valid() && audio_config_ &&
@@ -218,34 +180,6 @@ void MediaRemoter::StartOpenscreenDataStreams(
     video_sender_ = std::make_unique<RemotingSender>(
         cast_environment_, std::move(openscreen_video_sender_), *video_config_,
         std::move(video_pipe), std::move(video_sender_receiver),
-        base::BindOnce(&MediaRemoter::OnRemotingDataStreamError,
-                       base::Unretained(this)));
-  }
-}
-
-void MediaRemoter::StartLegacyDataStreams(
-    mojo::ScopedDataPipeConsumerHandle audio_pipe,
-    mojo::ScopedDataPipeConsumerHandle video_pipe,
-    mojo::PendingReceiver<media::mojom::RemotingDataStreamSender>
-        audio_sender_receiver,
-    mojo::PendingReceiver<media::mojom::RemotingDataStreamSender>
-        video_sender_receiver) {
-  if (audio_pipe.is_valid() && audio_config_ &&
-      audio_config_->codec == Codec::kAudioRemote) {
-    DCHECK(transport_);
-    audio_sender_ = std::make_unique<RemotingSender>(
-        cast_environment_, transport_, *audio_config_, std::move(audio_pipe),
-        std::move(audio_sender_receiver),
-        base::BindOnce(&MediaRemoter::OnRemotingDataStreamError,
-                       base::Unretained(this)));
-  }
-
-  if (video_pipe.is_valid() && video_config_ &&
-      video_config_->codec == Codec::kVideoRemote) {
-    DCHECK(transport_);
-    video_sender_ = std::make_unique<RemotingSender>(
-        cast_environment_, transport_, *video_config_, std::move(video_pipe),
-        std::move(video_sender_receiver),
         base::BindOnce(&MediaRemoter::OnRemotingDataStreamError,
                        base::Unretained(this)));
   }

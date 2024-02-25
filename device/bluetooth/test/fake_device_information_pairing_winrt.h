@@ -10,8 +10,7 @@
 #include <wrl/implements.h>
 
 #include <string>
-
-#include "base/strings/string_piece_forward.h"
+#include <string_view>
 
 namespace device {
 
@@ -28,7 +27,7 @@ class FakeDeviceInformationPairingWinrt
       ABI::Windows::Devices::Enumeration::DevicePairingKinds pairing_kind);
   explicit FakeDeviceInformationPairingWinrt(
       ABI::Windows::Devices::Enumeration::DevicePairingKinds pairing_kind,
-      base::StringPiece display_pin);
+      std::string_view display_pin);
 
   FakeDeviceInformationPairingWinrt(const FakeDeviceInformationPairingWinrt&) =
       delete;

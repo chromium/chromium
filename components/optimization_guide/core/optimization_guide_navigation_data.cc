@@ -52,7 +52,7 @@ void OptimizationGuideNavigationData::RecordOptimizationGuideUKM() const {
   if (!registered_optimization_types_.empty()) {
     int64_t types_bitmask = 0;
     for (const auto& optimization_type : registered_optimization_types_) {
-      types_bitmask |= (1 << static_cast<int>(optimization_type));
+      types_bitmask |= (int64_t{1} << static_cast<int>(optimization_type));
     }
     builder.SetRegisteredOptimizationTypes(types_bitmask);
     did_record_metric = true;
@@ -60,7 +60,7 @@ void OptimizationGuideNavigationData::RecordOptimizationGuideUKM() const {
   if (!registered_optimization_targets_.empty()) {
     int64_t targets_bitmask = 0;
     for (const auto& optimization_target : registered_optimization_targets_) {
-      targets_bitmask |= (1 << static_cast<int>(optimization_target));
+      targets_bitmask |= (int64_t{1} << static_cast<int>(optimization_target));
     }
     builder.SetRegisteredOptimizationTargets(targets_bitmask);
     did_record_metric = true;
@@ -71,18 +71,18 @@ void OptimizationGuideNavigationData::RecordOptimizationGuideUKM() const {
     builder.Record(ukm::UkmRecorder::Get());
 }
 
-absl::optional<base::TimeDelta>
+std::optional<base::TimeDelta>
 OptimizationGuideNavigationData::hints_fetch_latency() const {
   if (!hints_fetch_start_ || !hints_fetch_end_) {
     // Either a fetch was not initiated for this navigation or the fetch did not
     // completely successfully.
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   if (*hints_fetch_end_ < *hints_fetch_start_) {
     // This can happen if a hints fetch was started for a redirect, but the
     // fetch had not successfully completed yet.
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   return *hints_fetch_end_ - *hints_fetch_start_;

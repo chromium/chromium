@@ -6,12 +6,12 @@
 #define COMPONENTS_WEB_PACKAGE_WEB_BUNDLE_PARSER_H_
 
 #include <memory>
+#include <optional>
 
 #include "base/containers/flat_set.h"
 #include "base/containers/unique_ptr_adapters.h"
 #include "components/web_package/mojom/web_bundle_parser.mojom.h"
 #include "mojo/public/cpp/bindings/remote.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
 namespace web_package {
@@ -46,22 +46,26 @@ class WebBundleParser : public mojom::WebBundleParser {
 
   // mojom::WebBundleParser implementation.
   void ParseIntegrityBlock(ParseIntegrityBlockCallback callback) override;
-  void ParseMetadata(absl::optional<uint64_t> offset,
+  void ParseMetadata(std::optional<uint64_t> offset,
                      ParseMetadataCallback callback) override;
   void ParseResponse(uint64_t response_offset,
                      uint64_t response_length,
                      ParseResponseCallback callback) override;
+  void Close(CloseCallback parser_closed_callback) override;
+  void OnDataSourceClosed(CloseCallback parser_closed_callback);
 
   void ActivateParser(std::unique_ptr<WebBundleSectionParser> parser);
   void OnParsingComplete(WebBundleSectionParser* parser,
                          base::OnceClosure result_callback);
   void OnDisconnect();
+  bool CheckIfClosed();
 
   GURL base_url_;
   base::flat_set<std::unique_ptr<WebBundleSectionParser>,
                  base::UniquePtrComparator>
       active_parsers_;
   mojo::Remote<mojom::BundleDataSource> data_source_;
+  bool is_closed_ = false;
 };
 
 }  // namespace web_package

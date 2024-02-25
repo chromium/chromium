@@ -146,12 +146,10 @@ TEST(JsonSchemaCompilerErrorTest, WrongTypeValueType) {
   }
   {
     base::Value value = Dictionary("otherType", Value(1.1));
-    errors::ObjectType out;
-    std::u16string error;
-    EXPECT_FALSE(errors::ObjectType::Populate(value.GetDict(), out, error));
+    auto out = errors::ObjectType::FromValue(value.GetDict());
+    ASSERT_FALSE(out.has_value());
     EXPECT_TRUE(EqualsUtf16("'otherType': expected dictionary, got double",
-        error));
-    EXPECT_FALSE(out.other_type.has_value());
+                            out.error()));
   }
 }
 
@@ -225,13 +223,10 @@ TEST(JsonSchemaCompilerErrorTest, ErrorOnOptionalFailure) {
   {
     base::Value value = Dictionary("string", Value(1));
 
-    errors::OptionalTestType out;
-    std::u16string error;
-    EXPECT_FALSE(
-        errors::OptionalTestType::Populate(value.GetDict(), out, error));
-    EXPECT_TRUE(EqualsUtf16("'string': expected string, got integer",
-        error));
-    EXPECT_FALSE(out.string);
+    auto out = errors::OptionalTestType::FromValue(value.GetDict());
+    ASSERT_FALSE(out.has_value());
+    EXPECT_TRUE(
+        EqualsUtf16("'string': expected string, got integer", out.error()));
   }
 }
 
@@ -245,13 +240,10 @@ TEST(JsonSchemaCompilerErrorTest, OptionalBinaryTypeFailure) {
     // There's a bug with silent failures if the key doesn't exist.
     base::Value value = Dictionary("data", Value(1));
 
-    errors::OptionalBinaryData out;
-    std::u16string error;
-    EXPECT_FALSE(
-        errors::OptionalBinaryData::Populate(value.GetDict(), out, error));
-    EXPECT_TRUE(EqualsUtf16("'data': expected binary, got integer",
-        error));
-    EXPECT_FALSE(out.data.has_value());
+    auto out = errors::OptionalBinaryData::FromValue(value.GetDict());
+    ASSERT_FALSE(out.has_value());
+    EXPECT_TRUE(
+        EqualsUtf16("'data': expected binary, got integer", out.error()));
   }
 }
 
@@ -264,12 +256,10 @@ TEST(JsonSchemaCompilerErrorTest, OptionalArrayTypeFailure) {
   }
   {
     base::Value value = Dictionary("TheArray", Value(5));
-    errors::ArrayObject out;
-    std::u16string error;
-    EXPECT_FALSE(errors::ArrayObject::Populate(value.GetDict(), out, error));
-    EXPECT_TRUE(EqualsUtf16("'TheArray': expected list, got integer",
-        error));
-    EXPECT_FALSE(out.the_array.has_value());
+    auto out = errors::ArrayObject::FromValue(value.GetDict());
+    EXPECT_FALSE(out.has_value());
+    EXPECT_TRUE(
+        EqualsUtf16("'TheArray': expected list, got integer", out.error()));
   }
 }
 
@@ -282,15 +272,12 @@ TEST(JsonSchemaCompilerErrorTest, OptionalUnableToPopulateArray) {
   }
   {
     base::Value params_value = List(Value(5), Value(false));
-    errors::OptionalChoiceType::Integers out;
-    std::u16string error;
-    EXPECT_FALSE(errors::OptionalChoiceType::Integers::Populate(params_value,
-                                                                out, error));
+    auto out = errors::OptionalChoiceType::Integers::FromValue(params_value);
+    EXPECT_FALSE(out.has_value());
     EXPECT_TRUE(
         EqualsUtf16("Error at key 'integers': Parsing array failed at index 1: "
                     "expected integer, got boolean",
-                    error));
-    EXPECT_FALSE(out.as_integer.has_value());
+                    out.error()));
   }
 }
 

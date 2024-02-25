@@ -32,13 +32,13 @@ class SegmentationResultPrefsTest : public testing::Test {
 TEST_F(SegmentationResultPrefsTest, WriteResultAndRead) {
   std::string result_key = "some_key";
   // Start test with no result.
-  absl::optional<SelectedSegment> current_result =
+  std::optional<SelectedSegment> current_result =
       result_prefs_->ReadSegmentationResultFromPref(result_key);
   EXPECT_FALSE(current_result.has_value());
 
   // Save a result. Verify by reading the result back.
   SegmentId segment_id = SegmentId::OPTIMIZATION_TARGET_SEGMENTATION_NEW_TAB;
-  SelectedSegment selected_segment(segment_id, absl::nullopt);
+  SelectedSegment selected_segment(segment_id, std::nullopt);
   result_prefs_->SaveSegmentationResultToPref(result_key, selected_segment);
   current_result = result_prefs_->ReadSegmentationResultFromPref(result_key);
   EXPECT_TRUE(current_result.has_value());
@@ -82,7 +82,7 @@ TEST_F(SegmentationResultPrefsTest, WriteResultAndRead) {
   EXPECT_EQ(10, *current_result->rank);
 
   // Save empty result. It should delete the current result.
-  result_prefs_->SaveSegmentationResultToPref(result_key, absl::nullopt);
+  result_prefs_->SaveSegmentationResultToPref(result_key, std::nullopt);
   current_result = result_prefs_->ReadSegmentationResultFromPref(result_key);
   EXPECT_FALSE(current_result.has_value());
 }
@@ -91,7 +91,7 @@ TEST_F(SegmentationResultPrefsTest, CorruptedValue) {
   std::string result_key = "some_key";
   SelectedSegment selected_segment(static_cast<SegmentId>(100), 1);
   result_prefs_->SaveSegmentationResultToPref(result_key, selected_segment);
-  absl::optional<SelectedSegment> current_result =
+  std::optional<SelectedSegment> current_result =
       result_prefs_->ReadSegmentationResultFromPref(result_key);
   EXPECT_TRUE(current_result.has_value());
   EXPECT_EQ(100, current_result->segment_id);

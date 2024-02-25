@@ -22,13 +22,20 @@ import org.chromium.url.GURL;
 public interface PlayerCompositorDelegate {
     /** An interface that creates an instance of {@link PlayerCompositorDelegate}. */
     interface Factory {
-        PlayerCompositorDelegate create(NativePaintPreviewServiceProvider service, GURL url,
-                String directoryKey, boolean mainFrameMode,
+        PlayerCompositorDelegate create(
+                NativePaintPreviewServiceProvider service,
+                GURL url,
+                String directoryKey,
+                boolean mainFrameMode,
                 @NonNull CompositorListener compositorListener,
                 Callback<Integer> compositorErrorCallback);
 
-        PlayerCompositorDelegate createForCaptureResult(NativePaintPreviewServiceProvider service,
-                long nativeCaptureResultPtr, GURL url, String directoryKey, boolean mainFrameMode,
+        PlayerCompositorDelegate createForCaptureResult(
+                NativePaintPreviewServiceProvider service,
+                long nativeCaptureResultPtr,
+                GURL url,
+                String directoryKey,
+                boolean mainFrameMode,
                 @NonNull CompositorListener compositorListener,
                 Callback<Integer> compositorErrorCallback);
     }
@@ -66,9 +73,15 @@ public interface PlayerCompositorDelegate {
          * @param nativeAxTree Native pointer to the accessibility tree snapshot. The implementer
          * of this method will be the owner of this object and should delete it once it's used.
          */
-        void onCompositorReady(UnguessableToken rootFrameGuid, UnguessableToken[] frameGuids,
-                int[] frameContentSize, int[] scrollOffsets, int[] subFramesCount,
-                UnguessableToken[] subFrameGuids, int[] subFrameClipRects, float pageScaleFactor,
+        void onCompositorReady(
+                UnguessableToken rootFrameGuid,
+                UnguessableToken[] frameGuids,
+                int[] frameContentSize,
+                int[] scrollOffsets,
+                int[] subFramesCount,
+                UnguessableToken[] subFrameGuids,
+                int[] subFrameClipRects,
+                float pageScaleFactor,
                 long nativeAxTree);
     }
 
@@ -90,8 +103,12 @@ public interface PlayerCompositorDelegate {
      * @return an int representing the ID for the bitmap request. Can be used with {@link
      * cancelBitmapRequest(int)} to cancel the request if possible.
      */
-    int requestBitmap(UnguessableToken frameGuid, Rect clipRect, float scaleFactor,
-            Callback<Bitmap> bitmapCallback, Runnable errorCallback);
+    int requestBitmap(
+            UnguessableToken frameGuid,
+            Rect clipRect,
+            float scaleFactor,
+            Callback<Bitmap> bitmapCallback,
+            Runnable errorCallback);
 
     /**
      * Requests a new bitmap for a frame from the Paint Preview compositor if {@link mainFrameMode}
@@ -105,7 +122,10 @@ public interface PlayerCompositorDelegate {
      * @return an int representing the ID for the bitmap request. Can be used with {@link
      * cancelBitmapRequest(int)} to cancel the request if possible.
      */
-    int requestBitmap(Rect clipRect, float scaleFactor, Callback<Bitmap> bitmapCallback,
+    int requestBitmap(
+            Rect clipRect,
+            float scaleFactor,
+            Callback<Bitmap> bitmapCallback,
             Runnable errorCallback);
 
     /**
@@ -115,9 +135,7 @@ public interface PlayerCompositorDelegate {
      */
     boolean cancelBitmapRequest(int requestId);
 
-    /**
-     * Cancels all outstanding bitmap requests.
-     */
+    /** Cancels all outstanding bitmap requests. */
     void cancelAllBitmapRequests();
 
     /**
@@ -143,8 +161,6 @@ public interface PlayerCompositorDelegate {
      */
     default void setCompressOnClose(boolean compressOnClose) {}
 
-    /**
-     * Called when PlayerCompositorDelegate needs to be destroyed.
-     */
+    /** Called when PlayerCompositorDelegate needs to be destroyed. */
     default void destroy() {}
 }

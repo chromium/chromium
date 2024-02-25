@@ -16,17 +16,30 @@ NodePart* NodePart::Create(PartRootUnion* root_union,
                            Node* node,
                            const PartInit* init,
                            ExceptionState& exception_state) {
+  if (!IsAcceptableNodeType(*node)) {
+    exception_state.ThrowDOMException(
+        DOMExceptionCode::kInvalidNodeTypeError,
+        "The provided node is not a valid node for a NodePart.");
+    return nullptr;
+  }
   return MakeGarbageCollected<NodePart>(
       *PartRoot::GetPartRootFromUnion(root_union), *node, init);
 }
 
-NodePart::NodePart(PartRoot& root, Node& node, const Vector<String> metadata)
-    : Part(root, metadata), node_(node) {
+NodePart::NodePart(PartRoot& root,
+                   Node& node,
+                   bool add_to_parts_list,
+                   Vector<String> metadata)
+    : Part(root, std::move(metadata)), node_(node) {
+  CHECK(IsAcceptableNodeType(node));
   node.AddDOMPart(*this);
+  if (add_to_parts_list) {
+    root.AddPart(*this);
+  }
 }
 
 void NodePart::disconnect() {
-  if (disconnected_) {
+  if (!IsConnected()) {
     CHECK(!node_);
     return;
   }
@@ -42,29 +55,14 @@ void NodePart::Trace(Visitor* visitor) const {
   Part::Trace(visitor);
 }
 
-bool NodePart::IsValid() const {
-  // A NodePart is valid if the base Part is valid (has a root), and if there
-  // is a node reference.
-  return Part::IsValid() && node_;
-}
-
 Node* NodePart::NodeToSortBy() const {
-  return node_;
+  return node_.Get();
 }
 
-Part* NodePart::ClonePart(NodeCloningData& data) const {
+Part* NodePart::ClonePart(NodeCloningData& data, Node& node_clone) const {
   DCHECK(IsValid());
-  PartRoot* new_part_root = data.ClonedPartRootFor(*root());
-  // TODO(crbug.com/1453291) Eventually it should *not* be possible to construct
-  // Parts that get cloned without their PartRoots. But as-is, that can happen
-  // if, for example, a ChildNodePart contains child Nodes that are part of
-  // other ChildNodeParts or NodeParts whose `root` is not this ChildNodePart.
-  if (!new_part_root) {
-    return nullptr;
-  }
-  Node* new_node = data.ClonedNodeFor(*node_);
-  CHECK(new_node);
-  return MakeGarbageCollected<NodePart>(*new_part_root, *new_node, metadata());
+  return MakeGarbageCollected<NodePart>(data.CurrentPartRoot(), node_clone,
+                                        metadata().AsVector());
 }
 
 Document& NodePart::GetDocument() const {

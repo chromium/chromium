@@ -8,7 +8,6 @@ import {NetworkTestRunner} from 'network_test_runner';
 
 (async function() {
   TestRunner.addResult(`Checks that we show warning message for long cookie.\n`);
-  await TestRunner.loadLegacyModule('console');
   await TestRunner.showPanel('network');
 
   NetworkTestRunner.makeFetch(

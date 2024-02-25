@@ -20,10 +20,10 @@
 #import "ios/chrome/browser/shared/model/browser_state/test_chrome_browser_state.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
-#import "ios/chrome/browser/url_loading/url_loading_params.h"
+#import "ios/chrome/browser/url_loading/model/url_loading_params.h"
 #import "ios/testing/open_url_context.h"
 #import "ios/web/public/test/web_task_environment.h"
-#import "net/base/mac/url_conversions.h"
+#import "net/base/apple/url_conversions.h"
 #import "testing/gtest_mac.h"
 #import "testing/platform_test.h"
 #import "third_party/ocmock/OCMock/OCMock.h"
@@ -171,9 +171,9 @@ TEST_F(URLOpenerTest, HandleOpenURL) {
           URLOpenerParams* urlOpenerParams = [[URLOpenerParams alloc]
               initWithUIOpenURLContext:(id)context];  //< Unsafe cast intended.
 
-          ChromeAppStartupParameters* params = [ChromeAppStartupParameters
-              newChromeAppStartupParametersWithURL:testUrl
-                             fromSourceApplication:nil];
+          ChromeAppStartupParameters* params =
+              [ChromeAppStartupParameters startupParametersWithURL:testUrl
+                                                 sourceApplication:nil];
 
           // Action.
           BOOL result = [URLOpener openURL:urlOpenerParams
@@ -220,12 +220,9 @@ TEST_F(URLOpenerTest, HandleOpenURL) {
 TEST_F(URLOpenerTest, VerifyLaunchOptions) {
   // Setup.
   NSURL* url = [NSURL URLWithString:@"chromium://www.google.com"];
-  NSDictionary* launchOptions = @{
-    UIApplicationLaunchOptionsURLKey : url,
-    UIApplicationLaunchOptionsSourceApplicationKey : @"com.apple.mobilesafari"
-  };
   URLOpenerParams* urlOpenerParams =
-      [[URLOpenerParams alloc] initWithLaunchOptions:launchOptions];
+      [[URLOpenerParams alloc] initWithURL:url
+                         sourceApplication:@"com.apple.mobilesafari"];
 
   id tabOpenerMock = [OCMockObject mockForProtocol:@protocol(TabOpening)];
 
@@ -285,11 +282,8 @@ TEST_F(URLOpenerTest, VerifyLaunchOptionsNil) {
 TEST_F(URLOpenerTest, VerifyLaunchOptionsWithNoSourceApplication) {
   // Setup.
   NSURL* url = [NSURL URLWithString:@"chromium://www.google.com"];
-  NSDictionary* launchOptions = @{
-    UIApplicationLaunchOptionsURLKey : url,
-  };
-  URLOpenerParams* urlOpenerParams =
-      [[URLOpenerParams alloc] initWithLaunchOptions:launchOptions];
+  URLOpenerParams* urlOpenerParams = [[URLOpenerParams alloc] initWithURL:url
+                                                        sourceApplication:nil];
 
   MockTabOpener* tabOpenerMock = [[MockTabOpener alloc] init];
 
@@ -327,11 +321,9 @@ TEST_F(URLOpenerTest, VerifyLaunchOptionsWithNoSourceApplication) {
 // Tests that -handleApplication set startup parameters as expected with no url.
 TEST_F(URLOpenerTest, VerifyLaunchOptionsWithNoURL) {
   // Setup.
-  NSDictionary* launchOptions = @{
-    UIApplicationLaunchOptionsSourceApplicationKey : @"com.apple.mobilesafari"
-  };
   URLOpenerParams* urlOpenerParams =
-      [[URLOpenerParams alloc] initWithLaunchOptions:launchOptions];
+      [[URLOpenerParams alloc] initWithURL:nil
+                         sourceApplication:@"com.apple.mobilesafari"];
 
   // Creates a mock with no stub. This test will pass only if we don't use these
   // objects.
@@ -355,12 +347,9 @@ TEST_F(URLOpenerTest, VerifyLaunchOptionsWithNoURL) {
 TEST_F(URLOpenerTest, VerifyLaunchOptionsWithBadURL) {
   // Setup.
   NSURL* url = [NSURL URLWithString:@"chromium.www.google.com"];
-  NSDictionary* launchOptions = @{
-    UIApplicationLaunchOptionsURLKey : url,
-    UIApplicationLaunchOptionsSourceApplicationKey : @"com.apple.mobilesafari"
-  };
   URLOpenerParams* urlOpenerParams =
-      [[URLOpenerParams alloc] initWithLaunchOptions:launchOptions];
+      [[URLOpenerParams alloc] initWithURL:url
+                         sourceApplication:@"com.apple.mobilesafari"];
 
   id tabOpenerMock = [OCMockObject mockForProtocol:@protocol(TabOpening)];
 
@@ -392,12 +381,9 @@ TEST_F(URLOpenerTest, VerifyLaunchOptionsWithBadURL) {
 TEST_F(URLOpenerTest, PresentingFirstRunUI) {
   // Setup.
   NSURL* url = [NSURL URLWithString:@"chromium://www.google.com"];
-  NSDictionary* launchOptions = @{
-    UIApplicationLaunchOptionsURLKey : url,
-    UIApplicationLaunchOptionsSourceApplicationKey : @"com.apple.mobilesafari"
-  };
   URLOpenerParams* urlOpenerParams =
-      [[URLOpenerParams alloc] initWithLaunchOptions:launchOptions];
+      [[URLOpenerParams alloc] initWithURL:url
+                         sourceApplication:@"com.apple.mobilesafari"];
   id tabOpenerMock = [OCMockObject mockForProtocol:@protocol(TabOpening)];
   id startupInformationMock =
       [OCMockObject mockForProtocol:@protocol(StartupInformation)];

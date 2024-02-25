@@ -8,6 +8,7 @@
 
 #include "gpu/command_buffer/tests/gl_manager.h"
 #include "gpu/command_buffer/tests/gl_test_utils.h"
+#include "gpu/config/gpu_test_config.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace gpu {
@@ -16,7 +17,14 @@ namespace {
 
 class GLOOBAttribTest : public testing::Test {
  protected:
-  void SetUp() override { gl_.Initialize(GLManager::Options()); }
+  void SetUp() override {
+    if (GPUTestBotConfig::CurrentConfigMatches("Android ARM 0x92020010")) {
+      // TODO(crbug.com/1157073): remove suppression when passthrough ships.
+      // Crashes on Pixel 6 validating
+      GTEST_SKIP();
+    }
+    gl_.Initialize(GLManager::Options());
+  }
   void TearDown() override { gl_.Destroy(); }
   GLManager gl_;
 };

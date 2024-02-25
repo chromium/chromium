@@ -42,6 +42,9 @@ class FakeLocalPrinter : public crosapi::mojom::LocalPrinter {
       mojo::PendingRemote<crosapi::mojom::PrintJobObserver> remote,
       crosapi::mojom::PrintJobSource source,
       AddPrintJobObserverCallback callback) override;
+  void AddLocalPrintersObserver(
+      mojo::PendingRemote<crosapi::mojom::LocalPrintersObserver> remote,
+      AddLocalPrintersObserverCallback callback) override;
   void GetOAuthAccessToken(const std::string& printer_id,
                            GetOAuthAccessTokenCallback callback) override;
   void GetIppClientInfo(const std::string& printer_id,

@@ -101,6 +101,11 @@ src$ tools/perf/run_benchmark benchmark_name --story-filter story_name
 If the run crashes, it is often helpful to add the `-v` flag in order to better
 understand what is causing the crash.
 
+If you would like to add logging to the browser to help debug, or if you need to
+see a stack trace for a crash, use
+`--extra-browser-args=--enable-logging=stdout` and `--show-stdout` to see that
+logging.
+
 ### Can I get a trace?
 
 For most metrics, yes. Here are the steps:

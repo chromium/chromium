@@ -112,7 +112,7 @@ allocation_recorder::Payload CreatePayloadWithMemoryOperationReport(
 }
 
 allocation_recorder::Payload CreatePayloadWithProcessingFailures(
-    base::span<const base::StringPiece> error_messages) {
+    base::span<const std::string_view> error_messages) {
   allocation_recorder::Payload full_report;
   auto& destination_messages =
       *(full_report.mutable_processing_failures()->mutable_messages());

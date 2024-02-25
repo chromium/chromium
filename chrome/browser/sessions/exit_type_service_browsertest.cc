@@ -205,8 +205,7 @@ IN_PROC_BROWSER_TEST_F(ExitTypeServiceTest, PRE_CloseCrashBubbleEnablesSaving) {
 }
 
 // TODO(crbug.com/1473975): Re-enable test that flakily times out
-#if BUILDFLAG(IS_CHROMEOS) && defined(ADDRESS_SANITIZER) && \
-    defined(LEAK_SANITIZER)
+#if BUILDFLAG(IS_CHROMEOS)
 #define MAYBE_CloseCrashBubbleEnablesSaving \
   DISABLED_CloseCrashBubbleEnablesSaving
 #else

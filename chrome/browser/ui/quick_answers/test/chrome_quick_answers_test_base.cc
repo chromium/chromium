@@ -6,7 +6,10 @@
 
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
+#include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
 #include "chrome/browser/ui/quick_answers/quick_answers_controller_impl.h"
+#include "chrome/test/base/testing_profile.h"
+#include "components/user_manager/user_manager.h"
 #include "ui/base/models/simple_menu_model.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/controls/menu/menu_runner.h"
@@ -16,11 +19,21 @@ ChromeQuickAnswersTestBase::ChromeQuickAnswersTestBase() = default;
 
 ChromeQuickAnswersTestBase::~ChromeQuickAnswersTestBase() = default;
 
+ash::FakeChromeUserManager* GetFakeUserManager() {
+  return static_cast<ash::FakeChromeUserManager*>(
+      user_manager::UserManager::Get());
+}
+
 void ChromeQuickAnswersTestBase::SetUp() {
   ChromeAshTestBase::SetUp();
 
-  if (!QuickAnswersController::Get())
-    quick_answers_controller_ = std::make_unique<QuickAnswersControllerImpl>();
+  TestingProfile::Builder profile_builder;
+  profile_ = profile_builder.Build();
+  auto account_id = AccountId::FromUserEmail(profile_->GetProfileUserName());
+  GetFakeUserManager()->AddUser(account_id);
+  GetFakeUserManager()->LoginUser(account_id);
+
+  quick_answers_controller_ = std::make_unique<QuickAnswersControllerImpl>();
 
   CreateUserSessions(/*session_count=*/1);
 }

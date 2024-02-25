@@ -4,9 +4,11 @@
 
 #include "chrome/browser/ui/views/page_action/page_action_icon_controller.h"
 
+#include "base/containers/contains.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/immediate_crash.h"
+#include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/strcat.h"
@@ -29,7 +31,7 @@
 #include "chrome/browser/ui/views/location_bar/cookie_controls/cookie_controls_icon_view.h"
 #include "chrome/browser/ui/views/location_bar/find_bar_icon.h"
 #include "chrome/browser/ui/views/location_bar/intent_picker_view.h"
-#include "chrome/browser/ui/views/location_bar/old_cookie_controls_icon_view.h"
+#include "chrome/browser/ui/views/location_bar/read_anything_icon_view.h"
 #include "chrome/browser/ui/views/location_bar/star_view.h"
 #include "chrome/browser/ui/views/location_bar/zoom_bubble_view.h"
 #include "chrome/browser/ui/views/page_action/page_action_icon_container.h"
@@ -37,7 +39,7 @@
 #include "chrome/browser/ui/views/page_action/pwa_install_view.h"
 #include "chrome/browser/ui/views/page_action/zoom_view.h"
 #include "chrome/browser/ui/views/passwords/manage_passwords_icon_views.h"
-#include "chrome/browser/ui/views/performance_controls/high_efficiency_chip_view.h"
+#include "chrome/browser/ui/views/performance_controls/memory_saver_chip_view.h"
 #include "chrome/browser/ui/views/qrcode_generator/qrcode_generator_icon_view.h"
 #include "chrome/browser/ui/views/reader_mode/reader_mode_icon_view.h"
 #include "chrome/browser/ui/views/send_tab_to_self/send_tab_to_self_icon_view.h"
@@ -123,18 +125,10 @@ void PageActionIconController::Init(const PageActionIconParams& params,
                           SharingDialogView::GetAsBubbleForClickToCall)));
         break;
       case PageActionIconType::kCookieControls:
-        if (base::FeatureList::IsEnabled(
-                content_settings::features::kUserBypassUI)) {
-          add_page_action_icon(
-              type, std::make_unique<CookieControlsIconView>(
-                        params.browser, params.icon_label_bubble_delegate,
-                        params.page_action_icon_delegate));
-        } else {
-          add_page_action_icon(type,
-                               std::make_unique<OldCookieControlsIconView>(
-                                   params.icon_label_bubble_delegate,
-                                   params.page_action_icon_delegate));
-        }
+        add_page_action_icon(
+            type, std::make_unique<CookieControlsIconView>(
+                      params.browser, params.icon_label_bubble_delegate,
+                      params.page_action_icon_delegate));
         break;
       case PageActionIconType::kFind:
         add_page_action_icon(
@@ -142,8 +136,8 @@ void PageActionIconController::Init(const PageActionIconParams& params,
                       params.browser, params.icon_label_bubble_delegate,
                       params.page_action_icon_delegate));
         break;
-      case PageActionIconType::kHighEfficiency:
-        add_page_action_icon(type, std::make_unique<HighEfficiencyChipView>(
+      case PageActionIconType::kMemorySaver:
+        add_page_action_icon(type, std::make_unique<MemorySaverChipView>(
                                        params.command_updater, params.browser,
                                        params.icon_label_bubble_delegate,
                                        params.page_action_icon_delegate));
@@ -202,6 +196,12 @@ void PageActionIconController::Init(const PageActionIconParams& params,
             type, std::make_unique<qrcode_generator::QRCodeGeneratorIconView>(
                       params.command_updater, params.icon_label_bubble_delegate,
                       params.page_action_icon_delegate));
+        break;
+      case PageActionIconType::kReadAnything:
+        add_page_action_icon(type, std::make_unique<ReadAnythingIconView>(
+                                       params.command_updater, params.browser,
+                                       params.icon_label_bubble_delegate,
+                                       params.page_action_icon_delegate));
         break;
       case PageActionIconType::kReaderMode:
         DCHECK(params.command_updater);
@@ -369,11 +369,9 @@ void PageActionIconController::OnPageActionIconViewShown(
       page_actions_excluded_from_logging_.end()) {
     page_actions_excluded_from_logging_[url] = {};
   }
-  std::vector<PageActionIconView*> excluded_actions_on_page =
-      page_actions_excluded_from_logging_[url];
-  if (!view->ephemeral() || std::find(excluded_actions_on_page.begin(),
-                                      excluded_actions_on_page.end(),
-                                      view) != excluded_actions_on_page.end()) {
+  std::vector<raw_ptr<PageActionIconView, VectorExperimental>>
+      excluded_actions_on_page = page_actions_excluded_from_logging_[url];
+  if (!view->ephemeral() || base::Contains(excluded_actions_on_page, view)) {
     return;
   }
   RecordOverallMetrics();
@@ -440,14 +438,12 @@ void PageActionIconController::RecordMetricsOnURLChange(GURL url) {
       page_actions_excluded_from_logging_.end()) {
     page_actions_excluded_from_logging_[url] = {};
   }
-  std::vector<PageActionIconView*> excluded_actions_on_page =
-      page_actions_excluded_from_logging_[url];
+  std::vector<raw_ptr<PageActionIconView, VectorExperimental>>
+      excluded_actions_on_page = page_actions_excluded_from_logging_[url];
   RecordOverallMetrics();
   for (auto icon_item : page_action_icon_views_) {
     if (!icon_item.second->ephemeral() || !icon_item.second->GetVisible() ||
-        std::find(excluded_actions_on_page.begin(),
-                  excluded_actions_on_page.end(),
-                  icon_item.second) != excluded_actions_on_page.end()) {
+        base::Contains(excluded_actions_on_page, icon_item.second)) {
       continue;
     }
     RecordIndividualMetrics(icon_item.first, icon_item.second);

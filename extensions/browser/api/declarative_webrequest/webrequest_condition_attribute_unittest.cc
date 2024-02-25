@@ -252,7 +252,7 @@ base::Value::Dict GetDictFromArray(
     const std::string* name = array[i];
     const std::string* value = array[i+1];
     if (base::Value* entry = dict.Find(*name)) {
-      absl::optional<base::Value> entry_owned;
+      std::optional<base::Value> entry_owned;
       switch (entry->type()) {
         case base::Value::Type::STRING: {
           // Replace the present string with a list.

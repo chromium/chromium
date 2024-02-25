@@ -12,8 +12,8 @@
 #include "ash/public/cpp/external_arc/message_center/arc_notification_view.h"
 #include "ash/public/cpp/style/color_provider.h"
 #include "ash/style/ash_color_provider.h"
-#include "ash/system/message_center/ash_notification_control_button_factory.h"
-#include "ash/system/message_center/message_center_constants.h"
+#include "ash/system/notification_center/ash_notification_control_button_factory.h"
+#include "ash/system/notification_center/message_center_constants.h"
 #include "base/auto_reset.h"
 #include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_macros.h"
@@ -70,7 +70,7 @@ class ArcNotificationContentView::MouseEnterExitHandler
   }
 
  private:
-  const raw_ptr<ArcNotificationContentView, ExperimentalAsh> owner_;
+  const raw_ptr<ArcNotificationContentView> owner_;
 };
 
 class ArcNotificationContentView::EventForwarder : public ui::EventHandler {
@@ -105,8 +105,9 @@ class ArcNotificationContentView::EventForwarder : public ui::EventHandler {
       return;
 
     views::Widget* widget = owner_->GetWidget();
-    if (!widget)
+    if (!widget || !widget->GetNativeWindow()) {
       return;
+    }
 
     // Forward the events to the containing widget, except for:
     // 1. Touches, because View should no longer receive touch events.
@@ -130,8 +131,9 @@ class ArcNotificationContentView::EventForwarder : public ui::EventHandler {
           located_event->IsMouseWheelEvent()) {
         widget->OnMouseEvent(located_event->AsMouseEvent());
       } else if (located_event->IsScrollEvent()) {
-        widget->OnScrollEvent(located_event->AsScrollEvent());
         owner_->item_->CancelPress();
+        widget->OnScrollEvent(located_event->AsScrollEvent());
+        return;
       } else if (located_event->IsGestureEvent() &&
                  event->type() != ui::ET_GESTURE_TAP) {
         bool slide_handled_by_android = false;
@@ -221,7 +223,7 @@ class ArcNotificationContentView::EventForwarder : public ui::EventHandler {
   // Android.
   bool swipe_captured_ = false;
 
-  const raw_ptr<ArcNotificationContentView, ExperimentalAsh> owner_;
+  const raw_ptr<ArcNotificationContentView> owner_;
   bool is_current_slide_handled_by_android_ = false;
 
   base::ScopedObservation<ui::EventTarget, ui::EventHandler> observation_{this};
@@ -257,7 +259,7 @@ class ArcNotificationContentView::SlideHelper {
   }
 
  private:
-  const raw_ptr<ArcNotificationContentView, ExperimentalAsh> owner_;
+  const raw_ptr<ArcNotificationContentView> owner_;
 
   // True if the view is not at the original position.
   bool slide_in_progress_ = false;
@@ -394,8 +396,9 @@ void ArcNotificationContentView::UpdateCornerRadius(float top_radius,
   top_radius_ = top_radius;
   bottom_radius_ = bottom_radius;
 
-  if (GetWidget())
+  if (GetWidget() && GetNativeViewContainer()) {
     UpdateMask(force_update);
+  }
 }
 
 void ArcNotificationContentView::OnSlideChanged(bool in_progress) {
@@ -422,10 +425,10 @@ void ArcNotificationContentView::MaybeCreateFloatingControlButtons() {
   // of the hosting widget's focus chain. It could only be created when both
   // are present. Further, if we are being destroyed (|item_| is null), don't
   // create the control buttons.
-  if (!surface_ || !GetWidget() || !item_)
+  if (!surface_ || !GetWidget() || !item_ || control_buttons_view_.parent()) {
     return;
+  }
 
-  DCHECK(!control_buttons_view_.parent());
   DCHECK(!floating_control_buttons_widget_);
 
   views::Widget::InitParams params(views::Widget::InitParams::TYPE_CONTROL);
@@ -444,7 +447,7 @@ void ArcNotificationContentView::MaybeCreateFloatingControlButtons() {
       GetWidget()->GetFocusTraversable());
   floating_control_buttons_widget_->SetFocusTraversableParentView(this);
 
-  Layout();
+  DeprecatedLayoutImmediately();
 }
 
 void ArcNotificationContentView::SetSurface(ArcNotificationSurface* surface) {
@@ -551,6 +554,23 @@ void ArcNotificationContentView::AttachSurface() {
   UpdateMask(false /* force_update */);
 }
 
+void ArcNotificationContentView::EnsureSurfaceAttached() {
+  if (!surface_ || surface_->IsAttached()) {
+    return;
+  }
+  AttachSurface();
+}
+
+void ArcNotificationContentView::EnsureSurfaceDetached() {
+  if (!GetWidget()) {
+    return;
+  }
+
+  if (surface_ && surface_->IsAttached()) {
+    surface_->Detach();
+  }
+}
+
 void ArcNotificationContentView::ShowCopiedSurface() {
   if (!surface_)
     return;
@@ -575,7 +595,7 @@ void ArcNotificationContentView::HideCopiedSurface() {
     return;
   DCHECK(surface_->GetWindow());
   surface_->GetWindow()->layer()->SetOpacity(1.0f);
-  Layout();
+  DeprecatedLayoutImmediately();
   surface_copy_.reset();
 
   // Re-install the mask since the custom mask is unset by
@@ -653,7 +673,7 @@ void ArcNotificationContentView::ViewHierarchyChanged(
   AttachSurface();
 }
 
-void ArcNotificationContentView::Layout() {
+void ArcNotificationContentView::Layout(PassKey) {
   base::AutoReset<bool> auto_reset_in_layout(&in_layout_, true);
 
   if (!surface_ || !GetWidget())
@@ -661,11 +681,11 @@ void ArcNotificationContentView::Layout() {
 
   bool is_surface_visible = (surface_->GetWindow()->layer()->opacity() != 0.0f);
   if (is_surface_visible) {
-    // |views::NativeViewHost::Layout()| can be called only when the hosted
+    // views::NativeViewHost::Layout() can be triggered only when the hosted
     // window is opaque, because that method calls
-    // |views::NativeViewHostAura::ShowWidget()| and |aura::Window::Show()|
-    // which has DCHECK the opacity of the window.
-    views::NativeViewHost::Layout();
+    // views::NativeViewHostAura::ShowWidget() and aura::Window::Show() which
+    // DCHECKs the opacity of the window.
+    LayoutSuperclass<views::NativeViewHost>(this);
     // Reinstall mask to update rounded mask insets. Set null mask unless radius
     // is set.
     UpdateMask(false /* force_update */);
@@ -855,7 +875,7 @@ void ArcNotificationContentView::OnWindowBoundsChanged(
     return;
 
   UpdatePreferredSize();
-  Layout();
+  DeprecatedLayoutImmediately();
 }
 
 void ArcNotificationContentView::OnWindowDestroying(aura::Window* window) {
@@ -922,7 +942,7 @@ void ArcNotificationContentView::OnNotificationSurfaceRemoved(
   SetSurface(nullptr);
 }
 
-BEGIN_METADATA(ArcNotificationContentView, views::NativeViewHost)
+BEGIN_METADATA(ArcNotificationContentView)
 END_METADATA
 
 }  // namespace ash

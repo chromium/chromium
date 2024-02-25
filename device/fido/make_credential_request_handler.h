@@ -6,6 +6,7 @@
 #define DEVICE_FIDO_MAKE_CREDENTIAL_REQUEST_HANDLER_H_
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <utility>
 #include <vector>
@@ -25,7 +26,6 @@
 #include "device/fido/fido_transport_protocol.h"
 #include "device/fido/fido_types.h"
 #include "device/fido/pin.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base {
 class ElapsedTimer;
@@ -60,6 +60,7 @@ enum class MakeCredentialStatus {
   kWinInvalidStateError,
   kWinNotAllowedError,
   kHybridTransportError,
+  kEnclaveError,
 };
 
 class COMPONENT_EXPORT(DEVICE_FIDO) MakeCredentialRequestHandler
@@ -69,7 +70,7 @@ class COMPONENT_EXPORT(DEVICE_FIDO) MakeCredentialRequestHandler
  public:
   using CompletionCallback = base::OnceCallback<void(
       MakeCredentialStatus,
-      absl::optional<AuthenticatorMakeCredentialResponse>,
+      std::optional<AuthenticatorMakeCredentialResponse>,
       const FidoAuthenticator*)>;
 
   MakeCredentialRequestHandler(
@@ -112,13 +113,13 @@ class COMPONENT_EXPORT(DEVICE_FIDO) MakeCredentialRequestHandler
   void HavePINUVAuthTokenResultForAuthenticator(
       FidoAuthenticator* authenticator,
       AuthTokenRequester::Result result,
-      absl::optional<pin::TokenResponse> response) override;
+      std::optional<pin::TokenResponse> response) override;
 
   // BioEnroller::Delegate:
   void OnSampleCollected(BioEnrollmentSampleStatus status,
                          int samples_remaining) override;
   void OnEnrollmentDone(
-      absl::optional<std::vector<uint8_t>> template_id) override;
+      std::optional<std::vector<uint8_t>> template_id) override;
   void OnEnrollmentError(CtapDeviceResponseCode status) override;
 
   void ObtainPINUVAuthToken(FidoAuthenticator* authenticator,
@@ -129,13 +130,13 @@ class COMPONENT_EXPORT(DEVICE_FIDO) MakeCredentialRequestHandler
       std::unique_ptr<CtapMakeCredentialRequest> request,
       FidoAuthenticator* authenticator,
       CtapDeviceResponseCode status,
-      absl::optional<bool> unused);
+      std::optional<bool> unused);
   void HandleResponse(
       FidoAuthenticator* authenticator,
       std::unique_ptr<CtapMakeCredentialRequest> request,
       base::ElapsedTimer request_timer,
       CtapDeviceResponseCode response_code,
-      absl::optional<AuthenticatorMakeCredentialResponse> response);
+      std::optional<AuthenticatorMakeCredentialResponse> response);
   void HandleExcludedAuthenticator(FidoAuthenticator* authenticator);
   void HandleInapplicableAuthenticator(FidoAuthenticator* authenticator,
                                        MakeCredentialStatus status);
@@ -154,7 +155,7 @@ class COMPONENT_EXPORT(DEVICE_FIDO) MakeCredentialRequestHandler
   State state_ = State::kWaitingForTouch;
   bool suppress_attestation_ = false;
   CtapMakeCredentialRequest request_;
-  absl::optional<base::RepeatingClosure> bio_enrollment_complete_barrier_;
+  std::optional<base::RepeatingClosure> bio_enrollment_complete_barrier_;
   const MakeCredentialOptions options_;
 
   std::map<FidoAuthenticator*, std::unique_ptr<AuthTokenRequester>>
@@ -166,7 +167,7 @@ class COMPONENT_EXPORT(DEVICE_FIDO) MakeCredentialRequestHandler
   // object and this pointer is cleared if it's removed during processing.
   raw_ptr<FidoAuthenticator> selected_authenticator_for_pin_uv_auth_token_ =
       nullptr;
-  absl::optional<pin::TokenResponse> token_;
+  std::optional<pin::TokenResponse> token_;
   std::unique_ptr<BioEnroller> bio_enroller_;
 
   // On ChromeOS, non-U2F cross-platform requests may be dispatched to the

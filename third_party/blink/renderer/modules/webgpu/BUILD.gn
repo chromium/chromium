@@ -53,6 +53,8 @@ blink_modules_sources("webgpu") {
     "gpu_internal_error.cc",
     "gpu_internal_error.h",
     "gpu_map_mode.h",
+    "gpu_memory_heap_info.cc",
+    "gpu_memory_heap_info.h",
     "gpu_out_of_memory_error.cc",
     "gpu_out_of_memory_error.h",
     "gpu_pipeline_error.cc",

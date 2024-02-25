@@ -5,19 +5,22 @@
 <video></video>
 <script>
 async_test(function(t) {
-    var video = document.querySelector("video");
-    navigator.mediaDevices.getUserMedia({ video: true }).then(function(stream) {
-        video.srcObject = stream;
-        video.play();
-    }, t.unreached_func("getUserMedia failed"));
+  var video = document.querySelector("video");
 
-    var num_progress = 0;
-    video.onprogress = () => { num_progress += 1; };
+  var num_progress = 0;
+  video.onprogress = () => { num_progress += 1; };
 
-    // Wait 1.5 second to ensure that the "progress" event is not fired more
-    // than once.
+  // Wait 1.5 second from the first frame to ensure that the "progress" event
+  // is not fired more than once.
+  video.requestVideoFrameCallback(() => {
     setTimeout(t.step_func_done(() => {
       assert_equals(num_progress, 1);
     }), 1500);
+  })
+
+  navigator.mediaDevices.getUserMedia({ video: true }).then(function (stream) {
+    video.srcObject = stream;
+    video.play();
+  }, t.unreached_func("getUserMedia failed"));
 });
 </script>

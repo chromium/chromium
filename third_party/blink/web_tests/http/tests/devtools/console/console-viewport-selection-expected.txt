@@ -13,8 +13,8 @@ EOL
 
 Running: testSelectionMultiLineText
 Selected text:<<<EOL
-ole-viewport-selection.js:16 Message #74
-console-viewport-selection.js:16 Message #75
+ole-viewport-selection.js:18 Message #74
+console-viewport-selection.js:18 Message #75
 console
 EOL
 
@@ -58,10 +58,10 @@ Running: testSelectAll
 Selected all 150 messages.
 
 Running: testSelectWithNonTextNodeContainer
-Selected text: console-viewport-selection.js:16 Message #1
+Selected text: console-viewport-selection.js:18 Message #1
 
-Selected text: console-viewport-selection.js:16 Message #1
+Selected text: console-viewport-selection.js:18 Message #1
 
-Selected text: console-viewport-selection.js:16 Message #1
+Selected text: console-viewport-selection.js:18 Message #1
 
 

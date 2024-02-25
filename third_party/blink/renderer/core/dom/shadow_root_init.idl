@@ -8,8 +8,12 @@ enum ShadowRootMode { "open", "closed" };
 enum SlotAssignmentMode { "manual", "named" };
 
 dictionary ShadowRootInit {
-    required ShadowRootMode mode;
-    boolean delegatesFocus;
-    SlotAssignmentMode slotAssignment;
-    [RuntimeEnabled=ScopedCustomElementRegistry] CustomElementRegistry registry;
+  required ShadowRootMode mode;
+  boolean delegatesFocus;
+  SlotAssignmentMode slotAssignment;
+  [RuntimeEnabled=ScopedCustomElementRegistry] CustomElementRegistry registry;
+  [RuntimeEnabled=ElementGetHTML] boolean serializable;
+  [RuntimeEnabled=ShadowRootClonable] boolean clonable;
+  // Note: if you add a parameter here, be sure to add it to the list of checks
+  // in Element::attachShadow() for existing declarative shadow roots.
 };

@@ -50,8 +50,7 @@ test(function(t) {
 
 test(function(t) {
     var axModal2 = axElementById("modal-2");
-    assert_equals(axModal2.isModal, false);
-    assert_equals(axModal2.isIgnored, true);
+    assert_equals(typeof axModal2, "undefined");
 }, "A closed HTML dialog has no accessibility node");
 
 test(function(t) {

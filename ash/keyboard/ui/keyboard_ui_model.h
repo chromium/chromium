@@ -39,7 +39,7 @@ std::string StateToStr(KeyboardUIState state);
 
 // Returns a unique hash of a state transition, used for histograms.
 // The hashes correspond to the KeyboardControllerStateTransition entry in
-// tools/metrics/enums.xml.
+// tools/metrics/histograms/enums.xml.
 constexpr int GetStateTransitionHash(KeyboardUIState prev,
                                      KeyboardUIState next) {
   return static_cast<int>(prev) * 1000 + static_cast<int>(next);

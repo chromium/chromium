@@ -6,6 +6,7 @@
 
 #include "base/functional/bind.h"
 #include "content/browser/loader/navigation_loader_interceptor.h"
+#include "content/browser/loader/response_head_update_params.h"
 #include "content/browser/service_worker/service_worker_main_resource_handle.h"
 #include "content/browser/service_worker/service_worker_main_resource_loader_interceptor.h"
 #include "content/public/browser/browser_task_traits.h"
@@ -48,13 +49,9 @@ WorkerScriptLoader::WorkerScriptLoader(
     Abort();
     return;
   }
-  auto service_worker_interceptor =
-      ServiceWorkerMainResourceLoaderInterceptor::CreateForWorker(
-          resource_request_, isolation_info, process_id, worker_token,
-          service_worker_handle_);
-
-  if (service_worker_interceptor)
-    interceptors_.push_back(std::move(service_worker_interceptor));
+  interceptor_ = ServiceWorkerMainResourceLoaderInterceptor::CreateForWorker(
+      resource_request_, isolation_info, process_id, worker_token,
+      service_worker_handle_);
 
   Start();
 }
@@ -89,16 +86,14 @@ void WorkerScriptLoader::Start() {
     return;
   }
 
-  if (interceptor_index_ < interceptors_.size()) {
-    auto* interceptor = interceptors_[interceptor_index_++].get();
-    interceptor->MaybeCreateLoader(
+  if (interceptor_) {
+    interceptor_->MaybeCreateLoader(
         resource_request_, browser_context,
         base::BindOnce(&WorkerScriptLoader::MaybeStartLoader,
-                       weak_factory_.GetWeakPtr(), interceptor),
+                       weak_factory_.GetWeakPtr(), interceptor_.get()),
         base::BindOnce(
             [](base::WeakPtr<WorkerScriptLoader> self,
-               bool /*reset_subresource_loader_params*/,
-               const net::LoadTimingInfo&) {
+               ResponseHeadUpdateParams) {
               if (self) {
                 self->LoadFromNetwork();
               }
@@ -111,8 +106,8 @@ void WorkerScriptLoader::Start() {
 }
 
 void WorkerScriptLoader::MaybeStartLoader(
-    NavigationLoaderInterceptor* interceptor,
-    scoped_refptr<network::SharedURLLoaderFactory> single_request_factory) {
+    ServiceWorkerMainResourceLoaderInterceptor* interceptor,
+    std::optional<NavigationLoaderInterceptor::Result> interceptor_result) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   DCHECK(!completed_);
   DCHECK(interceptor);
@@ -123,15 +118,14 @@ void WorkerScriptLoader::MaybeStartLoader(
     return;
   }
 
-  // Create SubresourceLoaderParams for intercepting subresource requests and
-  // populating the "controller" field in ServiceWorkerContainer. This can be
-  // null if the interceptor is not interested in this request.
   subresource_loader_params_ =
-      interceptor->MaybeCreateSubresourceLoaderParams();
+      interceptor_result
+          ? std::move(interceptor_result->subresource_loader_params)
+          : SubresourceLoaderParams();
 
-  if (single_request_factory) {
+  if (interceptor_result && interceptor_result->single_request_factory) {
     // The interceptor elected to handle the request. Use it.
-    url_loader_factory_ = std::move(single_request_factory);
+    url_loader_factory_ = std::move(interceptor_result->single_request_factory);
     url_loader_.reset();
     url_loader_factory_->CreateLoaderAndStart(
         url_loader_.BindNewPipeAndPassReceiver(), request_id_, options_,
@@ -142,21 +136,14 @@ void WorkerScriptLoader::MaybeStartLoader(
     return;
   }
 
-  // We shouldn't try the remaining interceptors if this interceptor provides
-  // SubresourceLoaderParams. For details, see comments on
-  // NavigationLoaderInterceptor::MaybeCreateSubresourceLoaderParams().
-  if (subresource_loader_params_)
-    interceptor_index_ = interceptors_.size();
-
-  // Continue until all the interceptors are tried.
-  Start();
+  // The interceptor didn't elect to handle the request. Fallback to network.
+  LoadFromNetwork();
 }
 
 void WorkerScriptLoader::LoadFromNetwork() {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   DCHECK(!completed_);
 
-  default_loader_used_ = true;
   url_loader_client_receiver_.reset();
   url_loader_factory_ = default_loader_factory_;
   url_loader_.reset();
@@ -175,7 +162,7 @@ void WorkerScriptLoader::FollowRedirect(
     const std::vector<std::string>& removed_headers,
     const net::HttpRequestHeaders& modified_headers,
     const net::HttpRequestHeaders& modified_cors_exempt_headers,
-    const absl::optional<GURL>& new_url) {
+    const std::optional<GURL>& new_url) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   DCHECK(!new_url.has_value()) << "Redirect with modified URL was not "
                                   "supported yet. crbug.com/845683";
@@ -199,7 +186,6 @@ void WorkerScriptLoader::FollowRedirect(
   resource_request_.referrer_policy = redirect_info_->new_referrer_policy;
 
   // Restart the request.
-  interceptor_index_ = 0;
   url_loader_client_receiver_.reset();
   redirect_info_.reset();
 
@@ -243,7 +229,7 @@ void WorkerScriptLoader::OnReceiveEarlyHints(
 void WorkerScriptLoader::OnReceiveResponse(
     network::mojom::URLResponseHeadPtr response_head,
     mojo::ScopedDataPipeConsumerHandle body,
-    absl::optional<mojo_base::BigBuffer> cached_metadata) {
+    std::optional<mojo_base::BigBuffer> cached_metadata) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   client_->OnReceiveResponse(std::move(response_head), std::move(body),
                              std::move(cached_metadata));
@@ -286,42 +272,6 @@ void WorkerScriptLoader::OnComplete(
 }
 
 // URLLoaderClient end ---------------------------------------------------------
-
-bool WorkerScriptLoader::MaybeCreateLoaderForResponse(
-    const network::URLLoaderCompletionStatus& status,
-    network::mojom::URLResponseHeadPtr* response_head,
-    mojo::ScopedDataPipeConsumerHandle* response_body,
-    mojo::PendingRemote<network::mojom::URLLoader>* response_url_loader,
-    mojo::PendingReceiver<network::mojom::URLLoaderClient>*
-        response_client_receiver,
-    blink::ThrottlingURLLoader* url_loader) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
-
-  // TODO(crbug/898755): This is odd that NavigationLoaderInterceptor::
-  // MaybeCreateLoader() is called directly from WorkerScriptLoader. But
-  // NavigationLoaderInterceptor::MaybeCreateLoaderForResponse() is called from
-  // WorkerScriptFetcher::OnReceiveResponse(). This is due to the wired design
-  // of WorkerScriptLoader and WorkerScriptFetcher and the interceptors. The
-  // interceptors should be owned by WorkerScriptFetcher.
-  DCHECK(default_loader_used_);
-  for (auto& interceptor : interceptors_) {
-    bool skip_other_interceptors = false;
-    bool will_return_unsafe_redirect = false;
-    if (interceptor->MaybeCreateLoaderForResponse(
-            status, resource_request_, response_head, response_body,
-            response_url_loader, response_client_receiver, url_loader,
-            &skip_other_interceptors, &will_return_unsafe_redirect)) {
-      // ServiceWorkerMainResourceLoaderInterceptor doesn't set
-      // skip_other_interceptors or will_return_unsafe_redirect.
-      DCHECK(!skip_other_interceptors);
-      DCHECK(!will_return_unsafe_redirect);
-      subresource_loader_params_ =
-          interceptor->MaybeCreateSubresourceLoaderParams();
-      return true;
-    }
-  }
-  return false;
-}
 
 void WorkerScriptLoader::CommitCompleted(
     const network::URLLoaderCompletionStatus& status) {

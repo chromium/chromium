@@ -39,7 +39,7 @@ class URLLoaderClientCheckedRemote final {
     void OnReceiveResponse(
         network::mojom::URLResponseHeadPtr head,
         mojo::ScopedDataPipeConsumerHandle body,
-        absl::optional<mojo_base::BigBuffer> cached_metadata) {
+        std::optional<mojo_base::BigBuffer> cached_metadata) {
       on_receive_response_called_ = true;
       client_->OnReceiveResponse(std::move(head), std::move(body),
                                  std::move(cached_metadata));

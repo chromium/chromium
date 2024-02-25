@@ -46,9 +46,9 @@ class Shape;
 class LogoViewImpl : public LogoView,
                      public chromeos::assistant::StateAnimatorTimerDelegate,
                      public ui::CompositorAnimationObserver {
- public:
-  METADATA_HEADER(LogoViewImpl);
+  METADATA_HEADER(LogoViewImpl, LogoView)
 
+ public:
   using Dot = chromeos::assistant::Dot;
   using Logo = chromeos::assistant::Logo;
   using StateAnimator = chromeos::assistant::StateAnimator;
@@ -94,7 +94,7 @@ class LogoViewImpl : public LogoView,
 
   StateAnimator state_animator_;
 
-  raw_ptr<ui::Compositor, ExperimentalAsh> animating_compositor_ = nullptr;
+  raw_ptr<ui::Compositor> animating_compositor_ = nullptr;
 
   float dots_scale_ = 1.0f;
 

@@ -69,7 +69,7 @@ class DEVICE_BLUETOOTH_EXPORT FakeBluetoothAdapterClient
                            ErrorCallback error_callback) override;
   void ConnectDevice(const dbus::ObjectPath& object_path,
                      const std::string& address,
-                     const absl::optional<AddressType>& address_type,
+                     const std::optional<AddressType>& address_type,
                      ConnectDeviceCallback callback,
                      ErrorCallback error_callback) override;
 
@@ -98,6 +98,9 @@ class DEVICE_BLUETOOTH_EXPORT FakeBluetoothAdapterClient
 
   // Set discoverable timeout
   void SetDiscoverableTimeout(base::TimeDelta timeout);
+
+  // Set adapter roles
+  void SetRoles(const std::vector<std::string>& roles);
 
   // Object path, name and addresses of the adapters we emulate.
   static const char kAdapterPath[];

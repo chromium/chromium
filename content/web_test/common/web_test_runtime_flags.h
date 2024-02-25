@@ -30,7 +30,7 @@ class WebTestRuntimeFlags {
 
 #define DEFINE_BOOL_WEB_TEST_RUNTIME_FLAG(name)             \
   bool name() const {                                       \
-    absl::optional<bool> result =                           \
+    std::optional<bool> result =                            \
         dict_.current_values().FindBoolByDottedPath(#name); \
     DCHECK(result);                                         \
     return *result;                                         \
@@ -39,7 +39,7 @@ class WebTestRuntimeFlags {
 
 #define DEFINE_INT_WEB_TEST_RUNTIME_FLAG(name)             \
   int name() const {                                       \
-    absl::optional<int> result =                           \
+    std::optional<int> result =                            \
         dict_.current_values().FindIntByDottedPath(#name); \
     DCHECK(result);                                        \
     return *result;                                        \
@@ -83,10 +83,14 @@ class WebTestRuntimeFlags {
   // named frame printed.
   DEFINE_STRING_WEB_TEST_RUNTIME_FLAG(printing_frame)
 
-  // Width and height of the pages to print to. Set both to 0 in order to use
+  // Default page width and height when printing. Set both to 0 in order to use
   // the frame width / height.
   DEFINE_INT_WEB_TEST_RUNTIME_FLAG(printing_width)
   DEFINE_INT_WEB_TEST_RUNTIME_FLAG(printing_height)
+
+  // Default page margin size when printing. This default margin will apply to
+  // all four sides of the page.
+  DEFINE_INT_WEB_TEST_RUNTIME_FLAG(printing_margin)
 
   // If true, don't dump output until notifyDone is called.
   DEFINE_BOOL_WEB_TEST_RUNTIME_FLAG(wait_until_done)
@@ -115,8 +119,6 @@ class WebTestRuntimeFlags {
   DEFINE_BOOL_WEB_TEST_RUNTIME_FLAG(dump_drag_image)
 
   // Flags influencing behavior of WebTestContentSettingsClient.
-  DEFINE_BOOL_WEB_TEST_RUNTIME_FLAG(images_allowed)
-  DEFINE_BOOL_WEB_TEST_RUNTIME_FLAG(scripts_allowed)
   DEFINE_BOOL_WEB_TEST_RUNTIME_FLAG(storage_allowed)
   DEFINE_BOOL_WEB_TEST_RUNTIME_FLAG(running_insecure_content_allowed)
   DEFINE_BOOL_WEB_TEST_RUNTIME_FLAG(dump_web_content_settings_client_callbacks)

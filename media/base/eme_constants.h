@@ -7,9 +7,10 @@
 
 #include <stdint.h>
 
+#include <optional>
+
 #include "media/base/media_export.h"
 #include "media/media_buildflags.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace media {
 
@@ -35,20 +36,21 @@ enum EmeCodec : uint32_t {
   EME_CODEC_VP9_PROFILE2 = 1 << 6,  // VP9 profiles 2
   EME_CODEC_HEVC_PROFILE_MAIN = 1 << 7,
   EME_CODEC_DOLBY_VISION_PROFILE0 = 1 << 8,
-  EME_CODEC_DOLBY_VISION_PROFILE4 = 1 << 9,
-  EME_CODEC_DOLBY_VISION_PROFILE5 = 1 << 10,
-  EME_CODEC_DOLBY_VISION_PROFILE7 = 1 << 11,
-  EME_CODEC_DOLBY_VISION_PROFILE8 = 1 << 12,
-  EME_CODEC_DOLBY_VISION_PROFILE9 = 1 << 13,
-  EME_CODEC_AC3 = 1 << 14,
-  EME_CODEC_EAC3 = 1 << 15,
-  EME_CODEC_MPEG_H_AUDIO = 1 << 16,
-  EME_CODEC_FLAC = 1 << 17,
-  EME_CODEC_AV1 = 1 << 18,
-  EME_CODEC_HEVC_PROFILE_MAIN10 = 1 << 19,
-  EME_CODEC_DTS = 1 << 20,
-  EME_CODEC_DTSXP2 = 1 << 21,
-  EME_CODEC_DTSE = 1 << 22,
+  EME_CODEC_DOLBY_VISION_PROFILE5 = 1 << 9,
+  EME_CODEC_DOLBY_VISION_PROFILE7 = 1 << 10,
+  EME_CODEC_DOLBY_VISION_PROFILE8 = 1 << 11,
+  EME_CODEC_DOLBY_VISION_PROFILE9 = 1 << 12,
+  EME_CODEC_AC3 = 1 << 13,
+  EME_CODEC_EAC3 = 1 << 14,
+  EME_CODEC_MPEG_H_AUDIO = 1 << 15,
+  EME_CODEC_FLAC = 1 << 16,
+  EME_CODEC_AV1 = 1 << 17,
+  EME_CODEC_HEVC_PROFILE_MAIN10 = 1 << 18,
+  EME_CODEC_DTS = 1 << 19,
+  EME_CODEC_DTSXP2 = 1 << 20,
+  EME_CODEC_DTSE = 1 << 21,
+  EME_CODEC_AC4 = 1 << 22,
+  EME_CODEC_IAMF = 1 << 23,
 };
 
 // *_ALL values should only be used for masking, do not use them to specify
@@ -61,8 +63,8 @@ using SupportedCodecs = uint32_t;
 constexpr SupportedCodecs EME_CODEC_DOLBY_VISION_AVC =
     EME_CODEC_DOLBY_VISION_PROFILE0 | EME_CODEC_DOLBY_VISION_PROFILE9;
 constexpr SupportedCodecs EME_CODEC_DOLBY_VISION_HEVC =
-    EME_CODEC_DOLBY_VISION_PROFILE4 | EME_CODEC_DOLBY_VISION_PROFILE5 |
-    EME_CODEC_DOLBY_VISION_PROFILE7 | EME_CODEC_DOLBY_VISION_PROFILE8;
+    EME_CODEC_DOLBY_VISION_PROFILE5 | EME_CODEC_DOLBY_VISION_PROFILE7 |
+    EME_CODEC_DOLBY_VISION_PROFILE8;
 
 namespace {
 
@@ -73,6 +75,9 @@ constexpr SupportedCodecs GetMp4AudioCodecs() {
 #if BUILDFLAG(ENABLE_PLATFORM_AC3_EAC3_AUDIO)
   codecs |= EME_CODEC_AC3 | EME_CODEC_EAC3;
 #endif  // BUILDFLAG(ENABLE_PLATFORM_AC3_EAC3_AUDIO)
+#if BUILDFLAG(ENABLE_PLATFORM_AC4_AUDIO)
+  codecs |= EME_CODEC_AC4;
+#endif  // BUILDFLAG(ENABLE_PLATFORM_AC4_AUDIO)
 #if BUILDFLAG(ENABLE_PLATFORM_DTS_AUDIO)
   codecs |= EME_CODEC_DTS | EME_CODEC_DTSXP2 | EME_CODEC_DTSE;
 #endif  // BUILDFLAG(ENABLE_PLATFORM_DTS_AUDIO)
@@ -80,6 +85,9 @@ constexpr SupportedCodecs GetMp4AudioCodecs() {
   codecs |= EME_CODEC_MPEG_H_AUDIO;
 #endif  // BUILDFLAG(ENABLE_PLATFORM_MPEG_H_AUDIO)
 #endif  // BUILDFLAG(USE_PROPRIETARY_CODECS)
+#if BUILDFLAG(ENABLE_PLATFORM_IAMF_AUDIO)
+  codecs |= EME_CODEC_IAMF;
+#endif  // BUILDFLAG(ENABLE_PLATFORM_IAMF_AUDIO)
   return codecs;
 }
 
@@ -182,7 +190,7 @@ enum class EmeConfigRuleState {
 };
 
 struct MEDIA_EXPORT EmeConfig {
-  using Rule = absl::optional<EmeConfig>;
+  using Rule = std::optional<EmeConfig>;
 
   // Refer to the EME spec for definitions on what identifier, persistence, and
   // hw_secure_codecs represent.
@@ -196,8 +204,8 @@ struct MEDIA_EXPORT EmeConfig {
   static EmeConfig::Rule SupportedRule() { return EmeConfig(); }
 
   // To represent an EmeConfig::Rule where the feature is not supported.
-  // Internally, we represent Unsupported as absl::nullopt.
-  static EmeConfig::Rule UnsupportedRule() { return absl::nullopt; }
+  // Internally, we represent Unsupported as std::nullopt.
+  static EmeConfig::Rule UnsupportedRule() { return std::nullopt; }
 };
 
 inline bool operator==(EmeConfig const& lhs, EmeConfig const& rhs) {

@@ -16,6 +16,7 @@
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
+#include "base/i18n/time_formatting.h"
 #include "base/json/values_util.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
@@ -48,6 +49,7 @@
 #include "extensions/browser/granted_file_entry.h"
 #include "extensions/browser/path_util.h"
 #include "extensions/common/api/file_system.h"
+#include "extensions/common/extension_id.h"
 #include "extensions/common/permissions/api_permission.h"
 #include "extensions/common/permissions/permissions_data.h"
 #include "net/base/mime_util.h"
@@ -224,13 +226,9 @@ base::FilePath GenerateUniqueSavePath(const base::FilePath& path) {
       // Try a timestamp suffix.
       // Generate an ISO8601 compliant local timestamp suffix that avoids
       // reserved characters that are forbidden on some OSes like Windows.
-      base::Time::Exploded exploded;
-      base::Time::Now().LocalExplode(&exploded);
-      std::string suffix = base::StringPrintf(
-          " - %04d-%02d-%02dT%02d%02d%02d.%03d", exploded.year, exploded.month,
-          exploded.day_of_month, exploded.hour, exploded.minute,
-          exploded.second, exploded.millisecond);
-      unique_path = path.InsertBeforeExtensionASCII(suffix);
+      unique_path = path.InsertBeforeExtensionASCII(
+          base::UnlocalizedTimeFormatWithPattern(base::Time::Now(),
+                                                 " - yyyy-MM-dd'T'HHmmss.SSS"));
     }
     if (!filename_generation::TruncateFilename(&unique_path, limit))
       return base::FilePath();
@@ -247,7 +245,7 @@ base::FilePath GenerateUniqueSavePath(const base::FilePath& path) {
 namespace file_system_api {
 
 base::FilePath GetLastChooseEntryDirectory(const ExtensionPrefs* prefs,
-                                           const std::string& extension_id) {
+                                           const ExtensionId& extension_id) {
   base::FilePath path;
   std::string string_path;
   if (prefs->ReadPrefAsString(extension_id, kLastChooseEntryDirectory,
@@ -258,7 +256,7 @@ base::FilePath GetLastChooseEntryDirectory(const ExtensionPrefs* prefs,
 }
 
 void SetLastChooseEntryDirectory(ExtensionPrefs* prefs,
-                                 const std::string& extension_id,
+                                 const ExtensionId& extension_id,
                                  const base::FilePath& path) {
   prefs->UpdateExtensionPref(extension_id, kLastChooseEntryDirectory,
                              ::base::FilePathToValue(path));
@@ -624,8 +622,8 @@ void FileSystemChooseEntryFunction::OnDirectoryAccessConfirmed(
 void FileSystemChooseEntryFunction::BuildFileTypeInfo(
     ui::SelectFileDialog::FileTypeInfo* file_type_info,
     const base::FilePath::StringType& suggested_extension,
-    const absl::optional<AcceptOptions>& accepts,
-    const absl::optional<bool>& accepts_all_types) {
+    const std::optional<AcceptOptions>& accepts,
+    const std::optional<bool>& accepts_all_types) {
   file_type_info->include_all_files = accepts_all_types.value_or(true);
 
   bool need_suggestion =
@@ -657,7 +655,7 @@ void FileSystemChooseEntryFunction::BuildFileTypeInfo(
 }
 
 void FileSystemChooseEntryFunction::BuildSuggestion(
-    const absl::optional<std::string>& opt_name,
+    const std::optional<std::string>& opt_name,
     base::FilePath* suggested_name,
     base::FilePath::StringType* suggested_extension) {
   if (opt_name) {
@@ -714,7 +712,7 @@ void FileSystemChooseEntryFunction::MaybeUseManagedSavePath(
 FileSystemChooseEntryFunction::~FileSystemChooseEntryFunction() = default;
 
 ExtensionFunction::ResponseAction FileSystemChooseEntryFunction::Run() {
-  absl::optional<ChooseEntry::Params> params =
+  std::optional<ChooseEntry::Params> params =
       ChooseEntry::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params);
 
@@ -889,7 +887,8 @@ ExtensionFunction::ResponseAction FileSystemRetainEntryFunction::Run() {
             base::IgnoreResult(
                 &storage::FileSystemOperationRunner::GetMetadata),
             base::Unretained(file_system_context->operation_runner()), url,
-            storage::FileSystemOperation::GET_METADATA_FIELD_IS_DIRECTORY,
+            storage::FileSystemOperation::GetMetadataFieldSet(
+                {storage::FileSystemOperation::GetMetadataField::kIsDirectory}),
             base::BindOnce(
                 &PassFileInfoToUIThread,
                 base::BindOnce(&FileSystemRetainEntryFunction::RetainFileEntry,
@@ -988,7 +987,7 @@ FileSystemRequestFileSystemFunction::~FileSystemRequestFileSystemFunction() =
 
 ExtensionFunction::ResponseAction FileSystemRequestFileSystemFunction::Run() {
   using file_system::RequestFileSystem::Params;
-  const absl::optional<Params> params = Params::Create(args());
+  const std::optional<Params> params = Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params);
 
   consent_provider_ =
@@ -1069,7 +1068,7 @@ FileSystemRequestFileSystemFunction::~FileSystemRequestFileSystemFunction() =
 
 ExtensionFunction::ResponseAction FileSystemRequestFileSystemFunction::Run() {
   using file_system::RequestFileSystem::Params;
-  const absl::optional<Params> params = Params::Create(args());
+  const std::optional<Params> params = Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params);
 
   NOTIMPLEMENTED();

@@ -28,7 +28,7 @@ bool ShouldBrowserCustomDrawTitlebar(BrowserView* browser_view) {
 
 bool ShouldDefaultThemeUseMicaTitlebar() {
   return SystemTitlebarCanUseMicaMaterial() &&
-         !ui::AccentColorObserver::Get()->accent_color().has_value() &&
+         !ui::AccentColorObserver::Get()->use_dwm_frame_color() &&
          !ui::NativeTheme::GetInstanceForNativeUi()
               ->UserHasContrastPreference();
 }

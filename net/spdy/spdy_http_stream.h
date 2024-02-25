@@ -211,13 +211,15 @@ class NET_EXPORT_PRIVATE SpdyHttpStream : public SpdyStream::Delegate,
   // Timer to execute DoBufferedReadCallback() with a delay.
   base::OneShotTimer buffered_read_timer_;
 
-  bool was_alpn_negotiated_ = false;
-
   // Stores any DNS aliases for the remote endpoint. Includes all known aliases,
   // e.g. from A, AAAA, or HTTPS, not just from the address used for the
   // connection, in no particular order. These are stored in the stream instead
   // of the session due to complications related to IP-pooling.
   std::set<std::string> dns_aliases_;
+
+  // Keep track of the priority of the request for setting the priority header
+  // right before sending the request.
+  RequestPriority priority_ = RequestPriority::DEFAULT_PRIORITY;
 
   base::WeakPtrFactory<SpdyHttpStream> weak_factory_{this};
 };

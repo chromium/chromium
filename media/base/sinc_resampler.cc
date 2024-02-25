@@ -77,10 +77,10 @@
 #include "media/base/sinc_resampler.h"
 
 #include <limits>
+#include <numbers>
 
 #include "base/check_op.h"
 #include "base/cpu.h"
-#include "base/numerics/math_constants.h"
 #include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
 #include "cc/base/math_util.h"
@@ -228,14 +228,14 @@ void SincResampler::InitializeKernel() {
     for (int i = 0; i < kernel_size_; ++i) {
       const int idx = i + offset_idx * kernel_size_;
       const float pre_sinc =
-          base::kPiFloat * (i - kernel_size_ / 2 - subsample_offset);
+          std::numbers::pi_v<float> * (i - kernel_size_ / 2 - subsample_offset);
       kernel_pre_sinc_storage_[idx] = pre_sinc;
 
       // Compute Blackman window, matching the offset of the sinc().
       const float x = (i - subsample_offset) / kernel_size_;
       const float window =
-          static_cast<float>(kA0 - kA1 * cos(2.0 * base::kPiDouble * x) +
-                             kA2 * cos(4.0 * base::kPiDouble * x));
+          static_cast<float>(kA0 - kA1 * cos(2.0 * std::numbers::pi * x) +
+                             kA2 * cos(4.0 * std::numbers::pi * x));
       kernel_window_storage_[idx] = window;
 
       // Compute the sinc with offset, then window the sinc() function and store

@@ -32,38 +32,38 @@
 </style>
 <settings-toggle-button id="toggleButton" on-change="onChange_"
     pref="{{prefs.performance_tuning.high_efficiency_mode.state}}"
-    label="$i18n{highEfficiencyModeLabel}"
-    sub-label="$i18n{highEfficiencyModeDescription}"
-    learn-more-url="$i18n{highEfficiencyLearnMoreUrl}"
-    numeric-unchecked-value="[[highEfficiencyModeStateEnum_.DISABLED]]"
+    label="$i18n{memorySaverModeLabel}"
+    sub-label="$i18n{memorySaverModeDescription}"
+    learn-more-url="$i18n{memorySaverLearnMoreUrl}"
+    numeric-unchecked-values="[[numericUncheckedValues_]]"
     numeric-checked-value="[[toggleButtonCheckedValue_(
-        isHighEfficiencyMultistateModeEnabled_)]]">
+        isMemorySaverMultistateModeEnabled_)]]">
 </settings-toggle-button>
-<template is="dom-if" if="[[isHighEfficiencyMultistateModeEnabled_]]">
+<template is="dom-if" if="[[isMemorySaverMultistateModeEnabled_]]">
   <iron-collapse id="radioGroupCollapse"
-      opened="[[isHighEfficiencyModeEnabled_(
+      opened="[[isMemorySaverModeEnabled_(
           prefs.performance_tuning.high_efficiency_mode.state.value)]]">
     <div class="high-efficiency-radio-group">
       <settings-radio-group id="radioGroup" on-change="onChange_"
           pref="{{prefs.performance_tuning.high_efficiency_mode.state}}"
-          group-aria-label="$i18n{highEfficiencyModeRadioGroupAriaLabel}">
+          group-aria-label="$i18n{memorySaverModeRadioGroupAriaLabel}">
         <controlled-radio-button
-            label="$i18n{highEfficiencyModeHeuristicsLabel}"
-            name="[[highEfficiencyModeStateEnum_.ENABLED]]"
+            label="$i18n{memorySaverModeHeuristicsLabel}"
+            name="[[memorySaverModeStateEnum_.ENABLED]]"
             pref="[[prefs.performance_tuning.high_efficiency_mode.state]]">
           <div class="badge"
-              hidden$="[[!showHighEfficiencyHeuristicModeRecommendedBadge_]]">
-            $i18n{highEfficiencyModeRecommendedBadge}
+              hidden$="[[!showMemorySaverHeuristicModeRecommendedBadge_]]">
+            $i18n{memorySaverModeRecommendedBadge}
           </div>
         </controlled-radio-button>
         <controlled-radio-button id="enabledOnTimerButton"
-            label="$i18n{highEfficiencyModeOnTimerLabel}"
-            name="[[highEfficiencyModeStateEnum_.ENABLED_ON_TIMER]]"
+            label="$i18n{memorySaverModeOnTimerLabel}"
+            name="[[memorySaverModeStateEnum_.ENABLED_ON_TIMER]]"
             pref="[[prefs.performance_tuning.high_efficiency_mode.state]]"
             exportparts="labelWrapper">
           <settings-dropdown-menu id="discardTimeDropdown"
-              label="$i18n{highEfficiencyChooseDiscardTimeAriaLabel}"
-              disabled="[[!isHighEfficiencyModeEnabledOnTimer_(
+              label="$i18n{memorySaverChooseDiscardTimeAriaLabel}"
+              disabled="[[!isMemorySaverModeEnabledOnTimer_(
                   prefs.performance_tuning.high_efficiency_mode.state.value)]]"
               pref="{{prefs.performance_tuning.high_efficiency_mode.time_before_discard_in_minutes}}"
               menu-options="[[discardTimerOptions_]]"
@@ -74,5 +74,5 @@
     </div>
   </iron-collapse>
 </template>
-<tab-discard-exception-list id="tabDiscardExceptionsList" prefs="{{prefs}}">
+<tab-discard-exception-list id="exceptionList" prefs="{{prefs}}">
 </tab-discard-exception-list>

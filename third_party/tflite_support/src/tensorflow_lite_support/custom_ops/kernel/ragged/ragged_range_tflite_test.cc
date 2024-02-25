@@ -39,8 +39,7 @@ class RaggedRangeOpModel : public SingleOpModel {
  public:
   static TensorType GetType();
 
-  RaggedRangeOpModel(const std::vector<T>& start,
-                     const std::vector<T>& limits,
+  RaggedRangeOpModel(const std::vector<T>& start, const std::vector<T>& limits,
                      const std::vector<T>& deltas) {
     const TensorType value_type = GetType();
     std::vector<std::vector<int>> shapes;

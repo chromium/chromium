@@ -15,7 +15,7 @@ include_rules = [
   "+third_party/blink/public",
   "+components/privacy_sandbox",
   "+components/site_engagement/content",
-   "+services/metrics/public",
+  "+services/metrics/public",
   "+components/strings",
   "+components/vector_icons",
   "+ui/base",
@@ -32,5 +32,8 @@ specific_include_rules = {
   "page_specific_content_settings_unittest.cc": [
     "+net/extras/shared_dictionary/shared_dictionary_isolation_key.h",
     "+services/network/public/mojom/shared_dictionary_access_observer.mojom.h",
+  ],
+  "content_settings_manager_impl.cc": [
+    "+net/base/features.h",
   ],
 }

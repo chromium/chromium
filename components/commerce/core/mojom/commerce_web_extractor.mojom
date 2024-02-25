@@ -1,0 +1,16 @@
+// Copyright 2023 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module commerce_web_extractor.mojom;
+
+import "mojo/public/mojom/base/values.mojom";
+
+// Class for extracting commerce-related information from web page. This
+// is implemented by class in renderer process and called by browser
+// process.
+interface CommerceWebExtractor {
+  // Extract commerce-related meta info from the page and return the
+  // extracted value.
+  ExtractMetaInfo() => (mojo_base.mojom.Value result);
+};

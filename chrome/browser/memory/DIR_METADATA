@@ -2,3 +2,6 @@ monorail: {
   component: "Blink>MemoryAllocator"
 }
 team_email: "catan-team@chromium.org"
+buganizer_public: {
+  component_id: 1456801
+}

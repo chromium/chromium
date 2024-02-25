@@ -1,4 +1,4 @@
 Tests that logging custom elements uses proper formatting.
 
-console-log-custom-elements.js:22 foo-bar
+console-log-custom-elements.js:21 foo-bar
 

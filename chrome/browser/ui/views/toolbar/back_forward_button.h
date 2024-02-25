@@ -13,9 +13,9 @@
 class Browser;
 
 class BackForwardButton : public ToolbarButton {
- public:
-  METADATA_HEADER(BackForwardButton);
+  METADATA_HEADER(BackForwardButton, ToolbarButton)
 
+ public:
   enum class Direction { kBack, kForward };
 
   BackForwardButton(Direction direction,

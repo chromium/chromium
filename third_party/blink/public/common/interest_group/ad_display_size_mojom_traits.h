@@ -37,7 +37,7 @@ struct BLINK_COMMON_EXPORT
     return ad_descriptor.url;
   }
 
-  static absl::optional<blink::AdSize> size(
+  static std::optional<blink::AdSize> size(
       const blink::AdDescriptor& ad_descriptor) {
     return ad_descriptor.size;
   }

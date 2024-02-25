@@ -4,6 +4,8 @@
 
 #include "extensions/common/error_utils.h"
 
+#include <string_view>
+
 #include "base/strings/utf_string_conversions.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -13,14 +15,14 @@ namespace {
 // Tests ErrorUtils::FormatErrorMessage which takes two placeholders.
 TEST(ErrorUtils, FormatErrorMessage_Success) {
   struct {
-    base::StringPiece format;
-    base::StringPiece s1;
-    base::StringPiece s2;
+    std::string_view format;
+    std::string_view s1;
+    std::string_view s2;
     const char* expected;
   } cases[] = {
       {"Hello * Bye *", "arg1", "arg2", "Hello arg1 Bye arg2"},
-      // Ensure substitutions respect the size of the StringPiece.
-      {"Hello * Bye *", base::StringPiece("12345", 2), "3", "Hello 12 Bye 3"},
+      // Ensure substitutions respect the size of the string_view.
+      {"Hello * Bye *", std::string_view("12345", 2), "3", "Hello 12 Bye 3"},
       // Regression test for crbug.com/928415.
       {"Hello * Bye *", "*arg1", "*arg2", "Hello *arg1 Bye *arg2"},
   };
@@ -42,9 +44,9 @@ TEST(ErrorUtils, FormatErrorMessage_Success) {
 // arguments are not equal.
 TEST(ErrorUtils, FormatErrorMessage_Death) {
   struct {
-    base::StringPiece format;
-    base::StringPiece s1;
-    base::StringPiece s2;
+    std::string_view format;
+    std::string_view s1;
+    std::string_view s2;
     const char* death_message_regex;
   } cases[] = {{"Hello * Bye * *", "arg1", "arg2", "More placeholders"},
                {"Hello * Bye", "arg1", "arg2", "Fewer placeholders"}};

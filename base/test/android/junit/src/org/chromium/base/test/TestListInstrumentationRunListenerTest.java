@@ -4,8 +4,11 @@
 
 package org.chromium.base.test;
 
-import org.json.JSONObject;
+import android.app.Instrumentation;
+import android.os.Bundle;
+
 import org.junit.Assert;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.Description;
 import org.junit.runner.RunWith;
@@ -15,8 +18,7 @@ import org.chromium.base.test.params.ParameterizedCommandLineFlags;
 import org.chromium.base.test.params.ParameterizedCommandLineFlags.Switches;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
-
-import java.util.Arrays;
+import org.chromium.testing.TestListInstrumentationRunListener;
 
 /**
  * Robolectric test to ensure static methods in TestListInstrumentationRunListener works properly.
@@ -24,6 +26,7 @@ import java.util.Arrays;
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
 public class TestListInstrumentationRunListenerTest {
+
     @CommandLineFlags.Add("hello")
     private static class ParentClass {
         public void testA() {}
@@ -36,168 +39,130 @@ public class TestListInstrumentationRunListenerTest {
     private static class ChildClass extends ParentClass {}
 
     private static class Groups {
-        // clang-format off
         @ParameterizedCommandLineFlags({
             @Switches({"c1", "c2"}),
             @Switches({"c3", "c4"}),
         })
         public void testA() {}
-        // clang-format on
+
         @ParameterizedCommandLineFlags
         public void testB() {}
     }
 
-    private String makeJSON(String... lines) {
-        StringBuilder builder = new StringBuilder();
-        for (String line : lines) {
-            builder.append(line);
-        }
-        return builder.toString().replaceAll("\\s", "").replaceAll("'", "\"");
+    private TestListInstrumentationRunListener mListener;
+    private Bundle mLastBundle;
+
+    @Before
+    public void setUp() {
+        mListener = new TestListInstrumentationRunListener();
+        mListener.setInstrumentation(
+                new Instrumentation() {
+                    @Override
+                    public void sendStatus(int resultCode, Bundle results) {
+                        mLastBundle = results;
+                    }
+                });
     }
 
     @Test
     public void testGetTestMethodJSON_testA() throws Throwable {
-        Description desc = Description.createTestDescription(
-                ParentClass.class, "testA",
-                ParentClass.class.getMethod("testA").getAnnotations());
-        JSONObject json = TestListInstrumentationRunListener.getTestMethodJSON(desc);
-        // clang-format off
-        String expectedJsonString = makeJSON(
-            "{",
-            " 'method': 'testA',",
-            " 'annotations': {}",
-            "}"
-        );
-        // clang-format on
-        Assert.assertEquals(expectedJsonString, json.toString());
+        Description desc =
+                Description.createTestDescription(
+                        ParentClass.class,
+                        "testA",
+                        ParentClass.class.getMethod("testA").getAnnotations());
+        mListener.testFinished(desc);
+        Bundle expected = new Bundle();
+        expected.putString(
+                "class",
+                "org.chromium.base.test.TestListInstrumentationRunListenerTest$ParentClass");
+        expected.putString(
+                "class_annotations", "{\"CommandLineFlags$Add\":{\"value\":[\"hello\"]}}");
+        expected.putString("method", "testA");
+        expected.putString("method_annotations", "{}");
+        Assert.assertEquals(expected.toString(), mLastBundle.toString());
+        mListener.testFinished(desc);
+        expected.remove("class");
+        expected.remove("class_annotations");
+        Assert.assertEquals(expected.toString(), mLastBundle.toString());
     }
 
     @Test
     public void testGetTestMethodJSON_testB() throws Throwable {
-        Description desc = Description.createTestDescription(
-                ParentClass.class, "testB",
-                ParentClass.class.getMethod("testB").getAnnotations());
-        JSONObject json = TestListInstrumentationRunListener.getTestMethodJSON(desc);
-        // clang-format off
-        String expectedJsonString = makeJSON(
-            "{",
-            " 'method': 'testB',",
-            " 'annotations': {",
-            "  'CommandLineFlags$Add': {",
-            "   'value': ['world']",
-            "  }",
-            " }",
-            "}"
-        );
-        // clang-format on
-        Assert.assertEquals(expectedJsonString, json.toString());
+        Description desc =
+                Description.createTestDescription(
+                        ParentClass.class,
+                        "testB",
+                        ParentClass.class.getMethod("testB").getAnnotations());
+        mListener.testFinished(desc);
+        Bundle expected = new Bundle();
+        expected.putString(
+                "class",
+                "org.chromium.base.test.TestListInstrumentationRunListenerTest$ParentClass");
+        expected.putString(
+                "class_annotations", "{\"CommandLineFlags$Add\":{\"value\":[\"hello\"]}}");
+        expected.putString("method", "testB");
+        expected.putString(
+                "method_annotations", "{\"CommandLineFlags$Add\":{\"value\":[\"world\"]}}");
+        Assert.assertEquals(expected.toString(), mLastBundle.toString());
     }
-
 
     @Test
     public void testGetTestMethodJSONForInheritedClass() throws Throwable {
-        Description desc = Description.createTestDescription(
-                ChildClass.class, "testB",
-                ChildClass.class.getMethod("testB").getAnnotations());
-        JSONObject json = TestListInstrumentationRunListener.getTestMethodJSON(desc);
-        // clang-format off
-        String expectedJsonString = makeJSON(
-            "{",
-            " 'method': 'testB',",
-            " 'annotations': {",
-            "   'CommandLineFlags$Add': {",
-            "    'value': ['world']",
-            "   }",
-            "  }",
-            "}"
-        );
-        // clang-format on
-        Assert.assertEquals(expectedJsonString, json.toString());
-    }
-
-    @Test
-    public void testGetAnnotationJSONForParentClass() throws Throwable {
-        JSONObject json = TestListInstrumentationRunListener.getAnnotationJSON(
-                Arrays.asList(ParentClass.class.getAnnotations()));
-        // clang-format off
-        String expectedJsonString = makeJSON(
-            "{",
-            " 'CommandLineFlags$Add': {",
-            "  'value': ['hello']",
-            " }",
-            "}"
-        );
-        // clang-format on
-        Assert.assertEquals(expectedJsonString, json.toString());
-    }
-
-    @Test
-    public void testGetAnnotationJSONForChildClass() throws Throwable {
-        JSONObject json = TestListInstrumentationRunListener.getAnnotationJSON(
-                Arrays.asList(ChildClass.class.getAnnotations()));
-        // clang-format off
-        String expectedJsonString = makeJSON(
-            "{",
-            " 'CommandLineFlags$Add': {",
-            "  'value': ['hello']",
-            " },",
-            " 'Batch': {",
-            "  'value': 'foo'",
-            " }",
-            "}"
-        );
-        // clang-format on
-        Assert.assertEquals(expectedJsonString, json.toString());
+        Description desc =
+                Description.createTestDescription(
+                        ChildClass.class,
+                        "testB",
+                        ChildClass.class.getMethod("testB").getAnnotations());
+        mListener.testFinished(desc);
+        Bundle expected = new Bundle();
+        expected.putString(
+                "class",
+                "org.chromium.base.test.TestListInstrumentationRunListenerTest$ChildClass");
+        expected.putString(
+                "class_annotations",
+                "{\"CommandLineFlags$Add\":{\"value\":[\"hello\"]},\"Batch\":{\"value\":\"foo\"}}");
+        expected.putString("method", "testB");
+        expected.putString(
+                "method_annotations", "{\"CommandLineFlags$Add\":{\"value\":[\"world\"]}}");
+        Assert.assertEquals(expected.toString(), mLastBundle.toString());
     }
 
     @Test
     public void testGetTestMethodJSONGroup_testA() throws Throwable {
-        Description desc = Description.createTestDescription(
-                Groups.class, "testA", Groups.class.getMethod("testA").getAnnotations());
-        JSONObject json = TestListInstrumentationRunListener.getTestMethodJSON(desc);
-        // clang-format off
-        String expectedJsonString = makeJSON(
-            "{",
-            " 'method': 'testA',",
-            " 'annotations': {",
-            "  'ParameterizedCommandLineFlags': {",
-            "   'value': [",
-            "    {",
-            "     'ParameterizedCommandLineFlags$Switches': {",
-            "      'value': ['c1','c2']",
-            "     }",
-            "    },",
-            "    {",
-            "     'ParameterizedCommandLineFlags$Switches': {",
-            "      'value': ['c3','c4']",
-            "     }",
-            "    }",
-            "   ]",
-            "  }",
-            " }",
-            "}"
-        );
-        // clang-format on
-        Assert.assertEquals(expectedJsonString, json.toString());
+        Description desc =
+                Description.createTestDescription(
+                        Groups.class, "testA", Groups.class.getMethod("testA").getAnnotations());
+        mListener.testFinished(desc);
+        Bundle expected = new Bundle();
+        expected.putString(
+                "class", "org.chromium.base.test.TestListInstrumentationRunListenerTest$Groups");
+        expected.putString("class_annotations", "{}");
+        expected.putString("method", "testA");
+        expected.putString(
+                "method_annotations",
+                """
+                {"ParameterizedCommandLineFlags":{"value":[\
+                {"ParameterizedCommandLineFlags$Switches":{"value":["c1","c2"]}},\
+                {"ParameterizedCommandLineFlags$Switches":{"value":["c3","c4"]}}]}}\
+                """);
+
+        Assert.assertEquals(expected.toString(), mLastBundle.toString());
     }
 
     @Test
     public void testGetTestMethodJSONGroup_testB() throws Throwable {
-        Description desc = Description.createTestDescription(
-                Groups.class, "testB", Groups.class.getMethod("testB").getAnnotations());
-        JSONObject json = TestListInstrumentationRunListener.getTestMethodJSON(desc);
-        // clang-format off
-        String expectedJsonString = makeJSON(
-            "{",
-            " 'method': 'testB',",
-            " 'annotations': {",
-            "  'ParameterizedCommandLineFlags': {",
-            "   'value': []",
-            "  }",
-            " }",
-            "}"
-        );
-        // clang-format on
-        Assert.assertEquals(expectedJsonString, json.toString());
+        Description desc =
+                Description.createTestDescription(
+                        Groups.class, "testB", Groups.class.getMethod("testB").getAnnotations());
+        mListener.testFinished(desc);
+        Bundle expected = new Bundle();
+        expected.putString(
+                "class", "org.chromium.base.test.TestListInstrumentationRunListenerTest$Groups");
+        expected.putString("class_annotations", "{}");
+        expected.putString("method", "testB");
+        expected.putString(
+                "method_annotations", "{\"ParameterizedCommandLineFlags\":{\"value\":[]}}");
+        Assert.assertEquals(expected.toString(), mLastBundle.toString());
     }
 }

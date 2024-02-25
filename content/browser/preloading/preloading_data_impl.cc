@@ -8,9 +8,8 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/rand_util.h"
 #include "base/strings/strcat.h"
-#include "content/browser/preloading/prefetch/no_vary_search_helper.h"
 #include "content/browser/preloading/prefetch/prefetch_container.h"
-#include "content/browser/preloading/prefetch/prefetch_document_manager.h"
+#include "content/browser/preloading/prefetch/prefetch_service.h"
 #include "content/browser/preloading/preloading.h"
 #include "content/browser/preloading/preloading_attempt_impl.h"
 #include "content/browser/preloading/preloading_config.h"
@@ -68,27 +67,25 @@ PreloadingURLMatchCallback PreloadingData::GetSameURLMatcher(
 }
 
 // static
-PreloadingURLMatchCallback
-PreloadingDataImpl::GetSameURLAndNoVarySearchURLMatcher(
-    base::WeakPtr<PrefetchDocumentManager> manager,
-    const GURL& destination_url) {
+PreloadingURLMatchCallback PreloadingDataImpl::GetPrefetchServiceMatcher(
+    PrefetchService* prefetch_service,
+    const PrefetchContainer::Key& predicted) {
   return base::BindRepeating(
-      [](base::WeakPtr<PrefetchDocumentManager> prefetch_doc_manager,
-         const GURL& predicted_url, const GURL& navigated_url) {
-        if (!prefetch_doc_manager) {
-          return predicted_url == navigated_url;
+      [](base::WeakPtr<PrefetchService> prefetch_service,
+         const PrefetchContainer::Key& predicted, const GURL& navigated_url) {
+        if (!prefetch_service) {
+          return predicted.prefetch_url() == navigated_url;
         }
-
-        if (predicted_url == navigated_url) {
+        if (predicted.prefetch_url() == navigated_url) {
           return true;
         }
 
         base::WeakPtr<PrefetchContainer> prefetch_container =
-            prefetch_doc_manager->MatchUrl(navigated_url);
+            prefetch_service->MatchUrl(predicted.WithNewUrl(navigated_url));
         return prefetch_container &&
-               prefetch_container->GetURL() == predicted_url;
+               prefetch_container->GetPrefetchContainerKey() == predicted;
       },
-      manager, destination_url);
+      prefetch_service ? prefetch_service->GetWeakPtr() : nullptr, predicted);
 }
 
 // static
@@ -110,16 +107,10 @@ PreloadingDataImpl* PreloadingDataImpl::GetOrCreateForWebContents(
 PreloadingAttempt* PreloadingDataImpl::AddPreloadingAttempt(
     PreloadingPredictor predictor,
     PreloadingType preloading_type,
-    PreloadingURLMatchCallback url_match_predicate) {
-  // We want to log the metrics for user visible primary pages to measure the
-  // impact of PreloadingAttempt on the page user is viewing.
-  // TODO(crbug.com/1330783): Extend this for non-primary page and inner
-  // WebContents preloading attempts.
-  ukm::SourceId triggered_primary_page_source_id =
-      web_contents()->GetPrimaryMainFrame()->GetPageUkmSourceId();
-
+    PreloadingURLMatchCallback url_match_predicate,
+    ukm::SourceId triggering_primary_page_source_id) {
   auto attempt = std::make_unique<PreloadingAttemptImpl>(
-      predictor, preloading_type, triggered_primary_page_source_id,
+      predictor, preloading_type, triggering_primary_page_source_id,
       std::move(url_match_predicate), sampling_seed_);
   preloading_attempts_.push_back(std::move(attempt));
 

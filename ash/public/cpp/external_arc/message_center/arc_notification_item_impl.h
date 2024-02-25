@@ -61,8 +61,8 @@ class ArcNotificationItemImpl : public ArcNotificationItem {
   void CancelPress() override;
 
  private:
-  const raw_ptr<ArcNotificationManager, ExperimentalAsh> manager_;
-  const raw_ptr<message_center::MessageCenter, ExperimentalAsh> message_center_;
+  const raw_ptr<ArcNotificationManager> manager_;
+  const raw_ptr<message_center::MessageCenter> message_center_;
 
   // The snapshot of the latest notification.
   gfx::ImageSkia snapshot_;

@@ -89,10 +89,10 @@ void ContentJavaScriptFeatureManager::AddFeature(
     }
   }
 
-  absl::optional<std::string> handler_name =
+  std::optional<std::string> handler_name =
       feature->GetScriptMessageHandlerName();
   if (handler_name) {
-    absl::optional<JavaScriptFeature::ScriptMessageHandler> handler =
+    std::optional<JavaScriptFeature::ScriptMessageHandler> handler =
         feature->GetScriptMessageHandler();
     CHECK(handler);
     CHECK(!script_message_handlers_.count(*handler_name));

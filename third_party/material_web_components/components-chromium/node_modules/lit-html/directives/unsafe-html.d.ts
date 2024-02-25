@@ -11,7 +11,7 @@ export declare class UnsafeHTMLDirective extends Directive {
     private _value;
     private _templateResult?;
     constructor(partInfo: PartInfo);
-    render(value: string | typeof nothing | typeof noChange | undefined | null): typeof noChange | typeof nothing | TemplateResult<1 | 2> | null | undefined;
+    render(value: string | typeof nothing | typeof noChange | undefined | null): typeof noChange | typeof nothing | TemplateResult | null | undefined;
 }
 /**
  * Renders the result as HTML, rather than text.

@@ -5,18 +5,19 @@
 #ifndef MOJO_PUBLIC_CPP_BINDINGS_GENERIC_PENDING_ASSOCIATED_RECEIVER_H_
 #define MOJO_PUBLIC_CPP_BINDINGS_GENERIC_PENDING_ASSOCIATED_RECEIVER_H_
 
+#include <optional>
 #include <string>
+#include <string_view>
 
 #include "base/component_export.h"
-#include "base/strings/string_piece.h"
 #include "mojo/public/cpp/bindings/pending_associated_receiver.h"
+#include "mojo/public/cpp/bindings/runtime_features.h"
 #include "mojo/public/cpp/bindings/scoped_interface_endpoint_handle.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace mojo {
 
 // GenericPendingAssociatedReceiver encapsulates a pairing of a receiving
-// associated interface endponit with the name of the mojom interface assumed by
+// associated interface endpoint with the name of the mojom interface assumed by
 // the corresponding remote endpoint.
 //
 // This is used by mojom C++ bindings to represent
@@ -31,7 +32,7 @@ namespace mojo {
 class COMPONENT_EXPORT(MOJO_CPP_BINDINGS) GenericPendingAssociatedReceiver {
  public:
   GenericPendingAssociatedReceiver();
-  GenericPendingAssociatedReceiver(base::StringPiece interface_name,
+  GenericPendingAssociatedReceiver(std::string_view interface_name,
                                    mojo::ScopedInterfaceEndpointHandle handle);
 
   template <typename Interface>
@@ -54,7 +55,7 @@ class COMPONENT_EXPORT(MOJO_CPP_BINDINGS) GenericPendingAssociatedReceiver {
 
   void reset();
 
-  const absl::optional<std::string>& interface_name() const {
+  const std::optional<std::string>& interface_name() const {
     return interface_name_;
   }
 
@@ -65,6 +66,9 @@ class COMPONENT_EXPORT(MOJO_CPP_BINDINGS) GenericPendingAssociatedReceiver {
   // if and only if that interface's name matches the stored interface name.
   template <typename Interface>
   mojo::PendingAssociatedReceiver<Interface> As() {
+    if (!internal::GetRuntimeFeature_ExpectEnabled<Interface>()) {
+      return mojo::PendingAssociatedReceiver<Interface>();
+    }
     return mojo::PendingAssociatedReceiver<Interface>(
         PassHandleIfNameIs(Interface::Name_));
   }
@@ -73,7 +77,7 @@ class COMPONENT_EXPORT(MOJO_CPP_BINDINGS) GenericPendingAssociatedReceiver {
   mojo::ScopedInterfaceEndpointHandle PassHandleIfNameIs(
       const char* interface_name);
 
-  absl::optional<std::string> interface_name_;
+  std::optional<std::string> interface_name_;
   mojo::ScopedInterfaceEndpointHandle handle_;
 };
 

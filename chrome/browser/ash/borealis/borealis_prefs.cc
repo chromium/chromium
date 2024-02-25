@@ -7,12 +7,9 @@
 #include "components/guest_os/guest_os_prefs.h"
 #include "components/prefs/pref_registry_simple.h"
 
-namespace borealis {
-namespace prefs {
+namespace borealis::prefs {
 
 const char kBorealisInstalledOnDevice[] = "borealis.installed_on_device";
-
-const char kBorealisVmTokenHash[] = "borealis.vm_token_hash";
 
 const char kBorealisAllowedForUser[] = "borealis.allowed_for_user";
 
@@ -24,7 +21,6 @@ const char kExtraLaunchOptions[] = "borealis.extra_launch_options";
 
 void RegisterProfilePrefs(PrefRegistrySimple* registry) {
   registry->RegisterBooleanPref(kBorealisInstalledOnDevice, false);
-  registry->RegisterStringPref(kBorealisVmTokenHash, "");
   registry->RegisterBooleanPref(kBorealisAllowedForUser, true);
   registry->RegisterBooleanPref(kBorealisMicAllowed, false);
   registry->RegisterStringPref(kExtraLaunchOptions, std::string());
@@ -32,5 +28,4 @@ void RegisterProfilePrefs(PrefRegistrySimple* registry) {
                                                   kEngagementPrefsPrefix);
 }
 
-}  // namespace prefs
-}  // namespace borealis
+}  // namespace borealis::prefs

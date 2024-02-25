@@ -158,12 +158,12 @@ TEST_F(RasterFormatTest, BeginRasterCHROMIUMImmediate) {
   };
   cmds::BeginRasterCHROMIUMImmediate& cmd =
       *GetBufferAs<cmds::BeginRasterCHROMIUMImmediate>();
-  void* next_cmd =
-      cmd.Set(&cmd, static_cast<GLfloat>(11), static_cast<GLfloat>(12),
-              static_cast<GLfloat>(13), static_cast<GLfloat>(14),
-              static_cast<GLboolean>(15), static_cast<GLuint>(16),
-              static_cast<gpu::raster::MsaaMode>(17),
-              static_cast<GLboolean>(18), static_cast<GLboolean>(19), data);
+  void* next_cmd = cmd.Set(
+      &cmd, static_cast<GLfloat>(11), static_cast<GLfloat>(12),
+      static_cast<GLfloat>(13), static_cast<GLfloat>(14),
+      static_cast<GLboolean>(15), static_cast<GLuint>(16),
+      static_cast<gpu::raster::MsaaMode>(17), static_cast<GLboolean>(18),
+      static_cast<GLboolean>(19), static_cast<GLfloat>(20), data);
   EXPECT_EQ(static_cast<uint32_t>(cmds::BeginRasterCHROMIUMImmediate::kCmdId),
             cmd.header.command);
   EXPECT_EQ(sizeof(cmd) + RoundSizeToMultipleOfEntries(sizeof(data)),
@@ -177,6 +177,7 @@ TEST_F(RasterFormatTest, BeginRasterCHROMIUMImmediate) {
   EXPECT_EQ(static_cast<gpu::raster::MsaaMode>(17), cmd.msaa_mode);
   EXPECT_EQ(static_cast<GLboolean>(18), cmd.can_use_lcd_text);
   EXPECT_EQ(static_cast<GLboolean>(19), cmd.visible);
+  EXPECT_EQ(static_cast<GLfloat>(20), cmd.hdr_headroom);
   CheckBytesWrittenMatchesExpectedSize(
       next_cmd, sizeof(cmd) + RoundSizeToMultipleOfEntries(sizeof(data)));
 }
@@ -705,17 +706,22 @@ TEST_F(RasterFormatTest, ConvertYUVAMailboxesToRGBINTERNALImmediate) {
   };
   cmds::ConvertYUVAMailboxesToRGBINTERNALImmediate& cmd =
       *GetBufferAs<cmds::ConvertYUVAMailboxesToRGBINTERNALImmediate>();
-  void* next_cmd =
-      cmd.Set(&cmd, static_cast<GLenum>(11), static_cast<GLenum>(12),
-              static_cast<GLenum>(13), data);
+  void* next_cmd = cmd.Set(&cmd, static_cast<GLint>(11), static_cast<GLint>(12),
+                           static_cast<GLsizei>(13), static_cast<GLsizei>(14),
+                           static_cast<GLenum>(15), static_cast<GLenum>(16),
+                           static_cast<GLenum>(17), data);
   EXPECT_EQ(static_cast<uint32_t>(
                 cmds::ConvertYUVAMailboxesToRGBINTERNALImmediate::kCmdId),
             cmd.header.command);
   EXPECT_EQ(sizeof(cmd) + RoundSizeToMultipleOfEntries(sizeof(data)),
             cmd.header.size * 4u);
-  EXPECT_EQ(static_cast<GLenum>(11), cmd.planes_yuv_color_space);
-  EXPECT_EQ(static_cast<GLenum>(12), cmd.plane_config);
-  EXPECT_EQ(static_cast<GLenum>(13), cmd.subsampling);
+  EXPECT_EQ(static_cast<GLint>(11), cmd.src_x);
+  EXPECT_EQ(static_cast<GLint>(12), cmd.src_y);
+  EXPECT_EQ(static_cast<GLsizei>(13), cmd.width);
+  EXPECT_EQ(static_cast<GLsizei>(14), cmd.height);
+  EXPECT_EQ(static_cast<GLenum>(15), cmd.planes_yuv_color_space);
+  EXPECT_EQ(static_cast<GLenum>(16), cmd.plane_config);
+  EXPECT_EQ(static_cast<GLenum>(17), cmd.subsampling);
   CheckBytesWrittenMatchesExpectedSize(
       next_cmd, sizeof(cmd) + RoundSizeToMultipleOfEntries(sizeof(data)));
 }

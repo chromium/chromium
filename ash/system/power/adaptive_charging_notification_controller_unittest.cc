@@ -22,10 +22,13 @@ namespace ash {
 
 namespace {
 
-const base::Time::Exploded kTestDateTimeExploded = {
-    2022, 4,  5, 29,  // Fri, Apr 29, 2022
-    2,    42, 7, 0    // 2:42:07.000 in UTC = 12:42:07 in Australia AEST.
-};
+constexpr base::Time::Exploded kTestDateTimeExploded = {.year = 2022,
+                                                        .month = 4,
+                                                        .day_of_week = 5,
+                                                        .day_of_month = 29,
+                                                        .hour = 2,
+                                                        .minute = 42,
+                                                        .second = 7};
 
 // Enables or disables the user pref for the entire feature.
 void SetAdaptiveChargingPref(bool enabled) {
@@ -65,7 +68,7 @@ class AdaptiveChargingNotificationControllerTest : public AshTestBase {
     message_center::Notification* notification =
         message_center::MessageCenter::Get()->FindVisibleNotificationById(
             /*id=*/"adaptive-charging-notify-info");
-    notification->delegate()->Click(button_index, absl::nullopt);
+    notification->delegate()->Click(button_index, std::nullopt);
   }
 
  private:
@@ -76,14 +79,14 @@ TEST_F(AdaptiveChargingNotificationControllerTest, ShouldntShowNotification) {
   SetAdaptiveChargingPref(false);
 
   GetController()->ShowAdaptiveChargingNotification();
-  GetController()->ShowAdaptiveChargingNotification(5);
+  GetController()->ShowAdaptiveChargingNotification(base::Hours(5));
 
   EXPECT_EQ(VisibleNotificationCount(), 0u);
 }
 
 TEST_F(AdaptiveChargingNotificationControllerTest, ShowNotificationWithHour) {
   SetAdaptiveChargingPref(true);
-  GetController()->ShowAdaptiveChargingNotification(5);
+  GetController()->ShowAdaptiveChargingNotification(base::Hours(5));
 
   EXPECT_EQ(VisibleNotificationCount(), 1u);
 }
@@ -113,7 +116,7 @@ TEST_F(AdaptiveChargingNotificationControllerTest, HaveTimeInNotification) {
       /*thread_ticks_override=*/nullptr);
 
   SetAdaptiveChargingPref(true);
-  GetController()->ShowAdaptiveChargingNotification(5);
+  GetController()->ShowAdaptiveChargingNotification(base::Hours(5));
 
   const message_center::Notification* notification =
       message_center::MessageCenter::Get()->FindPopupNotificationById(
@@ -137,13 +140,14 @@ TEST_F(AdaptiveChargingNotificationControllerTest, TimeRoundingUpTest) {
       []() {
         base::Time time;
         EXPECT_TRUE(base::Time::FromUTCExploded(kTestDateTimeExploded, &time));
-        return time + base::Minutes(3);  // Local time is 12:45pm.
+        return time + base::Minutes(2);  // Local time is 12:44pm.
       },
       /*time_ticks_override=*/nullptr,
       /*thread_ticks_override=*/nullptr);
 
   SetAdaptiveChargingPref(true);
-  GetController()->ShowAdaptiveChargingNotification(5);
+  GetController()->ShowAdaptiveChargingNotification(
+      base::Seconds(5 * 3600 + 120));
 
   const message_center::Notification* notification =
       message_center::MessageCenter::Get()->FindPopupNotificationById(
@@ -151,15 +155,15 @@ TEST_F(AdaptiveChargingNotificationControllerTest, TimeRoundingUpTest) {
 
   ASSERT_TRUE(notification);
 
-  // Current local time is 12:45 pm, so 5 hours after should be 6:00pm (rounding
-  // from 5:45pm).
+  // Current local time is 12:44 pm, so 5 hours 2 mins after should be 6:00pm
+  // (rounding from 5:46pm).
   EXPECT_TRUE(base::Contains(notification->message(), u"6:00\u202fpm"));
 }
 
 TEST_F(AdaptiveChargingNotificationControllerTest,
        ClickButtonMakesNotificationDisappear) {
   SetAdaptiveChargingPref(true);
-  GetController()->ShowAdaptiveChargingNotification(5);
+  GetController()->ShowAdaptiveChargingNotification(base::Hours(5));
   EXPECT_EQ(VisibleNotificationCount(), 1u);
 
   // Notification should disappear after click.

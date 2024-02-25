@@ -6,6 +6,7 @@
 
 #include <iterator>
 #include <memory>
+#include <optional>
 #include <string>
 #include <string_view>
 #include <utility>
@@ -20,7 +21,7 @@
 #include "base/notreached.h"
 #include "base/ranges/algorithm.h"
 #include "base/run_loop.h"
-#include "base/strings/string_piece_forward.h"
+#include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
@@ -28,7 +29,6 @@
 #include "base/test/test_future.h"
 #include "base/threading/thread_restrictions.h"
 #include "base/time/time.h"
-#include "chrome/browser/apps/app_service/app_icon/icon_effects.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/apps/app_service/browser_app_instance_tracker.h"
@@ -43,6 +43,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_list.h"
+#include "chrome/browser/ui/chrome_pages.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/web_applications/test/web_app_browsertest_util.h"
 #include "chrome/browser/ui/web_applications/web_app_controller_browsertest.h"
@@ -53,7 +54,6 @@
 #include "chrome/browser/web_applications/web_app.h"
 #include "chrome/browser/web_applications/web_app_command_scheduler.h"
 #include "chrome/browser/web_applications/web_app_constants.h"
-#include "chrome/browser/web_applications/web_app_id.h"
 #include "chrome/browser/web_applications/web_app_install_finalizer.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
 #include "chrome/browser/web_applications/web_app_install_manager.h"
@@ -73,11 +73,13 @@
 #include "components/services/app_service/public/cpp/app_launch_util.h"
 #include "components/services/app_service/public/cpp/app_types.h"
 #include "components/services/app_service/public/cpp/capability_access.h"
+#include "components/services/app_service/public/cpp/icon_effects.h"
 #include "components/services/app_service/public/cpp/icon_types.h"
 #include "components/services/app_service/public/cpp/intent_filter.h"
 #include "components/services/app_service/public/cpp/intent_util.h"
 #include "components/services/app_service/public/cpp/permission.h"
 #include "components/webapps/browser/install_result_code.h"
+#include "components/webapps/common/web_app_id.h"
 #include "content/public/browser/desktop_media_id.h"
 #include "content/public/browser/media_stream_request.h"
 #include "content/public/browser/web_contents.h"
@@ -89,7 +91,6 @@
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
 #include "third_party/blink/public/common/mediastream/media_stream_request.h"
 #include "third_party/blink/public/mojom/mediastream/media_stream.mojom-shared.h"
@@ -112,7 +113,9 @@ namespace {
 
 class MockAppPublisher : public crosapi::mojom::AppPublisher {
  public:
-  MockAppPublisher() { run_loop_ = std::make_unique<base::RunLoop>(); }
+  explicit MockAppPublisher(Profile* profile) : profile_(profile) {
+    run_loop_ = std::make_unique<base::RunLoop>();
+  }
   ~MockAppPublisher() override = default;
 
   void Wait() {
@@ -132,10 +135,16 @@ class MockAppPublisher : public crosapi::mojom::AppPublisher {
  private:
   // crosapi::mojom::AppPublisher:
   void OnApps(std::vector<apps::AppPtr> deltas) override {
+    std::vector<apps::AppPtr> app_deltas_to_publish;
     for (auto& delta : deltas) {
-      if (delta)
+      if (delta) {
+        app_deltas_to_publish.push_back(delta->Clone());
         app_deltas_.push_back(std::move(delta));
+      }
     }
+    apps::AppServiceProxyFactory::GetForProfile(profile_)->OnApps(
+        std::move(app_deltas_to_publish), apps::AppType::kWeb,
+        /* should_notify_initialized */ false);
     run_loop_->Quit();
   }
 
@@ -155,6 +164,7 @@ class MockAppPublisher : public crosapi::mojom::AppPublisher {
   std::vector<apps::AppPtr> app_deltas_;
   std::vector<apps::CapabilityAccessPtr> capability_access_deltas_;
   std::unique_ptr<base::RunLoop> run_loop_;
+  raw_ptr<Profile> profile_;
 };
 
 content::EvalJsResult ReadTextContent(content::WebContents* web_contents,
@@ -229,14 +239,14 @@ IN_PROC_BROWSER_TEST_F(LacrosWebAppsControllerBrowserTest, PublishApps) {
   InstallWebAppFromManifest(browser(), embedded_test_server()->GetURL(
                                            "/web_share_target/charts.html"));
 
-  MockAppPublisher mock_app_publisher;
+  MockAppPublisher mock_app_publisher(profile());
   LacrosWebAppsController lacros_web_apps_controller(profile());
   lacros_web_apps_controller.SetPublisherForTesting(&mock_app_publisher);
   lacros_web_apps_controller.Init();
   mock_app_publisher.Wait();
   EXPECT_EQ(mock_app_publisher.get_deltas().size(), 2U);
 
-  AppId app_id = InstallWebAppFromManifest(
+  webapps::AppId app_id = InstallWebAppFromManifest(
       browser(),
       embedded_test_server()->GetURL("/banners/manifest_test_page.html"));
   mock_app_publisher.Wait();
@@ -269,10 +279,10 @@ IN_PROC_BROWSER_TEST_F(LacrosWebAppsControllerBrowserTest, PublishApps) {
 
 IN_PROC_BROWSER_TEST_F(LacrosWebAppsControllerBrowserTest, LaunchTime) {
   ASSERT_TRUE(embedded_test_server()->Start());
-  AppId app_id = InstallWebAppFromManifest(
+  webapps::AppId app_id = InstallWebAppFromManifest(
       browser(), embedded_test_server()->GetURL("/web_apps/basic.html"));
 
-  MockAppPublisher mock_app_publisher;
+  MockAppPublisher mock_app_publisher(profile());
   LacrosWebAppsController lacros_web_apps_controller(profile());
   lacros_web_apps_controller.SetPublisherForTesting(&mock_app_publisher);
   lacros_web_apps_controller.Init();
@@ -296,12 +306,12 @@ IN_PROC_BROWSER_TEST_F(LacrosWebAppsControllerBrowserTest, ManifestUpdate) {
   const GURL app_url =
       embedded_test_server()->GetURL("app.site.com", "/simple.html");
 
-  MockAppPublisher mock_app_publisher;
+  MockAppPublisher mock_app_publisher(profile());
   LacrosWebAppsController lacros_web_apps_controller(profile());
   lacros_web_apps_controller.SetPublisherForTesting(&mock_app_publisher);
   lacros_web_apps_controller.Init();
 
-  AppId app_id;
+  webapps::AppId app_id;
   {
     const std::u16string original_description = u"Original Web App";
     auto web_app_info = std::make_unique<WebAppInstallInfo>();
@@ -327,7 +337,7 @@ IN_PROC_BROWSER_TEST_F(LacrosWebAppsControllerBrowserTest, ManifestUpdate) {
     base::RunLoop run_loop;
     provider().install_finalizer().FinalizeUpdate(
         *web_app_info,
-        base::BindLambdaForTesting([&run_loop](const AppId& app_id,
+        base::BindLambdaForTesting([&run_loop](const webapps::AppId& app_id,
                                                webapps::InstallResultCode code,
                                                OsHooksErrors os_hooks_errors) {
           EXPECT_EQ(code, webapps::InstallResultCode::kSuccessAlreadyInstalled);
@@ -348,7 +358,7 @@ IN_PROC_BROWSER_TEST_F(LacrosWebAppsControllerBrowserTest,
   const GURL app_url =
       embedded_test_server()->GetURL("app.site.com", "/simple.html");
 
-  AppId app_id;
+  webapps::AppId app_id;
   {
     const std::u16string description = u"Web App";
     auto web_app_info = std::make_unique<WebAppInstallInfo>();
@@ -358,12 +368,10 @@ IN_PROC_BROWSER_TEST_F(LacrosWebAppsControllerBrowserTest,
     web_app_info->description = description;
     app_id = InstallWebApp(std::move(web_app_info));
 
-    provider().sync_bridge_unsafe().SetAppIsLocallyInstalledForTesting(
-        app_id,
-        /*is_locally_installed=*/false);
+    provider().sync_bridge_unsafe().SetAppNotLocallyInstalledForTesting(app_id);
   }
 
-  MockAppPublisher mock_app_publisher;
+  MockAppPublisher mock_app_publisher(profile());
   LacrosWebAppsController lacros_web_apps_controller(profile());
   lacros_web_apps_controller.SetPublisherForTesting(&mock_app_publisher);
   lacros_web_apps_controller.Init();
@@ -373,9 +381,10 @@ IN_PROC_BROWSER_TEST_F(LacrosWebAppsControllerBrowserTest,
                                      IconEffects::kBlocked |
                                      IconEffects::kCrOsStandardMask));
 
-  provider().sync_bridge_unsafe().SetAppIsLocallyInstalledForTesting(
-      app_id,
-      /*is_locally_installed=*/true);
+  base::test::TestFuture<void> future;
+  provider().scheduler().InstallAppLocally(app_id, future.GetCallback());
+  ASSERT_TRUE(future.Wait());
+
   mock_app_publisher.Wait();
   EXPECT_EQ(mock_app_publisher.get_deltas().back()->icon_key->icon_effects,
             IconEffects::kRoundCorners | IconEffects::kCrOsStandardMask);
@@ -386,8 +395,8 @@ IN_PROC_BROWSER_TEST_F(LacrosWebAppsControllerBrowserTest, PolicyIds) {
   const GURL app_url = embedded_test_server()->GetURL("/web_apps/basic.html");
   const GURL install_url =
       embedded_test_server()->GetURL("/web_apps/get_manifest.html?basic.json");
-  AppId app_id = InstallWebAppFromPage(browser(), install_url);
-  MockAppPublisher mock_app_publisher;
+  webapps::AppId app_id = InstallWebAppFromPage(browser(), install_url);
+  MockAppPublisher mock_app_publisher(profile());
   LacrosWebAppsController lacros_web_apps_controller(profile());
   lacros_web_apps_controller.SetPublisherForTesting(&mock_app_publisher);
   lacros_web_apps_controller.Init();
@@ -420,7 +429,7 @@ IN_PROC_BROWSER_TEST_F(LacrosWebAppsControllerBrowserTest, PolicyIds) {
 IN_PROC_BROWSER_TEST_F(LacrosWebAppsControllerBrowserTest, ContentSettings) {
   ASSERT_TRUE(embedded_test_server()->Start());
   const GURL app_url = embedded_test_server()->GetURL("/web_apps/basic.html");
-  AppId app_id = InstallWebAppFromManifest(browser(), app_url);
+  webapps::AppId app_id = InstallWebAppFromManifest(browser(), app_url);
 
   // Install an additional app from a different host.
   {
@@ -431,7 +440,7 @@ IN_PROC_BROWSER_TEST_F(LacrosWebAppsControllerBrowserTest, ContentSettings) {
     InstallWebApp(std::move(web_app_info));
   }
 
-  MockAppPublisher mock_app_publisher;
+  MockAppPublisher mock_app_publisher(profile());
   LacrosWebAppsController lacros_web_apps_controller(profile());
   lacros_web_apps_controller.SetPublisherForTesting(&mock_app_publisher);
   lacros_web_apps_controller.Init();
@@ -464,12 +473,12 @@ IN_PROC_BROWSER_TEST_F(LacrosWebAppsControllerBrowserTest, ContentSettings) {
 IN_PROC_BROWSER_TEST_F(LacrosWebAppsControllerBrowserTest, MediaRequest) {
   ASSERT_TRUE(embedded_test_server()->Start());
   const GURL app_url = embedded_test_server()->GetURL("/web_apps/basic.html");
-  AppId app_id = InstallWebAppFromManifest(browser(), app_url);
+  webapps::AppId app_id = InstallWebAppFromManifest(browser(), app_url);
   Browser* browser = LaunchWebAppBrowserAndWait(app_id);
   content::WebContents* web_contents =
       browser->tab_strip_model()->GetActiveWebContents();
 
-  MockAppPublisher mock_app_publisher;
+  MockAppPublisher mock_app_publisher(profile());
   LacrosWebAppsController& lacros_web_apps_controller =
       *apps::AppServiceProxyFactory::GetForProfile(profile())
            ->LacrosWebAppsControllerForTesting();
@@ -518,9 +527,9 @@ IN_PROC_BROWSER_TEST_F(LacrosWebAppsControllerBrowserTest, MediaRequest) {
 IN_PROC_BROWSER_TEST_F(LacrosWebAppsControllerBrowserTest, Launch) {
   ASSERT_TRUE(embedded_test_server()->Start());
   const GURL app_url = embedded_test_server()->GetURL("/web_apps/basic.html");
-  AppId app_id = InstallWebAppFromManifest(browser(), app_url);
+  webapps::AppId app_id = InstallWebAppFromManifest(browser(), app_url);
 
-  MockAppPublisher mock_app_publisher;
+  MockAppPublisher mock_app_publisher(profile());
   LacrosWebAppsController lacros_web_apps_controller(profile());
   lacros_web_apps_controller.SetPublisherForTesting(&mock_app_publisher);
   lacros_web_apps_controller.Init();
@@ -544,10 +553,10 @@ IN_PROC_BROWSER_TEST_F(LacrosWebAppsControllerBrowserTest, LaunchWithFiles) {
   ASSERT_TRUE(embedded_test_server()->Start());
   const GURL app_url =
       embedded_test_server()->GetURL("/web_apps/file_handler_index.html");
-  AppId app_id = InstallWebAppFromManifest(browser(), app_url);
+  webapps::AppId app_id = InstallWebAppFromManifest(browser(), app_url);
   EXPECT_EQ(provider().registrar_unsafe().GetAppStartUrl(app_id), app_url);
 
-  MockAppPublisher mock_app_publisher;
+  MockAppPublisher mock_app_publisher(profile());
   LacrosWebAppsController lacros_web_apps_controller(profile());
   lacros_web_apps_controller.SetPublisherForTesting(&mock_app_publisher);
   lacros_web_apps_controller.Init();
@@ -592,7 +601,7 @@ IN_PROC_BROWSER_TEST_F(LacrosWebAppsControllerBrowserTest, PauseUnpause) {
   ASSERT_TRUE(embedded_test_server()->Start());
   const GURL app_url = embedded_test_server()->GetURL("/web_apps/basic.html");
 
-  MockAppPublisher mock_app_publisher;
+  MockAppPublisher mock_app_publisher(profile());
   apps::AppServiceProxyLacros& app_service =
       *apps::AppServiceProxyFactory::GetForProfile(profile());
   LacrosWebAppsController& lacros_web_apps_controller =
@@ -603,7 +612,7 @@ IN_PROC_BROWSER_TEST_F(LacrosWebAppsControllerBrowserTest, PauseUnpause) {
   lacros_web_apps_controller.SetPublisherForTesting(&mock_app_publisher);
   lacros_web_apps_controller.Init();
 
-  const AppId app_id = InstallWebAppFromManifest(browser(), app_url);
+  const webapps::AppId app_id = InstallWebAppFromManifest(browser(), app_url);
   LaunchWebAppBrowserAndWait(app_id);
   mock_app_publisher.Wait();
 
@@ -642,7 +651,7 @@ IN_PROC_BROWSER_TEST_F(LacrosWebAppsControllerBrowserTest, StopApp) {
   ASSERT_TRUE(embedded_test_server()->Start());
   const GURL app_url = embedded_test_server()->GetURL("/web_apps/basic.html");
 
-  MockAppPublisher mock_app_publisher;
+  MockAppPublisher mock_app_publisher(profile());
   apps::AppServiceProxyLacros& app_service =
       *apps::AppServiceProxyFactory::GetForProfile(profile());
   LacrosWebAppsController& lacros_web_apps_controller =
@@ -654,7 +663,7 @@ IN_PROC_BROWSER_TEST_F(LacrosWebAppsControllerBrowserTest, StopApp) {
   lacros_web_apps_controller.Init();
   mock_app_publisher.Wait();
 
-  const AppId app_id = InstallWebAppFromManifest(browser(), app_url);
+  const webapps::AppId app_id = InstallWebAppFromManifest(browser(), app_url);
   Browser* app_browser = LaunchWebAppBrowserAndWait(app_id);
 
   AsAppController(lacros_web_apps_controller).StopApp(app_id);
@@ -664,7 +673,7 @@ IN_PROC_BROWSER_TEST_F(LacrosWebAppsControllerBrowserTest, StopApp) {
 IN_PROC_BROWSER_TEST_F(LacrosWebAppsControllerBrowserTest, GetMenuModel) {
   auto CheckMenuItem = [](const crosapi::mojom::MenuItem& menu_item,
                           const std::string& label,
-                          absl::optional<SkColor> color) {
+                          std::optional<SkColor> color) {
     EXPECT_EQ(menu_item.label, label);
     if (color.has_value()) {
       EXPECT_FALSE(menu_item.image.isNull());
@@ -676,7 +685,7 @@ IN_PROC_BROWSER_TEST_F(LacrosWebAppsControllerBrowserTest, GetMenuModel) {
 
   const GURL app_url =
       https_server()->GetURL("/web_app_shortcuts/shortcuts.html");
-  const AppId app_id = InstallWebAppFromPage(browser(), app_url);
+  const webapps::AppId app_id = InstallWebAppFromPage(browser(), app_url);
   crosapi::mojom::AppController& lacros_web_apps_controller =
       *apps::AppServiceProxyFactory::GetForProfile(profile())
            ->LacrosWebAppsControllerForTesting();
@@ -701,14 +710,14 @@ IN_PROC_BROWSER_TEST_F(LacrosWebAppsControllerBrowserTest, GetMenuModel) {
   CheckMenuItem(*menu_items->items[2], "Three", SK_ColorYELLOW);
   CheckMenuItem(*menu_items->items[3], "Four", SK_ColorCYAN);
   CheckMenuItem(*menu_items->items[4], "Five", SK_ColorMAGENTA);
-  CheckMenuItem(*menu_items->items[5], "Six", absl::nullopt);
+  CheckMenuItem(*menu_items->items[5], "Six", std::nullopt);
 }
 
 IN_PROC_BROWSER_TEST_F(LacrosWebAppsControllerBrowserTest,
                        ExecuteContextMenuCommand) {
   const GURL app_url =
       https_server()->GetURL("/web_app_shortcuts/shortcuts.html");
-  const AppId app_id = InstallWebAppFromPage(browser(), app_url);
+  const webapps::AppId app_id = InstallWebAppFromPage(browser(), app_url);
   LacrosWebAppsController& lacros_web_apps_controller =
       *apps::AppServiceProxyFactory::GetForProfile(profile())
            ->LacrosWebAppsControllerForTesting();
@@ -724,12 +733,16 @@ IN_PROC_BROWSER_TEST_F(LacrosWebAppsControllerBrowserTest,
 
   auto id = *menu_items->items[5]->id;
 
+  ui_test_utils::BrowserChangeObserver new_app_browser_observer(
+      nullptr, ui_test_utils::BrowserChangeObserver::ChangeType::kAdded);
   base::test::TestFuture<::crosapi::mojom::LaunchResultPtr>
       launch_result_future;
   AsAppController(lacros_web_apps_controller)
       .ExecuteContextMenuCommand(app_id, id,
                                  launch_result_future.GetCallback());
-  launch_result_future.Wait();
+  // TODO: handle return value.
+  std::ignore = launch_result_future.Wait();
+  ui_test_utils::WaitForBrowserSetLastActive(new_app_browser_observer.Wait());
 
   EXPECT_EQ(BrowserList::GetInstance()
                 ->GetLastActive()
@@ -742,9 +755,9 @@ IN_PROC_BROWSER_TEST_F(LacrosWebAppsControllerBrowserTest,
 IN_PROC_BROWSER_TEST_F(LacrosWebAppsControllerBrowserTest, OpenNativeSettings) {
   ASSERT_TRUE(embedded_test_server()->Start());
   const GURL app_url = embedded_test_server()->GetURL("/web_apps/basic.html");
-  AppId app_id = InstallWebAppFromManifest(browser(), app_url);
+  webapps::AppId app_id = InstallWebAppFromManifest(browser(), app_url);
 
-  MockAppPublisher mock_app_publisher;
+  MockAppPublisher mock_app_publisher(profile());
   LacrosWebAppsController lacros_web_apps_controller(profile());
   lacros_web_apps_controller.SetPublisherForTesting(&mock_app_publisher);
   lacros_web_apps_controller.Init();
@@ -753,17 +766,18 @@ IN_PROC_BROWSER_TEST_F(LacrosWebAppsControllerBrowserTest, OpenNativeSettings) {
   AsAppController(lacros_web_apps_controller).OpenNativeSettings(app_id);
   content::WebContents* const web_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
+  std::string expected_url = base::StrCat(
+      {chrome::kChromeUISettingsURL, chrome::kContentSettingsSubPage});
   EXPECT_TRUE(base::StartsWith(web_contents->GetVisibleURL().spec(),
-                               chrome::kChromeUIContentSettingsURL,
-                               base::CompareCase::SENSITIVE));
+                               expected_url, base::CompareCase::SENSITIVE));
 }
 
 IN_PROC_BROWSER_TEST_F(LacrosWebAppsControllerBrowserTest, WindowMode) {
   ASSERT_TRUE(embedded_test_server()->Start());
   const GURL app_url = embedded_test_server()->GetURL("/web_apps/basic.html");
-  AppId app_id = InstallWebAppFromManifest(browser(), app_url);
+  webapps::AppId app_id = InstallWebAppFromManifest(browser(), app_url);
 
-  MockAppPublisher mock_app_publisher;
+  MockAppPublisher mock_app_publisher(profile());
   LacrosWebAppsController lacros_web_apps_controller(profile());
   lacros_web_apps_controller.SetPublisherForTesting(&mock_app_publisher);
   lacros_web_apps_controller.Init();
@@ -785,9 +799,9 @@ IN_PROC_BROWSER_TEST_F(LacrosWebAppsControllerBrowserTest, WindowMode) {
 IN_PROC_BROWSER_TEST_F(LacrosWebAppsControllerBrowserTest, Notification) {
   ASSERT_TRUE(embedded_test_server()->Start());
   const GURL app_url = embedded_test_server()->GetURL("/web_apps/basic.html");
-  AppId app_id = InstallWebAppFromManifest(browser(), app_url);
+  webapps::AppId app_id = InstallWebAppFromManifest(browser(), app_url);
 
-  MockAppPublisher mock_app_publisher;
+  MockAppPublisher mock_app_publisher(profile());
   LacrosWebAppsController lacros_web_apps_controller(profile());
   lacros_web_apps_controller.SetPublisherForTesting(&mock_app_publisher);
   lacros_web_apps_controller.Init();
@@ -819,10 +833,10 @@ IN_PROC_BROWSER_TEST_F(LacrosWebAppsControllerBrowserTest, Notification) {
 IN_PROC_BROWSER_TEST_F(LacrosWebAppsControllerBrowserTest, DisabledState) {
   ASSERT_TRUE(embedded_test_server()->Start());
   WebAppSyncBridge& web_app_sync_bridge = provider().sync_bridge_unsafe();
-  const AppId app_id = InstallWebAppFromManifest(
+  const webapps::AppId app_id = InstallWebAppFromManifest(
       browser(), embedded_test_server()->GetURL("/web_apps/basic.html"));
 
-  AppId app2_id;
+  webapps::AppId app2_id;
   {
     const std::u16string description = u"Uninstalled Web App";
     auto web_app_info = std::make_unique<WebAppInstallInfo>();
@@ -832,12 +846,10 @@ IN_PROC_BROWSER_TEST_F(LacrosWebAppsControllerBrowserTest, DisabledState) {
     web_app_info->title = description;
     web_app_info->description = description;
     app2_id = InstallWebApp(std::move(web_app_info));
-    web_app_sync_bridge.SetAppIsLocallyInstalledForTesting(
-        app2_id,
-        /*is_locally_installed=*/false);
+    web_app_sync_bridge.SetAppNotLocallyInstalledForTesting(app2_id);
   }
 
-  MockAppPublisher mock_app_publisher;
+  MockAppPublisher mock_app_publisher(profile());
   LacrosWebAppsController lacros_web_apps_controller(profile());
   lacros_web_apps_controller.SetPublisherForTesting(&mock_app_publisher);
   lacros_web_apps_controller.Init();
@@ -891,8 +903,7 @@ IN_PROC_BROWSER_TEST_F(LacrosWebAppsControllerBrowserTest, DisabledState) {
             IconEffects::kRoundCorners | IconEffects::kCrOsStandardMask |
                 IconEffects::kBlocked);
 
-  provider().install_manager().NotifyWebAppManifestUpdated(app_id,
-                                                           base::StringPiece());
+  provider().install_manager().NotifyWebAppManifestUpdated(app_id);
   mock_app_publisher.Wait();
   EXPECT_EQ(mock_app_publisher.get_deltas().size(), 7U);
   EXPECT_EQ(mock_app_publisher.get_deltas().back()->app_id, app_id);
@@ -902,13 +913,13 @@ IN_PROC_BROWSER_TEST_F(LacrosWebAppsControllerBrowserTest, DisabledState) {
 
 IN_PROC_BROWSER_TEST_F(LacrosWebAppsControllerBrowserTest, GetLink) {
   ASSERT_TRUE(embedded_test_server()->Start());
-  const AppId app_id = InstallWebAppFromManifest(
+  const webapps::AppId app_id = InstallWebAppFromManifest(
       browser(),
       embedded_test_server()->GetURL("/web_share_target/gatherer.html"));
   const GURL share_target_url =
       embedded_test_server()->GetURL("/web_share_target/share.html");
 
-  MockAppPublisher mock_app_publisher;
+  MockAppPublisher mock_app_publisher(profile());
   LacrosWebAppsController lacros_web_apps_controller(profile());
   lacros_web_apps_controller.SetPublisherForTesting(&mock_app_publisher);
   lacros_web_apps_controller.Init();
@@ -951,12 +962,12 @@ IN_PROC_BROWSER_TEST_F(LacrosWebAppsControllerBrowserTest, GetLink) {
 
 IN_PROC_BROWSER_TEST_F(LacrosWebAppsControllerBrowserTest, ShareImage) {
   ASSERT_TRUE(embedded_test_server()->Start());
-  const AppId app_id = InstallWebAppFromManifest(
+  const webapps::AppId app_id = InstallWebAppFromManifest(
       browser(),
       embedded_test_server()->GetURL("/web_share_target/multimedia.html"));
   const std::string kData(12, '*');
 
-  MockAppPublisher mock_app_publisher;
+  MockAppPublisher mock_app_publisher(profile());
   LacrosWebAppsController lacros_web_apps_controller(profile());
   lacros_web_apps_controller.SetPublisherForTesting(&mock_app_publisher);
   lacros_web_apps_controller.Init();
@@ -1004,13 +1015,13 @@ IN_PROC_BROWSER_TEST_F(LacrosWebAppsControllerBrowserTest, ShareImage) {
 
 IN_PROC_BROWSER_TEST_F(LacrosWebAppsControllerBrowserTest, ShareMultimedia) {
   ASSERT_TRUE(embedded_test_server()->Start());
-  const AppId app_id = InstallWebAppFromManifest(
+  const webapps::AppId app_id = InstallWebAppFromManifest(
       browser(),
       embedded_test_server()->GetURL("/web_share_target/multimedia.html"));
   const std::string kAudioContent(345, '*');
   const std::string kVideoContent(67890, '*');
 
-  MockAppPublisher mock_app_publisher;
+  MockAppPublisher mock_app_publisher(profile());
   LacrosWebAppsController lacros_web_apps_controller(profile());
   lacros_web_apps_controller.SetPublisherForTesting(&mock_app_publisher);
   lacros_web_apps_controller.Init();
@@ -1091,7 +1102,7 @@ IN_PROC_BROWSER_TEST_F(LacrosWebAppsControllerBrowserTest,
           }));
   run_loop.Run();
 
-  MockAppPublisher mock_app_publisher;
+  MockAppPublisher mock_app_publisher(profile());
   LacrosWebAppsController lacros_web_apps_controller(profile());
   lacros_web_apps_controller.SetPublisherForTesting(&mock_app_publisher);
   lacros_web_apps_controller.Init();

@@ -20,12 +20,13 @@ ActivityFilteringWebSocketHandshakeThrottle::
 void ActivityFilteringWebSocketHandshakeThrottle::ThrottleHandshake(
     const blink::WebURL& url,
     const blink::WebSecurityOrigin& creator_origin,
+    const blink::WebSecurityOrigin& isolated_world_origin,
     blink::WebSocketHandshakeThrottle::OnCompletion completion_callback) {
   GURL gurl = GURL(url);
 
   // Pass through allowed URLs, block otherwise.
   if (url_filter_->UrlMatchesWhitelist(gurl)) {
-    std::move(completion_callback).Run(absl::nullopt);
+    std::move(completion_callback).Run(std::nullopt);
     return;
   }
 

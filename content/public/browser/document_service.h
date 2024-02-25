@@ -70,6 +70,9 @@ class DocumentService : public Interface, public internal::DocumentServiceBase {
                   mojo::PendingReceiver<Interface> pending_receiver)
       : DocumentServiceBase(render_frame_host),
         receiver_(this, std::move(pending_receiver)) {
+    // This is a developer error; it does not make sense to bind a
+    // DocumentService with a null PendingReceiver.
+    DUMP_WILL_BE_CHECK(receiver_.is_bound());
     // |this| owns |receiver_|, so base::Unretained is safe.
     receiver_.set_disconnect_handler(base::BindOnce(
         [](DocumentService* document_service) {
@@ -83,7 +86,7 @@ class DocumentService : public Interface, public internal::DocumentServiceBase {
   ~DocumentService() override {
     // To avoid potential destruction order issues, implementations must use one
     // of the *AndDeleteThis() methods below instead of writing `delete this`.
-    DCHECK(!receiver_.is_bound());
+    DUMP_WILL_BE_CHECK(!receiver_.is_bound());
   }
 
   // Subclasses may end their lifetime early by calling this method; `delete

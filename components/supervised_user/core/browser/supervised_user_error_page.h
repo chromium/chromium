@@ -7,7 +7,7 @@
 
 #include <string>
 
-#include "components/supervised_user/core/common/supervised_user_utils.h"
+#include "components/supervised_user/core/browser/supervised_user_utils.h"
 
 namespace supervised_user {
 

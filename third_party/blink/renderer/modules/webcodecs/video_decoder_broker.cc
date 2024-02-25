@@ -8,6 +8,7 @@
 #include <memory>
 #include <string>
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/task/sequenced_task_runner.h"
 #include "build/buildflag.h"
@@ -59,8 +60,8 @@ struct CrossThreadCopier<media::DecoderStatus>
 };
 
 template <>
-struct CrossThreadCopier<absl::optional<DecoderDetails>>
-    : public CrossThreadCopierPassThrough<absl::optional<DecoderDetails>> {
+struct CrossThreadCopier<std::optional<DecoderDetails>>
+    : public CrossThreadCopierPassThrough<std::optional<DecoderDetails>> {
   STATIC_ONLY(CrossThreadCopier);
 };
 
@@ -76,7 +77,7 @@ class MediaVideoTaskWrapper {
  public:
   using CrossThreadOnceInitCB =
       WTF::CrossThreadOnceFunction<void(media::DecoderStatus status,
-                                        absl::optional<DecoderDetails>)>;
+                                        std::optional<DecoderDetails>)>;
   using CrossThreadOnceDecodeCB =
       WTF::CrossThreadOnceFunction<void(const media::DecoderStatus&)>;
   using CrossThreadOnceResetCB = WTF::CrossThreadOnceClosure;
@@ -272,7 +273,7 @@ class MediaVideoTaskWrapper {
     decoder_ = std::move(decoder);
 
     media::DecoderStatus status = media::DecoderStatus::Codes::kOk;
-    absl::optional<DecoderDetails> decoder_details = absl::nullopt;
+    std::optional<DecoderDetails> decoder_details = std::nullopt;
 
     if (decoder_) {
       decoder_details = DecoderDetails({decoder_->GetDecoderType(),
@@ -323,7 +324,9 @@ class MediaVideoTaskWrapper {
   base::WeakPtr<CrossThreadVideoDecoderClient> weak_client_;
   scoped_refptr<base::SequencedTaskRunner> media_task_runner_;
   scoped_refptr<base::SequencedTaskRunner> main_task_runner_;
-  media::GpuVideoAcceleratorFactories* gpu_factories_;
+  raw_ptr<media::GpuVideoAcceleratorFactories, DanglingUntriaged>
+      gpu_factories_;
+  std::unique_ptr<media::MediaLog> media_log_;
   mojo::Remote<media::mojom::InterfaceFactory> media_interface_factory_;
   std::unique_ptr<WebCodecsVideoDecoderSelector> selector_;
   std::unique_ptr<media::DecoderFactory> decoder_factory_;
@@ -336,8 +339,6 @@ class MediaVideoTaskWrapper {
   mojo::PendingRemote<media::mojom::FuchsiaMediaCodecProvider>
       fuchsia_media_codec_provider_;
 #endif
-
-  std::unique_ptr<media::MediaLog> media_log_;
 
   SEQUENCE_CHECKER(sequence_checker_);
 
@@ -357,7 +358,7 @@ VideoDecoderBroker::VideoDecoderBroker(
               ? gpu_factories->GetTaskRunner()
               // Otherwise, use a worker task runner to avoid scheduling decoder
               // work on the main thread.
-              : worker_pool::CreateSequencedTaskRunner({})) {
+              : worker_pool::CreateSequencedTaskRunner({base::MayBlock()})) {
   DVLOG(2) << __func__;
   media_tasks_ = std::make_unique<MediaVideoTaskWrapper>(
       weak_factory_.GetWeakPtr(), execution_context, gpu_factories,
@@ -432,7 +433,7 @@ int VideoDecoderBroker::CreateCallbackId() {
 }
 
 void VideoDecoderBroker::OnInitialize(media::DecoderStatus status,
-                                      absl::optional<DecoderDetails> details) {
+                                      std::optional<DecoderDetails> details) {
   DVLOG(2) << __func__;
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(init_cb_);

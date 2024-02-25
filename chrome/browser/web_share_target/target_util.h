@@ -5,11 +5,11 @@
 #ifndef CHROME_BROWSER_WEB_SHARE_TARGET_TARGET_UTIL_H_
 #define CHROME_BROWSER_WEB_SHARE_TARGET_TARGET_UTIL_H_
 
+#include <optional>
 #include <string>
 #include <vector>
 
 #include "base/memory/scoped_refptr.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace network {
 class ResourceRequestBody;

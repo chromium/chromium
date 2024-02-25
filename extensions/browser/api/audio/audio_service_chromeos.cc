@@ -126,10 +126,9 @@ class AudioServiceImpl : public AudioService,
   // List of observers.
   base::ObserverList<AudioService::Observer>::Unchecked observer_list_;
 
-  raw_ptr<CrasAudioHandler, DanglingUntriaged | ExperimentalAsh>
-      cras_audio_handler_;
+  raw_ptr<CrasAudioHandler, DanglingUntriaged> cras_audio_handler_;
 
-  raw_ptr<AudioDeviceIdCalculator, ExperimentalAsh> id_calculator_;
+  raw_ptr<AudioDeviceIdCalculator> id_calculator_;
 
   // Note: This should remain the last member so it'll be destroyed and
   // invalidate the weak pointers before any other members are destroyed.

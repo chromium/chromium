@@ -37,8 +37,7 @@ std::string CreateHintsConfig(
 
   std::string encoded_config;
   config.SerializeToString(&encoded_config);
-  base::Base64Encode(encoded_config, &encoded_config);
-  return encoded_config;
+  return base::Base64Encode(encoded_config);
 }
 
 }  // namespace optimization_guide

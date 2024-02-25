@@ -41,9 +41,9 @@ class MockContentBrowserClient : public ContentBrowserClient {
       FetchRemoteSms,
       base::OnceClosure(WebContents*,
                         const std::vector<url::Origin>&,
-                        base::OnceCallback<void(absl::optional<OriginList>,
-                                                absl::optional<std::string>,
-                                                absl::optional<FailureType>)>));
+                        base::OnceCallback<void(std::optional<OriginList>,
+                                                std::optional<std::string>,
+                                                std::optional<FailureType>)>));
 };
 
 class MockSubscriber : public SmsFetcher::Subscriber {
@@ -115,14 +115,14 @@ TEST_F(SmsFetcherImplTest, ReceiveFromRemoteProvider) {
   SmsFetcherImpl fetcher(provider());
 
   EXPECT_CALL(*client(), FetchRemoteSms(_, _, _))
-      .WillOnce(Invoke(
-          [&](WebContents*, const OriginList&,
-              base::OnceCallback<void(absl::optional<OriginList>,
-                                      absl::optional<std::string>,
-                                      absl::optional<FailureType>)> callback) {
+      .WillOnce(
+          Invoke([&](WebContents*, const OriginList&,
+                     base::OnceCallback<void(
+                         std::optional<OriginList>, std::optional<std::string>,
+                         std::optional<FailureType>)> callback) {
             std::move(callback).Run(
                 OriginList{url::Origin::Create(GURL("https://a.com"))}, "123",
-                absl::nullopt);
+                std::nullopt);
             return base::NullCallback();
           }));
 
@@ -137,13 +137,12 @@ TEST_F(SmsFetcherImplTest, RemoteProviderTimesOut) {
   SmsFetcherImpl fetcher(provider());
 
   EXPECT_CALL(*client(), FetchRemoteSms(_, _, _))
-      .WillOnce(Invoke(
-          [&](WebContents*, const OriginList&,
-              base::OnceCallback<void(absl::optional<OriginList>,
-                                      absl::optional<std::string>,
-                                      absl::optional<FailureType>)> callback) {
-            std::move(callback).Run(absl::nullopt, absl::nullopt,
-                                    absl::nullopt);
+      .WillOnce(
+          Invoke([&](WebContents*, const OriginList&,
+                     base::OnceCallback<void(
+                         std::optional<OriginList>, std::optional<std::string>,
+                         std::optional<FailureType>)> callback) {
+            std::move(callback).Run(std::nullopt, std::nullopt, std::nullopt);
             return base::NullCallback();
           }));
 
@@ -158,14 +157,14 @@ TEST_F(SmsFetcherImplTest, ReceiveFromOtherOrigin) {
   SmsFetcherImpl fetcher(provider());
 
   EXPECT_CALL(*client(), FetchRemoteSms(_, _, _))
-      .WillOnce(Invoke(
-          [&](WebContents*, const OriginList&,
-              base::OnceCallback<void(absl::optional<OriginList>,
-                                      absl::optional<std::string>,
-                                      absl::optional<FailureType>)> callback) {
+      .WillOnce(
+          Invoke([&](WebContents*, const OriginList&,
+                     base::OnceCallback<void(
+                         std::optional<OriginList>, std::optional<std::string>,
+                         std::optional<FailureType>)> callback) {
             std::move(callback).Run(
                 OriginList{url::Origin::Create(GURL("b.com"))}, "123",
-                absl::nullopt);
+                std::nullopt);
             return base::NullCallback();
           }));
 
@@ -183,14 +182,14 @@ TEST_F(SmsFetcherImplTest, ReceiveFromBothProviders) {
   const std::string& sms = "hello\n@a.com #123";
 
   EXPECT_CALL(*client(), FetchRemoteSms(_, _, _))
-      .WillOnce(Invoke(
-          [&](WebContents*, const OriginList&,
-              base::OnceCallback<void(absl::optional<OriginList>,
-                                      absl::optional<std::string>,
-                                      absl::optional<FailureType>)> callback) {
+      .WillOnce(
+          Invoke([&](WebContents*, const OriginList&,
+                     base::OnceCallback<void(
+                         std::optional<OriginList>, std::optional<std::string>,
+                         std::optional<FailureType>)> callback) {
             std::move(callback).Run(
                 OriginList{url::Origin::Create(GURL("https://a.com"))}, "123",
-                absl::nullopt);
+                std::nullopt);
             return base::NullCallback();
           }));
 
@@ -265,13 +264,13 @@ TEST_F(SmsFetcherImplTest, FetchRemoteSmsFailed) {
   SmsFetcherImpl fetcher(provider());
 
   EXPECT_CALL(*client(), FetchRemoteSms(_, _, _))
-      .WillOnce(Invoke(
-          [&](WebContents*, const OriginList&,
-              base::OnceCallback<void(absl::optional<OriginList>,
-                                      absl::optional<std::string>,
-                                      absl::optional<FailureType>)> callback) {
+      .WillOnce(
+          Invoke([&](WebContents*, const OriginList&,
+                     base::OnceCallback<void(
+                         std::optional<OriginList>, std::optional<std::string>,
+                         std::optional<FailureType>)> callback) {
             std::move(callback).Run(
-                absl::nullopt, absl::nullopt,
+                std::nullopt, std::nullopt,
                 static_cast<FailureType>(FailureType::kPromptCancelled));
             return base::NullCallback();
           }));
@@ -288,11 +287,11 @@ TEST_F(SmsFetcherImplTest, FetchRemoteSmsCancelled) {
 
   base::MockOnceClosure cancel_callback;
   EXPECT_CALL(*client(), FetchRemoteSms(_, _, _))
-      .WillOnce(Invoke(
-          [&](WebContents*, const OriginList&,
-              base::OnceCallback<void(absl::optional<OriginList>,
-                                      absl::optional<std::string>,
-                                      absl::optional<FailureType>)> callback) {
+      .WillOnce(
+          Invoke([&](WebContents*, const OriginList&,
+                     base::OnceCallback<void(
+                         std::optional<OriginList>, std::optional<std::string>,
+                         std::optional<FailureType>)> callback) {
             return cancel_callback.Get();
           }));
 

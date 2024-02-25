@@ -6,13 +6,13 @@
 #define CHROME_BROWSER_SESSIONS_EXIT_TYPE_SERVICE_H_
 
 #include <memory>
+#include <optional>
 #include <vector>
 
 #include "base/callback_list.h"
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
 #include "components/keyed_service/core/keyed_service.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 class Profile;
 
@@ -164,7 +164,7 @@ class ExitTypeService : public KeyedService {
   // Temporary place that stores the current session exit type if
   // SetCurrentSessionExitType() is called while waiting for the user to
   // acknowledge the crash.
-  absl::optional<ExitType> exit_type_to_apply_on_ack_;
+  std::optional<ExitType> exit_type_to_apply_on_ack_;
 
   // Callbacks run once the user acknowledges the crash.
   std::vector<base::OnceClosure> crash_ack_callbacks_;

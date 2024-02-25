@@ -1,0 +1,4 @@
+This is a wdspec test.
+[FAIL] test_status_with_session_running_on_endpoint_node
+  assert True is False
+Harness: the test ran to completion.

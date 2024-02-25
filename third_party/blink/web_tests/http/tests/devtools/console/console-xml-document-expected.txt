@@ -1,5 +1,5 @@
 Tests that XML document contents are logged using the correct case in the console.
 
-console-xml-document.js:14 #document<MixedCase> Test </MixedCase>
-console-xml-document.js:16 <Book></Book>
+console-xml-document.js:13 #document (http://127.0.0.1:8000/devtools/resources/inspected-page.html)<MixedCase> Test </MixedCase>
+console-xml-document.js:15 <Book></Book>
 

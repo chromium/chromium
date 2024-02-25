@@ -39,7 +39,8 @@ class WaylandKeyboardDelegate : public WaylandInputDelegate,
   bool CanAcceptKeyboardEventsForSurface(Surface* surface) const override;
   void OnKeyboardEnter(
       Surface* surface,
-      const base::flat_map<ui::DomCode, KeyState>& pressed_keys) override;
+      const base::flat_map<PhysicalCode, base::flat_set<KeyState>>&
+          pressed_keys) override;
   void OnKeyboardLeave(Surface* surface) override;
   uint32_t OnKeyboardKey(base::TimeTicks time_stamp,
                          ui::DomCode key,
@@ -58,10 +59,10 @@ class WaylandKeyboardDelegate : public WaylandInputDelegate,
   wl_client* client() const;
 
   // The keyboard resource associated with the keyboard.
-  const raw_ptr<wl_resource, ExperimentalAsh> keyboard_resource_;
+  const raw_ptr<wl_resource> keyboard_resource_;
 
   // Owned by Server, which always outlives this delegate.
-  const raw_ptr<SerialTracker, ExperimentalAsh> serial_tracker_;
+  const raw_ptr<SerialTracker> serial_tracker_;
 
   // Tracks the latest modifiers.
   KeyboardModifiers current_modifiers_{};

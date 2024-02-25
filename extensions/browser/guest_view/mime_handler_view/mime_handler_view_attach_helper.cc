@@ -4,13 +4,17 @@
 
 #include "extensions/browser/guest_view/mime_handler_view/mime_handler_view_attach_helper.h"
 
+#include <stdint.h>
+
+#include <string>
+#include <vector>
+
 #include "base/containers/contains.h"
 #include "base/containers/flat_map.h"
 #include "base/functional/bind.h"
 #include "base/memory/ptr_util.h"
 #include "base/no_destructor.h"
 #include "base/strings/stringprintf.h"
-#include "base/unguessable_token.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/navigation_handle.h"
@@ -21,9 +25,20 @@
 #include "extensions/browser/guest_view/mime_handler_view/mime_handler_view_embedder.h"
 #include "extensions/browser/guest_view/mime_handler_view/mime_handler_view_guest.h"
 #include "mojo/public/cpp/bindings/associated_remote.h"
+#include "pdf/buildflags.h"
 #include "ppapi/buildflags/buildflags.h"
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_provider.h"
 #include "third_party/skia/include/core/SkColor.h"
+
+#if BUILDFLAG(ENABLE_PDF)
+#include "base/feature_list.h"
+#include "base/strings/string_number_conversions.h"
+#include "base/strings/string_util.h"
+#include "components/grit/components_resources.h"
+#include "components/pdf/common/constants.h"
+#include "pdf/pdf_features.h"
+#include "ui/base/resource/resource_bundle.h"
+#endif
 
 #if BUILDFLAG(ENABLE_PLUGINS)
 #include "content/public/browser/plugin_service.h"
@@ -36,15 +51,14 @@ namespace extensions {
 
 namespace {
 
-// TODO(ekaramad): Make this a proper resource (https://crbug.com/659750).
-const char kFullPageMimeHandlerViewHTML[] =
+// TODO(crbug.com/659750): Make this a proper resource.
+constexpr char kFullPageMimeHandlerViewHTML[] =
     "<!doctype html><html><body style='height: 100%%; width: 100%%; overflow: "
     "hidden; margin:0px; background-color: rgb(%d, %d, %d);'><embed "
     "name='%s' "
     "style='position:absolute; left: 0; top: 0;'width='100%%' height='100%%'"
     " src='about:blank' type='%s' "
     "internalid='%s'></body></html>";
-const uint32_t kFullPageMimeHandlerViewDataPipeSize = 512U;
 
 SkColor GetBackgroundColorStringForMimeType(const GURL& url,
                                             const std::string& mime_type) {
@@ -53,8 +67,9 @@ SkColor GetBackgroundColorStringForMimeType(const GURL& url,
   std::vector<std::string> unused_actual_mime_types;
   content::PluginService::GetInstance()->GetPluginInfoArray(
       url, mime_type, true, &web_plugin_info_array, &unused_actual_mime_types);
-  if (!web_plugin_info_array.empty())
+  if (!web_plugin_info_array.empty()) {
     return web_plugin_info_array.front().background_color;
+  }
 #endif
   return content::WebPluginInfo::kDefaultBackgroundColor;
 }
@@ -85,28 +100,47 @@ MimeHandlerViewAttachHelper* MimeHandlerViewAttachHelper::Get(
 }
 
 // static
-bool MimeHandlerViewAttachHelper::OverrideBodyForInterceptedResponse(
+std::string MimeHandlerViewAttachHelper::CreateTemplateMimeHandlerPage(
+    const GURL& resource_url,
+    const std::string& mime_type,
+    const std::string& internal_id) {
+  auto color = GetBackgroundColorStringForMimeType(resource_url, mime_type);
+#if BUILDFLAG(ENABLE_PDF)
+  if (base::FeatureList::IsEnabled(chrome_pdf::features::kPdfOopif) &&
+      mime_type == pdf::kPDFMimeType) {
+    std::string pdf_embedder_html =
+        ui::ResourceBundle::GetSharedInstance().LoadDataResourceString(
+            IDR_PDF_EMBEDDER_HTML);
+    return base::ReplaceStringPlaceholders(
+        pdf_embedder_html,
+        {base::NumberToString(SkColorGetR(color)),
+         base::NumberToString(SkColorGetG(color)),
+         base::NumberToString(SkColorGetB(color)), internal_id, mime_type,
+         internal_id},
+        /*offsets=*/nullptr);
+  }
+#endif
+  return base::StringPrintf(kFullPageMimeHandlerViewHTML, SkColorGetR(color),
+                            SkColorGetG(color), SkColorGetB(color),
+                            internal_id.c_str(), mime_type.c_str(),
+                            internal_id.c_str());
+}
+
+// static
+std::string MimeHandlerViewAttachHelper::OverrideBodyForInterceptedResponse(
     int32_t navigating_frame_tree_node_id,
     const GURL& resource_url,
     const std::string& mime_type,
     const std::string& stream_id,
-    std::string* payload,
-    uint32_t* data_pipe_size,
+    const std::string& internal_id,
     base::OnceClosure resume_load) {
-  auto color = GetBackgroundColorStringForMimeType(resource_url, mime_type);
-  std::string token = base::UnguessableToken::Create().ToString();
-  auto html_str = base::StringPrintf(
-      kFullPageMimeHandlerViewHTML, SkColorGetR(color), SkColorGetG(color),
-      SkColorGetB(color), token.c_str(), mime_type.c_str(), token.c_str());
-  payload->assign(html_str);
-  *data_pipe_size = kFullPageMimeHandlerViewDataPipeSize;
   content::GetUIThreadTaskRunner({})->PostTaskAndReply(
       FROM_HERE,
       base::BindOnce(CreateFullPageMimeHandlerView,
                      navigating_frame_tree_node_id, resource_url, stream_id,
-                     token),
+                     internal_id),
       std::move(resume_load));
-  return true;
+  return CreateTemplateMimeHandlerPage(resource_url, mime_type, internal_id);
 }
 
 void MimeHandlerViewAttachHelper::RenderProcessHostDestroyed(

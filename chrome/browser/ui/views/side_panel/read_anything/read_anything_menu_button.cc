@@ -62,9 +62,9 @@ ReadAnythingMenuModel* ReadAnythingMenuButton::GetMenuModel() const {
   return menu_model_;
 }
 
-absl::optional<size_t> ReadAnythingMenuButton::GetSelectedIndex() const {
+std::optional<size_t> ReadAnythingMenuButton::GetSelectedIndex() const {
   if (!menu_model_) {
-    return absl::nullopt;
+    return std::nullopt;
   }
   return menu_model_->GetSelectedIndex();
 }
@@ -89,6 +89,6 @@ void ReadAnythingMenuButton::SetDropdownColorIds(ui::ColorId background_color,
   menu_model_->SetSelectedBackgroundColorId(selected_color);
 }
 
-BEGIN_METADATA(ReadAnythingMenuButton, MenuButton)
+BEGIN_METADATA(ReadAnythingMenuButton)
 ADD_PROPERTY_METADATA(ReadAnythingMenuModel*, MenuModel)
 END_METADATA

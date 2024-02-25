@@ -2,9 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "media/renderers/renderer_impl.h"
+
 #include <stdint.h>
 
 #include <memory>
+#include <optional>
 #include <vector>
 
 #include "base/functional/bind.h"
@@ -20,9 +23,7 @@
 #include "base/time/time.h"
 #include "media/base/mock_filters.h"
 #include "media/base/test_helpers.h"
-#include "media/renderers/renderer_impl.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 using ::base::test::RunCallback;
 using ::base::test::RunClosure;
@@ -42,25 +43,12 @@ namespace media {
 
 const int64_t kStartPlayingTimeInMs = 100;
 
-ACTION_P2(SetBool, var, value) {
-  *var = value;
-}
-
 ACTION_P3(SetBufferingState, renderer_client, buffering_state, reason) {
   (*renderer_client)->OnBufferingStateChange(buffering_state, reason);
 }
 
 ACTION_P2(SetError, renderer_client, error) {
   (*renderer_client)->OnError(error);
-}
-
-ACTION(PostCallback) {
-  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(FROM_HERE, arg0);
-}
-
-ACTION(PostQuitWhenIdle) {
-  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
-      FROM_HERE, base::RunLoop::QuitCurrentWhenIdleClosureDeprecated());
 }
 
 class RendererImplTest : public ::testing::Test {
@@ -371,7 +359,7 @@ class RendererImplTest : public ::testing::Test {
   StrictMock<MockTimeSource> time_source_;
   std::unique_ptr<StrictMock<MockDemuxerStream>> audio_stream_;
   std::unique_ptr<StrictMock<MockDemuxerStream>> video_stream_;
-  std::vector<DemuxerStream*> streams_;
+  std::vector<raw_ptr<DemuxerStream, VectorExperimental>> streams_;
   // This field is not a raw_ptr<> because it was filtered by the rewriter for:
   // #addr-of
   RAW_PTR_EXCLUSION RendererClient* video_renderer_client_;

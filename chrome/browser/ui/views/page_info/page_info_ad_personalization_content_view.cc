@@ -20,8 +20,7 @@
 #include "ui/gfx/geometry/insets.h"
 #include "ui/views/border.h"
 #include "ui/views/controls/styled_label.h"
-#include "ui/views/layout/box_layout.h"
-#include "ui/views/layout/flex_layout.h"
+#include "ui/views/layout/box_layout_view.h"
 #include "ui/views/style/typography.h"
 
 PageInfoAdPersonalizationContentView::PageInfoAdPersonalizationContentView(
@@ -34,36 +33,27 @@ PageInfoAdPersonalizationContentView::PageInfoAdPersonalizationContentView(
   const int vertical_distance =
       layout_provider->GetDistanceMetric(DISTANCE_CONTROL_LIST_VERTICAL);
 
-  SetLayoutManager(std::make_unique<views::FlexLayout>())
-      ->SetOrientation(views::LayoutOrientation::kVertical);
-  info_container_ = AddChildView(std::make_unique<views::View>());
-  info_container_->SetLayoutManager(std::make_unique<views::BoxLayout>(
-      views::BoxLayout::Orientation::kVertical, button_insets,
-      vertical_distance));
+  SetOrientation(views::LayoutOrientation::kVertical);
+
+  info_container_ = AddChildView(std::make_unique<views::BoxLayoutView>());
+  info_container_->SetOrientation(views::BoxLayout::Orientation::kVertical);
+  info_container_->SetInsideBorderInsets(button_insets);
+  info_container_->SetBetweenChildSpacing(vertical_distance);
 
   AddChildView(PageInfoViewFactory::CreateSeparator(
       ChromeLayoutProvider::Get()->GetDistanceMetric(
           DISTANCE_HORIZONTAL_SEPARATOR_PADDING_PAGE_INFO_VIEW)));
-  const auto manage_button_id =
-      base::FeatureList::IsEnabled(privacy_sandbox::kPrivacySandboxSettings4)
-          ? IDS_PAGE_INFO_AD_PRIVACY_SUBPAGE_MANAGE_BUTTON
-          : IDS_PAGE_INFO_AD_PERSONALIZATION_SUBPAGE_MANAGE_BUTTON;
   AddChildView(std::make_unique<RichHoverButton>(
       base::BindRepeating(
           [](PageInfoAdPersonalizationContentView* view) {
             view->presenter_->RecordPageInfoAction(
-                PageInfo::PageInfoAction::
-                    PAGE_INFO_AD_PERSONALIZATION_SETTINGS_OPENED);
-            if (base::FeatureList::IsEnabled(
-                    privacy_sandbox::kPrivacySandboxSettings4)) {
-              view->ui_delegate_->ShowPrivacySandboxSettings();
-            } else {
-              view->ui_delegate_->ShowPrivacySandboxAdPersonalization();
-            }
+                page_info::PAGE_INFO_AD_PERSONALIZATION_SETTINGS_OPENED);
+            view->ui_delegate_->ShowPrivacySandboxSettings();
           },
           this),
       PageInfoViewFactory::GetSiteSettingsIcon(),
-      l10n_util::GetStringUTF16(manage_button_id), std::u16string(),
+      l10n_util::GetStringUTF16(IDS_PAGE_INFO_AD_PRIVACY_SUBPAGE_MANAGE_BUTTON),
+      std::u16string(),
       /*tooltip_text=*/std::u16string(), std::u16string(),
       PageInfoViewFactory::GetLaunchIcon()));
 
@@ -80,20 +70,11 @@ void PageInfoAdPersonalizationContentView::SetAdPersonalizationInfo(
 
   int message_id;
   if (info.has_joined_user_to_interest_group && !info.accessed_topics.empty()) {
-    message_id =
-        base::FeatureList::IsEnabled(privacy_sandbox::kPrivacySandboxSettings4)
-            ? IDS_PAGE_INFO_AD_PRIVACY_TOPICS_AND_FLEDGE_DESCRIPTION
-            : IDS_PAGE_INFO_AD_PERSONALIZATION_TOPICS_AND_INTEREST_GROUP_DESCRIPTION;
+    message_id = IDS_PAGE_INFO_AD_PRIVACY_TOPICS_AND_FLEDGE_DESCRIPTION;
   } else if (info.has_joined_user_to_interest_group) {
-    message_id =
-        base::FeatureList::IsEnabled(privacy_sandbox::kPrivacySandboxSettings4)
-            ? IDS_PAGE_INFO_AD_PRIVACY_FLEDGE_DESCRIPTION
-            : IDS_PAGE_INFO_AD_PERSONALIZATION_INTEREST_GROUP_DESCRIPTION;
+    message_id = IDS_PAGE_INFO_AD_PRIVACY_FLEDGE_DESCRIPTION;
   } else {
-    message_id =
-        base::FeatureList::IsEnabled(privacy_sandbox::kPrivacySandboxSettings4)
-            ? IDS_PAGE_INFO_AD_PRIVACY_TOPICS_DESCRIPTION
-            : IDS_PAGE_INFO_AD_PERSONALIZATION_TOPICS_DESCRIPTION;
+    message_id = IDS_PAGE_INFO_AD_PRIVACY_TOPICS_DESCRIPTION;
   }
   auto* description_label =
       info_container_->AddChildView(std::make_unique<views::Label>(
@@ -104,7 +85,13 @@ void PageInfoAdPersonalizationContentView::SetAdPersonalizationInfo(
   // TODO(crbug.com/1378703): Figure out why without additional horizontal
   // margin the size is being calculated incorrectly and the topics labels are
   // being cut off.
-  description_label->SetProperty(views::kMarginsKey, gfx::Insets::VH(0, 1));
+  auto label_margin = gfx::Insets::VH(0, 1);
+  description_label->SetProperty(views::kMarginsKey, label_margin);
+
+  int label_width = PageInfoViewFactory::kMinBubbleWidth -
+                    info_container_->GetInsideBorderInsets().width() -
+                    label_margin.width();
+  description_label->SizeToFit(label_width);
 
   if (!info.accessed_topics.empty()) {
     std::vector<std::u16string> topic_names;

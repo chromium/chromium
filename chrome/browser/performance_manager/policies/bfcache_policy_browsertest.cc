@@ -172,8 +172,8 @@ class BFCachePolicyBrowserTest
 
 }  // namespace
 
-// TODO(https://crbug.com/1335514): Flaky.
-#if BUILDFLAG(IS_WIN)
+// TODO(https://crbug.com/1335514, https://crbug.com/1494579): Flaky.
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
 #define MAYBE_CacheFlushed DISABLED_CacheFlushed
 #else
 #define MAYBE_CacheFlushed CacheFlushed

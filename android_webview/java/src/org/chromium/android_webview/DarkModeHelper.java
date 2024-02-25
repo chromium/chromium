@@ -16,9 +16,7 @@ import org.chromium.base.Log;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
-/**
- * This class provides the utility methods for dark mode.
- */
+/** This class provides the utility methods for dark mode. */
 public class DarkModeHelper {
     private static final String TAG = "DarkModeHelper";
 
@@ -69,21 +67,44 @@ public class DarkModeHelper {
     public static int getLightTheme(Context context) {
         if (sLightThemeForTesting != null) return sLightThemeForTesting;
         int lightTheme = LightTheme.LIGHT_THEME_UNDEFINED;
-        int resId = android.R.attr.isLightTheme;
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.Q) {
-            // android.R.attr.isLightTheme is added in Q, for pre-Q platform, WebView
-            // checks if app has isLightTheme attr which could be added by Android X
-            // and wasn't stripped out.
-            resId = context.getApplicationContext().getResources().getIdentifier(
-                    "isLightTheme", "attr", context.getApplicationContext().getPackageName());
-            if (resId == 0) return lightTheme;
+        try {
+            int resId = android.R.attr.isLightTheme;
+            if (Build.VERSION.SDK_INT < Build.VERSION_CODES.Q) {
+                // android.R.attr.isLightTheme is added in Q, for pre-Q platform, WebView
+                // checks if app has isLightTheme attr which could be added by Android X
+                // and wasn't stripped out.
+                resId =
+                        context.getApplicationContext()
+                                .getResources()
+                                .getIdentifier(
+                                        "isLightTheme",
+                                        "attr",
+                                        context.getApplicationContext().getPackageName());
+                if (resId == 0) return lightTheme;
+            }
+            TypedArray a = context.getTheme().obtainStyledAttributes(new int[] {resId});
+            // TODO: use try-with-resources once minSdkVersion>=31 instead of recycle
+            try {
+                if (a.hasValue(0)) {
+                    lightTheme =
+                            a.getBoolean(0, true)
+                                    ? LightTheme.LIGHT_THEME_TRUE
+                                    : LightTheme.LIGHT_THEME_FALSE;
+                }
+            } finally {
+                a.recycle();
+            }
+        } catch (RuntimeException e) {
+            // The AssetManager may have been shut down, possibly due to the WebView outliving the
+            // Activity it was associated with, but this just throws a generic RuntimeException.
+            // Check the message to be sure.
+            if ("AssetManager has been destroyed".equals(e.getMessage())) {
+                // just fall through so we return the default
+            } else {
+                // rethrow if the message doesn't match
+                throw e;
+            }
         }
-        TypedArray a = context.getTheme().obtainStyledAttributes(new int[] {resId});
-        if (a.hasValue(0)) {
-            lightTheme = a.getBoolean(0, true) ? LightTheme.LIGHT_THEME_TRUE
-                                               : LightTheme.LIGHT_THEME_FALSE;
-        }
-        a.recycle();
         return lightTheme;
     }
 
@@ -94,13 +115,15 @@ public class DarkModeHelper {
     @TextLuminance
     public static int getPrimaryTextLuminace(Context context) {
         int textColor = TextLuminance.TEXT_LUMINACE_UNDEFINED;
-        TypedArray a = context.getTheme().obtainStyledAttributes(
-                new int[] {android.R.attr.textColorPrimary});
+        TypedArray a =
+                context.getTheme()
+                        .obtainStyledAttributes(new int[] {android.R.attr.textColorPrimary});
         if (a.hasValue(0)) {
             try {
-                textColor = ColorUtils.calculateLuminance(a.getColor(0, 0)) < 0.5
-                        ? TextLuminance.TEXT_LUMINACE_DARK
-                        : TextLuminance.TEXT_LUMINACE_LIGHT;
+                textColor =
+                        ColorUtils.calculateLuminance(a.getColor(0, 0)) < 0.5
+                                ? TextLuminance.TEXT_LUMINACE_DARK
+                                : TextLuminance.TEXT_LUMINACE_LIGHT;
             } catch (UnsupportedOperationException e) {
                 Log.e(TAG, "Wrong color format", e);
             }

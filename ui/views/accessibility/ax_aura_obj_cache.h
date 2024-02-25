@@ -83,7 +83,8 @@ class VIEWS_EXPORT AXAuraObjCache : public aura::client::FocusChangeObserver {
 
   // Get all top level windows this cache knows about. Under classic ash and
   // SingleProcessMash this is a list of per-display root windows.
-  void GetTopLevelWindows(std::vector<AXAuraObjWrapper*>* children);
+  void GetTopLevelWindows(
+      std::vector<raw_ptr<AXAuraObjWrapper, VectorExperimental>>* children);
 
   // Get the object that has focus.
   AXAuraObjWrapper* GetFocus();
@@ -158,7 +159,7 @@ class VIEWS_EXPORT AXAuraObjCache : public aura::client::FocusChangeObserver {
 
   raw_ptr<Delegate> delegate_ = nullptr;
 
-  std::vector<aura::Window*> root_windows_;
+  std::vector<raw_ptr<aura::Window, VectorExperimental>> root_windows_;
 
   raw_ptr<aura::Window> focused_window_ = nullptr;
 

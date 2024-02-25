@@ -1,15 +1,17 @@
 // Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
-
 #include "chrome/browser/media/webrtc/native_desktop_media_list.h"
 
 #include <memory>
+#include <optional>
 #include <utility>
 
+#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/hash/hash.h"
 #include "base/message_loop/message_pump_type.h"
+#include "base/metrics/field_trial_params.h"
 #include "base/numerics/checked_math.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/utf_string_conversions.h"
@@ -24,7 +26,6 @@
 #include "content/public/browser/desktop_capture.h"
 #include "content/public/common/content_features.h"
 #include "media/base/video_util.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/libyuv/include/libyuv/scale_argb.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "third_party/webrtc/modules/desktop_capture/desktop_capturer.h"
@@ -53,25 +54,37 @@ using content::DesktopMediaID;
 
 namespace {
 
+// The enable/disable property of this feature has no impact. The feature is
+// used solely to pass on the parameter below.
+BASE_FEATURE(kNativeDesktopMediaList,
+             "NativeDesktopMediaList",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
+// The maximum number of window thumbnails that are concurrently captured when
+// the frame delivery mode is set to kMultipleSourcesRecurrent.
+// ThumbnailCapturerMac is the only capturer at the moment that implements this.
+const base::FeatureParam<int> kNativeDesktopMediaListMaxConcurrentStreams{
+    &kNativeDesktopMediaList, "max_concurrent_streams", 100};
+
 // Update the list every second.
 const int kDefaultNativeDesktopMediaListUpdatePeriod = 1000;
 
 // Returns a hash of a DesktopFrame content to detect when image for a desktop
 // media source has changed, if the frame is valid, or absl::null_opt if not.
-absl::optional<size_t> GetFrameHash(webrtc::DesktopFrame* frame) {
+std::optional<size_t> GetFrameHash(webrtc::DesktopFrame* frame) {
   // These checks ensure invalid data isn't passed along, potentially leading to
   // crashes, e.g. when we calculate the hash which assumes a positive height
   // and stride.
   // TODO(crbug.com/1085230): figure out why the height is sometimes negative.
   if (!frame || !frame->data() || frame->stride() < 0 ||
       frame->size().height() < 0) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   size_t data_size;
   if (!base::CheckMul<size_t>(frame->stride(), frame->size().height())
            .AssignIfValid(&data_size)) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   return base::FastHash(base::make_span(frame->data(), data_size));
@@ -150,16 +163,117 @@ BASE_FEATURE(kWindowCaptureMacV2,
              base::FEATURE_ENABLED_BY_DEFAULT);
 #endif
 
+content::DesktopMediaID::Type ConvertToDesktopMediaIDType(
+    DesktopMediaList::Type type) {
+  switch (type) {
+    case DesktopMediaList::Type::kScreen:
+      return content::DesktopMediaID::Type::TYPE_SCREEN;
+    case DesktopMediaList::Type::kWindow:
+      return content::DesktopMediaID::Type::TYPE_WINDOW;
+    case DesktopMediaList::Type::kWebContents:
+    case DesktopMediaList::Type::kCurrentTab:
+    case DesktopMediaList::Type::kNone:
+      break;
+  }
+  NOTREACHED_NORETURN();
+}
+
+content::DesktopMediaID::Id GetUpdatedWindowId(
+    const content::DesktopMediaID& desktop_media_id,
+    bool is_source_list_delegated) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+
+  // Use current value by default.
+  content::DesktopMediaID::Id window_id = desktop_media_id.window_id;
+
+  // Update |window_id| if |desktop_media_id.id| corresponds to a
+  // viz::FrameSinkId.
+  // TODO(https://crbug.com/1366579): This lookup is fairly fragile and has
+  // now resulted in at least two patches to avoid it (though both are Wayland
+  // based problems). On top of that, the series of ifdefs is a bit confusing.
+  // We should try to simplify/abstract/cleanup this logic.
+  // The root cause is that the Ozone Wayland Window Manager does *not* use a
+  // platform handle/unique ID to back the AcceleratedWidget, but rather a
+  // monotonically increasing int. Thus, capturers on that platform that
+  // also (by default) use monotonically increasing ints as IDs (e.g.
+  // delegated source lists, the lacros capturer) can have source IDs that
+  // collide with known aura IDs. This causes us to mistakenly try to capture
+  // the non-aura windows as an aura window. The preview ultimately matches
+  // what is captured, but this is likely unexpected for the user and can
+  // result in multiple instances of a window appearing in the source list and
+  // also means that the collided non-aura window cannot be captured.
+#if defined(USE_AURA)
+  if (!is_source_list_delegated) {
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+    // The lacros capturer is not delegated and can circumvent the collision
+    // described above because it receives additional information about each
+    // window from Ash-chrome; however, it is limited in how it can convey
+    // that information. |FormatSources|, above, will put the internal ID into
+    // the window_id slot; but this will not yet be a registered native
+    // window, as the capturer does not run on the UI thread. Thus, we still
+    // need to find and register this window here and then overwrite the
+    // window_id. If the window_id has not been set, we'll just fail to find a
+    // corresponding window and the state will remain unset.
+    DesktopMediaID::Id search_id = desktop_media_id.window_id;
+#else
+    DesktopMediaID::Id search_id = desktop_media_id.id;
+#endif
+    aura::WindowTreeHost* const host =
+        aura::WindowTreeHost::GetForAcceleratedWidget(
+            *reinterpret_cast<gfx::AcceleratedWidget*>(&search_id));
+    aura::Window* const aura_window = host ? host->window() : nullptr;
+    if (aura_window) {
+      DesktopMediaID aura_id = DesktopMediaID::RegisterNativeWindow(
+          DesktopMediaID::TYPE_WINDOW, aura_window);
+      window_id = aura_id.window_id;
+    } else if (search_id != DesktopMediaID::kNullId) {
+      // This is expected for non-LaCrOS platforms, where we are searching all
+      // IDs (which include windows/screens that we don't own). However, on
+      // LaCrOS, if we set search_id, then that means we think we should know
+      // about the window. There are potential race conditions where this
+      // could happen, so don't throw an error, but do log it in case any
+      // issues pop up in the future so we can debug it.
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+      LOG(ERROR) << __func__ << ": Could not find window but had window id";
+      window_id = DesktopMediaID::kNullId;
+#endif
+    }
+  }
+#elif BUILDFLAG(IS_MAC)
+  if (base::FeatureList::IsEnabled(kWindowCaptureMacV2)) {
+    if (remote_cocoa::ScopedCGWindowID::Get(desktop_media_id.id)) {
+      window_id = desktop_media_id.id;
+    }
+  }
+#endif
+
+  return window_id;
+}
+
+using ThumbnailCallback =
+    base::OnceCallback<void(const content::DesktopMediaID&,
+                            const gfx::ImageSkia&)>;
+
+void AssignWindowIdAndUpdateThumbnail(
+    content::DesktopMediaID desktop_media_id,
+    bool is_source_list_delegated,
+    const gfx::ImageSkia& thumbnail,
+    ThumbnailCallback update_thumbnail_callback) {
+  desktop_media_id.window_id =
+      GetUpdatedWindowId(desktop_media_id, is_source_list_delegated);
+  std::move(update_thumbnail_callback).Run(desktop_media_id, thumbnail);
+}
+
 }  // namespace
 
 class NativeDesktopMediaList::Worker
-    : public webrtc::DesktopCapturer::Callback,
+    : public ThumbnailCapturer::Consumer,
       public webrtc::DelegatedSourceListController::Observer {
  public:
   Worker(scoped_refptr<base::SingleThreadTaskRunner> task_runner,
          base::WeakPtr<NativeDesktopMediaList> media_list,
          DesktopMediaList::Type type,
-         std::unique_ptr<webrtc::DesktopCapturer> capturer,
+         std::unique_ptr<ThumbnailCapturer> capturer,
          bool add_current_process_windows);
 
   Worker(const Worker&) = delete;
@@ -168,13 +282,19 @@ class NativeDesktopMediaList::Worker
   ~Worker() override;
 
   void Start();
-  void Refresh(const DesktopMediaID::Id& view_dialog_id, bool update_thumnails);
+  void Refresh(bool update_thumbnails);
 
   void RefreshThumbnails(std::vector<DesktopMediaID> native_ids,
                          const gfx::Size& thumbnail_size);
   void FocusList();
   void HideList();
   void ClearDelegatedSourceListSelection();
+
+  // If |excluded_window_id| is not kNullId, then that ID will
+  // be ignored by `this`.
+  void SetExcludedWindow(DesktopMediaID::Id excluded_window_id);
+
+  void SetThumbnailSize(const gfx::Size& thumbnail_size);
 
  private:
   typedef std::map<DesktopMediaID, size_t> ImageHashesMap;
@@ -189,10 +309,12 @@ class NativeDesktopMediaList::Worker
 
   // These must be members because |SourceDescription| is a protected type from
   // |DesktopMediaListBase|.
+  // |excluded_window_id|, if different from kNullId, indicates a window
+  // which should be excluded from the list produced.
   static std::vector<SourceDescription> FormatSources(
       const webrtc::DesktopCapturer::SourceList& sources,
-      const DesktopMediaID::Id& view_dialog_id,
-      const DesktopMediaList::Type& list_type);
+      const DesktopMediaID::Type source_type,
+      DesktopMediaID::Id excluded_window_id);
 
 #if BUILDFLAG(IS_WIN)
   static std::vector<SourceDescription> GetCurrentProcessWindows();
@@ -204,9 +326,13 @@ class NativeDesktopMediaList::Worker
 
   void RefreshNextThumbnail();
 
-  // webrtc::DesktopCapturer::Callback interface.
+  // ThumbnailCapturer::Consumer interface.
   void OnCaptureResult(webrtc::DesktopCapturer::Result result,
                        std::unique_ptr<webrtc::DesktopFrame> frame) override;
+  void OnRecurrentCaptureResult(ThumbnailCapturer::Result result,
+                                std::unique_ptr<webrtc::DesktopFrame> frame,
+                                ThumbnailCapturer::SourceId source_id) override;
+  void OnSourceListUpdated() override;
 
   // webrtc::DelegatedSourceListController::Observer interface.
   void OnSelection() override;
@@ -218,17 +344,31 @@ class NativeDesktopMediaList::Worker
 
   base::WeakPtr<NativeDesktopMediaList> media_list_;
 
-  DesktopMediaList::Type type_;
-  std::unique_ptr<webrtc::DesktopCapturer> capturer_;
+  DesktopMediaID::Type source_type_;
+  const std::unique_ptr<ThumbnailCapturer> capturer_;
+  const ThumbnailCapturer::FrameDeliveryMethod frame_delivery_method_;
   const bool add_current_process_windows_;
 
+  const bool is_source_list_delegated_;
   bool delegated_source_list_has_selection_ = false;
   bool focused_ = false;
+
+  // If this ID is different than kNullId, then windows with this ID
+  // may not be captured.
+  // Used to keep track of the view dialog where the thumbnails are displayed,
+  // so as to avoid offering the user to capture that dialog, which will
+  // disappear as soon as the user makes that choice.
+  // TODO(https://crbug.com/1471931): Set this earlier to avoid frames being
+  // dropped because it's not set. If possible set it in the constructor.
+  DesktopMediaID::Id excluded_window_id_ = DesktopMediaID::kNullId;
+
+  gfx::Size thumbnail_size_ = kDefaultThumbnailSize;
 
   // Stores hashes of snapshots previously captured.
   ImageHashesMap image_hashes_;
 
-  // Non-null when RefreshThumbnails hasn't yet completed.
+  // Non-null when RefreshThumbnails hasn't yet completed. Must only be accessed
+  // on `task_runner_` thread.
   std::unique_ptr<RefreshThumbnailsState> refresh_thumbnails_state_;
 
   base::WeakPtrFactory<Worker> weak_factory_{this};
@@ -238,16 +378,19 @@ NativeDesktopMediaList::Worker::Worker(
     scoped_refptr<base::SingleThreadTaskRunner> task_runner,
     base::WeakPtr<NativeDesktopMediaList> media_list,
     DesktopMediaList::Type type,
-    std::unique_ptr<webrtc::DesktopCapturer> capturer,
+    std::unique_ptr<ThumbnailCapturer> capturer,
     bool add_current_process_windows)
     : task_runner_(task_runner),
       media_list_(media_list),
-      type_(type),
+      source_type_(ConvertToDesktopMediaIDType(type)),
       capturer_(std::move(capturer)),
-      add_current_process_windows_(add_current_process_windows) {
+      frame_delivery_method_(capturer_->GetFrameDeliveryMethod()),
+      add_current_process_windows_(add_current_process_windows),
+      is_source_list_delegated_(capturer_->GetDelegatedSourceListController() !=
+                                nullptr) {
   DCHECK(capturer_);
 
-  DCHECK(type_ == DesktopMediaList::Type::kWindow ||
+  DCHECK(source_type_ == DesktopMediaID::Type::TYPE_WINDOW ||
          !add_current_process_windows_);
 }
 
@@ -259,29 +402,45 @@ void NativeDesktopMediaList::Worker::Start() {
   DCHECK(task_runner_->BelongsToCurrentThread());
   capturer_->Start(this);
 
-  if (capturer_->GetDelegatedSourceListController())
+  if (is_source_list_delegated_) {
     capturer_->GetDelegatedSourceListController()->Observe(this);
+  }
 }
 
-void NativeDesktopMediaList::Worker::Refresh(
-    const DesktopMediaID::Id& view_dialog_id,
-    bool update_thumnails) {
+void NativeDesktopMediaList::Worker::Refresh(bool update_thumbnails) {
   DCHECK(task_runner_->BelongsToCurrentThread());
+
   webrtc::DesktopCapturer::SourceList sources;
   if (!capturer_->GetSourceList(&sources)) {
     // Will pass empty results list to RefreshForVizFrameSinkWindows().
     sources.clear();
   }
 
+  if (capturer_->GetFrameDeliveryMethod() ==
+      ThumbnailCapturer::FrameDeliveryMethod::kMultipleSourcesRecurrent) {
+    // TODO(https://crbug.com/1471931): Select windows to stream based on what's
+    // visible. For now, select the first N windows.
+    const size_t target_size = std::min(
+        static_cast<size_t>(kNativeDesktopMediaListMaxConcurrentStreams.Get()),
+        sources.size());
+    std::vector<ThumbnailCapturer::SourceId> source_ids;
+    for (size_t i = 0; i < target_size; ++i) {
+      if (sources[i].id != excluded_window_id_) {
+        source_ids.push_back(sources[i].id);
+      }
+    }
+    capturer_->SelectSources(source_ids, thumbnail_size_);
+  }
+
   std::vector<SourceDescription> source_descriptions =
-      FormatSources(sources, view_dialog_id, type_);
+      FormatSources(sources, source_type_, excluded_window_id_);
 
 #if BUILDFLAG(IS_WIN)
   // If |add_current_process_windows_| is set to false, |capturer_| will have
   // found the windows owned by the current process for us. Otherwise, we must
   // do this.
   if (add_current_process_windows_) {
-    DCHECK_EQ(type_, DesktopMediaList::Type::kWindow);
+    DCHECK_EQ(source_type_, DesktopMediaID::Type::TYPE_WINDOW);
     // WebRTC returns the windows in order of highest z-order to lowest, but
     // these additional windows will be out of order if we just append them. So
     // we sort the list according to the z-order of the windows.
@@ -293,7 +452,7 @@ void NativeDesktopMediaList::Worker::Refresh(
   content::GetUIThreadTaskRunner({})->PostTask(
       FROM_HERE,
       base::BindOnce(&NativeDesktopMediaList::RefreshForVizFrameSinkWindows,
-                     media_list_, source_descriptions, update_thumnails));
+                     media_list_, source_descriptions, update_thumbnails));
 }
 
 void NativeDesktopMediaList::Worker::RefreshThumbnails(
@@ -301,10 +460,11 @@ void NativeDesktopMediaList::Worker::RefreshThumbnails(
     const gfx::Size& thumbnail_size) {
   DCHECK(task_runner_->BelongsToCurrentThread());
 
-  // Ignore if refresh is already in progress.
-  if (refresh_thumbnails_state_)
-    return;
-
+  // The refresh of thumbnails follows different steps depending on if the frame
+  // deliver method is kOnRequest or kMultipleSourcesRecurrent.
+  //
+  // For kOnRequest
+  // ==============
   // To refresh thumbnails, a snapshot of each window is captured and scaled
   // down to the specified size. Snapshotting can be asynchronous, and so
   // the process looks like the following steps:
@@ -318,10 +478,27 @@ void NativeDesktopMediaList::Worker::RefreshThumbnails(
   //
   // |image_hashes_| is used to help avoid updating thumbnails that haven't
   // changed since the last refresh.
+  //
+  // For kMultipleSourcesRecurrent
+  // =============================
+  // The refresh of thumbnails begins as soon as SelectSources() is called with
+  // the specific sources that should be captured. This will result in several
+  // callbacks to OnRecurrentCaptureResult for each source. If the source list
+  // is updated, there will be a call to OnSourceListUpdated() and the selection
+  // of sources may be changed.
+
+  // Ignore if refresh is already in progress or the frame delivery method is
+  // multiple sources recurrent.
+  if (refresh_thumbnails_state_ ||
+      frame_delivery_method_ ==
+          ThumbnailCapturer::FrameDeliveryMethod::kMultipleSourcesRecurrent) {
+    return;
+  }
 
   refresh_thumbnails_state_ = std::make_unique<RefreshThumbnailsState>();
   refresh_thumbnails_state_->source_ids = std::move(native_ids);
   refresh_thumbnails_state_->thumbnail_size = thumbnail_size;
+
   RefreshNextThumbnail();
 }
 
@@ -329,15 +506,13 @@ void NativeDesktopMediaList::Worker::RefreshThumbnails(
 std::vector<DesktopMediaListBase::SourceDescription>
 NativeDesktopMediaList::Worker::FormatSources(
     const webrtc::DesktopCapturer::SourceList& sources,
-    const DesktopMediaID::Id& view_dialog_id,
-    const DesktopMediaList::Type& list_type) {
+    const DesktopMediaID::Type source_type,
+    DesktopMediaID::Id excluded_window_id) {
   std::vector<SourceDescription> source_descriptions;
   std::u16string title;
   for (size_t i = 0; i < sources.size(); ++i) {
-    DesktopMediaID::Type source_type = DesktopMediaID::Type::TYPE_NONE;
-    switch (list_type) {
-      case DesktopMediaList::Type::kScreen:
-        source_type = DesktopMediaID::Type::TYPE_SCREEN;
+    switch (source_type) {
+      case DesktopMediaID::Type::TYPE_SCREEN:
         // Just in case 'Screen' is inflected depending on the screen number,
         // use plural formatter.
         title = sources.size() > 1
@@ -348,11 +523,11 @@ NativeDesktopMediaList::Worker::FormatSources(
                           IDS_DESKTOP_MEDIA_PICKER_SINGLE_SCREEN_NAME);
         break;
 
-      case DesktopMediaList::Type::kWindow:
-        source_type = DesktopMediaID::Type::TYPE_WINDOW;
+      case DesktopMediaID::Type::TYPE_WINDOW:
         // Skip the picker dialog window.
-        if (sources[i].id == view_dialog_id)
+        if (sources[i].id == excluded_window_id) {
           continue;
+        }
         title = base::UTF8ToUTF16(sources[i].title);
         break;
 
@@ -437,6 +612,7 @@ NativeDesktopMediaList::Worker::MergeAndSortWindowSources(
 #endif  // BUILDFLAG(IS_WIN)
 
 void NativeDesktopMediaList::Worker::RefreshNextThumbnail() {
+  DCHECK(task_runner_->BelongsToCurrentThread());
   DCHECK(refresh_thumbnails_state_);
 
   for (size_t index = refresh_thumbnails_state_->next_source_index;
@@ -462,13 +638,15 @@ void NativeDesktopMediaList::Worker::RefreshNextThumbnail() {
 void NativeDesktopMediaList::Worker::OnCaptureResult(
     webrtc::DesktopCapturer::Result result,
     std::unique_ptr<webrtc::DesktopFrame> frame) {
-  auto index = refresh_thumbnails_state_->next_source_index - 1;
+  DCHECK(task_runner_->BelongsToCurrentThread());
+
+  const size_t index = refresh_thumbnails_state_->next_source_index - 1;
   DCHECK(index < refresh_thumbnails_state_->source_ids.size());
   DesktopMediaID id = refresh_thumbnails_state_->source_ids[index];
 
   // |frame| may be null if capture failed (e.g. because window has been
   // closed).
-  auto frame_hash = GetFrameHash(frame.get());
+  const std::optional<size_t> frame_hash = GetFrameHash(frame.get());
   if (frame_hash) {
     refresh_thumbnails_state_->new_image_hashes[id] = *frame_hash;
 
@@ -491,8 +669,37 @@ void NativeDesktopMediaList::Worker::OnCaptureResult(
                                 weak_factory_.GetWeakPtr()));
 }
 
+void NativeDesktopMediaList::Worker::OnRecurrentCaptureResult(
+    ThumbnailCapturer::Result result,
+    std::unique_ptr<webrtc::DesktopFrame> frame,
+    ThumbnailCapturer::SourceId source_id) {
+  DCHECK(task_runner_->BelongsToCurrentThread());
+
+  // |frame| may be null if capture failed (e.g. because window has been
+  // closed).
+  if (!frame) {
+    return;
+  }
+
+  gfx::ImageSkia thumbnail =
+      ScaleDesktopFrame(std::move(frame), thumbnail_size_);
+
+  content::GetUIThreadTaskRunner({})->PostTask(
+      FROM_HERE,
+      base::BindOnce(
+          &AssignWindowIdAndUpdateThumbnail,
+          DesktopMediaID(source_type_, source_id), is_source_list_delegated_,
+          thumbnail,
+          base::BindOnce(&NativeDesktopMediaList::UpdateSourceThumbnail,
+                         media_list_)));
+}
+
+void NativeDesktopMediaList::Worker::OnSourceListUpdated() {
+  Refresh(/*update_thumbnails=*/false);
+}
+
 void NativeDesktopMediaList::Worker::ClearDelegatedSourceListSelection() {
-  DCHECK(capturer_->GetDelegatedSourceListController());
+  DCHECK(is_source_list_delegated_);
   if (!delegated_source_list_has_selection_)
     return;
 
@@ -504,15 +711,25 @@ void NativeDesktopMediaList::Worker::ClearDelegatedSourceListSelection() {
     capturer_->GetDelegatedSourceListController()->EnsureVisible();
 }
 
+void NativeDesktopMediaList::Worker::SetExcludedWindow(
+    DesktopMediaID::Id excluded_window_id) {
+  excluded_window_id_ = excluded_window_id;
+}
+
+void NativeDesktopMediaList::Worker::SetThumbnailSize(
+    const gfx::Size& thumbnail_size) {
+  thumbnail_size_ = thumbnail_size;
+}
+
 void NativeDesktopMediaList::Worker::FocusList() {
   focused_ = true;
   // If the capturer uses a delegated source list, then we need to ensure that
   // its source list is visible, unless a selection has previously been made.
   // If the capturer doesn't use a delegated source list, there's nothing for us
   // to do as we're continually querying the list state ourselves.
-  if (capturer_->GetDelegatedSourceListController() &&
-      !delegated_source_list_has_selection_)
+  if (is_source_list_delegated_ && !delegated_source_list_has_selection_) {
     capturer_->GetDelegatedSourceListController()->EnsureVisible();
+  }
 }
 
 void NativeDesktopMediaList::Worker::HideList() {
@@ -522,8 +739,9 @@ void NativeDesktopMediaList::Worker::HideList() {
   // If the capturer doesn't use a delegated source list, there's nothing for us
   // to do as we want to continually querying the list state ourselves as we
   // have been doing.
-  if (capturer_->GetDelegatedSourceListController())
+  if (is_source_list_delegated_) {
     capturer_->GetDelegatedSourceListController()->EnsureHidden();
+  }
 }
 
 void NativeDesktopMediaList::Worker::OnSelection() {
@@ -550,14 +768,14 @@ void NativeDesktopMediaList::Worker::OnError() {
 
 NativeDesktopMediaList::NativeDesktopMediaList(
     DesktopMediaList::Type type,
-    std::unique_ptr<webrtc::DesktopCapturer> capturer)
+    std::unique_ptr<ThumbnailCapturer> capturer)
     : NativeDesktopMediaList(type,
                              std::move(capturer),
                              /*add_current_process_windows=*/false) {}
 
 NativeDesktopMediaList::NativeDesktopMediaList(
     DesktopMediaList::Type type,
-    std::unique_ptr<webrtc::DesktopCapturer> capturer,
+    std::unique_ptr<ThumbnailCapturer> capturer,
     bool add_current_process_windows)
     : DesktopMediaListBase(
           base::Milliseconds(kDefaultNativeDesktopMediaListUpdatePeriod)),
@@ -600,6 +818,33 @@ NativeDesktopMediaList::~NativeDesktopMediaList() {
   // thread after worker_'s deletion.
   thread_.task_runner()->DeleteSoon(FROM_HERE, worker_.release());
   thread_.Stop();
+}
+
+void NativeDesktopMediaList::SetViewDialogWindowId(DesktopMediaID dialog_id) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+
+  DesktopMediaListBase::SetViewDialogWindowId(dialog_id);
+
+  // base::Unretained is safe here because we own the lifetime of both the
+  // worker and the thread and ensure that destroying the worker is the last
+  // thing the thread does before stopping.
+  thread_.task_runner()->PostTask(
+      FROM_HERE, base::BindOnce(&Worker::SetExcludedWindow,
+                                base::Unretained(worker_.get()), dialog_id.id));
+}
+
+void NativeDesktopMediaList::SetThumbnailSize(const gfx::Size& thumbnail_size) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+
+  DesktopMediaListBase::SetThumbnailSize(thumbnail_size);
+
+  // base::Unretained is safe here because we own the lifetime of both the
+  // worker and the thread and ensure that destroying the worker is the last
+  // thing the thread does before stopping.
+  thread_.task_runner()->PostTask(
+      FROM_HERE,
+      base::BindOnce(&Worker::SetThumbnailSize, base::Unretained(worker_.get()),
+                     thumbnail_size));
 }
 
 bool NativeDesktopMediaList::IsSourceListDelegated() const {
@@ -655,7 +900,7 @@ void NativeDesktopMediaList::HideList() {
       base::BindOnce(&Worker::HideList, base::Unretained(worker_.get())));
 }
 
-void NativeDesktopMediaList::Refresh(bool update_thumnails) {
+void NativeDesktopMediaList::Refresh(bool update_thumbnails) {
   DCHECK(can_refresh());
 
 #if defined(USE_AURA)
@@ -670,12 +915,12 @@ void NativeDesktopMediaList::Refresh(bool update_thumnails) {
   thread_.task_runner()->PostTask(
       FROM_HERE,
       base::BindOnce(&Worker::Refresh, base::Unretained(worker_.get()),
-                     view_dialog_id_.id, update_thumnails));
+                     update_thumbnails));
 }
 
 void NativeDesktopMediaList::RefreshForVizFrameSinkWindows(
     std::vector<SourceDescription> sources,
-    bool update_thumnails) {
+    bool update_thumbnails) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   DCHECK(can_refresh());
 
@@ -719,72 +964,15 @@ void NativeDesktopMediaList::RefreshForVizFrameSinkWindows(
     }
 #endif  // BUILDFLAG(IS_WIN)
 
-    // Assign |source_it->id.window_id| if |source_it->id.id| corresponds to a
-    // viz::FrameSinkId.
-    // TODO(https://crbug.com/1366579): This lookup is fairly fragile and has
-    // now resulted in at least two patches to avoid it (though both are Wayland
-    // based problems). On top of that, the series of ifdefs is a bit confusing.
-    // We should try to simplify/abstract/cleanup this logic.
-    // The root cause is that the Ozone Wayland Window Manager does *not* use a
-    // platform handle/unique ID to back the AcceleratedWidget, but rather a
-    // monotonically increasing int. Thus, capturers on that platform that
-    // also (by default) use monotonically increasing ints as IDs (e.g.
-    // delegated source lists, the lacros capturer) can have source IDs that
-    // collide with known aura IDs. This causes us to mistakenly try to capture
-    // the non-aura windows as an aura window. The preview ultimately matches
-    // what is captured, but this is likely unexpected for the user and can
-    // result in multiple instances of a window appearing in the source list and
-    // also means that the collided non-aura window cannot be captured.
-#if defined(USE_AURA)
-    if (!is_source_list_delegated_) {
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-      // The lacros capturer is not delegated and can circumvent the collision
-      // described above because it receives additional information about each
-      // window from Ash-chrome; however, it is limited in how it can convey
-      // that information. |FormatSources|, above, will put the internal ID into
-      // the window_id slot; but this will not yet be a registered native
-      // window, as the capturer does not run on the UI thread. Thus, we still
-      // need to find and register this window here and then overwrite the
-      // window_id. If the window_id has not been set, we'll just fail to find a
-      // corresponding window and the state will remain unset.
-      DesktopMediaID::Id search_id = source_it->id.window_id;
-#else
-      DesktopMediaID::Id search_id = source_it->id.id;
-#endif
-      aura::WindowTreeHost* const host =
-          aura::WindowTreeHost::GetForAcceleratedWidget(
-              *reinterpret_cast<gfx::AcceleratedWidget*>(&search_id));
-      aura::Window* const aura_window = host ? host->window() : nullptr;
-      if (aura_window) {
-        DesktopMediaID aura_id = DesktopMediaID::RegisterNativeWindow(
-            DesktopMediaID::TYPE_WINDOW, aura_window);
-        source_it->id.window_id = aura_id.window_id;
-      } else if (search_id != DesktopMediaID::kNullId) {
-        // This is expected for non-LaCrOS platforms, where we are searching all
-        // IDs (which include windows/screens that we don't own). However, on
-        // LaCrOS, if we set search_id, then that means we think we should know
-        // about the window. There are potential race conditions where this
-        // could happen, so don't throw an error, but do log it in case any
-        // issues pop up in the future so we can debug it.
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-        LOG(ERROR) << __func__ << ": Could not find window but had window id";
-        source_it->id.window_id = DesktopMediaID::kNullId;
-#endif
-      }
-    }
-#elif BUILDFLAG(IS_MAC)
-    if (base::FeatureList::IsEnabled(kWindowCaptureMacV2)) {
-      if (remote_cocoa::ScopedCGWindowID::Get(source_it->id.id))
-        source_it->id.window_id = source_it->id.id;
-    }
-#endif
+    source_it->id.window_id =
+        GetUpdatedWindowId(source_it->id, is_source_list_delegated_);
 
     ++source_it;
   }
 
   UpdateSourcesList(sources);
 
-  if (!update_thumnails) {
+  if (!update_thumbnails) {
     OnRefreshComplete();
     return;
   }
@@ -861,7 +1049,7 @@ void NativeDesktopMediaList::CaptureAuraWindowThumbnail(
       gfx::Rect(thumbnail_size_), window_rect.size());
 
   pending_aura_capture_requests_++;
-  ui::GrabWindowSnapshotAndScaleAsyncAura(
+  ui::GrabWindowSnapshotAndScaleAura(
       window, window_rect, scaled_rect.size(),
       base::BindOnce(&NativeDesktopMediaList::OnAuraThumbnailCaptured,
                      weak_factory_.GetWeakPtr(), id));

@@ -14,6 +14,7 @@
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/content_switches.h"
 #include "content/public/test/browser_test.h"
+#include "content/public/test/browser_test_utils.h"
 #include "net/dns/mock_host_resolver.h"
 #include "net/test/embedded_test_server/default_handlers.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
@@ -63,8 +64,7 @@ class WindowManagementPermissionContextTest
  public:
   WindowManagementPermissionContextTest() {
     scoped_feature_list_.InitWithFeatureState(
-        permissions::features::kWindowManagementPermissionAlias,
-        AliasEnabled());
+        permissions::features::kWindowPlacementPermissionAlias, AliasEnabled());
   }
   void SetUpOnMainThread() override {
     // Support multiple sites on the test server.
@@ -107,7 +107,7 @@ class WindowManagementPermissionContextTest
   bool UseAlias() const { return std::get<1>(GetParam()); }
   bool ShouldError() const { return UseAlias() && !AliasEnabled(); }
   const std::string AliasToTest() const {
-    return UseAlias() ? kNewPermissionName : kOldPermissionName;
+    return UseAlias() ? kOldPermissionName : kNewPermissionName;
   }
   const std::string GetScreensScript() const {
     return base::ReplaceStringPlaceholders(kGetScreens, {AliasToTest()},

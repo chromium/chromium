@@ -10,6 +10,7 @@
 #include "base/memory/raw_ptr.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "extensions/common/api/types.h"
+#include "extensions/common/extension_id.h"
 
 class ExtensionPrefValueMap;
 
@@ -43,19 +44,19 @@ class ExtensionPrefsHelper : public KeyedService {
   // but rather about something global the extension wants to override.
 
   // Set a new extension-controlled preference value.
-  void SetExtensionControlledPref(const std::string& extension_id,
+  void SetExtensionControlledPref(const ExtensionId& extension_id,
                                   const std::string& pref_key,
                                   ChromeSettingScope scope,
                                   base::Value value);
 
   // Remove an extension-controlled preference value.
-  void RemoveExtensionControlledPref(const std::string& extension_id,
+  void RemoveExtensionControlledPref(const ExtensionId& extension_id,
                                      const std::string& pref_key,
                                      ChromeSettingScope scope);
 
   // Returns true if currently no extension with higher precedence controls the
   // preference.
-  bool CanExtensionControlPref(const std::string& extension_id,
+  bool CanExtensionControlPref(const ExtensionId& extension_id,
                                const std::string& pref_key,
                                bool incognito);
 
@@ -64,7 +65,7 @@ class ExtensionPrefsHelper : public KeyedService {
   // preferences first, and |from_incognito| is set to true if the effective
   // pref value is coming from the incognito preferences, false if it is coming
   // from the normal ones.
-  bool DoesExtensionControlPref(const std::string& extension_id,
+  bool DoesExtensionControlPref(const ExtensionId& extension_id,
                                 const std::string& pref_key,
                                 bool* from_incognito);
 

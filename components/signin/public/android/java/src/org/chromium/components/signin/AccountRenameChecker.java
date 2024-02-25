@@ -4,7 +4,6 @@
 
 package org.chromium.components.signin;
 
-import android.accounts.Account;
 import android.content.Context;
 
 import androidx.annotation.Nullable;
@@ -19,20 +18,17 @@ import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
 import org.chromium.base.Promise;
 import org.chromium.base.task.AsyncTask;
+import org.chromium.components.signin.base.CoreAccountInfo;
 
 import java.io.IOException;
 import java.util.List;
 
-/**
- * A checker of the account rename event.
- */
+/** A checker of the account rename event. */
 public final class AccountRenameChecker {
     private static final String TAG = "AccountRenameChecker";
     private static AccountRenameChecker sInstance;
 
-    /**
-     * The delegate is used to query the accounts rename event.
-     */
+    /** The delegate is used to query the accounts rename event. */
     @VisibleForTesting
     public interface Delegate {
         /**
@@ -46,9 +42,7 @@ public final class AccountRenameChecker {
     }
 
     private static final class SystemDelegate implements Delegate {
-        /**
-         * Gets the new account name of the renamed account.
-         */
+        /** Gets the new account name of the renamed account. */
         @Override
         public @Nullable String getNewNameOfRenamedAccount(String accountEmail) {
             final Context context = ContextUtils.getApplicationContext();
@@ -73,9 +67,7 @@ public final class AccountRenameChecker {
         mDelegate = delegate;
     }
 
-    /**
-     * @return The Singleton instance of {@link AccountRenameChecker}.
-     */
+    /** @return The Singleton instance of {@link AccountRenameChecker}. */
     public static AccountRenameChecker get() {
         if (sInstance == null) {
             sInstance = new AccountRenameChecker(new SystemDelegate());
@@ -83,26 +75,24 @@ public final class AccountRenameChecker {
         return sInstance;
     }
 
-    /**
-     * Overrides the {@link Delegate} for tests.
-     */
+    /** Overrides the {@link Delegate} for tests. */
     public static void overrideDelegateForTests(Delegate delegate) {
         sInstance = new AccountRenameChecker(delegate);
     }
 
     /**
-     * Gets the new account name of the renamed account asynchronously.
+     * Gets the new account email of the renamed account asynchronously.
      *
-     * @return A {@link Promise} of the new account name if the old account is renamed to an account
-     * that exists in the given list of accounts; otherwise a {@link Promise} of null.
+     * @return A {@link Promise} of the new account email if the old account is renamed to an
+     *     account that exists in the given list of accounts; otherwise a {@link Promise} of null.
      */
-    public Promise<String> getNewNameOfRenamedAccountAsync(
-            String oldAccountEmail, List<Account> accounts) {
+    public Promise<String> getNewEmailOfRenamedAccountAsync(
+            String oldAccountEmail, List<CoreAccountInfo> coreAccountInfos) {
         final Promise<String> newNamePromise = new Promise<>();
         new AsyncTask<String>() {
             @Override
             protected String doInBackground() {
-                return getNewNameOfRenamedAccount(oldAccountEmail, accounts);
+                return getNewNameOfRenamedAccount(oldAccountEmail, coreAccountInfos);
             }
 
             @Override
@@ -115,10 +105,11 @@ public final class AccountRenameChecker {
 
     @WorkerThread
     private @Nullable String getNewNameOfRenamedAccount(
-            String oldAccountEmail, List<Account> accounts) {
+            String oldAccountEmail, List<CoreAccountInfo> coreAccountInfos) {
         String newAccountEmail = mDelegate.getNewNameOfRenamedAccount(oldAccountEmail);
         while (newAccountEmail != null) {
-            if (AccountUtils.findAccountByName(accounts, newAccountEmail) != null) {
+            if (AccountUtils.findCoreAccountInfoByEmail(coreAccountInfos, newAccountEmail)
+                    != null) {
                 break;
             }
             // When the new name does not exist in the list, continue to search if it is

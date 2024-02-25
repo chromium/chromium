@@ -7,18 +7,18 @@
 
 #include "base/functional/callback.h"
 #include "base/test/scoped_feature_list.h"
-#include "content/public/browser/prerender_trigger_type.h"
+#include "content/public/browser/preloading_trigger_type.h"
 #include "content/public/browser/render_frame_host.h"
+#include "content/public/browser/web_contents.h"
 #include "content/public/common/isolated_world_ids.h"
 #include "content/public/test/browser_test_utils.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "net/test/embedded_test_server/http_request.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/mojom/speculation_rules/speculation_rules.mojom.h"
 #include "url/gurl.h"
 
 namespace content {
-
-class WebContents;
 
 namespace test {
 
@@ -79,6 +79,19 @@ class PrerenderHostObserver {
   std::unique_ptr<PrerenderHostObserverImpl> impl_;
 };
 
+// This waits for creation of PrerenderHost and then returns its host id.
+class PrerenderHostCreationWaiter {
+ public:
+  PrerenderHostCreationWaiter();
+  ~PrerenderHostCreationWaiter() = default;
+
+  int Wait();
+
+ private:
+  base::RunLoop run_loop_;
+  int created_host_id_ = content::RenderFrameHost::kNoFrameTreeNodeId;
+};
+
 // Enables appropriate features for Prerender2.
 // This also disables the memory requirement of Prerender2 on Android so that
 // test can run on any bot.
@@ -109,10 +122,16 @@ class PrerenderTestHelper {
   // creates test server after SetUp).
   void RegisterServerRequestMonitor(
       net::test_server::EmbeddedTestServer* http_server);
+  void RegisterServerRequestMonitor(
+      net::test_server::EmbeddedTestServer& test_server);
 
   // Attempts to lookup the host for the given |gurl|. Returns
   // RenderFrameHost::kNoFrameTreeNodeId upon failure.
+  static int GetHostForUrl(WebContents& web_contents, const GURL& gurl);
   int GetHostForUrl(const GURL& gurl);
+
+  // Returns whether the registry holds the handler for prerender-into-new-tab.
+  bool HasNewTabHandle(int host_id);
 
   // Waits until a prerender has finished loading. Note: this may not be called
   // when the load fails (e.g. because it was blocked by a NavigationThrottle,
@@ -126,26 +145,30 @@ class PrerenderTestHelper {
   // Adds <script type="speculationrules"> in the current main frame and waits
   // until the completion of prerendering. Returns the id of the resulting
   // prerendering host.
-  //
-  // AddPrerenderAsync() is the same as AddPrerender(), but does not wait until
-  // the completion of prerendering.
   int AddPrerender(const GURL& prerendering_url,
                    int32_t world_id = ISOLATED_WORLD_ID_GLOBAL);
+  int AddPrerender(const GURL& prerendering_url,
+                   std::optional<blink::mojom::SpeculationEagerness> eagerness,
+                   const std::string& target_hint,
+                   int32_t world_id = ISOLATED_WORLD_ID_GLOBAL);
+  // AddPrerenderAsync() is the same as AddPrerender(), but does not wait until
+  // the completion of prerendering.
   void AddPrerenderAsync(const GURL& prerendering_url,
                          int32_t world_id = ISOLATED_WORLD_ID_GLOBAL);
-  void AddPrerenderWithTargetHintAsync(const GURL& prerendering_url,
-                                       const std::string& target_hint);
+  void AddPrerendersAsync(
+      const std::vector<GURL>& prerendering_urls,
+      std::optional<blink::mojom::SpeculationEagerness> eagerness,
+      const std::string& target_hint,
+      int32_t world_id = ISOLATED_WORLD_ID_GLOBAL);
 
-  // Adds multiple URLs to the speculation rules at the same time. This function
-  // doesn't wait for the completion of prerendering.
-  void AddMultiplePrerenderAsync(const std::vector<GURL>& prerendering_urls);
+  void AddPrefetchAsync(const GURL& prefetch_url);
 
   // Starts prerendering and returns a PrerenderHandle that should be kept alive
   // until prerender activation. Note that it returns before the completion of
   // the prerendering navigation.
   std::unique_ptr<PrerenderHandle> AddEmbedderTriggeredPrerenderAsync(
       const GURL& prerendering_url,
-      PrerenderTriggerType trigger_type,
+      PreloadingTriggerType trigger_type,
       const std::string& embedder_histogram_suffix,
       ui::PageTransition page_transition);
 
@@ -158,21 +181,26 @@ class PrerenderTestHelper {
   // Navigates the primary page to the URL and waits until the completion of
   // the navigation.
   //
-  // Navigations that could activate a prerendered page on the multiple
-  // WebContents architecture (not multiple-pages architecture known as
-  // MPArch) should use this function instead of the NavigateToURL() test
-  // helper. This is because the test helper accesses the predecessor
-  // WebContents to be destroyed during activation and results in crashes.
-  // See https://crbug.com/1154501 for the MPArch migration.
-  // TODO(crbug.com/1198960): remove this once the migration is complete.
+  // Navigations that could activate a prerendered page should use this function
+  // instead of the NavigateToURL() test helper. This is because the test helper
+  // could access a navigating frame being destroyed during activation and fail.
   static void NavigatePrimaryPage(WebContents& web_contents, const GURL& gurl);
   void NavigatePrimaryPage(const GURL& gurl);
+
+  // Opens a new window without an opener on the primary page of `web_contents`.
+  // This is intended for activating a prerendered page initiated for a new
+  // window.
+  static void OpenNewWindowWithoutOpener(WebContents& web_contents,
+                                         const GURL& url);
 
   // Confirms that, internally, appropriate subframes report that they are
   // prerendering (and that each frame tree type is kPrerender).
   [[nodiscard]] ::testing::AssertionResult VerifyPrerenderingState(
       const GURL& gurl);
 
+  // Returns RenderFrameHost corresponding to `host_id`.
+  static RenderFrameHost* GetPrerenderedMainFrameHost(WebContents& web_contents,
+                                                      int host_id);
   RenderFrameHost* GetPrerenderedMainFrameHost(int host_id);
 
   int GetRequestCount(const GURL& url);
@@ -184,7 +212,7 @@ class PrerenderTestHelper {
   // Generates the histogram name by appending the trigger type and the embedder
   // suffix to the base name.
   std::string GenerateHistogramName(const std::string& histogram_base_name,
-                                    content::PrerenderTriggerType trigger_type,
+                                    content::PreloadingTriggerType trigger_type,
                                     const std::string& embedder_suffix);
 
  private:

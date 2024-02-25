@@ -157,8 +157,8 @@ void TestSessionControllerClient::AddUserSession(
     bool is_account_managed) {
   // Set is_ephemeral in user_info to true if the user type is guest or public
   // account.
-  bool is_ephemeral = user_type == user_manager::USER_TYPE_GUEST ||
-                      user_type == user_manager::USER_TYPE_PUBLIC_ACCOUNT;
+  bool is_ephemeral = user_type == user_manager::UserType::kGuest ||
+                      user_type == user_manager::UserType::kPublicAccount;
 
   UserSession session;
   session.session_id = ++fake_session_id_;
@@ -323,11 +323,16 @@ PrefService* TestSessionControllerClient::GetUserPrefService(
   return prefs_provider_ ? prefs_provider_->GetUserPrefs(account_id) : nullptr;
 }
 
+base::FilePath TestSessionControllerClient::GetProfilePath(
+    const AccountId& account_id) {
+  return base::FilePath("/profile/path").Append(account_id.GetUserEmail());
+}
+
 bool TestSessionControllerClient::IsEnterpriseManaged() const {
   return is_enterprise_managed_;
 }
 
-absl::optional<int> TestSessionControllerClient::GetExistingUsersCount() const {
+std::optional<int> TestSessionControllerClient::GetExistingUsersCount() const {
   return existing_users_count_;
 }
 

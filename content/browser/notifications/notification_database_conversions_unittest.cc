@@ -7,6 +7,8 @@
 #include <stddef.h>
 #include <stdint.h>
 
+#include <optional>
+
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
@@ -15,24 +17,13 @@
 #include "content/public/browser/notification_database_data.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/notifications/notification_constants.h"
 #include "third_party/blink/public/common/notifications/notification_resources.h"
 #include "third_party/blink/public/mojom/notifications/notification.mojom.h"
 #include "third_party/skia/include/core/SkBitmap.h"
+#include "ui/gfx/image/image_unittest_util.h"
 
 namespace content {
-
-namespace {
-
-SkBitmap CreateBitmap(int width, int height, SkColor color) {
-  SkBitmap bitmap;
-  bitmap.allocN32Pixels(width, height);
-  bitmap.eraseColor(color);
-  return bitmap;
-}
-
-}  // namespace
 
 const char kNotificationId[] = "my-notification";
 const int64_t kServiceWorkerRegistrationId = 9001;
@@ -80,12 +71,13 @@ TEST(NotificationDatabaseConversionsTest, SerializeAndDeserializeData) {
   notification_data.icon = GURL(kNotificationIconUrl);
   notification_data.badge = GURL(kNotificationBadgeUrl);
   notification_data.vibration_pattern = vibration_pattern;
-  notification_data.timestamp = base::Time::FromJsTime(kNotificationTimestamp);
+  notification_data.timestamp =
+      base::Time::FromMillisecondsSinceUnixEpoch(kNotificationTimestamp);
   notification_data.renotify = true;
   notification_data.silent = true;
   notification_data.require_interaction = true;
   notification_data.show_trigger_timestamp =
-      base::Time::FromJsTime(kShowTriggerTimestamp);
+      base::Time::FromMillisecondsSinceUnixEpoch(kShowTriggerTimestamp);
   notification_data.data = developer_data;
   for (size_t i = 0; i < blink::kNotificationMaxActions; i++) {
     auto notification_action = blink::mojom::NotificationAction::New();
@@ -105,7 +97,8 @@ TEST(NotificationDatabaseConversionsTest, SerializeAndDeserializeData) {
   database_data.replaced_existing_notification = kReplacedExistingNotification;
   database_data.num_clicks = kNumClicks;
   database_data.num_action_button_clicks = kNumActionButtonClicks;
-  database_data.creation_time_millis = base::Time::FromDoubleT(kInitTimeMillis);
+  database_data.creation_time_millis =
+      base::Time::FromSecondsSinceUnixEpoch(kInitTimeMillis);
   database_data.time_until_first_click_millis =
       base::Milliseconds(kTimeUntilFirstClickMillis);
   database_data.time_until_last_click_millis =
@@ -301,7 +294,7 @@ TEST(NotificationDatabaseConversionsTest,
      SerializeAndDeserializeNullPlaceholder) {
   auto action = blink::mojom::NotificationAction::New();
   action->type = kNotificationActionType;
-  action->placeholder = absl::nullopt;  // null string.
+  action->placeholder = std::nullopt;  // null string.
 
   blink::PlatformNotificationData notification_data;
   notification_data.actions.push_back(std::move(action));
@@ -325,7 +318,7 @@ TEST(NotificationDatabaseConversionsTest,
   blink::PlatformNotificationData notification_data;
 
   // explicitly empty timestamp
-  notification_data.show_trigger_timestamp = absl::nullopt;
+  notification_data.show_trigger_timestamp = std::nullopt;
 
   NotificationDatabaseData database_data;
   database_data.notification_data = notification_data;
@@ -385,16 +378,19 @@ TEST(NotificationDatabaseConversionsTest,
      SerializeAndDeserializeNotificationResources) {
   blink::NotificationResources notification_resources;
 
-  notification_resources.notification_icon = CreateBitmap(10, 10, SK_ColorBLUE);
-  notification_resources.image = CreateBitmap(20, 20, SK_ColorGREEN);
-  notification_resources.badge = CreateBitmap(30, 30, SK_ColorRED);
+  notification_resources.notification_icon =
+      gfx::test::CreateBitmap(/*size=*/10, SK_ColorBLUE);
+  notification_resources.image =
+      gfx::test::CreateBitmap(/*size=*/20, SK_ColorGREEN);
+  notification_resources.badge =
+      gfx::test::CreateBitmap(/*size=*/30, SK_ColorRED);
 
   notification_resources.action_icons.push_back(
-      CreateBitmap(40, 40, SK_ColorYELLOW));
+      gfx::test::CreateBitmap(/*size=*/40, SK_ColorYELLOW));
   notification_resources.action_icons.push_back(
-      CreateBitmap(41, 41, SK_ColorCYAN));
+      gfx::test::CreateBitmap(/*size=*/41, SK_ColorCYAN));
   notification_resources.action_icons.push_back(
-      CreateBitmap(42, 42, SK_ColorMAGENTA));
+      gfx::test::CreateBitmap(/*size=*/42, SK_ColorMAGENTA));
 
   std::string serialized_resources;
   ASSERT_TRUE(SerializeNotificationDatabaseResources(notification_resources,

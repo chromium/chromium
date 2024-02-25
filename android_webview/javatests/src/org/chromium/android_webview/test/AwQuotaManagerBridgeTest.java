@@ -12,6 +12,8 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.junit.runners.Parameterized;
+import org.junit.runners.Parameterized.UseParametersRunnerFactory;
 
 import org.chromium.android_webview.AwContents;
 import org.chromium.android_webview.AwQuotaManagerBridge;
@@ -21,19 +23,21 @@ import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.DisabledTest;
 import org.chromium.net.test.util.TestWebServer;
 
-/**
- * Tests for the AwQuotaManagerBridge.
- */
-@RunWith(AwJUnit4ClassRunner.class)
-public class AwQuotaManagerBridgeTest {
-    @Rule
-    public AwActivityTestRule mActivityTestRule = new AwActivityTestRule();
+/** Tests for the AwQuotaManagerBridge. */
+@RunWith(Parameterized.class)
+@UseParametersRunnerFactory(AwJUnit4ClassRunnerWithParameters.Factory.class)
+public class AwQuotaManagerBridgeTest extends AwParameterizedTest {
+    @Rule public AwActivityTestRule mActivityTestRule;
 
     private TestAwContentsClient mContentsClient;
     private AwTestContainerView mTestView;
     private AwContents mAwContents;
     private TestWebServer mWebServer;
     private String mOrigin;
+
+    public AwQuotaManagerBridgeTest(AwSettingsMutation param) {
+        this.mActivityTestRule = new AwActivityTestRule(param.getMutation());
+    }
 
     @Before
     public void setUp() throws Exception {
@@ -65,8 +69,8 @@ public class AwQuotaManagerBridgeTest {
     private void deleteOrigin(final String origin) {
         final AwQuotaManagerBridge bridge =
                 mActivityTestRule.getAwBrowserContext().getQuotaManagerBridge();
-        InstrumentationRegistry.getInstrumentation().runOnMainSync(
-                () -> bridge.deleteOrigin(origin));
+        InstrumentationRegistry.getInstrumentation()
+                .runOnMainSync(() -> bridge.deleteOrigin(origin));
     }
 
     private static class LongValueCallbackHelper extends CallbackHelper {
@@ -89,9 +93,11 @@ public class AwQuotaManagerBridgeTest {
                 mActivityTestRule.getAwBrowserContext().getQuotaManagerBridge();
 
         int callCount = callbackHelper.getCallCount();
-        InstrumentationRegistry.getInstrumentation().runOnMainSync(
-                () -> bridge.getQuotaForOrigin("foo.com",
-                        quota -> callbackHelper.notifyCalled(quota)));
+        InstrumentationRegistry.getInstrumentation()
+                .runOnMainSync(
+                        () ->
+                                bridge.getQuotaForOrigin(
+                                        "foo.com", quota -> callbackHelper.notifyCalled(quota)));
         callbackHelper.waitForCallback(callCount);
 
         return callbackHelper.getValue();
@@ -103,9 +109,11 @@ public class AwQuotaManagerBridgeTest {
                 mActivityTestRule.getAwBrowserContext().getQuotaManagerBridge();
 
         int callCount = callbackHelper.getCallCount();
-        InstrumentationRegistry.getInstrumentation().runOnMainSync(
-                () -> bridge.getUsageForOrigin(origin,
-                        usage -> callbackHelper.notifyCalled(usage)));
+        InstrumentationRegistry.getInstrumentation()
+                .runOnMainSync(
+                        () ->
+                                bridge.getUsageForOrigin(
+                                        origin, usage -> callbackHelper.notifyCalled(usage)));
         callbackHelper.waitForCallback(callCount);
 
         return callbackHelper.getValue();

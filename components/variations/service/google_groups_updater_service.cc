@@ -4,24 +4,11 @@
 
 #include "components/variations/service/google_groups_updater_service.h"
 
-#include "base/feature_list.h"
 #include "base/files/file_path.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/pref_service.h"
 #include "components/prefs/scoped_user_pref_update.h"
 #include "components/variations/pref_names.h"
-
-// This feature controls whether variations code copies the dogfood group
-// information from per-profile data to local-state.
-BASE_FEATURE(kVariationsGoogleGroupFiltering,
-             "VariationsGoogleGroupFiltering",
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
-             base::FEATURE_ENABLED_BY_DEFAULT
-#else
-             // TODO(b/286365351): launch on Android, iOS and ChromeOS.
-             base::FEATURE_DISABLED_BY_DEFAULT
-#endif
-);
 
 GoogleGroupsUpdaterService::GoogleGroupsUpdaterService(
     PrefService& target_prefs,

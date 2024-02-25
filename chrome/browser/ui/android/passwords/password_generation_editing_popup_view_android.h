@@ -43,6 +43,8 @@ class PasswordGenerationEditingPopupViewAndroid
   void UpdateState() override;
   bool UpdateBoundsAndRedrawPopup() override;
   void PasswordSelectionUpdated() override;
+  void EditPasswordSelectionUpdated() override;
+  void NudgePasswordSelectionUpdated() override;
 
   // Weak pointer to the controller.
   base::WeakPtr<PasswordGenerationPopupController> controller_;

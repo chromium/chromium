@@ -10,8 +10,10 @@ import pathlib
 
 # All instrumented jars + latest non-instrumented one.
 _ROBO_URL_FILES = {
-    'android-all-13-robolectric-9030017.jar':
-        'https://repo1.maven.org/maven2/org/robolectric/android-all/13-robolectric-9030017/android-all-13-robolectric-9030017.jar',
+    'android-all-14-robolectric-10818077.jar':
+        'https://repo1.maven.org/maven2/org/robolectric/android-all/14-robolectric-10818077/android-all-14-robolectric-10818077.jar',
+    'android-all-instrumented-14-robolectric-10818077-i4.jar':
+        'https://repo1.maven.org/maven2/org/robolectric/android-all-instrumented/14-robolectric-10818077-i4/android-all-instrumented-14-robolectric-10818077-i4.jar',
     'android-all-instrumented-13-robolectric-9030017-i4.jar':
         'https://repo1.maven.org/maven2/org/robolectric/android-all-instrumented/13-robolectric-9030017-i4/android-all-instrumented-13-robolectric-9030017-i4.jar',
     'android-all-instrumented-12.1-robolectric-8229987-i4.jar':
@@ -36,8 +38,6 @@ _ROBO_URL_FILES = {
         'https://repo1.maven.org/maven2/org/robolectric/android-all-instrumented/6.0.1_r3-robolectric-r1-i4/android-all-instrumented-6.0.1_r3-robolectric-r1-i4.jar',
     'android-all-instrumented-5.0.2_r3-robolectric-r0-i4.jar':
         'https://repo1.maven.org/maven2/org/robolectric/android-all-instrumented/5.0.2_r3-robolectric-r0-i4/android-all-instrumented-5.0.2_r3-robolectric-r0-i4.jar',
-    'android-all-instrumented-4.4_r1-robolectric-r2-i4.jar':
-        'https://repo1.maven.org/maven2/org/robolectric/android-all-instrumented/4.4_r1-robolectric-r2-i4/android-all-instrumented-4.4_r1-robolectric-r2-i4.jar',
 }
 
 

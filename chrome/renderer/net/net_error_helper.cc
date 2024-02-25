@@ -39,6 +39,7 @@
 #include "content/public/renderer/render_frame.h"
 #include "content/public/renderer/render_thread.h"
 #include "net/base/net_errors.h"
+#include "base/feature_list.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
@@ -51,6 +52,7 @@
 #include "third_party/blink/public/platform/web_security_origin.h"
 #include "third_party/blink/public/platform/web_url.h"
 #include "third_party/blink/public/platform/web_url_request.h"
+#include "chrome/common/chrome_features.h"
 #include "third_party/blink/public/platform/web_url_response.h"
 #include "third_party/blink/public/web/web_document.h"
 #include "third_party/blink/public/web/web_frame.h"
@@ -58,7 +60,7 @@
 #include "third_party/blink/public/web/web_local_frame.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/resource/resource_bundle.h"
-#include "ui/base/webui/jstemplate_builder.h"
+#include "ui/base/webui/web_ui_util.h"
 #include "url/gurl.h"
 
 #if BUILDFLAG(IS_ANDROID)
@@ -89,7 +91,7 @@ bool IsExtensionExtendedErrorCode(int extended_error_code) {
 
 #if BUILDFLAG(IS_ANDROID)
 bool IsOfflineContentOnNetErrorFeatureEnabled() {
-  return true;
+  return  base::FeatureList::IsEnabled(features::kOfflineContentOnNetError);
 }
 #else   // BUILDFLAG(IS_ANDROID)
 bool IsOfflineContentOnNetErrorFeatureEnabled() {
@@ -99,7 +101,7 @@ bool IsOfflineContentOnNetErrorFeatureEnabled() {
 
 #if BUILDFLAG(IS_ANDROID)
 bool IsAutoFetchFeatureEnabled() {
-  return true;
+  return  base::FeatureList::IsEnabled(features::kOfflineAutoFetch);
 }
 #else   // BUILDFLAG(IS_ANDROID)
 bool IsAutoFetchFeatureEnabled() {
@@ -230,7 +232,6 @@ LocalizedError::PageState NetErrorHelper::GenerateLocalizedErrorPage(
       alternative_error_page_info->alternative_error_page_params
           .FindBool(error_page::kOverrideErrorPage)
           .value_or(false)) {
-    DCHECK(base::FeatureList::IsEnabled(features::kPWAsDefaultOfflinePage));
     base::UmaHistogramSparse("Net.ErrorPageCounts.WebAppAlternativeErrorPage",
                              -error.reason());
     resource_id = alternative_error_page_info->resource_id;
@@ -261,8 +262,7 @@ LocalizedError::PageState NetErrorHelper::GenerateLocalizedErrorPage(
   base::StringPiece template_html(extracted_string.data(),
                                   extracted_string.size());
   DCHECK(!template_html.empty()) << "unable to load template.";
-  // "t" is the id of the template's root node.
-  *error_html = webui::GetTemplatesHtml(template_html, page_state.strings, "t");
+  *error_html = webui::GetLocalizedHtml(template_html, page_state.strings);
   return page_state;
 }
 

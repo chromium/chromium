@@ -6,14 +6,15 @@
 
 #include <stddef.h>
 
+#include <optional>
 #include <ostream>
 
 #include "base/check_op.h"
+#include "base/no_destructor.h"
 #include "base/strings/escape.h"
 #include "base/strings/string_piece.h"
 #include "base/values.h"
 #include "build/chromeos_buildflags.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 #if DCHECK_IS_ON()
 #include "third_party/re2/src/re2/re2.h"  // nogncheck
@@ -94,7 +95,7 @@ std::string PolymerParameterEscape(const std::string& in_string,
 }
 
 bool EscapeForJS(const std::string& in_string,
-                 absl::optional<char> in_previous,
+                 std::optional<char> in_previous,
                  std::string* out_string) {
   out_string->reserve(in_string.size() * 2);
   bool last_was_dollar = in_previous && in_previous.value() == '$';
@@ -126,7 +127,8 @@ bool HasUnexpectedPlaceholder(const std::string& key,
   if (key == "displayResolutionText")
     return false;
 #endif
-  return re2::RE2::PartialMatch(replacement, re2::RE2(R"(\$\d)"));
+  static const base::NoDestructor<re2::RE2> placeholder_regex(R"(\$\d)");
+  return re2::RE2::PartialMatch(replacement, *placeholder_regex.get());
 }
 #endif  // DCHECK_IS_ON()
 
@@ -145,7 +147,8 @@ bool ReplaceTemplateExpressionsInternal(
     size_t next_pos = source.find(kLeader, current_pos);
 
     if (next_pos == std::string::npos) {
-      formatted->append(source.begin() + current_pos, source.end());
+      formatted->append(source.data() + current_pos,
+                        source.size() - current_pos);
       break;
     }
 
@@ -170,9 +173,9 @@ bool ReplaceTemplateExpressionsInternal(
     std::string replacement = value->second;
     if (is_javascript) {
       // Run JS escaping first.
-      absl::optional<char> last = formatted->empty()
-                                      ? absl::nullopt
-                                      : absl::make_optional(formatted->back());
+      std::optional<char> last = formatted->empty()
+                                     ? std::nullopt
+                                     : std::make_optional(formatted->back());
       std::string escaped_replacement;
       if (!EscapeForJS(replacement, last, &escaped_replacement))
         return false;

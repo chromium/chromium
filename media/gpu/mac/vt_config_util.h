@@ -8,11 +8,13 @@
 #include <CoreFoundation/CoreFoundation.h>
 #include <CoreMedia/CoreMedia.h>
 
+#include <optional>
+
 #include "base/apple/scoped_cftyperef.h"
+#include "base/containers/span.h"
 #include "media/base/video_codecs.h"
 #include "media/base/video_color_space.h"
 #include "media/gpu/media_gpu_export.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/hdr_metadata.h"
 
 namespace media {
@@ -20,8 +22,10 @@ namespace media {
 MEDIA_GPU_EXPORT base::apple::ScopedCFTypeRef<CFDictionaryRef>
 CreateFormatExtensions(CMVideoCodecType codec_type,
                        VideoCodecProfile profile,
+                       int bit_depth,
                        const VideoColorSpace& color_space,
-                       absl::optional<gfx::HDRMetadata> hdr_metadata);
+                       std::optional<gfx::HDRMetadata> hdr_metadata,
+                       std::optional<base::span<const uint8_t>> csd_box);
 
 }  // namespace media
 

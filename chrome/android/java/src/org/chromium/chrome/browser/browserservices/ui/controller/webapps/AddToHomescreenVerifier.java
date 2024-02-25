@@ -12,9 +12,7 @@ import org.chromium.components.embedder_support.util.UrlUtilities;
 
 import javax.inject.Inject;
 
-/**
- * Provides homescreen-shortcut specific behaviour for the {@link CurrentPageVerifier}.
- */
+/** Provides homescreen-shortcut specific behaviour for the {@link CurrentPageVerifier}. */
 @ActivityScope
 public class AddToHomescreenVerifier extends WebappVerifier {
     private final WebappExtras mWebappExtras;

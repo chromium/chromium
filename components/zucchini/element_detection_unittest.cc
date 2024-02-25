@@ -45,7 +45,7 @@ class ElementDetectionTest : public ::testing::Test {
         image,
         base::BindRepeating(
             [](ExeTypeMap exe_map, ConstBufferView image,
-               ConstBufferView region) -> absl::optional<Element> {
+               ConstBufferView region) -> std::optional<Element> {
               EXPECT_GE(region.begin(), image.begin());
               EXPECT_LE(region.end(), image.end());
               EXPECT_GE(region.size(), 0U);
@@ -56,7 +56,7 @@ class ElementDetectionTest : public ::testing::Test {
                   ++length;
                 return Element{{0, length}, exe_map[region[0]]};
               }
-              return absl::nullopt;
+              return std::nullopt;
             },
             exe_map_, image));
     std::vector<Element> elements;
@@ -74,10 +74,10 @@ TEST_F(ElementDetectionTest, ElementFinderEmpty) {
   std::vector<uint8_t> buffer(10, 0);
   ElementFinder finder(
       ConstBufferView(buffer.data(), buffer.size()),
-      base::BindRepeating([](ConstBufferView image) -> absl::optional<Element> {
-        return absl::nullopt;
+      base::BindRepeating([](ConstBufferView image) -> std::optional<Element> {
+        return std::nullopt;
       }));
-  EXPECT_EQ(absl::nullopt, finder.GetNext());
+  EXPECT_EQ(std::nullopt, finder.GetNext());
 }
 
 TEST_F(ElementDetectionTest, ElementFinder) {

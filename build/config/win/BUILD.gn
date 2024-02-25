@@ -176,7 +176,13 @@ config("compiler") {
   # block maps.
   # This flag requires lld-link.exe or link.exe from VS 2022 or later to create
   # the PDBs, and tools from circa 22H2 or later to consume the PDBs.
-  ldflags += [ "/pdbpagesize:8192" ]
+  # Debug component builds can generate PDBs that exceed 8 GiB, so use an
+  # even larger page size, allowing up to 16 GiB PDBs.
+  if (is_debug && !is_component_build) {
+    ldflags += [ "/pdbpagesize:16384" ]
+  } else {
+    ldflags += [ "/pdbpagesize:8192" ]
+  }
 
   if (!is_debug && !is_component_build) {
     # Enable standard linker optimizations like GC (/OPT:REF) and ICF in static
@@ -414,6 +420,7 @@ config("delayloads") {
     "/DELAYLOAD:credui.dll",
     "/DELAYLOAD:cryptui.dll",
     "/DELAYLOAD:d3d11.dll",
+    "/DELAYLOAD:d3d12.dll",
     "/DELAYLOAD:d3d9.dll",
     "/DELAYLOAD:dwmapi.dll",
     "/DELAYLOAD:dxgi.dll",
@@ -428,6 +435,7 @@ config("delayloads") {
     "/DELAYLOAD:ncrypt.dll",
     "/DELAYLOAD:ole32.dll",
     "/DELAYLOAD:oleacc.dll",
+    "/DELAYLOAD:pdh.dll",
     "/DELAYLOAD:propsys.dll",
     "/DELAYLOAD:psapi.dll",
     "/DELAYLOAD:rpcrt4.dll",
@@ -608,17 +616,9 @@ config("static_crt") {
 # Subsystem --------------------------------------------------------------------
 
 # This is appended to the subsystem to specify a minimum version.
-if (current_cpu == "x64") {
-  # The number after the comma is the minimum required OS version.
-  # 5.02 = Windows Server 2003.
-  subsystem_version_suffix = ",5.02"
-} else if (current_cpu == "arm64") {
-  # Windows ARM64 requires Windows 10.
-  subsystem_version_suffix = ",10.0"
-} else {
-  # 5.01 = Windows XP.
-  subsystem_version_suffix = ",5.01"
-}
+# The number after the comma is the minimum required OS version.
+# Set to 10.0 since we only support >= Win10 since M110.
+subsystem_version_suffix = ",10.0"
 
 config("console") {
   ldflags = [ "/SUBSYSTEM:CONSOLE$subsystem_version_suffix" ]

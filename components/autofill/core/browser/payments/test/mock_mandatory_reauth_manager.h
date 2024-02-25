@@ -18,11 +18,7 @@ class MockMandatoryReauthManager : public MandatoryReauthManager {
 
   MOCK_METHOD(bool,
               ShouldOfferOptin,
-              ((const absl::optional<CreditCard>&),
-               (const absl::optional<
-                   absl::variant<FormDataImporter::CardGuid,
-                                 FormDataImporter::CardLastFourDigits>>&),
-               (autofill::FormDataImporter::CreditCardImportType)),
+              (std::optional<NonInteractivePaymentMethodType>),
               (override));
   MOCK_METHOD(void, StartOptInFlow, (), (override));
   MOCK_METHOD(void, OnUserAcceptedOptInPrompt, (), (override));
@@ -32,8 +28,7 @@ class MockMandatoryReauthManager : public MandatoryReauthManager {
   MOCK_METHOD(
       void,
       Authenticate,
-      ((device_reauth::DeviceAuthRequester requester),
-       (device_reauth::DeviceAuthenticator::AuthenticateCallback callback)),
+      ((device_reauth::DeviceAuthenticator::AuthenticateCallback callback)),
       (override));
   MOCK_METHOD(
       void,
@@ -41,6 +36,11 @@ class MockMandatoryReauthManager : public MandatoryReauthManager {
       ((const std::u16string& message),
        (device_reauth::DeviceAuthenticator::AuthenticateCallback callback)),
       (override));
+  MOCK_METHOD(void,
+              StartDeviceAuthentication,
+              (NonInteractivePaymentMethodType type,
+               base::OnceCallback<void(bool)> authentication_complete_callback),
+              (override));
   MOCK_METHOD(MandatoryReauthAuthenticationMethod,
               GetAuthenticationMethod,
               (),

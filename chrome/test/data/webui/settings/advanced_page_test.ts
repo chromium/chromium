@@ -6,7 +6,8 @@
 
 // clang-format off
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import {CrSettingsPrefs, SettingsBasicPageElement, SettingsSectionElement} from 'chrome://settings/settings.js';
+import type {SettingsBasicPageElement, SettingsSectionElement} from 'chrome://settings/settings.js';
+import {CrSettingsPrefs} from 'chrome://settings/settings.js';
 // <if expr="_google_chrome">
 import {loadTimeData} from 'chrome://settings/settings.js';
 // </if>
@@ -19,25 +20,16 @@ import {getPage, getSection} from './settings_page_test_util.js';
 suite('AdvancedPage', function() {
   let basicPage: SettingsBasicPageElement;
 
-  suiteSetup(function() {
+  suiteSetup(async function() {
     // <if expr="_google_chrome">
     loadTimeData.overrideValues({showGetTheMostOutOfChromeSection: true});
     // </if>
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
     const settingsUi = document.createElement('settings-ui');
     document.body.appendChild(settingsUi);
-    return CrSettingsPrefs.initialized
-        .then(() => {
-          return getPage('basic');
-        })
-        .then(page => {
-          basicPage = page as SettingsBasicPageElement;
-          const settingsMain =
-              settingsUi.shadowRoot!.querySelector('settings-main');
-          assertTrue(!!settingsMain);
-          settingsMain!.advancedToggleExpanded = true;
-          flush();
-        });
+    await CrSettingsPrefs.initialized;
+    basicPage = await getPage('basic') as SettingsBasicPageElement;
+    flush();
   });
 
   /**

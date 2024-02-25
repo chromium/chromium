@@ -19,6 +19,7 @@
 #include "chrome/browser/ui/views/side_panel/bookmarks/bookmarks_side_panel_coordinator.h"
 #include "chrome/browser/ui/views/side_panel/feed/feed_side_panel_coordinator.h"
 #include "chrome/browser/ui/views/side_panel/history_clusters/history_clusters_side_panel_coordinator.h"
+#include "chrome/browser/ui/views/side_panel/performance_controls/performance_side_panel_coordinator.h"
 #include "chrome/browser/ui/views/side_panel/read_anything/read_anything_coordinator.h"
 #include "chrome/browser/ui/views/side_panel/reading_list/reading_list_side_panel_coordinator.h"
 #include "chrome/browser/ui/views/side_panel/search_companion/search_companion_side_panel_coordinator.h"
@@ -29,9 +30,11 @@
 #include "components/feed/feed_feature_list.h"
 #include "components/history_clusters/core/features.h"
 #include "components/history_clusters/core/history_clusters_service.h"
+#include "components/performance_manager/public/features.h"
 #include "components/prefs/pref_service.h"
 #include "components/user_notes/user_notes_features.h"
 #include "ui/accessibility/accessibility_features.h"
+#include "ui/actions/actions.h"
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
 #include "chrome/browser/ui/views/side_panel/extensions/extension_side_panel_manager.h"
@@ -39,35 +42,14 @@
 #endif
 
 namespace {
-
-std::string GetHistogramNameForId(SidePanelEntry::Id id) {
-  static constexpr auto id_to_histogram_name_map =
-      // Note: once provided the histogram name should not be changed since it
-      // is persisted to logs. When adding a new Id please add actions to
-      // tools/metrics/actions/actions.xml for "SidePanel.[new id name].Shown"
-      // since we cannot autogenerate this in actions.xml.
-      base::MakeFixedFlatMap<SidePanelEntry::Id, const char*>(
-          {{SidePanelEntry::Id::kReadingList, "ReadingList"},
-           {SidePanelEntry::Id::kBookmarks, "Bookmarks"},
-           {SidePanelEntry::Id::kHistoryClusters, "HistoryClusters"},
-           {SidePanelEntry::Id::kReadAnything, "ReadAnything"},
-           {SidePanelEntry::Id::kUserNote, "UserNotes"},
-           {SidePanelEntry::Id::kFeed, "Feed"},
-           {SidePanelEntry::Id::kSideSearch, "SideSearch"},
-           {SidePanelEntry::Id::kLens, "Lens"},
-           {SidePanelEntry::Id::kAssistant, "Assistant"},
-           {SidePanelEntry::Id::kAboutThisSite, "AboutThisSite"},
-           {SidePanelEntry::Id::kCustomizeChrome, "CustomizeChrome"},
-           {SidePanelEntry::Id::kWebView, "WebView"},
-           {SidePanelEntry::Id::kSearchCompanion, "Companion"},
-           {SidePanelEntry::Id::kShoppingInsights, "ShoppingInsights"},
-           {SidePanelEntry::Id::kExtension, "Extension"}});
-  auto* i = id_to_histogram_name_map.find(id);
-  DCHECK(i != id_to_histogram_name_map.cend());
-  return {i->second};
+constexpr std::underlying_type_t<SidePanelOpenTrigger>
+    kInvalidSidePanelOpenTrigger = -1;
 }
 
-}  // namespace
+DEFINE_UI_CLASS_PROPERTY_TYPE(SidePanelOpenTrigger)
+DEFINE_UI_CLASS_PROPERTY_KEY(std::underlying_type_t<SidePanelOpenTrigger>,
+                             kSidePanelOpenTriggerKey,
+                             kInvalidSidePanelOpenTrigger)
 
 // static
 void SidePanelUtil::PopulateGlobalEntries(Browser* browser,
@@ -80,6 +62,13 @@ void SidePanelUtil::PopulateGlobalEntries(Browser* browser,
   BookmarksSidePanelCoordinator::GetOrCreateForBrowser(browser)
       ->CreateAndRegisterEntry(global_registry);
 
+  // Add performance.
+  if (base::FeatureList::IsEnabled(
+          performance_manager::features::kPerformanceControlsSidePanel)) {
+    PerformanceSidePanelCoordinator::GetOrCreateForBrowser(browser)
+        ->CreateAndRegisterEntry(global_registry);
+  }
+
   // Add history clusters.
   if (HistoryClustersSidePanelCoordinator::IsSupported(browser->profile())) {
     HistoryClustersSidePanelCoordinator::GetOrCreateForBrowser(browser)
@@ -88,8 +77,13 @@ void SidePanelUtil::PopulateGlobalEntries(Browser* browser,
 
   // Add read anything.
   if (features::IsReadAnythingEnabled()) {
-    ReadAnythingCoordinator::GetOrCreateForBrowser(browser)
-        ->CreateAndRegisterEntry(global_registry);
+    auto* read_anything_coordinator =
+        ReadAnythingCoordinator::GetOrCreateForBrowser(browser);
+    // If the local side panel is not enabled, create and register a global side
+    // panel entry for Reading Anything.
+    if (!features::IsReadAnythingLocalSidePanelEnabled()) {
+      read_anything_coordinator->CreateAndRegisterEntry(global_registry);
+    }
   }
 
   // Create Search Companion coordinator.
@@ -126,10 +120,11 @@ void SidePanelUtil::PopulateGlobalEntries(Browser* browser,
 
 SidePanelContentProxy* SidePanelUtil::GetSidePanelContentProxy(
     views::View* content_view) {
-  if (!content_view->GetProperty(kSidePanelContentProxyKey))
+  if (!content_view->GetProperty(kSidePanelContentProxyKey)) {
     content_view->SetProperty(
         kSidePanelContentProxyKey,
         std::make_unique<SidePanelContentProxy>(true).release());
+  }
   return content_view->GetProperty(kSidePanelContentProxyKey);
 }
 
@@ -148,15 +143,16 @@ SidePanelCoordinator* SidePanelUtil::GetSidePanelCoordinatorForBrowser(
 }
 
 void SidePanelUtil::RecordSidePanelOpen(
-    absl::optional<SidePanelUtil::SidePanelOpenTrigger> trigger) {
+    std::optional<SidePanelUtil::SidePanelOpenTrigger> trigger) {
   base::RecordAction(base::UserMetricsAction("SidePanel.Show"));
 
-  if (trigger.has_value())
+  if (trigger.has_value()) {
     base::UmaHistogramEnumeration("SidePanel.OpenTrigger", trigger.value());
+  }
 }
 
 void SidePanelUtil::RecordSidePanelShowOrChangeEntryTrigger(
-    absl::optional<SidePanelUtil::SidePanelOpenTrigger> trigger) {
+    std::optional<SidePanelUtil::SidePanelOpenTrigger> trigger) {
   if (trigger.has_value()) {
     base::UmaHistogramEnumeration("SidePanel.OpenOrChangeEntryTrigger",
                                   trigger.value());
@@ -173,7 +169,7 @@ void SidePanelUtil::RecordSidePanelClosed(base::TimeTicks opened_timestamp) {
 void SidePanelUtil::RecordSidePanelResizeMetrics(SidePanelEntry::Id id,
                                                  int side_panel_contents_width,
                                                  int browser_window_width) {
-  std::string entry_name = GetHistogramNameForId(id);
+  std::string entry_name = SidePanelEntryIdToHistogramName(id);
 
   // Metrics per-id and overall for side panel width after resize.
   base::UmaHistogramCounts10000(
@@ -193,18 +189,19 @@ void SidePanelUtil::RecordSidePanelResizeMetrics(SidePanelEntry::Id id,
 }
 
 void SidePanelUtil::RecordNewTabButtonClicked(SidePanelEntry::Id id) {
-  base::RecordComputedAction(base::StrCat(
-      {"SidePanel.", GetHistogramNameForId(id), ".NewTabButtonClicked"}));
+  base::RecordComputedAction(
+      base::StrCat({"SidePanel.", SidePanelEntryIdToHistogramName(id),
+                    ".NewTabButtonClicked"}));
 }
 
 void SidePanelUtil::RecordEntryShownMetrics(
     SidePanelEntry::Id id,
     base::TimeTicks load_started_timestamp) {
-  base::RecordComputedAction(
-      base::StrCat({"SidePanel.", GetHistogramNameForId(id), ".Shown"}));
+  base::RecordComputedAction(base::StrCat(
+      {"SidePanel.", SidePanelEntryIdToHistogramName(id), ".Shown"}));
   if (load_started_timestamp != base::TimeTicks()) {
     base::UmaHistogramLongTimes(
-        base::StrCat({"SidePanel.", GetHistogramNameForId(id),
+        base::StrCat({"SidePanel.", SidePanelEntryIdToHistogramName(id),
                       ".TimeFromEntryTriggerToShown"}),
         base::TimeTicks::Now() - load_started_timestamp);
   }
@@ -213,18 +210,19 @@ void SidePanelUtil::RecordEntryShownMetrics(
 void SidePanelUtil::RecordEntryHiddenMetrics(SidePanelEntry::Id id,
                                              base::TimeTicks shown_timestamp) {
   base::UmaHistogramLongTimes(
-      base::StrCat({"SidePanel.", GetHistogramNameForId(id), ".ShownDuration"}),
+      base::StrCat({"SidePanel.", SidePanelEntryIdToHistogramName(id),
+                    ".ShownDuration"}),
       base::TimeTicks::Now() - shown_timestamp);
 }
 
 void SidePanelUtil::RecordEntryShowTriggeredMetrics(
     Browser* browser,
     SidePanelEntry::Id id,
-    absl::optional<SidePanelUtil::SidePanelOpenTrigger> trigger) {
+    std::optional<SidePanelUtil::SidePanelOpenTrigger> trigger) {
   if (trigger.has_value()) {
     base::UmaHistogramEnumeration(
-        base::StrCat(
-            {"SidePanel.", GetHistogramNameForId(id), ".ShowTriggered"}),
+        base::StrCat({"SidePanel.", SidePanelEntryIdToHistogramName(id),
+                      ".ShowTriggered"}),
         trigger.value());
   }
 
@@ -238,4 +236,28 @@ void SidePanelUtil::RecordEntryShowTriggeredMetrics(
 
 void SidePanelUtil::RecordComboboxShown() {
   base::UmaHistogramBoolean("SidePanel.ComboboxMenuShown", true);
+}
+
+void SidePanelUtil::RecordPinnedButtonClicked(SidePanelEntry::Id id,
+                                              bool is_pinned) {
+  base::RecordComputedAction(base::StrCat(
+      {"SidePanel.", SidePanelEntryIdToHistogramName(id), ".",
+       is_pinned ? "Pinned" : "Unpinned", ".BySidePanelHeaderButton"}));
+}
+
+actions::ActionItem::InvokeActionCallback
+SidePanelUtil::CreateToggleSidePanelActionCallback(SidePanelEntryKey key,
+                                                   Browser* browser) {
+  return base::BindRepeating(
+      [](SidePanelEntryKey key, Browser* browser, actions::ActionItem* item,
+         actions::ActionInvocationContext context) {
+        const SidePanelOpenTrigger open_trigger =
+            static_cast<SidePanelOpenTrigger>(
+                context.GetProperty(kSidePanelOpenTriggerKey));
+        CHECK_GE(open_trigger, SidePanelOpenTrigger::kMinValue);
+        CHECK_LE(open_trigger, SidePanelOpenTrigger::kMaxValue);
+        SidePanelUI::GetSidePanelUIForBrowser(browser)->Toggle(key,
+                                                               open_trigger);
+      },
+      key, browser);
 }

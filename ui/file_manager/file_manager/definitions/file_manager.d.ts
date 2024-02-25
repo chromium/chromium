@@ -2,8 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {VolumeManager} from '../externs/volume_manager.js';
-import {MetadataModel} from '../foreground/js/metadata/metadata_model.js';
+import type {FileManagerBase} from '../background/js/file_manager_base.js';
+import type {VolumeManager} from '../background/js/volume_manager.js';
+import type {MetadataModel} from '../foreground/js/metadata/metadata_model.js';
+import type {FileManagerUI} from '../foreground/js/ui/file_manager_ui.js';
 
 /**
  * Type definition for foreground/js/file_manager.js:FileManager.
@@ -19,6 +21,16 @@ interface FileManager {
   dialogType: DialogType;
   directoryModel: DirectoryModel;
   directoryTreeNamingController: DirectoryTreeNamingController;
+  ui: FileManagerUI;
+  getLastVisitedUrl(): string;
+  getTranslatedString(id: string): string;
+  onUnloadForTest(): void;
+}
+
+interface AppState {
+  currentDirectoryURL?: string;
+  selectionURL?: string;
+  viewOptions?: any;
 }
 
 /**
@@ -26,16 +38,37 @@ interface FileManager {
  */
 declare global {
   interface Window {
+    appID: string;
     fileManager: FileManager;
     IN_TEST: boolean;
+    JSErrorCount: number;
     store: Store;
-    /** Log action data in the console for debugging purpose. */
-    DEBUG_STORE: boolean;
 
-    webkitResolveLocalFileSystemURL(
-        url: string, successCallback: FileSystemEntryCallback,
-        errorCallback: ErrorCallback): void;
+    /** Namespace used for test utils. */
+    test: any;
+
+    appState?: AppState;
+
+    // Only used for grid.ts
+    cvox?: {
+      Api?: {
+        isChromeVoxActive: () => boolean,
+      },
+    };
+
+    // Defined in the file_manager_base.ts
+    background: FileManagerBase;
+
+    // Defined in the main_window_component.ts
+    isFocused?: () => boolean;
+
+    // For unit test.
+    chrome: typeof chrome;
   }
+
+  function webkitResolveLocalFileSystemURL(
+      url: string, successCallback: FileSystemEntryCallback,
+      errorCallback: ErrorCallback): void;
 }
 
 export {};

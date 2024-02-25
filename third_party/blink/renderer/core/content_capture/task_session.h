@@ -5,9 +5,10 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_CONTENT_CAPTURE_TASK_SESSION_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_CONTENT_CAPTURE_TASK_SESSION_H_
 
+#include <optional>
+
 #include "base/memory/scoped_refptr.h"
 #include "cc/paint/node_id.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/platform/web_vector.h"
 #include "third_party/blink/renderer/core/content_capture/content_holder.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_map.h"
@@ -63,7 +64,7 @@ class TaskSession final : public GarbageCollected<TaskSession> {
     bool HasUnsentChangedContent() const { return !changed_content_.empty(); }
     bool HasUnsentDetachedNodes() const { return !detached_nodes_.empty(); }
     WebVector<int64_t> MoveDetachedNodes();
-    const Document* GetDocument() const { return document_; }
+    const Document* GetDocument() const { return document_.Get(); }
     bool FirstDataHasSent() const { return first_data_has_sent_; }
     void SetFirstDataHasSent() { first_data_has_sent_ = true; }
 

@@ -38,6 +38,9 @@ class TestWallpaperControllerClient : public WallpaperControllerClient {
   size_t fetch_images_for_collection_count() const {
     return fetch_images_for_collection_count_;
   }
+  std::string fetch_google_photos_photo_id() const {
+    return fetch_google_photos_photo_id_;
+  }
   std::string get_fetch_daily_refresh_wallpaper_param() const {
     return fetch_daily_refresh_wallpaper_param_;
   }
@@ -97,6 +100,7 @@ class TestWallpaperControllerClient : public WallpaperControllerClient {
  private:
   size_t open_count_ = 0;
   size_t fetch_images_for_collection_count_ = 0;
+  std::string fetch_google_photos_photo_id_;
   std::string fetch_daily_refresh_wallpaper_param_;
   bool fetch_daily_refresh_info_fails_ = false;
   std::unordered_map<AccountId, std::string> fake_files_ids_;

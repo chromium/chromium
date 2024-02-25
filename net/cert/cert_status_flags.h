@@ -30,15 +30,6 @@ inline bool IsCertStatusError(CertStatus status) {
   return (CERT_STATUS_ALL_ERRORS & status) != 0;
 }
 
-// Maps a network error code to the equivalent certificate status flag. If
-// the error code is not a certificate error, it is mapped to 0.
-// Note: It is not safe to go net::CertStatus -> net::Error -> net::CertStatus,
-// as the CertStatus contains more information. Conversely, going from
-// net::Error -> net::CertStatus -> net::Error is not a lossy function, for the
-// same reason.
-// To avoid incorrect use, this is only exported for unittest helpers.
-NET_EXPORT_PRIVATE CertStatus MapNetErrorToCertStatus(int error);
-
 // Maps the most serious certificate error in the certificate status flags
 // to the equivalent network error code.
 NET_EXPORT int MapCertStatusToNetError(CertStatus cert_status);

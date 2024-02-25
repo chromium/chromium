@@ -5,7 +5,9 @@
 //! Utilities to support testing Mojo clients and the Mojo system implementation
 //! itself.
 
-extern crate mojo_system as system;
+chromium::import! {
+    "//mojo/public/rust:mojo_system" as system;
+}
 
 macro_rules! gen_panic_stub {
     ($name:ident $(, $arg:ident : $arg_ty:ty)*) => {

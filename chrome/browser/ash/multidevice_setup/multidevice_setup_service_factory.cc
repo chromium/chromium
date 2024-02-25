@@ -70,7 +70,7 @@ class MultiDeviceSetupServiceHolder : public KeyedService {
   // KeyedService:
   void Shutdown() override { multidevice_setup_service_.reset(); }
 
-  const raw_ptr<Profile, ExperimentalAsh> profile_;
+  const raw_ptr<Profile> profile_;
   std::unique_ptr<MultiDeviceSetupService> multidevice_setup_service_;
 };
 
@@ -122,7 +122,8 @@ MultiDeviceSetupServiceFactory::MultiDeviceSetupServiceFactory()
 
 MultiDeviceSetupServiceFactory::~MultiDeviceSetupServiceFactory() = default;
 
-KeyedService* MultiDeviceSetupServiceFactory::BuildServiceInstanceFor(
+std::unique_ptr<KeyedService>
+MultiDeviceSetupServiceFactory::BuildServiceInstanceForBrowserContext(
     content::BrowserContext* context) const {
   if (!multidevice_setup::AreAnyMultiDeviceFeaturesAllowed(
           Profile::FromBrowserContext(context)->GetPrefs())) {
@@ -132,7 +133,7 @@ KeyedService* MultiDeviceSetupServiceFactory::BuildServiceInstanceFor(
     return nullptr;
   }
 
-  return new MultiDeviceSetupServiceHolder(context);
+  return std::make_unique<MultiDeviceSetupServiceHolder>(context);
 }
 
 }  // namespace multidevice_setup

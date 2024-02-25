@@ -94,7 +94,7 @@ void __attribute__((noinline)) ContextMenuNestedCFRunLoop() {
   CGPoint locationInWebView =
       [self.webView.scrollView convertPoint:location fromView:interaction.view];
 
-  absl::optional<web::ContextMenuParams> optionalParams =
+  std::optional<web::ContextMenuParams> optionalParams =
       [self fetchContextMenuParamsAtLocation:locationInWebView];
 
   if (!optionalParams.has_value()) {
@@ -111,11 +111,13 @@ void __attribute__((noinline)) ContextMenuNestedCFRunLoop() {
   params.location = [self.webView convertPoint:location
                                       fromView:interaction.view];
 
-  __block UIContextMenuConfiguration* configuration;
-  self.webState->GetDelegate()->ContextMenuConfiguration(
-      self.webState, params, ^(UIContextMenuConfiguration* conf) {
-        configuration = conf;
-      });
+  __block UIContextMenuConfiguration* configuration = nil;
+  if (self.webState && self.webState->GetDelegate()) {
+    self.webState->GetDelegate()->ContextMenuConfiguration(
+        self.webState, params, ^(UIContextMenuConfiguration* conf) {
+          configuration = conf;
+        });
+  }
 
   if (configuration) {
     // User long pressed on a link or an image. Cancelling all touches will
@@ -135,8 +137,14 @@ void __attribute__((noinline)) ContextMenuNestedCFRunLoop() {
   UIPreviewParameters* previewParameters = [[UIPreviewParameters alloc] init];
   previewParameters.backgroundColor = UIColor.clearColor;
 
-  return [[UITargetedPreview alloc] initWithView:self.screenshotView
-                                      parameters:previewParameters];
+  // If the preview view is not attached to the view hierarchy, fallback to nil
+  // to prevent app crashing. See crbug.com/1351669.
+  UITargetedPreview* targetPreview =
+      self.screenshotView.window
+          ? [[UITargetedPreview alloc] initWithView:self.screenshotView
+                                         parameters:previewParameters]
+          : nil;
+  return targetPreview;
 }
 
 - (UITargetedPreview*)contextMenuInteraction:
@@ -162,8 +170,10 @@ void __attribute__((noinline)) ContextMenuNestedCFRunLoop() {
         (UIContextMenuConfiguration*)configuration
                                             animator:
         (id<UIContextMenuInteractionCommitAnimating>)animator {
-  self.webState->GetDelegate()->ContextMenuWillCommitWithAnimator(self.webState,
-                                                                  animator);
+  if (self.webState && self.webState->GetDelegate()) {
+    self.webState->GetDelegate()->ContextMenuWillCommitWithAnimator(
+        self.webState, animator);
+  }
 }
 
 - (void)contextMenuInteraction:(UIContextMenuInteraction*)interaction
@@ -196,7 +206,7 @@ void __attribute__((noinline)) ContextMenuNestedCFRunLoop() {
 
 // Fetches the context menu params for the element at `locationInWebView`. The
 // returned params can be empty.
-- (absl::optional<web::ContextMenuParams>)fetchContextMenuParamsAtLocation:
+- (std::optional<web::ContextMenuParams>)fetchContextMenuParamsAtLocation:
     (CGPoint)locationInWebView {
   // While traditionally using dispatch_async would be used here, we have to
   // instead use CFRunLoop because dispatch_async blocks the thread. As this
@@ -207,7 +217,7 @@ void __attribute__((noinline)) ContextMenuNestedCFRunLoop() {
   __block BOOL javascriptEvaluationComplete = NO;
   __block BOOL isRunLoopComplete = NO;
 
-  __block absl::optional<web::ContextMenuParams> resultParams;
+  __block std::optional<web::ContextMenuParams> resultParams;
 
   __weak __typeof(self) weakSelf = self;
   [self.elementFetcher

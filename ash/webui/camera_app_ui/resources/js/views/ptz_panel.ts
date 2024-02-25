@@ -3,31 +3,15 @@
 // found in the LICENSE file.
 
 import {assert, assertExists, assertInstanceof} from '../assert.js';
-import {ClearableAsyncJobQueue} from '../async_job_queue.js';
+import {AsyncJobQueue} from '../async_job_queue.js';
+import {PTZController} from '../device/ptz_controller.js';
 import * as dom from '../dom.js';
-import {SvgWrapper} from '../lit/svg_wrapper.js';
 import * as metrics from '../metrics.js';
 import * as state from '../state.js';
-import * as tooltip from '../tooltip.js';
 import {ViewName} from '../type.js';
 import {DelayInterval} from '../util.js';
 
 import {EnterOptions, PTZPanelOptions, View} from './view.js';
-
-/**
- * A set of vid:pid of digital zoom cameras whose PT control is disabled when
- * all zooming out.
- */
-const digitalZoomCameras = new Set([
-  '046d:0809',
-  '046d:0823',
-  '046d:0825',
-  '046d:082d',
-  '046d:0843',
-  '046d:085c',
-  '046d:085e',
-  '046d:0893',
-]);
 
 /**
  * Detects hold gesture on UI and triggers corresponding handler.
@@ -108,12 +92,7 @@ function detectHoldGesture({
  * View controller for PTZ panel.
  */
 export class PTZPanel extends View {
-  /**
-   * Video track of opened stream having PTZ support.
-   */
-  private track: MediaStreamTrack|null = null;
-
-  private resetPTZ: (() => Promise<void>)|null = null;
+  private ptzController: PTZController|null = null;
 
   private readonly panel = dom.get('#ptz-panel', HTMLDivElement);
 
@@ -136,23 +115,23 @@ export class PTZPanel extends View {
   /**
    * Queues asynchronous pan change jobs in sequence.
    */
-  private panQueues = new ClearableAsyncJobQueue();
+  private panQueues = new AsyncJobQueue();
 
   /**
    * Queues asynchronous tilt change jobs in sequence.
    */
-  private tiltQueues = new ClearableAsyncJobQueue();
+  private tiltQueues = new AsyncJobQueue();
 
   /**
    * Queues asynchronous zoom change jobs in sequence.
    */
-  private zoomQueues = new ClearableAsyncJobQueue();
+  private zoomQueues = new AsyncJobQueue();
 
   /**
-   * Whether the camera associated with current track is a digital zoom
-   * cameras whose PT control is disabled when all zooming out.
+   * Whether the camera associated with current track is a camera whose PT
+   * control is disabled when all zooming out.
    */
-  private isDigitalZoom = false;
+  private isPanTiltRestricted = false;
 
   constructor() {
     super(ViewName.PTZ_PANEL, {
@@ -160,16 +139,6 @@ export class PTZPanel extends View {
       dismissByBackgroundClick: true,
       dismissOnStopStreaming: true,
     });
-
-    for (const btn
-             of [this.panRight, this.panLeft, this.tiltUp, this.tiltDown]) {
-      btn.addEventListener(tooltip.TOOLTIP_POSITION_EVENT_NAME, (e) => {
-        const target = assertInstanceof(e.target, HTMLElement);
-        const icon = dom.getFrom(target, 'svg-wrapper', SvgWrapper);
-        tooltip.position(icon.getBoundingClientRect());
-        e.preventDefault();
-      });
-    }
 
     this.setMirrorObserver(() => {
       this.checkDisabled();
@@ -197,17 +166,15 @@ export class PTZPanel extends View {
    */
   private bind(
       attr: 'pan'|'tilt'|'zoom', incBtn: HTMLButtonElement,
-      decBtn: HTMLButtonElement): ClearableAsyncJobQueue {
-    const track = this.track;
-    assert(track !== null);
-    const {min, max, step} = track.getCapabilities()[attr];
+      decBtn: HTMLButtonElement): AsyncJobQueue {
+    const ptzController = assertExists(this.ptzController);
+    const {min, max, step} = ptzController.getCapabilities()[attr];
     function getCurrent() {
-      assert(track !== null);
-      return assertExists(track.getSettings()[attr]);
+      return assertExists(ptzController.getSettings()[attr]);
     }
     this.checkDisabled();
 
-    const queue = new ClearableAsyncJobQueue();
+    const queue = new AsyncJobQueue();
 
     /**
      * Returns a function triggering |attr| change of preview moving toward
@@ -223,11 +190,8 @@ export class PTZPanel extends View {
               Math.max(
                   Math.round((max - min) / step * deltaInPercent / 100), 1) *
               step * direction;
-          return async () => {
-            await queue.push(async () => {
-              if (!track.enabled) {
-                return;
-              }
+          return () => {
+            queue.push(async () => {
               const current = getCurrent();
               const needMirror =
                   attr === 'pan' && state.get(state.State.MIRROR);
@@ -236,7 +200,8 @@ export class PTZPanel extends View {
               if (current === next) {
                 return;
               }
-              await track.applyConstraints({advanced: [{[attr]: next}]});
+              // Apply pan, tilt, or zoom with |next| value.
+              await ptzController[attr](next);
               this.checkDisabled();
             });
           };
@@ -266,27 +231,12 @@ export class PTZPanel extends View {
     return queue;
   }
 
-  private canPan(): boolean {
-    assert(this.track !== null);
-    return this.track.getCapabilities().pan !== undefined;
-  }
-
-  private canTilt(): boolean {
-    assert(this.track !== null);
-    return this.track.getCapabilities().tilt !== undefined;
-  }
-
-  private canZoom(): boolean {
-    assert(this.track !== null);
-    return this.track.getCapabilities().zoom !== undefined;
-  }
-
   private checkDisabled() {
-    if (this.track === null) {
+    if (this.ptzController === null) {
       return;
     }
-    const capabilities = this.track.getCapabilities();
-    const settings = this.track.getSettings();
+    const capabilities = this.ptzController.getCapabilities();
+    const settings = this.ptzController.getSettings();
     function updateDisable(
         incBtn: HTMLButtonElement, decBtn: HTMLButtonElement,
         attr: 'pan'|'tilt'|'zoom') {
@@ -302,14 +252,14 @@ export class PTZPanel extends View {
     const allZoomOut = this.zoomOut.disabled;
 
     if (capabilities.tilt !== undefined) {
-      if (allZoomOut && this.isDigitalZoom) {
+      if (allZoomOut && this.isPanTiltRestricted) {
         this.tiltUp.disabled = this.tiltDown.disabled = true;
       } else {
         updateDisable(this.tiltUp, this.tiltDown, 'tilt');
       }
     }
     if (capabilities.pan !== undefined) {
-      if (allZoomOut && this.isDigitalZoom) {
+      if (allZoomOut && this.isPanTiltRestricted) {
         this.panLeft.disabled = this.panRight.disabled = true;
       } else {
         let incBtn = this.panRight;
@@ -323,21 +273,17 @@ export class PTZPanel extends View {
   }
 
   override entering(options: EnterOptions): void {
-    const {stream, vidPid, resetPTZ} =
-        assertInstanceof(options, PTZPanelOptions);
+    const {ptzController} = assertInstanceof(options, PTZPanelOptions);
     const {bottom, right} =
         dom.get('#open-ptz-panel', HTMLButtonElement).getBoundingClientRect();
     this.panel.style.bottom = `${window.innerHeight - bottom}px`;
     this.panel.style.left = `${right + 6}px`;
-    this.track = assertInstanceof(stream, MediaStream).getVideoTracks()[0];
-    this.isDigitalZoom = state.get(state.State.USE_FAKE_CAMERA) ||
-        (vidPid !== null && digitalZoomCameras.has(vidPid));
-    this.resetPTZ = resetPTZ;
+    this.isPanTiltRestricted = ptzController.isPanTiltRestricted();
+    this.ptzController = ptzController;
 
-
-    const canPan = this.canPan();
-    const canTilt = this.canTilt();
-    const canZoom = this.canZoom();
+    const canPan = ptzController.canPan();
+    const canTilt = ptzController.canTilt();
+    const canZoom = ptzController.canZoom();
 
     metrics.sendOpenPTZPanelEvent({
       pan: canPan,
@@ -367,8 +313,7 @@ export class PTZPanel extends View {
         this.tiltQueues.clear(),
         this.zoomQueues.clear(),
       ]);
-      assert(this.resetPTZ !== null);
-      await this.resetPTZ();
+      await ptzController.resetPTZ();
       this.checkDisabled();
     };
   }

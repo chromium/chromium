@@ -7,10 +7,14 @@
 
 #include "base/memory/weak_ptr.h"
 #include "components/keyed_service/core/keyed_service.h"
-#include "components/password_manager/core/browser/sharing/sharing_invitations.h"
+#include "components/sync/protocol/password_sharing_invitation_specifics.pb.h"
 
 namespace syncer {
 class ModelTypeControllerDelegate;
+}  // namespace syncer
+
+namespace syncer {
+class SyncService;
 }  // namespace syncer
 
 namespace password_manager {
@@ -25,11 +29,13 @@ class PasswordReceiverService : public KeyedService {
   ~PasswordReceiverService() override = default;
 
   virtual void ProcessIncomingSharingInvitation(
-      IncomingSharingInvitation invitation) = 0;
+      sync_pb::IncomingPasswordSharingInvitationSpecifics invitation) = 0;
 
   // Used to wire sync data type.
   virtual base::WeakPtr<syncer::ModelTypeControllerDelegate>
   GetControllerDelegate() = 0;
+
+  virtual void OnSyncServiceInitialized(syncer::SyncService* service) = 0;
 };
 
 }  // namespace password_manager

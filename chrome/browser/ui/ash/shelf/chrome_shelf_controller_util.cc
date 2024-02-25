@@ -7,11 +7,19 @@
 #include "ash/constants/ash_features.h"
 #include "ash/public/cpp/shelf_item_delegate.h"
 #include "ash/public/cpp/shelf_model.h"
+#include "ash/public/cpp/window_properties.h"
+#include "ash/root_window_controller.h"
+#include "ash/shelf/shelf.h"
+#include "ash/shelf/shelf_app_button.h"
+#include "ash/shelf/shelf_view.h"
+#include "ash/shelf/shelf_widget.h"
+#include "ash/shell.h"
 #include "base/containers/contains.h"
 #include "base/ranges/algorithm.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/apps/app_service/policy_util.h"
+#include "chrome/browser/apps/app_service/promise_apps/promise_app.h"
 #include "chrome/browser/apps/app_service/promise_apps/promise_app_registry_cache.h"
 #include "chrome/browser/ash/app_list/app_list_controller_delegate.h"
 #include "chrome/browser/ash/app_list/arc/arc_app_list_prefs.h"
@@ -21,21 +29,25 @@
 #include "chrome/browser/ash/file_manager/app_id.h"
 #include "chrome/browser/ash/login/demo_mode/demo_session.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/scalable_iph/scalable_iph_factory.h"
 #include "chrome/browser/ui/ash/multi_user/multi_user_util.h"
 #include "chrome/browser/ui/ash/multi_user/multi_user_window_manager_helper.h"
 #include "chrome/browser/ui/ash/shelf/arc_app_shelf_id.h"
 #include "chrome/browser/ui/ash/shelf/chrome_shelf_controller.h"
 #include "chrome/browser/ui/ash/shelf/chrome_shelf_item_factory.h"
 #include "chrome/browser/ui/ash/shelf/chrome_shelf_prefs.h"
+#include "chrome/browser/ui/ash/shelf/shelf_controller_helper.h"
+#include "chrome/browser/ui/ash/shelf/standalone_window_migration_nudge_util.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/web_applications/policy/web_app_policy_manager.h"
 #include "chrome/browser/web_applications/web_app_constants.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
-#include "chrome/browser/web_applications/web_app_id.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_utils.h"
 #include "chrome/common/pref_names.h"
+#include "chromeos/ash/components/scalable_iph/scalable_iph.h"
 #include "components/prefs/pref_service.h"
+#include "components/webapps/common/web_app_id.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/common/constants.h"
 #include "extensions/common/extension.h"
@@ -59,7 +71,7 @@ AppListControllerDelegate::Pinnable GetPinnableForAppID(
   if (base::Contains(kNoPinAppIds, app_id))
     return AppListControllerDelegate::NO_PIN;
 
-  const absl::optional<std::vector<std::string>> policy_ids =
+  const std::optional<std::vector<std::string>> policy_ids =
       apps_util::GetPolicyIdsFromAppId(profile, app_id);
 
   if (!policy_ids || policy_ids->empty()) {
@@ -109,6 +121,20 @@ bool IsAppHiddenFromShelf(Profile* profile, const std::string& app_id) {
 
   return hidden;
 }
+
+bool IsPromiseAppReadyToShowInShelf(Profile* profile,
+                                    const std::string& promise_package_id) {
+  if (!ash::features::ArePromiseIconsEnabled()) {
+    return false;
+  }
+  CHECK(apps::AppServiceProxyFactory::IsAppServiceAvailableForProfile(profile));
+  const apps::PromiseApp* promise_app =
+      apps::AppServiceProxyFactory::GetForProfile(profile)
+          ->PromiseAppRegistryCache()
+          ->GetPromiseAppForStringPackageId(promise_package_id);
+  return promise_app && promise_app->should_show.value_or(false);
+}
+
 bool IsAppPinEditable(apps::AppType app_type,
                       const std::string& app_id,
                       Profile* profile) {
@@ -116,6 +142,10 @@ bool IsAppPinEditable(apps::AppType app_type,
       apps::AppServiceProxyFactory::GetForProfile(profile)
           ->PromiseAppRegistryCache()
           ->GetPromiseAppForStringPackageId(app_id)) {
+    return true;
+  }
+
+  if (ShelfControllerHelper::IsAppServiceShortcut(profile, app_id)) {
     return true;
   }
 
@@ -163,7 +193,6 @@ bool IsAppPinEditable(apps::AppType app_type,
       // Type kUnknown is used for "unregistered" Crostini apps, which do not
       // have a .desktop file and can only be closed, not pinned.
       return false;
-    case apps::AppType::kMacOs:
     case apps::AppType::kRemote:
     case apps::AppType::kExtension:
     case apps::AppType::kStandaloneBrowserExtension:
@@ -249,4 +278,68 @@ bool BrowserAppShelfControllerShouldHandleApp(const std::string& app_id,
     default:
       return false;
   }
+}
+
+void MaybeRecordAppLaunchForScalableIph(const std::string& app_id,
+                                        Profile* profile,
+                                        ash::ShelfLaunchSource source) {
+  // Launches from app list is covered in `AppListClientImpl::ActivateItem`.
+  if (source != ash::ShelfLaunchSource::LAUNCH_FROM_SHELF) {
+    return;
+  }
+
+  scalable_iph::ScalableIph* scalable_iph =
+      ScalableIphFactory::GetForBrowserContext(profile);
+  if (!scalable_iph) {
+    return;
+  }
+
+  scalable_iph->MaybeRecordShelfItemActivationById(app_id);
+}
+
+void MaybeShowStandaloneMigrationNudge(const std::string& app_id,
+                                       Profile* profile) {
+  CHECK(ash::Shell::GetPrimaryRootWindowController());
+  ash::ShelfView* shelf_view = ash::Shell::GetPrimaryRootWindowController()
+                                   ->shelf()
+                                   ->hotseat_widget()
+                                   ->GetShelfView();
+
+  CHECK(profile);
+  CHECK(shelf_view);
+
+  ash::ShelfAppButton* anchor_view =
+      shelf_view->GetShelfAppButton(ash::ShelfID(app_id));
+
+  auto* app_service_proxy =
+      apps::AppServiceProxyFactory::GetForProfile(profile);
+
+  CHECK(app_service_proxy);
+
+  std::string app_name;
+  apps::WindowMode window_mode;
+
+  // Retrieving an app's window mode, set prior to the default window mode
+  // change, allows us to verify whether the nudge should be shown on opening
+  // this app. The nudge is to only be shown for apps previously displayed
+  // within the browser by default.
+  app_service_proxy->AppRegistryCache().ForOneApp(
+      app_id, [&app_name, &window_mode](const apps::AppUpdate& update) {
+        app_name = update.Name();
+        window_mode = update.WindowMode();
+      });
+
+  if (window_mode != apps::WindowMode::kBrowser) {
+    return;
+  }
+
+  PrefService* prefs = profile->GetPrefs();
+
+  if (prefs->GetBoolean(prefs::kStandaloneWindowMigrationNudgeShown)) {
+    return;
+  }
+
+  prefs->SetBoolean(prefs::kStandaloneWindowMigrationNudgeShown, true);
+
+  ash::CreateAndShowNudge(anchor_view, base::UTF8ToUTF16(app_name));
 }

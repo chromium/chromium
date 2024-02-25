@@ -4,27 +4,29 @@
 
 #include "chrome/browser/ui/views/file_system_access/file_system_access_permission_dialog.h"
 
+#include <optional>
+
 #include "base/files/file_path.h"
 #include "base/test/bind.h"
 #include "chrome/test/base/browser_with_test_window_test.h"
 #include "components/permissions/permission_util.h"
 #include "content/public/browser/file_system_access_permission_context.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/test/test_dialog_model_host.h"
 #include "url/origin.h"
 
 using AccessType = FileSystemAccessPermissionRequestManager::Access;
 using HandleType = content::FileSystemAccessPermissionContext::HandleType;
 using RequestData = FileSystemAccessPermissionRequestManager::RequestData;
+using RequestType = FileSystemAccessPermissionRequestManager::RequestType;
 
 using FileSystemAccessPermissionDialogTest = BrowserWithTestWindowTest;
 
 class TestFileSystemAccessPermissionDialog {
  public:
   std::unique_ptr<ui::TestDialogModelHost> CreateDialogModelHost() {
-    RequestData request(kTestOrigin, kTestPath, HandleType::kFile,
-                        AccessType::kRead);
+    RequestData request(RequestType::kNewPermission, kTestOrigin,
+                        {{kTestPath, HandleType::kFile, AccessType::kRead}});
     return std::make_unique<ui::TestDialogModelHost>(
         CreateFileSystemAccessPermissionDialogForTesting(
             request, base::BindLambdaForTesting(
@@ -45,7 +47,7 @@ class TestFileSystemAccessPermissionDialog {
   const base::FilePath kTestPath =
       base::FilePath(FILE_PATH_LITERAL("/foo/bar.txt"));
 
-  absl::optional<permissions::PermissionAction> result_ = absl::nullopt;
+  std::optional<permissions::PermissionAction> result_ = std::nullopt;
 };
 
 TEST_F(FileSystemAccessPermissionDialogTest, Accept) {

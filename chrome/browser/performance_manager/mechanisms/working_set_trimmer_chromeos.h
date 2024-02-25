@@ -72,8 +72,7 @@ class WorkingSetTrimmerChromeOS : public WorkingSetTrimmer {
   // WorkingSetTrimmer::GetInstance().
   WorkingSetTrimmerChromeOS();
 
-  raw_ptr<content::BrowserContext, ExperimentalAsh> context_for_testing_ =
-      nullptr;
+  raw_ptr<content::BrowserContext> context_for_testing_ = nullptr;
 
   base::WeakPtrFactory<WorkingSetTrimmerChromeOS> weak_factory_{this};
 };

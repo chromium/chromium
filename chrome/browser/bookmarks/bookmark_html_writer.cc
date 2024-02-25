@@ -154,14 +154,19 @@ class BookmarkFaviconFetcher : public base::SupportsUserData::Data {
 // Class responsible for the actual writing. Takes ownership of favicons_map.
 class Writer : public base::RefCountedThreadSafe<Writer> {
  public:
-  Writer(base::Value::Dict bookmarks,
+  Writer(const bookmarks::BookmarkModel* model,
          const base::FilePath& path,
          BookmarkFaviconFetcher::URLFaviconMap* favicons_map,
          BookmarksExportObserver* observer)
-      : bookmarks_(std::move(bookmarks)),
-        path_(path),
-        favicons_map_(favicons_map),
-        observer_(observer) {}
+      : path_(path), favicons_map_(favicons_map), observer_(observer) {
+    // BookmarkModel isn't thread safe (nor would we want to lock it down
+    // for the duration of the write), as such we make a copy of the
+    // BookmarkModel using BookmarkCodec then write from that.
+    BookmarkCodec codec;
+    bookmarks_ =
+        codec.Encode(model->bookmark_bar_node(), model->other_node(),
+                     model->mobile_node(), /*sync_metadata_str=*/std::string());
+  }
 
   Writer(const Writer&) = delete;
   Writer& operator=(const Writer&) = delete;
@@ -332,11 +337,8 @@ class Writer : public base::RefCountedThreadSafe<Writer> {
       std::string favicon_string;
       auto itr = favicons_map_->find(*url_string);
       if (itr != favicons_map_->end()) {
-        scoped_refptr<base::RefCountedMemory> data(itr->second.get());
-        std::string favicon_base64_encoded;
-        base::Base64Encode(
-            base::StringPiece(data->front_as<char>(), data->size()),
-            &favicon_base64_encoded);
+        scoped_refptr<base::RefCountedMemory> data = itr->second;
+        std::string favicon_base64_encoded = base::Base64Encode(*data);
         GURL favicon_url("data:image/png;base64," + favicon_base64_encoded);
         favicon_string = favicon_url.spec();
       }
@@ -472,18 +474,12 @@ void BookmarkFaviconFetcher::ExtractUrls(const BookmarkNode* node) {
 }
 
 void BookmarkFaviconFetcher::ExecuteWriter() {
-  // BookmarkModel isn't thread safe (nor would we want to lock it down
-  // for the duration of the write), as such we make a copy of the
-  // BookmarkModel using BookmarkCodec then write from that.
-  BookmarkCodec codec;
   base::ThreadPool::PostTask(
       FROM_HERE, {base::MayBlock(), base::TaskPriority::BEST_EFFORT},
-      base::BindOnce(
-          &Writer::DoWrite,
-          base::MakeRefCounted<Writer>(
-              codec.Encode(BookmarkModelFactory::GetForBrowserContext(profile_),
-                           /*sync_metadata_str=*/std::string()),
-              path_, favicons_map_.release(), observer_)));
+      base::BindOnce(&Writer::DoWrite,
+                     base::MakeRefCounted<Writer>(
+                         BookmarkModelFactory::GetForBrowserContext(profile_),
+                         path_, favicons_map_.release(), observer_)));
   profile_->RemoveUserData(kBookmarkFaviconFetcherKey);
   // |this| is deleted!
 }

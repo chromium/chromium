@@ -18,20 +18,20 @@ SuitableTrustTokenOrigin::SuitableTrustTokenOrigin(
 SuitableTrustTokenOrigin& SuitableTrustTokenOrigin::operator=(
     SuitableTrustTokenOrigin&& rhs) = default;
 
-absl::optional<SuitableTrustTokenOrigin> SuitableTrustTokenOrigin::Create(
+std::optional<SuitableTrustTokenOrigin> SuitableTrustTokenOrigin::Create(
     url::Origin origin) {
   if (origin.scheme() != url::kHttpsScheme &&
       origin.scheme() != url::kHttpScheme)
-    return absl::nullopt;
+    return std::nullopt;
   if (!IsOriginPotentiallyTrustworthy(origin))
-    return absl::nullopt;
+    return std::nullopt;
 
-  return absl::optional<SuitableTrustTokenOrigin>(
-      absl::in_place, base::PassKey<SuitableTrustTokenOrigin>(),
+  return std::optional<SuitableTrustTokenOrigin>(
+      std::in_place, base::PassKey<SuitableTrustTokenOrigin>(),
       std::move(origin));
 }
 
-absl::optional<SuitableTrustTokenOrigin> SuitableTrustTokenOrigin::Create(
+std::optional<SuitableTrustTokenOrigin> SuitableTrustTokenOrigin::Create(
     const GURL& url) {
   return Create(url::Origin::Create(url));
 }

@@ -8,6 +8,7 @@
 #include <map>
 #include <memory>
 #include <string>
+#include <string_view>
 #include <vector>
 
 #include "base/files/file_path.h"
@@ -197,7 +198,7 @@ class Extension final : public base::RefCountedThreadSafe<Extension> {
 
   // Returns an extension resource object. |relative_path| should be UTF8
   // encoded.
-  ExtensionResource GetResource(base::StringPiece relative_path) const;
+  ExtensionResource GetResource(std::string_view relative_path) const;
 
   // As above, but with |relative_path| following the file system's encoding.
   ExtensionResource GetResource(const base::FilePath& relative_path) const;
@@ -219,6 +220,12 @@ class Extension final : public base::RefCountedThreadSafe<Extension> {
 
   // Returns the base extension url for a given |extension_id|.
   static GURL GetBaseURLFromExtensionId(const ExtensionId& extension_id);
+
+  // Returns for scope for the extension's service worker.
+  static GURL GetServiceWorkerScopeFromExtensionId(
+      const ExtensionId& extension_id) {
+    return GetBaseURLFromExtensionId(extension_id);
+  }
 
   // Returns the extension origin for a given |extension_id|.
   static url::Origin CreateOriginFromExtensionId(
@@ -457,7 +464,7 @@ class Extension final : public base::RefCountedThreadSafe<Extension> {
   base::Uuid guid_;
 };
 
-typedef std::vector<scoped_refptr<const Extension>> ExtensionList;
+using ExtensionList = std::vector<scoped_refptr<const Extension>>;
 
 // Handy struct to pass core extension info around.
 struct ExtensionInfo {

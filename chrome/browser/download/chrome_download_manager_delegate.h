@@ -21,15 +21,17 @@
 #include "build/build_config.h"
 #include "chrome/browser/download/download_completion_blocker.h"
 #include "chrome/browser/download/download_target_determiner_delegate.h"
-#include "chrome/browser/download/download_target_info.h"
 #include "components/download/public/common/download_danger_type.h"
 #include "components/download/public/common/download_item.h"
 #include "components/download/public/common/download_path_reservation_tracker.h"
+#include "components/download/public/common/download_target_info.h"
 #include "components/safe_browsing/buildflags.h"
+#include "components/safe_browsing/content/common/proto/download_file_types.pb.h"
 #include "content/public/browser/download_manager.h"
 #include "content/public/browser/download_manager_delegate.h"
 #include "extensions/buildflags/buildflags.h"
 #include "ui/gfx/native_widget_types.h"
+#include "ui/shell_dialogs/selected_file_info.h"
 
 #if BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/download/android/download_dialog_bridge.h"
@@ -99,7 +101,7 @@ class ChromeDownloadManagerDelegate
   void GetNextId(content::DownloadIdCallback callback) override;
   bool DetermineDownloadTarget(
       download::DownloadItem* item,
-      content::DownloadTargetCallback* callback) override;
+      download::DownloadTargetCallback* callback) override;
   bool ShouldAutomaticallyOpenFile(const GURL& url,
                                    const base::FilePath& path) override;
   bool ShouldAutomaticallyOpenFileByPolicy(const GURL& url,
@@ -137,7 +139,7 @@ class ChromeDownloadManagerDelegate
       const content::WebContents::Getter& web_contents_getter,
       const GURL& url,
       const std::string& request_method,
-      absl::optional<url::Origin> request_initiator,
+      std::optional<url::Origin> request_initiator,
       bool from_download_cross_origin_redirect,
       bool content_initiated,
       content::CheckDownloadAllowedCallback check_download_allowed_cb) override;
@@ -147,9 +149,11 @@ class ChromeDownloadManagerDelegate
       download::DownloadItem* download_item,
       base::flat_map<base::FilePath, base::FilePath> save_package_files,
       content::SavePackageAllowedCallback callback) override;
-#if !BUILDFLAG(IS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
+  bool IsFromExternalApp(download::DownloadItem* item) override;
+#else
   void AttachExtraInfo(download::DownloadItem* item) override;
-#endif  // !BUILDFLAG(IS_ANRDOID)
+#endif  // BUILDFLAG(IS_ANDROID)
 
   // Opens a download using the platform handler. DownloadItem::OpenDownload,
   // which ends up being handled by OpenDownload(), will open a download in the
@@ -169,7 +173,7 @@ class ChromeDownloadManagerDelegate
 
     ~SafeBrowsingState() override;
 
-    // String pointer used for identifying safebrowing data associated with
+    // String pointer used for identifying safebrowsing data associated with
     // a download item.
     static const char kSafeBrowsingUserDataKey[];
   };
@@ -201,7 +205,7 @@ class ChromeDownloadManagerDelegate
 #endif
 
   // Returns true if |path| should open in the browser.
-  virtual bool IsOpenInBrowserPreferreredForFile(const base::FilePath& path);
+  virtual bool IsOpenInBrowserPreferredForFile(const base::FilePath& path);
 
  protected:
 #if BUILDFLAG(FULL_SAFE_BROWSING)
@@ -256,7 +260,7 @@ class ChromeDownloadManagerDelegate
   void OnConfirmationCallbackComplete(
       DownloadTargetDeterminerDelegate::ConfirmationCallback callback,
       DownloadConfirmationResult result,
-      const base::FilePath& virtual_path);
+      const ui::SelectedFileInfo& selected_file_info);
 
   // So that test classes that inherit from this for override purposes
   // can call back into the DownloadManager.
@@ -279,10 +283,9 @@ class ChromeDownloadManagerDelegate
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
   // Called when CrxInstaller in running_crx_installs_ finishes installation.
-  void OnInstallerDone(
-      const base::UnguessableToken& token,
-      content::DownloadOpenDelayedCallback callback,
-      const absl::optional<extensions::CrxInstallError>& error);
+  void OnInstallerDone(const base::UnguessableToken& token,
+                       content::DownloadOpenDelayedCallback callback,
+                       const std::optional<extensions::CrxInstallError>& error);
 #endif
 
   // Internal gateways for ShouldCompleteDownload().
@@ -301,8 +304,9 @@ class ChromeDownloadManagerDelegate
 
   void OnDownloadTargetDetermined(
       uint32_t download_id,
-      content::DownloadTargetCallback callback,
-      std::unique_ptr<DownloadTargetInfo> target_info);
+      download::DownloadTargetCallback callback,
+      download::DownloadTargetInfo target_info,
+      safe_browsing::DownloadFileType::DangerLevel danger_level);
 
   void MaybeSendDangerousDownloadOpenedReport(download::DownloadItem* download,
                                               bool show_download_in_folder);

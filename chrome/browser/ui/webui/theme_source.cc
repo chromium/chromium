@@ -6,12 +6,14 @@
 
 #include "base/functional/bind.h"
 #include "base/memory/ref_counted_memory.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
+#include "base/timer/elapsed_timer.h"
 #include "build/branding_buildflags.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/profiles/profile.h"
@@ -257,6 +259,7 @@ void ThemeSource::SendColorsCss(
     const GURL& url,
     const content::WebContents::Getter& wc_getter,
     content::URLDataSource::GotDataCallback callback) {
+  base::ElapsedTimer timer;
   const ui::ColorProvider& color_provider = wc_getter.Run()->GetColorProvider();
 
   std::string sets_param;
@@ -369,8 +372,13 @@ void ThemeSource::SendColorsCss(
     std::move(callback).Run(nullptr);
     return;
   }
+
   std::move(callback).Run(
       base::MakeRefCounted<base::RefCountedString>(std::move(css_string)));
+
+  // Measures the time it takes to generate the colors.css and queue it for the
+  // renderer.
+  UmaHistogramTimes("WebUI.ColorsStylesheetServingDuration", timer.Elapsed());
 }
 
 std::string ThemeSource::GetAccessControlAllowOriginForOrigin(

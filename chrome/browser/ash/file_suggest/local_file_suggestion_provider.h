@@ -49,19 +49,19 @@ class LocalFileSuggestionProvider
 
   // FileSuggestionProvider:
   void GetSuggestFileData(GetSuggestFileDataCallback callback) override;
+  void MaybeUpdateItemSuggestCache(
+      base::PassKey<FileSuggestKeyedService>) override;
 
   // file_manager::file_tasks::FileTaskObserver:
   void OnFilesOpened(const std::vector<FileOpenEvent>& file_opens) override;
 
-  // Returns true if there is pending fetch on file suggestions.
-  bool HasPendingLocalSuggestionFetchForTest() const;
 
  private:
   void OnProtoInitialized(app_list::ReadStatus status);
   void OnValidationComplete(std::pair<std::vector<LocalFileData>,
                                       std::vector<base::FilePath>> results);
 
-  const raw_ptr<Profile, ExperimentalAsh> profile_;
+  const raw_ptr<Profile> profile_;
 
   // Any file not modified at least as recently as `max_last_modified_time_` ago
   // will be filtered out of results.

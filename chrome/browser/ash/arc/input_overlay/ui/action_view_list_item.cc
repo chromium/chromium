@@ -4,65 +4,70 @@
 
 #include "chrome/browser/ash/arc/input_overlay/ui/action_view_list_item.h"
 
-#include <memory>
-
-#include "ash/bubble/bubble_utils.h"
 #include "ash/style/rounded_container.h"
-#include "ash/style/typography.h"
 #include "chrome/browser/ash/arc/input_overlay/actions/action.h"
 #include "chrome/browser/ash/arc/input_overlay/display_overlay_controller.h"
 #include "chrome/browser/ash/arc/input_overlay/ui/edit_labels.h"
 #include "chrome/browser/ash/arc/input_overlay/ui/name_tag.h"
 #include "chrome/browser/ash/arc/input_overlay/ui/ui_utils.h"
-#include "ui/chromeos/styles/cros_tokens_color_mappings.h"
-#include "ui/views/background.h"
-#include "ui/views/layout/table_layout.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
 
 namespace arc::input_overlay {
 
 ActionViewListItem::ActionViewListItem(DisplayOverlayController* controller,
                                        Action* action)
-    : controller_(controller), action_(action) {
-  Init();
-}
+    : ActionEditView(controller,
+                     action,
+                     /*is_editing_list=*/true) {}
 
 ActionViewListItem::~ActionViewListItem() = default;
 
-void ActionViewListItem::OnActionInputBindingUpdated() {
-  labels_view_->OnActionInputBindingUpdated();
+void ActionViewListItem::PerformPulseAnimation() {
+  labels_view_->PerformPulseAnimationOnFirstLabel();
 }
 
-void ActionViewListItem::OnActionNameUpdated() {
-  auto action_name = GetActionNameAtIndex(controller_->action_name_list(),
-                                          action_->name_label_index());
-  name_tag_->SetTitle(action_name);
+void ActionViewListItem::ClickCallback() {
+  controller_->AddButtonOptionsMenuWidget(action_);
 }
 
-void ActionViewListItem::Init() {
-  SetUseDefaultFillLayout(true);
-  auto* container = AddChildView(std::make_unique<ash::RoundedContainer>());
-  container->SetBorderInsets(gfx::Insets::VH(14, 16));
-  container->SetBackground(
-      views::CreateThemedSolidBackground(cros_tokens::kCrosSysSystemOnBase));
-  container->SetLayoutManager(std::make_unique<views::TableLayout>())
-      ->AddColumn(/*h_align=*/views::LayoutAlignment::kStart,
-                  /*v_align=*/views::LayoutAlignment::kStart,
-                  /*horizontal_resize=*/1.0f,
-                  /*size_type=*/views::TableLayout::ColumnSize::kUsePreferred,
-                  /*fixed_width=*/0, /*min_width=*/0)
-      .AddColumn(/*h_align=*/views::LayoutAlignment::kEnd,
-                 /*v_align=*/views::LayoutAlignment::kCenter,
-                 /*horizontal_resize=*/1.0f,
-                 /*size_type=*/views::TableLayout::ColumnSize::kUsePreferred,
-                 /*fixed_width=*/0, /*min_width=*/0)
-      .AddRows(1, /*vertical_resize=*/views::TableLayout::kFixedSize);
-
-  // TODO(b/270969479): Replace the hardcoded string.
-  auto title_string = GetActionNameAtIndex(controller_->action_name_list(),
-                                           action_->name_label_index());
-  name_tag_ = container->AddChildView(NameTag::CreateNameTag(title_string));
-  labels_view_ = container->AddChildView(EditLabels::CreateEditLabels(
-      controller_, action_, name_tag_, /*set_title=*/true));
+void ActionViewListItem::OnMouseEntered(const ui::MouseEvent& event) {
+  controller_->AddActionHighlightWidget(action_);
+  controller_->AddDeleteEditShortcutWidget(this);
 }
+
+void ActionViewListItem::OnMouseExited(const ui::MouseEvent& event) {
+  controller_->HideActionHighlightWidget();
+}
+
+bool ActionViewListItem::OnKeyPressed(const ui::KeyEvent& event) {
+  if (event.key_code() == ui::VKEY_RIGHT) {
+    controller_->AddDeleteEditShortcutWidget(this);
+    return true;
+  }
+
+  // Don't hide the action view highlight because the focus may traverse inside
+  // of this view. If the next focus view is not inside of this view, then hide
+  // the action view highlight.
+  if (views::FocusManager::IsTabTraversalKeyEvent(event)) {
+    auto* focus_manager = GetFocusManager();
+    if (auto* next_view = focus_manager->GetNextFocusableView(
+            /*starting_view=*/focus_manager->GetFocusedView(),
+            /*starting_widget=*/GetWidget(), /*reverse=*/event.IsShiftDown(),
+            /*dont_loop=*/false);
+        !next_view || !Contains(next_view)) {
+      controller_->HideActionHighlightWidget();
+    }
+    // Tab key is not considered as processed here, so it falls to the end to
+    // return false.
+  }
+  return false;
+}
+
+void ActionViewListItem::OnFocus() {
+  controller_->AddActionHighlightWidget(action_);
+}
+
+BEGIN_METADATA(ActionViewListItem)
+END_METADATA
 
 }  // namespace arc::input_overlay

@@ -56,4 +56,4 @@ class AccessibilityServiceDevToolsDelegate
 };
 }  // namespace ash
 
-#endif
+#endif  // CHROME_BROWSER_ASH_ACCESSIBILITY_SERVICE_ACCESSIBILITY_SERVICE_DEVTOOLS_DELEGATE_H_

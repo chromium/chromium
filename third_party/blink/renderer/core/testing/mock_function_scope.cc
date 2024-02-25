@@ -49,6 +49,7 @@ v8::Local<v8::Function> MockFunctionScope::ExpectNoCall() {
 
 ACTION_P2(SaveValueIn, script_state, captor) {
   *captor = ToCoreString(
+      script_state->GetIsolate(),
       arg1.V8Value()->ToString(script_state->GetContext()).ToLocalChecked());
 }
 

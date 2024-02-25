@@ -145,7 +145,7 @@ scoped_refptr<DecoderBuffer> DecryptBitstreamBuffer(
     buffer_size += subsample.clear_bytes() + subsample.cypher_bytes();
     subsamples.emplace_back(subsample.clear_bytes(), subsample.cypher_bytes());
   }
-  absl::optional<EncryptionPattern> pattern = absl::nullopt;
+  std::optional<EncryptionPattern> pattern = std::nullopt;
   if (buffer_proto.has_pattern()) {
     pattern.emplace(buffer_proto.pattern().cypher_bytes(),
                     buffer_proto.pattern().clear_bytes());
@@ -241,7 +241,7 @@ bool VdVideoDecodeAccelerator::Initialize(const Config& config,
     return false;
   }
 #endif  //  !BUILDFLAG(USE_ARC_PROTECTED_MEDIA)
-  if (config.output_mode != Config::OutputMode::IMPORT) {
+  if (config.output_mode != Config::OutputMode::kImport) {
     VLOGF(1) << "Only IMPORT OutputMode is supported.";
     return false;
   }
@@ -261,7 +261,9 @@ bool VdVideoDecodeAccelerator::Initialize(const Config& config,
         std::move(frame_pool), /*frame_converter=*/nullptr,
         VideoDecoderPipeline::DefaultPreferredRenderableFourccs(),
         std::make_unique<NullMediaLog>(),
-        /*oop_video_decoder=*/{});
+        /*oop_video_decoder=*/{},
+        // TODO(b/195769334): Set this properly once OOP-VD is enabled for ARC.
+        /*in_video_decoder_process=*/false);
     if (!vd_)
       return false;
 
@@ -354,7 +356,7 @@ void VdVideoDecodeAccelerator::OnFrameReady(scoped_refptr<VideoFrame> frame) {
   DCHECK(frame);
   DCHECK(client_);
 
-  absl::optional<Picture> picture = GetPicture(*frame);
+  std::optional<Picture> picture = GetPicture(*frame);
   if (!picture) {
     VLOGF(1) << "Failed to get picture.";
     OnError(FROM_HERE, PLATFORM_FAILURE);
@@ -467,8 +469,13 @@ void VdVideoDecodeAccelerator::RequestFrames(
   // |pending_coded_size_|.
   pending_coded_size_ = coded_size;
   client_->ProvidePictureBuffersWithVisibleRect(
-      max_num_frames, fourcc.ToVideoPixelFormat(), 1 /* textures_per_buffer */,
-      coded_size, visible_rect, GL_TEXTURE_EXTERNAL_OES);
+      max_num_frames, fourcc.ToVideoPixelFormat(), coded_size, visible_rect,
+      GL_TEXTURE_EXTERNAL_OES);
+}
+
+VideoFrame::StorageType VdVideoDecodeAccelerator::GetFrameStorageType() const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(client_sequence_checker_);
+  return VideoFrame::STORAGE_GPU_MEMORY_BUFFER;
 }
 
 void VdVideoDecodeAccelerator::AssignPictureBuffers(
@@ -535,7 +542,7 @@ void VdVideoDecodeAccelerator::ImportBufferForPicture(
                << ", coded_size: " << coded_size_.ToString()
                << ", planes: " << VectorToString(planes)
                << ", modifier: " << std::hex << modifier;
-      layout_ = absl::nullopt;
+      layout_ = std::nullopt;
       import_frame_cb_.Reset();
       std::move(notify_layout_changed_cb_)
           .Run(CroStatus::Codes::kFailedToChangeResolution);
@@ -574,6 +581,11 @@ void VdVideoDecodeAccelerator::ImportBufferForPicture(
           std::move(gpu_memory_buffer), mailbox_holder, base::NullCallback(),
           base::TimeDelta());
 
+  // This passes because GetFrameStorageType() is hard coded to match the
+  // storage type of frames produced by
+  // VideoFrame::WrapExternalGpuMemoryBuffer().
+  CHECK_EQ(origin_frame->storage_type(), GetFrameStorageType());
+
   auto res = frame_id_to_picture_id_.emplace(
       origin_frame->GetGpuMemoryBuffer()->GetId(), picture_buffer_id);
   // The frame ID should not be inside the map before insertion.
@@ -602,7 +614,7 @@ void VdVideoDecodeAccelerator::ImportBufferForPicture(
   import_frame_cb_.Run(std::move(wrapped_frame));
 }
 
-absl::optional<Picture> VdVideoDecodeAccelerator::GetPicture(
+std::optional<Picture> VdVideoDecodeAccelerator::GetPicture(
     const VideoFrame& frame) {
   DVLOGF(4);
   DCHECK_CALLED_ON_VALID_SEQUENCE(client_sequence_checker_);
@@ -610,18 +622,18 @@ absl::optional<Picture> VdVideoDecodeAccelerator::GetPicture(
   auto it = frame_id_to_picture_id_.find(frame.GetGpuMemoryBuffer()->GetId());
   if (it == frame_id_to_picture_id_.end()) {
     VLOGF(1) << "Failed to find the picture buffer id.";
-    return absl::nullopt;
+    return std::nullopt;
   }
   int32_t picture_buffer_id = it->second;
   int32_t bitstream_id = FakeTimestampToBitstreamId(frame.timestamp());
-  return absl::make_optional(Picture(picture_buffer_id, bitstream_id,
-                                     frame.visible_rect(), frame.ColorSpace(),
-                                     frame.metadata().allow_overlay));
+  return std::make_optional(Picture(picture_buffer_id, bitstream_id,
+                                    frame.visible_rect(), frame.ColorSpace(),
+                                    frame.metadata().allow_overlay));
 }
 
 // static
 void VdVideoDecodeAccelerator::OnFrameReleasedThunk(
-    absl::optional<base::WeakPtr<VdVideoDecodeAccelerator>> weak_this,
+    std::optional<base::WeakPtr<VdVideoDecodeAccelerator>> weak_this,
     scoped_refptr<base::SequencedTaskRunner> task_runner,
     scoped_refptr<VideoFrame> origin_frame) {
   DVLOGF(4);

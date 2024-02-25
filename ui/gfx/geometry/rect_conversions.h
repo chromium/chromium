@@ -19,9 +19,9 @@ GEOMETRY_EXPORT Rect ToEnclosingRect(const RectF& rect);
 // edge and the nearest integer grid is smaller than |error|, the edge is
 // snapped to the integer grid. Unlike ToNearestRect() which only accepts
 // integer rect with or without floating point error, this function also accepts
-// non-integer rect.
+// non-integer rect. The default error is 0.001, which is used in cc/viz.
 GEOMETRY_EXPORT Rect ToEnclosingRectIgnoringError(const RectF& rect,
-                                                  float error);
+                                                  float error = 0.001f);
 
 // Returns the largest Rect that is enclosed by the given RectF if possible.
 // The returned rect is smaller than or equal to the input rect, but if

@@ -8,7 +8,6 @@
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/string_number_conversions.h"
-#include "content/public/browser/browser_message_filter.h"
 #include "content/public/browser/render_process_host.h"
 
 namespace extensions {
@@ -47,14 +46,6 @@ void ReceivedBadMessage(int render_process_id, BadMessageReason reason) {
     return;
 
   ReceivedBadMessage(rph, reason);
-}
-
-void ReceivedBadMessage(content::BrowserMessageFilter* filter,
-                        BadMessageReason reason) {
-  base::debug::ScopedCrashKeyString crash_key(GetBadMessageCrashKey(),
-                                              base::NumberToString(reason));
-  LogBadMessage(reason);
-  filter->ShutdownForBadMessage();
 }
 
 }  // namespace bad_message

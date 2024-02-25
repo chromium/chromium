@@ -14,6 +14,7 @@
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/gtest_util.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/mock_callback.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "components/optimization_guide/core/bloom_filter.h"
@@ -34,10 +35,16 @@
 #include "components/optimization_guide/core/top_host_provider.h"
 #include "components/optimization_guide/proto/hints.pb.h"
 #include "components/prefs/pref_registry_simple.h"
+#include "components/prefs/scoped_user_pref_update.h"
+#include "components/signin/public/base/consent_level.h"
+#include "components/signin/public/identity_manager/identity_manager.h"
+#include "components/signin/public/identity_manager/identity_test_environment.h"
+#include "components/signin/public/identity_manager/test_identity_manager_observer.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "components/ukm/test_ukm_recorder.h"
 #include "components/unified_consent/unified_consent_service.h"
 #include "components/variations/scoped_variations_ids_provider.h"
+#include "google_apis/gaia/google_service_auth_error.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "services/metrics/public/cpp/ukm_source.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
@@ -89,6 +96,8 @@ std::unique_ptr<proto::GetHintsResponse> BuildHintsResponse(
     proto::Hint* hint = get_hints_response->add_hints();
     hint->set_key_representation(proto::HOST);
     hint->set_key(host);
+    hint->add_allowlisted_optimizations()->set_optimization_type(
+        proto::NOSCRIPT);
     proto::PageHint* page_hint = hint->add_page_hints();
     page_hint->set_page_pattern("page pattern");
     proto::Optimization* opt = page_hint->add_allowlisted_optimizations();
@@ -199,26 +208,30 @@ class TestHintsFetcher : public HintsFetcher {
         fetch_states_(fetch_states) {
     DCHECK(!fetch_states_.empty());
   }
-
+  bool is_request_context_metadata_filled = false;
   bool FetchOptimizationGuideServiceHints(
       const std::vector<std::string>& hosts,
       const std::vector<GURL>& urls,
       const base::flat_set<proto::OptimizationType>& optimization_types,
       proto::RequestContext request_context,
       const std::string& locale,
-      absl::optional<std::string> access_token,
+      const std::string& access_token,
       bool skip_cache,
-      HintsFetchedCallback hints_fetched_callback) override {
+      HintsFetchedCallback hints_fetched_callback,
+      proto::RequestContextMetadata* request_context_metadata) override {
     HintsFetcherEndState fetch_state =
         num_fetches_requested_ < static_cast<int>(fetch_states_.size())
             ? fetch_states_[num_fetches_requested_]
             : fetch_states_.back();
+    if (request_context_metadata) {
+      is_request_context_metadata_filled = true;
+    }
     num_fetches_requested_++;
     locale_requested_ = locale;
     request_context_requested_ = request_context;
     switch (fetch_state) {
       case HintsFetcherEndState::kFetchFailed:
-        std::move(hints_fetched_callback).Run(absl::nullopt);
+        std::move(hints_fetched_callback).Run(std::nullopt);
         return false;
       case HintsFetcherEndState::kFetchSuccessWithHostHints:
         base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
@@ -229,10 +242,11 @@ class TestHintsFetcher : public HintsFetcher {
       case HintsFetcherEndState::kFetchSuccessWithURLHints:
         base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
             FROM_HERE,
-            base::BindOnce(&RunHintsFetchedCallbackWithResponse,
-                           std::move(hints_fetched_callback),
-                           BuildHintsResponse(
-                               {}, {"https://somedomain.org/news/whatever"})));
+            base::BindOnce(
+                &RunHintsFetchedCallbackWithResponse,
+                std::move(hints_fetched_callback),
+                BuildHintsResponse({"somedomain.org"},
+                                   {"https://somedomain.org/news/whatever"})));
         return true;
       case HintsFetcherEndState::kFetchSuccessWithNoHints:
         base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
@@ -253,12 +267,12 @@ class TestHintsFetcher : public HintsFetcher {
   }
 
  private:
+  OptimizationGuideLogger optimization_guide_logger_;
   std::vector<HintsFetcherEndState> fetch_states_;
   int num_fetches_requested_ = 0;
   std::string locale_requested_;
   proto::RequestContext request_context_requested_ =
       proto::RequestContext::CONTEXT_UNSPECIFIED;
-  OptimizationGuideLogger optimization_guide_logger_;
 };
 
 // A mock class of HintsFetcherFactory that returns instances of
@@ -322,7 +336,9 @@ class HintsManagerTest : public ProtoDatabaseProviderTestBase {
     ProtoDatabaseProviderTestBase::TearDown();
   }
 
-  void CreateHintsManager(TopHostProvider* top_host_provider) {
+  void CreateHintsManager(
+      std::unique_ptr<FakeTopHostProvider> top_host_provider,
+      signin::IdentityManager* identity_manager = nullptr) {
     if (hints_manager_)
       ResetHintsManager();
 
@@ -336,11 +352,14 @@ class HintsManagerTest : public ProtoDatabaseProviderTestBase {
 
     tab_url_provider_ = std::make_unique<FakeTabUrlProvider>();
 
+    top_host_provider_ = std::move(top_host_provider);
+
     hints_manager_ = std::make_unique<HintsManager>(
         /*is_off_the_record=*/false, /*application_locale=*/"en-US",
-        pref_service(), hint_store_->AsWeakPtr(), top_host_provider,
+        pref_service(), hint_store_->AsWeakPtr(), top_host_provider_.get(),
         tab_url_provider_.get(), url_loader_factory_,
-        /*push_notification_manager=*/nullptr, &optimization_guide_logger_);
+        /*push_notification_manager=*/nullptr,
+        /*identity_manager=*/identity_manager, &optimization_guide_logger_);
     hints_manager_->SetClockForTesting(task_environment_.GetMockClock());
 
     // Run until hint cache is initialized and the HintsManager is ready to
@@ -352,6 +371,9 @@ class HintsManagerTest : public ProtoDatabaseProviderTestBase {
     hints_manager_->Shutdown();
     hints_manager_.reset();
     tab_url_provider_.reset();
+    if (top_host_provider_) {
+      top_host_provider_.reset();
+    }
     hint_store_.reset();
     RunUntilIdle();
   }
@@ -478,12 +500,17 @@ class HintsManagerTest : public ProtoDatabaseProviderTestBase {
     return tab_url_provider_.get();
   }
 
+  FakeTopHostProvider* top_host_provider() const {
+    return top_host_provider_.get();
+  }
+
   void RunUntilIdle() {
     task_environment_.RunUntilIdle();
     base::RunLoop().RunUntilIdle();
   }
 
  protected:
+  OptimizationGuideLogger optimization_guide_logger_;
   std::unique_ptr<HintsManager> hints_manager_;
 
  private:
@@ -499,10 +526,10 @@ class HintsManagerTest : public ProtoDatabaseProviderTestBase {
   base::test::ScopedFeatureList scoped_feature_list_;
   std::unique_ptr<OptimizationGuideStore> hint_store_;
   std::unique_ptr<FakeTabUrlProvider> tab_url_provider_;
+  std::unique_ptr<FakeTopHostProvider> top_host_provider_;
   std::unique_ptr<sync_preferences::TestingPrefServiceSyncable> pref_service_;
   scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
   network::TestURLLoaderFactory test_url_loader_factory_;
-  OptimizationGuideLogger optimization_guide_logger_;
 };
 
 TEST_F(HintsManagerTest, ProcessHintsWithValidCommandLineOverride) {
@@ -531,7 +558,7 @@ TEST_F(HintsManagerTest, ProcessHintsWithValidCommandLineOverride) {
 
   std::string encoded_config;
   config.SerializeToString(&encoded_config);
-  base::Base64Encode(encoded_config, &encoded_config);
+  encoded_config = base::Base64Encode(encoded_config);
 
   base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(
       switches::kHintsProtoOverride, encoded_config);
@@ -556,6 +583,15 @@ TEST_F(HintsManagerTest, ProcessHintsWithValidCommandLineOverride) {
       proto::LITE_PAGE_REDIRECT));
   EXPECT_FALSE(hints_manager()->HasLoadedOptimizationAllowlist(
       proto::PERFORMANCE_HINTS));
+  const base::Value::Dict& previous_opt_types_with_filter =
+      pref_service()->GetDict(prefs::kPreviousOptimizationTypesWithFilter);
+  EXPECT_EQ(2u, previous_opt_types_with_filter.size());
+  EXPECT_TRUE(previous_opt_types_with_filter.contains(
+      optimization_guide::proto::OptimizationType_Name(
+          proto::LITE_PAGE_REDIRECT)));
+  EXPECT_TRUE(previous_opt_types_with_filter.contains(
+      optimization_guide::proto::OptimizationType_Name(
+          proto::PERFORMANCE_HINTS)));
 
   // Now register a new type with an allowlist that has not yet been loaded.
   hints_manager()->RegisterOptimizationTypes({proto::PERFORMANCE_HINTS});
@@ -594,7 +630,7 @@ TEST_F(HintsManagerTest,
 
   std::string encoded_config;
   config.SerializeToString(&encoded_config);
-  base::Base64Encode(encoded_config, &encoded_config);
+  encoded_config = base::Base64Encode(encoded_config);
 
   {
     base::HistogramTester histogram_tester;
@@ -808,6 +844,46 @@ TEST_F(HintsManagerTest, ProcessHintsWithInvalidPref) {
                                         ProcessHintsComponentResult::kSuccess,
                                         1);
   }
+}
+
+TEST_F(HintsManagerTest, ProcessHintsUpdatePreviousOptTypesWithFilter) {
+  proto::Configuration config_one;
+  BloomFilter bloom_filter_one(kDefaultHostBloomFilterNumHashFunctions,
+                               kDefaultHostBloomFilterNumBits);
+  PopulateBloomFilterWithDefaultHost(&bloom_filter_one);
+  AddBloomFilterToConfig(proto::LITE_PAGE_REDIRECT, bloom_filter_one,
+                         kDefaultHostBloomFilterNumHashFunctions,
+                         kDefaultHostBloomFilterNumBits,
+                         /*is_allowlist=*/false, &config_one);
+  AddBloomFilterToConfig(proto::PERFORMANCE_HINTS, bloom_filter_one,
+                         kDefaultHostBloomFilterNumHashFunctions,
+                         kDefaultHostBloomFilterNumBits,
+                         /*is_allowlist=*/true, &config_one);
+  ProcessHints(config_one, "1.0.0.0");
+
+  const base::Value::Dict& dic_one =
+      pref_service()->GetDict(prefs::kPreviousOptimizationTypesWithFilter);
+  EXPECT_EQ(2u, dic_one.size());
+  EXPECT_TRUE(dic_one.contains(optimization_guide::proto::OptimizationType_Name(
+      proto::LITE_PAGE_REDIRECT)));
+  EXPECT_TRUE(dic_one.contains(optimization_guide::proto::OptimizationType_Name(
+      proto::PERFORMANCE_HINTS)));
+
+  proto::Configuration config_two;
+  BloomFilter bloom_filter_two(kDefaultHostBloomFilterNumHashFunctions,
+                               kDefaultHostBloomFilterNumBits);
+  PopulateBloomFilterWithDefaultHost(&bloom_filter_two);
+  AddBloomFilterToConfig(proto::LITE_PAGE_REDIRECT, bloom_filter_two,
+                         kDefaultHostBloomFilterNumHashFunctions,
+                         kDefaultHostBloomFilterNumBits,
+                         /*is_allowlist=*/false, &config_two);
+  ProcessHints(config_two, "2.0.0.0");
+
+  const base::Value::Dict& dic_two =
+      pref_service()->GetDict(prefs::kPreviousOptimizationTypesWithFilter);
+  EXPECT_EQ(1u, dic_two.size());
+  EXPECT_TRUE(dic_two.contains(optimization_guide::proto::OptimizationType_Name(
+      proto::LITE_PAGE_REDIRECT)));
 }
 
 TEST_F(HintsManagerTest,
@@ -1088,7 +1164,10 @@ TEST_F(HintsManagerTest, CanApplyOptimizationUrlWithNoHost) {
   EXPECT_EQ(OptimizationTypeDecision::kInvalidURL, optimization_type_decision);
 }
 
-TEST_F(HintsManagerTest, CanApplyOptimizationHasFilterForTypeButNotLoadedYet) {
+TEST_F(HintsManagerTest,
+       CanApplyOptimizationHasFilterForTypeButNotLoadedYet_ComponentReady) {
+  // Simulate a situation where the component is ready, but the filter has not
+  // been loaded yet.
   proto::Configuration config;
   BloomFilter blocklist_bloom_filter(kDefaultHostBloomFilterNumHashFunctions,
                                      kDefaultHostBloomFilterNumBits);
@@ -1115,6 +1194,27 @@ TEST_F(HintsManagerTest, CanApplyOptimizationHasFilterForTypeButNotLoadedYet) {
   // Run until idle to ensure we don't crash because the test object has gone
   // away.
   RunUntilIdle();
+}
+
+TEST_F(HintsManagerTest,
+       CanApplyOptimizationHasFilterForTypeButNotLoadedYet_ComponentNotReady) {
+  // Simulate a situation where the component not ready, but we know from
+  // previous sessions that LITE_PAGE_REDIRECT type has a filter.
+  ScopedDictPrefUpdate previous_opt_types_with_filter(
+      pref_service(), prefs::kPreviousOptimizationTypesWithFilter);
+  previous_opt_types_with_filter->Set(
+      optimization_guide::proto::OptimizationType_Name(
+          proto::LITE_PAGE_REDIRECT),
+      true);
+
+  hints_manager()->RegisterOptimizationTypes({proto::LITE_PAGE_REDIRECT});
+  OptimizationTypeDecision optimization_type_decision =
+      hints_manager()->CanApplyOptimization(GURL("https://whatever.com/123"),
+                                            proto::LITE_PAGE_REDIRECT,
+                                            /*optimization_metadata=*/nullptr);
+
+  EXPECT_EQ(OptimizationTypeDecision::kHadOptimizationFilterButNotLoadedInTime,
+            optimization_type_decision);
 }
 
 TEST_F(HintsManagerTest,
@@ -1481,16 +1581,13 @@ TEST_F(HintsManagerFetchingDisabledTest,
   base::CommandLine::ForCurrentProcess()->AppendSwitch(
       switches::kDisableCheckingUserPermissionsForTesting);
 
-  std::unique_ptr<FakeTopHostProvider> top_host_provider =
-      std::make_unique<FakeTopHostProvider>(
-          std::vector<std::string>({"example1.com", "example2.com"}));
-
-  CreateHintsManager(top_host_provider.get());
+  CreateHintsManager(std::make_unique<FakeTopHostProvider>(
+      std::vector<std::string>({"example1.com", "example2.com"})));
   InitializeWithDefaultConfig("1.0.0");
 
   // Force timer to expire and schedule a hints fetch.
   MoveClockForwardBy(base::Seconds(kUpdateFetchHintsTimeSecs));
-  EXPECT_EQ(0, top_host_provider->get_num_top_hosts_called());
+  EXPECT_EQ(0, top_host_provider()->get_num_top_hosts_called());
   // Hints fetcher should not even be created.
   EXPECT_FALSE(active_tabs_batch_update_hints_fetcher());
 }
@@ -1735,13 +1832,10 @@ TEST_F(HintsManagerFetchingTest,
 
 TEST_F(HintsManagerFetchingTest,
        NoRegisteredOptimizationTypesAndHintsFetchNotAttempted) {
-  std::unique_ptr<FakeTopHostProvider> top_host_provider =
-      std::make_unique<FakeTopHostProvider>(
-          std::vector<std::string>({"example1.com", "example2.com"}));
-
   base::CommandLine::ForCurrentProcess()->AppendSwitch(
       switches::kDisableCheckingUserPermissionsForTesting);
-  CreateHintsManager(top_host_provider.get());
+  CreateHintsManager(std::make_unique<FakeTopHostProvider>(
+      std::vector<std::string>({"example1.com", "example2.com"})));
 
   hints_manager()->SetHintsFetcherFactoryForTesting(
       BuildTestHintsFetcherFactory(
@@ -1750,7 +1844,7 @@ TEST_F(HintsManagerFetchingTest,
 
   // Force timer to expire and schedule a hints fetch but the fetch is not made.
   MoveClockForwardBy(base::Seconds(kUpdateFetchHintsTimeSecs));
-  EXPECT_EQ(0, top_host_provider->get_num_top_hosts_called());
+  EXPECT_EQ(0, top_host_provider()->get_num_top_hosts_called());
   // Hints fetcher should not even be created.
   EXPECT_FALSE(active_tabs_batch_update_hints_fetcher());
 }
@@ -1766,13 +1860,10 @@ TEST_F(HintsManagerFetchingTest,
                          kDefaultHostBloomFilterNumBits,
                          /*is_allowlist=*/true, &config);
 
-  std::unique_ptr<FakeTopHostProvider> top_host_provider =
-      std::make_unique<FakeTopHostProvider>(
-          std::vector<std::string>({"example1.com", "example2.com"}));
-
   base::CommandLine::ForCurrentProcess()->AppendSwitch(
       switches::kDisableCheckingUserPermissionsForTesting);
-  CreateHintsManager(top_host_provider.get());
+  CreateHintsManager(std::make_unique<FakeTopHostProvider>(
+      std::vector<std::string>({"example1.com", "example2.com"})));
   ProcessHints(config, "1.0.0.0");
 
   hints_manager()->RegisterOptimizationTypes({proto::LITE_PAGE_REDIRECT});
@@ -1782,7 +1873,7 @@ TEST_F(HintsManagerFetchingTest,
 
   // Force timer to expire after random delay and schedule a hints fetch.
   MoveClockForwardBy(base::Seconds(60 * 2));
-  EXPECT_EQ(0, top_host_provider->get_num_top_hosts_called());
+  EXPECT_EQ(0, top_host_provider()->get_num_top_hosts_called());
   // Hints fetcher should not even be created.
   EXPECT_FALSE(active_tabs_batch_update_hints_fetcher());
 }
@@ -1792,9 +1883,8 @@ TEST_F(HintsManagerFetchingTest, HintsFetcherEnabledNoHostsOrUrlsToFetch) {
   base::HistogramTester histogram_tester;
   base::CommandLine::ForCurrentProcess()->AppendSwitch(
       switches::kDisableCheckingUserPermissionsForTesting);
-  std::unique_ptr<FakeTopHostProvider> top_host_provider =
-      std::make_unique<FakeTopHostProvider>(std::vector<std::string>({}));
-  CreateHintsManager(top_host_provider.get());
+  CreateHintsManager(
+      std::make_unique<FakeTopHostProvider>(std::vector<std::string>({})));
 
   hints_manager()->RegisterOptimizationTypes({proto::DEFER_ALL_SCRIPT});
   hints_manager()->SetHintsFetcherFactoryForTesting(
@@ -1809,14 +1899,14 @@ TEST_F(HintsManagerFetchingTest, HintsFetcherEnabledNoHostsOrUrlsToFetch) {
 
   // Force timer to expire after random delay and schedule a hints fetch.
   MoveClockForwardBy(base::Seconds(60 * 2));
-  EXPECT_EQ(1, top_host_provider->get_num_top_hosts_called());
+  EXPECT_EQ(1, top_host_provider()->get_num_top_hosts_called());
   EXPECT_EQ(1, tab_url_provider()->get_num_urls_called());
   // Hints fetcher should not even be created.
   EXPECT_FALSE(active_tabs_batch_update_hints_fetcher());
 
   // Move it forward again to make sure timer is scheduled.
   MoveClockForwardBy(base::Seconds(kUpdateFetchHintsTimeSecs));
-  EXPECT_EQ(2, top_host_provider->get_num_top_hosts_called());
+  EXPECT_EQ(2, top_host_provider()->get_num_top_hosts_called());
   EXPECT_EQ(2, tab_url_provider()->get_num_urls_called());
   // Hints fetcher should not even be created.
   EXPECT_FALSE(active_tabs_batch_update_hints_fetcher());
@@ -1827,9 +1917,8 @@ TEST_F(HintsManagerFetchingTest, HintsFetcherEnabledNoHostsButHasUrlsToFetch) {
   base::HistogramTester histogram_tester;
   base::CommandLine::ForCurrentProcess()->AppendSwitch(
       switches::kDisableCheckingUserPermissionsForTesting);
-  std::unique_ptr<FakeTopHostProvider> top_host_provider =
-      std::make_unique<FakeTopHostProvider>(std::vector<std::string>({}));
-  CreateHintsManager(top_host_provider.get());
+  CreateHintsManager(
+      std::make_unique<FakeTopHostProvider>(std::vector<std::string>({})));
 
   hints_manager()->RegisterOptimizationTypes({proto::DEFER_ALL_SCRIPT});
   hints_manager()->SetHintsFetcherFactoryForTesting(
@@ -1848,7 +1937,7 @@ TEST_F(HintsManagerFetchingTest, HintsFetcherEnabledNoHostsButHasUrlsToFetch) {
   // Force timer to expire after random delay and schedule a hints fetch that
   // succeeds.
   MoveClockForwardBy(base::Seconds(60 * 2));
-  EXPECT_EQ(1, top_host_provider->get_num_top_hosts_called());
+  EXPECT_EQ(1, top_host_provider()->get_num_top_hosts_called());
   EXPECT_EQ(1, tab_url_provider()->get_num_urls_called());
   EXPECT_EQ(1,
             active_tabs_batch_update_hints_fetcher()->num_fetches_requested());
@@ -1862,7 +1951,7 @@ TEST_F(HintsManagerFetchingTest, HintsFetcherEnabledNoHostsButHasUrlsToFetch) {
 
   // Move it forward again to make sure timer is scheduled.
   MoveClockForwardBy(base::Seconds(kUpdateFetchHintsTimeSecs));
-  EXPECT_EQ(2, top_host_provider->get_num_top_hosts_called());
+  EXPECT_EQ(2, top_host_provider()->get_num_top_hosts_called());
   EXPECT_EQ(2, tab_url_provider()->get_num_urls_called());
   // Urls didn't change and we have all URLs cached in store.
   EXPECT_EQ(1,
@@ -1879,10 +1968,9 @@ TEST_F(HintsManagerFetchingTest, HintsFetcherTimerFetchOnStartup) {
   base::HistogramTester histogram_tester;
   base::CommandLine::ForCurrentProcess()->AppendSwitch(
       switches::kDisableCheckingUserPermissionsForTesting);
-  std::unique_ptr<FakeTopHostProvider> top_host_provider =
-      std::make_unique<FakeTopHostProvider>(std::vector<std::string>({}));
 
-  CreateHintsManager(top_host_provider.get());
+  CreateHintsManager(
+      std::make_unique<FakeTopHostProvider>(std::vector<std::string>({})));
   hints_manager()->RegisterOptimizationTypes({proto::DEFER_ALL_SCRIPT});
   hints_manager()->SetHintsFetcherFactoryForTesting(
       BuildTestHintsFetcherFactory(
@@ -1926,10 +2014,9 @@ TEST_F(HintsManagerFetchingTest, HintsFetcherDeferredStartup) {
 
   base::CommandLine::ForCurrentProcess()->AppendSwitch(
       switches::kDisableCheckingUserPermissionsForTesting);
-  std::unique_ptr<FakeTopHostProvider> top_host_provider =
-      std::make_unique<FakeTopHostProvider>(std::vector<std::string>({}));
 
-  CreateHintsManager(top_host_provider.get());
+  CreateHintsManager(
+      std::make_unique<FakeTopHostProvider>(std::vector<std::string>({})));
   hints_manager()->RegisterOptimizationTypes({proto::DEFER_ALL_SCRIPT});
   hints_manager()->SetHintsFetcherFactoryForTesting(
       BuildTestHintsFetcherFactory(
@@ -2074,7 +2161,7 @@ TEST_F(HintsManagerFetchingTest,
   opt->set_optimization_type(proto::DEFER_ALL_SCRIPT);
   std::string encoded_config;
   config.SerializeToString(&encoded_config);
-  base::Base64Encode(encoded_config, &encoded_config);
+  encoded_config = base::Base64Encode(encoded_config);
   base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(
       switches::kHintsProtoOverride, encoded_config);
 
@@ -3096,7 +3183,8 @@ TEST_F(HintsManagerFetchingTest,
 
             run_loop->Quit();
           },
-          run_loop.get()));
+          run_loop.get()),
+      nullptr);
   run_loop->Run();
 
   histogram_tester.ExpectUniqueSample(
@@ -3120,21 +3208,24 @@ TEST_F(HintsManagerFetchingTest, BatchUpdateCalledMoreThanMaxConcurrent) {
       base::DoNothingAs<void(
           const GURL&,
           const base::flat_map<proto::OptimizationType,
-                               OptimizationGuideDecisionWithMetadata>&)>());
+                               OptimizationGuideDecisionWithMetadata>&)>(),
+      nullptr);
   hints_manager()->CanApplyOptimizationOnDemand(
       {url_with_url_keyed_hint()}, {proto::COMPRESS_PUBLIC_IMAGES},
       proto::RequestContext::CONTEXT_BOOKMARKS,
       base::DoNothingAs<void(
           const GURL&,
           const base::flat_map<proto::OptimizationType,
-                               OptimizationGuideDecisionWithMetadata>&)>());
+                               OptimizationGuideDecisionWithMetadata>&)>(),
+      nullptr);
   hints_manager()->CanApplyOptimizationOnDemand(
       {url_with_url_keyed_hint()}, {proto::COMPRESS_PUBLIC_IMAGES},
       proto::RequestContext::CONTEXT_BOOKMARKS,
       base::DoNothingAs<void(
           const GURL&,
           const base::flat_map<proto::OptimizationType,
-                               OptimizationGuideDecisionWithMetadata>&)>());
+                               OptimizationGuideDecisionWithMetadata>&)>(),
+      nullptr);
 
   // The third one is over the max and should evict another one.
   histogram_tester.ExpectTotalCount(
@@ -3172,11 +3263,12 @@ TEST_F(HintsManagerFetchingTest,
 
             it = decisions.find(proto::NOSCRIPT);
             ASSERT_TRUE(it != decisions.end());
-            EXPECT_EQ(OptimizationGuideDecision::kFalse, it->second.decision);
+            EXPECT_EQ(OptimizationGuideDecision::kTrue, it->second.decision);
 
             run_loop->Quit();
           },
-          run_loop.get()));
+          run_loop.get()),
+      nullptr);
   run_loop->Run();
 
   histogram_tester.ExpectTotalCount(
@@ -3207,11 +3299,15 @@ TEST_F(HintsManagerFetchingTest,
 
             run_loop->Quit();
           },
-          run_loop.get()));
+          run_loop.get()),
+      nullptr);
   run_loop->Run();
 
   histogram_tester.ExpectTotalCount(
       "OptimizationGuide.HintsManager.ConcurrentBatchUpdateFetches", 1);
+  histogram_tester.ExpectUniqueSample(
+      "OptimizationGuide.ApplyDecision.CompressPublicImages",
+      OptimizationTypeDecision::kNoHintAvailable, 1);
 }
 
 TEST_F(HintsManagerFetchingTest,
@@ -3242,9 +3338,8 @@ TEST_F(HintsManagerFetchingTest,
             ASSERT_EQ(decisions.size(), 2u);
             auto it = decisions.find(proto::NOSCRIPT);
             ASSERT_TRUE(it != decisions.end());
-            // Even though this is cached/loaded, the on-demand call does not
-            // have a result from the server.
-            EXPECT_EQ(OptimizationGuideDecision::kFalse, it->second.decision);
+            // The server has a response for this.
+            EXPECT_EQ(OptimizationGuideDecision::kTrue, it->second.decision);
 
             it = decisions.find(proto::COMPRESS_PUBLIC_IMAGES);
             ASSERT_TRUE(it != decisions.end());
@@ -3253,11 +3348,18 @@ TEST_F(HintsManagerFetchingTest,
 
             run_loop->Quit();
           },
-          run_loop.get()));
+          run_loop.get()),
+      nullptr);
   run_loop->Run();
 
   histogram_tester.ExpectTotalCount(
       "OptimizationGuide.HintsManager.ConcurrentBatchUpdateFetches", 1);
+  histogram_tester.ExpectUniqueSample(
+      "OptimizationGuide.ApplyDecision.NoScript",
+      OptimizationTypeDecision::kAllowedByHint, 1);
+  histogram_tester.ExpectUniqueSample(
+      "OptimizationGuide.ApplyDecision.CompressPublicImages",
+      OptimizationTypeDecision::kAllowedByHint, 1);
 }
 
 TEST_F(
@@ -3295,7 +3397,8 @@ TEST_F(
 
             run_loop->Quit();
           },
-          run_loop.get()));
+          run_loop.get()),
+      nullptr);
   run_loop->Run();
 }
 
@@ -3324,14 +3427,145 @@ TEST_F(HintsManagerFetchingTest,
             ASSERT_TRUE(it != decisions.end());
             EXPECT_EQ(OptimizationGuideDecision::kFalse, it->second.decision);
 
-            // Should still populate with what's on device.
             it = decisions.find(proto::NOSCRIPT);
             ASSERT_TRUE(it != decisions.end());
-            EXPECT_EQ(OptimizationGuideDecision::kTrue, it->second.decision);
+            EXPECT_EQ(OptimizationGuideDecision::kFalse, it->second.decision);
 
             run_loop->Quit();
           },
-          run_loop.get()));
+          run_loop.get()),
+      nullptr);
+  run_loop->Run();
+
+  histogram_tester.ExpectUniqueSample(
+      "OptimizationGuide.ApplyDecision.NoScript",
+      OptimizationTypeDecision::kNoHintAvailable, 1);
+  histogram_tester.ExpectUniqueSample(
+      "OptimizationGuide.ApplyDecision.CompressPublicImages",
+      OptimizationTypeDecision::kNoHintAvailable, 1);
+}
+
+// RequestContextMetadata will be sent in fetcher only for appropriate request
+// context.
+TEST_F(HintsManagerFetchingTest,
+       PageInsightsHubContextRequestContextMetadataPihSentGetHintsRequest) {
+  base::HistogramTester histogram_tester;
+
+  hints_manager()->RegisterOptimizationTypes({proto::PAGE_INSIGHTS});
+  InitializeWithDefaultConfig("1.0.0.0");
+
+  hints_manager()->SetHintsFetcherFactoryForTesting(
+      BuildTestHintsFetcherFactory(
+          {HintsFetcherEndState::kFetchSuccessWithURLHints}));
+  std::unique_ptr<base::RunLoop> run_loop = std::make_unique<base::RunLoop>();
+  proto::PageInsightsHubRequestContextMetadata
+      page_insights_hub_request_context_metadata =
+          proto::PageInsightsHubRequestContextMetadata::default_instance();
+  proto::RequestContextMetadata request_context_metadata_var;
+  *request_context_metadata_var.mutable_page_insights_hub_metadata() =
+      page_insights_hub_request_context_metadata;
+  proto::RequestContextMetadata* request_context_metadata =
+      &request_context_metadata_var;
+  hints_manager()->CanApplyOptimizationOnDemand(
+      {url_with_url_keyed_hint()}, {proto::PAGE_INSIGHTS},
+      proto::RequestContext::CONTEXT_PAGE_INSIGHTS_HUB,
+      base::BindRepeating(
+          [](base::RunLoop* run_loop, const GURL& url,
+             const base::flat_map<proto::OptimizationType,
+                                  OptimizationGuideDecisionWithMetadata>&
+                 decisions) {
+            EXPECT_EQ(decisions.size(), 1u);
+            auto it = decisions.find(proto::PAGE_INSIGHTS);
+            EXPECT_TRUE(it != decisions.end());
+
+            run_loop->Quit();
+          },
+          run_loop.get()),
+      request_context_metadata);
+  HintsFetcher* it =
+      hints_manager_->batch_update_hints_fetchers_.Peek(0)->second.get();
+  TestHintsFetcher* it2 = static_cast<TestHintsFetcher*>(it);
+  EXPECT_TRUE(it2->is_request_context_metadata_filled);
+  run_loop->Run();
+}
+
+// RequestContextMetadata will not be sent in fetcher when the request context
+// is not enabled for it.
+TEST_F(
+    HintsManagerFetchingTest,
+    PageInsightsHubContextNotSentRequestContextMetadataPihSentGetHintsRequest) {
+  base::HistogramTester histogram_tester;
+
+  hints_manager()->RegisterOptimizationTypes({proto::PAGE_INSIGHTS});
+  InitializeWithDefaultConfig("1.0.0.0");
+
+  hints_manager()->SetHintsFetcherFactoryForTesting(
+      BuildTestHintsFetcherFactory(
+          {HintsFetcherEndState::kFetchSuccessWithURLHints}));
+  std::unique_ptr<base::RunLoop> run_loop = std::make_unique<base::RunLoop>();
+  proto::PageInsightsHubRequestContextMetadata
+      page_insights_hub_request_context_metadata =
+          proto::PageInsightsHubRequestContextMetadata::default_instance();
+  proto::RequestContextMetadata request_context_metadata_var;
+  *request_context_metadata_var.mutable_page_insights_hub_metadata() =
+      page_insights_hub_request_context_metadata;
+  proto::RequestContextMetadata* request_context_metadata =
+      &request_context_metadata_var;
+  hints_manager()->CanApplyOptimizationOnDemand(
+      {url_with_url_keyed_hint()}, {proto::PAGE_INSIGHTS},
+      proto::RequestContext::CONTEXT_BOOKMARKS,
+      base::BindRepeating(
+          [](base::RunLoop* run_loop, const GURL& url,
+             const base::flat_map<proto::OptimizationType,
+                                  OptimizationGuideDecisionWithMetadata>&
+                 decisions) {
+            EXPECT_EQ(decisions.size(), 1u);
+            auto it = decisions.find(proto::PAGE_INSIGHTS);
+            EXPECT_TRUE(it != decisions.end());
+
+            run_loop->Quit();
+          },
+          run_loop.get()),
+      request_context_metadata);
+  HintsFetcher* it =
+      hints_manager_->batch_update_hints_fetchers_.Peek(0)->second.get();
+  TestHintsFetcher* it2 = static_cast<TestHintsFetcher*>(it);
+  EXPECT_FALSE(it2->is_request_context_metadata_filled);
+  run_loop->Run();
+}
+
+// Tests the null RequestContextMetadata case.
+TEST_F(HintsManagerFetchingTest,
+       PageInsightsHubContextRequestContextMetadataPihNotSentGetHintsRequest) {
+  base::HistogramTester histogram_tester;
+
+  hints_manager()->RegisterOptimizationTypes({proto::PAGE_INSIGHTS});
+  InitializeWithDefaultConfig("1.0.0.0");
+
+  hints_manager()->SetHintsFetcherFactoryForTesting(
+      BuildTestHintsFetcherFactory(
+          {HintsFetcherEndState::kFetchSuccessWithURLHints}));
+  std::unique_ptr<base::RunLoop> run_loop = std::make_unique<base::RunLoop>();
+  hints_manager()->CanApplyOptimizationOnDemand(
+      {url_with_url_keyed_hint()}, {proto::PAGE_INSIGHTS},
+      proto::RequestContext::CONTEXT_PAGE_INSIGHTS_HUB,
+      base::BindRepeating(
+          [](base::RunLoop* run_loop, const GURL& url,
+             const base::flat_map<proto::OptimizationType,
+                                  OptimizationGuideDecisionWithMetadata>&
+                 decisions) {
+            EXPECT_EQ(decisions.size(), 1u);
+            auto it = decisions.find(proto::PAGE_INSIGHTS);
+            EXPECT_TRUE(it != decisions.end());
+
+            run_loop->Quit();
+          },
+          run_loop.get()),
+      nullptr);
+  HintsFetcher* it =
+      hints_manager_->batch_update_hints_fetchers_.Peek(0)->second.get();
+  TestHintsFetcher* it2 = static_cast<TestHintsFetcher*>(it);
+  EXPECT_FALSE(it2->is_request_context_metadata_filled);
   run_loop->Run();
 }
 
@@ -3351,12 +3585,9 @@ TEST_F(HintsManagerFetchingNoBatchUpdateTest,
        BatchUpdateHintsFetchNotScheduledIfNotAllowed) {
   base::CommandLine::ForCurrentProcess()->AppendSwitch(
       switches::kDisableCheckingUserPermissionsForTesting);
-  std::unique_ptr<FakeTopHostProvider> top_host_provider =
-      std::make_unique<FakeTopHostProvider>(
-          std::vector<std::string>({"example1.com", "example2.com"}));
-
   // Force hints fetch scheduling.
-  CreateHintsManager(top_host_provider.get());
+  CreateHintsManager(std::make_unique<FakeTopHostProvider>(
+      std::vector<std::string>({"example1.com", "example2.com"})));
   hints_manager()->RegisterOptimizationTypes({proto::DEFER_ALL_SCRIPT});
   hints_manager()->SetHintsFetcherFactoryForTesting(
       BuildTestHintsFetcherFactory(
@@ -3410,6 +3641,165 @@ TEST_F(HintsManagerComponentSkipProcessingTest, ProcessHintsWithExistingPref) {
                                         ProcessHintsComponentResult::kSuccess,
                                         1);
   }
+}
+
+class HintsManagerPersonalizedFetchingTest : public HintsManagerFetchingTest {
+ public:
+  HintsManagerPersonalizedFetchingTest() {
+    scoped_feature_list_.InitAndEnableFeatureWithParameters(
+        features::kOptimizationGuidePersonalizedFetching,
+        {{"allowed_contexts", "CONTEXT_BOOKMARKS"}});
+  }
+
+  HintsManagerPersonalizedFetchingTest(
+      const HintsManagerPersonalizedFetchingTest&) = delete;
+  HintsManagerPersonalizedFetchingTest& operator=(
+      const HintsManagerPersonalizedFetchingTest&) = delete;
+
+  void SetUp() override {
+    HintsManagerFetchingTest::SetUp();
+    CreateHintsManager(/*top_host_provider=*/nullptr,
+                       identity_test_env()->identity_manager());
+  }
+
+  signin::IdentityTestEnvironment* identity_test_env() {
+    return &identity_test_env_;
+  }
+
+ protected:
+  signin::IdentityTestEnvironment identity_test_env_;
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+// TODO(crbug.com/1509873): test is failing on iPhone device.
+#if TARGET_OS_IOS && !TARGET_IPHONE_SIMULATOR
+#define MAYBE_SuccessfulPersonalizedHintsFetching \
+  DISABLED_SuccessfulPersonalizedHintsFetching
+#else
+#define MAYBE_SuccessfulPersonalizedHintsFetching \
+  SuccessfulPersonalizedHintsFetching
+#endif
+TEST_F(HintsManagerPersonalizedFetchingTest,
+       MAYBE_SuccessfulPersonalizedHintsFetching) {
+  ASSERT_TRUE(identity_test_env()->identity_manager());
+  AccountInfo account_info = identity_test_env()->MakePrimaryAccountAvailable(
+      "test_email", signin::ConsentLevel::kSignin);
+
+  base::HistogramTester histogram_tester;
+
+  hints_manager()->RegisterOptimizationTypes({proto::COMPRESS_PUBLIC_IMAGES});
+  InitializeWithDefaultConfig("1.0.0.0");
+
+  hints_manager()->SetHintsFetcherFactoryForTesting(
+      BuildTestHintsFetcherFactory(
+          {HintsFetcherEndState::kFetchSuccessWithURLHints}));
+  std::unique_ptr<base::RunLoop> run_loop = std::make_unique<base::RunLoop>();
+  hints_manager()->CanApplyOptimizationOnDemand(
+      {url_with_url_keyed_hint()}, {proto::COMPRESS_PUBLIC_IMAGES},
+      proto::RequestContext::CONTEXT_BOOKMARKS,
+      base::BindRepeating(
+          [](base::RunLoop* run_loop, const GURL& url,
+             const base::flat_map<proto::OptimizationType,
+                                  OptimizationGuideDecisionWithMetadata>&
+                 decisions) {
+            ASSERT_EQ(decisions.size(), 1u);
+            auto it = decisions.find(proto::COMPRESS_PUBLIC_IMAGES);
+            ASSERT_TRUE(it != decisions.end());
+            EXPECT_EQ(OptimizationGuideDecision::kTrue, it->second.decision);
+            EXPECT_TRUE(it->second.metadata.any_metadata().has_value());
+
+            run_loop->Quit();
+          },
+          run_loop.get()),
+      nullptr);
+  identity_test_env()->WaitForAccessTokenRequestIfNecessaryAndRespondWithToken(
+      "access_token", base::Time::Max());
+  run_loop->Run();
+
+  histogram_tester.ExpectUniqueSample(
+      "OptimizationGuide.HintsManager.ConcurrentBatchUpdateFetches", 1, 1);
+  histogram_tester.ExpectUniqueSample(
+      "OptimizationGuide.AccessTokenHelper.Result",
+      OptimizationGuideAccessTokenResult::kSuccess, 1);
+}
+
+TEST_F(HintsManagerPersonalizedFetchingTest, TokenFailure) {
+  AccountInfo account_info = identity_test_env()->MakePrimaryAccountAvailable(
+      "test_email", signin::ConsentLevel::kSignin);
+  base::HistogramTester histogram_tester;
+
+  hints_manager()->RegisterOptimizationTypes({proto::COMPRESS_PUBLIC_IMAGES});
+  InitializeWithDefaultConfig("1.0.0.0");
+
+  hints_manager()->SetHintsFetcherFactoryForTesting(
+      BuildTestHintsFetcherFactory(
+          {HintsFetcherEndState::kFetchSuccessWithURLHints}));
+  std::unique_ptr<base::RunLoop> run_loop = std::make_unique<base::RunLoop>();
+  hints_manager()->CanApplyOptimizationOnDemand(
+      {url_with_url_keyed_hint()}, {proto::COMPRESS_PUBLIC_IMAGES},
+      proto::RequestContext::CONTEXT_BOOKMARKS,
+      base::BindRepeating(
+          [](base::RunLoop* run_loop, const GURL& url,
+             const base::flat_map<proto::OptimizationType,
+                                  OptimizationGuideDecisionWithMetadata>&
+                 decisions) {
+            ASSERT_EQ(decisions.size(), 1u);
+            auto it = decisions.find(proto::COMPRESS_PUBLIC_IMAGES);
+            ASSERT_TRUE(it != decisions.end());
+            // Should still request metadata, just without triggering access
+            // token requests.
+            EXPECT_EQ(OptimizationGuideDecision::kTrue, it->second.decision);
+
+            run_loop->Quit();
+          },
+          run_loop.get()),
+      nullptr);
+  identity_test_env()->WaitForAccessTokenRequestIfNecessaryAndRespondWithError(
+      GoogleServiceAuthError(GoogleServiceAuthError::CONNECTION_FAILED));
+  run_loop->Run();
+
+  histogram_tester.ExpectUniqueSample(
+      "OptimizationGuide.HintsManager.ConcurrentBatchUpdateFetches", 1, 1);
+  histogram_tester.ExpectUniqueSample(
+      "OptimizationGuide.AccessTokenHelper.Result",
+      OptimizationGuideAccessTokenResult::kTransientError, 1);
+}
+
+TEST_F(HintsManagerPersonalizedFetchingTest, NoUserSignIn) {
+  base::HistogramTester histogram_tester;
+
+  hints_manager()->RegisterOptimizationTypes({proto::COMPRESS_PUBLIC_IMAGES});
+  InitializeWithDefaultConfig("1.0.0.0");
+
+  hints_manager()->SetHintsFetcherFactoryForTesting(
+      BuildTestHintsFetcherFactory(
+          {HintsFetcherEndState::kFetchSuccessWithURLHints}));
+  std::unique_ptr<base::RunLoop> run_loop = std::make_unique<base::RunLoop>();
+  hints_manager()->CanApplyOptimizationOnDemand(
+      {url_with_url_keyed_hint()}, {proto::COMPRESS_PUBLIC_IMAGES},
+      proto::RequestContext::CONTEXT_BOOKMARKS,
+      base::BindRepeating(
+          [](base::RunLoop* run_loop, const GURL& url,
+             const base::flat_map<proto::OptimizationType,
+                                  OptimizationGuideDecisionWithMetadata>&
+                 decisions) {
+            ASSERT_EQ(decisions.size(), 1u);
+            auto it = decisions.find(proto::COMPRESS_PUBLIC_IMAGES);
+            ASSERT_TRUE(it != decisions.end());
+            // Should still request metadata, just without triggering access
+            // token requests.
+            EXPECT_EQ(OptimizationGuideDecision::kTrue, it->second.decision);
+
+            run_loop->Quit();
+          },
+          run_loop.get()),
+      nullptr);
+  run_loop->Run();
+  histogram_tester.ExpectUniqueSample(
+      "OptimizationGuide.HintsManager.ConcurrentBatchUpdateFetches", 1, 1);
+  histogram_tester.ExpectUniqueSample(
+      "OptimizationGuide.AccessTokenHelper.Result",
+      OptimizationGuideAccessTokenResult::kUserNotSignedIn, 1);
 }
 
 }  // namespace optimization_guide

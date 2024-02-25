@@ -13,7 +13,9 @@
 #include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/memory/singleton.h"
+#include "base/strings/stringprintf.h"
 #include "chromeos/ash/components/dbus/dbus_thread_manager.h"
+#include "chromeos/ash/components/dbus/upstart/upstart_client.h"
 #include "chromeos/dbus/power/power_manager_client.h"
 #include "mojo/public/cpp/system/handle.h"
 #include "mojo/public/cpp/system/platform_handle.h"
@@ -156,6 +158,34 @@ void ArcTimerBridge::StartTimer(clockid_t clock_id,
       base::BindOnce(&OnStartTimer, std::move(callback)));
 }
 
+void ArcTimerBridge::SetTime(base::Time time_to_set, SetTimeCallback callback) {
+  base::Time now = base::Time::Now();
+  base::TimeDelta delta = time_to_set - now;
+  if (delta.is_negative()) {
+    delta = -delta;
+  }
+  if (delta > kArcSetTimeMaxTimeDelta) {
+    LOG(ERROR) << "SetTime rejected. Delta between requested time ("
+               << time_to_set << ") and current time (" << now
+               << ") is greater than " << kArcSetTimeMaxTimeDelta;
+    std::move(callback).Run(mojom::ArcTimerResult::FAILURE);
+    return;
+  }
+
+  DVLOG(1) << "SetTime requested: " << time_to_set;
+  std::vector<std::string> env = {
+      base::StringPrintf("UNIXTIME_TO_SET=%ld", time_to_set.ToTimeT())};
+  ash::UpstartClient::Get()->StartJob(
+      kArcSetTimeJobName, env,
+      base::BindOnce(
+          [](SetTimeCallback callback, bool success) {
+            DVLOG(1) << "arc-set-time upstart job returned: " << success;
+            std::move(callback).Run(success ? mojom::ArcTimerResult::SUCCESS
+                                            : mojom::ArcTimerResult::FAILURE);
+          },
+          std::move(callback)));
+}
+
 void ArcTimerBridge::DeleteArcTimers() {
   chromeos::PowerManagerClient::Get()->DeleteArcTimers(
       kTag, base::BindOnce(&ArcTimerBridge::OnDeleteArcTimers,
@@ -177,7 +207,7 @@ void ArcTimerBridge::OnDeleteArcTimers(bool result) {
 void ArcTimerBridge::OnCreateArcTimers(
     std::vector<clockid_t> clock_ids,
     CreateTimersCallback callback,
-    absl::optional<std::vector<TimerId>> timer_ids) {
+    std::optional<std::vector<TimerId>> timer_ids) {
   // Any old timers associated with the same tag are always cleared by the API
   // regardless of the new timers being created successfully or not. Clear the
   // cached timer ids in that case.
@@ -214,11 +244,11 @@ void ArcTimerBridge::OnCreateArcTimers(
   std::move(callback).Run(mojom::ArcTimerResult::SUCCESS);
 }
 
-absl::optional<ArcTimerBridge::TimerId> ArcTimerBridge::GetTimerId(
+std::optional<ArcTimerBridge::TimerId> ArcTimerBridge::GetTimerId(
     clockid_t clock_id) const {
   auto it = timer_ids_.find(clock_id);
-  return (it == timer_ids_.end()) ? absl::nullopt
-                                  : absl::make_optional<TimerId>(it->second);
+  return (it == timer_ids_.end()) ? std::nullopt
+                                  : std::make_optional<TimerId>(it->second);
 }
 
 // static

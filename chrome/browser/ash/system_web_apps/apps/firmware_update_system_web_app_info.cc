@@ -90,6 +90,10 @@ FirmwareUpdateSystemAppDelegate::GetWebAppInfo() const {
   return CreateWebAppInfoForFirmwareUpdateSystemWebApp();
 }
 
+bool FirmwareUpdateSystemAppDelegate::ShouldAllowFullscreen() const {
+  return false;
+}
+
 bool FirmwareUpdateSystemAppDelegate::ShouldAllowMaximize() const {
   return false;
 }
@@ -102,7 +106,7 @@ bool FirmwareUpdateSystemAppDelegate::ShouldShowInLauncher() const {
   return false;
 }
 
-bool FirmwareUpdateSystemAppDelegate::ShouldShowInSearch() const {
+bool FirmwareUpdateSystemAppDelegate::ShouldShowInSearchAndShelf() const {
   return false;
 }
 

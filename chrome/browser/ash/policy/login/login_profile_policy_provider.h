@@ -31,7 +31,7 @@ class LoginProfilePolicyProvider : public ConfigurationPolicyProvider,
   // ConfigurationPolicyProvider:
   void Init(SchemaRegistry* registry) override;
   void Shutdown() override;
-  void RefreshPolicies() override;
+  void RefreshPolicies(PolicyFetchReason reason) override;
 
   // PolicyService::Observer:
   void OnPolicyUpdated(const PolicyNamespace& ns,
@@ -44,7 +44,7 @@ class LoginProfilePolicyProvider : public ConfigurationPolicyProvider,
  private:
   void UpdateFromDevicePolicy();
 
-  raw_ptr<PolicyService, ExperimentalAsh> device_policy_service_;  // Not owned.
+  raw_ptr<PolicyService> device_policy_service_;  // Not owned.
 
   bool waiting_for_device_policy_refresh_;
 

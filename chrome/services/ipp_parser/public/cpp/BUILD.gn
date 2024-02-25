@@ -13,6 +13,8 @@ if (use_cups) {
       "ipp_converter.h",
     ]
 
+    configs += [ "//build/config/compiler:wexit_time_destructors" ]
+
     public_deps = [ "//chrome/services/ipp_parser/public/mojom" ]
 
     deps = [

@@ -50,8 +50,6 @@ class CAPTURE_EXPORT VideoCaptureBufferPool
   // create regions.
   virtual base::UnsafeSharedMemoryRegion DuplicateAsUnsafeRegion(
       int buffer_id) = 0;
-  virtual mojo::ScopedSharedBufferHandle DuplicateAsMojoBuffer(
-      int buffer_id) = 0;
 
   // Try and obtain a read/write access to the buffer.
   virtual std::unique_ptr<VideoCaptureBufferHandle> GetHandleForInProcessAccess(
@@ -59,6 +57,10 @@ class CAPTURE_EXPORT VideoCaptureBufferPool
 
   virtual gfx::GpuMemoryBufferHandle GetGpuMemoryBufferHandle(
       int buffer_id) = 0;
+
+  // Returns the buffer type of the buffer. Useful when deciding whether to
+  // serialize the buffer for IPC either as shared memory or GMB.
+  virtual VideoCaptureBufferType GetBufferType(int buffer_id) = 0;
 
   // Reserve or allocate a buffer to support a packed frame of |dimensions| of
   // pixel |format| and return its id. If the pool is already at maximum

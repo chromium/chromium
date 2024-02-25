@@ -20,6 +20,7 @@
 #include <stdint.h>
 
 #include <map>
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -27,13 +28,13 @@
 #include "base/memory/ref_counted.h"
 #include "base/observer_list_types.h"
 #include "base/supports_user_data.h"
+#include "build/build_config.h"
 #include "components/download/public/common/download_danger_type.h"
 #include "components/download/public/common/download_export.h"
 #include "components/download/public/common/download_interrupt_reasons.h"
 #include "components/download/public/common/download_source.h"
 #include "net/base/isolation_info.h"
 #include "services/network/public/mojom/fetch_api.mojom-shared.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/page_transition_types.h"
 #include "url/origin.h"
 
@@ -306,7 +307,7 @@ class COMPONENTS_DOWNLOAD_EXPORT DownloadItem : public base::SupportsUserData {
   virtual const GURL& GetTabReferrerUrl() const = 0;
 
   // Origin of the original originator of this download, before redirects, etc.
-  virtual const absl::optional<url::Origin>& GetRequestInitiator() const = 0;
+  virtual const std::optional<url::Origin>& GetRequestInitiator() const = 0;
 
   // For downloads initiated via <a download>, this is the suggested download
   // filename from the download attribute.
@@ -355,8 +356,7 @@ class COMPONENTS_DOWNLOAD_EXPORT DownloadItem : public base::SupportsUserData {
   virtual ::network::mojom::CredentialsMode GetCredentialsMode() const = 0;
 
   // The isolation mode of the request.
-  virtual const absl::optional<net::IsolationInfo>& GetIsolationInfo()
-      const = 0;
+  virtual const std::optional<net::IsolationInfo>& GetIsolationInfo() const = 0;
 
   //    Destination State accessors --------------------------------------------
 
@@ -438,6 +438,16 @@ class COMPONENTS_DOWNLOAD_EXPORT DownloadItem : public base::SupportsUserData {
 
   // Gets the pointer to the DownloadFile owned by this object.
   virtual DownloadFile* GetDownloadFile() = 0;
+
+#if BUILDFLAG(IS_ANDROID)
+  // Gets whether the download is triggered from external app.
+  virtual bool IsFromExternalApp() = 0;
+
+  // Whether the original URL must be downloded, e.g. triggered by context
+  // menu or from the download service, or has "content-disposition: attachment"
+  // in header.
+  virtual bool IsMustDownload() = 0;
+#endif  // BUILDFLAG(IS_ANDROID)
 
   //    Progress State accessors -----------------------------------------------
 

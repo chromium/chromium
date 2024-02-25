@@ -10,8 +10,8 @@
 #import "components/infobars/core/infobar.h"
 #import "components/infobars/core/infobar_manager.h"
 #import "components/infobars/core/simple_alert_infobar_delegate.h"
-#import "ios/chrome/browser/infobars/infobar_manager_impl.h"
-#import "ios/chrome/browser/infobars/infobar_utils.h"
+#import "ios/chrome/browser/infobars/model/infobar_manager_impl.h"
+#import "ios/chrome/browser/infobars/model/infobar_utils.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/grit/ios_strings.h"
@@ -47,10 +47,9 @@ PresentAddPassesDialogResult GetUmaResult(
 @end
 
 @implementation PassKitCoordinator
-@synthesize pass = _pass;
 
 - (void)start {
-  if (self.pass) {
+  if (self.passes.count > 0) {
     [self presentAddPassUI];
   } else {
     [self presentErrorUI];
@@ -60,7 +59,7 @@ PresentAddPassesDialogResult GetUmaResult(
 - (void)stop {
   [_viewController dismissViewControllerAnimated:YES completion:nil];
   _viewController = nil;
-  _pass = nil;
+  _passes = nil;
 }
 
 #pragma mark - Private
@@ -78,7 +77,8 @@ PresentAddPassesDialogResult GetUmaResult(
   if (_viewController)
     return;
 
-  _viewController = [[PKAddPassesViewController alloc] initWithPass:self.pass];
+  _viewController =
+      [[PKAddPassesViewController alloc] initWithPasses:self.passes];
   _viewController.delegate = self;
   [self.baseViewController presentViewController:_viewController
                                         animated:YES

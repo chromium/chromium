@@ -22,11 +22,11 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_list.h"
-#include "chrome/browser/web_applications/web_app_id.h"
 #include "components/app_constants/constants.h"
 #include "components/exo/shell_surface_util.h"
 #include "components/services/app_service/public/cpp/app_types.h"
 #include "components/services/app_service/public/cpp/instance_update.h"
+#include "components/webapps/common/web_app_id.h"
 #include "content/public/browser/web_contents.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/wm/core/window_util.h"
@@ -183,7 +183,7 @@ void AppServiceInstanceRegistryHelper::OnInstances(const std::string& app_id,
   // proxy, still save to that proxy, otherwise, save to the current active user
   // profile's proxy.
   apps::AppServiceProxy* proxy = proxy_;
-  for (auto* profile : controller_->GetProfileList()) {
+  for (Profile* profile : controller_->GetProfileList()) {
     auto* proxy_for_profile =
         apps::AppServiceProxyFactory::GetForProfile(profile);
     if (proxy_for_profile->InstanceRegistry().Exists(window)) {
@@ -279,7 +279,7 @@ void AppServiceInstanceRegistryHelper::OnWindowVisibilityChanged(
 
   // For Chrome browser app windows, sets the state for each tab window instance
   // in this browser.
-  for (auto* it : browser_window_to_tab_windows_[window]) {
+  for (aura::Window* it : browser_window_to_tab_windows_[window]) {
     const std::string app_id = GetAppId(it);
     if (app_id.empty())
       continue;
@@ -357,7 +357,7 @@ void AppServiceInstanceRegistryHelper::SetWindowActivated(
 
   // For Chrome browser app windows, sets the state for each tab window instance
   // in this browser.
-  for (auto* it : browser_window_to_tab_windows_[window]) {
+  for (aura::Window* it : browser_window_to_tab_windows_[window]) {
     const std::string app_id = GetAppId(it);
     if (app_id.empty())
       continue;
@@ -403,7 +403,7 @@ bool AppServiceInstanceRegistryHelper::IsOpenedInBrowser(
   if (exo::GetShellApplicationId(window) || exo::GetShellStartupId(window))
     return false;
 
-  for (auto* profile : controller_->GetProfileList()) {
+  for (Profile* profile : controller_->GetProfileList()) {
     auto* proxy = apps::AppServiceProxyFactory::GetForProfile(profile);
     auto app_type = proxy->AppRegistryCache().GetAppType(app_id);
     if (app_type == apps::AppType::kUnknown)
@@ -431,7 +431,7 @@ bool AppServiceInstanceRegistryHelper::IsOpenedInBrowser(
   //
   // The window could be teleported from the inactive user's profile to the
   // current active user, so search all proxies.
-  for (auto* profile : controller_->GetProfileList()) {
+  for (Profile* profile : controller_->GetProfileList()) {
     content::BrowserContext* browser_context = nullptr;
     auto* proxy = apps::AppServiceProxyFactory::GetForProfile(profile);
     bool found = false;
@@ -449,7 +449,7 @@ bool AppServiceInstanceRegistryHelper::IsOpenedInBrowser(
 
 std::string AppServiceInstanceRegistryHelper::GetAppId(
     const aura::Window* window) const {
-  for (auto* profile : controller_->GetProfileList()) {
+  for (Profile* profile : controller_->GetProfileList()) {
     auto* proxy = apps::AppServiceProxyFactory::GetForProfile(profile);
     std::string app_id = proxy->InstanceRegistry().GetShelfId(window).app_id;
     if (!app_id.empty())
@@ -481,7 +481,7 @@ aura::Window* AppServiceInstanceRegistryHelper::GetWindow(
 std::set<const apps::Instance*> AppServiceInstanceRegistryHelper::GetInstances(
     const std::string& app_id) {
   std::set<const apps::Instance*> instances;
-  for (auto* profile : controller_->GetProfileList()) {
+  for (Profile* profile : controller_->GetProfileList()) {
     auto* proxy = apps::AppServiceProxyFactory::GetForProfile(profile);
     instances = base::STLSetUnion<std::set<const apps::Instance*>>(
         instances, proxy->InstanceRegistry().GetInstances(app_id));
@@ -491,7 +491,7 @@ std::set<const apps::Instance*> AppServiceInstanceRegistryHelper::GetInstances(
 
 apps::InstanceState AppServiceInstanceRegistryHelper::GetState(
     const aura::Window* window) const {
-  for (auto* profile : controller_->GetProfileList()) {
+  for (Profile* profile : controller_->GetProfileList()) {
     auto* proxy = apps::AppServiceProxyFactory::GetForProfile(profile);
     auto state = proxy->InstanceRegistry().GetState(window);
     if (state != apps::InstanceState::kUnknown)

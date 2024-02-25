@@ -17,6 +17,7 @@
 #include "chrome/browser/ash/file_manager/fileapi_util.h"
 #include "chrome/browser/ash/guest_os/guest_os_registry_service_factory.h"
 #include "components/services/app_service/public/cpp/app_types.h"
+#include "components/services/app_service/public/cpp/icon_types.h"
 #include "components/services/app_service/public/cpp/intent_util.h"
 #include "storage/browser/file_system/file_system_context.h"
 
@@ -35,10 +36,16 @@ void GuestOSApps::InitializeForTesting() {
 void GuestOSApps::Initialize() {
   DCHECK(profile_);
   if (!CouldBeAllowed()) {
+    // Set the publisher unavailable to remove apps saved in the AppStorage
+    // file, and related launch requests.
+    proxy()->SetPublisherUnavailable(AppType());
     return;
   }
   registry_ = guest_os::GuestOsRegistryServiceFactory::GetForProfile(profile_);
   if (!registry_) {
+    // Set the publisher unavailable to remove apps saved in the AppStorage
+    // file, and related launch requests.
+    proxy()->SetPublisherUnavailable(AppType());
     return;
   }
   registry_observation_.Observe(registry_);
@@ -78,6 +85,23 @@ void GuestOSApps::GetCompressedIconData(const std::string& app_id,
                                   std::move(callback));
 }
 
+void GuestOSApps::LaunchAppWithParams(AppLaunchParams&& params,
+                                      LaunchCallback callback) {
+  auto event_flags = apps::GetEventFlags(params.disposition,
+                                         /*prefer_container=*/false);
+  if (params.intent) {
+    LaunchAppWithIntent(params.app_id, event_flags, std::move(params.intent),
+                        params.launch_source,
+                        std::make_unique<WindowInfo>(params.display_id),
+                        std::move(callback));
+  } else {
+    Launch(params.app_id, event_flags, params.launch_source,
+           std::make_unique<WindowInfo>(params.display_id));
+    // TODO(crbug.com/1244506): Add launch return value.
+    std::move(callback).Run(LaunchResult());
+  }
+}
+
 void GuestOSApps::OnRegistryUpdated(
     guest_os::GuestOsRegistryService* registry_service,
     guest_os::VmType vm_type,
@@ -108,21 +132,20 @@ void GuestOSApps::OnRegistryUpdated(
   }
 }
 
-void GuestOSApps::LaunchAppWithParams(AppLaunchParams&& params,
-                                      LaunchCallback callback) {
-  auto event_flags = apps::GetEventFlags(params.disposition,
-                                         /*prefer_container=*/false);
-  if (params.intent) {
-    LaunchAppWithIntent(params.app_id, event_flags, std::move(params.intent),
-                        params.launch_source,
-                        std::make_unique<WindowInfo>(params.display_id),
-                        std::move(callback));
-  } else {
-    Launch(params.app_id, event_flags, params.launch_source,
-           std::make_unique<WindowInfo>(params.display_id));
-    // TODO(crbug.com/1244506): Add launch return value.
-    std::move(callback).Run(LaunchResult());
+void GuestOSApps::OnAppLastLaunchTimeUpdated(
+    guest_os::VmType vm_type,
+    const std::string& app_id,
+    const base::Time& last_launch_time) {
+  if (vm_type != VmType()) {
+    return;
   }
+
+  auto app = std::make_unique<App>(AppType(), app_id);
+  app->last_launch_time = last_launch_time;
+  std::vector<AppPtr> apps;
+  apps.push_back(std::move(app));
+  AppPublisher::Publish(std::move(apps), AppType(),
+                        /*should_notify_initialized=*/false);
 }
 
 AppPtr GuestOSApps::CreateApp(
@@ -146,7 +169,7 @@ AppPtr GuestOSApps::CreateApp(
     if (crostini::CrostiniFeatures::Get()->IsMultiContainerAllowed(profile_)) {
       icon_effects |= IconEffects::kGuestOsBadge;
     }
-    app->icon_key = std::move(*icon_key_factory_.CreateIconKey(icon_effects));
+    app->icon_key = IconKey(icon_effects);
   }
 
   app->last_launch_time = registration.LastLaunchTime();
@@ -158,6 +181,7 @@ AppPtr GuestOSApps::CreateApp(
   app->show_in_shelf = show;
   app->show_in_management = false;
   app->allow_uninstall = false;
+  app->allow_close = true;
 
   // Add intent filters based on file extensions.
   app->handles_intents = true;
@@ -165,6 +189,18 @@ AppPtr GuestOSApps::CreateApp(
       guest_os::GuestOsMimeTypesServiceFactory::GetForProfile(profile());
   app->intent_filters =
       CreateIntentFilterForAppService(mime_types_service, registration);
+
+  app->SetExtraField("vm_name", registration.VmName());
+  app->SetExtraField("container_name", registration.ContainerName());
+  app->SetExtraField("desktop_file_id", registration.DesktopFileId());
+  app->SetExtraField("exec", registration.Exec());
+  app->SetExtraField("executable_file_name", registration.ExecutableFileName());
+  app->SetExtraField("no_display", registration.NoDisplay());
+  app->SetExtraField("terminal", registration.Terminal());
+  app->SetExtraField("scaled", registration.IsScaled());
+  app->SetExtraField("package_id", registration.PackageId());
+  app->SetExtraField("startup_wm_class", registration.StartupWmClass());
+  app->SetExtraField("startup_notify", registration.StartupNotify());
 
   // Allow subclasses of GuestOSApps to modify app.
   CreateAppOverrides(registration, app.get());
@@ -196,11 +232,9 @@ apps::IntentFilters CreateIntentFilterForAppService(
   // In this case, remove all mime types that begin with "text/" and replace
   // them with a single "text/*" mime type.
   if (base::Contains(mime_types, "text/plain")) {
-    mime_types.erase(std::remove_if(mime_types.begin(), mime_types.end(),
-                                    [](const std::string& s) {
-                                      return base::StartsWith(s, "text/");
-                                    }),
-                     mime_types.end());
+    base::EraseIf(mime_types, [](const std::string& s) {
+      return base::StartsWith(s, "text/");
+    });
     mime_types.push_back("text/*");
   }
 

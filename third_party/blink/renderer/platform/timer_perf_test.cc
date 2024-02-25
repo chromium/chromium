@@ -12,6 +12,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/public/platform/scheduler/test/renderer_scheduler_test_support.h"
+#include "third_party/blink/renderer/platform/testing/task_environment.h"
 #include "third_party/blink/renderer/platform/testing/unit_test_helpers.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 
@@ -25,11 +26,15 @@ class TimerPerfTest : public testing::Test {
 
   void RecordEndRunTime(TimerBase*) {
     run_end_ = base::ThreadTicks::Now();
-    base::RunLoop::QuitCurrentDeprecated();
+    loop_.Quit();
   }
 
+  void Run() { loop_.Run(); }
+
+  test::TaskEnvironment task_environment_;
   base::ThreadTicks run_start_;
   base::ThreadTicks run_end_;
+  base::RunLoop loop_;
 };
 
 TEST_F(TimerPerfTest, PostAndRunTimers) {
@@ -57,7 +62,7 @@ TEST_F(TimerPerfTest, PostAndRunTimers) {
   base::ThreadTicks post_end = base::ThreadTicks::Now();
   measure_run_end.StartOneShot(base::TimeDelta(), FROM_HERE);
 
-  test::EnterRunLoop();
+  Run();
 
   double posting_time = (post_end - post_start).InMicrosecondsF();
   double posting_time_us_per_call =
@@ -99,7 +104,7 @@ TEST_F(TimerPerfTest, PostThenCancelTenThousandTimers) {
   }
   base::ThreadTicks cancel_end = base::ThreadTicks::Now();
 
-  test::EnterRunLoop();
+  Run();
 
   double posting_time = (post_end - post_start).InMicrosecondsF();
   double posting_time_us_per_call =

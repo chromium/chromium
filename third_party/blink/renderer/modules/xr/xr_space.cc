@@ -4,6 +4,11 @@
 
 #include "third_party/blink/renderer/modules/xr/xr_space.h"
 
+#include <array>
+#include <cmath>
+
+#include "base/debug/dump_without_crashing.h"
+#include "base/ranges/algorithm.h"
 #include "third_party/blink/renderer/modules/event_target_modules.h"
 #include "third_party/blink/renderer/modules/xr/xr_input_source.h"
 #include "third_party/blink/renderer/modules/xr/xr_pose.h"
@@ -16,14 +21,14 @@ XRSpace::XRSpace(XRSession* session) : session_(session) {}
 
 XRSpace::~XRSpace() = default;
 
-absl::optional<gfx::Transform> XRSpace::NativeFromViewer(
-    const absl::optional<gfx::Transform>& mojo_from_viewer) const {
+std::optional<gfx::Transform> XRSpace::NativeFromViewer(
+    const std::optional<gfx::Transform>& mojo_from_viewer) const {
   if (!mojo_from_viewer)
-    return absl::nullopt;
+    return std::nullopt;
 
-  absl::optional<gfx::Transform> native_from_mojo = NativeFromMojo();
+  std::optional<gfx::Transform> native_from_mojo = NativeFromMojo();
   if (!native_from_mojo)
-    return absl::nullopt;
+    return std::nullopt;
 
   native_from_mojo->PreConcat(*mojo_from_viewer);
 
@@ -41,10 +46,10 @@ gfx::Transform XRSpace::OffsetFromNativeMatrix() const {
   return identity;
 }
 
-absl::optional<gfx::Transform> XRSpace::MojoFromOffsetMatrix() const {
+std::optional<gfx::Transform> XRSpace::MojoFromOffsetMatrix() const {
   auto maybe_mojo_from_native = MojoFromNative();
   if (!maybe_mojo_from_native) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   // Modifies maybe_mojo_from_native - it becomes mojo_from_offset_matrix.
@@ -53,10 +58,10 @@ absl::optional<gfx::Transform> XRSpace::MojoFromOffsetMatrix() const {
   return maybe_mojo_from_native;
 }
 
-absl::optional<gfx::Transform> XRSpace::NativeFromMojo() const {
-  absl::optional<gfx::Transform> mojo_from_native = MojoFromNative();
+std::optional<gfx::Transform> XRSpace::NativeFromMojo() const {
+  std::optional<gfx::Transform> mojo_from_native = MojoFromNative();
   if (!mojo_from_native)
-    return absl::nullopt;
+    return std::nullopt;
 
   return mojo_from_native->GetCheckedInverse();
 }
@@ -71,7 +76,7 @@ XRPose* XRSpace::getPose(const XRSpace* other_space) const {
 
   // Named mojo_from_offset because that is what we will leave it as, though it
   // starts mojo_from_native.
-  absl::optional<gfx::Transform> mojo_from_offset = MojoFromNative();
+  std::optional<gfx::Transform> mojo_from_offset = MojoFromNative();
   if (!mojo_from_offset) {
     DVLOG(2) << __func__ << ": MojoFromNative() is not set";
     return nullptr;
@@ -80,8 +85,7 @@ XRPose* XRSpace::getPose(const XRSpace* other_space) const {
   // Add any origin offset now.
   mojo_from_offset->PreConcat(NativeFromOffsetMatrix());
 
-  absl::optional<gfx::Transform> other_from_mojo =
-      other_space->NativeFromMojo();
+  std::optional<gfx::Transform> other_from_mojo = other_space->NativeFromMojo();
   if (!other_from_mojo) {
     DVLOG(2) << __func__ << ": other_space->NativeFromMojo() is not set";
     return nullptr;
@@ -96,18 +100,33 @@ XRPose* XRSpace::getPose(const XRSpace* other_space) const {
   // resolved.
   gfx::Transform other_offset_from_offset =
       other_offset_from_mojo * mojo_from_offset.value();
+
+  // TODO(https://crbug.com/1522245): Check for crash dumps.
+  std::array<float, 16> transform_data;
+  other_offset_from_offset.GetColMajorF(transform_data.data());
+  bool contains_nan = base::ranges::any_of(
+      transform_data, [](const float f) { return std::isnan(f); });
+
+  if (contains_nan) {
+    // It's unclear if this could be tripping on every frame, but reporting once
+    // per day per user (the default throttling) should be sufficient for future
+    // investigation.
+    base::debug::DumpWithoutCrashing();
+    return nullptr;
+  }
+
   return MakeGarbageCollected<XRPose>(
       other_offset_from_offset,
       EmulatedPosition() || other_space->EmulatedPosition());
 }
 
-absl::optional<gfx::Transform> XRSpace::OffsetFromViewer() const {
-  absl::optional<gfx::Transform> native_from_viewer =
+std::optional<gfx::Transform> XRSpace::OffsetFromViewer() const {
+  std::optional<gfx::Transform> native_from_viewer =
       NativeFromViewer(session()->GetMojoFrom(
           device::mojom::blink::XRReferenceSpaceType::kViewer));
 
   if (!native_from_viewer) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   return OffsetFromNativeMatrix() * *native_from_viewer;

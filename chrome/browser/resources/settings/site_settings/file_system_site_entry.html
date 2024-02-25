@@ -1,47 +1,42 @@
 <style include="cr-shared-style settings-shared">
-  .dropdown-row {
+  .origin {
+    flex-grow: 1;
+    padding-inline-start: 20px;
+  }
+
+  .origin-row {
     align-items: center;
     display: flex;
+    padding-bottom: 5px;
+    padding-inline-end: 10px;
+    padding-top: 5px;
+  }
+
+  .subpage-arrow {
+    margin-inline-end: 2px;
+  }
+
+  .separator {
+    padding-inline-end: 25px;
   }
 </style>
 
 <div class="list-frame">
-  <div class="dropdown-row">
+  <div class="origin-row">
     <site-favicon url="[[grantsPerOrigin.origin]]"></site-favicon>
-    <cr-expand-button id="dropdownButton" class="cr-row"
-        expanded="{{expanded_}}">
-      [[grantsPerOrigin.origin]]
-    </cr-expand-button>
+    <div class="origin">[[grantsPerOrigin.origin]]</div>
+    <cr-icon-button id="fileSystemSiteDetails"
+        class="subpage-arrow"
+        aria-label$="[[grantsPerOrigin.origin]]"
+        aria-roledescription="$i18n{subpageArrowRoleDescription}"
+        on-click="onNavigateToDetailsPageClick_">
+    </cr-icon-button>
     <div class="separator"></div>
-    <cr-icon-button class="icon-more-vert"
-        title="$i18n{moreActions}" on-click="onOptionsMenuClick_"
-        aria-label="$i18n{moreActions}">
+    <cr-icon-button
+        class="icon-delete-gray"
+        id="removeGrants"
+        on-click="onRemoveGrantsClick_">
+      $i18n{siteSettingsFileSystemSiteListRemoveGrants}
     </cr-icon-button>
   </div>
-  <iron-collapse id="collapseChild" expand-icon="cr:arrow-drop-down"
-      collapse-icon="cr:arrow-drop-up" opened="[[expanded_]]" no-animation
-      no-hover>
-    <!-- Edit Grants -->
-    <div>
-      <div hidden$="[[!grantsPerOrigin.editGrants.length]]">
-        $i18n{siteSettingsFileSystemSiteListEditHeader}
-      </div>
-      <template is="dom-repeat" items="[[grantsPerOrigin.editGrants]]"
-          as="editGrant">
-        <file-system-site-entry-item grant="[[editGrant]]">
-        </file-system-site-entry-item>
-      </template>
-    </div>
-    <!-- View Grants -->
-    <div>
-      <div hidden$="[[!grantsPerOrigin.viewGrants.length]]">
-        $i18n{siteSettingsFileSystemSiteListViewHeader}
-      </div>
-      <template is="dom-repeat" items="[[grantsPerOrigin.viewGrants]]"
-          as="viewGrant">
-        <file-system-site-entry-item grant="[[viewGrant]]">
-        </file-system-site-entry-item>
-      </template>
-    </div>
-  </iron-collapse>
 </div>

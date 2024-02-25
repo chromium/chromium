@@ -7,16 +7,8 @@
 
 #import <UIKit/UIKit.h>
 
-enum class SafetyCheckItemType;
+@protocol ContentSuggestionsViewControllerAudience;
 @class SafetyCheckState;
-
-// A delegate protocol to be implemented by the owner of the SafetyCheckView.
-@protocol SafetyCheckViewDelegate
-
-// Called when a Safety Check item is selected by the user.
-- (void)didSelectSafetyCheckItem:(SafetyCheckItemType)type;
-
-@end
 
 // A view that displays the Safety Check in the Magic Stack.
 //
@@ -27,8 +19,9 @@ enum class SafetyCheckItemType;
 // Initializes the SafetyCheckView with `state`.
 - (instancetype)initWithState:(SafetyCheckState*)state;
 
-// The object that should handle delegate events.
-@property(nonatomic, weak) id<SafetyCheckViewDelegate> delegate;
+// The object that should handle user events.
+@property(nonatomic, weak) id<ContentSuggestionsViewControllerAudience>
+    commandhandler;
 
 @end
 

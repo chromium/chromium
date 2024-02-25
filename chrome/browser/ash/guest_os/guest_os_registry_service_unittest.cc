@@ -54,6 +54,8 @@ class GuestOsRegistryServiceTest : public testing::Test {
                       const std::vector<std::string>&,
                       const std::vector<std::string>&,
                       const std::vector<std::string>&));
+    MOCK_METHOD3(OnAppLastLaunchTimeUpdated,
+                 void(VmType, const std::string&, const base::Time&));
   };
 
   guest_os::GuestOsRegistryService* service() { return service_.get(); }
@@ -142,15 +144,14 @@ TEST_F(GuestOsRegistryServiceTest, SetAndGetRegistration) {
     app->add_mime_types(mime_type);
 
   service()->UpdateApplicationList(app_list);
-  absl::optional<GuestOsRegistryService::Registration> result =
+  std::optional<GuestOsRegistryService::Registration> result =
       service()->GetRegistration(app_id);
   ASSERT_TRUE(result.has_value());
   EXPECT_EQ(result->DesktopFileId(), desktop_file_id);
-  EXPECT_EQ(result->VmType(), absl::make_optional(VmType::TERMINA));
+  EXPECT_EQ(result->VmType(), std::make_optional(VmType::TERMINA));
   EXPECT_EQ(result->VmName(), vm_name);
   EXPECT_EQ(result->ContainerName(), container_name);
   EXPECT_EQ(result->Name(), name[""]);
-  EXPECT_EQ(result->Comment(), comment[""]);
   EXPECT_EQ(result->Keywords(), keywords[""]);
   EXPECT_EQ(result->MimeTypes(), mime_types);
   EXPECT_EQ(result->NoDisplay(), no_display);
@@ -286,7 +287,7 @@ TEST_F(GuestOsRegistryServiceTest, InstallAndLaunchTime) {
                             testing::IsEmpty(), testing::ElementsAre(app_id)));
   service()->UpdateApplicationList(app_list);
 
-  absl::optional<GuestOsRegistryService::Registration> result =
+  std::optional<GuestOsRegistryService::Registration> result =
       service()->GetRegistration(app_id);
   base::Time install_time = test_clock_.Now();
   EXPECT_EQ(result->InstallTime(), install_time);
@@ -303,6 +304,9 @@ TEST_F(GuestOsRegistryServiceTest, InstallAndLaunchTime) {
 
   // Launch the app
   test_clock_.Advance(base::Hours(1));
+  EXPECT_CALL(observer,
+              OnAppLastLaunchTimeUpdated(VmType::TERMINA, app_id,
+                                         base::Time() + base::Hours(3)));
   service()->AppLaunched(app_id);
   result = service()->GetRegistration(app_id);
   EXPECT_EQ(result->InstallTime(), install_time);
@@ -386,7 +390,7 @@ TEST_F(GuestOsRegistryServiceTest, IsScaledReturnFalseWhenNotSet) {
   ApplicationList app_list =
       crostini::CrostiniTestHelper::BasicAppList("app", "vm", "container");
   service()->UpdateApplicationList(app_list);
-  absl::optional<GuestOsRegistryService::Registration> registration =
+  std::optional<GuestOsRegistryService::Registration> registration =
       service()->GetRegistration(app_id);
   EXPECT_TRUE(registration.has_value());
   EXPECT_FALSE(registration.value().IsScaled());
@@ -399,7 +403,7 @@ TEST_F(GuestOsRegistryServiceTest, SetScaledWorks) {
       crostini::CrostiniTestHelper::BasicAppList("app", "vm", "container");
   service()->UpdateApplicationList(app_list);
   service()->SetAppScaled(app_id, true);
-  absl::optional<GuestOsRegistryService::Registration> registration =
+  std::optional<GuestOsRegistryService::Registration> registration =
       service()->GetRegistration(app_id);
   EXPECT_TRUE(registration.has_value());
   EXPECT_TRUE(registration.value().IsScaled());
@@ -430,7 +434,7 @@ TEST_F(GuestOsRegistryServiceTest, SetAndGetRegistrationKeywords) {
   }
   service()->UpdateApplicationList(app_list);
 
-  absl::optional<GuestOsRegistryService::Registration> result =
+  std::optional<GuestOsRegistryService::Registration> result =
       service()->GetRegistration(app_id);
   g_browser_process->SetApplicationLocale("");
   EXPECT_EQ(result->Keywords(), keywords[""]);
@@ -455,9 +459,9 @@ TEST_F(GuestOsRegistryServiceTest, SetAndGetRegistrationExec) {
   app_list.mutable_apps(0)->set_exec(exec);
   service()->UpdateApplicationList(app_list);
 
-  absl::optional<GuestOsRegistryService::Registration> result_valid_exec =
+  std::optional<GuestOsRegistryService::Registration> result_valid_exec =
       service()->GetRegistration(app_id_valid_exec);
-  absl::optional<GuestOsRegistryService::Registration> result_no_exec =
+  std::optional<GuestOsRegistryService::Registration> result_no_exec =
       service()->GetRegistration(app_id_no_exec);
   EXPECT_EQ(result_valid_exec->Exec(), exec);
   EXPECT_EQ(result_no_exec->Exec(), "");
@@ -476,9 +480,9 @@ TEST_F(GuestOsRegistryServiceTest, SetAndGetRegistrationExecutableFileName) {
   app_list.mutable_apps(0)->set_executable_file_name(executable_file_name);
   service()->UpdateApplicationList(app_list);
 
-  absl::optional<GuestOsRegistryService::Registration> result_valid_exec =
+  std::optional<GuestOsRegistryService::Registration> result_valid_exec =
       service()->GetRegistration(app_id_valid_exec);
-  absl::optional<GuestOsRegistryService::Registration> result_no_exec =
+  std::optional<GuestOsRegistryService::Registration> result_no_exec =
       service()->GetRegistration(app_id_no_exec);
   EXPECT_EQ(result_valid_exec->ExecutableFileName(), executable_file_name);
   EXPECT_EQ(result_no_exec->ExecutableFileName(), "");
@@ -499,9 +503,9 @@ TEST_F(GuestOsRegistryServiceTest, SetAndGetPackageId) {
   app_list.mutable_apps(0)->set_package_id(package_id);
   service()->UpdateApplicationList(app_list);
 
-  absl::optional<GuestOsRegistryService::Registration> result_valid_package_id =
+  std::optional<GuestOsRegistryService::Registration> result_valid_package_id =
       service()->GetRegistration(app_id_valid_package_id);
-  absl::optional<GuestOsRegistryService::Registration> result_no_package_id =
+  std::optional<GuestOsRegistryService::Registration> result_no_package_id =
       service()->GetRegistration(app_id_no_package_id);
   EXPECT_EQ(result_valid_package_id->PackageId(), package_id);
   EXPECT_EQ(result_no_package_id->PackageId(), "");

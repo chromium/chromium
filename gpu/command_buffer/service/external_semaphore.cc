@@ -152,13 +152,13 @@ void ExternalSemaphore::Reset() {
   }
 
   if (gl_semaphore_ != 0) {
-    auto* current_gl = gl::GetGlContextForCurrentThread();
-    auto* api = current_gl->Driver ? current_gl->Api.get() : nullptr;
     // We assume there is always one GL context current. If there isn't a
     // GL context current, we assume the last GL context is destroyed, in that
     // case, we will skip glDeleteSemaphoresEXT().
-    if (api)
+    if (gl::g_current_gl_driver) {
+      gl::GLApi* const api = gl::g_current_gl_context;
       api->glDeleteSemaphoresEXTFn(1, &gl_semaphore_);
+    }
   }
 
   context_provider_ = nullptr;

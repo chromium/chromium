@@ -1,0 +1,10 @@
+{
+  "name": "Event page webNavigation",
+  "version": "0.1",
+  "manifest_version": 2,
+  "background": {
+    "scripts": ["background.js"],
+    "persistent": false
+  },
+  "permissions": ["webNavigation"]
+}

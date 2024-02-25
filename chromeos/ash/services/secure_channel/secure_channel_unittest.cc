@@ -86,7 +86,7 @@ class TestObserver final : public SecureChannel::Observer {
   }
 
  private:
-  raw_ptr<SecureChannel, DanglingUntriaged | ExperimentalAsh> secure_channel_;
+  raw_ptr<SecureChannel, DanglingUntriaged> secure_channel_;
   std::vector<SecureChannelStatusChange> connection_status_changes_;
   std::vector<ReceivedMessage> received_messages_;
   std::vector<int> sent_sequence_numbers_;
@@ -117,7 +117,7 @@ class DeletingObserver final : public SecureChannel::Observer {
   }
 
  private:
-  raw_ptr<std::unique_ptr<SecureChannel>, ExperimentalAsh> secure_channel_;
+  raw_ptr<std::unique_ptr<SecureChannel>> secure_channel_;
 };
 
 class TestAuthenticatorFactory final
@@ -136,7 +136,7 @@ class TestAuthenticatorFactory final
   Authenticator* last_instance() { return last_instance_; }
 
  private:
-  raw_ptr<Authenticator, DanglingUntriaged | ExperimentalAsh> last_instance_;
+  raw_ptr<Authenticator, DanglingUntriaged> last_instance_;
 };
 
 multidevice::RemoteDeviceRef CreateTestRemoteDevice() {
@@ -320,30 +320,29 @@ class SecureChannelConnectionTest : public testing::Test {
     EXPECT_EQ(expected_payload, wire_message->payload());
   }
 
-  void VerifyRssi(absl::optional<int32_t> expected_rssi) {
+  void VerifyRssi(std::optional<int32_t> expected_rssi) {
     fake_connection_->set_rssi_to_return(expected_rssi);
 
     secure_channel_->GetConnectionRssi(
         base::BindOnce(&SecureChannelConnectionTest::OnConnectionRssi,
                        base::Unretained(this)));
 
-    absl::optional<int32_t> rssi = rssi_;
+    std::optional<int32_t> rssi = rssi_;
     rssi_.reset();
 
     EXPECT_EQ(expected_rssi, rssi);
   }
 
-  void OnConnectionRssi(absl::optional<int32_t> rssi) { rssi_ = rssi; }
+  void OnConnectionRssi(std::optional<int32_t> rssi) { rssi_ = rssi; }
 
   // Owned by secure_channel_.
-  raw_ptr<FakeConnection, DanglingUntriaged | ExperimentalAsh> fake_connection_;
+  raw_ptr<FakeConnection, DanglingUntriaged> fake_connection_;
 
   std::unique_ptr<multidevice::FakeSecureMessageDelegateFactory>
       fake_secure_message_delegate_factory_;
 
   // Owned by secure_channel_ once authentication has completed successfully.
-  raw_ptr<FakeSecureContext, DanglingUntriaged | ExperimentalAsh>
-      fake_secure_context_;
+  raw_ptr<FakeSecureContext, DanglingUntriaged> fake_secure_context_;
 
   std::vector<SecureChannelStatusChange> verified_status_changes_;
 
@@ -357,7 +356,7 @@ class SecureChannelConnectionTest : public testing::Test {
 
   const multidevice::RemoteDeviceRef test_device_;
 
-  absl::optional<int32_t> rssi_;
+  std::optional<int32_t> rssi_;
 
   base::WeakPtrFactory<SecureChannelConnectionTest> weak_ptr_factory_{this};
 };

@@ -2,172 +2,168 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "base/files/file_util.h"
-#include "base/functional/bind.h"
-#include "base/functional/callback_helpers.h"
-#include "base/threading/thread_restrictions.h"
-#include "chrome/browser/ash/crosapi/crosapi_manager.h"
-#include "chrome/browser/ash/printing/cups_print_job_manager_factory.h"
-#include "chrome/browser/ash/printing/cups_printers_manager_factory.h"
-#include "chrome/browser/ash/printing/fake_cups_printers_manager.h"
-#include "chrome/browser/ash/printing/test_cups_print_job_manager.h"
-#include "chrome/browser/extensions/api/printing/fake_print_job_controller_ash.h"
+#include <string>
+
 #include "chrome/browser/extensions/api/printing/print_job_submitter.h"
-#include "chrome/browser/extensions/api/printing/printing_api.h"
-#include "chrome/browser/extensions/api/printing/printing_api_handler.h"
+#include "chrome/browser/extensions/api/printing/printing_test_utils.h"
 #include "chrome/browser/extensions/extension_apitest.h"
-#include "chrome/browser/extensions/policy_test_utils.h"
-#include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/printing/local_printer_utils_chromeos.h"
 #include "chrome/browser/ui/browser.h"
-#include "chrome/test/base/ui_test_utils.h"
-#include "chromeos/printing/printer_configuration.h"
 #include "content/public/test/browser_test.h"
-#include "extensions/common/constants.h"
-#include "extensions/test/result_catcher.h"
 #include "extensions/test/test_extension_dir.h"
-#include "printing/backend/print_backend.h"
-#include "printing/backend/test_print_backend.h"
-#include "printing/mojom/print.mojom.h"
 #include "testing/gtest/include/gtest/gtest.h"
+
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+#include "base/test/gmock_callback_support.h"
+#include "chrome/browser/extensions/api/printing/fake_print_job_controller.h"
+#include "chrome/browser/extensions/api/printing/printing_api_handler.h"
+#include "chrome/test/chromeos/printing/mock_local_printer_chromeos.h"
+#include "chromeos/crosapi/mojom/local_printer.mojom.h"
+#include "chromeos/lacros/lacros_service.h"
+#include "chromeos/printing/printer_configuration.h"
+#endif
 
 namespace extensions {
 
 namespace {
 
 constexpr char kId[] = "id";
+constexpr char kName[] = "name";
 
-constexpr int kHorizontalDpi = 300;
-constexpr int kVerticalDpi = 400;
-constexpr int kMediaSizeWidth = 210000;
-constexpr int kMediaSizeHeight = 297000;
-constexpr char kMediaSizeVendorId[] = "iso_a4_210x297mm";
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
 
-std::unique_ptr<KeyedService> BuildTestCupsPrintJobManager(
-    content::BrowserContext* context) {
-  return std::make_unique<ash::TestCupsPrintJobManager>(
-      Profile::FromBrowserContext(context));
-}
+using testing::_;
+using testing::DoAll;
+using testing::InSequence;
+using testing::NiceMock;
+using testing::Return;
+using testing::WithArg;
+using testing::WithArgs;
+using testing::WithoutArgs;
 
-std::unique_ptr<KeyedService> BuildFakeCupsPrintersManager(
-    content::BrowserContext* context) {
-  return std::make_unique<ash::FakeCupsPrintersManager>();
-}
-
-std::unique_ptr<printing::PrinterSemanticCapsAndDefaults>
-ConstructPrinterCapabilities() {
-  auto capabilities =
-      std::make_unique<printing::PrinterSemanticCapsAndDefaults>();
-  capabilities->color_model = printing::mojom::ColorModel::kColor;
-  capabilities->duplex_modes.push_back(printing::mojom::DuplexMode::kSimplex);
-  capabilities->copies_max = 2;
-  capabilities->dpis.emplace_back(kHorizontalDpi, kVerticalDpi);
-  printing::PrinterSemanticCapsAndDefaults::Paper paper(
-      /*display_name=*/"", kMediaSizeVendorId,
-      {kMediaSizeWidth, kMediaSizeHeight});
-  capabilities->papers.push_back(std::move(paper));
-  capabilities->collate_capable = true;
-  return capabilities;
-}
+#endif
 
 }  // namespace
 
-class PrintingApiTest : public ExtensionApiTest,
-                        public testing::WithParamInterface<bool> {
+class PrintingApiTestBase : public ExtensionApiTest,
+                            public testing::WithParamInterface<ExtensionType> {
  public:
-  PrintingApiTest() = default;
-  ~PrintingApiTest() override = default;
-
-  PrintingApiTest(const PrintingApiTest&) = delete;
-  PrintingApiTest& operator=(const PrintingApiTest&) = delete;
+  void SetUpOnMainThread() override {
+    ExtensionApiTest::SetUpOnMainThread();
+    PrintJobSubmitter::SkipConfirmationDialogForTesting();
+  }
 
  protected:
-  void SetUpInProcessBrowserTestFixture() override {
-    create_services_subscription_ =
-        BrowserContextDependencyManager::GetInstance()
-            ->RegisterCreateServicesCallbackForTesting(base::BindRepeating(
-                &PrintingApiTest::OnWillCreateBrowserContextServices,
-                base::Unretained(this)));
-    test_print_backend_ = base::MakeRefCounted<printing::TestPrintBackend>();
-    printing::PrintBackend::SetPrintBackendForTesting(
-        test_print_backend_.get());
-    ExtensionApiTest::SetUpInProcessBrowserTestFixture();
-  }
-
-  ash::TestCupsPrintJobManager* GetPrintJobManager() {
-    return static_cast<ash::TestCupsPrintJobManager*>(
-        ash::CupsPrintJobManagerFactory::GetForBrowserContext(
-            browser()->profile()));
-  }
-
-  ash::FakeCupsPrintersManager* GetPrintersManager() {
-    return static_cast<ash::FakeCupsPrintersManager*>(
-        ash::CupsPrintersManagerFactory::GetForBrowserContext(
-            browser()->profile()));
-  }
-
-  void AddAvailablePrinter(
-      const std::string& printer_id,
-      std::unique_ptr<printing::PrinterSemanticCapsAndDefaults> capabilities) {
-    GetPrintersManager()->AddPrinter(chromeos::Printer(printer_id),
-                                     chromeos::PrinterClass::kEnterprise);
-    chromeos::CupsPrinterStatus status(printer_id);
-    status.AddStatusReason(
-        chromeos::CupsPrinterStatus::CupsPrinterStatusReason::Reason::
-            kPrinterUnreachable,
-        chromeos::CupsPrinterStatus::CupsPrinterStatusReason::Severity::kError);
-    GetPrintersManager()->SetPrinterStatus(status);
-    test_print_backend_->AddValidPrinter(printer_id, std::move(capabilities),
-                                         nullptr);
-  }
+  ExtensionType GetExtensionType() const { return GetParam(); }
 
   void RunTest(const char* html_test_page) {
-    TestExtensionDir dir;
-
-    {
-      // Prepare test files.
-      base::ScopedAllowBlockingForTesting allow_blocking;
-      base::CopyDirectory(test_data_dir_.AppendASCII("printing"),
-                          dir.UnpackedPath(), /*recursive=*/false);
-      base::CopyFile(
-          test_data_dir_.AppendASCII("printing")
-              .AppendASCII(IsChromeApp() ? "manifest_chrome_app.json"
-                                         : "manifest_extension.json"),
-          dir.UnpackedPath().AppendASCII(extensions::kManifestFilename));
-    }
-
-    auto run_options = IsChromeApp()
+    auto dir = CreatePrintingExtension(GetExtensionType());
+    auto run_options = GetExtensionType() == ExtensionType::kChromeApp
                            ? RunOptions{.custom_arg = html_test_page,
                                         .launch_as_platform_app = true}
                            : RunOptions({.extension_url = html_test_page});
-    ASSERT_TRUE(RunExtensionTest(dir.UnpackedPath(), run_options, {}));
+    ASSERT_TRUE(RunExtensionTest(dir->UnpackedPath(), run_options, {}));
+  }
+};
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+class PrintingApiTest : public PrintingApiTestBase {
+ public:
+  void PreRunTestOnMainThread() override {
+    PrintingApiTestBase::PreRunTestOnMainThread();
+    helper_->Init(browser()->profile());
+  }
+
+  void TearDownOnMainThread() override {
+    helper_.reset();
+    PrintingApiTestBase::TearDownOnMainThread();
+  }
+
+  void SetUpInProcessBrowserTestFixture() override {
+    PrintingApiTestBase::SetUpInProcessBrowserTestFixture();
+    helper_ = std::make_unique<PrintingTestHelper>();
+  }
+
+ protected:
+  void AddPrinterWithSemanticCaps(
+      const std::string& printer_id,
+      const std::string& printer_display_name,
+      std::unique_ptr<printing::PrinterSemanticCapsAndDefaults> caps) {
+    helper_->AddAvailablePrinter(printer_id, printer_display_name,
+                                 std::move(caps));
   }
 
  private:
-  bool IsChromeApp() const { return GetParam(); }
-
-  void OnWillCreateBrowserContextServices(content::BrowserContext* context) {
-    ash::CupsPrintJobManagerFactory::GetInstance()->SetTestingFactory(
-        context, base::BindRepeating(&BuildTestCupsPrintJobManager));
-    ash::CupsPrintersManagerFactory::GetInstance()->SetTestingFactory(
-        context, base::BindRepeating(&BuildFakeCupsPrintersManager));
+  std::unique_ptr<PrintingTestHelper> helper_;
+};
+#elif BUILDFLAG(IS_CHROMEOS_LACROS)
+class PrintingApiTest : public PrintingApiTestBase {
+ public:
+  void SetUpOnMainThread() override {
+    PrintingApiTestBase::SetUpOnMainThread();
+    printing_infra_helper_ =
+        std::make_unique<PrintingBackendInfrastructureHelper>();
   }
 
-  base::CallbackListSubscription create_services_subscription_;
+  void CreatedBrowserMainParts(
+      content::BrowserMainParts* browser_main_parts) override {
+    PrintingApiTestBase::CreatedBrowserMainParts(browser_main_parts);
+    chromeos::LacrosService::Get()->InjectRemoteForTesting(
+        local_printer_receiver_.BindNewPipeAndPassRemote());
 
-  scoped_refptr<printing::TestPrintBackend> test_print_backend_;
+    // When PrintingAPIHandler is initiated, it attempts to bind the observer
+    // for print jobs.
+    EXPECT_CALL(local_printer(), AddPrintJobObserver(_, _, _))
+        .WillOnce(WithArgs<0, 2>(
+            [&](mojo::PendingRemote<crosapi::mojom::PrintJobObserver> remote,
+                MockLocalPrinter::AddPrintJobObserverCallback callback) {
+              observer_remote_.Bind(std::move(remote));
+              std::move(callback).Run();
+            }));
+  }
+
+ protected:
+  NiceMock<MockLocalPrinter>& local_printer() { return local_printer_; }
+  crosapi::mojom::PrintJobObserver* observer_remote() {
+    return observer_remote_.get();
+  }
+  PrintingBackendInfrastructureHelper& printing_infra_helper() {
+    return *printing_infra_helper_;
+  }
+
+ private:
+  NiceMock<MockLocalPrinter> local_printer_;
+  mojo::Receiver<crosapi::mojom::LocalPrinter> local_printer_receiver_{
+      &local_printer_};
+  mojo::Remote<crosapi::mojom::PrintJobObserver> observer_remote_;
+
+  std::unique_ptr<PrintingBackendInfrastructureHelper> printing_infra_helper_;
 };
+#endif
+
+using PrintingPromiseApiTest = PrintingApiTest;
 
 IN_PROC_BROWSER_TEST_P(PrintingApiTest, GetPrinters) {
-  chromeos::Printer printer = chromeos::Printer(kId);
-  printer.set_display_name("name");
-  GetPrintersManager()->AddPrinter(printer, chromeos::PrinterClass::kSaved);
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  AddPrinterWithSemanticCaps(kId, kName, ConstructPrinterCapabilities());
+#elif BUILDFLAG(IS_CHROMEOS_LACROS)
+  EXPECT_CALL(local_printer(), GetPrinters(_))
+      .WillOnce(base::test::RunOnceCallback<0>(
+          ConstructGetPrintersResponse(kId, kName)));
+#endif
 
   RunTest("get_printers.html");
 }
 
 IN_PROC_BROWSER_TEST_P(PrintingApiTest, GetPrinterInfo) {
-  AddAvailablePrinter(
-      kId, std::make_unique<printing::PrinterSemanticCapsAndDefaults>());
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  AddPrinterWithSemanticCaps(kId, kName, ConstructPrinterCapabilities());
+#elif BUILDFLAG(IS_CHROMEOS_LACROS)
+  EXPECT_CALL(local_printer(), GetCapability(kId, _))
+      .WillOnce(base::test::RunOnceCallback<1>(
+          printing::PrinterWithCapabilitiesToMojom(
+              chromeos::Printer(kId), *ConstructPrinterCapabilities())));
+#endif
 
   RunTest("get_printer_info.html");
 }
@@ -182,15 +178,52 @@ IN_PROC_BROWSER_TEST_P(PrintingApiTest, GetPrinterInfo) {
 IN_PROC_BROWSER_TEST_P(PrintingApiTest, SubmitJob) {
   ASSERT_TRUE(StartEmbeddedTestServer());
 
-  AddAvailablePrinter(kId, ConstructPrinterCapabilities());
-  PrintingAPIHandler* handler = PrintingAPIHandler::Get(browser()->profile());
-  handler->SetPrintJobControllerForTesting(
-      std::make_unique<FakePrintJobControllerAsh>(GetPrintJobManager(),
-                                                  GetPrintersManager()));
-  base::AutoReset<bool> skip_confirmation_dialog_reset(
-      PrintJobSubmitter::SkipConfirmationDialogForTesting());
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  AddPrinterWithSemanticCaps(kId, kName, ConstructPrinterCapabilities());
+#elif BUILDFLAG(IS_CHROMEOS_LACROS)
+  InSequence s;
+
+  EXPECT_CALL(local_printer(), GetCapability(kId, _))
+      .WillOnce(base::test::RunOnceCallback<1>(
+          printing::PrinterWithCapabilitiesToMojom(
+              chromeos::Printer(kId), *ConstructPrinterCapabilities())));
+
+  // Acknowledge print job creation so that the mojo callback doesn't hang.
+  EXPECT_CALL(local_printer(), CreatePrintJob(_, _))
+      .WillOnce(base::test::RunOnceCallback<1>());
+
+  printing_infra_helper()
+      .test_printing_context_factory()
+      .SetPrinterNameForSubsequentContexts(kId);
+#endif
 
   RunTest("submit_job.html");
+}
+
+// As above, but tests using promise based API calls.
+IN_PROC_BROWSER_TEST_P(PrintingPromiseApiTest, SubmitJob) {
+  ASSERT_TRUE(StartEmbeddedTestServer());
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  AddPrinterWithSemanticCaps(kId, kName, ConstructPrinterCapabilities());
+#elif BUILDFLAG(IS_CHROMEOS_LACROS)
+  InSequence s;
+
+  EXPECT_CALL(local_printer(), GetCapability(kId, _))
+      .WillOnce(base::test::RunOnceCallback<1>(
+          printing::PrinterWithCapabilitiesToMojom(
+              chromeos::Printer(kId), *ConstructPrinterCapabilities())));
+
+  // Acknowledge print job creation so that the mojo callback doesn't hang.
+  EXPECT_CALL(local_printer(), CreatePrintJob(_, _))
+      .WillOnce(base::test::RunOnceCallback<1>());
+
+  printing_infra_helper()
+      .test_printing_context_factory()
+      .SetPrinterNameForSubsequentContexts(kId);
+#endif
+
+  RunTest("submit_job_promise.html");
 }
 
 // Verifies that:
@@ -199,18 +232,70 @@ IN_PROC_BROWSER_TEST_P(PrintingApiTest, SubmitJob) {
 IN_PROC_BROWSER_TEST_P(PrintingApiTest, CancelJob) {
   ASSERT_TRUE(StartEmbeddedTestServer());
 
-  AddAvailablePrinter(kId, ConstructPrinterCapabilities());
-  PrintingAPIHandler* handler = PrintingAPIHandler::Get(browser()->profile());
-  handler->SetPrintJobControllerForTesting(
-      std::make_unique<FakePrintJobControllerAsh>(GetPrintJobManager(),
-                                                  GetPrintersManager()));
-  base::AutoReset<bool> skip_confirmation_dialog_reset(
-      PrintJobSubmitter::SkipConfirmationDialogForTesting());
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  AddPrinterWithSemanticCaps(kId, kName, ConstructPrinterCapabilities());
+#elif BUILDFLAG(IS_CHROMEOS_LACROS)
+  InSequence s;
+
+  EXPECT_CALL(local_printer(), GetCapability(kId, _))
+      .WillOnce(base::test::RunOnceCallback<1>(
+          printing::PrinterWithCapabilitiesToMojom(
+              chromeos::Printer(kId), *ConstructPrinterCapabilities())));
+
+  std::optional<uint32_t> job_id;
+  // Pretends to acknowledge the incoming Lacros print job creation request and
+  // responds with PrintJobStatus::kStarted event.
+  // The callback is ignored by the implementation -- for this reason the
+  // invocation order doesn't really matter here (however, dropping it would
+  // yield a mojo error).
+  EXPECT_CALL(local_printer(), CreatePrintJob(_, _))
+      .WillOnce(DoAll(WithArg<0>([&](const auto& job) {
+                        job_id = job->job_id;
+                        auto update = crosapi::mojom::PrintJobUpdate::New();
+                        update->status =
+                            crosapi::mojom::PrintJobStatus::kStarted;
+                        observer_remote()->OnPrintJobUpdate(kId, *job_id,
+                                                            std::move(update));
+                      }),
+                      base::test::RunOnceCallback<1>()));
+
+  // Pretends to acknowledge the incoming Lacros print job cancelation request
+  // and responds with PrintJobStatus::kCancelled event.
+  // The callback is ignored by the implementation -- for this reason the
+  // invocation order doesn't really matter here (however, dropping it would
+  // yield a mojo error).
+  EXPECT_CALL(local_printer(), CancelPrintJob(_, _, _))
+      .WillOnce(DoAll(WithoutArgs([&] {
+                        // Thanks to InSequence defined in the beginning of the
+                        // test, it's guaranteed that `job_id` will be set
+                        // before we get here.
+                        ASSERT_TRUE(job_id);
+                        auto update = crosapi::mojom::PrintJobUpdate::New();
+                        update->status =
+                            crosapi::mojom::PrintJobStatus::kCancelled;
+                        observer_remote()->OnPrintJobUpdate(kId, *job_id,
+                                                            std::move(update));
+                      }),
+                      base::test::RunOnceCallback<2>(/*canceled=*/true)));
+
+  printing_infra_helper()
+      .test_printing_context_factory()
+      .SetPrinterNameForSubsequentContexts(kId);
+#endif
 
   RunTest("cancel_job.html");
 }
 
-// |true| for Chrome App, |false| for Extension.
-INSTANTIATE_TEST_SUITE_P(/**/, PrintingApiTest, testing::Bool());
+INSTANTIATE_TEST_SUITE_P(/**/,
+                         PrintingApiTest,
+                         testing::Values(ExtensionType::kChromeApp,
+                                         ExtensionType::kExtensionMV2,
+                                         ExtensionType::kExtensionMV3));
+
+// We only run the promise based tests for MV3 extensions as promise based API
+// calls are only exposed to MV3.
+INSTANTIATE_TEST_SUITE_P(/**/,
+                         PrintingPromiseApiTest,
+                         testing::Values(ExtensionType::kExtensionMV3));
 
 }  // namespace extensions

@@ -78,7 +78,7 @@ class AccessCodeCastPrefUpdater {
   // |get_sink_callback| with this value, otherwise runs the callback with
   // absl::nullop.
   void GetDeviceAddedTime(const MediaSink::Id sink_id,
-                          base::OnceCallback<void(absl::optional<base::Time>)>
+                          base::OnceCallback<void(std::optional<base::Time>)>
                               get_device_added_time_callback);
 
   // Returns a list of media sink id's of devices in |devices_dict| whose ip

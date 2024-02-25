@@ -8,7 +8,7 @@
 #include <stddef.h>
 
 #include "base/check_op.h"
-#include "base/logging.h"
+#include "base/notreached.h"
 #include "base/strings/stringprintf.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/trace_event/memory_dump_manager.h"
@@ -135,12 +135,11 @@ std::string IsolateTypeString(IsolateHolder::IsolateType isolate_type) {
     case IsolateHolder::IsolateType::kBlinkWorkerThread:
       return "workers";
     case IsolateHolder::IsolateType::kTest:
-      LOG(FATAL) << "Unreachable code";
-      return "test";
+      NOTREACHED_NORETURN();
     case IsolateHolder::IsolateType::kUtility:
       return "utility";
   }
-  LOG(FATAL) << "Unreachable code";
+  NOTREACHED_NORETURN();
 }
 
 bool CanHaveMultipleIsolates(IsolateHolder::IsolateType isolate_type) {
@@ -150,13 +149,12 @@ bool CanHaveMultipleIsolates(IsolateHolder::IsolateType isolate_type) {
     case IsolateHolder::IsolateType::kBlinkWorkerThread:
       return true;
     case IsolateHolder::IsolateType::kTest:
-      LOG(FATAL) << "Unreachable code";
-      return false;
+      NOTREACHED_NORETURN();
     case IsolateHolder::IsolateType::kUtility:
       // PDFium and ProxyResolver create one isolate per process.
       return false;
   }
-  LOG(FATAL) << "Unreachable code";
+  NOTREACHED_NORETURN();
 }
 
 }  // namespace
@@ -164,7 +162,7 @@ bool CanHaveMultipleIsolates(IsolateHolder::IsolateType isolate_type) {
 void V8IsolateMemoryDumpProvider::DumpHeapStatistics(
     const base::trace_event::MemoryDumpArgs& args,
     base::trace_event::ProcessMemoryDump* process_memory_dump) {
-  if (args.determinism == base::trace_event::MemoryDumpDeterminism::FORCE_GC) {
+  if (args.determinism == base::trace_event::MemoryDumpDeterminism::kForceGc) {
     // Force GC in V8 using the same API as DevTools uses in "collectGarbage".
     isolate_holder_->isolate()->LowMemoryNotification();
   }
@@ -282,7 +280,7 @@ void V8IsolateMemoryDumpProvider::DumpHeapStatistics(
 
   // Dump object statistics only for detailed dumps.
   if (args.level_of_detail !=
-      base::trace_event::MemoryDumpLevelOfDetail::DETAILED) {
+      base::trace_event::MemoryDumpLevelOfDetail::kDetailed) {
     return;
   }
 

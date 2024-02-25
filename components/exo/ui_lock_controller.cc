@@ -5,6 +5,7 @@
 #include "components/exo/ui_lock_controller.h"
 
 #include <memory>
+#include <optional>
 
 #include "ash/bluetooth_devices_observer.h"
 #include "ash/constants/app_types.h"
@@ -29,7 +30,6 @@
 #include "components/fullscreen_control/fullscreen_control_popup.h"
 #include "components/fullscreen_control/subtle_notification_view.h"
 #include "components/strings/grit/components_strings.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/aura/window.h"
 #include "ui/aura/window_observer.h"
@@ -448,11 +448,9 @@ class ExitNotifier : public ui::EventHandler,
       exit_popup_->Hide(animate);
   }
 
-  const raw_ptr<aura::Window, ExperimentalAsh> window_;
-  raw_ptr<views::Widget, ExperimentalAsh> fullscreen_esc_notification_ =
-      nullptr;
-  raw_ptr<views::Widget, ExperimentalAsh> pointer_capture_notification_ =
-      nullptr;
+  const raw_ptr<aura::Window> window_;
+  raw_ptr<views::Widget> fullscreen_esc_notification_ = nullptr;
+  raw_ptr<views::Widget> pointer_capture_notification_ = nullptr;
   bool want_pointer_capture_notification_ = false;
   bool pointer_is_captured_ = false;
   std::unique_ptr<FullscreenControlPopup> exit_popup_;

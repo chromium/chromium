@@ -124,11 +124,8 @@ class SecurityKeyAuthHandlerPosixTest : public testing::Test {
 
   void WriteRequestData(net::UnixDomainClientSocket* client_socket) {
     int request_len = sizeof(kRequestData);
-    scoped_refptr<net::DrainableIOBuffer> request_buffer =
-        base::MakeRefCounted<net::DrainableIOBuffer>(
-            base::MakeRefCounted<net::WrappedIOBuffer>(
-                reinterpret_cast<const char*>(kRequestData)),
-            request_len);
+    auto request_buffer = base::MakeRefCounted<net::DrainableIOBuffer>(
+        base::MakeRefCounted<net::WrappedIOBuffer>(kRequestData), request_len);
     net::TestCompletionCallback write_callback;
     int bytes_written = 0;
     while (bytes_written < request_len) {
@@ -153,11 +150,9 @@ class SecurityKeyAuthHandlerPosixTest : public testing::Test {
   }
 
   void WaitForData(net::UnixDomainClientSocket* socket, int request_len) {
-    scoped_refptr<net::IOBuffer> buffer =
-        base::MakeRefCounted<net::IOBuffer>(request_len);
-    scoped_refptr<net::DrainableIOBuffer> read_buffer =
-        base::MakeRefCounted<net::DrainableIOBuffer>(std::move(buffer),
-                                                     request_len);
+    auto buffer = base::MakeRefCounted<net::IOBufferWithSize>(request_len);
+    auto read_buffer = base::MakeRefCounted<net::DrainableIOBuffer>(
+        std::move(buffer), request_len);
     net::TestCompletionCallback read_callback;
     int bytes_read = 0;
     while (bytes_read < request_len) {

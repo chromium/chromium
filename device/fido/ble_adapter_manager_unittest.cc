@@ -6,6 +6,7 @@
 
 #include <map>
 #include <memory>
+#include <string_view>
 #include <utility>
 
 #include "base/functional/callback_helpers.h"
@@ -49,7 +50,7 @@ class MockObserver : public FidoRequestHandlerBase::Observer {
   MOCK_METHOD1(BluetoothAdapterPowerChanged, void(bool is_powered_on));
   MOCK_METHOD1(FidoAuthenticatorAdded,
                void(const FidoAuthenticator& authenticator));
-  MOCK_METHOD1(FidoAuthenticatorRemoved, void(base::StringPiece device_id));
+  MOCK_METHOD1(FidoAuthenticatorRemoved, void(std::string_view device_id));
   MOCK_CONST_METHOD0(SupportsPIN, bool());
   MOCK_METHOD2(CollectPIN,
                void(CollectPINOptions,

@@ -5,6 +5,7 @@
 #import "ios/chrome/app/enterprise_app_agent.h"
 
 #import "base/check.h"
+#import "base/memory/raw_ptr.h"
 #import "components/policy/core/common/cloud/cloud_policy_client.h"
 #import "components/policy/core/common/cloud/machine_level_user_cloud_policy_manager.h"
 #import "components/policy/core/common/policy_namespace.h"
@@ -12,10 +13,10 @@
 #import "ios/chrome/app/application_delegate/startup_information.h"
 #import "ios/chrome/app/enterprise_loading_screen_view_controller.h"
 #import "ios/chrome/app/tests_hook.h"
-#import "ios/chrome/browser/policy/browser_policy_connector_ios.h"
-#import "ios/chrome/browser/policy/chrome_browser_cloud_management_controller_ios.h"
-#import "ios/chrome/browser/policy/chrome_browser_cloud_management_controller_observer_bridge.h"
-#import "ios/chrome/browser/policy/cloud_policy_client_observer_bridge.h"
+#import "ios/chrome/browser/policy/model/browser_policy_connector_ios.h"
+#import "ios/chrome/browser/policy/model/chrome_browser_cloud_management_controller_ios.h"
+#import "ios/chrome/browser/policy/model/chrome_browser_cloud_management_controller_observer_bridge.h"
+#import "ios/chrome/browser/policy/model/cloud_policy_client_observer_bridge.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 
@@ -33,14 +34,14 @@ constexpr CGFloat kTimeout = 30;
       _cloudManagementControllerObserver;
   std::unique_ptr<CloudPolicyClientObserverBridge> _cloudPolicyClientObserver;
 
-  BrowserPolicyConnectorIOS* _policyConnector;
+  raw_ptr<BrowserPolicyConnectorIOS> _policyConnector;
 }
 
 // The app state for the app.
 @property(nonatomic, weak, readonly) AppState* appState;
 
 // Browser policy connector for iOS.
-@property(nonatomic, assign) BrowserPolicyConnectorIOS* policyConnector;
+@property(nonatomic, assign) raw_ptr<BrowserPolicyConnectorIOS> policyConnector;
 
 // YES if enterprise launch screen has been dismissed.
 @property(nonatomic, assign) BOOL launchScreenDismissed;

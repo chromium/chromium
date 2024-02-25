@@ -45,7 +45,6 @@ mojom("mojom") {
     "//skia/public/mojom",
     "//ui/gfx/geometry/mojom",
   ]
-  webui_module_path = "chrome://resources/mojo/ui/gfx/mojom"
 
   enabled_features = []
   if (ozone_platform_x11) {
@@ -368,7 +367,6 @@ mojom("native_handle_types") {
   }
   public_deps = [ "//mojo/public/mojom/base" ]
   generate_java = true
-  webui_module_path = "chrome://resources/mojo/ui/gfx/mojom"
 
   shared_cpp_typemap = {
     types = [
@@ -428,7 +426,6 @@ component("native_handle_types_mojom_traits") {
 
 mojom("hdr_metadata") {
   generate_java = true
-  webui_module_path = "chrome://resources/mojo/ui/gfx/mojom"
 
   sources = [ "hdr_metadata.mojom" ]
 
@@ -447,6 +444,10 @@ mojom("hdr_metadata") {
         {
           mojom = "gfx.mojom.HdrMetadataSmpteSt2086"
           cpp = "::gfx::HdrMetadataSmpteSt2086"
+        },
+        {
+          mojom = "gfx.mojom.HdrMetadataNdwl"
+          cpp = "::gfx::HdrMetadataNdwl"
         },
         {
           mojom = "gfx.mojom.HdrMetadataExtendedRange"
@@ -485,10 +486,10 @@ component("shared_mojom_traits") {
     ":native_handle_types",
     "//ui/gfx",
   ]
-  deps = [ "//skia/public/mojom" ]
-  if (use_ozone) {
-    public_deps += [ "//ui/ozone:buildflags" ]
-  }
+  deps = [
+    "//skia/public/mojom",
+    "//ui/base:ozone_buildflags",
+  ]
   frameworks = [
     "CoreFoundation.framework",
     "IOSurface.framework",

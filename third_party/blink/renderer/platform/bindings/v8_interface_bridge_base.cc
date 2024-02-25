@@ -4,16 +4,18 @@
 
 #include "third_party/blink/renderer/platform/bindings/v8_interface_bridge_base.h"
 
+#include "third_party/blink/public/mojom/origin_trial_feature/origin_trial_feature.mojom-shared.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 
 namespace blink {
 namespace bindings {
 
 V8InterfaceBridgeBase::FeatureSelector::FeatureSelector()
-    : does_select_all_(true), selector_(OriginTrialFeature::kNonExisting) {}
+    : does_select_all_(true),
+      selector_(blink::mojom::blink::OriginTrialFeature::kNonExisting) {}
 
 V8InterfaceBridgeBase::FeatureSelector::FeatureSelector(
-    OriginTrialFeature feature)
+    blink::mojom::blink::OriginTrialFeature feature)
     : selector_(feature) {}
 
 }  // namespace bindings

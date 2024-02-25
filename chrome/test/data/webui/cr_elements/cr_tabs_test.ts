@@ -5,7 +5,7 @@
 // clang-format off
 import 'chrome://resources/cr_elements/cr_tabs/cr_tabs.js';
 
-import {CrTabsElement} from 'chrome://resources/cr_elements/cr_tabs/cr_tabs.js';
+import type {CrTabsElement} from 'chrome://resources/cr_elements/cr_tabs/cr_tabs.js';
 import {keyDownOn} from 'chrome://resources/polymer/v3_0/iron-test-helpers/mock-interactions.js';
 import {assertEquals, assertNotEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {eventToPromise} from 'chrome://webui-test/test_util.js';
@@ -119,5 +119,13 @@ suite('cr_tabs_test', function() {
     await checkClickTab(0, 2);
     await checkClickTab(1, 2);
     await checkClickTab(2, 2);
+  });
+
+  test('initial tab out of bound', async () => {
+    // When old selected tab is out of bound, onSelectedChanged_ should early
+    // return, rather than trigger out of bound error.
+    await checkUiChange(
+        () => getTabElement(1).click(), /*initialSelection=*/ 10,
+        /*expectedSelection=*/ 1);
   });
 });

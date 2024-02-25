@@ -56,7 +56,7 @@ class TestShelfModelObserver : public ShelfModelObserver {
       return;
     if (!result->empty())
       *result += " ";
-    *result += base::StringPrintf(format.c_str(), count);
+    *result += base::StringPrintfNonConstexpr(format.c_str(), count);
   }
 
   int added_count_ = 0;

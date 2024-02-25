@@ -9,7 +9,7 @@
 #include "build/build_config.h"
 #include "chrome/common/chrome_version.h"
 #include "chrome/common/url_constants.h"
-#include "chrome/grit/chromium_strings.h"
+#include "chrome/grit/branded_strings.h"
 #include "ui/base/l10n/l10n_util.h"
 
 namespace {

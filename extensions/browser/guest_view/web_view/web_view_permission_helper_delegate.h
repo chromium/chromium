@@ -37,9 +37,12 @@ class WebViewPermissionHelperDelegate {
 
   // Requests Geolocation Permission from the embedder.
   virtual void RequestGeolocationPermission(
-      const GURL& requesting_frame,
+      const GURL& requesting_frame_url,
       bool user_gesture,
       base::OnceCallback<void(bool)> callback) {}
+
+  virtual void RequestHidPermission(const GURL& requesting_frame_url,
+                                    base::OnceCallback<void(bool)> callback) {}
 
   virtual void RequestFileSystemPermission(
       const GURL& url,

@@ -113,6 +113,12 @@ class AccountTrackerService {
   // If after the update IsValid() is true, OnAccountUpdated will be fired.
   CoreAccountId SeedAccountInfo(AccountInfo info);
 
+  // Seeds the accounts with |core_account_infos|. The primary account id is
+  // passed to keep it from getting removed.
+  void SeedAccountsInfo(const std::vector<CoreAccountInfo>& core_account_infos,
+                        const std::optional<CoreAccountId>& primary_account_id,
+                        bool should_remove_stale_accounts);
+
   // Sets whether the account is a Unicorn account.
   void SetIsChildAccount(const CoreAccountId& account_id,
                          bool is_child_account);
@@ -133,7 +139,7 @@ class AccountTrackerService {
   base::android::ScopedJavaLocalRef<jobject> GetJavaObject();
 
   // Seeds the accounts with |core_account_infos|.
-  void SeedAccountsInfo(
+  void LegacySeedAccountsInfo(
       JNIEnv* env,
       const base::android::JavaParamRef<jobjectArray>& core_account_infos);
 #endif

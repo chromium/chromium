@@ -4,11 +4,10 @@
 
 #include "components/component_updater/url_param_filter_remover.h"
 
+#include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
 #include "base/task/thread_pool.h"
-
-#include "components/component_updater/component_updater_utils.h"
 
 namespace component_updater {
 
@@ -16,7 +15,7 @@ void DeleteUrlParamFilter(const base::FilePath& user_data_dir) {
   base::ThreadPool::PostTask(
       FROM_HERE, {base::TaskPriority::BEST_EFFORT, base::MayBlock()},
       base::BindOnce(
-          &DeleteFilesAndParentDirectory,
+          base::IgnoreResult(&base::DeletePathRecursively),
           user_data_dir.Append(FILE_PATH_LITERAL("UrlParamClassifications"))));
 }
 

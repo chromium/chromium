@@ -14,28 +14,25 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import org.chromium.base.FeatureList;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
+import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.layouts.animation.CompositorAnimationHandler;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
-import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
 import org.chromium.components.browser_ui.widget.chips.ChipProperties;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * Tests the Related Searches Feature of Contextual Search using instrumentation tests.
- */
+/** Tests the Related Searches Feature of Contextual Search using instrumentation tests. */
 @RunWith(ChromeJUnit4ClassRunner.class)
 // NOTE: Disable online detection so we we'll default to online on test bots with no network.
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
@@ -58,12 +55,11 @@ public class ContextualSearchRelatedSearchesTest extends ContextualSearchInstrum
     @SmallTest
     @Feature({"ContextualSearch"})
     public void testRelatedSearchesInBar() throws Exception {
-        FeatureList.setTestFeatures(ENABLE_RELATED_SEARCHES_IN_BAR);
-        mFakeServer.reset();
         ContextualSearchFakeServer.FakeResolveSearch fakeSearch =
                 simulateResolveSearch("intelligence");
         ResolvedSearchTerm resolvedSearchTerm = fakeSearch.getResolvedSearchTerm();
-        Assert.assertTrue("Related Searches results should have been returned but were not!",
+        Assert.assertTrue(
+                "Related Searches results should have been returned but were not!",
                 !resolvedSearchTerm.relatedSearchesJson().isEmpty());
         // Select a chip in the Bar, which should expand the panel.
         final int chipToSelect = 1;
@@ -77,16 +73,15 @@ public class ContextualSearchRelatedSearchesTest extends ContextualSearchInstrum
     }
 
     /**
-     * Tests that the offset of the SERP is unaffected by whether we are showing Related Searches
-     * in the Bar or not. See https://crbug.com/1250546.
+     * Tests that the offset of the SERP is unaffected by whether we are showing Related Searches in
+     * the Bar or not. See https://crbug.com/1250546.
+     *
      * @throws Exception
      */
     @Test
     @SmallTest
     @Feature({"ContextualSearch"})
     public void testRelatedSearchesInBarSerpOffset() throws Exception {
-        FeatureList.setTestFeatures(ENABLE_RELATED_SEARCHES_IN_BAR);
-        mFakeServer.reset();
         simulateResolveSearch(SEARCH_NODE);
         float plainSearchBarHeight = mPanel.getBarHeight();
         float plainSearchContentY = mPanel.getContentY();
@@ -95,31 +90,34 @@ public class ContextualSearchRelatedSearchesTest extends ContextualSearchInstrum
         // Bring up a panel with Related Searches in order to expand the Bar
         simulateResolveSearch(RELATED_SEARCHES_NODE);
         // Wait for the animation to start growing the Bar.
-        CriteriaHelper.pollUiThread(() -> {
-            Criteria.checkThat(
-                    mPanel.getInBarRelatedSearchesAnimatedHeightDps(), Matchers.greaterThan(0f));
-        });
+        CriteriaHelper.pollUiThread(
+                () -> {
+                    Criteria.checkThat(
+                            mPanel.getInBarRelatedSearchesAnimatedHeightDps(),
+                            Matchers.greaterThan(0f));
+                });
         // We should have a taller Bar, but that should not affect the Y offset of the content.
         Assert.assertNotEquals(
                 "Test code failure - unable to open panels with differing Bar heights!",
-                plainSearchBarHeight, mPanel.getBarHeight(), 0.1f);
-        Assert.assertEquals("SERP content offsets with and without Related Searches should match!",
-                plainSearchContentY, mPanel.getContentY(), 0.1f);
+                plainSearchBarHeight,
+                mPanel.getBarHeight(),
+                0.1f);
+        Assert.assertEquals(
+                "SERP content offsets with and without Related Searches should match!",
+                plainSearchContentY,
+                mPanel.getContentY(),
+                0.1f);
     }
 
     @Test
     @SmallTest
     @Feature({"ContextualSearch"})
     public void testRelatedSearchesInBarWithDefaultQuery() throws Exception {
-        FeatureList.TestValues testValues = new FeatureList.TestValues();
-        testValues.setFeatureFlagsOverride(ENABLE_RELATED_SEARCHES_IN_BAR);
-        FeatureList.setTestValues(testValues);
-        mFakeServer.reset();
-
         ContextualSearchFakeServer.FakeResolveSearch fakeSearch =
                 simulateResolveSearch("intelligence");
         ResolvedSearchTerm resolvedSearchTerm = fakeSearch.getResolvedSearchTerm();
-        Assert.assertTrue("Related Searches results should have been returned but were not!",
+        Assert.assertTrue(
+                "Related Searches results should have been returned but were not!",
                 !resolvedSearchTerm.relatedSearchesJson().isEmpty());
         // Select a chip in the Bar, which should expand the panel.
         final int chipToSelect = 0;
@@ -127,10 +125,12 @@ public class ContextualSearchRelatedSearchesTest extends ContextualSearchInstrum
                 () -> mPanel.getRelatedSearchesInBarControl().selectChipForTest(chipToSelect));
         waitForPanelToExpand();
 
-        CriteriaHelper.pollUiThread(() -> {
-            Criteria.checkThat(
-                    mPanel.getSearchBarControl().getSearchTerm(), Matchers.is("Intelligence"));
-        });
+        CriteriaHelper.pollUiThread(
+                () -> {
+                    Criteria.checkThat(
+                            mPanel.getSearchBarControl().getSearchTerm(),
+                            Matchers.is("Intelligence"));
+                });
 
         // Close the panel
         closePanel();
@@ -140,27 +140,25 @@ public class ContextualSearchRelatedSearchesTest extends ContextualSearchInstrum
     @Test
     @SmallTest
     @Feature({"ContextualSearch"})
-    @DisabledTest(message = "https://crbug.com/1244089")
     public void testRelatedSearchesInBarWithDefaultQuery_HighlightDefaultQuery() throws Exception {
-        FeatureList.TestValues testValues = new FeatureList.TestValues();
-        testValues.setFeatureFlagsOverride(ENABLE_RELATED_SEARCHES_IN_BAR);
-        FeatureList.setTestValues(testValues);
-        mFakeServer.reset();
-
         ContextualSearchFakeServer.FakeResolveSearch fakeSearch =
                 simulateResolveSearch("intelligence");
         ResolvedSearchTerm resolvedSearchTerm = fakeSearch.getResolvedSearchTerm();
-        Assert.assertTrue("Related Searches results should have been returned but were not!",
+        Assert.assertTrue(
+                "Related Searches results should have been returned but were not!",
                 !resolvedSearchTerm.relatedSearchesJson().isEmpty());
         // Select a chip in the Bar, which should expand the panel.
         expandPanelAndAssert();
 
-        CriteriaHelper.pollUiThread(() -> {
-            Criteria.checkThat(
-                    mPanel.getSearchBarControl().getSearchTerm(), Matchers.is("Intelligence"));
-            Criteria.checkThat(mPanel.getRelatedSearchesInBarControl().getSelectedChipForTest(),
-                    Matchers.is(0));
-        });
+        CriteriaHelper.pollUiThread(
+                () -> {
+                    Criteria.checkThat(
+                            mPanel.getSearchBarControl().getSearchTerm(),
+                            Matchers.is("Intelligence"));
+                    Criteria.checkThat(
+                            mPanel.getRelatedSearchesInBarControl().getSelectedChipForTest(),
+                            Matchers.is(0));
+                });
 
         // Close the panel
         closePanel();
@@ -171,25 +169,25 @@ public class ContextualSearchRelatedSearchesTest extends ContextualSearchInstrum
     @SmallTest
     @Feature({"ContextualSearch"})
     public void testRelatedSearchesInBarWithDefaultQuery_Ellipsize() throws Exception {
-        FeatureList.TestValues testValues = new FeatureList.TestValues();
-        testValues.setFeatureFlagsOverride(ENABLE_RELATED_SEARCHES_IN_BAR);
-        FeatureList.setTestValues(testValues);
-        mFakeServer.reset();
-
         ContextualSearchFakeServer.FakeResolveSearch fakeSearch =
                 simulateResolveSearch("intelligence");
         ResolvedSearchTerm resolvedSearchTerm = fakeSearch.getResolvedSearchTerm();
-        Assert.assertTrue("Related Searches results should have been returned but were not!",
+        Assert.assertTrue(
+                "Related Searches results should have been returned but were not!",
                 !resolvedSearchTerm.relatedSearchesJson().isEmpty());
         // Select a chip in the Bar, which should expand the panel.
         expandPanelAndAssert();
 
-        CriteriaHelper.pollUiThread(() -> {
-            Criteria.checkThat(
-                    mPanel.getRelatedSearchesInBarControl().getChipsForTest().get(0).model.get(
-                            ChipProperties.TEXT_MAX_WIDTH_PX),
-                    Matchers.not(ChipProperties.SHOW_WHOLE_TEXT));
-        });
+        CriteriaHelper.pollUiThread(
+                () -> {
+                    Criteria.checkThat(
+                            mPanel.getRelatedSearchesInBarControl()
+                                    .getChipsForTest()
+                                    .get(0)
+                                    .model
+                                    .get(ChipProperties.TEXT_MAX_WIDTH_PX),
+                            Matchers.not(ChipProperties.SHOW_WHOLE_TEXT));
+                });
 
         // Close the panel
         closePanel();
@@ -201,8 +199,6 @@ public class ContextualSearchRelatedSearchesTest extends ContextualSearchInstrum
     @Feature({"ContextualSearch"})
     public void testRelatedSearchesInBarForDefinitionCard() throws Exception {
         CompositorAnimationHandler.setTestingMode(true);
-        FeatureList.setTestFeatures(ENABLE_RELATED_SEARCHES_IN_BAR);
-        mFakeServer.reset();
         // Do a normal search without Related Searches or Definition cards.
         simulateResolveSearch("search");
         float normalHeight = mPanel.getHeight();
@@ -212,9 +208,13 @@ public class ContextualSearchRelatedSearchesTest extends ContextualSearchInstrum
         inBarSuggestions.add("Related Suggestion 1");
         inBarSuggestions.add("Related Suggestion 2");
         TestThreadUtils.runOnUiThreadBlocking(
-                ()
-                        -> mPanel.onSearchTermResolved("obscure · əbˈskyo͝or", null, null,
-                                QuickActionCategory.NONE, ResolvedSearchTerm.CardTag.CT_DEFINITION,
+                () ->
+                        mPanel.onSearchTermResolved(
+                                "obscure · əbˈskyo͝or",
+                                null,
+                                null,
+                                QuickActionCategory.NONE,
+                                ResolvedSearchTerm.CardTag.CT_DEFINITION,
                                 inBarSuggestions));
         boolean didPanelGetTaller = mPanel.getHeight() > normalHeight;
         Assert.assertTrue(
@@ -231,30 +231,36 @@ public class ContextualSearchRelatedSearchesTest extends ContextualSearchInstrum
     @Feature({"ContextualSearch"})
     @DisabledTest(message = "https://crbug.com/1255084")
     public void testRelatedSearchesDismissDuringAnimation() throws Exception {
-        FeatureList.setTestFeatures(ENABLE_RELATED_SEARCHES_IN_BAR);
-        mFakeServer.reset();
         // Use the "intelligence" node to generate Related Searches suggestions.
         simulateResolveSearch("intelligence");
 
         // Wait for the animation to start growing the Bar.
-        CriteriaHelper.pollUiThread(() -> {
-            Criteria.checkThat(
-                    mPanel.getInBarRelatedSearchesAnimatedHeightDps(), Matchers.greaterThan(0f));
-        });
+        CriteriaHelper.pollUiThread(
+                () -> {
+                    Criteria.checkThat(
+                            mPanel.getInBarRelatedSearchesAnimatedHeightDps(),
+                            Matchers.greaterThan(0f));
+                });
 
         // Wait for the animation to change to make sure that doesn't bring the Bar back
         final boolean[] didAnimationChange = {false};
-        mPanel.getSearchBarControl().setInBarAnimationTestNotifier(
-                () -> { didAnimationChange[0] = true; });
+        mPanel.getSearchBarControl()
+                .setInBarAnimationTestNotifier(
+                        () -> {
+                            didAnimationChange[0] = true;
+                        });
         CriteriaHelper.pollUiThread(
-                () -> { Criteria.checkThat(didAnimationChange[0], Matchers.is(true)); });
+                () -> {
+                    Criteria.checkThat(didAnimationChange[0], Matchers.is(true));
+                });
         // Repeatedly closing the panel should not bring it back even during ongoing animation.
         closePanel();
         Assert.assertFalse("The panel is showing again due to Animation!", mPanel.isShowing());
         // Another scroll might try to close the panel when it thinks it's already closed, which
         // could fail due to inconsistencies in internal logic, so test that too.
         closePanel();
-        Assert.assertFalse("Expected the panel to not be showing after a close! "
+        Assert.assertFalse(
+                "Expected the panel to not be showing after a close! "
                         + "Animation of the Bar height is the likely cause.",
                 mPanel.isShowing());
     }

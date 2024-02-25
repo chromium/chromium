@@ -4,9 +4,7 @@
 
 package org.chromium.build.gtest_apk;
 
-/**
- * Intent action and extras of broadcasts intercepted by TestStatusReceiver.
- */
+/** Intent action and extras of broadcasts intercepted by TestStatusReceiver. */
 public class TestStatusIntent {
     public static final String ACTION_TEST_RUN_STARTED =
             "org.chromium.test.reporter.TestStatusReporter.TEST_RUN_STARTED";

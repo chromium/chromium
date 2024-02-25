@@ -8,6 +8,7 @@
 #include <utility>
 
 #include "base/functional/bind.h"
+#include "base/metrics/histogram_functions.h"
 #include "components/omnibox/browser/base_search_provider.h"
 #include "components/omnibox/browser/document_suggestions_service.h"
 #include "components/search_engines/template_url_service.h"
@@ -20,6 +21,10 @@
 #include "services/network/public/mojom/url_response_head.mojom.h"
 
 namespace {
+
+void LogSuggestRequestSent(RemoteRequestType request_type) {
+  base::UmaHistogramEnumeration("Omnibox.SuggestRequestsSent", request_type);
+}
 
 void AddVariationHeaders(network::ResourceRequest* request) {
   // Note: It's OK to pass InIncognito::kNo since we are expected to be in
@@ -59,6 +64,7 @@ GURL RemoteSuggestionsService::EndpointUrl(
 
 std::unique_ptr<network::SimpleURLLoader>
 RemoteSuggestionsService::StartSuggestionsRequest(
+    RemoteRequestType request_type,
     const TemplateURL* template_url,
     TemplateURLRef::SearchTermsArgs search_terms_args,
     const SearchTermsData& search_terms_data,
@@ -102,6 +108,8 @@ RemoteSuggestionsService::StartSuggestionsRequest(
   auto request = std::make_unique<network::ResourceRequest>();
   request->url = suggest_url;
   request->load_flags = net::LOAD_DO_NOT_SAVE_COOKIES;
+  // Set the SiteForCookies to the request URL's site to avoid cookie blocking.
+  request->site_for_cookies = net::SiteForCookies::FromUrl(suggest_url);
   // Add Chrome experiment state to the request headers.
   AddVariationHeaders(request.get());
 
@@ -127,12 +135,13 @@ RemoteSuggestionsService::StartSuggestionsRequest(
     observer.OnSuggestRequestStarted(request_id, loader.get(),
                                      /*request_body*/ "");
   }
-
+  LogSuggestRequestSent(request_type);
   return loader;
 }
 
 std::unique_ptr<network::SimpleURLLoader>
 RemoteSuggestionsService::StartZeroPrefixSuggestionsRequest(
+    RemoteRequestType request_type,
     const TemplateURL* template_url,
     TemplateURLRef::SearchTermsArgs search_terms_args,
     const SearchTermsData& search_terms_data,
@@ -181,7 +190,7 @@ RemoteSuggestionsService::StartZeroPrefixSuggestionsRequest(
   if (search_terms_args.bypass_cache) {
     request->load_flags |= net::LOAD_BYPASS_CACHE;
   }
-  // Try to attach cookies for signed in user.
+  // Set the SiteForCookies to the request URL's site to avoid cookie blocking.
   request->site_for_cookies = net::SiteForCookies::FromUrl(suggest_url);
   // Add Chrome experiment state to the request headers.
   AddVariationHeaders(request.get());
@@ -208,7 +217,7 @@ RemoteSuggestionsService::StartZeroPrefixSuggestionsRequest(
     observer.OnSuggestRequestStarted(request_id, loader.get(),
                                      /*request_body*/ "");
   }
-
+  LogSuggestRequestSent(request_type);
   return loader;
 }
 
@@ -282,6 +291,8 @@ RemoteSuggestionsService::StartDeletionRequest(
         })");
   auto request = std::make_unique<network::ResourceRequest>();
   request->url = url;
+  // Set the SiteForCookies to the request URL's site to avoid cookie blocking.
+  request->site_for_cookies = net::SiteForCookies::FromUrl(url);
   // Add Chrome experiment state to the request headers.
   AddVariationHeaders(request.get());
 
@@ -307,7 +318,7 @@ RemoteSuggestionsService::StartDeletionRequest(
     observer.OnSuggestRequestStarted(request_id, loader.get(),
                                      /*request_body*/ "");
   }
-
+  LogSuggestRequestSent(RemoteRequestType::kDeletion);
   return loader;
 }
 
@@ -342,7 +353,7 @@ void RemoteSuggestionsService::OnDocumentSuggestionsLoaderAvailable(
   for (Observer& observer : observers_) {
     observer.OnSuggestRequestStarted(request_id, loader.get(), request_body);
   }
-
+  LogSuggestRequestSent(RemoteRequestType::kDocumentSuggest);
   std::move(start_callback).Run(std::move(loader));
 }
 

@@ -167,21 +167,19 @@ void CastDisplayConfigurator::ConfigureDisplayFromCommandLine() {
                display::Display::ROTATE_0);
 }
 
-void CastDisplayConfigurator::SetColorMatrix(
-    const std::vector<float>& color_matrix) {
+void CastDisplayConfigurator::SetColorTemperatureAdjustment(
+    const display::ColorTemperatureAdjustment& cta) {
   if (!delegate_ || !display_)
     return;
-  delegate_->SetColorMatrix(display_->display_id(), color_matrix);
+  delegate_->SetColorTemperatureAdjustment(display_->display_id(), cta);
   NotifyObservers();
 }
 
-void CastDisplayConfigurator::SetGammaCorrection(
-    const std::vector<display::GammaRampRGBEntry>& degamma_lut,
-    const std::vector<display::GammaRampRGBEntry>& gamma_lut) {
+void CastDisplayConfigurator::SetGammaAdjustment(
+    const display::GammaAdjustment& adjustment) {
   if (!delegate_ || !display_)
     return;
-
-  delegate_->SetGammaCorrection(display_->display_id(), degamma_lut, gamma_lut);
+  delegate_->SetGammaAdjustment(display_->display_id(), adjustment);
   NotifyObservers();
 }
 
@@ -200,7 +198,8 @@ void CastDisplayConfigurator::ForceInitialConfigure() {
 
 void CastDisplayConfigurator::OnDisplaysAcquired(
     bool force_initial_configure,
-    const std::vector<display::DisplaySnapshot*>& displays) {
+    const std::vector<raw_ptr<display::DisplaySnapshot, VectorExperimental>>&
+        displays) {
   DCHECK(delegate_);
   if (displays.empty()) {
     LOG(WARNING) << "No displays detected, skipping display init.";

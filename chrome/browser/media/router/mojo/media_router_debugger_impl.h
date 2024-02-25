@@ -50,7 +50,7 @@ class MediaRouterDebuggerImpl : public MediaRouterDebugger,
  protected:
   friend class MediaRouterDebuggerImplTest;
   FRIEND_TEST_ALL_PREFIXES(MediaRouterDebuggerImplTest,
-                           OnMirroringStatsRtcpReportsDisabled);
+                           ShouldFetchMirroringStatsFeatureDisabled);
 
   void NotifyGetMirroringStats(const base::Value::Dict& json_logs);
   void LogMirroringStats();

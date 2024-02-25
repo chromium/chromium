@@ -15,7 +15,6 @@
 #include "base/task/bind_post_task.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
-#include "gpu/command_buffer/service/abstract_texture.h"
 #include "gpu/command_buffer/service/mailbox_manager.h"
 #include "gpu/command_buffer/service/shared_image/android_video_image_backing.h"
 #include "gpu/command_buffer/service/shared_image/shared_image_factory.h"
@@ -196,10 +195,6 @@ bool GpuSharedImageVideoFactory::CreateImageInternal(
     scoped_refptr<gpu::RefCountedLock> drdc_lock) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   if (!MakeContextCurrent(stub_))
-    return false;
-
-  gpu::gles2::ContextGroup* group = stub_->decoder_context()->GetContextGroup();
-  if (!group)
     return false;
 
   const auto& coded_size = spec.coded_size;

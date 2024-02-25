@@ -11,7 +11,7 @@ import org.junit.runners.model.Statement;
 
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
-import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.components.browser_ui.modaldialog.ModalDialogTestUtils;
 import org.chromium.components.browser_ui.notifications.MockNotificationManagerProxy;
@@ -19,6 +19,7 @@ import org.chromium.components.browser_ui.notifications.MockNotificationManagerP
 import org.chromium.components.browser_ui.site_settings.PermissionInfo;
 import org.chromium.components.content_settings.ContentSettingValues;
 import org.chromium.components.content_settings.ContentSettingsType;
+import org.chromium.components.content_settings.SessionModel;
 import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 
@@ -28,7 +29,7 @@ import java.util.concurrent.TimeoutException;
 /**
  * Base class for instrumentation tests using Web Notifications on Android.
  *
- * Web Notifications are only supported on Android JellyBean and beyond.
+ * <p>Web Notifications are only supported on Android JellyBean and beyond.
  */
 public class NotificationTestRule extends ChromeTabbedActivityTestRule {
     /** The maximum time to wait for a criteria to become valid. */
@@ -57,12 +58,19 @@ public class NotificationTestRule extends ChromeTabbedActivityTestRule {
      */
     public void setNotificationContentSettingForOrigin(
             final @ContentSettingValues int setting, String origin) throws TimeoutException {
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            // The notification content setting does not consider the embedder origin.
-            PermissionInfo notificationInfo =
-                    new PermissionInfo(ContentSettingsType.NOTIFICATIONS, origin, "", false);
-            notificationInfo.setContentSetting(Profile.getLastUsedRegularProfile(), setting);
-        });
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    // The notification content setting does not consider the embedder origin.
+                    PermissionInfo notificationInfo =
+                            new PermissionInfo(
+                                    ContentSettingsType.NOTIFICATIONS,
+                                    origin,
+                                    "",
+                                    /* isEmbargoed= */ false,
+                                    SessionModel.DURABLE);
+                    notificationInfo.setContentSetting(
+                            ProfileManager.getLastUsedRegularProfile(), setting);
+                });
 
         String permission = runJavaScriptCodeInCurrentTab("Notification.permission");
         if (setting == ContentSettingValues.ALLOW) {
@@ -96,21 +104,27 @@ public class NotificationTestRule extends ChromeTabbedActivityTestRule {
      * called into Android to notify or cancel a notification.
      */
     public void waitForNotificationManagerMutation() {
-        CriteriaHelper.pollUiThread(() -> {
-            Criteria.checkThat(mMockNotificationManager.getMutationCountAndDecrement(),
-                    Matchers.greaterThan(0));
-        }, MAX_TIME_TO_POLL_MS, POLLING_INTERVAL_MS);
+        CriteriaHelper.pollUiThread(
+                () -> {
+                    Criteria.checkThat(
+                            mMockNotificationManager.getMutationCountAndDecrement(),
+                            Matchers.greaterThan(0));
+                },
+                MAX_TIME_TO_POLL_MS,
+                POLLING_INTERVAL_MS);
     }
 
     @Override
     public Statement apply(final Statement base, Description description) {
-        return super.apply(new Statement() {
-            @Override
-            public void evaluate() throws Throwable {
-                setUp();
-                base.evaluate();
-                tearDown();
-            }
-        }, description);
+        return super.apply(
+                new Statement() {
+                    @Override
+                    public void evaluate() throws Throwable {
+                        setUp();
+                        base.evaluate();
+                        tearDown();
+                    }
+                },
+                description);
     }
 }

@@ -4,11 +4,24 @@
 
 #include "components/privacy_sandbox/privacy_sandbox_features.h"
 
+#include "base/feature_list.h"
+
 namespace privacy_sandbox {
+
+#if BUILDFLAG(IS_ANDROID)
+BASE_FEATURE(kPrivacySandboxAdsNoticeCCT,
+             "PrivacySandboxAdsNoticeCCT",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+const char kPrivacySandboxAdsNoticeCCTAppIdName[] = "app-id";
+
+const base::FeatureParam<std::string> kPrivacySandboxAdsNoticeCCTAppId{
+    &kPrivacySandboxAdsNoticeCCT, kPrivacySandboxAdsNoticeCCTAppIdName, ""};
+#endif  // BUILDFLAG(IS_ANDROID)
 
 BASE_FEATURE(kPrivacySandboxSettings4,
              "PrivacySandboxSettings4",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 const char kPrivacySandboxSettings4ConsentRequiredName[] = "consent-required";
 const char kPrivacySandboxSettings4NoticeRequiredName[] = "notice-required";
@@ -65,24 +78,8 @@ const base::FeatureParam<bool>
         &kPrivacySandboxSettings4, "suppress-dialog-for-external-app-launches",
         true};
 
-BASE_FEATURE(kPrivacySandboxSettings3,
-             "PrivacySandboxSettings3",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-const base::FeatureParam<bool> kPrivacySandboxSettings3ConsentRequired{
-    &kPrivacySandboxSettings3, "consent-required", false};
-const base::FeatureParam<bool> kPrivacySandboxSettings3NoticeRequired{
-    &kPrivacySandboxSettings3, "notice-required", false};
-
-const base::FeatureParam<bool>
-    kPrivacySandboxSettings3ForceShowConsentForTesting{
-        &kPrivacySandboxSettings3, "force-show-consent-for-testing", false};
-const base::FeatureParam<bool>
-    kPrivacySandboxSettings3ForceShowNoticeForTesting{
-        &kPrivacySandboxSettings3, "force-show-notice-for-testing", false};
-const base::FeatureParam<bool> kPrivacySandboxSettings3ShowSampleDataForTesting{
-    &kPrivacySandboxSettings3, "show-sample-data", false};
-const base::FeatureParam<bool> kPrivacySandboxSettings3DisablePromptForTesting{
-    &kPrivacySandboxSettings3, "disable-dialog-for-testing", false};
+const base::FeatureParam<bool> kPrivacySandboxSettings4CloseAllPrompts{
+    &kPrivacySandboxSettings4, "close-all-prompts", true};
 
 BASE_FEATURE(kOverridePrivacySandboxSettingsLocalTesting,
              "OverridePrivacySandboxSettingsLocalTesting",
@@ -94,19 +91,84 @@ BASE_FEATURE(kDisablePrivacySandboxPrompts,
 
 BASE_FEATURE(kPrivacySandboxFirstPartySetsUI,
              "PrivacySandboxFirstPartySetsUI",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 const base::FeatureParam<bool> kPrivacySandboxFirstPartySetsUISampleSets{
     &kPrivacySandboxFirstPartySetsUI, "use-sample-sets", false};
 
 BASE_FEATURE(kEnforcePrivacySandboxAttestations,
              "EnforcePrivacySandboxAttestations",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
+BASE_FEATURE(kDefaultAllowPrivacySandboxAttestations,
+             "DefaultAllowPrivacySandboxAttestations",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
+BASE_FEATURE(kPrivacySandboxAttestationSentinel,
+             "PrivacySandboxAttestationsSentinel",
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 const char kPrivacySandboxEnrollmentOverrides[] =
     "privacy-sandbox-enrollment-overrides";
 
 BASE_FEATURE(kPrivacySandboxAttestationsHigherComponentRegistrationPriority,
              "PrivacySandboxAttestationsHigherComponentRegistrationPriority",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
+BASE_FEATURE(kPrivacySandboxAttestationsUserBlockingPriority,
+             "PrivacySandboxAttestationsUserBlockingPriority",
              base::FEATURE_DISABLED_BY_DEFAULT);
+
+BASE_FEATURE(kPrivacySandboxProactiveTopicsBlocking,
+             "PrivacySandboxProactiveTopicsBlocking",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+BASE_FEATURE(kTrackingProtectionSettingsPageRollbackNotice,
+             "TrackingProtectionSettingsPageRollbackNotice",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+#if BUILDFLAG(IS_ANDROID)
+BASE_FEATURE(kTrackingProtectionOnboardingSkipSecurePageCheck,
+             "TrackingProtectionOnboardingSkipSecurePageCheck",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+#endif  // BUILDFLAG(IS_ANDROID)
+
+// Show the Tracking Protection rollback flow if previously onboarded.
+BASE_FEATURE(kTrackingProtectionOnboardingRollback,
+             "TrackingProtectionOnboardingRollback",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+BASE_FEATURE(kAttributionDebugReportingCookieDeprecationTesting,
+             "AttributionDebugReportingCookieDeprecationTesting",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+BASE_FEATURE(kPrivateAggregationDebugReportingCookieDeprecationTesting,
+             "PrivateAggregationDebugReportingCookieDeprecationTesting",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
+BASE_FEATURE(kPrivacySandboxInternalsDevUI,
+             "PrivacySandboxInternalsDevUI",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+BASE_FEATURE(kIpProtectionV1,
+             "IpProtectionV1",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+BASE_FEATURE(kAntiFingerprintingSetting,
+             "AntiFingerprintingSetting",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+BASE_FEATURE(kIpProtectionUx,
+             "IpProtectionUx",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+BASE_FEATURE(kCookieSettingsUiAlignment,
+             "CookieSettingsUiAlignment",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
+#if BUILDFLAG(IS_ANDROID)
+BASE_FEATURE(kTrackingProtectionNoticeRequestTracking,
+             "TrackingProtectionNoticeRequestTracking",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+#endif  // BUILDFLAG(IS_ANDROID)
 
 }  // namespace privacy_sandbox

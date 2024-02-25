@@ -363,8 +363,7 @@ void UserNoteService::InitializeNewNoteForCreation(
         // UX for this note. The UI layer will eventually call either
         // `OnNoteCreationDone` or `OnNoteCreationCancelled`, in which the
         // partial note will be finalized or deleted, respectively.
-        if (UserNotesUI* ui =
-                service->delegate_->GetUICoordinatorForFrame(frame)) {
+        if (service->delegate_->GetUICoordinatorForFrame(frame)) {
           // TODO(crbug.com/1408767): Remove this during notes backend cleanup.
         }
       },

@@ -105,7 +105,7 @@ SendTabToSelfToolbarBubbleView::SendTabToSelfToolbarBubbleView(
                           base::Unretained(this)),
       l10n_util::GetStringUTF16(
           IDS_TOOLBAR_BUTTON_SEND_TAB_TO_SELF_BUTTON_LABEL));
-  button->SetProminent(true);
+  button->SetStyle(ui::ButtonStyle::kProminent);
   button->SetProperty(views::kCrossAxisAlignmentKey,
                       views::LayoutAlignment::kEnd);
   AddChildView(std::move(button));

@@ -4,6 +4,8 @@
 
 #include "chrome/browser/ash/file_manager/io_task_controller.h"
 
+#include <vector>
+
 #include "base/task/bind_post_task.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
@@ -195,6 +197,18 @@ void IOTaskController::RemoveIOTask(const IOTaskId task_id) {
     GetWakeLock()->CancelWakeLock();
     --wake_lock_counter_for_tests_;
   }
+}
+
+std::vector<std::reference_wrapper<const ProgressStatus>>
+IOTaskController::TaskStatuses() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  std::vector<std::reference_wrapper<const ProgressStatus>> status_vector;
+  for (auto& it : tasks_) {
+    IOTask* task = it.second.get();
+    status_vector.push_back(task->progress());
+  }
+  return status_vector;
 }
 
 }  // namespace io_task

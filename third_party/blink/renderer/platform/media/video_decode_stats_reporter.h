@@ -6,9 +6,11 @@
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_MEDIA_VIDEO_DECODE_STATS_REPORTER_H_
 
 #include <memory>
+#include <optional>
 #include <string>
 
 #include "base/memory/ptr_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/default_tick_clock.h"
 #include "base/time/tick_clock.h"
@@ -20,7 +22,6 @@
 #include "media/mojo/mojom/video_decode_stats_recorder.mojom.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/remote.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
 #include "ui/gfx/geometry/size.h"
 
@@ -41,7 +42,7 @@ class PLATFORM_EXPORT VideoDecodeStatsReporter {
       GetPipelineStatsCB get_pipeline_stats_cb,
       media::VideoCodecProfile codec_profile,
       const gfx::Size& natural_size,
-      absl::optional<media::CdmConfig> cdm_config,
+      std::optional<media::CdmConfig> cdm_config,
       scoped_refptr<base::SingleThreadTaskRunner> task_runner,
       const base::TickClock* tick_clock =
           base::DefaultTickClock::GetInstance());
@@ -172,7 +173,7 @@ class PLATFORM_EXPORT VideoDecodeStatsReporter {
 
   // Clock for |stats_cb_timer_| and getting current tick count (NowTicks()).
   // Tests may supply a mock clock via the constructor.
-  const base::TickClock* tick_clock_;
+  raw_ptr<const base::TickClock> tick_clock_;
 
   // Timer for all stats callbacks. Timer interval will be dynamically set based
   // on state of reporter. See calls to RunStatsTimerAtIntervalMs().

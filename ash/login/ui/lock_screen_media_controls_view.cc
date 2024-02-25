@@ -16,6 +16,7 @@
 #include "ash/style/ash_color_id.h"
 #include "base/containers/contains.h"
 #include "base/functional/bind.h"
+#include "base/notreached.h"
 #include "base/power_monitor/power_monitor.h"
 #include "base/task/single_thread_task_runner.h"
 #include "chromeos/constants/chromeos_features.h"
@@ -149,6 +150,8 @@ const gfx::VectorIcon& GetVectorIconForMediaAction(MediaSessionAction action) {
 
 // MediaActionButton is an image button with a custom ink drop mask.
 class MediaActionButton : public views::ImageButton {
+  METADATA_HEADER(MediaActionButton, views::ImageButton)
+
  public:
   MediaActionButton(LockScreenMediaControlsView* view,
                     int icon_size,
@@ -190,7 +193,7 @@ class MediaActionButton : public views::ImageButton {
     SetInstallFocusRingOnFocus(true);
     views::FocusRing::Get(this)->SetColorId(ui::kColorAshFocusRing);
     login_views_utils::ConfigureRectFocusRingCircleInkDrop(
-        this, views::FocusRing::Get(this), absl::nullopt);
+        this, views::FocusRing::Get(this), std::nullopt);
   }
 
   MediaActionButton(const MediaActionButton&) = delete;
@@ -216,6 +219,9 @@ class MediaActionButton : public views::ImageButton {
 
   int const icon_size_;
 };
+
+BEGIN_METADATA(MediaActionButton)
+END_METADATA
 
 }  // namespace
 
@@ -392,7 +398,7 @@ LockScreenMediaControlsView::LockScreenMediaControlsView(
           this, kPlayPauseIconSize, MediaSessionAction::kPause,
           l10n_util::GetStringUTF16(
               IDS_ASH_LOCK_SCREEN_MEDIA_CONTROLS_ACTION_PAUSE)));
-  media_action_buttons_.push_back(play_pause_button_);
+  media_action_buttons_.push_back(play_pause_button_.get());
 
   media_action_buttons_.push_back(
       right_control_group->AddChildView(std::make_unique<MediaActionButton>(
@@ -410,11 +416,11 @@ LockScreenMediaControlsView::LockScreenMediaControlsView(
 
   // Set child view data to default values initially, until the media controller
   // observers are triggered by a change in media session state.
-  MediaSessionMetadataChanged(absl::nullopt);
-  MediaSessionPositionChanged(absl::nullopt);
+  MediaSessionMetadataChanged(std::nullopt);
+  MediaSessionPositionChanged(std::nullopt);
   MediaControllerImageChanged(
       media_session::mojom::MediaSessionImageType::kSourceIcon, SkBitmap());
-  SetArtwork(absl::nullopt);
+  SetArtwork(std::nullopt);
 
   // |service| can be null in tests.
   media_session::MediaSessionService* service =
@@ -455,7 +461,7 @@ gfx::Size LockScreenMediaControlsView::CalculatePreferredSize() const {
   return contents_view_->GetPreferredSize();
 }
 
-void LockScreenMediaControlsView::Layout() {
+void LockScreenMediaControlsView::Layout(PassKey) {
   contents_view_->SetBoundsRect(GetContentsBounds());
 }
 
@@ -506,13 +512,7 @@ void LockScreenMediaControlsView::MediaSessionInfoChanged(
     return;
   }
 
-  // We only consider the session as sensitive if its metadata comes from an OTR
-  // session and the kHideIncognitoMediaMetadata flag is off. When the flag is
-  // on, the session's metadata is obscured (in Incognito mode), so don't need
-  // to hide the media controls.
-  bool is_sensitive =
-      !base::FeatureList::IsEnabled(media::kHideIncognitoMediaMetadata) &&
-      session_info->is_sensitive;
+  bool is_sensitive = session_info->is_sensitive;
 
   // If the session is marked as sensitive then don't show the controls.
   if (is_sensitive && !IsDrawn()) {
@@ -537,7 +537,7 @@ void LockScreenMediaControlsView::MediaSessionInfoChanged(
 }
 
 void LockScreenMediaControlsView::MediaSessionMetadataChanged(
-    const absl::optional<media_session::MediaMetadata>& metadata) {
+    const std::optional<media_session::MediaMetadata>& metadata) {
   if (hide_controls_timer_->IsRunning()) {
     return;
   }
@@ -570,7 +570,7 @@ void LockScreenMediaControlsView::MediaSessionActionsChanged(
 }
 
 void LockScreenMediaControlsView::MediaSessionChanged(
-    const absl::optional<base::UnguessableToken>& request_id) {
+    const std::optional<base::UnguessableToken>& request_id) {
   if (!media_session_id_.has_value()) {
     media_session_id_ = request_id;
     return;
@@ -594,7 +594,7 @@ void LockScreenMediaControlsView::MediaSessionChanged(
 }
 
 void LockScreenMediaControlsView::MediaSessionPositionChanged(
-    const absl::optional<media_session::MediaPosition>& position) {
+    const std::optional<media_session::MediaPosition>& position) {
   if (hide_controls_timer_->IsRunning()) {
     return;
   }
@@ -604,7 +604,7 @@ void LockScreenMediaControlsView::MediaSessionPositionChanged(
   if (!position.has_value()) {
     if (progress_->GetVisible()) {
       progress_->SetVisible(false);
-      Layout();
+      DeprecatedLayoutImmediately();
     }
     return;
   }
@@ -613,7 +613,7 @@ void LockScreenMediaControlsView::MediaSessionPositionChanged(
 
   if (!progress_->GetVisible()) {
     progress_->SetVisible(true);
-    Layout();
+    DeprecatedLayoutImmediately();
   }
 }
 
@@ -638,7 +638,7 @@ void LockScreenMediaControlsView::MediaControllerImageChanged(
 
   switch (type) {
     case media_session::mojom::MediaSessionImageType::kArtwork: {
-      absl::optional<gfx::ImageSkia> session_artwork;
+      std::optional<gfx::ImageSkia> session_artwork;
       if (!converted_bitmap.empty()) {
         session_artwork = gfx::ImageSkia::CreateFrom1xBitmap(converted_bitmap);
       }
@@ -654,6 +654,11 @@ void LockScreenMediaControlsView::MediaControllerImageChanged(
             kDesiredSourceIconSize);
       }
       header_row_->SetAppIcon(session_icon);
+      break;
+    }
+    case media_session::mojom::MediaSessionImageType::kChapter: {
+      NOTREACHED() << " The chpater images should be updated in "
+                      "`MediaControllerChapterImageChanged` ";
     }
   }
 }
@@ -791,7 +796,7 @@ void LockScreenMediaControlsView::Dismiss() {
 }
 
 void LockScreenMediaControlsView::SetArtwork(
-    absl::optional<gfx::ImageSkia> img) {
+    std::optional<gfx::ImageSkia> img) {
   if (!img.has_value()) {
     if (!session_artwork_->GetVisible() || hide_artwork_timer_->IsRunning()) {
       return;
@@ -813,7 +818,7 @@ void LockScreenMediaControlsView::SetArtwork(
       ScaleSizeToFitView(img->size(), session_artwork_->GetPreferredSize()));
   session_artwork_->SetImage(*img);
 
-  Layout();
+  DeprecatedLayoutImmediately();
   session_artwork_->SetClipPath(GetArtworkClipPath());
 }
 
@@ -889,7 +894,7 @@ void LockScreenMediaControlsView::RunResetControlsAnimation() {
   contents_view_->layer()->SetOpacity(1);
 }
 
-BEGIN_METADATA(LockScreenMediaControlsView, views::View)
+BEGIN_METADATA(LockScreenMediaControlsView)
 END_METADATA
 
 }  // namespace ash

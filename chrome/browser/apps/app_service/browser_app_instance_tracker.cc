@@ -36,6 +36,7 @@
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
 #include "chrome/browser/lacros/lacros_extensions_util.h"
+#include "chrome/browser/lacros/profile_util.h"
 #include "ui/views/widget/desktop_aura/desktop_window_tree_host_lacros.h"
 #endif
 
@@ -60,15 +61,16 @@ bool HaveSameWindowTreeHostLacros(aura::Window* window1,
 #endif
 
 Browser* GetBrowserWithTabStripModel(TabStripModel* tab_strip_model) {
-  for (auto* browser : *BrowserList::GetInstance()) {
-    if (browser->tab_strip_model() == tab_strip_model)
+  for (Browser* browser : *BrowserList::GetInstance()) {
+    if (browser->tab_strip_model() == tab_strip_model) {
       return browser;
+    }
   }
   return nullptr;
 }
 
 Browser* GetBrowserWithAuraWindow(aura::Window* aura_window) {
-  for (auto* browser : *BrowserList::GetInstance()) {
+  for (Browser* browser : *BrowserList::GetInstance()) {
     BrowserWindow* window = browser->window();
     if (window && window->GetNativeWindow() == aura_window) {
       return browser;
@@ -122,8 +124,9 @@ std::string GetAppIdForBrowser(Browser* browser) {
   auto* registry = extensions::ExtensionRegistry::Get(browser->profile());
   auto* extension = registry->GetInstalledExtension(app_id);
   // This is a web-app.
-  if (!extension)
+  if (!extension) {
     return app_id;
+  }
 
   if (extension->is_hosted_app() || extension->is_legacy_packaged_app()) {
     return app_id;
@@ -212,7 +215,7 @@ const BrowserAppInstance* BrowserAppInstanceTracker::GetAppInstance(
   // Then app window instance, which should be at most one per WebContents,
   // although multiple WebContents can map to a single app window instance, in
   // case of app windows with tab strips.
-  Browser* browser = chrome::FindBrowserWithWebContents(contents);
+  Browser* browser = chrome::FindBrowserWithTab(contents);
   if (!browser) {
     return nullptr;
   }
@@ -233,7 +236,7 @@ void BrowserAppInstanceTracker::ActivateTabInstance(base::UnguessableToken id) {
   for (const auto& pair : app_tab_instances_) {
     const BrowserAppInstance& instance = *pair.second;
     if (instance.id == id) {
-      Browser* browser = chrome::FindBrowserWithWebContents(pair.first);
+      Browser* browser = chrome::FindBrowserWithTab(pair.first);
       TabStripModel* tab_strip = browser->tab_strip_model();
       int index = tab_strip->GetIndexOfWebContents(pair.first);
       DCHECK_NE(TabStripModel::kNoTab, index);
@@ -252,7 +255,7 @@ void BrowserAppInstanceTracker::StopInstancesOfApp(const std::string& app_id) {
     }
   }
   for (content::WebContents* web_contents : web_contents_to_close) {
-    Browser* browser = chrome::FindBrowserWithWebContents(web_contents);
+    Browser* browser = chrome::FindBrowserWithTab(web_contents);
     if (!browser) {
       continue;
     }
@@ -330,7 +333,7 @@ void BrowserAppInstanceTracker::OnAppUpdate(const AppUpdate& update) {
   // Sync app instances for existing tabs.
   // Iterate over the full list of browsers instead of tracked_browsers_ in case
   // tracked_browsers_ is out of date with global state.
-  for (auto* browser : *BrowserList::GetInstance()) {
+  for (Browser* browser : *BrowserList::GetInstance()) {
     if (!IsBrowserTracked(browser)) {
       continue;
     }
@@ -546,7 +549,7 @@ void BrowserAppInstanceTracker::OnTabClosing(Browser* browser,
 
 void BrowserAppInstanceTracker::OnWebContentsUpdated(
     content::WebContents* contents) {
-  Browser* browser = chrome::FindBrowserWithWebContents(contents);
+  Browser* browser = chrome::FindBrowserWithTab(contents);
   if (browser) {
     OnTabUpdated(browser, contents);
   }
@@ -650,12 +653,17 @@ void BrowserAppInstanceTracker::RemoveAppWindowInstanceIfExists(
 }
 
 void BrowserAppInstanceTracker::CreateBrowserWindowInstance(Browser* browser) {
+  uint64_t lacros_profile_id = 0;
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  lacros_profile_id = HashProfilePathToProfileId(browser->profile()->GetPath());
+#endif
   auto& instance = AddInstance(
       window_instances_, browser,
       std::make_unique<BrowserWindowInstance>(
           GenerateId(), browser->window()->GetNativeWindow(),
           browser->session_id().id(), browser->create_params().restore_id,
-          browser->profile()->IsIncognitoProfile(), IsBrowserActive(browser)));
+          browser->profile()->IsIncognitoProfile(), lacros_profile_id,
+          IsBrowserActive(browser)));
   for (auto& observer : observers_) {
     observer.OnBrowserWindowAdded(instance);
   }
@@ -695,7 +703,7 @@ bool BrowserAppInstanceTracker::IsActivationClientTracked(
   // tracked_browsers_ is out of date with global state
   // TODO(crbug.com/1236273): This can be changed to iterate tracked_browsers_
   // when confident it doesn't get out of sync.
-  for (auto* browser : *BrowserList::GetInstance()) {
+  for (Browser* browser : *BrowserList::GetInstance()) {
     if (IsBrowserTracked(browser) &&
         ActivationClientForBrowser(browser) == client) {
       return true;

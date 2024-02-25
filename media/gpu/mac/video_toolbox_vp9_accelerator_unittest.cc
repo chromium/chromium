@@ -23,14 +23,16 @@ class VideoToolboxVP9AcceleratorTest : public testing::Test {
   ~VideoToolboxVP9AcceleratorTest() override = default;
 
  protected:
-  MOCK_METHOD2(OnDecode,
+  MOCK_METHOD3(OnDecode,
                void(base::apple::ScopedCFTypeRef<CMSampleBufferRef>,
+                    VideoToolboxDecompressionSessionMetadata,
                     scoped_refptr<CodecPicture>));
   MOCK_METHOD1(OnOutput, void(scoped_refptr<CodecPicture>));
 
   std::unique_ptr<VideoToolboxVP9Accelerator> accelerator_{
       std::make_unique<VideoToolboxVP9Accelerator>(
           std::make_unique<NullMediaLog>(),
+          std::nullopt,
           base::BindRepeating(&VideoToolboxVP9AcceleratorTest::OnDecode,
                               base::Unretained(this)),
           base::BindRepeating(&VideoToolboxVP9AcceleratorTest::OnOutput,
@@ -43,7 +45,6 @@ TEST_F(VideoToolboxVP9AcceleratorTest, DecodeRaw) {
   const Vp9SegmentationParams segm_params = {0};
   const Vp9LoopFilterParams lf_params = {0};
   const Vp9ReferenceFrameVector reference_frames;
-  base::OnceClosure done_cb;
 
   constexpr uint8_t frame_data[] = {0x01};
 
@@ -55,14 +56,13 @@ TEST_F(VideoToolboxVP9AcceleratorTest, DecodeRaw) {
 
   // Save the resulting sample.
   base::apple::ScopedCFTypeRef<CMSampleBufferRef> sample;
-  EXPECT_CALL(*this, OnDecode(_, _)).WillOnce(SaveArg<0>(&sample));
+  EXPECT_CALL(*this, OnDecode(_, _, _)).WillOnce(SaveArg<0>(&sample));
   EXPECT_CALL(*this, OnOutput(_));
-  accelerator_->SubmitDecode(pic, segm_params, lf_params, reference_frames,
-                             std::move(done_cb));
+  accelerator_->SubmitDecode(pic, segm_params, lf_params, reference_frames);
   accelerator_->OutputPicture(pic);
 
   // Verify `sample`.
-  CMBlockBufferRef buf = CMSampleBufferGetDataBuffer(sample);
+  CMBlockBufferRef buf = CMSampleBufferGetDataBuffer(sample.get());
   std::vector<uint8_t> data(CMBlockBufferGetDataLength(buf));
   CMBlockBufferCopyDataBytes(buf, 0, CMBlockBufferGetDataLength(buf),
                              data.data());
@@ -73,7 +73,6 @@ TEST_F(VideoToolboxVP9AcceleratorTest, DecodeSuperframe) {
   const Vp9SegmentationParams segm_params = {0};
   const Vp9LoopFilterParams lf_params = {0};
   const Vp9ReferenceFrameVector reference_frames;
-  base::OnceClosure done_cb;
 
   constexpr uint8_t frame_data1[] = {0x01};
   constexpr uint8_t frame_data2[] = {0x02};
@@ -91,14 +90,13 @@ TEST_F(VideoToolboxVP9AcceleratorTest, DecodeSuperframe) {
 
   // Save the resulting sample.
   base::apple::ScopedCFTypeRef<CMSampleBufferRef> sample;
-  EXPECT_CALL(*this, OnDecode(_, _)).WillOnce(SaveArg<0>(&sample));
+  EXPECT_CALL(*this, OnDecode(_, _, _)).WillOnce(SaveArg<0>(&sample));
   EXPECT_CALL(*this, OnOutput(_));
-  accelerator_->SubmitDecode(pic1, segm_params, lf_params, reference_frames,
-                             std::move(done_cb));
+  accelerator_->SubmitDecode(pic1, segm_params, lf_params, reference_frames);
   accelerator_->OutputPicture(pic2);
 
   // Verify `sample`.
-  CMBlockBufferRef buf = CMSampleBufferGetDataBuffer(sample);
+  CMBlockBufferRef buf = CMSampleBufferGetDataBuffer(sample.get());
   std::vector<uint8_t> data(CMBlockBufferGetDataLength(buf));
   CMBlockBufferCopyDataBytes(buf, 0, CMBlockBufferGetDataLength(buf),
                              data.data());

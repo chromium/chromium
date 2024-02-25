@@ -5,8 +5,10 @@
 #include "chromeos/ash/components/dbus/rmad/fake_rmad_client.h"
 
 #include <memory>
+#include <optional>
 #include <string>
 
+#include "base/files/file_path.h"
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
 #include "base/test/task_environment.h"
@@ -47,7 +49,7 @@ class FakeRmadClientTest : public testing::Test {
     return google::protobuf::down_cast<FakeRmadClient*>(client_.get());
   }
 
-  raw_ptr<RmadClient, DanglingUntriaged | ExperimentalAsh> client_ =
+  raw_ptr<RmadClient, DanglingUntriaged> client_ =
       nullptr;  // Unowned convenience pointer.
   // A message loop to emulate asynchronous behavior.
   base::test::SingleThreadTaskEnvironment task_environment_;
@@ -165,7 +167,7 @@ class TestObserver : public RmadClient::Observer {
   }
 
  private:
-  raw_ptr<RmadClient, ExperimentalAsh> client_;  // Not owned.
+  raw_ptr<RmadClient> client_;  // Not owned.
   int num_error_ = 0;
   rmad::RmadErrorCode last_error_ = rmad::RmadErrorCode::RMAD_ERROR_NOT_SET;
   int num_calibration_progress_ = 0;
@@ -218,7 +220,7 @@ rmad::GetStateReply CreateDeviceDestinationStateReply(
 }
 
 TEST_F(FakeRmadClientTest, GetCurrentState_Default_RmaNotRequired) {
-  base::test::TestFuture<absl::optional<rmad::GetStateReply>> future;
+  base::test::TestFuture<std::optional<rmad::GetStateReply>> future;
   client_->GetCurrentState(future.GetCallback());
   const auto& response = future.Get();
   EXPECT_TRUE(response.has_value());
@@ -231,7 +233,7 @@ TEST_F(FakeRmadClientTest, GetCurrentState_Welcome_Ok) {
   fake_states.push_back(CreateWelcomeStateReply(rmad::RMAD_ERROR_OK));
   fake_client_()->SetFakeStateReplies(std::move(fake_states));
 
-  base::test::TestFuture<absl::optional<rmad::GetStateReply>> future;
+  base::test::TestFuture<std::optional<rmad::GetStateReply>> future;
   client_->GetCurrentState(future.GetCallback());
   const auto& response = future.Get();
   EXPECT_TRUE(response.has_value());
@@ -250,7 +252,7 @@ TEST_F(FakeRmadClientTest, GetCurrentState_Welcome_CorrectStateReturned) {
   fake_states.push_back(std::move(state));
   fake_client_()->SetFakeStateReplies(std::move(fake_states));
 
-  base::test::TestFuture<absl::optional<rmad::GetStateReply>> future;
+  base::test::TestFuture<std::optional<rmad::GetStateReply>> future;
   client_->GetCurrentState(future.GetCallback());
   const auto& response = future.Get();
   EXPECT_TRUE(response.has_value());
@@ -262,7 +264,7 @@ TEST_F(FakeRmadClientTest, GetCurrentState_Welcome_CorrectStateReturned) {
 }
 
 TEST_F(FakeRmadClientTest, TransitionNextState_Default_RmaNotRequired) {
-  base::test::TestFuture<absl::optional<rmad::GetStateReply>> future;
+  base::test::TestFuture<std::optional<rmad::GetStateReply>> future;
   client_->TransitionNextState(std::move(CreateWelcomeState()),
                                future.GetCallback());
   const auto& response = future.Get();
@@ -277,7 +279,7 @@ TEST_F(FakeRmadClientTest, TransitionNextState_NoNextState_Fails) {
       rmad::GetStateReply(CreateWelcomeStateReply(rmad::RMAD_ERROR_OK)));
   fake_client_()->SetFakeStateReplies(std::move(fake_states));
 
-  base::test::TestFuture<absl::optional<rmad::GetStateReply>> future;
+  base::test::TestFuture<std::optional<rmad::GetStateReply>> future;
   client_->TransitionNextState(std::move(CreateWelcomeState()),
                                future.GetCallback());
   const auto& response = future.Get();
@@ -295,7 +297,7 @@ TEST_F(FakeRmadClientTest, TransitionNextState_HasNextState_Ok) {
       CreateDeviceDestinationStateReply(rmad::RMAD_ERROR_OK)));
   fake_client_()->SetFakeStateReplies(std::move(fake_states));
 
-  base::test::TestFuture<absl::optional<rmad::GetStateReply>> future;
+  base::test::TestFuture<std::optional<rmad::GetStateReply>> future;
   client_->TransitionNextState(std::move(CreateWelcomeState()),
                                future.GetCallback());
   const auto& response = future.Get();
@@ -313,7 +315,7 @@ TEST_F(FakeRmadClientTest, TransitionNextState_WrongCurrentState_Invalid) {
       CreateDeviceDestinationStateReply(rmad::RMAD_ERROR_OK)));
   fake_client_()->SetFakeStateReplies(std::move(fake_states));
 
-  base::test::TestFuture<absl::optional<rmad::GetStateReply>> future;
+  base::test::TestFuture<std::optional<rmad::GetStateReply>> future;
   client_->TransitionNextState(std::move(CreateDeviceDestinationState()),
                                future.GetCallback());
   const auto& response = future.Get();
@@ -324,7 +326,7 @@ TEST_F(FakeRmadClientTest, TransitionNextState_WrongCurrentState_Invalid) {
 }
 
 TEST_F(FakeRmadClientTest, TransitionPreviousState_Default_RmaNotRequired) {
-  base::test::TestFuture<absl::optional<rmad::GetStateReply>> future;
+  base::test::TestFuture<std::optional<rmad::GetStateReply>> future;
   client_->TransitionPreviousState(future.GetCallback());
   const auto& response = future.Get();
   EXPECT_TRUE(response.has_value());
@@ -341,7 +343,7 @@ TEST_F(FakeRmadClientTest, TransitionPreviousState_HasPreviousState_Ok) {
   fake_client_()->SetFakeStateReplies(std::move(fake_states));
 
   {
-    base::test::TestFuture<absl::optional<rmad::GetStateReply>> future;
+    base::test::TestFuture<std::optional<rmad::GetStateReply>> future;
     client_->TransitionNextState(std::move(CreateWelcomeState()),
                                  future.GetCallback());
     const auto& response = future.Get();
@@ -351,7 +353,7 @@ TEST_F(FakeRmadClientTest, TransitionPreviousState_HasPreviousState_Ok) {
     EXPECT_TRUE(response->state().has_device_destination());
   }
   {
-    base::test::TestFuture<absl::optional<rmad::GetStateReply>> future;
+    base::test::TestFuture<std::optional<rmad::GetStateReply>> future;
     client_->TransitionPreviousState(future.GetCallback());
     const auto& response = future.Get();
     LOG(ERROR) << "Prev started";
@@ -371,7 +373,7 @@ TEST_F(FakeRmadClientTest,
   fake_client_()->SetFakeStateReplies(std::move(fake_states));
 
   {
-    base::test::TestFuture<absl::optional<rmad::GetStateReply>> future;
+    base::test::TestFuture<std::optional<rmad::GetStateReply>> future;
     client_->GetCurrentState(future.GetCallback());
     EXPECT_TRUE(future.Get().has_value());
     EXPECT_EQ(future.Get()->error(), rmad::RMAD_ERROR_OK);
@@ -385,7 +387,7 @@ TEST_F(FakeRmadClientTest,
     current_state.mutable_welcome()->set_choice(
         rmad::WelcomeState_FinalizeChoice_RMAD_CHOICE_FINALIZE_REPAIR);
 
-    base::test::TestFuture<absl::optional<rmad::GetStateReply>> future;
+    base::test::TestFuture<std::optional<rmad::GetStateReply>> future;
     client_->TransitionNextState(std::move(current_state),
                                  future.GetCallback());
     EXPECT_TRUE(future.Get().has_value());
@@ -394,7 +396,7 @@ TEST_F(FakeRmadClientTest,
     EXPECT_TRUE(future.Get()->state().has_device_destination());
   }
   {
-    base::test::TestFuture<absl::optional<rmad::GetStateReply>> future;
+    base::test::TestFuture<std::optional<rmad::GetStateReply>> future;
     client_->TransitionPreviousState(future.GetCallback());
     const auto& response = future.Get();
     LOG(ERROR) << "Prev started";
@@ -408,7 +410,7 @@ TEST_F(FakeRmadClientTest,
 }
 
 TEST_F(FakeRmadClientTest, Abortable_Default_Rma_Not_Required) {
-  base::test::TestFuture<absl::optional<rmad::AbortRmaReply>> future;
+  base::test::TestFuture<std::optional<rmad::AbortRmaReply>> future;
   client_->AbortRma(future.GetCallback());
   const auto& response = future.Get();
   EXPECT_TRUE(response.has_value());
@@ -417,7 +419,7 @@ TEST_F(FakeRmadClientTest, Abortable_Default_Rma_Not_Required) {
 
 TEST_F(FakeRmadClientTest, Abortable_SetFalse_CannotCancel) {
   fake_client_()->SetAbortable(false);
-  base::test::TestFuture<absl::optional<rmad::AbortRmaReply>> future;
+  base::test::TestFuture<std::optional<rmad::AbortRmaReply>> future;
   client_->AbortRma(future.GetCallback());
   const auto& response = future.Get();
   EXPECT_TRUE(response.has_value());
@@ -426,7 +428,7 @@ TEST_F(FakeRmadClientTest, Abortable_SetFalse_CannotCancel) {
 
 TEST_F(FakeRmadClientTest, Abortable_SetTrue_Rma_Not_Required) {
   fake_client_()->SetAbortable(true);
-  base::test::TestFuture<absl::optional<rmad::AbortRmaReply>> future;
+  base::test::TestFuture<std::optional<rmad::AbortRmaReply>> future;
   client_->AbortRma(future.GetCallback());
   const auto& response = future.Get();
   EXPECT_TRUE(response.has_value());
@@ -436,7 +438,7 @@ TEST_F(FakeRmadClientTest, Abortable_SetTrue_Rma_Not_Required) {
 TEST_F(FakeRmadClientTest, GetLog) {
   const std::string expected_log = "This is my test log for the RMA process";
   fake_client_()->SetGetLogReply(expected_log, rmad::RMAD_ERROR_OK);
-  base::test::TestFuture<absl::optional<rmad::GetLogReply>> future;
+  base::test::TestFuture<std::optional<rmad::GetLogReply>> future;
   client_->GetLog(future.GetCallback());
   const auto& response = future.Get();
   EXPECT_TRUE(response.has_value());
@@ -447,7 +449,7 @@ TEST_F(FakeRmadClientTest, GetLog) {
 TEST_F(FakeRmadClientTest, SaveLog) {
   const std::string expected_save_path = "fake save path for testing";
   fake_client_()->SetSaveLogReply(expected_save_path, rmad::RMAD_ERROR_OK);
-  base::test::TestFuture<absl::optional<rmad::SaveLogReply>> future;
+  base::test::TestFuture<std::optional<rmad::SaveLogReply>> future;
   client_->SaveLog("Diagnostics log text", future.GetCallback());
   const auto& response = future.Get();
 
@@ -458,7 +460,7 @@ TEST_F(FakeRmadClientTest, SaveLog) {
 
 TEST_F(FakeRmadClientTest, RecordBrowserActionMetric) {
   fake_client_()->SetRecordBrowserActionMetricReply(rmad::RMAD_ERROR_OK);
-  base::test::TestFuture<absl::optional<rmad::RecordBrowserActionMetricReply>>
+  base::test::TestFuture<std::optional<rmad::RecordBrowserActionMetricReply>>
       future;
 
   rmad::RecordBrowserActionMetricRequest request;
@@ -469,6 +471,81 @@ TEST_F(FakeRmadClientTest, RecordBrowserActionMetric) {
   const auto& response = future.Get();
   EXPECT_TRUE(response.has_value());
   EXPECT_EQ(response->error(), rmad::RMAD_ERROR_OK);
+}
+
+TEST_F(FakeRmadClientTest, ExtractExternalDiagnosticsApp_NotFound) {
+  base::test::TestFuture<
+      std::optional<rmad::ExtractExternalDiagnosticsAppReply>>
+      future;
+  client_->ExtractExternalDiagnosticsApp(future.GetCallback());
+  const auto& response = future.Get();
+  EXPECT_TRUE(response.has_value());
+  EXPECT_EQ(response->error(), rmad::RMAD_ERROR_DIAGNOSTICS_APP_NOT_FOUND);
+}
+
+TEST_F(FakeRmadClientTest, ExtractExternalDiagnosticsApp_Found) {
+  fake_client_()->external_diag_app_path() =
+      base::FilePath{"/example/diag_app"};
+
+  base::test::TestFuture<
+      std::optional<rmad::ExtractExternalDiagnosticsAppReply>>
+      future;
+  client_->ExtractExternalDiagnosticsApp(future.GetCallback());
+  const auto& response = future.Get();
+  EXPECT_TRUE(response.has_value());
+  EXPECT_EQ(response->error(), rmad::RMAD_ERROR_OK);
+  EXPECT_EQ(response->diagnostics_app_swbn_path(), "/example/diag_app.swbn");
+  EXPECT_EQ(response->diagnostics_app_crx_path(), "/example/diag_app.crx");
+}
+
+TEST_F(FakeRmadClientTest, InstallExtractedDiagnosticsApp_NotFound) {
+  base::test::TestFuture<
+      std::optional<rmad::InstallExtractedDiagnosticsAppReply>>
+      future;
+  client_->InstallExtractedDiagnosticsApp(future.GetCallback());
+  const auto& response = future.Get();
+  EXPECT_TRUE(response.has_value());
+  EXPECT_EQ(response->error(), rmad::RMAD_ERROR_DIAGNOSTICS_APP_NOT_FOUND);
+}
+
+TEST_F(FakeRmadClientTest, InstallExtractedDiagnosticsApp_Found) {
+  fake_client_()->external_diag_app_path() =
+      base::FilePath{"/example/diag_app"};
+
+  base::test::TestFuture<
+      std::optional<rmad::InstallExtractedDiagnosticsAppReply>>
+      future;
+  client_->InstallExtractedDiagnosticsApp(future.GetCallback());
+  const auto& response = future.Get();
+  EXPECT_TRUE(response.has_value());
+  EXPECT_EQ(response->error(), rmad::RMAD_ERROR_OK);
+  // The installed path was set so the next `GetInstalledDiagnosticsApp` will
+  // get the installed package path.
+  EXPECT_EQ(fake_client_()->installed_diag_app_path(),
+            fake_client_()->external_diag_app_path());
+}
+
+TEST_F(FakeRmadClientTest, GetInstalledDiagnosticsApp_NotFound) {
+  base::test::TestFuture<std::optional<rmad::GetInstalledDiagnosticsAppReply>>
+      future;
+  client_->GetInstalledDiagnosticsApp(future.GetCallback());
+  const auto& response = future.Get();
+  EXPECT_TRUE(response.has_value());
+  EXPECT_EQ(response->error(), rmad::RMAD_ERROR_DIAGNOSTICS_APP_NOT_FOUND);
+}
+
+TEST_F(FakeRmadClientTest, GetInstalledDiagnosticsApp_Found) {
+  fake_client_()->installed_diag_app_path() =
+      base::FilePath{"/example/diag_app"};
+
+  base::test::TestFuture<std::optional<rmad::GetInstalledDiagnosticsAppReply>>
+      future;
+  client_->GetInstalledDiagnosticsApp(future.GetCallback());
+  const auto& response = future.Get();
+  EXPECT_TRUE(response.has_value());
+  EXPECT_EQ(response->error(), rmad::RMAD_ERROR_OK);
+  EXPECT_EQ(response->diagnostics_app_swbn_path(), "/example/diag_app.swbn");
+  EXPECT_EQ(response->diagnostics_app_crx_path(), "/example/diag_app.crx");
 }
 
 // Tests that synchronous observers are notified about errors that occur outside

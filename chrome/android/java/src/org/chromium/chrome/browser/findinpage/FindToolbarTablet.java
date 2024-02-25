@@ -18,9 +18,7 @@ import org.chromium.chrome.R;
 import org.chromium.components.browser_ui.widget.animation.CancelAwareAnimatorListener;
 import org.chromium.ui.interpolators.Interpolators;
 
-/**
- * A tablet specific version of the {@link FindToolbar}.
- */
+/** A tablet specific version of the {@link FindToolbar}. */
 public class FindToolbarTablet extends FindToolbar {
     private static final int ENTER_EXIT_ANIMATION_DURATION_MS = 200;
     private static final int MAKE_ROOM_ANIMATION_DURATION_MS = 200;
@@ -59,36 +57,38 @@ public class FindToolbarTablet extends FindToolbar {
         mAnimationEnter = ObjectAnimator.ofFloat(this, View.TRANSLATION_X, translateWidth, 0);
         mAnimationEnter.setDuration(ENTER_EXIT_ANIMATION_DURATION_MS);
         mAnimationEnter.setInterpolator(Interpolators.DECELERATE_INTERPOLATOR);
-        mAnimationEnter.addListener(new CancelAwareAnimatorListener() {
-            @Override
-            public void onStart(Animator animation) {
-                setVisibility(View.VISIBLE);
-                postInvalidateOnAnimation();
-                FindToolbarTablet.super.handleActivate();
-            }
+        mAnimationEnter.addListener(
+                new CancelAwareAnimatorListener() {
+                    @Override
+                    public void onStart(Animator animation) {
+                        setVisibility(View.VISIBLE);
+                        postInvalidateOnAnimation();
+                        FindToolbarTablet.super.handleActivate();
+                    }
 
-            @Override
-            public void onEnd(Animator animation) {
-                mCurrentAnimation = null;
-            }
-        });
+                    @Override
+                    public void onEnd(Animator animation) {
+                        mCurrentAnimation = null;
+                    }
+                });
 
         mAnimationLeave = ObjectAnimator.ofFloat(this, View.TRANSLATION_X, 0, translateWidth);
         mAnimationLeave.setDuration(ENTER_EXIT_ANIMATION_DURATION_MS);
         mAnimationLeave.setInterpolator(Interpolators.DECELERATE_INTERPOLATOR);
-        mAnimationLeave.addListener(new CancelAwareAnimatorListener() {
-            @Override
-            public void onStart(Animator animator) {
-                setVisibility(View.VISIBLE);
-                postInvalidateOnAnimation();
-            }
+        mAnimationLeave.addListener(
+                new CancelAwareAnimatorListener() {
+                    @Override
+                    public void onStart(Animator animator) {
+                        setVisibility(View.VISIBLE);
+                        postInvalidateOnAnimation();
+                    }
 
-            @Override
-            public void onEnd(Animator animator) {
-                setVisibility(View.GONE);
-                mCurrentAnimation = null;
-            }
-        });
+                    @Override
+                    public void onEnd(Animator animator) {
+                        setVisibility(View.GONE);
+                        mCurrentAnimation = null;
+                    }
+                });
     }
 
     @Override
@@ -117,7 +117,10 @@ public class FindToolbarTablet extends FindToolbar {
         float density = getContext().getResources().getDisplayMetrics().density;
 
         if (rect != null
-                && rect.intersects((int) (getLeft() / density), 0, (int) (getRight() / density),
+                && rect.intersects(
+                        (int) (getLeft() / density),
+                        0,
+                        (int) (getRight() / density),
                         (int) (getHeight() / density))) {
             makeRoom = true;
         }
@@ -147,17 +150,18 @@ public class FindToolbarTablet extends FindToolbar {
         mCurrentAnimation = ObjectAnimator.ofFloat(this, View.TRANSLATION_Y, translationY);
         mCurrentAnimation.setDuration(MAKE_ROOM_ANIMATION_DURATION_MS);
         mCurrentAnimation.setInterpolator(Interpolators.DECELERATE_INTERPOLATOR);
-        mCurrentAnimation.addListener(new AnimatorListenerAdapter() {
-            @Override
-            public void onAnimationStart(Animator animation) {
-                postInvalidateOnAnimation();
-            }
+        mCurrentAnimation.addListener(
+                new AnimatorListenerAdapter() {
+                    @Override
+                    public void onAnimationStart(Animator animation) {
+                        postInvalidateOnAnimation();
+                    }
 
-            @Override
-            public void onAnimationEnd(Animator animation) {
-                mCurrentAnimation = null;
-            }
-        });
+                    @Override
+                    public void onAnimationEnd(Animator animation) {
+                        mCurrentAnimation = null;
+                    }
+                });
         startAnimationOverContent(mCurrentAnimation);
     }
 

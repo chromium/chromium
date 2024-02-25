@@ -23,30 +23,15 @@
 
 namespace performance_manager {
 
-namespace {
-
-// Returns a new RenderProcessHostProxy with a unique RenderProcessHostId.
-RenderProcessHostProxy CreateRenderProcessHostProxy() {
-  static RenderProcessHostId::Generator id_generator;
-  return RenderProcessHostProxy::CreateForTesting(
-      id_generator.GenerateNextId());
-}
-
-// Returns a new BrowserChildProcessHostProxy with a unique
-// BrowserChildProcessHostId.
-BrowserChildProcessHostProxy CreateBrowserChildProcessHostProxy() {
-  static BrowserChildProcessHostId::Generator id_generator;
-  return BrowserChildProcessHostProxy::CreateForTesting(
-      id_generator.GenerateNextId());
-}
-
-}  // namespace
-
 TestProcessNodeImpl::TestProcessNodeImpl()
-    : ProcessNodeImpl(CreateRenderProcessHostProxy()) {}
+    : ProcessNodeImpl(RenderProcessHostProxy::CreateForTesting(
+                          NextTestRenderProcessHostId()),
+                      base::TaskPriority::HIGHEST) {}
 
 TestProcessNodeImpl::TestProcessNodeImpl(content::ProcessType process_type)
-    : ProcessNodeImpl(process_type, CreateBrowserChildProcessHostProxy()) {}
+    : ProcessNodeImpl(process_type,
+                      BrowserChildProcessHostProxy::CreateForTesting(
+                          NextTestBrowserChildProcessHostId())) {}
 
 void TestProcessNodeImpl::SetProcessWithPid(base::ProcessId pid,
                                             base::Process process,
@@ -85,6 +70,29 @@ MockMultiplePagesInSingleProcessGraph::
     ~MockMultiplePagesInSingleProcessGraph() {
   other_frame.reset();
   other_page.reset();
+}
+
+MockManyPagesInSingleProcessGraph::MockManyPagesInSingleProcessGraph(
+    TestGraphImpl* graph,
+    size_t num_other_pages)
+    : MockSinglePageInSingleProcessGraph(graph) {
+  other_pages.reserve(num_other_pages);
+  other_frames.reserve(num_other_pages);
+  for (size_t i = 0; i < num_other_pages; ++i) {
+    other_pages.push_back(TestNodeWrapper<PageNodeImpl>::Create(graph));
+    other_frames.push_back(graph->CreateFrameNodeAutoId(
+        process.get(), other_pages[i].get(), nullptr));
+  }
+}
+
+MockManyPagesInSingleProcessGraph::~MockManyPagesInSingleProcessGraph() {
+  for (auto& f : other_frames) {
+    f.reset();
+  }
+
+  for (auto& p : other_pages) {
+    p.reset();
+  }
 }
 
 MockSinglePageWithMultipleProcessesGraph::

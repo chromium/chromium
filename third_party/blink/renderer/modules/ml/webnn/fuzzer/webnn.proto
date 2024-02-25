@@ -6,13 +6,15 @@ syntax = "proto2";
 
 package webnn_proto;
 
-enum MLOperandType {
+enum MLOperandDataType {
   FLOAT32 = 0;
   FLOAT16 = 1;
   INT32 = 2;
   UINT32 = 3;
-  INT8 = 4;
-  UINT8 = 5;
+  INT64 = 4;
+  UINT64 = 5;
+  INT8 = 6;
+  UINT8 = 7;
 }
 
 enum MLInputOperandLayout {
@@ -66,17 +68,17 @@ message pool2dOptions {
 
 message conv2d {
   repeated uint32 input_dimensions = 1;
-  required MLOperandType input_type = 2;
+  required MLOperandDataType input_data_type = 2;
 
   repeated uint32 filter_dimensions = 3;
-  required MLOperandType filter_type = 4;
+  required MLOperandDataType filter_data_type = 4;
 
   optional conv2dOptions conv2d_options = 5;
 }
 
 message pool2d {
   repeated uint32 input_dimensions = 1;
-  required MLOperandType input_type = 2;
+  required MLOperandDataType input_data_type = 2;
 
   required MLPool2dKind pool2d_kind = 3;
 

@@ -1,0 +1,184 @@
+# Copyright 2023 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/chromeos/ui_mode.gni")
+import("//build/config/features.gni")
+
+source_set("password_store_interface") {
+  sources = [
+    "interactions_stats.h",
+    "password_store_backend_error.cc",
+    "password_store_backend_error.h",
+    "password_store_change.cc",
+    "password_store_change.h",
+    "password_store_consumer.cc",
+    "password_store_consumer.h",
+    "password_store_interface.h",
+    "password_store_util.cc",
+    "password_store_util.h",
+  ]
+  public_deps = [ "//components/password_manager/core/browser:password_form" ]
+  deps = [
+    "//base",
+    "//components/keyed_service/core",
+    "//url",
+  ]
+  configs += [ "//build/config/compiler:wexit_time_destructors" ]
+}
+
+source_set("password_store_impl") {
+  sources = [
+    "get_logins_with_affiliations_request_handler.cc",
+    "get_logins_with_affiliations_request_handler.h",
+    "insecure_credentials_table.cc",
+    "insecure_credentials_table.h",
+    "login_database.cc",
+    "login_database.h",
+    "login_database_async_helper.cc",
+    "login_database_async_helper.h",
+    "password_notes_table.cc",
+    "password_notes_table.h",
+    "password_store.cc",
+    "password_store.h",
+    "password_store_backend.h",
+    "password_store_backend_metrics_recorder.cc",
+    "password_store_backend_metrics_recorder.h",
+    "password_store_built_in_backend.cc",
+    "password_store_built_in_backend.h",
+    "psl_matching_helper.cc",
+    "psl_matching_helper.h",
+    "smart_bubble_stats_store.h",
+    "statistics_table.cc",
+    "statistics_table.h",
+  ]
+  public_deps = [ ":password_store_interface" ]
+  deps = [
+    "//base",
+    "//build:blink_buildflags",
+    "//components/affiliations/core/browser:affiliations",
+    "//components/affiliations/core/browser:sql_builder",
+    "//components/autofill/core/common",
+    "//components/os_crypt/sync:os_crypt",
+    "//components/password_manager/core/browser:metrics_util",
+    "//components/password_manager/core/browser/affiliation:affiliation_match_helper",
+    "//components/password_manager/core/browser/features:password_features",
+    "//components/password_manager/core/browser/sync",
+    "//components/password_manager/core/common",
+    "//components/password_manager/core/common:features",
+    "//components/prefs",
+    "//components/safe_browsing/core/common:safe_browsing_prefs",
+    "//components/sync/base",
+    "//components/sync/base:features",
+    "//components/sync/model",
+    "//components/sync/protocol",
+    "//sql",
+    "//third_party/abseil-cpp:absl",
+    "//third_party/re2",
+    "//url",
+  ]
+  if (is_android) {
+    sources += [
+      "android_backend_error.h",
+      "split_stores_and_local_upm.cc",
+      "split_stores_and_local_upm.h",
+    ]
+  }
+
+  if ((is_posix && !is_apple) || is_fuchsia) {
+    sources += [ "login_database_posix.cc" ]
+  }
+
+  if (is_mac) {
+    sources += [ "login_database_mac.cc" ]
+  }
+
+  if (is_ios) {
+    sources += [ "login_database_ios.cc" ]
+  }
+
+  if (is_win) {
+    sources += [ "login_database_win.cc" ]
+  }
+  configs += [ "//build/config/compiler:wexit_time_destructors" ]
+}
+
+static_library("test_support") {
+  testonly = true
+  sources = [
+    "fake_password_store_backend.cc",
+    "fake_password_store_backend.h",
+    "mock_password_store_backend.cc",
+    "mock_password_store_backend.h",
+    "mock_password_store_consumer.cc",
+    "mock_password_store_consumer.h",
+    "mock_password_store_interface.cc",
+    "mock_password_store_interface.h",
+    "mock_smart_bubble_stats_store.cc",
+    "mock_smart_bubble_stats_store.h",
+    "password_store_results_observer.cc",
+    "password_store_results_observer.h",
+    "test_password_store.cc",
+    "test_password_store.h",
+  ]
+  deps = [
+    ":password_store_impl",
+    "//base",
+    "//components/password_manager/core/browser/affiliation:affiliation_match_helper",
+    "//components/sync/model",
+    "//testing/gmock",
+  ]
+  configs += [ "//build/config/compiler:wexit_time_destructors" ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [
+    "get_logins_with_affiliations_request_handler_unittest.cc",
+    "insecure_credentials_table_unittest.cc",
+    "login_database_unittest.cc",
+    "password_notes_table_unittest.cc",
+    "password_store_built_in_backend_unittest.cc",
+    "password_store_consumer_unittest.cc",
+    "password_store_unittest.cc",
+    "psl_matching_helper_unittest.cc",
+    "statistics_table_unittest.cc",
+  ]
+
+  if (is_android) {
+    sources += [
+      "password_store_backend_metrics_recorder_unittest.cc",
+      "split_stores_and_local_upm_unittest.cc",
+    ]
+  }
+  if (is_ios) {
+    sources += [ "login_database_ios_unittest.cc" ]
+  }
+  deps = [
+    ":password_store_impl",
+    ":test_support",
+    "//base",
+    "//base/test:test_support",
+    "//components/affiliations/core/browser:affiliations",
+    "//components/affiliations/core/browser:test_support",
+    "//components/autofill/core/common",
+    "//components/os_crypt/sync:os_crypt",
+    "//components/os_crypt/sync:test_support",
+    "//components/password_manager/core/browser:test_support",
+    "//components/password_manager/core/browser/affiliation:affiliation_match_helper",
+    "//components/password_manager/core/browser/affiliation:test_support",
+    "//components/password_manager/core/browser/features:password_features",
+    "//components/password_manager/core/browser/form_parsing",
+    "//components/password_manager/core/browser/sync",
+    "//components/password_manager/core/common",
+    "//components/prefs",
+    "//components/prefs:test_support",
+    "//components/sync/model",
+    "//sql",
+    "//sql:test_support",
+    "//testing/gmock",
+    "//testing/gtest",
+    "//url",
+  ]
+  configs += [ "//build/config/compiler:wexit_time_destructors" ]
+}

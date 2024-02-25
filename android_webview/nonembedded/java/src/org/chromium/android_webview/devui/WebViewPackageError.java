@@ -38,12 +38,12 @@ public class WebViewPackageError {
     // The developer UI application label should be used in the placeholder.
     public static final String DIFFERENT_WEBVIEW_PROVIDER_DIALOG_MESSAGE =
             "You are using DevTools for (%s) which is not the system's currently selected "
-            + "WebView provider";
+                    + "WebView provider";
 
     private static final String NO_VALID_WEBVIEW_MESSAGE =
             "Cannot find a valid WebView provider installed. "
-            + "Please install a valid WebView package. Contact "
-            + "android-webview-dev@chromium.org for help.";
+                    + "Please install a valid WebView package. Contact "
+                    + "android-webview-dev@chromium.org for help.";
 
     /**
      * @param context The {@link Activity} where the error is yield.
@@ -99,11 +99,13 @@ public class WebViewPackageError {
         }
 
         if (canOpenCurrentProvider) {
-            dialogBuilder.setPositiveButton(OPEN_WEBVIEW_PROVIDER_BUTTON_TEXT,
+            dialogBuilder.setPositiveButton(
+                    OPEN_WEBVIEW_PROVIDER_BUTTON_TEXT,
                     (d, id) -> openCurrentWebViewProviderDevTools());
         }
         if (canChangeProvider) {
-            dialogBuilder.setNeutralButton(CHANGE_WEBVIEW_PROVIDER_BUTTON_TEXT,
+            dialogBuilder.setNeutralButton(
+                    CHANGE_WEBVIEW_PROVIDER_BUTTON_TEXT,
                     (d, id) -> openChangeWebViewProviderSettings());
         }
 
@@ -120,24 +122,25 @@ public class WebViewPackageError {
         PackageInfo systemWebViewPackage = WebViewPackageHelper.getCurrentWebViewPackage(mContext);
         AlertDialog.Builder builder = new AlertDialog.Builder(mContext);
         builder.setTitle("DevTools Not Found")
-                .setMessage(String.format(Locale.US,
-                        "DevTools are not available in the current "
-                                + "WebView provider selected by the system (%s).\n\n"
-                                + "Please update to a newer version or select a different WebView "
-                                + "provider.",
-                        systemWebViewPackage.packageName));
+                .setMessage(
+                        String.format(
+                                Locale.US,
+                                "DevTools are not available in the current "
+                                        + "WebView provider selected by the system (%s).\n\n"
+                                        + "Please update to a newer version or select a different WebView "
+                                        + "provider.",
+                                systemWebViewPackage.packageName));
 
         if (canAccessWebViewProviderDeveloperSetting()) {
-            builder.setPositiveButton(CHANGE_WEBVIEW_PROVIDER_BUTTON_TEXT,
+            builder.setPositiveButton(
+                    CHANGE_WEBVIEW_PROVIDER_BUTTON_TEXT,
                     (dialog, id) -> openChangeWebViewProviderSettings());
         }
 
         return builder.create();
     }
 
-    /**
-     * Check if the system current selceted WebView provider has a valid DevTools implementation.
-     */
+    /** Check if the system current selceted WebView provider has a valid DevTools implementation. */
     private boolean canOpenCurrentWebViewProviderDevTools() {
         PackageInfo systemWebViewPackage = WebViewPackageHelper.getCurrentWebViewPackage(mContext);
         if (systemWebViewPackage == null) {
@@ -162,9 +165,7 @@ public class WebViewPackageError {
         mContext.startActivity(intent);
     }
 
-    /**
-     * Builds the intent used to open DevTools from the given {@code packageName}.
-     */
+    /** Builds the intent used to open DevTools from the given {@code packageName}. */
     private Intent buildWebViewDevUiIntent(String packageName) {
         Intent intent = new Intent("com.android.webview.SHOW_DEV_UI");
         intent.setPackage(packageName);
@@ -175,9 +176,7 @@ public class WebViewPackageError {
         return intent;
     }
 
-    /**
-     * Check if the user can open the settings activity to change WebView providers or not.
-     */
+    /** Check if the user can open the settings activity to change WebView providers or not. */
     public static boolean canAccessWebViewProviderDeveloperSetting() {
         // Switching WebView providers is possible from API >= 24.
         // The activity to change WebView provider is only enabled for admin user, see
@@ -186,7 +185,8 @@ public class WebViewPackageError {
     }
 
     private void openChangeWebViewProviderSettings() {
-        SafeIntentUtils.startActivityOrShowError(mContext,
+        SafeIntentUtils.startActivityOrShowError(
+                mContext,
                 new Intent(Settings.ACTION_WEBVIEW_SETTINGS),
                 SafeIntentUtils.WEBVIEW_SETTINGS_ERROR);
     }

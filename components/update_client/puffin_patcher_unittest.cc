@@ -23,8 +23,6 @@
 #include "components/update_client/test_installer.h"
 #include "components/update_client/test_utils.h"
 #include "components/update_client/update_client_errors.h"
-#include "courgette/courgette.h"
-#include "courgette/third_party/bsdiff/bsdiff.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace update_client {

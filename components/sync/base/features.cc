@@ -16,18 +16,15 @@ BASE_FEATURE(kIgnoreSyncEncryptionKeysLongMissing,
              "IgnoreSyncEncryptionKeysLongMissing",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(kPasswordNotesWithBackup,
-             "PasswordNotesWithBackup",
 #if BUILDFLAG(IS_ANDROID)
-             base::FEATURE_DISABLED_BY_DEFAULT
-#else
-             base::FEATURE_ENABLED_BY_DEFAULT
+BASE_FEATURE(kPassExplicitSyncPassphraseToGmsCore,
+             "PassExplicitSyncPassphraseToGmsCore",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 #endif
-);
 
 BASE_FEATURE(kSharingOfferKeyPairBootstrap,
              "SharingOfferKeyPairBootstrap",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kSharingOfferKeyPairRead,
              "SharingOfferKeyPairRead",
@@ -36,7 +33,7 @@ BASE_FEATURE(kSharingOfferKeyPairRead,
 #if BUILDFLAG(IS_ANDROID)
 BASE_FEATURE(kSyncAndroidLimitNTPPromoImpressions,
              "SyncAndroidLimitNTPPromoImpressions",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 #endif  // BUILDFLAG(IS_ANDROID)
 
 BASE_FEATURE(kSyncAutofillWalletUsageData,
@@ -58,7 +55,7 @@ BASE_FEATURE(kSyncChromeOSExplicitPassphraseSharing,
 
 BASE_FEATURE(kSyncChromeOSAppsToggleSharing,
              "SyncChromeOSAppsToggleSharing",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kChromeOSSyncedSessionSharing,
              "ChromeOSSyncedSessionSharing",
@@ -67,55 +64,76 @@ BASE_FEATURE(kChromeOSSyncedSessionSharing,
 
 BASE_FEATURE(kSyncPersistInvalidations,
              "SyncPersistInvalidations",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kSkipInvalidationOptimizationsWhenDeviceInfoUpdated,
              "SkipInvalidationOptimizationsWhenDeviceInfoUpdated",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(kSyncEnableHistoryDataType,
-             "SyncEnableHistoryDataType",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 BASE_FEATURE(kSyncEnableContactInfoDataTypeInTransportMode,
              "SyncEnableContactInfoDataTypeInTransportMode",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+#if BUILDFLAG(IS_IOS)
+             base::FEATURE_ENABLED_BY_DEFAULT
+#else
+             base::FEATURE_DISABLED_BY_DEFAULT
+#endif
+);
 
 BASE_FEATURE(kSyncEnableContactInfoDataTypeForCustomPassphraseUsers,
              "SyncEnableContactInfoDataTypeForCustomPassphraseUsers",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+#if BUILDFLAG(IS_IOS)
+             base::FEATURE_ENABLED_BY_DEFAULT
+#else
+             base::FEATURE_DISABLED_BY_DEFAULT
+#endif
+);
+
+BASE_FEATURE(kEnablePasswordsAccountStorageForSyncingUsers,
+             "EnablePasswordsAccountStorageForSyncingUsers",
+#if BUILDFLAG(IS_ANDROID)
+             base::FEATURE_ENABLED_BY_DEFAULT
+#else
+             base::FEATURE_DISABLED_BY_DEFAULT
+#endif
+);
+
+BASE_FEATURE(kEnablePasswordsAccountStorageForNonSyncingUsers,
+             "EnablePasswordsAccountStorageForNonSyncingUsers",
+#if BUILDFLAG(IS_ANDROID)
+             base::FEATURE_DISABLED_BY_DEFAULT
+#else
+             base::FEATURE_ENABLED_BY_DEFAULT
+#endif
+);
 
 BASE_FEATURE(kSyncEnableContactInfoDataTypeForDasherUsers,
              "SyncEnableContactInfoDataTypeForDasherUsers",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(kSyncEnforceBookmarksCountLimit,
-             "SyncEnforceBookmarksCountLimit",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 BASE_FEATURE(kEnablePreferencesAccountStorage,
              "EnablePreferencesAccountStorage",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
-BASE_FEATURE(kSyncIgnoreSyncRequestedPreference,
-             "SyncIgnoreSyncRequestedPreference",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-#endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_IOS) || BUILDFLAG(IS_ANDROID)
+             base::FEATURE_ENABLED_BY_DEFAULT
+#else
+             base::FEATURE_DISABLED_BY_DEFAULT
+#endif
+);
 
 BASE_FEATURE(kSyncPollImmediatelyOnEveryStartup,
-             "SyncPollImmediatelyOnEveryStartup",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             "SyncPollImmediatelyOnEveryStartup2",
+#if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || \
+    BUILDFLAG(IS_WIN)
+             base::FEATURE_ENABLED_BY_DEFAULT
+#else
+             base::FEATURE_DISABLED_BY_DEFAULT
+#endif
+);
 
-BASE_FEATURE(kSyncPollWithoutDelayOnStartup,
-             "SyncPollWithoutDelayOnStartup",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
-#if !BUILDFLAG(IS_ANDROID) || !BUILDFLAG(IS_IOS)
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 BASE_FEATURE(kSyncWebauthnCredentials,
              "SyncWebauthnCredentials",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-#endif  // !BUILDFLAG(IS_ANDROID) || !BUILDFLAG(IS_IOS)
+             base::FEATURE_ENABLED_BY_DEFAULT);
+#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 
 BASE_FEATURE(kSyncIgnoreGetUpdatesRetryDelay,
              "SyncIgnoreGetUpdatesRetryDelay",
@@ -127,27 +145,49 @@ BASE_FEATURE(kTabGroupsSaveNudgeDelay,
 
 BASE_FEATURE(kReplaceSyncPromosWithSignInPromos,
              "ReplaceSyncPromosWithSignInPromos",
+#if BUILDFLAG(IS_IOS)
+             base::FEATURE_ENABLED_BY_DEFAULT
+#else
+             base::FEATURE_DISABLED_BY_DEFAULT
+#endif
+);
+
+BASE_FEATURE(kEnableBookmarkFoldersForAccountStorage,
+             "EnableBookmarkFoldersForAccountStorage",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(kEnableBookmarksAccountStorage,
-             "EnableBookmarksAccountStorage",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
-BASE_FEATURE(kReadingListEnableDualReadingListModel,
-             "ReadingListEnableDualReadingListModel",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
+#if !BUILDFLAG(IS_IOS)
 BASE_FEATURE(kReadingListEnableSyncTransportModeUponSignIn,
              "ReadingListEnableSyncTransportModeUponSignIn",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+bool IsReadingListAccountStorageEnabled() {
+  return base::FeatureList::IsEnabled(
+      syncer::kReadingListEnableSyncTransportModeUponSignIn);
+}
+#endif  // !BUILDFLAG(IS_IOS)
+
+BASE_FEATURE(kSyncSharedTabGroupDataInTransportMode,
+             "SyncSharedTabGroupDataInTransportMode",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 BASE_FEATURE(kSyncEnableWalletMetadataInTransportMode,
              "SyncEnableWalletMetadataInTransportMode",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+#if BUILDFLAG(IS_IOS)
+             base::FEATURE_ENABLED_BY_DEFAULT
+#else
+             base::FEATURE_DISABLED_BY_DEFAULT
+#endif
+);
 
 BASE_FEATURE(kSyncEnableWalletOfferInTransportMode,
              "SyncEnableWalletOfferInTransportMode",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+#if BUILDFLAG(IS_IOS)
+             base::FEATURE_ENABLED_BY_DEFAULT
+#else
+             base::FEATURE_DISABLED_BY_DEFAULT
+#endif
+);
 
 BASE_FEATURE(kSyncEntityMetadataRecordDeletedByVersionOnLocalDeletion,
              "SyncEntityMetadataRecordDeletedByVersionOnLocalDeletion",
@@ -156,5 +196,57 @@ BASE_FEATURE(kSyncEntityMetadataRecordDeletedByVersionOnLocalDeletion,
 BASE_FEATURE(kSyncPasswordCleanUpAccidentalBatchDeletions,
              "SyncPasswordCleanUpAccidentalBatchDeletions",
              base::FEATURE_DISABLED_BY_DEFAULT);
+
+BASE_FEATURE(kSyncEnableBatchUploadLocalData,
+             "SyncEnableBatchUploadLocalData",
+#if BUILDFLAG(IS_IOS)
+             base::FEATURE_ENABLED_BY_DEFAULT
+#else
+             base::FEATURE_DISABLED_BY_DEFAULT
+#endif
+);
+
+#if BUILDFLAG(IS_ANDROID)
+BASE_FEATURE(kRestoreSyncedPlaceholderTabs,
+             "RestoreSyncedPlaceholderTabs",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+#endif  // BUILDFLAG(IS_ANDROID)
+
+BASE_FEATURE(kSyncSessionOnVisibilityChanged,
+             "SyncSessionOnVisibilityChanged",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+BASE_FEATURE(kSyncDecoupleAddressPaymentSettings,
+             "SyncDecoupleAddressPaymentSettings",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+// TODO(crbug.com/1374718): Delete feature toggle after a grace period.
+BASE_FEATURE(kSyncAlwaysForceImmediateStartIfTransportDataMissing,
+             "SyncAlwaysForceImmediateStartIfTransportDataMissing",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
+BASE_FEATURE(kSyncIncreaseNudgeDelayForSingleClient,
+             "SyncIncreaseNudgeDelayForSingleClient",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+BASE_FEATURE(kSyncSchedulerUseWallClockTimer,
+             "SyncSchedulerUseWallClockTimer",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+#if BUILDFLAG(IS_ANDROID)
+BASE_FEATURE(kSyncShowIdentityErrorsForSignedInUsers,
+             "SyncShowIdentityErrorsForSignedInUsers",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+#endif  // BUILDFLAG(IS_ANDROID)
+
+BASE_FEATURE(kSyncRememberCustomPassphraseAfterSignout,
+             "SyncRememberCustomPassphraseAfterSignout",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
+#if BUILDFLAG(IS_ANDROID)
+BASE_FEATURE(kWebApkBackupAndRestoreBackend,
+             "WebApkBackupAndRestoreBackend",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+#endif  // BUILDFLAG(IS_ANDROID)
 
 }  // namespace syncer

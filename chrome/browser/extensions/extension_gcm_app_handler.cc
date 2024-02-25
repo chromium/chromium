@@ -10,7 +10,6 @@
 #include "base/lazy_instance.h"
 #include "base/location.h"
 #include "base/task/single_thread_task_runner.h"
-#include "chrome/browser/chrome_notification_types.h"
 #include "chrome/browser/extensions/api/gcm/gcm_api.h"
 #include "chrome/browser/gcm/gcm_profile_service_factory.h"
 #include "chrome/browser/gcm/instance_id/instance_id_profile_service_factory.h"
@@ -51,7 +50,7 @@ ExtensionGCMAppHandler::GetFactoryInstance() {
 ExtensionGCMAppHandler::ExtensionGCMAppHandler(content::BrowserContext* context)
     : profile_(Profile::FromBrowserContext(context)) {
   extension_registry_observation_.Observe(ExtensionRegistry::Get(profile_));
-  js_event_router_ = std::make_unique<extensions::GcmJsEventRouter>(profile_);
+  js_event_router_ = std::make_unique<GcmJsEventRouter>(profile_);
 }
 
 ExtensionGCMAppHandler::~ExtensionGCMAppHandler() = default;
@@ -146,7 +145,7 @@ void ExtensionGCMAppHandler::OnExtensionUnloaded(
 void ExtensionGCMAppHandler::OnExtensionUninstalled(
     content::BrowserContext* browser_context,
     const Extension* extension,
-    extensions::UninstallReason reason) {
+    UninstallReason reason) {
   if (IsGCMPermissionEnabled(extension)) {
     // Let's first remove InstanceID data. GCM unregistration will be triggered
     // after the asynchronous call is returned in OnDeleteIDCompleted.

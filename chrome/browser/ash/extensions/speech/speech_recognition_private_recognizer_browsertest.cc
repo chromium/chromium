@@ -69,8 +69,8 @@ class SpeechRecognitionPrivateRecognizerTest
     SpeechRecognitionPrivateBaseTest::TearDownOnMainThread();
   }
 
-  void HandleStart(absl::optional<std::string> locale,
-                   absl::optional<bool> interim_results) {
+  void HandleStart(std::optional<std::string> locale,
+                   std::optional<bool> interim_results) {
     // In some cases, speech recognition will not be started e.g. if
     // HandleStart() is called when speech recognition is already active. In
     // these cases, we don't want to wait for speech recognition to start.
@@ -80,8 +80,8 @@ class SpeechRecognitionPrivateRecognizerTest
                        base::Unretained(this)));
   }
 
-  void HandleStartAndWait(absl::optional<std::string> locale,
-                          absl::optional<bool> interim_results) {
+  void HandleStartAndWait(std::optional<std::string> locale,
+                          std::optional<bool> interim_results) {
     recognizer_->HandleStart(
         locale, interim_results,
         base::BindOnce(&SpeechRecognitionPrivateRecognizerTest::OnStartCallback,
@@ -108,8 +108,8 @@ class SpeechRecognitionPrivateRecognizerTest
     ASSERT_EQ(SPEECH_RECOGNIZER_OFF, recognizer()->current_state());
   }
 
-  void MaybeUpdateProperties(absl::optional<std::string> locale,
-                             absl::optional<bool> interim_results) {
+  void MaybeUpdateProperties(std::optional<std::string> locale,
+                             std::optional<bool> interim_results) {
     recognizer_->MaybeUpdateProperties(
         locale, interim_results,
         base::BindOnce(&SpeechRecognitionPrivateRecognizerTest::OnStartCallback,
@@ -121,17 +121,17 @@ class SpeechRecognitionPrivateRecognizerTest
   }
 
   void SendInterimFakeSpeechResult(const std::u16string& transcript) {
-    recognizer_->OnSpeechResult(transcript, false, absl::nullopt);
+    recognizer_->OnSpeechResult(transcript, false, std::nullopt);
   }
 
   void OnStartCallback(speech::SpeechRecognitionType type,
-                       absl::optional<std::string> error) {
+                       std::optional<std::string> error) {
     type_ = type;
     on_start_callback_error_ = error.has_value() ? error.value() : "";
     ran_on_start_callback_ = true;
   }
 
-  void OnStopOnceCallback(absl::optional<std::string> error) {
+  void OnStopOnceCallback(std::optional<std::string> error) {
     if (error.has_value())
       on_stop_once_callback_error_ = error.value();
     else
@@ -188,8 +188,8 @@ INSTANTIATE_TEST_SUITE_P(
 
 IN_PROC_BROWSER_TEST_P(SpeechRecognitionPrivateRecognizerTest,
                        MaybeUpdateProperties) {
-  absl::optional<std::string> locale;
-  absl::optional<bool> interim_results;
+  std::optional<std::string> locale;
+  std::optional<bool> interim_results;
   MaybeUpdateProperties(locale, interim_results);
   ASSERT_EQ(kEnglishLocale, recognizer()->locale());
   ASSERT_FALSE(recognizer()->interim_results());
@@ -212,15 +212,15 @@ IN_PROC_BROWSER_TEST_P(SpeechRecognitionPrivateRecognizerTest,
 
 IN_PROC_BROWSER_TEST_P(SpeechRecognitionPrivateRecognizerTest,
                        RecognitionStarts) {
-  absl::optional<std::string> locale;
-  absl::optional<bool> interim_results;
+  std::optional<std::string> locale;
+  std::optional<bool> interim_results;
   HandleStartAndWait(locale, interim_results);
 }
 
 IN_PROC_BROWSER_TEST_P(SpeechRecognitionPrivateRecognizerTest,
                        RecognitionStartsAndStops) {
-  absl::optional<std::string> locale;
-  absl::optional<bool> interim_results;
+  std::optional<std::string> locale;
+  std::optional<bool> interim_results;
 
   // Start speech recognition.
   HandleStartAndWait(locale, interim_results);
@@ -234,8 +234,8 @@ IN_PROC_BROWSER_TEST_P(SpeechRecognitionPrivateRecognizerTest,
 // should run the OnceCallback with an error.
 IN_PROC_BROWSER_TEST_P(SpeechRecognitionPrivateRecognizerTest,
                        HandleStartAlreadyStarted) {
-  absl::optional<std::string> locale;
-  absl::optional<bool> interim_results;
+  std::optional<std::string> locale;
+  std::optional<bool> interim_results;
   HandleStartAndWait(locale, interim_results);
   ASSERT_EQ("", on_start_callback_error());
   ASSERT_EQ(kEnglishLocale, recognizer()->locale());
@@ -256,8 +256,8 @@ IN_PROC_BROWSER_TEST_P(SpeechRecognitionPrivateRecognizerTest,
 
 IN_PROC_BROWSER_TEST_P(SpeechRecognitionPrivateRecognizerTest,
                        RecognitionStartsAndStopsTwice) {
-  absl::optional<std::string> locale;
-  absl::optional<bool> interim_results;
+  std::optional<std::string> locale;
+  std::optional<bool> interim_results;
   HandleStartAndWait(locale, interim_results);
   ASSERT_EQ(kEnglishLocale, recognizer()->locale());
   ASSERT_EQ(false, recognizer()->interim_results());
@@ -302,7 +302,7 @@ IN_PROC_BROWSER_TEST_P(SpeechRecognitionPrivateRecognizerTest,
 // the background.
 IN_PROC_BROWSER_TEST_P(SpeechRecognitionPrivateRecognizerTest,
                        StoppedInBackground) {
-  HandleStartAndWait(absl::optional<std::string>(), absl::optional<bool>());
+  HandleStartAndWait(std::optional<std::string>(), std::optional<bool>());
   FakeSpeechRecognitionStateChanged(SPEECH_RECOGNIZER_READY);
   ASSERT_TRUE(delegate_handled_stop());
   ASSERT_FALSE(ran_on_stop_once_callback());
@@ -313,7 +313,7 @@ IN_PROC_BROWSER_TEST_P(SpeechRecognitionPrivateRecognizerTest,
 // Tests that we run the correct callbacks when speech recognition encounters
 // an error.
 IN_PROC_BROWSER_TEST_P(SpeechRecognitionPrivateRecognizerTest, Error) {
-  HandleStartAndWait(absl::optional<std::string>(), absl::optional<bool>());
+  HandleStartAndWait(std::optional<std::string>(), std::optional<bool>());
   SendErrorAndWait();
   ASSERT_TRUE(delegate_handled_stop());
   ASSERT_FALSE(ran_on_stop_once_callback());
@@ -322,12 +322,12 @@ IN_PROC_BROWSER_TEST_P(SpeechRecognitionPrivateRecognizerTest, Error) {
 }
 
 IN_PROC_BROWSER_TEST_P(SpeechRecognitionPrivateRecognizerTest, OnSpeechResult) {
-  HandleStartAndWait(absl::optional<std::string>(), absl::optional<bool>());
+  HandleStartAndWait(std::optional<std::string>(), std::optional<bool>());
 
   // Set interim_results to false. This means we should only respond to final
   // speech recognition results.
-  MaybeUpdateProperties(absl::optional<std::string>(),
-                        absl::optional<bool>(false));
+  MaybeUpdateProperties(std::optional<std::string>(),
+                        std::optional<bool>(false));
   SendInterimFakeSpeechResult(u"Interim result");
   ASSERT_EQ(u"", last_transcript());
   ASSERT_FALSE(last_is_final());
@@ -338,8 +338,8 @@ IN_PROC_BROWSER_TEST_P(SpeechRecognitionPrivateRecognizerTest, OnSpeechResult) {
 
   // Set interim_results to true. This means we should respond to both final
   // and interim speech recognition results.
-  MaybeUpdateProperties(absl::optional<std::string>(),
-                        absl::optional<bool>(true));
+  MaybeUpdateProperties(std::optional<std::string>(),
+                        std::optional<bool>(true));
   SendInterimFakeSpeechResult(u"Interim result");
   ASSERT_EQ(u"Interim result", last_transcript());
   ASSERT_FALSE(last_is_final());
@@ -364,8 +364,8 @@ IN_PROC_BROWSER_TEST_P(SpeechRecognitionPrivateRecognizerTest, SetState) {
 
 IN_PROC_BROWSER_TEST_P(SpeechRecognitionPrivateRecognizerTest,
                        StopWhenNeverStarted) {
-  absl::optional<std::string> locale;
-  absl::optional<bool> interim_results;
+  std::optional<std::string> locale;
+  std::optional<bool> interim_results;
   // Attempt to start speech recognition. Don't wait for `on_start_callback` to
   // be run.
   HandleStart(locale, interim_results);

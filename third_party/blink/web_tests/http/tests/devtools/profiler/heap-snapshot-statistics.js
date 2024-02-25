@@ -5,10 +5,12 @@
 import {TestRunner} from 'test_runner';
 import {HeapProfilerTestRunner} from 'heap_profiler_test_runner';
 
+import * as ProfilerModule from 'devtools/panels/profiler/profiler.js';
+
 (async function() {
   'use strict';
   TestRunner.addResult(`Tests Statistics view of detailed heap snapshots.\n`);
-  await TestRunner.showPanel('heap_profiler');
+  await TestRunner.showPanel('heap-profiler');
 
   function createHeapSnapshot() {
     var builder = new HeapProfilerTestRunner.HeapSnapshotBuilder();
@@ -43,7 +45,7 @@ import {HeapProfilerTestRunner} from 'heap_profiler_test_runner';
   }
 
   HeapProfilerTestRunner.runHeapSnapshotTestSuite([function testStatistics(next) {
-    TestRunner.addSniffer(Profiler.HeapSnapshotView.prototype, 'retrieveStatistics', step1);
+    TestRunner.addSniffer(ProfilerModule.HeapSnapshotView.HeapSnapshotView.prototype, 'retrieveStatistics', step1);
     HeapProfilerTestRunner.takeAndOpenSnapshot(createHeapSnapshot, () => {});
 
     async function step1(arg, result) {

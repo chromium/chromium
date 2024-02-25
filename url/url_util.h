@@ -7,10 +7,10 @@
 
 #include <memory>
 #include <string>
+#include <string_view>
 #include <vector>
 
 #include "base/component_export.h"
-#include "base/strings/string_piece.h"
 #include "url/third_party/mozilla/url_parse.h"
 #include "url/url_canon.h"
 #include "url/url_constants.h"
@@ -203,12 +203,12 @@ bool GetStandardSchemeType(const char16_t* spec,
 // input domain should match host canonicalization rules. i.e. it should be
 // lowercase except for escape chars.
 COMPONENT_EXPORT(URL)
-bool DomainIs(base::StringPiece canonical_host,
-              base::StringPiece canonical_domain);
+bool DomainIs(std::string_view canonical_host,
+              std::string_view canonical_domain);
 
 // Returns true if the hostname is an IP address. Note: this function isn't very
 // cheap, as it must re-parse the host to verify.
-COMPONENT_EXPORT(URL) bool HostIsIPAddress(base::StringPiece host);
+COMPONENT_EXPORT(URL) bool HostIsIPAddress(std::string_view host);
 
 // URL library wrappers --------------------------------------------------------
 
@@ -299,15 +299,29 @@ enum class DecodeURLMode {
 
 // Unescapes the given string using URL escaping rules.
 COMPONENT_EXPORT(URL)
-void DecodeURLEscapeSequences(const char* input,
-                              int length,
+void DecodeURLEscapeSequences(std::string_view input,
                               DecodeURLMode mode,
                               CanonOutputW* output);
 
 // Escapes the given string as defined by the JS method encodeURIComponent. See
 // https://developer.mozilla.org/en/JavaScript/Reference/Global_Objects/encodeURIComponent
 COMPONENT_EXPORT(URL)
-void EncodeURIComponent(const char* input, int length, CanonOutput* output);
+void EncodeURIComponent(std::string_view input, CanonOutput* output);
+
+// Returns true if `c` is a character that does not require escaping in
+// encodeURIComponent.
+// TODO(crbug.com/1481056): Remove this when event-level reportEvent is removed
+// (if it is still this function's only consumer).
+COMPONENT_EXPORT(URL)
+bool IsURIComponentChar(char c);
+
+// Checks an arbitrary string for invalid escape sequences.
+//
+// A valid percent-encoding is '%' followed by exactly two hex-digits. This
+// function returns true if an occurrence of '%' is found and followed by
+// anything other than two hex-digits.
+COMPONENT_EXPORT(URL)
+bool HasInvalidURLEscapeSequences(std::string_view input);
 
 }  // namespace url
 

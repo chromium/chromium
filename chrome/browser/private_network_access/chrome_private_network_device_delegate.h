@@ -18,8 +18,11 @@
 #include "third_party/blink/public/mojom/private_network_device/private_network_device.mojom.h"
 
 namespace content {
+class BrowserContext;
 class RenderFrameHost;
 }  // namespace content
+
+class PrivateNetworkDevicePermissionContext;
 
 // Interface to support Private Network permission APIs.
 class ChromePrivateNetworkDeviceDelegate
@@ -44,11 +47,32 @@ class ChromePrivateNetworkDeviceDelegate
       network::mojom::URLLoaderNetworkServiceObserver::
           OnPrivateNetworkAccessPermissionRequiredCallback callback) override;
 
- private:
-  void HandlePrivateNetworkDeviceChooserResult(
+  bool HasDevicePermission(content::RenderFrameHost& frame,
+                           const blink::mojom::PrivateNetworkDevice& device,
+                           bool is_device_valid);
+
+  std::unique_ptr<ChromePrivateNetworkDeviceChooser> RunChooser(
+      content::RenderFrameHost& frame,
+      blink::mojom::PrivateNetworkDevicePtr device,
       network::mojom::URLLoaderNetworkServiceObserver::
           OnPrivateNetworkAccessPermissionRequiredCallback callback,
+      bool is_device_valid);
+
+  void HandlePrivateNetworkDeviceChooserResult(
+      bool is_device_valid,
+      network::mojom::URLLoaderNetworkServiceObserver::
+          OnPrivateNetworkAccessPermissionRequiredCallback callback,
+      PrivateNetworkDevicePermissionContext* permission_context,
+      const url::Origin& origin,
+      const blink::mojom::PrivateNetworkDevice& device,
       bool permission_granted);
+
+  static bool CheckDevice(const blink::mojom::PrivateNetworkDevice& device,
+                          content::RenderFrameHost& frame);
+
+ private:
+  PrivateNetworkDevicePermissionContext* GetPermissionContext(
+      content::BrowserContext* browser_context);
 
   // The currently-displayed private network device chooser prompt, if any.
   //
@@ -59,4 +83,4 @@ class ChromePrivateNetworkDeviceDelegate
   std::unique_ptr<ChromePrivateNetworkDeviceChooser> chooser_;
 };
 
-#endif  // CHROME_BROWSER_PRIVATE_NETWORK_DEVICE_DELEGATE_H_
+#endif  // CHROME_BROWSER_PRIVATE_NETWORK_ACCESS_CHROME_PRIVATE_NETWORK_DEVICE_DELEGATE_H_

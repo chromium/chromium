@@ -29,14 +29,7 @@
 
 #include "third_party/blink/renderer/core/dom/text_link_colors.h"
 
-#include "third_party/blink/renderer/core/css/css_color.h"
-#include "third_party/blink/renderer/core/css/css_color_mix_value.h"
-#include "third_party/blink/renderer/core/css/css_identifier_value.h"
-#include "third_party/blink/renderer/core/css/css_light_dark_value_pair.h"
-#include "third_party/blink/renderer/core/css/style_color.h"
-#include "third_party/blink/renderer/core/layout/layout_theme.h"
-#include "third_party/blink/renderer/platform/graphics/color.h"
-#include "third_party/blink/renderer/platform/wtf/casting.h"
+#include "third_party/blink/public/mojom/frame/color_scheme.mojom-blink.h"
 
 namespace blink {
 
@@ -122,66 +115,6 @@ const Color& TextLinkColors::ActiveLinkColor(
              : color_scheme == mojom::blink::ColorScheme::kLight
                    ? kDefaultActiveLinkColorLight
                    : kDefaultActiveLinkColorDark;
-}
-
-Color TextLinkColors::ColorFromCSSValue(const CSSValue& value,
-                                        Color current_color,
-                                        mojom::blink::ColorScheme color_scheme,
-                                        bool for_visited_link) const {
-  if (auto* color_value = DynamicTo<cssvalue::CSSColor>(value)) {
-    Color result_color = color_value->Value();
-    result_color.ResolveNonFiniteValues();
-    return result_color;
-  }
-
-  if (auto* color_mix_value = DynamicTo<cssvalue::CSSColorMixValue>(value)) {
-    Color c1 = ColorFromCSSValue(color_mix_value->Color1(), current_color,
-                                 color_scheme, for_visited_link);
-    Color c2 = ColorFromCSSValue(color_mix_value->Color2(), current_color,
-                                 color_scheme, for_visited_link);
-
-    double alpha_multiplier;
-    double mix_amount;
-    if (cssvalue::CSSColorMixValue::NormalizePercentages(
-            color_mix_value->Percentage1(), color_mix_value->Percentage2(),
-            mix_amount, alpha_multiplier)) {
-      return Color::FromColorMix(color_mix_value->ColorInterpolationSpace(),
-                                 color_mix_value->HueInterpolationMethod(), c1,
-                                 c2, mix_amount, alpha_multiplier);
-    } else {
-      // TODO(crbug.com/1362022): Not sure what is appropriate to return when
-      // both mix amounts are zero.
-      return Color();
-    }
-  }
-
-  if (auto* pair = DynamicTo<CSSLightDarkValuePair>(value)) {
-    const CSSValue& color_value =
-        color_scheme == mojom::blink::ColorScheme::kLight ? pair->First()
-                                                          : pair->Second();
-    return ColorFromCSSValue(color_value, current_color, color_scheme,
-                             for_visited_link);
-  }
-
-  CSSValueID value_id = To<CSSIdentifierValue>(value).GetValueID();
-  switch (value_id) {
-    case CSSValueID::kInvalid:
-      NOTREACHED();
-      return Color();
-    case CSSValueID::kInternalQuirkInherit:
-      return TextColor(color_scheme);
-    case CSSValueID::kWebkitLink:
-      return for_visited_link ? VisitedLinkColor(color_scheme)
-                              : LinkColor(color_scheme);
-    case CSSValueID::kWebkitActivelink:
-      return ActiveLinkColor(color_scheme);
-    case CSSValueID::kWebkitFocusRingColor:
-      return LayoutTheme::GetTheme().FocusRingColor(color_scheme);
-    case CSSValueID::kCurrentcolor:
-      return current_color;
-    default:
-      return StyleColor::ColorFromKeyword(value_id, color_scheme);
-  }
 }
 
 }  // namespace blink

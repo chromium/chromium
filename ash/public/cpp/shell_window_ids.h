@@ -61,9 +61,6 @@ enum ShellWindowId {
   // The wallpaper (desktop background) window.
   kShellWindowId_WallpaperContainer,
 
-  // The glanceables ("welcome back") window container.
-  kShellWindowId_GlanceablesContainer,
-
   // The containers for standard top-level windows per active desks.
   // * Notes:
   //   - There are no direct mapping between `kShellWindowId_DeskContainerA` and
@@ -230,16 +227,9 @@ enum NonContainerWindowId {
   // window (if one exists).
   kShellWindowId_CaptureModeFolderSelectionDialogOwner,
 
-  // The window that shows the "Save desk as template" button and `Save desk for
-  // later` button below the Virtual Desks bar. There's only one such window on
-  // each display when overview mode is active.
-  kShellWindowId_SaveDeskButtonContainer,
-
-  // The window that shows the Saved Desk Library in overview.
-  kShellWindowId_SavedDeskLibraryWindow,
-
-  // The window that shows the "No recent items" label in overview.
-  kShellWindowId_OverviewNoWindowsLabelWindow,
+  // The window that notifies the user that an admin user was present on the
+  // host device when the remote desktop session was curtained.
+  kShellWindowId_AdminWasPresentNotificationWindow,
 };
 
 // A list of system modal container IDs. The order of the list is important that

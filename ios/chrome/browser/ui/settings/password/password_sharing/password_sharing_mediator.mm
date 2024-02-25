@@ -4,8 +4,13 @@
 
 #import "ios/chrome/browser/ui/settings/password/password_sharing/password_sharing_mediator.h"
 
+#import "base/strings/sys_string_conversions.h"
+#import "components/password_manager/core/browser/password_form.h"
+#import "components/password_manager/core/browser/sharing/password_sender_service.h"
 #import "components/password_manager/core/browser/sharing/recipients_fetcher.h"
 #import "components/password_manager/core/browser/sharing/recipients_fetcher_impl.h"
+#import "components/password_manager/core/browser/ui/credential_ui_entry.h"
+#import "components/password_manager/core/browser/ui/saved_passwords_presenter.h"
 #import "components/signin/public/identity_manager/identity_manager.h"
 #import "ios/chrome/app/tests_hook.h"
 #import "ios/chrome/browser/ui/settings/password/password_sharing/password_sharing_mediator_delegate.h"
@@ -34,7 +39,14 @@ std::unique_ptr<RecipientsFetcher> CreateRecipientsFetcher(
 }  // namespace
 
 @interface PasswordSharingMediator () {
+  // Fetches information about the potential sharing recipients of the user.
   std::unique_ptr<RecipientsFetcher> _recipientsFetcher;
+
+  // Sends passwords to specified recipients.
+  raw_ptr<password_manager::PasswordSenderService> _passwordSenderService;
+
+  // Service providing a view on user's saved passwords.
+  raw_ptr<password_manager::SavedPasswordsPresenter> _savedPasswordsPresenter;
 }
 
 @property(nonatomic, weak) id<PasswordSharingMediatorDelegate> delegate;
@@ -44,15 +56,21 @@ std::unique_ptr<RecipientsFetcher> CreateRecipientsFetcher(
 @implementation PasswordSharingMediator
 
 - (instancetype)initWithDelegate:(id<PasswordSharingMediatorDelegate>)delegate
-          SharedURLLoaderFactory:
+          sharedURLLoaderFactory:
               (scoped_refptr<network::SharedURLLoaderFactory>)
                   sharedURLLoaderFactory
-                 identityManager:(signin::IdentityManager*)identityManager {
+                 identityManager:(signin::IdentityManager*)identityManager
+         savedPasswordsPresenter:
+             (password_manager::SavedPasswordsPresenter*)savedPasswordsPresenter
+           passwordSenderService:
+               (password_manager::PasswordSenderService*)passwordSenderService {
   self = [super init];
   if (self) {
     _delegate = delegate;
     _recipientsFetcher =
         CreateRecipientsFetcher(sharedURLLoaderFactory, identityManager);
+    _passwordSenderService = passwordSenderService;
+    _savedPasswordsPresenter = savedPasswordsPresenter;
 
     __weak __typeof__(self) weakSelf = self;
     _recipientsFetcher->FetchFamilyMembers(base::BindOnce(
@@ -62,6 +80,17 @@ std::unique_ptr<RecipientsFetcher> CreateRecipientsFetcher(
         }));
   }
   return self;
+}
+
+- (void)sendSelectedCredentialToSelectedRecipients {
+  std::vector<password_manager::PasswordForm> passwords =
+      _savedPasswordsPresenter->GetCorrespondingPasswordForms(
+          self.selectedCredential);
+  for (RecipientInfoForIOSDisplay* recipient in self.selectedRecipients) {
+    _passwordSenderService->SendPasswords(
+        passwords, {.user_id = base::SysNSStringToUTF8(recipient.userID),
+                    .public_key = recipient.publicKey});
+  }
 }
 
 #pragma mark - Private methods

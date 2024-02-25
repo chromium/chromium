@@ -4,14 +4,15 @@
 
 #include "chrome/browser/ash/arc/policy/arc_policy_bridge.h"
 
+#include <optional>
 #include <string>
+#include <string_view>
 #include <utility>
 
 #include "arc_policy_util.h"
 #include "ash/components/arc/arc_browser_context_keyed_service_factory_base.h"
 #include "ash/components/arc/arc_prefs.h"
 #include "ash/components/arc/session/arc_bridge_service.h"
-#include "ash/constants/ash_switches.h"
 #include "base/command_line.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
@@ -39,7 +40,6 @@
 #include "components/policy/policy_constants.h"
 #include "components/prefs/pref_service.h"
 #include "components/user_manager/user.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 // Enable VLOG level 1.
 #undef ENABLED_VLOG_LEVEL
@@ -316,7 +316,7 @@ base::Value::Dict ParseArcPoliciesToDict(const policy::PolicyMap& policy_map) {
   const base::Value* const app_policy_value =
       policy_map.GetValueUnsafe(policy::key::kArcPolicy);
   if (app_policy_value) {
-    absl::optional<base::Value> app_policy_dict;
+    std::optional<base::Value> app_policy_dict;
     if (app_policy_value->is_string()) {
       app_policy_dict = base::JSONReader::Read(
           app_policy_value->GetString(),
@@ -325,7 +325,7 @@ base::Value::Dict ParseArcPoliciesToDict(const policy::PolicyMap& policy_map) {
     if (app_policy_dict.has_value() && app_policy_dict.value().is_dict()) {
       // Need a deep copy of all values here instead of doing a swap, because
       // JSONReader::Read constructs a dictionary whose StringValues are
-      // JSONStringValues which are based on StringPiece instead of string.
+      // JSONStringValues which are based on std::string_view instead of string.
       filtered_policies.Merge(std::move(app_policy_dict.value().GetDict()));
     } else {
       std::string app_policy_string =
@@ -392,12 +392,9 @@ void OverrideArcPolicies(base::Value::Dict& filtered_policies,
   }
 
   // Always enable APK Cache for affiliated users, and always disable it for
-  // not affiliated ones, unless kArcForceEnableApkCache is set.
-  bool apk_cache_enabled =
-      is_affiliated || base::CommandLine::ForCurrentProcess()->HasSwitch(
-                           ash::switches::kArcForceEnableApkCache);
+  // not affiliated ones.
   filtered_policies.Set(policy_util::kArcPolicyKeyApkCacheEnabled,
-                        apk_cache_enabled);
+                        is_affiliated);
 
   filtered_policies.Set(policy_util::kArcPolicyKeyGuid, guid);
 

@@ -200,7 +200,7 @@ class PersonalizationAppSearchHandlerTest : public AshTestBase {
   std::vector<mojom::SearchResultPtr> SimulateSearchCompleted(
       uint32_t max_num_results,
       local_search_service::ResponseStatus response_status,
-      const absl::optional<std::vector<local_search_service::Result>>&
+      const std::optional<std::vector<local_search_service::Result>>&
           local_search_service_results) {
     std::vector<mojom::SearchResultPtr> result;
     base::RunLoop loop;
@@ -434,7 +434,7 @@ TEST_F(PersonalizationAppSearchHandlerTest, HasDarkModeSearchResults) {
 TEST_F(PersonalizationAppSearchHandlerTest, SortsAndTruncatesResults) {
   ClearSearchTagRegistry();
   // Test search concepts.
-  std::vector<const SearchConcept> test_search_concepts = {
+  const std::vector<SearchConcept> test_search_concepts = {
       {
           .id = mojom::SearchConceptId::kChangeWallpaper,
           .message_id = IDS_PERSONALIZATION_APP_WALLPAPER_LABEL,
@@ -475,7 +475,7 @@ TEST_F(PersonalizationAppSearchHandlerTest, SortsAndTruncatesResults) {
   auto results = SimulateSearchCompleted(
       /*max_num_results=*/maxNumResults,
       local_search_service::ResponseStatus::kSuccess,
-      absl::make_optional(fake_local_results));
+      std::make_optional(fake_local_results));
 
   // Capped at |maxNumResults|.
   EXPECT_EQ(maxNumResults, results.size());

@@ -12,11 +12,13 @@
 
 #include "base/check.h"
 #include "base/check_op.h"
+#include "base/debug/dump_without_crashing.h"
+#include "base/feature_list.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
-#include "base/metrics/histogram_macros.h"
 #include "base/sequence_checker.h"
+#include "components/history/core/browser/features.h"
 #include "components/history/core/browser/history_types.h"
 #include "components/history/core/browser/top_sites.h"
 #include "sql/database.h"
@@ -68,57 +70,12 @@ bool InitTables(sql::Database* db) {
   return db->Execute(kTopSitesSql);
 }
 
-// Track various failure (and success) cases in recovery code.
-//
-// TODO(shess): The recovery code is complete, but by nature runs in challenging
-// circumstances, so errors will happen.  This histogram is intended to expose
-// the failures seen in the fleet.  Frequent failure cases can be explored more
-// deeply to see if the complexity to fix them is warranted.  Infrequent failure
-// cases can be resolved by marking the database unrecoverable (which will
-// delete the data).
-//
-// Based on the thumbnail_database.cc recovery code, FAILED_SCOPER should
-// dominate, followed distantly by FAILED_META, with few or no other failures.
-enum RecoveryEventType {
-  // Database successfully recovered.
-  RECOVERY_EVENT_RECOVERED = 0,
-
-  // Database successfully deprecated.
-  RECOVERY_EVENT_DEPRECATED,
-
-  // Sqlite.RecoveryEvent can usually be used to get more detail about the
-  // specific failure (see sql/recovery.cc).
-  OBSOLETE_RECOVERY_EVENT_FAILED_SCOPER,
-  RECOVERY_EVENT_FAILED_META_VERSION,
-  RECOVERY_EVENT_FAILED_META_WRONG_VERSION,
-  OBSOLETE_RECOVERY_EVENT_FAILED_META_INIT,
-  OBSOLETE_RECOVERY_EVENT_FAILED_SCHEMA_INIT,
-  OBSOLETE_RECOVERY_EVENT_FAILED_AUTORECOVER_THUMBNAILS,
-  RECOVERY_EVENT_FAILED_COMMIT,
-
-  // Track invariants resolved by FixTopSitesTable().
-  OBSOLETE_RECOVERY_EVENT_INVARIANT_RANK,
-  OBSOLETE_RECOVERY_EVENT_INVARIANT_REDIRECT,
-  RECOVERY_EVENT_INVARIANT_CONTIGUOUS,
-
-  // Track automated full-database recovery.
-  RECOVERY_EVENT_FAILED_AUTORECOVER,
-
-  // Always keep this at the end.
-  RECOVERY_EVENT_MAX,
-};
-
-void RecordRecoveryEvent(RecoveryEventType recovery_event) {
-  UMA_HISTOGRAM_ENUMERATION("History.TopSitesRecovery", recovery_event,
-                            RECOVERY_EVENT_MAX);
-}
-
 // Most corruption comes down to atomic updates between pages being broken
 // somehow.  This can result in either missing data, or overlapping data,
 // depending on the operation broken.  This table has large rows, which will use
 // overflow pages, so it is possible (though unlikely) that a chain could fit
 // together and yield a row with errors.
-void FixTopSitesTable(sql::Database* db, int version) {
+void FixTopSitesTable(sql::Database& db) {
   // Enforce invariant that url_rank>=0 forms a contiguous series.
   // TODO(shess): I have not found an UPDATE+SUBSELECT method of managing this.
   // It can be done with a temporary table and a subselect, but doing it
@@ -128,19 +85,17 @@ void FixTopSitesTable(sql::Database* db, int version) {
       "SELECT url_rank,rowid FROM top_sites "
       "WHERE url_rank<>-1 "
       "ORDER BY url_rank";
-  sql::Statement select_statement(db->GetUniqueStatement(kByRankSql));
+  sql::Statement select_statement(db.GetUniqueStatement(kByRankSql));
 
   static constexpr char kAdjustRankSql[] =
       "UPDATE top_sites SET url_rank=? WHERE rowid=?";
-  sql::Statement update_statement(db->GetUniqueStatement(kAdjustRankSql));
+  sql::Statement update_statement(db.GetUniqueStatement(kAdjustRankSql));
 
   // Update any rows where `next_rank` doesn't match `url_rank`.
   int next_rank = 0;
-  bool adjusted = false;
   while (select_statement.Step()) {
     const int url_rank = select_statement.ColumnInt(0);
     if (url_rank != next_rank) {
-      adjusted = true;
       update_statement.Reset(true);
       update_statement.BindInt(0, next_rank);
       update_statement.BindInt64(1, select_statement.ColumnInt64(1));
@@ -148,20 +103,17 @@ void FixTopSitesTable(sql::Database* db, int version) {
     }
     ++next_rank;
   }
-  if (adjusted)
-    RecordRecoveryEvent(RECOVERY_EVENT_INVARIANT_CONTIGUOUS);
 }
 
 // Recover the database to the extent possible, then fixup any broken
 // constraints.
 void RecoverAndFixup(sql::Database* db, const base::FilePath& db_path) {
   // NOTE(shess): If the version changes, review this code.
-  DCHECK_EQ(5, kVersionNumber);
+  static_assert(kVersionNumber == 5);
 
   std::unique_ptr<sql::Recovery> recovery =
       sql::Recovery::BeginRecoverDatabase(db, db_path);
   if (!recovery) {
-    RecordRecoveryEvent(RECOVERY_EVENT_FAILED_AUTORECOVER);
     return;
   }
 
@@ -173,14 +125,12 @@ void RecoverAndFixup(sql::Database* db, const base::FilePath& db_path) {
   int version = 0;
   if (!recovery->SetupMeta() || !recovery->GetMetaVersionNumber(&version)) {
     sql::Recovery::Unrecoverable(std::move(recovery));
-    RecordRecoveryEvent(RECOVERY_EVENT_FAILED_META_VERSION);
     return;
   }
 
   // In this case the next open will clear the database anyhow.
   if (version <= kDeprecatedVersionNumber) {
     sql::Recovery::Unrecoverable(std::move(recovery));
-    RecordRecoveryEvent(RECOVERY_EVENT_DEPRECATED);
     return;
   }
 
@@ -189,23 +139,13 @@ void RecoverAndFixup(sql::Database* db, const base::FilePath& db_path) {
   // this may be too risky, because if future code was correlated with
   // corruption then rollback would be a sensible response.
   if (version > kVersionNumber) {
-    RecordRecoveryEvent(RECOVERY_EVENT_FAILED_META_WRONG_VERSION);
     sql::Recovery::Rollback(std::move(recovery));
     return;
   }
 
-  // TODO(shess): Inline this?
-  FixTopSitesTable(recovery->db(), version);
+  FixTopSitesTable(*recovery->db());
 
-  if (!sql::Recovery::Recovered(std::move(recovery))) {
-    // TODO(shess): Very unclear what this failure would actually mean, and what
-    // should be done.  Add histograms to Recovered() implementation to get some
-    // insight.
-    RecordRecoveryEvent(RECOVERY_EVENT_FAILED_COMMIT);
-    return;
-  }
-
-  RecordRecoveryEvent(RECOVERY_EVENT_RECOVERED);
+  std::ignore = sql::Recovery::Recovered(std::move(recovery));
 }
 
 }  // namespace
@@ -216,7 +156,45 @@ void TopSitesDatabase::DatabaseErrorCallback(const base::FilePath& db_path,
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(db_);
 
-  // Attempt to recover corrupt databases.
+  // TODO(https://crbug.com/1513464): Simplify this code as soon as we're
+  // confident that we can remove sql::Recovery.
+  if (base::FeatureList::IsEnabled(
+          kTopSitesDatabaseUseBuiltInRecoveryIfSupported) &&
+      sql::BuiltInRecovery::ShouldAttemptRecovery(db_.get(), extended_error)) {
+    bool recovery_was_attempted = sql::BuiltInRecovery::RecoverIfPossible(
+        db_.get(), extended_error,
+        sql::BuiltInRecovery::Strategy::kRecoverWithMetaVersionOrRaze,
+        &kTopSitesDatabaseUseBuiltInRecoveryIfSupported);
+    if (!recovery_was_attempted) {
+      LOG(ERROR)
+          << "Recovery should have been attempted if the checks above passed.";
+      base::debug::DumpWithoutCrashing();
+      return;
+    }
+    // Recovery was attempted. The database handle has been poisoned and the
+    // error callback has been reset.
+
+    // Since the database was recovered from corruption, it's possible that some
+    // data in the newly recovered database is incorrect. When re-opening the
+    // database, we should attempt to fix any broken constraints.
+    //
+    // Unlike below when using sql::Recovery, which runs `FixTopSitesTable()` on
+    // the recovered copy of the database before overwriting the original
+    // (corrupted) database, here we defer the fix-up logic to after we've
+    // re-opened the database and all the other checks in the Init() method
+    // (version, schema, etc) pass.
+    //
+    // Note that recovery is only run when we detect corruption, but undetected
+    // corruption can happen at any time. We could consider running
+    // `FixTopSitesTable()` every time the database is opened, but in most cases
+    // that would be a (possibly expensive) no-op.
+    needs_fixing_up_ = true;
+
+    // Signal the test-expectation framework that the error was handled.
+    std::ignore = sql::Database::IsExpectedSqliteError(extended_error);
+    return;
+  }
+
   if (sql::Recovery::ShouldRecover(extended_error)) {
     // Prevent reentrant calls.
     db_->reset_error_callback();
@@ -234,21 +212,6 @@ void TopSitesDatabase::DatabaseErrorCallback(const base::FilePath& db_path,
     return;
   }
 
-  // TODO(shess): This database's error histograms look like:
-  // 84% SQLITE_CORRUPT, SQLITE_CANTOPEN, SQLITE_NOTADB
-  //  7% SQLITE_ERROR
-  //  6% SQLITE_IOERR variants
-  //  2% SQLITE_READONLY
-  // .4% SQLITE_FULL
-  // nominal SQLITE_TOBIG, SQLITE_AUTH, and SQLITE_BUSY.  In the case of
-  // thumbnail_database.cc, as soon as the recovery code landed, SQLITE_IOERR
-  // shot to leadership.  If the I/O error is system-level, there is probably no
-  // hope, but if it is restricted to something about the database file, it is
-  // possible that the recovery code could be brought to bear.  In fact, it is
-  // possible that running recovery would be a reasonable default when errors
-  // are seen.
-
-  // The default handling is to assert on debug and to ignore on release.
   if (!sql::Database::IsExpectedSqliteError(extended_error))
     DLOG(FATAL) << db_->GetErrorMessage();
 }
@@ -318,8 +281,8 @@ bool TopSitesDatabase::InitImpl(const base::FilePath& db_name) {
   const bool file_existed = base::PathExists(db_name);
 
   // Settings copied from FaviconDatabase.
-  db_ = std::make_unique<sql::Database>(sql::DatabaseOptions{
-      .exclusive_locking = true, .page_size = 4096, .cache_size = 32});
+  db_ = std::make_unique<sql::Database>(
+      sql::DatabaseOptions{.page_size = 4096, .cache_size = 32});
   db_->set_histogram_tag("TopSites");
   db_->set_error_callback(
       base::BindRepeating(&TopSitesDatabase::DatabaseErrorCallback,
@@ -367,6 +330,15 @@ bool TopSitesDatabase::InitImpl(const base::FilePath& db_name) {
   // Version check.
   if (meta_table.GetVersionNumber() != kVersionNumber)
     return false;
+
+  // Attempt to fix up the table if recovery was attempted when opening.
+  if (needs_fixing_up_) {
+    CHECK(base::FeatureList::IsEnabled(
+        kTopSitesDatabaseUseBuiltInRecoveryIfSupported));
+
+    FixTopSitesTable(*db_);
+    needs_fixing_up_ = false;
+  }
 
   // Initialization is complete.
   return transaction.Commit();

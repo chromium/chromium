@@ -4,7 +4,7 @@
 
 import 'chrome://password-manager/password_manager.js';
 
-import {SiteFaviconElement} from 'chrome://password-manager/password_manager.js';
+import type {SiteFaviconElement} from 'chrome://password-manager/password_manager.js';
 import {assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {eventToPromise, isVisible} from 'chrome://webui-test/test_util.js';
 

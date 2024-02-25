@@ -7,23 +7,27 @@
 
 #include <algorithm>
 #include <memory>
+#include <utility>
 
 #include "ash/bubble/bubble_utils.h"
+#include "ash/constants/ash_features.h"
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/icon_button.h"
 #include "ash/style/typography.h"
 #include "ash/system/tray/tray_constants.h"
+#include "ash/system/unified/feature_tile.h"
 #include "ash/system/video_conference/bubble/bubble_view_ids.h"
+#include "ash/system/video_conference/bubble/vc_tile_ui_controller.h"
 #include "ash/system/video_conference/effects/video_conference_tray_effects_manager_types.h"
 #include "ash/system/video_conference/video_conference_tray_controller.h"
 #include "ash/system/video_conference/video_conference_utils.h"
-#include "ash/utility/haptics_util.h"
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/utf_string_conversions.h"
+#include "chromeos/utils/haptics_util.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
@@ -63,9 +67,9 @@ constexpr char kGoogleSansFont[] = "Google Sans";
 // than 1 line, it will automatically adjust the padding and the spacing of the
 // button.
 class ToggleEffectsButtonLabel : public views::Label {
- public:
-  METADATA_HEADER(ToggleEffectsButtonLabel);
+  METADATA_HEADER(ToggleEffectsButtonLabel, views::Label)
 
+ public:
   ToggleEffectsButtonLabel(ToggleEffectsButton* button,
                            const std::u16string& label_text,
                            int num_button_per_row)
@@ -122,7 +126,8 @@ class ToggleEffectsButtonLabel : public views::Label {
         0)));
   }
 
-  gfx::Size CalculatePreferredSize() const override {
+  gfx::Size CalculatePreferredSize(
+      const views::SizeBounds &available_size) const override {
     // TODO(crbug.com/1349528): The size constraint is not passed down from
     // the views tree in the first round of layout, so multiline label might
     // be broken here. We need to explicitly set the size to fix this.
@@ -154,26 +159,24 @@ class ToggleEffectsButtonLabel : public views::Label {
   int label_max_width_ = 0;
 };
 
-BEGIN_METADATA(ToggleEffectsButtonLabel, views::Label);
+BEGIN_METADATA(ToggleEffectsButtonLabel);
 END_METADATA
 
 }  // namespace
 
 ToggleEffectsButton::ToggleEffectsButton(
     views::Button::PressedCallback callback,
-    const gfx::VectorIcon* enabled_vector_icon,
-    const gfx::VectorIcon* disabled_vector_icon,
+    const gfx::VectorIcon* vector_icon,
     bool toggle_state,
     const std::u16string& label_text,
     const int accessible_name_id,
-    absl::optional<int> container_id,
+    std::optional<int> container_id,
     const VcEffectId effect_id,
     int num_button_per_row)
-    : callback_(callback),
+    : callback_(std::move(callback)),
       toggled_(toggle_state),
       effect_id_(effect_id),
-      enabled_vector_icon_(enabled_vector_icon),
-      disabled_vector_icon_(disabled_vector_icon),
+      vector_icon_(vector_icon),
       accessible_name_id_(accessible_name_id) {
   SetCallback(base::BindRepeating(&ToggleEffectsButton::OnButtonClicked,
                                   weak_ptr_factory_.GetWeakPtr()));
@@ -187,13 +190,17 @@ ToggleEffectsButton::ToggleEffectsButton(
           gfx::Insets::TLBR(kButtonVerticalPadding, kButtonHorizontalPadding,
                             kButtonVerticalPadding, kButtonHorizontalPadding));
 
-  // This makes the view the expand or contract to occupy any available space.
-  SetProperty(
-      views::kFlexBehaviorKey,
-      views::FlexSpecification(views::MinimumFlexSizeRule::kScaleToMinimum,
-                               views::MaximumFlexSizeRule::kUnbounded));
+  // If VcDlcUi is enabled then the button's preferred size and flex properties
+  // are controlled externally to the button rather than by the button itself.
+  if (!features::IsVcDlcUiEnabled()) {
+    // This makes the view the expand or contract to occupy any available space.
+    SetProperty(
+        views::kFlexBehaviorKey,
+        views::FlexSpecification(views::MinimumFlexSizeRule::kScaleToMinimum,
+                                 views::MaximumFlexSizeRule::kUnbounded));
 
-  SetPreferredSize(gfx::Size(GetPreferredSize().width(), kButtonHeight));
+    SetPreferredSize(gfx::Size(GetPreferredSize().width(), kButtonHeight));
+  }
 
   views::InstallRoundRectHighlightPathGenerator(this, gfx::Insets(),
                                                 kButtonCornerRadius);
@@ -204,7 +211,7 @@ ToggleEffectsButton::ToggleEffectsButton(
   focus_ring->SetHaloInset(-3);
   // Since the focus ring doesn't set a LayoutManager it won't get drawn
   // unless excluded by the tile's LayoutManager.
-  layout_->SetChildViewIgnoredByLayout(focus_ring, true);
+  focus_ring->SetProperty(views::kViewIgnoredByLayoutKey, true);
 
   auto icon = std::make_unique<views::ImageView>();
   icon->SetID(video_conference::BubbleViewID::kToggleEffectIcon);
@@ -245,7 +252,7 @@ void ToggleEffectsButton::OnButtonClicked(const ui::Event& event) {
       video_conference_utils::GetEffectHistogramNameForClick(effect_id_),
       toggled_);
 
-  haptics_util::PlayHapticToggleEffect(
+  chromeos::haptics_util::PlayHapticToggleEffect(
       !toggled_, ui::HapticTouchpadEffectStrength::kMedium);
 
   UpdateColorsAndBackground();
@@ -268,12 +275,11 @@ void ToggleEffectsButton::UpdateColorsAndBackground() {
       toggled_ ? cros_tokens::kCrosSysSystemOnPrimaryContainer
                : cros_tokens::kCrosSysOnSurface;
   icon_->SetImage(ui::ImageModel::FromVectorIcon(
-      toggled_ ? *enabled_vector_icon_ : *disabled_vector_icon_,
-      foreground_color_id, kIconSize));
+      *vector_icon_, foreground_color_id, kIconSize));
   label_->SetEnabledColorId(foreground_color_id);
 }
 
-BEGIN_METADATA(ToggleEffectsButton, views::Button);
+BEGIN_METADATA(ToggleEffectsButton);
 END_METADATA
 
 ToggleEffectsView::ToggleEffectsView(
@@ -289,8 +295,9 @@ ToggleEffectsView::ToggleEffectsView(
                   gfx::Insets::TLBR(0, 0, kButtonContainerSpacing, 0));
 
   // The effects manager provides the toggle effects in rows.
+  auto& effects_manager = controller->GetEffectsManager();
   const VideoConferenceTrayEffectsManager::EffectDataTable tile_rows =
-      controller->effects_manager().GetToggleEffectButtonTable();
+      effects_manager.GetToggleEffectButtonTable();
   for (auto& row : tile_rows) {
     // Each row is its own view, with its own layout.
     std::unique_ptr<views::View> row_view = std::make_unique<views::View>();
@@ -311,7 +318,7 @@ ToggleEffectsView::ToggleEffectsView(
       // (represented by `tile`) cannot be obtained. This can happen if the
       // `VcEffectsDelegate` hosting the effect has encountered an error or is
       // in some bad state. In this case its controls are not presented.
-      absl::optional<int> current_state = tile->get_state_callback().Run();
+      std::optional<int> current_state = tile->get_state_callback().Run();
       if (!current_state.has_value()) {
         continue;
       }
@@ -319,12 +326,47 @@ ToggleEffectsView::ToggleEffectsView(
       // `current_state` can only be a `bool` for a toggle effect.
       bool toggle_state = current_state.value() != 0;
       const VcEffectState* state = tile->GetState(/*index=*/0);
-      CHECK(state->disabled_icon())
-          << "Toggle effects must define a disabled icon.";
-      row_view->AddChildView(std::make_unique<ToggleEffectsButton>(
-          state->button_callback(), state->icon(), state->disabled_icon(),
-          toggle_state, state->label_text(), state->accessible_name_id(),
-          tile->container_id(), tile->id(), /*num_button_per_row=*/row.size()));
+
+      // The button should either be a `FeatureTile` or a `ToggleEffectsButton`,
+      // depending on the following logic.
+      std::unique_ptr<views::View> button;
+      if (ash::features::IsVcDlcUiEnabled()) {
+        // If VcDlcUi is enabled then first try to see if the button should be a
+        // `FeatureTile` by determining if there is a tile controller for the
+        // VC effect.
+        auto* tile_controller =
+            effects_manager.GetUiControllerForEffectId(tile->id());
+        if (tile_controller) {
+          button = tile_controller->CreateTile();
+        }
+      }
+      if (!button) {
+        // If there was no tile controller or if VcDlcUi is not enabled, then
+        // the button should be a `ToggleEffectsButton`.
+        button = std::make_unique<ToggleEffectsButton>(
+            state->button_callback(), state->icon(), toggle_state,
+            state->label_text(), state->accessible_name_id(),
+            tile->container_id(), tile->id(),
+            /*num_button_per_row=*/row.size());
+      }
+
+      // If VcDlcUi is enabled then the button's preferred size and flex
+      // properties are controlled externally to the button rather than by the
+      // button itself.
+      if (ash::features::IsVcDlcUiEnabled()) {
+        // Set the preferred width to 0 so that the container (`row_view`) can
+        // equally distribute its full width among all its child buttons.
+        button->SetPreferredSize(gfx::Size(0, kButtonHeight));
+
+        // Allow the button to expand or contract to whatever size is available
+        // for it.
+        button->SetProperty(views::kFlexBehaviorKey,
+                            views::FlexSpecification(
+                                views::MinimumFlexSizeRule::kScaleToMinimum,
+                                views::MaximumFlexSizeRule::kUnbounded));
+      }
+
+      row_view->AddChildView(std::move(button));
     }
 
     // Add the row as a child, now that it's fully populated,
@@ -332,7 +374,7 @@ ToggleEffectsView::ToggleEffectsView(
   }
 }
 
-BEGIN_METADATA(ToggleEffectsView, views::View);
+BEGIN_METADATA(ToggleEffectsView);
 END_METADATA
 
 }  // namespace ash::video_conference

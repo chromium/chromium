@@ -7,6 +7,7 @@
 #import "ios/chrome/browser/ui/partial_translate/partial_translate_mediator.h"
 
 #import "base/ios/ios_util.h"
+#import "base/memory/raw_ptr.h"
 #import "base/test/ios/wait_util.h"
 #import "base/test/metrics/histogram_tester.h"
 #import "base/test/scoped_feature_list.h"
@@ -16,13 +17,12 @@
 #import "ios/chrome/browser/shared/model/browser_state/test_chrome_browser_state.h"
 #import "ios/chrome/browser/shared/model/web_state_list/test/fake_web_state_list_delegate.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
-#import "ios/chrome/browser/shared/model/web_state_list/web_state_list_delegate.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_opener.h"
 #import "ios/chrome/browser/shared/public/commands/browser_coordinator_commands.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/ui/browser_container/edit_menu_alert_delegate.h"
-#import "ios/chrome/browser/web/chrome_web_client.h"
-#import "ios/chrome/browser/web_selection/web_selection_tab_helper.h"
+#import "ios/chrome/browser/web/model/chrome_web_client.h"
+#import "ios/chrome/browser/web_selection/model/web_selection_tab_helper.h"
 #import "ios/chrome/test/providers/partial_translate/test_partial_translate.h"
 #import "ios/web/public/test/scoped_testing_web_client.h"
 #import "ios/web/public/test/web_state_test_util.h"
@@ -152,9 +152,9 @@ class PartialTranslateMediatorTest : public PlatformTest {
     web::WebState::CreateParams params(browser_state_.get());
     auto web_state = web::WebState::Create(params);
     WebSelectionTabHelper::CreateForWebState(web_state.get());
-    web_state_list_.InsertWebState(0, std::move(web_state),
-                                   WebStateList::INSERT_ACTIVATE,
-                                   WebStateOpener());
+    web_state_list_.InsertWebState(
+        std::move(web_state),
+        WebStateList::InsertionParams::Automatic().Activate());
     web_state_ = web_state_list_.GetActiveWebState();
     base_view_controller_ = [[UIViewController alloc] init];
     fake_alert_controller_ = [[FakeAlertController alloc] init];
@@ -214,7 +214,7 @@ class PartialTranslateMediatorTest : public PlatformTest {
   std::unique_ptr<TestChromeBrowserState> browser_state_;
   FakeWebStateListDelegate web_state_list_delegate_;
   WebStateList web_state_list_;
-  web::WebState* web_state_;
+  raw_ptr<web::WebState> web_state_;
   UIViewController* base_view_controller_;
   FakeAlertController* fake_alert_controller_;
   id mock_browser_coordinator_commands_handler_;
@@ -270,7 +270,8 @@ TEST_F(PartialTranslateMediatorTest, IncognitoSupportedSuccess) {
   EXPECT_TRUE([mediator canHandlePartialTranslateSelection]);
   [mediator handlePartialTranslateSelection];
   ASSERT_TRUE(base::test::ios::WaitUntilConditionOrTimeout(
-      base::test::ios::kWaitForJSCompletionTimeout, ^{
+      base::test::ios::kWaitForJSCompletionTimeout, /*run_message_loop=*/true,
+      ^{
         return factory.latestController != nil;
       }));
   EXPECT_NSEQ(@"AAAAAAAAAA", factory.latestController.sourceText);
@@ -305,8 +306,10 @@ TEST_F(PartialTranslateMediatorTest, SupportedSuccess) {
   EXPECT_TRUE([mediator_ shouldInstallPartialTranslate]);
   EXPECT_TRUE([mediator_ canHandlePartialTranslateSelection]);
   [mediator_ handlePartialTranslateSelection];
+
   ASSERT_TRUE(base::test::ios::WaitUntilConditionOrTimeout(
-      base::test::ios::kWaitForJSCompletionTimeout, ^{
+      base::test::ios::kWaitForJSCompletionTimeout, /*run_message_loop=*/true,
+      ^{
         return factory.latestController != nil;
       }));
   EXPECT_NSEQ(@"AAAAAAAAAA", factory.latestController.sourceText);
@@ -328,7 +331,8 @@ TEST_F(PartialTranslateMediatorTest, StringTooLongCancel) {
   EXPECT_TRUE([mediator_ canHandlePartialTranslateSelection]);
   [mediator_ handlePartialTranslateSelection];
   ASSERT_TRUE(base::test::ios::WaitUntilConditionOrTimeout(
-      base::test::ios::kWaitForJSCompletionTimeout, ^{
+      base::test::ios::kWaitForJSCompletionTimeout, /*run_message_loop=*/true,
+      ^{
         return fake_alert_controller_.called;
       }));
   EXPECT_NSEQ(nil, factory.latestController.sourceText);
@@ -352,7 +356,8 @@ TEST_F(PartialTranslateMediatorTest, StringTooLongFullTranslate) {
   ExpectShowTranslate();
   [mediator_ handlePartialTranslateSelection];
   ASSERT_TRUE(base::test::ios::WaitUntilConditionOrTimeout(
-      base::test::ios::kWaitForJSCompletionTimeout, ^{
+      base::test::ios::kWaitForJSCompletionTimeout, /*run_message_loop=*/true,
+      ^{
         return fake_alert_controller_.called;
       }));
   EXPECT_NSEQ(nil, factory.latestController.sourceText);
@@ -374,7 +379,8 @@ TEST_F(PartialTranslateMediatorTest, StringEmptyCancel) {
   EXPECT_TRUE([mediator_ canHandlePartialTranslateSelection]);
   [mediator_ handlePartialTranslateSelection];
   ASSERT_TRUE(base::test::ios::WaitUntilConditionOrTimeout(
-      base::test::ios::kWaitForJSCompletionTimeout, ^{
+      base::test::ios::kWaitForJSCompletionTimeout, /*run_message_loop=*/true,
+      ^{
         return fake_alert_controller_.called;
       }));
   EXPECT_NSEQ(nil, factory.latestController.sourceText);
@@ -396,7 +402,8 @@ TEST_F(PartialTranslateMediatorTest, StringSpacesCancel) {
   EXPECT_TRUE([mediator_ canHandlePartialTranslateSelection]);
   [mediator_ handlePartialTranslateSelection];
   ASSERT_TRUE(base::test::ios::WaitUntilConditionOrTimeout(
-      base::test::ios::kWaitForJSCompletionTimeout, ^{
+      base::test::ios::kWaitForJSCompletionTimeout, /*run_message_loop=*/true,
+      ^{
         return fake_alert_controller_.called;
       }));
   EXPECT_NSEQ(nil, factory.latestController.sourceText);
@@ -420,7 +427,8 @@ TEST_F(PartialTranslateMediatorTest, StringEmptyFullTranslate) {
   ExpectShowTranslate();
   [mediator_ handlePartialTranslateSelection];
   ASSERT_TRUE(base::test::ios::WaitUntilConditionOrTimeout(
-      base::test::ios::kWaitForJSCompletionTimeout, ^{
+      base::test::ios::kWaitForJSCompletionTimeout, /*run_message_loop=*/true,
+      ^{
         return fake_alert_controller_.called;
       }));
   EXPECT_NSEQ(nil, factory.latestController.sourceText);
@@ -442,7 +450,8 @@ TEST_F(PartialTranslateMediatorTest, InternalErrorCancel) {
   EXPECT_TRUE([mediator_ canHandlePartialTranslateSelection]);
   [mediator_ handlePartialTranslateSelection];
   ASSERT_TRUE(base::test::ios::WaitUntilConditionOrTimeout(
-      base::test::ios::kWaitForJSCompletionTimeout, ^{
+      base::test::ios::kWaitForJSCompletionTimeout, /*run_message_loop=*/true,
+      ^{
         return fake_alert_controller_.called;
       }));
   EXPECT_NSEQ(@"AAAAAAAAAA", factory.latestController.sourceText);
@@ -466,7 +475,8 @@ TEST_F(PartialTranslateMediatorTest, InternalErrorFullTranslate) {
   ExpectShowTranslate();
   [mediator_ handlePartialTranslateSelection];
   ASSERT_TRUE(base::test::ios::WaitUntilConditionOrTimeout(
-      base::test::ios::kWaitForJSCompletionTimeout, ^{
+      base::test::ios::kWaitForJSCompletionTimeout, /*run_message_loop=*/true,
+      ^{
         return fake_alert_controller_.called;
       }));
   EXPECT_NSEQ(@"AAAAAAAAAA", factory.latestController.sourceText);

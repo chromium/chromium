@@ -34,7 +34,7 @@ class MockSafeBrowsingMetricsCollector : public SafeBrowsingMetricsCollector {
  public:
   explicit MockSafeBrowsingMetricsCollector(PrefService* pref_service)
       : SafeBrowsingMetricsCollector(pref_service) {}
-  MOCK_METHOD(absl::optional<base::Time>,
+  MOCK_METHOD(std::optional<base::Time>,
               GetLatestSecuritySensitiveEventTimestamp,
               (),
               (override));

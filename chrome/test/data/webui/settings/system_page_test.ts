@@ -5,7 +5,8 @@
 
 // clang-format off
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import {SettingsSystemPageElement, SystemPageBrowserProxy, SystemPageBrowserProxyImpl} from 'chrome://settings/lazy_load.js';
+import type {SettingsSystemPageElement, SystemPageBrowserProxy} from 'chrome://settings/lazy_load.js';
+import {SystemPageBrowserProxyImpl} from 'chrome://settings/lazy_load.js';
 import {LifetimeBrowserProxyImpl} from 'chrome://settings/settings.js';
 import {assertEquals, assertFalse, assertNotEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';

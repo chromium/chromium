@@ -10,6 +10,9 @@
 #include <stddef.h>
 #include <stdint.h>
 
+#include <type_traits>
+
+#include "base/containers/span.h"
 #include "base/hash/hash.h"
 #include "base/logging.h"
 #include "base/notreached.h"
@@ -19,9 +22,9 @@ namespace disk_cache {
 template <typename T>
 StorageBlock<T>::StorageBlock(MappedFile* file, Addr address)
     : file_(file), address_(address) {
-  if (address.num_blocks() > 1)
-    extended_ = true;
-  DCHECK(!address.is_initialized() || sizeof(*data_) == address.BlockSize())
+  static_assert(std::is_trivial_v<T>);  // T is loaded as bytes from a file.
+  DCHECK_NE(address.num_blocks(), 0);
+  DCHECK(!address.is_initialized() || sizeof(T) == address.BlockSize())
       << address.value();
 }
 
@@ -36,10 +39,9 @@ void StorageBlock<T>::CopyFrom(StorageBlock<T>* other) {
   DCHECK(!modified_);
   DCHECK(!other->modified_);
   Discard();
-  *Data() = *other->Data();
-  file_ = other->file_;
   address_ = other->address_;
-  extended_ = other->extended_;
+  file_ = other->file_;
+  *Data() = *other->Data();
 }
 
 template<typename T> void* StorageBlock<T>::buffer() const {
@@ -47,9 +49,7 @@ template<typename T> void* StorageBlock<T>::buffer() const {
 }
 
 template<typename T> size_t StorageBlock<T>::size() const {
-  if (!extended_)
-    return sizeof(*data_);
-  return address_.num_blocks() * sizeof(*data_);
+  return address_.num_blocks() * sizeof(T);
 }
 
 template<typename T> int StorageBlock<T>::offset() const {
@@ -64,10 +64,7 @@ template<typename T> bool StorageBlock<T>::LazyInit(MappedFile* file,
   }
   file_ = file;
   address_.set_value(address.value());
-  if (address.num_blocks() > 1)
-    extended_ = true;
-
-  DCHECK(sizeof(*data_) == address.BlockSize());
+  DCHECK(sizeof(T) == address.BlockSize());
   return true;
 }
 
@@ -87,7 +84,6 @@ template<typename T> void  StorageBlock<T>::Discard() {
   DeleteData();
   data_ = nullptr;
   modified_ = false;
-  extended_ = false;
 }
 
 template<typename T> void  StorageBlock<T>::StopSharingData() {
@@ -185,30 +181,21 @@ template<typename T> bool StorageBlock<T>::Store(FileIOCallback* callback,
 
 template<typename T> void StorageBlock<T>::AllocateData() {
   DCHECK(!data_);
-  if (!extended_) {
-    data_ = new T;
-  } else {
-    void* buffer = new char[address_.num_blocks() * sizeof(*data_)];
-    data_ = new(buffer) T;
-  }
+  data_ = new T[address_.num_blocks()];
   own_data_ = true;
 }
 
 template<typename T> void StorageBlock<T>::DeleteData() {
   if (own_data_) {
-    if (!extended_) {
-      data_.ClearAndDelete();
-    } else {
-      data_->~T();
-      delete[] reinterpret_cast<char*>(data_.ExtractAsDangling().get());
-    }
+    data_.ClearAndDeleteArray();
     own_data_ = false;
   }
 }
 
 template <typename T>
 uint32_t StorageBlock<T>::CalculateHash() const {
-  return base::PersistentHash(data_, offsetof(T, self_hash));
+  base::span<const uint8_t> bytes = base::as_bytes(base::span_from_ref(*data_));
+  return base::PersistentHash(bytes.first(offsetof(T, self_hash)));
 }
 
 }  // namespace disk_cache

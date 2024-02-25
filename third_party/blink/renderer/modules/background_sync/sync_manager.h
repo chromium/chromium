@@ -7,6 +7,8 @@
 
 #include "base/task/sequenced_task_runner.h"
 #include "third_party/blink/public/mojom/background_sync/background_sync.mojom-blink.h"
+#include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
+#include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/mojo/heap_mojo_remote.h"
@@ -16,8 +18,6 @@
 namespace blink {
 
 class ExceptionState;
-class ScriptPromise;
-class ScriptPromiseResolver;
 class ScriptState;
 class ServiceWorkerRegistration;
 
@@ -31,7 +31,7 @@ class SyncManager final : public ScriptWrappable {
   ScriptPromise registerFunction(ScriptState*,
                                  const String& tag,
                                  ExceptionState& exception_state);
-  ScriptPromise getTags(ScriptState*);
+  ScriptPromiseTyped<IDLSequence<IDLString>> getTags(ScriptState*);
 
   void Trace(Visitor*) const override;
 
@@ -43,7 +43,7 @@ class SyncManager final : public ScriptWrappable {
                         mojom::blink::BackgroundSyncError,
                         mojom::blink::SyncRegistrationOptionsPtr options);
   static void GetRegistrationsCallback(
-      ScriptPromiseResolver*,
+      ScriptPromiseResolverTyped<IDLSequence<IDLString>>*,
       mojom::blink::BackgroundSyncError,
       WTF::Vector<mojom::blink::SyncRegistrationOptionsPtr> registrations);
 

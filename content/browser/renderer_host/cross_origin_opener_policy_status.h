@@ -6,6 +6,7 @@
 #define CONTENT_BROWSER_RENDERER_HOST_CROSS_ORIGIN_OPENER_POLICY_STATUS_H_
 
 #include <memory>
+#include <optional>
 
 #include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
@@ -16,7 +17,6 @@
 #include "services/network/public/mojom/blocked_by_response_reason.mojom.h"
 #include "services/network/public/mojom/content_security_policy.mojom.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace net {
 class IsolationInfo;
@@ -53,7 +53,7 @@ class CrossOriginOpenerPolicyStatus : public RenderProcessHostObserver {
   // Sanitize the COOP header from the `response`.
   // Return an error, and swap browsing context group when COOP is used on
   // sandboxed popups.
-  absl::optional<network::mojom::BlockedByResponseReason> SanitizeResponse(
+  std::optional<network::mojom::BlockedByResponseReason> SanitizeResponse(
       network::mojom::URLResponseHead* response);
 
   // Called when receiving a redirect or the final response.

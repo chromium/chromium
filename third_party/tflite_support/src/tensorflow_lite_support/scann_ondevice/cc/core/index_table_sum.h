@@ -29,9 +29,7 @@ namespace scann_ondevice {
 namespace core {
 
 template <typename LutType>
-void RearrangeLUT(const LutType* input_data,
-                  int batch_elems,
-                  int batch_size,
+void RearrangeLUT(const LutType* input_data, int batch_elems, int batch_size,
                   LutType* const output_data) {
   std::vector<int64_t> simd_sizes;
   if (std::is_same<LutType, float>::value) {
@@ -90,15 +88,10 @@ struct MaxQuantizationValue<uint16_t> {
 };
 
 template <typename SimdType, typename LutType, size_t NumCenters = 0>
-size_t IndexTableSumSimdBatch(const uint8_t* indices,
-                              size_t num_chunks,
-                              size_t num_outputs,
-                              const LutType* lookup_table,
-                              size_t batch_size,
-                              size_t num_centers,
-                              float min,
-                              float max,
-                              size_t batch_index,
+size_t IndexTableSumSimdBatch(const uint8_t* indices, size_t num_chunks,
+                              size_t num_outputs, const LutType* lookup_table,
+                              size_t batch_size, size_t num_centers, float min,
+                              float max, size_t batch_index,
                               float* const output) {
   if (num_centers == 256) {
     return IndexTableSumSimdBatch<SimdType, LutType, 256>(
@@ -183,14 +176,9 @@ size_t IndexTableSumSimdBatch(const uint8_t* indices,
 }
 
 template <typename LutType>
-void IndexTableSum(const uint8_t* indices,
-                   size_t num_chunks,
-                   size_t num_outputs,
-                   const LutType* lookup_table,
-                   size_t batch_size,
-                   size_t num_centers,
-                   float min,
-                   float max,
+void IndexTableSum(const uint8_t* indices, size_t num_chunks,
+                   size_t num_outputs, const LutType* lookup_table,
+                   size_t batch_size, size_t num_centers, float min, float max,
                    float* const output) {
   static_assert(std::is_same<LutType, uint8_t>::value ||
                     std::is_same<LutType, uint16_t>::value,
@@ -218,15 +206,10 @@ void IndexTableSum(const uint8_t* indices,
 }
 
 template <>
-inline void IndexTableSum<float>(const uint8_t* indices,
-                                 size_t num_chunks,
-                                 size_t num_outputs,
-                                 const float* lookup_table,
-                                 size_t batch_size,
-                                 size_t num_centers,
-                                 float min,
-                                 float max,
-                                 float* const output) {
+inline void IndexTableSum<float>(const uint8_t* indices, size_t num_chunks,
+                                 size_t num_outputs, const float* lookup_table,
+                                 size_t batch_size, size_t num_centers,
+                                 float min, float max, float* const output) {
   std::fill(output, output + batch_size * num_outputs, 0.0f);
   size_t i = 0;
 #ifdef __AVX__

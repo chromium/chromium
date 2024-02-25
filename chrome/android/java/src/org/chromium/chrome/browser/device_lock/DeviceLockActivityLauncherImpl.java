@@ -9,7 +9,8 @@ import android.content.Intent;
 
 import androidx.annotation.Nullable;
 
-import org.chromium.chrome.browser.ui.signin.DeviceLockActivityLauncher;
+import org.chromium.components.browser_ui.device_lock.DeviceLockActivityLauncher;
+import org.chromium.components.browser_ui.device_lock.DeviceLockActivityLauncher.Source;
 import org.chromium.ui.base.WindowAndroid;
 
 /**
@@ -19,9 +20,7 @@ import org.chromium.ui.base.WindowAndroid;
 public class DeviceLockActivityLauncherImpl implements DeviceLockActivityLauncher {
     private static DeviceLockActivityLauncherImpl sLauncher;
 
-    /**
-     * Singleton instance getter
-     */
+    /** Singleton instance getter */
     public static DeviceLockActivityLauncherImpl get() {
         if (sLauncher == null) {
             sLauncher = new DeviceLockActivityLauncherImpl();
@@ -32,9 +31,16 @@ public class DeviceLockActivityLauncherImpl implements DeviceLockActivityLaunche
     private DeviceLockActivityLauncherImpl() {}
 
     @Override
-    public void launchDeviceLockActivity(Context context, @Nullable String selectedAccount,
-            WindowAndroid windowAndroid, WindowAndroid.IntentCallback callback) {
-        Intent intent = DeviceLockActivity.createIntent(context, selectedAccount);
+    public void launchDeviceLockActivity(
+            Context context,
+            @Nullable String selectedAccount,
+            boolean requireDeviceLockReauthentication,
+            WindowAndroid windowAndroid,
+            WindowAndroid.IntentCallback callback,
+            @Source String source) {
+        Intent intent =
+                DeviceLockActivity.createIntent(
+                        context, selectedAccount, requireDeviceLockReauthentication, source);
         windowAndroid.showIntent(intent, callback, null);
     }
 }

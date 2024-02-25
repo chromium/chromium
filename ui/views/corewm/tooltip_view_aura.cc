@@ -4,6 +4,8 @@
 
 #include "ui/views/corewm/tooltip_view_aura.h"
 
+#include <utility>
+
 #include "base/strings/string_util.h"
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/accessibility/ax_node_data.h"
@@ -46,9 +48,9 @@ void TooltipViewAura::SetText(const std::u16string& text) {
 
   // Replace tabs with whitespace to avoid placeholder character rendering
   // where previously it did not. crbug.com/993100
-  std::u16string newText(text);
-  base::ReplaceChars(newText, u"\t", u"        ", &newText);
-  render_text_->SetText(newText);
+  std::u16string new_text(text);
+  base::ReplaceChars(new_text, u"\t", u"        ", &new_text);
+  render_text_->SetText(std::move(new_text));
   SchedulePaint();
 }
 
@@ -63,6 +65,14 @@ void TooltipViewAura::SetMinLineHeight(int line_height) {
 void TooltipViewAura::SetMaxWidth(int width) {
   max_width_ = width;
   ResetDisplayRect();
+}
+
+void TooltipViewAura::SetMaxLines(size_t max_lines) {
+  render_text_->SetMaxLines(max_lines);
+}
+
+void TooltipViewAura::SetElideBehavior(gfx::ElideBehavior elide_behavior) {
+  render_text_->SetElideBehavior(elide_behavior);
 }
 
 void TooltipViewAura::OnPaint(gfx::Canvas* canvas) {
@@ -104,7 +114,7 @@ void TooltipViewAura::ResetDisplayRect() {
   render_text_->SetDisplayRect(gfx::Rect(0, 0, max_width_, 100000));
 }
 
-BEGIN_METADATA(TooltipViewAura, views::View)
+BEGIN_METADATA(TooltipViewAura)
 END_METADATA
 
 }  // namespace views::corewm

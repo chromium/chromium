@@ -1,0 +1,141 @@
+// Copyright 2023 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module ash.settings.mojom;
+
+import "ash/public/mojom/input_device_settings.mojom";
+import "ash/public/mojom/accelerator_actions.mojom";
+
+// Represents the options for user in the dropdown of button customization.
+struct ActionChoice {
+  ActionType action_type;
+  string name;
+};
+
+// Represents the different types of actions that are remappable to buttons
+// within settings.
+union ActionType {
+  ash.mojom.AcceleratorAction accelerator_action;
+  ash.mojom.StaticShortcutAction static_shortcut_action;
+};
+
+// Interface for observing keyboard settings changes in OSSettings SWA.
+interface KeyboardSettingsObserver {
+  // Notifies KeyboardSettingsObserver when the list of connected keyboards
+  // and their settings are updated.
+  OnKeyboardListUpdated(array<ash.mojom.Keyboard> keyboards);
+  // Notifies KeyboardSettingsObserver whenever the set of policies which
+  // control keyboard settings change.
+  OnKeyboardPoliciesUpdated(ash.mojom.KeyboardPolicies policies);
+};
+
+// Interface for observing touchpad settings changes in OSSettings SWA.
+interface TouchpadSettingsObserver {
+  // Notifies TouchpadSettingsObserver when the list of connected touchpads
+  // and their settings are updated.
+  OnTouchpadListUpdated(array<ash.mojom.Touchpad> touchpads);
+};
+
+// Interface for observing point stick settings changes in OSSettings SWA.
+interface PointingStickSettingsObserver {
+  // Notifies PointingStickSettingsObserver when the list of connected
+  // pointing sticks and their settings are updated.
+  OnPointingStickListUpdated(array<ash.mojom.PointingStick> pointSticks);
+};
+
+// Interface for observing mouse settings changes in OSSettings SWA.
+interface MouseSettingsObserver {
+  // Notifies MouseSettingsObserver when the list of connected mice
+  // and their settings are updated.
+  OnMouseListUpdated(array<ash.mojom.Mouse> mice);
+  // Notifies MouseSettingsObserver whenever the set of policies which
+  // control mouse settings change.
+  OnMousePoliciesUpdated(ash.mojom.MousePolicies policies);
+};
+
+// Interface for observing button presses from mice and graphics tablets while
+// on the customize button page.
+interface ButtonPressObserver {
+  // Notifies ButtonPressObserver when a `button` is pressed on a device
+  // currently being observed.
+  OnButtonPressed(ash.mojom.Button button);
+};
+
+// Interface for observing graphics tablet settings changes in OSSettings SWA.
+interface GraphicsTabletSettingsObserver {
+  // Notifies GraphicsTabletSettingsObserver when the list of connected
+  // graphics tablets and their settings are updated.
+  OnGraphicsTabletListUpdated(array<ash.mojom.GraphicsTablet> graphics_tablets);
+};
+
+// Interface for fetching and configuring input device settings in OSSettings.
+interface InputDeviceSettingsProvider {
+  // Registers an observer which will be notified every time
+  // a keyboard connects/disconnects or when settings change.
+  // The observer which is registered is immediately informed
+  // of the current state via its OnKeyboardListUpdated function.
+  ObserveKeyboardSettings(pending_remote<KeyboardSettingsObserver> observer);
+  // Registers an observer which will be notified every time
+  // a touchpad connects/disconnects or when settings change.
+  // The observer which is registered is immediately informed
+  // of the current state via its ObserveTouchpadSettings function.
+  ObserveTouchpadSettings(pending_remote<TouchpadSettingsObserver> observer);
+  // Registers an observer which will be notified every time
+  // a pointing stick connects/disconnects or when settings change.
+  // The observer which is registered is immediately informed
+  // of the current state via its ObservePointingStickSettings function.
+  ObservePointingStickSettings(
+      pending_remote<PointingStickSettingsObserver> observer);
+  // Registers an observer which will be notified every time
+  // a mouse connects/disconnects or when settings change.
+  // The observer which is registered is immediately informed
+  // of the current state via its ObserveMouseSettings function.
+  ObserveMouseSettings(pending_remote<MouseSettingsObserver> observer);
+  // Registers an observer which will be notified every time
+  // a graphics tablet connects/disconnects or when settings change.
+  // The observer which is registered is immediately informed
+  // of the current state via its ObserveGraphicsTabletSettings function.
+  ObserveGraphicsTabletSettings(
+      pending_remote<GraphicsTabletSettingsObserver> observer);
+
+  // Registers an observer which is notified every time a button is pressed on a
+  // device that is currently being observed via the `StartObserving` method.
+  ObserveButtonPresses(
+      pending_remote<ButtonPressObserver> observer);
+
+  // Restore the keyboard remappings to default base on its id.
+  RestoreDefaultKeyboardRemappings(uint32 device_id);
+  // Sets the keyboard settings based on its id.
+  SetKeyboardSettings(uint32 device_id, ash.mojom.KeyboardSettings settings);
+  // Sets the point stick settings based on its id.
+  SetPointingStickSettings(
+      uint32 device_id, ash.mojom.PointingStickSettings settings);
+  // Sets the mouse settings based on its id.
+  SetMouseSettings(uint32 device_id, ash.mojom.MouseSettings settings);
+  // Sets the touchpad settings based on its id.
+  SetTouchpadSettings(uint32 device_id, ash.mojom.TouchpadSettings settings);
+  // Sets the graphics tablet settings bsaed on its id.
+  SetGraphicsTabletSettings(
+      uint32 device_id, ash.mojom.GraphicsTabletSettings settings);
+
+  // Starts observing customizable button presses for the device with the given
+  // `device_id`.
+  StartObserving(uint32 device_id);
+  // Stops observing customizable button presses for all devices.
+  StopObserving();
+
+  // Returns the set of actions that are valid for mouse button customization.
+  GetActionsForMouseButtonCustomization() => (array<ActionChoice> options);
+
+  // Returns the set of actions that are valid for graphics tablet button
+  // customization.
+  GetActionsForGraphicsTabletButtonCustomization() =>
+      (array<ActionChoice> options);
+
+  // Returns whether any of the keyboards has launcher button.
+  // True if the keyboard has launcher button as meta key and we display the
+  // launcher icon in settings. False if the keyboard has other buttons as meta
+  // key and we display the search icon in settings.
+  HasLauncherButton() => (bool has_launcher_button);
+};

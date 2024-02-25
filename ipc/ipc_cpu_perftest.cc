@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include <memory>
+#include <string_view>
 #include <tuple>
 
 #include "base/check_op.h"
@@ -67,7 +68,7 @@ base::TimeDelta GetFrameTime(size_t frames_per_second) {
 
 class PerfCpuLogger {
  public:
-  explicit PerfCpuLogger(base::StringPiece test_name)
+  explicit PerfCpuLogger(std::string_view test_name)
       : test_name_(test_name),
         process_metrics_(base::ProcessMetrics::CreateCurrentProcessMetrics()) {
     // Query the CPU usage once to start the recording interval.

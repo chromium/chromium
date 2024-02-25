@@ -66,6 +66,12 @@ interface MostVisitedPageHandler {
                         string new_title) => (bool success);
   // Prerenders |tile|.
   PrerenderMostVisitedTile(MostVisitedTile tile, bool is_hover_trigger);
+  // Preconnects |tile|. Preresolve/preconnects the origin; a socket created
+  // by this call will be reused, if possible, for a subsequent attempt to
+  // prerender or navigate to this url.
+  PreconnectMostVisitedTile(MostVisitedTile tile);
+  // Cancel the on-going prerender if exists.
+  CancelPrerender();
   // ======= METRICS =======
   // Logs that |tiles| were displayed / updated at |time|. The first instance of
   // this event is used as a proxy for when the NTP has finished loading.

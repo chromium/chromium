@@ -6,7 +6,7 @@
 
 #include "base/functional/bind.h"
 #include "base/task/single_thread_task_runner.h"
-#include "base/test/test_timeouts.h"
+#include "base/test/run_until.h"
 #include "base/time/time.h"
 #include "components/guest_view/browser/test_guest_view_manager.h"
 #include "content/public/browser/browser_task_traits.h"
@@ -82,15 +82,11 @@ void TestMimeHandlerViewGuest::DidAttachToEmbedder() {
 void TestMimeHandlerViewGuest::WaitForGuestLoadStartThenStop(
     GuestViewBase* guest_view) {
   auto* guest_contents = guest_view->web_contents();
-
-  while (!guest_contents->IsLoading() &&
-         !guest_view->GetController().GetLastCommittedEntry()) {
-    base::RunLoop run_loop;
-    base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
-        FROM_HERE, run_loop.QuitClosure(), TestTimeouts::tiny_timeout());
-    run_loop.Run();
-  }
-
+  // Wait for loading to start.
+  EXPECT_TRUE(base::test::RunUntil([&]() {
+    return guest_contents->IsLoading() ||
+           guest_view->GetController().GetLastCommittedEntry();
+  }));
   ASSERT_TRUE(content::WaitForLoadStop(guest_contents));
 }
 

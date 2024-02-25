@@ -45,8 +45,7 @@ class COMPONENT_EXPORT(EVDEV) InputControllerEvdev : public InputController {
   void set_has_pointing_stick(bool has_pointing_stick);
   void set_has_touchpad(bool has_touchpad);
   void set_has_haptic_touchpad(bool has_haptic_touchpad);
-
-  void SetInputDevicesEnabled(bool enabled);
+  void set_any_keys_pressed(bool any);
 
   // InputController:
   bool HasMouse() override;
@@ -62,43 +61,42 @@ class COMPONENT_EXPORT(EVDEV) InputControllerEvdev : public InputController {
                          const base::TimeDelta& interval) override;
   void GetAutoRepeatRate(base::TimeDelta* delay,
                          base::TimeDelta* interval) override;
-  void SetCurrentLayoutByName(const std::string& layout_name) override;
+  void SetCurrentLayoutByName(const std::string& layout_name,
+                              base::OnceCallback<void(bool)> callback) override;
   void SetKeyboardKeyBitsMapping(
       base::flat_map<int, std::vector<uint64_t>> key_bits_mapping) override;
   std::vector<uint64_t> GetKeyboardKeyBits(int id) override;
   void SetTouchEventLoggingEnabled(bool enabled) override;
   void SetThreeFingerClick(bool enabled) override;
-  void SetTouchpadSensitivity(absl::optional<int> device_id,
-                              int value) override;
-  void SetTouchpadScrollSensitivity(absl::optional<int> device_id,
+  void SetTouchpadSensitivity(std::optional<int> device_id, int value) override;
+  void SetTouchpadScrollSensitivity(std::optional<int> device_id,
                                     int value) override;
-  void SetTouchpadHapticFeedback(absl::optional<int> device_id,
+  void SetTouchpadHapticFeedback(std::optional<int> device_id,
                                  bool enabled) override;
-  void SetTouchpadHapticClickSensitivity(absl::optional<int> device_id,
+  void SetTouchpadHapticClickSensitivity(std::optional<int> device_id,
                                          int value) override;
-  void SetTapToClick(absl::optional<int> device_id, bool enabled) override;
-  void SetTapDragging(absl::optional<int> device_id, bool enabled) override;
-  void SetNaturalScroll(absl::optional<int> device_id, bool enabled) override;
-  void SetMouseSensitivity(absl::optional<int> device_id, int value) override;
-  void SetMouseScrollSensitivity(absl::optional<int> device_id,
+  void SetTapToClick(std::optional<int> device_id, bool enabled) override;
+  void SetTapDragging(std::optional<int> device_id, bool enabled) override;
+  void SetNaturalScroll(std::optional<int> device_id, bool enabled) override;
+  void SetMouseSensitivity(std::optional<int> device_id, int value) override;
+  void SetMouseScrollSensitivity(std::optional<int> device_id,
                                  int value) override;
-  void SetMouseReverseScroll(absl::optional<int> device_id,
+  void SetMouseReverseScroll(std::optional<int> device_id,
                              bool enabled) override;
-  void SetMouseAcceleration(absl::optional<int> device_id,
+  void SetMouseAcceleration(std::optional<int> device_id,
                             bool enabled) override;
-  void SetMouseScrollAcceleration(absl::optional<int> device_id,
+  void SetMouseScrollAcceleration(std::optional<int> device_id,
                                   bool enabled) override;
-  void SetPointingStickSensitivity(absl::optional<int> device_id,
+  void SetPointingStickSensitivity(std::optional<int> device_id,
                                    int value) override;
-  void SetPointingStickAcceleration(absl::optional<int> device_id,
+  void SetPointingStickAcceleration(std::optional<int> device_id,
                                     bool enabled) override;
-  void SetTouchpadAcceleration(absl::optional<int> device_id,
+  void SetTouchpadAcceleration(std::optional<int> device_id,
                                bool enabled) override;
-  void SetTouchpadScrollAcceleration(absl::optional<int> device_id,
+  void SetTouchpadScrollAcceleration(std::optional<int> device_id,
                                      bool enabled) override;
-  void SetPrimaryButtonRight(absl::optional<int> device_id,
-                             bool right) override;
-  void SetPointingStickPrimaryButtonRight(absl::optional<int> device_id,
+  void SetPrimaryButtonRight(std::optional<int> device_id, bool right) override;
+  void SetPointingStickPrimaryButtonRight(std::optional<int> device_id,
                                           bool right) override;
   void SuspendMouseAcceleration() override;
   void EndMouseAccelerationSuspension() override;
@@ -128,12 +126,23 @@ class COMPONENT_EXPORT(EVDEV) InputControllerEvdev : public InputController {
   void SetHapticTouchpadEffectForNextButtonRelease(
       HapticTouchpadEffect effect,
       HapticTouchpadEffectStrength strength) override;
+  bool AreAnyKeysPressed() override;
+  void BlockModifiersOnDevices(std::vector<int> device_ids) override;
+  bool AreInputDevicesEnabled() const override;
+  std::unique_ptr<ScopedDisableInputDevices> DisableInputDevices() override;
 
   // Notifies the controller to delete any data for the given `device_id`.
   void OnInputDeviceRemoved(int device_id);
 
+  // Configuration that needs to be passed on to InputDeviceFactory.
+  InputDeviceSettingsEvdev GetInputDeviceSettings() const;
+
  private:
-  FRIEND_TEST_ALL_PREFIXES(InputControllerEvdevTest, AccelerationSuspension);
+  class ScopedDisableInputDevicesImpl;
+
+  // Called by `ScopedDisableInputDevicesImpl` when they are created/destroyed.
+  void OnScopedDisableInputDevicesCreated();
+  void OnScopedDisableInputDevicesDestroyed();
 
   // Post task to update settings.
   void ScheduleUpdateDeviceSettings();
@@ -146,6 +155,9 @@ class COMPONENT_EXPORT(EVDEV) InputControllerEvdev : public InputController {
 
   // Configuration that needs to be passed on to InputDeviceFactory.
   InputDeviceSettingsEvdev input_device_settings_;
+
+  // Amount of `ScopedDisableInputDevicesImpl` currently alive.
+  int num_scoped_input_devices_disablers_ = 0;
 
   // Task to update config from input_device_settings_ is pending.
   bool settings_update_pending_ = false;
@@ -174,6 +186,8 @@ class COMPONENT_EXPORT(EVDEV) InputControllerEvdev : public InputController {
   bool has_touchpad_ = false;
   // if has_haptic_touchpad_ is true, then has_touchpad_ is also true.
   bool has_haptic_touchpad_ = false;
+
+  bool any_keys_are_pressed_ = false;
 
   // LED state.
   bool caps_lock_led_state_ = false;

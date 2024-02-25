@@ -93,10 +93,8 @@ class FolderHeaderViewTest : public AshTestBase,
   }
 
   base::test::ScopedFeatureList scoped_feature_list_;
-  raw_ptr<test::AppListTestModel, DanglingUntriaged | ExperimentalAsh> model_ =
-      nullptr;
-  raw_ptr<FolderHeaderView, DanglingUntriaged | ExperimentalAsh>
-      folder_header_view_ = nullptr;
+  raw_ptr<test::AppListTestModel, DanglingUntriaged> model_ = nullptr;
+  raw_ptr<FolderHeaderView, DanglingUntriaged> folder_header_view_ = nullptr;
 };
 
 INSTANTIATE_TEST_SUITE_P(Jelly, FolderHeaderViewTest, testing::Bool());
@@ -244,7 +242,7 @@ TEST_P(FolderHeaderViewTest, SetFolderNameOnReturn) {
 
   // Make sure the return press unfocused the text and registered the name
   // change.
-  EXPECT_EQ(IsJellyEnabled(), HasTextFocus());
+  EXPECT_EQ(false, HasTextFocus());
   EXPECT_EQ("ret", folder_item->name());
 }
 
@@ -268,7 +266,7 @@ TEST_P(FolderHeaderViewTest, RevertFolderNameOnEscape) {
   SendKey(ui::VKEY_ESCAPE);
 
   // Make sure the escape press unfocused the text and reverted the name change.
-  EXPECT_EQ(IsJellyEnabled(), HasTextFocus());
+  EXPECT_EQ(false, HasTextFocus());
   EXPECT_EQ("", folder_item->name());
 }
 

@@ -15,5 +15,5 @@
 
     [CallWith=ScriptState, RaisesException] void respondWith(Promise<Response> r);
     [CallWith=ScriptState] readonly attribute Promise<any> preloadResponse;
-    [CallWith=ScriptState] readonly attribute Promise<void> handled;
+    [CallWith=ScriptState] readonly attribute Promise<undefined> handled;
 };

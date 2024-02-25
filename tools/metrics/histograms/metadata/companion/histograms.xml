@@ -36,7 +36,7 @@ chromium-metrics-reviews@google.com.
 </variants>
 
 <histogram name="Companion.CQ.TextHighlight.Success" enum="BooleanSuccess"
-    expires_after="2023-10-20">
+    expires_after="2024-04-21">
   <owner>junzou@chromium.org</owner>
   <owner>shaktisahu@chromium.org</owner>
   <owner>src/chrome/browser/companion/OWNERS</owner>
@@ -47,7 +47,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Companion.FullLoad.Latency" units="ms"
-    expires_after="2024-01-07">
+    expires_after="2024-07-14">
   <owner>mcrouse@chromium.org</owner>
   <owner>src/chrome/browser/companion/OWNERS</owner>
   <summary>
@@ -57,7 +57,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Companion.HasNavigatedToExpsSuccessPagePref.OnChanged"
-    enum="Boolean" expires_after="2024-01-07">
+    enum="Boolean" expires_after="2024-07-14">
   <owner>tbansal@chromium.org</owner>
   <owner>src/chrome/browser/companion/OWNERS</owner>
   <summary>
@@ -68,7 +68,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Companion.HasNavigatedToExpsSuccessPagePref.Status"
-    enum="Boolean" expires_after="2023-12-31">
+    enum="Boolean" expires_after="2024-07-07">
   <owner>tbansal@chromium.org</owner>
   <owner>src/chrome/browser/companion/OWNERS</owner>
   <summary>
@@ -77,7 +77,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Companion.IsUserOptedInToExps" enum="BooleanOptedIn"
-    expires_after="2023-12-24">
+    expires_after="2024-06-30">
   <owner>tbansal@chromium.org</owner>
   <owner>src/chrome/browser/companion/OWNERS</owner>
   <summary>
@@ -87,7 +87,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Companion.NavigationLoad.Latency" units="ms"
-    expires_after="2024-01-07">
+    expires_after="2024-07-14">
   <owner>mcrouse@chromium.org</owner>
   <owner>src/chrome/browser/companion/OWNERS</owner>
   <summary>
@@ -98,7 +98,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Companion.PHFeedback.Result" enum="Companion.PhFeedback"
-    expires_after="2024-01-14">
+    expires_after="2024-08-18">
   <owner>mcrouse@chromium.org</owner>
   <owner>src/chrome/browser/companion/OWNERS</owner>
   <summary>
@@ -108,7 +108,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Companion.PromoEvent" enum="Companion.PromoEvent"
-    expires_after="2024-02-05">
+    expires_after="2024-06-30">
   <owner>shaktisahu@chromium.org</owner>
   <owner>src/chrome/browser/companion/OWNERS</owner>
   <summary>
@@ -117,8 +117,19 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Companion.ServerSideUrlFilterEvent" enum="Boolean"
+    expires_after="2024-04-28">
+  <owner>srna@google.com</owner>
+  <owner>src/chrome/browser/companion/OWNERS</owner>
+  <summary>
+    Records that a URL was excluded from VQS triggering due to pXLQ or
+    pornography signals from Diner. Recorded after URL RPC check and before VQS
+    rendering.
+  </summary>
+</histogram>
+
 <histogram name="Companion.SidePanel.OpenTrigger" enum="SidePanelOpenTrigger"
-    expires_after="2023-12-24">
+    expires_after="2024-06-30">
   <owner>shaktisahu@chromium.org</owner>
   <owner>src/chrome/browser/companion/OWNERS</owner>
   <summary>
@@ -127,8 +138,19 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Companion.SidePanel.ShowUiSuccess" enum="BooleanSuccess"
+    expires_after="2024-07-21">
+  <owner>mercerd@google.com</owner>
+  <owner>src/chrome/browser/companion/OWNERS</owner>
+  <summary>
+    Records whether the UI for side panel was successfully shown to the user
+    have the side panel opened. Recorded after the side panel is opened and all
+    listeners to the main active tab are setup.
+  </summary>
+</histogram>
+
 <histogram name="Companion.SidePanelAvailabilityChanged"
-    enum="CompanionSidePanelAvailabilityChanged" expires_after="2023-12-24">
+    enum="CompanionSidePanelAvailabilityChanged" expires_after="2024-04-28">
   <owner>tbansal@chromium.org</owner>
   <owner>src/chrome/browser/companion/OWNERS</owner>
   <summary>
@@ -137,21 +159,32 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Companion.VisualQuery.Agent.DomImageCount" units="images"
+    expires_after="2024-08-11">
+  <owner>srna@google.com</owner>
+  <owner>pstjuste@google.com</owner>
+  <owner>src/chrome/browser/companion/OWNERS</owner>
+  <summary>
+    Records the number of images on the page found by DOM traversal. Recorded
+    during classification start for VisualQuerySuggestions in CSC.
+  </summary>
+</histogram>
+
 <histogram name="Companion.VisualQuery.Agent.StartClassification"
-    enum="Boolean" expires_after="2023-10-20">
+    enum="Boolean" expires_after="2024-06-30">
   <owner>srna@google.com</owner>
   <owner>pstjuste@google.com</owner>
   <owner>src/chrome/browser/companion/OWNERS</owner>
   <summary>
     Records whether we successfully started classification in the
-    VisualSearchClassifierAgent or chose to delay processing to wait for DOM to
+    VisualQueryClassifierAgent or chose to delay processing to wait for DOM to
     get updates with images. This is recorded right after we traverse the DOM
     for images but before we do any classification.
   </summary>
 </histogram>
 
 <histogram name="Companion.VisualQuery.ClassificationInitStatus"
-    enum="Companion.VisualQuery.InitStatus" expires_after="2024-02-04">
+    enum="Companion.VisualQuery.InitStatus" expires_after="2024-06-30">
   <owner>srna@google.com</owner>
   <owner>pstjuste@google.com</owner>
   <owner>src/chrome/browser/companion/OWNERS</owner>
@@ -163,7 +196,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Companion.VisualQuery.ClassificationLatency" units="ms"
-    expires_after="2024-02-04">
+    expires_after="2024-06-30">
   <owner>srna@google.com</owner>
   <owner>pstjuste@google.com</owner>
   <owner>src/chrome/browser/companion/OWNERS</owner>
@@ -174,20 +207,20 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Companion.VisualQuery.ClassificationResultsSize"
-    units="images" expires_after="2023-10-20">
+    units="images" expires_after="2024-06-30">
   <owner>srna@google.com</owner>
   <owner>pstjuste@google.com</owner>
   <owner>src/chrome/browser/companion/OWNERS</owner>
   <summary>
     Records the number of images received by the companion UI from the
-    VisualSearchClassifierAgent running in the renderer process. Recorded once
+    VisualQueryClassifierAgent running in the renderer process. Recorded once
     the classification and result filtering is complete and the result is
     received by the browser process.
   </summary>
 </histogram>
 
 <histogram name="Companion.VisualQuery.ClassifierInitializationLatency"
-    units="ms" expires_after="2024-02-04">
+    units="ms" expires_after="2024-06-30">
   <owner>srna@google.com</owner>
   <owner>pstjuste@google.com</owner>
   <owner>src/chrome/browser/companion/OWNERS</owner>
@@ -199,7 +232,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Companion.VisualQuery.ClassifierModelAvailable"
-    enum="BooleanAvailable" expires_after="2024-02-04">
+    enum="BooleanAvailable" expires_after="2024-06-30">
   <owner>srna@google.com</owner>
   <owner>pstjuste@google.com</owner>
   <owner>src/chrome/browser/companion/OWNERS</owner>
@@ -209,19 +242,8 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Companion.VisualQuery.DomImageCount" units="images"
-    expires_after="2023-10-20">
-  <owner>srna@google.com</owner>
-  <owner>pstjuste@google.com</owner>
-  <owner>src/chrome/browser/companion/OWNERS</owner>
-  <summary>
-    Records the number of images on the page found by DOM traversal. Recorded
-    during classification start for VisualQuerySuggestions in CSC.
-  </summary>
-</histogram>
-
 <histogram name="Companion.VisualQuery.EligibilityStatus.NumImages"
-    units="images" expires_after="2024-02-11">
+    units="images" expires_after="2024-06-30">
   <owner>srna@google.com</owner>
   <owner>pstjuste@google.com</owner>
   <owner>src/chrome/browser/companion/OWNERS</owner>
@@ -233,7 +255,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Companion.VisualQuery.EligibilityStatus.NumSensitive"
-    units="images" expires_after="2023-10-20">
+    units="images" expires_after="2024-07-07">
   <owner>srna@google.com</owner>
   <owner>pstjuste@google.com</owner>
   <owner>src/chrome/browser/companion/OWNERS</owner>
@@ -246,7 +268,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Companion.VisualQuery.EligibilityStatus.NumShoppy"
-    units="images" expires_after="2024-02-11">
+    units="images" expires_after="2024-06-30">
   <owner>srna@google.com</owner>
   <owner>pstjuste@google.com</owner>
   <owner>src/chrome/browser/companion/OWNERS</owner>
@@ -259,7 +281,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Companion.VisualQuery.EligibilityStatus.NumShoppyNotSensitive"
-    units="images" expires_after="2024-02-11">
+    units="images" expires_after="2024-06-30">
   <owner>srna@google.com</owner>
   <owner>pstjuste@google.com</owner>
   <owner>src/chrome/browser/companion/OWNERS</owner>
@@ -273,7 +295,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Companion.VisualQuery.MaybeSensitive.SensitivityClassificationScore"
-    units="percentile" expires_after="2023-10-20">
+    units="percentile" expires_after="2024-03-31">
   <owner>srna@google.com</owner>
   <owner>pstjuste@google.com</owner>
   <owner>src/chrome/browser/companion/OWNERS</owner>
@@ -287,7 +309,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Companion.VisualQuery.MaybeShoppy.ShoppingClassificationScore"
-    units="percentile" expires_after="2023-10-20">
+    units="percentile" expires_after="2024-03-31">
   <owner>srna@google.com</owner>
   <owner>pstjuste@google.com</owner>
   <owner>src/chrome/browser/companion/OWNERS</owner>
@@ -302,7 +324,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Companion.VisualQuery.MostShoppy.SensitivityClassificationScore"
-    units="percentile" expires_after="2023-10-20">
+    units="percentile" expires_after="2024-08-18">
   <owner>srna@google.com</owner>
   <owner>pstjuste@google.com</owner>
   <owner>src/chrome/browser/companion/OWNERS</owner>
@@ -316,7 +338,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Companion.VisualQuery.MostShoppy.ShoppingClassificationScore"
-    units="percentile" expires_after="2023-10-20">
+    units="percentile" expires_after="2024-08-18">
   <owner>srna@google.com</owner>
   <owner>pstjuste@google.com</owner>
   <owner>src/chrome/browser/companion/OWNERS</owner>
@@ -331,7 +353,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Companion.VisualQuery.MostShoppyNotSensitive.SensitivityClassificationScore"
-    units="percentile" expires_after="2023-10-20">
+    units="percentile" expires_after="2024-03-31">
   <owner>srna@google.com</owner>
   <owner>pstjuste@google.com</owner>
   <owner>src/chrome/browser/companion/OWNERS</owner>
@@ -346,7 +368,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Companion.VisualQuery.MostShoppyNotSensitive.ShoppingClassificationScore"
-    units="percentile" expires_after="2023-10-20">
+    units="percentile" expires_after="2024-03-31">
   <owner>srna@google.com</owner>
   <owner>pstjuste@google.com</owner>
   <owner>src/chrome/browser/companion/OWNERS</owner>
@@ -360,7 +382,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Companion.VisualQuery.ResultLatency" units="ms"
-    expires_after="2023-10-20">
+    expires_after="2024-06-30">
   <owner>srna@google.com</owner>
   <owner>pstjuste@google.com</owner>
   <owner>src/chrome/browser/companion/OWNERS</owner>
@@ -372,7 +394,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Companion.VisualQuery.SendVisualResultSuccess" enum="Boolean"
-    expires_after="2023-10-20">
+    expires_after="2024-06-30">
   <owner>srna@google.com</owner>
   <owner>pstjuste@google.com</owner>
   <owner>src/chrome/browser/companion/OWNERS</owner>
@@ -384,7 +406,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Companion.{UiSurface}.ChildElementCount" units="Index"
-    expires_after="2024-02-20">
+    expires_after="2024-06-30">
   <owner>shaktisahu@chromium.org</owner>
   <owner>src/chrome/browser/companion/OWNERS</owner>
   <summary>
@@ -395,7 +417,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Companion.{UiSurface}.Clicked" enum="BooleanClicked"
-    expires_after="2024-02-20">
+    expires_after="2024-06-30">
   <owner>shaktisahu@chromium.org</owner>
   <owner>src/chrome/browser/companion/OWNERS</owner>
   <summary>
@@ -406,7 +428,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Companion.{UiSurface}.ClickPosition" units="Index"
-    expires_after="2024-02-20">
+    expires_after="2024-06-30">
   <owner>shaktisahu@chromium.org</owner>
   <owner>src/chrome/browser/companion/OWNERS</owner>
   <summary>
@@ -417,7 +439,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Companion.{UiSurface}.Shown" enum="BooleanShown"
-    expires_after="2024-02-20">
+    expires_after="2024-06-30">
   <owner>shaktisahu@chromium.org</owner>
   <owner>src/chrome/browser/companion/OWNERS</owner>
   <summary>

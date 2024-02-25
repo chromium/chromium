@@ -27,13 +27,19 @@ FORWARD_DECLARE_TEST(TestStructuredMetricsServiceDisabled,
 
 namespace metrics::structured {
 
+class OobeStructuredMetricsWatcher;
+class StructuredMetricsServiceTest;
+class StructuredMetricsMixin;
+
+FORWARD_DECLARE_TEST(StructuredMetricsServiceTest, RotateLogs);
+
 // The Structured Metrics Service is responsible for collecting and uploading
 // Structured Metric events.
 class StructuredMetricsService final {
  public:
-  StructuredMetricsService(MetricsProvider* system_profile_provider,
-                           MetricsServiceClient* client,
-                           PrefService* local_state);
+  StructuredMetricsService(MetricsServiceClient* client,
+                           PrefService* local_state,
+                           std::unique_ptr<StructuredMetricsRecorder> recorder);
 
   ~StructuredMetricsService();
 
@@ -52,6 +58,8 @@ class StructuredMetricsService final {
   // Clears all event and log data.
   void Purge();
 
+  MetricsServiceClient* GetMetricsServiceClient() const;
+
   bool reporting_active() const {
     return reporting_service_->reporting_active();
   }
@@ -62,17 +70,23 @@ class StructuredMetricsService final {
 
   static void RegisterPrefs(PrefRegistrySimple* registry);
 
+  metrics::LogStore* log_store() { return reporting_service_->log_store(); }
+
  private:
   friend class StructuredMetricsServiceTest;
+  friend class StructuredMetricsMixin;
+#if BUILDFLAG(IS_CHROMEOS)
+  friend class OobeStructuredMetricsWatcher;
+#endif
   friend class metrics::StructuredMetricsServiceTestBase;
 
-  FRIEND_TEST_ALL_PREFIXES(StructuredMetricsServiceTest, RotateLogs);
+  FRIEND_TEST_ALL_PREFIXES(metrics::structured::StructuredMetricsServiceTest,
+                           RotateLogs);
   FRIEND_TEST_ALL_PREFIXES(metrics::TestStructuredMetricsServiceDisabled,
                            ValidStateWhenDisabled);
 
-  StructuredMetricsService(MetricsServiceClient* client,
-                           PrefService* local_state,
-                           std::unique_ptr<StructuredMetricsRecorder> recorder);
+  // Sets the instance of the recorder used for test.
+  void SetRecorderForTest(std::unique_ptr<StructuredMetricsRecorder> recorder);
 
   // Callback function to get the upload interval.
   base::TimeDelta GetUploadTimeInterval();
@@ -88,6 +102,18 @@ class StructuredMetricsService final {
 
   // Fills out the UMA proto to be sent.
   void InitializeUmaProto(ChromeUserMetricsExtension& uma_proto);
+
+  // Triggers an upload of recorded events outside of the normal cadence.
+  // This doesn't interfere with the normal cadence.
+  void ManualUpload();
+
+  // Queue an upload if there are logs stored in the log store. This is meant to
+  // be used to start an upload when the service starts, so we do not have to
+  // wait until first upload to send events from the previous session.
+  //
+  // Reporting is assumed to be enabled by function. Must be checked before
+  // called.
+  void MaybeStartUpload();
 
   // Helper function to serialize a ChromeUserMetricsExtension proto.
   static std::string SerializeLog(const ChromeUserMetricsExtension& uma_proto);
@@ -111,6 +137,9 @@ class StructuredMetricsService final {
   // Represents if structured metrics and the service is enabled. This isn't
   // to indicate if the service is recording.
   bool structured_metrics_enabled_ = false;
+
+  // Flag to make sure MaybeStartUpload() isn't called twice.
+  bool initial_upload_started_ = false;
 
   // The metrics client |this| is service is associated.
   raw_ptr<MetricsServiceClient> client_;

@@ -1,0 +1,43 @@
+[
+  {
+    "os": [
+      "chromeos_ash"
+    ],
+    "policy_pref_mapping_tests": [
+      {
+        "note": "Check default values (no policies set)",
+        "policies": {},
+        "prefs": {
+          "wallpaper_google_photos_integration_enabled": {
+            "default_value": true,
+            "location": "user_profile"
+          }
+        }
+      },
+      {
+        "note": "Check true policy value",
+        "policies": {
+          "WallpaperGooglePhotosIntegrationEnabled": true
+        },
+        "prefs": {
+          "wallpaper_google_photos_integration_enabled": {
+            "location": "user_profile",
+            "value": true
+          }
+        }
+      },
+      {
+        "note": "Check false policy value",
+        "policies": {
+          "WallpaperGooglePhotosIntegrationEnabled": false
+        },
+        "prefs": {
+          "wallpaper_google_photos_integration_enabled": {
+            "location": "user_profile",
+            "value": false
+          }
+        }
+      }
+    ]
+  }
+]

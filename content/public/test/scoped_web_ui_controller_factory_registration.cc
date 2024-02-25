@@ -92,7 +92,7 @@ void CheckForLeakedWebUIRegistrations::OnTestStart(
   // Call GetInstance() to ensure WebUIConfig registers its
   // WebUIControllerFactory before we get the number of registered factories.
   initial_size_of_webui_config_map_ =
-      WebUIConfigMap::GetInstance().GetSizeForTesting();
+      WebUIConfigMap::GetInstance().GetWebUIConfigList(nullptr).size();
   initial_num_factories_registered_ =
       content::WebUIControllerFactory::GetNumRegisteredFactoriesForTesting();
 }
@@ -100,7 +100,7 @@ void CheckForLeakedWebUIRegistrations::OnTestStart(
 void CheckForLeakedWebUIRegistrations::OnTestEnd(
     const testing::TestInfo& test_info) {
   EXPECT_EQ(initial_size_of_webui_config_map_,
-            WebUIConfigMap::GetInstance().GetSizeForTesting())
+            WebUIConfigMap::GetInstance().GetWebUIConfigList(nullptr).size())
       << "A WebUIConfig was registered by a test but never unregistered. This "
          "can cause flakiness in later tests. Please use "
          "ScopedWebUIConfigRegistration to ensure that registered configs are "

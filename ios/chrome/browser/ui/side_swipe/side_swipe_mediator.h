@@ -7,14 +7,16 @@
 
 #import <UIKit/UIKit.h>
 
-#import "ios/chrome/browser/snapshots/snapshot_generator_delegate.h"
-
 class FullscreenController;
 @protocol SideSwipeToolbarInteracting;
 @protocol SideSwipeToolbarSnapshotProviding;
 class SnapshotBrowserAgent;
 @protocol TabStripHighlighting;
 class WebStateList;
+
+namespace feature_engagement {
+class Tracker;
+}  // namespace feature_engagement
 
 // Notification sent when the user starts a side swipe (on tablet).
 extern NSString* const kSideSwipeWillStartNotification;
@@ -59,10 +61,11 @@ extern NSString* const kSideSwipeDidStopNotification;
 @property(nonatomic, weak) id<SideSwipeToolbarSnapshotProviding>
     toolbarSnapshotProvider;
 
-@property(nonatomic, weak) id<SnapshotGeneratorDelegate> snapshotDelegate;
 @property(nonatomic, weak) id<TabStripHighlighting> tabStripDelegate;
 
 @property(nonatomic, assign) FullscreenController* fullscreenController;
+
+@property(nonatomic) feature_engagement::Tracker* engagementTracker;
 
 // Initializer.
 - (instancetype)

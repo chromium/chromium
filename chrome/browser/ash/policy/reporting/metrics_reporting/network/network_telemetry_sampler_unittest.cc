@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ash/policy/reporting/metrics_reporting/network/network_telemetry_sampler.h"
 
+#include <optional>
 #include <string>
 #include <utility>
 #include <vector>
@@ -11,7 +12,6 @@
 #include "base/run_loop.h"
 #include "base/strings/strcat.h"
 #include "base/test/bind.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/values.h"
 #include "chrome/browser/ash/policy/reporting/metrics_reporting/metric_reporting_manager.h"
@@ -33,7 +33,6 @@
 #include "components/user_manager/user_manager.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/cros_system_api/dbus/shill/dbus-constants.h"
 
 namespace reporting {
@@ -180,8 +179,6 @@ class NetworkTelemetrySamplerTest : public ::testing::Test {
   std::unique_ptr<user_manager::ScopedUserManager> scoped_user_manager_;
 
   ::ash::NetworkHandlerTestHelper network_handler_test_helper_;
-
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 TEST_F(NetworkTelemetrySamplerTest, CellularConnected) {
@@ -193,9 +190,9 @@ TEST_F(NetworkTelemetrySamplerTest, CellularConnected) {
 
   SetNetworkData(networks_data);
   NetworkTelemetrySampler network_telemetry_sampler;
-  test::TestEvent<absl::optional<MetricData>> metric_collect_event;
+  test::TestEvent<std::optional<MetricData>> metric_collect_event;
   network_telemetry_sampler.MaybeCollect(metric_collect_event.cb());
-  const absl::optional<MetricData> optional_result =
+  const std::optional<MetricData> optional_result =
       metric_collect_event.result();
 
   ASSERT_TRUE(optional_result.has_value());
@@ -239,9 +236,9 @@ TEST_F(NetworkTelemetrySamplerTest, NoNetworkData) {
   SetNetworkData({});
 
   NetworkTelemetrySampler network_telemetry_sampler;
-  test::TestEvent<absl::optional<MetricData>> metric_collect_event;
+  test::TestEvent<std::optional<MetricData>> metric_collect_event;
   network_telemetry_sampler.MaybeCollect(metric_collect_event.cb());
-  const absl::optional<MetricData> result = metric_collect_event.result();
+  const std::optional<MetricData> result = metric_collect_event.result();
 
   ASSERT_FALSE(result.has_value());
 }
@@ -255,9 +252,9 @@ TEST_F(NetworkTelemetrySamplerTest, CellularNotConnected) {
 
   SetNetworkData(networks_data);
   NetworkTelemetrySampler network_telemetry_sampler;
-  test::TestEvent<absl::optional<MetricData>> metric_collect_event;
+  test::TestEvent<std::optional<MetricData>> metric_collect_event;
   network_telemetry_sampler.MaybeCollect(metric_collect_event.cb());
-  const absl::optional<MetricData> result = metric_collect_event.result();
+  const std::optional<MetricData> result = metric_collect_event.result();
 
   ASSERT_FALSE(result.has_value());
 }
@@ -270,9 +267,9 @@ TEST_F(NetworkTelemetrySamplerTest, WifiNotConnected_NoSignalStrength) {
 
   SetNetworkData(networks_data);
   NetworkTelemetrySampler network_telemetry_sampler;
-  test::TestEvent<absl::optional<MetricData>> metric_collect_event;
+  test::TestEvent<std::optional<MetricData>> metric_collect_event;
   network_telemetry_sampler.MaybeCollect(metric_collect_event.cb());
-  const absl::optional<MetricData> result = metric_collect_event.result();
+  const std::optional<MetricData> result = metric_collect_event.result();
 
   ASSERT_FALSE(result.has_value());
 }
@@ -286,9 +283,9 @@ TEST_F(NetworkTelemetrySamplerTest, EthernetPortal) {
 
   SetNetworkData(networks_data);
   NetworkTelemetrySampler network_telemetry_sampler;
-  test::TestEvent<absl::optional<MetricData>> metric_collect_event;
+  test::TestEvent<std::optional<MetricData>> metric_collect_event;
   network_telemetry_sampler.MaybeCollect(metric_collect_event.cb());
-  const absl::optional<MetricData> optional_result =
+  const std::optional<MetricData> optional_result =
       metric_collect_event.result();
 
   ASSERT_TRUE(optional_result.has_value());
@@ -339,9 +336,9 @@ TEST_F(NetworkTelemetrySamplerTest, EmptyLatencyData) {
   SetNetworkData(networks_data);
 
   NetworkTelemetrySampler network_telemetry_sampler;
-  test::TestEvent<absl::optional<MetricData>> metric_collect_event;
+  test::TestEvent<std::optional<MetricData>> metric_collect_event;
   network_telemetry_sampler.MaybeCollect(metric_collect_event.cb());
-  const absl::optional<MetricData> optional_result =
+  const std::optional<MetricData> optional_result =
       metric_collect_event.result();
 
   ASSERT_TRUE(optional_result.has_value());
@@ -406,9 +403,9 @@ TEST_F(NetworkTelemetrySamplerTest, MixTypesAndConfigurations) {
             "WiFi.SignalStrengthRssi": -60})");
 
   NetworkTelemetrySampler network_telemetry_sampler;
-  test::TestEvent<absl::optional<MetricData>> metric_collect_event;
+  test::TestEvent<std::optional<MetricData>> metric_collect_event;
   network_telemetry_sampler.MaybeCollect(metric_collect_event.cb());
-  const absl::optional<MetricData> optional_result =
+  const std::optional<MetricData> optional_result =
       metric_collect_event.result();
 
   ASSERT_TRUE(optional_result.has_value());
@@ -497,9 +494,9 @@ TEST_F(NetworkTelemetrySamplerTest, WifiNotConnected) {
       R"({"GUID": "guid1", "Type": "wifi", "State": "idle",
             "WiFi.SignalStrengthRssi": -70})");
   NetworkTelemetrySampler network_telemetry_sampler;
-  test::TestEvent<absl::optional<MetricData>> metric_collect_event;
+  test::TestEvent<std::optional<MetricData>> metric_collect_event;
   network_telemetry_sampler.MaybeCollect(metric_collect_event.cb());
-  const absl::optional<MetricData> optional_result =
+  const std::optional<MetricData> optional_result =
       metric_collect_event.result();
 
   ASSERT_TRUE(optional_result.has_value());

@@ -87,7 +87,7 @@ found in the LICENSE file.
         android:importantForAccessibility="no"
         style="@style/ListItemEndIcon" />
 
-    <org.chromium.components.browser_ui.widget.listmenu.ListMenuButton
+    <org.chromium.ui.listmenu.ListMenuButton
         android:id="@+id/more"
         android:src="@drawable/ic_more_vert_24dp"
         android:layout_width="@dimen/min_touch_target_size"

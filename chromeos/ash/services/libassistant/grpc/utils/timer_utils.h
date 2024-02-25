@@ -10,10 +10,8 @@
 
 namespace assistant {
 namespace api {
-class OnAlarmTimerEventRequest;
 
 namespace params {
-enum class TimerStatus;
 class Timer;
 class TimerParams;
 }  // namespace params
@@ -23,24 +21,13 @@ class TimerParams;
 
 namespace ash::libassistant {
 
-::assistant::api::OnAlarmTimerEventRequest
-CreateOnAlarmTimerEventRequestProtoForV1(
-    const std::vector<assistant::AssistantTimer>& all_curr_timers);
-
 // `timer_params` contains the information of all the current timers.
 std::vector<assistant::AssistantTimer> ConstructAssistantTimersFromProto(
     const ::assistant::api::params::TimerParams& timer_params);
 
-void ConvertAssistantTimerToProtoTimer(const assistant::AssistantTimer& input,
-                                       ::assistant::api::params::Timer* output);
-
 void ConvertProtoTimerToAssistantTimer(
     const ::assistant::api::params::Timer& input,
     assistant::AssistantTimer* output);
-
-// Used both in |AssistantClientV1| and |FakeAssistantClient|.
-std::vector<assistant::AssistantTimer> GetAllCurrentTimersFromEvents(
-    const std::vector<assistant_client::AlarmTimerManager::Event>& events);
 
 }  // namespace ash::libassistant
 

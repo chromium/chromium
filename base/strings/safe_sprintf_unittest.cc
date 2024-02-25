@@ -12,7 +12,7 @@
 #include <limits>
 #include <memory>
 
-#include "base/allocator/partition_allocator/partition_alloc_config.h"
+#include "base/allocator/partition_allocator/src/partition_alloc/partition_alloc_config.h"
 #include "base/check_op.h"
 #include "build/build_config.h"
 #include "testing/gtest/include/gtest/gtest.h"

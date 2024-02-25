@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include <map>
+#include <optional>
 #include <sstream>
 #include <string>
 
@@ -27,6 +28,7 @@
 #include "chrome/browser/autofill/automated_tests/cache_replayer.h"
 #include "chrome/browser/autofill/captured_sites_test_utils.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/autofill/autofill_popup_controller_impl.h"
 #include "chrome/browser/ui/autofill/chrome_autofill_client.h"
 #include "chrome/browser/ui/autofill/payments/test_card_unmask_prompt_waiter.h"
 #include "chrome/browser/ui/browser_window.h"
@@ -48,8 +50,10 @@
 #include "components/autofill/core/common/autofill_util.h"
 #include "components/metrics/content/subprocess_metrics_provider.h"
 #include "components/password_manager/core/common/password_manager_pref_names.h"
+#include "components/safe_browsing/core/common/safe_browsing_prefs.h"
 #include "components/user_prefs/user_prefs.h"
 #include "components/variations/variations_switches.h"
+#include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/test_renderer_host.h"
 #include "content/public/test/test_utils.h"
@@ -76,7 +80,7 @@ constexpr base::TimeDelta kAutofillWaitForFillInterval = base::Seconds(60);
 
 base::FilePath GetReplayFilesRootDirectory() {
   base::FilePath src_dir;
-  if (base::PathService::Get(base::DIR_SOURCE_ROOT, &src_dir)) {
+  if (base::PathService::Get(base::DIR_SRC_TEST_DATA_ROOT, &src_dir)) {
     return src_dir.AppendASCII("chrome")
         .AppendASCII("test")
         .AppendASCII("data")
@@ -158,19 +162,18 @@ class AutofillCapturedSitesInteractiveTest
       public ::testing::WithParamInterface<CapturedSiteParams> {
  public:
   // TestRecipeReplayChromeFeatureActionExecutor
-  bool AutofillForm(
-      const std::string& focus_element_css_selector,
-      const std::vector<std::string>& iframe_path,
-      const int attempts,
-      content::RenderFrameHost* frame,
-      absl::optional<ServerFieldType> triggered_field_type) override {
+  bool AutofillForm(const std::string& focus_element_css_selector,
+                    const std::vector<std::string>& iframe_path,
+                    const int attempts,
+                    content::RenderFrameHost* frame,
+                    std::optional<FieldType> triggered_field_type) override {
     content::WebContents* web_contents =
         content::WebContents::FromRenderFrameHost(frame);
-    auto* autofill_manager = static_cast<BrowserAutofillManager*>(
+    auto& autofill_manager = static_cast<BrowserAutofillManager&>(
         ContentAutofillDriverFactory::FromWebContents(web_contents)
             ->DriverForFrame(frame->GetMainFrame())
-            ->autofill_manager());
-    autofill_manager->SetTestDelegate(test_delegate());
+            ->GetAutofillManager());
+    test_delegate()->Observe(autofill_manager);
 
     int tries = 0;
     while (tries < attempts) {
@@ -183,7 +186,7 @@ class AutofillCapturedSitesInteractiveTest
       translate::test_utils::CloseCurrentBubble(browser());
       TryToCloseAllPrompts(web_contents);
 
-      autofill_manager->client().HideAutofillPopup(
+      autofill_manager.client().HideAutofillPopup(
           autofill::PopupHidingReason::kViewDestroyed);
 
       testing::AssertionResult suggestions_shown = ShowAutofillSuggestion(
@@ -195,9 +198,7 @@ class AutofillCapturedSitesInteractiveTest
       }
 
       // Press the down key to highlight the first choice in the autofill
-      // suggestion drop down. Once the popup is shown, wait for 500 ms to
-      // exceed the freeze period of the popup during which it ignores "Enter"
-      // keystrokes.
+      // suggestion drop down.
       test_delegate()->SetExpectations({ObservedUiEvents::kPreviewFormData},
                                        kAutofillWaitForActionInterval);
       SendKeyToPopup(frame, ui::DomKey::ARROW_DOWN);
@@ -208,21 +209,20 @@ class AutofillCapturedSitesInteractiveTest
                      << preview_shown.message();
         continue;
       }
-      DoNothingAndWait(base::Milliseconds(500));
 
-      absl::optional<std::u16string> cvc = profile_controller_->cvc();
+      std::optional<std::u16string> cvc = profile_controller_->cvc();
       // If CVC is available in the Action Recorder receipts and this is a
       // payment form, this means it's running the test with a server card. So
       // the "Enter CVC" dialog will pop up for card autofill.
       bool is_credit_card_field =
           triggered_field_type.has_value() &&
-          AutofillType(triggered_field_type.value()).group() ==
+          GroupTypeOfFieldType(triggered_field_type.value()) ==
               FieldTypeGroup::kCreditCard;
       bool should_cvc_dialog_pop_up = is_credit_card_field && cvc;
 
       // Press the enter key to invoke autofill using the first suggestion.
-      test_delegate()->SetExpectations({ObservedUiEvents::kSuggestionsHidden,
-                                        ObservedUiEvents::kFormDataFilled},
+      test_delegate()->SetExpectations({ObservedUiEvents::kFormDataFilled,
+                                        ObservedUiEvents::kSuggestionsHidden},
                                        kAutofillWaitForFillInterval);
       TestCardUnmaskPromptWaiter test_card_unmask_prompt_waiter(
           web_contents,
@@ -248,7 +248,7 @@ class AutofillCapturedSitesInteractiveTest
       return true;
     }
 
-    autofill_manager->client().HideAutofillPopup(
+    autofill_manager.client().HideAutofillPopup(
         autofill::PopupHidingReason::kViewDestroyed);
     ADD_FAILURE() << "Failed to autofill the form!";
     return false;
@@ -294,6 +294,9 @@ class AutofillCapturedSitesInteractiveTest
                 test::ServerCacheReplayer::kOptionSplitRequestsByForm)));
 
     metrics_scraper_ = MetricsScraper::MaybeCreate(GetParam().site_name);
+
+    browser()->profile()->GetPrefs()->SetBoolean(prefs::kSafeBrowsingEnabled,
+                                                 false);
   }
 
   void TearDownOnMainThread() override {
@@ -335,7 +338,8 @@ class AutofillCapturedSitesInteractiveTest
                                {}},
                               {features::kAutofillParsingPatternProvider,
                                {{"prediction_source", "nextgen"}}}},
-        /*disabled_features=*/{});
+        /*disabled_features=*/{features::kAutofillOverwritePlaceholdersOnly,
+                               features::kAutofillSkipPreFilledFields});
     command_line->AppendSwitchASCII(
         variations::switches::kVariationsOverrideCountry, "us");
     AutofillUiTest::SetUpCommandLine(command_line);
@@ -358,9 +362,20 @@ class AutofillCapturedSitesInteractiveTest
       const std::string& target_element_xpath,
       const std::vector<std::string> iframe_path,
       content::RenderFrameHost* frame) {
-    // First, automation should focus on the frame containing the autofill form.
-    // Doing so ensures that Chrome scrolls the element into view if the
-    // element is off the page.
+    auto disable_popup_timing_checks = [&frame]() {
+      auto* web_contents = content::WebContents::FromRenderFrameHost(frame);
+      CHECK_NE(web_contents, nullptr);
+      auto* client =
+          ChromeAutofillClient::FromWebContentsForTesting(web_contents);
+      CHECK_NE(client, nullptr);
+      if (base::WeakPtr<AutofillPopupControllerImpl> controller =
+              client->popup_controller_for_testing()) {
+        controller->DisableThresholdForTesting(true);
+      }
+    };
+    // First, automation should focus on the frame containing the autofill
+    // form. Doing so ensures that Chrome scrolls the element into view if
+    // the element is off the page.
     test_delegate()->SetExpectations({ObservedUiEvents::kSuggestionsShown},
                                      kAutofillWaitForActionInterval);
     if (!captured_sites_test_utils::TestRecipeReplayer::PlaceFocusOnElement(
@@ -369,6 +384,7 @@ class AutofillCapturedSitesInteractiveTest
              << "PlaceFocusOnElement() failed in " << FROM_HERE.ToString();
     }
     if (test_delegate()->Wait()) {
+      disable_popup_timing_checks();
       return testing::AssertionSuccess();
     }
 
@@ -388,7 +404,9 @@ class AutofillCapturedSitesInteractiveTest
       return testing::AssertionFailure()
              << "SimulateLeftMouseClickAt() failed in " << FROM_HERE.ToString();
 
-    return test_delegate()->Wait();
+    auto result = test_delegate()->Wait();
+    disable_popup_timing_checks();
+    return result;
   }
 
   std::unique_ptr<captured_sites_test_utils::TestRecipeReplayer>
@@ -415,7 +433,7 @@ IN_PROC_BROWSER_TEST_P(AutofillCapturedSitesInteractiveTest, Recipe) {
   }
 
   base::FilePath src_dir;
-  ASSERT_TRUE(base::PathService::Get(base::DIR_SOURCE_ROOT, &src_dir));
+  ASSERT_TRUE(base::PathService::Get(base::DIR_SRC_TEST_DATA_ROOT, &src_dir));
 
   bool test_completed = recipe_replayer()->ReplayTest(
       GetParam().capture_file_path, GetParam().recipe_file_path,

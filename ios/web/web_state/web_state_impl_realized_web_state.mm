@@ -12,6 +12,7 @@
 #import "base/strings/sys_string_conversions.h"
 #import "base/strings/utf_string_conversions.h"
 #import "base/time/time.h"
+#import "components/security_state/core/security_state.h"
 #import "ios/web/common/features.h"
 #import "ios/web/js_messaging/java_script_feature_manager.h"
 #import "ios/web/js_messaging/web_view_js_utils.h"
@@ -42,8 +43,6 @@
 #import "ios/web/web_state/ui/crw_web_view_navigation_proxy.h"
 #import "ios/web/webui/web_ui_ios_controller_factory_registry.h"
 #import "ios/web/webui/web_ui_ios_impl.h"
-#import "ui/gfx/geometry/rect_f.h"
-#import "ui/gfx/image/image.h"
 #import "url/gurl.h"
 #import "url/url_constants.h"
 
@@ -98,7 +97,7 @@ WebStateImpl::RealizedWebState::PendingSession::PendingSession(
 WebStateImpl::RealizedWebState::RealizedWebState(WebStateImpl* owner,
                                                  base::Time creation_time,
                                                  NSString* stable_identifier,
-                                                 SessionID unique_identifier)
+                                                 WebStateID unique_identifier)
     : owner_(owner),
       interface_binder_(owner),
       creation_time_(creation_time),
@@ -107,7 +106,7 @@ WebStateImpl::RealizedWebState::RealizedWebState(WebStateImpl* owner,
       unique_identifier_(unique_identifier) {
   DCHECK(owner_);
   DCHECK(stable_identifier_.length);
-  DCHECK(unique_identifier_.is_valid());
+  DCHECK(unique_identifier_.valid());
 }
 
 WebStateImpl::RealizedWebState::~RealizedWebState() = default;
@@ -170,25 +169,24 @@ void WebStateImpl::RealizedWebState::InitWithProto(
 
 void WebStateImpl::RealizedWebState::SerializeToProto(
     proto::WebStateStorage& storage) const {
-  // If restorating is in progress, copy the currently cached storage.
-  // TODO(crbug.com/1383087): This is required to support legacy logic
-  // that captures the state of the WebState even while restoration is
-  // in progress. Remove when the feature is launched.
   if (restored_session_) {
-    DCHECK(!features::UseSessionSerializationOptimizations());
+    // If the WebState has recently transitioned from unrealized to realized
+    // state but the initial navigation has not been committed yet, return a
+    // copy of the data loaded from storage.
     storage = restored_session_->storage();
-    return;
+  } else {
+    // Ensure state is synchronized between CRWWebController and
+    // NavigationManagerImpl before starting the serialization.
+    [web_controller_ recordStateInHistory];
+
+    storage.set_has_opener(created_with_opener_);
+    storage.set_user_agent(UserAgentTypeToProto(user_agent_type_));
+    navigation_manager_->SerializeToProto(*storage.mutable_navigation());
+    certificate_policy_cache_->SerializeToProto(*storage.mutable_certs_cache());
   }
 
-  // Ensure state is synchronized between CRWWebController and
-  // NavigationManagerImpl before starting the serialization.
-  [web_controller_ recordStateInHistory];
-
-  storage.set_has_opener(created_with_opener_);
-  storage.set_user_agent(UserAgentTypeToProto(user_agent_type_));
-  navigation_manager_->SerializeToProto(*storage.mutable_navigation());
-  certificate_policy_cache_->SerializeToProto(*storage.mutable_certs_cache());
-
+  // Fill the WebStateMetadataStorage from the WebStateStorage and the current
+  // instance information (creation time, last active time, ...).
   proto::WebStateMetadataStorage& metadata = *storage.mutable_metadata();
   SerializeTimeToProto(creation_time_, *metadata.mutable_creation_time());
   SerializeTimeToProto(last_active_time_, *metadata.mutable_last_active_time());
@@ -204,6 +202,9 @@ void WebStateImpl::RealizedWebState::SerializeToProto(
     page_metadata.set_page_url(virtual_url.empty() ? item.url() : virtual_url);
     page_metadata.set_page_title(item.title());
   }
+
+  // The metadata must always be non-default at this point.
+  DCHECK(storage.has_metadata());
 }
 
 void WebStateImpl::RealizedWebState::TearDown() {
@@ -473,9 +474,11 @@ void WebStateImpl::RealizedWebState::SendChangeLoadProgress(double progress) {
 }
 
 void WebStateImpl::RealizedWebState::ShowRepostFormWarningDialog(
+    FormWarningType warning_type,
     base::OnceCallback<void(bool)> callback) {
   if (delegate_) {
-    delegate_->ShowRepostFormWarningDialog(owner_, std::move(callback));
+    delegate_->ShowRepostFormWarningDialog(owner_, warning_type,
+                                           std::move(callback));
   } else {
     std::move(callback).Run(true);
   }
@@ -649,7 +652,7 @@ NSString* WebStateImpl::RealizedWebState::GetStableIdentifier() const {
   return [stable_identifier_ copy];
 }
 
-SessionID WebStateImpl::RealizedWebState::GetUniqueIdentifier() const {
+WebStateID WebStateImpl::RealizedWebState::GetUniqueIdentifier() const {
   return unique_identifier_;
 }
 
@@ -768,15 +771,12 @@ const GURL& WebStateImpl::RealizedWebState::GetLastCommittedURL() const {
   return item ? item->GetVirtualURL() : GURL::EmptyGURL();
 }
 
-absl::optional<GURL>
+std::optional<GURL>
 WebStateImpl::RealizedWebState::GetLastCommittedURLIfTrusted() const {
   NavigationItemImpl* item = navigation_manager_->GetLastCommittedItemImpl();
-  if (!item) {
-    return GURL();
-  }
 
-  if (item->IsUntrusted()) {
-    return absl::nullopt;
+  if (!item || item->IsUntrusted()) {
+    return std::nullopt;
   }
 
   return item->GetVirtualURL();
@@ -814,15 +814,15 @@ bool WebStateImpl::RealizedWebState::CanTakeSnapshot() const {
   return !running_javascript_dialog_;
 }
 
-void WebStateImpl::RealizedWebState::TakeSnapshot(const gfx::RectF& rect,
+void WebStateImpl::RealizedWebState::TakeSnapshot(const CGRect rect,
                                                   SnapshotCallback callback) {
   DCHECK(CanTakeSnapshot());
   // Move the callback to a __block pointer, which will be in scope as long
   // as the callback is retained.
   __block SnapshotCallback shared_callback = std::move(callback);
-  [web_controller_ takeSnapshotWithRect:rect.ToCGRect()
+  [web_controller_ takeSnapshotWithRect:rect
                              completion:^(UIImage* snapshot) {
-                               shared_callback.Run(gfx::Image(snapshot));
+                               shared_callback.Run(snapshot);
                              }];
 }
 
@@ -904,7 +904,13 @@ void WebStateImpl::RealizedWebState::OnStateChangedForPermission(
 
 void WebStateImpl::RealizedWebState::RequestPermissionsWithDecisionHandler(
     NSArray<NSNumber*>* permissions,
+    const GURL& origin,
     PermissionDecisionHandler web_view_decision_handler) {
+  if (!security_state::IsSchemeCryptographic(origin) &&
+      !security_state::IsOriginLocalhostOrFile(origin)) {
+    web_view_decision_handler(WKPermissionDecisionDeny);
+    return;
+  }
   if (delegate_) {
     WebStatePermissionDecisionHandler web_state_decision_handler =
         ^(PermissionDecision decision) {

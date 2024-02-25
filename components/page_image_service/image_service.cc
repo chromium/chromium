@@ -76,7 +76,8 @@ class ImageService::SuggestEntityImageURLFetcher {
     search_terms_args.search_terms = search_query_;
 
     loader_ = remote_suggestions_service->StartSuggestionsRequest(
-        template_url, search_terms_args, search_terms_data,
+        RemoteRequestType::kImages, template_url, search_terms_args,
+        search_terms_data,
         base::BindOnce(&SuggestEntityImageURLFetcher::OnURLLoadComplete,
                        weak_factory_.GetWeakPtr()));
   }
@@ -218,18 +219,20 @@ void ImageService::FetchImageFor(mojom::ClientId client_id,
 
 void ImageService::GetConsentToFetchImage(
     mojom::ClientId client_id,
-    base::OnceCallback<void(bool)> callback) {
+    base::OnceCallback<void(PageImageServiceConsentStatus)> callback) {
   switch (client_id) {
     case mojom::ClientId::Journeys:
     case mojom::ClientId::JourneysSidePanel:
     case mojom::ClientId::NtpQuests: {
-      return history_consent_helper_->EnqueueRequest(std::move(callback));
+      return history_consent_helper_->EnqueueRequest(std::move(callback),
+                                                     client_id);
     }
     case mojom::ClientId::NtpRealbox:
       // TODO(b/244507194): Figure out consent story for NTP realbox case.
-      return std::move(callback).Run(false);
+      return std::move(callback).Run(PageImageServiceConsentStatus::kFailure);
     case mojom::ClientId::Bookmarks: {
-      return bookmarks_consent_helper_->EnqueueRequest(std::move(callback));
+      return bookmarks_consent_helper_->EnqueueRequest(std::move(callback),
+                                                       client_id);
     }
   }
 }
@@ -238,13 +241,13 @@ void ImageService::OnConsentResult(mojom::ClientId client_id,
                                    const GURL& page_url,
                                    const mojom::Options& options,
                                    ResultCallback callback,
-                                   bool consent_is_enabled) {
-  base::UmaHistogramBoolean(kConsentSuccessHistogramName, consent_is_enabled);
-  base::UmaHistogramBoolean(std::string(kConsentSuccessHistogramName) + "." +
-                                ClientIdToString(client_id),
-                            consent_is_enabled);
+                                   PageImageServiceConsentStatus status) {
+  base::UmaHistogramEnumeration(kConsentStatusHistogramName, status);
+  base::UmaHistogramEnumeration(std::string(kConsentStatusHistogramName) + "." +
+                                    ClientIdToString(client_id),
+                                status);
 
-  if (!consent_is_enabled) {
+  if (status != PageImageServiceConsentStatus::kSuccess) {
     return std::move(callback).Run(GURL());
   }
 
@@ -452,7 +455,7 @@ void ImageService::OnOptimizationGuideImageFetched(
   for (const auto& thumbnail : salient_image_metadata.thumbnails()) {
     if (thumbnail.has_image_url()) {
       GURL image_url(thumbnail.image_url());
-      if (image_url.is_valid()) {
+      if (image_url.is_valid() && image_url.SchemeIs(url::kHttpsScheme)) {
         UmaHistogramEnumerationForClient(
             kBackendOptimizationGuideResultHistogramName,
             PageImageServiceResult::kSuccess, client_id);

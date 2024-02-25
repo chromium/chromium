@@ -11,16 +11,16 @@ import './print_preview_shared.css.js';
 import './print_preview_vars.css.js';
 import '../strings.m.js';
 
-import {CrDialogElement} from 'chrome://resources/cr_elements/cr_dialog/cr_dialog.js';
+import type {CrDialogElement} from 'chrome://resources/cr_elements/cr_dialog/cr_dialog.js';
 import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
 import {removeHighlights} from 'chrome://resources/js/search_highlight_utils.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {Destination} from '../data/destination.js';
+import type {Destination} from '../data/destination.js';
 import {MetricsContext, PrintSettingsUiBucket} from '../metrics.js';
 
 import {getTemplate} from './advanced_settings_dialog.html.js';
-import {PrintPreviewSearchBoxElement} from './print_preview_search_box.js';
+import type {PrintPreviewSearchBoxElement} from './print_preview_search_box.js';
 import {SettingsMixin} from './settings_mixin.js';
 
 export interface PrintPreviewAdvancedSettingsDialogElement {
@@ -123,7 +123,7 @@ export class PrintPreviewAdvancedSettingsDialogElement extends
     this.bubbles_.clear();
 
     const listItems = this.shadowRoot!.querySelectorAll(
-        'print-preview-advanced-settings-item')!;
+        'print-preview-advanced-settings-item');
     let hasMatch = false;
     listItems.forEach(item => {
       const matches = item.hasMatch(this.searchQuery_);

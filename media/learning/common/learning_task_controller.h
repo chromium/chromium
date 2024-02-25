@@ -5,6 +5,8 @@
 #ifndef MEDIA_LEARNING_COMMON_LEARNING_TASK_CONTROLLER_H_
 #define MEDIA_LEARNING_COMMON_LEARNING_TASK_CONTROLLER_H_
 
+#include <optional>
+
 #include "base/component_export.h"
 #include "base/functional/callback.h"
 #include "base/unguessable_token.h"
@@ -12,7 +14,6 @@
 #include "media/learning/common/learning_task.h"
 #include "media/learning/common/target_histogram.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace media {
 namespace learning {
@@ -44,8 +45,8 @@ struct ObservationCompletion {
 // observed to do that.
 class COMPONENT_EXPORT(LEARNING_COMMON) LearningTaskController {
  public:
-  using PredictionCB = base::OnceCallback<void(
-      const absl::optional<TargetHistogram>& predicted)>;
+  using PredictionCB =
+      base::OnceCallback<void(const std::optional<TargetHistogram>& predicted)>;
 
   LearningTaskController() = default;
 
@@ -71,8 +72,8 @@ class COMPONENT_EXPORT(LEARNING_COMMON) LearningTaskController {
   virtual void BeginObservation(
       base::UnguessableToken id,
       const FeatureVector& features,
-      const absl::optional<TargetValue>& default_target = absl::nullopt,
-      const absl::optional<ukm::SourceId>& source_id = absl::nullopt) = 0;
+      const std::optional<TargetValue>& default_target = std::nullopt,
+      const std::optional<ukm::SourceId>& source_id = std::nullopt) = 0;
 
   // Complete an observation by sending a completion.
   virtual void CompleteObservation(base::UnguessableToken id,
@@ -88,13 +89,13 @@ class COMPONENT_EXPORT(LEARNING_COMMON) LearningTaskController {
   // default value was given.
   virtual void UpdateDefaultTarget(
       base::UnguessableToken id,
-      const absl::optional<TargetValue>& default_target) = 0;
+      const std::optional<TargetValue>& default_target) = 0;
 
   // Returns the LearningTask associated with |this|.
   virtual const LearningTask& GetLearningTask() = 0;
 
   // Asynchronously predicts distribution for given |features|. |callback| will
-  // receive a absl::nullopt prediction when model is not available. |callback|
+  // receive a std::nullopt prediction when model is not available. |callback|
   // may be called immediately without posting.
   virtual void PredictDistribution(const FeatureVector& features,
                                    PredictionCB callback) = 0;

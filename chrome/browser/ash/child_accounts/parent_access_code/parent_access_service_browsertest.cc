@@ -28,29 +28,6 @@
 namespace ash {
 namespace parent_access {
 
-namespace {
-
-// Dictionary keys for ParentAccessCodeConfig policy.
-constexpr char kFutureConfigDictKey[] = "future_config";
-constexpr char kCurrentConfigDictKey[] = "current_config";
-constexpr char kOldConfigsDictKey[] = "old_configs";
-
-base::Value PolicyFromConfigs(
-    const AccessCodeConfig& future_config,
-    const AccessCodeConfig& current_config,
-    const std::vector<AccessCodeConfig>& old_configs) {
-  base::Value::Dict dict;
-  dict.Set(kFutureConfigDictKey, future_config.ToDictionary());
-  dict.Set(kCurrentConfigDictKey, current_config.ToDictionary());
-  base::Value::List old_configs_value;
-  for (const auto& config : old_configs)
-    old_configs_value.Append(config.ToDictionary());
-  dict.Set(kOldConfigsDictKey, std::move(old_configs_value));
-  return base::Value(std::move(dict));
-}
-
-}  // namespace
-
 // Stores information about results of the access code validation.
 struct CodeValidationResults {
   // Number of successful access code validations.
@@ -74,7 +51,7 @@ class TestParentAccessServiceObserver : public ParentAccessService::Observer {
   ~TestParentAccessServiceObserver() override = default;
 
   void OnAccessCodeValidation(ParentCodeValidationResult result,
-                              absl::optional<AccountId> account_id) override {
+                              std::optional<AccountId> account_id) override {
     ASSERT_TRUE(account_id);
     EXPECT_EQ(account_id_, account_id.value());
     result == ParentCodeValidationResult::kValid
@@ -155,7 +132,7 @@ class ParentAccessServiceTest : public MixinBasedInProcessBrowserTest {
                                           embedded_test_server(),
                                           this,
                                           true /*should_launch_browser*/,
-                                          absl::nullopt /*account_id*/,
+                                          std::nullopt /*account_id*/,
                                           true /*include_initial_user*/};
   std::unique_ptr<TestParentAccessServiceObserver> test_observer_;
 };

@@ -14,6 +14,7 @@
 
 #include "base/check.h"
 #include "base/compiler_specific.h"
+#include "base/containers/span.h"
 #include "base/feature_list.h"
 #include "base/files/file_util.h"
 #include "base/metrics/histogram_macros.h"
@@ -175,14 +176,14 @@ bool UseBoringSSLForRandBytes() {
 
 namespace {
 
-void RandBytes(void* output, size_t output_length, bool avoid_allocation) {
+void RandBytes(span<uint8_t> output, bool avoid_allocation) {
 #if !BUILDFLAG(IS_NACL)
   // The BoringSSL experiment takes priority over everything else.
   if (!avoid_allocation && internal::UseBoringSSLForRandBytes()) {
     // Ensure BoringSSL is initialized so it can use things like RDRAND.
     CRYPTO_library_init();
     // BoringSSL's RAND_bytes always returns 1. Any error aborts the program.
-    (void)RAND_bytes(static_cast<uint8_t*>(output), output_length);
+    (void)RAND_bytes(output.data(), output.size());
     return;
   }
 #endif
@@ -194,13 +195,14 @@ void RandBytes(void* output, size_t output_length, bool avoid_allocation) {
     // support for a syscall before calling. The same check is made on Linux and
     // ChromeOS to avoid making a syscall that predictably returns ENOSYS.
     static const bool kernel_has_support = KernelSupportsGetRandom();
-    if (kernel_has_support && GetRandomSyscall(output, output_length))
+    if (kernel_has_support && GetRandomSyscall(output.data(), output.size())) {
       return;
+    }
   }
 #elif BUILDFLAG(IS_MAC)
   // TODO(crbug.com/995996): Enable this on iOS too, when sys/random.h arrives
   // in its SDK.
-  if (getentropy(output, output_length) == 0) {
+  if (getentropy(output.data(), output.size()) == 0) {
     return;
   }
 #endif
@@ -211,8 +213,7 @@ void RandBytes(void* output, size_t output_length, bool avoid_allocation) {
   // TODO(crbug.com/995996): When we no longer need to support old Linux
   // kernels, we can get rid of this /dev/urandom branch altogether.
   const int urandom_fd = GetUrandomFD();
-  const bool success =
-      ReadFromFD(urandom_fd, static_cast<char*>(output), output_length);
+  const bool success = ReadFromFD(urandom_fd, as_writable_chars(output));
   CHECK(success);
 }
 
@@ -222,15 +223,20 @@ namespace internal {
 
 double RandDoubleAvoidAllocation() {
   uint64_t number;
-  RandBytes(&number, sizeof(number), /*avoid_allocation=*/true);
+  RandBytes(as_writable_bytes(make_span(&number, 1u)),
+            /*avoid_allocation=*/true);
   // This transformation is explained in rand_util.cc.
   return (number >> 11) * 0x1.0p-53;
 }
 
 }  // namespace internal
 
+void RandBytes(span<uint8_t> output) {
+  RandBytes(output, /*avoid_allocation=*/false);
+}
+
 void RandBytes(void* output, size_t output_length) {
-  RandBytes(output, output_length, /*avoid_allocation=*/false);
+  RandBytes(make_span(static_cast<uint8_t*>(output), output_length));
 }
 
 int GetUrandomFD() {

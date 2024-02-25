@@ -46,7 +46,7 @@ class WaylandTestBase {
   void SetUp();
   void TearDown();
 
-  // Posts 'callback' or 'closure' to run on the client thread; blocks till the
+  // Posts 'callback' or 'closure' to run on the server thread; blocks till the
   // callable is run and all pending Wayland requests and events are delivered.
   void PostToServerAndWait(
       base::OnceCallback<void(wl::TestWaylandServerThread* server)> callback);
@@ -76,14 +76,14 @@ class WaylandTestBase {
   void SendConfigureEvent(uint32_t surface_id,
                           const gfx::Size& size,
                           const wl::ScopedWlArray& states,
-                          absl::optional<uint32_t> serial = absl::nullopt);
+                          std::optional<uint32_t> serial = std::nullopt);
 
   // Sends XDG_TOPLEVEL_STATE_ACTIVATED to the surface that has |surface_id| and
   // has xdg surface role with width and height set to 0, which results in
   // asking the client to set the width and height of the surface. The client
   // test may pass |serial| that will be used to activate the surface.
   void ActivateSurface(uint32_t surface_id,
-                       absl::optional<uint32_t> serial = absl::nullopt);
+                       std::optional<uint32_t> serial = std::nullopt);
 
   // Initializes SurfaceAugmenter in |server_|.
   void InitializeSurfaceAugmenter();

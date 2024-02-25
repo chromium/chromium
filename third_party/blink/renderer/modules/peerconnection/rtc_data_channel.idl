@@ -55,7 +55,7 @@ enum RTCDataChannelState {
              attribute EventHandler onclose;
     void close();
              attribute EventHandler onmessage;
-    [RaisesException=Setter] attribute DOMString binaryType;
+    [RaisesException=Setter] attribute BinaryType binaryType;
     [RaisesException] void send(USVString data);
     [RaisesException] void send(Blob data);
     [RaisesException] void send(ArrayBuffer data);

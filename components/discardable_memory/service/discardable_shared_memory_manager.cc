@@ -22,6 +22,7 @@
 #include "base/system/sys_info.h"
 #include "base/task/current_thread.h"
 #include "base/task/single_thread_task_runner.h"
+#include "base/task/thread_pool.h"
 #include "base/trace_event/memory_allocator_dump.h"
 #include "base/trace_event/memory_dump_manager.h"
 #include "base/trace_event/process_memory_dump.h"
@@ -188,11 +189,6 @@ uint64_t GetDefaultMemoryLimit() {
     int64_t shmem_dir_amount_of_free_space_mb =
         shmem_dir_amount_of_free_space / kMegabyte;
 
-    UMA_HISTOGRAM_CUSTOM_COUNTS("Memory.ShmemDir.AmountOfFreeSpace",
-                                shmem_dir_amount_of_free_space_mb, 1,
-                                4 * 1024,  // 4 GB
-                                50);
-
     if (shmem_dir_amount_of_free_space_mb < 64) {
       LOG(WARNING) << "Less than 64MB of free space in temporary directory for "
                       "shared memory files: "
@@ -224,22 +220,20 @@ DiscardableSharedMemoryManager::MemorySegment::MemorySegment(
     std::unique_ptr<base::DiscardableSharedMemory> memory)
     : memory_(std::move(memory)) {}
 
-DiscardableSharedMemoryManager::MemorySegment::~MemorySegment() {}
+DiscardableSharedMemoryManager::MemorySegment::~MemorySegment() = default;
 
 DiscardableSharedMemoryManager::DiscardableSharedMemoryManager()
     : next_client_id_(1),
       default_memory_limit_(GetDefaultMemoryLimit()),
       memory_limit_(default_memory_limit_),
       bytes_allocated_(0),
-      memory_pressure_listener_(new base::MemoryPressureListener(
-          FROM_HERE,
-          base::BindRepeating(&DiscardableSharedMemoryManager::OnMemoryPressure,
-                              base::Unretained(this)))),
       // Current thread might not have a task runner in tests.
       enforce_memory_policy_task_runner_(
           base::SingleThreadTaskRunner::GetCurrentDefault()),
       enforce_memory_policy_pending_(false),
-      mojo_thread_message_loop_(base::CurrentThread::GetNull()) {
+      mojo_thread_message_loop_(base::CurrentThread::GetNull()),
+      memory_pressure_task_runner_(base::ThreadPool::CreateSequencedTaskRunner(
+          {base::WithBaseSyncPrimitives()})) {
   DCHECK(!g_instance)
       << "A DiscardableSharedMemoryManager already exists in this process.";
   g_instance = this;
@@ -250,6 +244,13 @@ DiscardableSharedMemoryManager::DiscardableSharedMemoryManager()
   base::trace_event::MemoryDumpManager::GetInstance()->RegisterDumpProvider(
       this, "DiscardableSharedMemoryManager",
       base::SingleThreadTaskRunner::GetCurrentDefault());
+
+  // base::Unretained() is safe because memory pressure worker thread will be
+  // flushed in destructor if the thread is still running.
+  memory_pressure_task_runner_->PostTask(
+      FROM_HERE, base::BindOnce(&DiscardableSharedMemoryManager::
+                                    CreateMemoryPressureListenerOnWorkerThread,
+                                base::Unretained(this)));
 }
 
 DiscardableSharedMemoryManager::~DiscardableSharedMemoryManager() {
@@ -278,6 +279,19 @@ DiscardableSharedMemoryManager::~DiscardableSharedMemoryManager() {
       LOG_IF(ERROR, !result) << "Invalidate mojo weak ptrs failed!";
       if (result)
         event.Wait();
+    }
+  }
+
+  {
+    // Flush the memory pressure worker thread if the thread is still running.
+    base::WaitableEvent event(base::WaitableEvent::ResetPolicy::MANUAL,
+                              base::WaitableEvent::InitialState::NOT_SIGNALED);
+    bool result = memory_pressure_task_runner_->PostTask(
+        FROM_HERE,
+        base::BindOnce([](base::WaitableEvent* event) { event->Signal(); },
+                       &event));
+    if (result) {
+      event.Wait();
     }
   }
 
@@ -336,7 +350,7 @@ bool DiscardableSharedMemoryManager::OnMemoryDump(
     const base::trace_event::MemoryDumpArgs& args,
     base::trace_event::ProcessMemoryDump* pmd) {
   if (args.level_of_detail ==
-      base::trace_event::MemoryDumpLevelOfDetail::BACKGROUND) {
+      base::trace_event::MemoryDumpLevelOfDetail::kBackground) {
     base::trace_event::MemoryAllocatorDump* total_dump =
         pmd->CreateAllocatorDump("discardable");
     total_dump->AddScalar(base::trace_event::MemoryAllocatorDump::kNameSize,
@@ -525,6 +539,8 @@ void DiscardableSharedMemoryManager::DeletedDiscardableSharedMemory(
 
 void DiscardableSharedMemoryManager::OnMemoryPressure(
     base::MemoryPressureListener::MemoryPressureLevel memory_pressure_level) {
+  DCHECK(memory_pressure_task_runner_->RunsTasksInCurrentSequence());
+
   base::AutoLock lock(lock_);
 
   switch (memory_pressure_level) {
@@ -650,6 +666,17 @@ void DiscardableSharedMemoryManager::InvalidateMojoThreadWeakPtrs(
   mojo_thread_message_loop_ = base::CurrentThread::GetNull();
   if (event)
     event->Signal();
+}
+
+void DiscardableSharedMemoryManager::
+    CreateMemoryPressureListenerOnWorkerThread() {
+  DCHECK(memory_pressure_task_runner_->RunsTasksInCurrentSequence());
+
+  base::AutoLock lock(lock_);
+  memory_pressure_listener_ = std::make_unique<base::MemoryPressureListener>(
+      FROM_HERE,
+      base::BindRepeating(&DiscardableSharedMemoryManager::OnMemoryPressure,
+                          base::Unretained(this)));
 }
 
 }  // namespace discardable_memory

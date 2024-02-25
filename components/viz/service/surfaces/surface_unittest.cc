@@ -81,7 +81,7 @@ TEST_P(OnBeginFrameAcksSurfaceTest, PresentationCallback) {
   if (BeginFrameAcksEnabled()) {
     support->SetWantsBeginFrameAcks();
   }
-  uint32_t frame_token = 0;
+  uint32_t frame_token = kInvalidOrLocalFrameToken;
   {
     CompositorFrame frame =
         CompositorFrameBuilder()
@@ -89,7 +89,7 @@ TEST_P(OnBeginFrameAcksSurfaceTest, PresentationCallback) {
             .SetBeginFrameSourceId(kBeginFrameSourceId)
             .Build();
     frame_token = frame.metadata.frame_token;
-    ASSERT_NE(frame_token, 0u);
+    ASSERT_NE(frame_token, kInvalidOrLocalFrameToken);
     EXPECT_CALL(client, DidReceiveCompositorFrameAck(testing::_))
         .Times(BeginFrameAcksEnabled() ? 0 : 1);
     support->SubmitCompositorFrame(local_surface_id, std::move(frame));

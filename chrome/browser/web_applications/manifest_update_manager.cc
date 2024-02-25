@@ -14,7 +14,6 @@
 #include "base/containers/contains.h"
 #include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
-#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/no_destructor.h"
@@ -34,12 +33,17 @@
 #include "components/content_settings/core/common/content_settings_types.h"
 #include "components/keep_alive_registry/keep_alive_types.h"
 #include "components/keep_alive_registry/scoped_keep_alive.h"
+#include "components/webapps/browser/features.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_observer.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chrome/browser/web_applications/web_app_system_web_app_delegate_map_utils.h"
+#endif
+
+#if BUILDFLAG(IS_CHROMEOS)
+#include "chromeos/constants/chromeos_features.h"
 #endif
 
 class Profile;
@@ -201,9 +205,10 @@ void ManifestUpdateManager::Shutdown() {
   started_ = false;
 }
 
-void ManifestUpdateManager::MaybeUpdate(const GURL& url,
-                                        const absl::optional<AppId>& app_id,
-                                        content::WebContents* web_contents) {
+void ManifestUpdateManager::MaybeUpdate(
+    const GURL& url,
+    const std::optional<webapps::AppId>& app_id,
+    content::WebContents* web_contents) {
   if (!started_) {
     return;
   }
@@ -235,6 +240,19 @@ void ManifestUpdateManager::MaybeUpdate(const GURL& url,
     // Manifests of Isolated Web Apps are only updated when a new version of the
     // app is installed.
     NotifyResult(url, *app_id, ManifestUpdateResult::kAppIsIsolatedWebApp);
+    return;
+  }
+
+  if (provider_->registrar_unsafe().IsShortcutApp(*app_id) &&
+      (base::FeatureList::IsEnabled(
+           webapps::features::kCreateShortcutIgnoresManifest)
+#if BUILDFLAG(IS_CHROMEOS)
+       || chromeos::features::IsCrosShortstandEnabled()
+#endif
+           )) {
+    // When create shortcut ignores manifest, we should not update manifest for
+    // shortcuts.
+    NotifyResult(url, *app_id, ManifestUpdateResult::kShortcutIgnoresManifest);
     return;
   }
 
@@ -271,7 +289,7 @@ ManifestUpdateManager::UpdateStage::UpdateStage(
 ManifestUpdateManager::UpdateStage::~UpdateStage() = default;
 
 void ManifestUpdateManager::StartCheckAfterPageAndManifestUrlLoad(
-    const AppId& app_id,
+    const webapps::AppId& app_id,
     base::Time check_time,
     base::WeakPtr<content::WebContents> web_contents) {
   auto update_stage_it = update_stages_.find(app_id);
@@ -307,9 +325,9 @@ void ManifestUpdateManager::StartCheckAfterPageAndManifestUrlLoad(
 void ManifestUpdateManager::OnManifestCheckAwaitAppWindowClose(
     base::WeakPtr<content::WebContents> contents,
     const GURL& url,
-    const AppId& app_id,
+    const webapps::AppId& app_id,
     ManifestUpdateCheckResult check_result,
-    absl::optional<WebAppInstallInfo> install_info) {
+    std::optional<WebAppInstallInfo> install_info) {
   auto update_stage_it = update_stages_.find(app_id);
   if (update_stage_it == update_stages_.end()) {
     // If the web_app already has already been uninstalled after the
@@ -375,7 +393,7 @@ void ManifestUpdateManager::OnManifestCheckAwaitAppWindowClose(
 
 void ManifestUpdateManager::StartManifestWriteAfterWindowsClosed(
     const GURL& url,
-    const AppId& app_id,
+    const webapps::AppId& app_id,
     std::unique_ptr<ScopedKeepAlive> keep_alive,
     std::unique_ptr<ScopedProfileKeepAlive> profile_keep_alive,
     WebAppInstallInfo install_info) {
@@ -396,9 +414,9 @@ void ManifestUpdateManager::StartManifestWriteAfterWindowsClosed(
                      weak_factory_.GetWeakPtr()));
 }
 
-bool ManifestUpdateManager::IsUpdateConsumed(const AppId& app_id,
+bool ManifestUpdateManager::IsUpdateConsumed(const webapps::AppId& app_id,
                                              base::Time check_time) {
-  absl::optional<base::Time> last_check_time = GetLastUpdateCheckTime(app_id);
+  std::optional<base::Time> last_check_time = GetLastUpdateCheckTime(app_id);
   if (last_check_time.has_value() &&
       check_time < *last_check_time + kDelayBetweenChecks &&
       !base::CommandLine::ForCurrentProcess()->HasSwitch(
@@ -408,12 +426,14 @@ bool ManifestUpdateManager::IsUpdateConsumed(const AppId& app_id,
   return false;
 }
 
-bool ManifestUpdateManager::IsUpdateCommandPending(const AppId& app_id) {
+bool ManifestUpdateManager::IsUpdateCommandPending(
+    const webapps::AppId& app_id) {
   return base::Contains(update_stages_, app_id);
 }
 
 // WebAppInstallManager:
-void ManifestUpdateManager::OnWebAppWillBeUninstalled(const AppId& app_id) {
+void ManifestUpdateManager::OnWebAppWillBeUninstalled(
+    const webapps::AppId& app_id) {
   CHECK(started_);
   auto it = update_stages_.find(app_id);
   if (it != update_stages_.end()) {
@@ -431,9 +451,10 @@ void ManifestUpdateManager::OnWebAppInstallManagerDestroyed() {
 
 // Throttling updates to at most once per day is consistent with Android.
 // See |UPDATE_INTERVAL| in WebappDataStorage.java.
-bool ManifestUpdateManager::MaybeConsumeUpdateCheck(const GURL& origin,
-                                                    const AppId& app_id,
-                                                    base::Time check_time) {
+bool ManifestUpdateManager::MaybeConsumeUpdateCheck(
+    const GURL& origin,
+    const webapps::AppId& app_id,
+    base::Time check_time) {
   if (IsUpdateConsumed(app_id, check_time)) {
     return false;
   }
@@ -442,21 +463,21 @@ bool ManifestUpdateManager::MaybeConsumeUpdateCheck(const GURL& origin,
   return true;
 }
 
-absl::optional<base::Time> ManifestUpdateManager::GetLastUpdateCheckTime(
-    const AppId& app_id) const {
+std::optional<base::Time> ManifestUpdateManager::GetLastUpdateCheckTime(
+    const webapps::AppId& app_id) const {
   auto it = last_update_check_.find(app_id);
-  return it != last_update_check_.end() ? absl::optional<base::Time>(it->second)
-                                        : absl::nullopt;
+  return it != last_update_check_.end() ? std::optional<base::Time>(it->second)
+                                        : std::nullopt;
 }
 
 void ManifestUpdateManager::SetLastUpdateCheckTime(const GURL& origin,
-                                                   const AppId& app_id,
+                                                   const webapps::AppId& app_id,
                                                    base::Time time) {
   last_update_check_[app_id] = time;
 }
 
 void ManifestUpdateManager::OnUpdateStopped(const GURL& url,
-                                            const AppId& app_id,
+                                            const webapps::AppId& app_id,
                                             ManifestUpdateResult result) {
   auto update_stage_it = update_stages_.find(app_id);
   // If the app has been uninstalled in the middle of the manifest
@@ -467,9 +488,10 @@ void ManifestUpdateManager::OnUpdateStopped(const GURL& url,
   NotifyResult(url, app_id, result);
 }
 
-void ManifestUpdateManager::NotifyResult(const GURL& url,
-                                         const absl::optional<AppId>& app_id,
-                                         ManifestUpdateResult result) {
+void ManifestUpdateManager::NotifyResult(
+    const GURL& url,
+    const std::optional<webapps::AppId>& app_id,
+    ManifestUpdateResult result) {
   // Don't log kNoAppInScope because it will be far too noisy (most page loads
   // will hit it).
   if (result != ManifestUpdateResult::kNoAppInScope) {
@@ -481,7 +503,7 @@ void ManifestUpdateManager::NotifyResult(const GURL& url,
 }
 
 void ManifestUpdateManager::ResetManifestThrottleForTesting(
-    const AppId& app_id) {
+    const webapps::AppId& app_id) {
   // Erase the throttle info from the map so that corresponding
   // manifest writes can go through.
   auto it = last_update_check_.find(app_id);
@@ -505,9 +527,9 @@ void ManifestUpdateManager::SetLoadFinishedCallbackForTesting(
   load_finished_callback_ = std::move(load_finished_callback);
 }
 
-base::flat_set<AppId>
+base::flat_set<webapps::AppId>
 ManifestUpdateManager::GetAppsPendingWindowsClosingForTesting() {
-  base::flat_set<AppId> apps_pending_window_closed;
+  base::flat_set<webapps::AppId> apps_pending_window_closed;
   for (const auto& data : update_stages_) {
     if (data.second.stage == UpdateStage::Stage::kPendingAppWindowClose) {
       apps_pending_window_closed.emplace(data.first);
@@ -517,7 +539,7 @@ ManifestUpdateManager::GetAppsPendingWindowsClosingForTesting() {
 }
 
 bool ManifestUpdateManager::IsAppPendingPageAndManifestUrlLoadForTesting(
-    const AppId& app_id) {
+    const webapps::AppId& app_id) {
   CHECK_IS_TEST();
   auto update_stage_it = update_stages_.find(app_id);
   if (update_stage_it == update_stages_.end()) {

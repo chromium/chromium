@@ -18,6 +18,7 @@
 #include "base/task/sequenced_task_runner.h"
 #include "base/thread_annotations.h"
 #include "base/values.h"
+#include "url/gurl.h"
 #include "v8/include/v8-inspector.h"
 
 namespace auction_worklet {
@@ -94,6 +95,16 @@ class TestChannel : public v8_inspector::V8Inspector::Channel {
   // Waits for a notification with method field matching `method`.
   Event WaitForMethodNotification(const std::string& method);
 
+  // Waits for the next notification with the "Runtime.consoleAPICalled" method,
+  // expecting it to have the provided details. `json_args` is the JSON
+  // representation of the expected arguments.
+  void WaitForAndValidateConsoleMessage(std::string_view type,
+                                        std::string_view json_args,
+                                        size_t stack_trace_size,
+                                        std::string_view function,
+                                        const GURL& url,
+                                        int line_number);
+
   // v8_inspector::V8Inspector::Channel implementation.
   void sendResponse(
       int call_id,
@@ -138,6 +149,10 @@ class ScopedInspectorSupport {
   // Connects a debugger session for given `context_group_id`. Will spin an
   // event loop.  Returned object is owned by this.
   TestChannel* ConnectDebuggerSession(int context_group_id);
+
+  // Wraps ConnectDebuggerSession(), but also calls RunCommandAndWaitForResult()
+  // with "debugger.enable", to enable debugging.
+  TestChannel* ConnectDebuggerSessionAndRuntimeEnable(int context_group_id);
 
  private:
   struct V8State {

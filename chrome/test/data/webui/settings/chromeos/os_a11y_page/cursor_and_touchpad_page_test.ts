@@ -6,7 +6,7 @@ import 'chrome://os-settings/lazy_load.js';
 
 import {SettingsCursorAndTouchpadPageElement} from 'chrome://os-settings/lazy_load.js';
 import {CrSettingsPrefs, DevicePageBrowserProxyImpl, Router, routes, SettingsDropdownMenuElement, SettingsPrefsElement, SettingsToggleButtonElement} from 'chrome://os-settings/os_settings.js';
-import {assert} from 'chrome://resources/js/assert_ts.js';
+import {assert} from 'chrome://resources/js/assert.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {assertEquals, assertFalse, assertNotEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
@@ -372,5 +372,55 @@ suite('<settings-cursor-and-touchpad-page>', () => {
         flush();
         assertTrue(cursorHighlightToggle.checked);
         assertTrue(page.prefs.settings.a11y.cursor_highlight.value);
+      });
+
+  test(
+      'face gaze feature does not show if the feature flag is disabled',
+      async () => {
+        loadTimeData.overrideValues({
+          isAccessibilityFaceGazeEnabled: false,
+        });
+
+        await initPage();
+        const faceGazeToggle =
+            page.shadowRoot!.querySelector<SettingsToggleButtonElement>(
+                '#faceGazeToggle');
+        assertEquals(null, faceGazeToggle);
+      });
+
+  test(
+      'face tracking feature shows if the feature flag is enabled',
+      async () => {
+        loadTimeData.overrideValues({
+          isAccessibilityFaceGazeEnabled: true,
+        });
+
+        await initPage();
+        const faceGazeToggle =
+            page.shadowRoot!.querySelector<SettingsToggleButtonElement>(
+                '#faceGazeToggle');
+        assert(faceGazeToggle);
+        assertTrue(isVisible(faceGazeToggle));
+
+        const faceGazeCursorControlButton =
+            page.shadowRoot!.querySelector('#faceGazeCursorControlButton');
+        assert(faceGazeCursorControlButton);
+        assertFalse(isVisible(faceGazeCursorControlButton));
+
+        const faceGazeFacialExpressionsButton =
+            page.shadowRoot!.querySelector('#faceGazeFacialExpressionsButton');
+        assert(faceGazeFacialExpressionsButton);
+        assertFalse(isVisible(faceGazeFacialExpressionsButton));
+
+        assertFalse(faceGazeToggle.checked);
+        assertFalse(page.prefs.settings.a11y.face_gaze.enabled.value);
+        faceGazeToggle.click();
+
+        await waitBeforeNextRender(page);
+        flush();
+        assertTrue(faceGazeToggle.checked);
+        assertTrue(page.prefs.settings.a11y.face_gaze.enabled.value);
+        assertTrue(isVisible(faceGazeCursorControlButton));
+        assertTrue(isVisible(faceGazeFacialExpressionsButton));
       });
 });

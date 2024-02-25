@@ -105,8 +105,14 @@ void ReadingListSyncBridge::DidRemoveEntry(
   change_processor()->Delete(entry.URL().spec(), metadata_change_list);
 }
 
+// IsTrackingMetadata() continues to be true while ApplyDisableSyncChanges() is
+// running, but transitions to false immediately afterwards.
+// ongoing_apply_disable_sync_changes_ is used to cause IsTrackingMetadata()
+// return false slightly earlier, and before related observer notifications are
+// triggered.
 bool ReadingListSyncBridge::IsTrackingMetadata() const {
-  return change_processor()->IsTrackingMetadata();
+  return !ongoing_apply_disable_sync_changes_ &&
+         change_processor()->IsTrackingMetadata();
 }
 
 syncer::StorageType ReadingListSyncBridge::GetStorageTypeForUma() const {
@@ -130,7 +136,7 @@ ReadingListSyncBridge::CreateMetadataChangeList() {
 // Durable storage writes, if not able to combine all change atomically, should
 // save the metadata after the data changes, so that this merge will be re-
 // driven by sync if is not completely saved during the current run.
-absl::optional<syncer::ModelError> ReadingListSyncBridge::MergeFullSyncData(
+std::optional<syncer::ModelError> ReadingListSyncBridge::MergeFullSyncData(
     std::unique_ptr<syncer::MetadataChangeList> metadata_change_list,
     syncer::EntityChangeList entity_changes) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -212,7 +218,7 @@ absl::optional<syncer::ModelError> ReadingListSyncBridge::MergeFullSyncData(
 // |metadata_change_list| in case when some of the data changes are filtered
 // out, or even be empty in case when a commit confirmation is processed and
 // only the metadata needs to persisted.
-absl::optional<syncer::ModelError>
+std::optional<syncer::ModelError>
 ReadingListSyncBridge::ApplyIncrementalSyncChanges(
     std::unique_ptr<syncer::MetadataChangeList> metadata_change_list,
     syncer::EntityChangeList entity_changes) {
@@ -232,6 +238,7 @@ ReadingListSyncBridge::ApplyIncrementalSyncChanges(
 
       // The specifics validity is guaranteed by IsEntityDataValid().
       CHECK(ReadingListEntry::IsSpecificsValid(specifics));
+
       scoped_refptr<ReadingListEntry> entry(
           ReadingListEntry::FromReadingListValidSpecifics(specifics,
                                                           clock_->Now()));
@@ -315,6 +322,8 @@ std::string ReadingListSyncBridge::GetStorageKey(
 
 void ReadingListSyncBridge::ApplyDisableSyncChanges(
     std::unique_ptr<syncer::MetadataChangeList> delete_metadata_change_list) {
+  base::AutoReset<bool> auto_reset_is_sync_stopping(
+      &ongoing_apply_disable_sync_changes_, true);
   switch (wipe_model_upon_sync_disabled_behavior_) {
     case syncer::WipeModelUponSyncDisabledBehavior::kNever:
       CHECK_EQ(storage_type_for_uma_, syncer::StorageType::kUnspecified);

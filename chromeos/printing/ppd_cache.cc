@@ -30,8 +30,7 @@ namespace {
 // Return the (full) path to the file we expect to find the given key at.
 base::FilePath FilePathForKey(const base::FilePath& base_dir,
                               const std::string& key) {
-  std::string hashed_key = crypto::SHA256HashString(key);
-  return base_dir.Append(base::HexEncode(hashed_key.data(), hashed_key.size()));
+  return base_dir.Append(base::HexEncode(crypto::SHA256HashString(key)));
 }
 
 // If the cache doesn't already exist, create it.

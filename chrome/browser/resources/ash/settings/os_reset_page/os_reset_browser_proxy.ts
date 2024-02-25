@@ -4,14 +4,19 @@
 
 export interface OsResetBrowserProxy {
   /**
-   * A method to be called when the reset powerwash dialog is shown.
-   */
-  onPowerwashDialogShow(): void;
-
-  /**
    * Initiates a factory reset and restarts.
    */
   requestFactoryResetRestart(): void;
+
+  /**
+   * A method to be called when the reset sanitize dialog is shown.
+   */
+  onShowSanitizeDialog(): void;
+
+  /**
+   * Sanitizes settings.
+   */
+  performSanitizeSettings(): void;
 }
 
 let instance: OsResetBrowserProxy|null = null;
@@ -21,15 +26,19 @@ export class OsResetBrowserProxyImpl implements OsResetBrowserProxy {
     return instance || (instance = new OsResetBrowserProxyImpl());
   }
 
-  static setInstanceForTesting(obj: OsResetBrowserProxy) {
+  static setInstanceForTesting(obj: OsResetBrowserProxy): void {
     instance = obj;
   }
 
-  onPowerwashDialogShow() {
-    chrome.send('onPowerwashDialogShow');
+  requestFactoryResetRestart(): void {
+    chrome.send('requestFactoryResetRestart');
   }
 
-  requestFactoryResetRestart() {
-    chrome.send('requestFactoryResetRestart');
+  onShowSanitizeDialog(): void {
+    chrome.send('onShowSanitizeDialog');
+  }
+
+  performSanitizeSettings(): void {
+    chrome.send('performSanitizeSettings');
   }
 }

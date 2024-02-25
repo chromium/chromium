@@ -96,6 +96,9 @@ COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_SETTINGS)
 extern const char kDeviceChannelDowngradeBehavior[];
 
 COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_SETTINGS)
+extern const char kDeviceExtendedAutoUpdateEnabled[];
+
+COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_SETTINGS)
 extern const char kDeviceSystemAecEnabled[];
 
 COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_SETTINGS)
@@ -211,8 +214,6 @@ extern const char kKioskDisableBailoutShortcut[];
 COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_SETTINGS)
 extern const char kVariationsRestrictParameter[];
 
-COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_SETTINGS)
-extern const char kDeviceAttestationEnabled[];
 COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_SETTINGS)
 extern const char kAttestationForContentProtectionEnabled[];
 
@@ -395,6 +396,9 @@ extern const char kDevicePrintingClientNameTemplate[];
 
 COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_SETTINGS)
 extern const char kDeviceHindiInscriptLayoutEnabled[];
+
+COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_SETTINGS)
+extern const char kDeviceDlcPredownloadList[];
 
 }  // namespace ash
 

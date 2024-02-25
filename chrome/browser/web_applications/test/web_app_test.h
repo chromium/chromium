@@ -17,6 +17,10 @@
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
 #include "services/network/test/test_url_loader_factory.h"
 
+#if BUILDFLAG(IS_WIN)
+#include "base/test/test_reg_util_win.h"
+#endif  // BUILDFLAG(IS_WIN)
+
 namespace web_app {
 class FakeWebAppProvider;
 }
@@ -31,28 +35,26 @@ class WebAppTest : public content::RenderViewHostTestHarness {
     explicit ValidTraits(WithTestUrlLoaderFactory);
   };
 
-  template <typename... WebAppTestTraits,
-            class CheckArgumentsAreValid = std::enable_if_t<
-                base::trait_helpers::
-                    AreValidTraits<ValidTraits, WebAppTestTraits...>::value>>
+  template <typename... WebAppTestTraits>
+    requires base::trait_helpers::AreValidTraits<ValidTraits,
+                                                 WebAppTestTraits...>
   explicit WebAppTest(WebAppTestTraits&&... traits)
       : content::RenderViewHostTestHarness(
             base::trait_helpers::Exclude<WithTestUrlLoaderFactory>::Filter(
-                traits)...),
-        shared_url_loader_factory_(
-            base::trait_helpers::HasTrait<WithTestUrlLoaderFactory,
-                                          WebAppTestTraits...>()
-                ? base::MakeRefCounted<
-                      network::WeakWrapperSharedURLLoaderFactory>(
-                      &test_url_loader_factory_)
-                : nullptr) {}
+                traits)...) {
+    shared_url_loader_factory_ =
+        base::trait_helpers::HasTrait<WithTestUrlLoaderFactory,
+                                      WebAppTestTraits...>()
+            ? test_url_loader_factory_.GetSafeWeakWrapper()
+            : nullptr;
+  }
 
   ~WebAppTest() override;
 
   void SetUp() override;
   void TearDown() override;
 
-  TestingProfile* profile() { return profile_.get(); }
+  TestingProfile* profile() const { return profile_.get(); }
   TestingProfileManager& profile_manager() { return testing_profile_manager_; }
 
   network::TestURLLoaderFactory& profile_url_loader_factory() {
@@ -65,7 +67,7 @@ class WebAppTest : public content::RenderViewHostTestHarness {
     return test_url_loader_factory_;
   }
 
-  web_app::FakeWebAppProvider& fake_provider();
+  web_app::FakeWebAppProvider& fake_provider() const;
 
  protected:
   // content::RenderViewHostTestHarness.
@@ -73,13 +75,20 @@ class WebAppTest : public content::RenderViewHostTestHarness {
 
  private:
   base::TimeTicks start_time_ = base::TimeTicks::Now();
+  network::TestURLLoaderFactory test_url_loader_factory_;
   scoped_refptr<network::SharedURLLoaderFactory> shared_url_loader_factory_ =
       nullptr;
-  network::TestURLLoaderFactory test_url_loader_factory_;
 
   TestingProfileManager testing_profile_manager_{
       TestingBrowserProcess::GetGlobal()};
-  raw_ptr<TestingProfile, DanglingUntriaged> profile_;
+  raw_ptr<TestingProfile, DanglingUntriaged> profile_ = nullptr;
+
+#if BUILDFLAG(IS_WIN)
+  // This is used to ensure that the registry starts in a well known state, and
+  // any registry changes by this test don't affect other parts of the registry
+  // on the machine running the test, and are cleaned up.
+  registry_util::RegistryOverrideManager registry_override_;
+#endif  // BUILDFLAG(IS_WIN)
 };
 
 #endif  // CHROME_BROWSER_WEB_APPLICATIONS_TEST_WEB_APP_TEST_H_

@@ -148,6 +148,10 @@ class CC_ANIMATION_EXPORT Animation : public base::RefCounted<Animation>,
 
   void SetNeedsCommit();
 
+  void set_is_replacement() { is_replacement_ = true; }
+
+  std::optional<base::TimeTicks> GetStartTime() const;
+
   virtual bool IsWorkletAnimation() const;
 
   void SetKeyframeEffectForTesting(std::unique_ptr<KeyframeEffect>);
@@ -178,6 +182,21 @@ class CC_ANIMATION_EXPORT Animation : public base::RefCounted<Animation>,
   const int id_;
 
  private:
+  // If this Animation was created to replace an existing one of the same id,
+  // it should take the start time from the impl instance before replacing it,
+  // since the start time may not yet have been committed back to the client at
+  // the time the animation was restarted. The client sets this bit to true
+  // when such an animation is created so that the first commit pulls the start
+  // time into this Animation before pushing it.
+  //
+  // When this animation is pushed to the impl thread, it will update the
+  // existing Animation and KeyframeEffect rather than creating new ones. It
+  // will silently replace the effect's keyframe models with the new ones
+  // specified in this animation.
+  //
+  // Used only from the main thread and isn't synced to the compositor thread.
+  bool is_replacement_ = false;
+
   // Animation's ProtectedSequenceSynchronizer implementation is implemented
   // using this member. As such the various helpers can not be used to protect
   // access (otherwise we would get infinite recursion).

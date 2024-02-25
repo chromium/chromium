@@ -34,8 +34,8 @@ class AppListTestBase : public extensions::ExtensionServiceTestBase {
  private:
   void ConfigureWebAppProvider();
 
-  raw_ptr<web_app::TestWebAppUrlLoader, DanglingUntriaged | ExperimentalAsh>
-      url_loader_ = nullptr;
+  raw_ptr<web_app::TestWebAppUrlLoader, DanglingUntriaged> url_loader_ =
+      nullptr;
 };
 
 // Test util constants --------------------------------------------------------
@@ -64,7 +64,7 @@ syncer::SyncData CreateAppRemoteData(
     const std::string& item_pin_ordinal,
     sync_pb::AppListSpecifics_AppListItemType item_type =
         sync_pb::AppListSpecifics_AppListItemType_TYPE_APP,
-    absl::optional<bool> is_user_pinned = absl::nullopt,
+    std::optional<bool> is_user_pinned = std::nullopt,
     const std::string& promise_package_id = kUnset);
 
 }  // namespace app_list

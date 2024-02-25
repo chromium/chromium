@@ -158,19 +158,19 @@ class DownloadFramePolicyBrowserTest
                                 DownloadSource source,
                                 bool initiate_with_gesture,
                                 std::string file_name = "allow.zip") {
-    const char kADownloadScript[] = R"(
+    static constexpr char kADownloadScript[] = R"(
       var a = document.createElement('a');
       a.setAttribute('href', '%s');
       a.download = '';
       document.body.appendChild(a);
       a.click();
     )";
-    const char kNavDownloadScript[] = "window.location = '%s'";
+    static constexpr char kNavDownloadScript[] = "window.location = '%s'";
 
-    std::string script = base::StringPrintf(
-        source == DownloadSource::kAnchorAttribute ? kADownloadScript
-                                                   : kNavDownloadScript,
-        file_name.c_str());
+    std::string script =
+        source == DownloadSource::kAnchorAttribute
+            ? base::StringPrintf(kADownloadScript, file_name.c_str())
+            : base::StringPrintf(kNavDownloadScript, file_name.c_str());
 
     if (initiate_with_gesture) {
       EXPECT_TRUE(ExecJs(adapter, script));
@@ -256,7 +256,8 @@ class DownloadFramePolicyBrowserTest
   void CheckNumDownloadsExpectation() {
     if (download_observer_)
       download_observer_->WaitForFinished();
-    std::vector<download::DownloadItem*> download_items;
+    std::vector<raw_ptr<download::DownloadItem, VectorExperimental>>
+        download_items;
     content::DownloadManager* manager =
         browser()->profile()->GetDownloadManager();
     manager->GetAllDownloads(&download_items);

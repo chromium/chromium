@@ -88,27 +88,33 @@ public class RadioButtonWithEditText extends RadioButtonWithDescription {
         super.setViewsInternal();
 
         mEditText = (EditText) getPrimaryTextView();
-        mEditText.addTextChangedListener(new EmptyTextWatcher() {
-            @Override
-            public void afterTextChanged(Editable s) {
-                // Text set through AttributionSet will trigger this function before mListeners
-                // initialize, so we only notify listeners after initialization.
-                if (mListeners == null) return;
+        mEditText.addTextChangedListener(
+                new EmptyTextWatcher() {
+                    @Override
+                    public void afterTextChanged(Editable s) {
+                        // Text set through AttributionSet will trigger this function before
+                        // mListeners initialize, so we only notify listeners after
+                        // initialization.
+                        if (mListeners == null) return;
 
-                for (OnTextChangeListener listener : mListeners) {
-                    listener.onTextChanged(s);
-                }
-            }
-        });
+                        for (OnTextChangeListener listener : mListeners) {
+                            listener.onTextChanged(s);
+                        }
+                    }
+                });
 
         // Handles keyboard actions
-        mEditText.setOnEditorActionListener((v, actionId, event) -> {
-            mEditText.clearFocus();
-            return false;
-        });
+        mEditText.setOnEditorActionListener(
+                (v, actionId, event) -> {
+                    mEditText.clearFocus();
+                    return false;
+                });
 
         // Handle touches beside the Edit text
-        mEditText.setOnFocusChangeListener((v, hasFocus) -> { onEditTextFocusChanged(hasFocus); });
+        mEditText.setOnFocusChangeListener(
+                (v, hasFocus) -> {
+                    onEditTextFocusChanged(hasFocus);
+                });
     }
 
     @Override
@@ -129,22 +135,24 @@ public class RadioButtonWithEditText extends RadioButtonWithDescription {
     protected void applyAttributes(AttributeSet attrs) {
         super.applyAttributes(attrs);
 
-        TypedArray a = getContext().getTheme().obtainStyledAttributes(
-                attrs, R.styleable.RadioButtonWithEditText, 0, 0);
+        TypedArray a =
+                getContext()
+                        .getTheme()
+                        .obtainStyledAttributes(attrs, R.styleable.RadioButtonWithEditText, 0, 0);
 
         String hint = a.getString(R.styleable.RadioButtonWithEditText_android_hint);
         if (hint != null) setHint(hint);
 
-        int inputType = a.getInt(
-                R.styleable.RadioButtonWithEditText_android_inputType, InputType.TYPE_CLASS_TEXT);
+        int inputType =
+                a.getInt(
+                        R.styleable.RadioButtonWithEditText_android_inputType,
+                        InputType.TYPE_CLASS_TEXT);
         setInputType(inputType);
 
         a.recycle();
     }
 
-    /**
-     * Sets the checked status.
-     */
+    /** Sets the checked status. */
     @Override
     public void setChecked(boolean checked) {
         super.setChecked(checked);
@@ -185,23 +193,17 @@ public class RadioButtonWithEditText extends RadioButtonWithDescription {
         mEditText.setInputType(inputType);
     }
 
-    /**
-     * Set the hint message of text edit box
-     */
+    /** Set the hint message of text edit box */
     public void setHint(CharSequence hint) {
         mEditText.setHint(hint);
     }
 
-    /**
-     * Set the hint message of text edit box using pre-defined string from {@link R.string}
-     */
+    /** Set the hint message of text edit box using pre-defined string from {@link R.string} */
     public void setHint(int hintId) {
         mEditText.setHint(hintId);
     }
 
-    /**
-     * @return the EditText living inside this widget.
-     */
+    /** @return the EditText living inside this widget. */
     public EditText getEditTextForTests() {
         return mEditText;
     }

@@ -9,11 +9,13 @@
 #import "components/omnibox/browser/actions/omnibox_pedal.h"
 #import "components/omnibox/browser/actions/omnibox_pedal_concepts.h"
 #import "components/omnibox/browser/autocomplete_match.h"
-#import "ios/chrome/browser/default_browser/promo_source.h"
+#import "components/password_manager/core/browser/ui/password_check_referrer.h"
+#import "ios/chrome/browser/default_browser/model/promo_source.h"
 #import "ios/chrome/browser/shared/model/url/chrome_url_constants.h"
 #import "ios/chrome/browser/shared/public/commands/application_commands.h"
 #import "ios/chrome/browser/shared/public/commands/omnibox_commands.h"
 #import "ios/chrome/browser/shared/public/commands/open_new_tab_command.h"
+#import "ios/chrome/browser/shared/public/commands/settings_commands.h"
 #import "ios/chrome/browser/shared/ui/symbols/colorful_background_symbol_view.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/browser/ui/omnibox/popup/popup_swift.h"
@@ -46,8 +48,9 @@ const CGFloat kSymbolSize = 18;
   if (!omniboxPedal) {
     return nil;
   }
-  __weak id<ApplicationCommands> pedalsEndpoint = self.pedalsEndpoint;
-  __weak id<OmniboxCommands> omniboxCommandHandler = self.omniboxCommandHandler;
+  __weak id<ApplicationCommands> applicationHandler = self.applicationHandler;
+  __weak id<SettingsCommands> settingsHandler = self.settingsHandler;
+  __weak id<OmniboxCommands> omniboxHandler = self.omniboxHandler;
 
   NSString* hint =
       base::SysUTF16ToNSString(omniboxPedal->GetLabelStrings().hint);
@@ -75,7 +78,7 @@ const CGFloat kSymbolSize = 18;
                        OpenNewTabCommand* command =
                            [OpenNewTabCommand commandWithURLFromChrome:url
                                                            inIncognito:NO];
-                       [pedalsEndpoint openURLInNewTab:command];
+                       [applicationHandler openURLInNewTab:command];
                      }];
     }
     case OmniboxPedalId::CLEAR_BROWSING_DATA: {
@@ -93,21 +96,21 @@ const CGFloat kSymbolSize = 18;
            imageBorderColor:nil
                        type:pedalType
                      action:^{
-                       [omniboxCommandHandler cancelOmniboxEdit];
-                       [pedalsEndpoint showClearBrowsingDataSettings];
+                       [omniboxHandler cancelOmniboxEdit];
+                       [settingsHandler showClearBrowsingDataSettings];
                      }];
     }
     case OmniboxPedalId::SET_CHROME_AS_DEFAULT_BROWSER: {
 #if BUILDFLAG(IOS_USE_BRANDED_SYMBOLS)
       UIImage* image = MakeSymbolMulticolor(
-          CustomSymbolWithPointSize(kChromeSymbol, kSymbolSize));
+          CustomSymbolWithPointSize(kMulticolorChromeballSymbol, kSymbolSize));
 #else
       UIImage* image = DefaultSymbolTemplateWithPointSize(kDefaultBrowserSymbol,
                                                           kSymbolSize);
 #endif  // BUILDFLAG(IOS_USE_BRANDED_SYMBOLS)
       ProceduralBlock action = ^{
-        [omniboxCommandHandler cancelOmniboxEdit];
-        [pedalsEndpoint
+        [omniboxHandler cancelOmniboxEdit];
+        [settingsHandler
             showDefaultBrowserSettingsFromViewController:nil
                                             sourceForUMA:
                                                 DefaultBrowserPromoSource::
@@ -144,11 +147,10 @@ const CGFloat kSymbolSize = 18;
            imageBorderColor:nil
                        type:pedalType
                      action:^{
-                       [omniboxCommandHandler cancelOmniboxEdit];
-                       [pedalsEndpoint
+                       [omniboxHandler cancelOmniboxEdit];
+                       [settingsHandler
                            showSavedPasswordsSettingsFromViewController:nil
-                                                       showCancelButton:NO
-                                                     startPasswordCheck:NO];
+                                                       showCancelButton:NO];
                      }];
     }
     case OmniboxPedalId::UPDATE_CREDIT_CARD: {
@@ -166,8 +168,8 @@ const CGFloat kSymbolSize = 18;
            imageBorderColor:nil
                        type:pedalType
                      action:^{
-                       [omniboxCommandHandler cancelOmniboxEdit];
-                       [pedalsEndpoint showCreditCardSettings];
+                       [omniboxHandler cancelOmniboxEdit];
+                       [settingsHandler showCreditCardSettings];
                      }];
     }
     case OmniboxPedalId::LAUNCH_INCOGNITO: {
@@ -183,8 +185,8 @@ const CGFloat kSymbolSize = 18;
            imageBorderColor:nil
                        type:pedalType
                      action:^{
-                       [omniboxCommandHandler cancelOmniboxEdit];
-                       [pedalsEndpoint
+                       [omniboxHandler cancelOmniboxEdit];
+                       [applicationHandler
                            openURLInNewTab:[OpenNewTabCommand
                                                incognitoTabCommand]];
                      }];
@@ -204,9 +206,13 @@ const CGFloat kSymbolSize = 18;
            imageBorderColor:nil
                        type:pedalType
                      action:^{
-                       [omniboxCommandHandler cancelOmniboxEdit];
-                       [pedalsEndpoint
-                           showSafetyCheckSettingsAndStartSafetyCheck];
+                       [omniboxHandler cancelOmniboxEdit];
+                       [settingsHandler
+                           showAndStartSafetyCheckInHalfSheet:NO
+                                                     referrer:
+                                                         password_manager::
+                                                             PasswordCheckReferrer::
+                                                                 kSafetyCheck];
                      }];
     }
     case OmniboxPedalId::MANAGE_CHROME_SETTINGS: {
@@ -224,8 +230,8 @@ const CGFloat kSymbolSize = 18;
            imageBorderColor:nil
                        type:pedalType
                      action:^{
-                       [omniboxCommandHandler cancelOmniboxEdit];
-                       [pedalsEndpoint showSettingsFromViewController:nil];
+                       [omniboxHandler cancelOmniboxEdit];
+                       [applicationHandler showSettingsFromViewController:nil];
                      }];
     }
     case OmniboxPedalId::VIEW_CHROME_HISTORY: {
@@ -243,8 +249,8 @@ const CGFloat kSymbolSize = 18;
            imageBorderColor:nil
                        type:pedalType
                      action:^{
-                       [omniboxCommandHandler cancelOmniboxEdit];
-                       [pedalsEndpoint showHistory];
+                       [omniboxHandler cancelOmniboxEdit];
+                       [applicationHandler showHistory];
                      }];
     }
       // If a new case is added here, make sure to update the method returning

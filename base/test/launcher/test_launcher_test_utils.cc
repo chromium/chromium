@@ -4,12 +4,13 @@
 
 #include "base/test/launcher/test_launcher_test_utils.h"
 
+#include <optional>
+
 #include "base/files/file_util.h"
 #include "base/json/json_reader.h"
 #include "base/json/json_writer.h"
 #include "base/test/gtest_util.h"
 #include "base/test/launcher/test_result.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base {
 
@@ -25,14 +26,15 @@ std::string FindStringKeyOrEmpty(const Value::Dict& dict,
   return value ? *value : std::string();
 }
 
-// Find and return test case with name |test_case_name|,
+// Find and return test case with name |test_suite_name|,
 // return null if missing.
-const testing::TestCase* GetTestCase(const std::string& test_case_name) {
+const testing::TestSuite* GetTestSuite(const std::string& test_suite_name) {
   testing::UnitTest* const unit_test = testing::UnitTest::GetInstance();
-  for (int i = 0; i < unit_test->total_test_case_count(); ++i) {
-    const testing::TestCase* test_case = unit_test->GetTestCase(i);
-    if (test_case->name() == test_case_name)
+  for (int i = 0; i < unit_test->total_test_suite_count(); ++i) {
+    const testing::TestSuite* test_case = unit_test->GetTestSuite(i);
+    if (test_case->name() == test_suite_name) {
       return test_case;
+    }
   }
   return nullptr;
 }
@@ -114,17 +116,17 @@ bool ValidateTestResult(const Value::Dict& iteration_data,
 }
 
 bool ValidateTestLocations(const Value::Dict& test_locations,
-                           const std::string& test_case_name) {
-  const testing::TestCase* test_case = GetTestCase(test_case_name);
-  if (test_case == nullptr) {
-    ADD_FAILURE() << "Could not find test case " << test_case_name;
+                           const std::string& test_suite_name) {
+  const testing::TestSuite* test_suite = GetTestSuite(test_suite_name);
+  if (test_suite == nullptr) {
+    ADD_FAILURE() << "Could not find test suite " << test_suite_name;
     return false;
   }
   bool result = true;
-  for (int j = 0; j < test_case->total_test_count(); ++j) {
-    const testing::TestInfo* test_info = test_case->GetTestInfo(j);
+  for (int j = 0; j < test_suite->total_test_count(); ++j) {
+    const testing::TestInfo* test_info = test_suite->GetTestInfo(j);
     std::string full_name =
-        FormatFullTestName(test_case->name(), test_info->name());
+        FormatFullTestName(test_suite->name(), test_info->name());
     result &= ValidateTestLocation(test_locations, full_name, test_info->file(),
                                    test_info->line());
   }
@@ -147,13 +149,13 @@ bool ValidateTestLocation(const Value::Dict& test_locations,
   return result;
 }
 
-absl::optional<Value::Dict> ReadSummary(const FilePath& path) {
-  absl::optional<Value::Dict> result;
+std::optional<Value::Dict> ReadSummary(const FilePath& path) {
+  std::optional<Value::Dict> result;
   File resultFile(path, File::FLAG_OPEN | File::FLAG_READ);
   const int size = 2e7;
   std::string json;
   CHECK(ReadFileToStringWithMaxSize(path, &json, size));
-  absl::optional<Value> value = JSONReader::Read(json);
+  std::optional<Value> value = JSONReader::Read(json);
   if (value && value->is_dict())
     result = std::move(*value).TakeDict();
 

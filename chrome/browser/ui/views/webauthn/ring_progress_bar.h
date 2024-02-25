@@ -16,8 +16,9 @@ class LinearAnimation;
 
 // A progress bar that takes the shape of a ring.
 class RingProgressBar : public views::View, public gfx::AnimationDelegate {
+  METADATA_HEADER(RingProgressBar, views::View)
+
  public:
-  METADATA_HEADER(RingProgressBar);
   RingProgressBar();
   ~RingProgressBar() override;
 

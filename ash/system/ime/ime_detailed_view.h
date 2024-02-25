@@ -23,9 +23,9 @@ class ImeControllerImpl;
 // along with other items in the title row (a settings button and optional
 // enterprise-controlled icon).
 class IMEDetailedView : public ImeListView {
- public:
-  METADATA_HEADER(IMEDetailedView);
+  METADATA_HEADER(IMEDetailedView, ImeListView)
 
+ public:
   IMEDetailedView(DetailedViewDelegate* delegate,
                   ImeControllerImpl* ime_controller);
   IMEDetailedView(const IMEDetailedView&) = delete;
@@ -49,14 +49,13 @@ class IMEDetailedView : public ImeListView {
   void CreateExtraTitleRowButtons() override;
   void ShowSettings();
 
-  const raw_ptr<ImeControllerImpl, ExperimentalAsh> ime_controller_;
+  const raw_ptr<ImeControllerImpl> ime_controller_;
 
   // Gear icon that takes the user to IME settings.
-  raw_ptr<views::Button, DanglingUntriaged | ExperimentalAsh> settings_button_ =
-      nullptr;
+  raw_ptr<views::Button, DanglingUntriaged> settings_button_ = nullptr;
 
   // This icon says that the IMEs are managed by policy.
-  raw_ptr<views::ImageView, ExperimentalAsh> controlled_setting_icon_ = nullptr;
+  raw_ptr<views::ImageView> controlled_setting_icon_ = nullptr;
 };
 
 }  // namespace ash

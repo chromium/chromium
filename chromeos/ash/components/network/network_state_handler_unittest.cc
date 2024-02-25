@@ -8,6 +8,7 @@
 
 #include <map>
 #include <memory>
+#include <optional>
 #include <set>
 #include <string>
 
@@ -39,7 +40,6 @@
 #include "chromeos/ash/components/network/tether_constants.h"
 #include "dbus/object_path.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/cros_system_api/dbus/service_constants.h"
 
 using testing::ElementsAre;
@@ -275,7 +275,7 @@ class TestObserver final : public NetworkStateHandlerObserver {
   }
 
  private:
-  raw_ptr<NetworkStateHandler, ExperimentalAsh> handler_;
+  raw_ptr<NetworkStateHandler> handler_;
   size_t active_network_change_count_ = 0;
   size_t default_network_change_count_ = 0;
   size_t portal_state_change_count_ = 0;
@@ -295,8 +295,8 @@ class TestObserver final : public NetworkStateHandlerObserver {
   std::map<std::string, int> device_property_updates_;
   std::map<std::string, int> connection_state_changes_;
   std::map<std::string, std::string> network_connection_state_;
-  absl::optional<base::RunLoop> run_loop_scan_started_;
-  absl::optional<base::RunLoop> run_loop_scan_completed_;
+  std::optional<base::RunLoop> run_loop_scan_started_;
+  std::optional<base::RunLoop> run_loop_scan_completed_;
   std::vector<std::pair<std::string, std::string>> service_path_transitions_;
 };
 
@@ -469,17 +469,10 @@ class NetworkStateHandlerTest : public testing::Test {
   std::unique_ptr<NetworkStateHandler> network_state_handler_;
   std::unique_ptr<TestObserver> test_observer_;
   FakeStubCellularNetworksProvider fake_stub_cellular_networks_provider_;
-  raw_ptr<ShillDeviceClient::TestInterface, DanglingUntriaged | ExperimentalAsh>
-      device_test_;
-  raw_ptr<ShillManagerClient::TestInterface,
-          DanglingUntriaged | ExperimentalAsh>
-      manager_test_;
-  raw_ptr<ShillProfileClient::TestInterface,
-          DanglingUntriaged | ExperimentalAsh>
-      profile_test_;
-  raw_ptr<ShillServiceClient::TestInterface,
-          DanglingUntriaged | ExperimentalAsh>
-      service_test_;
+  raw_ptr<ShillDeviceClient::TestInterface, DanglingUntriaged> device_test_;
+  raw_ptr<ShillManagerClient::TestInterface, DanglingUntriaged> manager_test_;
+  raw_ptr<ShillProfileClient::TestInterface, DanglingUntriaged> profile_test_;
+  raw_ptr<ShillServiceClient::TestInterface, DanglingUntriaged> service_test_;
 };
 
 TEST_F(NetworkStateHandlerTest, NetworkStateHandlerStub) {
@@ -1972,9 +1965,6 @@ TEST_F(NetworkStateHandlerTest, SetNetworkChromePortalState) {
   service_test_->SetServiceProperty(kShillManagerClientStubDefaultWifi,
                                     shill::kStateProperty,
                                     base::Value(shill::kStatePortalSuspected));
-  service_test_->SetServiceProperty(
-      kShillManagerClientStubDefaultWifi,
-      shill::kPortalDetectionFailedStatusCodeProperty, base::Value(300));
   base::RunLoop().RunUntilIdle();
 
   const NetworkState* network = network_state_handler_->GetNetworkState(
@@ -2002,8 +1992,6 @@ TEST_F(NetworkStateHandlerTest, SetNetworkChromePortalState) {
   EXPECT_THAT(histogram_tester.GetAllSamples("Network.CaptivePortalResult"),
               ElementsAre(base::Bucket(
                   NetworkState::PortalState::kPortalSuspected, 1)));
-  EXPECT_THAT(histogram_tester.GetAllSamples("Network.CaptivePortalStatusCode"),
-              ElementsAre(base::Bucket(300, 1)));
 }
 
 TEST_F(NetworkStateHandlerTest, PortalStateChanged) {
@@ -2830,7 +2818,7 @@ TEST_F(NetworkStateHandlerTest, RequestTrafficCounters) {
       base::BindOnce(
           [](base::Value::List* expected_traffic_counters,
              base::OnceClosure quit_closure,
-             absl::optional<base::Value> actual_traffic_counters) {
+             std::optional<base::Value> actual_traffic_counters) {
             ASSERT_TRUE(actual_traffic_counters);
             EXPECT_EQ(*expected_traffic_counters, *actual_traffic_counters);
             std::move(quit_closure).Run();
@@ -2845,7 +2833,7 @@ TEST_F(NetworkStateHandlerTest, RequestTrafficCounters) {
       base::BindOnce(
           [](base::Value::List* expected_traffic_counters,
              base::OnceClosure quit_closure,
-             absl::optional<base::Value> actual_traffic_counters) {
+             std::optional<base::Value> actual_traffic_counters) {
             ASSERT_FALSE(actual_traffic_counters);
             std::move(quit_closure).Run();
           },

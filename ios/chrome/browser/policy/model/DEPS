@@ -1,0 +1,23 @@
+include_rules = [
+  "+ios/chrome/browser/policy_url_blocking/model",
+  "+ios/chrome/browser/signin/model",
+]
+
+specific_include_rules = {
+  # TODO(crbug.com/1294160): Remove this dependency.
+  "^policy_watcher_browser_agent.mm": [
+    "+ios/chrome/browser/ui/authentication/signin/signin_utils.h",
+    "+ios/chrome/browser/shared/coordinator/scene/scene_state.h",
+  ],
+  "^policy_egtest.mm": [
+    "+components/policy/test_support",
+  ],
+  "^user_policy_egtest.mm": [
+    "+components/policy/proto",
+    "+components/policy/test_support",
+  ],
+  "^enterprise_policy_test_helper.cc": [
+    "+ios/chrome/browser/prefs/model/ios_chrome_pref_service_factory.h",
+  ]
+}
+

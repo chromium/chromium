@@ -57,9 +57,10 @@ class TestViewWithInkDrop : public View {
   ui::EventHandler* GetTargetHandler() { return target_handler(); }
 
   TestInkDrop* last_created_inkdrop() const { return last_created_inkdrop_; }
+  void ClearLastCreatedInkDrop() { last_created_inkdrop_ = nullptr; }
 
  private:
-  raw_ptr<TestInkDrop, DanglingUntriaged> last_created_inkdrop_ = nullptr;
+  raw_ptr<TestInkDrop> last_created_inkdrop_ = nullptr;
 };
 
 class InkDropHostTest : public testing::Test {
@@ -76,8 +77,7 @@ class InkDropHostTest : public testing::Test {
   // Provides internal access to |host_view_| test target.
   InkDropHostTestApi test_api_;
 
-  std::unique_ptr<base::AutoReset<gfx::Animation::RichAnimationRenderMode>>
-      animation_mode_reset_;
+  gfx::AnimationTestApi::RenderModeResetter animation_mode_reset_;
 
   void MouseEventTriggersInkDropHelper(InkDropMode ink_drop_mode);
 };
@@ -199,6 +199,10 @@ TEST_F(InkDropHostTest,
 
     EXPECT_EQ(test_api_.GetInkDrop()->GetTargetInkDropState(),
               InkDropState::HIDDEN);
+    // Subsequent times through the loop will call SetInkDropMode which may
+    // delete the TestInkDrop pointed to by TestViewWithInkDrop and cause a
+    // dangling pointer.
+    host_view_.ClearLastCreatedInkDrop();
   }
 }
 

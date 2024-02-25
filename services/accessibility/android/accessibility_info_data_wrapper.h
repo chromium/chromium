@@ -5,14 +5,13 @@
 #ifndef SERVICES_ACCESSIBILITY_ANDROID_ACCESSIBILITY_INFO_DATA_WRAPPER_H_
 #define SERVICES_ACCESSIBILITY_ANDROID_ACCESSIBILITY_INFO_DATA_WRAPPER_H_
 
-#include "services/accessibility/android/public/mojom/accessibility_helper.mojom.h"
-
-#include "base/memory/raw_ptr.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
-#include "ui/gfx/geometry/rect.h"
-
+#include <optional>
 #include <string>
 #include <vector>
+
+#include "base/memory/raw_ptr.h"
+#include "services/accessibility/android/public/mojom/accessibility_helper.mojom.h"
+#include "ui/gfx/geometry/rect.h"
 
 namespace ui {
 struct AXNodeData;
@@ -51,12 +50,15 @@ class AccessibilityInfoDataWrapper {
   virtual void Serialize(ui::AXNodeData* out_data) const;
   virtual std::string ComputeAXName(bool do_recursive) const = 0;
   virtual void GetChildren(
-      std::vector<AccessibilityInfoDataWrapper*>* children) const = 0;
+      std::vector<raw_ptr<AccessibilityInfoDataWrapper, VectorExperimental>>*
+          children) const = 0;
   virtual int32_t GetWindowId() const = 0;
 
  protected:
-  raw_ptr<AXTreeSourceAndroid, ExperimentalAsh> tree_source_;
-  absl::optional<std::vector<AccessibilityInfoDataWrapper*>> cached_children_;
+  raw_ptr<AXTreeSourceAndroid> tree_source_;
+  std::optional<
+      std::vector<raw_ptr<AccessibilityInfoDataWrapper, VectorExperimental>>>
+      cached_children_;
 
  private:
   friend class AXTreeSourceAndroid;

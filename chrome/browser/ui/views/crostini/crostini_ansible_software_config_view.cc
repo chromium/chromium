@@ -198,7 +198,6 @@ void CrostiniAnsibleSoftwareConfigView::OnStateChanged() {
     GetWidget()->SetSize(GetWidget()->non_client_view()->GetPreferredSize());
 }
 
-BEGIN_METADATA(CrostiniAnsibleSoftwareConfigView,
-               views::BubbleDialogDelegateView)
+BEGIN_METADATA(CrostiniAnsibleSoftwareConfigView)
 ADD_READONLY_PROPERTY_METADATA(std::u16string, SubtextLabel)
 END_METADATA

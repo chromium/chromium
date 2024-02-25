@@ -44,7 +44,7 @@ class FilesRequestHandler;
 // If `source_url` is a directory, all files contained within the directory or
 // any descended directory will be scanned. If `source_url` is a file only that
 // file will be scanned.
-class FileTransferAnalysisDelegate : public ContentAnalysisDelegateBase {
+class FileTransferAnalysisDelegate {
  public:
   using FileTransferAnalysisDelegateFactory = base::RepeatingCallback<
       std::unique_ptr<enterprise_connectors::FileTransferAnalysisDelegate>(
@@ -55,13 +55,58 @@ class FileTransferAnalysisDelegate : public ContentAnalysisDelegateBase {
           storage::FileSystemContext* file_system_context,
           enterprise_connectors::AnalysisSettings settings)>;
 
-  enum FileTransferAnalysisResult {
-    RESULT_ALLOWED,
-    RESULT_BLOCKED,
-    RESULT_UNKNOWN,
+  // The verdict of an analysis.
+  enum Verdict {
+    // The file transfer is allowed.
+    ALLOWED,
+    // The file transfer is blocked.
+    BLOCKED,
+    // A file transfer result verdict is unknown if the file was copied/moved to
+    // a scanned directory after the scan was started
+    UNKNOWN,
   };
 
-  ~FileTransferAnalysisDelegate() override;
+  // The result of an analysis.
+  class FileTransferAnalysisResult {
+   public:
+    // Creates a result representing an allowed file transfer.
+    static FileTransferAnalysisResult Allowed();
+    // Creates a result for a file transfer blocked because of `tag`.
+    static FileTransferAnalysisResult Blocked(
+        FinalContentAnalysisResult final_result,
+        const std::string& tag);
+    // Represents a file transfer for which there is no known result.
+    static FileTransferAnalysisResult Unknown();
+
+    ~FileTransferAnalysisResult();
+    FileTransferAnalysisResult(const FileTransferAnalysisResult& other);
+    FileTransferAnalysisResult& operator=(FileTransferAnalysisResult&& other);
+
+    bool IsAllowed() const;
+    bool IsBlocked() const;
+    bool IsUnknown() const;
+
+    const std::string& tag() const;
+    const std::optional<FinalContentAnalysisResult> final_result() const;
+
+   private:
+    FileTransferAnalysisResult(
+        Verdict verdict,
+        std::optional<FinalContentAnalysisResult> final_result,
+        const std::string& tag);
+
+    Verdict verdict_ = Verdict::UNKNOWN;
+    // The tag ("dlp" or "malware") is only relevant when verdict is BLOCKED.
+    // Note however that results associated with blocked files can have an empty
+    // tag. This may happen when the file is blocked because it's encrypted or
+    // it's too large to be uploaded.
+    // For blocked files with an empty tag, final result contains the reason for
+    // which they were blocked.
+    std::optional<FinalContentAnalysisResult> final_result_;
+    std::string tag_;
+  };
+
+  virtual ~FileTransferAnalysisDelegate();
 
   // Create the FileTransferAnalysisDelegate. This function uses the factory if
   // it is set via `SetFactorForTesting()`.
@@ -86,7 +131,7 @@ class FileTransferAnalysisDelegate : public ContentAnalysisDelegateBase {
   // If the enterprise connectors are not enabled for any of the transfers an
   // empty vector is returned. Each entry in the returned vector corresponds to
   // the entry in the `source_urls` vector with the same index.
-  static std::vector<absl::optional<AnalysisSettings>> IsEnabledVec(
+  static std::vector<std::optional<AnalysisSettings>> IsEnabledVec(
       Profile* profile,
       const std::vector<storage::FileSystemURL>& source_urls,
       storage::FileSystemURL destination_url);
@@ -101,15 +146,22 @@ class FileTransferAnalysisDelegate : public ContentAnalysisDelegateBase {
   // Calling this function is only allowed after the scan is complete!
   virtual std::vector<storage::FileSystemURL> GetWarnedFiles() const;
 
-  // ContentAnalysisDelegateBase:
-  void BypassWarnings(
-      absl::optional<std::u16string> user_justification) override;
-  void Cancel(bool warning) override;
-  absl::optional<std::u16string> GetCustomMessage() const override;
-  absl::optional<GURL> GetCustomLearnMoreUrl() const override;
-  bool BypassRequiresJustification() const override;
-  std::u16string GetBypassJustificationLabel() const override;
-  absl::optional<std::u16string> OverrideCancelButtonText() const override;
+  // Called when the user cancels a transfer.
+  void Cancel(bool warning);
+
+  // Called when the user byapass a warning.
+  void BypassWarnings(std::optional<std::u16string> user_justification);
+
+  // Returns the custom message specified by the admin for the given tag, or
+  // std::nullopt if there isn't any.
+  std::optional<std::u16string> GetCustomMessage(const std::string& tag) const;
+
+  // Returns the custom "learn more" URL specified by the admin for the given
+  // tag, or std::nullopt if there isn't any.
+  std::optional<GURL> GetCustomLearnMoreUrl(const std::string& tag) const;
+
+  // Returns whether a user justification is required for the given tag.
+  bool BypassRequiresJustification(const std::string& tag) const;
 
   FilesRequestHandler* GetFilesRequestHandlerForTesting();
 
@@ -130,7 +182,7 @@ class FileTransferAnalysisDelegate : public ContentAnalysisDelegateBase {
   void ContentAnalysisCompleted(std::vector<RequestHandlerResult> results);
 
   AnalysisSettings settings_;
-  raw_ptr<Profile, ExperimentalAsh> profile_;
+  raw_ptr<Profile> profile_;
   safe_browsing::DeepScanAccessPoint access_point_;
   std::vector<storage::FileSystemURL> scanning_urls_;
   storage::FileSystemURL source_url_;

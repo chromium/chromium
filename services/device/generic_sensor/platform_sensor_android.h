@@ -46,6 +46,18 @@ class PlatformSensorAndroid : public PlatformSensor {
       jdouble value3,
       jdouble value4);
 
+  base::android::ScopedJavaGlobalRef<jobject> GetJavaObjectForTesting() {
+    return j_object_;
+  }
+
+  // Simulate a `SensorEvent` from
+  // android.hardware.Sensor. The simulated event is created
+  // with length of |reading_values_length| and filled with readings with
+  // (reading_index + 0.1).
+  static void SimulateSensorEventFromJavaForTesting(
+      base::android::ScopedJavaGlobalRef<jobject> j_object_,
+      jint reading_values_length);
+
  protected:
   ~PlatformSensorAndroid() override;
   bool StartSensor(const PlatformSensorConfiguration& configuration) override;

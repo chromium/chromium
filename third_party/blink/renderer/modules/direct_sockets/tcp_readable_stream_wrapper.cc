@@ -182,8 +182,8 @@ void TCPReadableStreamWrapper::ErrorStream(int32_t error_code) {
 
   SetState(State::kAborted);
 
-  auto exception = ScriptValue::From(
-      script_state,
+  auto exception = ScriptValue(
+      script_state->GetIsolate(),
       V8ThrowDOMException::CreateOrDie(script_state->GetIsolate(),
                                        DOMExceptionCode::kNetworkError,
                                        String{"Stream aborted by the remote: " +

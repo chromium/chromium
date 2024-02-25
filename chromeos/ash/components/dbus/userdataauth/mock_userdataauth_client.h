@@ -42,11 +42,6 @@ class COMPONENT_EXPORT(USERDATAAUTH_CLIENT) MockUserDataAuthClient
                RemoveCallback callback),
               (override));
   MOCK_METHOD(void,
-              CheckKey,
-              (const ::user_data_auth::CheckKeyRequest& request,
-               CheckKeyCallback callback),
-              (override));
-  MOCK_METHOD(void,
               StartMigrateToDircrypto,
               (const ::user_data_auth::StartMigrateToDircryptoRequest& request,
                StartMigrateToDircryptoCallback callback),
@@ -87,6 +82,11 @@ class COMPONENT_EXPORT(USERDATAAUTH_CLIENT) MockUserDataAuthClient
                CreatePersistentUserCallback callback),
               (override));
   MOCK_METHOD(void,
+              RestoreDeviceKey,
+              (const ::user_data_auth::RestoreDeviceKeyRequest& request,
+               RestoreDeviceKeyCallback callback),
+              (override));
+  MOCK_METHOD(void,
               PreparePersistentVault,
               (const ::user_data_auth::PreparePersistentVaultRequest& request,
                PreparePersistentVaultCallback callback),
@@ -120,6 +120,11 @@ class COMPONENT_EXPORT(USERDATAAUTH_CLIENT) MockUserDataAuthClient
               UpdateAuthFactor,
               (const ::user_data_auth::UpdateAuthFactorRequest& request,
                UpdateAuthFactorCallback callback),
+              (override));
+  MOCK_METHOD(void,
+              UpdateAuthFactorMetadata,
+              (const ::user_data_auth::UpdateAuthFactorMetadataRequest& request,
+               UpdateAuthFactorMetadataCallback callback),
               (override));
   MOCK_METHOD(void,
               ListAuthFactors,
@@ -161,6 +166,11 @@ class COMPONENT_EXPORT(USERDATAAUTH_CLIENT) MockUserDataAuthClient
               GetArcDiskFeatures,
               (const ::user_data_auth::GetArcDiskFeaturesRequest& request,
                GetArcDiskFeaturesCallback callback),
+              (override));
+  MOCK_METHOD(void,
+              GetRecoverableKeyStores,
+              (const ::user_data_auth::GetRecoverableKeyStoresRequest& request,
+               GetRecoverableKeyStoresCallback),
               (override));
 };
 

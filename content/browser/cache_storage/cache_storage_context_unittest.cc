@@ -107,13 +107,12 @@ TEST_F(CacheStorageContextTest, DefaultBucketCreatedOnAddReceiver) {
   storage::QuotaManagerProxySync quota_manager_proxy_sync(
       quota_manager_proxy());
 
-  // Call method on CacheStorageContext to ensure that AddReceiver task has
-  // completed.
+  // Call method on remote to ensure that AddReceiver task has completed.
   base::RunLoop loop;
-  cache_storage_context_->GetAllStorageKeysInfo(base::BindLambdaForTesting(
-      [&](std::vector<storage::mojom::StorageUsageInfoPtr> inner) {
-        loop.Quit();
-      }));
+  google_remote->Keys(
+      /*trace_id=*/0,
+      base::BindLambdaForTesting(
+          [&](const std::vector<std::u16string>& keys) { loop.Quit(); }));
   loop.Run();
 
   // Check default bucket exists for https://example.com.

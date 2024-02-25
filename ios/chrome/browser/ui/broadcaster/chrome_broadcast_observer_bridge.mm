@@ -5,6 +5,7 @@
 #import "ios/chrome/browser/ui/broadcaster/chrome_broadcast_observer_bridge.h"
 
 #import "base/check.h"
+#import "ios/web/common/features.h"
 
 ChromeBroadcastObserverInterface::~ChromeBroadcastObserverInterface() = default;
 
@@ -20,6 +21,7 @@ ChromeBroadcastObserverInterface::~ChromeBroadcastObserverInterface() = default;
 }
 
 - (void)broadcastScrollViewSize:(CGSize)scrollViewSize {
+  CHECK(base::FeatureList::IsEnabled(web::features::kSmoothScrollingDefault));
   self.observer->OnScrollViewSizeBroadcasted(scrollViewSize);
 }
 
@@ -28,22 +30,27 @@ ChromeBroadcastObserverInterface::~ChromeBroadcastObserverInterface() = default;
 }
 
 - (void)broadcastScrollViewContentInset:(UIEdgeInsets)contentInset {
+  CHECK(base::FeatureList::IsEnabled(web::features::kSmoothScrollingDefault));
   self.observer->OnScrollViewContentInsetBroadcasted(contentInset);
 }
 
 - (void)broadcastContentScrollOffset:(CGFloat)offset {
+  CHECK(base::FeatureList::IsEnabled(web::features::kSmoothScrollingDefault));
   self.observer->OnContentScrollOffsetBroadcasted(offset);
 }
 
 - (void)broadcastScrollViewIsScrolling:(BOOL)scrolling {
+  CHECK(base::FeatureList::IsEnabled(web::features::kSmoothScrollingDefault));
   self.observer->OnScrollViewIsScrollingBroadcasted(scrolling);
 }
 
 - (void)broadcastScrollViewIsZooming:(BOOL)zooming {
+  CHECK(base::FeatureList::IsEnabled(web::features::kSmoothScrollingDefault));
   self.observer->OnScrollViewIsZoomingBroadcasted(zooming);
 }
 
 - (void)broadcastScrollViewIsDragging:(BOOL)dragging {
+  CHECK(base::FeatureList::IsEnabled(web::features::kSmoothScrollingDefault));
   self.observer->OnScrollViewIsDraggingBroadcasted(dragging);
 }
 

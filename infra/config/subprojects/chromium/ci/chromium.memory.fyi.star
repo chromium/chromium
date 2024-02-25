@@ -7,6 +7,8 @@ load("//lib/builder_config.star", "builder_config")
 load("//lib/builders.star", "os", "reclient")
 load("//lib/ci.star", "ci")
 load("//lib/consoles.star", "consoles")
+load("//lib/gn_args.star", "gn_args")
+load("//lib/builder_health_indicators.star", "blank_low_value_thresholds", "health_spec", "modified_default")
 
 ci.defaults.set(
     executable = ci.DEFAULT_EXECUTABLE,
@@ -15,6 +17,7 @@ ci.defaults.set(
     cores = 8,
     os = os.LINUX_DEFAULT,
     execution_timeout = ci.DEFAULT_EXECUTION_TIMEOUT,
+    health_spec = health_spec.DEFAULT,
     priority = ci.DEFAULT_FYI_PRIORITY,
     reclient_instance = reclient.instance.DEFAULT_TRUSTED,
     reclient_jobs = reclient.jobs.LOW_JOBS_FOR_CI,
@@ -24,37 +27,6 @@ ci.defaults.set(
 
 consoles.console_view(
     name = "chromium.memory.fyi",
-)
-
-# TODO(crbug.com/1442587): Remove this builder after burning down failures
-# found when we now post-process stdout.
-ci.builder(
-    name = "linux-exp-asan-lsan-fyi-rel",
-    schedule = "with 6h interval",
-    triggered_by = [],
-    builder_spec = builder_config.builder_spec(
-        gclient_config = builder_config.gclient_config(
-            config = "chromium",
-        ),
-        chromium_config = builder_config.chromium_config(
-            config = "chromium_asan",
-            apply_configs = [
-                "lsan",
-                "mb",
-            ],
-            build_config = builder_config.build_config.RELEASE,
-            target_bits = 64,
-        ),
-    ),
-    builderless = 1,
-    cores = 16,
-    ssd = True,
-    console_view_entry = consoles.console_view_entry(
-        category = "experimental|linux",
-        short_name = "asan lsan",
-    ),
-    execution_timeout = 6 * time.hour,
-    reclient_jobs = reclient.jobs.DEFAULT,
 )
 
 # TODO(crbug.com/1442587): Remove this builder after burning down failures
@@ -74,7 +46,16 @@ ci.builder(
             apply_configs = ["mb"],
             build_config = builder_config.build_config.RELEASE,
             target_bits = 64,
+            target_platform = builder_config.target_platform.LINUX,
         ),
+    ),
+    gn_args = gn_args.config(
+        configs = [
+            "msan",
+            "fail_on_san_warnings",
+            "release_builder",
+            "reclient",
+        ],
     ),
     builderless = 1,
     # At this time, MSan is only compatibly with Focal. See
@@ -86,6 +67,9 @@ ci.builder(
         short_name = "msan",
     ),
     execution_timeout = 6 * time.hour,
+    health_spec = modified_default({
+        "Low Value": blank_low_value_thresholds,
+    }),
     reclient_jobs = reclient.jobs.DEFAULT,
 )
 
@@ -104,7 +88,16 @@ ci.builder(
             apply_configs = ["mb"],
             build_config = builder_config.build_config.RELEASE,
             target_bits = 64,
+            target_platform = builder_config.target_platform.LINUX,
         ),
+    ),
+    gn_args = gn_args.config(
+        configs = [
+            "tsan",
+            "fail_on_san_warnings",
+            "release_builder",
+            "reclient",
+        ],
     ),
     builderless = 1,
     console_view_entry = consoles.console_view_entry(
@@ -112,6 +105,9 @@ ci.builder(
         short_name = "tsan",
     ),
     execution_timeout = 4 * time.hour,
+    health_spec = modified_default({
+        "Low Value": blank_low_value_thresholds,
+    }),
     reclient_jobs = reclient.jobs.DEFAULT,
 )
 
@@ -130,14 +126,25 @@ ci.builder(
             apply_configs = ["mb"],
             build_config = builder_config.build_config.RELEASE,
             target_bits = 64,
+            target_platform = builder_config.target_platform.LINUX,
         ),
+    ),
+    gn_args = gn_args.config(
+        configs = [
+            "ubsan_no_recover",
+            "release_builder",
+            "reclient",
+        ],
     ),
     builderless = 1,
     console_view_entry = consoles.console_view_entry(
         category = "linux|ubsan",
         short_name = "fyi",
     ),
-    execution_timeout = 4 * time.hour,
+    execution_timeout = 6 * time.hour,
+    health_spec = modified_default({
+        "Low Value": blank_low_value_thresholds,
+    }),
     reclient_jobs = reclient.jobs.DEFAULT,
 )
 
@@ -145,6 +152,7 @@ ci.builder(
 # and measuring performance to see if we can roll LSan into ASan.
 ci.builder(
     name = "mac-lsan-fyi-rel",
+    description_html = "Runs basic Mac tests with is_lsan=true",
     schedule = "with 24h interval",
     triggered_by = [],
     builder_spec = builder_config.builder_spec(
@@ -156,8 +164,18 @@ ci.builder(
             apply_configs = ["mb"],
             build_config = builder_config.build_config.RELEASE,
             target_bits = 64,
+            target_platform = builder_config.target_platform.MAC,
         ),
         run_tests_serially = True,
+    ),
+    gn_args = gn_args.config(
+        configs = [
+            "asan",
+            "lsan",
+            "dcheck_always_on",
+            "release_builder",
+            "reclient",
+        ],
     ),
     builderless = 1,
     cores = None,
@@ -167,5 +185,48 @@ ci.builder(
         short_name = "lsan",
     ),
     execution_timeout = 12 * time.hour,
+    health_spec = modified_default({
+        "Low Value": blank_low_value_thresholds,
+    }),
+    reclient_jobs = reclient.jobs.DEFAULT,
+)
+
+ci.builder(
+    name = "mac-ubsan-fyi-rel",
+    description_html = "Runs basic Mac tests with is_ubsan=true",
+    schedule = "with 24h interval",
+    triggered_by = [],
+    builder_spec = builder_config.builder_spec(
+        gclient_config = builder_config.gclient_config(
+            config = "chromium",
+        ),
+        chromium_config = builder_config.chromium_config(
+            config = "chromium",
+            apply_configs = ["mb"],
+            build_config = builder_config.build_config.RELEASE,
+            target_bits = 64,
+            target_platform = builder_config.target_platform.MAC,
+        ),
+        run_tests_serially = True,
+    ),
+    gn_args = gn_args.config(
+        configs = [
+            "ubsan_no_recover",
+            "dcheck_always_on",
+            "release_builder",
+            "reclient",
+        ],
+    ),
+    builderless = 1,
+    cores = None,
+    os = os.MAC_DEFAULT,
+    console_view_entry = consoles.console_view_entry(
+        category = "mac|ubsan",
+        short_name = "ubsan",
+    ),
+    execution_timeout = 12 * time.hour,
+    health_spec = modified_default({
+        "Low Value": blank_low_value_thresholds,
+    }),
     reclient_jobs = reclient.jobs.DEFAULT,
 )

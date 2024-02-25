@@ -115,8 +115,14 @@ class DownloadController {
                                         const std::string& content_disposition,
                                         int64_t total_bytes,
                                         const std::string& mime_type,
-                                        DownloadNativeTaskBridge* download)
-      API_AVAILABLE(ios(15)) = 0;
+                                        DownloadNativeTaskBridge* download) = 0;
+
+  // Creates a new download task to download the document that is currently
+  // displayed by the `web_state`. This is mainly intended to download documents
+  // (like PDFs).
+  virtual void CreateWebStateDownloadTask(WebState* web_state,
+                                          NSString* identifier,
+                                          int64_t total_bytes) = 0;
 
   // Sets DownloadControllerDelegate. Clients must set the delegate to null in
   // DownloadControllerDelegate::OnDownloadControllerDestroyed().

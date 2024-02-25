@@ -1,0 +1,5 @@
+This is a testharness.js-based test.
+[FAIL] writer.abort() inside size() should work
+  promise_test: Unhandled rejection with value: object "error1: error1"
+Harness: the test ran to completion.
+

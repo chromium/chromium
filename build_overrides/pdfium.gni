@@ -20,3 +20,7 @@ pdf_use_partition_alloc_override = use_partition_alloc
 
 # Allow to use Skia backend at run time.
 pdf_use_skia_override = true
+
+# Disallow PDFium Fontations support.
+# TODO(crbug.com/pdfium/2107): Enable this.
+pdf_enable_fontations_override = false

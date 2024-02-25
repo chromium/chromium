@@ -28,14 +28,14 @@ class FakeArCore : public ArCore {
   ~FakeArCore() override;
 
   // ArCore implementation.
-  absl::optional<ArCore::InitializeResult> Initialize(
+  std::optional<ArCore::InitializeResult> Initialize(
       base::android::ScopedJavaLocalRef<jobject> application_context,
       const std::unordered_set<device::mojom::XRSessionFeature>&
           required_features,
       const std::unordered_set<device::mojom::XRSessionFeature>&
           optional_features,
       const std::vector<device::mojom::XRTrackedImagePtr>& tracked_images,
-      absl::optional<ArCore::DepthSensingConfiguration> depth_sensing_config)
+      std::optional<ArCore::DepthSensingConfiguration> depth_sensing_config)
       override;
   MinMaxRange GetTargetFramerateRange() override;
   void SetCameraTexture(uint32_t texture) override;
@@ -55,11 +55,11 @@ class FakeArCore : public ArCore {
   bool RequestHitTest(const mojom::XRRayPtr& ray,
                       std::vector<mojom::XRHitResultPtr>* hit_results) override;
 
-  absl::optional<uint64_t> SubscribeToHitTest(
+  std::optional<uint64_t> SubscribeToHitTest(
       mojom::XRNativeOriginInformationPtr nativeOriginInformation,
       const std::vector<mojom::EntityTypeForHitTest>& entity_types,
       mojom::XRRayPtr ray) override;
-  absl::optional<uint64_t> SubscribeToHitTestForTransientInput(
+  std::optional<uint64_t> SubscribeToHitTestForTransientInput(
       const std::string& profile_name,
       const std::vector<mojom::EntityTypeForHitTest>& entity_types,
       mojom::XRRayPtr ray) override;

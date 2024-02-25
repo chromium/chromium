@@ -19,7 +19,7 @@ namespace {
 
 Vector<unsigned> CollectIdentifierHashesFromInnerRule(Document& document,
                                                       String rule_text) {
-  Vector<unsigned> result(4);
+  Vector<unsigned> result;
   const auto* outer_rule = DynamicTo<StyleRuleGroup>(
       css_test_helpers::ParseRule(document, rule_text));
   CHECK(outer_rule);
@@ -35,8 +35,7 @@ Vector<unsigned> CollectIdentifierHashesFromInnerRule(Document& document,
       scope_rule ? &scope_rule->GetStyleScope() : nullptr;
 
   SelectorFilter::CollectIdentifierHashes(*inner_style_rule->FirstSelector(),
-                                          style_scope, result.data(),
-                                          result.size());
+                                          style_scope, result);
   return result;
 }
 
@@ -52,11 +51,9 @@ TEST_F(SelectorFilterTest, CollectHashesScopeSubject) {
     }
   )CSS");
 
-  ASSERT_EQ(4u, hashes.size());
+  ASSERT_EQ(2u, hashes.size());
   EXPECT_NE(0u, hashes[0]);  // .b
   EXPECT_NE(0u, hashes[1]);  // .c
-  EXPECT_EQ(0u, hashes[2]);
-  EXPECT_EQ(0u, hashes[3]);
 }
 
 TEST_F(SelectorFilterTest, CollectHashesScopeNonSubject) {
@@ -69,11 +66,10 @@ TEST_F(SelectorFilterTest, CollectHashesScopeNonSubject) {
     }
   )CSS");
 
-  ASSERT_EQ(4u, hashes.size());
+  ASSERT_EQ(3u, hashes.size());
   EXPECT_NE(0u, hashes[0]);  // .b
   EXPECT_NE(0u, hashes[1]);  // .c
   EXPECT_NE(0u, hashes[2]);  // .a
-  EXPECT_EQ(0u, hashes[3]);
 }
 
 TEST_F(SelectorFilterTest, CollectHashesScopeImplied) {
@@ -87,11 +83,10 @@ TEST_F(SelectorFilterTest, CollectHashesScopeImplied) {
     }
   )CSS");
 
-  ASSERT_EQ(4u, hashes.size());
+  ASSERT_EQ(3u, hashes.size());
   EXPECT_NE(0u, hashes[0]);  // .b
   EXPECT_NE(0u, hashes[1]);  // .c
   EXPECT_NE(0u, hashes[2]);  // .a
-  EXPECT_EQ(0u, hashes[3]);
 }
 
 }  // namespace blink

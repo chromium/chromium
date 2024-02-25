@@ -33,7 +33,7 @@
 #include "build/chromeos_buildflags.h"
 #include "components/mirroring/service/captured_audio_input.h"
 #include "components/mirroring/service/mirroring_features.h"
-#include "components/mirroring/service/udp_socket_client.h"
+#include "components/mirroring/service/rpc_dispatcher_impl.h"
 #include "components/mirroring/service/video_capture_client.h"
 #include "components/openscreen_platform/network_context.h"
 #include "components/openscreen_platform/network_util.h"
@@ -199,8 +199,7 @@ const std::string ToString(const media::VideoCaptureParams& params) {
       static_cast<int>(params.resolution_change_policy));
 }
 
-void RecordRemotePlaybackSessionLoadTime(
-    absl::optional<base::Time> start_time) {
+void RecordRemotePlaybackSessionLoadTime(std::optional<base::Time> start_time) {
   if (!start_time) {
     return;
   }
@@ -379,7 +378,7 @@ void OpenscreenSessionHost::OnNegotiated(
   if (state_ == State::kStopped)
     return;
 
-  absl::optional<FrameSenderConfig> audio_config;
+  std::optional<FrameSenderConfig> audio_config;
   if (last_offered_audio_config_ && senders.audio_sender) {
     base::UmaHistogramEnumeration(
         "CastStreaming.Sender.Audio.NegotiatedCodec",
@@ -389,7 +388,7 @@ void OpenscreenSessionHost::OnNegotiated(
     audio_config = last_offered_audio_config_;
   }
 
-  absl::optional<FrameSenderConfig> video_config;
+  std::optional<FrameSenderConfig> video_config;
   if (senders.video_sender) {
     base::UmaHistogramEnumeration(
         "CastStreaming.Sender.Video.NegotiatedCodec",
@@ -501,9 +500,10 @@ void OpenscreenSessionHost::OnNegotiated(
             &OpenscreenSessionHost::CreateVideoEncodeAccelerator,
             weak_factory_.GetWeakPtr()),
         std::move(senders.video_sender),
-        media::CreateMojoVideoEncoderMetricsProvider(
+        base::MakeRefCounted<media::MojoVideoEncoderMetricsProviderFactory>(
             media::mojom::VideoEncoderUseCase::kCastMirroring,
-            std::move(metrics_provider_pending_remote)),
+            std::move(metrics_provider_pending_remote))
+            ->CreateVideoEncoderMetricsProvider(),
         base::BindRepeating(&OpenscreenSessionHost::SetTargetPlayoutDelay,
                             weak_factory_.GetWeakPtr()),
         base::BindRepeating(&OpenscreenSessionHost::ProcessFeedback,
@@ -846,8 +846,8 @@ void OpenscreenSessionHost::StopSession() {
 
 void OpenscreenSessionHost::SetConstraints(
     const Recommendations& recommendations,
-    absl::optional<FrameSenderConfig>& audio_config,
-    absl::optional<FrameSenderConfig>& video_config) {
+    std::optional<FrameSenderConfig>& audio_config,
+    std::optional<FrameSenderConfig>& video_config) {
   const auto& audio = recommendations.audio;
   const auto& video = recommendations.video;
 
@@ -990,9 +990,9 @@ int OpenscreenSessionHost::GetSuggestedVideoBitrate(int min_bitrate,
 }
 
 void OpenscreenSessionHost::UpdateBandwidthEstimate() {
-  int bandwidth_estimate = forced_bandwidth_estimate_for_testing_ > 0
-                               ? forced_bandwidth_estimate_for_testing_
-                               : session_->GetEstimatedNetworkBandwidth();
+  const int bandwidth_estimate = forced_bandwidth_estimate_for_testing_ > 0
+                                     ? forced_bandwidth_estimate_for_testing_
+                                     : session_->GetEstimatedNetworkBandwidth();
 
   // Nothing to do yet.
   if (bandwidth_estimate <= 0) {
@@ -1038,7 +1038,7 @@ void OpenscreenSessionHost::Negotiate() {
 }
 
 void OpenscreenSessionHost::NegotiateMirroring() {
-  last_offered_audio_config_ = absl::nullopt;
+  last_offered_audio_config_ = std::nullopt;
   last_offered_video_configs_.clear();
   std::vector<openscreen::cast::AudioCaptureConfig> audio_configs;
   std::vector<openscreen::cast::VideoCaptureConfig> video_configs;
@@ -1138,7 +1138,7 @@ void OpenscreenSessionHost::NegotiateRemoting() {
 void OpenscreenSessionHost::InitMediaRemoter(
     const openscreen::cast::RemotingCapabilities& capabilities) {
   rpc_dispatcher_ =
-      std::make_unique<OpenscreenRpcDispatcher>(session_->session_messenger());
+      std::make_unique<RpcDispatcherImpl>(session_->session_messenger());
   media_remoter_ = std::make_unique<MediaRemoter>(
       *this,
       ToRemotingSinkMetadata(capabilities,

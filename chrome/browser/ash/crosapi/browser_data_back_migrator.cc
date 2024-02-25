@@ -5,8 +5,10 @@
 #include "chrome/browser/ash/crosapi/browser_data_back_migrator.h"
 
 #include <errno.h>
+
 #include <memory>
 #include <string>
+#include <string_view>
 
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_switches.h"
@@ -111,6 +113,9 @@ void BrowserDataBackMigrator::Migrate(
           local_state_, user_id_hash_);
   browser_data_back_migrator_metrics::RecordBackwardMigrationTimeDelta(
       forward_migration_completion_time);
+  browser_data_back_migrator_metrics::
+      RecordBackwardMigrationPrecededByForwardMigration(
+          forward_migration_completion_time);
   crosapi::browser_util::ClearProfileMigrationCompletionTimeForUser(
       local_state_, user_id_hash_);
 
@@ -863,7 +868,7 @@ bool BrowserDataBackMigrator::MergePreferences(
   }
 
   // Parse the Ash JSON file.
-  absl::optional<base::Value> ash_root = base::JSONReader::Read(ash_contents);
+  std::optional<base::Value> ash_root = base::JSONReader::Read(ash_contents);
   if (!ash_root) {
     PLOG(ERROR) << "Failure while parsing Ash's Preferences";
     return false;
@@ -883,7 +888,7 @@ bool BrowserDataBackMigrator::MergePreferences(
   }
 
   // Parse the Lacros JSON file.
-  absl::optional<base::Value> lacros_root =
+  std::optional<base::Value> lacros_root =
       base::JSONReader::Read(lacros_contents);
   if (!lacros_root) {
     PLOG(ERROR) << "Failure while parsing Lacros's Preferences";
@@ -914,7 +919,7 @@ bool BrowserDataBackMigrator::MergePreferences(
     } else {
       if (lacros_value->is_dict() && ash_value->is_dict()) {
         for (const auto entry : lacros_value->GetDict()) {
-          const base::StringPiece extension_id = entry.first;
+          const std::string_view extension_id = entry.first;
           if (IsLacrosOnlyExtension(extension_id)) {
             ash_value->GetDict().Set(extension_id, entry.second.Clone());
           }
@@ -924,7 +929,7 @@ bool BrowserDataBackMigrator::MergePreferences(
           if (!item.is_string())
             return false;
 
-          const base::StringPiece extension_id = item.GetString();
+          const std::string_view extension_id = item.GetString();
           return IsLacrosOnlyExtension(extension_id);
         });
 
@@ -1021,7 +1026,7 @@ bool BrowserDataBackMigrator::MergeLacrosPreferences(
 
 // static
 bool BrowserDataBackMigrator::IsLacrosOnlyExtension(
-    const base::StringPiece extension_id) {
+    const std::string_view extension_id) {
   return !base::Contains(browser_data_migrator_util::kExtensionsAshOnly,
                          extension_id) &&
          !base::Contains(
@@ -1273,8 +1278,8 @@ bool BrowserDataBackMigrator::IsBackMigrationEnabled(
       crosapi::browser_util::LacrosDataBackwardMigrationMode::kNone;
   if (policy_init_state ==
       crosapi::browser_util::PolicyInitState::kBeforeInit) {
-    absl::optional<crosapi::browser_util::LacrosDataBackwardMigrationMode>
-        parsed = absl::nullopt;
+    std::optional<crosapi::browser_util::LacrosDataBackwardMigrationMode>
+        parsed = std::nullopt;
 
     if (base::CommandLine::ForCurrentProcess()->HasSwitch(
             crosapi::browser_util::
@@ -1338,6 +1343,20 @@ bool BrowserDataBackMigrator::ShouldMigrateBack(
 
     if (!user) {
       VLOG(1) << "Failed to find user, not triggering backward migration";
+      return false;
+    }
+
+    // Backward migration should not run for secondary users.
+    const auto* primary_user =
+        user_manager::UserManager::Get()->GetPrimaryUser();
+    // `ShouldMigrateBack()` is called from `MaybeRestartToMigrateBack()`, which
+    // is called either before or after profile initialization. In the former
+    // case it is called from `PreProfileInit()` and this is only called for the
+    // primary profile so we can assume that the user is the primary user if
+    // `primary_user == nullptr`. If primary_user is not null then we check if
+    // `user != primary_user`.
+    if (primary_user && (user != primary_user)) {
+      VLOG(1) << "Skip backward migration for secondary users.";
       return false;
     }
 

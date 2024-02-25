@@ -2,8 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {Action, DeferredAction, Store} from '//resources/js/store_ts.js';
-import {dedupingMixin, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import type {Action, DeferredAction, Store} from '//resources/js/store.js';
+import type {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {dedupingMixin} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 /**
  * @fileoverview defines a helper function `makeStoreClientMixin` to create a
@@ -61,11 +62,6 @@ export interface StoreClientInterface<S, A extends Action> {
   getStore(): Store<S, A>;
 }
 
-export interface PropertyWatch<S, V> {
-  localProperty: string;
-  valueGetter: (state: S) => V | undefined;
-}
-
 type Constructor<T> = new (...args: any[]) => T;
 
 /**
@@ -91,8 +87,7 @@ export function makeStoreClientMixin<S, A extends Action>(
       superClass: T): T&Constructor<StoreClientInterface<S, A>> {
     class StoreClientMixin extends superClass implements
         StoreClientInterface<S, A> {
-      // TODO(b/296282547) guard for duplicate property watches.
-      private propertyWatches_: Array<PropertyWatch<S, any>> = [];
+      private propertyWatches_: Map<string, ValueGetter<S, any>> = new Map();
 
       override connectedCallback() {
         super.connectedCallback();
@@ -116,16 +111,14 @@ export function makeStoreClientMixin<S, A extends Action>(
         // Collect all changes and batch them together. This reduces visual
         // churn on the polymer component if a single store change results in
         // multiple polymer properties changing.
-        const changes = this.propertyWatches_.reduce(
-            (result: Record<string, any>, {localProperty, valueGetter}) => {
-              const oldValue = this.get(localProperty);
-              const newValue = valueGetter(state);
-              if (newValue !== oldValue && newValue !== undefined) {
-                result[localProperty] = newValue;
-              }
-              return result;
-            },
-            {});
+        const changes: Record<string, any> = {};
+        for (const [localProperty, valueGetter] of this.propertyWatches_) {
+          const oldValue = this.get(localProperty);
+          const newValue = valueGetter(state);
+          if (newValue !== oldValue && newValue !== undefined) {
+            changes[localProperty] = newValue;
+          }
+        }
         this.setProperties(changes);
       }
 
@@ -137,9 +130,11 @@ export function makeStoreClientMixin<S, A extends Action>(
         }
       }
 
-      watch<V>(localProperty: string, valueGetter: (state: S) => V | undefined):
-          void {
-        this.propertyWatches_.push({localProperty, valueGetter});
+      watch<V>(localProperty: string, valueGetter: ValueGetter<S, V>) {
+        if (this.propertyWatches_.has(localProperty)) {
+          console.warn(`Overwriting watch for property ${localProperty}`);
+        }
+        this.propertyWatches_.set(localProperty, valueGetter);
       }
 
       getState(): S {

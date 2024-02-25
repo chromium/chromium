@@ -1,0 +1,21 @@
+[
+  {
+    "os": [
+      "win",
+      "mac"
+    ],
+    "policy_pref_mapping_tests": [
+      {
+        "policies": {
+          "TotalMemoryLimitMb": 2048
+        },
+        "prefs": {
+          "total_memory_limit_mb": {
+            "location": "local_state",
+            "value": 2048
+          }
+        }
+      }
+    ]
+  }
+]

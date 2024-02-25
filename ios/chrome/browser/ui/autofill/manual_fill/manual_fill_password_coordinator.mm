@@ -6,14 +6,14 @@
 
 #import "base/apple/foundation_util.h"
 #import "components/keyed_service/core/service_access_type.h"
-#import "components/password_manager/core/browser/password_store_interface.h"
-#import "ios/chrome/browser/favicon/favicon_loader.h"
-#import "ios/chrome/browser/favicon/ios_chrome_favicon_loader_factory.h"
-#import "ios/chrome/browser/passwords/ios_chrome_account_password_store_factory.h"
-#import "ios/chrome/browser/passwords/ios_chrome_password_store_factory.h"
+#import "components/password_manager/core/browser/password_store/password_store_interface.h"
+#import "ios/chrome/browser/favicon/model/favicon_loader.h"
+#import "ios/chrome/browser/favicon/model/ios_chrome_favicon_loader_factory.h"
+#import "ios/chrome/browser/passwords/model/ios_chrome_account_password_store_factory.h"
+#import "ios/chrome/browser/passwords/model/ios_chrome_profile_password_store_factory.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
-#import "ios/chrome/browser/sync/sync_setup_service_factory.h"
+#import "ios/chrome/browser/sync/model/sync_service_factory.h"
 #import "ios/chrome/browser/ui/autofill/manual_fill/manual_fill_injection_handler.h"
 #import "ios/chrome/browser/ui/autofill/manual_fill/manual_fill_password_mediator.h"
 #import "ios/chrome/browser/ui/autofill/manual_fill/password_list_navigator.h"
@@ -42,12 +42,14 @@
 // extends FallbackCoordinatorDelegate)
 @dynamic delegate;
 
-- (instancetype)initWithBaseViewController:(UIViewController*)viewController
-                                   browser:(Browser*)browser
-                                       URL:(const GURL&)URL
-                          injectionHandler:
-                              (ManualFillInjectionHandler*)injectionHandler
-                    invokedOnPasswordField:(BOOL)invokedOnPasswordField {
+- (instancetype)
+    initWithBaseViewController:(UIViewController*)viewController
+                       browser:(Browser*)browser
+                           URL:(const GURL&)URL
+              injectionHandler:(ManualFillInjectionHandler*)injectionHandler
+      invokedOnObfuscatedField:(BOOL)invokedOnObfuscatedField
+                        formID:(const autofill::FormRendererId)formID
+                       frameID:(const std::string&)frameID {
   self = [super initWithBaseViewController:viewController
                                    browser:browser
                           injectionHandler:injectionHandler];
@@ -55,28 +57,19 @@
     _passwordViewController =
         [[PasswordViewController alloc] initWithSearchController:nil];
 
-    auto profilePasswordStore =
-        IOSChromePasswordStoreFactory::GetForBrowserState(
-            browser->GetBrowserState(), ServiceAccessType::EXPLICIT_ACCESS);
-    auto accountPasswordStore =
-        IOSChromeAccountPasswordStoreFactory::GetForBrowserState(
-            browser->GetBrowserState(), ServiceAccessType::EXPLICIT_ACCESS);
     FaviconLoader* faviconLoader =
         IOSChromeFaviconLoaderFactory::GetForBrowserState(
             browser->GetBrowserState());
-    SyncSetupService* syncService = SyncSetupServiceFactory::GetForBrowserState(
-        self.browser->GetBrowserState());
+    syncer::SyncService* syncService =
+        SyncServiceFactory::GetForBrowserState(self.browser->GetBrowserState());
 
     _passwordMediator = [[ManualFillPasswordMediator alloc]
-        initWithProfilePasswordStore:profilePasswordStore
-                accountPasswordStore:accountPasswordStore
-                       faviconLoader:faviconLoader
-                            webState:browser->GetWebStateList()
-                                         ->GetActiveWebState()
-                         syncService:syncService
-                                 URL:URL
-              invokedOnPasswordField:invokedOnPasswordField];
-    [_passwordMediator fetchPasswords];
+           initWithFaviconLoader:faviconLoader
+                        webState:browser->GetWebStateList()->GetActiveWebState()
+                     syncService:syncService
+                             URL:URL
+        invokedOnObfuscatedField:invokedOnObfuscatedField];
+    [_passwordMediator fetchPasswordsForForm:formID frame:frameID];
     _passwordMediator.actionSectionEnabled = YES;
     _passwordMediator.consumer = _passwordViewController;
     _passwordMediator.navigator = self;
@@ -91,6 +84,10 @@
   [super stop];
   [self.activeChildCoordinator stop];
   [self.childCoordinators removeAllObjects];
+
+  [_passwordMediator disconnect];
+  _passwordMediator.consumer = nil;
+  _passwordMediator = nil;
 }
 
 - (void)presentFromButton:(UIButton*)button {

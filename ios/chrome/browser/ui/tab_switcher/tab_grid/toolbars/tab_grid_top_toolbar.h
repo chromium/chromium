@@ -11,7 +11,7 @@
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/tab_grid_paging.h"
 
 @class TabGridPageControl;
-@protocol TabGridToolbarsButtonsDelegate;
+@protocol TabGridToolbarsGridDelegate;
 
 // Top toolbar for TabGrid. The appearance of the toolbar is decided by screen
 // size, current TabGrid page and mode:
@@ -38,8 +38,8 @@
 // selection mode. It will be used to update the buttons to use the correct
 // title (singular or plural).
 @property(nonatomic, assign) int selectedTabsCount;
-// Delegate to call when a button is pushed.
-@property(nonatomic, weak) id<TabGridToolbarsButtonsDelegate> buttonsDelegate;
+// Delegate to call when a button is tapped.
+@property(nonatomic, weak) id<TabGridToolbarsGridDelegate> buttonsDelegate;
 
 // Sets the delegate for the searchbar.
 - (void)setSearchBarDelegate:(id<UISearchBarDelegate>)delegate;

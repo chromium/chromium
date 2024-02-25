@@ -62,7 +62,7 @@ public class org.chromium.net.ConnectionMigrationOptions$Builder {
 }
 public interface org.chromium.net.ConnectionMigrationOptions$Experimental extends java.lang.annotation.Annotation {
 }
-public class org.chromium.net.ConnectionMigrationOptions {
+public final class org.chromium.net.ConnectionMigrationOptions {
   public java.lang.Boolean getEnableDefaultNetworkMigration();
   public java.lang.Boolean getEnablePathDegradationMigration();
   public java.lang.Boolean getAllowServerMigration();
@@ -73,7 +73,6 @@ public class org.chromium.net.ConnectionMigrationOptions {
   public java.lang.Long getMaxTimeOnNonDefaultNetworkSeconds();
   public java.lang.Integer getMaxWriteErrorEagerMigrationsCount();
   public java.lang.Integer getMaxPathDegradingEagerMigrationsCount();
-  public org.chromium.net.ConnectionMigrationOptions(org.chromium.net.ConnectionMigrationOptions$Builder);
   public static org.chromium.net.ConnectionMigrationOptions$Builder builder();
 }
 public abstract class org.chromium.net.CronetEngine$Builder$LibraryLoader {
@@ -108,6 +107,7 @@ public class org.chromium.net.CronetEngine$Builder {
   public org.chromium.net.CronetEngine$Builder setDnsOptions(org.chromium.net.DnsOptions$Builder);
   public org.chromium.net.CronetEngine$Builder setConnectionMigrationOptions(org.chromium.net.ConnectionMigrationOptions);
   public org.chromium.net.CronetEngine$Builder setConnectionMigrationOptions(org.chromium.net.ConnectionMigrationOptions$Builder);
+  protected org.chromium.net.ExperimentalCronetEngine buildExperimental();
   public org.chromium.net.CronetEngine build();
 }
 public abstract class org.chromium.net.CronetEngine {
@@ -177,7 +177,7 @@ public final class org.chromium.net.DnsOptions$StaleDnsOptions$Builder {
   public org.chromium.net.DnsOptions$StaleDnsOptions$Builder setFreshLookupTimeoutMillis(long);
   public org.chromium.net.DnsOptions$StaleDnsOptions$Builder setFreshLookupTimeout(java.time.Duration);
   public org.chromium.net.DnsOptions$StaleDnsOptions$Builder setMaxExpiredDelayMillis(long);
-  public org.chromium.net.DnsOptions$StaleDnsOptions$Builder setMaxExpiredDelayMillis(java.time.Duration);
+  public org.chromium.net.DnsOptions$StaleDnsOptions$Builder setMaxExpiredDelay(java.time.Duration);
   public org.chromium.net.DnsOptions$StaleDnsOptions$Builder allowCrossNetworkUsage(boolean);
   public org.chromium.net.DnsOptions$StaleDnsOptions$Builder useStaleOnNameNotResolved(boolean);
   public org.chromium.net.DnsOptions$StaleDnsOptions build();
@@ -332,6 +332,7 @@ public abstract class org.chromium.net.ICronetEngineBuilder {
   protected java.util.Set<java.lang.Integer> getSupportedConfigOptions();
   public org.chromium.net.ICronetEngineBuilder enableNetworkQualityEstimator(boolean);
   public org.chromium.net.ICronetEngineBuilder setThreadPriority(int);
+  protected long getLogCronetInitializationRef();
 }
 public final class org.chromium.net.InlineExecutionProhibitedException extends java.util.concurrent.RejectedExecutionException {
   public org.chromium.net.InlineExecutionProhibitedException();
@@ -379,6 +380,7 @@ public class org.chromium.net.QuicOptions$Builder {
   public org.chromium.net.QuicOptions$Builder setPreCryptoHandshakeIdleTimeoutSeconds(long);
   public org.chromium.net.QuicOptions$Builder setCryptoHandshakeTimeoutSeconds(long);
   public org.chromium.net.QuicOptions$Builder setIdleConnectionTimeoutSeconds(long);
+  public org.chromium.net.QuicOptions$Builder setIdleConnectionTimeout(java.time.Duration);
   public org.chromium.net.QuicOptions$Builder setRetransmittableOnWireTimeoutMillis(long);
   public org.chromium.net.QuicOptions$Builder closeSessionsOnIpChange(boolean);
   public org.chromium.net.QuicOptions$Builder goawaySessionsOnIpChange(boolean);
@@ -392,7 +394,7 @@ public interface org.chromium.net.QuicOptions$Experimental extends java.lang.ann
 }
 public interface org.chromium.net.QuicOptions$QuichePassthroughOption extends java.lang.annotation.Annotation {
 }
-public class org.chromium.net.QuicOptions {
+public final class org.chromium.net.QuicOptions {
   public java.util.Set<java.lang.String> getQuicHostAllowlist();
   public java.util.Set<java.lang.String> getEnabledQuicVersions();
   public java.util.Set<java.lang.String> getConnectionOptions();
@@ -632,4 +634,4 @@ public class org.chromium.net.apihelpers.UrlRequestCallbacks {
   public static org.chromium.net.apihelpers.JsonCronetCallback forJsonBody(org.chromium.net.apihelpers.RedirectHandler, org.chromium.net.apihelpers.CronetRequestCompletionListener<org.json.JSONObject>);
   public static org.chromium.net.apihelpers.UrlRequestCallbacks$CallbackAndResponseFuturePair<org.json.JSONObject, org.chromium.net.apihelpers.JsonCronetCallback> forJsonBody(org.chromium.net.apihelpers.RedirectHandler);
 }
-Stamp: f464da74f2717f8584d782e27e9e6868
+Stamp: cfd272ad8510d246ce07e5f12c4caa92

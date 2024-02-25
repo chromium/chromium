@@ -1,0 +1,29 @@
+[
+  {
+    "os": [
+      "chromeos_ash"
+    ],
+    "policy_pref_mapping_tests": [
+      {
+        "policies": {
+          "PhysicalKeyboardAutocorrect": true
+        },
+        "prefs": {
+          "settings.ime.managed.physical_keyboard.autocorrect_enabled": {
+            "value": true
+          }
+        }
+      },
+      {
+        "policies": {
+          "PhysicalKeyboardAutocorrect": false
+        },
+        "prefs": {
+          "settings.ime.managed.physical_keyboard.autocorrect_enabled": {
+            "value": false
+          }
+        }
+      }
+    ]
+  }
+]

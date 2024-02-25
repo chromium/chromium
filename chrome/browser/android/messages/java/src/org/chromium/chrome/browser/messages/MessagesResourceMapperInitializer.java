@@ -4,7 +4,7 @@
 
 package org.chromium.chrome.browser.messages;
 
-import org.chromium.base.annotations.NativeMethods;
+import org.jni_zero.NativeMethods;
 
 /** Helper class to initialize ResourceIdMapper for MessageDispatcherBridge. */
 public class MessagesResourceMapperInitializer {

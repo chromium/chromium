@@ -7,12 +7,15 @@
 #import "components/metrics/metrics_pref_names.h"
 #import "components/metrics/metrics_reporting_default_state.h"
 #import "components/prefs/pref_service.h"
+#import "components/sync/service/sync_service.h"
+#import "components/sync/service/sync_user_settings.h"
 #import "ios/chrome/app/main_controller.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_controller.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_controller_testing.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
-#import "ios/chrome/browser/sync/sync_setup_service.h"
-#import "ios/chrome/browser/sync/sync_setup_service_factory.h"
+#import "ios/chrome/browser/shared/public/features/features.h"
+#import "ios/chrome/browser/sync/model/sync_service_factory.h"
+#import "ios/chrome/browser/ui/first_run/omnibox_position/omnibox_position_choice_util.h"
 #import "ios/chrome/test/app/chrome_test_util.h"
 
 @implementation FirstRunAppInterface
@@ -34,9 +37,16 @@
 }
 
 + (BOOL)isInitialSyncFeatureSetupComplete {
-  return SyncSetupServiceFactory::GetForBrowserState(
+  return SyncServiceFactory::GetForBrowserState(
              chrome_test_util::GetOriginalBrowserState())
+      ->GetUserSettings()
       ->IsInitialSyncFeatureSetupComplete();
+}
+
++ (BOOL)isOmniboxPositionChoiceEnabled {
+  return IsBottomOmniboxPromoFlagEnabled(BottomOmniboxPromoType::kFRE) &&
+         ShouldShowOmniboxPositionChoiceInFRE(
+             chrome_test_util::GetOriginalBrowserState());
 }
 
 @end

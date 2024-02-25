@@ -12,6 +12,10 @@ namespace base {
 class TimeTicks;
 }  // namespace base
 
+namespace gfx {
+struct VectorIcon;
+}  // namespace gfx
+
 namespace ash {
 
 // This delegate is a singleton used by the
@@ -49,6 +53,17 @@ class ASH_PUBLIC_EXPORT NearbyShareDelegate {
   // Open the settings page for Nearby Share, Used when the user clicks on the
   // label under the pod button.
   virtual void ShowNearbyShareSettings() const = 0;
+
+  // Returns the icon for Nearby Share. Used by the pod button to
+  // display the icon, where `on_icon`=false will return the alternative icon
+  // for when the feature is off. Caller should check if the icon is_empty
+  // before using.
+  virtual const gfx::VectorIcon& GetIcon(bool on_icon) const = 0;
+
+  // Returns the feature name which will be used in feature name placeholder
+  // strings, or the empty string if on a non-chrome branded build or the
+  // feature flag is disabled.
+  virtual std::u16string GetPlaceholderFeatureName() const = 0;
 };
 
 }  // namespace ash

@@ -61,7 +61,7 @@ class DOMFileSystemCallbacksSyncHelper final
       return nullptr;
     }
 
-    return result_;
+    return result_.Get();
   }
 
  private:

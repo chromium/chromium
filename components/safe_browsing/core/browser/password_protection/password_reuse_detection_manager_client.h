@@ -47,8 +47,9 @@ class PasswordReuseDetectionManagerClient {
   virtual password_manager::PasswordReuseManager* GetPasswordReuseManager()
       const = 0;
 
-  // Checks if |username| matches sync account.
-  virtual bool IsSyncAccountEmail(const std::string& username) = 0;
+  // Checks if |username| matches sync account, and the history sync datatype is
+  // enabled.
+  virtual bool IsHistorySyncAccountEmail(const std::string& username) = 0;
 
   // Checks if password field detected on page.
   virtual bool IsPasswordFieldDetectedOnPage() = 0;

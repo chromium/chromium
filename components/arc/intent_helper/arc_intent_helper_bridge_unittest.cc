@@ -5,6 +5,7 @@
 #include "components/arc/intent_helper/arc_intent_helper_bridge.h"
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <utility>
 #include <vector>
@@ -21,7 +22,6 @@
 #include "mojo/public/cpp/bindings/clone_traits.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace arc {
 
@@ -172,7 +172,7 @@ TEST_F(ArcIntentHelperTest, TestObserver) {
    public:
     MOCK_METHOD(void,
                 OnIntentFiltersUpdated,
-                (const absl::optional<std::string>& package_name),
+                (const std::optional<std::string>& package_name),
                 (override));
     MOCK_METHOD(void,
                 OnArcSupportedLinksChanged,
@@ -190,7 +190,7 @@ TEST_F(ArcIntentHelperTest, TestObserver) {
 
   {
     // Observer should be called when an intent filter is updated.
-    EXPECT_CALL(observer, OnIntentFiltersUpdated(testing::Eq(absl::nullopt)));
+    EXPECT_CALL(observer, OnIntentFiltersUpdated(testing::Eq(std::nullopt)));
     instance_->OnIntentFiltersUpdated(/*filters=*/std::vector<IntentFilter>());
     testing::Mock::VerifyAndClearExpectations(&observer);
   }

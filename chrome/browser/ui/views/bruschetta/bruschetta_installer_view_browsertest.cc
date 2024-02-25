@@ -101,7 +101,7 @@ class BruschettaInstallerViewBrowserTest : public DialogBrowserTest {
         }));
   }
 
-  raw_ptr<BruschettaInstallerView, ExperimentalAsh> view_;
+  raw_ptr<BruschettaInstallerView, DanglingUntriaged> view_;
   std::unique_ptr<bruschetta::BruschettaInstallerMock> installer_;
 };
 

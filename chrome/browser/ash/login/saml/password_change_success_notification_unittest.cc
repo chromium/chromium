@@ -21,7 +21,7 @@ inline std::u16string utf16(const char* ascii) {
 
 class PasswordChangeSuccessNotificationTest : public testing::Test {
  protected:
-  absl::optional<Notification> Notification() {
+  std::optional<Notification> Notification() {
     return NotificationDisplayServiceTester::Get()->GetNotification(
         "saml.password-change-success-notification");
   }

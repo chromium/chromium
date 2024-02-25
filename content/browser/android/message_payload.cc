@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 #include "content/public/browser/android/message_payload.h"
 
+#include <optional>
 #include <string>
 #include <utility>
 
@@ -14,7 +15,6 @@
 #include "base/functional/overloaded.h"
 #include "base/notreached.h"
 #include "content/public/android/content_jni_headers/MessagePayloadJni_jni.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
 #include "third_party/blink/public/common/messaging/string_message_codec.h"
 #include "third_party/blink/public/common/messaging/transferable_message.h"
@@ -40,9 +40,9 @@ class JavaArrayBuffer : public blink::WebMessageArrayBufferPayload {
 
   // Due to JNI limitation, Java ByteArray cannot be converted into base::span
   // trivially.
-  absl::optional<base::span<const uint8_t>> GetAsSpanIfPossible()
+  std::optional<base::span<const uint8_t>> GetAsSpanIfPossible()
       const override {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   void CopyInto(base::span<uint8_t> dest) const override {

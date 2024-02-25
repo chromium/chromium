@@ -14,7 +14,7 @@ BoundSessionTestCookieManager::~BoundSessionTestCookieManager() = default;
 net::CanonicalCookie BoundSessionTestCookieManager::CreateCookie(
     const GURL& url,
     const std::string& cookie_name,
-    absl::optional<base::Time> expiry_date) {
+    std::optional<base::Time> expiry_date) {
   base::Time expiration_time =
       expiry_date.value_or(base::Time::Now() + base::Minutes(10));
   return *net::CanonicalCookie::CreateSanitizedCookie(
@@ -24,7 +24,25 @@ net::CanonicalCookie BoundSessionTestCookieManager::CreateCookie(
       /*last_access_time=*/base::Time::Now(), /*secure=*/true,
       /*http_only=*/true, net::CookieSameSite::UNSPECIFIED,
       net::CookiePriority::COOKIE_PRIORITY_HIGH,
-      /*same_party=*/true, /*partition_key=*/absl::nullopt);
+      /*partition_key=*/std::nullopt);
+}
+
+size_t BoundSessionTestCookieManager::GetNumberOfDeleteCookiesCallbacks() {
+  return delete_cookies_callbacks_.size();
+}
+
+void BoundSessionTestCookieManager::RunDeleteCookiesCallback() {
+  std::vector<DeleteCookiesCallback> callbacks;
+  delete_cookies_callbacks_.swap(callbacks);
+  for (auto& callback : callbacks) {
+    const uint32_t kNumDeletedIgnored = 0;
+    std::move(callback).Run(kNumDeletedIgnored);
+  }
+}
+
+std::vector<network::mojom::CookieDeletionFilterPtr>
+BoundSessionTestCookieManager::TakeCookieDeletionFilters() {
+  return std::move(cookie_deletion_filters_);
 }
 
 void BoundSessionTestCookieManager::SetCanonicalCookie(
@@ -54,7 +72,7 @@ void BoundSessionTestCookieManager::GetCookieList(
 
 void BoundSessionTestCookieManager::AddCookieChangeListener(
     const GURL& url,
-    const absl::optional<std::string>& name,
+    const std::optional<std::string>& name,
     mojo::PendingRemote<network::mojom::CookieChangeListener> listener) {
   mojo::Remote<network::mojom::CookieChangeListener> listener_remote(
       std::move(listener));
@@ -69,4 +87,11 @@ void BoundSessionTestCookieManager::DispatchCookieChange(
     return;
   }
   cookie_to_listener_[change.cookie.Name()]->OnCookieChange(change);
+}
+
+void BoundSessionTestCookieManager::DeleteCookies(
+    network::mojom::CookieDeletionFilterPtr filter,
+    DeleteCookiesCallback callback) {
+  cookie_deletion_filters_.push_back(std::move(filter));
+  delete_cookies_callbacks_.push_back(std::move(callback));
 }

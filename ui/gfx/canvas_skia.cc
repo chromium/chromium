@@ -7,6 +7,7 @@
 #include <stdint.h>
 
 #include <memory>
+#include <utility>
 
 #include "build/build_config.h"
 #include "cc/paint/paint_canvas.h"
@@ -131,7 +132,7 @@ void Canvas::SizeStringFloat(const std::u16string& text,
     float w = 0;
     for (size_t i = 0; i < strings.size(); ++i) {
       StripAcceleratorChars(flags, &strings[i]);
-      render_text->SetText(strings[i]);
+      render_text->SetText(std::move(strings[i]));
       const SizeF& string_size = render_text->GetStringSizeF();
       w = std::max(w, string_size.width());
       h += (i > 0 && line_height > 0) ?

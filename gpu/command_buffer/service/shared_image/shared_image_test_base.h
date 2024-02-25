@@ -7,11 +7,14 @@
 
 #include <vector>
 
+#include "gpu/command_buffer/service/feature_info.h"
 #include "gpu/command_buffer/service/shared_context_state.h"
 #include "gpu/command_buffer/service/shared_image/shared_image_backing_factory.h"
 #include "gpu/command_buffer/service/shared_image/shared_image_factory.h"
 #include "gpu/command_buffer/service/shared_image/shared_image_manager.h"
+#include "gpu/command_buffer/service/texture_manager.h"
 #include "gpu/config/gpu_driver_bug_workarounds.h"
+#include "gpu/config/gpu_feature_info.h"
 #include "gpu/config/gpu_preferences.h"
 #include "gpu/vulkan/buildflags.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -81,6 +84,10 @@ class SharedImageTestBase : public testing::Test {
   std::unique_ptr<viz::MetalContextProvider> metal_context_provider_;
 #endif
 #if BUILDFLAG(SKIA_USE_DAWN)
+  // Subclass can customize this method to configure a specific Dawn backend
+  // when InitializeContext()
+  virtual wgpu::BackendType GetDawnBackendType() const;
+  virtual bool DawnForceFallbackAdapter() const;
   std::unique_ptr<DawnContextProvider> dawn_context_provider_;
 #endif
 

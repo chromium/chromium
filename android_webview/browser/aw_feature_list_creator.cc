@@ -52,6 +52,8 @@
 #include "components/variations/pref_names.h"
 #include "components/variations/service/safe_seed_manager.h"
 #include "components/variations/service/variations_service.h"
+#include "components/variations/synthetic_trial_registry.h"
+#include "components/variations/variations_safe_seed_store_local_state.h"
 #include "components/variations/variations_switches.h"
 #include "content/public/common/content_switch_dependent_feature_overrides.h"
 #include "net/base/features.h"
@@ -101,14 +103,6 @@ const char* const kPersistentPrefsAllowlist[] = {
     // determine if the seed is expired.
     variations::prefs::kVariationsLastFetchTime,
     variations::prefs::kVariationsSeedDate,
-
-    // A dictionary that caches 'AppPackageNameLoggingRule' object which decides
-    // whether the app package name should be recorded in UMA or not.
-    prefs::kMetricsAppPackageNameLoggingRule,
-
-    // The last time the apps package name allowlist was queried from the
-    // component update service, regardless if it was successful or not.
-    prefs::kAppPackageNameLoggingRuleLastUpdateTime,
 
     // The state of the previous background tracing session.
     tracing::kBackgroundTracingSessionState,
@@ -226,7 +220,7 @@ void AwFeatureListCreator::SetUpFieldTrials() {
     // than base::Time::Now() because we want to compute seed freshness based on
     // the initial download time, which happened in the service at some earlier
     // point.
-    seed_date = base::Time::FromJavaTime(seed_proto->date());
+    seed_date = base::Time::FromMillisecondsSinceUnixEpoch(seed_proto->date());
 
     seed = std::make_unique<variations::SeedResponse>();
     seed->data = seed_proto->seed_data();
@@ -240,6 +234,8 @@ void AwFeatureListCreator::SetUpFieldTrials() {
   auto seed_store = std::make_unique<variations::VariationsSeedStore>(
       local_state_.get(), /*initial_seed=*/std::move(seed),
       /*signature_verification_enabled=*/g_signature_verification_enabled,
+      std::make_unique<variations::VariationsSafeSeedStoreLocalState>(
+          local_state_.get()),
       /*use_first_run_prefs=*/false);
 
   if (!seed_date.is_null())
@@ -248,7 +244,9 @@ void AwFeatureListCreator::SetUpFieldTrials() {
   variations::UIStringOverrider ui_string_overrider;
   variations_field_trial_creator_ =
       std::make_unique<variations::VariationsFieldTrialCreator>(
-          client_.get(), std::move(seed_store), ui_string_overrider);
+          client_.get(), std::move(seed_store), ui_string_overrider,
+          // Limited entropy field trials are not supported on WebView.
+          /*limited_entropy_synthetic_trial=*/nullptr);
   variations_field_trial_creator_->OverrideVariationsPlatform(
       variations::Study::PLATFORM_ANDROID_WEBVIEW);
 
@@ -260,6 +258,11 @@ void AwFeatureListCreator::SetUpFieldTrials() {
   // which itself doesn't support variations; therefore a bad seed shouldn't be
   // able to break seed downloads. See https://crbug.com/801771 for more info.
   variations::SafeSeedManager ignored_safe_seed_manager(local_state_.get());
+
+  base::Time fetchTime =
+      variations_field_trial_creator_->CalculateSeedFreshness();
+  long seedFreshnessMinutes = (base::Time::Now() - fetchTime).InMinutes();
+  CacheSeedFreshness(seedFreshnessMinutes);
 
   auto feature_list = std::make_unique<base::FeatureList>();
   std::vector<std::string> variation_ids =
@@ -280,7 +283,8 @@ void AwFeatureListCreator::SetUpFieldTrials() {
           variations::switches::kForceVariationIds),
       GetSwitchDependentFeatureOverrides(*command_line),
       std::move(feature_list), metrics_client->metrics_state_manager(),
-      aw_field_trials_.get(), &ignored_safe_seed_manager,
+      metrics_client->GetSyntheticTrialRegistry(), aw_field_trials_.get(),
+      &ignored_safe_seed_manager,
       /*add_entropy_source_to_variations_ids=*/false);
 }
 

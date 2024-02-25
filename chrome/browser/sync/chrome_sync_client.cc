@@ -5,7 +5,6 @@
 #include "chrome/browser/sync/chrome_sync_client.h"
 
 #include <memory>
-#include <string>
 #include <utility>
 
 #include "base/feature_list.h"
@@ -13,6 +12,7 @@
 #include "base/functional/bind.h"
 #include "base/path_service.h"
 #include "base/syslog_logging.h"
+#include "base/task/sequenced_task_runner.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/consent_auditor/consent_auditor_factory.h"
@@ -22,7 +22,7 @@
 #include "chrome/browser/password_manager/account_password_store_factory.h"
 #include "chrome/browser/password_manager/password_receiver_service_factory.h"
 #include "chrome/browser/password_manager/password_sender_service_factory.h"
-#include "chrome/browser/password_manager/password_store_factory.h"
+#include "chrome/browser/password_manager/profile_password_store_factory.h"
 #include "chrome/browser/power_bookmarks/power_bookmark_service_factory.h"
 #include "chrome/browser/prefs/pref_service_syncable_util.h"
 #include "chrome/browser/profiles/profile.h"
@@ -34,8 +34,9 @@
 #include "chrome/browser/sharing/sharing_message_bridge_factory.h"
 #include "chrome/browser/sharing/sharing_message_model_type_controller.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
-#include "chrome/browser/sync/bookmark_sync_service_factory.h"
+#include "chrome/browser/sync/account_bookmark_sync_service_factory.h"
 #include "chrome/browser/sync/device_info_sync_service_factory.h"
+#include "chrome/browser/sync/local_or_syncable_bookmark_sync_service_factory.h"
 #include "chrome/browser/sync/model_type_store_service_factory.h"
 #include "chrome/browser/sync/send_tab_to_self_sync_service_factory.h"
 #include "chrome/browser/sync/session_sync_service_factory.h"
@@ -57,7 +58,7 @@
 #include "components/desks_storage/core/desk_sync_service.h"
 #include "components/history/core/browser/history_service.h"
 #include "components/metrics/demographics/user_demographics.h"
-#include "components/password_manager/core/browser/password_store_interface.h"
+#include "components/password_manager/core/browser/password_store/password_store_interface.h"
 #include "components/password_manager/core/browser/sharing/password_receiver_service.h"
 #include "components/password_manager/core/browser/sharing/password_sender_service.h"
 #include "components/prefs/pref_service.h"
@@ -82,7 +83,6 @@
 #include "components/sync_user_events/user_event_service.h"
 #include "components/trusted_vault/trusted_vault_service.h"
 #include "components/variations/service/google_groups_updater_service.h"
-#include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "extensions/buildflags/buildflags.h"
 
@@ -141,11 +141,11 @@
 #include "chromeos/ash/components/sync_wifi/wifi_configuration_sync_service.h"
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
-using content::BrowserThread;
+#if BUILDFLAG(IS_ANDROID)
+#include "chrome/browser/android/webapk/webapk_sync_service.h"
+#endif  // BUILDFLAG(IS_ANDROID)
 
-#if BUILDFLAG(ENABLE_EXTENSIONS)
-using browser_sync::ExtensionModelTypeController;
-#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
+using content::BrowserThread;
 
 namespace browser_sync {
 
@@ -218,25 +218,27 @@ ChromeSyncClient::ChromeSyncClient(Profile* profile)
     : profile_(profile), extensions_activity_monitor_(profile) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
-  profile_web_data_service_ =
+  scoped_refptr<autofill::AutofillWebDataService> profile_web_data_service =
       WebDataServiceFactory::GetAutofillWebDataForProfile(
           profile_, ServiceAccessType::IMPLICIT_ACCESS);
-  account_web_data_service_ =
+  scoped_refptr<autofill::AutofillWebDataService> account_web_data_service =
       WebDataServiceFactory::GetAutofillWebDataForAccount(
           profile_, ServiceAccessType::IMPLICIT_ACCESS);
-  web_data_service_thread_ = profile_web_data_service_
-                                 ? profile_web_data_service_->GetDBTaskRunner()
-                                 : nullptr;
+  scoped_refptr<base::SequencedTaskRunner> web_data_service_thread =
+      profile_web_data_service ? profile_web_data_service->GetDBTaskRunner()
+                               : nullptr;
 
   // This class assumes that the database thread is the same across the profile
   // and account storage. This DCHECK makes that assumption explicit.
-  DCHECK(!account_web_data_service_ ||
-         web_data_service_thread_ ==
-             account_web_data_service_->GetDBTaskRunner());
-  profile_password_store_ = PasswordStoreFactory::GetForProfile(
-      profile_, ServiceAccessType::IMPLICIT_ACCESS);
-  account_password_store_ = AccountPasswordStoreFactory::GetForProfile(
-      profile_, ServiceAccessType::IMPLICIT_ACCESS);
+  DCHECK(!account_web_data_service ||
+         web_data_service_thread ==
+             account_web_data_service->GetDBTaskRunner());
+  scoped_refptr<password_manager::PasswordStoreInterface>
+      profile_password_store = ProfilePasswordStoreFactory::GetForProfile(
+          profile_, ServiceAccessType::IMPLICIT_ACCESS);
+  scoped_refptr<password_manager::PasswordStoreInterface>
+      account_password_store = AccountPasswordStoreFactory::GetForProfile(
+          profile_, ServiceAccessType::IMPLICIT_ACCESS);
 
   supervised_user::SupervisedUserSettingsService*
       supervised_user_settings_service = nullptr;
@@ -245,14 +247,13 @@ ChromeSyncClient::ChromeSyncClient(Profile* profile)
       SupervisedUserSettingsServiceFactory::GetForKey(
           profile_->GetProfileKey());
 #endif
-  // TODO(https://crbug.com/1404250): Pass AccountBookmarkSyncServiceFactory
-  //                                  when it is available.
+
   component_factory_ = std::make_unique<SyncApiComponentFactoryImpl>(
       this, chrome::GetChannel(), content::GetUIThreadTaskRunner({}),
-      web_data_service_thread_, profile_web_data_service_,
-      account_web_data_service_, profile_password_store_,
-      account_password_store_,
-      BookmarkSyncServiceFactory::GetForProfile(profile_), nullptr,
+      web_data_service_thread, profile_web_data_service,
+      account_web_data_service, profile_password_store, account_password_store,
+      LocalOrSyncableBookmarkSyncServiceFactory::GetForProfile(profile_),
+      AccountBookmarkSyncServiceFactory::GetForProfile(profile_),
       PowerBookmarkServiceFactory::GetForBrowserContext(profile_),
       supervised_user_settings_service);
 }
@@ -422,6 +423,21 @@ ChromeSyncClient::CreateDataTypeControllers(syncer::SyncService* sync_service) {
     }
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
+#if BUILDFLAG(IS_ANDROID)
+    if (base::FeatureList::IsEnabled(syncer::kWebApkBackupAndRestoreBackend)) {
+      syncer::ModelTypeControllerDelegate* delegate =
+          GetControllerDelegateForModelType(syncer::WEB_APKS).get();
+      controllers.push_back(std::make_unique<syncer::ModelTypeController>(
+          syncer::WEB_APKS,
+          /*delegate_for_full_sync_mode=*/
+          std::make_unique<syncer::ForwardingModelTypeControllerDelegate>(
+              delegate),
+          /*delegate_for_transport_mode=*/
+          std::make_unique<syncer::ForwardingModelTypeControllerDelegate>(
+              delegate)));
+    }
+#endif  // BUILDFLAG(IS_ANDROID)
+
 #if !BUILDFLAG(IS_ANDROID)
     // Theme sync is enabled by default.
     controllers.push_back(std::make_unique<ExtensionModelTypeController>(
@@ -546,7 +562,7 @@ ChromeSyncClient::CreateDataTypeControllers(syncer::SyncService* sync_service) {
 
 trusted_vault::TrustedVaultClient* ChromeSyncClient::GetTrustedVaultClient() {
   return TrustedVaultServiceFactory::GetForProfile(profile_)
-      ->GetTrustedVaultClient();
+      ->GetTrustedVaultClient(trusted_vault::SecurityDomainId::kChromeSync);
 }
 
 syncer::SyncInvalidationsService*
@@ -662,6 +678,14 @@ ChromeSyncClient::GetControllerDelegateForModelType(syncer::ModelType type) {
           ->GetControllerDelegate();
     }
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)
+#if BUILDFLAG(IS_ANDROID)
+    case syncer::WEB_APKS: {
+      webapk::WebApkSyncService* service =
+          webapk::WebApkSyncService::GetForProfile(profile_);
+      CHECK(service);
+      return service->GetModelTypeControllerDelegate();
+    }
+#endif  //  BUILDFLAG(IS_ANDROID)
 #if !BUILDFLAG(IS_ANDROID)
     case syncer::WEBAUTHN_CREDENTIAL: {
       DCHECK(base::FeatureList::IsEnabled(syncer::kSyncWebauthnCredentials));
@@ -681,7 +705,6 @@ ChromeSyncClient::GetControllerDelegateForModelType(syncer::ModelType type) {
     case syncer::SECURITY_EVENTS:
     case syncer::SEND_TAB_TO_SELF:
     case syncer::SESSIONS:
-    case syncer::TYPED_URLS:
       NOTREACHED();
       return base::WeakPtr<syncer::ModelTypeControllerDelegate>();
 
@@ -696,13 +719,17 @@ ChromeSyncClient::GetSyncApiComponentFactory() {
   return component_factory_.get();
 }
 
-syncer::SyncTypePreferenceProvider* ChromeSyncClient::GetPreferenceProvider() {
+bool ChromeSyncClient::IsCustomPassphraseAllowed() {
 #if BUILDFLAG(ENABLE_SUPERVISED_USERS)
-  return SupervisedUserSettingsServiceFactory::GetForKey(
-      profile_->GetProfileKey());
-#else
-  return nullptr;
-#endif
+  supervised_user::SupervisedUserSettingsService*
+      supervised_user_settings_service =
+          SupervisedUserSettingsServiceFactory::GetForKey(
+              profile_->GetProfileKey());
+  if (supervised_user_settings_service) {
+    return supervised_user_settings_service->IsCustomPassphraseAllowed();
+  }
+#endif  // BUILDFLAG(ENABLE_SUPERVISED_USERS)
+  return true;
 }
 
 void ChromeSyncClient::OnLocalSyncTransportDataCleared() {

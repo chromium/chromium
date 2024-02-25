@@ -6,8 +6,10 @@
 #define CC_TREES_LAYER_TREE_HOST_CLIENT_H_
 
 #include <memory>
+#include <string>
 
 #include "base/time/time.h"
+#include "cc/cc_export.h"
 #include "cc/input/browser_controls_state.h"
 #include "cc/metrics/frame_sequence_tracker_collection.h"
 #include "cc/trees/paint_holding_commit_trigger.h"
@@ -85,7 +87,12 @@ struct PaintBenchmarkResult {
 //
 // One important example of a LayerTreeHostClient is (via additional
 // indirections) Blink.
-class LayerTreeHostClient {
+//
+// Note: Some API callbacks below are tied to a frame. Since LayerTreeHost
+// maintains a pipeline of frames, it can be ambiguous which frame the callback
+// is associated with. We rely on `source_frame_number` to tie the callback to
+// its associated frame. See LayerTreeHost::SourceFrameNumber for details.
+class CC_EXPORT LayerTreeHostClient {
  public:
   virtual void WillBeginMainFrame() = 0;
   // Marks finishing compositing-related tasks on the main thread. In threaded
@@ -117,6 +124,7 @@ class LayerTreeHostClient {
   virtual void DidUpdateLayers() = 0;
 
   virtual void DidObserveFirstScrollDelay(
+      int source_frame_number,
       base::TimeDelta first_scroll_delay,
       base::TimeTicks first_scroll_timestamp) = 0;
   // Notification that the proxy started or stopped deferring main frame updates
@@ -129,7 +137,7 @@ class LayerTreeHostClient {
   virtual void OnDeferCommitsChanged(
       bool defer_status,
       PaintHoldingReason reason,
-      absl::optional<PaintHoldingCommitTrigger> trigger) = 0;
+      std::optional<PaintHoldingCommitTrigger> trigger) = 0;
 
   // Notification that a compositing update has been requested.
   virtual void OnCommitRequested() = 0;
@@ -168,11 +176,12 @@ class LayerTreeHostClient {
   // commit_start_time is the time that the impl thread began processing the
   // commit, or base::TimeTicks() if the commit did not require action by the
   // impl thread.
-  virtual void DidCommit(base::TimeTicks commit_start_time,
+  virtual void DidCommit(int source_frame_number,
+                         base::TimeTicks commit_start_time,
                          base::TimeTicks commit_finish_time) = 0;
-  virtual void DidCommitAndDrawFrame() = 0;
+  virtual void DidCommitAndDrawFrame(int source_frame_number) = 0;
   virtual void DidReceiveCompositorFrameAck() = 0;
-  virtual void DidCompletePageScaleAnimation() = 0;
+  virtual void DidCompletePageScaleAnimation(int source_frame_number) = 0;
   virtual void DidPresentCompositorFrame(
       uint32_t frame_token,
       const gfx::PresentationFeedback& feedback) = 0;
@@ -201,6 +210,10 @@ class LayerTreeHostClient {
 
   virtual void RunPaintBenchmark(int repeat_count,
                                  PaintBenchmarkResult& result) {}
+
+  // Return a string that is the paused debugger message for the heads-up
+  // display overlay.
+  virtual std::string GetPausedDebuggerLocalizedMessage();
 
  protected:
   virtual ~LayerTreeHostClient() = default;

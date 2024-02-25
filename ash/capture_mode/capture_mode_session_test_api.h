@@ -78,8 +78,7 @@ class CaptureModeSessionTestApi {
   gfx::Rect GetSelectedWindowTargetBounds();
 
  private:
-  const raw_ptr<CaptureModeSession, DanglingUntriaged | ExperimentalAsh>
-      session_;
+  const raw_ptr<CaptureModeSession, DanglingUntriaged> session_;
 };
 
 }  // namespace ash

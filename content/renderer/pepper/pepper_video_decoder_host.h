@@ -13,6 +13,7 @@
 #include <set>
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "content/renderer/pepper/video_decoder_shim.h"
 #include "gpu/command_buffer/common/mailbox.h"
 #include "ppapi/c/pp_codecs.h"
@@ -20,13 +21,15 @@
 #include "ppapi/host/resource_host.h"
 #include "ppapi/proxy/resource_message_params.h"
 
+namespace gpu {
+class ClientSharedImage;
+}
+
 namespace content {
 
 class RendererPpapiHost;
-class VideoDecoderShim;
 
-class PepperVideoDecoderHost : public ppapi::host::ResourceHost,
-                               public media::VideoDecodeAccelerator::Client {
+class PepperVideoDecoderHost : public ppapi::host::ResourceHost {
  public:
   PepperVideoDecoderHost(RendererPpapiHost* host,
                          PP_Instance instance,
@@ -71,6 +74,18 @@ class PepperVideoDecoderHost : public ppapi::host::ResourceHost,
     bool busy = false;
   };
 
+  struct SharedImage {
+    SharedImage(gfx::Size size,
+                PictureBufferState state,
+                scoped_refptr<gpu::ClientSharedImage> client_shared_image);
+    SharedImage(const SharedImage& shared_image);
+    ~SharedImage();
+
+    gfx::Size size;
+    PictureBufferState state;
+    scoped_refptr<gpu::ClientSharedImage> client_shared_image;
+  };
+
   friend class VideoDecoderShim;
 
   // ResourceHost implementation.
@@ -78,18 +93,20 @@ class PepperVideoDecoderHost : public ppapi::host::ResourceHost,
       const IPC::Message& msg,
       ppapi::host::HostMessageContext* context) override;
 
-  // media::VideoDecodeAccelerator::Client implementation.
-  void ProvidePictureBuffers(uint32_t requested_num_of_buffers,
-                             media::VideoPixelFormat format,
-                             uint32_t textures_per_buffer,
-                             const gfx::Size& dimensions,
-                             uint32_t texture_target) override;
-  void DismissPictureBuffer(int32_t picture_buffer_id) override;
-  void PictureReady(const media::Picture& picture) override;
-  void NotifyEndOfBitstreamBuffer(int32_t bitstream_buffer_id) override;
-  void NotifyFlushDone() override;
-  void NotifyResetDone() override;
-  void NotifyError(media::VideoDecodeAccelerator::Error error) override;
+  gpu::Mailbox CreateSharedImage(gfx::Size size);
+  void DestroySharedImage(const gpu::Mailbox& mailbox);
+  void DestroySharedImageInternal(
+      std::map<gpu::Mailbox, SharedImage>::iterator it);
+
+  void SharedImageReady(int32_t decode_id,
+                        const gpu::Mailbox& mailbox,
+                        gfx::Size size,
+                        const gfx::Rect& visible_rect);
+
+  void NotifyEndOfBitstreamBuffer(int32_t bitstream_buffer_id);
+  void NotifyFlushDone();
+  void NotifyResetDone();
+  void NotifyError(media::VideoDecodeAccelerator::Error error);
 
   int32_t OnHostMsgInitialize(ppapi::host::HostMessageContext* context,
                               const ppapi::HostResource& graphics_context,
@@ -103,21 +120,12 @@ class PepperVideoDecoderHost : public ppapi::host::ResourceHost,
                           uint32_t shm_id,
                           uint32_t size,
                           int32_t decode_id);
-  int32_t OnHostMsgAssignTextures(ppapi::host::HostMessageContext* context,
-                                  const PP_Size& size,
-                                  const std::vector<uint32_t>& texture_ids,
-                                  const std::vector<gpu::Mailbox>& mailboxes);
-  int32_t OnHostMsgRecyclePicture(ppapi::host::HostMessageContext* context,
-                                  uint32_t picture_id);
+  int32_t OnHostMsgRecycleSharedImage(ppapi::host::HostMessageContext* context,
+                                      const gpu::Mailbox& mailbox);
   int32_t OnHostMsgFlush(ppapi::host::HostMessageContext* context);
   int32_t OnHostMsgReset(ppapi::host::HostMessageContext* context);
 
-  // These methods are needed by VideoDecodeShim, to look like a
-  // VideoDecodeAccelerator.
   const uint8_t* DecodeIdToAddress(uint32_t decode_id);
-  std::vector<gpu::Mailbox> TakeMailboxes() {
-    return std::move(texture_mailboxes_);
-  }
 
   // Tries to initialize software decoder. Returns true on success.
   bool TryFallbackToSoftwareDecoder();
@@ -125,9 +133,13 @@ class PepperVideoDecoderHost : public ppapi::host::ResourceHost,
   PendingDecodeList::iterator GetPendingDecodeById(int32_t decode_id);
 
   // Non-owning pointer.
-  RendererPpapiHost* renderer_ppapi_host_;
+  raw_ptr<RendererPpapiHost> renderer_ppapi_host_;
 
   media::VideoCodecProfile profile_;
+
+  // |decoder_| will call DestroySharedImage in its dtor, which accesses these
+  // fields.
+  std::map<gpu::Mailbox, SharedImage> shared_images_;
 
   std::unique_ptr<VideoDecoderShim> decoder_;
 
@@ -139,12 +151,6 @@ class PepperVideoDecoderHost : public ppapi::host::ResourceHost,
 
   // Used for UMA stats; not frame-accurate.
   gfx::Size coded_size_;
-
-  int pending_texture_requests_ = 0;
-
-  // Set after software decoder fallback to dismiss all outstanding texture
-  // requests.
-  int assign_textures_messages_to_dismiss_ = 0;
 
   // A vector holding our shm buffers, in sync with a similar vector in the
   // resource. We use a buffer's index in these vectors as its id on both sides
@@ -159,12 +165,6 @@ class PepperVideoDecoderHost : public ppapi::host::ResourceHost,
   std::vector<MappedBuffer> shm_buffers_;
 
   uint32_t min_picture_count_;
-  typedef std::map<uint32_t, PictureBufferState> PictureBufferMap;
-  PictureBufferMap picture_buffer_map_;
-
-  // Mailboxes corresponding to textures given to AssignPictureBuffers, to allow
-  // VideoDecoderShim to use them from another context.
-  std::vector<gpu::Mailbox> texture_mailboxes_;
 
   // Keeps list of pending decodes.
   PendingDecodeList pending_decodes_;
@@ -174,12 +174,6 @@ class PepperVideoDecoderHost : public ppapi::host::ResourceHost,
 
   bool initialized_ = false;
 };
-
-// Checks the corresponding flag and enterprise policy to know if the
-// MojoVideoDecoder should be used in Pepper for hardware video decoding.
-// Returns true if the MojoVideoDecoder should be used and false if the
-// legacy VDA path should be used instead.
-bool ShouldUseMojoVideoDecoderForPepper();
 
 }  // namespace content
 

@@ -102,6 +102,10 @@ class IsolatedWebAppTrustChecker {
 void SetTrustedWebBundleIdsForTesting(
     base::flat_set<web_package::SignedWebBundleId> trusted_web_bundle_ids);
 
+// Used in tests to pretend that a given Web Bundle ID is trusted.
+void AddTrustedWebBundleIdForTesting(
+    const web_package::SignedWebBundleId& trusted_web_bundle_id);
+
 }  // namespace web_app
 
 #endif  // CHROME_BROWSER_WEB_APPLICATIONS_ISOLATED_WEB_APPS_ISOLATED_WEB_APP_TRUST_CHECKER_H_

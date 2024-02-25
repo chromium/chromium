@@ -45,6 +45,30 @@ void BrowserAccessibilityWin::UpdatePlatformAttributes() {
   GetCOM()->UpdateStep3FireEvents();
 }
 
+std::wstring BrowserAccessibilityWin::ComputeListItemNameFromContent() const {
+  DCHECK_EQ(GetRole(), ax::mojom::Role::kListItem);
+  DCHECK(!HasStringAttribute(ax::mojom::StringAttribute::kName));
+
+  std::wstring str;
+  int offset = 0;
+  if (node()->GetFirstChild() &&
+      node()->GetFirstChild()->GetRole() == ax::mojom::Role::kListMarker) {
+    offset = 1;
+  }
+  auto start_position = ui::AXNodePosition::CreatePosition(*node(), offset);
+  auto end_position = start_position->CreatePositionAtEndOfAnchor();
+  auto range = AXRange(std::move(start_position), std::move(end_position));
+  // TODO(accessibility): We're aware that there is an issue with no space being
+  // generated between descendants' names in some cases when appending their
+  // names. For instance if we have a <li> with a child <ul> which has <li> as
+  // children.
+  str = base::UTF16ToWide(
+      range.GetText(ui::AXTextConcatenationBehavior::kWithoutParagraphBreaks,
+                    ui::AXEmbeddedObjectBehavior::kSuppressCharacter));
+
+  return str;
+}
+
 bool BrowserAccessibilityWin::CanFireEvents() const {
   // On Windows, we want to hide the subtree of a collapsed <select> element but
   // we still need to fire events on those hidden nodes.

@@ -23,6 +23,7 @@
 #include "third_party/blink/renderer/core/testing/null_execution_context.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/testing/runtime_enabled_features_test_helpers.h"
+#include "third_party/blink/renderer/platform/testing/task_environment.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 
 using testing::AssertionFailure;
@@ -90,7 +91,8 @@ class RuleFeatureSetTest : public testing::Test {
     HeapVector<CSSSelector> arena;
     base::span<CSSSelector> selector_vector = CSSParser::ParseSelector(
         StrictCSSParserContext(SecureContextMode::kInsecureContext),
-        nesting_type, parent_rule_for_nesting, nullptr, selector_text, arena);
+        nesting_type, parent_rule_for_nesting, false /* is_within_scope */,
+        nullptr, selector_text, arena);
     return CollectFeaturesTo(selector_vector, nullptr /* style_scope */, set);
   }
 
@@ -608,15 +610,6 @@ class RuleFeatureSetTest : public testing::Test {
     return AssertionSuccess();
   }
 
-  AssertionResult HasFullRecalcForRuleSetInvalidation(bool expected) {
-    if (rule_feature_set_.NeedsFullRecalcForRuleSetInvalidation() != expected) {
-      return AssertionFailure()
-             << rule_feature_set_.NeedsFullRecalcForRuleSetInvalidation()
-             << " should be " << expected;
-    }
-    return AssertionSuccess();
-  }
-
   AssertionResult HasPartsInvalidation(
       InvalidationSetVector& invalidation_sets) {
     if (invalidation_sets.size() != 1u) {
@@ -707,6 +700,7 @@ class RuleFeatureSetTest : public testing::Test {
   }
 
  protected:
+  test::TaskEnvironment task_environment_;
   ScopedNullExecutionContext execution_context_;
 
  private:
@@ -1251,155 +1245,6 @@ TEST_F(RuleFeatureSetTest, nthInvalidationAnyDescendant) {
       invalidation_lists.siblings));
 }
 
-TEST_F(RuleFeatureSetTest, RuleSetInvalidationTypeSelector) {
-  EXPECT_EQ(RuleFeatureSet::kSelectorMayMatch, CollectFeatures("div"));
-  EXPECT_TRUE(HasFullRecalcForRuleSetInvalidation(false));
-  ClearFeatures();
-
-  EXPECT_EQ(RuleFeatureSet::kSelectorMayMatch, CollectFeatures("* div"));
-  EXPECT_TRUE(HasFullRecalcForRuleSetInvalidation(false));
-  ClearFeatures();
-
-  EXPECT_EQ(RuleFeatureSet::kSelectorMayMatch, CollectFeatures("body *"));
-  EXPECT_TRUE(HasFullRecalcForRuleSetInvalidation(true));
-}
-
-TEST_F(RuleFeatureSetTest, RuleSetInvalidationClassIdAttr) {
-  EXPECT_EQ(RuleFeatureSet::kSelectorMayMatch, CollectFeatures(".c"));
-  EXPECT_TRUE(HasFullRecalcForRuleSetInvalidation(false));
-  ClearFeatures();
-
-  EXPECT_EQ(RuleFeatureSet::kSelectorMayMatch, CollectFeatures(".c *"));
-  EXPECT_TRUE(HasFullRecalcForRuleSetInvalidation(false));
-  ClearFeatures();
-
-  EXPECT_EQ(RuleFeatureSet::kSelectorMayMatch, CollectFeatures("#i"));
-  EXPECT_TRUE(HasFullRecalcForRuleSetInvalidation(false));
-  ClearFeatures();
-
-  EXPECT_EQ(RuleFeatureSet::kSelectorMayMatch, CollectFeatures("#i *"));
-  EXPECT_TRUE(HasFullRecalcForRuleSetInvalidation(false));
-  ClearFeatures();
-
-  EXPECT_EQ(RuleFeatureSet::kSelectorMayMatch, CollectFeatures("[attr]"));
-  EXPECT_TRUE(HasFullRecalcForRuleSetInvalidation(false));
-  ClearFeatures();
-
-  EXPECT_EQ(RuleFeatureSet::kSelectorMayMatch, CollectFeatures("[attr] *"));
-  EXPECT_TRUE(HasFullRecalcForRuleSetInvalidation(false));
-}
-
-TEST_F(RuleFeatureSetTest, RuleSetInvalidationHoverActiveFocus) {
-  EXPECT_EQ(RuleFeatureSet::kSelectorMayMatch,
-            CollectFeatures(":hover:active:focus"));
-  EXPECT_TRUE(HasFullRecalcForRuleSetInvalidation(true));
-}
-
-TEST_F(RuleFeatureSetTest, RuleSetInvalidationHostContext) {
-  EXPECT_EQ(RuleFeatureSet::kSelectorMayMatch,
-            CollectFeatures(":host-context(.x)"));
-  EXPECT_TRUE(HasFullRecalcForRuleSetInvalidation(true));
-  ClearFeatures();
-
-  EXPECT_EQ(RuleFeatureSet::kSelectorMayMatch,
-            CollectFeatures(":host-context(.x) .y"));
-  EXPECT_TRUE(HasFullRecalcForRuleSetInvalidation(false));
-}
-
-TEST_F(RuleFeatureSetTest, RuleSetInvalidationHost) {
-  EXPECT_EQ(RuleFeatureSet::kSelectorMayMatch, CollectFeatures(":host(.x)"));
-  EXPECT_TRUE(HasFullRecalcForRuleSetInvalidation(false));
-  ClearFeatures();
-
-  EXPECT_EQ(RuleFeatureSet::kSelectorMayMatch, CollectFeatures(":host(*) .y"));
-  EXPECT_TRUE(HasFullRecalcForRuleSetInvalidation(false));
-  ClearFeatures();
-
-  EXPECT_EQ(RuleFeatureSet::kSelectorMayMatch, CollectFeatures(":host(.x) .y"));
-  EXPECT_TRUE(HasFullRecalcForRuleSetInvalidation(false));
-}
-
-TEST_F(RuleFeatureSetTest, RuleSetInvalidationNot) {
-  EXPECT_EQ(RuleFeatureSet::kSelectorMayMatch, CollectFeatures(":not(.x)"));
-  EXPECT_TRUE(HasFullRecalcForRuleSetInvalidation(true));
-  ClearFeatures();
-
-  EXPECT_EQ(RuleFeatureSet::kSelectorMayMatch,
-            CollectFeatures(":not(.x) :hover"));
-  EXPECT_TRUE(HasFullRecalcForRuleSetInvalidation(true));
-  ClearFeatures();
-
-  EXPECT_EQ(RuleFeatureSet::kSelectorMayMatch, CollectFeatures(":not(.x) .y"));
-  EXPECT_TRUE(HasFullRecalcForRuleSetInvalidation(false));
-  ClearFeatures();
-
-  EXPECT_EQ(RuleFeatureSet::kSelectorMayMatch,
-            CollectFeatures(":not(.x) + .y"));
-  EXPECT_TRUE(HasFullRecalcForRuleSetInvalidation(false));
-}
-
-TEST_F(RuleFeatureSetTest, RuleSetInvalidationCustomPseudo) {
-  EXPECT_EQ(RuleFeatureSet::kSelectorMayMatch,
-            CollectFeatures("::-webkit-slider-thumb"));
-  EXPECT_TRUE(HasFullRecalcForRuleSetInvalidation(false));
-  ClearFeatures();
-
-  EXPECT_EQ(RuleFeatureSet::kSelectorMayMatch,
-            CollectFeatures(".x::-webkit-slider-thumb"));
-  EXPECT_TRUE(HasFullRecalcForRuleSetInvalidation(false));
-  ClearFeatures();
-
-  EXPECT_EQ(RuleFeatureSet::kSelectorMayMatch,
-            CollectFeatures(".x + ::-webkit-slider-thumb"));
-  EXPECT_TRUE(HasFullRecalcForRuleSetInvalidation(false));
-}
-
-TEST_F(RuleFeatureSetTest, RuleSetInvalidationSlotted) {
-  EXPECT_EQ(RuleFeatureSet::kSelectorMayMatch, CollectFeatures("::slotted(*)"));
-  EXPECT_TRUE(HasFullRecalcForRuleSetInvalidation(true));
-  ClearFeatures();
-
-  EXPECT_EQ(RuleFeatureSet::kSelectorMayMatch,
-            CollectFeatures("::slotted(.y)"));
-  EXPECT_TRUE(HasFullRecalcForRuleSetInvalidation(false));
-  ClearFeatures();
-
-  EXPECT_EQ(RuleFeatureSet::kSelectorMayMatch,
-            CollectFeatures(".x::slotted(.y)"));
-  EXPECT_TRUE(HasFullRecalcForRuleSetInvalidation(false));
-  ClearFeatures();
-
-  EXPECT_EQ(RuleFeatureSet::kSelectorMayMatch,
-            CollectFeatures("[x] ::slotted(.y)"));
-  EXPECT_TRUE(HasFullRecalcForRuleSetInvalidation(false));
-}
-
-TEST_F(RuleFeatureSetTest, RuleSetInvalidationAnyPseudo) {
-  EXPECT_EQ(RuleFeatureSet::kSelectorMayMatch,
-            CollectFeatures(":-webkit-any(*, #x)"));
-  EXPECT_TRUE(HasFullRecalcForRuleSetInvalidation(true));
-  ClearFeatures();
-
-  EXPECT_EQ(RuleFeatureSet::kSelectorMayMatch,
-            CollectFeatures(".x:-webkit-any(*, #y)"));
-  EXPECT_TRUE(HasFullRecalcForRuleSetInvalidation(false));
-  ClearFeatures();
-
-  EXPECT_EQ(RuleFeatureSet::kSelectorMayMatch,
-            CollectFeatures(":-webkit-any(:-webkit-any(.a, .b), #x)"));
-  EXPECT_TRUE(HasFullRecalcForRuleSetInvalidation(false));
-  ClearFeatures();
-
-  EXPECT_EQ(RuleFeatureSet::kSelectorMayMatch,
-            CollectFeatures(":-webkit-any(:-webkit-any(.a, *), #x)"));
-  EXPECT_TRUE(HasFullRecalcForRuleSetInvalidation(true));
-  ClearFeatures();
-
-  EXPECT_EQ(RuleFeatureSet::kSelectorMayMatch,
-            CollectFeatures(":-webkit-any(*, .a) *"));
-  EXPECT_TRUE(HasFullRecalcForRuleSetInvalidation(true));
-}
-
 TEST_F(RuleFeatureSetTest, SelfInvalidationSet) {
   EXPECT_EQ(RuleFeatureSet::kSelectorMayMatch, CollectFeatures(".a"));
   EXPECT_EQ(RuleFeatureSet::kSelectorMayMatch, CollectFeatures("div .b"));
@@ -1924,6 +1769,13 @@ RefTestData ref_equal_test_data[] = {
     {":is([foo], [bar]) .a", "[foo] .a, [bar] .a"},
     {":is([a], [b]) :is([c], [d])", "[a] [c], [a] [d], [b] [c], [b] [d]"},
 
+    {"", "div"},
+    {"", "::before"},
+    {"", ":host"},
+    {"", "*"},
+    {"ol", "ul"},
+    {"::cue(a)", "::cue(b)"},
+    {"div", "span"},
     // clang-format on
 };
 
@@ -1932,28 +1784,21 @@ RefTestData ref_not_equal_test_data[] = {
     // clang-format off
     {"", ".a"},
     {"", "#a"},
-    {"", "div"},
     {"", ":hover"},
-    {"", "::before"},
-    {"", ":host"},
     {"", ":host(.a)"},
     {"", ":host-context(.a)"},
-    {"", "*"},
     {"", ":not(.a)"},
     {".a", ".b"},
     {".a", ".a, .b"},
     {"#a", "#b"},
-    {"ol", "ul"},
     {"[foo]", "[bar]"},
     {":link", ":visited"},
     {".a::before", ".b::after"},
-    {"::cue(a)", "::cue(b)"},
     {".a .b", ".a .c"},
     {".a + .b", ".a + .c"},
     {".a + .b .c", ".a + .b .d"},
     {"div + .a", "div + .b"},
     {".a:nth-child(1)", ".b:nth-child(1)"},
-    {"div", "span"},
     // clang-format on
 };
 
@@ -2112,7 +1957,7 @@ class RuleFeatureSetScopeRefTest
     while (IsA<StyleRuleScope>(rule)) {
       auto& scope_rule = To<StyleRuleScope>(*rule);
       scope = scope_rule.GetStyleScope().CopyWithParent(scope);
-      const HeapVector<Member<StyleRuleBase>>& child_rules =
+      const StyleRuleBase::ChildRuleVector& child_rules =
           scope_rule.ChildRules();
       ASSERT_EQ(1u, child_rules.size());
       rule = child_rules[0].Get();
@@ -2874,7 +2719,8 @@ TEST_F(RuleFeatureSetTest, NestedSelector) {
   base::span<CSSSelector> selector_vector = CSSParser::ParseSelector(
       StrictCSSParserContext(SecureContextMode::kInsecureContext),
       CSSNestingType::kNone,
-      /*parent_rule_for_nesting=*/nullptr, nullptr, ".a, .b", arena);
+      /*parent_rule_for_nesting=*/nullptr, /*is_within_scope=*/false, nullptr,
+      ".a, .b", arena);
   auto* parent_rule = StyleRule::Create(
       selector_vector,
       MakeGarbageCollected<MutableCSSPropertyValueSet>(kHTMLStandardMode));

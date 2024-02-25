@@ -26,6 +26,7 @@ class NoopLockDescription : public LockDescription {
  public:
   NoopLockDescription();
   ~NoopLockDescription();
+  NoopLockDescription(NoopLockDescription&&);
 };
 
 // Holding a NoopLock is required when a locked operation needs to be executed,

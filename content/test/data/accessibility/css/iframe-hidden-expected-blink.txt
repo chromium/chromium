@@ -5,8 +5,6 @@ rootWebArea name='done'
 ++++++++paragraph
 ++++++++++staticText name='Before visibility:collapse iframes'
 ++++++++++++inlineTextBox name='Before visibility:collapse iframes'
-++++++++genericContainer ignored invisible
-++++++++++iframe ignored invisible
 ++++++++paragraph
 ++++++++++staticText name='After visibility:collapse iframes'
 ++++++++++++inlineTextBox name='After visibility:collapse iframes'
@@ -16,7 +14,6 @@ rootWebArea name='done'
 ++++++++paragraph
 ++++++++++staticText name='Before display:none iframes'
 ++++++++++++inlineTextBox name='Before display:none iframes'
-++++++++genericContainer ignored invisible
 ++++++++paragraph
 ++++++++++staticText name='After display:none iframes'
 ++++++++++++inlineTextBox name='After display:none iframes'

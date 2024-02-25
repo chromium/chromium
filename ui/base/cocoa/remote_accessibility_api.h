@@ -14,9 +14,13 @@
 // NSAccessibilityRemoteUIElement is a private class in AppKit.
 
 @interface NSAccessibilityRemoteUIElement : NSObject
++ (void)setRemoteUIApp:(BOOL)flag;
++ (BOOL)isRemoteUIApp;
 + (void)registerRemoteUIProcessIdentifier:(int)pid;
 + (NSData*)remoteTokenForLocalUIElement:(id)element;
 - (id)initWithRemoteToken:(NSData*)token;
+- (pid_t)processIdentifier;
+- (void)accessibilitySetPresenterProcessIdentifier:(pid_t)presenterPID;
 @property(strong) id windowUIElement;
 @property(strong) id topLevelUIElement;
 @end

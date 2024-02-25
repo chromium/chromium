@@ -60,13 +60,12 @@ import org.chromium.ui.test.util.ViewUtils;
 
 import java.util.Locale;
 
-/**
- * UI tests for the developer UI's HomeFragment.
- */
+/** UI tests for the developer UI's HomeFragment. */
 @RunWith(AwJUnit4ClassRunner.class)
 @DoNotBatch(reason = "Batching causes test failures")
 public class HomeFragmentTest {
     public static final PackageInfo FAKE_WEBVIEW_PACKAGE = new PackageInfo();
+
     static {
         FAKE_WEBVIEW_PACKAGE.packageName = "org.chromium.fake_webview";
         FAKE_WEBVIEW_PACKAGE.versionCode = 123456789;
@@ -133,8 +132,12 @@ public class HomeFragmentTest {
 
         PackageInfo currentWebViewPackage = WebViewPackageHelper.getCurrentWebViewPackage(context);
         String expectedWebViewPackageInfo =
-                String.format(Locale.US, "%s (%s/%s)", currentWebViewPackage.packageName,
-                        currentWebViewPackage.versionName, currentWebViewPackage.versionCode);
+                String.format(
+                        Locale.US,
+                        "%s (%s/%s)",
+                        currentWebViewPackage.packageName,
+                        currentWebViewPackage.versionName,
+                        currentWebViewPackage.versionCode);
         onData(anything())
                 .atPosition(0)
                 .onChildView(withId(android.R.id.text1))
@@ -171,8 +174,12 @@ public class HomeFragmentTest {
         onView(withId(R.id.main_info_list)).check(matches(withCount(3)));
 
         String expectedWebViewPackageInfo =
-                String.format(Locale.US, "%s (%s/%s)", FAKE_WEBVIEW_PACKAGE.packageName,
-                        FAKE_WEBVIEW_PACKAGE.versionName, FAKE_WEBVIEW_PACKAGE.versionCode);
+                String.format(
+                        Locale.US,
+                        "%s (%s/%s)",
+                        FAKE_WEBVIEW_PACKAGE.packageName,
+                        FAKE_WEBVIEW_PACKAGE.versionName,
+                        FAKE_WEBVIEW_PACKAGE.versionCode);
         onData(anything())
                 .atPosition(0)
                 .onChildView(withId(android.R.id.text1))
@@ -183,8 +190,13 @@ public class HomeFragmentTest {
                 .check(matches(withText(expectedWebViewPackageInfo)));
 
         PackageInfo devUiPackage = WebViewPackageHelper.getContextPackageInfo(context);
-        String expectedDevUiInfo = String.format(Locale.US, "%s (%s/%s)", devUiPackage.packageName,
-                devUiPackage.versionName, devUiPackage.versionCode);
+        String expectedDevUiInfo =
+                String.format(
+                        Locale.US,
+                        "%s (%s/%s)",
+                        devUiPackage.packageName,
+                        devUiPackage.versionName,
+                        devUiPackage.versionCode);
         onData(anything())
                 .atPosition(1)
                 .onChildView(withId(android.R.id.text1))
@@ -209,10 +221,9 @@ public class HomeFragmentTest {
     @Test
     @MediumTest
     @Feature({"AndroidWebView"})
-    // clang-format off
-    @DisableIf.Build(sdk_is_greater_than = Build.VERSION_CODES.R,
-        message = "https://crbug.com/1292197")
-    // clang-format on
+    @DisableIf.Build(
+            sdk_is_greater_than = Build.VERSION_CODES.R,
+            message = "https://crbug.com/1292197")
     public void testLongPressCopy() throws Throwable {
         Context context = ContextUtils.getApplicationContext();
         // Inject a fake PackageInfo as the current WebView package to make sure it will always be
@@ -222,14 +233,23 @@ public class HomeFragmentTest {
 
         onView(withText("WebView package")).perform(longClick());
         String expectedWebViewInfo =
-                String.format(Locale.US, "%s (%s/%s)", FAKE_WEBVIEW_PACKAGE.packageName,
-                        FAKE_WEBVIEW_PACKAGE.versionName, FAKE_WEBVIEW_PACKAGE.versionCode);
+                String.format(
+                        Locale.US,
+                        "%s (%s/%s)",
+                        FAKE_WEBVIEW_PACKAGE.packageName,
+                        FAKE_WEBVIEW_PACKAGE.versionName,
+                        FAKE_WEBVIEW_PACKAGE.versionCode);
         assertThat(getClipBoardTextOnUiThread(context), is(equalTo(expectedWebViewInfo)));
 
         onView(withText("DevTools package")).perform(longClick());
         PackageInfo devUiPackage = WebViewPackageHelper.getContextPackageInfo(context);
-        String expectedDevUiInfo = String.format(Locale.US, "%s (%s/%s)", devUiPackage.packageName,
-                devUiPackage.versionName, devUiPackage.versionCode);
+        String expectedDevUiInfo =
+                String.format(
+                        Locale.US,
+                        "%s (%s/%s)",
+                        devUiPackage.packageName,
+                        devUiPackage.versionName,
+                        devUiPackage.versionCode);
         assertThat(getClipBoardTextOnUiThread(context), is(equalTo(expectedDevUiInfo)));
 
         onView(withText("Device info")).perform(longClick());
@@ -248,9 +268,11 @@ public class HomeFragmentTest {
         launchHomeFragment();
 
         Context context = ContextUtils.getApplicationContext();
-        String expectedErrorMessage = String.format(Locale.US,
-                WebViewPackageError.DIFFERENT_WEBVIEW_PROVIDER_ERROR_MESSAGE,
-                WebViewPackageHelper.loadLabel(context));
+        String expectedErrorMessage =
+                String.format(
+                        Locale.US,
+                        WebViewPackageError.DIFFERENT_WEBVIEW_PROVIDER_ERROR_MESSAGE,
+                        WebViewPackageHelper.loadLabel(context));
         ViewUtils.waitForVisibleView(withId(R.id.main_error_view));
         onView(withId(R.id.main_error_view)).check(matches(isDisplayed()));
         onView(withId(R.id.error_text)).check(matches(withText(expectedErrorMessage)));
@@ -259,8 +281,13 @@ public class HomeFragmentTest {
         // offer to open the current WebView provider dev UI.
 
         onView(withId(R.id.action_button))
-                .check(matches(allOf(isDisplayed(),
-                        withText(WebViewPackageError.CHANGE_WEBVIEW_PROVIDER_BUTTON_TEXT))))
+                .check(
+                        matches(
+                                allOf(
+                                        isDisplayed(),
+                                        withText(
+                                                WebViewPackageError
+                                                        .CHANGE_WEBVIEW_PROVIDER_BUTTON_TEXT))))
                 .perform(click());
         intended(IntentMatchers.hasAction(Settings.ACTION_WEBVIEW_SETTINGS));
     }
@@ -276,9 +303,11 @@ public class HomeFragmentTest {
         WebViewPackageHelper.setCurrentWebViewPackageForTesting(FAKE_WEBVIEW_PACKAGE);
         launchHomeFragment();
 
-        String dialogExpectedMessage = String.format(Locale.US,
-                WebViewPackageError.DIFFERENT_WEBVIEW_PROVIDER_DIALOG_MESSAGE,
-                WebViewPackageHelper.loadLabel(context));
+        String dialogExpectedMessage =
+                String.format(
+                        Locale.US,
+                        WebViewPackageError.DIFFERENT_WEBVIEW_PROVIDER_DIALOG_MESSAGE,
+                        WebViewPackageHelper.loadLabel(context));
         onView(withId(R.id.main_error_view)).check(matches(isDisplayed())).perform(click());
         onView(withText(dialogExpectedMessage)).check(matches(isDisplayed()));
         // Since the current provider is set to a fake package not an actual installed WebView

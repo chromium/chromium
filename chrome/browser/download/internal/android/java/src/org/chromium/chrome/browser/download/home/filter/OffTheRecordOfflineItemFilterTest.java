@@ -23,6 +23,7 @@ import org.chromium.base.test.util.JniMocker;
 import org.chromium.chrome.browser.profiles.OTRProfileID;
 import org.chromium.chrome.browser.profiles.OTRProfileIDJni;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.components.offline_items_collection.OfflineItem;
 
 import java.util.Collection;
@@ -31,27 +32,21 @@ import java.util.Collection;
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
 public class OffTheRecordOfflineItemFilterTest {
-    @Rule
-    public JniMocker mMocker = new JniMocker();
+    @Rule public JniMocker mMocker = new JniMocker();
 
-    @Mock
-    private OTRProfileID.Natives mOTRProfileIDNatives;
+    @Mock private OTRProfileID.Natives mOTRProfileIDNatives;
 
-    @Mock
-    private OfflineItemFilterSource mSource;
+    @Mock private OfflineItemFilterSource mSource;
 
-    @Mock
-    private OfflineItemFilterObserver mObserver;
+    @Mock private OfflineItemFilterObserver mObserver;
 
-    @Mock
-    private Profile mRegularProfile;
+    @Mock private Profile mRegularProfile;
 
-    @Rule
-    public MockitoRule mMockitoRule = MockitoJUnit.rule();
+    @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
     @Before
     public void setup() {
-        Profile.setLastUsedProfileForTesting(mRegularProfile);
+        ProfileManager.setLastUsedProfileForTesting(mRegularProfile);
         mMocker.mock(OTRProfileIDJni.TEST_HOOKS, mOTRProfileIDNatives);
         when(mRegularProfile.hasOffTheRecordProfile(any())).thenReturn(true);
     }

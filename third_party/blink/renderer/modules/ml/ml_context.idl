@@ -28,14 +28,7 @@ dictionary MLComputeResult {
     RuntimeEnabled=MachineLearningNeuralNetwork,
     CallWith=ScriptState,
     RaisesException,
-    Exposed=Window
+    Exposed=(Window, DedicatedWorker)
   ] Promise<MLComputeResult> compute(
-      MLGraph graph, MLNamedArrayBufferViews inputs, MLNamedArrayBufferViews outputs);
-
-  [
-    RuntimeEnabled=MachineLearningNeuralNetwork,
-    RaisesException,
-    Exposed=DedicatedWorker
-  ] void computeSync(
       MLGraph graph, MLNamedArrayBufferViews inputs, MLNamedArrayBufferViews outputs);
 };

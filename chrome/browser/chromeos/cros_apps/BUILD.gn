@@ -1,0 +1,42 @@
+# Copyright 2023 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/chromeos/ui_mode.gni")
+
+assert(is_chromeos)
+
+source_set("cros_apps") {
+  sources = [
+    "cros_apps_key_event_handler.cc",
+    "cros_apps_key_event_handler.h",
+    "cros_apps_key_event_handler_factory.cc",
+    "cros_apps_key_event_handler_factory.h",
+    "cros_apps_tab_helper.cc",
+    "cros_apps_tab_helper.h",
+  ]
+
+  deps = [
+    "//chrome/browser/chromeos/cros_apps/api",
+    "//chrome/browser/profiles:profile",
+    "//chromeos/constants:constants",
+    "//components/keyed_service/content",
+    "//content/public/browser",
+    "//content/public/common",
+  ]
+}
+
+source_set("test_support") {
+  testonly = true
+  sources = [
+    "cros_apps_test_utils.cc",
+    "cros_apps_test_utils.h",
+  ]
+
+  public_deps = [ "//content/test:test_support" ]
+}
+
+group("all_browser_tests") {
+  testonly = true
+  deps = [ "//chrome/browser/chromeos/cros_apps/api:browser_tests" ]
+}

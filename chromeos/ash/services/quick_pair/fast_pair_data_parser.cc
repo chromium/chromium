@@ -5,6 +5,7 @@
 #include "chromeos/ash/services/quick_pair/fast_pair_data_parser.h"
 
 #include <cstdint>
+#include <optional>
 #include <vector>
 
 #include "ash/quick_pair/common/fast_pair/fast_pair_decoder.h"
@@ -21,7 +22,6 @@
 #include "crypto/openssl_util.h"
 #include "device/bluetooth/public/cpp/bluetooth_address.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace {
 
@@ -106,8 +106,7 @@ bool IsBatteryCharging(uint8_t battery_byte) {
 namespace ash {
 namespace quick_pair {
 
-absl::optional<mojom::MessageGroup> MessageGroupFromByte(
-    uint8_t message_group) {
+std::optional<mojom::MessageGroup> MessageGroupFromByte(uint8_t message_group) {
   switch (message_group) {
     case kBluetoothEvent:
       return mojom::MessageGroup::kBluetoothEvent;
@@ -120,11 +119,11 @@ absl::optional<mojom::MessageGroup> MessageGroupFromByte(
     case kAcknowledgementEvent:
       return mojom::MessageGroup::kAcknowledgementEvent;
     default:
-      return absl::nullopt;
+      return std::nullopt;
   }
 }
 
-absl::optional<mojom::Acknowledgement> NakReasonFromByte(uint8_t nak_reason) {
+std::optional<mojom::Acknowledgement> NakReasonFromByte(uint8_t nak_reason) {
   switch (nak_reason) {
     case kNotSupportedNak:
       return mojom::Acknowledgement::kNotSupportedNak;
@@ -133,7 +132,7 @@ absl::optional<mojom::Acknowledgement> NakReasonFromByte(uint8_t nak_reason) {
     case kNotAllowedDueToCurrentStateNak:
       return mojom::Acknowledgement::kNotAllowedDueToCurrentStateNak;
     default:
-      return absl::nullopt;
+      return std::nullopt;
   }
 }
 
@@ -158,7 +157,7 @@ void FastPairDataParser::GetHexModelIdFromServiceData(
   std::move(callback).Run(
       fast_pair_decoder::HasModelId(&service_data)
           ? fast_pair_decoder::GetHexModelIdFromServiceData(&service_data)
-          : absl::nullopt);
+          : std::nullopt);
 }
 
 void FastPairDataParser::ParseDecryptedResponse(
@@ -166,7 +165,7 @@ void FastPairDataParser::ParseDecryptedResponse(
     const std::vector<uint8_t>& encrypted_response_bytes,
     ParseDecryptedResponseCallback callback) {
   if (!ValidateInputSizes(aes_key_bytes, encrypted_response_bytes)) {
-    std::move(callback).Run(absl::nullopt);
+    std::move(callback).Run(std::nullopt);
     return;
   }
 
@@ -183,7 +182,7 @@ void FastPairDataParser::ParseDecryptedPasskey(
     const std::vector<uint8_t>& encrypted_passkey_bytes,
     ParseDecryptedPasskeyCallback callback) {
   if (!ValidateInputSizes(aes_key_bytes, encrypted_passkey_bytes)) {
-    std::move(callback).Run(absl::nullopt);
+    std::move(callback).Run(std::nullopt);
     return;
   }
 
@@ -214,7 +213,7 @@ void FastPairDataParser::ParseNotDiscoverableAdvertisement(
     ParseNotDiscoverableAdvertisementCallback callback) {
   if (service_data.empty() ||
       fast_pair_decoder::GetVersion(&service_data) != 0) {
-    std::move(callback).Run(absl::nullopt);
+    std::move(callback).Run(std::nullopt);
     return;
   }
 
@@ -268,7 +267,7 @@ void FastPairDataParser::ParseNotDiscoverableAdvertisement(
   }
 
   if (account_key_filter_bytes.empty()) {
-    std::move(callback).Run(absl::nullopt);
+    std::move(callback).Run(std::nullopt);
     return;
   }
 
@@ -277,7 +276,7 @@ void FastPairDataParser::ParseNotDiscoverableAdvertisement(
   if (salt_bytes.size() > 2) {
     QP_LOG(WARNING) << " Parsed a salt field larger than two bytes: "
                     << salt_bytes.size();
-    std::move(callback).Run(absl::nullopt);
+    std::move(callback).Run(std::nullopt);
     return;
   }
 
@@ -318,7 +317,7 @@ void FastPairDataParser::ParseMessageStreamMessages(
   while (remaining_bytes.size() >= kMinMessageByteCount) {
     uint8_t message_group_byte = remaining_bytes.front();
     remaining_bytes.pop_front();
-    absl::optional<mojom::MessageGroup> message_group =
+    std::optional<mojom::MessageGroup> message_group =
         MessageGroupFromByte(message_group_byte);
 
     uint8_t message_code = remaining_bytes.front();
@@ -639,7 +638,7 @@ mojom::MessageStreamMessagePtr FastPairDataParser::ParseAcknowledgementEvent(
     }
 
     // Get the message group pertaining to the action being acknowledged.
-    absl::optional<mojom::MessageGroup> message_group =
+    std::optional<mojom::MessageGroup> message_group =
         MessageGroupFromByte(additional_data[0]);
     if (!message_group.has_value()) {
       QP_LOG(WARNING) << __func__ << ": Unknown message group. Received 0x"
@@ -667,7 +666,7 @@ mojom::MessageStreamMessagePtr FastPairDataParser::ParseAcknowledgementEvent(
       return nullptr;
     }
 
-    absl::optional<mojom::Acknowledgement> nak_reason =
+    std::optional<mojom::Acknowledgement> nak_reason =
         NakReasonFromByte(additional_data[0]);
     if (!nak_reason) {
       QP_LOG(WARNING)
@@ -678,7 +677,7 @@ mojom::MessageStreamMessagePtr FastPairDataParser::ParseAcknowledgementEvent(
     }
 
     // Get the message group pertaining to the action being nacknowledged.
-    absl::optional<mojom::MessageGroup> message_group =
+    std::optional<mojom::MessageGroup> message_group =
         MessageGroupFromByte(additional_data[1]);
     if (!message_group.has_value()) {
       QP_LOG(WARNING) << __func__ << ": Unknown message group. Received 0x"

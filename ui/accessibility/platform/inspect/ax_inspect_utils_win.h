@@ -66,7 +66,7 @@ COMPONENT_EXPORT(AX_PLATFORM)
 std::string RoleVariantToString(const base::win::ScopedVariant& role);
 
 COMPONENT_EXPORT(AX_PLATFORM)
-absl::optional<std::string> GetIAccessible2Attribute(
+std::optional<std::string> GetIAccessible2Attribute(
     Microsoft::WRL::ComPtr<IAccessible2> element,
     std::string attribute);
 COMPONENT_EXPORT(AX_PLATFORM)

@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "base/test/values_test_util.h"
+#include "base/time/time.h"
 #include "chrome/browser/extensions/api/reading_list/reading_list_api_constants.h"
 #include "chrome/browser/extensions/api/reading_list/reading_list_event_router.h"
 #include "chrome/browser/extensions/extension_service_test_base.h"
@@ -43,10 +44,12 @@ scoped_refptr<const Extension> CreateReadingListExtension() {
 
 void AddReadingListEntry(ReadingListModel* reading_list_model,
                          const GURL& url,
-                         const std::string& title) {
+                         const std::string& title,
+                         bool has_been_read) {
   reading_list_model->AddOrReplaceEntry(
       url, title, reading_list::EntrySource::ADDED_VIA_CURRENT_APP,
       base::TimeDelta());
+  reading_list_model->SetReadStatusIfExists(url, has_been_read);
 }
 
 std::unique_ptr<KeyedService> BuildReadingListEventRouter(
@@ -79,7 +82,6 @@ class ReadingListApiUnitTest : public ExtensionServiceTestBase {
 
   std::unique_ptr<TestBrowserWindow> browser_window_;
   std::unique_ptr<Browser> browser_;
-  ScopedCurrentChannel channel_{version_info::Channel::UNKNOWN};
 };
 
 void ReadingListApiUnitTest::SetUp() {
@@ -141,6 +143,35 @@ TEST_F(ReadingListApiUnitTest, AddUniqueURL) {
   EXPECT_FALSE(entry->IsRead());
 }
 
+// Test that it is possible to add an already read entry.
+TEST_F(ReadingListApiUnitTest, AddEntryThatHasBeenRead) {
+  scoped_refptr<const Extension> extension = CreateReadingListExtension();
+
+  static constexpr char kArgs[] =
+      R"([{
+          "url": "https://www.example.com",
+          "title": "example of title",
+          "hasBeenRead": true
+        }])";
+  auto function = base::MakeRefCounted<ReadingListAddEntryFunction>();
+  function->set_extension(extension);
+  ReadingListModel* reading_list_model =
+      ReadingListModelFactory::GetForBrowserContext(profile());
+
+  // Add the entry.
+  api_test_utils::RunFunction(function.get(), kArgs, profile(),
+                              api_test_utils::FunctionMode::kNone);
+
+  EXPECT_EQ(reading_list_model->size(), 1u);
+
+  // Verify the features of the entry.
+  GURL url = GURL("https://www.example.com");
+  auto entry = reading_list_model->GetEntryByURL(url);
+  EXPECT_EQ(entry->URL(), url);
+  EXPECT_EQ(entry->Title(), "example of title");
+  EXPECT_TRUE(entry->IsRead());
+}
+
 // Test that adding a duplicate URL generates an error.
 TEST_F(ReadingListApiUnitTest, AddDuplicateURL) {
   scoped_refptr<const Extension> extension = CreateReadingListExtension();
@@ -195,7 +226,7 @@ TEST_F(ReadingListApiUnitTest, RemoveURL) {
   ReadingListLoadObserver(reading_list_model).Wait();
 
   AddReadingListEntry(reading_list_model, GURL("https://www.example.com"),
-                      "example of title");
+                      "example of title", /*has_been_read=*/false);
 
   // Verify that the entry has been added.
   EXPECT_EQ(reading_list_model->size(), 1u);
@@ -242,7 +273,7 @@ TEST_F(ReadingListApiUnitTest, UpdateEntryFeatures) {
   ReadingListLoadObserver(reading_list_model).Wait();
 
   AddReadingListEntry(reading_list_model, GURL("https://www.example.com"),
-                      "example of title");
+                      "example of title", /*has_been_read=*/false);
 
   // Verify that the entry has been added.
   EXPECT_EQ(reading_list_model->size(), 1u);
@@ -281,7 +312,7 @@ TEST_F(ReadingListApiUnitTest, UpdateEntryOnlyWithTheURL) {
   ReadingListLoadObserver(reading_list_model).Wait();
 
   AddReadingListEntry(reading_list_model, GURL("https://www.example.com"),
-                      "example of title");
+                      "example of title", /*has_been_read=*/false);
 
   // Verify that the entry has been added.
   EXPECT_EQ(reading_list_model->size(), 1u);
@@ -319,9 +350,9 @@ TEST_F(ReadingListApiUnitTest, RetrieveAllEntries) {
   ReadingListLoadObserver(reading_list_model).Wait();
 
   AddReadingListEntry(reading_list_model, GURL("https://www.example.com"),
-                      "example of title");
+                      "example of title", /*has_been_read=*/false);
   AddReadingListEntry(reading_list_model, GURL("https://www.example2.com"),
-                      "Title #2");
+                      "Title #2", /*has_been_read=*/false);
 
   // Verify that the entries have been added.
   EXPECT_EQ(reading_list_model->size(), 2u);
@@ -352,11 +383,11 @@ TEST_F(ReadingListApiUnitTest, RetrieveCertainEntries) {
   ReadingListLoadObserver(reading_list_model).Wait();
 
   AddReadingListEntry(reading_list_model, GURL("https://www.example.com"),
-                      "example of title");
+                      "example of title", /*has_been_read=*/false);
   AddReadingListEntry(reading_list_model, GURL("https://www.example2.com"),
-                      "Example");
+                      "Example", /*has_been_read=*/false);
   AddReadingListEntry(reading_list_model, GURL("https://www.example3.com"),
-                      "Example");
+                      "Example", /*has_been_read=*/false);
 
   // Verify that the entries have been added.
   EXPECT_EQ(reading_list_model->size(), 3u);
@@ -372,26 +403,44 @@ TEST_F(ReadingListApiUnitTest, RetrieveCertainEntries) {
       update_function.get(), kArgs, profile(),
       api_test_utils::FunctionMode::kNone);
 
-  // Verify that 2 entries were retrieved and that their title is "Example".
-  EXPECT_EQ(entries.value().GetList().size(), 2u);
-  static constexpr char kExpectedJson[] =
-      R"([{
-           "url": "https://www.example2.com/",
-           "title": "Example",
-           "hasBeenRead": false
-         },
-         {
-           "url": "https://www.example3.com/",
-           "title": "Example",
-           "hasBeenRead": false
-         }])";
-  EXPECT_THAT(entries.value().GetList(), base::test::IsJson(kExpectedJson));
+  // Verify only 2 entries were retrieved: example_2 and example_3.
+  ASSERT_EQ(entries.value().GetList().size(), 2u);
 
-  // Verify that the size of the reading list model is still the same.
+  scoped_refptr<const ReadingListEntry> e2 =
+      reading_list_model->GetEntryByURL(GURL("https://www.example2.com"));
+  scoped_refptr<const ReadingListEntry> e3 =
+      reading_list_model->GetEntryByURL(GURL("https://www.example3.com"));
+
+  // Expect that the first entry is equivalent to `e2`.
+  std::optional<api::reading_list::ReadingListEntry> entry1_actual =
+      api::reading_list::ReadingListEntry::FromValue(entries->GetList()[0]);
+  int64_t e2_update_in_milliseconds =
+      base::Microseconds(e2->UpdateTime()).InMilliseconds();
+  int64_t e2_creation_in_milliseconds =
+      base::Microseconds(e2->CreationTime()).InMilliseconds();
+  EXPECT_EQ(entry1_actual->url, e2->URL().spec());
+  EXPECT_EQ(entry1_actual->title, e2->Title());
+  EXPECT_EQ(entry1_actual->has_been_read, e2->IsRead());
+  EXPECT_EQ(entry1_actual->last_update_time, e2_update_in_milliseconds);
+  EXPECT_EQ(entry1_actual->creation_time, e2_creation_in_milliseconds);
+
+  // Expect that the second entry is equivalent to `e3`.
+  std::optional<api::reading_list::ReadingListEntry> entry2_actual =
+      api::reading_list::ReadingListEntry::FromValue(entries->GetList()[1]);
+  int64_t e3_update_in_milliseconds =
+      base::Microseconds(e3->UpdateTime()).InMilliseconds();
+  int64_t e3_creation_in_milliseconds =
+      base::Microseconds(e3->CreationTime()).InMilliseconds();
+  EXPECT_EQ(entry2_actual->url, e3->URL().spec());
+  EXPECT_EQ(entry2_actual->title, e3->Title());
+  EXPECT_EQ(entry2_actual->has_been_read, e3->IsRead());
+  EXPECT_EQ(entry2_actual->last_update_time, e3_update_in_milliseconds);
+  EXPECT_EQ(entry2_actual->creation_time, e3_creation_in_milliseconds);
+
   EXPECT_EQ(reading_list_model->size(), 3u);
 }
 
-// Test that it is possible not to retrieve entries.
+// Test that a query can return no matching entries.
 TEST_F(ReadingListApiUnitTest, NoEntriesRetrieved) {
   scoped_refptr<const Extension> extension = CreateReadingListExtension();
 
@@ -401,7 +450,7 @@ TEST_F(ReadingListApiUnitTest, NoEntriesRetrieved) {
   ReadingListLoadObserver(reading_list_model).Wait();
 
   AddReadingListEntry(reading_list_model, GURL("https://www.example.com"),
-                      "example of title");
+                      "example of title", /*has_been_read=*/false);
 
   // Query for an entry.
   auto update_function = base::MakeRefCounted<ReadingListQueryFunction>();
@@ -416,7 +465,6 @@ TEST_F(ReadingListApiUnitTest, NoEntriesRetrieved) {
       update_function.get(), kArgs, profile(),
       api_test_utils::FunctionMode::kNone);
 
-  // Verify that no entries were retrieved.
   EXPECT_EQ(entries.value().GetList().size(), 0u);
 }
 
@@ -430,7 +478,7 @@ TEST_F(ReadingListApiUnitTest, ReadingListOnEntryAdded) {
   ReadingListLoadObserver(reading_list_model).Wait();
 
   AddReadingListEntry(reading_list_model, GURL("https://www.example.com"),
-                      "example of title");
+                      "example of title", /*has_been_read=*/false);
 
   EXPECT_EQ(reading_list_model->size(), 1u);
 
@@ -439,7 +487,7 @@ TEST_F(ReadingListApiUnitTest, ReadingListOnEntryAdded) {
 }
 
 // Test that removing an entry generates an event.
-TEST_F(ReadingListApiUnitTest, ReadingListOnEntryWillBeRemoved) {
+TEST_F(ReadingListApiUnitTest, ReadingListOnEntryRemoved) {
   ReadingListModel* const reading_list_model =
       ReadingListModelFactory::GetForBrowserContext(profile());
 
@@ -447,7 +495,8 @@ TEST_F(ReadingListApiUnitTest, ReadingListOnEntryWillBeRemoved) {
 
   const GURL url = GURL("https://www.example.com");
 
-  AddReadingListEntry(reading_list_model, url, "example of title");
+  AddReadingListEntry(reading_list_model, url, "example of title",
+                      /*has_been_read=*/false);
   EXPECT_EQ(reading_list_model->size(), 1u);
 
   TestEventRouterObserver event_observer(EventRouter::Get(browser_context()));
@@ -456,9 +505,8 @@ TEST_F(ReadingListApiUnitTest, ReadingListOnEntryWillBeRemoved) {
   EXPECT_EQ(reading_list_model->size(), 0u);
 
   EXPECT_EQ(event_observer.events().size(), 1u);
-  EXPECT_TRUE(
-      base::Contains(event_observer.events(),
-                     api::reading_list::OnEntryWillBeRemoved::kEventName));
+  EXPECT_TRUE(base::Contains(event_observer.events(),
+                             api::reading_list::OnEntryRemoved::kEventName));
 }
 
 // Test that updating an entry generates an event.
@@ -470,12 +518,20 @@ TEST_F(ReadingListApiUnitTest, ReadingListOnEntryUpdated) {
 
   const GURL url = GURL("https://www.example.com");
 
-  AddReadingListEntry(reading_list_model, url, "example of title");
+  AddReadingListEntry(reading_list_model, url, "example of title",
+                      /*has_been_read=*/false);
   EXPECT_EQ(reading_list_model->size(), 1u);
   EXPECT_EQ(reading_list_model->GetEntryByURL(url)->Title(),
             "example of title");
 
   TestEventRouterObserver event_observer(EventRouter::Get(browser_context()));
+
+  reading_list_model->SetReadStatusIfExists(url, /*read=*/true);
+  EXPECT_TRUE(reading_list_model->GetEntryByURL(url)->IsRead());
+
+  EXPECT_EQ(event_observer.events().size(), 1u);
+  EXPECT_TRUE(base::Contains(event_observer.events(),
+                             api::reading_list::OnEntryUpdated::kEventName));
 
   reading_list_model->SetEntryTitleIfExists(url, "New title");
   EXPECT_EQ(reading_list_model->GetEntryByURL(url)->Title(), "New title");

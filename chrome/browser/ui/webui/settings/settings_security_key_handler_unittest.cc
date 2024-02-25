@@ -339,7 +339,7 @@ class MockLocalCredentialManagement : public LocalCredentialManagement {
       void,
       Enumerate,
       (base::OnceCallback<void(
-           absl::optional<std::vector<device::DiscoverableCredentialMetadata>>)>
+           std::optional<std::vector<device::DiscoverableCredentialMetadata>>)>
            callback));
   MOCK_METHOD(void,
               Delete,
@@ -423,7 +423,7 @@ TEST_F(PasskeysHandlerTest, TestHandleEdit) {
       });
   EXPECT_CALL(*weak_local_cred_man_, Enumerate)
       .WillOnce([](base::OnceCallback<
-                    void(absl::optional<
+                    void(std::optional<
                          std::vector<device::DiscoverableCredentialMetadata>>)>
                        callback) {
         std::vector<device::DiscoverableCredentialMetadata> credential_metadata{
@@ -462,7 +462,7 @@ TEST_F(PasskeysHandlerTest, TestRecordPasskeyDelete) {
   EXPECT_CALL(*weak_local_cred_man_, Enumerate)
       .WillOnce(
           [](base::OnceCallback<void(
-                 absl::optional<std::vector<
+                 std::optional<std::vector<
                      device::DiscoverableCredentialMetadata>>)> callback) {
             std::move(callback).Run(/*credential_metadata=*/{});
             base::RunLoop().RunUntilIdle();

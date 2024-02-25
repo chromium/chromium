@@ -6,8 +6,11 @@ module attribution_internals.mojom;
 
 import "components/attribution_reporting/registration.mojom";
 import "components/attribution_reporting/source_type.mojom";
-import "content/browser/attribution_reporting/store_source_result.mojom";
+import "components/attribution_reporting/trigger_data_matching.mojom";
+import "content/browser/attribution_reporting/aggregatable_result.mojom";
 import "content/browser/attribution_reporting/attribution_reporting.mojom";
+import "content/browser/attribution_reporting/event_level_result.mojom";
+import "content/browser/attribution_reporting/store_source_result.mojom";
 import "services/network/public/mojom/attribution.mojom";
 import "url/mojom/origin.mojom";
 import "url/mojom/url.mojom";
@@ -86,24 +89,34 @@ struct WebUIDebugReport {
 
 // Struct representing a stored attribution source that will be displayed by WebUI.
 struct WebUISource {
+  // The source's internal ID, unique across all sources in storage.
+  // Not intended to be displayed.
+  int64 id;
   uint64 source_event_id;
   url.mojom.Origin source_origin;
   attribution_reporting.mojom.DestinationSet destinations;
   url.mojom.Origin reporting_origin;
   double source_time;
   double expiry_time;
-  // TODO(crbug.com/1462699): Display `event_report_windows` and
-  // `max_event_level_reports` fields.
+  // String instead of mojo_base.mojom.DictionaryValue because the value is
+  // simply displayed in the UI, never inspected. JSON is used instead of
+  // attribution_reporting.mojom.TriggerSpecs to avoid complex TypeScript-based
+  // formatting.
+  string trigger_specs_json;
   double aggregatable_report_window_time;
+  int32 max_event_level_reports;
   attribution_reporting.mojom.SourceType source_type;
   int64 priority;
-  attribution_reporting.mojom.DebugKey? debug_key;
+  uint64? debug_key;
   array<uint64> dedup_keys;
-  map<string, array<string>> filter_data;
+  attribution_reporting.mojom.FilterData filter_data;
   // The value is a hex-encoded unsigned 128-bit integer.
   map<string, string> aggregation_keys;
   uint64 aggregatable_budget_consumed;
   array<uint64> aggregatable_dedup_keys;
+  attribution_reporting.mojom.TriggerDataMatching trigger_data_matching;
+  double event_level_epsilon;
+  bool debug_cookie_set;
 
   enum Attributability {
     kAttributable,
@@ -123,41 +136,15 @@ struct WebUIRegistration {
   // String instead of mojo_base.mojom.DictionaryValue because the value is
   // simply displayed in the UI, never inspected.
   string registration_json;
-  attribution_reporting.mojom.DebugKey? cleared_debug_key;
+  uint64? cleared_debug_key;
 };
 
 struct WebUITrigger {
   WebUIRegistration registration;
   array<network.mojom.TriggerVerification> verifications;
 
-  enum Status {
-    // Shared statuses:
-    kSuccess,
-    kInternalError,
-    kNoMatchingSources,
-    kNoMatchingSourceFilterData,
-    kNoReportCapacityForDestinationSite,
-    kExcessiveAttributions,
-    kExcessiveReportingOrigins,
-    kProhibitedByBrowserPolicy,
-    kDeduplicated,
-    kReportWindowNotStarted,
-    kReportWindowPassed,
-    kNotRegistered,
-    kExcessiveReports,
-
-    // Event-level statuses:
-    kLowPriority,
-    kNoised,
-    kNoMatchingConfigurations,
-
-    // Aggregatable statuses:
-    kNoHistograms,
-    kInsufficientBudget,
-  };
-
-  Status event_level_status;
-  Status aggregatable_status;
+  attribution_reporting.mojom.EventLevelResult event_level_result;
+  attribution_reporting.mojom.AggregatableResult aggregatable_result;
 };
 
 struct WebUISourceRegistration {
@@ -170,7 +157,7 @@ struct WebUISourceRegistration {
 // displayed as a log by WebUI.
 struct WebUIOsRegistration {
   // Contains msec since the Unix epoch, as returned by
-  // base::Time::ToJsTimeIgnoringNull().
+  // base::Time::InMillisecondsFSinceUnixEpochIgnoringNull().
   double time;
   url.mojom.Url registration_url;
   url.mojom.Origin top_level_origin;

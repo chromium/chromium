@@ -10,6 +10,7 @@
 #include "components/favicon/content/content_favicon_driver.h"
 #include "components/language/core/common/language_experiments.h"
 #include "components/sessions/content/session_tab_helper.h"
+#include "components/sync/base/features.h"
 #include "components/sync_sessions/synced_tab_delegate.h"
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/navigation_handle.h"
@@ -85,6 +86,19 @@ void SyncSessionsRouterTabHelper::DidOpenRequestedURL(
   // TODO(crbug.com/1007969): This is a relic from when we actually did change
   // something about the tab here. It should be safe to remove now.
   NotifyRouter();
+}
+
+void SyncSessionsRouterTabHelper::OnVisibilityChanged(
+    content::Visibility visibility) {
+  if (!base::FeatureList::IsEnabled(syncer::kSyncSessionOnVisibilityChanged)) {
+    return;
+  }
+
+  // Only notify a notification when the tab becomes visible. This is necessary
+  // to sync the last active time field.
+  if (visibility == content::Visibility::VISIBLE) {
+    NotifyRouter();
+  }
 }
 
 void SyncSessionsRouterTabHelper::OnLanguageDetermined(

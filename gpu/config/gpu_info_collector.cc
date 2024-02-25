@@ -11,6 +11,7 @@
 #include <utility>
 #include <vector>
 
+#include <optional>
 #include "base/base_paths.h"
 #include "base/command_line.h"
 #include "base/files/file_path.h"
@@ -27,7 +28,6 @@
 #include "gpu/config/gpu_switches.h"
 #include "gpu/config/webgpu_blocklist.h"
 #include "skia/buildflags.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/angle/src/gpu_info_util/SystemInfo.h"  // nogncheck
 #include "third_party/skia/include/core/SkGraphics.h"
 #include "ui/gl/buildflags.h"
@@ -52,7 +52,11 @@
 #include "ui/ozone/public/platform_gl_egl_utility.h"  // nogncheck
 #endif
 
-#if BUILDFLAG(USE_DAWN) || BUILDFLAG(SKIA_USE_DAWN)
+#if !BUILDFLAG(USE_DAWN) && BUILDFLAG(SKIA_USE_DAWN)
+#error "SKIA_USE_DAWN used without USE_DAWN is not supposed to work."
+#endif
+
+#if BUILDFLAG(USE_DAWN)
 #include "third_party/dawn/include/dawn/dawn_proc.h"          // nogncheck
 #include "third_party/dawn/include/dawn/native/DawnNative.h"  // nogncheck
 #include "third_party/dawn/include/dawn/webgpu.h"             // nogncheck
@@ -155,52 +159,6 @@ int StringContainsName(const std::string& str,
   return -1;
 }
 
-#if BUILDFLAG(USE_DAWN) || BUILDFLAG(SKIA_USE_DAWN)
-std::string GetDawnAdapterTypeString(wgpu::AdapterType type) {
-  switch (type) {
-    case wgpu::AdapterType::IntegratedGPU:
-      return "<Integrated GPU> ";
-    case wgpu::AdapterType::DiscreteGPU:
-      return "<Discrete GPU> ";
-    case wgpu::AdapterType::CPU:
-      return "<CPU> ";
-    default:
-      return "<Unknown GPU> ";
-  }
-}
-
-std::string GetDawnBackendTypeString(wgpu::BackendType type) {
-  switch (type) {
-    case wgpu::BackendType::D3D11:
-      return "D3D11 backend";
-    case wgpu::BackendType::D3D12:
-      return "D3D12 backend";
-    case wgpu::BackendType::Metal:
-      return "Metal backend";
-    case wgpu::BackendType::Vulkan:
-      return "Vulkan backend";
-    case wgpu::BackendType::OpenGL:
-      return "OpenGL backend";
-    case wgpu::BackendType::OpenGLES:
-      return "OpenGLES backend";
-    default:
-      NOTREACHED();
-      return "";
-  }
-}
-
-void AddTogglesToDawnInfoList(dawn::native::Instance* instance,
-                              const std::vector<const char*>& toggle_names,
-                              std::vector<std::string>* dawn_info_list) {
-  for (auto* name : toggle_names) {
-    const dawn::native::ToggleInfo* info = instance->GetToggleInfo(name);
-    dawn_info_list->push_back(info->name);
-    dawn_info_list->push_back(info->url);
-    dawn_info_list->push_back(info->description);
-  }
-}
-#endif
-
 std::string GetDisplayTypeString(gl::DisplayType type) {
   switch (type) {
     case gl::DEFAULT:
@@ -248,8 +206,55 @@ std::string GetDisplayTypeString(gl::DisplayType type) {
 }
 
 #if BUILDFLAG(USE_DAWN)
-void ForceDawnTogglesForWebGPU(
+std::string GetDawnAdapterTypeString(wgpu::AdapterType type) {
+  switch (type) {
+    case wgpu::AdapterType::IntegratedGPU:
+      return "<Integrated GPU> ";
+    case wgpu::AdapterType::DiscreteGPU:
+      return "<Discrete GPU> ";
+    case wgpu::AdapterType::CPU:
+      return "<CPU> ";
+    default:
+      return "<Unknown GPU> ";
+  }
+}
+
+std::string GetDawnBackendTypeString(wgpu::BackendType type) {
+  switch (type) {
+    case wgpu::BackendType::D3D11:
+      return "D3D11 backend";
+    case wgpu::BackendType::D3D12:
+      return "D3D12 backend";
+    case wgpu::BackendType::Metal:
+      return "Metal backend";
+    case wgpu::BackendType::Vulkan:
+      return "Vulkan backend";
+    case wgpu::BackendType::OpenGL:
+      return "OpenGL backend";
+    case wgpu::BackendType::OpenGLES:
+      return "OpenGLES backend";
+    default:
+      NOTREACHED();
+      return "";
+  }
+}
+
+void AddTogglesToDawnInfoList(dawn::native::Instance* instance,
+                              const std::vector<const char*>& toggle_names,
+                              std::vector<std::string>* dawn_info_list) {
+  for (auto* name : toggle_names) {
+    const dawn::native::ToggleInfo* info = instance->GetToggleInfo(name);
+    if (info) {
+      dawn_info_list->push_back(info->name);
+      dawn_info_list->push_back(info->url);
+      dawn_info_list->push_back(info->description);
+    }
+  }
+}
+
+void GetDawnTogglesForWebGPU(
     bool enable_unsafe_webgpu,
+    bool enable_webgpu_developer_features,
     const std::vector<std::string>& enabled_preference,
     const std::vector<std::string>& disabled_preference,
     std::vector<const char*>* force_enabled_toggles,
@@ -258,6 +263,13 @@ void ForceDawnTogglesForWebGPU(
   // is secure), unless --enable-unsafe-webgpu is used.
   if (!enable_unsafe_webgpu) {
     force_enabled_toggles->push_back("disallow_spirv");
+  }
+  // Enable timestamp quantization by default for privacy, unless
+  // --enable-webgpu-developer-features is used.
+  if (!enable_webgpu_developer_features) {
+    force_enabled_toggles->push_back("timestamp_quantization");
+  } else {
+    force_disabled_toggles->push_back("timestamp_quantization");
   }
 
   for (const std::string& toggle : enabled_preference) {
@@ -268,9 +280,9 @@ void ForceDawnTogglesForWebGPU(
     force_disabled_toggles->push_back(toggle.c_str());
   }
 }
-#endif
+
 #if BUILDFLAG(SKIA_USE_DAWN)
-void ForceDawnTogglesForSkiaGraphite(
+void GetDawnTogglesForSkiaGraphite(
     std::vector<const char*>* force_enabled_toggles,
     std::vector<const char*>* force_disabled_toggles) {
 #if DCHECK_IS_ON()
@@ -281,9 +293,7 @@ void ForceDawnTogglesForSkiaGraphite(
   force_disabled_toggles->push_back("lazy_clear_resource_on_first_use");
 #endif
 }
-#endif
-
-#if BUILDFLAG(USE_DAWN) || BUILDFLAG(SKIA_USE_DAWN)
+#endif  // BUILDFLAG(SKIA_USE_DAWN)
 
 void ReportWebGPUAdapterMetrics(dawn::native::Instance* instance) {
   static BASE_FEATURE(kCollectDawnGpuMetrics, "CollectDawnGpuMetrics",
@@ -303,6 +313,8 @@ void ReportWebGPUAdapterMetrics(dawn::native::Instance* instance) {
 #else
   adapter_options.backendType = WGPUBackendType_Vulkan;
 #endif
+
+  bool supports_shader_f16 = false;
   for (dawn::native::Adapter& adapter :
        instance->EnumerateAdapters(&adapter_options)) {
     adapter.SetUseTieredLimits(false);
@@ -326,6 +338,9 @@ void ReportWebGPUAdapterMetrics(dawn::native::Instance* instance) {
       max_limits = limits.limits;
       adapter_type = props.adapterType;
     }
+
+    supports_shader_f16 |=
+        wgpu::Adapter(adapter.Get()).HasFeature(wgpu::FeatureName::ShaderF16);
   }
 
   bool has_gpu_adapter = adapter_type != wgpu::AdapterType::Unknown;
@@ -340,10 +355,23 @@ void ReportWebGPUAdapterMetrics(dawn::native::Instance* instance) {
     base::UmaHistogramCounts100000(
         "GPU.WebGPU.MaxTextureDimension2D." + adapter_string,
         max_limits.maxTextureDimension2D);
+
+    base::UmaHistogramBoolean("GPU.WebGPU.Support.ShaderF16",
+                              supports_shader_f16);
   }
 }
 
 void ReportWebGPUSupportMetrics(dawn::native::Instance* instance) {
+  static BASE_FEATURE(kCollectWebGPUSupportMetrics,
+                      "CollectWebGPUSupportMetrics",
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_LINUX)
+                      base::FEATURE_DISABLED_BY_DEFAULT);
+#else
+                      base::FEATURE_ENABLED_BY_DEFAULT);
+#endif
+  if (!base::FeatureList::IsEnabled(kCollectWebGPUSupportMetrics)) {
+    return;
+  }
   // Note: These enum values should not change and should match those in
   // //tools/metrics/histograms/enums.xml
   enum class WebGPUSupport {
@@ -434,7 +462,7 @@ void ReportWebGPUSupportMetrics(dawn::native::Instance* instance) {
   UMA_HISTOGRAM_ENUMERATION("GPU.WebGPU.Support", tier);
   ReportWebGPUAdapterMetrics(instance);
 }
-#endif  // BUILDFLAG(USE_DAWN) || BUILDFLAG(SKIA_USE_DAWN)
+#endif  // BUILDFLAG(USE_DAWN)
 
 }  // namespace
 
@@ -492,8 +520,9 @@ bool CollectBasicGraphicsInfo(const base::CommandLine* command_line,
                               GPUInfo* gpu_info) {
   // In the info-collection GPU process on Windows, we get the device info from
   // the browser.
-  if (CollectGraphicsDeviceInfoFromCommandLine(command_line, gpu_info))
+  if (CollectGraphicsDeviceInfoFromCommandLine(command_line, gpu_info)) {
     return true;
+  }
 
   // We can't check if passthrough is supported yet because GL may not be
   // initialized.
@@ -501,7 +530,7 @@ bool CollectBasicGraphicsInfo(const base::CommandLine* command_line,
       gl::UsePassthroughCommandDecoder(command_line);
 
   bool fallback_to_software = false;
-  absl::optional<gl::GLImplementationParts> implementation =
+  std::optional<gl::GLImplementationParts> implementation =
       gl::GetRequestedGLImplementationFromCommandLine(command_line,
                                                       &fallback_to_software);
 
@@ -576,10 +605,12 @@ bool CollectGraphicsInfoGL(GPUInfo* gpu_info, gl::GLDisplay* display) {
   gl::GLVersionInfo gl_info(gpu_info->gl_version.c_str(),
                             gpu_info->gl_renderer.c_str(), extension_set);
   GPUInfo::GPUDevice& active_gpu = gpu_info->active_gpu();
-  if (!gl_info.driver_vendor.empty() && active_gpu.driver_vendor.empty())
+  if (!gl_info.driver_vendor.empty() && active_gpu.driver_vendor.empty()) {
     active_gpu.driver_vendor = gl_info.driver_vendor;
-  if (!gl_info.driver_version.empty() && active_gpu.driver_version.empty())
+  }
+  if (!gl_info.driver_version.empty() && active_gpu.driver_version.empty()) {
     active_gpu.driver_version = gl_info.driver_version;
+  }
 
   GLint max_samples = 0;
   if (gl_info.IsAtLeastGL(3, 0) || gl_info.IsAtLeastGLES(3, 0) ||
@@ -592,7 +623,6 @@ bool CollectGraphicsInfoGL(GPUInfo* gpu_info, gl::GLDisplay* display) {
     glGetIntegerv(GL_MAX_SAMPLES, &max_samples);
   }
   gpu_info->max_msaa_samples = base::NumberToString(max_samples);
-  base::UmaHistogramSparse("GPU.MaxMSAASampleCount", max_samples);
 
 #if BUILDFLAG(IS_ANDROID)
   gpu_info->can_support_threaded_texture_mailbox =
@@ -803,7 +833,7 @@ bool CollectGpuExtraInfo(gfx::GpuExtraInfo* gpu_extra_info,
 void CollectDawnInfo(const gpu::GpuPreferences& gpu_preferences,
                      bool collect_metrics,
                      std::vector<std::string>* dawn_info_list) {
-#if BUILDFLAG(USE_DAWN) || BUILDFLAG(SKIA_USE_DAWN)
+#if BUILDFLAG(USE_DAWN)
   DawnProcTable procs = dawn::native::GetProcs();
   dawnProcSetProcs(&procs);
 
@@ -829,13 +859,34 @@ void CollectDawnInfo(const gpu::GpuPreferences& gpu_preferences,
   }
   const char* dawn_search_path_c_str = dawn_search_path.c_str();
 
-  wgpu::DawnInstanceDescriptor dawn_instance_desc = {};
+  // Get the list of required toggles for WebGPU.
+  std::vector<const char*> required_enabled_toggles_webgpu;
+  std::vector<const char*> required_disabled_toggles_webgpu;
+
+  GetDawnTogglesForWebGPU(gpu_preferences.enable_unsafe_webgpu,
+                          gpu_preferences.enable_webgpu_developer_features,
+                          gpu_preferences.enabled_dawn_features_list,
+                          gpu_preferences.disabled_dawn_features_list,
+                          &required_enabled_toggles_webgpu,
+                          &required_disabled_toggles_webgpu);
+
+  // Build toggles descriptor for instance, adapters and devices.
+  wgpu::DawnTogglesDescriptor dawn_toggles;
+
+  dawn_toggles.enabledToggleCount = required_enabled_toggles_webgpu.size();
+  dawn_toggles.enabledToggles = required_enabled_toggles_webgpu.data();
+  dawn_toggles.disabledToggleCount = required_disabled_toggles_webgpu.size();
+  dawn_toggles.disabledToggles = required_disabled_toggles_webgpu.data();
+
+  dawn::native::DawnInstanceDescriptor dawn_instance_desc = {};
   dawn_instance_desc.additionalRuntimeSearchPathsCount =
       dawn_search_path.empty() ? 0u : 1u;
   dawn_instance_desc.additionalRuntimeSearchPaths = &dawn_search_path_c_str;
 
   wgpu::InstanceDescriptor instance_desc = {};
   instance_desc.nextInChain = &dawn_instance_desc;
+  // Create instance with Dawn toggles.
+  dawn_instance_desc.nextInChain = &dawn_toggles;
 
   auto instance = std::make_unique<dawn::native::Instance>(
       reinterpret_cast<const WGPUInstanceDescriptor*>(&instance_desc));
@@ -844,8 +895,11 @@ void CollectDawnInfo(const gpu::GpuPreferences& gpu_preferences,
     return;
   }
 
-  // Enumerate adapters with default toggles
-  std::vector<dawn::native::Adapter> adapters = instance->EnumerateAdapters();
+  // Enumerate adapters with required toggles.
+  wgpu::RequestAdapterOptions adapter_options = {};
+  adapter_options.nextInChain = &dawn_toggles;
+  std::vector<dawn::native::Adapter> adapters = instance->EnumerateAdapters(
+      reinterpret_cast<const WGPURequestAdapterOptions*>(&adapter_options));
 
   for (dawn::native::Adapter& adapter : adapters) {
     wgpu::AdapterProperties properties;
@@ -871,14 +925,24 @@ void CollectDawnInfo(const gpu::GpuPreferences& gpu_preferences,
         dawn_info_list->push_back("Available");
       }
 
+      // Get supported features under required adapter toggles if Dawn
+      // available, or default toggles otherwise.
+      dawn_info_list->push_back("[Adapter Supported Features]");
+      for (const char* name : adapter.GetSupportedFeatures()) {
+        dawn_info_list->push_back(name);
+      }
+
       // Scope the lifetime of |device| to avoid accidental use after release.
       {
-        auto* device = adapter.CreateDevice();
+        // If Dawn is available, create the device with Dawn toggles.
+        wgpu::DeviceDescriptor device_descriptor = {};
+        device_descriptor.nextInChain = &dawn_toggles;
+        auto* device = adapter.CreateDevice(&device_descriptor);
         // CreateDevice can return null if the device has been removed or we've
         // run out of memory. Ensure we don't crash in these instances.
         if (device) {
           // Get the list of enabled toggles on the device
-          dawn_info_list->push_back("[Default Toggle Names]");
+          dawn_info_list->push_back("[Enabled Toggle Names]");
           std::vector<const char*> toggle_names =
               dawn::native::GetTogglesUsed(device);
           AddTogglesToDawnInfoList(instance.get(), toggle_names,
@@ -887,62 +951,45 @@ void CollectDawnInfo(const gpu::GpuPreferences& gpu_preferences,
         }
       }
 
-#if BUILDFLAG(USE_DAWN)
-      // Get the list of forced toggles for WebGPU.
-      std::vector<const char*> force_enabled_toggles_webgpu;
-      std::vector<const char*> force_disabled_toggles_webgpu;
-      ForceDawnTogglesForWebGPU(gpu_preferences.enable_unsafe_webgpu,
-                                gpu_preferences.enabled_dawn_features_list,
-                                gpu_preferences.disabled_dawn_features_list,
-                                &force_enabled_toggles_webgpu,
-                                &force_disabled_toggles_webgpu);
-
-      if (!force_enabled_toggles_webgpu.empty()) {
-        dawn_info_list->push_back("[WebGPU Forced Toggles - enabled]");
-        AddTogglesToDawnInfoList(instance.get(), force_enabled_toggles_webgpu,
-                                 dawn_info_list);
+      if (!required_enabled_toggles_webgpu.empty()) {
+        dawn_info_list->push_back("[WebGPU Required Toggles - enabled]");
+        AddTogglesToDawnInfoList(
+            instance.get(), required_enabled_toggles_webgpu, dawn_info_list);
       }
 
-      if (!force_disabled_toggles_webgpu.empty()) {
-        dawn_info_list->push_back("[WebGPU Forced Toggles - disabled]");
-        AddTogglesToDawnInfoList(instance.get(), force_disabled_toggles_webgpu,
-                                 dawn_info_list);
+      if (!required_disabled_toggles_webgpu.empty()) {
+        dawn_info_list->push_back("[WebGPU Required Toggles - disabled]");
+        AddTogglesToDawnInfoList(
+            instance.get(), required_disabled_toggles_webgpu, dawn_info_list);
       }
-#endif
 
 #if BUILDFLAG(SKIA_USE_DAWN)
       if (gpu_preferences.gr_context_type == GrContextType::kGraphiteDawn) {
-        // Get the list of forced toggles for Skia.
+        // Get the list of required toggles for Skia.
         // TODO(sunnyps): Ideally these should come from a single source of
         // truth e.g. from DawnContextProvider or a common helper, instead of
         // just assuming some values here.
         std::vector<const char*> force_enabled_toggles_skia;
         std::vector<const char*> force_disabled_toggles_skia;
-        ForceDawnTogglesForSkiaGraphite(&force_enabled_toggles_skia,
-                                        &force_disabled_toggles_skia);
+        GetDawnTogglesForSkiaGraphite(&force_enabled_toggles_skia,
+                                      &force_disabled_toggles_skia);
 
         if (!force_enabled_toggles_skia.empty()) {
-          dawn_info_list->push_back("[Skia Forced Toggles - enabled]");
+          dawn_info_list->push_back("[Skia Required Toggles - enabled]");
           AddTogglesToDawnInfoList(instance.get(), force_enabled_toggles_skia,
                                    dawn_info_list);
         }
 
         if (!force_disabled_toggles_skia.empty()) {
-          dawn_info_list->push_back("[Skia Forced Toggles - disabled]");
+          dawn_info_list->push_back("[Skia Required Toggles - disabled]");
           AddTogglesToDawnInfoList(instance.get(), force_disabled_toggles_skia,
                                    dawn_info_list);
         }
       }
-#endif
-
-      // Get supported features under default adapter toggles.
-      dawn_info_list->push_back("[Default Supported Features]");
-      for (const char* name : adapter.GetSupportedFeatures()) {
-        dawn_info_list->push_back(name);
-      }
+#endif  // BUILDFLAG(SKIA_USE_DAWN)
     }
   }
-#endif
+#endif  // BUILDFLAG(USE_DAWN)
 }
 
 }  // namespace gpu

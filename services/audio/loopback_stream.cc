@@ -79,7 +79,7 @@ LoopbackStream::LoopbackStream(
       socket_handle = mojo::PlatformHandle(foreign_socket.Take());
       if (socket_handle.is_valid()) {
         std::move(created_callback)
-            .Run({absl::in_place, std::move(shared_memory_region),
+            .Run({std::in_place, std::move(shared_memory_region),
                   std::move(socket_handle)});
         network_.reset(new FlowNetwork(std::move(flow_task_runner), params,
                                        std::move(writer)));
@@ -317,7 +317,7 @@ void LoopbackStream::FlowNetwork::GenerateMoreAudio() {
     // underruns in the inputs. http://crbug.com/934770
     delayed_capture_time = next_generate_time_ - capture_delay_;
     for (SnooperNode* node : inputs_) {
-      const absl::optional<base::TimeTicks> suggestion =
+      const std::optional<base::TimeTicks> suggestion =
           node->SuggestLatestRenderTime(mix_bus_->frames());
       if (suggestion.value_or(delayed_capture_time) < delayed_capture_time) {
         const base::TimeDelta increase = delayed_capture_time - (*suggestion);

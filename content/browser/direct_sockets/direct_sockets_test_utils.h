@@ -6,12 +6,14 @@
 #define CONTENT_BROWSER_DIRECT_SOCKETS_DIRECT_SOCKETS_TEST_UTILS_H_
 
 #include <stdint.h>
+
 #include <memory>
+#include <optional>
 #include <string>
 
 #include "base/containers/span.h"
 #include "base/functional/callback_forward.h"
-#include "base/strings/string_piece_forward.h"
+#include "base/strings/string_piece.h"
 #include "base/test/test_future.h"
 #include "base/token.h"
 #include "content/public/browser/web_contents.h"
@@ -24,7 +26,6 @@
 #include "services/network/test/test_network_context_with_host_resolver.h"
 #include "services/network/test/test_restricted_udp_socket.h"
 #include "services/network/test/test_udp_socket.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace url {
 class Origin;
@@ -51,7 +52,7 @@ class MockUDPSocket : public network::TestUDPSocket {
 
   // Sends some data to the remote.
   void MockSend(int32_t result,
-                const absl::optional<base::span<uint8_t>>& data = {});
+                const std::optional<base::span<uint8_t>>& data = {});
 
   mojo::Remote<network::mojom::UDPSocketListener>& get_listener() {
     return listener_;
@@ -70,7 +71,7 @@ class MockUDPSocket : public network::TestUDPSocket {
  protected:
   mojo::Remote<network::mojom::UDPSocketListener> listener_;
 
-  absl::optional<int> next_send_result_;
+  std::optional<int> next_send_result_;
 
   SendCallback callback_;
   base::OnceClosure additional_send_callback_;
@@ -180,10 +181,9 @@ class IsolatedWebAppContentBrowserClient
   bool ShouldUrlUseApplicationIsolationLevel(BrowserContext* browser_context,
                                              const GURL& url) override;
 
-  absl::optional<blink::ParsedPermissionsPolicy>
-  GetPermissionsPolicyForIsolatedWebApp(
-      content::BrowserContext* browser_context,
-      const url::Origin& app_origin) override;
+  std::optional<blink::ParsedPermissionsPolicy>
+  GetPermissionsPolicyForIsolatedWebApp(WebContents* web_contents,
+                                        const url::Origin& app_origin) override;
 
  private:
   url::Origin isolated_app_origin_;

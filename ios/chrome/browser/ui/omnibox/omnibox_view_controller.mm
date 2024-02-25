@@ -6,13 +6,14 @@
 
 #import "base/containers/contains.h"
 #import "base/functional/bind.h"
+#import "base/memory/raw_ptr.h"
 #import "base/metrics/user_metrics.h"
 #import "base/metrics/user_metrics_action.h"
 #import "base/strings/sys_string_conversions.h"
 #import "components/omnibox/browser/omnibox_field_trial.h"
 #import "components/open_from_clipboard/clipboard_recent_content.h"
 #import "components/strings/grit/components_strings.h"
-#import "ios/chrome/browser/default_browser/utils.h"
+#import "ios/chrome/browser/default_browser/model/utils.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
@@ -41,7 +42,7 @@ const CGFloat kClearButtonImageSize = 17.0f;
                                      OmniboxKeyboardDelegate,
                                      UIScribbleInteractionDelegate> {
   // Weak, acts as a delegate
-  OmniboxTextChangeDelegate* _textChangeDelegate;
+  raw_ptr<OmniboxTextChangeDelegate> _textChangeDelegate;
 }
 
 // Override of UIViewController's view with a different type.
@@ -131,7 +132,7 @@ const CGFloat kClearButtonImageSize = 17.0f;
 
 - (void)viewDidLoad {
   [super viewDidLoad];
-
+#if !defined(__IPHONE_16_0) || __IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_16_0
   // Add Paste and Go option to the editing menu
   RegisterEditMenuItem([[UIMenuItem alloc]
       initWithTitle:l10n_util::GetNSString(IDS_IOS_SEARCH_COPIED_IMAGE)
@@ -146,6 +147,7 @@ const CGFloat kClearButtonImageSize = 17.0f;
   RegisterEditMenuItem([[UIMenuItem alloc]
       initWithTitle:l10n_util::GetNSString(IDS_IOS_SEARCH_COPIED_TEXT)
              action:@selector(searchCopiedText:)]);
+#endif
 
   self.textField.placeholderTextColor = [self placeholderAndClearButtonColor];
   self.textField.placeholder = l10n_util::GetNSString(IDS_OMNIBOX_EMPTY_HINT);
@@ -207,6 +209,7 @@ const CGFloat kClearButtonImageSize = 17.0f;
   if (_isTextfieldEditing == owns) {
     return;
   }
+#if !defined(__IPHONE_16_0) || __IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_16_0
   if (owns) {
     [[NSNotificationCenter defaultCenter]
         addObserver:self
@@ -219,7 +222,12 @@ const CGFloat kClearButtonImageSize = 17.0f;
                   name:UIMenuControllerWillShowMenuNotification
                 object:nil];
   }
+#endif
   _isTextfieldEditing = owns;
+}
+
+- (UIView<TextFieldViewContaining>*)viewContainingTextField {
+  return self.view;
 }
 
 #pragma mark - public methods
@@ -424,6 +432,59 @@ const CGFloat kClearButtonImageSize = 17.0f;
   }
 }
 
+- (UIMenu*)textField:(UITextField*)textField
+    editMenuForCharactersInRange:(NSRange)range
+                suggestedActions:(NSArray<UIMenuElement*>*)suggestedActions
+    API_AVAILABLE(ios(16)) {
+  NSMutableArray* actions = [suggestedActions mutableCopy];
+  if ([self canPerformAction:@selector(searchCopiedImage:) withSender:nil]) {
+    UIAction* searchCopiedImage = [UIAction
+        actionWithTitle:l10n_util::GetNSString(IDS_IOS_SEARCH_COPIED_IMAGE)
+                  image:nil
+             identifier:nil
+                handler:^(__kindof UIAction* _Nonnull action) {
+                  [self searchCopiedImage:nil];
+                }];
+    [actions addObject:searchCopiedImage];
+  }
+
+  if ([self canPerformAction:@selector(lensCopiedImage:) withSender:nil]) {
+    UIAction* searchCopiedImageWithLens =
+        [UIAction actionWithTitle:l10n_util::GetNSString(
+                                      IDS_IOS_SEARCH_COPIED_IMAGE_WITH_LENS)
+                            image:nil
+                       identifier:nil
+                          handler:^(__kindof UIAction* _Nonnull action) {
+                            [self lensCopiedImage:nil];
+                          }];
+    [actions addObject:searchCopiedImageWithLens];
+  }
+
+  if ([self canPerformAction:@selector(visitCopiedLink:) withSender:nil]) {
+    UIAction* visitCopiedLink = [UIAction
+        actionWithTitle:l10n_util::GetNSString(IDS_IOS_VISIT_COPIED_LINK)
+                  image:nil
+             identifier:nil
+                handler:^(__kindof UIAction* _Nonnull action) {
+                  [self visitCopiedLink:nil];
+                }];
+    [actions addObject:visitCopiedLink];
+  }
+
+  if ([self canPerformAction:@selector(searchCopiedText:) withSender:nil]) {
+    UIAction* searchCopiedText = [UIAction
+        actionWithTitle:l10n_util::GetNSString(IDS_IOS_SEARCH_COPIED_TEXT)
+                  image:nil
+             identifier:nil
+                handler:^(__kindof UIAction* _Nonnull action) {
+                  [self searchCopiedText:nil];
+                }];
+    [actions addObject:searchCopiedText];
+  }
+
+  return [UIMenu menuWithChildren:actions];
+}
+
 #pragma mark - OmniboxConsumer
 
 - (void)updateAutocompleteIcon:(UIImage*)icon
@@ -445,20 +506,8 @@ const CGFloat kClearButtonImageSize = 17.0f;
 
 #pragma mark - EditViewAnimatee
 
-- (void)setLeadingIconFaded:(BOOL)faded {
-  CATransition* transition = [CATransition animation];
-  transition.duration = 0.3;
-  transition.timingFunction = [CAMediaTimingFunction
-      functionWithName:kCAMediaTimingFunctionEaseInEaseOut];
-  transition.type = kCATransitionFade;
-  [self.view.layer addAnimation:transition forKey:nil];
-  if (faded) {
-    [self.view setLeadingImageAlpha:0];
-    [self.view setLeadingImageScale:0];
-  } else {
-    [self.view setLeadingImageAlpha:1];
-    [self.view setLeadingImageScale:1];
-  }
+- (void)setLeadingIconScale:(CGFloat)scale {
+  [self.view setLeadingImageScale:scale];
 }
 
 - (void)setClearButtonFaded:(BOOL)faded {
@@ -537,6 +586,7 @@ const CGFloat kClearButtonImageSize = 17.0f;
       }));
 }
 
+#if !defined(__IPHONE_16_0) || __IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_16_0
 - (void)menuControllerWillShow:(NSNotification*)notification {
   if (self.showingEditMenu || !self.isTextfieldEditing ||
       !self.textField.window.isKeyWindow) {
@@ -556,6 +606,7 @@ const CGFloat kClearButtonImageSize = 17.0f;
 
   self.showingEditMenu = NO;
 }
+#endif
 
 - (void)pasteboardDidChange:(NSNotification*)notification {
   [self updateCachedClipboardState];
@@ -702,8 +753,8 @@ const CGFloat kClearButtonImageSize = 17.0f;
 
 #pragma mark - UIScribbleInteractionDelegate
 
-- (void)scribbleInteractionWillBeginWriting:(UIScribbleInteraction*)interaction
-    API_AVAILABLE(ios(14.0)) {
+- (void)scribbleInteractionWillBeginWriting:
+    (UIScribbleInteraction*)interaction {
   if (self.textField.isPreEditing) {
     [self.textField exitPreEditState];
     [self.textField setText:[[NSAttributedString alloc] initWithString:@""]
@@ -713,8 +764,8 @@ const CGFloat kClearButtonImageSize = 17.0f;
   [self.textField clearAutocompleteText];
 }
 
-- (void)scribbleInteractionDidFinishWriting:(UIScribbleInteraction*)interaction
-    API_AVAILABLE(ios(14.0)) {
+- (void)scribbleInteractionDidFinishWriting:
+    (UIScribbleInteraction*)interaction {
   [self cleanupOmniboxAfterScribble];
 
   // Dismiss any inline autocomplete. The user expectation is to not have it.

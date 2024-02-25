@@ -123,17 +123,15 @@ class SystemLiveCaptionServiceTest : public InProcessBrowserTest {
         &profiles::testing::CreateProfileSync(profile_manager, profile_path);
     CHECK(secondary_profile_);
 
-    // Replace our CrosSpeechRecognitionService with a fake one. We can pass a
-    // unique_ptr into this lambda since it is only called once (despite being
-    // "repeating").
-    auto service = std::make_unique<speech::FakeSpeechRecognitionService>();
-    fake_speech_recognition_service_ = service.get();
-    const auto spawn_test_service =
-        base::BindRepeating([](std::unique_ptr<KeyedService> s,
-                               content::BrowserContext*) { return s; },
-                            base::Passed(std::move(service)));
-    CrosSpeechRecognitionServiceFactory::GetInstanceForTest()
-        ->SetTestingFactoryAndUse(primary_profile_, spawn_test_service);
+    // Replace our CrosSpeechRecognitionService with a fake one.
+    fake_speech_recognition_service_ =
+        CrosSpeechRecognitionServiceFactory::GetInstanceForTest()
+            ->SetTestingSubclassFactoryAndUse(
+                primary_profile_,
+                base::BindRepeating([](content::BrowserContext*) {
+                  return std::make_unique<
+                      speech::FakeSpeechRecognitionService>();
+                }));
 
     // Pass in an inert audio system backend.
     SystemLiveCaptionServiceFactory::GetInstance()
@@ -185,10 +183,9 @@ class SystemLiveCaptionServiceTest : public InProcessBrowserTest {
   }
 
   // Unowned.
-  raw_ptr<Profile, DanglingUntriaged | ExperimentalAsh> primary_profile_;
-  raw_ptr<Profile, DanglingUntriaged | ExperimentalAsh> secondary_profile_;
-  raw_ptr<speech::FakeSpeechRecognitionService,
-          DanglingUntriaged | ExperimentalAsh>
+  raw_ptr<Profile, DanglingUntriaged> primary_profile_;
+  raw_ptr<Profile, DanglingUntriaged> secondary_profile_;
+  raw_ptr<speech::FakeSpeechRecognitionService, DanglingUntriaged>
       fake_speech_recognition_service_;
 
   base::test::ScopedFeatureList scoped_feature_list_;

@@ -9,7 +9,7 @@ import './strings.m.js';
 import {CustomElement} from 'chrome://resources/js/custom_element.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 
-import {Conflict, PolicyConflictElement} from './policy_conflict.js';
+import type {Conflict, PolicyConflictElement} from './policy_conflict.js';
 import {getTemplate} from './policy_row.html.js';
 
 export interface Policy {
@@ -85,8 +85,7 @@ export class PolicyRowElement extends CustomElement {
     const nameDisplay = this.shadowRoot!.querySelector('.name .link span');
     nameDisplay!.textContent = policy.name;
     if (policy.link) {
-      const link =
-          this.shadowRoot!.querySelector('.name .link') as HTMLAnchorElement;
+      const link = this.getRequiredElement<HTMLAnchorElement>('.name .link');
       link.href = policy.link;
       link.title = loadTimeData.getStringF('policyLearnMore', policy.name);
       this.toggleAttribute('no-help-link', false);
@@ -149,9 +148,8 @@ export class PolicyRowElement extends CustomElement {
       const valueDisplay = this.shadowRoot!.querySelector('.value');
       valueDisplay!.textContent = truncatedValue;
 
-      const copyLink =
-          this.shadowRoot!.querySelector('.copy .link') as HTMLElement;
-      copyLink!.title = loadTimeData.getStringF('policyCopyValue', policy.name);
+      const copyLink = this.getRequiredElement('.copy .link');
+      copyLink.title = loadTimeData.getStringF('policyCopyValue', policy.name);
 
       const valueRowContentDisplay =
           this.shadowRoot!.querySelector('.value.row .value');
@@ -248,29 +246,21 @@ export class PolicyRowElement extends CustomElement {
 
   // Toggle the visibility of an additional row containing the complete text.
   private toggleExpanded() {
-    const warningRowDisplay =
-        this.shadowRoot!.querySelector('.warnings.row') as CustomElement;
-    const errorRowDisplay =
-        this.shadowRoot!.querySelector('.errors.row') as CustomElement;
-    const infoRowDisplay =
-        this.shadowRoot!.querySelector('.infos.row') as CustomElement;
-    const valueRowDisplay =
-        this.shadowRoot!.querySelector('.value.row') as CustomElement;
+    const warningRowDisplay = this.getRequiredElement('.warnings.row');
+    const errorRowDisplay = this.getRequiredElement('.errors.row');
+    const infoRowDisplay = this.getRequiredElement('.infos.row');
+    const valueRowDisplay = this.getRequiredElement('.value.row');
     // <if expr="is_android or is_ios">
-    const scopeRowDisplay =
-        this.shadowRoot!.querySelector('.scope.row') as CustomElement;
+    const scopeRowDisplay = this.getRequiredElement('.scope.row');
     scopeRowDisplay.hidden = !scopeRowDisplay.hidden;
-    const levelRowDisplay =
-        this.shadowRoot!.querySelector('.level.row') as CustomElement;
+    const levelRowDisplay = this.getRequiredElement('.level.row');
     levelRowDisplay.hidden = !levelRowDisplay.hidden;
     // </if>
     valueRowDisplay.hidden = !valueRowDisplay.hidden;
     this.classList!.toggle('expanded', !valueRowDisplay.hidden);
 
-    this.shadowRoot!.querySelector<CustomElement>('.show-more')!.hidden =
-        !valueRowDisplay.hidden;
-    this.shadowRoot!.querySelector<CustomElement>('.show-less')!.hidden =
-        valueRowDisplay!.hidden;
+    this.getRequiredElement('.show-more').hidden = !valueRowDisplay.hidden;
+    this.getRequiredElement('.show-less').hidden = valueRowDisplay!.hidden;
     if (this.hasWarnings_) {
       warningRowDisplay!.hidden = !warningRowDisplay.hidden;
     }
@@ -280,9 +270,9 @@ export class PolicyRowElement extends CustomElement {
     if (this.hasInfos_) {
       infoRowDisplay!.hidden = !infoRowDisplay.hidden;
     }
-    this.shadowRoot!.querySelectorAll<HTMLElement>('.policy-conflict-data')!
+    this.shadowRoot!.querySelectorAll<HTMLElement>('.policy-conflict-data')
         .forEach(row => row!.hidden = !row.hidden);
-    this.shadowRoot!.querySelectorAll<HTMLElement>('.policy-superseded-data')!
+    this.shadowRoot!.querySelectorAll<HTMLElement>('.policy-superseded-data')
         .forEach(row => row!.hidden = !row.hidden);
   }
 }

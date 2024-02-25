@@ -4,12 +4,12 @@
 
 #include "ash/components/arc/intent_helper/intent_filter_mojom_traits.h"
 
+#include <optional>
 #include <string>
 #include <utility>
 #include <vector>
 
 #include "base/strings/string_util.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace mojo {
 
@@ -24,7 +24,7 @@ bool StructTraits<arc::mojom::IntentFilterDataView, arc::IntentFilter>::Read(
   if (!data.ReadDataPaths(&paths))
     return false;
 
-  absl::optional<std::string> package_name;
+  std::optional<std::string> package_name;
   if (!data.ReadPackageName(&package_name))
     return false;
 
@@ -40,11 +40,11 @@ bool StructTraits<arc::mojom::IntentFilterDataView, arc::IntentFilter>::Read(
   if (!data.ReadMimeTypes(&mime_types))
     return false;
 
-  absl::optional<std::string> activity_name;
+  std::optional<std::string> activity_name;
   if (!data.ReadActivityName(&activity_name))
     return false;
 
-  absl::optional<std::string> activity_label;
+  std::optional<std::string> activity_label;
   if (!data.ReadActivityLabel(&activity_label))
     return false;
 

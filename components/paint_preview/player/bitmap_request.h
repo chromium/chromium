@@ -5,10 +5,11 @@
 #ifndef COMPONENTS_PAINT_PREVIEW_PLAYER_BITMAP_REQUEST_H_
 #define COMPONENTS_PAINT_PREVIEW_PLAYER_BITMAP_REQUEST_H_
 
+#include <optional>
+
 #include "base/functional/callback.h"
 #include "base/unguessable_token.h"
 #include "components/services/paint_preview_compositor/public/mojom/paint_preview_compositor.mojom.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/gfx/geometry/rect.h"
 
@@ -19,7 +20,7 @@ struct BitmapRequest {
       base::OnceCallback<void(mojom::PaintPreviewCompositor::BitmapStatus,
                               const SkBitmap&)>;
 
-  BitmapRequest(const absl::optional<base::UnguessableToken>& frame_guid,
+  BitmapRequest(const std::optional<base::UnguessableToken>& frame_guid,
                 const gfx::Rect& clip_rect,
                 float scale_factor,
                 BitmapRequestCallback callback,
@@ -29,7 +30,7 @@ struct BitmapRequest {
   BitmapRequest& operator=(BitmapRequest&& other) noexcept;
   BitmapRequest(BitmapRequest&& other) noexcept;
 
-  absl::optional<base::UnguessableToken> frame_guid;
+  std::optional<base::UnguessableToken> frame_guid;
   gfx::Rect clip_rect;
   float scale_factor;
   BitmapRequestCallback callback;

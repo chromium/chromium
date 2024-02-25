@@ -14,12 +14,14 @@
 #include "base/containers/flat_set.h"
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/raw_ref.h"
 #include "ui/base/dragdrop/mojom/drag_drop_types.mojom-forward.h"
 #include "ui/base/x/x11_desktop_window_move_client.h"
 #include "ui/base/x/x11_drag_drop_client.h"
 #include "ui/base/x/x11_move_loop_delegate.h"
 #include "ui/events/platform/platform_event_dispatcher.h"
 #include "ui/gfx/geometry/insets.h"
+#include "ui/gfx/x/connection.h"
 #include "ui/gfx/x/event.h"
 #include "ui/gfx/x/sync.h"
 #include "ui/gfx/x/xfixes.h"
@@ -114,13 +116,12 @@ class X11Window : public PlatformWindow,
   void SetWindowIcons(const gfx::ImageSkia& window_icon,
                       const gfx::ImageSkia& app_icon) override;
   void SizeConstraintsChanged() override;
-  bool IsTranslucentWindowOpacitySupported() const override;
   void SetOpacity(float opacity) override;
   bool CanSetDecorationInsets() const override;
   void SetDecorationInsets(const gfx::Insets* insets_px) override;
   void SetOpaqueRegion(
-      absl::optional<std::vector<gfx::Rect>> region_px) override;
-  void SetInputRegion(absl::optional<gfx::Rect> region_px) override;
+      std::optional<std::vector<gfx::Rect>> region_px) override;
+  void SetInputRegion(std::optional<std::vector<gfx::Rect>> region_px) override;
   void NotifyStartupComplete(const std::string& startup_id) override;
 
   // WorkspaceExtension:
@@ -156,8 +157,8 @@ class X11Window : public PlatformWindow,
   void OnXWindowLostPointerGrab();
   void OnXWindowSelectionEvent(const x11::SelectionNotifyEvent& xev);
   void OnXWindowDragDropEvent(const x11::ClientMessageEvent& xev);
-  absl::optional<gfx::Size> GetMinimumSizeForXWindow();
-  absl::optional<gfx::Size> GetMaximumSizeForXWindow();
+  std::optional<gfx::Size> GetMinimumSizeForXWindow();
+  std::optional<gfx::Size> GetMaximumSizeForXWindow();
   SkPath GetWindowMaskForXWindow();
 
  private:
@@ -194,7 +195,7 @@ class X11Window : public PlatformWindow,
                        const gfx::Vector2d& offset) override;
 
   // XDragDropClient::Delegate
-  absl::optional<gfx::AcceleratedWidget> GetDragWidget() override;
+  std::optional<gfx::AcceleratedWidget> GetDragWidget() override;
   int UpdateDrag(const gfx::Point& screen_point) override;
   void UpdateCursor(mojom::DragOperation negotiated_operation) override;
   void OnBeginForeignDrag(x11::Window window) override;
@@ -217,8 +218,10 @@ class X11Window : public PlatformWindow,
 
   void QuitDragLoop();
 
-  // Handles |xevent| as a Atk Key Event
-  bool HandleAsAtkEvent(const x11::Event& xevent, bool transient);
+  // Handles `key_event` as an Atk Key Event
+  bool HandleAsAtkEvent(const x11::KeyEvent& key_event,
+                        bool send_event,
+                        bool transient);
 
   // Adjusts |requested_size_in_pixels| to avoid the WM "feature" where setting
   // the window size to the monitor size causes the WM to set the EWMH for
@@ -272,6 +275,8 @@ class X11Window : public PlatformWindow,
   // Called when |xwindow_|'s _NET_WM_STATE property is updated.
   void OnWMStateUpdated();
 
+  WindowTiledEdges GetTiledState() const;
+
   // Called when |xwindow_|'s _NET_FRAME_EXTENTS property is updated.
   void OnFrameExtentsUpdated();
 
@@ -318,6 +323,8 @@ class X11Window : public PlatformWindow,
   // Stores current state of this window.
   PlatformWindowState state_ = PlatformWindowState::kUnknown;
 
+  WindowTiledEdges tiled_state_;
+
   const raw_ptr<PlatformWindowDelegate> platform_window_delegate_;
 
   raw_ptr<WorkspaceExtensionDelegate, DanglingUntriaged>
@@ -353,10 +360,10 @@ class X11Window : public PlatformWindow,
   std::unique_ptr<X11MoveLoop> drag_loop_;
 
   // Events that we have selected on the source window of the incoming drag.
-  std::unique_ptr<x11::XScopedEventSelector> source_window_events_;
+  x11::ScopedEventSelector source_window_events_;
 
   // The display and the native X window hosting the root window.
-  const raw_ptr<x11::Connection> connection_;
+  const raw_ref<x11::Connection> connection_;
   x11::Window xwindow_ = x11::Window::None;
   x11::Window x_root_window_ = x11::Window::None;
 
@@ -364,7 +371,7 @@ class X11Window : public PlatformWindow,
   x11::Window transient_window_ = x11::Window::None;
 
   // Events selected on |xwindow_|.
-  std::unique_ptr<x11::XScopedEventSelector> xwindow_events_;
+  x11::ScopedEventSelector xwindow_events_;
 
   // The window manager state bits.
   base::flat_set<x11::Atom> window_properties_;
@@ -375,7 +382,7 @@ class X11Window : public PlatformWindow,
   // Was this window initialized with the override_redirect window attribute?
   bool override_redirect_ = false;
 
-  absl::optional<std::u16string> window_title_;
+  std::optional<std::u16string> window_title_;
 
   // Whether the window is visible with respect to Aura.
   bool window_mapped_in_client_ = false;
@@ -391,9 +398,9 @@ class X11Window : public PlatformWindow,
   // Whether we used an ARGB visual for our window.
   bool visual_has_alpha_ = false;
 
-  // The workspace containing |xwindow_|.  This will be absl::nullopt when
+  // The workspace containing |xwindow_|.  This will be std::nullopt when
   // _NET_WM_DESKTOP is unset.
-  absl::optional<int> workspace_;
+  std::optional<int> workspace_;
 
   // True if the window should stay on top of most other windows.
   bool is_always_on_top_ = false;

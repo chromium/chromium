@@ -55,49 +55,20 @@ class URLLoaderFactoryGetter
   CONTENT_EXPORT scoped_refptr<network::SharedURLLoaderFactory>
   GetNetworkFactory();
 
-  // Like above, except it returns a URLLoaderFactory that has CORB enabled. Use
-  // this when using the factory for requests on behalf of a renderer.
-  // TODO(lukasza): https://crbug.com/871827: Ensure that |request_initiator| is
-  // trustworthy, even when starting requests on behalf of a renderer.
-  CONTENT_EXPORT scoped_refptr<network::SharedURLLoaderFactory>
-  GetNetworkFactoryWithCORBEnabled();
-
   // Called on the UI thread to get an info that holds a reference to this
   // URLLoaderFactoryGetter, which can be used to construct a similar
   // SharedURLLoaderFactory as returned from |GetNetworkFactory()| on IO thread.
   CONTENT_EXPORT std::unique_ptr<network::PendingSharedURLLoaderFactory>
   GetPendingNetworkFactory();
 
-  // Called on the IO thread. The factory obtained from here can only be used
-  // from the browser process. It must NOT be sent to a renderer process. It has
-  // CORB disabled, so it must NOT be used to make requests on behalf of a
-  // renderer.
-  //
-  // When NetworkService is enabled, this clones the internal factory to the
-  // network service, which doesn't support auto-reconnect after crash. Useful
-  // for one-off requests (e.g. a single navigation) to avoid an additional Mojo
-  // hop.
-  //
-  // When NetworkService is disabled, this clones the non-NetworkService direct
-  // network factory.
-  CONTENT_EXPORT void CloneNetworkFactory(
-      mojo::PendingReceiver<network::mojom::URLLoaderFactory>
-          network_factory_receiver);
-
   // Overrides the network URLLoaderFactory for subsequent requests. Passing a
   // null pointer will restore the default behavior.
   CONTENT_EXPORT void SetNetworkFactoryForTesting(
-      network::mojom::URLLoaderFactory* test_factory,
-      bool is_corb_enabled = false);
+      network::mojom::URLLoaderFactory* test_factory);
 
   CONTENT_EXPORT mojo::Remote<network::mojom::URLLoaderFactory>*
   original_network_factory_for_testing() {
     return &network_factory_;
-  }
-
-  CONTENT_EXPORT mojo::Remote<network::mojom::URLLoaderFactory>*
-  original_network_factory__corb_enabled_for_testing() {
-    return &network_factory_corb_enabled_;
   }
 
   // When this global function is set, if GetURLLoaderFactory is called and
@@ -123,22 +94,18 @@ class URLLoaderFactoryGetter
   void InitializeOnIOThread(
       mojo::PendingRemote<network::mojom::URLLoaderFactory> network_factory);
 
-  // Moves |network_factory| to |network_factory_| or
-  // |network_factory_corb_enabled_| depending on |is_corb_enabled| and sets up
-  // an error handler.
+  // Moves |network_factory| to |network_factory_| and sets up an error handler.
   void ReinitializeOnIOThread(
-      mojo::Remote<network::mojom::URLLoaderFactory> network_factory,
-      bool is_corb_enabled);
+      mojo::Remote<network::mojom::URLLoaderFactory> network_factory);
 
   // Send |network_factory_request| to cached |StoragePartitionImpl|.
   void HandleNetworkFactoryRequestOnUIThread(
       mojo::PendingReceiver<network::mojom::URLLoaderFactory>
-          network_factory_receiver,
-      bool is_corb_enabled);
+          network_factory_receiver);
 
   // Called on the IO thread to get the URLLoaderFactory to the network service.
   // The pointer shouldn't be cached.
-  network::mojom::URLLoaderFactory* GetURLLoaderFactory(bool is_corb_enabled);
+  network::mojom::URLLoaderFactory* GetURLLoaderFactory();
 
   // Call |network_factory_.FlushForTesting()|. For test use only. When the
   // flush is complete, |callback| will be called.
@@ -146,10 +113,7 @@ class URLLoaderFactoryGetter
 
   // Only accessed on IO thread.
   mojo::Remote<network::mojom::URLLoaderFactory> network_factory_;
-  mojo::Remote<network::mojom::URLLoaderFactory> network_factory_corb_enabled_;
   raw_ptr<network::mojom::URLLoaderFactory> test_factory_ = nullptr;
-  raw_ptr<network::mojom::URLLoaderFactory> test_factory_corb_enabled_ =
-      nullptr;
 
   // Used to re-create |network_factory_| when connection error happens. Can
   // only be accessed on UI thread. Must be cleared by |StoragePartitionImpl|

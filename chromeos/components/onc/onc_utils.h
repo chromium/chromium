@@ -6,12 +6,12 @@
 #define CHROMEOS_COMPONENTS_ONC_ONC_UTILS_H_
 
 #include <map>
+#include <optional>
 #include <string>
 
 #include "base/component_export.h"
 #include "base/values.h"
 #include "components/onc/onc_constants.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace chromeos {
 
@@ -27,15 +27,15 @@ using CertPEMsByGUIDMap = std::map<std::string, std::string>;
 // dictionary, the function populates |dict| and returns true, otherwise returns
 // false and |dict| is unchanged.
 COMPONENT_EXPORT(CHROMEOS_ONC)
-absl::optional<base::Value::Dict> ReadDictionaryFromJson(
+std::optional<base::Value::Dict> ReadDictionaryFromJson(
     const std::string& json);
 
 // Decrypts the given EncryptedConfiguration |onc| (see the ONC specification)
 // using |passphrase|. The resulting UnencryptedConfiguration is returned. If an
 // error occurs, returns nullopt.
 COMPONENT_EXPORT(CHROMEOS_ONC)
-absl::optional<base::Value::Dict> Decrypt(const std::string& passphrase,
-                                          const base::Value::Dict& onc);
+std::optional<base::Value::Dict> Decrypt(const std::string& passphrase,
+                                         const base::Value::Dict& onc);
 
 // For logging only: strings not user facing.
 COMPONENT_EXPORT(CHROMEOS_ONC)

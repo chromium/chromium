@@ -52,7 +52,7 @@ class ScopedAutofillManagersObservationTest
 
   AutofillManager* manager(content::RenderFrameHost* rfh) {
     ContentAutofillDriver* driver = autofill_driver_injector_[rfh];
-    return driver ? driver->autofill_manager() : nullptr;
+    return driver ? &driver->GetAutofillManager() : nullptr;
   }
 
  private:

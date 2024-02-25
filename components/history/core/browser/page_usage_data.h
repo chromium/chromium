@@ -7,6 +7,7 @@
 
 #include <string>
 
+#include "base/time/time.h"
 #include "components/history/core/browser/history_types.h"
 #include "url/gurl.h"
 
@@ -43,6 +44,18 @@ class PageUsageData {
 
   const std::u16string& GetTitle() const { return title_; }
 
+  // Return the segment visit count.
+  void SetVisitCount(int visit_count) { visit_count_ = visit_count; }
+
+  int GetVisitCount() const { return visit_count_; }
+
+  void SetLastVisitTimeslot(base::Time last_visit_timeslot) {
+    last_visit_timeslot_ = last_visit_timeslot;
+  }
+
+  // Return the day of the last visit to the segment.
+  base::Time GetLastVisitTimeslot() const { return last_visit_timeslot_; }
+
   void SetScore(double v) {
     score_ = v;
   }
@@ -55,7 +68,8 @@ class PageUsageData {
   SegmentID id_;
   GURL url_;
   std::u16string title_;
-
+  int visit_count_{0};
+  base::Time last_visit_timeslot_{base::Time::Min()};
   double score_;
 };
 

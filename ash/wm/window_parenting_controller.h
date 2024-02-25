@@ -5,13 +5,18 @@
 #ifndef ASH_WM_WINDOW_PARENTING_CONTROLLER_H_
 #define ASH_WM_WINDOW_PARENTING_CONTROLLER_H_
 
+#include "base/memory/raw_ptr.h"
 #include "ui/aura/client/window_parenting_client.h"
+
+namespace aura {
+class Window;
+}
 
 namespace ash {
 
 class WindowParentingController : public aura::client::WindowParentingClient {
  public:
-  WindowParentingController();
+  explicit WindowParentingController(aura::Window* root_window);
 
   WindowParentingController(const WindowParentingController&) = delete;
   WindowParentingController& operator=(const WindowParentingController&) =
@@ -21,7 +26,11 @@ class WindowParentingController : public aura::client::WindowParentingClient {
 
   // aura::client::WindowParentingClient:
   aura::Window* GetDefaultParent(aura::Window* window,
-                                 const gfx::Rect& bounds) override;
+                                 const gfx::Rect& bounds,
+                                 const int64_t display_id) override;
+
+ private:
+  raw_ptr<aura::Window> root_window_;
 };
 
 }  // namespace ash

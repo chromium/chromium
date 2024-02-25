@@ -1,8 +1,8 @@
 Name: Crashpad
 Short Name: crashpad
 URL: https://crashpad.chromium.org/
-Version: unknown
-Revision: a736f7d070c872a4cc786c31755fd769fb2e50b3
+Version: N/A
+Revision: 37afd37401253ebcebcf6e07ce15c8cfecb1a1cc
 License: Apache 2.0
 License File: crashpad/LICENSE
 Security Critical: yes
@@ -46,8 +46,6 @@ Local Modifications:
    (crashpad/util/BUILD.gn, crashpad/util/linux/memory_map_test.cc)
  - CloseMultipleNowOrOnExec has been updated to invoke the new
    base::subtle::ResetFDOwnership() API
- - FALLTHROUGH macro has been replaced with C++17 attribute [[fallthrough]]
- - Qualified calls to bit_cast<>() with base::.
  - MultiprocessExec.MultiprocessExec is disabled entirely on the Mac.
    https://crbug.com/1341377
  - SystemSnapshotLinux.Basic is disabled on Android: https://crbug.com/1362091
@@ -56,3 +54,8 @@ Local Modifications:
    "base/allocator/partition_allocator/partition_alloc_buildflags.h", because
    BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC) was moved. crrev.com/c/3963596
  - Fix some accidental argument-dependent lookup: https://crrev.com/c/4298113
+ - #include path was modified:
+   "base/allocator/partition_allocator/buildflags.h" ->
+   "base/allocator/partition_allocator/src/partition_alloc/partition_alloc_buildflags.h",
+   https://crbug.com/1467773
+ - CPEPrefix for third_party/zlib is added to README.chromium

@@ -4,10 +4,10 @@
 
 #include "services/device/generic_sensor/platform_sensor.h"
 
+#include <list>
 #include <utility>
 
 #include "base/check.h"
-#include "base/containers/cxx20_erase.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/observer_list.h"
@@ -15,6 +15,7 @@
 #include "services/device/generic_sensor/platform_sensor_provider.h"
 #include "services/device/generic_sensor/platform_sensor_util.h"
 #include "services/device/public/cpp/generic_sensor/platform_sensor_configuration.h"
+#include "services/device/public/cpp/generic_sensor/sensor_reading_shared_buffer.h"
 #include "services/device/public/cpp/generic_sensor/sensor_reading_shared_buffer_reader.h"
 
 namespace device {
@@ -77,8 +78,9 @@ bool PlatformSensor::StopListening(Client* client,
     return false;
 
   auto& config_list = client_entry->second;
-  if (base::Erase(config_list, config) == 0)
+  if (std::erase(config_list, config) == 0) {
     return false;
+  }
 
   return UpdateSensorInternal(config_map_);
 }
@@ -282,6 +284,10 @@ bool PlatformSensor::IsSignificantlyDifferent(const SensorReading& lhs,
   }
   NOTREACHED();
   return false;
+}
+
+base::WeakPtr<PlatformSensor> PlatformSensor::AsWeakPtr() {
+  return weak_factory_.GetWeakPtr();
 }
 
 }  // namespace device

@@ -1,5 +1,5 @@
 The following two lines should have the same content:
 
    
-0.2- 0.2- 0.5- 1-
+1- 1- 2- 3-
 0.2- 0.2- 0.5- 1-

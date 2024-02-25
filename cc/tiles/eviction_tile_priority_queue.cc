@@ -4,6 +4,7 @@
 
 #include "cc/tiles/eviction_tile_priority_queue.h"
 
+#include "base/memory/raw_ptr.h"
 
 namespace cc {
 
@@ -71,12 +72,12 @@ class EvictionOrderComparator {
 };
 
 void CreateTilingSetEvictionQueues(
-    const std::vector<PictureLayerImpl*>& layers,
+    const std::vector<raw_ptr<PictureLayerImpl, VectorExperimental>>& layers,
     TreePriority tree_priority,
     std::vector<std::unique_ptr<TilingSetEvictionQueue>>* queues) {
   DCHECK(queues->empty());
 
-  for (auto* layer : layers) {
+  for (PictureLayerImpl* layer : layers) {
     std::unique_ptr<TilingSetEvictionQueue> tiling_set_queue =
         std::make_unique<TilingSetEvictionQueue>(
             layer->picture_layer_tiling_set(),
@@ -96,8 +97,10 @@ EvictionTilePriorityQueue::EvictionTilePriorityQueue() = default;
 EvictionTilePriorityQueue::~EvictionTilePriorityQueue() = default;
 
 void EvictionTilePriorityQueue::Build(
-    const std::vector<PictureLayerImpl*>& active_layers,
-    const std::vector<PictureLayerImpl*>& pending_layers,
+    const std::vector<raw_ptr<PictureLayerImpl, VectorExperimental>>&
+        active_layers,
+    const std::vector<raw_ptr<PictureLayerImpl, VectorExperimental>>&
+        pending_layers,
     TreePriority tree_priority) {
   tree_priority_ = tree_priority;
 

@@ -4,20 +4,20 @@
 
 import 'chrome://resources/cros_components/lottie_renderer/lottie-renderer.js';
 import 'chrome://resources/ash/common/quick_unlock/fingerprint_progress.js';
-import 'chrome://resources/cr_elements/cr_button/cr_button.js';
-import 'chrome://resources/cr_elements/cr_dialog/cr_dialog.js';
+import 'chrome://resources/ash/common/cr_elements/cr_button/cr_button.js';
+import 'chrome://resources/ash/common/cr_elements/cr_dialog/cr_dialog.js';
 import 'chrome://resources/polymer/v3_0/iron-media-query/iron-media-query.js';
 import '../settings_shared.css.js';
 
+import {CrDialogElement} from 'chrome://resources/ash/common/cr_elements/cr_dialog/cr_dialog.js';
+import {I18nMixin} from 'chrome://resources/ash/common/cr_elements/i18n_mixin.js';
+import {WebUiListenerMixin} from 'chrome://resources/ash/common/cr_elements/web_ui_listener_mixin.js';
 import {FingerprintProgressElement} from 'chrome://resources/ash/common/quick_unlock/fingerprint_progress.js';
-import {CrDialogElement} from 'chrome://resources/cr_elements/cr_dialog/cr_dialog.js';
-import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
-import {WebUiListenerMixin} from 'chrome://resources/cr_elements/web_ui_listener_mixin.js';
-import {assertNotReached} from 'chrome://resources/js/assert_ts.js';
-import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
+import {assertNotReached} from 'chrome://resources/js/assert.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {recordSettingChange} from '../metrics_recorder.js';
+import {Setting} from '../mojom-webui/setting.mojom-webui.js';
 
 import {FingerprintBrowserProxy, FingerprintBrowserProxyImpl, FingerprintResultType, FingerprintScan} from './fingerprint_browser_proxy.js';
 import {getTemplate} from './setup_fingerprint_dialog.html.js';
@@ -36,7 +36,7 @@ export enum FingerprintSetupStep {
  * The amount of milliseconds after a successful but not completed scan before
  * a message shows up telling the user to scan their finger again.
  */
-const SHOW_TAP_SENSOR_MESSAGE_DELAY_MS: number = 2000;
+const SHOW_TAP_SENSOR_MESSAGE_DELAY_MS = 2000;
 
 const SettingsSetupFingerprintDialogElementBase =
     I18nMixin(WebUiListenerMixin(PolymerElement));
@@ -100,20 +100,11 @@ export class SettingsSetupFingerprintDialogElement extends
         value: 0,
         observer: 'onProgressChanged_',
       },
-
-      /**
-       * Indicates whether Jelly is enabled.
-       */
-      isDynamicColor_: {
-        type: Boolean,
-        value: loadTimeData.getBoolean('isJellyEnabled'),
-      },
     };
   }
 
   allowAddAnotherFinger: boolean;
   authToken: string;
-  private isDynamicColor_: boolean;
   private browserProxy_: FingerprintBrowserProxy;
   private percentComplete_: number;
   private problemMessage_: string;
@@ -318,7 +309,7 @@ export class SettingsSetupFingerprintDialogElement extends
     this.$.arc.reset();
     this.step_ = FingerprintSetupStep.MOVE_FINGER;
     this.browserProxy_.startEnroll(this.authToken);
-    recordSettingChange();
+    recordSettingChange(Setting.kAddFingerprintV2);
   }
 
   /**

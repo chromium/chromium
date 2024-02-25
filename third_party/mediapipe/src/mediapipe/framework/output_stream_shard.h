@@ -18,12 +18,12 @@
 #include <list>
 #include <string>
 
+#include "absl/log/absl_check.h"
 #include "mediapipe/framework/output_stream.h"
 #include "mediapipe/framework/packet.h"
 #include "mediapipe/framework/packet_type.h"
 #include "mediapipe/framework/port.h"
 #include "mediapipe/framework/timestamp.h"
-#include "absl/log/absl_check.h"
 
 namespace mediapipe {
 

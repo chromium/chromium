@@ -18,6 +18,7 @@
 #include "base/functional/callback.h"
 #include "chromeos/constants/chromeos_features.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/vector_icon_types.h"
@@ -29,8 +30,6 @@ namespace ash {
 
 namespace {
 
-constexpr char kLoginShelfButtonClassName[] = "LoginShelfButton";
-
 // The highlight radius of the button.
 constexpr int kButtonHighlightRadiusDp = 16;
 
@@ -41,7 +40,7 @@ LoginShelfButton::LoginShelfButton(PressedCallback callback,
                                    const gfx::VectorIcon& icon)
     : PillButton(std::move(callback),
                  l10n_util::GetStringUTF16(text_resource_id),
-                 PillButton::Type::kDefaultLargeWithIconLeading,
+                 PillButton::Type::kDefaultElevatedLargeWithIconLeading,
                  &icon,
                  PillButton::kPillButtonHorizontalSpacing),
       icon_(icon),
@@ -49,18 +48,17 @@ LoginShelfButton::LoginShelfButton(PressedCallback callback,
   SetFocusBehavior(FocusBehavior::ALWAYS);
   set_suppress_default_focus_handling();
   SetFocusPainter(nullptr);
-  views::InkDrop::Get(this)->SetMode(views::InkDropHost::InkDropMode::ON);
-  UpdateColors(ShelfBackgroundType::kDefaultBg);
+
+  views::InkDrop::Get(this)->SetMode(views::InkDropHost::InkDropMode::OFF);
+  SetBorder(std::make_unique<views::HighlightBorder>(
+      kButtonHighlightRadiusDp,
+      views::HighlightBorder::Type::kHighlightBorderNoShadow));
 }
 
 LoginShelfButton::~LoginShelfButton() = default;
 
 int LoginShelfButton::text_resource_id() const {
   return text_resource_id_;
-}
-
-const char* LoginShelfButton::GetClassName() const {
-  return kLoginShelfButtonClassName;
 }
 
 std::u16string LoginShelfButton::GetTooltipText(const gfx::Point& p) const {
@@ -85,31 +83,44 @@ void LoginShelfButton::AddedToWidget() {
 void LoginShelfButton::OnBackgroundTypeChanged(
     ShelfBackgroundType background_type,
     AnimationChangeType change_type) {
-  UpdateColors(background_type);
+  if (background_type_ == background_type) {
+    return;
+  }
+  background_type_ = background_type;
+
+  if (background_type_ == ShelfBackgroundType::kLoginNonBlurredWallpaper) {
+    SetPillButtonType(PillButton::kDefaultLargeWithIconLeading);
+  } else {
+    SetPillButtonType(PillButton::kDefaultElevatedLargeWithIconLeading);
+  }
 }
 
-void LoginShelfButton::UpdateColors(ShelfBackgroundType background_type) {
-  ui::ColorId icon_color = kColorAshButtonIconColor;
-  if (!chromeos::features::IsJellyrollEnabled()) {
-    ui::ColorId text_color = kColorAshButtonLabelColor;
-    if (background_type == ShelfBackgroundType::kOobe) {
-      text_color = kColorAshButtonLabelColorLight;
-      icon_color = kColorAshButtonIconColorLight;
-    }
-    SetEnabledTextColorIds(text_color);
+void LoginShelfButton::OnActiveChanged() {
+  if (is_active_) {
+    SetBackgroundColorId(cros_tokens::kCrosSysSystemPrimaryContainer);
+    SetEnabledTextColorIds(cros_tokens::kCrosSysSystemOnPrimaryContainer);
+    SetIconColorId(cros_tokens::kCrosSysSystemOnPrimaryContainer);
   } else {
-    if (background_type == ShelfBackgroundType::kLoginNonBlurredWallpaper) {
-      SetPillButtonType(PillButton::kDefaultLargeWithIconLeading);
-    } else {
-      SetPillButtonType(PillButton::kDefaultElevatedLargeWithIconLeading);
-    }
-    SetBorder(std::make_unique<views::HighlightBorder>(
-        kButtonHighlightRadiusDp,
-        views::HighlightBorder::Type::kHighlightBorderNoShadow));
-    icon_color = cros_tokens::kCrosSysOnSurface;
+    // Switch the pillbutton to the default background color.
+    SetBackgroundColor(gfx::kPlaceholderColor);
+    SetEnabledTextColorIds(cros_tokens::kCrosSysOnSurface);
+    SetIconColor(gfx::kPlaceholderColor);
   }
-  SetImageModel(views::Button::STATE_NORMAL,
-                ui::ImageModel::FromVectorIcon(*icon_, icon_color));
 }
+
+void LoginShelfButton::SetIsActive(bool is_active) {
+  if (is_active_ == is_active) {
+    return;
+  }
+  is_active_ = is_active;
+  OnActiveChanged();
+}
+
+bool LoginShelfButton::GetIsActive() const {
+  return is_active_;
+}
+
+BEGIN_METADATA(LoginShelfButton)
+END_METADATA
 
 }  // namespace ash

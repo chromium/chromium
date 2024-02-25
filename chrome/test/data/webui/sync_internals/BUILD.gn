@@ -1,0 +1,20 @@
+# Copyright 2023 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("../build_webui_tests.gni")
+
+build_webui_tests("build") {
+  files = [ "sync_internals_test.ts" ]
+
+  ts_deps = [
+    "//components/sync/service/resources:build_ts",
+    "//ui/webui/resources/cr_elements:build_ts",
+    "//ui/webui/resources/js:build_ts",
+  ]
+
+  ts_path_mappings =
+      [ "chrome://sync-internals/*|" +
+        rebase_path("$root_gen_dir/components/sync/service/resources/tsc/*",
+                    target_gen_dir) ]
+}

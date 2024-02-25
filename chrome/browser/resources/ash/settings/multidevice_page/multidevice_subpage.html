@@ -65,27 +65,6 @@
     </template>
     <template is="dom-if"
         if="[[isFeatureSupported(
-            MultiDeviceFeature.MESSAGES, pageContentData)]]"
-        restamp>
-      <settings-multidevice-feature-item id="messagesItem"
-          feature="[[MultiDeviceFeature.MESSAGES]]"
-          page-content-data="[[pageContentData]]"
-          deep-link-focus-id$="[[Setting.kMessagesOnOff]]
-              [[Setting.kMessagesSetUp]]">
-        <template is="dom-if"
-            if="[[doesAndroidMessagesRequireSetUp_(pageContentData)]]"
-            restamp>
-          <cr-button disabled$="[[isAndroidMessagesSetupButtonDisabled_(
-                                    pageContentData)]]"
-              on-click="handleAndroidMessagesButtonClick_"
-              slot="feature-controller">
-            $i18n{multideviceSetupButton}
-          </cr-button>
-        </template>
-      </settings-multidevice-feature-item>
-    </template>
-    <template is="dom-if"
-        if="[[isFeatureSupported(
             MultiDeviceFeature.PHONE_HUB, pageContentData)]]"
         restamp>
       <settings-multidevice-feature-item id="phoneHubItem"
@@ -202,36 +181,24 @@
     </template>
   </div>
 </template>
-<div class="settings-box two-line">
-  <div id="forgetDeviceLabel" class="start" aria-hidden="true">
-    $i18n{multideviceForgetDevice}
-    <div id="forgetDeviceSummary" class="secondary" aria-hidden="true">
+<template is="dom-if" if="[[!isRevampWayfindingEnabled_]]">
+  <div class="settings-box two-line">
+    <div id="forgetDeviceLabel" class="start" aria-hidden="true">
+      $i18n{multideviceForgetDevice}
+      <div id="forgetDeviceSummary" class="secondary" aria-hidden="true">
         $i18n{multideviceForgetDeviceSummary}
+      </div>
     </div>
-  </div>
-  <cr-button on-click="handleForgetDeviceClick_"
-      aria-labelledby="forgetDeviceLabel"
-      aria-describedby="forgetDeviceSummary"
-      deep-link-focus-id$="[[Setting.kForgetPhone]]">
-    $i18n{multideviceForgetDeviceDisconnect}
-  </cr-button>
-</div>
-<cr-dialog id="forgetDeviceDialog">
-  <div slot="title">$i18n{multideviceForgetDevice}</div>
-  <div slot="body">
-    <div class="first">
-      $i18n{multideviceForgetDeviceDialogMessage}
-    </div>
-  </div>
-  <div slot="button-container">
-    <cr-button class="cancel-button"
-        on-click="onForgetDeviceDialogCancelClick_">
-      $i18n{cancel}
-    </cr-button>
-    <cr-button id="confirmButton"
-        class="action-button"
-        on-click="onForgetDeviceDialogConfirmClick_">
+    <cr-button on-click="handleForgetDeviceClick_"
+        aria-labelledby="forgetDeviceLabel"
+        aria-describedby="forgetDeviceSummary"
+        deep-link-focus-id$="[[Setting.kForgetPhone]]">
       $i18n{multideviceForgetDeviceDisconnect}
     </cr-button>
   </div>
-</cr-dialog>
+  <template is="dom-if" if="[[shouldShowForgetDeviceDialog_]]" restamp>
+    <settings-multidevice-forget-device-dialog
+      on-close="onCloseForgetDeviceDialog_">
+    </settings-multidevice-forget-device-dialog>
+  </template>
+</template>

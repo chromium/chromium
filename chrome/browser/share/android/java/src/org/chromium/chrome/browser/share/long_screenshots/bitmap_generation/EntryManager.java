@@ -90,8 +90,9 @@ public class EntryManager {
      * listener to the returned entry to get that status of the generation and retrieve the bitmap.
      */
     public LongScreenshotsEntry generateFullpageEntry() {
-        LongScreenshotsEntry entry = new LongScreenshotsEntry(
-                mGenerator, mBoundsManager.getFullEntryBounds(), this::updateMemoryUsage);
+        LongScreenshotsEntry entry =
+                new LongScreenshotsEntry(
+                        mGenerator, mBoundsManager.getFullEntryBounds(), this::updateMemoryUsage);
         processEntry(entry, false, false);
         return entry;
     }
@@ -108,7 +109,9 @@ public class EntryManager {
         return entry;
     }
 
-    private void processEntry(LongScreenshotsEntry entry, boolean skipAddingEntryToList,
+    private void processEntry(
+            LongScreenshotsEntry entry,
+            boolean skipAddingEntryToList,
             boolean addToBeginningOfList) {
         if (mGeneratorStatus == EntryStatus.CAPTURE_COMPLETE) {
             entry.generateBitmap();

@@ -19,6 +19,7 @@ import org.chromium.chrome.browser.download.home.filter.Filters;
 import org.chromium.chrome.browser.download.home.list.view.CircularProgressView;
 import org.chromium.chrome.browser.download.home.list.view.CircularProgressView.UiState;
 import org.chromium.chrome.browser.download.internal.R;
+import org.chromium.components.browser_ui.util.DownloadUtils;
 import org.chromium.components.browser_ui.util.date.CalendarFactory;
 import org.chromium.components.browser_ui.util.date.CalendarUtils;
 import org.chromium.components.offline_items_collection.LegacyHelpers;
@@ -35,6 +36,9 @@ import java.util.Date;
 
 /** A set of helper utility methods for the UI. */
 public final class UiUtils {
+    // Limit file name to 25 characters.
+    public static final int MAX_FILE_NAME_LENGTH_FOR_TITLE = 33;
+
     private UiUtils() {}
 
     static {
@@ -43,6 +47,7 @@ public final class UiUtils {
 
     /**
      * Builds the accessibility text to be used for a given chip on the chips row.
+     *
      * @param resources The resources to use for lookup.
      * @param filter The filter type of the chip.
      * @param itemCount The number of items being shown on the given chip.
@@ -53,7 +58,7 @@ public final class UiUtils {
         switch (filter) {
             case Filters.FilterType.NONE:
                 return resources.getQuantityString(
-                        R.plurals.accessibility_download_manager_ui_generic, itemCount, itemCount);
+                        R.plurals.accessibility_download_manager_ui_all, itemCount, itemCount);
             case Filters.FilterType.VIDEOS:
                 return resources.getQuantityString(
                         R.plurals.accessibility_download_manager_ui_video, itemCount, itemCount);
@@ -68,7 +73,7 @@ public final class UiUtils {
                         R.plurals.accessibility_download_manager_ui_pages, itemCount, itemCount);
             case Filters.FilterType.OTHER:
                 return resources.getQuantityString(
-                        R.plurals.accessibility_download_manager_ui_generic, itemCount, itemCount);
+                        R.plurals.accessibility_download_manager_ui_other, itemCount, itemCount);
             default:
                 assert false;
                 return null;
@@ -77,8 +82,9 @@ public final class UiUtils {
 
     /**
      * Converts {@code date} to a string meant to be used as a prefetched item timestamp.
+     *
      * @param date The {@link Date} to convert.
-     * @return     The {@link CharSequence} representing the timestamp.
+     * @return The {@link CharSequence} representing the timestamp.
      */
     public static CharSequence generatePrefetchTimestamp(Date date) {
         Context context = ContextUtils.getApplicationContext();
@@ -90,12 +96,15 @@ public final class UiUtils {
         calendar2.setTime(date);
 
         if (CalendarUtils.isSameDay(calendar1, calendar2)) {
-            int hours = (int) MathUtils.clamp(
-                    (calendar1.getTimeInMillis() - calendar2.getTimeInMillis())
-                            / DateUtils.HOUR_IN_MILLIS,
-                    1, 23);
-            return context.getResources().getQuantityString(
-                    R.plurals.download_manager_n_hours, hours, hours);
+            int hours =
+                    (int)
+                            MathUtils.clamp(
+                                    (calendar1.getTimeInMillis() - calendar2.getTimeInMillis())
+                                            / DateUtils.HOUR_IN_MILLIS,
+                                    1,
+                                    23);
+            return context.getResources()
+                    .getQuantityString(R.plurals.download_manager_n_hours, hours, hours);
         } else {
             return DateUtils.formatDateTime(context, date.getTime(), DateUtils.FORMAT_SHOW_YEAR);
         }
@@ -103,27 +112,31 @@ public final class UiUtils {
 
     /**
      * Generates a caption for a prefetched item.
+     *
      * @param item The {@link OfflineItem} to generate a caption for.
-     * @return     The {@link CharSequence} representing the caption.
+     * @return The {@link CharSequence} representing the caption.
      */
     public static CharSequence generatePrefetchCaption(OfflineItem item) {
         Context context = ContextUtils.getApplicationContext();
         String displaySize = Formatter.formatFileSize(context, item.totalSizeBytes);
-        String displayUrl = UrlFormatter.formatUrlForSecurityDisplay(
-                item.url, SchemeDisplay.OMIT_HTTP_AND_HTTPS);
+        String displayUrl =
+                UrlFormatter.formatUrlForSecurityDisplay(
+                        item.url, SchemeDisplay.OMIT_HTTP_AND_HTTPS);
         return context.getString(
                 R.string.download_manager_prefetch_caption, displayUrl, displaySize);
     }
 
     /**
      * Generates a caption for a generic item.
+     *
      * @param item The {@link OfflineItem} to generate a caption for.
-     * @return     The {@link CharSequence} representing the caption.
+     * @return The {@link CharSequence} representing the caption.
      */
     public static CharSequence generateGenericCaption(OfflineItem item) {
         Context context = ContextUtils.getApplicationContext();
-        String displayUrl = UrlFormatter.formatUrlForSecurityDisplay(
-                item.url, SchemeDisplay.OMIT_HTTP_AND_HTTPS);
+        String displayUrl =
+                DownloadUtils.formatUrlForDisplayInNotification(
+                        item.url, DownloadUtils.MAX_ORIGIN_LENGTH_FOR_DOWNLOAD_HOME_CAPTION);
 
         if (item.totalSizeBytes == 0) {
             return context.getString(
@@ -133,6 +146,16 @@ public final class UiUtils {
         String displaySize = Formatter.formatFileSize(context, item.totalSizeBytes);
         return context.getString(
                 R.string.download_manager_list_item_description, displaySize, displayUrl);
+    }
+
+    /**
+     * Formats the file name of the download with respect to the available file size.
+     *
+     * @param item The {@link OfflineItem} to generate a title for.
+     * @return The {@link CharSequence} representing the title.
+     */
+    public static CharSequence formatGenericItemTitle(OfflineItem item) {
+        return StringUtils.getAbbreviatedFileName(item.title, MAX_FILE_NAME_LENGTH_FOR_TITLE);
     }
 
     /** @return Whether or not {@code item} can show a thumbnail in the UI. */
@@ -191,8 +214,9 @@ public final class UiUtils {
      * @return           The {@link CharSequence} representing the caption.
      */
     public static CharSequence generateInProgressCaption(OfflineItem item, boolean abbreviate) {
-        return abbreviate ? generateInProgressShortCaption(item)
-                          : generateInProgressLongCaption(item);
+        return abbreviate
+                ? generateInProgressShortCaption(item)
+                : generateInProgressLongCaption(item);
     }
 
     /**
@@ -211,8 +235,7 @@ public final class UiUtils {
                 indeterminate ? CircularProgressView.INDETERMINATE : determinateProgress;
         final int inactiveProgress = indeterminate ? 0 : determinateProgress;
 
-        @UiState
-        int shownState;
+        @UiState int shownState;
         int shownProgress;
 
         switch (item.state) {
@@ -228,8 +251,10 @@ public final class UiUtils {
                 shownState = CircularProgressView.UiState.PAUSED;
                 break;
             case OfflineItemState.INTERRUPTED:
-                shownState = item.isResumable ? CircularProgressView.UiState.RUNNING
-                                              : CircularProgressView.UiState.RETRY;
+                shownState =
+                        item.isResumable
+                                ? CircularProgressView.UiState.RUNNING
+                                : CircularProgressView.UiState.RETRY;
                 break;
             case OfflineItemState.COMPLETE: // Intentional fallthrough.
             default:
@@ -281,8 +306,9 @@ public final class UiUtils {
         // message.
         if (progress == null) {
             if (item.totalSizeBytes > 0) {
-                progress = new OfflineItem.Progress(
-                        0, item.totalSizeBytes, OfflineItemProgressUnit.BYTES);
+                progress =
+                        new OfflineItem.Progress(
+                                0, item.totalSizeBytes, OfflineItemProgressUnit.BYTES);
             } else {
                 progress = new OfflineItem.Progress(0, 100L, OfflineItemProgressUnit.PERCENTAGE);
             }
@@ -367,8 +393,9 @@ public final class UiUtils {
 
     /** @return The domain associated with the given {@link OfflineItem}. */
     public static String getDomainForItem(OfflineItem offlineItem) {
-        String formattedUrl = UrlFormatter.formatUrlForSecurityDisplay(
-                offlineItem.url, SchemeDisplay.OMIT_HTTP_AND_HTTPS);
+        String formattedUrl =
+                UrlFormatter.formatUrlForSecurityDisplay(
+                        offlineItem.url, SchemeDisplay.OMIT_HTTP_AND_HTTPS);
         return formattedUrl;
     }
 }

@@ -5,10 +5,11 @@
 #ifndef CHROME_BROWSER_DEVICE_IDENTITY_CHROMEOS_DEVICE_OAUTH2_TOKEN_STORE_CHROMEOS_H_
 #define CHROME_BROWSER_DEVICE_IDENTITY_CHROMEOS_DEVICE_OAUTH2_TOKEN_STORE_CHROMEOS_H_
 
-#include "base/memory/raw_ptr.h"
-#include "chrome/browser/device_identity/device_oauth2_token_store.h"
+#include <optional>
 
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/ash/settings/cros_settings.h"
+#include "chrome/browser/device_identity/device_oauth2_token_store.h"
 
 class PrefRegistrySimple;
 
@@ -54,6 +55,12 @@ class DeviceOAuth2TokenStoreChromeOS : public DeviceOAuth2TokenStore {
   // salt is available.
   void EncryptAndSaveToken();
 
+  // Attempt to load a refresh token from the local state. This will return null
+  // if an error occurs while loading the token, otherwise the token will be
+  // returned. Note that not having a token at all is not considered an error:
+  // an empty token is returned in this
+  std::optional<std::string> LoadAndDecryptToken();
+
   // Handles completion of the system salt input. Will invoke |callback| since
   // this function is what happens at the end of the initialization process.
   void DidGetSystemSalt(InitCallback callback, const std::string& system_salt);
@@ -63,7 +70,7 @@ class DeviceOAuth2TokenStoreChromeOS : public DeviceOAuth2TokenStore {
 
   State state_ = State::STOPPED;
 
-  raw_ptr<PrefService, ExperimentalAsh> local_state_;
+  raw_ptr<PrefService> local_state_;
 
   base::CallbackListSubscription service_account_identity_subscription_;
 

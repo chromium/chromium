@@ -6,12 +6,13 @@
 
 #include <initializer_list>
 #include <memory>
+#include <optional>
 #include <tuple>
 #include <utility>
 
 #include "base/feature_list.h"
 #include "base/scoped_observation.h"
-#include "base/strings/string_piece_forward.h"
+#include "base/strings/string_piece.h"
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
@@ -40,7 +41,6 @@
 #include "components/webapps/browser/install_result_code.h"
 #include "mojo/public/cpp/bindings/struct_ptr.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/mojom/manifest/manifest.mojom-forward.h"
 #include "third_party/blink/public/mojom/manifest/manifest.mojom.h"
 #include "url/gurl.h"
@@ -51,7 +51,7 @@ namespace web_app {
 namespace {
 
 struct FinalizeInstallResult {
-  AppId installed_app_id;
+  webapps::AppId installed_app_id;
   webapps::InstallResultCode code;
   OsHooksErrors os_hooks_errors;
 };
@@ -64,8 +64,7 @@ class TestInstallManagerObserver : public WebAppInstallManagerObserver {
     install_manager_observation_.Observe(install_manager);
   }
 
-  void OnWebAppManifestUpdated(const AppId& app_id,
-                               base::StringPiece old_name) override {
+  void OnWebAppManifestUpdated(const webapps::AppId& app_id) override {
     web_app_manifest_updated_called_ = true;
   }
 
@@ -128,7 +127,7 @@ class WebAppInstallFinalizerUnitTest
     base::RunLoop run_loop;
     finalizer().FinalizeInstall(
         info, options,
-        base::BindLambdaForTesting([&](const AppId& installed_app_id,
+        base::BindLambdaForTesting([&](const webapps::AppId& installed_app_id,
                                        webapps::InstallResultCode code,
                                        OsHooksErrors os_hooks_errors) {
           result.installed_app_id = installed_app_id;
@@ -178,7 +177,7 @@ TEST_P(WebAppInstallFinalizerUnitTest, BasicInstallSucceeds) {
 
   EXPECT_EQ(webapps::InstallResultCode::kSuccessNewInstall, result.code);
   EXPECT_EQ(result.installed_app_id,
-            GenerateAppId(/*manifest_id=*/absl::nullopt, info->start_url));
+            GenerateAppId(/*manifest_id=*/std::nullopt, info->start_url));
   EXPECT_EQ(0u, os_integration_manager().num_register_run_on_os_login_calls());
 }
 
@@ -202,13 +201,13 @@ TEST_P(WebAppInstallFinalizerUnitTest, ConcurrentInstallSucceeds) {
   {
     finalizer().FinalizeInstall(
         *info1, options,
-        base::BindLambdaForTesting([&](const AppId& installed_app_id,
+        base::BindLambdaForTesting([&](const webapps::AppId& installed_app_id,
                                        webapps::InstallResultCode code,
                                        OsHooksErrors os_hooks_errors) {
           EXPECT_EQ(webapps::InstallResultCode::kSuccessNewInstall, code);
           EXPECT_EQ(
               installed_app_id,
-              GenerateAppId(/*manifest_id=*/absl::nullopt, info1->start_url));
+              GenerateAppId(/*manifest_id=*/std::nullopt, info1->start_url));
           EXPECT_TRUE(os_hooks_errors.none());
           callback1_called = true;
           if (callback2_called)
@@ -220,13 +219,13 @@ TEST_P(WebAppInstallFinalizerUnitTest, ConcurrentInstallSucceeds) {
   {
     finalizer().FinalizeInstall(
         *info2, options,
-        base::BindLambdaForTesting([&](const AppId& installed_app_id,
+        base::BindLambdaForTesting([&](const webapps::AppId& installed_app_id,
                                        webapps::InstallResultCode code,
                                        OsHooksErrors os_hooks_errors) {
           EXPECT_EQ(webapps::InstallResultCode::kSuccessNewInstall, code);
           EXPECT_EQ(
               installed_app_id,
-              GenerateAppId(/*manifest_id=*/absl::nullopt, info2->start_url));
+              GenerateAppId(/*manifest_id=*/std::nullopt, info2->start_url));
           EXPECT_TRUE(os_hooks_errors.none());
           callback2_called = true;
           if (callback1_called)
@@ -261,16 +260,16 @@ TEST_P(WebAppInstallFinalizerUnitTest, OnWebAppManifestUpdatedTriggered) {
       webapps::WebappInstallSource::EXTERNAL_POLICY);
 
   FinalizeInstallResult result = AwaitFinalizeInstall(*info, options);
-  base::test::TestFuture<const AppId&, webapps::InstallResultCode,
+  base::test::TestFuture<const webapps::AppId&, webapps::InstallResultCode,
                          OsHooksErrors>
       update_future;
   finalizer().FinalizeUpdate(*info, update_future.GetCallback());
-  update_future.Wait();
+  ASSERT_TRUE(update_future.Wait());
   EXPECT_TRUE(install_manager_observer_->web_app_manifest_updated_called());
 }
 
 TEST_P(WebAppInstallFinalizerUnitTest,
-       NonLocalThenLocalInstallSetsInstallTime) {
+       NonLocalThenLocalInstallSetsBothInstallTime) {
   auto info = std::make_unique<WebAppInstallInfo>();
   info->start_url = GURL("https://foo.example");
   info->title = u"Foo Title";
@@ -290,7 +289,8 @@ TEST_P(WebAppInstallFinalizerUnitTest,
         registrar().GetAppById(result.installed_app_id);
 
     EXPECT_FALSE(installed_app->is_locally_installed());
-    EXPECT_TRUE(installed_app->install_time().is_null());
+    EXPECT_TRUE(installed_app->first_install_time().is_null());
+    EXPECT_TRUE(installed_app->latest_install_time().is_null());
   }
 
   options.locally_installed = true;
@@ -303,7 +303,59 @@ TEST_P(WebAppInstallFinalizerUnitTest,
         registrar().GetAppById(result.installed_app_id);
 
     EXPECT_TRUE(installed_app->is_locally_installed());
-    EXPECT_FALSE(installed_app->install_time().is_null());
+    EXPECT_FALSE(installed_app->first_install_time().is_null());
+    EXPECT_FALSE(installed_app->latest_install_time().is_null());
+    EXPECT_EQ(installed_app->first_install_time(),
+              installed_app->latest_install_time());
+  }
+}
+
+TEST_P(WebAppInstallFinalizerUnitTest,
+       LatestInstallTimeAlwaysUpdatedIfReinstalled) {
+  auto info = std::make_unique<WebAppInstallInfo>();
+  info->start_url = GURL("https://foo.example");
+  info->title = u"Foo Title";
+  WebAppInstallFinalizer::FinalizeOptions options(
+      webapps::WebappInstallSource::INTERNAL_DEFAULT);
+  options.locally_installed = false;
+  // OS Hooks must be disabled for non-locally installed app.
+  options.add_to_applications_menu = false;
+  options.add_to_desktop = false;
+  options.add_to_quick_launch_bar = false;
+  options.locally_installed = true;
+
+  base::Time old_first_install_time;
+  base::Time old_latest_install_time;
+
+  {
+    FinalizeInstallResult result = AwaitFinalizeInstall(*info, options);
+
+    ASSERT_EQ(webapps::InstallResultCode::kSuccessNewInstall, result.code);
+    const WebApp* installed_app =
+        registrar().GetAppById(result.installed_app_id);
+
+    EXPECT_TRUE(installed_app->is_locally_installed());
+    old_first_install_time = installed_app->first_install_time();
+    old_latest_install_time = installed_app->latest_install_time();
+    EXPECT_FALSE(old_first_install_time.is_null());
+    EXPECT_FALSE(old_latest_install_time.is_null());
+    EXPECT_EQ(old_first_install_time, old_latest_install_time);
+  }
+
+  // Try reinstalling the same app again, the latest install time should be
+  // updated but the first install time should still stay the same.
+  {
+    FinalizeInstallResult result = AwaitFinalizeInstall(*info, options);
+
+    ASSERT_EQ(webapps::InstallResultCode::kSuccessNewInstall, result.code);
+    const WebApp* installed_app =
+        registrar().GetAppById(result.installed_app_id);
+
+    EXPECT_TRUE(installed_app->is_locally_installed());
+    EXPECT_FALSE(installed_app->first_install_time().is_null());
+    EXPECT_FALSE(installed_app->latest_install_time().is_null());
+    EXPECT_EQ(installed_app->first_install_time(), old_first_install_time);
+    EXPECT_NE(installed_app->latest_install_time(), old_latest_install_time);
   }
 }
 
@@ -319,7 +371,7 @@ TEST_P(WebAppInstallFinalizerUnitTest, InstallNoDesktopShortcut) {
 
   EXPECT_EQ(webapps::InstallResultCode::kSuccessNewInstall, result.code);
   EXPECT_EQ(result.installed_app_id,
-            GenerateAppId(/*manifest_id=*/absl::nullopt, info->start_url));
+            GenerateAppId(/*manifest_id=*/std::nullopt, info->start_url));
 
   EXPECT_EQ(1u, os_integration_manager().num_create_shortcuts_calls());
   EXPECT_FALSE(os_integration_manager().did_add_to_desktop().value());
@@ -339,7 +391,7 @@ TEST_P(WebAppInstallFinalizerUnitTest, InstallNoQuickLaunchBarShortcut) {
 
   EXPECT_EQ(webapps::InstallResultCode::kSuccessNewInstall, result.code);
   EXPECT_EQ(result.installed_app_id,
-            GenerateAppId(/*manifest_id=*/absl::nullopt, info->start_url));
+            GenerateAppId(/*manifest_id=*/std::nullopt, info->start_url));
 
   EXPECT_EQ(1u, os_integration_manager().num_create_shortcuts_calls());
   EXPECT_TRUE(os_integration_manager().did_add_to_desktop().value());
@@ -361,7 +413,7 @@ TEST_P(WebAppInstallFinalizerUnitTest,
 
   EXPECT_EQ(webapps::InstallResultCode::kSuccessNewInstall, result.code);
   EXPECT_EQ(result.installed_app_id,
-            GenerateAppId(/*manifest_id=*/absl::nullopt, info->start_url));
+            GenerateAppId(/*manifest_id=*/std::nullopt, info->start_url));
 
   EXPECT_EQ(1u, os_integration_manager().num_create_shortcuts_calls());
   EXPECT_FALSE(os_integration_manager().did_add_to_desktop().value());
@@ -384,7 +436,7 @@ TEST_P(WebAppInstallFinalizerUnitTest, InstallNoCreateOsShorcuts) {
 
   EXPECT_EQ(webapps::InstallResultCode::kSuccessNewInstall, result.code);
   EXPECT_EQ(result.installed_app_id,
-            GenerateAppId(/*manifest_id=*/absl::nullopt, info->start_url));
+            GenerateAppId(/*manifest_id=*/std::nullopt, info->start_url));
 
   EXPECT_EQ(0u, os_integration_manager().num_create_shortcuts_calls());
 }
@@ -401,7 +453,7 @@ TEST_P(WebAppInstallFinalizerUnitTest,
 
   EXPECT_EQ(webapps::InstallResultCode::kSuccessNewInstall, result.code);
   EXPECT_EQ(result.installed_app_id,
-            GenerateAppId(/*manifest_id=*/absl::nullopt, info->start_url));
+            GenerateAppId(/*manifest_id=*/std::nullopt, info->start_url));
 
   EXPECT_EQ(1u, os_integration_manager().num_create_file_handlers_calls());
 }
@@ -417,7 +469,7 @@ TEST_P(WebAppInstallFinalizerUnitTest, InstallOsHooksDisabledForDefaultApps) {
 
   EXPECT_EQ(webapps::InstallResultCode::kSuccessNewInstall, result.code);
   EXPECT_EQ(result.installed_app_id,
-            GenerateAppId(/*manifest_id=*/absl::nullopt, info->start_url));
+            GenerateAppId(/*manifest_id=*/std::nullopt, info->start_url));
 
 #if BUILDFLAG(IS_CHROMEOS)
   // OS integration is always enabled in ChromeOS
@@ -429,10 +481,10 @@ TEST_P(WebAppInstallFinalizerUnitTest, InstallOsHooksDisabledForDefaultApps) {
   // Update the app, adding a file handler.
   std::vector<blink::mojom::ManifestFileHandlerPtr> file_handlers;
   AddFileHandler(&file_handlers);
-  info->file_handlers =
-      CreateFileHandlersFromManifest(file_handlers, info->start_url);
+  PopulateFileHandlerInfoFromManifest(file_handlers, info->start_url,
+                                      info.get());
 
-  base::test::TestFuture<const AppId&, webapps::InstallResultCode,
+  base::test::TestFuture<const webapps::AppId&, webapps::InstallResultCode,
                          OsHooksErrors>
       update_future;
   finalizer().FinalizeUpdate(*info, update_future.GetCallback());
@@ -460,7 +512,7 @@ TEST_P(WebAppInstallFinalizerUnitTest, InstallUrlSetInWebAppDB) {
 
   EXPECT_EQ(webapps::InstallResultCode::kSuccessNewInstall, result.code);
   EXPECT_EQ(result.installed_app_id,
-            GenerateAppId(/*manifest_id=*/absl::nullopt, info->start_url));
+            GenerateAppId(/*manifest_id=*/std::nullopt, info->start_url));
 
   const WebApp* installed_app = registrar().GetAppById(result.installed_app_id);
   const WebApp::ExternalConfigMap& config_map =
@@ -490,7 +542,7 @@ TEST_P(WebAppInstallFinalizerUnitTest, IsolationDataSetInWebAppDB) {
 
   EXPECT_EQ(webapps::InstallResultCode::kSuccessNewInstall, result.code);
   EXPECT_EQ(result.installed_app_id,
-            GenerateAppId(/*manifest_id=*/absl::nullopt, info.start_url));
+            GenerateAppId(/*manifest_id=*/std::nullopt, info.start_url));
 
   const WebApp* installed_app = registrar().GetAppById(result.installed_app_id);
   EXPECT_EQ(location, installed_app->isolation_data()->location);

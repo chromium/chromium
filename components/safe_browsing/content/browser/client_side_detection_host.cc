@@ -20,9 +20,12 @@
 #include "base/time/default_tick_clock.h"
 #include "base/time/tick_clock.h"
 #include "base/uuid.h"
+#include "components/permissions/permission_request_manager.h"
 #include "components/prefs/pref_service.h"
+#include "components/safe_browsing/content/browser/client_side_detection_feature_cache.h"
 #include "components/safe_browsing/content/browser/client_side_detection_service.h"
 #include "components/safe_browsing/content/browser/client_side_phishing_model.h"
+#include "components/safe_browsing/content/browser/unsafe_resource_util.h"
 #include "components/safe_browsing/content/common/safe_browsing.mojom-shared.h"
 #include "components/safe_browsing/content/common/safe_browsing.mojom.h"
 #include "components/safe_browsing/content/common/visual_utils.h"
@@ -31,7 +34,6 @@
 #include "components/safe_browsing/core/browser/sync/sync_utils.h"
 #include "components/safe_browsing/core/common/features.h"
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
-#include "components/security_interstitials/content/unsafe_resource_util.h"
 #include "components/zoom/zoom_controller.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_task_traits.h"
@@ -45,10 +47,12 @@
 #include "content/public/common/url_constants.h"
 #include "net/base/ip_endpoint.h"
 #include "net/http/http_response_headers.h"
+#include "services/network/public/mojom/url_response_head.mojom.h"
 #include "services/service_manager/public/cpp/interface_provider.h"
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_provider.h"
 #include "third_party/blink/public/mojom/loader/referrer.mojom.h"
 #include "url/gurl.h"
+#include "url/origin.h"
 
 #if BUILDFLAG(IS_ANDROID)
 #include "ui/android/view_android.h"
@@ -72,8 +76,9 @@ void WriteFeaturesToDisk(const ClientPhishingRequest& features,
   base::FilePath path =
       base_path.AppendASCII(base::Uuid::GenerateRandomV4().AsLowercaseString());
   base::File file(path, base::File::FLAG_CREATE | base::File::FLAG_WRITE);
-  if (!file.IsValid())
+  if (!file.IsValid()) {
     return;
+  }
   std::string serialized_features = features.SerializeAsString();
   file.WriteAtCurrentPos(serialized_features.data(),
                          serialized_features.size());
@@ -93,6 +98,22 @@ base::FilePath GetDebugFeatureDirectory() {
   return base::CommandLine::ForCurrentProcess()->GetSwitchValuePath(
       kCsdDebugFeatureDirectoryFlag);
 }
+
+std::string GetRequestTypeName(
+    ClientSideDetectionType client_side_detection_type) {
+  switch (client_side_detection_type) {
+    case safe_browsing::ClientSideDetectionType::
+        CLIENT_SIDE_DETECTION_TYPE_UNSPECIFIED:
+      return "Unknown";
+    case safe_browsing::ClientSideDetectionType::FORCE_REQUEST:
+      return "ForceRequest";
+    case safe_browsing::ClientSideDetectionType::NOTIFICATION_PERMISSION_PROMPT:
+      return "NotificationPermissionPrompt";
+    case safe_browsing::ClientSideDetectionType::TRIGGER_MODELS:
+      return "TriggerModel";
+  }
+}
+
 }  // namespace
 
 typedef base::OnceCallback<void(bool)> ShouldClassifyUrlCallback;
@@ -109,15 +130,19 @@ class ClientSideDetectionHost::ShouldClassifyUrlRequest
           ClientSideDetectionHost::ShouldClassifyUrlRequest> {
  public:
   ShouldClassifyUrlRequest(
-      content::NavigationHandle* navigation_handle,
+      const GURL& url,
+      const network::mojom::URLResponseHead* response_head,
       ShouldClassifyUrlCallback start_phishing_classification,
       WebContents* web_contents,
       base::WeakPtr<ClientSideDetectionService> csd_service,
       SafeBrowsingDatabaseManager* database_manager,
+      ClientSideDetectionType phishing_detection_request_type,
       base::WeakPtr<ClientSideDetectionHost> host)
-      : web_contents_(web_contents),
+      : url_(url),
+        web_contents_(web_contents),
         csd_service_(csd_service),
         database_manager_(database_manager),
+        phishing_detection_request_type_(phishing_detection_request_type),
         host_(host),
         start_phishing_classification_cb_(
             std::move(start_phishing_classification)) {
@@ -126,10 +151,12 @@ class ClientSideDetectionHost::ShouldClassifyUrlRequest
     DCHECK(csd_service_);
     DCHECK(database_manager_.get());
     DCHECK(host_);
-    url_ = navigation_handle->GetURL();
-    if (navigation_handle->GetResponseHeaders())
-      navigation_handle->GetResponseHeaders()->GetMimeType(&mime_type_);
-    remote_endpoint_ = navigation_handle->GetSocketAddress();
+    if (response_head) {
+      if (response_head->headers) {
+        response_head->headers->GetMimeType(&mime_type_);
+      }
+      remote_endpoint_ = response_head->remote_endpoint;
+    }
   }
 
   ShouldClassifyUrlRequest(const ShouldClassifyUrlRequest&) = delete;
@@ -137,7 +164,6 @@ class ClientSideDetectionHost::ShouldClassifyUrlRequest
 
   void Start() {
     DCHECK_CURRENTLY_ON(BrowserThread::UI);
-
     // We start by doing some simple checks that can run on the UI thread.
     base::UmaHistogramBoolean("SBClientPhishing.ClassificationStart", true);
 
@@ -176,13 +202,6 @@ class ClientSideDetectionHost::ShouldClassifyUrlRequest
       DontClassifyForPhishing(NO_CLASSIFY_ALLOWLISTED_BY_POLICY);
     }
 
-    // Don't start classification if CSD-Phishing is not allowed by enterprise
-    // policy.
-    if (host_ && host_->delegate_->GetPrefs() &&
-        !IsCsdPhishingProtectionAllowed(*host_->delegate_->GetPrefs())) {
-      DontClassifyForPhishing(NO_CLASSIFY_NOT_ALLOWED_BY_POLICY);
-    }
-
     // If the tab has a delayed warning, ignore this second verdict. We don't
     // want to immediately undelay a page that's already blocked as phishy.
     if (host_ && host_->delegate_->HasSafeBrowsingUserInteractionObserver()) {
@@ -191,18 +210,9 @@ class ClientSideDetectionHost::ShouldClassifyUrlRequest
 
     // We lookup the csd-allowlist before we lookup the cache because
     // a URL may have recently been allowlisted.  If the URL matches
-    // the csd-allowlist we won't start phishing classification.  The
-    // csd-allowlist check has to be done on the IO thread because it
-    // uses the SafeBrowsing service class.
+    // the csd-allowlist we won't start phishing classification.
     if (ShouldClassifyForPhishing()) {
-      if (base::FeatureList::IsEnabled(kSafeBrowsingOnUIThread)) {
-        CheckSafeBrowsingDatabase(url_);
-      } else {
-        content::GetIOThreadTaskRunner({})->PostTask(
-            FROM_HERE,
-            base::BindOnce(&ShouldClassifyUrlRequest::CheckSafeBrowsingDatabase,
-                           this, url_));
-      }
+      CheckSafeBrowsingDatabase(url_);
     }
   }
 
@@ -241,13 +251,13 @@ class ClientSideDetectionHost::ShouldClassifyUrlRequest
     NO_CLASSIFY_HAS_DELAYED_WARNING = 14,
     NO_CLASSIFY_LOCAL_RESOURCE = 15,
     NO_CLASSIFY_CHROME_UI_PAGE = 16,
-    NO_CLASSIFY_NOT_ALLOWED_BY_POLICY = 17,
+    // NO_CLASSIFY_NOT_ALLOWED_BY_POLICY = 17,  Obsolete
 
     NO_CLASSIFY_MAX  // Always add new values before this one.
   };
 
   // The destructor can be called either from the UI or the IO thread.
-  virtual ~ShouldClassifyUrlRequest() = default;
+  ~ShouldClassifyUrlRequest() = default;
 
   bool ShouldClassifyForPhishing() const {
     DCHECK_CURRENTLY_ON(BrowserThread::UI);
@@ -267,31 +277,29 @@ class ClientSideDetectionHost::ShouldClassifyUrlRequest
   }
 
   void CheckSafeBrowsingDatabase(const GURL& url) {
-    DCHECK_CURRENTLY_ON(base::FeatureList::IsEnabled(kSafeBrowsingOnUIThread)
-                            ? content::BrowserThread::UI
-                            : content::BrowserThread::IO);
+    DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
     PreClassificationCheckResult phishing_reason = NO_CLASSIFY_MAX;
 
     // When doing debug feature dumps, ignore the allowlist.
     if (HasDebugFeatureDirectory()) {
-      OnAllowlistCheckDoneOnIO(url, phishing_reason,
-                               /*match_allowlist=*/false);
+      OnAllowlistCheckDone(url, phishing_reason,
+                           /*match_allowlist=*/false);
       return;
     }
 
     if (!database_manager_.get()) {
       // We cannot check the Safe Browsing allowlists so we stop here
       // for safety.
-      OnAllowlistCheckDoneOnIO(
-          url, /*phishing_reason=*/NO_CLASSIFY_NO_DATABASE_MANAGER,
-          /*match_allowlist=*/false);
+      OnAllowlistCheckDone(url,
+                           /*phishing_reason=*/NO_CLASSIFY_NO_DATABASE_MANAGER,
+                           /*match_allowlist=*/false);
       return;
     }
 
     if (ShouldSkipCSDAllowlist()) {
       // Command line flag to skip the allowlist check has been set.
-      OnAllowlistCheckDoneOnIO(url, phishing_reason,
-                               /*match_allowlist=*/false);
+      OnAllowlistCheckDone(url, phishing_reason,
+                           /*match_allowlist=*/false);
       return;
     }
 
@@ -299,45 +307,37 @@ class ClientSideDetectionHost::ShouldClassifyUrlRequest
     // can call AllowlistCheckerClient directly.
     base::OnceCallback<void(bool)> result_callback =
         base::BindOnce(&ClientSideDetectionHost::ShouldClassifyUrlRequest::
-                           OnAllowlistCheckDoneOnIO,
+                           OnAllowlistCheckDone,
                        this, url, phishing_reason);
     AllowlistCheckerClient::StartCheckCsdAllowlist(database_manager_, url,
                                                    std::move(result_callback));
   }
 
-  void OnAllowlistCheckDoneOnIO(const GURL& url,
-                                PreClassificationCheckResult phishing_reason,
-                                bool match_allowlist) {
-    DCHECK_CURRENTLY_ON(base::FeatureList::IsEnabled(kSafeBrowsingOnUIThread)
-                            ? content::BrowserThread::UI
-                            : content::BrowserThread::IO);
-    // We don't want to call the classification callbacks from the IO
-    // thread so we simply pass the results of this method to CheckCache()
-    // which is called on the UI thread;
+  void OnAllowlistCheckDone(const GURL& url,
+                            PreClassificationCheckResult phishing_reason,
+                            bool match_allowlist) {
+    DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
     if (match_allowlist) {
       phishing_reason = NO_CLASSIFY_MATCH_CSD_ALLOWLIST;
     }
-    if (base::FeatureList::IsEnabled(kSafeBrowsingOnUIThread)) {
-      CheckCache(phishing_reason);
-    } else {
-      content::GetUIThreadTaskRunner({})->PostTask(
-          FROM_HERE, base::BindOnce(&ShouldClassifyUrlRequest::CheckCache, this,
-                                    phishing_reason));
-    }
+    CheckCache(phishing_reason);
   }
 
   void CheckCache(PreClassificationCheckResult phishing_reason) {
     DCHECK_CURRENTLY_ON(BrowserThread::UI);
-    if (phishing_reason != NO_CLASSIFY_MAX)
+    if (phishing_reason != NO_CLASSIFY_MAX) {
       DontClassifyForPhishing(phishing_reason);
+    }
     if (!ShouldClassifyForPhishing()) {
       return;  // No point in doing anything else.
     }
-    // If result is cached, we don't want to run classification again.
-    // In that case we're just trying to show the warning.
+    // For trigger model requests, if result is cached, we don't want to run
+    // classification again. In that case we're just trying to show the warning.
     // If we're dumping features for debugging, ignore the cache.
     bool is_phishing;
-    if (!HasDebugFeatureDirectory() && host_ && csd_service_ &&
+    if (phishing_detection_request_type_ ==
+            ClientSideDetectionType::TRIGGER_MODELS &&
+        !HasDebugFeatureDirectory() && host_ && csd_service_ &&
         csd_service_->GetValidCachedResult(url_, &is_phishing)) {
       // Since we are already on the UI thread, this is safe.
       host_->MaybeShowPhishingWarning(/*is_from_cache=*/true, url_,
@@ -372,7 +372,7 @@ class ClientSideDetectionHost::ShouldClassifyUrlRequest
     }
   }
 
-  GURL url_;
+  const GURL url_;
   std::string mime_type_;
   net::IPEndPoint remote_endpoint_;
   raw_ptr<WebContents> web_contents_;
@@ -380,6 +380,7 @@ class ClientSideDetectionHost::ShouldClassifyUrlRequest
   // We keep a ref pointer here just to make sure the safe browsing
   // database manager stays alive long enough.
   scoped_refptr<SafeBrowsingDatabaseManager> database_manager_;
+  ClientSideDetectionType phishing_detection_request_type_;
   base::WeakPtr<ClientSideDetectionHost> host_;
 
   ShouldClassifyUrlCallback start_phishing_classification_cb_;
@@ -420,10 +421,20 @@ ClientSideDetectionHost::ClientSideDetectionHost(
   // Note: csd_service_ and sb_service will be nullptr here in testing.
   csd_service_ = delegate_->GetClientSideDetectionService();
 
+  if (csd_service_ &&
+      base::FeatureList::IsEnabled(kClientSideDetectionImagesCache)) {
+    ClientSideDetectionFeatureCache::CreateForWebContents(web_contents());
+    ClientSideDetectionFeatureCache* feature_map =
+        ClientSideDetectionFeatureCache::FromWebContents(web_contents());
+    feature_map->AddClearCacheSubscription(csd_service_);
+  }
+
   // |ui_manager_| and |database_manager_| can
   // be null if safe browsing service is not available in the embedder.
   ui_manager_ = delegate_->GetSafeBrowsingUIManager();
   database_manager_ = delegate_->GetSafeBrowsingDBManager();
+
+  RegisterPermissionRequestManager();
 }
 
 ClientSideDetectionHost::~ClientSideDetectionHost() {
@@ -432,13 +443,15 @@ ClientSideDetectionHost::~ClientSideDetectionHost() {
   }
 }
 
-void ClientSideDetectionHost::DidFinishNavigation(
-    content::NavigationHandle* navigation_handle) {
-  if (!navigation_handle->IsInPrimaryMainFrame() ||
-      !navigation_handle->HasCommitted()) {
-    return;
+void ClientSideDetectionHost::RegisterPermissionRequestManager() {
+  if (IsEnhancedProtectionEnabled(*delegate_->GetPrefs()) &&
+      base::FeatureList::IsEnabled(kClientSideDetectionNotificationPrompt)) {
+    observation_.Observe(
+        permissions::PermissionRequestManager::FromWebContents(web_contents()));
   }
+}
 
+void ClientSideDetectionHost::PrimaryPageChanged(content::Page& page) {
   if (base::FeatureList::IsEnabled(kClientSideDetectionKillswitch)) {
     return;
   }
@@ -446,43 +459,70 @@ void ClientSideDetectionHost::DidFinishNavigation(
   // TODO(noelutz): move this DCHECK to WebContents and fix all the unit tests
   // that don't call this method on the UI thread.
   // DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  if (navigation_handle->IsSameDocument()) {
-    // If the navigation is within the same document, the user isn't really
-    // navigating away.  We don't need to cancel a pending callback or
-    // begin a new classification.
-    return;
-  }
+
   // Cancel any pending classification request.
   if (classification_request_.get()) {
     classification_request_->Cancel();
   }
-  // If we navigate away and there currently is a pending phishing
-  // report request we have to cancel it to make sure we don't display
-  // an interstitial for the wrong page.  Note that this won't cancel
-  // the server ping back but only cancel the showing of the
-  // interstitial.
+  // If we navigate away and there currently is a pending phishing report
+  // request we have to cancel it to make sure we don't display an interstitial
+  // for the wrong page.  Note that this won't cancel the server ping back but
+  // only cancel the showing of the interstitial.
   weak_factory_.InvalidateWeakPtrs();
 
   if (!csd_service_) {
     return;
   }
 
-  current_url_ = navigation_handle->GetURL();
-  current_outermost_main_frame_id_ = navigation_handle->GetRenderFrameHost()
-                                         ->GetOutermostMainFrame()
-                                         ->GetGlobalId();
+  content::RenderFrameHost& rfh = page.GetMainDocument();
+  current_url_ = rfh.GetLastCommittedURL();
+  current_outermost_main_frame_id_ = rfh.GetGlobalId();
 
   // Check whether we can cassify the current URL for phishing.
   classification_request_ = new ShouldClassifyUrlRequest(
-      navigation_handle,
+      rfh.GetLastCommittedURL(), rfh.GetLastResponseHead(),
       base::BindOnce(&ClientSideDetectionHost::OnPhishingPreClassificationDone,
-                     weak_factory_.GetWeakPtr()),
+                     weak_factory_.GetWeakPtr(),
+                     ClientSideDetectionType::TRIGGER_MODELS),
       web_contents(), csd_service_, database_manager_.get(),
-      weak_factory_.GetWeakPtr());
+      ClientSideDetectionType::TRIGGER_MODELS, weak_factory_.GetWeakPtr());
   classification_request_->Start();
 }
 
+void ClientSideDetectionHost::OnPromptAdded() {
+  if (!IsEnhancedProtectionEnabled(*delegate_->GetPrefs())) {
+    return;
+  }
+
+  permissions::PermissionRequestManager* permission_request_manager =
+      permissions::PermissionRequestManager::FromWebContents(web_contents());
+  CHECK(permission_request_manager);
+
+  content::RenderFrameHost* rfh = web_contents()->GetPrimaryMainFrame();
+
+  if (base::Contains(permission_request_manager->Requests(),
+                     permissions::RequestType::kNotifications,
+                     &permissions::PermissionRequest::request_type)) {
+    // Check whether we can classify the current URL for phishing.
+    classification_request_ = new ShouldClassifyUrlRequest(
+        rfh->GetLastCommittedURL(), rfh->GetLastResponseHead(),
+        base::BindOnce(
+            &ClientSideDetectionHost::OnPhishingPreClassificationDone,
+            weak_factory_.GetWeakPtr(),
+            ClientSideDetectionType::NOTIFICATION_PERMISSION_PROMPT),
+        web_contents(), csd_service_, database_manager_.get(),
+        ClientSideDetectionType::NOTIFICATION_PERMISSION_PROMPT,
+        weak_factory_.GetWeakPtr());
+    classification_request_->Start();
+  }
+}
+
+void ClientSideDetectionHost::OnPermissionRequestManagerDestructed() {
+  observation_.Reset();
+}
+
 void ClientSideDetectionHost::OnPhishingPreClassificationDone(
+    ClientSideDetectionType request_type,
     bool should_classify) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   if (should_classify) {
@@ -496,12 +536,13 @@ void ClientSideDetectionHost::OnPhishingPreClassificationDone(
       phishing_detector_->StartPhishingDetection(
           current_url_,
           base::BindOnce(&ClientSideDetectionHost::PhishingDetectionDone,
-                         weak_factory_.GetWeakPtr()));
+                         weak_factory_.GetWeakPtr(), request_type));
     }
   }
 }
 
 void ClientSideDetectionHost::PhishingDetectionDone(
+    ClientSideDetectionType request_type,
     mojom::PhishingDetectorResult result,
     const std::string& verdict_str) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
@@ -509,41 +550,76 @@ void ClientSideDetectionHost::PhishingDetectionDone(
   // this method is called.  The renderer should not start phishing detection
   // if there isn't any service class in the browser.
   DCHECK(csd_service_);
-
   phishing_detector_.reset();
 
+  std::string request_type_name = GetRequestTypeName(request_type);
+
   UmaHistogramMediumTimes(
-      "SBClientPhishing.PhishingDetectionDuration",
+      "SBClientPhishing.PhishingDetectionDuration." + request_type_name,
       base::TimeTicks::Now() - phishing_detection_start_time_);
   base::UmaHistogramEnumeration("SBClientPhishing.PhishingDetectorResult",
                                 result);
+  base::UmaHistogramEnumeration(
+      "SBClientPhishing.PhishingDetectorResult." + request_type_name, result);
   if (result == mojom::PhishingDetectorResult::CLASSIFIER_NOT_READY) {
     bool is_model_available = csd_service_->IsModelAvailable();
     base::UmaHistogramBoolean(
         "SBClientPhishing.BrowserReadyOnClassifierNotReady",
         is_model_available);
   }
-  if (result != mojom::PhishingDetectorResult::SUCCESS)
+  if (result != mojom::PhishingDetectorResult::SUCCESS) {
     return;
+  }
 
-  // We parse the protocol buffer here.  If we're unable to parse it we won't
-  // send the verdict further.
+  // We parse the protocol buffer here.  If we're unable to parse it we
+  // won't send the verdict further.
   std::unique_ptr<ClientPhishingRequest> verdict(new ClientPhishingRequest);
   if (csd_service_ && verdict->ParseFromString(verdict_str) &&
       verdict->IsInitialized()) {
-    csd_service_->ClassifyPhishingThroughThresholds(verdict.get());
-    VLOG(2) << "Phishing classification score: " << verdict->client_score();
-    VLOG(2) << "Visual model scores:";
-    for (const ClientPhishingRequest::CategoryScore& label_and_value :
-         verdict->tflite_model_scores()) {
-      VLOG(2) << label_and_value.label() << ": " << label_and_value.value();
+    verdict->set_client_side_detection_type(request_type);
+    if (base::FeatureList::IsEnabled(kClientSideDetectionImagesCache)) {
+      // We should only cache the string if the result is SUCCESS, so that
+      // in a situation where it is not, PG can retry the classification
+      // because classifier can be ready or a new model is ready to address
+      // the failure reasons.
+      ClientSideDetectionFeatureCache::CreateForWebContents(web_contents());
+      ClientSideDetectionFeatureCache* feature_map =
+          ClientSideDetectionFeatureCache::FromWebContents(web_contents());
+
+      // Initial implementation of the feature is that only PG will use the
+      // cache to reuse the images that are computed by CSD-Phishing/PG. In
+      // scenarios where the user reloads the page, we could use the images
+      // again, and we will log to see the efficiency if we were to.
+      bool cache_csd_phishing_data_available =
+          feature_map->GetFeatureMapForURL(current_url_) != nullptr;
+
+      base::UmaHistogramBoolean(
+          "SBClientPhishing.CSDPhishingCachedDataAvailable",
+          cache_csd_phishing_data_available);
+
+      feature_map->Insert(current_url_,
+                          std::make_unique<ClientPhishingRequest>(*verdict));
     }
 
-    if (HasDebugFeatureDirectory()) {
-      base::ThreadPool::PostTask(FROM_HERE, {base::MayBlock()},
-                                 base::BindOnce(&WriteFeaturesToDisk, *verdict,
-                                                GetDebugFeatureDirectory()));
-    }
+    MaybeSendClientPhishingRequest(std::move(verdict));
+  }
+}
+
+void ClientSideDetectionHost::MaybeSendClientPhishingRequest(
+    std::unique_ptr<ClientPhishingRequest> verdict) {
+  csd_service_->ClassifyPhishingThroughThresholds(verdict.get());
+  VLOG(2) << "Phishing classification score: " << verdict->client_score();
+  VLOG(2) << "Visual model scores:";
+  for (const ClientPhishingRequest::CategoryScore& label_and_value :
+       verdict->tflite_model_scores()) {
+    VLOG(2) << label_and_value.label() << ": " << label_and_value.value();
+  }
+
+  if (HasDebugFeatureDirectory()) {
+    base::ThreadPool::PostTask(FROM_HERE, {base::MayBlock()},
+                               base::BindOnce(&WriteFeaturesToDisk, *verdict,
+                                              GetDebugFeatureDirectory()));
+  }
 
 #if BUILDFLAG(IS_ANDROID)
     gfx::Size size;
@@ -554,9 +630,11 @@ void ClientSideDetectionHost::PhishingDetectionDone(
       size = gfx::Size(static_cast<int>(viewport.width()),
                        static_cast<int>(viewport.height()));
     }
-    bool can_extract_visual_features = visual_utils::CanExtractVisualFeatures(
-        IsExtendedReportingEnabled(*delegate_->GetPrefs()),
-        web_contents()->GetBrowserContext()->IsOffTheRecord(), size);
+    visual_utils::CanExtractVisualFeaturesResult
+        can_extract_visual_features_result =
+            visual_utils::CanExtractVisualFeatures(
+                IsExtendedReportingEnabled(*delegate_->GetPrefs()),
+                web_contents()->GetBrowserContext()->IsOffTheRecord(), size);
 #else
     gfx::Size size;
     content::RenderWidgetHostView* view =
@@ -564,12 +642,19 @@ void ClientSideDetectionHost::PhishingDetectionDone(
     if (view) {
       size = view->GetVisibleViewportSize();
     }
-    bool can_extract_visual_features = visual_utils::CanExtractVisualFeatures(
-        IsExtendedReportingEnabled(*delegate_->GetPrefs()),
-        web_contents()->GetBrowserContext()->IsOffTheRecord(), size,
-        zoom::ZoomController::GetZoomLevelForWebContents(web_contents()));
+    visual_utils::CanExtractVisualFeaturesResult
+        can_extract_visual_features_result =
+            visual_utils::CanExtractVisualFeatures(
+                IsExtendedReportingEnabled(*delegate_->GetPrefs()),
+                web_contents()->GetBrowserContext()->IsOffTheRecord(), size,
+                zoom::ZoomController::GetZoomLevelForWebContents(
+                    web_contents()));
 #endif
-    if (!can_extract_visual_features) {
+    base::UmaHistogramEnumeration("SBClientPhishing.VisualFeaturesClearReason",
+                                  can_extract_visual_features_result);
+    if (can_extract_visual_features_result !=
+        visual_utils::CanExtractVisualFeaturesResult::
+            kCanExtractVisualFeatures) {
       verdict->clear_visual_features();
     }
 
@@ -585,28 +670,37 @@ void ClientSideDetectionHost::PhishingDetectionDone(
 
     bool force_request_from_rt_url_lookup = false;
 
-    if (base::FeatureList::IsEnabled(kClientSideDetectionTypeForceRequest)) {
-      if (cache_manager) {
-        safe_browsing::ClientSideDetectionType cached_csd_type =
-            cache_manager->GetCachedRealTimeUrlClientSideDetectionType(
-                current_url_);
-        force_request_from_rt_url_lookup =
-            cached_csd_type ==
-                safe_browsing::ClientSideDetectionType::FORCE_REQUEST &&
-            IsEnhancedProtectionEnabled(*delegate_->GetPrefs());
-        if (force_request_from_rt_url_lookup) {
-          verdict->set_client_side_detection_type(
-              safe_browsing::ClientSideDetectionType::FORCE_REQUEST);
-        }
+    if (verdict->client_side_detection_type() ==
+            ClientSideDetectionType::TRIGGER_MODELS &&
+        cache_manager) {
+      safe_browsing::ClientSideDetectionType cached_csd_type =
+          cache_manager->GetCachedRealTimeUrlClientSideDetectionType(
+              current_url_);
+      force_request_from_rt_url_lookup =
+          cached_csd_type ==
+              safe_browsing::ClientSideDetectionType::FORCE_REQUEST &&
+          IsEnhancedProtectionEnabled(*delegate_->GetPrefs());
+      if (force_request_from_rt_url_lookup) {
+        verdict->set_client_side_detection_type(
+            safe_browsing::ClientSideDetectionType::FORCE_REQUEST);
       }
-
-      base::UmaHistogramBoolean("SBClientPhishing.RTLookupForceRequest",
-                                force_request_from_rt_url_lookup);
     }
 
-    // We only send a phishing verdict if the verdict is phishing OR we get a
-    // FORCE_REQUEST from a RTLookupResponse for a SBER/ESB user.
-    if (!verdict->is_phishing() && !force_request_from_rt_url_lookup) {
+    base::UmaHistogramBoolean("SBClientPhishing.RTLookupForceRequest",
+                              force_request_from_rt_url_lookup);
+
+    base::UmaHistogramExactLinear(
+        "SBClientPhishing.ClientSideDetectionTypeRequest",
+        verdict->client_side_detection_type(), ClientSideDetectionType_MAX + 1);
+
+    // We only send a phishing verdict if the verdict is phishing AND the client
+    // side detection type is |TRIGGER_MODELS|. The detection type can be
+    // changed to FORCE_REQUEST from a RTLookupResponse for a SBER/ESB user.
+    // This can also be changed when the request is made from a notification
+    // permission prompt.
+    if (!verdict->is_phishing() &&
+        verdict->client_side_detection_type() ==
+            ClientSideDetectionType::TRIGGER_MODELS) {
       return;
     }
 
@@ -628,6 +722,7 @@ void ClientSideDetectionHost::PhishingDetectionDone(
 
     if (base::FeatureList::IsEnabled(kClientSideDetectionModelImageEmbedder) &&
         IsEnhancedProtectionEnabled(*delegate_->GetPrefs()) &&
+        csd_service_->HasImageEmbeddingModel() &&
         csd_service_->IsModelMetadataImageEmbeddingVersionMatching()) {
       content::RenderFrameHost* rfh = web_contents()->GetPrimaryMainFrame();
 
@@ -652,7 +747,6 @@ void ClientSideDetectionHost::PhishingDetectionDone(
       std::string empty_access_token;
       SendRequest(std::move(verdict), empty_access_token);
     }
-  }
 }
 
 void ClientSideDetectionHost::PhishingImageEmbeddingDone(
@@ -691,8 +785,9 @@ void ClientSideDetectionHost::MaybeShowPhishingWarning(bool is_from_cache,
   if (is_phishing) {
     DCHECK(web_contents());
     if (ui_manager_.get()) {
+      auto* primary_main_frame = web_contents()->GetPrimaryMainFrame();
       const content::GlobalRenderFrameHostId primary_main_frame_id =
-          web_contents()->GetPrimaryMainFrame()->GetGlobalId();
+          primary_main_frame->GetGlobalId();
 
       security_interstitials::UnsafeResource resource;
       resource.url = phishing_url;
@@ -702,7 +797,7 @@ void ClientSideDetectionHost::MaybeShowPhishingWarning(bool is_from_cache,
       resource.threat_source =
           safe_browsing::ThreatSource::CLIENT_SIDE_DETECTION;
       resource.render_process_id = primary_main_frame_id.child_id;
-      resource.render_frame_id = primary_main_frame_id.frame_routing_id;
+      resource.render_frame_token = primary_main_frame->GetFrameToken().value();
       if (!ui_manager_->IsAllowlisted(resource)) {
         // We need to stop any pending navigations, otherwise the interstitial
         // might not get created properly.
@@ -737,8 +832,9 @@ void ClientSideDetectionHost::OnGotAccessToken(
 }
 
 bool ClientSideDetectionHost::CanGetAccessToken() {
-  if (is_off_the_record_)
+  if (is_off_the_record_) {
     return false;
+  }
 
   // Return true if the primary user account of an ESB user is signed in.
   return IsEnhancedProtectionEnabled(*pref_service_) &&

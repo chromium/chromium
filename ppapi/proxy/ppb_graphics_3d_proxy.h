@@ -20,6 +20,7 @@
 
 namespace gpu {
 struct Capabilities;
+struct GLCapabilities;
 }
 
 namespace ppapi {
@@ -42,6 +43,7 @@ class PPAPI_PROXY_EXPORT Graphics3D : public PPB_Graphics3D_Shared {
 
   bool Init(gpu::gles2::GLES2Implementation* share_gles2,
             const gpu::Capabilities& capabilities,
+            const gpu::GLCapabilities& gl_capabilities,
             SerializedHandle shared_state,
             gpu::CommandBufferId command_buffer_id);
 
@@ -96,6 +98,7 @@ class PPB_Graphics3D_Proxy : public InterfaceProxy {
                    const Graphics3DContextAttribs& context_attribs,
                    HostResource* result,
                    gpu::Capabilities* capabilities,
+                   gpu::GLCapabilities* gl_capabilities,
                    SerializedHandle* handle,
                    gpu::CommandBufferId* command_buffer_id);
   void OnMsgSetGetBuffer(const HostResource& context, int32_t id);

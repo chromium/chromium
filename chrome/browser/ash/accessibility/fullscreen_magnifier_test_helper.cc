@@ -10,10 +10,8 @@
 #include "chrome/browser/ash/accessibility/accessibility_manager.h"
 #include "chrome/browser/ash/accessibility/magnification_manager.h"
 #include "chrome/browser/ash/accessibility/magnifier_animation_waiter.h"
-#include "chrome/browser/ui/browser.h"
 #include "chrome/common/extensions/extension_constants.h"
 #include "chrome/test/base/ui_test_utils.h"
-#include "content/public/browser/web_contents.h"
 #include "content/public/test/accessibility_notification_waiter.h"
 #include "extensions/browser/browsertest_util.h"
 #include "extensions/browser/extension_host_test_helper.h"
@@ -33,6 +31,25 @@ gfx::Rect GetViewPort() {
 
 }  // namespace
 
+// static
+void FullscreenMagnifierTestHelper::WaitForMagnifierJSReady(Profile* profile) {
+  base::ScopedAllowBlockingForTesting allow_blocking;
+  std::string script = base::StringPrintf(R"JS(
+      (async function() {
+        globalThis.accessibilityCommon.setFeatureLoadCallbackForTest(
+            'magnifier', () => {
+              globalThis.accessibilityCommon.magnifier_.setIsInitializingForTest(
+                  false);
+              chrome.test.sendScriptResult('ready');
+            });
+      })();
+    )JS");
+  base::Value result =
+      extensions::browsertest_util::ExecuteScriptInBackgroundPage(
+          profile, extension_misc::kAccessibilityCommonExtensionId, script);
+  ASSERT_EQ("ready", result);
+}
+
 FullscreenMagnifierTestHelper::FullscreenMagnifierTestHelper(
     gfx::Point center_position_on_load)
     : center_position_on_load_(center_position_on_load) {
@@ -42,18 +59,6 @@ FullscreenMagnifierTestHelper::FullscreenMagnifierTestHelper(
           weak_ptr_factory_.GetWeakPtr()));
 }
 FullscreenMagnifierTestHelper::~FullscreenMagnifierTestHelper() = default;
-
-void FullscreenMagnifierTestHelper::LoadURLAndMagnifier(
-    Browser* browser,
-    const std::string& url) {
-  auto* web_contents = browser->tab_strip_model()->GetActiveWebContents();
-  content::AccessibilityNotificationWaiter waiter(
-      web_contents, ui::kAXModeComplete, ax::mojom::Event::kLoadComplete);
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser, GURL(url)));
-  ASSERT_TRUE(waiter.WaitForNotification());
-
-  LoadMagnifier(browser->profile());
-}
 
 void FullscreenMagnifierTestHelper::LoadMagnifier(Profile* profile) {
   extensions::ExtensionHostTestHelper host_helper(
@@ -104,24 +109,6 @@ void FullscreenMagnifierTestHelper::WaitForMagnifierBoundsChangedTo(
   }
 }
 
-void FullscreenMagnifierTestHelper::WaitForMagnifierJSReady(Profile* profile) {
-  base::ScopedAllowBlockingForTesting allow_blocking;
-  std::string script = base::StringPrintf(R"JS(
-      (async function() {
-        window.accessibilityCommon.setFeatureLoadCallbackForTest('magnifier',
-            () => {
-              window.accessibilityCommon.magnifier_.setIsInitializingForTest(
-                  false);
-              chrome.test.sendScriptResult('ready');
-            });
-      })();
-    )JS");
-  base::Value result =
-      extensions::browsertest_util::ExecuteScriptInBackgroundPage(
-          profile, extension_misc::kAccessibilityCommonExtensionId, script);
-  ASSERT_EQ("ready", result);
-}
-
 void FullscreenMagnifierTestHelper::OnMagnifierBoundsChanged() {
   if (!bounds_changed_waiter_) {
     return;
@@ -129,9 +116,8 @@ void FullscreenMagnifierTestHelper::OnMagnifierBoundsChanged() {
 
   std::move(bounds_changed_waiter_).Run();
 
-  // Wait for any additional animation to complete.
-  MagnifierAnimationWaiter magnifier_waiter(GetFullscreenMagnifierController());
-  magnifier_waiter.Wait();
+  // Note: no need to wait for animation to get updated viewport. That can be
+  // done separately if we need to check cursor changes.
 }
 
 }  // namespace ash

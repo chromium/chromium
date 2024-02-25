@@ -8,6 +8,7 @@
 
 #include <functional>
 #include <memory>
+#include <optional>
 #include <set>
 #include <vector>
 
@@ -52,7 +53,6 @@
 #include "components/sync/service/sync_service_impl.h"
 #include "components/sync/test/entity_builder_factory.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/base/models/tree_node_iterator.h"
 #include "ui/gfx/favicon_size.h"
@@ -131,7 +131,7 @@ class FaviconChangeObserver : public bookmarks::BookmarkModelObserver {
  public:
   FaviconChangeObserver(BookmarkModel* model,
                         const BookmarkNode* node,
-                        const absl::optional<GURL>& expected_icon_url)
+                        const std::optional<GURL>& expected_icon_url)
       : model_(model), node_(node), expected_icon_url_(expected_icon_url) {
     model->AddObserver(this);
   }
@@ -199,7 +199,7 @@ class FaviconChangeObserver : public bookmarks::BookmarkModelObserver {
  private:
   const raw_ptr<BookmarkModel> model_;
   const raw_ptr<const BookmarkNode> node_;
-  const absl::optional<GURL> expected_icon_url_;
+  const std::optional<GURL> expected_icon_url_;
 
   base::RunLoop run_loop_;
 };
@@ -268,8 +268,6 @@ bool FaviconRawBitmapsMatch(const SkBitmap& bitmap_a,
 
 // Represents a favicon image and the icon URL associated with it.
 struct FaviconData {
-  FaviconData() = default;
-
   FaviconData(const gfx::Image& favicon_image, const GURL& favicon_url)
       : image(favicon_image), icon_url(favicon_url) {}
 
@@ -279,14 +277,14 @@ struct FaviconData {
 
 // Gets the favicon and icon URL associated with |node| in |model|. Returns
 // nullopt if the favicon is still loading.
-absl::optional<FaviconData> GetFaviconData(BookmarkModel* model,
-                                           const BookmarkNode* node) {
+std::optional<FaviconData> GetFaviconData(BookmarkModel* model,
+                                          const BookmarkNode* node) {
   // We may need to wait for the favicon to be loaded via
   // BookmarkModel::GetFavicon(), which is an asynchronous operation.
   if (!node->is_favicon_loaded()) {
     model->GetFavicon(node);
     // Favicon still loading, no data available just yet.
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   // Favicon loaded: return actual image, if there is one (the no-favicon case
@@ -346,7 +344,7 @@ void DeleteFaviconMappingsImpl(Profile* profile,
   BookmarkModel* model = BookmarkModelFactory::GetForBrowserContext(profile);
 
   FaviconChangeObserver observer(model, node,
-                                 /*expected_icon_url=*/absl::nullopt);
+                                 /*expected_icon_url=*/std::nullopt);
   favicon::FaviconService* favicon_service =
       FaviconServiceFactory::GetForProfile(profile,
                                            ServiceAccessType::EXPLICIT_ACCESS);
@@ -373,8 +371,8 @@ bool FaviconsMatch(BookmarkModel* model_a,
   DCHECK(!node_a->is_folder());
   DCHECK(!node_b->is_folder());
 
-  absl::optional<FaviconData> favicon_data_a = GetFaviconData(model_a, node_a);
-  absl::optional<FaviconData> favicon_data_b = GetFaviconData(model_b, node_b);
+  std::optional<FaviconData> favicon_data_a = GetFaviconData(model_a, node_a);
+  std::optional<FaviconData> favicon_data_b = GetFaviconData(model_b, node_b);
 
   // If either of the two favicons is still loading, let's return false now
   // because observers will get notified when the load completes. Note that even
@@ -452,23 +450,19 @@ bool NodesMatch(const BookmarkNode* node_a, const BookmarkNode* node_b) {
   return true;
 }
 
-// Helper for BookmarkModelsMatch.
-bool NodeCantBeSynced(bookmarks::BookmarkClient* client,
-                      const BookmarkNode* node) {
-  // Return true to skip a node.
-  return !client->CanSyncNode(node);
-}
-
 // Checks if the hierarchies in |model_a| and |model_b| are equivalent in
 // terms of the data model and favicon. Returns true if they both match.
 // Note: Some peripheral fields like creation times are allowed to mismatch.
 bool BookmarkModelsMatch(BookmarkModel* model_a, BookmarkModel* model_b) {
+  // base::Unretained() is safe because these iterators are short-lived.
   ui::TreeNodeIterator<const BookmarkNode> iterator_a(
       model_a->root_node(),
-      base::BindRepeating(&NodeCantBeSynced, model_a->client()));
+      base::BindRepeating(&bookmarks::BookmarkClient::IsNodeManaged,
+                          base::Unretained(model_a->client())));
   ui::TreeNodeIterator<const BookmarkNode> iterator_b(
       model_b->root_node(),
-      base::BindRepeating(&NodeCantBeSynced, model_b->client()));
+      base::BindRepeating(&bookmarks::BookmarkClient::IsNodeManaged,
+                          base::Unretained(model_b->client())));
   while (iterator_a.has_next()) {
     const BookmarkNode* node_a = iterator_a.Next();
     if (!iterator_b.has_next()) {
@@ -793,10 +787,11 @@ bool ContainsDuplicateBookmarks(int profile) {
     if (node->is_folder()) {
       continue;
     }
-    std::vector<const BookmarkNode*> nodes;
-    GetBookmarkModel(profile)->GetNodesByURL(node->url(), &nodes);
+    std::vector<raw_ptr<const BookmarkNode, VectorExperimental>> nodes =
+        GetBookmarkModel(profile)->GetNodesByURL(node->url());
     EXPECT_GE(nodes.size(), 1U);
-    for (std::vector<const BookmarkNode*>::const_iterator it = nodes.begin();
+    for (std::vector<raw_ptr<const BookmarkNode, VectorExperimental>>::
+             const_iterator it = nodes.begin();
          it != nodes.end(); ++it) {
       if (node->id() != (*it)->id() && node->parent() == (*it)->parent() &&
           node->GetTitle() == (*it)->GetTitle()) {
@@ -808,14 +803,12 @@ bool ContainsDuplicateBookmarks(int profile) {
 }
 
 bool HasNodeWithURL(int profile, const GURL& url) {
-  std::vector<const BookmarkNode*> nodes;
-  GetBookmarkModel(profile)->GetNodesByURL(url, &nodes);
-  return !nodes.empty();
+  return !GetBookmarkModel(profile)->GetNodesByURL(url).empty();
 }
 
 const BookmarkNode* GetUniqueNodeByURL(int profile, const GURL& url) {
-  std::vector<const BookmarkNode*> nodes;
-  GetBookmarkModel(profile)->GetNodesByURL(url, &nodes);
+  std::vector<raw_ptr<const BookmarkNode, VectorExperimental>> nodes =
+      GetBookmarkModel(profile)->GetNodesByURL(url);
   EXPECT_EQ(1U, nodes.size());
   if (nodes.empty()) {
     return nullptr;
@@ -833,8 +826,8 @@ size_t CountBookmarksWithTitlesMatching(int profile, const std::string& title) {
 }
 
 size_t CountBookmarksWithUrlsMatching(int profile, const GURL& url) {
-  std::vector<const BookmarkNode*> nodes;
-  GetBookmarkModel(profile)->GetNodesByURL(url, &nodes);
+  std::vector<raw_ptr<const BookmarkNode, VectorExperimental>> nodes =
+      GetBookmarkModel(profile)->GetNodesByURL(url);
   return nodes.size();
 }
 

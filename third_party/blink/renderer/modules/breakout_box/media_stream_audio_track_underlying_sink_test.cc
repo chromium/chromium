@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/modules/breakout_box/media_stream_audio_track_underlying_sink.h"
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/run_loop.h"
 #include "base/test/gmock_callback_support.h"
@@ -16,6 +17,8 @@
 #include "third_party/blink/renderer/bindings/core/v8/to_v8_traits.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_testing.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_audio_data.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_audio_data_init.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_audio_sample_format.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/messaging/message_channel.h"
 #include "third_party/blink/renderer/core/streams/writable_stream.h"
@@ -24,11 +27,12 @@
 #include "third_party/blink/renderer/core/workers/worker_thread_test_helper.h"
 #include "third_party/blink/renderer/modules/breakout_box/pushable_media_stream_audio_source.h"
 #include "third_party/blink/renderer/modules/mediastream/mock_media_stream_audio_sink.h"
+#include "third_party/blink/renderer/modules/webcodecs/audio_data.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
-#include "third_party/blink/renderer/platform/bindings/to_v8.h"
 #include "third_party/blink/renderer/platform/mediastream/media_stream_audio_track.h"
 #include "third_party/blink/renderer/platform/mediastream/media_stream_component_impl.h"
 #include "third_party/blink/renderer/platform/mediastream/media_stream_source.h"
+#include "third_party/blink/renderer/platform/testing/task_environment.h"
 #include "third_party/blink/renderer/platform/wtf/cross_thread_copier_base.h"
 
 using testing::_;
@@ -90,17 +94,35 @@ class MediaStreamAudioTrackUnderlyingSinkTest : public testing::Test {
         MakeGarbageCollected<AudioData>(std::move(media_buffer));
     if (audio_data_out)
       *audio_data_out = audio_data;
-    return ScriptValue(
-        script_state->GetIsolate(),
-        ToV8Traits<AudioData>::ToV8(script_state, audio_data).ToLocalChecked());
+    return ScriptValue(script_state->GetIsolate(),
+                       ToV8Traits<AudioData>::ToV8(script_state, audio_data));
+  }
+
+  static ScriptValue CreateInvalidAudioData(ScriptState* script_state,
+                                            ExceptionState& exception_state) {
+    AudioDataInit* init = AudioDataInit::Create();
+    init->setFormat(V8AudioSampleFormat::Enum::kF32);
+    init->setSampleRate(31600.0f);
+    init->setNumberOfFrames(316u);
+    init->setNumberOfChannels(26u);  // This maps to CHANNEL_LAYOUT_UNSUPPORTED
+    init->setTimestamp(1u);
+    init->setData(
+        MakeGarbageCollected<AllowSharedBufferSource>(DOMArrayBuffer::Create(
+            init->numberOfChannels() * init->numberOfFrames(), sizeof(float))));
+
+    AudioData* audio_data =
+        AudioData::Create(script_state, init, exception_state);
+    return ScriptValue(script_state->GetIsolate(),
+                       ToV8Traits<AudioData>::ToV8(script_state, audio_data));
   }
 
  protected:
+  test::TaskEnvironment task_environment_;
   base::Thread testing_thread_;
   Persistent<MediaStreamSource> media_stream_source_;
   Persistent<MediaStreamComponent> media_stream_component_;
 
-  PushableMediaStreamAudioSource* pushable_audio_source_;
+  raw_ptr<PushableMediaStreamAudioSource> pushable_audio_source_;
 };
 
 TEST_F(MediaStreamAudioTrackUnderlyingSinkTest,
@@ -158,7 +180,9 @@ TEST_F(MediaStreamAudioTrackUnderlyingSinkTest, WriteInvalidDataFails) {
   V8TestingScope v8_scope;
   ScriptState* script_state = v8_scope.GetScriptState();
   auto* sink = CreateUnderlyingSink(script_state);
-  ScriptValue v8_integer = ScriptValue::From(script_state, 0);
+  ScriptValue v8_integer =
+      ScriptValue(script_state->GetIsolate(),
+                  v8::Integer::New(script_state->GetIsolate(), 0));
 
   // Writing something that is not an AudioData to the sink should fail.
   DummyExceptionStateForTesting dummy_exception_state;
@@ -201,6 +225,23 @@ TEST_F(MediaStreamAudioTrackUnderlyingSinkTest, WriteToAbortedSinkFails) {
   EXPECT_TRUE(dummy_exception_state.HadException());
   EXPECT_EQ(dummy_exception_state.Code(),
             static_cast<ExceptionCode>(DOMExceptionCode::kInvalidStateError));
+}
+
+TEST_F(MediaStreamAudioTrackUnderlyingSinkTest, WriteInvalidAudioDataFails) {
+  V8TestingScope v8_scope;
+  ScriptState* script_state = v8_scope.GetScriptState();
+  auto* sink = CreateUnderlyingSink(script_state);
+  CreateTrackAndConnectToSource();
+
+  DummyExceptionStateForTesting dummy_exception_state;
+  auto chunk = CreateInvalidAudioData(script_state, dummy_exception_state);
+  EXPECT_FALSE(dummy_exception_state.HadException());
+
+  sink->write(script_state, chunk, nullptr, dummy_exception_state);
+  EXPECT_TRUE(dummy_exception_state.HadException());
+  EXPECT_EQ(dummy_exception_state.Code(),
+            static_cast<ExceptionCode>(DOMExceptionCode::kOperationError));
+  EXPECT_EQ(dummy_exception_state.Message(), "Invalid audio data");
 }
 
 TEST_F(MediaStreamAudioTrackUnderlyingSinkTest, DeserializeWithOptimizer) {

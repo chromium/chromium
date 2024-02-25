@@ -6,6 +6,7 @@
 
 #include "base/test/test_future.h"
 #include "chrome/browser/browser_process.h"
+#include "chrome/browser/enterprise/connectors/connectors_service.h"
 #include "chrome/browser/enterprise/connectors/test/management_context_mixin.h"
 #include "chrome/browser/enterprise/connectors/test/test_constants.h"
 #include "chrome/browser/profiles/profile.h"
@@ -23,34 +24,35 @@ constexpr char kTestUrl[] = "https://example.com";
 constexpr char kTestAccessToken[] = "test_access_token";
 constexpr char kTestInstanceId[] = "test_instance_id";
 
-constexpr testing::tuple<enterprise_connectors::test::ManagementContext,
-                         /*device_request=*/bool>
-    kTestCases[] = {
-        // Cases where only the device is managed.
-        {{.is_cloud_user_managed = false, .is_cloud_machine_managed = true},
-         true},
+struct ManagementContextDeviceRequest {
+  enterprise_connectors::test::ManagementContext context;
+  bool profile_request;
+};
 
-        // Cases where only the user is managed.
-        {{.is_cloud_user_managed = true, .is_cloud_machine_managed = false},
-         false},
+constexpr ManagementContextDeviceRequest kTestCases[] = {
+    // Cases where only the device is managed.
+    {{.is_cloud_user_managed = false, .is_cloud_machine_managed = true}, false},
 
-        // Cases where both the user and device are managed
-        {{.is_cloud_user_managed = true,
-          .is_cloud_machine_managed = true,
-          .affiliated = true},
-         true},
-        {{.is_cloud_user_managed = true,
-          .is_cloud_machine_managed = true,
-          .affiliated = false},
-         true},
-        {{.is_cloud_user_managed = true,
-          .is_cloud_machine_managed = true,
-          .affiliated = true},
-         false},
-        {{.is_cloud_user_managed = true,
-          .is_cloud_machine_managed = true,
-          .affiliated = false},
-         false},
+    // Cases where only the user is managed.
+    {{.is_cloud_user_managed = true, .is_cloud_machine_managed = false}, true},
+
+    // Cases where both the user and device are managed
+    {{.is_cloud_user_managed = true,
+      .is_cloud_machine_managed = true,
+      .affiliated = true},
+     true},
+    {{.is_cloud_user_managed = true,
+      .is_cloud_machine_managed = true,
+      .affiliated = false},
+     true},
+    {{.is_cloud_user_managed = true,
+      .is_cloud_machine_managed = true,
+      .affiliated = true},
+     false},
+    {{.is_cloud_user_managed = true,
+      .is_cloud_machine_managed = true,
+      .affiliated = false},
+     false},
 };
 
 class TestSafeBrowsingTokenFetcher : public SafeBrowsingTokenFetcher {
@@ -95,12 +97,14 @@ class TestCloudBinaryUploadService : public CloudBinaryUploadService {
       Profile* profile,
       std::unique_ptr<BinaryFCMService> binary_fcm_service,
       enterprise_connectors::test::ManagementContext management_context,
-      enterprise_connectors::AnalysisConnector connector)
+      enterprise_connectors::AnalysisConnector connector,
+      bool profile_request)
       : CloudBinaryUploadService(url_loader_factory,
                                  profile,
                                  std::move(binary_fcm_service)),
         management_context_(management_context),
-        connector_(connector) {
+        connector_(connector),
+        profile_request_(profile_request) {
     SetTokenFetcherForTesting(std::make_unique<TestSafeBrowsingTokenFetcher>());
   }
 
@@ -116,7 +120,7 @@ class TestCloudBinaryUploadService : public CloudBinaryUploadService {
     // `TestRequest`.
     ASSERT_EQ(data.contents, kData);
     ASSERT_EQ(data.contents.size(), data.size);
-
+    ASSERT_EQ(request->per_profile_request(), profile_request_);
     // Since paste requests only receive sync responses, they don't use FCM and
     // shouldn't have a notification token.
     if (connector_ ==
@@ -126,11 +130,14 @@ class TestCloudBinaryUploadService : public CloudBinaryUploadService {
       ASSERT_EQ(request->fcm_notification_token(), kTestInstanceId);
     }
 
-    // The access token is always present if there is a managed user, unless
-    // that user is not affiliated to the managed device.
-    if (management_context_.is_cloud_user_managed &&
-        (!management_context_.is_cloud_machine_managed ||
-         management_context_.affiliated)) {
+    // There is no case where neither user nor machine is managed.
+    // We upload an access token when we have a:
+    // 1. Profile policy on an unmanaged device,
+    // 2. Profile policy on an unaffiliated device (no device-level BCE
+    // policies),
+    // 3. Affiliated profile.
+    if (!management_context_.is_cloud_machine_managed ||
+        management_context_.affiliated || request->per_profile_request()) {
       ASSERT_EQ(request->access_token(), kTestAccessToken);
     } else {
       ASSERT_TRUE(request->access_token().empty());
@@ -143,6 +150,7 @@ class TestCloudBinaryUploadService : public CloudBinaryUploadService {
  private:
   enterprise_connectors::test::ManagementContext management_context_;
   enterprise_connectors::AnalysisConnector connector_;
+  bool profile_request_;
 };
 
 class TestRequest : public CloudBinaryUploadService::Request {
@@ -164,9 +172,7 @@ class TestRequest : public CloudBinaryUploadService::Request {
 
 class CloudBinaryUploadServiceRequestValidationBrowserTest
     : public MixinBasedInProcessBrowserTest,
-      public testing::WithParamInterface<
-          testing::tuple<enterprise_connectors::test::ManagementContext,
-                         bool>> {
+      public testing::WithParamInterface<ManagementContextDeviceRequest> {
  public:
   CloudBinaryUploadServiceRequestValidationBrowserTest()
       : management_mixin_(
@@ -176,9 +182,10 @@ class CloudBinaryUploadServiceRequestValidationBrowserTest
                 management_context())) {}
 
   enterprise_connectors::test::ManagementContext management_context() const {
-    return std::get<0>(GetParam());
+    return GetParam().context;
   }
-  bool device_request() const { return std::get<1>(GetParam()); }
+
+  bool profile_request() const { return GetParam().profile_request; }
 
   void SetUpOnMainThread() override {
     CloudBinaryUploadServiceFactory::GetInstance()->SetTestingFactory(
@@ -201,7 +208,7 @@ class CloudBinaryUploadServiceRequestValidationBrowserTest
         g_browser_process->safe_browsing_service()->GetURLLoaderFactory(
             profile),
         profile, std::make_unique<TestBinaryFCMService>(valid_fcm_),
-        management_context(), connector_);
+        management_context(), connector_, profile_request());
   }
 
   CloudBinaryUploadService* service() {
@@ -210,10 +217,10 @@ class CloudBinaryUploadServiceRequestValidationBrowserTest
   }
 
   std::string dm_token() {
-    if (device_request()) {
-      return enterprise_connectors::test::kDeviceDmToken;
-    } else {
+    if (profile_request()) {
       return enterprise_connectors::test::kProfileDmToken;
+    } else {
+      return enterprise_connectors::test::kDeviceDmToken;
     }
   }
 
@@ -229,6 +236,7 @@ class CloudBinaryUploadServiceRequestValidationBrowserTest
       enterprise_connectors::AnalysisConnector::ANALYSIS_CONNECTOR_UNSPECIFIED;
   std::unique_ptr<enterprise_connectors::test::ManagementContextMixin>
       management_mixin_;
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 }  // namespace
@@ -253,6 +261,7 @@ IN_PROC_BROWSER_TEST_P(CloudBinaryUploadServiceRequestValidationBrowserTest,
   request->set_analysis_connector(
       enterprise_connectors::AnalysisConnector::BULK_DATA_ENTRY);
   request->set_device_token(dm_token());
+  request->set_per_profile_request(profile_request());
 
   service()->SetAuthForTesting(dm_token(), true);
   service()->MaybeUploadForDeepScanning(std::move(request));
@@ -278,6 +287,7 @@ IN_PROC_BROWSER_TEST_P(CloudBinaryUploadServiceRequestValidationBrowserTest,
   request->set_analysis_connector(
       enterprise_connectors::AnalysisConnector::FILE_ATTACHED);
   request->set_device_token(dm_token());
+  request->set_per_profile_request(profile_request());
 
   service()->SetAuthForTesting(dm_token(), true);
   service()->MaybeUploadForDeepScanning(std::move(request));
@@ -303,6 +313,7 @@ IN_PROC_BROWSER_TEST_P(CloudBinaryUploadServiceRequestValidationBrowserTest,
   request->set_analysis_connector(
       enterprise_connectors::AnalysisConnector::FILE_DOWNLOADED);
   request->set_device_token(dm_token());
+  request->set_per_profile_request(profile_request());
 
   service()->SetAuthForTesting(dm_token(), true);
   service()->MaybeUploadForDeepScanning(std::move(request));
@@ -328,6 +339,7 @@ IN_PROC_BROWSER_TEST_P(CloudBinaryUploadServiceRequestValidationBrowserTest,
   request->set_analysis_connector(
       enterprise_connectors::AnalysisConnector::PRINT);
   request->set_device_token(dm_token());
+  request->set_per_profile_request(profile_request());
 
   service()->SetAuthForTesting(dm_token(), true);
   service()->MaybeUploadForDeepScanning(std::move(request));

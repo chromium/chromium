@@ -110,7 +110,7 @@ void SubmenuView::UpdateMenuPartSizes() {
   if (config.reserve_dedicated_arrow_column &&
       base::ranges::any_of(menu_items, &MenuItemView::HasSubmenu)) {
     trailing_padding_ +=
-        kSubmenuArrowSize +
+        config.arrow_size +
         (base::Contains(menu_items, MenuItemView::Type::kActionableSubMenu,
                         &MenuItemView::GetType)
              ? config.actionable_submenu_arrow_to_edge_padding
@@ -182,7 +182,7 @@ void SubmenuView::ChildPreferredSizeChanged(View* child) {
   }
 }
 
-void SubmenuView::Layout() {
+void SubmenuView::Layout(PassKey) {
   // We're in a ScrollView, and need to set our width/height ourselves.
   if (!parent()) {
     return;
@@ -455,15 +455,15 @@ size_t SubmenuView::GetRowCount() {
   return GetMenuItems().size();
 }
 
-absl::optional<size_t> SubmenuView::GetSelectedRow() {
+std::optional<size_t> SubmenuView::GetSelectedRow() {
   const auto menu_items = GetMenuItems();
   const auto i = base::ranges::find_if(menu_items, &MenuItemView::IsSelected);
-  return (i == menu_items.cend()) ? absl::nullopt
-                                  : absl::make_optional(static_cast<size_t>(
+  return (i == menu_items.cend()) ? std::nullopt
+                                  : std::make_optional(static_cast<size_t>(
                                         std::distance(menu_items.cbegin(), i)));
 }
 
-void SubmenuView::SetSelectedRow(absl::optional<size_t> row) {
+void SubmenuView::SetSelectedRow(std::optional<size_t> row) {
   parent_menu_item_->GetMenuController()->SetSelection(
       GetMenuItemAt(row.value()), MenuController::SELECTION_DEFAULT);
 }
@@ -693,7 +693,7 @@ bool SubmenuView::OnScroll(float dx, float dy) {
   return false;
 }
 
-void SubmenuView::SetBorderColorId(absl::optional<ui::ColorId> color_id) {
+void SubmenuView::SetBorderColorId(std::optional<ui::ColorId> color_id) {
   if (scroll_view_container_) {
     scroll_view_container_->SetBorderColorId(color_id);
   }
@@ -701,7 +701,7 @@ void SubmenuView::SetBorderColorId(absl::optional<ui::ColorId> color_id) {
   border_color_id_ = color_id;
 }
 
-BEGIN_METADATA(SubmenuView, View)
+BEGIN_METADATA(SubmenuView)
 END_METADATA
 
 }  // namespace views

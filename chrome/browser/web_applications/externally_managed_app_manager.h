@@ -15,7 +15,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/web_applications/external_install_options.h"
-#include "chrome/browser/web_applications/web_app_id.h"
+#include "components/webapps/common/web_app_id.h"
 #include "url/gurl.h"
 
 class GURL;
@@ -69,7 +69,7 @@ class ExternallyManagedAppManager {
   struct InstallResult {
     InstallResult();
     explicit InstallResult(webapps::InstallResultCode code,
-                           absl::optional<AppId> app_id = absl::nullopt,
+                           std::optional<webapps::AppId> app_id = std::nullopt,
                            bool did_uninstall_and_replace = false);
     InstallResult(const InstallResult&);
     ~InstallResult();
@@ -77,7 +77,7 @@ class ExternallyManagedAppManager {
     bool operator==(const InstallResult& other) const;
 
     webapps::InstallResultCode code;
-    absl::optional<AppId> app_id;
+    std::optional<webapps::AppId> app_id;
     bool did_uninstall_and_replace = false;
     // When adding fields, please update the `==` and `<<` operators to include
     // the new field.
@@ -213,11 +213,12 @@ class ExternallyManagedAppManager {
     std::map<GURL, bool> uninstall_results;
   };
 
-  base::Value SynchronizeInstalledAppsOnLockAcquired(
+  void SynchronizeInstalledAppsOnLockAcquired(
       std::vector<ExternalInstallOptions> desired_apps_install_options,
       ExternalInstallSource install_source,
       SynchronizeCallback callback,
-      AllAppsLock& lock);
+      AllAppsLock& lock,
+      base::Value::Dict& debug_value);
 
   void InstallForSynchronizeCallback(
       ExternalInstallSource source,
@@ -232,9 +233,12 @@ class ExternallyManagedAppManager {
   void PostMaybeStartNext();
 
   void MaybeStartNext();
-  void MaybeStartNextOnLockAcquired(AllAppsLock& lock);
+  void MaybeStartNextOnLockAcquired(AllAppsLock& lock,
+                                    base::Value::Dict& debug_value);
 
-  void StartInstallationTask(std::unique_ptr<TaskAndCallback> task);
+  void StartInstallationTask(
+      std::unique_ptr<TaskAndCallback> task,
+      std::optional<webapps::AppId> installed_placeholder_app_id);
 
   bool RunNextRegistration();
 

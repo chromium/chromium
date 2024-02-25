@@ -6,6 +6,7 @@
 
 #include <string>
 #include <utility>
+#include <vector>
 
 #include "ash/app_list/model/app_list_model.h"
 #include "base/functional/callback.h"
@@ -27,6 +28,11 @@ bool AppListTestViewDelegate::KeyboardTraversalEngaged() {
   return true;
 }
 
+std::vector<AppListSearchControlCategory>
+AppListTestViewDelegate::GetToggleableCategories() const {
+  return std::vector<AppListSearchControlCategory>();
+}
+
 void AppListTestViewDelegate::StartZeroStateSearch(base::OnceClosure callback,
                                                    base::TimeDelta timeout) {
   std::move(callback).Run();
@@ -43,9 +49,6 @@ void AppListTestViewDelegate::OpenSearchResult(
   for (size_t i = 0; i < results->item_count(); ++i) {
     if (results->GetItemAt(i)->id() == result_id) {
       open_search_result_counts_[i]++;
-      if (results->GetItemAt(i)->is_omnibox_search()) {
-        ++open_assistant_ui_count_;
-      }
       break;
     }
   }
@@ -139,6 +142,11 @@ bool AppListTestViewDelegate::ShouldHideContinueSection() const {
 
 void AppListTestViewDelegate::SetHideContinueSection(bool hide) {}
 
+bool AppListTestViewDelegate::IsCategoryEnabled(
+    AppListSearchControlCategory category) {
+  return true;
+}
+
 ash::AssistantViewDelegate*
 AppListTestViewDelegate::GetAssistantViewDelegate() {
   return nullptr;
@@ -194,7 +202,7 @@ bool AppListTestViewDelegate::AppListTargetVisibility() const {
   return true;
 }
 
-bool AppListTestViewDelegate::IsInTabletMode() {
+bool AppListTestViewDelegate::IsInTabletMode() const {
   return is_tablet_mode_;
 }
 
@@ -206,8 +214,6 @@ std::unique_ptr<ScopedIphSession>
 AppListTestViewDelegate::CreateLauncherSearchIphSession() {
   return nullptr;
 }
-
-void AppListTestViewDelegate::OpenSearchBoxIphUrl() {}
 
 void AppListTestViewDelegate::RecordAppLaunched(
     ash::AppListLaunchedFrom launched_from) {

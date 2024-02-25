@@ -8,7 +8,6 @@ import {ConsoleTestRunner} from 'console_test_runner';
 
 (async function() {
   TestRunner.addResult(`Tests requests loaded from disk cache have correct timing\n`);
-  await TestRunner.loadLegacyModule('console');
   await TestRunner.showPanel('network');
   await TestRunner.addScriptTag('resources/gc.js');
   await TestRunner.evaluateInPagePromise(`

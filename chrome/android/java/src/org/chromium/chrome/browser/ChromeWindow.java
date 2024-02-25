@@ -26,14 +26,14 @@ import java.lang.ref.WeakReference;
  * and show error messages.
  */
 public class ChromeWindow extends ActivityWindowAndroid {
-    /**
-     * Interface allowing to inject a different keyboard delegate for testing.
-     */
+    /** Interface allowing to inject a different keyboard delegate for testing. */
     @VisibleForTesting
     public interface KeyboardVisibilityDelegateFactory {
-        ChromeKeyboardVisibilityDelegate create(@NonNull WeakReference<Activity> activity,
+        ChromeKeyboardVisibilityDelegate create(
+                @NonNull WeakReference<Activity> activity,
                 @NonNull Supplier<ManualFillingComponent> manualFillingComponentSupplier);
     }
+
     private static KeyboardVisibilityDelegateFactory sKeyboardVisibilityDelegateFactory =
             ChromeKeyboardVisibilityDelegate::new;
 
@@ -50,13 +50,17 @@ public class ChromeWindow extends ActivityWindowAndroid {
      * @param manualFillingComponentSupplier Supplies the {@link ManualFillingComponent}.
      * @param intentRequestTracker The {@link IntentRequestTracker} of the current activity.
      */
-    public ChromeWindow(@NonNull Activity activity,
+    public ChromeWindow(
+            @NonNull Activity activity,
             @NonNull ActivityTabProvider activityTabProvider,
             @NonNull Supplier<CompositorViewHolder> compositorViewHolderSupplier,
             @NonNull Supplier<ModalDialogManager> modalDialogManagerSupplier,
             @NonNull Supplier<ManualFillingComponent> manualFillingComponentSupplier,
             @NonNull IntentRequestTracker intentRequestTracker) {
-        this(activity, activityTabProvider, compositorViewHolderSupplier,
+        this(
+                activity,
+                activityTabProvider,
+                compositorViewHolderSupplier,
                 modalDialogManagerSupplier,
                 sKeyboardVisibilityDelegateFactory.create(
                         new WeakReference<Activity>(activity), manualFillingComponentSupplier),
@@ -72,13 +76,17 @@ public class ChromeWindow extends ActivityWindowAndroid {
      * @param activityKeyboardVisibilityDelegate Delegate to handle keyboard visibility.
      * @param intentRequestTracker The {@link IntentRequestTracker} of the current activity.
      */
-    public ChromeWindow(@NonNull Activity activity,
+    public ChromeWindow(
+            @NonNull Activity activity,
             @NonNull ActivityTabProvider activityTabProvider,
             @NonNull Supplier<CompositorViewHolder> compositorViewHolderSupplier,
             @NonNull Supplier<ModalDialogManager> modalDialogManagerSupplier,
             @NonNull ActivityKeyboardVisibilityDelegate activityKeyboardVisibilityDelegate,
             IntentRequestTracker intentRequestTracker) {
-        super(activity, /* listenToActivityState= */ true, activityKeyboardVisibilityDelegate,
+        super(
+                activity,
+                /* listenToActivityState= */ true,
+                activityKeyboardVisibilityDelegate,
                 intentRequestTracker);
         mActivityTabProvider = activityTabProvider;
         mCompositorViewHolderSupplier = compositorViewHolderSupplier;

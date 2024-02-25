@@ -6,6 +6,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_MEDIASTREAM_AUDIO_SERVICE_AUDIO_PROCESSOR_PROXY_H_
 
 #include "base/functional/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/synchronization/lock.h"
 #include "base/task/single_thread_task_runner.h"
@@ -64,7 +65,7 @@ class PLATFORM_EXPORT AudioServiceAudioProcessorProxy
 
   const scoped_refptr<base::SingleThreadTaskRunner> main_task_runner_;
 
-  media::AudioProcessorControls* processor_controls_
+  raw_ptr<media::AudioProcessorControls> processor_controls_
       GUARDED_BY_CONTEXT(main_thread_checker_) = nullptr;
 
   base::Lock stats_lock_;

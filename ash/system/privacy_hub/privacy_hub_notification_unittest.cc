@@ -19,6 +19,7 @@
 #include "ash/test/ash_test_base.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/notreached.h"
+#include "base/ranges/algorithm.h"
 #include "base/test/bind.h"
 #include "base/test/gtest_util.h"
 #include "base/test/scoped_feature_list.h"
@@ -47,7 +48,7 @@ class FakeSensorDisabledNotificationDelegate
   }
 
   void CloseApp(const std::u16string& app_name) {
-    auto it = std::find(apps_.begin(), apps_.end(), app_name);
+    auto it = base::ranges::find(apps_, app_name);
     if (it != apps_.end()) {
       apps_.erase(it);
     }
@@ -152,7 +153,8 @@ class PrivacyHubNotificationTextTest
       public testing::WithParamInterface<std::tuple<bool, NotificationType>> {
  public:
   PrivacyHubNotificationTextTest() {
-    scoped_feature_list_.InitAndEnableFeature(features::kCrosPrivacyHubV2);
+    scoped_feature_list_.InitWithFeatures(
+        {features::kCrosPrivacyHubV0, features::kCrosPrivacyHub}, {});
     scoped_camera_led_fallback_ = std::make_unique<ScopedLedFallbackForTesting>(
         IsCameraLedFallbackActive());
     sensors_ = [this]() -> SensorDisabledNotificationDelegate::SensorSet {
@@ -254,13 +256,13 @@ TEST_F(PrivacyHubNotificationClickDelegateTest, Click) {
 
   // Clicking the message while no callback for it is added shouldn't result in
   // a callback being executed.
-  delegate->Click(absl::nullopt, absl::nullopt);
+  delegate->Click(std::nullopt, std::nullopt);
 
   EXPECT_EQ(button_clicked, 0u);
   EXPECT_EQ(message_clicked, 0u);
 
   // Click the button.
-  delegate->Click(0, absl::nullopt);
+  delegate->Click(0, std::nullopt);
 
   EXPECT_EQ(button_clicked, 1u);
   EXPECT_EQ(message_clicked, 0u);
@@ -270,13 +272,13 @@ TEST_F(PrivacyHubNotificationClickDelegateTest, Click) {
       base::BindLambdaForTesting([&message_clicked]() { message_clicked++; }));
 
   // When clicking the button, only the button callback should be executed.
-  delegate->Click(0, absl::nullopt);
+  delegate->Click(0, std::nullopt);
 
   EXPECT_EQ(button_clicked, 2u);
   EXPECT_EQ(message_clicked, 0u);
 
   // Clicking the message should execute the message callback.
-  delegate->Click(absl::nullopt, absl::nullopt);
+  delegate->Click(std::nullopt, std::nullopt);
 
   EXPECT_EQ(button_clicked, 2u);
   EXPECT_EQ(message_clicked, 1u);
@@ -289,10 +291,10 @@ TEST(PrivacyHubNotificationClickDelegateDeathTest, AddButton) {
 
   // There is no valid callback for the first button. This should only fail on
   // debug builds, in release builds this will simply not run the callback.
-  EXPECT_DCHECK_DEATH(delegate->Click(1, absl::nullopt));
+  EXPECT_DCHECK_DEATH(delegate->Click(1, std::nullopt));
 
   // There is no second button, this could lead to out of bounds issues.
-  EXPECT_CHECK_DEATH(delegate->Click(2, absl::nullopt));
+  EXPECT_CHECK_DEATH(delegate->Click(2, std::nullopt));
 }
 
 INSTANTIATE_TEST_SUITE_P(

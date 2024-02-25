@@ -5,8 +5,11 @@
 #import "ios/chrome/browser/ui/settings/default_browser/default_browser_settings_table_view_controller.h"
 
 #import "base/apple/foundation_util.h"
-#import "ios/chrome/browser/shared/ui/table_view/chrome_table_view_controller_test.h"
+#import "base/test/scoped_feature_list.h"
+#import "ios/chrome/browser/shared/public/features/features.h"
+#import "ios/chrome/browser/shared/ui/table_view/legacy_chrome_table_view_controller_test.h"
 #import "ios/chrome/browser/ui/settings/settings_table_view_controller.h"
+#import "ios/chrome/grit/ios_branded_strings.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "testing/platform_test.h"
 
@@ -14,23 +17,25 @@ namespace {
 
 // Tests the items shown in DefaultBrowserSettingTableViewController.
 class DefaultBrowserSettingsTableViewControllerTest
-    : public ChromeTableViewControllerTest {
+    : public LegacyChromeTableViewControllerTest {
  protected:
   DefaultBrowserSettingsTableViewControllerTest() {}
 
-  void SetUp() override { ChromeTableViewControllerTest::SetUp(); }
+  void SetUp() override { LegacyChromeTableViewControllerTest::SetUp(); }
 
   void TearDown() override {
     [base::apple::ObjCCastStrict<DefaultBrowserSettingsTableViewController>(
         controller()) settingsWillBeDismissed];
-    ChromeTableViewControllerTest::TearDown();
+    LegacyChromeTableViewControllerTest::TearDown();
   }
-  ChromeTableViewController* InstantiateController() override {
+  LegacyChromeTableViewController* InstantiateController() override {
     return [[DefaultBrowserSettingsTableViewController alloc] init];
   }
 };
 
 TEST_F(DefaultBrowserSettingsTableViewControllerTest, TestModel) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeatures({}, {kDefaultBrowserVideoInSettings});
   CreateController();
   CheckController();
 
@@ -43,6 +48,20 @@ TEST_F(DefaultBrowserSettingsTableViewControllerTest, TestModel) {
 
   CheckSectionHeaderWithId(IDS_IOS_SETTINGS_HEADER_TEXT, 0);
   CheckSectionHeaderWithId(IDS_IOS_SETTINGS_FOLLOW_STEPS_BELOW_TEXT, 1);
+
+  // Ensure primary button cell can be interacted with.
+  CheckTextCellEnabled(YES, 2, 0);
 }
 
+TEST_F(DefaultBrowserSettingsTableViewControllerTest,
+       TestDefaultBrowserInstructionsView) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeatures({kDefaultBrowserVideoInSettings}, {});
+
+  CreateController();
+
+  CheckTitleWithId(IDS_IOS_SETTINGS_SET_DEFAULT_BROWSER);
+
+  EXPECT_EQ(0, NumberOfSections());
+}
 }  // namespace

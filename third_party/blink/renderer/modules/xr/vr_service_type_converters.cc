@@ -8,13 +8,13 @@
 
 namespace mojo {
 
-absl::optional<blink::XRPlane::Orientation>
-TypeConverter<absl::optional<blink::XRPlane::Orientation>,
+std::optional<blink::XRPlane::Orientation>
+TypeConverter<std::optional<blink::XRPlane::Orientation>,
               device::mojom::blink::XRPlaneOrientation>::
     Convert(const device::mojom::blink::XRPlaneOrientation& orientation) {
   switch (orientation) {
     case device::mojom::blink::XRPlaneOrientation::UNKNOWN:
-      return absl::nullopt;
+      return std::nullopt;
     case device::mojom::blink::XRPlaneOrientation::HORIZONTAL:
       return blink::XRPlane::Orientation::kHorizontal;
     case device::mojom::blink::XRPlaneOrientation::VERTICAL:

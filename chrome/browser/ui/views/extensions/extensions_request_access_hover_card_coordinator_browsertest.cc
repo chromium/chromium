@@ -15,9 +15,7 @@ class ExtensionsRequestAccessHoverCardCoordinatorBrowserTest
     : public ExtensionsDialogBrowserTest {
  public:
   ExtensionsRequestAccessButton* request_access_button() {
-    return extensions_container()
-        ->GetExtensionsToolbarControls()
-        ->request_access_button();
+    return extensions_container()->GetRequestAccessButton();
   }
 
   ExtensionsRequestAccessHoverCardCoordinator* hover_card_coordinator() {

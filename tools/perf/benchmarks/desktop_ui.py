@@ -27,7 +27,8 @@ class DesktopUI(perf_benchmark.PerfBenchmark):
   SUPPORTED_PLATFORMS = [story.expectations.ALL_DESKTOP]
 
   def CreateStorySet(self, options):
-    return page_sets.DesktopUIStorySet()
+    exhaustive = hasattr(options, 'story_set_should_be_exhaustive_for_test')
+    return page_sets.DesktopUIStorySet(exhaustive=exhaustive)
 
   def CreateCoreTimelineBasedMeasurementOptions(self):
     category_filter = chrome_trace_category_filter.ChromeTraceCategoryFilter(

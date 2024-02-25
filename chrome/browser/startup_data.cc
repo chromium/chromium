@@ -98,13 +98,17 @@ void StartupData::RecordCoreSystemProfile() {
 }
 
 #if BUILDFLAG(IS_ANDROID)
-void StartupData::CreateProfilePrefService() {
+void StartupData::InitProfileKey() {
   key_ = std::make_unique<ProfileKey>(GetProfilePath());
   PreProfilePrefServiceInit();
-  CreateServicesInternal();
-  key_->SetPrefs(prefs_.get());
 
   ProfileKeyStartupAccessor::GetInstance()->SetProfileKey(key_.get());
+}
+
+void StartupData::CreateProfilePrefService() {
+  CHECK(key_);
+  CreateServicesInternal();
+  key_->SetPrefs(prefs_.get());
 }
 
 bool StartupData::HasBuiltProfilePrefService() {
@@ -153,26 +157,36 @@ void StartupData::PreProfilePrefServiceInit() {
   pref_registry_ = base::MakeRefCounted<user_prefs::PrefRegistrySyncable>();
   ChromeBrowserMainExtraPartsProfiles::
       EnsureBrowserContextKeyedServiceFactoriesBuilt();
-}
 
-void StartupData::CreateServicesInternal() {
   const base::FilePath& path = key_->GetPath();
   if (!base::PathExists(path)) {
     // TODO(rogerta): http://crbug/160553 - Bad things happen if we can't
     // write to the profile directory.  We should eventually be able to run in
     // this situation.
-    if (!base::CreateDirectory(path))
+    if (!base::CreateDirectory(path)) {
       return;
+    }
 
     CreateProfileReadme(path);
   }
+
+  // StoragePartitionImplMap uses profile directory as default storage
+  // partition, see StoragePartitionImplMap::GetStoragePartitionPath().
+  proto_db_provider_ = std::make_unique<leveldb_proto::ProtoDatabaseProvider>(
+      path, /*is_in_memory=*/false);
+  key_->SetProtoDatabaseProvider(proto_db_provider_.get());
+}
+
+void StartupData::CreateServicesInternal() {
+  const base::FilePath& path = key_->GetPath();
 
   scoped_refptr<base::SequencedTaskRunner> io_task_runner =
       base::ThreadPool::CreateSequencedTaskRunner(
           {base::TaskShutdownBehavior::BLOCK_SHUTDOWN, base::MayBlock()});
 
   policy::ChromeBrowserPolicyConnector* browser_policy_connector =
-      chrome_feature_list_creator_->browser_policy_connector();
+      g_browser_process->browser_policy_connector();
+  CHECK(browser_policy_connector);
   std::unique_ptr<policy::SchemaRegistry> schema_registry =
       std::make_unique<policy::SchemaRegistry>();
   schema_registry_service_ = BuildSchemaRegistryService(
@@ -191,12 +205,6 @@ void StartupData::CreateServicesInternal() {
       user_cloud_policy_manager_.get(),
       user_cloud_policy_manager_->core()->store(),
       true /* force_immediate_policy_load*/, nullptr /* user */);
-
-  // StoragePartitionImplMap uses profile directory as default storage
-  // partition, see StoragePartitionImplMap::GetStoragePartitionPath().
-  proto_db_provider_ = std::make_unique<leveldb_proto::ProtoDatabaseProvider>(
-      path, /*is_in_memory=*/false);
-  key_->SetProtoDatabaseProvider(proto_db_provider_.get());
 
   RegisterProfilePrefs(false /* is_signin_profile */,
                        chrome_feature_list_creator_->actual_locale(),

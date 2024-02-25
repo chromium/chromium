@@ -17,6 +17,11 @@
 // presented.
 - (void)showPasswordSettingsSubmenu;
 
+// Called when the user has tapped the "Show Me How" button of the Password
+// Manager widget promo. This method presents the instruction view associated
+// with that promo.
+- (void)showPasswordManagerWidgetPromoInstructions;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_UI_SETTINGS_PASSWORD_PASSWORD_MANAGER_VIEW_CONTROLLER_PRESENTATION_DELEGATE_H_

@@ -16,6 +16,7 @@
 #include "base/functional/bind.h"
 #include "base/json/values_util.h"
 #include "base/location.h"
+#include "base/logging.h"
 #include "base/memory/ptr_util.h"
 #include "base/metrics/histogram.h"
 #include "base/notreached.h"
@@ -205,7 +206,7 @@ const std::string& PrefService::GetString(base::StringPiece path) const {
 
 base::FilePath PrefService::GetFilePath(base::StringPiece path) const {
   const base::Value& value = GetValue(path);
-  absl::optional<base::FilePath> result = base::ValueToFilePath(value);
+  std::optional<base::FilePath> result = base::ValueToFilePath(value);
   DCHECK(result);
   return *result;
 }
@@ -350,7 +351,8 @@ const base::Value* PrefService::GetUserPrefValue(
     return nullptr;
 
   if (value->type() != pref->GetType()) {
-    NOTREACHED() << "Pref value type doesn't match registered type.";
+    DUMP_WILL_BE_NOTREACHED_NORETURN()
+        << "Pref value type doesn't match registered type.";
     return nullptr;
   }
 
@@ -466,7 +468,7 @@ void PrefService::SetInt64(const std::string& path, int64_t value) {
 
 int64_t PrefService::GetInt64(const std::string& path) const {
   const base::Value& value = GetValue(path);
-  absl::optional<int64_t> integer = base::ValueToInt64(value);
+  std::optional<int64_t> integer = base::ValueToInt64(value);
   DCHECK(integer);
   return integer.value_or(0);
 }
@@ -491,7 +493,7 @@ void PrefService::SetTime(const std::string& path, base::Time value) {
 
 base::Time PrefService::GetTime(const std::string& path) const {
   const base::Value& value = GetValue(path);
-  absl::optional<base::Time> time = base::ValueToTime(value);
+  std::optional<base::Time> time = base::ValueToTime(value);
   DCHECK(time);
   return time.value_or(base::Time());
 }
@@ -502,7 +504,7 @@ void PrefService::SetTimeDelta(const std::string& path, base::TimeDelta value) {
 
 base::TimeDelta PrefService::GetTimeDelta(const std::string& path) const {
   const base::Value& value = GetValue(path);
-  absl::optional<base::TimeDelta> time_delta = base::ValueToTimeDelta(value);
+  std::optional<base::TimeDelta> time_delta = base::ValueToTimeDelta(value);
   DCHECK(time_delta);
   return time_delta.value_or(base::TimeDelta());
 }
@@ -660,13 +662,6 @@ const base::Value* PrefService::GetPreferenceValue(
     base::StringPiece path) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  // TODO(battre): This is a check for crbug.com/435208. After analyzing some
-  // crash dumps it looks like the PrefService is accessed even though it has
-  // been cleared already.
-  CHECK(pref_registry_);
-  CHECK(pref_registry_->defaults());
-  CHECK(pref_value_store_);
-
   const base::Value* default_value = nullptr;
   if (!pref_registry_->defaults()->GetValue(path, &default_value))
     return nullptr;
@@ -693,11 +688,21 @@ const base::Value* PrefService::GetPreferenceValueChecked(
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 void PrefService::SetStandaloneBrowserPref(const std::string& path,
                                            const base::Value& value) {
+  if (!standalone_browser_pref_store_) {
+    LOG(WARNING) << "Failure to set value of " << path
+                 << " in standalone browser store";
+    return;
+  }
   standalone_browser_pref_store_->SetValue(
       path, value.Clone(), WriteablePrefStore::DEFAULT_PREF_WRITE_FLAGS);
 }
 
 void PrefService::RemoveStandaloneBrowserPref(const std::string& path) {
+  if (!standalone_browser_pref_store_) {
+    LOG(WARNING) << "Failure to remove value of " << path
+                 << " in standalone browser store";
+    return;
+  }
   standalone_browser_pref_store_->RemoveValue(
       path, WriteablePrefStore::DEFAULT_PREF_WRITE_FLAGS);
 }

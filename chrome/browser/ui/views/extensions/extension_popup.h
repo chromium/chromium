@@ -48,9 +48,9 @@ class ExtensionPopup : public views::BubbleDialogDelegateView,
                        public content::WebContentsObserver,
                        public TabStripModelObserver,
                        public content::DevToolsAgentHostObserver {
- public:
-  METADATA_HEADER(ExtensionPopup);
+  METADATA_HEADER(ExtensionPopup, views::BubbleDialogDelegateView)
 
+ public:
   // The min/max height of popups.
   // The minimum is just a little larger than the size of the button itself.
   // The maximum is an arbitrary number and should be smaller than most screens.

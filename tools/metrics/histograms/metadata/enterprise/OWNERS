@@ -2,7 +2,14 @@ per-file OWNERS=file://tools/metrics/histograms/metadata/METRIC_REVIEWER_OWNERS
 
 # Prefer sending CLs to the owners listed below.
 # Use chromium-metrics-reviews@google.com as a backup.
-poromov@chromium.org
-zmin@chromium.org
-seblalancette@chromium.org
+
+# When making changes, also update MetricsOwners in the GwsQ config:
+# http://google3/chrome/enterprise/gwsq/enterprise-policy-review.gwsq
+
+emaxx@chromium.org
+hendrich@chromium.org
 igorruvinov@chromium.org
+poromov@chromium.org
+seblalancette@chromium.org
+vsavu@google.com
+zmin@chromium.org

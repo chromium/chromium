@@ -1,0 +1,63 @@
+// Copyright 2023 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = "proto2";
+
+package commerce;
+
+option java_package = "org.chromium.components.commerce";
+
+option optimize_for = LITE_RUNTIME;
+
+// These messages are primarily used for over-the-wire communications.
+message DiscountsData {
+  repeated DiscountCluster discount_clusters = 1;
+}
+
+message DiscountCluster {
+  enum ClusterType {
+    TYPE_UNSPECIFIED = 0;
+    OFFER_LEVEL = 1;
+  }
+  optional ClusterType cluster_type = 1;
+  repeated Discount discounts = 2;
+}
+
+message Discount {
+  // The unique ID that identifies the discount.
+  optional uint64 id = 1;
+
+  enum Type {
+    TYPE_UNSPECIFIED = 0;
+    FREE_LISTING_WITH_CODE = 1;
+  }
+  // Type of the discount.
+  optional Type type = 2;
+
+  message Description {
+    // Format: "en-US", "en-GB", "es", "es-419", "fr", "pt-BR", etc.
+    optional string language_code = 1;
+    // The discount text details.
+    optional string detail = 2;
+    // The text of any terms and conditions that apply to the discount. The
+    // maximum length is 500 characters.
+    optional string terms_and_conditions = 3;
+    // Value of the discount in text, e.g. 10% off, $10 off, Free shipping, etc.
+    optional string value_text = 4;
+  }
+  // More details of the discount in text.
+  optional Description description = 3;
+
+  // The expiry timestamp in second.
+  optional double expiry_time_sec = 4;
+
+  // Whether this is a merchant wide discount.
+  optional bool is_merchant_wide = 5;
+
+  // The discount code that is used to redeem the discount.
+  optional string discount_code = 6;
+
+  // The discount associated offer id.
+  optional fixed64 offer_id = 7;
+}

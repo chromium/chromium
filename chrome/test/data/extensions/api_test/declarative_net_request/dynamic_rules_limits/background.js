@@ -4,8 +4,13 @@
 
 var updateDynamicRules = chrome.declarativeNetRequest.updateDynamicRules;
 var getDynamicRules = chrome.declarativeNetRequest.getDynamicRules;
-var ruleLimit = chrome.declarativeNetRequest.MAX_NUMBER_OF_DYNAMIC_AND_SESSION_RULES;
-var regexRuleLimit = chrome.declarativeNetRequest.MAX_NUMBER_OF_REGEX_RULES;
+
+// Rule limits are actually set after the browser replies to the extension's
+// "ready" message.
+var ruleLimit = -1;
+var unsafeRuleLimit = -1;
+var regexRuleLimit = -1;
+
 var nextId = 1;
 
 var createRuleWithID = function(id) {
@@ -14,6 +19,15 @@ var createRuleWithID = function(id) {
     priority: 1,
     condition: {urlFilter: id.toString()},
     action: {type: 'block'},
+  };
+};
+
+var createRedirectRuleWithID = function(id) {
+  return {
+    id: id,
+    priority: 1,
+    condition: {urlFilter: id.toString()},
+    action: {type: 'redirect', redirect: {url: 'https://example.com'}},
   };
 };
 
@@ -48,21 +62,29 @@ var verifyCurrentRulesCallback = function() {
 };
 var currentRules = [];
 
-chrome.test.runTests([
-  // Ensure that an extension can add up to |regexRuleLimit| number of regex
+const testCases = [
+  // Sanity check that rule limits received from the browser have been set.
+  function checkRuleLimits() {
+    chrome.test.assertTrue(ruleLimit > 0);
+    chrome.test.assertTrue(unsafeRuleLimit > 0);
+    chrome.test.assertTrue(regexRuleLimit > 0);
+    chrome.test.succeed();
+  },
+
+  // Ensure that an extension can add up to `regexRuleLimit` number of regex
   // rules.
   function regexRuleLimitReached() {
-    var numRulesToAdd = regexRuleLimit;
     var newRules = [];
-    while (newRules.length < regexRuleLimit)
+    while (newRules.length < regexRuleLimit) {
       newRules.push(createRegexRuleWithID(nextId++));
+    }
 
     currentRules = newRules.concat(currentRules);
     chrome.test.assertEq(regexRuleLimit, currentRules.length);
     updateDynamicRules({addRules: newRules}, verifyCurrentRulesCallback);
   },
 
-  // Ensure that adding more regex rules than |regexRuleLimit| causes an error.
+  // Ensure that adding more regex rules than `regexRuleLimit` causes an error.
   function regexRuleLimitError() {
     updateDynamicRules(
         {addRules: [createRegexRuleWithID(nextId++)]},
@@ -70,7 +92,28 @@ chrome.test.runTests([
             'Dynamic rule count for regex rules exceeded.'));
   },
 
-  // Ensure we can add up to |ruleLimit| no. of rules.
+  // Ensure that an extension can add up to `unsafeRuleLimit` number of "unsafe"
+  // rules.
+  function unsafeRuleLimitReached() {
+    var newRules = [];
+    while (newRules.length < unsafeRuleLimit) {
+      newRules.push(createRedirectRuleWithID(nextId++));
+    }
+
+    currentRules = newRules.concat(currentRules);
+    chrome.test.assertEq(regexRuleLimit + unsafeRuleLimit, currentRules.length);
+    updateDynamicRules({addRules: newRules}, verifyCurrentRulesCallback);
+  },
+
+  // Ensure that adding more "unsafe" rules than `unsafeRuleLimit` causes an
+  // error.
+  function unsafeRuleLimitError() {
+    updateDynamicRules(
+        {addRules: [createRedirectRuleWithID(nextId++)]},
+        chrome.test.callbackFail('Dynamic unsafe rule count exceeded.'));
+  },
+
+  // Ensure we can add up to `ruleLimit` no. of rules.
   function ruleLimitReached() {
     var numRulesToAdd = ruleLimit - currentRules.length;
     var newRules = [];
@@ -83,12 +126,19 @@ chrome.test.runTests([
         {addRules: newRules, removeRuleIds: []}, verifyCurrentRulesCallback);
   },
 
-  // Ensure we can't add more than |ruleLimit| rules.
+  // Ensure we can't add more than `ruleLimit` rules.
   function ruleLimitError() {
     updateDynamicRules(
         {addRules: [createRuleWithID(nextId++)]},
         chrome.test.callbackFail('Dynamic rule count exceeded.'));
+  },
+];
 
-}
+chrome.test.sendMessage('ready', ruleLimitsStr => {
+  const ruleLimits = JSON.parse(ruleLimitsStr);
+  ruleLimit = ruleLimits.ruleLimit;
+  unsafeRuleLimit = ruleLimits.unsafeRuleLimit;
+  regexRuleLimit = ruleLimits.regexRuleLimit;
 
-]);
+  chrome.test.runTests(testCases);
+});

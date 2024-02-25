@@ -9,6 +9,7 @@
 
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_switches.h"
+#include "base/check_is_test.h"
 #include "base/command_line.h"
 #include "base/containers/contains.h"
 #include "base/functional/bind.h"
@@ -24,7 +25,6 @@
 #include "chrome/browser/ash/login/configuration_keys.h"
 #include "chrome/browser/ash/login/demo_mode/demo_setup_controller.h"
 #include "chrome/browser/ash/login/login_pref_names.h"
-#include "chrome/browser/ash/login/oobe_quick_start/target_device_bootstrap_controller.h"
 #include "chrome/browser/ash/login/oobe_screen.h"
 #include "chrome/browser/ash/login/ui/input_events_blocker.h"
 #include "chrome/browser/ash/login/wizard_controller.h"
@@ -38,7 +38,7 @@
 #include "chrome/browser/ui/webui/ash/login/l10n_util.h"
 #include "chrome/browser/ui/webui/ash/login/welcome_screen_handler.h"
 #include "chrome/common/pref_names.h"
-#include "chrome/grit/chromium_strings.h"
+#include "chrome/grit/branded_strings.h"
 #include "chrome/grit/generated_resources.h"
 #include "chromeos/dbus/constants/dbus_switches.h"
 #include "components/language/core/browser/pref_names.h"
@@ -90,7 +90,7 @@ constexpr const char kUserActionActivateRemoraRequisition[] =
     "activateRemoraRequisition";
 constexpr const char kUserActionEditDeviceRequisition[] =
     "editDeviceRequisition";
-constexpr const char kUserActionQuickStartClicked[] = "activateQuickStart";
+constexpr const char kUserActionQuickStartClicked[] = "quickStartClicked";
 constexpr const char kWelcomeScreenLocaleChangeMetric[] =
     "OOBE.WelcomeScreen.UserChangedLocale";
 constexpr const char kSetLocaleId[] = "setLocaleId";
@@ -174,15 +174,15 @@ std::string GetApplicationLocale() {
 // static
 std::string WelcomeScreen::GetResultString(Result result) {
   switch (result) {
-    case Result::NEXT:
+    case Result::kNext:
       return "Next";
-    case Result::NEXT_OS_INSTALL:
+    case Result::kNextOSInstall:
       return "StartOsInstall";
-    case Result::SETUP_DEMO:
+    case Result::kSetupDemo:
       return "SetupDemo";
-    case Result::ENABLE_DEBUGGING:
+    case Result::kEnableDebugging:
       return "EnableDebugging";
-    case Result::QUICK_START:
+    case Result::kQuickStart:
       return "QuickStart";
   }
 }
@@ -195,11 +195,14 @@ WelcomeScreen::WelcomeScreen(base::WeakPtr<WelcomeView> view,
   input_method::InputMethodManager::Get()->AddObserver(this);
 
   AccessibilityManager* accessibility_manager = AccessibilityManager::Get();
-  CHECK(accessibility_manager);
-  accessibility_subscription_ = accessibility_manager->RegisterCallback(
-      base::BindRepeating(&WelcomeScreen::OnAccessibilityStatusChanged,
-                          base::Unretained(this)));
-  UpdateA11yState();
+  if (accessibility_manager) {
+    accessibility_subscription_ = accessibility_manager->RegisterCallback(
+        base::BindRepeating(&WelcomeScreen::OnAccessibilityStatusChanged,
+                            base::Unretained(this)));
+    UpdateA11yState();
+  } else {
+    CHECK_IS_TEST();
+  }
 }
 
 WelcomeScreen::~WelcomeScreen() {
@@ -369,15 +372,6 @@ void WelcomeScreen::ShowImpl() {
     }
   }
 
-  // Skip this screen if this is an automatic enrollment as part of Zero-Touch
-  // hands off flow.
-  // TODO(crbug.com/1295708): Move this check to an implementation of
-  // BaseScreen:MaybeSkip().
-  if (WizardController::IsZeroTouchHandsOffOobeFlow()) {
-    OnContinueButtonPressed();
-    return;
-  }
-
   // TODO(crbug.com/1105387): Part of initial screen logic.
   PrefService* prefs = g_browser_process->local_state();
   if (prefs->GetBoolean(::prefs::kDebuggingFeaturesRequested)) {
@@ -390,12 +384,12 @@ void WelcomeScreen::ShowImpl() {
   if (view_)
     view_->Show();
 
-  // Quick Start can be enabled either by feature flag or by keyboard shortcut.
-  // The shortcut method enables a simpler workflow for testers, while the
-  // feature flag will enable us to perform a first run field trial.
-  if (features::IsOobeQuickStartEnabled()) {
-    EnableQuickStart();
-  }
+  // Determine the QuickStart button visibility
+  WizardController::default_controller()
+      ->quick_start_controller()
+      ->DetermineEntryPointVisibility(
+          base::BindOnce(&WelcomeScreen::SetQuickStartButtonVisibility,
+                         weak_ptr_factory_.GetWeakPtr()));
 
   if (LoginScreenClientImpl::HasInstance()) {
     LoginScreenClientImpl::Get()->AddSystemTrayObserver(this);
@@ -404,17 +398,12 @@ void WelcomeScreen::ShowImpl() {
 
 void WelcomeScreen::HideImpl() {
   CancelChromeVoxHintIdleDetection();
-
-  if (context()->quick_start_enabled) {
-    bootstrap_controller_.reset();
-  }
 }
 
 void WelcomeScreen::OnUserAction(const base::Value::List& args) {
   const std::string& action_id = args[0].GetString();
   if (action_id == kUserActionQuickStartClicked) {
-    CHECK(context()->quick_start_enabled);
-    Exit(Result::QUICK_START);
+    OnQuickStartClicked();
     return;
   }
   if (action_id == kUserActionContinueButtonClicked) {
@@ -556,11 +545,19 @@ bool WelcomeScreen::HandleAccelerator(LoginAcceleratorAction action) {
       view_->ShowRemoraRequisitionDialog();
     return true;
   } else if (action == LoginAcceleratorAction::kEnableQuickStart) {
-    if (context()->quick_start_enabled) {
-      return true;
-    }
+    // Quick Start can be enabled either by feature flag or by keyboard
+    // shortcut. The shortcut method enables a simpler workflow for testers,
+    // while the feature flag will enable us to perform a first run field trial.
+    WizardController::default_controller()
+        ->quick_start_controller()
+        ->ForceEnableQuickStart();
 
-    EnableQuickStart();
+    // Update the entry point button visibility.
+    WizardController::default_controller()
+        ->quick_start_controller()
+        ->DetermineEntryPointVisibility(
+            base::BindOnce(&WelcomeScreen::SetQuickStartButtonVisibility,
+                           weak_ptr_factory_.GetWeakPtr()));
     return true;
   }
 
@@ -580,26 +577,10 @@ void WelcomeScreen::InputMethodChanged(
   }
 }
 
-void WelcomeScreen::EnableQuickStart() {
-  context()->quick_start_enabled = true;
-  bootstrap_controller_ =
-      LoginDisplayHost::default_host()->GetQuickStartBootstrapController();
-  bootstrap_controller_->GetFeatureSupportStatusAsync(
-      base::BindOnce(&WelcomeScreen::OnGetQuickStartFeatureSupportStatus,
-                     weak_ptr_factory_.GetWeakPtr()));
-}
-
-void WelcomeScreen::OnGetQuickStartFeatureSupportStatus(
-    quick_start::TargetDeviceConnectionBroker::FeatureSupportStatus status) {
-  if (status != quick_start::TargetDeviceConnectionBroker::
-                    FeatureSupportStatus::kSupported) {
-    return;
+void WelcomeScreen::SetQuickStartButtonVisibility(bool visible) {
+  if (visible && view_) {
+    view_->SetQuickStartEnabled();
   }
-
-  if (!view_) {
-    return;
-  }
-  view_->SetQuickStartEnabled();
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -607,17 +588,17 @@ void WelcomeScreen::OnGetQuickStartFeatureSupportStatus(
 
 void WelcomeScreen::OnContinueButtonPressed() {
   if (switches::IsOsInstallAllowed())
-    Exit(Result::NEXT_OS_INSTALL);
+    Exit(Result::kNextOSInstall);
   else
-    Exit(Result::NEXT);
+    Exit(Result::kNext);
 }
 
 void WelcomeScreen::OnSetupDemoMode() {
-  Exit(Result::SETUP_DEMO);
+  Exit(Result::kSetupDemo);
 }
 
 void WelcomeScreen::OnEnableDebugging() {
-  Exit(Result::ENABLE_DEBUGGING);
+  Exit(Result::kEnableDebugging);
 }
 
 void WelcomeScreen::OnLanguageChangedCallback(
@@ -730,6 +711,11 @@ void WelcomeScreen::UpdateA11yState() {
   if (view_) {
     view_->UpdateA11yState(a11y_state);
   }
+}
+
+void WelcomeScreen::OnQuickStartClicked() {
+  CHECK(context()->quick_start_enabled);
+  Exit(Result::kQuickStart);
 }
 
 void WelcomeScreen::Exit(Result result) const {

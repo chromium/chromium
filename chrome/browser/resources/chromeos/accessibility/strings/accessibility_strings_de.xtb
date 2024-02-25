@@ -99,6 +99,7 @@
 <translation id="1559739829547075274">Zurück navigieren</translation>
 <translation id="1565432156062359693">Keine nächste Liste</translation>
 <translation id="1571643229714746283">ChromeVox bereit</translation>
+<translation id="1588252353131492116">„Taste ignorieren“ ist nicht verfügbar, wenn der fixierte Modus aktiviert ist</translation>
 <translation id="1594072653727561613">mnu</translation>
 <translation id="1610130962244179598">Zu 6-Punkt-Braille wechseln</translation>
 <translation id="161042844686301425">Cyan</translation>
@@ -194,6 +195,7 @@
 <translation id="2318372665160196757">Hauptinhalt</translation>
 <translation id="2329324941084714723">Tabsteuerfeld</translation>
 <translation id="2347456970887948350">Ein Link</translation>
+<translation id="2363753371702255035">Aufzählungszeichen</translation>
 <translation id="2365384324219615024">Du kannst zum Aktivieren von Elementen auch die Eingabetaste drücken. Die Eingabetaste kann beispielsweise verwendet werden, um Text in einem Formular abzusenden. Drücke zum Fortfahren die Eingabetaste.</translation>
 <translation id="2381733276052567791">Sprachausgabe aktivieren oder deaktivieren</translation>
 <translation id="2390264819538553347">Drücke die Eingabetaste, um zur nächsten Seite, oder die Rücktaste, um zur vorigen Seite zu gelangen.</translation>
@@ -521,6 +523,7 @@
 <translation id="4457472090507035117">Aktuelle Stimme auswählen:</translation>
 <translation id="4476183483923481720">Neue Zeile</translation>
 <translation id="4479068155583208887">Backstein</translation>
+<translation id="4481524099194084725">Systemstimme verwenden</translation>
 <translation id="4482330759234983253">Vorherige Tabelle</translation>
 <translation id="4491109536499578614">Bild</translation>
 <translation id="4507332368061453500">Langer Klick auf aktuelles Element</translation>

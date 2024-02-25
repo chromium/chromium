@@ -1,0 +1,9 @@
+Tests that Command Line API inspect() works correctly when paused
+{
+    className : HTMLBodyElement
+    description : body
+    objectId : <string>
+    subtype : node
+    type : object
+}
+

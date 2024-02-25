@@ -6,6 +6,7 @@
 #define ASH_APP_LIST_VIEWS_PAGED_APPS_GRID_VIEW_H_
 
 #include <memory>
+#include <optional>
 #include <vector>
 
 #include "ash/app_list/app_list_metrics.h"
@@ -15,7 +16,7 @@
 #include "ash/public/cpp/pagination/pagination_model_observer.h"
 #include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
+#include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/compositor/presentation_time_recorder.h"
 #include "ui/compositor/throughput_tracker.h"
 #include "ui/events/types/event_type.h"
@@ -44,6 +45,8 @@ class PaginationController;
 class ASH_EXPORT PagedAppsGridView : public AppsGridView,
                                      public PaginationModelObserver,
                                      public views::ViewTargeterDelegate {
+  METADATA_HEADER(PagedAppsGridView, AppsGridView)
+
  public:
   class ContainerDelegate {
    public:
@@ -91,7 +94,7 @@ class ASH_EXPORT PagedAppsGridView : public AppsGridView,
   void OnGestureEvent(ui::GestureEvent* event) override;
 
   // views::View:
-  void Layout() override;
+  void Layout(PassKey) override;
   void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
   void OnThemeChanged() override;
 
@@ -115,16 +118,15 @@ class ASH_EXPORT PagedAppsGridView : public AppsGridView,
                                   ui::EventType type) override;
   void SetFocusAfterEndDrag(AppListItem* drag_item) override;
   void RecordAppMovingTypeMetrics(AppListAppMovingType type) override;
-  absl::optional<int> GetMaxRowsInPage(int page) const override;
+  std::optional<int> GetMaxRowsInPage(int page) const override;
   gfx::Vector2d GetGridCenteringOffset(int page) const override;
   void UpdatePaging() override;
   void RecordPageMetrics() override;
   const gfx::Vector2d CalculateTransitionOffset(
       int page_of_view) const override;
   void EnsureViewVisible(const GridIndex& index) override;
-  absl::optional<VisibleItemIndexRange> GetVisibleItemIndexRange()
+  std::optional<VisibleItemIndexRange> GetVisibleItemIndexRange()
       const override;
-  base::ScopedClosureRunner LockAppsGridOpacity() override;
   bool ShouldContainerHandleDragEvents() override;
 
   // PaginationModelObserver:
@@ -287,11 +289,11 @@ class ASH_EXPORT PagedAppsGridView : public AppsGridView,
   int GetPaddingBetweenPages() const;
 
   // Created by AppListMainView, owned by views hierarchy.
-  const raw_ptr<ContentsView, ExperimentalAsh> contents_view_;
+  const raw_ptr<ContentsView> contents_view_;
 
   // Used to get information about whether a point is within the page flip drag
   // buffer area around this view.
-  const raw_ptr<ContainerDelegate, ExperimentalAsh> container_delegate_;
+  const raw_ptr<ContainerDelegate> container_delegate_;
 
   // Depends on |pagination_model_|.
   std::unique_ptr<PaginationController> pagination_controller_;
@@ -307,7 +309,7 @@ class ASH_EXPORT PagedAppsGridView : public AppsGridView,
   base::TimeDelta page_flip_delay_;
 
   // Records smoothness of pagination animation.
-  absl::optional<ui::ThroughputTracker> pagination_metrics_tracker_;
+  std::optional<ui::ThroughputTracker> pagination_metrics_tracker_;
 
   // Records the presentation time for apps grid dragging.
   std::unique_ptr<ui::PresentationTimeRecorder> presentation_time_recorder_;
@@ -348,9 +350,6 @@ class ASH_EXPORT PagedAppsGridView : public AppsGridView,
   int margin_for_gradient_mask_ = 0;
 
   void StackCardsAtBottom() override;
-
-  // If true, ignore the calls on `UpdateOpacity()`.
-  bool lock_opacity_ = false;
 
   // Whether the apps grid is currently animating  the cardified state.
   bool is_animating_cardified_state_ = false;

@@ -19,6 +19,7 @@
 #include "components/update_client/update_client.h"
 #include "extensions/browser/extensions_browser_client.h"
 #include "extensions/browser/updater/extension_cache.h"
+#include "extensions/common/extension_id.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "services/network/public/mojom/fetch_api.mojom.h"
@@ -102,7 +103,7 @@ class TestExtensionsBrowserClient : public ExtensionsBrowserClient {
 #endif
   bool IsGuestSession(content::BrowserContext* context) const override;
   bool IsExtensionIncognitoEnabled(
-      const std::string& extension_id,
+      const ExtensionId& extension_id,
       content::BrowserContext* context) const override;
   bool CanExtensionCrossIncognito(
       const extensions::Extension* extension,
@@ -134,6 +135,10 @@ class TestExtensionsBrowserClient : public ExtensionsBrowserClient {
       content::BrowserContext* context,
       std::vector<EarlyExtensionPrefsObserver*>* observers) const override;
   ProcessManagerDelegate* GetProcessManagerDelegate() const override;
+  mojo::PendingRemote<network::mojom::URLLoaderFactory>
+  GetControlledFrameEmbedderURLLoader(
+      int frame_tree_node_id,
+      content::BrowserContext* browser_context) override;
   std::unique_ptr<ExtensionHostDelegate> CreateExtensionHostDelegate() override;
   bool DidVersionUpdate(content::BrowserContext* context) override;
   void PermitExternalProtocolHandler() override;
@@ -171,6 +176,11 @@ class TestExtensionsBrowserClient : public ExtensionsBrowserClient {
     return extension_system_factory_;
   }
 
+  void set_pref_service_for_context(content::BrowserContext* context,
+                                    PrefService* pref_service) {
+    set_pref_service_for_context_[context] = pref_service;
+  }
+
  private:
   // Not owned.
   raw_ptr<content::BrowserContext> main_context_ = nullptr;
@@ -187,6 +197,10 @@ class TestExtensionsBrowserClient : public ExtensionsBrowserClient {
 
   // Not owned.
   raw_ptr<PrefService> pref_service_ = nullptr;
+
+  // Not owned.
+  std::map<content::BrowserContext*, raw_ptr<PrefService>>
+      set_pref_service_for_context_;
 
   std::unique_ptr<ExtensionCache> extension_cache_;
 

@@ -14,6 +14,7 @@ import org.chromium.base.Callback;
 import org.chromium.base.CallbackController;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.RecordUserAction;
+import org.chromium.base.supplier.LazyOneshotSupplier;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.supplier.OneshotSupplier;
@@ -32,8 +33,8 @@ import org.chromium.chrome.browser.tabmodel.TabModelObserver;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tabmodel.TabModelSelectorObserver;
 import org.chromium.chrome.browser.tabmodel.TabModelSelectorTabObserver;
-import org.chromium.chrome.browser.tasks.tab_groups.EmptyTabGroupModelFilterObserver;
 import org.chromium.chrome.browser.tasks.tab_groups.TabGroupModelFilter;
+import org.chromium.chrome.browser.tasks.tab_groups.TabGroupModelFilterObserver;
 import org.chromium.chrome.browser.toolbar.bottom.BottomControlsCoordinator;
 import org.chromium.chrome.browser.toolbar.bottom.BottomControlsCoordinator.BottomControlsVisibilityController;
 import org.chromium.chrome.tab_ui.R;
@@ -46,13 +47,9 @@ import org.chromium.url.GURL;
 
 import java.util.List;
 
-/**
- * A mediator for the TabGroupUi. Responsible for managing the internal state of the component.
- */
+/** A mediator for the TabGroupUi. Responsible for managing the internal state of the component. */
 public class TabGroupUiMediator implements BackPressHandler {
-    /**
-     * An interface to control the TabGroupUi component.
-     */
+    /** An interface to control the TabGroupUi component. */
     interface TabGroupUiController {
         /**
          * Setup the drawable in TabGroupUi left button with a drawable ID.
@@ -95,10 +92,10 @@ public class TabGroupUiMediator implements BackPressHandler {
     private final ResetHandler mResetHandler;
     private final TabModelSelector mTabModelSelector;
     private final TabCreatorManager mTabCreatorManager;
-    private final BottomControlsCoordinator
-            .BottomControlsVisibilityController mVisibilityController;
+    private final BottomControlsCoordinator.BottomControlsVisibilityController
+            mVisibilityController;
     private final IncognitoStateProvider mIncognitoStateProvider;
-    private final OneshotSupplier<TabGridDialogMediator.DialogController>
+    private final LazyOneshotSupplier<TabGridDialogMediator.DialogController>
             mTabGridDialogControllerSupplier;
     private final IncognitoStateObserver mIncognitoStateObserver;
     private final TabModelSelectorObserver mTabModelSelectorObserver;
@@ -109,19 +106,24 @@ public class TabGroupUiMediator implements BackPressHandler {
     private final LayoutStateObserver mLayoutStateObserver;
     private LayoutStateProvider mLayoutStateProvider;
 
-    private TabGroupModelFilter.Observer mTabGroupModelFilterObserver;
+    private TabGroupModelFilterObserver mTabGroupModelFilterObserver;
     private TabModelSelectorTabObserver mTabModelSelectorTabObserver;
     private Callback<Boolean> mOmniboxFocusObserver;
     private boolean mIsTabGroupUiVisible;
     private boolean mIsShowingOverViewMode;
 
-    TabGroupUiMediator(Context context, BottomControlsVisibilityController visibilityController,
-            ResetHandler resetHandler, PropertyModel model, TabModelSelector tabModelSelector,
+    TabGroupUiMediator(
+            Context context,
+            BottomControlsVisibilityController visibilityController,
+            ResetHandler resetHandler,
+            PropertyModel model,
+            TabModelSelector tabModelSelector,
             TabCreatorManager tabCreatorManager,
             OneshotSupplier<LayoutStateProvider> layoutStateProviderSupplier,
             IncognitoStateProvider incognitoStateProvider,
-            @Nullable OneshotSupplier<TabGridDialogMediator.DialogController>
-                    dialogControllerSupplier,
+            @Nullable
+                    LazyOneshotSupplier<TabGridDialogMediator.DialogController>
+                            dialogControllerSupplier,
             ObservableSupplier<Boolean> omniboxFocusStateSupplier) {
         mContext = context;
         mResetHandler = resetHandler;
@@ -135,8 +137,9 @@ public class TabGroupUiMediator implements BackPressHandler {
 
         if (layoutStateProviderSupplier.get() != null
                 && (layoutStateProviderSupplier.get().isLayoutVisible(LayoutType.TAB_SWITCHER)
-                        || (layoutStateProviderSupplier.get().isLayoutVisible(
-                                LayoutType.START_SURFACE)))) {
+                        || (layoutStateProviderSupplier
+                                .get()
+                                .isLayoutVisible(LayoutType.START_SURFACE)))) {
             // It is possible that the overview mode is showing when the TabGroupUiMediator is
             // created, sets the mIsShowingOverViewMode early to prevent the Tab strip is wrongly
             // showing on the Start surface homepage. See https://crbug.com/1239272.
@@ -144,166 +147,186 @@ public class TabGroupUiMediator implements BackPressHandler {
         }
 
         // register for tab model
-        mTabModelObserver = new TabModelObserver() {
-            @Override
-            public void didSelectTab(Tab tab, @TabSelectionType int type, int lastId) {
-                if (TabUiFeatureUtilities.isTabGroupsAndroidEnabled(mContext)
-                        && getTabsToShowForId(lastId).contains(tab)) {
-                    return;
-                }
+        mTabModelObserver =
+                new TabModelObserver() {
+                    @Override
+                    public void didSelectTab(Tab tab, @TabSelectionType int type, int lastId) {
+                        if (getTabsToShowForId(lastId).contains(tab)) {
+                            return;
+                        }
 
-                // TODO(995956): Optimization we can do here if we decided always hide the strip if
-                // related tab size down to 1.
-                resetTabStripWithRelatedTabsForId(tab.getId());
-            }
-
-            @Override
-            public void willCloseTab(Tab tab, boolean animate, boolean didCloseAlone) {
-                if (!mIsTabGroupUiVisible) return;
-
-                List<Tab> tabList = getTabsToShowForId(tab.getId());
-                if (tabList.size() == 1) {
-                    resetTabStripWithRelatedTabsForId(Tab.INVALID_TAB_ID);
-                }
-            }
-
-            @Override
-            public void didAddTab(Tab tab, int type, @TabCreationState int creationState,
-                    boolean markedForSelection) {
-                if (type == TabLaunchType.FROM_CHROME_UI || type == TabLaunchType.FROM_RESTORE
-                        || type == TabLaunchType.FROM_STARTUP
-                        || type == TabLaunchType.FROM_LONGPRESS_BACKGROUND) {
-                    return;
-                }
-
-                if (type == TabLaunchType.FROM_TAB_GROUP_UI && mIsTabGroupUiVisible) {
-                    mModel.set(TabGroupUiProperties.INITIAL_SCROLL_INDEX,
-                            getTabsToShowForId(tab.getId()).size() - 1);
-                }
-
-                if (mIsTabGroupUiVisible) return;
-
-                resetTabStripWithRelatedTabsForId(tab.getId());
-            }
-
-            @Override
-            public void restoreCompleted() {
-                Tab currentTab = mTabModelSelector.getCurrentTab();
-                // Do not try to show tab strip when there is no current tab or we are not in tab
-                // page when restore completed.
-                if (currentTab == null
-                        || (mLayoutStateProvider != null
-                                && (mLayoutStateProvider.isLayoutVisible(LayoutType.TAB_SWITCHER)
-                                        || mLayoutStateProvider.isLayoutVisible(
-                                                LayoutType.START_SURFACE)))) {
-                    return;
-                }
-                resetTabStripWithRelatedTabsForId(currentTab.getId());
-            }
-
-            @Override
-            public void tabClosureUndone(Tab tab) {
-                if (!mIsTabGroupUiVisible) {
-                    // Reset with the current tab as the undone tab may be in the background.
-                    resetTabStripWithRelatedTabsForId(mTabModelSelector.getCurrentTab().getId());
-                }
-            }
-        };
-        mLayoutStateObserver = new LayoutStateProvider.LayoutStateObserver() {
-            @Override
-            public void onStartedShowing(@LayoutType int layoutType) {
-                if (layoutType == LayoutType.TAB_SWITCHER
-                        || layoutType == LayoutType.START_SURFACE) {
-                    mIsShowingOverViewMode = true;
-                    resetTabStripWithRelatedTabsForId(Tab.INVALID_TAB_ID);
-                }
-            }
-
-            @Override
-            public void onFinishedHiding(@LayoutType int layoutType) {
-                if (layoutType == LayoutType.TAB_SWITCHER
-                        || layoutType == LayoutType.START_SURFACE) {
-                    mIsShowingOverViewMode = false;
-                    Tab tab = mTabModelSelector.getCurrentTab();
-                    if (tab == null) return;
-                    resetTabStripWithRelatedTabsForId(tab.getId());
-                }
-            }
-        };
-
-        mTabModelSelectorTabObserver = new TabModelSelectorTabObserver(mTabModelSelector) {
-            @Override
-            public void onPageLoadStarted(Tab tab, GURL url) {
-                // TODO(crbug.com/1087826) This is a band-aid fix for M84. The root cause is
-                // probably a leaked observer. Remove this when the TabObservers are removed during
-                // tab reparenting.
-                if (mTabModelSelector.getTabById(tab.getId()) == null) return;
-                List<Tab> listOfTabs = getTabsToShowForId(tab.getId());
-                int numTabs = listOfTabs.size();
-                // This is set to zero because the UI is hidden.
-                if (!mIsTabGroupUiVisible || numTabs == 1) numTabs = 0;
-                RecordHistogram.recordCount1MHistogram("TabStrip.TabCountOnPageLoad", numTabs);
-            }
-
-            @Override
-            public void onActivityAttachmentChanged(Tab tab, WindowAndroid window) {
-                // Remove this when tab is detached since the TabModelSelectorTabObserver is not
-                // properly destroyed when there is a normal/night mode switch.
-                if (window == null) {
-                    this.destroy();
-                    mTabModelSelectorTabObserver = null;
-                }
-            }
-        };
-
-        mTabModelSelectorObserver = new TabModelSelectorObserver() {
-            @Override
-            public void onTabModelSelected(TabModel newModel, TabModel oldModel) {
-                resetTabStripWithRelatedTabsForId(mTabModelSelector.getCurrentTabId());
-            }
-        };
-
-        if (TabUiFeatureUtilities.isTabGroupsAndroidEnabled(mContext)) {
-            mTabGroupModelFilterObserver = new EmptyTabGroupModelFilterObserver() {
-                @Override
-                public void didMoveTabOutOfGroup(Tab movedTab, int prevFilterIndex) {
-                    if (mIsTabGroupUiVisible && movedTab == mTabModelSelector.getCurrentTab()) {
-                        resetTabStripWithRelatedTabsForId(movedTab.getId());
+                        resetTabStripWithRelatedTabsForId(tab.getId());
                     }
-                }
-            };
 
-            // TODO(995951): Add observer similar to TabModelSelectorTabModelObserver for
-            // TabModelFilter.
-            ((TabGroupModelFilter) mTabModelSelector.getTabModelFilterProvider().getTabModelFilter(
-                     false))
-                    .addTabGroupObserver(mTabGroupModelFilterObserver);
-            ((TabGroupModelFilter) mTabModelSelector.getTabModelFilterProvider().getTabModelFilter(
-                     true))
-                    .addTabGroupObserver(mTabGroupModelFilterObserver);
-        }
+                    // TODO(crbug/41496693): Delete this logic once tab groups with one tab are
+                    // launched.
+                    @Override
+                    public void willCloseTab(Tab tab, boolean animate, boolean didCloseAlone) {
+                        if (!mIsTabGroupUiVisible) return;
 
-        mOmniboxFocusObserver = isFocus -> {
-            // Hide tab strip when omnibox gains focus and try to re-show it when omnibox loses
-            // focus.
-            int tabId = (isFocus == null || !isFocus) ? mTabModelSelector.getCurrentTabId()
-                                                      : Tab.INVALID_TAB_ID;
-            resetTabStripWithRelatedTabsForId(tabId);
-        };
+                        // Check if the group the tab was part of is still a tab group.
+                        TabGroupModelFilter filter = getCurrentTabGroupModelFilter();
+                        Tab groupTab = filter.getGroupLastShownTab(tab.getRootId());
+                        if (groupTab == null) return;
+
+                        if (!getCurrentTabGroupModelFilter().isTabInTabGroup(groupTab)) {
+                            resetTabStripWithRelatedTabsForId(Tab.INVALID_TAB_ID);
+                        }
+                    }
+
+                    @Override
+                    public void didAddTab(
+                            Tab tab,
+                            int type,
+                            @TabCreationState int creationState,
+                            boolean markedForSelection) {
+                        if (type == TabLaunchType.FROM_CHROME_UI
+                                || type == TabLaunchType.FROM_RESTORE
+                                || type == TabLaunchType.FROM_STARTUP
+                                || type == TabLaunchType.FROM_LONGPRESS_BACKGROUND) {
+                            return;
+                        }
+
+                        if (type == TabLaunchType.FROM_TAB_GROUP_UI && mIsTabGroupUiVisible) {
+                            mModel.set(
+                                    TabGroupUiProperties.INITIAL_SCROLL_INDEX,
+                                    getTabsToShowForId(tab.getId()).size() - 1);
+                        }
+
+                        if (mIsTabGroupUiVisible) return;
+
+                        resetTabStripWithRelatedTabsForId(tab.getId());
+                    }
+
+                    @Override
+                    public void restoreCompleted() {
+                        Tab currentTab = mTabModelSelector.getCurrentTab();
+                        // Do not try to show tab strip when there is no current tab or we are not
+                        // in tab page when restore completed.
+                        if (currentTab == null
+                                || (mLayoutStateProvider != null
+                                        && (mLayoutStateProvider.isLayoutVisible(
+                                                        LayoutType.TAB_SWITCHER)
+                                                || mLayoutStateProvider.isLayoutVisible(
+                                                        LayoutType.START_SURFACE)))) {
+                            return;
+                        }
+                        resetTabStripWithRelatedTabsForId(currentTab.getId());
+                    }
+
+                    @Override
+                    public void tabClosureUndone(Tab tab) {
+                        if (!mIsTabGroupUiVisible) {
+                            // Reset with the current tab as the undone tab may be in the
+                            // background.
+                            resetTabStripWithRelatedTabsForId(
+                                    mTabModelSelector.getCurrentTab().getId());
+                        }
+                    }
+                };
+        mLayoutStateObserver =
+                new LayoutStateProvider.LayoutStateObserver() {
+                    @Override
+                    public void onStartedShowing(@LayoutType int layoutType) {
+                        if (layoutType == LayoutType.TAB_SWITCHER
+                                || layoutType == LayoutType.START_SURFACE) {
+                            mIsShowingOverViewMode = true;
+                            resetTabStripWithRelatedTabsForId(Tab.INVALID_TAB_ID);
+                        }
+                    }
+
+                    @Override
+                    public void onFinishedHiding(@LayoutType int layoutType) {
+                        if (layoutType == LayoutType.TAB_SWITCHER
+                                || layoutType == LayoutType.START_SURFACE) {
+                            mIsShowingOverViewMode = false;
+                            Tab tab = mTabModelSelector.getCurrentTab();
+                            if (tab == null) return;
+                            resetTabStripWithRelatedTabsForId(tab.getId());
+                        }
+                    }
+                };
+
+        mTabModelSelectorTabObserver =
+                new TabModelSelectorTabObserver(mTabModelSelector) {
+                    @Override
+                    public void onPageLoadStarted(Tab tab, GURL url) {
+                        // TODO(crbug.com/1087826) This is a band-aid fix for M84. The root cause is
+                        // probably a leaked observer. Remove this when the TabObservers are removed
+                        // during tab reparenting.
+                        if (mTabModelSelector.getTabById(tab.getId()) == null) return;
+
+                        int numTabs = 0;
+                        TabGroupModelFilter filter = getCurrentTabGroupModelFilter();
+                        if (mIsTabGroupUiVisible && filter.isTabInTabGroup(tab)) {
+                            numTabs = filter.getRelatedTabCountForRootId(tab.getRootId());
+                        }
+
+                        RecordHistogram.recordCount1MHistogram(
+                                "TabStrip.TabCountOnPageLoad", numTabs);
+                    }
+
+                    @Override
+                    public void onActivityAttachmentChanged(Tab tab, WindowAndroid window) {
+                        // Remove this when tab is detached since the TabModelSelectorTabObserver is
+                        // not properly destroyed when there is a normal/night mode switch.
+                        if (window == null) {
+                            this.destroy();
+                            mTabModelSelectorTabObserver = null;
+                        }
+                    }
+                };
+
+        mTabModelSelectorObserver =
+                new TabModelSelectorObserver() {
+                    @Override
+                    public void onTabModelSelected(TabModel newModel, TabModel oldModel) {
+                        resetTabStripWithRelatedTabsForId(mTabModelSelector.getCurrentTabId());
+                    }
+                };
+
+        mTabGroupModelFilterObserver =
+                new TabGroupModelFilterObserver() {
+                    @Override
+                    public void didMoveTabOutOfGroup(Tab movedTab, int prevFilterIndex) {
+                        if (mIsTabGroupUiVisible && movedTab == mTabModelSelector.getCurrentTab()) {
+                            resetTabStripWithRelatedTabsForId(movedTab.getId());
+                        }
+                    }
+                };
+
+        var filterProvider = mTabModelSelector.getTabModelFilterProvider();
+        ((TabGroupModelFilter) filterProvider.getTabModelFilter(false))
+                .addTabGroupObserver(mTabGroupModelFilterObserver);
+        ((TabGroupModelFilter) filterProvider.getTabModelFilter(true))
+                .addTabGroupObserver(mTabGroupModelFilterObserver);
+
+        mOmniboxFocusObserver =
+                isFocus -> {
+                    // Hide tab strip when omnibox gains focus and try to re-show it when omnibox
+                    // loses focus.
+                    int tabId =
+                            (isFocus == null || !isFocus)
+                                    ? mTabModelSelector.getCurrentTabId()
+                                    : Tab.INVALID_TAB_ID;
+                    resetTabStripWithRelatedTabsForId(tabId);
+                };
         mOmniboxFocusStateSupplier.addObserver(mOmniboxFocusObserver);
 
-        mIncognitoStateObserver = (isIncognito) -> {
-            mModel.set(TabGroupUiProperties.IS_INCOGNITO, isIncognito);
-        };
+        mIncognitoStateObserver =
+                (isIncognito) -> {
+                    mModel.set(TabGroupUiProperties.IS_INCOGNITO, isIncognito);
+                };
 
-        mTabModelSelector.getTabModelFilterProvider().addTabModelFilterObserver(mTabModelObserver);
+        filterProvider.addTabModelFilterObserver(mTabModelObserver);
         mTabModelSelector.addObserver(mTabModelSelectorObserver);
 
         layoutStateProviderSupplier.onAvailable(
-                mCallbackController.makeCancelable((layoutStateProvider) -> {
-                    mLayoutStateProvider = layoutStateProvider;
-                    mLayoutStateProvider.addObserver(mLayoutStateObserver);
-                }));
+                mCallbackController.makeCancelable(
+                        (layoutStateProvider) -> {
+                            mLayoutStateProvider = layoutStateProvider;
+                            mLayoutStateProvider.addObserver(mLayoutStateObserver);
+                        }));
 
         mIncognitoStateProvider.addIncognitoStateObserverAndTrigger(mIncognitoStateObserver);
 
@@ -316,10 +339,12 @@ public class TabGroupUiMediator implements BackPressHandler {
 
         mBackPressStateSupplier = new ObservableSupplierImpl<>();
         if (mTabGridDialogControllerSupplier != null) {
-            mTabGridDialogControllerSupplier.onAvailable(controller -> {
-                controller.getHandleBackPressChangedSupplier().addObserver(
-                        mBackPressStateSupplier::set);
-            });
+            mTabGridDialogControllerSupplier.onAvailable(
+                    controller -> {
+                        controller
+                                .getHandleBackPressChangedSupplier()
+                                .addObserver(mBackPressStateSupplier::set);
+                    });
         }
     }
 
@@ -332,29 +357,33 @@ public class TabGroupUiMediator implements BackPressHandler {
     }
 
     private void setupToolbarButtons() {
-        View.OnClickListener leftButtonOnClickListener = view -> {
-            Tab currentTab = mTabModelSelector.getCurrentTab();
-            if (currentTab == null) return;
-            mResetHandler.resetGridWithListOfTabs(getTabsToShowForId(currentTab.getId()));
-            RecordUserAction.record("TabGroup.ExpandedFromStrip.TabGridDialog");
-        };
+        View.OnClickListener leftButtonOnClickListener =
+                view -> {
+                    Tab currentTab = mTabModelSelector.getCurrentTab();
+                    if (currentTab == null) return;
+                    mResetHandler.resetGridWithListOfTabs(getTabsToShowForId(currentTab.getId()));
+                    RecordUserAction.record("TabGroup.ExpandedFromStrip.TabGridDialog");
+                };
         mModel.set(TabGroupUiProperties.LEFT_BUTTON_ON_CLICK_LISTENER, leftButtonOnClickListener);
 
-        View.OnClickListener rightButtonOnClickListener = view -> {
-            Tab parentTabToAttach = null;
-            Tab currentTab = mTabModelSelector.getCurrentTab();
-            if (TabUiFeatureUtilities.isTabGroupsAndroidEnabled(mContext)) {
-                List<Tab> relatedTabs = getTabsToShowForId(currentTab.getId());
+        View.OnClickListener rightButtonOnClickListener =
+                view -> {
+                    Tab parentTabToAttach = null;
+                    Tab currentTab = mTabModelSelector.getCurrentTab();
+                    List<Tab> relatedTabs = getTabsToShowForId(currentTab.getId());
 
-                assert relatedTabs.size() > 0;
+                    assert relatedTabs.size() > 0;
 
-                parentTabToAttach = relatedTabs.get(relatedTabs.size() - 1);
-            }
-            mTabCreatorManager.getTabCreator(currentTab.isIncognito())
-                    .createNewTab(new LoadUrlParams(UrlConstants.NTP_URL),
-                            TabLaunchType.FROM_TAB_GROUP_UI, parentTabToAttach);
-            RecordUserAction.record("MobileNewTabOpened." + TabGroupUiCoordinator.COMPONENT_NAME);
-        };
+                    parentTabToAttach = relatedTabs.get(relatedTabs.size() - 1);
+                    mTabCreatorManager
+                            .getTabCreator(currentTab.isIncognito())
+                            .createNewTab(
+                                    new LoadUrlParams(UrlConstants.NTP_URL),
+                                    TabLaunchType.FROM_TAB_GROUP_UI,
+                                    parentTabToAttach);
+                    RecordUserAction.record(
+                            "MobileNewTabOpened." + TabGroupUiCoordinator.COMPONENT_NAME);
+                };
         mModel.set(TabGroupUiProperties.RIGHT_BUTTON_ON_CLICK_LISTENER, rightButtonOnClickListener);
 
         String leftButtonContentDescription =
@@ -362,7 +391,8 @@ public class TabGroupUiMediator implements BackPressHandler {
         String rightButtonContentDescription = mContext.getString(R.string.bottom_tab_grid_new_tab);
         mModel.set(
                 TabGroupUiProperties.LEFT_BUTTON_CONTENT_DESCRIPTION, leftButtonContentDescription);
-        mModel.set(TabGroupUiProperties.RIGHT_BUTTON_CONTENT_DESCRIPTION,
+        mModel.set(
+                TabGroupUiProperties.RIGHT_BUTTON_CONTENT_DESCRIPTION,
                 rightButtonContentDescription);
     }
 
@@ -383,22 +413,24 @@ public class TabGroupUiMediator implements BackPressHandler {
         if (mIsShowingOverViewMode) {
             id = Tab.INVALID_TAB_ID;
         }
-        List<Tab> listOfTabs = getTabsToShowForId(id);
-        if (listOfTabs.size() < 2) {
+        Tab tab = mTabModelSelector.getTabById(id);
+        if (tab == null || !getCurrentTabGroupModelFilter().isTabInTabGroup(tab)) {
             mResetHandler.resetStripWithListOfTabs(null);
             mIsTabGroupUiVisible = false;
         } else {
+            List<Tab> listOfTabs = getTabsToShowForId(id);
             mResetHandler.resetStripWithListOfTabs(listOfTabs);
             mIsTabGroupUiVisible = true;
-        }
-        if (mIsTabGroupUiVisible) {
+
             // Post to make sure that the recyclerView already knows how many visible items it has.
             // This is to make sure that we can scroll to a state where the selected tab is in the
             // middle of the strip.
             Handler handler = new Handler();
-            handler.post(()
-                                 -> mModel.set(TabGroupUiProperties.INITIAL_SCROLL_INDEX,
-                                         listOfTabs.indexOf(mTabModelSelector.getCurrentTab())));
+            handler.post(
+                    () ->
+                            mModel.set(
+                                    TabGroupUiProperties.INITIAL_SCROLL_INDEX,
+                                    listOfTabs.indexOf(mTabModelSelector.getCurrentTab())));
         }
         mVisibilityController.setBottomControlsVisible(mIsTabGroupUiVisible);
     }
@@ -409,9 +441,12 @@ public class TabGroupUiMediator implements BackPressHandler {
      * @param id  The ID of the tab that will be used to decide the list of tabs to show.
      */
     private List<Tab> getTabsToShowForId(int id) {
-        return mTabModelSelector.getTabModelFilterProvider()
-                .getCurrentTabModelFilter()
-                .getRelatedTabList(id);
+        return getCurrentTabGroupModelFilter().getRelatedTabList(id);
+    }
+
+    private TabGroupModelFilter getCurrentTabGroupModelFilter() {
+        return (TabGroupModelFilter)
+                mTabModelSelector.getTabModelFilterProvider().getCurrentTabModelFilter();
     }
 
     public boolean onBackPressed() {
@@ -438,15 +473,14 @@ public class TabGroupUiMediator implements BackPressHandler {
 
     public void destroy() {
         if (mTabModelSelector != null) {
-            mTabModelSelector.getTabModelFilterProvider().removeTabModelFilterObserver(
-                    mTabModelObserver);
+            var filterProvider = mTabModelSelector.getTabModelFilterProvider();
+
+            filterProvider.removeTabModelFilterObserver(mTabModelObserver);
             mTabModelSelector.removeObserver(mTabModelSelectorObserver);
             if (mTabGroupModelFilterObserver != null) {
-                ((TabGroupModelFilter) mTabModelSelector.getTabModelFilterProvider()
-                                .getTabModelFilter(false))
+                ((TabGroupModelFilter) filterProvider.getTabModelFilter(false))
                         .removeTabGroupObserver(mTabGroupModelFilterObserver);
-                ((TabGroupModelFilter) mTabModelSelector.getTabModelFilterProvider()
-                                .getTabModelFilter(true))
+                ((TabGroupModelFilter) filterProvider.getTabModelFilter(true))
                         .removeTabGroupObserver(mTabGroupModelFilterObserver);
             }
         }

@@ -9,13 +9,7 @@
     Serializable,
     RuntimeEnabled=FileSystemAccess
 ] interface FileSystemDirectoryHandle : FileSystemHandle {
-    // TODO(https://crbug.com/1087157): This interface defines an async
-    // iterable, however that isn't supported yet by the bindings. So for now
-    // just explicitly define what an async iterable definition implies.
-    //async iterable<USVString, FileSystemHandle>;
-    [RaisesException] FileSystemDirectoryIterator entries();
-    [RaisesException] FileSystemDirectoryIterator keys();
-    [RaisesException] FileSystemDirectoryIterator values();
+    async iterable<USVString, FileSystemHandle>;
 
     [
         CallWith=ScriptState,

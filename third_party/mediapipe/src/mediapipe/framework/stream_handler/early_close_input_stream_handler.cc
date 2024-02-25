@@ -15,12 +15,11 @@
 
 #include <algorithm>
 
-#include "absl/log/check.h"
+#include "absl/log/absl_check.h"
 #include "absl/strings/substitute.h"
 #include "mediapipe/framework/calculator_framework.h"
 #include "mediapipe/framework/collection_item_id.h"
 #include "mediapipe/framework/input_stream_handler.h"
-#include "absl/log/absl_check.h"
 
 namespace mediapipe {
 

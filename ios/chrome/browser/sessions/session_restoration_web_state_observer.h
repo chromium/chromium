@@ -6,6 +6,7 @@
 #define IOS_CHROME_BROWSER_SESSIONS_SESSION_RESTORATION_WEB_STATE_OBSERVER_H_
 
 #include "base/functional/callback.h"
+#import "base/memory/raw_ptr.h"
 #include "ios/web/public/js_messaging/web_frames_manager.h"
 #include "ios/web/public/web_state.h"
 #include "ios/web/public/web_state_observer.h"
@@ -37,6 +38,7 @@ class SessionRestorationWebStateObserver final
   void clear_dirty() { is_dirty_ = false; }
 
   // web::WebStateObserver implementation.
+  void WasShown(web::WebState* web_state) final;
   void DidFinishNavigation(web::WebState* web_state,
                            web::NavigationContext* navigation_context) final;
   void WebStateRealized(web::WebState* web_state) final;
@@ -60,7 +62,7 @@ class SessionRestorationWebStateObserver final
   // was not yet marked as dirty, will invoke `callback_`.
   void MarkDirty();
 
-  web::WebState* const web_state_;
+  const raw_ptr<web::WebState> web_state_;
   WebStateDirtyCallback callback_;
 
   bool is_dirty_ = false;

@@ -22,40 +22,6 @@ namespace base {
 
 namespace {
 
-// This enum is used to back an UMA histogram, and should therefore be treated
-// as append-only.
-enum LoadLibraryResult {
-  // LoadLibraryExW API/flags are available and the call succeeds.
-  SUCCEED = 0,
-  // LoadLibraryExW API/flags are availabe to use but the call fails, then
-  // LoadLibraryW is used and succeeds.
-  FAIL_AND_SUCCEED,
-  // LoadLibraryExW API/flags are availabe to use but the call fails, then
-  // LoadLibraryW is used but fails as well.
-  FAIL_AND_FAIL,
-  // LoadLibraryExW API/flags are unavailabe to use, then LoadLibraryW is used
-  // and succeeds. Pre-Win10-only.
-  UNAVAILABLE_AND_SUCCEED_OBSOLETE,
-  // LoadLibraryExW API/flags are unavailabe to use, then LoadLibraryW is used
-  // but fails.  Pre-Win10-only.
-  UNAVAILABLE_AND_FAIL_OBSOLETE,
-  // Add new items before this one, always keep this one at the end.
-  END
-};
-
-// A helper method to log library loading result to UMA.
-void LogLibrarayLoadResultToUMA(LoadLibraryResult result) {
-  UMA_HISTOGRAM_ENUMERATION("LibraryLoader.LoadNativeLibraryWindows", result,
-                            LoadLibraryResult::END);
-}
-
-// A helper method to encode the library loading result to enum
-// LoadLibraryResult.
-LoadLibraryResult GetLoadLibraryResult(bool has_load_library_succeeded) {
-  return has_load_library_succeeded ? LoadLibraryResult::FAIL_AND_SUCCEED
-                                    : LoadLibraryResult::FAIL_AND_FAIL;
-}
-
 NativeLibrary LoadNativeLibraryHelper(const FilePath& library_path,
                                       NativeLibraryLoadError* error) {
   // LoadLibrary() opens the file off disk and acquires the LoaderLock, hence
@@ -70,9 +36,6 @@ NativeLibrary LoadNativeLibraryHelper(const FilePath& library_path,
 
   HMODULE module_handle = nullptr;
 
-  // This variable records the library loading result.
-  LoadLibraryResult load_library_result = LoadLibraryResult::SUCCEED;
-
   // LOAD_LIBRARY_SEARCH_DLL_LOAD_DIR flag is needed to search the library
   // directory as the library may have dependencies on DLLs in this
   // directory.
@@ -81,7 +44,6 @@ NativeLibrary LoadNativeLibraryHelper(const FilePath& library_path,
       LOAD_LIBRARY_SEARCH_DLL_LOAD_DIR | LOAD_LIBRARY_SEARCH_DEFAULT_DIRS);
   // If LoadLibraryExW succeeds, log this metric and return.
   if (module_handle) {
-    LogLibrarayLoadResultToUMA(load_library_result);
     return module_handle;
   }
   // GetLastError() needs to be called immediately after
@@ -114,9 +76,6 @@ NativeLibrary LoadNativeLibraryHelper(const FilePath& library_path,
   if (restore_directory)
     SetCurrentDirectory(current_directory);
 
-  // Get the library loading result and log it to UMA.
-  LogLibrarayLoadResultToUMA(GetLoadLibraryResult(!!module_handle));
-
   return module_handle;
 }
 
@@ -134,8 +93,6 @@ NativeLibrary LoadSystemLibraryHelper(const FilePath& library_path,
 
     if (!module && error)
       error->code = ::GetLastError();
-
-    LogLibrarayLoadResultToUMA(GetLoadLibraryResult(!!module));
   }
 
   return module;

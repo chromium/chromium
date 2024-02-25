@@ -3,6 +3,16 @@ desc: |-
   If <ph name="DEFAULT_SEARCH_PROVIDER_ENABLED_POLICY_NAME">DefaultSearchProviderEnabled</ph> is on, then setting <ph name="DEFAULT_SEARCH_PROVIDER_IMAGE_URL_POLICY_NAME">DefaultSearchProviderImageURL</ph> specifies the URL of the search engine used for image search. (If <ph name="DEFAULT_SEARCH_PROVIDER_IMAGE_URL_POST_PARMS_POLICY_NAME">DefaultSearchProviderImageURLPostParams</ph> is set, then image search requests use the POST method instead.)
 
         Leaving <ph name="DEFAULT_SEARCH_PROVIDER_IMAGE_URL_POLICY_NAME">DefaultSearchProviderImageURL</ph> unset means no image search is used.
+
+        If image search uses the GET method, then the URL must specify image
+        parameters using a valid combination of the following placeholders:
+        <ph name="IMAGE_IMAGE_URL">'{google:imageURL}'</ph>,
+        <ph name="IMAGE_ORIGINAL_HEIGHT">'{google:imageOriginalHeight}'</ph>,
+        <ph name="IMAGE_ORIGINAL_WIDTH">'{google:imageOriginalWidth}'</ph>,
+        <ph name="IMAGE_PROCESSED_IMAGE_DIMENSIONS">'{google:processedImageDimensions}'</ph>,
+        <ph name="IMAGE_SEARCH_SOURCE">'{google:imageSearchSource}'</ph>,
+        <ph name="IMAGE_THUMBNAIL">'{google:imageThumbnail}'</ph>,
+        <ph name="IMAGE_THUMBNAIL_BASE64">'{google:imageThumbnailBase64}'</ph>.
 example_value: https://search.my.company/searchbyimage/upload
 features:
   can_be_recommended: true

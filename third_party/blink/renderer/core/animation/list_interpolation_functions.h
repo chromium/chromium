@@ -25,7 +25,7 @@ class CORE_EXPORT ListInterpolationFunctions {
   template <typename CreateItemCallback>
   static InterpolationValue CreateList(wtf_size_t length, CreateItemCallback);
   static InterpolationValue CreateEmptyList() {
-    return InterpolationValue(std::make_unique<InterpolableList>(0));
+    return InterpolationValue(MakeGarbageCollected<InterpolableList>(0));
   }
 
   enum class LengthMatchingStrategy {
@@ -145,7 +145,7 @@ InterpolationValue ListInterpolationFunctions::CreateList(
     CreateItemCallback create_item) {
   if (length == 0)
     return CreateEmptyList();
-  auto interpolable_list = std::make_unique<InterpolableList>(length);
+  auto* interpolable_list = MakeGarbageCollected<InterpolableList>(length);
   Vector<scoped_refptr<const NonInterpolableValue>> non_interpolable_values(
       length);
   for (wtf_size_t i = 0; i < length; i++) {
@@ -156,7 +156,7 @@ InterpolationValue ListInterpolationFunctions::CreateList(
     non_interpolable_values[i] = std::move(item.non_interpolable_value);
   }
   return InterpolationValue(
-      std::move(interpolable_list),
+      interpolable_list,
       NonInterpolableList::Create(std::move(non_interpolable_values)));
 }
 

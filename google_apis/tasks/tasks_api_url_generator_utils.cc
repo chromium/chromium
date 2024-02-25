@@ -6,12 +6,12 @@
 
 #include <string>
 
+#include <optional>
 #include "base/check.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "google_apis/gaia/gaia_urls.h"
 #include "net/base/url_util.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
 namespace google_apis::tasks {
@@ -20,6 +20,7 @@ namespace {
 constexpr char kFieldsParameterName[] = "fields";
 constexpr char kMaxResultsParameterName[] = "maxResults";
 constexpr char kPageTokenParameterName[] = "pageToken";
+constexpr char kPreviousTaskParameterName[] = "previous";
 constexpr char kShowCompletedParameterName[] = "showCompleted";
 
 constexpr char kTaskListsListUrl[] = "tasks/v1/users/@me/lists";
@@ -28,7 +29,7 @@ constexpr char kTaskListsListRequestedFields[] =
 
 constexpr char kTasksListUrlTemplate[] = "tasks/v1/lists/$1/tasks";
 constexpr char kTasksListRequestedFields[] =
-    "kind,items(id,title,status,parent,position,due,links(type),notes),"
+    "kind,items(id,title,status,parent,position,due,links(type),notes,updated),"
     "nextPageToken";
 
 constexpr char kTaskUrlTemplate[] = "tasks/v1/lists/$1/tasks/$2";
@@ -39,7 +40,7 @@ GURL GetBaseUrl() {
 
 }  // namespace
 
-GURL GetListTaskListsUrl(absl::optional<int> max_results,
+GURL GetListTaskListsUrl(std::optional<int> max_results,
                          const std::string& page_token) {
   GURL url = GetBaseUrl().Resolve(kTaskListsListUrl);
   url = net::AppendOrReplaceQueryParameter(url, kFieldsParameterName,
@@ -58,7 +59,7 @@ GURL GetListTaskListsUrl(absl::optional<int> max_results,
 
 GURL GetListTasksUrl(const std::string& task_list_id,
                      bool include_completed,
-                     absl::optional<int> max_results,
+                     std::optional<int> max_results,
                      const std::string& page_token) {
   CHECK(!task_list_id.empty());
   GURL url = GetBaseUrl().Resolve(base::ReplaceStringPlaceholders(
@@ -85,6 +86,18 @@ GURL GetPatchTaskUrl(const std::string& task_list_id,
   CHECK(!task_id.empty());
   return GetBaseUrl().Resolve(base::ReplaceStringPlaceholders(
       kTaskUrlTemplate, {task_list_id, task_id}, nullptr));
+}
+
+GURL GetInsertTaskUrl(const std::string& task_list_id,
+                      const std::string& previous_task_id) {
+  CHECK(!task_list_id.empty());
+  GURL url = GetBaseUrl().Resolve(base::ReplaceStringPlaceholders(
+      kTasksListUrlTemplate, {task_list_id}, nullptr));
+  if (!previous_task_id.empty()) {
+    url = net::AppendOrReplaceQueryParameter(url, kPreviousTaskParameterName,
+                                             previous_task_id);
+  }
+  return url;
 }
 
 }  // namespace google_apis::tasks

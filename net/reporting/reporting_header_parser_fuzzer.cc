@@ -2,7 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "net/reporting/reporting_header_parser.h"
+
 #include <memory>
+#include <optional>
 #include <utility>
 
 #include "base/json/json_reader.h"
@@ -12,15 +15,12 @@
 #include "base/values.h"
 #include "net/base/network_anonymization_key.h"
 #include "net/reporting/reporting_cache.h"
-#include "net/reporting/reporting_header_parser.h"
 #include "net/reporting/reporting_policy.pb.h"
 #include "net/reporting/reporting_test_util.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
-#include "url/gurl.h"
-#include "url/origin.h"
-
 #include "testing/libfuzzer/proto/json_proto_converter.h"
 #include "third_party/libprotobuf-mutator/src/src/libfuzzer/libfuzzer_macro.h"
+#include "url/gurl.h"
+#include "url/origin.h"
 
 // Silence logging from the protobuf library.
 protobuf_mutator::protobuf::LogSilencer log_silencer;
@@ -34,7 +34,7 @@ void FuzzReportingHeaderParser(const std::string& data_json,
                                     policy);
   // Emulate what ReportingService::OnHeader does before calling
   // ReportingHeaderParser::ParseHeader.
-  absl::optional<base::Value> data_value =
+  std::optional<base::Value> data_value =
       base::JSONReader::Read("[" + data_json + "]");
   if (!data_value)
     return;

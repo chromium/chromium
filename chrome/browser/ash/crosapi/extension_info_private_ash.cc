@@ -4,10 +4,11 @@
 
 #include "chrome/browser/ash/crosapi/extension_info_private_ash.h"
 
+#include <string_view>
+
 #include "ash/components/arc/arc_util.h"
 #include "ash/constants/ash_pref_names.h"
 #include "ash/public/cpp/stylus_utils.h"
-#include "ash/public/cpp/tablet_mode.h"
 #include "base/memory/ptr_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/system/sys_info.h"
@@ -38,6 +39,7 @@
 #include "extensions/browser/extensions_browser_client.h"
 #include "extensions/common/error_utils.h"
 #include "third_party/cros_system_api/dbus/service_constants.h"
+#include "ui/display/screen.h"
 
 using ash::NetworkHandler;
 
@@ -258,7 +260,7 @@ std::unique_ptr<base::Value> GetValue(const std::string& property_name) {
   if (property_name == kPropertyHWID) {
     ash::system::StatisticsProvider* provider =
         ash::system::StatisticsProvider::GetInstance();
-    const absl::optional<base::StringPiece> hwid =
+    const std::optional<std::string_view> hwid =
         provider->GetMachineStatistic(ash::system::kHardwareClassKey);
     return std::make_unique<base::Value>(hwid.value_or(""));
   }
@@ -266,7 +268,7 @@ std::unique_ptr<base::Value> GetValue(const std::string& property_name) {
   if (property_name == kPropertyCustomizationID) {
     ash::system::StatisticsProvider* provider =
         ash::system::StatisticsProvider::GetInstance();
-    const absl::optional<base::StringPiece> customization_id =
+    const std::optional<std::string_view> customization_id =
         provider->GetMachineStatistic(ash::system::kCustomizationIdKey);
     return std::make_unique<base::Value>(customization_id.value_or(""));
   }
@@ -274,7 +276,7 @@ std::unique_ptr<base::Value> GetValue(const std::string& property_name) {
   if (property_name == kPropertyDeviceRequisition) {
     ash::system::StatisticsProvider* provider =
         ash::system::StatisticsProvider::GetInstance();
-    const absl::optional<base::StringPiece> device_requisition =
+    const std::optional<std::string_view> device_requisition =
         provider->GetMachineStatistic(ash::system::kOemDeviceRequisitionKey);
     return std::make_unique<base::Value>(device_requisition.value_or(""));
   }
@@ -461,9 +463,8 @@ void ExtensionInfoPrivateAsh::SetBool(const std::string& property_name,
 void ExtensionInfoPrivateAsh::IsTabletModeEnabled(
     IsTabletModeEnabledCallback callback) {
   base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-      FROM_HERE,
-      base::BindOnce(std::move(callback),
-                     std::move(ash::TabletMode::Get()->InTabletMode())));
+      FROM_HERE, base::BindOnce(std::move(callback),
+                                display::Screen::GetScreen()->InTabletMode()));
 }
 
 }  // namespace crosapi

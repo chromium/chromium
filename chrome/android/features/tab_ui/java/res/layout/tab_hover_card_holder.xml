@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+Copyright 2023 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<org.chromium.chrome.browser.compositor.overlays.strip.StripTabHoverCardView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/tab_hover_card_holder"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:visibility="gone"
+    android:elevation="@dimen/tab_hover_card_elevation"
+    android:background="@drawable/tab_hover_card_background">
+
+    <LinearLayout
+        android:id="@+id/content_view"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <org.chromium.chrome.browser.tasks.tab_management.TabThumbnailView
+            android:id="@+id/thumbnail"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/tab_hover_card_thumbnail_height"
+            android:visibility="gone"
+            android:gravity="center_horizontal"
+            android:scaleType="fitCenter"
+            android:importantForAccessibility="no"
+            app:cornerRadiusTopStart="@dimen/tab_hover_card_corner_radius"
+            app:cornerRadiusTopEnd="@dimen/tab_hover_card_corner_radius"
+            android:src="@color/thumbnail_placeholder_on_primary_bg"/>
+
+        <TextView
+            android:id="@+id/title"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/tab_hover_card_text_content_margin"
+            android:layout_marginStart="@dimen/tab_hover_card_text_content_margin"
+            android:layout_marginEnd="@dimen/tab_hover_card_text_content_margin"
+            android:ellipsize="end"
+            android:maxLines="2"
+            android:textDirection="locale"
+            android:textAppearance="@style/TextAppearance.TextMediumThick.Primary"/>
+
+        <TextView
+            android:id="@+id/url"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/tab_hover_card_url_top_margin"
+            android:layout_marginStart="@dimen/tab_hover_card_text_content_margin"
+            android:layout_marginEnd="@dimen/tab_hover_card_text_content_margin"
+            android:layout_marginBottom="@dimen/tab_hover_card_text_content_margin"
+            android:ellipsize="end"
+            android:maxLines="1"
+            android:textDirection="locale"
+            android:textAppearance="@style/TextAppearance.TextSmall.Secondary"/>
+    </LinearLayout>
+</org.chromium.chrome.browser.compositor.overlays.strip.StripTabHoverCardView>

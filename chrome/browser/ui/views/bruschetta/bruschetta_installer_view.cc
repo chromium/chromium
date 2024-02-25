@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/views/bruschetta/bruschetta_installer_view.h"
 
 #include <memory>
+#include <optional>
 
 #include "ash/public/cpp/new_window_delegate.h"
 #include "ash/public/cpp/style/dark_light_mode_controller.h"
@@ -20,7 +21,6 @@
 #include "chrome/grit/generated_resources.h"
 #include "components/strings/grit/components_strings.h"
 #include "content/public/browser/browser_thread.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_header_macros.h"
@@ -33,6 +33,8 @@
 #include "ui/views/controls/link.h"
 #include "ui/views/controls/progress_bar.h"
 #include "ui/views/layout/box_layout.h"
+#include "ui/views/style/typography.h"
+#include "ui/views/style/typography_provider.h"
 #include "ui/views/view_class_properties.h"
 
 namespace {
@@ -73,10 +75,10 @@ BruschettaInstallerView* BruschettaInstallerView::GetActiveViewForTesting() {
 // We need a separate class so that we can alert screen readers appropriately
 // when the text changes.
 class BruschettaInstallerView::TitleLabel : public views::Label {
+  METADATA_HEADER(TitleLabel, views::Label)
+
  public:
   using Label::Label;
-
-  METADATA_HEADER(TitleLabel);
 
   TitleLabel() = default;
   ~TitleLabel() override = default;
@@ -87,7 +89,7 @@ class BruschettaInstallerView::TitleLabel : public views::Label {
   }
 };
 
-BEGIN_METADATA(BruschettaInstallerView, TitleLabel, views::Label)
+BEGIN_METADATA(BruschettaInstallerView, TitleLabel)
 END_METADATA
 
 BruschettaInstallerView::BruschettaInstallerView(Profile* profile,
@@ -95,9 +97,10 @@ BruschettaInstallerView::BruschettaInstallerView(Profile* profile,
     : profile_(profile), observation_(this), guest_id_(guest_id) {
   // Layout constants from the spec used for the plugin vm installer.
   constexpr auto kDialogInsets = gfx::Insets::TLBR(60, 64, 0, 64);
-  const int kPrimaryMessageHeight = views::style::GetLineHeight(
+  const auto& typography_provider = views::TypographyProvider::Get();
+  const int kPrimaryMessageHeight = typography_provider.GetLineHeight(
       CONTEXT_HEADLINE, views::style::STYLE_PRIMARY);
-  const int kSecondaryMessageHeight = views::style::GetLineHeight(
+  const int kSecondaryMessageHeight = typography_provider.GetLineHeight(
       views::style::CONTEXT_DIALOG_BODY_TEXT, views::style::STYLE_SECONDARY);
   constexpr int kProgressBarHeight = 5;
   constexpr int kProgressBarTopMargin = 32;
@@ -160,7 +163,8 @@ BruschettaInstallerView::BruschettaInstallerView(Profile* profile,
       learn_more_url_));
   secondary_message_container_view->AddChildView(link_label_.get());
 
-  progress_bar_ = new views::ProgressBar(kProgressBarHeight);
+  progress_bar_ = new views::ProgressBar();
+  progress_bar_->SetPreferredHeight(kProgressBarHeight);
   progress_bar_->SetProperty(
       views::kMarginsKey,
       gfx::Insets::TLBR(kProgressBarTopMargin - kProgressBarHeight, 0, 0, 0));
@@ -215,7 +219,7 @@ bool BruschettaInstallerView::Accept() {
          state_ == State::kFailedCleanup);
 
   if (state_ == State::kConfirmInstall) {
-    absl::optional<std::string> selected_config;
+    std::optional<std::string> selected_config;
     for (const auto& it : radio_buttons_) {
       if (it.second->GetChecked()) {
         selected_config = it.first;
@@ -480,7 +484,7 @@ void BruschettaInstallerView::UninstallBruschettaFinished(bool success) {
   }
 }
 
-BEGIN_METADATA(BruschettaInstallerView, views::DialogDelegateView)
+BEGIN_METADATA(BruschettaInstallerView)
 ADD_READONLY_PROPERTY_METADATA(std::u16string, PrimaryMessage)
 ADD_READONLY_PROPERTY_METADATA(std::u16string, SecondaryMessage)
 ADD_READONLY_PROPERTY_METADATA(int, CurrentDialogButtons)

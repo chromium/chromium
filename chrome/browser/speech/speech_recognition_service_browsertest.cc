@@ -94,7 +94,7 @@ class TestStreamFactory : public audio::FakeStreamFactory {
     base::SyncSocket socket1, socket2;
     base::SyncSocket::CreatePair(&socket1, &socket2);
     std::move(created_callback)
-        .Run({absl::in_place,
+        .Run({std::in_place,
               base::ReadOnlySharedMemoryRegion::Create(kShMemSize).region,
               mojo::PlatformHandle(socket1.Take())},
              false /*initially muted*/, base::UnguessableToken::Create());
@@ -117,7 +117,7 @@ class TestStreamFactory : public audio::FakeStreamFactory {
   mojo::Remote<media::mojom::AudioInputStreamClient> client_;
   mojo::Receiver<media::mojom::AudioInputStream> stream_receiver_;
   std::string device_id_;
-  absl::optional<media::AudioParameters> params_;
+  std::optional<media::AudioParameters> params_;
 
  private:
   void OnTimer() {
@@ -201,7 +201,8 @@ class SpeechRecognitionServiceTest
 };
 
 void SpeechRecognitionServiceTest::SetUp() {
-  ASSERT_TRUE(base::PathService::Get(base::DIR_SOURCE_ROOT, &test_data_dir_));
+  ASSERT_TRUE(
+      base::PathService::Get(base::DIR_SRC_TEST_DATA_ROOT, &test_data_dir_));
   InProcessBrowserTest::SetUp();
 }
 

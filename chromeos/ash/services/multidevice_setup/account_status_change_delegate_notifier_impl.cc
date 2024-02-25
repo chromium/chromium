@@ -159,7 +159,7 @@ void AccountStatusChangeDelegateNotifierImpl::OnHostStatusChange(
 
 void AccountStatusChangeDelegateNotifierImpl::OnOobeCompleted() {
   pref_service_->SetInt64(kOobeSetupFlowTimestampPrefName,
-                          clock_->Now().ToJavaTime());
+                          clock_->Now().InMillisecondsSinceUnixEpoch());
   if (delegate())
     delegate()->OnNoLongerNewUser();
 }
@@ -175,7 +175,7 @@ void AccountStatusChangeDelegateNotifierImpl::
   }
   if (IsInPhoneHubNotificationExperimentGroup()) {
     pref_service_->SetInt64(kMultiDeviceLastSessionStartTime,
-                            clock_->Now().ToJavaTime());
+                            clock_->Now().InMillisecondsSinceUnixEpoch());
     CheckForNewUserPotentialHostExistsEvent(
         host_status_provider_->GetHostWithStatus());
   }
@@ -198,12 +198,12 @@ void AccountStatusChangeDelegateNotifierImpl::CheckForMultiDeviceEvents(
   }
 
   // Track and update host status.
-  absl::optional<mojom::HostStatus> host_status_before_update =
+  std::optional<mojom::HostStatus> host_status_before_update =
       host_status_from_most_recent_update_;
   host_status_from_most_recent_update_ = host_status_with_device.host_status();
 
   // Track and update verified host info.
-  absl::optional<std::string> verified_host_device_id_before_update =
+  std::optional<std::string> verified_host_device_id_before_update =
       verified_host_device_id_from_most_recent_update_;
 
   // Check if a host has been verified.
@@ -271,8 +271,9 @@ void AccountStatusChangeDelegateNotifierImpl::
   if (IsInPhoneHubNotificationExperimentGroup()) {
     if (pref_service_->GetInt64(kMultiDeviceLastSessionStartTime) !=
             kTimestampNotSet &&
-        clock_->Now() - base::Time::FromJavaTime(pref_service_->GetInt64(
-                            kMultiDeviceLastSessionStartTime)) >
+        clock_->Now() -
+                base::Time::FromMillisecondsSinceUnixEpoch(
+                    pref_service_->GetInt64(kMultiDeviceLastSessionStartTime)) >
             features::kMultiDeviceSetupNotificationTimeLimit.Get()) {
       return;
     }
@@ -281,13 +282,13 @@ void AccountStatusChangeDelegateNotifierImpl::
   if (delegate()) {
     delegate()->OnPotentialHostExistsForNewUser();
     pref_service_->SetInt64(kNewUserPotentialHostExistsPrefName,
-                            clock_->Now().ToJavaTime());
+                            clock_->Now().InMillisecondsSinceUnixEpoch());
   }
 }
 
 void AccountStatusChangeDelegateNotifierImpl::CheckForNoLongerNewUserEvent(
     const HostStatusProvider::HostStatusWithDevice& host_status_with_device,
-    const absl::optional<mojom::HostStatus> host_status_before_update) {
+    const std::optional<mojom::HostStatus> host_status_before_update) {
   // We are only looking for the case when the host status switched from
   // kEligibleHostExistsButNoHostSet to something else.
   if (host_status_with_device.host_status() ==
@@ -310,7 +311,7 @@ void AccountStatusChangeDelegateNotifierImpl::CheckForNoLongerNewUserEvent(
 void AccountStatusChangeDelegateNotifierImpl::
     CheckForExistingUserHostSwitchedEvent(
         const HostStatusProvider::HostStatusWithDevice& host_status_with_device,
-        const absl::optional<std::string>&
+        const std::optional<std::string>&
             verified_host_device_id_before_update) {
   // The host switched event requires both a pre-update and a post-update
   // verified host.
@@ -328,13 +329,13 @@ void AccountStatusChangeDelegateNotifierImpl::
   delegate()->OnConnectedHostSwitchedForExistingUser(
       host_status_with_device.host_device()->name());
   pref_service_->SetInt64(kExistingUserHostSwitchedPrefName,
-                          clock_->Now().ToJavaTime());
+                          clock_->Now().InMillisecondsSinceUnixEpoch());
 }
 
 void AccountStatusChangeDelegateNotifierImpl::
     CheckForExistingUserChromebookAddedEvent(
         const HostStatusProvider::HostStatusWithDevice& host_status_with_device,
-        const absl::optional<std::string>&
+        const std::optional<std::string>&
             verified_host_device_id_before_update) {
   // The Chromebook added event requires that a verified host was found by the
   // update, i.e. there was no verified host before the host status update but
@@ -351,16 +352,16 @@ void AccountStatusChangeDelegateNotifierImpl::
   delegate()->OnNewChromebookAddedForExistingUser(
       host_status_with_device.host_device()->name());
   pref_service_->SetInt64(kExistingUserChromebookAddedPrefName,
-                          clock_->Now().ToJavaTime());
+                          clock_->Now().InMillisecondsSinceUnixEpoch());
 }
 
-absl::optional<std::string> AccountStatusChangeDelegateNotifierImpl::
+std::optional<std::string> AccountStatusChangeDelegateNotifierImpl::
     LoadHostDeviceIdFromEndOfPreviousSession() {
   std::string verified_host_device_id_from_most_recent_update =
       pref_service_->GetString(
           kVerifiedHostDeviceIdFromMostRecentHostStatusUpdatePrefName);
   if (verified_host_device_id_from_most_recent_update.empty())
-    return absl::nullopt;
+    return std::nullopt;
   return verified_host_device_id_from_most_recent_update;
 }
 

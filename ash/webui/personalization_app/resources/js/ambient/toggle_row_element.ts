@@ -6,10 +6,10 @@
  * @fileoverview This component displays a description text and a toggle button.
  */
 
-import '../../css/common.css.js';
-import 'chrome://resources/cr_elements/cr_toggle/cr_toggle.js';
+import 'chrome://resources/ash/common/personalization/common.css.js';
+import 'chrome://resources/ash/common/cr_elements/cr_toggle/cr_toggle.js';
 
-import {CrToggleElement} from 'chrome://resources/cr_elements/cr_toggle/cr_toggle.js';
+import {CrToggleElement} from 'chrome://resources/ash/common/cr_elements/cr_toggle/cr_toggle.js';
 
 import {isPersonalizationJellyEnabled} from '../load_time_booleans.js';
 import {WithPersonalizationStore} from '../personalization_store.js';
@@ -18,11 +18,11 @@ import {setAmbientModeEnabled} from './ambient_controller.js';
 import {getAmbientProvider} from './ambient_interface_provider.js';
 import {getTemplate} from './toggle_row_element.html.js';
 
-export interface ToggleRow {
+export interface ToggleRowElement {
   $: {toggle: CrToggleElement};
 }
 
-export class ToggleRow extends WithPersonalizationStore {
+export class ToggleRowElement extends WithPersonalizationStore {
   static get is() {
     return 'toggle-row';
   }
@@ -53,7 +53,7 @@ export class ToggleRow extends WithPersonalizationStore {
 
   override connectedCallback() {
     super.connectedCallback();
-    this.watch<ToggleRow['ambientModeEnabled_']>(
+    this.watch<ToggleRowElement['ambientModeEnabled_']>(
         'ambientModeEnabled_', state => state.ambient.ambientModeEnabled);
     this.updateFromStore();
   }
@@ -77,8 +77,8 @@ export class ToggleRow extends WithPersonalizationStore {
 
 declare global {
   interface HTMLElementTagNameMap {
-    'toggle-row': ToggleRow;
+    'toggle-row': ToggleRowElement;
   }
 }
 
-customElements.define(ToggleRow.is, ToggleRow);
+customElements.define(ToggleRowElement.is, ToggleRowElement);

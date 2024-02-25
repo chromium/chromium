@@ -3,139 +3,70 @@
 # found in the LICENSE file.
 
 import("//chrome/common/features.gni")
-import("//third_party/closure_compiler/compile_js.gni")
-import("//tools/grit/grit_rule.gni")
-import("//tools/grit/preprocess_if_expr.gni")
-import("//tools/polymer/html_to_wrapper.gni")
-import("//ui/webui/resources/tools/generate_grd.gni")
+import("//ui/webui/resources/tools/build_webui.gni")
 
-preprocess_folder = "preprocessed"
-preprocess_manifest = "preprocessed_manifest.json"
-preprocess_gen_manifest = "preprocessed_gen_manifest.json"
+build_webui("build") {
+  static_files = [ "network.html" ]
 
-generate_grd("build_grd") {
+  # Files holding a Polymer element definition AND have an equivalent .html file.
+  web_component_files = [
+    "network_logs_ui.ts",
+    "network_metrics_ui.ts",
+    "network_state_ui.ts",
+    "network_ui.ts",
+  ]
+
+  non_web_component_files = [ "network_ui_browser_proxy.ts" ]
+
+  ts_definitions = [
+    "//chrome/browser/resources/chromeos/network_ui/third_party/uPlot.iife.min.d.ts",
+    "//tools/typescript/definitions/chrome_send.d.ts",
+    "//tools/typescript/definitions/networking_private.d.ts",
+    "//tools/typescript/definitions/runtime.d.ts",
+    "//tools/typescript/definitions/tabs.d.ts",
+  ]
+
+  ts_deps = [
+    "//ash/webui/common/resources:build_ts",
+    "//ash/webui/common/resources/cr_elements:build_ts",
+    "//third_party/polymer/v3_0:library",
+    "//ui/webui/resources/cr_components/color_change_listener:build_ts",
+    "//ui/webui/resources/js:build_ts",
+    "//ui/webui/resources/mojo:build_ts",
+  ]
+
+  ts_extra_deps = [
+    ":copy_uplot",
+    ":copy_uplot_dts",
+  ]
+
   grd_prefix = "network_ui"
-  out_grd = "$target_gen_dir/${grd_prefix}_resources.grd"
-  input_files = [ "network.html" ]
-  input_files_base_dir = rebase_path(".", "//")
 
-  deps = [
-    ":preprocess",
-    ":preprocess_generated",
-  ]
-  manifest_files = [
-    "$target_gen_dir/$preprocess_manifest",
-    "$target_gen_dir/$preprocess_gen_manifest",
-  ]
+  extra_grdp_deps = [ ":build_uplot_grdp" ]
+  extra_grdp_files = [ "$target_gen_dir/uplot_resources.grdp" ]
 }
 
-preprocess_if_expr("preprocess") {
-  out_folder = "$target_gen_dir/$preprocess_folder"
-  out_manifest = "$target_gen_dir/$preprocess_manifest"
-  in_files = [
-    "network_logs_ui.js",
-    "network_metrics_ui.js",
-    "network_state_ui.js",
-    "network_ui_browser_proxy.js",
-    "network_ui.js",
+generate_grd("build_uplot_grdp") {
+  grd_prefix = "network_ui"
+  out_grd = "$target_gen_dir/uplot_resources.grdp"
+  input_files = [
     "third_party/uPlot.iife.min.js",
     "third_party/uPlot.min.css",
   ]
+  input_files_base_dir =
+      rebase_path("$target_gen_dir/preprocessed", root_build_dir)
+  deps = [ ":copy_uplot" ]
 }
 
-preprocess_if_expr("preprocess_generated") {
-  deps = [ ":html_wrapper_files" ]
-  in_folder = target_gen_dir
-  out_folder = "$target_gen_dir/$preprocess_folder"
-  out_manifest = "$target_gen_dir/$preprocess_gen_manifest"
-  in_files = [
-    "network_logs_ui.html.js",
-    "network_state_ui.html.js",
-    "network_ui.html.js",
-    "network_metrics_ui.html.js",
+copy("copy_uplot") {
+  sources = [
+    "//chrome/browser/resources/chromeos/network_ui/third_party/uPlot.iife.min.js",
+    "//chrome/browser/resources/chromeos/network_ui/third_party/uPlot.min.css",
   ]
+  outputs = [ "$target_gen_dir/preprocessed/third_party/{{source_file_part}}" ]
 }
 
-grit("resources") {
-  defines = chrome_grit_defines
-
-  # These arguments are needed since the grd is generated at build time.
-  enable_input_discovery_for_gn_analyze = false
-  source = "$target_gen_dir/network_ui_resources.grd"
-  deps = [ ":build_grd" ]
-
-  outputs = [
-    "grit/network_ui_resources.h",
-    "grit/network_ui_resources_map.cc",
-    "grit/network_ui_resources_map.h",
-    "network_ui_resources.pak",
-  ]
-  output_dir = "$root_gen_dir/chrome"
-}
-
-js_type_check("closure_compile") {
-  is_polymer3 = true
-  closure_flags = default_closure_args + mojom_js_args
-  deps = [
-    ":network_logs_ui",
-    ":network_metrics_ui",
-    ":network_state_ui",
-    ":network_ui",
-    ":network_ui_browser_proxy",
-  ]
-}
-
-js_library("network_ui") {
-  deps = [
-    ":network_ui_browser_proxy",
-    "//ash/webui/common/resources:i18n_behavior",
-    "//ash/webui/common/resources:load_time_data.m",
-    "//ash/webui/common/resources/network:onc_mojo",
-    "//ash/webui/common/resources/network_health:network_diagnostics",
-  ]
-}
-
-js_library("network_logs_ui") {
-  deps = [
-    ":network_ui_browser_proxy",
-    "//ash/webui/common/resources:i18n_behavior",
-  ]
-}
-
-js_library("network_metrics_ui") {
-  deps = [
-    ":network_ui_browser_proxy",
-    "//ash/webui/common/resources:i18n_behavior",
-  ]
-}
-
-js_library("network_state_ui") {
-  deps = [
-    ":network_ui_browser_proxy",
-    "//ash/webui/common/resources/network:mojo_interface_provider",
-    "//ash/webui/common/resources/network:network_icon",
-    "//ash/webui/common/resources/network:network_list",
-    "//ash/webui/common/resources/network:onc_mojo",
-    "//chromeos/services/network_config/public/mojom:mojom_webui_js",
-  ]
-  externs_list = chrome_extension_public_externs +
-                 [ "$externs_path/networking_private.js" ]
-}
-
-js_library("network_ui_browser_proxy") {
-  deps = [
-    "//ash/webui/common/resources:cr.m",
-    "//ash/webui/common/resources:cr_deprecated",
-  ]
-  externs_list = [ "$externs_path/chrome_send.js" ]
-}
-
-html_to_wrapper("html_wrapper_files") {
-  in_files = [
-    "network_logs_ui.html",
-    "network_state_ui.html",
-    "network_ui.html",
-    "network_metrics_ui.html",
-  ]
-  use_js = true
+copy("copy_uplot_dts") {
+  sources = [ "//chrome/browser/resources/chromeos/network_ui/third_party/uPlot.iife.min.d.ts" ]
+  outputs = [ "$target_gen_dir/preprocessed/third_party/{{source_file_part}}" ]
 }

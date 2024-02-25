@@ -6,13 +6,12 @@ package org.chromium.android_webview.gfx;
 
 import android.graphics.Canvas;
 
-import org.chromium.android_webview.common.Lifetime;
-import org.chromium.base.annotations.JNINamespace;
-import org.chromium.base.annotations.NativeMethods;
+import org.jni_zero.JNINamespace;
+import org.jni_zero.NativeMethods;
 
-/**
- * Implementation of draw_fn.h.
- */
+import org.chromium.android_webview.common.Lifetime;
+
+/** Implementation of draw_fn.h. */
 @JNINamespace("android_webview")
 @Lifetime.WebView
 public class AwDrawFnImpl implements AwFunctor {
@@ -21,7 +20,9 @@ public class AwDrawFnImpl implements AwFunctor {
     private final int mHandle;
 
     /** Interface for inserting functor into canvas */
-    public interface DrawFnAccess { void drawWebViewFunctor(Canvas canvas, int functor); }
+    public interface DrawFnAccess {
+        void drawWebViewFunctor(Canvas canvas, int functor);
+    }
 
     public AwDrawFnImpl(DrawFnAccess access) {
         mAccess = access;
@@ -44,8 +45,8 @@ public class AwDrawFnImpl implements AwFunctor {
     @Override
     public long getNativeCompositorFrameConsumer() {
         assert mNativeAwDrawFnImpl != 0;
-        return AwDrawFnImplJni.get().getCompositorFrameConsumer(
-                mNativeAwDrawFnImpl, AwDrawFnImpl.this);
+        return AwDrawFnImplJni.get()
+                .getCompositorFrameConsumer(mNativeAwDrawFnImpl, AwDrawFnImpl.this);
     }
 
     @Override
@@ -61,9 +62,13 @@ public class AwDrawFnImpl implements AwFunctor {
     @NativeMethods
     interface Natives {
         int getFunctorHandle(long nativeAwDrawFnImpl, AwDrawFnImpl caller);
+
         long getCompositorFrameConsumer(long nativeAwDrawFnImpl, AwDrawFnImpl caller);
+
         void releaseHandle(long nativeAwDrawFnImpl, AwDrawFnImpl caller);
+
         void setDrawFnFunctionTable(long functionTablePointer);
+
         long create();
     }
 }

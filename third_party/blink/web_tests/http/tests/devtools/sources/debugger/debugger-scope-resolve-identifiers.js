@@ -5,9 +5,10 @@
 import {TestRunner} from 'test_runner';
 import {SourcesTestRunner} from 'sources_test_runner';
 
+import * as SourceMapScopesModule from 'devtools/models/source_map_scopes/source_map_scopes.js';
+
 (async function() {
   TestRunner.addResult(`Tests resolving variable names via source maps.\n`);
-  await TestRunner.loadLegacyModule('sources');
   await TestRunner.showPanel('sources');
   await TestRunner.addScriptTag('resources/resolve-identifiers.js');
 
@@ -15,7 +16,7 @@ import {SourcesTestRunner} from 'sources_test_runner';
 
   function onSourceMapLoaded() {
     SourcesTestRunner.startDebuggerTest(() => SourcesTestRunner.runTestFunctionAndWaitUntilPaused());
-    TestRunner.addSniffer(Sources.SourceMapNamesResolver, '_scopeResolvedForTest', onAllScopesResolved, true);
+    SourceMapScopesModule.NamesResolver.setScopeResolvedForTest(onAllScopesResolved);
   }
 
   function onAllScopesResolved() {

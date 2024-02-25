@@ -43,9 +43,9 @@ class ChromeVoxHintDetector {
 
   bool chromevox_hint_given_ = false;
 
-  raw_ptr<const base::TickClock, ExperimentalAsh> tick_clock_;
+  raw_ptr<const base::TickClock> tick_clock_;
 
-  raw_ptr<Observer, ExperimentalAsh> observer_;
+  raw_ptr<Observer> observer_;
 
   std::unique_ptr<IdleDetector> idle_detector_;
 

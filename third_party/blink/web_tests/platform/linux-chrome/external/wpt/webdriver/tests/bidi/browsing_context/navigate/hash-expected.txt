@@ -1,0 +1,12 @@
+This is a wdspec test.
+[FAIL] test_navigate_in_the_same_document[without hash to with hash]
+  AssertionError
+[FAIL] test_navigate_in_the_same_document[with different hashes]
+  AssertionError
+[FAIL] test_navigate_in_the_same_document[with identical hashes]
+  AssertionError
+[FAIL] test_navigate_in_iframe
+  AssertionError
+[FAIL] test_navigate_unique_navigation_id
+  AssertionError
+Harness: the test ran to completion.

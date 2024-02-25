@@ -4,6 +4,7 @@
 
 #include "chromeos/components/onc/onc_utils.h"
 
+#include <optional>
 #include <string>
 
 #include "base/check.h"
@@ -23,7 +24,6 @@
 #include "chromeos/components/onc/variable_expander.h"
 #include "components/onc/onc_constants.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace chromeos::onc {
 
@@ -31,7 +31,7 @@ TEST(ONCDecrypterTest, BrokenEncryptionIterations) {
   base::Value::Dict encrypted_onc =
       test_utils::ReadTestDictionary("broken-encrypted-iterations.onc");
 
-  absl::optional<base::Value::Dict> decrypted_onc =
+  std::optional<base::Value::Dict> decrypted_onc =
       Decrypt("test0000", encrypted_onc);
 
   EXPECT_FALSE(decrypted_onc.has_value());
@@ -41,7 +41,7 @@ TEST(ONCDecrypterTest, BrokenEncryptionZeroIterations) {
   base::Value::Dict encrypted_onc =
       test_utils::ReadTestDictionary("broken-encrypted-zero-iterations.onc");
 
-  absl::optional<base::Value::Dict> decrypted_onc =
+  std::optional<base::Value::Dict> decrypted_onc =
       Decrypt("test0000", encrypted_onc);
 
   EXPECT_FALSE(decrypted_onc.has_value());
@@ -54,7 +54,7 @@ TEST(ONCDecrypterTest, LoadEncryptedOnc) {
       test_utils::ReadTestDictionary("decrypted.onc");
 
   std::string error;
-  absl::optional<base::Value::Dict> actual_decrypted_onc =
+  std::optional<base::Value::Dict> actual_decrypted_onc =
       Decrypt("test0000", encrypted_onc);
 
   EXPECT_TRUE(test_utils::Equals(&expected_decrypted_onc,
@@ -173,6 +173,78 @@ TEST(ONCUtils, SetHiddenSSIDField_WithValueSetTrue) {
   EXPECT_TRUE(wifi_fields->Find(::onc::wifi::kHiddenSSID)->GetBool());
 }
 
+TEST(ONCUtils, ParseAndValidateOncForImport_ApnProvided) {
+  const auto onc_blob = test_utils::ReadTestData("valid_cellular_with_apn.onc");
+  base::Value::List network_configs;
+  base::Value::Dict global_network_config;
+  base::Value::List certificates;
+
+  ASSERT_TRUE(ParseAndValidateOncForImport(
+      onc_blob, ::onc::ONCSource::ONC_SOURCE_DEVICE_POLICY, std::string(),
+      &network_configs, &global_network_config, &certificates));
+
+  base::Value::Dict expected;
+  expected.Set(::onc::cellular_apn::kAccessPointName, "test-apn");
+  expected.Set(::onc::cellular_apn::kAuthentication, "");
+  expected.Set(::onc::cellular_apn::kUsername, "test-username");
+  expected.Set(::onc::cellular_apn::kPassword, "test-password");
+
+  const auto* cellular_apn =
+      network_configs[0].GetDict().FindByDottedPath("Cellular.APN");
+  EXPECT_THAT(cellular_apn->GetDict(),
+              base::test::DictionaryHasValues(std::move(expected)));
+}
+
+TEST(ONCUtils, ParseAndValidateOncForImport_NoApnProvided) {
+  const auto onc_blob = test_utils::ReadTestData("valid_cellular_no_apn.onc");
+  base::Value::List network_configs;
+  base::Value::Dict global_network_config;
+  base::Value::List certificates;
+
+  ASSERT_TRUE(ParseAndValidateOncForImport(
+      onc_blob, ::onc::ONCSource::ONC_SOURCE_DEVICE_POLICY, std::string(),
+      &network_configs, &global_network_config, &certificates));
+
+  const auto* cellular_apn =
+      network_configs[0].GetDict().FindByDottedPath("Cellular.APN");
+  ASSERT_NE(nullptr, cellular_apn);
+  ASSERT_NE(nullptr, cellular_apn->GetDict().Find(::onc::kRecommended));
+
+  base::Value::List recommended =
+      base::Value::List()
+          .Append(::onc::cellular_apn::kAccessPointName)
+          .Append(::onc::cellular_apn::kAttach)
+          .Append(::onc::cellular_apn::kAuthentication)
+          .Append(::onc::cellular_apn::kUsername)
+          .Append(::onc::cellular_apn::kPassword);
+
+  base::Value::Dict expected;
+  expected.Set(::onc::kRecommended, std::move(recommended));
+  EXPECT_THAT(cellular_apn->GetDict(),
+              base::test::DictionaryHasValues(std::move(expected)));
+}
+
+TEST(ONCUtils, ParseAndValidateOncForImport_CustomApnListRecommendedByDefault) {
+  const auto onc_blob =
+      test_utils::ReadTestData("valid_cellular_no_recommended.onc");
+  base::Value::List network_configs;
+  base::Value::Dict global_network_config;
+  base::Value::List certificates;
+
+  ASSERT_TRUE(ParseAndValidateOncForImport(
+      onc_blob, ::onc::ONCSource::ONC_SOURCE_DEVICE_POLICY, std::string(),
+      &network_configs, &global_network_config, &certificates));
+
+  const auto* recommended =
+      network_configs[0].GetDict().FindByDottedPath("Cellular.Recommended");
+  ASSERT_NE(nullptr, recommended);
+
+  base::Value::List expected_recommended =
+      base::Value::List().Append(::onc::cellular::kCustomAPNList);
+
+  EXPECT_EQ(expected_recommended, *recommended);
+}
+
 TEST(ONCUtils, ParseAndValidateOncForImport_WithAdvancedOpenVPNSettings) {
   constexpr auto* auth_key =
       "-----BEGIN OpenVPN Static key V1-----\n"
@@ -228,10 +300,9 @@ using ONCUtilsMaskCredentialsTest =
     testing::TestWithParam<MaskCredentialsTestCase>;
 
 TEST_P(ONCUtilsMaskCredentialsTest, Test) {
-  absl::optional<base::Value> onc_value =
-      base::JSONReader::Read(GetParam().onc);
+  std::optional<base::Value> onc_value = base::JSONReader::Read(GetParam().onc);
   ASSERT_TRUE(onc_value) << "Could not parse " << GetParam().onc;
-  absl::optional<base::Value> expected_after_masking_value =
+  std::optional<base::Value> expected_after_masking_value =
       base::JSONReader::Read(GetParam().expected_after_masking);
   ASSERT_TRUE(expected_after_masking_value)
       << "Could not parse " << GetParam().expected_after_masking;

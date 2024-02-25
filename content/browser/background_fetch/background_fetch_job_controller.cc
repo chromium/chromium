@@ -97,7 +97,7 @@ void BackgroundFetchJobController::InitializeRequestStatus(
     std::vector<scoped_refptr<BackgroundFetchRequestInfo>>
         active_fetch_requests,
     bool start_paused,
-    absl::optional<net::IsolationInfo> isolation_info) {
+    std::optional<net::IsolationInfo> isolation_info) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
   // Don't allow double initialization.

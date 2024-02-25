@@ -5,7 +5,8 @@
 #ifndef NET_CERT_CT_SIGNED_CERTIFICATE_TIMESTAMP_LOG_PARAM_H_
 #define NET_CERT_CT_SIGNED_CERTIFICATE_TIMESTAMP_LOG_PARAM_H_
 
-#include "base/strings/string_piece.h"
+#include <string_view>
+
 #include "base/values.h"
 #include "net/cert/signed_certificate_timestamp_and_status.h"
 
@@ -23,9 +24,9 @@ base::Value::Dict NetLogSignedCertificateTimestampParams(
 // See the documentation for SIGNED_CERTIFICATE_TIMESTAMPS_RECEIVED
 // in net/log/net_log_event_type_list.h
 base::Value::Dict NetLogRawSignedCertificateTimestampParams(
-    base::StringPiece embedded_scts,
-    base::StringPiece sct_list_from_ocsp,
-    base::StringPiece sct_list_from_tls_extension);
+    std::string_view embedded_scts,
+    std::string_view sct_list_from_ocsp,
+    std::string_view sct_list_from_tls_extension);
 
 }  // namespace net
 

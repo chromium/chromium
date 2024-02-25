@@ -86,6 +86,8 @@ enum class DecisionFailureReason : int32_t {
   LIVE_STATE_HAS_NOTIFICATIONS_PERMISSION,
   // The tab is a standalone desktop PWA window.
   LIVE_WEB_APP,
+  // The tab is displaying content in picture-in-picture.
+  LIVE_PICTURE_IN_PICTURE,
   // This must remain last.
   MAX,
 };

@@ -1061,10 +1061,29 @@ error::Error DoConvertRGBAToYUVAMailboxesINTERNAL(
     GLenum subsampling,
     const volatile GLbyte* mailboxes_in);
 error::Error DoConvertYUVAMailboxesToRGBINTERNAL(
+    GLint src_x,
+    GLint src_y,
+    GLsizei width,
+    GLsizei height,
     GLenum yuv_color_space,
     GLenum plane_config,
     GLenum subsampling,
     const volatile GLbyte* mailboxes_in);
+error::Error DoConvertYUVAMailboxesToTextureINTERNAL(
+    GLuint texture,
+    GLenum target,
+    GLuint internal_format,
+    GLenum type,
+    GLint src_x,
+    GLint src_y,
+    GLsizei width,
+    GLsizei height,
+    GLboolean flip_y,
+    GLenum yuv_color_space,
+    GLenum plane_config,
+    GLenum subsampling,
+    const volatile GLbyte* mailboxes_in);
+
 error::Error DoCopySharedImageINTERNAL(GLint xoffset,
                                        GLint yoffset,
                                        GLint x,
@@ -1136,4 +1155,9 @@ error::Error DoGetFramebufferPixelLocalStorageParameterivANGLE(GLint plane,
                                                                GLsizei* length,
                                                                GLint* params);
 error::Error DoProvokingVertexANGLE(GLenum provokeMode);
+error::Error DoClipControlEXT(GLenum origin, GLenum depth);
+error::Error DoPolygonModeANGLE(GLenum face, GLenum mode);
+error::Error DoPolygonOffsetClampEXT(GLfloat factor,
+                                     GLfloat units,
+                                     GLfloat clamp);
 #endif  // GPU_COMMAND_BUFFER_SERVICE_GLES2_CMD_DECODER_PASSTHROUGH_DOER_PROTOTYPES_H_

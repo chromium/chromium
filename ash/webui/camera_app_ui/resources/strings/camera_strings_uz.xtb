@@ -5,7 +5,6 @@
 <translation id="1076394037877376434"><ph name="PAGE_NUMBER" />-sahifani oʻchirish</translation>
 <translation id="1113173431709655881">Kamera rejimi</translation>
 <translation id="1153190633558910465">Kataksiz</translation>
-<translation id="1175958423215084756">Havola aniqlandi. <ph name="HOSTNAME" /></translation>
 <translation id="1197694886744716213"><ph name="PAGE_NUMBER" />-sahifa oʻchirib tashlandi</translation>
 <translation id="1258009455399840361">Soat mili yoʻnalishida 90 darajaga burish</translation>
 <translation id="1417314334557041815"><ph name="INDEX" />-sahifani tahrirlash</translation>
@@ -47,6 +46,7 @@
 <translation id="3067436040345934772">Oʻngga suring</translation>
 <translation id="3081586908890909590">Video yozib olish rejimi</translation>
 <translation id="313467653172006084">30 kadr/s</translation>
+<translation id="3158534262962737808">“<ph name="WIFINAME" />” tarmogʻiga ulanish</translation>
 <translation id="3227137524299004712">Mikrofon</translation>
 <translation id="3240426699337459095">Nusxalandi</translation>
 <translation id="3354465018370944241">Rasm sozlamalari</translation>
@@ -60,14 +60,12 @@
 <translation id="3642192109456033823">Video qayta iashlanmoqda…</translation>
 <translation id="3789724198583203151">Tasvirni soat miliga qarshi yoʻnalishda 90 darajaga burish</translation>
 <translation id="3810838688059735925">Video</translation>
-<translation id="3892148308691398805">Matnni nusxalash</translation>
 <translation id="4060608699153044055">Bu qurilma xotirasida joy oz qolgani uchun yozib olish imkonsiz. Yozib olishni boshlash uchun qurilmangizda boʻsh joy oching.</translation>
 <translation id="4061162772429051350"><ph name="MAGAPIXELS_AMOUNT" /> MP</translation>
 <translation id="4118525110028899586">Pauza qilish</translation>
 <translation id="4121305183798804752">Hujjat aniqlandi</translation>
 <translation id="414641094616694804">Bu kamera piksellar sigʻimi oʻzgarmaydi</translation>
 <translation id="4176463684765177261">O‘chirib qo‘yilgan</translation>
-<translation id="4269820728363426813">Havola manzilini nusxalash</translation>
 <translation id="428234092390943511">Sahifa eskizi</translation>
 <translation id="4349714250734879769">Chrome yordamida freymlarni masshtablash</translation>
 <translation id="4383571725254449280">Unumdorlik jurnalini chop etish</translation>
@@ -81,14 +79,15 @@
 <translation id="4705093842003735294">Asl hajmida</translation>
 <translation id="4864143361253542638">Skanerlangan sahifalar roʻyxati</translation>
 <translation id="4890010094662541459">3 x 3</translation>
+<translation id="4892746741161549733">Havola manzilini nusxalash: <ph name="URL" /></translation>
 <translation id="491895758387112773">Multistrim video yozib olinishi</translation>
 <translation id="495170559598752135">Harakatlar</translation>
 <translation id="4984613436295737187">Quad HD (1440p)</translation>
 <translation id="5034763830503483128">Rasm tomonlar nisbati</translation>
 <translation id="5057360777601936059">Kamera hozirda ishlamayapti.
         Kamera bexato ulanganini tekshiring.</translation>
+<translation id="5157591164390831335">URL aniqlandi.</translation>
 <translation id="5163387177077603948">Oʻngga surish</translation>
-<translation id="5219374179772385066">Taymlaps rejimi chiqdi!</translation>
 <translation id="5235304959032763950">16:9</translation>
 <translation id="5266635337630551423">Hujjatning yuqori chap burchagi</translation>
 <translation id="5317780077021120954">Saqlash</translation>
@@ -114,6 +113,7 @@
 <translation id="6353688143752491039">Kamera ilovasi haqidagi fikr-mulohazangiz uchun rahmat.
 
 Xabaringiz rasm yoki video sifati haqida boʻlsa, namunaviy rasm yoki videoni biriktirish orqali muammo haqida xabar qiling. (Masalan, rasm juda xira yoki obyekt fokuslanmagan)</translation>
+<translation id="6519884562954018934"><ph name="WIFINAME" /> tarmogʻiga ulanish</translation>
 <translation id="6527303717912515753">Ulashish</translation>
 <translation id="6617916774429601017">Barcha piksellar sigʻimini koʻrsatish</translation>
 <translation id="6631515515009660915">Koʻzgu tugmasi oʻchiq</translation>
@@ -133,6 +133,7 @@ Xabaringiz rasm yoki video sifati haqida boʻlsa, namunaviy rasm yoki videoni bi
 <translation id="7450541714075000668">Matn nusxalandi</translation>
 <translation id="7488619942230388918">GIF video yozib olish</translation>
 <translation id="7557677699350329807">Keyingi kameraga almashtirish</translation>
+<translation id="7562584071994185503">Matnni nusxalash: <ph name="TEXT" /></translation>
 <translation id="7607002721634913082">Vaqtincha to‘xtatildi</translation>
 <translation id="7608223098072244877">4 ga 4</translation>
 <translation id="761421184377987513">Pastga va chapga surish</translation>
@@ -155,10 +156,12 @@ Xabaringiz rasm yoki video sifati haqida boʻlsa, namunaviy rasm yoki videoni bi
 <translation id="8346544573713510785">HAL kamerasi yordamida freymlarni masshtablash</translation>
 <translation id="8425673304802773841">Pastga qiyalang</translation>
 <translation id="8428213095426709021">Sozlamalar</translation>
+<translation id="8609951387004618906">Ochish: <ph name="URL" /></translation>
 <translation id="8629662593426079630">360p</translation>
 <translation id="8711011893539266636">Mikrofonni ovozsiz qilish. Ovozsiz qilindi</translation>
 <translation id="8730621377337864115">Tayyor</translation>
 <translation id="8732462232047530626">Meta-maʼlumotlarga razm solish</translation>
+<translation id="874854738381978209">Wi-Fi tarmoq aniqlandi.</translation>
 <translation id="8815966864175525708">Portret rejimida suratga olish</translation>
 <translation id="8828441885228359828">Davom ettirish</translation>
 <translation id="8870695351537079478">Yozib olish boshlanmadi</translation>

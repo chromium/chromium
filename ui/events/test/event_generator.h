@@ -6,14 +6,15 @@
 #define UI_EVENTS_TEST_EVENT_GENERATOR_H_
 
 #include <memory>
+#include <optional>
 #include <vector>
 
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
 #include "build/chromeos_buildflags.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/events/event.h"
+#include "ui/events/event_constants.h"
 #include "ui/events/event_dispatcher.h"
 #include "ui/events/keycodes/keyboard_codes.h"
 #include "ui/gfx/geometry/point.h"
@@ -186,6 +187,16 @@ class EventGenerator {
   void set_flags(int flags) { flags_ = flags; }
   int flags() const { return flags_; }
 
+  // Resets the Mouse Event device ID.
+  void set_mouse_source_device_id(
+      int source_device_id = ui::ED_UNKNOWN_DEVICE) {
+    mouse_source_device_id_ = source_device_id;
+  }
+
+  // Generates a button press / release event.
+  void PressButton(int flag);
+  void ReleaseButton(int flag);
+
   // Generates a left button press event.
   void PressLeftButton();
 
@@ -290,14 +301,14 @@ class EventGenerator {
   // Generates a touch press event. If |touch_location_in_screen| is not null,
   // the touch press event will happen at |touch_location_in_screen|. Otherwise,
   // it will happen at the current event location |current_screen_location_|.
-  void PressTouch(const absl::optional<gfx::Point>& touch_location_in_screen =
-                      absl::nullopt);
+  void PressTouch(
+      const std::optional<gfx::Point>& touch_location_in_screen = std::nullopt);
 
   // Generates a touch press event with |touch_id|. See PressTouch() event for
   // the description of |touch_location_in_screen| parameter.
-  void PressTouchId(int touch_id,
-                    const absl::optional<gfx::Point>& touch_location_in_screen =
-                        absl::nullopt);
+  void PressTouchId(
+      int touch_id,
+      const std::optional<gfx::Point>& touch_location_in_screen = std::nullopt);
 
   // Generates a ET_TOUCH_MOVED event to |point|.
   void MoveTouch(const gfx::Point& point);
@@ -470,6 +481,32 @@ class EventGenerator {
                           int flags = EF_NONE,
                           int source_device_id = ED_UNKNOWN_DEVICE);
 
+  // Emulates pressing modidifer keys from given flags.
+  void PressModifierKeys(int flags, int source_device_id = ED_UNKNOWN_DEVICE);
+
+  // Emulates releasing modifier keys from given flags.
+  void ReleaseModifierKeys(int flags, int source_device_id = ED_UNKNOWN_DEVICE);
+
+  // Emulates press key with modifiers. If modifier key `flags` are specified,
+  // corresponding key press events are first sent, then key press event for
+  // the given `key` will be sent.
+  void PressKeyAndModifierKeys(KeyboardCode key,
+                               int flags,
+                               int source_device_id = ED_UNKNOWN_DEVICE);
+  // Emulates release key with modifiers. If modifier key `flags` are specified,
+  // corresponding key release events are sent after the key release event for
+  // the given `key`.
+  void ReleaseKeyAndModifierKeys(KeyboardCode key,
+                                 int flags,
+                                 int source_device_id = ED_UNKNOWN_DEVICE);
+
+  // Convenient alias to call PressKeyAndModifierKeys() followed by
+  // ReleaseKeyAndModifierKeys() to emulate user key event sequence.
+  void PressAndReleaseKeyAndModifierKeys(
+      KeyboardCode key,
+      int flags,
+      int source_device_id = ED_UNKNOWN_DEVICE);
+
   // Dispatch the event to the WindowEventDispatcher.
   void Dispatch(Event* event);
 
@@ -495,8 +532,6 @@ class EventGenerator {
 
   void SetCurrentScreenLocation(const gfx::Point& point);
   void UpdateCurrentDispatcher(const gfx::Point& point);
-  void PressButton(int flag);
-  void ReleaseButton(int flag);
 
   gfx::Point GetLocationInCurrentRoot() const;
   gfx::Point CenterOfWindow(const EventTarget* window) const;
@@ -505,6 +540,7 @@ class EventGenerator {
   gfx::Point current_screen_location_;
   raw_ptr<EventTarget, AcrossTasksDanglingUntriaged> current_target_ = nullptr;
   int flags_ = 0;
+  int mouse_source_device_id_ = ui::ED_UNKNOWN_DEVICE;
   bool grab_ = false;
 
   ui::PointerDetails touch_pointer_details_;

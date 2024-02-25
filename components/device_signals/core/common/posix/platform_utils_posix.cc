@@ -98,16 +98,16 @@ bool ResolvePath(const base::FilePath& file_path,
   return true;
 }
 
-absl::optional<base::FilePath> GetProcessExePath(base::ProcessId pid) {
+std::optional<base::FilePath> GetProcessExePath(base::ProcessId pid) {
   auto file_path = base::GetProcessExecutablePath(pid);
   if (file_path.empty()) {
-    return absl::nullopt;
+    return std::nullopt;
   }
   return file_path;
 }
 
-absl::optional<CrowdStrikeSignals> GetCrowdStrikeSignals() {
-  return absl::nullopt;
+std::optional<CrowdStrikeSignals> GetCrowdStrikeSignals() {
+  return std::nullopt;
 }
 
 }  // namespace device_signals

@@ -49,7 +49,7 @@ const int FlossDBusManager::kInvalidAdapter = -1;
 static bool g_using_floss_dbus_manager_for_testing = false;
 
 // Wait 2s for clients to become ready before timing out.
-constexpr int kClientReadyTimeoutMs = 2000;
+const int FlossDBusManager::kClientReadyTimeoutMs = 2000;
 
 FlossDBusManager::ClientInitializer::ClientInitializer(
     base::OnceClosure on_ready,
@@ -66,6 +66,7 @@ FlossDBusManager::FlossDBusManager(dbus::Bus* bus, bool use_stubs) : bus_(bus) {
     active_adapter_ = 0;
     object_manager_supported_ = true;
     object_manager_support_known_ = true;
+    mgmt_client_present_ = true;
     InitializeAdapterClients(active_adapter_, base::DoNothing());
     return;
   }
@@ -90,6 +91,174 @@ FlossDBusManager::FlossDBusManager(dbus::Bus* bus, bool use_stubs) : bus_(bus) {
 
 FlossDBusManager::~FlossDBusManager() = default;
 
+dbus::PropertySet* FlossDBusManager::CreateProperties(
+    dbus::ObjectProxy* object_proxy,
+    const dbus::ObjectPath& object_path,
+    const std::string& interface_name) {
+  return new dbus::PropertySet(object_proxy, interface_name, base::DoNothing());
+}
+
+// Some interface is available.
+void FlossDBusManager::ObjectAdded(const dbus::ObjectPath& object_path,
+                                   const std::string& interface_name) {
+  DVLOG(1) << __func__ << ": " << object_path.value() << ", " << interface_name;
+
+  if (interface_name == kAdapterInterface) {
+    if (adapter_interface_present_) {
+      DVLOG(1) << kAdapterInterface
+               << " has already been added. Not initializing the client!";
+      return;
+    }
+    adapter_interface_present_ = true;
+    InitAdapterClientsIfReady();
+  } else if (interface_name == kAdapterLoggingInterface) {
+    if (adapter_logging_interface_present_) {
+      DVLOG(1) << kAdapterLoggingInterface
+               << " has already been added. Not initializing the client!";
+      return;
+    }
+    adapter_logging_interface_present_ = true;
+    InitAdapterLoggingClientsIfReady();
+#if BUILDFLAG(IS_CHROMEOS)
+  } else if (interface_name == kAdminInterface) {
+    if (admin_interface_present_) {
+      DVLOG(1) << kAdminInterface
+               << " has already been added. Not initializing the client!";
+      return;
+    }
+    admin_interface_present_ = true;
+    InitAdminClientsIfReady();
+#endif  // BUILDFLAG(IS_CHROMEOS)
+  } else if (interface_name == kBatteryManagerInterface) {
+    if (battery_interface_present_) {
+      DVLOG(1) << kBatteryManagerInterface
+               << " has already been added. Not initializing the client!";
+      return;
+    }
+    battery_interface_present_ = true;
+    InitBatteryClientsIfReady();
+  } else if (interface_name == kBluetoothTelephonyInterface) {
+    if (telephony_interface_present_) {
+      DVLOG(1) << kBluetoothTelephonyInterface
+               << " has already been added. Not initializing the client!";
+      return;
+    }
+    telephony_interface_present_ = true;
+    InitTelephonyClientsIfReady();
+  } else if (interface_name == kGattInterface) {
+    if (gatt_interface_present_) {
+      DVLOG(1) << kGattInterface
+               << " has already been added. Not initializing the client!";
+      return;
+    }
+    gatt_interface_present_ = true;
+    InitGattClientsIfReady();
+  } else if (interface_name == kSocketManagerInterface) {
+    if (socket_manager_interface_present_) {
+      DVLOG(1) << kSocketManagerInterface
+               << " has already been added. Not initializing the client!";
+      return;
+    }
+    socket_manager_interface_present_ = true;
+    InitSocketManagerClientsIfReady();
+  } else {
+    LOG(WARNING) << object_path.value() << ": Unknown interface "
+                 << interface_name;
+  }
+}
+
+// Some interface is gone (no longer present).
+void FlossDBusManager::ObjectRemoved(const dbus::ObjectPath& object_path,
+                                     const std::string& interface_name) {
+  DVLOG(1) << __func__ << ": " << object_path.value() << ", " << interface_name;
+
+  if (interface_name == kAdapterInterface) {
+    adapter_interface_present_ = false;
+  } else if (interface_name == kAdapterLoggingInterface) {
+    adapter_logging_interface_present_ = false;
+#if BUILDFLAG(IS_CHROMEOS)
+  } else if (interface_name.compare(std::string(kAdminInterface)) == 0) {
+    admin_interface_present_ = false;
+#endif  // BUILDFLAG(IS_CHROMEOS)
+  } else if (interface_name == kBatteryManagerInterface) {
+    battery_interface_present_ = false;
+  } else if (interface_name == kBluetoothTelephonyInterface) {
+    telephony_interface_present_ = false;
+  } else if (interface_name == kGattInterface) {
+    gatt_interface_present_ = false;
+  } else if (interface_name == kSocketManagerInterface) {
+    socket_manager_interface_present_ = false;
+  } else {
+    LOG(WARNING) << object_path.value() << ": Unknown interface "
+                 << interface_name;
+  }
+}
+
+void FlossDBusManager::InitAdapterClientsIfReady() {
+  if (adapter_interface_present_ && HasActiveAdapter() && client_on_ready_ &&
+      !client_on_ready_->Finished()) {
+    GetAdapterClient()->Init(GetSystemBus(), kAdapterService, active_adapter_,
+                             version_, client_on_ready_->CreateReadyClosure());
+  }
+}
+
+void FlossDBusManager::InitAdapterLoggingClientsIfReady() {
+  if (adapter_logging_interface_present_ && HasActiveAdapter() &&
+      client_on_ready_ && !client_on_ready_->Finished()) {
+    GetLoggingClient()->Init(GetSystemBus(), kAdapterService, active_adapter_,
+                             version_, client_on_ready_->CreateReadyClosure());
+  }
+}
+
+#if BUILDFLAG(IS_CHROMEOS)
+void FlossDBusManager::InitAdminClientsIfReady() {
+  if (admin_interface_present_ && HasActiveAdapter() && client_on_ready_ &&
+      !client_on_ready_->Finished()) {
+    GetAdminClient()->Init(GetSystemBus(), kAdapterService, active_adapter_,
+                           version_, client_on_ready_->CreateReadyClosure());
+  }
+}
+#endif  // BUILDFLAG(IS_CHROMEOS)
+
+void FlossDBusManager::InitBatteryClientsIfReady() {
+  if (battery_interface_present_ && HasActiveAdapter() && client_on_ready_) {
+    GetBatteryManagerClient()->Init(GetSystemBus(), kAdapterService,
+                                    active_adapter_, version_,
+                                    client_on_ready_->CreateReadyClosure());
+  }
+}
+
+void FlossDBusManager::InitTelephonyClientsIfReady() {
+  if (telephony_interface_present_ && HasActiveAdapter() && client_on_ready_ &&
+      !client_on_ready_->Finished()) {
+    GetBluetoothTelephonyClient()->Init(GetSystemBus(), kAdapterService,
+                                        active_adapter_, version_,
+                                        client_on_ready_->CreateReadyClosure());
+  }
+}
+
+void FlossDBusManager::InitGattClientsIfReady() {
+  if (gatt_interface_present_ && HasActiveAdapter() && client_on_ready_ &&
+      !client_on_ready_->Finished()) {
+    GetGattManagerClient()->Init(GetSystemBus(), kAdapterService,
+                                 active_adapter_, version_,
+                                 client_on_ready_->CreateReadyClosure());
+    GetLEScanClient()->Init(GetSystemBus(), kAdapterService, active_adapter_,
+                            version_, client_on_ready_->CreateReadyClosure());
+    GetAdvertiserClient()->Init(GetSystemBus(), kAdapterService,
+                                active_adapter_, version_,
+                                client_on_ready_->CreateReadyClosure());
+  }
+}
+
+void FlossDBusManager::InitSocketManagerClientsIfReady() {
+  if (socket_manager_interface_present_ && HasActiveAdapter() &&
+      client_on_ready_ && !client_on_ready_->Finished()) {
+    GetSocketManager()->Init(GetSystemBus(), kAdapterService, active_adapter_,
+                             version_, client_on_ready_->CreateReadyClosure());
+  }
+}
+
 // static
 void FlossDBusManager::Initialize(dbus::Bus* system_bus) {
   // If we initialize FlossDBusManager twice we may also be shutting it down
@@ -105,6 +274,19 @@ void FlossDBusManager::InitializeFake() {
   CreateGlobalInstance(nullptr, /*use_stubs=*/true);
 }
 
+void FlossDBusManager::SetAllClientsPresentForTesting() {
+  mgmt_client_present_ = true;
+  adapter_interface_present_ = true;
+  adapter_logging_interface_present_ = true;
+#if BUILDFLAG(IS_CHROMEOS)
+  admin_interface_present_ = true;
+#endif  // BUILDFLAG(IS_CHROMEOS)
+  battery_interface_present_ = true;
+  telephony_interface_present_ = true;
+  gatt_interface_present_ = true;
+  socket_manager_interface_present_ = true;
+}
+
 // static
 std::unique_ptr<FlossDBusManagerSetter>
 floss::FlossDBusManager::GetSetterForTesting() {
@@ -112,6 +294,8 @@ floss::FlossDBusManager::GetSetterForTesting() {
     g_using_floss_dbus_manager_for_testing = true;
     CreateGlobalInstance(nullptr, /*use_stubs=*/true);
   }
+
+  FlossDBusManager::Get()->SetAllClientsPresentForTesting();
 
   return base::WrapUnique(new FlossDBusManagerSetter());
 }
@@ -166,13 +350,23 @@ void FlossDBusManager::OnObjectManagerSupported(dbus::Response* response) {
 
   // Initialize the manager client (which doesn't depend on any specific
   // adapter being present)
-  client_bundle_->manager_client()->Init(GetSystemBus(), kManagerInterface,
-                                         kInvalidAdapter, base::DoNothing());
+  client_bundle_->manager_client()->Init(
+      GetSystemBus(), kManagerInterface, kInvalidAdapter, base::Version(),
+      base::BindOnce(&FlossDBusManager::OnManagerClientInitComplete,
+                     weak_ptr_factory_.GetWeakPtr()));
 
-  object_manager_support_known_ = true;
-  if (object_manager_support_known_callback_) {
-    std::move(object_manager_support_known_callback_).Run();
-  }
+  // Register object manager for Manager.
+  object_manager_ =
+      GetSystemBus()->GetObjectManager(kAdapterService, dbus::ObjectPath("/"));
+  object_manager_->RegisterInterface(kAdapterInterface, this);
+  object_manager_->RegisterInterface(kAdapterLoggingInterface, this);
+#if BUILDFLAG(IS_CHROMEOS)
+  object_manager_->RegisterInterface(kAdminInterface, this);
+#endif  // BUILDFLAG(IS_CHROMEOS)
+  object_manager_->RegisterInterface(kBatteryManagerInterface, this);
+  object_manager_->RegisterInterface(kBluetoothTelephonyInterface, this);
+  object_manager_->RegisterInterface(kGattInterface, this);
+  object_manager_->RegisterInterface(kSocketManagerInterface, this);
 }
 
 void FlossDBusManager::OnObjectManagerNotSupported(
@@ -181,6 +375,16 @@ void FlossDBusManager::OnObjectManagerNotSupported(
   object_manager_supported_ = false;
 
   // Don't initialize any clients since they need ObjectManager.
+
+  object_manager_support_known_ = true;
+  if (object_manager_support_known_callback_) {
+    std::move(object_manager_support_known_callback_).Run();
+  }
+}
+
+void FlossDBusManager::OnManagerClientInitComplete() {
+  mgmt_client_present_ = client_bundle_->manager_client()->IsInitialized();
+  DVLOG(1) << "Floss manager client initialized: " << mgmt_client_present_;
 
   object_manager_support_known_ = true;
   if (object_manager_support_known_callback_) {
@@ -251,15 +455,15 @@ FlossAdminClient* FlossDBusManager::GetAdminClient() {
 
 void FlossDBusManager::InitializeAdapterClients(int adapter,
                                                 base::OnceClosure on_ready) {
-  // Clean up active adapter clients
-  if (active_adapter_ != kInvalidAdapter) {
-    client_bundle_->ResetAdapterClients();
-  }
-
   // Initializing already current adapter.
   if (active_adapter_ == adapter) {
     std::move(on_ready).Run();
     return;
+  }
+
+  // Clean up active adapter clients
+  if (active_adapter_ != kInvalidAdapter) {
+    client_bundle_->ResetAdapterClients();
   }
 
   // Set current adapter. If it's kInvalidAdapter, this doesn't need to do any
@@ -269,6 +473,9 @@ void FlossDBusManager::InitializeAdapterClients(int adapter,
     std::move(on_ready).Run();
     return;
   }
+
+  // Set current Floss API version.
+  version_ = client_bundle_->manager_client()->GetFlossApiVersion();
 
   // Initialize callback readiness. If clients aren't ready within a certain
   // period, we will time out and send the ready signal anyway.
@@ -281,36 +488,16 @@ void FlossDBusManager::InitializeAdapterClients(int adapter,
 #endif
       base::Milliseconds(kClientReadyTimeoutMs));
 
-  // Initialize any adapter clients.
-  client_bundle_->adapter_client()->Init(
-      GetSystemBus(), kAdapterService, active_adapter_,
-      client_on_ready_->CreateReadyClosure());
-  client_bundle_->gatt_manager_client()->Init(
-      GetSystemBus(), kAdapterService, active_adapter_,
-      client_on_ready_->CreateReadyClosure());
-  client_bundle_->socket_manager()->Init(
-      GetSystemBus(), kAdapterService, active_adapter_,
-      client_on_ready_->CreateReadyClosure());
-  client_bundle_->lescan_client()->Init(GetSystemBus(), kAdapterService,
-                                        active_adapter_,
-                                        client_on_ready_->CreateReadyClosure());
-  client_bundle_->advertiser_client()->Init(
-      GetSystemBus(), kAdapterService, active_adapter_,
-      client_on_ready_->CreateReadyClosure());
-  client_bundle_->battery_manager_client()->Init(
-      GetSystemBus(), kAdapterService, active_adapter_,
-      client_on_ready_->CreateReadyClosure());
-  client_bundle_->bluetooth_telephony_client()->Init(
-      GetSystemBus(), kAdapterService, active_adapter_,
-      client_on_ready_->CreateReadyClosure());
-  client_bundle_->logging_client()->Init(
-      GetSystemBus(), kAdapterService, active_adapter_,
-      client_on_ready_->CreateReadyClosure());
+  // Adapter is set. Try to init clients if the interface present.
+  InitAdapterClientsIfReady();
+  InitAdapterLoggingClientsIfReady();
 #if BUILDFLAG(IS_CHROMEOS)
-  client_bundle_->admin_client()->Init(GetSystemBus(), kAdapterService,
-                                       active_adapter_,
-                                       client_on_ready_->CreateReadyClosure());
+  InitAdminClientsIfReady();
 #endif  // BUILDFLAG(IS_CHROMEOS)
+  InitBatteryClientsIfReady();
+  InitTelephonyClientsIfReady();
+  InitGattClientsIfReady();
+  InitSocketManagerClientsIfReady();
 }
 
 void FlossDBusManagerSetter::SetFlossManagerClient(
@@ -373,7 +560,6 @@ FlossClientBundle::FlossClientBundle(bool use_stubs) : use_stubs_(use_stubs) {
 #if defined(USE_REAL_DBUS_CLIENTS)
   if (use_stubs) {
     LOG(FATAL) << "Fakes are unavailable if USE_REAL_DBUS_CLIENTS is defined.";
-    return;
   }
 #endif  // defined(USE_REAL_DBUS_CLIENTS)
   if (!use_stubs) {
@@ -391,7 +577,6 @@ void FlossClientBundle::ResetAdapterClients() {
 #if defined(USE_REAL_DBUS_CLIENTS)
   if (use_stubs_) {
     LOG(FATAL) << "Fakes are unavailable if USE_REAL_DBUS_CLIENTS is defined.";
-    return;
   }
 #endif  // defined(USE_REAL_DBUS_CLIENTS)
   if (!use_stubs_) {

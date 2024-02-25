@@ -1,4 +1,4 @@
-// Copyright 2022 The Chromium Authors. All rights reserved.
+// Copyright 2022 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -29,14 +29,32 @@ void StatusReduction(CopyOrMoveHookDelegate::StatusCallback callback,
   std::move(callback).Run(base::File::FILE_OK);
 }
 
-base::RepeatingCallback<void(std::pair<int, base::File::Error>)> GetBarrier(
+void ErrorReduction(CopyOrMoveHookDelegate::ErrorCallback callback,
+                    std::vector<CopyOrMoveHookDelegate::ErrorAction> actions) {
+  for (CopyOrMoveHookDelegate::ErrorAction action : actions) {
+    if (action != CopyOrMoveHookDelegate::ErrorAction::kDefault) {
+      std::move(callback).Run(action);
+      return;
+    }
+  }
+  std::move(callback).Run(CopyOrMoveHookDelegate::ErrorAction::kDefault);
+}
+
+base::RepeatingCallback<void(std::pair<int, base::File::Error>)> CreateBarrier(
     size_t size,
     CopyOrMoveHookDelegate::StatusCallback callback) {
   return base::BarrierCallback<std::pair<int, base::File::Error>>(
       size, base::BindOnce(&StatusReduction, std::move(callback)));
 }
 
-CopyOrMoveHookDelegate::StatusCallback GetStatusCallback(
+base::RepeatingCallback<void(CopyOrMoveHookDelegate::ErrorAction)>
+CreateErrorBarrier(size_t size,
+                   CopyOrMoveHookDelegate::ErrorCallback callback) {
+  return base::BarrierCallback<CopyOrMoveHookDelegate::ErrorAction>(
+      size, base::BindOnce(&ErrorReduction, std::move(callback)));
+}
+
+CopyOrMoveHookDelegate::StatusCallback CreateStatusCallback(
     base::RepeatingCallback<void(std::pair<int, base::File::Error>)> barrier,
     size_t index) {
   return base::BindOnce(
@@ -46,6 +64,18 @@ CopyOrMoveHookDelegate::StatusCallback GetStatusCallback(
         std::move(barrier).Run(std::make_pair(index, status));
       },
       barrier, index);
+}
+
+CopyOrMoveHookDelegate::ErrorCallback CreateErrorCallback(
+    base::RepeatingCallback<void(CopyOrMoveHookDelegate::ErrorAction)>
+        barrier) {
+  return base::BindOnce(
+      [](base::RepeatingCallback<void(CopyOrMoveHookDelegate::ErrorAction)>
+             barrier,
+         CopyOrMoveHookDelegate::ErrorAction action) {
+        std::move(barrier).Run(action);
+      },
+      barrier);
 }
 }  // namespace
 
@@ -74,10 +104,10 @@ void CopyOrMoveHookDelegateComposite::OnBeginProcessFile(
     const FileSystemURL& destination_url,
     StatusCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  auto barrier = GetBarrier(delegates_.size(), std::move(callback));
+  auto barrier = CreateBarrier(delegates_.size(), std::move(callback));
   for (size_t i = 0; i < delegates_.size(); ++i) {
     delegates_[i]->OnBeginProcessFile(source_url, destination_url,
-                                      GetStatusCallback(barrier, i));
+                                      CreateStatusCallback(barrier, i));
   }
 }
 
@@ -86,10 +116,10 @@ void CopyOrMoveHookDelegateComposite::OnBeginProcessDirectory(
     const FileSystemURL& destination_url,
     StatusCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  auto barrier = GetBarrier(delegates_.size(), std::move(callback));
+  auto barrier = CreateBarrier(delegates_.size(), std::move(callback));
   for (size_t i = 0; i < delegates_.size(); ++i) {
     delegates_[i]->OnBeginProcessDirectory(source_url, destination_url,
-                                           GetStatusCallback(barrier, i));
+                                           CreateStatusCallback(barrier, i));
   }
 }
 
@@ -106,10 +136,13 @@ void CopyOrMoveHookDelegateComposite::OnProgress(
 void CopyOrMoveHookDelegateComposite::OnError(
     const FileSystemURL& source_url,
     const FileSystemURL& destination_url,
-    base::File::Error error) {
+    base::File::Error error,
+    ErrorCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  auto barrier = CreateErrorBarrier(delegates_.size(), std::move(callback));
   for (std::unique_ptr<CopyOrMoveHookDelegate>& delegate : delegates_) {
-    delegate->OnError(source_url, destination_url, error);
+    delegate->OnError(source_url, destination_url, error,
+                      CreateErrorCallback(barrier));
   }
 }
 

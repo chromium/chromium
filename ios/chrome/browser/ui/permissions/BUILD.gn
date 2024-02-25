@@ -10,8 +10,12 @@ source_set("permissions") {
     "permissions_delegate.h",
   ]
   deps = [
+    ":constants",
     ":permission_info",
     "//base:base",
+    "//components/content_settings/core/browser",
+    "//components/content_settings/core/common",
+    "//components/page_info/core",
     "//ios/chrome/browser/ui/infobars/modals",
     "//ios/web/public/permissions",
   ]
@@ -44,7 +48,7 @@ source_set("eg_app_support+eg2") {
     "//ios/chrome/app:app_internal",
     "//ios/chrome/browser/shared/model/browser",
     "//ios/chrome/browser/shared/model/web_state_list",
-    "//ios/chrome/browser/tabs:tabs",
+    "//ios/chrome/browser/tabs/model",
     "//ios/chrome/test/app:test_support",
     "//ios/testing/earl_grey:eg_app_support+eg2",
     "//ios/web/public",
@@ -72,8 +76,8 @@ source_set("eg2_tests") {
     "//base/test:test_support",
     "//components/supervised_user/core/common:features",
     "//ios/chrome/app/strings",
-    "//ios/chrome/browser/overlays/public/web_content_area:constants",
-    "//ios/chrome/browser/signin:fake_system_identity",
+    "//ios/chrome/browser/overlays/model/public/web_content_area:constants",
+    "//ios/chrome/browser/signin/model:fake_system_identity",
     "//ios/chrome/browser/ui/authentication:eg_test_support+eg2",
     "//ios/chrome/browser/ui/badges:public",
     "//ios/chrome/browser/ui/infobars:eg_test_support+eg2",

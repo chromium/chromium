@@ -77,7 +77,7 @@ std::string GetBrand() {
 std::string GetRlzBrand() {
   policy::BrowserPolicyConnectorAsh* connector =
       g_browser_process->platform_part()->browser_policy_connector_ash();
-  absl::optional<policy::MarketSegment> market_segment;
+  std::optional<policy::MarketSegment> market_segment;
   if (connector->IsDeviceEnterpriseManaged())
     market_segment = connector->GetEnterpriseMarketSegment();
   // The rlz brand code may change over time (e.g. when device goes from
@@ -89,7 +89,7 @@ std::string GetRlzBrand() {
 void InitBrand(base::OnceClosure callback) {
   ::ash::system::StatisticsProvider* provider =
       ::ash::system::StatisticsProvider::GetInstance();
-  const absl::optional<base::StringPiece> brand =
+  const std::optional<base::StringPiece> brand =
       provider->GetMachineStatistic(::ash::system::kRlzBrandCodeKey);
   if (brand && IsBrandValid(brand.value())) {
     SetBrand(std::move(callback), std::string(brand.value()));

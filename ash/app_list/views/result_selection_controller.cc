@@ -47,6 +47,11 @@ ResultSelectionController::ResultSelectionController(
 
 ResultSelectionController::~ResultSelectionController() = default;
 
+bool ResultSelectionController::IsSelectedResultAtFirstAvailableLocation() {
+  auto location = GetFirstAvailableResultLocation();
+  return location && (*location == *selected_location_details_);
+}
+
 ResultSelectionController::MoveResult ResultSelectionController::MoveSelection(
     const ui::KeyEvent& event) {
   if (block_selection_changes_)
@@ -91,7 +96,9 @@ void ResultSelectionController::ResetSelection(const ui::KeyEvent* key_event,
           : nullptr;
   const bool selected_id_preserved = selected_location_details_.get();
 
-  const bool is_up_key = key_event && key_event->key_code() == ui::VKEY_UP;
+  const bool is_previous_key =
+      key_event && (key_event->key_code() == ui::VKEY_UP ||
+                    key_event->key_code() == ui::VKEY_LEFT);
   const bool is_shift_tab = key_event &&
                             key_event->key_code() == ui::VKEY_TAB &&
                             key_event->IsShiftDown();
@@ -101,9 +108,10 @@ void ResultSelectionController::ResetSelection(const ui::KeyEvent* key_event,
     // Note: left and right arrows are used primarily for traversal in
     // horizontal containers, so treat "back" arrow as other non-traversal keys
     // when deciding whether to reverse selection direction.
-    if (is_up_key || is_shift_tab)
+    if (is_previous_key || is_shift_tab) {
       ChangeContainer(selected_location_details_.get(),
                       selected_location_details_->container_index - 1);
+    }
   }
 
   SearchResultBaseView* new_selection =
@@ -112,7 +120,7 @@ void ResultSelectionController::ResetSelection(const ui::KeyEvent* key_event,
     return;
 
   if (selected_result_)
-    selected_result_->SetSelected(false, absl::nullopt);
+    selected_result_->SetSelected(false, std::nullopt);
 
   selected_result_ = new_selection;
 
@@ -134,7 +142,7 @@ void ResultSelectionController::ClearSelection() {
   selected_location_details_ = nullptr;
   if (selected_result_) {
     // Reset the state of the previous selected result.
-    selected_result_->SetSelected(false, absl::nullopt);
+    selected_result_->SetSelected(false, std::nullopt);
     selected_result_id_ = std::string();
     selected_result_->set_is_default_result(false);
   }
@@ -175,7 +183,7 @@ ResultSelectionController::GetNextResultLocationForLocation(
           ChangeContainer(next_location, location.container_index - 1);
 
           if (next_location->container_index >= location.container_index)
-            return MoveResult::kSelectionCycleRejected;
+            return MoveResult::kSelectionCycleBeforeFirstResult;
 
         } else {
           --next_location->result_index;
@@ -186,7 +194,7 @@ ResultSelectionController::GetNextResultLocationForLocation(
           ChangeContainer(next_location, location.container_index + 1);
 
           if (next_location->container_index <= location.container_index)
-            return MoveResult::kSelectionCycleRejected;
+            return MoveResult::kSelectionCycleAfterLastResult;
         } else {
           ++next_location->result_index;
         }
@@ -199,7 +207,7 @@ ResultSelectionController::GetNextResultLocationForLocation(
         ChangeContainer(next_location, location.container_index - 1);
 
         if (next_location->container_index >= location.container_index)
-          return MoveResult::kSelectionCycleRejected;
+          return MoveResult::kSelectionCycleBeforeFirstResult;
       } else {
         // Traversing 'up' moves up one result.
         --next_location->result_index;
@@ -210,7 +218,7 @@ ResultSelectionController::GetNextResultLocationForLocation(
         // Traversing 'down' from the bottom of a container changes containers.
         ChangeContainer(next_location, location.container_index + 1);
         if (next_location->container_index <= location.container_index)
-          return MoveResult::kSelectionCycleRejected;
+          return MoveResult::kSelectionCycleAfterLastResult;
       } else {
         // Traversing 'down' moves down one result.
         ++next_location->result_index;

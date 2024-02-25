@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <utility>
 
@@ -38,6 +39,7 @@
 #include "content/browser/service_worker/service_worker_context_wrapper.h"
 #include "content/browser/storage_partition_impl.h"
 #include "content/browser/web_contents/web_contents_impl.h"
+#include "content/common/features.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/network_service_instance.h"
 #include "content/public/browser/storage_partition.h"
@@ -68,7 +70,6 @@
 #include "services/network/test/test_network_connection_tracker.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/fenced_frame/fenced_frame_utils.h"
 #include "third_party/blink/public/common/fenced_frame/redacted_fenced_frame_config.h"
@@ -290,14 +291,15 @@ class InterestGroupEnabledContentBrowserClient
   bool IsPrivacySandboxReportingDestinationAttested(
       content::BrowserContext* browser_context,
       const url::Origin& destination_origin,
-      content::PrivacySandboxInvokingAPI invoking_api) override {
+      content::PrivacySandboxInvokingAPI invoking_api,
+      bool post_impression_reporting) override {
     return true;
   }
 };
 
-class AttributionsBrowserTest : public ContentBrowserTest {
+class AttributionsBrowserTestBase : public ContentBrowserTest {
  public:
-  AttributionsBrowserTest() = default;
+  AttributionsBrowserTestBase() = default;
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
     command_line->AppendSwitch(switches::kAttributionReportingDebugMode);
@@ -457,12 +459,39 @@ class AttributionsBrowserTest : public ContentBrowserTest {
       content_browser_client_;
 };
 
+class AttributionsBrowserTest : public AttributionsBrowserTestBase,
+                                public ::testing::WithParamInterface<bool> {
+ public:
+  explicit AttributionsBrowserTest(
+      std::vector<base::test::FeatureRef> enabled_features = {},
+      std::vector<base::test::FeatureRef> disabled_features = {}) {
+    const bool enable_in_browser_migration = GetParam();
+
+    if (enable_in_browser_migration) {
+      enabled_features.emplace_back(
+          blink::features::kKeepAliveInBrowserMigration);
+      enabled_features.emplace_back(
+          blink::features::kAttributionReportingInBrowserMigration);
+    } else {
+      disabled_features.emplace_back(
+          blink::features::kKeepAliveInBrowserMigration);
+    }
+
+    scoped_feature_list_.InitWithFeatures(enabled_features, disabled_features);
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+INSTANTIATE_TEST_SUITE_P(All, AttributionsBrowserTest, ::testing::Bool());
+
 // Verifies that storage initialization does not hang when initialized in a
 // browsertest context, see https://crbug.com/1080764).
-IN_PROC_BROWSER_TEST_F(AttributionsBrowserTest,
+IN_PROC_BROWSER_TEST_P(AttributionsBrowserTest,
                        FeatureEnabled_StorageInitWithoutHang) {}
 
-IN_PROC_BROWSER_TEST_F(AttributionsBrowserTest,
+IN_PROC_BROWSER_TEST_P(AttributionsBrowserTest,
                        ImpressionNavigationMultipleRedirects_FirstReportSent) {
   auto register_response =
       std::make_unique<net::test_server::ControllableHttpResponse>(
@@ -551,7 +580,7 @@ IN_PROC_BROWSER_TEST_F(AttributionsBrowserTest,
   expected_report2.WaitForReport();
 }
 
-IN_PROC_BROWSER_TEST_F(AttributionsBrowserTest,
+IN_PROC_BROWSER_TEST_P(AttributionsBrowserTest,
                        ImpressionsRegisteredOnNavigation_ReportSent) {
   // Expected reports must be registered before the server starts.
   ExpectedReportWaiter expected_report(
@@ -593,7 +622,21 @@ IN_PROC_BROWSER_TEST_F(AttributionsBrowserTest,
   expected_report.WaitForReport();
 }
 
-IN_PROC_BROWSER_TEST_F(AttributionsBrowserTest,
+class AttributionsCrossAppWebDisabledBrowserTest
+    : public AttributionsBrowserTest {
+ public:
+  AttributionsCrossAppWebDisabledBrowserTest()
+      : AttributionsBrowserTest(
+            /*enabled_features=*/{},
+            /*disabled_features=*/{
+                network::features::kAttributionReportingCrossAppWeb}) {}
+};
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         AttributionsCrossAppWebDisabledBrowserTest,
+                         ::testing::Bool());
+
+IN_PROC_BROWSER_TEST_P(AttributionsCrossAppWebDisabledBrowserTest,
                        AttributionEligibleNavigation_SetsEligibleHeader) {
   auto register_response1 =
       std::make_unique<net::test_server::ControllableHttpResponse>(
@@ -643,7 +686,7 @@ IN_PROC_BROWSER_TEST_F(AttributionsBrowserTest,
                               "Attribution-Reporting-Support"));
 }
 
-IN_PROC_BROWSER_TEST_F(AttributionsBrowserTest,
+IN_PROC_BROWSER_TEST_P(AttributionsBrowserTest,
                        NonAttributionEligibleNavigation_NoEligibleHeader) {
   auto register_response1 =
       std::make_unique<net::test_server::ControllableHttpResponse>(
@@ -680,7 +723,7 @@ IN_PROC_BROWSER_TEST_F(AttributionsBrowserTest,
   register_response1->Done();
 }
 
-IN_PROC_BROWSER_TEST_F(AttributionsBrowserTest,
+IN_PROC_BROWSER_TEST_P(AttributionsBrowserTest,
                        ImpressionFromCrossOriginSubframe_ReportSent) {
   ExpectedReportWaiter expected_report(
       GURL("https://a.test/.well-known/attribution-reporting/"
@@ -722,7 +765,7 @@ IN_PROC_BROWSER_TEST_F(AttributionsBrowserTest,
 }
 
 // Regression test for crbug.com/1366513.
-IN_PROC_BROWSER_TEST_F(AttributionsBrowserTest,
+IN_PROC_BROWSER_TEST_P(AttributionsBrowserTest,
                        AttributionSrcInSandboxedIframe_NoCrash) {
   ExpectedReportWaiter expected_report(
       GURL("https://a.test/.well-known/attribution-reporting/"
@@ -780,7 +823,7 @@ IN_PROC_BROWSER_TEST_F(AttributionsBrowserTest,
   expected_report.WaitForReport();
 }
 
-IN_PROC_BROWSER_TEST_F(AttributionsBrowserTest,
+IN_PROC_BROWSER_TEST_P(AttributionsBrowserTest,
                        ImpressionOnNoOpenerNavigation_ReportSent) {
   ExpectedReportWaiter expected_report(
       GURL("https://a.test/.well-known/attribution-reporting/"
@@ -813,7 +856,7 @@ IN_PROC_BROWSER_TEST_F(AttributionsBrowserTest,
   expected_report.WaitForReport();
 }
 
-IN_PROC_BROWSER_TEST_F(
+IN_PROC_BROWSER_TEST_P(
     AttributionsBrowserTest,
     ConversionOnDifferentSubdomainThanLandingPage_ReportSent) {
   // Expected reports must be registered before the server starts.
@@ -853,7 +896,7 @@ IN_PROC_BROWSER_TEST_F(
   expected_report.WaitForReport();
 }
 
-IN_PROC_BROWSER_TEST_F(
+IN_PROC_BROWSER_TEST_P(
     AttributionsBrowserTest,
     ServiceWorkerPerformsAttributionSrcRedirect_ReporterSet) {
   auto register_response =
@@ -934,7 +977,7 @@ IN_PROC_BROWSER_TEST_F(
   expected_report.WaitForReport();
 }
 
-IN_PROC_BROWSER_TEST_F(
+IN_PROC_BROWSER_TEST_P(
     AttributionsBrowserTest,
     ServiceWorkerPerformsAttributionEligibleRedirect_ReporterSet) {
   auto register_response =
@@ -1015,13 +1058,17 @@ IN_PROC_BROWSER_TEST_F(
   expected_report.WaitForReport();
 }
 
-IN_PROC_BROWSER_TEST_F(AttributionsBrowserTest,
+IN_PROC_BROWSER_TEST_P(AttributionsBrowserTest,
                        NavigationNoneSupported_EligibleHeaderNotSet) {
   MockAttributionReportingContentBrowserClientBase<
       ContentBrowserTestContentBrowserClient>
       browser_client;
-  EXPECT_CALL(browser_client, IsWebAttributionReportingAllowed())
-      .WillRepeatedly(testing::Return(false));
+  EXPECT_CALL(
+      browser_client,
+      GetAttributionSupport(
+          ContentBrowserClient::AttributionReportingOsApiState::kDisabled,
+          testing::_))
+      .WillRepeatedly(Return(network::mojom::AttributionSupport::kNone));
 
   auto register_response =
       std::make_unique<net::test_server::ControllableHttpResponse>(
@@ -1062,13 +1109,17 @@ class AttributionsPrerenderBrowserTest : public AttributionsBrowserTest {
   content::test::PrerenderTestHelper prerender_helper_;
 };
 
+INSTANTIATE_TEST_SUITE_P(All,
+                         AttributionsPrerenderBrowserTest,
+                         ::testing::Bool());
+
 // TODO(crbug.com/1344264): these tests are flaky on most release bots.
 #if defined(NDEBUG)
 #define ATTRIBUTION_PRERENDER_BROWSER_TEST(TEST_NAME) \
-  IN_PROC_BROWSER_TEST_F(AttributionsPrerenderBrowserTest, DISABLED_##TEST_NAME)
+  IN_PROC_BROWSER_TEST_P(AttributionsPrerenderBrowserTest, DISABLED_##TEST_NAME)
 #else
 #define ATTRIBUTION_PRERENDER_BROWSER_TEST(TEST_NAME) \
-  IN_PROC_BROWSER_TEST_F(AttributionsPrerenderBrowserTest, TEST_NAME)
+  IN_PROC_BROWSER_TEST_P(AttributionsPrerenderBrowserTest, TEST_NAME)
 #endif
 
 ATTRIBUTION_PRERENDER_BROWSER_TEST(NoConversionsOnPrerender) {
@@ -1196,20 +1247,21 @@ ATTRIBUTION_PRERENDER_BROWSER_TEST(ConversionsRegisteredOnActivatedPrerender) {
 class AttributionsCrossAppWebRuntimeDisabledBrowserTest
     : public AttributionsBrowserTest {
  public:
-  AttributionsCrossAppWebRuntimeDisabledBrowserTest() {
-    scoped_feature_list_.InitWithFeatures(
-        /*enabled_features=*/{network::features::
-                                  kAttributionReportingCrossAppWeb},
-        /*disabled_features=*/{});
-  }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
+  AttributionsCrossAppWebRuntimeDisabledBrowserTest()
+      : AttributionsBrowserTest(
+            /*enabled_features=*/{network::features::
+                                      kAttributionReportingCrossAppWeb},
+            /*disabled_features=*/{
+                features::kAttributionReportingCrossAppWebOverride}) {}
 };
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         AttributionsCrossAppWebRuntimeDisabledBrowserTest,
+                         ::testing::Bool());
 
 // Verify that the Attribution-Reporting-Support header setting is gated by the
 // runtime feature.
-IN_PROC_BROWSER_TEST_F(AttributionsCrossAppWebRuntimeDisabledBrowserTest,
+IN_PROC_BROWSER_TEST_P(AttributionsCrossAppWebRuntimeDisabledBrowserTest,
                        AttributionEligibleNavigation_SupportHeaderNotSet) {
   auto register_response1 =
       std::make_unique<net::test_server::ControllableHttpResponse>(
@@ -1263,19 +1315,18 @@ IN_PROC_BROWSER_TEST_F(AttributionsCrossAppWebRuntimeDisabledBrowserTest,
 class AttributionsCrossAppWebEnabledBrowserTest
     : public AttributionsBrowserTest {
  public:
-  AttributionsCrossAppWebEnabledBrowserTest() {
-    scoped_feature_list_.InitWithFeatures(
-        /*enabled_features=*/{network::features::
-                                  kAttributionReportingCrossAppWeb,
-                              features::kPrivacySandboxAdsAPIsOverride},
-        /*disabled_features=*/{});
-  }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
+  AttributionsCrossAppWebEnabledBrowserTest()
+      : AttributionsBrowserTest(
+            /*enabled_features=*/{
+                network::features::kAttributionReportingCrossAppWeb,
+                features::kPrivacySandboxAdsAPIsOverride}) {}
 };
 
-IN_PROC_BROWSER_TEST_F(AttributionsCrossAppWebEnabledBrowserTest,
+INSTANTIATE_TEST_SUITE_P(All,
+                         AttributionsCrossAppWebEnabledBrowserTest,
+                         ::testing::Bool());
+
+IN_PROC_BROWSER_TEST_P(AttributionsCrossAppWebEnabledBrowserTest,
                        AttributionEligibleNavigation_SetsSupportHeader) {
   auto register_response1 =
       std::make_unique<net::test_server::ControllableHttpResponse>(
@@ -1325,7 +1376,7 @@ IN_PROC_BROWSER_TEST_F(AttributionsCrossAppWebEnabledBrowserTest,
       /*os_expected=*/false);
 }
 
-IN_PROC_BROWSER_TEST_F(
+IN_PROC_BROWSER_TEST_P(
     AttributionsCrossAppWebEnabledBrowserTest,
     AttributionEligibleNavigationOsLevelEnabled_SetsSupportHeader) {
   auto register_response1 =
@@ -1381,16 +1432,13 @@ IN_PROC_BROWSER_TEST_F(
 
 class AttributionsFencedFrameBrowserTest : public AttributionsBrowserTest {
  public:
-  AttributionsFencedFrameBrowserTest() {
-    scoped_feature_list_.InitWithFeaturesAndParameters(
-        /*enabled_features=*/{{blink::features::kFencedFrames, {}},
-                              {features::kPrivacySandboxAdsAPIsOverride, {}},
-                              {features::kAttributionFencedFrameReportingBeacon,
-                               {}},
-                              {blink::features::kFencedFramesAPIChanges, {}},
-                              {blink::features::kFencedFramesDefaultMode, {}}},
-        /*disabled_features=*/{});
-  }
+  AttributionsFencedFrameBrowserTest()
+      : AttributionsBrowserTest(/*enabled_features=*/{
+            blink::features::kFencedFrames,
+            features::kPrivacySandboxAdsAPIsOverride,
+            features::kAttributionFencedFrameReportingBeacon,
+            blink::features::kFencedFramesAPIChanges,
+            blink::features::kFencedFramesDefaultMode}) {}
 
   FrameTreeNode* AddFencedFrame(
       FrameTreeNode* root,
@@ -1440,7 +1488,8 @@ class AttributionsFencedFrameBrowserTest : public AttributionsBrowserTest {
             *web_contents()->GetBrowserContext()),
         /*main_frame_origin=*/
         web_contents()->GetPrimaryMainFrame()->GetLastCommittedOrigin(),
-        /*winner_origin=*/url::Origin::Create(GURL("https://a.test")));
+        /*winner_origin=*/url::Origin::Create(GURL("https://a.test")),
+        /*winner_aggregation_coordinator_origin=*/std::nullopt);
   }
 
  private:
@@ -1448,7 +1497,7 @@ class AttributionsFencedFrameBrowserTest : public AttributionsBrowserTest {
       FencedFrameURLMapping* fenced_frame_url_mapping,
       const GURL& https_url,
       scoped_refptr<FencedFrameReporter> fenced_frame_reporter) {
-    absl::optional<GURL> urn_uuid =
+    std::optional<GURL> urn_uuid =
         fenced_frame_url_mapping->AddFencedFrameURLForTesting(
             https_url, std::move(fenced_frame_reporter));
     EXPECT_TRUE(urn_uuid.has_value());
@@ -1459,7 +1508,11 @@ class AttributionsFencedFrameBrowserTest : public AttributionsBrowserTest {
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-IN_PROC_BROWSER_TEST_F(AttributionsFencedFrameBrowserTest,
+INSTANTIATE_TEST_SUITE_P(All,
+                         AttributionsFencedFrameBrowserTest,
+                         ::testing::Bool());
+
+IN_PROC_BROWSER_TEST_P(AttributionsFencedFrameBrowserTest,
                        ReportEvent_ReportSent) {
   // Expected reports must be registered before the server starts.
   ExpectedReportWaiter expected_report(
@@ -1482,12 +1535,14 @@ IN_PROC_BROWSER_TEST_F(AttributionsFencedFrameBrowserTest,
   GURL reporting_url = https_server()->GetURL(
       "a.test", "/register_source_headers_trigger_same_origin.html");
 
+  GURL buyer_url = https_server()->GetURL("c.test", "/");
+
   scoped_refptr<FencedFrameReporter> fenced_frame_reporter =
       CreateFencedFrameReporter();
   // Set valid reporting metadata for buyer.
   fenced_frame_reporter->OnUrlMappingReady(
       blink::FencedFrame::ReportingDestination::kBuyer,
-      {{"click", reporting_url}});
+      url::Origin::Create(GURL(buyer_url)), {{"click", reporting_url}});
 
   FrameTreeNode* fenced_frame_root_node =
       AddFencedFrame(root, fenced_frame_url, std::move(fenced_frame_reporter));
@@ -1520,7 +1575,7 @@ IN_PROC_BROWSER_TEST_F(AttributionsFencedFrameBrowserTest,
   expected_report.WaitForReport();
 }
 
-IN_PROC_BROWSER_TEST_F(AttributionsFencedFrameBrowserTest,
+IN_PROC_BROWSER_TEST_P(AttributionsFencedFrameBrowserTest,
                        ReportEventRedirect_BothReportsSent) {
   MockAttributionObserver attribution_manager_observer;
   base::ScopedObservation<AttributionManager, AttributionObserver> observation(
@@ -1563,12 +1618,14 @@ IN_PROC_BROWSER_TEST_F(AttributionsFencedFrameBrowserTest,
   GURL reporting_url =
       https_server()->GetURL("a.test", "/register_source_redirect");
 
+  GURL buyer_url = https_server()->GetURL("c.test", "/");
+
   scoped_refptr<FencedFrameReporter> fenced_frame_reporter =
       CreateFencedFrameReporter();
   // Set valid reporting metadata for buyer.
   fenced_frame_reporter->OnUrlMappingReady(
       blink::FencedFrame::ReportingDestination::kBuyer,
-      {{"click", reporting_url}});
+      url::Origin::Create(buyer_url), {{"click", reporting_url}});
 
   FrameTreeNode* fenced_frame_root_node =
       AddFencedFrame(root, fenced_frame_url, std::move(fenced_frame_reporter));
@@ -1595,6 +1652,7 @@ IN_PROC_BROWSER_TEST_F(AttributionsFencedFrameBrowserTest,
           ->GetURL("b.test",
                    "/register_source_headers_trigger_same_origin.html")
           .spec());
+  http_response->AddCustomHeader("Access-Control-Allow-Origin", "*");
   register_response->Send(http_response->ToResponseString());
   register_response->Done();
 
@@ -1618,7 +1676,7 @@ IN_PROC_BROWSER_TEST_F(AttributionsFencedFrameBrowserTest,
   expected_report2.WaitForReport();
 }
 
-IN_PROC_BROWSER_TEST_F(AttributionsFencedFrameBrowserTest,
+IN_PROC_BROWSER_TEST_P(AttributionsFencedFrameBrowserTest,
                        AutomaticBeacon_ReportSent) {
   // Expected reports must be registered before the server starts.
   ExpectedReportWaiter expected_report(
@@ -1642,25 +1700,29 @@ IN_PROC_BROWSER_TEST_F(AttributionsFencedFrameBrowserTest,
   GURL reporting_url = https_server()->GetURL(
       "a.test", "/register_source_headers_trigger_same_origin.html");
 
+  GURL buyer_url = https_server()->GetURL("c.test", "/");
+
   scoped_refptr<FencedFrameReporter> fenced_frame_reporter =
       CreateFencedFrameReporter();
   // Set valid reporting metadata for buyer.
   fenced_frame_reporter->OnUrlMappingReady(
       blink::FencedFrame::ReportingDestination::kBuyer,
-      {{blink::kFencedFrameTopNavigationBeaconType, reporting_url}});
+      url::Origin::Create(GURL(buyer_url)),
+      {{blink::kDeprecatedFencedFrameTopNavigationBeaconType, reporting_url}});
 
   FrameTreeNode* fenced_frame_root_node =
       AddFencedFrame(root, fenced_frame_url, std::move(fenced_frame_reporter));
 
-  ASSERT_TRUE(ExecJs(fenced_frame_root_node,
-                     JsReplace(R"(
+  ASSERT_TRUE(
+      ExecJs(fenced_frame_root_node,
+             JsReplace(R"(
     window.fence.setReportEventDataForAutomaticBeacons({
       eventType: $1,
       eventData: 'This is the event data!',
       destination: ['buyer']
     });
     )",
-                               blink::kFencedFrameTopNavigationBeaconType)));
+                       blink::kDeprecatedFencedFrameTopNavigationBeaconType)));
 
   GURL navigation_url(
       https_server()->GetURL("a.test", "/page_with_impression_creator.html"));
@@ -1678,6 +1740,76 @@ IN_PROC_BROWSER_TEST_F(AttributionsFencedFrameBrowserTest,
                                          "a.test",
                                          "/attribution_reporting/"
                                          "register_trigger_headers.html"))));
+
+  expected_report.WaitForReport();
+}
+
+class AttributionsBrowserTestWithKeepAliveMigration
+    : public AttributionsBrowserTestBase {
+ public:
+  AttributionsBrowserTestWithKeepAliveMigration() {
+    scoped_feature_list_.InitWithFeatures(
+        {blink::features::kKeepAliveInBrowserMigration,
+         blink::features::kAttributionReportingInBrowserMigration},
+        {});
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+// Regression test for crbug.com/1374121.
+IN_PROC_BROWSER_TEST_F(AttributionsBrowserTestWithKeepAliveMigration,
+                       SourceRegisteredAfterNavigation) {
+  auto register_response =
+      std::make_unique<net::test_server::ControllableHttpResponse>(
+          https_server(), "/register_source");
+
+  ExpectedReportWaiter expected_report(
+      GURL("https://d.test/.well-known/attribution-reporting/"
+           "report-event-attribution"),
+      /*attribution_destination=*/"https://d.test",
+      /*source_event_id=*/"1", /*source_type=*/"navigation",
+      /*trigger_data=*/"7", https_server());
+  ASSERT_TRUE(https_server()->Start());
+
+  GURL impression_url = https_server()->GetURL(
+      "a.test", "/attribution_reporting/page_with_impression_creator.html");
+  ASSERT_TRUE(NavigateToURL(web_contents(), impression_url));
+
+  GURL register_source_url =
+      https_server()->GetURL("d.test", "/register_source");
+
+  GURL conversion_url = https_server()->GetURL(
+      "d.test", "/attribution_reporting/page_with_conversion_redirect.html");
+
+  ASSERT_TRUE(
+      ExecJs(web_contents(), JsReplace(R"(
+    createAttributionSrcAnchor({id: 'link',
+                        url: $1,
+                        attributionsrc: $2,
+                        target: '_top'});)",
+                                       conversion_url, register_source_url)));
+
+  TestNavigationObserver observer(web_contents());
+  ASSERT_TRUE(ExecJs(web_contents(), "simulateClick('link');"));
+
+  // Wait for navigation to complete before registering the source.
+  observer.Wait();
+
+  register_response->WaitForRequest();
+  auto http_response = std::make_unique<net::test_server::BasicHttpResponse>();
+  http_response->set_code(net::HTTP_MOVED_PERMANENTLY);
+  http_response->AddCustomHeader(
+      "Attribution-Reporting-Register-Source",
+      R"({"source_event_id":"1","destination":"https://d.test"})");
+  register_response->Send(http_response->ToResponseString());
+  register_response->Done();
+
+  GURL register_trigger_url = https_server()->GetURL(
+      "d.test", "/attribution_reporting/register_trigger_headers.html");
+  ASSERT_TRUE(ExecJs(web_contents(), JsReplace("createAttributionSrcImg($1);",
+                                               register_trigger_url)));
 
   expected_report.WaitForReport();
 }

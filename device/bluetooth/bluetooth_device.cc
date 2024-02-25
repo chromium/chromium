@@ -114,14 +114,13 @@ BluetoothDevice::ConnectionInfo::ConnectionInfo(int rssi,
 
 BluetoothDevice::ConnectionInfo::~ConnectionInfo() = default;
 
-BatteryInfo::BatteryInfo()
-    : BatteryInfo(BatteryType::kDefault, absl::nullopt) {}
+BatteryInfo::BatteryInfo() : BatteryInfo(BatteryType::kDefault, std::nullopt) {}
 
-BatteryInfo::BatteryInfo(BatteryType type, absl::optional<uint8_t> percentage)
+BatteryInfo::BatteryInfo(BatteryType type, std::optional<uint8_t> percentage)
     : BatteryInfo(type, percentage, BatteryInfo::ChargeState::kUnknown) {}
 
 BatteryInfo::BatteryInfo(BatteryType type,
-                         absl::optional<uint8_t> percentage,
+                         std::optional<uint8_t> percentage,
                          ChargeState charge_state)
     : type(type),
       percentage(std::move(percentage)),
@@ -143,7 +142,7 @@ bool BatteryInfo::operator==(const BatteryInfo& other) {
 BatteryInfo::~BatteryInfo() = default;
 
 std::u16string BluetoothDevice::GetNameForDisplay() const {
-  absl::optional<std::string> name = GetName();
+  std::optional<std::string> name = GetName();
   if (name && HasGraphicCharacter(name.value())) {
     return base::UTF8ToUTF16(name.value());
   } else {
@@ -387,21 +386,21 @@ const std::vector<uint8_t>* BluetoothDevice::GetManufacturerDataForID(
   return nullptr;
 }
 
-absl::optional<int8_t> BluetoothDevice::GetInquiryRSSI() const {
+std::optional<int8_t> BluetoothDevice::GetInquiryRSSI() const {
   return inquiry_rssi_;
 }
 
-absl::optional<uint8_t> BluetoothDevice::GetAdvertisingDataFlags() const {
+std::optional<uint8_t> BluetoothDevice::GetAdvertisingDataFlags() const {
   return advertising_data_flags_;
 }
 
-absl::optional<int8_t> BluetoothDevice::GetInquiryTxPower() const {
+std::optional<int8_t> BluetoothDevice::GetInquiryTxPower() const {
   return inquiry_tx_power_;
 }
 
 void BluetoothDevice::CreateGattConnection(
     GattConnectionCallback callback,
-    absl::optional<BluetoothUUID> service_uuid) {
+    std::optional<BluetoothUUID> service_uuid) {
   if (!supports_service_specific_discovery_)
     service_uuid.reset();
 
@@ -421,7 +420,7 @@ void BluetoothDevice::CreateGattConnection(
 
   if (IsGattConnected()) {
     DCHECK(!connection_already_pending);
-    return DidConnectGatt(/*error_code=*/absl::nullopt);
+    return DidConnectGatt(/*error_code=*/std::nullopt);
   }
 
   if (connection_already_pending) {
@@ -469,9 +468,9 @@ std::string BluetoothDevice::GetOuiPortionOfBluetoothAddress() const {
 
 void BluetoothDevice::UpdateAdvertisementData(
     int8_t rssi,
-    absl::optional<uint8_t> flags,
+    std::optional<uint8_t> flags,
     UUIDList advertised_uuids,
-    absl::optional<int8_t> tx_power,
+    std::optional<int8_t> tx_power,
     ServiceDataMap service_data,
     ManufacturerDataMap manufacturer_data) {
   UpdateTimestamp();
@@ -554,12 +553,12 @@ bool BluetoothDevice::RemoveBatteryInfo(const BatteryType& type) {
   return false;
 }
 
-absl::optional<BatteryInfo> BluetoothDevice::GetBatteryInfo(
+std::optional<BatteryInfo> BluetoothDevice::GetBatteryInfo(
     const BatteryType& type) const {
   auto it = battery_info_map_.find(type);
 
   if (it == battery_info_map_.end())
-    return absl::nullopt;
+    return std::nullopt;
 
   return it->second;
 }
@@ -590,7 +589,7 @@ BluetoothDevice::CreateBluetoothGattConnectionObject() {
   return std::make_unique<BluetoothGattConnection>(adapter_, GetAddress());
 }
 
-void BluetoothDevice::DidConnectGatt(absl::optional<ConnectErrorCode> error) {
+void BluetoothDevice::DidConnectGatt(std::optional<ConnectErrorCode> error) {
   if (error.has_value()) {
     // Connection request should only be made if there are no active
     // connections.
@@ -611,7 +610,7 @@ void BluetoothDevice::DidConnectGatt(absl::optional<ConnectErrorCode> error) {
   auto callbacks = std::move(create_gatt_connection_callbacks_);
   for (auto& callback : callbacks) {
     std::move(callback).Run(CreateBluetoothGattConnectionObject(),
-                            /*error_code=*/absl::nullopt);
+                            /*error_code=*/std::nullopt);
   }
 
   GetAdapter()->NotifyDeviceChanged(this);

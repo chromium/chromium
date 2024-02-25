@@ -38,18 +38,20 @@ public class PaymentRequestPaymentAppsSortingTest {
     @Before
     public void setUp() throws TimeoutException {
         AutofillTestHelper helper = new AutofillTestHelper();
-        String billingAddressId = helper.setProfile(AutofillProfile.builder()
-                                                            .setFullName("Jon Doe")
-                                                            .setCompanyName("Google")
-                                                            .setStreetAddress("340 Main St")
-                                                            .setRegion("CA")
-                                                            .setLocality("Los Angeles")
-                                                            .setPostalCode("90291")
-                                                            .setCountryCode("US")
-                                                            .setPhoneNumber("310-310-6000")
-                                                            .setEmailAddress("jon.doe@gmail.com")
-                                                            .setLanguageCode("en-US")
-                                                            .build());
+        String billingAddressId =
+                helper.setProfile(
+                        AutofillProfile.builder()
+                                .setFullName("Jon Doe")
+                                .setCompanyName("Google")
+                                .setStreetAddress("340 Main St")
+                                .setRegion("CA")
+                                .setLocality("Los Angeles")
+                                .setPostalCode("90291")
+                                .setCountryCode("US")
+                                .setPhoneNumber("310-310-6000")
+                                .setEmailAddress("jon.doe@gmail.com")
+                                .setLanguageCode("en-US")
+                                .build());
     }
 
     @Test
@@ -61,16 +63,18 @@ public class PaymentRequestPaymentAppsSortingTest {
         TestPay appA = new TestPay("https://alicepay.test", AppSpeed.FAST_APP);
         TestPay appB = new TestPay("https://bobpay.test", AppSpeed.FAST_APP);
         TestPay appC = new TestPay("https://charliepay.test", AppSpeed.FAST_APP);
-        PaymentAppService.getInstance().addFactory(new PaymentAppFactoryInterface() {
-            @Override
-            public void create(PaymentAppFactoryDelegate delegate) {
-                delegate.onCanMakePaymentCalculated(true);
-                delegate.onPaymentAppCreated(appA);
-                delegate.onPaymentAppCreated(appB);
-                delegate.onPaymentAppCreated(appC);
-                delegate.onDoneCreatingPaymentApps(/*factory=*/this);
-            }
-        });
+        PaymentAppService.getInstance()
+                .addFactory(
+                        new PaymentAppFactoryInterface() {
+                            @Override
+                            public void create(PaymentAppFactoryDelegate delegate) {
+                                delegate.onCanMakePaymentCalculated(true);
+                                delegate.onPaymentAppCreated(appA);
+                                delegate.onPaymentAppCreated(appB);
+                                delegate.onPaymentAppCreated(appC);
+                                delegate.onDoneCreatingPaymentApps(/* factory= */ this);
+                            }
+                        });
         String alicePayId = appA.getIdentifier();
         String bobPayId = appB.getIdentifier();
         String charliePayId = appC.getIdentifier();

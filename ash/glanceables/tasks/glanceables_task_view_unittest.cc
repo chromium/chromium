@@ -4,20 +4,31 @@
 
 #include "ash/glanceables/tasks/glanceables_task_view.h"
 
+#include <memory>
+#include <optional>
 #include <string>
 
+#include "ash/api/tasks/tasks_client.h"
+#include "ash/api/tasks/tasks_types.h"
+#include "ash/constants/ash_features.h"
 #include "ash/glanceables/common/glanceables_view_id.h"
-#include "ash/glanceables/tasks/glanceables_tasks_types.h"
 #include "ash/system/time/calendar_unittest_utils.h"
 #include "ash/test/ash_test_base.h"
+#include "base/functional/callback_helpers.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/scoped_feature_list.h"
+#include "base/test/test_future.h"
 #include "base/time/time.h"
 #include "base/time/time_override.h"
 #include "base/types/cxx23_to_underlying.h"
 #include "chromeos/ash/components/settings/scoped_timezone_settings.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
+#include "ui/events/event_constants.h"
+#include "ui/events/keycodes/keyboard_codes_posix.h"
+#include "ui/views/controls/button/image_button.h"
 #include "ui/views/controls/label.h"
+#include "ui/views/controls/textfield/textfield.h"
 #include "ui/views/view_utils.h"
+#include "ui/views/widget/widget.h"
 
 namespace ash {
 
@@ -51,11 +62,13 @@ TEST_F(GlanceablesTaskViewTest, FormatsDueDate) {
     base::Time due;
     EXPECT_TRUE(base::Time::FromString(tc.due.c_str(), &due));
 
-    const auto task = GlanceablesTask(
-        "task-id", "Task title", /*completed=*/false,
-        /*due=*/due,
-        /*has_subtasks=*/false, /*has_email_link=*/false, /*has_notes=*/false);
-    const auto view = GlanceablesTaskView("task-list-id", &task);
+    const auto task = api::Task("task-id", "Task title",
+                                /*due=*/due, /*completed=*/false,
+                                /*has_subtasks=*/false,
+                                /*has_email_link=*/false, /*has_notes=*/false,
+                                /*updated=*/due);
+    const auto view = GlanceablesTaskView(
+        &task, /*mark_as_completed_callback=*/base::DoNothing());
 
     const auto* const due_label =
         views::AsViewClass<views::Label>(view.GetViewByID(
@@ -63,6 +76,80 @@ TEST_F(GlanceablesTaskViewTest, FormatsDueDate) {
     ASSERT_TRUE(due_label);
 
     EXPECT_EQ(due_label->GetText(), tc.expected_text);
+  }
+}
+
+TEST_F(GlanceablesTaskViewTest,
+       AppliesStrikeThroughStyleAfterMarkingAsComplete) {
+  const auto task = api::Task("task-id", "Task title",
+                              /*due=*/std::nullopt, /*completed=*/false,
+                              /*has_subtasks=*/false, /*has_email_link=*/false,
+                              /*has_notes=*/false, /*updated=*/base::Time());
+
+  const auto widget = CreateFramelessTestWidget();
+  widget->SetFullscreen(true);
+  const auto* const view =
+      widget->SetContentsView(std::make_unique<GlanceablesTaskView>(
+          &task, /*mark_as_completed_callback=*/base::DoNothing()));
+  ASSERT_TRUE(view);
+
+  const auto* const checkbox = view->GetButtonForTest();
+  ASSERT_TRUE(checkbox);
+
+  const auto* const title_label =
+      views::AsViewClass<views::Label>(view->GetViewByID(
+          base::to_underlying(GlanceablesViewId::kTaskItemTitleLabel)));
+  ASSERT_TRUE(title_label);
+
+  // No `STRIKE_THROUGH` style applied initially.
+  EXPECT_FALSE(view->GetCompletedForTest());
+  EXPECT_FALSE(title_label->font_list().GetFontStyle() &
+               gfx::Font::FontStyle::STRIKE_THROUGH);
+
+  // After pressing on `checkbox`, the label should have `STRIKE_THROUGH` style
+  // applied.
+  GestureTapOn(checkbox);
+  EXPECT_TRUE(view->GetCompletedForTest());
+  EXPECT_TRUE(title_label->font_list().GetFontStyle() &
+              gfx::Font::FontStyle::STRIKE_THROUGH);
+}
+
+TEST_F(GlanceablesTaskViewTest, InvokesMarkAsCompletedCallback) {
+  const auto task = api::Task("task-id", "Task title",
+                              /*due=*/std::nullopt, /*completed=*/false,
+                              /*has_subtasks=*/false, /*has_email_link=*/false,
+                              /*has_notes=*/false, /*updated=*/base::Time());
+
+  base::test::TestFuture<const std::string&, bool> future;
+
+  const auto widget = CreateFramelessTestWidget();
+  widget->SetFullscreen(true);
+  const auto* const view =
+      widget->SetContentsView(std::make_unique<GlanceablesTaskView>(
+          &task, /*mark_as_completed_callback=*/future.GetRepeatingCallback()));
+  ASSERT_TRUE(view);
+
+  EXPECT_FALSE(view->GetCompletedForTest());
+
+  const auto* const checkbox = view->GetButtonForTest();
+  ASSERT_TRUE(checkbox);
+
+  // Mark as completed by pressing `checkbox`.
+  {
+    GestureTapOn(checkbox);
+    EXPECT_TRUE(view->GetCompletedForTest());
+    const auto [task_id, completed] = future.Take();
+    EXPECT_EQ(task_id, "task-id");
+    EXPECT_TRUE(completed);
+  }
+
+  // Undo / mark as not completed by pressing `checkbox` again.
+  {
+    GestureTapOn(checkbox);
+    EXPECT_FALSE(view->GetCompletedForTest());
+    const auto [task_id, completed] = future.Take();
+    EXPECT_EQ(task_id, "task-id");
+    EXPECT_FALSE(completed);
   }
 }
 

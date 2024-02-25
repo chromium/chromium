@@ -45,9 +45,9 @@ class DCOMPTextureRepresentation : public OverlayImageRepresentation {
       : OverlayImageRepresentation(manager, backing, tracker),
         dcomp_surface_proxy_(std::move(dcomp_surface_proxy)) {}
 
-  absl::optional<gl::DCLayerOverlayImage> GetDCLayerOverlayImage() override {
-    return absl::make_optional<gl::DCLayerOverlayImage>(size(),
-                                                        dcomp_surface_proxy_);
+  std::optional<gl::DCLayerOverlayImage> GetDCLayerOverlayImage() override {
+    return std::make_optional<gl::DCLayerOverlayImage>(size(),
+                                                       dcomp_surface_proxy_);
   }
 
   bool BeginReadAccess(gfx::GpuFenceHandle& acquire_fence) override {
@@ -72,6 +72,7 @@ class DCOMPTextureBacking : public ClearTrackingSharedImageBacking {
                                         kTopLeft_GrSurfaceOrigin,
                                         kPremul_SkAlphaType,
                                         gpu::SHARED_IMAGE_USAGE_SCANOUT,
+                                        {},
                                         /*estimated_size=*/0,
                                         /*is_thread_safe=*/false),
         dcomp_surface_proxy_(std::move(dcomp_surface_proxy)) {

@@ -8,9 +8,9 @@
  */
 import 'chrome://resources/cr_elements/cr_shared_style.css.js';
 import 'chrome://resources/polymer/v3_0/iron-flex-layout/iron-flex-layout-classes.js';
-import '/shared/settings/controls/controlled_radio_button.js';
+import '../controls/controlled_radio_button.js';
 import '/shared/settings/controls/extension_controlled_indicator.js';
-import '/shared/settings/controls/settings_radio_group.js';
+import '../controls/settings_radio_group.js';
 import './startup_urls_page.js';
 import '../i18n_setup.js';
 import '../settings_shared.css.js';
@@ -18,7 +18,8 @@ import '../settings_shared.css.js';
 import {WebUiListenerMixin} from 'chrome://resources/cr_elements/web_ui_listener_mixin.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {NtpExtension, OnStartupBrowserProxyImpl} from './on_startup_browser_proxy.js';
+import type {NtpExtension} from './on_startup_browser_proxy.js';
+import {OnStartupBrowserProxyImpl} from './on_startup_browser_proxy.js';
 import {getTemplate} from './on_startup_page.html.js';
 
 

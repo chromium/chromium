@@ -85,6 +85,11 @@ class CC_PAINT_EXPORT PaintImageBuilder {
     paint_image_.gainmap_info_ = gainmap_info;
     return std::move(*this);
   }
+  PaintImageBuilder&& set_hdr_metadata(
+      std::optional<gfx::HDRMetadata> hdr_metadata) {
+    paint_image_.hdr_metadata_ = hdr_metadata;
+    return std::move(*this);
+  }
   PaintImageBuilder&& set_completion_state(PaintImage::CompletionState state) {
     paint_image_.completion_state_ = state;
     return std::move(*this);
@@ -99,6 +104,10 @@ class CC_PAINT_EXPORT PaintImageBuilder {
   }
   PaintImageBuilder&& set_may_be_lcp_candidate(bool may_be_lcp_candidate) {
     paint_image_.may_be_lcp_candidate_ = may_be_lcp_candidate;
+    return std::move(*this);
+  }
+  PaintImageBuilder&& set_no_cache(bool no_cache) {
+    paint_image_.no_cache_ = no_cache;
     return std::move(*this);
   }
   PaintImageBuilder&& set_repetition_count(int count) {

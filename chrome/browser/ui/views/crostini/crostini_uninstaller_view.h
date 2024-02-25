@@ -28,9 +28,9 @@ void ShowCrostiniUninstallerView(Profile* profile);
 // The Crostini uninstaller. Provides a warning to the user and
 // uninstalls Crostinin if the user chooses to do so.
 class CrostiniUninstallerView : public views::BubbleDialogDelegateView {
- public:
-  METADATA_HEADER(CrostiniUninstallerView);
+  METADATA_HEADER(CrostiniUninstallerView, views::BubbleDialogDelegateView)
 
+ public:
   // These values are persisted to logs. Entries should not be renumbered and
   // numeric values should never be reused.
   enum class UninstallResult {
@@ -69,11 +69,11 @@ class CrostiniUninstallerView : public views::BubbleDialogDelegateView {
   void RecordUninstallResultHistogram(UninstallResult result);
 
   State state_ = State::PROMPT;
-  raw_ptr<views::Label, ExperimentalAsh> message_label_ = nullptr;
-  raw_ptr<views::ProgressBar, ExperimentalAsh> progress_bar_ = nullptr;
+  raw_ptr<views::Label> message_label_ = nullptr;
+  raw_ptr<views::ProgressBar> progress_bar_ = nullptr;
 
   bool has_logged_result_ = false;
-  raw_ptr<Profile, ExperimentalAsh> profile_;
+  raw_ptr<Profile> profile_;
 
   base::ScopedClosureRunner destructor_callback_for_testing_;
 

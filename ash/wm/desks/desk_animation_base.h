@@ -84,6 +84,15 @@ class ASH_EXPORT DeskAnimationBase
   void ActivateDeskDuringAnimation(const Desk* desk,
                                    bool update_window_activation);
 
+  // Immediately switches to the target desk and notifies the desk controller
+  // that the animation is done, which will end up deleting `this`.
+  void ActivateTargetDeskWithoutAnimation();
+
+  // Returns true if any of the animators have failed, for any reason. In this
+  // case, we will abort what we're doing and switch to the target desk without
+  // animation.
+  bool AnimatorFailed() const;
+
   // Abstract functions that can be overridden by child classes to do different
   // things when phase (1), and phase (3) completes. Note that
   // `OnDeskSwitchAnimationFinishedInternal()` will be called before the desks
@@ -100,7 +109,7 @@ class ASH_EXPORT DeskAnimationBase
   virtual LatencyReportCallback GetLatencyReportCallback() const = 0;
   virtual metrics_util::ReportCallback GetSmoothnessReportCallback() const = 0;
 
-  const raw_ptr<DesksController, ExperimentalAsh> controller_;
+  const raw_ptr<DesksController> controller_;
 
   // An animator object per each root. Once all the animations are complete,
   // this list is cleared.
@@ -121,8 +130,6 @@ class ASH_EXPORT DeskAnimationBase
   // the user starts and ends the swipe gesture within half a second. If this is
   // false, we do not start the animation when `OnEndingDeskScreenshotTaken` is
   // called.
-  // TODO(sammiequon): If the trial feature is removed, this can be combined
-  // with `is_continuous_gesture_animation_` as an optional or enum.
   bool did_continuous_gesture_end_fast_ = false;
 
   // Used for metrics collection to track how many desks changes a user has seen
@@ -146,7 +153,7 @@ class ASH_EXPORT DeskAnimationBase
   base::TimeTicks launch_time_;
 
   // ThroughputTracker used for measuring this animation smoothness.
-  absl::optional<ui::ThroughputTracker> throughput_tracker_;
+  std::optional<ui::ThroughputTracker> throughput_tracker_;
 
   // If true, do not notify |controller_| when
   // OnDeskSwitchAnimationFinished() is called. This class and

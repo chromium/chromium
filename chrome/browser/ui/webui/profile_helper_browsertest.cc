@@ -31,6 +31,10 @@
 #include "content/public/test/test_utils.h"
 #include "content/public/test/test_web_ui.h"
 
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+#include "chrome/browser/lacros/browser_test_util.h"
+#endif
+
 namespace {
 
 Profile* CreateProfile() {
@@ -125,14 +129,19 @@ IN_PROC_BROWSER_TEST_F(ProfileHelperTest, OpenNewWindowForProfile) {
   EXPECT_EQ(1u, browser_list->size());
   EXPECT_EQ(original_browser, browser_list->GetLastActive());
 
-  // Open additional browser will add new window and activates it.
+  // Opening additional browser will add new window and activate it.
   Profile* additional_profile = CreateProfile();
   activation_observer =
       std::make_unique<ExpectBrowserActivationForProfile>(additional_profile);
   webui::OpenNewWindowForProfile(additional_profile);
   EXPECT_EQ(2u, browser_list->size());
   activation_observer->Wait();
-  EXPECT_EQ(additional_profile, browser_list->GetLastActive()->profile());
+  Browser* additional_browser = browser_list->GetLastActive();
+  EXPECT_EQ(additional_profile, additional_browser->profile());
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  // Await complete window creation to avoid interference with the next steps.
+  ASSERT_TRUE(browser_test_util::WaitForWindowCreation(additional_browser));
+#endif
 
 // On Macs OpenNewWindowForProfile does not activate existing browser
 // while non of the browser windows have focus. BrowserWindowCocoa::Show() got
@@ -245,8 +254,9 @@ class ProfileHelperTestWithDestroyProfile
   base::test::ScopedFeatureList feature_list_;
 };
 
+// TODO(crbug.com/1504677): Fix this flaky test. Probably a timing issue.
 IN_PROC_BROWSER_TEST_P(ProfileHelperTestWithDestroyProfile,
-                       DeleteInactiveProfile) {
+                       DISABLED_DeleteInactiveProfile) {
   content::TestWebUI web_ui;
   Browser* original_browser = browser();
   ProfileAttributesStorage& storage =

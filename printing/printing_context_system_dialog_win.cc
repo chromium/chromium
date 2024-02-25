@@ -15,15 +15,11 @@
 #include "printing/print_settings_initializer_win.h"
 #include "skia/ext/skia_utils_win.h"
 
-#if BUILDFLAG(ENABLE_OOP_PRINTING)
-#include "printing/printing_features.h"
-#endif
-
 namespace printing {
 
 HWND PrintingContextSystemDialogWin::GetWindow() {
 #if BUILDFLAG(ENABLE_OOP_PRINTING)
-  if (features::kEnableOopPrintDriversJobPrint.Get()) {
+  if (process_behavior() == ProcessBehavior::kOopEnabledPerformSystemCalls) {
     // Delving through the view tree to get to root window happens separately
     // in the browser process (i.e., not in `PrintingContextSystemDialogWin`)
     // before sending the identified window owner to the Print Backend service.
@@ -39,8 +35,9 @@ HWND PrintingContextSystemDialogWin::GetWindow() {
 }
 
 PrintingContextSystemDialogWin::PrintingContextSystemDialogWin(
-    Delegate* delegate)
-    : PrintingContextWin(delegate) {}
+    Delegate* delegate,
+    ProcessBehavior process_behavior)
+    : PrintingContextWin(delegate, process_behavior) {}
 
 PrintingContextSystemDialogWin::~PrintingContextSystemDialogWin() {}
 

@@ -357,7 +357,7 @@ TEST_F(BrowserAccessibilityAndroidTest, TestGetTextContent) {
   BrowserAccessibilityAndroid* node =
       static_cast<BrowserAccessibilityAndroid*>(container_obj);
   // No predicate returns all text.
-  EXPECT_EQ(u"1Foo2Bar3Baz", node->GetSubstringTextContentUTF16(absl::nullopt));
+  EXPECT_EQ(u"1Foo2Bar3Baz", node->GetSubstringTextContentUTF16(std::nullopt));
   // Non-empty predicate terminates after one text node.
   EXPECT_EQ(u"1Foo", node->GetSubstringTextContentUTF16(
                          BrowserAccessibilityAndroid::NonEmptyPredicate()));

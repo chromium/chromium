@@ -11,6 +11,8 @@
 #include "base/strings/utf_string_conversions.h"
 #include "chromeos/constants/chromeos_features.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/base/metadata/metadata_header_macros.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/events/test/event_generator.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/layout/box_layout.h"
@@ -22,8 +24,19 @@ namespace {
 // Total width of the bubble view.
 constexpr int kBubbleTotalWidthDp = 192;
 
-class AnchorView : public views::View,
-                   public base::SupportsWeakPtr<AnchorView> {};
+class AnchorView : public views::View {
+ public:
+  base::WeakPtr<AnchorView> AsWeakPtr() {
+    return weak_ptr_factory_.GetWeakPtr();
+  }
+
+ private:
+  METADATA_HEADER(AnchorView, views::View)
+  base::WeakPtrFactory<AnchorView> weak_ptr_factory_{this};
+};
+
+BEGIN_METADATA(AnchorView)
+END_METADATA
 
 }  // namespace
 
@@ -60,9 +73,9 @@ class LoginBaseBubbleViewTest : public LoginTestBase {
     container_->AddChildView(bubble_.get());
   }
 
-  raw_ptr<LoginBaseBubbleView, DanglingUntriaged | ExperimentalAsh> bubble_;
-  raw_ptr<views::View, DanglingUntriaged | ExperimentalAsh> container_;
-  raw_ptr<AnchorView, DanglingUntriaged | ExperimentalAsh> anchor_;
+  raw_ptr<LoginBaseBubbleView, DanglingUntriaged> bubble_;
+  raw_ptr<views::View, DanglingUntriaged> container_;
+  raw_ptr<AnchorView, DanglingUntriaged> anchor_;
 };
 
 TEST_F(LoginBaseBubbleViewTest, BasicProperties) {

@@ -2,6 +2,11 @@
 
 namespace blink {
 
+bool CountingSettingsProvider::IsMetaExperimentActive() const {
+  ++state_->count_of_is_meta_experiment_active;
+  return state_->response_for_is_meta_experiment_active;
+}
+
 bool CountingSettingsProvider::IsActive() const {
   ++state_->count_of_is_active;
   return state_->response_for_is_active;
@@ -22,10 +27,6 @@ bool CountingSettingsProvider::IsTypeAllowed(
     IdentifiableSurface::Type type) const {
   ++state_->count_of_is_type_allowed;
   return state_->response_for_is_allowed;
-}
-
-bool CountingSettingsProvider::ShouldActivelySample() const {
-  return false;
 }
 
 }  // namespace blink

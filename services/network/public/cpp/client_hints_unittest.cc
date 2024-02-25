@@ -17,7 +17,7 @@ using testing::UnorderedElementsAre;
 namespace network {
 
 TEST(ClientHintsTest, ParseClientHintsHeader) {
-  absl::optional<std::vector<network::mojom::WebClientHintsType>> result;
+  std::optional<std::vector<network::mojom::WebClientHintsType>> result;
 
   // Empty is OK.
   result = ParseClientHintsHeader(" ");

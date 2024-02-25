@@ -6,15 +6,15 @@
 
 #include <cstdint>
 #include <limits>
+#include <optional>
 #include <string>
+#include <string_view>
 
 #include "net/third_party/uri_template/uri_template.h"
 #include "third_party/abseil-cpp/absl/container/flat_hash_map.h"
 #include "third_party/abseil-cpp/absl/container/flat_hash_set.h"
 #include "third_party/abseil-cpp/absl/strings/str_cat.h"
 #include "third_party/abseil-cpp/absl/strings/str_replace.h"
-#include "third_party/abseil-cpp/absl/strings/string_view.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/url_canon.h"
 #include "url/url_util.h"
 
@@ -41,17 +41,15 @@ bool ExpandURITemplateImpl(
   return result;
 }
 
-absl::optional<std::string> AsciiUrlDecodeImpl(absl::string_view input) {
-  std::string input_encoded = std::string(input);
+std::optional<std::string> AsciiUrlDecodeImpl(std::string_view input) {
   url::RawCanonOutputW<1024> canon_output;
-  url::DecodeURLEscapeSequences(input_encoded.c_str(), input_encoded.length(),
-                                url::DecodeURLMode::kUTF8, &canon_output);
+  url::DecodeURLEscapeSequences(input, url::DecodeURLMode::kUTF8,
+                                &canon_output);
   std::string output;
   output.reserve(canon_output.length());
-  for (int i = 0; i < canon_output.length(); i++) {
-    const uint16_t c = reinterpret_cast<uint16_t*>(canon_output.data())[i];
+  for (uint16_t c : canon_output.view()) {
     if (c > std::numeric_limits<signed char>::max()) {
-      return absl::nullopt;
+      return std::nullopt;
     }
     output += static_cast<char>(c);
   }

@@ -98,7 +98,7 @@ class CleanupAnimationObserverTest : public AshTestBase,
       widget_ = nullptr;
   }
 
-  raw_ptr<views::Widget, ExperimentalAsh> widget_ = nullptr;
+  raw_ptr<views::Widget> widget_ = nullptr;
 };
 
 }  // namespace

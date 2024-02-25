@@ -17,14 +17,10 @@ import org.chromium.components.browser_ui.settings.SettingsLauncher;
  * save password) from native code.
  */
 public interface PasswordManagerHandler {
-    /**
-     * Called to insert a password entry into the password store.
-     */
+    /** Called to insert a password entry into the password store. */
     public void insertPasswordEntryForTesting(String origin, String username, String password);
 
-    /**
-     * Called to start fetching password and exception lists.
-     */
+    /** Called to start fetching password and exception lists. */
     void updatePasswordLists();
 
     /**
@@ -77,7 +73,10 @@ public interface PasswordManagerHandler {
      * @param index the index of the password entry to edit
      * @param isBlockedCredential whether this credential is blocked for saving
      */
-    void showPasswordEntryEditingView(Context context, SettingsLauncher settingsLauncher, int index,
+    void showPasswordEntryEditingView(
+            Context context,
+            SettingsLauncher settingsLauncher,
+            int index,
             boolean isBlockedCredential);
 
     /**

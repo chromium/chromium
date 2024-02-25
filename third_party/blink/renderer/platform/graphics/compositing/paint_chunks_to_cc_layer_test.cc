@@ -68,7 +68,7 @@ class TestChunks {
       const ClipPaintPropertyNodeOrAlias& c,
       const EffectPaintPropertyNodeOrAlias& e,
       const gfx::Rect& bounds = gfx::Rect(0, 0, 100, 100),
-      const absl::optional<gfx::Rect>& drawable_bounds = absl::nullopt) {
+      const std::optional<gfx::Rect>& drawable_bounds = std::nullopt) {
     cc::PaintOpBuffer buffer;
     buffer.push<cc::DrawRectOp>(
         gfx::RectToSkRect(drawable_bounds ? *drawable_bounds : bounds),
@@ -83,7 +83,7 @@ class TestChunks {
       const ClipPaintPropertyNodeOrAlias& c,
       const EffectPaintPropertyNodeOrAlias& e,
       const gfx::Rect& bounds = gfx::Rect(0, 0, 100, 100),
-      const absl::optional<gfx::Rect>& drawable_bounds = absl::nullopt) {
+      const std::optional<gfx::Rect>& drawable_bounds = std::nullopt) {
     auto& items = paint_artifact_->GetDisplayItemList();
     auto i = items.size();
     items.AllocateAndConstruct<DrawingDisplayItem>(

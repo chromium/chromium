@@ -4,6 +4,9 @@
 
 #include "media/gpu/v4l2/v4l2_utils.h"
 
+#include <fcntl.h>
+#include <sys/ioctl.h>
+
 #include <map>
 #include <sstream>
 
@@ -15,13 +18,17 @@
 
 #include "base/containers/contains.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/numerics/safe_conversions.h"
+#include "base/posix/eintr_wrapper.h"
 #include "base/ranges/algorithm.h"
 #include "build/build_config.h"
+#include "media/base/media_switches.h"
 #include "media/base/video_codecs.h"
 #include "media/base/video_frame.h"
 #include "media/base/video_types.h"
 #include "media/gpu/chromeos/fourcc.h"
 #include "media/gpu/macros.h"
+#include "media/media_buildflags.h"
 #include "ui/gfx/geometry/size.h"
 
 // This has not been accepted upstream.
@@ -37,10 +44,20 @@
 #define MAKE_V4L2_CODEC_PAIR(codec, suffix) \
   std::make_pair(codec##_##suffix, codec)
 
+namespace {
+int HandledIoctl(int fd, int request, void* arg) {
+  return HANDLE_EINTR(ioctl(fd, request, arg));
+}
+}  // namespace
 namespace media {
 
 void RecordMediaIoctlUMA(MediaIoctlRequests function) {
   base::UmaHistogramEnumeration("Media.V4l2VideoDecoder.MediaIoctlError",
+                                function);
+}
+
+void RecordVidiocIoctlErrorUMA(VidiocIoctlRequests function) {
+  base::UmaHistogramEnumeration("Media.V4l2VideoDecoder.VidiocIoctlError",
                                 function);
 }
 
@@ -159,8 +176,11 @@ VideoCodecProfile V4L2ProfileToVideoCodecProfile(uint32_t v4l2_codec,
         case V4L2_MPEG_VIDEO_VP9_PROFILE_0:
           return VP9PROFILE_PROFILE0;
         case V4L2_MPEG_VIDEO_VP9_PROFILE_2:
-          // TODO(b/250698011): Support Profile 2 when launched
-          return VIDEO_CODEC_PROFILE_UNKNOWN;
+          if (base::FeatureList::IsEnabled(kV4L2FlatVideoDecoder)) {
+            return VP9PROFILE_PROFILE2;
+          } else {
+            return VIDEO_CODEC_PROFILE_UNKNOWN;
+          }
       }
       break;
 #if BUILDFLAG(ENABLE_HEVC_PARSER_AND_HW_DECODER)
@@ -192,19 +212,19 @@ VideoCodecProfile V4L2ProfileToVideoCodecProfile(uint32_t v4l2_codec,
 }
 
 size_t GetNumPlanesOfV4L2PixFmt(uint32_t pix_fmt) {
-  absl::optional<Fourcc> fourcc = Fourcc::FromV4L2PixFmt(pix_fmt);
+  std::optional<Fourcc> fourcc = Fourcc::FromV4L2PixFmt(pix_fmt);
   if (fourcc && fourcc->IsMultiPlanar()) {
     return VideoFrame::NumPlanes(fourcc->ToVideoPixelFormat());
   }
   return 1u;
 }
 
-absl::optional<VideoFrameLayout> V4L2FormatToVideoFrameLayout(
+std::optional<VideoFrameLayout> V4L2FormatToVideoFrameLayout(
     const struct v4l2_format& format) {
   if (!V4L2_TYPE_IS_MULTIPLANAR(format.type)) {
     VLOGF(1) << "v4l2_buf_type is not multiplanar: " << std::hex << "0x"
              << format.type;
-    return absl::nullopt;
+    return std::nullopt;
   }
   const v4l2_pix_format_mplane& pix_mp = format.fmt.pix_mp;
   const uint32_t& pix_fmt = pix_mp.pixelformat;
@@ -212,7 +232,7 @@ absl::optional<VideoFrameLayout> V4L2FormatToVideoFrameLayout(
   if (!video_fourcc) {
     VLOGF(1) << "Failed to convert pixel format to VideoPixelFormat: "
              << FourccToString(pix_fmt);
-    return absl::nullopt;
+    return std::nullopt;
   }
   const VideoPixelFormat video_format = video_fourcc->ToVideoPixelFormat();
   const size_t num_buffers = pix_mp.num_planes;
@@ -220,14 +240,14 @@ absl::optional<VideoFrameLayout> V4L2FormatToVideoFrameLayout(
   if (num_color_planes == 0) {
     VLOGF(1) << "Unsupported video format for NumPlanes(): "
              << VideoPixelFormatToString(video_format);
-    return absl::nullopt;
+    return std::nullopt;
   }
   if (num_buffers > num_color_planes) {
     VLOGF(1) << "pix_mp.num_planes: " << num_buffers
              << " should not be larger than NumPlanes("
              << VideoPixelFormatToString(video_format)
              << "): " << num_color_planes;
-    return absl::nullopt;
+    return std::nullopt;
   }
   // Reserve capacity in advance to prevent unnecessary vector reallocation.
   std::vector<ColorPlaneLayout> planes;
@@ -261,7 +281,7 @@ absl::optional<VideoFrameLayout> V4L2FormatToVideoFrameLayout(
         if (y_stride % 2 != 0 || pix_mp.height % 2 != 0) {
           VLOGF(1) << "Plane-Y stride and height should be even; stride: "
                    << y_stride << ", height: " << pix_mp.height;
-          return absl::nullopt;
+          return std::nullopt;
         }
         const int32_t half_stride = y_stride / 2;
         const size_t plane_0_area = y_stride_abs * pix_mp.height;
@@ -275,7 +295,7 @@ absl::optional<VideoFrameLayout> V4L2FormatToVideoFrameLayout(
       default:
         VLOGF(1) << "Cannot derive stride for each plane for pixel format "
                  << FourccToString(pix_fmt);
-        return absl::nullopt;
+        return std::nullopt;
     }
   }
 
@@ -470,7 +490,82 @@ base::TimeDelta TimeValToTimeDelta(const struct timeval& timeval) {
 }
 
 struct timeval TimeDeltaToTimeVal(base::TimeDelta time_delta) {
-  return base::Time::FromTimeSpec(time_delta.ToTimeSpec()).ToTimeVal();
+  const int64_t time_delta_linear = time_delta.InMicroseconds();
+  constexpr int64_t kMicrosecondsPerSecond = 1000 * 1000;
+  return {.tv_sec = base::checked_cast<__time_t>(time_delta_linear /
+                                                 kMicrosecondsPerSecond),
+          .tv_usec = base::checked_cast<__suseconds_t>(time_delta_linear %
+                                                       kMicrosecondsPerSecond)};
+}
+
+std::optional<SupportedVideoDecoderConfigs> GetSupportedV4L2DecoderConfigs() {
+  SupportedVideoDecoderConfigs supported_media_configs;
+
+  constexpr char kVideoDeviceDriverPath[] = "/dev/video-dec0";
+  base::ScopedFD device_fd(HANDLE_EINTR(
+      open(kVideoDeviceDriverPath, O_RDWR | O_NONBLOCK | O_CLOEXEC)));
+  if (!device_fd.is_valid()) {
+    return std::nullopt;
+  }
+
+  std::vector<uint32_t> v4l2_codecs = EnumerateSupportedPixFmts(
+      base::BindRepeating(&HandledIoctl, device_fd.get()),
+      V4L2_BUF_TYPE_VIDEO_OUTPUT_MPLANE);
+
+  for (const uint32_t v4l2_codec : v4l2_codecs) {
+    const std::vector<VideoCodecProfile> media_codec_profiles =
+        EnumerateSupportedProfilesForV4L2Codec(
+            base::BindRepeating(&HandledIoctl, device_fd.get()), v4l2_codec);
+
+    gfx::Size min_coded_size;
+    gfx::Size max_coded_size;
+    GetSupportedResolution(base::BindRepeating(&HandledIoctl, device_fd.get()),
+                           v4l2_codec, &min_coded_size, &max_coded_size);
+
+    for (const auto& profile : media_codec_profiles) {
+      supported_media_configs.emplace_back(SupportedVideoDecoderConfig(
+          profile, profile, min_coded_size, max_coded_size,
+          /*allow_encrypted=*/false, /*require_encrypted=*/false));
+    }
+  }
+
+#if DCHECK_IS_ON()
+  for (const auto& config : supported_media_configs) {
+    DVLOGF(3) << "Enumerated " << GetProfileName(config.profile_min) << " ("
+              << config.coded_size_min.ToString() << "-"
+              << config.coded_size_max.ToString() << ")";
+  }
+#endif
+
+  return supported_media_configs;
+}
+
+bool IsV4L2DecoderStateful() {
+  constexpr char kVideoDeviceDriverPath[] = "/dev/video-dec0";
+  base::ScopedFD device_fd(HANDLE_EINTR(
+      open(kVideoDeviceDriverPath, O_RDWR | O_NONBLOCK | O_CLOEXEC)));
+  if (!device_fd.is_valid()) {
+    return false;
+  }
+
+  std::vector<uint32_t> v4l2_codecs = EnumerateSupportedPixFmts(
+      base::BindRepeating(&HandledIoctl, device_fd.get()),
+      V4L2_BUF_TYPE_VIDEO_OUTPUT_MPLANE);
+
+  // V4L2 stateful formats (don't end up with _SLICE or _FRAME) supported.
+  constexpr std::array<uint32_t, 4> kSupportedStatefulInputCodecs = {
+      V4L2_PIX_FMT_H264,
+#if BUILDFLAG(ENABLE_HEVC_PARSER_AND_HW_DECODER)
+      V4L2_PIX_FMT_HEVC,
+#endif  // BUILDFLAG(ENABLE_HEVC_PARSER_AND_HW_DECODER)
+      V4L2_PIX_FMT_VP8,
+      V4L2_PIX_FMT_VP9,
+  };
+
+  return std::find_first_of(v4l2_codecs.begin(), v4l2_codecs.end(),
+                            kSupportedStatefulInputCodecs.begin(),
+                            kSupportedStatefulInputCodecs.end()) !=
+         v4l2_codecs.end();
 }
 
 }  // namespace media

@@ -51,7 +51,7 @@ def bind_local_vars(code_node, cg_context, is_construct_call=False):
     local_vars.extend([
         S("exception_state",
           ("ExceptionState ${exception_state}("
-           "${isolate}, ExceptionContext::Context::kOperationInvoke,"
+           "${isolate}, ExceptionContextType::kOperationInvoke,"
            "${class_like_name}, ${property_name});")),
         S("isolate", "v8::Isolate* ${isolate} = GetIsolate();"),
         S("script_state",
@@ -167,7 +167,7 @@ def make_callback_invocation_function(cg_context,
     F = FormatNode
 
     func_like = cg_context.function_like
-    return_type = ("void" if func_like.return_type.unwrap().is_void else
+    return_type = ("void" if func_like.return_type.unwrap().is_undefined else
                    blink_type_info(func_like.return_type).value_t)
     maybe_return_type = "v8::Maybe<{}>".format(return_type)
     arg_type_and_names = _make_arg_type_and_names(func_like)
@@ -222,7 +222,7 @@ def make_callback_invocation_function(cg_context,
         body.add_template_var(arg_name, arg_name)
     bind_local_vars(body, cg_context, is_construct_call)
 
-    if func_like.return_type.unwrap(typedef=True).is_void:
+    if func_like.return_type.unwrap(typedef=True).is_undefined:
         text = "v8::JustVoid()"
     else:
         text = "helper.Result<{}, {}>()".format(
@@ -373,7 +373,7 @@ def make_invoke_and_report_function(cg_context, function_name, api_func_name):
     F = FormatNode
 
     func_like = cg_context.function_like
-    if not (func_like.return_type.unwrap().is_void
+    if not (func_like.return_type.unwrap().is_undefined
             or func_like.identifier == "Function"):
         return None, None
 
@@ -615,13 +615,20 @@ def generate_callback_function(callback_function_identifier):
         "third_party/blink/renderer/bindings/core/v8/generated_code_helper.h",
         "third_party/blink/renderer/bindings/core/v8/to_v8_traits.h",
     ])
-    (header_forward_decls, header_include_headers, source_forward_decls,
-     source_include_headers) = collect_forward_decls_and_include_headers(
-         [callback_function.return_type] + list(
-             map(lambda argument: argument.idl_type,
-                 callback_function.arguments)))
+    (
+        header_forward_decls,
+        header_include_headers,
+        header_stdcpp_include_headers,
+        source_forward_decls,
+        source_include_headers,
+    ) = collect_forward_decls_and_include_headers(
+        [callback_function.return_type] + list(
+            map(lambda argument: argument.idl_type,
+                callback_function.arguments)))
     header_node.accumulator.add_class_decls(header_forward_decls)
     header_node.accumulator.add_include_headers(header_include_headers)
+    header_node.accumulator.add_stdcpp_include_headers(
+        header_stdcpp_include_headers)
     source_node.accumulator.add_class_decls(source_forward_decls)
     source_node.accumulator.add_include_headers(source_include_headers)
 

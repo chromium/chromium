@@ -65,6 +65,7 @@ class MockSharingFCMSender : public SharingFCMSender {
             /*sync_preference=*/nullptr,
             /*vapid_key_manager=*/nullptr,
             /*gcm_driver=*/nullptr,
+            /*device_info_tracker=*/nullptr,
             /*local_device_info_provider=*/nullptr,
             /*sync_service=*/nullptr) {}
   ~MockSharingFCMSender() override = default;

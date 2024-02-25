@@ -8,6 +8,12 @@ found in the LICENSE file.
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools">
 
+  <ViewStub
+    android:id="@+id/title_with_icon_stub"
+    android:inflatedId="@+id/title_with_icon"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content" />
+
   <LinearLayout
       android:id="@+id/otp_verification_dialog_contents"
       android:layout_height="wrap_content"

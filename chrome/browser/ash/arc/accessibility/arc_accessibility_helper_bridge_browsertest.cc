@@ -16,6 +16,8 @@
 #include "ash/constants/app_types.h"
 #include "ash/shell.h"
 #include "base/feature_list.h"
+#include "base/metrics/histogram_base.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "chrome/browser/ash/accessibility/accessibility_manager.h"
 #include "chrome/browser/ash/accessibility/magnification_manager.h"
 #include "chrome/browser/profiles/profile.h"
@@ -74,14 +76,14 @@ class MockAutomationEventRouter
 
   void DispatchGetTextLocationDataResult(
       const ui::AXActionData& data,
-      const absl::optional<gfx::Rect>& rect) override {
+      const std::optional<gfx::Rect>& rect) override {
     last_dispatched_action_data_ = data;
     last_dispatched_text_location_ = rect;
   }
 
-  absl::optional<ui::AXActionData> last_dispatched_action_data_;
-  absl::optional<bool> last_dispatched_action_result_;
-  absl::optional<gfx::Rect> last_dispatched_text_location_;
+  std::optional<ui::AXActionData> last_dispatched_action_data_;
+  std::optional<bool> last_dispatched_action_result_;
+  std::optional<gfx::Rect> last_dispatched_text_location_;
 };
 
 }  // namespace

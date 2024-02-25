@@ -64,6 +64,7 @@ extern const char kPermissionTypeDownload[];
 extern const char kPermissionTypeFileSystem[];
 extern const char kPermissionTypeFullscreen[];
 extern const char kPermissionTypeGeolocation[];
+extern const char kPermissionTypeHid[];
 extern const char kPermissionTypeLoadPlugin[];
 extern const char kPermissionTypeMedia[];
 extern const char kPermissionTypeNewWindow[];

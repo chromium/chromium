@@ -8,6 +8,7 @@
 #include <memory>
 #include <string>
 
+#include <optional>
 #include "base/i18n/message_formatter.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/utf_string_conversions.h"
@@ -16,7 +17,6 @@
 #include "remoting/base/string_resources.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/message_center/lock_screen/fake_lock_screen_controller.h"
 #include "ui/message_center/message_center.h"
@@ -90,7 +90,7 @@ class It2MeConfirmationDialogChromeOSTest
     ASSERT_NE(notification, nullptr);
     const int button_index = FindButtonIndex(*notification, button_title);
     ASSERT_GE(button_index, 0);
-    notification->delegate()->Click(button_index, absl::nullopt);
+    notification->delegate()->Click(button_index, std::nullopt);
   }
 
   std::u16string FormatMessage(const std::string& remote_user_email,

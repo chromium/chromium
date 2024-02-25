@@ -4,7 +4,6 @@
 
 #include "components/reporting/util/status.h"
 
-#include <stdio.h>
 #include <ostream>
 #include <string>
 #include <utility>
@@ -66,21 +65,16 @@ const Status& Status::StatusOK() {
 
 Status::Status() : error_code_(error::OK) {}
 
-Status::Status(error::Code error_code, std::string_view error_message)
-    : error_code_(error_code) {
-  if (error_code != error::OK) {
-    error_message_ = std::string(error_message);
-  }
-}
+Status::Status(const Status&) = default;
+Status& Status::operator=(const Status&) = default;
+Status::Status(Status&&) = default;
+Status& Status::operator=(Status&&) = default;
+Status::~Status() = default;
 
-Status::Status(const Status& other)
-    : error_code_(other.error_code_), error_message_(other.error_message_) {}
-
-Status& Status::operator=(const Status& other) {
-  error_code_ = other.error_code_;
-  error_message_ = other.error_message_;
-  return *this;
-}
+Status::Status(error::Code error_code, std::string error_message)
+    : error_code_(error_code),
+      error_message_{error_code != error::OK ? std::move(error_message)
+                                             : std::string()} {}
 
 bool Status::operator==(const Status& x) const {
   return error_code_ == x.error_code_ && error_message_ == x.error_message_;

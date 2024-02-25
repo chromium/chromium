@@ -18,7 +18,7 @@ class WaylandConnection;
 class WaylandZcrColorManagementSurface {
  public:
   explicit WaylandZcrColorManagementSurface(
-      struct zcr_color_management_surface_v1* management_surface,
+      zcr_color_management_surface_v1* management_surface,
       WaylandConnection* connection);
   WaylandZcrColorManagementSurface(const WaylandZcrColorManagementSurface&) =
       delete;
@@ -31,10 +31,10 @@ class WaylandZcrColorManagementSurface {
       scoped_refptr<WaylandZcrColorSpace> wayland_zcr_color_space);
 
  private:
-  // zcr_color_management_surface_v1_listener
+  // zcr_color_management_surface_v1_listener callbacks:
   static void OnPreferredColorSpace(void* data,
-                                    struct zcr_color_management_surface_v1* cms,
-                                    struct wl_output* output);
+                                    zcr_color_management_surface_v1* cms,
+                                    wl_output* output);
 
   wl::Object<zcr_color_management_surface_v1> zcr_color_management_surface_;
   const raw_ptr<WaylandConnection> connection_;

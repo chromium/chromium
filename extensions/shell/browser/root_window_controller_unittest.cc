@@ -148,7 +148,13 @@ TEST_F(RootWindowControllerTest, Basic) {
 }
 
 // Tests the window layout.
-TEST_F(RootWindowControllerTest, FillLayout) {
+// TODO(crbug.com/1505747): Flakily times out in Debug
+#if defined(NDEBUG)
+#define MAYBE_FillLayout FillLayout
+#else
+#define MAYBE_FillLayout DISABLED_FillLayout
+#endif
+TEST_F(RootWindowControllerTest, MAYBE_FillLayout) {
   RootWindowController* root_window_controller =
       desktop_delegate()->CreateRootWindowController();
 

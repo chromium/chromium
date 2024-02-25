@@ -18,16 +18,13 @@ import android.view.autofill.AutofillValue;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * This class only implements the necessary methods of ViewStructure for testing.
- */
+/** This class only implements the necessary methods of ViewStructure for testing. */
 public class TestViewStructure extends ViewStructure {
-    /**
-     * Test implementation of {@link HtmlInfo}.
-     */
+    /** Test implementation of {@link HtmlInfo}. */
     public static class TestHtmlInfo extends HtmlInfo {
         private String mTag;
         private List<Pair<String, String>> mAttributes;
+
         public TestHtmlInfo(String tag, List<Pair<String, String>> attributes) {
             mTag = tag;
             mAttributes = attributes;
@@ -53,12 +50,11 @@ public class TestViewStructure extends ViewStructure {
         }
     }
 
-    /**
-     * Test implementation of {@link HtmlInfo.Builder}.
-     */
+    /** Test implementation of {@link HtmlInfo.Builder}. */
     public static class TestBuilder extends HtmlInfo.Builder {
         private String mTag;
         private ArrayList<Pair<String, String>> mAttributes;
+
         public TestBuilder(String tag) {
             mTag = tag;
             mAttributes = new ArrayList<Pair<String, String>>();

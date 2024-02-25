@@ -4,6 +4,7 @@
 
 #include "content/browser/media/capture/web_contents_video_capture_device.h"
 
+#include <optional>
 #include <tuple>
 
 #include "base/functional/bind.h"
@@ -14,7 +15,6 @@
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "cc/test/pixel_test_utils.h"
-#include "components/viz/common/features.h"
 #include "content/browser/media/capture/content_capture_device_browsertest_base.h"
 #include "content/browser/media/capture/fake_video_capture_stack.h"
 #include "content/browser/media/capture/frame_test_util.h"
@@ -32,7 +32,6 @@
 #include "media/base/video_types.h"
 #include "media/base/video_util.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/gfx/geometry/rect.h"
@@ -47,36 +46,8 @@
 #include "ui/base/ui_base_features.h"
 #endif
 
-#if BUILDFLAG(IS_MAC) || defined(USE_AURA)
-#include "content/browser/compositor/image_transport_factory.h"
-#endif
-
 namespace content {
 namespace {
-
-scoped_refptr<viz::ContextProvider> GetContextProvider() {
-#if BUILDFLAG(IS_MAC) || defined(USE_AURA)
-  auto* image_transport_factory = ImageTransportFactory::GetInstance();
-  DCHECK(image_transport_factory);
-
-  auto* ui_context_factory = image_transport_factory->GetContextFactory();
-  if (!ui_context_factory) {
-    return nullptr;
-  }
-
-  return ui_context_factory->SharedMainThreadContextProvider();
-#else
-  return nullptr;
-#endif
-}
-
-bool IsGpuRastrizationEnabled() {
-  auto context_provider = GetContextProvider();
-  if (!context_provider)
-    return false;
-
-  return context_provider->ContextCapabilities().gpu_rasterization;
-}
 
 class WebContentsVideoCaptureDeviceBrowserTest
     : public ContentCaptureDeviceBrowserTestBase,
@@ -103,7 +74,7 @@ class WebContentsVideoCaptureDeviceBrowserTest
   // test to fail in case we encounter something else).
   void WaitForFrameWithColor(
       SkColor color,
-      absl::optional<SkColor> tolerate_color = absl::nullopt) {
+      std::optional<SkColor> tolerate_color = std::nullopt) {
     const std::string color_string =
         base::StringPrintf("red=%d, green=%d, blue=%d", SkColorGetR(color),
                            SkColorGetG(color), SkColorGetB(color));
@@ -156,10 +127,9 @@ class WebContentsVideoCaptureDeviceBrowserTest
 
         // viz::SoftwareRenderer does not do color space management. Otherwise
         // (normal case), be strict about color differences.
-        const int max_color_diff =
-            (IsSoftwareCompositingTest() || !IsGpuRastrizationEnabled())
-                ? kVeryLooseMaxColorDifference
-                : kMaxColorDifference;
+        const int max_color_diff = (IsSoftwareCompositingTest())
+                                       ? kVeryLooseMaxColorDifference
+                                       : kMaxColorDifference;
 
         // Determine the average RGB color in the three regions-of-interest in
         // the frame.
@@ -293,8 +263,17 @@ class WebContentsVideoCaptureDeviceBrowserTest
 
 // Tests that the device refuses to start if the WebContents target was
 // destroyed before the device could start.
+// TODO(crbug.com/40947039): Fails with MSAN. Determine if enabling the test for
+// MSAN is feasible or not
+#if defined(MEMORY_SANITIZER)
+#define MAYBE_ErrorsOutIfWebContentsHasGoneBeforeDeviceStart \
+  DISABLED_ErrorsOutIfWebContentsHasGoneBeforeDeviceStart
+#else
+#define MAYBE_ErrorsOutIfWebContentsHasGoneBeforeDeviceStart \
+  ErrorsOutIfWebContentsHasGoneBeforeDeviceStart
+#endif
 IN_PROC_BROWSER_TEST_F(WebContentsVideoCaptureDeviceBrowserTest,
-                       ErrorsOutIfWebContentsHasGoneBeforeDeviceStart) {
+                       MAYBE_ErrorsOutIfWebContentsHasGoneBeforeDeviceStart) {
   NavigateToInitialDocument();
 
   auto* const main_frame = shell()->web_contents()->GetPrimaryMainFrame();
@@ -330,8 +309,17 @@ IN_PROC_BROWSER_TEST_F(WebContentsVideoCaptureDeviceBrowserTest,
 
 // Tests that the device starts, captures a frame, and then gracefully
 // errors-out because the WebContents is destroyed before the device is stopped.
+// TODO(crbug.com/40947039): Fails with MSAN. Determine if enabling the test for
+// MSAN is feasible or not
+#if defined(MEMORY_SANITIZER)
+#define MAYBE_ErrorsOutWhenWebContentsIsDestroyed \
+  DISABLED_ErrorsOutWhenWebContentsIsDestroyed
+#else
+#define MAYBE_ErrorsOutWhenWebContentsIsDestroyed \
+  ErrorsOutWhenWebContentsIsDestroyed
+#endif
 IN_PROC_BROWSER_TEST_F(WebContentsVideoCaptureDeviceBrowserTest,
-                       ErrorsOutWhenWebContentsIsDestroyed) {
+                       MAYBE_ErrorsOutWhenWebContentsIsDestroyed) {
   NavigateToInitialDocument();
   AllocateAndStartAndWaitForFirstFrame();
   EXPECT_TRUE(shell()->web_contents()->IsBeingCaptured());
@@ -352,8 +340,15 @@ IN_PROC_BROWSER_TEST_F(WebContentsVideoCaptureDeviceBrowserTest,
 
 // Tests that capture is re-targetted when the render view of a WebContents
 // changes.
+// TODO(crbug.com/40947039): Fails with MSAN. Determine if enabling the test for
+// MSAN is feasible or not
+#if defined(MEMORY_SANITIZER)
+#define MAYBE_ChangesTargettedRenderView DISABLED_ChangesTargettedRenderView
+#else
+#define MAYBE_ChangesTargettedRenderView ChangesTargettedRenderView
+#endif
 IN_PROC_BROWSER_TEST_F(WebContentsVideoCaptureDeviceBrowserTest,
-                       ChangesTargettedRenderView) {
+                       MAYBE_ChangesTargettedRenderView) {
   NavigateToInitialDocument();
   AllocateAndStartAndWaitForFirstFrame();
   EXPECT_TRUE(shell()->web_contents()->IsBeingCaptured());
@@ -387,7 +382,7 @@ class WebContentsVideoCaptureDeviceBrowserTestAura
   void SetUp() override {
     scoped_feature_list_.InitAndEnableFeatureWithParameters(
         features::kApplyNativeOcclusionToCompositor,
-        {{features::kApplyNativeOcclusionToCompositorType,
+        {{features::kApplyNativeOcclusionToCompositorType.name,
           features::kApplyNativeOcclusionToCompositorTypeRelease}});
 
     WebContentsVideoCaptureDeviceBrowserTest::SetUp();
@@ -425,8 +420,15 @@ IN_PROC_BROWSER_TEST_F(WebContentsVideoCaptureDeviceBrowserTestAura,
 
 // Tests that capture is re-targetted when a renderer crash is followed by a
 // reload. Regression test for http://crbug.com/916332.
+// TODO(crbug.com/40947039): Fails with MSAN. Determine if enabling the test for
+// MSAN is feasible or not
+#if defined(MEMORY_SANITIZER)
+#define MAYBE_RecoversAfterRendererCrash DISABLED_RecoversAfterRendererCrash
+#else
+#define MAYBE_RecoversAfterRendererCrash RecoversAfterRendererCrash
+#endif
 IN_PROC_BROWSER_TEST_F(WebContentsVideoCaptureDeviceBrowserTest,
-                       RecoversAfterRendererCrash) {
+                       MAYBE_RecoversAfterRendererCrash) {
   NavigateToInitialDocument();
   AllocateAndStartAndWaitForFirstFrame();
   EXPECT_TRUE(shell()->web_contents()->IsBeingCaptured());
@@ -455,8 +457,15 @@ IN_PROC_BROWSER_TEST_F(WebContentsVideoCaptureDeviceBrowserTest,
 // Tests that the device stops delivering frames while suspended. When resumed,
 // any content changes that occurred during the suspend should cause a new frame
 // to be delivered, to ensure the client is up-to-date.
+// TODO(crbug.com/40947039): Fails with MSAN. Determine if enabling the test for
+// MSAN is feasible or not
+#if defined(MEMORY_SANITIZER)
+#define MAYBE_SuspendsAndResumes DISABLED_SuspendsAndResumes
+#else
+#define MAYBE_SuspendsAndResumes SuspendsAndResumes
+#endif
 IN_PROC_BROWSER_TEST_F(WebContentsVideoCaptureDeviceBrowserTest,
-                       SuspendsAndResumes) {
+                       MAYBE_SuspendsAndResumes) {
   NavigateToInitialDocument();
   AllocateAndStartAndWaitForFirstFrame();
   EXPECT_TRUE(shell()->web_contents()->IsBeingCaptured());
@@ -490,8 +499,16 @@ IN_PROC_BROWSER_TEST_F(WebContentsVideoCaptureDeviceBrowserTest,
 
 // Tests that the device delivers refresh frames when asked, while the source
 // content is not changing.
+// TODO(crbug.com/40947039): Fails with MSAN. Determine if enabling the test for
+// MSAN is feasible or not
+#if defined(MEMORY_SANITIZER)
+#define MAYBE_DeliversRefreshFramesUponRequest \
+  DISABLED_DeliversRefreshFramesUponRequest
+#else
+#define MAYBE_DeliversRefreshFramesUponRequest DeliversRefreshFramesUponRequest
+#endif
 IN_PROC_BROWSER_TEST_F(WebContentsVideoCaptureDeviceBrowserTest,
-                       DeliversRefreshFramesUponRequest) {
+                       MAYBE_DeliversRefreshFramesUponRequest) {
   NavigateToInitialDocument();
   AllocateAndStartAndWaitForFirstFrame();
   EXPECT_TRUE(shell()->web_contents()->IsBeingCaptured());
@@ -615,12 +632,20 @@ INSTANTIATE_TEST_SUITE_P(
 // whether the browser is running with software compositing or GPU-accelerated
 // compositing, whether the WebContents is visible/hidden or occluded/unoccluded
 // and whether the main document contains a cross-site iframe.
+// TODO(crbug.com/40947039): Fails with MSAN. Determine if enabling the test for
+// MSAN is feasible or not
+#if defined(MEMORY_SANITIZER)
+#define MAYBE_CapturesContentChanges DISABLED_CapturesContentChanges
+#else
+#define MAYBE_CapturesContentChanges CapturesContentChanges
+#endif
 IN_PROC_BROWSER_TEST_P(WebContentsVideoCaptureDeviceBrowserTestP,
-                       CapturesContentChanges) {
+                       MAYBE_CapturesContentChanges) {
   media::VideoPixelFormat specified_format = GetVideoPixelFormat();
   media::VideoPixelFormat expected_format = specified_format;
+
   if (specified_format == media::VideoPixelFormat::PIXEL_FORMAT_UNKNOWN) {
-    if (IsSoftwareCompositingTest() || !IsGpuRastrizationEnabled()) {
+    if (IsSoftwareCompositingTest()) {
       expected_format = media::VideoPixelFormat::PIXEL_FORMAT_I420;
     } else {
       expected_format = media::VideoPixelFormat::PIXEL_FORMAT_NV12;
@@ -648,7 +673,7 @@ IN_PROC_BROWSER_TEST_P(WebContentsVideoCaptureDeviceBrowserTestP,
   EXPECT_TRUE(shell()->web_contents()->IsBeingCaptured());
 
   // First frame is supposed to be black, store this as a previous color:
-  absl::optional<SkColor> previous_color = SK_ColorBLACK;
+  std::optional<SkColor> previous_color = SK_ColorBLACK;
 
   for (int visibility_case = 0; visibility_case < 3; ++visibility_case) {
     switch (visibility_case) {

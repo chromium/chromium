@@ -11,6 +11,7 @@
 #include <deque>
 #include <map>
 #include <memory>
+#include <optional>
 #include <set>
 #include <string>
 #include <vector>
@@ -43,7 +44,6 @@
 #include "net/dns/system_dns_config_change_notifier.h"
 #include "net/log/net_log_with_source.h"
 #include "net/socket/datagram_client_socket.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
 #include "url/gurl.h"
 #include "url/scheme_host_port.h"
@@ -106,6 +106,10 @@ class NET_EXPORT HostResolverManager
   using ResolveHostParameters = HostResolver::ResolveHostParameters;
   using PassKey = base::PassKey<HostResolverManager>;
 
+  struct NET_EXPORT_PRIVATE JobKey;
+  class NET_EXPORT_PRIVATE Job;
+  class NET_EXPORT_PRIVATE RequestImpl;
+
   // Creates a HostResolver as specified by |options|. Blocking tasks are run in
   // ThreadPool.
   //
@@ -141,28 +145,23 @@ class NET_EXPORT HostResolverManager
       handles::NetworkHandle target_network,
       NetLog* net_log);
 
-  // |resolve_context| must have already been added (via
-  // RegisterResolveContext()). If |optional_parameters| specifies any cache
-  // usage other than LOCAL_ONLY, there must be a 1:1 correspondence between
-  // |resolve_context| and |host_cache|, and both should come from the same
-  // ContextHostResolver.
-  //
-  // TODO(crbug.com/1022059): Use the HostCache out of the ResolveContext
-  // instead of passing it separately.
+  // Creates a host resolution request. `resolve_context` must have already been
+  // added via RegisterResolveContext(). If `optional_parameters` specifies any
+  // cache usage other than LOCAL_ONLY, `resolve_context` should have a valid
+  // `host_cache()` coming from a ContextHostResolver that owns
+  // `resolve_context`.
   std::unique_ptr<HostResolver::ResolveHostRequest> CreateRequest(
       absl::variant<url::SchemeHostPort, HostPortPair> host,
       NetworkAnonymizationKey network_anonymization_key,
       NetLogWithSource net_log,
-      absl::optional<ResolveHostParameters> optional_parameters,
-      ResolveContext* resolve_context,
-      HostCache* host_cache);
+      std::optional<ResolveHostParameters> optional_parameters,
+      ResolveContext* resolve_context);
   std::unique_ptr<HostResolver::ResolveHostRequest> CreateRequest(
       HostResolver::Host host,
       NetworkAnonymizationKey network_anonymization_key,
       NetLogWithSource net_log,
-      absl::optional<ResolveHostParameters> optional_parameters,
-      ResolveContext* resolve_context,
-      HostCache* host_cache);
+      std::optional<ResolveHostParameters> optional_parameters,
+      ResolveContext* resolve_context);
   // |resolve_context| is the context to use for the probes, and it is expected
   // to be the context of the calling ContextHostResolver.
   std::unique_ptr<HostResolver::ProbeRequest> CreateDohProbeRequest(
@@ -186,6 +185,8 @@ class NET_EXPORT HostResolverManager
   // Sets overriding configuration that will replace or add to configuration
   // read from the system for DnsClient resolution.
   void SetDnsConfigOverrides(DnsConfigOverrides overrides);
+
+  void SetIPv6ReachabilityOverride(bool reachability_override);
 
   // Support for invalidating cached per-context data on changes to network or
   // DNS configuration. ContextHostResolvers should register/deregister
@@ -274,11 +275,7 @@ class NET_EXPORT HostResolverManager
  private:
   friend class HostResolverManagerTest;
   friend class HostResolverManagerDnsTest;
-  class Job;
-  struct JobKey;
   class LoopbackProbeJob;
-  class DnsTask;
-  class RequestImpl;
   class ProbeRequestImpl;
   using JobMap = std::map<JobKey, std::unique_ptr<Job>>;
 
@@ -303,6 +300,17 @@ class NET_EXPORT HostResolverManager
   // Returns true if the task is local, synchronous, and instantaneous.
   static bool IsLocalTask(TaskType task);
 
+  // Initializes a job key and an IP address using manager properties and IPv6
+  // reachability. These job key and IP address are used to call
+  // ResolveLocally() and CreateAndStartJob().
+  void InitializeJobKeyAndIPAddress(
+      const HostResolver::Host& host,
+      const NetworkAnonymizationKey& network_anonymization_key,
+      const ResolveHostParameters& parameters,
+      const NetLogWithSource& source_net_log,
+      JobKey& out_job_key,
+      IPAddress& out_ip_address);
+
   // Attempts host resolution using fast local sources: IP literal resolution,
   // cache lookup, HOSTS lookup (if enabled), and localhost. Returns results
   // with error() OK if successful, ERR_NAME_NOT_RESOLVED if input is invalid,
@@ -314,7 +322,7 @@ class NET_EXPORT HostResolverManager
   //
   // If results are returned from the host cache, |out_stale_info| will be
   // filled in with information on how stale or fresh the result is. Otherwise,
-  // |out_stale_info| will be set to |absl::nullopt|.
+  // |out_stale_info| will be set to |std::nullopt|.
   //
   // If |cache_usage == ResolveHostParameters::CacheUsage::STALE_ALLOWED|, then
   // stale cache entries can be returned.
@@ -328,7 +336,7 @@ class NET_EXPORT HostResolverManager
       const NetLogWithSource& source_net_log,
       HostCache* cache,
       std::deque<TaskType>* out_tasks,
-      absl::optional<HostCache::EntryStaleness>* out_stale_info);
+      std::optional<HostCache::EntryStaleness>* out_stale_info);
 
   // Creates and starts a Job to asynchronously attempt to resolve
   // |request|.
@@ -352,18 +360,18 @@ class NET_EXPORT HostResolverManager
   // Returns the result iff |cache_usage| permits cache lookups and a positive
   // match is found for |key| in |cache|. |out_stale_info| must be non-null, and
   // will be filled in with details of the entry's staleness if an entry is
-  // returned, otherwise it will be set to |absl::nullopt|.
-  absl::optional<HostCache::Entry> MaybeServeFromCache(
+  // returned, otherwise it will be set to |std::nullopt|.
+  std::optional<HostCache::Entry> MaybeServeFromCache(
       HostCache* cache,
       const HostCache::Key& key,
       ResolveHostParameters::CacheUsage cache_usage,
       bool ignore_secure,
       const NetLogWithSource& source_net_log,
-      absl::optional<HostCache::EntryStaleness>* out_stale_info);
+      std::optional<HostCache::EntryStaleness>* out_stale_info);
 
   // Returns any preset resolution result from the active DoH configuration that
   // matches |key.host|.
-  absl::optional<HostCache::Entry> MaybeReadFromConfig(const JobKey& key);
+  std::optional<HostCache::Entry> MaybeReadFromConfig(const JobKey& key);
 
   // Populates the secure cache with an optimal entry that supersedes the
   // bootstrap result.
@@ -374,7 +382,7 @@ class NET_EXPORT HostResolverManager
   // Iff we have a DnsClient with a valid DnsConfig and we're not about to
   // attempt a system lookup, then try to resolve the query using the HOSTS
   // file.
-  absl::optional<HostCache::Entry> ServeFromHosts(
+  std::optional<HostCache::Entry> ServeFromHosts(
       base::StringPiece hostname,
       DnsQueryTypeSet query_types,
       bool default_family_due_to_no_ipv6,
@@ -382,7 +390,7 @@ class NET_EXPORT HostResolverManager
 
   // Iff |key| is for a localhost name (RFC 6761) and address DNS query type,
   // returns a results entry with the loopback IP.
-  absl::optional<HostCache::Entry> ServeLocalhost(
+  std::optional<HostCache::Entry> ServeLocalhost(
       base::StringPiece hostname,
       DnsQueryTypeSet query_types,
       bool default_family_due_to_no_ipv6);
@@ -413,19 +421,6 @@ class NET_EXPORT HostResolverManager
                           ResolveHostParameters::CacheUsage cache_usage,
                           SecureDnsPolicy secure_dns_policy,
                           std::deque<TaskType>* out_tasks);
-
-  // Determines "effective" request parameters using manager properties and IPv6
-  // reachability.
-  void GetEffectiveParametersForRequest(
-      const absl::variant<url::SchemeHostPort, std::string>& host,
-      DnsQueryType dns_query_type,
-      HostResolverFlags flags,
-      SecureDnsPolicy secure_dns_policy,
-      bool is_ip,
-      const NetLogWithSource& net_log,
-      DnsQueryTypeSet* out_effective_types,
-      HostResolverFlags* out_effective_flags,
-      SecureDnsMode* out_effective_secure_dns_mode);
 
   // Schedules probes to check IPv6 support. Returns OK if probe results are
   // already cached, and ERR_IO_PENDING when a probe is scheduled to be
@@ -502,7 +497,7 @@ class NET_EXPORT HostResolverManager
       NetworkChangeNotifier::ConnectionType type) override;
 
   // SystemDnsConfigChangeNotifier::Observer:
-  void OnSystemDnsConfigChanged(absl::optional<DnsConfig> config) override;
+  void OnSystemDnsConfigChanged(std::optional<DnsConfig> config) override;
 
   void UpdateJobsForChangedConfig();
 
@@ -560,6 +555,9 @@ class NET_EXPORT HostResolverManager
   base::TimeTicks last_ipv6_probe_time_;
   bool last_ipv6_probe_result_ = true;
   bool probing_ipv6_ = false;
+
+  // When true, query AAAA even when the globally reachable check failed.
+  bool ipv6_reachability_override_ = false;
 
   // Any resolver flags that should be added to a request by default.
   HostResolverFlags additional_resolver_flags_ = 0;

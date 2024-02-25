@@ -1,0 +1,8 @@
+WebView textSize:16.0 style:0 htmlInfo:[{htmlTag="#document"}, {display=""}]
+++View textSize:16.0 style:0 htmlInfo:[{htmlTag="p"}, {display="block"}]
+++++TextView text:"Menu is deprecated, but it may still be used semantically with list item children. For more history, see crbug.com/87553." textSize:16.0 style:0 htmlInfo:[{htmlTag=""}, {display=""}]
+++ListView textSize:16.0 style:0 htmlInfo:[{htmlTag="menu"}, {display="block"}]
+++++View textSize:16.0 style:0 htmlInfo:[{htmlTag="li"}, {display="list-item"}]
+++++++TextView text:"Cats" textSize:16.0 style:0 htmlInfo:[{htmlTag=""}, {display=""}]
+++++View textSize:16.0 style:0 htmlInfo:[{htmlTag="li"}, {display="list-item"}]
+++++++TextView text:"Dogs" textSize:16.0 style:0 htmlInfo:[{htmlTag=""}, {display=""}]

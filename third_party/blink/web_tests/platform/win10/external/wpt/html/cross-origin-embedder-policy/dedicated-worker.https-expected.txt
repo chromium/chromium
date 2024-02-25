@@ -1,0 +1,9 @@
+This is a testharness.js-based test.
+[FAIL] COEP: worker inherits COEP from blob URL creator, not owner.
+  assert_equals: expected "FAILED" but got "LOADED"
+[FAIL] COEP: worker inherits COEP for filesystem URL.
+  assert_unreached: Worker.onerror should not be called Reached unreachable code
+[FAIL] COEP: worker inherits COEP from filesystem URL creator, not owner.
+  assert_unreached: Worker.onerror should not be called Reached unreachable code
+Harness: the test ran to completion.
+

@@ -16,7 +16,7 @@ namespace {
 
 base::FilePath TestFile(const std::string& file) {
   base::FilePath path;
-  base::PathService::Get(base::DIR_SOURCE_ROOT, &path);
+  base::PathService::Get(base::DIR_SRC_TEST_DATA_ROOT, &path);
   return path.AppendASCII("components")
       .AppendASCII("test")
       .AppendASCII("data")
@@ -41,9 +41,7 @@ TEST_F(CrxCreatorTest, Create) {
   auto signing_key = crypto::RSAPrivateKey::Create(4096);
   std::vector<uint8_t> public_key;
   signing_key->ExportPublicKey(&public_key);
-  std::string expected_public_key;
-  base::Base64Encode(std::string(public_key.begin(), public_key.end()),
-                     &expected_public_key);
+  const std::string expected_public_key = base::Base64Encode(public_key);
 
   // Create a CRX File.
   base::FilePath temp_file;
@@ -70,9 +68,7 @@ TEST_F(CrxCreatorTest, VerifyCrxWithVerifiedContents) {
   auto signing_key = crypto::RSAPrivateKey::Create(4096);
   std::vector<uint8_t> public_key;
   signing_key->ExportPublicKey(&public_key);
-  std::string expected_public_key;
-  base::Base64Encode(std::string(public_key.begin(), public_key.end()),
-                     &expected_public_key);
+  const std::string expected_public_key = base::Base64Encode(public_key);
 
   // Create a CRX File.
   base::FilePath temp_file;

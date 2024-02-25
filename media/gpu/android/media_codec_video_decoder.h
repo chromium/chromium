@@ -5,13 +5,13 @@
 #ifndef MEDIA_GPU_ANDROID_MEDIA_CODEC_VIDEO_DECODER_H_
 #define MEDIA_GPU_ANDROID_MEDIA_CODEC_VIDEO_DECODER_H_
 
+#include <memory>
+#include <optional>
 #include <vector>
 
 #include "base/containers/circular_deque.h"
 #include "base/memory/raw_ptr.h"
 #include "base/threading/thread_checker.h"
-#include "base/timer/elapsed_timer.h"
-#include "base/timer/timer.h"
 #include "gpu/command_buffer/service/ref_counted_lock.h"
 #include "gpu/config/gpu_feature_info.h"
 #include "gpu/config/gpu_preferences.h"
@@ -19,6 +19,7 @@
 #include "media/base/android_overlay_mojo_factory.h"
 #include "media/base/callback_registry.h"
 #include "media/base/cdm_context.h"
+#include "media/base/decoder_status.h"
 #include "media/base/overlay_info.h"
 #include "media/base/scoped_async_trace.h"
 #include "media/base/video_decoder.h"
@@ -30,7 +31,6 @@
 #include "media/gpu/android/surface_chooser_helper.h"
 #include "media/gpu/android/video_frame_factory.h"
 #include "media/gpu/media_gpu_export.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace media {
 
@@ -184,15 +184,10 @@ class MEDIA_GPU_EXPORT MediaCodecVideoDecoder final
   // a new one.
   void FlushCodec();
 
-  // Attempts to queue input and dequeue output from the codec. Calls
-  // StartTimerOrPumpCodec() even if the codec is idle when |force_start_timer|.
-  void PumpCodec(bool force_start_timer);
+  // Attempts to queue input and dequeue output from the codec.
+  void PumpCodec();
   bool QueueInput();
   bool DequeueOutput();
-
-  // Starts |pump_codec_timer_| if it's not started and resets the idle timeout.
-  void StartTimerOrPumpCodec();
-  void StopTimerIfIdle();
 
   // Runs |eos_decode_cb_| if it's valid and |reset_generation| matches
   // |reset_generation_|.
@@ -217,7 +212,7 @@ class MEDIA_GPU_EXPORT MediaCodecVideoDecoder final
   // must be either kSurfaceDestroyed or kError.  |reason| will be logged to
   // |media_log_| as an info event ("error" indicates that playback will stop,
   // but we don't know that the renderer will do that).
-  void EnterTerminalState(State state, const char* reason);
+  void EnterTerminalState(State state, DecoderStatus reason);
   bool InTerminalState();
 
   // Releases |codec_| if it's not null.
@@ -247,13 +242,14 @@ class MEDIA_GPU_EXPORT MediaCodecVideoDecoder final
   bool lazy_init_pending_ = true;
   base::circular_deque<PendingDecode> pending_decodes_;
 
-  // Whether we've seen MediaCodec return MEDIA_CODEC_NO_KEY indicating that
-  // the corresponding key was not set yet, and MediaCodec will not accept
-  // buffers until OnCdmContextEvent() is called with kHasAdditionalUsableKey.
+  // Whether we've seen MediaCodec return MediaCodecResult::Codes::kNoKey
+  // indicating that the corresponding key was not set yet, and MediaCodec will
+  // not accept buffers until OnCdmContextEvent() is called with
+  // kHasAdditionalUsableKey.
   bool waiting_for_key_ = false;
 
   // The reason for the current drain operation if any.
-  absl::optional<DrainType> drain_type_;
+  std::optional<DrainType> drain_type_;
 
   // The current reset cb if a Reset() is in progress.
   base::OnceClosure reset_cb_;
@@ -275,8 +271,6 @@ class MEDIA_GPU_EXPORT MediaCodecVideoDecoder final
   std::vector<uint8_t> csd1_;
 
   std::unique_ptr<CodecWrapper> codec_;
-  base::ElapsedTimer idle_timer_;
-  base::RepeatingTimer pump_codec_timer_;
   raw_ptr<CodecAllocator> codec_allocator_;
 
   // The current target surface that |codec_| should be rendering to. It
@@ -325,8 +319,6 @@ class MEDIA_GPU_EXPORT MediaCodecVideoDecoder final
 
   // Do we need a hw-secure codec?
   bool requires_secure_codec_ = false;
-
-  bool using_async_api_ = false;
 
   // Should we flush the codec on the next decode, and pretend that it is
   // drained currently?  Note that we'll automatically flush if the codec is

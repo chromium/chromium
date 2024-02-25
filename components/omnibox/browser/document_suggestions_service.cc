@@ -124,6 +124,8 @@ void DocumentSuggestionsService::CreateDocumentSuggestionsRequest(
   request->method = "POST";
   std::string request_body = BuildDocumentSuggestionRequest(query);
   request->load_flags = net::LOAD_DO_NOT_SAVE_COOKIES;
+  // Set the SiteForCookies to the request URL's site to avoid cookie blocking.
+  request->site_for_cookies = net::SiteForCookies::FromUrl(suggest_url);
   // It is expected that the user is signed in here. But we only care about
   // experiment IDs from the variations server, which do not require the
   // signed-in version of this method.

@@ -39,7 +39,7 @@ TEST_F(TypeConversionTest, TestConversion_StringToInt) {
 TEST_F(TypeConversionTest, TestConversion_BogusStringToInt) {
   std::u16string from_string = u"Foo";
   EXPECT_EQ(ui::metadata::TypeConverter<int>::FromString(from_string),
-            absl::nullopt);
+            std::nullopt);
 }
 
 TEST_F(TypeConversionTest, TestConversion_BogusStringToFloat) {
@@ -48,28 +48,27 @@ TEST_F(TypeConversionTest, TestConversion_BogusStringToFloat) {
 }
 
 TEST_F(TypeConversionTest, TestConversion_OptionalIntToString) {
-  absl::optional<int> src;
+  std::optional<int> src;
   std::u16string to_string =
-      ui::metadata::TypeConverter<absl::optional<int>>::ToString(src);
+      ui::metadata::TypeConverter<std::optional<int>>::ToString(src);
   EXPECT_EQ(to_string, ui::metadata::GetNullOptStr());
 
   src = 5;
-  to_string = ui::metadata::TypeConverter<absl::optional<int>>::ToString(src);
+  to_string = ui::metadata::TypeConverter<std::optional<int>>::ToString(src);
   EXPECT_EQ(to_string, u"5");
 }
 
 TEST_F(TypeConversionTest, TestConversion_StringToOptionalInt) {
-  absl::optional<int> ret;
-  EXPECT_EQ(ui::metadata::TypeConverter<absl::optional<int>>::FromString(
+  std::optional<int> ret;
+  EXPECT_EQ(ui::metadata::TypeConverter<std::optional<int>>::FromString(
                 ui::metadata::GetNullOptStr()),
-            absl::make_optional(ret));
+            std::make_optional(ret));
 
-  EXPECT_EQ(ui::metadata::TypeConverter<absl::optional<int>>::FromString(u"10"),
+  EXPECT_EQ(ui::metadata::TypeConverter<std::optional<int>>::FromString(u"10"),
             10);
 
-  EXPECT_EQ(
-      ui::metadata::TypeConverter<absl::optional<int>>::FromString(u"ab0"),
-      absl::nullopt);
+  EXPECT_EQ(ui::metadata::TypeConverter<std::optional<int>>::FromString(u"ab0"),
+            std::nullopt);
 }
 
 TEST_F(TypeConversionTest, TestConversion_ShadowValuesToString) {
@@ -90,7 +89,7 @@ TEST_F(TypeConversionTest, TestConversion_ShadowValuesToString) {
 }
 
 TEST_F(TypeConversionTest, TestConversion_StringToShadowValues) {
-  absl::optional<gfx::ShadowValues> opt_result =
+  std::optional<gfx::ShadowValues> opt_result =
       ui::metadata::TypeConverter<gfx::ShadowValues>::FromString(
           u"[ (6,4),0.53,rgba(23,44,0,1); (93,83),4.33,rgba(10,20,0,0.059) ]");
 
@@ -113,7 +112,7 @@ TEST_F(TypeConversionTest, TestConversion_StringToShadowValues) {
 
 TEST_F(TypeConversionTest, TestConversion_SkColorConversions) {
   // Check conversion from rgb hex string
-  absl::optional<SkColor> result =
+  std::optional<SkColor> result =
       ui::metadata::SkColorConverter::FromString(u"0x112233");
   EXPECT_TRUE(result);
   EXPECT_EQ(result.value(), SkColorSetRGB(0x11, 0x22, 0x33));
@@ -249,9 +248,9 @@ TEST_F(TypeConversionTest, CheckIsSerializable) {
   EXPECT_TRUE(ui::metadata::TypeConverter<int>::IsSerializable());
   EXPECT_TRUE(ui::metadata::TypeConverter<SkColor>::IsSerializable());
 
-  // Test absl::optional type.
+  // Test std::optional type.
   EXPECT_TRUE(ui::metadata::TypeConverter<
-              absl::optional<const char*>>::IsSerializable());
+              std::optional<const char*>>::IsSerializable());
   EXPECT_TRUE(
-      ui::metadata::TypeConverter<absl::optional<int>>::IsSerializable());
+      ui::metadata::TypeConverter<std::optional<int>>::IsSerializable());
 }

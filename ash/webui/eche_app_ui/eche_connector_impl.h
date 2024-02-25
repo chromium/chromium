@@ -49,10 +49,9 @@ class EcheConnectorImpl : public EcheConnector,
   void FlushQueue();
   void FlushQueueWhenDisabled();
 
-  raw_ptr<FeatureStatusProvider, ExperimentalAsh> eche_feature_status_provider_;
-  raw_ptr<secure_channel::ConnectionManager, ExperimentalAsh>
-      connection_manager_;
-  raw_ptr<EcheConnectionScheduler, ExperimentalAsh> connection_scheduler_;
+  raw_ptr<FeatureStatusProvider> eche_feature_status_provider_;
+  raw_ptr<secure_channel::ConnectionManager> connection_manager_;
+  raw_ptr<EcheConnectionScheduler> connection_scheduler_;
   base::queue<proto::ExoMessage> message_queue_;
 };
 

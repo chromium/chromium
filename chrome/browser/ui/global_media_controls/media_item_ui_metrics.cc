@@ -8,10 +8,7 @@
 #include "base/notreached.h"
 #include "components/media_router/browser/media_router_metrics.h"
 
-using global_media_controls::GlobalMediaControlsCastActionAndEntryPoint;
-using global_media_controls::GlobalMediaControlsEntryPoint;
 using media_router::MediaRouterMetrics;
-using media_router::mojom::MediaRouteProviderId;
 
 namespace {
 
@@ -32,56 +29,18 @@ GlobalMediaControlsCastMode GetGlobalMediaControlsCastMode(
 
 }  // namespace
 
-void MediaItemUIMetrics::RecordStartCastMode(
+// static
+void MediaItemUIMetrics::RecordStartCastingMetrics(
+    media_router::SinkIconType sink_icon_type,
     media_router::MediaCastMode cast_mode) {
+  MediaRouterMetrics::RecordMediaSinkTypeForGlobalMediaControls(sink_icon_type);
   base::UmaHistogramEnumeration(kStartCastingModeHistogramName,
                                 GetGlobalMediaControlsCastMode(cast_mode));
 }
-void MediaItemUIMetrics::RecordStopCastMode(
+
+// static
+void MediaItemUIMetrics::RecordStopCastingMetrics(
     media_router::MediaCastMode cast_mode) {
   base::UmaHistogramEnumeration(kStopCastingModeHistogramName,
                                 GetGlobalMediaControlsCastMode(cast_mode));
-}
-
-void MediaItemUIMetrics::RecordStartCastingMetrics(
-    media_router::SinkIconType sink_icon_type,
-    media_router::MediaCastMode cast_mode,
-    GlobalMediaControlsEntryPoint entry_point) {
-  MediaRouterMetrics::RecordMediaSinkTypeForGlobalMediaControls(sink_icon_type);
-  RecordStartCastMode(cast_mode);
-
-  GlobalMediaControlsCastActionAndEntryPoint action;
-  switch (entry_point) {
-    case GlobalMediaControlsEntryPoint::kToolbarIcon:
-      action = GlobalMediaControlsCastActionAndEntryPoint::kStartViaToolbarIcon;
-      break;
-    case GlobalMediaControlsEntryPoint::kPresentation:
-      action =
-          GlobalMediaControlsCastActionAndEntryPoint::kStartViaPresentation;
-      break;
-    case GlobalMediaControlsEntryPoint::kSystemTray:
-      action = GlobalMediaControlsCastActionAndEntryPoint::kStartViaSystemTray;
-      break;
-  }
-  base::UmaHistogramEnumeration(kCastStartStopHistogramName, action);
-}
-
-void MediaItemUIMetrics::RecordStopCastingMetrics(
-    media_router::MediaCastMode cast_mode,
-    GlobalMediaControlsEntryPoint entry_point) {
-  RecordStopCastMode(cast_mode);
-
-  GlobalMediaControlsCastActionAndEntryPoint action;
-  switch (entry_point) {
-    case GlobalMediaControlsEntryPoint::kToolbarIcon:
-      action = GlobalMediaControlsCastActionAndEntryPoint::kStopViaToolbarIcon;
-      break;
-    case GlobalMediaControlsEntryPoint::kPresentation:
-      action = GlobalMediaControlsCastActionAndEntryPoint::kStopViaPresentation;
-      break;
-    case GlobalMediaControlsEntryPoint::kSystemTray:
-      action = GlobalMediaControlsCastActionAndEntryPoint::kStopViaSystemTray;
-      break;
-  }
-  base::UmaHistogramEnumeration(kCastStartStopHistogramName, action);
 }

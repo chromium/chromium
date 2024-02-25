@@ -4,31 +4,37 @@
 
 #include "chrome/browser/ui/views/hats/hats_next_web_dialog.h"
 
-#include "base/memory/raw_ptr.h"
-#include "chrome/browser/ui/browser_dialogs.h"
-
 #include "base/base64url.h"
 #include "base/json/json_writer.h"
+#include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/notreached.h"
 #include "base/values.h"
 #include "chrome/browser/browser_process.h"
+#include "chrome/browser/devtools/devtools_window.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_destroyer.h"
+#include "chrome/browser/ui/browser_dialogs.h"
 #include "chrome/browser/ui/hats/hats_service.h"
+#include "chrome/browser/ui/hats/hats_service_desktop.h"
 #include "chrome/browser/ui/hats/hats_service_factory.h"
+#include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/frame/app_menu_button.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/toolbar_button_provider.h"
 #include "chrome/browser/ui/views/frame/top_container_view.h"
 #include "chrome/browser/ui/webui/chrome_web_contents_handler.h"
+#include "chrome/browser/ui/webui/hats/hats_ui.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/chrome_isolated_world_ids.h"
 #include "chrome/common/pref_names.h"
+#include "chrome/common/webui_url_constants.h"
 #include "components/constrained_window/constrained_window_views.h"
 #include "components/version_info/version_info.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/render_frame_host.h"
+#include "content/public/browser/web_ui.h"
 #include "net/base/url_util.h"
 #include "third_party/blink/public/common/page/page_zoom.h"
 #include "ui/base/metadata/metadata_header_macros.h"
@@ -46,8 +52,9 @@ constexpr gfx::Size HatsNextWebDialog::kMaxSize;
 
 // WebView which contains the WebContents displaying the HaTS Next survey.
 class HatsNextWebDialog::HatsWebView : public views::WebView {
+  METADATA_HEADER(HatsWebView, views::WebView)
+
  public:
-  METADATA_HEADER(HatsWebView);
   HatsWebView(content::BrowserContext* browser_context,
               Browser* browser,
               HatsNextWebDialog* dialog)
@@ -105,6 +112,8 @@ class HatsNextWebDialog::HatsWebView : public views::WebView {
     return nullptr;
   }
 
+  // TODO(crbug.com/1493711): Remove this whole function after HaTSWebUI is
+  // launched.
   // content::WebContentsObserver:
   void DidStartNavigation(
       content::NavigationHandle* navigation_handle) override {
@@ -119,7 +128,7 @@ class HatsNextWebDialog::HatsWebView : public views::WebView {
   raw_ptr<Browser> browser_;
 };
 
-BEGIN_METADATA(HatsNextWebDialog, HatsWebView, views::WebView)
+BEGIN_METADATA(HatsNextWebDialog, HatsWebView)
 END_METADATA
 
 HatsNextWebDialog::HatsNextWebDialog(
@@ -129,15 +138,17 @@ HatsNextWebDialog::HatsNextWebDialog(
     base::OnceClosure failure_callback,
     const SurveyBitsData& product_specific_bits_data,
     const SurveyStringData& product_specific_string_data)
-    : HatsNextWebDialog(
-          browser,
-          trigger_id,
-          GURL("https://storage.googleapis.com/chrome_hats_staging/index.html"),
-          base::Seconds(10),
-          std::move(success_callback),
-          std::move(failure_callback),
-          product_specific_bits_data,
-          product_specific_string_data) {}
+    : HatsNextWebDialog(browser,
+                        trigger_id,
+                        base::FeatureList::IsEnabled(features::kHaTSWebUI)
+                            ? GURL(chrome::kChromeUIUntrustedHatsURL)
+                            : GURL("https://storage.googleapis.com/"
+                                   "chrome_hats_staging/index.html"),
+                        base::Seconds(10),
+                        std::move(success_callback),
+                        std::move(failure_callback),
+                        product_specific_bits_data,
+                        product_specific_string_data) {}
 
 gfx::Size HatsNextWebDialog::CalculatePreferredSize() const {
   gfx::Size preferred_size = views::View::CalculatePreferredSize();
@@ -149,6 +160,66 @@ gfx::Size HatsNextWebDialog::CalculatePreferredSize() const {
 void HatsNextWebDialog::OnProfileWillBeDestroyed(Profile* profile) {
   DCHECK_EQ(profile, otr_profile_);
   otr_profile_ = nullptr;
+}
+
+std::string HatsNextWebDialog::GetTriggerId() {
+  return trigger_id_;
+}
+
+bool HatsNextWebDialog::GetEnableTesting() {
+  return base::FeatureList::IsEnabled(
+      features::kHappinessTrackingSurveysForDesktopDemo);
+}
+
+std::vector<std::string> HatsNextWebDialog::GetLanguageList() {
+  // The HaTS backend service accepts a list of preferred languages, although
+  // only the application locale is provided here to ensure that the survey
+  // matches the native UI language.
+  return std::vector<std::string>({g_browser_process->GetApplicationLocale()});
+}
+
+base::Value::Dict HatsNextWebDialog::GetProductSpecificDataJson() {
+  // Append any Product Specific Data to the query. This will be interpreted
+  // by the wrapper website and provided to the HaTS backend service.
+  base::Value::Dict dict;
+  for (const auto& field_value : product_specific_bits_data_) {
+    dict.Set(field_value.first, field_value.second ? "true" : "false");
+  }
+  for (const auto& field_value : product_specific_string_data_) {
+    dict.Set(field_value.first, field_value.second);
+  }
+  return dict;
+}
+
+void HatsNextWebDialog::OnSurveyLoaded() {
+  // If this has already been called, do nothing. This makes the code robust,
+  // should it be called multiple times.
+  if (received_survey_loaded_) {
+    return;
+  }
+  loading_timer_.Stop();
+  // Record that the survey was shown, and display the widget.
+  auto* service = HatsServiceFactory::GetForProfile(browser_->profile(), false);
+  DCHECK(service);
+  service->RecordSurveyAsShown(trigger_id_);
+  received_survey_loaded_ = true;
+  ShowWidget();
+  std::move(success_callback_).Run();
+}
+
+void HatsNextWebDialog::OnSurveyClosed() {
+  loading_timer_.Stop();
+  if (!received_survey_loaded_) {
+    // Receiving a close state prior to a loaded state indicates that contact
+    // was made with the HaTS Next service, but the HaTS service declined the
+    // survey request. This is likely because of a survey misconfiguration,
+    // such as a survey still being in test mode, or an invalid survey ID.
+    base::UmaHistogramEnumeration(
+        kHatsShouldShowSurveyReasonHistogram,
+        HatsServiceDesktop::ShouldShowSurveyReasons::kNoRejectedByHatsService);
+    std::move(failure_callback_).Run();
+  }
+  CloseWidget();
 }
 
 HatsNextWebDialog::HatsNextWebDialog(
@@ -195,7 +266,16 @@ HatsNextWebDialog::HatsNextWebDialog(
   SetLayoutManager(std::make_unique<views::FillLayout>());
   web_view_ =
       AddChildView(std::make_unique<HatsWebView>(otr_profile_, browser, this));
-  web_view_->LoadInitialURL(GetParameterizedHatsURL());
+  if (base::FeatureList::IsEnabled(features::kHaTSWebUI)) {
+    web_view_->LoadInitialURL(hats_survey_url_);
+    web_view_->web_contents()
+        ->GetWebUI()
+        ->GetController()
+        ->GetAs<HatsUI>()
+        ->SetHatsPageHandlerDelegate(this);
+  } else {
+    web_view_->LoadInitialURL(GetParameterizedHatsURL());
+  }
   web_view_->EnableSizingFromWebContents(kMinSize, kMaxSize);
 
   set_margins(gfx::Insets());
@@ -207,12 +287,16 @@ HatsNextWebDialog::HatsNextWebDialog(
 }
 
 HatsNextWebDialog::~HatsNextWebDialog() {
+#if IS_ANDROID
+  NOTIMPLEMENTED();  // This class is for desktop only. Enforce assumption.
+#endif
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   if (otr_profile_) {
     otr_profile_->RemoveObserver(this);
     ProfileDestroyer::DestroyOTRProfileWhenAppropriate(otr_profile_);
   }
-  auto* service = HatsServiceFactory::GetForProfile(browser_->profile(), false);
+  HatsServiceDesktop* service = static_cast<HatsServiceDesktop*>(
+      HatsServiceFactory::GetForProfile(browser_->profile(), false));
   DCHECK(service);
   service->HatsNextDialogClosed();
 
@@ -221,6 +305,8 @@ HatsNextWebDialog::~HatsNextWebDialog() {
   web_view_->web_contents()->SetDelegate(nullptr);
 }
 
+// TODO(crbug.com/1493711): Remove this whole function after HaTSWebUI is
+// launched.
 GURL HatsNextWebDialog::GetParameterizedHatsURL() const {
   GURL param_url =
       net::AppendQueryParameter(hats_survey_url_, "trigger_id", trigger_id_);
@@ -261,35 +347,20 @@ GURL HatsNextWebDialog::GetParameterizedHatsURL() const {
 void HatsNextWebDialog::LoadTimedOut() {
   base::UmaHistogramEnumeration(
       kHatsShouldShowSurveyReasonHistogram,
-      HatsService::ShouldShowSurveyReasons::kNoSurveyUnreachable);
+      HatsServiceDesktop::ShouldShowSurveyReasons::kNoSurveyUnreachable);
   CloseWidget();
   std::move(failure_callback_).Run();
 }
 
+// TODO(crbug.com/1493711): Remove this whole function after HaTSWebUI is
+// launched.
 void HatsNextWebDialog::OnSurveyStateUpdateReceived(std::string state) {
   loading_timer_.AbandonAndStop();
 
   if (state == "loaded") {
-    // Record that the survey was shown, and display the widget.
-    auto* service =
-        HatsServiceFactory::GetForProfile(browser_->profile(), false);
-    DCHECK(service);
-    service->RecordSurveyAsShown(trigger_id_);
-    received_survey_loaded_ = true;
-    ShowWidget();
-    std::move(success_callback_).Run();
+    OnSurveyLoaded();
   } else if (state == "close") {
-    if (!received_survey_loaded_) {
-      // Receiving a close state prior to a loaded state indicates that contact
-      // was made with the HaTS Next service, but the HaTS service declined the
-      // survey request. This is likely because of a survey misconfiguration,
-      // such as a survey still being in test mode, or an invalid survey ID.
-      base::UmaHistogramEnumeration(
-          kHatsShouldShowSurveyReasonHistogram,
-          HatsService::ShouldShowSurveyReasons::kNoRejectedByHatsService);
-      std::move(failure_callback_).Run();
-    }
-    CloseWidget();
+    OnSurveyClosed();
   } else {
     LOG(ERROR) << "Unknown state provided in URL fragment by HaTS survey:"
                << state;
@@ -318,6 +389,6 @@ bool HatsNextWebDialog::IsWaitingForSurveyForTesting() {
   return loading_timer_.IsRunning();
 }
 
-BEGIN_METADATA(HatsNextWebDialog, views::BubbleDialogDelegateView)
+BEGIN_METADATA(HatsNextWebDialog)
 ADD_READONLY_PROPERTY_METADATA(GURL, ParameterizedHatsURL)
 END_METADATA

@@ -64,14 +64,14 @@ DOMPlugin* DOMPluginArray::item(unsigned index) {
         DomWindow(), *GetPluginData()->Plugins()[index]);
   }
 
-  return dom_plugins_[index];
+  return dom_plugins_[index].Get();
 }
 
 DOMPlugin* DOMPluginArray::namedItem(const AtomicString& property_name) {
   if (should_return_fixed_plugin_data_) {
     for (const auto& plugin : dom_plugins_) {
       if (plugin->name() == property_name)
-        return plugin;
+        return plugin.Get();
     }
     return nullptr;
   }

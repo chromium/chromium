@@ -21,6 +21,7 @@
 #include "base/observer_list_types.h"
 #include "base/scoped_multi_source_observation.h"
 #include "base/scoped_observation.h"
+#include "base/timer/timer.h"
 #include "base/values.h"
 #include "chrome/browser/extensions/extension_icon_manager.h"
 #include "chrome/browser/profiles/profile.h"
@@ -40,6 +41,8 @@ struct ContextMenuParams;
 
 namespace extensions {
 class Extension;
+class ExtensionMenuIconLoader;
+class MenuIconLoader;
 class StateStore;
 
 // Represents a menu item added by an extension.
@@ -50,20 +53,25 @@ class MenuItem {
 
   // Key used to identify which extension a menu item belongs to.  A menu item
   // can also belong to a <webview>, in which case |webview_embedder_process_id|
-  // and |webview_instance_id| will be non-zero. When two ExtensionKeys are
-  // compared, an empty |extension_id| will match any other extension ID. This
-  // allows menu items belonging to webviews to be found with only the two
-  // webview IDs when the extension ID is not known. This is currently done from
-  // ChromeExtensionsBrowserClient::CleanUpWebView().
+  // |webview_embedder_frame_id|, and |webview_instance_id| will be non-zero.
+  // When two ExtensionKeys are compared, an empty |extension_id| will match any
+  // other extension ID. This allows menu items belonging to webviews to be
+  // found with only the |webview_embedder_process_id| and |webview_instance_id|
+  // when the extension ID is not known. This is currently done from
+  // ChromeExtensionsBrowserClient::CleanUpWebView(). The
+  // |webview_embedder_frame_id| is only used to get the <webview>'s embedder
+  // RenderFrameHost.
   struct ExtensionKey {
     std::string extension_id;
     int webview_embedder_process_id;
+    int webview_embedder_frame_id;
     int webview_instance_id;
 
     ExtensionKey();
     explicit ExtensionKey(const std::string& extension_id);
     ExtensionKey(const std::string& extension_id,
                  int webview_embedder_process_id,
+                 int webview_embedder_frame_id,
                  int webview_instance_id);
 
     bool operator==(const ExtensionKey& other) const;
@@ -291,6 +299,7 @@ class MenuManager : public ProfileObserver,
  public:
   static const char kOnContextMenus[];
   static const char kOnWebviewContextMenus[];
+  static constexpr MenuItem::OwnedList::size_type kMaxItemsPerExtension = 1000;
 
   class TestObserver : public base::CheckedObserver {
    public:
@@ -318,7 +327,15 @@ class MenuManager : public ProfileObserver,
   // top-level items' children. A view can then decide how to display these,
   // including whether to put them into a submenu if there are more than 1.
   const MenuItem::OwnedList* MenuItems(
-      const MenuItem::ExtensionKey& extension_key);
+      const MenuItem::ExtensionKey& extension_key) const;
+
+  // Returns the number of menu items for extension specified by
+  // `extension_key`.
+  MenuItem::OwnedList::size_type MenuItemsSize(
+      const MenuItem::ExtensionKey& extension_key) const {
+    const MenuItem::OwnedList* list = MenuItems(extension_key);
+    return list ? list->size() : 0;
+  }
 
   // Adds a top-level menu item for an extension, requiring the |extension|
   // pointer so it can load the icon for the extension. Returns a boolean
@@ -363,10 +380,10 @@ class MenuManager : public ProfileObserver,
                       const content::ContextMenuParams& params,
                       const MenuItem::Id& menu_item_id);
 
-  // This returns a image of width/height kFaviconSize, loaded either from an
-  // entry specified in the extension's 'icon' section of the manifest, or a
-  // default extension icon.
-  gfx::Image GetIconForExtension(const std::string& extension_id);
+  // This returns a image of width/height kFaviconSize, loaded through the
+  // MenuIconLoader associated with the |extension_key|.
+  gfx::Image GetIconForExtensionKey(
+      const MenuItem::ExtensionKey& extension_key);
 
   // ProfileObserver:
   void OnOffTheRecordProfileCreated(Profile* off_the_record) override;
@@ -379,17 +396,25 @@ class MenuManager : public ProfileObserver,
                            const Extension* extension,
                            UnloadedExtensionReason reason) override;
 
-  // Stores the menu items for the extension in the state storage.
+  // Stores the menu items for the extension in the state storage. The write
+  // will happen asynchronously after some delay.
   void WriteToStorage(const Extension* extension,
                       const MenuItem::ExtensionKey& extension_key);
 
   // Reads menu items for the extension from the state storage. Any invalid
   // items are ignored.
   void ReadFromStorage(const std::string& extension_id,
-                       absl::optional<base::Value> value);
+                       std::optional<base::Value> value);
 
   // Removes all "incognito" "split" mode context items.
   void RemoveAllIncognitoContextItems();
+
+  // Associates |extension_key| with the given |menu_icon_loader|.
+  void SetMenuIconLoader(MenuItem::ExtensionKey extension_key,
+                         std::unique_ptr<MenuIconLoader> menu_icon_loader);
+
+  // Returns the MenuIconLoader associated with |extension_key|.
+  MenuIconLoader* GetMenuIconLoader(MenuItem::ExtensionKey extension_key);
 
   void AddObserver(TestObserver* observer);
   void RemoveObserver(TestObserver* observer);
@@ -411,6 +436,8 @@ class MenuManager : public ProfileObserver,
   // Returns true if item is a descendant of an item with id |ancestor_id|.
   bool DescendantOf(MenuItem* item, const MenuItem::Id& ancestor_id);
 
+  void WriteToStorageInternal(const MenuItem::ExtensionKey& extension_key);
+
   // We keep items organized by mapping ExtensionKey to a list of items.
   std::map<MenuItem::ExtensionKey, MenuItem::OwnedList> context_items_;
 
@@ -419,6 +446,9 @@ class MenuManager : public ProfileObserver,
   // items.
   std::map<MenuItem::Id, MenuItem*> items_by_id_;
 
+  // The scheduled tasks to write the menu items to storage.
+  std::map<MenuItem::ExtensionKey, base::OneShotTimer> write_tasks_;
+
   // Listen to extension load, unloaded events.
   base::ScopedObservation<ExtensionRegistry, ExtensionRegistryObserver>
       extension_registry_observation_{this};
@@ -426,7 +456,13 @@ class MenuManager : public ProfileObserver,
   base::ScopedMultiSourceObservation<Profile, ProfileObserver>
       observed_profiles_{this};
 
-  ExtensionIconManager icon_manager_;
+  // Holds the default MenuIconLoader to use for extensions Context Menus API.
+  std::unique_ptr<ExtensionMenuIconLoader> extension_menu_icon_loader_;
+
+  // We keep a map of ExtensionKey to the MenuIconLoader that should be used to
+  // load that context's menu icon for a WebView Context Menus API use.
+  std::map<MenuItem::ExtensionKey, std::unique_ptr<MenuIconLoader>>
+      webview_menu_icon_loaders_;
 
   raw_ptr<content::BrowserContext> browser_context_;
 

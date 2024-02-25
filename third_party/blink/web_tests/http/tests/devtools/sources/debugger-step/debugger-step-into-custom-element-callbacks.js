@@ -8,7 +8,6 @@ import {SourcesTestRunner} from 'sources_test_runner';
 (async function() {
   TestRunner.addResult(`Tests that stepping into custom element methods will lead to a pause in the callbacks.\n`);
 
-  await TestRunner.loadLegacyModule('sources');
   await TestRunner.showPanel('sources');
 
   await TestRunner.evaluateInPagePromise(`

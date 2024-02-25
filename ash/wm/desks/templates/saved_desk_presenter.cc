@@ -28,12 +28,14 @@
 #include "base/containers/cxx20_erase_vector.h"
 #include "base/functional/bind.h"
 #include "base/i18n/number_formatting.h"
+#include "base/memory/raw_ptr.h"
 #include "base/ranges/algorithm.h"
 #include "base/scoped_multi_source_observation.h"
 #include "base/time/default_tick_clock.h"
 #include "base/time/time.h"
 #include "third_party/re2/src/re2/re2.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/display/screen.h"
 #include "ui/wm/core/window_util.h"
 
 namespace ash {
@@ -81,7 +83,7 @@ void ShowLibrary(aura::Window* const root_window,
     DCHECK(overview_session);
   }
 
-  // Show the library, this should highlight the newly saved item.
+  // Show the library, this should focus the newly saved item.
   overview_session->ShowSavedDeskLibrary(uuid, saved_desk_name, root_window);
 
   // Remove the current desk, this will be done without animation.
@@ -128,10 +130,11 @@ WindowCloseObserver* g_window_close_observer = nullptr;
 
 class WindowCloseObserver : public aura::WindowObserver {
  public:
-  WindowCloseObserver(aura::Window* root_window,
-                      const base::Uuid& saved_desk_uuid,
-                      const std::u16string& saved_desk_name,
-                      const std::vector<aura::Window*>& windows)
+  WindowCloseObserver(
+      aura::Window* root_window,
+      const base::Uuid& saved_desk_uuid,
+      const std::u16string& saved_desk_name,
+      const std::vector<raw_ptr<aura::Window, VectorExperimental>>& windows)
       : root_window_(root_window),
         saved_desk_uuid_(saved_desk_uuid),
         saved_desk_name_(saved_desk_name) {
@@ -275,12 +278,12 @@ class WindowCloseObserver : public aura::WindowObserver {
 
   void Terminate() { delete this; }
 
-  raw_ptr<aura::Window, ExperimentalAsh> root_window_;
+  raw_ptr<aura::Window> root_window_;
 
-  raw_ptr<aura::Window, ExperimentalAsh> system_modal_container_ = nullptr;
+  raw_ptr<aura::Window> system_modal_container_ = nullptr;
 
   // Current desk container. Will be used when monitoring for new windows.
-  raw_ptr<aura::Window, ExperimentalAsh> desk_container_ = nullptr;
+  raw_ptr<aura::Window> desk_container_ = nullptr;
 
   // Tracks whether a modal "confirm close" dialog has been showed.
   bool modal_dialog_showed_ = false;
@@ -297,8 +300,7 @@ class WindowCloseObserver : public aura::WindowObserver {
 
   // The desk that the user has saved and that we will remove once windows have
   // been removed.
-  raw_ptr<const Desk, DanglingUntriaged | ExperimentalAsh> desk_to_remove_ =
-      nullptr;
+  raw_ptr<const Desk, DanglingUntriaged> desk_to_remove_ = nullptr;
 
   // UUID and name of the saved desk.
   const base::Uuid saved_desk_uuid_;
@@ -355,8 +357,7 @@ void SavedDeskPresenter::UpdateUIForSavedDeskLibrary() {
   // The library and the library button is always hidden if we enter tablet
   // mode. If not in tablet mode, the library button is visible if there are
   // saved desks in the model, *or* we are already showing the library.
-  const bool in_tablet_mode =
-      Shell::Get()->tablet_mode_controller()->InTabletMode();
+  const bool in_tablet_mode = display::Screen::GetScreen()->InTabletMode();
 
   for (auto& overview_grid : overview_session_->grid_list()) {
     const bool is_showing_library = overview_grid->IsShowingSavedDeskLibrary();
@@ -382,7 +383,7 @@ void SavedDeskPresenter::UpdateUIForSavedDeskLibrary() {
 
 void SavedDeskPresenter::DeleteEntry(
     const base::Uuid& uuid,
-    absl::optional<DeskTemplateType> record_for_type) {
+    std::optional<DeskTemplateType> record_for_type) {
   weak_ptr_factory_.InvalidateWeakPtrs();
   GetDeskModel()->DeleteEntry(
       uuid,
@@ -411,8 +412,14 @@ void SavedDeskPresenter::LaunchSavedDesk(
 
   // Copy fields we need from `desk_template` since we're about to move it.
   const auto saved_desk_type = saved_desk->type();
-  const Desk* new_desk = desks_controller->CreateNewDeskForSavedDesk(
+  Desk* new_desk = desks_controller->CreateNewDeskForSavedDesk(
       saved_desk_type, saved_desk->template_name());
+
+  // Set the lacros profile ID for the newly created desk. This is effectively a
+  // no-op if `lacros_profile_id` returns zero.
+  new_desk->SetLacrosProfileId(saved_desk->lacros_profile_id(),
+                               /*source=*/std::nullopt);
+
   LaunchSavedDeskIntoNewDesk(std::move(saved_desk), root_window, new_desk);
 
   // Note: `LaunchSavedDeskIntoNewDesk` *may* cause overview mode to exit. This
@@ -469,7 +476,8 @@ void SavedDeskPresenter::OnDeskModelDestroying() {
 }
 
 void SavedDeskPresenter::EntriesAddedOrUpdatedRemotely(
-    const std::vector<const DeskTemplate*>& new_entries) {
+    const std::vector<raw_ptr<const DeskTemplate, VectorExperimental>>&
+        new_entries) {
   AddOrUpdateUIEntries(new_entries);
 }
 
@@ -522,7 +530,7 @@ void SavedDeskPresenter::GetAllEntries(const base::Uuid& item_to_focus,
 
 void SavedDeskPresenter::OnDeleteEntry(
     const base::Uuid& uuid,
-    absl::optional<DeskTemplateType> record_for_type,
+    std::optional<DeskTemplateType> record_for_type,
     desks_storage::DeskModel::DeleteEntryStatus status) {
   if (status != desks_storage::DeskModel::DeleteEntryStatus::kOk)
     return;
@@ -606,7 +614,7 @@ void SavedDeskPresenter::LaunchSavedDeskIntoNewDesk(
   if (saved_desk_type == DeskTemplateType::kSaveAndRecall) {
     // Passing nullopt as type since this indicates that we don't want to record
     // the `delete` metric for this operation.
-    DeleteEntry(uuid, /*record_for_type=*/absl::nullopt);
+    DeleteEntry(uuid, /*record_for_type=*/std::nullopt);
     RecordTimeBetweenSaveAndRecall(base::Time::Now() -
                                    saved_desk_creation_time);
   }
@@ -680,7 +688,7 @@ void SavedDeskPresenter::OnAddOrUpdateEntry(
                                       GetMaxEntryCount(saved_desk_type));
 
     if (saved_desk_type == DeskTemplateType::kSaveAndRecall) {
-      std::vector<aura::Window*> windows =
+      std::vector<raw_ptr<aura::Window, VectorExperimental>> windows =
           Shell::Get()->mru_window_tracker()->BuildMruWindowList(kActiveDesk);
 
       // Get rid of transient windows and all-desks windows.
@@ -720,7 +728,8 @@ void SavedDeskPresenter::OnAddOrUpdateEntry(
 }
 
 void SavedDeskPresenter::AddOrUpdateUIEntries(
-    const std::vector<const DeskTemplate*>& new_entries) {
+    const std::vector<raw_ptr<const DeskTemplate, VectorExperimental>>&
+        new_entries) {
   if (new_entries.empty())
     return;
 

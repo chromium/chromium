@@ -75,9 +75,6 @@ void InkDropEventHandler::OnGestureEvent(ui::GestureEvent* event) {
       if (current_ink_drop_state == InkDropState::ACTIVATED)
         return;
       ink_drop_state = InkDropState::ACTION_PENDING;
-      // The ui::ET_GESTURE_TAP_DOWN event needs to be marked as handled so
-      // that subsequent events for the gesture are sent to |this|.
-      event->SetHandled();
       break;
     case ui::ET_GESTURE_LONG_PRESS:
       if (current_ink_drop_state == InkDropState::ACTIVATED)

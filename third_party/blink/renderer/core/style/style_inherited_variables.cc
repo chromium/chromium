@@ -10,10 +10,25 @@
 
 namespace blink {
 
+bool StyleInheritedVariables::HasEquivalentRoots(
+    const StyleInheritedVariables& other) const {
+  if (base::ValuesEquivalent(root_, other.root_)) {
+    return true;
+  }
+  // A non-null root pointer can be semantically the same as
+  // a null root pointer; normalize them and try comparing again.
+  if (root_ == nullptr) {
+    return other.root_->variables_ == other.variables_;
+  } else if (other.root_ == nullptr) {
+    return root_->variables_ == variables_;
+  } else {
+    return false;
+  }
+}
+
 bool StyleInheritedVariables::operator==(
     const StyleInheritedVariables& other) const {
-  return base::ValuesEquivalent(root_, other.root_) &&
-         variables_ == other.variables_;
+  return HasEquivalentRoots(other) && variables_ == other.variables_;
 }
 
 StyleInheritedVariables::StyleInheritedVariables() : root_(nullptr) {}
@@ -36,7 +51,7 @@ StyleVariables::OptionalData StyleInheritedVariables::GetData(
   if (root_) {
     return root_->variables_.GetData(name);
   }
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 StyleVariables::OptionalValue StyleInheritedVariables::GetValue(
@@ -47,7 +62,7 @@ StyleVariables::OptionalValue StyleInheritedVariables::GetValue(
   if (root_) {
     return root_->variables_.GetValue(name);
   }
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 void StyleInheritedVariables::CollectNames(HashSet<AtomicString>& names) const {

@@ -58,9 +58,9 @@ void RecordSignInEvent(const UserContext& user_context, bool is_auto_login) {
   DCHECK(IsDeviceEnterpriseManaged());
 
   const user_manager::UserType session_type = user_context.GetUserType();
-  if (session_type == user_manager::USER_TYPE_REGULAR) {
+  if (session_type == user_manager::UserType::kRegular) {
     RecordSignInEvent(SignInEventType::REGULAR_USER);
-  } else if (session_type == user_manager::USER_TYPE_PUBLIC_ACCOUNT) {
+  } else if (session_type == user_manager::UserType::kPublicAccount) {
     RecordSignInEvent(is_auto_login ? SignInEventType::AUTOMATIC_PUBLIC_SESSION
                                     : SignInEventType::MANUAL_PUBLIC_SESSION);
   }
@@ -73,14 +73,15 @@ void StoreSessionLength(user_manager::UserType session_type,
                         const base::TimeDelta& session_length) {
   DCHECK(IsDeviceEnterpriseManaged());
 
-  if (session_type != user_manager::USER_TYPE_REGULAR &&
-      session_type != user_manager::USER_TYPE_PUBLIC_ACCOUNT) {
+  if (session_type != user_manager::UserType::kRegular &&
+      session_type != user_manager::UserType::kPublicAccount) {
     // No session length metric for other session types.
     return;
   }
 
   PrefService* local_state = g_browser_process->local_state();
-  local_state->SetInteger(prefs::kLastSessionType, session_type);
+  local_state->SetInteger(prefs::kLastSessionType,
+                          static_cast<int>(session_type));
   local_state->SetInt64(prefs::kLastSessionLength,
                         session_length.ToInternalValue());
   local_state->CommitPendingWrite();
@@ -108,9 +109,9 @@ void RecordStoredSessionLength() {
     return;
 
   std::string metric_name;
-  if (session_type == user_manager::USER_TYPE_REGULAR) {
+  if (session_type == user_manager::UserType::kRegular) {
     metric_name = "Enterprise.RegularUserSession.SessionLength";
-  } else if (session_type == user_manager::USER_TYPE_PUBLIC_ACCOUNT) {
+  } else if (session_type == user_manager::UserType::kPublicAccount) {
     metric_name = "Enterprise.PublicSession.SessionLength";
   } else {
     // NOTREACHED() since session length for other session types should not

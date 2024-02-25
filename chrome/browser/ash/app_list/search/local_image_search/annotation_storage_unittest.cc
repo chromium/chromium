@@ -39,9 +39,9 @@ class AnnotationStorageTest : public testing::Test {
 
     test_directory_ = temp_dir.GetPath();
     base::FilePath test_db = test_directory_.AppendASCII("test.db");
-    storage_ = std::make_unique<AnnotationStorage>(
-        std::move(test_db), /*histogram_tag=*/"test",
-        /*annotation_worker=*/nullptr);
+    storage_ =
+        std::make_unique<AnnotationStorage>(std::move(test_db),
+                                            /*annotation_worker=*/nullptr);
   }
 
   base::test::TaskEnvironment task_environment_;
@@ -53,7 +53,7 @@ TEST_F(AnnotationStorageTest, EmptyStorage) {
   storage_->Initialize();
   task_environment_.RunUntilIdle();
 
-  auto annotations = storage_->GetAllAnnotations();
+  auto annotations = storage_->GetAllAnnotationsForTest();
   EXPECT_TRUE(annotations.empty());
 
   task_environment_.RunUntilIdle();
@@ -64,30 +64,31 @@ TEST_F(AnnotationStorageTest, Insert) {
   task_environment_.RunUntilIdle();
 
   auto time = base::Time::Now();
-  ImageInfo bar_image({"test"}, test_directory_.AppendASCII("bar.jpg"), time);
+  ImageInfo bar_image({"test"}, test_directory_.AppendASCII("bar.jpg"), time,
+                      /*file_size=*/1);
 
   storage_->Insert(bar_image);
 
-  EXPECT_THAT(storage_->GetAllAnnotations(),
+  EXPECT_THAT(storage_->GetAllAnnotationsForTest(),
               testing::ElementsAreArray({bar_image}));
   task_environment_.RunUntilIdle();
 
   ImageInfo bar_image1({"test1"}, test_directory_.AppendASCII("bar.jpg"),
-                       std::move(time));
+                       std::move(time), 1);
 
   storage_->Insert(bar_image1);
 
-  EXPECT_THAT(storage_->GetAllAnnotations(),
+  EXPECT_THAT(storage_->GetAllAnnotationsForTest(),
               testing::ElementsAreArray({bar_image, bar_image1}));
   task_environment_.RunUntilIdle();
 
   ImageInfo foo_image({"test1"}, test_directory_.AppendASCII("foo.png"),
-                      base::Time::Now());
+                      base::Time::Now(), 2);
 
   storage_->Insert(foo_image);
 
   EXPECT_THAT(
-      storage_->GetAllAnnotations(),
+      storage_->GetAllAnnotationsForTest(),
       testing::UnorderedElementsAreArray({bar_image, bar_image1, foo_image}));
   task_environment_.RunUntilIdle();
 }
@@ -98,29 +99,30 @@ TEST_F(AnnotationStorageTest, Remove) {
 
   auto time = base::Time::Now();
   ImageInfo bar_image({"test"}, test_directory_.AppendASCII("bar.jpg"),
-                      base::Time::Now());
-  ImageInfo foo_image({"test"}, test_directory_.AppendASCII("foo.png"), time);
+                      base::Time::Now(), /*file_size=*/1);
+  ImageInfo foo_image({"test"}, test_directory_.AppendASCII("foo.png"), time,
+                      2);
   ImageInfo foo_image1({"test1"}, test_directory_.AppendASCII("foo.png"),
-                       std::move(time));
+                       std::move(time), 2);
   storage_->Insert(bar_image);
   storage_->Insert(foo_image);
   storage_->Insert(foo_image1);
 
   storage_->Remove(test_directory_.AppendASCII("bar.jpg"));
 
-  EXPECT_THAT(storage_->GetAllAnnotations(),
+  EXPECT_THAT(storage_->GetAllAnnotationsForTest(),
               testing::ElementsAreArray({foo_image, foo_image1}));
 
   storage_->Remove(test_directory_.AppendASCII("bar.jpg"));
 
-  EXPECT_THAT(storage_->GetAllAnnotations(),
+  EXPECT_THAT(storage_->GetAllAnnotationsForTest(),
               testing::ElementsAreArray({foo_image, foo_image1}));
 
   storage_->Remove(test_directory_.AppendASCII("foo.png"));
-  EXPECT_TRUE(storage_->GetAllAnnotations().empty());
+  EXPECT_TRUE(storage_->GetAllAnnotationsForTest().empty());
 
   storage_->Remove(test_directory_.AppendASCII("foo.png"));
-  EXPECT_TRUE(storage_->GetAllAnnotations().empty());
+  EXPECT_TRUE(storage_->GetAllAnnotationsForTest().empty());
 
   task_environment_.RunUntilIdle();
 }
@@ -130,9 +132,9 @@ TEST_F(AnnotationStorageTest, FindImagePath) {
   task_environment_.RunUntilIdle();
 
   ImageInfo bar_image({"test"}, test_directory_.AppendASCII("bar.jpg"),
-                      base::Time::Now());
+                      base::Time::Now(), /*file_size=*/1);
   ImageInfo foo_image({"test1"}, test_directory_.AppendASCII("foo.png"),
-                      base::Time::Now());
+                      base::Time::Now(), 2);
   storage_->Insert(bar_image);
   storage_->Insert(foo_image);
 
@@ -154,15 +156,15 @@ TEST_F(AnnotationStorageTest, SearchAnnotations) {
 
   ImageInfo document_image1({"test", "bar", "test1"},
                             test_directory_.AppendASCII("document1.jpg"),
-                            base::Time::Now());
+                            base::Time::Now(), /*file_size=*/1);
   ImageInfo document_image2({"testing", "testing_long"},
                             test_directory_.AppendASCII("document2.jpg"),
-                            base::Time::Now());
+                            base::Time::Now(), 2);
   ImageInfo document_image3({"testing_long"},
                             test_directory_.AppendASCII("document3.jpg"),
-                            base::Time::Now());
+                            base::Time::Now(), 3);
   ImageInfo foo_image({"test1"}, test_directory_.AppendASCII("foo.png"),
-                      base::Time::Now());
+                      base::Time::Now(), 4);
   storage_->Insert(document_image1);
   storage_->Insert(document_image2);
   storage_->Insert(document_image3);
@@ -240,17 +242,16 @@ TEST_F(AnnotationStorageTest, MaxResult) {
   storage_->Initialize();
   task_environment_.RunUntilIdle();
 
+  auto time = base::Time::Now();
   ImageInfo document_image1({"test", "bar", "test1"},
-                            test_directory_.AppendASCII("document1.jpg"),
-                            base::Time::Now());
-  ImageInfo document_image2({"bar", "test1"},
-                            test_directory_.AppendASCII("document2.jpg"),
-                            base::Time::Now());
-  ImageInfo document_image3({"bar", "test1"},
-                            test_directory_.AppendASCII("document3.jpg"),
-                            base::Time::Now());
-  ImageInfo foo_image({"test1"}, test_directory_.AppendASCII("foo.png"),
-                      base::Time::Now());
+                            test_directory_.AppendASCII("document1.jpg"), time,
+                            /*file_size=*/1);
+  ImageInfo document_image2(
+      {"bar", "test1"}, test_directory_.AppendASCII("document2.jpg"), time, 2);
+  ImageInfo document_image3(
+      {"bar", "test1"}, test_directory_.AppendASCII("document3.jpg"), time, 3);
+  ImageInfo foo_image({"test1"}, test_directory_.AppendASCII("foo.png"), time,
+                      4);
 
   storage_->Insert(document_image1);
   storage_->Insert(document_image2);
@@ -260,7 +261,7 @@ TEST_F(AnnotationStorageTest, MaxResult) {
   EXPECT_THAT(
       storage_->Search(base::UTF8ToUTF16(std::string("bar test")),
                        /*max_num_results=*/4),
-      testing::UnorderedElementsAreArray(
+      testing::ElementsAreArray(
           {FileSearchResult(document_image1.path, document_image1.last_modified,
                             2 / 2),
            FileSearchResult(document_image2.path, document_image2.last_modified,
@@ -270,7 +271,7 @@ TEST_F(AnnotationStorageTest, MaxResult) {
 
   EXPECT_THAT(
       storage_->Search(base::UTF8ToUTF16(std::string("bar test")), 3),
-      testing::UnorderedElementsAreArray(
+      testing::ElementsAreArray(
           {FileSearchResult(document_image1.path, document_image1.last_modified,
                             2 / 2),
            FileSearchResult(document_image2.path, document_image2.last_modified,
@@ -280,7 +281,7 @@ TEST_F(AnnotationStorageTest, MaxResult) {
 
   EXPECT_THAT(
       storage_->Search(base::UTF8ToUTF16(std::string("bar test")), 2),
-      testing::UnorderedElementsAreArray(
+      testing::ElementsAreArray(
           {FileSearchResult(document_image1.path, document_image1.last_modified,
                             2 / 2),
            FileSearchResult(document_image2.path, document_image2.last_modified,
@@ -288,12 +289,11 @@ TEST_F(AnnotationStorageTest, MaxResult) {
 
   EXPECT_THAT(
       storage_->Search(base::UTF8ToUTF16(std::string("bar test")), 1),
-      testing::UnorderedElementsAreArray({FileSearchResult(
+      testing::ElementsAreArray({FileSearchResult(
           document_image1.path, document_image1.last_modified, 2 / 2)}));
 
-  EXPECT_THAT(
-      storage_->Search(base::UTF8ToUTF16(std::string("bar test")), 0),
-      testing::UnorderedElementsAreArray(std::vector<FileSearchResult>()));
+  EXPECT_THAT(storage_->Search(base::UTF8ToUTF16(std::string("bar test")), 0),
+              testing::ElementsAreArray(std::vector<FileSearchResult>()));
 
   task_environment_.RunUntilIdle();
 }
@@ -304,10 +304,10 @@ TEST_F(AnnotationStorageTest, QueryWithStopWords) {
 
   ImageInfo document_image1({"test", "bar", "test1"},
                             test_directory_.AppendASCII("document1.jpg"),
-                            base::Time::Now());
+                            base::Time::Now(), /*file_size=*/1);
   ImageInfo document_image2({"bar", "test1"},
                             test_directory_.AppendASCII("document2.jpg"),
-                            base::Time::Now());
+                            base::Time::Now(), 2);
 
   storage_->Insert(document_image1);
   storage_->Insert(document_image2);
@@ -347,22 +347,70 @@ TEST_F(AnnotationStorageTest, SchemaMigration) {
         return current_version_number;
       }));
 
-  sql_database->Initialize();
+  ASSERT_TRUE(sql_database->Initialize());
   task_environment_.RunUntilIdle();
   sql_database->Close();
 
   storage_ = std::make_unique<AnnotationStorage>(
-      test_directory_.AppendASCII("test.db"), /*histogram_tag=*/"test",
+      test_directory_.AppendASCII("test.db"),
       /*annotation_worker=*/nullptr);
   storage_->Initialize();
   task_environment_.RunUntilIdle();
 
   ImageInfo bar_image({"test"}, test_directory_.AppendASCII("bar.jpg"),
-                      base::Time::Now());
+                      base::Time::Now(), /*file_size=*/1);
 
   storage_->Insert(bar_image);
-  EXPECT_THAT(storage_->GetAllAnnotations(),
+  EXPECT_THAT(storage_->GetAllAnnotationsForTest(),
               testing::ElementsAreArray({bar_image}));
+  task_environment_.RunUntilIdle();
+}
+
+TEST_F(AnnotationStorageTest, SearchByDirectory) {
+  storage_->Initialize();
+  task_environment_.RunUntilIdle();
+
+  ImageInfo document_image1({"test", "bar", "test1"},
+                            test_directory_.AppendASCII("document1.jpg"),
+                            base::Time::Now(), /*file_size=*/1);
+  ImageInfo foo_image(
+      {"test1"},
+      test_directory_.AppendASCII("New Folder").AppendASCII("foo.png"),
+      base::Time::Now(), 4);
+
+  storage_->Insert(document_image1);
+  storage_->Insert(foo_image);
+
+  EXPECT_THAT(
+      storage_->SearchByDirectory(test_directory_),
+      testing::ElementsAreArray({document_image1.path, foo_image.path}));
+
+  EXPECT_THAT(
+      storage_->SearchByDirectory(test_directory_.AppendASCII("New Folder")),
+      testing::ElementsAreArray({foo_image.path}));
+
+  task_environment_.RunUntilIdle();
+}
+
+TEST_F(AnnotationStorageTest, GetAllFiles) {
+  storage_->Initialize();
+  task_environment_.RunUntilIdle();
+
+  ImageInfo document_image1({"test", "bar", "test1"},
+                            test_directory_.AppendASCII("document1.jpg"),
+                            base::Time::Now(), /*file_size=*/1);
+  ImageInfo foo_image(
+      {"test1"},
+      test_directory_.AppendASCII("New Folder").AppendASCII("foo.png"),
+      base::Time::Now(), 4);
+
+  storage_->Insert(document_image1);
+  storage_->Insert(foo_image);
+
+  EXPECT_THAT(
+      storage_->GetAllFiles(),
+      testing::ElementsAreArray({document_image1.path, foo_image.path}));
+
   task_environment_.RunUntilIdle();
 }
 

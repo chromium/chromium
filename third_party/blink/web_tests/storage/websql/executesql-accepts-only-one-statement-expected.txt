@@ -1,3 +1,0 @@
-This test tests that executeSql() fails when called with a string that has more than one valid statement in it.
-Test passed.
-

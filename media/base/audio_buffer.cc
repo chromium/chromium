@@ -6,6 +6,7 @@
 
 #include <cmath>
 
+#include "base/bits.h"
 #include "base/functional/callback_helpers.h"
 #include "base/logging.h"
 #include "base/notreached.h"
@@ -36,6 +37,19 @@ void CopyConvertFromInterleaved(
   }
 }
 
+class SelfOwnedMemory : public AudioBuffer::ExternalMemory {
+ public:
+  explicit SelfOwnedMemory(size_t size)
+      : memory_(std::make_unique<uint8_t[]>(size)) {
+    span_ = {memory_.get(), size};
+  }
+  SelfOwnedMemory(SelfOwnedMemory&&) = default;
+  ~SelfOwnedMemory() override = default;
+
+ private:
+  std::unique_ptr<uint8_t[]> memory_;
+};
+
 }  // namespace
 
 static base::TimeDelta CalculateDuration(int frames, double sample_rate) {
@@ -44,36 +58,60 @@ static base::TimeDelta CalculateDuration(int frames, double sample_rate) {
                             sample_rate);
 }
 
-AudioBufferMemoryPool::AudioBufferMemoryPool() = default;
+AudioBufferMemoryPool::AudioBufferMemoryPool(int alignment)
+    : alignment_(alignment) {}
 AudioBufferMemoryPool::~AudioBufferMemoryPool() = default;
+
+AudioBufferMemoryPool::ExternalMemoryFromPool::ExternalMemoryFromPool(
+    ExternalMemoryFromPool&& am) = default;
+AudioBufferMemoryPool::ExternalMemoryFromPool::ExternalMemoryFromPool(
+    scoped_refptr<AudioBufferMemoryPool> pool,
+    std::unique_ptr<uint8_t, base::AlignedFreeDeleter> memory,
+    size_t size)
+    : memory_(std::move(memory)), pool_(pool) {
+  span_ = {memory_.get(), size};
+}
+
+AudioBufferMemoryPool::ExternalMemoryFromPool::~ExternalMemoryFromPool() {
+  if (pool_) {
+    // Entry is destroyed outside of the pool and the memory needs to be
+    // returned to the pool. But we need to unplug the pool pointer first
+    // in order to avoid circular dependencies pool<->memory.
+    auto pool = std::move(pool_);
+    pool->ReturnBuffer(std::move(*this));
+  }
+}
 
 size_t AudioBufferMemoryPool::GetPoolSizeForTesting() {
   base::AutoLock al(entry_lock_);
   return entries_.size();
 }
 
-AudioBufferMemoryPool::AudioMemory AudioBufferMemoryPool::CreateBuffer(
-    size_t size) {
+std::unique_ptr<AudioBufferMemoryPool::ExternalMemoryFromPool>
+AudioBufferMemoryPool::CreateBuffer(size_t size) {
   base::AutoLock al(entry_lock_);
   while (!entries_.empty()) {
-    MemoryEntry& front = entries_.front();
-    MemoryEntry entry(std::move(front.first), front.second);
+    ExternalMemoryFromPool entry = std::move(entries_.front());
     entries_.pop_front();
-    if (entry.second == size)
-      return std::move(entry.first);
+    if (entry.span().size() == size) {
+      // Before giving away the memory, set where it should be returned to.
+      entry.pool_ = this;
+      return std::make_unique<ExternalMemoryFromPool>(std::move(entry));
+    }
   }
 
   // FFmpeg may not always initialize the entire output memory, so just like
   // for VideoFrames we need to zero out the memory. https://crbug.com/1144070.
-  auto memory = AudioMemory(static_cast<uint8_t*>(
-      base::AlignedAlloc(size, AudioBuffer::kChannelAlignment)));
+  auto memory = std::unique_ptr<uint8_t, base::AlignedFreeDeleter>(
+      static_cast<uint8_t*>(base::AlignedAlloc(size, GetChannelAlignment())));
   memset(memory.get(), 0, size);
-  return memory;
+  return std::make_unique<ExternalMemoryFromPool>(
+      ExternalMemoryFromPool(this, std::move(memory), size));
 }
 
-void AudioBufferMemoryPool::ReturnBuffer(AudioMemory memory, size_t size) {
+void AudioBufferMemoryPool::ReturnBuffer(ExternalMemoryFromPool memory) {
   base::AutoLock al(entry_lock_);
-  entries_.emplace_back(std::move(memory), size);
+  entries_.emplace_back(std::move(memory));
 }
 
 AudioBuffer::AudioBuffer(SampleFormat sample_format,
@@ -105,32 +143,29 @@ AudioBuffer::AudioBuffer(SampleFormat sample_format,
   DCHECK(channel_layout == CHANNEL_LAYOUT_DISCRETE ||
          ChannelLayoutToChannelCount(channel_layout) == channel_count);
 
-  int bytes_per_channel = SampleFormatToBytesPerChannel(sample_format);
-  DCHECK_LE(bytes_per_channel, kChannelAlignment);
+  const int bytes_per_channel = SampleFormatToBytesPerChannel(sample_format);
+  const int channel_alignment =
+      pool_ ? pool_->GetChannelAlignment() : bytes_per_channel;
+  CHECK_LE(bytes_per_channel, channel_alignment);
 
   // Empty buffer?
-  if (!create_buffer)
+  if (!create_buffer) {
     return;
+  }
 
   CHECK_NE(sample_format, kUnknownSampleFormat);
 
   if (sample_format == kSampleFormatIECDts) {
     // Allocate a contiguous buffer for IEC61937 encapsulated Bitstream.
     data_size_ = frame_count * bytes_per_channel * channel_count_;
-    if (pool_) {
-      data_ = pool_->CreateBuffer(data_size_);
-    } else {
-      // Aligned buffer ensures compatibility with AudioBus
-      // and audio sink which have been optimized for SSE
-      data_.reset(static_cast<uint8_t*>(
-          base::AlignedAlloc(data_size_, kChannelAlignment)));
-    }
-    channel_data_.reserve(1);
-    channel_data_.push_back(data_.get());
+    data_ =
+        pool_ ? pool_->CreateBuffer(data_size_) : AllocateMemory(data_size_);
+    channel_data_.push_back(data_->span().data());
 
     // Copy data
-    if (data)
+    if (data) {
       memcpy(channel_data_[0], data[0], data_size);
+    }
     return;
   }
   int data_size_per_channel = frame_count * bytes_per_channel;
@@ -138,26 +173,23 @@ AudioBuffer::AudioBuffer(SampleFormat sample_format,
     DCHECK(!IsBitstreamFormat()) << sample_format_;
     // Planar data, so need to allocate buffer for each channel.
     // Determine per channel data size, taking into account alignment.
-    int block_size_per_channel =
-        (data_size_per_channel + kChannelAlignment - 1) &
-        ~(kChannelAlignment - 1);
+    int block_size_per_channel = base::bits::AlignUpDeprecatedDoNotUse(
+        data_size_per_channel, channel_alignment);
     DCHECK_GE(block_size_per_channel, data_size_per_channel);
 
     // Allocate a contiguous buffer for all the channel data.
     data_size_ = channel_count_ * block_size_per_channel;
-    if (pool_) {
-      data_ = pool_->CreateBuffer(data_size_);
-    } else {
-      data_.reset(static_cast<uint8_t*>(
-          base::AlignedAlloc(data_size_, kChannelAlignment)));
-    }
+    data_ =
+        pool_ ? pool_->CreateBuffer(data_size_) : AllocateMemory(data_size_);
     channel_data_.reserve(channel_count_);
 
     // Copy each channel's data into the appropriate spot.
     for (int i = 0; i < channel_count_; ++i) {
-      channel_data_.push_back(data_.get() + i * block_size_per_channel);
-      if (data)
+      channel_data_.push_back(data_->span().data() +
+                              i * block_size_per_channel);
+      if (data) {
         memcpy(channel_data_[i], data[i], data_size_per_channel);
+      }
     }
     return;
   }
@@ -166,27 +198,80 @@ AudioBuffer::AudioBuffer(SampleFormat sample_format,
   DCHECK(IsInterleaved(sample_format)) << sample_format_;
   // Allocate our own buffer and copy the supplied data into it. Buffer must
   // contain the data for all channels.
-  if (!IsBitstreamFormat())
+  if (!IsBitstreamFormat()) {
     data_size_ = data_size_per_channel * channel_count_;
-  else
-    DCHECK(data_size_ > 0);
-
-  if (pool_) {
-    data_ = pool_->CreateBuffer(data_size_);
   } else {
-    data_.reset(static_cast<uint8_t*>(
-        base::AlignedAlloc(data_size_, kChannelAlignment)));
+    DCHECK_GT(data_size_, 0u);
   }
 
-  channel_data_.reserve(1);
-  channel_data_.push_back(data_.get());
-  if (data)
-    memcpy(data_.get(), data[0], data_size_);
+  data_ = pool_ ? pool_->CreateBuffer(data_size_) : AllocateMemory(data_size_);
+  channel_data_.push_back(data_->span().data());
+  if (data) {
+    memcpy(data_->span().data(), data[0], data_size_);
+  }
 }
 
-AudioBuffer::~AudioBuffer() {
-  if (pool_)
-    pool_->ReturnBuffer(std::move(data_), data_size_);
+AudioBuffer::AudioBuffer(SampleFormat sample_format,
+                         ChannelLayout channel_layout,
+                         int channel_count,
+                         int sample_rate,
+                         int frame_count,
+                         const base::TimeDelta timestamp,
+                         std::unique_ptr<ExternalMemory> external_memory)
+    : sample_format_(sample_format),
+      channel_layout_(channel_layout),
+      channel_count_(channel_count),
+      sample_rate_(sample_rate),
+      adjusted_frame_count_(frame_count),
+      end_of_stream_(false),
+      timestamp_(timestamp),
+      duration_(end_of_stream_
+                    ? base::TimeDelta()
+                    : CalculateDuration(adjusted_frame_count_, sample_rate_)),
+      data_(std::move(external_memory)) {
+  CHECK_GE(channel_count_, 0);
+  CHECK_LE(channel_count_, limits::kMaxChannels);
+  CHECK_GE(frame_count, 0);
+  CHECK_NE(sample_format, kUnknownSampleFormat);
+  CHECK(data_);
+
+  DCHECK(channel_layout == CHANNEL_LAYOUT_DISCRETE ||
+         ChannelLayoutToChannelCount(channel_layout) == channel_count);
+
+  if (IsBitstreamFormat()) {
+    data_size_ = data_->span().size();
+    DCHECK_GT(data_size_, 0u);
+    return;
+  }
+
+  int bytes_per_channel = SampleFormatToBytesPerChannel(sample_format);
+  int data_size_per_channel = frame_count * bytes_per_channel;
+
+  data_size_ = channel_count_ * data_size_per_channel;
+  CHECK_GE(data_->span().size(), data_size_);
+
+  if (IsInterleaved(sample_format)) {
+    channel_data_.push_back(data_->span().data());
+  } else if (IsPlanar(sample_format)) {
+    // Planar data, so need to set up pointers for each channel.
+    channel_data_.reserve(channel_count_);
+    // Set each channel's data pointer into the appropriate spot.
+    for (int i = 0; i < channel_count_; ++i) {
+      channel_data_.push_back(data_->span().data() + i * data_size_per_channel);
+      CHECK_LE(data_->span().data(), channel_data_.back());
+      CHECK_GE(data_->span().data() + data_->span().size(),
+               channel_data_.back() + data_size_per_channel);
+    }
+  } else {
+    NOTREACHED_NORETURN() << sample_format;
+  }
+}
+
+AudioBuffer::~AudioBuffer() = default;
+
+std::unique_ptr<AudioBuffer::ExternalMemory> AudioBuffer::AllocateMemory(
+    size_t size) {
+  return std::make_unique<SelfOwnedMemory>(size);
 }
 
 // static
@@ -304,6 +389,21 @@ scoped_refptr<AudioBuffer> AudioBuffer::CreateEmptyBuffer(
 }
 
 // static
+scoped_refptr<AudioBuffer> AudioBuffer::CreateFromExternalMemory(
+    SampleFormat sample_format,
+    ChannelLayout channel_layout,
+    int channel_count,
+    int sample_rate,
+    int frame_count,
+    const base::TimeDelta timestamp,
+    std::unique_ptr<AudioBuffer::ExternalMemory> external_memory) {
+  CHECK_GT(frame_count, 0);
+  return base::WrapRefCounted(
+      new AudioBuffer(sample_format, channel_layout, channel_count, sample_rate,
+                      frame_count, timestamp, std::move(external_memory)));
+}
+
+// static
 scoped_refptr<AudioBuffer> AudioBuffer::CreateEOSBuffer() {
   return base::WrapRefCounted(
       new AudioBuffer(kUnknownSampleFormat, CHANNEL_LAYOUT_NONE, 0, 0, 0, false,
@@ -321,9 +421,15 @@ std::unique_ptr<AudioBus> AudioBuffer::WrapOrCopyToAudioBus(
   DCHECK(channels);
   DCHECK(frames);
 
-  // |buffer| might already have the right memory layout. Prevent a data copy
-  // by wrapping it instead.
-  if (buffer->sample_format() == SampleFormat::kSampleFormatPlanarF32) {
+  // `buffer` might already have the right memory layout (aligned floats).
+  // Prevent a data copy by wrapping it instead.
+  bool audiobus_compatible =
+      buffer->sample_format() == SampleFormat::kSampleFormatPlanarF32;
+  for (int ch = 0; (ch < channels) && audiobus_compatible; ++ch) {
+    audiobus_compatible &= AudioBus::IsAligned(buffer->channel_data()[ch]);
+  }
+
+  if (audiobus_compatible) {
     auto audio_bus = AudioBus::CreateWrapper(channels);
 
     for (int ch = 0; ch < channels; ++ch) {
@@ -449,7 +555,8 @@ void AudioBuffer::ReadFrames(int frames_to_copy,
 
   const int bytes_per_channel = SampleFormatToBytesPerChannel(sample_format_);
   const int frame_size = channel_count_ * bytes_per_channel;
-  const uint8_t* source_data = data_.get() + source_frame_offset * frame_size;
+  const uint8_t* source_data =
+      data_->span().data() + source_frame_offset * frame_size;
 
   if (sample_format_ == kSampleFormatF32) {
     dest->FromInterleavedPartial<Float32SampleTypeTraits>(
@@ -477,7 +584,7 @@ void AudioBuffer::TrimStart(int frames_to_trim) {
   CHECK_LE(frames_to_trim, adjusted_frame_count_);
 
   if (IsBitstreamFormat()) {
-    LOG(ERROR) << "Not allowed to trim an audio bitstream buffer.";
+    DLOG(ERROR) << "Not allowed to trim an audio bitstream buffer.";
     return;
   }
 
@@ -489,7 +596,7 @@ void AudioBuffer::TrimEnd(int frames_to_trim) {
   CHECK_LE(frames_to_trim, adjusted_frame_count_);
 
   if (IsBitstreamFormat()) {
-    LOG(ERROR) << "Not allowed to trim an audio bitstream buffer.";
+    DLOG(ERROR) << "Not allowed to trim an audio bitstream buffer.";
     return;
   }
 
@@ -503,7 +610,7 @@ void AudioBuffer::TrimRange(int start, int end) {
   CHECK_LE(end, adjusted_frame_count_);
 
   if (IsBitstreamFormat()) {
-    LOG(ERROR) << "Not allowed to trim an audio bitstream buffer.";
+    DLOG(ERROR) << "Not allowed to trim an audio bitstream buffer.";
     return;
   }
 

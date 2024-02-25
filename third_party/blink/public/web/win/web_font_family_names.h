@@ -13,8 +13,7 @@ namespace blink {
 
 // Used to record the font family names needed to render a frame.
 struct BLINK_EXPORT WebFontFamilyNames {
-  WebVector<WebString> primary_family_names;
-  WebVector<WebString> fallback_family_names;
+  WebVector<WebString> font_names;
 };
 
 }  // namespace blink

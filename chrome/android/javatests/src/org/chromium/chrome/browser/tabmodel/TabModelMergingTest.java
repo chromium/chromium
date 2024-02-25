@@ -24,6 +24,7 @@ import org.junit.runner.RunWith;
 import org.chromium.base.ActivityState;
 import org.chromium.base.ApplicationStatus;
 import org.chromium.base.ApplicationStatus.ActivityStateListener;
+import org.chromium.base.shared_preferences.SharedPreferencesManager;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Criteria;
@@ -42,7 +43,7 @@ import org.chromium.chrome.browser.multiwindow.MultiInstanceManager;
 import org.chromium.chrome.browser.multiwindow.MultiWindowTestHelper;
 import org.chromium.chrome.browser.multiwindow.MultiWindowUtils;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
-import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
+import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tabmodel.TabPersistentStoreTest.MockTabPersistentStoreObserver;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
@@ -55,9 +56,7 @@ import org.chromium.ui.test.util.UiRestriction;
 import java.util.Collections;
 import java.util.concurrent.TimeoutException;
 
-/**
- * Tests merging tab models for Android N+ multi-instance.
- */
+/** Tests merging tab models for Android N+ multi-instance. */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 public class TabModelMergingTest {
@@ -87,7 +86,7 @@ public class TabModelMergingTest {
     public void setUp() throws Exception {
         mActivityTestRule.startMainActivityOnBlankPage();
         // Make sure file migrations don't run as they are unnecessary since app data was cleared.
-        SharedPreferencesManager prefs = SharedPreferencesManager.getInstance();
+        SharedPreferencesManager prefs = ChromeSharedPreferences.getInstance();
         prefs.writeBoolean(ChromePreferenceKeys.TABMODEL_HAS_RUN_FILE_MIGRATION, true);
         prefs.writeBoolean(
                 ChromePreferenceKeys.TABMODEL_HAS_RUN_MULTI_INSTANCE_FILE_MIGRATION, true);
@@ -101,36 +100,41 @@ public class TabModelMergingTest {
         // Start multi-instance mode so that ChromeTabbedActivity's check for whether the activity
         // is started up correctly doesn't fail.
         MultiInstanceManager.onMultiInstanceModeStarted();
-        mActivity2 = MultiWindowTestHelper.createSecondChromeTabbedActivity(
-                mActivity1, new LoadUrlParams(TEST_URL_7));
-        CriteriaHelper.pollUiThread(() -> {
-            Criteria.checkThat(mActivity2.areTabModelsInitialized(), Matchers.is(true));
-            Criteria.checkThat(
-                    mActivity2.getTabModelSelector().isTabStateInitialized(), Matchers.is(true));
-        });
+        mActivity2 =
+                MultiWindowTestHelper.createSecondChromeTabbedActivity(
+                        mActivity1, new LoadUrlParams(TEST_URL_7));
+        CriteriaHelper.pollUiThread(
+                () -> {
+                    Criteria.checkThat(mActivity2.areTabModelsInitialized(), Matchers.is(true));
+                    Criteria.checkThat(
+                            mActivity2.getTabModelSelector().isTabStateInitialized(),
+                            Matchers.is(true));
+                });
 
         // Create a few tabs in each activity.
         createTabsOnUiThread();
 
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            // Initialize activity states and register for state change events.
-            mActivity1State = ApplicationStatus.getStateForActivity(mActivity1);
-            mActivity2State = ApplicationStatus.getStateForActivity(mActivity2);
-            ApplicationStatus.registerStateListenerForAllActivities(new ActivityStateListener() {
-                @Override
-                public void onActivityStateChange(Activity activity, int newState) {
-                    if (activity.equals(mActivity1)) {
-                        mActivity1State = newState;
-                    } else if (activity.equals(mActivity2)) {
-                        mActivity2State = newState;
-                    } else if (activity instanceof ChromeTabbedActivity2
-                            && newState == ActivityState.CREATED) {
-                        mNewCTA2 = (ChromeTabbedActivity2) activity;
-                        mNewCTA2CallbackHelper.notifyCalled();
-                    }
-                }
-            });
-        });
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    // Initialize activity states and register for state change events.
+                    mActivity1State = ApplicationStatus.getStateForActivity(mActivity1);
+                    mActivity2State = ApplicationStatus.getStateForActivity(mActivity2);
+                    ApplicationStatus.registerStateListenerForAllActivities(
+                            new ActivityStateListener() {
+                                @Override
+                                public void onActivityStateChange(Activity activity, int newState) {
+                                    if (activity.equals(mActivity1)) {
+                                        mActivity1State = newState;
+                                    } else if (activity.equals(mActivity2)) {
+                                        mActivity2State = newState;
+                                    } else if (activity instanceof ChromeTabbedActivity2
+                                            && newState == ActivityState.CREATED) {
+                                        mNewCTA2 = (ChromeTabbedActivity2) activity;
+                                        mNewCTA2CallbackHelper.notifyCalled();
+                                    }
+                                }
+                            });
+                });
     }
 
     /**
@@ -138,77 +142,112 @@ public class TabModelMergingTest {
      * has the expected number of tabs.
      */
     private void createTabsOnUiThread() {
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            // Create normal tabs.
-            mActivity1.getTabCreator(false).createNewTab(
-                    new LoadUrlParams(TEST_URL_0), TabLaunchType.FROM_CHROME_UI, null);
-            mActivity1.getTabCreator(false).createNewTab(
-                    new LoadUrlParams(TEST_URL_1), TabLaunchType.FROM_CHROME_UI, null);
-            mActivity1.getTabCreator(false).createNewTab(
-                    new LoadUrlParams(TEST_URL_2), TabLaunchType.FROM_CHROME_UI, null);
-            mActivity2.getTabCreator(false).createNewTab(
-                    new LoadUrlParams(TEST_URL_3), TabLaunchType.FROM_CHROME_UI, null);
-            mActivity2.getTabCreator(false).createNewTab(
-                    new LoadUrlParams(TEST_URL_4), TabLaunchType.FROM_CHROME_UI, null);
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    // Create normal tabs.
+                    mActivity1
+                            .getTabCreator(false)
+                            .createNewTab(
+                                    new LoadUrlParams(TEST_URL_0),
+                                    TabLaunchType.FROM_CHROME_UI,
+                                    null);
+                    mActivity1
+                            .getTabCreator(false)
+                            .createNewTab(
+                                    new LoadUrlParams(TEST_URL_1),
+                                    TabLaunchType.FROM_CHROME_UI,
+                                    null);
+                    mActivity1
+                            .getTabCreator(false)
+                            .createNewTab(
+                                    new LoadUrlParams(TEST_URL_2),
+                                    TabLaunchType.FROM_CHROME_UI,
+                                    null);
+                    mActivity2
+                            .getTabCreator(false)
+                            .createNewTab(
+                                    new LoadUrlParams(TEST_URL_3),
+                                    TabLaunchType.FROM_CHROME_UI,
+                                    null);
+                    mActivity2
+                            .getTabCreator(false)
+                            .createNewTab(
+                                    new LoadUrlParams(TEST_URL_4),
+                                    TabLaunchType.FROM_CHROME_UI,
+                                    null);
 
-            mActivity1.saveState();
-            mActivity2.saveState();
-        });
+                    mActivity1.saveState();
+                    mActivity2.saveState();
+                });
 
         // ChromeTabbedActivity should have four normal tabs, the one it started with and the three
         // just created.
-        Assert.assertEquals("Wrong number of tabs in ChromeTabbedActivity", 4,
+        Assert.assertEquals(
+                "Wrong number of tabs in ChromeTabbedActivity",
+                4,
                 mActivity1.getTabModelSelector().getModel(false).getCount());
 
         // ChromeTabbedActivity2 should have three normal tabs, the one it started with and the two
         // just created.
-        Assert.assertEquals("Wrong number of tabs in ChromeTabbedActivity2", 3,
+        Assert.assertEquals(
+                "Wrong number of tabs in ChromeTabbedActivity2",
+                3,
                 mActivity2.getTabModelSelector().getModel(false).getCount());
 
         // Construct expected tabs.
         mMergeIntoActivity1ExpectedTabs = new String[7];
         mMergeIntoActivity2ExpectedTabs = new String[7];
         for (int i = 0; i < 4; i++) {
-            mMergeIntoActivity1ExpectedTabs[i] = ChromeTabUtils.getUrlStringOnUiThread(
-                    mActivity1.getTabModelSelector().getModel(false).getTabAt(i));
-            mMergeIntoActivity2ExpectedTabs[i + 3] = ChromeTabUtils.getUrlStringOnUiThread(
-                    mActivity1.getTabModelSelector().getModel(false).getTabAt(i));
+            mMergeIntoActivity1ExpectedTabs[i] =
+                    ChromeTabUtils.getUrlStringOnUiThread(
+                            mActivity1.getTabModelSelector().getModel(false).getTabAt(i));
+            mMergeIntoActivity2ExpectedTabs[i + 3] =
+                    ChromeTabUtils.getUrlStringOnUiThread(
+                            mActivity1.getTabModelSelector().getModel(false).getTabAt(i));
         }
         for (int i = 0; i < 3; i++) {
-            mMergeIntoActivity2ExpectedTabs[i] = ChromeTabUtils.getUrlStringOnUiThread(
-                    mActivity2.getTabModelSelector().getModel(false).getTabAt(i));
-            mMergeIntoActivity1ExpectedTabs[i + 4] = ChromeTabUtils.getUrlStringOnUiThread(
-                    mActivity2.getTabModelSelector().getModel(false).getTabAt(i));
+            mMergeIntoActivity2ExpectedTabs[i] =
+                    ChromeTabUtils.getUrlStringOnUiThread(
+                            mActivity2.getTabModelSelector().getModel(false).getTabAt(i));
+            mMergeIntoActivity1ExpectedTabs[i + 4] =
+                    ChromeTabUtils.getUrlStringOnUiThread(
+                            mActivity2.getTabModelSelector().getModel(false).getTabAt(i));
         }
     }
 
-    private void mergeTabsAndAssert(final ChromeTabbedActivity activity,
-            final String[] expectedTabUrls) {
-        String selectedTabUrl = ChromeTabUtils.getUrlStringOnUiThread(
-                activity.getTabModelSelector().getCurrentTab());
+    private void mergeTabsAndAssert(
+            final ChromeTabbedActivity activity, final String[] expectedTabUrls) {
+        String selectedTabUrl =
+                ChromeTabUtils.getUrlStringOnUiThread(
+                        activity.getTabModelSelector().getCurrentTab());
         mergeTabsAndAssert(activity, expectedTabUrls, expectedTabUrls.length, selectedTabUrl);
     }
 
     /**
      * Merges tabs into the provided activity and asserts that the tab model looks as expected.
+     *
      * @param activity The activity to merge into.
      * @param expectedTabUrls The expected ordering of normal tab URLs after the merge.
      * @param expectedNumberOfTabs The expected number of tabs after the merge.
      * @param expectedSelectedTabUrl The expected URL of the selected tab after the merge.
      */
-    private void mergeTabsAndAssert(final ChromeTabbedActivity activity,
-            final String[] expectedTabUrls, final int expectedNumberOfTabs,
+    private void mergeTabsAndAssert(
+            final ChromeTabbedActivity activity,
+            final String[] expectedTabUrls,
+            final int expectedNumberOfTabs,
             String expectedSelectedTabUrl) {
         // Merge tabs into the activity.
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> activity.getMultiInstanceMangerForTesting().maybeMergeTabs());
 
         // Wait for all tabs to be merged into the activity.
-        CriteriaHelper.pollUiThread(() -> {
-            Criteria.checkThat("Total tab count incorrect.",
-                    activity.getTabModelSelector().getTotalTabCount(),
-                    Matchers.is(expectedNumberOfTabs));
-        });
+        CriteriaHelper.pollUiThread(
+                () -> {
+                    Criteria.checkThat(
+                            "Total tab count incorrect.",
+                            activity.getTabModelSelector().getTotalTabCount(),
+                            Matchers.is(expectedNumberOfTabs));
+                });
 
         assertTabModelMatchesExpectations(activity, expectedSelectedTabUrl, expectedTabUrls);
     }
@@ -226,43 +265,54 @@ public class TabModelMergingTest {
 
     /**
      * Starts a new ChromeTabbedActivity and asserts that the tab model looks as expected.
+     *
      * @param intent The intent to launch the new activity.
      * @param expectedSelectedTabUrl The URL of the tab that's expected to be selected.
      * @param expectedTabUrls The expected ordering of tab URLs after the merge.
      * @return The newly created ChromeTabbedActivity.
      */
-    private ChromeTabbedActivity startNewChromeTabbedActivityAndAssert(Intent intent,
-            String expectedSelectedTabUrl, String[] expectedTabUrls) {
+    private ChromeTabbedActivity startNewChromeTabbedActivityAndAssert(
+            Intent intent, String expectedSelectedTabUrl, String[] expectedTabUrls) {
         final ChromeTabbedActivity newActivity =
-                (ChromeTabbedActivity) InstrumentationRegistry.getInstrumentation()
-                        .startActivitySync(intent);
+                (ChromeTabbedActivity)
+                        InstrumentationRegistry.getInstrumentation().startActivitySync(intent);
 
         // Wait for the tab state to be initialized.
-        CriteriaHelper.pollUiThread(() -> {
-            Criteria.checkThat(newActivity.areTabModelsInitialized(), Matchers.is(true));
-            Criteria.checkThat(
-                    newActivity.getTabModelSelector().isTabStateInitialized(), Matchers.is(true));
-        });
+        CriteriaHelper.pollUiThread(
+                () -> {
+                    Criteria.checkThat(newActivity.areTabModelsInitialized(), Matchers.is(true));
+                    Criteria.checkThat(
+                            newActivity.getTabModelSelector().isTabStateInitialized(),
+                            Matchers.is(true));
+                });
 
         assertTabModelMatchesExpectations(newActivity, expectedSelectedTabUrl, expectedTabUrls);
 
         return newActivity;
     }
 
-    private void assertTabModelMatchesExpectations(final ChromeTabbedActivity activity,
-            String expectedSelectedTabUrl, final String[] expectedTabUrls) {
+    private void assertTabModelMatchesExpectations(
+            final ChromeTabbedActivity activity,
+            String expectedSelectedTabUrl,
+            final String[] expectedTabUrls) {
         // Assert there are the correct number of tabs.
-        Assert.assertEquals("Wrong number of normal tabs", expectedTabUrls.length,
+        Assert.assertEquals(
+                "Wrong number of normal tabs",
+                expectedTabUrls.length,
                 activity.getTabModelSelector().getModel(false).getCount());
 
         // Assert that the correct tab is selected.
-        Assert.assertEquals("Wrong tab selected", expectedSelectedTabUrl,
+        Assert.assertEquals(
+                "Wrong tab selected",
+                expectedSelectedTabUrl,
                 ChromeTabUtils.getUrlStringOnUiThread(
                         activity.getTabModelSelector().getCurrentTab()));
 
         // Assert that tabs are in the correct order.
         for (int i = 0; i < expectedTabUrls.length; i++) {
-            Assert.assertEquals("Wrong tab at position " + i, expectedTabUrls[i],
+            Assert.assertEquals(
+                    "Wrong tab at position " + i,
+                    expectedTabUrls[i],
                     ChromeTabUtils.getUrlStringOnUiThread(
                             activity.getTabModelSelector().getModel(false).getTabAt(i)));
         }
@@ -270,31 +320,36 @@ public class TabModelMergingTest {
 
     /**
      * Wait until the activity is on an expected or not expected state.
+     *
      * @param state The expected state or not one.
      * @param activity The activity whose state will be observed.
      * @param expected If true, wait until activity is on the {@code state}; otherwise, wait util
-     *         activity is on any state other than {@code state}.
+     *     activity is on any state other than {@code state}.
      * @throws TimeoutException
      */
     private void waitForActivityStateChange(
             @ActivityState int state, Activity activity, boolean expected) throws TimeoutException {
         // do nothing if already in expected state.
         CallbackHelper helper = new CallbackHelper();
-        ApplicationStatus.ActivityStateListener listener = (act, newState) -> {
-            if (expected == (state == newState)) helper.notifyCalled();
-        };
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            int currentState = ApplicationStatus.getStateForActivity(activity);
-            if (expected == (state == currentState)) {
-                helper.notifyCalled();
-                return;
-            }
-            ApplicationStatus.registerStateListenerForActivity(listener, activity);
-        });
+        ApplicationStatus.ActivityStateListener listener =
+                (act, newState) -> {
+                    if (expected == (state == newState)) helper.notifyCalled();
+                };
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    int currentState = ApplicationStatus.getStateForActivity(activity);
+                    if (expected == (state == currentState)) {
+                        helper.notifyCalled();
+                        return;
+                    }
+                    ApplicationStatus.registerStateListenerForActivity(listener, activity);
+                });
         helper.waitForFirst();
         // listener was registered on UiThread. So it should be unregistered on UiThread.
         TestThreadUtils.runOnUiThreadBlocking(
-                () -> { ApplicationStatus.unregisterActivityStateListener(listener); });
+                () -> {
+                    ApplicationStatus.unregisterActivityStateListener(listener);
+                });
     }
 
     @Test
@@ -320,34 +375,43 @@ public class TabModelMergingTest {
     @Feature({"TabPersistentStore", "MultiWindow"})
     @DisabledTest(message = "https://crbug.com/1275082")
     public void testMergeOnColdStart() {
-        String expectedSelectedUrl = ChromeTabUtils.getUrlStringOnUiThread(
-                mActivity1.getTabModelSelector().getCurrentTab());
+        String expectedSelectedUrl =
+                ChromeTabUtils.getUrlStringOnUiThread(
+                        mActivity1.getTabModelSelector().getCurrentTab());
 
         // Create an intent to launch a new ChromeTabbedActivity.
         Intent intent = createChromeTabbedActivityIntent(mActivity1);
 
         // Save state.
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            mActivity1.saveState();
-            mActivity2.saveState();
-        });
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    mActivity1.saveState();
+                    mActivity2.saveState();
+                });
 
         // Destroy both activities.
         mActivity2.finishAndRemoveTask();
-        CriteriaHelper.pollUiThread(() -> {
-            Criteria.checkThat("CTA2 should be destroyed", mActivity2State,
-                    Matchers.is(ActivityState.DESTROYED));
-        });
+        CriteriaHelper.pollUiThread(
+                () -> {
+                    Criteria.checkThat(
+                            "CTA2 should be destroyed",
+                            mActivity2State,
+                            Matchers.is(ActivityState.DESTROYED));
+                });
 
         mActivity1.finishAndRemoveTask();
-        CriteriaHelper.pollUiThread(() -> {
-            Criteria.checkThat("CTA should be destroyed", mActivity1State,
-                    Matchers.is(ActivityState.DESTROYED));
-        });
+        CriteriaHelper.pollUiThread(
+                () -> {
+                    Criteria.checkThat(
+                            "CTA should be destroyed",
+                            mActivity1State,
+                            Matchers.is(ActivityState.DESTROYED));
+                });
 
         // Start the new ChromeTabbedActivity.
-        final ChromeTabbedActivity newActivity = startNewChromeTabbedActivityAndAssert(
-                intent, expectedSelectedUrl, mMergeIntoActivity1ExpectedTabs);
+        final ChromeTabbedActivity newActivity =
+                startNewChromeTabbedActivityAndAssert(
+                        intent, expectedSelectedUrl, mMergeIntoActivity1ExpectedTabs);
 
         // Clean up.
         newActivity.finishAndRemoveTask();
@@ -358,16 +422,21 @@ public class TabModelMergingTest {
     @Feature({"TabPersistentStore", "MultiWindow"})
     @DisabledTest(message = "https://crbug.com/1275082")
     public void testMergeOnColdStartFromChromeTabbedActivity2() throws Exception {
-        String expectedSelectedUrl = ChromeTabUtils.getUrlStringOnUiThread(
-                mActivity2.getTabModelSelector().getCurrentTab());
+        String expectedSelectedUrl =
+                ChromeTabUtils.getUrlStringOnUiThread(
+                        mActivity2.getTabModelSelector().getCurrentTab());
 
         MockTabPersistentStoreObserver mockObserver = new MockTabPersistentStoreObserver();
         TabModelSelectorImpl tabModelSelector =
                 (TabModelSelectorImpl) mActivity2.getTabModelSelector();
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            mActivity2.getTabModelOrchestratorSupplier().get().getTabPersistentStore().addObserver(
-                    mockObserver);
-        });
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    mActivity2
+                            .getTabModelOrchestratorSupplier()
+                            .get()
+                            .getTabPersistentStore()
+                            .addObserver(mockObserver);
+                });
 
         // Merge tabs into ChromeTabbedActivity2. Wait for the merge to finish, ensuring the
         // tab metadata file for ChromeTabbedActivity gets deleted before attempting to merge
@@ -381,16 +450,22 @@ public class TabModelMergingTest {
         // Destroy ChromeTabbedActivity2. ChromeTabbedActivity should have been destroyed during the
         // merge.
         mActivity2.finishAndRemoveTask();
-        CriteriaHelper.pollUiThread(() -> {
-            Criteria.checkThat("CTA should be destroyed", mActivity1State,
-                    Matchers.is(ActivityState.DESTROYED));
-            Criteria.checkThat("CTA2 should be destroyed", mActivity2State,
-                    Matchers.is(ActivityState.DESTROYED));
-        });
+        CriteriaHelper.pollUiThread(
+                () -> {
+                    Criteria.checkThat(
+                            "CTA should be destroyed",
+                            mActivity1State,
+                            Matchers.is(ActivityState.DESTROYED));
+                    Criteria.checkThat(
+                            "CTA2 should be destroyed",
+                            mActivity2State,
+                            Matchers.is(ActivityState.DESTROYED));
+                });
 
         // Start the new ChromeTabbedActivity.
-        final ChromeTabbedActivity newActivity = startNewChromeTabbedActivityAndAssert(
-                intent, expectedSelectedUrl, mMergeIntoActivity2ExpectedTabs);
+        final ChromeTabbedActivity newActivity =
+                startNewChromeTabbedActivityAndAssert(
+                        intent, expectedSelectedUrl, mMergeIntoActivity2ExpectedTabs);
 
         // Clean up.
         newActivity.finishAndRemoveTask();
@@ -404,21 +479,27 @@ public class TabModelMergingTest {
         String CTA2ClassName = mActivity2.getClass().getName();
         String CTA2PackageName = mActivity2.getPackageName();
 
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            mActivity1.saveState();
-            mActivity2.saveState();
-        });
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    mActivity1.saveState();
+                    mActivity2.saveState();
+                });
 
         // Destroy both activities without removing tasks.
         mActivity1.finish();
         mActivity2.finish();
 
-        CriteriaHelper.pollUiThread(() -> {
-            Criteria.checkThat("CTA should be destroyed", mActivity1State,
-                    Matchers.is(ActivityState.DESTROYED));
-            Criteria.checkThat("CTA2 should be destroyed", mActivity2State,
-                    Matchers.is(ActivityState.DESTROYED));
-        });
+        CriteriaHelper.pollUiThread(
+                () -> {
+                    Criteria.checkThat(
+                            "CTA should be destroyed",
+                            mActivity1State,
+                            Matchers.is(ActivityState.DESTROYED));
+                    Criteria.checkThat(
+                            "CTA2 should be destroyed",
+                            mActivity2State,
+                            Matchers.is(ActivityState.DESTROYED));
+                });
 
         // Send a main intent to restart ChromeTabbedActivity2.
         Intent CTA2MainIntent = new Intent(Intent.ACTION_MAIN);
@@ -428,14 +509,17 @@ public class TabModelMergingTest {
 
         mNewCTA2CallbackHelper.waitForCallback(0);
 
-        CriteriaHelper.pollUiThread(() -> {
-            Criteria.checkThat(mNewCTA2.areTabModelsInitialized(), Matchers.is(true));
-            Criteria.checkThat(
-                    mNewCTA2.getTabModelSelector().isTabStateInitialized(), Matchers.is(true));
-        });
+        CriteriaHelper.pollUiThread(
+                () -> {
+                    Criteria.checkThat(mNewCTA2.areTabModelsInitialized(), Matchers.is(true));
+                    Criteria.checkThat(
+                            mNewCTA2.getTabModelSelector().isTabStateInitialized(),
+                            Matchers.is(true));
+                });
 
         // Check that a merge occurred.
-        Assert.assertEquals("Wrong number of tabs after restart.",
+        Assert.assertEquals(
+                "Wrong number of tabs after restart.",
                 mMergeIntoActivity2ExpectedTabs.length,
                 mNewCTA2.getTabModelSelector().getModel(false).getCount());
 
@@ -497,22 +581,32 @@ public class TabModelMergingTest {
                 InstrumentationRegistry.getInstrumentation(), mActivity2, TEST_URL_6, true);
 
         // Save state.
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            mActivity1.saveState();
-            mActivity2.saveState();
-        });
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    mActivity1.saveState();
+                    mActivity2.saveState();
+                });
 
-        Assert.assertEquals("Wrong number of incognito tabs in ChromeTabbedActivity", 1,
+        Assert.assertEquals(
+                "Wrong number of incognito tabs in ChromeTabbedActivity",
+                1,
                 mActivity1.getTabModelSelector().getModel(true).getCount());
-        Assert.assertEquals("Wrong number of tabs in ChromeTabbedActivity", 5,
+        Assert.assertEquals(
+                "Wrong number of tabs in ChromeTabbedActivity",
+                5,
                 mActivity1.getTabModelSelector().getTotalTabCount());
-        Assert.assertEquals("Wrong number of incognito tabs in ChromeTabbedActivity2", 1,
+        Assert.assertEquals(
+                "Wrong number of incognito tabs in ChromeTabbedActivity2",
+                1,
                 mActivity2.getTabModelSelector().getModel(true).getCount());
-        Assert.assertEquals("Wrong number of tabs in ChromeTabbedActivity2", 4,
+        Assert.assertEquals(
+                "Wrong number of tabs in ChromeTabbedActivity2",
+                4,
                 mActivity2.getTabModelSelector().getTotalTabCount());
 
-        String selectedUrl = ChromeTabUtils.getUrlStringOnUiThread(
-                mActivity1.getTabModelSelector().getCurrentTab());
+        String selectedUrl =
+                ChromeTabUtils.getUrlStringOnUiThread(
+                        mActivity1.getTabModelSelector().getCurrentTab());
         mergeTabsAndAssert(mActivity1, mMergeIntoActivity1ExpectedTabs, 9, selectedUrl);
     }
 
@@ -520,10 +614,11 @@ public class TabModelMergingTest {
     @LargeTest
     @DisableIf.Build(sdk_is_less_than = VERSION_CODES.P)
     public void testMergeOnMultiDisplay_CTA_Resumed_CTA2_Not_Resumed() throws TimeoutException {
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            mActivity1.saveState();
-            mActivity2.saveState();
-        });
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    mActivity1.saveState();
+                    mActivity2.saveState();
+                });
         MultiInstanceManager m1 = mActivity1.getMultiInstanceMangerForTesting();
         MultiInstanceManager m2 = mActivity2.getMultiInstanceMangerForTesting();
 
@@ -538,21 +633,30 @@ public class TabModelMergingTest {
         m1.setCurrentDisplayIdForTesting(0);
         m2.setCurrentDisplayIdForTesting(1);
 
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            m1.getDisplayListenerForTesting().onDisplayRemoved(1);
-            m2.getDisplayListenerForTesting().onDisplayRemoved(1);
-        });
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    m1.getDisplayListenerForTesting().onDisplayRemoved(1);
+                    m2.getDisplayListenerForTesting().onDisplayRemoved(1);
+                });
 
-        CriteriaHelper.pollUiThread(() -> {
-            Criteria.checkThat("Total tab count incorrect.",
-                    mActivity1.getTabModelSelector().getTotalTabCount(), Matchers.is(7));
-        });
-        CriteriaHelper.pollUiThread(() -> {
-            Criteria.checkThat("CTA should not be destroyed", mActivity1State,
-                    Matchers.not(ActivityState.DESTROYED));
-            Criteria.checkThat("CTA2 should be destroyed", mActivity2State,
-                    Matchers.is(ActivityState.DESTROYED));
-        });
+        CriteriaHelper.pollUiThread(
+                () -> {
+                    Criteria.checkThat(
+                            "Total tab count incorrect.",
+                            mActivity1.getTabModelSelector().getTotalTabCount(),
+                            Matchers.is(7));
+                });
+        CriteriaHelper.pollUiThread(
+                () -> {
+                    Criteria.checkThat(
+                            "CTA should not be destroyed",
+                            mActivity1State,
+                            Matchers.not(ActivityState.DESTROYED));
+                    Criteria.checkThat(
+                            "CTA2 should be destroyed",
+                            mActivity2State,
+                            Matchers.is(ActivityState.DESTROYED));
+                });
         mActivity1.finishAndRemoveTask();
         mActivity2.finishAndRemoveTask();
     }
@@ -561,10 +665,11 @@ public class TabModelMergingTest {
     @LargeTest
     @DisableIf.Build(sdk_is_less_than = VERSION_CODES.P)
     public void testMergeOnMultiDisplay_OnDisplayChanged() throws TimeoutException {
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            mActivity1.saveState();
-            mActivity2.saveState();
-        });
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    mActivity1.saveState();
+                    mActivity2.saveState();
+                });
         MultiInstanceManager m1 = mActivity1.getMultiInstanceMangerForTesting();
         MultiInstanceManager m2 = mActivity2.getMultiInstanceMangerForTesting();
 
@@ -579,22 +684,31 @@ public class TabModelMergingTest {
         m1.setCurrentDisplayIdForTesting(0);
         m2.setCurrentDisplayIdForTesting(1);
 
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            m1.getDisplayListenerForTesting().onDisplayChanged(1);
-            m2.getDisplayListenerForTesting().onDisplayChanged(1);
-        });
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    m1.getDisplayListenerForTesting().onDisplayChanged(1);
+                    m2.getDisplayListenerForTesting().onDisplayChanged(1);
+                });
 
-        CriteriaHelper.pollUiThread(() -> {
-            Criteria.checkThat("Total tab count incorrect.",
-                mActivity1.getTabModelSelector().getTotalTabCount(), Matchers.is(7));
-        });
+        CriteriaHelper.pollUiThread(
+                () -> {
+                    Criteria.checkThat(
+                            "Total tab count incorrect.",
+                            mActivity1.getTabModelSelector().getTotalTabCount(),
+                            Matchers.is(7));
+                });
 
-        CriteriaHelper.pollUiThread(() -> {
-            Criteria.checkThat("CTA should not be destroyed", mActivity1State,
-                Matchers.not(ActivityState.DESTROYED));
-            Criteria.checkThat("CTA2 should be destroyed", mActivity2State,
-                Matchers.is(ActivityState.DESTROYED));
-        });
+        CriteriaHelper.pollUiThread(
+                () -> {
+                    Criteria.checkThat(
+                            "CTA should not be destroyed",
+                            mActivity1State,
+                            Matchers.not(ActivityState.DESTROYED));
+                    Criteria.checkThat(
+                            "CTA2 should be destroyed",
+                            mActivity2State,
+                            Matchers.is(ActivityState.DESTROYED));
+                });
 
         mActivity1.finishAndRemoveTask();
         mActivity2.finishAndRemoveTask();

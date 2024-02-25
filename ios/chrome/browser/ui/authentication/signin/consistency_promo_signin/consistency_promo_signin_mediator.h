@@ -6,12 +6,10 @@
 #define IOS_CHROME_BROWSER_UI_AUTHENTICATION_SIGNIN_CONSISTENCY_PROMO_SIGNIN_CONSISTENCY_PROMO_SIGNIN_MEDIATOR_H_
 
 #import <Foundation/Foundation.h>
-#import <memory>
 
 #import "base/ios/block_types.h"
 #import "ios/chrome/browser/ui/authentication/signin/signin_constants.h"
 
-class AccountCookieWaiter;
 @class AuthenticationFlow;
 class AuthenticationService;
 class ChromeAccountManagerService;
@@ -19,6 +17,10 @@ class ChromeAccountManagerService;
 class PrefService;
 @class SigninCompletionInfo;
 @protocol SystemIdentity;
+
+namespace signin {
+class IdentityManager;
+}  // signin
 
 namespace signin_metrics {
 enum class AccessPoint : int;
@@ -30,19 +32,20 @@ typedef NS_ENUM(NSInteger, ConsistencyPromoSigninMediatorError) {
   ConsistencyPromoSigninMediatorErrorTimeout,
   // Generic error.
   ConsistencyPromoSigninMediatorErrorGeneric,
-  // Failed to sign-in.
-  ConsistencyPromoSigninMediatorErrorFailedToSignin,
 };
 
 // Delegate for ConsistencyPromoSigninMediator.
 @protocol ConsistencyPromoSigninMediatorDelegate <NSObject>
 
 // Called when the sign-in flow is started. One of the following will be called
-// to finish the sign-in flow (once the cookies are available or not):
+// to finish the sign-in flow (once the cookies are available or not, or when
+// the flow is cancelled):
 // -[id<ConsistencyPromoSigninMediatorDelegate>
 // consistencyPromoSigninMediatorSignInDone:withIdentity:]
 // -[id<ConsistencyPromoSigninMediatorDelegate>
 // consistencyPromoSigninMediatorGenericErrorDidHappen:]
+// -[id<ConsistencyPromoSigninMediatorDelegate>
+// consistencyPromoSigninMediatorSignInCancelled:]
 - (void)consistencyPromoSigninMediatorSigninStarted:
     (ConsistencyPromoSigninMediator*)mediator;
 
@@ -50,6 +53,10 @@ typedef NS_ENUM(NSInteger, ConsistencyPromoSigninMediatorError) {
 - (void)consistencyPromoSigninMediatorSignInDone:
             (ConsistencyPromoSigninMediator*)mediator
                                     withIdentity:(id<SystemIdentity>)identity;
+
+// Called if the sign-in is cancelled.
+- (void)consistencyPromoSigninMediatorSignInCancelled:
+    (ConsistencyPromoSigninMediator*)mediator;
 
 // Called if there is sign-in error.
 - (void)consistencyPromoSigninMediator:(ConsistencyPromoSigninMediator*)mediator
@@ -67,8 +74,7 @@ typedef NS_ENUM(NSInteger, ConsistencyPromoSigninMediatorError) {
     initWithAccountManagerService:
         (ChromeAccountManagerService*)accountManagerService
             authenticationService:(AuthenticationService*)authenticationService
-              accountCookieWaiter:
-                  (std::unique_ptr<AccountCookieWaiter>)accountCookieWaiter
+                  identityManager:(signin::IdentityManager*)identityManager
                   userPrefService:(PrefService*)userPrefService
                       accessPoint:(signin_metrics::AccessPoint)accessPoint;
 

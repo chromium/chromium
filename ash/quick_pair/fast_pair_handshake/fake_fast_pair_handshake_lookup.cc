@@ -83,7 +83,7 @@ void FakeFastPairHandshakeLookup::Create(
 
 void FakeFastPairHandshakeLookup::InvokeCallbackForTesting(
     scoped_refptr<Device> device,
-    absl::optional<PairFailure> failure) {
+    std::optional<PairFailure> failure) {
   std::move(on_complete_callback_).Run(device, failure);
 }
 

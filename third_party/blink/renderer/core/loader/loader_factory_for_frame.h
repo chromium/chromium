@@ -11,8 +11,10 @@
 #include "third_party/blink/public/mojom/frame/frame.mojom-blink.h"
 #include "third_party/blink/public/mojom/loader/keep_alive_handle.mojom-blink.h"
 #include "third_party/blink/public/mojom/loader/keep_alive_handle_factory.mojom-blink.h"
+#include "third_party/blink/public/platform/url_loader_throttle_provider.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/platform/heap/member.h"
+#include "third_party/blink/renderer/platform/loader/fetch/background_code_cache_host.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_fetcher.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
@@ -35,18 +37,26 @@ class CORE_EXPORT LoaderFactoryForFrame final
 
   // LoaderFactory implementations
   std::unique_ptr<URLLoader> CreateURLLoader(
-      const ResourceRequest&,
+      const network::ResourceRequest&,
       const ResourceLoaderOptions&,
       scoped_refptr<base::SingleThreadTaskRunner>,
       scoped_refptr<base::SingleThreadTaskRunner>,
-      BackForwardCacheLoaderHelper*) override;
-  std::unique_ptr<WebCodeCacheLoader> CreateCodeCacheLoader() override;
+      BackForwardCacheLoaderHelper*,
+      const std::optional<base::UnguessableToken>&
+          service_worker_race_network_request_token,
+      bool is_from_origin_dirty_style_sheet) override;
+  CodeCacheHost* GetCodeCacheHost() override;
 
  private:
   void IssueKeepAliveHandleIfRequested(
-      const ResourceRequest& request,
+      const network::ResourceRequest& network_request,
       mojom::blink::LocalFrameHost& local_frame_host,
       mojo::PendingReceiver<mojom::blink::KeepAliveHandle> pending_receiver);
+  scoped_refptr<BackgroundCodeCacheHost> GetBackgroundCodeCacheHost();
+
+  URLLoaderThrottleProvider* GetURLLoaderThrottleProvider();
+  Vector<std::unique_ptr<URLLoaderThrottle>> CreateThrottles(
+      const network::ResourceRequest&);
 
   const Member<DocumentLoader> document_loader_;
   const Member<LocalDOMWindow> window_;
@@ -54,6 +64,7 @@ class CORE_EXPORT LoaderFactoryForFrame final
       prefetched_signed_exchange_manager_;
   HeapMojoRemote<mojom::blink::KeepAliveHandleFactory>
       keep_alive_handle_factory_;
+  scoped_refptr<BackgroundCodeCacheHost> background_code_cache_host_;
 };
 
 }  // namespace blink

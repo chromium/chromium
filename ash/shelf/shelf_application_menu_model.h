@@ -59,7 +59,7 @@ class ASH_EXPORT ShelfApplicationMenuModel
                                      int num_menu_items_enabled);
 
   // The shelf item delegate that created the menu and executes its commands.
-  const raw_ptr<ShelfItemDelegate, ExperimentalAsh> delegate_;
+  const raw_ptr<ShelfItemDelegate> delegate_;
 
   // A set containing the enabled command IDs.
   base::flat_set<int> enabled_commands_;

@@ -10,7 +10,7 @@
 #include "chrome/browser/ui/passwords/password_generation_popup_controller.h"
 #include "chrome/browser/ui/views/autofill/popup/popup_pixel_test.h"
 #include "chrome/browser/ui/views/passwords/password_generation_popup_view_views.h"
-#include "chrome/grit/chromium_strings.h"
+#include "chrome/grit/branded_strings.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -49,11 +49,14 @@ class MockPasswordGenerationPopupController
   MOCK_METHOD(void, SetSelected, (), (override));
   MOCK_METHOD(void, SelectionCleared, (), (override));
   MOCK_METHOD(void, EditPasswordClicked, (), (override));
-  MOCK_METHOD(void, EditPasswordSelected, (), (override));
-  MOCK_METHOD(void, OnGooglePasswordManagerLinkClicked, (), (override));
+  MOCK_METHOD(void, EditPasswordHovered, (bool), (override));
   MOCK_METHOD(std::u16string, GetPrimaryAccountEmail, (), (override));
+  MOCK_METHOD(bool, ShouldShowNudgePassword, (), (const override));
   MOCK_METHOD(GenerationUIState, state, (), (const override));
   MOCK_METHOD(bool, password_selected, (), (const override));
+  MOCK_METHOD(bool, edit_password_selected, (), (const override));
+  MOCK_METHOD(bool, accept_button_selected, (), (const override));
+  MOCK_METHOD(bool, cancel_button_selected, (), (const override));
   MOCK_METHOD(const std::u16string&, password, (), (const override));
   MOCK_METHOD(const std::u16string&, HelpText, (), (const override));
   MOCK_METHOD(std::u16string, SuggestedText, (), (const override));
@@ -115,6 +118,15 @@ class PasswordGenerationPopupViewBrowsertest
     // If this update is not forced, the password selection state does not get
     // taken into account.
     view()->PasswordSelectionUpdated();
+  }
+
+ protected:
+  // autofill::PopupPixelTest:
+  PasswordGenerationPopupViewViews* CreateView(
+      MockPasswordGenerationPopupController& controller) override {
+    return new PasswordGenerationPopupViewViews(
+        controller.GetWeakPtr(), views::Widget::GetWidgetForNativeWindow(
+                                     browser()->window()->GetNativeWindow()));
   }
 
  private:

@@ -88,11 +88,13 @@ component("wm") {
   ]
 
   deps = [
+    "//cc/paint",
     "//skia",
     "//ui/base/ime",
     "//ui/compositor_extra",
     "//ui/events/platform",
     "//ui/gfx/animation",
+    "//ui/lottie",
     "//ui/resources",
   ]
 

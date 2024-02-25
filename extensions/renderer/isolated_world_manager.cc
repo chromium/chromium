@@ -8,7 +8,6 @@
 #include <string>
 
 #include "base/check.h"
-#include "base/containers/cxx20_erase_map.h"
 #include "base/no_destructor.h"
 #include "base/ranges/algorithm.h"
 #include "extensions/common/mojom/execution_world.mojom.h"
@@ -46,25 +45,25 @@ std::string IsolatedWorldManager::GetHostIdForIsolatedWorld(int world_id) {
   return iter != isolated_worlds_.end() ? iter->second.host_id : std::string();
 }
 
-absl::optional<mojom::ExecutionWorld>
+std::optional<mojom::ExecutionWorld>
 IsolatedWorldManager::GetExecutionWorldForIsolatedWorld(int world_id) {
   auto iter = isolated_worlds_.find(world_id);
-  return iter != isolated_worlds_.end() ? absl::optional<mojom::ExecutionWorld>(
+  return iter != isolated_worlds_.end() ? std::optional<mojom::ExecutionWorld>(
                                               iter->second.execution_world)
-                                        : absl::nullopt;
+                                        : std::nullopt;
 }
 
 void IsolatedWorldManager::RemoveIsolatedWorlds(const std::string& host_id) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  base::EraseIf(isolated_worlds_, [&host_id](const auto& entry) {
+  std::erase_if(isolated_worlds_, [&host_id](const auto& entry) {
     return entry.second.host_id == host_id;
   });
 }
 
 void IsolatedWorldManager::SetUserScriptWorldProperties(
     const std::string& host_id,
-    absl::optional<std::string> csp,
+    std::optional<std::string> csp,
     bool enable_messaging) {
   auto& pending_info = pending_worlds_info_[host_id];
   pending_info.csp = std::move(csp);
@@ -158,7 +157,7 @@ int IsolatedWorldManager::GetOrCreateIsolatedWorldForHost(
 
   // If we found a CSP, apply it to the world. Otherwise, explicitly clear out
   // any old CSP.
-  world_info->csp = csp ? absl::optional<std::string>(*csp) : absl::nullopt;
+  world_info->csp = csp ? std::optional<std::string>(*csp) : std::nullopt;
 
   // Even though there may be an existing world for this `injection_host`'s id,
   // the properties may have changed (e.g. due to an extension update).

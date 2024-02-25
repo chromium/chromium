@@ -7,6 +7,7 @@
 #include <string>
 
 #include "base/strings/string_piece.h"
+#include "components/password_manager/core/browser/features/password_features.h"
 #include "components/password_manager/core/browser/leak_detection/encryption_utils.h"
 #include "components/password_manager/core/browser/password_manager_util.h"
 
@@ -47,7 +48,12 @@ PossibleUsernameData::PossibleUsernameData(const PossibleUsernameData&) =
 PossibleUsernameData::~PossibleUsernameData() = default;
 
 bool PossibleUsernameData::IsStale() const {
-  return base::Time::Now() - last_change > kPossibleUsernameExpirationTimeout;
+  return base::Time::Now() - last_change >
+         (base::FeatureList::IsEnabled(
+              password_manager::features::
+                  kUsernameFirstFlowWithIntermediateValues)
+              ? base::Minutes(features::kSingleUsernameTimeToLive.Get())
+              : kPossibleUsernameExpirationTimeout);
 }
 
 bool PossibleUsernameData::HasSingleUsernameServerPrediction() const {
@@ -57,6 +63,17 @@ bool PossibleUsernameData::HasSingleUsernameServerPrediction() const {
   const PasswordFieldPrediction* field_prediction =
       FindFieldPrediction(*form_predictions, renderer_id);
   return field_prediction &&
+         password_manager_util::IsSingleUsernameType(field_prediction->type);
+}
+
+bool PossibleUsernameData::HasSingleUsernameOverride() const {
+  // Check if there is a server prediction.
+  if (!form_predictions) {
+    return false;
+  }
+  const PasswordFieldPrediction* field_prediction =
+      FindFieldPrediction(*form_predictions, renderer_id);
+  return field_prediction && field_prediction->is_override &&
          password_manager_util::IsSingleUsernameType(field_prediction->type);
 }
 

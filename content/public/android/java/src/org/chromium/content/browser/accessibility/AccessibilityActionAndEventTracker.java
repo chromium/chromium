@@ -9,9 +9,7 @@ import android.view.accessibility.AccessibilityEvent;
 
 import java.util.LinkedList;
 
-/**
- * Helper class for tracking accessibility actions and events for end-to-end tests.
- */
+/** Helper class for tracking accessibility actions and events for end-to-end tests. */
 public class AccessibilityActionAndEventTracker {
     private LinkedList<String> mEvents;
     private boolean mTestComplete;
@@ -48,16 +46,12 @@ public class AccessibilityActionAndEventTracker {
         return results.toString().trim();
     }
 
-    /**
-     * Helper method to signal the beginning of a given unit test.
-     */
+    /** Helper method to signal the beginning of a given unit test. */
     public void signalReadyForTest() {
         mTestComplete = false;
     }
 
-    /**
-     * Helper method to signal the end of a given unit test.
-     */
+    /** Helper method to signal the end of a given unit test. */
     public void signalEndOfTest() {
         mTestComplete = true;
     }
@@ -120,7 +114,7 @@ public class AccessibilityActionAndEventTracker {
         // CONTENT_CHANGE_TYPE_STATE_DESCRIPTION flag)
         if (event.getEventType() == AccessibilityEvent.TYPE_WINDOW_CONTENT_CHANGED
                 && (event.getContentChangeTypes()
-                           & AccessibilityEvent.CONTENT_CHANGE_TYPE_STATE_DESCRIPTION)
+                                & AccessibilityEvent.CONTENT_CHANGE_TYPE_STATE_DESCRIPTION)
                         == 0) {
             return null;
         }
@@ -130,42 +124,46 @@ public class AccessibilityActionAndEventTracker {
 
         // Add extra information based on eventType.
         switch (event.getEventType()) {
-            // For announcements, track the text announced to the user.
-            case AccessibilityEvent.TYPE_ANNOUNCEMENT: {
-                builder.append(" - [");
-                builder.append(event.getText().get(0).toString());
-                builder.append("]");
-                break;
-            }
-            // For text selection/traversal, track the To and From indices.
+                // For announcements, track the text announced to the user.
+            case AccessibilityEvent.TYPE_ANNOUNCEMENT:
+                {
+                    builder.append(" - [");
+                    builder.append(event.getText().get(0).toString());
+                    builder.append("]");
+                    break;
+                }
+                // For text selection/traversal, track the To and From indices.
             case AccessibilityEvent.TYPE_VIEW_TEXT_TRAVERSED_AT_MOVEMENT_GRANULARITY:
-            case AccessibilityEvent.TYPE_VIEW_TEXT_SELECTION_CHANGED: {
-                builder.append(" - [");
-                builder.append(event.getFromIndex());
-                builder.append(", ");
-                builder.append(event.getToIndex());
-                builder.append("]");
-                break;
-            }
+            case AccessibilityEvent.TYPE_VIEW_TEXT_SELECTION_CHANGED:
+                {
+                    builder.append(" - [");
+                    builder.append(event.getFromIndex());
+                    builder.append(", ");
+                    builder.append(event.getToIndex());
+                    builder.append("]");
+                    break;
+                }
 
-            // For appearance of dialogs, track the content types.
-            case AccessibilityEvent.TYPE_WINDOW_STATE_CHANGED: {
-                builder.append(" - [contentTypes=");
-                builder.append(event.getContentChangeTypes());
-                builder.append("]");
-                break;
-            }
+                // For appearance of dialogs, track the content types.
+            case AccessibilityEvent.TYPE_WINDOW_STATE_CHANGED:
+                {
+                    builder.append(" - [contentTypes=");
+                    builder.append(event.getContentChangeTypes());
+                    builder.append("]");
+                    break;
+                }
 
-            // Any TYPE_WINDOW_CONTENT_CHANGED event here should have the
-            // CONTENT_CHANGE_TYPE_STATE_DESCRIPTION flag
-            case AccessibilityEvent.TYPE_WINDOW_CONTENT_CHANGED: {
-                builder.append(" - [contentTypes=");
-                builder.append(event.getContentChangeTypes());
-                builder.append("]");
-                break;
-            }
+                // Any TYPE_WINDOW_CONTENT_CHANGED event here should have the
+                // CONTENT_CHANGE_TYPE_STATE_DESCRIPTION flag
+            case AccessibilityEvent.TYPE_WINDOW_CONTENT_CHANGED:
+                {
+                    builder.append(" - [contentTypes=");
+                    builder.append(event.getContentChangeTypes());
+                    builder.append("]");
+                    break;
+                }
 
-            // Events that do not add extra information for unit tests
+                // Events that do not add extra information for unit tests
             case AccessibilityEvent.TYPE_VIEW_ACCESSIBILITY_FOCUSED:
             case AccessibilityEvent.TYPE_ASSIST_READING_CONTEXT:
             case AccessibilityEvent.TYPE_GESTURE_DETECTION_END:

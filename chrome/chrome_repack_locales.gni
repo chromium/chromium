@@ -44,12 +44,12 @@ template("chrome_repack_locales") {
       deps = []
     }
     deps += [
-      "//chrome/app:chromium_strings",
+      "//chrome/app:branded_strings",
       "//chrome/app:generated_resources",
       "//chrome/app/resources:locale_settings",
       "//chrome/app/resources:platform_locale_settings",
       "//components/omnibox/resources:omnibox_pedal_synonyms",
-      "//components/strings:components_chromium_strings",
+      "//components/strings:components_branded_strings",
       "//components/strings:components_locale_settings",
       "//components/strings:components_strings",
       "//device/bluetooth/strings",
@@ -93,23 +93,26 @@ template("chrome_repack_locales") {
           [ "${root_gen_dir}/chromeos/strings/chromeos_strings_" ]
       deps += [ "//chromeos/strings" ]
     }
+    if (!is_android) {
+      source_patterns += [ "${root_gen_dir}/components/strings/search_engine_descriptions_strings_" ]
+      deps += [ "//components/strings:search_engine_descriptions_strings" ]
+    }
     if (enable_extensions) {
       source_patterns +=
           [ "${root_gen_dir}/extensions/strings/extensions_strings_" ]
       deps += [ "//extensions/strings" ]
     }
 
+    # src-internal strings only available on Chrome branded builds.
     if (is_chrome_branded) {
-      source_patterns += [
-        "${root_gen_dir}/chrome/google_chrome_strings_",
-        "${root_gen_dir}/components/strings/components_google_chrome_strings_",
-      ]
-    } else {
-      source_patterns += [
-        "${root_gen_dir}/chrome/chromium_strings_",
-        "${root_gen_dir}/components/strings/components_chromium_strings_",
-      ]
+      source_patterns += [ "${root_gen_dir}/chrome/browser/nearby_sharing/internal/resources/nearby_share_internal_strings_" ]
+      deps += [ "//chrome/browser/nearby_sharing/internal/resources:nearby_share_internal_strings" ]
     }
+
+    source_patterns += [
+      "${root_gen_dir}/chrome/${branding_path_product}_strings_",
+      "${root_gen_dir}/components/strings/components_${branding_path_product}_strings_",
+    ]
 
     if (defined(invoker.additional_source_patterns)) {
       source_patterns += invoker.additional_source_patterns

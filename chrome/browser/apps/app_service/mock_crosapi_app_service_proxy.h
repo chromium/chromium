@@ -46,6 +46,8 @@ class MockCrosapiAppServiceProxy : public crosapi::mojom::AppServiceProxy {
   void SetSupportedLinksPreference(const std::string& app_id) override;
   void UninstallSilently(const std::string& app_id,
                          UninstallSource uninstall_source) override;
+  void InstallApp(crosapi::mojom::InstallAppParamsPtr params,
+                  InstallAppCallback callback) override;
 
   std::vector<crosapi::mojom::LaunchParamsPtr> launched_apps_;
   std::vector<std::string> supported_link_apps_;

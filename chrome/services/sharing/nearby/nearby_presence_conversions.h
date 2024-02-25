@@ -37,6 +37,7 @@ mojom::SharedCredentialPtr SharedCredentialToMojom(
 
 mojom::PresenceDevicePtr BuildPresenceMojomDevice(
     ::nearby::presence::PresenceDevice device);
+
 }  // namespace ash::nearby::presence
 
 #endif  // CHROME_SERVICES_SHARING_NEARBY_NEARBY_PRESENCE_CONVERSIONS_H_

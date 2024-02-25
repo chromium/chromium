@@ -47,9 +47,7 @@ import org.chromium.ui.test.util.ViewUtils;
 import java.io.IOException;
 import java.util.HashSet;
 
-/**
- * Integration tests for ClearBrowsingDataFragmentBasic.
- */
+/** Integration tests for ClearBrowsingDataFragmentBasic. */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 public class ClearBrowsingDataFragmentBasicTest {
@@ -57,9 +55,10 @@ public class ClearBrowsingDataFragmentBasicTest {
             new ChromeTabbedActivityTestRule();
     public final SettingsActivityTestRule<ClearBrowsingDataFragmentBasic>
             mSettingsActivityTestRule =
-                    new SettingsActivityTestRule<>(ClearBrowsingDataFragmentBasic.class,
+                    new SettingsActivityTestRule<>(
+                            ClearBrowsingDataFragmentBasic.class,
                             ClearBrowsingDataFragment.createFragmentArgs(
-                                    /*isFetcherSuppliedFromOutside=*/false));
+                                    /* isFetcherSuppliedFromOutside= */ false));
 
     // SettingsActivity has to be finished before the outer CTA can be finished or trying to finish
     // CTA won't work.
@@ -67,22 +66,19 @@ public class ClearBrowsingDataFragmentBasicTest {
     public final RuleChain mRuleChain =
             RuleChain.outerRule(mActivityTestRule).around(mSettingsActivityTestRule);
 
-    @Rule
-    public final SigninTestRule mSigninTestRule = new SigninTestRule();
+    @Rule public final SigninTestRule mSigninTestRule = new SigninTestRule();
 
     @Rule
     public ChromeRenderTestRule mRenderTestRule =
             ChromeRenderTestRule.Builder.withPublicCorpus()
                     .setBugComponent(ChromeRenderTestRule.Component.PRIVACY)
+                    .setRevision(1)
                     .build();
 
-    @Mock
-    private SyncService mMockSyncService;
+    @Mock private SyncService mMockSyncService;
 
-    @Mock
-    public TemplateUrlService mMockTemplateUrlService;
-    @Mock
-    public TemplateUrl mMockSearchEngine;
+    @Mock public TemplateUrlService mMockTemplateUrlService;
+    @Mock public TemplateUrl mMockSearchEngine;
 
     @Before
     public void setUp() throws InterruptedException {
@@ -93,13 +89,16 @@ public class ClearBrowsingDataFragmentBasicTest {
     }
 
     private void setSyncable(boolean syncable) {
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            when(mMockSyncService.isSyncFeatureEnabled()).thenReturn(syncable);
-            when(mMockSyncService.getActiveDataTypes())
-                    .thenReturn(syncable
-                                    ? CollectionUtil.newHashSet(ModelType.HISTORY_DELETE_DIRECTIVES)
-                                    : new HashSet<Integer>());
-        });
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    when(mMockSyncService.isSyncFeatureEnabled()).thenReturn(syncable);
+                    when(mMockSyncService.getActiveDataTypes())
+                            .thenReturn(
+                                    syncable
+                                            ? CollectionUtil.newHashSet(
+                                                    ModelType.HISTORY_DELETE_DIRECTIVES)
+                                            : new HashSet<Integer>());
+                });
     }
 
     private void configureMockSearchEngine() {
@@ -110,10 +109,13 @@ public class ClearBrowsingDataFragmentBasicTest {
     }
 
     private void waitForOptionsMenu() {
-        CriteriaHelper.pollUiThread(() -> {
-            return mSettingsActivityTestRule.getActivity().findViewById(R.id.menu_id_general_help)
-                    != null;
-        });
+        CriteriaHelper.pollUiThread(
+                () -> {
+                    return mSettingsActivityTestRule
+                                    .getActivity()
+                                    .findViewById(R.id.menu_id_targeted_help)
+                            != null;
+                });
     }
 
     @Test
@@ -138,9 +140,11 @@ public class ClearBrowsingDataFragmentBasicTest {
         setSyncable(true);
         mSettingsActivityTestRule.startSettingsActivity();
         waitForOptionsMenu();
-        View view = mSettingsActivityTestRule.getActivity()
-                            .findViewById(android.R.id.content)
-                            .getRootView();
+        View view =
+                mSettingsActivityTestRule
+                        .getActivity()
+                        .findViewById(android.R.id.content)
+                        .getRootView();
         mRenderTestRule.render(view, "clear_browsing_data_basic_signed_in_sync");
     }
 
@@ -150,9 +154,11 @@ public class ClearBrowsingDataFragmentBasicTest {
     public void testRenderSearchHistoryLinkSignedOutGoogleDSE() throws IOException {
         mSettingsActivityTestRule.startSettingsActivity();
         waitForOptionsMenu();
-        View view = mSettingsActivityTestRule.getActivity()
-                            .findViewById(android.R.id.content)
-                            .getRootView();
+        View view =
+                mSettingsActivityTestRule
+                        .getActivity()
+                        .findViewById(android.R.id.content)
+                        .getRootView();
         mRenderTestRule.render(view, "clear_browsing_data_basic_shl_google_signed_out");
     }
 
@@ -164,9 +170,11 @@ public class ClearBrowsingDataFragmentBasicTest {
         setSyncable(false);
         mSettingsActivityTestRule.startSettingsActivity();
         waitForOptionsMenu();
-        View view = mSettingsActivityTestRule.getActivity()
-                            .findViewById(android.R.id.content)
-                            .getRootView();
+        View view =
+                mSettingsActivityTestRule
+                        .getActivity()
+                        .findViewById(android.R.id.content)
+                        .getRootView();
         mRenderTestRule.render(view, "clear_browsing_data_basic_shl_google_signed_in");
     }
 
@@ -182,9 +190,11 @@ public class ClearBrowsingDataFragmentBasicTest {
 
         mSettingsActivityTestRule.startSettingsActivity();
         waitForOptionsMenu();
-        View view = mSettingsActivityTestRule.getActivity()
-                            .findViewById(android.R.id.content)
-                            .getRootView();
+        View view =
+                mSettingsActivityTestRule
+                        .getActivity()
+                        .findViewById(android.R.id.content)
+                        .getRootView();
         mRenderTestRule.render(view, "clear_browsing_data_basic_shl_known_signed_in");
     }
 
@@ -201,9 +211,11 @@ public class ClearBrowsingDataFragmentBasicTest {
 
         mSettingsActivityTestRule.startSettingsActivity();
         waitForOptionsMenu();
-        View view = mSettingsActivityTestRule.getActivity()
-                            .findViewById(android.R.id.content)
-                            .getRootView();
+        View view =
+                mSettingsActivityTestRule
+                        .getActivity()
+                        .findViewById(android.R.id.content)
+                        .getRootView();
         ViewUtils.waitForVisibleView(withText("Frees up"));
         mRenderTestRule.render(view, "clear_browsing_data_basic_shl_unknown_signed_in");
     }
@@ -218,9 +230,11 @@ public class ClearBrowsingDataFragmentBasicTest {
 
         mSettingsActivityTestRule.startSettingsActivity();
         waitForOptionsMenu();
-        View view = mSettingsActivityTestRule.getActivity()
-                            .findViewById(android.R.id.content)
-                            .getRootView();
+        View view =
+                mSettingsActivityTestRule
+                        .getActivity()
+                        .findViewById(android.R.id.content)
+                        .getRootView();
         mRenderTestRule.render(view, "clear_browsing_data_basic_shl_known_signed_out");
     }
 
@@ -235,9 +249,11 @@ public class ClearBrowsingDataFragmentBasicTest {
 
         mSettingsActivityTestRule.startSettingsActivity();
         waitForOptionsMenu();
-        View view = mSettingsActivityTestRule.getActivity()
-                            .findViewById(android.R.id.content)
-                            .getRootView();
+        View view =
+                mSettingsActivityTestRule
+                        .getActivity()
+                        .findViewById(android.R.id.content)
+                        .getRootView();
         mRenderTestRule.render(view, "clear_browsing_data_basic_shl_unknown_signed_out");
     }
 }

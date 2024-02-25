@@ -9,7 +9,6 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_key.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
-#include "chrome/browser/supervised_user/kids_chrome_management/kids_chrome_management_client_factory.h"
 #include "chrome/browser/supervised_user/supervised_user_browser_utils.h"
 #include "chrome/browser/supervised_user/supervised_user_settings_service_factory.h"
 #include "chrome/browser/sync/sync_service_factory.h"
@@ -18,11 +17,18 @@
 #include "components/sync/service/sync_service.h"
 #include "components/variations/service/variations_service.h"
 #include "content/public/browser/browser_context.h"
+#include "content/public/browser/storage_partition.h"
 #include "extensions/buildflags/buildflags.h"
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
 #include "extensions/browser/extension_system_provider.h"
 #include "extensions/browser/extensions_browser_client.h"
+#endif
+
+#if BUILDFLAG(IS_ANDROID)
+#include "chrome/browser/supervised_user/android/supervised_user_service_platform_delegate.h"
+#else
+#include "chrome/browser/supervised_user/supervised_user_service_platform_delegate.h"
 #endif
 
 class FilterDelegateImpl
@@ -72,13 +78,21 @@ SupervisedUserServiceFactory* SupervisedUserServiceFactory::GetInstance() {
 KeyedService* SupervisedUserServiceFactory::BuildInstanceFor(Profile* profile) {
   return new supervised_user::SupervisedUserService(
       IdentityManagerFactory::GetForProfile(profile),
-      KidsChromeManagementClientFactory::GetInstance()->GetForProfile(profile),
+      profile->GetDefaultStoragePartition()
+          ->GetURLLoaderFactoryForBrowserProcess(),
       *profile->GetPrefs(),
       *SupervisedUserSettingsServiceFactory::GetInstance()->GetForKey(
           profile->GetProfileKey()),
-      *SyncServiceFactory::GetInstance()->GetForProfile(profile),
+      SyncServiceFactory::GetInstance()->GetForProfile(profile),
       base::BindRepeating(supervised_user::IsSupportedChromeExtensionURL),
       std::make_unique<FilterDelegateImpl>(),
+#if BUILDFLAG(IS_ANDROID)
+      std::make_unique<SupervisedUserServicePlatformDelegate>(
+          SupervisedUserServicePlatformDelegate()),
+#else
+      std::make_unique<SupervisedUserServicePlatformDelegate>(
+          SupervisedUserServicePlatformDelegate(*profile)),
+#endif
       /*can_show_first_time_interstitial_banner=*/!profile->IsNewProfile());
 }
 
@@ -91,7 +105,6 @@ SupervisedUserServiceFactory::SupervisedUserServiceFactory()
       extensions::ExtensionsBrowserClient::Get()->GetExtensionSystemFactory());
 #endif
   DependsOn(IdentityManagerFactory::GetInstance());
-  DependsOn(KidsChromeManagementClientFactory::GetInstance());
   DependsOn(SyncServiceFactory::GetInstance());
   DependsOn(SupervisedUserSettingsServiceFactory::GetInstance());
 }

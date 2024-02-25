@@ -10,6 +10,7 @@
 #define NET_SOCKET_TRANSPORT_CLIENT_SOCKET_POOL_TEST_UTIL_H_
 
 #include <memory>
+#include <optional>
 #include <string>
 
 #include "base/compiler_specific.h"
@@ -23,7 +24,6 @@
 #include "net/socket/client_socket_handle.h"
 #include "net/socket/socket_performance_watcher.h"
 #include "net/socket/stream_socket.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace net {
 
@@ -76,8 +76,8 @@ class MockTransportClientSocketFactory : public ClientSocketFactory {
   // A rule describing a mock `TransportClientSocket` to create.
   struct Rule {
     explicit Rule(Type type,
-                  absl::optional<std::vector<IPEndPoint>> expected_addresses =
-                      absl::nullopt,
+                  std::optional<std::vector<IPEndPoint>> expected_addresses =
+                      std::nullopt,
                   Error connect_error = ERR_CONNECTION_FAILED);
     ~Rule();
     Rule(const Rule&);
@@ -86,7 +86,7 @@ class MockTransportClientSocketFactory : public ClientSocketFactory {
     Type type;
     // If specified, the addresses that should be passed into
     // `CreateTransportClientSocket`.
-    absl::optional<std::vector<IPEndPoint>> expected_addresses;
+    std::optional<std::vector<IPEndPoint>> expected_addresses;
     // The error to use if `type` specifies a failing connection. Ignored
     // otherwise.
     Error connect_error;

@@ -323,8 +323,8 @@ TEST(TelemetryExtensionEventsApiConvertersUnitTest,
   }
   {
     auto output = ConvertStructPtr(
-        crosapi::TelemetryStylusTouchPointInfo::New(kX, kY, absl::nullopt));
-    EXPECT_EQ(output.pressure, absl::nullopt);
+        crosapi::TelemetryStylusTouchPointInfo::New(kX, kY, std::nullopt));
+    EXPECT_EQ(output.pressure, std::nullopt);
   }
 }
 
@@ -593,9 +593,8 @@ TEST(TelemetryExtensionEventsApiConvertersUnitTest,
   EXPECT_EQ(display_info.manufacturer, kManufacturer);
   ASSERT_TRUE(display_info.model_id.has_value());
   EXPECT_EQ(static_cast<uint16_t>(display_info.model_id.value()), kModelId);
-  ASSERT_TRUE(display_info.serial_number.has_value());
-  EXPECT_EQ(static_cast<uint32_t>(display_info.serial_number.value()),
-            kSerialNumber);
+  // serial_number is not converted in ConvertPtr() for now.
+  EXPECT_FALSE(display_info.serial_number);
   ASSERT_TRUE(display_info.manufacture_week.has_value());
   EXPECT_EQ(static_cast<uint8_t>(display_info.manufacture_week.value()),
             kManufactureWeek);
@@ -685,9 +684,9 @@ TEST(TelemetryExtensionEventsApiConvertersUnitTest,
   EXPECT_EQ(result.touch_points[1].tracking_id, kTrackingId2);
   EXPECT_EQ(result.touch_points[1].x, kX2);
   EXPECT_EQ(result.touch_points[1].y, kY2);
-  EXPECT_EQ(result.touch_points[1].pressure, absl::nullopt);
-  EXPECT_EQ(result.touch_points[1].touch_major, absl::nullopt);
-  EXPECT_EQ(result.touch_points[1].touch_minor, absl::nullopt);
+  EXPECT_EQ(result.touch_points[1].pressure, std::nullopt);
+  EXPECT_EQ(result.touch_points[1].touch_major, std::nullopt);
+  EXPECT_EQ(result.touch_points[1].touch_minor, std::nullopt);
 }
 
 TEST(TelemetryExtensionEventsApiConvertersUnitTest,
@@ -753,9 +752,9 @@ TEST(TelemetryExtensionEventsApiConvertersUnitTest,
   EXPECT_EQ(result.touch_points[1].tracking_id, kTrackingId2);
   EXPECT_EQ(result.touch_points[1].x, kX2);
   EXPECT_EQ(result.touch_points[1].y, kY2);
-  EXPECT_EQ(result.touch_points[1].pressure, absl::nullopt);
-  EXPECT_EQ(result.touch_points[1].touch_major, absl::nullopt);
-  EXPECT_EQ(result.touch_points[1].touch_minor, absl::nullopt);
+  EXPECT_EQ(result.touch_points[1].pressure, std::nullopt);
+  EXPECT_EQ(result.touch_points[1].touch_major, std::nullopt);
+  EXPECT_EQ(result.touch_points[1].touch_minor, std::nullopt);
 }
 
 TEST(TelemetryExtensionEventsApiConvertersUnitTest,
@@ -795,7 +794,7 @@ TEST(TelemetryExtensionEventsApiConvertersUnitTest, ConvertTouchpointInfo) {
   EXPECT_EQ(output.y, kY);
   EXPECT_EQ(output.pressure, kPressure);
   EXPECT_EQ(output.touch_major, kTouchMajor);
-  EXPECT_EQ(output.touch_minor, absl::nullopt);
+  EXPECT_EQ(output.touch_minor, std::nullopt);
 }
 
 TEST(TelemetryExtensionEventsApiConvertersUnitTest,

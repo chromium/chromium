@@ -5,6 +5,7 @@
 #include "chromeos/ash/components/dbus/human_presence/human_presence_dbus_client.h"
 
 #include <memory>
+#include <optional>
 
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
@@ -16,7 +17,6 @@
 #include "dbus/bus.h"
 #include "dbus/message.h"
 #include "dbus/object_proxy.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/cros_system_api/dbus/hps/dbus-constants.h"
 
 namespace ash {
@@ -26,16 +26,16 @@ namespace {
 HumanPresenceDBusClient* g_instance = nullptr;
 
 // Extracts result data out of a DBus response.
-absl::optional<hps::HpsResultProto> UnwrapHpsResult(dbus::Response* response) {
+std::optional<hps::HpsResultProto> UnwrapHpsResult(dbus::Response* response) {
   if (response == nullptr) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   dbus::MessageReader reader(response);
   hps::HpsResultProto result;
   if (!reader.PopArrayOfBytesAsProto(&result)) {
     LOG(ERROR) << "Invalid DBus response data";
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   return result;
@@ -207,7 +207,7 @@ class HumanPresenceDBusClientImpl : public HumanPresenceDBusClient {
                                       base::DoNothing());
   }
 
-  const raw_ptr<dbus::ObjectProxy, ExperimentalAsh> human_presence_proxy_;
+  const raw_ptr<dbus::ObjectProxy> human_presence_proxy_;
 
   base::ObserverList<Observer> observers_;
 

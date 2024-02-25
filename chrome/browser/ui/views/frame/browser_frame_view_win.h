@@ -22,9 +22,9 @@ class BrowserCaptionButtonContainer;
 
 class BrowserFrameViewWin : public BrowserNonClientFrameView,
                             public TabIconViewModel {
- public:
-  METADATA_HEADER(BrowserFrameViewWin);
+  METADATA_HEADER(BrowserFrameViewWin, BrowserNonClientFrameView)
 
+ public:
   // Constructs a non-client view for an BrowserFrame.
   BrowserFrameViewWin(BrowserFrame* frame, BrowserView* browser_view);
   BrowserFrameViewWin(const BrowserFrameViewWin&) = delete;
@@ -40,7 +40,6 @@ class BrowserFrameViewWin : public BrowserNonClientFrameView,
   void LayoutWebAppWindowTitle(const gfx::Rect& available_space,
                                views::Label& window_title_label) const override;
   int GetTopInset(bool restored) const override;
-  int GetThemeBackgroundXInset() const override;
   bool HasVisibleBackgroundTabShapes(
       BrowserFrameActiveState active_state) const override;
   SkColor GetCaptionColor(BrowserFrameActiveState active_state) const override;
@@ -56,9 +55,7 @@ class BrowserFrameViewWin : public BrowserNonClientFrameView,
   int NonClientHitTest(const gfx::Point& point) override;
   void UpdateWindowIcon() override;
   void UpdateWindowTitle() override;
-  void GetWindowMask(const gfx::Size& size, SkPath* window_mask) override {}
   void ResetWindowControls() override;
-  void SizeConstraintsChanged() override {}
   void OnThemeChanged() override;
 
   // TabIconViewModel:
@@ -84,13 +81,15 @@ class BrowserFrameViewWin : public BrowserNonClientFrameView,
     return caption_button_container_;
   }
 
+  const TabIconView* window_icon_for_testing() const { return window_icon_; }
+
  protected:
   // BrowserNonClientFrameView:
   void PaintAsActiveChanged() override;
 
   // views::View:
   void OnPaint(gfx::Canvas* canvas) override;
-  void Layout() override;
+  void Layout(PassKey) override;
 
  private:
   friend class BrowserCaptionButtonContainer;

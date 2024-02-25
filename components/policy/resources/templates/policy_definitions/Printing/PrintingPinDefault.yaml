@@ -14,7 +14,8 @@ items:
   name: no_pin
   value: no_pin
 owners:
-- srad@google.com
+- ust@google.com
+- chromeos-commercial-printing@google.com
 - pawliczek@chromium.org
 schema:
   enum:

@@ -6,10 +6,12 @@
 
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/renderer/core/svg/svg_number.h"
+#include "third_party/blink/renderer/platform/testing/task_environment.h"
 
 namespace blink {
 
 TEST(SVGNumberInterpolationTypeTest, NonNegativeSVGNumber) {
+  test::TaskEnvironment task_environment;
   // kPathLengthAttr implies non-negative.
   SVGNumberInterpolationType interpolation_type(svg_names::kPathLengthAttr);
 
@@ -25,6 +27,7 @@ TEST(SVGNumberInterpolationTypeTest, NonNegativeSVGNumber) {
 }
 
 TEST(SVGNumberInterpolationTypeTest, NegativeSVGNumber) {
+  test::TaskEnvironment task_environment;
   // kOffsetAttr can be negative.
   SVGNumberInterpolationType interpolation_type(svg_names::kOffsetAttr);
 
@@ -43,6 +46,7 @@ TEST(SVGNumberInterpolationTypeTest, NegativeSVGNumber) {
 // can represent a double, but SVGNumber is created from a float, so we must
 // make sure to clamp it.
 TEST(SVGNumberInterpolationTypeTest, InterpolableNumberOutOfRange) {
+  test::TaskEnvironment task_environment;
   SVGNumberInterpolationType interpolation_type(svg_names::kOffsetAttr);
 
   double too_large = std::numeric_limits<float>::max() * 2;

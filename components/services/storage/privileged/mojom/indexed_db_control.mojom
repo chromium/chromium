@@ -4,7 +4,7 @@
 
 module storage.mojom;
 
-import "components/services/storage/privileged/mojom/indexed_db_bucket_types.mojom";
+import "components/services/storage/privileged/mojom/indexed_db_internals_types.mojom";
 import "components/services/storage/privileged/mojom/indexed_db_client_state_checker.mojom";
 import "components/services/storage/privileged/mojom/indexed_db_control_test.mojom";
 import "components/services/storage/public/mojom/buckets/bucket_locator.mojom";
@@ -13,6 +13,7 @@ import "components/services/storage/public/mojom/storage_policy_update.mojom";
 import "components/services/storage/public/mojom/storage_usage_info.mojom";
 import "mojo/public/mojom/base/file_path.mojom";
 import "mojo/public/mojom/base/string16.mojom";
+import "mojo/public/mojom/base/unguessable_token.mojom";
 import "mojo/public/mojom/base/values.mojom";
 import "third_party/blink/public/mojom/indexeddb/indexeddb.mojom";
 import "third_party/blink/public/mojom/storage_key/storage_key.mojom";
@@ -23,7 +24,7 @@ enum ForceCloseReason {
   FORCE_CLOSE_BACKING_STORE_FAILURE = 1,
   FORCE_CLOSE_INTERNALS_PAGE = 2,
   FORCE_CLOSE_COPY_ORIGIN = 3,
-  FORCE_SCHEMA_DOWNGRADE_INTERNALS_PAGE = 4,
+  // Deprecated: FORCE_SCHEMA_DOWNGRADE_INTERNALS_PAGE = 4,
   // Append new values here and update IDBContextForcedCloseReason in
   // enums.xml.
 };
@@ -50,36 +51,17 @@ interface IndexedDBObserver {
 // implementation will eventually live in the storage service which may run
 // out-of-process.
 interface IndexedDBControl {
-  // Binds an IDBFactory to the given `storage_key` and ids that identify
-  // the `RenderFrameHost` for the default bucket.
+  // Binds an IDBFactory for the given bucket. If the bucket locator refers to
+  // the default bucket, its ID may be invalid.
   BindIndexedDB(
-    blink.mojom.StorageKey storage_key,
-    pending_associated_remote<storage.mojom.IndexedDBClientStateChecker>
-      client_state_checker_remote,
-    pending_receiver<blink.mojom.IDBFactory> receiver);
-
-  // Binds an IDBFactory for the given bucket.
-  BindIndexedDBForBucket(
     storage.mojom.BucketLocator bucket_locator,
-    pending_associated_remote<storage.mojom.IndexedDBClientStateChecker>
-      client_state_checker_remote,
+    pending_remote<storage.mojom.IndexedDBClientStateChecker>
+        client_state_checker_remote,
+    mojo_base.mojom.UnguessableToken client_token,
     pending_receiver<blink.mojom.IDBFactory> receiver);
-
-  // Retrieves some basic usage information about the IndexedDB state. The
-  // returned array has one StorageUsageInfo per `storage_key` in the
-  // partition that has IndexedDB usage data.
-  GetUsage() => (array<StorageUsageInfo> info);
-
-  // Deletes all indexed db files (across all buckets) for the given
-  // `storage_key`.
-  DeleteForStorageKey(blink.mojom.StorageKey storage_key) => (bool success);
 
   // Forcibly closes all connections to all databases within the bucket.
   ForceClose(storage.mojom.BucketId bucket_id, ForceCloseReason reason) => ();
-
-  // Returns the current number of connections.
-  GetConnectionCount(storage.mojom.BucketId bucket_id) =>
-    (uint64 connection_count);
 
   // Called by chrome://indexeddb-internals to download all of the indexeddb
   // data for a particular bucket.  This creates a zip file at

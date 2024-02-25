@@ -20,81 +20,81 @@ Default levels
 Running: beforeFilter
 beforeFilter
 Level menu: Default levels
->console-filter-level-test.js:15 sample info
->console-filter-level-test.js:16 sample log
->console-filter-level-test.js:17 sample warning
-(anonymous) @ console-filter-level-test.js:17
->console-filter-level-test.js:19 sample error
-(anonymous) @ console-filter-level-test.js:19
->console-filter-level-test.js:21 abc info
->console-filter-level-test.js:22 def info
->console-filter-level-test.js:24 abc warn
-(anonymous) @ console-filter-level-test.js:24
->console-filter-level-test.js:25 def warn
+>console-filter-level-test.js:16 sample info
+>console-filter-level-test.js:17 sample log
+>console-filter-level-test.js:18 sample warning
+(anonymous) @ console-filter-level-test.js:18
+>console-filter-level-test.js:20 sample error
+(anonymous) @ console-filter-level-test.js:20
+>console-filter-level-test.js:22 abc info
+>console-filter-level-test.js:23 def info
+>console-filter-level-test.js:25 abc warn
 (anonymous) @ console-filter-level-test.js:25
+>console-filter-level-test.js:26 def warn
+(anonymous) @ console-filter-level-test.js:26
 >'Should be always visible'
 >'Should be always visible'
 
 Running: allLevels
 Level menu: All levels
->console-filter-level-test.js:15 sample info
->console-filter-level-test.js:16 sample log
->console-filter-level-test.js:17 sample warning
-(anonymous) @ console-filter-level-test.js:17
->console-filter-level-test.js:18 sample debug
->console-filter-level-test.js:19 sample error
-(anonymous) @ console-filter-level-test.js:19
->console-filter-level-test.js:21 abc info
->console-filter-level-test.js:22 def info
->console-filter-level-test.js:24 abc warn
-(anonymous) @ console-filter-level-test.js:24
->console-filter-level-test.js:25 def warn
+>console-filter-level-test.js:16 sample info
+>console-filter-level-test.js:17 sample log
+>console-filter-level-test.js:18 sample warning
+(anonymous) @ console-filter-level-test.js:18
+>console-filter-level-test.js:19 sample debug
+>console-filter-level-test.js:20 sample error
+(anonymous) @ console-filter-level-test.js:20
+>console-filter-level-test.js:22 abc info
+>console-filter-level-test.js:23 def info
+>console-filter-level-test.js:25 abc warn
 (anonymous) @ console-filter-level-test.js:25
+>console-filter-level-test.js:26 def warn
+(anonymous) @ console-filter-level-test.js:26
 >'Should be always visible'
 >'Should be always visible'
 
 Running: defaultLevels
 Level menu: Default levels
->console-filter-level-test.js:15 sample info
->console-filter-level-test.js:16 sample log
->console-filter-level-test.js:17 sample warning
-(anonymous) @ console-filter-level-test.js:17
->console-filter-level-test.js:19 sample error
-(anonymous) @ console-filter-level-test.js:19
->console-filter-level-test.js:21 abc info
->console-filter-level-test.js:22 def info
->console-filter-level-test.js:24 abc warn
-(anonymous) @ console-filter-level-test.js:24
->console-filter-level-test.js:25 def warn
+>console-filter-level-test.js:16 sample info
+>console-filter-level-test.js:17 sample log
+>console-filter-level-test.js:18 sample warning
+(anonymous) @ console-filter-level-test.js:18
+>console-filter-level-test.js:20 sample error
+(anonymous) @ console-filter-level-test.js:20
+>console-filter-level-test.js:22 abc info
+>console-filter-level-test.js:23 def info
+>console-filter-level-test.js:25 abc warn
 (anonymous) @ console-filter-level-test.js:25
+>console-filter-level-test.js:26 def warn
+(anonymous) @ console-filter-level-test.js:26
 >'Should be always visible'
 >'Should be always visible'
 
 Running: verbose
 Level menu: Verbose only
->console-filter-level-test.js:18 sample debug
+>console-filter-level-test.js:19 sample debug
 >'Should be always visible'
 >'Should be always visible'
 
 Running: info
 Level menu: Info only
->console-filter-level-test.js:15 sample info
->console-filter-level-test.js:16 sample log
->console-filter-level-test.js:21 abc info
->console-filter-level-test.js:22 def info
+>console-filter-level-test.js:16 sample info
+>console-filter-level-test.js:17 sample log
+>console-filter-level-test.js:22 abc info
+>console-filter-level-test.js:23 def info
 >'Should be always visible'
 >'Should be always visible'
 
 Running: warningsAndErrors
 Level menu: Custom levels
->console-filter-level-test.js:17 sample warning
-(anonymous) @ console-filter-level-test.js:17
->console-filter-level-test.js:19 sample error
-(anonymous) @ console-filter-level-test.js:19
->console-filter-level-test.js:24 abc warn
-(anonymous) @ console-filter-level-test.js:24
->console-filter-level-test.js:25 def warn
+>console-filter-level-test.js:18 sample warning
+(anonymous) @ console-filter-level-test.js:18
+>console-filter-level-test.js:20 sample error
+(anonymous) @ console-filter-level-test.js:20
+>console-filter-level-test.js:25 abc warn
 (anonymous) @ console-filter-level-test.js:25
+>console-filter-level-test.js:26 def warn
+(anonymous) @ console-filter-level-test.js:26
 >'Should be always visible'
 >'Should be always visible'
 
@@ -110,8 +110,8 @@ Level menu: Verbose only
 
 Running: abcMessageRegexWarning
 Level menu: Warnings only
->console-filter-level-test.js:24 abc warn
-(anonymous) @ console-filter-level-test.js:24
+>console-filter-level-test.js:25 abc warn
+(anonymous) @ console-filter-level-test.js:25
 >'Should be always visible'
 >'Should be always visible'
 

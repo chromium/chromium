@@ -40,6 +40,10 @@ class ArcSurveyServiceTest : public testing::Test {
     EXPECT_EQ(2u, arc_survey_service_->GetAllowedPackagesForTesting()->size());
   }
 
+  void TearDown() override {
+    arc_service_manager_.set_browser_context(nullptr);
+  }
+
   void OnTaskCreated(int32_t task_id, const std::string package_name) {
     arc_survey_service_->OnTaskCreated(task_id, package_name, "" /* activity */,
                                        "" /* intent */, 0 /* session_id */);
@@ -73,7 +77,7 @@ class ArcSurveyServiceTest : public testing::Test {
   content::BrowserTaskEnvironment task_environment_;
   TestingProfile testing_profile_;
   ArcServiceManager arc_service_manager_;
-  raw_ptr<ArcSurveyService, ExperimentalAsh> arc_survey_service_ = nullptr;
+  raw_ptr<ArcSurveyService> arc_survey_service_ = nullptr;
 };
 
 TEST_F(ArcSurveyServiceTest, ConstructDestruct) {}

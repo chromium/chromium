@@ -19,10 +19,10 @@
 //   - for use by Abseil internal code that Mutex itself depends on
 //   - for async signal safety (see below)
 
-// SpinLock is async signal safe.  If a spinlock is used within a signal
-// handler, all code that acquires the lock must ensure that the signal cannot
-// arrive while they are holding the lock.  Typically, this is done by blocking
-// the signal.
+// SpinLock with a base_internal::SchedulingMode::SCHEDULE_KERNEL_ONLY is async
+// signal safe. If a spinlock is used within a signal handler, all code that
+// acquires the lock must ensure that the signal cannot arrive while they are
+// holding the lock. Typically, this is done by blocking the signal.
 //
 // Threads waiting on a SpinLock may be woken in an arbitrary order.
 
@@ -41,11 +41,19 @@
 #include "absl/base/internal/tsan_mutex_interface.h"
 #include "absl/base/thread_annotations.h"
 
+namespace tcmalloc {
+namespace tcmalloc_internal {
+
+class AllocationGuardSpinLockHolder;
+
+}  // namespace tcmalloc_internal
+}  // namespace tcmalloc
+
 namespace absl {
 ABSL_NAMESPACE_BEGIN
 namespace base_internal {
 
-class ABSL_LOCKABLE SpinLock {
+class ABSL_LOCKABLE ABSL_ATTRIBUTE_WARN_UNUSED SpinLock {
  public:
   SpinLock() : lockword_(kSpinLockCooperative) {
     ABSL_TSAN_MUTEX_CREATE(this, __tsan_mutex_not_static);
@@ -137,6 +145,7 @@ class ABSL_LOCKABLE SpinLock {
 
   // Provide access to protected method above.  Use for testing only.
   friend struct SpinLockTest;
+  friend class tcmalloc::tcmalloc_internal::AllocationGuardSpinLockHolder;
 
  private:
   // lockword_ is used to store the following:
@@ -169,6 +178,10 @@ class ABSL_LOCKABLE SpinLock {
   static constexpr bool IsCooperative(
       base_internal::SchedulingMode scheduling_mode) {
     return scheduling_mode == base_internal::SCHEDULE_COOPERATIVE_AND_KERNEL;
+  }
+
+  bool IsCooperative() const {
+    return lockword_.load(std::memory_order_relaxed) & kSpinLockCooperative;
   }
 
   uint32_t TryLockInternal(uint32_t lock_value, uint32_t wait_cycles);

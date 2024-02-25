@@ -12,11 +12,11 @@
 
 namespace feed {
 
-absl::optional<Experiments> TranslateExperiments(
+std::optional<Experiments> TranslateExperiments(
     const google::protobuf::RepeatedPtrField<feedwire::Experiment>&
         wire_experiments) {
   // Set up the Experiments map that contains the trial -> list of groups.
-  absl::optional<Experiments> experiments = absl::nullopt;
+  std::optional<Experiments> experiments = std::nullopt;
   if (wire_experiments.size() > 0) {
     Experiments e;
     for (feedwire::Experiment exp : wire_experiments) {

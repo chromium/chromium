@@ -1,0 +1,4 @@
+WebView textSize:16.0 style:0 htmlInfo:[{htmlTag="#document"}, {display=""}]
+++View textSize:16.0 style:0 htmlInfo:[{htmlTag="body"}, {display="block"}]
+++++Button text:"Search" textSize:13.3 style:0 bgColor:-1052689 htmlInfo:[{htmlTag="button"}, {display="inline-block"}, {aria-label="Search"}]
+++++++Image textSize:13.3 style:0 htmlInfo:[{htmlTag="svg"}, {display="inline"}, {height="24px"}, {viewbox="0 0 24 24"}, {width="24px"}, {xmlns="http://www.w3.org/2000/svg"}, {class="button-child-icon"}]

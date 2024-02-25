@@ -8,6 +8,7 @@
 #include <stdint.h>
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -30,7 +31,6 @@
 #include "services/network/public/mojom/websocket.mojom.h"
 #include "services/network/websocket_interceptor.h"
 #include "services/network/websocket_throttler.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/origin.h"
 
 class GURL;
@@ -62,6 +62,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) WebSocket : public mojom::WebSocket {
       const GURL& url,
       const std::vector<std::string>& requested_protocols,
       const net::SiteForCookies& site_for_cookies,
+      bool has_storage_access,
       const net::IsolationInfo& isolation_info,
       std::vector<mojom::HttpHeaderPtr> additional_headers,
       const url::Origin& origin,
@@ -73,10 +74,10 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) WebSocket : public mojom::WebSocket {
           url_loader_network_observer,
       mojo::PendingRemote<mojom::WebSocketAuthenticationHandler> auth_handler,
       mojo::PendingRemote<mojom::TrustedHeaderClient> header_client,
-      absl::optional<WebSocketThrottler::PendingConnection>
+      std::optional<WebSocketThrottler::PendingConnection>
           pending_connection_tracker,
       base::TimeDelta delay,
-      const absl::optional<base::UnguessableToken>& throttling_profile_id);
+      const std::optional<base::UnguessableToken>& throttling_profile_id);
 
   WebSocket(const WebSocket&) = delete;
   WebSocket& operator=(const WebSocket&) = delete;
@@ -103,7 +104,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) WebSocket : public mojom::WebSocket {
       net::CompletionOnceCallback callback,
       const net::HttpResponseHeaders* original_response_headers,
       scoped_refptr<net::HttpResponseHeaders>* override_response_headers,
-      absl::optional<GURL>* preserve_fragment_on_redirect_url);
+      std::optional<GURL>* preserve_fragment_on_redirect_url);
 
   // Gets the WebSocket associated with this request.
   static WebSocket* ForRequest(const net::URLRequest& request);
@@ -147,6 +148,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) WebSocket : public mojom::WebSocket {
   void AddChannel(const GURL& socket_url,
                   const std::vector<std::string>& requested_protocols,
                   const net::SiteForCookies& site_for_cookies,
+                  bool has_storage_access,
                   const net::IsolationInfo& isolation_info,
                   std::vector<mojom::HttpHeaderPtr> additional_headers);
   void OnSSLCertificateErrorResponse(
@@ -156,18 +158,18 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) WebSocket : public mojom::WebSocket {
       int net_error);
   void OnAuthRequiredComplete(
       base::OnceCallback<void(const net::AuthCredentials*)> callback,
-      const absl::optional<net::AuthCredentials>& credential);
+      const std::optional<net::AuthCredentials>& credential);
   void OnBeforeSendHeadersComplete(
       net::NetworkDelegate::OnBeforeStartTransactionCallback callback,
       int result,
-      const absl::optional<net::HttpRequestHeaders>& headers);
+      const std::optional<net::HttpRequestHeaders>& headers);
   void OnHeadersReceivedComplete(
       net::CompletionOnceCallback callback,
       scoped_refptr<net::HttpResponseHeaders>* out_headers,
-      absl::optional<GURL>* out_preserve_fragment_on_redirect_url,
+      std::optional<GURL>* out_preserve_fragment_on_redirect_url,
       int result,
-      const absl::optional<std::string>& headers,
-      const absl::optional<GURL>& preserve_fragment_on_redirect_url);
+      const std::optional<std::string>& headers,
+      const std::optional<GURL>& preserve_fragment_on_redirect_url);
 
   void Reset();
 
@@ -207,7 +209,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) WebSocket : public mojom::WebSocket {
   mojo::Remote<mojom::WebSocketAuthenticationHandler> auth_handler_;
   mojo::Remote<mojom::TrustedHeaderClient> header_client_;
 
-  absl::optional<WebSocketThrottler::PendingConnection>
+  std::optional<WebSocketThrottler::PendingConnection>
       pending_connection_tracker_;
 
   // The channel we use to send events to the network.
@@ -264,7 +266,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) WebSocket : public mojom::WebSocket {
   // which StartClosingHandshake() is called.
   std::unique_ptr<CloseInfo> pending_start_closing_handshake_;
 
-  const absl::optional<base::UnguessableToken> throttling_profile_id_;
+  const std::optional<base::UnguessableToken> throttling_profile_id_;
   uint32_t net_log_source_id_ = net::NetLogSource::kInvalidId;
   std::unique_ptr<WebSocketInterceptor> frame_interceptor_;
 

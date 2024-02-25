@@ -56,6 +56,18 @@ KeyParamsForTesting ScryptPassphraseKeyParamsForTesting(
   return {KeyDerivationParams::CreateForScrypt(passphrase), passphrase};
 }
 
+sync_pb::CrossUserSharingPublicKey CrossUserSharingKeysToPublicKeyProto(
+    const CrossUserSharingKeys& cross_user_sharing_keys,
+    size_t key_version) {
+  sync_pb::CrossUserSharingPublicKey public_key;
+  auto raw_public_key =
+      cross_user_sharing_keys.GetKeyPair(key_version).GetRawPublicKey();
+  public_key.set_x25519_public_key(
+      std::string(raw_public_key.begin(), raw_public_key.end()));
+  public_key.set_version(key_version);
+  return public_key;
+}
+
 sync_pb::NigoriSpecifics BuildKeystoreNigoriSpecifics(
     const std::vector<KeyParamsForTesting>& keybag_keys_params,
     const KeyParamsForTesting& keystore_decryptor_params,
@@ -95,6 +107,12 @@ sync_pb::NigoriSpecifics BuildKeystoreNigoriSpecifics(
   EXPECT_TRUE(keystore_cryptographer->EncryptString(
       serialized_keystore_decryptor,
       specifics.mutable_keystore_decryptor_token()));
+
+  if (cross_user_sharing_keys.HasKeyPair(/*key_version=*/0)) {
+    specifics.mutable_cross_user_sharing_public_key()->CopyFrom(
+        CrossUserSharingKeysToPublicKeyProto(cross_user_sharing_keys,
+                                             /*key_version=*/0));
+  }
 
   specifics.set_passphrase_type(sync_pb::NigoriSpecifics::KEYSTORE_PASSPHRASE);
   specifics.set_keystore_migration_time(TimeToProtoTime(base::Time::Now()));
@@ -144,7 +162,7 @@ sync_pb::NigoriSpecifics BuildTrustedVaultNigoriSpecifics(
 
 sync_pb::NigoriSpecifics BuildCustomPassphraseNigoriSpecifics(
     const KeyParamsForTesting& passphrase_key_params,
-    const absl::optional<KeyParamsForTesting>& old_key_params) {
+    const std::optional<KeyParamsForTesting>& old_key_params) {
   KeyDerivationMethod method = passphrase_key_params.derivation_params.method();
 
   sync_pb::NigoriSpecifics nigori;
@@ -163,8 +181,8 @@ sync_pb::NigoriSpecifics BuildCustomPassphraseNigoriSpecifics(
       // Nigori.
       break;
     case KeyDerivationMethod::SCRYPT_8192_8_11:
-      base::Base64Encode(passphrase_key_params.derivation_params.scrypt_salt(),
-                         &encoded_salt);
+      encoded_salt = base::Base64Encode(
+          passphrase_key_params.derivation_params.scrypt_salt());
       nigori.set_custom_passphrase_key_derivation_salt(encoded_salt);
       break;
   }
@@ -189,7 +207,7 @@ sync_pb::NigoriSpecifics BuildCustomPassphraseNigoriSpecifics(
 
 KeyDerivationParams InitCustomPassphraseKeyDerivationParamsFromNigori(
     const sync_pb::NigoriSpecifics& nigori) {
-  absl::optional<KeyDerivationMethod> key_derivation_method =
+  std::optional<KeyDerivationMethod> key_derivation_method =
       ProtoKeyDerivationMethodToEnum(
           nigori.custom_passphrase_key_derivation_method());
   if (!key_derivation_method.has_value()) {

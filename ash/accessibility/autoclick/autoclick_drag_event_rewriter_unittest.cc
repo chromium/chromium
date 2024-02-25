@@ -94,7 +94,7 @@ class AutoclickDragEventRewriterTest : public AshTestBase {
 
  protected:
   // Generates ui::Events from simulated user input.
-  raw_ptr<ui::test::EventGenerator, ExperimentalAsh> generator_ = nullptr;
+  raw_ptr<ui::test::EventGenerator> generator_ = nullptr;
   // Records events delivered to the next event rewriter after
   // AutoclickDragEventRewriter.
   EventRecorder event_recorder_;

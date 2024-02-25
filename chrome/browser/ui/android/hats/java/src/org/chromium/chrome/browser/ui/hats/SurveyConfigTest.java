@@ -16,9 +16,7 @@ import org.chromium.base.test.BaseJUnit4ClassRunner;
 import org.chromium.base.test.util.Batch;
 import org.chromium.content_public.browser.test.NativeLibraryTestUtils;
 
-/**
- * Unit test for survey config creation.
- */
+/** Unit test for survey config creation. */
 @Batch(Batch.UNIT_TESTS)
 @RunWith(BaseJUnit4ClassRunner.class)
 public class SurveyConfigTest {
@@ -38,9 +36,13 @@ public class SurveyConfigTest {
         SurveyConfig config = SurveyConfig.get("testing");
         Assert.assertNotNull("Config is null.", config);
         Assert.assertEquals("Probability is different.", 1.0f, config.mProbability, 0.01f);
-        Assert.assertArrayEquals("PSD bit fields is different.", config.mPsdBitDataFields,
+        Assert.assertArrayEquals(
+                "PSD bit fields is different.",
+                config.mPsdBitDataFields,
                 new String[] {"Test Field 1", "Test Field 2"});
-        Assert.assertArrayEquals("PSD bit fields is different.", config.mPsdStringDataFields,
+        Assert.assertArrayEquals(
+                "PSD bit fields is different.",
+                config.mPsdStringDataFields,
                 new String[] {"Test Field 3"});
     }
 }

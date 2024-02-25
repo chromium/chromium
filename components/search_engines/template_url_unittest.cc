@@ -5,6 +5,7 @@
 #include "components/search_engines/template_url.h"
 
 #include <stddef.h>
+
 #include <string>
 
 #include "base/base64.h"
@@ -21,6 +22,7 @@
 #include "components/omnibox/common/omnibox_features.h"
 #include "components/search_engines/search_engines_switches.h"
 #include "components/search_engines/search_terms_data.h"
+#include "components/search_engines/template_url_data.h"
 #include "components/search_engines/testing_search_terms_data.h"
 #include "net/base/url_util.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -29,6 +31,7 @@
 #include "third_party/omnibox_proto/chrome_searchbox_stats.pb.h"
 
 using base::ASCIIToUTF16;
+using CreatedByPolicy = TemplateURLData::CreatedByPolicy;
 using RequestSource = SearchTermsData::RequestSource;
 
 namespace {
@@ -270,9 +273,8 @@ TEST_F(TemplateURLTest, URLRefTestImageURLWithPOST) {
                               "image/jpeg");
             break;
           case TemplateURLRef::GOOGLE_IMAGE_THUMBNAIL_BASE64: {
-            std::string base64_image_content;
-            base::Base64Encode(search_args.image_thumbnail_content,
-                               &base64_image_content);
+            std::string base64_image_content =
+                base::Base64Encode(search_args.image_thumbnail_content);
             ExpectPostParamIs(*i, "base64_image_content", base64_image_content,
                               "image/jpeg");
             break;
@@ -319,9 +321,8 @@ TEST_F(TemplateURLTest, ImageThumbnailContentTypePostParams) {
       url.image_url_ref().post_params_;
   ExpectContainsPostParam(post_params, "image_content",
                           search_args.image_thumbnail_content, "image/tiff");
-  std::string base64_image_content;
-  base::Base64Encode(search_args.image_thumbnail_content,
-                     &base64_image_content);
+  std::string base64_image_content =
+      base::Base64Encode(search_args.image_thumbnail_content);
   ExpectContainsPostParam(post_params, "base64_image_content",
                           base64_image_content, "image/tiff");
 }
@@ -381,17 +382,17 @@ TEST_F(TemplateURLTest, SetPrepopulatedAndReplace) {
   const SearchTermsData& stdata = search_terms_data_;
 
   TemplateURL url(data);
-  EXPECT_EQ("http://foo%7Bfhqwhgads%7Dsearch/?q=X",
+  EXPECT_EQ("http://foo{fhqwhgads}search/?q=X",
             url.url_ref().ReplaceSearchTerms(args, stdata));
-  EXPECT_EQ("http://foo%7Bfhqwhgads%7Dalternate/?q=X",
+  EXPECT_EQ("http://foo{fhqwhgads}alternate/?q=X",
             url.url_refs()[0].ReplaceSearchTerms(args, stdata));
-  EXPECT_EQ("http://foo%7Bfhqwhgads%7Dsearch/?q=X",
+  EXPECT_EQ("http://foo{fhqwhgads}search/?q=X",
             url.url_refs()[1].ReplaceSearchTerms(args, stdata));
-  EXPECT_EQ("http://foo%7Bfhqwhgads%7Dsuggest/?q=X",
+  EXPECT_EQ("http://foo{fhqwhgads}suggest/?q=X",
             url.suggestions_url_ref().ReplaceSearchTerms(args, stdata));
   EXPECT_EQ("http://foo{fhqwhgads}image/",
             url.image_url_ref().ReplaceSearchTerms(args, stdata));
-  EXPECT_EQ("http://foo%7Bfhqwhgads%7Dimage/?translate",
+  EXPECT_EQ("http://foo{fhqwhgads}image/?translate",
             url.image_translate_url_ref().ReplaceSearchTerms(args, stdata));
   EXPECT_EQ("http://foo{fhqwhgads}newtab/",
             url.new_tab_url_ref().ReplaceSearchTerms(args, stdata));
@@ -658,71 +659,9 @@ TEST_F(TemplateURLTest, ReplaceSearchTermsMultipleEncodings) {
   }
 }
 
-// Tests replacing assisted query stats (AQS) in various scenarios.
-TEST_F(TemplateURLTest, ReplaceAssistedQueryStats) {
-  base::HistogramTester histogram_tester;
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeatures({omnibox::kReportAssistedQueryStats},
-                                {omnibox::kReportSearchboxStats});
-
-  omnibox::metrics::ChromeSearchboxStats searchbox_stats;
-  searchbox_stats.set_client_name("chrome");
-  searchbox_stats.set_zero_prefix_enabled(true);
-
-  struct TestData {
-    const std::u16string search_term;
-    const std::string aqs;
-    const omnibox::metrics::ChromeSearchboxStats searchbox_stats;
-    const std::string base_url;
-    const std::string url;
-    const std::string expected_result;
-  } test_data[] = {
-      // HTTPS and non-empty gs_lcrp and non-empty AQS: Success.
-      {u"foo", "chrome.0.0l6", searchbox_stats, "https://foo/",
-       "{google:baseURL}?q={searchTerms}&{google:assistedQueryStats}",
-       "https://foo/?q=foo&aqs=chrome.0.0l6&"},
-      // Non-Google HTTPS and non-empty gs_lcrp and non-empty AQS: Success.
-      {u"foo", "chrome.0.0l6", searchbox_stats, "https://bar/",
-       "https://foo/?q={searchTerms}&{google:assistedQueryStats}",
-       "https://foo/?q=foo&aqs=chrome.0.0l6&"},
-      // No HTTPS: Failure.
-      {u"foo", "chrome.0.0l6", searchbox_stats, "http://foo/",
-       "{google:baseURL}?q={searchTerms}&{google:assistedQueryStats}",
-       "http://foo/?q=foo&"},
-      // No {google:assistedQueryStats}: Failure.
-      {u"foo", "chrome.0.0l6", searchbox_stats, "https://foo/",
-       "{google:baseURL}?q={searchTerms}", "https://foo/?q=foo"},
-  };
-  TemplateURLData data;
-  data.input_encodings.push_back("UTF-8");
-  for (const auto& entry : test_data) {
-    data.SetURL(entry.url);
-    TemplateURL url(data);
-    EXPECT_TRUE(url.url_ref().IsValid(search_terms_data_));
-    ASSERT_TRUE(url.url_ref().SupportsReplacement(search_terms_data_));
-    TemplateURLRef::SearchTermsArgs search_terms_args(entry.search_term);
-    search_terms_args.assisted_query_stats = entry.aqs;
-    search_terms_args.searchbox_stats.MergeFrom(entry.searchbox_stats);
-    search_terms_data_.set_google_base_url(entry.base_url);
-    GURL result(url.url_ref().ReplaceSearchTerms(search_terms_args,
-                                                 search_terms_data_));
-    ASSERT_TRUE(result.is_valid());
-    EXPECT_EQ(entry.expected_result, result.spec());
-  }
-  // Expect correct histograms to have been logged.
-  histogram_tester.ExpectTotalCount("Omnibox.AssistedQueryStats.Length", 2);
-  histogram_tester.ExpectBucketCount("Omnibox.AssistedQueryStats.Length", 12,
-                                     2);
-
-  histogram_tester.ExpectTotalCount("Omnibox.SearchboxStats.Length", 0);
-}
-
 // Tests replacing searchbox stats (gs_lcrp) in various scenarios.
 TEST_F(TemplateURLTest, ReplaceSearchboxStats) {
   base::HistogramTester histogram_tester;
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeatures({omnibox::kReportSearchboxStats},
-                                {omnibox::kReportAssistedQueryStats});
 
   omnibox::metrics::ChromeSearchboxStats searchbox_stats;
   searchbox_stats.set_client_name("chrome");
@@ -730,26 +669,25 @@ TEST_F(TemplateURLTest, ReplaceSearchboxStats) {
 
   struct TestData {
     const std::u16string search_term;
-    const std::string aqs;
     const omnibox::metrics::ChromeSearchboxStats searchbox_stats;
     const std::string base_url;
     const std::string url;
     const std::string expected_result;
   } test_data[] = {
-      // HTTPS and non-empty gs_lcrp and non-empty AQS: Success.
-      {u"foo", "chrome.0.0l6", searchbox_stats, "https://foo/",
+      // HTTPS and non-empty gs_lcrp: Success.
+      {u"foo", searchbox_stats, "https://foo/",
        "{google:baseURL}?q={searchTerms}&{google:assistedQueryStats}",
        "https://foo/?q=foo&gs_lcrp=EgZjaHJvbWWwAgE&"},
-      // Non-Google HTTPS and non-empty gs_lcrp and non-empty AQS: Success.
-      {u"foo", "chrome.0.0l6", searchbox_stats, "https://bar/",
+      // Non-Google HTTPS and non-empty gs_lcrp: Success.
+      {u"foo", searchbox_stats, "https://bar/",
        "https://foo/?q={searchTerms}&{google:assistedQueryStats}",
        "https://foo/?q=foo&gs_lcrp=EgZjaHJvbWWwAgE&"},
       // No HTTPS: Failure.
-      {u"foo", "chrome.0.0l6", searchbox_stats, "http://foo/",
+      {u"foo", searchbox_stats, "http://foo/",
        "{google:baseURL}?q={searchTerms}&{google:assistedQueryStats}",
        "http://foo/?q=foo&"},
       // No {google:assistedQueryStats}: Failure.
-      {u"foo", "chrome.0.0l6", searchbox_stats, "https://foo/",
+      {u"foo", searchbox_stats, "https://foo/",
        "{google:baseURL}?q={searchTerms}", "https://foo/?q=foo"},
   };
   TemplateURLData data;
@@ -760,7 +698,6 @@ TEST_F(TemplateURLTest, ReplaceSearchboxStats) {
     EXPECT_TRUE(url.url_ref().IsValid(search_terms_data_));
     ASSERT_TRUE(url.url_ref().SupportsReplacement(search_terms_data_));
     TemplateURLRef::SearchTermsArgs search_terms_args(entry.search_term);
-    search_terms_args.assisted_query_stats = entry.aqs;
     search_terms_args.searchbox_stats.MergeFrom(entry.searchbox_stats);
     search_terms_data_.set_google_base_url(entry.base_url);
     GURL result(url.url_ref().ReplaceSearchTerms(search_terms_args,
@@ -769,68 +706,6 @@ TEST_F(TemplateURLTest, ReplaceSearchboxStats) {
     EXPECT_EQ(entry.expected_result, result.spec());
   }
   // Expect correct histograms to have been logged.
-  histogram_tester.ExpectTotalCount("Omnibox.AssistedQueryStats.Length", 0);
-
-  histogram_tester.ExpectTotalCount("Omnibox.SearchboxStats.Length", 2);
-  histogram_tester.ExpectBucketCount("Omnibox.SearchboxStats.Length", 15, 2);
-}
-
-// Tests replacing searchbox stats (gs_lcrp) and assisted query stats (AQS).
-TEST_F(TemplateURLTest, ReplaceSearchboxStatsAndAssistedQueryStats) {
-  base::HistogramTester histogram_tester;
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeatures(
-      {omnibox::kReportSearchboxStats, omnibox::kReportAssistedQueryStats}, {});
-
-  omnibox::metrics::ChromeSearchboxStats searchbox_stats;
-  searchbox_stats.set_client_name("chrome");
-  searchbox_stats.set_zero_prefix_enabled(true);
-
-  struct TestData {
-    const std::u16string search_term;
-    const std::string aqs;
-    const omnibox::metrics::ChromeSearchboxStats searchbox_stats;
-    const std::string base_url;
-    const std::string url;
-    const std::string expected_result;
-  } test_data[] = {
-      // HTTPS and non-empty gs_lcrp and non-empty AQS: Success.
-      {u"foo", "chrome.0.0l6", searchbox_stats, "https://foo/",
-       "{google:baseURL}?q={searchTerms}&{google:assistedQueryStats}",
-       "https://foo/?q=foo&gs_lcrp=EgZjaHJvbWWwAgE&aqs=chrome.0.0l6&"},
-      // Non-Google HTTPS and non-empty gs_lcrp and non-empty AQS: Success.
-      {u"foo", "chrome.0.0l6", searchbox_stats, "https://bar/",
-       "https://foo/?q={searchTerms}&{google:assistedQueryStats}",
-       "https://foo/?q=foo&gs_lcrp=EgZjaHJvbWWwAgE&aqs=chrome.0.0l6&"},
-      // No HTTPS: Failure.
-      {u"foo", "chrome.0.0l6", searchbox_stats, "http://foo/",
-       "{google:baseURL}?q={searchTerms}&{google:assistedQueryStats}",
-       "http://foo/?q=foo&"},
-      // No {google:assistedQueryStats}: Failure.
-      {u"foo", "chrome.0.0l6", searchbox_stats, "https://foo/",
-       "{google:baseURL}?q={searchTerms}", "https://foo/?q=foo"},
-  };
-  TemplateURLData data;
-  data.input_encodings.push_back("UTF-8");
-  for (const auto& entry : test_data) {
-    data.SetURL(entry.url);
-    TemplateURL url(data);
-    EXPECT_TRUE(url.url_ref().IsValid(search_terms_data_));
-    ASSERT_TRUE(url.url_ref().SupportsReplacement(search_terms_data_));
-    TemplateURLRef::SearchTermsArgs search_terms_args(entry.search_term);
-    search_terms_args.assisted_query_stats = entry.aqs;
-    search_terms_args.searchbox_stats.MergeFrom(entry.searchbox_stats);
-    search_terms_data_.set_google_base_url(entry.base_url);
-    GURL result(url.url_ref().ReplaceSearchTerms(search_terms_args,
-                                                 search_terms_data_));
-    ASSERT_TRUE(result.is_valid());
-    EXPECT_EQ(entry.expected_result, result.spec());
-  }
-  // Expect correct histograms to have been logged.
-  histogram_tester.ExpectTotalCount("Omnibox.AssistedQueryStats.Length", 2);
-  histogram_tester.ExpectBucketCount("Omnibox.AssistedQueryStats.Length", 12,
-                                     2);
-
   histogram_tester.ExpectTotalCount("Omnibox.SearchboxStats.Length", 2);
   histogram_tester.ExpectBucketCount("Omnibox.SearchboxStats.Length", 15, 2);
 }
@@ -2102,7 +1977,7 @@ TEST_F(TemplateURLTest, GenerateKeyword) {
   // stores TemplateURLs in maps using keyword as key.
   EXPECT_TRUE(IsLowerCase(TemplateURL::GenerateKeyword(GURL("http://BLAH/"))));
   EXPECT_TRUE(IsLowerCase(
-      TemplateURL::GenerateKeyword(GURL("http://embeddedhtml.<head>/"))));
+      TemplateURL::GenerateKeyword(GURL("http://embeddedhtml.-head-/"))));
 }
 
 TEST_F(TemplateURLTest, KeepSearchTermsInURL) {
@@ -2528,4 +2403,154 @@ TEST_F(TemplateURLTest, ImageSearchBrandingLabel) {
   data.image_search_branding_label = u"fooimages";
   TemplateURL image_branding_url(data);
   EXPECT_EQ(u"fooimages", image_branding_url.image_search_branding_label());
+}
+
+struct IsBetterThanEngineTestEngine {
+  std::u16string keyword;
+  CreatedByPolicy created_by_policy = CreatedByPolicy::kNoPolicy;
+  bool enforced_by_policy = false;
+  bool featured_by_policy = false;
+  bool safe_for_autoreplace = false;
+  base::Time last_modified;
+};
+
+TemplateURL CreateEngineFromTestEngine(
+    const IsBetterThanEngineTestEngine& engine) {
+  TemplateURLData template_url_data;
+  template_url_data.SetKeyword(engine.keyword);
+  template_url_data.SetShortName(engine.keyword + u"_name");
+  template_url_data.SetURL("https://" + base::UTF16ToUTF8(engine.keyword) +
+                           ".com/q={searchTerms}");
+  template_url_data.created_by_policy = engine.created_by_policy;
+  template_url_data.enforced_by_policy = engine.enforced_by_policy;
+  template_url_data.featured_by_policy = engine.featured_by_policy;
+  template_url_data.safe_for_autoreplace = engine.safe_for_autoreplace;
+  template_url_data.last_modified = engine.last_modified;
+  return TemplateURL(template_url_data);
+}
+
+struct IsBetterThanEngineTestCase {
+  std::string description;
+  IsBetterThanEngineTestEngine better_engine;
+  IsBetterThanEngineTestEngine worse_engine;
+} kTestCases[] = {
+    {
+        .description = "NonFeaturedByPolicy_SafeForAutoreplace",
+        .better_engine =
+            {
+                .keyword = u"kw",
+                .created_by_policy = CreatedByPolicy::kSiteSearch,
+            },
+        .worse_engine =
+            {
+                .keyword = u"kw",
+                .safe_for_autoreplace = true,
+            },
+    },
+    {
+        .description = "NonFeaturedByPolicy_EditedByUser",
+        .better_engine =
+            {
+                .keyword = u"kw",
+                .safe_for_autoreplace = false,
+            },
+        .worse_engine =
+            {
+                .keyword = u"kw",
+                .created_by_policy = CreatedByPolicy::kSiteSearch,
+            },
+    },
+    {
+        .description = "FeaturedByPolicy_EditedByUser",
+        .better_engine =
+            {
+                .keyword = u"@kw",
+                .created_by_policy = CreatedByPolicy::kSiteSearch,
+                .featured_by_policy = true,
+            },
+        .worse_engine =
+            {
+                .keyword = u"@kw",
+                .safe_for_autoreplace = false,
+            },
+    },
+    {
+        .description = "FeaturedByPolicy_NonFeaturedByPolicy",
+        .better_engine =
+            {
+                .keyword = u"@kw",
+                .created_by_policy = CreatedByPolicy::kSiteSearch,
+                .featured_by_policy = true,
+            },
+        .worse_engine =
+            {
+                .keyword = u"kw",
+                .created_by_policy = CreatedByPolicy::kSiteSearch,
+            },
+    },
+    {
+        .description = "DefaultSearchProvider_MandatoryPolicy_UserDefined",
+        .better_engine =
+            {
+                .keyword = u"kw",
+                .created_by_policy = CreatedByPolicy::kDefaultSearchProvider,
+                .enforced_by_policy = true,
+            },
+        .worse_engine =
+            {
+                .keyword = u"kw",
+                .created_by_policy = CreatedByPolicy::kNoPolicy,
+                .safe_for_autoreplace = false,
+            },
+    },
+    {
+        .description = "DefaultSearchProvider_MandatoryPolicy_Recommended",
+        .better_engine =
+            {
+                .keyword = u"kw",
+                .created_by_policy = CreatedByPolicy::kDefaultSearchProvider,
+                .enforced_by_policy = true,
+            },
+        .worse_engine =
+            {
+                .keyword = u"kw",
+                .created_by_policy = CreatedByPolicy::kDefaultSearchProvider,
+            },
+    },
+    {
+        .description = "SiteSearchPolicy_Fallback",
+        .better_engine =
+            {
+                .keyword = u"kw",
+                .created_by_policy = CreatedByPolicy::kSiteSearch,
+                .last_modified = base::Time::FromTimeT(2000),
+            },
+        .worse_engine =
+            {
+                .keyword = u"kw",
+                .created_by_policy = CreatedByPolicy::kSiteSearch,
+                .last_modified = base::Time::FromTimeT(1000),
+            },
+    },
+};
+
+class TemplateURLIsBetterThanEngineTest
+    : public TemplateURLTest,
+      public testing::WithParamInterface<IsBetterThanEngineTestCase> {};
+
+std::string ParamToTestSuffix(
+    const ::testing::TestParamInfo<IsBetterThanEngineTestCase>& info) {
+  return info.param.description;
+}
+
+INSTANTIATE_TEST_SUITE_P(,
+                         TemplateURLIsBetterThanEngineTest,
+                         ::testing::ValuesIn(kTestCases),
+                         &ParamToTestSuffix);
+
+TEST_P(TemplateURLIsBetterThanEngineTest, Compare) {
+  TemplateURL better = CreateEngineFromTestEngine(GetParam().better_engine);
+  TemplateURL worse = CreateEngineFromTestEngine(GetParam().worse_engine);
+  EXPECT_TRUE(better.IsBetterThanConflictingEngine(&worse));
+  EXPECT_FALSE(worse.IsBetterThanConflictingEngine(&better));
 }

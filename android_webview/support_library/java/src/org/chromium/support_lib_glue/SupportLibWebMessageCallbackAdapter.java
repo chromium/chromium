@@ -27,8 +27,9 @@ class SupportLibWebMessageCallbackAdapter {
         // calling it.
         String[] supportedFeatures = mImpl.getSupportedFeatures();
         if (BoundaryInterfaceReflectionUtil.containsFeature(
-                    supportedFeatures, Features.WEB_MESSAGE_CALLBACK_ON_MESSAGE)) {
-            mImpl.onMessage(BoundaryInterfaceReflectionUtil.createInvocationHandlerFor(port),
+                supportedFeatures, Features.WEB_MESSAGE_CALLBACK_ON_MESSAGE)) {
+            mImpl.onMessage(
+                    BoundaryInterfaceReflectionUtil.createInvocationHandlerFor(port),
                     BoundaryInterfaceReflectionUtil.createInvocationHandlerFor(message));
         }
     }

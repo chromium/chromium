@@ -1,0 +1,37 @@
+[
+  {
+    "os": [
+      "chromeos_ash"
+    ],
+    "policy_pref_mapping_tests": [
+      {
+        "policies": {},
+        "prefs": {
+          "ash.calendar_integration_enabled": {
+            "default_value": true
+          }
+        }
+      },
+      {
+        "policies": {
+          "CalendarIntegrationEnabled": false
+        },
+        "prefs": {
+          "ash.calendar_integration_enabled": {
+            "value": false
+          }
+        }
+      },
+      {
+        "policies": {
+          "CalendarIntegrationEnabled": true
+        },
+        "prefs": {
+          "ash.calendar_integration_enabled": {
+            "value": true
+          }
+        }
+      }
+    ]
+  }
+]

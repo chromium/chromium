@@ -5,6 +5,7 @@
 #include "chrome/browser/ash/policy/login/login_profile_policy_provider.h"
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <utility>
 
@@ -18,7 +19,6 @@
 #include "components/policy/core/common/policy_map.h"
 #include "components/policy/core/common/policy_types.h"
 #include "components/policy/policy_constants.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace policy {
 
@@ -38,7 +38,7 @@ const char kActionShutdown[] = "Shutdown";
 const char kActionDoNothing[] = "DoNothing";
 
 // All policies in this list should have a pref mapping test case in
-// components/policy/test/data/policy_test_cases.json with location
+// components/policy/test/data/pref_mapping/[PolicyName].json with location
 // "signin_profile".
 const DevicePolicyToUserPolicyMapEntry kDevicePoliciesWithPolicyOptionsMap[] = {
     {key::kDeviceLoginScreenAutoSelectCertificateForUrls,
@@ -73,14 +73,10 @@ const DevicePolicyToUserPolicyMapEntry kDevicePoliciesWithPolicyOptionsMap[] = {
      key::kExtensionManifestV2Availability},
     {key::kDeviceLoginScreenPromptOnMultipleMatchingCertificates,
      key::kPromptOnMultipleMatchingCertificates},
-
-    // TODO(b:283960562): Remove the mapping to
-    // kContextAwareAccessSignalsAllowlist as part of the deprecation and
-    // cleanup of that policy.
-    {key::kDeviceLoginScreenContextAwareAccessSignalsAllowlist,
-     key::kContextAwareAccessSignalsAllowlist},
     {key::kDeviceLoginScreenContextAwareAccessSignalsAllowlist,
      key::kUserContextAwareAccessSignalsAllowlist},
+    {key::kDeviceLoginScreenTouchVirtualKeyboardEnabled,
+     key::kTouchVirtualKeyboardEnabled},
 
     // The authentication URL blocklist and allowlist policies implement content
     // control for authentication flows, including in the login screen and lock
@@ -119,7 +115,7 @@ const DevicePolicyToUserPolicyMapEntry kRecommendedDevicePoliciesMap[] = {
      key::kVirtualKeyboardEnabled},
 };
 
-absl::optional<base::Value> GetAction(const std::string& action) {
+std::optional<base::Value> GetAction(const std::string& action) {
   if (action == kActionSuspend) {
     return base::Value(chromeos::PowerPolicyController::ACTION_SUSPEND);
   }
@@ -132,7 +128,7 @@ absl::optional<base::Value> GetAction(const std::string& action) {
   if (action == kActionDoNothing) {
     return base::Value(chromeos::PowerPolicyController::ACTION_DO_NOTHING);
   }
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 // Applies |value| as the recommended value of |user_policy| in
@@ -201,12 +197,13 @@ void LoginProfilePolicyProvider::Shutdown() {
   ConfigurationPolicyProvider::Shutdown();
 }
 
-void LoginProfilePolicyProvider::RefreshPolicies() {
+void LoginProfilePolicyProvider::RefreshPolicies(PolicyFetchReason reason) {
   waiting_for_device_policy_refresh_ = true;
   weak_factory_.InvalidateWeakPtrs();
   device_policy_service_->RefreshPolicies(
       base::BindOnce(&LoginProfilePolicyProvider::OnDevicePolicyRefreshDone,
-                     weak_factory_.GetWeakPtr()));
+                     weak_factory_.GetWeakPtr()),
+      reason);
 }
 
 void LoginProfilePolicyProvider::OnPolicyUpdated(const PolicyNamespace& ns,
@@ -262,7 +259,7 @@ void LoginProfilePolicyProvider::UpdateFromDevicePolicy() {
         policy_dict.FindString(kLidCloseAction);
 
     if (lid_close_action) {
-      absl::optional<base::Value> action = GetAction(*lid_close_action);
+      std::optional<base::Value> action = GetAction(*lid_close_action);
       if (action) {
         ApplyValueAsMandatoryPolicy(*action, key::kLidCloseAction,
                                     &user_policy_map);

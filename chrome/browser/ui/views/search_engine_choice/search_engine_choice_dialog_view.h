@@ -19,25 +19,29 @@ class WebView;
 // WebView into which is loaded a WebUI page which renders the actual dialog
 // content.
 class SearchEngineChoiceDialogView : public views::View {
+  METADATA_HEADER(SearchEngineChoiceDialogView, views::View)
+
  public:
-  METADATA_HEADER(SearchEngineChoiceDialogView);
-  SearchEngineChoiceDialogView(Browser* browser,
-                               absl::optional<gfx::Size> boundary_dimensions);
+  SearchEngineChoiceDialogView(
+      Browser* browser,
+      std::optional<gfx::Size> boundary_dimensions_for_test,
+      std::optional<double> zoom_factor_for_test);
   ~SearchEngineChoiceDialogView() override;
 
   // Initialize SearchEngineChoiceDialogView's web_view_ element.
   void Initialize();
 
  private:
-  // Show the dialog widget. `content_height` sets setting the dialog's height.
-  void ShowNativeView(int content_height);
+  // Show the dialog widget.
+  void ShowNativeView();
 
   // Close the dialog widget.
   void CloseView();
 
   raw_ptr<views::WebView> web_view_ = nullptr;
   const raw_ptr<Browser> browser_;
-  const absl::optional<gfx::Size> boundary_dimensions_;
+  const std::optional<gfx::Size> boundary_dimensions_for_test_;
+  const std::optional<double> zoom_factor_for_test_;
   base::WeakPtrFactory<SearchEngineChoiceDialogView> weak_ptr_factory_{this};
 };
 

@@ -117,7 +117,7 @@ void NonClientFrameView::OnThemeChanged() {
   SchedulePaint();
 }
 
-void NonClientFrameView::Layout() {
+void NonClientFrameView::Layout(PassKey) {
   if (GetLayoutManager())
     GetLayoutManager()->Layout(this);
 
@@ -155,7 +155,7 @@ int NonClientFrameView::GetSystemMenuY() const {
 }
 #endif
 
-BEGIN_METADATA(NonClientFrameView, View)
+BEGIN_METADATA(NonClientFrameView)
 END_METADATA
 
 NonClientView::NonClientView(views::ClientView* client_view)
@@ -259,7 +259,7 @@ gfx::Size NonClientView::GetMaximumSize() const {
   return frame_view_->GetMaximumSize();
 }
 
-void NonClientView::Layout() {
+void NonClientView::Layout(PassKey) {
   // TODO(pkasting): The frame view should have the client view as a child and
   // lay it out directly + set its clip path.  Done correctly, this should let
   // us use a FillLayout on this class that holds |frame_view_| and
@@ -339,7 +339,7 @@ View* NonClientView::TargetForRect(View* root, const gfx::Rect& rect) {
   return ViewTargeterDelegate::TargetForRect(root, rect);
 }
 
-BEGIN_METADATA(NonClientView, View)
+BEGIN_METADATA(NonClientView)
 END_METADATA
 
 }  // namespace views

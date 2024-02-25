@@ -5,13 +5,14 @@
 #ifndef DEVICE_FIDO_CREDENTIAL_MANAGEMENT_H_
 #define DEVICE_FIDO_CREDENTIAL_MANAGEMENT_H_
 
+#include <optional>
+
 #include "base/component_export.h"
 #include "device/fido/fido_constants.h"
 #include "device/fido/pin.h"
 #include "device/fido/public_key_credential_descriptor.h"
 #include "device/fido/public_key_credential_rp_entity.h"
 #include "device/fido/public_key_credential_user_entity.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace cbor {
 class Value;
@@ -69,8 +70,8 @@ enum class CredentialManagementSubCommand : uint8_t {
 template <class T>
 class CredentialManagementPreviewRequestAdapter {
  public:
-  static std::pair<CtapRequestCommand, absl::optional<cbor::Value>>
-  EncodeAsCBOR(const CredentialManagementPreviewRequestAdapter<T>& request) {
+  static std::pair<CtapRequestCommand, std::optional<cbor::Value>> EncodeAsCBOR(
+      const CredentialManagementPreviewRequestAdapter<T>& request) {
     auto result = T::EncodeAsCBOR(request.wrapped_request_);
     DCHECK_EQ(result.first,
               CtapRequestCommand::kAuthenticatorCredentialManagement);
@@ -90,8 +91,8 @@ class CredentialManagementPreviewRequestAdapter {
 // CTAP2 request. Instances can be obtained via one of the subcommand-specific
 // static factory methods.
 struct CredentialManagementRequest {
-  static std::pair<CtapRequestCommand, absl::optional<cbor::Value>>
-  EncodeAsCBOR(const CredentialManagementRequest&);
+  static std::pair<CtapRequestCommand, std::optional<cbor::Value>> EncodeAsCBOR(
+      const CredentialManagementRequest&);
 
   enum Version {
     kDefault,
@@ -123,7 +124,7 @@ struct CredentialManagementRequest {
 
   CredentialManagementRequest(Version version,
                               CredentialManagementSubCommand subcommand,
-                              absl::optional<cbor::Value::MapValue> params);
+                              std::optional<cbor::Value::MapValue> params);
   CredentialManagementRequest(CredentialManagementRequest&&);
   CredentialManagementRequest& operator=(CredentialManagementRequest&&);
   CredentialManagementRequest(const CredentialManagementRequest&) = delete;
@@ -133,14 +134,14 @@ struct CredentialManagementRequest {
 
   Version version;
   CredentialManagementSubCommand subcommand;
-  absl::optional<cbor::Value::MapValue> params;
-  absl::optional<PINUVAuthProtocol> pin_protocol;
-  absl::optional<std::vector<uint8_t>> pin_auth;
+  std::optional<cbor::Value::MapValue> params;
+  std::optional<PINUVAuthProtocol> pin_protocol;
+  std::optional<std::vector<uint8_t>> pin_auth;
 };
 
 struct CredentialsMetadataResponse {
-  static absl::optional<CredentialsMetadataResponse> Parse(
-      const absl::optional<cbor::Value>& cbor_response);
+  static std::optional<CredentialsMetadataResponse> Parse(
+      const std::optional<cbor::Value>& cbor_response);
 
   size_t num_existing_credentials;
   size_t num_estimated_remaining_credentials;
@@ -150,9 +151,9 @@ struct CredentialsMetadataResponse {
 };
 
 struct EnumerateRPsResponse {
-  static absl::optional<EnumerateRPsResponse> Parse(
+  static std::optional<EnumerateRPsResponse> Parse(
       bool expect_rp_count,
-      const absl::optional<cbor::Value>& cbor_response);
+      const std::optional<cbor::Value>& cbor_response);
 
   // StringFixupPredicate indicates which fields of an EnumerateRPsResponse may
   // contain truncated UTF-8 strings. See
@@ -163,23 +164,23 @@ struct EnumerateRPsResponse {
   EnumerateRPsResponse& operator=(EnumerateRPsResponse&&);
   ~EnumerateRPsResponse();
 
-  absl::optional<PublicKeyCredentialRpEntity> rp;
-  absl::optional<std::array<uint8_t, kRpIdHashLength>> rp_id_hash;
+  std::optional<PublicKeyCredentialRpEntity> rp;
+  std::optional<std::array<uint8_t, kRpIdHashLength>> rp_id_hash;
   size_t rp_count;
 
  private:
   EnumerateRPsResponse(
-      absl::optional<PublicKeyCredentialRpEntity> rp,
-      absl::optional<std::array<uint8_t, kRpIdHashLength>> rp_id_hash,
+      std::optional<PublicKeyCredentialRpEntity> rp,
+      std::optional<std::array<uint8_t, kRpIdHashLength>> rp_id_hash,
       size_t rp_count);
   EnumerateRPsResponse(const EnumerateRPsResponse&) = delete;
   EnumerateRPsResponse& operator=(const EnumerateRPsResponse&) = delete;
 };
 
 struct EnumerateCredentialsResponse {
-  static absl::optional<EnumerateCredentialsResponse> Parse(
+  static std::optional<EnumerateCredentialsResponse> Parse(
       bool expect_credential_count,
-      const absl::optional<cbor::Value>& cbor_response);
+      const std::optional<cbor::Value>& cbor_response);
 
   // StringFixupPredicate indicates which fields of an
   // EnumerateCredentialsResponse may contain truncated UTF-8 strings. See
@@ -196,14 +197,14 @@ struct EnumerateCredentialsResponse {
   PublicKeyCredentialUserEntity user;
   PublicKeyCredentialDescriptor credential_id;
   size_t credential_count;
-  absl::optional<std::array<uint8_t, kLargeBlobKeyLength>> large_blob_key;
+  std::optional<std::array<uint8_t, kLargeBlobKeyLength>> large_blob_key;
 
  private:
   EnumerateCredentialsResponse(
       PublicKeyCredentialUserEntity user,
       PublicKeyCredentialDescriptor credential_id,
       size_t credential_count,
-      absl::optional<std::array<uint8_t, kLargeBlobKeyLength>> large_blob_key);
+      std::optional<std::array<uint8_t, kLargeBlobKeyLength>> large_blob_key);
 };
 
 struct COMPONENT_EXPORT(DEVICE_FIDO) AggregatedEnumerateCredentialsResponse {
@@ -224,7 +225,7 @@ struct COMPONENT_EXPORT(DEVICE_FIDO) AggregatedEnumerateCredentialsResponse {
 using DeleteCredentialResponse = pin::EmptyResponse;
 using UpdateUserInformationResponse = pin::EmptyResponse;
 
-std::pair<CtapRequestCommand, absl::optional<cbor::Value>>
+std::pair<CtapRequestCommand, std::optional<cbor::Value>>
 AsCTAPRequestValuePair(const CredentialManagementRequest&);
 
 }  // namespace device

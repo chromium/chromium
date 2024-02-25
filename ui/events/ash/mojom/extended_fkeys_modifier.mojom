@@ -1,0 +1,16 @@
+// Copyright 2023 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module ui.mojom;
+
+// The modifier used to simulate an extended F-key (F11/F12) on built-in
+// keyboards.
+// Note: The ordering of values in this enum must not change as the values are
+// saved to prefs.
+enum ExtendedFkeysModifier {
+ kDisabled = 0,
+ kAlt = 1,
+ kShift = 2,
+ kCtrlShift = 3,
+};

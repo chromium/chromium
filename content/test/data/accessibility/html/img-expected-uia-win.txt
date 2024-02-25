@@ -3,6 +3,6 @@ Document
 ++++Image Name='pipe'
 ++++Text Name=' '
 ++++Text Name=' '
-++++Image Name='  '
+++++Image Name='  . To get missing image descriptions, open the context menu.'
 ++++Text Name=' '
 ++++Image Name='SVG face'

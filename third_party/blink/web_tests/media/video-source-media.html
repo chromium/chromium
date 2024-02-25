@@ -1,10 +1,10 @@
 <!DOCTYPE html>
-<title>Test that "media" attribute is ignored in "source" element.</title>
+<title>Test that "media" attribute is supported in "source" elements.</title>
 <script src="../resources/testharness.js"></script>
 <script src="../resources/testharnessreport.js"></script>
 <video>
-    <source src="content/test.mp4" media="print"></source>
-    <source src="content/error.mpeg"></source>
+  <source src="content/error.mpeg" media="print"></source>
+  <source src="content/test.mp4"></source>
 </video>
 <script>
 async_test(function(t) {

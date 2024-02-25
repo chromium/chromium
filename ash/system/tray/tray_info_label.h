@@ -7,6 +7,7 @@
 
 #include "ash/ash_export.h"
 #include "base/memory/raw_ptr.h"
+#include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/view.h"
 
@@ -16,6 +17,8 @@ namespace ash {
 // row within a system menu detailed view (e.g., the "Scanning for devices..."
 // message that can appear at the top of the Bluetooth detailed view).
 class ASH_EXPORT TrayInfoLabel : public views::View {
+  METADATA_HEADER(TrayInfoLabel, views::View)
+
  public:
   explicit TrayInfoLabel(int message_id);
 
@@ -28,13 +31,10 @@ class ASH_EXPORT TrayInfoLabel : public views::View {
   // |message_id|.
   void Update(int message_id);
 
-  // views::View:
-  const char* GetClassName() const override;
-
   const views::Label* label() { return label_; }
 
  private:
-  const raw_ptr<views::Label, ExperimentalAsh> label_;
+  const raw_ptr<views::Label> label_;
 };
 
 }  // namespace ash

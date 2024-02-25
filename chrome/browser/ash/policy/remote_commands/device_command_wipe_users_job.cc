@@ -52,7 +52,7 @@ void DeviceCommandWipeUsersJob::RunImpl(CallbackWithResult result_callback) {
   // callback gets called and signals that the command was successfully received
   // and will be executed.
   ash::user_removal_manager::InitiateUserRemoval(base::BindOnce(
-      std::move(result_callback), ResultType::kSuccess, absl::nullopt));
+      std::move(result_callback), ResultType::kSuccess, std::nullopt));
 }
 
 }  // namespace policy

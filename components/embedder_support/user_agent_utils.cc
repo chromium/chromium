@@ -186,20 +186,20 @@ const blink::UserAgentBrandList GetUserAgentBrandList(
   int major_version_number;
   bool parse_result = base::StringToInt(major_version, &major_version_number);
   DCHECK(parse_result);
-  absl::optional<std::string> brand;
+  std::optional<std::string> brand;
 #if !BUILDFLAG(CHROMIUM_BRANDING)
   brand = version_info::GetProductName();
 #endif
-  absl::optional<std::string> maybe_brand_override =
+  std::optional<std::string> maybe_brand_override =
       base::GetFieldTrialParamValueByFeature(features::kGreaseUACH,
                                              "brand_override");
-  absl::optional<std::string> maybe_version_override =
+  std::optional<std::string> maybe_version_override =
       base::GetFieldTrialParamValueByFeature(features::kGreaseUACH,
                                              "version_override");
   if (maybe_brand_override->empty())
-    maybe_brand_override = absl::nullopt;
+    maybe_brand_override = std::nullopt;
   if (maybe_version_override->empty())
-    maybe_version_override = absl::nullopt;
+    maybe_version_override = std::nullopt;
 
   std::string brand_version =
       output_version_type == blink::UserAgentBrandVersionType::kFullVersion
@@ -234,6 +234,19 @@ blink::UserAgentBrandList GetUserAgentBrandFullVersionList(
                                enable_updated_grease_by_policy,
                                std::string(version_info::GetVersionNumber()),
                                blink::UserAgentBrandVersionType::kFullVersion);
+}
+
+std::vector<std::string> GetFormFactorClientHints(
+    const blink::UserAgentMetadata& metadata,
+    bool is_mobile) {
+  // By default, use "Mobile" or "Desktop" depending on the `mobile` bit.
+  std::vector<std::string> form_factor = {
+      is_mobile ? blink::kMobileFormFactor : blink::kDesktopFormFactor};
+
+  if (base::FeatureList::IsEnabled(blink::features::kClientHintsXRFormFactor)) {
+    form_factor.push_back(blink::kXRFormFactor);
+  }
+  return form_factor;
 }
 
 }  // namespace
@@ -271,7 +284,7 @@ std::string GetUserAgentInternal(
              : content::BuildUserAgentFromProduct(product);
 }
 
-absl::optional<std::string> GetUserAgentFromCommandLine() {
+std::optional<std::string> GetUserAgentFromCommandLine() {
   base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
   if (command_line->HasSwitch(kUserAgent)) {
     std::string ua = command_line->GetSwitchValueASCII(kUserAgent);
@@ -280,12 +293,12 @@ absl::optional<std::string> GetUserAgentFromCommandLine() {
     }
     LOG(WARNING) << "Ignored invalid value for flag --" << kUserAgent;
   }
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 std::string GetUserAgent(
     UserAgentReductionEnterprisePolicyState user_agent_reduction) {
-  absl::optional<std::string> custom_ua = GetUserAgentFromCommandLine();
+  std::optional<std::string> custom_ua = GetUserAgentFromCommandLine();
   if (custom_ua.has_value()) {
     return custom_ua.value();
   }
@@ -301,10 +314,10 @@ std::string GetUserAgent(
 //      version checking.
 blink::UserAgentBrandList GenerateBrandVersionList(
     int seed,
-    absl::optional<std::string> brand,
+    std::optional<std::string> brand,
     const std::string& version,
-    absl::optional<std::string> maybe_greasey_brand,
-    absl::optional<std::string> maybe_greasey_version,
+    std::optional<std::string> maybe_greasey_brand,
+    std::optional<std::string> maybe_greasey_version,
     bool enable_updated_grease_by_policy,
     blink::UserAgentBrandVersionType output_version_type) {
   DCHECK_GE(seed, 0);
@@ -379,8 +392,8 @@ blink::UserAgentBrandVersion GetProcessedGreasedBrandVersion(
 blink::UserAgentBrandVersion GetGreasedUserAgentBrandVersion(
     std::vector<int> permuted_order,
     int seed,
-    absl::optional<std::string> maybe_greasey_brand,
-    absl::optional<std::string> maybe_greasey_version,
+    std::optional<std::string> maybe_greasey_brand,
+    std::optional<std::string> maybe_greasey_version,
     bool enable_updated_grease_by_policy,
     blink::UserAgentBrandVersionType output_version_type) {
   std::string greasey_brand;
@@ -469,7 +482,7 @@ blink::UserAgentMetadata GetUserAgentMetadata(const PrefService* pref_service,
   // to populate and send only the low entropy client hints.
   // Notes: Sending low entropy hints with empty values may cause requests being
   // blocked by web application firewall software, etc.
-  absl::optional<std::string> custom_ua = GetUserAgentFromCommandLine();
+  std::optional<std::string> custom_ua = GetUserAgentFromCommandLine();
   if (custom_ua.has_value()) {
     return base::FeatureList::IsEnabled(blink::features::kUACHOverrideBlank)
                ? blink::UserAgentMetadata()
@@ -486,9 +499,7 @@ blink::UserAgentMetadata GetUserAgentMetadata(const PrefService* pref_service,
   metadata.full_version = std::string(version_info::GetVersionNumber());
   metadata.architecture = content::GetCpuArchitecture();
   metadata.model = content::BuildModelInfo();
-
-  // TODO(https://crbug.com/1442283): Support a broader range of form-factors.
-  metadata.form_factor = metadata.mobile ? kMobileFormFactor : "";
+  metadata.form_factor = GetFormFactorClientHints(metadata, metadata.mobile);
 
 #if BUILDFLAG(IS_WIN)
   metadata.platform_version = GetWindowsPlatformVersion();
@@ -520,7 +531,8 @@ void SetDesktopUserAgentOverride(content::WebContents* web_contents,
       std::string();  // match content::GetOSVersion(false) on Linux
   spoofed_ua.ua_metadata_override->model = std::string();
   spoofed_ua.ua_metadata_override->mobile = false;
-  spoofed_ua.ua_metadata_override->form_factor = "";
+  spoofed_ua.ua_metadata_override->form_factor =
+      GetFormFactorClientHints(metadata, /*is_mobile=*/false);
   // Match the above "CpuInfo" string, which is also the most common Linux
   // CPU architecture and bitness.`
   spoofed_ua.ua_metadata_override->architecture = "x86";

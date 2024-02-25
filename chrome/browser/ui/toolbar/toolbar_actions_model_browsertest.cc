@@ -35,11 +35,16 @@ class ToolbarActionsModelBrowserTest : public extensions::ExtensionBrowserTest {
     ASSERT_TRUE(toolbar_model_);
   }
 
+  void TearDownOnMainThread() override {
+    toolbar_model_ = nullptr;
+    extensions::ExtensionBrowserTest::TearDownOnMainThread();
+  }
+
   ToolbarActionsModel* toolbar_model() { return toolbar_model_; }
   base::HistogramTester* histogram_tester() { return &histogram_tester_; }
 
  private:
-  raw_ptr<ToolbarActionsModel, DanglingUntriaged> toolbar_model_ = nullptr;
+  raw_ptr<ToolbarActionsModel> toolbar_model_ = nullptr;
   base::HistogramTester histogram_tester_;
 };
 
@@ -118,8 +123,9 @@ IN_PROC_BROWSER_TEST_F(ToolbarActionsModelBrowserTest, PinnedStatePersistence) {
   auto get_extension_by_name =
       [registry](const char* name) -> const extensions::Extension* {
     for (const auto& extension : registry->enabled_extensions()) {
-      if (extension->name() == name)
+      if (extension->name() == name) {
         return extension.get();
+      }
     }
     return nullptr;
   };

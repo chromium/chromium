@@ -167,7 +167,7 @@ TEST(SpellcheckWordIteratorTest, SplitWord) {
     SpellcheckWordIterator iterator;
     EXPECT_TRUE(iterator.Initialize(&attributes,
                                     kTestCases[i].allow_contraction));
-    EXPECT_TRUE(iterator.SetText(input.c_str(), input.length()));
+    EXPECT_TRUE(iterator.SetText(input));
 
     std::vector<std::u16string> expected_words = base::SplitString(
         base::WideToUTF16(kTestCases[i].expected_words), std::u16string(1, ' '),
@@ -204,7 +204,7 @@ TEST(SpellcheckWordIteratorTest, RuleSetConsistency) {
 
   SpellcheckWordIterator iterator;
   EXPECT_TRUE(iterator.Initialize(&attributes, true));
-  EXPECT_TRUE(iterator.SetText(input.c_str(), input.length()));
+  EXPECT_TRUE(iterator.SetText(input));
 
   // When SpellcheckWordIterator uses an inconsistent ICU ruleset, the following
   // iterator.GetNextWord() calls get stuck in an infinite loop. Therefore, this
@@ -271,7 +271,7 @@ TEST(SpellcheckWordIteratorTest, TreatNumbersAsWordCharacters) {
     std::u16string input_word(base::WideToUTF16(kTestCases[i].text));
     SpellcheckWordIterator iterator;
     EXPECT_TRUE(iterator.Initialize(&attributes, true));
-    EXPECT_TRUE(iterator.SetText(input_word.c_str(), input_word.length()));
+    EXPECT_TRUE(iterator.SetText(input_word));
 
     std::u16string actual_word;
     size_t actual_start, actual_len;
@@ -316,7 +316,7 @@ TEST(SpellcheckWordIteratorTest, TypographicalApostropheIsPartOfWord) {
     std::u16string expected_word(base::WideToUTF16(kTestCases[i].expected));
     SpellcheckWordIterator iterator;
     EXPECT_TRUE(iterator.Initialize(&attributes, true));
-    EXPECT_TRUE(iterator.SetText(input_word.c_str(), input_word.length()));
+    EXPECT_TRUE(iterator.SetText(input_word));
 
     std::u16string actual_word;
     size_t actual_start, actual_len;

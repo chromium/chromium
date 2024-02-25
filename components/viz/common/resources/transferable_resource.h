@@ -7,6 +7,7 @@
 
 #include <stdint.h>
 
+#include <optional>
 #include <vector>
 
 #include "build/build_config.h"
@@ -16,11 +17,14 @@
 #include "components/viz/common/viz_common_export.h"
 #include "gpu/command_buffer/common/mailbox_holder.h"
 #include "gpu/ipc/common/vulkan_ycbcr_info.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/buffer_types.h"
 #include "ui/gfx/color_space.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/hdr_metadata.h"
+
+namespace gpu {
+class ClientSharedImage;
+}
 
 namespace viz {
 
@@ -43,15 +47,53 @@ struct VIZ_COMMON_EXPORT TransferableResource {
     kReleaseFence,
   };
 
-  static TransferableResource MakeSoftware(const SharedBitmapId& id,
-                                           const gfx::Size& size,
-                                           SharedImageFormat format);
-  static TransferableResource MakeGpu(const gpu::Mailbox& mailbox,
-                                      uint32_t texture_target,
-                                      const gpu::SyncToken& sync_token,
-                                      const gfx::Size& size,
-                                      SharedImageFormat format,
-                                      bool is_overlay_candidate);
+  // Differentiates between the various sources that create a resource. They
+  // have different lifetime expectations, and we want to be able to determine
+  // which remain after we Evict a Surface.
+  //
+  // These values are persistent to logs. Entries should not be renumbered and
+  // numeric values should never be reused.
+  enum class ResourceSource : uint8_t {
+    kUnknown = 0,
+    kAR = 1,
+    kCanvas = 2,
+    kDrawingBuffer = 3,
+    kExoBuffer = 4,
+    kHeadsUpDisplay = 5,
+    kImageLayerBridge = 6,
+    kPPBGraphics3D = 7,
+    kPepperGraphics2D = 8,
+    kSharedElementTransition = 9,
+    kStaleContent = 10,
+    kTest = 11,
+    kTileRasterTask = 12,
+    kUI = 13,
+    kVideo = 14,
+    kWebGPUSwapBuffer = 15,
+  };
+
+  static TransferableResource MakeSoftware(
+      const SharedBitmapId& id,
+      const gpu::SyncToken& sync_token,
+      const gfx::Size& size,
+      SharedImageFormat format,
+      ResourceSource source = ResourceSource::kUnknown);
+  static TransferableResource MakeGpu(
+      const gpu::Mailbox& mailbox,
+      uint32_t texture_target,
+      const gpu::SyncToken& sync_token,
+      const gfx::Size& size,
+      SharedImageFormat format,
+      bool is_overlay_candidate,
+      ResourceSource source = ResourceSource::kUnknown);
+  static TransferableResource MakeGpu(
+      const scoped_refptr<gpu::ClientSharedImage>& client_shared_image,
+      uint32_t texture_target,
+      const gpu::SyncToken& sync_token,
+      const gfx::Size& size,
+      SharedImageFormat format,
+      bool is_overlay_candidate,
+      ResourceSource source = ResourceSource::kUnknown);
 
   TransferableResource();
   ~TransferableResource();
@@ -88,8 +130,7 @@ struct VIZ_COMMON_EXPORT TransferableResource {
 
   // The |mailbox| inside here holds the gpu::Mailbox when this is a gpu
   // resource, or the SharedBitmapId when it is a software resource.
-  // The |texture_target| and sync_token| inside here only apply for gpu
-  // resources.
+  // The |texture_target| inside here only apply for gpu resources.
   gpu::MailboxHolder mailbox_holder;
 
   // The color space that is used for pixel path operations (e.g, TexImage,
@@ -105,17 +146,7 @@ struct VIZ_COMMON_EXPORT TransferableResource {
   // overlay. Instead, we should plumb this information to DRM/KMS so that if
   // the resource does get promoted to overlay, the display controller knows how
   // to perform the YUV-to-RGB conversion.
-  //
-  // TODO(b/246974264): Consider using |color_space| to replace |ycbcr_info|
-  // since the former is more general and not specific to Vulkan.
   gfx::ColorSpace color_space;
-  // The color space in which the resource is sampled, if different from
-  // |color_space|. If absl::nullopt, then sampling will occur in the same color
-  // space as |color_space|.
-  //
-  // TODO(crbug.com/1230619): Use this to implement support for WebGL sRGB
-  // framebuffers.
-  absl::optional<gfx::ColorSpace> color_space_when_sampled;
   gfx::HDRMetadata hdr_metadata;
 
   // A gpu resource may be possible to use directly in an overlay if this is
@@ -127,7 +158,7 @@ struct VIZ_COMMON_EXPORT TransferableResource {
   SynchronizationType synchronization_type = SynchronizationType::kSyncToken;
 
   // YCbCr info for resources backed by YCbCr Vulkan images.
-  absl::optional<gpu::VulkanYCbCrInfo> ycbcr_info;
+  std::optional<gpu::VulkanYCbCrInfo> ycbcr_info;
 
 #if BUILDFLAG(IS_ANDROID)
   // Indicates whether this resource may not be overlayed on Android, since
@@ -147,6 +178,14 @@ struct VIZ_COMMON_EXPORT TransferableResource {
   bool wants_promotion_hint = false;
 #endif
 
+  // If true, we need to run a detiling image processor on the quad before we
+  // can scan it out.
+  bool needs_detiling = false;
+
+  // The source that originally allocated this resource. For determining which
+  // sources are maintaining lifetime after surface eviction.
+  ResourceSource resource_source = ResourceSource::kUnknown;
+
   bool operator==(const TransferableResource& o) const {
     return id == o.id && is_software == o.is_software && size == o.size &&
            format == o.format &&
@@ -161,7 +200,8 @@ struct VIZ_COMMON_EXPORT TransferableResource {
 #elif BUILDFLAG(IS_WIN)
            wants_promotion_hint == o.wants_promotion_hint &&
 #endif
-           synchronization_type == o.synchronization_type;
+           synchronization_type == o.synchronization_type &&
+           resource_source == o.resource_source;
   }
   bool operator!=(const TransferableResource& o) const { return !(*this == o); }
 };

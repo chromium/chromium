@@ -4,6 +4,7 @@
 
 #include <stdint.h>
 
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -16,13 +17,12 @@
 #include "components/zucchini/patch_writer.h"
 #include "components/zucchini/zucchini.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace zucchini {
 
 base::FilePath MakeTestPath(const std::string& filename) {
   base::FilePath path;
-  DCHECK(base::PathService::Get(base::DIR_SOURCE_ROOT, &path));
+  DCHECK(base::PathService::Get(base::DIR_SRC_TEST_DATA_ROOT, &path));
   return path.AppendASCII("components")
       .AppendASCII("zucchini")
       .AppendASCII("testdata")
@@ -59,7 +59,7 @@ void TestGenApply(const std::string& old_filename,
   patch_writer.SerializeInto({patch_buffer.data(), patch_buffer.size()});
 
   // Read back generated patch.
-  absl::optional<EnsemblePatchReader> patch_reader =
+  std::optional<EnsemblePatchReader> patch_reader =
       EnsemblePatchReader::Create({patch_buffer.data(), patch_buffer.size()});
   ASSERT_TRUE(patch_reader.has_value());
 

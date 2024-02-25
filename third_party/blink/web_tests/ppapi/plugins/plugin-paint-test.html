@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <script src="../../resources/js-test.js"></script>
+  <script>
+    jsTestIsAsync = true;
+    description('This tests that dynamically added plugins receive paint events on creation.');
+    function onLoad()
+    {
+      var pluginDiv = document.querySelector('#pluginDiv');
+      // Create the plugin in the middle of the page.
+      pluginDiv.innerHTML = '<embed id="testPlugin" type="application/x-blink-test-plugin" width="200" height="200"></embed>';
+      document.querySelector('embed').addEventListener('message', onPluginMessage);
+    }
+
+    function onPluginMessage(message)
+    {
+      testPassed('plugin message: ' + message.data);
+      if (message.data == 'loaded')
+        finishJSTest();
+    }
+  </script>
+</head>
+<body onload="onLoad()">
+  <div id="pluginDiv" style="position: absolute; left: 300px; top: 300px; height: 400px; width: 400px; padding: 1em;">
+  </div>
+</body>
+</html>

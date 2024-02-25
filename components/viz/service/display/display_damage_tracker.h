@@ -88,7 +88,7 @@ class VIZ_SERVICE_EXPORT DisplayDamageTracker : public SurfaceObserver {
   void OnSurfaceMarkedForDestruction(const SurfaceId& surface_id) override;
   bool OnSurfaceDamaged(const SurfaceId& surface_id,
                         const BeginFrameAck& ack,
-                        bool is_handling_interaction) override;
+                        HandleInteraction handle_interaction) override;
   void OnSurfaceDamageExpected(const SurfaceId& surface_id,
                                const BeginFrameArgs& args) override;
 
@@ -114,7 +114,7 @@ class VIZ_SERVICE_EXPORT DisplayDamageTracker : public SurfaceObserver {
   void ProcessSurfaceDamage(const SurfaceId& surface_id,
                             const BeginFrameAck& ack,
                             bool display_damaged,
-                            bool is_handling_interaction);
+                            HandleInteraction handle_interaction);
 
   // Used to send corresponding notifications to observers.
   void NotifyDisplayDamaged(SurfaceId surface_id);
@@ -125,7 +125,7 @@ class VIZ_SERVICE_EXPORT DisplayDamageTracker : public SurfaceObserver {
   const raw_ptr<SurfaceManager> surface_manager_;
   const raw_ptr<SurfaceAggregator> aggregator_;
 
-  absl::optional<uint64_t> begin_frame_source_id_;
+  std::optional<uint64_t> begin_frame_source_id_;
   bool root_frame_missing_ = true;
 
   bool expecting_root_surface_damage_because_of_resize_ = false;

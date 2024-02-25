@@ -18,12 +18,13 @@ import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 import androidx.core.util.ObjectsCompat;
 
+import org.jni_zero.CalledByNative;
+
 import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.base.CollectionUtil;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
 import org.chromium.base.TraceEvent;
-import org.chromium.base.annotations.CalledByNative;
 import org.chromium.chrome.browser.omnibox.geo.VisibleNetworks.VisibleCell;
 import org.chromium.chrome.browser.omnibox.geo.VisibleNetworks.VisibleWifi;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -45,63 +46,58 @@ import java.util.Set;
  * Provides methods for building the X-Geo HTTP header, which provides device location to a server
  * when making an HTTP request.
  *
- * X-Geo header spec: https://goto.google.com/xgeospec.
+ * <p>X-Geo header spec: https://goto.google.com/xgeospec.
  */
 public class GeolocationHeader {
     private static final String TAG = "GeolocationHeader";
 
-    // Values for the histogram Geolocation.HeaderSentOrNot. Values 1, 5, 6, and 7 are defined in
-    // histograms.xml and should not be used in other ways.
-    public static final int UMA_LOCATION_DISABLED_FOR_GOOGLE_DOMAIN = 0;
-    public static final int UMA_LOCATION_NOT_AVAILABLE = 2;
-    public static final int UMA_LOCATION_STALE = 3;
-    public static final int UMA_HEADER_SENT = 4;
-    public static final int UMA_LOCATION_DISABLED_FOR_CHROME_APP = 5;
-    public static final int UMA_MAX = 8;
-
-    @IntDef({UmaPermission.UNKNOWN, UmaPermission.HIGH_ACCURACY_APP_YES_DOMAIN_YES_LOCATION,
-            UmaPermission.HIGH_ACCURACY_APP_YES_DOMAIN_YES_NO_LOCATION,
-            UmaPermission.HIGH_ACCURACY_APP_YES_DOMAIN_PROMPT_LOCATION,
-            UmaPermission.HIGH_ACCURACY_APP_YES_DOMAIN_PROMPT_NO_LOCATION,
-            UmaPermission.HIGH_ACCURACY_APP_YES_DOMAIN_BLOCKED,
-            UmaPermission.HIGH_ACCURACY_APP_PROMPT_DOMAIN_YES,
-            UmaPermission.HIGH_ACCURACY_APP_PROMPT_DOMAIN_PROMPT,
-            UmaPermission.HIGH_ACCURACY_APP_PROMPT_DOMAIN_BLOCKED,
-            UmaPermission.HIGH_ACCURACY_APP_BLOCKED_DOMAIN_YES,
-            UmaPermission.HIGH_ACCURACY_APP_BLOCKED_DOMAIN_PROMPT,
-            UmaPermission.HIGH_ACCURACY_APP_BLOCKED_DOMAIN_BLOCKED,
-            UmaPermission.BATTERY_SAVING_APP_YES_DOMAIN_YES_LOCATION,
-            UmaPermission.BATTERY_SAVING_APP_YES_DOMAIN_YES_NO_LOCATION,
-            UmaPermission.BATTERY_SAVING_APP_YES_DOMAIN_PROMPT_LOCATION,
-            UmaPermission.BATTERY_SAVING_APP_YES_DOMAIN_PROMPT_NO_LOCATION,
-            UmaPermission.BATTERY_SAVING_APP_YES_DOMAIN_BLOCKED,
-            UmaPermission.BATTERY_SAVING_APP_PROMPT_DOMAIN_YES,
-            UmaPermission.BATTERY_SAVING_APP_PROMPT_DOMAIN_PROMPT,
-            UmaPermission.BATTERY_SAVING_APP_PROMPT_DOMAIN_BLOCKED,
-            UmaPermission.BATTERY_SAVING_APP_BLOCKED_DOMAIN_YES,
-            UmaPermission.BATTERY_SAVING_APP_BLOCKED_DOMAIN_PROMPT,
-            UmaPermission.BATTERY_SAVING_APP_BLOCKED_DOMAIN_BLOCKED,
-            UmaPermission.GPS_ONLY_APP_YES_DOMAIN_YES_LOCATION,
-            UmaPermission.GPS_ONLY_APP_YES_DOMAIN_YES_NO_LOCATION,
-            UmaPermission.GPS_ONLY_APP_YES_DOMAIN_PROMPT_LOCATION,
-            UmaPermission.GPS_ONLY_APP_YES_DOMAIN_PROMPT_NO_LOCATION,
-            UmaPermission.GPS_ONLY_APP_YES_DOMAIN_BLOCKED,
-            UmaPermission.GPS_ONLY_APP_PROMPT_DOMAIN_YES,
-            UmaPermission.GPS_ONLY_APP_PROMPT_DOMAIN_PROMPT,
-            UmaPermission.GPS_ONLY_APP_PROMPT_DOMAIN_BLOCKED,
-            UmaPermission.GPS_ONLY_APP_BLOCKED_DOMAIN_YES,
-            UmaPermission.GPS_ONLY_APP_BLOCKED_DOMAIN_PROMPT,
-            UmaPermission.GPS_ONLY_APP_BLOCKED_DOMAIN_BLOCKED,
-            UmaPermission.LOCATION_OFF_APP_YES_DOMAIN_YES,
-            UmaPermission.LOCATION_OFF_APP_YES_DOMAIN_PROMPT,
-            UmaPermission.LOCATION_OFF_APP_YES_DOMAIN_BLOCKED,
-            UmaPermission.LOCATION_OFF_APP_PROMPT_DOMAIN_YES,
-            UmaPermission.LOCATION_OFF_APP_PROMPT_DOMAIN_PROMPT,
-            UmaPermission.LOCATION_OFF_APP_PROMPT_DOMAIN_BLOCKED,
-            UmaPermission.LOCATION_OFF_APP_BLOCKED_DOMAIN_YES,
-            UmaPermission.LOCATION_OFF_APP_BLOCKED_DOMAIN_PROMPT,
-            UmaPermission.LOCATION_OFF_APP_BLOCKED_DOMAIN_BLOCKED, UmaPermission.UNSUITABLE_URL,
-            UmaPermission.NOT_HTTPS})
+    @IntDef({
+        UmaPermission.UNKNOWN,
+        UmaPermission.HIGH_ACCURACY_APP_YES_DOMAIN_YES_LOCATION,
+        UmaPermission.HIGH_ACCURACY_APP_YES_DOMAIN_YES_NO_LOCATION,
+        UmaPermission.HIGH_ACCURACY_APP_YES_DOMAIN_PROMPT_LOCATION,
+        UmaPermission.HIGH_ACCURACY_APP_YES_DOMAIN_PROMPT_NO_LOCATION,
+        UmaPermission.HIGH_ACCURACY_APP_YES_DOMAIN_BLOCKED,
+        UmaPermission.HIGH_ACCURACY_APP_PROMPT_DOMAIN_YES,
+        UmaPermission.HIGH_ACCURACY_APP_PROMPT_DOMAIN_PROMPT,
+        UmaPermission.HIGH_ACCURACY_APP_PROMPT_DOMAIN_BLOCKED,
+        UmaPermission.HIGH_ACCURACY_APP_BLOCKED_DOMAIN_YES,
+        UmaPermission.HIGH_ACCURACY_APP_BLOCKED_DOMAIN_PROMPT,
+        UmaPermission.HIGH_ACCURACY_APP_BLOCKED_DOMAIN_BLOCKED,
+        UmaPermission.BATTERY_SAVING_APP_YES_DOMAIN_YES_LOCATION,
+        UmaPermission.BATTERY_SAVING_APP_YES_DOMAIN_YES_NO_LOCATION,
+        UmaPermission.BATTERY_SAVING_APP_YES_DOMAIN_PROMPT_LOCATION,
+        UmaPermission.BATTERY_SAVING_APP_YES_DOMAIN_PROMPT_NO_LOCATION,
+        UmaPermission.BATTERY_SAVING_APP_YES_DOMAIN_BLOCKED,
+        UmaPermission.BATTERY_SAVING_APP_PROMPT_DOMAIN_YES,
+        UmaPermission.BATTERY_SAVING_APP_PROMPT_DOMAIN_PROMPT,
+        UmaPermission.BATTERY_SAVING_APP_PROMPT_DOMAIN_BLOCKED,
+        UmaPermission.BATTERY_SAVING_APP_BLOCKED_DOMAIN_YES,
+        UmaPermission.BATTERY_SAVING_APP_BLOCKED_DOMAIN_PROMPT,
+        UmaPermission.BATTERY_SAVING_APP_BLOCKED_DOMAIN_BLOCKED,
+        UmaPermission.GPS_ONLY_APP_YES_DOMAIN_YES_LOCATION,
+        UmaPermission.GPS_ONLY_APP_YES_DOMAIN_YES_NO_LOCATION,
+        UmaPermission.GPS_ONLY_APP_YES_DOMAIN_PROMPT_LOCATION,
+        UmaPermission.GPS_ONLY_APP_YES_DOMAIN_PROMPT_NO_LOCATION,
+        UmaPermission.GPS_ONLY_APP_YES_DOMAIN_BLOCKED,
+        UmaPermission.GPS_ONLY_APP_PROMPT_DOMAIN_YES,
+        UmaPermission.GPS_ONLY_APP_PROMPT_DOMAIN_PROMPT,
+        UmaPermission.GPS_ONLY_APP_PROMPT_DOMAIN_BLOCKED,
+        UmaPermission.GPS_ONLY_APP_BLOCKED_DOMAIN_YES,
+        UmaPermission.GPS_ONLY_APP_BLOCKED_DOMAIN_PROMPT,
+        UmaPermission.GPS_ONLY_APP_BLOCKED_DOMAIN_BLOCKED,
+        UmaPermission.LOCATION_OFF_APP_YES_DOMAIN_YES,
+        UmaPermission.LOCATION_OFF_APP_YES_DOMAIN_PROMPT,
+        UmaPermission.LOCATION_OFF_APP_YES_DOMAIN_BLOCKED,
+        UmaPermission.LOCATION_OFF_APP_PROMPT_DOMAIN_YES,
+        UmaPermission.LOCATION_OFF_APP_PROMPT_DOMAIN_PROMPT,
+        UmaPermission.LOCATION_OFF_APP_PROMPT_DOMAIN_BLOCKED,
+        UmaPermission.LOCATION_OFF_APP_BLOCKED_DOMAIN_YES,
+        UmaPermission.LOCATION_OFF_APP_BLOCKED_DOMAIN_PROMPT,
+        UmaPermission.LOCATION_OFF_APP_BLOCKED_DOMAIN_BLOCKED,
+        UmaPermission.UNSUITABLE_URL,
+        UmaPermission.NOT_HTTPS
+    })
     @Retention(RetentionPolicy.SOURCE)
     public @interface UmaPermission {
         // Values for the histogram Geolocation.Header.PermissionState.
@@ -158,18 +154,18 @@ public class GeolocationHeader {
         int NUM_ENTRIES = 45;
     }
 
-    @IntDef({LocationSource.HIGH_ACCURACY, LocationSource.BATTERY_SAVING, LocationSource.GPS_ONLY,
-            LocationSource.LOCATION_OFF})
+    @IntDef({
+        LocationSource.HIGH_ACCURACY,
+        LocationSource.BATTERY_SAVING,
+        LocationSource.GPS_ONLY,
+        LocationSource.LOCATION_OFF
+    })
     @Retention(RetentionPolicy.SOURCE)
     public @interface LocationSource {
-        @VisibleForTesting
-        int HIGH_ACCURACY = 0;
-        @VisibleForTesting
-        int BATTERY_SAVING = 1;
-        @VisibleForTesting
-        int GPS_ONLY = 2;
-        @VisibleForTesting
-        int LOCATION_OFF = 3;
+        @VisibleForTesting int HIGH_ACCURACY = 0;
+        @VisibleForTesting int BATTERY_SAVING = 1;
+        @VisibleForTesting int GPS_ONLY = 2;
+        @VisibleForTesting int LOCATION_OFF = 3;
     }
 
     @IntDef({Permission.GRANTED, Permission.PROMPT, Permission.BLOCKED})
@@ -180,8 +176,13 @@ public class GeolocationHeader {
         int BLOCKED = 2;
     }
 
-    @IntDef({HeaderState.HEADER_ENABLED, HeaderState.INCOGNITO, HeaderState.UNSUITABLE_URL,
-            HeaderState.NOT_HTTPS, HeaderState.LOCATION_PERMISSION_BLOCKED})
+    @IntDef({
+        HeaderState.HEADER_ENABLED,
+        HeaderState.INCOGNITO,
+        HeaderState.UNSUITABLE_URL,
+        HeaderState.NOT_HTTPS,
+        HeaderState.LOCATION_PERMISSION_BLOCKED
+    })
     @Retention(RetentionPolicy.SOURCE)
     private @interface HeaderState {
         int HEADER_ENABLED = 0;
@@ -192,10 +193,10 @@ public class GeolocationHeader {
     }
 
     /** The maximum age in milliseconds of a location that we'll send in an X-Geo header. */
-    private static final int MAX_LOCATION_AGE = 24 * 60 * 60 * 1000;  // 24 hours
+    private static final int MAX_LOCATION_AGE = 24 * 60 * 60 * 1000; // 24 hours
 
     /** The maximum age in milliseconds of a location before we'll request a refresh. */
-    private static final int REFRESH_LOCATION_AGE = 5 * 60 * 1000;  // 5 minutes
+    private static final int REFRESH_LOCATION_AGE = 5 * 60 * 1000; // 5 minutes
 
     /** The X-Geo header prefix, preceding any location descriptors */
     private static final String XGEO_HEADER_PREFIX = "X-Geo:";
@@ -227,8 +228,8 @@ public class GeolocationHeader {
     private static final String DUMMY_URL_QUERY = "some_query";
 
     /**
-     * Requests a location refresh so that a valid location will be available for constructing
-     * an X-Geo header in the near future (i.e. within 5 minutes). Checks whether the header can
+     * Requests a location refresh so that a valid location will be available for constructing an
+     * X-Geo header in the near future (i.e. within 5 minutes). Checks whether the header can
      * actually be sent before requesting the location refresh.
      */
     public static void primeLocationForGeoHeaderIfEnabled(
@@ -279,32 +280,35 @@ public class GeolocationHeader {
 
     /**
      * Returns an X-Geo HTTP header string if:
-     *  1. The current mode is not incognito.
-     *  2. The url is a google search URL (e.g. www.google.co.uk/search?q=cars), and
-     *  3. The user has not disabled sharing location with this url, and
-     *  4. There is a valid and recent location available.
      *
-     * Returns null otherwise.
+     * <ul>
+     *   <li>The current mode is not incognito,
+     *   <li>The url is a google search URL (e.g. www.google.co.uk/search?q=cars),
+     *   <li>The user has not disabled sharing location with this url, and
+     *   <li>There is a valid and recent location available.
+     * </ul>
+     *
+     * <p>Returns null otherwise.
      *
      * @param url The URL of the request with which this header will be sent.
      * @param tab The Tab currently being accessed.
      * @return The X-Geo header string or null.
      */
     public static @Nullable String getGeoHeader(String url, Tab tab) {
-        Profile profile = Profile.fromWebContents(tab.getWebContents());
-        if (profile == null) return null;
-
-        return getGeoHeader(url, profile, tab);
+        return getGeoHeader(url, tab.getProfile(), tab);
     }
 
     /**
      * Returns an X-Geo HTTP header string if:
-     *  1. The current mode is not incognito.
-     *  2. The url is a google search URL (e.g. www.google.co.uk/search?q=cars), and
-     *  3. The user has not disabled sharing location with this url, and
-     *  4. There is a valid and recent location available.
      *
-     * Returns null otherwise. This will never prompt for location access.
+     * <ul>
+     *   <li>The current mode is not incognito,
+     *   <li>The url is a google search URL (e.g. www.google.co.uk/search?q=cars),
+     *   <li>The user has not disabled sharing location with this url, and
+     *   <li>There is a valid and recent location available.
+     * </ul>
+     *
+     * <p>Returns null otherwise. This will never prompt for location access.
      *
      * @param url The URL of the request with which this header will be sent.
      * @param profile The Tab currently being accessed.
@@ -321,17 +325,20 @@ public class GeolocationHeader {
 
     /**
      * Returns an X-Geo HTTP header string if:
-     *  1. The current mode is not incognito.
-     *  2. The url is a google search URL (e.g. www.google.co.uk/search?q=cars), and
-     *  3. The user has not disabled sharing location with this url, and
-     *  4. There is a valid and recent location available.
      *
-     * Returns null otherwise.
+     * <ul>
+     *   <li>The current mode is not incognito,
+     *   <li>The url is a google search URL (e.g. www.google.co.uk/search?q=cars),
+     *   <li>The user has not disabled sharing location with this url, and
+     *   <li>There is a valid and recent location available.
+     * </ul>
+     *
+     * <p>Returns null otherwise.
      *
      * @param url The URL of the request with which this header will be sent.
      * @param profile The user profile being accessed.
      * @param tab The Tab currently being accessed. Can be null, in which case, location permissions
-     *         will never prompt.
+     *     will never prompt.
      * @return The X-Geo header string or null.
      */
     private static @Nullable String getGeoHeader(String url, Profile profile, Tab tab) {
@@ -339,11 +346,11 @@ public class GeolocationHeader {
             Location locationToAttach = null;
             VisibleNetworks visibleNetworksToAttach = null;
             long locationAge = Long.MAX_VALUE;
-            @HeaderState
-            int headerState = geoHeaderStateForUrl(profile, url);
+            @HeaderState int headerState = geoHeaderStateForUrl(profile, url);
             if (headerState == HeaderState.HEADER_ENABLED) {
-                locationToAttach = GeolocationTracker.getLastKnownLocation(
-                        ContextUtils.getApplicationContext());
+                locationToAttach =
+                        GeolocationTracker.getLastKnownLocation(
+                                ContextUtils.getApplicationContext());
                 if (locationToAttach != null) {
                     locationAge = GeolocationTracker.getLocationAge(locationToAttach);
                     if (locationAge > MAX_LOCATION_AGE) {
@@ -356,8 +363,9 @@ public class GeolocationHeader {
                 // is allowed to receive location. Before attempting to attach visible networks,
                 // check if network-based location is enabled.
                 if (isNetworkLocationEnabled() && !isLocationFresh(locationToAttach)) {
-                    visibleNetworksToAttach = VisibleNetworksTracker.getLastKnownVisibleNetworks(
-                            ContextUtils.getApplicationContext());
+                    visibleNetworksToAttach =
+                            VisibleNetworksTracker.getLastKnownVisibleNetworks(
+                                    ContextUtils.getApplicationContext());
                 }
             }
 
@@ -391,8 +399,11 @@ public class GeolocationHeader {
         if (sUseAppPermissionGrantedForTesting) return sAppPermissionGrantedForTesting;
         int pid = Process.myPid();
         int uid = Process.myUid();
-        if (ApiCompatibilityUtils.checkPermission(ContextUtils.getApplicationContext(),
-                Manifest.permission.ACCESS_COARSE_LOCATION, pid, uid)
+        if (ApiCompatibilityUtils.checkPermission(
+                        ContextUtils.getApplicationContext(),
+                        Manifest.permission.ACCESS_COARSE_LOCATION,
+                        pid,
+                        uid)
                 != PackageManager.PERMISSION_GRANTED) {
             return false;
         }
@@ -400,8 +411,8 @@ public class GeolocationHeader {
     }
 
     /**
-     * Returns the app level geolocation permission.
-     * This permission can be either granted, blocked or prompt.
+     * Returns the app level geolocation permission. This permission can be either granted, blocked
+     * or prompt.
      */
     static @Permission int getGeolocationPermission(Tab tab) {
         try (TraceEvent e = TraceEvent.scoped("GeolocationHeader.getGeolocationPermission")) {
@@ -410,8 +421,9 @@ public class GeolocationHeader {
             }
             if (hasGeolocationPermission()) return Permission.GRANTED;
             return (tab != null
-                           && tab.getWindowAndroid().canRequestPermission(
-                                   Manifest.permission.ACCESS_COARSE_LOCATION))
+                            && tab.getWindowAndroid()
+                                    .canRequestPermission(
+                                            Manifest.permission.ACCESS_COARSE_LOCATION))
                     ? Permission.PROMPT
                     : Permission.BLOCKED;
         }
@@ -434,14 +446,13 @@ public class GeolocationHeader {
     }
 
     /**
-     * Returns the location permission for sharing their location with url (e.g. via the
-     * geolocation infobar).
+     * Returns the location permission for sharing their location with url (e.g. via the geolocation
+     * infobar).
      */
     static @ContentSettingValues @Nullable Integer locationContentSettingForUrl(
             Profile profile, Uri uri) {
-        PermissionInfo locationSettings = new PermissionInfo(
-                ContentSettingsType.GEOLOCATION, uri.toString(), null, profile.isOffTheRecord());
-        return locationSettings.getContentSetting(profile);
+        return PermissionInfo.getContentSetting(
+                profile, ContentSettingsType.GEOLOCATION, uri.toString(), null);
     }
 
     static void setLocationSourceForTesting(int locationSourceForTesting) {
@@ -465,9 +476,10 @@ public class GeolocationHeader {
 
             int locationMode;
             try {
-                locationMode = Settings.Secure.getInt(
-                        ContextUtils.getApplicationContext().getContentResolver(),
-                        Settings.Secure.LOCATION_MODE);
+                locationMode =
+                        Settings.Secure.getInt(
+                                ContextUtils.getApplicationContext().getContentResolver(),
+                                Settings.Secure.LOCATION_MODE);
             } catch (Settings.SettingNotFoundException e) {
                 Log.e(TAG, "Error getting the LOCATION_MODE");
                 return LocationSource.LOCATION_OFF;
@@ -496,9 +508,8 @@ public class GeolocationHeader {
     }
 
     /**
-     * Returns the domain permission as either granted, blocked or prompt.
-     * This is based upon the location permission for sharing their location with url (e.g. via the
-     * geolocation infobar).
+     * Returns the domain permission as either granted, blocked or prompt. This is based upon the
+     * location permission for sharing their location with url (e.g. via the geolocation infobar).
      */
     private static @Permission int getDomainPermission(Profile profile, String url) {
         try (TraceEvent e = TraceEvent.scoped("GeolocationHeader.getDomainPermission")) {
@@ -517,12 +528,15 @@ public class GeolocationHeader {
     }
 
     /**
-     * Returns the enum to use in the Geolocation.Header.PermissionState histogram.
-     * Unexpected input values return UmaPermission.UNKNOWN.
+     * Returns the enum to use in the Geolocation.Header.PermissionState histogram. Unexpected input
+     * values return UmaPermission.UNKNOWN.
      */
-    private static @UmaPermission int getPermissionHistogramEnum(@LocationSource int locationSource,
-            @Permission int appPermission, @Permission int domainPermission,
-            boolean locationAttached, @HeaderState int headerState) {
+    private static @UmaPermission int getPermissionHistogramEnum(
+            @LocationSource int locationSource,
+            @Permission int appPermission,
+            @Permission int domainPermission,
+            boolean locationAttached,
+            @HeaderState int headerState) {
         if (headerState == HeaderState.UNSUITABLE_URL) return UmaPermission.UNSUITABLE_URL;
         if (headerState == HeaderState.NOT_HTTPS) return UmaPermission.NOT_HTTPS;
         if (locationSource == LocationSource.HIGH_ACCURACY) {
@@ -588,8 +602,9 @@ public class GeolocationHeader {
         } else if (locationSource == LocationSource.GPS_ONLY) {
             if (appPermission == Permission.GRANTED) {
                 if (domainPermission == Permission.GRANTED) {
-                    return locationAttached ? UmaPermission.GPS_ONLY_APP_YES_DOMAIN_YES_LOCATION
-                                            : UmaPermission.GPS_ONLY_APP_YES_DOMAIN_YES_NO_LOCATION;
+                    return locationAttached
+                            ? UmaPermission.GPS_ONLY_APP_YES_DOMAIN_YES_LOCATION
+                            : UmaPermission.GPS_ONLY_APP_YES_DOMAIN_YES_NO_LOCATION;
                 } else if (domainPermission == Permission.PROMPT) {
                     return locationAttached
                             ? UmaPermission.GPS_ONLY_APP_YES_DOMAIN_PROMPT_LOCATION
@@ -644,9 +659,7 @@ public class GeolocationHeader {
         return UmaPermission.UNKNOWN;
     }
 
-    /**
-     * Encodes location into proto encoding.
-     */
+    /** Encodes location into proto encoding. */
     @Nullable
     @VisibleForTesting
     static String encodeProtoLocation(@Nullable Location location) {
@@ -662,10 +675,11 @@ public class GeolocationHeader {
         int radius = (int) (location.getAccuracy() * 1000);
 
         // Create a LatLng for the coordinates.
-        PartnerLocationDescriptor.LatLng latlng = PartnerLocationDescriptor.LatLng.newBuilder()
-                                                          .setLatitudeE7(latitudeE7)
-                                                          .setLongitudeE7(longitudeE7)
-                                                          .build();
+        PartnerLocationDescriptor.LatLng latlng =
+                PartnerLocationDescriptor.LatLng.newBuilder()
+                        .setLatitudeE7(latitudeE7)
+                        .setLongitudeE7(longitudeE7)
+                        .build();
 
         // Populate a LocationDescriptor with the LatLng.
         PartnerLocationDescriptor.LocationDescriptor locationDescriptor =
@@ -680,18 +694,14 @@ public class GeolocationHeader {
         return encodeLocationDescriptor(locationDescriptor);
     }
 
-    /**
-     * Encodes the given proto location descriptor into a BASE64 URL_SAFE encoding.
-     */
+    /** Encodes the given proto location descriptor into a BASE64 URL_SAFE encoding. */
     private static String encodeLocationDescriptor(
             PartnerLocationDescriptor.LocationDescriptor locationDescriptor) {
         return Base64.encodeToString(
                 locationDescriptor.toByteArray(), Base64.NO_WRAP | Base64.URL_SAFE);
     }
 
-    /**
-     * Encodes visible networks in proto encoding.
-     */
+    /** Encodes visible networks in proto encoding. */
     @Nullable
     @VisibleForTesting
     static String encodeProtoVisibleNetworks(@Nullable VisibleNetworks visibleNetworks) {
@@ -782,12 +792,16 @@ public class GeolocationHeader {
             }
         }
 
-        if (connectedCell == null && connectedWifi == null && extraVisibleCell == null
+        if (connectedCell == null
+                && connectedWifi == null
+                && extraVisibleCell == null
                 && extraVisibleWifi == null) {
             return null;
         }
 
-        return VisibleNetworks.create(connectedWifi, connectedCell,
+        return VisibleNetworks.create(
+                connectedWifi,
+                connectedCell,
                 extraVisibleWifi != null ? CollectionUtil.newHashSet(extraVisibleWifi) : null,
                 extraVisibleCell != null ? CollectionUtil.newHashSet(extraVisibleCell) : null);
     }

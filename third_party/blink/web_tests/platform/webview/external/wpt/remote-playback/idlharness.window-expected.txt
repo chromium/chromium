@@ -1,0 +1,54 @@
+This is a testharness.js-based test.
+[FAIL] RemotePlayback interface: existence and properties of interface object
+  assert_own_property: self does not have own property "RemotePlayback" expected property "RemotePlayback" missing
+[FAIL] RemotePlayback interface object length
+  assert_own_property: self does not have own property "RemotePlayback" expected property "RemotePlayback" missing
+[FAIL] RemotePlayback interface object name
+  assert_own_property: self does not have own property "RemotePlayback" expected property "RemotePlayback" missing
+[FAIL] RemotePlayback interface: existence and properties of interface prototype object
+  assert_own_property: self does not have own property "RemotePlayback" expected property "RemotePlayback" missing
+[FAIL] RemotePlayback interface: existence and properties of interface prototype object's "constructor" property
+  assert_own_property: self does not have own property "RemotePlayback" expected property "RemotePlayback" missing
+[FAIL] RemotePlayback interface: existence and properties of interface prototype object's @@unscopables property
+  assert_own_property: self does not have own property "RemotePlayback" expected property "RemotePlayback" missing
+[FAIL] RemotePlayback interface: operation watchAvailability(RemotePlaybackAvailabilityCallback)
+  assert_own_property: self does not have own property "RemotePlayback" expected property "RemotePlayback" missing
+[FAIL] RemotePlayback interface: operation cancelWatchAvailability(optional long)
+  assert_own_property: self does not have own property "RemotePlayback" expected property "RemotePlayback" missing
+[FAIL] RemotePlayback interface: attribute state
+  assert_own_property: self does not have own property "RemotePlayback" expected property "RemotePlayback" missing
+[FAIL] RemotePlayback interface: attribute onconnecting
+  assert_own_property: self does not have own property "RemotePlayback" expected property "RemotePlayback" missing
+[FAIL] RemotePlayback interface: attribute onconnect
+  assert_own_property: self does not have own property "RemotePlayback" expected property "RemotePlayback" missing
+[FAIL] RemotePlayback interface: attribute ondisconnect
+  assert_own_property: self does not have own property "RemotePlayback" expected property "RemotePlayback" missing
+[FAIL] RemotePlayback interface: operation prompt()
+  assert_own_property: self does not have own property "RemotePlayback" expected property "RemotePlayback" missing
+[FAIL] RemotePlayback must be primary interface of media.remote
+  assert_equals: wrong typeof object expected "object" but got "undefined"
+[FAIL] Stringification of media.remote
+  assert_equals: wrong typeof object expected "object" but got "undefined"
+[FAIL] RemotePlayback interface: media.remote must inherit property "watchAvailability(RemotePlaybackAvailabilityCallback)" with the proper type
+  assert_equals: wrong typeof object expected "object" but got "undefined"
+[FAIL] RemotePlayback interface: calling watchAvailability(RemotePlaybackAvailabilityCallback) on media.remote with too few arguments must throw TypeError
+  assert_equals: wrong typeof object expected "object" but got "undefined"
+[FAIL] RemotePlayback interface: media.remote must inherit property "cancelWatchAvailability(optional long)" with the proper type
+  assert_equals: wrong typeof object expected "object" but got "undefined"
+[FAIL] RemotePlayback interface: calling cancelWatchAvailability(optional long) on media.remote with too few arguments must throw TypeError
+  assert_equals: wrong typeof object expected "object" but got "undefined"
+[FAIL] RemotePlayback interface: media.remote must inherit property "state" with the proper type
+  assert_equals: wrong typeof object expected "object" but got "undefined"
+[FAIL] RemotePlayback interface: media.remote must inherit property "onconnecting" with the proper type
+  assert_equals: wrong typeof object expected "object" but got "undefined"
+[FAIL] RemotePlayback interface: media.remote must inherit property "onconnect" with the proper type
+  assert_equals: wrong typeof object expected "object" but got "undefined"
+[FAIL] RemotePlayback interface: media.remote must inherit property "ondisconnect" with the proper type
+  assert_equals: wrong typeof object expected "object" but got "undefined"
+[FAIL] RemotePlayback interface: media.remote must inherit property "prompt()" with the proper type
+  assert_equals: wrong typeof object expected "object" but got "undefined"
+[FAIL] HTMLMediaElement interface: attribute remote
+  assert_true: The prototype object must have a property "remote" expected true got false
+[FAIL] HTMLMediaElement interface: attribute disableRemotePlayback
+  assert_true: The prototype object must have a property "disableRemotePlayback" expected true got false
+Harness: the test ran to completion.

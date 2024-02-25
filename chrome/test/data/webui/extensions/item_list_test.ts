@@ -5,7 +5,7 @@
 /** @fileoverview Suite of tests for extensions-item-list. */
 import 'chrome://extensions/extensions.js';
 
-import {ExtensionsItemListElement} from 'chrome://extensions/extensions.js';
+import type {ExtensionsItemListElement} from 'chrome://extensions/extensions.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {assertEquals} from 'chrome://webui-test/chai_assert.js';
@@ -19,7 +19,6 @@ suite('ExtensionItemListTest', function() {
 
   // Initialize an extension item before each test.
   setup(function() {
-    loadTimeData.overrideValues({'safetyCheckShowReviewPanel': false});
     setupElement();
   });
 
@@ -30,7 +29,11 @@ suite('ExtensionItemListTest', function() {
 
     const createExt = createExtensionInfo;
     const extensionItems = [
-      createExt({name: 'Alpha', id: 'a'.repeat(32)}),
+      createExt({
+        name: 'Alpha',
+        id: 'a'.repeat(32),
+        safetyCheckText: {panelString: 'This extension contains malware.'},
+      }),
       createExt({name: 'Bravo', id: 'b'.repeat(32)}),
       createExt({name: 'Charlie', id: 'c'.repeat(29) + 'wxy'}),
     ];
@@ -126,8 +129,10 @@ suite('ExtensionItemListTest', function() {
 
   test('SafetyCheckPanel', function() {
     // The extension review panel should not be visible if
-    // safetyCheckShowReviewPanel is set to false.
+    // safetyCheckShowReviewPanel and safetyHubShowReviewPanel are set to
+    // false.
     loadTimeData.overrideValues({'safetyCheckShowReviewPanel': false});
+    loadTimeData.overrideValues({'safetyHubShowReviewPanel': false});
 
     // set up the element again to capture the updated value of
     // safetyCheckShowReviewPanel.
@@ -141,6 +146,15 @@ suite('ExtensionItemListTest', function() {
 
     // set up the element again to capture the updated value of
     // safetyCheckShowReviewPanel.
+    setupElement();
+
+    flush();
+    boundTestVisible('extensions-review-panel', true);
+
+    // The extension review panel should  be visible if
+    // safetyHubShowReviewPanel is set to true.
+    loadTimeData.overrideValues({'safetyCheckShowReviewPanel': false});
+    loadTimeData.overrideValues({'safetyHubShowReviewPanel': true});
     setupElement();
 
     flush();

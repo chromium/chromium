@@ -4,26 +4,26 @@
 
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/inactive_tabs/inactive_tabs_mediator.h"
 
+#import "base/memory/raw_ptr.h"
 #import "base/notreached.h"
 #import "base/scoped_multi_source_observation.h"
 #import "base/scoped_observation.h"
 #import "components/prefs/ios/pref_observer_bridge.h"
 #import "components/prefs/pref_change_registrar.h"
 #import "components/prefs/pref_service.h"
-#import "components/sessions/core/tab_restore_service.h"
-#import "ios/chrome/browser/sessions/session_restoration_browser_agent.h"
-#import "ios/chrome/browser/sessions/session_window_ios.h"
+#import "ios/chrome/browser/crash_report/model/crash_keys_helper.h"
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/shared/model/url/url_util.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list_observer_bridge.h"
-#import "ios/chrome/browser/snapshots/snapshot_browser_agent.h"
-#import "ios/chrome/browser/snapshots/snapshot_cache.h"
-#import "ios/chrome/browser/snapshots/snapshot_cache_observer.h"
-#import "ios/chrome/browser/snapshots/snapshot_tab_helper.h"
-#import "ios/chrome/browser/tabs/inactive_tabs/features.h"
+#import "ios/chrome/browser/snapshots/model/snapshot_storage.h"
+#import "ios/chrome/browser/snapshots/model/snapshot_storage_observer.h"
+#import "ios/chrome/browser/snapshots/model/snapshot_tab_helper.h"
+#import "ios/chrome/browser/tabs/model/inactive_tabs/features.h"
+#import "ios/chrome/browser/tabs/model/tabs_closer.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_collection_consumer.h"
+#import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/grid_item_identifier.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/inactive_tabs/inactive_tabs_info_consumer.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/toolbars/tab_grid_toolbars_configuration.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_utils.h"
@@ -31,10 +31,6 @@
 #import "ios/web/public/web_state.h"
 #import "ios/web/public/web_state_observer_bridge.h"
 #import "ui/base/device_form_factor.h"
-
-// To get access to UseSessionSerializationOptimizations().
-// TODO(crbug.com/1383087): remove once the feature is fully launched.
-#import "ios/web/common/features.h"
 
 using ScopedWebStateListObservation =
     base::ScopedObservation<WebStateList, WebStateListObserver>;
@@ -58,8 +54,9 @@ NSArray* CreateItemsOrderedByRecency(WebStateList* web_state_list) {
             });
 
   for (web::WebState* web_state : web_states) {
-    [items
-        addObject:[[WebStateTabSwitcherItem alloc] initWithWebState:web_state]];
+    WebStateTabSwitcherItem* item =
+        [[WebStateTabSwitcherItem alloc] initWithWebState:web_state];
+    [items addObject:[GridItemIdentifier tabIdentifier:item]];
   }
   return items;
 }
@@ -79,19 +76,20 @@ void AddWebStateObservations(
 void PopulateConsumerItems(id<TabCollectionConsumer> consumer,
                            WebStateList* web_state_list) {
   [consumer populateItems:CreateItemsOrderedByRecency(web_state_list)
-           selectedItemID:nil];
+           selectedItemID:web::WebStateID()];
+  crash_keys::SetInactiveTabCount(web_state_list->count());
 }
 
 }  // namespace
 
 @interface InactiveTabsMediator () <CRWWebStateObserver,
                                     PrefObserverDelegate,
-                                    SnapshotCacheObserver,
+                                    SnapshotStorageObserver,
                                     WebStateListObserving> {
   // The list of inactive tabs.
-  WebStateList* _webStateList;
-  // The snapshot cache of _webStateList.
-  __weak SnapshotCache* _snapshotCache;
+  raw_ptr<WebStateList> _webStateList;
+  // The snapshot storage of _webStateList.
+  __weak SnapshotStorage* _snapshotStorage;
   // The observers of _webStateList.
   std::unique_ptr<WebStateListObserverBridge> _webStateListObserverBridge;
   std::unique_ptr<ScopedWebStateListObservation> _scopedWebStateListObservation;
@@ -99,23 +97,14 @@ void PopulateConsumerItems(id<TabCollectionConsumer> consumer,
   std::unique_ptr<web::WebStateObserverBridge> _webStateObserverBridge;
   std::unique_ptr<ScopedWebStateObservation> _scopedWebStateObservation;
   // Preference service from the application context.
-  PrefService* _prefService;
+  raw_ptr<PrefService> _prefService;
   // Pref observer to track changes to prefs.
   std::unique_ptr<PrefObserverBridge> _prefObserverBridge;
   // Registrar for pref changes notifications.
   PrefChangeRegistrar _prefChangeRegistrar;
-  // The saved session window just before close all tabs from regular tab grid
-  // is called.
-  SessionWindowIOS* _closedSessionWindow;
-  // The number of tabs in `_closedSessionWindow` that are synced by
-  // TabRestoreService.
-  int _syncedClosedTabsCount;
-  // Session restoration agent.
-  SessionRestorationBrowserAgent* _sessionRestorationAgent;
-  // Snapshot agent.
-  SnapshotBrowserAgent* _snapshotAgent;
-  // TabRestoreService holds the recently closed tabs.
-  sessions::TabRestoreService* _tabRestoreService;
+  // TabsClosed used to implement the "close all tabs" operation with support
+  // for undoing the operation.
+  std::unique_ptr<TabsCloser> _tabsCloser;
 }
 
 @end
@@ -124,19 +113,12 @@ void PopulateConsumerItems(id<TabCollectionConsumer> consumer,
 
 - (instancetype)initWithWebStateList:(WebStateList*)webStateList
                          prefService:(PrefService*)prefService
-             sessionRestorationAgent:
-                 (SessionRestorationBrowserAgent*)sessionRestorationAgent
-                       snapshotAgent:(SnapshotBrowserAgent*)snapshotAgent
-                   tabRestoreService:
-                       (sessions::TabRestoreService*)tabRestoreService {
+                     snapshotStorage:(SnapshotStorage*)snapshotStorage
+                          tabsCloser:(std::unique_ptr<TabsCloser>)tabsCloser {
   CHECK(IsInactiveTabsAvailable());
   CHECK(webStateList);
   CHECK(prefService);
-  CHECK(sessionRestorationAgent ||
-        web::features::UseSessionSerializationOptimizations());
-  CHECK(snapshotAgent);
-  CHECK(snapshotAgent->snapshot_cache());
-  CHECK(tabRestoreService);
+  CHECK(snapshotStorage);
   self = [super init];
   if (self) {
     _webStateList = webStateList;
@@ -165,18 +147,16 @@ void PopulateConsumerItems(id<TabCollectionConsumer> consumer,
     _prefObserverBridge->ObserveChangesForPreference(
         prefs::kInactiveTabsTimeThreshold, &_prefChangeRegistrar);
 
-    _snapshotCache = snapshotAgent->snapshot_cache();
-    [_snapshotCache addObserver:self];
+    _snapshotStorage = snapshotStorage;
+    [_snapshotStorage addObserver:self];
 
-    _sessionRestorationAgent = sessionRestorationAgent;
-    _snapshotAgent = snapshotAgent;
-    _tabRestoreService = tabRestoreService;
+    _tabsCloser = std::move(tabsCloser);
   }
   return self;
 }
 
 - (void)dealloc {
-  [_snapshotCache removeObserver:self];
+  [_snapshotStorage removeObserver:self];
 }
 
 - (void)setConsumer:
@@ -208,11 +188,9 @@ void PopulateConsumerItems(id<TabCollectionConsumer> consumer,
   _prefChangeRegistrar.RemoveAll();
   _prefObserverBridge.reset();
   _prefService = nullptr;
-  [_snapshotCache removeObserver:self];
-  _snapshotCache = nil;
-  _sessionRestorationAgent = nullptr;
-  [self discardSavedClosedItems];
-  _snapshotAgent = nullptr;
+  [_snapshotStorage removeObserver:self];
+  _snapshotStorage = nil;
+  _tabsCloser.reset();
 }
 
 #pragma mark - CRWWebStateObserver
@@ -232,7 +210,7 @@ void PopulateConsumerItems(id<TabCollectionConsumer> consumer,
 - (void)updateConsumerItemForWebState:(web::WebState*)webState {
   TabSwitcherItem* item =
       [[WebStateTabSwitcherItem alloc] initWithWebState:webState];
-  [_consumer replaceItemID:webState->GetStableIdentifier() withItem:item];
+  [_consumer replaceItemID:webState->GetUniqueIdentifier() withItem:item];
 }
 
 #pragma mark - PrefObserverDelegate
@@ -245,9 +223,9 @@ void PopulateConsumerItems(id<TabCollectionConsumer> consumer,
   }
 }
 
-#pragma mark - SnapshotCacheObserver
+#pragma mark - SnapshotStorageObserver
 
-- (void)snapshotCache:(SnapshotCache*)snapshotCache
+- (void)snapshotStorage:(SnapshotStorage*)snapshotStorage
     didUpdateSnapshotForID:(SnapshotID)snapshotID {
   web::WebState* webState = nullptr;
   for (int i = 0; i < _webStateList->count(); i++) {
@@ -264,9 +242,7 @@ void PopulateConsumerItems(id<TabCollectionConsumer> consumer,
     // consumer's responsibility to ignore any updates before inserts.
     TabSwitcherItem* item =
         [[WebStateTabSwitcherItem alloc] initWithWebState:webState];
-    // Items are indexed with the stable identifier. Don't pass a snapshot ID
-    // here.
-    [_consumer replaceItemID:webState->GetStableIdentifier() withItem:item];
+    [_consumer replaceItemID:webState->GetUniqueIdentifier() withItem:item];
   }
 }
 
@@ -282,8 +258,8 @@ void PopulateConsumerItems(id<TabCollectionConsumer> consumer,
   }
 
   web::WebState* detachedWebState = detachChange.detached_web_state();
-  [_consumer removeItemWithID:detachedWebState->GetStableIdentifier()
-               selectedItemID:nil];
+  [_consumer removeItemWithID:detachedWebState->GetUniqueIdentifier()
+               selectedItemID:web::WebStateID()];
 
   _scopedWebStateObservation->RemoveObservation(detachedWebState);
 }
@@ -318,7 +294,9 @@ void PopulateConsumerItems(id<TabCollectionConsumer> consumer,
       web::WebState* insertedWebState = insertChange.inserted_web_state();
       TabSwitcherItem* item =
           [[WebStateTabSwitcherItem alloc] initWithWebState:insertedWebState];
-      [_consumer insertItem:item atIndex:status.index selectedItemID:nil];
+      [_consumer insertItem:[GridItemIdentifier tabIdentifier:item]
+                    atIndex:insertChange.index()
+             selectedItemID:web::WebStateID()];
 
       _scopedWebStateObservation->AddObservation(insertedWebState);
       break;
@@ -346,7 +324,7 @@ void PopulateConsumerItems(id<TabCollectionConsumer> consumer,
 
 #pragma mark - GridCommands
 
-- (void)addNewItem {
+- (BOOL)addNewItem {
   NOTREACHED_NORETURN();
 }
 
@@ -354,79 +332,65 @@ void PopulateConsumerItems(id<TabCollectionConsumer> consumer,
   NOTREACHED_NORETURN();
 }
 
-- (BOOL)isItemWithIDSelected:(NSString*)itemID {
+- (BOOL)isItemWithIDSelected:(web::WebStateID)itemID {
   NOTREACHED_NORETURN();
 }
 
-- (void)moveItemWithID:(NSString*)itemID toIndex:(NSUInteger)index {
+- (void)moveItemWithID:(web::WebStateID)itemID toIndex:(NSUInteger)index {
   NOTREACHED_NORETURN();
 }
 
-- (void)closeItemsWithIDs:(NSArray<NSString*>*)itemIDs {
+- (void)closeItemsWithIDs:(const std::set<web::WebStateID>&)itemIDs {
   NOTREACHED_NORETURN();
 }
 
 - (void)closeAllItems {
   // TODO(crbug.com/1418021): Add metrics when the user closes all inactive
   // tabs.
-  _webStateList->CloseAllWebStates(WebStateList::CLOSE_USER_ACTION);
-  _snapshotAgent->RemoveAllSnapshots();
+  CloseAllWebStates(*_webStateList, WebStateList::CLOSE_USER_ACTION);
+  [_snapshotStorage removeAllImages];
 }
 
 - (void)saveAndCloseAllItems {
-  if (_webStateList->empty()) {
+  if (![self canCloseTabs]) {
     return;
   }
+
   // TODO(crbug.com/1418021): Add metrics when the user closes all inactive
   // tabs from regular tab grid.
-  if (!web::features::UseSessionSerializationOptimizations()) {
-    _closedSessionWindow = SerializeWebStateList(_webStateList);
-  }
-  int oldSize = _tabRestoreService ? _tabRestoreService->entries().size() : 0;
-  _webStateList->CloseAllWebStates(WebStateList::CLOSE_USER_ACTION);
-  _syncedClosedTabsCount =
-      _tabRestoreService ? _tabRestoreService->entries().size() - oldSize : 0;
+  _tabsCloser->CloseTabs();
 }
 
 - (void)undoCloseAllItems {
-  if (!_closedSessionWindow) {
+  if (![self canUndoCloseAllTabs]) {
     return;
   }
   // TODO(crbug.com/1418021): Add metrics when the user restores all inactive
   // tabs from regular tab grid.
-  if (_sessionRestorationAgent) {
-    _sessionRestorationAgent->RestoreSessionWindow(
-        _closedSessionWindow, SessionRestorationScope::kRegularOnly);
-    _closedSessionWindow = nil;
-  }
-
-  [self removeEntriesFromTabRestoreService];
-  _syncedClosedTabsCount = 0;
+  _tabsCloser->UndoCloseTabs();
 }
 
 - (void)discardSavedClosedItems {
-  if (!_closedSessionWindow) {
+  if (![self canUndoCloseAllTabs]) {
     return;
   }
-  _syncedClosedTabsCount = 0;
-  _closedSessionWindow = nil;
-  _snapshotAgent->RemoveAllSnapshots();
+  _tabsCloser->ConfirmDeletion();
 }
 
-- (void)
-    showCloseItemsConfirmationActionSheetWithItems:(NSArray<NSString*>*)items
-                                            anchor:
-                                                (UIBarButtonItem*)buttonAnchor {
+- (void)showCloseItemsConfirmationActionSheetWithItems:
+            (const std::set<web::WebStateID>&)itemIDs
+                                                anchor:(UIBarButtonItem*)
+                                                           buttonAnchor {
   NOTREACHED_NORETURN();
 }
 
-- (void)shareItems:(NSArray<NSString*>*)items
+- (void)shareItems:(const std::set<web::WebStateID>&)itemIDs
             anchor:(UIBarButtonItem*)buttonAnchor {
   NOTREACHED_NORETURN();
 }
 
 - (NSArray<UIMenuElement*>*)addToButtonMenuElementsForItems:
-    (NSArray<NSString*>*)items {
+    (const std::set<web::WebStateID>&)itemIDs {
   NOTREACHED_NORETURN();
 }
 
@@ -443,13 +407,11 @@ void PopulateConsumerItems(id<TabCollectionConsumer> consumer,
   NOTREACHED_NORETURN();
 }
 
-#pragma mark - TabCollectionCommands
-
-- (void)selectItemWithID:(NSString*)itemID {
+- (void)selectItemWithID:(web::WebStateID)itemID pinned:(BOOL)pinned {
   NOTREACHED_NORETURN();
 }
 
-- (void)closeItemWithID:(NSString*)itemID {
+- (void)closeItemWithID:(web::WebStateID)itemID {
   // TODO(crbug.com/1418021): Add metrics when the user closes an inactive tab.
   int index = GetWebStateIndex(_webStateList, WebStateSearchCriteria{
                                                   .identifier = itemID,
@@ -459,43 +421,53 @@ void PopulateConsumerItems(id<TabCollectionConsumer> consumer,
   }
 }
 
-- (void)setPinState:(BOOL)pinState forItemWithIdentifier:(NSString*)identifier {
+- (void)setPinState:(BOOL)pinState forItemWithID:(web::WebStateID)itemID {
   NOTREACHED_NORETURN();
-}
-
-#pragma mark - Private
-
-// Removes `_syncedClosedTabsCount` most recent entries from the
-// TabRestoreService.
-- (void)removeEntriesFromTabRestoreService {
-  if (!_tabRestoreService) {
-    return;
-  }
-  std::vector<SessionID> identifiers;
-  auto iter = _tabRestoreService->entries().begin();
-  auto end = _tabRestoreService->entries().end();
-  for (int i = 0; i < _syncedClosedTabsCount && iter != end; i++) {
-    identifiers.push_back(iter->get()->id);
-    iter++;
-  }
-  for (const SessionID sessionID : identifiers) {
-    _tabRestoreService->RemoveTabEntryById(sessionID);
-  }
 }
 
 #pragma mark - GridToolbarsConfigurationProvider
 
 - (TabGridToolbarsConfiguration*)toolbarsConfiguration {
   TabGridToolbarsConfiguration* toolbarsConfiguration =
-      [[TabGridToolbarsConfiguration alloc] init];
-  toolbarsConfiguration.closeAllButton = !_webStateList->empty();
+      [[TabGridToolbarsConfiguration alloc]
+          initWithPage:TabGridPageRegularTabs];
+  toolbarsConfiguration.mode = TabGridModeInactive;
+  toolbarsConfiguration.closeAllButton = [self canCloseTabs];
   toolbarsConfiguration.searchButton = YES;
-  toolbarsConfiguration.undoButton = [self didSavedClosedTabs];
+  toolbarsConfiguration.undoButton = [self canUndoCloseAllTabs];
   return toolbarsConfiguration;
 }
 
 - (BOOL)didSavedClosedTabs {
-  return _closedSessionWindow != nil;
+  return [self canUndoCloseAllTabs];
+}
+
+#pragma mark - Internal
+
+- (BOOL)canCloseTabs {
+  return _tabsCloser && _tabsCloser->CanCloseTabs();
+}
+
+- (BOOL)canUndoCloseAllTabs {
+  return _tabsCloser && _tabsCloser->CanUndoCloseTabs();
+}
+
+#pragma mark - GridViewControllerMutator
+
+- (void)userTappedOnItemID:(web::WebStateID)itemID {
+  // No-op
+}
+
+- (void)addToSelectionItemID:(web::WebStateID)itemID {
+  NOTREACHED_NORETURN();
+}
+
+- (void)removeFromSelectionItemID:(web::WebStateID)itemID {
+  // No-op
+}
+
+- (void)closeItemID:(web::WebStateID)itemID {
+  [self closeItemWithID:itemID];
 }
 
 @end

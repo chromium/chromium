@@ -5,7 +5,6 @@
 #ifndef CHROME_TEST_BASE_CHROMEOS_CROSIER_CHROMEOS_INTEGRATION_TEST_MIXIN_H_
 #define CHROME_TEST_BASE_CHROMEOS_CROSIER_CHROMEOS_INTEGRATION_TEST_MIXIN_H_
 
-#include "chrome/test/base/chromeos/crosier/chromeos_test_definition.pb.h"
 #include "chrome/test/base/mixin_based_in_process_browser_test.h"
 
 namespace base {
@@ -21,12 +20,6 @@ class ChromeOSIntegrationTestMixin : public InProcessBrowserTestMixin {
   ChromeOSIntegrationTestMixin& operator=(const ChromeOSIntegrationTestMixin&) =
       delete;
   ~ChromeOSIntegrationTestMixin() override;
-
-  // Add the test information.
-  // Call this at the beginning of the test body. Setting test info would help
-  // other folks to understand the test and have better ownership.
-  // See |chromeos_test_definition.proto| for more information.
-  void AddTestInfo(const chrome_test_base_chromeos_crosier::TestInfo& info);
 
   // InProcessBrowserTestMixin:
   void SetUpCommandLine(base::CommandLine* command_line) override;

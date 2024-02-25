@@ -17,16 +17,9 @@
 
 namespace feed {
 
-BASE_DECLARE_FEATURE(kInterestFeedContentSuggestions);
 BASE_DECLARE_FEATURE(kInterestFeedV2);
-BASE_DECLARE_FEATURE(kInterestFeedV2Autoplay);
 BASE_DECLARE_FEATURE(kInterestFeedV2Hearts);
 BASE_DECLARE_FEATURE(kInterestFeedV2Scrolling);
-
-extern const base::FeatureParam<std::string> kDisableTriggerTypes;
-extern const base::FeatureParam<int> kTimeoutDurationSeconds;
-extern const base::FeatureParam<bool> kThrottleBackgroundFetches;
-extern const base::FeatureParam<bool> kOnlySetLastRefreshAttemptOnSuccess;
 
 // Feature that allows the client to automatically dismiss the notice card based
 // on the clicks and views on the notice card.
@@ -44,9 +37,6 @@ BASE_DECLARE_FEATURE(kDiscoFeedEndpoint);
 // xsurface feed.
 BASE_DECLARE_FEATURE(kXsurfaceMetricsReporting);
 
-// Feature that enables sticky header when users scroll down.
-BASE_DECLARE_FEATURE(kFeedHeaderStickToTop);
-
 // Feature that shows placeholder cards instead of a loading spinner at first
 // load.
 BASE_DECLARE_FEATURE(kFeedLoadingPlaceholder);
@@ -59,10 +49,6 @@ extern const base::FeatureParam<bool>
 // Feature that allows tuning the size of the image memory cache. Value is a
 // percentage of the maximum size calculated for the device.
 BASE_DECLARE_FEATURE(kFeedImageMemoryCacheSizePercentage);
-
-// Feature that enables showing a callout to help users return to the top of the
-// feeds quickly.
-BASE_DECLARE_FEATURE(kFeedBackToTop);
 
 #if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
 // When enabled, causes the server to restrig the Sync Promo Banner for the
@@ -93,6 +79,8 @@ extern const base::FeatureParam<bool> kWebUiDisableContentSecurityPolicy;
 
 std::string GetFeedReferrerUrl();
 
+bool IsCormorantEnabledForLocale(std::string country);
+
 // Personalize feed for unsigned users.
 BASE_DECLARE_FEATURE(kPersonalizeFeedUnsignedUsers);
 
@@ -101,11 +89,6 @@ signin::ConsentLevel GetConsentLevelNeededForPersonalizedFeed();
 
 // Feature that enables tracking the acknowledgement state for the info cards.
 BASE_DECLARE_FEATURE(kInfoCardAcknowledgementTracking);
-
-// Feature that enables the Crow feature.
-// Owned by the CwF team but located here until it makes sense to create a crow
-// component, since it is being used in the feed component.
-BASE_DECLARE_FEATURE(kShareCrowButton);
 
 // When enabled, schedule a background refresh for a feed sometime after the
 // last user engagement with that feed.
@@ -134,9 +117,6 @@ BASE_DECLARE_FEATURE(kFeedPerformanceStudy);
 // by the client, primarily to retroactively work around bugs.
 BASE_DECLARE_FEATURE(kSyntheticCapabilities);
 
-// Feature that enables Cormorant for users.
-BASE_DECLARE_FEATURE(kCormorant);
-
 // Feature that enables reporting feed user interaction reliability.
 BASE_DECLARE_FEATURE(kFeedUserInteractionReliabilityReport);
 
@@ -148,6 +128,12 @@ BASE_DECLARE_FEATURE(kFeedDynamicColors);
 
 // Feature that enables UI update for Follow.
 BASE_DECLARE_FEATURE(kFeedFollowUiUpdate);
+
+// Feature that enables sports card in the feed.
+BASE_DECLARE_FEATURE(kFeedSportsCard);
+
+// Feature that enables refreshing feed when Chrome restarts.
+BASE_DECLARE_FEATURE(kRefreshFeedOnRestart);
 
 }  // namespace feed
 

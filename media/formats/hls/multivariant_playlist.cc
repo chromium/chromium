@@ -4,6 +4,7 @@
 
 #include "media/formats/hls/multivariant_playlist.h"
 
+#include <optional>
 #include <utility>
 #include <vector>
 
@@ -22,7 +23,6 @@
 #include "media/formats/hls/types.h"
 #include "media/formats/hls/variable_dictionary.h"
 #include "media/formats/hls/variant_stream.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
 #include "url/gurl.h"
 
@@ -84,7 +84,7 @@ MultivariantPlaylist::Parse(base::StringPiece source,
 
   CommonParserState common_state;
   VariableDictionary::SubstitutionBuffer sub_buffer;
-  absl::optional<XStreamInfTag> inf_tag;
+  std::optional<XStreamInfTag> inf_tag;
   std::vector<VariantStream> variants;
   base::flat_map<base::StringPiece, scoped_refptr<AudioRenditionGroup>>
       audio_rendition_groups;
@@ -221,7 +221,7 @@ MultivariantPlaylist::Parse(base::StringPiece source,
                                                    inf_tag->audio->Str());
     }
 
-    absl::optional<std::string> video_rendition_group_name;
+    std::optional<std::string> video_rendition_group_name;
     if (inf_tag->video.has_value()) {
       video_rendition_group_name = std::string(inf_tag->video->Str());
     }

@@ -132,7 +132,7 @@ ListInfos GetListInfos() {
 base::span<const CommandLineSwitchAndThreatType> GetSwitchAndThreatTypes() {
   static constexpr CommandLineSwitchAndThreatType
       kCommandLineSwitchAndThreatType[] = {
-          {"mark_as_allowlisted_for_phish_guard", CSD_WHITELIST},
+          {"mark_as_allowlisted_for_phish_guard", CSD_ALLOWLIST},
           {"mark_as_allowlisted_for_real_time", HIGH_CONFIDENCE_ALLOWLIST},
           {"mark_as_phishing", SOCIAL_ENGINEERING},
           {"mark_as_malware", MALWARE_THREAT},
@@ -154,14 +154,14 @@ ThreatSeverity GetThreatSeverity(const ListIdentifier& list_id) {
     case CLIENT_INCIDENT:
     case SUBRESOURCE_FILTER:
       return 2;
-    case CSD_WHITELIST:
+    case CSD_ALLOWLIST:
     case HIGH_CONFIDENCE_ALLOWLIST:
       return 3;
     case SUSPICIOUS:
       return 4;
     case BILLING:
       return 15;
-    case CSD_DOWNLOAD_WHITELIST:
+    case CSD_DOWNLOAD_ALLOWLIST:
     case POTENTIALLY_HARMFUL_APPLICATION:
     case SOCIAL_ENGINEERING_PUBLIC:
     case THREAT_TYPE_UNSPECIFIED:
@@ -283,14 +283,12 @@ V4LocalDatabaseManager::PendingCheck::PendingCheck(
     Client* client,
     ClientCallbackType client_callback_type,
     const StoresToCheck& stores_to_check,
-    const std::vector<GURL>& urls,
-    MechanismExperimentHashDatabaseCache experiment_cache_selection)
+    const std::vector<GURL>& urls)
     : client(client),
       client_callback_type(client_callback_type),
       most_severe_threat_type(SB_THREAT_TYPE_SAFE),
       stores_to_check(stores_to_check),
-      urls(urls),
-      mechanism_experiment_cache_selection(experiment_cache_selection) {
+      urls(urls) {
   for (const auto& url : urls) {
     V4ProtocolManagerUtil::UrlToFullHashes(url, &full_hashes);
   }
@@ -420,15 +418,10 @@ bool V4LocalDatabaseManager::CanCheckUrl(const GURL& url) const {
          url.SchemeIsWSOrWSS();
 }
 
-bool V4LocalDatabaseManager::ChecksAreAlwaysAsync() const {
-  return false;
-}
-
 bool V4LocalDatabaseManager::CheckBrowseUrl(
     const GURL& url,
     const SBThreatTypeSet& threat_types,
     Client* client,
-    MechanismExperimentHashDatabaseCache experiment_cache_selection,
     CheckBrowseUrlType check_type) {
   DCHECK(sb_task_runner()->RunsTasksInCurrentSequence());
   DCHECK(!threat_types.empty());
@@ -445,7 +438,7 @@ bool V4LocalDatabaseManager::CheckBrowseUrl(
   std::unique_ptr<PendingCheck> check = std::make_unique<PendingCheck>(
       client, ClientCallbackType::CHECK_BROWSE_URL,
       CreateStoresToCheckFromSBThreatTypeSet(threat_types),
-      std::vector<GURL>(1, url), experiment_cache_selection);
+      std::vector<GURL>(1, url));
 
   bool safe_synchronously = HandleCheck(std::move(check));
   UMA_HISTOGRAM_BOOLEAN("SafeBrowsing.CheckBrowseUrl.HasLocalMatch",
@@ -468,8 +461,7 @@ bool V4LocalDatabaseManager::CheckDownloadUrl(
 
   std::unique_ptr<PendingCheck> check = std::make_unique<PendingCheck>(
       client, ClientCallbackType::CHECK_DOWNLOAD_URLS,
-      StoresToCheck({GetUrlMalBinId()}), url_chain,
-      MechanismExperimentHashDatabaseCache::kNoExperiment);
+      StoresToCheck({GetUrlMalBinId()}), url_chain);
 
   return HandleCheck(std::move(check));
 }
@@ -508,8 +500,7 @@ bool V4LocalDatabaseManager::CheckResourceUrl(const GURL& url, Client* client) {
 
   std::unique_ptr<PendingCheck> check = std::make_unique<PendingCheck>(
       client, ClientCallbackType::CHECK_RESOURCE_URL, stores_to_check,
-      std::vector<GURL>(1, url),
-      MechanismExperimentHashDatabaseCache::kNoExperiment);
+      std::vector<GURL>(1, url));
 
   return HandleCheck(std::move(check));
 }
@@ -553,8 +544,7 @@ void V4LocalDatabaseManager::CheckUrlForHighConfidenceAllowlist(
 
   std::unique_ptr<PendingCheck> check = std::make_unique<PendingCheck>(
       nullptr, ClientCallbackType::CHECK_OTHER, stores_to_check,
-      std::vector<GURL>(1, url),
-      MechanismExperimentHashDatabaseCache::kNoExperiment);
+      std::vector<GURL>(1, url));
 
   HandleAllowlistCheck(std::move(check), /*allow_async_full_hash_check=*/false,
                        std::move(callback));
@@ -572,8 +562,7 @@ bool V4LocalDatabaseManager::CheckUrlForSubresourceFilter(const GURL& url,
 
   std::unique_ptr<PendingCheck> check = std::make_unique<PendingCheck>(
       client, ClientCallbackType::CHECK_URL_FOR_SUBRESOURCE_FILTER,
-      stores_to_check, std::vector<GURL>(1, url),
-      MechanismExperimentHashDatabaseCache::kNoExperiment);
+      stores_to_check, std::vector<GURL>(1, url));
 
   return HandleCheck(std::move(check));
 }
@@ -600,8 +589,7 @@ AsyncMatch V4LocalDatabaseManager::CheckCsdAllowlistUrl(const GURL& url,
 
   std::unique_ptr<PendingCheck> check = std::make_unique<PendingCheck>(
       client, ClientCallbackType::CHECK_CSD_ALLOWLIST, stores_to_check,
-      std::vector<GURL>(1, url),
-      MechanismExperimentHashDatabaseCache::kNoExperiment);
+      std::vector<GURL>(1, url));
 
   return HandleAllowlistCheck(std::move(check),
                               /*allow_async_full_hash_check=*/true,
@@ -935,19 +923,21 @@ void V4LocalDatabaseManager::HandleAllowlistCheckContinuation(
     }
   }
 
+  bool did_match_allowlist = *match == AsyncMatch::MATCH;
   if (check->client_callback_type == ClientCallbackType::CHECK_OTHER) {
-    bool result = *match == AsyncMatch::MATCH;
     if (GetPrefixMatchesIsAsync()) {
       // This is already asynchronous so no need for another PostTask.
-      std::move(callback).Run(result);
+      std::move(callback).Run(did_match_allowlist);
     } else {
-      sb_task_runner()->PostTask(FROM_HERE,
-                                 base::BindOnce(std::move(callback), result));
+      sb_task_runner()->PostTask(
+          FROM_HERE, base::BindOnce(std::move(callback), did_match_allowlist));
     }
   } else if (check->client_callback_type ==
              ClientCallbackType::CHECK_CSD_ALLOWLIST) {
     if (GetPrefixMatchesIsAsync()) {
-      check->most_severe_threat_type = SB_THREAT_TYPE_CSD_ALLOWLIST;
+      check->most_severe_threat_type = did_match_allowlist
+                                           ? SB_THREAT_TYPE_CSD_ALLOWLIST
+                                           : SB_THREAT_TYPE_SAFE;
       RespondToClient(std::move(check));
     }
   } else {
@@ -1075,8 +1065,7 @@ void V4LocalDatabaseManager::HandleUrl(
 
   std::unique_ptr<PendingCheck> check = std::make_unique<PendingCheck>(
       nullptr, ClientCallbackType::CHECK_OTHER, stores_to_check,
-      std::vector<GURL>(1, url),
-      MechanismExperimentHashDatabaseCache::kNoExperiment);
+      std::vector<GURL>(1, url));
 
   GetPrefixMatches(check.get(),
                    base::BindOnce(&HandleUrlCallback, std::move(callback)));
@@ -1118,13 +1107,10 @@ void V4LocalDatabaseManager::PerformFullHashCheck(
   if (IsDatabaseReady()) {
     FullHashToStoreAndHashPrefixesMap full_hash_to_store_and_hash_prefixes =
         check->full_hash_to_store_and_hash_prefixes;
-    MechanismExperimentHashDatabaseCache experiment_cache_selection =
-        check->mechanism_experiment_cache_selection;
     v4_get_hash_protocol_manager_->GetFullHashes(
         full_hash_to_store_and_hash_prefixes, list_client_states_,
         base::BindOnce(&V4LocalDatabaseManager::OnFullHashResponse,
-                       weak_factory_.GetWeakPtr(), std::move(check)),
-        experiment_cache_selection);
+                       weak_factory_.GetWeakPtr(), std::move(check)));
   } else {
     DCHECK(pending_checks_.empty());
   }
@@ -1169,12 +1155,13 @@ void V4LocalDatabaseManager::ProcessQueuedChecksContinuation(
     RemovePendingCheck(it);
   }
 
-  if (results.empty()) {
+  check->full_hash_to_store_and_hash_prefixes = results;
+  GetArtificialPrefixMatches(check);
+  if (check->full_hash_to_store_and_hash_prefixes.empty() &&
+      check->artificial_full_hash_to_store_and_hash_prefixes.empty()) {
     RespondToClient(std::move(check));
   } else {
-    check->full_hash_to_store_and_hash_prefixes = results;
-    AddPendingCheck(check.get());
-    PerformFullHashCheck(std::move(check));
+    ScheduleFullHashCheck(std::move(check));
   }
 }
 

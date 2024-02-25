@@ -14,6 +14,7 @@
 
 #include "base/containers/flat_map.h"
 #include "base/time/time.h"
+#include "base/types/optional_ref.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "third_party/skia/include/core/SkBitmap.h"
@@ -40,7 +41,8 @@ class TestClipboard : public Clipboard {
 
   // Clipboard overrides.
   void OnPreShutdown() override;
-  DataTransferEndpoint* GetSource(ClipboardBuffer buffer) const override;
+  std::optional<DataTransferEndpoint> GetSource(
+      ClipboardBuffer buffer) const override;
   const ClipboardSequenceNumberToken& GetSequenceNumber(
       ClipboardBuffer buffer) const override;
   std::vector<std::u16string> GetStandardFormats(
@@ -99,10 +101,7 @@ class TestClipboard : public Clipboard {
       std::unique_ptr<DataTransferEndpoint> data_src) override;
   void WriteText(base::StringPiece text) override;
   void WriteHTML(base::StringPiece markup,
-                 absl::optional<base::StringPiece> source_url) override;
-  void WriteUnsanitizedHTML(
-      base::StringPiece markup,
-      absl::optional<base::StringPiece> source_url) override;
+                 std::optional<base::StringPiece> source_url) override;
   void WriteSvg(base::StringPiece markup) override;
   void WriteRTF(base::StringPiece rtf) override;
   void WriteFilenames(std::vector<ui::FileInfo> filenames) override;
@@ -119,15 +118,15 @@ class TestClipboard : public Clipboard {
     DataStore& operator=(const DataStore& other);
     ~DataStore();
     void Clear();
-    void SetDataSource(std::unique_ptr<DataTransferEndpoint> new_data_src);
-    DataTransferEndpoint* GetDataSource() const;
+    void SetDataSource(std::optional<DataTransferEndpoint> new_data_src);
+    std::optional<DataTransferEndpoint> GetDataSource() const;
     ClipboardSequenceNumberToken sequence_number;
     base::flat_map<ClipboardFormatType, std::string> data;
     std::string url_title;
     std::string html_src_url;
     std::vector<uint8_t> png;
     std::vector<ui::FileInfo> filenames;
-    std::unique_ptr<DataTransferEndpoint> data_src;
+    std::optional<DataTransferEndpoint> data_src;
   };
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
@@ -140,7 +139,7 @@ class TestClipboard : public Clipboard {
   // IsReadAllowed() is called and returned.
   bool MaybeRetrieveSyncedSourceAndCheckIfReadIsAllowed(
       ClipboardBuffer buffer,
-      const DataTransferEndpoint* data_src,
+      base::optional_ref<const DataTransferEndpoint> data_src,
       const DataTransferEndpoint* data_dst) const;
 
   // The non-const versions update the sequence number as a side effect.

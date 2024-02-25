@@ -8,10 +8,7 @@
 </head>
 <body>
 <script>
-promise_test(t => {
-  const scriptId = scheduler.taskId;
-  const channel = new MessageChannel();
-
+const generate_promise = (scriptId, channel) => {
   return new Promise((resolve, reject) => {
     channel.port1.onmessage = () => {
       try {
@@ -21,8 +18,19 @@ promise_test(t => {
         reject(e);
       }
     }
-    channel.port2.postMessage("hello");
   });
+}
+
+promise_test(t => {
+  const scriptId = scheduler.taskId;
+  const channel1 = new MessageChannel();
+  const channel2 = new MessageChannel();
+
+  const promise1 = generate_promise(scriptId, channel1);
+  const promise2 = generate_promise(scriptId, channel2);
+  channel1.port2.postMessage("hello");
+  channel2.port2.postMessage("hello");
+  return Promise.all([promise1, promise2]);
 }, "Same document MessagePort postMessage task properly detects its parent.");
 
 </script>

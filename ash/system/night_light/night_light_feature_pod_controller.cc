@@ -5,8 +5,8 @@
 #include "ash/system/night_light/night_light_feature_pod_controller.h"
 #include <string>
 
-#include "ash/constants/ash_features.h"
 #include "ash/constants/quick_settings_catalogs.h"
+#include "ash/public/cpp/schedule_enums.h"
 #include "ash/public/cpp/system_tray_client.h"
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/session/session_controller_impl.h"
@@ -16,7 +16,6 @@
 #include "ash/system/model/system_tray_model.h"
 #include "ash/system/night_light/night_light_controller_impl.h"
 #include "ash/system/tray/tray_popup_utils.h"
-#include "ash/system/unified/feature_pod_button.h"
 #include "ash/system/unified/feature_tile.h"
 #include "ash/system/unified/quick_settings_metrics_util.h"
 #include "ash/system/unified/unified_system_tray_controller.h"
@@ -37,36 +36,15 @@ NightLightFeaturePodController::~NightLightFeaturePodController() {
   Shell::Get()->system_tray_model()->clock()->RemoveObserver(this);
 }
 
-FeaturePodButton* NightLightFeaturePodController::CreateButton() {
-  DCHECK(!button_);
-  button_ = new FeaturePodButton(this);
-  button_->SetVectorIcon(kUnifiedMenuNightLightIcon);
-  const bool visible =
-      Shell::Get()->session_controller()->ShouldEnableSettings();
-  button_->SetVisible(visible);
-  if (visible) {
-    TrackVisibilityUMA();
-  }
-
-  button_->SetLabel(
-      l10n_util::GetStringUTF16(IDS_ASH_STATUS_TRAY_NIGHT_LIGHT_BUTTON_LABEL));
-  button_->SetLabelTooltip(l10n_util::GetStringUTF16(
-      IDS_ASH_STATUS_TRAY_NIGHT_LIGHT_SETTINGS_TOOLTIP));
-  UpdateButton();
-  return button_;
-}
-
 std::unique_ptr<FeatureTile> NightLightFeaturePodController::CreateTile(
     bool compact) {
-  DCHECK(features::IsQsRevampEnabled());
   DCHECK(!tile_);
   auto tile = std::make_unique<FeatureTile>(
       base::BindRepeating(&NightLightFeaturePodController::OnIconPressed,
                           weak_factory_.GetWeakPtr()),
       /*is_togglable=*/true);
   tile_ = tile.get();
-  const bool visible =
-      Shell::Get()->session_controller()->ShouldEnableSettings();
+  const bool visible = TrayPopupUtils::CanShowNightLightFeatureTile();
   tile_->SetVisible(visible);
   if (visible) {
     TrackVisibilityUMA();
@@ -85,12 +63,12 @@ QsFeatureCatalogName NightLightFeaturePodController::GetCatalogName() {
 void NightLightFeaturePodController::OnIconPressed() {
   TrackToggleUMA(/*target_toggle_state=*/!Shell::Get()
                      ->night_light_controller()
-                     ->GetEnabled());
+                     ->IsNightLightEnabled());
 
   Shell::Get()->night_light_controller()->Toggle();
-  Update();
+  UpdateTile();
 
-  if (Shell::Get()->night_light_controller()->GetEnabled()) {
+  if (Shell::Get()->night_light_controller()->IsNightLightEnabled()) {
     base::RecordAction(
         base::UserMetricsAction("StatusArea_NightLight_Enabled"));
   } else {
@@ -100,56 +78,46 @@ void NightLightFeaturePodController::OnIconPressed() {
 }
 
 void NightLightFeaturePodController::OnLabelPressed() {
-  if (features::IsQsRevampEnabled()) {
-    return;
-  }
-  if (TrayPopupUtils::CanOpenWebUISettings()) {
-    TrackDiveInUMA();
-    base::RecordAction(
-        base::UserMetricsAction("StatusArea_NightLight_Settings"));
-    tray_controller_->CloseBubble();  // Deletes |this|.
-    Shell::Get()->system_tray_model()->client()->ShowDisplaySettings();
-  }
+  return;
 }
 
 void NightLightFeaturePodController::OnDateFormatChanged() {
-  Update();
+  UpdateTile();
 }
 
 void NightLightFeaturePodController::OnSystemClockTimeUpdated() {
-  Update();
+  UpdateTile();
 }
 
 void NightLightFeaturePodController::OnSystemClockCanSetTimeChanged(
     bool can_set_time) {
-  Update();
+  UpdateTile();
 }
 
 void NightLightFeaturePodController::Refresh() {
-  Update();
+  UpdateTile();
 }
 
 const std::u16string NightLightFeaturePodController::GetPodSubLabel() {
   auto* controller = Shell::Get()->night_light_controller();
-  const bool is_enabled = controller->GetEnabled();
-  const NightLightController::ScheduleType schedule_type =
-      controller->GetScheduleType();
+  const bool is_enabled = controller->IsNightLightEnabled();
+  const ScheduleType schedule_type = controller->GetScheduleType();
   std::u16string sublabel;
   switch (schedule_type) {
-    case NightLightController::ScheduleType::kNone:
+    case ScheduleType::kNone:
       return l10n_util::GetStringUTF16(
           is_enabled ? IDS_ASH_STATUS_TRAY_NIGHT_LIGHT_ON_STATE
                      : IDS_ASH_STATUS_TRAY_NIGHT_LIGHT_OFF_STATE);
-    case NightLightController::ScheduleType::kSunsetToSunrise:
+    case ScheduleType::kSunsetToSunrise:
       return l10n_util::GetStringUTF16(
           is_enabled
               ? IDS_ASH_STATUS_TRAY_NIGHT_LIGHT_ON_STATE_SUNSET_TO_SUNRISE_SCHEDULED
               : IDS_ASH_STATUS_TRAY_NIGHT_LIGHT_OFF_STATE_SUNSET_TO_SUNRISE_SCHEDULED);
-    case NightLightController::ScheduleType::kCustom:
+    case ScheduleType::kCustom:
       const TimeOfDay time_of_day = is_enabled
                                         ? controller->GetCustomEndTime()
                                         : controller->GetCustomStartTime();
-      const absl::optional<base::Time> time = time_of_day.ToTimeToday();
+      const std::optional<base::Time> time = time_of_day.ToTimeToday();
       if (!time) {
         return std::u16string();
       }
@@ -168,30 +136,9 @@ const std::u16string NightLightFeaturePodController::GetPodSubLabel() {
   }
 }
 
-void NightLightFeaturePodController::Update() {
-  if (features::IsQsRevampEnabled()) {
-    UpdateTile();
-    return;
-  }
-  UpdateButton();
-}
-
-void NightLightFeaturePodController::UpdateButton() {
-  auto* controller = Shell::Get()->night_light_controller();
-  const bool is_enabled = controller->GetEnabled();
-  button_->SetToggled(is_enabled);
-  button_->SetSubLabel(GetPodSubLabel());
-
-  std::u16string tooltip_state = l10n_util::GetStringUTF16(
-      is_enabled ? IDS_ASH_STATUS_TRAY_NIGHT_LIGHT_ENABLED_STATE_TOOLTIP
-                 : IDS_ASH_STATUS_TRAY_NIGHT_LIGHT_DISABLED_STATE_TOOLTIP);
-  button_->SetIconTooltip(l10n_util::GetStringFUTF16(
-      IDS_ASH_STATUS_TRAY_NIGHT_LIGHT_TOGGLE_TOOLTIP, tooltip_state));
-}
-
 void NightLightFeaturePodController::UpdateTile() {
   auto* controller = Shell::Get()->night_light_controller();
-  const bool is_enabled = controller->GetEnabled();
+  const bool is_enabled = controller->IsNightLightEnabled();
   tile_->SetToggled(is_enabled);
   tile_->SetSubLabel(GetPodSubLabel());
 

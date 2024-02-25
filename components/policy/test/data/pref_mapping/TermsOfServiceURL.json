@@ -1,0 +1,19 @@
+[
+  {
+    "os": [
+      "chromeos_ash"
+    ],
+    "policy_pref_mapping_tests": [
+      {
+        "policies": {
+          "TermsOfServiceURL": "http://www.example.com/terms_of_service.txt"
+        },
+        "prefs": {
+          "terms_of_service.url": {
+            "value": "http://www.example.com/terms_of_service.txt"
+          }
+        }
+      }
+    ]
+  }
+]

@@ -14,6 +14,7 @@
 #include <memory>
 #include <string>
 
+#include "base/logging.h"
 #include "base/posix/eintr_wrapper.h"
 #include "base/strings/string_util.h"
 #include "third_party/blink/public/platform/web_font_description.h"
@@ -225,8 +226,10 @@ int MatchFontFaceWithFallback(const std::string& face,
       }
 
       font_fd = HANDLE_EINTR(open(filename.c_str(), O_RDONLY));
-      if (font_fd >= 0)
+      if (font_fd >= 0) {
+        VLOG(1) << "PDF font mapping: " << face << " to " << filename;
         break;
+      }
     }
   }
 
@@ -239,9 +242,15 @@ int MatchFontFaceWithFallback(const std::string& face,
             reinterpret_cast<FcChar8**>(const_cast<char**>(&c_filename)))) {
       const std::string filename = sysroot + c_filename;
       font_fd = HANDLE_EINTR(open(filename.c_str(), O_RDONLY));
+      if (font_fd >= 0) {
+        VLOG(1) << "PDF fallback font mapping: " << face << " to " << filename;
+      }
     }
   }
 
+  if (font_fd < 0) {
+    VLOG(1) << "PDF font mapping failed for: " << face;
+  }
   return font_fd;
 }
 

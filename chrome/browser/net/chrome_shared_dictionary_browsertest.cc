@@ -2,7 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <optional>
 #include <string>
+#include <string_view>
 #include <utility>
 
 #include "base/functional/callback.h"
@@ -23,18 +25,20 @@
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "services/network/public/cpp/features.h"
+#include "services/network/public/cpp/shared_dictionary_encoding_names.h"
 #include "services/network/public/mojom/shared_dictionary_access_observer.mojom.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom.h"
 #include "url/url_constants.h"
 
 namespace {
 
-constexpr base::StringPiece kTestDictionaryString = "A dictionary";
+constexpr std::string_view kTestDictionaryString = "A dictionary";
+constexpr std::string_view kTestDictionaryHashBase64 =
+    ":CqNpAU9/qzcL6UB0aYVFx7uTLsRhJSePN780qwKjWuw=:";
 
-constexpr base::StringPiece kCompressedDataOriginalString =
+constexpr std::string_view kCompressedDataOriginalString =
     "This is compressed test data using a test dictionary";
 
 // kBrotliCompressedData is generated using the following commands:
@@ -101,13 +105,11 @@ class SharedDictionaryAccessObserver : public content::WebContentsObserver {
   network::mojom::SharedDictionaryAccessDetailsPtr details_;
 };
 
-absl::optional<std::string> GetSecAvailableDictionary(
+std::optional<std::string> GetAvailableDictionary(
     const net::test_server::HttpRequest::HeaderMap& headers) {
-  auto it = headers.find("sec-available-dictionary");
-  if (it == headers.end()) {
-    return absl::nullopt;
-  }
-  return it->second;
+      auto it = headers.find("available-dictionary");
+      return it == headers.end() ? std::nullopt
+                                 : std::make_optional(it->second);
 }
 
 void CheckSharedDictionaryUseCounter(
@@ -312,33 +314,40 @@ class ChromeSharedDictionaryBrowserTest : public InProcessBrowserTest {
     if (request.relative_url == "/dictionary") {
       response->set_content_type("text/plain");
       response->AddCustomHeader("use-as-dictionary", "match=\"/path/*\"");
+      response->AddCustomHeader("cache-control", "max-age=3600");
       response->set_content(kTestDictionaryString);
       return response;
     } else if (request.relative_url == "/path/check_header") {
       response->set_content_type("text/plain");
-      absl::optional<std::string> dict_hash =
-          GetSecAvailableDictionary(request.headers);
+      std::optional<std::string> dict_hash =
+          GetAvailableDictionary(request.headers);
       response->set_content(dict_hash ? "Dictionary header available"
                                       : "Dictionary header not available");
       return response;
     } else if (request.relative_url == "/path/check_header1.html" ||
                request.relative_url == "/path/check_header2.html") {
       response->set_content_type("text/html");
-      absl::optional<std::string> dict_hash =
-          GetSecAvailableDictionary(request.headers);
+      std::optional<std::string> dict_hash =
+          GetAvailableDictionary(request.headers);
       response->set_content(dict_hash ? "Dictionary header available"
                                       : "Dictionary header not available");
       return response;
     } else if (request.relative_url == "/path/brotli_compressed") {
-      CHECK(GetSecAvailableDictionary(request.headers));
+      CHECK(GetAvailableDictionary(request.headers));
       response->set_content_type("text/html");
-      response->AddCustomHeader("content-encoding", "sbr");
+      response->AddCustomHeader("content-encoding",
+                                network::GetSharedBrotliContentEncodingName());
+      response->AddCustomHeader("content-dictionary",
+                                kTestDictionaryHashBase64);
       response->set_content(kBrotliCompressedDataString);
       return response;
     } else if (request.relative_url == "/path/zstd_compressed") {
-      CHECK(GetSecAvailableDictionary(request.headers));
+      CHECK(GetAvailableDictionary(request.headers));
       response->set_content_type("text/html");
-      response->AddCustomHeader("content-encoding", "zstd-d");
+      response->AddCustomHeader("content-encoding",
+                                network::GetSharedZstdContentEncodingName());
+      response->AddCustomHeader("content-dictionary",
+                                kTestDictionaryHashBase64);
       response->set_content(kZstdCompressedDataString);
       return response;
     }

@@ -48,6 +48,7 @@ class MetricsProtoCheckerTest(unittest.TestCase):
       MockAffectedFile(FullPath('PRESUBMIT.py'), 'some diff'),
       MockAffectedFile(FullPath('PRESUBMIT_test.py'), 'some diff'),
       MockAffectedFile(FullPath('OWNERS'), 'some diff'),
+      MockAffectedFile(FullPath('DIR_METADATA'), 'some diff'),
     ]
     self.assertEqual(0, len(PRESUBMIT.CheckChange(input_api, MockOutputApi())))
 

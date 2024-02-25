@@ -13,6 +13,7 @@ data/quic_http_response_cache_data_with_push/test.example.com/kitten-1.jpg
 data/ssl/certificates/10_year_validity.pem
 data/ssl/certificates/11_year_validity.pem
 data/ssl/certificates/2029_globalsign_com_cert.pem
+data/ssl/certificates/2_client_certs_1_key.p12
 data/ssl/certificates/398_days_1_second_after_2020_09_01.pem
 data/ssl/certificates/398_days_after_2020_09_01.pem
 data/ssl/certificates/399_days_after_2020_09_01.pem
@@ -63,6 +64,7 @@ data/ssl/certificates/client_7.pem
 data/ssl/certificates/client_7.pk8
 data/ssl/certificates/client_7_ca.pem
 data/ssl/certificates/client_root_ca.pem
+data/ssl/certificates/client_with_ec_key.p12
 data/ssl/certificates/common_name_only.pem
 data/ssl/certificates/crit-codeSigning-chain.pem
 data/ssl/certificates/crlset_blocked_interception_by_intermediate.raw
@@ -75,12 +77,15 @@ data/ssl/certificates/crlset_by_root_spki.raw
 data/ssl/certificates/crlset_by_root_subject.raw
 data/ssl/certificates/crlset_by_root_subject_no_spki.raw
 data/ssl/certificates/crlset_known_interception_by_root.raw
+data/ssl/certificates/cronet-quic-chain.pem
+data/ssl/certificates/cronet-quic-leaf-cert.key
+data/ssl/certificates/cronet-quic-leaf-cert.key.pkcs8.pem
+data/ssl/certificates/cronet-quic-root.pem
 data/ssl/certificates/ct-test-embedded-cert.pem
 data/ssl/certificates/ct-test-embedded-with-intermediate-chain.pem
 data/ssl/certificates/ct-test-embedded-with-intermediate-preca-chain.pem
 data/ssl/certificates/ct-test-embedded-with-preca-chain.pem
 data/ssl/certificates/ct-test-embedded-with-uids.pem
-data/ssl/certificates/dec_2017.pem
 data/ssl/certificates/diginotar_cyber_ca.pem
 data/ssl/certificates/diginotar_pkioverheid.pem
 data/ssl/certificates/diginotar_pkioverheid_g2.pem
@@ -149,11 +154,9 @@ data/ssl/certificates/non-crit-codeSigning-chain.pem
 data/ssl/certificates/ok_cert.pem
 data/ssl/certificates/ok_cert_by_intermediate.pem
 data/ssl/certificates/policies_sanity_check.pem
-data/ssl/certificates/post_june_2016.pem
 data/ssl/certificates/pre_br_validity_bad_121.pem
 data/ssl/certificates/pre_br_validity_bad_2020.pem
 data/ssl/certificates/pre_br_validity_ok.pem
-data/ssl/certificates/pre_june_2016.pem
 data/ssl/certificates/punycodetest.pem
 data/ssl/certificates/quic-chain.pem
 data/ssl/certificates/quic-ecdsa-leaf.key

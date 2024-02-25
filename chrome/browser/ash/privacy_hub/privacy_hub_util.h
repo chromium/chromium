@@ -1,4 +1,4 @@
-// Copyright 2022 The Chromium Authors. All rights reserved.
+// Copyright 2022 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,6 +6,8 @@
 #define CHROME_BROWSER_ASH_PRIVACY_HUB_PRIVACY_HUB_UTIL_H_
 
 #include <string>
+
+#include "base/time/time.h"
 
 class AppAccessNotifier;
 
@@ -21,6 +23,11 @@ void SetFrontend(PrivacyHubDelegate* ptr);
 // Returns the current switch state of the microphone.
 bool MicrophoneSwitchState();
 
+// Returns whether the camera switch should be disabled.
+// Note that the UI switch will always be disabled if no camera is connected
+// to the device, irrespective of what this function returns.
+bool ShouldForceDisableCameraSwitch();
+
 // Needs to be called for the Privacy Hub to be aware of the camera count.
 void SetUpCameraCountObserver();
 
@@ -29,6 +36,11 @@ void TrackGeolocationAttempted(const std::string& name);
 
 // Notifies the Privacy Hub controller.
 void TrackGeolocationRelinquished(const std::string& name);
+
+// Checks if the user can modify the ChromeOS system location toggle in the OOBE
+// consents screen. Returns true, if the underlying pref is not managed.
+// Returns false if the Privacy Hub Location feature flag is not enabled.
+bool IsCrosLocationOobeNegotiationNeeded();
 
 // Checks if we use the fallback solution for the camera LED
 // (go/privacy-hub:camera-led-fallback).
@@ -49,8 +61,11 @@ class ScopedCameraLedFallbackForTesting {
 // Sets an AppAccessNotifier instance to be used by the privacy hub
 void SetAppAccessNotifier(AppAccessNotifier* app_access_notifier);
 
+// Returns a pair with sunrise and sunset time.
+std::pair<base::Time, base::Time> SunriseSunsetSchedule();
+
 }  // namespace privacy_hub_util
 
 }  // namespace ash
 
-#endif  // CHROME_BROWSER_ASH_PRIVACY_HUB_PRIVACY_HUB_CONTROLLER_PROXY_H_
+#endif  // CHROME_BROWSER_ASH_PRIVACY_HUB_PRIVACY_HUB_UTIL_H_

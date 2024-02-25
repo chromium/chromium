@@ -17,6 +17,10 @@ namespace webui {
 content::WebUIDataSource* CreateAndAddWebUITestDataSource(
     content::BrowserContext* browser_context);
 
+// Creates a data source for for chrome-untrusted://webui-test/ URLs.
+content::WebUIDataSource* CreateAndAddUntrustedWebUITestDataSource(
+    content::BrowserContext* browser_context);
+
 }  // namespace webui
 
 #endif  // CHROME_TEST_BASE_WEB_UI_TEST_DATA_SOURCE_H_

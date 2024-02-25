@@ -256,8 +256,8 @@ class COMPONENT_EXPORT(CHROMEOS_UI_FRAME) ImmersiveFullscreenController
   // Not owned.
   raw_ptr<ImmersiveFullscreenControllerDelegate, DanglingUntriaged> delegate_ =
       nullptr;
-  raw_ptr<views::View> top_container_ = nullptr;
-  raw_ptr<views::Widget> widget_ = nullptr;
+  raw_ptr<views::View, DanglingUntriaged> top_container_ = nullptr;
+  raw_ptr<views::Widget, DanglingUntriaged> widget_ = nullptr;
 
   // True if the observers have been enabled.
   bool event_observers_enabled_ = false;

@@ -1,0 +1,38 @@
+[
+  {
+    "can_be_recommended": true,
+    "os": [
+      "chromeos_ash"
+    ],
+    "policy_pref_mapping_tests": [
+      {
+        "policies": {
+          "SelectToSpeakEnabled": true
+        },
+        "prefs": {
+          "settings.a11y.select_to_speak": {
+            "value": true
+          }
+        }
+      },
+      {
+        "policies": {
+          "SelectToSpeakEnabled": false
+        },
+        "prefs": {
+          "settings.a11y.select_to_speak": {
+            "value": false
+          }
+        }
+      },
+      {
+        "policies": {},
+        "prefs": {
+          "settings.a11y.select_to_speak": {
+            "default_value": false
+          }
+        }
+      }
+    ]
+  }
+]

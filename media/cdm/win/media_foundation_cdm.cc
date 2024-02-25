@@ -119,8 +119,8 @@ int GetHdcpValue(HdcpVersion hdcp_version) {
 // the generated session ID is `DUMMY_9F656F4D76BE30D4`.
 std::string GenerateDummySessionId() {
   uint8_t random_bytes[8];
-  base::RandBytes(random_bytes, sizeof(random_bytes));
-  return "DUMMY_" + base::HexEncode(random_bytes, sizeof(random_bytes));
+  base::RandBytes(random_bytes);
+  return "DUMMY_" + base::HexEncode(random_bytes);
 }
 
 class CdmProxyImpl : public MediaFoundationCdmProxy {

@@ -13,6 +13,7 @@
 #include "build/build_config.h"
 #include "components/viz/service/gl/gpu_service_impl.h"
 #include "gpu/command_buffer/service/command_buffer_task_executor.h"
+#include "gpu/command_buffer/service/dawn_context_provider.h"
 #include "gpu/command_buffer/service/gpu_task_scheduler_helper.h"
 #include "gpu/command_buffer/service/scheduler.h"
 #include "gpu/command_buffer/service/scheduler_sequence.h"
@@ -102,12 +103,21 @@ gpu::SurfaceHandle SkiaOutputSurfaceDependencyImpl::GetSurfaceHandle() {
 }
 
 scoped_refptr<gl::Presenter> SkiaOutputSurfaceDependencyImpl::CreatePresenter(
-    base::WeakPtr<gpu::ImageTransportSurfaceDelegate> stub,
-    gl::GLSurfaceFormat format) {
+    base::WeakPtr<gpu::ImageTransportSurfaceDelegate> stub) {
   DCHECK(!IsOffscreen());
 
+  auto context_state = GetSharedContextState();
+#if BUILDFLAG(IS_WIN)
+  // DirectComposition is only supported with dawn D3D11 backend.
+  if (context_state->gr_context_type() == gpu::GrContextType::kGraphiteDawn &&
+      context_state->dawn_context_provider()->backend_type() !=
+          wgpu::BackendType::D3D11) {
+    return {};
+  }
+#endif
+
   auto presenter = gpu::ImageTransportSurface::CreatePresenter(
-      GetSharedContextState()->display(), stub, surface_handle_, format);
+      context_state->display(), stub, surface_handle_);
   if (presenter &&
       GetGpuDriverBugWorkarounds().rely_on_implicit_sync_for_swap_buffers) {
     presenter->SetRelyOnImplicitSync();
@@ -118,13 +128,9 @@ scoped_refptr<gl::Presenter> SkiaOutputSurfaceDependencyImpl::CreatePresenter(
 scoped_refptr<gl::GLSurface> SkiaOutputSurfaceDependencyImpl::CreateGLSurface(
     base::WeakPtr<gpu::ImageTransportSurfaceDelegate> stub,
     gl::GLSurfaceFormat format) {
-  if (IsOffscreen()) {
-    return gl::init::CreateOffscreenGLSurfaceWithFormat(
-        GetSharedContextState()->display(), gfx::Size(), format);
-  } else {
-    return gpu::ImageTransportSurface::CreateNativeGLSurface(
-        GetSharedContextState()->display(), stub, surface_handle_, format);
-  }
+  CHECK(!IsOffscreen());
+  return gpu::ImageTransportSurface::CreateNativeGLSurface(
+      GetSharedContextState()->display(), stub, surface_handle_, format);
 }
 
 base::ScopedClosureRunner SkiaOutputSurfaceDependencyImpl::CachePresenter(
@@ -186,14 +192,7 @@ void SkiaOutputSurfaceDependencyImpl::ScheduleDelayedGPUTaskFromGPUThread(
 void SkiaOutputSurfaceDependencyImpl::DidLoseContext(
     gpu::error::ContextLostReason reason,
     const GURL& active_url) {
-  // |offscreen| is used to determine if it's compositing context or not to
-  // decide if we need to disable webgl and canvas.
-  gpu_service_impl_->DidLoseContext(/*offscreen=*/false, reason, active_url);
-}
-
-base::TimeDelta
-SkiaOutputSurfaceDependencyImpl::GetGpuBlockedTimeSinceLastSwap() {
-  return gpu_service_impl_->GetGpuScheduler()->TakeTotalBlockingTime();
+  gpu_service_impl_->DidLoseContext(reason, active_url);
 }
 
 bool SkiaOutputSurfaceDependencyImpl::NeedsSupportForExternalStencil() {

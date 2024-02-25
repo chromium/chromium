@@ -1,6 +1,9 @@
 {
   "$build/chromium_tests_builder_config": {
     "builder_config": {
+      "additional_exclusions": [
+        "infra/config/generated/builders/try/dawn-linux-x64-deps-rel/gn-args.json"
+      ],
       "builder_db": {
         "entries": [
           {

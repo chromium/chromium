@@ -15,8 +15,7 @@ Status StatusWaiter::status() {
   return Get();
 }
 
-const std::unique_ptr<std::vector<TokenId>>&
-GetTokensExecutionWaiter::token_ids() {
+const std::vector<TokenId>& GetTokensExecutionWaiter::token_ids() {
   return Get<0>();
 }
 
@@ -32,7 +31,7 @@ Status GetCertificatesExecutionWaiter::status() {
   return Get<1>();
 }
 
-absl::optional<bool> IsKeyOnTokenExecutionWaiter::on_slot() {
+std::optional<bool> IsKeyOnTokenExecutionWaiter::on_slot() {
   return Get<0>();
 }
 

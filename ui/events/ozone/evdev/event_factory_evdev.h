@@ -39,7 +39,7 @@ struct KeyboardDevice;
 struct TouchpadDevice;
 class SystemInputInjector;
 class GamepadProviderOzone;
-enum class DomCode;
+enum class DomCode : uint32_t;
 enum class StylusState;
 
 #if !defined(USE_EVDEV)
@@ -105,6 +105,7 @@ class COMPONENT_EXPORT(EVDEV) EventFactoryEvdev : public DeviceEventObserver,
   void DispatchDeviceListsComplete();
   void DispatchStylusStateChanged(StylusState stylus_state);
   void DispatchMicrophoneMuteSwitchValueChanged(bool muted);
+  void DispatchAnyKeysPressedUpdated(bool any);
 
   // Gamepad event and gamepad device event. These events are dispatched to
   // GamepadObserver through GamepadProviderOzone.

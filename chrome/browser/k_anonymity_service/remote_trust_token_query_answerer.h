@@ -1,4 +1,4 @@
-// Copyright 2022 The Chromium Authors. All rights reserved.
+// Copyright 2022 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -52,8 +52,8 @@ class RemoteTrustTokenQueryAnswerer
   // Handle a mojo disconnection. Retries current requests.
   void OnDisconnect();
 
-  absl::optional<HasTrustTokensCallback> pending_has_trust_tokens_request_;
-  absl::optional<HasRedemptionRecordCallback>
+  std::optional<HasTrustTokensCallback> pending_has_trust_tokens_request_;
+  std::optional<HasRedemptionRecordCallback>
       pending_has_redemption_record_request_;
 
   const url::Origin top_frame_origin_;

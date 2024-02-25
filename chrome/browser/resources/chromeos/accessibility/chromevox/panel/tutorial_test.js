@@ -13,26 +13,6 @@ ChromeVoxTutorialTest = class extends ChromeVoxPanelTestBase {
   /** @override */
   async setUpDeferred() {
     await super.setUpDeferred();
-
-    await Promise.all([
-      // Alphabetical based on file path.
-      importModule(
-          'BackgroundKeyboardHandler',
-          '/chromevox/background/keyboard_handler.js'),
-      importModule(
-          'ChromeVoxRange', '/chromevox/background/chromevox_range.js'),
-      importModule(
-          'CommandHandlerInterface',
-          '/chromevox/background/command_handler_interface.js'),
-      importModule(
-          'UserActionMonitor', '/chromevox/background/user_action_monitor.js'),
-      importModule('EarconId', '/chromevox/common/earcon_id.js'),
-      importModule(
-          ['PanelCommand', 'PanelCommandType'],
-          '/chromevox/common/panel_command.js'),
-      importModule('KeyCode', '/common/key_code.js'),
-    ]);
-
     globalThis.Gesture = chrome.accessibilityPrivate.Gesture;
   }
 
@@ -103,7 +83,8 @@ ChromeVoxTutorialTest = class extends ChromeVoxPanelTestBase {
   }
 };
 
-AX_TEST_F('ChromeVoxTutorialTest', 'BasicTest', async function() {
+// TODO(crbug.com/1501314): Flaky on ChromeOS.
+AX_TEST_F('ChromeVoxTutorialTest', 'DISABLED_BasicTest', async function() {
   const mockFeedback = this.createMockFeedback();
   const root = await this.runWithLoadedTree(this.simpleDoc);
   await this.launchAndWaitForTutorial();
@@ -424,9 +405,9 @@ AX_TEST_F('ChromeVoxTutorialTest', 'AutoReadTitle', async function() {
       .expectSpeech('Quick orientation')
       .call(doCmd('forceClickOnCurrentItem'))
       .expectSpeech(/Quick Orientation Tutorial, [0-9]+ Lessons/)
-      .call(doCmd('nextObject'))
-      .expectSpeech('Welcome to ChromeVox!')
-      .call(doCmd('forceClickOnCurrentItem'))
+      .call(() => {
+        tutorial.showFirstLesson_();
+      })
       .expectSpeech('Welcome to ChromeVox!')
       .expectSpeech(
           'Welcome to the ChromeVox tutorial. To exit this tutorial at any ' +
@@ -506,7 +487,7 @@ AX_TEST_F(
 
       // Helper functions. For this test, activate commands by hooking into
       // the BackgroundKeyboardHandler. This is necessary because
-      // UserActionMonitor intercepts key sequences before they are routed to
+      // ForcedActionPath intercepts key sequences before they are routed to
       // CommandHandler.
       const getRangeStartNode = () => ChromeVoxRange.current.start.node;
 
@@ -642,7 +623,7 @@ AX_TEST_F('ChromeVoxTutorialTest', 'OnlyLessonTest', async function() {
   await mockFeedback.replay();
 });
 
-// Tests that interactive mode and UserActionMonitor are properly set when
+// Tests that interactive mode and ForcedActionPath are properly set when
 // showing different screens in the tutorial.
 AX_TEST_F(
     'ChromeVoxTutorialTest', 'StartStopInteractiveMode', async function() {
@@ -651,18 +632,18 @@ AX_TEST_F(
       const tutorial = this.getTutorial();
       let userActionMonitorCreatedCount = 0;
       let userActionMonitorDestroyedCount = 0;
-      let isUserActionMonitorActive = false;
+      let isForcedActionPathActive = false;
       // Expose the correct BackgroundBridge so we can override the functions
       this.getPanel().exportBackgroundBridgeForTesting();
       // Swap in functions below so we can track the number of times
-      // UserActionMonitor is created and destroyed.
-      this.getPanelWindow().BackgroundBridge.UserActionMonitor.create = () => {
+      // ForcedActionPath is created and destroyed.
+      this.getPanelWindow().BackgroundBridge.ForcedActionPath.create = () => {
         userActionMonitorCreatedCount += 1;
-        isUserActionMonitorActive = true;
+        isForcedActionPathActive = true;
       };
-      this.getPanelWindow().BackgroundBridge.UserActionMonitor.destroy = () => {
+      this.getPanelWindow().BackgroundBridge.ForcedActionPath.destroy = () => {
         userActionMonitorDestroyedCount += 1;
-        isUserActionMonitorActive = false;
+        isForcedActionPathActive = false;
       };
 
       // A helper to make assertions on four variables of interest.
@@ -671,9 +652,9 @@ AX_TEST_F(
         assertEquals(
             expectedVars.destroyedCount, userActionMonitorDestroyedCount);
         assertEquals(expectedVars.interactiveMode, tutorial.interactiveMode_);
-        // Note: Interactive mode and UserActionMonitor should always be in
+        // Note: Interactive mode and ForcedActionPath should always be in
         // sync in the context of the tutorial.
-        assertEquals(expectedVars.interactiveMode, isUserActionMonitorActive);
+        assertEquals(expectedVars.interactiveMode, isForcedActionPathActive);
       };
 
       makeAssertions(
@@ -685,13 +666,13 @@ AX_TEST_F(
           {createdCount: 1, destroyedCount: 0, interactiveMode: true});
 
       // Move to the next lesson in the quick orientation. This lesson is also
-      // interactive, so UserActionMonitor should be destroyed and re-created.
+      // interactive, so ForcedActionPath should be destroyed and re-created.
       tutorial.showNextLesson();
       makeAssertions(
           {createdCount: 2, destroyedCount: 1, interactiveMode: true});
 
       // Leave the quick orientation by navigating to the lesson menu. This
-      // should stop interactive mode and destroy UserActionMonitor.
+      // should stop interactive mode and destroy ForcedActionPath.
       tutorial.showLessonMenu_();
       makeAssertions(
           {createdCount: 2, destroyedCount: 2, interactiveMode: false});

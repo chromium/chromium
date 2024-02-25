@@ -5,6 +5,8 @@
 #ifndef CONTENT_BROWSER_MEDIA_SESSION_MEDIA_SESSION_CONTROLLER_H_
 #define CONTENT_BROWSER_MEDIA_SESSION_MEDIA_SESSION_CONTROLLER_H_
 
+#include <optional>
+
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
@@ -17,7 +19,6 @@
 #include "media/base/media_content_type.h"
 #include "services/media_session/public/cpp/media_position.h"
 #include "services/media_session/public/mojom/media_session.mojom.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace content {
 
@@ -68,7 +69,7 @@ class CONTENT_EXPORT MediaSessionController
   void OnSetMute(int player_id, bool mute) override;
   void OnRequestMediaRemoting(int player_id) override;
   RenderFrameHost* render_frame_host() const override;
-  absl::optional<media_session::MediaPosition> GetPosition(
+  std::optional<media_session::MediaPosition> GetPosition(
       int player_id) const override;
   bool IsPictureInPictureAvailable(int player_id) const override;
   bool HasAudio(int player_id) const override;
@@ -123,7 +124,7 @@ class CONTENT_EXPORT MediaSessionController
   // Outlives |this|.
   const raw_ptr<MediaSessionImpl> media_session_;
 
-  absl::optional<media_session::MediaPosition> position_;
+  std::optional<media_session::MediaPosition> position_;
 
   // These objects are only created on the UI thread, so this is safe.
   static int player_count_;

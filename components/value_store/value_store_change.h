@@ -5,11 +5,11 @@
 #ifndef COMPONENTS_VALUE_STORE_VALUE_STORE_CHANGE_H_
 #define COMPONENTS_VALUE_STORE_VALUE_STORE_CHANGE_H_
 
+#include <optional>
 #include <string>
 #include <vector>
 
 #include "base/values.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace value_store {
 
@@ -23,8 +23,8 @@ struct ValueStoreChange {
   static base::Value ToValue(ValueStoreChangeList changes);
 
   ValueStoreChange(const std::string& key,
-                   absl::optional<base::Value> old_value,
-                   absl::optional<base::Value> new_value);
+                   std::optional<base::Value> old_value,
+                   std::optional<base::Value> new_value);
 
   ValueStoreChange(const ValueStoreChange& other) = delete;
   ValueStoreChange(ValueStoreChange&& other);
@@ -34,8 +34,8 @@ struct ValueStoreChange {
   ~ValueStoreChange();
 
   std::string key;
-  absl::optional<base::Value> old_value;
-  absl::optional<base::Value> new_value;
+  std::optional<base::Value> old_value;
+  std::optional<base::Value> new_value;
 };
 
 }  // namespace value_store

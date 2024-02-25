@@ -128,10 +128,7 @@ MainThreadTaskQueue::MainThreadTaskQueue(
       agent_group_scheduler_(params.agent_group_scheduler),
       frame_scheduler_(params.frame_scheduler) {
   task_runner_with_default_task_type_ =
-      base::FeatureList::IsEnabled(
-          features::kUseBlinkSchedulerTaskRunnerWithCustomDeleter)
-          ? WrapTaskRunner(task_queue_->task_runner())
-          : task_queue_->task_runner();
+      WrapTaskRunner(task_queue_->task_runner());
   // Throttling needs |should_notify_observers| to get task timing.
   DCHECK(!params.queue_traits.can_be_throttled || spec.should_notify_observers)
       << "Throttled queue is not supported with |!should_notify_observers|";
@@ -139,7 +136,6 @@ MainThreadTaskQueue::MainThreadTaskQueue(
             web_scheduling_queue_type_.has_value());
   DCHECK_EQ(web_scheduling_priority_.has_value(),
             queue_type_ == QueueType::kWebScheduling);
-  CHECK(task_queue_->HasImpl());
   if (spec.should_notify_observers) {
     if (params.queue_traits.can_be_throttled) {
       throttler_.emplace(task_queue_.get(),
@@ -207,9 +203,10 @@ void MainThreadTaskQueue::OnTaskRunTimeReported(
 void MainThreadTaskQueue::DetachTaskQueue() {
   // The task queue was already shut down, which happens in tests if the
   // `agent_group_scheduler_` is GCed after the task queue impl is unregistered.
+  //
   // TODO(crbug.com/1143007): AgentGroupSchedulerImpl should probably not be
   // detaching shut down task queues.
-  if (!task_queue_->HasImpl()) {
+  if (!task_queue_) {
     return;
   }
   // `main_thread_scheduler_` can be null in tests.
@@ -249,7 +246,7 @@ void MainThreadTaskQueue::ShutdownTaskQueue() {
   agent_group_scheduler_ = nullptr;
   frame_scheduler_ = nullptr;
   throttler_.reset();
-  task_queue_->ShutdownTaskQueue();
+  task_queue_.reset();
 }
 
 AgentGroupScheduler* MainThreadTaskQueue::GetAgentGroupScheduler() {
@@ -268,6 +265,9 @@ AgentGroupScheduler* MainThreadTaskQueue::GetAgentGroupScheduler() {
 }
 
 FrameSchedulerImpl* MainThreadTaskQueue::GetFrameScheduler() const {
+  if (!task_queue_) {
+    return frame_scheduler_;
+  }
   DCHECK(task_queue_->task_runner()->BelongsToCurrentThread());
   return frame_scheduler_;
 }
@@ -348,20 +348,14 @@ void MainThreadTaskQueue::QueueTraits::WriteIntoTrace(
 
 scoped_refptr<base::SingleThreadTaskRunner>
 MainThreadTaskQueue::CreateTaskRunner(TaskType task_type) {
-  scoped_refptr<base::SingleThreadTaskRunner> task_runner =
-      task_queue_->CreateTaskRunner(static_cast<int>(task_type));
-  if (base::FeatureList::IsEnabled(
-          features::kUseBlinkSchedulerTaskRunnerWithCustomDeleter)) {
-    return WrapTaskRunner(std::move(task_runner));
-  }
-  return task_runner;
+  CHECK(task_queue_);
+  return WrapTaskRunner(
+      task_queue_->CreateTaskRunner(static_cast<int>(task_type)));
 }
 
 scoped_refptr<BlinkSchedulerSingleThreadTaskRunner>
 MainThreadTaskQueue::WrapTaskRunner(
     scoped_refptr<base::SingleThreadTaskRunner> task_runner) {
-  DCHECK(base::FeatureList::IsEnabled(
-      features::kUseBlinkSchedulerTaskRunnerWithCustomDeleter));
   // We need to pass the cleanup task runner to task task queues that may stop
   // running tasks before the main thread shuts down as a backup for object
   // deleter tasks.

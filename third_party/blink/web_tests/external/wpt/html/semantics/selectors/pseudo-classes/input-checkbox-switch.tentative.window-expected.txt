@@ -1,0 +1,11 @@
+This is a testharness.js-based test.
+[FAIL] Switch control does not match :indeterminate
+  assert_false: expected false got true
+[FAIL] Checkbox that is no longer a switch control does match :indeterminate
+  assert_false: expected false got true
+[FAIL] Checkbox that becomes a switch control does not match :indeterminate
+  assert_false: expected false got true
+[FAIL] Parent of a checkbox that becomes a switch control does not match :has(:indeterminate)
+  assert_false: expected false got true
+Harness: the test ran to completion.
+

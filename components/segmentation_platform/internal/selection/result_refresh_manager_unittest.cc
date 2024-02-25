@@ -13,6 +13,7 @@
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/testing_pref_service.h"
 #include "components/segmentation_platform/internal/constants.h"
+#include "components/segmentation_platform/internal/data_collection/training_data_collector.h"
 #include "components/segmentation_platform/internal/database/client_result_prefs.h"
 #include "components/segmentation_platform/internal/metadata/metadata_utils.h"
 #include "components/segmentation_platform/internal/metadata/metadata_writer.h"
@@ -45,6 +46,24 @@ class MockResultProvider : public SegmentResultProvider {
                void(std::unique_ptr<GetResultOptions> options));
 };
 
+class MockTrainingDataCollector : public TrainingDataCollector {
+ public:
+  MOCK_METHOD0(OnModelMetadataUpdated, void());
+  MOCK_METHOD0(OnServiceInitialized, void());
+  MOCK_METHOD0(ReportCollectedContinuousTrainingData, void());
+  MOCK_METHOD5(OnDecisionTime,
+               TrainingRequestId(proto::SegmentId id,
+                                 scoped_refptr<InputContext> input_context,
+                                 DecisionType type,
+                                 std::optional<ModelProvider::Request> inputs,
+                                 bool decision_result_update_trigger));
+  MOCK_METHOD4(CollectTrainingData,
+               void(SegmentId segment_id,
+                    TrainingRequestId request_id,
+                    const TrainingLabels& param,
+                    SuccessCallback callback));
+};
+
 class ResultRefreshManagerTest : public testing::Test {
  public:
   ResultRefreshManagerTest() = default;
@@ -53,6 +72,13 @@ class ResultRefreshManagerTest : public testing::Test {
   void SetUp() override {
     base::SetRecordActionTaskRunner(
         task_environment_.GetMainThreadTaskRunner());
+
+    auto training_data_collector =
+        std::make_unique<MockTrainingDataCollector>();
+    training_data_collector_ = training_data_collector.get();
+    execution_service_ = std::make_unique<ExecutionService>();
+    execution_service_->set_training_data_collector_for_testing(
+        std::move(training_data_collector));
 
     std::vector<std::unique_ptr<Config>> configs;
     configs.emplace_back(
@@ -68,7 +94,8 @@ class ResultRefreshManagerTest : public testing::Test {
 
     result_refresh_manager_ = std::make_unique<ResultRefreshManager>(
         config_holder_.get(), cached_result_writer_.get(),
-        PlatformOptions(false));
+        PlatformOptions(/*force_refresh_results=*/false,
+                        /*disable_model_execution_delay=*/true));
   }
 
   std::unique_ptr<CachedResultWriter> SetupCachedResultWriter() {
@@ -79,7 +106,7 @@ class ResultRefreshManagerTest : public testing::Test {
     client_result_prefs_ = std::make_unique<ClientResultPrefs>(&pref_service);
     clock_.SetNow(base::Time::Now());
 
-    return std::make_unique<CachedResultWriter>(std::move(result_prefs),
+    return std::make_unique<CachedResultWriter>(client_result_prefs_.get(),
                                                 &clock_);
   }
 
@@ -105,21 +132,23 @@ class ResultRefreshManagerTest : public testing::Test {
 
   void VerifyIfResultUpdatedInPrefs(const std::string& segmentation_key,
                                     proto::PredictionResult expected_result) {
-    absl::optional<proto::ClientResult> client_result =
+    const proto::ClientResult* client_result =
         client_result_prefs_->ReadClientResultFromPrefs(segmentation_key);
-    EXPECT_TRUE(client_result.has_value());
+    EXPECT_TRUE(client_result);
     EXPECT_EQ(expected_result.SerializeAsString(),
-              client_result.value().client_result().SerializeAsString());
+              client_result->client_result().SerializeAsString());
   }
 
   void VerifyIfResultNotUpdatedInPrefs(const std::string& segmentation_key) {
-    absl::optional<proto::ClientResult> client_result =
+    const proto::ClientResult* client_result =
         client_result_prefs_->ReadClientResultFromPrefs(segmentation_key);
-    EXPECT_FALSE(client_result.has_value());
+    EXPECT_FALSE(client_result);
   }
 
   base::test::TaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
+  std::unique_ptr<ExecutionService> execution_service_;
+  raw_ptr<MockTrainingDataCollector> training_data_collector_;
   std::unique_ptr<ConfigHolder> config_holder_;
   std::unique_ptr<MockResultProvider> client1_result_provider_;
   std::unique_ptr<MockResultProvider> client2_result_provider_;
@@ -138,10 +167,10 @@ TEST_F(ResultRefreshManagerTest, TestRefreshModelResultsSuccess) {
           test_utils::GetTestOutputConfigForBinaryClassifier(),
           /*timestamp=*/base::Time::Now(), /*model_version=*/1);
 
-  ExpectSegmentResult(kSegmentId1, client1_result_provider_.get(),
-                      result_from_db_for_client1,
-                      SegmentResultProvider::ResultState::kSuccessFromDatabase,
-                      /*ignore_db_scores=*/false);
+  ExpectSegmentResult(
+      kSegmentId1, client1_result_provider_.get(), result_from_db_for_client1,
+      SegmentResultProvider::ResultState::kServerModelDatabaseScoreUsed,
+      /*ignore_db_scores=*/false);
 
   // Client 2 gets model result by running the model.
   proto::PredictionResult result_from_model_for_client2 =
@@ -150,19 +179,25 @@ TEST_F(ResultRefreshManagerTest, TestRefreshModelResultsSuccess) {
           test_utils::GetTestOutputConfigForBinaryClassifier(),
           /*timestamp=*/base::Time::Now(), /*model_version=*/1);
 
-  ExpectSegmentResult(kSegmentId2, client2_result_provider_.get(),
-                      result_from_model_for_client2,
-                      SegmentResultProvider::ResultState::kTfliteModelScoreUsed,
-                      /*ignore_db_scores=*/false);
+  ExpectSegmentResult(
+      kSegmentId2, client2_result_provider_.get(),
+      result_from_model_for_client2,
+      SegmentResultProvider::ResultState::kServerModelExecutionScoreUsed,
+      /*ignore_db_scores=*/false);
+
+  EXPECT_CALL(
+      *training_data_collector_,
+      OnDecisionTime(_, _, proto::TrainingOutputs::TriggerConfig::PERIODIC, _,
+                     true))
+      .Times(2);
 
   std::map<std::string, std::unique_ptr<SegmentResultProvider>>
       result_providers;
   result_providers[kTestClient1] = std::move(client1_result_provider_);
   result_providers[kTestClient2] = std::move(client2_result_provider_);
-
-  result_refresh_manager_->RefreshModelResults(std::move(result_providers),
-                                               nullptr);
-
+  result_refresh_manager_->Initialize(std::move(result_providers),
+                                      execution_service_.get());
+  result_refresh_manager_->RefreshModelResults(/*is_startup=*/true);
   VerifyIfResultUpdatedInPrefs(kTestClient1, result_from_db_for_client1);
   VerifyIfResultUpdatedInPrefs(kTestClient2, result_from_model_for_client2);
 }
@@ -174,10 +209,10 @@ TEST_F(ResultRefreshManagerTest, TestRefreshModelResultWithNoResult) {
           /*model_scores=*/{},
           test_utils::GetTestOutputConfigForBinaryClassifier(),
           /*timestamp=*/base::Time::Now(), /*model_version=*/1);
-  ExpectSegmentResult(kSegmentId1, client1_result_provider_.get(),
-                      result_for_client,
-                      SegmentResultProvider::ResultState::kSignalsNotCollected,
-                      /*ignore_db_scores=*/false);
+  ExpectSegmentResult(
+      kSegmentId1, client1_result_provider_.get(), result_for_client,
+      SegmentResultProvider::ResultState::kServerModelSignalsNotCollected,
+      /*ignore_db_scores=*/false);
 
   // Client 2 tries gets model result by running the model and model execution
   // fails.
@@ -186,16 +221,67 @@ TEST_F(ResultRefreshManagerTest, TestRefreshModelResultWithNoResult) {
       SegmentResultProvider::ResultState::kDefaultModelExecutionFailed,
       /*ignore_db_scores=*/false);
 
+  EXPECT_CALL(
+      *training_data_collector_,
+      OnDecisionTime(_, _, proto::TrainingOutputs::TriggerConfig::PERIODIC, _,
+                     true))
+      .Times(0);
+
   std::map<std::string, std::unique_ptr<SegmentResultProvider>>
       result_providers;
   result_providers[kTestClient1] = std::move(client1_result_provider_);
   result_providers[kTestClient2] = std::move(client2_result_provider_);
-
-  result_refresh_manager_->RefreshModelResults(std::move(result_providers),
-                                               nullptr);
-
+  result_refresh_manager_->Initialize(std::move(result_providers),
+                                      execution_service_.get());
+  result_refresh_manager_->RefreshModelResults(/*is_startup=*/true);
   VerifyIfResultNotUpdatedInPrefs(kTestClient1);
   VerifyIfResultNotUpdatedInPrefs(kTestClient2);
+}
+
+TEST_F(ResultRefreshManagerTest, TestOnModelUpdated) {
+  // Client 1 gets model result from database.
+  proto::PredictionResult result_from_db_for_client1 =
+      metadata_utils::CreatePredictionResult(
+          /*model_scores=*/{0.8},
+          test_utils::GetTestOutputConfigForBinaryClassifier(),
+          /*timestamp=*/base::Time::Now(), /*model_version=*/1);
+
+  ExpectSegmentResult(
+      kSegmentId1, client1_result_provider_.get(), result_from_db_for_client1,
+      SegmentResultProvider::ResultState::kServerModelDatabaseScoreUsed,
+      /*ignore_db_scores=*/false);
+
+  EXPECT_CALL(
+      *training_data_collector_,
+      OnDecisionTime(kSegmentId1, _,
+                     proto::TrainingOutputs::TriggerConfig::PERIODIC, _, true))
+      .Times(1);
+
+  std::map<std::string, std::unique_ptr<SegmentResultProvider>>
+      result_providers;
+  result_providers[kTestClient1] = std::move(client1_result_provider_);
+  result_refresh_manager_->Initialize(std::move(result_providers),
+                                      execution_service_.get());
+  proto::SegmentInfo segment_info;
+  segment_info.set_segment_id(kSegmentId1);
+  result_refresh_manager_->OnModelUpdated(&segment_info);
+  VerifyIfResultUpdatedInPrefs(kTestClient1, result_from_db_for_client1);
+}
+
+TEST_F(ResultRefreshManagerTest, TestOnModelUpdatedWithDelay) {
+  result_refresh_manager_ = std::make_unique<ResultRefreshManager>(
+      config_holder_.get(), cached_result_writer_.get(),
+      PlatformOptions(/*force_refresh_results=*/false));
+
+  std::map<std::string, std::unique_ptr<SegmentResultProvider>>
+      result_providers;
+  result_providers[kTestClient1] = std::move(client1_result_provider_);
+  result_refresh_manager_->Initialize(std::move(result_providers),
+                                      execution_service_.get());
+  proto::SegmentInfo segment_info;
+  segment_info.set_segment_id(kSegmentId1);
+  result_refresh_manager_->OnModelUpdated(&segment_info);
+  VerifyIfResultNotUpdatedInPrefs(kTestClient1);
 }
 
 }  // namespace

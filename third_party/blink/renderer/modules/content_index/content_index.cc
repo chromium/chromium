@@ -4,9 +4,10 @@
 
 #include "third_party/blink/renderer/modules/content_index/content_index.h"
 
+#include <optional>
+
 #include "base/feature_list.h"
 #include "base/task/sequenced_task_runner.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/browser_interface_broker_proxy.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_throw_dom_exception.h"
@@ -287,12 +288,13 @@ void ContentIndex::DidDeleteDescription(ScriptPromiseResolver* resolver,
   }
 }
 
-ScriptPromise ContentIndex::getDescriptions(ScriptState* script_state,
-                                            ExceptionState& exception_state) {
+ScriptPromiseTyped<IDLSequence<ContentDescription>>
+ContentIndex::getDescriptions(ScriptState* script_state,
+                              ExceptionState& exception_state) {
   if (!registration_->active()) {
     exception_state.ThrowTypeError(
         "No active registration available on the ServiceWorkerRegistration.");
-    return ScriptPromise();
+    return ScriptPromiseTyped<IDLSequence<ContentDescription>>();
   }
 
   ExecutionContext* execution_context = ExecutionContext::From(script_state);
@@ -300,12 +302,13 @@ ScriptPromise ContentIndex::getDescriptions(ScriptState* script_state,
     exception_state.ThrowDOMException(
         DOMExceptionCode::kNotAllowedError,
         "ContentIndex is not allowed in fenced frames.");
-    return ScriptPromise();
+    return ScriptPromiseTyped<IDLSequence<ContentDescription>>();
   }
 
-  auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(
+  auto* resolver = MakeGarbageCollected<
+      ScriptPromiseResolverTyped<IDLSequence<ContentDescription>>>(
       script_state, exception_state.GetContext());
-  ScriptPromise promise = resolver->Promise();
+  auto promise = resolver->Promise();
 
   GetService()->GetDescriptions(
       registration_->RegistrationId(),
@@ -316,7 +319,7 @@ ScriptPromise ContentIndex::getDescriptions(ScriptState* script_state,
 }
 
 void ContentIndex::DidGetDescriptions(
-    ScriptPromiseResolver* resolver,
+    ScriptPromiseResolverTyped<IDLSequence<ContentDescription>>* resolver,
     mojom::blink::ContentIndexError error,
     Vector<mojom::blink::ContentDescriptionPtr> descriptions) {
   HeapVector<Member<ContentDescription>> blink_descriptions;

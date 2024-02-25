@@ -27,8 +27,7 @@ namespace support {
 
 // Creates a TfLiteSupportError with a TfLiteSupportErrorCode and message.
 void CreateTfLiteSupportError(enum TfLiteSupportErrorCode code,
-                              const char* message,
-                              TfLiteSupportError** error);
+                              const char* message, TfLiteSupportError** error);
 
 // Creates a TfLiteSupportError from absl::Status and passes it back as a
 // parameter which is a pointer to the error pointer.

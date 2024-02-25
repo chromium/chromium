@@ -1,0 +1,23 @@
+[
+  {
+    "can_be_recommended": true,
+    "os": [
+      "ios"
+    ],
+    "policy_pref_mapping_tests": [
+      {
+        "policies": {
+          "SafeBrowsingProtectionLevel": 2
+        },
+        "prefs": {
+          "safebrowsing.enabled": {
+            "value": true
+          },
+          "safebrowsing.enhanced": {
+            "value": true
+          }
+        }
+      }
+    ]
+  }
+]

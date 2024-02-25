@@ -5,15 +5,17 @@
 #ifndef CONTENT_BROWSER_WORKER_HOST_DEDICATED_WORKER_HOST_FACTORY_IMPL_H_
 #define CONTENT_BROWSER_WORKER_HOST_DEDICATED_WORKER_HOST_FACTORY_IMPL_H_
 
+#include <optional>
+
 #include "content/browser/network/cross_origin_embedder_policy_reporter.h"
 #include "content/common/content_export.h"
+#include "content/public/browser/dedicated_worker_creator.h"
 #include "content/public/browser/global_routing_id.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "net/base/isolation_info.h"
 #include "services/network/public/mojom/client_security_state.mojom-forward.h"
 #include "services/network/public/mojom/cross_origin_embedder_policy.mojom-forward.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "third_party/blink/public/mojom/worker/dedicated_worker_host_factory.mojom.h"
 #include "url/origin.h"
@@ -31,14 +33,11 @@ class CONTENT_EXPORT DedicatedWorkerHostFactoryImpl
       const network::CrossOriginEmbedderPolicy&,
       mojo::PendingRemote<blink::mojom::BackForwardCacheControllerHost>)>;
 
-  // Exactly one of `creator_render_frame_host_id` and `creator_worker_token`
-  // must be specified.
   // `creator_client_security_state` specifies the client security state of
   // the creator frame or worker. Must not be nullptr.
   DedicatedWorkerHostFactoryImpl(
       int worker_process_id,
-      absl::optional<GlobalRenderFrameHostId> creator_render_frame_host_id,
-      absl::optional<blink::DedicatedWorkerToken> creator_worker_token,
+      DedicatedWorkerCreator creator,
       GlobalRenderFrameHostId ancestor_render_frame_host_id,
       const blink::StorageKey& creator_storage_key,
       const net::IsolationInfo& isolation_info,
@@ -71,15 +70,15 @@ class CONTENT_EXPORT DedicatedWorkerHostFactoryImpl
           outside_fetch_client_settings_object,
       mojo::PendingRemote<blink::mojom::BlobURLToken> blob_url_token,
       mojo::PendingRemote<blink::mojom::DedicatedWorkerHostFactoryClient>
-          client) override;
+          client,
+      bool has_storage_access) override;
 
  private:
   // The ID of the RenderProcessHost where the worker will live.
   const int worker_process_id_;
 
   // See comments on the corresponding members of DedicatedWorkerHost.
-  const absl::optional<GlobalRenderFrameHostId> creator_render_frame_host_id_;
-  const absl::optional<blink::DedicatedWorkerToken> creator_worker_token_;
+  const DedicatedWorkerCreator creator_;
   const GlobalRenderFrameHostId ancestor_render_frame_host_id_;
 
   // Storage key is used for storage partitioning, and for retrieving the

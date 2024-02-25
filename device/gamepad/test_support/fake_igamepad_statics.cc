@@ -6,7 +6,6 @@
 
 #include "base/notreached.h"
 #include "base/run_loop.h"
-#include "base/strings/string_piece_forward.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/thread_pool.h"
 #include "device/gamepad/test_support/fake_igamepad.h"
@@ -168,7 +167,7 @@ void FakeIGamepadStatics::SimulateGamepadAdded(
     const Microsoft::WRL::ComPtr<FakeIGamepad>& gamepad_to_add,
     uint16_t hardware_product_id,
     uint16_t hardware_vendor_id,
-    base::StringPiece display_name) {
+    std::string_view display_name) {
   CacheGamepad(gamepad_to_add, hardware_product_id, hardware_vendor_id,
                display_name);
   SimulateGamepadEvent(
@@ -217,7 +216,7 @@ void FakeIGamepadStatics::CacheGamepad(
     Microsoft::WRL::ComPtr<FakeIGamepad> fake_gamepad_to_add,
     uint16_t hardware_product_id,
     uint16_t hardware_vendor_id,
-    base::StringPiece display_name) {
+    std::string_view display_name) {
   uint64_t gamepad_id = next_gamepad_id_++;
 
   fake_gamepad_to_add->SetId(gamepad_id);

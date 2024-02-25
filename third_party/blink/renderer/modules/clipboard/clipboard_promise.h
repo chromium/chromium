@@ -12,6 +12,7 @@
 #include "third_party/blink/public/mojom/permissions/permission.mojom-blink.h"
 #include "third_party/blink/renderer/bindings/core/v8/native_value_traits_impl.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
+#include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context_lifecycle_observer.h"
 #include "third_party/blink/renderer/core/fileapi/blob.h"
@@ -23,107 +24,158 @@
 namespace blink {
 
 class ClipboardWriter;
-class ScriptPromiseResolver;
 class LocalFrame;
+class ExceptionState;
 class ExecutionContext;
-class ClipboardItemOptions;
 class ClipboardUnsanitizedFormats;
 
+// Represents a promise to execute Async Clipboard API functions off the main
+// thread. It handles read and write operations on the clipboard, including
+// reading and writing text and blobs for different MIME types. This class also
+// interacts with the `PermissionService` to check for read and write
+// permissions. It uses a `ClipboardItem` object to read/write supported MIME
+// types. Spec: https://w3c.github.io/clipboard-apis/#async-clipboard-api
 class ClipboardPromise final : public GarbageCollected<ClipboardPromise>,
                                public ExecutionContextLifecycleObserver {
  public:
-  // Creates promise to execute Clipboard API functions off the main thread.
-  static ScriptPromise CreateForRead(ExecutionContext*,
-                                     ScriptState*,
-                                     ClipboardUnsanitizedFormats*);
-  static ScriptPromise CreateForReadText(ExecutionContext*, ScriptState*);
-  static ScriptPromise CreateForWrite(ExecutionContext*,
-                                      ScriptState*,
-                                      const HeapVector<Member<ClipboardItem>>&);
-  static ScriptPromise CreateForWriteText(ExecutionContext*,
-                                          ScriptState*,
-                                          const String&);
+  // Creates a promise for reading clipboard data.
+  // Spec: https://w3c.github.io/clipboard-apis/#dom-clipboard-read
+  // `formats`: Unsanitized formats to be read from the clipboard.
+  // Spec:
+  // https://w3c.github.io/clipboard-apis/#dom-clipboardunsanitizedformats-unsanitized
+  static ScriptPromiseTyped<IDLSequence<ClipboardItem>> CreateForRead(
+      ExecutionContext* execution_context,
+      ScriptState* script_state,
+      ClipboardUnsanitizedFormats* formats,
+      ExceptionState& exception_state);
 
-  ClipboardPromise(ExecutionContext*, ScriptState*);
+  // Creates a promise for reading plain text from the clipboard.
+  // Spec: https://w3c.github.io/clipboard-apis/#dom-clipboard-readtext
+  static ScriptPromise CreateForReadText(ExecutionContext* execution_context,
+                                         ScriptState* script_state,
+                                         ExceptionState& exception_state);
 
+  // Creates a promise for writing supported MIME types to the clipboard.
+  // Spec: https://w3c.github.io/clipboard-apis/#dom-clipboard-write
+  static ScriptPromise CreateForWrite(
+      ExecutionContext* execution_context,
+      ScriptState* script_state,
+      const HeapVector<Member<ClipboardItem>>& items,
+      ExceptionState& exception_state);
+
+  // Creates a promise for writing text to the clipboard.
+  // `text`: The text to be written to the clipboard.
+  // Spec: https://w3c.github.io/clipboard-apis/#dom-clipboard-writetext
+  static ScriptPromise CreateForWriteText(ExecutionContext* execution_context,
+                                          ScriptState* script_state,
+                                          const String& text,
+                                          ExceptionState& exception_state);
+
+  // Use one of the above factories to construct. This ctor is public for
+  // `MakeGarbageCollected<>`.
+  ClipboardPromise(ExecutionContext* execution_context,
+                   ScriptState* script_state,
+                   ExceptionState& exception_state);
+  ClipboardPromise(ExecutionContext* execution_context,
+                   ScriptPromiseResolver*,
+                   ExceptionState& exception_state);
   ClipboardPromise(const ClipboardPromise&) = delete;
   ClipboardPromise& operator=(const ClipboardPromise&) = delete;
-
   ~ClipboardPromise() override;
 
-  // Completes current write and starts next write.
+  // Finishes writing the current representation and prepares for the next one.
   void CompleteWriteRepresentation();
-  // For rejections originating from ClipboardWriter.
+
+  // Handles rejections originating from the ClipboardWriter.
   void RejectFromReadOrDecodeFailure();
 
-  // Adds the blob to the clipboard items.
+  // Adds the given `blob` to the `clipboard_item_data_`.
   void OnRead(Blob* blob);
 
+  // Returns the local frame associated with the promise.
   LocalFrame* GetLocalFrame() const;
 
-  void Trace(Visitor*) const override;
+  // Returns the script state associated with the promise.
+  ScriptState* GetScriptState() const;
+
+  // ExecutionContextLifecycleObserver
+  void Trace(Visitor* visitor) const override;
 
  private:
   class BlobPromiseResolverFunction;
+
   void HandlePromiseBlobsWrite(HeapVector<Member<Blob>>* blob_list);
-  // Promises to Blobs in the `ClipboardItem` were rejected.
+  void WriteBlobs(HeapVector<Member<Blob>>* blob_list);
+
+  // Rejects the promise for blobs that have invalid MIME types or got rejected.
+  // `exception_text` The JS exception text populated after the promises for
+  // blobs were either fulfilled with invalid blob types or rejected.
   void RejectBlobPromise(const String& exception_text);
-  // Called to begin writing a type.
   void WriteNextRepresentation();
 
-  // Checks Read/Write permission (interacting with PermissionService).
-  void HandleRead(ClipboardUnsanitizedFormats*);
+  // Checks Read/Write permission (interacting with `PermissionService`).
+  void HandleRead(ClipboardUnsanitizedFormats* formats);
   void HandleReadText();
-  void HandleWrite(HeapVector<Member<ClipboardItem>>*);
-  void HandleWriteText(const String&);
+  void HandleWrite(const HeapVector<Member<ClipboardItem>>& items);
+  void HandleWriteText(const String& text);
 
   // Reads/Writes after permission check.
-  void HandleReadWithPermission(mojom::blink::PermissionStatus);
-  void HandleReadTextWithPermission(mojom::blink::PermissionStatus);
-  void HandleWriteWithPermission(mojom::blink::PermissionStatus);
-  void HandleWriteTextWithPermission(mojom::blink::PermissionStatus);
+  void HandleReadWithPermission(mojom::blink::PermissionStatus permission);
+  void HandleReadTextWithPermission(mojom::blink::PermissionStatus permission);
+  void HandleWriteWithPermission(mojom::blink::PermissionStatus permission);
+  void HandleWriteTextWithPermission(mojom::blink::PermissionStatus permission);
 
+  // Callback function called when the available format names for reading are
+  // received from the clipboard.
+  // `format_names`: The available format names on the clipboard
   void OnReadAvailableFormatNames(const Vector<String>& format_names);
+
+  // Reads the next clipboard representation.
   void ReadNextRepresentation();
+
+  // Resolves the read promise.
   void ResolveRead();
 
-  // Checks for permissions (interacting with PermissionService).
+  // Returns the `PermissionService` associated with the promise, or nullptr if
+  // the remote connection fails.
   mojom::blink::PermissionService* GetPermissionService();
-  void RequestPermission(
+
+  // Validates that the action may proceed, including but not limited to
+  // requesting permissions from the `PermissionService` as necessary.
+  // On failure, will reject via `script_promise_resolver_`.
+  //
+  // `permission`: The permission to request.
+  // `will_be_sanitized`: Whether the data will be sanitized.
+  // `callback`: The callback function to be called with the permission status.
+  void ValidatePreconditions(
       mojom::blink::PermissionName permission,
       bool will_be_sanitized,
-      base::OnceCallback<void(::blink::mojom::PermissionStatus)> callback);
+      base::OnceCallback<void(mojom::blink::PermissionStatus)> callback);
 
-  scoped_refptr<base::SingleThreadTaskRunner> GetTaskRunner();
+  scoped_refptr<base::SingleThreadTaskRunner> GetClipboardTaskRunner();
 
   // ExecutionContextLifecycleObserver
   void ContextDestroyed() override;
 
-  Member<ScriptState> script_state_;
   Member<ScriptPromiseResolver> script_promise_resolver_;
-
   Member<ClipboardWriter> clipboard_writer_;
-
-  // Checks for Read and Write permission.
   HeapMojoRemote<mojom::blink::PermissionService> permission_service_;
-
-  // Indicates whether unsanitized HTML content will be read from the clipboard.
-  bool will_read_unsanitized_html_ = false;
-
-  // Only for use in writeText().
+  // When true, the HTML data read from the clipboard will be unprocessed.
+  // When false, the HTML data is processed by the fragment parser.
+  bool will_read_unprocessed_html_ = false;
+  // Plain text data to be written to the clipboard.
   String plain_text_;
+  // The list of formats read from the clipboard.
   HeapVector<std::pair<String, Member<Blob>>> clipboard_item_data_;
+  // The list of formats with their corresponding promises to the Blob data to
+  // be written to the clipboard.
   HeapVector<std::pair<String, ScriptPromise>>
       clipboard_item_data_with_promises_;
-  // Index of clipboard representation currently being processed.
-  wtf_size_t clipboard_representation_index_;
-  // Stores all the custom formats defined in `ClipboardItemOptions`.
-  Vector<String> custom_format_items_;
+  wtf_size_t clipboard_representation_index_ = 0;
+  // List of custom format with "web " prefix.
+  Vector<String> write_custom_format_types_;
   // Stores the types provided by the web authors.
-  Vector<String> clipboard_item_types_;
-
-  // Because v8 is thread-hostile, ensures that all interactions with
-  // ScriptState and ScriptPromiseResolver occur on the main thread.
+  Vector<String> write_clipboard_item_types_;
   SEQUENCE_CHECKER(sequence_checker_);
 };
 

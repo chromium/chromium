@@ -7,6 +7,7 @@
 
 #include <stddef.h>
 
+#include <map>
 #include <string>
 #include <vector>
 
@@ -64,6 +65,10 @@ struct ContentSettingPatternSource {
   bool incognito;
 };
 
+// Formatter method for Google Test.
+std::ostream& operator<<(std::ostream& os,
+                         const ContentSettingPatternSource& source);
+
 typedef std::vector<ContentSettingPatternSource> ContentSettingsForOneType;
 
 struct RendererContentSettingRules {
@@ -108,6 +113,7 @@ enum SettingSource {
   SETTING_SOURCE_ALLOWLIST,
   SETTING_SOURCE_SUPERVISED,
   SETTING_SOURCE_INSTALLED_WEBAPP,
+  SETTING_SOURCE_TPCD_GRANT,
 };
 
 // |SettingInfo| provides meta data for content setting values. |source|

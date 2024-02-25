@@ -12,6 +12,7 @@
 #include "components/safe_browsing/core/common/features.h"
 #include "content/public/common/content_features.h"
 #include "content/public/renderer/render_thread.h"
+#include "services/network/public/cpp/resource_request.h"
 #include "third_party/blink/public/common/loader/resource_type_util.h"
 
 namespace android_webview {
@@ -48,8 +49,8 @@ AwURLLoaderThrottleProvider::~AwURLLoaderThrottleProvider() {
 
 blink::WebVector<std::unique_ptr<blink::URLLoaderThrottle>>
 AwURLLoaderThrottleProvider::CreateThrottles(
-    int render_frame_id,
-    const blink::WebURLRequest& request) {
+    base::optional_ref<const blink::LocalFrameToken> local_frame_token,
+    const network::ResourceRequest& request) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   blink::WebVector<std::unique_ptr<blink::URLLoaderThrottle>> throttles;
@@ -57,7 +58,7 @@ AwURLLoaderThrottleProvider::CreateThrottles(
   // Some throttles have already been added in the browser for frame resources.
   // Don't add them for frame requests.
   bool is_frame_resource =
-      blink::IsRequestDestinationFrame(request.GetRequestDestination());
+      blink::IsRequestDestinationFrame(request.destination);
 
   DCHECK(!is_frame_resource ||
          type_ == blink::URLLoaderThrottleProviderType::kFrame);
@@ -67,7 +68,7 @@ AwURLLoaderThrottleProvider::CreateThrottles(
       safe_browsing_.Bind(std::move(safe_browsing_remote_));
     throttles.emplace_back(
         std::make_unique<safe_browsing::RendererURLLoaderThrottle>(
-            safe_browsing_.get(), render_frame_id));
+            safe_browsing_.get(), local_frame_token));
   }
 
   return throttles;

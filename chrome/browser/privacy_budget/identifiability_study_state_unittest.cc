@@ -12,6 +12,7 @@
 
 #include "base/containers/flat_set.h"
 #include "base/containers/flat_tree.h"
+#include "base/test/scoped_feature_list.h"
 #include "chrome/browser/privacy_budget/inspectable_identifiability_study_state.h"
 #include "chrome/browser/privacy_budget/privacy_budget_prefs.h"
 #include "chrome/common/privacy_budget/field_trial_param_conversions.h"
@@ -57,6 +58,9 @@ constexpr auto kBlockedSurface1 =
     blink::IdentifiableSurface::FromTypeAndToken(kRegularTypeId, 1);
 constexpr auto kBlockedType1 =
     blink::IdentifiableSurface::Type::kCanvasReadback;
+constexpr auto kInternalSurface = blink::IdentifiableSurface::FromTypeAndToken(
+    blink::IdentifiableSurface::Type::kReservedInternal,
+    3);
 
 constexpr auto kTestingActiveSurfaceBudget = 40u;
 constexpr auto kTestingExpectedSurfaceCount = 1u;
@@ -525,8 +529,7 @@ TEST(IdentifiabilityStudyStateStandaloneTest, ClearsPrefsIfStudyIsDisabled) {
 }
 
 TEST_F(IdentifiabilityStudyStateTest, StripDisallowedSurfaces_Empty) {
-  test_utils::InspectableIdentifiabilityStudyState::
-      InitializeGlobalStudySettings();
+  test_utils::InspectableIdentifiabilityStudyState state(pref_service());
   std::vector<IdentifiabilityStudyState::OffsetType> dropped;
   IdentifiableSurfaceList surfaces;
   EXPECT_TRUE(
@@ -537,8 +540,7 @@ TEST_F(IdentifiabilityStudyStateTest, StripDisallowedSurfaces_Empty) {
 }
 
 TEST_F(IdentifiabilityStudyStateTest, StripDisallowedSurfaces_SingleBad) {
-  test_utils::InspectableIdentifiabilityStudyState::
-      InitializeGlobalStudySettings();
+  test_utils::InspectableIdentifiabilityStudyState state(pref_service());
   std::vector<IdentifiabilityStudyState::OffsetType> dropped;
   IdentifiableSurfaceList surfaces{kBlockedSurface1, kRegularSurface1};
   EXPECT_TRUE(
@@ -549,8 +551,7 @@ TEST_F(IdentifiabilityStudyStateTest, StripDisallowedSurfaces_SingleBad) {
 }
 
 TEST_F(IdentifiabilityStudyStateTest, StripDisallowedSurfaces_BadSuffix) {
-  test_utils::InspectableIdentifiabilityStudyState::
-      InitializeGlobalStudySettings();
+  test_utils::InspectableIdentifiabilityStudyState state(pref_service());
   std::vector<IdentifiabilityStudyState::OffsetType> dropped;
   IdentifiableSurfaceList surfaces{kRegularSurface1, kBlockedSurface1};
   EXPECT_TRUE(
@@ -561,8 +562,7 @@ TEST_F(IdentifiabilityStudyStateTest, StripDisallowedSurfaces_BadSuffix) {
 }
 
 TEST_F(IdentifiabilityStudyStateTest, StripDisallowedSurfaces_Duplicates) {
-  test_utils::InspectableIdentifiabilityStudyState::
-      InitializeGlobalStudySettings();
+  test_utils::InspectableIdentifiabilityStudyState state(pref_service());
   std::vector<IdentifiabilityStudyState::OffsetType> dropped;
   IdentifiableSurfaceList surfaces{kRegularSurface1, kRegularSurface1};
   EXPECT_FALSE(
@@ -571,8 +571,7 @@ TEST_F(IdentifiabilityStudyStateTest, StripDisallowedSurfaces_Duplicates) {
 }
 
 TEST_F(IdentifiabilityStudyStateTest, StripDisallowedSurfaces_InternalSurface) {
-  test_utils::InspectableIdentifiabilityStudyState::
-      InitializeGlobalStudySettings();
+  test_utils::InspectableIdentifiabilityStudyState state(pref_service());
   std::vector<IdentifiabilityStudyState::OffsetType> dropped;
   IdentifiableSurfaceList surfaces{
       kRegularSurface1,
@@ -1033,4 +1032,111 @@ TEST(IdentifiabilityStudyStateStandaloneTest, GroupOverflowsExperimentBudget) {
 
   // Experiment is active, but there are no active surfaces.
   EXPECT_TRUE(state.active_surfaces().Empty());
+}
+
+TEST_F(IdentifiabilityStudyStateTest, WithAlsoMetaExperimentEnabled) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeatureWithParameters(
+      features::kIdentifiabilityStudyMetaExperiment,
+      {{features::kIdentifiabilityStudyMetaExperimentActivationProbability.name,
+        "1"}});
+
+  TestingPrefServiceSimple pref_service;
+  prefs::RegisterPrivacyBudgetPrefs(pref_service.registry());
+  test_utils::InspectableIdentifiabilityStudyState settings(&pref_service);
+
+  EXPECT_TRUE(settings.meta_experiment_active());
+  // The specific surface doesn't matter.
+  EXPECT_TRUE(settings.ShouldReportEncounteredSurface(ukm::AssignNewSourceId(),
+                                                      kRegularSurface1));
+  EXPECT_TRUE(settings.ShouldReportEncounteredSurface(ukm::AssignNewSourceId(),
+                                                      kBlockedSurface1));
+  EXPECT_TRUE(settings.ShouldReportEncounteredSurface(ukm::AssignNewSourceId(),
+                                                      kBlockedTypeSurface1));
+}
+
+TEST(IdentifiabilityStudyStateStandaloneTest, MetaExperimentEnabled) {
+  test::ScopedPrivacyBudgetConfig config(
+      test::ScopedPrivacyBudgetConfig::Presets::kDisable);
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeatureWithParameters(
+      features::kIdentifiabilityStudyMetaExperiment,
+      {{features::kIdentifiabilityStudyMetaExperimentActivationProbability.name,
+        "1"}});
+
+  TestingPrefServiceSimple pref_service;
+  prefs::RegisterPrivacyBudgetPrefs(pref_service.registry());
+  test_utils::InspectableIdentifiabilityStudyState settings(&pref_service);
+
+  EXPECT_TRUE(settings.meta_experiment_active());
+  // The specific surface doesn't matter.
+  EXPECT_TRUE(settings.ShouldReportEncounteredSurface(ukm::AssignNewSourceId(),
+                                                      kRegularSurface1));
+  EXPECT_TRUE(settings.ShouldReportEncounteredSurface(ukm::AssignNewSourceId(),
+                                                      kBlockedSurface1));
+  EXPECT_TRUE(settings.ShouldReportEncounteredSurface(ukm::AssignNewSourceId(),
+                                                      kBlockedTypeSurface1));
+
+  // Regular surfaces should be dropped, internal surfaces still recorded.
+  EXPECT_TRUE(settings.ShouldRecordSurface(kInternalSurface));
+  EXPECT_FALSE(settings.ShouldRecordSurface(kRegularSurface1));
+}
+
+TEST(IdentifiabilityStudyStateStandaloneTest, MetaExperimentDisabled) {
+  test::ScopedPrivacyBudgetConfig config(
+      test::ScopedPrivacyBudgetConfig::Presets::kDisable);
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndDisableFeature(
+      features::kIdentifiabilityStudyMetaExperiment);
+
+  TestingPrefServiceSimple pref_service;
+  prefs::RegisterPrivacyBudgetPrefs(pref_service.registry());
+  test_utils::InspectableIdentifiabilityStudyState settings(&pref_service);
+
+  EXPECT_FALSE(settings.meta_experiment_active());
+  // The specific surface doesn't matter.
+  EXPECT_FALSE(settings.ShouldReportEncounteredSurface(ukm::AssignNewSourceId(),
+                                                       kRegularSurface1));
+}
+
+TEST(IdentifiabilityStudyStateStandaloneTest,
+     MetaExperimentEnabledWithProbability) {
+  test::ScopedPrivacyBudgetConfig config(
+      test::ScopedPrivacyBudgetConfig::Presets::kDisable);
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeatureWithParameters(
+      features::kIdentifiabilityStudyMetaExperiment,
+      {{features::kIdentifiabilityStudyMetaExperimentActivationProbability.name,
+        "0.3"}});
+
+  int num_active = 0;
+  for (int count = 0;; ++count) {
+    TestingPrefServiceSimple pref_service;
+    prefs::RegisterPrivacyBudgetPrefs(pref_service.registry());
+    test_utils::InspectableIdentifiabilityStudyState settings(&pref_service);
+    if (settings.meta_experiment_active()) {
+      ++num_active;
+    }
+    if (count > 20 && std::abs(num_active - 0.3 * count) < 0.1) {
+      break;
+    }
+  }
+}
+
+TEST(IdentifiabilityStudyStateStandaloneTest,
+     MetaExperimentActivationStateStoredInPrefs) {
+  test::ScopedPrivacyBudgetConfig config(
+      test::ScopedPrivacyBudgetConfig::Presets::kDisable);
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeatureWithParameters(
+      features::kIdentifiabilityStudyMetaExperiment,
+      {{features::kIdentifiabilityStudyMetaExperimentActivationProbability.name,
+        "0.5"}});
+
+  TestingPrefServiceSimple pref_service;
+  prefs::RegisterPrivacyBudgetPrefs(pref_service.registry());
+  test_utils::InspectableIdentifiabilityStudyState settings(&pref_service);
+  bool was_active = settings.meta_experiment_active();
+  test_utils::InspectableIdentifiabilityStudyState new_settings(&pref_service);
+  EXPECT_EQ(was_active, new_settings.meta_experiment_active());
 }

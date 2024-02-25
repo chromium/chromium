@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <string_view>
+
 #include "raw_input_gamepad_device_win.h"
 
 // NOTE: <hidsdi.h> must be included before <hidpi.h>. clang-format will want to
@@ -14,6 +16,7 @@ extern "C" {
 // clang-format on
 
 #include <algorithm>
+#include <optional>
 
 #include "base/strings/string_util_win.h"
 #include "base/strings/sys_string_conversions.h"
@@ -23,7 +26,6 @@ extern "C" {
 #include "device/gamepad/hid_haptic_gamepad.h"
 #include "device/gamepad/hid_writer_win.h"
 #include "device/gamepad/public/cpp/gamepad_features.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace device {
 
@@ -89,7 +91,7 @@ RawInputGamepadDeviceWin::RawInputGamepadDeviceWin(HANDLE device_handle,
     : handle_(device_handle),
       source_id_(source_id),
       last_update_timestamp_(GamepadDataFetcher::CurrentTimeInMicroseconds()),
-      button_report_id_(Gamepad::kButtonsLengthCap, absl::nullopt) {
+      button_report_id_(Gamepad::kButtonsLengthCap, std::nullopt) {
   ::ZeroMemory(buttons_, sizeof(buttons_));
   ::ZeroMemory(axes_, sizeof(axes_));
 
@@ -395,7 +397,7 @@ bool RawInputGamepadDeviceWin::QueryProductString(
   }
 
   // Remove trailing NUL characters.
-  buffer = std::wstring(base::TrimString(buffer, base::WStringPiece(L"\0", 1),
+  buffer = std::wstring(base::TrimString(buffer, std::wstring_view(L"\0", 1),
                                          base::TRIM_TRAILING));
 
   // The product string cannot be empty.

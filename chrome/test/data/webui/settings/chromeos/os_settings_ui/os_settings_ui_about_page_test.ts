@@ -12,7 +12,7 @@
 import 'chrome://os-settings/os_settings.js';
 
 import {CrSettingsPrefs, MainPageContainerElement, OsSettingsMenuElement, OsSettingsUiElement, Router, routes, routesMojom, SettingsIdleLoadElement} from 'chrome://os-settings/os_settings.js';
-import {assert} from 'chrome://resources/js/assert_ts.js';
+import {assert} from 'chrome://resources/js/assert.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {eventToPromise, isVisible} from 'chrome://webui-test/test_util.js';
@@ -52,9 +52,9 @@ suite('<os-settings-ui> About page', () => {
     flush();
   }
 
-  function queryMenuItemByHref(href: string): HTMLElement|null {
+  function queryMenuItemByPath(path: string): HTMLElement|null {
     return menu.shadowRoot!.querySelector<HTMLElement>(
-        `a.item[href="${href}"]`);
+        `os-settings-menu-item[path="${path}"]`);
   }
 
   async function clickMenuItemAndWaitForPage(menuItem: HTMLElement):
@@ -93,7 +93,7 @@ suite('<os-settings-ui> About page', () => {
 
         // Show basic page
         let menuItem =
-            queryMenuItemByHref(`/${routesMojom.BLUETOOTH_SECTION_PATH}`);
+            queryMenuItemByPath(`/${routesMojom.BLUETOOTH_SECTION_PATH}`);
         assertTrue(!!menuItem);
         await clickMenuItemAndWaitForPage(menuItem);
         assertTrue(isVisible(basicPageContainer));
@@ -102,7 +102,7 @@ suite('<os-settings-ui> About page', () => {
 
         // Show about page
         menuItem =
-            queryMenuItemByHref(`/${routesMojom.ABOUT_CHROME_OS_SECTION_PATH}`);
+            queryMenuItemByPath(`/${routesMojom.ABOUT_CHROME_OS_SECTION_PATH}`);
         assertTrue(!!menuItem);
         await clickMenuItemAndWaitForPage(menuItem);
         assertFalse(isVisible(basicPageContainer));
@@ -111,7 +111,7 @@ suite('<os-settings-ui> About page', () => {
 
         // Show advanced page
         menuItem =
-            queryMenuItemByHref(`/${routesMojom.DATE_AND_TIME_SECTION_PATH}`);
+            queryMenuItemByPath(`/${routesMojom.DATE_AND_TIME_SECTION_PATH}`);
         assertTrue(!!menuItem);
         await clickMenuItemAndWaitForPage(menuItem);
         assertTrue(isVisible(basicPageContainer));
@@ -120,7 +120,7 @@ suite('<os-settings-ui> About page', () => {
 
         // Show about page
         menuItem =
-            queryMenuItemByHref(`/${routesMojom.ABOUT_CHROME_OS_SECTION_PATH}`);
+            queryMenuItemByPath(`/${routesMojom.ABOUT_CHROME_OS_SECTION_PATH}`);
         assertTrue(!!menuItem);
         await clickMenuItemAndWaitForPage(menuItem);
         assertFalse(isVisible(basicPageContainer));

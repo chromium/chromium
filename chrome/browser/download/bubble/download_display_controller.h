@@ -7,22 +7,26 @@
 
 #include "base/power_monitor/power_observer.h"
 #include "base/timer/timer.h"
-#include "chrome/browser/download/bubble/download_icon_state.h"
 #include "chrome/browser/download/offline_item_model.h"
+#include "chrome/browser/ui/download/download_display.h"
 #include "chrome/browser/ui/exclusive_access/fullscreen_controller.h"
 #include "chrome/browser/ui/exclusive_access/fullscreen_observer.h"
 #include "components/download/content/public/all_download_item_notifier.h"
 #include "components/offline_items_collection/core/offline_content_aggregator.h"
 #include "components/offline_items_collection/core/offline_content_provider.h"
 
+struct DownloadBubbleDisplayInfo;
 class DownloadBubbleUIController;
+class DownloadDisplay;
 
 namespace base {
 class TimeDelta;
 class OneShotTimer;
 }  // namespace base
 
-class DownloadDisplay;
+namespace offline_items_collection {
+struct ContentId;
+}
 
 // Used to control the DownloadToolbar Button, through the DownloadDisplay
 // interface. Supports both regular Download and Offline items. When in the
@@ -39,55 +43,6 @@ class DownloadDisplayController : public FullscreenObserver,
   DownloadDisplayController& operator=(const DownloadDisplayController&) =
       delete;
   ~DownloadDisplayController() override;
-
-  // Information extracted from iterating over all models, to avoid having to do
-  // so multiple times.
-  struct AllDownloadUIModelsInfo {
-    // Number of models that would be returned to display.
-    size_t all_models_size = 0;
-    // The last time that a download was completed. Will be null if no downloads
-    // were completed.
-    base::Time last_completed_time;
-    // Whether there are any downloads actively doing deep scanning.
-    bool has_deep_scanning = false;
-    // Whether any downloads are unactioned.
-    bool has_unactioned = false;
-    // From the button UI's perspective, whether the download is considered in
-    // progress. Consider dangerous downloads as completed, because we don't
-    // want to encourage users to interact with them.
-    int in_progress_count = 0;
-    // Count of in-progress downloads (by the above definition) that are paused.
-    int paused_count = 0;
-
-    // Returns a reference to a singleton empty struct. This is for callers who
-    // return references but don't have anything to return in some cases.
-    static const AllDownloadUIModelsInfo& EmptyInfo();
-  };
-
-  struct ProgressInfo {
-    bool progress_certain = true;
-    int progress_percentage = 0;
-    int download_count = 0;
-  };
-
-  struct IconInfo {
-    download::DownloadIconState icon_state =
-        download::DownloadIconState::kComplete;
-    bool is_active = false;
-  };
-
-  // Returns a ProgressInfo where |download_count| is the number of currently
-  // active downloads. If we know the final size of all downloads,
-  // |progress_certain| is true. |progress_percentage| is the percentage
-  // complete of all in-progress downloads. Forwards to the
-  // DownloadBubbleUpdateService.
-  ProgressInfo GetProgress();
-
-  // Returns an IconInfo that contains current state of the icon.
-  IconInfo GetIconInfo();
-
-  // Returns whether the display is showing details.
-  bool IsDisplayShowingDetails();
 
   // Notifies the controller that the button is pressed. Called by `display_`.
   void OnButtonPressed();
@@ -117,6 +72,17 @@ class DownloadDisplayController : public FullscreenObserver,
   // details are already hidden.
   void HideBubble();
 
+  // Opens the primary dialog to the item and scrolls to the item, and opens
+  // the security dialog if the item has a security warning. Returns whether
+  // bubble was opened to the requested item.
+  // Note: This method is currently used only for Lacros download notifications.
+  // It does not explicitly handle fullscreen conditions. See comment in
+  // implementation. In the future if there are other entry points to this
+  // method, non-immersive fullscreen (i.e. exclusive access bubble) will have
+  // to be handled explicitly.
+  bool OpenMostSpecificDialog(
+      const offline_items_collection::ContentId& content_id);
+
   // Start listening to full screen changes. This is separate from the
   // constructor as the exclusive access manager is constructed after
   // BrowserWindow.
@@ -136,9 +102,10 @@ class DownloadDisplayController : public FullscreenObserver,
  private:
   friend class DownloadDisplayControllerTest;
 
-  // Gets info about all models to display, then updates the toolbar button
-  // state accordingly. Returns the info about all models.
-  const AllDownloadUIModelsInfo& UpdateButtonStateFromAllModelsInfo();
+  // Gets info about all models to display and progress ring info from the
+  // update service, then updates the toolbar button state accordingly. Returns
+  // the info about all models.
+  const DownloadBubbleDisplayInfo& UpdateButtonStateFromUpdateService();
 
   // Stops and restarts `icon_disappearance_timer_`. The toolbar button will
   // be hidden after the `interval`.
@@ -151,19 +118,16 @@ class DownloadDisplayController : public FullscreenObserver,
   // button is already showing.
   void ShowToolbarButton();
 
-  // Updates the icon state of the `display_`.
-  void UpdateToolbarButtonState(const AllDownloadUIModelsInfo& info);
+  // Updates the icon state of the `display_`, including the progress ring.
+  void UpdateToolbarButtonState(
+      const DownloadBubbleDisplayInfo& info,
+      const DownloadDisplay::ProgressInfo& progress_info);
+
   // Asks `display_` to make the download icon inactive.
   void UpdateDownloadIconToInactive();
 
   // Decides whether the toolbar button should be shown when it is created.
   virtual void MaybeShowButtonWhenCreated();
-  // Whether the last download complete time is less than `interval` ago.
-  bool HasRecentCompleteDownload(base::TimeDelta interval,
-                                 base::Time last_complete_time);
-
-  base::Time GetLastCompleteTime(
-      base::Time last_completed_time_from_current_models) const;
 
   // The pointer is created in ToolbarView and owned by ToolbarView.
   raw_ptr<DownloadDisplay> const display_;
@@ -172,7 +136,6 @@ class DownloadDisplayController : public FullscreenObserver,
       observation_{this};
   base::OneShotTimer icon_disappearance_timer_;
   base::OneShotTimer icon_inactive_timer_;
-  IconInfo icon_info_;
   bool fullscreen_notification_shown_ = false;
   bool should_show_details_on_exit_fullscreen_ = false;
   // DownloadDisplayController and DownloadBubbleUIController have the same

@@ -18,7 +18,7 @@ SpeculationCandidate::SpeculationCandidate(
     mojom::blink::SpeculationTargetHint target_hint,
     mojom::blink::SpeculationEagerness eagerness,
     network::mojom::blink::NoVarySearchPtr no_vary_search,
-    mojom::blink::SpeculationInjectionWorld injection_world,
+    mojom::blink::SpeculationInjectionType injection_type,
     SpeculationRuleSet* rule_set,
     HTMLAnchorElement* anchor)
     : url_(url),
@@ -29,7 +29,7 @@ SpeculationCandidate::SpeculationCandidate(
       target_hint_(target_hint),
       eagerness_(eagerness),
       no_vary_search_(std::move(no_vary_search)),
-      injection_world_(injection_world),
+      injection_type_(injection_type),
       rule_set_(rule_set),
       anchor_(anchor) {
   DCHECK(rule_set);
@@ -47,7 +47,7 @@ mojom::blink::SpeculationCandidatePtr SpeculationCandidate::ToMojom() const {
       mojom::blink::Referrer::New(KURL(referrer_.referrer),
                                   referrer_.referrer_policy),
       requires_anonymous_client_ip_when_cross_origin_, target_hint_, eagerness_,
-      no_vary_search_.Clone(), injection_world_);
+      no_vary_search_.Clone(), injection_type_);
 }
 
 }  // namespace blink

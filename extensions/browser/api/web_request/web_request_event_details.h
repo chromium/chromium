@@ -6,12 +6,11 @@
 #define EXTENSIONS_BROWSER_API_WEB_REQUEST_WEB_REQUEST_EVENT_DETAILS_H_
 
 #include <memory>
+#include <optional>
 #include <string>
-
 #include "base/values.h"
 #include "extensions/browser/extension_api_frame_id_map.h"
 #include "extensions/common/extension_id.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/origin.h"
 
 namespace net {
@@ -108,10 +107,10 @@ class WebRequestEventDetails {
   base::Value::Dict dict_;
 
   // Extra event details: Only included when |extra_info_spec_| matches.
-  absl::optional<base::Value::Dict> request_body_;
-  absl::optional<base::Value::List> request_headers_;
-  absl::optional<base::Value::List> response_headers_;
-  absl::optional<url::Origin> initiator_;
+  std::optional<base::Value::Dict> request_body_;
+  std::optional<base::Value::List> request_headers_;
+  std::optional<base::Value::List> response_headers_;
+  std::optional<url::Origin> initiator_;
 
   int extra_info_spec_;
 

@@ -1,0 +1,7 @@
+monorail: {
+  component: "Enterprise>TrafficAnnotations"
+}
+team_email: "chromium-enterprise@chromium.org"
+buganizer_public: {
+  component_id: 1456287
+}

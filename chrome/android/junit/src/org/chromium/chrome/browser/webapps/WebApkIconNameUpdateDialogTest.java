@@ -33,9 +33,7 @@ import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.modaldialog.ModalDialogProperties;
 import org.chromium.ui.modelutil.PropertyModel;
 
-/**
- * Test for the dialog warning that WebApks have an updated name/icon.
- */
+/** Test for the dialog warning that WebApks have an updated name/icon. */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
 public class WebApkIconNameUpdateDialogTest {
@@ -99,14 +97,13 @@ public class WebApkIconNameUpdateDialogTest {
         }
 
         public void dismissCurrentDialog(int dismissalCause) {
-            mCurrentDialogModel.get(ModalDialogProperties.CONTROLLER)
+            mCurrentDialogModel
+                    .get(ModalDialogProperties.CONTROLLER)
                     .onDismiss(mCurrentDialogModel, dismissalCause);
         }
     }
 
-    /**
-     * Generates a 320x320 test single-colored bitmap.
-     */
+    /** Generates a 320x320 test single-colored bitmap. */
     private static Bitmap generateTestBitmap(int color) {
         int width = 320;
         int height = 320;
@@ -125,8 +122,9 @@ public class WebApkIconNameUpdateDialogTest {
     }
 
     private CharSequence getDialogHeaderView() {
-        return mDialogManager.getCurrentDialogModel().get(
-                ModalDialogProperties.MESSAGE_PARAGRAPH_1);
+        return mDialogManager
+                .getCurrentDialogModel()
+                .get(ModalDialogProperties.MESSAGE_PARAGRAPH_1);
     }
 
     private String getDialogTitle() {
@@ -165,55 +163,78 @@ public class WebApkIconNameUpdateDialogTest {
         WebApkIconNameUpdateDialog dialog = new WebApkIconNameUpdateDialog();
         // Applying a theme overlay because the context is used to show the dialog, which needs some
         // color attributes to inflate the views.
-        Context context = new ContextThemeWrapper(
-                ApplicationProvider.getApplicationContext(), R.style.Theme_BrowserUI_DayNight);
+        Context context =
+                new ContextThemeWrapper(
+                        ApplicationProvider.getApplicationContext(),
+                        R.style.Theme_BrowserUI_DayNight);
 
-        dialog.show(context, mDialogManager, /* packageName= */ "", dialogParams.iconChanged,
-                dialogParams.shortNameChanged, dialogParams.nameChanged,
-                dialogParams.shortNameBefore, dialogParams.shortNameAfter, dialogParams.nameBefore,
-                dialogParams.nameAfter, dialogParams.bitmapBefore, dialogParams.bitmapAfter, false,
-                false, this::onUpdateDialogResult);
+        dialog.show(
+                context,
+                mDialogManager,
+                /* packageName= */ "",
+                dialogParams.iconChanged,
+                dialogParams.shortNameChanged,
+                dialogParams.nameChanged,
+                dialogParams.shortNameBefore,
+                dialogParams.shortNameAfter,
+                dialogParams.nameBefore,
+                dialogParams.nameAfter,
+                dialogParams.bitmapBefore,
+                dialogParams.bitmapAfter,
+                false,
+                false,
+                this::onUpdateDialogResult);
 
         // Verify the short name labels visibility status.
-        Assert.assertEquals(dialogParams.shortNameChanged || dialogParams.expectShortNameShownAnyway
+        Assert.assertEquals(
+                dialogParams.shortNameChanged || dialogParams.expectShortNameShownAnyway
                         ? dialogParams.shortNameBefore
                         : null,
                 getUpdateDialogAppNameLabel(R.id.short_app_name_old));
-        Assert.assertEquals(dialogParams.shortNameChanged || dialogParams.expectShortNameShownAnyway
+        Assert.assertEquals(
+                dialogParams.shortNameChanged || dialogParams.expectShortNameShownAnyway
                         ? dialogParams.shortNameAfter
                         : null,
                 getUpdateDialogAppNameLabel(R.id.short_app_name_new));
 
         // Verify the app name label visibility status.
-        Assert.assertEquals(dialogParams.nameChanged && !dialogParams.expectNameHiddenAnyway
+        Assert.assertEquals(
+                dialogParams.nameChanged && !dialogParams.expectNameHiddenAnyway
                         ? dialogParams.nameBefore
                         : null,
                 getUpdateDialogAppNameLabel(R.id.app_name_old));
-        Assert.assertEquals(dialogParams.nameChanged && !dialogParams.expectNameHiddenAnyway
+        Assert.assertEquals(
+                dialogParams.nameChanged && !dialogParams.expectNameHiddenAnyway
                         ? dialogParams.nameAfter
                         : null,
                 getUpdateDialogAppNameLabel(R.id.app_name_new));
 
         // Verify the icons visibility status.
-        Assert.assertEquals(dialogParams.iconChanged || dialogParams.expectIconShownAnyway
+        Assert.assertEquals(
+                dialogParams.iconChanged || dialogParams.expectIconShownAnyway
                         ? dialogParams.bitmapBefore
                         : null,
                 getUpdateDialogBitmap(R.id.app_icon_old));
-        Assert.assertEquals(dialogParams.iconChanged || dialogParams.expectIconShownAnyway
+        Assert.assertEquals(
+                dialogParams.iconChanged || dialogParams.expectIconShownAnyway
                         ? dialogParams.bitmapAfter
                         : null,
                 getUpdateDialogBitmap(R.id.app_icon_new));
 
-        mDialogManager.dismissCurrentDialog(clickAccept
+        mDialogManager.dismissCurrentDialog(
+                clickAccept
                         ? DialogDismissalCause.POSITIVE_BUTTON_CLICKED
                         : DialogDismissalCause.NEGATIVE_BUTTON_CLICKED);
         Assert.assertEquals(callCount + 1, mOnActionCallback.getCallCount());
 
-        Assert.assertEquals(clickAccept ? (Integer) DialogDismissalCause.POSITIVE_BUTTON_CLICKED
-                                        : (Integer) DialogDismissalCause.NEGATIVE_BUTTON_CLICKED,
+        Assert.assertEquals(
+                clickAccept
+                        ? (Integer) DialogDismissalCause.POSITIVE_BUTTON_CLICKED
+                        : (Integer) DialogDismissalCause.NEGATIVE_BUTTON_CLICKED,
                 mLastDismissalCause);
 
-        Assert.assertEquals((dialogParams.hasExplanationString ? MESSAGE_HEADER_LENGTH : 0),
+        Assert.assertEquals(
+                (dialogParams.hasExplanationString ? MESSAGE_HEADER_LENGTH : 0),
                 getUpdateDialogHeaderLabel().length());
     }
 
@@ -223,16 +244,24 @@ public class WebApkIconNameUpdateDialogTest {
 
         // Applying a theme overlay because the context is used to show the dialog, which needs some
         // color attributes to inflate the views.
-        Context context = new ContextThemeWrapper(
-                ApplicationProvider.getApplicationContext(), R.style.Theme_BrowserUI_DayNight);
+        Context context =
+                new ContextThemeWrapper(
+                        ApplicationProvider.getApplicationContext(),
+                        R.style.Theme_BrowserUI_DayNight);
         WebApkUpdateReportAbuseDialog dialog =
-                new WebApkUpdateReportAbuseDialog(context, mDialogManager, /* packageName= */ "",
-                        shortAppName, /* showAbuseCheckbox= */ true, this::onAbuseDialogResult);
+                new WebApkUpdateReportAbuseDialog(
+                        context,
+                        mDialogManager,
+                        /* packageName= */ "",
+                        shortAppName,
+                        /* showAbuseCheckbox= */ true,
+                        this::onAbuseDialogResult);
         dialog.show();
 
         Assert.assertEquals(expectedTitle, getDialogTitle());
 
-        mDialogManager.dismissCurrentDialog(clickAccept
+        mDialogManager.dismissCurrentDialog(
+                clickAccept
                         ? DialogDismissalCause.POSITIVE_BUTTON_CLICKED
                         : DialogDismissalCause.NEGATIVE_BUTTON_CLICKED);
         // Pressing Cancel on the Abuse dialog does not activate the dismiss-parent callback

@@ -60,12 +60,12 @@ import java.util.List;
  *
  * @param <E> The type of the selectable items this toolbar interacts with.
  */
-public class SelectableListToolbar<E>
-        extends Toolbar implements SelectionObserver<E>, OnClickListener, OnEditorActionListener,
-                                   DisplayStyleObserver {
-    /**
-     * A delegate that handles searching the list of selectable items associated with this toolbar.
-     */
+public class SelectableListToolbar<E> extends Toolbar
+        implements SelectionObserver<E>,
+                OnClickListener,
+                OnEditorActionListener,
+                DisplayStyleObserver {
+    /** A delegate that handles searching the list of selectable items associated with this toolbar. */
     public interface SearchDelegate {
         /**
          * Called when the text in the search EditText box has changed.
@@ -73,9 +73,7 @@ public class SelectableListToolbar<E>
          */
         void onSearchTextChanged(String query);
 
-        /**
-         * Called when a search is ended.
-         */
+        /** Called when a search is ended. */
         void onEndSearch();
     }
 
@@ -140,17 +138,13 @@ public class SelectableListToolbar<E>
     // current view type that SelectableListToolbar is showing
     private int mViewType;
 
-    /**
-     * Constructor for inflating from XML.
-     */
+    /** Constructor for inflating from XML. */
     public SelectableListToolbar(Context context, AttributeSet attrs) {
         super(context, attrs);
         mIsSearchingSupplier.set(false);
     }
 
-    /**
-     * Destroys and cleans up itself.
-     */
+    /** Destroys and cleans up itself. */
     @CallSuper
     public void destroy() {
         mIsDestroyed = true;
@@ -172,8 +166,12 @@ public class SelectableListToolbar<E>
      *                             toolbar color. If true, the status bar will only be updated if
      *                             the current device fully supports theming and is on Android M+.
      */
-    public void initialize(SelectionDelegate<E> delegate, int titleResId, int normalGroupResId,
-            int selectedGroupResId, boolean updateStatusBarColor) {
+    public void initialize(
+            SelectionDelegate<E> delegate,
+            int titleResId,
+            int normalGroupResId,
+            int selectedGroupResId,
+            boolean updateStatusBarColor) {
         mTitleResId = titleResId;
         mNormalGroupResId = normalGroupResId;
         mSelectedGroupResId = selectedGroupResId;
@@ -185,27 +183,38 @@ public class SelectableListToolbar<E>
         mSelectionDelegate = delegate;
         mSelectionDelegate.addObserver(this);
 
-        mModernNavButtonStartOffsetPx = getResources().getDimensionPixelSize(
-                R.dimen.selectable_list_toolbar_nav_button_start_offset);
-        mModernToolbarActionMenuEndOffsetPx = getResources().getDimensionPixelSize(
-                R.dimen.selectable_list_action_bar_end_padding);
-        mModernToolbarSearchIconOffsetPx = getResources().getDimensionPixelSize(
-                R.dimen.selectable_list_search_icon_end_padding);
+        mModernNavButtonStartOffsetPx =
+                getResources()
+                        .getDimensionPixelSize(
+                                R.dimen.selectable_list_toolbar_nav_button_start_offset);
+        mModernToolbarActionMenuEndOffsetPx =
+                getResources()
+                        .getDimensionPixelSize(R.dimen.selectable_list_action_bar_end_padding);
+        mModernToolbarSearchIconOffsetPx =
+                getResources()
+                        .getDimensionPixelSize(R.dimen.selectable_list_search_icon_end_padding);
 
         mNormalBackgroundColor = SemanticColorUtils.getDefaultBgColor(getContext());
         setBackgroundColor(mNormalBackgroundColor);
 
-        mIconColorList = AppCompatResources.getColorStateList(
-                getContext(), R.color.default_icon_color_tint_list);
+        mIconColorList =
+                AppCompatResources.getColorStateList(
+                        getContext(), R.color.default_icon_color_tint_list);
 
         setTitleTextAppearance(getContext(), R.style.TextAppearance_Headline_Primary);
         if (mTitleResId != 0) setTitle(mTitleResId);
 
-        mMenuButton = UiUtils.getTintedDrawable(getContext(), R.drawable.ic_more_vert_24dp,
-                R.color.default_icon_color_secondary_tint_list);
+        mMenuButton =
+                UiUtils.getTintedDrawable(
+                        getContext(),
+                        R.drawable.ic_more_vert_24dp,
+                        R.color.default_icon_color_secondary_tint_list);
         setOverflowIcon(mMenuButton);
-        mNavigationIconDrawable = UiUtils.getTintedDrawable(getContext(),
-                R.drawable.ic_arrow_back_white_24dp, R.color.default_icon_color_tint_list);
+        mNavigationIconDrawable =
+                UiUtils.getTintedDrawable(
+                        getContext(),
+                        R.drawable.ic_arrow_back_white_24dp,
+                        R.color.default_icon_color_tint_list);
 
         mShowInfoIcon = true;
         mShowInfoStringId = R.string.show_info;
@@ -233,14 +242,15 @@ public class SelectableListToolbar<E>
         mSearchEditText = mSearchView.findViewById(R.id.search_text);
         mSearchEditText.setHint(hintStringResId);
         mSearchEditText.setOnEditorActionListener(this);
-        mSearchEditText.addTextChangedListener(new EmptyTextWatcher() {
-            @Override
-            public void onTextChanged(CharSequence s, int start, int before, int count) {
-                mClearTextButton.setVisibility(
-                        TextUtils.isEmpty(s) ? View.INVISIBLE : View.VISIBLE);
-                if (isSearching()) mSearchDelegate.onSearchTextChanged(s.toString());
-            }
-        });
+        mSearchEditText.addTextChangedListener(
+                new EmptyTextWatcher() {
+                    @Override
+                    public void onTextChanged(CharSequence s, int start, int before, int count) {
+                        mClearTextButton.setVisibility(
+                                TextUtils.isEmpty(s) ? View.INVISIBLE : View.VISIBLE);
+                        if (isSearching()) mSearchDelegate.onSearchTextChanged(s.toString());
+                    }
+                });
 
         mClearTextButton = findViewById(R.id.clear_text_button);
         mClearTextButton.setOnClickListener(v -> mSearchEditText.setText(""));
@@ -278,8 +288,10 @@ public class SelectableListToolbar<E>
 
         if (mIsSelectionEnabled) {
             @StringRes
-            int resId = wasSelectionEnabled ? R.string.accessibility_toolbar_multi_select
-                                            : R.string.accessibility_toolbar_screen_position;
+            int resId =
+                    wasSelectionEnabled
+                            ? R.string.accessibility_toolbar_multi_select
+                            : R.string.accessibility_toolbar_screen_position;
             announceForAccessibility(
                     getContext().getString(resId, Integer.toString(selectedItems.size())));
         }
@@ -345,9 +357,7 @@ public class SelectableListToolbar<E>
         updateDisplayStyleIfNecessary();
     }
 
-    /**
-     * Shows the search edit text box and related views.
-     */
+    /** Shows the search edit text box and related views. */
     public void showSearchView(boolean showKeyboard) {
         assert mHasSearchView;
 
@@ -364,11 +374,9 @@ public class SelectableListToolbar<E>
         setTitle(null);
     }
 
-    /**
-     * Hides the search edit text box and related views. Notifies delegate of the change.
-     */
+    /** Hides the search edit text box and related views. Notifies delegate of the change. */
     public void hideSearchView() {
-        hideSearchView(/*notifyDelegate=*/true);
+        hideSearchView(/* notifyDelegate= */ true);
     }
 
     /**
@@ -442,7 +450,8 @@ public class SelectableListToolbar<E>
         MarginLayoutParams params = (MarginLayoutParams) getLayoutParams();
 
         if (newDisplayStyle.horizontal == HorizontalDisplayStyle.WIDE
-                && !(isSearching() || mIsSelectionEnabled
+                && !(isSearching()
+                        || mIsSelectionEnabled
                         || mNavigationButton != NavigationButton.NONE)) {
             // The title in the wide display should be aligned with the texts of the list elements.
             paddingStartOffset = mWideDisplayStartOffsetPx;
@@ -463,12 +472,17 @@ public class SelectableListToolbar<E>
         int navigationButtonStartOffsetPx =
                 mNavigationButton != NavigationButton.NONE ? mModernNavButtonStartOffsetPx : 0;
 
-        int actionMenuBarEndOffsetPx = mIsSelectionEnabled ? mModernToolbarActionMenuEndOffsetPx
-                                                           : mModernToolbarSearchIconOffsetPx;
+        int actionMenuBarEndOffsetPx =
+                mIsSelectionEnabled
+                        ? mModernToolbarActionMenuEndOffsetPx
+                        : mModernToolbarSearchIconOffsetPx;
 
-        ViewCompat.setPaddingRelative(this,
-                padding + paddingStartOffset + navigationButtonStartOffsetPx, this.getPaddingTop(),
-                padding + actionMenuBarEndOffsetPx, this.getPaddingBottom());
+        ViewCompat.setPaddingRelative(
+                this,
+                padding + paddingStartOffset + navigationButtonStartOffsetPx,
+                this.getPaddingTop(),
+                padding + actionMenuBarEndOffsetPx,
+                this.getPaddingBottom());
     }
 
     /**
@@ -584,9 +598,12 @@ public class SelectableListToolbar<E>
         if (infoMenuItem != null) {
             if (mShowInfoIcon) {
                 Drawable iconDrawable =
-                        TintedDrawable.constructTintedDrawable(getContext(), R.drawable.btn_info,
-                                infoShowing ? R.color.default_icon_color_accent1_tint_list
-                                            : R.color.default_icon_color_secondary_tint_list);
+                        TintedDrawable.constructTintedDrawable(
+                                getContext(),
+                                R.drawable.btn_info,
+                                infoShowing
+                                        ? R.color.default_icon_color_accent1_tint_list
+                                        : R.color.default_icon_color_secondary_tint_list);
 
                 infoMenuItem.setIcon(iconDrawable);
             }
@@ -596,9 +613,7 @@ public class SelectableListToolbar<E>
         }
     }
 
-    /**
-     * Hides the keyboard.
-     */
+    /** Hides the keyboard. */
     public void hideKeyboard() {
         KeyboardVisibilityDelegate.getInstance().hideKeyboard(mSearchEditText);
     }
@@ -627,7 +642,8 @@ public class SelectableListToolbar<E>
 
         Window window = ((Activity) context).getWindow();
         UiUtils.setStatusBarColor(window, color);
-        UiUtils.setStatusBarIconColor(window.getDecorView().getRootView(),
+        UiUtils.setStatusBarIconColor(
+                window.getDecorView().getRootView(),
                 !ColorUtils.shouldUseLightForegroundOnBackground(color));
     }
 

@@ -23,6 +23,7 @@ public interface MVCListAdapter {
     class ListItem {
         /** The type of view that the {@code model} is associated with. */
         public final int type;
+
         /** The model to be managed by a list. */
         public final PropertyModel model;
 

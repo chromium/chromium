@@ -9,6 +9,7 @@
 #include <Security/Security.h>
 
 #include "base/apple/scoped_cftyperef.h"
+#include "base/containers/span.h"
 #include "base/memory/scoped_refptr.h"
 #include "net/base/hash_value.h"
 #include "net/base/net_export.h"
@@ -20,7 +21,7 @@ namespace x509_util {
 // Creates a SecCertificate handle from the DER-encoded representation.
 // Returns NULL on failure.
 NET_EXPORT base::apple::ScopedCFTypeRef<SecCertificateRef>
-CreateSecCertificateFromBytes(const uint8_t* data, size_t length);
+CreateSecCertificateFromBytes(base::span<const uint8_t> data);
 
 // Returns a SecCertificate representing |cert|, or NULL on failure.
 NET_EXPORT base::apple::ScopedCFTypeRef<SecCertificateRef>

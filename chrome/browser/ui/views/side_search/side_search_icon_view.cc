@@ -44,7 +44,7 @@ SideSearchIconView::SideSearchIconView(
               ->RegisterIconChangedSubscription(
                   base::BindRepeating(&SideSearchIconView::UpdateIconImage,
                                       base::Unretained(this)))) {
-  image()->SetFlipCanvasOnPaintForRTLUI(false);
+  image_container_view()->SetFlipCanvasOnPaintForRTLUI(false);
   SetProperty(views::kElementIdentifierKey, kSideSearchButtonElementId);
   SetVisible(false);
   SetLabel(l10n_util::GetStringUTF16(IDS_SIDE_SEARCH_ENTRYPOINT_LABEL));
@@ -52,7 +52,7 @@ SideSearchIconView::SideSearchIconView(
   SetPaintLabelOverSolidBackground(true);
   browser_->tab_strip_model()->AddObserver(this);
   SetAccessibilityProperties(
-      /*role*/ absl::nullopt,
+      /*role*/ std::nullopt,
       l10n_util::GetStringUTF16(
           IDS_TOOLTIP_SIDE_SEARCH_TOOLBAR_BUTTON_NOT_ACTIVATED));
 }
@@ -118,7 +118,9 @@ void SideSearchIconView::UpdateImpl() {
 
   if (!should_show) {
     HidePageActionLabel();
-    browser_view->CloseFeaturePromo(feature_engagement::kIPHSideSearchFeature);
+    browser_view->CloseFeaturePromo(
+        feature_engagement::kIPHSideSearchFeature,
+        user_education::EndFeaturePromoReason::kAbortPromo);
   }
 }
 
@@ -198,7 +200,7 @@ bool SideSearchIconView::MaybeShowPageActionLabel() {
   }
 
   should_extend_label_shown_duration_ = true;
-  AnimateIn(absl::nullopt);
+  AnimateIn(std::nullopt);
 
   // Note that `Dismiss()` in this case does not dismiss the UI. It's telling
   // the FE backend that the promo is done so that other promos can run. The
@@ -214,5 +216,5 @@ void SideSearchIconView::HidePageActionLabel() {
   ResetSlideAnimation(false);
 }
 
-BEGIN_METADATA(SideSearchIconView, PageActionIconView)
+BEGIN_METADATA(SideSearchIconView)
 END_METADATA

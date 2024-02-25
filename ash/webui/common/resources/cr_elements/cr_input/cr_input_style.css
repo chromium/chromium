@@ -1,0 +1,238 @@
+/* Copyright 2022 The Chromium Authors
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file. */
+
+/* #css_wrapper_metadata_start
+ * #type=style
+ * #import=../cr_shared_vars.css.js
+ * #scheme=relative
+ * #css_wrapper_metadata_end */
+
+      :host {
+        --cr-input-background-color: var(--google-grey-100);
+        --cr-input-color: var(--cr-primary-text-color);
+        --cr-input-error-color: var(--google-red-600);
+        --cr-input-focus-color: var(--google-blue-600);
+        display: block;
+        /* Avoid showing outline when focus() programmatically called multiple
+           times in a row. */
+        outline: none;
+      }
+
+      :host-context([chrome-refresh-2023]):host {
+        --cr-input-background-color: var(--color-textfield-filled-background,
+            var(--cr-fallback-color-surface-variant));
+        --cr-input-border-bottom: 1px solid
+            var(--color-textfield-filled-underline,
+                var(--cr-fallback-color-outline));
+        --cr-input-border-radius: 8px 8px 0 0;
+        --cr-input-error-color: var(--color-textfield-filled-error,
+            var(--cr-fallback-color-error));
+        --cr-input-focus-color: var(--color-textfield-filled-underline-focused,
+            var(--cr-fallback-color-primary));
+        --cr-input-hover-background-color: var(--cr-hover-background-color);
+        --cr-input-label-color: var(--color-textfield-foreground-label,
+            var(--cr-fallback-color-on-surface-subtle));
+        --cr-input-padding-bottom: 10px;
+        --cr-input-padding-end: 10px;
+        --cr-input-padding-start: 10px;
+        --cr-input-padding-top: 10px;
+        --cr-input-placeholder-color:
+            var(--color-textfield-foreground-placeholder,
+                var(--cr-fallback-on-surface-subtle));
+        isolation: isolate;
+      }
+
+      :host-context([chrome-refresh-2023]):host([readonly]) {
+        --cr-input-border-radius: 8px 8px;
+      }
+
+      @media (prefers-color-scheme: dark) {
+        :host {
+          --cr-input-background-color: rgba(0, 0, 0, .3);
+          --cr-input-error-color: var(--google-red-300);
+          --cr-input-focus-color: var(--google-blue-300);
+        }
+      }
+
+      :host-context(html:not([chrome-refresh-2023])):host([focused_]:not([readonly]):not([invalid]))
+          #label {
+        color: var(--cr-input-focus-color);
+      }
+
+      :host-context([chrome-refresh-2023]) #label {
+        color: var(--cr-input-label-color);
+        font-size: 11px;
+        line-height: 16px;
+      }
+
+      :host-context([chrome-refresh-2023]):host([focused_]:not([readonly]):not([invalid]))
+          #label {
+        color: var(--cr-input-focus-label-color, var(--cr-input-label-color));
+      }
+
+      /* Input styling below. */
+      #input-container {
+        border-radius: var(--cr-input-border-radius, 4px);
+        overflow: hidden;
+        position: relative;
+        width: var(--cr-input-width, 100%);
+      }
+
+      :host-context([chrome-refresh-2023]):host([focused_]) #input-container {
+        outline: var(--cr-input-focus-outline, none);
+      }
+
+      #inner-input-container {
+        background-color: var(--cr-input-background-color);
+        box-sizing: border-box;
+        padding: 0;
+      }
+
+      :host-context([chrome-refresh-2023]) #inner-input-content ::slotted(*) {
+        --cr-icon-button-fill-color: var(--color-textfield-foreground-icon,
+            var(--cr-fallback-color-on-surface-subtle));
+        --cr-icon-button-icon-size: 16px;
+        --cr-icon-button-size: 24px;
+        --cr-icon-button-margin-start: 0;
+        --cr-icon-color: var(--color-textfield-foreground-icon,
+            var(--cr-fallback-color-on-surface-subtle));
+      }
+
+      :host-context([chrome-refresh-2023]) #inner-input-content
+          ::slotted([slot='inline-prefix']) {
+        --cr-icon-button-margin-start: -8px;
+      }
+
+      :host-context([chrome-refresh-2023]) #inner-input-content
+          ::slotted([slot='inline-suffix']) {
+        --cr-icon-button-margin-end: -4px;
+      }
+
+      :host-context([chrome-refresh-2023]):host([invalid])
+          #inner-input-content ::slotted(*) {
+        --cr-icon-color: var(--cr-input-error-color);
+        --cr-icon-button-fill-color: var(--cr-input-error-color);
+      }
+
+      #hover-layer {
+        display: none;
+      }
+
+      :host-context([chrome-refresh-2023]) #hover-layer {
+        background-color: var(--cr-input-hover-background-color);
+        inset: 0;
+        pointer-events: none;
+        position: absolute;
+        z-index: 0;
+      }
+
+      :host-context([chrome-refresh-2023]):host(:not([readonly]):not([disabled]))
+          #input-container:hover #hover-layer {
+        display: block;
+      }
+
+      #input {
+        -webkit-appearance: none;
+        /* Transparent, #inner-input-container will apply background. */
+        background-color: transparent;
+        border: none;
+        box-sizing: border-box;
+        caret-color: var(--cr-input-focus-color);
+        color: var(--cr-input-color);
+        font-family: inherit;
+        font-size: inherit;
+        font-weight: inherit;
+        line-height: inherit;
+        min-height: var(--cr-input-min-height, auto);
+        outline: none;
+
+        /**
+         * When using mixins, avoid using padding shorthand. Using both the
+         * shorthand and top/bottom/start/end can lead to style override issues.
+         * This is only noticable when the |optimize_webui=true| build argument
+         * is used.
+         *
+         * See https://crbug.com/846254 and associated CL for more information.
+         */
+        padding-bottom: var(--cr-input-padding-bottom, 6px);
+        padding-inline-end: var(--cr-input-padding-end, 8px);
+        padding-inline-start: var(--cr-input-padding-start, 8px);
+        padding-top: var(--cr-input-padding-top, 6px);
+
+        text-align: inherit;
+        text-overflow: ellipsis;
+        width: 100%;
+      }
+
+      :host-context([chrome-refresh-2023]) #input {
+        font-size: 12px;
+        line-height: 16px;
+        padding: 0;
+      }
+
+      :host-context([chrome-refresh-2023]) #inner-input-content {
+        padding-bottom: var(--cr-input-padding-bottom);
+        padding-inline-end: var(--cr-input-padding-end);
+        padding-inline-start: var(--cr-input-padding-start);
+        padding-top: var(--cr-input-padding-top);
+      }
+
+      /* Underline styling below. */
+      #underline {
+        border-bottom: 2px solid var(--cr-input-focus-color);
+        border-radius: var(--cr-input-underline-border-radius, 0);
+        bottom: 0;
+        box-sizing: border-box;
+        display: var(--cr-input-underline-display);
+        height: var(--cr-input-underline-height, 0);
+        left: 0;
+        margin: auto;
+        opacity: 0;
+        position: absolute;
+        right: 0;
+        transition: opacity 120ms ease-out, width 0s linear 180ms;
+        width: 0;
+      }
+
+      :host([invalid]) #underline,
+      :host([force-underline]) #underline,
+      :host([focused_]) #underline {
+        opacity: 1;
+        transition: opacity 120ms ease-in, width 180ms ease-out;
+        width: 100%;
+      }
+
+      #underline-base {
+        display: none;
+      }
+
+      :host-context([chrome-refresh-2023]):host([readonly]) #underline {
+        display: none;
+      }
+
+      :host-context([chrome-refresh-2023]):host(:not([readonly]))
+          #underline-base {
+        border-bottom: var(--cr-input-border-bottom);
+        bottom: 0;
+        display: block;
+        left: 0;
+        position: absolute;
+        right: 0;
+      }
+
+      :host-context([chrome-refresh-2023]):host([disabled]) {
+        color: var(--color-textfield-foreground-disabled,
+            var(--cr-fallback-color-disabled-foreground));
+        --cr-input-border-bottom: 1px solid currentColor;
+        --cr-input-placeholder-color: currentColor;
+        --cr-input-color: currentColor;
+        --cr-input-background-color: var(--color-textfield-background-disabled,
+            var(--cr-fallback-color-disabled-background));
+      }
+
+      :host-context([chrome-refresh-2023]):host([disabled])
+          #inner-input-content ::slotted(*) {
+        --cr-icon-color: currentColor;
+        --cr-icon-button-fill-color: currentColor;
+      }

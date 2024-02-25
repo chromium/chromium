@@ -53,7 +53,8 @@ Status StubWebView::Resume(const Timeout* timeout) {
   return Status(kOk);
 }
 
-Status StubWebView::StartBidiServer(std::string bidi_mapper_script) {
+Status StubWebView::StartBidiServer(std::string bidi_mapper_script,
+                                    const base::Value::Dict& mapper_options) {
   return Status{kOk};
 }
 
@@ -276,4 +277,17 @@ Status StubWebView::GetBackendNodeIdByElement(const std::string& frame,
                                               const base::Value& element,
                                               int* node_id) {
   return Status(kOk);
+}
+
+bool StubWebView::IsDetached() const {
+  return false;
+}
+
+Status StubWebView::CallFunctionWithTimeout(
+    const std::string& frame,
+    const std::string& function,
+    const base::Value::List& args,
+    const base::TimeDelta& timeout,
+    std::unique_ptr<base::Value>* result) {
+  return Status{kOk};
 }

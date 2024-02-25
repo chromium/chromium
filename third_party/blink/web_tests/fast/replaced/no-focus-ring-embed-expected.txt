@@ -1,7 +1,7 @@
-CONSOLE MESSAGE: Blink Test Plugin: initializing
-CONSOLE MESSAGE: Blink Test Plugin: DidChangeFocus(true)
-CONSOLE MESSAGE: Blink Test Plugin: MouseDown at (5,5)
-CONSOLE MESSAGE: Blink Test Plugin: MouseUp at (5,5)
+Plugin received event: MouseEnter
+Plugin received event: MouseMove
+Plugin received event: MouseDown
+Plugin received event: MouseUp
 
 This test requires DumpRenderTree. Click the orange border, a focus ring should not appear.
 EMBED Event: focus PASS

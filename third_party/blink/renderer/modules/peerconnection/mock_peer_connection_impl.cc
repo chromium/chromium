@@ -11,6 +11,7 @@
 
 #include "base/check_op.h"
 #include "base/containers/contains.h"
+#include "base/memory/raw_ptr.h"
 #include "base/notreached.h"
 #include "base/ranges/algorithm.h"
 #include "third_party/blink/renderer/modules/peerconnection/mock_data_channel_impl.h"
@@ -110,7 +111,7 @@ class MockDtmfSender : public DtmfSenderInterface {
   int inter_tone_gap() const override { return inter_tone_gap_; }
 
  private:
-  DtmfSenderObserverInterface* observer_ = nullptr;
+  raw_ptr<DtmfSenderObserverInterface> observer_ = nullptr;
   std::string tones_;
   int duration_ = 0;
   int inter_tone_gap_ = 0;
@@ -238,7 +239,7 @@ void FakeRtpReceiver::SetObserver(
 }
 
 void FakeRtpReceiver::SetJitterBufferMinimumDelay(
-    absl::optional<double> delay_seconds) {
+    std::optional<double> delay_seconds) {
   NOTIMPLEMENTED();
 }
 
@@ -251,10 +252,10 @@ FakeRtpTransceiver::FakeRtpTransceiver(
     cricket::MediaType media_type,
     rtc::scoped_refptr<FakeRtpSender> sender,
     rtc::scoped_refptr<FakeRtpReceiver> receiver,
-    absl::optional<std::string> mid,
+    std::optional<std::string> mid,
     bool stopped,
     webrtc::RtpTransceiverDirection direction,
-    absl::optional<webrtc::RtpTransceiverDirection> current_direction)
+    std::optional<webrtc::RtpTransceiverDirection> current_direction)
     : media_type_(media_type),
       sender_(std::move(sender)),
       receiver_(std::move(receiver)),
@@ -279,7 +280,7 @@ cricket::MediaType FakeRtpTransceiver::media_type() const {
   return media_type_;
 }
 
-absl::optional<std::string> FakeRtpTransceiver::mid() const {
+std::optional<std::string> FakeRtpTransceiver::mid() const {
   return mid_;
 }
 
@@ -306,7 +307,7 @@ webrtc::RtpTransceiverDirection FakeRtpTransceiver::direction() const {
   return direction_;
 }
 
-absl::optional<webrtc::RtpTransceiverDirection>
+std::optional<webrtc::RtpTransceiverDirection>
 FakeRtpTransceiver::current_direction() const {
   return current_direction_;
 }
@@ -396,8 +397,8 @@ MockPeerConnectionImpl::AddTrack(
   rtc::scoped_refptr<FakeRtpTransceiver> transceiver(
       new rtc::RefCountedObject<FakeRtpTransceiver>(
           cricket::MediaType::MEDIA_TYPE_AUDIO, sender, dummy_receiver,
-          absl::nullopt, false, webrtc::RtpTransceiverDirection::kSendRecv,
-          absl::nullopt));
+          std::nullopt, false, webrtc::RtpTransceiverDirection::kSendRecv,
+          std::nullopt));
   transceivers_.push_back(transceiver);
   return rtc::scoped_refptr<webrtc::RtpSenderInterface>(sender);
 }

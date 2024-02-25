@@ -207,7 +207,7 @@ int RelaunchRequiredDialogView::GetHeightForWidth(
       width - insets.width()) + insets.height();
 }
 
-void RelaunchRequiredDialogView::Layout() {
+void RelaunchRequiredDialogView::Layout(PassKey) {
   body_label_->SetBoundsRect(GetContentsBounds());
 }
 ```
@@ -496,7 +496,7 @@ a stacked title and subtitle flanked on by views on both sides.
 [Current code][4] uses [`FlexLayout`][] to achieve the desired result, resulting
 in clearer code.
 
-[4]: https://source.chromium.org/chromium/chromium/src/+/main:chrome/browser/ui/views/hover_button.cc;l=106;drc=888af74006ea1c4ee9907d18c8df2a7ca424eab9
+[4]: https://source.chromium.org/chromium/chromium/src/+/main:chrome/browser/ui/views/controls/hover_button.cc;l=129;drc=0139ceffb2f8e1f64b7c30834e57d5793e529ed7
 
 |||---|||
 
@@ -597,12 +597,16 @@ HoverButton::HoverButton(
     std::unique_ptr<views::View> secondary_view,
     ...) {
   ...
+  // Set the layout manager to ignore the
+  // ink_drop_container to ensure the ink drop tracks
+  // the bounds of its parent.
+  ink_drop_container()->SetProperty(
+      views::kViewIgnoredByLayoutKey, true);
+
   SetLayoutManager(
       std::make_unique<views::FlexLayout>())
       ->SetCrossAxisAlignment(
-          views::LayoutAlignment::kCenter)
-      .SetChildViewIgnoredByLayout(
-          ink_drop_container(), true);
+          views::LayoutAlignment::kCenter);
   ...
   icon_view_ =
     AddChildView(std::make_unique<IconWrapper>(
@@ -830,8 +834,8 @@ FindBarView::FindBarView(FindBarHost* host)
       AddChildView(std::move(close_button));
 }
 
-void FindBarView::Layout() {
-  views::View::Layout();
+void FindBarView::Layout(PassKey) {
+  LayoutSuperclass<views::View>(this);
   // The focus forwarder view is a hidden view that
   // should cover the area between the find text box
   // and the find button so that when the user clicks
@@ -963,28 +967,29 @@ FindBarView::FindBarView(FindBarHost* host)
 
 |||---|||
 
-## Don't invoke Layout() directly
+## Don't invoke DeprecatedLayoutImmediately()
 
-**Avoid direct calls to `Layout()`.**
+**Avoid calls to `DeprecatedLayoutImmediately()`.**
 These are typically used for three purposes:
 
-1.  *Calling `Layout()` on `this`, when something that affects layout has
-changed.* This forces a synchronous layout, which can lead to needless
-work (e.g. if several sequential changes each trigger layout). Use
+1.  *Calling `DeprecatedLayoutImmediately()` on `this`, when something that
+affects layout has changed.* This forces a synchronous layout, which can lead to
+needless work (e.g. if several sequential changes each trigger layout). Use
 asynchronous layout\* instead. In many cases (such as
 [the preferred size changing][] or
 [a child needing layout][],
 a `View` will automatically mark itself as needing layout; when necessary, call
 [`InvalidateLayout()`][] to mark it manually.
 
-1.  *Calling `Layout()` or `InvalidateLayout()` on some `View` to notify it
-that something affecting its layout has changed.* Instead, ensure that
-`View` is notified of the underlying change (via specific method overrides or
-plumbing from a model object), and then invalidates its own layout when needed.
+1.  *Calling `DeprecatedLayoutImmediately()` or `InvalidateLayout()` on some
+`View` to notify it that something affecting its layout has changed.* Instead,
+ensure that `View` is notified of the underlying change (via specific method
+overrides or plumbing from a model object), and then invalidates its own layout
+when needed.
 
-1.  *Calling `Layout()` on some `View` to "ensure it's up to date" before
-reading some layout-related property off it.* Instead, plumb any relevant
-events to the current object, then handle them directly (e.g. override
+1.  *Calling `DeprecatedLayoutImmediately()` on some `View` to "ensure it's up
+to date" before reading some layout-related property off it.* Instead, plumb any
+relevant events to the current object, then handle them directly (e.g. override
 [`ChildPreferredSizeChanged()`][] or use a [`ViewObserver`][]
 to monitor the target `View`; then update local state as necessary and trigger
 handler methods).
@@ -994,12 +999,11 @@ periodically [requests a LayerTreeHost update][].
 This ultimately calls back to [`Widget::LayoutRootViewIfNecessary()`][],
 recursively laying out invalidated `View`s within the `Widget`. In unittests,
 this compositor-driven sequence never occurs, so it's necessary to
-[call LayoutRootViewIfNecessary() manually][] when a test needs to ensure a
-`View`'s layout is up-to-date.  Many tests fail to do this, but currently pass
-because something triggers Layout() directly;
-accordingly, changing existing code from synchronous to asynchronous layout may
-require adding `LayoutRootViewIfNecessary()` calls to (possibly many) tests,
-and this is not a sign that the change is wrong.
+[call RunScheduledLayout() manually][] when a test needs to ensure a `View`'s
+layout is up-to-date.  Many tests fail to do this, but currently pass because
+something triggers Layout() directly; accordingly, changing existing code from
+synchronous to asynchronous layout may require adding `RunScheduledLayout()`
+calls to (possibly many) tests, and this is not a sign that the change is wrong.
 
 [the preferred size changing]: https://source.chromium.org/chromium/chromium/src/+/main:ui/views/view.cc;l=1673;drc=bc9a6d40468646be476c61b6637b51729bec7b6d
 [a child needing layout]: https://source.chromium.org/chromium/chromium/src/+/main:ui/views/view.cc;l=777;drc=bc9a6d40468646be476c61b6637b51729bec7b6d
@@ -1008,7 +1012,7 @@ and this is not a sign that the change is wrong.
 [`ViewObserver`]: https://source.chromium.org/chromium/chromium/src/+/main:ui/views/view_observer.h;l=17;drc=eb20fd77330dc4a89eecf17459263e5895e7f177
 [requests a LayerTreeHost update]: https://source.chromium.org/chromium/chromium/src/+/main:cc/trees/layer_tree_host.cc;l=304;drc=c06f6b339b47ce2388624aa9a89334ace38a71e4
 [`Widget::LayoutRootViewIfNecessary()`]: https://source.chromium.org/chromium/chromium/src/+/main:ui/views/widget/widget.h;l=946;drc=b1dcb398c454a576092d38d0d67db3709b2b2a9b
-[call LayoutRootViewIfNecessary() manually]: https://source.chromium.org/chromium/chromium/src/+/main:ui/views/widget/widget_unittest.cc;l=3110;drc=c06f6b339b47ce2388624aa9a89334ace38a71e4
+[call RunScheduledLayout() manually]: https://source.chromium.org/chromium/chromium/src/+/main:ui/views/test/views_test_utils.h;l=17;drc=3e1a26c44c024d97dc9a4c09bbc6a2365398ca2c
 
 |||---|||
 
@@ -1016,9 +1020,9 @@ and this is not a sign that the change is wrong.
 
 **Avoid**
 
-[Current code][5] makes a direct and unnecessary call to Layout()
+[Current code][5] makes an unnecessary call to DeprecatedLayoutImmediately()
 
-[5]: https://source.chromium.org/chromium/chromium/src/+/main:chrome/browser/ui/views/media_router/cast_dialog_view.cc;l=349;drc=18ca2de542bfa53802639dc5c85762b5e7b5bef6
+[5]: https://source.chromium.org/chromium/chromium/src/+/main:chrome/browser/ui/views/media_router/cast_dialog_view.cc;l=283;drc=7db01ff4534c04419f3fa10d75e0b97b0a5a4f99
 
 #####
 
@@ -1036,7 +1040,7 @@ A better approach would be to call InvalidateLayout() and update the necessary t
 void CastDialogView::PopulateScrollView(
     const std::vector<UIMediaSink>& sinks) {
   ...
-  Layout();
+  DeprecatedLayoutImmediately();
 }
 
 TEST_F(CastDialogViewTest, PopulateDialog) {
@@ -1224,7 +1228,7 @@ void TimeView::UpdateClockLayout(
     layout->AddPaddingRow(
         0, kVerticalClockMinutesTopOffset);
   }
-  Layout();
+  DeprecatedLayoutImmediately();
 }
 ```
 

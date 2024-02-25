@@ -7,17 +7,17 @@
 
 #import <UIKit/UIKit.h>
 
-#import "ios/chrome/browser/sync/sync_observer_bridge.h"
+#import "ios/chrome/browser/sync/model/sync_observer_bridge.h"
 #import "ios/chrome/browser/ui/settings/google_services/manage_sync_settings_constants.h"
 #import "ios/chrome/browser/ui/settings/google_services/manage_sync_settings_service_delegate.h"
-#import "ios/chrome/browser/ui/settings/google_services/manage_sync_settings_view_controller_model_delegate.h"
+#import "ios/chrome/browser/ui/settings/google_services/manage_sync_settings_table_view_controller_model_delegate.h"
 
 class AuthenticationService;
 class ChromeAccountManagerService;
+class PrefService;
 @protocol ManageSyncSettingsCommandHandler;
 @protocol ManageSyncSettingsConsumer;
 @protocol SyncErrorSettingsCommandHandler;
-class SyncSetupService;
 namespace signin {
 class IdentityManager;
 }  // namespace signin
@@ -33,8 +33,6 @@ class SyncService;
 
 // Consumer.
 @property(nonatomic, weak) id<ManageSyncSettingsConsumer> consumer;
-// Sync setup service.
-@property(nonatomic, assign) SyncSetupService* syncSetupService;
 // Command handler.
 @property(nonatomic, weak) id<ManageSyncSettingsCommandHandler> commandHandler;
 // The initial account sync state at the time this mediator gets created.
@@ -51,6 +49,10 @@ class SyncService;
 @property(nonatomic, assign) BOOL forcedSigninEnabled;
 // Returns the default title for the Sync Settings based on the account state.
 @property(nonatomic, strong, readonly) NSString* overrideViewControllerTitle;
+// Number of local items to upload excluding passwords.
+@property(nonatomic, assign) NSInteger localItemsToUpload;
+// Number of local passwords to upload.
+@property(nonatomic, assign) NSInteger localPasswordsToUpload;
 
 // Designated initializer.
 // `syncService`: Sync service. Should not be null.
@@ -59,12 +61,16 @@ class SyncService;
           identityManager:(signin::IdentityManager*)identityManager
     authenticationService:(AuthenticationService*)authenticationService
     accountManagerService:(ChromeAccountManagerService*)accountManagerService
+              prefService:(PrefService*)prefService
       initialAccountState:(SyncSettingsAccountState)initialAccountState
     NS_DESIGNATED_INITIALIZER;
 - (instancetype)init NS_UNAVAILABLE;
 
 // Disconnects the mediator to all observers and services.
 - (void)disconnect;
+
+// Enable or disable Autofill data type.
+- (void)autofillAlertConfirmed:(BOOL)value;
 
 @end
 

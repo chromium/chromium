@@ -103,31 +103,32 @@ public class TabUsageTracker
         if (mModelSelector.isTabStateInitialized()) {
             mInitialTabCount = mModelSelector.getTotalTabCount();
         } else {
-            mTabModelSelectorObserver = new TabModelSelectorObserver() {
-                @Override
-                public void onTabStateInitialized() {
-                    mInitialTabCount = mModelSelector.getTotalTabCount();
-                }
-            };
+            mTabModelSelectorObserver =
+                    new TabModelSelectorObserver() {
+                        @Override
+                        public void onTabStateInitialized() {
+                            mInitialTabCount = mModelSelector.getTotalTabCount();
+                        }
+                    };
             mModelSelector.addObserver(mTabModelSelectorObserver);
         }
 
-        Tab currentlySelectedTab =
-                mModelSelector.getCurrentModel().getTabAt(mModelSelector.getCurrentModelIndex());
+        Tab currentlySelectedTab = mModelSelector.getCurrentTab();
         if (currentlySelectedTab != null) mTabsUsed.add(currentlySelectedTab.getId());
 
-        mTabModelSelectorTabModelObserver = new TabModelSelectorTabModelObserver(mModelSelector) {
-            @Override
-            public void didAddTab(
-                    Tab tab, int type, int creationState, boolean markedForSelection) {
-                mNewlyAddedTabCount++;
-            }
+        mTabModelSelectorTabModelObserver =
+                new TabModelSelectorTabModelObserver(mModelSelector) {
+                    @Override
+                    public void didAddTab(
+                            Tab tab, int type, int creationState, boolean markedForSelection) {
+                        mNewlyAddedTabCount++;
+                    }
 
-            @Override
-            public void didSelectTab(Tab tab, int type, int lastId) {
-                mTabsUsed.add(tab.getId());
-            }
-        };
+                    @Override
+                    public void didSelectTab(Tab tab, int type, int lastId) {
+                        mTabsUsed.add(tab.getId());
+                    }
+                };
         mApplicationResumed = true;
     }
 

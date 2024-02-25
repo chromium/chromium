@@ -21,7 +21,7 @@ class RealTimeReportControllerAndroid
       const RealTimeReportControllerAndroid&) = delete;
   ~RealTimeReportControllerAndroid() override;
 
-  void TriggerLegacyTech(const LegacyTechReportGenerator::LegacyTechData& data);
+  void TriggerLegacyTech(LegacyTechReportGenerator::LegacyTechData data);
 
  private:
   // RealTimeReportController::Delegate

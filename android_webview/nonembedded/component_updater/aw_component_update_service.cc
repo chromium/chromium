@@ -5,6 +5,8 @@
 #include "android_webview/nonembedded/component_updater/aw_component_update_service.h"
 
 #include <memory>
+#include <string>
+#include <vector>
 
 #include "android_webview/common/aw_paths.h"
 #include "android_webview/nonembedded/component_updater/aw_component_updater_configurator.h"
@@ -189,25 +191,26 @@ update_client::CrxComponent AwComponentUpdateService::ToCrxComponent(
   return crx;
 }
 
-absl::optional<component_updater::ComponentRegistration>
+std::optional<component_updater::ComponentRegistration>
 AwComponentUpdateService::GetComponent(const std::string& id) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return component_updater::GetComponent(components_, id);
 }
 
-std::vector<absl::optional<update_client::CrxComponent>>
-AwComponentUpdateService::GetCrxComponents(
-    const std::vector<std::string>& ids) {
+void AwComponentUpdateService::GetCrxComponents(
+    const std::vector<std::string>& ids,
+    base::OnceCallback<
+        void(const std::vector<std::optional<update_client::CrxComponent>>&)>
+        callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  std::vector<absl::optional<update_client::CrxComponent>> crxs;
-  for (absl::optional<component_updater::ComponentRegistration> item :
+  std::vector<std::optional<update_client::CrxComponent>> crxs;
+  for (std::optional<component_updater::ComponentRegistration> item :
        component_updater::GetCrxComponents(components_, ids)) {
     crxs.push_back(
-        item
-            ? absl::optional<update_client::CrxComponent>{ToCrxComponent(*item)}
-            : absl::nullopt);
+        item ? std::optional<update_client::CrxComponent>{ToCrxComponent(*item)}
+             : std::nullopt);
   }
-  return crxs;
+  std::move(callback).Run(crxs);
 }
 
 void AwComponentUpdateService::ScheduleUpdatesOfRegisteredComponents(

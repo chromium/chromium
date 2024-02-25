@@ -1,0 +1,19 @@
+This is a testharness.js-based test.
+[FAIL] Serialization of basic shapes 12
+  assert_equals: circle(at top 0% right 5px) expected "circle(at calc(100% - 5px) 0%)" but got "circle(at right 5px top 0%)"
+[FAIL] Serialization of basic shapes 13
+  assert_equals: ellipse(at top 0% right 10px) expected "ellipse(at calc(100% - 10px) 0%)" but got "ellipse(at right 10px top 0%)"
+[FAIL] Serialization of basic shapes 21
+  assert_equals: circle(at right 5px bottom 10px) expected "circle(at calc(100% - 5px) calc(100% - 10px))" but got "circle(at right 5px bottom 10px)"
+[FAIL] Serialization of basic shapes 22
+  assert_equals: ellipse(at right 5px bottom 10px) expected "ellipse(at calc(100% - 5px) calc(100% - 10px))" but got "ellipse(at right 5px bottom 10px)"
+[FAIL] Serialization of basic shapes 23
+  assert_equals: circle(at right 5% top 0px) expected "circle(at calc(95%) 0px)" but got "circle(at 95% 0%)"
+[FAIL] Serialization of basic shapes 24
+  assert_equals: ellipse(at right 5% top 0px) expected "ellipse(at calc(95%) 0px)" but got "ellipse(at 95% 0%)"
+[FAIL] Serialization of basic shapes 25
+  assert_equals: circle(at right calc(10% + 5px) bottom calc(10% + 5px)) expected "circle(at calc(90% - 5px) calc(90% - 5px))" but got "circle(at right calc(10% + 5px) bottom calc(10% + 5px))"
+[FAIL] Serialization of basic shapes 26
+  assert_equals: ellipse(at right calc(10% + 5px) bottom calc(10% + 5px)) expected "ellipse(at calc(90% - 5px) calc(90% - 5px))" but got "ellipse(at right calc(10% + 5px) bottom calc(10% + 5px))"
+Harness: the test ran to completion.
+

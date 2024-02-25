@@ -6,7 +6,9 @@
 #define CHROMEOS_ASH_COMPONENTS_SYSTEM_STATISTICS_PROVIDER_IMPL_H_
 
 #include <memory>
+#include <optional>
 #include <string>
+#include <string_view>
 #include <utility>
 #include <vector>
 
@@ -15,14 +17,12 @@
 #include "base/files/file_path.h"
 #include "base/functional/callback_forward.h"
 #include "base/memory/scoped_refptr.h"
-#include "base/strings/string_piece.h"
 #include "base/synchronization/atomic_flag.h"
 #include "base/synchronization/lock.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/task/sequenced_task_runner.h"
 #include "chromeos/ash/components/system/name_value_pairs_parser.h"
 #include "chromeos/ash/components/system/statistics_provider.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ash::system {
 
@@ -85,9 +85,9 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_SYSTEM) StatisticsProviderImpl
   // If `ash::switches::kCrosRegion` switch is set, looks for the requested
   // statistic in the region file and ignores any other sources. Otherwise
   // returns the statistic from the first matching source.
-  absl::optional<base::StringPiece> GetMachineStatistic(
-      base::StringPiece name) override;
-  FlagValue GetMachineFlag(base::StringPiece name) override;
+  std::optional<std::string_view> GetMachineStatistic(
+      std::string_view name) override;
+  FlagValue GetMachineFlag(std::string_view name) override;
 
   void Shutdown() override;
 
@@ -132,12 +132,11 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_SYSTEM) StatisticsProviderImpl
   void LoadOemManifestFromFile(const base::FilePath& file);
 
   // Loads regional data off of disk. Runs on the file thread.
-  void LoadRegionsFile(const base::FilePath& filename,
-                       base::StringPiece region);
+  void LoadRegionsFile(const base::FilePath& filename, std::string_view region);
 
   // Extracts known data from `regional_data_`.
-  absl::optional<base::StringPiece> GetRegionalInformation(
-      base::StringPiece name) const;
+  std::optional<std::string_view> GetRegionalInformation(
+      std::string_view name) const;
 
   StatisticsSources sources_;
 

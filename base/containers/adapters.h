@@ -30,9 +30,9 @@ class ReversedAdapter {
   Iterator end() const { return std::rend(t_); }
 
  private:
-  // Not a raw_ref<...> for performance reasons: on-stack pointer.
-  // It is only used inside for loops. Ideally, the container being iterated
-  // over should be the one held via a raw_ref/raw_ptrs.
+  // RAW_PTR_EXCLUSION: References a STACK_ALLOCATED class. It is only used
+  // inside for loops. Ideally, the container being iterated over should be the
+  // one held via a raw_ref/raw_ptrs.
   RAW_PTR_EXCLUSION T& t_;
 };
 

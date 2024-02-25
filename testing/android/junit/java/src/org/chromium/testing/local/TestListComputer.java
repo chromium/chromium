@@ -35,7 +35,9 @@ import java.util.TreeSet;
 class TestListComputer extends Computer {
     private final List<Description> mDescriptions = new ArrayList<>();
 
-    private static String computeConfig(Description description, Set<String> instrumentedPackages,
+    private static String computeConfig(
+            Description description,
+            Set<String> instrumentedPackages,
             Set<String> instrumentedClasses) {
         // Cache key for the ClassLoaders is in SandboxFactory.getSdkEnvironment:
         // https://cs.android.com/android/platform/superproject/main/+/main:external/robolectric-shadows/robolectric/src/main/java/org/robolectric/internal/SandboxFactory.java?q=symbol%3A%5Cborg.robolectric.internal.SandboxFactory.getSdkEnvironment%5Cb%20case%3Ayes
@@ -116,12 +118,14 @@ class TestListComputer extends Computer {
     @Override
     public Runner getSuite(final RunnerBuilder builder, Class<?>[] classes)
             throws InitializationError {
-        return super.getSuite(new RunnerBuilder() {
-            @Override
-            public Runner runnerForClass(Class<?> testClass) throws Throwable {
-                return new TestListRunner(builder.runnerForClass(testClass));
-            }
-        }, classes);
+        return super.getSuite(
+                new RunnerBuilder() {
+                    @Override
+                    public Runner runnerForClass(Class<?> testClass) throws Throwable {
+                        return new TestListRunner(builder.runnerForClass(testClass));
+                    }
+                },
+                classes);
     }
 
     private static JSONObject getOrNewObject(JSONObject parent, String key) throws JSONException {

@@ -6,13 +6,24 @@
 
 #include <memory>
 
+#include "base/check.h"
 #include "base/functional/bind.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/values.h"
 #include "chrome/browser/ash/login/signin/token_handle_util.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
+#include "chrome/browser/browser_process.h"
+#include "chrome/browser/browser_process_platform_part_ash.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
+#include "chrome/browser/ui/webui/signin/ash/signin_helper.h"
+#include "chromeos/ash/components/account_manager/account_manager_factory.h"
+#include "components/account_id/account_id.h"
+#include "components/account_manager_core/chromeos/account_manager.h"
 #include "components/keyed_service/content/browser_context_keyed_service_shutdown_notifier_factory.h"
+#include "components/prefs/pref_registry_simple.h"
+#include "components/prefs/pref_service.h"
+#include "components/prefs/scoped_user_pref_update.h"
 #include "components/signin/public/base/consent_level.h"
 #include "components/signin/public/identity_manager/access_token_info.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
@@ -26,6 +37,10 @@ namespace {
 
 const int kMaxRetries = 3;
 const char kAccessTokenFetchId[] = "token_handle_fetcher";
+
+// A dictionary pref that stores the mapping from (access) token handles to a
+// hash of the OAuth refresh token from which the token handle was derived.
+constexpr char kTokenHandleMap[] = "ash.token_handle_map";
 
 class TokenHandleFetcherShutdownNotifierFactory
     : public BrowserContextKeyedServiceShutdownNotifierFactory {
@@ -51,27 +66,39 @@ class TokenHandleFetcherShutdownNotifierFactory
   ~TokenHandleFetcherShutdownNotifierFactory() override {}
 };
 
+account_manager::AccountManager* GetAccountManager(Profile* profile) {
+  return g_browser_process->platform_part()
+      ->GetAccountManagerFactory()
+      ->GetAccountManager(profile->GetPath().value());
+}
+
 }  // namespace
 
-TokenHandleFetcher::TokenHandleFetcher(TokenHandleUtil* util,
+TokenHandleFetcher::TokenHandleFetcher(Profile* profile,
+                                       TokenHandleUtil* util,
                                        const AccountId& account_id)
-    : token_handle_util_(util), account_id_(account_id) {}
+    : profile_(profile), token_handle_util_(util), account_id_(account_id) {
+  CHECK(profile_.get());
+  CHECK(token_handle_util_.get());
+}
 
 TokenHandleFetcher::~TokenHandleFetcher() {}
 
-void TokenHandleFetcher::BackfillToken(Profile* profile,
-                                       TokenFetchingCallback callback) {
-  profile_ = profile;
+void TokenHandleFetcher::BackfillToken(TokenFetchingCallback callback) {
   callback_ = std::move(callback);
 
-  identity_manager_ = IdentityManagerFactory::GetForProfile(profile);
+  if (account_id_.GetAccountType() != AccountType::GOOGLE) {
+    return;
+  }
+
+  identity_manager_ = IdentityManagerFactory::GetForProfile(profile_);
   // This class doesn't care about browser sync consent.
   if (!identity_manager_->HasAccountWithRefreshToken(
           identity_manager_->GetPrimaryAccountId(
               signin::ConsentLevel::kSignin))) {
     profile_shutdown_subscription_ =
         TokenHandleFetcherShutdownNotifierFactory::GetInstance()
-            ->Get(profile)
+            ->Get(profile_)
             ->Subscribe(
                 base::BindRepeating(&TokenHandleFetcher::OnProfileDestroyed,
                                     base::Unretained(this)));
@@ -108,20 +135,34 @@ void TokenHandleFetcher::OnAccessTokenFetchComplete(
     return;
   }
 
-  FillForAccessToken(token_info.token);
+  GetAccountManager(profile_)->GetTokenHash(
+      account_manager::AccountKey(account_id_.GetGaiaId(),
+                                  account_manager::AccountType::kGaia),
+      base::BindOnce(&TokenHandleFetcher::FillForAccessToken,
+                     weak_factory_.GetWeakPtr(),
+                     /*access_token=*/token_info.token));
+}
+
+// static
+void TokenHandleFetcher::RegisterPrefs(PrefRegistrySimple* registry) {
+  registry->RegisterDictionaryPref(/*path=*/kTokenHandleMap);
 }
 
 void TokenHandleFetcher::FillForNewUser(const std::string& access_token,
+                                        const std::string& refresh_token_hash,
                                         TokenFetchingCallback callback) {
-  profile_ = ProfileHelper::Get()->GetSigninProfile();
   callback_ = std::move(callback);
-  FillForAccessToken(access_token);
+  FillForAccessToken(access_token, refresh_token_hash);
 }
 
-void TokenHandleFetcher::FillForAccessToken(const std::string& access_token) {
-  if (!gaia_client_.get())
+void TokenHandleFetcher::FillForAccessToken(
+    const std::string& access_token,
+    const std::string& refresh_token_hash) {
+  refresh_token_hash_ = refresh_token_hash;
+  if (!gaia_client_.get()) {
     gaia_client_ = std::make_unique<gaia::GaiaOAuthClient>(
         profile_->GetURLLoaderFactory());
+  }
   tokeninfo_response_start_time_ = base::TimeTicks::Now();
   gaia_client_->GetTokenInfo(access_token, kMaxRetries, this);
 }
@@ -142,12 +183,49 @@ void TokenHandleFetcher::OnGetTokenInfoResponse(
     if (handle) {
       success = true;
       token_handle_util_->StoreTokenHandle(account_id_, *handle);
+      StoreTokenHandleMapping(*handle);
     }
   }
   const base::TimeDelta duration =
       base::TimeTicks::Now() - tokeninfo_response_start_time_;
   base::UmaHistogramTimes("Login.TokenObtainResponseTime", duration);
   std::move(callback_).Run(account_id_, success);
+}
+
+void TokenHandleFetcher::StoreTokenHandleMapping(
+    const std::string& token_handle) {
+  PrefService* prefs = profile_->GetPrefs();
+  ScopedDictPrefUpdate update(prefs, kTokenHandleMap);
+  CHECK(!refresh_token_hash_.empty());
+  update->Set(token_handle, refresh_token_hash_);
+}
+
+void TokenHandleFetcher::DiagnoseTokenHandleMapping(const AccountId& account_id,
+                                                    const std::string& token) {
+  GetAccountManager(profile_)->GetTokenHash(
+      account_manager::AccountKey(account_id.GetGaiaId(),
+                                  account_manager::AccountType::kGaia),
+      base::BindOnce(&TokenHandleFetcher::OnGetTokenHash,
+                     weak_factory_.GetWeakPtr(), token));
+}
+
+void TokenHandleFetcher::OnGetTokenHash(
+    const std::string& token,
+    const std::string& account_manager_stored_hash) {
+  PrefService* prefs = profile_->GetPrefs();
+  const base::Value::Dict& token_handle_map = prefs->GetDict(kTokenHandleMap);
+  const std::string* pref_stored_hash_val = token_handle_map.FindString(token);
+  if (!pref_stored_hash_val) {
+    return;
+  }
+
+  const bool hashes_match =
+      (*pref_stored_hash_val == account_manager_stored_hash);
+  if (!hashes_match) {
+    LOG(ERROR) << "Token handle check was performed against an older token";
+  }
+  base::UmaHistogramBoolean("Login.IsTokenHandleInSyncWithRefreshToken",
+                            hashes_match);
 }
 
 void TokenHandleFetcher::OnProfileDestroyed() {

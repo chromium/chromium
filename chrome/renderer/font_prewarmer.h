@@ -19,9 +19,7 @@ class FontPrewarmer : public chrome::mojom::FontPrewarmer {
       mojo::PendingReceiver<chrome::mojom::FontPrewarmer> pending_receiver);
 
   // chrome::mojom::FontPrewarmer:
-  void PrewarmFonts(
-      const std::vector<std::string>& primary_font_names,
-      const std::vector<std::string>& fallback_font_names) override;
+  void PrewarmFonts(const std::vector<std::string>& font_names) override;
 
  private:
   FontPrewarmer(

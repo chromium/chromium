@@ -36,10 +36,6 @@
 #include "ui/gtk/gtk_util.h"
 #include "ui/gtk/printing/printing_gtk_util.h"
 
-#if BUILDFLAG(USE_CUPS)
-#include "printing/mojom/print.mojom.h"  // nogncheck
-#endif
-
 using printing::PageRanges;
 using printing::PrintSettings;
 
@@ -133,25 +129,19 @@ class GtkPrinterList {
  public:
   GtkPrinterList() { gtk_enumerate_printers(SetPrinter, this, nullptr, TRUE); }
 
-  ~GtkPrinterList() {
-    for (GtkPrinter* printer : printers_)
-      g_object_unref(printer);
-  }
-
-  // Can return nullptr if there's no default printer. E.g. Printer on a laptop
-  // is "home_printer", but the laptop is at work.
-  GtkPrinter* default_printer() { return default_printer_; }
-
+  ~GtkPrinterList() = default;
   // Can return nullptr if the printer cannot be found due to:
   // - Printer list out of sync with printer dialog UI.
-  // - Querying for non-existant printers like 'Print to PDF'.
-  GtkPrinter* GetPrinterWithName(const std::string& name) {
-    if (name.empty())
+  // - Querying for non-existent printers like 'Print to PDF'.
+  ScopedGObject<GtkPrinter> GetPrinterWithName(const std::string& name) {
+    if (name.empty()) {
       return nullptr;
+    }
 
-    for (GtkPrinter* printer : printers_) {
-      if (gtk_printer_get_name(printer) == name)
+    for (ScopedGObject<GtkPrinter>& printer : printers_) {
+      if (gtk_printer_get_name(printer.get()) == name) {
         return printer;
+      }
     }
 
     return nullptr;
@@ -161,18 +151,27 @@ class GtkPrinterList {
   // Callback function used by gtk_enumerate_printers() to get all printer.
   static gboolean SetPrinter(GtkPrinter* printer, gpointer data) {
     GtkPrinterList* printer_list = reinterpret_cast<GtkPrinterList*>(data);
-    if (gtk_printer_is_default(printer))
-      printer_list->default_printer_ = printer;
-
-    g_object_ref(printer);
-    printer_list->printers_.push_back(printer);
-
+    printer_list->printers_.push_back(WrapGObject(printer));
     return FALSE;
   }
 
-  std::vector<GtkPrinter*> printers_;
-  raw_ptr<GtkPrinter> default_printer_ = nullptr;
+  std::vector<ScopedGObject<GtkPrinter>> printers_;
 };
+
+#if BUILDFLAG(ENABLE_OOP_PRINTING_NO_OOP_BASIC_PRINT_DIALOG)
+ScopedGKeyFile GetGKeyFileFromDict(const base::Value::Dict& data,
+                                   base::StringPiece key) {
+  const std::string* data_string = data.FindString(key);
+  CHECK(data_string);
+
+  ScopedGKeyFile key_file = ScopedGKeyFile(g_key_file_new());
+  GError* error = nullptr;
+  CHECK(g_key_file_load_from_data(key_file.get(), data_string->c_str(),
+                                  data_string->size(), G_KEY_FILE_NONE, &error))
+      << error->message;
+  return key_file;
+}
+#endif
 
 }  // namespace
 
@@ -202,14 +201,14 @@ PrintDialogGtk::~PrintDialogGtk() {
     gtk::GtkWindowDestroy(dialog_);
     dialog_ = nullptr;
   }
+  if (reenable_parent_events_) {
+    std::move(reenable_parent_events_).Run();
+  }
   if (gtk_settings_) {
     g_object_unref(gtk_settings_.ExtractAsDangling());
   }
   if (page_setup_) {
     g_object_unref(page_setup_.ExtractAsDangling());
-  }
-  if (printer_) {
-    g_object_unref(printer_.ExtractAsDangling());
   }
 }
 
@@ -232,12 +231,11 @@ void PrintDialogGtk::UpdateSettings(
   auto printer_list = std::make_unique<GtkPrinterList>();
   printer_ = printer_list->GetPrinterWithName(
       base::UTF16ToUTF8(settings->device_name()));
-  if (printer_) {
-    g_object_ref(printer_);
+  if (printer_.get()) {
     gtk_print_settings_set_printer(gtk_settings_,
-                                   gtk_printer_get_name(printer_));
+                                   gtk_printer_get_name(printer_.get()));
     if (!page_setup_) {
-      page_setup_ = gtk_printer_get_default_page_size(printer_);
+      page_setup_ = gtk_printer_get_default_page_size(printer_.get());
     }
   }
 
@@ -365,6 +363,41 @@ void PrintDialogGtk::UpdateSettings(
   InitPrintSettings(std::move(settings));
 }
 
+#if BUILDFLAG(ENABLE_OOP_PRINTING_NO_OOP_BASIC_PRINT_DIALOG)
+void PrintDialogGtk::LoadPrintSettings(const PrintSettings& settings) {
+  const std::string* printer_name =
+      settings.system_print_dialog_data().FindString(
+          printing::kLinuxSystemPrintDialogDataPrinter);
+  CHECK(printer_name);
+
+  auto printer_list = std::make_unique<GtkPrinterList>();
+  printer_ = printer_list->GetPrinterWithName(*printer_name);
+  CHECK(printer_);
+
+  if (!gtk_settings_) {
+    gtk_settings_ = gtk_print_settings_copy(GetLastUsedSettings().settings());
+  }
+  if (!page_setup_) {
+    page_setup_ = gtk_page_setup_new();
+  }
+
+  GError* error = nullptr;
+  ScopedGKeyFile settings_key_file =
+      GetGKeyFileFromDict(settings.system_print_dialog_data(),
+                          printing::kLinuxSystemPrintDialogDataPrintSettings);
+  CHECK(gtk_print_settings_load_key_file(gtk_settings_, settings_key_file.get(),
+                                         /*group_name=*/nullptr, &error))
+      << error->message;
+
+  ScopedGKeyFile page_setup_key_file =
+      GetGKeyFileFromDict(settings.system_print_dialog_data(),
+                          printing::kLinuxSystemPrintDialogDataPageSetup);
+  CHECK(gtk_page_setup_load_key_file(page_setup_, page_setup_key_file.get(),
+                                     /*group_name=*/nullptr, &error))
+      << error->message;
+}
+#endif  // BUILDFLAG(ENABLE_OOP_PRINTING_NO_OOP_BASIC_PRINT_DIALOG)
+
 void PrintDialogGtk::ShowDialog(
     gfx::NativeView parent_view,
     bool has_selection,
@@ -393,7 +426,7 @@ void PrintDialogGtk::ShowDialog(
 
   // Disable input handling so the user cannot focus the same tab and press
   // print again.
-  gtk::DisableHostInputHandling(dialog_, parent_view);
+  reenable_parent_events_ = gtk::DisableHostInputHandling(dialog_, parent_view);
 
   // Since we only generate PDF, only show printers that support PDF.
   // TODO(thestig) Add more capabilities to support?
@@ -411,7 +444,10 @@ void PrintDialogGtk::ShowDialog(
                                           has_selection);
   gtk_print_unix_dialog_set_settings(GTK_PRINT_UNIX_DIALOG(dialog_),
                                      gtk_settings_);
-  g_signal_connect(dialog_, "response", G_CALLBACK(OnResponseThunk), this);
+  // Unretained is safe since we own `signal_`.
+  signal_ = ScopedGSignal(
+      dialog_, "response",
+      base::BindRepeating(&PrintDialogGtk::OnResponse, base::Unretained(this)));
   gtk_widget_show(dialog_);
 
   gtk::GtkUi::GetPlatform()->ShowGtkWindow(GTK_WINDOW(dialog_));
@@ -420,17 +456,13 @@ void PrintDialogGtk::ShowDialog(
 void PrintDialogGtk::PrintDocument(const printing::MetafilePlayer& metafile,
                                    const std::u16string& document_name) {
 #if DCHECK_IS_ON()
-#if BUILDFLAG(ENABLE_OOP_PRINTING)
-  const bool kOopPrinting =
-      printing::features::kEnableOopPrintDriversJobPrint.Get();
-#else
-  const bool kOopPrinting = false;
-#endif  // BUILDFLAG(ENABLE_OOP_PRINTING)
+  bool oop_printing = context_->process_behavior() !=
+                      printing::PrintingContext::ProcessBehavior::kOopDisabled;
 
   // For in-browser printing, this runs on the print worker thread, so it does
   // not block the UI thread.  For OOP it runs on the service document task
   // runner.
-  DCHECK_EQ(owning_task_runner()->RunsTasksInCurrentSequence(), kOopPrinting);
+  DCHECK_EQ(owning_task_runner()->RunsTasksInCurrentSequence(), oop_printing);
 #endif  // DCHECK_IS_ON()
 
   // The document printing tasks can outlive the PrintingContext that created
@@ -468,11 +500,12 @@ void PrintDialogGtk::ReleaseDialog() {
 }
 
 void PrintDialogGtk::OnResponse(GtkWidget* dialog, int response_id) {
-  int num_matched_handlers = g_signal_handlers_disconnect_by_func(
-      dialog_, reinterpret_cast<gpointer>(&OnResponseThunk), this);
-  CHECK_EQ(1, num_matched_handlers);
+  signal_.Reset();
 
   gtk_widget_hide(dialog_);
+  if (reenable_parent_events_) {
+    std::move(reenable_parent_events_).Run();
+  }
 
   switch (response_id) {
     case GTK_RESPONSE_OK: {
@@ -487,12 +520,8 @@ void PrintDialogGtk::OnResponse(GtkWidget* dialog, int response_id) {
       gtk_settings_ =
           gtk_print_unix_dialog_get_settings(GTK_PRINT_UNIX_DIALOG(dialog_));
 
-      if (printer_) {
-        g_object_unref(printer_.ExtractAsDangling());
-      }
-      printer_ = gtk_print_unix_dialog_get_selected_printer(
-          GTK_PRINT_UNIX_DIALOG(dialog_));
-      g_object_ref(printer_);
+      printer_ = WrapGObject(gtk_print_unix_dialog_get_selected_printer(
+          GTK_PRINT_UNIX_DIALOG(dialog_)));
 
       if (page_setup_) {
         g_object_unref(page_setup_.ExtractAsDangling());

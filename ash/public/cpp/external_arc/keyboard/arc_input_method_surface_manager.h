@@ -32,7 +32,7 @@ class ASH_PUBLIC_EXPORT ArcInputMethodSurfaceManager
   void OnTouchableBoundsChanged(exo::InputMethodSurface* surface) override;
 
  private:
-  raw_ptr<exo::InputMethodSurface, ExperimentalAsh> input_method_surface_ =
+  raw_ptr<exo::InputMethodSurface> input_method_surface_ =
       nullptr;  // Not owned
 };
 

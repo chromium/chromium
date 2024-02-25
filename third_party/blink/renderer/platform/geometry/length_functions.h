@@ -42,29 +42,28 @@ class LengthSize;
 struct LengthPoint;
 
 PLATFORM_EXPORT int IntValueForLength(const Length&, int maximum_value);
-PLATFORM_EXPORT float FloatValueForLength(
-    const Length&,
-    float maximum_value,
-    const Length::AnchorEvaluator* anchor_evaluator = nullptr);
+PLATFORM_EXPORT float FloatValueForLength(const Length&,
+                                          float maximum_value,
+                                          const Length::EvaluationInput& = {});
 PLATFORM_EXPORT LayoutUnit
 MinimumValueForLengthInternal(const Length&,
                               LayoutUnit maximum_value,
-                              const Length::AnchorEvaluator*);
+                              const Length::EvaluationInput&);
 
 inline LayoutUnit MinimumValueForLength(
     const Length& length,
     LayoutUnit maximum_value,
-    const Length::AnchorEvaluator* anchor_evaluator = nullptr) {
+    const Length::EvaluationInput& input = {}) {
   if (LIKELY(length.IsFixed()))
     return LayoutUnit(length.Value());
 
-  return MinimumValueForLengthInternal(length, maximum_value, anchor_evaluator);
+  return MinimumValueForLengthInternal(length, maximum_value, input);
 }
 
 PLATFORM_EXPORT LayoutUnit
 ValueForLength(const Length&,
                LayoutUnit maximum_value,
-               const Length::AnchorEvaluator* anchor_evaluator = nullptr);
+               const Length::EvaluationInput& input = {});
 PLATFORM_EXPORT gfx::SizeF SizeForLengthSize(const LengthSize&,
                                              const gfx::SizeF& box_size);
 PLATFORM_EXPORT gfx::PointF PointForLengthPoint(const LengthPoint&,

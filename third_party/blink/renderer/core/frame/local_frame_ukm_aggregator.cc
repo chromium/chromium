@@ -315,7 +315,7 @@ void LocalFrameUkmAggregator::RecordCountSample(size_t metric_index,
   // Record the UMA
   // ForcedStyleAndLayout happen so frequently on some pages that we overflow
   // the signed 32 counter for number of events in a 30 minute period. So
-  // randomly record with probability 1/100.
+  // randomly record with probability 1/1000.
   if (record.pre_fcp_uma_counter) {
     if (is_pre_fcp)
       record.pre_fcp_uma_counter->Count(ToSample(count));
@@ -615,6 +615,7 @@ void LocalFrameUkmAggregator::ReportPreFCPEvent(int64_t source_id,
   RECORD_METRIC(JavascriptDocumentUpdate);
   RECORD_METRIC(ParseStyleSheet);
   RECORD_METRIC(Accessibility);
+  RECORD_METRIC(PossibleSynchronizedScrollCount2);
 
   builder.Record(recorder);
 #undef RECORD_METRIC
@@ -672,6 +673,7 @@ void LocalFrameUkmAggregator::ReportUpdateTimeEvent(
   RECORD_METRIC(JavascriptDocumentUpdate);
   RECORD_METRIC(ParseStyleSheet);
   RECORD_METRIC(Accessibility);
+  RECORD_METRIC(PossibleSynchronizedScrollCount2);
 
   builder.Record(recorder);
 #undef RECORD_METRIC

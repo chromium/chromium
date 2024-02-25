@@ -113,7 +113,7 @@ void WebAppInstallManager::RemoveObserver(
   observers_.RemoveObserver(observer);
 }
 
-void WebAppInstallManager::NotifyWebAppInstalled(const AppId& app_id) {
+void WebAppInstallManager::NotifyWebAppInstalled(const webapps::AppId& app_id) {
   for (WebAppInstallManagerObserver& observer : observers_) {
     observer.OnWebAppInstalled(app_id);
   }
@@ -122,20 +122,21 @@ void WebAppInstallManager::NotifyWebAppInstalled(const AppId& app_id) {
 }
 
 void WebAppInstallManager::NotifyWebAppInstalledWithOsHooks(
-    const AppId& app_id) {
+    const webapps::AppId& app_id) {
   for (WebAppInstallManagerObserver& obs : observers_) {
     obs.OnWebAppInstalledWithOsHooks(app_id);
   }
 }
 
-void WebAppInstallManager::NotifyWebAppSourceRemoved(const AppId& app_id) {
+void WebAppInstallManager::NotifyWebAppSourceRemoved(
+    const webapps::AppId& app_id) {
   for (WebAppInstallManagerObserver& observer : observers_) {
     observer.OnWebAppSourceRemoved(app_id);
   }
 }
 
 void WebAppInstallManager::NotifyWebAppUninstalled(
-    const AppId& app_id,
+    const webapps::AppId& app_id,
     webapps::WebappUninstallSource uninstall_source) {
   for (WebAppInstallManagerObserver& observer : observers_) {
     observer.OnWebAppUninstalled(app_id, uninstall_source);
@@ -143,14 +144,14 @@ void WebAppInstallManager::NotifyWebAppUninstalled(
 }
 
 void WebAppInstallManager::NotifyWebAppManifestUpdated(
-    const AppId& app_id,
-    base::StringPiece old_name) {
+    const webapps::AppId& app_id) {
   for (WebAppInstallManagerObserver& observer : observers_) {
-    observer.OnWebAppManifestUpdated(app_id, old_name);
+    observer.OnWebAppManifestUpdated(app_id);
   }
 }
 
-void WebAppInstallManager::NotifyWebAppWillBeUninstalled(const AppId& app_id) {
+void WebAppInstallManager::NotifyWebAppWillBeUninstalled(
+    const webapps::AppId& app_id) {
   for (WebAppInstallManagerObserver& observer : observers_) {
     observer.OnWebAppWillBeUninstalled(app_id);
   }

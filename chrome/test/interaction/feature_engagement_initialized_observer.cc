@@ -10,7 +10,8 @@
 #include "components/feature_engagement/public/tracker.h"
 #include "ui/base/interaction/state_observer.h"
 
-DEFINE_STATE_IDENTIFIER_VALUE(kFeatureEngagementInitializedState);
+DEFINE_STATE_IDENTIFIER_VALUE(FeatureEngagementInitializedObserver,
+                              kFeatureEngagementInitializedState);
 
 FeatureEngagementInitializedObserver::FeatureEngagementInitializedObserver(
     Browser* browser)

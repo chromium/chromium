@@ -25,6 +25,7 @@ static_library("keyed_service") {
   deps = [
     "//ash/public/cpp",
     "//ash/quick_pair/common",
+    "//ash/quick_pair/companion_app",
     "//ash/quick_pair/fast_pair_handshake",
     "//ash/quick_pair/feature_status_tracker",
     "//ash/quick_pair/message_stream",
@@ -37,6 +38,7 @@ static_library("keyed_service") {
     "//chromeos/ash/services/bluetooth_config/public/cpp",
     "//chromeos/ash/services/bluetooth_config/public/mojom",
     "//chromeos/ash/services/quick_pair",
+    "//components/cross_device/logging:logging",
     "//components/keyed_service/core",
     "//components/prefs",
     "//components/user_manager",
@@ -55,6 +57,7 @@ static_library("test_support") {
 
   deps = [
     ":keyed_service",
+    "//ash/quick_pair/companion_app",
     "//ash/quick_pair/fast_pair_handshake",
     "//ash/quick_pair/feature_status_tracker",
     "//ash/quick_pair/message_stream",
@@ -83,6 +86,8 @@ source_set("unit_tests") {
     "//ash/constants:constants",
     "//ash/quick_pair/common",
     "//ash/quick_pair/common:test_support",
+    "//ash/quick_pair/companion_app",
+    "//ash/quick_pair/companion_app:test_support",
     "//ash/quick_pair/fast_pair_handshake:test_support",
     "//ash/quick_pair/feature_status_tracker:test_support",
     "//ash/quick_pair/message_stream",

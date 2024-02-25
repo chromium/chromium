@@ -58,7 +58,7 @@ class FakeP2PSocketDelegate : public P2PSocket::Delegate {
 
 class FakeSocket : public net::StreamSocket {
  public:
-  FakeSocket(std::string* written_data);
+  explicit FakeSocket(std::string* written_data);
   ~FakeSocket() override;
 
   void set_async_write(bool async_write) { async_write_ = async_write; }
@@ -87,7 +87,6 @@ class FakeSocket : public net::StreamSocket {
   int GetLocalAddress(net::IPEndPoint* address) const override;
   const net::NetLogWithSource& NetLog() const override;
   bool WasEverUsed() const override;
-  bool WasAlpnNegotiated() const override;
   net::NextProto GetNegotiatedProtocol() const override;
   bool GetSSLInfo(net::SSLInfo* ssl_info) override;
   int64_t GetTotalReceivedBytes() const override;

@@ -5,19 +5,19 @@
 #include "chrome/browser/ui/webui/ash/settings/test_support/os_settings_browser_test_mixin.h"
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <utility>
-
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 #include "base/path_service.h"
 #include "base/test/scoped_run_loop_timeout.h"
 #include "chrome/browser/ui/browser_list.h"
-#include "chrome/browser/ui/webui/settings/ash/os_settings_ui.h"
+#include "chrome/browser/ui/webui/ash/settings/os_settings_ui.h"
 #include "chrome/test/base/web_ui_test_data_source.h"
 #include "chrome/test/data/webui/settings/chromeos/test_api.test-mojom-test-utils.h"
 #include "chrome/test/data/webui/settings/chromeos/test_api.test-mojom.h"
 #include "content/public/browser/web_ui_data_source.h"
+#include "content/public/test/browser_test_utils.h"
 #include "ui/base/resource/resource_bundle.h"
 
 namespace ash::settings {
@@ -45,7 +45,7 @@ OSSettingsBrowserTestMixin::BrowserProcessServer::ReleaseOSSettingsDriver() {
   CHECK(os_settings_driver_.value().get());
 
   auto result = std::move(*os_settings_driver_);
-  os_settings_driver_ = absl::nullopt;
+  os_settings_driver_ = std::nullopt;
   return result;
 }
 

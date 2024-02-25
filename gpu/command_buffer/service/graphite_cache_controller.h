@@ -26,9 +26,8 @@ namespace gpu::raster {
 
 // GraphiteCacheController is not thread-safe; it can be created on any thread,
 // but it must be destroyed on the same thread that ScheduleCleanup is called.
-class GPU_GLES2_EXPORT GraphiteCacheController
-    : public base::RefCounted<GraphiteCacheController>,
-      public base::SupportsWeakPtr<GraphiteCacheController> {
+class GPU_GLES2_EXPORT GraphiteCacheController final
+    : public base::RefCounted<GraphiteCacheController> {
  public:
   // |recorder| and |context| are optional, GraphiteCacheController only purges
   // resources in non-null |recorder| and |context|.
@@ -42,6 +41,10 @@ class GPU_GLES2_EXPORT GraphiteCacheController
   // after ScheduleCleanup() is not called for a while after going idle.
   void ScheduleCleanup();
 
+  base::WeakPtr<GraphiteCacheController> AsWeakPtr() {
+    return weak_ptr_factory_.GetWeakPtr();
+  }
+
  private:
   friend class base::RefCounted<GraphiteCacheController>;
   ~GraphiteCacheController();
@@ -53,6 +56,8 @@ class GPU_GLES2_EXPORT GraphiteCacheController
   std::unique_ptr<base::RetainingOneShotTimer> timer_;
 
   SEQUENCE_CHECKER(sequence_checker_);
+
+  base::WeakPtrFactory<GraphiteCacheController> weak_ptr_factory_{this};
 };
 
 }  // namespace gpu::raster

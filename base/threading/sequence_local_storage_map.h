@@ -9,6 +9,7 @@
 #include "base/base_export.h"
 #include "base/containers/flat_map.h"
 #include "base/memory/raw_ptr_exclusion.h"
+#include "third_party/abseil-cpp/absl/meta/type_traits.h"
 
 namespace base {
 namespace internal {
@@ -41,13 +42,93 @@ class BASE_EXPORT SequenceLocalStorageMap {
   // dereference SequenceLocalStorageSlots.
   static bool IsSetForCurrentThread();
 
-  // Holds a pointer to a value alongside a destructor for this pointer.
-  // Calls the destructor on the value upon destruction.
+  // A `Value` holds an `ExternalValue` or an `InlineValue`. `InlineValue` is
+  // most efficient, but can only be used with types that have a size and an
+  // alignment smaller than a pointer and are trivially relocatable.
+  struct BASE_EXPORT ExternalValue {
+    // `value_` is not a raw_ptr<...> for performance reasons
+    // (based on analysis of sampling profiler data and tab_search:top100:2020).
+    RAW_PTR_EXCLUSION void* value;
+
+    template <class T>
+    void emplace(T* ptr) {
+      value = static_cast<void*>(ptr);
+    }
+
+    template <class T, class Deleter>
+    void Destroy() {
+      Deleter()(std::addressof(value_as<T>()));
+    }
+
+    template <typename T>
+    T& value_as() {
+      return *static_cast<T*>(value);
+    }
+
+    template <typename T>
+    const T& value_as() const {
+      return *static_cast<const T*>(value);
+    }
+  };
+
+  struct BASE_EXPORT alignas(sizeof(void*)) InlineValue {
+    // Holds a T if small.
+    char bytes[sizeof(void*)];
+
+    template <class T, class... Args>
+    void emplace(Args&&... args) {
+      static_assert(sizeof(T) <= sizeof(void*),
+                    "Type T is too big for storage inline.");
+      static_assert(absl::is_trivially_relocatable<T>(),
+                    "T doesn't qualify as trivially relocatable, which "
+                    "precludes it from storage inline.");
+      static_assert(std::alignment_of<T>::value <= sizeof(T),
+                    "Type T has alignment requirements that preclude its "
+                    "storage inline.");
+      new (&bytes) T(std::forward<Args>(args)...);
+    }
+
+    template <class T>
+    void Destroy() {
+      value_as<T>().~T();
+    }
+
+    template <typename T>
+    T& value_as() {
+      return *reinterpret_cast<T*>(bytes);
+    }
+
+    template <typename T>
+    const T& value_as() const {
+      return *reinterpret_cast<const T*>(bytes);
+    }
+  };
+
+  // There's no need for a tagged union (absl::variant) since the value
+  // type is implicitly determined by T being stored.
+  union Value {
+    ExternalValue external_value;
+    InlineValue inline_value;
+  };
+
+  using DestructorFunc = void(Value*);
+
+  template <class T, class Deleter>
+  static DestructorFunc* MakeExternalDestructor() {
+    return [](Value* value) { value->external_value.Destroy<T, Deleter>(); };
+  }
+  template <class T>
+  static DestructorFunc* MakeInlineDestructor() {
+    return [](Value* value) { value->inline_value.Destroy<T>(); };
+  }
+
+  // Holds a value alongside its destructor. Calls the destructor on the
+  // value upon destruction.
   class BASE_EXPORT ValueDestructorPair {
    public:
-    using DestructorFunc = void(void*);
-
-    ValueDestructorPair(void* value, DestructorFunc* destructor);
+    ValueDestructorPair();
+    ValueDestructorPair(ExternalValue value, DestructorFunc* destructor);
+    ValueDestructorPair(InlineValue value, DestructorFunc* destructor);
 
     ValueDestructorPair(const ValueDestructorPair&) = delete;
     ValueDestructorPair& operator=(const ValueDestructorPair&) = delete;
@@ -58,21 +139,35 @@ class BASE_EXPORT SequenceLocalStorageMap {
 
     ValueDestructorPair& operator=(ValueDestructorPair&& value_destructor_pair);
 
-    void* value() const { return value_; }
+    explicit operator bool() const;
+
+    Value* get() { return destructor_ != nullptr ? &value_ : nullptr; }
+    const Value* get() const {
+      return destructor_ != nullptr ? &value_ : nullptr;
+    }
+
+    Value* operator->() { return get(); }
+    const Value* operator->() const { return get(); }
 
    private:
-    // `value_` and `destructor_` are not a raw_ptr<...> for performance reasons
+    Value value_;
+    // `destructor_` is not a raw_ptr<...> for performance reasons
     // (based on analysis of sampling profiler data and tab_search:top100:2020).
-    RAW_PTR_EXCLUSION void* value_;
     RAW_PTR_EXCLUSION DestructorFunc* destructor_;
   };
 
+  // Returns true if a value is stored in |slot_id|.
+  bool Has(int slot_id) const;
+
+  // Resets the value stored in |slot_id|.
+  void Reset(int slot_id);
+
   // Returns the value stored in |slot_id| or nullptr if no value was stored.
-  void* Get(int slot_id);
+  Value* Get(int slot_id);
 
   // Stores |value_destructor_pair| in |slot_id|. Overwrites and destroys any
   // previously stored value.
-  void Set(int slot_id, ValueDestructorPair value_destructor_pair);
+  Value* Set(int slot_id, ValueDestructorPair value_destructor_pair);
 
  private:
   // Map from slot id to ValueDestructorPair.

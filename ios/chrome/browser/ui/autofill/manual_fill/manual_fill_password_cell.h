@@ -17,7 +17,7 @@ class GURL;
 
 extern NSString* const kMaskedPasswordTitle;
 
-// Wrapper to show password cells in a ChromeTableViewController.
+// Wrapper to show password cells in a LegacyChromeTableViewController.
 @interface ManualFillCredentialItem : TableViewItem
 
 // URL to fetch the favicon.

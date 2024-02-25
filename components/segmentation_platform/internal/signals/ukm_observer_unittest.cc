@@ -76,6 +76,7 @@ class UkmObserverTest : public testing::Test {
   }
 
   void TearDown() override {
+    ukm_data_manager_.reset();
     ukm_observer_.reset();
     ukm_recorder_.reset();
   }
@@ -94,6 +95,8 @@ class UkmObserverTest : public testing::Test {
   }
 
   void InitializeUkmObserver(ukm::UkmConsentState consent_state) {
+    ukm_data_manager_.reset();
+    ukm_observer_.reset();
     ukm_observer_ = std::make_unique<UkmObserver>(ukm_recorder_.get());
     ukm_observer_->OnUkmAllowedStateChanged(consent_state);
     auto ukm_database = std::make_unique<MockUkmDatabase>();
@@ -205,7 +208,7 @@ TEST_F(UkmObserverTest, PauseObservation) {
   observer.StartObserving(config);
 
   EXPECT_CALL(ukm_database(), StoreUkmEntry(_)).Times(0);
-  EXPECT_CALL(ukm_database(), UpdateUrlForUkmSource(_, _, _)).Times(0);
+  EXPECT_CALL(ukm_database(), UpdateUrlForUkmSource(_, _, _, _)).Times(0);
 
   observer.PauseOrResumeObservation(true);
 
@@ -230,10 +233,12 @@ TEST_F(UkmObserverTest, ObservationFromRecorder) {
   const GURL kUrl1("https://www.url1.com");
   base::RunLoop wait_for_source;
   EXPECT_CALL(ukm_database(),
-              UpdateUrlForUkmSource(kSourceId, kUrl1, /*is_validated=*/false))
-      .WillOnce([&wait_for_source](ukm::SourceId, const GURL&, bool) {
-        wait_for_source.QuitClosure().Run();
-      });
+              UpdateUrlForUkmSource(kSourceId, kUrl1, /*is_validated=*/false,
+                                    /*profile_id*/ ""))
+      .WillOnce(
+          [&wait_for_source](ukm::SourceId, const GURL&, bool, std::string) {
+            wait_for_source.QuitClosure().Run();
+          });
   recorder.UpdateSourceURL(kSourceId, {kUrl1});
   wait_for_source.Run();
 

@@ -51,13 +51,19 @@ class PLATFORM_EXPORT VideoCapturerSource {
   // |running_callback| will always be called on the same thread as the
   // StartCapture.
   //
-  // |crop_version_callback| will be called when it is guaranteed that all
-  // subsequent frames |new_frame_callback| is called for, have a crop version
-  // that is equal-to-or-greater-than the given crop version.
+  // |sub_capture_target_version_callback| will be called when it is guaranteed
+  // that all subsequent frames |new_frame_callback| is called for, have a
+  // sub-capture-target version that is equal-to-or-greater-than the given
+  // sub-capture-target version.
+  //
+  // |frame_dropped_callback| will be called when a frame was dropped prior to
+  // delivery (i.e. |new_frame_callback| was not called for this frame).
   virtual void StartCapture(
       const media::VideoCaptureParams& params,
       const VideoCaptureDeliverFrameCB& new_frame_callback,
-      const VideoCaptureCropVersionCB& crop_version_callback,
+      const VideoCaptureSubCaptureTargetVersionCB&
+          sub_capture_target_version_callback,
+      const VideoCaptureNotifyFrameDroppedCB& frame_dropped_callback,
       const RunningCallback& running_callback) = 0;
 
   // Returns a callback for providing the feedback from the consumer.
@@ -102,9 +108,6 @@ class PLATFORM_EXPORT VideoCapturerSource {
   // may still occur after this call, so the caller must take care to
   // use refcounted or weak references in |new_frame_callback|.
   virtual void StopCapture() = 0;
-
-  // Indicates to the source that a frame has been dropped.
-  virtual void OnFrameDropped(media::VideoCaptureFrameDropReason reason) {}
 
   // Hints to the source that if it has an alpha channel, that alpha channel
   // will be ignored and can be discarded.

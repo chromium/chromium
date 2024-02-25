@@ -33,6 +33,7 @@ class TabHandleLayer : public Layer {
 
   void SetProperties(int id,
                      ui::Resource* close_button_resource,
+                     ui::Resource* close_button_background_resource,
                      ui::Resource* divider_resource,
                      ui::NinePatchResource* tab_handle_resource,
                      ui::NinePatchResource* tab_handle_outline_resource,
@@ -54,8 +55,7 @@ class TabHandleLayer : public Layer {
                      bool is_loading,
                      float spinner_rotation,
                      float brightness,
-                     float opacity,
-                     bool is_tab_strip_redesign_enabled);
+                     float opacity);
   scoped_refptr<cc::slim::Layer> layer() override;
 
  protected:
@@ -68,6 +68,7 @@ class TabHandleLayer : public Layer {
   scoped_refptr<cc::slim::Layer> layer_;
   scoped_refptr<cc::slim::Layer> tab_;
   scoped_refptr<cc::slim::UIResourceLayer> close_button_;
+  scoped_refptr<cc::slim::UIResourceLayer> close_button_hover_highlight_;
   scoped_refptr<cc::slim::UIResourceLayer> start_divider_;
   scoped_refptr<cc::slim::UIResourceLayer> end_divider_;
   scoped_refptr<cc::slim::NinePatchLayer> decoration_tab_;

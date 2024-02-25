@@ -10,3 +10,5 @@ EXPORTS
   help
   hwnd = RunHwndCommand
   view = RunViewCommand
+  crashinfo = RunCrashInfoCommand
+  gwpasan = RunGwpAsanCommand

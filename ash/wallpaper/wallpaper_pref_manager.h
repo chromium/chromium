@@ -5,7 +5,9 @@
 #ifndef ASH_WALLPAPER_WALLPAPER_PREF_MANAGER_H_
 #define ASH_WALLPAPER_WALLPAPER_PREF_MANAGER_H_
 
+#include <optional>
 #include <string>
+#include <string_view>
 
 #include "ash/ash_export.h"
 #include "ash/public/cpp/session/session_observer.h"
@@ -15,14 +17,11 @@
 #include "ash/wallpaper/wallpaper_utils/wallpaper_calculated_colors.h"
 #include "base/containers/flat_map.h"
 #include "base/files/file_path.h"
-#include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/observer_list_types.h"
-#include "base/strings/string_piece.h"
 #include "base/time/time.h"
 #include "base/timer/wall_clock_timer.h"
 #include "components/account_id/account_id.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 class PrefService;
 class PrefRegistrySimple;
@@ -57,9 +56,7 @@ class WallpaperProfileHelper {
 };
 
 // Manages wallpaper preferences and tracks the currently configured wallpaper.
-class ASH_EXPORT WallpaperPrefManager
-    : public base::SupportsWeakPtr<WallpaperPrefManager>,
-      public SessionObserver {
+class ASH_EXPORT WallpaperPrefManager : public SessionObserver {
  public:
   // Names of nodes with wallpaper info in |kUserWallpaperInfo| dictionary.
   static const char kNewWallpaperAssetIdNodeName[];
@@ -133,34 +130,27 @@ class ASH_EXPORT WallpaperPrefManager
   // Returns a WallpaperCalculatedColors for a wallpaper with the corresponding
   // `location`, if one can be found. The result is synthesized from Prominent
   // and KMean colors.
-  virtual absl::optional<WallpaperCalculatedColors> GetCachedWallpaperColors(
-      base::StringPiece location) const = 0;
+  virtual std::optional<WallpaperCalculatedColors> GetCachedWallpaperColors(
+      std::string_view location) const = 0;
 
-  virtual void CacheProminentColors(base::StringPiece location,
-                                    const std::vector<SkColor>& colors) = 0;
-
+  // DEPRECATED: Will be removed soon.
   virtual void RemoveProminentColors(const AccountId& account_id) = 0;
 
-  // Returns the cached prominent colors for a wallpaper with `location` if
-  // present.
-  virtual absl::optional<std::vector<SkColor>> GetCachedProminentColors(
-      const base::StringPiece location) const = 0;
-
-  virtual void CacheKMeanColor(base::StringPiece location,
+  virtual void CacheKMeanColor(std::string_view location,
                                SkColor k_mean_color) = 0;
 
   // Returns the cached KMeans color value for the wallpaper at `location`.
-  virtual absl::optional<SkColor> GetCachedKMeanColor(
-      const base::StringPiece location) const = 0;
+  virtual std::optional<SkColor> GetCachedKMeanColor(
+      const std::string_view location) const = 0;
 
   virtual void RemoveKMeanColor(const AccountId& account_id) = 0;
 
   // Cache the prominent color sampled with the 'Celebi' algorithm.
-  virtual void CacheCelebiColor(base::StringPiece location,
+  virtual void CacheCelebiColor(std::string_view location,
                                 SkColor celebi_color) = 0;
   // Returns the cached celebi color for the wallpaper at `location`.
-  virtual absl::optional<SkColor> GetCelebiColor(
-      const base::StringPiece location) const = 0;
+  virtual std::optional<SkColor> GetCelebiColor(
+      const std::string_view location) const = 0;
   virtual void RemoveCelebiColor(const AccountId& account_id) = 0;
 
   virtual bool SetDailyGooglePhotosWallpaperIdCache(

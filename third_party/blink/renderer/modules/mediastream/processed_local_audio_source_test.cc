@@ -363,15 +363,24 @@ enum AecState {
   SYSTEM_AEC,
 };
 
+enum VoiceIsolationState {
+  kEnabled,
+  kDisabled,
+  kDefault,
+};
+
 class ProcessedLocalAudioSourceVoiceIsolationTest
     : public ProcessedLocalAudioSourceBase,
       public testing::WithParamInterface<
-          testing::tuple<bool, bool, AecState, bool>> {
+          testing::tuple<bool, bool, VoiceIsolationState, AecState, bool>> {
  public:
   bool IsVoiceIsolationOptionEnabled() { return std::get<0>(GetParam()); }
   bool IsVoiceIsolationSupported() { return std::get<1>(GetParam()); }
-  AecState GetAecState() { return std::get<2>(GetParam()); }
-  bool IsSystemAecDefaultEnabled() { return std::get<3>(GetParam()); }
+  VoiceIsolationState GetVoiceIsolationState() {
+    return std::get<2>(GetParam());
+  }
+  AecState GetAecState() { return std::get<3>(GetParam()); }
+  bool IsSystemAecDefaultEnabled() { return std::get<4>(GetParam()); }
 
   void SetUp() override {
     if (IsVoiceIsolationOptionEnabled()) {
@@ -400,6 +409,21 @@ class ProcessedLocalAudioSourceVoiceIsolationTest
             EchoCancellationType::kEchoCancellationSystem;
         break;
     }
+
+    switch (GetVoiceIsolationState()) {
+      case VoiceIsolationState::kEnabled:
+        properties->voice_isolation = AudioProcessingProperties::
+            VoiceIsolationType::kVoiceIsolationEnabled;
+        break;
+      case VoiceIsolationState::kDisabled:
+        properties->voice_isolation = AudioProcessingProperties::
+            VoiceIsolationType::kVoiceIsolationDisabled;
+        break;
+      case VoiceIsolationState::kDefault:
+        properties->voice_isolation = AudioProcessingProperties::
+            VoiceIsolationType::kVoiceIsolationDefault;
+        break;
+    }
   }
 
   void SetUpAudioParameters() {
@@ -422,9 +446,10 @@ class ProcessedLocalAudioSourceVoiceIsolationTest
   base::test::ScopedFeatureList feature_list_;
 };
 
-MATCHER_P3(VoiceIsolationAsExpected,
+MATCHER_P4(VoiceIsolationAsExpected,
            voice_isolation_option_enabled,
            voice_isolation_supported,
+           voice_isolation_state,
            aec_state,
            "") {
   // Only if voice isolation is supported and browser AEC is enabled while voice
@@ -433,15 +458,23 @@ MATCHER_P3(VoiceIsolationAsExpected,
   // `VOICE_ISOLATION` should be off.
   // Otherwise, `CLIENT_CONTROLLED_VOICE_ISOLATION` should be off and
   // `VOICE_ISOLATION` bit is don't-care.
-  if (voice_isolation_supported && aec_state == BROWSER_AEC &&
-      voice_isolation_option_enabled) {
-    return (arg.effects() &
-            media::AudioParameters::CLIENT_CONTROLLED_VOICE_ISOLATION) &&
-           ((arg.effects() & media::AudioParameters::VOICE_ISOLATION) == 0);
-  } else {
-    return (arg.effects() &
-            media::AudioParameters::CLIENT_CONTROLLED_VOICE_ISOLATION) == 0;
+  const bool client_controlled_voice_isolation =
+      arg.effects() & media::AudioParameters::CLIENT_CONTROLLED_VOICE_ISOLATION;
+  const bool voice_isolation_activated =
+      arg.effects() & media::AudioParameters::VOICE_ISOLATION;
+
+  if (voice_isolation_supported && voice_isolation_option_enabled) {
+    if (aec_state == BROWSER_AEC) {
+      return client_controlled_voice_isolation && !voice_isolation_activated;
+    }
+    if (voice_isolation_state == VoiceIsolationState::kEnabled) {
+      return client_controlled_voice_isolation && voice_isolation_activated;
+    }
+    if (voice_isolation_state == VoiceIsolationState::kDisabled) {
+      return client_controlled_voice_isolation && !voice_isolation_activated;
+    }
   }
+  return !client_controlled_voice_isolation;
 }
 
 TEST_P(ProcessedLocalAudioSourceVoiceIsolationTest,
@@ -456,7 +489,8 @@ TEST_P(ProcessedLocalAudioSourceVoiceIsolationTest,
   EXPECT_CALL(*mock_audio_capturer_source(),
               Initialize(VoiceIsolationAsExpected(
                              IsVoiceIsolationOptionEnabled(),
-                             IsVoiceIsolationSupported(), GetAecState()),
+                             IsVoiceIsolationSupported(),
+                             GetVoiceIsolationState(), GetAecState()),
                          capture_source_callback()));
   EXPECT_CALL(*mock_audio_capturer_source(), Start())
       .WillOnce(Invoke(
@@ -470,6 +504,9 @@ INSTANTIATE_TEST_SUITE_P(
     ProcessedLocalAudioSourceVoiceIsolationTest,
     ::testing::Combine(::testing::Bool(),
                        ::testing::Bool(),
+                       ::testing::ValuesIn({VoiceIsolationState::kEnabled,
+                                            VoiceIsolationState::kDisabled,
+                                            VoiceIsolationState::kDefault}),
                        ::testing::ValuesIn({AecState::AEC_DISABLED,
                                             AecState::BROWSER_AEC,
                                             AecState::SYSTEM_AEC}),

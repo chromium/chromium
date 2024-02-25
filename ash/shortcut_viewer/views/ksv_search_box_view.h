@@ -9,11 +9,14 @@
 
 #include "ash/search_box/search_box_view_base.h"
 #include "third_party/skia/include/core/SkColor.h"
+#include "ui/base/metadata/metadata_header_macros.h"
 
 namespace keyboard_shortcut_viewer {
 
 // A search_box_SearchBoxViewBase implementation for KeyboardShortcutViewer.
 class KSVSearchBoxView : public ash::SearchBoxViewBase {
+  METADATA_HEADER(KSVSearchBoxView, ash::SearchBoxViewBase)
+
  public:
   using QueryHandler =
       base::RepeatingCallback<void(const std::u16string& query)>;

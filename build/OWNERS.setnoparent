@@ -47,7 +47,6 @@ file://ui/android/java/res/LAYOUT_OWNERS
 # The rules are documented at:
 # https://sites.google.com/a/chromium.org/dev/developers/how-tos/enterprise/adding-new-policies
 file://components/policy/ENTERPRISE_POLICY_OWNERS
-file://components/policy/resources/templates/OWNERS
 
 # This restriction is in place due to the complicated compliance regulations
 # around this code.
@@ -57,10 +56,6 @@ file://chrome/android/java/src/org/chromium/chrome/browser/searchwidget/COMPLIAN
 # Android, so should not be added or removed lightly, and the proper
 # deprecation and versioning steps must be taken when doing so.
 file://chrome/browser/notifications/android/java/src/org/chromium/chrome/browser/notifications/channels/NOTIFICATION_CHANNEL_OWNERS
-
-# The Weblayer API is supposed to be stable and will be used outside of the
-# chromium repository.
-file://weblayer/API_OWNERS
 
 # New features for lock/login UI on Chrome OS need to work stably in all corner
 # cases.

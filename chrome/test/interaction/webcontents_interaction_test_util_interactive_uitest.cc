@@ -176,7 +176,7 @@ IN_PROC_BROWSER_TEST_F(WebContentsInteractionTestUtilInteractiveUiTest,
   // Poke into the doc to find something that's not at the top level, just to
   // verify we can.
   const WebContentsInteractionTestUtil::DeepQuery kTabSearchListQuery = {
-      "tab-search-app", "#tabsList"};
+      "tab-search-app", "tab-search-page"};
 
   DEFINE_LOCAL_CUSTOM_ELEMENT_EVENT_TYPE(kMinimumSizeEvent);
 

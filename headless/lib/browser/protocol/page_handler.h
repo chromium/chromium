@@ -55,6 +55,7 @@ class PageHandler : public DomainHandler, public Page::Backend {
                   Maybe<bool> prefer_css_page_size,
                   Maybe<String> transfer_mode,
                   Maybe<bool> generate_tagged_pdf,
+                  Maybe<bool> generate_document_outline,
                   std::unique_ptr<PrintToPDFCallback> callback) override;
 
  private:

@@ -9,6 +9,8 @@
 #include "content/common/content_export.h"
 #include "third_party/blink/public/mojom/choosers/date_time_chooser.mojom-forward.h"
 
+@class DateTimeChooserCoordinator;
+
 namespace content {
 
 // IOS implementation for DateTimeChooser dialogs.
@@ -20,11 +22,17 @@ class CONTENT_EXPORT DateTimeChooserIOS : public DateTimeChooser {
   DateTimeChooserIOS(const DateTimeChooserIOS&) = delete;
   DateTimeChooserIOS& operator=(const DateTimeChooserIOS&) = delete;
 
+  // Called when a dialog is closed by a user action.
+  void OnDialogClosed(bool success, double value);
+
  protected:
   // DateTimeChooser:
   void OpenPlatformDialog(blink::mojom::DateTimeDialogValuePtr value,
                           OpenDateTimeDialogCallback callback) override;
   void ClosePlatformDialog() override;
+
+ private:
+  DateTimeChooserCoordinator* __strong coordinator_;
 };
 
 }  // namespace content

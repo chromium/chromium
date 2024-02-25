@@ -27,9 +27,6 @@ void RegistrationState::Register() {
   DCHECK(!linking_registration_);
   DCHECK(!sync_registration_);
 
-  prelink_play_services_ =
-      base::FeatureList::IsEnabled(device::kWebAuthnPrelinkPlayServices);
-
   linking_registration_ = interface_->NewRegistration(
       device::cablev2::authenticator::Registration::Type::LINKING,
       base::BindOnce(&RegistrationState::OnLinkingRegistrationReady,
@@ -86,10 +83,6 @@ void RegistrationState::SignalSyncWhenReady() {
 }
 
 bool RegistrationState::have_play_services_data() const {
-  // If querying Play Services is disabled then it's always "ready".
-  if (!prelink_play_services_) {
-    return true;
-  }
   // If there's no result, then we're not ready.
   if (!have_link_data_from_play_services_) {
     return false;
@@ -114,7 +107,7 @@ void RegistrationState::QueryPlayServices() {
 }
 
 void RegistrationState::OnHavePlayServicesLinkingInformation(
-    absl::optional<std::vector<uint8_t>> cbor) {
+    std::optional<std::vector<uint8_t>> cbor) {
   DCHECK(play_services_query_pending_);
 
   play_services_query_pending_ = false;
@@ -178,7 +171,7 @@ void RegistrationState::MaybeFlushPendingEvent() {
     }
   }
 
-  const absl::optional<std::vector<uint8_t>> serialized(event->Serialize());
+  const std::optional<std::vector<uint8_t>> serialized(event->Serialize());
   if (!serialized) {
     return;
   }

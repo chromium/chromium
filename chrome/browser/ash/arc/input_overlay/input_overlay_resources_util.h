@@ -5,15 +5,14 @@
 #ifndef CHROME_BROWSER_ASH_ARC_INPUT_OVERLAY_INPUT_OVERLAY_RESOURCES_UTIL_H_
 #define CHROME_BROWSER_ASH_ARC_INPUT_OVERLAY_INPUT_OVERLAY_RESOURCES_UTIL_H_
 
+#include <optional>
 #include <string>
-
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace arc::input_overlay {
 
 // Get the resource ID of the input overlay JSON file by the associated package
 // name.
-absl::optional<int> GetInputOverlayResourceId(const std::string& package_name);
+std::optional<int> GetInputOverlayResourceId(const std::string& package_name);
 
 }  // namespace arc::input_overlay
 

@@ -5,7 +5,8 @@
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {loadTimeData} from './i18n_setup.js';
-import {ProcessedFile, processFile, SUPPORTED_FILE_TYPES} from './image_processor.js';
+import type {ProcessedFile} from './image_processor.js';
+import {processFile, SUPPORTED_FILE_TYPES} from './image_processor.js';
 import {getTemplate} from './lens_form.html.js';
 
 /** Lens service endpoint for the Upload by File action. */
@@ -166,6 +167,8 @@ export class LensFormElement extends PolymerElement {
       this.uploadFileAction_ = DIRECT_UPLOAD_FILE_ACTION;
     }
 
+    this.startTime_ = Date.now().toString();
+
     let processedFile: ProcessedFile = {processedFile: file};
 
     if (this.useDirectUpload_) {
@@ -175,8 +178,6 @@ export class LensFormElement extends PolymerElement {
     const dataTransfer = new DataTransfer();
     dataTransfer.items.add(processedFile.processedFile);
     this.$.fileInput.files = dataTransfer.files;
-
-    this.startTime_ = Date.now().toString();
 
     const action = new URL(this.uploadFileAction_);
     action.searchParams.set('ep', UPLOAD_FILE_ENTRYPOINT);

@@ -752,7 +752,7 @@ TEST_F(VideoDecodeStatsDBImplTest, DiscardCorruptedDBData) {
   protoA.set_frames_decoded(100);
   protoA.set_frames_dropped(15);
   protoA.set_frames_power_efficient(50);
-  protoA.set_last_write_date(clock.Now().ToJsTime());
+  protoA.set_last_write_date(clock.Now().InMillisecondsFSinceUnixEpoch());
   protoA.set_unweighted_average_frames_dropped(15.0 / 100);
   protoA.set_unweighted_average_frames_efficient(50.0 / 100);
   protoA.set_num_unweighted_playbacks(1);
@@ -795,7 +795,8 @@ TEST_F(VideoDecodeStatsDBImplTest, DiscardCorruptedDBData) {
 
   // Make an invalid  proto with a last write date in the future.
   DecodeStatsProto protoG(protoA);
-  protoG.set_last_write_date((clock.Now() + base::Days(1)).ToJsTime());
+  protoG.set_last_write_date(
+      (clock.Now() + base::Days(1)).InMillisecondsFSinceUnixEpoch());
   AppendToProtoDB(keyG, &protoG);
   VerifyEmptyStats(keyG);
 }

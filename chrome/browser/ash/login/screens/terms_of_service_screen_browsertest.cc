@@ -7,7 +7,9 @@
 #include "ash/public/cpp/login_screen_test_api.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
+#include "base/metrics/histogram_base.h"
 #include "base/run_loop.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/threading/thread_restrictions.h"
 #include "chrome/browser/ash/login/existing_user_controller.h"
 #include "chrome/browser/ash/login/oobe_screen.h"
@@ -60,13 +62,13 @@ const char kManagedUser[] = "user@example.com";
 const char kManagedGaiaID[] = "33333";
 const char kTosText[] = "By using this test you agree to fix future bugs";
 
-absl::optional<std::string> ReadFileToOptionalString(
+std::optional<std::string> ReadFileToOptionalString(
     const base::FilePath& file_path) {
   base::ScopedAllowBlockingForTesting allow_blocking;
   std::string content;
   if (base::ReadFileToString(file_path, &content))
-    return absl::make_optional<std::string>(content);
-  return absl::nullopt;
+    return std::make_optional<std::string>(content);
+  return std::nullopt;
 }
 
 std::string TestServerBaseUrl(net::EmbeddedTestServer* server) {
@@ -208,7 +210,7 @@ class PublicSessionTosScreenTest : public OobeBaseTest {
     return FakeSessionManagerClient::Get();
   }
 
-  absl::optional<TermsOfServiceScreen::Result> result_;
+  std::optional<TermsOfServiceScreen::Result> result_;
   base::HistogramTester histogram_tester_;
 
  private:
@@ -373,7 +375,7 @@ class ManagedUserTosScreenTest : public OobeBaseTest {
     return saved_tos.has_value() && saved_tos.value() == tos;
   }
 
-  absl::optional<TermsOfServiceScreen::Result> result_;
+  std::optional<TermsOfServiceScreen::Result> result_;
   base::HistogramTester histogram_tester_;
 
  protected:

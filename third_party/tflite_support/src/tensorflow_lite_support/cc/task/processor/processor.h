@@ -18,9 +18,9 @@ limitations under the License.
 #include <initializer_list>
 #include <vector>
 
-#include "absl/status/status.h"       // from @com_google_absl
+#include "absl/status/status.h"  // from @com_google_absl
 #include "absl/strings/str_format.h"  // from @com_google_absl
-#include "tensorflow/lite/core/c/common.h"
+#include "tensorflow/lite/c/common.h"
 #include "tensorflow_lite_support/cc/common.h"
 #include "tensorflow_lite_support/cc/port/status_macros.h"
 #include "tensorflow_lite_support/cc/port/statusor.h"
@@ -52,12 +52,11 @@ class Processor {
   //   num_expected_tensors, engine, tensor_indices);
   template <typename T, EnableIfProcessorSubclass<T> = nullptr>
   static tflite::support::StatusOr<std::unique_ptr<T>> Create(
-      int num_expected_tensors,
-      tflite::task::core::TfLiteEngine* engine,
+      int num_expected_tensors, tflite::task::core::TfLiteEngine* engine,
       const std::initializer_list<int> tensor_indices,
       bool requires_metadata = true) {
     auto processor = absl::make_unique<T>(engine, tensor_indices);
-    RETURN_IF_ERROR(
+    TFLITE_RETURN_IF_ERROR(
         processor->SanityCheck(num_expected_tensors, requires_metadata));
     return processor;
   }

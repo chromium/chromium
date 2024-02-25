@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_ASH_CROSAPI_IMAGE_WRITER_ASH_H_
 
 #include <map>
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -20,7 +21,6 @@
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
 #include "mojo/public/cpp/bindings/remote.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 class GURL;
 
@@ -47,7 +47,7 @@ class ImageWriterAsh : public mojom::ImageWriter {
       DestroyPartitionsCallback callback) override;
   void WriteFromUrl(const std::string& storage_unit_id,
                     const GURL& image_url,
-                    const absl::optional<std::string>& image_hash,
+                    const std::optional<std::string>& image_hash,
                     mojo::PendingRemote<mojom::ImageWriterClient> remote_client,
                     WriteFromUrlCallback callback) override;
   void WriteFromFile(
@@ -91,7 +91,7 @@ class ImageWriterAsh : public mojom::ImageWriter {
   // perform on the removable disk, or returning with |error| due to sanity
   // check failure.
   using OperationCallback =
-      base::OnceCallback<void(const absl::optional<std::string>&)>;
+      base::OnceCallback<void(const std::optional<std::string>&)>;
   void OnOperationCompleted(OperationCallback callback,
                             bool success,
                             const std ::string& error);

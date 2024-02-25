@@ -6,6 +6,7 @@
 
 #include "base/strings/string_util.h"
 #include "media/base/audio_codecs.h"
+#include "media/base/video_codec_string_parsers.h"
 #include "media/base/video_codecs.h"
 
 namespace media::remoting {

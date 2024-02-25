@@ -24,14 +24,16 @@ public class NativeCronetTestRule extends CronetSmokeTestRule {
 
     @Override
     public Statement apply(final Statement base, Description desc) {
-        return super.apply(new Statement() {
-            @Override
-            public void evaluate() throws Throwable {
-                ruleSetUp();
-                base.evaluate();
-                ruleTearDown();
-            }
-        }, desc);
+        return super.apply(
+                new Statement() {
+                    @Override
+                    public void evaluate() throws Throwable {
+                        ruleSetUp();
+                        base.evaluate();
+                        ruleTearDown();
+                    }
+                },
+                desc);
     }
 
     @Override
@@ -44,7 +46,7 @@ public class NativeCronetTestRule extends CronetSmokeTestRule {
     private void ruleSetUp() throws Exception {
         ContextUtils.initApplicationContext(ApplicationProvider.getApplicationContext());
         PathUtils.setPrivateDataDirectorySuffix(PRIVATE_DATA_DIRECTORY_SUFFIX);
-        mTestSupport.loadTestNativeLibrary();
+        getTestSupport().loadTestNativeLibrary();
     }
 
     private void ruleTearDown() throws Exception {
@@ -63,6 +65,11 @@ public class NativeCronetTestRule extends CronetSmokeTestRule {
         mCronetEngine.stopNetLog();
         File netLogFile = new File(PathUtils.getDataDirectory(), LOGFILE_NAME);
         if (!netLogFile.exists()) return;
-        mTestSupport.processNetLog(ApplicationProvider.getApplicationContext(), netLogFile);
+        getTestSupport().processNetLog(ApplicationProvider.getApplicationContext(), netLogFile);
+    }
+
+    @Override
+    protected TestSupport initTestSupport() {
+        return new ChromiumNativeTestSupport();
     }
 }

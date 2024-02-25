@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 #include "chrome/updater/test_scope.h"
-
 #include "chrome/updater/updater_scope.h"
 
 namespace updater {

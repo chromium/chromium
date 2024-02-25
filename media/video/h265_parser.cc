@@ -25,6 +25,62 @@ namespace media {
 
 namespace {
 
+// Based on section 7.4.5 (equation 7-44), the elements of
+// ScalingList[0][matrixId][i] are expected to define a 4x4 matrix in up-right
+// diagonal scan order. Thus, the following 4x4 matrix (indexed by x and y):
+//
+//         x=0 x=1 x=2 x=3
+//        ________________
+//   y=0 |   a   b   c   d
+//   y=1 |   e   f   g   h
+//   y=2 |   i   j   k   l
+//   y=3 |   m   n   o   p
+//
+// is expected to appear in ScalingList[0][matrixId][...] as
+//
+//    {a, e, b, i, f, c, m, j, g, d, n, k, h, o, l, p}
+//   i=0  1  2  3  4  5  6  7  8  9 10 11 12 13 14 15
+//
+// The relationship between i and (x, y) is defined by the algorithm in 6.5.3
+// with an input of (1 << log2BlockSize) (see 7.4.3.2.1) where log2BlockSize is
+// 2 for a 4x4 matrix.
+//
+// Some APIs (such as the VA-API) want the scaling lists in raster scan order
+// instead of up-right diagonal scan order. That is, for the matrix above, they
+// expect:
+//
+//    {a, b, c, d, e, f, g, h, i, j, k, l, m, n, o, p}
+//   j=0  1  2  3  4  5  6  7  8  9 10 11 12 13 14 15
+//
+// Therefore, given j and the data in up-right diagonal order, we need to get
+// the corresponding entry in raster order. The
+// k4x4RasterScanOrderIdxToUpRightDiagScanOrderIdx array allows us to do this.
+// It's an array where the index is j and the corresponding element is i. This
+// array is derived from the algorithm in 6.5.3 by simply setting:
+//
+//   k4x4RasterScanOrderIdxToUpRightDiagScanOrderIdx[blkSize * y + x] = i
+//
+// every time diagScanX and diagScanY are updated.
+//
+// As a usage example, let's say we want to get the entry at index 6 of the
+// raster scan order. We get k4x4RasterScanOrderIdxToUpRightDiagScanOrderIdx[6]
+// which is 8. Then we get arrayInUpRightDiagOrder[8] which in the example above
+// is 'g'.
+constexpr size_t k4x4RasterScanOrderIdxToUpRightDiagScanOrderIdx[] = {
+    0, 2, 5, 9, 1, 4, 8, 12, 3, 7, 11, 14, 6, 10, 13, 15,
+};
+
+// k8x8RasterScanOrderIdxToUpRightDiagScanOrderIdx serves the same purpose as
+// k4x4RasterScanOrderIdxToUpRightDiagScanOrderIdx but for 8x8 matrices. This
+// array is also derived from the algorithm in 6.5.3 in a similar manner with
+// (1 << log2BlockSize) as the input where log2BlockSize is 3.
+constexpr size_t k8x8RasterScanOrderIdxToUpRightDiagScanOrderIdx[] = {
+    0,  2,  5,  9,  14, 20, 27, 35, 1,  4,  8,  13, 19, 26, 34, 42,
+    3,  7,  12, 18, 25, 33, 41, 48, 6,  11, 17, 24, 32, 40, 47, 53,
+    10, 16, 23, 31, 39, 46, 52, 57, 15, 22, 30, 38, 45, 51, 56, 60,
+    21, 29, 37, 44, 50, 55, 59, 62, 28, 36, 43, 49, 54, 58, 61, 63,
+};
+
 // From Table 7-6.
 constexpr uint8_t kDefaultScalingListSize1To3Matrix0To2[] = {
     16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 17, 16, 17, 16, 17, 18,
@@ -88,6 +144,58 @@ void FillInDefaultScalingListData(H265ScalingListData* scaling_list_data,
 
 H265ScalingListData::H265ScalingListData() {
   memset(reinterpret_cast<void*>(this), 0, sizeof(*this));
+}
+
+uint8_t H265ScalingListData::GetScalingList4x4EntryInRasterOrder(
+    size_t matrix_id,
+    size_t raster_idx) const {
+  // Per equation 7-44, ScalingList[0][matrixId][..] (i.e., the 4x4 scaling list
+  // data) is associated with ScanOrder[2][0][..] (i.e., an up-right diagonal
+  // scan ordering for a 4x4 matrix).
+  CHECK_LT(raster_idx,
+           std::size(k4x4RasterScanOrderIdxToUpRightDiagScanOrderIdx));
+  const size_t up_right_diag_idx =
+      k4x4RasterScanOrderIdxToUpRightDiagScanOrderIdx[raster_idx];
+  return scaling_list_4x4[matrix_id][up_right_diag_idx];
+}
+
+uint8_t H265ScalingListData::GetScalingList8x8EntryInRasterOrder(
+    size_t matrix_id,
+    size_t raster_idx) const {
+  // Per equation 7-45, ScalingList[1][matrixId][..] (i.e., the 8x8 scaling list
+  // data) is associated with ScanOrder[3][0][..] (i.e., an up-right diagonal
+  // scan ordering for an 8x8 matrix).
+  CHECK_LT(raster_idx,
+           std::size(k8x8RasterScanOrderIdxToUpRightDiagScanOrderIdx));
+  const size_t up_right_diag_idx =
+      k8x8RasterScanOrderIdxToUpRightDiagScanOrderIdx[raster_idx];
+  return scaling_list_8x8[matrix_id][up_right_diag_idx];
+}
+
+uint8_t H265ScalingListData::GetScalingList16x16EntryInRasterOrder(
+    size_t matrix_id,
+    size_t raster_idx) const {
+  // Per equation 7-46, ScalingList[2][matrixId][..] (i.e., the 16x16 scaling
+  // list data) is associated with ScanOrder[3][0][..] (i.e., an up-right
+  // diagonal scan ordering for an 8x8 matrix).
+  CHECK_LT(raster_idx,
+           std::size(k8x8RasterScanOrderIdxToUpRightDiagScanOrderIdx));
+  const size_t up_right_diag_idx =
+      k8x8RasterScanOrderIdxToUpRightDiagScanOrderIdx[raster_idx];
+  return scaling_list_16x16[matrix_id][up_right_diag_idx];
+}
+
+uint8_t H265ScalingListData::GetScalingList32x32EntryInRasterOrder(
+    size_t matrix_id,
+    size_t raster_idx) const {
+  // Per equation 7-48, ScalingList[3][matrixId][..] (i.e., the 32x32 scaling
+  // list data) is associated with ScanOrder[3][0][..] (i.e., an up-right
+  // diagonal scan ordering for an 8x8 matrix).
+  CHECK_LT(raster_idx,
+           std::size(k8x8RasterScanOrderIdxToUpRightDiagScanOrderIdx));
+  const size_t up_right_diag_idx =
+      k8x8RasterScanOrderIdxToUpRightDiagScanOrderIdx[raster_idx];
+  return scaling_list_32x32[matrix_id][up_right_diag_idx];
 }
 
 H265StRefPicSet::H265StRefPicSet() {
@@ -243,7 +351,7 @@ H265Parser::Result H265Parser::ParseVPS(int* vps_id) {
   READ_BOOL_OR_RETURN(&vps->vps_base_layer_internal_flag);
   READ_BOOL_OR_RETURN(&vps->vps_base_layer_available_flag);
   READ_BITS_OR_RETURN(6, &vps->vps_max_layers_minus1);
-  IN_RANGE_OR_RETURN(vps->vps_max_layers_minus1, 0, 62);
+  IN_RANGE_OR_RETURN(vps->vps_max_layers_minus1, 0, 63);
   READ_BITS_OR_RETURN(3, &vps->vps_max_sub_layers_minus1);
   IN_RANGE_OR_RETURN(vps->vps_max_sub_layers_minus1, 0, 7);
   READ_BOOL_OR_RETURN(&vps->vps_temporal_id_nesting_flag);
@@ -286,9 +394,208 @@ H265Parser::Result H265Parser::ParseVPS(int* vps_id) {
   }
 
   READ_BITS_OR_RETURN(6, &vps->vps_max_layer_id);
-  IN_RANGE_OR_RETURN(vps->vps_max_layer_id, 0, 62);
+  IN_RANGE_OR_RETURN(vps->vps_max_layer_id, 0, 63);
   READ_UE_OR_RETURN(&vps->vps_num_layer_sets_minus1);
   IN_RANGE_OR_RETURN(vps->vps_num_layer_sets_minus1, 0, 1023);
+  for (int i = 1; i <= vps->vps_num_layer_sets_minus1; ++i) {
+    for (int j = 0; j <= vps->vps_max_layer_id; ++j) {
+      SKIP_BITS_OR_RETURN(1);  // layer_id_included_flag[i][j]
+    }
+  }
+
+  bool vps_timing_info_present_flag;
+  READ_BOOL_OR_RETURN(&vps_timing_info_present_flag);
+  if (vps_timing_info_present_flag) {
+    SKIP_BITS_OR_RETURN(32);  // vps_num_units_in_tick (!= 0)
+    SKIP_BITS_OR_RETURN(32);  // vps_time_scale (!= 0)
+    bool vps_poc_proportional_to_timing_flag;
+    READ_BOOL_OR_RETURN(&vps_poc_proportional_to_timing_flag);
+    if (vps_poc_proportional_to_timing_flag) {
+      int vps_num_ticks_poc_diff_one_minus1;
+      // Valid range is 0 to 2^32 - 2, which doesn't actually fit in an int.
+      READ_UE_OR_RETURN(&vps_num_ticks_poc_diff_one_minus1);
+    }
+    int vps_num_hrd_parameters;
+    READ_UE_OR_RETURN(&vps_num_hrd_parameters);
+    IN_RANGE_OR_RETURN(vps_num_hrd_parameters, 0,
+                       vps->vps_num_layer_sets_minus1 + 1);
+    for (int i = 0; i < vps_num_hrd_parameters; ++i) {
+      int hrd_layer_set_idx_i;
+      READ_UE_OR_RETURN(&hrd_layer_set_idx_i);
+      IN_RANGE_OR_RETURN(hrd_layer_set_idx_i,
+                         vps->vps_base_layer_internal_flag ? 0 : 1,
+                         vps->vps_num_layer_sets_minus1 + 1);
+      bool cprms_present_flag = true;
+      if (i > 0) {
+        READ_BOOL_OR_RETURN(&cprms_present_flag);
+      }
+
+      // E.2.2 hrd_parameters()
+      bool nal_hrd_parameters_present_flag = false;
+      bool vcl_hrd_parameters_present_flag = false;
+      bool sub_pic_hrd_params_present_flag = false;
+      if (cprms_present_flag) {
+        READ_BOOL_OR_RETURN(&nal_hrd_parameters_present_flag);
+        READ_BOOL_OR_RETURN(&vcl_hrd_parameters_present_flag);
+        if (nal_hrd_parameters_present_flag ||
+            vcl_hrd_parameters_present_flag) {
+          READ_BOOL_OR_RETURN(&sub_pic_hrd_params_present_flag);
+          if (sub_pic_hrd_params_present_flag) {
+            SKIP_BITS_OR_RETURN(8);  // tick_divisor_minus2
+            SKIP_BITS_OR_RETURN(
+                5);  // du_cpb_removal_delay_increment_length_minus1
+            SKIP_BITS_OR_RETURN(
+                1);  // sub_pic_cpb_params_in_pic_timing_sei_flag
+            SKIP_BITS_OR_RETURN(5);  // dpb_output_delay_du_length_minus1
+          }
+          SKIP_BITS_OR_RETURN(4);  // bit_rate_scale
+          SKIP_BITS_OR_RETURN(4);  // cpb_size_scale
+          if (sub_pic_hrd_params_present_flag) {
+            SKIP_BITS_OR_RETURN(4);  // cpb_size_du_scale
+          }
+          SKIP_BITS_OR_RETURN(5);  // initial_cpb_removal_delay_length_minus1
+          SKIP_BITS_OR_RETURN(5);  // au_cpb_removal_delay_length_minus1
+          SKIP_BITS_OR_RETURN(5);  // dpb_output_delay_length_minus1
+        }
+      }
+      for (int j = 0; j <= vps->vps_max_sub_layers_minus1; ++j) {
+        bool fixed_pic_rate_general_flag_j;
+        READ_BOOL_OR_RETURN(&fixed_pic_rate_general_flag_j);
+        bool fixed_pic_rate_within_cvs_flag_j = true;
+        if (!fixed_pic_rate_general_flag_j) {
+          READ_BOOL_OR_RETURN(&fixed_pic_rate_within_cvs_flag_j);
+        }
+        bool low_delay_hrd_flag_j = false;
+        if (fixed_pic_rate_within_cvs_flag_j) {
+          int elemental_duration_in_tc_minus1;
+          READ_UE_OR_RETURN(&elemental_duration_in_tc_minus1);
+        } else {
+          READ_BOOL_OR_RETURN(&low_delay_hrd_flag_j);
+        }
+        int cpb_cnt_minus1_j = 0;
+        if (!low_delay_hrd_flag_j) {
+          READ_UE_OR_RETURN(&cpb_cnt_minus1_j);
+          IN_RANGE_OR_RETURN(cpb_cnt_minus1_j, 0, 31);
+        }
+        if (nal_hrd_parameters_present_flag) {
+          // E.2.3 sub_layer_hrd_parameters()
+          for (int k = 0; k < cpb_cnt_minus1_j + 1; ++k) {
+            int bit_rate_value_minus1_k;
+            READ_UE_OR_RETURN(&bit_rate_value_minus1_k);
+            int cpb_size_value_minus1_k;
+            READ_UE_OR_RETURN(&cpb_size_value_minus1_k);
+            if (sub_pic_hrd_params_present_flag) {
+              int cpb_size_du_value_minus1_k;
+              READ_UE_OR_RETURN(&cpb_size_du_value_minus1_k);
+              int bit_rate_du_value_minus1_k;
+              READ_UE_OR_RETURN(&bit_rate_du_value_minus1_k);
+            }
+            SKIP_BITS_OR_RETURN(1);  // cbr_flag
+          }
+        }
+        if (vcl_hrd_parameters_present_flag) {
+          // E.2.3 sub_layer_hrd_parameters()
+          for (int k = 0; k < cpb_cnt_minus1_j + 1; ++k) {
+            int bit_rate_value_minus1_k;
+            READ_UE_OR_RETURN(&bit_rate_value_minus1_k);
+            int cpb_size_value_minus1_k;
+            READ_UE_OR_RETURN(&cpb_size_value_minus1_k);
+            if (sub_pic_hrd_params_present_flag) {
+              int cpb_size_du_value_minus1_k;
+              READ_UE_OR_RETURN(&cpb_size_du_value_minus1_k);
+              int bit_rate_du_value_minus1_k;
+              READ_UE_OR_RETURN(&bit_rate_du_value_minus1_k);
+            }
+            SKIP_BITS_OR_RETURN(1);  // cbr_flag
+          }
+        }
+      }
+    }
+  }
+
+  // F.7.3.2.1 multi-layer video_parameter_set_rbsp()
+  bool vps_extension_flag;
+  READ_BOOL_OR_RETURN(&vps_extension_flag);
+  if (vps_extension_flag) {
+    BYTE_ALIGNMENT();
+    // F.7.3.2.1.1 vps_extension()
+    if (vps->vps_max_layers_minus1 > 0 && vps->vps_base_layer_internal_flag) {
+      H265ProfileTierLevel profile_tier_level;
+      res = ParseProfileTierLevel(false, vps->vps_max_sub_layers_minus1,
+                                  &profile_tier_level);
+      if (res != kOk) {
+        return res;
+      }
+    }
+    bool splitting_flag;
+    READ_BOOL_OR_RETURN(&splitting_flag);
+    bool scalability_mask_flag[16] = {false};
+    int num_scalability_types = 0;
+    for (int i = 0; i < 16; ++i) {
+      READ_BOOL_OR_RETURN(&scalability_mask_flag[i]);
+      num_scalability_types += scalability_mask_flag[i];
+    }
+    int dimension_id_len_minus1[16] = {0};
+    for (int j = 0; j < (num_scalability_types - splitting_flag); ++j) {
+      READ_BITS_OR_RETURN(3, &dimension_id_len_minus1[j]);
+    }
+
+    int dim_bit_offset[17] = {0};
+    if (splitting_flag) {
+      // Equation F-2
+      for (int j = 1; j <= num_scalability_types - 1; ++j) {
+        dim_bit_offset[j] =
+            dim_bit_offset[j - 1] + dimension_id_len_minus1[j - 1] + 1;
+      }
+      // F.7.4.3.1.1 dimension_id_len_minus1
+      // Note: this value is specified to be inferred regardless of the value of
+      // NumScalabilityTypes, but the indices would be negative if it were zero.
+      if (num_scalability_types) {
+        dimension_id_len_minus1[num_scalability_types - 1] =
+            5 - dim_bit_offset[num_scalability_types - 1];
+      }
+      dim_bit_offset[num_scalability_types] = 6;
+      if (num_scalability_types) {
+        LE_OR_RETURN(dim_bit_offset[num_scalability_types - 1], 5);
+      }
+    }
+
+    bool vps_nuh_layer_id_present_flag;
+    READ_BOOL_OR_RETURN(&vps_nuh_layer_id_present_flag);
+    for (int i = 1; i <= std::min(62, vps->vps_max_layers_minus1); ++i) {
+      int layer_id_in_nuh_i = i;
+      if (vps_nuh_layer_id_present_flag) {
+        READ_BITS_OR_RETURN(6, &layer_id_in_nuh_i);
+      }
+      int dimension_id_i[16] = {0};
+      if (!splitting_flag) {
+        for (int j = 0; j < num_scalability_types; ++j) {
+          READ_BITS_OR_RETURN(dimension_id_len_minus1[j] + 1,
+                              &dimension_id_i[j]);
+        }
+      } else {
+        // F.7.4.3.1.1 dimension_id
+        for (int j = 0; j < num_scalability_types; ++j) {
+          dimension_id_i[j] =
+              (layer_id_in_nuh_i & ((1 << dim_bit_offset[j + 1]) - 1)) >>
+              dim_bit_offset[j];
+        }
+      }
+
+      // F.7.4.3.1.1 dimension_id
+      // We can skip layer zero because all dimension_id[0][j] == 0.
+      int scalability_id_i[16] = {0};
+      for (int sm_idx = 0, j = 0; sm_idx < 16; ++sm_idx) {
+        if (scalability_mask_flag[sm_idx]) {
+          scalability_id_i[sm_idx] = dimension_id_i[j++];
+        }
+      }
+
+      if (scalability_id_i[3] == 1) {
+        vps->aux_alpha_layer_id = layer_id_in_nuh_i;
+      }
+    }
+  }
 
   // If an VPS with the same id already exists, replace it.
   *vps_id = vps->vps_video_parameter_set_id;
@@ -581,10 +888,6 @@ H265Parser::Result H265Parser::ParseSPS(int* sps_id) {
     READ_BOOL_OR_RETURN(&sps->persistent_rice_adaptation_enabled_flag);
     READ_BOOL_OR_RETURN(&sps->cabac_bypass_alignment_enabled_flag);
   }
-  if (sps->sps_multilayer_extension_flag) {
-    DVLOG(1) << "HEVC multilayer extension not supported";
-    return kInvalidStream;
-  }
   if (sps->sps_3d_extension_flag) {
     DVLOG(1) << "HEVC 3D extension not supported";
     return kInvalidStream;
@@ -620,7 +923,8 @@ H265Parser::Result H265Parser::ParsePPS(const H265NALU& nalu, int* pps_id) {
   pps->temporal_id = nalu.nuh_temporal_id_plus1 - 1;
 
   // Set these defaults if they are not present here.
-  pps->loop_filter_across_tiles_enabled_flag = 1;
+  pps->uniform_spacing_flag = true;
+  pps->loop_filter_across_tiles_enabled_flag = true;
 
   // 7.4.3.3.1
   READ_UE_OR_RETURN(&pps->pps_pic_parameter_set_id);
@@ -758,10 +1062,6 @@ H265Parser::Result H265Parser::ParsePPS(const H265NALU& nalu, int* pps_id) {
     READ_UE_OR_RETURN(&pps->log2_sao_offset_scale_chroma);
     IN_RANGE_OR_RETURN(pps->log2_sao_offset_scale_chroma, 0,
                        std::max(sps->bit_depth_chroma_minus8 - 2, 0));
-  }
-  if (pps->pps_multilayer_extension_flag) {
-    DVLOG(1) << "HEVC multilayer extension not supported";
-    return kInvalidStream;
   }
   if (pps->pps_3d_extension_flag) {
     DVLOG(1) << "HEVC 3D extension not supported";

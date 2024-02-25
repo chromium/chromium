@@ -94,8 +94,8 @@ class CryptAuthDeviceManagerImpl : public CryptAuthDeviceManager,
  private:
   // CryptAuthGCMManager::Observer:
   void OnResyncMessage(
-      const absl::optional<std::string>& session_id,
-      const absl::optional<CryptAuthFeatureType>& feature_type) override;
+      const std::optional<std::string>& session_id,
+      const std::optional<CryptAuthFeatureType>& feature_type) override;
 
   // Updates |unlock_keys_| by fetching the list stored in |pref_service_|.
   void UpdateUnlockKeysFromPrefs();
@@ -109,19 +109,19 @@ class CryptAuthDeviceManagerImpl : public CryptAuthDeviceManager,
   void OnGetMyDevicesFailure(NetworkRequestError error);
 
   // Used to determine the time.
-  raw_ptr<base::Clock, ExperimentalAsh> clock_;
+  raw_ptr<base::Clock> clock_;
 
   // Creates CryptAuthClient instances for each sync attempt.
-  raw_ptr<CryptAuthClientFactory, ExperimentalAsh> cryptauth_client_factory_;
+  raw_ptr<CryptAuthClientFactory> cryptauth_client_factory_;
 
   // Notifies when GCM push messages trigger device sync. Not owned and must
   // outlive this instance.
-  raw_ptr<CryptAuthGCMManager, ExperimentalAsh> gcm_manager_;
+  raw_ptr<CryptAuthGCMManager> gcm_manager_;
 
   // Contains preferences that outlive the lifetime of this object and across
   // process restarts. |pref_service_| must outlive the lifetime of this
   // instance.
-  const raw_ptr<PrefService, ExperimentalAsh> pref_service_;
+  const raw_ptr<PrefService> pref_service_;
 
   // All devices currently synced from CryptAuth.
   std::vector<cryptauth::ExternalDeviceInfo> synced_devices_;

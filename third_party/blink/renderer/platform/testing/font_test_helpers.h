@@ -5,6 +5,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_TESTING_FONT_TEST_HELPERS_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_TESTING_FONT_TEST_HELPERS_H_
 
+#include "base/memory/raw_ptr.h"
 #include "build/build_config.h"
 #include "third_party/blink/public/platform/web_font_prewarmer.h"
 #include "third_party/blink/renderer/platform/fonts/font_description.h"
@@ -30,6 +31,8 @@ Font CreateTestFont(const AtomicString& family_name,
                     float size,
                     const FontDescription::VariantLigatures* = nullptr);
 
+Font CreateAhemFont(float size);
+
 #if BUILDFLAG(IS_WIN)
 class TestFontPrewarmer : public WebFontPrewarmer {
  public:
@@ -52,7 +55,7 @@ class ScopedTestFontPrewarmer {
 
  private:
   TestFontPrewarmer current_;
-  WebFontPrewarmer* saved_;
+  raw_ptr<WebFontPrewarmer> saved_;
 };
 #endif
 

@@ -8,6 +8,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/containers/flat_map.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "chrome/browser/apps/app_service/app_launch_params.h"
@@ -18,6 +19,8 @@
 #include "chrome/browser/web_applications/web_app_ui_manager.h"
 #include "chrome/browser/web_applications/web_app_utils.h"
 #include "chrome/common/chrome_features.h"
+#include "components/services/app_service/public/cpp/app_launch_util.h"
+#include "content/public/browser/network_service_instance.h"
 #include "content/public/browser/web_contents.h"
 
 namespace web_app {
@@ -28,7 +31,9 @@ bool g_skip_startup_for_testing_ = false;
 
 WebAppRunOnOsLoginManager::WebAppRunOnOsLoginManager(Profile* profile)
     : profile_(profile) {}
-WebAppRunOnOsLoginManager::~WebAppRunOnOsLoginManager() = default;
+WebAppRunOnOsLoginManager::~WebAppRunOnOsLoginManager() {
+  content::GetNetworkConnectionTracker()->RemoveNetworkConnectionObserver(this);
+}
 
 void WebAppRunOnOsLoginManager::SetProvider(base::PassKey<WebAppProvider>,
                                             WebAppProvider& provider) {
@@ -44,21 +49,39 @@ void WebAppRunOnOsLoginManager::Start() {
     return;
   }
 
-  provider_->scheduler().ScheduleCallbackWithLock<AllAppsLock>(
-      "WebAppRunOnOsLoginManager::RunAppsOnOsLogin",
-      std::make_unique<AllAppsLockDescription>(),
-      base::BindOnce(&WebAppRunOnOsLoginManager::RunAppsOnOsLogin,
-                     GetWeakPtr()));
+  network::mojom::ConnectionType connection_type;
+  // `GetConnectionType` will execute either synchronously (and return true and
+  // store the value in the `connection_type`) or asynchronously (and return
+  // false and call `OnInitialConnectionTypeReceived` once it is done).
+  const bool call_was_synchronous =
+      content::GetNetworkConnectionTracker()->GetConnectionType(
+          &connection_type,
+          base::BindOnce(
+              &WebAppRunOnOsLoginManager::OnInitialConnectionTypeReceived,
+              GetWeakPtr()));
+  if (call_was_synchronous) {
+    OnInitialConnectionTypeReceived(connection_type);
+  }
 }
 
-void WebAppRunOnOsLoginManager::RunAppsOnOsLogin(AllAppsLock& lock) {
-  std::vector<std::string> app_names;
+void WebAppRunOnOsLoginManager::RunAppsOnOsLogin(
+    AllAppsLock& lock,
+    base::Value::Dict& debug_value) {
+  base::flat_map<webapps::AppId, WebAppUiManager::RoolNotificationBehavior>
+      notification_behaviors;
 
-  for (const AppId& app_id : lock.registrar().GetAppIds()) {
+  for (const webapps::AppId& app_id : lock.registrar().GetAppIds()) {
     if (!IsRunOnOsLoginModeEnabledForAutostart(
             lock.registrar().GetAppRunOnOsLoginMode(app_id).value)) {
       continue;
     }
+
+    WebAppUiManager::RoolNotificationBehavior behavior{
+        .is_rool_enabled = true,
+        .is_prevent_close_enabled =
+            lock.registrar().IsPreventCloseEnabled(app_id)};
+    notification_behaviors.insert({app_id, std::move(behavior)});
+    debug_value.EnsureList("app_ids")->Append(app_id);
 
     // In case of already opened/restored apps, we do not launch them again
     if (lock.ui_manager().GetNumWindowsForApp(app_id) > 0) {
@@ -73,24 +96,53 @@ void WebAppRunOnOsLoginManager::RunAppsOnOsLogin(AllAppsLock& lock) {
         app_id, apps::LaunchContainer::kLaunchContainerWindow,
         WindowOpenDisposition::NEW_WINDOW, apps::LaunchSource::kFromOsLogin);
 
-    std::string app_name = lock.registrar().GetAppShortName(app_id);
-    app_names.push_back(std::move(app_name));
-    // Schedule launch here, show notification together below (async)
+    // Schedule launch here, show notification when the app window pops up.
     provider_->scheduler().LaunchAppWithCustomParams(std::move(params),
                                                      base::DoNothing());
   }
 
-  if (app_names.empty()) {
-    return;
+  if (!notification_behaviors.empty()) {
+    provider_->ui_manager().DisplayRunOnOsLoginNotification(
+        notification_behaviors, profile_->GetWeakPtr());
   }
-
-  ShowAppLaunchedNotification(std::move(app_names));
 }
 
-void WebAppRunOnOsLoginManager::ShowAppLaunchedNotification(
-    const std::vector<std::string>& app_names) {
-  provider_->ui_manager().DisplayRunOnOsLoginNotification(
-      app_names, profile_->GetWeakPtr());
+void WebAppRunOnOsLoginManager::OnInitialConnectionTypeReceived(
+    network::mojom::ConnectionType type) {
+  CHECK(!scheduled_run_on_os_login_command_);
+
+  // If there is a connection, schedule ROOL and stop listening to the network
+  // status.
+  if (type != network::mojom::ConnectionType::CONNECTION_NONE) {
+    RunOsLoginAppsAndMaybeUnregisterObserver();
+    return;
+  }
+  // Otherwise, start listening to the network status and wait until the network
+  // connection is restored.
+  content::GetNetworkConnectionTracker()->AddNetworkConnectionObserver(this);
+}
+
+void WebAppRunOnOsLoginManager::OnConnectionChanged(
+    network::mojom::ConnectionType type) {
+  CHECK(!scheduled_run_on_os_login_command_);
+
+  // If there is a connection, schedule ROOL and stop listening to the network
+  // status. Otherwise, keep listening.
+  if (type != network::mojom::ConnectionType::CONNECTION_NONE) {
+    RunOsLoginAppsAndMaybeUnregisterObserver();
+  }
+}
+
+void WebAppRunOnOsLoginManager::RunOsLoginAppsAndMaybeUnregisterObserver() {
+  CHECK(!scheduled_run_on_os_login_command_);
+
+  content::GetNetworkConnectionTracker()->RemoveNetworkConnectionObserver(this);
+  scheduled_run_on_os_login_command_ = true;
+  provider_->scheduler().ScheduleCallback(
+      "WebAppRunOnOsLoginManager::RunAppsOnOsLogin", AllAppsLockDescription(),
+      base::BindOnce(&WebAppRunOnOsLoginManager::RunAppsOnOsLogin,
+                     GetWeakPtr()),
+      /*on_complete=*/std::move(completed_closure_));
 }
 
 base::WeakPtr<WebAppRunOnOsLoginManager>
@@ -104,11 +156,16 @@ base::AutoReset<bool> WebAppRunOnOsLoginManager::SkipStartupForTesting() {
 }
 
 void WebAppRunOnOsLoginManager::RunAppsOnOsLoginForTesting() {
-  provider_->scheduler().ScheduleCallbackWithLock<AllAppsLock>(
-      "WebAppRunOnOsLoginManager::RunAppsOnOsLogin",
-      std::make_unique<AllAppsLockDescription>(),
+  provider_->scheduler().ScheduleCallback(
+      "WebAppRunOnOsLoginManager::RunAppsOnOsLogin", AllAppsLockDescription(),
       base::BindOnce(&WebAppRunOnOsLoginManager::RunAppsOnOsLogin,
-                     GetWeakPtr()));
+                     GetWeakPtr()),
+      /*on_complete=*/std::move(completed_closure_));
+}
+
+void WebAppRunOnOsLoginManager::SetCompletedClosureForTesting(
+    base::OnceClosure completed_closure) {
+  completed_closure_ = std::move(completed_closure);
 }
 
 }  // namespace web_app

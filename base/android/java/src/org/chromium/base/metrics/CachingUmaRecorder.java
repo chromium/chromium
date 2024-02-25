@@ -48,52 +48,40 @@ import javax.annotation.concurrent.GuardedBy;
      * Maximum number of user actions cached at the same time. It is better to drop some samples
      * rather than have a bug cause the cache to grow without limit.
      */
-    @VisibleForTesting
-    static final int MAX_USER_ACTION_COUNT = 256;
+    @VisibleForTesting static final int MAX_USER_ACTION_COUNT = 256;
 
     /** Stores the definition and samples of a single cached histogram. */
     @VisibleForTesting
     static class Histogram {
         /**
-         * Maximum number of cached samples in a single histogram. it is better to drop some
-         * samples rather than have a bug cause the cache to grow without limit
+         * Maximum number of cached samples in a single histogram. it is better to drop some samples
+         * rather than have a bug cause the cache to grow without limit
          */
-        @VisibleForTesting
-        static final int MAX_SAMPLE_COUNT = 256;
+        @VisibleForTesting static final int MAX_SAMPLE_COUNT = 256;
 
-        /**
-         * Identifies the type of the histogram.
-         */
+        /** Identifies the type of the histogram. */
         @IntDef({
-                Type.BOOLEAN,
-                Type.EXPONENTIAL,
-                Type.LINEAR,
-                Type.SPARSE,
+            Type.BOOLEAN,
+            Type.EXPONENTIAL,
+            Type.LINEAR,
+            Type.SPARSE,
         })
         @Retention(RetentionPolicy.SOURCE)
         @interface Type {
-            /**
-             * Used by histograms recorded with {@link UmaRecorder#recordBooleanHistogram}.
-             */
+            /** Used by histograms recorded with {@link UmaRecorder#recordBooleanHistogram}. */
             int BOOLEAN = 1;
-            /**
-             * Used by histograms recorded with {@link UmaRecorder#recordExponentialHistogram}.
-             */
+
+            /** Used by histograms recorded with {@link UmaRecorder#recordExponentialHistogram}. */
             int EXPONENTIAL = 2;
 
-            /**
-             * Used by histograms recorded with {@link UmaRecorder#recordLinearHistogram}.
-             */
+            /** Used by histograms recorded with {@link UmaRecorder#recordLinearHistogram}. */
             int LINEAR = 3;
 
-            /**
-             * Used by histograms recorded with {@link UmaRecorder#recordSparseHistogram}.
-             */
+            /** Used by histograms recorded with {@link UmaRecorder#recordSparseHistogram}. */
             int SPARSE = 4;
         }
 
-        @Type
-        private final int mType;
+        @Type private final int mType;
         private final String mName;
 
         private final int mMin;
@@ -114,16 +102,17 @@ import javax.annotation.concurrent.GuardedBy;
          *         histograms.
          */
         Histogram(@Type int type, String name, int min, int max, int numBuckets) {
-            assert type == Type.EXPONENTIAL || type == Type.LINEAR
-                    || (min == 0 && max == 0 && numBuckets == 0)
-                : "Histogram type " + type + " must have no min/max/buckets set";
+            assert type == Type.EXPONENTIAL
+                            || type == Type.LINEAR
+                            || (min == 0 && max == 0 && numBuckets == 0)
+                    : "Histogram type " + type + " must have no min/max/buckets set";
             mType = type;
             mName = name;
             mMin = min;
             mMax = max;
             mNumBuckets = numBuckets;
 
-            mSamples = new ArrayList<>(/*initialCapacity=*/1);
+            mSamples = new ArrayList<>(/* initialCapacity= */ 1);
         }
 
         /**
@@ -216,11 +205,11 @@ import javax.annotation.concurrent.GuardedBy;
     /**
      * The lock doesn't need to be fair - in the worst case a writing record*Histogram call will be
      * starved until reading calls reach cache size limits.
-     * <p>
-     * A read-write lock is used rather than {@code synchronized} blocks to the limit opportunities
-     * for stutter on the UI thread when waiting for this shared resource.
+     *
+     * <p>A read-write lock is used rather than {@code synchronized} blocks to the limit
+     * opportunities for stutter on the UI thread when waiting for this shared resource.
      */
-    private final ReentrantReadWriteLock mRwLock = new ReentrantReadWriteLock(/*fair=*/false);
+    private final ReentrantReadWriteLock mRwLock = new ReentrantReadWriteLock(/* fair= */ false);
 
     /** Cached histograms keyed by histogram name. */
     @GuardedBy("mRwLock")
@@ -330,8 +319,12 @@ import javax.annotation.concurrent.GuardedBy;
         for (Histogram histogram : cache.values()) {
             flushedHistogramSampleCount += histogram.flushTo(mDelegate);
         }
-        Log.i(TAG, "Flushed %d samples from %d histograms, %d samples were dropped.",
-                flushedHistogramSampleCount, flushedHistogramCount, droppedHistogramSampleCount);
+        Log.i(
+                TAG,
+                "Flushed %d samples from %d histograms, %d samples were dropped.",
+                flushedHistogramSampleCount,
+                flushedHistogramCount,
+                droppedHistogramSampleCount);
     }
 
     /**
@@ -348,7 +341,10 @@ import javax.annotation.concurrent.GuardedBy;
         for (UserAction userAction : cache) {
             userAction.flushTo(mDelegate);
         }
-        Log.i(TAG, "Flushed %d user action samples, %d samples were dropped.", cache.size(),
+        Log.i(
+                TAG,
+                "Flushed %d user action samples, %d samples were dropped.",
+                cache.size(),
                 droppedUserActionCount);
     }
 
@@ -616,7 +612,7 @@ import javax.annotation.concurrent.GuardedBy;
             }
             Arrays.sort(samplesCopy);
             List<HistogramBucket> buckets = new ArrayList<>();
-            for (int i = 0; i < samplesCopy.length;) {
+            for (int i = 0; i < samplesCopy.length; ) {
                 int value = samplesCopy[i];
                 int countInBucket = 0;
                 do {
@@ -653,8 +649,9 @@ import javax.annotation.concurrent.GuardedBy;
         mRwLock.writeLock().lock();
         try {
             if (mUserActionCallbacksForTesting == null) {
-                assert false : "Attempting to remove a user action callback without previously "
-                               + "registering any.";
+                assert false
+                        : "Attempting to remove a user action callback without previously "
+                                + "registering any.";
                 return;
             }
             mUserActionCallbacksForTesting.remove(callback);

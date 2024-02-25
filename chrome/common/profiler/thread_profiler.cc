@@ -26,8 +26,8 @@
 #include "chrome/common/profiler/process_type.h"
 #include "chrome/common/profiler/thread_profiler_configuration.h"
 #include "chrome/common/profiler/unwind_util.h"
-#include "components/metrics/call_stack_profile_builder.h"
-#include "components/metrics/call_stack_profile_metrics_provider.h"
+#include "components/metrics/call_stacks/call_stack_profile_builder.h"
+#include "components/metrics/call_stacks/call_stack_profile_metrics_provider.h"
 #include "content/public/common/content_switches.h"
 #include "sandbox/policy/sandbox.h"
 
@@ -253,7 +253,12 @@ ThreadProfiler::ThreadProfiler(
               process_, thread,
               CallStackProfileParams::Trigger::kProcessStartup),
           work_id_recorder_.get()),
+#if BUILDFLAG(IS_ANDROID)
+      CreateCoreUnwindersFactory(
+          ThreadProfilerConfiguration::Get()->IsJavaNameHashingEnabled()),
+#else
       CreateCoreUnwindersFactory(),
+#endif  // BUILDFLAG(IS_ANDROID)
       GetApplyPerSampleMetadataCallback(process_));
 
   startup_profiler_->Start();
@@ -322,7 +327,12 @@ void ThreadProfiler::StartPeriodicSamplingCollection() {
           base::BindOnce(&ThreadProfiler::OnPeriodicCollectionCompleted,
                          owning_thread_task_runner_,
                          weak_factory_.GetWeakPtr())),
+#if BUILDFLAG(IS_ANDROID)
+      CreateCoreUnwindersFactory(
+          ThreadProfilerConfiguration::Get()->IsJavaNameHashingEnabled()),
+#else
       CreateCoreUnwindersFactory(),
+#endif  // BUILDFLAG(IS_ANDROID)
       GetApplyPerSampleMetadataCallback(process_));
   if (aux_unwinder_factory_)
     periodic_profiler_->AddAuxUnwinder(aux_unwinder_factory_.Run());

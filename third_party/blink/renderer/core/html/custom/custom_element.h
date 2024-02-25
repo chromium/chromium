@@ -84,7 +84,7 @@ class CORE_EXPORT CustomElement {
 
   // Look up a definition, and create an autonomous custom element if
   // it's found.
-  static HTMLElement* CreateCustomElement(Document&,
+  static HTMLElement* CreateCustomElement(TreeScope&,
                                           const QualifiedName&,
                                           const CreateElementFlags);
 

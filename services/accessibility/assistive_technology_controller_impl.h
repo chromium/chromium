@@ -1,4 +1,4 @@
-// Copyright 2022 The Chromium Authors. All rights reserved.
+// Copyright 2022 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -14,6 +14,9 @@
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "services/accessibility/public/mojom/accessibility_service.mojom.h"
+#include "services/accessibility/public/mojom/autoclick.mojom-forward.h"
+#include "services/accessibility/public/mojom/file_loader.mojom.h"
+#include "services/accessibility/public/mojom/user_input.mojom-forward.h"
 #include "services/accessibility/public/mojom/user_interface.mojom-forward.h"
 
 namespace ax {
@@ -46,12 +49,21 @@ class AssistiveTechnologyControllerImpl
   // mojo interfaces in the OS.
   // mojom::AccessibilityServiceClient:
   void BindAutomation(
-      mojo::PendingAssociatedRemote<mojom::Automation> automation,
-      mojo::PendingReceiver<mojom::AutomationClient> automation_client)
-      override;
+      mojo::PendingAssociatedRemote<mojom::Automation> automation) override;
+  void BindAutomationClient(mojo::PendingReceiver<mojom::AutomationClient>
+                                automation_client) override;
+  void BindAutoclickClient(
+      mojo::PendingReceiver<mojom::AutoclickClient> autoclick_client) override;
+  void BindSpeechRecognition(
+      mojo::PendingReceiver<mojom::SpeechRecognition> sr_receiver) override;
   void BindTts(mojo::PendingReceiver<mojom::Tts> tts_receiver) override;
+  void BindUserInput(
+      mojo::PendingReceiver<mojom::UserInput> user_input_receiver) override;
   void BindUserInterface(mojo::PendingReceiver<mojom::UserInterface>
                              user_interface_receiver) override;
+  void BindAccessibilityFileLoader(
+      mojo::PendingReceiver<ax::mojom::AccessibilityFileLoader>
+          file_loader_receiver) override;
 
   // mojom::AssistiveTechnologyController:
   void EnableAssistiveTechnology(
@@ -67,10 +79,10 @@ class AssistiveTechnologyControllerImpl
   void AddInterfaceForTest(mojom::AssistiveTechnologyType type,
                            std::unique_ptr<InterfaceBinder> test_interface);
 
-  V8Manager* GetV8Manager(mojom::AssistiveTechnologyType type);
+  V8Manager& GetOrCreateV8Manager(mojom::AssistiveTechnologyType type);
 
  private:
-  void CreateV8ManagerForType(mojom::AssistiveTechnologyType type);
+  void CreateV8ManagerForTypeIfNoneExists(mojom::AssistiveTechnologyType type);
 
   std::map<mojom::AssistiveTechnologyType, V8Manager> enabled_ATs_;
 
@@ -87,6 +99,12 @@ class AssistiveTechnologyControllerImpl
   // The remote to the Accessibility Service Client in the OS.
   mojo::Remote<mojom::AccessibilityServiceClient>
       accessibility_service_client_remote_;
+
+  // Interface used to request loading of files by the accessibility service.
+  // This remote is shared between the V8Managers that are instantiated, but can
+  // be moved to be owned by the manager once only one instance of the manager
+  // exists.
+  mojo::Remote<mojom::AccessibilityFileLoader> file_loader_remote_;
 };
 
 }  // namespace ax

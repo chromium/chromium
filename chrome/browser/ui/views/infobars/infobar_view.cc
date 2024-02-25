@@ -146,7 +146,7 @@ void InfoBarView::RecalculateHeight() {
   SetTargetHeight(height + infobar_margins.height());
 }
 
-void InfoBarView::Layout() {
+void InfoBarView::Layout(PassKey) {
   const int spacing = GetElementSpacing();
   int start_x = 0;
   if (icon_) {
@@ -376,7 +376,7 @@ void InfoBarView::CloseButtonPressed() {
   RemoveSelf();
 }
 
-BEGIN_METADATA(InfoBarView, views::View)
+BEGIN_METADATA(InfoBarView)
 ADD_READONLY_PROPERTY_METADATA(int, ContentMinimumWidth)
 ADD_READONLY_PROPERTY_METADATA(int, StartX)
 ADD_READONLY_PROPERTY_METADATA(int, EndX)

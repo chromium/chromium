@@ -78,7 +78,7 @@ std::string GetTpmResponse() {
 
 std::string GetTpmResponseBase64() {
   const std::string response = GetTpmResponse();
-  return base::Base64Encode(base::as_bytes(base::make_span(response)));
+  return base::Base64Encode(base::as_byte_span(response));
 }
 
 // Returns relay state from http get/post requests.
@@ -173,7 +173,7 @@ void FakeSamlIdpMixin::SetSamlResponseFile(const std::string& xml_file) {
   base::ScopedAllowBlockingForTesting allow_io;
   EXPECT_TRUE(base::ReadFileToString(saml_response_dir_.Append(xml_file),
                                      &saml_response_));
-  base::Base64Encode(saml_response_, &saml_response_);
+  saml_response_ = base::Base64Encode(saml_response_);
 }
 
 bool FakeSamlIdpMixin::DeviceTrustHeaderRecieved() const {
@@ -437,7 +437,7 @@ FakeSamlIdpMixin::BuildHTMLResponse(const std::string& response_html) const {
 }
 
 void FakeSamlIdpMixin::SaveChallengeResponse(const std::string& response) {
-  EXPECT_EQ(challenge_response_, absl::nullopt);
+  EXPECT_EQ(challenge_response_, std::nullopt);
   auto parsed_value = base::JSONReader::Read(
       response, base::JSONParserOptions::JSON_ALLOW_TRAILING_COMMAS);
 

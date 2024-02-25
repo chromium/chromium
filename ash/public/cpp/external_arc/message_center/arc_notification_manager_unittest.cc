@@ -82,7 +82,10 @@ class MockMessageCenter : public message_center::FakeMessageCenter {
     return visible_notifications_;
   }
 
-  void SetQuietMode(bool in_quiet_mode) override {
+  void SetQuietMode(
+      bool in_quiet_mode,
+      message_center::QuietModeSourceType type =
+          message_center::QuietModeSourceType::kUserAction) override {
     if (in_quiet_mode != in_quiet_mode_) {
       in_quiet_mode_ = in_quiet_mode;
       for (auto& observer : observer_list())

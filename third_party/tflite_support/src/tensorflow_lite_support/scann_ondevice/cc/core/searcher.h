@@ -22,8 +22,8 @@ limitations under the License.
 #include <vector>
 
 #include <glog/logging.h>
-#include "Eigen/Core"         // from @eigen
 #include "absl/types/span.h"  // from @com_google_absl
+#include "Eigen/Core"  // from @eigen
 #include "tensorflow_lite_support/cc/port/integral_types.h"
 #include "tensorflow_lite_support/scann_ondevice/cc/core/index_table_sum.h"
 #include "tensorflow_lite_support/scann_ondevice/cc/core/processor.h"
@@ -47,8 +47,7 @@ void ComputeAHDistance(const QueryInfo& query_info,
 template <class T>
 bool AsymmetricHashFindNeighbors(const QueryInfo& query_info,
                                  Eigen::Ref<const Matrix8u> database,
-                                 size_t global_offset,
-                                 absl::Span<T> topn) {
+                                 size_t global_offset, absl::Span<T> topn) {
   const int batch_size = query_info.query_lut->cols();
   if (topn.size() != batch_size) {
     return false;
@@ -68,8 +67,7 @@ template <class T>
 bool AsymmetricHashFindNeighbors(Eigen::Ref<const Eigen::MatrixXf> queries,
                                  const PreProcessorInterface& preprocessor,
                                  Eigen::Ref<const Matrix8u> database,
-                                 size_t global_offset,
-                                 absl::Span<T> topn) {
+                                 size_t global_offset, absl::Span<T> topn) {
   if (queries.cols() != topn.size()) {
     return false;
   }
@@ -118,12 +116,10 @@ template <class T>
 class AsymmetricHashLeafSearcherT : public SearcherInterfaceT<T> {
  public:
   static std::unique_ptr<AsymmetricHashLeafSearcherT<T>> Create(
-      std::shared_ptr<QueryInfo::Matrix<uint8_t>> database,
-      int global_offset,
+      std::shared_ptr<QueryInfo::Matrix<uint8_t>> database, int global_offset,
       std::shared_ptr<PreProcessorInterface> preprocessor);
   static std::unique_ptr<AsymmetricHashLeafSearcherT<T>> Create(
-      std::shared_ptr<QueryInfo::Matrix<uint8_t>> database,
-      int global_offset,
+      std::shared_ptr<QueryInfo::Matrix<uint8_t>> database, int global_offset,
       std::shared_ptr<PreProcessorInterface> preprocessor,
       size_t mini_batch_size);
   bool FindNeighbors(const Eigen::Ref<const Eigen::MatrixXf>& queries,
@@ -132,8 +128,7 @@ class AsymmetricHashLeafSearcherT : public SearcherInterfaceT<T> {
 
  private:
   AsymmetricHashLeafSearcherT(
-      std::shared_ptr<QueryInfo::Matrix<uint8_t>> database,
-      int global_offset,
+      std::shared_ptr<QueryInfo::Matrix<uint8_t>> database, int global_offset,
       std::shared_ptr<PreProcessorInterface> preprocessor,
       size_t mini_batch_size)
       : database_(std::move(database)),
@@ -159,8 +154,7 @@ class LinearLeafSearcherT : public SearcherInterfaceT<T> {
 
  private:
   LinearLeafSearcherT(std::shared_ptr<Eigen::MatrixXf> database,
-                      DistanceMeasure distance_measure,
-                      int global_offset)
+                      DistanceMeasure distance_measure, int global_offset)
       : database_(std::move(database)),
         distance_measure_(distance_measure),
         global_offset_(global_offset) {}
@@ -173,8 +167,7 @@ class LinearLeafSearcherT : public SearcherInterfaceT<T> {
 template <class T>
 std::unique_ptr<AsymmetricHashLeafSearcherT<T>>
 AsymmetricHashLeafSearcherT<T>::Create(
-    std::shared_ptr<Matrix8u> database,
-    int global_offset,
+    std::shared_ptr<Matrix8u> database, int global_offset,
     std::shared_ptr<PreProcessorInterface> preprocessor) {
   return AsymmetricHashLeafSearcherT<T>::Create(
       database, global_offset, preprocessor,
@@ -184,8 +177,7 @@ AsymmetricHashLeafSearcherT<T>::Create(
 template <class T>
 std::unique_ptr<AsymmetricHashLeafSearcherT<T>>
 AsymmetricHashLeafSearcherT<T>::Create(
-    std::shared_ptr<Matrix8u> database,
-    int global_offset,
+    std::shared_ptr<Matrix8u> database, int global_offset,
     std::shared_ptr<PreProcessorInterface> preprocessor,
     size_t mini_batch_size) {
   if (mini_batch_size == 0 || global_offset < 0) {
@@ -228,8 +220,7 @@ bool AsymmetricHashLeafSearcherT<T>::FindNeighbors(const QueryInfo& query_info,
 
 template <class T>
 std::unique_ptr<LinearLeafSearcherT<T>> LinearLeafSearcherT<T>::Create(
-    std::shared_ptr<Eigen::MatrixXf> database,
-    DistanceMeasure distance_measure,
+    std::shared_ptr<Eigen::MatrixXf> database, DistanceMeasure distance_measure,
     int global_offset) {
   if (global_offset < 0) {
     return nullptr;

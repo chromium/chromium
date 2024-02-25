@@ -94,7 +94,7 @@ class InheritedIntrinsicDimensionChecker
   const StyleIntrinsicLength intrinsic_dimension_;
 };
 
-std::unique_ptr<InterpolableValue>
+InterpolableValue*
 CSSIntrinsicLengthInterpolationType::CreateInterpolableIntrinsicDimension(
     const StyleIntrinsicLength& intrinsic_dimension) {
   const auto& length = intrinsic_dimension.GetLength();
@@ -102,7 +102,8 @@ CSSIntrinsicLengthInterpolationType::CreateInterpolableIntrinsicDimension(
     return nullptr;
   }
 
-  return InterpolableLength::CreatePixels(length->ToDouble());
+  DCHECK(length->IsFixed());
+  return InterpolableLength::CreatePixels(length->Value());
 }
 
 PairwiseInterpolationValue
@@ -161,7 +162,7 @@ InterpolationValue CSSIntrinsicLengthInterpolationType::MaybeConvertInherit(
   StyleIntrinsicLength inherited_intrinsic_dimension =
       GetIntrinsicDimension(*state.ParentStyle());
   conversion_checkers.push_back(
-      std::make_unique<InheritedIntrinsicDimensionChecker>(
+      MakeGarbageCollected<InheritedIntrinsicDimensionChecker>(
           CssProperty().PropertyID() == CSSPropertyID::kContainIntrinsicWidth,
           inherited_intrinsic_dimension));
   if (inherited_intrinsic_dimension.IsNoOp()) {
@@ -204,16 +205,14 @@ void CSSIntrinsicLengthInterpolationType::ApplyStandardPropertyValue(
   if (non_interpolable->HasNone()) {
     SetIntrinsicDimension(
         state.StyleBuilder(),
-        StyleIntrinsicLength(non_interpolable->HasAuto(), absl::nullopt));
+        StyleIntrinsicLength(non_interpolable->HasAuto(), std::nullopt));
   } else {
     SetIntrinsicDimension(
         state.StyleBuilder(),
         StyleIntrinsicLength(
             non_interpolable->HasAuto(),
-            interpolable
-                .CreateLength(state.CssToLengthConversionData(),
-                              Length::ValueRange::kNonNegative)
-                .Value()));
+            interpolable.CreateLength(state.CssToLengthConversionData(),
+                                      Length::ValueRange::kNonNegative)));
   }
 }
 void CSSIntrinsicLengthInterpolationType::Composite(

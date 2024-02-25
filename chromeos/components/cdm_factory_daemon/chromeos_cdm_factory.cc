@@ -97,7 +97,7 @@ class SingletonCdmContextRef : public media::CdmContextRef {
   }
 
  private:
-  raw_ptr<media::CdmContext, ExperimentalAsh> cdm_context_;
+  raw_ptr<media::CdmContext> cdm_context_;
 };
 
 void GetHwKeyDataProxy(const std::string& key_id,
@@ -144,6 +144,14 @@ class ArcCdmContext : public ChromeOsCdmContext, public media::CdmContext {
   void AllocateSecureBuffer(uint32_t size,
                             AllocateSecureBufferCB callback) override {
     ChromeOsCdmFactory::AllocateSecureBuffer(size, std::move(callback));
+  }
+  void ParseEncryptedSliceHeader(
+      uint64_t secure_handle,
+      uint32_t offset,
+      const std::vector<uint8_t>& stream_data,
+      ParseEncryptedSliceHeaderCB callback) override {
+    ChromeOsCdmFactory::ParseEncryptedSliceHeader(
+        secure_handle, offset, stream_data, std::move(callback));
   }
 
   // media::CdmContext implementation.
@@ -232,6 +240,24 @@ void ChromeOsCdmFactory::AllocateSecureBuffer(
     return;
   }
   GetBrowserCdmFactoryRemote()->AllocateSecureBuffer(size, std::move(callback));
+}
+
+// static
+void ChromeOsCdmFactory::ParseEncryptedSliceHeader(
+    uint64_t secure_handle,
+    uint32_t offset,
+    const std::vector<uint8_t>& stream_data,
+    ChromeOsCdmContext::ParseEncryptedSliceHeaderCB callback) {
+  if (!GetFactoryTaskRunner()->RunsTasksInCurrentSequence()) {
+    GetFactoryTaskRunner()->PostTask(
+        FROM_HERE,
+        base::BindOnce(&ChromeOsCdmFactory::ParseEncryptedSliceHeader,
+                       secure_handle, offset, stream_data,
+                       std::move(callback)));
+    return;
+  }
+  GetBrowserCdmFactoryRemote()->ParseEncryptedSliceHeader(
+      secure_handle, offset, stream_data, std::move(callback));
 }
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)

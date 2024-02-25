@@ -16,7 +16,7 @@
 #include "base/base_export.h"
 #include "base/compiler_specific.h"
 
-#if defined(__has_feature) && __has_feature(objc_arc)
+#if HAS_FEATURE(objc_arc)
 #error "Do not use scoped_nsobject in ARC code; use __strong instead."
 #endif
 
@@ -86,7 +86,7 @@ class scoped_nsobject : public scoped_nsprotocol<NST*> {
  public:
   using scoped_nsprotocol<NST*>::scoped_nsprotocol;
 
-  static_assert(std::is_same<NST, NSAutoreleasePool>::value == false,
+  static_assert(std::is_same_v<NST, NSAutoreleasePool> == false,
                 "Use @autoreleasepool instead");
 };
 

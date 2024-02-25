@@ -79,3 +79,10 @@ export function isLocalDev(): boolean {
 export function isVideoCaptureDisallowed(): boolean {
   return loadTimeData.getBoolean('video_capture_disallowed');
 }
+
+/**
+ * Returns the OS version string.
+ */
+export function getOsVersion(): string {
+  return loadTimeData.getString('os_version');
+}

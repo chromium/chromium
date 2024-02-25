@@ -1,3 +1,6 @@
-monorail {
+monorail: {
   component: "OS>Systems>Diagnostics"
+}
+buganizer_public: {
+  component_id: 1457053
 }

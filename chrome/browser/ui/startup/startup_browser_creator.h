@@ -129,17 +129,6 @@ class StartupBrowserCreator {
   // Invalid URLs (per `GURL::is_valid()`) are skipped.
   void AddFirstRunTabs(const std::vector<GURL>& urls);
 
-#if BUILDFLAG(IS_WIN)
-  // Configures the instance to include the specified "welcome back" page in a
-  // tab before other tabs (e.g., those from session restore). This is used for
-  // specific launches via retention experiments for which no URLs are provided
-  // on the command line. No "welcome back" page is shown to supervised users.
-  void set_welcome_back_page(bool welcome_back_page) {
-    welcome_back_page_ = welcome_back_page;
-  }
-  bool welcome_back_page() const { return welcome_back_page_; }
-#endif  // BUILDFLAG(IS_WIN)
-
   // This function is equivalent to ProcessCommandLine but should only be
   // called during actual process startup.
   bool Start(const base::CommandLine& cmd_line,
@@ -174,24 +163,32 @@ class StartupBrowserCreator {
   // |process_startup| indicates whether this is the first browser.
   // |is_first_run| indicates that this is a new profile.
   // If |launch_mode_recorder| is non null, and a browser is launched, a launch
-  // mode histogram will be recorded.
+  // mode histogram will be recorded. `restore_tabbed_browser` should only
+  // be flipped false by Ash full restore code path, suppressing restoring a
+  // normal browser when there were only PWAs open in previous session. See
+  // crbug.com/1463906.
   void LaunchBrowser(
       const base::CommandLine& command_line,
       Profile* profile,
       const base::FilePath& cur_dir,
       chrome::startup::IsProcessStartup process_startup,
       chrome::startup::IsFirstRun is_first_run,
-      std::unique_ptr<OldLaunchModeRecorder> launch_mode_recorder);
+      std::unique_ptr<OldLaunchModeRecorder> launch_mode_recorder,
+      bool restore_tabbed_browser);
 
   // Launches browser for `last_opened_profiles` if it's not empty. Otherwise,
-  // launches browser for `profile_info`.
+  // launches browser for `profile_info`. `restore_tabbed_browser` should
+  // only be flipped false by Ash full restore code path, suppressing restoring
+  // a normal browser when there were only PWAs open in previous session. See
+  // crbug.com/1463906.
   void LaunchBrowserForLastProfiles(
       const base::CommandLine& command_line,
       const base::FilePath& cur_dir,
       chrome::startup::IsProcessStartup process_startup,
       chrome::startup::IsFirstRun is_first_run,
       StartupProfileInfo profile_info,
-      const Profiles& last_opened_profiles);
+      const Profiles& last_opened_profiles,
+      bool restore_tabbed_browser);
 
   // Returns true during browser process startup if the previous browser was
   // restarted. This only returns true before the first StartupBrowserCreator
@@ -308,11 +305,6 @@ class StartupBrowserCreator {
 
   // Additional tabs to open during first run.
   std::vector<GURL> first_run_tabs_;
-
-#if BUILDFLAG(IS_WIN)
-  // The page to be shown in a tab when welcoming a user back to Chrome.
-  bool welcome_back_page_ = false;
-#endif  // BUILDFLAG(IS_WIN)
 
   // True if we have already read and reset the preference kWasRestarted. (A
   // member variable instead of a static variable inside WasRestarted because

@@ -1,0 +1,75 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+assert(is_win)
+
+source_set("os_crypt") {
+  sources = [
+    "app_bound_encryption_metrics_win.cc",
+    "app_bound_encryption_metrics_win.h",
+    "app_bound_encryption_win.cc",
+    "app_bound_encryption_win.h",
+  ]
+
+  deps = [
+    "//base",
+    "//chrome/install_static:install_static_util",
+    "//components/prefs:prefs",
+    "//content/public/browser",
+  ]
+
+  public_deps = [ "//chrome/elevation_service:public_headers" ]
+}
+
+source_set("browser_tests") {
+  testonly = true
+  sources = [ "app_bound_encryption_win_browsertest.cc" ]
+
+  defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+
+  deps = [
+    ":os_crypt",
+    ":test_support",
+    "//base",
+    "//chrome/test:test_support",
+    "//content/test:test_support",
+  ]
+
+  if (!is_component_build) {
+    data_deps = [ ":app_binary" ]
+  }
+}
+
+source_set("test_support") {
+  testonly = true
+  sources = [
+    "test_support.cc",
+    "test_support.h",
+  ]
+  deps = [
+    "//base",
+    "//chrome/elevation_service:public_headers",
+    "//chrome/install_static:install_static_util",
+    "//chrome/install_static/test:test_support",
+    "//chrome/installer/util:constants",
+    "//chrome/installer/util:work_item",
+  ]
+}
+
+# This binary is launched by the browser tests and makes calls to the app-bound
+# service to test the functionality for various executable callers. It cannot
+# be used in a component build because it needs to function from any directory
+# on the system as part of the test.
+if (!is_component_build) {
+  executable("app_binary") {
+    testonly = true
+    sources = [ "app_bound_encryption_test_main.cc" ]
+    deps = [
+      ":os_crypt",
+      ":test_support",
+      "//base",
+      "//chrome/install_static/test:test_support",
+    ]
+  }
+}

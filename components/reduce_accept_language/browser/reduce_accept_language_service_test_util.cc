@@ -40,7 +40,7 @@ void ReduceAcceptLanguageServiceTester::VerifyPersistFail(
     const std::string& language) const {
   service_->PersistReducedLanguage(url::Origin::Create(host), language);
 
-  const absl::optional<std::string>& persisted_language =
+  const std::optional<std::string>& persisted_language =
       service_->GetReducedLanguage(url::Origin::Create(host));
   EXPECT_FALSE(persisted_language.has_value());
 }
@@ -65,7 +65,7 @@ void ReduceAcceptLanguageServiceTester::VerifyPersistSuccess(
   url::Origin origin = url::Origin::Create(host);
   service_->PersistReducedLanguage(origin, language);
 
-  const absl::optional<std::string>& persisted_language =
+  const std::optional<std::string>& persisted_language =
       service_->GetReducedLanguage(origin);
   EXPECT_TRUE(persisted_language.has_value());
   EXPECT_EQ(persisted_language.value(), language);
@@ -87,7 +87,7 @@ void ReduceAcceptLanguageServiceTester::VerifyPersistMultipleHostsSuccess(
     service_->PersistReducedLanguage(url::Origin::Create(hosts[i]),
                                      languages[i]);
 
-    const absl::optional<std::string>& persisted_language =
+    const std::optional<std::string>& persisted_language =
         service_->GetReducedLanguage(url::Origin::Create(hosts[i]));
     EXPECT_TRUE(persisted_language.has_value());
     EXPECT_EQ(persisted_language.value(), languages[i]);
@@ -101,7 +101,7 @@ void ReduceAcceptLanguageServiceTester::VerifyPersistMultipleHostsSuccess(
 
   // Verify other origins still have the persisted language.
   for (size_t i = 1; i < hosts.size(); i++) {
-    const absl::optional<std::string>& persisted_language =
+    const std::optional<std::string>& persisted_language =
         service_->GetReducedLanguage(url::Origin::Create(hosts[i]));
     EXPECT_TRUE(persisted_language.has_value());
     EXPECT_EQ(persisted_language.value(), languages[i]);

@@ -9,6 +9,8 @@
 #import "ios/chrome/browser/ui/promos_manager/bannered_promo_view_provider.h"
 #import "ios/chrome/browser/ui/promos_manager/standard_promo_alert_provider.h"
 
+class Browser;
+
 // Provider for displaying the Post Restore Sign-in Promo.
 //
 // The Post Restore Sign-in promo comes in two variations: (1) A fullscreen,
@@ -16,7 +18,9 @@
 // necessary data and functionality to power both variations of this promo.
 @interface PostRestoreSignInProvider : NSObject <StandardPromoAlertProvider>
 
-- (instancetype)init;
+- (instancetype)initForBrowser:(Browser*)browser NS_DESIGNATED_INITIALIZER;
+
+- (instancetype)init NS_UNAVAILABLE;
 
 // Delegate callback to tell the provider that the promo was displayed.
 - (void)promoWasDisplayed;

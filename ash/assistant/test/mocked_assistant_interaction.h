@@ -36,8 +36,8 @@ class MockedAssistantInteraction {
  private:
   void Submit();
 
-  raw_ptr<AssistantTestApi, ExperimentalAsh> test_api_;
-  raw_ptr<TestAssistantService, ExperimentalAsh> service_;
+  raw_ptr<AssistantTestApi> test_api_;
+  raw_ptr<TestAssistantService> service_;
   std::unique_ptr<InteractionResponse> response_;
 
   std::string query_ = "<fake-query>";

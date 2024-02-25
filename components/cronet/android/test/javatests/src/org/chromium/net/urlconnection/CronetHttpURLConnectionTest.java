@@ -26,7 +26,8 @@ import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.net.CronetEngine;
 import org.chromium.net.CronetException;
 import org.chromium.net.CronetTestRule;
-import org.chromium.net.CronetTestRule.OnlyRunNativeCronet;
+import org.chromium.net.CronetTestRule.CronetImplementation;
+import org.chromium.net.CronetTestRule.IgnoreFor;
 import org.chromium.net.CronetTestRule.RequiresMinAndroidApi;
 import org.chromium.net.CronetTestRule.RequiresMinApi;
 import org.chromium.net.CronetTestUtil;
@@ -54,18 +55,19 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-/**
- * Basic tests of Cronet's HttpURLConnection implementation.
- */
-@DoNotBatch(reason = "crbug/1453571 testReadTimeout crashes because of MockUrlrequestJobFactory's"
-                + "interaction with a singleton")
-@OnlyRunNativeCronet
+/** Basic tests of Cronet's HttpURLConnection implementation. */
+@DoNotBatch(
+        reason =
+                "crbug/1453571 testReadTimeout crashes because of MockUrlrequestJobFactory's"
+                        + "interaction with a singleton")
+@IgnoreFor(
+        implementations = {CronetImplementation.FALLBACK},
+        reason = "See crrev.com/c/4590329")
 @RunWith(AndroidJUnit4.class)
 public class CronetHttpURLConnectionTest {
     private static final String TAG = CronetHttpURLConnectionTest.class.getSimpleName();
 
-    @Rule
-    public final CronetTestRule mTestRule = CronetTestRule.withManualEngineStartup();
+    @Rule public final CronetTestRule mTestRule = CronetTestRule.withManualEngineStartup();
 
     private HttpURLConnection mUrlConnection;
 
@@ -73,12 +75,17 @@ public class CronetHttpURLConnectionTest {
 
     @Before
     public void setUp() throws Exception {
-        mTestRule.getTestFramework().applyEngineBuilderPatch(
-                (builder) -> { mTestRule.getTestFramework().enableDiskCache(builder); });
+        mTestRule
+                .getTestFramework()
+                .applyEngineBuilderPatch(
+                        (builder) -> {
+                            mTestRule.getTestFramework().enableDiskCache(builder);
+                        });
 
         mCronetEngine = mTestRule.getTestFramework().startEngine();
         assertThat(
-                NativeTestServer.startNativeTestServer(mTestRule.getTestFramework().getContext()))
+                        NativeTestServer.startNativeTestServer(
+                                mTestRule.getTestFramework().getContext()))
                 .isTrue();
     }
 
@@ -129,6 +136,9 @@ public class CronetHttpURLConnectionTest {
 
     @Test
     @SmallTest
+    @IgnoreFor(
+            implementations = {CronetImplementation.AOSP_PLATFORM},
+            reason = "crbug.com/1495309: Enable once we drop MockUrlRequestJobFactory")
     public void testReadTimeout() throws Exception {
         // Add url interceptors.
         MockUrlRequestJobFactory mockUrlRequestJobFactory =
@@ -159,9 +169,8 @@ public class CronetHttpURLConnectionTest {
     }
 
     /**
-     * Tests that calling {@link HttpURLConnection#connect} will also initialize
-     * {@code OutputStream} if necessary in the case where
-     * {@code setFixedLengthStreamingMode} is called.
+     * Tests that calling {@link HttpURLConnection#connect} will also initialize {@code
+     * OutputStream} if necessary in the case where {@code setFixedLengthStreamingMode} is called.
      * Regression test for crbug.com/582975.
      */
     @Test
@@ -182,9 +191,8 @@ public class CronetHttpURLConnectionTest {
     }
 
     /**
-     * Tests that calling {@link HttpURLConnection#connect} will also initialize
-     * {@code OutputStream} if necessary in the case where
-     * {@code setChunkedStreamingMode} is called.
+     * Tests that calling {@link HttpURLConnection#connect} will also initialize {@code
+     * OutputStream} if necessary in the case where {@code setChunkedStreamingMode} is called.
      * Regression test for crbug.com/582975.
      */
     @Test
@@ -254,9 +262,10 @@ public class CronetHttpURLConnectionTest {
             out.write(byteRead);
         }
         assertThat(out.toString())
-                .isEqualTo("<!DOCTYPE html>\n<html>\n<head>\n"
-                        + "<title>Not found</title>\n<p>Test page loaded.</p>\n"
-                        + "</head>\n</html>\n");
+                .isEqualTo(
+                        "<!DOCTYPE html>\n<html>\n<head>\n"
+                                + "<title>Not found</title>\n<p>Test page loaded.</p>\n"
+                                + "</head>\n</html>\n");
     }
 
     @Test
@@ -272,13 +281,22 @@ public class CronetHttpURLConnectionTest {
         // Cronet's wrapper only receives the error in its listener
         // callback when message loop is running, thus only knows
         // about the error when it starts to read response.
-        CronetException e = assertThrows(CronetException.class, secondConnection::getResponseCode);
-        assertThat(e).hasMessageThat().containsMatch(Pattern.compile(
-                "ECONNREFUSED|Connection refused|net::ERR_CONNECTION_REFUSED|Failed to connect"));
+        IOException e = assertThrows(IOException.class, secondConnection::getResponseCode);
+        // TODO(crbug.com/1495774): Consider whether we should be checking this in the first place.
+        if (mTestRule.implementationUnderTest().equals(CronetImplementation.STATICALLY_LINKED)) {
+            assertThat(e).isInstanceOf(CronetException.class);
+        }
+        assertThat(e)
+                .hasMessageThat()
+                .containsMatch(
+                        Pattern.compile(
+                                "ECONNREFUSED|Connection refused|net::ERR_CONNECTION_REFUSED|Failed"
+                                        + " to connect"));
         checkExceptionsAreThrown(secondConnection);
         // Starts the server to avoid crashing on shutdown in tearDown().
         assertThat(
-                NativeTestServer.startNativeTestServer(mTestRule.getTestFramework().getContext()))
+                        NativeTestServer.startNativeTestServer(
+                                mTestRule.getTestFramework().getContext()))
                 .isTrue();
     }
 
@@ -290,9 +308,17 @@ public class CronetHttpURLConnectionTest {
         // Cronet's wrapper only receives the error in its listener
         // callback when message loop is running, thus only knows
         // about the error when it starts to read response.
-        CronetException e = assertThrows(CronetException.class, mUrlConnection::getResponseCode);
-        assertThat(e).hasMessageThat().containsMatch(Pattern.compile(
-                "ECONNREFUSED|Connection refused|net::ERR_CONNECTION_REFUSED|Failed to connect"));
+        IOException e = assertThrows(IOException.class, mUrlConnection::getResponseCode);
+        // TODO(crbug.com/1495774): Consider whether we should be checking this in the first place.
+        if (mTestRule.implementationUnderTest().equals(CronetImplementation.STATICALLY_LINKED)) {
+            assertThat(e).isInstanceOf(CronetException.class);
+        }
+        assertThat(e)
+                .hasMessageThat()
+                .containsMatch(
+                        Pattern.compile(
+                                "ECONNREFUSED|Connection refused|net::ERR_CONNECTION_REFUSED|Failed"
+                                        + " to connect"));
         checkExceptionsAreThrown(mUrlConnection);
     }
 
@@ -304,7 +330,11 @@ public class CronetHttpURLConnectionTest {
         // Cronet's wrapper only receives the error in its listener
         // callback when message loop is running, thus only knows
         // about the error when it starts to read response.
-        assertThrows(CronetException.class, mUrlConnection::getResponseCode);
+        IOException e = assertThrows(IOException.class, mUrlConnection::getResponseCode);
+        // TODO(crbug.com/1495774): Consider whether we should be checking this in the first place.
+        if (mTestRule.implementationUnderTest().equals(CronetImplementation.STATICALLY_LINKED)) {
+            assertThat(e).isInstanceOf(CronetException.class);
+        }
         checkExceptionsAreThrown(mUrlConnection);
     }
 
@@ -381,11 +411,15 @@ public class CronetHttpURLConnectionTest {
         URL url = new URL(NativeTestServer.getEchoAllHeadersURL());
         mUrlConnection = (HttpURLConnection) mCronetEngine.openConnection(url);
         mUrlConnection.addRequestProperty("header-name", "value1");
-        UnsupportedOperationException e = assertThrows(UnsupportedOperationException.class,
-                () -> mUrlConnection.addRequestProperty("header-Name", "value2"));
-        assertThat(e).hasMessageThat().isEqualTo(
-                "Cannot add multiple headers of the same key, header-Name. "
-                + "crbug.com/432719.");
+        UnsupportedOperationException e =
+                assertThrows(
+                        UnsupportedOperationException.class,
+                        () -> mUrlConnection.addRequestProperty("header-Name", "value2"));
+        assertThat(e)
+                .hasMessageThat()
+                .isEqualTo(
+                        "Cannot add multiple headers of the same key, header-Name. "
+                                + "crbug.com/432719.");
     }
 
     @Test
@@ -487,7 +521,8 @@ public class CronetHttpURLConnectionTest {
         mUrlConnection = (HttpURLConnection) mCronetEngine.openConnection(url);
         mUrlConnection.addRequestProperty("header-name", "value");
         Map<String, List<String>> headers = mUrlConnection.getRequestProperties();
-        assertThrows(UnsupportedOperationException.class,
+        assertThrows(
+                UnsupportedOperationException.class,
                 () -> headers.put("foo", Arrays.asList("v1", "v2")));
 
         List<String> values = headers.get("header-name");
@@ -562,11 +597,14 @@ public class CronetHttpURLConnectionTest {
     }
 
     /**
-     * Tests batch reading on CronetInputStream when
-     * {@link CronetHttpURLConnection#getMoreData} is called multiple times.
+     * Tests batch reading on CronetInputStream when {@link CronetHttpURLConnection#getMoreData} is
+     * called multiple times.
      */
     @Test
     @SmallTest
+    @IgnoreFor(
+            implementations = {CronetImplementation.AOSP_PLATFORM},
+            reason = "crbug.com/1495309: Enable once we drop MockUrlRequestJobFactory")
     public void testBigDataRead() throws Exception {
         String data = "MyBigFunkyData";
         int dataLength = data.length();
@@ -649,8 +687,8 @@ public class CronetHttpURLConnectionTest {
     }
 
     /**
-     * Makes sure that disconnect while reading from InputStream, the message
-     * loop does not block. Regression test for crbug.com/550605.
+     * Makes sure that disconnect while reading from InputStream, the message loop does not block.
+     * Regression test for crbug.com/550605.
      */
     @Test
     @SmallTest
@@ -673,10 +711,12 @@ public class CronetHttpURLConnectionTest {
         // TODO(crbug/1453579): This might be racy
         // Continue reading, and make sure the message loop will not block and the connection is
         // disconnected before EOF, since the response body is big.
-        IOException e = assertThrows(IOException.class, () -> {
-            while (in.read() != -1) {
-            }
-        });
+        IOException e =
+                assertThrows(
+                        IOException.class,
+                        () -> {
+                            while (in.read() != -1) {}
+                        });
         assertThat(e).hasMessageThat().isEqualTo("disconnect() called");
         // Read once more, and make sure exception is thrown.
         e = assertThrows(IOException.class, in::read);
@@ -684,8 +724,8 @@ public class CronetHttpURLConnectionTest {
     }
 
     /**
-     * Makes sure that {@link UrlRequest.Callback#onFailed} exception is
-     * propagated when calling read on the input stream.
+     * Makes sure that {@link UrlRequest.Callback#onFailed} exception is propagated when calling
+     * read on the input stream.
      */
     @Test
     @SmallTest
@@ -698,10 +738,12 @@ public class CronetHttpURLConnectionTest {
         NativeTestServer.shutdownNativeTestServer();
         // Continue reading, and make sure the message loop will not block and the server closes
         // the connection before EOF is received.
-        IOException e = assertThrows(IOException.class, () -> {
-            while (in.read() != -1) {
-            }
-        });
+        IOException e =
+                assertThrows(
+                        IOException.class,
+                        () -> {
+                            while (in.read() != -1) {}
+                        });
         assertThat(e).hasMessageThat().contains("net::ERR_CONTENT_LENGTH_MISMATCH");
 
         // Read once more, and make sure exception is thrown.
@@ -709,7 +751,8 @@ public class CronetHttpURLConnectionTest {
         assertThat(e).hasMessageThat().contains("net::ERR_CONTENT_LENGTH_MISMATCH");
         // Spins up server to avoid crash when shutting it down in tearDown().
         assertThat(
-                NativeTestServer.startNativeTestServer(mTestRule.getTestFramework().getContext()))
+                        NativeTestServer.startNativeTestServer(
+                                mTestRule.getTestFramework().getContext()))
                 .isTrue();
     }
 
@@ -808,7 +851,8 @@ public class CronetHttpURLConnectionTest {
         mUrlConnection = (HttpURLConnection) mCronetEngine.openConnection(url);
         Map<String, List<String>> responseHeaders = mUrlConnection.getHeaderFields();
         // Make sure response header map is not modifiable.
-        assertThrows(UnsupportedOperationException.class,
+        assertThrows(
+                UnsupportedOperationException.class,
                 () -> responseHeaders.put("foo", Arrays.asList("v1", "v2")));
 
         List<String> contentType = responseHeaders.get("Content-type");
@@ -890,20 +934,27 @@ public class CronetHttpURLConnectionTest {
         assertThat(TestUtil.getResponseAsString(mUrlConnection)).isEqualTo("Hello, World!");
     }
 
-    private static enum CacheSetting { USE_CACHE, DONT_USE_CACHE };
+    private static enum CacheSetting {
+        USE_CACHE,
+        DONT_USE_CACHE
+    };
 
-    private static enum ExpectedOutcome { SUCCESS, FAILURE };
+    private static enum ExpectedOutcome {
+        SUCCESS,
+        FAILURE
+    };
 
     /**
-     * Helper method to make a request with cache enabled or disabled, and check
-     * whether the request is successful.
+     * Helper method to make a request with cache enabled or disabled, and check whether the request
+     * is successful.
+     *
      * @param requestUrl request url.
      * @param cacheSetting indicates cache should be used.
      * @param outcome indicates request is expected to be successful.
      */
-    private void checkRequestCaching(String requestUrl,
-            CacheSetting cacheSetting,
-            ExpectedOutcome outcome) throws Exception {
+    private void checkRequestCaching(
+            String requestUrl, CacheSetting cacheSetting, ExpectedOutcome outcome)
+            throws Exception {
         URL url = new URL(requestUrl);
         mUrlConnection = (HttpURLConnection) mCronetEngine.openConnection(url);
         mUrlConnection.setUseCaches(cacheSetting == CacheSetting.USE_CACHE);
@@ -920,24 +971,20 @@ public class CronetHttpURLConnectionTest {
     @SmallTest
     public void testSetUseCaches() throws Exception {
         String url = NativeTestServer.getFileURL("/cacheable.txt");
-        checkRequestCaching(url,
-                CacheSetting.USE_CACHE, ExpectedOutcome.SUCCESS);
+        checkRequestCaching(url, CacheSetting.USE_CACHE, ExpectedOutcome.SUCCESS);
         // Shut down the server, we should be able to receive a cached response.
         NativeTestServer.shutdownNativeTestServer();
-        checkRequestCaching(url,
-                CacheSetting.USE_CACHE, ExpectedOutcome.SUCCESS);
+        checkRequestCaching(url, CacheSetting.USE_CACHE, ExpectedOutcome.SUCCESS);
     }
 
     @Test
     @SmallTest
     public void testSetUseCachesFalse() throws Exception {
         String url = NativeTestServer.getFileURL("/cacheable.txt");
-        checkRequestCaching(url,
-                CacheSetting.USE_CACHE, ExpectedOutcome.SUCCESS);
+        checkRequestCaching(url, CacheSetting.USE_CACHE, ExpectedOutcome.SUCCESS);
         NativeTestServer.shutdownNativeTestServer();
         // Disables caching. No cached response is received.
-        checkRequestCaching(url,
-                CacheSetting.DONT_USE_CACHE, ExpectedOutcome.FAILURE);
+        checkRequestCaching(url, CacheSetting.DONT_USE_CACHE, ExpectedOutcome.FAILURE);
     }
 
     @Test
@@ -952,17 +999,19 @@ public class CronetHttpURLConnectionTest {
         mUrlConnection = (HttpURLConnection) mCronetEngine.openConnection(url);
         // connect() is non-blocking. This is to make sure disconnect() triggers cancellation.
         mUrlConnection.connect();
-        FutureTask<IOException> task = new FutureTask<IOException>(new Callable<IOException>() {
-            @Override
-            public IOException call() {
-                try {
-                    mUrlConnection.getResponseCode();
-                } catch (IOException e) {
-                    return e;
-                }
-                return null;
-            }
-        });
+        FutureTask<IOException> task =
+                new FutureTask<IOException>(
+                        new Callable<IOException>() {
+                            @Override
+                            public IOException call() {
+                                try {
+                                    mUrlConnection.getResponseCode();
+                                } catch (IOException e) {
+                                    return e;
+                                }
+                                return null;
+                            }
+                        });
         new Thread(task).start();
         Socket s = hangingServer.accept();
         mUrlConnection.disconnect();
@@ -991,12 +1040,8 @@ public class CronetHttpURLConnectionTest {
         assertThat(errorStream).isNull();
     }
 
-    /**
-     * Helper method to extract a list of header values with the give header
-     * name.
-     */
-    private List<String> getRequestHeaderValues(String allHeaders,
-            String headerName) {
+    /** Helper method to extract a list of header values with the give header name. */
+    private List<String> getRequestHeaderValues(String allHeaders, String headerName) {
         Pattern pattern = Pattern.compile(headerName + ":\\s(.*)\\r\\n");
         Matcher matcher = pattern.matcher(allHeaders);
         List<String> headerValues = new ArrayList<String>();
@@ -1108,23 +1153,26 @@ public class CronetHttpURLConnectionTest {
         mUrlConnection = (HttpURLConnection) mCronetEngine.openConnection(url);
         // connect() is non-blocking.
         mUrlConnection.connect();
-        FutureTask<IOException> task = new FutureTask<IOException>(new Callable<IOException>() {
-            @Override
-            public IOException call() {
-                // This should not throw, even though internally it may encounter an exception.
-                mUrlConnection.getHeaderField("blah");
-                try {
-                    // This should throw an InterruptedIOException.
-                    mUrlConnection.getResponseCode();
-                } catch (InterruptedIOException e) {
-                    // Expected
-                    return e;
-                } catch (IOException e) {
-                    return null;
-                }
-                return null;
-            }
-        });
+        FutureTask<IOException> task =
+                new FutureTask<IOException>(
+                        new Callable<IOException>() {
+                            @Override
+                            public IOException call() {
+                                // This should not throw, even though internally it may encounter an
+                                // exception.
+                                mUrlConnection.getHeaderField("blah");
+                                try {
+                                    // This should throw an InterruptedIOException.
+                                    mUrlConnection.getResponseCode();
+                                } catch (InterruptedIOException e) {
+                                    // Expected
+                                    return e;
+                                } catch (IOException e) {
+                                    return null;
+                                }
+                                return null;
+                            }
+                        });
         Thread t = new Thread(task);
         t.start();
         Socket s = hangingServer.accept();
@@ -1147,16 +1195,18 @@ public class CronetHttpURLConnectionTest {
         mUrlConnection = (HttpURLConnection) mCronetEngine.openConnection(url);
         final AtomicBoolean connected = new AtomicBoolean();
         // Start request on another thread.
-        Thread thread = new Thread(new Runnable() {
-            @Override
-            public void run() {
-                try {
-                    assertThat(mUrlConnection.getResponseCode()).isEqualTo(200);
-                } catch (IOException e) {
-                }
-                connected.set(true);
-            }
-        });
+        Thread thread =
+                new Thread(
+                        new Runnable() {
+                            @Override
+                            public void run() {
+                                try {
+                                    assertThat(mUrlConnection.getResponseCode()).isEqualTo(200);
+                                } catch (IOException e) {
+                                }
+                                connected.set(true);
+                            }
+                        });
         thread.start();
         // Repeatedly call disconnect().  This used to crash.
         do {

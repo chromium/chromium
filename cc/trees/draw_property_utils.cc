@@ -14,6 +14,7 @@
 #include "base/containers/flat_map.h"
 #include "base/containers/stack.h"
 #include "base/logging.h"
+#include "base/memory/raw_ptr.h"
 #include "base/notreached.h"
 #include "base/ranges/algorithm.h"
 #include "build/build_config.h"
@@ -32,6 +33,7 @@
 #include "cc/trees/scroll_node.h"
 #include "cc/trees/transform_node.h"
 #include "cc/trees/viewport_property_ids.h"
+#include "components/viz/common/features.h"
 #include "components/viz/common/view_transition_element_resource_id.h"
 #include "ui/gfx/geometry/rect_conversions.h"
 
@@ -365,6 +367,8 @@ int LowestCommonAncestor(int clip_id_1,
 void SetHasContributingLayerThatEscapesClip(int lca_clip_id,
                                             int target_effect_id,
                                             EffectTree* effect_tree) {
+  DCHECK(!base::FeatureList::IsEnabled(
+      features::kRenderSurfaceCommonAncestorClip));
   const EffectNode* effect_node = effect_tree->Node(target_effect_id);
   // Find all ancestor targets starting from effect_node who are clipped by
   // a descendant of lowest ancestor clip and set their
@@ -378,62 +382,82 @@ void SetHasContributingLayerThatEscapesClip(int lca_clip_id,
   }
 }
 
+void UpdateRenderSurfaceCommonAncestorClip(LayerImpl* layer,
+                                           const ClipTree* clip_tree,
+                                           EffectTree* effect_tree) {
+  DCHECK(
+      base::FeatureList::IsEnabled(features::kRenderSurfaceCommonAncestorClip));
+  RenderSurfaceImpl* render_surface = layer->render_target();
+  CHECK(render_surface);
+  int clip_id = layer->clip_tree_index();
+  // Find each ancestor targets whose clip is escaped by the layer's clip, and
+  // set its common_ancestor_clip_id to be the lowest common ancestor of both
+  // clips.
+  while (clip_id < render_surface->common_ancestor_clip_id()) {
+    clip_id = LowestCommonAncestor(
+        clip_id, render_surface->common_ancestor_clip_id(), clip_tree);
+    render_surface->set_common_ancestor_clip_id(clip_id);
+    RenderSurfaceImpl* parent_render_surface = render_surface->render_target();
+    if (parent_render_surface == render_surface) {
+      break;
+    }
+    render_surface = parent_render_surface;
+  }
+}
+
+void ClearRenderSurfaceCommonAncestorClip(LayerImpl* layer) {
+  DCHECK(
+      base::FeatureList::IsEnabled(features::kRenderSurfaceCommonAncestorClip));
+  RenderSurfaceImpl* render_surface = layer->render_target();
+  CHECK(render_surface);
+  while (render_surface->has_contributing_layer_that_escapes_clip()) {
+    render_surface->set_common_ancestor_clip_id(kInvalidPropertyNodeId);
+    RenderSurfaceImpl* parent_render_surface = render_surface->render_target();
+    if (parent_render_surface == render_surface) {
+      break;
+    }
+    render_surface = parent_render_surface;
+  }
+}
+
 template <typename LayerType>
-int TransformTreeIndexForBackfaceVisibility(LayerType* layer,
-                                            const TransformTree& tree) {
-  return layer->transform_tree_index();
+const TransformNode& TransformNodeForBackfaceVisibility(
+    LayerType* layer,
+    const TransformTree& tree) {
+  const TransformNode* node = tree.Node(layer->transform_tree_index());
+  while (node->delegates_to_parent_for_backface) {
+    const TransformNode* parent = tree.Node(node->parent_id);
+    CHECK(node);
+    // Backface visibility inheritance should not cross 3d sorting contexts.
+    DCHECK(!node->sorting_context_id ||
+           parent->sorting_context_id == node->sorting_context_id);
+    node = parent;
+  }
+  return *node;
 }
 
 bool IsTargetSpaceTransformBackFaceVisible(
-    Layer* layer,
-    int transform_tree_index,
+    const LayerImpl* layer,
     const PropertyTrees* property_trees) {
-  // We do not skip back face invisible layers on main thread as target space
-  // transform will not be available here.
-  return false;
-}
-
-bool IsTargetSpaceTransformBackFaceVisible(
-    LayerImpl* layer,
-    int transform_tree_index,
-    const PropertyTrees* property_trees) {
-  const TransformTree& transform_tree = property_trees->transform_tree();
-  const TransformNode& transform_node =
-      *transform_tree.Node(transform_tree_index);
-  if (transform_node.delegates_to_parent_for_backface)
-    transform_tree_index = transform_node.parent_id;
-
+  const TransformNode& transform_node = TransformNodeForBackfaceVisibility(
+      layer, property_trees->transform_tree());
   gfx::Transform to_target;
-  property_trees->GetToTarget(transform_tree_index,
-                              layer->render_target_effect_tree_index(),
-                              &to_target);
+  property_trees->GetToTarget(
+      transform_node.id, layer->render_target_effect_tree_index(), &to_target);
+
   return to_target.IsBackFaceVisible();
 }
 
 bool IsTransformToRootOf3DRenderingContextBackFaceVisible(
-    Layer* layer,
-    int transform_tree_index,
-    const PropertyTrees* property_trees) {
-  // We do not skip back face invisible layers on main thread as target space
-  // transform will not be available here.
-  return false;
-}
-
-bool IsTransformToRootOf3DRenderingContextBackFaceVisible(
-    LayerImpl* layer,
-    int transform_tree_index,
+    const LayerImpl* layer,
     const PropertyTrees* property_trees) {
   const TransformTree& transform_tree = property_trees->transform_tree();
 
   const TransformNode& transform_node =
-      *transform_tree.Node(transform_tree_index);
+      TransformNodeForBackfaceVisibility(layer, transform_tree);
   const TransformNode* root_node = &transform_node;
-  if (transform_node.delegates_to_parent_for_backface) {
-    transform_tree_index = transform_node.parent_id;
-    root_node = transform_tree.Node(transform_tree_index);
-  }
 
-  int root_id = transform_tree_index;
+  int root_id = transform_node.id;
   int sorting_context_id = transform_node.sorting_context_id;
 
   while (root_id > kRootPropertyNodeId) {
@@ -448,24 +472,35 @@ bool IsTransformToRootOf3DRenderingContextBackFaceVisible(
   // TODO(chrishtr): cache this on the transform trees if needed, similar to
   // |to_target| and |to_screen|.
   gfx::Transform to_3d_root;
-  if (transform_tree_index != root_id)
+  if (transform_node.id != root_id) {
     property_trees->transform_tree().CombineTransformsBetween(
-        transform_tree_index, root_id, &to_3d_root);
+        transform_node.id, root_id, &to_3d_root);
+  }
   to_3d_root.PreConcat(root_node->to_parent);
   return to_3d_root.IsBackFaceVisible();
 }
 
-inline bool TransformToScreenIsKnown(Layer* layer,
-                                     int transform_tree_index,
-                                     const TransformTree& tree) {
-  const TransformNode* node = tree.Node(transform_tree_index);
-  return !node->to_screen_is_potentially_animated;
+bool IsLayerBackFaceVisible(const Layer* layer,
+                            const PropertyTrees* property_trees) {
+  // We do not skip back face invisible layers on main thread as target space
+  // transform will not be available here.
+  return false;
 }
 
-inline bool TransformToScreenIsKnown(LayerImpl* layer,
-                                     int transform_tree_index,
-                                     const TransformTree& tree) {
-  return true;
+bool IsLayerBackFaceVisible(const LayerImpl* layer,
+                            const PropertyTrees* property_trees) {
+  // A layer with singular transform is not drawn. So, we can assume that its
+  // backface is not visible.
+  if (HasSingularTransform(layer->transform_tree_index(),
+                           property_trees->transform_tree())) {
+    return false;
+  }
+  if (layer->layer_tree_impl()->settings().enable_backface_visibility_interop) {
+    return IsTransformToRootOf3DRenderingContextBackFaceVisible(layer,
+                                                                property_trees);
+  } else {
+    return IsTargetSpaceTransformBackFaceVisible(layer, property_trees);
+  }
 }
 
 template <typename LayerType>
@@ -496,18 +531,9 @@ bool LayerNeedsUpdate(LayerType* layer,
 
   // The layer should not be drawn if (1) it is not double-sided and (2) the
   // back of the layer is known to be facing the screen.
-  const TransformTree& tree = property_trees->transform_tree();
-  if (layer->should_check_backface_visibility()) {
-    int backface_transform_id =
-        TransformTreeIndexForBackfaceVisibility(layer, tree);
-    // A layer with singular transform is not drawn. So, we can assume that its
-    // backface is not visible.
-    if (TransformToScreenIsKnown(layer, backface_transform_id, tree) &&
-        !HasSingularTransform(backface_transform_id, tree) &&
-        draw_property_utils::IsLayerBackFaceVisible(
-            layer, backface_transform_id, property_trees)) {
-      return false;
-    }
+  if (layer->should_check_backface_visibility() &&
+      IsLayerBackFaceVisible(layer, property_trees)) {
+    return false;
   }
 
   return true;
@@ -541,11 +567,26 @@ gfx::Rect LayerDrawableContentRect(
 
 void SetSurfaceIsClipped(const ClipTree& clip_tree,
                          RenderSurfaceImpl* render_surface) {
-  bool is_clipped;
+  bool is_clipped = false;
   if (render_surface->EffectTreeIndex() == kContentsRootPropertyNodeId) {
     // Root render surface is always clipped.
     is_clipped = true;
+  } else if (base::FeatureList::IsEnabled(
+                 features::kRenderSurfaceCommonAncestorClip)) {
+    int parent_target_clip_id =
+        render_surface->render_target()->common_ancestor_clip_id();
+    for (const ClipNode* clip_node =
+             clip_tree.Node(render_surface->common_ancestor_clip_id());
+         clip_node && clip_node->id != parent_target_clip_id;
+         clip_node = clip_tree.parent(clip_node)) {
+      if (clip_node->AppliesLocalClip()) {
+        is_clipped = true;
+        break;
+      }
+    }
   } else if (render_surface->has_contributing_layer_that_escapes_clip()) {
+    CHECK_EQ(render_surface->common_ancestor_clip_id(),
+             render_surface->ClipTreeIndex());
     // We cannot clip a surface that has a contribuitng layer which escapes the
     // clip.
     is_clipped = false;
@@ -623,9 +664,12 @@ void SetSurfaceClipRect(const ClipNode* parent_clip_node,
     render_surface->SetClipRect(
         ToEnclosingClipRect(clip_tree.Node(effect_node->clip_id)->clip));
   } else {
-    ConditionalClip accumulated_clip_rect =
-        ComputeAccumulatedClip(property_trees, include_expanding_clips,
-                               effect_node->clip_id, target_node->id);
+    DCHECK(base::FeatureList::IsEnabled(
+               features::kRenderSurfaceCommonAncestorClip) ||
+           render_surface->common_ancestor_clip_id() == effect_node->clip_id);
+    ConditionalClip accumulated_clip_rect = ComputeAccumulatedClip(
+        property_trees, include_expanding_clips,
+        render_surface->common_ancestor_clip_id(), target_node->id);
     render_surface->SetClipRect(
         ToEnclosingClipRect(accumulated_clip_rect.clip_rect));
   }
@@ -771,9 +815,14 @@ std::pair<gfx::MaskFilterInfo, bool> GetMaskFilterInfoPair(
   if (!property_trees->GetToTarget(node->transform_id, target_id, &to_target))
     return kEmptyMaskFilterInfoPair;
 
-  auto result =
-      std::make_pair(node->mask_filter_info, node->is_fast_rounded_corner);
-  result.first.ApplyTransform(to_target);
+  auto mfi = node->mask_filter_info;
+  mfi.ApplyTransform(to_target);
+
+  auto rrect_f = gfx::RRectF::ToEnclosingRRectF(mfi.rounded_corner_bounds());
+  auto result = std::make_pair(
+      gfx::MaskFilterInfo(rrect_f,
+                          mfi.gradient_mask().value_or(gfx::LinearGradient())),
+      node->is_fast_rounded_corner);
   if (result.first.IsEmpty()) {
     return kEmptyMaskFilterInfoPair;
   }
@@ -856,10 +905,12 @@ void ComputeSurfaceDrawProperties(PropertyTrees* property_trees,
   SetSurfaceDrawOpacity(property_trees->effect_tree(), render_surface);
   SetSurfaceDrawTransform(property_trees, render_surface);
 
-  render_surface->SetMaskFilterInfo(
+  auto mask_filter_info_pair =
       GetMaskFilterInfoPair(property_trees, render_surface->EffectTreeIndex(),
-                            /*for_render_surface=*/true)
-          .first);
+                            /*for_render_surface=*/true);
+  render_surface->SetMaskFilterInfo(
+      /*mask_filter_info=*/mask_filter_info_pair.first,
+      /*is_fast_rounded_corner=*/mask_filter_info_pair.second);
   render_surface->SetScreenSpaceTransform(
       property_trees->ToScreenSpaceTransformWithoutSurfaceContentsScale(
           render_surface->TransformTreeIndex(),
@@ -903,12 +954,28 @@ void AddSurfaceToRenderSurfaceList(RenderSurfaceImpl* render_surface,
   // smarter about layers with filters that move pixels and exclude regions
   // where both layers and the filters are occluded, but this seems like
   // overkill.
+  //
+  // When kAllowUndamagedNonrootRenderPassToSkip is enabled, in order for the
+  // render_surface to be skipped without triggering a redraw for the changes on
+  // occlusion_from_outside_target, surface contents need to befully drawn.
+  // DamageTracker |has_damage_from_contributing_content_| only track occlusion
+  // inside its own render_surface. Therefore we set |is_occlusion_immune| to
+  // avoid the need for redraw.
+  //
   // TODO(senorblanco): make this smarter for the SkImageFilter case (check for
   // pixel-moving filters)
+  const bool allow_skipping_render_pass = base::FeatureList::IsEnabled(
+      features::kAllowUndamagedNonrootRenderPassToSkip);
   const FilterOperations& filters = render_surface->Filters();
-  bool is_occlusion_immune = render_surface->CopyOfOutputRequired() ||
-                             filters.HasReferenceFilter() ||
-                             filters.HasFilterThatMovesPixels();
+  bool is_occlusion_immune =
+      render_surface->CopyOfOutputRequired() || filters.HasReferenceFilter() ||
+      filters.HasFilterThatMovesPixels() || allow_skipping_render_pass;
+
+  // Setting |is_occlusion_immune| leads to an empty
+  // |occlusion_from_outside_target| for a non-root render_surface. It does not
+  // affect |occlusion_from_inside_target|. |occlusion_from_outside_target| is
+  // always empty for the root render_surface because there is no other
+  // render_surface on top to occlude the root.
   if (is_occlusion_immune) {
     render_surface->SetNearestOcclusionImmuneAncestor(render_surface);
   } else if (is_root) {
@@ -1130,7 +1197,7 @@ void RecordRenderSurfaceReasonsForTracing(
   // kTest is the last value which is not included for tracing.
   constexpr auto kNumReasons = static_cast<size_t>(RenderSurfaceReason::kTest);
   int reason_counts[kNumReasons] = {0};
-  for (const auto* render_surface : *render_surface_list) {
+  for (const RenderSurfaceImpl* render_surface : *render_surface_list) {
     const auto* effect_node =
         property_trees->effect_tree().Node(render_surface->EffectTreeIndex());
     reason_counts[static_cast<size_t>(effect_node->render_surface_reason)]++;
@@ -1213,7 +1280,10 @@ void UpdateElasticOverscroll(
 
 void ComputeDrawPropertiesOfVisibleLayers(const LayerImplList* layer_list,
                                           PropertyTrees* property_trees) {
-  // Compute transforms
+  const bool common_ancestor_clip_enabled =
+      base::FeatureList::IsEnabled(features::kRenderSurfaceCommonAncestorClip);
+
+  // Compute transforms and clear common ancestor clips of render surfaces.
   for (LayerImpl* layer : *layer_list) {
     const TransformNode* transform_node =
         property_trees->transform_tree().Node(layer->transform_tree_index());
@@ -1229,22 +1299,30 @@ void ComputeDrawPropertiesOfVisibleLayers(const LayerImplList* layer_list,
     layer->draw_properties().mask_filter_info = mask_filter_info_pair.first;
     layer->draw_properties().is_fast_rounded_corner =
         mask_filter_info_pair.second;
+
+    if (common_ancestor_clip_enabled) {
+      ClearRenderSurfaceCommonAncestorClip(layer);
+    }
   }
 
-  // Compute effects and determine if render surfaces have contributing layers
-  // that escape clip.
+  // Compute effects and common ancestor clips of render surfaces.
   for (LayerImpl* layer : *layer_list) {
     layer->draw_properties().opacity =
         LayerDrawOpacity(layer, property_trees->effect_tree());
-
-    RenderSurfaceImpl* render_target = layer->render_target();
-    int lca_clip_id = LowestCommonAncestor(layer->clip_tree_index(),
-                                           render_target->ClipTreeIndex(),
-                                           &property_trees->clip_tree());
-    if (lca_clip_id != render_target->ClipTreeIndex()) {
-      SetHasContributingLayerThatEscapesClip(
-          lca_clip_id, render_target->EffectTreeIndex(),
+    if (common_ancestor_clip_enabled) {
+      UpdateRenderSurfaceCommonAncestorClip(
+          layer, &property_trees->clip_tree(),
           &property_trees->effect_tree_mutable());
+    } else {
+      RenderSurfaceImpl* render_target = layer->render_target();
+      int lca_clip_id = LowestCommonAncestor(layer->clip_tree_index(),
+                                             render_target->ClipTreeIndex(),
+                                             &property_trees->clip_tree());
+      if (lca_clip_id != render_target->ClipTreeIndex()) {
+        SetHasContributingLayerThatEscapesClip(
+            lca_clip_id, render_target->EffectTreeIndex(),
+            &property_trees->effect_tree_mutable());
+      }
     }
   }
 
@@ -1301,7 +1379,7 @@ bool NodeMayContainBackdropBlurFilter(const EffectNode& node) {
 
 }  // namespace
 
-bool CC_EXPORT LayerShouldBeSkippedForDrawPropertiesComputation(
+bool LayerShouldBeSkippedForDrawPropertiesComputation(
     LayerImpl* layer,
     const PropertyTrees* property_trees) {
   const TransformTree& transform_tree = property_trees->transform_tree();
@@ -1327,37 +1405,15 @@ bool CC_EXPORT LayerShouldBeSkippedForDrawPropertiesComputation(
     return true;
   if (layer->layer_tree_impl()->settings().enable_backface_visibility_interop) {
     return layer->should_check_backface_visibility() &&
-           IsLayerBackFaceVisible(layer, layer->transform_tree_index(),
-                                  property_trees);
+           IsLayerBackFaceVisible(layer, property_trees);
   } else {
     return effect_node->hidden_by_backface_visibility;
   }
 }
 
-bool CC_EXPORT IsLayerBackFaceVisible(LayerImpl* layer,
-                                      int transform_tree_index,
+bool IsLayerBackFaceVisibleForTesting(const LayerImpl* layer,  // IN-TEST
                                       const PropertyTrees* property_trees) {
-  if (layer->layer_tree_impl()->settings().enable_backface_visibility_interop) {
-    return IsTransformToRootOf3DRenderingContextBackFaceVisible(
-        layer, transform_tree_index, property_trees);
-  } else {
-    return IsTargetSpaceTransformBackFaceVisible(layer, transform_tree_index,
-                                                 property_trees);
-  }
-}
-
-bool CC_EXPORT IsLayerBackFaceVisible(Layer* layer,
-                                      int transform_tree_index,
-                                      const PropertyTrees* property_trees) {
-  if (layer->layer_tree_host()
-          ->GetSettings()
-          .enable_backface_visibility_interop) {
-    return IsTransformToRootOf3DRenderingContextBackFaceVisible(
-        layer, transform_tree_index, property_trees);
-  } else {
-    return IsTargetSpaceTransformBackFaceVisible(layer, transform_tree_index,
-                                                 property_trees);
-  }
+  return IsLayerBackFaceVisible(layer, property_trees);
 }
 
 void ConcatInverseSurfaceContentsScale(const EffectNode* effect_node,
@@ -1413,21 +1469,7 @@ void FindLayersThatNeedUpdates(LayerTreeImpl* layer_tree_impl,
 
 void ComputeTransforms(TransformTree* transform_tree,
                        const ViewportPropertyIds& viewport_property_ids) {
-  if (!transform_tree->needs_update()) {
-#if DCHECK_IS_ON()
-    // If the transform tree does not need an update, no TransformNode should
-    // need a local transform update.
-    for (int i = kContentsRootPropertyNodeId;
-         i < static_cast<int>(transform_tree->size()); ++i) {
-      DCHECK(!transform_tree->Node(i)->needs_local_transform_update);
-    }
-#endif
-    return;
-  }
-  for (int i = kContentsRootPropertyNodeId;
-       i < static_cast<int>(transform_tree->size()); ++i)
-    transform_tree->UpdateTransforms(i, &viewport_property_ids);
-  transform_tree->set_needs_update(false);
+  transform_tree->UpdateAllTransforms(viewport_property_ids);
 }
 
 void ComputeEffects(EffectTree* effect_tree) {
@@ -1590,7 +1632,7 @@ bool LogDoubleBackgroundBlur(const LayerTreeImpl& layer_tree_impl,
   std::vector<std::pair<const LayerImpl*, gfx::Rect>> rects;
   rects.reserve(render_surface_list.size());
 
-  for (const auto* render_surface : render_surface_list) {
+  for (const RenderSurfaceImpl* render_surface : render_surface_list) {
     const auto* effect_node =
         property_trees.effect_tree().Node(render_surface->EffectTreeIndex());
     if (NodeMayContainBackdropBlurFilter(*effect_node)) {

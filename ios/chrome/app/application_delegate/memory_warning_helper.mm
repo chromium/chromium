@@ -7,7 +7,7 @@
 #import "base/memory/memory_pressure_listener.h"
 #import "base/metrics/histogram_macros.h"
 #import "components/previous_session_info/previous_session_info.h"
-#import "ios/chrome/browser/crash_report/crash_keys_helper.h"
+#import "ios/chrome/browser/crash_report/model/crash_keys_helper.h"
 
 namespace {
 // The number of seconds to wait after a memory warning to clear the flag used

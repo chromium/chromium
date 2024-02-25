@@ -1,0 +1,15 @@
+Tests target info reported by paint worklet.
+{
+    sessionId : <string>
+    targetInfo : {
+        attached : true
+        browserContextId : <string>
+        canAccessOpener : false
+        targetId : <string>
+        title : http://127.0.0.1:8000/inspector-protocol/resources/inspector-protocol-page.html
+        type : worklet
+        url : http://127.0.0.1:8000/inspector-protocol/resources/inspector-protocol-page.html
+    }
+    waitingForDebugger : false
+}
+

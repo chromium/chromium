@@ -8,6 +8,7 @@
 
 #include "base/command_line.h"
 #include "base/files/file_path.h"
+#include "gpu/config/gpu_switches.h"
 
 namespace gpu {
 
@@ -16,7 +17,7 @@ namespace {
 // Returns the path to use is no path is supplied.
 base::FilePath GetDefaultPath() {
   auto path = base::CommandLine::ForCurrentProcess()->GetSwitchValuePath(
-      "shader-cache-path");
+      switches::kShaderCachePath);
   return path.empty() ? base::FilePath::FromASCII("/tmp/shader") : path;
 }
 

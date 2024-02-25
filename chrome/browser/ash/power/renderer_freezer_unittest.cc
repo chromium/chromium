@@ -13,7 +13,6 @@
 #include "base/memory/ref_counted.h"
 #include "base/run_loop.h"
 #include "base/values.h"
-#include "chrome/browser/ash/login/users/scoped_test_user_manager.h"
 #include "chrome/browser/ash/settings/scoped_cros_settings_test_helper.h"
 #include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/extensions/test_extension_system.h"
@@ -22,9 +21,6 @@
 #include "chrome/test/base/testing_profile_manager.h"
 #include "chromeos/dbus/power/fake_power_manager_client.h"
 #include "chromeos/dbus/power_manager/suspend.pb.h"
-#include "content/public/browser/notification_service.h"
-#include "content/public/browser/notification_source.h"
-#include "content/public/browser/notification_types.h"
 #include "content/public/browser/site_instance.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/mock_render_process_host.h"
@@ -158,7 +154,7 @@ class RendererFreezerTest : public testing::Test {
   }
 
   // Owned by |renderer_freezer_|.
-  raw_ptr<TestDelegate, DanglingUntriaged | ExperimentalAsh> test_delegate_;
+  raw_ptr<TestDelegate, DanglingUntriaged> test_delegate_;
   std::unique_ptr<RendererFreezer> renderer_freezer_;
 
  private:
@@ -202,7 +198,7 @@ TEST_F(RendererFreezerTest, ErrorThawingRenderers) {
   // The "threadsafe" style of death test re-executes the unit test binary,
   // which in turn re-initializes some global state leading to failed CHECKs.
   // Instead, we use the "fast" style here to prevent re-initialization.
-  ::testing::FLAGS_gtest_death_test_style = "fast";
+  GTEST_FLAG_SET(death_test_style, "fast");
   Init();
   test_delegate_->set_thaw_renderers_result(false);
 
@@ -278,7 +274,7 @@ class RendererFreezerTestWithExtensions : public RendererFreezerTest {
   }
 
   // Owned by |profile_manager_|.
-  raw_ptr<TestingProfile, ExperimentalAsh> profile_;
+  raw_ptr<TestingProfile> profile_;
   std::unique_ptr<TestingProfileManager> profile_manager_;
 
  private:

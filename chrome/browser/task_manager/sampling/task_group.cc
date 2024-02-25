@@ -360,7 +360,7 @@ void TaskGroup::OnIdleWakeupsRefreshDone(int idle_wakeups_per_second) {
 }
 
 void TaskGroup::OnSamplerRefreshDone(
-    absl::optional<SharedSampler::SamplingResult> results) {
+    std::optional<SharedSampler::SamplingResult> results) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
   // If any of the Optional<> fields have no value then replace them with
@@ -389,7 +389,7 @@ void TaskGroup::OnSamplerRefreshDone(
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 void TaskGroup::OnArcSamplerRefreshDone(
-    absl::optional<ArcSharedSampler::MemoryFootprintBytes> memory_footprint) {
+    std::optional<ArcSharedSampler::MemoryFootprintBytes> memory_footprint) {
   if (memory_footprint)
     set_footprint_bytes(*memory_footprint);
 }

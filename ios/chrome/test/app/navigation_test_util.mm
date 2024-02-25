@@ -20,7 +20,8 @@ void LoadUrlInWindowWithNumber(const GURL& url, int window_number) {
 }
 
 bool IsLoading() {
-  return GetCurrentWebState()->IsLoading();
+  web::WebState* web_state = GetCurrentWebState();
+  return web_state && web_state->IsLoading();
 }
 
 bool IsLoadingInWindowWithNumber(int window_number) {

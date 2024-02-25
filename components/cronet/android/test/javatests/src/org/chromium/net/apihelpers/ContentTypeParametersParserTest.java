@@ -113,7 +113,8 @@ public class ContentTypeParametersParserTest {
         ContentTypeParametersParser parser = new ContentTypeParametersParser(header);
 
         ContentTypeParametersParser.ContentTypeParametersParserException exception =
-                assertThrows(ContentTypeParametersParser.ContentTypeParametersParserException.class,
+                assertThrows(
+                        ContentTypeParametersParser.ContentTypeParametersParserException.class,
                         parser::getNextParameter);
 
         assertThat(exception.getErrorOffset()).isEqualTo(header.indexOf('\\'));
@@ -127,7 +128,8 @@ public class ContentTypeParametersParserTest {
         ContentTypeParametersParser parser = new ContentTypeParametersParser(header);
 
         ContentTypeParametersParser.ContentTypeParametersParserException exception =
-                assertThrows(ContentTypeParametersParser.ContentTypeParametersParserException.class,
+                assertThrows(
+                        ContentTypeParametersParser.ContentTypeParametersParserException.class,
                         parser::getNextParameter);
 
         assertThat(exception.getErrorOffset()).isEqualTo(header.indexOf('\\'));
@@ -141,7 +143,8 @@ public class ContentTypeParametersParserTest {
         ContentTypeParametersParser parser = new ContentTypeParametersParser(header);
 
         ContentTypeParametersParser.ContentTypeParametersParserException exception =
-                assertThrows(ContentTypeParametersParser.ContentTypeParametersParserException.class,
+                assertThrows(
+                        ContentTypeParametersParser.ContentTypeParametersParserException.class,
                         parser::getNextParameter);
 
         assertThat(exception.getErrorOffset()).isEqualTo(header.indexOf('"'));

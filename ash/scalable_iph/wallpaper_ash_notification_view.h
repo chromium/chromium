@@ -6,7 +6,7 @@
 #define ASH_SCALABLE_IPH_WALLPAPER_ASH_NOTIFICATION_VIEW_H_
 
 #include "ash/ash_export.h"
-#include "ash/system/message_center/ash_notification_view.h"
+#include "ash/scalable_iph/scalable_iph_ash_notification_view.h"
 #include "base/memory/raw_ptr.h"
 
 namespace message_center {
@@ -24,10 +24,11 @@ class RoundedImageView;
 
 // A customized notification view for scalable IPH that adjusts the notification
 // by showing four preview images for wallpaper.
-class ASH_EXPORT WallpaperAshNotificationView : public AshNotificationView {
- public:
-  METADATA_HEADER(WallpaperAshNotificationView);
+class ASH_EXPORT WallpaperAshNotificationView
+    : public ScalableIphAshNotificationView {
+  METADATA_HEADER(WallpaperAshNotificationView, ScalableIphAshNotificationView)
 
+ public:
   WallpaperAshNotificationView(const message_center::Notification& notification,
                                bool shown_in_popup);
   WallpaperAshNotificationView(const WallpaperAshNotificationView&) = delete;
@@ -51,8 +52,9 @@ class ASH_EXPORT WallpaperAshNotificationView : public AshNotificationView {
 
   // The preview view created to replace the notification image.
   // Owned by the view hierarchy.
-  raw_ptr<views::View, ExperimentalAsh> preview_ = nullptr;
-  std::vector<RoundedImageView*> image_views_{4, nullptr};
+  raw_ptr<views::View> preview_ = nullptr;
+  std::vector<raw_ptr<RoundedImageView, VectorExperimental>> image_views_{
+      4, nullptr};
 };
 
 }  // namespace ash

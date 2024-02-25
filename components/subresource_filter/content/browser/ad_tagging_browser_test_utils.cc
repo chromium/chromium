@@ -137,7 +137,7 @@ testing::AssertionResult EvidenceForFrameComprises(
     blink::mojom::FrameCreationStackEvidence created_by_ad_script) {
   auto* throttle_manager =
       ContentSubresourceFilterThrottleManager::FromPage(frame_host->GetPage());
-  absl::optional<blink::FrameAdEvidence> ad_evidence =
+  std::optional<blink::FrameAdEvidence> ad_evidence =
       throttle_manager->GetAdEvidenceForFrame(frame_host);
 
   if (!ad_evidence.has_value())

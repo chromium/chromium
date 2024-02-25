@@ -26,37 +26,35 @@ import org.chromium.chrome.test.util.ChromeTabUtils;
 import java.io.File;
 import java.io.FileWriter;
 
-/**
- * Integration test suite for the BlobUrlStore.
- */
+/** Integration test suite for the BlobUrlStore. */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 public class BlobUrlStoreTest {
     @Rule
     public ChromeTabbedActivityTestRule mActivityTestRule = new ChromeTabbedActivityTestRule();
 
-    @Rule
-    public TemporaryFolder mFolder = new TemporaryFolder();
+    @Rule public TemporaryFolder mFolder = new TemporaryFolder();
 
     @Test
     @SmallTest
     public void testContentScheme() throws Exception {
         Context context = ContextUtils.getApplicationContext();
         FileWriter writer = new FileWriter(new File(mFolder.newFolder("android"), "blob.html"));
-        writer.write("<!DOCTYPE html>"
-                + "<html>"
-                + "  <body>"
-                + "    <a href='#' id='link'>click me</a>"
-                + "    <script>"
-                + "      let blob = new Blob(['<html>"
-                + "            <head><title>A blob</title></head>"
-                + "            <body>some text</body>"
-                + "          </html>'], {type: 'text/html'});"
-                + "      link.href = URL.createObjectURL(blob);"
-                + "      link.click()"
-                + "    </script>"
-                + "  </body>"
-                + "</html>");
+        writer.write(
+                "<!DOCTYPE html>"
+                        + "<html>"
+                        + "  <body>"
+                        + "    <a href='#' id='link'>click me</a>"
+                        + "    <script>"
+                        + "      let blob = new Blob(['<html>"
+                        + "            <head><title>A blob</title></head>"
+                        + "            <body>some text</body>"
+                        + "          </html>'], {type: 'text/html'});"
+                        + "      link.href = URL.createObjectURL(blob);"
+                        + "      link.click()"
+                        + "    </script>"
+                        + "  </body>"
+                        + "</html>");
         writer.close();
         TestContentProvider.resetResourceRequestCounts(context);
         TestContentProvider.setDataFilePath(context, mFolder.getRoot().getPath());

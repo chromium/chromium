@@ -21,12 +21,14 @@ DEBUG_APP_OTOOL_OUTPUT = '\n'.join([
     'imp 0x1075e6887 -[TabUITestCase testE]',
     'name 0x1064b8438 KeyboardTestCase',
     'imp 0x1075e6887 -[KeyboardTestCase testF]',
-    'name 0x1064b8438 PasswordsTestCase',
-    'imp 0x1075e6887 -[PasswordsTestCase testG]',
+    'name 0x1064b8438 PasswordManagerTestCase',
+    'imp 0x1075e6887 -[PasswordManagerTestCase testG]',
     'name 0x1064b8438 ToolBarTestCase',
     'imp 0x1075e6887 -[ToolBarTestCase testH]',
     'imp 0x1075e6887 -[ToolBarTestCase DISABLED_testI]',
-    'imp 0x1075e6887 -[ToolBarTestCase FLAKY_testJ]', 'version 0'
+    'imp 0x1075e6887 -[ToolBarTestCase FLAKY_testJ]', 'version 0',
+    'name 0x1075d8539 PasswordManagerPasswordCheckupDisabledTestCase',
+    'imp 0x1075d8539 -[PasswordManagerPasswordCheckupDisabledTestCase testK]'
 ]).encode('utf-8')
 
 # Debug app otool output format in Xcode 11.4 toolchain.
@@ -163,7 +165,7 @@ class TestShardUtil(unittest.TestCase):
   def test_fetch_test_names_debug(self):
     """Ensures that the debug output is formatted correctly"""
     resp = shard_util.fetch_test_names_for_debug(DEBUG_APP_OTOOL_OUTPUT)
-    self.assertEqual(len(resp), 10)
+    self.assertEqual(len(resp), 11)
     expected_test_names = [
         ('CacheTestCase', 'testA'),
         ('CacheTestCase', 'testB'),
@@ -171,17 +173,19 @@ class TestShardUtil(unittest.TestCase):
         ('TabUITestCase', 'testD'),
         ('TabUITestCase', 'testE'),
         ('KeyboardTestCase', 'testF'),
-        ('PasswordsTestCase', 'testG'),
+        ('PasswordManagerTestCase', 'testG'),
         ('ToolBarTestCase', 'testH'),
         ('ToolBarTestCase', 'DISABLED_testI'),
         ('ToolBarTestCase', 'FLAKY_testJ'),
+        ('PasswordManagerPasswordCheckupDisabledTestCase', 'testK'),
     ]
     for test_name in expected_test_names:
       self.assertTrue(test_name in resp)
 
     test_cases = [test_case for (test_case, _) in resp]
-    # ({'CacheTestCase': 3, 'TabUITestCase': 2, 'PasswordsTestCase': 1,
-    # 'KeyboardTestCase': 1, 'ToolBarTestCase': 3})
+    # ({'CacheTestCase': 3, 'TabUITestCase': 2, 'PasswordManagerTestCase': 1,
+    # 'KeyboardTestCase': 1, 'ToolBarTestCase': 3,
+    # 'PasswordManagerPasswordCheckupDisabledTestCase': 1})
     counts = collections.Counter(test_cases).most_common()
     name, _ = counts[0]
     # CacheTestCase and ToolBarTestCase each have 3 entries.
@@ -289,20 +293,38 @@ class TestShardUtil(unittest.TestCase):
 
     sublists_1 = shard_util.balance_into_sublists(test_counts, 1)
     self.assertEqual(len(sublists_1), 1)
-    self.assertEqual(len(sublists_1[0]), 5)
+    self.assertEqual(len(sublists_1[0]), 6)
 
     sublists_3 = shard_util.balance_into_sublists(test_counts, 3)
     self.assertEqual(len(sublists_3), 3)
     # CacheTestCase has 3,
     # TabUITestCase has 2, ToolBarTestCase has 4
-    # PasswordsTestCase has 1, KeyboardTestCase has 1
+    # PasswordManagerTestCase has 1, KeyboardTestCase has 1
+    # PasswordManagerPasswordCheckupDisabledTestCase has 2 (due to inheritance)
     # They will be balanced into:
-    # [[ToolBarTestCase], [CacheTestCase, PasswordsTestCase],
-    # [TabUITestCase, KeyboardTestCase]]
+    # [[ToolBarTestCase, KeyboardTestCase],
+    # [CacheTestCase, PasswordManagerTestCase],
+    # [PasswordManagerPasswordCheckupDisabledTestCase, TabUITestCase]]
     self.assertEqual(
         sorted([len(sublists_3[0]),
                 len(sublists_3[1]),
-                len(sublists_3[2])]), [1, 2, 2])
+                len(sublists_3[2])]), [2, 2, 2])
+
+  def test_balance_into_sublists_release(self):
+    """Ensure the balancing algorithm works"""
+    resp = shard_util.fetch_test_names_for_release(RELEASE_APP_OTOOL_OUTPUT)
+    test_cases = [test_case for (test_case, _) in resp]
+    test_counts = collections.Counter(test_cases)
+
+    sublists_3 = shard_util.balance_into_sublists(test_counts, 3)
+    self.assertEqual(len(sublists_3), 3)
+    # KeyboardTest has 3
+    # CacheTestCase has 3
+    # ToolbarTest Case has 4
+    # They will be balanced as one in each shard.
+    self.assertEqual(len(sublists_3[0]), 1)
+    self.assertEqual(len(sublists_3[1]), 1)
+    self.assertEqual(len(sublists_3[2]), 1)
 
   def test_balance_into_sublists_release(self):
     """Ensure the balancing algorithm works"""

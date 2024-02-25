@@ -21,20 +21,16 @@ import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.JniMocker;
 
-/**
- * Test class for {@link PasswordManagerLifecycleHelper}.
- */
+/** Test class for {@link PasswordManagerLifecycleHelper}. */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
 @Batch(Batch.PER_CLASS)
 public class PasswordManagerLifecycleHelperTest {
     private static final long sFakeNativePointer = 96024;
 
-    @Rule
-    public JniMocker mJniMocker = new JniMocker();
+    @Rule public JniMocker mJniMocker = new JniMocker();
 
-    @Mock
-    private PasswordManagerLifecycleHelper.Natives mBridgeJniMock;
+    @Mock private PasswordManagerLifecycleHelper.Natives mBridgeJniMock;
 
     @Before
     public void setUp() {
@@ -44,7 +40,8 @@ public class PasswordManagerLifecycleHelperTest {
 
     @Test
     public void testReuseInstance() {
-        assertSame(PasswordManagerLifecycleHelper.getInstance(),
+        assertSame(
+                PasswordManagerLifecycleHelper.getInstance(),
                 PasswordManagerLifecycleHelper.getInstance());
     }
 

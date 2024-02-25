@@ -16,7 +16,6 @@ mojom("mojom") {
     "cros_healthd_probe.mojom",
     "cros_healthd_routines.mojom",
     "nullable_primitives.mojom",
-    "wilco_ec.mojom",
   ]
   public_deps = [
     "//ash/system/diagnostics/mojom",

@@ -2,22 +2,31 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/chromeos/printing/cups_wrapper.h"
-
 #include <cups/cups.h>
+
 #include <utility>
 
 #include "base/functional/callback.h"
 #include "base/logging.h"
+#include "base/no_destructor.h"
 #include "base/sequence_checker.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "base/threading/scoped_blocking_call.h"
+#include "chrome/browser/chromeos/printing/cups_wrapper.h"
 #include "printing/backend/cups_printer.h"
 #include "url/gurl.h"
 
 namespace chromeos {
+
+namespace {
+CupsWrapper::CupsWrapperFactory& GetCupsWrapperFactoryForTesting() {
+  static base::NoDestructor<CupsWrapper::CupsWrapperFactory>
+      factory_for_testing;
+  return *factory_for_testing;
+}
+}  // namespace
 
 // A wrapper around the CUPS connection to ensure that it's always accessed on
 // the same sequence and run in the appropriate sequence off of the calling
@@ -146,7 +155,15 @@ class CupsWrapperImpl : public CupsWrapper {
 
 // static
 std::unique_ptr<CupsWrapper> CupsWrapper::Create() {
+  if (auto& testing_factory = GetCupsWrapperFactoryForTesting()) {
+    return testing_factory.Run();
+  }
   return std::make_unique<CupsWrapperImpl>();
+}
+
+// static
+void CupsWrapper::SetCupsWrapperFactoryForTesting(CupsWrapperFactory factory) {
+  GetCupsWrapperFactoryForTesting() = std::move(factory);
 }
 
 }  // namespace chromeos

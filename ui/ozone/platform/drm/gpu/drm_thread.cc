@@ -295,7 +295,7 @@ void DrmThread::SetWindowBounds(gfx::AcceleratedWidget widget,
 
 void DrmThread::SetCursor(gfx::AcceleratedWidget widget,
                           const std::vector<SkBitmap>& bitmaps,
-                          const absl::optional<gfx::Point>& location,
+                          const std::optional<gfx::Point>& location,
                           base::TimeDelta frame_delay) {
   TRACE_EVENT0("drm", "DrmThread::SetCursor");
   screen_manager_->GetWindow(widget)->SetCursor(bitmaps, location, frame_delay);
@@ -465,18 +465,15 @@ void DrmThread::SetHDCPState(int64_t display_id,
       display_manager_->SetHDCPState(display_id, state, protection_method));
 }
 
-void DrmThread::SetColorMatrix(int64_t display_id,
-                               const std::vector<float>& color_matrix) {
-  TRACE_EVENT0("drm", "DrmThread::SetColorMatrix");
-  display_manager_->SetColorMatrix(display_id, color_matrix);
+void DrmThread::SetColorTemperatureAdjustment(
+    int64_t display_id,
+    const display::ColorTemperatureAdjustment& cta) {
+  display_manager_->SetColorTemperatureAdjustment(display_id, cta);
 }
 
-void DrmThread::SetGammaCorrection(
-    int64_t display_id,
-    const std::vector<display::GammaRampRGBEntry>& degamma_lut,
-    const std::vector<display::GammaRampRGBEntry>& gamma_lut) {
-  TRACE_EVENT0("drm", "DrmThread::SetGammaCorrection");
-  display_manager_->SetGammaCorrection(display_id, degamma_lut, gamma_lut);
+void DrmThread::SetGammaAdjustment(int64_t display_id,
+                                   const display::GammaAdjustment& adjustment) {
+  display_manager_->SetGammaAdjustment(display_id, adjustment);
 }
 
 void DrmThread::SetPrivacyScreen(int64_t display_id,
@@ -502,19 +499,6 @@ void DrmThread::ProcessPendingTasks() {
   }
 
   pending_tasks_.clear();
-}
-
-void DrmThread::SetColorSpace(gfx::AcceleratedWidget widget,
-                              const gfx::ColorSpace& color_space) {
-  DCHECK(screen_manager_->GetWindow(widget));
-  HardwareDisplayController* controller =
-      screen_manager_->GetWindow(widget)->GetController();
-  if (!controller)
-    return;
-
-  const auto& crtc_controllers = controller->crtc_controllers();
-  for (const auto& crtc_controller : crtc_controllers)
-    display_manager_->SetColorSpace(crtc_controller->crtc(), color_space);
 }
 
 }  // namespace ui

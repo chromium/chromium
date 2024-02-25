@@ -77,20 +77,18 @@ class BrowserTabsModelProviderImpl
   void AttemptBrowserTabsModelUpdate();
   void InvalidateWeakPtrsAndClearTabMetadata(bool is_tab_sync_enabled);
   void OnMetadataFetched(
-      absl::optional<std::vector<BrowserTabsModel::BrowserTabMetadata>>
+      std::optional<std::vector<BrowserTabsModel::BrowserTabMetadata>>
           metadata);
-  absl::optional<std::string> GetHostDeviceName() const;
+  std::optional<std::string> GetHostDeviceName() const;
 
-  raw_ptr<multidevice_setup::MultiDeviceSetupClient, ExperimentalAsh>
-      multidevice_setup_client_;
+  raw_ptr<multidevice_setup::MultiDeviceSetupClient> multidevice_setup_client_;
 
   // |synced_session_client_ash_| is null if kChromeOSSyncedSessionClient or
   // Lacros Only are disabled.
-  raw_ptr<SyncedSessionClientAsh, ExperimentalAsh> synced_session_client_ash_;
+  raw_ptr<SyncedSessionClientAsh> synced_session_client_ash_;
 
-  raw_ptr<syncer::SyncService, ExperimentalAsh> sync_service_;
-  raw_ptr<sync_sessions::SessionSyncService, ExperimentalAsh>
-      session_sync_service_;
+  raw_ptr<syncer::SyncService> sync_service_;
+  raw_ptr<sync_sessions::SessionSyncService> session_sync_service_;
   std::unique_ptr<BrowserTabsMetadataFetcher> browser_tabs_metadata_fetcher_;
   base::CallbackListSubscription session_updated_subscription_;
 

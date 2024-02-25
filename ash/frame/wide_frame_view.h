@@ -64,7 +64,7 @@ class ASH_EXPORT WideFrameView
   static gfx::Rect GetFrameBounds(views::Widget* target);
 
   // views::View:
-  void Layout() override;
+  void Layout(PassKey) override;
   void OnMouseEvent(ui::MouseEvent* event) override;
 
   // aura::WindowObserver:
@@ -89,13 +89,13 @@ class ASH_EXPORT WideFrameView
   chromeos::HeaderView* GetTargetHeaderView();
 
   // The target widget this frame will control.
-  raw_ptr<views::Widget, ExperimentalAsh> target_;
+  raw_ptr<views::Widget> target_;
 
   std::unique_ptr<views::Widget> widget_;
 
   display::ScopedDisplayObserver display_observer_{this};
 
-  raw_ptr<chromeos::HeaderView, ExperimentalAsh> header_view_ = nullptr;
+  raw_ptr<chromeos::HeaderView> header_view_ = nullptr;
 
   std::unique_ptr<FrameContextMenuController> frame_context_menu_controller_;
 

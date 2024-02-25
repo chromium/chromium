@@ -4,6 +4,8 @@
 
 #include "ui/base/ime/ash/ime_keyboard.h"
 
+#include "base/functional/callback.h"
+#include "base/functional/callback_helpers.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/ime/ash/fake_ime_keyboard.h"
 
@@ -48,21 +50,22 @@ class ImeKeyboardTest : public testing::Test,
 TEST_F(ImeKeyboardTest, TestObserver) {
   ime_keyboard_->SetCapsLockEnabled(true);
   VerifyCapsLockChanged(true);
-  ime_keyboard_->SetCurrentKeyboardLayoutByName("foo");
+  ime_keyboard_->SetCurrentKeyboardLayoutByName("foo", base::DoNothing());
   VerifyLayoutChanged(true);
 }
 
 TEST_F(ImeKeyboardTest, IsISOLevel5ShiftAvailable) {
-  ime_keyboard_->SetCurrentKeyboardLayoutByName("us");
+  ime_keyboard_->SetCurrentKeyboardLayoutByName("us", base::DoNothing());
   EXPECT_FALSE(ime_keyboard_->IsISOLevel5ShiftAvailable());
-  ime_keyboard_->SetCurrentKeyboardLayoutByName("ca(multix)");
+  ime_keyboard_->SetCurrentKeyboardLayoutByName("ca(multix)",
+                                                base::DoNothing());
   EXPECT_TRUE(ime_keyboard_->IsISOLevel5ShiftAvailable());
 }
 
 TEST_F(ImeKeyboardTest, IsAltGrAvailable) {
-  ime_keyboard_->SetCurrentKeyboardLayoutByName("us");
+  ime_keyboard_->SetCurrentKeyboardLayoutByName("us", base::DoNothing());
   EXPECT_FALSE(ime_keyboard_->IsAltGrAvailable());
-  ime_keyboard_->SetCurrentKeyboardLayoutByName("fr");
+  ime_keyboard_->SetCurrentKeyboardLayoutByName("fr", base::DoNothing());
   EXPECT_TRUE(ime_keyboard_->IsAltGrAvailable());
 }
 

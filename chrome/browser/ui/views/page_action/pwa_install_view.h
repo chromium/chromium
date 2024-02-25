@@ -13,19 +13,19 @@
 class Browser;
 
 namespace webapps {
-class AppBannerManager;
+struct WebAppBannerData;
 }  // namespace webapps
 
 // A plus icon to surface whether a site has passed PWA (progressive web app)
 // installability checks and can be installed.
 class PwaInstallView : public PageActionIconView, public TabStripModelObserver {
+  METADATA_HEADER(PwaInstallView, PageActionIconView)
+
  public:
-  METADATA_HEADER(PwaInstallView);
-  explicit PwaInstallView(
-      CommandUpdater* command_updater,
-      IconLabelBubbleView::Delegate* icon_label_bubble_delegate,
-      PageActionIconView::Delegate* page_action_icon_delegate,
-      Browser* browser);
+  PwaInstallView(CommandUpdater* command_updater,
+                 IconLabelBubbleView::Delegate* icon_label_bubble_delegate,
+                 PageActionIconView::Delegate* page_action_icon_delegate,
+                 Browser* browser);
   PwaInstallView(const PwaInstallView&) = delete;
   PwaInstallView& operator=(const PwaInstallView&) = delete;
   ~PwaInstallView() override;
@@ -44,18 +44,17 @@ class PwaInstallView : public PageActionIconView, public TabStripModelObserver {
   const gfx::VectorIcon& GetVectorIcon() const override;
 
  private:
-  raw_ptr<Browser> browser_ = nullptr;
-
   // Called when IPH is closed.
-  void OnIphClosed();
+  void OnIphClosed(const webapps::WebAppBannerData& data);
 
   // Track whether IPH is closed because of install icon being clicked.
   bool install_icon_clicked_after_iph_shown_ = false;
 
   // Decide whether IPH promo should be shown based on previous interactions.
   bool ShouldShowIph(content::WebContents* web_contents,
-                     webapps::AppBannerManager* manager);
+                     const webapps::WebAppBannerData& data);
 
+  raw_ptr<Browser> browser_ = nullptr;
   base::WeakPtrFactory<PwaInstallView> weak_ptr_factory_{this};
 };
 

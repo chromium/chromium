@@ -5,9 +5,11 @@
 #ifndef CHROMEOS_CROSAPI_MOJOM_APP_SERVICE_TYPES_MOJOM_TRAITS_H_
 #define CHROMEOS_CROSAPI_MOJOM_APP_SERVICE_TYPES_MOJOM_TRAITS_H_
 
+#include <optional>
 #include <string>
 
 #include "chromeos/crosapi/mojom/app_service_types.mojom.h"
+#include "components/services/app_service/public/cpp/app.h"
 #include "components/services/app_service/public/cpp/app_launch_util.h"
 #include "components/services/app_service/public/cpp/app_types.h"
 #include "components/services/app_service/public/cpp/capability_access.h"
@@ -15,7 +17,7 @@
 #include "components/services/app_service/public/cpp/intent_filter.h"
 #include "components/services/app_service/public/cpp/permission.h"
 #include "components/services/app_service/public/cpp/preferred_app.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
+#include "components/services/app_service/public/cpp/shortcut/shortcut.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
 
 namespace mojo {
@@ -30,24 +32,23 @@ struct StructTraits<crosapi::mojom::AppDataView, apps::AppPtr> {
     return r->readiness;
   }
 
-  static const absl::optional<std::string>& name(const apps::AppPtr& r) {
+  static const std::optional<std::string>& name(const apps::AppPtr& r) {
     return r->name;
   }
 
-  static const absl::optional<std::string>& short_name(const apps::AppPtr& r) {
+  static const std::optional<std::string>& short_name(const apps::AppPtr& r) {
     return r->short_name;
   }
 
-  static const absl::optional<std::string>& publisher_id(
-      const apps::AppPtr& r) {
+  static const std::optional<std::string>& publisher_id(const apps::AppPtr& r) {
     return r->publisher_id;
   }
 
-  static const absl::optional<std::string>& description(const apps::AppPtr& r) {
+  static const std::optional<std::string>& description(const apps::AppPtr& r) {
     return r->description;
   }
 
-  static const absl::optional<std::string>& version(const apps::AppPtr& r) {
+  static const std::optional<std::string>& version(const apps::AppPtr& r) {
     return r->version;
   }
 
@@ -58,12 +59,12 @@ struct StructTraits<crosapi::mojom::AppDataView, apps::AppPtr> {
 
   static apps::IconKeyPtr icon_key(const apps::AppPtr& r);
 
-  static const absl::optional<base::Time>& last_launch_time(
+  static const std::optional<base::Time>& last_launch_time(
       const apps::AppPtr& r) {
     return r->last_launch_time;
   }
 
-  static const absl::optional<base::Time>& install_time(const apps::AppPtr& r) {
+  static const std::optional<base::Time>& install_time(const apps::AppPtr& r) {
     return r->install_time;
   }
 
@@ -72,8 +73,7 @@ struct StructTraits<crosapi::mojom::AppDataView, apps::AppPtr> {
   }
 
   // This method is required for Ash-Lacros backwards compatibility.
-  static absl::optional<std::string> deprecated_policy_id(
-      const apps::AppPtr& r);
+  static std::optional<std::string> deprecated_policy_id(const apps::AppPtr& r);
 
   static const std::vector<std::string>& policy_ids(const apps::AppPtr& r) {
     return r->policy_ids;
@@ -112,12 +112,21 @@ struct StructTraits<crosapi::mojom::AppDataView, apps::AppPtr> {
   static crosapi::mojom::OptionalBool handles_intents(const apps::AppPtr& r);
 
   // This method is required for Ash-Lacros backwards compatibility.
-  static std::vector<crosapi::mojom::ShortcutPtr> deprecated_shortcuts(
+  static std::vector<crosapi::mojom::REMOVED_01Ptr> deprecated_shortcuts(
       const apps::AppPtr& r) {
     return {};
   }
 
   static crosapi::mojom::OptionalBool is_platform_app(const apps::AppPtr& r);
+
+  static std::optional<uint64_t> app_size_in_bytes(const apps::AppPtr& r);
+
+  static std::optional<uint64_t> data_size_in_bytes(const apps::AppPtr& r);
+
+  static crosapi::mojom::OptionalBool allow_close(const apps::AppPtr& r);
+
+  static crosapi::mojom::OptionalBool allow_window_mode_selection(
+      const apps::AppPtr& r);
 
   static bool Read(crosapi::mojom::AppDataView data, apps::AppPtr* out);
 };
@@ -136,19 +145,60 @@ struct EnumTraits<crosapi::mojom::Readiness, apps::Readiness> {
 };
 
 template <>
+struct UnionTraits<crosapi::mojom::IconUpdateVersionDataView,
+                   apps::IconKey::UpdateVersion> {
+  static crosapi::mojom::IconUpdateVersionDataView::Tag GetTag(
+      const apps::IconKey::UpdateVersion& r);
+
+  static bool IsNull(const apps::IconKey::UpdateVersion& r) { return false; }
+
+  static void SetToNull(apps::IconKey::UpdateVersion* out) {}
+
+  static bool raw_icon_updated(const apps::IconKey::UpdateVersion& r) {
+    if (absl::holds_alternative<bool>(r)) {
+      return absl::get<bool>(r);
+    }
+    return false;
+  }
+
+  static int32_t timeline(const apps::IconKey::UpdateVersion& r) {
+    if (absl::holds_alternative<int32_t>(r)) {
+      return absl::get<int32_t>(r);
+    }
+    return apps::IconKey::kInvalidVersion;
+  }
+
+  static bool Read(crosapi::mojom::IconUpdateVersionDataView data,
+                   apps::IconKey::UpdateVersion* out);
+};
+
+template <>
 struct StructTraits<crosapi::mojom::IconKeyDataView, apps::IconKeyPtr> {
   static bool IsNull(const apps::IconKeyPtr& r) { return !r; }
 
   static void SetToNull(apps::IconKeyPtr* r) { r->reset(); }
 
-  static uint64_t timeline(const apps::IconKeyPtr& r) { return r->timeline; }
+  // This method is required for Ash-Lacros backwards compatibility.
+  static uint64_t deprecated_timeline(const apps::IconKeyPtr& r) {
+    return absl::holds_alternative<int32_t>(r->update_version)
+               ? absl::get<int32_t>(r->update_version)
+               : apps::IconKey::kInvalidVersion;
+  }
 
   static uint32_t icon_effects(const apps::IconKeyPtr& r) {
     return r->icon_effects;
   }
 
-  static bool raw_icon_updated(const apps::IconKeyPtr& r) {
-    return r->raw_icon_updated;
+  // This method is required for Ash-Lacros backwards compatibility.
+  static bool deprecated_raw_icon_updated(const apps::IconKeyPtr& r) {
+    return absl::holds_alternative<bool>(r->update_version)
+               ? absl::get<bool>(r->update_version)
+               : false;
+  }
+
+  static apps::IconKey::UpdateVersion update_version(
+      const apps::IconKeyPtr& r) {
+    return r->update_version;
   }
 
   static bool Read(crosapi::mojom::IconKeyDataView, apps::IconKeyPtr* out);
@@ -169,12 +219,12 @@ struct StructTraits<crosapi::mojom::IntentFilterDataView,
     return r->conditions;
   }
 
-  static const absl::optional<std::string>& activity_name(
+  static const std::optional<std::string>& activity_name(
       const apps::IntentFilterPtr& r) {
     return r->activity_name;
   }
 
-  static const absl::optional<std::string>& activity_label(
+  static const std::optional<std::string>& activity_label(
       const apps::IntentFilterPtr& r) {
     return r->activity_label;
   }
@@ -388,6 +438,30 @@ struct StructTraits<crosapi::mojom::PreferredAppChangesDataView,
 
   static bool Read(crosapi::mojom::PreferredAppChangesDataView,
                    apps::PreferredAppChangesPtr* out);
+};
+
+template <>
+struct StructTraits<crosapi::mojom::AppShortcutDataView, apps::ShortcutPtr> {
+  static const std::string& host_app_id(const apps::ShortcutPtr& r) {
+    return r->host_app_id;
+  }
+
+  static const std::string& local_id(const apps::ShortcutPtr& r) {
+    return r->local_id;
+  }
+
+  static const std::optional<std::string>& name(const apps::ShortcutPtr& r) {
+    return r->name;
+  }
+
+  static apps::IconKeyPtr icon_key(const apps::ShortcutPtr& r);
+
+  static const std::optional<bool>& allow_removal(const apps::ShortcutPtr& r) {
+    return r->allow_removal;
+  }
+
+  static bool Read(crosapi::mojom::AppShortcutDataView data,
+                   apps::ShortcutPtr* out);
 };
 
 }  // namespace mojo

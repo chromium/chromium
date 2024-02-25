@@ -1,4 +1,5 @@
 This is a testharness.js-based test.
-FAIL object setCustomValidity is correct assert_true: expected true got false
+[FAIL] object setCustomValidity is correct
+  assert_true: expected true got false
 Harness: the test ran to completion.
 

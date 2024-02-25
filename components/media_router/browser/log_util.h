@@ -5,7 +5,7 @@
 #ifndef COMPONENTS_MEDIA_ROUTER_BROWSER_LOG_UTIL_H_
 #define COMPONENTS_MEDIA_ROUTER_BROWSER_LOG_UTIL_H_
 
-#include "base/strings/string_piece_forward.h"
+#include "base/strings/string_piece.h"
 
 namespace media_router::log_util {
 

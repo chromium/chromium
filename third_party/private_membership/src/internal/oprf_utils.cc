@@ -23,7 +23,7 @@ namespace private_membership {
 
 ::rlwe::StatusOr<DoublyEncryptedId> ReEncryptId(
     absl::string_view encrypted_id,
-    private_join_and_compute::ECCommutativeCipher* ec_cipher) {
+    ::private_join_and_compute::ECCommutativeCipher* ec_cipher) {
   DoublyEncryptedId doubly_encrypted_id;
 
   doubly_encrypted_id.set_queried_encrypted_id(std::string(encrypted_id));

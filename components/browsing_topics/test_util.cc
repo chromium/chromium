@@ -119,7 +119,7 @@ std::vector<ApiResultUkmMetrics> ReadApiResultUkmMetrics(
 
     DCHECK_EQ(topics.size(), 3u);
 
-    absl::optional<ApiAccessResult> failure_reason;
+    std::optional<ApiAccessResult> failure_reason;
 
     const int64_t* failure_reason_metric =
         ukm_recorder.GetEntryMetric(entry, Event::kFailureReasonName);
@@ -244,8 +244,15 @@ void TestAnnotator::UseAnnotations(
 }
 
 void TestAnnotator::UseModelInfo(
-    const absl::optional<optimization_guide::ModelInfo>& model_info) {
+    const std::optional<optimization_guide::ModelInfo>& model_info) {
   model_info_ = model_info;
+}
+
+void TestAnnotator::SetModelAvailable(bool model_available) {
+  model_available_ = model_available;
+  if (model_available_) {
+    model_available_callbacks_.Notify();
+  }
 }
 
 void TestAnnotator::BatchAnnotate(BatchAnnotationCallback callback,
@@ -265,11 +272,14 @@ void TestAnnotator::BatchAnnotate(BatchAnnotationCallback callback,
 }
 
 void TestAnnotator::NotifyWhenModelAvailable(base::OnceClosure callback) {
-  // Always run the callback so that tests do not hang.
+  if (!model_available_) {
+    model_available_callbacks_.AddUnsafe(std::move(callback));
+    return;
+  }
   std::move(callback).Run();
 }
 
-absl::optional<optimization_guide::ModelInfo>
+std::optional<optimization_guide::ModelInfo>
 TestAnnotator::GetBrowsingTopicsModelInfo() const {
   return model_info_;
 }

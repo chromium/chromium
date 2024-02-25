@@ -1,8 +1,13 @@
 This is a testharness.js-based test.
-FAIL GeolocationSensor: Feature-Policy header geolocation 'none' disallows the top-level document. assert_implements: GeolocationSensor is not supported. undefined
-FAIL GeolocationSensor: Feature-Policy header geolocation 'none' disallows same-origin iframes. assert_implements: GeolocationSensor is not supported. undefined
-FAIL GeolocationSensor: Feature-Policy header geolocation 'none' disallows cross-origin iframes. assert_implements: GeolocationSensor is not supported. undefined
-FAIL GeolocationSensor.read(): 'SecurityError' is thrown when disabled by Feature Policy promise_test: Unhandled rejection with value: object "ReferenceError: GeolocationSensor is not defined"
-FAIL GeolocationSensor.read(): 'AbortError' takes priority promise_test: Unhandled rejection with value: object "ReferenceError: GeolocationSensor is not defined"
+[FAIL] GeolocationSensor: Feature-Policy header geolocation 'none' disallows the top-level document.
+  assert_implements: GeolocationSensor is not supported. undefined
+[FAIL] GeolocationSensor: Feature-Policy header geolocation 'none' disallows same-origin iframes.
+  assert_implements: GeolocationSensor is not supported. undefined
+[FAIL] GeolocationSensor: Feature-Policy header geolocation 'none' disallows cross-origin iframes.
+  assert_implements: GeolocationSensor is not supported. undefined
+[FAIL] GeolocationSensor.read(): 'SecurityError' is thrown when disabled by Feature Policy
+  promise_test: Unhandled rejection with value: object "ReferenceError: GeolocationSensor is not defined"
+[FAIL] GeolocationSensor.read(): 'AbortError' takes priority
+  promise_test: Unhandled rejection with value: object "ReferenceError: GeolocationSensor is not defined"
 Harness: the test ran to completion.
 

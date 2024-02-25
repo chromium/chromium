@@ -8,6 +8,7 @@
 #include <sys/types.h>
 #include <unistd.h>
 
+#include <optional>
 #include <string>
 
 #include "base/command_line.h"
@@ -19,7 +20,6 @@
 #include "base/test/scoped_command_line.h"
 #include "chromeos/startup/startup_switches.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace chromeos {
 namespace {
@@ -58,7 +58,7 @@ TEST(ChromeOSStartup, Startup) {
   command_line->AppendSwitchASCII(switches::kCrosStartupDataFD,
                                   base::NumberToString(file.release()));
 
-  absl::optional<std::string> data = ReadStartupData();
+  std::optional<std::string> data = ReadStartupData();
   EXPECT_EQ(data, kTestData);
 }
 

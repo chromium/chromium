@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_UI_VIEWS_TABS_TAB_HOVER_CARD_BUBBLE_VIEW_H_
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <utility>
 
@@ -18,7 +19,7 @@
 #include "chrome/browser/ui/tabs/tab_utils.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/browser/ui/views/tabs/fade_footer_view.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
+#include "components/prefs/pref_change_registrar.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/gfx/animation/linear_animation.h"
 #include "ui/views/animation/animation_delegate_views.h"
@@ -38,11 +39,12 @@ class FadeLabelView;
 
 // Dialog that displays an informational hover card containing page information.
 class TabHoverCardBubbleView : public views::BubbleDialogDelegateView {
+  METADATA_HEADER(TabHoverCardBubbleView, views::BubbleDialogDelegateView)
+
  public:
   static constexpr base::TimeDelta kHoverCardSlideDuration =
       base::Milliseconds(200);
 
-  METADATA_HEADER(TabHoverCardBubbleView);
   DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kHoverCardBubbleElementId);
   explicit TabHoverCardBubbleView(Tab* tab);
   TabHoverCardBubbleView(const TabHoverCardBubbleView&) = delete;
@@ -65,22 +67,20 @@ class TabHoverCardBubbleView : public views::BubbleDialogDelegateView {
   // Accessors used by tests.
   std::u16string GetTitleTextForTesting() const;
   std::u16string GetDomainTextForTesting() const;
+  views::View* GetThumbnailViewForTesting();
+  FooterView* GetFooterViewForTesting();
 
   // Returns the percentage complete during transition animations when a
   // pre-emptive crossfade to a placeholder should start if a new image is not
-  // available, or `absl::nullopt` to disable crossfades entirely.
-  static absl::optional<double> GetPreviewImageCrossfadeStart();
+  // available, or `std::nullopt` to disable crossfades entirely.
+  static std::optional<double> GetPreviewImageCrossfadeStart();
 
  private:
-  FRIEND_TEST_ALL_PREFIXES(TabHoverCardInteractiveUiTest,
-                           HoverCardDoesNotHaveFooterView);
   FRIEND_TEST_ALL_PREFIXES(TabHoverCardFadeFooterInteractiveUiTest,
-                           HoverCardFooterUpdatesTabAlertStatus);
-  FRIEND_TEST_ALL_PREFIXES(TabHoverCardFadeFooterInteractiveUiTest,
-                           HoverCardFooterShowsDiscardStatus);
-  FRIEND_TEST_ALL_PREFIXES(TabHoverCardFadeFooterInteractiveUiTest,
-                           HoverCardFooterShowsMemoryUsage);
+                           BackgroundTabHoverCardContentsHaveCorrectDimensions);
   class ThumbnailView;
+
+  void OnMemoryUsageInHovercardsPrefChanged();
 
   // views::BubbleDialogDelegateView:
   gfx::Size CalculatePreferredSize() const override;
@@ -89,10 +89,11 @@ class TabHoverCardBubbleView : public views::BubbleDialogDelegateView {
   raw_ptr<FadeLabelView> domain_label_ = nullptr;
   raw_ptr<ThumbnailView> thumbnail_view_ = nullptr;
   raw_ptr<FooterView> footer_view_ = nullptr;
-  absl::optional<TabAlertState> alert_state_;
+  std::optional<TabAlertState> alert_state_;
   const raw_ptr<const TabStyle> tab_style_;
-  const bool discard_tab_treatment_enabled_;
   const bool memory_usage_in_hovercards_enabled_;
+  PrefChangeRegistrar pref_change_registrar_;
+  bool memory_usage_in_hovercards_setting_ = false;
 
   int corner_radius_ = ChromeLayoutProvider::Get()->GetCornerRadiusMetric(
       views::Emphasis::kHigh);

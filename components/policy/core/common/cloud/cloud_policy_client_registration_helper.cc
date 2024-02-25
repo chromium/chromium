@@ -135,6 +135,24 @@ void CloudPolicyClientRegistrationHelper::StartRegistrationWithEnrollmentToken(
                              is_mandatory);
 }
 
+void CloudPolicyClientRegistrationHelper::StartRegistrationWithOidcTokens(
+    const std::string& oauth_token,
+    const std::string& id_token,
+    const std::string& client_id,
+    base::OnceClosure callback) {
+  DVLOG_POLICY(1, POLICY_AUTH)
+      << "Starting profile registration with Oidc tokens";
+  CHECK(!client_->is_registered());
+  callback_ = std::move(callback);
+  client_->AddObserver(this);
+
+  CloudPolicyClient::RegistrationParameters register_user(
+      enterprise_management::DeviceRegisterRequest::USER,
+      enterprise_management::DeviceRegisterRequest::FLAVOR_USER_REGISTRATION);
+  client_->RegisterWithOidcResponse(register_user, oauth_token, id_token,
+                                    client_id);
+}
+
 void CloudPolicyClientRegistrationHelper::OnTokenFetched(
     const std::string& access_token) {
   identity_manager_helper_.reset();

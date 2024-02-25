@@ -7,6 +7,7 @@
 #include <algorithm>
 #include <array>
 #include <map>
+#include <optional>
 #include <set>
 #include <string>
 #include <utility>
@@ -31,7 +32,6 @@
 #include "components/feedback/redaction_tool/redaction_tool.h"
 #include "components/user_manager/user.h"
 #include "components/user_manager/user_manager.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/cros_system_api/dbus/debugd/dbus-constants.h"
 
 namespace {
@@ -135,7 +135,7 @@ void SystemStateDataCollector::CollectDataAndDetectPII(
 
 void SystemStateDataCollector::OnGetLog(base::RepeatingClosure barrier_closure,
                                         std::string log_name,
-                                        absl::optional<std::string> log) {
+                                        std::optional<std::string> log) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!log) {
     get_log_errors_.push_back(base::StringPrintf(
@@ -173,7 +173,7 @@ void SystemStateDataCollector::OnGotAllExtraLogs(
   // https://chromium.googlesource.com/chromiumos/docs/+/master/dbus_in_chrome.md#using-system-daemons_d_bus-services).
   // `debugd_client` will run the callback on original thread (see
   // dbus/object_proxy.h for more details).
-  debugd_client->GetFeedbackLogsV2(
+  debugd_client->GetFeedbackLogs(
       cryptohome::CreateAccountIdentifierFromAccountId(
           user ? user->GetAccountId() : EmptyAccountId()),
       included_log_types,
@@ -219,7 +219,7 @@ void SystemStateDataCollector::OnPIIDetected(
     std::move(data_collector_done_callback_).Run(std::move(error));
     return;
   }
-  std::move(data_collector_done_callback_).Run(/*error=*/absl::nullopt);
+  std::move(data_collector_done_callback_).Run(/*error=*/std::nullopt);
 }
 
 void SystemStateDataCollector::ExportCollectedDataWithPII(
@@ -264,7 +264,7 @@ void SystemStateDataCollector::OnFilesWritten(
     std::move(on_exported_callback).Run(error);
     return;
   }
-  std::move(on_exported_callback).Run(/*error=*/absl::nullopt);
+  std::move(on_exported_callback).Run(/*error=*/std::nullopt);
 }
 
 // static

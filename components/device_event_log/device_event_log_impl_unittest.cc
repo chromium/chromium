@@ -12,6 +12,7 @@
 #include "base/compiler_specific.h"
 #include "base/format_macros.h"
 #include "base/functional/bind.h"
+#include "base/i18n/time_formatting.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/string_split.h"
 #include "base/strings/stringprintf.h"
@@ -204,32 +205,28 @@ TEST_F(DeviceEventLogTest, TestStringFormat) {
 }
 
 TEST_F(DeviceEventLogTest, TestTimeFormat) {
-  const int hour = 12;
-  const std::string time_str = base::StringPrintf("1 Jan 2020 %d:34:56", hour);
-
+  static constexpr base::Time::Exploded kTime = {.year = 2020,
+                                                 .month = 1,
+                                                 .day_of_month = 1,
+                                                 .hour = 12,
+                                                 .minute = 34,
+                                                 .second = 56};
   base::Time time;
-  ASSERT_TRUE(base::Time::FromUTCString(time_str.c_str(), &time));
-  base::Time::Exploded exploded;
-
-  // This gets the offset for the current system time, which is what will be
-  // used in the logs. TODO(stevenjb): Figure out a more robust test mechanism.
-  // Using base::test::ScopedRestoreDefaultTimezone does not work as expected.
-  time.LocalExplode(&exploded);
-  int hour_delta = exploded.hour - hour;
+  ASSERT_TRUE(base::Time::FromLocalExploded(kTime, &time));
 
   AddTestEventWithTimestamp(LOG_LEVEL_EVENT, "event0", time);
 
-  std::string extected_time_str =
-      base::StringPrintf("%02d:34:56.000", hour + hour_delta);
-  EXPECT_EQ(base::StringPrintf("[%s] event0\n", extected_time_str.c_str()),
+  EXPECT_EQ("[12:34:56.000] event0\n",
             GetLogString(OLDEST_FIRST, "time", kDefaultLevel, 1));
 
 #if BUILDFLAG(IS_POSIX)
-  char sign = hour_delta > 0 ? '+' : '-';
-  std::string expected_time =
-      base::StringPrintf("2020-01-01T%02d:34:56.000000%c%02d:00",
-                         hour + hour_delta, sign, std::abs(hour_delta));
-  EXPECT_EQ(base::StringPrintf("%s event0\n", expected_time.c_str()),
+  // External tools expect the "unixtime" format to match the format use in
+  // /var/log/messages and other system logs.
+  //
+  // The "xxx" format specifier below converts to the timezone offset in
+  // "+/-HH:MM" format.
+  EXPECT_EQ(base::UnlocalizedTimeFormatWithPattern(
+                time, "'2020-01-01T12:34:56.000000'xxx' event0\n'"),
             GetLogString(OLDEST_FIRST, "unixtime", kDefaultLevel, 1));
 #endif
 }

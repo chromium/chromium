@@ -18,25 +18,8 @@ luci.console_view(
             category = "rbe|staging|linux|debug",
         ),
         luci.console_view_entry(
-            builder = "goma/Chromium Mac Goma RBE Staging",
-            category = "rbe|staging|mac|rel",
-        ),
-        luci.console_view_entry(
-            builder = "goma/Chromium Mac Goma RBE Staging (dbg)",
-            category = "rbe|staging|mac|debug",
-        ),
-        luci.console_view_entry(
             builder = "goma/Chromium Win Goma RBE Staging",
             category = "rbe|staging|win|rel",
-        ),
-        luci.console_view_entry(
-            builder = "goma/Chromium Win Goma RBE ATS Staging",
-            category = "rbe|staging|win|rel",
-            short_name = "ats",
-        ),
-        luci.console_view_entry(
-            builder = "goma/Chromium Android ARM 32-bit Goma RBE Staging",
-            category = "rbe|staging|android arm|rel",
         ),
         luci.console_view_entry(
             builder = "goma/chromeos-amd64-generic-rel-goma-rbe-staging",

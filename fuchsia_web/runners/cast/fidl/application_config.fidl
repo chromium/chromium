@@ -62,9 +62,9 @@ type ApplicationConfig = resource table {
 
 /// Service interface for working with application configurations.
 @discoverable
-protocol ApplicationConfigManager {
+closed protocol ApplicationConfigManager {
     /// Returns the ApplicationConfig for the specified application Id.
-    GetConfig(struct {
+    strict GetConfig(struct {
         id string;
     }) -> (resource struct {
         config ApplicationConfig;

@@ -4,6 +4,8 @@
 #ifndef CHROMECAST_BROWSER_TEST_MOCK_CAST_WEB_VIEW_H_
 #define CHROMECAST_BROWSER_TEST_MOCK_CAST_WEB_VIEW_H_
 
+#include <string_view>
+
 #include "chromecast/browser/cast_web_contents.h"
 #include "chromecast/browser/cast_web_view.h"
 #include "components/url_rewrite/mojom/url_request_rewrite.mojom.h"
@@ -60,7 +62,7 @@ class MockCastWebContents : public CastWebContents {
   MOCK_METHOD(void, EnableBackgroundVideoPlayback, (bool), (override));
   MOCK_METHOD(void,
               AddBeforeLoadJavaScript,
-              (uint64_t, base::StringPiece),
+              (uint64_t, std::string_view),
               (override));
   MOCK_METHOD(void,
               PostMessageToMainFrame,

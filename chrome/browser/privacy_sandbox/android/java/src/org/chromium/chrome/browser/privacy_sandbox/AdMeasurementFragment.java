@@ -5,50 +5,75 @@
 package org.chromium.chrome.browser.privacy_sandbox;
 
 import android.os.Bundle;
-import android.view.View;
 
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
-import org.chromium.components.browser_ui.settings.ChromeBasePreference;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.preference.Preference;
+
+import org.chromium.base.metrics.RecordUserAction;
+import org.chromium.chrome.browser.preferences.Pref;
+import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.settings.ChromeManagedPreferenceDelegate;
+import org.chromium.components.browser_ui.settings.ChromeSwitchPreference;
 import org.chromium.components.browser_ui.settings.SettingsUtils;
-import org.chromium.ui.text.NoUnderlineClickableSpan;
-import org.chromium.ui.text.SpanApplier;
+import org.chromium.components.prefs.PrefService;
+import org.chromium.components.user_prefs.UserPrefs;
 
-/**
- * Settings fragment for privacy sandbox settings.
- */
-public class AdMeasurementFragment extends PrivacySandboxSettingsBaseFragment {
-    private static final String AD_MEASUREMENT_DESCRIPTION = "ad_measurement_description";
-    private Runnable mOpenHistoryRunnable;
+/** Fragment for the Privacy Sandbox -> Ad Measurement preferences. */
+public class AdMeasurementFragment extends PrivacySandboxSettingsBaseFragment
+        implements Preference.OnPreferenceChangeListener {
+    public static final String TOGGLE_PREFERENCE = "ad_measurement_toggle";
 
-    /**
-     * Initializes all the objects related to the preferences page.
-     */
+    static boolean isAdMeasurementPrefEnabled(Profile profile) {
+        PrefService prefService = UserPrefs.get(profile);
+        return prefService.getBoolean(Pref.PRIVACY_SANDBOX_M1_AD_MEASUREMENT_ENABLED);
+    }
+
+    static void setAdMeasurementPrefEnabled(Profile profile, boolean isEnabled) {
+        PrefService prefService = UserPrefs.get(profile);
+        prefService.setBoolean(Pref.PRIVACY_SANDBOX_M1_AD_MEASUREMENT_ENABLED, isEnabled);
+    }
+
+    static boolean isAdMeasurementPrefManaged(Profile profile) {
+        PrefService prefService = UserPrefs.get(profile);
+        return prefService.isManagedPreference(Pref.PRIVACY_SANDBOX_M1_AD_MEASUREMENT_ENABLED);
+    }
+
     @Override
-    public void onCreatePreferences(Bundle bundle, String s) {
-        assert (!ChromeFeatureList.isEnabled(ChromeFeatureList.PRIVACY_SANDBOX_SETTINGS_4));
-
+    public void onCreatePreferences(@Nullable Bundle bundle, @Nullable String s) {
         super.onCreatePreferences(bundle, s);
-        getActivity().setTitle(R.string.privacy_sandbox_ad_measurement_title);
+        getActivity().setTitle(R.string.settings_ad_measurement_page_title);
         SettingsUtils.addPreferencesFromResource(this, R.xml.ad_measurement_preference);
 
-        ChromeBasePreference descriptionPreference = findPreference(AD_MEASUREMENT_DESCRIPTION);
-        int description = PrivacySandboxBridge.isPrivacySandboxEnabled()
-                ? R.string.privacy_sandbox_ad_measurement_description_trials_on
-                : R.string.privacy_sandbox_ad_measurement_description_trials_off;
-        descriptionPreference.setSummary(
-                SpanApplier.applySpans(getResources().getString(description),
-                        new SpanApplier.SpanInfo("<link>", "</link>",
-                                new NoUnderlineClickableSpan(getContext(), this::showHistory))));
+        ChromeSwitchPreference adMeasurementToggle = findPreference(TOGGLE_PREFERENCE);
+        adMeasurementToggle.setChecked(isAdMeasurementPrefEnabled(getProfile()));
+        adMeasurementToggle.setOnPreferenceChangeListener(this);
+        adMeasurementToggle.setManagedPreferenceDelegate(createManagedPreferenceDelegate());
     }
 
-    /**
-     * Set the a helper to open history from settings.
-     */
-    public void setSetHistoryHelper(Runnable openHistoryRunnable) {
-        mOpenHistoryRunnable = openHistoryRunnable;
+    @Override
+    public boolean onPreferenceChange(@NonNull Preference preference, Object value) {
+        if (preference.getKey().equals(TOGGLE_PREFERENCE)) {
+            boolean enabled = (boolean) value;
+            RecordUserAction.record(
+                    enabled
+                            ? "Settings.PrivacySandbox.AdMeasurement.Enabled"
+                            : "Settings.PrivacySandbox.AdMeasurement.Disabled");
+            setAdMeasurementPrefEnabled(getProfile(), enabled);
+            return true;
+        }
+        return false;
     }
 
-    private void showHistory(View view) {
-        mOpenHistoryRunnable.run();
+    private ChromeManagedPreferenceDelegate createManagedPreferenceDelegate() {
+        return new ChromeManagedPreferenceDelegate(getProfile()) {
+            @Override
+            public boolean isPreferenceControlledByPolicy(Preference preference) {
+                if (TOGGLE_PREFERENCE.equals(preference.getKey())) {
+                    return isAdMeasurementPrefManaged(getProfile());
+                }
+                return false;
+            }
+        };
     }
 }

@@ -15,7 +15,7 @@
 namespace {
 using NetErrorFuture = base::test::TestFuture<int32_t>;
 using NetErrorWithOptionalIPEndPointFuture =
-    base::test::TestFuture<int32_t, const absl::optional<net::IPEndPoint>&>;
+    base::test::TestFuture<int32_t, const std::optional<net::IPEndPoint>&>;
 }  // namespace
 
 namespace network::test {
@@ -100,8 +100,8 @@ int UDPSocketTestHelper::LeaveGroupSync(const net::IPAddress& group_address) {
 
 UDPSocketListenerImpl::ReceivedResult::ReceivedResult(
     int net_error_arg,
-    const absl::optional<net::IPEndPoint>& src_addr_arg,
-    absl::optional<std::vector<uint8_t>> data_arg)
+    const std::optional<net::IPEndPoint>& src_addr_arg,
+    std::optional<std::vector<uint8_t>> data_arg)
     : net_error(net_error_arg),
       src_addr(src_addr_arg),
       data(std::move(data_arg)) {}
@@ -131,17 +131,17 @@ void UDPSocketListenerImpl::WaitForReceivedResults(size_t count) {
 
 void UDPSocketListenerImpl::OnReceived(
     int32_t result,
-    const absl::optional<net::IPEndPoint>& src_addr,
-    absl::optional<base::span<const uint8_t>> data) {
+    const std::optional<net::IPEndPoint>& src_addr,
+    std::optional<base::span<const uint8_t>> data) {
   // OnReceive() API contracts specifies that this method will not be called
   // with a |result| that is > 0.
   DCHECK_GE(0, result);
   DCHECK(result < 0 || data);
 
   results_.emplace_back(result, src_addr,
-                        data ? absl::make_optional(std::vector<uint8_t>(
+                        data ? std::make_optional(std::vector<uint8_t>(
                                    data.value().begin(), data.value().end()))
-                             : absl::nullopt);
+                             : std::nullopt);
   if (results_.size() == expected_receive_count_) {
     expected_receive_count_ = 0;
     run_loop_->Quit();

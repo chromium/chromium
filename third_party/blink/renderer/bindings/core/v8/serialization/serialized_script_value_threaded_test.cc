@@ -15,8 +15,8 @@
 #include "third_party/blink/renderer/core/typed_arrays/dom_array_buffer.h"
 #include "third_party/blink/renderer/core/workers/worker_thread_test_helper.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
-#include "third_party/blink/renderer/platform/bindings/to_v8.h"
 #include "third_party/blink/renderer/platform/heap/thread_state.h"
+#include "third_party/blink/renderer/platform/testing/task_environment.h"
 #include "third_party/blink/renderer/platform/wtf/cross_thread_copier_base.h"
 
 namespace blink {
@@ -25,6 +25,7 @@ namespace blink {
 // is destroyed on the wrong thread.
 TEST(SerializedScriptValueThreadedTest,
      SafeDestructionIfSendingThreadKeepsAlive) {
+  test::TaskEnvironment task_environment;
   V8TestingScope scope;
 
   // Start a worker.
@@ -43,8 +44,8 @@ TEST(SerializedScriptValueThreadedTest,
   scoped_refptr<SerializedScriptValue> serialized =
       SerializedScriptValue::Serialize(
           scope.GetIsolate(),
-          ToV8Traits<DOMArrayBuffer>::ToV8(scope.GetScriptState(), array_buffer)
-              .ToLocalChecked(),
+          ToV8Traits<DOMArrayBuffer>::ToV8(scope.GetScriptState(),
+                                           array_buffer),
           options, ASSERT_NO_EXCEPTION);
   EXPECT_TRUE(serialized);
   EXPECT_TRUE(array_buffer->IsDetached());

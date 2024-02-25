@@ -14,7 +14,7 @@ TestPage::TestPage(RenderFrameHostImpl& rfh, PageDelegate& delegate)
 
 TestPage::~TestPage() = default;
 
-const absl::optional<GURL>& TestPage::GetManifestUrl() const {
+const std::optional<GURL>& TestPage::GetManifestUrl() const {
   if (manifest_url_.has_value())
     return manifest_url_;
   return PageImpl::GetManifestUrl();

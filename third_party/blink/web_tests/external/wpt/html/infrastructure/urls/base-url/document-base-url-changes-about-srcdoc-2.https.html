@@ -3,32 +3,30 @@
 <script src="/resources/testharnessreport.js"></script>
 <script src="/common/get-host-info.sub.js"></script>
 
+<iframe src='about:blank'></iframe>
+
 <script>
 // If document.open's behavior is modified to remove the url-rewriting behavior,
 // then this test can be deleted (https://github.com/whatwg/html/issues/3989).
 setup({ explicit_done: true });
 
+// This function is called by directly by the child iframe (above), with the
+// child iframe's document. The child iframe's document contains an about:srcdoc iframe.
 window.start = childDocument => {
   const grandchildDocument =
-    childDocument.querySelector('iframe').contentDocument;
+    childDocument.getElementById('foo').contentDocument;
 
-  test(t => {
-    // Clean up the iframe so that the dangling document.open() doesn't cause a
-    // harness timeout.
-    t.add_cleanup(() => {
-      document.querySelector('iframe').remove();
-    });
-
-    assert_equals(childDocument.URL, 'about:srcdoc',
+  test(() => {
+    assert_equals(childDocument.URL, 'about:blank',
       'Child document starting URL');
-    assert_equals(grandchildDocument.URL, 'about:blank',
+    assert_equals(grandchildDocument.URL, 'about:srcdoc',
       'Grandchild document starting URL');
     const originalChildBaseURL = childDocument.baseURI;
 
     grandchildDocument.open("", "");
     // Verify that the document.open() trick worked: the grandchild should now
     // have the same url as the child, and have inherited the child's base url.
-    assert_equals(grandchildDocument.URL, 'about:srcdoc',
+    assert_equals(grandchildDocument.URL, 'about:blank',
       'Grandchild document after document.open() trick');
     assert_equals(grandchildDocument.baseURI, originalChildBaseURL,
       'Grandchild base URL must match child base URL');
@@ -41,7 +39,7 @@ window.start = childDocument => {
     // Verify that changing the child's base url succeeded and did not affect
     // the grandchild's base url.
     const newChildBaseURL = childDocument.baseURI;
-    assert_equals(grandchildDocument.URL, 'about:srcdoc',
+    assert_equals(grandchildDocument.URL, 'about:blank',
       'Grandchild document after child gets new base URL');
     assert_not_equals(newChildBaseURL, originalChildBaseURL,
       'Child base URL must change');
@@ -51,7 +49,19 @@ window.start = childDocument => {
 
   done();
 };
-</script>
 
-<iframe srcdoc="<iframe></iframe><script>parent.start(document)</script>">
-</iframe>
+let subframe_doc = document.querySelector('iframe').contentDocument;
+subframe_doc.body.innerHTML = '<iframe srcdoc="foo" id="foo"></iframe>';
+promise_test(async t => {
+  const grandchildIframe = subframe_doc.querySelector('iframe');
+  await new Promise(resolve => {
+    grandchildIframe.onload = resolve;
+  });
+
+  assert_equals(grandchildIframe.contentDocument.URL, 'about:srcdoc');
+
+  let script = subframe_doc.createElement('script');
+  script.innerHTML = 'parent.start(document);';
+  subframe_doc.body.appendChild(script);
+}, "wrapper promise test for timeout.");
+</script>

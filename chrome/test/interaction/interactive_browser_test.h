@@ -5,8 +5,10 @@
 #ifndef CHROME_TEST_INTERACTION_INTERACTIVE_BROWSER_TEST_H_
 #define CHROME_TEST_INTERACTION_INTERACTIVE_BROWSER_TEST_H_
 
+#include <concepts>
 #include <functional>
 #include <memory>
+#include <optional>
 #include <type_traits>
 #include <utility>
 #include <vector>
@@ -23,7 +25,6 @@
 #include "chrome/test/interaction/webcontents_interaction_test_util.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/base/interaction/element_test_util.h"
@@ -115,7 +116,7 @@ class InteractiveBrowserTestApi : public views::test::InteractiveViewsTestApi {
   // current page in the WebContents is fully loaded.
   [[nodiscard]] MultiStep InstrumentTab(
       ui::ElementIdentifier id,
-      absl::optional<int> tab_index = absl::nullopt,
+      std::optional<int> tab_index = std::nullopt,
       BrowserSpecifier in_browser = CurrentBrowser(),
       bool wait_for_ready = true);
 
@@ -131,7 +132,7 @@ class InteractiveBrowserTestApi : public views::test::InteractiveViewsTestApi {
   [[nodiscard]] MultiStep AddInstrumentedTab(
       ui::ElementIdentifier id,
       GURL url,
-      absl::optional<int> tab_index = absl::nullopt,
+      std::optional<int> tab_index = std::nullopt,
       BrowserSpecifier in_browser = CurrentBrowser());
 
   // Instruments the WebContents held by `web_view` as `id`. Will wait for the
@@ -158,10 +159,10 @@ class InteractiveBrowserTestApi : public views::test::InteractiveViewsTestApi {
   // really easy to forget to add InAnyContext() and have your test not work.
   [[nodiscard]] static StepBuilder WaitForWebContentsReady(
       ui::ElementIdentifier webcontents_id,
-      absl::optional<GURL> expected_url = absl::nullopt);
+      std::optional<GURL> expected_url = std::nullopt);
   [[nodiscard]] static StepBuilder WaitForWebContentsNavigation(
       ui::ElementIdentifier webcontents_id,
-      absl::optional<GURL> expected_url = absl::nullopt);
+      std::optional<GURL> expected_url = std::nullopt);
 
   // This convenience method navigates the page at `webcontents_id` to
   // `new_url`, which must be different than its current URL. The sequence will
@@ -170,6 +171,12 @@ class InteractiveBrowserTestApi : public views::test::InteractiveViewsTestApi {
   [[nodiscard]] static MultiStep NavigateWebContents(
       ui::ElementIdentifier webcontents_id,
       GURL new_url);
+
+  // Raises the surface containing `webcontents_id` and focuses the WebContents
+  // as if a user had interacted directly with it. This is useful if you want
+  // the WebContents to e.g. respond to accelerators.
+  [[nodiscard]] StepBuilder FocusWebContents(
+      ui::ElementIdentifier webcontents_id);
 
   // Waits for the given `state_change` in `webcontents_id`. The sequence will
   // fail if the change times out, unless `expect_timeout` is true, in which
@@ -198,22 +205,47 @@ class InteractiveBrowserTestApi : public views::test::InteractiveViewsTestApi {
       ui::ElementIdentifier webcontents_id,
       const DeepQuery& where);
 
+  // How to execute JavaScript when calling ExecuteJs() and ExecuteJsAt().
+  enum class ExecuteJsMode {
+    // Ensures that the code sent to the renderer completes without error before
+    // the next step can proceed. If an error occurs, the test fails.
+    //
+    // This is the default.
+    kWaitForCompletion,
+    // Sends the code to the renderer for execution, but does not wait for a
+    // response. If an error occurs, it may appear in the log, but the test
+    // will not detect it and will not fail.
+    //
+    // Use this mode if the code you are injecting will prevent the renderer
+    // from communicating the result back to the browser process.
+    kFireAndForget,
+  };
+
   // Execute javascript `function`, which should take no arguments, in
   // WebContents `webcontents_id`.
+  //
+  // You can use this method to call an existing function with no arguments in
+  // the global scope; to do that, specify only the name of the method (e.g.
+  // `myMethod` rather than `myMethod()`).
   [[nodiscard]] static StepBuilder ExecuteJs(
       ui::ElementIdentifier webcontents_id,
-      const std::string& function);
+      const std::string& function,
+      ExecuteJsMode mode = ExecuteJsMode::kWaitForCompletion);
 
   // Execute javascript `function`, which should take a single DOM element as an
   // argument, with the element at `where`, in WebContents `webcontents_id`.
   [[nodiscard]] static StepBuilder ExecuteJsAt(
       ui::ElementIdentifier webcontents_id,
       const DeepQuery& where,
-      const std::string& function);
+      const std::string& function,
+      ExecuteJsMode mode = ExecuteJsMode::kWaitForCompletion);
 
   // Executes javascript `function`, which should take no arguments and return a
   // value, in WebContents `webcontents_id`, and fails if the result is not
   // truthy.
+  //
+  // If `function` instead returns a promise, the result of the promise is
+  // evaluated for truthiness. If the promise rejects, CheckJsResult() fails.
   [[nodiscard]] static StepBuilder CheckJsResult(
       ui::ElementIdentifier webcontents_id,
       const std::string& function);
@@ -232,6 +264,9 @@ class InteractiveBrowserTestApi : public views::test::InteractiveViewsTestApi {
   // You must pass a literal or Matcher that matches the type returned by the
   // javascript function. If your function could return either an integer or a
   // floating-point value, you *must* use a double.
+  //
+  // If `function` instead returns a promise, the result of the promise is
+  // evaluated against `matcher`. If the promise rejects, CheckJsResult() fails.
   template <typename T>
   [[nodiscard]] static StepBuilder CheckJsResult(
       ui::ElementIdentifier webcontents_id,
@@ -241,6 +276,9 @@ class InteractiveBrowserTestApi : public views::test::InteractiveViewsTestApi {
   // Executes javascript `function`, which should take a single DOM element as
   // an argument and returns a value, in WebContents `webcontents_id` on the
   // element specified by `where`, and fails if the result is not truthy.
+  //
+  // If `function` instead returns a promise, the result of the promise is
+  // evaluated for truthiness. If the promise rejects, CheckJsResultAt() fails.
   [[nodiscard]] static StepBuilder CheckJsResultAt(
       ui::ElementIdentifier webcontents_id,
       const DeepQuery& where,
@@ -250,6 +288,10 @@ class InteractiveBrowserTestApi : public views::test::InteractiveViewsTestApi {
   // an argument and returns a value, in WebContents `webcontents_id` on the
   // element specified by `where`, and fails if the result does not match
   // `matcher`, which can be a literal or a testing::Matcher.
+  //
+  // If `function` instead returns a promise, the result of the promise is
+  // evaluated against `matcher`. If the promise rejects, CheckJsResultAt()
+  // fails.
   //
   // See notes on CheckJsResult() for what values and Matchers are supported.
   template <typename T>
@@ -324,9 +366,8 @@ class InteractiveBrowserTestApi : public views::test::InteractiveViewsTestApi {
 // `RunTestTestSequenceInContext()` instead.
 //
 // See README.md for usage.
-template <typename T,
-          typename =
-              std::enable_if_t<std::is_base_of_v<InProcessBrowserTest, T>>>
+template <typename T>
+  requires std::derived_from<T, InProcessBrowserTest>
 class InteractiveBrowserTestT : public T, public InteractiveBrowserTestApi {
  public:
   template <typename... Args>

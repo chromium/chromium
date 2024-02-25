@@ -8,13 +8,15 @@
 #include "chrome/browser/ui/views/payments/payment_request_dialog_view_ids.h"
 #include "chrome/browser/ui/views/payments/payment_request_views_util.h"
 #include "components/autofill/core/browser/autofill_test_utils.h"
+#include "content/public/common/content_switches.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace payments {
 
-class PaymentHandlerWindowSizeTest : public PaymentRequestBrowserTestBase {
+class PaymentHandlerWindowSizeTest : public PaymentRequestBrowserTestBase,
+                                     public testing::WithParamInterface<bool> {
  public:
   PaymentHandlerWindowSizeTest(const PaymentHandlerWindowSizeTest&) = delete;
   PaymentHandlerWindowSizeTest& operator=(const PaymentHandlerWindowSizeTest&) =
@@ -22,7 +24,8 @@ class PaymentHandlerWindowSizeTest : public PaymentRequestBrowserTestBase {
 
  protected:
   PaymentHandlerWindowSizeTest()
-      : expected_payment_request_dialog_size_(
+      : minimal_header_ux_enabled_(GetParam()),
+        expected_payment_request_dialog_size_(
             gfx::Size(kDialogMinWidth, kDialogHeight)) {}
 
   ~PaymentHandlerWindowSizeTest() override = default;
@@ -32,12 +35,21 @@ class PaymentHandlerWindowSizeTest : public PaymentRequestBrowserTestBase {
     NavigateTo("/payment_handler.html");
   }
 
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    PaymentRequestBrowserTestBase::SetUpCommandLine(command_line);
+    if (!minimal_header_ux_enabled_) {
+      command_line->AppendSwitchASCII(switches::kDisableBlinkFeatures,
+                                      "PaymentHandlerMinimalHeaderUX");
+    }
+  }
+
   gfx::Size DialogViewSize() { return dialog_view()->CalculatePreferredSize(); }
 
+  bool minimal_header_ux_enabled_;
   const gfx::Size expected_payment_request_dialog_size_;
 };
 
-IN_PROC_BROWSER_TEST_F(PaymentHandlerWindowSizeTest, ValidateDialogSize) {
+IN_PROC_BROWSER_TEST_P(PaymentHandlerWindowSizeTest, ValidateDialogSize) {
   // Add an autofill profile, so [Continue] button is enabled.
   autofill::AutofillProfile profile(autofill::test::GetFullProfile());
   AddAutofillProfile(profile);
@@ -75,9 +87,18 @@ IN_PROC_BROWSER_TEST_F(PaymentHandlerWindowSizeTest, ValidateDialogSize) {
   EXPECT_EQ(expected_payment_handler_dialog_size, DialogViewSize());
 
   // Check that dialog size resets after back navigation from payment handler
-  // window.
-  ClickOnBackArrow();
-  EXPECT_EQ(expected_payment_request_dialog_size_, DialogViewSize());
+  // window. The dialog only has a back button prior to minimal header UX.
+  if (!minimal_header_ux_enabled_) {
+    ClickOnBackArrow();
+    EXPECT_EQ(expected_payment_request_dialog_size_, DialogViewSize());
+  }
+
+  // The test flakily hangs if we don't close the payment handler dialog.
+  ResetEventWaiter(DialogEvent::DIALOG_CLOSED);
+  ClickOnDialogViewAndWait(DialogViewID::CANCEL_BUTTON,
+                           /*wait_for_animation=*/false);
 }
+
+INSTANTIATE_TEST_SUITE_P(All, PaymentHandlerWindowSizeTest, testing::Bool());
 
 }  // namespace payments

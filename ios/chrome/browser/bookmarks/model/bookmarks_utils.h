@@ -8,22 +8,29 @@
 #include <set>
 #include <vector>
 
+enum class BookmarkModelType;
 class ChromeBrowserState;
 class PrefService;
 
 namespace bookmarks {
 class BookmarkModel;
 class BookmarkNode;
-enum class StorageType;
 }  // namespace bookmarks
 
 // Used in the preference kIosBookmarkLastUsedFolderReceivingBookmarks.
 // It means that the user has not set a folder for bookmarks explicitly.
 extern const int64_t kLastUsedBookmarkFolderNone;
 
+// Checks whether all available bookmark models are loaded.
+// Return true if the bookmarks model are loaded, false otherwise.
+// TODO(crbug.com/326185948): Inline this trivial helper function.
+[[nodiscard]] bool AreAllAvailableBookmarkModelsLoaded(
+    ChromeBrowserState* browser_state);
+
 // Removes all user bookmarks and clears bookmark-related pref. Requires
 // bookmark model to be loaded.
 // Return true if the bookmarks were successfully removed and false otherwise.
+// TODO(crbug.com/326185948): Inline this trivial helper function.
 [[nodiscard]] bool RemoveAllUserBookmarksIOS(ChromeBrowserState* browser_state);
 
 // Returns the permanent nodes whose url children are considered uncategorized
@@ -48,7 +55,7 @@ void ResetLastUsedBookmarkFolder(PrefService* prefs);
 // or move bookmarks.
 void SetLastUsedBookmarkFolder(PrefService* prefs,
                                const bookmarks::BookmarkNode* folder,
-                               bookmarks::StorageType type);
+                               BookmarkModelType type);
 
 // It returns the first bookmark folder that exists, with the following
 // priority:

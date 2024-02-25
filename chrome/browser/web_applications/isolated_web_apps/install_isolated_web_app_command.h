@@ -5,15 +5,16 @@
 #ifndef CHROME_BROWSER_WEB_APPLICATIONS_ISOLATED_WEB_APPS_INSTALL_ISOLATED_WEB_APP_COMMAND_H_
 #define CHROME_BROWSER_WEB_APPLICATIONS_ISOLATED_WEB_APPS_INSTALL_ISOLATED_WEB_APP_COMMAND_H_
 
+#include <iosfwd>
 #include <memory>
-#include <ostream>
+#include <optional>
 #include <string>
 #include <type_traits>
 
 #include "base/functional/callback.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
-#include "base/strings/string_piece_forward.h"
+#include "base/strings/string_piece.h"
 #include "base/types/expected.h"
 #include "base/values.h"
 #include "base/version.h"
@@ -23,13 +24,13 @@
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_location.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_response_reader_factory.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_url_info.h"
+#include "chrome/browser/web_applications/locks/app_lock.h"
 #include "chrome/browser/web_applications/os_integration/os_integration_manager.h"
-#include "chrome/browser/web_applications/web_app_id.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
 #include "components/keep_alive_registry/scoped_keep_alive.h"
 #include "components/webapps/browser/install_result_code.h"
 #include "components/webapps/browser/installable/installable_logging.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
+#include "components/webapps/common/web_app_id.h"
 #include "third_party/blink/public/mojom/manifest/manifest.mojom-forward.h"
 
 class Profile;
@@ -40,29 +41,30 @@ class WebContents;
 
 namespace web_app {
 
-class AppLock;
-class AppLockDescription;
-class LockDescription;
-class WebAppDataRetriever;
 class WebAppUrlLoader;
 
 enum class WebAppUrlLoaderResult;
 
 struct InstallIsolatedWebAppCommandSuccess {
-  explicit InstallIsolatedWebAppCommandSuccess(base::Version installed_version)
-      : installed_version(std::move(installed_version)) {}
+  InstallIsolatedWebAppCommandSuccess(base::Version installed_version,
+                                      IsolatedWebAppLocation location);
+  InstallIsolatedWebAppCommandSuccess(
+      const InstallIsolatedWebAppCommandSuccess& other);
+  ~InstallIsolatedWebAppCommandSuccess();
+
   base::Version installed_version;
+  IsolatedWebAppLocation location;
 };
+
+std::ostream& operator<<(std::ostream& os,
+                         const InstallIsolatedWebAppCommandSuccess& success);
+
 struct InstallIsolatedWebAppCommandError {
   std::string message;
-
-  friend std::ostream& operator<<(
-      std::ostream& os,
-      const InstallIsolatedWebAppCommandError& error) {
-    return os << "InstallIsolatedWebAppCommandError { message = \""
-              << error.message << "\" }.";
-  }
 };
+
+std::ostream& operator<<(std::ostream& os,
+                         const InstallIsolatedWebAppCommandError& error);
 
 // Isolated Web App requires:
 //  * no cross-origin navigation
@@ -70,7 +72,10 @@ struct InstallIsolatedWebAppCommandError {
 //
 // |content::IsolatedWebAppThrottle| enforces that. The requirements prevent
 // re-using web contents.
-class InstallIsolatedWebAppCommand : public WebAppCommandTemplate<AppLock> {
+class InstallIsolatedWebAppCommand
+    : public WebAppCommand<AppLock,
+                           base::expected<InstallIsolatedWebAppCommandSuccess,
+                                          InstallIsolatedWebAppCommandError>> {
  public:
   // `url_info` holds the origin information of the app. It is randomly
   // generated for dev-proxy and the public key of signed bundle. It is
@@ -89,12 +94,11 @@ class InstallIsolatedWebAppCommand : public WebAppCommandTemplate<AppLock> {
   // `response_reader_factory` should be created via
   // `CreateDefaultResponseReaderFactory` and is used to create the
   // `IsolatedWebAppResponseReader` for the Web Bundle.
-  explicit InstallIsolatedWebAppCommand(
+  InstallIsolatedWebAppCommand(
       const IsolatedWebAppUrlInfo& url_info,
       const IsolatedWebAppLocation& location,
-      const absl::optional<base::Version>& expected_version,
+      const std::optional<base::Version>& expected_version,
       std::unique_ptr<content::WebContents> web_contents,
-      std::unique_ptr<WebAppUrlLoader> url_loader,
       std::unique_ptr<ScopedKeepAlive> optional_keep_alive,
       std::unique_ptr<ScopedProfileKeepAlive> optional_profile_keep_alive,
       base::OnceCallback<
@@ -112,14 +116,9 @@ class InstallIsolatedWebAppCommand : public WebAppCommandTemplate<AppLock> {
 
   ~InstallIsolatedWebAppCommand() override;
 
-  // WebAppCommandTemplate<AppLock>:
-  const LockDescription& lock_description() const override;
-  base::Value ToDebugValue() const override;
+ protected:
+  // WebAppCommand:
   void StartWithLock(std::unique_ptr<AppLock> lock) override;
-  void OnShutdown() override;
-
-  void SetDataRetrieverForTesting(
-      std::unique_ptr<WebAppDataRetriever> data_retriever);
 
  private:
   void ReportFailure(base::StringPiece message);
@@ -149,6 +148,14 @@ class InstallIsolatedWebAppCommand : public WebAppCommandTemplate<AppLock> {
 
   Profile& profile();
 
+  void CopyToProfileDirectory(
+      base::OnceCallback<void(base::expected<IsolatedWebAppLocation,
+                                             std::string>)> next_step_callback);
+
+  void UpdateLocation(
+      base::OnceClosure next_step_callback,
+      base::expected<IsolatedWebAppLocation, std::string> new_location);
+
   void CheckTrustAndSignatures(base::OnceClosure next_step_callback);
 
   void CreateStoragePartition(base::OnceClosure next_step_callback);
@@ -169,35 +176,30 @@ class InstallIsolatedWebAppCommand : public WebAppCommandTemplate<AppLock> {
       WebAppInstallInfo install_info);
 
   void FinalizeInstall(WebAppInstallInfo info);
-  void OnFinalizeInstall(const AppId& unused_app_id,
+  void OnFinalizeInstall(const webapps::AppId& unused_app_id,
                          webapps::InstallResultCode install_result_code,
                          OsHooksErrors unused_os_hooks_errors);
 
   SEQUENCE_CHECKER(sequence_checker_);
 
-  base::Value::Dict debug_log_;
-  std::unique_ptr<AppLockDescription> lock_description_;
   std::unique_ptr<AppLock> lock_;
+  std::unique_ptr<WebAppUrlLoader> url_loader_;
 
   std::unique_ptr<IsolatedWebAppInstallCommandHelper> command_helper_;
 
   IsolatedWebAppUrlInfo url_info_;
-  IsolatedWebAppLocation location_;
-  absl::optional<base::Version> expected_version_;
+  IsolatedWebAppLocation source_location_;
+  std::optional<IsolatedWebAppLocation> lazy_destination_location_;
+
+  std::optional<base::Version> expected_version_;
   // Populated as part of the installation process based on the version read
   // from the Web Bundle.
   base::Version actual_version_;
 
   std::unique_ptr<content::WebContents> web_contents_;
 
-  std::unique_ptr<WebAppUrlLoader> url_loader_;
-
   std::unique_ptr<ScopedKeepAlive> optional_keep_alive_;
   std::unique_ptr<ScopedProfileKeepAlive> optional_profile_keep_alive_;
-
-  base::OnceCallback<void(base::expected<InstallIsolatedWebAppCommandSuccess,
-                                         InstallIsolatedWebAppCommandError>)>
-      callback_;
 
   base::WeakPtrFactory<InstallIsolatedWebAppCommand> weak_factory_{this};
 };

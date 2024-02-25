@@ -7,17 +7,17 @@
 #import "base/apple/foundation_util.h"
 #import "base/metrics/user_metrics.h"
 #import "base/metrics/user_metrics_action.h"
-#import "ios/chrome/browser/net/crurl.h"
+#import "ios/chrome/browser/net/model/crurl.h"
+#import "ios/chrome/browser/shared/model/prefs/pref_backed_boolean.h"
 #import "ios/chrome/browser/shared/ui/list_model/list_model.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_info_button_cell.h"
 #import "ios/chrome/browser/ui/settings/cells/settings_image_detail_text_item.h"
 #import "ios/chrome/browser/ui/settings/elements/enterprise_info_popover_view_controller.h"
 #import "ios/chrome/browser/ui/settings/privacy/privacy_constants.h"
 #import "ios/chrome/browser/ui/settings/privacy/privacy_safe_browsing_view_controller_delegate.h"
-#import "ios/chrome/browser/ui/settings/utils/pref_backed_boolean.h"
-#import "ios/chrome/grit/ios_chromium_strings.h"
+#import "ios/chrome/grit/ios_branded_strings.h"
 #import "ios/chrome/grit/ios_strings.h"
-#import "net/base/mac/url_conversions.h"
+#import "net/base/apple/url_conversions.h"
 #import "ui/base/l10n/l10n_util_mac.h"
 
 using ItemArray = NSArray<TableViewItem*>*;
@@ -68,13 +68,18 @@ typedef NS_ENUM(NSInteger, SectionIdentifier) {
 
 #pragma mark - PrivacySafeBrowsingConsumer
 
-- (void)reloadCellsForItems {
+- (void)reconfigureCellsForItems {
   if (!self.tableViewModel) {
     // No need to reconfigure since the model has not been loaded yet.
     return;
   }
-  [self reloadCellsForItems:self.safeBrowsingItems
-           withRowAnimation:UITableViewRowAnimationNone];
+
+  NSMutableArray<NSIndexPath*>* indexPaths = [[NSMutableArray alloc] init];
+  for (TableViewItem* item in self.safeBrowsingItems) {
+    [indexPaths addObject:[self.tableViewModel indexPathForItem:item]];
+  }
+
+  [self.tableView reconfigureRowsAtIndexPaths:indexPaths];
 }
 
 - (void)setSafeBrowsingItems:(ItemArray)safeBrowsingItems {

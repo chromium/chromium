@@ -8,9 +8,10 @@
 #include "base/test/test_mock_time_task_runner.h"
 #include "chrome/browser/ash/policy/dlp/dlp_files_controller_ash.h"
 #include "chrome/browser/ash/policy/dlp/dlp_files_event_storage.h"
-#include "chrome/browser/chromeos/policy/dlp/dlp_policy_event.pb.h"
 #include "chrome/browser/chromeos/policy/dlp/test/dlp_files_test_base.h"
-#include "chrome/browser/chromeos/policy/dlp/test/dlp_reporting_manager_test_helper.h"
+#include "chrome/browser/enterprise/data_controls/dlp_reporting_manager_test_helper.h"
+#include "chrome/browser/policy/messaging_layer/public/report_client_test_util.h"
+#include "components/enterprise/data_controls/dlp_policy_event.pb.h"
 #include "storage/browser/file_system/external_mount_points.h"
 #include "storage/browser/file_system/file_system_url.h"
 
@@ -39,20 +40,20 @@ class DlpFilesTestWithMounts : public DlpFilesTestBase {
   std::unique_ptr<KeyedService> SetFilesPolicyNotificationManager(
       content::BrowserContext* context);
 
-  raw_ptr<MockFilesPolicyNotificationManager,
-          DanglingUntriaged | ExperimentalAsh>
-      fpnm_ = nullptr;
+  raw_ptr<MockFilesPolicyNotificationManager, DanglingUntriaged> fpnm_ =
+      nullptr;
   std::unique_ptr<DlpFilesControllerAsh> files_controller_;
-  std::unique_ptr<DlpReportingManager> reporting_manager_;
-  std::vector<DlpPolicyEvent> events;
-  raw_ptr<DlpFilesEventStorage, ExperimentalAsh> event_storage_ = nullptr;
+  std::unique_ptr<reporting::ReportingClient::TestEnvironment>
+      reporting_test_enviroment_;
+  std::unique_ptr<data_controls::DlpReportingManager> reporting_manager_;
+  std::vector<DlpPolicyEvent> events_;
+  raw_ptr<DlpFilesEventStorage> event_storage_ = nullptr;
 
   scoped_refptr<base::TestMockTimeTaskRunner> task_runner_;
 
   scoped_refptr<storage::FileSystemContext> file_system_context_;
 
-  raw_ptr<storage::ExternalMountPoints, ExperimentalAsh> mount_points_ =
-      nullptr;
+  raw_ptr<storage::ExternalMountPoints> mount_points_ = nullptr;
 
   const blink::StorageKey kTestStorageKey =
       blink::StorageKey::CreateFromStringForTesting("https://example.com/test");

@@ -7,6 +7,7 @@
 
 #include <memory>
 #include <set>
+#include <utility>
 
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
@@ -16,6 +17,7 @@
 #include "chrome/browser/ui/bookmarks/bookmark_stats.h"
 #include "chrome/browser/ui/tabs/tab_group_theme.h"
 #include "chrome/browser/ui/views/bookmarks/bookmark_menu_controller_observer.h"
+#include "chrome/browser/ui/views/bookmarks/bookmark_menu_controller_views.h"
 #include "chrome/browser/ui/views/bookmarks/saved_tab_groups/saved_tab_group_bar.h"
 #include "components/bookmarks/browser/bookmark_model_observer.h"
 #include "components/bookmarks/browser/bookmark_node_data.h"
@@ -70,15 +72,18 @@ class BookmarkBarView : public views::AccessiblePaneView,
                         public views::DragController,
                         public views::AnimationDelegateViews,
                         public BookmarkMenuControllerObserver {
+  METADATA_HEADER(BookmarkBarView, views::AccessiblePaneView)
+
  public:
   class ButtonSeparatorView;
 
-  METADATA_HEADER(BookmarkBarView);
   // |browser_view| can be NULL during tests.
   BookmarkBarView(Browser* browser, BrowserView* browser_view);
   BookmarkBarView(const BookmarkBarView&) = delete;
   BookmarkBarView& operator=(const BookmarkBarView&) = delete;
   ~BookmarkBarView() override;
+
+  static bool GetAnimationsEnabled();
 
   static void DisableAnimationsForTesting(bool disabled);
 
@@ -122,8 +127,8 @@ class BookmarkBarView : public views::AccessiblePaneView,
 
   // Returns the button responsible for showing bookmarks in the
   // "Other Bookmarks" folder.
-  views::MenuButton* other_bookmarks_button() const {
-    return other_bookmarks_button_;
+  views::MenuButton* all_bookmarks_button() const {
+    return all_bookmarks_button_;
   }
 
   // Returns the button used when not all the items on the bookmark bar fit.
@@ -131,8 +136,11 @@ class BookmarkBarView : public views::AccessiblePaneView,
 
   const gfx::Animation& size_animation() { return size_animation_; }
 
-  // Returns the active MenuItemView, or NULL if a menu isn't showing.
-  views::MenuItemView* GetMenu();
+  // Returns the active MenuItemView, or null if a menu isn't showing.
+  const views::MenuItemView* GetMenu() const;
+  views::MenuItemView* GetMenu() {
+    return const_cast<views::MenuItemView*>(std::as_const(*this).GetMenu());
+  }
 
   // Returns the context menu, or null if one isn't showing.
   views::MenuItemView* GetContextMenu();
@@ -154,7 +162,7 @@ class BookmarkBarView : public views::AccessiblePaneView,
   // views::View:
   gfx::Size CalculatePreferredSize() const override;
   gfx::Size GetMinimumSize() const override;
-  void Layout() override;
+  void Layout(PassKey) override;
   void ViewHierarchyChanged(
       const views::ViewHierarchyChangedDetails& details) override;
   void PaintChildren(const views::PaintInfo& paint_info) override;
@@ -233,7 +241,11 @@ class BookmarkBarView : public views::AccessiblePaneView,
   friend class BookmarkBarViewEventTestBase;
 
   // Used to identify what the user is dropping onto.
-  enum DropButtonType { DROP_BOOKMARK, DROP_OTHER_FOLDER, DROP_OVERFLOW };
+  enum DropButtonType {
+    DROP_BOOKMARK,
+    DROP_ALL_BOOKMARKS_FOLDER,
+    DROP_OVERFLOW
+  };
 
   // Creates recent bookmark button and when visible button as well as
   // calculating the preferred height.
@@ -256,8 +268,8 @@ class BookmarkBarView : public views::AccessiblePaneView,
   // visible, this returns GetBookmarkButtonCount().
   size_t GetFirstHiddenNodeIndex() const;
 
-  // Creates the button showing the "Other Bookmarks" folder.
-  std::unique_ptr<views::MenuButton> CreateOtherBookmarksButton();
+  // Creates the button showing the "All Bookmarks" folder.
+  std::unique_ptr<views::MenuButton> CreateAllBookmarksButton();
 
   // Creates the button showing the "Managed Bookmarks" folder.
   std::unique_ptr<views::MenuButton> CreateManagedBookmarksButton();
@@ -276,6 +288,10 @@ class BookmarkBarView : public views::AccessiblePaneView,
   // and icon.
   void ConfigureButton(const bookmarks::BookmarkNode* node,
                        views::LabelButton* button);
+
+  // Returns true when the TabGroupsSave feature should be added to the
+  // bookmarks bar.
+  bool IsSavedTabGroupsEnabled();
 
   // Implementation for BookmarkNodeAddedImpl. Returns true if LayoutAndPaint()
   // is required.
@@ -338,7 +354,7 @@ class BookmarkBarView : public views::AccessiblePaneView,
   void OnShowManagedBookmarksPrefChanged();
 
   void LayoutAndPaint() {
-    Layout();
+    DeprecatedLayoutImmediately();
     SchedulePaint();
   }
 
@@ -397,7 +413,7 @@ class BookmarkBarView : public views::AccessiblePaneView,
   raw_ptr<SavedTabGroupBar> saved_tab_group_bar_ = nullptr;
 
   // Shows the "Other Bookmarks" folder button.
-  raw_ptr<views::MenuButton> other_bookmarks_button_ = nullptr;
+  raw_ptr<views::MenuButton> all_bookmarks_button_ = nullptr;
 
   // Shows the managed bookmarks entries.
   raw_ptr<views::MenuButton> managed_bookmarks_button_ = nullptr;
@@ -412,7 +428,8 @@ class BookmarkBarView : public views::AccessiblePaneView,
   raw_ptr<views::MenuButton> overflow_button_ = nullptr;
 
   // The individual bookmark buttons.
-  std::vector<views::LabelButton*> bookmark_buttons_;
+  std::vector<raw_ptr<views::LabelButton, VectorExperimental>>
+      bookmark_buttons_;
 
   raw_ptr<ButtonSeparatorView> bookmarks_separator_view_ = nullptr;
   raw_ptr<ButtonSeparatorView> saved_tab_groups_separator_view_ = nullptr;

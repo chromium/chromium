@@ -31,8 +31,8 @@ Notification::AppMetadata::AppMetadata(
     const std::u16string& visible_app_name,
     const std::string& package_name,
     const gfx::Image& color_icon,
-    const absl::optional<gfx::Image>& monochrome_icon_mask,
-    const absl::optional<SkColor> icon_color,
+    const std::optional<gfx::Image>& monochrome_icon_mask,
+    const std::optional<SkColor> icon_color,
     bool icon_is_monochrome,
     int64_t user_id,
     proto::AppStreamabilityStatus app_streamability_status)
@@ -105,7 +105,7 @@ Notification::AppMetadata Notification::AppMetadata::FromValue(
   bool icon_is_monochrome =
       value.FindBoolByDottedPath(kIconIsMonochrome).value_or(false);
 
-  absl::optional<SkColor> icon_color = absl::nullopt;
+  std::optional<SkColor> icon_color = std::nullopt;
   if (value.contains(kIconColorR)) {
     DCHECK(value.FindInt(kIconColorR));
     DCHECK(value.FindInt(kIconColorG));
@@ -127,7 +127,7 @@ Notification::AppMetadata Notification::AppMetadata::FromValue(
   gfx::Image decode_color_icon = gfx::Image::CreateFrom1xPNGBytes(
       base::MakeRefCounted<base::RefCountedString>(std::move(color_icon_str)));
 
-  absl::optional<gfx::Image> decode_monochrome_icon_mask = absl::nullopt;
+  std::optional<gfx::Image> decode_monochrome_icon_mask = std::nullopt;
   std::string monochrome_icon_mask_str;
   if (value.contains(kMonochromeIconMask)) {
     base::Base64Decode(*(value.FindString(kMonochromeIconMask)),
@@ -155,10 +155,10 @@ Notification::Notification(
     Notification::Category category,
     const base::flat_map<Notification::ActionType, int64_t>& action_id_map,
     InteractionBehavior interaction_behavior,
-    const absl::optional<std::u16string>& title,
-    const absl::optional<std::u16string>& text_content,
-    const absl::optional<gfx::Image>& shared_image,
-    const absl::optional<gfx::Image>& contact_image)
+    const std::optional<std::u16string>& title,
+    const std::optional<std::u16string>& text_content,
+    const std::optional<gfx::Image>& shared_image,
+    const std::optional<gfx::Image>& contact_image)
     : id_(id),
       app_metadata_(app_metadata),
       timestamp_(timestamp),

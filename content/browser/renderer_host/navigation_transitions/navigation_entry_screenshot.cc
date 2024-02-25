@@ -32,8 +32,16 @@ cc::UIResourceBitmap NavigationEntryScreenshot::GetBitmap(cc::UIResourceId uid,
   return bitmap_;
 }
 
+gfx::Size NavigationEntryScreenshot::GetDimensions() const {
+  return bitmap_.GetSize();
+}
+
 size_t NavigationEntryScreenshot::SizeInBytes() const {
   return bitmap_.SizeInBytes();
+}
+
+SkBitmap NavigationEntryScreenshot::GetBitmapForTesting() const {
+  return bitmap_.GetBitmapForTesting();  // IN-TEST
 }
 
 }  // namespace content

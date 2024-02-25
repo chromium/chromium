@@ -5,10 +5,11 @@
 import {TestRunner} from 'test_runner';
 import {ConsoleTestRunner} from 'console_test_runner';
 
+import * as ObjectUI from 'devtools/ui/legacy/components/object_ui/object_ui.js';
+
 (async function() {
   TestRunner.addResult(`Tests that console dumps global object with properties.\n`);
 
-  await TestRunner.loadLegacyModule('console');
   await TestRunner.showPanel('console');
 
   await TestRunner.evaluateInPagePromise(`
@@ -35,7 +36,7 @@ import {ConsoleTestRunner} from 'console_test_runner';
 
   function getPropertiesCallback(allProperties) {
     const properties = allProperties.properties;
-    properties.sort(ObjectUI.ObjectPropertiesSection.CompareProperties);
+    properties.sort(ObjectUI.ObjectPropertiesSection.ObjectPropertiesSection.compareProperties);
 
     var golden = {
       'window': 1,

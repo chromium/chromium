@@ -2,9 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {EventGenerator} from '../../common/event_generator.js';
-import {EventHandler} from '../../common/event_handler.js';
-import {RectUtil} from '../../common/rect_util.js';
+import {EventGenerator} from '/common/event_generator.js';
+import {EventHandler} from '/common/event_handler.js';
+import {RectUtil} from '/common/rect_util.js';
+import {TestImportManager} from '/common/testing/test_import_manager.js';
+
 import {AutoScanManager} from '../auto_scan_manager.js';
 import {Navigator} from '../navigator.js';
 import {SwitchAccess} from '../switch_access.js';
@@ -274,3 +276,5 @@ BasicRootNode.builders.push({
  * @const {number}
  */
 const VK_KEY_PRESS_DURATION_MS = 100;
+
+TestImportManager.exportForTesting(KeyboardNode, KeyboardRootNode);

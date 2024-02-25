@@ -48,8 +48,6 @@ class ASH_EXPORT LockLayoutManager : public WmDefaultLayoutManager,
   void OnWindowAddedToLayout(aura::Window* child) override;
   void OnWillRemoveWindowFromLayout(aura::Window* child) override;
   void OnWindowRemovedFromLayout(aura::Window* child) override;
-  void OnChildWindowVisibilityChanged(aura::Window* child,
-                                      bool visible) override;
   void SetChildBounds(aura::Window* child,
                       const gfx::Rect& requested_bounds) override;
 
@@ -75,8 +73,8 @@ class ASH_EXPORT LockLayoutManager : public WmDefaultLayoutManager,
   aura::Window* window() { return window_; }
 
  private:
-  raw_ptr<aura::Window, ExperimentalAsh> window_;
-  raw_ptr<aura::Window, ExperimentalAsh> root_window_;
+  raw_ptr<aura::Window> window_;
+  raw_ptr<aura::Window> root_window_;
 
   // An observer to update position of modals when display work area changes.
   display::ScopedDisplayObserver display_observer_{this};

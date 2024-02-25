@@ -1,0 +1,2023 @@
+<structured-metrics>
+
+<project name="PopularDisplays">
+  <owner>markyacoub@google.com</owner>
+  <owner>chromeos-gfx-display@google.com</owner>
+  <id>none</id>
+  <scope>device</scope>
+  <key-rotation>90</key-rotation>
+  <summary>
+    Project for recording monitor infos
+  </summary>
+
+  <event name="MonitorInfo">
+    <summary>
+      Records a unique external monitor information, only once when it's plugged
+      in by a user for the very first time on that device.
+    </summary>
+    <metric name="DisplayName" type="raw-string">
+      <summary>
+        The Name of the Monitor.
+      </summary>
+    </metric>
+    <metric name="ManufacturerId" type="raw-string">
+      <summary>
+        ID of the monitor's manufacturer.
+      </summary>
+    </metric>
+    <metric name="ProductId" type="int">
+      <summary>
+        Monitor's Product ID.
+      </summary>
+    </metric>
+    <metric name="NativeModeSize" type="raw-string">
+      <summary>
+        The Monitor's Native Mode Size.
+      </summary>
+    </metric>
+    <metric name="NativeModeRefreshRate" type="double">
+      <summary>
+        The Monitor's Native Mode Refresh Rate.
+      </summary>
+    </metric>
+    <metric name="PhysicalSize" type="raw-string">
+      <summary>
+        The Physical Size of the Monitor in inches.
+      </summary>
+    </metric>
+    <metric name="ConnectionType" type="raw-string">
+      <summary>
+        The Connection type used to connect the display into the chromebook.
+      </summary>
+    </metric>
+    <metric name="IsVrrCapable" type="int">
+      <summary>
+        The Monitor's Ability to support Variable Refresh Rate.
+      </summary>
+    </metric>
+  </event>
+</project>
+
+<project name="FastPair">
+  <owner>jackshira@chromium.org</owner>
+  <owner>chromeos-cross-device-eng@google.com</owner>
+  <id>none</id>
+  <scope>profile</scope>
+  <key-rotation>30</key-rotation>
+  <summary>
+    Metrics for the ChromeOS Fast Pair implementation.
+  </summary>
+
+  <event name="DiscoveryNotificationShown">
+    <summary>
+      The user is shown a notification which can start the pairing process.
+    </summary>
+    <metric name="Protocol" type="int">
+      <summary>
+        The pairing protocol of the discovered device.
+      </summary>
+    </metric>
+    <metric name="FastPairVersion" type="int">
+      <summary>
+        The Fast Pair spec version the device implements.
+      </summary>
+    </metric>
+    <metric name="ModelId" type="int">
+      <summary>
+        The model ID of the discovered device.
+      </summary>
+    </metric>
+    <metric name="RSSI" type="int">
+      <summary>
+        The inquiry RSSI of the discovered device, recorded at the time of metrics
+        emission, with a range of -128 to 127. If inquiry RSSI is unknown, we report
+        -129.
+      </summary>
+    </metric>
+    <metric name="TxPower" type="int">
+      <summary>
+        The inquiry TxPower of the discovered device, recorded at the time of
+        metrics emission, with a range of -128 to 127. If inquiry TxPower is
+        unknown, we report -129.
+      </summary>
+    </metric>
+  </event>
+
+  <event name="PairingStart">
+    <summary>
+      The starting of the pairing process.
+    </summary>
+    <metric name="Protocol" type="int">
+      <summary>
+        The pairing protocol being started.
+      </summary>
+    </metric>
+    <metric name="FastPairVersion" type="int">
+      <summary>
+        The Fast Pair spec version the device implements.
+      </summary>
+    </metric>
+    <metric name="ModelId" type="int">
+      <summary>
+        The model ID of the device being paired.
+      </summary>
+    </metric>
+    <metric name="RSSI" type="int">
+      <summary>
+        The inquiry RSSI of the pairing device, recorded at the time of metrics
+        emission, with a range of -128 to 127. If inquiry RSSI is unknown, we report
+        -129.
+      </summary>
+    </metric>
+    <metric name="TxPower" type="int">
+      <summary>
+        The inquiry TxPower of the pairing device, recorded at the time of metrics
+        emission, with a range of -128 to 127. If inquiry TxPower is unknown, we
+        report -129.
+      </summary>
+    </metric>
+  </event>
+
+  <event name="PairingComplete">
+    <summary>
+      The end of the pairing process.
+    </summary>
+    <metric name="Protocol" type="int">
+      <summary>
+        The pairing protocol being started.
+      </summary>
+    </metric>
+    <metric name="FastPairVersion" type="int">
+      <summary>
+        The Fast Pair spec version the device implements.
+      </summary>
+    </metric>
+    <metric name="ModelId" type="int">
+      <summary>
+        The model ID of the device being paired.
+      </summary>
+    </metric>
+    <metric name="RSSI" type="int">
+      <summary>
+        The inquiry RSSI of the paired device, recorded at the time of metrics
+        emission, with a range of -128 to 127. If inquiry RSSI is unknown, we report
+        -129.
+      </summary>
+    </metric>
+    <metric name="TxPower" type="int">
+      <summary>
+        The inquiry TxPower of the paired device, recorded at the time of metrics
+        emission, with a range of -128 to 127. If inquiry TxPower is unknown, we
+        report -129.
+      </summary>
+    </metric>
+  </event>
+
+  <event name="PairFailure">
+    <summary>
+      The pairing process failed for the provided reason.
+    </summary>
+    <metric name="Protocol" type="int">
+      <summary>
+        The pairing protocol being started.
+      </summary>
+    </metric>
+    <metric name="FastPairVersion" type="int">
+      <summary>
+        The Fast Pair spec version the device implements.
+      </summary>
+    </metric>
+    <metric name="Reason" type="int">
+      <summary>
+        The pairing failure reason.
+      </summary>
+    </metric>
+    <metric name="ModelId" type="int">
+      <summary>
+        The model ID of the device being paired.
+      </summary>
+    </metric>
+  </event>
+</project>
+
+<project name="Hindsight">
+  <owner>charleszhao@chromium.org</owner>
+  <owner>tby@chromium.org</owner>
+  <id>per-project</id>
+  <scope>profile</scope>
+  <key-rotation>90</key-rotation>
+  <summary>
+    Project for recording CrOSActions.
+  </summary>
+
+  <event name="CrOSActionEvent.FileOpened">
+    <summary>
+      Records whenever a file is opened in the File App on ChromeOS.
+    </summary>
+    <metric name="Filename" type="hmac-string">
+      <summary>
+        The absolute path of the file.
+      </summary>
+    </metric>
+    <metric name="OpenType" type="int">
+      <summary>
+        The type of file open, defined in FileTaskObserver::OpenType.
+      </summary>
+    </metric>
+    <metric name="SequenceId" type="int">
+      <summary>
+        Sequence of this action across all CrOSActionEvent.
+      </summary>
+    </metric>
+    <metric name="TimeSinceLastAction" type="int">
+      <summary>
+        Time in milliseconds since last CrOSActionLogging.
+      </summary>
+    </metric>
+  </event>
+
+  <event name="CrOSActionEvent.SearchResultLaunched">
+    <summary>
+      Records information about the launch of an item from ChromeOS launcher.
+    </summary>
+    <metric name="Query" type="hmac-string">
+      <summary>
+        The search query associated with this launch.
+      </summary>
+    </metric>
+    <metric name="ResultType" type="int">
+      <summary>
+        Which type of search provider the launched result was created by.
+      </summary>
+    </metric>
+    <metric name="SearchResultId" type="hmac-string">
+      <summary>
+        The ID of the launched result result. For example, the app ID for app
+        results, or the URL for omnibox results.
+      </summary>
+    </metric>
+    <metric name="SequenceId" type="int">
+      <summary>
+        Sequence of this action across all CrOSActionEvent.
+      </summary>
+    </metric>
+    <metric name="TimeSinceLastAction" type="int">
+      <summary>
+        Time in milliseconds since last CrOSActionLogging.
+      </summary>
+    </metric>
+  </event>
+
+  <event name="CrOSActionEvent.SettingChanged">
+    <summary>
+      Records when a setting is changed; only records quick settings for now.
+    </summary>
+    <metric name="CurrentValue" type="int">
+      <summary>
+        Value of the setting after the change.
+      </summary>
+    </metric>
+    <metric name="PreviousValue" type="int">
+      <summary>
+        Value of the setting before the change.
+      </summary>
+    </metric>
+    <metric name="SequenceId" type="int">
+      <summary>
+        Sequence of this action across all CrOSActionEvent.
+      </summary>
+    </metric>
+    <metric name="SettingId" type="int">
+      <summary>
+        The setting id (in ash::ml::UserSettingsEvent::Event::SettingId) that
+        represents the type of the changed setting.
+      </summary>
+    </metric>
+    <metric name="SettingType" type="int">
+      <summary>
+        Enum that represents where the settings event originated from (in
+        ash::ml::UserSettingsEvent::Event::SettingType).
+      </summary>
+    </metric>
+    <metric name="TimeSinceLastAction" type="int">
+      <summary>
+        Time in milliseconds since last CrOSActionLogging.
+      </summary>
+    </metric>
+  </event>
+
+  <event name="CrOSActionEvent.TabEvent.TabNavigated">
+    <summary>
+      Records a tab activity of navigating to a new url.
+    </summary>
+    <metric name="PageTransition" type="int">
+      <summary>
+        The types of transition between pages. See more on ui::PageTransition.
+      </summary>
+    </metric>
+    <metric name="SequenceId" type="int">
+      <summary>
+        Sequence of this action across all CrOSActionEvent.
+      </summary>
+    </metric>
+    <metric name="TimeSinceLastAction" type="int">
+      <summary>
+        Time in milliseconds since last CrOSActionLogging.
+      </summary>
+    </metric>
+    <metric name="URL" type="hmac-string">
+      <summary>
+        The URL of the current event.
+      </summary>
+    </metric>
+    <metric name="Visibility" type="int">
+      <summary>
+        The visibility of this url, see more on content::Visibility.
+      </summary>
+    </metric>
+  </event>
+
+  <event name="CrOSActionEvent.TabEvent.TabOpened">
+    <summary>
+      Records a tab activity of opening a new url with ctrl+click.
+    </summary>
+    <metric name="SequenceId" type="int">
+      <summary>
+        Sequence of this action across all CrOSActionEvent.
+      </summary>
+    </metric>
+    <metric name="TimeSinceLastAction" type="int">
+      <summary>
+        Time in milliseconds since last CrOSActionLogging.
+      </summary>
+    </metric>
+    <metric name="URL" type="hmac-string">
+      <summary>
+        The URL of the current event.
+      </summary>
+    </metric>
+    <metric name="URLOpened" type="hmac-string">
+      <summary>
+        The URL that is opened from the current url.
+      </summary>
+    </metric>
+    <metric name="WindowOpenDisposition" type="int">
+      <summary>
+        Enum that indicates where the new tab is opened, see more on
+        WindowOpenDisposition.
+      </summary>
+    </metric>
+  </event>
+
+  <event name="CrOSActionEvent.TabEvent.TabReactivated">
+    <summary>
+      Records a tab activity of reactivating an existing tab.
+    </summary>
+    <metric name="SequenceId" type="int">
+      <summary>
+        Sequence of this action across all CrOSActionEvent.
+      </summary>
+    </metric>
+    <metric name="TimeSinceLastAction" type="int">
+      <summary>
+        Time in milliseconds since last CrOSActionLogging.
+      </summary>
+    </metric>
+    <metric name="URL" type="hmac-string">
+      <summary>
+        The URL of the current event.
+      </summary>
+    </metric>
+  </event>
+</project>
+
+<project name="LauncherUsage">
+  <owner>tby@chromium.org</owner>
+  <id>per-project</id>
+  <scope>profile</scope>
+  <key-rotation>90</key-rotation>
+  <summary>
+    See event summary.
+  </summary>
+
+  <event name="LauncherUsage">
+    <summary>
+      Records information about the launch of an item (such as an app or a file)
+      from the ChromeOS launcher. One event is recorded for every launch
+      originating from any launcher UI component, and this is the only
+      circumstance that records events.
+    </summary>
+    <metric name="App" type="hmac-string">
+      <summary>
+        App ID of the most-recently-opened app when this launch occurred. This can be
+        an app ID of a Chrome app, Arc++ app, or PWA.
+      </summary>
+    </metric>
+    <metric name="Domain" type="hmac-string">
+      <summary>
+        The most-recently-visited domain when this launch occurred.
+      </summary>
+    </metric>
+    <metric name="Hour" type="int">
+      <summary>
+        The hour of launch. This is the user's local time rounded to the nearest
+        hour, 0 to 23 inclusive.
+      </summary>
+    </metric>
+    <metric name="ProviderType" type="int">
+      <summary>
+        Which type of search provider the launched result was created by. This comes
+        from the AppListSearchResultType enum.
+      </summary>
+    </metric>
+    <metric name="Score" type="int">
+      <summary>
+        The relevance score of the launched result. This is a double multiplied by
+        1000 and cast to an int64. Results that don't have a score report 0.
+      </summary>
+    </metric>
+    <metric name="SearchQuery" type="hmac-string">
+      <summary>
+        The search query associated with this launch. Before hashing, the query is
+        the empty string if there was no search query.
+      </summary>
+    </metric>
+    <metric name="SearchQueryLength" type="int">
+      <summary>
+        String length of the search query associated with this launch. If there was
+        no query, this is zero.
+      </summary>
+    </metric>
+    <metric name="Target" type="hmac-string">
+      <summary>
+        The target item of this launch, eg. an app ID, filepath, or omnibox URL.
+      </summary>
+    </metric>
+  </event>
+</project>
+
+<project name="NearbyShare">
+  <owner>jackshira@chromium.org</owner>
+  <owner>chromeos-cross-device-eng@google.com</owner>
+  <id>none</id>
+  <scope>profile</scope>
+  <key-rotation>30</key-rotation>
+  <summary>
+    Metrics for the ChromeOS Nearby Share implementation.
+  </summary>
+
+  <event name="Discovery">
+    <summary>
+      A share target has been discovered by a sender.
+    </summary>
+    <metric name="Platform" type="int">
+      <summary>
+        The platform of the discovered share target.
+      </summary>
+    </metric>
+    <metric name="DeviceRelationship" type="int">
+      <summary>
+        The relationship type of the discovered share target.
+      </summary>
+    </metric>
+    <metric name="TimeToDiscovery" type="int">
+      <summary>
+        The time in milliseconds it took to discovery this share target from the
+        start of the discovery process.
+      </summary>
+    </metric>
+  </event>
+
+  <event name="Throughput">
+    <summary>
+      A snapshot of the transfer rate of an in progress transfer.
+    </summary>
+    <metric name="IsReceiving" type="int">
+      <summary>
+        A boolean value describing if this devices is receiving this transfer. If
+        false, it is assumed to be the sender.
+      </summary>
+    </metric>
+    <metric name="Platform" type="int">
+      <summary>
+        The platform of the share target used for this transfer.
+      </summary>
+    </metric>
+    <metric name="DeviceRelationship" type="int">
+      <summary>
+        The relationship type of the share target used for this transfer.
+      </summary>
+    </metric>
+    <metric name="Medium" type="int">
+      <summary>
+        The medium used during this segment of the transfer.
+      </summary>
+    </metric>
+    <metric name="UpdateBytes" type="int">
+      <summary>
+        The number of bytes transferred during this segment of the transfer.
+      </summary>
+    </metric>
+    <metric name="UpdateMillis" type="int">
+      <summary>
+        The duration in milliseconds of this segment of the transfer.
+      </summary>
+    </metric>
+    <metric name="TransferredBytes" type="int">
+      <summary>
+        The number of bytes transferred so far.
+      </summary>
+    </metric>
+    <metric name="TotalTransferBytes" type="int">
+      <summary>
+        The total size in bytes for this transfer.
+      </summary>
+    </metric>
+  </event>
+
+  <event name="FileAttachment">
+    <summary>
+      A file attachment transferred over Nearby Share.
+    </summary>
+    <metric name="IsReceiving" type="int">
+      <summary>
+        A boolean value describing if this devices is receiving this transfer. If
+        false, it is assumed to be the sender.
+      </summary>
+    </metric>
+    <metric name="Platform" type="int">
+      <summary>
+        The platform of the share target used for this attachment.
+      </summary>
+    </metric>
+    <metric name="DeviceRelationship" type="int">
+      <summary>
+        The relationship type of the share target used for this attachment.
+      </summary>
+    </metric>
+    <metric name="FileType" type="int">
+      <summary>
+        The file type of this attachment.
+      </summary>
+    </metric>
+    <metric name="Size" type="int">
+      <summary>
+        The size in bytes for attachment.
+      </summary>
+    </metric>
+    <metric name="Result" type="int">
+      <summary>
+        The end result of the transfer for this attachment.
+      </summary>
+    </metric>
+  </event>
+
+  <event name="TextAttachment">
+    <summary>
+      A text attachment transferred over Nearby Share.
+    </summary>
+    <metric name="IsReceiving" type="int">
+      <summary>
+        A boolean value describing if this devices is receiving this transfer. If
+        false, it is assumed to be the sender.
+      </summary>
+    </metric>
+    <metric name="Platform" type="int">
+      <summary>
+        The platform of the share target used for this attachment.
+      </summary>
+    </metric>
+    <metric name="DeviceRelationship" type="int">
+      <summary>
+        The relationship type of the share target used for this attachment.
+      </summary>
+    </metric>
+    <metric name="TextType" type="int">
+      <summary>
+        The text type of this attachment.
+      </summary>
+    </metric>
+    <metric name="Size" type="int">
+      <summary>
+        The size in bytes for attachment.
+      </summary>
+    </metric>
+    <metric name="Result" type="int">
+      <summary>
+        The end result of the transfer for this attachment.
+      </summary>
+    </metric>
+  </event>
+
+  <event name="ShareSession">
+    <summary>
+      A Nearby Share session. This is emitted when the session completes,
+      regardless of whether or not the transfer was successful.
+    </summary>
+    <metric name="IsReceiving" type="int">
+      <summary>
+        A boolean value describing if this devices is receiving this transfer. If
+        false, it is assumed to be the sender.
+      </summary>
+    </metric>
+    <metric name="Platform" type="int">
+      <summary>
+        The platform of the share target used for this attachment.
+      </summary>
+    </metric>
+    <metric name="DeviceRelationship" type="int">
+      <summary>
+        The relationship type of the share target used for this attachment.
+      </summary>
+    </metric>
+    <metric name="TimeToDiscovery" type="int">
+      <summary>
+        The time in milliseconds it took to discovery this share target from the
+        start of the discovery process.
+      </summary>
+    </metric>
+    <metric name="TimeToSelect" type="int">
+      <summary>
+        The time in milliseconds it took to select this share target from the time
+        the target was discovered. This is only emitted for the sending flow.
+      </summary>
+    </metric>
+    <metric name="TimeToConnect" type="int">
+      <summary>
+        The time in milliseconds it took to connect to this share target from the
+        time the target was discovered. This is only emitted for the sending flow.
+        This will not be set for targets that fail to connect.
+      </summary>
+    </metric>
+    <metric name="TimeToAccept" type="int">
+      <summary>
+        The time in milliseconds it took the receiver to accept or reject the
+        transfer from the time the target was discovered. Receivers begin the Nearby
+        Share flow at discovery. This will not be set for a sender that fails to
+        connect. It will always be set for receivers.
+      </summary>
+    </metric>
+    <metric name="TimeToTransferComplete" type="int">
+      <summary>
+        The time in milliseconds it took the transfer to complete from the time the
+        target was discovered.
+      </summary>
+    </metric>
+    <metric name="InitialMedium" type="int">
+      <summary>
+        The initial medium used for this transfer.
+      </summary>
+    </metric>
+    <metric name="TimeToUpgrade" type="int">
+      <summary>
+        The time in milliseconds it took the connection to upgrade the transfer
+        medium from the time the target was discovered. This will only be set if an
+        upgrade occurred.
+      </summary>
+    </metric>
+    <metric name="FinalMedium" type="int">
+      <summary>
+        The final medium used for this transfer. This changes when there is a
+        bandwidth upgrade.
+      </summary>
+    </metric>
+    <metric name="NumberOfFiles" type="int">
+      <summary>
+        The number of file attachments for this transfer.
+      </summary>
+    </metric>
+    <metric name="NumberOfTexts" type="int">
+      <summary>
+        The number of text attachments for this transfer.
+      </summary>
+    </metric>
+    <metric name="NumberOfWiFiCredentials" type="int">
+      <summary>
+        The number of WiFi credentials attachments for this transfer.
+      </summary>
+    </metric>
+    <metric name="TotalTransferBytes" type="int">
+      <summary>
+        The total size in bytes of all attachments for this transfer.
+      </summary>
+    </metric>
+    <metric name="BytesTransferred" type="int">
+      <summary>
+        The number of bytes send or received during this transfer. This will be
+        different than the total transfer size when the transfer fails or is
+        cancelled.
+      </summary>
+    </metric>
+    <metric name="Result" type="int">
+      <summary>
+        The end result of the transfer for this attachment.
+      </summary>
+    </metric>
+  </event>
+</project>
+
+<project name="StructuredMetrics">
+  <owner>jongahn@chromium.org</owner>
+  <owner>tby@chromium.org</owner>
+  <id>per-project</id>
+  <scope>device</scope>
+  <key-rotation>90</key-rotation>
+  <summary>
+    Structured Metrics is a logging framework for events. This project is used
+    for monitoring the framework itself.
+  </summary>
+
+  <event name="Initialization">
+    <summary>
+      Records metadata about initialization of Structured Metrics and will be
+      recorded immediately after initialization is successful. Will be sent once
+      per initialization during browser process initialization.
+    </summary>
+    <metric name="Platform" type="int">
+      <summary>
+        The platform for which the client is initialized on. 0: Uninitialized, 1:
+        ASH_CHROME, 2: LACROS_CHROME.
+      </summary>
+    </metric>
+  </event>
+</project>
+
+<project name="CrOSEvents" cros_events="true">
+  <owner>jongahn@chromium.org</owner>
+  <id>per-project</id>
+  <scope>device</scope>
+  <key-rotation>120</key-rotation>
+  <summary>
+    Project used to record a sequence of events that are related to each other.
+  </summary>
+
+  <event name="AppDiscovery.AppInstalled">
+    <summary>
+      Recorded whenever a new app is installed on Chrome OS.
+    </summary>
+    <metric name="AppId" type="raw-string">
+      <summary>
+        Key that identifies an app.
+      </summary>
+    </metric>
+    <metric name="AppType" type="int">
+      <summary>
+        The type of app that was installed (ie ARC, native, Crostini, etc.).
+      </summary>
+    </metric>
+    <metric name="InstallSource" type="int">
+      <summary>
+        Origin from which the app was installed (ie launcher, playstore).
+      </summary>
+    </metric>
+    <metric name="InstallReason" type="int">
+      <summary>
+        Reason for which the app was installed.
+      </summary>
+    </metric>
+  </event>
+
+  <event name="AppDiscovery.AppLaunched">
+    <summary>
+      Recorded whenever a new app is launched on Chrome OS.
+    </summary>
+    <metric name="AppId" type="raw-string">
+      <summary>
+        Key that identifies an app.
+      </summary>
+    </metric>
+    <metric name="AppType" type="int">
+      <summary>
+        The type of app that was installed (ie ARC, native, Crostini, etc.).
+      </summary>
+    </metric>
+    <metric name="LaunchSource" type="int">
+      <summary>
+        From where the app was launched from (ie launcher, shelf).
+      </summary>
+    </metric>
+  </event>
+
+  <event name="AppDiscovery.AppUninstall">
+    <summary>
+      Recorded whenever an app is uninstalled on Chrome OS.
+    </summary>
+    <metric name="AppId" type="raw-string">
+      <summary>
+        Key that identifies an app.
+      </summary>
+    </metric>
+    <metric name="AppType" type="int">
+      <summary>
+        The type of app that was installed (ie ARC, native, Crostini, etc.).
+      </summary>
+    </metric>
+    <metric name="UninstallSource" type="int">
+      <summary>
+        From where the app was uninstalled.
+      </summary>
+    </metric>
+  </event>
+
+  <event name="AppDiscovery.AppStateChanged">
+    <summary>
+      Recorded when a change in an app state has been detected.
+    </summary>
+    <metric name="AppId" type="raw-string">
+      <summary>
+        Key that identifies an app.
+      </summary>
+    </metric>
+    <metric name="AppState" type="int">
+      <summary>
+        Denotes a change in an app state. 0 - INACTIVE, 1 - ACTIVE, 2 - CLOSED.
+      </summary>
+    </metric>
+  </event>
+
+  <event name="AppDiscovery.LauncherOpen">
+    <summary>
+      Event collected if the launcher is opened. This is recorded when a zero-
+      state query is initiated.
+    </summary>
+
+  </event>
+
+  <event name="AppDiscovery.AppLauncherResultOpened">
+    <summary>
+      Event collected if a result iis opened in the launcher.
+    </summary>
+    <metric name="FuzzyStringMatch" type="double">
+      <summary>
+        Score that represents how close the initial query was to the app result
+        selected. A score of 1.0 represents an exact match.
+      </summary>
+    </metric>
+    <metric name="AppId" type="raw-string">
+      <summary>
+        App ID that identifies an app on the client. This will only be recorded if
+        the user has consented into app-sync.
+      </summary>
+    </metric>
+    <metric name="AppName" type="raw-string">
+      <summary>
+        Name of the app that was launched. Names are UTF-16 string encoding.
+      </summary>
+    </metric>
+    <metric name="ResultCategory" type="int">
+      <summary>
+        Enum representing the category of app the result is. This enum should map to
+        ash::SearchResultType.
+      </summary>
+    </metric>
+  </event>
+
+  <event name="AppDiscovery.Browser.OmniboxInstallIconClicked">
+    <summary>
+      Event recorded when the PWA Install Icon is clicked.
+    </summary>
+    <metric name="IPHShown" type="int">
+      <summary>
+        Boolean if the IPH (In-product help) was shown when the icon was clicked. 1
+        if the IPH was shown 0 otherwise.
+      </summary>
+    </metric>
+  </event>
+
+  <event name="AppDiscovery.Browser.AppInstallDialogShown">
+    <summary>
+      Event recorded when the PWA confirmation dialog is shown.
+    </summary>
+    <metric name="AppId" type="raw-string">
+      <summary>
+        Identifier of the app for which the bubble view is shown.
+      </summary>
+    </metric>
+  </event>
+
+  <event name="AppDiscovery.Browser.AppInstallDialogResult">
+    <summary>
+      Event capturing the result of the app install dialog shown in the browser.
+      This event will be captured if the install is accepted or cancelled. If a
+      user switches to a different tab, this will result in a "cancel".
+    </summary>
+    <metric name="WebAppInstallStatus" type="int">
+      <summary>
+        1 if accepted. 0 if cancelled. The status is considered cancelled if the
+        bubble dialog is closed before an "Accept" status has been detected.
+      </summary>
+    </metric>
+    <metric name="AppId" type="raw-string">
+      <summary>
+        Identifier of the app for which the bubble view is shown.
+      </summary>
+    </metric>
+  </event>
+
+  <event name="AppDiscovery.Browser.ClickInstallAppFromMenu">
+    <summary>
+      Event recorded when a PWA is installed from the browser menu.
+    </summary>
+    <metric name="AppId" type="raw-string">
+      <summary>
+        Identifier of the app that is being installed.
+      </summary>
+    </metric>
+  </event>
+
+  <event name="AppDiscovery.Browser.CreateShortcut">
+    <summary>
+      Event recorded when a web app or PWA is installed by creating a shortcut.
+    </summary>
+    <metric name="AppId" type="raw-string">
+      <summary>
+        Identifier of the app that is being installed.
+      </summary>
+    </metric>
+  </event>
+
+  <event name="OOBE.GaiaSigninRequested" force_record="true">
+    <summary>
+      Recorded after the password is entered for authentication in the GAIA Sign-
+      in screen. Note: this is not recorded for SAML flows.
+    </summary>
+    <metric name="IsReauthentication" type="int">
+      <summary>
+        Boolean for whether the sign-in is for the online reauthintication an
+        existing user.
+      </summary>
+    </metric>
+    <metric name="IsFlexFlow" type="int">
+      <summary>
+        Boolean for whether the device is a ChromeOS Flex device.
+      </summary>
+    </metric>
+    <metric name="IsDemoModeFlow" type="int">
+      <summary>
+        Boolean for whether the event is reported during the demo mode setup flow.
+      </summary>
+    </metric>
+    <metric name="IsOwnerUser" type="int">
+      <summary>
+        Boolean for whether the event is reported while the active user is the owner
+        of the device.
+      </summary>
+    </metric>
+    <metric name="IsEphemeralOrMGS" type="int">
+      <summary>
+        Boolean for whether the event is reported while the active user is an
+        ephemeral user or a managed guest session.
+      </summary>
+    </metric>
+    <metric name="IsFirstOnboarding" type="int">
+      <summary>
+        Boolean for whether the event is reported during the first onboarding flow
+        and before entering the session for the first time (without crashing into
+        session).
+      </summary>
+    </metric>
+    <metric name="ChromeMilestone" type="int">
+      <summary>
+        The major version of chrome at the time of recording the event.
+      </summary>
+    </metric>
+  </event>
+
+  <event name="OOBE.GaiaSigninCompleted" force_record="true">
+    <summary>
+      Recorded after a successful authentication in the GAIA Sign-in screen. Note:
+      this is not recorded for SAML flows.
+    </summary>
+    <metric name="IsReauthentication" type="int">
+      <summary>
+        Boolean for whether the sign-in is for the online reauthintication an
+        existing user.
+      </summary>
+    </metric>
+    <metric name="IsFlexFlow" type="int">
+      <summary>
+        Boolean for whether the device is a ChromeOS Flex device.
+      </summary>
+    </metric>
+    <metric name="IsDemoModeFlow" type="int">
+      <summary>
+        Boolean for whether the event is reported during the demo mode setup flow.
+      </summary>
+    </metric>
+    <metric name="IsOwnerUser" type="int">
+      <summary>
+        Boolean for whether the event is reported while the active user is the owner
+        of the device.
+      </summary>
+    </metric>
+    <metric name="IsEphemeralOrMGS" type="int">
+      <summary>
+        Boolean for whether the event is reported while the active user is an
+        ephemeral user or a managed guest session.
+      </summary>
+    </metric>
+    <metric name="IsFirstOnboarding" type="int">
+      <summary>
+        Boolean for whether the event is reported during the first onboarding flow
+        and before entering the session for the first time (without crashing into
+        session).
+      </summary>
+    </metric>
+    <metric name="ChromeMilestone" type="int">
+      <summary>
+        The major version of chrome at the time of recording the event.
+      </summary>
+    </metric>
+  </event>
+
+  <event name="OOBE.OobeStarted" force_record="true">
+    <summary>
+      Recorded at the first start of OOBE before the first OOBE screen is shown.
+    </summary>
+    <metric name="IsFlexFlow" type="int">
+      <summary>
+        Boolean for whether the device is in OOBE flow for ChromeOS Flex.
+      </summary>
+    </metric>
+    <metric name="ChromeMilestone" type="int">
+      <summary>
+        The major version of chrome at the time of recording the event.
+      </summary>
+    </metric>
+  </event>
+
+  <event name="OOBE.PreLoginOobeCompleted" force_record="true">
+    <summary>
+      Recorded after the completion of the pre-login part of the flow.
+    </summary>
+    <metric name="CompletedFlowType" type="int">
+      <summary>
+        Enum representing the type of completed pre-login OOBE flow. This enum
+        should map to ash::OobeMetricsHelper::CompletedPreLoginOobeFlowType.
+      </summary>
+    </metric>
+    <metric name="IsFlexFlow" type="int">
+      <summary>
+        Boolean for whether the device is a ChromeOS Flex device.
+      </summary>
+    </metric>
+    <metric name="IsDemoModeFlow" type="int">
+      <summary>
+        Boolean for whether the event is reported during the demo mode setup flow.
+      </summary>
+    </metric>
+    <metric name="ChromeMilestone" type="int">
+      <summary>
+        The major version of chrome at the time of recording the event.
+      </summary>
+    </metric>
+  </event>
+
+  <event name="OOBE.DeviceRegistered" force_record="true">
+    <summary>
+      Recorded after the completion of the pre-login part of the flow.
+    </summary>
+    <metric name="IsFirstOnboarding" type="int">
+      <summary>
+        Boolean for whether the event is reported during the first onboarding flow
+        and before entering the session for the first time (without crashing into
+        session).
+      </summary>
+    </metric>
+    <metric name="IsFlexFlow" type="int">
+      <summary>
+        Boolean for whether the device is a ChromeOS Flex device.
+      </summary>
+    </metric>
+    <metric name="IsDemoModeFlow" type="int">
+      <summary>
+        Boolean for whether the event is reported during the demo mode setup flow.
+      </summary>
+    </metric>
+    <metric name="ChromeMilestone" type="int">
+      <summary>
+        The major version of chrome at the time of recording the event.
+      </summary>
+    </metric>
+  </event>
+
+  <event name="OOBE.OobeCompleted" force_record="true">
+    <summary>
+      Recorded after the completion of the last screen in the onboarding flow and
+      before the start of the session for the first user.
+    </summary>
+    <metric name="IsFlexFlow" type="int">
+      <summary>
+        Boolean for whether the device is a ChromeOS Flex device.
+      </summary>
+    </metric>
+    <metric name="IsDemoModeFlow" type="int">
+      <summary>
+        Boolean for whether the event is reported during the demo mode setup flow.
+      </summary>
+    </metric>
+    <metric name="IsOwnerUser" type="int">
+      <summary>
+        Boolean for whether the event is reported while the active user is the owner
+        of the device.
+      </summary>
+    </metric>
+    <metric name="IsEphemeralOrMGS" type="int">
+      <summary>
+        Boolean for whether the event is reported while the active user is an
+        ephemeral user or a managed guest session.
+      </summary>
+    </metric>
+    <metric name="IsFirstOnboarding" type="int">
+      <summary>
+        Boolean for whether the event is reported during the first onboarding flow
+        and before entering the session for the first time (without crashing into
+        session).
+      </summary>
+    </metric>
+    <metric name="ChromeMilestone" type="int">
+      <summary>
+        The major version of chrome at the time of recording the event.
+      </summary>
+    </metric>
+  </event>
+
+  <event name="OOBE.OnboardingStarted" force_record="true">
+    <summary>
+      Recorded after a new user logs-in and before the first onboarding screen is
+      shown.
+    </summary>
+    <metric name="IsFlexFlow" type="int">
+      <summary>
+        Boolean for whether the device is a ChromeOS Flex device.
+      </summary>
+    </metric>
+    <metric name="IsDemoModeFlow" type="int">
+      <summary>
+        Boolean for whether the event is reported during the demo mode setup flow.
+      </summary>
+    </metric>
+    <metric name="IsOwnerUser" type="int">
+      <summary>
+        Boolean for whether the event is reported while the active user is the owner
+        of the device.
+      </summary>
+    </metric>
+    <metric name="IsEphemeralOrMGS" type="int">
+      <summary>
+        Boolean for whether the event is reported while the active user is an
+        ephemeral user or a managed guest session.
+      </summary>
+    </metric>
+    <metric name="IsFirstOnboarding" type="int">
+      <summary>
+        Boolean for whether the event is reported during the first onboarding flow
+        and before entering the session for the first time (without crashing into
+        session).
+      </summary>
+    </metric>
+    <metric name="ChromeMilestone" type="int">
+      <summary>
+        The major version of chrome at the time of recording the event.
+      </summary>
+    </metric>
+  </event>
+
+  <event name="OOBE.OnboardingCompleted" force_record="true">
+    <summary>
+      Recorded after the completion of the last screen in the onboarding flow and
+      before the start of the session.
+    </summary>
+    <metric name="IsFlexFlow" type="int">
+      <summary>
+        Boolean for whether the device is a ChromeOS Flex device.
+      </summary>
+    </metric>
+    <metric name="IsDemoModeFlow" type="int">
+      <summary>
+        Boolean for whether the event is reported during the demo mode setup flow.
+      </summary>
+    </metric>
+    <metric name="IsOwnerUser" type="int">
+      <summary>
+        Boolean for whether the event is reported while the active user is the owner
+        of the device.
+      </summary>
+    </metric>
+    <metric name="IsEphemeralOrMGS" type="int">
+      <summary>
+        Boolean for whether the event is reported while the active user is an
+        ephemeral user or a managed guest session.
+      </summary>
+    </metric>
+    <metric name="IsFirstOnboarding" type="int">
+      <summary>
+        Boolean for whether the event is reported during the first onboarding flow
+        and before entering the session for the first time (without crashing into
+        session).
+      </summary>
+    </metric>
+    <metric name="ChromeMilestone" type="int">
+      <summary>
+        The major version of chrome at the time of recording the event.
+      </summary>
+    </metric>
+  </event>
+
+  <event name="OOBE.PageEntered" force_record="true">
+    <summary>
+      Recorded after a screen is shown to the user.
+    </summary>
+    <metric name="PageId" type="raw-string">
+      <summary>
+        The ID of the screen exited. PageId is the screen ID defined in the screen
+        handlers. For example, the ID of the Welcome screen is "connect".
+      </summary>
+    </metric>
+    <metric name="IsFlexFlow" type="int">
+      <summary>
+        Boolean for whether the device is a ChromeOS Flex device.
+      </summary>
+    </metric>
+    <metric name="IsDemoModeFlow" type="int">
+      <summary>
+        Boolean for whether the event is reported during the demo mode setup flow.
+      </summary>
+    </metric>
+    <metric name="IsOwnerUser" type="int">
+      <summary>
+        Boolean for whether the event is reported while the active user is the owner
+        of the device.
+      </summary>
+    </metric>
+    <metric name="IsEphemeralOrMGS" type="int">
+      <summary>
+        Boolean for whether the event is reported while the active user is an
+        ephemeral user or a managed guest session.
+      </summary>
+    </metric>
+    <metric name="IsFirstOnboarding" type="int">
+      <summary>
+        Boolean for whether the event is reported during the first onboarding flow
+        and before entering the session for the first time (without crashing into
+        session).
+      </summary>
+    </metric>
+    <metric name="ChromeMilestone" type="int">
+      <summary>
+        The major version of chrome at the time of recording the event.
+      </summary>
+    </metric>
+  </event>
+
+  <event name="OOBE.PageSkippedBySystem" force_record="true">
+    <summary>
+      Recorded after a screen was skipped by the system.
+    </summary>
+    <metric name="PageId" type="raw-string">
+      <summary>
+        The ID of the screen skipped.
+      </summary>
+    </metric>
+    <metric name="IsFlexFlow" type="int">
+      <summary>
+        Boolean for whether the device is a ChromeOS Flex device.
+      </summary>
+    </metric>
+    <metric name="IsDemoModeFlow" type="int">
+      <summary>
+        Boolean for whether the event is reported during the demo mode setup flow.
+      </summary>
+    </metric>
+    <metric name="IsOwnerUser" type="int">
+      <summary>
+        Boolean for whether the event is reported while the active user is the owner
+        of the device.
+      </summary>
+    </metric>
+    <metric name="IsEphemeralOrMGS" type="int">
+      <summary>
+        Boolean for whether the event is reported while the active user is an
+        ephemeral user or a managed guest session.
+      </summary>
+    </metric>
+    <metric name="IsFirstOnboarding" type="int">
+      <summary>
+        Boolean for whether the event is reported during the first onboarding flow
+        and before entering the session for the first time (without crashing into
+        session).
+      </summary>
+    </metric>
+    <metric name="ChromeMilestone" type="int">
+      <summary>
+        The major version of chrome at the time of recording the event.
+      </summary>
+    </metric>
+  </event>
+
+  <event name="OOBE.PageLeft" force_record="true">
+    <summary>
+      Recorded after a screen was exited.
+    </summary>
+    <metric name="PageId" type="raw-string">
+      <summary>
+        The ID of the screen exited.
+      </summary>
+    </metric>
+    <metric name="ExitReason" type="raw-string">
+      <summary>
+        The ID of the reason for exiting the screen.
+      </summary>
+    </metric>
+    <metric name="IsFlexFlow" type="int">
+      <summary>
+        Boolean for whether the device is a ChromeOS Flex device.
+      </summary>
+    </metric>
+    <metric name="IsDemoModeFlow" type="int">
+      <summary>
+        Boolean for whether the event is reported during the demo mode setup flow.
+      </summary>
+    </metric>
+    <metric name="IsOwnerUser" type="int">
+      <summary>
+        Boolean for whether the event is reported while the active user is the owner
+        of the device.
+      </summary>
+    </metric>
+    <metric name="IsEphemeralOrMGS" type="int">
+      <summary>
+        Boolean for whether the event is reported while the active user is an
+        ephemeral user or a managed guest session.
+      </summary>
+    </metric>
+    <metric name="IsFirstOnboarding" type="int">
+      <summary>
+        Boolean for whether the event is reported during the first onboarding flow
+        and before entering the session for the first time (without crashing into
+        session).
+      </summary>
+    </metric>
+    <metric name="ChromeMilestone" type="int">
+      <summary>
+        The major version of chrome at the time of recording the event.
+      </summary>
+    </metric>
+  </event>
+
+  <event name="OOBE.PreLoginOobeResumed" force_record="true">
+    <summary>
+      Recorded after the determination to resume the pre-login OOBE flow and
+      before showing the pending screen.
+    </summary>
+    <metric name="PendingPageId" type="raw-string">
+      <summary>
+        The ID of the screen to resume from.
+      </summary>
+    </metric>
+    <metric name="ExitReason" type="raw-string">
+      <summary>
+        The ID of the reason for exiting the screen.
+      </summary>
+    </metric>
+    <metric name="IsFlexFlow" type="int">
+      <summary>
+        Boolean for whether the device is a ChromeOS Flex device.
+      </summary>
+    </metric>
+    <metric name="IsDemoModeFlow" type="int">
+      <summary>
+        Boolean for whether the event is reported during the demo mode setup flow.
+      </summary>
+    </metric>
+    <metric name="IsOwnerUser" type="int">
+      <summary>
+        Boolean for whether the event is reported while the active user is the owner
+        of the device.
+      </summary>
+    </metric>
+    <metric name="IsEphemeralOrMGS" type="int">
+      <summary>
+        Boolean for whether the event is reported while the active user is an
+        ephemeral user or a managed guest session.
+      </summary>
+    </metric>
+    <metric name="IsFirstOnboarding" type="int">
+      <summary>
+        Boolean for whether the event is reported during the first onboarding flow
+        and before entering the session for the first time (without crashing into
+        session).
+      </summary>
+    </metric>
+    <metric name="ChromeMilestone" type="int">
+      <summary>
+        The major version of chrome at the time of recording the event.
+      </summary>
+    </metric>
+  </event>
+
+  <event name="OOBE.OnboardingResumed" force_record="true">
+    <summary>
+      Recorded after the determination to resume the onboarding flow and before
+      showing the pending screen.
+    </summary>
+    <metric name="PendingPageId" type="raw-string">
+      <summary>
+        The ID of the screen to resume form.
+      </summary>
+    </metric>
+    <metric name="ExitReason" type="raw-string">
+      <summary>
+        The ID of the reason for exiting the screen.
+      </summary>
+    </metric>
+    <metric name="IsFlexFlow" type="int">
+      <summary>
+        Boolean for whether the device is a ChromeOS Flex device.
+      </summary>
+    </metric>
+    <metric name="IsDemoModeFlow" type="int">
+      <summary>
+        Boolean for whether the event is reported during the demo mode setup flow.
+      </summary>
+    </metric>
+    <metric name="IsOwnerUser" type="int">
+      <summary>
+        Boolean for whether the event is reported while the active user is the owner
+        of the device.
+      </summary>
+    </metric>
+    <metric name="IsEphemeralOrMGS" type="int">
+      <summary>
+        Boolean for whether the event is reported while the active user is an
+        ephemeral user or a managed guest session.
+      </summary>
+    </metric>
+    <metric name="IsFirstOnboarding" type="int">
+      <summary>
+        Boolean for whether the event is reported during the first onboarding flow
+        and before entering the session for the first time (without crashing into
+        session).
+      </summary>
+    </metric>
+    <metric name="ChromeMilestone" type="int">
+      <summary>
+        The major version of chrome at the time of recording the event.
+      </summary>
+    </metric>
+  </event>
+
+  <event name="OOBE.ChoobeResumed" force_record="true">
+    <summary>
+      Recorded after the determination to resume the CHOOBE flow and before
+      showing the pending screen.
+    </summary>
+    <metric name="ExitReason" type="raw-string">
+      <summary>
+        The ID of the reason for exiting the screen.
+      </summary>
+    </metric>
+    <metric name="IsFlexFlow" type="int">
+      <summary>
+        Boolean for whether the device is a ChromeOS Flex device.
+      </summary>
+    </metric>
+    <metric name="IsDemoModeFlow" type="int">
+      <summary>
+        Boolean for whether the event is reported during the demo mode setup flow.
+      </summary>
+    </metric>
+    <metric name="IsOwnerUser" type="int">
+      <summary>
+        Boolean for whether the event is reported while the active user is the owner
+        of the device.
+      </summary>
+    </metric>
+    <metric name="IsEphemeralOrMGS" type="int">
+      <summary>
+        Boolean for whether the event is reported while the active user is an
+        ephemeral user or a managed guest session.
+      </summary>
+    </metric>
+    <metric name="IsFirstOnboarding" type="int">
+      <summary>
+        Boolean for whether the event is reported during the first onboarding flow
+        and before entering the session for the first time (without crashing into
+        session).
+      </summary>
+    </metric>
+    <metric name="ChromeMilestone" type="int">
+      <summary>
+        The major version of chrome at the time of recording the event.
+      </summary>
+    </metric>
+  </event>
+
+  <event name="UserLogin">
+    <summary>
+      An event to signify a user is using the system.
+    </summary>
+
+  </event>
+
+  <event name="UserLogout">
+    <summary>
+      An event to signify a user explicitly logged out of the system.
+    </summary>
+
+  </event>
+
+  <event name="SystemSuspended">
+    <summary>
+      An event to signify the system has gone to sleep.
+    </summary>
+    <metric name="Reason" type="int">
+      <summary>
+        The reason the system was suspended, maps to the SuspendImminent::Reason.
+      </summary>
+    </metric>
+  </event>
+
+  <event name="Test1">
+    <summary>
+      Test event used for unit tests to ensure that the code-gen for the event
+      sequence project is working properly.
+    </summary>
+    <metric name="Metric1" type="double">
+      <summary>
+        Test metric1
+      </summary>
+    </metric>
+  </event>
+
+  <event name="NoMetricsEvent">
+    <summary>
+      Test event for events without metrics.
+    </summary>
+
+  </event>
+</project>
+
+<project name="DevTools">
+  <owner>dsv@chromium.org</owner>
+  <id>per-project</id>
+  <scope>device</scope>
+  <key-rotation>120</key-rotation>
+  <summary>
+    Interaction metrics for the Chrome DevTools — debugging tools and
+    capabilities offered by Chrome.
+  </summary>
+
+  <event name="SessionStart">
+    <summary>
+      Recorded whenever DevTools is opened
+    </summary>
+    <metric name="Trigger" type="int">
+      <summary>
+        What caused DevTools to open (e.g. shortcut, inpsect menu item, etc)
+      </summary>
+    </metric>
+    <metric name="DockSide" type="int">
+      <summary>
+        Which side is devtools docked to
+      </summary>
+    </metric>
+    <metric name="SessionId" type="int">
+      <summary>
+        Unique ID of this debugging session. If DevTools is opened on multiple tabs,
+        each instance would have a unique ID.
+      </summary>
+    </metric>
+  </event>
+
+  <event name="SessionEnd">
+    <summary>
+      Recorded whenever DevTools is closed
+    </summary>
+    <metric name="Trigger" type="int">
+      <summary>
+        What caused DevTools to close (e.g. shortcut, close button, etc)
+      </summary>
+    </metric>
+    <metric name="TimeSinceSessionStart" type="int">
+      <summary>
+        Time in milliseconds since DevTools sessions start.
+      </summary>
+    </metric>
+    <metric name="SessionId" type="int">
+      <summary>
+        Unique ID of this debugging session. If DevTools is opened on multiple tabs,
+        each instance would have a unique ID.
+      </summary>
+    </metric>
+  </event>
+
+  <event name="Impression">
+    <summary>
+      Recorded whenever a new visual element is first shown to the user
+    </summary>
+    <metric name="VeId" type="int">
+      <summary>
+        Visual Element ID
+      </summary>
+    </metric>
+    <metric name="VeType" type="int">
+      <summary>
+        Visual Element type.
+      </summary>
+    </metric>
+    <metric name="VeParent" type="int">
+      <summary>
+        ID of a parent of the visual element.
+      </summary>
+    </metric>
+    <metric name="VeContext" type="int">
+      <summary>
+        Arbitrary contextual information for the visual element.
+      </summary>
+    </metric>
+    <metric name="TimeSinceSessionStart" type="int">
+      <summary>
+        Time in milliseconds since DevTools sessions start.
+      </summary>
+    </metric>
+    <metric name="SessionId" type="int">
+      <summary>
+        Unique ID of this debugging session. If DevTools is opened on multiple tabs,
+        each instance would have a unique ID.
+      </summary>
+    </metric>
+    <metric name="Width" type="int">
+      <summary>
+        Width of the element in pixels
+      </summary>
+    </metric>
+    <metric name="Height" type="int">
+      <summary>
+        Height of the element in pixels
+      </summary>
+    </metric>
+  </event>
+
+  <event name="Resize">
+    <summary>
+      Recorded whenever a visual element significantly changes in size
+    </summary>
+    <metric name="VeId" type="int">
+      <summary>
+        Visual Element ID
+      </summary>
+    </metric>
+    <metric name="TimeSinceSessionStart" type="int">
+      <summary>
+        Time in milliseconds since DevTools sessions start.
+      </summary>
+    </metric>
+    <metric name="SessionId" type="int">
+      <summary>
+        Unique ID of this debugging session. If DevTools is opened on multiple tabs,
+        each instance would have a unique ID.
+      </summary>
+    </metric>
+    <metric name="Width" type="int">
+      <summary>
+        Width of the element in pixels
+      </summary>
+    </metric>
+    <metric name="Height" type="int">
+      <summary>
+        Height of the element in pixels
+      </summary>
+    </metric>
+  </event>
+
+  <event name="Click">
+    <summary>
+      Recorded whenever user clicks on a tracked visual element.
+    </summary>
+    <metric name="VeId" type="int">
+      <summary>
+        Visual Element ID
+      </summary>
+    </metric>
+    <metric name="MouseButton" type="int">
+      <summary>
+        An index of a mouse button as defined in JavaScript MouseEvent.
+      </summary>
+    </metric>
+    <metric name="Context" type="int">
+      <summary>
+        Arbitrary contextual information for the event.
+      </summary>
+    </metric>
+    <metric name="TimeSinceSessionStart" type="int">
+      <summary>
+        Time in milliseconds since DevTools sessions start.
+      </summary>
+    </metric>
+    <metric name="SessionId" type="int">
+      <summary>
+        Unique ID of this debugging session. If DevTools is opened on multiple tabs,
+        each instance would have a unique ID.
+      </summary>
+    </metric>
+  </event>
+
+  <event name="Hover">
+    <summary>
+      Recorded whenever user hovers on a tracked visual element.
+    </summary>
+    <metric name="VeId" type="int">
+      <summary>
+        Visual Element ID
+      </summary>
+    </metric>
+    <metric name="Time" type="int">
+      <summary>
+        Number of seconds the hover has lasted
+      </summary>
+    </metric>
+    <metric name="Context" type="int">
+      <summary>
+        Arbitrary contextual information for the event.
+      </summary>
+    </metric>
+    <metric name="TimeSinceSessionStart" type="int">
+      <summary>
+        Time in milliseconds since DevTools sessions start.
+      </summary>
+    </metric>
+    <metric name="SessionId" type="int">
+      <summary>
+        Unique ID of this debugging session. If DevTools is opened on multiple tabs,
+        each instance would have a unique ID.
+      </summary>
+    </metric>
+  </event>
+
+  <event name="Drag">
+    <summary>
+      Recorded whenever user drags in a tracked visual element.
+    </summary>
+    <metric name="VeId" type="int">
+      <summary>
+        Visual Element ID
+      </summary>
+    </metric>
+    <metric name="Distance" type="int">
+      <summary>
+        Number of pixels dragged
+      </summary>
+    </metric>
+    <metric name="Context" type="int">
+      <summary>
+        Arbitrary contextual information for the event.
+      </summary>
+    </metric>
+    <metric name="TimeSinceSessionStart" type="int">
+      <summary>
+        Time in milliseconds since DevTools sessions start.
+      </summary>
+    </metric>
+    <metric name="SessionId" type="int">
+      <summary>
+        Unique ID of this debugging session. If DevTools is opened on multiple tabs,
+        each instance would have a unique ID.
+      </summary>
+    </metric>
+  </event>
+
+  <event name="Change">
+    <summary>
+      Recorded whenever user changes a value of a tracked visual element.
+    </summary>
+    <metric name="VeId" type="int">
+      <summary>
+        Visual Element ID
+      </summary>
+    </metric>
+    <metric name="Context" type="int">
+      <summary>
+        Arbitrary contextual information for the event.
+      </summary>
+    </metric>
+    <metric name="TimeSinceSessionStart" type="int">
+      <summary>
+        Time in milliseconds since DevTools sessions start.
+      </summary>
+    </metric>
+    <metric name="SessionId" type="int">
+      <summary>
+        Unique ID of this debugging session. If DevTools is opened on multiple tabs,
+        each instance would have a unique ID.
+      </summary>
+    </metric>
+  </event>
+
+  <event name="KeyDown">
+    <summary>
+      Recorded presses key on a tracked visual element.
+    </summary>
+    <metric name="VeId" type="int">
+      <summary>
+        Visual Element ID
+      </summary>
+    </metric>
+    <metric name="Context" type="int">
+      <summary>
+        Arbitrary contextual information for the event.
+      </summary>
+    </metric>
+    <metric name="TimeSinceSessionStart" type="int">
+      <summary>
+        Time in milliseconds since DevTools sessions start.
+      </summary>
+    </metric>
+    <metric name="SessionId" type="int">
+      <summary>
+        Unique ID of this debugging session. If DevTools is opened on multiple tabs,
+        each instance would have a unique ID.
+      </summary>
+    </metric>
+  </event>
+</project>
+
+<project name="TestProjectOne">
+  <owner>tby@chromium.org</owner>
+  <id>per-project</id>
+  <scope>profile</scope>
+  <key-rotation>90</key-rotation>
+  <summary>
+    Project for unit testing, do not use.
+  </summary>
+
+  <event name="TestEventOne">
+    <summary>
+      Event for unit testing, do not use.
+    </summary>
+    <metric name="TestMetricOne" type="hmac-string">
+      <summary>
+        A per-user keyed hashed value.
+      </summary>
+    </metric>
+    <metric name="TestMetricTwo" type="int">
+      <summary>
+        An unhashed value, recorded as-is.
+      </summary>
+    </metric>
+  </event>
+</project>
+
+<project name="TestProjectTwo">
+  <owner>tby@chromium.org</owner>
+  <id>per-project</id>
+  <scope>profile</scope>
+  <key-rotation>90</key-rotation>
+  <summary>
+    Project for unit testing, do not use.
+  </summary>
+
+  <event name="TestEventThree">
+    <summary>
+      Event for unit testing, do not use.
+    </summary>
+    <metric name="TestMetricFour" type="hmac-string">
+      <summary>
+        A per-user keyed hashed value.
+      </summary>
+    </metric>
+  </event>
+
+  <event name="TestEventTwo">
+    <summary>
+      Event for unit testing, do not use.
+    </summary>
+    <metric name="TestMetricThree" type="hmac-string">
+      <summary>
+        A per-user keyed hashed value.
+      </summary>
+    </metric>
+  </event>
+</project>
+
+<project name="TestProjectThree">
+  <owner>tby@chromium.org</owner>
+  <id>uma</id>
+  <scope>profile</scope>
+  <key-rotation>90</key-rotation>
+  <summary>
+    Project for unit testing, do not use.
+  </summary>
+
+  <event name="TestEventFour">
+    <summary>
+      Event for unit testing, do not use.
+    </summary>
+    <metric name="TestMetricFour" type="int">
+      <summary>
+        An unhashed value, recorded as-is.
+      </summary>
+    </metric>
+  </event>
+</project>
+
+<project name="TestProjectFour">
+  <owner>tby@chromium.org</owner>
+  <id>per-project</id>
+  <scope>device</scope>
+  <key-rotation>90</key-rotation>
+  <summary>
+    Project for unit testing, do not use.
+  </summary>
+
+  <event name="TestEventFive">
+    <summary>
+      Event for unit testing, do not use.
+    </summary>
+    <metric name="TestMetricFive" type="hmac-string">
+      <summary>
+        A per-device keyed hashed value.
+      </summary>
+    </metric>
+  </event>
+</project>
+
+<project name="TestProjectFive">
+  <owner>tby@chromium.org</owner>
+  <id>none</id>
+  <scope>profile</scope>
+  <key-rotation>90</key-rotation>
+  <summary>
+    Project for unit testing, do not use.
+  </summary>
+
+  <event name="TestEventSix">
+    <summary>
+      Event for unit testing, do not use.
+    </summary>
+    <metric name="TestMetricSix" type="raw-string">
+      <summary>
+        A unhashed string value.
+      </summary>
+    </metric>
+  </event>
+</project>
+
+<project name="TestProjectSix">
+  <owner>andrewbregger@google.com</owner>
+  <id>none</id>
+  <scope>profile</scope>
+  <key-rotation>90</key-rotation>
+  <summary>
+    Project for unit testing, do not use.
+  </summary>
+  <enum name="Enum1">
+    <variant value="1">VARIANT1</variant>
+    <variant value="2">VARIANT2</variant>
+    <variant value="5">VARIANT3</variant>
+  </enum>
+  <event name="TestEventSeven">
+    <summary>
+      Event for unit testing, do not use.
+    </summary>
+    <metric name="TestMetricSeven" type="double">
+      <summary>
+        A floating point value.
+      </summary>
+    </metric>
+  </event>
+
+  <event name="TestEnum">
+    <summary>
+      Event for unit testing, do not use.
+    </summary>
+    <metric name="TestEnumMetric" type="Enum1">
+      <summary>
+        An enum value.
+      </summary>
+    </metric>
+  </event>
+</project>
+
+<project name="TestProjectSeven">
+  <owner>andrewbregger@google.com</owner>
+  <id>none</id>
+  <scope>profile</scope>
+  <key-rotation>90</key-rotation>
+  <summary>
+    Project for unit testing, do not use.
+  </summary>
+
+  <event name="TestEventEight" force_record="true">
+    <summary>
+      Event for unit testing, do not use.
+    </summary>
+    <metric name="TestMetricEight" type="double">
+      <summary>
+        A floating point value.
+      </summary>
+    </metric>
+  </event>
+</project>
+
+</structured-metrics>

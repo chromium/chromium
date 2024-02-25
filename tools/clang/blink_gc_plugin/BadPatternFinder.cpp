@@ -197,6 +197,11 @@ class CollectionOfGarbageCollectedMatcher : public MatchFinder::MatchCallback {
         // conservative stack scanning.
         return;
       }
+      if (member && (collection->getNameAsString() == "array")) {
+        // std::array of Members is fine as long as it is traced (which is
+        // enforced by another checker).
+        return;
+      }
       if (gc_type) {
         diagnostics_.CollectionOfGCed(bad_decl, collection, gc_type);
       } else {
@@ -296,6 +301,43 @@ class MemberOnStackMatcher : public MatchFinder::MatchCallback {
     if (Config::IsIgnoreAnnotated(member))
       return;
     diagnostics_.MemberOnStack(member);
+  }
+
+ private:
+  DiagnosticsReporter& diagnostics_;
+};
+
+class WeakPtrToGCedMatcher : public MatchFinder::MatchCallback {
+ public:
+  explicit WeakPtrToGCedMatcher(DiagnosticsReporter& diagnostics)
+      : diagnostics_(diagnostics) {}
+
+  void Register(MatchFinder& match_finder) {
+    // Matches declarations of type base::WeakPtr and base::WeakPtrFactory
+    // where the template argument is known to refer to a garbage-collected
+    // type.
+    auto weak_ptr_type = hasType(
+        classTemplateSpecializationDecl(
+            hasAnyName("::base::WeakPtr", "::base::WeakPtrFactory"),
+            hasTemplateArgument(0, refersToType(GarbageCollectedType())))
+            .bind("weak_ptr"));
+    auto weak_ptr_field = fieldDecl(weak_ptr_type).bind("bad_decl");
+    auto weak_ptr_var = varDecl(weak_ptr_type).bind("bad_decl");
+    auto weak_ptr_new_expression =
+        cxxNewExpr(has(cxxConstructExpr(weak_ptr_type))).bind("bad_decl");
+    match_finder.addDynamicMatcher(weak_ptr_field, this);
+    match_finder.addDynamicMatcher(weak_ptr_var, this);
+    match_finder.addDynamicMatcher(weak_ptr_new_expression, this);
+  }
+
+  void run(const MatchFinder::MatchResult& result) override {
+    auto* decl = result.Nodes.getNodeAs<clang::Decl>("bad_decl");
+    if (Config::IsIgnoreAnnotated(decl)) {
+      return;
+    }
+    auto* weak_ptr = result.Nodes.getNodeAs<clang::CXXRecordDecl>("weak_ptr");
+    auto* gc_type = result.Nodes.getNodeAs<clang::CXXRecordDecl>("gctype");
+    diagnostics_.WeakPtrToGCed(decl, weak_ptr, gc_type);
   }
 
  private:
@@ -435,14 +477,6 @@ class PaddingInGCedMatcher : public MatchFinder::MatchCallback {
   DiagnosticsReporter& diagnostics_;
 };
 
-bool IsInPdfiumFolder(const clang::ASTContext& ast_context) {
-  const clang::SourceManager& source_manager = ast_context.getSourceManager();
-  clang::StringRef filename =
-      source_manager.getFileEntryForID(source_manager.getMainFileID())
-          ->getName();
-  return filename.contains("/pdfium/");
-}
-
 }  // namespace
 
 void FindBadPatterns(clang::ASTContext& ast_context,
@@ -459,9 +493,7 @@ void FindBadPatterns(clang::ASTContext& ast_context,
 
   CollectionOfGarbageCollectedMatcher collection_of_gc(diagnostics,
                                                        record_cache);
-  if (options.enable_off_heap_collections_of_gced_check &&
-      (options.enable_off_heap_collections_of_gced_check_pdfium ||
-       !IsInPdfiumFolder(ast_context))) {
+  if (options.enable_off_heap_collections_of_gced_check) {
     collection_of_gc.Register(match_finder);
   }
 
@@ -477,6 +509,9 @@ void FindBadPatterns(clang::ASTContext& ast_context,
   if (options.enable_extra_padding_check) {
     padding_in_gced.Register(match_finder);
   }
+
+  WeakPtrToGCedMatcher weak_ptr_to_gced(diagnostics);
+  weak_ptr_to_gced.Register(match_finder);
 
   match_finder.matchAST(ast_context);
 }

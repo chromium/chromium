@@ -5,11 +5,11 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_WEB_APPS_FORCE_INSTALLED_PREINSTALLED_DEPRECATED_APP_DIALOG_VIEW_H_
 #define CHROME_BROWSER_UI_VIEWS_WEB_APPS_FORCE_INSTALLED_PREINSTALLED_DEPRECATED_APP_DIALOG_VIEW_H_
 
+#include <optional>
 #include <string>
 
 #include "base/auto_reset.h"
 #include "extensions/common/extension_id.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/views/layout/box_layout_view.h"
 #include "url/gurl.h"
 
@@ -19,13 +19,28 @@ class WebContents;
 
 class ForceInstalledPreinstalledDeprecatedAppDialogView
     : public views::BoxLayoutView {
+  METADATA_HEADER(ForceInstalledPreinstalledDeprecatedAppDialogView,
+                  views::BoxLayoutView)
+
  public:
+  // These values are persisted to logs. Entries should not be renumbered and
+  // numeric values should never be reused.
+  enum class Site {
+    kGmail = 0,
+    kDocs = 1,
+    kDrive = 2,
+    kSheets = 3,
+    kSlides = 4,
+    kYoutube = 5,
+    kMaxValue = kYoutube,
+  };
+
   struct LinkConfig {
     GURL link;
     std::u16string link_text;
+    Site site;
   };
 
-  METADATA_HEADER(ForceInstalledPreinstalledDeprecatedAppDialogView);
   ForceInstalledPreinstalledDeprecatedAppDialogView(
       const ForceInstalledPreinstalledDeprecatedAppDialogView&) = delete;
   ForceInstalledPreinstalledDeprecatedAppDialogView& operator=(
@@ -38,7 +53,7 @@ class ForceInstalledPreinstalledDeprecatedAppDialogView
   static void CreateAndShowDialog(const extensions::ExtensionId& extension_id,
                                   content::WebContents* web_contents);
 
-  static base::AutoReset<absl::optional<LinkConfig>>
+  static base::AutoReset<std::optional<LinkConfig>>
   SetOverrideLinkConfigForTesting(const LinkConfig& link_config);
 
  private:

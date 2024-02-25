@@ -4,6 +4,8 @@
 
 #include "components/paint_preview/common/serialized_recording.h"
 
+#include <optional>
+
 #include "base/notreached.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
@@ -13,7 +15,6 @@
 #include "components/paint_preview/common/paint_preview_tracker.h"
 #include "components/paint_preview/common/serial_utils.h"
 #include "mojo/public/cpp/base/big_buffer.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/skia/include/core/SkStream.h"
 
 namespace paint_preview {
@@ -93,7 +94,7 @@ bool SerializedRecording::IsValid() const {
   }
 }
 
-absl::optional<SkpResult> SerializedRecording::Deserialize() && {
+std::optional<SkpResult> SerializedRecording::Deserialize() && {
   TRACE_EVENT0("paint_preview", "SerializedRecording::Deserialize");
   SkpResult result;
   SkDeserialProcs procs = MakeDeserialProcs(&result.ctx);
@@ -137,7 +138,7 @@ sk_sp<SkPicture> SerializedRecording::DeserializeWithContext(
 bool RecordToFile(base::File file,
                   sk_sp<const SkPicture> skp,
                   PaintPreviewTracker* tracker,
-                  absl::optional<size_t> max_capture_size,
+                  std::optional<size_t> max_capture_size,
                   size_t* serialized_size) {
   if (!file.IsValid())
     return false;
@@ -154,25 +155,25 @@ bool RecordToFile(base::File file,
   return !file_stream.DidWriteFail();
 }
 
-absl::optional<mojo_base::BigBuffer> RecordToBuffer(
+std::optional<mojo_base::BigBuffer> RecordToBuffer(
     sk_sp<const SkPicture> skp,
     PaintPreviewTracker* tracker,
-    absl::optional<size_t> maybe_max_capture_size,
+    std::optional<size_t> maybe_max_capture_size,
     size_t* serialized_size) {
   SkDynamicMemoryWStream memory_stream;
   if (!SerializeSkPicture(skp, tracker, &memory_stream))
-    return absl::nullopt;
+    return std::nullopt;
 
   size_t max_capture_size = maybe_max_capture_size.value_or(SIZE_MAX);
   if (max_capture_size == 0)
-    return absl::nullopt;
+    return std::nullopt;
 
   sk_sp<SkData> data = memory_stream.detachAsData();
   *serialized_size = std::min(data->size(), max_capture_size);
   mojo_base::BigBuffer buffer(
       base::span<const uint8_t>(data->bytes(), *serialized_size));
   if (data->size() > max_capture_size)
-    return absl::nullopt;
+    return std::nullopt;
 
   return {std::move(buffer)};
 }

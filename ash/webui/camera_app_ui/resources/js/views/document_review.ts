@@ -1,4 +1,4 @@
-// Copyright 2022 The Chromium Authors. All rights reserved.
+// Copyright 2022 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -141,7 +141,7 @@ export class DocumentReview extends View {
         await this.onDeletePage(index);
         return;
       }
-      this.selectPage(index);
+      await this.selectPage(index);
     });
 
     const pagesElementMutationObserver = new MutationObserver((mutations) => {
@@ -156,10 +156,10 @@ export class DocumentReview extends View {
 
     const fixMode = new DocumentFixMode({
       target: this.previewElement,
-      onDone: () => {
-        this.waitForUpdatingPage(() => this.showMode(Mode.PREVIEW));
+      onDone: async () => {
+        await this.waitForUpdatingPage(() => this.showMode(Mode.PREVIEW));
       },
-      onUpdatePage: ({corners, rotation}) => {
+      onUpdatePage: async ({corners, rotation}) => {
         const page = this.pages[this.selectedIndex];
         const isCornersUpdated = page.isCornersUpdated ||
             page.corners.some(
@@ -167,7 +167,7 @@ export class DocumentReview extends View {
                     oldCorner.y !== corners[i].y);
         const isRotationUpdated =
             page.isRotationUpdated || page.rotation !== rotation;
-        this.updatePage(this.selectedIndex, {
+        await this.updatePage(this.selectedIndex, {
           ...page,
           corners,
           rotation,
@@ -190,13 +190,13 @@ export class DocumentReview extends View {
         this.clearPages();
         this.close();
       },
-      onFix: () => {
+      onFix: async () => {
         sendDocScanEvent(DocScanActionType.FIX);
-        this.showMode(Mode.FIX);
+        await this.showMode(Mode.FIX);
       },
-      onShare: () => {
+      onShare: async () => {
         this.sendResultEvent(DocScanResultActionType.SHARE);
-        this.share(
+        await this.share(
             this.pages.length > 1 ? MimeType.PDF : MimeType.JPEG,
         );
       },
@@ -255,11 +255,11 @@ export class DocumentReview extends View {
     const name = (new Filenamer()).newDocumentName(mimeType);
     if (mimeType === MimeType.JPEG) {
       await this.resultSaver.savePhoto(
-          blobs[0], ToteMetricFormat.SCAN_JPG, name, null);
+          blobs[0], ToteMetricFormat.kScanJpg, name, null);
     } else {
       const pdfBlob = await ChromeHelper.getInstance().convertToPdf(blobs);
       await this.resultSaver.savePhoto(
-          pdfBlob, ToteMetricFormat.SCAN_PDF, name, null);
+          pdfBlob, ToteMetricFormat.kScanPdf, name, null);
     }
   }
 
@@ -324,7 +324,7 @@ export class DocumentReview extends View {
       case Mode.PREVIEW: {
         const {src} = this.getPageImageElement(
             this.pagesElement.children[this.selectedIndex]);
-        this.modes[mode].update({src, pageIndex: this.selectedIndex});
+        await this.modes[mode].update({src, pageIndex: this.selectedIndex});
         break;
       }
       default:
@@ -419,10 +419,12 @@ export class DocumentReview extends View {
     pageElement.remove();
   }
 
-  private async selectPage(index: number): Promise<void> {
+  // TODO(pihsun): Revisit which operations of document scanning should be on
+  // the same queue.
+  private async selectPage(index: number) {
     this.selectedIndex = index;
-    await this.updateModeView(this.mode);
     this.selectPageView(index);
+    await this.updateModeView(this.mode);
   }
 
   /**
@@ -472,17 +474,15 @@ export class DocumentReview extends View {
   }
 
   protected override leaving(): boolean {
-    this.waitForUpdatingPage();
+    // TODO(pihsun): Should have a proper way to "pause" leaving.
+    void this.waitForUpdatingPage();
     if (this.pages.length === 0) {
       this.fixCount = 0;
     }
     return true;
   }
 
-  override onKeyPressed(key: KeyboardShortcut): boolean {
-    if (super.onKeyPressed(key)) {
-      return true;
-    }
+  override handlingKey(key: KeyboardShortcut): boolean {
     if (this.pages.length === 1 ||
         !this.pagesElement.contains(document.activeElement)) {
       return false;
@@ -490,16 +490,22 @@ export class DocumentReview extends View {
     if (key === 'ArrowUp') {
       const index = this.selectedIndex === 0 ? this.pages.length - 1 :
                                                this.selectedIndex - 1;
-      this.selectPage(index);
+      // TODO(b/301360817): Revisit which operations should be on the same
+      // queue.
+      void this.selectPage(index);
       return true;
     } else if (key === 'ArrowDown') {
       const index = this.selectedIndex === this.pages.length - 1 ?
           0 :
           this.selectedIndex + 1;
-      this.selectPage(index);
+      // TODO(b/301360817): Revisit which operations should be on the same
+      // queue.
+      void this.selectPage(index);
       return true;
     } else if (key === 'Delete') {
-      this.onDeletePage(this.selectedIndex);
+      // TODO(b/301360817): Revisit which operations should be on the same
+      // queue.
+      void this.onDeletePage(this.selectedIndex);
       return true;
     }
     return false;

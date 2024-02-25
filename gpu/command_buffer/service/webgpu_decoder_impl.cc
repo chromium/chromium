@@ -13,6 +13,7 @@
 #include <memory>
 #include <vector>
 
+#include <optional>
 #include "base/auto_reset.h"
 #include "base/bits.h"
 #include "base/containers/contains.h"
@@ -23,6 +24,7 @@
 #include "base/memory/raw_ref.h"
 #include "base/numerics/checked_math.h"
 #include "base/power_monitor/power_monitor.h"
+#include "base/strings/string_split.h"
 #include "base/task/bind_post_task.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/trace_event/trace_event.h"
@@ -37,6 +39,7 @@
 #include "gpu/command_buffer/service/dawn_service_memory_transfer_service.h"
 #include "gpu/command_buffer/service/dawn_service_serializer.h"
 #include "gpu/command_buffer/service/decoder_client.h"
+#include "gpu/command_buffer/service/graphite_utils.h"
 #include "gpu/command_buffer/service/isolation_key_provider.h"
 #include "gpu/command_buffer/service/shared_context_state.h"
 #include "gpu/command_buffer/service/shared_image/shared_image_factory.h"
@@ -45,15 +48,16 @@
 #include "gpu/command_buffer/service/shared_image/shared_image_representation.h"
 #include "gpu/command_buffer/service/skia_utils.h"
 #include "gpu/command_buffer/service/webgpu_decoder.h"
+#include "gpu/config/gpu_feature_info.h"
 #include "gpu/config/gpu_finch_features.h"
 #include "gpu/config/gpu_preferences.h"
 #include "gpu/config/webgpu_blocklist.h"
 #include "gpu/webgpu/callback.h"
 #include "third_party/abseil-cpp/absl/base/attributes.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/tokens/tokens.h"
 #include "third_party/skia/include/gpu/GrBackendSemaphore.h"
 #include "third_party/skia/include/gpu/ganesh/SkSurfaceGanesh.h"
+#include "third_party/skia/include/gpu/graphite/Context.h"
 #include "ui/gl/gl_context_egl.h"
 #include "ui/gl/gl_surface_egl.h"
 
@@ -62,6 +66,10 @@
 #include <dawn/native/D3D12Backend.h>
 #include "ui/gl/gl_angle_util_win.h"
 #endif
+
+#if !BUILDFLAG(IS_ANDROID)
+#include "gpu/command_buffer/service/abstract_texture.h"
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 namespace gpu {
 namespace webgpu {
@@ -117,7 +125,7 @@ class WebGPUDecoderImpl final : public WebGPUDecoder {
   void Destroy(bool have_context) override;
   bool MakeCurrent() override {
     if (gl_context_.get()) {
-      gl_context_->MakeCurrent(gl_surface_.get());
+      gl_context_->MakeCurrentDefault();
     }
     return true;
   }
@@ -131,6 +139,7 @@ class WebGPUDecoderImpl final : public WebGPUDecoder {
     return nullptr;
   }
   Capabilities GetCapabilities() override { return {}; }
+  GLCapabilities GetGLCapabilities() override { return {}; }
   void RestoreGlobalState() const override { NOTREACHED(); }
   void ClearAllAttributes() const override { NOTREACHED(); }
   void RestoreAllAttributes() const override { NOTREACHED(); }
@@ -181,22 +190,18 @@ class WebGPUDecoderImpl final : public WebGPUDecoder {
   void PerformPollingWork() override {
     TRACE_EVENT0(TRACE_DISABLED_BY_DEFAULT("gpu.dawn"),
                  "WebGPUDecoderImpl::PerformPollingWork");
-    has_polling_work_ = false;
     if (known_device_metadata_.empty()) {
       wire_serializer_->Flush();
       return;
     }
 
-    // Call DeviceTick() on all known devices, and prune any that are no longer
-    // on the wire and do not need a tick.
+    has_polling_work_ =
+        dawn::native::InstanceProcessEvents(dawn_instance_->Get());
+
     for (auto it = known_device_metadata_.begin();
          it != known_device_metadata_.end();) {
       auto& device = it->first;
       const bool known = wire_server_->IsDeviceKnown(device.Get());
-      const bool needs_tick = dawn::native::DeviceTick(device.Get());
-      if (needs_tick) {
-        has_polling_work_ = true;
-      }
       if (!known) {
         // The client has dropped all references and the device has been
         // removed from the wire.
@@ -409,7 +414,6 @@ class WebGPUDecoderImpl final : public WebGPUDecoder {
   bool use_blocklist() const;
 
   scoped_refptr<SharedContextState> shared_context_state_;
-  const GrContextType gr_context_type_;
 
   std::unique_ptr<SharedImageRepresentationFactory>
       shared_image_representation_factory_;
@@ -418,7 +422,7 @@ class WebGPUDecoderImpl final : public WebGPUDecoder {
   std::unique_ptr<DawnInstance> dawn_instance_;
   std::unique_ptr<DawnServiceMemoryTransferService> memory_transfer_service_;
 
-  bool enable_unsafe_webgpu_ = false;
+  webgpu::SafetyLevel safety_level_ = webgpu::SafetyLevel::kSafe;
   WebGPUAdapterName use_webgpu_adapter_ = WebGPUAdapterName::kDefault;
   WebGPUPowerPreference use_webgpu_power_preference_ =
       WebGPUPowerPreference::kNone;
@@ -426,12 +430,12 @@ class WebGPUDecoderImpl final : public WebGPUDecoder {
   bool force_webgpu_compat_ = false;
   std::vector<std::string> require_enabled_toggles_;
   std::vector<std::string> require_disabled_toggles_;
-  bool allow_unsafe_apis_;
+  base::flat_set<std::string> runtime_unsafe_features_;
   bool tiered_adapter_limits_;
 
   // Isolation key that is necessary for device requests. Optional to
   // differentiate between an empty isolation key, and an unset one.
-  absl::optional<std::string> isolation_key_;
+  std::optional<std::string> isolation_key_;
 
   std::unique_ptr<dawn::wire::WireServer> wire_server_;
   std::unique_ptr<DawnServiceSerializer> wire_serializer_;
@@ -607,6 +611,8 @@ class WebGPUDecoderImpl final : public WebGPUDecoder {
     }
 
     bool ReadPixelsIntoBuffer(void* dst_pointer, uint32_t bytes_per_row) {
+      // TODO(crbug.com/1467566): Support multiplanar format.
+      DCHECK(representation_->format().NumberOfPlanes() == 1);
       DCHECK(dst_pointer);
       std::vector<GrBackendSemaphore> begin_semaphores;
       std::vector<GrBackendSemaphore> end_semaphores;
@@ -636,11 +642,25 @@ class WebGPUDecoderImpl final : public WebGPUDecoder {
 
       // Read back the Skia image contents into the staging buffer.
       DCHECK(dst_pointer);
-      if (success && !sk_image->readPixels(shared_context_state_->gr_context(),
-                                           sk_image->imageInfo(), dst_pointer,
-                                           bytes_per_row, 0, 0)) {
-        DLOG(ERROR) << "Failed to read from SkImage";
-        success = false;
+      if (shared_context_state_->gr_context()) {
+        if (success &&
+            !sk_image->readPixels(shared_context_state_->gr_context(),
+                                  sk_image->imageInfo(), dst_pointer,
+                                  bytes_per_row, 0, 0)) {
+          DLOG(ERROR) << "Failed to read from SkImage";
+          success = false;
+        }
+      } else {
+        DCHECK(shared_context_state_->graphite_context());
+        DCHECK(shared_context_state_->gpu_main_graphite_recorder());
+        if (success && !GraphiteReadPixelsSync(
+                           shared_context_state_->graphite_context(),
+                           shared_context_state_->gpu_main_graphite_recorder(),
+                           sk_image.get(), sk_image->imageInfo(), dst_pointer,
+                           bytes_per_row, 0, 0)) {
+          DLOG(ERROR) << "Failed to read from SkImage";
+          success = false;
+        }
       }
 
       // Transition the image back to the desired end state. This is used
@@ -710,6 +730,9 @@ class WebGPUDecoderImpl final : public WebGPUDecoder {
     }
 
     bool UploadContentsToSkia() {
+      // TODO(crbug.com/1467566): Support multiplanar format.
+      DCHECK(representation_->format().NumberOfPlanes() == 1);
+
       uint32_t bytes_per_row;
       size_t buffer_size;
       if (!ComputeStagingBufferParams(representation_->format(),
@@ -801,7 +824,14 @@ class WebGPUDecoderImpl final : public WebGPUDecoder {
 
       // It's ok to pass in empty GrFlushInfo here since SignalSemaphores()
       // will populate it with semaphores and call GrDirectContext::flush.
-      skgpu::ganesh::Flush(surface);
+      if (shared_context_state_->gr_context()) {
+        skgpu::ganesh::Flush(surface);
+      } else {
+        DCHECK(shared_context_state_->graphite_context());
+        DCHECK(shared_context_state_->gpu_main_graphite_recorder());
+        GraphiteFlushAndSubmit(shared_context_state_->graphite_context(),
+                               shared_context_state_->gpu_main_graphite_recorder());
+      }
       // Transition the image back to the desired end state. This is used for
       // transitioning the image to the external queue for Vulkan/GL interop.
       scoped_write_access->ApplyBackendSurfaceEndState();
@@ -903,7 +933,6 @@ class WebGPUDecoderImpl final : public WebGPUDecoder {
   bool destroyed_ = false;
 
   scoped_refptr<gl::GLContext> gl_context_;
-  scoped_refptr<gl::GLSurface> gl_surface_;
 
   base::WeakPtrFactory<WebGPUDecoderImpl> weak_ptr_factory_{this};
 };
@@ -1043,7 +1072,6 @@ WebGPUDecoderImpl::WebGPUDecoderImpl(
     IsolationKeyProvider* isolation_key_provider)
     : WebGPUDecoder(client, command_buffer_service, outputter),
       shared_context_state_(std::move(shared_context_state)),
-      gr_context_type_(gpu_preferences.gr_context_type),
       shared_image_representation_factory_(
           std::make_unique<SharedImageRepresentationFactory>(
               shared_image_manager,
@@ -1051,23 +1079,31 @@ WebGPUDecoderImpl::WebGPUDecoderImpl(
       dawn_platform_(new DawnPlatform(
           base::FeatureList::IsEnabled(features::kWebGPUBlobCache)
               ? std::move(dawn_caching_interface)
-              : nullptr)),
-      dawn_instance_(
-          DawnInstance::Create(dawn_platform_.get(), gpu_preferences)),
+              : nullptr,
+          /*uma_prefix=*/"GPU.WebGPU.")),
       memory_transfer_service_(new DawnServiceMemoryTransferService(this)),
       wire_serializer_(new DawnServiceSerializer(client)),
       isolation_key_provider_(isolation_key_provider) {
-  enable_unsafe_webgpu_ = gpu_preferences.enable_unsafe_webgpu;
+  if (gpu_preferences.enable_webgpu_experimental_features) {
+    safety_level_ = webgpu::SafetyLevel::kSafeExperimental;
+  }
+  if (gpu_preferences.enable_unsafe_webgpu) {
+    safety_level_ = webgpu::SafetyLevel::kUnsafe;
+  }
+  dawn_instance_ = DawnInstance::Create(
+      dawn_platform_.get(), gpu_preferences, safety_level_,
+      /*logging_callback=*/nullptr, /*logging_callback_userdata=*/nullptr);
+
   use_webgpu_adapter_ = gpu_preferences.use_webgpu_adapter;
   use_webgpu_power_preference_ = gpu_preferences.use_webgpu_power_preference;
   force_webgpu_compat_ = gpu_preferences.force_webgpu_compat;
   require_enabled_toggles_ = gpu_preferences.enabled_dawn_features_list;
   require_disabled_toggles_ = gpu_preferences.disabled_dawn_features_list;
-
-  // Only allow unsafe APIs if the allow_unsafe_apis toggle is explicitly
-  // enabled.
-  allow_unsafe_apis_ =
-      base::Contains(require_enabled_toggles_, "allow_unsafe_apis");
+  for (std::string f :
+       base::SplitString(features::kWebGPUUnsafeFeatures.Get(), ",",
+                         base::TRIM_WHITESPACE, base::SPLIT_WANT_ALL)) {
+    runtime_unsafe_features_.insert(std::move(f));
+  }
 
   // Force adapters to report their limits in predetermined tiers unless the
   // adapter_limit_tiers toggle is explicitly disabled.
@@ -1092,7 +1128,7 @@ WebGPUDecoderImpl::WebGPUDecoderImpl(
   wire_server_ = DawnWireServer::Create(
       this, wire_serializer_.get(), memory_transfer_service_.get(), wire_procs);
 
-  wire_server_->InjectInstance(dawn_instance_->Get(), 1, 0);
+  wire_server_->InjectInstance(dawn_instance_->Get(), {1, 0});
 
   // If there is no isolation key provider we don't want to wait for an
   // isolation key to come when processing device requests. Therefore, we can
@@ -1140,39 +1176,53 @@ ContextResult WebGPUDecoderImpl::Initialize(
   // but it prevents rendering artifacts in Chrome. This workaround should
   // be revisited once EGL context creation is reworked. See crbug.com/1465911
   if (use_webgpu_adapter_ == WebGPUAdapterName::kOpenGLES) {
-    gl_surface_ = new gl::SurfacelessEGL(gl::GLSurfaceEGL::GetGLDisplayEGL(),
-                                         gfx::Size(1, 1));
+    scoped_refptr<gl::GLSurface> gl_surface(new gl::SurfacelessEGL(
+        gl::GLSurfaceEGL::GetGLDisplayEGL(), gfx::Size(1, 1)));
     gl::GLContextAttribs attribs;
     attribs.client_major_es_version = 3;
     attribs.client_minor_es_version = 1;
     gl_context_ = new gl::GLContextEGL(nullptr);
-    gl_context_->Initialize(gl_surface_.get(), attribs);
-    gl_context_->MakeCurrent(gl_surface_.get());
+    gl_context_->Initialize(gl_surface.get(), attribs);
+    DCHECK(gl_context_->default_surface());
+    gl_context_->MakeCurrentDefault();
   }
   return ContextResult::kSuccess;
 }
 
 bool WebGPUDecoderImpl::IsFeatureExposed(wgpu::FeatureName feature) const {
   switch (feature) {
-    case wgpu::FeatureName::TimestampQuery:
-    case wgpu::FeatureName::TimestampQueryInsidePasses:
-    case wgpu::FeatureName::PipelineStatisticsQuery:
-    case wgpu::FeatureName::ChromiumExperimentalDp4a:
-    case wgpu::FeatureName::ChromiumExperimentalReadWriteStorageTexture:
-    // TODO(dawn:1664): Enable Float32Filterable by default once it is tested.
-    case wgpu::FeatureName::Float32Filterable:
-    case wgpu::FeatureName::ShaderF16:
-      return allow_unsafe_apis_;
-    case wgpu::FeatureName::DawnMultiPlanarFormats:
-    case wgpu::FeatureName::Depth32FloatStencil8:
+    case wgpu::FeatureName::ChromiumExperimentalTimestampQueryInsidePasses:
+    case wgpu::FeatureName::ChromiumExperimentalSubgroups:
+    case wgpu::FeatureName::ChromiumExperimentalSubgroupUniformControlFlow:
+      return safety_level_ == webgpu::SafetyLevel::kUnsafe;
+    case wgpu::FeatureName::AdapterPropertiesMemoryHeaps:
+      return safety_level_ == webgpu::SafetyLevel::kUnsafe ||
+             safety_level_ == webgpu::SafetyLevel::kSafeExperimental;
     case wgpu::FeatureName::DepthClipControl:
+    case wgpu::FeatureName::Depth32FloatStencil8:
+    case wgpu::FeatureName::TimestampQuery:
     case wgpu::FeatureName::TextureCompressionBC:
     case wgpu::FeatureName::TextureCompressionETC2:
     case wgpu::FeatureName::TextureCompressionASTC:
     case wgpu::FeatureName::IndirectFirstInstance:
+    case wgpu::FeatureName::ShaderF16:
     case wgpu::FeatureName::RG11B10UfloatRenderable:
     case wgpu::FeatureName::BGRA8UnormStorage:
-      return true;
+    case wgpu::FeatureName::Float32Filterable:
+    case wgpu::FeatureName::DawnMultiPlanarFormats: {
+      // Likely case when no features are blocked.
+      if (runtime_unsafe_features_.empty() ||
+          safety_level_ == webgpu::SafetyLevel::kUnsafe) {
+        return true;
+      }
+
+      auto* info = dawn::native::GetFeatureInfo(feature);
+      if (info == nullptr) {
+        return false;
+      }
+
+      return !runtime_unsafe_features_.contains(info->name);
+    }
     default:
       return false;
   }
@@ -1194,16 +1244,18 @@ void WebGPUDecoderImpl::RequestAdapterImpl(
     force_fallback_adapter = true;
   }
 
-  if (gr_context_type_ != GrContextType::kVulkan &&
-      use_webgpu_adapter_ != WebGPUAdapterName::kOpenGLES) {
 #if BUILDFLAG(IS_LINUX)
+  if (!shared_context_state_->GrContextIsVulkan() &&
+      !shared_context_state_->IsGraphiteDawnVulkan() &&
+      use_webgpu_adapter_ != WebGPUAdapterName::kOpenGLES) {
     callback(WGPURequestAdapterStatus_Unavailable, nullptr,
-             "WebGPU on Linux requires command-line flag "
-             "--enable-features=Vulkan",
+             "WebGPU on Linux requires GLES compat, or command-line flag "
+             "--enable-features=Vulkan, or command-line flag "
+             "--enable-features=SkiaGraphite (and skia_use_dawn = true GN arg)",
              userdata);
     return;
-#endif  // BUILDFLAG(IS_LINUX)
   }
+#endif  // BUILDFLAG(IS_LINUX)
 
   wgpu::Adapter adapter = CreatePreferredAdapter(
       static_cast<wgpu::PowerPreference>(options->powerPreference),
@@ -1276,13 +1328,8 @@ void WebGPUDecoderImpl::RequestDeviceImpl(
 
   std::vector<wgpu::FeatureName> required_features;
 
-#ifdef WGPU_BREAKING_CHANGE_COUNT_RENAME
   if (desc.requiredFeatureCount) {
     size_t requiredFeatureCount = desc.requiredFeatureCount;
-#else
-  if (desc.requiredFeaturesCount) {
-    size_t requiredFeatureCount = desc.requiredFeaturesCount;
-#endif
     required_features = {
         desc.requiredFeatures,
         desc.requiredFeatures + requiredFeatureCount,
@@ -1310,6 +1357,16 @@ void WebGPUDecoderImpl::RequestDeviceImpl(
     required_features.push_back(wgpu::FeatureName::DawnMultiPlanarFormats);
   }
 
+  // Require platform-specific SharedTextureMemory features for use by
+  // the relevant SharedImage backings. These features should always be
+  // supported when running on the corresponding backend.
+  if (adapter_obj.HasFeature(wgpu::FeatureName::SharedTextureMemoryIOSurface)) {
+    CHECK(adapter_obj.HasFeature(wgpu::FeatureName::SharedFenceMTLSharedEvent));
+    required_features.push_back(
+        wgpu::FeatureName::SharedTextureMemoryIOSurface);
+    required_features.push_back(wgpu::FeatureName::SharedFenceMTLSharedEvent);
+  }
+
 #if BUILDFLAG(USE_DAWN) && BUILDFLAG(DAWN_ENABLE_BACKEND_OPENGLES)
   // On Desktop GL via ANGLE, require GL texture sharing.
   if (use_webgpu_adapter_ == WebGPUAdapterName::kOpenGLES &&
@@ -1319,13 +1376,9 @@ void WebGPUDecoderImpl::RequestDeviceImpl(
 #endif
 
   desc.requiredFeatures = required_features.data();
-#ifdef WGPU_BREAKING_CHANGE_COUNT_RENAME
   desc.requiredFeatureCount = required_features.size();
-#else
-  desc.requiredFeaturesCount = required_features.size();
-#endif
 
-  // If a new toggle is added here, ForceDawnTogglesForWebGPU() which collects
+  // If a new toggle is added here, GetDawnTogglesForWebGPU() which collects
   // info for about:gpu should be updated as well.
   wgpu::DawnTogglesDescriptor dawn_device_toggles;
   std::vector<const char*> require_device_enabled_toggles;
@@ -1333,8 +1386,15 @@ void WebGPUDecoderImpl::RequestDeviceImpl(
 
   // Disallows usage of SPIR-V by default for security (we only ensure that WGSL
   // is secure), unless --enable-unsafe-webgpu is used.
-  if (!enable_unsafe_webgpu_) {
+  if (safety_level_ != webgpu::SafetyLevel::kUnsafe) {
     require_device_enabled_toggles.push_back("disallow_spirv");
+  }
+  // Enable timestamp quantization by default for privacy, unless
+  // --enable-webgpu-developer-features is used.
+  if (safety_level_ == webgpu::SafetyLevel::kSafe) {
+    require_device_enabled_toggles.push_back("timestamp_quantization");
+  } else {
+    require_device_disabled_toggles.push_back("timestamp_quantization");
   }
   // Disable the blob cache if we don't have an isolation key.
   if (isolation_key_->empty()) {
@@ -1348,21 +1408,11 @@ void WebGPUDecoderImpl::RequestDeviceImpl(
     require_device_disabled_toggles.push_back(toggles.c_str());
   }
   dawn_device_toggles.enabledToggles = require_device_enabled_toggles.data();
-#ifdef WGPU_BREAKING_CHANGE_COUNT_RENAME
   dawn_device_toggles.enabledToggleCount =
       require_device_enabled_toggles.size();
-#else
-  dawn_device_toggles.enabledTogglesCount =
-      require_device_enabled_toggles.size();
-#endif
   dawn_device_toggles.disabledToggles = require_device_disabled_toggles.data();
-#ifdef WGPU_BREAKING_CHANGE_COUNT_RENAME
   dawn_device_toggles.disabledToggleCount =
       require_device_disabled_toggles.size();
-#else
-  dawn_device_toggles.disabledTogglesCount =
-      require_device_disabled_toggles.size();
-#endif
   ChainStruct(desc, &dawn_device_toggles);
 
   // Dawn caching isolation key information needs to be passed per device. If an
@@ -1394,7 +1444,7 @@ void WebGPUDecoderImpl::RequestDeviceImpl(
 
         if (device) {
           // Intercept the response so we can add a device ref to the list of
-          // known devices that we may need to call DeviceTick on.
+          // known devices on.
           wgpu::AdapterProperties properties;
           adapter.GetProperties(&properties);
           decoder->known_device_metadata_.emplace(
@@ -1430,15 +1480,9 @@ struct WGPUDeviceDescriptorDeepCopy : WGPUDeviceDescriptor {
       label = device_label_.c_str();
     }
     if (desc.requiredFeatures) {
-#ifdef WGPU_BREAKING_CHANGE_COUNT_RENAME
       required_features_ = std::vector<WGPUFeatureName>(
           desc.requiredFeatures,
           desc.requiredFeatures + desc.requiredFeatureCount);
-#else
-      required_features_ = std::vector<WGPUFeatureName>(
-          desc.requiredFeatures,
-          desc.requiredFeatures + desc.requiredFeaturesCount);
-#endif
       requiredFeatures = required_features_.data();
     }
     if (desc.requiredLimits) {
@@ -1495,7 +1539,7 @@ WebGPUDecoderImpl::CreateQueuedRequestDeviceCallback(
 bool WebGPUDecoderImpl::use_blocklist() const {
   // Enable the blocklist unless --enable-unsafe-webgpu or
   // --disable-dawn-features=adapter_blocklist
-  return !(enable_unsafe_webgpu_ ||
+  return !(safety_level_ == webgpu::SafetyLevel::kUnsafe ||
            base::Contains(require_disabled_toggles_, "adapter_blocklist"));
 }
 
@@ -1553,22 +1597,12 @@ wgpu::Adapter WebGPUDecoderImpl::CreatePreferredAdapter(
     require_adapter_disabled_toggles.push_back(toggles.c_str());
   }
   dawn_adapter_toggles.enabledToggles = require_adapter_enabled_toggles.data();
-#ifdef WGPU_BREAKING_CHANGE_COUNT_RENAME
   dawn_adapter_toggles.enabledToggleCount =
       require_adapter_enabled_toggles.size();
-#else
-  dawn_adapter_toggles.enabledTogglesCount =
-      require_adapter_enabled_toggles.size();
-#endif
   dawn_adapter_toggles.disabledToggles =
       require_adapter_disabled_toggles.data();
-#ifdef WGPU_BREAKING_CHANGE_COUNT_RENAME
   dawn_adapter_toggles.disabledToggleCount =
       require_adapter_disabled_toggles.size();
-#else
-  dawn_adapter_toggles.disabledTogglesCount =
-      require_adapter_disabled_toggles.size();
-#endif
   ChainStruct(adapter_options, &dawn_adapter_toggles);
 
 #if BUILDFLAG(IS_WIN)
@@ -1658,10 +1692,24 @@ wgpu::Adapter WebGPUDecoderImpl::CreatePreferredAdapter(
         adapter_properties.vendorID == 0x1AE0 &&
         adapter_properties.deviceID == 0xC0DE;
 
-    // The adapter must be able to import external images, or it must be a
+    // The adapter must be able to import external textures, or it must be a
     // SwiftShader adapter. For SwiftShader, we will perform a manual
     // upload/readback to/from shared images.
-    if (!(adapter.SupportsExternalImages() || is_swiftshader)) {
+    bool supports_external_textures = false;
+#if BUILDFLAG(IS_APPLE)
+    // On Apple, Chromium uses SharedTextureMemory to import IOSurfaces.
+    wgpu::Adapter adapter_obj(adapter.Get());
+    supports_external_textures =
+        adapter_obj.HasFeature(wgpu::FeatureName::SharedTextureMemoryIOSurface);
+#else
+    // On all other platforms, Chromium currently uses the platform-specific
+    // ExternalImage API surfaces.
+    // NOTE: These platforms should be switched to the corresponding
+    // SharedTextureMemory feature check as they are converted to using
+    // SharedTextureMemory.
+    supports_external_textures = adapter.SupportsExternalImages();
+#endif
+    if (!(supports_external_textures || is_swiftshader)) {
       return false;
     }
 
@@ -1839,7 +1887,8 @@ WebGPUDecoderImpl::AssociateMailboxDawn(
     std::vector<wgpu::TextureFormat> view_formats) {
   std::unique_ptr<DawnImageRepresentation> shared_image =
       shared_image_representation_factory_->ProduceDawn(
-          mailbox, device, backendType, std::move(view_formats));
+          mailbox, device, backendType, std::move(view_formats),
+          shared_context_state_);
 
   if (!shared_image) {
     DLOG(ERROR) << "AssociateMailbox: Couldn't produce shared image";
@@ -1847,7 +1896,7 @@ WebGPUDecoderImpl::AssociateMailboxDawn(
   }
 
 #if !BUILDFLAG(IS_WIN) && !BUILDFLAG(IS_CHROMEOS) && !BUILDFLAG(IS_APPLE) && \
-    !BUILDFLAG(IS_ANDROID)
+    !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_LINUX)
   if (usage & wgpu::TextureUsage::StorageBinding) {
     LOG(ERROR) << "AssociateMailbox: wgpu::TextureUsage::StorageBinding is NOT "
                   "supported yet on this platform.";
@@ -1991,8 +2040,8 @@ error::Error WebGPUDecoderImpl::HandleAssociateMailboxImmediate(
   // Inject the texture in the dawn::wire::Server and remember which shared
   // image it is associated with.
   if (!wire_server_->InjectTexture(representation_and_access->texture().Get(),
-                                   id, generation, device_id,
-                                   device_generation)) {
+                                   {id, generation},
+                                   {device_id, device_generation})) {
     DLOG(ERROR) << "AssociateMailbox: Invalid texture ID";
     return error::kInvalidArguments;
   }
@@ -2127,7 +2176,7 @@ error::Error WebGPUDecoderImpl::HandleSetWebGPUExecutionContextToken(
   blink::WebGPUExecutionContextToken::Tag type{c.type};
   uint64_t high = uint64_t(c.high_high) << 32 | uint64_t(c.high_low);
   uint64_t low = uint64_t(c.low_high) << 32 | uint64_t(c.low_low);
-  absl::optional<base::UnguessableToken> unguessable_token =
+  std::optional<base::UnguessableToken> unguessable_token =
       base::UnguessableToken::Deserialize(high, low);
   if (!unguessable_token.has_value()) {
     return error::kInvalidArguments;
@@ -2143,6 +2192,18 @@ error::Error WebGPUDecoderImpl::HandleSetWebGPUExecutionContextToken(
         blink::DedicatedWorkerToken>(): {
       execution_context_token = blink::WebGPUExecutionContextToken(
           blink::DedicatedWorkerToken(unguessable_token.value()));
+      break;
+    }
+    case blink::WebGPUExecutionContextToken::IndexOf<
+        blink::SharedWorkerToken>(): {
+      execution_context_token = blink::WebGPUExecutionContextToken(
+          blink::SharedWorkerToken(unguessable_token.value()));
+      break;
+    }
+    case blink::WebGPUExecutionContextToken::IndexOf<
+        blink::ServiceWorkerToken>(): {
+      execution_context_token = blink::WebGPUExecutionContextToken(
+          blink::ServiceWorkerToken(unguessable_token.value()));
       break;
     }
     default:

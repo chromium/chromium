@@ -5,10 +5,11 @@
 import {TestRunner} from 'test_runner';
 import {ApplicationTestRunner} from 'application_test_runner';
 
+import * as Application from 'devtools/panels/application/application.js';
+
 (async function() {
   TestRunner.addResult(
       `Test that storage panel is present and that it contains correct data whenever localStorage is updated.\n`);
-  await TestRunner.loadLegacyModule('console');
     // Note: every test that uses a storage API must manually clean-up state from previous tests.
   await ApplicationTestRunner.resetState();
 
@@ -71,8 +72,8 @@ import {ApplicationTestRunner} from 'application_test_runner';
 
       TestRunner.assertTrue(!!storage, 'Local storage not found.');
 
-      UI.panels.resources.showDOMStorage(storage);
-      view = UI.panels.resources.domStorageView;
+      Application.ResourcesPanel.ResourcesPanel.instance().showDOMStorage(storage);
+      view = Application.ResourcesPanel.ResourcesPanel.instance().domStorageView;
       TestRunner.addSniffer(view, 'showDOMStorageItems', viewUpdated);
     },
 

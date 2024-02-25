@@ -97,7 +97,7 @@ class CryptohomePkcs11ClientTest : public testing::Test {
   scoped_refptr<dbus::MockObjectProxy> proxy_;
 
   // Convenience pointer to the global instance.
-  raw_ptr<CryptohomePkcs11Client, DanglingUntriaged | ExperimentalAsh> client_;
+  raw_ptr<CryptohomePkcs11Client, DanglingUntriaged> client_;
 
   // The expected replies to the respective D-Bus calls.
   ::user_data_auth::Pkcs11IsTpmTokenReadyReply
@@ -122,7 +122,7 @@ class CryptohomePkcs11ClientTest : public testing::Test {
       // a very large value so the parsing will fail.
       constexpr uint8_t invalid_protobuf[] = {0x02, 0xFF, 0xFF, 0xFF,
                                               0xFF, 0xFF, 0xFF};
-      writer.AppendArrayOfBytes(invalid_protobuf, sizeof(invalid_protobuf));
+      writer.AppendArrayOfBytes(invalid_protobuf);
     } else if (method_call->GetMember() ==
                ::user_data_auth::kPkcs11IsTpmTokenReady) {
       writer.AppendProtoAsArrayOfBytes(
@@ -142,25 +142,25 @@ class CryptohomePkcs11ClientTest : public testing::Test {
 
 TEST_F(CryptohomePkcs11ClientTest, Pkcs11IsTpmTokenReadyInvalidProtobuf) {
   shall_message_parsing_fail_ = true;
-  absl::optional<::user_data_auth::Pkcs11IsTpmTokenReadyReply> result_reply =
+  std::optional<::user_data_auth::Pkcs11IsTpmTokenReadyReply> result_reply =
       ::user_data_auth::Pkcs11IsTpmTokenReadyReply();
 
   client_->Pkcs11IsTpmTokenReady(
       ::user_data_auth::Pkcs11IsTpmTokenReadyRequest(),
       CreateCopyCallback(&result_reply));
   base::RunLoop().RunUntilIdle();
-  ASSERT_EQ(result_reply, absl::nullopt);
+  ASSERT_EQ(result_reply, std::nullopt);
 }
 
 TEST_F(CryptohomePkcs11ClientTest, Pkcs11IsTpmTokenReady) {
   expected_pkcs11_is_tpm_token_ready_reply_.set_ready(true);
-  absl::optional<::user_data_auth::Pkcs11IsTpmTokenReadyReply> result_reply;
+  std::optional<::user_data_auth::Pkcs11IsTpmTokenReadyReply> result_reply;
 
   client_->Pkcs11IsTpmTokenReady(
       ::user_data_auth::Pkcs11IsTpmTokenReadyRequest(),
       CreateCopyCallback(&result_reply));
   base::RunLoop().RunUntilIdle();
-  ASSERT_NE(result_reply, absl::nullopt);
+  ASSERT_NE(result_reply, std::nullopt);
   EXPECT_TRUE(ProtobufEquals(result_reply.value(),
                              expected_pkcs11_is_tpm_token_ready_reply_));
 }
@@ -169,13 +169,13 @@ TEST_F(CryptohomePkcs11ClientTest, Pkcs11GetTpmTokenInfo) {
   constexpr int kSlot = 42;
   expected_pkcs11_get_tpm_token_info_reply_.mutable_token_info()->set_slot(
       kSlot);
-  absl::optional<::user_data_auth::Pkcs11GetTpmTokenInfoReply> result_reply;
+  std::optional<::user_data_auth::Pkcs11GetTpmTokenInfoReply> result_reply;
 
   client_->Pkcs11GetTpmTokenInfo(
       ::user_data_auth::Pkcs11GetTpmTokenInfoRequest(),
       CreateCopyCallback(&result_reply));
   base::RunLoop().RunUntilIdle();
-  ASSERT_NE(result_reply, absl::nullopt);
+  ASSERT_NE(result_reply, std::nullopt);
   EXPECT_TRUE(ProtobufEquals(result_reply.value(),
                              expected_pkcs11_get_tpm_token_info_reply_));
 }

@@ -94,7 +94,7 @@ void OobeConfiguration::UpdateConfigurationValues() {
     auto* imm = input_method::InputMethodManager::Get();
     configuration_.Set(
         configuration::kInputMethod,
-        imm->GetInputMethodUtil()->MigrateInputMethod(*ime_value));
+        imm->GetInputMethodUtil()->GetMigratedInputMethod(*ime_value));
   }
 }
 

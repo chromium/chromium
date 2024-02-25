@@ -45,10 +45,6 @@ void ResetInputType::CountUsage() {
   CountUsageIfVisible(WebFeature::kInputTypeReset);
 }
 
-const AtomicString& ResetInputType::FormControlType() const {
-  return input_type_names::kReset;
-}
-
 bool ResetInputType::SupportsValidation() const {
   return false;
 }

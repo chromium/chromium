@@ -5,7 +5,7 @@
 #include "chrome/browser/android/compositor/resources/toolbar_resource.h"
 #include "chrome/browser/ui/android/toolbar/jni_headers/ResourceFactory_jni.h"
 
-using base::android::JavaParamRef;
+using jni_zero::JavaParamRef;
 
 namespace android {
 

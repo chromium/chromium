@@ -18,6 +18,11 @@ constexpr char kBackgroundPasswordCheckTimeAndInterval[] =
 constexpr char kNextPasswordCheckTimeKey[] = "next_check_time";
 constexpr char kPasswordCheckIntervalKey[] = "check_interval";
 
+// Dictionary that holds the notifications in the three-dot menu and their
+// associated results.
+const char kMenuNotificationsPrefsKey[] =
+    "profile.safety_hub_menu_notifications";
+
 }  // namespace safety_hub_prefs
 
 void RegisterSafetyHubProfilePrefs(PrefRegistrySimple* registry);

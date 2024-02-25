@@ -85,20 +85,22 @@ public class ViewRectProviderTest {
 
         mOnRectChangeCallback = new CallbackHelper();
         mOnRectHideCallback = new CallbackHelper();
-        mObserver = new Observer() {
-            @Override
-            public void onRectChanged() {
-                mOnRectChangeCallback.notifyCalled();
-            }
+        mObserver =
+                new Observer() {
+                    @Override
+                    public void onRectChanged() {
+                        mOnRectChangeCallback.notifyCalled();
+                    }
 
-            @Override
-            public void onRectHidden() {
-                mOnRectHideCallback.notifyCalled();
-            }
-        };
+                    @Override
+                    public void onRectHidden() {
+                        mOnRectHideCallback.notifyCalled();
+                    }
+                };
 
         View rootView = mRootView.getRootView();
-        rootView.measure(MeasureSpec.makeMeasureSpec(WIDTH, MeasureSpec.EXACTLY),
+        rootView.measure(
+                MeasureSpec.makeMeasureSpec(WIDTH, MeasureSpec.EXACTLY),
                 MeasureSpec.makeMeasureSpec(HEIGHT, MeasureSpec.EXACTLY));
         rootView.layout(0, 0, WIDTH, HEIGHT);
 
@@ -119,19 +121,25 @@ public class ViewRectProviderTest {
 
         int expectedCounts = 0;
         mView.getViewTreeObserver().dispatchOnGlobalLayout();
-        Assert.assertEquals("#onGlobalLayout should call #onRectHidden.", ++expectedCounts,
+        Assert.assertEquals(
+                "#onGlobalLayout should call #onRectHidden.",
+                ++expectedCounts,
                 mOnRectHideCallback.getCallCount());
 
         mView.getViewTreeObserver().dispatchOnPreDraw();
-        Assert.assertEquals("#onPreDraw should call #onRectHidden.", ++expectedCounts,
+        Assert.assertEquals(
+                "#onPreDraw should call #onRectHidden.",
+                ++expectedCounts,
                 mOnRectHideCallback.getCallCount());
 
         Optional<OnAttachStateChangeListener> listener =
                 mShadowView.getOnAttachStateChangeListeners().stream().findFirst();
         Assert.assertTrue(listener.isPresent());
         listener.get().onViewDetachedFromWindow(mView);
-        Assert.assertEquals("#onViewDetachedFromWindow should call #onRectHidden.",
-                ++expectedCounts, mOnRectHideCallback.getCallCount());
+        Assert.assertEquals(
+                "#onViewDetachedFromWindow should call #onRectHidden.",
+                ++expectedCounts,
+                mOnRectHideCallback.getCallCount());
     }
 
     @Test
@@ -140,37 +148,48 @@ public class ViewRectProviderTest {
 
         mView.layout(0, 0, WIDTH, HEIGHT);
         mView.getViewTreeObserver().dispatchOnPreDraw();
-        Assert.assertEquals("View does not changes its bound. Should not trigger #onRectChanged.",
-                expectedCounts, mOnRectChangeCallback.getCallCount());
+        Assert.assertEquals(
+                "View does not changes its bound. Should not trigger #onRectChanged.",
+                expectedCounts,
+                mOnRectChangeCallback.getCallCount());
         mView.layout(0, 0, 100, 100);
         mView.getViewTreeObserver().dispatchOnPreDraw();
-        Assert.assertEquals("View changing its bound should trigger #onRectChanged.",
-                ++expectedCounts, mOnRectChangeCallback.getCallCount());
+        Assert.assertEquals(
+                "View changing its bound should trigger #onRectChanged.",
+                ++expectedCounts,
+                mOnRectChangeCallback.getCallCount());
         assertRectMatch(0, 0, 100, 100);
 
         mView.layout(1, 1, 101, 101);
         mView.getViewTreeObserver().dispatchOnPreDraw();
-        Assert.assertEquals("View changing its position on screen should trigger #onRectChanged.",
-                ++expectedCounts, mOnRectChangeCallback.getCallCount());
+        Assert.assertEquals(
+                "View changing its position on screen should trigger #onRectChanged.",
+                ++expectedCounts,
+                mOnRectChangeCallback.getCallCount());
         assertRectMatch(1, 1, 101, 101);
 
         mViewRectProvider.setInsetPx(new Rect(0, 0, 0, 0));
-        Assert.assertEquals("Setting same view inset should not trigger #onRectChanged.",
-                expectedCounts, mOnRectChangeCallback.getCallCount());
+        Assert.assertEquals(
+                "Setting same view inset should not trigger #onRectChanged.",
+                expectedCounts,
+                mOnRectChangeCallback.getCallCount());
         mViewRectProvider.setInsetPx(new Rect(0, 0, 0, 1));
         Assert.assertEquals(
                 "Setting different inset on ViewRectProvider should trigger #onRectChanged.",
-                ++expectedCounts, mOnRectChangeCallback.getCallCount());
+                ++expectedCounts,
+                mOnRectChangeCallback.getCallCount());
         assertRectMatch(1, 1, 101, 100);
 
         mViewRectProvider.setIncludePadding(false);
         Assert.assertEquals(
                 "Setting same ViewProvider#setIncludePadding should not trigger #onRectChanged.",
-                expectedCounts, mOnRectChangeCallback.getCallCount());
+                expectedCounts,
+                mOnRectChangeCallback.getCallCount());
         mViewRectProvider.setIncludePadding(true);
         Assert.assertEquals(
                 "Setting different ViewProvider#setIncludePadding should trigger #onRectChanged.",
-                ++expectedCounts, mOnRectChangeCallback.getCallCount());
+                ++expectedCounts,
+                mOnRectChangeCallback.getCallCount());
     }
 
     private void assertRectMatch(int left, int top, int right, int bottom) {

@@ -87,7 +87,10 @@ class MainThreadWorkletTest : public PageTestBase {
     EXPECT_FALSE(global_scope_->IsThreadedWorkletGlobalScope());
   }
 
-  void TearDown() override { global_scope_->Dispose(); }
+  void TearDown() override {
+    global_scope_->Dispose();
+    global_scope_->NotifyContextDestroyed();
+  }
 
  protected:
   std::unique_ptr<MainThreadWorkletReportingProxyForTest> reporting_proxy_;

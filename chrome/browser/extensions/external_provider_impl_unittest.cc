@@ -5,6 +5,7 @@
 #include "chrome/browser/extensions/external_provider_impl.h"
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <utility>
 
@@ -19,7 +20,6 @@
 #include "build/branding_buildflags.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
-#include "chrome/browser/chrome_notification_types.h"
 #include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/extensions/extension_service_test_base.h"
 #include "chrome/browser/extensions/external_testing_loader.h"
@@ -33,7 +33,6 @@
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
-#include "content/public/browser/notification_service.h"
 #include "content/public/test/test_utils.h"
 #include "extensions/browser/pref_names.h"
 #include "extensions/browser/updater/extension_cache_fake.h"
@@ -42,7 +41,6 @@
 #include "net/test/embedded_test_server/http_request.h"
 #include "net/test/embedded_test_server/http_response.h"
 #include "testing/gmock/include/gmock/gmock.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chrome/browser/ash/customization/customization_document.h"
@@ -120,7 +118,7 @@ class ExternalProviderImplTest : public ExtensionServiceTestBase {
   }
 
   void InitServiceWithExternalProviders(
-      const absl::optional<bool> block_external = absl::nullopt) {
+      const std::optional<bool> block_external = std::nullopt) {
     InitService();
 
     if (block_external.has_value())
@@ -132,8 +130,8 @@ class ExternalProviderImplTest : public ExtensionServiceTestBase {
         switches::kDisableDefaultApps);
 
     ProviderCollection providers;
-    extensions::ExternalProviderImpl::CreateExternalProviders(
-        service_, profile_.get(), &providers);
+    ExternalProviderImpl::CreateExternalProviders(service_, profile_.get(),
+                                                  &providers);
 
     for (std::unique_ptr<ExternalProviderInterface>& provider : providers)
       service_->AddProviderForTesting(std::move(provider));
@@ -241,7 +239,7 @@ class ExternalProviderImplTest : public ExtensionServiceTestBase {
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   // chromeos::ServicesCustomizationExternalLoader is hooked up as an
-  // extensions::ExternalLoader and depends on a functioning StatisticsProvider.
+  // ExternalLoader and depends on a functioning StatisticsProvider.
   ash::system::ScopedFakeStatisticsProvider fake_statistics_provider_;
 #endif
 

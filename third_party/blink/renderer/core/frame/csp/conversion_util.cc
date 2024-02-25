@@ -55,10 +55,10 @@ WebCSPSourceList ConvertToPublic(
 
 // TODO(arthursonzogni): Remove this when BeginNavigation will be sent directly
 // from blink.
-absl::optional<WebCSPTrustedTypes> ConvertToPublic(
+std::optional<WebCSPTrustedTypes> ConvertToPublic(
     network::mojom::blink::CSPTrustedTypesPtr trusted_types) {
   if (!trusted_types)
-    return absl::nullopt;
+    return std::nullopt;
   return WebCSPTrustedTypes{std::move(trusted_types->list),
                             trusted_types->allow_any,
                             trusted_types->allow_duplicates};

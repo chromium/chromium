@@ -96,13 +96,12 @@ TEST_P(MobileDevicePresetPerDeviceName, ValidatePresets) {
   ASSERT_TRUE(device.user_agent.has_value() || device.client_hints.has_value());
   if (device.client_hints.has_value()) {
     const ClientHints& client_hints = device.client_hints.value();
-    EXPECT_NE("", client_hints.platform);
     if (client_hints.platform == "Android") {
       // This implies from GetUserAgentMetadata and GetReducedAgent functions
       // code in components/embedder_support/user_agent_utils.cc.
       // S/A: crbug.com/1442468, crbug.com/1442784
       EXPECT_EQ(mobile_ua, client_hints.mobile);
-    } else {
+    } else if (!client_hints.platform.empty()) {
       // Testing the implication: mobile_ua => client_hints.mobile
       EXPECT_TRUE(!mobile_ua || client_hints.mobile);
     }

@@ -323,16 +323,13 @@ class GuestOsSharePathTest : public testing::Test {
   base::FilePath drivefs_;
   std::unique_ptr<file_manager::Volume> volume_downloads_;
 
-  raw_ptr<ash::FakeSeneschalClient, DanglingUntriaged | ExperimentalAsh>
-      fake_seneschal_client_;
-  raw_ptr<ash::FakeConciergeClient, DanglingUntriaged | ExperimentalAsh>
-      fake_concierge_client_;
+  raw_ptr<ash::FakeSeneschalClient, DanglingUntriaged> fake_seneschal_client_;
+  raw_ptr<ash::FakeConciergeClient, DanglingUntriaged> fake_concierge_client_;
 
   content::BrowserTaskEnvironment task_environment_;
   std::unique_ptr<base::RunLoop> run_loop_;
   std::unique_ptr<TestingProfile> profile_;
-  raw_ptr<GuestOsSharePath, DanglingUntriaged | ExperimentalAsh>
-      guest_os_share_path_;
+  raw_ptr<GuestOsSharePath, DanglingUntriaged> guest_os_share_path_;
   base::test::ScopedFeatureList features_;
   std::unique_ptr<user_manager::ScopedUserManager> scoped_user_manager_;
   AccountId account_id_;

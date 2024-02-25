@@ -9,6 +9,7 @@
 #include <iosfwd>
 #include <string>
 
+#include "base/check.h"
 #include "base/strings/string_piece.h"
 #include "components/reporting/proto/synced/status.pb.h"
 
@@ -48,14 +49,22 @@ class [[nodiscard]] Status {
   // Creates a "successful" status.
   Status();
 
-  // Create a status in the canonical error space with the specified
-  // code, and error message.  If "code == 0", error_message is
-  // ignored and a Status object identical to Status::OK is
-  // constructed.
-  Status(error::Code error_code, std::string_view error_message);
   Status(const Status&);
-  Status& operator=(const Status& x);
-  ~Status() = default;
+  Status& operator=(const Status&);
+  Status(Status&&);
+  Status& operator=(Status&&);
+  virtual ~Status();
+
+  // Create a status in the canonical error space with the specified code, and
+  // error message. If "code == 0", error_message is ignored and a Status object
+  // identical to Status::OK is constructed.
+  //
+  // If a string literal is passed in, it will be copied to construct a
+  // `std::string` object. While it is possible to create a constructor tag or
+  // factory function to construct a `Status` object from a string literal
+  // that does not copy, we think that its cost to code maintainability
+  // outweighs the performance benefit it brings.
+  Status(error::Code error_code, std::string error_message);
 
   // Pre-defined Status object
   static const Status& StatusOK();
@@ -64,8 +73,8 @@ class [[nodiscard]] Status {
   bool ok() const { return error_code_ == error::OK; }
   int error_code() const { return error_code_; }
   error::Code code() const { return error_code_; }
-  std::string_view error_message() const { return error_message_; }
-  std::string_view message() const { return error_message_; }
+  const std::string& error_message() const { return error_message_; }
+  const std::string& message() const { return error_message_; }
 
   bool operator==(const Status& x) const;
   bool operator!=(const Status& x) const { return !operator==(x); }
@@ -87,12 +96,6 @@ class [[nodiscard]] Status {
 
 // Prints a human-readable representation of 'x' to 'os'.
 std::ostream& operator<<(std::ostream& os, const Status& x);
-
-#define CHECK_OK(value) CHECK((value).ok())
-#define DCHECK_OK(value) DCHECK((value).ok())
-#define ASSERT_OK(value) ASSERT_TRUE((value).ok())
-#define EXPECT_OK(value) EXPECT_TRUE((value).ok())
-
 }  // namespace reporting
 
 #endif  // COMPONENTS_REPORTING_UTIL_STATUS_H_

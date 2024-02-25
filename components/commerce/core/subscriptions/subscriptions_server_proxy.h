@@ -107,7 +107,7 @@ class SubscriptionsServerProxy {
 
   base::Value::Dict Serialize(const CommerceSubscription& subscription);
 
-  absl::optional<CommerceSubscription> Deserialize(const base::Value& value);
+  std::optional<CommerceSubscription> Deserialize(const base::Value& value);
 
   const scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
 

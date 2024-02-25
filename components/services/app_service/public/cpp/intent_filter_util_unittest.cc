@@ -537,3 +537,39 @@ TEST_F(IntentFilterUtilTest, TestIntentFilterUrlMatchLength) {
         << " filter=" << test.filter_url;
   }
 }
+
+TEST_F(IntentFilterUtilTest, VerifyConvert) {
+  {  // Verify the convert function can work for null Dict.
+    EXPECT_FALSE(apps_util::ConvertDictToIntentFilter(nullptr));
+  }
+
+  {
+    // Verify the convert function can work for null intent filter.
+    auto intent_filter = std::make_unique<apps::IntentFilter>();
+    base::Value::Dict dict = apps_util::ConvertIntentFilterToDict(nullptr);
+    EXPECT_EQ(*intent_filter, *apps_util::ConvertDictToIntentFilter(&dict));
+  }
+
+  {
+    // Verify the convert function can convert conditions.
+    auto intent_filter =
+        MakeFilter(url::kHttpsScheme, kHostUrlGoogle, kPathLiteral,
+                   apps::PatternMatchType::kLiteral);
+
+    base::Value::Dict dict =
+        apps_util::ConvertIntentFilterToDict(intent_filter);
+    EXPECT_EQ(*intent_filter, *apps_util::ConvertDictToIntentFilter(&dict));
+  }
+
+  {
+    // Verify the convert function can convert all fields.
+    auto intent_filter = MakeFilter("https", "www.google.com", "/maps",
+                                    apps::PatternMatchType::kLiteral);
+    intent_filter->activity_name = "activity_name";
+    intent_filter->activity_label = "activity_label";
+
+    base::Value::Dict dict =
+        apps_util::ConvertIntentFilterToDict(intent_filter);
+    EXPECT_EQ(*intent_filter, *apps_util::ConvertDictToIntentFilter(&dict));
+  }
+}

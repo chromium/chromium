@@ -41,8 +41,10 @@ void JNI_InstalledAppProviderImpl_CheckDigitalAssetLinksRelationshipForWebApk(
   content::BrowserContext* browser_context =
       content::BrowserContextFromJavaHandle(jhandle);
 
-  std::string web_domain = ConvertJavaStringToUTF8(env, jwebDomain);
-  std::string manifest_url = ConvertJavaStringToUTF8(env, jmanifestUrl);
+  std::string web_domain =
+      base::android::ConvertJavaStringToUTF8(env, jwebDomain);
+  std::string manifest_url =
+      base::android::ConvertJavaStringToUTF8(env, jmanifestUrl);
   auto callback =
       base::BindOnce(&base::android::RunBooleanCallbackAndroid,
                      base::android::ScopedJavaGlobalRef<jobject>(jcallback));

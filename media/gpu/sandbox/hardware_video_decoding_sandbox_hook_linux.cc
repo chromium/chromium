@@ -7,6 +7,7 @@
 #include <dlfcn.h>
 #include <sys/stat.h>
 
+#include "base/process/process_metrics.h"
 #include "base/strings/stringprintf.h"
 #include "media/gpu/buildflags.h"
 #include "sandbox/policy/linux/bpf_hardware_video_decoding_policy_linux.h"
@@ -184,6 +185,15 @@ bool HardwareVideoDecodingPreSandboxHook(
       sandbox::policy::HardwareVideoDecodingProcessPolicy;
   using PolicyType =
       sandbox::policy::HardwareVideoDecodingProcessPolicy::PolicyType;
+
+  // When decoding many video streams at once, the video utility process can hit
+  // FD limits. Increase the limit of maximum FDs allowed to (at least) 8192.
+  // IncreaseFdLimitTo() will only increase the FD limit to a value in:
+  // [max(soft limit, requested value), min(hard limit, requested value)], never
+  // decrease it. See https://man7.org/linux/man-pages/man2/getrlimit.2.html for
+  // context on resource limits.
+  constexpr unsigned int kAttemptedFdSoftLimit = 1u << 13;
+  base::IncreaseFdLimitTo(kAttemptedFdSoftLimit);
 
   const PolicyType policy_type =
       HardwareVideoDecodingProcessPolicy::ComputePolicyType(

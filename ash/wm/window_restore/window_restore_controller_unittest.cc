@@ -17,17 +17,19 @@
 #include "ash/wm/desks/desks_controller.h"
 #include "ash/wm/desks/desks_util.h"
 #include "ash/wm/float/float_controller.h"
+#include "ash/wm/overview/overview_controller.h"
 #include "ash/wm/overview/overview_test_util.h"
 #include "ash/wm/splitview/split_view_controller.h"
 #include "ash/wm/tablet_mode/tablet_mode_controller_test_api.h"
+#include "ash/wm/window_positioning_utils.h"
 #include "ash/wm/window_state.h"
 #include "base/cancelable_callback.h"
 #include "base/containers/contains.h"
 #include "base/containers/flat_map.h"
 #include "base/functional/bind.h"
+#include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
 #include "base/test/scoped_feature_list.h"
-#include "chromeos/ui/wm/features.h"
 #include "components/account_id/account_id.h"
 #include "components/app_restore/app_restore_info.h"
 #include "components/app_restore/full_restore_utils.h"
@@ -65,8 +67,12 @@ class WindowRestoreControllerTest : public AshTestBase,
     std::unique_ptr<app_restore::WindowInfo> info;
   };
 
-  WindowRestoreControllerTest()
-      : scoped_feature_list_(chromeos::wm::features::kWindowLayoutMenu) {}
+  WindowRestoreControllerTest() {
+    scoped_feature_list_.InitWithFeatures(
+        /*enabled_features=*/{features::kFasterSplitScreenSetup,
+                              features::kOsSettingsRevampWayfinding},
+        /*disabled_features=*/{});
+  }
   WindowRestoreControllerTest(const WindowRestoreControllerTest&) = delete;
   WindowRestoreControllerTest& operator=(const WindowRestoreControllerTest&) =
       delete;
@@ -112,7 +118,7 @@ class WindowRestoreControllerTest : public AshTestBase,
     app_restore::WindowInfo* window_info = GetWindowInfo(window);
     if (!window_info)
       return -1;
-    absl::optional<int32_t> activation_index = window_info->activation_index;
+    std::optional<int32_t> activation_index = window_info->activation_index;
     return activation_index.value_or(-1);
   }
 
@@ -159,8 +165,6 @@ class WindowRestoreControllerTest : public AshTestBase,
     DCHECK(info->activation_index);
     DCHECK(info->display_id);
 
-    app_restore::WindowInfo* info_clone = info->Clone();
-
     aura::Window* context = Shell::GetRootWindowForDisplayId(*info->display_id);
     // The display may have been disconnected.
     if (!context)
@@ -176,7 +180,8 @@ class WindowRestoreControllerTest : public AshTestBase,
         .SetShow(false)
         .SetContext(context)
         .SetShowState(chromeos::ToWindowShowState(*info->window_state_type))
-        .SetWindowProperty(app_restore::kWindowInfoKey, info_clone)
+        .SetWindowProperty(app_restore::kWindowInfoKey,
+                           new app_restore::WindowInfo(*info))
         .SetWindowProperty(app_restore::kActivationIndexKey,
                            new int32_t(*info->activation_index))
         .SetWindowProperty(app_restore::kLaunchedFromAppRestoreKey, true)
@@ -201,8 +206,10 @@ class WindowRestoreControllerTest : public AshTestBase,
         /*is_taskless_arc_app=*/false);
   }
 
-  void VerifyStackingOrder(aura::Window* parent,
-                           const std::vector<aura::Window*>& expected_windows) {
+  void VerifyStackingOrder(
+      aura::Window* parent,
+      const std::vector<raw_ptr<aura::Window, VectorExperimental>>&
+          expected_windows) {
     auto children = parent->children();
     EXPECT_EQ(children.size(), expected_windows.size());
 
@@ -272,7 +279,7 @@ class WindowRestoreControllerTest : public AshTestBase,
 
   void TearDown() override {
     env_observation_.Reset();
-
+    WindowRestoreController::Get()->SetSaveWindowCallbackForTesting({});
     AshTestBase::TearDown();
   }
 
@@ -328,12 +335,12 @@ class WindowRestoreControllerTest : public AshTestBase,
     out_dst->arc_extra_info = src.arc_extra_info;
   }
 
+  base::test::ScopedFeatureList scoped_feature_list_;
+
   // A map which is a fake representation of the window restore file.
   base::flat_map<int32_t, WindowInfo> fake_window_restore_file_;
 
   base::ScopedObservation<aura::Env, aura::EnvObserver> env_observation_{this};
-
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 // Tests window save with setting on or off.
@@ -413,7 +420,7 @@ TEST_F(WindowRestoreControllerTest, WindowMovedDesks) {
   EXPECT_EQ(1, GetSaveWindowsCount(window.get()));
 }
 
-// Tests that data gets saved when assigning a window to all desks.
+// Tests that data gets saved correctly when assigning a window to all desks.
 TEST_F(WindowRestoreControllerTest, AssignToAllDesks) {
   auto* desks_controller = DesksController::Get();
   desks_controller->NewDesk(DesksCreationRemovalSource::kButton);
@@ -428,10 +435,22 @@ TEST_F(WindowRestoreControllerTest, AssignToAllDesks) {
                       aura::client::kWindowWorkspaceVisibleOnAllWorkspaces);
   EXPECT_EQ(1, GetSaveWindowsCount(window.get()));
 
+  // An all desks window should have a populated `desk_id` but not `desk_guid`.
+  app_restore::WindowInfo* window_info = GetWindowInfo(window.get());
+  ASSERT_TRUE(window_info);
+  EXPECT_EQ(aura::client::kWindowWorkspaceVisibleOnAllWorkspaces,
+            window_info->desk_id);
+  EXPECT_FALSE(window_info->desk_guid.is_valid());
+
   // Unassign |window| from all desks. This should trigger a save.
   window->SetProperty(aura::client::kWindowWorkspaceKey,
                       aura::client::kWindowWorkspaceUnassignedWorkspace);
   EXPECT_EQ(2, GetSaveWindowsCount(window.get()));
+
+  // A non-all desks window should not have a populated `desk_id`.
+  app_restore::WindowInfo* window_info2 = GetWindowInfo(window.get());
+  ASSERT_TRUE(window_info2);
+  EXPECT_FALSE(window_info2->desk_id);
 }
 
 // Tests that data gets saved when moving a window to another display using the
@@ -496,7 +515,7 @@ TEST_F(WindowRestoreControllerTest, TabletModeChange) {
 }
 
 TEST_F(WindowRestoreControllerTest, DisplayAddRemove) {
-  UpdateDisplay("800x700,801+0-800x700");
+  UpdateDisplay("800x700, 800x700");
 
   auto window = CreateAppWindow(gfx::Rect(800, 0, 400, 400), AppType::BROWSER);
   ResetSaveWindowsCount();
@@ -512,6 +531,7 @@ TEST_F(WindowRestoreControllerTest, DisplayAddRemove) {
   // window and activate it, resulting in a double save.
   std::vector<display::ManagedDisplayInfo> display_info_list;
   display_info_list.push_back(primary_info);
+  EXPECT_EQ(0, GetSaveWindowsCount(window.get()));
   display_manager()->OnNativeDisplaysChanged(display_info_list);
   EXPECT_EQ(2, GetSaveWindowsCount(window.get()));
 
@@ -604,9 +624,9 @@ TEST_F(WindowRestoreControllerTest, StackingMultiDisplay) {
   UpdateDisplay("800x700,801+0-800x700,1602+0-800x700");
 
   auto root_windows = Shell::GetAllRootWindows();
-  auto* root_1 = root_windows[0];
-  auto* root_2 = root_windows[1];
-  auto* root_3 = root_windows[2];
+  auto* root_1 = root_windows[0].get();
+  auto* root_2 = root_windows[1].get();
+  auto* root_3 = root_windows[2].get();
 
   auto* desk_container_display_1 =
       desks_util::GetActiveDeskContainerForRoot(root_1);
@@ -692,10 +712,10 @@ TEST_F(WindowRestoreControllerTest, ClamshellSnapWindow) {
   auto* split_view_controller =
       SplitViewController::Get(Shell::GetPrimaryRootWindow());
   EXPECT_EQ(split_view_controller->GetSnappedWindowBoundsInScreen(
-                SplitViewController::SnapPosition::kPrimary, nullptr),
+                SnapPosition::kPrimary, nullptr, chromeos::kDefaultSnapRatio),
             left_window->GetBoundsInScreen());
   EXPECT_EQ(split_view_controller->GetSnappedWindowBoundsInScreen(
-                SplitViewController::SnapPosition::kSecondary, nullptr),
+                SnapPosition::kSecondary, nullptr, chromeos::kDefaultSnapRatio),
             right_window->GetBoundsInScreen());
 
   // Test that after restoring the snapped windows, they have the bounds we
@@ -833,10 +853,8 @@ TEST_F(WindowRestoreControllerTest, TabletSplitviewWindow) {
 
   auto* split_view_controller =
       SplitViewController::Get(Shell::GetPrimaryRootWindow());
-  split_view_controller->SnapWindow(
-      window1.get(), SplitViewController::SnapPosition::kPrimary);
-  split_view_controller->SnapWindow(
-      window2.get(), SplitViewController::SnapPosition::kSecondary);
+  split_view_controller->SnapWindow(window1.get(), SnapPosition::kPrimary);
+  split_view_controller->SnapWindow(window2.get(), SnapPosition::kSecondary);
 
   app_restore::WindowInfo* window1_info = GetWindowInfo(window1.get());
   app_restore::WindowInfo* window2_info = GetWindowInfo(window2.get());
@@ -881,10 +899,10 @@ TEST_F(WindowRestoreControllerTest, TabletSnapWindow) {
   auto* split_view_controller =
       SplitViewController::Get(Shell::GetPrimaryRootWindow());
   EXPECT_EQ(split_view_controller->GetSnappedWindowBoundsInScreen(
-                SplitViewController::SnapPosition::kPrimary, nullptr),
+                SnapPosition::kPrimary, nullptr, chromeos::kDefaultSnapRatio),
             left_window->GetBoundsInScreen());
   EXPECT_EQ(split_view_controller->GetSnappedWindowBoundsInScreen(
-                SplitViewController::SnapPosition::kSecondary, nullptr),
+                SnapPosition::kSecondary, nullptr, chromeos::kDefaultSnapRatio),
             right_window->GetBoundsInScreen());
   EXPECT_EQ(left_window, split_view_controller->primary_window());
   EXPECT_EQ(right_window, split_view_controller->secondary_window());
@@ -1193,19 +1211,19 @@ TEST_F(WindowRestoreControllerTest, OutOfBoundsWindows) {
   // Add an entry that is partially out-of-bounds, one that is completely
   // out-of-bounds, and one that is completely out-of-bounds and snapped.
   const int64_t primary_id = WindowTreeHostManager::GetPrimaryDisplayId();
-  AddEntryToFakeFile(/*restore_id=*/1, kPartialBounds,
+  AddEntryToFakeFile(/*restore_window_id=*/1, kPartialBounds,
                      chromeos::WindowStateType::kNormal, /*activation_index=*/1,
                      /*display_id=*/primary_id);
-  AddEntryToFakeFile(/*restore_id=*/2, kFullBounds,
+  AddEntryToFakeFile(/*restore_window_id=*/2, kFullBounds,
                      chromeos::WindowStateType::kNormal, /*activation_index=*/2,
                      /*display_id=*/primary_id);
-  AddEntryToFakeFile(/*restore_id=*/3, kFullBounds,
+  AddEntryToFakeFile(/*restore_window_id=*/3, kFullBounds,
                      chromeos::WindowStateType::kPrimarySnapped,
                      /*activation_index=*/3, /*display_id=*/primary_id);
 
   // Restore the first window. The window should have the exact same bounds.
   const gfx::Rect& window_bounds_1 =
-      CreateTestWindowRestoredWidgetFromRestoreId(/*restore_id=*/1)
+      CreateTestWindowRestoredWidgetFromRestoreId(/*restore_window_id=*/1)
           ->GetNativeWindow()
           ->GetBoundsInScreen();
   EXPECT_EQ(kPartialBounds, window_bounds_1);
@@ -1213,7 +1231,7 @@ TEST_F(WindowRestoreControllerTest, OutOfBoundsWindows) {
   // Restore the second window. The window should be moved such that part of it
   // is within the display.
   gfx::Rect window_bounds_2(
-      CreateTestWindowRestoredWidgetFromRestoreId(/*restore_id=*/2)
+      CreateTestWindowRestoredWidgetFromRestoreId(/*restore_window_id=*/2)
           ->GetNativeWindow()
           ->GetBoundsInScreen());
   EXPECT_TRUE(window_bounds_2.Intersects(kScreenBounds));
@@ -1223,7 +1241,7 @@ TEST_F(WindowRestoreControllerTest, OutOfBoundsWindows) {
   // that part of it is within the display.
   const gfx::Rect& window_bounds_3 =
       WindowState::Get(
-          CreateTestWindowRestoredWidgetFromRestoreId(/*restore_id=*/3)
+          CreateTestWindowRestoredWidgetFromRestoreId(/*restore_window_id=*/3)
               ->GetNativeWindow())
           ->GetRestoreBoundsInScreen();
   EXPECT_TRUE(window_bounds_3.Intersects(kScreenBounds));
@@ -1372,6 +1390,54 @@ TEST_F(WindowRestoreControllerTest, WindowsSavedInOverview) {
   app_restore::WindowInfo* arc_window_info = GetWindowInfo(arc_window.get());
   ASSERT_TRUE(arc_window_info);
   EXPECT_EQ(window_bounds, arc_window_info->arc_extra_info->bounds_in_root);
+}
+
+// Tests that if overview is active, and a window gets launched because of full
+// restore, we exit overview.
+TEST_F(WindowRestoreControllerTest, WindowsRestoredWhileInOverview) {
+  AddEntryToFakeFile(
+      /*restore_id=*/1, gfx::Rect(900, 700, 300, 300),
+      chromeos::WindowStateType::kNormal);
+
+  ToggleOverview();
+  ASSERT_TRUE(OverviewController::Get()->InOverviewSession());
+
+  // Create a restored window. Test that we have exited overview.
+  CreateTestWindowRestoredWidgetFromRestoreId(
+      /*restore_id=*/1, AppType::BROWSER,
+      /*is_taskless_arc_app=*/false)
+      ->GetNativeWindow();
+  EXPECT_FALSE(OverviewController::Get()->InOverviewSession());
+}
+
+// Tests that a window whose bounds are offscreen (were on a disconnected
+// display), are restored such that at least 30% of the window is visible.
+TEST_F(WindowRestoreControllerTest, WindowsMinimumVisibleArea) {
+  UpdateDisplay("800x600");
+
+  // Create a Window Restore'd browser that is was previously on a monitor at
+  // the bottom right of the current display.
+  const int window_length = 200;
+  AddEntryToFakeFile(
+      /*restore_id=*/1, gfx::Rect(900, 700, window_length, window_length),
+      chromeos::WindowStateType::kNormal);
+  auto* restored_window = CreateTestWindowRestoredWidgetFromRestoreId(
+                              /*restore_id=*/1, AppType::BROWSER,
+                              /*is_taskless_arc_app=*/false)
+                              ->GetNativeWindow();
+  const gfx::Rect& bounds_in_screen = restored_window->GetBoundsInScreen();
+
+  // Check the intersection of the display bounds and the window bounds in
+  // screen. The intersection should be non-empty (window is partially on the
+  // display) and width and height should at least 60 (30% of the window is
+  // visible).
+  const gfx::Rect intersection =
+      gfx::IntersectRects(gfx::Rect(0, 0, 800, 600), bounds_in_screen);
+  const int minimum_length =
+      std::round(kMinimumPercentOnScreenArea * window_length);
+  EXPECT_FALSE(intersection.IsEmpty());
+  EXPECT_GE(intersection.size().width(), minimum_length);
+  EXPECT_GE(intersection.size().height(), minimum_length);
 }
 
 }  // namespace ash

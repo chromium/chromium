@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_ASH_ARC_INPUT_METHOD_MANAGER_INPUT_CONNECTION_IMPL_H_
 
 #include <memory>
+#include <optional>
 #include <string>
 
 #include "ash/components/arc/mojom/input_method_manager.mojom-forward.h"
@@ -15,7 +16,6 @@
 #include "chrome/browser/ash/input_method/input_method_engine.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace arc {
 
@@ -47,7 +47,7 @@ class InputConnectionImpl : public mojom::InputConnection {
   void SetComposingText(
       const std::u16string& text,
       int new_cursor_pos,
-      const absl::optional<gfx::Range>& new_selection_range) override;
+      const std::optional<gfx::Range>& new_selection_range) override;
   void RequestTextInputState(
       mojom::InputConnection::RequestTextInputStateCallback callback) override;
   void SetSelection(const gfx::Range& new_selection_range) override;
@@ -63,10 +63,8 @@ class InputConnectionImpl : public mojom::InputConnection {
 
   void SendControlKeyEvent(const std::u16string& text);
 
-  const raw_ptr<ash::input_method::InputMethodEngine, ExperimentalAsh>
-      ime_engine_;  // Not owned
-  const raw_ptr<ArcInputMethodManagerBridge, ExperimentalAsh>
-      imm_bridge_;  // Not owned
+  const raw_ptr<ash::input_method::InputMethodEngine> ime_engine_;  // Not owned
+  const raw_ptr<ArcInputMethodManagerBridge> imm_bridge_;  // Not owned
   const int input_context_id_;
 
   mojo::Receiver<mojom::InputConnection> receiver_{this};

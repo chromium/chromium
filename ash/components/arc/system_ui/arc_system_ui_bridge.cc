@@ -11,6 +11,7 @@
 #include "ash/constants/ash_features.h"
 #include "ash/shell.h"
 #include "ash/style/dark_light_mode_controller_impl.h"
+#include "ash/style/mojom/color_scheme.mojom-shared.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/memory/singleton.h"
@@ -40,19 +41,20 @@ class ArcSystemUIBridgeFactory
   ~ArcSystemUIBridgeFactory() override = default;
 };
 
-// Converts a `ash::ColorScheme` to the equivalent `mojom::ThemeStyleType`.
-mojom::ThemeStyleType ToThemeStyle(ash::ColorScheme scheme) {
+// Converts a `ash::style::mojom::ColorScheme` to the equivalent
+// `mojom::ThemeStyleType`.
+mojom::ThemeStyleType ToThemeStyle(ash::style::mojom::ColorScheme scheme) {
   switch (scheme) {
     // In ChromeOS, static is a color that's not from the wallpaper and palettes
     // are always tonal.
-    case ash::ColorScheme::kStatic:
-    case ash::ColorScheme::kTonalSpot:
+    case ash::style::mojom::ColorScheme::kStatic:
+    case ash::style::mojom::ColorScheme::kTonalSpot:
       return mojom::ThemeStyleType::TONAL_SPOT;
-    case ash::ColorScheme::kNeutral:
+    case ash::style::mojom::ColorScheme::kNeutral:
       return mojom::ThemeStyleType::SPRITZ;
-    case ash::ColorScheme::kExpressive:
+    case ash::style::mojom::ColorScheme::kExpressive:
       return mojom::ThemeStyleType::EXPRESSIVE;
-    case ash::ColorScheme::kVibrant:
+    case ash::style::mojom::ColorScheme::kVibrant:
       return mojom::ThemeStyleType::VIBRANT;
   }
 }
@@ -97,7 +99,7 @@ void ArcSystemUIBridge::OnColorPaletteChanging(
   ash::ColorPaletteSeed seed = in_seed;
   if (!chromeos::features::IsJellyEnabled()) {
     // Force scheme and seed color to the defaults if Jelly is disabled.
-    seed.scheme = ash::ColorScheme::kTonalSpot;
+    seed.scheme = ash::style::mojom::ColorScheme::kTonalSpot;
     seed.seed_color = gfx::kGoogleBlue400;
   }
 

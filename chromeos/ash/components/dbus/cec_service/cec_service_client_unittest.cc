@@ -107,8 +107,7 @@ class CecServiceClientTest : public testing::Test {
 
  protected:
   base::test::SingleThreadTaskEnvironment task_environment_;
-  raw_ptr<CecServiceClient, DanglingUntriaged | ExperimentalAsh> client_ =
-      nullptr;
+  raw_ptr<CecServiceClient, DanglingUntriaged> client_ = nullptr;
   scoped_refptr<dbus::MockBus> mock_bus_;
   scoped_refptr<dbus::MockObjectProxy> mock_proxy_;
 };

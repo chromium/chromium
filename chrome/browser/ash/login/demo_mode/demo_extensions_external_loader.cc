@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ash/login/demo_mode/demo_extensions_external_loader.h"
 
+#include <optional>
 #include <utility>
 
 #include "base/files/file_util.h"
@@ -24,7 +25,6 @@
 #include "extensions/browser/extension_file_task_runner.h"
 #include "extensions/common/extension_urls.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ash {
 
@@ -33,11 +33,11 @@ namespace {
 // Arbitrary, but reasonable size limit in bytes for prefs file.
 constexpr size_t kPrefsSizeLimit = 1024 * 1024;
 
-absl::optional<base::Value::Dict> LoadPrefsFromDisk(
+std::optional<base::Value::Dict> LoadPrefsFromDisk(
     const base::FilePath& prefs_path) {
   if (!base::PathExists(prefs_path)) {
     LOG(WARNING) << "Demo extensions prefs not found " << prefs_path.value();
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   std::string prefs_str;
@@ -45,18 +45,18 @@ absl::optional<base::Value::Dict> LoadPrefsFromDisk(
                                          kPrefsSizeLimit)) {
     LOG(ERROR) << "Failed to read prefs " << prefs_path.value() << "; "
                << "failed after reading " << prefs_str.size() << " bytes";
-    return absl::nullopt;
+    return std::nullopt;
   }
 
-  absl::optional<base::Value> prefs_value = base::JSONReader::Read(prefs_str);
+  std::optional<base::Value> prefs_value = base::JSONReader::Read(prefs_str);
   if (!prefs_value) {
     LOG(ERROR) << "Unable to parse demo extensions prefs.";
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   if (!prefs_value->is_dict()) {
     LOG(ERROR) << "Demo extensions prefs not a dictionary.";
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   return std::move(prefs_value).value().TakeDict();
@@ -142,7 +142,7 @@ void DemoExtensionsExternalLoader::StartLoadingFromOfflineDemoResources() {
 }
 
 void DemoExtensionsExternalLoader::DemoExternalExtensionsPrefsLoaded(
-    absl::optional<base::Value::Dict> prefs) {
+    std::optional<base::Value::Dict> prefs) {
   if (!prefs.has_value()) {
     LoadFinished(base::Value::Dict());
     return;

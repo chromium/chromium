@@ -21,8 +21,14 @@ constexpr char kDebugButton[] = "invokeDebuggerButton";
 constexpr char kDebugOverlay[] = "debuggerOverlay";
 constexpr char kScreensPanel[] = "DebuggerPanelScreens";
 
-constexpr int kOobeScreensCount = 49;
-constexpr int kLoginScreensCount = 45;
+constexpr int kCommonScreensCount = 50;
+constexpr int kOobeOnlyScreensCount = 10;
+constexpr int kLoginOnlyScreensCount = 7;
+
+constexpr int kOobeScreensCount = kCommonScreensCount + kOobeOnlyScreensCount;
+constexpr int kLoginScreensCount = kCommonScreensCount + kLoginOnlyScreensCount;
+
+// Feature-specific screens:
 constexpr int kOsInstallScreensCount = 2;
 
 std::string ElementsInPanel(const std::string& panel) {
@@ -81,8 +87,9 @@ class DebugOverlayScreensTest : public DebugOverlayTest,
   // DebugOverlayTest:
   void SetUpCommandLine(base::CommandLine* command_line) override {
     DebugOverlayTest::SetUpCommandLine(command_line);
-    if (!GetParam())
+    if (!GetParam()) {
       return;
+    }
     command_line->AppendSwitch(switches::kAllowOsInstall);
   }
 };
@@ -95,8 +102,9 @@ IN_PROC_BROWSER_TEST_P(DebugOverlayScreensTest, ExpectScreenButtonsCount) {
   test::OobeJS().CreateVisibilityWaiter(true, kDebugOverlay)->Wait();
 
   int screens_count = kOobeScreensCount;
-  if (switches::IsOsInstallAllowed())
+  if (switches::IsOsInstallAllowed()) {
     screens_count += kOsInstallScreensCount;
+  }
 
   test::OobeJS().ExpectEQ(ElementsInPanel(kScreensPanel), screens_count);
 }
@@ -110,6 +118,7 @@ IN_PROC_BROWSER_TEST_F(DebugOverlayOnLoginTest, ExpectScreenButtonsCount) {
   test::OobeJS().ExpectVisible(kDebugButton);
   test::OobeJS().ClickOn(kDebugButton);
   test::OobeJS().CreateVisibilityWaiter(true, kDebugOverlay)->Wait();
+
   test::OobeJS().ExpectEQ(ElementsInPanel(kScreensPanel), kLoginScreensCount);
 }
 

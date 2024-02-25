@@ -8,7 +8,7 @@
 #include <utility>
 
 #include "base/task/single_thread_task_runner.h"
-#include "base/test/test_timeouts.h"
+#include "base/test/run_until.h"
 #include "components/guest_view/browser/guest_view_base.h"
 #include "components/guest_view/browser/guest_view_manager_delegate.h"
 #include "content/public/browser/render_frame_host.h"
@@ -145,12 +145,7 @@ void TestGuestViewManager::WaitUntilAttached(GuestViewBase* guest_view) {
   // Completion of the attachment process may be delayed despite AttachGuest
   // having been called. We need to wait until the attachment is no longer
   // considered in progress.
-  while (!guest_view->attached()) {
-    base::RunLoop run_loop;
-    base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
-        FROM_HERE, run_loop.QuitClosure(), TestTimeouts::tiny_timeout());
-    run_loop.Run();
-  }
+  EXPECT_TRUE(base::test::RunUntil([&]() { return guest_view->attached(); }));
 }
 
 void TestGuestViewManager::WaitForViewGarbageCollected() {

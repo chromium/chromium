@@ -44,6 +44,14 @@ export interface InputMethodsModel {
   supported: chrome.languageSettingsPrivate.InputMethod[];
   enabled: chrome.languageSettingsPrivate.InputMethod[];
   currentId: string;
+  /**
+   * Mapping from input method ID to language packs status.
+   */
+  // TODO: b/298884063 - Move this to
+  // `chrome.languageSettingsPrivate.InputMethod` if there is a synchronous
+  // "cache" of language pack statuses.
+  imeLanguagePackStatus:
+      Partial<Record<string, chrome.inputMethodPrivate.LanguagePackStatus>>;
 }
 
 /**
@@ -225,4 +233,7 @@ export interface LanguageHelper {
    * @param id Input method ID.
    */
   getInputMethodDisplayName(id: string): string;
+
+  getImeLanguagePackStatus(id: string):
+      chrome.inputMethodPrivate.LanguagePackStatus;
 }

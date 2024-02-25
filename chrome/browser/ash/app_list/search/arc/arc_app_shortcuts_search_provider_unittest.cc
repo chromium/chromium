@@ -67,8 +67,8 @@ class ArcAppShortcutsSearchProviderTest
                                    bool launchable) {
     ArcAppListPrefs* const prefs = arc_test_.arc_app_list_prefs();
 
-    absl::optional<uint64_t> app_size_in_bytes;
-    absl::optional<uint64_t> data_size_in_bytes;
+    std::optional<uint64_t> app_size_in_bytes;
+    std::optional<uint64_t> data_size_in_bytes;
 
     if (!app_info.app_storage.is_null()) {
       app_size_in_bytes = app_info.app_storage->app_size_in_bytes;

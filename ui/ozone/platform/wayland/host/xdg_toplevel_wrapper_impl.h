@@ -8,8 +8,11 @@
 #include <xdg-shell-client-protocol.h>
 #include <memory>
 
-#include "base/memory/raw_ptr.h"
 #include "ui/ozone/platform/wayland/host/shell_toplevel_wrapper.h"
+
+namespace gfx {
+class RoundedCornersF;
+}  // namespace gfx
 
 namespace ui {
 
@@ -30,14 +33,16 @@ class XDGToplevelWrapperImpl : public ShellToplevelWrapper {
   // ShellToplevelWrapper overrides:
   bool Initialize() override;
   bool IsSupportedOnAuraToplevel(uint32_t version) const override;
+  void SetCanMaximize(bool can_maximize) override;
   void SetMaximized() override;
   void UnSetMaximized() override;
-  void SetFullscreen() override;
+  void SetCanFullscreen(bool can_fullscreen) override;
+  void SetFullscreen(WaylandOutput* wayland_output) override;
   void UnSetFullscreen() override;
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
   void SetUseImmersiveMode(bool immersive) override;
-  bool SupportsTopLevelImmersiveStatus() const override;
   void SetTopInset(int height) override;
+  void SetShadowCornersRadii(const gfx::RoundedCornersF& radii) override;
 #endif
   void SetMinimized() override;
   void SurfaceMove(WaylandConnection* connection) override;
@@ -52,7 +57,8 @@ class XDGToplevelWrapperImpl : public ShellToplevelWrapper {
   void SetDecoration(DecorationMode decoration) override;
   void Lock(WaylandOrientationLockType lock_type) override;
   void Unlock() override;
-  void RequestWindowBounds(const gfx::Rect& bounds) override;
+  void RequestWindowBounds(const gfx::Rect& bounds,
+                           int64_t display_id) override;
   void SetRestoreInfo(int32_t, int32_t) override;
   void SetRestoreInfoWithWindowIdSource(int32_t, const std::string&) override;
   void SetSystemModal(bool modal) override;
@@ -60,7 +66,8 @@ class XDGToplevelWrapperImpl : public ShellToplevelWrapper {
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
   void EnableScreenCoordinates() override;
 #endif
-  void SetFloat() override;
+  void SetFloatToLocation(
+      WaylandFloatStartLocation float_start_location) override;
   void UnSetFloat() override;
   void SetZOrder(ZOrderLevel z_order) override;
   bool SupportsActivation() override;
@@ -80,58 +87,60 @@ class XDGToplevelWrapperImpl : public ShellToplevelWrapper {
   XDGSurfaceWrapperImpl* xdg_surface_wrapper() const;
 
  private:
-  // xdg_toplevel_listener
-  static void ConfigureTopLevel(void* data,
-                                struct xdg_toplevel* xdg_toplevel,
+  // xdg_toplevel_listener callbacks:
+  static void OnToplevelConfigure(void* data,
+                                  xdg_toplevel* toplevel,
+                                  int32_t width,
+                                  int32_t height,
+                                  wl_array* states);
+  static void OnToplevelClose(void* data, xdg_toplevel* toplevel);
+  static void OnConfigureBounds(void* data,
+                                xdg_toplevel* toplevel,
                                 int32_t width,
-                                int32_t height,
-                                struct wl_array* states);
-  static void CloseTopLevel(void* data, struct xdg_toplevel* xdg_toplevel);
-  static void ConfigureBounds(void* data,
-                              struct xdg_toplevel* xdg_toplevel,
-                              int32_t width,
-                              int32_t height);
-  static void WmCapabilities(void* data,
-                             struct xdg_toplevel* xdg_toplevel,
-                             struct wl_array* capabilities);
+                                int32_t height);
+  static void OnWmCapabilities(void* data,
+                               xdg_toplevel* toplevel,
+                               wl_array* capabilities);
 
-  // zxdg_decoration_listener
-  static void ConfigureDecoration(
-      void* data,
-      struct zxdg_toplevel_decoration_v1* decoration,
-      uint32_t mode);
+  // zxdg_decoration_listener callbacks:
+  static void OnDecorationConfigure(void* data,
+                                    zxdg_toplevel_decoration_v1* decoration,
+                                    uint32_t mode);
 
-  // aura_toplevel_listener
-  static void ConfigureAuraTopLevel(void* data,
-                                    struct zaura_toplevel* zaura_toplevel,
-                                    int32_t x,
-                                    int32_t y,
-                                    int32_t width,
-                                    int32_t height,
-                                    struct wl_array* states);
-
+  // zaura_toplevel_listener callbacks:
+  static void OnAuraToplevelConfigure(void* data,
+                                      zaura_toplevel* aura_toplevel,
+                                      int32_t x,
+                                      int32_t y,
+                                      int32_t width,
+                                      int32_t height,
+                                      wl_array* states);
   static void OnOriginChange(void* data,
-                             struct zaura_toplevel* zaura_toplevel,
+                             zaura_toplevel* aura_toplevel,
                              int32_t x,
                              int32_t y);
 
-  static void ConfigureRasterScale(void* data,
-                                   struct zaura_toplevel* zaura_toplevel,
-                                   uint32_t scale_as_uint);
+  static void OnConfigureRasterScale(void* data,
+                                     struct zaura_toplevel* zaura_toplevel,
+                                     uint32_t scale_as_uint);
+
+  static void OnConfigureOcclusionState(void* data,
+                                        struct zaura_toplevel* zaura_toplevel,
+                                        uint32_t mode);
   static void OnRotateFocus(void* data,
-                            struct zaura_toplevel* zaura_toplevel,
+                            zaura_toplevel* aura_toplevel,
                             uint32_t serial,
                             uint32_t direction,
                             uint32_t restart);
+  static void OnOverviewChange(void* data,
+                               zaura_toplevel* aura_toplevel,
+                               uint32_t in_overview_as_uint);
 
   // Send request to wayland compositor to enable a requested decoration mode.
   void SetTopLevelDecorationMode(DecorationMode requested_mode);
 
   // Initializes the xdg-decoration protocol extension, if available.
   void InitializeXdgDecoration();
-
-  // Called when raster scale is changed.
-  void OnConfigureRasterScale(double scale);
 
   // Creates a wl_region from `shape_rects`.
   wl::Object<wl_region> CreateAndAddRegion(const ShapeRects& shape_rects);

@@ -5,18 +5,15 @@
 #ifndef SQL_INITIALIZATION_H_
 #define SQL_INITIALIZATION_H_
 
-#include "base/component_export.h"
-
 namespace sql {
 
 // Makes sure that sqlite3_initialize() is called.
 //
-// Users of the APIs exposed in //sql do not need to worry about SQLite
-// initialization, because sql::Database calls this function internally.
+// Only for use within //sql.
 //
-// The function is exposed for other components that use SQLite indirectly, such
-// as Blink.
-COMPONENT_EXPORT(SQL) void EnsureSqliteInitialized();
+// When `create_wrapper` is true, this will create a functionality-modifying
+// wrapper VFS and install it as the default. See `CreateVfsWrapper()`.
+void EnsureSqliteInitialized(bool create_wrapper = true);
 
 }  // namespace sql
 

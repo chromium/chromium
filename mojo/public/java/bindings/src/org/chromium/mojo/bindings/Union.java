@@ -6,9 +6,7 @@ package org.chromium.mojo.bindings;
 
 import org.chromium.mojo.system.Core;
 
-/**
- * Base class for all mojo unions.
- */
+/** Base class for all mojo unions. */
 public abstract class Union {
     /** They type of object that has been set. */
     protected int mTag;
@@ -36,8 +34,6 @@ public abstract class Union {
         return encoder.getMessage();
     }
 
-    /**
-     * Serializes this data structure using the given encoder.
-     */
+    /** Serializes this data structure using the given encoder. */
     protected abstract void encode(Encoder encoder, int offset);
 }

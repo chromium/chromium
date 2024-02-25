@@ -8,10 +8,12 @@
 #include <unistd.h>
 
 #include <limits>
+#include <optional>
 #include <sstream>
 #include <utility>
 
 #include "base/containers/contains.h"
+#include "base/containers/cxx20_erase_vector.h"
 #include "base/files/file.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
@@ -23,7 +25,6 @@
 #include "base/ranges/algorithm.h"
 #include "base/task/single_thread_task_runner.h"
 #include "mojo/public/cpp/system/platform_handle.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace arc {
 
@@ -336,8 +337,7 @@ std::string FakeFileSystemInstance::GetFileContent(const std::string& url,
       }
       std::string result;
       result.resize(bytes);
-      bool success =
-          base::ReadFromFD(pipe_read_ends_it->second.get(), &result[0], bytes);
+      bool success = base::ReadFromFD(pipe_read_ends_it->second.get(), result);
       DCHECK(success);
       return result;
     }
@@ -384,7 +384,7 @@ void FakeFileSystemInstance::GetMimeType(const std::string& url,
   auto iter = files_.find(url);
   if (iter == files_.end()) {
     base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
-        FROM_HERE, base::BindOnce(std::move(callback), absl::nullopt));
+        FROM_HERE, base::BindOnce(std::move(callback), std::nullopt));
     return;
   }
   const File& file = iter->second;
@@ -522,7 +522,7 @@ void FakeFileSystemInstance::GetChildDocuments(
       child_documents_.find(DocumentKey(authority, parent_document_id));
   if (child_iter == child_documents_.end()) {
     base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
-        FROM_HERE, base::BindOnce(std::move(callback), absl::nullopt));
+        FROM_HERE, base::BindOnce(std::move(callback), std::nullopt));
     return;
   }
   std::vector<mojom::DocumentPtr> children;
@@ -533,7 +533,7 @@ void FakeFileSystemInstance::GetChildDocuments(
   }
   base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindOnce(std::move(callback),
-                                absl::make_optional(std::move(children))));
+                                std::make_optional(std::move(children))));
 }
 
 void FakeFileSystemInstance::GetRecentDocuments(
@@ -544,7 +544,7 @@ void FakeFileSystemInstance::GetRecentDocuments(
   auto recent_iter = recent_documents_.find(RootKey(authority, root_id));
   if (recent_iter == recent_documents_.end()) {
     base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
-        FROM_HERE, base::BindOnce(std::move(callback), absl::nullopt));
+        FROM_HERE, base::BindOnce(std::move(callback), std::nullopt));
     return;
   }
   std::vector<mojom::DocumentPtr> recents;
@@ -552,7 +552,7 @@ void FakeFileSystemInstance::GetRecentDocuments(
     recents.emplace_back(MakeDocument(document));
   base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindOnce(std::move(callback),
-                                absl::make_optional(std::move(recents))));
+                                std::make_optional(std::move(recents))));
 }
 
 void FakeFileSystemInstance::GetRoots(GetRootsCallback callback) {
@@ -562,7 +562,7 @@ void FakeFileSystemInstance::GetRoots(GetRootsCallback callback) {
     roots.emplace_back(MakeRoot(root));
   base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindOnce(std::move(callback),
-                                absl::make_optional(std::move(roots))));
+                                std::make_optional(std::move(roots))));
 }
 
 void FakeFileSystemInstance::GetRootSize(const std::string& authority,
@@ -600,6 +600,12 @@ void FakeFileSystemInstance::DeleteDocument(const std::string& authority,
   documents_.erase(iter);
   size_t erased = child_documents_.erase(key);
   DCHECK_NE(0u, erased);
+
+  // Remove this document from lists of children.
+  for (auto& child_iter : child_documents_) {
+    base::Erase(child_iter.second, key);
+  }
+
   base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindOnce(std::move(callback), true));
 }

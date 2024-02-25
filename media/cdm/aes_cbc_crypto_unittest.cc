@@ -5,6 +5,7 @@
 #include "media/cdm/aes_cbc_crypto.h"
 
 #include <memory>
+#include <optional>
 
 #include "base/containers/span.h"
 #include "crypto/encryptor.h"
@@ -12,7 +13,6 @@
 #include "media/base/decoder_buffer.h"
 #include "media/base/decrypt_config.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/boringssl/src/include/openssl/aes.h"
 #include "third_party/boringssl/src/include/openssl/crypto.h"
 #include "third_party/boringssl/src/include/openssl/err.h"

@@ -24,6 +24,7 @@ class SyncSetupInProgressHandle;
 // Must only be accessed from the UI thread.
 class SyncServiceAndroidBridge : public syncer::SyncServiceObserver {
  public:
+  // `native_sync_service` must be non-null and outlive this object.
   explicit SyncServiceAndroidBridge(syncer::SyncService* native_sync_service);
   ~SyncServiceAndroidBridge() override;
 
@@ -34,6 +35,7 @@ class SyncServiceAndroidBridge : public syncer::SyncServiceObserver {
 
   // syncer::SyncServiceObserver:
   void OnStateChanged(syncer::SyncService* sync) override;
+  void OnSyncShutdown(syncer::SyncService* sync) override;
 
   // Please keep all methods below in the same order as the @NativeMethods in
   // SyncServiceImpl.java.
@@ -55,6 +57,7 @@ class SyncServiceAndroidBridge : public syncer::SyncServiceObserver {
                         jboolean sync_everything,
                         const base::android::JavaParamRef<jintArray>&
                             user_selectable_type_selection);
+  void SetSelectedType(JNIEnv* env, jint type, jboolean is_type_on);
   jboolean IsCustomPassphraseAllowed(JNIEnv* env);
   jboolean IsEncryptEverythingEnabled(JNIEnv* env);
   jboolean IsPassphraseRequiredForPreferredDataTypes(JNIEnv* env);
@@ -86,6 +89,9 @@ class SyncServiceAndroidBridge : public syncer::SyncServiceObserver {
   // Returns a timestamp for when a sync was last executed. The return value is
   // the internal value of base::Time.
   jlong GetLastSyncedTimeForDebugging(JNIEnv* env);
+  void KeepAccountSettingsPrefsOnlyForUsers(
+      JNIEnv* env,
+      const base::android::JavaParamRef<jobjectArray>& gaia_ids);
 
  private:
   // A reference to the sync service for this profile.

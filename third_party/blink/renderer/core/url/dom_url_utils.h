@@ -34,7 +34,6 @@
 namespace blink {
 
 class KURL;
-class ScriptState;
 
 class CORE_EXPORT DOMURLUtils : public DOMURLUtilsReadOnly {
  public:
@@ -46,7 +45,7 @@ class CORE_EXPORT DOMURLUtils : public DOMURLUtilsReadOnly {
   void setPassword(const String&);
   void setHost(const String&);
   void setHostname(const String&);
-  void setPort(ScriptState*, const String&);
+  void setPort(const String&);
   void setPathname(const String&);
   void setHash(const String&);
   virtual void setSearch(const String&);

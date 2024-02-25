@@ -28,12 +28,12 @@
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"
 
 #include <algorithm>
+#include <string_view>
 
-#include "base/feature_list.h"
+#include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/numerics/checked_math.h"
 #include "base/numerics/safe_conversions.h"
-#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/renderer/platform/weborigin/known_ports.h"
 #include "third_party/blink/renderer/platform/weborigin/scheme_registry.h"
 #include "third_party/blink/renderer/platform/wtf/math_extras.h"
@@ -45,6 +45,7 @@
 #include "third_party/perfetto/include/perfetto/tracing/traced_value.h"
 #include "url/gurl.h"
 #include "url/url_constants.h"
+#include "url/url_features.h"
 #include "url/url_util.h"
 #ifndef NDEBUG
 #include <stdio.h>
@@ -111,11 +112,11 @@ class KURLCharsetConverter final : public url::CharsetConverter {
     std::string encoded =
         encoding_->Encode(String(input, static_cast<unsigned>(input_length)),
                           WTF::kURLEncodedEntitiesForUnencodables);
-    output->Append(encoded.c_str(), encoded.length());
+    output->Append(encoded);
   }
 
  private:
-  const WTF::TextEncoding* encoding_;
+  raw_ptr<const WTF::TextEncoding> encoding_;
 };
 
 }  // namespace
@@ -216,10 +217,12 @@ const KURL& NullURL() {
 }
 
 String KURL::ElidedString() const {
-  if (GetString().length() <= 1024)
-    return GetString();
+  const WTF::String& string = string_;
+  if (string.length() <= 1024) {
+    return string;
+  }
 
-  return GetString().Left(511) + "..." + GetString().Right(510);
+  return string.Left(511) + "..." + string.Right(510);
 }
 
 KURL::KURL()
@@ -382,6 +385,10 @@ String KURL::Host() const {
   return ComponentString(parsed_.host);
 }
 
+StringView KURL::HostView() const {
+  return ComponentStringView(parsed_.host);
+}
+
 uint16_t KURL::Port() const {
   if (!is_valid_ || parsed_.port.is_empty())
     return 0;
@@ -491,16 +498,10 @@ bool KURL::SetProtocol(const String& protocol) {
       String(canon_protocol.data(), protocol_length);
 
   if (SchemeRegistry::IsSpecialScheme(Protocol())) {
-    bool new_protocol_is_special_scheme =
-        SchemeRegistry::IsSpecialScheme(new_protocol_canon);
-
-    base::UmaHistogramBoolean("URL.Scheme.SetNonSpecialSchemeOnSpecialScheme",
-                              !new_protocol_is_special_scheme);
-
     // https://url.spec.whatwg.org/#scheme-state
     // 2.1.1 If url’s scheme is a special scheme and buffer is not a special
     //       scheme, then return.
-    if (!new_protocol_is_special_scheme) {
+    if (!SchemeRegistry::IsSpecialScheme(new_protocol_canon)) {
       return true;
     }
 
@@ -651,27 +652,15 @@ void KURL::RemovePort() {
 }
 
 void KURL::SetPort(const String& input) {
-  SetPort(input, nullptr);
-}
-
-void KURL::SetPort(const String& input, bool* value_overflow_out) {
   String port = RemoveURLWhitespace(input);
   String parsed_port = ParsePortFromStringPosition(port, 0);
-  if (value_overflow_out) {
-    *value_overflow_out = false;
-  }
   if (parsed_port.empty()) {
     return;
   }
   bool to_uint_ok;
   unsigned port_value = parsed_port.ToUInt(&to_uint_ok);
   if (port_value > UINT16_MAX || !to_uint_ok) {
-    if (value_overflow_out) {
-      *value_overflow_out = true;
-    }
-    if (base::FeatureList::IsEnabled(features::kURLSetPortCheckOverflow)) {
-      return;
-    }
+    return;
   }
   SetPort(port_value);
 }
@@ -791,8 +780,7 @@ void KURL::SetPath(const String& input) {
 String DecodeURLEscapeSequences(const String& string, DecodeURLMode mode) {
   StringUTF8Adaptor string_utf8(string);
   url::RawCanonOutputT<char16_t> unescaped;
-  url::DecodeURLEscapeSequences(string_utf8.data(), string_utf8.size(), mode,
-                                &unescaped);
+  url::DecodeURLEscapeSequences(string_utf8.AsStringPiece(), mode, &unescaped);
   return StringImpl::Create8BitIfPossible(
       reinterpret_cast<UChar*>(unescaped.data()),
       base::checked_cast<wtf_size_t>(unescaped.length()));
@@ -807,12 +795,16 @@ String EncodeWithURLEscapeSequences(const String& not_encoded_string) {
   if (buffer.capacity() < input_length * 3)
     buffer.Resize(input_length * 3);
 
-  url::EncodeURIComponent(utf8.c_str(), static_cast<wtf_size_t>(input_length),
-                          &buffer);
+  url::EncodeURIComponent(utf8, &buffer);
   String escaped(buffer.data(), static_cast<unsigned>(buffer.length()));
   // Unescape '/'; it's safe and much prettier.
   escaped.Replace("%2F", "/");
   return escaped;
+}
+
+bool HasInvalidURLEscapeSequences(const String& string) {
+  StringUTF8Adaptor string_utf8(string);
+  return url::HasInvalidURLEscapeSequences(string_utf8.AsStringPiece());
 }
 
 bool KURL::IsHierarchical() const {
@@ -943,7 +935,14 @@ void KURL::Init(const KURL& base,
   InitProtocolMetadata();
   InitInnerURL();
   AssertStringSpecIsASCII();
-  DCHECK(!::blink::ProtocolIsJavaScript(string_) || ProtocolIsJavaScript());
+
+  if (!url::IsUsingStandardCompliantNonSpecialSchemeURLParsing()) {
+    // This assertion implicitly assumes that "javascript:" scheme URL is always
+    // valid, but that is no longer true when
+    // kStandardCompliantNonSpecialSchemeURLParsing feature is enabled. e.g.
+    // "javascript://^", which is an invalid URL.
+    DCHECK(!::blink::ProtocolIsJavaScript(string_) || ProtocolIsJavaScript());
+  }
 
   // Check for deviation characters in the string. See
   // https://unicode.org/reports/tr46/#Table_Deviation_Characters

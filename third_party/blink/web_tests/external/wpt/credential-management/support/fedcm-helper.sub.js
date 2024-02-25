@@ -1,31 +1,32 @@
-const manifest_origin = "https://{{host}}:{{ports[https][0]}}";
+export const manifest_origin = "https://{{host}}:{{ports[https][0]}}";
 export const alt_manifest_origin = 'https://{{hosts[alt][]}}:{{ports[https][0]}}';
+export const same_site_manifest_origin = 'https://{{hosts[][www1]}}:{{ports[https][0]}}';
 
-function open_and_wait_for_popup(origin, path, resolve) {
-  let popup_window = window.open(origin + path);
+export function open_and_wait_for_popup(origin, path) {
+  return new Promise(resolve => {
+    let popup_window = window.open(origin + path);
 
-  // We rely on the popup page to send us a message when done.
-  const popup_message_handler = (event) => {
-    if (event.origin == origin) {
-      popup_window.close();
-      window.removeEventListener('message', popup_message_handler);
-      resolve();
-    }
-  };
+    // We rely on the popup page to send us a message when done.
+    const popup_message_handler = (event) => {
+      if (event.origin == origin) {
+        popup_window.close();
+        window.removeEventListener('message', popup_message_handler);
+        resolve();
+      }
+    };
 
-  window.addEventListener('message', popup_message_handler);
+    window.addEventListener('message', popup_message_handler);
+  });
 }
 
 // Set the identity provider cookie.
 export function set_fedcm_cookie(host) {
-  return new Promise(resolve => {
-    if (host == undefined) {
-      document.cookie = 'cookie=1; SameSite=Strict; Path=/credential-management/support; Secure';
-      resolve();
-    } else {
-      open_and_wait_for_popup(host, '/credential-management/support/set_cookie', resolve);
-    }
-  });
+  if (host == undefined) {
+    document.cookie = 'cookie=1; SameSite=Strict; Path=/credential-management/support; Secure';
+    return Promise.resolve();
+  } else {
+    return open_and_wait_for_popup(host, '/credential-management/support/set_cookie');
+  }
 }
 
 // Set the alternate identity provider cookie.
@@ -34,18 +35,20 @@ export function set_alt_fedcm_cookie() {
 }
 
 export function mark_signed_in(origin = manifest_origin) {
-  return new Promise(resolve => {
-    open_and_wait_for_popup(origin, '/credential-management/support/mark_signedin', resolve);
-  });
+  return open_and_wait_for_popup(origin, '/credential-management/support/mark_signedin');
+}
+
+export function mark_signed_out(origin = manifest_origin) {
+  return open_and_wait_for_popup(origin, '/credential-management/support/mark_signedout');
 }
 
 // Returns FedCM CredentialRequestOptions for which navigator.credentials.get()
 // succeeds.
-export function request_options_with_mediation_required(manifest_filename) {
+export function request_options_with_mediation_required(manifest_filename, origin = manifest_origin) {
   if (manifest_filename === undefined) {
     manifest_filename = "manifest.py";
   }
-  const manifest_path = `${manifest_origin}/\
+  const manifest_path = `${origin}/\
 credential-management/support/fedcm/${manifest_filename}`;
   return {
     identity: {
@@ -62,21 +65,7 @@ credential-management/support/fedcm/${manifest_filename}`;
 // Returns alternate FedCM CredentialRequestOptions for which navigator.credentials.get()
 // succeeds.
 export function alt_request_options_with_mediation_required(manifest_filename) {
-  if (manifest_filename === undefined) {
-    manifest_filename = "manifest.py";
-  }
-  const manifest_path = `${alt_manifest_origin}/\
-credential-management/support/fedcm/${manifest_filename}`;
-  return {
-    identity: {
-      providers: [{
-        configURL: manifest_path,
-        clientId: '1',
-        nonce: '2'
-      }]
-    },
-    mediation: 'required'
-  };
+  return request_options_with_mediation_required(manifest_filename, alt_manifest_origin);
 }
 
 // Returns FedCM CredentialRequestOptions with auto re-authentication.
@@ -94,7 +83,7 @@ export function request_options_with_context(manifest_filename, context) {
   if (manifest_filename === undefined) {
     manifest_filename = "manifest.py";
   }
-  const manifest_path = `https://{{host}}:{{ports[https][0]}}/\
+  const manifest_path = `${manifest_origin}/\
 credential-management/support/fedcm/${manifest_filename}`;
   return {
     identity: {
@@ -150,9 +139,9 @@ export function request_options_with_login_hint(manifest_filename, login_hint) {
   return options;
 }
 
-export function request_options_with_hosted_domain(manifest_filename, hosted_domain) {
+export function request_options_with_domain_hint(manifest_filename, domain_hint) {
   let options = request_options_with_mediation_required(manifest_filename);
-  options.identity.providers[0].hostedDomain = hosted_domain;
+  options.identity.providers[0].domainHint = domain_hint;
 
   return options;
 }
@@ -209,4 +198,66 @@ export function fedcm_get_and_select_first_account(t, options) {
   const credentialPromise = navigator.credentials.get(options);
   fedcm_select_account_promise(t, 0);
   return credentialPromise;
+}
+
+export function fedcm_error_dialog_dismiss(t) {
+  return new Promise(resolve => {
+    async function helper() {
+      // Try to select the account. If the UI is not up yet, we'll catch an exception
+      // and try again in 100ms.
+      try {
+        let type = await fedcm_get_dialog_type_promise(t);
+        assert_equals(type, "Error");
+        await window.test_driver.cancel_fedcm_dialog();
+        resolve();
+      } catch (ex) {
+        t.step_timeout(helper, 100);
+      }
+    }
+    helper();
+  });
+}
+
+export function fedcm_error_dialog_click_button(t, button) {
+  return new Promise(resolve => {
+    async function helper() {
+      // Try to select the account. If the UI is not up yet, we'll catch an exception
+      // and try again in 100ms.
+      try {
+        let type = await fedcm_get_dialog_type_promise(t);
+        assert_equals(type, "Error");
+        await window.test_driver.click_fedcm_dialog_button(button);
+        resolve();
+      } catch (ex) {
+        t.step_timeout(helper, 100);
+      }
+    }
+    helper();
+  });
+}
+
+export function disconnect_options(accountHint, manifest_filename) {
+  if (manifest_filename === undefined) {
+    manifest_filename = "manifest.py";
+  }
+  const manifest_path = `${manifest_origin}/\
+credential-management/support/fedcm/${manifest_filename}`;
+  return {
+      configURL: manifest_path,
+      clientId: '1',
+      accountHint: accountHint
+      };
+}
+
+export function alt_disconnect_options(accountHint, manifest_filename) {
+  if (manifest_filename === undefined) {
+    manifest_filename = "manifest.py";
+  }
+  const manifest_path = `${alt_manifest_origin}/\
+credential-management/support/fedcm/${manifest_filename}`;
+  return {
+      configURL: manifest_path,
+      clientId: '1',
+      accountHint: accountHint
+  };
 }

@@ -7,7 +7,18 @@
 
 #include <string>
 
+#include "third_party/skia/include/core/SkColor.h"
 #include "ui/events/keycodes/dom/dom_code.h"
+#include "ui/events/keycodes/keyboard_codes_posix.h"
+
+namespace aura {
+class Window;
+}  // namespace aura
+
+namespace gfx {
+class Point;
+class Rect;
+}  // namespace gfx
 
 namespace arc::input_overlay {
 
@@ -18,16 +29,15 @@ std::u16string GetDisplayText(const ui::DomCode code);
 // Sometimes, `text` is a symbol.
 std::u16string GetDisplayTextAccessibleName(const std::u16string& text);
 
-// Returns the index of `action_name` within `action_names`, and returns the
-// length of the array on failure.
-int GetIndexOfActionName(const std::vector<std::u16string>& action_names,
-                         const std::u16string& action_name);
+// Returns bounds of `root_window` excluding the shelf if the shelf is visible.
+gfx::Rect CalculateAvailableBounds(aura::Window* root_window);
 
-// Returns the action name at the `index` of `action_names`, and "Unassigned" on
-// failure.
-std::u16string GetActionNameAtIndex(
-    const std::vector<std::u16string>& action_names,
-    int index);
+// `opacity_percent` is contained within [0.0, 1.0] where 0.0 corresponds to
+// fully transparent and 1.0 corresponds to fully opaque.
+SkAlpha GetAlpha(float opacity_percent);
+
+// Update `position` according to `key` if `key` is arrow key.
+bool OffsetPositionByArrowKey(ui::KeyboardCode key, gfx::Point& position);
 
 }  // namespace arc::input_overlay
 

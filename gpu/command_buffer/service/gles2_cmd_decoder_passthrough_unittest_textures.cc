@@ -25,8 +25,8 @@ std::unique_ptr<TestImageBacking> AllocateTextureAndCreateSharedImage(
   GLuint service_id;
   glGenTextures(1, &service_id);
   glBindTexture(GL_TEXTURE_2D, service_id);
-  GLFormatDesc format_desc = ToGLFormatDesc(format, /*plane_index=*/0,
-                                            /*use_angle_rgbx_format*/ false);
+  GLFormatDesc format_desc =
+      GLFormatCaps().ToGLFormatDesc(format, /*plane_index=*/0);
   glTexImage2D(GL_TEXTURE_2D, 0, format_desc.image_internal_format,
                size.width(), size.height(), 0, format_desc.data_format,
                format_desc.data_type, nullptr /* data */);

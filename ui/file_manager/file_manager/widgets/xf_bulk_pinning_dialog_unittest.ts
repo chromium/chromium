@@ -2,15 +2,19 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import 'chrome://resources/ash/common/cr_elements/cr_button/cr_button.js';
+import 'chrome://resources/ash/common/cr_elements/cr_dialog/cr_dialog.js';
+
 import {getTrustedHTML} from 'chrome://resources/js/static_types.js';
 import {assertEquals, assertFalse, assertNotEquals, assertTrue} from 'chrome://webui-test/chromeos/chai_assert.js';
 
-import {mockUtilVisitURL} from '../common/js/mock_util.js';
 import {waitForElementUpdate} from '../common/js/unittest_util.js';
+import {getLastVisitedURL} from '../common/js/util.js';
 import {updateBulkPinProgress} from '../state/ducks/bulk_pinning.js';
 import {getEmptyState, getStore} from '../state/store.js';
 
-import {BulkPinStage, XfBulkPinningDialog} from './xf_bulk_pinning_dialog.js';
+import type {XfBulkPinningDialog} from './xf_bulk_pinning_dialog.js';
+import {BulkPinStage} from './xf_bulk_pinning_dialog.js';
 
 export function setUp() {
   document.body.innerHTML = getTrustedHTML`
@@ -356,14 +360,10 @@ export async function testLearnMore() {
   const link =
       dialog.shadowRoot!.querySelector<HTMLAnchorElement>('#learn-more-link')!;
   assertNotEquals(null, link);
-  const visit = mockUtilVisitURL();
-  try {
-    link.click();
-    assertEquals(
-        visit.getURL(), 'https://support.google.com/chromebook?p=my_drive_cbx');
-  } finally {
-    visit.restoreVisitURL();
-  }
+  link.click();
+  assertEquals(
+      getLastVisitedURL(),
+      'https://support.google.com/chromebook?p=my_drive_cbx');
 }
 
 
@@ -412,6 +412,7 @@ export async function testFileCountUpdates() {
     pinnedBytes: 0,
     filesToPin: 100,
     remainingSeconds: 0,
+    shouldPin: true,
     emptiedQueue: false,
     listedFiles: 100,
   };

@@ -62,7 +62,7 @@ gfx::RoundedCornersF RoundedContainer::GetRoundedCorners() {
   }
 }
 
-BEGIN_METADATA(RoundedContainer, views::View);
+BEGIN_METADATA(RoundedContainer);
 END_METADATA
 
 }  // namespace ash

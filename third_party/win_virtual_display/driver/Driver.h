@@ -10,19 +10,9 @@
 
 #include <windows.h>
 
-#include <wdf.h>
-
-#include <avrt.h>
-#include <bugcodes.h>
-#include <d3d11_2.h>
-#include <dxgi1_5.h>
-#include <iddcx.h>
-#include <wrl.h>
-#include <wudfwdm.h>
-
-#include <memory>
-#include <vector>
-
+#include "Direct3DDevice.h"
+#include "IndirectMonitor.h"
+#include "SwapChainProcessor.h"
 #include "Trace.h"
 
 namespace Microsoft {
@@ -35,94 +25,61 @@ typedef HandleT<HandleTraits::HANDLENullTraits> Thread;
 }  // namespace WRL
 }  // namespace Microsoft
 
-namespace Microsoft {
-namespace IndirectDisp {
-/// <summary>
-/// Manages the creation and lifetime of a Direct3D render device.
-/// </summary>
-struct IndirectSampleMonitor {
-  static constexpr size_t szEdidBlock = 128;
-  static constexpr size_t szModeList = 3;
+namespace display::test {
 
-  const BYTE pEdidBlock[szEdidBlock];
-  const struct SampleMonitorMode {
-    DWORD Width;
-    DWORD Height;
-    DWORD VSync;
-  } pModeList[szModeList];
-  const DWORD ulPreferredModeIdx;
-};
-
-/// <summary>
-/// Manages the creation and lifetime of a Direct3D render device.
-/// </summary>
-struct Direct3DDevice {
-  Direct3DDevice(LUID AdapterLuid);
-  Direct3DDevice();
-  HRESULT Init();
-
-  LUID AdapterLuid;
-  Microsoft::WRL::ComPtr<IDXGIFactory5> DxgiFactory;
-  Microsoft::WRL::ComPtr<IDXGIAdapter1> Adapter;
-  Microsoft::WRL::ComPtr<ID3D11Device> Device;
-  Microsoft::WRL::ComPtr<ID3D11DeviceContext> DeviceContext;
-};
-
-/// <summary>
-/// Manages a thread that consumes buffers from an indirect display swap-chain
-/// object.
-/// </summary>
-class SwapChainProcessor {
- public:
-  SwapChainProcessor(IDDCX_SWAPCHAIN hSwapChain,
-                     std::unique_ptr<Direct3DDevice> Device,
-                     HANDLE NewFrameEvent);
-  ~SwapChainProcessor();
-
- private:
-  static DWORD CALLBACK RunThread(LPVOID Argument);
-
-  void Run();
-  void RunCore();
-
-  IDDCX_SWAPCHAIN m_hSwapChain;
-  std::unique_ptr<Direct3DDevice> m_Device;
-  HANDLE m_hAvailableBufferEvent;
-  Microsoft::WRL::Wrappers::Thread m_hThread;
-  Microsoft::WRL::Wrappers::Event m_hTerminateEvent;
-};
-
-/// <summary>
-/// Provides a sample implementation of an indirect display driver.
-/// </summary>
-class IndirectDeviceContext {
- public:
-  IndirectDeviceContext(_In_ WDFDEVICE WdfDevice);
-  virtual ~IndirectDeviceContext();
-
-  void InitAdapter();
-  void FinishInit(UINT ConnectorIndex);
-
- protected:
-  WDFDEVICE m_WdfDevice;
-  IDDCX_ADAPTER m_Adapter;
-};
-
+// Contains data and handles related to a single monitor (IDDCX_MONITOR) object.
 class IndirectMonitorContext {
  public:
-  IndirectMonitorContext(_In_ IDDCX_MONITOR Monitor);
+  IndirectMonitorContext(_In_ IDDCX_MONITOR Monitor, IndirectMonitor config);
   virtual ~IndirectMonitorContext();
 
   void AssignSwapChain(IDDCX_SWAPCHAIN SwapChain,
                        LUID RenderAdapter,
                        HANDLE NewFrameEvent);
   void UnassignSwapChain();
+  // Attach this monitor to the adaptor to trigger OS detection.
+  NTSTATUS Attach();
+  // Detatch this monitor from the adaptor to remove it from the OS.
+  NTSTATUS Detach();
+
+  const IndirectMonitor& monitor_config() const { return monitor_config_; }
 
  private:
   IDDCX_MONITOR m_Monitor;
+  // Underlying monitor config and EDID data.
+  IndirectMonitor monitor_config_;
   std::unique_ptr<SwapChainProcessor> m_ProcessingThread;
 };
-}  // namespace IndirectDisp
-}  // namespace Microsoft
+
+// Contains data and handles related to a single device (WDFDEVICE) object.
+class IndirectDeviceContext {
+ public:
+  IndirectDeviceContext(_In_ WDFDEVICE WdfDevice);
+  virtual ~IndirectDeviceContext();
+
+  void InitAdapter();
+  void FinishInit();
+  // Read driver properties and sync any configuration changes.
+  void SyncRequestedConfig();
+
+ protected:
+  // Array of monitors, indexed by connector values. Each entry contains a
+  // connected monitor for the given connector index, or null if no monitor is
+  // connected at that connector index.
+  std::array<std::unique_ptr<IndirectMonitorContext>,
+             DriverProperties::kMaxMonitors>
+      monitors;
+  WDFDEVICE m_WdfDevice;
+  IDDCX_ADAPTER m_Adapter;
+  // Background thread to poll configuration changes.
+  Microsoft::WRL::Wrappers::Thread m_hThread;
+
+ private:
+  static DWORD CALLBACK RunThread(LPVOID Argument);
+  // Adds and attaches a new monitor.
+  NTSTATUS AddMonitor(IndirectMonitor monitor);
+};
+
+}  // namespace display::test
 
 #endif  // THIRD_PARTY_WIN_VIRTUAL_DISPLAY_DRIVER_DRIVER_H_

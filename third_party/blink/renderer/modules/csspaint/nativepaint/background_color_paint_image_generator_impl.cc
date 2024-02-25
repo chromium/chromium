@@ -33,7 +33,7 @@ scoped_refptr<Image> BackgroundColorPaintImageGeneratorImpl::Paint(
     const Node* node,
     const Vector<Color>& animated_colors,
     const Vector<double>& offsets,
-    const absl::optional<double>& progress) {
+    const std::optional<double>& progress) {
   return background_color_paint_definition_->Paint(
       container_size, node, animated_colors, offsets, progress);
 }
@@ -42,7 +42,7 @@ bool BackgroundColorPaintImageGeneratorImpl::GetBGColorPaintWorkletParams(
     Node* node,
     Vector<Color>* animated_colors,
     Vector<double>* offsets,
-    absl::optional<double>* progress) {
+    std::optional<double>* progress) {
   return BackgroundColorPaintDefinition::GetBGColorPaintWorkletParams(
       node, animated_colors, offsets, progress);
 }

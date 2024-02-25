@@ -3,9 +3,9 @@
 // found in the LICENSE file.
 
 /**
- * @fileoverview Element which displays the number of selected items with
- * Cancel/Delete buttons, designed to be used as an overlay on top of
- * <cr-toolbar>. See <history-toolbar> for an example usage.
+ * @fileoverview Element which displays the number of selected items, designed
+ * to be used as an overlay on top of <cr-toolbar>. See <history-toolbar> for an
+ * example usage.
  *
  * Note that the embedder is expected to set position: relative to make the
  * absolute positioning of this element work, and the cr-toolbar should have the
@@ -13,90 +13,63 @@
  * tab-traversal.
  */
 
-import '../cr_button/cr_button.js';
 import '../cr_icon_button/cr_icon_button.js';
-import '../cr_shared_vars.css.js';
 import '../icons.html.js';
 
+import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
+import type {PropertyValues} from '//resources/lit/v3_0/lit.rollup.js';
 import {IronA11yAnnouncer} from '//resources/polymer/v3_0/iron-a11y-announcer/iron-a11y-announcer.js';
-import {Debouncer, microTask, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {CrButtonElement} from '../cr_button/cr_button.js';
+import {getCss} from './cr_toolbar_selection_overlay.css.js';
+import {getHtml} from './cr_toolbar_selection_overlay.html.js';
 
-import {getTemplate} from './cr_toolbar_selection_overlay.html.js';
-
-export class CrToolbarSelectionOverlayElement extends PolymerElement {
+export class CrToolbarSelectionOverlayElement extends CrLitElement {
   static get is() {
     return 'cr-toolbar-selection-overlay';
   }
 
-  static get template() {
-    return getTemplate();
+  static override get styles() {
+    return getCss();
   }
 
-  static get properties() {
+  override render() {
+    return getHtml.bind(this)();
+  }
+
+  static override get properties() {
     return {
       show: {
         type: Boolean,
-        observer: 'onShowChanged_',
-        reflectToAttribute: true,
+        reflect: true,
       },
 
-      cancelLabel: String,
-      selectionLabel: String,
-      hasShown_: Boolean,
-      selectionLabel_: String,
+      cancelLabel: {type: String},
+      selectionLabel: {type: String},
     };
   }
 
-  static get observers() {
-    return [
-      'updateSelectionLabel_(show, selectionLabel)',
-    ];
-  }
-
-  show: boolean;
+  show: boolean = false;
   cancelLabel: string;
   selectionLabel: string;
-  private hasShown_: boolean;
-  private selectionLabel_: string;
-  private debouncer_: Debouncer;
 
-  override ready() {
-    super.ready();
+  override firstUpdated() {
     this.setAttribute('role', 'toolbar');
   }
 
-  get deleteButton(): CrButtonElement {
-    return this.shadowRoot!.querySelector<CrButtonElement>('#delete')!;
-  }
+  override updated(changedProperties: PropertyValues<this>) {
+    super.updated(changedProperties);
 
-  private fire_(eventName: string, detail?: any) {
-    this.dispatchEvent(
-        new CustomEvent(eventName, {bubbles: true, composed: true, detail}));
-  }
-
-  private onClearSelectionClick_() {
-    this.fire_('clear-selected-items');
-  }
-
-  private updateSelectionLabel_() {
-    // Do this update in a microtask to ensure |show| and |selectionLabel|
-    // are both updated.
-    this.debouncer_ = Debouncer.debounce(this.debouncer_, microTask, () => {
-      this.selectionLabel_ =
-          this.show ? this.selectionLabel : this.selectionLabel_;
-      this.setAttribute('aria-label', this.selectionLabel_);
-
+    // Parent element is responsible for updating `selectionLabel` when `show`
+    // changes.
+    if (changedProperties.has('selectionLabel')) {
+      this.setAttribute('aria-label', this.selectionLabel);
       IronA11yAnnouncer.requestAvailability();
-      this.fire_('iron-announce', {text: this.selectionLabel});
-    });
+      this.fire('iron-announce', {text: this.selectionLabel});
+    }
   }
 
-  private onShowChanged_() {
-    if (this.show) {
-      this.hasShown_ = true;
-    }
+  protected onClearSelectionClick_() {
+    this.fire('clear-selected-items');
   }
 }
 

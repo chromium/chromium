@@ -38,12 +38,12 @@ void TetherHostFetcher::ProcessFetchSingleTetherHostRequest(
   for (auto remote_device : remote_device_list) {
     if (remote_device.GetDeviceId() == device_id) {
       std::move(callback).Run(
-          absl::make_optional<multidevice::RemoteDeviceRef>(remote_device));
+          std::make_optional<multidevice::RemoteDeviceRef>(remote_device));
       return;
     }
   }
 
-  std::move(callback).Run(absl::nullopt);
+  std::move(callback).Run(std::nullopt);
 }
 
 void TetherHostFetcher::NotifyTetherHostsUpdated() {

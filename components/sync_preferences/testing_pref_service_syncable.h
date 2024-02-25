@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_SYNC_PREFERENCES_TESTING_PREF_SERVICE_SYNCABLE_H_
 #define COMPONENTS_SYNC_PREFERENCES_TESTING_PREF_SERVICE_SYNCABLE_H_
 
+#include "base/memory/scoped_refptr.h"
 #include "components/prefs/testing_pref_service.h"
 #include "components/sync_preferences/pref_service_syncable.h"
 
@@ -32,14 +33,15 @@ class TestingPrefServiceSyncable
                                     user_prefs::PrefRegistrySyncable> {
  public:
   TestingPrefServiceSyncable();
-  TestingPrefServiceSyncable(TestingPrefStore* managed_prefs,
-                             TestingPrefStore* supervised_user_prefs,
-                             TestingPrefStore* extension_prefs,
-                             TestingPrefStore* standalone_browser_prefs,
-                             TestingPrefStore* user_prefs,
-                             TestingPrefStore* recommended_prefs,
-                             user_prefs::PrefRegistrySyncable* pref_registry,
-                             PrefNotifierImpl* pref_notifier);
+  TestingPrefServiceSyncable(
+      scoped_refptr<TestingPrefStore> managed_prefs,
+      scoped_refptr<TestingPrefStore> supervised_user_prefs,
+      scoped_refptr<TestingPrefStore> extension_prefs,
+      scoped_refptr<TestingPrefStore> standalone_browser_prefs,
+      scoped_refptr<TestingPrefStore> user_prefs,
+      scoped_refptr<TestingPrefStore> recommended_prefs,
+      scoped_refptr<user_prefs::PrefRegistrySyncable> pref_registry,
+      std::unique_ptr<PrefNotifierImpl> pref_notifier);
 
   TestingPrefServiceSyncable(const TestingPrefServiceSyncable&) = delete;
   TestingPrefServiceSyncable& operator=(const TestingPrefServiceSyncable&) =
@@ -58,13 +60,14 @@ class TestingPrefServiceSyncable
 template <>
 TestingPrefServiceBase<sync_preferences::PrefServiceSyncable,
                        user_prefs::PrefRegistrySyncable>::
-    TestingPrefServiceBase(TestingPrefStore* managed_prefs,
-                           TestingPrefStore* supervised_user_prefs,
-                           TestingPrefStore* extension_prefs,
-                           TestingPrefStore* standalone_browser_prefs,
-                           TestingPrefStore* user_prefs,
-                           TestingPrefStore* recommended_prefs,
-                           user_prefs::PrefRegistrySyncable* pref_registry,
-                           PrefNotifierImpl* pref_notifier);
+    TestingPrefServiceBase(
+        scoped_refptr<TestingPrefStore> managed_prefs,
+        scoped_refptr<TestingPrefStore> supervised_user_prefs,
+        scoped_refptr<TestingPrefStore> extension_prefs,
+        scoped_refptr<TestingPrefStore> standalone_browser_prefs,
+        scoped_refptr<TestingPrefStore> user_prefs,
+        scoped_refptr<TestingPrefStore> recommended_prefs,
+        scoped_refptr<user_prefs::PrefRegistrySyncable> pref_registry,
+        PrefNotifierImpl* pref_notifier);
 
 #endif  // COMPONENTS_SYNC_PREFERENCES_TESTING_PREF_SERVICE_SYNCABLE_H_

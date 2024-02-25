@@ -20,12 +20,14 @@
 #include "media/base/decoder_buffer.h"
 #include "media/base/limits.h"
 #include "media/base/media_log.h"
+#include "media/base/media_switches.h"
 #include "media/base/timestamp_constants.h"
 #include "media/base/video_aspect_ratio.h"
 #include "media/base/video_frame.h"
 #include "media/base/video_util.h"
 #include "media/ffmpeg/ffmpeg_common.h"
 #include "media/ffmpeg/ffmpeg_decoding_loop.h"
+#include "media/filters/ffmpeg_glue.h"
 
 namespace media {
 
@@ -121,6 +123,13 @@ static void ReleaseVideoBufferImpl(void* opaque, uint8_t* data) {
 
 // static
 bool FFmpegVideoDecoder::IsCodecSupported(VideoCodec codec) {
+#if BUILDFLAG(IS_CHROMEOS)
+  if (codec == VideoCodec::kMPEG4 &&
+      !base::FeatureList::IsEnabled(kCrOSLegacyMediaFormats)) {
+    return false;
+  }
+#endif
+
   return avcodec_find_decoder(VideoCodecToCodecID(codec)) != nullptr;
 }
 
@@ -242,14 +251,14 @@ void FFmpegVideoDecoder::Initialize(const VideoDecoderConfig& config,
   }
 
   InitCB bound_init_cb = base::BindPostTaskToCurrentDefault(std::move(init_cb));
-
   if (config.is_encrypted()) {
     std::move(bound_init_cb)
         .Run(DecoderStatus::Codes::kUnsupportedEncryptionMode);
     return;
   }
 
-  if (!ConfigureDecoder(config, low_delay)) {
+  if (!IsCodecSupported(config.codec()) ||
+      !ConfigureDecoder(config, low_delay)) {
     std::move(bound_init_cb).Run(DecoderStatus::Codes::kUnsupportedConfig);
     return;
   }
@@ -492,8 +501,15 @@ bool FFmpegVideoDecoder::ConfigureDecoder(const VideoDecoderConfig& config,
   codec_context_->opaque = this;
   codec_context_->get_buffer2 = GetVideoBufferImpl;
 
-  if (decode_nalus_)
+  if (base::FeatureList::IsEnabled(kFFmpegAllowLists)) {
+    // Note: FFmpeg will try to free this string, so we must duplicate it.
+    codec_context_->codec_whitelist =
+        av_strdup(FFmpegGlue::GetAllowedVideoDecoders());
+  }
+
+  if (decode_nalus_) {
     codec_context_->flags2 |= AV_CODEC_FLAG2_CHUNKS;
+  }
 
   const AVCodec* codec = avcodec_find_decoder(codec_context_->codec_id);
   if (!codec || avcodec_open2(codec_context_.get(), codec, NULL) < 0) {

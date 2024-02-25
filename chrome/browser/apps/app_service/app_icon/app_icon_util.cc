@@ -11,7 +11,7 @@
 #include "base/strings/stringprintf.h"
 #include "base/task/thread_pool.h"
 #include "chrome/browser/apps/app_service/app_icon/dip_px_util.h"
-#include "chrome/browser/apps/app_service/app_icon/icon_effects.h"
+#include "components/services/app_service/public/cpp/icon_effects.h"
 #include "services/data_decoder/public/cpp/data_decoder.h"
 #include "ui/base/resource/resource_scale_factor.h"
 #include "ui/gfx/geometry/size.h"
@@ -75,7 +75,7 @@ base::FilePath GetBackgroundIconPath(const base::FilePath& base_path,
 bool IsAdaptiveIcon(const base::FilePath& base_path,
                     const std::string& app_id,
                     int32_t size_in_dip) {
-  for (auto scale_factor : ui::GetSupportedResourceScaleFactors()) {
+  for (const auto scale_factor : ui::GetSupportedResourceScaleFactors()) {
     int icon_size_in_px = apps_util::ConvertDipToPxForScale(
         size_in_dip, ui::GetScaleForResourceScaleFactor(scale_factor));
 
@@ -168,7 +168,7 @@ std::map<ui::ResourceScaleFactor, IconValuePtr> ReadIconFilesOnBackgroundThread(
     const std::string& app_id,
     int32_t size_in_dip) {
   std::map<ui::ResourceScaleFactor, IconValuePtr> result;
-  for (auto scale_factor : ui::GetSupportedResourceScaleFactors()) {
+  for (const auto scale_factor : ui::GetSupportedResourceScaleFactors()) {
     int icon_size_in_px = apps_util::ConvertDipToPxForScale(
         size_in_dip, ui::GetScaleForResourceScaleFactor(scale_factor));
 
@@ -186,36 +186,19 @@ std::map<ui::ResourceScaleFactor, IconValuePtr> ReadIconFilesOnBackgroundThread(
 }
 
 void ScheduleIconFoldersDeletion(const base::FilePath& base_path,
-                                 const std::vector<std::string>& app_ids,
+                                 const std::vector<std::string>& ids,
                                  base::OnceCallback<void()> callback) {
   base::ThreadPool::PostTaskAndReply(
       FROM_HERE, {base::MayBlock(), base::TaskPriority::USER_BLOCKING},
       base::BindOnce(
           [](const base::FilePath& base_path,
              const std::vector<std::string>& ids) {
-            for (const auto& app_id : ids) {
-              base::DeletePathRecursively(GetIconFolderPath(base_path, app_id));
+            for (const auto& id : ids) {
+              base::DeletePathRecursively(GetIconFolderPath(base_path, id));
             }
           },
-          base_path, app_ids),
+          base_path, ids),
       std::move(callback));
-}
-
-// TODO(b/261907495): Update this method to return the appropriate icon effects
-// for each promise status. These icon effects are currently placeholders.
-IconEffects GetPromiseIconEffectsForAppStatus(ash::AppStatus status) {
-  switch (status) {
-    // These statuses are not applicable to promise apps.
-    case ash::AppStatus::kBlocked:
-    case ash::AppStatus::kPaused:
-    case ash::AppStatus::kReady:
-      NOTREACHED();
-      return IconEffects::kNone;
-    case ash::AppStatus::kPending:
-      return IconEffects::kPaused;
-    case ash::AppStatus::kInstalling:
-      return IconEffects::kCrOsStandardMask;
-  }
 }
 
 }  // namespace apps

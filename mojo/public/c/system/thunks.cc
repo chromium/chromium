@@ -7,14 +7,16 @@
 #include <cstddef>
 #include <cstdint>
 #include <cstring>
+#include <optional>
+#include <string_view>
 #include <vector>
 
 #include "base/check_op.h"
 #include "base/compiler_specific.h"
 #include "base/files/file_path.h"
 #include "base/logging.h"
+#include "base/no_destructor.h"
 #include "base/notreached.h"
-#include "base/strings/string_piece.h"
 #include "build/build_config.h"
 #include "mojo/public/c/system/core.h"
 #include "mojo/public/c/system/data_pipe.h"
@@ -28,7 +30,6 @@
 #include "base/files/file_path.h"
 #include "base/scoped_native_library.h"
 #include "base/threading/thread_restrictions.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #endif
 
 namespace {
@@ -48,7 +49,6 @@ MojoResult NotImplemented(const char* name) {
       << "Mojo has not been initialized in this process. You must call "
       << "either mojo::core::Init() as an embedder, or |MojoInitialize()| if "
       << "using the mojo_core shared library.";
-  return MOJO_RESULT_UNIMPLEMENTED;
 }
 
 }  // namespace
@@ -68,7 +68,7 @@ class CoreLibraryInitializer {
   CoreLibraryInitializer() = default;
   CoreLibraryInitializer(const CoreLibraryInitializer&) = delete;
   CoreLibraryInitializer& operator=(const CoreLibraryInitializer&) = delete;
-  ~CoreLibraryInitializer() = default;
+  ~CoreLibraryInitializer() = delete;
 
   MojoResult LoadLibrary(base::FilePath library_path) {
 #if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN) || \
@@ -143,7 +143,7 @@ class CoreLibraryInitializer {
  private:
 #if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN) || \
     BUILDFLAG(IS_FUCHSIA)
-  absl::optional<base::ScopedNativeLibrary> library_;
+  std::optional<base::ScopedNativeLibrary> library_;
 #endif
 };
 
@@ -152,17 +152,17 @@ class CoreLibraryInitializer {
 extern "C" {
 
 MojoResult MojoInitialize(const struct MojoInitializeOptions* options) {
-  static mojo::CoreLibraryInitializer initializer;
+  static base::NoDestructor<mojo::CoreLibraryInitializer> initializer;
 
-  base::StringPiece library_path_utf8;
+  std::string_view library_path_utf8;
   if (options) {
     if (!MOJO_IS_STRUCT_FIELD_PRESENT(options, mojo_core_path_length))
       return MOJO_RESULT_INVALID_ARGUMENT;
-    library_path_utf8 = base::StringPiece(options->mojo_core_path,
-                                          options->mojo_core_path_length);
+    library_path_utf8 = std::string_view(options->mojo_core_path,
+                                         options->mojo_core_path_length);
   }
 
-  MojoResult load_result = initializer.LoadLibrary(
+  MojoResult load_result = initializer->LoadLibrary(
       base::FilePath::FromUTF8Unsafe(library_path_utf8));
   if (load_result != MOJO_RESULT_OK)
     return load_result;

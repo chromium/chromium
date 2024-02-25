@@ -14,6 +14,7 @@
 #include <cstdint>
 #include <cstdio>
 #include <limits>
+#include <optional>
 #include <set>
 #include <sstream>
 #include <utility>
@@ -22,6 +23,8 @@
 #include "ash/components/arc/session/arc_bridge_service.h"
 #include "ash/components/arc/session/arc_service_manager.h"
 #include "ash/constants/ash_features.h"
+#include "base/check.h"
+#include "base/check_op.h"
 #include "base/feature_list.h"
 #include "base/files/file_enumerator.h"
 #include "base/files/file_util.h"
@@ -43,7 +46,7 @@
 #include "base/values.h"
 #include "base/version.h"
 #include "chrome/browser/ash/app_mode/arc/arc_kiosk_app_manager.h"
-#include "chrome/browser/ash/app_mode/kiosk_app_manager.h"
+#include "chrome/browser/ash/app_mode/kiosk_chrome_app_manager.h"
 #include "chrome/browser/ash/crosapi/browser_util.h"
 #include "chrome/browser/ash/crostini/crostini_pref_names.h"
 #include "chrome/browser/ash/crostini/crostini_reporting_util.h"
@@ -52,7 +55,6 @@
 #include "chrome/browser/ash/guest_os/guest_os_registry_service_factory.h"
 #include "chrome/browser/ash/login/demo_mode/demo_mode_dimensions.h"
 #include "chrome/browser/ash/login/demo_mode/demo_session.h"
-#include "chrome/browser/ash/login/users/chrome_user_manager.h"
 #include "chrome/browser/ash/policy/core/device_local_account.h"
 #include "chrome/browser/ash/policy/core/reporting_user_tracker.h"
 #include "chrome/browser/ash/policy/status_collector/enterprise_activity_storage.h"
@@ -64,7 +66,7 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/crash_upload_list/crash_upload_list.h"
 #include "chrome/browser/policy/profile_policy_connector.h"
-#include "chrome/browser/ui/webui/settings/ash/device_storage_util.h"
+#include "chrome/browser/ui/webui/ash/settings/pages/storage/device_storage_util.h"
 #include "chrome/common/channel_info.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/pref_names.h"
@@ -107,7 +109,6 @@
 #include "gpu/config/gpu_info.h"
 #include "gpu/ipc/common/memory_stats.h"
 #include "storage/browser/file_system/external_mount_points.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/cros_system_api/dbus/service_constants.h"
 #include "ui/display/display.h"
 #include "ui/display/screen.h"
@@ -313,22 +314,22 @@ std::vector<em::CPUTempInfo> ReadCPUTempInfo() {
 
 // If |contents| contains |prefix| followed by a hex integer, parses the hex
 // integer of specified length and returns it.
-// Otherwise, returns absl::nullopt.
-absl::optional<int> ExtractHexIntegerAfterPrefix(std::string_view contents,
-                                                 std::string_view prefix,
-                                                 size_t hex_number_length) {
+// Otherwise, returns std::nullopt.
+std::optional<int> ExtractHexIntegerAfterPrefix(std::string_view contents,
+                                                std::string_view prefix,
+                                                size_t hex_number_length) {
   size_t prefix_position = contents.find(prefix);
   if (prefix_position == std::string::npos) {
-    return absl::nullopt;
+    return std::nullopt;
   }
   if (prefix_position + prefix.size() + hex_number_length >= contents.size()) {
-    return absl::nullopt;
+    return std::nullopt;
   }
   int parsed_number;
   if (!base::HexStringToInt(
           contents.substr(prefix_position + prefix.size(), hex_number_length),
           &parsed_number)) {
-    return absl::nullopt;
+    return std::nullopt;
   }
   return parsed_number;
 }
@@ -512,7 +513,8 @@ bool AddCrostiniAppInfo(
   const base::Time last_launch_time = registration.LastLaunchTime();
   if (!last_launch_time.is_null()) {
     app->set_last_launch_time_window_start_timestamp(
-        crostini::GetThreeDayWindowStart(last_launch_time).ToJavaTime());
+        crostini::GetThreeDayWindowStart(last_launch_time)
+            .InMillisecondsSinceUnixEpoch());
   }
 
   app->set_app_type(em::CROSTINI_APP_TYPE_INTERACTIVE);
@@ -617,7 +619,8 @@ void CrashReportsLoaded(
          crash_report->source == kCrashReportSourceEC)) {
       em::CrashReportInfo info;
       info.set_remote_id(crash_report->upload_id);
-      info.set_capture_timestamp(crash_report->capture_time.ToJavaTime());
+      info.set_capture_timestamp(
+          crash_report->capture_time.InMillisecondsSinceUnixEpoch());
       info.set_cause(crash_report->source);
       info.set_upload_status(GetCrashReportUploadStatus(crash_report->state));
       contents.push_back(info);
@@ -834,7 +837,7 @@ class DeviceStatusCollectorState : public StatusCollectorState {
     for (const em::CPUTempInfo& info : cpu_temp_info) {
       auto* new_info = response_params_.device_status->add_cpu_temp_infos();
       *new_info = info;
-      new_info->set_timestamp(timestamp.ToJavaTime());
+      new_info->set_timestamp(timestamp.InMillisecondsSinceUnixEpoch());
     }
   }
 
@@ -1534,7 +1537,7 @@ class DeviceStatusCollectorState : public StatusCollectorState {
     SetDeviceStatusReported();
   }
 
-  void OnGetRootDeviceSize(absl::optional<int64_t> root_device_size) {
+  void OnGetRootDeviceSize(std::optional<int64_t> root_device_size) {
     if (!root_device_size.has_value()) {
       DVLOG(1) << "Could not fetch root device size from spaced.";
       return;
@@ -1555,7 +1558,7 @@ class DeviceStatusCollectorState : public StatusCollectorState {
 
   void OnCrashReportInfoReceived(
       const std::vector<em::CrashReportInfo>& crash_report_infos) {
-    DCHECK(response_params_.device_status->crash_report_infos_size() == 0);
+    DCHECK_EQ(response_params_.device_status->crash_report_infos_size(), 0);
     for (const em::CrashReportInfo& info : crash_report_infos) {
       *response_params_.device_status->add_crash_report_infos() = info;
     }
@@ -2105,7 +2108,8 @@ void DeviceStatusCollector::SampleProbeData(
     } else if (!battery_result->get_battery_info().is_null()) {
       const auto& battery = battery_result->get_battery_info();
       em::BatterySample battery_sample;
-      battery_sample.set_timestamp(sample->timestamp.ToJavaTime());
+      battery_sample.set_timestamp(
+          sample->timestamp.InMillisecondsSinceUnixEpoch());
       // Convert V to mV:
       battery_sample.set_voltage(std::lround(battery->voltage_now * 1000));
       // Convert Ah to mAh:
@@ -2169,7 +2173,7 @@ void DeviceStatusCollector::ReceiveCPUTemperature(
     std::unique_ptr<SampledData> sample,
     SamplingCallback callback,
     std::vector<em::CPUTempInfo> measurements) {
-  auto timestamp = sample->timestamp.ToJavaTime();
+  auto timestamp = sample->timestamp.InMillisecondsSinceUnixEpoch();
   for (const auto& measurement : measurements) {
     sample->cpu_samples[measurement.cpu_label()] = measurement;
     sample->cpu_samples[measurement.cpu_label()].set_timestamp(timestamp);
@@ -2336,7 +2340,7 @@ bool DeviceStatusCollector::GetVersionInfo(
 
 bool DeviceStatusCollector::GetWriteProtectSwitch(
     em::DeviceStatusReportRequest* status) {
-  const absl::optional<std::string_view> firmware_write_protect =
+  const std::optional<std::string_view> firmware_write_protect =
       statistics_provider_->GetMachineStatistic(
           ash::system::kFirmwareWriteProtectCurrentKey);
   if (!firmware_write_protect) {
@@ -2524,10 +2528,10 @@ bool DeviceStatusCollector::GetNetworkStatus(
 
 bool DeviceStatusCollector::GetUsers(em::DeviceStatusReportRequest* status) {
   const user_manager::UserList& users =
-      ash::ChromeUserManager::Get()->GetUsers();
+      user_manager::UserManager::Get()->GetUsers();
 
   bool anything_reported = false;
-  for (auto* user : users) {
+  for (user_manager::User* user : users) {
     // Only users with gaia accounts (regular) are reported.
     if (!user->HasGaiaAccount()) {
       continue;
@@ -2556,7 +2560,8 @@ bool DeviceStatusCollector::GetMemoryInfo(
     em::SystemFreeRamInfo* system_ram_free_info =
         status->add_system_ram_free_infos();
     system_ram_free_info->set_size_in_bytes(usage.bytes_of_ram_free);
-    system_ram_free_info->set_timestamp(usage.timestamp.ToJavaTime());
+    system_ram_free_info->set_timestamp(
+        usage.timestamp.InMillisecondsSinceUnixEpoch());
   }
 
   return true;
@@ -2569,7 +2574,8 @@ bool DeviceStatusCollector::GetCPUInfo(em::DeviceStatusReportRequest* status) {
     em::CpuUtilizationInfo* cpu_utilization_info =
         status->add_cpu_utilization_infos();
     cpu_utilization_info->set_cpu_utilization_pct(usage.cpu_usage_percent);
-    cpu_utilization_info->set_timestamp(usage.timestamp.ToJavaTime());
+    cpu_utilization_info->set_timestamp(
+        usage.timestamp.InMillisecondsSinceUnixEpoch());
   }
 
   return true;
@@ -2591,16 +2597,17 @@ bool DeviceStatusCollector::GetOsUpdateStatus(
 
   std::string required_platform_version_string;
   // Can be uninitialized in tests.
-  if (ash::KioskAppManager::IsInitialized()) {
+  if (ash::KioskChromeAppManager::IsInitialized()) {
     required_platform_version_string =
-        ash::KioskAppManager::Get()->GetAutoLaunchAppRequiredPlatformVersion();
+        ash::KioskChromeAppManager::Get()
+            ->GetAutoLaunchAppRequiredPlatformVersion();
   }
   em::OsUpdateStatus* os_update_status = status->mutable_os_update_status();
 
   const update_engine::StatusResult update_engine_status =
       ash::UpdateEngineClient::Get()->GetLastStatus();
 
-  absl::optional<base::Version> required_platform_version;
+  std::optional<base::Version> required_platform_version;
 
   if (required_platform_version_string.empty()) {
     // If this is non-Kiosk session, the OS is considered as up-to-date if the
@@ -2622,7 +2629,7 @@ bool DeviceStatusCollector::GetOsUpdateStatus(
       base::Time::Now() - base::SysInfo::Uptime();
 
   os_update_status->set_last_reboot_timestamp(
-      last_reboot_timestamp.ToJavaTime());
+      last_reboot_timestamp.InMillisecondsSinceUnixEpoch());
 
   // Get last check timestamp.
   // As the timestamp precision return from UpdateEngine is in seconds (see
@@ -2631,7 +2638,7 @@ bool DeviceStatusCollector::GetOsUpdateStatus(
       base::Time::FromTimeT(update_engine_status.last_checked_time());
 
   os_update_status->set_last_checked_timestamp(
-      last_checked_timestamp.ToJavaTime());
+      last_checked_timestamp.InMillisecondsSinceUnixEpoch());
 
   if (required_platform_version &&
       platform_version == *required_platform_version) {
@@ -2691,8 +2698,9 @@ bool DeviceStatusCollector::GetRunningKioskApp(
       running_kiosk_app->set_extension_version(app_version);
     }
 
-    ash::KioskAppManager::App app_info;
-    if (ash::KioskAppManager::Get()->GetApp(account->kiosk_app_id, &app_info)) {
+    ash::KioskChromeAppManager::App app_info;
+    if (ash::KioskChromeAppManager::Get()->GetApp(account->kiosk_app_id,
+                                                  &app_info)) {
       running_kiosk_app->set_required_platform_version(
           app_info.required_platform_version);
     }
@@ -2709,7 +2717,7 @@ bool DeviceStatusCollector::GetRunningKioskApp(
 
 bool DeviceStatusCollector::GetDeviceBootMode(
     em::DeviceStatusReportRequest* status) {
-  absl::optional<std::string> boot_mode =
+  std::optional<std::string> boot_mode =
       StatusCollector::GetBootMode(statistics_provider_);
 
   if (boot_mode) {
@@ -3098,7 +3106,7 @@ bool DeviceStatusCollector::IsReportingAppInfoAndActivity() const {
 // TODO(https://crbug.com/1364428)
 // Make this function fallible when the optional received is empty
 void DeviceStatusCollector::OnOSVersion(
-    const absl::optional<std::string>& version) {
+    const std::optional<std::string>& version) {
   os_version_ = version.value_or("0.0.0.0");
 }
 

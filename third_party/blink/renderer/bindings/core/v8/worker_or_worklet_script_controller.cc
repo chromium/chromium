@@ -33,32 +33,39 @@
 #include <memory>
 #include <tuple>
 
+#include "base/debug/crash_logging.h"
+#include "third_party/blink/public/mojom/origin_trial_feature/origin_trial_feature.mojom-blink.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_controller.h"
 #include "third_party/blink/renderer/core/execution_context/agent.h"
 #include "third_party/blink/renderer/core/inspector/worker_thread_debugger.h"
+#include "third_party/blink/renderer/core/origin_trials/origin_trial_context.h"
 #include "third_party/blink/renderer/core/workers/worker_global_scope.h"
 #include "third_party/blink/renderer/core/workers/worker_or_worklet_global_scope.h"
+#include "third_party/blink/renderer/platform/bindings/dom_wrapper_world.h"
 #include "third_party/blink/renderer/platform/bindings/extensions_registry.h"
 #include "third_party/blink/renderer/platform/bindings/origin_trial_features.h"
 #include "third_party/blink/renderer/platform/bindings/v8_dom_wrapper.h"
 #include "third_party/blink/renderer/platform/bindings/wrapper_type_info.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/scheduler/public/event_loop.h"
+#include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
+#include "third_party/blink/renderer/platform/wtf/vector.h"
 #include "v8/include/v8.h"
 
 namespace blink {
 
 WorkerOrWorkletScriptController::WorkerOrWorkletScriptController(
     WorkerOrWorkletGlobalScope* global_scope,
-    v8::Isolate* isolate)
+    v8::Isolate* isolate,
+    bool is_default_world_of_isolate)
     : global_scope_(global_scope),
       isolate_(isolate),
-      rejected_promises_(RejectedPromises::Create()) {
-  DCHECK(isolate);
-  world_ =
-      DOMWrapperWorld::Create(isolate, DOMWrapperWorld::WorldType::kWorker);
-}
+      world_(
+          DOMWrapperWorld::Create(isolate,
+                                  DOMWrapperWorld::WorldType::kWorkerOrWorklet,
+                                  is_default_world_of_isolate)),
+      rejected_promises_(RejectedPromises::Create()) {}
 
 WorkerOrWorkletScriptController::~WorkerOrWorkletScriptController() {
   DCHECK(!rejected_promises_);
@@ -139,7 +146,40 @@ void WorkerOrWorkletScriptController::Initialize(const KURL& url_for_debugger) {
                                v8::DeserializeInternalFieldsCallback(),
                                microtask_queue);
   }
-  DCHECK(!context.IsEmpty());
+  // TODO(crbug.com/1501387): Remove temporary crash key when crash is fixed.
+  // While this logging involves a lot of string operations, it is only
+  // performed when a crash is certain.
+  StringBuilder ot_feature_string;
+  if (context.IsEmpty()) {
+    ot_feature_string.Append("Interface name: ");
+    if (global_scope_->GetWrapperTypeInfo()) {
+      ot_feature_string.Append(
+          global_scope_->GetWrapperTypeInfo()->interface_name);
+    }
+    ot_feature_string.Append("; OT Features: ");
+
+    if (OriginTrialContext* ot_context =
+            global_scope_->GetOriginTrialContext()) {
+      if (std::unique_ptr<Vector<mojom::blink::OriginTrialFeature>>
+              ot_features = ot_context->GetInheritedTrialFeatures()) {
+        for (mojom::blink::OriginTrialFeature& feature : *ot_features) {
+          ot_feature_string.AppendNumber(static_cast<int>(feature));
+          ot_feature_string.Append(',');
+        }
+      } else {
+        ot_feature_string.Append("none");
+      }
+    }
+
+    // Ensure the string fits in the crash key, with space for a null
+    if (ot_feature_string.length() > 255) {
+      ot_feature_string.Resize(255);
+    }
+    SCOPED_CRASH_KEY_STRING256("shared-storage", "context-empty",
+                               ot_feature_string.ReleaseString().Utf8());
+    CHECK(false) << "V8 context is empty";
+  }
+  CHECK(!context.IsEmpty());
 
   script_state_ = ScriptState::Create(context, world_, global_scope_);
 
@@ -344,6 +384,7 @@ void WorkerOrWorkletScriptController::SetWasmEvalErrorMessage(
 void WorkerOrWorkletScriptController::Trace(Visitor* visitor) const {
   visitor->Trace(global_scope_);
   visitor->Trace(script_state_);
+  visitor->Trace(world_);
 }
 
 }  // namespace blink

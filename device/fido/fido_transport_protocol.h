@@ -5,10 +5,11 @@
 #ifndef DEVICE_FIDO_FIDO_TRANSPORT_PROTOCOL_H_
 #define DEVICE_FIDO_FIDO_TRANSPORT_PROTOCOL_H_
 
+#include <optional>
+#include <string_view>
+
 #include "base/component_export.h"
-#include "base/strings/string_piece.h"
 #include "device/fido/fido_types.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace device {
 
@@ -35,11 +36,11 @@ extern const char kHybrid[];
 extern const char kInternal[];
 
 COMPONENT_EXPORT(DEVICE_FIDO)
-absl::optional<FidoTransportProtocol> ConvertToFidoTransportProtocol(
-    base::StringPiece protocol);
+std::optional<FidoTransportProtocol> ConvertToFidoTransportProtocol(
+    std::string_view protocol);
 
 COMPONENT_EXPORT(DEVICE_FIDO)
-base::StringPiece ToString(FidoTransportProtocol protocol);
+std::string_view ToString(FidoTransportProtocol protocol);
 
 COMPONENT_EXPORT(DEVICE_FIDO)
 AuthenticatorAttachment AuthenticatorAttachmentFromTransport(

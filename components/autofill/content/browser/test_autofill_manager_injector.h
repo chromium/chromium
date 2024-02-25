@@ -9,6 +9,7 @@
 #include "components/autofill/content/browser/content_autofill_driver.h"
 #include "components/autofill/content/browser/content_autofill_driver_factory.h"
 #include "components/autofill/content/browser/content_autofill_driver_factory_test_api.h"
+#include "components/autofill/content/browser/content_autofill_driver_test_api.h"
 #include "components/autofill/content/browser/test_autofill_driver_injector.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_observer.h"
@@ -149,7 +150,7 @@ class TestAutofillManagerInjector : public TestAutofillManagerInjectorBase {
         ContentAutofillDriver& driver) override {
       std::unique_ptr<T> new_manager = CreateManager(&driver);
       owner_->managers_[driver.render_frame_host()] = new_manager.get();
-      driver.set_autofill_manager(std::move(new_manager));
+      test_api(driver).set_autofill_manager(std::move(new_manager));
     }
 
     void OnContentAutofillDriverWillBeDeleted(

@@ -11,7 +11,6 @@
 #include "ui/gfx/linux/gbm_buffer.h"
 #include "ui/gfx/linux/gpu_memory_buffer_support_x11.h"
 #include "ui/gfx/linux/native_pixmap_dmabuf.h"
-#include "ui/gfx/x/connection.h"
 #include "ui/gl/gl_bindings.h"
 #include "ui/gl/gl_surface_egl.h"
 #include "ui/gl/gl_surface_egl_x11_gles2.h"
@@ -206,7 +205,7 @@ scoped_refptr<gfx::NativePixmap> X11SurfaceFactory::CreateNativePixmap(
     gfx::Size size,
     gfx::BufferFormat format,
     gfx::BufferUsage usage,
-    absl::optional<gfx::Size> framebuffer_size) {
+    std::optional<gfx::Size> framebuffer_size) {
   scoped_refptr<gfx::NativePixmapDmaBuf> pixmap;
   auto buffer = ui::GpuMemoryBufferSupportX11::GetInstance()->CreateBuffer(
       format, size, usage);
@@ -262,6 +261,19 @@ X11SurfaceFactory::CreateNativePixmapFromHandle(
         size, format, std::move(buffer_handle));
   }
   return pixmap;
+}
+
+std::vector<gfx::BufferFormat>
+X11SurfaceFactory::GetSupportedFormatsForTexturing() const {
+  std::vector<gfx::BufferFormat> supported_buffer_formats;
+  for (int j = 0; j <= static_cast<int>(gfx::BufferFormat::LAST); ++j) {
+    const gfx::BufferFormat buffer_format = static_cast<gfx::BufferFormat>(j);
+    if (ui::GpuMemoryBufferSupportX11::GetInstance()
+            ->CanCreateNativePixmapForFormat(buffer_format)) {
+      supported_buffer_formats.push_back(buffer_format);
+    }
+  }
+  return supported_buffer_formats;
 }
 
 }  // namespace ui

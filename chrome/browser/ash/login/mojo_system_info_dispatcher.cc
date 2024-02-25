@@ -55,7 +55,7 @@ void MojoSystemInfoDispatcher::OnAdbSideloadStatusUpdated(bool enabled) {
 }
 
 void MojoSystemInfoDispatcher::OnSystemInfoUpdated() {
-  const absl::optional<bool> policy_show =
+  const std::optional<bool> policy_show =
       version_info_updater_.IsSystemInfoEnforced();
   bool enforced = policy_show.has_value();
   bool show = false;

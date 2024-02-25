@@ -55,7 +55,7 @@ ContextMenuParams ContextMenuParamsFromElementDictionary(
     params.alt_text = base::SysUTF8ToNSString(*alt_text);
   }
 
-  absl::optional<double> text_offset =
+  std::optional<double> text_offset =
       element.FindDouble(web::kContextMenuElementTextOffset);
   if (text_offset.has_value()) {
     params.text_offset = *text_offset;
@@ -67,7 +67,7 @@ ContextMenuParams ContextMenuParamsFromElementDictionary(
     params.surrounding_text = base::SysUTF8ToNSString(*surrounding_text);
   }
 
-  absl::optional<double> surrounding_text_offset =
+  std::optional<double> surrounding_text_offset =
       element.FindDouble(web::kContextMenuElementSurroundingTextOffset);
   if (surrounding_text_offset.has_value()) {
     params.surrounding_text_offset = *surrounding_text_offset;

@@ -7,7 +7,9 @@
 #include <stdint.h>
 
 #include <list>
+#include <optional>
 #include <string>
+#include <string_view>
 #include <utility>
 #include <vector>
 
@@ -25,7 +27,6 @@
 #include "base/run_loop.h"
 #include "base/sequence_checker.h"
 #include "base/strings/string_number_conversions.h"
-#include "base/strings/string_piece.h"
 #include "base/strings/stringprintf.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/test/bind.h"
@@ -66,7 +67,6 @@
 #include "services/network/test/test_network_context_client.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
 #if BUILDFLAG(IS_ANDROID)
@@ -425,7 +425,7 @@ class SimpleLoaderTestHelper : public SimpleURLLoaderStreamConsumer {
 
   // SimpleURLLoaderStreamConsumer implementation:
 
-  void OnDataReceived(base::StringPiece string_piece,
+  void OnDataReceived(std::string_view string_piece,
                       base::OnceClosure resume) override {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     EXPECT_FALSE(done_);
@@ -657,7 +657,7 @@ class SimpleURLLoaderTestBase {
     mojom::URLLoaderFactoryParamsPtr params =
         mojom::URLLoaderFactoryParams::New();
     params->process_id = mojom::kBrowserProcessId;
-    params->is_corb_enabled = false;
+    params->is_orb_enabled = false;
     url::Origin origin = url::Origin::Create(test_server_.base_url());
     params->isolation_info =
         net::IsolationInfo::CreateForInternalRequest(origin);
@@ -687,7 +687,7 @@ class SimpleURLLoaderTestBase {
   // Returns the path of a file that can be used in upload tests.
   static base::FilePath GetTestFilePath() {
     base::FilePath test_data_dir;
-    base::PathService::Get(base::DIR_SOURCE_ROOT, &test_data_dir);
+    base::PathService::Get(base::DIR_SRC_TEST_DATA_ROOT, &test_data_dir);
     return test_data_dir.AppendASCII("services/test/data/title1.html");
   }
 
@@ -935,15 +935,14 @@ TEST_P(SimpleURLLoaderTest, DeleteInOnRedirectCallback) {
       CreateHelperForURL(test_server_.GetURL(
           "/server-redirect?" + test_server_.GetURL("/echo").spec()));
 
-  SimpleLoaderTestHelper* unowned_test_helper = test_helper.get();
   base::RunLoop run_loop;
-  unowned_test_helper->simple_url_loader()->SetOnRedirectCallback(
-      base::BindRepeating(
-          [](std::unique_ptr<SimpleLoaderTestHelper> test_helper,
-             base::RunLoop* run_loop, const GURL& url_before_redirect,
-             const net::RedirectInfo& redirect_info,
-             const network::mojom::URLResponseHead& response_head,
-             std::vector<std::string>* to_be_removed_headers) {
+  test_helper->simple_url_loader()->SetOnRedirectCallback(
+      base::BindLambdaForTesting(
+          [&](const GURL& url_before_redirect,
+              const net::RedirectInfo& redirect_info,
+              const network::mojom::URLResponseHead& response_head,
+              std::vector<std::string>* to_be_removed_headers) {
+            CHECK(test_helper);
             test_helper.reset();
             // Access the parameters to trigger a memory error if they have been
             // deleted. (ASAN build should catch it)
@@ -951,12 +950,9 @@ TEST_P(SimpleURLLoaderTest, DeleteInOnRedirectCallback) {
             EXPECT_TRUE(url_before_redirect.is_valid());
             EXPECT_FALSE(redirect_info.new_url.is_empty());
             EXPECT_NE(to_be_removed_headers, nullptr);
-
-            run_loop->Quit();
-          },
-          base::Passed(std::move(test_helper)), &run_loop));
-
-  unowned_test_helper->StartSimpleLoader(url_loader_factory_.get());
+            run_loop.Quit();
+          }));
+  test_helper->StartSimpleLoader(url_loader_factory_.get());
 
   run_loop.Run();
 }
@@ -2132,7 +2128,7 @@ class MockURLLoader : public network::mojom::URLLoader {
           ASSERT_EQ(mojo::CreateDataPipe(1024, body_stream_, consumer_handle),
                     MOJO_RESULT_OK);
           client_->OnReceiveResponse(std::move(response_info),
-                                     std::move(consumer_handle), absl::nullopt);
+                                     std::move(consumer_handle), std::nullopt);
           break;
         }
         case TestLoaderEvent::kReceived401Response: {
@@ -2145,7 +2141,7 @@ class MockURLLoader : public network::mojom::URLLoader {
           ASSERT_EQ(mojo::CreateDataPipe(1024, body_stream_, consumer_handle),
                     MOJO_RESULT_OK);
           client_->OnReceiveResponse(std::move(response_info),
-                                     std::move(consumer_handle), absl::nullopt);
+                                     std::move(consumer_handle), std::nullopt);
           break;
         }
         case TestLoaderEvent::kReceived501Response: {
@@ -2158,7 +2154,7 @@ class MockURLLoader : public network::mojom::URLLoader {
           ASSERT_EQ(mojo::CreateDataPipe(1024, body_stream_, consumer_handle),
                     MOJO_RESULT_OK);
           client_->OnReceiveResponse(std::move(response_info),
-                                     std::move(consumer_handle), absl::nullopt);
+                                     std::move(consumer_handle), std::nullopt);
           break;
         }
         case TestLoaderEvent::kReceivedResponseNoData: {
@@ -2169,7 +2165,7 @@ class MockURLLoader : public network::mojom::URLLoader {
                   net::HttpUtil::AssembleRawHeaders(headers));
           client_->OnReceiveResponse(std::move(response_info),
                                      mojo::ScopedDataPipeConsumerHandle(),
-                                     absl::nullopt);
+                                     std::nullopt);
           break;
         }
         case TestLoaderEvent::kBodyDataRead: {
@@ -2251,7 +2247,7 @@ class MockURLLoader : public network::mojom::URLLoader {
       const std::vector<std::string>& removed_headers,
       const net::HttpRequestHeaders& modified_headers,
       const net::HttpRequestHeaders& modified_cors_exempt_headers,
-      const absl::optional<GURL>& new_url) override {}
+      const std::optional<GURL>& new_url) override {}
   void SetPriority(net::RequestPriority priority,
                    int32_t intra_priority_value) override {
     NOTREACHED();
@@ -3720,20 +3716,13 @@ TEST_P(SimpleURLLoaderTest, DeleteInOnUploadProgressCallback) {
   test_helper->simple_url_loader()->AttachStringForUpload(long_string,
                                                           "text/plain");
 
-  SimpleLoaderTestHelper* unowned_test_helper = test_helper.get();
   base::RunLoop run_loop;
-  unowned_test_helper->simple_url_loader()->SetOnUploadProgressCallback(
-      base::BindRepeating(
-          [](std::unique_ptr<SimpleLoaderTestHelper> test_helper,
-             base::RepeatingClosure quit_closure, uint64_t current,
-             uint64_t total) {
-            test_helper.reset();
-            std::move(quit_closure).Run();
-          },
-          base::Passed(std::move(test_helper)), run_loop.QuitClosure()));
-
-  unowned_test_helper->StartSimpleLoader(url_loader_factory_.get());
-
+  test_helper->simple_url_loader()->SetOnUploadProgressCallback(
+      base::BindLambdaForTesting([&](uint64_t current, uint64_t total) {
+        test_helper.reset();
+        run_loop.Quit();
+      }));
+  test_helper->StartSimpleLoader(url_loader_factory_.get());
   run_loop.Run();
 }
 

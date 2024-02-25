@@ -37,6 +37,7 @@ class SignalHandler {
   void Initialize(StorageService* storage_service,
                   history::HistoryService* history_service,
                   const base::flat_set<proto::SegmentId>& segment_ids,
+                  const std::string& profile_id,
                   base::RepeatingClosure model_refresh_callback);
 
   void TearDown();
@@ -65,9 +66,9 @@ class SignalHandler {
  private:
   std::unique_ptr<UserActionSignalHandler> user_action_signal_handler_;
   std::unique_ptr<HistogramSignalHandler> histogram_signal_handler_;
-  std::unique_ptr<SignalFilterProcessor> signal_filter_processor_;
   // Can be null when UKM engine is disabled.
   std::unique_ptr<HistoryServiceObserver> history_service_observer_;
+  std::unique_ptr<SignalFilterProcessor> signal_filter_processor_;
 };
 
 }  // namespace segmentation_platform

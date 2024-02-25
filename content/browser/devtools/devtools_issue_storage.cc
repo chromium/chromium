@@ -4,6 +4,9 @@
 
 #include "content/browser/devtools/devtools_issue_storage.h"
 
+#include <bit>
+#include <cstdint>
+
 #include "content/browser/devtools/protocol/audits.h"
 #include "content/browser/devtools/render_frame_devtools_agent_host.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
@@ -27,7 +30,7 @@ DevToolsIssueStorage::~DevToolsIssueStorage() {
   // TOOD(1351587): remove explicit destructor once the bug is fixed.
   // This is so that crash key is scoped to issue destruction.
   SCOPED_CRASH_KEY_NUMBER("devtools", "audit_issue_count",
-                          base::bits::Log2Floor(total_added_issues_));
+                          std::bit_width<uint32_t>(total_added_issues_) - 1);
   issues_.clear();
 }
 

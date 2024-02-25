@@ -204,7 +204,7 @@ class HistoryService : public KeyedService,
   void AddPage(const GURL& url, base::Time time, VisitSource visit_source);
 
   // All AddPage variants end up here.
-  void AddPage(const HistoryAddPageArgs& add_page_args);
+  void AddPage(HistoryAddPageArgs add_page_args);
 
   // Adds an entry for the specified url without creating a visit. This should
   // only be used when bookmarking a page, otherwise the row leaks in the
@@ -297,6 +297,21 @@ class HistoryService : public KeyedService,
       const GURL& url,
       bool want_visits,
       QueryURLCallback callback,
+      base::CancelableTaskTracker* tracker);
+
+  using QueryURLsCallback =
+      base::OnceCallback<void(std::vector<QueryURLResult>)>;
+
+  // Queries the basic information about the URLs in the history database. If
+  // the caller is interested in the visits (each time the URL is visited),
+  // set `want_visits` to true. If these are not needed, the function will be
+  // faster by setting this to false. Same as QueryURL but takes a
+  // vector of URLs and returns a vector of results.
+  // Note: Virtual needed for mocking.
+  virtual base::CancelableTaskTracker::TaskId QueryURLs(
+      const std::vector<GURL>& urls,
+      bool want_visits,
+      QueryURLsCallback callback,
       base::CancelableTaskTracker* tracker);
 
   // Provides the result of a query. See QueryResults in history_types.h.
@@ -470,8 +485,10 @@ class HistoryService : public KeyedService,
   // the expiration is complete. You may use null Time values to do an
   // unbounded delete in either direction.
   // If `restrict_urls` is not empty, only visits to the URLs in this set are
-  // removed.
+  // removed. Also, if `restrict_app_id` is present, only visits matching the
+  // passed app_id are removed.
   void ExpireHistoryBetween(const std::set<GURL>& restrict_urls,
+                            std::optional<std::string> restrict_app_id,
                             base::Time begin_time,
                             base::Time end_time,
                             bool user_initiated,
@@ -501,10 +518,12 @@ class HistoryService : public KeyedService,
 
   // Removes all visits to the given URLs in the specified time range. Calls
   // ExpireHistoryBetween() to delete local visits, and handles deletion of
-  // synced visits if appropriate.
+  // synced visits if appropriate. If app_id is present, restrict the visits
+  // to those matching the passed app_id only.
   void DeleteLocalAndRemoteHistoryBetween(WebHistoryService* web_history,
                                           base::Time begin_time,
                                           base::Time end_time,
+                                          std::optional<std::string> app_id,
                                           base::OnceClosure callback,
                                           base::CancelableTaskTracker* tracker);
 
@@ -596,12 +615,24 @@ class HistoryService : public KeyedService,
   //
   // If `compute_redirect_chain_start_properties` is true, the opener and
   // referring visit IDs for the start of the redirect chain will be computed.
+  // Virtual for testing.
   using GetAnnotatedVisitsCallback =
       base::OnceCallback<void(std::vector<AnnotatedVisit>)>;
-  base::CancelableTaskTracker::TaskId GetAnnotatedVisits(
+  virtual base::CancelableTaskTracker::TaskId GetAnnotatedVisits(
       const QueryOptions& options,
       bool compute_redirect_chain_start_properties,
+      bool get_unclustered_visits_only,
       GetAnnotatedVisitsCallback callback,
+      base::CancelableTaskTracker* tracker) const;
+
+  // Does the same as GetAnnotatedVisits above but uses
+  // visits instead of querying for the visits with the options.
+  using ToAnnotatedVisitsCallback =
+      base::OnceCallback<void(std::vector<AnnotatedVisit>)>;
+  virtual base::CancelableTaskTracker::TaskId ToAnnotatedVisits(
+      const VisitVector& visit_rows,
+      bool compute_redirect_chain_start_properties,
+      ToAnnotatedVisitsCallback callback,
       base::CancelableTaskTracker* tracker) const;
 
   // Delete and add 2 sets of clusters. Doing this in one call avoids an
@@ -765,11 +796,6 @@ class HistoryService : public KeyedService,
   base::WeakPtr<syncer::SyncableService> GetDeleteDirectivesSyncableService();
 
   // For sync codebase only: instantiates a controller delegate to interact with
-  // TypedURLSyncBridge. Must be called from the UI thread.
-  std::unique_ptr<syncer::ModelTypeControllerDelegate>
-  GetTypedURLSyncControllerDelegate();
-
-  // For sync codebase only: instantiates a controller delegate to interact with
   // HistorySyncBridge. Must be called from the UI thread.
   std::unique_ptr<syncer::ModelTypeControllerDelegate>
   GetHistorySyncControllerDelegate();
@@ -854,7 +880,7 @@ class HistoryService : public KeyedService,
   // `content::NavigationHandle` and will be populated only during local visits.
   void NotifyURLVisited(const URLRow& url_row,
                         const VisitRow& new_visit,
-                        absl::optional<int64_t> local_navigation_id);
+                        std::optional<int64_t> local_navigation_id);
 
   // Notify all HistoryServiceObservers registered that URLs have been added or
   // modified. `changed_urls` contains the list of affects URLs.

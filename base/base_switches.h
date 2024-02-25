@@ -24,6 +24,7 @@ extern const char kFieldTrialHandle[];
 extern const char kForceFieldTrials[];
 extern const char kFullMemoryCrashReport[];
 extern const char kLogBestEffortTasks[];
+extern const char kMetricsSharedMemoryHandle[];
 extern const char kNoErrorDialogs[];
 extern const char kProfilingAtStart[];
 extern const char kProfilingFile[];
@@ -49,17 +50,15 @@ extern const char kEnableCrashReporterForTesting[];
 #endif
 
 #if BUILDFLAG(IS_ANDROID)
-extern const char kEnableReachedCodeProfiler[];
-extern const char kReachedCodeSamplingIntervalUs[];
 extern const char kDefaultCountryCodeAtInstall[];
 extern const char kEnableIdleTracing[];
 extern const char kForceFieldTrialParams[];
-#endif
-
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
-// TODO(crbug.com/1176772): Remove kEnableCrashpad and IsCrashpadEnabled() when
-// Crashpad is fully enabled on Linux.
-extern const char kEnableCrashpad[];
+extern const char kHostPackageName[];
+extern const char kHostPackageLabel[];
+extern const char kHostVersionCode[];
+extern const char kPackageName[];
+extern const char kPackageVersionName[];
+extern const char kPackageVersionCode[];
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS)

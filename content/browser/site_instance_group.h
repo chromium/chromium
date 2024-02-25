@@ -154,6 +154,13 @@ class CONTENT_EXPORT SiteInstanceGroup
     return *agent_scheduling_group_;
   }
 
+  const StoragePartitionConfig& GetStoragePartitionConfig() const;
+
+  const base::flat_set<raw_ptr<SiteInstanceImpl>>& site_instances_for_testing()
+      const {
+    return site_instances_;
+  }
+
   // Creates a new SiteInstanceGroup in a new BrowsingInstance for testing.
   static SiteInstanceGroup* CreateForTesting(BrowserContext* browser_context,
                                              RenderProcessHost* process);
@@ -164,11 +171,6 @@ class CONTENT_EXPORT SiteInstanceGroup
   using TraceProto = perfetto::protos::pbzero::SiteInstanceGroup;
   // Write a representation of this object into a trace.
   void WriteIntoTrace(perfetto::TracedProto<TraceProto> proto) const;
-
-  // Used for setting crashkeys for Bug1470312.
-  bool is_notifying_observers_for_debugging() const {
-    return is_notifying_observers_;
-  }
 
  private:
   friend class RefCounted<SiteInstanceGroup>;

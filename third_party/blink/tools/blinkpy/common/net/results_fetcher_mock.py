@@ -55,7 +55,10 @@ class MockTestResultsFetcher(TestResultsFetcher):
                        only_unexpected: bool = True) -> WebTestResults:
         step = BuilderStep(build=build, step_name=step_name)
         self.fetched_builds.append(step)
-        return self._canned_results.get(step)
+        empty_results = WebTestResults([],
+                                       builder_name=build.builder_name,
+                                       step_name=step_name)
+        return self._canned_results.get(step, empty_results)
 
     def set_retry_sumary_json(self, build, content):
         self._canned_retry_summary_json[build] = content

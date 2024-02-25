@@ -48,7 +48,7 @@ import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.base.Callback;
 import org.chromium.base.ContextUtils;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
-import org.chromium.components.autofill.ServerFieldType;
+import org.chromium.components.autofill.FieldType;
 import org.chromium.components.autofill.payments.LegalMessageLine;
 import org.chromium.ui.text.NoUnderlineClickableSpan;
 import org.chromium.ui.text.SpanApplier;
@@ -57,21 +57,19 @@ import org.chromium.url.GURL;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.util.Calendar;
-import java.util.LinkedList;
+import java.util.List;
+import java.util.Optional;
 
-/**
- * Helper methods that can be used across multiple Autofill UIs.
- */
+/** Helper methods that can be used across multiple Autofill UIs. */
 public class AutofillUiUtils {
     public static final String CAPITAL_ONE_ICON_URL =
             "https://www.gstatic.com/autofill/virtualcard/icon/capitalone.png";
 
-    /**
-     * Interface to provide the horizontal and vertical offset for the tooltip.
-     */
+    /** Interface to provide the horizontal and vertical offset for the tooltip. */
     public interface OffsetProvider {
         /** Returns the X offset for the tooltip. */
         int getXOffset(TextView textView);
+
         /** Returns the Y offset for the tooltip. */
         int getYOffset(TextView textView);
     }
@@ -81,8 +79,15 @@ public class AutofillUiUtils {
     private static final int TOOLTIP_DEFERRED_PERIOD_MS = 200;
     public static final int EXPIRATION_FIELDS_LENGTH = 2;
 
-    @IntDef({ErrorType.EXPIRATION_MONTH, ErrorType.EXPIRATION_YEAR, ErrorType.EXPIRATION_DATE,
-            ErrorType.CVC, ErrorType.CVC_AND_EXPIRATION, ErrorType.NOT_ENOUGH_INFO, ErrorType.NONE})
+    @IntDef({
+        ErrorType.EXPIRATION_MONTH,
+        ErrorType.EXPIRATION_YEAR,
+        ErrorType.EXPIRATION_DATE,
+        ErrorType.CVC,
+        ErrorType.CVC_AND_EXPIRATION,
+        ErrorType.NOT_ENOUGH_INFO,
+        ErrorType.NONE
+    })
     @Retention(RetentionPolicy.SOURCE)
     public @interface ErrorType {
         int EXPIRATION_MONTH = 1;
@@ -98,7 +103,7 @@ public class AutofillUiUtils {
      * Different sizes in which we show the credit card art images. Update the {@code NUM_SIZES}
      * entry when adding/removing entries.
      */
-    @IntDef({CardIconSize.SMALL, CardIconSize.LARGE})
+    @IntDef({CardIconSize.SMALL, CardIconSize.LARGE, CardIconSize.NUM_SIZES})
     @Retention(RetentionPolicy.SOURCE)
     public @interface CardIconSize {
         int SMALL = 0;
@@ -106,9 +111,7 @@ public class AutofillUiUtils {
         int NUM_SIZES = 2;
     }
 
-    /**
-     * Contains dimensional specs for credit card icons.
-     */
+    /** Contains dimensional specs for credit card icons. */
     public static class CardIconSpecs {
         private final Context mContext;
         private final int mWidthId;
@@ -183,8 +186,13 @@ public class AutofillUiUtils {
      * @param anchorView Anchor view under which tooltip popup has to be shown
      * @param dismissAction Tooltip dismissive action.
      */
-    public static void showTooltip(Context context, PopupWindow popup, int text,
-            OffsetProvider offsetProvider, View anchorView, final Runnable dismissAction) {
+    public static void showTooltip(
+            Context context,
+            PopupWindow popup,
+            int text,
+            OffsetProvider offsetProvider,
+            View anchorView,
+            final Runnable dismissAction) {
         TextView textView = new TextView(context);
         textView.setText(text);
         textView.setTextAppearance(R.style.TextAppearance_TextMedium_Primary_Baseline_Light);
@@ -198,35 +206,41 @@ public class AutofillUiUtils {
         popup.setHeight(ViewGroup.LayoutParams.WRAP_CONTENT);
         popup.setWidth(ViewGroup.LayoutParams.WRAP_CONTENT);
         popup.setOutsideTouchable(true);
-        popup.setBackgroundDrawable(ApiCompatibilityUtils.getDrawable(
-                resources, R.drawable.store_locally_tooltip_background));
+        popup.setBackgroundDrawable(
+                ApiCompatibilityUtils.getDrawable(
+                        resources, R.drawable.store_locally_tooltip_background));
 
         // An alternate solution is to extend TextView and override onConfigurationChanged. However,
         // due to lemon compression, onConfigurationChanged never gets called.
-        final ComponentCallbacks componentCallbacks = new ComponentCallbacks() {
-            @Override
-            public void onConfigurationChanged(Configuration configuration) {
-                // If the popup was already showing dismiss it. This may happen during an
-                // orientation change.
-                if (configuration.orientation == Configuration.ORIENTATION_LANDSCAPE
-                        && popup != null) {
-                    popup.dismiss();
-                }
-            }
+        final ComponentCallbacks componentCallbacks =
+                new ComponentCallbacks() {
+                    @Override
+                    public void onConfigurationChanged(Configuration configuration) {
+                        // If the popup was already showing dismiss it. This may happen during an
+                        // orientation change.
+                        if (configuration.orientation == Configuration.ORIENTATION_LANDSCAPE
+                                && popup != null) {
+                            popup.dismiss();
+                        }
+                    }
 
-            @Override
-            public void onLowMemory() {}
-        };
+                    @Override
+                    public void onLowMemory() {}
+                };
 
         ContextUtils.getApplicationContext().registerComponentCallbacks(componentCallbacks);
 
-        popup.setOnDismissListener(() -> {
-            Handler h = new Handler();
-            h.postDelayed(dismissAction, TOOLTIP_DEFERRED_PERIOD_MS);
-            ContextUtils.getApplicationContext().unregisterComponentCallbacks(componentCallbacks);
-        });
+        popup.setOnDismissListener(
+                () -> {
+                    Handler h = new Handler();
+                    h.postDelayed(dismissAction, TOOLTIP_DEFERRED_PERIOD_MS);
+                    ContextUtils.getApplicationContext()
+                            .unregisterComponentCallbacks(componentCallbacks);
+                });
 
-        popup.showAsDropDown(anchorView, offsetProvider.getXOffset(textView),
+        popup.showAsDropDown(
+                anchorView,
+                offsetProvider.getXOffset(textView),
                 offsetProvider.getYOffset(textView));
         textView.announceForAccessibility(textView.getText());
     }
@@ -242,8 +256,11 @@ public class AutofillUiUtils {
      * @return The ErrorType value representing the type of error found for the expiration date
      *         unmask fields.
      */
-    public static @ErrorType int getExpirationDateErrorType(EditText monthInput, EditText yearInput,
-            boolean didFocusOnMonth, boolean didFocusOnYear) {
+    public static @ErrorType int getExpirationDateErrorType(
+            EditText monthInput,
+            EditText yearInput,
+            boolean didFocusOnMonth,
+            boolean didFocusOnYear) {
         Calendar calendar = Calendar.getInstance();
         int thisYear = calendar.get(Calendar.YEAR);
         int thisMonth = calendar.get(Calendar.MONTH) + 1; // calendar month is 0-based
@@ -405,18 +422,26 @@ public class AutofillUiUtils {
      * @param yearInput EditText for the year field.
      * @param cvcInput EditText for the cvc field.
      */
-    public static void updateColorForInputs(@ErrorType int errorType, Context context,
-            EditText monthInput, EditText yearInput, EditText cvcInput) {
-        ColorFilter filter = new PorterDuffColorFilter(
-                context.getColor(R.color.input_underline_error_color), PorterDuff.Mode.SRC_IN);
+    public static void updateColorForInputs(
+            @ErrorType int errorType,
+            Context context,
+            EditText monthInput,
+            EditText yearInput,
+            EditText cvcInput) {
+        ColorFilter filter =
+                new PorterDuffColorFilter(
+                        context.getColor(R.color.input_underline_error_color),
+                        PorterDuff.Mode.SRC_IN);
 
         // Decide on what field(s) to apply the filter.
-        boolean filterMonth = errorType == ErrorType.EXPIRATION_MONTH
-                || errorType == ErrorType.EXPIRATION_DATE
-                || errorType == ErrorType.CVC_AND_EXPIRATION;
-        boolean filterYear = errorType == ErrorType.EXPIRATION_YEAR
-                || errorType == ErrorType.EXPIRATION_DATE
-                || errorType == ErrorType.CVC_AND_EXPIRATION;
+        boolean filterMonth =
+                errorType == ErrorType.EXPIRATION_MONTH
+                        || errorType == ErrorType.EXPIRATION_DATE
+                        || errorType == ErrorType.CVC_AND_EXPIRATION;
+        boolean filterYear =
+                errorType == ErrorType.EXPIRATION_YEAR
+                        || errorType == ErrorType.EXPIRATION_DATE
+                        || errorType == ErrorType.CVC_AND_EXPIRATION;
 
         updateColorForInput(monthInput, filterMonth ? filter : null);
         updateColorForInput(yearInput, filterYear ? filter : null);
@@ -448,22 +473,24 @@ public class AutofillUiUtils {
      */
     public static void inlineTitleStringWithLogo(
             Context context, TextView titleTextView, String title, int logoResourceId) {
-        Drawable mInlineTitleIcon = ResourcesCompat.getDrawable(
-                context.getResources(), logoResourceId, context.getTheme());
+        Drawable mInlineTitleIcon =
+                ResourcesCompat.getDrawable(
+                        context.getResources(), logoResourceId, context.getTheme());
         // The first character will be replaced by the logo, and the consecutive spaces after
         // are used as padding.
         SpannableString titleWithLogo = new SpannableString("   " + title);
         // How much the original logo should scale up in size to match height of text.
         float scaleFactor = titleTextView.getTextSize() / mInlineTitleIcon.getIntrinsicHeight();
         mInlineTitleIcon.setBounds(
-                /* left */ 0, /* top */
-                0,
+                /* left= */ 0,
+                /* top= */ 0,
                 /* right */ (int) (scaleFactor * mInlineTitleIcon.getIntrinsicWidth()),
                 /* bottom */ (int) (scaleFactor * mInlineTitleIcon.getIntrinsicHeight()));
-        titleWithLogo.setSpan(new ImageSpan(mInlineTitleIcon, ImageSpan.ALIGN_CENTER),
-                /* start */ 0,
-                /* end */ 1,
-                /* flags */ Spannable.SPAN_INCLUSIVE_EXCLUSIVE);
+        titleWithLogo.setSpan(
+                new ImageSpan(mInlineTitleIcon, ImageSpan.ALIGN_CENTER),
+                /* start= */ 0,
+                /* end= */ 1,
+                /* flags= */ Spannable.SPAN_INCLUSIVE_EXCLUSIVE);
         titleTextView.setText(titleWithLogo, TextView.BufferType.SPANNABLE);
     }
 
@@ -476,27 +503,40 @@ public class AutofillUiUtils {
      * @param onClickCallback The callback for the link clicks.
      * @return A {@link SpannableStringBuilder} that can directly be set on a TextView.
      */
-    public static SpannableStringBuilder getSpannableStringForLegalMessageLines(Context context,
-            LinkedList<LegalMessageLine> legalMessageLines, boolean underlineLinks,
+    public static SpannableStringBuilder getSpannableStringForLegalMessageLines(
+            Context context,
+            List<LegalMessageLine> legalMessageLines,
+            boolean underlineLinks,
             Callback<String> onClickCallback) {
         SpannableStringBuilder spannableStringBuilder = new SpannableStringBuilder();
-        for (LegalMessageLine line : legalMessageLines) {
+        for (int i = 0; i < legalMessageLines.size(); i++) {
+            LegalMessageLine line = legalMessageLines.get(i);
             SpannableString text = new SpannableString(line.text);
             for (final LegalMessageLine.Link link : line.links) {
                 if (underlineLinks) {
-                    text.setSpan(new ClickableSpan() {
-                        @Override
-                        public void onClick(View view) {
-                            onClickCallback.onResult(link.url);
-                        }
-                    }, link.start, link.end, Spanned.SPAN_INCLUSIVE_EXCLUSIVE);
+                    text.setSpan(
+                            new ClickableSpan() {
+                                @Override
+                                public void onClick(View view) {
+                                    onClickCallback.onResult(link.url);
+                                }
+                            },
+                            link.start,
+                            link.end,
+                            Spanned.SPAN_INCLUSIVE_EXCLUSIVE);
                 } else {
-                    text.setSpan(new NoUnderlineClickableSpan(
-                                         context, view -> onClickCallback.onResult(link.url)),
-                            link.start, link.end, Spanned.SPAN_INCLUSIVE_EXCLUSIVE);
+                    text.setSpan(
+                            new NoUnderlineClickableSpan(
+                                    context, view -> onClickCallback.onResult(link.url)),
+                            link.start,
+                            link.end,
+                            Spanned.SPAN_INCLUSIVE_EXCLUSIVE);
                 }
             }
             spannableStringBuilder.append(text);
+            if (i != legalMessageLines.size() - 1) {
+                spannableStringBuilder.append("\n");
+            }
         }
         return spannableStringBuilder;
     }
@@ -513,8 +553,11 @@ public class AutofillUiUtils {
      */
     public static SpannableString getSpannableStringWithClickableSpansToOpenLinksInCustomTabs(
             Context context, int stringResourceId, String url, Callback<String> onClickCallback) {
-        return SpanApplier.applySpans(context.getString(stringResourceId),
-                new SpanApplier.SpanInfo("<link1>", "</link1>",
+        return SpanApplier.applySpans(
+                context.getString(stringResourceId),
+                new SpanApplier.SpanInfo(
+                        "<link1>",
+                        "</link1>",
                         new NoUnderlineClickableSpan(
                                 context, view -> onClickCallback.onResult(url))));
     }
@@ -535,7 +578,7 @@ public class AutofillUiUtils {
 
         // If SCS supports stretching, add it as a param to fetch images of exact dimensions.
         if (ChromeFeatureList.isEnabled(
-                    ChromeFeatureList.AUTOFILL_ENABLE_CARD_ART_SERVER_SIDE_STRETCHING)) {
+                ChromeFeatureList.AUTOFILL_ENABLE_CARD_ART_SERVER_SIDE_STRETCHING)) {
             url.append("-s");
         }
         return new GURL(url.toString());
@@ -580,8 +623,12 @@ public class AutofillUiUtils {
      * @return {@link Drawable} that can be set as the card icon. If neither the custom icon nor the
      *         default icon is available, returns null.
      */
-    public static @Nullable Drawable getCardIcon(Context context, @Nullable GURL cardArtUrl,
-            int defaultIconId, @CardIconSize int cardIconSize, boolean showCustomIcon) {
+    public static @Nullable Drawable getCardIcon(
+            Context context,
+            @Nullable GURL cardArtUrl,
+            int defaultIconId,
+            @CardIconSize int cardIconSize,
+            boolean showCustomIcon) {
         Drawable defaultIcon =
                 defaultIconId == 0 ? null : AppCompatResources.getDrawable(context, defaultIconId);
         if (!showCustomIcon || cardArtUrl == null || !cardArtUrl.isValid()) {
@@ -594,14 +641,15 @@ public class AutofillUiUtils {
             return AppCompatResources.getDrawable(context, R.drawable.capitalone_metadata_card);
         }
 
-        Bitmap customIconBitmap =
-                PersonalDataManager.getInstance().getCustomImageForAutofillSuggestionIfAvailable(
-                        cardArtUrl, CardIconSpecs.create(context, cardIconSize));
-        if (customIconBitmap == null) {
+        Optional<Bitmap> customIconBitmap =
+                PersonalDataManager.getInstance()
+                        .getCustomImageForAutofillSuggestionIfAvailable(
+                                cardArtUrl, CardIconSpecs.create(context, cardIconSize));
+        if (!customIconBitmap.isPresent()) {
             return defaultIcon;
         }
 
-        return new BitmapDrawable(context.getResources(), customIconBitmap);
+        return new BitmapDrawable(context.getResources(), customIconBitmap.get());
     }
 
     /**
@@ -621,8 +669,12 @@ public class AutofillUiUtils {
         // rolled out.
         if (bitmap.getWidth() != cardIconSpecs.getWidth()
                 || bitmap.getHeight() != cardIconSpecs.getHeight()) {
-            bitmap = Bitmap.createScaledBitmap(bitmap, cardIconSpecs.getWidth(),
-                    cardIconSpecs.getHeight(), /* filter= */ true);
+            bitmap =
+                    Bitmap.createScaledBitmap(
+                            bitmap,
+                            cardIconSpecs.getWidth(),
+                            cardIconSpecs.getHeight(),
+                            /* filter= */ true);
         }
 
         if (!addRoundedCornersAndGreyBorder) {
@@ -671,10 +723,18 @@ public class AutofillUiUtils {
      * @param cardLabelTextAppearance Text appearance Id for the card label.
      * @param showCustomIcon If true, custom card icon is shown, else, default icon is shown.
      */
-    public static void addCardDetails(Context context, View parentView, String cardName,
-            String cardNumber, String cardLabel, GURL cardArtUrl, int defaultIconId,
-            @CardIconSize int cardIconSize, int iconEndMarginId,
-            int cardNameAndNumberTextAppearance, int cardLabelTextAppearance,
+    public static void addCardDetails(
+            Context context,
+            View parentView,
+            String cardName,
+            String cardNumber,
+            String cardLabel,
+            GURL cardArtUrl,
+            int defaultIconId,
+            @CardIconSize int cardIconSize,
+            int iconEndMarginId,
+            int cardNameAndNumberTextAppearance,
+            int cardLabelTextAppearance,
             boolean showCustomIcon) {
         ImageView cardIconView = parentView.findViewById(R.id.card_icon);
         cardIconView.setImageDrawable(
@@ -697,23 +757,26 @@ public class AutofillUiUtils {
         cardLabelView.setTextAppearance(cardLabelTextAppearance);
     }
 
-    public static int getInputTypeForField(@ServerFieldType int type) {
+    public static int getInputTypeForField(@FieldType int type) {
         switch (type) {
-            case ServerFieldType.NAME_FULL:
-                return InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_FLAG_CAP_WORDS
+            case FieldType.NAME_FULL:
+                return InputType.TYPE_CLASS_TEXT
+                        | InputType.TYPE_TEXT_FLAG_CAP_WORDS
                         | InputType.TYPE_TEXT_VARIATION_PERSON_NAME;
-            case ServerFieldType.ADDRESS_HOME_SORTING_CODE:
-            case ServerFieldType.ADDRESS_HOME_ZIP:
-                return InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_FLAG_CAP_CHARACTERS
+            case FieldType.ADDRESS_HOME_SORTING_CODE:
+            case FieldType.ADDRESS_HOME_ZIP:
+                return InputType.TYPE_CLASS_TEXT
+                        | InputType.TYPE_TEXT_FLAG_CAP_CHARACTERS
                         | InputType.TYPE_TEXT_VARIATION_POSTAL_ADDRESS;
-            case ServerFieldType.PHONE_HOME_WHOLE_NUMBER:
+            case FieldType.PHONE_HOME_WHOLE_NUMBER:
                 // Show the keyboard with numbers and phone-related symbols.
                 return InputType.TYPE_CLASS_PHONE;
-            case ServerFieldType.ADDRESS_HOME_STREET_ADDRESS:
-                return InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_FLAG_CAP_WORDS
+            case FieldType.ADDRESS_HOME_STREET_ADDRESS:
+                return InputType.TYPE_CLASS_TEXT
+                        | InputType.TYPE_TEXT_FLAG_CAP_WORDS
                         | InputType.TYPE_TEXT_FLAG_MULTI_LINE
                         | InputType.TYPE_TEXT_VARIATION_POSTAL_ADDRESS;
-            case ServerFieldType.EMAIL_ADDRESS:
+            case FieldType.EMAIL_ADDRESS:
                 return InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_EMAIL_ADDRESS;
             default:
                 return InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_FLAG_CAP_WORDS;

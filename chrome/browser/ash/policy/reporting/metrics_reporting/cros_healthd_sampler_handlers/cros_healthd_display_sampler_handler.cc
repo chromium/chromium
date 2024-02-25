@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ash/policy/reporting/metrics_reporting/cros_healthd_sampler_handlers/cros_healthd_display_sampler_handler.h"
 
+#include <optional>
 #include <utility>
 
 #include "base/logging.h"
@@ -11,7 +12,6 @@
 #include "chrome/browser/ash/policy/reporting/metrics_reporting/cros_healthd_metric_sampler.h"
 #include "components/reporting/metrics/sampler.h"
 #include "components/reporting/proto/synced/metric_data.pb.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace reporting {
 
@@ -26,7 +26,7 @@ CrosHealthdDisplaySamplerHandler::~CrosHealthdDisplaySamplerHandler() = default;
 void CrosHealthdDisplaySamplerHandler::HandleResult(
     OptionalMetricCallback callback,
     cros_healthd::TelemetryInfoPtr result) const {
-  absl::optional<MetricData> metric_data;
+  std::optional<MetricData> metric_data;
   const auto& display_result = result->display_result;
   if (!display_result.is_null()) {
     switch (display_result->which()) {
@@ -43,7 +43,7 @@ void CrosHealthdDisplaySamplerHandler::HandleResult(
           break;
         }
 
-        metric_data = absl::make_optional<MetricData>();
+        metric_data = std::make_optional<MetricData>();
         const auto* const embedded_display_info =
             display_info->embedded_display.get();
         if (metric_type_ == MetricType::kInfo) {

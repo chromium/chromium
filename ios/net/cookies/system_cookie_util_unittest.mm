@@ -39,8 +39,7 @@ void CheckSystemCookie(const base::Time& expires, bool secure, bool httponly) {
           expires,
           base::Time(),  // last_access
           base::Time(),  // last_update
-          secure, httponly, same_site, net::COOKIE_PRIORITY_DEFAULT,
-          false /* same_party */);
+          secure, httponly, same_site, net::COOKIE_PRIORITY_DEFAULT);
   // Convert it to system cookie.
   NSHTTPCookie* system_cookie =
       SystemCookieFromCanonicalCookie(*canonical_cookie);
@@ -59,7 +58,7 @@ void CheckSystemCookie(const base::Time& expires, bool secure, bool httponly) {
     EXPECT_NSEQ(NSHTTPCookieSameSiteLax, [system_cookie sameSitePolicy]);
   }
   // Allow 1 second difference as iOS rounds expiry time to the nearest second.
-  base::Time system_cookie_expire_date = base::Time::FromDoubleT(
+  base::Time system_cookie_expire_date = base::Time::FromSecondsSinceUnixEpoch(
       [[system_cookie expiresDate] timeIntervalSince1970]);
   EXPECT_LE(expires - base::Seconds(1), system_cookie_expire_date);
   EXPECT_GE(expires + base::Seconds(1), system_cookie_expire_date);
@@ -72,8 +71,8 @@ using CookieUtil = PlatformTest;
 TEST_F(CookieUtil, CanonicalCookieFromSystemCookie) {
   base::Time creation_time = base::Time::Now();
   base::Time expire_date = creation_time + base::Hours(2);
-  NSDate* system_expire_date =
-      [NSDate dateWithTimeIntervalSince1970:expire_date.ToDoubleT()];
+  NSDate* system_expire_date = [NSDate
+      dateWithTimeIntervalSince1970:expire_date.InSecondsFSinceUnixEpoch()];
   NSMutableDictionary* properties =
       [NSMutableDictionary dictionaryWithDictionary:@{
         NSHTTPCookieDomain : @"foo",
@@ -104,7 +103,7 @@ TEST_F(CookieUtil, CanonicalCookieFromSystemCookie) {
   // Allow 1 second difference as iOS rounds expiry time to the nearest second.
   EXPECT_LE(expire_date - base::Seconds(1), chrome_cookie->ExpiryDate());
   EXPECT_GE(expire_date + base::Seconds(1), chrome_cookie->ExpiryDate());
-  EXPECT_FALSE(chrome_cookie->IsSecure());
+  EXPECT_FALSE(chrome_cookie->SecureAttribute());
   EXPECT_TRUE(chrome_cookie->IsHttpOnly());
   EXPECT_EQ(net::COOKIE_PRIORITY_DEFAULT, chrome_cookie->Priority());
   if (@available(iOS 13, *)) {
@@ -122,7 +121,7 @@ TEST_F(CookieUtil, CanonicalCookieFromSystemCookie) {
   ASSERT_TRUE(system_cookie);
   chrome_cookie = CanonicalCookieFromSystemCookie(system_cookie, creation_time);
   EXPECT_FALSE(chrome_cookie->IsPersistent());
-  EXPECT_TRUE(chrome_cookie->IsSecure());
+  EXPECT_TRUE(chrome_cookie->SecureAttribute());
 
   // Test a non-Canonical cookie does not cause a crash.
   system_cookie = [[NSHTTPCookie alloc] initWithProperties:@{
@@ -156,8 +155,7 @@ TEST_F(CookieUtil, SystemCookieFromBadCanonicalCookie) {
           base::Time(),  // last_update
           false,         // secure
           false,         // httponly
-          net::CookieSameSite::NO_RESTRICTION, net::COOKIE_PRIORITY_DEFAULT,
-          false /* same_party */);
+          net::CookieSameSite::NO_RESTRICTION, net::COOKIE_PRIORITY_DEFAULT);
   // Convert it to system cookie.
   NSHTTPCookie* system_cookie =
       SystemCookieFromCanonicalCookie(*bad_canonical_cookie);
@@ -175,8 +173,7 @@ TEST_F(CookieUtil, SystemCookiesFromCanonicalCookieList) {
           base::Time(),  // last_update
           false,         // secure
           false,         // httponly
-          net::CookieSameSite::UNSPECIFIED, net::COOKIE_PRIORITY_DEFAULT,
-          false /* same_party */),
+          net::CookieSameSite::UNSPECIFIED, net::COOKIE_PRIORITY_DEFAULT),
       *net::CanonicalCookie::CreateUnsafeCookieForTesting(
           "name2", "value2", "domain2", "path2/",
           base::Time(),  // creation
@@ -185,8 +182,7 @@ TEST_F(CookieUtil, SystemCookiesFromCanonicalCookieList) {
           base::Time(),  // last_update
           false,         // secure
           false,         // httponly
-          net::CookieSameSite::UNSPECIFIED, net::COOKIE_PRIORITY_DEFAULT,
-          false /* same_party */),
+          net::CookieSameSite::UNSPECIFIED, net::COOKIE_PRIORITY_DEFAULT),
   };
 
   NSArray<NSHTTPCookie*>* system_cookies =

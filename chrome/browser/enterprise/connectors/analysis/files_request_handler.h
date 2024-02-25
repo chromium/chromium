@@ -64,6 +64,7 @@ class FilesRequestHandler : public RequestHandlerBase {
       const std::string& destination,
       const std::string& user_action_id,
       const std::string& tab_title,
+      const std::string& content_transfer_method,
       safe_browsing::DeepScanAccessPoint access_point,
       ContentAnalysisRequest::Reason reason,
       const std::vector<base::FilePath>& paths,
@@ -83,6 +84,7 @@ class FilesRequestHandler : public RequestHandlerBase {
       const std::string& destination,
       const std::string& user_action_id,
       const std::string& tab_title,
+      const std::string& content_transfer_method,
       safe_browsing::DeepScanAccessPoint access_point,
       ContentAnalysisRequest::Reason reason,
       const std::vector<base::FilePath>& paths,
@@ -95,7 +97,7 @@ class FilesRequestHandler : public RequestHandlerBase {
   ~FilesRequestHandler() override;
 
   void ReportWarningBypass(
-      absl::optional<std::u16string> user_justification) override;
+      std::optional<std::u16string> user_justification) override;
 
  protected:
   FilesRequestHandler(
@@ -107,6 +109,7 @@ class FilesRequestHandler : public RequestHandlerBase {
       const std::string& destination,
       const std::string& user_action_id,
       const std::string& tab_title,
+      const std::string& content_transfer_method,
       safe_browsing::DeepScanAccessPoint access_point,
       ContentAnalysisRequest::Reason reason,
       const std::vector<base::FilePath>& paths,
@@ -184,6 +187,8 @@ class FilesRequestHandler : public RequestHandlerBase {
   // This is set to true as soon as a TOO_MANY_REQUESTS response is obtained. No
   // more data should be upload for `this` at that point.
   bool throttled_ = false;
+
+  std::string content_transfer_method_;
 
   CompletionCallback callback_;
 

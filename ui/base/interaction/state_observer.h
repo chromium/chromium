@@ -7,7 +7,7 @@
 
 #include <algorithm>
 #include <ostream>
-#include <type_traits>
+#include <utility>
 
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
@@ -40,11 +40,11 @@ class StateObserver {
   virtual T GetStateObserverInitialState() const { return T(); }
 
   // Used by the owning test to set the state change callback. Do not call
-  // directly.
+  // directly. The caller should ensure the the new callback is issued with the
+  // current state.
   void SetStateObserverStateChangedCallback(StateChangedCallback callback) {
     CHECK(!state_changed_callback_);
     state_changed_callback_ = std::move(callback);
-    state_changed_callback_.Run(GetStateObserverInitialState());
   }
 
  protected:
@@ -170,13 +170,14 @@ extern std::ostream& operator<<(std::ostream& os,
 
 #define DECLARE_STATE_IDENTIFIER_VALUE(ObserverType, Name) \
   DECLARE_ELEMENT_IDENTIFIER_VALUE(Name##Impl);            \
+  extern const ui::test::StateIdentifier<ObserverType> Name
+
+#define DEFINE_STATE_IDENTIFIER_VALUE(ObserverType, Name) \
+  DEFINE_ELEMENT_IDENTIFIER_VALUE(Name##Impl);            \
   constexpr ui::test::StateIdentifier<ObserverType> Name(Name##Impl)
 
-#define DEFINE_STATE_IDENTIFIER_VALUE(Name) \
-  DEFINE_ELEMENT_IDENTIFIER_VALUE(Name##Impl)
-
-#define DEFINE_LOCAL_STATE_IDENTIFIER_VALUE(ObserverType, Name) \
-  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(Name##Impl);            \
+#define DEFINE_LOCAL_STATE_IDENTIFIER_VALUE(ObserverType, Name)          \
+  DEFINE_MACRO_ELEMENT_IDENTIFIER_VALUE(__FILE__, __LINE__, Name##Impl); \
   constexpr ui::test::StateIdentifier<ObserverType> Name(Name##Impl)
 
 #endif  // UI_BASE_INTERACTION_STATE_OBSERVER_H_

@@ -10,12 +10,14 @@
 
 #include <map>
 #include <memory>
+#include <optional>
 #include <set>
 #include <string>
 #include <vector>
 
 #include "base/check_op.h"
 #include "base/compiler_specific.h"
+#include "base/containers/flat_map.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
@@ -23,14 +25,12 @@
 #include "base/sequence_checker.h"
 #include "base/supports_user_data.h"
 #include "base/uuid.h"
-#include "build/build_config.h"
 #include "components/bookmarks/browser/bookmark_client.h"
 #include "components/bookmarks/browser/bookmark_node.h"
 #include "components/bookmarks/browser/bookmark_undo_provider.h"
+#include "components/bookmarks/browser/core_bookmark_model.h"
+#include "components/bookmarks/browser/uuid_index.h"
 #include "components/bookmarks/common/bookmark_metrics.h"
-#include "components/bookmarks/common/storage_type.h"
-#include "components/keyed_service/core/keyed_service.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/image/image.h"
 #include "url/gurl.h"
 
@@ -54,7 +54,6 @@ class BookmarkModelObserver;
 class BookmarkStorage;
 class ModelLoader;
 class ScopedGroupBookmarkActions;
-class TestBookmarkClient;
 class TitledUrlIndex;
 class UrlIndex;
 
@@ -75,10 +74,11 @@ struct TitledUrlMatch;
 // Marked final to prevent unintended subclassing.
 // `MoveToOtherModelWithNewNodeIdsAndUuids` affects two instances, and assumes
 // that both instances are `BookmarkModel`, not some subclasses.
-class BookmarkModel final : public BookmarkUndoProvider,
-                            public KeyedService,
+class BookmarkModel final : public CoreBookmarkModel,
+                            public BookmarkUndoProvider,
                             public base::SupportsUserData {
  public:
+  // `client` must not be null.
   explicit BookmarkModel(std::unique_ptr<BookmarkClient> client);
 
   BookmarkModel(const BookmarkModel&) = delete;
@@ -89,19 +89,19 @@ class BookmarkModel final : public BookmarkUndoProvider,
   // Triggers the loading of bookmarks, which is an asynchronous operation with
   // most heavy-lifting taking place in a background sequence. Upon completion,
   // loaded() will return true and observers will be notified via
-  // BookmarkModelLoaded(). Uses different files depending on
-  // |storage_type| to support local and account storages.
-  // Please note that for the time being the local storage is also used when
-  // sync is on.
-  // TODO(crbug.com/1422201): Update the note above when the local storage is
-  //                          no longer used for sync.
-  void Load(const base::FilePath& profile_path, StorageType storage_type);
+  // BookmarkModelLoaded().
+  void Load(const base::FilePath& profile_path);
+
+  // Special API for iOS only, where a dedicated BookmarkModel is used for
+  // account bookmarks, and counter-intuitively this BookmarkModel instance
+  // exposes those bookmarks as local-or-syncable bookmarks.
+  // TODO(crbug.com/326185948): Remove once a single BookmarkModel instance is
+  // used on iOS.
+  void LoadAccountBookmarksFileAsLocalOrSyncableBookmarks(
+      const base::FilePath& profile_path);
 
   // Returns true if the model finished loading.
-  bool loaded() const {
-    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-    return loaded_;
-  }
+  bool loaded() const override;
 
   // Returns the object responsible for tracking loading.
   scoped_refptr<ModelLoader> model_loader();
@@ -113,32 +113,59 @@ class BookmarkModel final : public BookmarkUndoProvider,
     return root_;
   }
 
-  // Returns the 'bookmark bar' node. This is NULL until loaded.
+  // Returns the 'bookmark bar' node for the local-or-syncable storage.
+  // Local-or-syncable storage is used for syncing bookmarks *only* if
+  // Sync-the-feature is enabled. After Sync-to-Signin migration is finished -
+  // local-or-syncable storage (and this folder) will become purely local.
+  // This is null until loaded.
   const BookmarkNode* bookmark_bar_node() const {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     return bookmark_bar_node_;
   }
 
-  // Returns the 'other' node. This is NULL until loaded.
+  // Returns the 'other' node for the local-or-syncable storage.
+  // Local-or-syncable storage is used for syncing bookmarks *only* if
+  // Sync-the-feature is enabled. After Sync-to-Signin migration is finished -
+  // local-or-syncable storage (and this folder) will become purely local.
+  // This is null until loaded.
   const BookmarkNode* other_node() const {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     return other_node_;
   }
 
-  // Returns the 'mobile' node. This is NULL until loaded.
+  // Returns the 'mobile' node for the local-or-syncable storage.
+  // Local-or-syncable storage is used for syncing bookmarks *only* if
+  // Sync-the-feature is enabled. After Sync-to-Signin migration is finished -
+  // local-or-syncable storage (and this folder) will become purely local.
+  // This is null until loaded.
   const BookmarkNode* mobile_node() const {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     return mobile_node_;
   }
+
+  // Returns the 'bookmark bar' node for the account storage. This is null until
+  // loaded or if the user is not signed in (or isn't opted into syncing
+  // bookmarks in the account storage).
+  const BookmarkNode* account_bookmark_bar_node() const;
+
+  // Returns the 'other' node for the account storage. This is null until loaded
+  // or if the user is not signed in (or isn't opted into syncing bookmarks in
+  // the account storage).
+  const BookmarkNode* account_other_node() const;
+
+  // Returns the 'mobile' node for the account storage. This is null until
+  // loaded or if the user is not signed in (or isn't opted into syncing
+  // bookmarks in the account storage).
+  const BookmarkNode* account_mobile_node() const;
 
   bool is_root_node(const BookmarkNode* node) const {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     return node == root_;
   }
 
-  // Returns whether the given |node| is one of the permanent nodes - root node,
+  // Returns whether the given `node` is one of the permanent nodes - root node,
   // 'bookmark bar' node, 'other' node or 'mobile' node, or one of the root
-  // nodes supplied by the |client_|.
+  // nodes supplied by the `client_`.
   bool is_permanent_node(const BookmarkNode* node) const {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     return node && (node == root_ || node->parent() == root_);
@@ -168,14 +195,17 @@ class BookmarkModel final : public BookmarkUndoProvider,
   // Removes all the non-permanent bookmark nodes that are editable by the user.
   // Observers are only notified when all nodes have been removed. There is no
   // notification for individual node removals.
-  void RemoveAllUserBookmarks();
+  void RemoveAllUserBookmarks() override;
 
-  // Moves |node| to |new_parent| and inserts it at the given |index|.
+  // Moves `node` to `new_parent` and inserts it at the given `index`.
+  //
+  // Note: this might cause UUIDs to get reassigned for `node` or its
+  // descendants, when the node is moved between local and account storages.
   void Move(const BookmarkNode* node,
             const BookmarkNode* new_parent,
             size_t index);
 
-  // Inserts a copy of |node| into |new_parent| at |index|.
+  // Inserts a copy of `node` into `new_parent` at `index`.
   void Copy(const BookmarkNode* node,
             const BookmarkNode* new_parent,
             size_t index);
@@ -204,55 +234,117 @@ class BookmarkModel final : public BookmarkUndoProvider,
       BookmarkModel* dest_model,
       const BookmarkNode* dest_parent);
 
-  // Returns the favicon for |node|. If the favicon has not yet been loaded,
+  // Returns the favicon for `node`. If the favicon has not yet been loaded,
   // a load will be triggered and the observer of the model notified when done.
   // This also means that, on return, the node's state is guaranteed to be
   // either LOADED_FAVICON (if it was already loaded prior to the call) or
   // LOADING_FAVICON (with the exception of folders, where the call is a no-op).
   const gfx::Image& GetFavicon(const BookmarkNode* node);
 
-  // Sets the title of |node|.
+  // Sets the title of `node`.
   void SetTitle(const BookmarkNode* node,
                 const std::u16string& title,
                 metrics::BookmarkEditSource source);
 
-  // Sets the URL of |node|.
+  // Sets the URL of `node`.
   void SetURL(const BookmarkNode* node,
               const GURL& url,
               metrics::BookmarkEditSource source);
 
-  // Sets the date added time of |node|.
+  // Sets the date added time of `node`.
   void SetDateAdded(const BookmarkNode* node, base::Time date_added);
 
-  // Returns the set of nodes with the |url|.
-  void GetNodesByURL(const GURL& url, std::vector<const BookmarkNode*>* nodes);
+  // Returns the set of nodes with the `url`.
+  [[nodiscard]] std::vector<raw_ptr<const BookmarkNode, VectorExperimental>>
+  GetNodesByURL(const GURL& url) const;
 
-  // Returns the most recently added user node for the |url|; urls from any
+  // Same as above but it only returns the count.
+  // TODO(crbug.com/326185948): Remove this function once the migration of iOS
+  // to a single BookmarkModel instance is complete, as callers can invoke
+  // `GetNodesByURL()` instead.
+  size_t GetNodeCountByURL(const GURL& url) const override;
+
+  // Same as `GetNodesByURL()` but it only returns the titles.
+  // TODO(crbug.com/326185948): Remove this function once the migration of iOS
+  // to a single BookmarkModel instance is complete, as callers can invoke
+  // `GetNodesByURL()` instead.
+  std::vector<std::u16string_view> GetNodeTitlesByURL(
+      const GURL& url) const override;
+
+  // Enum determining a subset of bookmark nodes within a BookmarkModel for the
+  // purpose of issuing UUID-based lookups. It is needed because, in some
+  // advanced scenarios, the same UUID may be used by two BookmarkNode-s, in
+  // particular if a bookmark duplicate exists as a result of Sync having left
+  // behind a copy of the data.
+  //
+  // Below some guidance about the use of this enum:
+  // 1. For callers that don't particularly mind the nature of the bookmark
+  //    node, a sensible default is to issue two lookups, starting with
+  //    `kAccountNodes` and (if the first returns null) following up with
+  //    `kLocalOrSyncableNodes`.
+  //
+  // 2. For callers that specifically need to identify bookmarks that are saved
+  //    (sync-ed) to the user's server-side account, it might be required to
+  //    only conditionally issue the second lookup (`kLocalOrSyncableNodes`),
+  //    based on whether user-facing Sync is on (exposed outside
+  //    components/bookmarks, namely in SyncService).
+  //
+  // 3. For callers that specifically need the opposite, that is, identify
+  //    bookmarks that are local-only, a lookup using `kLocalOrSyncableNodes`
+  //    is sufficient, but it should also be done conditionally to the
+  //    user-facing Sync being off (exposed outside components/bookmarks, namely
+  //    in SyncService).
+  //
+  // In doubt, please reach out to components/bookmarks owners for guidance.
+  enum class NodeTypeForUuidLookup {
+    // Local or syncable nodes include all bookmark nodes that are not
+    // descendants of account permanent folders (e.g. as returned by
+    // account_bookmark_bar_node()). On platforms where
+    // BookmarkClient::AreFoldersForAccountStorageAllowed() returns false, which
+    // most notably includes iOS, this includes all bookmark nodes.
+    kLocalOrSyncableNodes,
+    // Account nodes include all bookmarks that are descendants of account
+    // permanent folders (e.g. as returned by account_bookmark_bar_node()). On
+    // platforms where BookmarkClient::AreFoldersForAccountStorageAllowed()
+    // returns false, which most notably includes iOS, these bookmarks don't
+    // exist.
+    kAccountNodes,
+  };
+
+  // Returns the node with the given `uuid` among the subset of nodes determined
+  // by `type`. Returns null if no node exists matching `uuid`.
+  //
+  // WARNING: UUID-based lookups are subtle and should be done with care, please
+  // see details above in `NodeTypeForUuidLookup` and in doubt please reach out
+  // to components/bookmarks owners for guidance.
+  const BookmarkNode* GetNodeByUuid(const base::Uuid& uuid,
+                                    NodeTypeForUuidLookup type) const;
+
+  // Returns the most recently added user node for the `url`; urls from any
   // nodes that are not editable by the user are never returned by this call.
-  // Returns NULL if |url| is not bookmarked.
-  const BookmarkNode* GetMostRecentlyAddedUserNodeForURL(const GURL& url);
+  // Returns NULL if `url` is not bookmarked.
+  const BookmarkNode* GetMostRecentlyAddedUserNodeForURL(const GURL& url) const;
 
   // Returns true if there are bookmarks, otherwise returns false.
-  bool HasBookmarks();
+  bool HasBookmarks() const;
 
   // Returns true is there is no user created bookmarks or folders.
-  bool HasNoUserCreatedBookmarksOrFolders();
+  bool HasNoUserCreatedBookmarksOrFolders() const;
 
   // Returns true if the specified URL is bookmarked.
-  bool IsBookmarked(const GURL& url);
+  bool IsBookmarked(const GURL& url) const override;
 
-  // Returns, by reference in |bookmarks|, the set of bookmarked urls and their
-  // titles. This returns the unique set of URLs. For example, if two bookmarks
-  // reference the same URL only one entry is added not matter the titles are
-  // same or not.
-  void GetBookmarks(std::vector<UrlAndTitle>* urls);
+  // Return the set of bookmarked urls and their titles. This returns the unique
+  // set of URLs. For example, if two bookmarks reference the same URL only one
+  // entry is added not matter the titles are same or not.
+  [[nodiscard]] std::vector<UrlAndTitle> GetUniqueUrls() const;
 
-  // Returns the type of |folder| as represented in metrics.
+  // Returns the type of `folder` as represented in metrics.
   metrics::BookmarkFolderTypeForUMA GetFolderType(
       const BookmarkNode* folder) const;
 
   // Adds a new folder node at the specified position with the given
-  // |creation_time|, |uuid| and |meta_info|. If no UUID is provided (i.e.
+  // `creation_time`, `uuid` and `meta_info`. If no UUID is provided (i.e.
   // nullopt), then a random one will be generated. If a UUID is provided, it
   // must be valid.
   const BookmarkNode* AddFolder(
@@ -260,8 +352,8 @@ class BookmarkModel final : public BookmarkUndoProvider,
       size_t index,
       const std::u16string& title,
       const BookmarkNode::MetaInfoMap* meta_info = nullptr,
-      absl::optional<base::Time> creation_time = absl::nullopt,
-      absl::optional<base::Uuid> uuid = absl::nullopt);
+      std::optional<base::Time> creation_time = std::nullopt,
+      std::optional<base::Uuid> uuid = std::nullopt);
 
   // Adds a new bookmark for the given `url` at the specified position with the
   // given `meta_info`. Used for bookmarks being added through some direct user
@@ -286,16 +378,16 @@ class BookmarkModel final : public BookmarkUndoProvider,
       const std::u16string& title,
       const GURL& url,
       const BookmarkNode::MetaInfoMap* meta_info = nullptr,
-      absl::optional<base::Time> creation_time = absl::nullopt,
-      absl::optional<base::Uuid> uuid = absl::nullopt,
+      std::optional<base::Time> creation_time = std::nullopt,
+      std::optional<base::Uuid> uuid = std::nullopt,
       bool added_by_user = false);
 
-  // Sorts the children of |parent|, notifying observers by way of the
+  // Sorts the children of `parent`, notifying observers by way of the
   // BookmarkNodeChildrenReordered method.
   void SortChildren(const BookmarkNode* parent);
 
-  // Order the children of |parent| as specified in |ordered_nodes|.  This
-  // function should only be used to reorder the child nodes of |parent| and
+  // Order the children of `parent` as specified in `ordered_nodes`.  This
+  // function should only be used to reorder the child nodes of `parent` and
   // is not meant to move nodes between different parent. Notifies observers
   // using the BookmarkNodeChildrenReordered method.
   void ReorderChildren(const BookmarkNode* parent,
@@ -322,23 +414,22 @@ class BookmarkModel final : public BookmarkUndoProvider,
   void ClearLastUsedTimeInRange(const base::Time delete_begin,
                                 const base::Time delete_end);
 
-  // Returns up to |max_count| bookmarks containing each term from |query| in
-  // either the title, URL, or the titles of ancestors. |matching_algorithm|
-  // determines the algorithm used by QueryParser internally to parse |query|.
-  std::vector<TitledUrlMatch> GetBookmarksMatching(
+  // Returns up to `max_count_hint` bookmarks containing each term from `query`
+  // in either the title, URL, or the titles of ancestors. `matching_algorithm`
+  // determines the algorithm used by QueryParser internally to parse `query`.
+  [[nodiscard]] std::vector<TitledUrlMatch> GetBookmarksMatching(
       const std::u16string& query,
-      size_t max_count,
-      query_parser::MatchingAlgorithm matching_algorithm);
+      size_t max_count_hint,
+      query_parser::MatchingAlgorithm matching_algorithm) const override;
 
-  // Sets the store to NULL, making it so the BookmarkModel does not persist
-  // any changes to disk. This is only useful during testing to speed up
+  // Disables the persistence to disk, useful during testing to speed up
   // testing.
-  void ClearStore();
+  void DisableWritesToDiskForTest();
 
   // Returns the next node ID.
   int64_t next_node_id() const { return next_node_id_; }
 
-  // Sets/deletes meta info of |node|.
+  // Sets/deletes meta info of `node`.
   void SetNodeMetaInfo(const BookmarkNode* node,
                        const std::string& key,
                        const std::string& value);
@@ -346,66 +437,75 @@ class BookmarkModel final : public BookmarkUndoProvider,
                           const BookmarkNode::MetaInfoMap& meta_info_map);
   void DeleteNodeMetaInfo(const BookmarkNode* node, const std::string& key);
 
-  // Sets/deletes local meta info of |node|.
-  void SetNodeUnsyncedMetaInfo(const BookmarkNode* node,
-                               const std::string& key,
-                               const std::string& value);
-  void SetNodeUnsyncedMetaInfoMap(
-      const BookmarkNode* node,
-      const BookmarkNode::MetaInfoMap& meta_info_map);
-  void DeleteUnsyncedNodeMetaInfo(const BookmarkNode* node,
-                                  const std::string& key);
-
-  // Adds |key| to the set of meta info keys that are not copied when a node is
-  // cloned.
-  void AddNonClonedKey(const std::string& key);
-
-  // Returns the set of meta info keys that should not be copied when a node is
-  // cloned.
-  const std::set<std::string>& non_cloned_keys() const {
-    return non_cloned_keys_;
-  }
-
   // Notify BookmarkModel that the favicons for the given page URLs (e.g.
   // http://www.google.com) and the given icon URL (e.g.
   // http://www.google.com/favicon.ico) have changed. It is valid to call
-  // OnFaviconsChanged() with non-empty |page_urls| and an empty |icon_url| and
+  // OnFaviconsChanged() with non-empty `page_urls` and an empty `icon_url` and
   // vice versa.
   void OnFaviconsChanged(const std::set<GURL>& page_urls, const GURL& icon_url);
 
   // Returns the client used by this BookmarkModel.
   BookmarkClient* client() const { return client_.get(); }
 
+  // Creates folders for account storage. Must be invoked by sync code only.
+  // Must only be invoked after BookmarkModel is loaded.
+  void CreateAccountPermanentFolders();
+
+  // Removes folders for account storage. Calling this method will destroy ALL
+  // bookmarks in account storage, including permanent folders. Must be invoked
+  // by sync code only. Must only be invoked after BookmarkModel is loaded.
+  void RemoveAccountPermanentFolders();
+
   base::WeakPtr<BookmarkModel> AsWeakPtr() {
     return weak_factory_.GetWeakPtr();
   }
 
-  // Attempts to delete the account storage file in case the account storage
-  // support was rolled back. If the account storage support wasn't enabled -
-  // this is a no-op. Deletion is done asynchronously on a background thread.
-  static void WipeAccountStorageForRollback(const base::FilePath& profile_path);
+  // Similar to Load() but allows unit-tests to mimic an empty JSON file being
+  // loaded from disk, without dealing with actual files, and complete loading
+  // synchronously.
+  void LoadEmptyForTest();
+
+  // If a write to disk is scheduled, performs it immediately. This is useful
+  // for tests that restart the browser without necessarily shutting it down
+  // cleanly first.
+  void CommitPendingWriteForTest();
+
+  // Returns whether pending writes are pending/scheduled.
+  bool LocalOrSyncableStorageHasPendingWriteForTest() const;
+  bool AccountStorageHasPendingWriteForTest() const;
+
+  // Mimics `LoadAccountBookmarksFileAsLocalOrSyncableBookmarks()` having been
+  // used instead of `Load()`, for the purpose of logging metrics. For
+  // unit-tests only.
+  void SetLoadedAccountBookmarksFileAsLocalOrSyncableBookmarksForUmaForTest();
 
  private:
   friend class BookmarkCodecTest;
   friend class BookmarkModelFaviconTest;
   friend class BookmarkStorage;
   friend class ScopedGroupBookmarkActions;
-  friend class TestBookmarkClient;
 
   // BookmarkUndoProvider:
   void RestoreRemovedNode(const BookmarkNode* parent,
                           size_t index,
                           std::unique_ptr<BookmarkNode> node) override;
 
-  // Notifies the observers for adding every descendant of |node|.
+  // Internal version of Load() that takes two file paths, the second of which
+  // represents account bookmarks and is optional. If `account_file_path` is
+  // empty, account bookmarks are neither read from nor written to disk.
+  void LoadImpl(const base::FilePath& local_or_syncable_file_path,
+                const base::FilePath& account_file_path);
+
+  // Given a node that is already part of the model, it determines the
+  // corresponding type for the purpose of understanding uniqueness properties
+  // of its UUID. That is, which subset of nodes this UUID is guaranteed to be
+  // unique among.
+  NodeTypeForUuidLookup DetermineTypeForUuidLookupForExistingNode(
+      const BookmarkNode* node) const;
+
+  // Notifies the observers for adding every descendant of `node`.
   void NotifyNodeAddedForAllDescendants(const BookmarkNode* node,
                                         bool added_by_user);
-
-  // Removes the node from internal maps and recurses through all children. If
-  // the node is a url, its url is added to removed_urls.
-  //
-  // This does NOT delete the node.
-  void RemoveNodeFromIndexRecursive(BookmarkNode* node);
 
   // Clones `node` and all its descendants (if any) for adding it in
   // `dest_model`. Doesn't add it to `dest_model` - this is the responsibility
@@ -424,10 +524,26 @@ class BookmarkModel final : public BookmarkUndoProvider,
   BookmarkNode* AddNode(BookmarkNode* parent,
                         size_t index,
                         std::unique_ptr<BookmarkNode> node,
-                        bool added_by_user = false);
+                        bool added_by_user,
+                        NodeTypeForUuidLookup type_for_uuid_lookup);
 
-  // Adds |node| to |index_| and recursively invokes this for all children.
-  void AddNodeToIndexRecursive(const BookmarkNode* node);
+  // Adds `node` to all lookups indices and recursively invokes this for all
+  // children.
+  void AddNodeToIndicesRecursive(const BookmarkNode* node,
+                                 NodeTypeForUuidLookup type_for_uuid_lookup);
+
+  // Removes `node` and notifies its observers, returning and transferring
+  // ownership of the node removed. The caller is responsible for allowing undo,
+  // if applicable.
+  std::unique_ptr<BookmarkNode> RemoveNode(const BookmarkNode* node);
+
+  // Removes the node from internal maps and recurses through all children. If
+  // the node is a url, its url is added to removed_urls.
+  //
+  // This does NOT delete the node.
+  void RemoveNodeFromIndicesRecursive(
+      BookmarkNode* node,
+      NodeTypeForUuidLookup type_for_uuid_lookup);
 
   // Returns true if the parent and index are valid.
   bool IsValidIndex(const BookmarkNode* parent, size_t index, bool allow_end);
@@ -470,16 +586,37 @@ class BookmarkModel final : public BookmarkUndoProvider,
                                          const base::Time delete_begin,
                                          const base::Time delete_end);
 
+  // Schedules saving the bookmark model to disk as a result of `node` having
+  // changed. When multiple BookmarkStorage instances are involved, `node`
+  // allows determining which of the two needs to be persisted.
+  void ScheduleSaveForNode(const BookmarkNode* node);
+
+  // Returns which BookmakStorage instance is used to persist `node` to disk.
+  // The returned value will be either `local_or_syncable_store_` or
+  // `account_store_`. It may return null in tests.
+  BookmarkStorage* GetStorageForNode(const BookmarkNode* node);
+
+  // Returns an enum representing how metrics associated to `node` should be
+  // suffixed with for the purpose of metric breakdowns.
+  metrics::StorageStateForUma GetStorageStateForUma(
+      const BookmarkNode* node) const;
+
   // Whether the initial set of data has been loaded.
   bool loaded_ = false;
 
-  // See |root_| for details.
+  // Whether or not loading was invoked via
+  // `LoadAccountBookmarksFileAsLocalOrSyncableBookmarks()`, remembered for the
+  // purpose of metrics.
+  bool loaded_account_bookmarks_file_as_local_or_syncable_bookmarks_for_uma_ =
+      false;
+
+  // See `root_` for details.
   std::unique_ptr<BookmarkNode> owned_root_;
 
   // The root node. This contains the bookmark bar node, the 'other' node and
-  // the mobile node as children. The value of |root_| is initially that of
-  // |owned_root_|. Once loading has completed, |owned_root_| is destroyed and
-  // this is set to url_index_->root(). |owned_root_| is done as lots of
+  // the mobile node as children. The value of `root_` is initially that of
+  // `owned_root_`. Once loading has completed, `owned_root_` is destroyed and
+  // this is set to url_index_->root(). `owned_root_` is done as lots of
   // existing code assumes the root is non-null while loading.
   raw_ptr<BookmarkNode, AcrossTasksDanglingUntriaged> root_ = nullptr;
 
@@ -489,6 +626,11 @@ class BookmarkModel final : public BookmarkUndoProvider,
       nullptr;
   raw_ptr<BookmarkPermanentNode, AcrossTasksDanglingUntriaged> mobile_node_ =
       nullptr;
+
+  // Permanent nodes for account storage.
+  raw_ptr<BookmarkPermanentNode> account_bookmark_bar_node_ = nullptr;
+  raw_ptr<BookmarkPermanentNode> account_other_node_ = nullptr;
+  raw_ptr<BookmarkPermanentNode> account_mobile_node_ = nullptr;
 
   // The maximum ID assigned to the bookmark nodes in the model.
   int64_t next_node_id_ = 1;
@@ -506,22 +648,21 @@ class BookmarkModel final : public BookmarkUndoProvider,
   // Used for loading favicons.
   base::CancelableTaskTracker cancelable_task_tracker_;
 
-  // Writes bookmarks to disk.
-  std::unique_ptr<BookmarkStorage> store_;
+  // Write bookmarks to disk.
+  std::unique_ptr<BookmarkStorage> local_or_syncable_store_;
+  std::unique_ptr<BookmarkStorage> account_store_;
 
   std::unique_ptr<TitledUrlIndex> titled_url_index_;
 
-  // Owned by |model_loader_|.
-  // WARNING: in some tests this does *not* refer to
-  // |ModelLoader::history_bookmark_model_|. This is because some tests
-  // directly call DoneLoading().
-  // TODO: this is confusing, fix tests not to circumvent ModelLoader.
+  // All nodes indexed by UUID. An independent index exists for each value in
+  // NodeTypeForUuidLookup, because UUID uniqueness is guaranteed only within
+  // the scope of each NodeTypeForUuidLookup value.
+  base::flat_map<NodeTypeForUuidLookup, UuidIndex> uuid_index_;
+
   scoped_refptr<UrlIndex> url_index_;
 
   // See description of IsDoingExtensiveChanges above.
   int extensive_changes_ = 0;
-
-  std::set<std::string> non_cloned_keys_;
 
   scoped_refptr<ModelLoader> model_loader_;
 

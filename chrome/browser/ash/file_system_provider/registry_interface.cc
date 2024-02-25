@@ -4,20 +4,15 @@
 
 #include "chrome/browser/ash/file_system_provider/registry_interface.h"
 
-namespace ash {
-namespace file_system_provider {
+namespace ash::file_system_provider {
 
-RegistryInterface::~RegistryInterface() {
-}
+RegistryInterface::~RegistryInterface() = default;
 
-RegistryInterface::RestoredFileSystem::RestoredFileSystem() {
-}
+RegistryInterface::RestoredFileSystem::RestoredFileSystem() = default;
 
 RegistryInterface::RestoredFileSystem::RestoredFileSystem(
     const RestoredFileSystem& other) = default;
 
-RegistryInterface::RestoredFileSystem::~RestoredFileSystem() {
-}
+RegistryInterface::RestoredFileSystem::~RestoredFileSystem() = default;
 
-}  // namespace file_system_provider
-}  // namespace ash
+}  // namespace ash::file_system_provider

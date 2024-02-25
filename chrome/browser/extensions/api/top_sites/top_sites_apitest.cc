@@ -29,8 +29,9 @@ class TopSitesExtensionTest : public InProcessBrowserTest {
       : top_sites_prepopulated_pages_size_(0),
         top_sites_inited_(false),
         waiting_(false) {}
-
   void SetUpOnMainThread() override {
+    base::RunLoop loop;
+    quit_closure_ = loop.QuitWhenIdleClosure();
     scoped_refptr<history::TopSites> top_sites =
         TopSitesFactory::GetForProfile(browser()->profile());
 
@@ -45,7 +46,7 @@ class TopSitesExtensionTest : public InProcessBrowserTest {
 
     if (!top_sites_inited_) {
       waiting_ = true;
-      base::RunLoop().Run();
+      loop.Run();
     }
 
     // By this point, we know topsites has loaded. We can run the tests now.
@@ -58,7 +59,7 @@ class TopSitesExtensionTest : public InProcessBrowserTest {
  private:
   void OnTopSitesAvailable(const history::MostVisitedURLList& data) {
     if (waiting_) {
-      base::RunLoop::QuitCurrentWhenIdleDeprecated();
+      std::move(quit_closure_).Run();
       waiting_ = false;
     }
     top_sites_inited_ = true;
@@ -67,6 +68,7 @@ class TopSitesExtensionTest : public InProcessBrowserTest {
   size_t top_sites_prepopulated_pages_size_;
   bool top_sites_inited_;
   bool waiting_;
+  base::OnceClosure quit_closure_;
 };
 
 }  // namespace
@@ -77,7 +79,7 @@ IN_PROC_BROWSER_TEST_F(TopSitesExtensionTest, GetTopSites) {
   // Without a callback the function will not generate a result.
   get_top_sites_function->set_has_callback(true);
 
-  absl::optional<base::Value> result = utils::RunFunctionAndReturnSingleResult(
+  std::optional<base::Value> result = utils::RunFunctionAndReturnSingleResult(
       get_top_sites_function.get(), "[]", browser()->profile());
   ASSERT_TRUE(result->is_list());
   EXPECT_GE(result->GetList().size(), top_sites_prepopulated_pages_size());

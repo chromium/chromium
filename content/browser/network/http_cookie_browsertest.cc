@@ -40,14 +40,27 @@ using ::testing::UnorderedElementsAre;
 // See also (tests for cookie access via JavaScript):
 // //content/browser/renderer_host/cookie_browsertest.cc
 
+constexpr char kHostA[] = "a.test";
+constexpr char kHostB[] = "b.test";
+constexpr char kSameSiteNoneCookieName[] = "samesite_none_cookie";
+constexpr char kSameSiteStrictCookieName[] = "samesite_strict_cookie";
+constexpr char kSameSiteLaxCookieName[] = "samesite_lax_cookie";
+constexpr char kSameSiteUnspecifiedCookieName[] = "samesite_unspecified_cookie";
+constexpr char kEchoCookiesWithCorsPath[] = "/echocookieswithcors";
+
+GURL RedirectUrl(net::EmbeddedTestServer* test_server,
+                 const std::string& host,
+                 const GURL& target_url) {
+  return test_server->GetURL(host, "/server-redirect?" + target_url.spec());
+}
+
 class HttpCookieBrowserTest : public ContentBrowserTest,
                               public ::testing::WithParamInterface<bool> {
  public:
   HttpCookieBrowserTest() : https_server_(net::EmbeddedTestServer::TYPE_HTTPS) {
-    if (DoesSameSiteConsiderRedirectChain()) {
-      feature_list_.InitAndEnableFeature(
-          net::features::kCookieSameSiteConsidersRedirectChain);
-    }
+    feature_list_.InitWithFeatureState(
+        net::features::kCookieSameSiteConsidersRedirectChain,
+        DoesSameSiteConsiderRedirectChain());
   }
 
   ~HttpCookieBrowserTest() override = default;
@@ -60,25 +73,8 @@ class HttpCookieBrowserTest : public ContentBrowserTest,
     ASSERT_TRUE(https_server()->Start());
   }
 
-  void SetUpCommandLine(base::CommandLine* command_line) override {
-    ContentBrowserTest::SetUpCommandLine(command_line);
-    command_line->AppendSwitchASCII(
-        network::switches::kUseFirstPartySet,
-        base::StringPrintf(R"({"primary": "https://%s",)"
-                           R"("associatedSites": ["https://%s","https://%s"]})",
-                           kHostA, kHostB, kHostC));
-  }
-
   bool DoesSameSiteConsiderRedirectChain() { return GetParam(); }
 
-  const char* kHostA = "a.test";
-  const char* kHostB = "b.test";
-  const char* kHostC = "c.test";
-  const char* kHostD = "d.test";
-  const char* kSameSiteStrictCookieName = "samesite_strict_cookie";
-  const char* kSameSiteLaxCookieName = "samesite_lax_cookie";
-  const char* kSameSiteNoneCookieName = "samesite_none_cookie";
-  const char* kSameSiteUnspecifiedCookieName = "samesite_unspecified_cookie";
   const std::string kSetSameSiteCookiesURL = base::StrCat({
       "/set-cookie?",
       kSameSiteStrictCookieName,
@@ -115,12 +111,6 @@ class HttpCookieBrowserTest : public ContentBrowserTest,
   GURL SetSameSiteCookiesUrl(net::EmbeddedTestServer* test_server,
                              const std::string& host) {
     return test_server->GetURL(host, kSetSameSiteCookiesURL);
-  }
-
-  GURL RedirectUrl(net::EmbeddedTestServer* test_server,
-                   const std::string& host,
-                   const GURL& target_url) {
-    return test_server->GetURL(host, "/server-redirect?" + target_url.spec());
   }
 
   std::string ExtractFrameContent(RenderFrameHost* frame) const {
@@ -540,6 +530,359 @@ IN_PROC_BROWSER_TEST_P(HttpCookieBrowserTest,
       net::CookieStringIs(UnorderedElementsAre(
           Key(kSameSiteStrictCookieName), Key(kSameSiteLaxCookieName),
           Key(kSameSiteNoneCookieName), Key(kSameSiteUnspecifiedCookieName))));
+}
+
+// Responds to a request to /echocookieswithcors with the cookies that were sent
+// with the request. We can't use the default handler /echoheader?Cookie here,
+// because it doesn't send the appropriate Access-Control-Allow-Origin and
+// Access-Control-Allow-Credentials headers (which are required for this to
+// work for cross-origin requests in the tests).
+std::unique_ptr<net::test_server::HttpResponse>
+HandleEchoCookiesWithCorsRequest(const net::test_server::HttpRequest& request) {
+  if (request.relative_url != kEchoCookiesWithCorsPath) {
+    return nullptr;
+  }
+
+  auto http_response = std::make_unique<net::test_server::BasicHttpResponse>();
+  std::string content;
+
+  // Get the 'Cookie' header that was sent in the request.
+  if (auto it = request.headers.find(net::HttpRequestHeaders::kCookie);
+      it != request.headers.end()) {
+    content = it->second;
+  }
+
+  http_response->set_code(net::HTTP_OK);
+  http_response->set_content_type("text/plain");
+  // Set the cors enabled headers.
+  if (auto it = request.headers.find(net::HttpRequestHeaders::kOrigin);
+      it != request.headers.end()) {
+    http_response->AddCustomHeader("Access-Control-Allow-Headers",
+                                   "credentials");
+    http_response->AddCustomHeader("Access-Control-Allow-Origin", it->second);
+    http_response->AddCustomHeader("Origin", it->second);
+    http_response->AddCustomHeader("Vary", "Origin");
+    http_response->AddCustomHeader("Access-Control-Allow-Methods", "POST");
+    http_response->AddCustomHeader("Access-Control-Allow-Credentials", "true");
+  }
+  http_response->set_content(content);
+
+  return http_response;
+}
+
+class ThirdPartyCookiesBlockedHttpCookieBrowserTest
+    : public ContentBrowserTest {
+ public:
+  ThirdPartyCookiesBlockedHttpCookieBrowserTest()
+      : https_server_(net::EmbeddedTestServer::TYPE_HTTPS) {
+    feature_list_.InitWithFeatures(
+        {
+            net::features::kForceThirdPartyCookieBlocking,
+            net::features::kThirdPartyCookieTopLevelSiteCorsException,
+        },
+        {});
+  }
+
+  ~ThirdPartyCookiesBlockedHttpCookieBrowserTest() override = default;
+
+  void SetUpOnMainThread() override {
+    ContentBrowserTest::SetUpOnMainThread();
+    host_resolver()->AddRule("*", "127.0.0.1");
+    https_server()->SetSSLConfig(net::EmbeddedTestServer::CERT_TEST_NAMES);
+    https_server()->AddDefaultHandlers(GetTestDataFilePath());
+    https_server()->RegisterRequestHandler(
+        base::BindRepeating(&HandleEchoCookiesWithCorsRequest));
+    ASSERT_TRUE(https_server()->Start());
+  }
+
+  WebContents* web_contents() const { return shell()->web_contents(); }
+
+  net::EmbeddedTestServer* https_server() { return &https_server_; }
+
+  GURL EchoCookiesUrl(const std::string& host) {
+    return https_server()->GetURL(host, "/echoheader?Cookie");
+  }
+
+  std::string ExtractFrameContent(RenderFrameHost* frame) const {
+    return EvalJs(frame, "document.body.textContent").ExtractString();
+  }
+
+  std::string ExtractCookieFromDocument(RenderFrameHost* frame) const {
+    return EvalJs(frame, "document.cookie").ExtractString();
+  }
+
+  std::string PostWithCredentials(RenderFrameHost* frame, const GURL& url) {
+    constexpr char script[] = R"JS(
+      fetch($1, {method: 'POST', 'credentials' : 'include'}
+      ).then((result) => result.text());
+      )JS";
+    return EvalJs(frame, JsReplace(script, url)).ExtractString();
+  }
+
+  EvalJsResult Fetch(RenderFrameHost* frame,
+                     const GURL& url,
+                     const std::string& mode,
+                     const std::string& credentials) {
+    constexpr char script[] = R"JS(
+      fetch($1, {mode: $2, credentials: $3}).then(result => result.text());
+    )JS";
+    return EvalJs(frame, JsReplace(script, url, mode, credentials));
+  }
+
+  bool CookieStoreEmpty(RenderFrameHost* frame) {
+    constexpr char script[] = R"JS(
+          (async () => {
+            let cookies = await cookieStore.getAll();
+            return cookies.length == 0;
+          })();
+      )JS";
+    return EvalJs(frame, script).ExtractBool();
+  }
+
+  EvalJsResult NavigateToURLWithPOST(RenderFrameHost* frame,
+                                     const std::string& host) {
+    TestNavigationObserver observer(web_contents());
+
+    constexpr char script[] = R"JS(
+        let form = document.createElement('form');
+        form.setAttribute('method', 'POST');
+        form.setAttribute('action', $1);
+        document.body.appendChild(form);
+        form.submit();
+     )JS";
+
+    EvalJsResult result =
+        EvalJs(frame, JsReplace(script, EchoCookiesUrl(host)));
+    observer.WaitForNavigationFinished();
+    EXPECT_TRUE(WaitForLoadStop(web_contents()));
+    return result;
+  }
+
+  EvalJsResult ReadCookiesViaFetchWithRedirect(
+      RenderFrameHost* frame,
+      const std::string& intermediate_host,
+      const std::string& destination_host) {
+    constexpr char script[] = "fetch($1).then((result) => result.text());";
+
+    GURL redirect_url = RedirectUrl(https_server(), intermediate_host,
+                                    EchoCookiesUrl(destination_host));
+
+    return EvalJs(frame, JsReplace(script, redirect_url));
+  }
+
+ private:
+  net::test_server::EmbeddedTestServer https_server_;
+  base::test::ScopedFeatureList feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(ThirdPartyCookiesBlockedHttpCookieBrowserTest,
+                       SameSiteNoneCookieNavigateCrossSiteEmbedToSameSiteUrl) {
+  ASSERT_TRUE(base::FeatureList::IsEnabled(
+      net::features::kForceThirdPartyCookieBlocking));
+
+  // Set SameSite=None cookie on kHostA.
+  ASSERT_TRUE(SetCookie(
+      web_contents()->GetBrowserContext(), https_server()->GetURL(kHostA, "/"),
+      base::StrCat({kSameSiteNoneCookieName, "=1;Secure;SameSite=None;"})));
+
+  // Confirm cross-site iframe (kHostB embedded in kHostA) does not
+  // send SameSite=None cookie to iframe.
+  EXPECT_THAT(content::ArrangeFramesAndGetContentFromLeaf(
+                  web_contents(), https_server(), "a.test(%s)", {0},
+                  EchoCookiesUrl(kHostB)),
+              net::CookieStringIs(UnorderedElementsAre()));
+
+  // Navigate embedded iframe from kHostB to kHostA and confirm that
+  // SameSite=None cookie is sent.
+  ASSERT_TRUE(NavigateToURLFromRenderer(
+      ChildFrameAt(web_contents()->GetPrimaryMainFrame(), 0),
+      EchoCookiesUrl(kHostA)));
+
+  EXPECT_THAT(
+      ExtractFrameContent(
+          ChildFrameAt(web_contents()->GetPrimaryMainFrame(), 0)),
+      net::CookieStringIs(UnorderedElementsAre(Key(kSameSiteNoneCookieName))));
+}
+
+IN_PROC_BROWSER_TEST_F(ThirdPartyCookiesBlockedHttpCookieBrowserTest,
+                       SameSiteNoneCookieCrossSitePostRequest) {
+  // Set and confirm SameSite=None cookie on top-level-site kHostB.
+  ASSERT_TRUE(SetCookie(
+      web_contents()->GetBrowserContext(), https_server()->GetURL(kHostB, "/"),
+      base::StrCat({kSameSiteNoneCookieName, "=1;Secure;SameSite=None;"})));
+
+  ASSERT_TRUE(NavigateToURL(web_contents(), EchoCookiesUrl(kHostB)));
+
+  ASSERT_THAT(
+      ExtractFrameContent(web_contents()->GetPrimaryMainFrame()),
+      net::CookieStringIs(UnorderedElementsAre(Key(kSameSiteNoneCookieName))));
+
+  ASSERT_TRUE(NavigateToURL(web_contents(), EchoCookiesUrl(kHostA)));
+
+  // Perform 'Post' to cross-site (kHostB) and confirm no cookie present in
+  // method response. Since there is no redirect action at the same time as
+  // the post, the cookie will be blocked as the request is being made
+  // cross-site.
+  EXPECT_THAT(PostWithCredentials(
+                  web_contents()->GetPrimaryMainFrame(),
+                  https_server()->GetURL(kHostB, kEchoCookiesWithCorsPath)),
+              "");
+}
+
+IN_PROC_BROWSER_TEST_F(ThirdPartyCookiesBlockedHttpCookieBrowserTest,
+                       SameSiteNoneCookieCrossSiteSubresourceNavigationPost) {
+  // Set and confirm SameSite=None cookie on top-level-site kHostB.
+  ASSERT_TRUE(SetCookie(
+      web_contents()->GetBrowserContext(), https_server()->GetURL(kHostB, "/"),
+      base::StrCat({kSameSiteNoneCookieName, "=1;Secure;SameSite=None;"})));
+
+  ASSERT_TRUE(NavigateToURL(web_contents(), EchoCookiesUrl(kHostB)));
+
+  ASSERT_THAT(
+      ExtractFrameContent(web_contents()->GetPrimaryMainFrame()),
+      net::CookieStringIs(UnorderedElementsAre(Key(kSameSiteNoneCookieName))));
+
+  // Starting at kHostA create a form that has an action value that causes a
+  // navigation to a new top-level-site (kHostB). Submit the form to trigger the
+  // navigation and confirm that no error has occurred in the response.
+  ASSERT_TRUE(NavigateToURL(web_contents(), EchoCookiesUrl(kHostA)));
+
+  ASSERT_TRUE(
+      NavigateToURLWithPOST(web_contents()->GetPrimaryMainFrame(), kHostB)
+          .error.empty());
+
+  // Confirm that navigation from subresource occurred and cookies are still
+  // available.
+  EXPECT_THAT(web_contents()->GetLastCommittedURL().host(), kHostB);
+
+  EXPECT_THAT(
+      ExtractFrameContent(web_contents()->GetPrimaryMainFrame()),
+      net::CookieStringIs(UnorderedElementsAre(Key(kSameSiteNoneCookieName))));
+}
+
+IN_PROC_BROWSER_TEST_F(ThirdPartyCookiesBlockedHttpCookieBrowserTest,
+                       RedirectCrossSiteSubresourceToSameSiteUrl) {
+  // Set and confirm SameSite=None cookie on top-level-site kHostA.
+  ASSERT_TRUE(SetCookie(
+      web_contents()->GetBrowserContext(), https_server()->GetURL(kHostA, "/"),
+      base::StrCat({kSameSiteNoneCookieName, "=1;Secure;SameSite=None;"})));
+
+  ASSERT_TRUE(NavigateToURL(web_contents(), EchoCookiesUrl(kHostA)));
+
+  ASSERT_THAT(
+      ExtractFrameContent(web_contents()->GetPrimaryMainFrame()),
+      net::CookieStringIs(UnorderedElementsAre(Key(kSameSiteNoneCookieName))));
+
+  // Perform redirect from cross-site subresource and ensure that no cookie was
+  // sent even though it was redirected to the top-level-site.
+  EXPECT_EQ(ReadCookiesViaFetchWithRedirect(
+                web_contents()->GetPrimaryMainFrame(), kHostB, kHostA),
+            "None");
+}
+
+IN_PROC_BROWSER_TEST_F(ThirdPartyCookiesBlockedHttpCookieBrowserTest,
+                       SameSiteNoneCookieBlockedOnABEmbeddedIframe) {
+  // Set and confirm SameSite=None cookie on top-level-site kHostA is
+  // present in the cookie header, document.cookie and cookie store.
+  ASSERT_TRUE(SetCookie(
+      web_contents()->GetBrowserContext(), https_server()->GetURL(kHostA, "/"),
+      base::StrCat({kSameSiteNoneCookieName, "=1;Secure;SameSite=None;"})));
+
+  ASSERT_TRUE(NavigateToURL(web_contents(), EchoCookiesUrl(kHostA)));
+  // Confirm in cookie header.
+  ASSERT_THAT(
+      ExtractFrameContent(web_contents()->GetPrimaryMainFrame()),
+      net::CookieStringIs(UnorderedElementsAre(Key(kSameSiteNoneCookieName))));
+  // Confirm in document.cookie.
+  ASSERT_THAT(
+      ExtractCookieFromDocument(web_contents()->GetPrimaryMainFrame()),
+      net::CookieStringIs(UnorderedElementsAre(Key(kSameSiteNoneCookieName))));
+  // Confirm in cookie store.
+  ASSERT_TRUE(
+      GetCookies(web_contents()->GetBrowserContext(), EchoCookiesUrl(kHostA))
+          .starts_with(kSameSiteNoneCookieName));
+
+  ASSERT_TRUE(NavigateToURL(web_contents(), EchoCookiesUrl(kHostB)));
+
+  // Embed an iframe containing A in B and check cookie header.
+  EXPECT_THAT(content::ArrangeFramesAndGetContentFromLeaf(
+                  web_contents(), https_server(),
+                  base::StrCat({kHostB, "(%s)"}), {0}, EchoCookiesUrl(kHostA)),
+              "None");
+
+  // Check document.cookie.
+  EXPECT_TRUE(ExtractCookieFromDocument(
+                  ChildFrameAt(web_contents()->GetPrimaryMainFrame(), 0))
+                  .empty());
+
+  // Check cookie store.
+  EXPECT_TRUE(
+      CookieStoreEmpty(ChildFrameAt(web_contents()->GetPrimaryMainFrame(), 0)));
+}
+
+IN_PROC_BROWSER_TEST_F(
+    ThirdPartyCookiesBlockedHttpCookieBrowserTest,
+    SameSiteNoneCookieBlockedInCrossSiteFetchRequestFromTopLevelFrame) {
+  // Set and confirm SameSite=None cookie on Site A.
+  ASSERT_TRUE(SetCookie(
+      web_contents()->GetBrowserContext(), https_server()->GetURL(kHostA, "/"),
+      base::StrCat({kSameSiteNoneCookieName, "=1;Secure;SameSite=None;"})));
+
+  ASSERT_TRUE(NavigateToURL(web_contents(), EchoCookiesUrl(kHostA)));
+
+  ASSERT_THAT(
+      ExtractFrameContent(web_contents()->GetPrimaryMainFrame()),
+      net::CookieStringIs(UnorderedElementsAre(Key(kSameSiteNoneCookieName))));
+
+  // From site B make a fetch call (with credentials) from site B to site A; and
+  // check if cookies are present on the request.
+  ASSERT_TRUE(NavigateToURL(web_contents(), EchoCookiesUrl(kHostB)));
+
+  EXPECT_THAT(Fetch(web_contents()->GetPrimaryMainFrame(),
+                    https_server()->GetURL(kHostA, kEchoCookiesWithCorsPath),
+                    "cors", "include")
+                  .ExtractString(),
+              net::CookieStringIs(IsEmpty()));
+}
+
+IN_PROC_BROWSER_TEST_F(ThirdPartyCookiesBlockedHttpCookieBrowserTest,
+                       TopLevelSiteCorsException) {
+  // Set and confirm SameSite=None cookie on Site A.
+  ASSERT_TRUE(SetCookie(
+      web_contents()->GetBrowserContext(), https_server()->GetURL(kHostA, "/"),
+      base::StrCat({kSameSiteNoneCookieName, "=1;Secure;SameSite=None;"})));
+
+  ASSERT_TRUE(NavigateToURL(web_contents(), EchoCookiesUrl(kHostA)));
+
+  // Embed an iframe containing A in B.
+  ASSERT_EQ(content::ArrangeFramesAndGetContentFromLeaf(
+                web_contents(), https_server(), base::StrCat({kHostA, "(%s)"}),
+                {0}, EchoCookiesUrl(kHostB)),
+            "None");
+
+  // Test that a subresource request from B to A can use cookies if it is
+  // in CORS mode and includes credentials.
+  EXPECT_EQ(Fetch(ChildFrameAt(web_contents()->GetPrimaryMainFrame(), 0),
+                  https_server()->GetURL(kHostA, kEchoCookiesWithCorsPath),
+                  "cors", "include")
+                .ExtractString(),
+            base::StrCat({kSameSiteNoneCookieName, "=1"}));
+
+  // Test that a subresource request from B to A cannot use cookies if it is
+  // in CORS mode and omits credentials.
+  EXPECT_THAT(Fetch(ChildFrameAt(web_contents()->GetPrimaryMainFrame(), 0),
+                    https_server()->GetURL(kHostA, kEchoCookiesWithCorsPath),
+                    "cors", "omit")
+                  .ExtractString(),
+              net::CookieStringIs(IsEmpty()));
+
+  // Test that a subresource request from B to A cannot use cookies if it is
+  // in no-cors mode.
+  EXPECT_THAT(Fetch(ChildFrameAt(web_contents()->GetPrimaryMainFrame(), 0),
+                    https_server()->GetURL(kHostA, kEchoCookiesWithCorsPath),
+                    "no-cors", "include")
+                  .ExtractString(),
+              net::CookieStringIs(IsEmpty()));
 }
 
 INSTANTIATE_TEST_SUITE_P(/* no label */,

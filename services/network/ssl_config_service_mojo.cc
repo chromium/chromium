@@ -4,7 +4,8 @@
 
 #include "services/network/ssl_config_service_mojo.h"
 
-#include "base/strings/string_piece.h"
+#include <string_view>
+
 #include "base/strings/string_util.h"
 #include "mojo/public/cpp/bindings/type_converter.h"
 #include "services/network/ssl_config_type_converter.h"
@@ -15,8 +16,8 @@ namespace {
 
 // Returns true if |hostname| is a subdomain of |pattern| (including if they are
 // equal).
-bool IsSubdomain(const base::StringPiece hostname,
-                 const base::StringPiece pattern) {
+bool IsSubdomain(const std::string_view hostname,
+                 const std::string_view pattern) {
   if (hostname == pattern) {
     return true;
   }
@@ -77,7 +78,7 @@ net::SSLContextConfig SSLConfigServiceMojo::GetSSLContextConfig() {
 }
 
 bool SSLConfigServiceMojo::CanShareConnectionWithClientCerts(
-    const std::string& hostname) const {
+    std::string_view hostname) const {
   // Hostnames (and the patterns configured for this class) must be
   // canonicalized before comparison, or the comparison will fail.
   for (const std::string& pattern : client_cert_pooling_policy_) {

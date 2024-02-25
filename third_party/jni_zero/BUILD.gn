@@ -1,0 +1,76 @@
+# Copyright 2023 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//third_party/jni_zero/jni_zero.gni")
+
+config("jni_include_dir") {
+  include_dirs = [ jni_headers_dir ]
+}
+
+config("toolchain_define") {
+  if (is_robolectric) {
+    defines = [ "JNI_ZERO_IS_ROBOLECTRIC" ]
+  }
+}
+
+# These are intended to only be used within jni_zero and the code it generates
+# and are not external APIs.
+source_set("jni_zero_internals") {
+  sources = [
+    "jni_export.h",
+    "logging.cc",
+    "logging.h",
+  ]
+  visibility = [ ":*" ]
+  if (is_android) {
+    libs = [ "log" ]
+  }
+  if (is_robolectric) {
+    public_configs = [ "//third_party/jdk:jdk" ]
+  }
+  configs += [ ":toolchain_define" ]
+}
+
+# Just used by generated code. Cannot set visibility since it's depended on by a
+# template which gets instantiated everywhere.
+source_set("generated_file_helper") {
+  sources = [ "jni_zero_helper.h" ]
+  public_deps = [
+    ":jni_zero",
+    ":jni_zero_internals",
+  ]
+}
+
+# This is the public target that we intend others to use.
+component("jni_zero") {
+  sources = [
+    "jni_zero.cc",
+    "jni_zero.h",
+  ]
+  public_deps = [ ":jni_zero_internals" ]
+  configs += [ ":toolchain_define" ]
+}
+
+if (enable_java_templates && is_android) {
+  import("//build/config/android/rules.gni")
+
+  java_library("jni_zero_java") {
+    supports_android = true
+    deps = [ "//build/android:build_java" ]
+    sources = [
+      "java/src/org/jni_zero/AccessedByNative.java",
+      "java/src/org/jni_zero/CalledByNative.java",
+      "java/src/org/jni_zero/CalledByNativeForTesting.java",
+      "java/src/org/jni_zero/CalledByNativeUnchecked.java",
+      "java/src/org/jni_zero/CheckDiscard.java",
+      "java/src/org/jni_zero/JNINamespace.java",
+      "java/src/org/jni_zero/JniStaticTestMocker.java",
+      "java/src/org/jni_zero/JniType.java",
+      "java/src/org/jni_zero/NativeClassQualifiedName.java",
+      "java/src/org/jni_zero/NativeLibraryLoadedStatus.java",
+      "java/src/org/jni_zero/NativeMethods.java",
+    ]
+    proguard_configs = [ "proguard.flags" ]
+  }
+}

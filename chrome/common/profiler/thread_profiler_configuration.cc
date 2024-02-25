@@ -34,11 +34,11 @@ bool IsBrowserTestModeEnabled() {
 // Returns the channel if this is a Chrome release, otherwise returns nullopt. A
 // build is considered to be a Chrome release if it's official and has Chrome
 // branding.
-absl::optional<version_info::Channel> GetReleaseChannel() {
+std::optional<version_info::Channel> GetReleaseChannel() {
 #if defined(OFFICIAL_BUILD) && BUILDFLAG(GOOGLE_CHROME_BRANDING)
   return chrome::GetChannel();
 #else
-  return absl::nullopt;
+  return std::nullopt;
 #endif
 }
 
@@ -112,8 +112,17 @@ bool ThreadProfilerConfiguration::GetSyntheticFieldTrial(
       *group_name = "Control";
       break;
 
+#if BUILDFLAG(IS_ANDROID)
+    case kProfileEnabledWithJavaNameHashing:
+      *group_name = "EnabledWithJavaNameHashing";
+      break;
+#endif  // BUILDFLAG(IS_ANDROID)
+
     case kProfileEnabled:
       *group_name = "Enabled";
+      break;
+    case kProfileDisabledOutsideOfExperiment:
+      *group_name = "DisabledOutsideOfExperiment";
       break;
   }
 
@@ -146,10 +155,29 @@ void ThreadProfilerConfiguration::AppendCommandLineSwitchForChildProcess(
     child_process_command_line->AppendSwitchASCII(
         switches::kStartStackProfiler,
         switches::kStartStackProfilerBrowserTest);
+#if BUILDFLAG(IS_ANDROID)
+  } else if (IsJavaNameHashingEnabled()) {
+    child_process_command_line->AppendSwitchASCII(
+        switches::kStartStackProfiler,
+        switches::kStartStackProfilerWithJavaNameHashing);
+#endif  // BUILDFLAG(IS_ANDROID)
   } else {
     child_process_command_line->AppendSwitch(switches::kStartStackProfiler);
   }
 }
+
+#if BUILDFLAG(IS_ANDROID)
+bool ThreadProfilerConfiguration::IsJavaNameHashingEnabled() const {
+  if (const auto* config =
+          absl::get_if<BrowserProcessConfiguration>(&configuration_)) {
+    return config->variation_group == kProfileEnabledWithJavaNameHashing;
+  }
+
+  const auto* command_line = base::CommandLine::ForCurrentProcess();
+  return command_line->GetSwitchValueASCII(switches::kStartStackProfiler) ==
+         switches::kStartStackProfilerWithJavaNameHashing;
+}
+#endif  // BUILDFLAG(IS_ANDROID)
 
 ThreadProfilerConfiguration::ThreadProfilerConfiguration()
     : platform_configuration_(ThreadProfilerPlatformConfiguration::Create(
@@ -160,11 +188,15 @@ ThreadProfilerConfiguration::ThreadProfilerConfiguration()
 
 // static
 bool ThreadProfilerConfiguration::EnableForVariationGroup(
-    absl::optional<VariationGroup> variation_group) {
+    std::optional<VariationGroup> variation_group) {
   // Enable if assigned to a variation group, and the group is one of the groups
   // that are to be enabled.
-  return variation_group.has_value() && (*variation_group == kProfileEnabled ||
-                                         *variation_group == kProfileControl);
+  return variation_group.has_value() &&
+         (*variation_group == kProfileEnabled ||
+#if BUILDFLAG(IS_ANDROID)
+          *variation_group == kProfileEnabledWithJavaNameHashing ||
+#endif  // BUILDFLAG(IS_ANDROID)
+          *variation_group == kProfileControl);
 }
 
 // static
@@ -204,36 +236,52 @@ ThreadProfilerConfiguration::GenerateBrowserProcessConfiguration(
   const base::CommandLine* command_line =
       base::CommandLine::ForCurrentProcess();
   if (command_line->HasSwitch(switches::kDisableStackProfiler))
-    return {absl::nullopt, absl::nullopt};
+    return {std::nullopt, std::nullopt};
 
-  const absl::optional<version_info::Channel> release_channel =
+  const std::optional<version_info::Channel> release_channel =
       GetReleaseChannel();
 
   if (!platform_configuration.IsSupported(release_channel))
-    return {absl::nullopt, absl::nullopt};
+    return {std::nullopt, std::nullopt};
 
-  // We pass `version_info::Channel::UNKNOWN` instead of `absl::nullopt` here
+  // We pass `version_info::Channel::UNKNOWN` instead of `std::nullopt` here
   // because `AreUnwindPrerequisitesAvailable` accounts for official build
   // status internally.
   if (!AreUnwindPrerequisitesAvailable(
           release_channel.value_or(version_info::Channel::UNKNOWN))) {
-    return {kProfileDisabledModuleNotInstalled, absl::nullopt};
+    return {kProfileDisabledModuleNotInstalled, std::nullopt};
   }
 
   ThreadProfilerPlatformConfiguration::RelativePopulations
       relative_populations =
           platform_configuration.GetEnableRates(release_channel);
 
-  const absl::optional<metrics::CallStackProfileParams::Process>
+  const std::optional<metrics::CallStackProfileParams::Process>
       process_type_to_sample = platform_configuration.ChooseEnabledProcess();
 
+#if BUILDFLAG(IS_ANDROID)
+  CHECK_EQ(0, relative_populations.experiment % 3);
+  return {
+      ChooseVariationGroup({
+          {kProfileDisabledOutsideOfExperiment, relative_populations.disabled},
+          {kProfileEnabled, relative_populations.enabled},
+          {kProfileControl, relative_populations.experiment / 3},
+          {kProfileEnabledWithJavaNameHashing,
+           relative_populations.experiment / 3},
+          {kProfileDisabled, relative_populations.experiment / 3},
+      }),
+      process_type_to_sample};
+#else
   CHECK_EQ(0, relative_populations.experiment % 2);
-  return {ChooseVariationGroup({
-              {kProfileEnabled, relative_populations.enabled},
-              {kProfileControl, relative_populations.experiment / 2},
-              {kProfileDisabled, relative_populations.experiment / 2},
-          }),
-          process_type_to_sample};
+  return {
+      ChooseVariationGroup({
+          {kProfileDisabledOutsideOfExperiment, relative_populations.disabled},
+          {kProfileEnabled, relative_populations.enabled},
+          {kProfileControl, relative_populations.experiment / 2},
+          {kProfileDisabled, relative_populations.experiment / 2},
+      }),
+      process_type_to_sample};
+#endif
 }
 
 // static

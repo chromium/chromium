@@ -10,7 +10,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "chrome/browser/ash/input_method/assistive_window_controller_delegate.h"
-#include "chrome/browser/ash/input_method/ui/assistive_accessibility_view.h"
+#include "chrome/browser/ash/input_method/ui/announcement_view.h"
 #include "chrome/browser/ash/input_method/ui/suggestion_details.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/test/base/chrome_ash_test_base.h"
@@ -33,7 +33,7 @@ const char16_t kAnnounceString[] = u"announce string";
 namespace ash {
 namespace input_method {
 
-constexpr size_t kShowSuggestionDelayMs = 5;
+constexpr size_t kShowSuggestionDelay = 5;
 
 class MockDelegate : public AssistiveWindowControllerDelegate {
  public:
@@ -44,14 +44,18 @@ class MockDelegate : public AssistiveWindowControllerDelegate {
       const ash::ime::AssistiveWindow& window) const override {}
 };
 
-class TestAccessibilityView : public ui::ime::AssistiveAccessibilityView {
+class TestAnnouncementView : public ui::ime::AnnouncementView {
  public:
-  TestAccessibilityView() = default;
+  TestAnnouncementView() = default;
   void VerifyAnnouncement(const std::u16string& expected_text) {
     EXPECT_EQ(text_, expected_text);
   }
 
   void Announce(const std::u16string& text) override { text_ = text; }
+  void AnnounceAfterDelay(const std::u16string& text,
+                          base::TimeDelta delay) override {
+    text_ = text;
+  }
 
  private:
   std::u16string text_;
@@ -71,9 +75,9 @@ class AssistiveWindowControllerTest : public ChromeAshTestBase {
     wm::ActivateWindow(window.get());
 
     profile_ = std::make_unique<TestingProfile>();
-    accessibility_view_ = std::make_unique<TestAccessibilityView>();
+    announcement_view_ = std::make_unique<TestAnnouncementView>();
     controller_ = std::make_unique<AssistiveWindowController>(
-        delegate_.get(), profile_.get(), accessibility_view_.get());
+        delegate_.get(), profile_.get(), announcement_view_.get());
     IMEBridge::Get()->SetAssistiveWindowHandler(controller_.get());
 
     // TODO(crbug/1102283): Create MockSuggestionWindowView to be independent of
@@ -116,7 +120,7 @@ class AssistiveWindowControllerTest : public ChromeAshTestBase {
 
   void WaitForSuggestionWindowDelay() {
     task_environment()->FastForwardBy(
-        base::Milliseconds(kShowSuggestionDelayMs + 1));
+        base::Milliseconds(kShowSuggestionDelay + 1));
   }
 
   base::test::ScopedFeatureList feature_list_;
@@ -126,7 +130,7 @@ class AssistiveWindowControllerTest : public ChromeAshTestBase {
   const std::u16string suggestion_ = u"test";
   ui::ime::AssistiveWindowButton emoji_button_;
   AssistiveWindowProperties emoji_window_;
-  std::unique_ptr<TestAccessibilityView> accessibility_view_;
+  std::unique_ptr<TestAnnouncementView> announcement_view_;
 };
 
 TEST_F(AssistiveWindowControllerTest, ShowSuggestionDelaysWindowDisplay) {
@@ -433,7 +437,7 @@ TEST_F(AssistiveWindowControllerTest,
   controller_->SetButtonHighlighted(emoji_button_, true);
   task_environment()->RunUntilIdle();
 
-  accessibility_view_->VerifyAnnouncement(kAnnounceString);
+  announcement_view_->VerifyAnnouncement(kAnnounceString);
 }
 
 TEST_F(
@@ -443,13 +447,13 @@ TEST_F(
       ash::prefs::kAccessibilitySpokenFeedbackEnabled, true);
   InitEmojiSuggestionWindow();
   InitEmojiButton();
-  emoji_button_.announce_string = base::EmptyString16();
+  emoji_button_.announce_string.clear();
 
   controller_->SetAssistiveWindowProperties(emoji_window_);
   controller_->SetButtonHighlighted(emoji_button_, true);
   task_environment()->RunUntilIdle();
 
-  accessibility_view_->VerifyAnnouncement(base::EmptyString16());
+  announcement_view_->VerifyAnnouncement(std::u16string());
 }
 
 TEST_F(AssistiveWindowControllerTest,
@@ -467,7 +471,7 @@ TEST_F(AssistiveWindowControllerTest,
   controller_->SetButtonHighlighted(button, true);
   task_environment()->RunUntilIdle();
 
-  accessibility_view_->VerifyAnnouncement(kAnnounceString);
+  announcement_view_->VerifyAnnouncement(kAnnounceString);
 }
 
 TEST_F(
@@ -480,7 +484,7 @@ TEST_F(
   controller_->SetButtonHighlighted(emoji_button_, true);
   task_environment()->RunUntilIdle();
 
-  accessibility_view_->VerifyAnnouncement(base::EmptyString16());
+  announcement_view_->VerifyAnnouncement(std::u16string());
 }
 
 }  // namespace input_method

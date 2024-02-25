@@ -21,101 +21,103 @@ import org.tensorflow.lite.support.common.internal.SupportPreconditions;
 
 /** Represents data buffer with 8-bit unsigned integer values. */
 public final class TensorBufferUint8 extends TensorBuffer {
-    private static final DataType DATA_TYPE = DataType.UINT8;
+  private static final DataType DATA_TYPE = DataType.UINT8;
 
-    /**
-     * Creates a {@link TensorBufferUint8} with specified {@code shape}.
-     *
-     * @throws NullPointerException if {@code shape} is null.
-     * @throws IllegalArgumentException if {@code shape} has non-positive elements.
-     */
-    TensorBufferUint8(@NonNull int[] shape) {
-        super(shape);
+  /**
+   * Creates a {@link TensorBufferUint8} with specified {@code shape}.
+   *
+   * @throws NullPointerException if {@code shape} is null.
+   * @throws IllegalArgumentException if {@code shape} has non-positive elements.
+   */
+  TensorBufferUint8(@NonNull int[] shape) {
+    super(shape);
+  }
+
+  TensorBufferUint8() {
+    super();
+  }
+
+  @Override
+  public DataType getDataType() {
+    return DATA_TYPE;
+  }
+
+  @Override
+  @NonNull
+  public float[] getFloatArray() {
+    buffer.rewind();
+    byte[] byteArr = new byte[flatSize];
+    buffer.get(byteArr);
+
+    float[] floatArr = new float[flatSize];
+    for (int i = 0; i < flatSize; i++) {
+      floatArr[i] = (float) (byteArr[i] & 0xff);
     }
+    return floatArr;
+  }
 
-    TensorBufferUint8() {
-        super();
+  @Override
+  public float getFloatValue(int index) {
+    return (float) (buffer.get(index) & 0xff);
+  }
+
+  @Override
+  @NonNull
+  public int[] getIntArray() {
+    buffer.rewind();
+    byte[] byteArr = new byte[flatSize];
+    buffer.get(byteArr);
+
+    int[] intArr = new int[flatSize];
+    for (int i = 0; i < flatSize; i++) {
+      intArr[i] = byteArr[i] & 0xff;
     }
+    return intArr;
+  }
 
-    @Override
-    public DataType getDataType() {
-        return DATA_TYPE;
+  @Override
+  public int getIntValue(int index) {
+    return buffer.get(index) & 0xff;
+  }
+
+  @Override
+  public int getTypeSize() {
+    return DATA_TYPE.byteSize();
+  }
+
+  @Override
+  public void loadArray(@NonNull float[] src, @NonNull int[] shape) {
+    SupportPreconditions.checkNotNull(src, "The array to be loaded cannot be null.");
+    SupportPreconditions.checkArgument(
+        src.length == computeFlatSize(shape),
+        "The size of the array to be loaded does not match the specified shape.");
+    copyByteBufferIfReadOnly();
+    resize(shape);
+    buffer.rewind();
+
+    byte[] byteArr = new byte[src.length];
+    int cnt = 0;
+    for (float a : src) {
+      byteArr[cnt++] = (byte) Math.max(Math.min(a, 255.0), 0.0);
     }
+    buffer.put(byteArr);
+  }
 
-    @Override
-    @NonNull
-    public float[] getFloatArray() {
-        buffer.rewind();
-        byte[] byteArr = new byte[flatSize];
-        buffer.get(byteArr);
+  @Override
+  public void loadArray(@NonNull int[] src, @NonNull int[] shape) {
+    SupportPreconditions.checkNotNull(src, "The array to be loaded cannot be null.");
+    SupportPreconditions.checkArgument(
+        src.length == computeFlatSize(shape),
+        "The size of the array to be loaded does not match the specified shape.");
+    copyByteBufferIfReadOnly();
+    resize(shape);
+    buffer.rewind();
 
-        float[] floatArr = new float[flatSize];
-        for (int i = 0; i < flatSize; i++) {
-            floatArr[i] = (float) (byteArr[i] & 0xff);
-        }
-        return floatArr;
+    byte[] byteArr = new byte[src.length];
+    int cnt = 0;
+    for (float a : src) {
+      byteArr[cnt++] = (byte) Math.max(Math.min(a, 255), 0);
     }
-
-    @Override
-    public float getFloatValue(int index) {
-        return (float) (buffer.get(index) & 0xff);
-    }
-
-    @Override
-    @NonNull
-    public int[] getIntArray() {
-        buffer.rewind();
-        byte[] byteArr = new byte[flatSize];
-        buffer.get(byteArr);
-
-        int[] intArr = new int[flatSize];
-        for (int i = 0; i < flatSize; i++) {
-            intArr[i] = byteArr[i] & 0xff;
-        }
-        return intArr;
-    }
-
-    @Override
-    public int getIntValue(int index) {
-        return buffer.get(index) & 0xff;
-    }
-
-    @Override
-    public int getTypeSize() {
-        return DATA_TYPE.byteSize();
-    }
-
-    @Override
-    public void loadArray(@NonNull float[] src, @NonNull int[] shape) {
-        SupportPreconditions.checkNotNull(src, "The array to be loaded cannot be null.");
-        SupportPreconditions.checkArgument(src.length == computeFlatSize(shape),
-                "The size of the array to be loaded does not match the specified shape.");
-        copyByteBufferIfReadOnly();
-        resize(shape);
-        buffer.rewind();
-
-        byte[] byteArr = new byte[src.length];
-        int cnt = 0;
-        for (float a : src) {
-            byteArr[cnt++] = (byte) Math.max(Math.min(a, 255.0), 0.0);
-        }
-        buffer.put(byteArr);
-    }
-
-    @Override
-    public void loadArray(@NonNull int[] src, @NonNull int[] shape) {
-        SupportPreconditions.checkNotNull(src, "The array to be loaded cannot be null.");
-        SupportPreconditions.checkArgument(src.length == computeFlatSize(shape),
-                "The size of the array to be loaded does not match the specified shape.");
-        copyByteBufferIfReadOnly();
-        resize(shape);
-        buffer.rewind();
-
-        byte[] byteArr = new byte[src.length];
-        int cnt = 0;
-        for (float a : src) {
-            byteArr[cnt++] = (byte) Math.max(Math.min(a, 255), 0);
-        }
-        buffer.put(byteArr);
-    }
+    buffer.put(byteArr);
+  }
 }

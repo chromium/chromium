@@ -6,9 +6,10 @@
 
 #include <memory>
 
+#include "media/audio/apple/audio_input.h"
+#include "media/audio/apple/audio_low_latency_input.h"
+#include "media/audio/apple/audio_manager_apple.h"
 #include "media/audio/ios/audio_session_manager_ios.h"
-#include "media/audio/mac/audio_auhal_mac.h"
-#include "media/audio/mac/audio_input_mac.h"
 
 namespace media {
 
@@ -24,38 +25,49 @@ std::unique_ptr<media::AudioManager> CreateAudioManager(
 
 AudioManagerIOS::AudioManagerIOS(std::unique_ptr<AudioThread> audio_thread,
                                  AudioLogFactory* audio_log_factory)
-    : AudioManagerBase(std::move(audio_thread), audio_log_factory) {
-  audio_session_manager_ = std::make_unique<AudioSessionManagerIOS>();
+    : AudioManagerApple(std::move(audio_thread), audio_log_factory) {
+  AudioSessionManagerIOS::GetInstance().SetActive(true);
 }
 
-AudioManagerIOS::~AudioManagerIOS() = default;
+AudioManagerIOS::~AudioManagerIOS() {
+  AudioSessionManagerIOS::GetInstance().SetActive(false);
+}
 
 bool AudioManagerIOS::HasAudioOutputDevices() {
-  return audio_session_manager_->HasAudioHardware(/*is_input=*/false);
+  return AudioSessionManagerIOS::GetInstance().HasAudioHardware(
+      /*is_input=*/false);
 }
 
 bool AudioManagerIOS::HasAudioInputDevices() {
-  return audio_session_manager_->HasAudioHardware(/*is_input=*/true);
+  return AudioSessionManagerIOS::GetInstance().HasAudioHardware(
+      /*is_input=*/true);
 }
 
 void AudioManagerIOS::GetAudioInputDeviceNames(AudioDeviceNames* device_names) {
   DCHECK(device_names->empty());
-  audio_session_manager_->GetAudioDeviceInfo(true, device_names);
+  AudioSessionManagerIOS::GetInstance().GetAudioDeviceInfo(true, device_names);
 }
 
 void AudioManagerIOS::GetAudioOutputDeviceNames(
     AudioDeviceNames* device_names) {
   DCHECK(device_names->empty());
-  audio_session_manager_->GetAudioDeviceInfo(false, device_names);
+  AudioSessionManagerIOS::GetInstance().GetAudioDeviceInfo(false, device_names);
 }
 
 AudioParameters AudioManagerIOS::GetInputStreamParameters(
     const std::string& input_device_id) {
   DCHECK(GetTaskRunner()->BelongsToCurrentThread());
-  int sample_rate = audio_session_manager_->HardwareSampleRate();
-  return AudioParameters(AudioParameters::AUDIO_PCM_LINEAR,
-                         ChannelLayoutConfig::Stereo(), sample_rate,
-                         kDefaultInputBufferSize);
+  const int hardware_sample_rate =
+      AudioSessionManagerIOS::GetInstance().HardwareSampleRate();
+
+  // Try to use mono to save resources. Also avoids channel format conversion in
+  // the I/O audio unit.
+  ChannelLayoutConfig channel_layout_config = ChannelLayoutConfig::Mono();
+
+  AudioParameters params = AudioParameters(
+      AudioParameters::AUDIO_PCM_LOW_LATENCY, channel_layout_config,
+      hardware_sample_rate, kDefaultInputBufferSize);
+  return params;
 }
 
 std::string AudioManagerIOS::GetAssociatedOutputDeviceID(
@@ -66,25 +78,6 @@ std::string AudioManagerIOS::GetAssociatedOutputDeviceID(
 
 const char* media::AudioManagerIOS::GetName() {
   return "iOS";
-}
-
-void AudioManagerIOS::ReleaseOutputStreamUsingRealDevice(
-    AudioOutputStream* stream,
-    AudioDeviceID device_id) {
-  DCHECK(GetTaskRunner()->BelongsToCurrentThread());
-  output_streams_.remove(static_cast<AUHALStream*>(stream));
-  AudioManagerBase::ReleaseOutputStream(stream);
-}
-
-void AudioManagerIOS::ReleaseInputStreamUsingRealDevice(
-    AudioInputStream* stream) {
-  DCHECK(GetTaskRunner()->BelongsToCurrentThread());
-  auto stream_it = base::ranges::find(basic_input_streams_, stream);
-  if (stream_it != basic_input_streams_.end()) {
-    basic_input_streams_.erase(stream_it);
-  }
-
-  AudioManagerBase::ReleaseInputStream(stream);
 }
 
 AudioOutputStream* AudioManagerIOS::MakeLinearOutputStream(
@@ -99,10 +92,8 @@ AudioOutputStream* AudioManagerIOS::MakeLowLatencyOutputStream(
     const std::string& device_id,
     const LogCallback& log_callback) {
   DCHECK(GetTaskRunner()->BelongsToCurrentThread());
-
   AUHALStream* stream =
       new AUHALStream(this, params, kAudioObjectUnknown, log_callback);
-  output_streams_.push_back(stream);
   return stream;
 }
 
@@ -112,7 +103,6 @@ AudioInputStream* AudioManagerIOS::MakeLinearInputStream(
     const LogCallback& log_callback) {
   DCHECK(GetTaskRunner()->BelongsToCurrentThread());
   AudioInputStream* stream = new PCMQueueInAudioInputStream(this, params);
-  basic_input_streams_.push_back(stream);
   return stream;
 }
 
@@ -121,19 +111,22 @@ AudioInputStream* AudioManagerIOS::MakeLowLatencyInputStream(
     const std::string& device_id,
     const LogCallback& log_callback) {
   DCHECK(GetTaskRunner()->BelongsToCurrentThread());
-  // TODO: Replace PCMQueueInAudioInputStream with AUAudioInputStream to use
-  // low-latency implementation.
-  return MakeLinearInputStream(params, device_id, log_callback);
+
+  VoiceProcessingMode voice_processing_mode = VoiceProcessingMode::kDisabled;
+
+  auto* stream = new AUAudioInputStream(this, params, kAudioObjectUnknown,
+                                        log_callback, voice_processing_mode);
+  return stream;
 }
 
 std::string AudioManagerIOS::GetDefaultInputDeviceID() {
   DCHECK(GetTaskRunner()->BelongsToCurrentThread());
-  return audio_session_manager_->GetDefaultInputDeviceID();
+  return AudioSessionManagerIOS::GetInstance().GetDefaultInputDeviceID();
 }
 
 std::string AudioManagerIOS::GetDefaultOutputDeviceID() {
   DCHECK(GetTaskRunner()->BelongsToCurrentThread());
-  return audio_session_manager_->GetDefaultOutputDeviceID();
+  return AudioSessionManagerIOS::GetInstance().GetDefaultOutputDeviceID();
 }
 
 bool AudioManagerIOS::MaybeChangeBufferSize(AudioDeviceID device_id,
@@ -145,14 +138,116 @@ bool AudioManagerIOS::MaybeChangeBufferSize(AudioDeviceID device_id,
   return true;
 }
 
+bool AudioManagerIOS::DeviceSupportsAmbientNoiseReduction(
+    AudioDeviceID device_id) {
+  return false;
+}
+
+bool AudioManagerIOS::SuppressNoiseReduction(AudioDeviceID device_id) {
+  return false;
+}
+
+void AudioManagerIOS::UnsuppressNoiseReduction(AudioDeviceID device_id) {
+  NOTIMPLEMENTED();
+}
+
+double AudioManagerIOS::GetMaxInputVolume(AudioDeviceID device_id) {
+  return 1.0;
+}
+
+bool AudioManagerIOS::ShouldDeferStreamStart() const {
+  return false;
+}
+
+// static
+double AudioManagerIOS::HardwareIOBufferDuration() {
+  return AudioSessionManagerIOS::GetInstance().HardwareIOBufferDuration();
+}
+
+double AudioManagerIOS::HardwareLatency(bool is_input) {
+  return AudioSessionManagerIOS::GetInstance().HardwareLatency(is_input);
+}
+
+long AudioManagerIOS::GetDeviceChannels(bool is_input) {
+  return AudioSessionManagerIOS::GetInstance().GetDeviceChannels(is_input);
+}
+
+double AudioManagerIOS::GetInputVolume(AudioDeviceID device_id) {
+  return static_cast<double>(
+      AudioSessionManagerIOS::GetInstance().GetInputGain());
+}
+
+void AudioManagerIOS::SetInputVolume(AudioDeviceID device_id, double volume) {
+  AudioSessionManagerIOS::GetInstance().SetInputGain(
+      static_cast<float>(volume));
+}
+
+bool AudioManagerIOS::IsInputMuted(AudioDeviceID device_id) {
+  return AudioSessionManagerIOS::GetInstance().IsInputMuted();
+}
+
+int AudioManagerIOS::HardwareSampleRateForDevice(AudioDeviceID device_id) {
+  return static_cast<int>(
+      AudioSessionManagerIOS::GetInstance().HardwareSampleRate());
+}
+
+bool AudioManagerIOS::IsInputGainSettable() {
+  return AudioSessionManagerIOS::GetInstance().IsInputGainSettable();
+}
+
+OSStatus AudioManagerIOS::GetInputDeviceStreamFormat(
+    AudioUnit audio_unit,
+    AudioStreamBasicDescription* input_format) {
+  // Configure audio stream format for 16-bit PCM
+  const SampleFormat kSampleFormat = kSampleFormatS16;
+  input_format->mSampleRate =
+      AudioSessionManagerIOS::GetInstance().HardwareSampleRate();
+  input_format->mFormatID = kAudioFormatLinearPCM;
+  input_format->mFormatFlags =
+      kLinearPCMFormatFlagIsSignedInteger | kLinearPCMFormatFlagIsPacked;
+  input_format->mChannelsPerFrame =
+      AudioSessionManagerIOS::GetInstance().GetDeviceChannels(
+          /*is_input=*/true);
+  input_format->mBitsPerChannel = SampleFormatToBitsPerChannel(kSampleFormat);
+
+  // Calculate other fields based on the above settings
+  input_format->mBytesPerPacket = SampleFormatToBytesPerChannel(kSampleFormat) *
+                                  input_format->mChannelsPerFrame;
+  input_format->mBytesPerFrame = input_format->mBytesPerPacket;
+  input_format->mFramesPerPacket = 1;  // uncompressed audio
+  return noErr;
+}
+
+// protected
 AudioParameters AudioManagerIOS::GetPreferredOutputStreamParameters(
     const std::string& output_device_id,
     const AudioParameters& input_params) {
   DCHECK(GetTaskRunner()->BelongsToCurrentThread());
-  int sample_rate = audio_session_manager_->HardwareSampleRate();
-  return AudioParameters(AudioParameters::AUDIO_PCM_LOW_LATENCY,
-                         ChannelLayoutConfig::Stereo(), sample_rate,
-                         kDefaultInputBufferSize);
+  const bool has_valid_input_params = input_params.IsValid();
+  const int hardware_sample_rate =
+      AudioSessionManagerIOS::GetInstance().HardwareSampleRate();
+
+  const int hardware_channels =
+      AudioSessionManagerIOS::GetInstance().GetDeviceChannels(
+          /*is_input=*/false);
+
+  // Use the input channel count and channel layout if possible.  Let OSX take
+  // care of remapping the channels; this lets user specified channel layouts
+  // work correctly.
+  int output_channels = input_params.channels();
+  ChannelLayout channel_layout = input_params.channel_layout();
+  if (!has_valid_input_params || output_channels > hardware_channels) {
+    output_channels = hardware_channels;
+    channel_layout = GuessChannelLayout(output_channels);
+    if (channel_layout == CHANNEL_LAYOUT_UNSUPPORTED) {
+      channel_layout = CHANNEL_LAYOUT_DISCRETE;
+    }
+  }
+
+  AudioParameters params(AudioParameters::AUDIO_PCM_LOW_LATENCY,
+                         {channel_layout, output_channels},
+                         hardware_sample_rate, kDefaultInputBufferSize);
+  return params;
 }
 
 }  // namespace media

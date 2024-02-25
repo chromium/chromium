@@ -6,6 +6,7 @@
 
 #include <algorithm>
 #include <memory>
+#include <optional>
 #include <utility>
 
 #include "ash/constants/ash_features.h"
@@ -25,6 +26,7 @@
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
+#include "build/buildflag.h"
 #include "chromeos/ash/components/assistant/buildflags.h"
 #include "chromeos/ash/components/audio/cras_audio_handler.h"
 #include "chromeos/ash/components/dbus/dbus_thread_manager.h"
@@ -48,7 +50,14 @@
 #include "google_apis/gaia/gaia_constants.h"
 #include "google_apis/gaia/google_service_auth_error.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
+
+#if BUILDFLAG(ENABLE_CROS_LIBASSISTANT)
+#include "base/files/file_path.h"
+#include "base/files/file_util.h"
+#include "base/task/task_traits.h"
+#include "base/task/thread_pool.h"
+#include "chromeos/ash/services/libassistant/constants.h"
+#endif  // BUILDFLAG(ENABLE_CROS_LIBASSISTANT)
 
 namespace ash::assistant {
 
@@ -67,6 +76,13 @@ const char* g_s3_server_uri_override = nullptr;
 // Testing override for the device-id used by Libassistant to identify this
 // device.
 const char* g_device_id_override = nullptr;
+
+#if BUILDFLAG(ENABLE_CROS_LIBASSISTANT)
+base::TaskTraits GetTaskTraits() {
+  return {base::MayBlock(), base::TaskPriority::USER_BLOCKING,
+          base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN};
+}
+#endif  // BUILDFLAG(ENABLE_CROS_LIBASSISTANT)
 
 // The max number of tries to start service.
 // We decide whether to start service based on two counters:
@@ -118,16 +134,16 @@ AssistantStatus ToAssistantStatus(AssistantManagerService::State state) {
   }
 }
 
-absl::optional<std::string> GetS3ServerUriOverride() {
+std::optional<std::string> GetS3ServerUriOverride() {
   if (g_s3_server_uri_override)
     return g_s3_server_uri_override;
-  return absl::nullopt;
+  return std::nullopt;
 }
 
-absl::optional<std::string> GetDeviceIdOverride() {
+std::optional<std::string> GetDeviceIdOverride() {
   if (g_device_id_override)
     return g_device_id_override;
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 // In the signed-out mode, we are going to run Assistant service without
@@ -167,7 +183,7 @@ class ScopedAshSessionObserver {
  private:
   SessionController* controller() const { return SessionController::Get(); }
 
-  const raw_ptr<SessionActivationObserver, ExperimentalAsh> observer_;
+  const raw_ptr<SessionActivationObserver> observer_;
   const AccountId account_id_;
 };
 
@@ -222,8 +238,7 @@ class Service::Context : public ServiceContext {
   }
 
  private:
-  const raw_ptr<Service, ExperimentalAsh>
-      parent_;  // |this| is owned by |parent_|.
+  const raw_ptr<Service> parent_;  // |this| is owned by |parent_|.
 };
 
 Service::Service(std::unique_ptr<network::PendingSharedURLLoaderFactory>
@@ -415,7 +430,7 @@ void Service::UpdateAssistantManagerState() {
       !assistant_state->locale().has_value() ||
       (!access_token_.has_value() && !IsSignedOutMode()) ||
       !assistant_state->arc_play_store_enabled().has_value() ||
-      !libassistant_loaded_) {
+      !libassistant_loaded_ || is_deleting_data_) {
     // Assistant state has not finished initialization, let's wait.
     return;
   }
@@ -423,7 +438,7 @@ void Service::UpdateAssistantManagerState() {
   if (IsSignedOutMode()) {
     // Clear |access_token_| in signed-out mode to keep it synced with what we
     // will pass to the |assistant_manager_service_|.
-    access_token_ = absl::nullopt;
+    access_token_ = std::nullopt;
   }
 
   if (!assistant_manager_service_)
@@ -677,12 +692,12 @@ void Service::UpdateListeningState() {
                                             ShouldEnableHotword());
 }
 
-absl::optional<AssistantManagerService::UserInfo> Service::GetUserInfo() const {
+std::optional<AssistantManagerService::UserInfo> Service::GetUserInfo() const {
   if (access_token_) {
     return AssistantManagerService::UserInfo(RetrievePrimaryAccountInfo().gaia,
                                              access_token_.value());
   }
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 bool Service::ShouldEnableHotword() {
@@ -717,6 +732,22 @@ void Service::OnLibassistantLoaded(bool success) {
 void Service::ClearAfterStop() {
   is_assistant_manager_service_finalized_ = false;
   scoped_ash_session_observer_.reset();
+
+#if BUILDFLAG(ENABLE_CROS_LIBASSISTANT)
+  // When user disables the Assistant, we also delete all data.
+  if (!AssistantState::Get()->settings_enabled().value()) {
+    is_deleting_data_ = true;
+    base::ThreadPool::CreateSequencedTaskRunner(GetTaskTraits())
+        ->PostTaskAndReply(
+            FROM_HERE, base::BindOnce([]() {
+              base::DeletePathRecursively(base::FilePath(
+                  FILE_PATH_LITERAL(libassistant::kAssistantBaseDirPath)));
+            }),
+            base::BindOnce(&Service::OnDataDeleted,
+                           weak_ptr_factory_.GetWeakPtr()));
+  }
+#endif  // BUILDFLAG(ENABLE_CROS_LIBASSISTANT)
+
   ResetAuthenticationStateObserver();
 }
 
@@ -767,6 +798,11 @@ bool Service::CanStartService() const {
   }
 
   return true;
+}
+
+void Service::OnDataDeleted() {
+  is_deleting_data_ = false;
+  UpdateAssistantManagerState();
 }
 
 }  // namespace ash::assistant

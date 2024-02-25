@@ -5,12 +5,12 @@
 #ifndef CHROME_BROWSER_ASH_CHILD_ACCOUNTS_TIME_LIMITS_APP_TYPES_H_
 #define CHROME_BROWSER_ASH_CHILD_ACCOUNTS_TIME_LIMITS_APP_TYPES_H_
 
+#include <optional>
 #include <string>
 #include <vector>
 
 #include "base/time/time.h"
 #include "components/services/app_service/public/cpp/app_types.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ash {
 namespace app_time {
@@ -121,7 +121,7 @@ class AppLimit {
   // |daily_limit| can only be set when |restriction| is kTimeLimit.
   // |daily_limit| needs to be in range of [0, 24] hours.
   AppLimit(AppRestriction restriction,
-           absl::optional<base::TimeDelta> daily_limit,
+           std::optional<base::TimeDelta> daily_limit,
            base::Time last_updated);
   AppLimit(const AppLimit&);
   AppLimit& operator=(const AppLimit&);
@@ -131,7 +131,7 @@ class AppLimit {
 
   AppRestriction restriction() const { return restriction_; }
   base::Time last_updated() const { return last_updated_; }
-  const absl::optional<base::TimeDelta>& daily_limit() const {
+  const std::optional<base::TimeDelta>& daily_limit() const {
     return daily_limit_;
   }
 
@@ -141,7 +141,7 @@ class AppLimit {
 
   // Daily usage limit. Only set |restriction| is kTimeLimit.
   // Has to be between 0 and 24 hours.
-  absl::optional<base::TimeDelta> daily_limit_;
+  std::optional<base::TimeDelta> daily_limit_;
 
   // UTC timestamp for the last time the limit was updated.
   base::Time last_updated_;
@@ -158,8 +158,8 @@ class AppActivity {
     // each other, this static method creates a new ActiveTime with the earlier
     // of |t1|'s or |t2|'s |active_from| and the later of |t1|'s or |t2|'s
     // |active_to_|.
-    static absl::optional<ActiveTime> Merge(const ActiveTime& t1,
-                                            const ActiveTime& t2);
+    static std::optional<ActiveTime> Merge(const ActiveTime& t1,
+                                           const ActiveTime& t2);
 
     ActiveTime(base::Time start, base::Time end);
     ActiveTime(const ActiveTime& rhs);

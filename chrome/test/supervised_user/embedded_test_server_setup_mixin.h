@@ -10,8 +10,8 @@
 
 #include "base/command_line.h"
 #include "base/memory/raw_ptr.h"
+#include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/mixin_based_in_process_browser_test.h"
-#include "components/supervised_user/test_support/kids_management_api_server_mock.h"
 #include "content/public/test/browser_test_utils.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 
@@ -32,15 +32,14 @@ class EmbeddedTestServerSetupMixin : public InProcessBrowserTestMixin {
     // --host-resolver-rules=
     // 'MAP example.com 127.0.0.1:3145,  MAP *.another-example.com
     // 127.0.0.1:3145'.
-    //
-    // Internally, a host name for kids management api server mock is also
-    // resolved to the associated embedded test server.
     std::string resolver_rules_map_host_list;
   };
 
   EmbeddedTestServerSetupMixin() = delete;
-  explicit EmbeddedTestServerSetupMixin(InProcessBrowserTestMixinHost& host);
   EmbeddedTestServerSetupMixin(InProcessBrowserTestMixinHost& host,
+                               InProcessBrowserTest* test_base);
+  EmbeddedTestServerSetupMixin(InProcessBrowserTestMixinHost& host,
+                               InProcessBrowserTest* test_base,
                                raw_ptr<net::EmbeddedTestServer> server,
                                const Options& options);
 
@@ -52,27 +51,19 @@ class EmbeddedTestServerSetupMixin : public InProcessBrowserTestMixin {
 
   // InProcessBrowserTestMixin:
   void SetUp() override;
-  void SetUpCommandLine(base::CommandLine* command_line) override;
   void TearDownOnMainThread() override;
+  void SetUpCommandLine(base::CommandLine* command_line) override;
   void SetUpOnMainThread() override;
 
-  KidsManagementApiServerMock& GetApiMock();
-
-  // See SupervisionMixin::InitFeatures.
-  void InitFeatures();
-
  private:
+  // This mixin dependencies.
+  raw_ptr<InProcessBrowserTest> test_base_;
+
   // Embedded test server owned by test that uses this mixin.
   raw_ptr<net::EmbeddedTestServer> embedded_test_server_;
 
-  // Mocks server functionalities.
-  KidsManagementApiServerMock api_mock_;
-
   // List of hosts that will be resolved to server's address.
   std::vector<std::string> resolver_rules_map_host_list_;
-
-  // Set and activated in ::InitFeatures.
-  base::test::ScopedFeatureList feature_list_;
 };
 
 }  // namespace supervised_user

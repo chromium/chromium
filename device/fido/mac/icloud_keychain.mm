@@ -7,9 +7,14 @@
 #import <AuthenticationServices/AuthenticationServices.h>
 #import <Foundation/Foundation.h>
 
+#include <optional>
+
+#include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/metrics/histogram_functions.h"
+#include "base/no_destructor.h"
 #include "base/notreached.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/string_number_conversions.h"
@@ -30,7 +35,6 @@
 #include "device/fido/fido_parsing_utils.h"
 #include "device/fido/fido_transport_protocol.h"
 #include "device/fido/mac/icloud_keychain_sys.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace device::fido::icloud_keychain {
 
@@ -56,6 +60,22 @@ AuthenticatorSupportedOptions AuthenticatorOptions() {
   options.supports_user_presence = true;
   return options;
 }
+
+// This enum is used in a histogram. Never change assigned values and only add
+// new entries at the end.
+enum class PasskeyPermissionMetric {
+  kRequestedDuringCreate = 0,
+  kApprovedDuringCreate = 1,
+  kDeniedDuringCreate = 2,
+
+  kRequestedDuringGet = 3,
+  kApprovedDuringGet = 4,
+  kDeniedDuringGet = 5,
+
+  kMaxValue = 5,
+};
+
+constexpr char kMetricName[] = "WebAuthentication.MacOS.PasskeyPermission";
 
 class API_AVAILABLE(macos(13.3)) Authenticator : public FidoAuthenticator {
  public:
@@ -83,9 +103,12 @@ class API_AVAILABLE(macos(13.3)) Authenticator : public FidoAuthenticator {
     switch (sys_interface->GetAuthState()) {
       case SystemInterface::kAuthNotAuthorized:
         FIDO_LOG(DEBUG) << "iCKC: requesting permission";
-        sys_interface->AuthorizeAndContinue(base::BindOnce(
-            &SystemInterface::MakeCredential, sys_interface, window_,
-            std::move(request), std::move(continuation)));
+        base::UmaHistogramEnumeration(
+            kMetricName, PasskeyPermissionMetric::kRequestedDuringCreate);
+        sys_interface->AuthorizeAndContinue(
+            base::BindOnce(&Authenticator::MakeCredentialAfterPermissionRequest,
+                           weak_factory_.GetWeakPtr(), std::move(request),
+                           std::move(continuation)));
         break;
       case SystemInterface::kAuthDenied:
         // The operation continues even if the user denied access. See above.
@@ -98,13 +121,27 @@ class API_AVAILABLE(macos(13.3)) Authenticator : public FidoAuthenticator {
     }
   }
 
+  void MakeCredentialAfterPermissionRequest(
+      CtapMakeCredentialRequest request,
+      base::OnceCallback<void(ASAuthorization* authorization, NSError* error)>
+          continuation) {
+    scoped_refptr<SystemInterface> sys_interface = GetSystemInterface();
+    if (sys_interface->GetAuthState() != SystemInterface::kAuthAuthorized) {
+      base::UmaHistogramEnumeration(
+          kMetricName, PasskeyPermissionMetric::kDeniedDuringCreate);
+    } else {
+      base::UmaHistogramEnumeration(
+          kMetricName, PasskeyPermissionMetric::kApprovedDuringCreate);
+    }
+
+    sys_interface->MakeCredential(window_, std::move(request),
+                                  std::move(continuation));
+  }
+
   void GetAssertion(CtapGetAssertionRequest request,
                     CtapGetAssertionOptions options,
                     GetAssertionCallback callback) override {
     scoped_refptr<SystemInterface> sys_interface = GetSystemInterface();
-    auto continuation =
-        base::BindOnce(&Authenticator::OnGetAssertionComplete,
-                       weak_factory_.GetWeakPtr(), std::move(callback));
 
     // Authentication is not required for this operation, but it's a moment
     // when we can reasonably ask for it. If the user authorizes Chromium then
@@ -112,19 +149,44 @@ class API_AVAILABLE(macos(13.3)) Authenticator : public FidoAuthenticator {
     switch (sys_interface->GetAuthState()) {
       case SystemInterface::kAuthNotAuthorized:
         FIDO_LOG(DEBUG) << "iCKC: requesting permission";
-        sys_interface->AuthorizeAndContinue(base::BindOnce(
-            &SystemInterface::GetAssertion, GetSystemInterface(), window_,
-            std::move(request), std::move(continuation)));
+        base::UmaHistogramEnumeration(
+            kMetricName, PasskeyPermissionMetric::kRequestedDuringGet);
+        sys_interface->AuthorizeAndContinue(
+            base::BindOnce(&Authenticator::GetAssertionAfterPermissionRequest,
+                           weak_factory_.GetWeakPtr(), std::move(request),
+                           std::move(callback)));
         break;
       case SystemInterface::kAuthDenied:
         // The operation continues even if the user denied access. See above.
         FIDO_LOG(DEBUG) << "iCKC: passkeys permission is denied";
         [[fallthrough]];
       case SystemInterface::kAuthAuthorized:
-        GetSystemInterface()->GetAssertion(window_, std::move(request),
-                                           std::move(continuation));
+        auto continuation =
+            base::BindOnce(&Authenticator::OnGetAssertionComplete,
+                           weak_factory_.GetWeakPtr(), std::move(callback));
+        sys_interface->GetAssertion(window_, std::move(request),
+                                    std::move(continuation));
         break;
     }
+  }
+
+  void GetAssertionAfterPermissionRequest(CtapGetAssertionRequest request,
+                                          GetAssertionCallback callback) {
+    scoped_refptr<SystemInterface> sys_interface = GetSystemInterface();
+    if (sys_interface->GetAuthState() != SystemInterface::kAuthAuthorized) {
+      base::UmaHistogramEnumeration("WebAuthentication.MacOS.PasskeyPermission",
+                                    PasskeyPermissionMetric::kDeniedDuringGet);
+    } else {
+      base::UmaHistogramEnumeration(
+          "WebAuthentication.MacOS.PasskeyPermission",
+          PasskeyPermissionMetric::kApprovedDuringGet);
+    }
+
+    auto continuation =
+        base::BindOnce(&Authenticator::OnGetAssertionComplete,
+                       weak_factory_.GetWeakPtr(), std::move(callback));
+    sys_interface->GetAssertion(window_, std::move(request),
+                                std::move(continuation));
   }
 
   void GetPlatformCredentialInfoForRequest(
@@ -170,7 +232,7 @@ class API_AVAILABLE(macos(13.3)) Authenticator : public FidoAuthenticator {
                              ToVector(cred.userHandle), cred.name.UTF8String,
                              /* iCloud Keychain does not store
                                 a displayName for passkeys */
-                             absl::nullopt));
+                             std::nullopt));
       }
       const auto has_credentials =
           ret.empty() ? FidoRequestHandlerBase::RecognizedCredential::
@@ -198,12 +260,12 @@ class API_AVAILABLE(macos(13.3)) Authenticator : public FidoAuthenticator {
   std::string GetId() const override { return "iCloudKeychain"; }
 
   const AuthenticatorSupportedOptions& Options() const override {
-    static const AuthenticatorSupportedOptions options = AuthenticatorOptions();
-    return options;
+    static const base::NoDestructor<AuthenticatorSupportedOptions> options(
+        AuthenticatorOptions());
+    return *options;
   }
 
-  absl::optional<FidoTransportProtocol> AuthenticatorTransport()
-      const override {
+  std::optional<FidoTransportProtocol> AuthenticatorTransport() const override {
     return FidoTransportProtocol::kInternal;
   }
 
@@ -231,14 +293,14 @@ class API_AVAILABLE(macos(13.3)) Authenticator : public FidoAuthenticator {
                       << " msg: " << error.localizedDescription.UTF8String;
       if (domain == "WKErrorDomain" && error.code == 8) {
         std::move(callback).Run(
-            CtapDeviceResponseCode::kCtap2ErrCredentialExcluded, absl::nullopt);
+            CtapDeviceResponseCode::kCtap2ErrCredentialExcluded, std::nullopt);
       } else {
         // All other errors are currently mapped to `kCtap2ErrOperationDenied`
         // because it's not obvious that we want to differentiate them:
         // https://developer.apple.com/documentation/authenticationservices/asauthorizationerror?language=objc
         //
         std::move(callback).Run(
-            CtapDeviceResponseCode::kCtap2ErrOperationDenied, absl::nullopt);
+            CtapDeviceResponseCode::kCtap2ErrOperationDenied, std::nullopt);
       }
       return;
     }
@@ -251,21 +313,21 @@ class API_AVAILABLE(macos(13.3)) Authenticator : public FidoAuthenticator {
         (id<ASAuthorizationPublicKeyCredentialRegistration>)
             authorization.credential;
 
-    absl::optional<cbor::Value> attestation_object_value =
+    std::optional<cbor::Value> attestation_object_value =
         cbor::Reader::Read(ToSpan(result.rawAttestationObject));
     if (!attestation_object_value || !attestation_object_value->is_map()) {
       FIDO_LOG(ERROR) << "iCKC: failed to parse attestation CBOR";
       std::move(callback).Run(CtapDeviceResponseCode::kCtap2ErrOther,
-                              absl::nullopt);
+                              std::nullopt);
       return;
     }
 
-    absl::optional<AttestationObject> attestation_object =
+    std::optional<AttestationObject> attestation_object =
         AttestationObject::Parse(*attestation_object_value);
     if (!attestation_object) {
       FIDO_LOG(ERROR) << "iCKC: failed to parse attestation object";
       std::move(callback).Run(CtapDeviceResponseCode::kCtap2ErrOther,
-                              absl::nullopt);
+                              std::nullopt);
       return;
     }
 
@@ -280,7 +342,7 @@ class API_AVAILABLE(macos(13.3)) Authenticator : public FidoAuthenticator {
                       << base::HexEncode(credential_id_from_auth_data) << " vs "
                       << base::HexEncode(credential_id);
       std::move(callback).Run(CtapDeviceResponseCode::kCtap2ErrOther,
-                              absl::nullopt);
+                              std::nullopt);
       return;
     }
 
@@ -305,15 +367,26 @@ class API_AVAILABLE(macos(13.3)) Authenticator : public FidoAuthenticator {
     }
 
     if (error) {
+      const std::string_view description =
+          error.localizedDescription.UTF8String;
       FIDO_LOG(ERROR) << "iCKC: getAssertion failed, domain: "
                       << base::SysNSStringToUTF8(error.domain)
-                      << " code: " << error.code
-                      << " msg: " << error.localizedDescription.UTF8String;
-      // All errors are currently mapped to `kCtap2ErrOperationDenied` because
-      // it's not obvious that we want to differentiate them:
-      // https://developer.apple.com/documentation/authenticationservices/asauthorizationerror?language=objc
-      std::move(callback).Run(CtapDeviceResponseCode::kCtap2ErrOperationDenied,
-                              {});
+                      << " code: " << error.code << " msg: " << description;
+      // The underlying code sets `shouldShowHybridTransport` to false, which
+      // will cause this error to be returned if there are no credentials. We
+      // have asked Apple that, if they change this error string, they should
+      // please have macOS show its own error dialog.
+      CtapDeviceResponseCode response;
+      if (error.code == 1001 &&
+          base::Contains(description, "No credentials available for login")) {
+        response = CtapDeviceResponseCode::kCtap2ErrNoCredentials;
+      } else {
+        // All other errors are currently mapped to `kCtap2ErrOperationDenied`
+        // because it's not obvious that we want to differentiate them:
+        // https://developer.apple.com/documentation/authenticationservices/asauthorizationerror?language=objc
+        response = CtapDeviceResponseCode::kCtap2ErrOperationDenied;
+      }
+      std::move(callback).Run(response, {});
       return;
     }
 
@@ -325,7 +398,7 @@ class API_AVAILABLE(macos(13.3)) Authenticator : public FidoAuthenticator {
         (id<ASAuthorizationPublicKeyCredentialAssertion>)
             authorization.credential;
 
-    absl::optional<AuthenticatorData> authenticator_data =
+    std::optional<AuthenticatorData> authenticator_data =
         AuthenticatorData::DecodeAuthenticatorData(
             ToSpan(result.rawAuthenticatorData));
     if (!authenticator_data) {
@@ -406,8 +479,11 @@ bool IsSupported() {
 
 std::unique_ptr<FidoDiscoveryBase> NewDiscovery(uintptr_t ns_window) {
   if (@available(macOS 13.5, *)) {
-    NSWindow* window = (__bridge NSWindow*)(void*)ns_window;
-    static_assert(sizeof(window) == sizeof(ns_window));
+    NSWindow* window = nullptr;
+    if (ns_window != kFakeNSWindowForTesting) {
+      window = (__bridge NSWindow*)(void*)ns_window;
+      static_assert(sizeof(window) == sizeof(ns_window));
+    }
 
     return std::make_unique<Discovery>(window);
   }

@@ -31,16 +31,14 @@ import org.chromium.chrome.browser.ui.appmenu.TestAppMenuObserver;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.R;
-import org.chromium.chrome.test.util.browser.Features.DisableFeatures;
 import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
+import org.chromium.ui.test.util.DeviceRestriction;
 import org.chromium.ui.test.util.UiRestriction;
 
 import java.util.concurrent.TimeoutException;
 
-/**
- * Tests for the UpdateMenuItemHelper.
- */
+/** Tests for the UpdateMenuItemHelper. */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE, "enable_update_menu_item"})
 public class UpdateMenuItemHelperTest {
@@ -90,7 +88,7 @@ public class UpdateMenuItemHelperTest {
         }
     }
 
-    /** Reports a dummy market URL back to OmahaClient. */
+    /** Reports a test market URL back to OmahaClient. */
     private static class MockMarketURLGetter extends MarketURLGetter {
         private final String mURL;
 
@@ -104,7 +102,6 @@ public class UpdateMenuItemHelperTest {
         }
     }
 
-
     private MockVersionNumberGetter mMockVersionNumberGetter;
     private MockMarketURLGetter mMockMarketURLGetter;
     private TestAppMenuObserver mMenuObserver;
@@ -116,8 +113,9 @@ public class UpdateMenuItemHelperTest {
     }
 
     /**
-     * Prepares Main before actually launching it.  This is required since we don't have all of the
+     * Prepares Main before actually launching it. This is required since we don't have all of the
      * info we need in setUp().
+     *
      * @param currentVersion Version to report as the current version of Chrome
      * @param latestVersion Version to report is available by Omaha
      */
@@ -126,7 +124,7 @@ public class UpdateMenuItemHelperTest {
         mMockVersionNumberGetter = new MockVersionNumberGetter(currentVersion, latestVersion);
         VersionNumberGetter.setInstanceForTests(mMockVersionNumberGetter);
 
-        // Report a dummy URL to Omaha.
+        // Report a test URL to Omaha.
         mMockMarketURLGetter = new MockMarketURLGetter(TEST_MARKET_URL);
         MarketURLGetter.setInstanceForTests(mMockMarketURLGetter);
 
@@ -140,33 +138,35 @@ public class UpdateMenuItemHelperTest {
     }
 
     private void versionNumbersQueried() {
-        CriteriaHelper.pollInstrumentationThread(() -> {
-            Criteria.checkThat(
-                    mMockVersionNumberGetter.askedForCurrentVersion(), Matchers.is(true));
-            Criteria.checkThat(mMockVersionNumberGetter.askedForLatestVersion(), Matchers.is(true));
-        }, MS_TIMEOUT, MS_INTERVAL);
+        CriteriaHelper.pollInstrumentationThread(
+                () -> {
+                    Criteria.checkThat(
+                            mMockVersionNumberGetter.askedForCurrentVersion(), Matchers.is(true));
+                    Criteria.checkThat(
+                            mMockVersionNumberGetter.askedForLatestVersion(), Matchers.is(true));
+                },
+                MS_TIMEOUT,
+                MS_INTERVAL);
     }
 
-    /**
-     * Checks that the menu item is shown when a new version is available.
-     */
+    /** Checks that the menu item is shown when a new version is available. */
     private void checkUpdateMenuItemIsShowing(String currentVersion, String latestVersion)
             throws Exception {
         prepareAndStartMainActivity(currentVersion, latestVersion);
         showAppMenuAndAssertMenuShown();
-        Assert.assertNotNull("Update menu item is not showing.",
+        Assert.assertNotNull(
+                "Update menu item is not showing.",
                 AppMenuTestSupport.getMenuItemPropertyModel(
                         mActivityTestRule.getAppMenuCoordinator(), R.id.update_menu_id));
     }
 
-    /**
-     * Checks that the menu item is not shown when a new version is not available.
-     */
+    /** Checks that the menu item is not shown when a new version is not available. */
     private void checkUpdateMenuItemIsNotShowing(String currentVersion, String latestVersion)
             throws Exception {
         prepareAndStartMainActivity(currentVersion, latestVersion);
         showAppMenuAndAssertMenuShown();
-        Assert.assertNull("Update menu item is showing.",
+        Assert.assertNull(
+                "Update menu item is showing.",
                 AppMenuTestSupport.getMenuItemPropertyModel(
                         mActivityTestRule.getAppMenuCoordinator(), R.id.update_menu_id));
     }
@@ -174,8 +174,7 @@ public class UpdateMenuItemHelperTest {
     @Test
     @MediumTest
     @Feature({"Omaha"})
-    // TODO(https://crbug.com/965106): Fix tests when InlineUpdateFlow is enabled.
-    @DisableFeatures("InlineUpdateFlow")
+    @Restriction(DeviceRestriction.RESTRICTION_TYPE_NON_AUTO)
     public void testCurrentVersionIsOlder() throws Exception {
         checkUpdateMenuItemIsShowing("0.0.0.0", "1.2.3.4");
     }
@@ -183,6 +182,15 @@ public class UpdateMenuItemHelperTest {
     @Test
     @MediumTest
     @Feature({"Omaha"})
+    @Restriction(DeviceRestriction.RESTRICTION_TYPE_AUTO)
+    public void testCurrentVersionIsOlderAutomotive() throws Exception {
+        checkUpdateMenuItemIsNotShowing("0.0.0.0", "1.2.3.4");
+    }
+
+    @Test
+    @MediumTest
+    @Feature({"Omaha"})
+    @Restriction(DeviceRestriction.RESTRICTION_TYPE_NON_AUTO)
     public void testCurrentVersionIsSame() throws Exception {
         checkUpdateMenuItemIsNotShowing("1.2.3.4", "1.2.3.4");
     }
@@ -190,6 +198,7 @@ public class UpdateMenuItemHelperTest {
     @Test
     @MediumTest
     @Feature({"Omaha"})
+    @Restriction(DeviceRestriction.RESTRICTION_TYPE_NON_AUTO)
     public void testCurrentVersionIsNewer() throws Exception {
         checkUpdateMenuItemIsNotShowing("27.0.1453.42", "26.0.1410.49");
     }
@@ -197,6 +206,7 @@ public class UpdateMenuItemHelperTest {
     @Test
     @MediumTest
     @Feature({"Omaha"})
+    @Restriction(DeviceRestriction.RESTRICTION_TYPE_NON_AUTO)
     public void testNoVersionKnown() throws Exception {
         checkUpdateMenuItemIsNotShowing("1.2.3.4", "0");
     }
@@ -204,9 +214,10 @@ public class UpdateMenuItemHelperTest {
     @Test
     @MediumTest
     @Feature({"Omaha"})
-    @Restriction(UiRestriction.RESTRICTION_TYPE_PHONE)
-    // TODO(https://crbug.com/965106): Fix tests when InlineUpdateFlow is enabled.
-    @DisableFeatures("InlineUpdateFlow")
+    @Restriction({
+        UiRestriction.RESTRICTION_TYPE_PHONE,
+        DeviceRestriction.RESTRICTION_TYPE_NON_AUTO
+    })
     public void testMenuItemNotShownInOverview() throws Exception {
         checkUpdateMenuItemIsShowing("0.0.0.0", "1.2.3.4");
 
@@ -219,7 +230,8 @@ public class UpdateMenuItemHelperTest {
 
         // Make sure the item is not shown in tab switcher app menu.
         showAppMenuAndAssertMenuShown();
-        Assert.assertNull("Update menu item is showing.",
+        Assert.assertNull(
+                "Update menu item is showing.",
                 AppMenuTestSupport.getMenuItemPropertyModel(
                         mActivityTestRule.getAppMenuCoordinator(), R.id.update_menu_id));
     }
@@ -227,7 +239,7 @@ public class UpdateMenuItemHelperTest {
     @Test
     @MediumTest
     @Feature({"Omaha"})
-    @DisableFeatures("InlineUpdateFlow")
+    @Restriction(DeviceRestriction.RESTRICTION_TYPE_NON_AUTO)
     public void testClickUpdateMenuItem() throws Exception {
         checkUpdateMenuItemIsShowing("0.0.0.0", "1.2.3.4");
 
@@ -236,8 +248,8 @@ public class UpdateMenuItemHelperTest {
         Intents.intending(IntentMatchers.hasData(TEST_MARKET_URL)).respondWith(intentResult);
 
         TestThreadUtils.runOnUiThreadBlocking(
-                ()
-                        -> AppMenuTestSupport.callOnItemClick(
+                () ->
+                        AppMenuTestSupport.callOnItemClick(
                                 mActivityTestRule.getAppMenuCoordinator(), R.id.update_menu_id));
 
         Intents.intended(Matchers.allOf(IntentMatchers.hasData(TEST_MARKET_URL)));
@@ -251,7 +263,7 @@ public class UpdateMenuItemHelperTest {
     @Test
     @MediumTest
     @Feature({"Omaha"})
-    @DisableFeatures("InlineUpdateFlow")
+    @Restriction(DeviceRestriction.RESTRICTION_TYPE_NON_AUTO)
     public void testHideMenuWithoutClicking() throws Exception {
         checkUpdateMenuItemIsShowing("0.0.0.0", "1.2.3.4");
 
@@ -261,9 +273,11 @@ public class UpdateMenuItemHelperTest {
 
     private void showAppMenuAndAssertMenuShown() throws TimeoutException {
         int currentCallCount = mMenuObserver.menuShownCallback.getCallCount();
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            AppMenuTestSupport.showAppMenu(mActivityTestRule.getAppMenuCoordinator(), null, false);
-        });
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    AppMenuTestSupport.showAppMenu(
+                            mActivityTestRule.getAppMenuCoordinator(), null, false);
+                });
         mMenuObserver.menuShownCallback.waitForCallback(currentCallCount);
     }
 
@@ -277,8 +291,10 @@ public class UpdateMenuItemHelperTest {
     }
 
     private void waitForAppMenuDimissedRunnable() {
-        CriteriaHelper.pollInstrumentationThread(() -> {
-            return UpdateMenuItemHelper.getInstance().getMenuDismissedRunnableExecutedForTests();
-        });
+        CriteriaHelper.pollInstrumentationThread(
+                () -> {
+                    return UpdateMenuItemHelper.getInstance(mActivityTestRule.getProfile(false))
+                            .getMenuDismissedRunnableExecutedForTests();
+                });
     }
 }

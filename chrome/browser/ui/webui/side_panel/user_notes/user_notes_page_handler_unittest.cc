@@ -252,7 +252,7 @@ TEST_F(UserNotesPageHandlerTest, CreateAndDeleteNote) {
 }
 
 TEST_F(UserNotesPageHandlerTest, ShouldNotCreateNoteWithEmptyURL) {
-  handler()->SetCurrentTabUrlForTesting(GURL::EmptyGURL());
+  handler()->SetCurrentTabUrlForTesting(GURL());
   ASSERT_FALSE(NewNoteFinished("note5"));
 
   auto notes = GetNotesForCurrentTab();

@@ -22,8 +22,9 @@ namespace chrome_pdf {
 
 base::FilePath GetTestDataFilePath(const base::FilePath& path) {
   base::FilePath source_root;
-  if (!base::PathService::Get(base::DIR_SOURCE_ROOT, &source_root))
+  if (!base::PathService::Get(base::DIR_SRC_TEST_DATA_ROOT, &source_root)) {
     return {};
+  }
 
   return source_root.Append(FILE_PATH_LITERAL("pdf"))
       .Append(FILE_PATH_LITERAL("test"))
@@ -56,6 +57,16 @@ sk_sp<SkSurface> CreateSkiaSurfaceForTesting(const gfx::Size& size,
 
 sk_sp<SkImage> CreateSkiaImageForTesting(const gfx::Size& size, SkColor color) {
   return CreateSkiaSurfaceForTesting(size, color)->makeImageSnapshot();
+}
+
+static v8::Isolate* g_isolate = nullptr;
+
+v8::Isolate* GetBlinkIsolate() {
+  return g_isolate;
+}
+
+void SetBlinkIsolate(v8::Isolate* isolate) {
+  g_isolate = isolate;
 }
 
 }  // namespace chrome_pdf

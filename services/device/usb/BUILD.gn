@@ -9,7 +9,8 @@ import("//testing/libfuzzer/fuzzer_test.gni")
 assert(use_blink)
 
 if (is_android) {
-  import("//build/config/android/rules.gni")  # For generate_jni().
+  import("//build/config/android/rules.gni")
+  import("//third_party/jni_zero/jni_zero.gni")
 }
 
 static_library("usb") {
@@ -32,6 +33,8 @@ static_library("usb") {
     "webusb_descriptors.cc",
     "webusb_descriptors.h",
   ]
+
+  configs += [ "//build/config/compiler:wexit_time_destructors" ]
 
   deps = [
     "//base/third_party/dynamic_annotations",
@@ -230,9 +233,9 @@ if (is_android) {
     sources = java_sources_needing_jni
     deps = [
       "//base:base_java",
-      "//base:jni_java",
       "//build/android:build_java",
       "//third_party/androidx:androidx_annotation_annotation_java",
+      "//third_party/jni_zero:jni_zero_java",
     ]
   }
 }

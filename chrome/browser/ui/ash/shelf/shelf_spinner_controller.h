@@ -105,7 +105,7 @@ class ShelfSpinnerController : public ash::ShelfModelObserver {
   void HideSpinner(const std::string& app_id);
 
   // Unowned pointers.
-  raw_ptr<ChromeShelfController, ExperimentalAsh> owner_;
+  raw_ptr<ChromeShelfController> owner_;
 
   AccountId current_account_id_;
 

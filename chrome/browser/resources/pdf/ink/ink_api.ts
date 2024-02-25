@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {AnnotationTool} from '../annotation_tool.js';
+import type {AnnotationTool} from '../annotation_tool.js';
 
 /**
  * Wraps the Ink component with an API that can be called

@@ -4,8 +4,8 @@
 
 // This header defines fenced frame configs, which are objects that can be
 // loaded into a fenced frame and determine its subsequent behavior. Different
-// APIs like FLEDGE and sharedStorage use fenced frame configs in order to
-// achieve different end-to-end privacy guarantees.
+// APIs like Protected Audience and Shared Storage use fenced frame configs in
+// order to achieve different end-to-end privacy guarantees.
 //
 // Certain information stored in configs may be sensitive and therefore should
 // be redacted before it is sent to a renderer process. Whether information is
@@ -32,18 +32,15 @@
 //
 // Here is a summary of the information flow:
 // * The embedder calls a config-generating API on the web platform, let's say
-//   FLEDGE, which makes an IPC to the browser.
-// * In the browser, FLEDGE generates a `FencedFrameConfig` (including the
-//   visibility of each field to different entities) and stores it in
-//   the Page's `FencedFrameURLMapping` data structure.
-// * FLEDGE constructs a `RedactedFencedFrameConfig` from the
+//   Protected Audience, which makes an IPC to the browser.
+// * In the browser, Protected Audience generates a `FencedFrameConfig`
+//   (including the visibility of each field to different entities) and stores
+//   it in the Page's `FencedFrameURLMapping` data structure.
+// * Protected Audience constructs a `RedactedFencedFrameConfig` from the
 //   `FencedFrameConfig` and the `kEmbedder` entity. The constructor
 //   automatically performs the redaction process.
 //
-//   TODO(crbug.com/1347953): Remove this disclaimer.
-//   (Note: the following two steps aren't implemented yet, and are currently
-//    accomplished with urns.)
-// * FLEDGE returns the redacted config to the embedder's renderer.
+// * Protected Audience returns the redacted config to the embedder's renderer.
 //   `RedactedFencedFrameConfig` supports mojom type mappings for
 //   `blink::mojom::FencedFrameConfig`.
 // * Later, the embedder loads the config into a fenced frame on the web
@@ -72,14 +69,16 @@
 #ifndef CONTENT_BROWSER_FENCED_FRAME_FENCED_FRAME_CONFIG_H_
 #define CONTENT_BROWSER_FENCED_FRAME_FENCED_FRAME_CONFIG_H_
 
+#include <optional>
+
 #include "base/containers/flat_map.h"
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
+#include "content/browser/fenced_frame/automatic_beacon_info.h"
+#include "content/browser/fenced_frame/fenced_document_data.h"
 #include "content/browser/fenced_frame/fenced_frame_reporter.h"
 #include "content/common/content_export.h"
-#include "services/network/public/cpp/attribution_reporting_runtime_features.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/fenced_frame/redacted_fenced_frame_config.h"
 #include "third_party/blink/public/mojom/fenced_frame/fenced_frame.mojom.h"
 #include "ui/gfx/geometry/size.h"
@@ -92,6 +91,10 @@ class FencedFrameURLMapping;
 
 extern const char kUrnUuidPrefix[];
 GURL CONTENT_EXPORT GenerateUrnUuid();
+
+// Used by the fenced frame properties getter. It specifies the node source
+// of the fenced frame properties.
+enum class FencedFramePropertiesNodeSource { kFrameTreeRoot, kClosestAncestor };
 
 // Returns a new string based on input where the matching substrings have been
 // replaced with the corresponding substitutions. This function avoids repeated
@@ -106,33 +109,7 @@ using AdAuctionData = blink::FencedFrame::AdAuctionData;
 using DeprecatedFencedFrameMode = blink::FencedFrame::DeprecatedFencedFrameMode;
 using SharedStorageBudgetMetadata =
     blink::FencedFrame::SharedStorageBudgetMetadata;
-
-struct CONTENT_EXPORT AutomaticBeaconInfo {
-  AutomaticBeaconInfo(
-      const std::string& data,
-      const std::vector<blink::FencedFrame::ReportingDestination>& destinations,
-      network::AttributionReportingRuntimeFeatures
-          attribution_reporting_runtime_features,
-      bool once);
-
-  AutomaticBeaconInfo(const AutomaticBeaconInfo&);
-  AutomaticBeaconInfo(AutomaticBeaconInfo&&);
-
-  AutomaticBeaconInfo& operator=(const AutomaticBeaconInfo&);
-  AutomaticBeaconInfo& operator=(AutomaticBeaconInfo&&);
-
-  ~AutomaticBeaconInfo();
-
-  std::string data;
-  std::vector<blink::FencedFrame::ReportingDestination> destinations;
-  // Indicates whether Attribution Reporting API related runtime features are
-  // enabled and is needed for integration with Attribution Reporting API.
-  network::AttributionReportingRuntimeFeatures
-      attribution_reporting_runtime_features;
-  // Indicates whether the automatic beacon will only be sent out for one event,
-  // or if it will be sent out every time an event occurs.
-  bool once;
-};
+using ParentPermissionsInfo = blink::FencedFrame::ParentPermissionsInfo;
 
 // Different kinds of entities (renderers) that should receive different
 // views of the information in fenced frame configs.
@@ -196,22 +173,22 @@ class CONTENT_EXPORT FencedFrameProperty {
   // Get the value of the property, redacted as necessary for the given
   // `entity`. Should be used whenever the returned information will be
   // sent to a different process or is observable from a web surface API.
-  absl::optional<T> GetValueForEntity(FencedFrameEntity entity) const {
+  std::optional<T> GetValueForEntity(FencedFrameEntity entity) const {
     switch (entity) {
       case FencedFrameEntity::kEmbedder: {
         if (visibility_to_embedder_ == VisibilityToEmbedder::kOpaque) {
-          return absl::nullopt;
+          return std::nullopt;
         }
         break;
       }
       case FencedFrameEntity::kCrossOriginContent: {
         // For now, content that is cross-origin to the mapped URL does not get
         // access to any of the redacted properties in the config.
-        return absl::nullopt;
+        return std::nullopt;
       }
       case FencedFrameEntity::kSameOriginContent: {
         if (visibility_to_content_ == VisibilityToContent::kOpaque) {
-          return absl::nullopt;
+          return std::nullopt;
         }
         break;
       }
@@ -221,8 +198,8 @@ class CONTENT_EXPORT FencedFrameProperty {
 
  private:
   friend class content::FencedFrameURLMapping;
-  friend struct FencedFrameConfig;
-  friend struct FencedFrameProperties;
+  friend class FencedFrameConfig;
+  friend class FencedFrameProperties;
 
   T value_;
   VisibilityToEmbedder visibility_to_embedder_;
@@ -236,11 +213,12 @@ class CONTENT_EXPORT FencedFrameProperty {
 // configuration, but some require additional processing (e.g.
 // `nested_configs`.)
 //
-// Config-generating APIs like FLEDGE's runAdAuction and sharedStorage's
-// selectURL return urns as handles to `FencedFrameConfig`s.
-// TODO(crbug.com/1417871): Turn this into a class, make its fields private,
-// and have a single constructor that requires all fields to be specified.
-struct CONTENT_EXPORT FencedFrameConfig {
+// Config-generating APIs like Protected Audience's runAdAuction and
+// sharedStorage's selectURL return urns as handles to `FencedFrameConfig`s.
+// TODO(crbug.com/1417871): Use a single constructor that requires values to be
+// specified for all fields, to ensure none are accidentally omitted.
+class CONTENT_EXPORT FencedFrameConfig {
+ public:
   FencedFrameConfig();
   explicit FencedFrameConfig(const GURL& mapped_url);
   explicit FencedFrameConfig(
@@ -267,48 +245,75 @@ struct CONTENT_EXPORT FencedFrameConfig {
   blink::FencedFrame::RedactedFencedFrameConfig RedactFor(
       FencedFrameEntity entity) const;
 
-  absl::optional<GURL> urn_uuid_;
+  const scoped_refptr<FencedFrameReporter>& fenced_frame_reporter() const {
+    return fenced_frame_reporter_;
+  }
 
-  absl::optional<FencedFrameProperty<GURL>> mapped_url_;
+  const std::optional<GURL>& urn_uuid() const { return urn_uuid_; }
+
+  const std::optional<FencedFrameProperty<GURL>>& mapped_url() const {
+    return mapped_url_;
+  }
+
+  // Add a permission to the FencedFrameConfig.
+  // TODO(crbug.com/1347953): Refactor and expand use of test utils so there is
+  // a consistent way to do this properly everywhere.
+  void AddEffectiveEnabledPermissionForTesting(
+      blink::mojom::PermissionsPolicyFeature feature) {
+    effective_enabled_permissions_.push_back(feature);
+  }
+
+ private:
+  friend class FencedFrameURLMapping;
+  friend class FencedFrameProperties;
+  friend class FencedFrameConfigMojomTraitsTest;
+  FRIEND_TEST_ALL_PREFIXES(FencedFrameConfigMojomTraitsTest,
+                           ConfigMojomTraitsTest);
+  FRIEND_TEST_ALL_PREFIXES(FencedFrameConfigMojomTraitsTest,
+                           ConfigMojomTraitsModeTest);
+
+  std::optional<GURL> urn_uuid_;
+
+  std::optional<FencedFrameProperty<GURL>> mapped_url_;
 
   // The initial size of the outer container (the size that the embedder sees
   // for the fenced frame). This will only be respected if the embedder hasn't
   // explicitly declared a size for the <fencedframe> element, and will be
   // disregarded if the embedder subsequently resizes the fenced frame.
-  absl::optional<FencedFrameProperty<gfx::Size>> container_size_;
+  std::optional<FencedFrameProperty<gfx::Size>> container_size_;
 
   // The size of the inner frame (the size that the fenced frame sees for
   // itself).
-  absl::optional<FencedFrameProperty<gfx::Size>> content_size_;
+  std::optional<FencedFrameProperty<gfx::Size>> content_size_;
 
   // Whether we should use the old size freezing behavior for backwards
   // compatibility. (The old behavior is to freeze the fenced frame to its size
   // at navigation start, coerced to a list of allowed sizes. The new behavior
   // uses `container_size` and `content_size` above.)
-  absl::optional<FencedFrameProperty<bool>>
+  std::optional<FencedFrameProperty<bool>>
       deprecated_should_freeze_initial_size_;
 
-  // Extra data set if `mapped_url` is the result of a FLEDGE auction. Used
-  // to fill in `AdAuctionDocumentData` for the fenced frame that navigates
-  // to `mapped_url`.
-  absl::optional<FencedFrameProperty<AdAuctionData>> ad_auction_data_;
+  // Extra data set if `mapped_url` is the result of a Protected Audience
+  // auction. Used to fill in `AdAuctionDocumentData` for the fenced frame that
+  // navigates to `mapped_url`.
+  std::optional<FencedFrameProperty<AdAuctionData>> ad_auction_data_;
 
   // Should be invoked whenever the URN is navigated to.
   base::RepeatingClosure on_navigate_callback_;
 
   // Configurations for nested ad components.
-  // Currently only used by FLEDGE.
+  // Currently only used by Protected Audience.
   // When a fenced frame loads this configuration, these component
   // configurations will be mapped to URNs themselves, and those URNs will be
   // provided to the fenced frame for use in nested fenced frames.
-  absl::optional<FencedFrameProperty<std::vector<FencedFrameConfig>>>
+  std::optional<FencedFrameProperty<std::vector<FencedFrameConfig>>>
       nested_configs_;
 
   // Contains the metadata needed for shared storage budget charging. Will be
-  // initialized to absl::nullopt if the associated URN is not generated from
+  // initialized to std::nullopt if the associated URN is not generated from
   // shared storage. Its `budget_to_charge` can be updated to 0 when the
   // budget is charged.
-  absl::optional<FencedFrameProperty<SharedStorageBudgetMetadata>>
+  std::optional<FencedFrameProperty<SharedStorageBudgetMetadata>>
       shared_storage_budget_metadata_;
 
   // If reporting events from fenced frames are registered, then this
@@ -331,15 +336,24 @@ struct CONTENT_EXPORT FencedFrameConfig {
 
   // Contains the list of permissions policy features that need to be enabled
   // for a fenced frame with this configuration to load. APIs that load fenced
-  // frames, such as FLEDGE and Shared Storage, require certain features to be
-  // enabled in the frame's permissions policy, but they cannot be set directly
-  // by the embedder since that opens a communication channel. The API that
-  // constructs the config will set this directly. These permissions will be the
-  // only ones enabled in the fenced frame once it navigates.
-  // See entry in spec:
+  // frames, such as Protected Audience and Shared Storage, require certain
+  // features to be enabled in the frame's permissions policy, but they cannot
+  // be set directly by the embedder since that opens a communication channel.
+  // The API that constructs the config will set this directly. These
+  // permissions will be the only ones enabled in the fenced frame once it
+  // navigates. See entry in spec:
   // https://wicg.github.io/fenced-frame/#fenced-frame-config-effective-enabled-permissions
   std::vector<blink::mojom::PermissionsPolicyFeature>
-      effective_enabled_permissions;
+      effective_enabled_permissions_;
+
+  // Fenced frames with flexible permissions are allowed to inherit certain
+  // permissions policies from their parent. However, a fenced frame's renderer
+  // process doesn't have access to its parent. Instead, we give it this
+  // information through its fenced frame properties, so that it can calculate
+  // inheritance. Right now, only FencedFrameConfigs created from JavaScript
+  // (non-Protected Audience/Shared Storage) will have a flexible permissions
+  // policy.
+  std::optional<ParentPermissionsInfo> parent_permissions_info_;
 };
 
 // Contains a set of fenced frame properties. These are generated at
@@ -355,13 +369,17 @@ struct CONTENT_EXPORT FencedFrameConfig {
 // These `FencedFrameProperties` are stored in the fenced frame root
 // `FrameTreeNode`, and live between embedder-initiated fenced frame
 // navigations.
-// TODO(crbug.com/1417871): Turn this into a class and make its fields private.
-struct CONTENT_EXPORT FencedFrameProperties {
+class CONTENT_EXPORT FencedFrameProperties {
+ public:
   // The empty constructor is used for:
   // * pre-navigation fenced frames
   // * embedder-initiated non-opaque url navigations
   // All fields are empty, except a randomly generated partition nonce.
   FencedFrameProperties();
+
+  // The GURL constructor is used when loading a default config
+  // FencedFrameConfig(url).
+  FencedFrameProperties(const GURL& mapped_url);
 
   // For opaque url navigations, the properties should be constructed from
   // a `FencedFrameConfig` that was previously created.
@@ -376,8 +394,6 @@ struct CONTENT_EXPORT FencedFrameProperties {
   blink::FencedFrame::RedactedFencedFrameProperties RedactFor(
       FencedFrameEntity entity) const;
 
-  absl::optional<FencedFrameProperty<GURL>> mapped_url_;
-
   // Update the stored mapped URL to a new one given by `url`.
   // `this` must have a value for `mapped_url_` when the function is called.
   // We use this method when an embedder-initiated fenced frame root navigation
@@ -385,33 +401,150 @@ struct CONTENT_EXPORT FencedFrameProperties {
   // any server-side redirects.
   void UpdateMappedURL(GURL url);
 
-  // Stores the payload that will be sent as part of the
-  // `reserved.top_navigation` automatic beacon.
+  // Stores the payload that will be sent as part of an automatic beacon.
   void UpdateAutomaticBeaconData(
+      blink::mojom::AutomaticBeaconType event_type,
       const std::string& event_data,
       const std::vector<blink::FencedFrame::ReportingDestination>& destinations,
-      network::AttributionReportingRuntimeFeatures
-          attribution_reporting_runtime_features,
-      bool once);
+      bool once,
+      bool cross_origin_exposed);
 
   // Automatic beacon data is cleared out after one automatic beacon if `once`
   // was set to true when calling `setReportEventDataForAutomaticBeacons()`.
-  void MaybeResetAutomaticBeaconData();
+  void MaybeResetAutomaticBeaconData(
+      blink::mojom::AutomaticBeaconType event_type);
 
-  const absl::optional<AutomaticBeaconInfo>& automatic_beacon_info() const {
-    return automatic_beacon_info_;
+  // Stores information about a fenced frame's parent's permissions policy so
+  // that the fenced frame's renderer process can calculate permissions
+  // inheritance. This is called before the fenced frame-targeting navigation
+  // commits.
+  void UpdateParentParsedPermissionsPolicy(
+      const blink::PermissionsPolicy* parent_policy,
+      const url::Origin& parent_origin);
+
+  // Attempts to retrieve the automatic beacon data for a given event type.
+  const std::optional<AutomaticBeaconInfo> GetAutomaticBeaconInfo(
+      blink::mojom::AutomaticBeaconType event_type) const;
+
+  const std::optional<FencedFrameProperty<GURL>>& mapped_url() const {
+    return mapped_url_;
   }
 
-  absl::optional<FencedFrameProperty<gfx::Size>> container_size_;
+  const std::optional<FencedFrameProperty<AdAuctionData>>& ad_auction_data()
+      const {
+    return ad_auction_data_;
+  }
+
+  const base::RepeatingClosure& on_navigate_callback() const {
+    return on_navigate_callback_;
+  }
+
+  const std::optional<
+      FencedFrameProperty<std::vector<std::pair<GURL, FencedFrameConfig>>>>
+  nested_urn_config_pairs() const {
+    return nested_urn_config_pairs_;
+  }
+
+  const std::optional<
+      FencedFrameProperty<raw_ptr<const SharedStorageBudgetMetadata>>>&
+  shared_storage_budget_metadata() const {
+    return shared_storage_budget_metadata_;
+  }
+
+  const std::optional<std::u16string>& embedder_shared_storage_context() const {
+    return embedder_shared_storage_context_;
+  }
+
+  // Used to store the shared storage context passed from the embedder
+  // (navigation initiator)'s renderer into the new FencedFrameProperties.
+  // TODO(crbug.com/1417871): Refactor this to be part of the
+  // FencedFrameProperties constructor rather than
+  // OnFencedFrameURLMappingComplete.
+  void SetEmbedderSharedStorageContext(
+      const std::optional<std::u16string>& embedder_shared_storage_context) {
+    embedder_shared_storage_context_ = embedder_shared_storage_context;
+  }
+
+  const scoped_refptr<FencedFrameReporter>& fenced_frame_reporter() const {
+    return fenced_frame_reporter_;
+  }
+
+  const std::optional<FencedFrameProperty<base::UnguessableToken>>&
+  partition_nonce() const {
+    return partition_nonce_;
+  }
+
+  // Used for urn iframes, which should not have a separate storage/network
+  // partition or access to window.fence.disableUntrustedNetwork().
+  // TODO(crbug.com/1417871): Refactor this to be part of the
+  // FencedFrameProperties constructor rather than
+  // OnFencedFrameURLMappingComplete.
+  void AdjustPropertiesForUrnIframe() {
+    partition_nonce_ = std::nullopt;
+    can_disable_untrusted_network_ = false;
+  }
+
+  const DeprecatedFencedFrameMode& mode() const { return mode_; }
+
+  bool is_ad_component() const { return is_ad_component_; }
+
+  const std::vector<blink::mojom::PermissionsPolicyFeature>&
+  effective_enabled_permissions() const {
+    return effective_enabled_permissions_;
+  }
+
+  std::optional<ParentPermissionsInfo> parent_permissions_info() const {
+    return parent_permissions_info_;
+  }
+
+  // Set the current FencedFrameProperties to have "opaque ads mode".
+  // TODO(crbug.com/1347953): Refactor and expand use of test utils so there is
+  // a consistent way to do this properly everywhere. Consider removing
+  // arbitrary restrictions in "default mode" so that using opaque ads mode is
+  // less necessary.
+  void SetFencedFramePropertiesOpaqueAdsModeForTesting() {
+    mode_ = blink::FencedFrame::DeprecatedFencedFrameMode::kOpaqueAds;
+  }
+
+  bool can_disable_untrusted_network() const {
+    return can_disable_untrusted_network_;
+  }
+
+  bool has_disabled_untrusted_network() const {
+    return has_disabled_untrusted_network_;
+  }
+
+  // Safe to call multiple times (will do nothing after the first time).
+  void DisableUntrustedNetwork() {
+    CHECK(can_disable_untrusted_network_);
+    // TODO(crbug.com/1294933): Actually disable network.
+    has_disabled_untrusted_network_ = true;
+  }
+
+ private:
+  FRIEND_TEST_ALL_PREFIXES(FencedFrameConfigMojomTraitsTest,
+                           ConfigMojomTraitsTest);
+  FRIEND_TEST_ALL_PREFIXES(FencedFrameConfigMojomTraitsTest,
+                           PropertiesHasFencedFrameReportingTest);
+  FRIEND_TEST_ALL_PREFIXES(FencedFrameConfigMojomTraitsTest,
+                           PropertiesCanDisableUntrustedNetworkTest);
+
+  std::vector<std::pair<GURL, FencedFrameConfig>>
+  GenerateURNConfigVectorForConfigs(
+      const std::vector<FencedFrameConfig>& nested_configs);
+
+  std::optional<FencedFrameProperty<GURL>> mapped_url_;
+
+  std::optional<FencedFrameProperty<gfx::Size>> container_size_;
 
   // TODO(crbug.com/1420638): The representation of size in fenced frame config
   // will need to work with the size carried with the winning bid.
-  absl::optional<FencedFrameProperty<gfx::Size>> content_size_;
+  std::optional<FencedFrameProperty<gfx::Size>> content_size_;
 
-  absl::optional<FencedFrameProperty<bool>>
+  std::optional<FencedFrameProperty<bool>>
       deprecated_should_freeze_initial_size_;
 
-  absl::optional<FencedFrameProperty<AdAuctionData>> ad_auction_data_;
+  std::optional<FencedFrameProperty<AdAuctionData>> ad_auction_data_;
 
   // Should be invoked when `mapped_url` is navigated to via the passed in
   // URN.
@@ -419,7 +552,7 @@ struct CONTENT_EXPORT FencedFrameProperties {
 
   // urn/url mappings for ad components. These are inserted into the
   // fenced frame page's urn/url mapping when the urn navigation commits.
-  absl::optional<
+  std::optional<
       FencedFrameProperty<std::vector<std::pair<GURL, FencedFrameConfig>>>>
       nested_urn_config_pairs_;
 
@@ -431,30 +564,29 @@ struct CONTENT_EXPORT FencedFrameProperties {
   // This metadata can be on fenced frame roots, and if `kAllowURNsInIframes`
   // is enabled, it can also be on any node except for the main frame node in
   // the outermost frame tree.
-  absl::optional<
-      FencedFrameProperty<raw_ptr<const SharedStorageBudgetMetadata>>>
+  std::optional<FencedFrameProperty<raw_ptr<const SharedStorageBudgetMetadata>>>
       shared_storage_budget_metadata_;
 
   // Any context that is written by the embedder using
   // `blink::FencedFrameConfig::setSharedStorageContext`. Only readable in
   // shared storage worklets via `sharedStorage.context()`. Not copied during
   // redaction.
-  absl::optional<std::u16string> embedder_shared_storage_context_;
+  std::optional<std::u16string> embedder_shared_storage_context_;
 
   scoped_refptr<FencedFrameReporter> fenced_frame_reporter_;
 
-  absl::optional<FencedFrameProperty<base::UnguessableToken>> partition_nonce_;
+  std::optional<FencedFrameProperty<base::UnguessableToken>> partition_nonce_;
 
   DeprecatedFencedFrameMode mode_ = DeprecatedFencedFrameMode::kDefault;
 
   // Stores data registered by one of the documents in a FencedFrame using
-  // the `Fence.setReportEventDataForAutomaticBeacons` API.
-  //
-  // Currently, only the `reserved.top_navigation` event exists.
+  // the `Fence.setReportEventDataForAutomaticBeacons` API. Maps an event type
+  // to an AutomaticBeaconInfo object.
   //
   // The data will be sent directly to the network, without going back to any
   // renderer process, so they are not made part of the redacted properties.
-  absl::optional<AutomaticBeaconInfo> automatic_beacon_info_;
+  std::map<blink::mojom::AutomaticBeaconType, AutomaticBeaconInfo>
+      automatic_beacon_info_;
 
   // Whether this is an ad component fenced frame. An ad component fenced frame
   // is a nested fenced frame which loads the config from its parent fenced
@@ -466,15 +598,37 @@ struct CONTENT_EXPORT FencedFrameProperties {
 
   // Contains the list of permissions policy features that need to be enabled
   // for a fenced frame with this configuration to load. APIs that load fenced
-  // frames, such as FLEDGE and Shared Storage, require certain features to be
-  // enabled in the frame's permissions policy, but they cannot be set directly
-  // by the embedder since that opens a communication channel. The API that
-  // constructs the config will set this directly. These permissions will be the
-  // only ones enabled in the fenced frame once it navigates.
-  // See entry in spec:
+  // frames, such as Protected Audience and Shared Storage, require certain
+  // features to be enabled in the frame's permissions policy, but they cannot
+  // be set directly by the embedder since that opens a communication channel.
+  // The API that constructs the config will set this directly. These
+  // permissions will be the only ones enabled in the fenced frame once it
+  // navigates. See entry in spec:
   // https://wicg.github.io/fenced-frame/#fenced-frame-config-effective-enabled-permissions
   std::vector<blink::mojom::PermissionsPolicyFeature>
-      effective_enabled_permissions;
+      effective_enabled_permissions_;
+
+  // Fenced frames with flexible permissions are allowed to inherit certain
+  // permissions policies from their parent. However, a fenced frame's renderer
+  // process doesn't have access to its parent. Instead, we give it this
+  // information through its fenced frame properties, so that it can calculate
+  // inheritance. Right now, only developer-created fenced frames (non-Protected
+  // Audience/Shared Storage) will have a flexible permissions policy.
+  std::optional<ParentPermissionsInfo> parent_permissions_info_;
+
+  // Whether this config allows calls to window.fence.disableUntrustedNetwork()
+  // (and then access to unpartitioned storage).
+  // Currently true in all fenced frame configs, but set to false if loaded in a
+  // urn iframe.
+  // TODO(crbug.com/1415475): Remove this when urn iframes are removed.
+  bool can_disable_untrusted_network_ = true;
+
+  // Whether this fenced frame has already called
+  // window.fence.disableUntrustedNetwork() (i.e., if this is true, untrusted
+  // network access should be disabled and access to unpartitioned storage
+  // should be enabled.)
+  // Set by `DisableUntrustedNetwork()`.
+  bool has_disabled_untrusted_network_ = false;
 };
 
 }  // namespace content

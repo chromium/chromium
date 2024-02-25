@@ -5,8 +5,11 @@
 #include "net/cookies/cookie_inclusion_status.h"
 
 #include <initializer_list>
+#include <string_view>
+#include <tuple>
 #include <utility>
 
+#include "base/notreached.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/strcat.h"
 #include "url/gurl.h"
@@ -30,6 +33,19 @@ CookieInclusionStatus::CookieInclusionStatus(WarningReason warning) {
 }
 
 CookieInclusionStatus::CookieInclusionStatus(
+    std::vector<ExclusionReason> exclusions,
+    std::vector<WarningReason> warnings,
+    ExemptionReason exemption) {
+  for (ExclusionReason reason : exclusions) {
+    exclusion_reasons_[reason] = true;
+  }
+  for (WarningReason warning : warnings) {
+    warning_reasons_[warning] = true;
+  }
+  exemption_reason_ = exemption;
+}
+
+CookieInclusionStatus::CookieInclusionStatus(
     const CookieInclusionStatus& other) = default;
 
 CookieInclusionStatus& CookieInclusionStatus::operator=(
@@ -38,12 +54,26 @@ CookieInclusionStatus& CookieInclusionStatus::operator=(
 bool CookieInclusionStatus::operator==(
     const CookieInclusionStatus& other) const {
   return exclusion_reasons_ == other.exclusion_reasons_ &&
-         warning_reasons_ == other.warning_reasons_;
+         warning_reasons_ == other.warning_reasons_ &&
+         exemption_reason_ == other.exemption_reason_;
 }
 
 bool CookieInclusionStatus::operator!=(
     const CookieInclusionStatus& other) const {
   return !operator==(other);
+}
+
+bool CookieInclusionStatus::operator<(
+    const CookieInclusionStatus& other) const {
+  static_assert(NUM_EXCLUSION_REASONS <= sizeof(unsigned long) * CHAR_BIT,
+                "use .ullong() instead");
+  static_assert(NUM_WARNING_REASONS <= sizeof(unsigned long) * CHAR_BIT,
+                "use .ullong() instead");
+  return std::make_tuple(exclusion_reasons_.to_ulong(),
+                         warning_reasons_.to_ulong(), exemption_reason_) <
+         std::make_tuple(other.exclusion_reasons_.to_ulong(),
+                         other.warning_reasons_.to_ulong(),
+                         other.exemption_reason_);
 }
 
 bool CookieInclusionStatus::IsInclude() const {
@@ -64,6 +94,11 @@ void CookieInclusionStatus::AddExclusionReason(ExclusionReason reason) {
   // If the cookie would be excluded for reasons other than the new SameSite
   // rules, don't bother warning about it.
   MaybeClearSameSiteWarning();
+  // If the cookie would be excluded for reasons unrelated to 3pcd, don't bother
+  // warning about 3pcd.
+  MaybeClearThirdPartyPhaseoutReason();
+  // If the cookie would have been excluded, clear the exemption reason.
+  exemption_reason_ = ExemptionReason::kNone;
 }
 
 void CookieInclusionStatus::RemoveExclusionReason(ExclusionReason reason) {
@@ -73,6 +108,12 @@ void CookieInclusionStatus::RemoveExclusionReason(ExclusionReason reason) {
 void CookieInclusionStatus::RemoveExclusionReasons(
     const std::vector<ExclusionReason>& reasons) {
   exclusion_reasons_ = ExclusionReasonsWithout(reasons);
+}
+
+void CookieInclusionStatus::MaybeSetExemptionReason(ExemptionReason reason) {
+  if (IsInclude() && exemption_reason_ == ExemptionReason::kNone) {
+    exemption_reason_ = reason;
+  }
 }
 
 CookieInclusionStatus::ExclusionReasonBitset
@@ -103,6 +144,18 @@ void CookieInclusionStatus::MaybeClearSameSiteWarning() {
     RemoveWarningReason(WARN_LAX_CROSS_DOWNGRADE_LAX_SAMESITE);
 
     RemoveWarningReason(WARN_CROSS_SITE_REDIRECT_DOWNGRADE_CHANGES_INCLUSION);
+  }
+}
+
+void CookieInclusionStatus::MaybeClearThirdPartyPhaseoutReason() {
+  if (!IsInclude()) {
+    RemoveWarningReason(WARN_THIRD_PARTY_PHASEOUT);
+  }
+  if (ExclusionReasonsWithout(
+          {EXCLUDE_THIRD_PARTY_PHASEOUT,
+           EXCLUDE_THIRD_PARTY_BLOCKED_WITHIN_FIRST_PARTY_SET}) != 0u) {
+    RemoveExclusionReason(EXCLUDE_THIRD_PARTY_PHASEOUT);
+    RemoveExclusionReason(EXCLUDE_THIRD_PARTY_BLOCKED_WITHIN_FIRST_PARTY_SET);
   }
 }
 
@@ -231,6 +284,7 @@ std::string CookieInclusionStatus::GetDebugString() const {
       {EXCLUDE_SHADOWING_DOMAIN, "EXCLUDE_SHADOWING_DOMAIN"},
       {EXCLUDE_DISALLOWED_CHARACTER, "EXCLUDE_DISALLOWED_CHARACTER"},
       {EXCLUDE_THIRD_PARTY_PHASEOUT, "EXCLUDE_THIRD_PARTY_PHASEOUT"},
+      {EXCLUDE_NO_COOKIE_CONTENT, "EXCLUDE_NO_COOKIE_CONTENT"},
   };
   static_assert(
       std::size(exclusion_reasons) == ExclusionReason::NUM_EXCLUSION_REASONS,
@@ -247,8 +301,7 @@ std::string CookieInclusionStatus::GetDebugString() const {
 
   // Add warning
   if (!ShouldWarn()) {
-    base::StrAppend(&out, {"DO_NOT_WARN"});
-    return out;
+    base::StrAppend(&out, {"DO_NOT_WARN, "});
   }
 
   constexpr std::pair<WarningReason, const char*> warning_reasons[] = {
@@ -294,8 +347,42 @@ std::string CookieInclusionStatus::GetDebugString() const {
       base::StrAppend(&out, {reason.second, ", "});
   }
 
-  // Strip trailing comma and space.
-  out.erase(out.end() - 2, out.end());
+  // Add exemption reason
+  if (exemption_reason() == CookieInclusionStatus::ExemptionReason::kNone) {
+    base::StrAppend(&out, {"NO_EXEMPTION"});
+    return out;
+  }
+
+  std::string_view reason;
+  switch (exemption_reason()) {
+    case ExemptionReason::kUserSetting:
+      reason = "ExemptionUserSetting";
+      break;
+    case ExemptionReason::k3PCDMetadata:
+      reason = "Exemption3PCDMetadata";
+      break;
+    case ExemptionReason::k3PCDDeprecationTrial:
+      reason = "Exemption3PCDDeprecationTrial";
+      break;
+    case ExemptionReason::k3PCDHeuristics:
+      reason = "Exemption3PCDHeuristics";
+      break;
+    case ExemptionReason::kEnterprisePolicy:
+      reason = "ExemptionEnterprisePolicy";
+      break;
+    case ExemptionReason::kStorageAccess:
+      reason = "ExemptionStorageAccess";
+      break;
+    case ExemptionReason::kTopLevelStorageAccess:
+      reason = "ExemptionTopLevelStorageAccess";
+      break;
+    case ExemptionReason::kCorsOptIn:
+      reason = "ExemptionCorsOptIn";
+      break;
+    case ExemptionReason::kNone:
+      NOTREACHED_NORETURN();
+  };
+  base::StrAppend(&out, {reason});
 
   return out;
 }
@@ -325,23 +412,36 @@ bool CookieInclusionStatus::ValidateExclusionAndWarningFromWire(
 }
 
 CookieInclusionStatus CookieInclusionStatus::MakeFromReasonsForTesting(
-    std::vector<ExclusionReason> reasons,
-    std::vector<WarningReason> warnings) {
+    std::vector<ExclusionReason> exclusions,
+    std::vector<WarningReason> warnings,
+    ExemptionReason exemption,
+    bool use_literal) {
+  CookieInclusionStatus literal_status(exclusions, warnings, exemption);
+  if (use_literal) {
+    return literal_status;
+  }
   CookieInclusionStatus status;
-  for (ExclusionReason reason : reasons) {
+  for (ExclusionReason reason : exclusions) {
     status.AddExclusionReason(reason);
   }
   for (WarningReason warning : warnings) {
     status.AddWarningReason(warning);
   }
+  status.MaybeSetExemptionReason(exemption);
+
+  CHECK_EQ(status, literal_status);
   return status;
 }
 
+// TODO(shuuran): Consolidate reasons in this method.
 bool CookieInclusionStatus::ExcludedByUserPreferences() const {
-  if (HasOnlyExclusionReason(ExclusionReason::EXCLUDE_USER_PREFERENCES))
+  if (HasOnlyExclusionReason(ExclusionReason::EXCLUDE_USER_PREFERENCES) ||
+      HasOnlyExclusionReason(ExclusionReason::EXCLUDE_THIRD_PARTY_PHASEOUT)) {
     return true;
+  }
   return exclusion_reasons_.count() == 2 &&
-         exclusion_reasons_[ExclusionReason::EXCLUDE_USER_PREFERENCES] &&
+         (exclusion_reasons_[ExclusionReason::EXCLUDE_USER_PREFERENCES] ||
+          exclusion_reasons_[ExclusionReason::EXCLUDE_THIRD_PARTY_PHASEOUT]) &&
          exclusion_reasons_
              [ExclusionReason::
                   EXCLUDE_THIRD_PARTY_BLOCKED_WITHIN_FIRST_PARTY_SET];

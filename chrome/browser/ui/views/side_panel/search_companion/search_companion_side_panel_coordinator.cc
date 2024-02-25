@@ -4,6 +4,8 @@
 
 #include "chrome/browser/ui/views/side_panel/search_companion/search_companion_side_panel_coordinator.h"
 
+#include <memory>
+
 #include "base/metrics/histogram.h"
 #include "base/metrics/histogram_functions.h"
 #include "chrome/app/vector_icons/vector_icons.h"
@@ -12,12 +14,16 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/search/search.h"
 #include "chrome/browser/search_engines/template_url_service_factory.h"
+#include "chrome/browser/ui/actions/chrome_action_id.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/side_panel/companion/companion_tab_helper.h"
 #include "chrome/browser/ui/side_panel/companion/companion_utils.h"
 #include "chrome/browser/ui/side_panel/side_panel_enums.h"
 #include "chrome/browser/ui/side_panel/side_panel_ui.h"
+#include "chrome/browser/ui/toolbar/pinned_toolbar/pinned_toolbar_actions_model_factory.h"
 #include "chrome/browser/ui/ui_features.h"
+#include "chrome/browser/ui/views/chrome_layout_provider.h"
+#include "chrome/browser/ui/views/frame/browser_actions.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_entry.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_registry.h"
@@ -28,6 +34,8 @@
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
 #include "components/vector_icons/vector_icons.h"
+#include "ui/actions/actions.h"
+#include "ui/base/l10n/l10n_util.h"
 #include "ui/base/ui_base_features.h"
 
 namespace {
@@ -127,6 +135,17 @@ bool SearchCompanionSidePanelCoordinator::Show(
   return true;
 }
 
+void SearchCompanionSidePanelCoordinator::ShowLens(
+    const content::OpenURLParams& url_params) {
+  // First, we need to modify our view to make sure we are showing Lens.
+  auto* companion_tab_helper = companion::CompanionTabHelper::FromWebContents(
+      browser_->tab_strip_model()->GetActiveWebContents());
+  companion_tab_helper->OpenContextualLensView(url_params);
+  SidePanelUI::GetSidePanelUIForBrowser(&GetBrowser())
+      ->Show(SidePanelEntry::Id::kSearchCompanion,
+             SidePanelOpenTrigger::kLensContextMenu);
+}
+
 BrowserView* SearchCompanionSidePanelCoordinator::GetBrowserView() const {
   return BrowserView::GetBrowserViewForBrowser(&GetBrowser());
 }
@@ -151,7 +170,7 @@ void SearchCompanionSidePanelCoordinator::SetAccessibleNameForToolbarButton(
 }
 
 void SearchCompanionSidePanelCoordinator::NotifyCompanionOfSidePanelOpenTrigger(
-    absl::optional<SidePanelOpenTrigger> side_panel_open_trigger) {
+    std::optional<SidePanelOpenTrigger> side_panel_open_trigger) {
   auto* companion_tab_helper = companion::CompanionTabHelper::FromWebContents(
       browser_->tab_strip_model()->GetActiveWebContents());
   companion_tab_helper->SetMostRecentSidePanelOpenTrigger(
@@ -217,6 +236,7 @@ void SearchCompanionSidePanelCoordinator::
   if (!browser_view) {
     return;
   }
+
   SidePanelToolbarContainer* container =
       browser_view->toolbar()->side_panel_container();
 
@@ -227,8 +247,13 @@ void SearchCompanionSidePanelCoordinator::
         "Companion.SidePanelAvailabilityChanged",
         CompanionSidePanelAvailabilityChanged::kUnavailableToAvailable);
     is_currently_observing_tab_changes_ = true;
-    container->AddPinnedEntryButtonFor(SidePanelEntry::Id::kSearchCompanion,
-                                       accessible_name(), name(), icon());
+
+    if (features::IsSidePanelPinningEnabled()) {
+      GetActionItem()->SetVisible(true);
+    } else {
+      container->AddPinnedEntryButtonFor(SidePanelEntry::Id::kSearchCompanion,
+                                         accessible_name(), name(), icon());
+    }
     browser_->tab_strip_model()->AddObserver(this);
     CreateAndRegisterEntriesForExistingWebContents(browser_->tab_strip_model());
     return;
@@ -240,7 +265,13 @@ void SearchCompanionSidePanelCoordinator::
         "Companion.SidePanelAvailabilityChanged",
         CompanionSidePanelAvailabilityChanged::kAvailableToUnavailable);
     is_currently_observing_tab_changes_ = false;
-    container->RemovePinnedEntryButtonFor(SidePanelEntry::Id::kSearchCompanion);
+
+    if (features::IsSidePanelPinningEnabled()) {
+      GetActionItem()->SetVisible(false);
+    } else {
+      container->RemovePinnedEntryButtonFor(
+          SidePanelEntry::Id::kSearchCompanion);
+    }
     browser_->tab_strip_model()->RemoveObserver(this);
     DeregisterEntriesForExistingWebContents(browser_->tab_strip_model());
     return;
@@ -264,10 +295,27 @@ void SearchCompanionSidePanelCoordinator::
   NOTREACHED();
 }
 
+actions::ActionItem* SearchCompanionSidePanelCoordinator::GetActionItem() {
+  BrowserActions* browser_actions = BrowserActions::FromBrowser(browser_);
+  return actions::ActionManager::Get().FindAction(
+      kActionSidePanelShowSearchCompanion, browser_actions->root_action_item());
+}
+
 void SearchCompanionSidePanelCoordinator::MaybeUpdateCompanionEnabledState() {
   bool enabled = companion::IsCompanionAvailableForCurrentActiveTab(browser_);
-  MaybeUpdatePinnedButtonEnabledState(enabled);
-  MaybeUpdateComboboxEntryEnabledState(enabled);
+
+  if (features::IsSidePanelPinningEnabled()) {
+    actions::ActionItem* action_item = GetActionItem();
+    action_item->SetEnabled(enabled);
+    action_item->SetImage(ui::ImageModel::FromVectorIcon(
+        (enabled ? icon() : disabled_icon()), ui::kColorIcon,
+        ChromeLayoutProvider::Get()->GetDistanceMetric(
+            ChromeDistanceMetric::
+                DISTANCE_SIDE_PANEL_HEADER_VECTOR_ICON_SIZE)));
+  } else {
+    MaybeUpdatePinnedButtonEnabledState(enabled);
+    MaybeUpdateComboboxEntryEnabledState(enabled);
+  }
 }
 
 void SearchCompanionSidePanelCoordinator::MaybeUpdatePinnedButtonEnabledState(
@@ -302,7 +350,8 @@ void SearchCompanionSidePanelCoordinator::MaybeUpdateComboboxEntryEnabledState(
 
   entry->ResetIcon(ui::ImageModel::FromVectorIcon(
       (enabled ? icon() : disabled_icon()), ui::kColorIcon,
-      /*icon_size=*/16));
+      ChromeLayoutProvider::Get()->GetDistanceMetric(
+          ChromeDistanceMetric::DISTANCE_SIDE_PANEL_HEADER_VECTOR_ICON_SIZE)));
 }
 
 void SearchCompanionSidePanelCoordinator::OnTemplateURLServiceShuttingDown() {
@@ -326,7 +375,9 @@ void SearchCompanionSidePanelCoordinator::OnExpsPolicyPrefChanged() {
       pref_service_->GetBoolean(companion::kHasNavigatedToExpsSuccessPage));
 
   UpdateCompanionAvailabilityInSidePanel();
-  companion::UpdateCompanionDefaultPinnedToToolbarState(pref_service_);
+
+  CHECK(browser_->profile());
+  companion::UpdateCompanionDefaultPinnedToToolbarState(browser_->profile());
 }
 
-WEB_CONTENTS_USER_DATA_KEY_IMPL(SearchCompanionSidePanelCoordinator);
+BROWSER_USER_DATA_KEY_IMPL(SearchCompanionSidePanelCoordinator);

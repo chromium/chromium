@@ -8,7 +8,10 @@ template("_androidx_prebuilt") {
   target(invoker.target_type, target_name) {
     forward_variables_from(invoker, "*", [ "target_type" ])
 
-    if (target_name == "androidx_annotation_annotation_jvm_java") {
+    if (target_name == "androidx_annotation_annotation_java") {
+      # Ensure this dep is the suggested one when targets are missing it.
+      preferred_dep = true
+    } else if (target_name == "androidx_annotation_annotation_jvm_java") {
       # https://crbug.com/989505
       jar_excluded_patterns = [ "META-INF/proguard/*" ]
       proguard_configs = [ "androidx_annotations.flags" ]
@@ -17,9 +20,6 @@ template("_androidx_prebuilt") {
     } else if (target_name == "androidx_benchmark_benchmark_macro_java") {
       # Manually add dep onto DISALLOWED_DEP androidx.profileinstaller.
       deps += [ ":androidx_profileinstaller_profileinstaller_java" ]
-    } else if (target_name == "androidx_biometric_biometric_java") {
-      bytecode_rewriter_target =
-          "//build/android/bytecode:fragment_activity_replacer"
     } else if (target_name ==
                "androidx_coordinatorlayout_coordinatorlayout_java") {
       # Reduce binary size. https:crbug.com/954584
@@ -48,14 +48,8 @@ template("_androidx_prebuilt") {
       deps += [ "//third_party/android_deps/utils:java" ]
 
       proguard_configs = [ "androidx_fragment.flags" ]
-
-      bytecode_rewriter_target =
-          "//build/android/bytecode:fragment_activity_replacer"
     } else if (target_name == "androidx_lifecycle_lifecycle_process_java") {
       # Only useful for very old SDKs.
-      ignore_proguard_configs = true
-    } else if (target_name == "androidx_lifecycle_lifecycle_runtime_java") {
-      # https://crbug.com/887942#c1
       ignore_proguard_configs = true
     } else if (target_name == "androidx_media_media_java") {
       # Target has AIDL, but we do not support it yet: http://crbug.com/644439
@@ -64,21 +58,11 @@ template("_androidx_prebuilt") {
       # https://crbug.com/1000382
       proguard_configs = [ "androidx_mediarouter.flags" ]
     } else if (target_name == "androidx_preference_preference_java") {
-      bytecode_rewriter_target =
-          "//build/android/bytecode:fragment_activity_replacer"
-
       proguard_configs = [ "androidx_preferences.flags" ]
 
       # Replace broad library -keep rules with a more limited set in
       # chrome/android/java/proguard.flags instead.
       ignore_proguard_configs = true
-    } else if (target_name ==
-               "androidx_privacysandbox_ads_ads_adservices_java") {
-      alternative_android_sdk_dep =
-          "//third_party/android_sdk:android_privacy_sandbox_sdk_java"
-
-      # https://crbug.com/1448095
-      mergeable_android_manifests = [ "0_privacysandbox_AndroidManifest.xml" ]
     } else if (target_name == "androidx_startup_startup_runtime_java") {
       # Keeps emoji2 code. See http://crbug.com/1205141
       ignore_proguard_configs = true
@@ -92,6 +76,9 @@ template("_androidx_prebuilt") {
       ]
     } else if (target_name == "androidx_test_uiautomator_uiautomator_java") {
       deps += [ ":androidx_test_runner_java" ]
+    } else if (target_name == "androidx_tracing_tracing_perfetto_java") {
+      # b/280878596
+      jar_excluded_patterns = [ "dalvik/*" ]
     } else if (target_name == "androidx_transition_transition_java") {
       # Not specified in the POM, compileOnly dependency not supposed to be used unless
       # the library is present: b/70887421
@@ -107,6 +94,13 @@ template("_androidx_prebuilt") {
         "//android_webview/tools/system_webview_shell:*",
         "//third_party/android_deps:*",
       ]
+    }
+  }
+
+  # Arbitrarily use this target to add new top-level GN targets.
+  if (target_name == "androidx_annotation_annotation_jvm_java") {
+    java_group("androidx_window_stubs_java") {
+      deps = [ "//third_party/androidx/local_modifications/window:androidx_window_shims_java" ]
     }
   }
 }
@@ -129,5 +123,12 @@ template("androidx_android_aar_prebuilt") {
     # The libraries have duplicate resources such as
     # "primary_text_default_material_dark".
     resource_overlay = true
+  }
+}
+
+template("androidx_java_group") {
+  _androidx_prebuilt(target_name) {
+    forward_variables_from(invoker, "*")
+    target_type = "java_group"
   }
 }

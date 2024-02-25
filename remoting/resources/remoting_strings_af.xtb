@@ -4,7 +4,6 @@
 <translation id="1002108253973310084">'n Onversoenbare protokolweergawe is bespeur. Maak seker dat die jongste weergawe van die sagteware op albei rekenaars geïnstalleer is en probeer weer.</translation>
 <translation id="1008557486741366299">Nie nou nie</translation>
 <translation id="1201402288615127009">Volgende</translation>
-<translation id="1296511125400541222">Kopiereg 2023 Die Chromium-outeurs. Alle regte voorbehou.</translation>
 <translation id="1297009705180977556">Kon nie aan <ph name="HOSTNAME" /> koppel nie</translation>
 <translation id="1450760146488584666">Die voorwerp wat versoek is, bestaan nie.</translation>
 <translation id="1480046233931937785">Krediete</translation>
@@ -89,7 +88,6 @@ As "<ph name="SERVICE_SCRIPT_NAME" />" reeds gemerk is, moet jy dit ontmerk en d
 <translation id="4808503597364150972">Voer jou PIN vir <ph name="HOSTNAME" /> in.</translation>
 <translation id="4812684235631257312">Gasheer</translation>
 <translation id="4867841927763172006">Stuur PrtScn</translation>
-<translation id="4960795469833295568">Kopiereg 2023 Google LLC. Alle regte voorbehou.</translation>
 <translation id="4974476491460646149">Verbinding is gesluit vir <ph name="HOSTNAME" /></translation>
 <translation id="4985296110227979402">Jy moet jou rekenaar eers vir afstandtoegang opstel</translation>
 <translation id="4987330545941822761">Chrome-afstandskerm kan nie die blaaier bepaal om URL'e plaaslik oop te maak nie. Kies dit asseblief uit die lys hieronder.</translation>
@@ -154,6 +152,7 @@ As "<ph name="SERVICE_SCRIPT_NAME" />" reeds gemerk is, moet jy dit ontmerk en d
 <translation id="7693372326588366043">Herlaai die lys gashere</translation>
 <translation id="7714222945760997814">Gee dit aan</translation>
 <translation id="7868137160098754906">Voer asseblief jou PIN in vir die afstandrekenaar.</translation>
+<translation id="7881455334687220899">Kopiereg 2024 Die Chromium-outeurs. Alle regte voorbehou.</translation>
 <translation id="7895403300744144251">Sekuriteitbeleide op die afstandrekenaar laat nie verbindings van jou rekening af toe nie.</translation>
 <translation id="7936528439960309876">Dok regs</translation>
 <translation id="7970576581263377361">Kon nie staaf nie. Meld asseblief weer by Chromium aan.</translation>
@@ -185,6 +184,7 @@ As "<ph name="SERVICE_SCRIPT_NAME" />" reeds gemerk is, moet jy dit ontmerk en d
 <translation id="8747048596626351634">Sessie het omgeval of kon nie begin nie. As ~/.chrome-remote-desktop-session op die afstandrekenaar bestaan, moet jy seker maak dat dit 'n langlopende voorgrondproses begin, soos 'n werkskermomgewing of vensterbestuurder.</translation>
 <translation id="8804164990146287819">Privaatheidbeleid</translation>
 <translation id="8906511416443321782">Mikrofoontoegang word vereis om oudio vas te vang en dit na die Chrome-afstandwerkskermkliënt te stroom.</translation>
+<translation id="9042277333359847053">Kopiereg 2024 Google LLC. Alle regte voorbehou.</translation>
 <translation id="9111855907838866522">Jy is aan jou afstandtoestel gekoppel. Tik met vier vingers op die skerm om die kieslys oop te maak.</translation>
 <translation id="9126115402994542723">Moenie weer vir 'n PIN vra wanneer jy van hierdie toestel af aan hierdie gasheer koppel nie.</translation>
 <translation id="916856682307586697">Begin die verstek-XSession</translation>

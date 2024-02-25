@@ -5,6 +5,7 @@
 #include "chrome/browser/vr/native_gl_surface_provider.h"
 
 #include "third_party/skia/include/gpu/GrDirectContext.h"
+#include "third_party/skia/include/gpu/ganesh/gl/GrGLDirectContext.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gl/gl_implementation.h"
 #include "ui/gl/gl_version_info.h"
@@ -20,11 +21,10 @@ NativeGlSurfaceProvider::NativeGlSurfaceProvider() {
   std::string extensions_string(gl::GetGLExtensionsFromCurrentContext());
   gfx::ExtensionSet extensions(gfx::MakeExtensionSet(extensions_string));
   gl::GLVersionInfo gl_version_info(version_str, renderer_str, extensions);
-  const bool use_version_es2 = false;
   sk_sp<const GrGLInterface> gr_interface =
-      gl::init::CreateGrGLInterface(gl_version_info, use_version_es2);
+      gl::init::CreateGrGLInterface(gl_version_info);
   DCHECK(gr_interface.get());
-  gr_context_ = GrDirectContext::MakeGL(std::move(gr_interface));
+  gr_context_ = GrDirectContexts::MakeGL(std::move(gr_interface));
   DCHECK(gr_context_.get());
 }
 

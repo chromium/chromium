@@ -39,10 +39,10 @@ const char kSwitchDisableDeltaUpdates[] = "disable-delta-updates";
 // value is in seconds.
 const char kInitialDelay[] = "initial-delay";
 
-#if BUILDFLAG(IS_WIN)
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
 // Disables background downloads.
 const char kSwitchDisableBackgroundDownloads[] = "disable-background-downloads";
-#endif  // BUILDFLAG(IS_WIN)
+#endif  // BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
 
 // If there is an element of |vec| of the form |test|=.*, returns the right-
 // hand side of that assignment. Otherwise, returns an empty string.
@@ -50,8 +50,9 @@ const char kSwitchDisableBackgroundDownloads[] = "disable-background-downloads";
 // further nesting of switch arguments.
 std::string GetSwitchArgument(const std::vector<std::string>& vec,
                               const char* test) {
-  if (vec.empty())
+  if (vec.empty()) {
     return std::string();
+  }
   for (auto it = vec.begin(); it != vec.end(); ++it) {
     const std::size_t found = it->find("=");
     if (found != std::string::npos) {
@@ -76,7 +77,7 @@ ComponentUpdaterCommandLineConfigPolicy::
       cmdline->GetSwitchValueASCII(switches::kComponentUpdater), ",",
       base::KEEP_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
 
-#if BUILDFLAG(IS_WIN)
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
   background_downloads_enabled_ =
       !base::Contains(switch_values, kSwitchDisableBackgroundDownloads);
 #else
@@ -98,8 +99,9 @@ ComponentUpdaterCommandLineConfigPolicy::
   const std::string initial_delay =
       GetSwitchArgument(switch_values, kInitialDelay);
   double initial_delay_seconds = 0;
-  if (base::StringToDouble(initial_delay, &initial_delay_seconds))
+  if (base::StringToDouble(initial_delay, &initial_delay_seconds)) {
     initial_delay_ = base::Seconds(initial_delay_seconds);
+  }
 }
 
 bool ComponentUpdaterCommandLineConfigPolicy::BackgroundDownloadsEnabled()

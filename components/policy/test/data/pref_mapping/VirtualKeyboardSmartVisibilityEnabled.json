@@ -1,0 +1,37 @@
+[
+  {
+    "os": [
+      "chromeos_ash"
+    ],
+    "policy_pref_mapping_tests": [
+      {
+        "note": "Default value (no policies set).",
+        "prefs": {
+          "ui.virtual_keyboard_smart_visibility_enabled": {
+            "default_value": true
+          }
+        }
+      },
+      {
+        "policies": {
+          "VirtualKeyboardSmartVisibilityEnabled": true
+        },
+        "prefs": {
+          "ui.virtual_keyboard_smart_visibility_enabled": {
+            "value": true
+          }
+        }
+      },
+      {
+        "policies": {
+          "VirtualKeyboardSmartVisibilityEnabled": false
+        },
+        "prefs": {
+          "ui.virtual_keyboard_smart_visibility_enabled": {
+            "value": false
+          }
+        }
+      }
+    ]
+  }
+]

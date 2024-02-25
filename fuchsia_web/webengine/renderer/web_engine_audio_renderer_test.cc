@@ -8,6 +8,7 @@
 #include <fuchsia/media/cpp/fidl_test_base.h>
 #include <lib/fidl/cpp/binding.h>
 
+#include <optional>
 #include "base/containers/queue.h"
 #include "base/fuchsia/fuchsia_logging.h"
 #include "base/logging.h"
@@ -23,7 +24,6 @@
 #include "media/fuchsia/common/passthrough_sysmem_buffer_stream.h"
 #include "media/fuchsia/common/sysmem_client.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace {
 
@@ -41,7 +41,7 @@ class TestDemuxerStream : public media::DemuxerStream {
     explicit ReadResult(const media::AudioDecoderConfig& config)
         : config(config) {}
 
-    absl::optional<media::AudioDecoderConfig> config;
+    std::optional<media::AudioDecoderConfig> config;
     scoped_refptr<media::DecoderBuffer> buffer;
   };
 
@@ -211,8 +211,8 @@ class TestAudioConsumer
     EXPECT_TRUE(started_);
   }
 
-  void UpdateStatus(absl::optional<base::TimeTicks> reference_time,
-                    absl::optional<base::TimeDelta> media_time) {
+  void UpdateStatus(std::optional<base::TimeTicks> reference_time,
+                    std::optional<base::TimeDelta> media_time) {
     fuchsia::media::AudioConsumerStatus status;
     if (reference_time) {
       CHECK(media_time);
@@ -305,7 +305,7 @@ class TestAudioConsumer
 
     std::move(status_callback_)(std::move(status_update_.value()));
     status_callback_ = {};
-    status_update_ = absl::nullopt;
+    status_update_ = std::nullopt;
   }
 
   fidl::Binding<fuchsia::media::AudioConsumer> binding_;
@@ -318,7 +318,7 @@ class TestAudioConsumer
   bool create_stream_sink_called_ = false;
 
   WatchStatusCallback status_callback_;
-  absl::optional<fuchsia::media::AudioConsumerStatus> status_update_;
+  std::optional<fuchsia::media::AudioConsumerStatus> status_update_;
 
   bool started_ = false;
   base::TimeDelta start_media_time_;
@@ -348,7 +348,7 @@ class TestRendererClient : public media::RendererClient {
 
   media::BufferingState buffering_state() const { return buffering_state_; }
 
-  absl::optional<media::AudioDecoderConfig> last_config_change() const {
+  std::optional<media::AudioDecoderConfig> last_config_change() const {
     return last_config_change_;
   }
 
@@ -386,7 +386,7 @@ class TestRendererClient : public media::RendererClient {
   }
   void OnVideoNaturalSizeChange(const gfx::Size& size) override { FAIL(); }
   void OnVideoOpacityChange(bool opaque) override { FAIL(); }
-  void OnVideoFrameRateChange(absl::optional<int> fps) override { FAIL(); }
+  void OnVideoFrameRateChange(std::optional<int> fps) override { FAIL(); }
 
  private:
   media::PipelineStatus expected_error_ = media::PIPELINE_OK;
@@ -394,7 +394,7 @@ class TestRendererClient : public media::RendererClient {
   bool expect_eos_ = false;
   media::BufferingState buffering_state_ = media::BUFFERING_HAVE_NOTHING;
   size_t bytes_decoded_ = 0;
-  absl::optional<media::AudioDecoderConfig> last_config_change_;
+  std::optional<media::AudioDecoderConfig> last_config_change_;
 };
 
 // media::SysmemBufferStream that asynchronously decouples buffer production
@@ -501,7 +501,7 @@ class WebEngineAudioRendererTestBase : public testing::Test {
   void FillDemuxerStream(base::TimeDelta end_pos);
   void FillBuffer();
   void StartPlayback(base::TimeDelta start_time = base::TimeDelta());
-  void CheckGetWallClockTimes(absl::optional<base::TimeDelta> media_timestamp,
+  void CheckGetWallClockTimes(std::optional<base::TimeDelta> media_timestamp,
                               base::TimeTicks expected_wall_clock,
                               bool is_time_moving);
 
@@ -561,7 +561,7 @@ void WebEngineAudioRendererTestBase::InitializeRenderer() {
 
   ASSERT_EQ(pipeline_status, media::PIPELINE_OK);
 
-  audio_consumer_->UpdateStatus(absl::nullopt, absl::nullopt);
+  audio_consumer_->UpdateStatus(std::nullopt, std::nullopt);
 
   task_environment_.RunUntilIdle();
 }
@@ -633,7 +633,7 @@ void WebEngineAudioRendererTestBase::StartPlayback(base::TimeDelta start_time) {
 }
 
 void WebEngineAudioRendererTestBase::CheckGetWallClockTimes(
-    absl::optional<base::TimeDelta> media_timestamp,
+    std::optional<base::TimeDelta> media_timestamp,
     base::TimeTicks expected_wall_clock,
     bool is_time_moving) {
   std::vector<base::TimeDelta> media_timestamps;
@@ -664,7 +664,7 @@ void WebEngineAudioRendererTestBase::StartPlaybackAndVerifyClock(
   task_environment_.FastForwardBy(kTimeStep);
   EXPECT_EQ(time_source_->CurrentMediaTime(), start_time);
 
-  CheckGetWallClockTimes(absl::nullopt, base::TimeTicks(), false);
+  CheckGetWallClockTimes(std::nullopt, base::TimeTicks(), false);
   CheckGetWallClockTimes(start_time + kTimeStep,
                          base::TimeTicks::Now() + kTimeStep, false);
 
@@ -680,7 +680,7 @@ void WebEngineAudioRendererTestBase::StartPlaybackAndVerifyClock(
   EXPECT_EQ(time_source_->CurrentMediaTime(),
             start_time + (-kStartDelay + kTimeStep) * playback_rate);
 
-  CheckGetWallClockTimes(absl::nullopt, base::TimeTicks::Now(), true);
+  CheckGetWallClockTimes(std::nullopt, base::TimeTicks::Now(), true);
   CheckGetWallClockTimes(start_time + kTimeStep,
                          start_wall_clock + kTimeStep / playback_rate, true);
   CheckGetWallClockTimes(start_time + 2 * kTimeStep,

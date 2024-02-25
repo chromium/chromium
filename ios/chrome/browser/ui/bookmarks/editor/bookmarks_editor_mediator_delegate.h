@@ -20,9 +20,6 @@
 // Change the folder in the folder selector.
 - (void)bookmarkDidMoveToParent:(const bookmarks::BookmarkNode*)newParent;
 
-// Display the message in a snackbar
-- (void)showSnackbarMessage:(MDCSnackbarMessage*)message;
-
 // Called when the controller is going to commit the title or URL change.
 - (void)bookmarkEditorWillCommitTitleOrURLChange:
     (BookmarksEditorMediator*)mediator;

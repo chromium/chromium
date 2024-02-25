@@ -7,7 +7,6 @@ import 'chrome://os-settings/lazy_load.js';
 import {AppManagementPinToShelfItemElement} from 'chrome://os-settings/lazy_load.js';
 import {AppManagementStore} from 'chrome://os-settings/os_settings.js';
 import {AppType} from 'chrome://resources/cr_components/app_management/app_management.mojom-webui.js';
-import {convertOptionalBoolToBool} from 'chrome://resources/cr_components/app_management/util.js';
 import {assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 
@@ -43,7 +42,7 @@ suite('<app-management-pin-to-shelf-item>', () => {
     pinToShelfItem.app = app;
     let selectedApp = AppManagementStore.getInstance().data.apps[app.id];
     assertTrue(!!selectedApp);
-    assertFalse(convertOptionalBoolToBool(selectedApp.isPinned));
+    assertFalse(!!selectedApp.isPinned);
 
     pinToShelfItem.click();
     flushTasks();
@@ -51,6 +50,6 @@ suite('<app-management-pin-to-shelf-item>', () => {
 
     selectedApp = AppManagementStore.getInstance().data.apps[app.id];
     assertTrue(!!selectedApp);
-    assertTrue(convertOptionalBoolToBool(selectedApp.isPinned));
+    assertTrue(!!selectedApp.isPinned);
   });
 });

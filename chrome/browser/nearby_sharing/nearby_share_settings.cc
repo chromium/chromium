@@ -9,8 +9,8 @@
 #include "chrome/browser/nearby_sharing/common/nearby_share_enums.h"
 #include "chrome/browser/nearby_sharing/common/nearby_share_features.h"
 #include "chrome/browser/nearby_sharing/common/nearby_share_prefs.h"
-#include "chrome/browser/nearby_sharing/logging/logging.h"
 #include "chromeos/constants/chromeos_features.h"
+#include "components/cross_device/logging/logging.h"
 #include "components/prefs/pref_service.h"
 #include "components/prefs/scoped_user_pref_update.h"
 
@@ -152,8 +152,9 @@ void NearbyShareSettings::SetEnabled(bool enabled) {
   DCHECK(!enabled || IsOnboardingComplete());
   pref_service_->SetBoolean(prefs::kNearbySharingEnabledPrefName, enabled);
   if (enabled && GetVisibility() == Visibility::kUnknown) {
-    NS_LOG(ERROR) << "Nearby Share enabled with visibility unset. Setting "
-                     "visibility to kNoOne.";
+    CD_LOG(ERROR, Feature::NS)
+        << "Nearby Share enabled with visibility unset. Setting "
+           "visibility to kNoOne.";
     SetVisibility(Visibility::kNoOne);
   }
 }

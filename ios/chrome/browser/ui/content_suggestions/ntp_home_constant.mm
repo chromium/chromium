@@ -24,7 +24,8 @@ const CGFloat kMostVisitedBottomMarginIPhone = 60;
 const CGFloat kSuggestionPeekingHeight = 60;
 
 const CGFloat kIdentityAvatarDimension = 32;
-const CGFloat kIdentityAvatarMargin = 16;
+const CGFloat kIdentityAvatarMargin = 8;
+const CGFloat kIdentityAvatarPadding = 8;
 const CGFloat kSignedOutIdentityIconDimension = 24;
 
 UIColor* NTPBackgroundColor() {

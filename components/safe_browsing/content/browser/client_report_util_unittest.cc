@@ -34,15 +34,17 @@ class ClientReportUtilTest : public testing::Test {
         security_interstitials::SecurityInterstitialCommand::
             CMD_SHOW_MORE_SECTION,
         security_interstitials::InterstitialInteractionDetails(
-            kExpectedShowMoreEvents, base::Time::Now().ToJavaTime() - 2000,
-            base::Time::Now().ToJavaTime()));
+            kExpectedShowMoreEvents,
+            base::Time::Now().InMillisecondsSinceUnixEpoch() - 2000,
+            base::Time::Now().InMillisecondsSinceUnixEpoch()));
     interactions_map->insert_or_assign(
         security_interstitials::SecurityInterstitialCommand::
             CMD_OPEN_HELP_CENTER,
         security_interstitials::InterstitialInteractionDetails(
-            kExpectedOpenHelpCenter, base::Time::Now().ToJavaTime() - 1000,
-            base::Time::Now().ToJavaTime()));
-    int64_t time_now = base::Time::Now().ToJavaTime();
+            kExpectedOpenHelpCenter,
+            base::Time::Now().InMillisecondsSinceUnixEpoch() - 1000,
+            base::Time::Now().InMillisecondsSinceUnixEpoch()));
+    int64_t time_now = base::Time::Now().InMillisecondsSinceUnixEpoch();
     interactions_map->insert_or_assign(
         security_interstitials::SecurityInterstitialCommand::CMD_PROCEED,
         security_interstitials::InterstitialInteractionDetails(

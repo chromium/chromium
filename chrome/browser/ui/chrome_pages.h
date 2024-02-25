@@ -22,7 +22,7 @@
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "chrome/browser/ui/webui/settings/ash/app_management/app_management_uma.h"
+#include "chrome/browser/ui/webui/ash/settings/app_management/app_management_uma.h"
 #endif
 
 namespace apps {
@@ -123,6 +123,14 @@ enum FeedbackSource {
   kFeedbackSourceWindowLayoutMenu,
   kFeedbackSourcePriceInsights,
   kFeedbackSourceCookieControls,
+  kFeedbackSourceGameDashboard,
+  kFeedbackSourceLogin,
+  kFeedbackSourceAI,
+  kFeedbackSourceFocusMode,
+
+  // ATTENTION: Before making any changes or adding to feedback collection,
+  // please ensure the teams that operationalize feedback are aware and
+  // supportive. Contact: chrome-gtech@
 
   // Must be last.
   kFeedbackSourceCount,
@@ -138,25 +146,25 @@ void ShowExtensions(Browser* browser,
 
 // ShowFeedbackPage() uses |browser| to determine the URL of the current tab.
 // |browser| should be NULL if there are no currently open browser windows.
-void ShowFeedbackPage(
-    const Browser* browser,
-    FeedbackSource source,
-    const std::string& description_template,
-    const std::string& description_placeholder_text,
-    const std::string& category_tag,
-    const std::string& extra_diagnostics,
-    base::Value::Dict autofill_metadata = base::Value::Dict());
+void ShowFeedbackPage(const Browser* browser,
+                      FeedbackSource source,
+                      const std::string& description_template,
+                      const std::string& description_placeholder_text,
+                      const std::string& category_tag,
+                      const std::string& extra_diagnostics,
+                      base::Value::Dict autofill_metadata = base::Value::Dict(),
+                      base::Value::Dict ai_metadata = base::Value::Dict());
 
 // Displays the Feedback ui.
-void ShowFeedbackPage(
-    const GURL& page_url,
-    Profile* profile,
-    FeedbackSource source,
-    const std::string& description_template,
-    const std::string& description_placeholder_text,
-    const std::string& category_tag,
-    const std::string& extra_diagnostics,
-    base::Value::Dict autofill_metadata = base::Value::Dict());
+void ShowFeedbackPage(const GURL& page_url,
+                      Profile* profile,
+                      FeedbackSource source,
+                      const std::string& description_template,
+                      const std::string& description_placeholder_text,
+                      const std::string& category_tag,
+                      const std::string& extra_diagnostics,
+                      base::Value::Dict autofill_metadata = base::Value::Dict(),
+                      base::Value::Dict ai_metadata = base::Value::Dict());
 
 void ShowHelp(Browser* browser, HelpSource source);
 void ShowHelpForProfile(Profile* profile, HelpSource source);
@@ -191,6 +199,9 @@ void ShowContentSettingsExceptionsForProfile(
 void ShowSiteSettings(Profile* profile, const GURL& url);
 void ShowSiteSettings(Browser* browser, const GURL& url);
 
+void ShowSiteSettingsFileSystem(Profile* profile, const GURL& url);
+void ShowSiteSettingsFileSystem(Browser* browser, const GURL& url);
+
 void ShowContentSettings(Browser* browser,
                          ContentSettingsType content_settings_type);
 void ShowSettingsSubPageInTabbedBrowser(Browser* browser,
@@ -208,8 +219,6 @@ void ShowSearchEngineSettings(Browser* browser);
 void ShowWebStore(Browser* browser, const base::StringPiece& utm_source_value);
 void ShowPrivacySandboxSettings(Browser* browser);
 void ShowPrivacySandboxAdMeasurementSettings(Browser* browser);
-void ShowPrivacySandboxAdPersonalization(Browser* browser);
-void ShowPrivacySandboxLearnMore(Browser* browser);
 void ShowAddresses(Browser* browser);
 void ShowPaymentMethods(Browser* browser);
 void ShowAllSitesSettingsFilteredByFpsOwner(
@@ -241,6 +250,11 @@ void ShowDiagnosticsApp(Profile* profile);
 void ShowFirmwareUpdatesApp(Profile* profile);
 
 void ShowShortcutCustomizationApp(Profile* profile);
+// The `action` and `category` will be appended the app URL in the following
+// format: url?action={action}&category={category}.
+void ShowShortcutCustomizationApp(Profile* profile,
+                                  const std::string& action,
+                                  const std::string& category);
 #endif
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \

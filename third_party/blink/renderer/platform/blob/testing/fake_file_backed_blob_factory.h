@@ -23,6 +23,12 @@ class FakeFileBackedBlobFactory : public mojom::blink::FileBackedBlobFactory {
                     const String& content_type,
                     mojom::blink::DataElementFilePtr file) override;
 
+  void RegisterBlobSync(mojo::PendingReceiver<mojom::blink::Blob> blob,
+                        const String& uuid,
+                        const String& content_type,
+                        mojom::blink::DataElementFilePtr file,
+                        RegisterBlobSyncCallback callback) override;
+
   struct Registration {
     String uuid;
     String content_type;

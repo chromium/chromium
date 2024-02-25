@@ -75,7 +75,7 @@ appending `target_os = ['linux', 'android']` to your `.gclient` file (in the
 directory above `src`):
 
 ```shell
-echo "target_os = [ 'android' ]" >> ../.gclient
+echo "target_os = [ 'linux', 'android' ]" >> ../.gclient
 ```
 
 Then run `gclient sync` to pull the new Android dependencies:
@@ -127,6 +127,9 @@ target_os = "android"
 target_cpu = "arm64"  # See "Figuring out target_cpu" below
 ```
 
+* There are several settings that will speed up compile/deploy time at the cost
+  of some unusual edge cases that will not affect most developers. See
+  `incremental_install` and other options below.
 * You only have to run this once for each new build directory, Ninja will
   update the build files as needed.
 * You can replace `Default` with another name, but
@@ -161,6 +164,28 @@ non-WebView targets. This is also allowed for Monochrome, but only when not set
 as the WebView provider.
 ***
 
+### Faster builds
+
+This section contains some things you can change to speed up your builds,
+sorted so that the things that make the biggest difference are first.
+
+#### Use Reclient
+
+*** note
+**Warning:** If you are a Google employee, do not follow the instructions below.
+See
+[go/building-android-chrome#initialize-remote-execution-distributed-builds](https://goto.google.com/building-android-chrome#initialize-remote-execution-distributed-builds)
+instead.
+***
+
+Chromium's build can be sped up significantly by using a remote execution system
+compatible with [REAPI](https://github.com/bazelbuild/remote-apis). This allows
+you to benefit from remote caching and executing many build actions in parallel
+on a shared cluster of workers.
+
+To use Reclient, follow the corresponding
+[Linux build instructions](linux/build_instructions.md#use-reclient).
+
 ## Build Chromium
 
 Build Chromium with Ninja using the command:
@@ -188,7 +213,7 @@ feature to package optimized versions for different OS versions.
    * Contains both Chrome and WebView (to save disk space).
 2. `trichrome_chrome_bundle` (`TrichromeChrome.aab`)
    * `minSdkVersion=29` (Android 10).
-   * Native code shared with WebView through a "Static Shared Library APK": `trichrome_library_apk` 
+   * Native code shared with WebView through a "Static Shared Library APK": `trichrome_library_apk`
    * Corresponding WebView target: `trichrome_webview_bundle`
 3. `chrome_public_bundle` & `chrome_public_apk` (`ChromePublic.aab`, `ChromePublic.apk`)
    * `minSdkVersion=24` (Nougat).
@@ -352,7 +377,7 @@ for more on debugging, including how to debug Java code.
 ### Testing
 
 For information on running tests, see
-[Android Test Instructions](/testing/android/docs/README.md)
+[Android Test Instructions](/docs/testing/android_test_instructions.md)
 
 ### Faster Edit/Deploy
 

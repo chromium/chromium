@@ -23,6 +23,7 @@
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
+#include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/types/pass_key.h"
@@ -48,13 +49,7 @@ constexpr char kMainDatabaseName[] = "main";
 
 // static
 bool BuiltInRecovery::IsSupported() {
-  // TODO(https://crbug.com/1385500): `BuiltInRecovery` is not yet supported on
-  // Fuchsia.
-#if BUILDFLAG(IS_FUCHSIA)
-  return false;
-#else
   return base::FeatureList::IsEnabled(features::kUseBuiltInRecoveryIfSupported);
-#endif  // BUILDFLAG(IS_FUCHSIA)
 }
 
 // static
@@ -62,6 +57,10 @@ bool BuiltInRecovery::ShouldAttemptRecovery(Database* database,
                                             int extended_error) {
   return BuiltInRecovery::IsSupported() && database && database->is_open() &&
          !database->DbPath(InternalApiToken()).empty() &&
+#if BUILDFLAG(IS_FUCHSIA)
+         // Recovering WAL databases is not supported on Fuchsia.
+         !database->UseWALMode() &&
+#endif  // BUILDFLAG(IS_FUCHSIA)
          IsErrorCatastrophic(extended_error);
 }
 
@@ -93,6 +92,7 @@ bool BuiltInRecovery::RecoverIfPossible(
           ? !BuiltInRecovery::ShouldAttemptRecovery(database, extended_error)
           : !database || !database->is_open() ||
                 database->DbPath(InternalApiToken()).empty() ||
+                database->UseWALMode() ||
                 !Recovery::ShouldRecover(extended_error)) {
     return false;
   }
@@ -128,7 +128,6 @@ BuiltInRecovery::BuiltInRecovery(Database* database, Strategy strategy)
     : strategy_(strategy),
       db_(database),
       recover_db_(sql::DatabaseOptions{
-          .exclusive_locking = false,
           .page_size = database ? database->page_size() : 0,
           .cache_size = 0,
       }) {
@@ -145,6 +144,9 @@ BuiltInRecovery::BuiltInRecovery(Database* database, Strategy strategy)
   // Corruption recovery for in-memory databases is not supported.
   CHECK(!db_path.empty());
 
+  // Cache the database's histogram tag while the database is open.
+  database_uma_name_ = db_->histogram_tag();
+
   recovery_database_path_ = db_path.AddExtensionASCII(".recovery");
 
   // Break any outstanding transactions on the original database, since the
@@ -160,6 +162,14 @@ BuiltInRecovery::~BuiltInRecovery() {
   base::UmaHistogramEnumeration("Sql.Recovery.Result", result_);
   UmaHistogramSqliteResult("Sql.Recovery.ResultCode",
                            static_cast<int>(sqlite_result_code_));
+
+  if (!database_uma_name_.empty()) {
+    base::UmaHistogramEnumeration(
+        base::StrCat({"Sql.Recovery.Result.", database_uma_name_}), result_);
+    UmaHistogramSqliteResult(
+        base::StrCat({"Sql.Recovery.ResultCode.", database_uma_name_}),
+        static_cast<int>(sqlite_result_code_));
+  }
 
   if (db_) {
     if (result_ == Result::kSuccess) {

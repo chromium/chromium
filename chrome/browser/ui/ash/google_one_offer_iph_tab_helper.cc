@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/ash/google_one_offer_iph_tab_helper.h"
 
+#include <optional>
 #include <string>
 
 #include "ash/constants/notifier_catalogs.h"
@@ -27,7 +28,6 @@
 #include "components/feature_engagement/public/tracker.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_user_data.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/message_center/public/cpp/notification.h"
 #include "ui/message_center/public/cpp/notification_delegate.h"
 #include "ui/message_center/public/cpp/notification_types.h"
@@ -44,8 +44,8 @@ class DriveIphTabHelperNotificationDelegate
       : tracker_(tracker), profile_(profile) {}
 
   // message_center::NotificationDelegate:
-  void Click(const absl::optional<int>& button_index,
-             const absl::optional<std::u16string>& reply) override {
+  void Click(const std::optional<int>& button_index,
+             const std::optional<std::u16string>& reply) override {
     if (!button_index.has_value() ||
         button_index.value() != kGetPerkButtonIndex) {
       return;

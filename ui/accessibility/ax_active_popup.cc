@@ -8,23 +8,23 @@ namespace ui {
 
 namespace {
 
-absl::optional<AXNodeID>& GetActivePopupAXUniqueIdInstance() {
+std::optional<AXNodeID>& GetActivePopupAXUniqueIdInstance() {
   // Keeps track of the unique ID that can be used to retrieve the
   // `ViewAccessibility` object that is handling the accessibility for the
   // currently active autofill popup. This singleton is used for communicating
   // the live status of the autofill popup between web contents and Views. The
   // assumption here is that only one autofill popup can exist at a time.
-  static absl::optional<AXNodeID> active_popup_ax_unique_id;
+  static std::optional<AXNodeID> active_popup_ax_unique_id;
   return active_popup_ax_unique_id;
 }
 
 }  // namespace
 
-absl::optional<AXNodeID> GetActivePopupAxUniqueId() {
+std::optional<AXNodeID> GetActivePopupAxUniqueId() {
   return GetActivePopupAXUniqueIdInstance();
 }
 
-void SetActivePopupAxUniqueId(absl::optional<AXNodeID> ax_unique_id) {
+void SetActivePopupAxUniqueId(std::optional<AXNodeID> ax_unique_id) {
   // When an instance of autofill popup hides, the caller of popup hide should
   // make sure active_popup_ax_unique_id is cleared. The assumption is that
   // there can only be one active autofill popup existing at a time. If on
@@ -38,7 +38,7 @@ void SetActivePopupAxUniqueId(absl::optional<AXNodeID> ax_unique_id) {
 }
 
 void ClearActivePopupAxUniqueId() {
-  GetActivePopupAXUniqueIdInstance() = absl::nullopt;
+  GetActivePopupAXUniqueIdInstance() = std::nullopt;
 }
 
 }  // namespace ui

@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/test/metrics/histogram_tester.h"
 #include "build/build_config.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
@@ -19,8 +20,10 @@
 #include "components/webapps/browser/test/service_worker_registration_waiter.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_base.h"
+#include "content/public/test/browser_test_utils.h"
 #include "content/public/test/test_navigation_observer.h"
 #include "content/public/test/url_loader_interceptor.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/features.h"
 #include "ui/base/ui_base_switches.h"
@@ -69,11 +72,11 @@ class WebAppOfflineTest : public InProcessBrowserTest {
   }
 
   // Start a web app without a service worker and disconnect.
-  web_app::AppId StartWebAppAndDisconnect(content::WebContents* web_contents,
+  webapps::AppId StartWebAppAndDisconnect(content::WebContents* web_contents,
                                           base::StringPiece relative_url) {
     GURL target_url(embedded_test_server()->GetURL(relative_url));
-    web_app::NavigateToURLAndWait(browser(), target_url);
-    web_app::AppId app_id = web_app::test::InstallPwaForCurrentUrl(browser());
+    web_app::NavigateViaLinkClickToURLAndWait(browser(), target_url);
+    webapps::AppId app_id = web_app::test::InstallPwaForCurrentUrl(browser());
     WebAppIconWaiter(browser()->profile(), app_id).Wait();
     std::unique_ptr<content::URLLoaderInterceptor> interceptor =
         content::URLLoaderInterceptor::SetupRequestFailForURL(
@@ -91,9 +94,9 @@ class WebAppOfflineTest : public InProcessBrowserTest {
     GURL target_url(embedded_test_server()->GetURL(relative_url));
     web_app::ServiceWorkerRegistrationWaiter registration_waiter(
         browser()->profile(), target_url);
-    web_app::NavigateToURLAndWait(browser(), target_url);
+    web_app::NavigateViaLinkClickToURLAndWait(browser(), target_url);
     registration_waiter.AwaitRegistration();
-    web_app::AppId app_id = web_app::test::InstallPwaForCurrentUrl(browser());
+    webapps::AppId app_id = web_app::test::InstallPwaForCurrentUrl(browser());
     WebAppIconWaiter(browser()->profile(), app_id).Wait();
     std::unique_ptr<content::URLLoaderInterceptor> interceptor =
         content::URLLoaderInterceptor::SetupRequestFailForURL(
@@ -111,7 +114,7 @@ class WebAppOfflineTest : public InProcessBrowserTest {
   }
 
   void CloseBrowser(content::WebContents* web_contents) {
-    Browser* app_browser = chrome::FindBrowserWithWebContents(web_contents);
+    Browser* app_browser = chrome::FindBrowserWithTab(web_contents);
     app_browser->window()->Close();
     ui_test_utils::WaitForBrowserToClose(app_browser);
   }
@@ -121,18 +124,8 @@ class WebAppOfflineTest : public InProcessBrowserTest {
       override_registration_;
 };
 
-class WebAppOfflinePageTest
-    : public WebAppOfflineTest,
-      public ::testing::WithParamInterface<PageFlagParam> {
+class WebAppOfflinePageTest : public WebAppOfflineTest {
  public:
-  WebAppOfflinePageTest() {
-    if (GetParam() == PageFlagParam::kWithDefaultPageFlag) {
-      feature_list_.InitAndEnableFeature(features::kPWAsDefaultOfflinePage);
-    } else {
-      feature_list_.InitAndDisableFeature(features::kPWAsDefaultOfflinePage);
-    }
-  }
-
   void SyncHistograms() {
     content::FetchHistogramsFromChildProcesses();
     metrics::SubprocessMetricsProvider::MergeHistogramDeltasForTesting();
@@ -148,7 +141,6 @@ class WebAppOfflinePageTest
   base::HistogramTester* histogram() { return &histogram_tester_; }
 
  private:
-  base::test::ScopedFeatureList feature_list_;
   base::HistogramTester histogram_tester_;
 };
 
@@ -156,33 +148,23 @@ class WebAppOfflinePageTest
 // display the default offline page rather than the dino.
 // When the exact same conditions are applied with the feature flag disabled
 // expect that the default offline page is not shown.
-IN_PROC_BROWSER_TEST_P(WebAppOfflinePageTest, WebAppOfflinePageIsDisplayed) {
+IN_PROC_BROWSER_TEST_F(WebAppOfflinePageTest, WebAppOfflinePageIsDisplayed) {
   ASSERT_TRUE(embedded_test_server()->Start());
   content::WebContents* web_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
   ExpectUniqueSample(net::ERR_INTERNET_DISCONNECTED, 0);
   StartWebAppAndDisconnect(web_contents, "/banners/no-sw-with-colors.html");
 
-  if (GetParam() == PageFlagParam::kWithDefaultPageFlag) {
-    ExpectUniqueSample(net::ERR_INTERNET_DISCONNECTED, 1);
-    // Expect that the default offline page is showing.
-    EXPECT_TRUE(
-        EvalJs(web_contents,
-               "document.getElementById('default-web-app-msg') !== null")
-            .ExtractBool());
-  } else {
-    ExpectUniqueSample(net::ERR_INTERNET_DISCONNECTED, 0);
-    // Expect that the default offline page is not showing.
-    EXPECT_TRUE(
-        EvalJs(web_contents,
-               "document.getElementById('default-web-app-msg') === null")
-            .ExtractBool());
-  }
+  ExpectUniqueSample(net::ERR_INTERNET_DISCONNECTED, 1);
+  // Expect that the default offline page is showing.
+  EXPECT_TRUE(EvalJs(web_contents,
+                     "document.getElementById('default-web-app-msg') !== null")
+                  .ExtractBool());
 }
 
 // When a web app with a manifest and service worker that doesn't handle being
 // offline it should display the default offline page rather than the dino.
-IN_PROC_BROWSER_TEST_P(WebAppOfflinePageTest,
+IN_PROC_BROWSER_TEST_F(WebAppOfflinePageTest,
                        WebAppOfflineWithEmptyServiceWorker) {
   ASSERT_TRUE(embedded_test_server()->Start());
   content::WebContents* web_contents =
@@ -190,26 +172,16 @@ IN_PROC_BROWSER_TEST_P(WebAppOfflinePageTest,
   ExpectUniqueSample(net::ERR_INTERNET_DISCONNECTED, 0);
   StartPwaAndDisconnect(web_contents, "/banners/background-color.html");
 
-  if (GetParam() == PageFlagParam::kWithDefaultPageFlag) {
-    ExpectUniqueSample(net::ERR_INTERNET_DISCONNECTED, 1);
-    // Expect that the default offline page is showing.
-    EXPECT_TRUE(
-        EvalJs(web_contents,
-               "document.getElementById('default-web-app-msg') !== null")
-            .ExtractBool());
-  } else {
-    ExpectUniqueSample(net::ERR_INTERNET_DISCONNECTED, 0);
-    // Expect that the default offline page is not showing.
-    EXPECT_TRUE(
-        EvalJs(web_contents,
-               "document.getElementById('default-web-app-msg') === null")
-            .ExtractBool());
-  }
+  ExpectUniqueSample(net::ERR_INTERNET_DISCONNECTED, 1);
+  // Expect that the default offline page is showing.
+  EXPECT_TRUE(EvalJs(web_contents,
+                     "document.getElementById('default-web-app-msg') !== null")
+                  .ExtractBool());
 }
 
 // When a web app with a manifest and service worker that handles being offline
 // it should not display the default offline page.
-IN_PROC_BROWSER_TEST_P(WebAppOfflinePageTest, WebAppOfflineWithServiceWorker) {
+IN_PROC_BROWSER_TEST_F(WebAppOfflinePageTest, WebAppOfflineWithServiceWorker) {
   ASSERT_TRUE(embedded_test_server()->Start());
   content::WebContents* web_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
@@ -224,7 +196,7 @@ IN_PROC_BROWSER_TEST_P(WebAppOfflinePageTest, WebAppOfflineWithServiceWorker) {
 }
 
 // Default offline page icon test.
-IN_PROC_BROWSER_TEST_P(WebAppOfflinePageTest, WebAppOfflinePageIconShowing) {
+IN_PROC_BROWSER_TEST_F(WebAppOfflinePageTest, WebAppOfflinePageIconShowing) {
   ASSERT_TRUE(embedded_test_server()->Start());
   content::WebContents* web_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
@@ -233,81 +205,105 @@ IN_PROC_BROWSER_TEST_P(WebAppOfflinePageTest, WebAppOfflinePageIconShowing) {
   WaitForLoadStop(web_contents);
 
   constexpr char kExpectedIconUrl[] =
-      "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAKAAAACgCAIAAAAErfB6AAAO90"
-      "lEQVR4nO2ce4xc1X3Hf9/fufPa3ZndnbVxwJgYMODwtMMjgM2rVRMlJTRtUVuqNCiKEjUlpB"
-      "DSGAiP8IqJVVKittCGSm2FQGlRVDVtmpBUgLCpsXkaMBAIYEiIjb2P2de87j2/X/84M8uuvW"
-      "u8GLN3D+ej0djanXvm7HzmnPs7v9+5Fwvv2EYBf+G57kDgwBIEe04Q7DlBsOcEwZ4TBHtOEO"
-      "w5QbDnBMGeEwR7ThDsOUGw5wTBnhMEe04Q7DlBsOcEwZ4TBHtOEOw5QbDnBMGeEwR7ThDsOU"
-      "Gw5wTBnhMEe04Q7DlBsOcEwZ4TBHtOEOw5QbDnBMGeEwR7ThDsOUGw5wTBnhMEe04Q7DlBsO"
-      "cEwZ4TBHtOEOw5QbDnBMGeEwR7ThDsOUGw5wTBnhMEe04Q7DlBsOcEwZ4TBHtOEOw50Vx34N"
-      "2jqgxE031FRSkRBfC+dyp1zFfBSgogEd1ZFVIlApESkftPJkI5b6xQUDwvBasqgFh0cSf/3W"
-      "/3dWeNknNMosrAE281bnl0qFwwVue6r3PN/BOsRACYtBHL10/pvWh5cc/XdGZwfSKMIHgeCi"
-      "ZVwxhu6B8f03nR8mIi6kat+2UiGjFGGkKAfuDt0nwUbIBqLEtL5opTerIGVjRiMODmbSKKGI"
-      "ZBRJg4L3+AmWfLJFW1qgxc/tHS8QtzVtVMtRvYjfkk2FmsJ/qJpfmLjy8logZQoh1jCQANM/"
-      "J0zBvBLrayogsLfPOZ5axhJiVCpW6/tXGQiCQIno55I5hUDVHD6rWn9y4rZ0VUiQC6/Ynhzd"
-      "ubRKQapuhpmB+CVTViVJr204cX/mR5l6haVcP85I7anVtGmImIgt9pmQeClZSBWiKHFaNrz+"
-      "wtZNiqAqg07E2bKgMNzRmQS3Pse5uqIGKQmfRgtH7l/tnLwe02FDSlhd0bSQHzYJkEBUFF6f"
-      "KTu4/ty8VWAYoYd28dfeCNemcGsz37qhKAptVqMuVABnVm9iEmbwV0AKhhtTa1EQPqaDWSik"
-      "Rp2gWrqgGNNOX8IwqfP66YWCXSiLFlZ+32J4cjRiyqsxu9ZEAjsVx0dOfVH+uRdhIbhJ3V5M"
-      "/+Z+dgQzKG9+ZYFQCDRhpy/hH5b5/VZ5WYSJQixvax5C8fHHi5EhciTsMoTrtgAE3RJcXo2o"
-      "+VcxEnVgyjHuutm4e3V6Unx/W6YJYfpBB1RvjRK+MXHt3xySO6Jn6+rDfznbPLX/jZLpAStb"
-      "Pb0/aKtB7rMb3RurP7lnZnJ//qjqcqLw41uzKpsEspPwerKpHGVi9bWTrhoJwVMQwG3fPi2H"
-      "/8slrMcGIVhFkO4NYUnRC+8sDA1l11IrIiVsSK/sFRXZesKI02xXD7XDt5/teWeFHKRbj1rP"
-      "LS7mwiYkViK6r6D09V7nxmtDNjhNKSKE2vYBdbVWP9+NL8F08qqSpARHh1KL51c6Uzw+Jm0d"
-      "mf5wAi1QxjV03WrB8crlsiTBQcrzil55zF+eG6Rgzd7UQKqKphjDXlspWlTxzeKaoGACFj+I"
-      "kdjbWPDRcihipI03ACptQKViUQEtGFBb5pVdnAzXgA9JpHBneMWwPar9wkoKr5CA/9qrHusS"
-      "HDIFIGlLSvEK07p++wIo/HwlMTZG61NlSznzmy44pTekSVVN3ZeqhmL39oYLAhEUOAWQb1B5"
-      "CUCgaUicZjWXNq97F9WVFNRBn41+dG73+9ljO8/xEqACIUMrjzmbF/e2HEMCeiAMVWTliYu+"
-      "aM3hzDTrVrmKqxHr8gc9Pqcra9lUSJAL1q/cCTO5sdEUvKEi5pFKyqBhhp2t9f1vHZY4uiJK"
-      "pZw78canzvqeFEKOL3ZqHp3kiVvvVo5ZmdjYxhVRiQFfnssaXPHdtVT9QNYrcqSoTyEd1wZs"
-      "+y3mxshVStkmH+xy0j//5ytSPjlkap8ptKwQzUYl3cZb5xak9XlhPragxy2+PDz/XHHe1Ex/"
-      "6/EQCrmouwbcRes2FgrGFdqyBS1RtX9a46ODfWtAautqz1WC5bWTr/yGIiEjGEKGN48/baus"
-      "cqIq0Zfv979d6SOsGqKqoE/cqK0spF+UQ0MoiYfvLa+A9+MV7Os31Pd9O5AkZ3lu9/o37Lpi"
-      "EGEeBqU51Z893z+g7pMk0R95371OGFy07usaIMuPBq53iy5uGB7eNSmAj6Uka6BLuApWH1rM"
-      "X5L57YHYtLKOKtseTGjRUhKOE9D0/dOO7Ome8/O3rfL8acPCf+uAW5G8/oFaWG6OGlaN05fY"
-      "UMgxTuBao3bxratCPuyXNqN3GmSLC+PZ7w7dXljgwbcp+art1ceWkoKRgcoBDGuRHF9RsrW/"
-      "sbhtmqgjSx+kfLi186oVhvynfP7V3anRVRAEJg4N4Xxv5561gxy4mkIy05HSkSTKpMVLdy1W"
-      "k9JyzMudCGgZ+8Ur37hfGODN6rU+8Mb645g23DyZqHB8ZjawAiYqhhfPWj3T+8YNG5SzpE1Y"
-      "VchvH0W7VrNgxmAHW5ywPUrf0mLYJVKWIMN+3HP1y4+Lii25pDhP5acsOjQ7GbAA/oxwhYpV"
-      "KWH/hV4+aNQ4mQJbiOHVrMfOrIzsgwA6JEQH81uezBgUpTIwNNs97UCFaGNqwe3BFdd3pvZ9"
-      "aIKgiGsW5zZetAnI+gB3h9CSJARbUrg+8/O/ajV8YzjHZATeKypqpKEKWbHq08vjMuRPNgL1"
-      "gqBKuCCE0rl64onnRQLhYVJcP4+bbxu58fy7ZC2/ehI1AAgFW6ev3gi/0NdtlKUgZI1apGjH"
-      "ufH/mX50cLEZSQcruUBsFKxKDRpvzWkvyfryypElQzhvuryW2PD1cT6sjCgAywW2l98mM39q"
-      "zDY9+K8CAS1UKEN0aT6zYOuXBaVd3izQCbtteu21iJAOOymCkpKczM3JcLQdS0ckiXufaMci"
-      "EyriDYSGTtpqH7Xx7Pd5jt4zMW7kCUNGWwLtTy1yrFN6zaqu2P0GzXewsROiJ+x2hX247zES"
-      "48umPP4r8hMpiUzkj9CE6JYF1YMKd+KB9bMQwAQ/VkuKmfW9H9jh9gI9EPlyIi4lbcCyJaUo"
-      "w+c0KpXGCrJEoMenkofq4/zkfvVDtuXTZhL11RuvCooisnuKw1g6zqKQcXvr26/OWf9yeg1i"
-      "BOt2MsvGPbXPeBqrEc35fZ+KeLE6UMH5DI5Y6nhy/5Wf8h3VEsM76mtbWvYVcdnPvB+YvKBa"
-      "Oti2JA1JqrrVIEunJ9/99vGSsYtHbu7G1zwByTihFM1EoQol19U9W9mJiMEjFRprVcaT2Lai"
-      "ytlptWswYjDSHeWxHeuazGsrjTrD27vKAjsiIMEKDq6oaut2oVV55W3rIreeTNej6z1809KS"
-      "AVQRYRkWoimohaJffM2KeHmWF5bKa+bB8UQFQN4xun9riTBYgSURDdtWXkxv8bdIoZBNKevL"
-      "n9vL5FnRxbSflFFakYwS43FDEifvdDwQ0jtM/EEy25NjsibiWcpnPhhu9YUy9a3vGlk0pWXC"
-      "SFjMGzuxrfe2rk9ZF4xcLsBUcVXaXBihxTzt52Tt/FP91FpEB65+i5F6xEEWOkKT9+tTr5Qt"
-      "B9AUSJainL5y4puGPd847xZONv6vmI3b0cIsYz/c1sBJnWLpErRx7fl1l7Vh8RQEJEAFVje+"
-      "0jg9tGbGfGfP3hwaPL2eV9ORFhIlG94MjOr53cuHXzcCln2uno1Ime+yDLfSSJ6FDNTroTwz"
-      "4Ty7KDci9/4bDYSsawe/7hS+MX3vtrU4qskGuzkOFSjve4qYPbVkdClAHd9+lFqw8taHtnHY"
-      "Ouf2Tw1s3DvXkjRPVEzl6cv+d3D+rKsJt2iDDatJ//6a77X69150w6C0pzP4LRDl8PKc66My"
-      "CqxvKhTkNTp+hChGwpOrj4dsxslfYsJCuBlAzTaN3esrp39aGFRJRJlcgw//cro3dsGe3OsV"
-      "Ui0nyEB39dX7d56JazFrj4y6r25KO/Pqfvlf/c8dqI7UhlSXjugyxqW4nl3TyaQske8bYSNa"
-      "e+TKbdTKMaMVXq9g+P6rh0Zbfo23ZfqzSv2TDkvh9oVS3REU3ZwMWgxMqRvdmbV5e7snBbut"
-      "rvnxZSIXhOaK2LEj2uL3vdGWV3NQMREdBI5Or1gy9VbD56O/5ubeAiun5j5emJDVyMROSCZV"
-      "2XnFRqWuV2Km0u/7CpfHAFuy0ZWabrz+g5upx1Cx5LgNLfPlX5r9dqxSxboYlcVWsDl8Ebo/"
-      "abGwZGGhYgVWUiVb3ytN5PLs0PN2yUslXTB1SwqxNUY/2Lk4oXLOtyZSK3G37Dm7W/eWIkZ4"
-      "hIAQUwUVFwG05KWf7fN+o3bRycvIErMrjt3AUfKUfjiRik6OrCD6JgNznXEj1vSW7Nab1W1W"
-      "XQGNg5nvzVwwPDTc0wi7smjaZUFNw47smZf3pu7J6toy7UcuKXlDLfOXtBZwaJUnqyH/Nb8M"
-      "SFui4LNvGwojTDJb6qxEDDSjnPa1eV8xGsqFVSAoG+uWHg2YGkmN3bzlwASkTADZsqT75Vj5"
-      "ibVq1qLZFzDyt8dUVptCmUmnB6fguenAXLRzzxXMq181Z7HgIS1bzBXb/Td+KiPANZwxnDhn"
-      "HXlpH7Xqp2RWivaGccgm4D15ujds36gbGmzUWcNVyIOMO46vTyl08sNqymJJae+3Xw/rBnFm"
-      "ziVobZiKfNWzHRWKKrDsk3BD9+tarti4NHmnbtY8M0ZefXjEMQgBUq5viR3zS/9tDA7y3rsq"
-      "oG5DaifKQvW87zcFOnvVHq+8zcZ7L2h+myYNj7zUhViUG1REcblojaFpWAvgLP5pZb6mb70V"
-      "hqTZn0bVAwynmeVc71wDG/R/BMWbC93E7YTdGFCMXs7n97LDSb2h9cU91Z7s1NGapKlMyuqQ"
-      "PI/BZMk7Jg0/58pkN0ukP2ftRMTVmlaW95mga7NN+DrMA7EgR7ThDsOUGw5wTBnhMEe04Q7D"
-      "lBsOcEwZ4TBHtOEOw5QbDnBMGeEwR7ThDsOUGw5wTBnhMEe04Q7DlBsOcEwZ4TBHtOEOw5Qb"
-      "DnBMGeEwR7ThDsOUGw5wTBnhMEe04Q7DlBsOcEwZ4TBHtOEOw5QbDnBMGeEwR7ThDsOUGw5w"
-      "TBnhMEe04Q7DlBsOcEwZ4TBHtOEOw5QbDnBMGeEwR7ThDsOUGw5wTBnhMEe04Q7Dn/D/w/wB"
-      "uDwDL2AAAAAElFTkSuQmCC";
+      "data:image/"
+      "png;base64,"
+      "iVBORw0KGgoAAAANSUhEUgAAAKAAAACgCAIAAAAErfB6AAAO8ElEQVR4nO2ce4xc9XXHz/"
+      "f87rx2d2Z3Z20cMCYGjHHMyw6PADYYWjVRUkLTFrWlSoOiKFFTQgohjYHwCE8Tq6REbaENld"
+      "oKgdKiqGraNCGpAGFTY/M0YCAQwJAQG3sfs6953fs7p3/"
+      "8Zpdde9d4sZ29++P30Whs7czcuTOf+f3u+"
+      "Z1z7sX8u7ZTwF94tncgcGgJgj0nCPacINhzgmDPCYI9Jwj2nCDYc4JgzwmCPScI9pwg2HOCY"
+      "M8Jgj0nCPacINhzgmDPCYI9Jwj2nCDYc4JgzwmCPScI9pwg2HOCYM8Jgj0nCPacINhzgmDPC"
+      "YI9Jwj2nCDYc4JgzwmCPScI9pwg2HOCYM8Jgj0nCPacINhzgmDPCYI9Jwj2nCDYc4JgzwmCP"
+      "ScI9pwg2HOCYM8Jgj0nCPacINhzgmDPCYI9Jwj2nGi2d+"
+      "D9o6oMRFP9REUpEQUwC7uVMuaqYCUFkIjuqgqpEoFIicj9JxOhnDdWKCiek4JVFUAsurCd/"
+      "+63ezqzRsk5JlFl4Kl3Grc+PlAuGKuzva+"
+      "zzdwTrEQAmLQRy9dP6754WXHv57RncEMijCB4DgomVcMYbOgfH99+"
+      "8bJiIupGrXswEY0YQw0hQD/"
+      "wduekYANUY1lcMlee1pU1sKIRgwE3bxNRxDAMIsL4cfkDzBxbJqmqVWXgio+"
+      "WTpyfs6pmst3AHswlwc5iPdFPLM5fcmIpETWAEu0cSQBomJGnYs4IdrGVFZ1f4FvOLmcNMyk"
+      "RKnX7rU39Ln6e7X1MI3NGMKkaoobV687sXlLOiqgSAXTnU4NbdjSJSDVM0VMwNwSrasSoNO2"
+      "njy78ybIOUbWqhvnpnbW7tw4xExEFv1MyBwQrKQO1RI4qRted3V3IsFUFUGnYmzdX+"
+      "hqaM3AZrBlsUxVEDDITbozWQ+6ffbx4bBsKmrSFPTeSAubAMgkKgorSFad2Lu/"
+      "JxVYBihj3bht+6K16ewYzPfqqEoCm1Woy6YUMas/"
+      "sR0zeCugAUMNqbfJGDKittZFUJErTLlhVDWioKRccU/"
+      "j8CcXEKpFGjK27anc+PRgxYlGd2eglAxqK5eKl7dd8rEvGktgg7Komf/Y/u/"
+      "obkjG8L8eqABg01JALjsnfdk6PVWIiUYoYO0aSv3y479VKXIg4DaM47YIBNEUXFaPrPlbORZ"
+      "xYMYx6rLdvGdxRla4c1+uCGX6RQtQe4YevjV60tO2Tx3SM/31Jd+bb55a/"
+      "8NPdIG3F7dPtFWk91uO7o/"
+      "Xn9izuzE586K5nKi8PNDsyqbCb9mOwqhJpbPXylaWTDstZEcNg0H0vj/"
+      "zHL6rFDCdWQZjhAG5N0QnhKw/1bdtdJyIrYkWs6B8c13HpitJwUwyPHWsnzv/"
+      "aEi9KuQi3n1Ne3JlNRKxIbEVV/+GZyt3PDbdnjFBaEqXpFexiq2qsH1+c/"
+      "+IpJVUFiAivD8S3b6m0Z1jcLDrz4xxApJph7K7J2g39g3VLhPGC45Wnda1ZmB+"
+      "sa8TQPQ6kgKoaxkhTLl9Z+sTR7aJqABAyhp/"
+      "a2Vj3xGAhYqiCNA0H4PQKViUQEtH5Bb55VdnAzXgA9NrH+neOWgM6oNwkoKr5CI/"
+      "8srH+iQHDIFIGlLSnEK1f03NUkUdj4ckJMrdaG6jZzxzbduVpXaJKqu5oPVCzVzzS19+"
+      "QiCHADIP6Q0hKBQPKRKOxrD29c3lPVlQTUQb+9YXhB9+s5QwfeIQKgAiFDO5+"
+      "buTfXhoyzIkoQLGVk+bnrj2rO8ewk+0apmqsJ87L3Ly6nB1rJVEiQK/"
+      "e0Pf0rmZbxJKyhEsaBauqAYaa9veXtH12eVGURDVr+BcDje8+"
+      "M5gIRXxwFprujVTpW49XntvVyBhWhQFZkc8uL31ueUc9UTeI3aooEcpHdOPZXUu6s7EVUrVK"
+      "hvkftw79+6vVtoxbGqXKbyoFM1CLdWGH+cbpXR1ZTqyrMcgdTw6+"
+      "0Bu3jSU6DvyNAFjVXITtQ/"
+      "bajX0jDeu2CiJVvWlV96rDcyNNa+"
+      "Bqy1qP5fKVpQuOLSYiEUOIMoa37Kitf6Ii0prhD8LnP6ikTrCqiipBv7KitHJBPhGNDCKmH7"
+      "8x+v2fj5bzbA9qN50rYHRm+cG36rduHmAQAa421Z413zm/54gO0xRxv7lPHV24/"
+      "NQuK8qAC692jSZrH+3bMSqF8aAvZaRLsAtYGlbPWZj/"
+      "4smdsbiEIt4ZSW7aVBGCEg56eOrGcWfOfO/"
+      "54Qd+"
+      "PuLkOfEnzMvddFa3KDVEjy5F69f0FDIMUrgnqN6yeWDzzrgrz6lt4kyRYH13POG21eW2DBty"
+      "35qu21J5ZSApGByiEMa5EcUNmyrbehuG2aqCNLH6R8uKXzqpWG/Kd87rXtyZFVEAQmDg/"
+      "pdG/"
+      "nnbSDHLiaQjLTkVKRJMqkxUt3L1GV0nzc+"
+      "50IaBH79Wvfel0bYMDtahd5o315zB9sFk7aN9o7E1ABEx1DC++"
+      "tHOH1y44LxFbaLqQi7DePad2rUb+zOAutzlIdqtAyYtglUpYgw27cc/"
+      "XLjkhKJrzSFCby258fGB2E2Ah/RrBKxSKcsP/"
+      "bJxy6aBRMgS3I4dWcx86tj2yDADokRAbzW5/OG+SlMjA02z3tQIVoY2rB7eFl1/"
+      "Znd71ogqCIaxfktlW1+cj6CHeH0JIkBFtSOD7z0/8sPXRjOMsYCaxGVNVZUgSjc/"
+      "XnlyV1yI5kAvWCoEq4IITSuXrSieclguFhUlw/"
+      "jZ9tF7XxzJtkLb38COQAEAVumaDf0v9zbYZStJGSBVqxox7n9x6F9eHC5EUELK7aZCsBIxaL"
+      "gpv7Uo/+crS6oE1Yzh3mpyx5OD1YTasjAgA+xRWp9424O96/"
+      "DYvyI8iES1EOGt4eT6TQMunFZVt3gzwOYdtes3VSLAuCxmSkoK0zP75UIQNa0c0WGuO6tciI"
+      "wrCDYSWbd54MFXR/NtZsfotIU7ECVN6a/LWOmpVYpvWLVV2xuhOVbvLURoi/"
+      "g9o10dc5yPcNHStr2L/4bIYEI6I/"
+      "UjOCWCdX7BnP6hfGzFMAAM1JPBpn5uRed7foGNRD9cilz+a/"
+      "x+UTH6zEmlcoGtkigx6NWB+IXeOB+9V+24ddqEvWxF6aLjiq6c4LLWDLKqpx1euG11+cs/"
+      "601ArUGcbseYf9f22d4HqsZyYk9m058uTJQyfEgil7ueHbz0p71HdEaxTPucVmtfw646PPf9"
+      "CxaUC0ZbJ8WAqDVXW6UIdNWG3r/"
+      "fOlIwaHXu7Ks5YJZJxQgmaiUIMVZ9U9V9mJiIEjFRprVcad2LaiytLTetZg2GGkK8ryK8c1m"
+      "NZWG7WXdueV5bZEUYIEDV1Q3d3qpVXHVGeevu5LG36/"
+      "nMPpt7UkAqgiwiItVENBG1Su6esV83M83y2Ex+2n4ogKgaxjdO73IHCxAloiC6Z+vQTf/"
+      "X7xQzCKRdeXPn+T0L2jm2kvKTKlIxgl1uKGJE/P6HghtGGDsSj2/"
+      "JbbMt4lbCaSoXbviONPXiZW1fOqVkxUVSyBg8v7vx3WeG3hyKV8zPXnhc0VUarMjx5ewda3o"
+      "u+"
+      "cluIgXSO0fPvmAlihhDTfnR69WJJ4LuDyBKVEtZPm9Rwb3W3e8cTTb9up6P2F3LIWI819vMR"
+      "pAp7RK5cuSJPZl15/QQASQuQK7G9rrH+rcP2faM+fqj/"
+      "UvL2WU9ORFhIlG98Nj2r53auH3LYClnxtLRqRM9+0GW+"
+      "0oS0YGanXAlhv0mliWH5V79wlGxlYxhd/"
+      "+DV0Yvuv9XphRZac0RhQyXcrzXRR1cWx0JUQb0wKcXrD6yoGOddQy64bH+"
+      "27cMdueNENUTOXdh/r7fPawjw27aIcJw037+J7sffLPWmTPpLCjN/"
+      "gjGWPh6RHHGOwOiaiwfajd7TNGFCNlSdHjx3ZjZKu1dSFYCKRmm4bq9dXX36iMLiSiTKpFh/"
+      "u/Xhu/aOtyZY6tEpPkID/+qvn7LwK3nzHPxl1Xtykd/vabntf/"
+      "c+caQbUtlSXj2g6xxK7G8n1tTKNkr3lai5uSnyZTNNKoRU6Vu//C4tstWdoq+a/"
+      "eNSvPajQPu94FW1RJt0aQGLgYlVo7tzt6yutyRhWvpGnv/"
+      "tJAKwbNCa12U6Ak92evPKruzGYiIgEYi12zof6Vi89G78XergYvohk2VZ8cbuBiJyIVLOi49"
+      "pdS0ymOptFn+bBP44Ap2LRlZphvO6lpazroFjyVA6W+fqfzXG7Vilq3QeK6q1cBl8Naw/"
+      "ebGvqGGBUhVmUhVrzqj+5OL84MNG6Vs1fQBFezqBNVY/"
+      "+KU4oVLOlyZyHXDb3y79jdPDeUMESmgAMYrCq7hpJTl/32rfvOm/"
+      "okNXJHBHefN+0g5Gk3EIEVnF34QBbvJuZbo+Ytya8/"
+      "otqoug8bArtHkrx7tG2xqhll0LM824eDtxnFXzvzTCyP3bRt2oZYTv6iU+fa589ozSJTSk/"
+      "2Y24LHT9R1WbDxmxWd7hRfVWKgYaWc53WryvkIVtQqKYFA39zY93xfUszuqzMXgBIRcOPmyt"
+      "Pv1CPmplWrWkvkvKMKX11RGm4KpSacntuCJ2bB8hGP35dyPF2jFECimje453d6Tl6QZyBrOG"
+      "PYMO7ZOvTAK9WOCGMr2mmHoGvgenvYrt3QN9K0uYizhgsRZxhXn1n+8snFhtWUxNKzvw4+"
+      "EPbOgo1fyjAb8ZR5KyYaSXTVEfmG4EevV3Xs5OChpl33xCBN6vyadggCsELFHD/"
+      "26+bXHun7vSUdVtWAXCPKR3qy5TwPNnXKC6X+"
+      "hpn9TNaBMFUW7D0uRqpKDKolOtywROMWlYCeAs/"
+      "kklvqZvvhWGpNmfBrUDDKeZ5RzvXQMbdH8HRZsH1cTthN0YUIxeyenz0WmkntD25TnVnuzk0"
+      "aqkqUzGxTh5C5LXhiFmzKv0/"
+      "3Ep3qJft+1XSbskpTXvI0DXbnfJAVeE+"
+      "CYM8Jgj0nCPacINhzgmDPCYI9Jwj2nCDYc4JgzwmCPScI9pwg2HOCYM8Jgj0nCPacINhzgmD"
+      "PCYI9Jwj2nCDYc4JgzwmCPScI9pwg2HOCYM8Jgj0nCPacINhzgmDPCYI9Jwj2nCDYc4Jgzwm"
+      "CPScI9pwg2HOCYM8Jgj0nCPacINhzgmDPCYI9Jwj2nCDYc4JgzwmCPScI9pwg2HOCYM8Jgj0"
+      "nCPacINhzgmDPCYI95/8B/D/AG3nStoAAAAAASUVORK5CYII=";
 
-  if (GetParam() == PageFlagParam::kWithDefaultPageFlag) {
     // Ensure that we don't proceed until the icon loading is finished.
     ASSERT_EQ(
         true,
@@ -352,16 +348,9 @@ IN_PROC_BROWSER_TEST_P(WebAppOfflinePageTest, WebAppOfflinePageIconShowing) {
               EvalJs(web_contents,
                      "document.getElementById('offlineIcon').style.display")
                   .ExtractString());
-  } else {
-    // Expect that the default offline page is not showing.
-    EXPECT_TRUE(
-        EvalJs(web_contents,
-               "document.getElementById('default-web-app-msg') === null")
-            .ExtractBool());
-  }
 }
 
-IN_PROC_BROWSER_TEST_P(WebAppOfflinePageTest, WebAppOfflineMetricsNavigation) {
+IN_PROC_BROWSER_TEST_F(WebAppOfflinePageTest, WebAppOfflineMetricsNavigation) {
   ASSERT_TRUE(embedded_test_server()->Start());
   content::WebContents* web_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
@@ -372,41 +361,23 @@ IN_PROC_BROWSER_TEST_P(WebAppOfflinePageTest, WebAppOfflineMetricsNavigation) {
   histogram()->ExpectTotalCount(kHistogramDurationShown, 0);
   histogram()->ExpectTotalCount(kHistogramClosingReason, 0);
 
-  if (GetParam() == PageFlagParam::kWithDefaultPageFlag) {
-    ExpectUniqueSample(net::ERR_INTERNET_DISCONNECTED, 1);
-    // Expect that the default offline page is showing.
-    EXPECT_TRUE(
-        EvalJs(web_contents,
-               "document.getElementById('default-web-app-msg') !== null")
-            .ExtractBool());
+  ExpectUniqueSample(net::ERR_INTERNET_DISCONNECTED, 1);
+  // Expect that the default offline page is showing.
+  EXPECT_TRUE(EvalJs(web_contents,
+                     "document.getElementById('default-web-app-msg') !== null")
+                  .ExtractBool());
 
-    // Navigate somewhere else (anywhere else but the current page will do).
-    EXPECT_TRUE(NavigateToURL(web_contents, GURL("about:blank")));
+  // Navigate somewhere else (anywhere else but the current page will do).
+  EXPECT_TRUE(NavigateToURL(web_contents, GURL("about:blank")));
 
-    SyncHistograms();
-    histogram()->ExpectTotalCount(kHistogramDurationShown, 1);
-    histogram()->ExpectTotalCount(kHistogramClosingReason, 1);
-    EXPECT_THAT(histogram()->GetAllSamples(kHistogramClosingReason),
-                ElementsAre(base::Bucket(/* min= */ 1, /* count= */ 1)));
-  } else {
-    ExpectUniqueSample(net::ERR_INTERNET_DISCONNECTED, 0);
-    // Expect that the default offline page is not showing.
-    EXPECT_TRUE(
-        EvalJs(web_contents,
-               "document.getElementById('default-web-app-msg') === null")
-            .ExtractBool());
-
-    // Navigate somewhere else (anywhere else but the current page will do).
-    EXPECT_TRUE(NavigateToURL(web_contents, GURL("about:blank")));
-
-    // There should be no histograms still.
-    SyncHistograms();
-    histogram()->ExpectTotalCount(kHistogramDurationShown, 0);
-    histogram()->ExpectTotalCount(kHistogramClosingReason, 0);
-  }
+  SyncHistograms();
+  histogram()->ExpectTotalCount(kHistogramDurationShown, 1);
+  histogram()->ExpectTotalCount(kHistogramClosingReason, 1);
+  EXPECT_THAT(histogram()->GetAllSamples(kHistogramClosingReason),
+              ElementsAre(base::Bucket(/* min= */ 1, /* count= */ 1)));
 }
 
-IN_PROC_BROWSER_TEST_P(WebAppOfflinePageTest, WebAppOfflineMetricsBackOnline) {
+IN_PROC_BROWSER_TEST_F(WebAppOfflinePageTest, WebAppOfflineMetricsBackOnline) {
   ASSERT_TRUE(embedded_test_server()->Start());
   content::WebContents* web_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
@@ -417,97 +388,54 @@ IN_PROC_BROWSER_TEST_P(WebAppOfflinePageTest, WebAppOfflineMetricsBackOnline) {
   histogram()->ExpectTotalCount(kHistogramDurationShown, 0);
   histogram()->ExpectTotalCount(kHistogramClosingReason, 0);
 
-  if (GetParam() == PageFlagParam::kWithDefaultPageFlag) {
-    ExpectUniqueSample(net::ERR_INTERNET_DISCONNECTED, 1);
-    // Expect that the default offline page is showing.
-    EXPECT_TRUE(
-        EvalJs(web_contents,
-               "document.getElementById('default-web-app-msg') !== null")
-            .ExtractBool());
+  ExpectUniqueSample(net::ERR_INTERNET_DISCONNECTED, 1);
+  // Expect that the default offline page is showing.
+  EXPECT_TRUE(EvalJs(web_contents,
+                     "document.getElementById('default-web-app-msg') !== null")
+                  .ExtractBool());
 
-    // The URL interceptor only blocks the first navigation. This one should
-    // go through.
-    ReloadWebContents(web_contents);
+  // The URL interceptor only blocks the first navigation. This one should
+  // go through.
+  ReloadWebContents(web_contents);
 
-    // Expect that the default offline page is not showing.
-    EXPECT_TRUE(
-        EvalJs(web_contents,
-               "document.getElementById('default-web-app-msg') === null")
-            .ExtractBool());
+  // Expect that the default offline page is not showing.
+  EXPECT_TRUE(EvalJs(web_contents,
+                     "document.getElementById('default-web-app-msg') === null")
+                  .ExtractBool());
 
-    SyncHistograms();
-    histogram()->ExpectTotalCount(kHistogramDurationShown, 1);
-    histogram()->ExpectTotalCount(kHistogramClosingReason, 1);
-    EXPECT_THAT(histogram()->GetAllSamples(kHistogramClosingReason),
-                ElementsAre(base::Bucket(/* min= */ 0, /* count= */ 1)));
-  } else {
-    ExpectUniqueSample(net::ERR_INTERNET_DISCONNECTED, 0);
-    // Expect that the default offline page is not showing.
-    EXPECT_TRUE(
-        EvalJs(web_contents,
-               "document.getElementById('default-web-app-msg') === null")
-            .ExtractBool());
-
-    // The URL interceptor only blocks the first navigation. This one should
-    // go through.
-    ReloadWebContents(web_contents);
-
-    // There should be no histograms still.
-    SyncHistograms();
-    histogram()->ExpectTotalCount(kHistogramDurationShown, 0);
-    histogram()->ExpectTotalCount(kHistogramClosingReason, 0);
-  }
+  SyncHistograms();
+  histogram()->ExpectTotalCount(kHistogramDurationShown, 1);
+  histogram()->ExpectTotalCount(kHistogramClosingReason, 1);
+  EXPECT_THAT(histogram()->GetAllSamples(kHistogramClosingReason),
+              ElementsAre(base::Bucket(/* min= */ 0, /* count= */ 1)));
 }
 
-IN_PROC_BROWSER_TEST_P(WebAppOfflinePageTest, WebAppOfflineMetricsPwaClosing) {
+IN_PROC_BROWSER_TEST_F(WebAppOfflinePageTest, WebAppOfflineMetricsPwaClosing) {
   ASSERT_TRUE(embedded_test_server()->Start());
   content::WebContents* web_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
   ExpectUniqueSample(net::ERR_INTERNET_DISCONNECTED, 0);
-  web_app::AppId app_id =
+  webapps::AppId app_id =
       StartWebAppAndDisconnect(web_contents, "/banners/no-sw-with-colors.html");
 
   SyncHistograms();
   histogram()->ExpectTotalCount(kHistogramDurationShown, 0);
   histogram()->ExpectTotalCount(kHistogramClosingReason, 0);
 
-  if (GetParam() == PageFlagParam::kWithDefaultPageFlag) {
-    ExpectUniqueSample(net::ERR_INTERNET_DISCONNECTED, 1);
-    // Expect that the default offline page is showing.
-    EXPECT_TRUE(
-        EvalJs(web_contents,
-               "document.getElementById('default-web-app-msg') !== null")
-            .ExtractBool());
+  ExpectUniqueSample(net::ERR_INTERNET_DISCONNECTED, 1);
+  // Expect that the default offline page is showing.
+  EXPECT_TRUE(EvalJs(web_contents,
+                     "document.getElementById('default-web-app-msg') !== null")
+                  .ExtractBool());
 
-    CloseBrowser(web_contents);
+  CloseBrowser(web_contents);
 
-    SyncHistograms();
-    histogram()->ExpectTotalCount(kHistogramDurationShown, 1);
-    histogram()->ExpectTotalCount(kHistogramClosingReason, 1);
-    EXPECT_THAT(histogram()->GetAllSamples(kHistogramClosingReason),
-                ElementsAre(base::Bucket(/* min= */ 2, /* count= */ 1)));
-  } else {
-    ExpectUniqueSample(net::ERR_INTERNET_DISCONNECTED, 0);
-    // Expect that the default offline page is not showing.
-    EXPECT_TRUE(
-        EvalJs(web_contents,
-               "document.getElementById('default-web-app-msg') === null")
-            .ExtractBool());
-
-    CloseBrowser(web_contents);
-
-    // There should be no histograms still.
-    SyncHistograms();
-    histogram()->ExpectTotalCount(kHistogramDurationShown, 0);
-    histogram()->ExpectTotalCount(kHistogramClosingReason, 0);
-  }
+  SyncHistograms();
+  histogram()->ExpectTotalCount(kHistogramDurationShown, 1);
+  histogram()->ExpectTotalCount(kHistogramClosingReason, 1);
+  EXPECT_THAT(histogram()->GetAllSamples(kHistogramClosingReason),
+              ElementsAre(base::Bucket(/* min= */ 2, /* count= */ 1)));
 }
-
-INSTANTIATE_TEST_SUITE_P(
-    All,
-    WebAppOfflinePageTest,
-    ::testing::Values(PageFlagParam::kWithDefaultPageFlag,
-                      PageFlagParam::kWithoutDefaultPageFlag));
 
 class WebAppOfflineDarkModeTest
     : public WebAppOfflineTest,
@@ -515,8 +443,7 @@ class WebAppOfflineDarkModeTest
  public:
   WebAppOfflineDarkModeTest() {
     std::vector<base::test::FeatureRef> disabled_features;
-    feature_list_.InitWithFeatures({features::kPWAsDefaultOfflinePage,
-                                    blink::features::kWebAppEnableDarkMode},
+    feature_list_.InitWithFeatures({blink::features::kWebAppEnableDarkMode},
                                    {disabled_features});
   }
 

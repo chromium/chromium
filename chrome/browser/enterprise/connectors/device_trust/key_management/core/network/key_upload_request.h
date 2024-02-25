@@ -5,9 +5,9 @@
 #ifndef CHROME_BROWSER_ENTERPRISE_CONNECTORS_DEVICE_TRUST_KEY_MANAGEMENT_CORE_NETWORK_KEY_UPLOAD_REQUEST_H_
 #define CHROME_BROWSER_ENTERPRISE_CONNECTORS_DEVICE_TRUST_KEY_MANAGEMENT_CORE_NETWORK_KEY_UPLOAD_REQUEST_H_
 
+#include <optional>
 #include <string>
 
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
 namespace enterprise_connectors {
@@ -18,9 +18,9 @@ class KeyUploadRequest {
  public:
   // Creates a request object for the simple key creation upload scenario using
   // the given request url `dm_server_url` and `dm_token` as authentication.
-  // Uses `key_pair` to generate the request body. Returns absl::nullopt if any
+  // Uses `key_pair` to generate the request body. Returns std::nullopt if any
   // parameter is invalid, or if serialization of the request fails.
-  static absl::optional<const KeyUploadRequest> Create(
+  static std::optional<const KeyUploadRequest> Create(
       const GURL& dm_server_url,
       const std::string& dm_token,
       const SigningKeyPair& key_pair);
@@ -29,9 +29,9 @@ class KeyUploadRequest {
   // given request url `dm_server_url` and `dm_token` as authentication. Uses
   // `new_key_pair`, `old_key_pair` and nonce to generate the rotation request
   // body. `nonce` is an opaque binary blob and should not be treated as an
-  // ASCII or UTF-8 string. Returns absl::nullopt if any parameter is invalid,
+  // ASCII or UTF-8 string. Returns std::nullopt if any parameter is invalid,
   // or if serialization of the request fails.
-  static absl::optional<const KeyUploadRequest> Create(
+  static std::optional<const KeyUploadRequest> Create(
       const GURL& dm_server_url,
       const std::string& dm_token,
       const SigningKeyPair& new_key_pair,

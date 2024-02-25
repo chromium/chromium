@@ -23,6 +23,7 @@
 #include "ash/wm/overview/overview_controller.h"
 #include "ash/wm/splitview/split_view_constants.h"
 #include "ash/wm/splitview/split_view_divider.h"
+#include "ash/wm/splitview/split_view_types.h"
 #include "ash/wm/tablet_mode/tablet_mode_controller.h"
 #include "ash/wm/window_state.h"
 #include "ash/wm/window_util.h"
@@ -33,6 +34,7 @@
 #include "chromeos/ui/base/window_properties.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/aura/window.h"
+#include "ui/display/screen.h"
 #include "ui/wm/core/coordinate_conversion.h"
 #include "ui/wm/core/window_util.h"
 
@@ -151,16 +153,17 @@ void ActivateUnderneathWindowInSplitViewMode(
   } else {
     if (left_window && split_view_controller
                            ->GetSnappedWindowBoundsInScreen(
-                               SplitViewController::SnapPosition::kPrimary,
-                               /*window_for_minimum_size=*/nullptr)
+                               SnapPosition::kPrimary,
+                               /*window_for_minimum_size=*/nullptr,
+                               chromeos::kDefaultSnapRatio)
                            .Contains(location)) {
       ActivateWindow(left_window);
-    } else if (right_window &&
-               split_view_controller
-                   ->GetSnappedWindowBoundsInScreen(
-                       SplitViewController::SnapPosition::kSecondary,
-                       /*window_for_minimum_size=*/nullptr)
-                   .Contains(location)) {
+    } else if (right_window && split_view_controller
+                                   ->GetSnappedWindowBoundsInScreen(
+                                       SnapPosition::kSecondary,
+                                       /*window_for_minimum_size=*/nullptr,
+                                       chromeos::kDefaultSnapRatio)
+                                   .Contains(location)) {
       ActivateWindow(right_window);
     } else if (split_view_controller->split_view_divider()
                    ->GetDividerBoundsInScreen(
@@ -177,7 +180,7 @@ void ActivateUnderneathWindowInSplitViewMode(
 }  // namespace
 
 BackGestureEventHandler::BackGestureEventHandler() {
-  if (features::AreContextualNudgesEnabled()) {
+  if (features::IsHideShelfControlsInTabletModeEnabled()) {
     nudge_controller_ =
         std::make_unique<BackGestureContextualNudgeControllerImpl>();
   }
@@ -317,7 +320,7 @@ bool BackGestureEventHandler::MaybeHandleBackGesture(
         break;
       back_gesture_affordance_ = std::make_unique<BackGestureAffordance>(
           screen_location, dragged_from_splitview_divider_);
-      if (features::AreContextualNudgesEnabled()) {
+      if (features::IsHideShelfControlsInTabletModeEnabled()) {
         // Cancel the in-waiting or in-progress back nudge animation.
         nudge_controller_->OnBackGestureStarted();
         contextual_tooltip::HandleGesturePerformed(
@@ -440,8 +443,9 @@ bool BackGestureEventHandler::CanStartGoingBack(
   if (shell->session_controller()->IsRunningInAppMode())
     return false;
 
-  if (!shell->tablet_mode_controller()->InTabletMode())
+  if (!display::Screen::GetScreen()->InTabletMode()) {
     return false;
+  }
 
   // Do not enable back gesture if it is not in an ACTIVE session. e.g, login
   // screen, lock screen.

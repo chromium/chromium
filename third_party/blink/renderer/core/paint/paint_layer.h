@@ -50,8 +50,8 @@
 #include "base/dcheck_is_on.h"
 #include "base/gtest_prod_util.h"
 #include "third_party/blink/renderer/core/core_export.h"
+#include "third_party/blink/renderer/core/layout/geometry/static_position.h"
 #include "third_party/blink/renderer/core/layout/layout_box.h"
-#include "third_party/blink/renderer/core/layout/ng/geometry/ng_static_position.h"
 #include "third_party/blink/renderer/core/paint/paint_layer_clipper.h"
 #include "third_party/blink/renderer/core/paint/paint_layer_fragment.h"
 #include "third_party/blink/renderer/core/paint/paint_layer_resource_info.h"
@@ -133,7 +133,7 @@ enum PaintLayerIteration {
 //   PaintLayers.
 // - If the flag is false, the LayoutObject is painted like normal children (ie
 //   as if it didn't have a PaintLayer). The paint order is handled by
-//   NGBoxFragmentPainter.
+//   BoxFragmentPainter.
 // This means that the self-painting flag changes the painting order in a subtle
 // way, which can potentially have visible consequences. Those bugs are called
 // painting inversion as we invert the order of painting for 2 elements
@@ -177,11 +177,11 @@ class CORE_EXPORT PaintLayer : public GarbageCollected<PaintLayer>,
   // Returns |GetLayoutBox()| if it exists and has fragments.
   const LayoutBox* GetLayoutBoxWithBlockFragments() const;
 
-  PaintLayer* Parent() const { return parent_; }
-  PaintLayer* PreviousSibling() const { return previous_; }
-  PaintLayer* NextSibling() const { return next_; }
-  PaintLayer* FirstChild() const { return first_; }
-  PaintLayer* LastChild() const { return last_; }
+  PaintLayer* Parent() const { return parent_.Get(); }
+  PaintLayer* PreviousSibling() const { return previous_.Get(); }
+  PaintLayer* NextSibling() const { return next_.Get(); }
+  PaintLayer* FirstChild() const { return first_.Get(); }
+  PaintLayer* LastChild() const { return last_.Get(); }
 
   // TODO(wangxianzhu): Find a better name for it. 'paintContainer' might be
   // good but we can't use it for now because it conflicts with
@@ -224,8 +224,6 @@ class CORE_EXPORT PaintLayer : public GarbageCollected<PaintLayer>,
 
   void UpdateScrollingAfterLayout();
 
-  void UpdateLayerPositionsAfterLayout();
-
   void UpdateTransform();
 
   bool HasVisibleContent() const {
@@ -245,12 +243,7 @@ class CORE_EXPORT PaintLayer : public GarbageCollected<PaintLayer>,
   // of this layer. Normally the parent layer is the containing layer, except
   // for out of flow positioned, floating and multicol spanner layers whose
   // containing layer might be an ancestor of the parent layer.
-  // If |ancestor| is specified, |*skippedAncestor| will be set to true if
-  // |ancestor| is found in the ancestry chain between this layer and the
-  // containing block layer; if not found, it will be set to false. Either both
-  // |ancestor| and |skippedAncestor| should be nullptr, or none of them should.
-  PaintLayer* ContainingLayer(const PaintLayer* ancestor = nullptr,
-                              bool* skipped_ancestor = nullptr) const;
+  PaintLayer* ContainingLayer() const;
 
   // The hitTest() method looks for mouse events by walking layers that
   // intersect the point from front to back.
@@ -267,8 +260,8 @@ class CORE_EXPORT PaintLayer : public GarbageCollected<PaintLayer>,
     static_block_position_ = position;
   }
 
-  using InlineEdge = NGLogicalStaticPosition::InlineEdge;
-  using BlockEdge = NGLogicalStaticPosition::BlockEdge;
+  using InlineEdge = LogicalStaticPosition::InlineEdge;
+  using BlockEdge = LogicalStaticPosition::BlockEdge;
   InlineEdge StaticInlineEdge() const {
     return static_cast<InlineEdge>(static_inline_edge_);
   }
@@ -276,15 +269,15 @@ class CORE_EXPORT PaintLayer : public GarbageCollected<PaintLayer>,
     return static_cast<BlockEdge>(static_block_edge_);
   }
 
-  void SetStaticPositionFromNG(const NGLogicalStaticPosition& position) {
+  void SetStaticPositionFromNG(const LogicalStaticPosition& position) {
     static_inline_position_ = position.offset.inline_offset;
     static_block_position_ = position.offset.block_offset;
     static_inline_edge_ = position.inline_edge;
     static_block_edge_ = position.block_edge;
   }
 
-  NGLogicalStaticPosition GetStaticPosition() const {
-    NGLogicalStaticPosition position;
+  LogicalStaticPosition GetStaticPosition() const {
+    LogicalStaticPosition position;
     position.offset.inline_offset = static_inline_position_;
     position.offset.block_offset = static_block_position_;
     position.inline_edge = StaticInlineEdge();
@@ -359,7 +352,7 @@ class CORE_EXPORT PaintLayer : public GarbageCollected<PaintLayer>,
     return has_filter_that_moves_pixels_;
   }
 
-  PaintLayerResourceInfo* ResourceInfo() const { return resource_info_; }
+  PaintLayerResourceInfo* ResourceInfo() const { return resource_info_.Get(); }
   PaintLayerResourceInfo& EnsureResourceInfo();
 
   // Filter reference box is the area over which the filter is computed, in the
@@ -526,13 +519,13 @@ class CORE_EXPORT PaintLayer : public GarbageCollected<PaintLayer>,
 
   void Trace(Visitor*) const override;
 
+  PhysicalRect LocalBoundingBoxIncludingSelfPaintingDescendants() const;
+
  private:
   void Update3DTransformedDescendantStatus();
 
   // Bounding box in the coordinates of this layer.
   PhysicalRect LocalBoundingBox() const;
-
-  void UpdateLayerPositionRecursive();
 
   void SetNextSibling(PaintLayer* next) { next_ = next; }
   void SetPreviousSibling(PaintLayer* prev) { previous_ = prev; }
@@ -603,7 +596,7 @@ class CORE_EXPORT PaintLayer : public GarbageCollected<PaintLayer>,
       const HitTestingTransformState* root_transform_state) const;
 
   bool HitTestFragmentWithPhase(HitTestResult&,
-                                const NGPhysicalBoxFragment*,
+                                const PhysicalBoxFragment*,
                                 const PhysicalOffset& fragment_offset,
                                 const HitTestLocation&,
                                 HitTestPhase phase) const;
@@ -666,7 +659,7 @@ class CORE_EXPORT PaintLayer : public GarbageCollected<PaintLayer>,
 
   // This is private because PaintLayerStackingNode is only for PaintLayer and
   // PaintLayerPaintOrderIterator.
-  PaintLayerStackingNode* StackingNode() const { return stacking_node_; }
+  PaintLayerStackingNode* StackingNode() const { return stacking_node_.Get(); }
 
   void SetNeedsReorderOverlayOverflowControls(bool);
 

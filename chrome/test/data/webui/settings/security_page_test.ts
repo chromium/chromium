@@ -5,21 +5,19 @@
 // clang-format off
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import {SafeBrowsingSetting, SettingsSecurityPageElement} from 'chrome://settings/lazy_load.js';
-import {MetricsBrowserProxyImpl, PrivacyElementInteractions, PrivacyPageBrowserProxyImpl, Router, routes, SafeBrowsingInteractions, SecureDnsMode, SettingsToggleButtonElement} from 'chrome://settings/settings.js';
-// <if expr="chrome_root_store_supported">
-import {OpenWindowProxyImpl} from 'chrome://settings/settings.js';
-// </if>
+import type {SettingsSecurityPageElement} from 'chrome://settings/lazy_load.js';
+import {HttpsFirstModeSetting, SafeBrowsingSetting} from 'chrome://settings/lazy_load.js';
+import type {SettingsPrefsElement, SettingsToggleButtonElement} from 'chrome://settings/settings.js';
+import {HatsBrowserProxyImpl, CrSettingsPrefs, MetricsBrowserProxyImpl, OpenWindowProxyImpl, PrivacyElementInteractions, PrivacyPageBrowserProxyImpl, Router, routes, SafeBrowsingInteractions, SecureDnsMode, SecurityPageInteraction} from 'chrome://settings/settings.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {isChildVisible} from 'chrome://webui-test/test_util.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 
+import {TestHatsBrowserProxy} from './test_hats_browser_proxy.js';
 import {TestMetricsBrowserProxy} from './test_metrics_browser_proxy.js';
 
-// <if expr="chrome_root_store_supported">
 import {TestOpenWindowProxy} from 'chrome://webui-test/test_open_window_proxy.js';
 
-// </if>
 import {TestPrivacyPageBrowserProxy} from './test_privacy_page_browser_proxy.js';
 
 // clang-format on
@@ -29,6 +27,7 @@ function pagePrefs() {
     profile: {password_manager_leak_detection: {value: false}},
     safebrowsing: {
       scout_reporting_enabled: {value: true},
+      esb_opt_in_with_friendlier_settings: {value: false},
     },
     generated: {
       safe_browsing: {
@@ -36,11 +35,17 @@ function pagePrefs() {
         value: SafeBrowsingSetting.STANDARD,
       },
       password_leak_detection: {value: false},
-      https_first_mode_enabled: {value: false},
+      https_first_mode_enabled: {
+        type: chrome.settingsPrivate.PrefType.NUMBER,
+        value: HttpsFirstModeSetting.DISABLED,
+      },
     },
     dns_over_https:
         {mode: {value: SecureDnsMode.AUTOMATIC}, templates: {value: ''}},
-    https_only_mode_enabled: {value: false},
+    https_only_mode_enabled: {
+      type: chrome.settingsPrivate.PrefType.NUMBER,
+      value: HttpsFirstModeSetting.DISABLED,
+    },
   };
 }
 
@@ -48,14 +53,12 @@ suite('Main', function() {
   let testMetricsBrowserProxy: TestMetricsBrowserProxy;
   let testPrivacyBrowserProxy: TestPrivacyPageBrowserProxy;
   let page: SettingsSecurityPageElement;
-  // <if expr="chrome_root_store_supported">
   let openWindowProxy: TestOpenWindowProxy;
-  // </if>
 
   suiteSetup(function() {
     loadTimeData.overrideValues({
       enableSecurityKeysSubpage: true,
-      showChromeRootStoreCertificates: true,
+      enableHttpsFirstModeNewSettings: true,
     });
   });
 
@@ -64,10 +67,8 @@ suite('Main', function() {
     MetricsBrowserProxyImpl.setInstance(testMetricsBrowserProxy);
     testPrivacyBrowserProxy = new TestPrivacyPageBrowserProxy();
     PrivacyPageBrowserProxyImpl.setInstance(testPrivacyBrowserProxy);
-    // <if expr="chrome_root_store_supported">
     openWindowProxy = new TestOpenWindowProxy();
     OpenWindowProxyImpl.setInstance(openWindowProxy);
-    // </if>
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
     page = document.createElement('settings-security-page');
     page.prefs = pagePrefs();
@@ -89,7 +90,6 @@ suite('Main', function() {
   });
   // </if>
 
-  // <if expr="chrome_root_store_supported">
   test('ChromeRootStorePage', async function() {
     const row =
         page.shadowRoot!.querySelector<HTMLElement>('#chromeCertificates');
@@ -98,7 +98,6 @@ suite('Main', function() {
     const url = await openWindowProxy.whenCalled('openUrl');
     assertEquals(url, loadTimeData.getString('chromeRootStoreHelpCenterURL'));
   });
-  // </if>
 
   // <if expr="not chromeos_lacros">
   // TODO(crbug.com/1148302): This class directly calls
@@ -122,36 +121,132 @@ suite('Main', function() {
     assertFalse(isChildVisible(page, '#security-keys-phones-subpage-trigger'));
   });
 
-  // Tests that toggling the HTTPS-Only Mode setting sets the associated pref.
-  test('httpsOnlyModeToggle', function() {
-    const httpsOnlyModeToggle =
-        page.shadowRoot!.querySelector<HTMLElement>('#httpsOnlyModeToggle')!;
-    assertFalse(page.prefs.generated.https_first_mode_enabled.value);
+  // Tests that changing the HTTPS-First Mode setting sets the associated pref.
+  test('HttpsFirstModeRadioButtons', function() {
+    let radioButton = page.shadowRoot!.querySelector<HTMLElement>(
+        '#httpsFirstModeEnabledFull');
+    assertTrue(!!radioButton);
+    radioButton.click();
+    assertEquals(
+        HttpsFirstModeSetting.ENABLED_FULL,
+        page.getPref('generated.https_first_mode_enabled').value);
 
-    httpsOnlyModeToggle.click();
-    assertTrue(page.prefs.generated.https_first_mode_enabled.value);
+    radioButton = page.shadowRoot!.querySelector<HTMLElement>(
+        '#httpsFirstModeEnabledIncognito');
+    assertTrue(!!radioButton);
+    radioButton.click();
+    assertEquals(
+        HttpsFirstModeSetting.ENABLED_INCOGNITO,
+        page.getPref('generated.https_first_mode_enabled').value);
+
+    radioButton =
+        page.shadowRoot!.querySelector<HTMLElement>('#httpsFirstModeDisabled');
+    assertTrue(!!radioButton);
+    radioButton.click();
+    assertEquals(
+        HttpsFirstModeSetting.DISABLED,
+        page.getPref('generated.https_first_mode_enabled').value);
   });
 
-  test('HttpsOnlyModeSettingSubLabel', function() {
-    const toggle = page.shadowRoot!.querySelector<SettingsToggleButtonElement>(
-        '#httpsOnlyModeToggle');
-    assertTrue(!!toggle);
-    const defaultSubLabel = loadTimeData.getString('httpsOnlyModeDescription');
-    assertEquals(defaultSubLabel, toggle.subLabel);
+  // Test that clicking the V8 security row navigates to the setting page.
+  test('NavigateToV8Setting', function() {
+    const link =
+        page.shadowRoot!.querySelector<HTMLElement>('#v8-setting-link');
+    assertTrue(!!link);
+    link.click();
+    assertEquals(
+        routes.SITE_SETTINGS_JAVASCRIPT_JIT,
+        Router.getInstance().getCurrentRoute());
+  });
 
-    page.set('prefs.https_only_mode_enabled.value', false);
-    page.set(
-        'prefs.generated.https_first_mode_enabled.userControlDisabled', true);
-    flush();
-    const lockedSubLabel =
-        loadTimeData.getString('httpsOnlyModeDescriptionAdvancedProtection');
-    assertEquals(lockedSubLabel, toggle.subLabel);
+  // TODO(crbug.com/1494186): Add test for alternate sub-label when Advanced
+  // Protection is enabled.
+});
 
-    page.set('prefs.https_only_mode_enabled.value', true);
-    page.set(
-        'prefs.generated.https_first_mode_enabled.userControlDisabled', true);
+suite('SecurityPageHappinessTrackingSurveys', function() {
+  let testHatsBrowserProxy: TestHatsBrowserProxy;
+  let settingsPrefs: SettingsPrefsElement;
+  let page: SettingsSecurityPageElement;
+
+  suiteSetup(function() {
+    settingsPrefs = document.createElement('settings-prefs');
+    return CrSettingsPrefs.initialized;
+  });
+
+  setup(function() {
+    testHatsBrowserProxy = new TestHatsBrowserProxy();
+    HatsBrowserProxyImpl.setInstance(testHatsBrowserProxy);
+    document.body.innerHTML = window.trustedTypes!.emptyHTML;
+    page = document.createElement('settings-security-page');
+    page.prefs = settingsPrefs.prefs;
+    document.body.appendChild(page);
+    testHatsBrowserProxy.reset();
+    Router.getInstance().navigateTo(routes.SECURITY);
+    return flushTasks();
+  });
+
+  teardown(function() {
+    page.remove();
+    Router.getInstance().navigateTo(routes.BASIC);
+  });
+
+  test('SecurityPageSwitchRouteCallsHatsProxy', async function() {
+    const t1 = 10000;
+    testHatsBrowserProxy.setNow(t1);
+    window.dispatchEvent(new Event('focus'));
+
+    const t2 = 20000;
+    testHatsBrowserProxy.setNow(t2);
+    window.dispatchEvent(new Event('blur'));
+
+    // Switch tabs within the settings page.
+    Router.getInstance().navigateTo(routes.PRIVACY);
+
+    const args =
+        await testHatsBrowserProxy.whenCalled('securityPageHatsRequest');
+
+    // Verify that the method securityPageHatsRequest was called and the time
+    // the user spent on the security page was logged correctly.
+    const expectedTotalTimeInFocus = t2 - t1;
+    assertEquals(expectedTotalTimeInFocus, args[2]);
+  });
+
+  test('SecurityPageBeforeUnloadCallsHatsProxy', async function() {
+    // Interact with the security page.
+    page.$.safeBrowsingEnhanced.click();
     flush();
-    assertEquals(lockedSubLabel, toggle.subLabel);
+
+    const t1 = 10000;
+    testHatsBrowserProxy.setNow(t1);
+    window.dispatchEvent(new Event('focus'));
+
+    const t2 = 20000;
+    testHatsBrowserProxy.setNow(t2);
+    window.dispatchEvent(new Event('blur'));
+
+    const t3 = 60000;
+    testHatsBrowserProxy.setNow(t3);
+    window.dispatchEvent(new Event('focus'));
+
+    const t4 = 80000;
+    testHatsBrowserProxy.setNow(t4);
+    window.dispatchEvent(new Event('blur'));
+
+    // Fire the beforeunload event to simulate closing the page.
+    window.dispatchEvent(new Event('beforeunload'));
+
+    const args =
+        await testHatsBrowserProxy.whenCalled('securityPageHatsRequest');
+
+    // Verify the latest interaction type.
+    assertEquals(SecurityPageInteraction.RADIO_BUTTON_ENHANCED_CLICK, args[0]);
+
+    // Verify the safe browsing state on open.
+    assertEquals(SafeBrowsingSetting.STANDARD, args[1]);
+
+    // Verify the time the user spend on the security page.
+    const expectedTotalTimeInFocus = t2 - t1 + t4 - t3;
+    assertEquals(expectedTotalTimeInFocus, args[2]);
   });
 });
 
@@ -163,6 +258,7 @@ suite('FlagsDisabled', function() {
       enableSecurityKeysSubpage: false,
       enableFriendlierSafeBrowsingSettings: false,
       enableHashPrefixRealTimeLookups: false,
+      enableHttpsFirstModeNewSettings: false,
     });
   });
 
@@ -267,6 +363,49 @@ suite('FlagsDisabled', function() {
     flush();
     assertEquals(defaultSubLabel, toggle.subLabel);
   });
+
+  // Tests that toggling the HTTPS-Only Mode setting sets the associated pref.
+  test('HttpsOnlyModeToggle', function() {
+    const httpsOnlyModeToggle =
+        page.shadowRoot!.querySelector<HTMLElement>('#httpsOnlyModeToggle');
+    assertTrue(!!httpsOnlyModeToggle);
+
+    assertEquals(
+        HttpsFirstModeSetting.DISABLED,
+        page.getPref('generated.https_first_mode_enabled').value);
+
+    httpsOnlyModeToggle.click();
+    assertEquals(
+        HttpsFirstModeSetting.ENABLED_FULL,
+        page.getPref('generated.https_first_mode_enabled').value);
+  });
+
+  // Tests that the correct Advanced Protection sublabel is used when the
+  // HTTPS-Only Mode setting toggle has user control disabled.
+  test('HttpsOnlyModeSettingSubLabel', function() {
+    const toggle = page.shadowRoot!.querySelector<SettingsToggleButtonElement>(
+        '#httpsOnlyModeToggle');
+    assertTrue(!!toggle);
+    const defaultSubLabel = loadTimeData.getString('httpsOnlyModeDescription');
+    assertEquals(defaultSubLabel, toggle.subLabel);
+
+    page.setPrefValue(
+        'generated.https_first_mode_enabled', HttpsFirstModeSetting.DISABLED);
+    page.set(
+        'prefs.generated.https_first_mode_enabled.userControlDisabled', true);
+    flush();
+    const lockedSubLabel =
+        loadTimeData.getString('httpsOnlyModeDescriptionAdvancedProtection');
+    assertEquals(lockedSubLabel, toggle.subLabel);
+
+    page.setPrefValue(
+        'generated.https_first_mode_enabled',
+        HttpsFirstModeSetting.ENABLED_FULL);
+    page.set(
+        'prefs.generated.https_first_mode_enabled.userControlDisabled', true);
+    flush();
+    assertEquals(lockedSubLabel, toggle.subLabel);
+  });
 });
 
 // Separate test suite for tests specifically related to Safe Browsing controls.
@@ -274,9 +413,7 @@ suite('SafeBrowsing', function() {
   let testMetricsBrowserProxy: TestMetricsBrowserProxy;
   let testPrivacyBrowserProxy: TestPrivacyPageBrowserProxy;
   let page: SettingsSecurityPageElement;
-  // <if expr="chrome_root_store_supported">
   let openWindowProxy: TestOpenWindowProxy;
-  // </if>
 
   function setUpPage() {
     page = document.createElement('settings-security-page');
@@ -296,10 +433,8 @@ suite('SafeBrowsing', function() {
     MetricsBrowserProxyImpl.setInstance(testMetricsBrowserProxy);
     testPrivacyBrowserProxy = new TestPrivacyPageBrowserProxy();
     PrivacyPageBrowserProxyImpl.setInstance(testPrivacyBrowserProxy);
-    // <if expr="chrome_root_store_supported">
     openWindowProxy = new TestOpenWindowProxy();
     OpenWindowProxyImpl.setInstance(openWindowProxy);
-    // </if>
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
     setUpPage();
   });
@@ -382,7 +517,7 @@ suite('SafeBrowsing', function() {
 
   test(
       'SafeBrowsingRadio_ManuallyExpandedRemainExpandedOnRepeatSelection',
-      function() {
+      async function() {
         page.$.safeBrowsingStandard.click();
         flush();
         assertEquals(
@@ -394,7 +529,7 @@ suite('SafeBrowsing', function() {
         // Expanding another radio button should not collapse already expanded
         // option.
         page.$.safeBrowsingEnhanced.$.expandButton.click();
-        flush();
+        await page.$.safeBrowsingEnhanced.$.expandButton.updateComplete;
         assertTrue(page.$.safeBrowsingStandard.expanded);
         assertTrue(page.$.safeBrowsingEnhanced.expanded);
 
@@ -416,7 +551,7 @@ suite('SafeBrowsing', function() {
             page.prefs.generated.safe_browsing.value);
 
         page.$.safeBrowsingEnhanced.$.expandButton.click();
-        flush();
+        await page.$.safeBrowsingEnhanced.$.expandButton.updateComplete;
         assertTrue(page.$.safeBrowsingStandard.expanded);
         assertTrue(page.$.safeBrowsingEnhanced.expanded);
 
@@ -769,24 +904,9 @@ suite('SafeBrowsing', function() {
     assertTrue(page.$.safeBrowsingStandard.expanded);
   });
 
-  test('enhancedProtectionExpandedIfEsbCollapseDisabled', function() {
-    // Enhanced protection should be pre-expanded if the param is set to
-    // enhanced and enableEsbCollapse is false.
-    loadTimeData.overrideValues({enableEsbCollapse: false});
-    Router.getInstance().navigateTo(
-        routes.SECURITY,
-        /* dynamicParams= */ new URLSearchParams('q=enhanced'));
-    assertEquals(
-        page.prefs.generated.safe_browsing.value, SafeBrowsingSetting.STANDARD);
-    assertTrue(page.$.safeBrowsingEnhanced.expanded);
-    assertFalse(page.$.safeBrowsingStandard.expanded);
-  });
-
-  test('enhancedProtectionCollapsedIfEsbCollapseEnabled', function() {
+  test('enhancedProtectionCollapsedIfParamIsEnhanced', function() {
     // Enhanced protection should be collapsed if the param is set to
-    // enhanced and enableEsbCollapse is true.
-    loadTimeData.overrideValues({enableEsbCollapse: true});
-
+    // enhanced.
     Router.getInstance().navigateTo(
         routes.SECURITY,
         /* dynamicParams= */ new URLSearchParams('q=enhanced'));
@@ -876,4 +996,30 @@ suite('SafeBrowsing', function() {
     assertEquals(subLabel, standardProtection.subLabel);
   });
   // </if>
+
+  test('FriendlierSettingsPopulatedOnEsbOptIn', async function() {
+    loadTimeData.overrideValues({
+      enableFriendlierSafeBrowsingSettings: false,
+    });
+    resetPage();
+    page.$.safeBrowsingEnhanced.click();
+    assertFalse(
+        page.getPref('safebrowsing.esb_opt_in_with_friendlier_settings').value);
+
+    loadTimeData.overrideValues({
+      enableFriendlierSafeBrowsingSettings: true,
+    });
+    resetPage();
+    page.$.safeBrowsingEnhanced.click();
+    assertTrue(
+        page.getPref('safebrowsing.esb_opt_in_with_friendlier_settings').value);
+  });
+
+  test('FriendlierSettingsClearedOnEsbOptOut', async function() {
+    page.$.safeBrowsingEnhanced.click();
+    page.setPrefValue('safebrowsing.esb_opt_in_with_friendlier_settings', true);
+    page.$.safeBrowsingStandard.click();
+    assertFalse(
+        page.getPref('safebrowsing.esb_opt_in_with_friendlier_settings').value);
+  });
 });

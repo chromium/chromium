@@ -52,37 +52,6 @@ class PLATFORM_EXPORT ExceptionState {
   STACK_ALLOCATED();
 
  public:
-  // TODO(peria): Replace following enum aliases.
-  using ContextType = ExceptionContext::Context;
-  static constexpr ContextType kConstructionContext =
-      ExceptionContext::Context::kConstructorOperationInvoke;
-  static constexpr ContextType kExecutionContext =
-      ExceptionContext::Context::kOperationInvoke;
-  static constexpr ContextType kDeletionContext =
-      ExceptionContext::Context::kNamedPropertyDelete;
-  static constexpr ContextType kGetterContext =
-      ExceptionContext::Context::kAttributeGet;
-  static constexpr ContextType kSetterContext =
-      ExceptionContext::Context::kAttributeSet;
-  static constexpr ContextType kEnumerationContext =
-      ExceptionContext::Context::kNamedPropertyEnumerate;
-  static constexpr ContextType kQueryContext =
-      ExceptionContext::Context::kNamedPropertyQuery;
-  static constexpr ContextType kIndexedGetterContext =
-      ExceptionContext::Context::kIndexedPropertyGet;
-  static constexpr ContextType kIndexedSetterContext =
-      ExceptionContext::Context::kIndexedPropertySet;
-  static constexpr ContextType kIndexedDeletionContext =
-      ExceptionContext::Context::kIndexedPropertyDelete;
-  static constexpr ContextType kNamedGetterContext =
-      ExceptionContext::Context::kNamedPropertyGet;
-  static constexpr ContextType kNamedSetterContext =
-      ExceptionContext::Context::kNamedPropertySet;
-  static constexpr ContextType kNamedDeletionContext =
-      ExceptionContext::Context::kNamedPropertyDelete;
-  static constexpr ContextType kUnknownContext =
-      ExceptionContext::Context::kUnknown;
-
   // ContextScope represents a stack of ExceptionContext in order to represent
   // nested exception contexts such like an IDL dictionary in another IDL
   // dictionary.
@@ -136,7 +105,7 @@ class PLATFORM_EXPORT ExceptionState {
       : main_context_(std::move(context)), isolate_(isolate) {}
 
   ExceptionState(v8::Isolate* isolate,
-                 ContextType context_type,
+                 ExceptionContextType context_type,
                  const char* interface_name,
                  const char* property_name)
       : ExceptionState(
@@ -144,10 +113,22 @@ class PLATFORM_EXPORT ExceptionState {
             ExceptionContext(context_type, interface_name, property_name)) {}
 
   ExceptionState(v8::Isolate* isolate,
-                 ContextType context_type,
+                 ExceptionContextType context_type,
                  const char* interface_name)
       : ExceptionState(isolate,
                        ExceptionContext(context_type, interface_name)) {}
+
+  // This constructor opts in to special handling for a dynamic `property_name`,
+  // which is only needed for named and indexed interceptors.
+  enum ForInterceptor { kForInterceptor };
+  ExceptionState(v8::Isolate* isolate,
+                 ExceptionContextType context_type,
+                 const char* interface_name,
+                 const AtomicString& property_name,
+                 ExceptionState::ForInterceptor)
+      : ExceptionState(
+            isolate,
+            ExceptionContext(context_type, interface_name, property_name)) {}
 
   ExceptionState(const ExceptionState&) = delete;
   ExceptionState& operator=(const ExceptionState&) = delete;
@@ -160,36 +141,37 @@ class PLATFORM_EXPORT ExceptionState {
 
   // Throws an appropriate exception due to the given exception code. The
   // exception will be either of ECMAScript Error object or DOMException.
-  void ThrowException(ExceptionCode, const String& message);
+  NOINLINE void ThrowException(ExceptionCode, const String& message);
 
   // Throws a DOMException due to the given exception code.
-  virtual void ThrowDOMException(DOMExceptionCode, const String& message);
+  NOINLINE void ThrowDOMException(DOMExceptionCode, const String& message);
 
   // Throws a DOMException with SECURITY_ERR.
-  virtual void ThrowSecurityError(const String& sanitized_message,
-                                  const String& unsanitized_message = String());
+  NOINLINE void ThrowSecurityError(
+      const String& sanitized_message,
+      const String& unsanitized_message = String());
 
   // Throws an ECMAScript Error object.
-  virtual void ThrowRangeError(const String& message);
-  virtual void ThrowTypeError(const String& message);
+  NOINLINE void ThrowRangeError(const String& message);
+  NOINLINE void ThrowTypeError(const String& message);
 
   // Throws WebAssembly Error object.
-  virtual void ThrowWasmCompileError(const String& message);
+  NOINLINE void ThrowWasmCompileError(const String& message);
 
   // These overloads reduce the binary code size because the call sites do not
   // need the conversion by String::String(const char*) that is inlined at each
   // call site. As there are many call sites that pass in a const char*, this
   // size optimization is effective (32kb reduction as of June 2018).
   // See also https://crbug.com/849743
-  void ThrowDOMException(DOMExceptionCode, const char* message);
-  void ThrowSecurityError(const char* sanitized_message,
-                          const char* unsanitized_message = nullptr);
-  void ThrowRangeError(const char* message);
-  void ThrowTypeError(const char* message);
-  void ThrowWasmCompileError(const char* message);
+  NOINLINE void ThrowDOMException(DOMExceptionCode, const char* message);
+  NOINLINE void ThrowSecurityError(const char* sanitized_message,
+                                   const char* unsanitized_message = nullptr);
+  NOINLINE void ThrowRangeError(const char* message);
+  NOINLINE void ThrowTypeError(const char* message);
+  NOINLINE void ThrowWasmCompileError(const char* message);
 
   // Rethrows a v8::Value as an exception.
-  virtual void RethrowV8Exception(v8::Local<v8::Value>);
+  NOINLINE void RethrowV8Exception(v8::Local<v8::Value>);
 
   // Returns true if there is a pending exception.
   //
@@ -227,9 +209,22 @@ class PLATFORM_EXPORT ExceptionState {
   }
 
  protected:
+  // Methods for use by subclasses.
   void SetException(ExceptionCode, const String&, v8::Local<v8::Value>);
   void SetExceptionCode(ExceptionCode);
   v8::Isolate* GetIsolate() { return isolate_; }
+
+  // Methods to be overridden by subclasses. These are not called directly by
+  // users of ExceptionState, but instead indirected via the non-virtual methods
+  // above in order to reduce binary size.
+  virtual void DoThrowDOMException(DOMExceptionCode, const String& message);
+  virtual void DoThrowSecurityError(
+      const String& sanitized_message,
+      const String& unsanitized_message = String());
+  virtual void DoThrowRangeError(const String& message);
+  virtual void DoThrowTypeError(const String& message);
+  virtual void DoThrowWasmCompileError(const String& message);
+  virtual void DoRethrowV8Exception(v8::Local<v8::Value>);
 
  private:
   void PushContextScope(ContextScope* scope);
@@ -269,16 +264,20 @@ class PLATFORM_EXPORT NonThrowableExceptionState final : public ExceptionState {
   NonThrowableExceptionState();
   NonThrowableExceptionState(const char*, int);
 
-  void ThrowDOMException(DOMExceptionCode, const String& message) override;
-  void ThrowTypeError(const String& message) override;
-  void ThrowSecurityError(const String& sanitized_message,
-                          const String& unsanitized_message) override;
-  void ThrowRangeError(const String& message) override;
-  void ThrowWasmCompileError(const String& message) override;
-  void RethrowV8Exception(v8::Local<v8::Value>) override;
   ExceptionState& ReturnThis() { return *this; }
 
+ protected:
+  void DoThrowDOMException(DOMExceptionCode, const String& message) override;
+  void DoThrowTypeError(const String& message) override;
+  void DoThrowSecurityError(const String& sanitized_message,
+                            const String& unsanitized_message) override;
+  void DoThrowRangeError(const String& message) override;
+  void DoThrowWasmCompileError(const String& message) override;
+  void DoRethrowV8Exception(v8::Local<v8::Value>) override;
+
  private:
+  void ComplainAbout(const char* exception);
+
   const char* file_;
   const int line_;
 };
@@ -304,7 +303,7 @@ class PLATFORM_EXPORT DummyExceptionStateForTesting final
  public:
   DummyExceptionStateForTesting()
       : ExceptionState(nullptr,
-                       ExceptionState::kUnknownContext,
+                       ExceptionContextType::kUnknown,
                        nullptr,
                        nullptr) {}
   ~DummyExceptionStateForTesting() {
@@ -313,17 +312,25 @@ class PLATFORM_EXPORT DummyExceptionStateForTesting final
       ClearException();
     }
   }
-  void ThrowDOMException(DOMExceptionCode, const String& message) override;
-  void ThrowTypeError(const String& message) override;
-  void ThrowSecurityError(const String& sanitized_message,
-                          const String& unsanitized_message) override;
-  void ThrowRangeError(const String& message) override;
-  void ThrowWasmCompileError(const String& message) override;
-  void RethrowV8Exception(v8::Local<v8::Value>) override;
+
   ExceptionState& ReturnThis() { return *this; }
   v8::Local<v8::Value> GetException() override {
     return v8::Local<v8::Value>();
   }
+
+ protected:
+  void DoThrowDOMException(DOMExceptionCode, const String& message) override;
+  void DoThrowTypeError(const String& message) override;
+  void DoThrowSecurityError(const String& sanitized_message,
+                            const String& unsanitized_message) override;
+  void DoThrowRangeError(const String& message) override;
+  void DoThrowWasmCompileError(const String& message) override;
+  void DoRethrowV8Exception(v8::Local<v8::Value>) override;
+
+ private:
+  void DoThrowInternal(ESErrorType, const String& message);
+  void DoThrowInternal(DOMExceptionCode, const String& message);
+  void DoThrowInternal(ExceptionCode, const String& message);
 };
 
 // Syntax sugar for DummyExceptionStateForTesting.

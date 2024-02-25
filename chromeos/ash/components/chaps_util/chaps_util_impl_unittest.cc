@@ -4,27 +4,32 @@
 
 #include "chromeos/ash/components/chaps_util/chaps_util_impl.h"
 
-#include "base/base64.h"
-#include "base/files/file_util.h"
-
 #include <pkcs11t.h>
 #include <secmodt.h>
+#include <stdint.h>
 
 #include <map>
+#include <optional>
 #include <utility>
 #include <vector>
 
+#include "base/base64.h"
+#include "base/containers/span.h"
+#include "base/files/file_util.h"
 #include "base/memory/raw_ptr.h"
 #include "chromeos/ash/components/chaps_util/chaps_slot_session.h"
-#include "chromeos/ash/components/chaps_util/pkcs12_reader.h"
 #include "crypto/nss_key_util.h"
 #include "crypto/scoped_nss_types.h"
 #include "crypto/scoped_test_nss_db.h"
+#include "net/cert/x509_util_nss.h"
+#include "net/test/cert_test_util.h"
 #include "net/test/test_data_directory.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
+#include "third_party/boringssl/src/include/openssl/base.h"
 #include "third_party/boringssl/src/include/openssl/bn.h"
+#include "third_party/boringssl/src/include/openssl/stack.h"
+#include "third_party/boringssl/src/include/openssl/x509.h"
 
 namespace chromeos {
 namespace {
@@ -38,7 +43,23 @@ constexpr CK_ATTRIBUTE_TYPE kForceSoftwareAttribute = CKA_VENDOR_DEFINED + 4;
 constexpr CK_ATTRIBUTE_TYPE kKeyInSoftware = CKA_VENDOR_DEFINED + 5;
 
 enum AttrValueType { kNotDefined, kCkBool, kCkUlong, kCkBytes };
-const char kPkcs12FilePassword[] = "12345";
+const std::optional<std::vector<CK_BYTE>> default_encoded_cert_label =
+    base::Base64Decode("dGVzdHVzZXJjZXJ0");
+// python print(base64.b64encode("default nickname".encode('utf-8'))).
+const std::optional<std::vector<CK_BYTE>> default_encoded_label =
+    base::Base64Decode("VW5rbm93biBvcmc=");
+const std::optional<std::vector<CK_BYTE>> cka_id_for_ec_key =
+    base::Base64Decode("9kVFdOhn8yYso7a/wG2uC0wdHWo=");
+const std::optional<std::vector<CK_BYTE>> cka_ex_point_ec_key =
+    base::Base64Decode(
+        "BP+"
+        "IQBEPm3e3ABQMhQaZlE0w8qIjn0tKH6jTEekQvtKoUhFo2nM4Q9VA3MLljVF7vabV8CuH9"
+        "/"
+        "UkKt2FMg2iHGM=");
+const std::optional<std::vector<CK_BYTE>> cka_ec_params_ec_key =
+    base::Base64Decode("BggqhkjOPQMBBw==");
+const std::optional<std::vector<CK_BYTE>> cka_value_ec_key =
+    base::Base64Decode("fvWtrgVAq5JApBuCPK92IUAQQnnEoLUrBgZ/KGFhz7E=");
 
 // Class helper to keep relations between all possible attribute's types,
 // attribute's names and attribute's value types.
@@ -104,6 +125,9 @@ class AttributesParsingOptions {
       attr_map[CKA_SERIAL_NUMBER] = {kCkBytes, "CKA_SERIAL_NUMBER"};
       attr_map[CKA_NSS_EMAIL] = {kCkBytes, "CKA_NSS_EMAIL"};
       attr_map[CKA_CERTIFICATE_TYPE] = {kCkBytes, "CKA_CERTIFICATE_TYPE"};
+      attr_map[CKA_EC_POINT] = {kCkBytes, "CKA_EC_POINT"};
+      attr_map[CKA_DERIVE] = {kCkBool, "CKA_DERIVE"};
+      attr_map[CKA_EC_PARAMS] = {kCkBytes, "CKA_EC_PARAMS"};
     }
     return attr_map;
   }
@@ -135,45 +159,45 @@ class AttributeData {
   }
   ~AttributeData() = default;
 
-  absl::optional<CK_BBOOL> CkBool() { return ck_bool_value_; }
+  std::optional<CK_BBOOL> CkBool() { return ck_bool_value_; }
 
-  absl::optional<CK_ULONG> CkULong() { return ck_ulong_value_; }
+  std::optional<CK_ULONG> CkULong() { return ck_ulong_value_; }
 
-  absl::optional<std::vector<CK_BYTE>> CkByte() { return ck_bytes_value_; }
+  std::optional<std::vector<CK_BYTE>> CkByte() { return ck_bytes_value_; }
 
  private:
   std::string name_;
-  absl::optional<CK_BBOOL> ck_bool_value_;
-  absl::optional<CK_ULONG> ck_ulong_value_;
-  absl::optional<std::vector<CK_BYTE>> ck_bytes_value_;
+  std::optional<CK_BBOOL> ck_bool_value_;
+  std::optional<CK_ULONG> ck_ulong_value_;
+  std::optional<std::vector<CK_BYTE>> ck_bytes_value_;
 
-  static absl::optional<CK_BBOOL> ParseCkBBool(
+  static std::optional<CK_BBOOL> ParseCkBBool(
       const CK_ATTRIBUTE& attribute,
       const std::string& attribute_name) {
     if (attribute.ulValueLen < sizeof(CK_BBOOL)) {
       ADD_FAILURE() << "Size to small for CK_BBOOL for attribute "
                     << attribute_name << ": " << attribute.ulValueLen;
-      return absl::nullopt;
+      return std::nullopt;
     }
     CK_BBOOL value;
     memcpy(&value, attribute.pValue, sizeof(CK_BBOOL));
     return value;
   }
 
-  static absl::optional<CK_ULONG> ParseCkULong(
+  static std::optional<CK_ULONG> ParseCkULong(
       const CK_ATTRIBUTE& attribute,
       const std::string& attribute_name) {
     if (attribute.ulValueLen < sizeof(CK_ULONG)) {
       ADD_FAILURE() << "Size to small for CK_ULONG for attribute "
                     << attribute_name << ": " << attribute.ulValueLen;
-      return absl::nullopt;
+      return std::nullopt;
     }
     CK_ULONG value;
     memcpy(&value, attribute.pValue, sizeof(CK_ULONG));
     return value;
   }
 
-  static absl::optional<std::vector<CK_BYTE>> ParseCkBytes(
+  static std::optional<std::vector<CK_BYTE>> ParseCkBytes(
       const CK_ATTRIBUTE& attribute) {
     std::vector<CK_BYTE> result(attribute.ulValueLen);
     memcpy(result.data(), attribute.pValue, result.size());
@@ -199,15 +223,15 @@ struct ObjectAttributes {
     return result;
   }
 
-  absl::optional<CK_BBOOL> GetCkBool(const CK_ATTRIBUTE_TYPE attribute_type) {
+  std::optional<CK_BBOOL> GetCkBool(const CK_ATTRIBUTE_TYPE attribute_type) {
     return parsed_attributes_map[attribute_type].CkBool();
   }
 
-  absl::optional<CK_ULONG> GetCkULong(const CK_ATTRIBUTE_TYPE attribute_type) {
+  std::optional<CK_ULONG> GetCkULong(const CK_ATTRIBUTE_TYPE attribute_type) {
     return parsed_attributes_map[attribute_type].CkULong();
   }
 
-  absl::optional<std::vector<CK_BYTE>> GetCkByte(
+  std::optional<std::vector<CK_BYTE>> GetCkByte(
       const CK_ATTRIBUTE_TYPE attribute_type) {
     return parsed_attributes_map[attribute_type].CkByte();
   }
@@ -224,20 +248,25 @@ struct ObjectAttributes {
 struct PassedData {
   // Controls whether ChapsSlotSessionFactory::CreateChapsSlotSession succeeds.
   bool factory_success = true;
+
   // Assigns results to operations. The key is the operation index, i.e. the
   // sequence number of an operation performed on the ChapsSlotSession.
   // The value is the operation result. CKR_INVALID_SESSION_HANDLE and
   // CKR_SESSION_CLOSED have special meaning.
   std::map<int, CK_RV> operation_results;
+
   // If set to false, calls to ChapsSlotSession::ReopenSession will fail.
   bool reopen_session_success = true;
 
-  // Counts how often teh code under test called
+  // Counts how often the code under test called
   // ChapsSlotSession::ReopenSession.
   int reopen_session_call_count = 0;
 
   // The slot_id passed into FakeChapsSlotSessionFactory.
-  absl::optional<CK_SLOT_ID> slot_id;
+  std::optional<CK_SLOT_ID> slot_id;
+
+  // Attributes passed for the secret key template to GenerateKey.
+  ObjectAttributes secret_key_gen_attributes;
 
   // Attributes passed for the public key template to GenerateKeyPair.
   ObjectAttributes public_key_gen_attributes;
@@ -265,9 +294,9 @@ struct PassedData {
   std::vector<ObjectAttributes> pkcs12_cert_attributes;
 };
 
-// The FakeChapsSlotSession actually generating a key pair on a NSS slot.
-// This is useful so it's possible to test whether the CKA_ID that the code
-// under test would assign matches the CKA_ID that NSS computed for the key.
+// FakeChapsSlotSession actually generates a key pair on a NSS slot. This is
+// useful so it's possible to test whether the CKA_ID that the code under test
+// would assign matches the CKA_ID that NSS computed for the key.
 class FakeChapsSlotSession : public ChapsSlotSession {
  public:
   explicit FakeChapsSlotSession(PK11SlotInfo* slot, PassedData* passed_data)
@@ -285,6 +314,49 @@ class FakeChapsSlotSession : public ChapsSlotSession {
       return true;
     }
     return false;
+  }
+
+  CK_RV CreateObject(CK_ATTRIBUTE_PTR pTemplate,
+                     CK_ULONG ulCount,
+                     CK_OBJECT_HANDLE_PTR phObject) override {
+    EXPECT_TRUE(session_ok_);
+    CK_RV configured_result = ApplyConfiguredResult();
+    if (configured_result != CKR_OK) {
+      return configured_result;
+    }
+
+    ObjectAttributes parsing_result =
+        ObjectAttributes::ParseFrom(pTemplate, ulCount);
+
+    AttributeData parsed_object_type =
+        parsing_result.parsed_attributes_map[CKA_CLASS];
+    if (parsed_object_type.CkULong() == CKO_PRIVATE_KEY) {
+      passed_data_->pkcs12_key_attributes = parsing_result;
+    }
+    if (parsed_object_type.CkULong() == CKO_CERTIFICATE) {
+      passed_data_->pkcs12_cert_attributes.push_back(parsing_result);
+    }
+
+    return CKR_OK;
+  }
+
+  CK_RV GenerateKey(CK_MECHANISM_PTR pMechanism,
+                    CK_ATTRIBUTE_PTR pTemplate,
+                    CK_ULONG ulCount,
+                    CK_OBJECT_HANDLE_PTR phKey) override {
+    EXPECT_TRUE(session_ok_);
+    CK_RV configured_result = ApplyConfiguredResult();
+    if (configured_result != CKR_OK) {
+      return configured_result;
+    }
+
+    passed_data_->secret_key_gen_attributes =
+        ObjectAttributes::ParseFrom(pTemplate, ulCount);
+
+    // TODO(b/288880151): Finish fake implementation of `GenerateKey()`, when it
+    // becomes necessary for testing `ChapsUtilImpl`.
+
+    return CKR_OK;
   }
 
   CK_RV GenerateKeyPair(CK_MECHANISM_PTR pMechanism,
@@ -381,30 +453,6 @@ class FakeChapsSlotSession : public ChapsSlotSession {
     return CKR_OBJECT_HANDLE_INVALID;
   }
 
-  CK_RV CreateObject(CK_ATTRIBUTE_PTR pTemplate,
-                     CK_ULONG ulCount,
-                     CK_OBJECT_HANDLE_PTR phObject) override {
-    EXPECT_TRUE(session_ok_);
-    CK_RV configured_result = ApplyConfiguredResult();
-    if (configured_result != CKR_OK) {
-      return configured_result;
-    }
-
-    ObjectAttributes parsing_result =
-        ObjectAttributes::ParseFrom(pTemplate, ulCount);
-
-    AttributeData parsed_object_type =
-        parsing_result.parsed_attributes_map[CKA_CLASS];
-    if (parsed_object_type.CkULong() == CKO_PRIVATE_KEY) {
-      passed_data_->pkcs12_key_attributes = parsing_result;
-    }
-    if (parsed_object_type.CkULong() == CKO_CERTIFICATE) {
-      passed_data_->pkcs12_cert_attributes.push_back(parsing_result);
-    }
-
-    return CKR_OK;
-  }
-
  private:
   // Applies a result configured for the current operation, if any.
   CK_RV ApplyConfiguredResult() {
@@ -432,9 +480,9 @@ class FakeChapsSlotSession : public ChapsSlotSession {
   bool session_ok_ = true;
 
   // Unowned.
-  const raw_ptr<PK11SlotInfo, ExperimentalAsh> slot_;
+  const raw_ptr<PK11SlotInfo> slot_;
   // Unowned.
-  const raw_ptr<PassedData, ExperimentalAsh> passed_data_;
+  const raw_ptr<PassedData> passed_data_;
 
   // Cached modulus of the generated public key so GetAttributeValue with
   // CKA_MODULUS is supported.
@@ -460,84 +508,9 @@ class FakeChapsSlotSessionFactory : public ChapsSlotSessionFactory {
 
  private:
   // Unowned.
-  const raw_ptr<PK11SlotInfo, ExperimentalAsh> slot_;
+  const raw_ptr<PK11SlotInfo> slot_;
   // Unowned.
-  const raw_ptr<PassedData, ExperimentalAsh> passed_data_;
-};
-
-// FakePkcs12Reader helper, by default it will call methods for the
-// original object.
-class FakePkcs12Reader : public Pkcs12Reader {
- public:
-  FakePkcs12Reader() = default;
-  ~FakePkcs12Reader() override = default;
-
-  Pkcs12ReaderStatusCode GetPkcs12KeyAndCerts(
-      const std::vector<uint8_t>& pkcs12_data,
-      const std::string& password,
-      bssl::UniquePtr<EVP_PKEY>& key,
-      bssl::UniquePtr<STACK_OF(X509)>& certs) const override {
-    if (get_pkcs12_key_and_cert_status != Pkcs12ReaderStatusCode::kSuccess) {
-      return get_pkcs12_key_and_cert_status;
-    }
-    return Pkcs12Reader::GetPkcs12KeyAndCerts(pkcs12_data, password, key,
-                                              certs);
-  }
-
-  Pkcs12ReaderStatusCode GetDerEncodedCert(X509* cert,
-                                           bssl::UniquePtr<uint8_t>& cert_der,
-                                           int& cert_der_size) const override {
-    if (get_cert_der_status != Pkcs12ReaderStatusCode::kSuccess) {
-      return get_cert_der_status;
-    }
-    return Pkcs12Reader::GetDerEncodedCert(cert, cert_der, cert_der_size);
-  }
-
-  Pkcs12ReaderStatusCode GetIssuerNameDer(
-      X509* cert,
-      base::span<const uint8_t>& issuer_name_data) const override {
-    if (get_issuer_name_der_status != Pkcs12ReaderStatusCode::kSuccess) {
-      return get_issuer_name_der_status;
-    }
-    return Pkcs12Reader::GetIssuerNameDer(cert, issuer_name_data);
-  }
-
-  Pkcs12ReaderStatusCode GetSubjectNameDer(
-      X509* cert,
-      base::span<const uint8_t>& subject_name_data) const override {
-    if (get_subject_name_der_status != Pkcs12ReaderStatusCode::kSuccess) {
-      return get_subject_name_der_status;
-    }
-    return Pkcs12Reader::GetSubjectNameDer(cert, subject_name_data);
-  }
-  Pkcs12ReaderStatusCode GetSerialNumberDer(
-      X509* cert,
-      bssl::UniquePtr<uint8_t>& serial_number_der,
-      int& serial_number_der_size) const override {
-    if (get_serial_number_der_status != Pkcs12ReaderStatusCode::kSuccess) {
-      return get_serial_number_der_status;
-    }
-    return Pkcs12Reader::GetSerialNumberDer(cert, serial_number_der,
-                                            serial_number_der_size);
-  }
-
-  std::vector<uint8_t> BignumToBytes(const BIGNUM* bignum) const override {
-    if (bignum_to_bytes_value) {
-      return bignum_to_bytes_value.value();
-    }
-    return Pkcs12Reader::BignumToBytes(bignum);
-  }
-
-  Pkcs12ReaderStatusCode get_pkcs12_key_and_cert_status =
-      Pkcs12ReaderStatusCode::kSuccess;
-  Pkcs12ReaderStatusCode get_cert_der_status = Pkcs12ReaderStatusCode::kSuccess;
-  Pkcs12ReaderStatusCode get_issuer_name_der_status =
-      Pkcs12ReaderStatusCode::kSuccess;
-  Pkcs12ReaderStatusCode get_subject_name_der_status =
-      Pkcs12ReaderStatusCode::kSuccess;
-  Pkcs12ReaderStatusCode get_serial_number_der_status =
-      Pkcs12ReaderStatusCode::kSuccess;
-  absl::optional<std::vector<uint8_t>> bignum_to_bytes_value = absl::nullopt;
+  const raw_ptr<PassedData> passed_data_;
 };
 
 class ChapsUtilImplTest : public ::testing::Test {
@@ -558,7 +531,7 @@ class ChapsUtilImplTest : public ::testing::Test {
   static std::vector<uint8_t> ReadTestFile(const std::string& file_name) {
     base::FilePath file_path =
         net::GetTestCertsDirectory().AppendASCII(file_name);
-    absl::optional<std::vector<uint8_t>> file_data = ReadFileToBytes(file_path);
+    std::optional<std::vector<uint8_t>> file_data = ReadFileToBytes(file_path);
     EXPECT_TRUE(file_data.has_value());
     if (!file_data.has_value()) {
       return {};
@@ -566,12 +539,37 @@ class ChapsUtilImplTest : public ::testing::Test {
     return file_data.value();
   }
 
-  static std::vector<uint8_t>& GetPkcs12Data() {
+  static std::vector<uint8_t>& GetPkcs12Data(std::string file_name) {
     static std::vector<uint8_t> pkcs12_data_;
-    if (pkcs12_data_.empty()) {
-      pkcs12_data_ = ReadTestFile("client.p12");
-    }
+    pkcs12_data_ = ReadTestFile(file_name);
     return pkcs12_data_;
+  }
+
+  static std::vector<uint8_t>& GetPkcs12Data() {
+    return GetPkcs12Data("client.p12");
+  }
+
+  static std::vector<uint8_t>& GetPkcs12WithEcKeyData() {
+    return GetPkcs12Data("client_with_ec_key.p12");
+  }
+
+  bool KeyImportNeverDone() const {
+    ObjectAttributes data = passed_data_.pkcs12_key_attributes;
+    return data.Size() == 0;
+  }
+
+  bool CertImportNeverDone() const {
+    return passed_data_.pkcs12_cert_attributes.empty();
+  }
+
+  bool KeyImportDone() const {
+    ObjectAttributes data = passed_data_.pkcs12_key_attributes;
+    return data.Size() == 19;  // valid only for ReadTestFile("client.p12").
+  }
+
+  bool CertImportDone() const {
+    ObjectAttributes data = passed_data_.pkcs12_cert_attributes[0];
+    return data.Size() == 10;  // valid only for ReadTestFile("client.p12").
   }
 
   crypto::ScopedTestNSSDB nss_test_db_;
@@ -629,165 +627,6 @@ TEST_F(ChapsUtilImplTest, GenerateSoftwareKeyPairSuccess) {
   std::vector<uint8_t> expected_cka_id = GetExpectedCkaId(private_key.get());
   EXPECT_EQ(passed_data_.public_key_cka_id, expected_cka_id);
   EXPECT_EQ(passed_data_.private_key_cka_id, expected_cka_id);
-}
-
-// Verify that ChapsUtil passed the correct slot id to the factory.
-TEST_F(ChapsUtilImplTest, ImportPkcs12CertificateSuccessSlotOk) {
-  chaps_util_impl_->ImportPkcs12Certificate(
-      nss_test_db_.slot(), GetPkcs12Data(), kPkcs12FilePassword,
-      /*is_software_backed=*/true);
-
-  EXPECT_EQ(passed_data_.slot_id, PK11_GetSlotID(nss_test_db_.slot()));
-}
-
-// Successfully import public key and single certificate from PKCS12 file to
-// Chaps software slot.
-TEST_F(ChapsUtilImplTest, ImportPkcs12EnforceSoftwareBackedSuccess) {
-  using OPTIONAL_CK_BYTE_VECTOR = absl::optional<std::vector<CK_BYTE>>;
-  std::map<CK_ATTRIBUTE_TYPE, OPTIONAL_CK_BYTE_VECTOR> expected_key_data;
-  // Strings below have hardcoded fields from "client.p12" which is referenced
-  // by GetPkcs12Data(), they are Base64Encoded for the shorter representation.
-  // You can print original CkByte values from the key_data using this example:
-  // std::cout << base::Base64Encode(std::move(*key_data.GetCkByte(CKA_LABEL)));
-  expected_key_data[CKA_MODULUS] = base::Base64Decode(
-      "1JC7k5aWwwOpqoiNzoRHLRdmzH9h4kVmFlBU/vZ5e7hCSnnIbVJilMxDB+p0b7ozw1/"
-      "bHvsRqikARkMc0OnC4EMnm6BEopqiyOnNGBy1qXwol5Mw8T8zwlzJl7FQdQdlH7pMxuID8hZ"
-      "Eu8VkoEyLYJVJ1Ylaasc5BC0pHxZdNKk=");
-  expected_key_data[CKA_ID] =
-      base::Base64Decode("U65QueEa+ljfdKySfD6QbFrXEcM=");
-  expected_key_data[CKA_PUBLIC_EXPONENT] = base::Base64Decode("AQAB");
-  expected_key_data[CKA_PRIVATE_EXPONENT] = base::Base64Decode(
-      "y/k2hiFy+h+BqArxSMLWKgbStlll7GL7212qsh6B5J6jviOumHj98BsyF1577"
-      "NqY4VoSQmBaSxadFM9Bz5cBT8IrKr2/FjL1AC+wgdwUvGvbD426zN4Yb59cTf/"
-      "bhNkvd2xocFPHeMDETFD6ISEcV6YLbPAtNlom7qVxlSTn1KE=");
-  expected_key_data[CKA_PRIME_1] = base::Base64Decode(
-      "8W127p18wtuvUBxz7MtZgAPk/1OGLj1RJghuVYbHaCJ9sT5AzK8eNcRqCld/"
-      "bKABDdmYf3QHKYDx+vcrhcNF8w==");
-  expected_key_data[CKA_PRIME_2] = base::Base64Decode(
-      "4WVKE2h5oF7HYpX2sLgHXFhM77k6Hb1MalKk1MvXSYeKLnFf1Xh4Af2tUR73RmG/Mp/"
-      "evvUMu6h4AvlGvn+18w==");
-  expected_key_data[CKA_EXPONENT_1] = base::Base64Decode(
-      "SUZzCXstKaspq4PnP2B8upj0APalzBT6MzPt4PF2RknpokkFu9oOrjz9/"
-      "kOOPjbV+xEm8tAReGxVhVlNkVyyNw==");
-  expected_key_data[CKA_EXPONENT_2] = base::Base64Decode(
-      "DkFqwvl7n9H+yFR1ys2I4aVQEGVlsJXVbHAXrsHJtwPUkIVpK0Y4SN/"
-      "zg0rzFsd94UTNQMSc7o2EMaP0fn3zUw==");
-  expected_key_data[CKA_COEFFICIENT] = base::Base64Decode(
-      "mV2Q/My7RVOOsSZGDEouCYMcVahOFWS84IcpYRwR9ds0KZ4hKcdyMGNR5/4ryvr9XMA+DBR/"
-      "L9GBSWe6CeK3RQ==");
-
-  std::map<CK_ATTRIBUTE_TYPE, OPTIONAL_CK_BYTE_VECTOR> expected_cert_data;
-  // Strings below have hardcoded fields from "client.p12" which is referenced
-  // by GetPkcs12Data(), they are Base64Encoded for shorter representation.
-  // You can print original CkByte values from the key_data using this example:
-  // std::cout << base::Base64Encode(std::move(*key_data.GetCkByte(CKA_LABEL)));
-  expected_cert_data[CKA_CERTIFICATE_TYPE] = base::Base64Decode("AAAAAAAAAAA=");
-  expected_cert_data[CKA_ID] =
-      base::Base64Decode("U65QueEa+ljfdKySfD6QbFrXEcM=");
-  expected_cert_data[CKA_LABEL] = base::Base64Decode("dGVzdHVzZXJjZXJ0");
-  expected_cert_data[CKA_VALUE] = base::Base64Decode(
-      "MIICpTCCAg6gAwIBAgIBATANBgkqhkiG9w0BAQUFADBWMQswCQYDVQQGEwJBVTETMBEGA1UE"
-      "CBMKU29tZS1TdGF0ZTEhMB8GA1UEChMYSW50ZXJuZXQgV2lkZ2l0cyBQdHkgTHRkMQ8wDQYD"
-      "VQQDEwZ0ZXN0Y2EwIBcNMTAwNzMwMDEwMjEyWhgPMjA2MDA3MTcwMTAyMTJaMFwxCzAJBgNV"
-      "BAYTAkFVMRMwEQYDVQQIEwpTb21lLVN0YXRlMSEwHwYDVQQKExhJbnRlcm5ldCBXaWRnaXRz"
-      "IFB0eSBMdGQxFTATBgNVBAMTDHRlc3R1c2VyY2VydDCBnzANBgkqhkiG9w0BAQEFAAOBjQAw"
-      "gYkCgYEA1JC7k5aWwwOpqoiNzoRHLRdmzH9h4kVmFlBU/"
-      "vZ5e7hCSnnIbVJilMxDB+p0b7ozw1/"
-      "bHvsRqikARkMc0OnC4EMnm6BEopqiyOnNGBy1qXwol5Mw8T8zwlzJl7FQdQdlH7pMxuID8hZ"
-      "Eu8VkoEyLYJVJ1Ylaasc5BC0pHxZdNKkCAwEAAaN7MHkwCQYDVR0TBAIwADAsBglghkgBhvh"
-      "CAQ0EHxYdT3BlblNTTCBHZW5lcmF0ZWQgQ2VydGlmaWNhdGUwHQYDVR0OBBYEFHqEH18NKRV"
-      "bhkqTT8swZq22Dc4YMB8GA1UdIwQYMBaAFE8aGkwMhipgaDysVMfu3JaN29ILMA0GCSqGSIb"
-      "3DQEBBQUAA4GBAKMT7cwjZtgmkFrJPAa/"
-      "oOt1cdoBD7MqErx+tdvVN62q0h0Vl6UM3a94Ic0/"
-      "sv1V8RT5TUYUyyuepr2Gm58uqkcbI3qflveVcvi96n7fCCo6NwxbKHmpVOx+"
-      "wcPlHtjfek2KGQnee3mEN0YY/HOP5Rvj0Bh302kLrfgFx3xN1G5I");
-  expected_cert_data[CKA_ISSUER] = base::Base64Decode(
-      "MFYxCzAJBgNVBAYTAkFVMRMwEQYDVQQIEwpTb21lLVN0YXRlMSEwHwYDVQQKExhJbnRlcm5l"
-      "dCBXaWRnaXRzIFB0eSBMdGQxDzANBgNVBAMTBnRlc3RjYQ==");
-  expected_cert_data[CKA_SUBJECT] = base::Base64Decode(
-      "MFwxCzAJBgNVBAYTAkFVMRMwEQYDVQQIEwpTb21lLVN0YXRlMSEwHwYDVQQKExhJbnRlcm5l"
-      "dCBXaWRnaXRzIFB0eSBMdGQxFTATBgNVBAMTDHRlc3R1c2VyY2VydA==");
-  expected_cert_data[CKA_SERIAL_NUMBER] = base::Base64Decode("AgEB");
-  chaps_util_impl_->ImportPkcs12Certificate(
-      nss_test_db_.slot(), GetPkcs12Data(), kPkcs12FilePassword,
-      /*is_software_backed=*/true);
-
-  // Verify that ChapsUtil passed the correct slot id to the factory.
-  EXPECT_EQ(passed_data_.slot_id, PK11_GetSlotID(nss_test_db_.slot()));
-
-  // Verify that ChapsUtil passed the expected attributes.
-  // Check attributes for private key.
-  ObjectAttributes key_data = passed_data_.pkcs12_key_attributes;
-  const int expected_private_key_attributes = 19;
-  EXPECT_EQ(key_data.Size(), expected_private_key_attributes);
-  EXPECT_EQ(key_data.GetCkULong(CKA_CLASS), CKO_PRIVATE_KEY);
-  EXPECT_EQ(key_data.GetCkULong(CKA_KEY_TYPE), CKK_RSA);
-  EXPECT_EQ(key_data.GetCkBool(CKA_TOKEN), CK_TRUE);
-  EXPECT_EQ(key_data.GetCkBool(CKA_SENSITIVE), CK_TRUE);
-  EXPECT_EQ(key_data.GetCkBool(kForceSoftwareAttribute), CK_TRUE);
-  EXPECT_EQ(key_data.GetCkBool(CKA_PRIVATE), CK_TRUE);
-  EXPECT_EQ(key_data.GetCkBool(CKA_UNWRAP), CK_TRUE);
-  EXPECT_EQ(key_data.GetCkBool(CKA_DECRYPT), CK_TRUE);
-  EXPECT_EQ(key_data.GetCkBool(CKA_SIGN), CK_TRUE);
-  EXPECT_EQ(key_data.GetCkBool(CKA_SIGN_RECOVER), CK_TRUE);
-  EXPECT_EQ(key_data.GetCkByte(CKA_MODULUS), expected_key_data[CKA_MODULUS]);
-  EXPECT_EQ(key_data.GetCkByte(CKA_ID), expected_key_data[CKA_ID]);
-  EXPECT_EQ(key_data.GetCkByte(CKA_PUBLIC_EXPONENT),
-            expected_key_data[CKA_PUBLIC_EXPONENT]);
-  EXPECT_EQ(key_data.GetCkByte(CKA_PRIVATE_EXPONENT),
-            expected_key_data[CKA_PRIVATE_EXPONENT]);
-  EXPECT_EQ(key_data.GetCkByte(CKA_PRIME_1), expected_key_data[CKA_PRIME_1]);
-  EXPECT_EQ(key_data.GetCkByte(CKA_PRIME_2), expected_key_data[CKA_PRIME_2]);
-  EXPECT_EQ(key_data.GetCkByte(CKA_EXPONENT_1),
-            expected_key_data[CKA_EXPONENT_1]);
-  EXPECT_EQ(key_data.GetCkByte(CKA_EXPONENT_2),
-            expected_key_data[CKA_EXPONENT_2]);
-  EXPECT_EQ(key_data.GetCkByte(CKA_COEFFICIENT),
-            expected_key_data[CKA_COEFFICIENT]);
-
-  // Checking attributes for certificate.
-  ObjectAttributes cert_data = passed_data_.pkcs12_cert_attributes[0];
-  const int expected_cert_attributes = 10;
-  EXPECT_EQ(cert_data.Size(), expected_cert_attributes);
-  EXPECT_EQ(cert_data.GetCkBool(CKA_TOKEN), CK_TRUE);
-  EXPECT_EQ(cert_data.GetCkULong(CKA_CLASS), CKO_CERTIFICATE);
-  EXPECT_EQ(cert_data.GetCkByte(CKA_CERTIFICATE_TYPE),
-            expected_cert_data[CKA_CERTIFICATE_TYPE]);
-  EXPECT_EQ(cert_data.GetCkByte(CKA_ID), expected_cert_data[CKA_ID]);
-  EXPECT_EQ(cert_data.GetCkByte(CKA_VALUE), expected_cert_data[CKA_VALUE]);
-  EXPECT_EQ(cert_data.GetCkByte(CKA_ISSUER), expected_cert_data[CKA_ISSUER]);
-  EXPECT_EQ(cert_data.GetCkByte(CKA_SUBJECT), expected_cert_data[CKA_SUBJECT]);
-  EXPECT_EQ(cert_data.GetCkByte(CKA_SERIAL_NUMBER),
-            expected_cert_data[CKA_SERIAL_NUMBER]);
-  EXPECT_EQ(cert_data.GetCkByte(CKA_LABEL), expected_cert_data[CKA_LABEL]);
-}
-
-// This is same test as ImportPkcs12EnforceSoftBackSuccess but with
-// kKeyInSoftware = false, so key will be hardware backed.
-// Only number of stored attributes and required minimum of values is checked,
-// because we use same pkcs12 file "client.p12" and all values match already
-// checked in  ImportPkcs12EnforceSoftwareBackedSuccess test.
-TEST_F(ChapsUtilImplTest, ImportPkcs12HardwareBackedSuccess) {
-  chaps_util_impl_->ImportPkcs12Certificate(
-      nss_test_db_.slot(), GetPkcs12Data(), kPkcs12FilePassword,
-      /*is_software_backed=*/false);
-
-  // Verify that ChapsUtil passed the correct slot id to the factory.
-  EXPECT_EQ(passed_data_.slot_id, PK11_GetSlotID(nss_test_db_.slot()));
-
-  // Verify that ChapsUtil passed the expected attributes.
-  // Check only kForceSoftwareAttribute attribute for private key.
-  ObjectAttributes key_data = passed_data_.pkcs12_key_attributes;
-  const int expected_private_key_attributes = 19;
-  EXPECT_EQ(key_data.Size(), expected_private_key_attributes);
-  EXPECT_EQ(key_data.GetCkULong(CKA_CLASS), CKO_PRIVATE_KEY);
-  EXPECT_EQ(key_data.GetCkULong(CKA_KEY_TYPE), CKK_RSA);
-  EXPECT_EQ(key_data.GetCkBool(kForceSoftwareAttribute), CK_FALSE);
-
-  // Check only number of attributes for certificate.
-  ObjectAttributes cert_data = passed_data_.pkcs12_cert_attributes[0];
-  const int expected_cert_attributes = 10;
-  EXPECT_EQ(cert_data.Size(), expected_cert_attributes);
 }
 
 // The passed slot is not provided by chaps. The operation fails.
@@ -879,103 +718,6 @@ TEST_F(ChapsUtilImplTest, HandlesInvalidSessionHandle_ReopenFails) {
   EXPECT_FALSE(chaps_util_impl_->GenerateSoftwareBackedRSAKey(
       nss_test_db_.slot(), kKeySizeBits, &public_key, &private_key));
   EXPECT_EQ(passed_data_.reopen_session_call_count, 1);
-}
-
-class ChapsUtilPKCS12ImportTest : public ChapsUtilImplTest {
- public:
-  ChapsUtilPKCS12ImportTest() {
-    GetPkcs12Data();
-    EXPECT_FALSE(GetPkcs12Data().empty());
-  }
-
-  bool RunImportPkcs12Certificate() {
-    return chaps_util_impl_->ImportPkcs12CertificateImpl(
-        nss_test_db_.slot(), GetPkcs12Data(), kPkcs12FilePassword,
-        /*is_software_backed=*/true, fake_pkcs12_reader_);
-  }
-
-  FakePkcs12Reader fake_pkcs12_reader_;
-};
-
-TEST_F(ChapsUtilPKCS12ImportTest, DefaultCasePKCS12ImportSuccessful) {
-  bool import_result = RunImportPkcs12Certificate();
-
-  EXPECT_EQ(import_result, true);
-}
-
-TEST_F(ChapsUtilPKCS12ImportTest, NoChapsSessionPKCS12ImportFailed) {
-  bool import_result = chaps_util_impl_->ImportPkcs12CertificateImpl(
-      /*slot=*/nullptr, GetPkcs12Data(), kPkcs12FilePassword,
-      /*is_software_backed=*/true, fake_pkcs12_reader_);
-
-  EXPECT_EQ(import_result, false);
-}
-
-// Failed import PKCS12 due to empty keys.
-TEST_F(ChapsUtilPKCS12ImportTest, EmptyKeyPtrPKCS12ImportFailed) {
-  fake_pkcs12_reader_.get_pkcs12_key_and_cert_status =
-      Pkcs12ReaderStatusCode::kKeyExtractionFailed;
-  bool import_result = RunImportPkcs12Certificate();
-  EXPECT_EQ(import_result, false);
-}
-
-// Failed import PKCS12 due to missed key attribute.
-TEST_F(ChapsUtilPKCS12ImportTest, MissedKeyAttributePKCS12ImportFailed) {
-  std::vector<uint8_t> empty_vector({});
-  // This will set all attributes to empty.
-  fake_pkcs12_reader_.bignum_to_bytes_value = absl::make_optional(empty_vector);
-  bool import_result = RunImportPkcs12Certificate();
-  EXPECT_EQ(import_result, false);
-}
-
-TEST_F(ChapsUtilPKCS12ImportTest, ImportOfKeyFailedPKCS12ImportFailed) {
-  // Mock CreateObject operations result.
-  passed_data_.operation_results[0] = CKR_GENERAL_ERROR;
-
-  bool import_result = RunImportPkcs12Certificate();
-  EXPECT_EQ(import_result, false);
-}
-
-TEST_F(ChapsUtilPKCS12ImportTest, FailedGetCertDerPKCS12ImportFailed) {
-  fake_pkcs12_reader_.get_cert_der_status =
-      Pkcs12ReaderStatusCode::kKeyExtractionFailed;
-
-  bool import_result = RunImportPkcs12Certificate();
-  EXPECT_EQ(import_result, false);
-}
-
-TEST_F(ChapsUtilPKCS12ImportTest, FailedGetIssuerNameDerPKCS12ImportFailed) {
-  fake_pkcs12_reader_.get_issuer_name_der_status =
-      Pkcs12ReaderStatusCode::kPkcs12CertIssuerDerNameFailed;
-
-  bool import_result = RunImportPkcs12Certificate();
-  EXPECT_EQ(import_result, false);
-}
-
-TEST_F(ChapsUtilPKCS12ImportTest, FailedGetSubjectNameDerPKCS12ImportFailed) {
-  fake_pkcs12_reader_.get_subject_name_der_status =
-      Pkcs12ReaderStatusCode::kPkcs12CertSubjectNameDerFailed;
-
-  bool import_result = RunImportPkcs12Certificate();
-  EXPECT_EQ(import_result, false);
-}
-
-TEST_F(ChapsUtilPKCS12ImportTest, FailedGetSerialNumberDerPKCS12ImportFailed) {
-  fake_pkcs12_reader_.get_serial_number_der_status =
-      Pkcs12ReaderStatusCode::kPkcs12CertSerialNumberDerFailed;
-
-  bool import_result = RunImportPkcs12Certificate();
-  EXPECT_EQ(import_result, false);
-}
-
-TEST_F(ChapsUtilPKCS12ImportTest, CertObjectCreationFailedPKCS12ImportFailed) {
-  // Mock CreateObject operations result for key import.
-  passed_data_.operation_results[0] = CKR_OK;
-  // Mock CreateObject operations result for the certificate import.
-  passed_data_.operation_results[1] = CKR_GENERAL_ERROR;
-
-  bool import_result = RunImportPkcs12Certificate();
-  EXPECT_EQ(import_result, false);
 }
 
 }  // namespace

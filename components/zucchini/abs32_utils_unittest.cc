@@ -287,7 +287,7 @@ TEST(Abs32UtilsTest, Win32Read32) {
     Abs32ReaderWin32 reader(std::move(extractor), translator);
 
     // Loop over |expected_ref| to check element-by-element.
-    absl::optional<Reference> ref;
+    std::optional<Reference> ref;
     for (const auto& expected_ref : test_case.expected_refs) {
       ref = reader.GetNext();
       EXPECT_TRUE(ref.has_value());
@@ -322,7 +322,7 @@ TEST(Abs32UtilsTest, Win32Read64) {
   Abs32ReaderWin32 reader(std::move(extractor), translator);
 
   std::vector<Reference> refs;
-  absl::optional<Reference> ref;
+  std::optional<Reference> ref;
   for (ref = reader.GetNext(); ref.has_value(); ref = reader.GetNext())
     refs.push_back(ref.value());
   EXPECT_EQ(expected_refs, refs);

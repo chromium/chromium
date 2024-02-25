@@ -14,6 +14,7 @@
 #import "ios/chrome/browser/shared/model/browser_state/test_chrome_browser_state.h"
 #import "ios/chrome/browser/shared/public/commands/application_commands.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
+#import "ios/chrome/browser/shared/public/commands/settings_commands.h"
 #import "ios/chrome/browser/shared/public/commands/snackbar_commands.h"
 #import "ios/chrome/browser/shared/ui/table_view/table_view_model.h"
 #import "ios/chrome/browser/ui/bookmarks/home/bookmarks_home_mediator.h"
@@ -22,41 +23,29 @@
 
 namespace {
 
-class BookmarksHomeViewControllerTest
-    : public BookmarkIOSUnitTestSupport,
-      public testing::WithParamInterface<bool> {
- protected:
-  void SetUp() override {
-    scoped_feature_list_.InitWithFeatureState(
-        syncer::kEnableBookmarksAccountStorage, IsAccountStorageEnabled());
-    BookmarkIOSUnitTestSupport::SetUp();
-  }
+using BookmarksHomeViewControllerTest = BookmarkIOSUnitTestSupport;
 
-  bool IsAccountStorageEnabled() const { return GetParam(); }
-};
-
-TEST_P(BookmarksHomeViewControllerTest,
+TEST_F(BookmarksHomeViewControllerTest,
        TableViewPopulatedAfterBookmarkModelLoaded) {
   @autoreleasepool {
     id mockSnackbarCommandHandler =
         OCMProtocolMock(@protocol(SnackbarCommands));
 
     // Set up ApplicationCommands mock. Because ApplicationCommands conforms
-    // to ApplicationSettingsCommands, that needs to be mocked and dispatched
+    // to SettingsCommands, that needs to be mocked and dispatched
     // as well.
     id mockApplicationCommandHandler =
         OCMProtocolMock(@protocol(ApplicationCommands));
-    id mockApplicationSettingsCommandHandler =
-        OCMProtocolMock(@protocol(ApplicationSettingsCommands));
+    id mockSettingsCommandHandler =
+        OCMProtocolMock(@protocol(SettingsCommands));
 
     CommandDispatcher* dispatcher = browser_->GetCommandDispatcher();
     [dispatcher startDispatchingToTarget:mockSnackbarCommandHandler
                              forProtocol:@protocol(SnackbarCommands)];
     [dispatcher startDispatchingToTarget:mockApplicationCommandHandler
                              forProtocol:@protocol(ApplicationCommands)];
-    [dispatcher
-        startDispatchingToTarget:mockApplicationSettingsCommandHandler
-                     forProtocol:@protocol(ApplicationSettingsCommands)];
+    [dispatcher startDispatchingToTarget:mockSettingsCommandHandler
+                             forProtocol:@protocol(SettingsCommands)];
 
     BookmarksHomeViewController* controller =
         [[BookmarksHomeViewController alloc] initWithBrowser:browser_.get()];
@@ -67,8 +56,8 @@ TEST_P(BookmarksHomeViewControllerTest,
         local_or_syncable_bookmark_model_->mobile_node();
     AddBookmark(mobileNode, u"foo");
     controller.displayedFolderNode = mobileNode;
-    // sections: Bookmarks, root profile, root account, message.
-    EXPECT_EQ(4, [controller numberOfSectionsInTableView:controller.tableView]);
+    // sections: Bookmarks, root profile, root account, message, batch upload.
+    EXPECT_EQ(5, [controller numberOfSectionsInTableView:controller.tableView]);
     EXPECT_EQ(1, [controller tableView:controller.tableView
                      numberOfRowsInSection:
                          [controller.tableViewModel
@@ -90,32 +79,36 @@ TEST_P(BookmarksHomeViewControllerTest,
                          [controller.tableViewModel
                              sectionForSectionIdentifier:
                                  BookmarksHomeSectionIdentifierMessages]]);
+    EXPECT_EQ(0, [controller tableView:controller.tableView
+                     numberOfRowsInSection:
+                         [controller.tableViewModel
+                             sectionForSectionIdentifier:
+                                 BookmarksBatchUploadSectionIdentifier]]);
     [controller shutdown];
   }
 }
 
-TEST_P(BookmarksHomeViewControllerTest,
+TEST_F(BookmarksHomeViewControllerTest,
        TableViewPopulatedAfterBookmarkModelLoadedAtRootLevel) {
   @autoreleasepool {
     id mockSnackbarCommandHandler =
         OCMProtocolMock(@protocol(SnackbarCommands));
 
     // Set up ApplicationCommands mock. Because ApplicationCommands conforms
-    // to ApplicationSettingsCommands, that needs to be mocked and dispatched
+    // to SettingsCommands, that needs to be mocked and dispatched
     // as well.
     id mockApplicationCommandHandler =
         OCMProtocolMock(@protocol(ApplicationCommands));
-    id mockApplicationSettingsCommandHandler =
-        OCMProtocolMock(@protocol(ApplicationSettingsCommands));
+    id mockSettingsCommandHandler =
+        OCMProtocolMock(@protocol(SettingsCommands));
 
     CommandDispatcher* dispatcher = browser_->GetCommandDispatcher();
     [dispatcher startDispatchingToTarget:mockSnackbarCommandHandler
                              forProtocol:@protocol(SnackbarCommands)];
     [dispatcher startDispatchingToTarget:mockApplicationCommandHandler
                              forProtocol:@protocol(ApplicationCommands)];
-    [dispatcher
-        startDispatchingToTarget:mockApplicationSettingsCommandHandler
-                     forProtocol:@protocol(ApplicationSettingsCommands)];
+    [dispatcher startDispatchingToTarget:mockSettingsCommandHandler
+                             forProtocol:@protocol(SettingsCommands)];
 
     BookmarksHomeViewController* controller =
         [[BookmarksHomeViewController alloc] initWithBrowser:browser_.get()];
@@ -128,8 +121,9 @@ TEST_P(BookmarksHomeViewControllerTest,
         local_or_syncable_bookmark_model_->mobile_node();
     AddBookmark(mobileNode, u"foo");  // Ensure there are bookmarks
     controller.displayedFolderNode = rootNode;
-    // sections: Promo, Bookmarks, root profile, root account, message.
-    EXPECT_EQ(5, [controller numberOfSectionsInTableView:controller.tableView]);
+    // sections: Promo, Bookmarks, root profile, root account, message, batch
+    // upload.
+    EXPECT_EQ(6, [controller numberOfSectionsInTableView:controller.tableView]);
     EXPECT_EQ(1, [controller tableView:controller.tableView
                      numberOfRowsInSection:
                          [controller.tableViewModel
@@ -156,32 +150,36 @@ TEST_P(BookmarksHomeViewControllerTest,
                          [controller.tableViewModel
                              sectionForSectionIdentifier:
                                  BookmarksHomeSectionIdentifierMessages]]);
+    EXPECT_EQ(0, [controller tableView:controller.tableView
+                     numberOfRowsInSection:
+                         [controller.tableViewModel
+                             sectionForSectionIdentifier:
+                                 BookmarksBatchUploadSectionIdentifier]]);
     [controller shutdown];
   }
 }
 
 // Checks that metrics are correctly reported.
-TEST_P(BookmarksHomeViewControllerTest, Metrics) {
+TEST_F(BookmarksHomeViewControllerTest, Metrics) {
   @autoreleasepool {
     id mockSnackbarCommandHandler =
         OCMProtocolMock(@protocol(SnackbarCommands));
 
     // Set up ApplicationCommands mock. Because ApplicationCommands conforms
-    // to ApplicationSettingsCommands, that needs to be mocked and dispatched
+    // to SettingsCommands, that needs to be mocked and dispatched
     // as well.
     id mockApplicationCommandHandler =
         OCMProtocolMock(@protocol(ApplicationCommands));
-    id mockApplicationSettingsCommandHandler =
-        OCMProtocolMock(@protocol(ApplicationSettingsCommands));
+    id mockSettingsCommandHandler =
+        OCMProtocolMock(@protocol(SettingsCommands));
 
     CommandDispatcher* dispatcher = browser_->GetCommandDispatcher();
     [dispatcher startDispatchingToTarget:mockSnackbarCommandHandler
                              forProtocol:@protocol(SnackbarCommands)];
     [dispatcher startDispatchingToTarget:mockApplicationCommandHandler
                              forProtocol:@protocol(ApplicationCommands)];
-    [dispatcher
-        startDispatchingToTarget:mockApplicationSettingsCommandHandler
-                     forProtocol:@protocol(ApplicationSettingsCommands)];
+    [dispatcher startDispatchingToTarget:mockSettingsCommandHandler
+                             forProtocol:@protocol(SettingsCommands)];
 
     BookmarksHomeViewController* controller =
         [[BookmarksHomeViewController alloc] initWithBrowser:browser_.get()];
@@ -200,9 +198,5 @@ TEST_P(BookmarksHomeViewControllerTest, Metrics) {
     [controller shutdown];
   }
 }
-
-INSTANTIATE_TEST_SUITE_P(All,
-                         BookmarksHomeViewControllerTest,
-                         ::testing::Bool());
 
 }  // namespace

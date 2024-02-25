@@ -19,8 +19,7 @@
 #include "components/offline_pages/task/task_test_base.h"
 
 namespace offline_pages {
-class ModelTaskTestBase : public TaskTestBase,
-                          public base::SupportsWeakPtr<ModelTaskTestBase> {
+class ModelTaskTestBase : public TaskTestBase {
  public:
   ModelTaskTestBase();
   ~ModelTaskTestBase() override;

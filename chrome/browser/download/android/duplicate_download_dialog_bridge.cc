@@ -62,7 +62,7 @@ void DuplicateDownloadDialogBridge::Show(
   // taken from the browser context to support multiple off-the-record profiles.
   content::BrowserContext* browser_context = web_contents->GetBrowserContext();
   if (browser_context && browser_context->IsOffTheRecord()) {
-    absl::optional<Profile::OTRProfileID> otr_profile_id =
+    std::optional<Profile::OTRProfileID> otr_profile_id =
         Profile::FromBrowserContext(browser_context)->GetOTRProfileID();
     if (otr_profile_id) {
       j_otr_profile_id = otr_profile_id->ConvertToJavaOTRProfileID(env);

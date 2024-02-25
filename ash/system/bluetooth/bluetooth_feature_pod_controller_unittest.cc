@@ -14,13 +14,12 @@
 #include "ash/public/cpp/hats_bluetooth_revamp_trigger.h"
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/strings/grit/ash_strings.h"
+#include "ash/system/bluetooth/hid_preserving_controller/hid_preserving_bluetooth_state_controller_test_helper.h"
 #include "ash/system/unified/detailed_view_controller.h"
-#include "ash/system/unified/feature_pod_button.h"
 #include "ash/system/unified/feature_tile.h"
 #include "ash/system/unified/unified_system_tray.h"
 #include "ash/system/unified/unified_system_tray_bubble.h"
 #include "ash/system/unified/unified_system_tray_controller.h"
-#include "ash/system/unified/unified_system_tray_view.h"
 #include "ash/test/ash_test_base.h"
 #include "ash/test/ash_test_helper.h"
 #include "base/i18n/number_formatting.h"
@@ -33,6 +32,7 @@
 #include "chromeos/ash/services/bluetooth_config/public/mojom/cros_bluetooth_config.mojom.h"
 #include "chromeos/ash/services/bluetooth_config/scoped_bluetooth_config_test_helper.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/views/view.h"
 
 namespace ash {
 
@@ -58,20 +58,9 @@ constexpr uint8_t kCaseBatteryPercentage = 77;
 // How many devices to "pair" for tests that require multiple connected devices.
 constexpr int kMultipleDeviceCount = 3;
 
-// Tests are parameterized by QsRevamp.
-class BluetoothFeaturePodControllerTest
-    : public AshTestBase,
-      public testing::WithParamInterface<bool> {
+class BluetoothFeaturePodControllerTest : public AshTestBase {
  public:
-  BluetoothFeaturePodControllerTest() {
-    if (IsQsRevampEnabled()) {
-      feature_list_.InitAndEnableFeature(features::kQsRevamp);
-    } else {
-      feature_list_.InitAndDisableFeature(features::kQsRevamp);
-    }
-  }
-
-  bool IsQsRevampEnabled() const { return GetParam(); }
+  BluetoothFeaturePodControllerTest() = default;
 
   // AshTestBase:
   void SetUp() override {
@@ -83,21 +72,13 @@ class BluetoothFeaturePodControllerTest
 
     bluetooth_pod_controller_ =
         std::make_unique<BluetoothFeaturePodController>(tray_controller());
-    if (IsQsRevampEnabled()) {
-      feature_tile_ = bluetooth_pod_controller_->CreateTile();
-    } else {
-      feature_pod_button_ =
-          base::WrapUnique(bluetooth_pod_controller_->CreateButton());
-    }
+    feature_tile_ = bluetooth_pod_controller_->CreateTile();
+
     base::RunLoop().RunUntilIdle();
   }
 
   void TearDown() override {
-    if (IsQsRevampEnabled()) {
-      feature_tile_.reset();
-    } else {
-      feature_pod_button_.reset();
-    }
+    feature_tile_.reset();
     bluetooth_pod_controller_.reset();
 
     AshTestBase::TearDown();
@@ -111,9 +92,9 @@ class BluetoothFeaturePodControllerTest
   }
 
   DeviceBatteryInfoPtr CreateMultipleBatteryInfo(
-      absl::optional<int> left_bud_battery,
-      absl::optional<int> case_battery,
-      absl::optional<int> right_bud_battery) {
+      std::optional<int> left_bud_battery,
+      std::optional<int> case_battery,
+      std::optional<int> right_bud_battery) {
     DeviceBatteryInfoPtr battery_info = DeviceBatteryInfo::New();
 
     if (left_bud_battery) {
@@ -137,32 +118,19 @@ class BluetoothFeaturePodControllerTest
 
   // Checks if the qs bubble is currently showing Bluetooth detailed view.
   void IsShowingDetailedView(bool is_showing = true) {
-    if (IsQsRevampEnabled()) {
-      auto* quick_settings_view =
-          GetPrimaryUnifiedSystemTray()->bubble()->quick_settings_view();
-      EXPECT_TRUE(quick_settings_view->detailed_view_container());
-      const views::View::Views& children =
-          quick_settings_view->detailed_view_container()->children();
-      if (is_showing) {
-        EXPECT_EQ(1u, children.size());
-        EXPECT_STREQ("BluetoothDetailedViewImpl",
-                     children.at(0)->GetClassName());
-        return;
-      }
-      EXPECT_EQ(0u, children.size());
+    views::View* container;
+    auto* quick_settings_view =
+        GetPrimaryUnifiedSystemTray()->bubble()->quick_settings_view();
+    EXPECT_TRUE(quick_settings_view->detailed_view_container());
+    container = quick_settings_view->detailed_view_container();
 
-    } else {
-      EXPECT_TRUE(tray_view()->detailed_view_container());
-      const views::View::Views& children =
-          tray_view()->detailed_view_container()->children();
-      if (is_showing) {
-        EXPECT_EQ(1u, children.size());
-        EXPECT_STREQ("BluetoothDetailedViewLegacy",
-                     children.at(0)->GetClassName());
-        return;
-      }
-      EXPECT_EQ(0u, children.size());
+    const views::View::Views& children = container->children();
+    if (is_showing) {
+      EXPECT_EQ(1u, children.size());
+      EXPECT_STREQ("BluetoothDetailedViewImpl", children.at(0)->GetClassName());
+      return;
     }
+    EXPECT_EQ(0u, children.size());
   }
 
   void LockScreen() {
@@ -202,68 +170,40 @@ class BluetoothFeaturePodControllerTest
     base::RunLoop().RunUntilIdle();
   }
 
-  bool IsButtonEnabled() {
-    return IsQsRevampEnabled() ? feature_tile_->GetEnabled()
-                               : feature_pod_button_->GetEnabled();
-  }
+  bool IsButtonEnabled() { return feature_tile_->GetEnabled(); }
 
-  bool IsButtonVisible() {
-    return IsQsRevampEnabled() ? feature_tile_->GetVisible()
-                               : feature_pod_button_->GetVisible();
-  }
+  bool IsButtonVisible() { return feature_tile_->GetVisible(); }
 
-  bool IsButtonToggled() {
-    return IsQsRevampEnabled() ? feature_tile_->IsToggled()
-                               : feature_pod_button_->IsToggled();
-  }
+  bool IsButtonToggled() { return feature_tile_->IsToggled(); }
 
   std::u16string GetButtonLabelText() {
-    return IsQsRevampEnabled() ? feature_tile_->label()->GetText()
-                               : feature_pod_label_button()->GetLabelText();
+    return feature_tile_->label()->GetText();
   }
 
   std::u16string GetButtonSubLabelText() {
-    return IsQsRevampEnabled() ? feature_tile_->sub_label()->GetText()
-                               : feature_pod_label_button()->GetSubLabelText();
+    return feature_tile_->sub_label()->GetText();
   }
 
   std::u16string GetButtonTooltipText() {
-    return IsQsRevampEnabled()
-               ? feature_tile_->icon_button()->GetTooltipText()
-               : feature_pod_button_->icon_button()->GetTooltipText();
+    return feature_tile_->icon_button()->GetTooltipText();
   }
 
   std::u16string GetDrillInTooltipText() {
-    return IsQsRevampEnabled() ? feature_tile_->GetTooltipText()
-                               : feature_pod_label_button()->GetTooltipText();
+    return feature_tile_->GetTooltipText();
   }
 
-  const char* GetButtonIconName() {
-    return IsQsRevampEnabled() ? feature_tile_->vector_icon_->name
-                               : feature_pod_icon_button_icon()->name;
-  }
+  const char* GetButtonIconName() { return feature_tile_->vector_icon_->name; }
 
   const char* GetToggledOnHistogramName() {
-    return IsQsRevampEnabled() ? "Ash.QuickSettings.FeaturePod.ToggledOn"
-                               : "Ash.UnifiedSystemView.FeaturePod.ToggledOn";
+    return "Ash.QuickSettings.FeaturePod.ToggledOn";
   }
 
   const char* GetToggledOffHistogramName() {
-    return IsQsRevampEnabled() ? "Ash.QuickSettings.FeaturePod.ToggledOff"
-                               : "Ash.UnifiedSystemView.FeaturePod.ToggledOff";
+    return "Ash.QuickSettings.FeaturePod.ToggledOff";
   }
 
   const char* GetDiveInHistogramName() {
-    return IsQsRevampEnabled() ? "Ash.QuickSettings.FeaturePod.DiveIn"
-                               : "Ash.UnifiedSystemView.FeaturePod.DiveIn";
-  }
-
-  const gfx::VectorIcon* feature_pod_icon_button_icon() {
-    return feature_pod_button_->icon_button_->icon_;
-  }
-
-  const ash::FeaturePodLabelButton* feature_pod_label_button() {
-    return feature_pod_button_->label_button_;
+    return "Ash.QuickSettings.FeaturePod.DiveIn";
   }
 
   bluetooth_config::FakeDeviceCache* fake_device_cache() {
@@ -276,16 +216,11 @@ class BluetoothFeaturePodControllerTest
         ->unified_system_tray_controller();
   }
 
-  UnifiedSystemTrayView* tray_view() {
-    return GetPrimaryUnifiedSystemTray()->bubble()->unified_view();
-  }
-
   size_t GetTryToShowSurveyCount() {
     return fake_trigger_impl_->try_to_show_survey_count();
   }
 
  protected:
-  std::unique_ptr<FeaturePodButton> feature_pod_button_;
   std::unique_ptr<FeatureTile> feature_tile_;
 
  private:
@@ -295,14 +230,9 @@ class BluetoothFeaturePodControllerTest
 
   std::unique_ptr<FakeHatsBluetoothRevampTriggerImpl> fake_trigger_impl_;
   std::unique_ptr<BluetoothFeaturePodController> bluetooth_pod_controller_;
-  base::test::ScopedFeatureList feature_list_;
 };
 
-INSTANTIATE_TEST_SUITE_P(QsRevamp,
-                         BluetoothFeaturePodControllerTest,
-                         testing::Bool());
-
-TEST_P(BluetoothFeaturePodControllerTest,
+TEST_F(BluetoothFeaturePodControllerTest,
        HasCorrectButtonStateWhenBluetoothStateChanges) {
   SetSystemState(BluetoothSystemState::kUnavailable);
   EXPECT_FALSE(IsButtonEnabled());
@@ -321,7 +251,7 @@ TEST_P(BluetoothFeaturePodControllerTest,
   }
 }
 
-TEST_P(BluetoothFeaturePodControllerTest, PressingIconOrLabelChangesBluetooth) {
+TEST_F(BluetoothFeaturePodControllerTest, PressingIconOrLabelChangesBluetooth) {
   EXPECT_EQ(0u, GetTryToShowSurveyCount());
   EXPECT_TRUE(IsButtonToggled());
   PressIcon();
@@ -334,7 +264,7 @@ TEST_P(BluetoothFeaturePodControllerTest, PressingIconOrLabelChangesBluetooth) {
   EXPECT_EQ(2u, GetTryToShowSurveyCount());
 }
 
-TEST_P(BluetoothFeaturePodControllerTest, HasCorrectMetadataWhenOff) {
+TEST_F(BluetoothFeaturePodControllerTest, HasCorrectMetadataWhenOff) {
   SetSystemState(BluetoothSystemState::kDisabled);
 
   EXPECT_FALSE(IsButtonToggled());
@@ -359,7 +289,7 @@ TEST_P(BluetoothFeaturePodControllerTest, HasCorrectMetadataWhenOff) {
             GetButtonTooltipText());
 }
 
-TEST_P(BluetoothFeaturePodControllerTest, HasCorrectMetadataWithZeroDevices) {
+TEST_F(BluetoothFeaturePodControllerTest, HasCorrectMetadataWithZeroDevices) {
   SetSystemState(BluetoothSystemState::kEnabled);
 
   EXPECT_EQ(l10n_util::GetStringUTF16(IDS_ASH_STATUS_TRAY_BLUETOOTH),
@@ -381,7 +311,7 @@ TEST_P(BluetoothFeaturePodControllerTest, HasCorrectMetadataWithZeroDevices) {
             GetButtonTooltipText());
 }
 
-TEST_P(BluetoothFeaturePodControllerTest, HasCorrectMetadataWithOneDevice) {
+TEST_F(BluetoothFeaturePodControllerTest, HasCorrectMetadataWithOneDevice) {
   SetSystemState(BluetoothSystemState::kEnabled);
 
   const std::u16string public_name = base::ASCIIToUTF16(kDevicePublicName);
@@ -431,7 +361,7 @@ TEST_P(BluetoothFeaturePodControllerTest, HasCorrectMetadataWithOneDevice) {
             GetButtonSubLabelText());
 }
 
-TEST_P(BluetoothFeaturePodControllerTest,
+TEST_F(BluetoothFeaturePodControllerTest,
        HasCorrectMetadataWithOneDevice_MultipleBatteries) {
   SetSystemState(BluetoothSystemState::kEnabled);
 
@@ -453,7 +383,7 @@ TEST_P(BluetoothFeaturePodControllerTest,
             GetButtonSubLabelText());
 
   paired_device->device_properties->battery_info =
-      CreateMultipleBatteryInfo(/*left_bud_battery=*/absl::nullopt,
+      CreateMultipleBatteryInfo(/*left_bud_battery=*/std::nullopt,
                                 /*case_battery=*/kCaseBatteryPercentage,
                                 /*right_battery=*/kRightBudBatteryPercentage);
   SetConnectedDevice(paired_device);
@@ -463,8 +393,8 @@ TEST_P(BluetoothFeaturePodControllerTest,
             GetButtonSubLabelText());
 
   paired_device->device_properties->battery_info = CreateMultipleBatteryInfo(
-      /*left_bud_battery=*/absl::nullopt,
-      /*case_battery=*/kCaseBatteryPercentage, /*right_battery=*/absl::nullopt);
+      /*left_bud_battery=*/std::nullopt,
+      /*case_battery=*/kCaseBatteryPercentage, /*right_battery=*/std::nullopt);
   SetConnectedDevice(paired_device);
   EXPECT_EQ(l10n_util::GetStringFUTF16(
                 IDS_ASH_STATUS_TRAY_BLUETOOTH_DEVICE_BATTERY_PERCENTAGE_LABEL,
@@ -472,7 +402,7 @@ TEST_P(BluetoothFeaturePodControllerTest,
             GetButtonSubLabelText());
 }
 
-TEST_P(BluetoothFeaturePodControllerTest,
+TEST_F(BluetoothFeaturePodControllerTest,
        HasCorrectMetadataWithMultipleDevice) {
   SetSystemState(BluetoothSystemState::kEnabled);
 
@@ -514,7 +444,7 @@ TEST_P(BluetoothFeaturePodControllerTest,
       GetButtonTooltipText());
 }
 
-TEST_P(BluetoothFeaturePodControllerTest, EnablingBluetoothOnTheMainPage) {
+TEST_F(BluetoothFeaturePodControllerTest, EnablingBluetoothOnTheMainPage) {
   SetSystemState(BluetoothSystemState::kDisabled);
   EXPECT_FALSE(IsButtonToggled());
 
@@ -523,14 +453,14 @@ TEST_P(BluetoothFeaturePodControllerTest, EnablingBluetoothOnTheMainPage) {
   IsShowingDetailedView(/*is_showing=*/false);
 }
 
-TEST_P(BluetoothFeaturePodControllerTest,
+TEST_F(BluetoothFeaturePodControllerTest,
        PressingLabelWithEnabledBluetoothShowsBluetoothDetailedView) {
   EXPECT_TRUE(IsButtonToggled());
   PressLabel();
   IsShowingDetailedView();
 }
 
-TEST_P(BluetoothFeaturePodControllerTest,
+TEST_F(BluetoothFeaturePodControllerTest,
        FeaturePodIsDisabledWhenBluetoothCannotBeModified) {
   EXPECT_TRUE(IsButtonEnabled());
 
@@ -542,7 +472,7 @@ TEST_P(BluetoothFeaturePodControllerTest,
   EXPECT_FALSE(IsButtonEnabled());
 }
 
-TEST_P(BluetoothFeaturePodControllerTest, IconUMATracking) {
+TEST_F(BluetoothFeaturePodControllerTest, IconUMATracking) {
   // No metrics are logged before clicking on any views.
   auto histogram_tester = std::make_unique<base::HistogramTester>();
   histogram_tester->ExpectTotalCount(GetToggledOnHistogramName(),
@@ -591,7 +521,7 @@ TEST_P(BluetoothFeaturePodControllerTest, IconUMATracking) {
                                       /*expected_count=*/1);
 }
 
-TEST_P(BluetoothFeaturePodControllerTest, LabelUMATracking) {
+TEST_F(BluetoothFeaturePodControllerTest, LabelUMATracking) {
   // No metrics logged before clicking on any views.
   auto histogram_tester = std::make_unique<base::HistogramTester>();
   histogram_tester->ExpectTotalCount(GetToggledOnHistogramName(),
@@ -614,19 +544,157 @@ TEST_P(BluetoothFeaturePodControllerTest, LabelUMATracking) {
                                       /*expected_count=*/1);
 }
 
-TEST_P(BluetoothFeaturePodControllerTest, VisibilityOnConstruction) {
+TEST_F(BluetoothFeaturePodControllerTest, VisibilityOnConstruction) {
   BluetoothFeaturePodController controller(tray_controller());
-  if (IsQsRevampEnabled()) {
     // Create a feature tile but don't spin the message loop.
     auto tile = controller.CreateTile();
     // System state defaults to "enabled" so the tile is visible.
     EXPECT_TRUE(tile->GetVisible());
-  } else {
-    // Create a feature pod button but don't spin the message loop.
-    auto button = base::WrapUnique(controller.CreateButton());
-    // System state defaults to "unavailable" so the button is invisible.
-    EXPECT_FALSE(button->GetVisible());
+}
+
+class BluetoothFeaturePodControllerDisconnectWarningTest : public AshTestBase {
+ public:
+  BluetoothFeaturePodControllerDisconnectWarningTest() = default;
+
+  // AshTestBase:
+  void SetUp() override {
+    AshTestBase::SetUp();
+
+    scoped_feature_list_.InitAndEnableFeature(
+        features::kBluetoothDisconnectWarning);
+
+    GetPrimaryUnifiedSystemTray()->ShowBubble();
+
+    hid_preserving_bluetooth_state_test_helper_ =
+        std::make_unique<HidPreservingBluetoothStateControllerTestHelper>();
+
+    hid_preserving_bluetooth_state_test_helper_->fake_hid_preserving_bluetooth()
+        ->SetScopedBluetoothConfigHelper(bluetooth_config_test_helper());
+
+    fake_trigger_impl_ = std::make_unique<FakeHatsBluetoothRevampTriggerImpl>();
+
+    bluetooth_pod_controller_ =
+        std::make_unique<BluetoothFeaturePodController>(tray_controller());
+    feature_tile_ = bluetooth_pod_controller_->CreateTile();
+
+    base::RunLoop().RunUntilIdle();
   }
+
+  void TearDown() override {
+    feature_tile_.reset();
+    bluetooth_pod_controller_.reset();
+
+    AshTestBase::TearDown();
+  }
+
+  void PressIcon() {
+    bluetooth_pod_controller_->OnIconPressed();
+    base::RunLoop().RunUntilIdle();
+  }
+
+  void PressLabel() {
+    bluetooth_pod_controller_->OnLabelPressed();
+    base::RunLoop().RunUntilIdle();
+  }
+
+  bool IsButtonToggled() { return feature_tile_->IsToggled(); }
+
+  void SetShouldShowWarningDialog(bool should_show_warning_dialog) {
+    hid_preserving_bluetooth_state_test_helper_->fake_hid_preserving_bluetooth()
+        ->SetShouldShowWarningDialog(should_show_warning_dialog);
+  }
+
+  void CompleteShowWarningDialog(bool show_dialog_result) {
+    hid_preserving_bluetooth_state_test_helper_->fake_hid_preserving_bluetooth()
+        ->CompleteShowDialog(show_dialog_result);
+  }
+
+  size_t GetDialogShownCount() {
+    return hid_preserving_bluetooth_state_test_helper_
+        ->fake_hid_preserving_bluetooth()
+        ->dialog_shown_count();
+  }
+
+  UnifiedSystemTrayController* tray_controller() {
+    return GetPrimaryUnifiedSystemTray()
+        ->bubble()
+        ->unified_system_tray_controller();
+  }
+
+  size_t GetTryToShowSurveyCount() {
+    return fake_trigger_impl_->try_to_show_survey_count();
+  }
+
+ protected:
+  std::unique_ptr<FeatureTile> feature_tile_;
+
+ private:
+  ScopedBluetoothConfigTestHelper* bluetooth_config_test_helper() {
+    return ash_test_helper()->bluetooth_config_test_helper();
+  }
+
+  std::unique_ptr<FakeHatsBluetoothRevampTriggerImpl> fake_trigger_impl_;
+  std::unique_ptr<BluetoothFeaturePodController> bluetooth_pod_controller_;
+
+  std::unique_ptr<HidPreservingBluetoothStateControllerTestHelper>
+      hid_preserving_bluetooth_state_test_helper_;
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+TEST_F(BluetoothFeaturePodControllerDisconnectWarningTest,
+       PressingIconOrLabelChangesBluetooth) {
+  EXPECT_EQ(0u, GetTryToShowSurveyCount());
+  EXPECT_TRUE(IsButtonToggled());
+  EXPECT_EQ(0u, GetDialogShownCount());
+  PressIcon();
+  EXPECT_FALSE(IsButtonToggled());
+  EXPECT_EQ(1u, GetTryToShowSurveyCount());
+  EXPECT_EQ(0u, GetDialogShownCount());
+
+  // Pressing the label should not enable bluetooth.
+  PressLabel();
+  EXPECT_FALSE(IsButtonToggled());
+  EXPECT_EQ(2u, GetTryToShowSurveyCount());
+}
+
+TEST_F(BluetoothFeaturePodControllerDisconnectWarningTest,
+       SimulateShowWarningDialog_ResultTrue) {
+  EXPECT_EQ(0u, GetTryToShowSurveyCount());
+  EXPECT_TRUE(IsButtonToggled());
+  EXPECT_EQ(0u, GetDialogShownCount());
+
+  SetShouldShowWarningDialog(true);
+  PressIcon();
+  EXPECT_TRUE(IsButtonToggled());
+  EXPECT_EQ(1u, GetTryToShowSurveyCount());
+  EXPECT_EQ(1u, GetDialogShownCount());
+
+  CompleteShowWarningDialog(/*show_dialog_result=*/true);
+  base::RunLoop().RunUntilIdle();
+
+  EXPECT_FALSE(IsButtonToggled());
+  EXPECT_EQ(1u, GetTryToShowSurveyCount());
+  EXPECT_EQ(1u, GetDialogShownCount());
+}
+
+TEST_F(BluetoothFeaturePodControllerDisconnectWarningTest,
+       SimulateShowWarningDialog_ResultFalse) {
+  EXPECT_EQ(0u, GetTryToShowSurveyCount());
+  EXPECT_TRUE(IsButtonToggled());
+  EXPECT_EQ(0u, GetDialogShownCount());
+
+  SetShouldShowWarningDialog(true);
+  PressIcon();
+  EXPECT_TRUE(IsButtonToggled());
+  EXPECT_EQ(1u, GetTryToShowSurveyCount());
+  EXPECT_EQ(1u, GetDialogShownCount());
+
+  CompleteShowWarningDialog(/*show_dialog_result=*/false);
+  base::RunLoop().RunUntilIdle();
+
+  EXPECT_TRUE(IsButtonToggled());
+  EXPECT_EQ(1u, GetTryToShowSurveyCount());
+  EXPECT_EQ(1u, GetDialogShownCount());
 }
 
 }  // namespace ash

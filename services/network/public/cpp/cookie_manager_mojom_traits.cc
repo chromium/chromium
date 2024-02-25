@@ -601,7 +601,7 @@ bool StructTraits<network::mojom::CookiePartitionKeyDataView,
   if (!partition_key.ReadSite(&site))
     return false;
 
-  absl::optional<base::UnguessableToken> nonce;
+  std::optional<base::UnguessableToken> nonce;
   if (!partition_key.ReadNonce(&nonce))
     return false;
   *out = net::CookiePartitionKey::FromWire(site, nonce);
@@ -680,7 +680,7 @@ bool StructTraits<
   if (!cookie.ReadPriority(&priority))
     return false;
 
-  absl::optional<net::CookiePartitionKey> partition_key;
+  std::optional<net::CookiePartitionKey> partition_key;
   if (!cookie.ReadPartitionKey(&partition_key))
     return false;
 
@@ -692,8 +692,8 @@ bool StructTraits<
       std::move(name), std::move(value), std::move(domain), std::move(path),
       std::move(creation_time), std::move(expiry_time),
       std::move(last_access_time), std::move(last_update_time), cookie.secure(),
-      cookie.httponly(), site_restrictions, priority, cookie.same_party(),
-      partition_key, source_scheme, cookie.source_port());
+      cookie.httponly(), site_restrictions, priority, partition_key,
+      source_scheme, cookie.source_port());
   if (!cc)
     return false;
   *out = *cc;
@@ -704,7 +704,7 @@ bool StructTraits<network::mojom::CookieAndLineWithAccessResultDataView,
                   net::CookieAndLineWithAccessResult>::
     Read(network::mojom::CookieAndLineWithAccessResultDataView c,
          net::CookieAndLineWithAccessResult* out) {
-  absl::optional<net::CanonicalCookie> cookie;
+  std::optional<net::CanonicalCookie> cookie;
   std::string cookie_string;
   net::CookieAccessResult access_result;
   if (!c.ReadCookie(&cookie))

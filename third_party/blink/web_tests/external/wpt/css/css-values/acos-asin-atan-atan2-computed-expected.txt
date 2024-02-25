@@ -1,0 +1,7 @@
+This is a testharness.js-based test.
+[FAIL] atan2(1rem + 1px - 1px, -1rem) should be used-value-equivalent to 135deg
+  assert_not_equals: atan2(1rem + 1px - 1px, -1rem) isn't valid in 'rotate'; got the default value instead. got disallowed value "none"
+[FAIL] atan2(1vh + 0px, -1vh + 0px) should be used-value-equivalent to 135deg
+  assert_not_equals: atan2(1vh + 0px, -1vh + 0px) isn't valid in 'rotate'; got the default value instead. got disallowed value "none"
+Harness: the test ran to completion.
+

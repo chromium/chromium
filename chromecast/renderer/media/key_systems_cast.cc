@@ -6,17 +6,16 @@
 
 #include <string>
 
+#include <optional>
 #include "base/check.h"
 #include "base/command_line.h"
 #include "build/build_config.h"
 #include "chromecast/chromecast_buildflags.h"
 #include "chromecast/media/base/key_systems_common.h"
-#include "components/cdm/renderer/android_key_systems.h"
 #include "media/base/content_decryption_module.h"
 #include "media/base/eme_constants.h"
 #include "media/base/key_system_info.h"
 #include "media/media_buildflags.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/widevine/cdm/buildflags.h"
 
 #if BUILDFLAG(ENABLE_WIDEVINE)
@@ -49,7 +48,7 @@ class PlayReadyKeySystemInfo : public ::media::KeySystemInfo {
         persistent_license_support_(persistent_license_support) {
   }
 
-  std::string GetKeySystemName() const override {
+  std::string GetBaseKeySystemName() const override {
     return media::kChromecastPlayreadyKeySystem;
   }
 
@@ -81,20 +80,20 @@ class PlayReadyKeySystemInfo : public ::media::KeySystemInfo {
 #if BUILDFLAG(IS_ANDROID)
       return EmeConfig{.hw_secure_codecs = EmeConfigRuleState::kRequired};
 #else
-      return media::EmeConfig::SupportedRule();
+      return EmeConfig::SupportedRule();
 #endif  // BUILDFLAG(IS_ANDROID)
     }
 
     // Cast-specific PlayReady implementation does not currently recognize or
     // support non-empty robustness strings.
-    return media::EmeConfig::UnsupportedRule();
+    return EmeConfig::UnsupportedRule();
   }
 
   EmeConfig::Rule GetPersistentLicenseSessionSupport() const override {
     if (persistent_license_support_) {
-      return media::EmeConfig::SupportedRule();
+      return EmeConfig::SupportedRule();
     } else {
-      return media::EmeConfig::UnsupportedRule();
+      return EmeConfig::UnsupportedRule();
     }
   }
 
@@ -108,9 +107,9 @@ class PlayReadyKeySystemInfo : public ::media::KeySystemInfo {
   EmeConfig::Rule GetEncryptionSchemeConfigRule(
       EncryptionScheme encryption_scheme) const override {
     if (encryption_scheme == EncryptionScheme::kCenc) {
-      return media::EmeConfig::SupportedRule();
+      return EmeConfig::SupportedRule();
     } else {
-      return media::EmeConfig::UnsupportedRule();
+      return EmeConfig::UnsupportedRule();
     }
   }
 
@@ -198,41 +197,10 @@ void AddCmaKeySystems(::media::KeySystemInfos* key_system_infos,
       EmeFeatureSupport::ALWAYS_ENABLED));  // Distinctive identifier.
 #endif                                      // BUILDFLAG(ENABLE_WIDEVINE)
 }
-#elif BUILDFLAG(IS_ANDROID)
-#if BUILDFLAG(ENABLE_PLAYREADY)
-void AddCastPlayreadyKeySystemAndroid(
-    ::media::KeySystemInfos* key_system_infos) {
-  DCHECK(key_system_infos);
-  SupportedKeySystemResponse response =
-      cdm::QueryKeySystemSupport(kChromecastPlayreadyKeySystem);
-
-  if (response.non_secure_codecs == ::media::EME_CODEC_NONE)
-    return;
-
-  key_system_infos->emplace_back(new PlayReadyKeySystemInfo(
-      response.non_secure_codecs, response.secure_codecs,
-      false /* persistent_license_support */));
-}
-#endif  // BUILDFLAG(ENABLE_PLAYREADY)
-
-void AddCastAndroidKeySystems(
-    ::media::KeySystemInfos* key_system_infos,
-    bool enable_playready) {
-#if BUILDFLAG(ENABLE_PLAYREADY)
-  if (enable_playready) {
-    AddCastPlayreadyKeySystemAndroid(key_system_infos);
-  }
-#endif  // BUILDFLAG(ENABLE_PLAYREADY)
-
-#if BUILDFLAG(ENABLE_WIDEVINE)
-  cdm::AddAndroidWidevine(key_system_infos);
-#endif  // BUILDFLAG(ENABLE_WIDEVINE)
-}
-#endif  // BUILDFLAG(IS_ANDROID)
+#endif  // BUILDFLAG(USE_CHROMECAST_CDMS) || BUILDFLAG(ENABLE_LIBRARY_CDMS)
 
 }  // namespace
 
-// TODO(yucliu): Split CMA/Android logics into their own files.
 void AddChromecastKeySystems(
     ::media::KeySystemInfos* key_system_infos,
     bool enable_persistent_license_support,
@@ -240,9 +208,7 @@ void AddChromecastKeySystems(
 #if BUILDFLAG(USE_CHROMECAST_CDMS) || BUILDFLAG(ENABLE_LIBRARY_CDMS)
   AddCmaKeySystems(key_system_infos, enable_persistent_license_support,
                    enable_playready);
-#elif BUILDFLAG(IS_ANDROID)
-  AddCastAndroidKeySystems(key_system_infos, enable_playready);
-#endif  // BUILDFLAG(IS_ANDROID)
+#endif  // BUILDFLAG(USE_CHROMECAST_CDMS) || BUILDFLAG(ENABLE_LIBRARY_CDMS)
 }
 
 }  // namespace media

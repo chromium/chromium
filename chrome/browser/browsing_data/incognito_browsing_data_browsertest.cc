@@ -27,18 +27,21 @@
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
+#include "components/browsing_data/content/browsing_data_model.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/browser/storage_partition.h"
 #include "content/public/browser/storage_usage_info.h"
 #include "content/public/common/content_client.h"
 #include "content/public/common/content_paths.h"
 #include "content/public/test/browser_test.h"
+#include "content/public/test/browser_test_utils.h"
 #include "media/base/media_switches.h"
 #include "media/mojo/mojom/media_types.mojom.h"
 #include "media/mojo/services/video_decode_perf_history.h"
 #include "net/dns/mock_host_resolver.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/common/features.h"
 #include "url/gurl.h"
 
 #if BUILDFLAG(ENABLE_LIBRARY_CDMS)
@@ -69,6 +72,9 @@ class IncognitoBrowsingDataBrowserTest
 #if BUILDFLAG(ENABLE_LIBRARY_CDMS)
     enabled_features.push_back(media::kExternalClearKeyForTesting);
 #endif
+    // WebSQL is disabled by default as of M119 (crbug/695592). Enable feature
+    // in tests during deprecation trial and enterprise policy support.
+    enabled_features.push_back(blink::features::kWebSQLAccess);
     InitFeatureLists(std::move(enabled_features), {});
   }
 
@@ -102,17 +108,17 @@ class IncognitoBrowsingDataBrowserTest
 
     // Even after navigation.
     EXPECT_EQ(0, GetSiteDataCount(GetActiveWebContents(incognito_browser)));
-    ExpectCookieTreeModelCount(incognito_browser, 0);
+    ExpectTotalModelCount(incognito_browser, 0);
     EXPECT_FALSE(HasDataForType(type, GetActiveWebContents(incognito_browser)));
 
     // Set data type in Incognito mode, ensure only Incognito mode is affected.
     SetDataForType(type, GetActiveWebContents(incognito_browser));
     EXPECT_EQ(0, GetSiteDataCount(GetActiveWebContents(regular_browser)));
     EXPECT_EQ(1, GetSiteDataCount(GetActiveWebContents(incognito_browser)));
-    ExpectCookieTreeModelCount(regular_browser, 0);
+    ExpectTotalModelCount(regular_browser, 0);
     // TODO(crbug.com/1307796): Use a different approach to determine presence
     // of data that does not depend on UI code and has a better resolution when
-    // 3PSP is fully enabled. ExpectCookieTreeModelCount(incognito_browser, 1);
+    // 3PSP is fully enabled. ExpectTotalModelCount(incognito_browser, 1);
     // is not always true here.
 
     EXPECT_FALSE(HasDataForType(type, GetActiveWebContents(regular_browser)));
@@ -124,7 +130,7 @@ class IncognitoBrowsingDataBrowserTest
     ASSERT_TRUE(ui_test_utils::NavigateToURL(incognito_browser, url));
 
     EXPECT_EQ(0, GetSiteDataCount(GetActiveWebContents(incognito_browser)));
-    ExpectCookieTreeModelCount(incognito_browser, 0);
+    ExpectTotalModelCount(incognito_browser, 0);
     EXPECT_FALSE(HasDataForType(type, GetActiveWebContents(incognito_browser)));
   }
 
@@ -136,50 +142,40 @@ class IncognitoBrowsingDataBrowserTest
 
     EXPECT_EQ(0, GetSiteDataCount(GetActiveWebContents(regular_browser)));
     EXPECT_EQ(0, GetSiteDataCount(GetActiveWebContents(incognito_browser)));
-    ExpectCookieTreeModelCount(regular_browser, 0);
-    ExpectCookieTreeModelCount(incognito_browser, 0);
+    ExpectTotalModelCount(regular_browser, 0);
+    ExpectTotalModelCount(incognito_browser, 0);
 
     GURL url = embedded_test_server()->GetURL("/browsing_data/site_data.html");
     ASSERT_TRUE(ui_test_utils::NavigateToURL(incognito_browser, url));
     EXPECT_EQ(0, GetSiteDataCount(GetActiveWebContents(incognito_browser)));
-    ExpectCookieTreeModelCount(incognito_browser, 0);
+    ExpectTotalModelCount(incognito_browser, 0);
     // Opening a store of this type creates a site data entry in Incognito only.
     EXPECT_FALSE(HasDataForType(type, GetActiveWebContents(incognito_browser)));
     EXPECT_EQ(0, GetSiteDataCount(GetActiveWebContents(regular_browser)));
     EXPECT_EQ(1, GetSiteDataCount(GetActiveWebContents(incognito_browser)));
-    ExpectCookieTreeModelCount(regular_browser, 0);
+    ExpectTotalModelCount(regular_browser, 0);
     // TODO(crbug.com/1307796): Use a different approach to determine presence
     // of data that does not depend on UI code and has a better resolution when
-    // 3PSP is fully enabled. ExpectCookieTreeModelCount(incognito_browser, 1);
+    // 3PSP is fully enabled. ExpectTotalModelCount(incognito_browser, 1);
     // is not always true here.
 
     // Restart Incognito, ensure there is no residue from previous one.
     RestartIncognitoBrowser();
     incognito_browser = GetIncognitoBrowser();
     EXPECT_EQ(0, GetSiteDataCount(GetActiveWebContents(incognito_browser)));
-    ExpectCookieTreeModelCount(incognito_browser, 0);
+    ExpectTotalModelCount(incognito_browser, 0);
   }
 
-  inline void ExpectCookieTreeModelCount(Browser* browser, int expected) {
-    std::unique_ptr<CookiesTreeModel> model =
+  inline void ExpectTotalModelCount(Browser* browser, int expected) {
+    std::unique_ptr<CookiesTreeModel> cookies_tree_model =
         GetCookiesTreeModel(browser->profile());
-    EXPECT_EQ(expected, GetCookiesTreeModelCount(model->GetRoot()))
-        << GetCookiesTreeModelInfo(model->GetRoot());
-  }
-
-  inline void ExpectCookieTreeModelCount(Browser* browser,
-                                         int expected3PSPDisabled,
-                                         int expected3PSPEnabled) {
-    // TODO(crbug.com/1307796): Use a different approach to determine presence
-    // of data that does not depend on UI code and has a better resolution when
-    // 3PSP is fully enabled. Also, remove helper duplication between the
-    // incognito, and remover, browsing data browser tests.
-    if (base::FeatureList::IsEnabled(
-            net::features::kThirdPartyStoragePartitioning)) {
-      ExpectCookieTreeModelCount(browser, expected3PSPEnabled);
-    } else {
-      ExpectCookieTreeModelCount(browser, expected3PSPDisabled);
-    }
+    std::unique_ptr<BrowsingDataModel> browsing_data_model =
+        GetBrowsingDataModel(browser->profile());
+    int total_model_size =
+        GetCookiesTreeModelCount(cookies_tree_model->GetRoot()) +
+        browsing_data_model->size();
+    EXPECT_EQ(expected, total_model_size)
+        << GetCookiesTreeModelInfo(cookies_tree_model->GetRoot());
   }
 
   void OnVideoDecodePerfInfo(base::RunLoop* run_loop,
@@ -526,7 +522,7 @@ IN_PROC_BROWSER_TEST_F(IncognitoBrowsingDataBrowserTest, MediaLicenseDeletion) {
   ASSERT_TRUE(ui_test_utils::NavigateToURL(GetBrowser(), url));
 
   EXPECT_EQ(0, GetSiteDataCount());
-  ExpectCookieTreeModelCount(GetBrowser(), 0);
+  ExpectTotalModelCount(GetBrowser(), 0);
   EXPECT_FALSE(HasDataForType(kMediaLicenseType));
 
   // The new media license backend will not store media licenses explicitly
@@ -534,7 +530,7 @@ IN_PROC_BROWSER_TEST_F(IncognitoBrowsingDataBrowserTest, MediaLicenseDeletion) {
   // quota system.
   SetDataForType(kMediaLicenseType);
   EXPECT_EQ(1, GetSiteDataCount());
-  ExpectCookieTreeModelCount(GetBrowser(), 0, 1);
+  ExpectTotalModelCount(GetBrowser(), 1);
   EXPECT_TRUE(HasDataForType(kMediaLicenseType));
 
   // No residue in regular mode.
@@ -547,7 +543,7 @@ IN_PROC_BROWSER_TEST_F(IncognitoBrowsingDataBrowserTest, MediaLicenseDeletion) {
   ASSERT_TRUE(ui_test_utils::NavigateToURL(GetBrowser(), url));
 
   EXPECT_EQ(0, GetSiteDataCount());
-  ExpectCookieTreeModelCount(GetBrowser(), 0);
+  ExpectTotalModelCount(GetBrowser(), 0);
   EXPECT_FALSE(HasDataForType(kMediaLicenseType));
 }
 #endif  // BUILDFLAG(ENABLE_LIBRARY_CDMS)
@@ -569,7 +565,7 @@ IN_PROC_BROWSER_TEST_F(IncognitoBrowsingDataBrowserTest,
   ASSERT_EQ(0, CheckUserDirectoryForString(kLocalHost, {},
                                            /*check_leveldb_content=*/false));
   ASSERT_EQ(0, GetSiteDataCount());
-  ExpectCookieTreeModelCount(GetBrowser(), 0);
+  ExpectTotalModelCount(GetBrowser(), 0);
 
   // To use secure-only features on a host name, we need an https server.
   net::EmbeddedTestServer https_server(net::EmbeddedTestServer::TYPE_HTTPS);
@@ -595,10 +591,10 @@ IN_PROC_BROWSER_TEST_F(IncognitoBrowsingDataBrowserTest,
   EXPECT_EQ(0, found) << "A file contains the hostname.";
 
   EXPECT_EQ(0, GetSiteDataCount(GetActiveWebContents(GetRegularBrowser())));
-  ExpectCookieTreeModelCount(GetRegularBrowser(), 0);
+  ExpectTotalModelCount(GetRegularBrowser(), 0);
 
   RestartIncognitoBrowser();
 
   EXPECT_EQ(0, GetSiteDataCount());
-  ExpectCookieTreeModelCount(GetBrowser(), 0);
+  ExpectTotalModelCount(GetBrowser(), 0);
 }

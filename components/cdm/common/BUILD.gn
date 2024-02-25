@@ -5,15 +5,11 @@
 import("//third_party/widevine/cdm/widevine.gni")
 
 static_library("common") {
-  sources = [
-    "cdm_message_generator.cc",
-    "cdm_message_generator.h",
-  ]
+  sources = []
 
   deps = [
     "//base",
     "//content/public/common",
-    "//ipc",
     "//media",
   ]
 
@@ -21,12 +17,12 @@ static_library("common") {
     sources += [
       "android_cdm_registration.cc",
       "android_cdm_registration.h",
-      "cdm_messages_android.h",
       "clearkey_drm_delegate_android.cc",
       "clearkey_drm_delegate_android.h",
       "widevine_drm_delegate_android.cc",
       "widevine_drm_delegate_android.h",
     ]
+
     deps += [ "//third_party/widevine/cdm:buildflags" ]
   }
 

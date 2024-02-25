@@ -5,9 +5,11 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_SCHEDULER_MAIN_THREAD_MAIN_THREAD_METRICS_HELPER_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_SCHEDULER_MAIN_THREAD_MAIN_THREAD_METRICS_HELPER_H_
 
+#include <optional>
+
+#include "base/memory/raw_ptr.h"
 #include "base/rand_util.h"
 #include "base/time/time.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/platform/task_type.h"
 #include "third_party/blink/renderer/platform/instrumentation/histogram.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
@@ -65,14 +67,14 @@ class PLATFORM_EXPORT MainThreadMetricsHelper : public MetricsHelper {
  private:
   void ReportLowThreadLoadForPageAlmostIdleSignal(int load_percentage);
 
-  MainThreadSchedulerImpl* main_thread_scheduler_;  // NOT OWNED
+  raw_ptr<MainThreadSchedulerImpl> main_thread_scheduler_;  // NOT OWNED
 
   // Set to true when OnRendererShutdown is called. Used to ensure that metrics
   // that need to cross IPC boundaries aren't sent, as they cause additional
   // useless tasks to be posted.
   bool renderer_shutting_down_;
 
-  absl::optional<base::TimeTicks> last_reported_task_;
+  std::optional<base::TimeTicks> last_reported_task_;
 
   ThreadLoadTracker main_thread_load_tracker_;
   ThreadLoadTracker background_main_thread_load_tracker_;

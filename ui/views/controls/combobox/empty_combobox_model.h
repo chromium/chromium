@@ -20,7 +20,7 @@ class EmptyComboboxModel final : public ui::ComboboxModel {
   // ui::ComboboxModel:
   size_t GetItemCount() const override;
   std::u16string GetItemAt(size_t index) const override;
-  absl::optional<size_t> GetDefaultIndex() const override;
+  std::optional<size_t> GetDefaultIndex() const override;
 };
 
 }  // namespace views::internal

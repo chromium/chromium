@@ -147,8 +147,9 @@ class COMPONENT_EXPORT(UI_BASE) OSExchangeDataProviderWin
 
   // OSExchangeDataProvider methods.
   std::unique_ptr<OSExchangeDataProvider> Clone() const override;
-  void MarkOriginatedFromRenderer() override;
-  bool DidOriginateFromRenderer() const override;
+  void MarkRendererTaintedFromOrigin(const url::Origin& origin) override;
+  bool IsRendererTainted() const override;
+  std::optional<url::Origin> GetRendererTaintedOrigin() const override;
   void MarkAsFromPrivileged() override;
   bool IsFromPrivileged() const override;
   void SetString(const std::u16string& data) override;
@@ -172,7 +173,6 @@ class COMPONENT_EXPORT(UI_BASE) OSExchangeDataProviderWin
   bool GetURLAndTitle(FilenameToURLPolicy policy,
                       GURL* url,
                       std::u16string* title) const override;
-  bool GetFilename(base::FilePath* path) const override;
   bool GetFilenames(std::vector<FileInfo>* filenames) const override;
   bool HasVirtualFilenames() const override;
   bool GetVirtualFilenames(std::vector<FileInfo>* filenames) const override;

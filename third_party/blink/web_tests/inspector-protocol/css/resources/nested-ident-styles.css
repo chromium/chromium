@@ -1,0 +1,13 @@
+#parent {
+  div {
+    width: 42px;
+
+    div:not(.x) {
+      height: 42px;
+    }
+
+    unrelated, div {
+      display: grid;
+    }
+  }
+}

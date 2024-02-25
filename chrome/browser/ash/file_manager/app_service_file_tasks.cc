@@ -6,6 +6,7 @@
 
 #include <memory>
 #include <string>
+#include <string_view>
 #include <utility>
 #include <vector>
 
@@ -31,7 +32,9 @@
 #include "chrome/browser/ash/file_manager/file_tasks.h"
 #include "chrome/browser/ash/file_manager/fileapi_util.h"
 #include "chrome/browser/ash/file_manager/filesystem_api_util.h"
+#include "chrome/browser/ash/file_manager/office_file_tasks.h"
 #include "chrome/browser/ash/file_manager/path_util.h"
+#include "chrome/browser/ash/file_manager/virtual_file_tasks.h"
 #include "chrome/browser/ash/fusebox/fusebox_server.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/web_applications/os_integration/os_integration_manager.h"
@@ -61,17 +64,17 @@ ConvertLaunchResultToTaskResult(const apps::LaunchResult& result,
   // on how the app will be opened in multiprofile.
   namespace fmp = extensions::api::file_manager_private;
   switch (result.state) {
-    case apps::State::SUCCESS:
+    case apps::State::kSuccess:
       if (task_type == TASK_TYPE_WEB_APP) {
-        return fmp::TASK_RESULT_OPENED;
+        return fmp::TaskResult::kOpened;
       } else {
-        return fmp::TASK_RESULT_MESSAGE_SENT;
+        return fmp::TaskResult::kMessageSent;
       }
-    case apps::State::FAILED_DIRECTORY_NOT_SHARED:
+    case apps::State::kFailedDirectoryNotShared:
       DCHECK(task_type == TASK_TYPE_PLUGIN_VM_APP);
-      return fmp::TASK_RESULT_FAILED_PLUGIN_VM_DIRECTORY_NOT_SHARED;
-    case apps::State::FAILED:
-      return fmp::TASK_RESULT_FAILED;
+      return fmp::TaskResult::kFailedPluginVmDirectoryNotShared;
+    case apps::State::kFailed:
+      return fmp::TaskResult::kFailed;
   }
 }
 
@@ -101,7 +104,6 @@ TaskType GetTaskType(apps::AppType app_type) {
       return TASK_TYPE_PLUGIN_VM_APP;
     case apps::AppType::kUnknown:
     case apps::AppType::kBuiltIn:
-    case apps::AppType::kMacOs:
     case apps::AppType::kStandaloneBrowser:
     case apps::AppType::kRemote:
     case apps::AppType::kBorealis:
@@ -113,20 +115,6 @@ const char kImportCrostiniImageHandlerId[] =
     "chrome://file-manager/?import-crostini-image";
 const char kInstallLinuxPackageHandlerId[] =
     "chrome://file-manager/?install-linux-package";
-
-bool MatchPolicyIdAgainstLegacyArcAppFormat(const TaskDescriptor& td,
-                                            base::StringPiece policy_id) {
-  DCHECK_EQ(td.task_type, TASK_TYPE_ARC_APP);
-  // Sometimes task descriptors for Android apps are stored in a
-  // legacy format (app id: "<package>/<activity>", action id: "view").
-  std::vector<std::string> app_id_info = base::SplitString(
-      td.app_id, "/", base::KEEP_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
-  if (app_id_info.size() != 2) {
-    return false;
-  }
-  const auto& package_name = app_id_info[0];
-  return package_name == policy_id;
-}
 
 }  // namespace
 
@@ -199,13 +187,6 @@ GURL GetRealOrFuseboxGURL(Profile* profile,
   return url;
 }
 
-// TODO(petermarshall): This can be removed along with ParseFilesAppActionId()
-// in file_tasks.cc as the legacy files app has been removed.
-std::string ToSwaActionId(const std::string& action_id) {
-  return std::string(ash::file_manager::kChromeUIFileManagerURL) + "?" +
-         action_id;
-}
-
 // True if |app_id| and |action_id| represent a task which opens the file by
 // getting the URL for a file rather than by opening the local contents of the
 // file.
@@ -220,7 +201,7 @@ bool IsFilesAppUrlOpener(const std::string& app_id,
          action_id == ToSwaActionId(kActionIdWebDriveOfficePowerPoint);
 }
 
-bool IsSystemAppIdWithFileHandlers(base::StringPiece id) {
+bool IsSystemAppIdWithFileHandlers(std::string_view id) {
   return id == web_app::kMediaAppId;
 }
 
@@ -267,6 +248,7 @@ void FindAppServiceTasks(Profile* profile,
       proxy->GetAppsForFiles(std::move(intent_files));
 
   std::vector<apps::AppType> supported_app_types = {
+      apps::AppType::kArc,
       apps::AppType::kWeb,
       apps::AppType::kSystemWeb,
       apps::AppType::kChromeApp,
@@ -277,9 +259,6 @@ void FindAppServiceTasks(Profile* profile,
       apps::AppType::kCrostini,
       apps::AppType::kPluginVm,
   };
-  if (ash::features::ShouldArcFileTasksUseAppService()) {
-    supported_app_types.push_back(apps::AppType::kArc);
-  }
   for (auto& launch_entry : intent_launch_info) {
     auto app_type = proxy->AppRegistryCache().GetAppType(launch_entry.app_id);
     if (!base::Contains(supported_app_types, app_type)) {
@@ -353,7 +332,7 @@ void ExecuteAppServiceTask(
   Profile* profile_with_app_service = GetProfileWithAppService(profile);
   if (!profile_with_app_service) {
     std::move(done).Run(
-        extensions::api::file_manager_private::TASK_RESULT_FAILED,
+        extensions::api::file_manager_private::TaskResult::kFailed,
         "Unexpected profile type");
     return;
   }
@@ -393,8 +372,7 @@ void ExecuteAppServiceTask(
          task.task_type == TASK_TYPE_BRUSCHETTA_APP ||
          task.task_type == TASK_TYPE_CROSTINI_APP ||
          task.task_type == TASK_TYPE_PLUGIN_VM_APP ||
-         (ash::features::ShouldArcFileTasksUseAppService() &&
-          task.task_type == TASK_TYPE_ARC_APP));
+         task.task_type == TASK_TYPE_ARC_APP);
 
   apps::IntentPtr intent = std::make_unique<apps::Intent>(
       apps_util::kIntentActionView, std::move(intent_files));
@@ -448,18 +426,25 @@ bool ChooseAndSetDefaultTaskFromPolicyPrefs(
   DCHECK_EQ(default_handlers_for_entries.size(), 1U);
   const auto& policy_id = *default_handlers_for_entries.begin();
 
-  std::vector<std::string> app_ids =
-      apps_util::GetAppIdsFromPolicyId(profile, policy_id);
-
   std::vector<FullTaskDescriptor*> filtered_tasks;
-  for (auto& task : resulting_tasks->tasks) {
-    const auto& td = task.task_descriptor;
-    if (base::Contains(app_ids, td.app_id) ||
-        (td.task_type == TASK_TYPE_ARC_APP &&
-         !ash::features::ShouldArcFileTasksUseAppService() &&
-         MatchPolicyIdAgainstLegacyArcAppFormat(td, policy_id))) {
-      filtered_tasks.push_back(&task);
-      continue;
+  // `app_id` matching is not necessary if the policy points to a virtual task.
+  if (std::optional<std::string_view> virtual_task_id =
+          apps_util::GetVirtualTaskIdFromPolicyId(policy_id)) {
+    std::string full_virtual_task_id = ToSwaActionId(*virtual_task_id);
+    for (auto& task : resulting_tasks->tasks) {
+      if (IsVirtualTask(task.task_descriptor) &&
+          task.task_descriptor.action_id == full_virtual_task_id) {
+        filtered_tasks.push_back(&task);
+      }
+    }
+  } else {
+    std::vector<std::string> app_ids =
+        apps_util::GetAppIdsFromPolicyId(profile, policy_id);
+    for (auto& task : resulting_tasks->tasks) {
+      const auto& td = task.task_descriptor;
+      if (base::Contains(app_ids, td.app_id)) {
+        filtered_tasks.push_back(&task);
+      }
     }
   }
 

@@ -26,7 +26,7 @@ settings status to the user:
     [SingleWebsiteSettings](https://cs.chromium.org/chromium/src/components/browser_ui/site_settings/android/java/src/org/chromium/components/browser_ui/site_settings/SingleWebsiteSettings.java)
     class.
 
-All of these extend `PreferenceFragmentCompat` via `SiteSettingsPreferenceFragment`
+All of these extend `PreferenceFragmentCompat` via `BaseSiteSettingsFragment`
 and use a layout xml to define the preferences that form the screens.
 
 ## Site Settings

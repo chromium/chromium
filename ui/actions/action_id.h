@@ -7,9 +7,9 @@
 
 // clang-format off
 #define CROSS_PLATFORM_ACTION_IDS \
-  E(kActionCut, kActionsStart, kActionsStart) \
-  E(kActionCopy) \
-  E(kActionPaste)
+  E(kActionCut, kActionsStart, kActionsStart, actions) \
+  E(kActionCopy, , actions) \
+  E(kActionPaste, , actions)
 
 #define PLATFORM_SPECIFIC_ACTION_IDS
 

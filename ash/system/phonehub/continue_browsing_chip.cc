@@ -9,6 +9,7 @@
 #include "ash/root_window_controller.h"
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
+#include "ash/style/ash_color_id.h"
 #include "ash/style/ash_color_provider.h"
 #include "ash/style/typography.h"
 #include "ash/system/phonehub/phone_hub_metrics.h"
@@ -19,8 +20,8 @@
 #include "base/strings/utf_string_conversions.h"
 #include "chromeos/ash/components/multidevice/logging/logging.h"
 #include "chromeos/ash/components/phonehub/user_action_recorder.h"
-#include "chromeos/constants/chromeos_features.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
 #include "ui/color/color_id.h"
 #include "ui/gfx/paint_vector_icon.h"
@@ -103,10 +104,8 @@ ContinueBrowsingChip::ContinueBrowsingChip(
       AshColorProvider::ContentLayerType::kTextColorPrimary));
   url_label->SetElideBehavior(gfx::ElideBehavior::ELIDE_TAIL);
 
-  if (chromeos::features::IsJellyrollEnabled()) {
-    TypographyProvider::Get()->StyleLabel(
-        ash::TypographyToken::kCrosAnnotation1, *url_label);
-  }
+  TypographyProvider::Get()->StyleLabel(ash::TypographyToken::kCrosAnnotation1,
+                                        *url_label);
 
   auto* title_label =
       AddChildView(std::make_unique<views::Label>(metadata.title));
@@ -118,13 +117,8 @@ ContinueBrowsingChip::ContinueBrowsingChip(
   title_label->SetMultiLine(true);
   title_label->SetMaxLines(kTitleMaxLines);
 
-  if (chromeos::features::IsJellyrollEnabled()) {
-    TypographyProvider::Get()->StyleLabel(
-        ash::TypographyToken::kCrosAnnotation2, *title_label);
-  } else {
-    title_label->SetFontList(
-        title_label->font_list().DeriveWithWeight(gfx::Font::Weight::BOLD));
-  }
+  TypographyProvider::Get()->StyleLabel(ash::TypographyToken::kCrosAnnotation2,
+                                        *title_label);
 
   const std::u16string card_label = l10n_util::GetStringFUTF16(
       IDS_ASH_PHONE_HUB_CONTINUE_BROWSING_TAB_LABEL,
@@ -137,18 +131,14 @@ ContinueBrowsingChip::ContinueBrowsingChip(
 void ContinueBrowsingChip::OnPaintBackground(gfx::Canvas* canvas) {
   cc::PaintFlags flags;
   flags.setAntiAlias(true);
-  flags.setColor(AshColorProvider::Get()->GetControlsLayerColor(
-      AshColorProvider::ControlsLayerType::kControlBackgroundColorInactive));
+  flags.setColor(
+      GetColorProvider()->GetColor(kColorAshControlBackgroundColorInactive));
   gfx::Rect bounds = GetContentsBounds();
   canvas->DrawRoundRect(bounds, kTaskContinuationChipRadius, flags);
   views::View::OnPaintBackground(canvas);
 }
 
 ContinueBrowsingChip::~ContinueBrowsingChip() = default;
-
-const char* ContinueBrowsingChip::GetClassName() const {
-  return "ContinueBrowsingChip";
-}
 
 void ContinueBrowsingChip::ButtonPressed() {
   PA_LOG(INFO) << "Opening browser tab: " << url_;
@@ -174,5 +164,8 @@ void ContinueBrowsingChip::ButtonPressed() {
       ->phone_hub_tray()
       ->CloseBubble();
 }
+
+BEGIN_METADATA(ContinueBrowsingChip)
+END_METADATA
 
 }  // namespace ash

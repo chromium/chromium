@@ -9,7 +9,7 @@
 #import "base/test/task_environment.h"
 #import "components/crash/core/app/crashpad.h"
 #import "components/crash/core/common/reporter_running_ios.h"
-#import "ios/chrome/browser/crash_report/crash_helper.h"
+#import "ios/chrome/browser/crash_report/model/crash_helper.h"
 #import "ios/chrome/common/crash_report/crash_helper.h"
 #import "ios/testing/scoped_block_swizzler.h"
 #import "testing/gtest/include/gtest/gtest.h"

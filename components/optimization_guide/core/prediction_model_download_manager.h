@@ -6,6 +6,7 @@
 #define COMPONENTS_OPTIMIZATION_GUIDE_CORE_PREDICTION_MODEL_DOWNLOAD_MANAGER_H_
 
 #include <map>
+#include <optional>
 #include <set>
 #include <string>
 
@@ -17,7 +18,6 @@
 #include "components/download/public/background_service/download_params.h"
 #include "components/optimization_guide/core/prediction_model_store.h"
 #include "components/optimization_guide/proto/models.pb.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace download {
 class BackgroundDownloadService;
@@ -120,14 +120,14 @@ class PredictionModelDownloadManager {
   // Invoked when the download as specified by |downloaded_guid| succeeded for
   // |optimization_target|.
   void OnDownloadSucceeded(
-      absl::optional<proto::OptimizationTarget> optimization_target,
+      std::optional<proto::OptimizationTarget> optimization_target,
       const std::string& downloaded_guid,
       const base::FilePath& download_file_path);
 
   // Invoked when the download as specified by |failed_download_guid| failed
   // for |optimization_target|.
   void OnDownloadFailed(
-      absl::optional<proto::OptimizationTarget> optimization_target,
+      std::optional<proto::OptimizationTarget> optimization_target,
       const std::string& failed_download_guid);
 
   // Starts unzipping the contents of |download_file_path|, to |base_model_dir|,
@@ -148,7 +148,7 @@ class PredictionModelDownloadManager {
   //
   // Must be called on the background thread, as it performs file I/O. This is a
   // stateless func to avoid needing weird lifetime stuff.
-  static absl::optional<proto::PredictionModel> ProcessUnzippedContents(
+  static std::optional<proto::PredictionModel> ProcessUnzippedContents(
       const base::FilePath& base_model_dir);
 
   // Notifies |observers_| that a model is ready for |optimization_target|.
@@ -156,7 +156,7 @@ class PredictionModelDownloadManager {
   // Must be invoked on the UI thread.
   void NotifyModelReady(proto::OptimizationTarget optimization_target,
                         const base::FilePath& base_model_dir,
-                        const absl::optional<proto::PredictionModel>& model);
+                        const std::optional<proto::PredictionModel>& model);
 
   // Notifies |observers_| that a model download failed for
   // |optimization_target|.

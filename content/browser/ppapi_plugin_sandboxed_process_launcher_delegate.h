@@ -47,4 +47,4 @@ class CONTENT_EXPORT PpapiPluginSandboxedProcessLauncherDelegate
 };
 }  // namespace content
 
-#endif
+#endif  // CONTENT_BROWSER_PPAPI_PLUGIN_SANDBOXED_PROCESS_LAUNCHER_DELEGATE_H_

@@ -1,0 +1,138 @@
+# Copyright 2023 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("model") {
+  sources = [
+    "child_account_service_factory.h",
+    "child_account_service_factory.mm",
+    "ios_web_content_handler_impl.h",
+    "ios_web_content_handler_impl.mm",
+    "list_family_members_service_factory.h",
+    "list_family_members_service_factory.mm",
+    "supervised_user_error.h",
+    "supervised_user_error.mm",
+    "supervised_user_error_container.h",
+    "supervised_user_error_container.mm",
+    "supervised_user_interstitial_java_script_feature.h",
+    "supervised_user_interstitial_java_script_feature.mm",
+    "supervised_user_metrics_service_factory.h",
+    "supervised_user_metrics_service_factory.mm",
+    "supervised_user_service_factory.h",
+    "supervised_user_service_factory.mm",
+    "supervised_user_service_platform_delegate.h",
+    "supervised_user_service_platform_delegate.mm",
+    "supervised_user_url_filter_tab_helper.h",
+    "supervised_user_url_filter_tab_helper.mm",
+  ]
+
+  deps = [
+    ":sync_settings_factory",
+    "//components/keyed_service/core",
+    "//components/keyed_service/ios",
+    "//components/prefs",
+    "//components/security_interstitials/core",
+    "//components/supervised_user/core/browser",
+    "//components/supervised_user/core/browser:list_family_members_service",
+    "//components/supervised_user/core/common",
+    "//components/variations/service",
+    "//ios/chrome/browser/first_run/model",
+    "//ios/chrome/browser/shared/model/application_context",
+    "//ios/chrome/browser/shared/model/browser",
+    "//ios/chrome/browser/shared/model/browser_state",
+    "//ios/chrome/browser/shared/model/web_state_list:web_state_list",
+    "//ios/chrome/browser/signin/model",
+    "//ios/chrome/browser/sync/model",
+    "//ios/components/security_interstitials",
+    "//ios/net",
+    "//ios/web/public/js_messaging:js_messaging",
+    "//net",
+    "//services/network/public/cpp",
+  ]
+}
+
+source_set("sync_settings_factory") {
+  sources = [
+    "supervised_user_settings_service_factory.h",
+    "supervised_user_settings_service_factory.mm",
+  ]
+  deps = [
+    "//components/keyed_service/ios",
+    "//components/supervised_user/core/browser",
+    "//ios/chrome/browser/shared/model/browser_state",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [
+    "child_account_service_factory_unittest.mm",
+    "list_family_members_service_factory_unittest.mm",
+    "supervised_user_metrics_service_factory_unittest.mm",
+    "supervised_user_service_factory_unittest.mm",
+    "supervised_user_settings_service_factory_unittest.mm",
+    "supervised_user_url_filter_tab_helper_unittest.mm",
+  ]
+  deps = [
+    ":model",
+    ":sync_settings_factory",
+    "//base/test:test_support",
+    "//components/prefs",
+    "//components/signin/public/identity_manager",
+    "//components/signin/public/identity_manager:test_support",
+    "//components/supervised_user/core/browser",
+    "//components/supervised_user/core/browser:list_family_members_service",
+    "//components/supervised_user/core/common",
+    "//components/supervised_user/test_support",
+    "//components/sync_preferences",
+    "//components/sync_preferences:test_support",
+    "//ios/chrome/browser/first_run/model",
+    "//ios/chrome/browser/shared/model/browser_state:test_support",
+    "//ios/chrome/browser/shared/model/prefs:browser_prefs",
+    "//ios/chrome/browser/signin/model",
+    "//ios/chrome/browser/signin/model:test_support",
+    "//ios/chrome/test:test_support",
+    "//ios/components/security_interstitials",
+    "//ios/web/public/test",
+    "//services/network:test_support",
+    "//testing/gtest",
+  ]
+}
+
+source_set("eg2_tests") {
+  configs += [ "//build/config/ios:xctest_config" ]
+  testonly = true
+  sources = [
+    "supervised_user_incognito_mode_egtest.mm",
+    "supervised_user_with_parental_controls_egtest.mm",
+  ]
+  deps = [
+    "//base",
+    "//components/policy:policy_code_generate",
+    "//components/signin/internal/identity_manager",
+    "//components/supervised_user/core/browser",
+    "//components/supervised_user/core/common",
+    "//ios/chrome/app/strings",
+    "//ios/chrome/browser/metrics/model:eg_test_support+eg2",
+    "//ios/chrome/browser/policy/model:eg_test_support+eg2",
+    "//ios/chrome/browser/policy/model:policy_earl_grey_matchers",
+    "//ios/chrome/browser/policy/model:policy_util",
+    "//ios/chrome/browser/signin/model:capabilities_types",
+    "//ios/chrome/browser/signin/model:fake_system_identity",
+    "//ios/chrome/browser/signin/model:system_identity_manager",
+    "//ios/chrome/browser/ui/authentication:eg_test_support+eg2",
+    "//ios/chrome/browser/ui/popup_menu:constants",
+    "//ios/chrome/browser/ui/settings:eg_test_support+eg2",
+    "//ios/chrome/browser/ui/settings/google_services:constants",
+    "//ios/chrome/browser/ui/tab_switcher/tab_grid:tab_grid_ui_constants",
+    "//ios/chrome/browser/ui/toolbar/public:constants",
+    "//ios/chrome/test/earl_grey:eg_test_support+eg2",
+    "//ios/chrome/test/earl_grey:switches",
+    "//ios/testing/earl_grey:eg_test_support+eg2",
+    "//ios/testing/earl_grey:launch_configuration",
+    "//net:test_support",
+    "//services/network:test_support",
+    "//ui/base",
+  ]
+  frameworks = [ "UIKit.framework" ]
+}

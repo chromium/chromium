@@ -5,11 +5,11 @@
 #ifndef UI_BASE_MODELS_TREE_MODEL_H_
 #define UI_BASE_MODELS_TREE_MODEL_H_
 
+#include <optional>
 #include <string>
 #include <vector>
 
 #include "base/component_export.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ui {
 
@@ -38,19 +38,17 @@ class TreeModelNode {
 class COMPONENT_EXPORT(UI_BASE) TreeModelObserver {
  public:
   // Notification that nodes were added to the specified parent.
-  virtual void TreeNodesAdded(TreeModel* model,
-                              TreeModelNode* parent,
-                              size_t start,
-                              size_t count) = 0;
+  virtual void TreeNodeAdded(TreeModel* model,
+                             TreeModelNode* parent,
+                             size_t index) {}
 
   // Notification that nodes were removed from the specified parent.
-  virtual void TreeNodesRemoved(TreeModel* model,
-                                TreeModelNode* parent,
-                                size_t start,
-                                size_t count) = 0;
+  virtual void TreeNodeRemoved(TreeModel* model,
+                               TreeModelNode* parent,
+                               size_t index) {}
 
   // Notification that the contents of a node has changed.
-  virtual void TreeNodeChanged(TreeModel* model, TreeModelNode* node) = 0;
+  virtual void TreeNodeChanged(TreeModel* model, TreeModelNode* node) {}
 
  protected:
   virtual ~TreeModelObserver() {}
@@ -74,8 +72,8 @@ class COMPONENT_EXPORT(UI_BASE) TreeModel {
   virtual Nodes GetChildren(const TreeModelNode* parent) const = 0;
 
   // Returns the index of |child| in |parent|.
-  virtual absl::optional<size_t> GetIndexOf(TreeModelNode* parent,
-                                            TreeModelNode* child) const = 0;
+  virtual std::optional<size_t> GetIndexOf(TreeModelNode* parent,
+                                           TreeModelNode* child) const = 0;
 
   // Returns the parent of |node|, or NULL if |node| is the root.
   virtual TreeModelNode* GetParent(TreeModelNode* node) const = 0;
@@ -97,7 +95,7 @@ class COMPONENT_EXPORT(UI_BASE) TreeModel {
   // Returns the index of the icon to use for |node|. Return nullopt to use the
   // default icon. The index is relative to the list of icons returned from
   // GetIcons.
-  virtual absl::optional<size_t> GetIconIndex(TreeModelNode* node);
+  virtual std::optional<size_t> GetIconIndex(TreeModelNode* node);
 
  protected:
   virtual ~TreeModel() {}

@@ -1,0 +1,683 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>PreferenceSpecifiers</key>
+	<array>
+		<dict>
+			<key>Title</key>
+			<string>Discover Feed</string>
+			<key>Type</key>
+			<string>PSGroupSpecifier</string>
+		</dict>
+		<dict>
+			<key>Type</key>
+			<string>PSTextFieldSpecifier</string>
+			<key>Title</key>
+			<string>DiscoverFeed Server URL</string>
+			<key>Key</key>
+			<string>AlternateDiscoverFeedServerURL</string>
+			<key>DefaultValue</key>
+			<string></string>
+			<key>AutocorrectionType</key>
+			<string>No</string>
+		</dict>
+		<dict>
+			<key>Type</key>
+			<string>PSToggleSwitchSpecifier</string>
+			<key>Title</key>
+			<string>Reset Notice Card</string>
+			<key>Key</key>
+			<string>ResetNoticeCard</string>
+			<key>DefaultValue</key>
+			<false/>
+		</dict>
+		<dict>
+			<key>Type</key>
+			<string>PSToggleSwitchSpecifier</string>
+			<key>Title</key>
+			<string>Reset First Follow</string>
+			<key>Key</key>
+			<string>ResetFirstFollow</string>
+			<key>DefaultValue</key>
+			<false/>
+		</dict>
+		<dict>
+			<key>Type</key>
+			<string>PSToggleSwitchSpecifier</string>
+			<key>Title</key>
+			<string>Always show First Follow</string>
+			<key>Key</key>
+			<string>AlwaysShowFirstFollow</string>
+			<key>DefaultValue</key>
+			<false/>
+		</dict>
+		<dict>
+			<key>Type</key>
+			<string>PSToggleSwitchSpecifier</string>
+			<key>Title</key>
+			<string>Force Content Notifications Promo</string>
+			<key>Key</key>
+			<string>ForceContentNotificationsPromo</string>
+			<key>DefaultValue</key>
+			<false/>
+		</dict>
+		<dict>
+			<key>Type</key>
+			<string>PSToggleSwitchSpecifier</string>
+			<key>Title</key>
+			<string>Force Feed Signin Promo</string>
+			<key>Key</key>
+			<string>ForceFeedSigninPromo</string>
+			<key>DefaultValue</key>
+			<false/>
+		</dict>
+		<dict>
+			<key>Type</key>
+			<string>PSToggleSwitchSpecifier</string>
+			<key>Title</key>
+			<string>Ignore Tile Ablation Conditions</string>
+			<key>Key</key>
+			<string>IgnoreTileAblationConditions</string>
+			<key>DefaultValue</key>
+			<false/>
+		</dict>
+		<dict>
+			<key>Type</key>
+			<string>PSToggleSwitchSpecifier</string>
+			<key>Title</key>
+			<string>Always show Follow IPH</string>
+			<key>Key</key>
+			<string>AlwaysShowFollowIPH</string>
+			<key>DefaultValue</key>
+			<false/>
+		</dict>
+		<dict>
+			<key>Type</key>
+			<string>PSChildPaneSpecifier</string>
+			<key>Title</key>
+			<string>Feed Refresh Settings</string>
+			<key>File</key>
+			<string>ExperimentalFeedRefresh</string>
+		</dict>
+		<dict>
+			<key>Type</key>
+			<string>PSGroupSpecifier</string>
+			<key>Title</key>
+			<string>UI Settings</string>
+		</dict>
+		<dict>
+			<key>Type</key>
+			<string>PSToggleSwitchSpecifier</string>
+			<key>Title</key>
+			<string>Enable Pseudo-RTL</string>
+			<key>Key</key>
+			<string>EnablePseudoRTL</string>
+			<key>DefaultValue</key>
+			<false/>
+		</dict>
+		<dict>
+			<key>Type</key>
+			<string>PSToggleSwitchSpecifier</string>
+			<key>Title</key>
+			<string>Force First Run</string>
+			<key>Key</key>
+			<string>FirstRunForceEnabled</string>
+			<key>DefaultValue</key>
+			<false/>
+		</dict>
+		<dict>
+			<key>Type</key>
+			<string>PSMultiValueSpecifier</string>
+			<key>Title</key>
+			<string>First Run Recency</string>
+			<key>Key</key>
+			<string>FirstRunRecency</string>
+			<key>DefaultValue</key>
+			<integer>0</integer>
+			<key>Values</key>
+			<array>
+				<integer>0</integer>
+				<string>1</string>
+				<string>100</string>
+			</array>
+			<key>Titles</key>
+			<array>
+				<string>Unset</string>
+				<string>Recent (1 Day)</string>
+				<string>Not recent (100 Days)</string>
+			</array>
+		</dict>
+		<dict>
+			<key>Type</key>
+			<string>PSToggleSwitchSpecifier</string>
+			<key>Title</key>
+			<string>Force Upgrade Promo</string>
+			<key>Key</key>
+			<string>UpgradePromoForceEnabled</string>
+			<key>DefaultValue</key>
+			<false/>
+		</dict>
+		<dict>
+			<key>Type</key>
+			<string>PSMultiValueSpecifier</string>
+			<key>Title</key>
+			<string>Force Promo</string>
+			<key>Key</key>
+			<string>NextPromoForDisplayOverride</string>
+			<key>DefaultValue</key>
+			<string></string>
+			<key>Values</key>
+			<array>
+				<string></string>
+				<string>promos_manager::Promo::AppStoreRating</string>
+				<string>promos_manager::Promo::DefaultBrowser</string>
+				<string>promos_manager::Promo::PostRestoreDefaultBrowserAlert</string>
+				<string>promos_manager::Promo::OmniboxPosition</string>
+				<string>promos_manager::Promo::DockingPromo</string>
+				<string>promos_manager::Promo::PostDefaultAbandonment</string>
+			</array>
+			<key>Titles</key>
+			<array>
+				<string>Disabled (No Promos Forced)</string>
+				<string>App Store Rating</string>
+				<string>Default Browser</string>
+				<string>Post Restore Default Browser Alert</string>
+				<string>Omnibox Position</string>
+				<string>Docking Promo</string>
+				<string>Post-Default Browser Abandonment Alert</string>
+			</array>
+		</dict>
+		<dict>
+			<key>Type</key>
+			<string>PSMultiValueSpecifier</string>
+			<key>Title</key>
+			<string>Force Device Switcher Experience</string>
+			<key>Key</key>
+			<string>ForceExperienceForDeviceSwitcher</string>
+			<key>DefaultValue</key>
+			<string></string>
+			<key>Values</key>
+			<array>
+				<string></string>
+				<string>AndroidPhone</string>
+				<string>SyncedAndFirstDevice</string>
+			</array>
+			<key>Titles</key>
+			<array>
+				<string>Disabled</string>
+				<string>Android Phone</string>
+				<string>Synced And First Device</string>
+			</array>
+		</dict>
+		<dict>
+			<key>Type</key>
+			<string>PSToggleSwitchSpecifier</string>
+			<key>Title</key>
+			<string>Simulate Post Phone Restore</string>
+			<key>Key</key>
+			<string>SimulatePostDeviceRestore</string>
+			<key>DefaultValue</key>
+			<false/>
+		</dict>
+		<dict>
+			<key>Type</key>
+			<string>PSToggleSwitchSpecifier</string>
+			<key>Title</key>
+			<string>Ignore history sync decline limits</string>
+			<key>Key</key>
+			<string>ShouldIgnoreHistorySyncDeclineLimits</string>
+			<key>DefaultValue</key>
+			<false/>
+		</dict>
+		<dict>
+			<key>Type</key>
+			<string>PSMultiValueSpecifier</string>
+			<key>Title</key>
+			<string>Update Chrome Safety Check State</string>
+			<key>Key</key>
+			<string>SafetyCheckUpdateChromeStateOverride</string>
+			<key>DefaultValue</key>
+			<string></string>
+			<key>Values</key>
+			<array>
+				<string></string>
+				<string>UpdateChromeSafetyCheckState::kOutOfDate</string>
+			</array>
+			<key>Titles</key>
+			<array>
+				<string>None</string>
+				<string>Out of date</string>
+			</array>
+		</dict>
+		<dict>
+			<key>Type</key>
+			<string>PSMultiValueSpecifier</string>
+			<key>Title</key>
+			<string>Password Safety Check State</string>
+			<key>Key</key>
+			<string>SafetyCheckPasswordStateOverride</string>
+			<key>DefaultValue</key>
+			<string></string>
+			<key>Values</key>
+			<array>
+				<string></string>
+				<string>PasswordSafetyCheckState::kUnmutedCompromisedPasswords</string>
+				<string>PasswordSafetyCheckState::kReusedPasswords</string>
+				<string>PasswordSafetyCheckState::kWeakPasswords</string>
+			</array>
+			<key>Titles</key>
+			<array>
+				<string>None</string>
+				<string>Compromised</string>
+				<string>Re-used</string>
+				<string>Weak</string>
+			</array>
+		</dict>
+		<dict>
+			<key>Type</key>
+			<string>PSMultiValueSpecifier</string>
+			<key>Title</key>
+			<string>Safe Browsing Safety Check State</string>
+			<key>Key</key>
+			<string>SafetyCheckSafeBrowsingStateOverride</string>
+			<key>DefaultValue</key>
+			<string></string>
+			<key>Values</key>
+			<array>
+				<string></string>
+				<string>SafeBrowsingSafetyCheckState::kUnsafe</string>
+			</array>
+			<key>Titles</key>
+			<array>
+				<string>None</string>
+				<string>Unsafe</string>
+			</array>
+		</dict>
+		<dict>
+			<key>Type</key>
+			<string>PSMultiValueSpecifier</string>
+			<key>Title</key>
+			<string>Weak Passwords Count (Safety Check)</string>
+			<key>Key</key>
+			<string>SafetyCheckWeakPasswordsCountOverride</string>
+			<key>DefaultValue</key>
+			<integer>0</integer>
+			<key>Values</key>
+			<array>
+				<integer>0</integer>
+				<integer>1</integer>
+				<integer>2</integer>
+			</array>
+			<key>Titles</key>
+			<array>
+				<string>Unset</string>
+				<string>1</string>
+				<string>2</string>
+			</array>
+		</dict>
+		<dict>
+			<key>Type</key>
+			<string>PSMultiValueSpecifier</string>
+			<key>Title</key>
+			<string>Reused Passwords Count (Safety Check)</string>
+			<key>Key</key>
+			<string>SafetyCheckReusedPasswordsCountOverride</string>
+			<key>DefaultValue</key>
+			<integer>0</integer>
+			<key>Values</key>
+			<array>
+				<integer>0</integer>
+				<integer>1</integer>
+				<integer>2</integer>
+			</array>
+			<key>Titles</key>
+			<array>
+				<string>Unset</string>
+				<string>1</string>
+				<string>2</string>
+			</array>
+		</dict>
+		<dict>
+			<key>Type</key>
+			<string>PSMultiValueSpecifier</string>
+			<key>Title</key>
+			<string>Compromised Passwords Count (Safety Check)</string>
+			<key>Key</key>
+			<string>SafetyCheckCompromisedPasswordsCountOverride</string>
+			<key>DefaultValue</key>
+			<integer>0</integer>
+			<key>Values</key>
+			<array>
+				<integer>0</integer>
+				<integer>1</integer>
+				<integer>2</integer>
+			</array>
+			<key>Titles</key>
+			<array>
+				<string>Unset</string>
+				<string>1</string>
+				<string>2</string>
+			</array>
+		</dict>
+		<dict>
+			<key>Type</key>
+			<string>PSToggleSwitchSpecifier</string>
+			<key>Title</key>
+			<string>WidgetKit refresh 5 minutes</string>
+			<key>Key</key>
+			<string>WidgetKitRefreshFiveMinutes</string>
+			<key>DefaultValue</key>
+			<false/>
+		</dict>
+		<dict>
+			<key>Type</key>
+			<string>PSGroupSpecifier</string>
+			<key>Title</key>
+			<string>Debug Settings</string>
+		</dict>
+		<dict>
+			<key>Type</key>
+			<string>PSToggleSwitchSpecifier</string>
+			<key>Title</key>
+			<string>Enable Startup Crash</string>
+			<key>Key</key>
+			<string>EnableStartupCrash</string>
+			<key>DefaultValue</key>
+			<false/>
+		</dict>
+		<dict>
+			<key>Type</key>
+			<string>PSToggleSwitchSpecifier</string>
+			<key>Title</key>
+			<string>Enable Memory Debugging</string>
+			<key>Key</key>
+			<string>EnableMemoryDebugging</string>
+			<key>DefaultValue</key>
+			<false/>
+		</dict>
+		<dict>
+			<key>Type</key>
+			<string>PSToggleSwitchSpecifier</string>
+			<key>Title</key>
+			<string>Enable Omnibox Debugging</string>
+			<key>Key</key>
+			<string>EnableOmniboxDebugging</string>
+			<key>DefaultValue</key>
+			<false/>
+		</dict>
+		<dict>
+			<key>Type</key>
+			<string>PSToggleSwitchSpecifier</string>
+			<key>Title</key>
+			<string>Enable Spotlight Debugging</string>
+			<key>Key</key>
+			<string>EnableSpotlightDebugging</string>
+			<key>DefaultValue</key>
+			<false/>
+		</dict>
+		<dict>
+			<key>Type</key>
+			<string>PSToggleSwitchSpecifier</string>
+			<key>Title</key>
+			<string>Use Mobile Safari UA</string>
+			<key>Key</key>
+			<string>UseMobileSafariUA</string>
+			<key>DefaultValue</key>
+			<false/>
+		</dict>
+		<dict>
+			<key>Type</key>
+			<string>PSMultiValueSpecifier</string>
+			<key>Title</key>
+			<string>Add google.com tabs on startup</string>
+			<key>Key</key>
+			<string>AddLotsOfTabs</string>
+			<key>DefaultValue</key>
+			<integer>0</integer>
+			<key>Values</key>
+			<array>
+				<integer>0</integer>
+				<integer>100</integer>
+				<integer>1000</integer>
+				<integer>10000</integer>
+			</array>
+			<key>Titles</key>
+			<array>
+				<string>Unset</string>
+				<string>100</string>
+				<string>1000</string>
+				<string>10000 (this can OOM debug builds)</string>
+			</array>
+		</dict>
+		<dict>
+			<key>Type</key>
+			<string>PSGroupSpecifier</string>
+			<key>Title</key>
+			<string>Enterprise Settings</string>
+		</dict>
+		<dict>
+			<key>Type</key>
+			<string>PSToggleSwitchSpecifier</string>
+			<key>Title</key>
+			<string>Enable Sample Policies</string>
+			<key>Key</key>
+			<string>EnableSamplePolicies</string>
+			<key>DefaultValue</key>
+			<false/>
+		</dict>
+		<dict>
+			<key>Type</key>
+			<string>PSToggleSwitchSpecifier</string>
+			<key>Title</key>
+			<string>Add Managed Bookmarks</string>
+			<key>Key</key>
+			<string>AddManagedBookmarks</string>
+			<key>DefaultValue</key>
+			<false/>
+		</dict>
+		<dict>
+			<key>Type</key>
+			<string>PSToggleSwitchSpecifier</string>
+			<key>Title</key>
+			<string>Enable SyncDisabled</string>
+			<key>Key</key>
+			<string>EnableSyncDisabledPolicy</string>
+			<key>DefaultValue</key>
+			<false/>
+		</dict>
+		<dict>
+			<key>Type</key>
+			<string>PSChildPaneSpecifier</string>
+			<key>Title</key>
+			<string>SyncTypesListDisabled</string>
+			<key>File</key>
+			<string>ExperimentalSyncTypesListDisabled</string>
+		</dict>
+		<dict>
+			<key>Type</key>
+			<string>PSMultiValueSpecifier</string>
+			<key>Title</key>
+			<string>Incognito Mode</string>
+			<key>Key</key>
+			<string>IncognitoModeAvailability</string>
+			<key>DefaultValue</key>
+			<integer>0</integer>
+			<key>Values</key>
+			<array>
+				<integer>0</integer>
+				<integer>1</integer>
+				<integer>2</integer>
+			</array>
+			<key>Titles</key>
+			<array>
+				<string>Default</string>
+				<string>Disabled</string>
+				<string>Forced</string>
+			</array>
+		</dict>
+		<dict>
+			<key>Type</key>
+			<string>PSMultiValueSpecifier</string>
+			<key>Title</key>
+			<string>Signin Mode</string>
+			<key>Key</key>
+			<string>BrowserSignin</string>
+			<key>DefaultValue</key>
+			<integer>0</integer>
+			<key>Values</key>
+			<array>
+				<integer>0</integer>
+				<integer>1</integer>
+				<integer>2</integer>
+				<integer>3</integer>
+			</array>
+			<key>Titles</key>
+			<array>
+				<string>Default</string>
+				<string>Disable browser sign-in</string>
+				<string>Enable browser sign-in</string>
+				<string>Force browser sign-in</string>
+			</array>
+		</dict>
+		<dict>
+			<key>Type</key>
+			<string>PSMultiValueSpecifier</string>
+			<key>Title</key>
+			<string>UMA Reporting</string>
+			<key>Key</key>
+			<string>MetricsReportingEnabled</string>
+			<key>DefaultValue</key>
+			<integer>0</integer>
+			<key>Values</key>
+			<array>
+				<integer>0</integer>
+				<integer>1</integer>
+				<integer>2</integer>
+			</array>
+			<key>Titles</key>
+			<array>
+				<string>Default</string>
+				<string>UMA Reporting Forced</string>
+				<string>UMA Reporting Disabled</string>
+			</array>
+		</dict>
+		<dict>
+			<key>Type</key>
+			<string>PSTextFieldSpecifier</string>
+			<key>Title</key>
+			<string>CBCM Enrollment Token</string>
+			<key>Key</key>
+			<string>CloudManagementEnrollmentToken</string>
+			<key>DefaultValue</key>
+			<string></string>
+			<key>AutocorrectionType</key>
+			<string>No</string>
+		</dict>
+		<dict>
+			<key>Type</key>
+			<string>PSTextFieldSpecifier</string>
+			<key>Title</key>
+			<string>Restrict accounts to pattern</string>
+			<key>Key</key>
+			<string>RestrictAccountsToPatterns</string>
+			<key>DefaultValue</key>
+			<string></string>
+			<key>AutocorrectionType</key>
+			<string>No</string>
+		</dict>
+		<dict>
+			<key>Type</key>
+			<string>PSTextFieldSpecifier</string>
+			<key>Title</key>
+			<string>NTP Location</string>
+			<key>Key</key>
+			<string>NTPLocation</string>
+			<key>DefaultValue</key>
+			<string></string>
+			<key>AutocorrectionType</key>
+			<string>No</string>
+		</dict>
+		<dict>
+			<key>Type</key>
+			<string>PSToggleSwitchSpecifier</string>
+			<key>Title</key>
+			<string>Disallow Chrome Data In Backups</string>
+			<key>Key</key>
+			<string>DisallowChromeDataInBackups</string>
+			<key>DefaultValue</key>
+			<false/>
+		</dict>
+		<dict>
+			<key>Type</key>
+			<string>PSToggleSwitchSpecifier</string>
+			<key>Title</key>
+			<string>Disable password manager</string>
+			<key>Key</key>
+			<string>DisablePasswordManagerPolicy</string>
+			<key>DefaultValue</key>
+			<false/>
+		</dict>
+		<dict>
+			<key>Type</key>
+			<string>PSToggleSwitchSpecifier</string>
+			<key>Title</key>
+			<string>Enable User Policy Merge</string>
+			<key>Key</key>
+			<string>EnableUserPolicyMerge</string>
+			<key>DefaultValue</key>
+			<false/>
+		</dict>
+		<dict>
+			<key>Type</key>
+			<string>PSGroupSpecifier</string>
+			<key>Title</key>
+			<string>Google App Ecosystem</string>
+		</dict>
+		<dict>
+			<key>Type</key>
+			<string>PSMultiValueSpecifier</string>
+			<key>Title</key>
+			<string>Gaia Environment</string>
+			<key>Key</key>
+			<string>GAIAEnvironment</string>
+			<key>DefaultValue</key>
+			<string></string>
+			<key>Values</key>
+			<array>
+				<string></string>
+				<string>Staging</string>
+				<string>Test</string>
+			</array>
+			<key>Titles</key>
+			<array>
+				<string>Prod</string>
+				<string>Staging</string>
+				<string>Test</string>
+			</array>
+		</dict>
+		<dict>
+			<key>Type</key>
+			<string>PSToggleSwitchSpecifier</string>
+			<key>Title</key>
+			<string>Clear Application Group sandbox</string>
+			<key>Key</key>
+			<string>ClearApplicationGroup</string>
+			<key>DefaultValue</key>
+			<false/>
+		</dict>
+		<dict>
+			<key>Type</key>
+			<string>PSTextFieldSpecifier</string>
+			<key>Title</key>
+			<string>Origin Server Host</string>
+			<key>Key</key>
+			<string>AlternateOriginServerHost</string>
+			<key>DefaultValue</key>
+			<string></string>
+			<key>AutocorrectionType</key>
+			<string>No</string>
+		</dict>
+	</array>
+</dict>
+</plist>

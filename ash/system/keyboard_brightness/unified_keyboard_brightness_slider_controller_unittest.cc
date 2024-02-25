@@ -4,10 +4,8 @@
 
 #include "ash/system/keyboard_brightness/unified_keyboard_brightness_slider_controller.h"
 
-#include "ash/constants/ash_features.h"
 #include "ash/system/unified/unified_system_tray.h"
 #include "ash/test/ash_test_base.h"
-#include "base/test/scoped_feature_list.h"
 #include "ui/views/controls/slider.h"
 
 namespace ash {
@@ -22,7 +20,6 @@ class UnifiedKeyboardBrightnessSliderControllerTest : public AshTestBase {
   ~UnifiedKeyboardBrightnessSliderControllerTest() override = default;
 
   void SetUp() override {
-    feature_list_.InitAndEnableFeature(features::kQsRevamp);
     AshTestBase::SetUp();
 
     controller_ = std::make_unique<UnifiedKeyboardBrightnessSliderController>(
@@ -53,7 +50,6 @@ class UnifiedKeyboardBrightnessSliderControllerTest : public AshTestBase {
   std::unique_ptr<UnifiedKeyboardBrightnessSliderController> controller_ =
       nullptr;
   std::unique_ptr<UnifiedSliderView> keyboard_brightness_slider_ = nullptr;
-  base::test::ScopedFeatureList feature_list_;
 };
 
 // Tests to ensure that the `slider_button` does not handle any events,

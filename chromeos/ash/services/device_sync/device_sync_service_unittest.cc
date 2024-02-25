@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <tuple>
 #include <vector>
@@ -12,7 +13,6 @@
 #include "base/functional/callback.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
-#include "base/memory/raw_ptr_exclusion.h"
 #include "base/memory/raw_ref.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/no_destructor.h"
@@ -66,7 +66,6 @@
 #include "components/signin/public/identity_manager/identity_test_environment.h"
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ash {
 
@@ -221,12 +220,10 @@ class FakeCryptAuthGCMManagerFactory : public CryptAuthGCMManagerImpl::Factory {
     return instance;
   }
 
-  raw_ptr<gcm::FakeGCMDriver, DanglingUntriaged | ExperimentalAsh>
-      fake_gcm_driver_;
-  raw_ptr<TestingPrefServiceSimple, ExperimentalAsh> test_pref_service_;
+  raw_ptr<gcm::FakeGCMDriver, DanglingUntriaged> fake_gcm_driver_;
+  raw_ptr<TestingPrefServiceSimple> test_pref_service_;
   std::string initial_registration_id_;
-  raw_ptr<FakeCryptAuthGCMManager, DanglingUntriaged | ExperimentalAsh>
-      instance_ = nullptr;
+  raw_ptr<FakeCryptAuthGCMManager, DanglingUntriaged> instance_ = nullptr;
 };
 
 class FakeCryptAuthDeviceManagerFactory
@@ -265,13 +262,11 @@ class FakeCryptAuthDeviceManagerFactory
     return instance;
   }
 
-  raw_ptr<base::SimpleTestClock, ExperimentalAsh> simple_test_clock_;
-  raw_ptr<FakeCryptAuthGCMManagerFactory, ExperimentalAsh>
-      fake_cryptauth_gcm_manager_factory_;
-  raw_ptr<TestingPrefServiceSimple, ExperimentalAsh> test_pref_service_;
+  raw_ptr<base::SimpleTestClock> simple_test_clock_;
+  raw_ptr<FakeCryptAuthGCMManagerFactory> fake_cryptauth_gcm_manager_factory_;
+  raw_ptr<TestingPrefServiceSimple> test_pref_service_;
 
-  raw_ptr<FakeCryptAuthDeviceManager, DanglingUntriaged | ExperimentalAsh>
-      instance_ = nullptr;
+  raw_ptr<FakeCryptAuthDeviceManager, DanglingUntriaged> instance_ = nullptr;
 };
 
 class FakeCryptAuthDeviceRegistry : public CryptAuthDeviceRegistry {
@@ -309,9 +304,8 @@ class FakeCryptAuthDeviceRegistryFactory
     return instance;
   }
 
-  raw_ptr<TestingPrefServiceSimple, ExperimentalAsh> test_pref_service_;
-  raw_ptr<FakeCryptAuthDeviceRegistry, DanglingUntriaged | ExperimentalAsh>
-      instance_ = nullptr;
+  raw_ptr<TestingPrefServiceSimple> test_pref_service_;
+  raw_ptr<FakeCryptAuthDeviceRegistry, DanglingUntriaged> instance_ = nullptr;
 };
 
 class FakeCryptAuthKeyRegistry : public CryptAuthKeyRegistry {
@@ -349,9 +343,8 @@ class FakeCryptAuthKeyRegistryFactory
     return instance;
   }
 
-  raw_ptr<TestingPrefServiceSimple, ExperimentalAsh> test_pref_service_;
-  raw_ptr<FakeCryptAuthKeyRegistry, DanglingUntriaged | ExperimentalAsh>
-      instance_ = nullptr;
+  raw_ptr<TestingPrefServiceSimple> test_pref_service_;
+  raw_ptr<FakeCryptAuthKeyRegistry, DanglingUntriaged> instance_ = nullptr;
 };
 
 class FakeCryptAuthSchedulerFactory : public CryptAuthSchedulerImpl::Factory {
@@ -384,9 +377,8 @@ class FakeCryptAuthSchedulerFactory : public CryptAuthSchedulerImpl::Factory {
     return instance;
   }
 
-  raw_ptr<TestingPrefServiceSimple, ExperimentalAsh> test_pref_service_;
-  raw_ptr<FakeCryptAuthScheduler, DanglingUntriaged | ExperimentalAsh>
-      instance_ = nullptr;
+  raw_ptr<TestingPrefServiceSimple> test_pref_service_;
+  raw_ptr<FakeCryptAuthScheduler, DanglingUntriaged> instance_ = nullptr;
 };
 
 class FakeCryptAuthV2DeviceManagerFactory
@@ -441,18 +433,13 @@ class FakeCryptAuthV2DeviceManagerFactory
   }
 
   cryptauthv2::ClientAppMetadata client_app_metadata_;
-  raw_ptr<FakeCryptAuthDeviceRegistryFactory, ExperimentalAsh>
-      fake_device_registry_factory_ = nullptr;
-  raw_ptr<FakeCryptAuthKeyRegistryFactory, ExperimentalAsh>
-      fake_key_registry_factory_ = nullptr;
-  raw_ptr<FakeCryptAuthGCMManagerFactory, ExperimentalAsh>
-      fake_gcm_manager_factory_ = nullptr;
-  raw_ptr<FakeCryptAuthSchedulerFactory, ExperimentalAsh>
-      fake_scheduler_factory_ = nullptr;
-  raw_ptr<TestingPrefServiceSimple, ExperimentalAsh> test_pref_service_ =
+  raw_ptr<FakeCryptAuthDeviceRegistryFactory> fake_device_registry_factory_ =
       nullptr;
-  raw_ptr<FakeCryptAuthV2DeviceManager, DanglingUntriaged | ExperimentalAsh>
-      instance_ = nullptr;
+  raw_ptr<FakeCryptAuthKeyRegistryFactory> fake_key_registry_factory_ = nullptr;
+  raw_ptr<FakeCryptAuthGCMManagerFactory> fake_gcm_manager_factory_ = nullptr;
+  raw_ptr<FakeCryptAuthSchedulerFactory> fake_scheduler_factory_ = nullptr;
+  raw_ptr<TestingPrefServiceSimple> test_pref_service_ = nullptr;
+  raw_ptr<FakeCryptAuthV2DeviceManager, DanglingUntriaged> instance_ = nullptr;
 };
 
 class FakeCryptAuthEnrollmentManagerFactory
@@ -504,13 +491,12 @@ class FakeCryptAuthEnrollmentManagerFactory
   }
 
  private:
-  raw_ptr<base::SimpleTestClock, ExperimentalAsh> simple_test_clock_;
-  raw_ptr<FakeCryptAuthGCMManagerFactory, ExperimentalAsh>
-      fake_cryptauth_gcm_manager_factory_;
-  raw_ptr<TestingPrefServiceSimple, ExperimentalAsh> test_pref_service_;
+  raw_ptr<base::SimpleTestClock> simple_test_clock_;
+  raw_ptr<FakeCryptAuthGCMManagerFactory> fake_cryptauth_gcm_manager_factory_;
+  raw_ptr<TestingPrefServiceSimple> test_pref_service_;
   bool device_already_enrolled_in_cryptauth_ = false;
-  raw_ptr<FakeCryptAuthEnrollmentManager, DanglingUntriaged | ExperimentalAsh>
-      instance_ = nullptr;
+  raw_ptr<FakeCryptAuthEnrollmentManager, DanglingUntriaged> instance_ =
+      nullptr;
 };
 
 class FakeCryptAuthV2EnrollmentManagerFactory
@@ -572,17 +558,14 @@ class FakeCryptAuthV2EnrollmentManagerFactory
 
  private:
   cryptauthv2::ClientAppMetadata client_app_metadata_;
-  raw_ptr<FakeCryptAuthKeyRegistryFactory, ExperimentalAsh>
-      fake_cryptauth_key_registry_factory_;
-  raw_ptr<FakeCryptAuthGCMManagerFactory, ExperimentalAsh>
-      fake_cryptauth_gcm_manager_factory_;
-  raw_ptr<FakeCryptAuthSchedulerFactory, ExperimentalAsh>
-      fake_cryptauth_scheduler_factory_;
-  raw_ptr<TestingPrefServiceSimple, ExperimentalAsh> test_pref_service_;
-  raw_ptr<base::SimpleTestClock, ExperimentalAsh> simple_test_clock_;
+  raw_ptr<FakeCryptAuthKeyRegistryFactory> fake_cryptauth_key_registry_factory_;
+  raw_ptr<FakeCryptAuthGCMManagerFactory> fake_cryptauth_gcm_manager_factory_;
+  raw_ptr<FakeCryptAuthSchedulerFactory> fake_cryptauth_scheduler_factory_;
+  raw_ptr<TestingPrefServiceSimple> test_pref_service_;
+  raw_ptr<base::SimpleTestClock> simple_test_clock_;
   bool device_already_enrolled_in_cryptauth_ = false;
-  raw_ptr<FakeCryptAuthEnrollmentManager, DanglingUntriaged | ExperimentalAsh>
-      instance_ = nullptr;
+  raw_ptr<FakeCryptAuthEnrollmentManager, DanglingUntriaged> instance_ =
+      nullptr;
 };
 
 class FakeRemoteDeviceProviderFactory
@@ -648,22 +631,19 @@ class FakeRemoteDeviceProviderFactory
   }
 
  private:
-  const raw_ref<const multidevice::RemoteDeviceList, ExperimentalAsh>
-      initial_devices_;
+  const raw_ref<const multidevice::RemoteDeviceList> initial_devices_;
 
-  raw_ptr<signin::IdentityManager, DanglingUntriaged | ExperimentalAsh>
-      identity_manager_;
-  raw_ptr<FakeCryptAuthDeviceManagerFactory, ExperimentalAsh>
+  raw_ptr<signin::IdentityManager, DanglingUntriaged> identity_manager_;
+  raw_ptr<FakeCryptAuthDeviceManagerFactory>
       fake_cryptauth_device_manager_factory_;
-  raw_ptr<FakeCryptAuthV2DeviceManagerFactory, ExperimentalAsh>
+  raw_ptr<FakeCryptAuthV2DeviceManagerFactory>
       fake_cryptauth_v2_device_manager_factory_;
-  raw_ptr<FakeCryptAuthEnrollmentManagerFactory, ExperimentalAsh>
+  raw_ptr<FakeCryptAuthEnrollmentManagerFactory>
       fake_cryptauth_enrollment_manager_factory_;
-  raw_ptr<FakeCryptAuthV2EnrollmentManagerFactory, ExperimentalAsh>
+  raw_ptr<FakeCryptAuthV2EnrollmentManagerFactory>
       fake_cryptauth_v2_enrollment_manager_factory_;
 
-  raw_ptr<FakeRemoteDeviceProvider, DanglingUntriaged | ExperimentalAsh>
-      instance_ = nullptr;
+  raw_ptr<FakeRemoteDeviceProvider, DanglingUntriaged> instance_ = nullptr;
 };
 
 class FakeSoftwareFeatureManagerFactory
@@ -690,9 +670,7 @@ class FakeSoftwareFeatureManagerFactory
   }
 
  private:
-  // This field is not a raw_ptr<> because it was filtered by the rewriter
-  // for: #constexpr-ctor-field-initializer
-  RAW_PTR_EXCLUSION FakeSoftwareFeatureManager* instance_ = nullptr;
+  raw_ptr<FakeSoftwareFeatureManager, DanglingUntriaged> instance_ = nullptr;
 };
 
 }  // namespace
@@ -732,7 +710,7 @@ class DeviceSyncServiceTest
 
    private:
     std::unique_ptr<base::MockOneShotTimer> mock_timer_;
-    raw_ptr<base::SimpleTestClock, ExperimentalAsh> simple_test_clock_;
+    raw_ptr<base::SimpleTestClock> simple_test_clock_;
   };
 
   DeviceSyncServiceTest()
@@ -1080,7 +1058,7 @@ class DeviceSyncServiceTest
               success ? CryptAuthDeviceSyncResult::ResultCode::kSuccess
                       : CryptAuthDeviceSyncResult::ResultCode::
                             kErrorSyncMetadataApiCallBadRequest,
-              !updated_devices.empty(), absl::nullopt /* client_directive */),
+              !updated_devices.empty(), std::nullopt /* client_directive */),
           base::Time::Now());
     }
 
@@ -1342,8 +1320,7 @@ class DeviceSyncServiceTest
     return last_better_together_metadata_status_result_;
   }
 
-  const absl::optional<multidevice::RemoteDevice>&
-  CallGetLocalDeviceMetadata() {
+  const std::optional<multidevice::RemoteDevice>& CallGetLocalDeviceMetadata() {
     base::RunLoop run_loop;
     device_sync_->GetLocalDeviceMetadata(base::BindOnce(
         &DeviceSyncServiceTest::OnGetLocalDeviceMetadataCompleted,
@@ -1352,7 +1329,7 @@ class DeviceSyncServiceTest
     return last_local_device_metadata_result_;
   }
 
-  const absl::optional<multidevice::RemoteDeviceList>& CallGetSyncedDevices() {
+  const std::optional<multidevice::RemoteDeviceList>& CallGetSyncedDevices() {
     base::RunLoop run_loop;
     device_sync_->GetSyncedDevices(
         base::BindOnce(&DeviceSyncServiceTest::OnGetSyncedDevicesCompleted,
@@ -1467,7 +1444,7 @@ class DeviceSyncServiceTest
     fake_device_notifier()->set_delegate(nullptr);
   }
 
-  const absl::optional<mojom::DebugInfo>& CallGetDebugInfo() {
+  const std::optional<mojom::DebugInfo>& CallGetDebugInfo() {
     base::RunLoop run_loop;
     device_sync_->GetDebugInfo(
         base::BindOnce(&DeviceSyncServiceTest::OnGetDebugInfoCompleted,
@@ -1574,14 +1551,14 @@ class DeviceSyncServiceTest
 
   void OnGetLocalDeviceMetadataCompleted(
       base::OnceClosure quit_closure,
-      const absl::optional<multidevice::RemoteDevice>& local_device_metadata) {
+      const std::optional<multidevice::RemoteDevice>& local_device_metadata) {
     last_local_device_metadata_result_ = local_device_metadata;
     std::move(quit_closure).Run();
   }
 
   void OnGetSyncedDevicesCompleted(
       base::OnceClosure quit_closure,
-      const absl::optional<multidevice::RemoteDeviceList>& synced_devices) {
+      const std::optional<multidevice::RemoteDeviceList>& synced_devices) {
     last_synced_devices_result_ = synced_devices;
     std::move(quit_closure).Run();
   }
@@ -1657,8 +1634,7 @@ class DeviceSyncServiceTest
 
   std::unique_ptr<NetworkHandlerTestHelper> network_handler_test_helper_;
   std::unique_ptr<TestingPrefServiceSimple> test_pref_service_;
-  raw_ptr<base::MockOneShotTimer, DanglingUntriaged | ExperimentalAsh>
-      mock_timer_;
+  raw_ptr<base::MockOneShotTimer, DanglingUntriaged> mock_timer_;
   std::unique_ptr<base::SimpleTestClock> simple_test_clock_;
   std::unique_ptr<FakeDeviceSyncImplFactory> fake_device_sync_impl_factory_;
   std::unique_ptr<FakeCryptAuthGCMManagerFactory>
@@ -1697,14 +1673,14 @@ class DeviceSyncServiceTest
   bool last_force_sync_now_result_;
   GroupPrivateKeyStatus last_group_private_key_status_result_;
   BetterTogetherMetadataStatus last_better_together_metadata_status_result_;
-  absl::optional<multidevice::RemoteDeviceList> last_synced_devices_result_;
-  absl::optional<multidevice::RemoteDevice> last_local_device_metadata_result_;
+  std::optional<multidevice::RemoteDeviceList> last_synced_devices_result_;
+  std::optional<multidevice::RemoteDevice> last_local_device_metadata_result_;
   std::unique_ptr<mojom::NetworkRequestResult>
       last_set_software_feature_state_response_;
   std::unique_ptr<std::pair<mojom::NetworkRequestResult,
                             mojom::FindEligibleDevicesResponsePtr>>
       last_find_eligible_devices_response_;
-  absl::optional<mojom::DebugInfo> last_debug_info_result_;
+  std::optional<mojom::DebugInfo> last_debug_info_result_;
   std::vector<mojom::NetworkRequestResult> set_feature_status_results_;
   std::vector<mojom::NetworkRequestResult> notify_devices_results_;
 
@@ -1797,7 +1773,7 @@ TEST_P(DeviceSyncServiceTest, ClientAppMetadataFetch) {
       std::move(fake_client_app_metadata_provider()
                     ->metadata_requests()[attempt - 1]
                     .callback)
-          .Run(absl::nullopt /* client_app_metadata */);
+          .Run(std::nullopt /* client_app_metadata */);
       EXPECT_TRUE(mock_timer()->IsRunning());  // Retry timer is running.
       mock_timer()->Fire();
     } else if (attempt == 3) {
@@ -2529,12 +2505,12 @@ TEST_P(DeviceSyncServiceTest, GetDebugInfo) {
   if (features::ShouldUseV2DeviceSync()) {
     fake_cryptauth_v2_device_manager()->ForceDeviceSyncNow(
         cryptauthv2::ClientMetadata::MANUAL /* invocation_reason */,
-        absl::nullopt /* session_id */);
+        std::nullopt /* session_id */);
     fake_cryptauth_v2_device_manager()->FinishNextForcedDeviceSync(
         CryptAuthDeviceSyncResult(
             CryptAuthDeviceSyncResult::ResultCode::kSuccess,
             true /* did_device_registry_change */,
-            absl::nullopt /* client_directive */),
+            std::nullopt /* client_directive */),
         base::Time::FromDeltaSinceWindowsEpoch(
             kTimeBetweenEpochAndLastSync) /* device_sync_finish_time */);
     fake_cryptauth_v2_device_manager()->set_time_to_next_attempt(

@@ -49,7 +49,7 @@ class ZipIOTask : public IOTask {
   void OnZipProgress();
   void OnZipComplete();
 
-  raw_ptr<Profile, ExperimentalAsh> profile_;
+  raw_ptr<Profile> profile_;
   scoped_refptr<storage::FileSystemContext> file_system_context_;
 
   size_t files_preprocessed_ = 0;

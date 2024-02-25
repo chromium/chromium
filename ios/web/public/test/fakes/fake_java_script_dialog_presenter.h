@@ -5,18 +5,20 @@
 #ifndef IOS_WEB_PUBLIC_TEST_FAKES_FAKE_JAVA_SCRIPT_DIALOG_PRESENTER_H_
 #define IOS_WEB_PUBLIC_TEST_FAKES_FAKE_JAVA_SCRIPT_DIALOG_PRESENTER_H_
 
+#import "ios/web/public/ui/java_script_dialog_presenter.h"
+
 #include <memory>
 #include <vector>
 
 #import "base/functional/callback.h"
-#import "ios/web/public/ui/java_script_dialog_presenter.h"
+#import "base/memory/raw_ptr.h"
 
 namespace web {
 
 struct FakeJavaScriptAlertDialog {
   FakeJavaScriptAlertDialog();
   ~FakeJavaScriptAlertDialog();
-  WebState* web_state = nullptr;
+  raw_ptr<WebState> web_state = nullptr;
   GURL origin_url;
   NSString* message_text;
   base::OnceClosure callback;
@@ -25,7 +27,7 @@ struct FakeJavaScriptAlertDialog {
 struct FakeJavaScriptConfirmDialog {
   FakeJavaScriptConfirmDialog();
   ~FakeJavaScriptConfirmDialog();
-  WebState* web_state = nullptr;
+  raw_ptr<WebState> web_state = nullptr;
   GURL origin_url;
   NSString* message_text;
   base::OnceCallback<void(bool success)> callback;
@@ -34,7 +36,7 @@ struct FakeJavaScriptConfirmDialog {
 struct FakeJavaScriptPromptDialog {
   FakeJavaScriptPromptDialog();
   ~FakeJavaScriptPromptDialog();
-  WebState* web_state = nullptr;
+  raw_ptr<WebState> web_state = nullptr;
   GURL origin_url;
   NSString* message_text;
   NSString* default_prompt_text;

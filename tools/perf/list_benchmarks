@@ -5,7 +5,7 @@
 
 from __future__ import print_function
 
-import optparse
+import argparse
 import sys
 
 from core import path_util
@@ -16,19 +16,16 @@ from telemetry import decorators
 
 
 def _CreateParser():
-  parser = optparse.OptionParser()
-  parser.add_option('--include-contrib', action='store_true', default=False,
-                    help="also list contrib (non-waterfall) benchmarks")
+  parser = argparse.ArgumentParser()
+  parser.add_argument('--include-contrib', action='store_true', default=False,
+                      help='Also list contrib (non-waterfall) benchmarks')
   return parser
 
-def main(args):
+def main():
   parser = _CreateParser()
-  options, extra_args = parser.parse_args(args)
+  args = parser.parse_args()
 
-  if extra_args:
-    parser.error('Unexpected command line arguments')
-
-  if options.include_contrib:
+  if args.include_contrib:
     benchmarks = benchmark_finders.GetAllBenchmarks()
   else:
     benchmarks = benchmark_finders.GetOfficialBenchmarks()
@@ -38,4 +35,4 @@ def main(args):
 
 
 if __name__ == '__main__':
-  sys.exit(main(sys.argv[1:]))
+  sys.exit(main())

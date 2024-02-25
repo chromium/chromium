@@ -33,7 +33,11 @@
     margin-inline-start: 0;
   }
 
-  #apnRowSublabel {
+  #apnRow {
+    height: var(--cr-section-two-line-min-height);
+  }
+
+  #apnRowSublabel:not([warning]) {
     color: var(--cros-text-color-positive);
   }
 
@@ -76,13 +80,13 @@
       warning$="[[showRestrictedConnectivity_(managedProperties_)]]">
     [[getStateText_(managedProperties_)]]
   </div>
-  <cr-button class="signin-button" id="signinButton" on-click="onSigninTap_"
+  <cr-button class="signin-button" id="signinButton" on-click="onSigninClicked_"
       hidden$="[[!showSignin_(managedProperties_)]]"
       disabled="[[disableSignin_(managedProperties_, disabled_)]]">
     <div class="signin-icon cr-icon icon-external"></div>
     $i18n{networkButtonSignin}
   </cr-button>
-  <cr-button on-click="onForgetTap_"
+  <cr-button on-click="onForgetClicked_"
       hidden$="[[!showForget_(managedProperties_)]]"
       disabled="[[disabled_]]">
     $i18n{networkButtonForget}
@@ -134,10 +138,12 @@
   <template is="dom-if"
       if="[[shouldShowApnSection_(managedProperties_,
           isApnRevampEnabled_)]]">
-    <cr-expand-button class="settings-box cr-row"
+    <cr-expand-button id="apnRow" class="settings-box cr-row"
         expanded="{{apnExpanded_}}">
       <div id="apnRowTitle">$i18n{internetApnPageTitle}</div>
-      <div id="apnRowSublabel" class="cr-secondary-text">
+      <div id="apnRowSublabel"
+          class="cr-secondary-text"
+          warning$="[[showRestrictedConnectivity_(managedProperties_)]]">
         [[getApnRowSublabel_(managedProperties_, apnExpanded_)]]
       </div>
     </cr-expand-button>
@@ -147,6 +153,7 @@
           managed-cellular-properties="[[managedProperties_.typeProperties.cellular]]"
           guid="[[guid]]"
           error-state="[[managedProperties_.errorState]]"
+          portal-state="[[managedProperties_.portalState]]"
           should-omit-links>
       </apn-list>
       <div id="apnButtonTitle">
@@ -194,7 +201,7 @@
     <!-- IP Config -->
     <div class="cr-row">
       <network-ip-config class="flex"
-          editable on-ip-change="onIPConfigChange_"
+          editable on-ip-change="onIpConfigChange_"
           managed-properties="[[managedProperties_]]"
           disabled="[[disabled_]]">
       </network-ip-config>
@@ -203,7 +210,7 @@
     <!-- Nameservers -->
     <div class="cr-row">
       <network-nameservers class="flex" editable
-          on-nameservers-change="onIPConfigChange_"
+          on-nameservers-change="onIpConfigChange_"
           managed-properties="[[managedProperties_]]"
           disabled="[[disabled_]]">
       </network-nameservers>
@@ -213,7 +220,8 @@
   <div class="cr-row">
     <!-- MAC Address. -->
     <div class="property-box single-column two-line"
-        hidden$="[[!deviceState_.macAddress]]">
+        id="macAddress"
+        hidden$="[[!shouldShowMacAddress_(deviceState_.macAddress)]]">
       <div>$i18n{OncMacAddress}</div>
       <div class="secondary">[[deviceState_.macAddress]]</div>
     </div>
@@ -229,4 +237,10 @@
       </network-property-list-mojo>
     </div>
   </template>
+</template>
+
+<template is="dom-if" if="[[isApnRevampEnabled_]]" restamp>
+  <cr-toast id="errorToast" duration="5000">
+    <span id="errorToastMessage">[[errorToastMessage_]]</span>
+  </cr-toast>
 </template>

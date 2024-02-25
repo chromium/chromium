@@ -11,8 +11,10 @@
 #include "base/callback_list.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/timer/elapsed_timer.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/search_engine_choice/search_engine_choice_dialog_service.h"
 #include "chrome/browser/sync/sync_startup_tracker.h"
 #include "chrome/browser/ui/webui/signin/login_ui_service.h"
 #include "chrome/browser/ui/webui/signin/signin_utils.h"
@@ -57,8 +59,10 @@ class TurnSyncOnHelper {
   enum class SigninAbortedMode {
     // The token is revoked and the account is signed out of the web.
     REMOVE_ACCOUNT,
-    // The account is kept.
-    KEEP_ACCOUNT
+    // The account is kept as primary account in Chrome and on the web.
+    KEEP_ACCOUNT,
+    // The primary account is cleared, but the account is kept on the web only.
+    KEEP_ACCOUNT_ON_WEB_ONLY,
   };
 
   // Delegate implementing the UI prompts.
@@ -137,7 +141,6 @@ class TurnSyncOnHelper {
   TurnSyncOnHelper(Profile* profile,
                    signin_metrics::AccessPoint signin_access_point,
                    signin_metrics::PromoAction signin_promo_action,
-                   signin_metrics::Reason signin_reason,
                    const CoreAccountId& account_id,
                    SigninAbortedMode signin_aborted_mode,
                    std::unique_ptr<Delegate> delegate,
@@ -148,7 +151,6 @@ class TurnSyncOnHelper {
                    Browser* browser,
                    signin_metrics::AccessPoint signin_access_point,
                    signin_metrics::PromoAction signin_promo_action,
-                   signin_metrics::Reason signin_reason,
                    const CoreAccountId& account_id,
                    SigninAbortedMode signin_aborted_mode);
 
@@ -215,7 +217,9 @@ class TurnSyncOnHelper {
   void CreateNewSignedInProfile();
 
   // Called when the new profile is created.
-  void OnNewSignedInProfileCreated(Profile* new_profile);
+  void OnNewSignedInProfileCreated(
+      search_engines::ChoiceData search_engine_choice_data,
+      Profile* new_profile);
 
   // Returns the SyncService, or nullptr if sync is not allowed.
   syncer::SyncService* GetSyncService();
@@ -244,12 +248,15 @@ class TurnSyncOnHelper {
   // Aborts the flow and deletes this object.
   void AbortAndDelete();
 
+  // Removes the account on abort taking into consideration if it is the primary
+  // account.
+  void RemoveAccount();
+
   std::unique_ptr<Delegate> delegate_;
   raw_ptr<Profile> profile_;
   raw_ptr<signin::IdentityManager> identity_manager_;
   const signin_metrics::AccessPoint signin_access_point_;
   const signin_metrics::PromoAction signin_promo_action_;
-  const signin_metrics::Reason signin_reason_;
 
   // Whether the refresh token should be deleted if the Sync flow is aborted.
   SigninAbortedMode signin_aborted_mode_;
@@ -274,14 +281,26 @@ class TurnSyncOnHelper {
 #endif
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
   std::unique_ptr<ProfilePickerLacrosSignInProvider> lacros_sign_in_provider_;
+#endif
 
   // The initial primary account is restored if the flow aborts. This is only
-  // needed on Lacros, because the `SigninManager` does it automatically on
-  // DICE platforms.
+  // needed on Lacros or if UNO Desktop is enabled, because the `SigninManager`
+  // does it automatically on DICE platforms.
   CoreAccountId initial_primary_account_;
-#endif
   base::CallbackListSubscription shutdown_subscription_;
   bool enterprise_account_confirmed_ = false;
+
+  // The time at which all user input has been collected, prior to this helper
+  // running heuristics for displaying the sync consent screen.
+  //
+  // When in the flow this is set depends on the properties - for example it
+  // could be:
+  // * At the start of the flow
+  // * After the user completes the user merge choice dialog
+  // * After the user acknowledge enterprise management
+  //
+  // Used for metrics, to output the timing histograms.
+  std::optional<base::ElapsedTimer> user_input_complete_timer_;
 
   base::WeakPtrFactory<TurnSyncOnHelper> weak_pointer_factory_{this};
 };

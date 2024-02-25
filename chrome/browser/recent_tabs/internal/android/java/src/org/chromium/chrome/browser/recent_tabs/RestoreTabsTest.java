@@ -8,10 +8,12 @@ import static androidx.test.espresso.Espresso.onView;
 import static androidx.test.espresso.Espresso.pressBack;
 import static androidx.test.espresso.action.ViewActions.click;
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
+import static androidx.test.espresso.matcher.ViewMatchers.isDescendantOfA;
 import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
 
+import static org.hamcrest.CoreMatchers.allOf;
 import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.eq;
@@ -23,6 +25,8 @@ import static org.mockito.Mockito.verify;
 
 import android.os.Build;
 
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 import androidx.test.filters.MediumTest;
 
 import org.hamcrest.Matchers;
@@ -41,12 +45,10 @@ import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.DisableIf;
-import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.base.test.util.JniMocker;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.recent_tabs.ForeignSessionHelper.ForeignSession;
 import org.chromium.chrome.browser.recent_tabs.ForeignSessionHelper.ForeignSessionTab;
@@ -54,7 +56,6 @@ import org.chromium.chrome.browser.recent_tabs.ForeignSessionHelper.ForeignSessi
 import org.chromium.chrome.browser.tasks.tab_management.TabUiTestHelper;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
-import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.feature_engagement.FeatureConstants;
 import org.chromium.components.feature_engagement.Tracker;
@@ -65,30 +66,24 @@ import org.chromium.url.JUnitTestGURLs;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * Integration tests for the RestoreTabs feature.
- */
+/** Integration tests for the RestoreTabs feature. */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 @Restriction(UiRestriction.RESTRICTION_TYPE_PHONE)
-@EnableFeatures(ChromeFeatureList.RESTORE_TABS_ON_FRE)
 @DoNotBatch(reason = "Tests startup behaviors that trigger per-session")
 public class RestoreTabsTest {
     private static final String RESTORE_TABS_FEATURE = FeatureConstants.RESTORE_TABS_ON_FRE_FEATURE;
 
     @Rule
     public ChromeTabbedActivityTestRule mActivityTestRule = new ChromeTabbedActivityTestRule();
-    @Rule
-    public JniMocker jniMocker = new JniMocker();
 
-    @Spy
-    ForeignSessionHelper.Natives mForeignSessionHelperJniSpy;
+    @Rule public JniMocker jniMocker = new JniMocker();
+
+    @Spy ForeignSessionHelper.Natives mForeignSessionHelperJniSpy;
     // Tell R8 not to break the ability to mock the class.
-    @Spy
-    ForeignSessionHelperJni mUnused;
+    @Spy ForeignSessionHelperJni mUnused;
 
-    @Mock
-    private Tracker mMockTracker;
+    @Mock private Tracker mMockTracker;
 
     private BottomSheetController mBottomSheetController;
 
@@ -96,37 +91,33 @@ public class RestoreTabsTest {
     public void setUp() {
         MockitoAnnotations.initMocks(this);
         mActivityTestRule.startMainActivityOnBlankPage();
-        RestoreTabsFeatureHelper.RESTORE_TABS_PROMO_SKIP_FEATURE_ENGAGEMENT.setForTesting(true);
         TrackerFactory.setTrackerForTests(mMockTracker);
 
         mForeignSessionHelperJniSpy = Mockito.spy(ForeignSessionHelperJni.get());
         jniMocker.mock(ForeignSessionHelperJni.TEST_HOOKS, mForeignSessionHelperJniSpy);
         doReturn(true).when(mForeignSessionHelperJniSpy).isTabSyncEnabled(anyLong());
 
-        mBottomSheetController = mActivityTestRule.getActivity()
-                                         .getRootUiCoordinatorForTesting()
-                                         .getBottomSheetController();
+        mBottomSheetController =
+                mActivityTestRule
+                        .getActivity()
+                        .getRootUiCoordinatorForTesting()
+                        .getBottomSheetController();
     }
 
     @After
     public void tearDown() {
-        RestoreTabsFeatureHelper.RESTORE_TABS_PROMO_SKIP_FEATURE_ENGAGEMENT.setForTesting(false);
         TrackerFactory.setTrackerForTests(null);
     }
 
     @Test
     @MediumTest
-    @DisableIf.
-    Build(supported_abis_includes = "armeabi-v7a", sdk_is_less_than = Build.VERSION_CODES.O,
+    @DisableIf.Build(
+            supported_abis_includes = "armeabi-v7a",
+            sdk_is_less_than = Build.VERSION_CODES.O,
             message = "Flaky only on test-n-phone, crbug.com/1469008")
-    public void
-    testRestoreTabsPromo_triggerBottomSheetView() {
-        // Test using triggerHelpUI methods instead of skip_feature_engagement param
-        RestoreTabsFeatureHelper.RESTORE_TABS_PROMO_SKIP_FEATURE_ENGAGEMENT.setForTesting(false);
-
+    public void testRestoreTabsPromo_triggerBottomSheetView() {
         // Setup mock data
-        ForeignSessionTab tab = new ForeignSessionTab(
-                JUnitTestGURLs.getGURL(JUnitTestGURLs.URL_1), "title", 32L, 0);
+        ForeignSessionTab tab = new ForeignSessionTab(JUnitTestGURLs.URL_1, "title", 32L, 32L, 0);
         List<ForeignSessionTab> tabs = new ArrayList<>();
         tabs.add(tab);
         ForeignSessionWindow window = new ForeignSessionWindow(31L, 1, tabs);
@@ -139,26 +130,29 @@ public class RestoreTabsTest {
 
         doReturn(true).when(mMockTracker).wouldTriggerHelpUI(eq(RESTORE_TABS_FEATURE));
         doReturn(true).when(mMockTracker).shouldTriggerHelpUI(eq(RESTORE_TABS_FEATURE));
-        doAnswer(invocation -> {
-            List<ForeignSession> invoked_sessions = invocation.getArgument(1);
-            invoked_sessions.addAll(sessions);
-            return true;
-        })
+        doAnswer(
+                        invocation -> {
+                            List<ForeignSession> invoked_sessions = invocation.getArgument(1);
+                            invoked_sessions.addAll(sessions);
+                            return true;
+                        })
                 .when(mForeignSessionHelperJniSpy)
                 .getMobileAndTabletForeignSessions(anyLong(), anyList());
 
         TabUiTestHelper.enterTabSwitcher(mActivityTestRule.getActivity());
-        CriteriaHelper.pollUiThread(() -> {
-            Criteria.checkThat("Bottom sheet never fully loaded",
-                    mBottomSheetController.getCurrentSheetContent(),
-                    Matchers.instanceOf(RestoreTabsPromoSheetContent.class));
-        });
-        Assert.assertTrue(mBottomSheetController.getCurrentSheetContent()
-                                  instanceof RestoreTabsPromoSheetContent);
+        CriteriaHelper.pollUiThread(
+                () -> {
+                    Criteria.checkThat(
+                            "Bottom sheet never fully loaded",
+                            mBottomSheetController.getCurrentSheetContent(),
+                            Matchers.instanceOf(RestoreTabsPromoSheetContent.class));
+                });
+        Assert.assertTrue(
+                mBottomSheetController.getCurrentSheetContent()
+                        instanceof RestoreTabsPromoSheetContent);
 
         pressBack();
         verify(mMockTracker, times(1)).dismissed(eq(RESTORE_TABS_FEATURE));
-        RestoreTabsFeatureHelper.RESTORE_TABS_PROMO_SKIP_FEATURE_ENGAGEMENT.setForTesting(true);
     }
 
     @Test
@@ -172,10 +166,10 @@ public class RestoreTabsTest {
 
     @Test
     @MediumTest
-    @DisabledTest(message = "https://crbug.com/1459179")
     public void testRestoreTabsPromo_testOpenDeviceScreenAndRestore() {
+        TabUiTestHelper.createTabs(mActivityTestRule.getActivity(), false, 6);
         setupMultipleDevicesAndTabsMockData();
-        Assert.assertEquals(1, mActivityTestRule.tabsCount(false));
+        Assert.assertEquals(6, mActivityTestRule.tabsCount(false));
         TabUiTestHelper.enterTabSwitcher(mActivityTestRule.getActivity());
 
         // Check the latest device is selected with the proper info.
@@ -186,30 +180,58 @@ public class RestoreTabsTest {
 
         // Clicking on it opens the device sheet.
         onView(withId(R.id.restore_tabs_selected_device_view)).perform(click());
-        onView(withText(mActivityTestRule.getActivity().getString(
-                       R.string.restore_tabs_device_screen_sheet_title)))
+        onView(
+                        withText(
+                                mActivityTestRule
+                                        .getActivity()
+                                        .getString(
+                                                R.string.restore_tabs_device_screen_sheet_title)))
                 .check(matches(isDisplayed()));
 
         // Clicking on another device opens the promo sheet again.
         onView(withText("John's iPhone 6")).check(matches(isDisplayed()));
         onView(withText("John's iPhone 6")).perform(click());
-        onView(withText(mActivityTestRule.getActivity().getString(
-                       R.string.restore_tabs_promo_sheet_title)))
+        onView(
+                        withText(
+                                mActivityTestRule
+                                        .getActivity()
+                                        .getString(R.string.restore_tabs_promo_sheet_title)))
                 .check(matches(isDisplayed()));
-        onView(withText(mActivityTestRule.getActivity().getString(
-                       R.string.restore_tabs_promo_sheet_subtitle_multi_device)))
+        onView(
+                        withText(
+                                mActivityTestRule
+                                        .getActivity()
+                                        .getString(
+                                                R.string
+                                                        .restore_tabs_promo_sheet_subtitle_multi_device)))
                 .check(matches(isDisplayed()));
 
         // Accept the bottom sheet.
         onView(withId(R.id.restore_tabs_button_open_tabs)).check(matches(withText("Open 1 tab")));
         onView(withId(R.id.restore_tabs_button_open_tabs)).perform(click());
-        Assert.assertEquals(2, mActivityTestRule.tabsCount(false));
+        Assert.assertEquals(7, mActivityTestRule.tabsCount(false));
         Assert.assertFalse(mBottomSheetController.isSheetOpen());
+
+        int tabSwitcherAncestorViewId =
+                TabUiTestHelper.getTabSwitcherAncestorId(mActivityTestRule.getActivity());
+        // Make sure the grid tab switcher is scrolled down to show the selected tab.
+        onView(
+                        allOf(
+                                withId(org.chromium.chrome.test.R.id.tab_list_recycler_view),
+                                isDescendantOfA(withId(tabSwitcherAncestorViewId))))
+                .check(
+                        (v, noMatchException) -> {
+                            if (noMatchException != null) throw noMatchException;
+                            Assert.assertTrue(v instanceof RecyclerView);
+                            LinearLayoutManager layoutManager =
+                                    (LinearLayoutManager) ((RecyclerView) v).getLayoutManager();
+                            Assert.assertEquals(
+                                    4, layoutManager.findFirstCompletelyVisibleItemPosition());
+                        });
     }
 
     @Test
     @MediumTest
-    @DisabledTest(message = "https://crbug.com/1459179")
     public void testRestoreTabsPromo_testOpenReviewTabsScreenBackButtonRestore() {
         setupMultipleDevicesAndTabsMockData();
         TabUiTestHelper.enterTabSwitcher(mActivityTestRule.getActivity());
@@ -218,8 +240,13 @@ public class RestoreTabsTest {
 
         // Clicking on the review tabs button.
         onView(withId(R.id.restore_tabs_button_review_tabs)).perform(click());
-        onView(withText(mActivityTestRule.getActivity().getString(
-                       R.string.restore_tabs_review_tabs_screen_sheet_title)))
+        onView(
+                        withText(
+                                mActivityTestRule
+                                        .getActivity()
+                                        .getString(
+                                                R.string
+                                                        .restore_tabs_review_tabs_screen_sheet_title)))
                 .check(matches(isDisplayed()));
 
         // Deselect a tab.
@@ -235,11 +262,19 @@ public class RestoreTabsTest {
 
         // Clicking on the back button opens the promo sheet again.
         onView(withId(R.id.restore_tabs_toolbar_back_image_button)).perform(click());
-        onView(withText(mActivityTestRule.getActivity().getString(
-                       R.string.restore_tabs_promo_sheet_title)))
+        onView(
+                        withText(
+                                mActivityTestRule
+                                        .getActivity()
+                                        .getString(R.string.restore_tabs_promo_sheet_title)))
                 .check(matches(isDisplayed()));
-        onView(withText(mActivityTestRule.getActivity().getString(
-                       R.string.restore_tabs_promo_sheet_subtitle_multi_device)))
+        onView(
+                        withText(
+                                mActivityTestRule
+                                        .getActivity()
+                                        .getString(
+                                                R.string
+                                                        .restore_tabs_promo_sheet_subtitle_multi_device)))
                 .check(matches(isDisplayed()));
 
         // Check that tab selection state for the selected device is persistent.
@@ -251,7 +286,6 @@ public class RestoreTabsTest {
 
     @Test
     @MediumTest
-    @DisabledTest(message = "https://crbug.com/1459179")
     public void testRestoreTabsPromo_testOpenReviewTabsScreenBackPressChangeDevice() {
         setupMultipleDevicesAndTabsMockData();
         TabUiTestHelper.enterTabSwitcher(mActivityTestRule.getActivity());
@@ -260,8 +294,13 @@ public class RestoreTabsTest {
 
         // Clicking on the review tabs button.
         onView(withId(R.id.restore_tabs_button_review_tabs)).perform(click());
-        onView(withText(mActivityTestRule.getActivity().getString(
-                       R.string.restore_tabs_review_tabs_screen_sheet_title)))
+        onView(
+                        withText(
+                                mActivityTestRule
+                                        .getActivity()
+                                        .getString(
+                                                R.string
+                                                        .restore_tabs_review_tabs_screen_sheet_title)))
                 .check(matches(isDisplayed()));
 
         // Ensure tabs exist
@@ -282,11 +321,19 @@ public class RestoreTabsTest {
 
         // Clicking on the back button opens the promo sheet again.
         onView(withId(R.id.restore_tabs_toolbar_back_image_button)).perform(click());
-        onView(withText(mActivityTestRule.getActivity().getString(
-                       R.string.restore_tabs_promo_sheet_title)))
+        onView(
+                        withText(
+                                mActivityTestRule
+                                        .getActivity()
+                                        .getString(R.string.restore_tabs_promo_sheet_title)))
                 .check(matches(isDisplayed()));
-        onView(withText(mActivityTestRule.getActivity().getString(
-                       R.string.restore_tabs_promo_sheet_subtitle_multi_device)))
+        onView(
+                        withText(
+                                mActivityTestRule
+                                        .getActivity()
+                                        .getString(
+                                                R.string
+                                                        .restore_tabs_promo_sheet_subtitle_multi_device)))
                 .check(matches(isDisplayed()));
 
         // Check that tab selection state for the selected device is persistent.
@@ -310,7 +357,6 @@ public class RestoreTabsTest {
 
     @Test
     @MediumTest
-    @DisabledTest(message = "https://crbug.com/1459179")
     public void testRestoreTabsPromo_testReviewTabsScreenToggleSelection() {
         setupMultipleDevicesAndTabsMockData();
         Assert.assertEquals(1, mActivityTestRule.tabsCount(false));
@@ -320,8 +366,13 @@ public class RestoreTabsTest {
 
         // Clicking on the review tabs button.
         onView(withId(R.id.restore_tabs_button_review_tabs)).perform(click());
-        onView(withText(mActivityTestRule.getActivity().getString(
-                       R.string.restore_tabs_review_tabs_screen_sheet_title)))
+        onView(
+                        withText(
+                                mActivityTestRule
+                                        .getActivity()
+                                        .getString(
+                                                R.string
+                                                        .restore_tabs_review_tabs_screen_sheet_title)))
                 .check(matches(isDisplayed()));
 
         // Deselect all and select all.
@@ -352,8 +403,7 @@ public class RestoreTabsTest {
 
     private void setupMultipleDevicesAndTabsMockData() {
         // Setup mock data
-        ForeignSessionTab tab1 = new ForeignSessionTab(
-                JUnitTestGURLs.getGURL(JUnitTestGURLs.URL_1), "title1", 31L, 0);
+        ForeignSessionTab tab1 = new ForeignSessionTab(JUnitTestGURLs.URL_1, "title1", 31L, 31L, 0);
         List<ForeignSessionTab> tabs1 = new ArrayList<>();
         tabs1.add(tab1);
         ForeignSessionWindow window1 = new ForeignSessionWindow(32L, 1, tabs1);
@@ -362,12 +412,9 @@ public class RestoreTabsTest {
         ForeignSession session1 =
                 new ForeignSession("tag", "John's iPhone 6", 33L, windows1, FormFactor.PHONE);
 
-        ForeignSessionTab tab2 = new ForeignSessionTab(
-                JUnitTestGURLs.getGURL(JUnitTestGURLs.URL_1), "title2", 34L, 0);
-        ForeignSessionTab tab3 = new ForeignSessionTab(
-                JUnitTestGURLs.getGURL(JUnitTestGURLs.URL_1), "title3", 35L, 0);
-        ForeignSessionTab tab4 = new ForeignSessionTab(
-                JUnitTestGURLs.getGURL(JUnitTestGURLs.URL_1), "title4", 36L, 0);
+        ForeignSessionTab tab2 = new ForeignSessionTab(JUnitTestGURLs.URL_1, "title2", 34L, 34L, 0);
+        ForeignSessionTab tab3 = new ForeignSessionTab(JUnitTestGURLs.URL_1, "title3", 35L, 35L, 0);
+        ForeignSessionTab tab4 = new ForeignSessionTab(JUnitTestGURLs.URL_1, "title4", 36L, 36L, 0);
         List<ForeignSessionTab> tabs2 = new ArrayList<>();
         tabs2.add(tab2);
         tabs2.add(tab3);
@@ -383,11 +430,12 @@ public class RestoreTabsTest {
 
         doReturn(true).when(mMockTracker).wouldTriggerHelpUI(eq(RESTORE_TABS_FEATURE));
         doReturn(true).when(mMockTracker).shouldTriggerHelpUI(eq(RESTORE_TABS_FEATURE));
-        doAnswer(invocation -> {
-            List<ForeignSession> invoked_sessions = invocation.getArgument(1);
-            invoked_sessions.addAll(sessions);
-            return true;
-        })
+        doAnswer(
+                        invocation -> {
+                            List<ForeignSession> invoked_sessions = invocation.getArgument(1);
+                            invoked_sessions.addAll(sessions);
+                            return true;
+                        })
                 .when(mForeignSessionHelperJniSpy)
                 .getMobileAndTabletForeignSessions(anyLong(), anyList());
     }

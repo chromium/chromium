@@ -9,6 +9,7 @@
 #include "chrome/browser/extensions/extension_install_prompt.h"
 #include "chrome/browser/extensions/extension_uninstall_dialog.h"
 #include "extensions/browser/api/management/management_api_delegate.h"
+#include "extensions/common/extension_id.h"
 
 class ChromeManagementAPIDelegate : public extensions::ManagementAPIDelegate {
  public:
@@ -50,19 +51,20 @@ class ChromeManagementAPIDelegate : public extensions::ManagementAPIDelegate {
       const GURL& web_app_url,
       ManagementAPIDelegate::InstallOrLaunchWebAppCallback callback)
       const override;
-  void EnableExtension(content::BrowserContext* context,
-                       const std::string& extension_id) const override;
+  void EnableExtension(
+      content::BrowserContext* context,
+      const extensions::ExtensionId& extension_id) const override;
   void DisableExtension(
       content::BrowserContext* context,
       const extensions::Extension* source_extension,
-      const std::string& extension_id,
+      const extensions::ExtensionId& extension_id,
       extensions::disable_reason::DisableReason disable_reason) const override;
   bool UninstallExtension(content::BrowserContext* context,
-                          const std::string& transient_extension_id,
+                          const extensions::ExtensionId& transient_extension_id,
                           extensions::UninstallReason reason,
                           std::u16string* error) const override;
   void SetLaunchType(content::BrowserContext* context,
-                     const std::string& extension_id,
+                     const extensions::ExtensionId& extension_id,
                      extensions::LaunchType launch_type) const override;
   GURL GetIconURL(const extensions::Extension* extension,
                   int icon_size,

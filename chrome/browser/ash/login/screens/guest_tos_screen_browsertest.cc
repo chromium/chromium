@@ -25,8 +25,8 @@ namespace {
 
 constexpr char kGuestTostId[] = "guest-tos";
 
-// Loaded Dialog
-const test::UIPath kLoadedDialog = {kGuestTostId, "loaded"};
+// Overview Dialog
+const test::UIPath kOverviewDialog = {kGuestTostId, "overview"};
 const test::UIPath kGoogleEulaLink = {kGuestTostId, "googleEulaLink"};
 const test::UIPath kCrosEulaLink = {kGuestTostId, "crosEulaLink"};
 
@@ -61,7 +61,7 @@ class GuestTosScreenTest : public OobeBaseTest {
     WizardController::default_controller()->AdvanceToScreen(
         GuestTosScreenView::kScreenId);
     OobeScreenWaiter(GuestTosScreenView::kScreenId).Wait();
-    test::OobeJS().CreateVisibilityWaiter(true, kLoadedDialog)->Wait();
+    test::OobeJS().CreateVisibilityWaiter(true, kOverviewDialog)->Wait();
   }
 
  protected:
@@ -72,26 +72,26 @@ class GuestTosScreenTest : public OobeBaseTest {
 
 IN_PROC_BROWSER_TEST_F(GuestTosScreenTest, GoogleEula) {
   ShowGuestTosScreen();
-  test::OobeJS().CreateVisibilityWaiter(true, kLoadedDialog)->Wait();
+  test::OobeJS().CreateVisibilityWaiter(true, kOverviewDialog)->Wait();
   test::OobeJS().ClickOnPath(kGoogleEulaLink);
   test::OobeJS().CreateVisibilityWaiter(true, kGoogleEulaDialog)->Wait();
   const std::string webview_contents =
       test::GetWebViewContents(kGoogleEulaWebview);
   EXPECT_TRUE(base::Contains(webview_contents, FakeEulaMixin::kFakeOnlineEula));
   test::OobeJS().ClickOnPath(kGoogleEulaOkButton);
-  test::OobeJS().CreateVisibilityWaiter(true, kLoadedDialog)->Wait();
+  test::OobeJS().CreateVisibilityWaiter(true, kOverviewDialog)->Wait();
 }
 
 IN_PROC_BROWSER_TEST_F(GuestTosScreenTest, CrosEula) {
   ShowGuestTosScreen();
-  test::OobeJS().CreateVisibilityWaiter(true, kLoadedDialog)->Wait();
+  test::OobeJS().CreateVisibilityWaiter(true, kOverviewDialog)->Wait();
   test::OobeJS().ClickOnPath(kCrosEulaLink);
   test::OobeJS().CreateVisibilityWaiter(true, kCrosEulaDialog)->Wait();
   const std::string webview_contents =
       test::GetWebViewContents(kCrosEulaWebview);
   EXPECT_TRUE(base::Contains(webview_contents, FakeEulaMixin::kFakeOnlineEula));
   test::OobeJS().ClickOnPath(kCrosEulaOkButton);
-  test::OobeJS().CreateVisibilityWaiter(true, kLoadedDialog)->Wait();
+  test::OobeJS().CreateVisibilityWaiter(true, kOverviewDialog)->Wait();
 }
 
 IN_PROC_BROWSER_TEST_F(GuestTosScreenTest, UsageStatsOptin) {

@@ -24,6 +24,7 @@
 
 #include "third_party/blink/renderer/core/dom/first_letter_pseudo_element.h"
 
+#include "third_party/blink/renderer/core/accessibility/ax_object_cache.h"
 #include "third_party/blink/renderer/core/css/resolver/style_resolver.h"
 #include "third_party/blink/renderer/core/css/style_change_reason.h"
 #include "third_party/blink/renderer/core/css/style_request.h"
@@ -34,18 +35,21 @@
 #include "third_party/blink/renderer/core/layout/layout_object_inlines.h"
 #include "third_party/blink/renderer/core/layout/layout_text.h"
 #include "third_party/blink/renderer/core/layout/layout_text_fragment.h"
-#include "third_party/blink/renderer/core/layout/ng/list/layout_ng_list_item.h"
+#include "third_party/blink/renderer/core/layout/list/layout_list_item.h"
 #include "third_party/blink/renderer/platform/text/text_break_iterator.h"
+#include "third_party/blink/renderer/platform/wtf/text/code_point_iterator.h"
 #include "third_party/blink/renderer/platform/wtf/text/unicode.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 
 namespace blink {
 
+namespace {
+
 // CSS 2.1 http://www.w3.org/TR/CSS21/selector.html#first-letter "Punctuation
 // (i.e, characters defined in Unicode [UNICODE] in the "open" (Ps), "close"
 // (Pe), "initial" (Pi). "final" (Pf) and "other" (Po) punctuation classes),
 // that precedes or follows the first letter should be included"
-static inline bool IsPunctuationForFirstLetter(UChar32 c) {
+inline bool IsPunctuationForFirstLetter(UChar32 c) {
   WTF::unicode::CharCategory char_category = WTF::unicode::Category(c);
   return char_category == WTF::unicode::kPunctuation_Open ||
          char_category == WTF::unicode::kPunctuation_Close ||
@@ -54,11 +58,42 @@ static inline bool IsPunctuationForFirstLetter(UChar32 c) {
          char_category == WTF::unicode::kPunctuation_Other;
 }
 
-static inline bool IsSpaceForFirstLetter(UChar c) {
-  return IsSpaceOrNewline(c) || c == WTF::unicode::kNoBreakSpaceCharacter;
+bool IsPunctuationForFirstLetter(const String& string, unsigned offset) {
+  return IsPunctuationForFirstLetter(*StringView(string, offset).begin());
 }
 
-unsigned FirstLetterPseudoElement::FirstLetterLength(const String& text) {
+inline bool IsNewLine(UChar c) {
+  if (c == 0xA || c == 0xD) {
+    return true;
+  }
+
+  return false;
+}
+
+inline bool IsSpace(UChar c) {
+  if (IsNewLine(c)) {
+    return false;
+  }
+
+  return IsSpaceOrNewline(c);
+}
+
+inline bool IsSpaceForFirstLetter(UChar c, bool preserve_breaks) {
+  return (preserve_breaks ? IsSpace(c) : IsSpaceOrNewline(c)) ||
+         c == WTF::unicode::kNoBreakSpaceCharacter;
+}
+
+// Once we see any of these layoutObjects we can stop looking for first-letter
+// as they signal the end of the first line of text.
+bool IsInvalidFirstLetterLayoutObject(const LayoutObject* obj) {
+  return (obj->IsBR() || (obj->IsText() && To<LayoutText>(obj)->IsWordBreak()));
+}
+
+bool IsParentInlineLayoutObject(const LayoutObject* layout_object) {
+  return layout_object && IsA<LayoutInline>(layout_object->Parent());
+}
+
+unsigned FirstLetterLengthLegacy(const String& text, bool preserve_breaks) {
   unsigned length = 0;
   unsigned text_length = text.length();
 
@@ -66,17 +101,23 @@ unsigned FirstLetterPseudoElement::FirstLetterLength(const String& text) {
     return length;
 
   // Account for leading spaces first.
-  while (length < text_length && IsSpaceForFirstLetter(text[length]))
+  while (length < text_length &&
+         IsSpaceForFirstLetter(text[length], preserve_breaks)) {
     length++;
+  }
+
   // Now account for leading punctuation.
   while (length < text_length &&
-         IsPunctuationForFirstLetter(text.CharacterStartingAt(length)))
+         IsPunctuationForFirstLetter(text.CharacterStartingAt(length))) {
     length += LengthOfGraphemeCluster(text, length);
+  }
 
   // Bail if we didn't find a letter before the end of the text or before a
   // space.
-  if (IsSpaceForFirstLetter(text[length]) || length == text_length)
+  if (IsSpaceForFirstLetter(text[length], preserve_breaks) ||
+      IsNewLine(text[length]) || length == text_length) {
     return 0;
+  }
 
   // Account the next character for first letter.
   length += LengthOfGraphemeCluster(text, length);
@@ -92,23 +133,7 @@ unsigned FirstLetterPseudoElement::FirstLetterLength(const String& text) {
   return length;
 }
 
-void FirstLetterPseudoElement::Trace(Visitor* visitor) const {
-  visitor->Trace(remaining_text_layout_object_);
-  PseudoElement::Trace(visitor);
-}
-
-// Once we see any of these layoutObjects we can stop looking for first-letter
-// as they signal the end of the first line of text.
-static bool IsInvalidFirstLetterLayoutObject(const LayoutObject* obj) {
-  return (obj->IsBR() || (obj->IsText() && To<LayoutText>(obj)->IsWordBreak()));
-}
-
-static bool IsParentInlineLayoutObject(const LayoutObject* obj) {
-  return (obj && obj->Parent() && obj->Parent()->IsLayoutInline());
-}
-
-LayoutText* FirstLetterPseudoElement::FirstLetterTextLayoutObject(
-    const Element& element) {
+LayoutText* FirstLetterTextLayoutObjectLegacy(const Element& element) {
   LayoutObject* parent_layout_object = nullptr;
 
   // If we are looking at a first letter element then we need to find the
@@ -153,7 +178,9 @@ LayoutText* FirstLetterPseudoElement::FirstLetterTextLayoutObject(
                        ? To<LayoutTextFragment>(first_letter_text_layout_object)
                              ->CompleteText()
                        : layout_text->OriginalText();
-      if (FirstLetterLength(str.Impl()) ||
+      bool preserve_breaks = ShouldPreserveBreaks(
+          first_letter_text_layout_object->StyleRef().GetWhiteSpaceCollapse());
+      if (FirstLetterLengthLegacy(str.Impl(), preserve_breaks) ||
           IsInvalidFirstLetterLayoutObject(first_letter_text_layout_object)) {
         break;
       }
@@ -192,8 +219,9 @@ LayoutText* FirstLetterPseudoElement::FirstLetterTextLayoutObject(
                first_letter_text_layout_object->IsButton() ||
                IsMenuList(first_letter_text_layout_object)) {
       return nullptr;
-    } else if (first_letter_text_layout_object->IsFlexibleBoxIncludingNG() ||
-               first_letter_text_layout_object->IsLayoutNGGrid()) {
+    } else if (first_letter_text_layout_object->IsFlexibleBox() ||
+               first_letter_text_layout_object->IsLayoutGrid() ||
+               first_letter_text_layout_object->IsMathML()) {
       first_letter_text_layout_object =
           first_letter_text_layout_object->NextSibling();
     } else if (!first_letter_text_layout_object->IsInline() &&
@@ -236,6 +264,243 @@ LayoutText* FirstLetterPseudoElement::FirstLetterTextLayoutObject(
   return To<LayoutText>(first_letter_text_layout_object);
 }
 
+}  // namespace
+
+unsigned FirstLetterPseudoElement::FirstLetterLength(const String& text,
+                                                     bool preserve_breaks,
+                                                     Punctuation& punctuation) {
+  if (!RuntimeEnabledFeatures::CSSFirstLetterTextRewriteEnabled()) {
+    return FirstLetterLengthLegacy(text, preserve_breaks);
+  }
+  DCHECK_NE(punctuation, Punctuation::kDisallow);
+
+  unsigned length = 0;
+  unsigned text_length = text.length();
+
+  if (text_length == 0) {
+    return length;
+  }
+
+  // Account for leading spaces first. If there is leading punctuation from a
+  // different text node, spaces can not appear in between to form valid
+  // ::first-letter text.
+  if (punctuation == Punctuation::kNotSeen) {
+    while (length < text_length &&
+           IsSpaceForFirstLetter(text[length], preserve_breaks)) {
+      length++;
+    }
+    if (length == text_length) {
+      // Only contains spaces.
+      return 0;
+    }
+  }
+
+  unsigned punctuation_start = length;
+  // Now account for leading punctuation.
+  while (length < text_length && IsPunctuationForFirstLetter(text, length)) {
+    length += LengthOfGraphemeCluster(text, length);
+  }
+
+  if (length == text_length) {
+    if (length > punctuation_start) {
+      // Text ends at allowed leading punctuation. Signal that we may continue
+      // looking for ::first-letter text in the next text node, including more
+      // punctuation.
+      punctuation = Punctuation::kSeen;
+      return length;
+    }
+  }
+
+  // Stop allowing leading punctuation.
+  punctuation = Punctuation::kDisallow;
+
+  DCHECK_LT(length, text_length);
+  if (IsSpaceForFirstLetter(text[length], preserve_breaks) ||
+      IsNewLine(text[length])) {
+    return 0;
+  }
+
+  // Account the next character for first letter.
+  length += LengthOfGraphemeCluster(text, length);
+
+  // Keep looking for allowed punctuation for the ::first-letter within the same
+  // text node. We are allowed to ignore trailing punctuation in following text
+  // nodes per spec.
+  unsigned num_code_units = 0;
+  for (; length < text_length; length += num_code_units) {
+    if (!IsPunctuationForFirstLetter(text, length)) {
+      break;
+    }
+    num_code_units = LengthOfGraphemeCluster(text, length);
+  }
+  return length;
+}
+
+void FirstLetterPseudoElement::Trace(Visitor* visitor) const {
+  visitor->Trace(remaining_text_layout_object_);
+  PseudoElement::Trace(visitor);
+}
+
+namespace {
+
+LayoutObject* FirstInFlowInlineDescendantForFirstLetter(LayoutObject& parent) {
+  // https://drafts.csswg.org/css-pseudo/#first-text-line:
+  //
+  // - The first formatted line of a block container that establishes an inline
+  //   formatting context represents the inline-level content of its first line
+  //   box.
+  // - The first formatted line of a block container or multi-column container
+  //   that contains block-level content (and is not a table wrapper box) is the
+  //   first formatted line of its first in-flow block-level child. If no such
+  //   line exists, it has no first formatted line.
+  LayoutObject* first_inline = parent.SlowFirstChild();
+
+  while (first_inline) {
+    if (first_inline->IsFloatingOrOutOfFlowPositioned()) {
+      first_inline = first_inline->NextSibling();
+      continue;
+    }
+    if (first_inline->IsListMarker()) {
+      LayoutObject* list_item = first_inline;
+      while (list_item && !list_item->IsLayoutListItem()) {
+        DCHECK_NE(list_item, &parent);
+        list_item = list_item->Parent();
+      }
+      // Skip the marker contents, but don't escape the list item.
+      first_inline = first_inline->NextInPreOrderAfterChildren(list_item);
+      continue;
+    }
+    if (first_inline->IsInline()) {
+      return first_inline;
+    }
+    if (!first_inline->BehavesLikeBlockContainer()) {
+      // Block level in-flow displays like flex, grid, and table do not have a
+      // first formatted line.
+      return nullptr;
+    }
+    if (first_inline->StyleRef().HasPseudoElementStyle(kPseudoIdFirstLetter)) {
+      // Applying ::first-letter styles from multiple nested containers is not
+      // supported. ::first-letter styles from the inner-most container is
+      // applied - bail out.
+      return nullptr;
+    }
+    first_inline = first_inline->SlowFirstChild();
+  }
+  return nullptr;
+}
+
+}  // namespace
+
+LayoutText* FirstLetterPseudoElement::FirstLetterTextLayoutObject(
+    const Element& element) {
+  if (!RuntimeEnabledFeatures::CSSFirstLetterTextRewriteEnabled()) {
+    return FirstLetterTextLayoutObjectLegacy(element);
+  }
+  LayoutObject* parent_layout_object = nullptr;
+
+  if (element.IsFirstLetterPseudoElement()) {
+    // If the passed-in element is a ::first-letter pseudo element we need to
+    // start from the originating element.
+    parent_layout_object =
+        element.ParentOrShadowHostElement()->GetLayoutObject();
+  } else {
+    parent_layout_object = element.GetLayoutObject();
+  }
+
+  if (!parent_layout_object ||
+      !parent_layout_object->StyleRef().HasPseudoElementStyle(
+          kPseudoIdFirstLetter) ||
+      !CanHaveGeneratedChildren(*parent_layout_object) ||
+      !parent_layout_object->BehavesLikeBlockContainer()) {
+    // This element can not have a styleable ::first-letter.
+    return nullptr;
+  }
+
+  LayoutObject* inline_child =
+      FirstInFlowInlineDescendantForFirstLetter(*parent_layout_object);
+  if (!inline_child) {
+    return nullptr;
+  }
+
+  LayoutObject* stay_inside = inline_child->Parent();
+  LayoutText* punctuation_text = nullptr;
+  Punctuation punctuation = Punctuation::kNotSeen;
+
+  while (inline_child) {
+    if (inline_child->StyleRef().StyleType() == kPseudoIdFirstLetter) {
+      // This can be called when the ::first-letter LayoutObject is already in
+      // the tree. We do not want to consider that LayoutObject for our text
+      // LayoutObject so we go to the sibling (which is the LayoutTextFragment
+      // for the remaining text).
+      inline_child = inline_child->NextSibling();
+    } else if (inline_child->IsListMarker()) {
+      inline_child = inline_child->NextInPreOrderAfterChildren(stay_inside);
+    } else if (inline_child->IsInline()) {
+      if (auto* layout_text = DynamicTo<LayoutText>(inline_child)) {
+        // Don't apply first letter styling to passwords and other elements
+        // obfuscated by -webkit-text-security. Also, see
+        // ShouldUpdateLayoutByReattaching() in text.cc.
+        if (layout_text->IsSecure()) {
+          return nullptr;
+        }
+        if (layout_text->IsBR() || layout_text->IsWordBreak()) {
+          return nullptr;
+        }
+        String str = layout_text->IsTextFragment()
+                         ? To<LayoutTextFragment>(inline_child)->CompleteText()
+                         : layout_text->OriginalText();
+        bool preserve_breaks = ShouldPreserveBreaks(
+            inline_child->StyleRef().GetWhiteSpaceCollapse());
+
+        if (FirstLetterLength(str, preserve_breaks, punctuation)) {
+          // A prefix, or the whole text for the current layout_text is
+          // included in the valid ::first-letter text.
+
+          if (punctuation == Punctuation::kSeen) {
+            // So far, we have only seen punctuation. Need to continue looking
+            // for a typographic character unit to go along with the
+            // punctuation.
+            if (!punctuation_text) {
+              punctuation_text = layout_text;
+            }
+          } else {
+            // We have found valid ::first-letter text. When the ::first-letter
+            // text spans multiple elements, the UA is free to style only one of
+            // the elements, all of the elements, or none of the elements. Here
+            // we choose to return the first, which matches the Firefox
+            // behavior.
+            if (punctuation_text) {
+              return punctuation_text;
+            } else {
+              return layout_text;
+            }
+          }
+        } else if (punctuation == Punctuation::kDisallow) {
+          // No ::first-letter text seen in this text node. Non-null
+          // punctuation_text means we have seen punctuation in a previous text
+          // node, but leading_punctuation was reset to false as we encountered
+          // spaces or other content that is neither punctuation nor a valid
+          // typographic character unit for ::first-letter.
+          return nullptr;
+        }
+      } else if (inline_child->IsAtomicInlineLevel() ||
+                 inline_child->IsButton() || IsMenuList(inline_child)) {
+        return nullptr;
+      }
+      inline_child = inline_child->NextInPreOrder(stay_inside);
+    } else if (inline_child->IsFloatingOrOutOfFlowPositioned()) {
+      if (inline_child->StyleRef().StyleType() == kPseudoIdFirstLetter) {
+        inline_child = inline_child->SlowFirstChild();
+      } else {
+        inline_child = inline_child->NextInPreOrderAfterChildren(stay_inside);
+      }
+    } else {
+      return nullptr;
+    }
+  }
+  return nullptr;
+}
+
 FirstLetterPseudoElement::FirstLetterPseudoElement(Element* parent)
     : PseudoElement(parent, kPseudoIdFirstLetter),
       remaining_text_layout_object_(nullptr) {}
@@ -248,11 +513,16 @@ void FirstLetterPseudoElement::UpdateTextFragments() {
   String old_text(remaining_text_layout_object_->CompleteText());
   DCHECK(old_text.Impl());
 
-  unsigned length = FirstLetterPseudoElement::FirstLetterLength(old_text);
+  bool preserve_breaks = ShouldPreserveBreaks(
+      remaining_text_layout_object_->StyleRef().GetWhiteSpaceCollapse());
+  FirstLetterPseudoElement::Punctuation punctuation =
+      FirstLetterPseudoElement::Punctuation::kNotSeen;
+  unsigned length = FirstLetterPseudoElement::FirstLetterLength(
+      old_text, preserve_breaks, punctuation);
   remaining_text_layout_object_->SetTextFragment(
       old_text.Impl()->Substring(length, old_text.length()), length,
       old_text.length() - length);
-  remaining_text_layout_object_->DirtyLineBoxes();
+  remaining_text_layout_object_->InvalidateInlineItems();
 
   for (auto* child = GetLayoutObject()->SlowFirstChild(); child;
        child = child->NextSibling()) {
@@ -264,7 +534,7 @@ void FirstLetterPseudoElement::UpdateTextFragments() {
 
     child_fragment->SetTextFragment(old_text.Impl()->Substring(0, length), 0,
                                     length);
-    child_fragment->DirtyLineBoxes();
+    child_fragment->InvalidateInlineItems();
 
     // Make sure the first-letter layoutObject is set to require a layout as it
     // needs to re-create the line boxes. The remaining text layoutObject
@@ -371,13 +641,19 @@ void FirstLetterPseudoElement::AttachFirstLetterTextLayoutObjects(
 
   // FIXME: This would already have been calculated in firstLetterLayoutObject.
   // Can we pass the length through?
-  unsigned length = FirstLetterPseudoElement::FirstLetterLength(old_text);
+  bool preserve_breaks = ShouldPreserveBreaks(
+      first_letter_text->StyleRef().GetWhiteSpaceCollapse());
+  FirstLetterPseudoElement::Punctuation punctuation =
+      FirstLetterPseudoElement::Punctuation::kNotSeen;
+  unsigned length = FirstLetterPseudoElement::FirstLetterLength(
+      old_text, preserve_breaks, punctuation);
 
   // In case of inline level content made of punctuation, we use
-  // first_letter_text length instead of FirstLetterLength.
+  // the whole text length instead of FirstLetterLength.
   if (IsParentInlineLayoutObject(first_letter_text) && length == 0 &&
-      first_letter_text->TextLength())
-    length = first_letter_text->TextLength();
+      old_text.length()) {
+    length = old_text.length();
+  }
 
   unsigned remaining_length = old_text.length() - length;
 
@@ -416,7 +692,7 @@ void FirstLetterPseudoElement::AttachFirstLetterTextLayoutObjects(
     // TODO(crbug.com/1393280): Once we can store used font somewhere, we should
     // compute initial-letter font during layout to take proper effective style.
     const ComputedStyle& paragraph_style =
-        paragraph.EffectiveStyle(NGStyleVariant::kFirstLine);
+        paragraph.EffectiveStyle(StyleVariant::kFirstLine);
     const ComputedStyle* initial_letter_text_style =
         GetDocument().GetStyleResolver().StyleForInitialLetterText(
             *letter_style, paragraph_style);
@@ -426,6 +702,13 @@ void FirstLetterPseudoElement::AttachFirstLetterTextLayoutObjects(
   }
   GetLayoutObject()->AddChild(letter);
 
+  // AXObjects are normally removed from destroyed layout objects in
+  // Node::DetachLayoutTree(), but as the ::first-letter implementation manually
+  // destroys the layout object for the first letter text, it must manually
+  // remove the accessibility object for it as well.
+  if (auto* cache = GetDocument().ExistingAXObjectCache()) {
+    cache->RemoveAXObjectsInLayoutSubtree(first_letter_text);
+  }
   first_letter_text->Destroy();
 }
 

@@ -41,7 +41,7 @@ FeedbackData::FeedbackData(base::WeakPtr<feedback::FeedbackUploader> uploader,
   // sending the report. If it is created after this point, then the tracing is
   // not relevant to this report.
   if (tracing_manager) {
-    tracing_manager_ = base::AsWeakPtr(tracing_manager);
+    tracing_manager_ = tracing_manager->AsWeakPtr();
   }
 }
 
@@ -159,7 +159,8 @@ void FeedbackData::SendReport() {
     auto post_body = std::make_unique<std::string>();
     feedback_data.SerializeToString(post_body.get());
     uploader_->QueueReport(std::move(post_body),
-                           /*has_email=*/!user_email().empty());
+                           /*has_email=*/!user_email().empty(),
+                           /*product_id=*/feedback_data.product_id());
   }
 }
 

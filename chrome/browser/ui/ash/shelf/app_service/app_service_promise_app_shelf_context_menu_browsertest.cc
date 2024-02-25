@@ -14,12 +14,12 @@
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
-#include "chrome/browser/apps/app_service/package_id.h"
 #include "chrome/browser/apps/app_service/promise_apps/promise_app.h"
 #include "chrome/browser/apps/app_service/promise_apps/promise_app_registry_cache.h"
 #include "chrome/browser/ui/ash/shelf/chrome_shelf_controller_util.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/test/base/in_process_browser_test.h"
+#include "components/services/app_service/public/cpp/package_id.h"
 #include "content/public/test/browser_test.h"
 #include "ui/base/models/simple_menu_model.h"
 #include "ui/display/display.h"
@@ -35,8 +35,6 @@ class AppServicePromiseAppShelfContextMenuBrowserTest
   void AddTestPromiseApp(const apps::PackageId& package_id) {
     apps::PromiseAppPtr promise_app =
         std::make_unique<apps::PromiseApp>(package_id);
-    promise_app->progress = 0.7;
-    promise_app->name = "Name";
     promise_app->should_show = true;
     apps::AppServiceProxyFactory::GetForProfile(browser()->profile())
         ->PromiseAppRegistryCache()

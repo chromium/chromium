@@ -5,15 +5,17 @@
 #ifndef UI_VIEWS_CONTROLS_TEXTAREA_TEXTAREA_H_
 #define UI_VIEWS_CONTROLS_TEXTAREA_TEXTAREA_H_
 
+#include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/controls/textfield/textfield.h"
+#include "ui/views/metadata/view_factory.h"
 
 namespace views {
 
 // A multiline textfield implementation.
 class VIEWS_EXPORT Textarea : public Textfield {
- public:
-  METADATA_HEADER(Textarea);
+  METADATA_HEADER(Textarea, Textfield)
 
+ public:
   Textarea();
   ~Textarea() override = default;
 
@@ -31,6 +33,11 @@ class VIEWS_EXPORT Textarea : public Textfield {
   ui::TextEditCommand GetCommandForKeyEvent(const ui::KeyEvent& event) override;
 };
 
+BEGIN_VIEW_BUILDER(VIEWS_EXPORT, Textarea, Textfield)
+END_VIEW_BUILDER
+
 }  // namespace views
+
+DEFINE_VIEW_BUILDER(VIEWS_EXPORT, Textarea)
 
 #endif  // UI_VIEWS_CONTROLS_TEXTAREA_TEXTAREA_H_

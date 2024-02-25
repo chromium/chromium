@@ -6,6 +6,7 @@
 #define ASH_WEBUI_DIAGNOSTICS_UI_BACKEND_SYSTEM_SYSTEM_ROUTINE_CONTROLLER_H_
 
 #include <memory>
+#include <optional>
 
 #include "ash/webui/diagnostics_ui/mojom/system_routine_controller.mojom.h"
 #include "base/memory/raw_ptr.h"
@@ -19,7 +20,6 @@
 #include "services/data_decoder/public/cpp/data_decoder.h"
 #include "services/device/public/mojom/wake_lock.mojom.h"
 #include "services/device/public/mojom/wake_lock_provider.mojom.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base {
 class OneShotTimer;
@@ -133,7 +133,7 @@ class SystemRoutineController : public mojom::SystemRoutineController {
 
   // The currently inflight routine (if any). This is used to correctly
   // attribute cancellations.
-  absl::optional<mojom::RoutineType> inflight_routine_type_;
+  std::optional<mojom::RoutineType> inflight_routine_type_;
 
   // Records the number of routines that a user attempts to run during one
   // session in the app. Emitted when the app is closed.

@@ -11,6 +11,7 @@
 #include <memory>
 #include <set>
 #include <string>
+#include <string_view>
 #include <vector>
 
 #include "base/gtest_prod_util.h"
@@ -64,12 +65,18 @@ namespace content {
 struct WebPluginInfo;
 }  // namespace content
 
+#if BUILDFLAG(ENABLE_NACL)
 namespace extensions {
 class Extension;
 }
+#endif
 
 namespace subresource_filter {
 class UnverifiedRulesetDealer;
+}
+
+namespace url {
+class Origin;
 }
 
 namespace web_cache {
@@ -137,8 +144,8 @@ class ChromeContentRendererClient
   bool AllowPopup() override;
   bool ShouldNotifyServiceWorkerOnWebSocketActivity(
       v8::Local<v8::Context> context) override;
-  blink::ProtocolHandlerSecurityLevel GetProtocolHandlerSecurityLevel()
-      override;
+  blink::ProtocolHandlerSecurityLevel GetProtocolHandlerSecurityLevel(
+      const url::Origin& origin) override;
   void WillSendRequest(blink::WebLocalFrame* frame,
                        ui::PageTransition transition_type,
                        const blink::WebURL& url,
@@ -146,7 +153,7 @@ class ChromeContentRendererClient
                        const url::Origin* initiator_origin,
                        GURL* new_url) override;
   bool IsPrefetchOnly(content::RenderFrame* render_frame) override;
-  uint64_t VisitedLinkHash(const char* canonical_url, size_t length) override;
+  uint64_t VisitedLinkHash(std::string_view canonical_url) override;
   bool IsLinkVisited(uint64_t link_hash) override;
   std::unique_ptr<blink::WebPrescientNetworking> CreatePrescientNetworking(
       content::RenderFrame* render_frame) override;
@@ -205,9 +212,6 @@ class ChromeContentRendererClient
       blink::WebVector<blink::WebContentSecurityPolicyHeader>* csp) override;
 
 #if BUILDFLAG(ENABLE_PLUGINS)
-  static mojo::AssociatedRemote<chrome::mojom::PluginInfoHost>&
-  GetPluginInfoHost();
-
   static blink::WebPlugin* CreatePlugin(
       content::RenderFrame* render_frame,
       const blink::WebPluginParams& params,

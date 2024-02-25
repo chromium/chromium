@@ -18,9 +18,12 @@ void FakeConnectionAttempt::OnConnectionAttemptFailure(
 
 void FakeConnectionAttempt::OnConnection(
     mojo::PendingRemote<mojom::Channel> channel,
-    mojo::PendingReceiver<mojom::MessageReceiver> message_receiver_receiver) {
-  ConnectionAttemptImpl::OnConnection(std::move(channel),
-                                      std::move(message_receiver_receiver));
+    mojo::PendingReceiver<mojom::MessageReceiver> message_receiver_receiver,
+    mojo::PendingReceiver<mojom::NearbyConnectionStateListener>
+        nearby_connection_state_listener) {
+  ConnectionAttemptImpl::OnConnection(
+      std::move(channel), std::move(message_receiver_receiver),
+      std::move(nearby_connection_state_listener));
   std::move(on_connection_callback_).Run();
 }
 

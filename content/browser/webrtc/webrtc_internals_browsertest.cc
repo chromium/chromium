@@ -142,8 +142,6 @@ class UserMediaRequestEntry {
   std::string video_constraints;
 };
 
-static const int64_t FAKE_TIME_STAMP = 3600000;
-
 class WebRtcInternalsBrowserTest : public ContentBrowserTest {
  public:
   WebRtcInternalsBrowserTest() = default;
@@ -232,8 +230,8 @@ class WebRtcInternalsBrowserTest : public ContentBrowserTest {
       const base::Value& value = list_request[i];
       ASSERT_TRUE(value.is_dict());
       const base::Value::Dict& dict = value.GetDict();
-      absl::optional<int> rid = dict.FindInt("rid");
-      absl::optional<int> pid = dict.FindInt("pid");
+      std::optional<int> rid = dict.FindInt("rid");
+      std::optional<int> pid = dict.FindInt("pid");
       ASSERT_TRUE(rid);
       ASSERT_TRUE(pid);
       const std::string* origin = dict.FindString("origin");
@@ -301,29 +299,6 @@ class WebRtcInternalsBrowserTest : public ContentBrowserTest {
 
     VerifyPeerConnectionEntry(pc);
   }
-
-  // Execute addStats and verifies that the stats table has the right content.
-  void ExecuteAndVerifyAddStats(
-      PeerConnectionEntry& pc, const string& type, const string& id,
-      StatsUnit& stats) {
-    StatsEntry entry = {type, id, stats};
-
-    // Adds each new value to the map of stats history.
-    std::map<string, string>::iterator iter;
-    for (iter = stats.values.begin(); iter != stats.values.end(); iter++) {
-      pc.stats_[id][iter->first].push_back(iter->second);
-    }
-    std::stringstream ss;
-    ss << "(() => {\n";
-    ss << "  setCurrentGetStatsMethod(OPTION_GETSTATS_LEGACY);\n";
-    ss << "  cr.webUIListenerCallback('add-legacy-stats', "
-       << "{rid:" << pc.rid_ << ", lid:" << pc.lid_ << ", reports:[{id:'" << id
-       << "', type:'" << type << "', stats:" << stats.GetString() << "}]});\n";
-    ss << "})()";
-    ASSERT_TRUE(ExecuteJavascript(ss.str()));
-    VerifyStatsTable(pc, entry);
-  }
-
 
   // Verifies that the stats table has the right content.
   void VerifyStatsTable(const PeerConnectionEntry& pc,
@@ -409,46 +384,6 @@ class WebRtcInternalsBrowserTest : public ContentBrowserTest {
                   "    ssrcInfoManager.SSRC_INFO_BLOCK_CLASS).length")
         .ExtractInt();
   }
-
-  // Verifies |dump| contains |peer_connection_number| peer connection dumps,
-  // each containing |update_number| updates and |stats_number| stats tables.
-  void VerifyPageDumpStructure(const base::Value::Dict& dump,
-                               int peer_connection_number,
-                               int update_number,
-                               int stats_number) {
-    EXPECT_EQ(static_cast<size_t>(peer_connection_number), dump.size());
-    for (auto kv : dump) {
-      ASSERT_TRUE(kv.second.is_dict());
-      const base::Value::Dict& pc_dump = kv.second.GetDict();
-
-      // Verifies the number of updates.
-      const base::Value::List* updates = pc_dump.FindList("updateLog");
-      ASSERT_TRUE(updates);
-      EXPECT_EQ(static_cast<size_t>(update_number), updates->size());
-
-      // Verifies the number of stats tables.
-      const base::Value::Dict* stats = pc_dump.FindDict("stats");
-      ASSERT_TRUE(stats);
-      EXPECT_EQ(static_cast<size_t>(stats_number), stats->size());
-    }
-  }
-
-  // Verifies |dump| contains the correct statsTable and statsDataSeries for
-  // |pc|.
-  void VerifyStatsDump(const base::Value::Dict& dump,
-                       const PeerConnectionEntry& pc,
-                       const string& report_type,
-                       const string& report_id,
-                       const StatsUnit& stats) {
-    const base::Value::Dict* pc_dump = dump.FindDict(pc.getIdString());
-    ASSERT_TRUE(pc_dump);
-
-    // Verifies there is one data series per stats name.
-    const base::Value::Dict* data_series_dump = pc_dump->FindDict("stats");
-    ASSERT_TRUE(data_series_dump);
-    // The timestamp is considered an additional data series.
-    EXPECT_EQ(stats.values.size() + 1, data_series_dump->size());
-  }
 };
 
 IN_PROC_BROWSER_TEST_F(WebRtcInternalsBrowserTest, AddAndRemovePeerConnection) {
@@ -489,140 +424,6 @@ IN_PROC_BROWSER_TEST_F(WebRtcInternalsBrowserTest, UpdateAllPeerConnections) {
       ");"));
   VerifyPeerConnectionEntry(pc_0);
   VerifyPeerConnectionEntry(pc_1);
-}
-
-IN_PROC_BROWSER_TEST_F(WebRtcInternalsBrowserTest, UpdatePeerConnection) {
-  GURL url("chrome://webrtc-internals");
-  EXPECT_TRUE(NavigateToURL(shell(), url));
-
-  // Add one PeerConnection and send one update.
-  PeerConnectionEntry pc_1(1, 0);
-  ExecuteAddPeerConnectionJs(pc_1);
-
-  ExecuteAndVerifyUpdatePeerConnection(pc_1, "e1", "v1");
-
-  // Add another PeerConnection and send two updates.
-  PeerConnectionEntry pc_2(1, 1);
-  ExecuteAddPeerConnectionJs(pc_2);
-
-  SsrcEntry ssrc1, ssrc2;
-  ssrc1.id = "ssrcid1";
-  ssrc1.properties["msid"] = "mymsid";
-  ssrc2.id = "ssrcid2";
-  ssrc2.properties["label"] = "mylabel";
-  ssrc2.properties["cname"] = "mycname";
-
-  ExecuteAndVerifyUpdatePeerConnection(pc_2, "setRemoteDescription",
-      ssrc1.GetSsrcAttributeString());
-
-  ExecuteAndVerifyUpdatePeerConnection(pc_2, "createAnswerOnSuccess",
-                                       ssrc2.GetSsrcAttributeString());
-  ExecuteAndVerifyUpdatePeerConnection(pc_2, "setLocalDescription",
-      ssrc2.GetSsrcAttributeString());
-
-  EXPECT_EQ(ssrc1.GetAsJSON(), GetSsrcInfo(ssrc1.id));
-  EXPECT_EQ(ssrc2.GetAsJSON(), GetSsrcInfo(ssrc2.id));
-
-  StatsUnit stats = {FAKE_TIME_STAMP};
-  stats.values["ssrc"] = ssrc1.id;
-  ExecuteAndVerifyAddStats(pc_2, "ssrc", "dummyId", stats);
-  EXPECT_GT(GetSsrcInfoBlockCount(shell()), 0);
-}
-
-// Tests that adding random named stats updates the dataSeries and graphs.
-IN_PROC_BROWSER_TEST_F(WebRtcInternalsBrowserTest, AddStats) {
-  GURL url("chrome://webrtc-internals");
-  EXPECT_TRUE(NavigateToURL(shell(), url));
-
-  PeerConnectionEntry pc(1, 0);
-  ExecuteAddPeerConnectionJs(pc);
-
-  const string type = "ssrc";
-  const string id = "ssrc-1234";
-  StatsUnit stats = {FAKE_TIME_STAMP};
-  stats.values["trackId"] = "abcd";
-  stats.values["bitrate"] = "2000";
-  stats.values["framerate"] = "30";
-
-  // Add new stats and verify the stats table and graphs.
-  ExecuteAndVerifyAddStats(pc, type, id, stats);
-  VerifyStatsGraph(pc);
-
-  // Update existing stats and verify the stats table and graphs.
-  stats.values["bitrate"] = "2001";
-  stats.values["framerate"] = "31";
-  ExecuteAndVerifyAddStats(pc, type, id, stats);
-  VerifyStatsGraph(pc);
-}
-
-// Tests that the bandwidth estimation values are drawn on a single graph.
-IN_PROC_BROWSER_TEST_F(WebRtcInternalsBrowserTest, BweCompoundGraph) {
-  GURL url("chrome://webrtc-internals");
-  EXPECT_TRUE(NavigateToURL(shell(), url));
-
-  PeerConnectionEntry pc(1, 0);
-  ExecuteAddPeerConnectionJs(pc);
-
-  StatsUnit stats = {FAKE_TIME_STAMP};
-  stats.values["googAvailableSendBandwidth"] = "1000000";
-  stats.values["googTargetEncBitrate"] = "1000";
-  stats.values["googActualEncBitrate"] = "1000000";
-  stats.values["googRetransmitBitrate"] = "10";
-  stats.values["googTransmitBitrate"] = "1000000";
-  const string stats_type = "bwe";
-  const string stats_id = "videobwe";
-  ExecuteAndVerifyAddStats(pc, stats_type, stats_id, stats);
-
-  string graph_id = pc.getIdString() + "-" + stats_id + "-bweCompound";
-  // Verify that the bweCompound graph exists.
-  EXPECT_EQ(true, EvalJs(shell(), "   graphViews['" + graph_id + "'] != null"));
-
-  // Verify that the bweCompound graph contains multiple dataSeries.
-  int count =
-      EvalJs(shell(), "graphViews['" + graph_id + "'].getDataSeriesCount()")
-          .ExtractInt();
-  EXPECT_EQ((int)stats.values.size(), count);
-}
-
-// Tests that the total packet/byte count is converted to count per second,
-// and the converted data is drawn.
-IN_PROC_BROWSER_TEST_F(WebRtcInternalsBrowserTest, ConvertedGraphs) {
-  GURL url("chrome://webrtc-internals");
-  EXPECT_TRUE(NavigateToURL(shell(), url));
-
-  PeerConnectionEntry pc(1, 0);
-  ExecuteAddPeerConnectionJs(pc);
-
-  const string stats_type = "s";
-  const string stats_id = "1";
-  const int num_converted_stats = 4;
-  const string stats_names[] =
-      {"packetsSent", "bytesSent", "packetsReceived", "bytesReceived"};
-  const string converted_names[] =
-      {"packetsSentPerSecond", "bitsSentPerSecond",
-       "packetsReceivedPerSecond", "bitsReceivedPerSecond"};
-  const string first_value = "1000";
-  const string second_value = "2000";
-  const string converted_values[] = {"1000", "8000", "1000", "8000"};
-
-  // Send the first data point.
-  StatsUnit stats = {FAKE_TIME_STAMP};
-  for (int i = 0; i < num_converted_stats; ++i)
-    stats.values[stats_names[i]] = first_value;
-
-  ExecuteAndVerifyAddStats(pc, stats_type, stats_id, stats);
-
-  // Send the second data point at 1000ms after the first data point.
-  stats.timestamp += 1000;
-  for (int i = 0; i < num_converted_stats; ++i)
-    stats.values[stats_names[i]] = second_value;
-  ExecuteAndVerifyAddStats(pc, stats_type, stats_id, stats);
-
-  // Verifies the graph data matches converted_values.
-  for (int i = 0; i < num_converted_stats; ++i) {
-    VerifyGraphDataPoint(pc.getIdString(), stats_id + "-" + converted_names[i],
-                         1, converted_values[i]);
-  }
 }
 
 // Timing out on ARM linux bot: http://crbug.com/238490
@@ -699,42 +500,6 @@ IN_PROC_BROWSER_TEST_F(WebRtcInternalsBrowserTest,
 
   count = GetSsrcInfoBlockCount(shell2);
   EXPECT_GT(count, 0);
-}
-
-IN_PROC_BROWSER_TEST_F(WebRtcInternalsBrowserTest, CreatePageDump) {
-  GURL url("chrome://webrtc-internals");
-  EXPECT_TRUE(NavigateToURL(shell(), url));
-
-  PeerConnectionEntry pc_0(1, 0);
-  pc_0.AddEvent("e1", "v1");
-  pc_0.AddEvent("e2", "v2");
-  PeerConnectionEntry pc_1(1, 1);
-  pc_1.AddEvent("e3", "v3");
-  pc_1.AddEvent("e4", "v4");
-  string pc_array =
-      "[" + pc_0.getAllUpdateString() + ", " + pc_1.getAllUpdateString() + "]";
-  EXPECT_TRUE(ExecuteJavascript(
-      "cr.webUIListenerCallback('update-all-peer-connections', " + pc_array +
-      ");"));
-
-  // Verifies the peer connection data store can be created without stats.
-  string dump_json = EvalJs(shell(), "JSON.stringify(peerConnectionDataStore);")
-                         .ExtractString();
-  VerifyPageDumpStructure(base::test::ParseJsonDict(dump_json),
-                          2 /*peer_connection_number*/, 2 /*update_number*/,
-                          0 /*stats_number*/);
-
-  // Adds a stats report.
-  const string type = "dummy";
-  const string id = "1234";
-  StatsUnit stats = { FAKE_TIME_STAMP };
-  stats.values["bitrate"] = "2000";
-  stats.values["framerate"] = "30";
-  ExecuteAndVerifyAddStats(pc_0, type, id, stats);
-
-  dump_json = EvalJs(shell(), "JSON.stringify(peerConnectionDataStore);")
-                  .ExtractString();
-  VerifyStatsDump(base::test::ParseJsonDict(dump_json), pc_0, type, id, stats);
 }
 
 IN_PROC_BROWSER_TEST_F(WebRtcInternalsBrowserTest, UpdateMedia) {

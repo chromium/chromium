@@ -4,19 +4,19 @@
 
 #include "ash/utility/haptics_tracking_test_input_controller.h"
 
-#include "ash/utility/haptics_util.h"
 #include "base/notreached.h"
+#include "chromeos/utils/haptics_util.h"
 #include "ui/events/devices/stylus_state.h"
 #include "ui/ozone/public/ozone_platform.h"
 
 namespace ash {
 
 HapticsTrackingTestInputController::HapticsTrackingTestInputController() {
-  haptics_util::SetInputControllerForTesting(this);
+  chromeos::haptics_util::SetInputControllerForTesting(this);
 }
 
 HapticsTrackingTestInputController::~HapticsTrackingTestInputController() {
-  haptics_util::SetInputControllerForTesting(nullptr);
+  chromeos::haptics_util::SetInputControllerForTesting(nullptr);
 }
 
 bool HapticsTrackingTestInputController::HasMouse() {
@@ -58,7 +58,8 @@ void HapticsTrackingTestInputController::GetAutoRepeatRate(
     base::TimeDelta* interval) {}
 
 void HapticsTrackingTestInputController::SetCurrentLayoutByName(
-    const std::string& layout_name) {}
+    const std::string& layout_name,
+    base::OnceCallback<void(bool)> callback) {}
 
 void HapticsTrackingTestInputController::SetKeyboardKeyBitsMapping(
     base::flat_map<int, std::vector<uint64_t>> key_bits_mapping) {}
@@ -71,75 +72,75 @@ std::vector<uint64_t> HapticsTrackingTestInputController::GetKeyboardKeyBits(
 void HapticsTrackingTestInputController::SetThreeFingerClick(bool enabled) {}
 
 void HapticsTrackingTestInputController::SetTouchpadSensitivity(
-    absl::optional<int> device_id,
+    std::optional<int> device_id,
     int value) {}
 
 void HapticsTrackingTestInputController::SetTouchpadScrollSensitivity(
-    absl::optional<int> device_id,
+    std::optional<int> device_id,
     int value) {}
 
 void HapticsTrackingTestInputController::SetTouchpadHapticFeedback(
-    absl::optional<int> device_id,
+    std::optional<int> device_id,
     bool enabled) {}
 
 void HapticsTrackingTestInputController::SetTouchpadHapticClickSensitivity(
-    absl::optional<int> device_id,
+    std::optional<int> device_id,
     int value) {}
 
 void HapticsTrackingTestInputController::SetTapToClick(
-    absl::optional<int> device_id,
+    std::optional<int> device_id,
     bool enabled) {}
 
 void HapticsTrackingTestInputController::SetTapDragging(
-    absl::optional<int> device_id,
+    std::optional<int> device_id,
     bool enabled) {}
 
 void HapticsTrackingTestInputController::SetNaturalScroll(
-    absl::optional<int> device_id,
+    std::optional<int> device_id,
     bool enabled) {}
 
 void HapticsTrackingTestInputController::SetMouseSensitivity(
-    absl::optional<int> device_id,
+    std::optional<int> device_id,
     int value) {}
 
 void HapticsTrackingTestInputController::SetMouseScrollSensitivity(
-    absl::optional<int> device_id,
+    std::optional<int> device_id,
     int value) {}
 
 void HapticsTrackingTestInputController::SetMouseReverseScroll(
-    absl::optional<int> device_id,
+    std::optional<int> device_id,
     bool enabled) {}
 
 void HapticsTrackingTestInputController::SetMouseAcceleration(
-    absl::optional<int> device_id,
+    std::optional<int> device_id,
     bool enabled) {}
 
 void HapticsTrackingTestInputController::SetMouseScrollAcceleration(
-    absl::optional<int> device_id,
+    std::optional<int> device_id,
     bool enabled) {}
 
 void HapticsTrackingTestInputController::SetPointingStickSensitivity(
-    absl::optional<int> device_id,
+    std::optional<int> device_id,
     int value) {}
 
 void HapticsTrackingTestInputController::SetPointingStickAcceleration(
-    absl::optional<int> device_id,
+    std::optional<int> device_id,
     bool enabled) {}
 
 void HapticsTrackingTestInputController::SetTouchpadAcceleration(
-    absl::optional<int> device_id,
+    std::optional<int> device_id,
     bool enabled) {}
 
 void HapticsTrackingTestInputController::SetTouchpadScrollAcceleration(
-    absl::optional<int> device_id,
+    std::optional<int> device_id,
     bool enabled) {}
 
 void HapticsTrackingTestInputController::SetPrimaryButtonRight(
-    absl::optional<int> device_id,
+    std::optional<int> device_id,
     bool right) {}
 
 void HapticsTrackingTestInputController::SetPointingStickPrimaryButtonRight(
-    absl::optional<int> device_id,
+    std::optional<int> device_id,
     bool right) {}
 
 void HapticsTrackingTestInputController::SuspendMouseAcceleration() {}
@@ -218,6 +219,22 @@ void HapticsTrackingTestInputController::SetInternalKeyboardFilter(
 void HapticsTrackingTestInputController::GetGesturePropertiesService(
     mojo::PendingReceiver<ui::ozone::mojom::GesturePropertiesService>
         receiver) {}
+
+bool HapticsTrackingTestInputController::AreAnyKeysPressed() {
+  return false;
+}
+
+void HapticsTrackingTestInputController::BlockModifiersOnDevices(
+    std::vector<int> device_ids) {}
+
+std::unique_ptr<ui::ScopedDisableInputDevices>
+HapticsTrackingTestInputController::DisableInputDevices() {
+  return nullptr;
+}
+
+bool HapticsTrackingTestInputController::AreInputDevicesEnabled() const {
+  return true;
+}
 
 int HapticsTrackingTestInputController::GetSentHapticCount(
     ui::HapticTouchpadEffect effect,

@@ -7,9 +7,9 @@
 
 #include <map>
 
+#include "base/memory/raw_ptr.h"
 #include "extensions/common/extension_guid.h"
 #include "extensions/common/extension_id.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/page_transition_types.h"
 #include "url/origin.h"
 
@@ -43,13 +43,13 @@ class ResourceRequestPolicy {
   bool CanRequestResource(const GURL& resource_url,
                           blink::WebLocalFrame* frame,
                           ui::PageTransition transition_type,
-                          const absl::optional<url::Origin>& initiator_origin);
+                          const url::Origin* initiator_origin);
 
  private:
   // Determine if the host is web accessible.
   bool IsWebAccessibleHost(const std::string& host);
 
-  Dispatcher* dispatcher_;
+  raw_ptr<Dispatcher> dispatcher_;
 
   // 1:1 mapping of extension IDs with any potentially web- or webview-
   // accessible resources to their corresponding GUIDs.

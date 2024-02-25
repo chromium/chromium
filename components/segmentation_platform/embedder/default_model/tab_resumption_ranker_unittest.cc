@@ -39,7 +39,8 @@ TEST_F(TabResumptionRankerTest, ExecuteModelWithInput) {
 
   EXPECT_FALSE(ExecuteWithInput(/*inputs=*/{}));
 
-  ModelProvider::Request input(processing::TabSessionSource::kNumInputs + 2, 0);
+  ModelProvider::Request input(processing::TabSessionSource::kNumInputs + 11,
+                               0);
   ASSERT_TRUE(ExecuteWithInput(input));
 
   input[processing::TabSessionSource::kInputTimeSinceModifiedSec] = 3;

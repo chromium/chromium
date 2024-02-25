@@ -5,8 +5,10 @@
 #include "chromeos/ash/services/bluetooth_config/discovery_session_manager_impl.h"
 
 #include <memory>
+#include <optional>
 
 #include "base/functional/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/test/bind.h"
@@ -28,7 +30,6 @@
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ash::bluetooth_config {
 
@@ -177,7 +178,8 @@ class DiscoverySessionManagerImplTest : public testing::Test {
     return observer;
   }
 
-  std::vector<FakeDevicePairingHandler*>& GetDevicePairingHandlers() {
+  std::vector<raw_ptr<FakeDevicePairingHandler, VectorExperimental>>&
+  GetDevicePairingHandlers() {
     return fake_device_pairing_handler_factory_.device_pairing_handlers();
   }
 
@@ -188,7 +190,8 @@ class DiscoverySessionManagerImplTest : public testing::Test {
     FakeDevicePairingHandlerFactory() = default;
     ~FakeDevicePairingHandlerFactory() override = default;
 
-    std::vector<FakeDevicePairingHandler*>& device_pairing_handlers() {
+    std::vector<raw_ptr<FakeDevicePairingHandler, VectorExperimental>>&
+    device_pairing_handlers() {
       return device_pairing_handlers_;
     }
 
@@ -209,7 +212,8 @@ class DiscoverySessionManagerImplTest : public testing::Test {
       return fake_device_pairing_handler;
     }
 
-    std::vector<FakeDevicePairingHandler*> device_pairing_handlers_;
+    std::vector<raw_ptr<FakeDevicePairingHandler, VectorExperimental>>
+        device_pairing_handlers_;
   };
 
   base::test::TaskEnvironment task_environment_;
@@ -417,7 +421,7 @@ TEST_F(DiscoverySessionManagerImplTest, MultipleClientsAttemptPairing) {
   FakeDevicePairingHandler* device_pairing_handler1 =
       GetDevicePairingHandlers()[0];
   EXPECT_TRUE(device_pairing_handler1->current_pairing_device_id().empty());
-  absl::optional<mojom::PairingResult> result;
+  std::optional<mojom::PairingResult> result;
   auto pairing_delegate1 = std::make_unique<FakeDevicePairingDelegate>();
   const std::string device_id = "device_id";
   delegate1->pairing_handler()->PairDevice(
@@ -453,7 +457,7 @@ TEST_F(DiscoverySessionManagerImplTest, MultipleClientsAttemptPairing) {
 
   // Finish the pairing with success.
   device_pairing_handler1->SimulatePairDeviceFinished(
-      /*failure_reason=*/absl::nullopt);
+      /*failure_reason=*/std::nullopt);
   EXPECT_EQ(result, mojom::PairingResult::kSuccess);
   EXPECT_TRUE(delegate1->IsMojoPipeConnected());
   EXPECT_TRUE(delegate1->pairing_handler().is_connected());
@@ -485,7 +489,7 @@ TEST_F(DiscoverySessionManagerImplTest, MultipleClientsAttemptPairing) {
 
   // Finish the pairing with success.
   device_pairing_handler2->SimulatePairDeviceFinished(
-      /*failure_reason=*/absl::nullopt);
+      /*failure_reason=*/std::nullopt);
   EXPECT_EQ(result, mojom::PairingResult::kSuccess);
   EXPECT_TRUE(delegate2->IsMojoPipeConnected());
   EXPECT_TRUE(delegate2->pairing_handler().is_connected());
@@ -553,7 +557,7 @@ TEST_F(DiscoverySessionManagerImplTest, AdapterDiscoveringStopsDuringPairing) {
   EXPECT_TRUE(device_pairing_handler->current_pairing_device_id().empty());
   std::string device_id;
   AddDevice(&device_id);
-  absl::optional<mojom::PairingResult> result;
+  std::optional<mojom::PairingResult> result;
   auto pairing_delegate = std::make_unique<FakeDevicePairingDelegate>();
   delegate->pairing_handler()->PairDevice(
       device_id, pairing_delegate->GeneratePendingRemote(),
@@ -595,7 +599,7 @@ TEST_F(DiscoverySessionManagerImplTest,
   EXPECT_TRUE(device_pairing_handler->current_pairing_device_id().empty());
   std::string device_id;
   AddDevice(&device_id);
-  absl::optional<mojom::PairingResult> result;
+  std::optional<mojom::PairingResult> result;
   auto pairing_delegate = std::make_unique<FakeDevicePairingDelegate>();
   delegate->pairing_handler()->PairDevice(
       device_id, pairing_delegate->GeneratePendingRemote(),
@@ -618,7 +622,7 @@ TEST_F(DiscoverySessionManagerImplTest,
   EXPECT_TRUE(pairing_delegate->IsMojoPipeConnected());
 
   device_pairing_handler->SimulatePairDeviceFinished(
-      /*failure_reason=*/absl::nullopt);
+      /*failure_reason=*/std::nullopt);
   EXPECT_EQ(result, mojom::PairingResult::kSuccess);
 
   // |delegate| will still be connected.

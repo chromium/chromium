@@ -6,8 +6,11 @@
 
 #include <tuple>
 
+#include <optional>
 #include "base/command_line.h"
 #include "base/feature_list.h"
+#include "base/memory/scoped_refptr.h"
+#include "base/synchronization/lock.h"
 #include "build/chromecast_buildflags.h"
 #include "components/media_control/renderer/media_playback_options.h"
 #include "components/memory_pressure/multi_source_memory_pressure_monitor.h"
@@ -24,9 +27,10 @@
 #include "media/base/video_codecs.h"
 #include "services/network/public/cpp/features.h"
 #include "services/service_manager/public/cpp/binder_registry.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_registry.h"
 #include "third_party/blink/public/common/browser_interface_broker_proxy.h"
+#include "third_party/blink/public/platform/url_loader_throttle_provider.h"
+#include "third_party/blink/public/web/web_local_frame.h"
 #include "third_party/blink/public/web/web_view.h"
 #include "third_party/widevine/cdm/buildflags.h"
 
@@ -132,18 +136,26 @@ class PlayreadyKeySystemInfo : public ::media::KeySystemInfo {
 
 WebEngineContentRendererClient::WebEngineContentRendererClient() = default;
 
-WebEngineContentRendererClient::~WebEngineContentRendererClient() = default;
-
-WebEngineRenderFrameObserver*
-WebEngineContentRendererClient::GetWebEngineRenderFrameObserverForRenderFrameId(
-    int render_frame_id) const {
-  auto iter = render_frame_id_to_observer_map_.find(render_frame_id);
-  DCHECK(iter != render_frame_id_to_observer_map_.end());
-  return iter->second.get();
+WebEngineContentRendererClient::~WebEngineContentRendererClient() {
+  base::AutoLock lock(observer_map_lock_);
+  frame_token_to_observer_map_.clear();
 }
 
-void WebEngineContentRendererClient::OnRenderFrameDeleted(int render_frame_id) {
-  size_t count = render_frame_id_to_observer_map_.erase(render_frame_id);
+scoped_refptr<url_rewrite::UrlRequestRewriteRules>
+WebEngineContentRendererClient::GetRewriteRulesForFrameToken(
+    const blink::LocalFrameToken& frame_token) const {
+  base::AutoLock lock(observer_map_lock_);
+  auto iter = frame_token_to_observer_map_.find(frame_token);
+  if (iter == frame_token_to_observer_map_.end()) {
+    return nullptr;
+  }
+  return iter->second->url_request_rules_receiver()->GetCachedRules();
+}
+
+void WebEngineContentRendererClient::OnRenderFrameDeleted(
+    const blink::LocalFrameToken& frame_token) {
+  base::AutoLock lock(observer_map_lock_);
+  size_t count = frame_token_to_observer_map_.erase(frame_token);
   DCHECK_EQ(count, 1u);
 }
 
@@ -165,15 +177,18 @@ void WebEngineContentRendererClient::RenderFrameCreated(
   // The objects' lifetimes are bound to the RenderFrame's lifetime.
   new on_load_script_injector::OnLoadScriptInjector(render_frame);
 
-  int render_frame_id = render_frame->GetRoutingID();
+  auto frame_token = render_frame->GetWebFrame()->GetLocalFrameToken();
 
   auto render_frame_observer = std::make_unique<WebEngineRenderFrameObserver>(
       render_frame,
       base::BindOnce(&WebEngineContentRendererClient::OnRenderFrameDeleted,
                      base::Unretained(this)));
-  auto render_frame_observer_iter = render_frame_id_to_observer_map_.emplace(
-      render_frame_id, std::move(render_frame_observer));
-  DCHECK(render_frame_observer_iter.second);
+  {
+    base::AutoLock lock(observer_map_lock_);
+    auto render_frame_observer_iter = frame_token_to_observer_map_.emplace(
+        frame_token, std::move(render_frame_observer));
+    DCHECK(render_frame_observer_iter.second);
+  }
 
   // Lifetime is tied to |render_frame| via content::RenderFrameObserver.
   new media_control::MediaPlaybackOptions(render_frame);
@@ -182,10 +197,6 @@ void WebEngineContentRendererClient::RenderFrameCreated(
 std::unique_ptr<blink::URLLoaderThrottleProvider>
 WebEngineContentRendererClient::CreateURLLoaderThrottleProvider(
     blink::URLLoaderThrottleProviderType type) {
-  // TODO(crbug.com/1378791): Add support for workers.
-  if (type == blink::URLLoaderThrottleProviderType::kWorker)
-    return nullptr;
-
   return std::make_unique<WebEngineURLLoaderThrottleProvider>(this);
 }
 

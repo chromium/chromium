@@ -20,9 +20,7 @@ import org.chromium.base.test.BaseJUnit4ClassRunner;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.Feature;
 
-/**
- * Tests for WebsiteAddress.
- */
+/** Tests for WebsiteAddress. */
 @RunWith(BaseJUnit4ClassRunner.class)
 @Batch(Batch.PER_CLASS)
 public class WebsiteAddressTest {
@@ -68,24 +66,35 @@ public class WebsiteAddressTest {
         Assert.assertEquals("google.com", anySubdomainAddress.getHost());
         Assert.assertEquals("google.com", anySubdomainAddress.getTitle());
         Assert.assertTrue(anySubdomainAddress.getIsAnySubdomainPattern());
+
+        WebsiteAddress schemefulSitePattern = WebsiteAddress.create("https://[*.]google.com");
+        Assert.assertEquals("https://google.com", schemefulSitePattern.getOrigin());
+        Assert.assertEquals("google.com", schemefulSitePattern.getHost());
+        Assert.assertEquals("https://google.com", schemefulSitePattern.getTitle());
+        Assert.assertFalse(schemefulSitePattern.getIsAnySubdomainPattern());
     }
 
     @Test
     @SmallTest
     @Feature({"Preferences"})
     public void testEqualsHashCodeCompareTo() {
-        Object[][] testData = {{0, "http://google.com", "http://google.com"},
-                {-1, "[*.]google.com", "http://google.com"},
-                {-1, "[*.]google.com", "http://a.google.com"}, {-1, "[*.]a.com", "[*.]b.com"},
-                {0, "[*.]google.com", "google.com"}, {-1, "[*.]google.com", "a.google.com"},
-                {-1, "http://google.com", "http://a.google.com"},
-                {-1, "http://a.google.com", "http://a.a.google.com"},
-                {-1, "http://a.a.google.com", "http://a.b.google.com"},
-                {1, "http://a.b.google.com", "http://google.com"},
-                {-1, "http://google.com", "https://google.com"},
-                {-1, "http://google.com", "https://a.google.com"},
-                {1, "https://b.google.com", "https://a.google.com"},
-                {-1, "http://a.com", "http://b.com"}, {-1, "http://a.com", "http://a.b.com"}};
+        Object[][] testData = {
+            {0, "http://google.com", "http://google.com"},
+            {-1, "[*.]google.com", "http://google.com"},
+            {-1, "[*.]google.com", "http://a.google.com"},
+            {-1, "[*.]a.com", "[*.]b.com"},
+            {0, "[*.]google.com", "google.com"},
+            {-1, "[*.]google.com", "a.google.com"},
+            {-1, "http://google.com", "http://a.google.com"},
+            {-1, "http://a.google.com", "http://a.a.google.com"},
+            {-1, "http://a.a.google.com", "http://a.b.google.com"},
+            {1, "http://a.b.google.com", "http://google.com"},
+            {-1, "http://google.com", "https://google.com"},
+            {-1, "http://google.com", "https://a.google.com"},
+            {1, "https://b.google.com", "https://a.google.com"},
+            {-1, "http://a.com", "http://b.com"},
+            {-1, "http://a.com", "http://a.b.com"}
+        };
 
         for (int i = 0; i < testData.length; ++i) {
             Object[] testRow = testData[i];
@@ -98,11 +107,15 @@ public class WebsiteAddressTest {
             WebsiteAddress addr1 = WebsiteAddress.create(string1);
             WebsiteAddress addr2 = WebsiteAddress.create(string2);
 
-            Assert.assertEquals("\"" + string1 + "\" vs \"" + string2 + "\"", compareToResult,
+            Assert.assertEquals(
+                    "\"" + string1 + "\" vs \"" + string2 + "\"",
+                    compareToResult,
                     Integer.signum(addr1.compareTo(addr2)));
 
             // Test that swapping arguments gives an opposite result.
-            Assert.assertEquals("\"" + string2 + "\" vs \"" + string1 + "\"", -compareToResult,
+            Assert.assertEquals(
+                    "\"" + string2 + "\" vs \"" + string1 + "\"",
+                    -compareToResult,
                     Integer.signum(addr2.compareTo(addr1)));
 
             if (compareToResult == 0) {

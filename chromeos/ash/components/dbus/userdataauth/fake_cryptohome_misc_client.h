@@ -8,6 +8,7 @@
 #include "chromeos/ash/components/dbus/userdataauth/cryptohome_misc_client.h"
 
 #include "base/component_export.h"
+#include "chromeos/ash/components/cryptohome/error_types.h"
 #include "chromeos/ash/components/dbus/cryptohome/UserDataAuth.pb.h"
 
 namespace ash {
@@ -42,7 +43,7 @@ class COMPONENT_EXPORT(USERDATAAUTH_CLIENT) FakeCryptohomeMiscClient
   void GetRsuDeviceId(const ::user_data_auth::GetRsuDeviceIdRequest& request,
                       GetRsuDeviceIdCallback callback) override;
 
-  absl::optional<::user_data_auth::GetSanitizedUsernameReply>
+  std::optional<::user_data_auth::GetSanitizedUsernameReply>
   BlockingGetSanitizedUsername(
       const ::user_data_auth::GetSanitizedUsernameRequest& request) override;
 
@@ -99,7 +100,7 @@ class COMPONENT_EXPORT(USERDATAAUTH_CLIENT) FakeCryptohomeMiscClient
 
   // The next error code to return for various functions.
   ::user_data_auth::CryptohomeErrorCode cryptohome_error_ =
-      ::user_data_auth::CryptohomeErrorCode::CRYPTOHOME_ERROR_NOT_SET;
+      ::user_data_auth::CRYPTOHOME_ERROR_NOT_SET;
 
   // The system salt to return.
   std::vector<uint8_t> system_salt_{GetStubSystemSalt()};

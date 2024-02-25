@@ -14,22 +14,22 @@ namespace mojo {
 // Simple wrapper around a pointer to allow zero-copy serialization of a
 // nullable type.
 //
-// Traits for nullable fields typically return `const absl::optional<T>&` or
-// `absl::optional<T>&`. However, if the field is not already an
-// `absl::optional`, this can be inefficient:
+// Traits for nullable fields typically return `const std::optional<T>&` or
+// `std::optional<T>&`. However, if the field is not already an
+// `std::optional`, this can be inefficient:
 //
-//   static absl::optional<std::string> nullable_field_getter(
+//   static std::optional<std::string> nullable_field_getter(
 //       const MyType& input) {
-//     // Bad: copies input.data() to populate `absl::optional`.
-//     return absl::make_optional(
-//         input.has_valid_data() ? input.data() : absl::nullopt);
+//     // Bad: copies input.data() to populate `std::optional`.
+//     return std::make_optional(
+//         input.has_valid_data() ? input.data() : std::nullopt);
 //   }
 //
 // Using this wrapper allows this to be serialized without additional copies:
 //
 //   static mojo::OptionalAsPointer<std::string> nullable_field_getter(
 //       const MyType& input) {
-//     return mojo::MakeOptionalAsPointer(
+//     return mojo::OptionalAsPointer(
 //         input.has_valid_data() ? &input.data() : nullptr);
 //   }
 //
@@ -52,7 +52,8 @@ class OptionalAsPointer {
   OptionalAsPointer(const OptionalAsPointer<U>& other) : value_(other.value_) {}
 
   bool has_value() const { return value_ != nullptr; }
-  T* value() const { return value_; }
+  T& value() { return *value_; }
+  const T& value() const { return *value_; }
 
  private:
   template <typename U>
@@ -61,12 +62,8 @@ class OptionalAsPointer {
   raw_ptr<T> value_ = nullptr;
 };
 
-// Type-deducing helpers for constructing a `OptionalAsPointer`.
-// TODO(dcheng): Remove this when we have C++20.
-template <int&... ExplicitArgumentBarrier, typename T>
-OptionalAsPointer<T> MakeOptionalAsPointer(T* ptr) {
-  return OptionalAsPointer<T>(ptr);
-}
+template <typename T>
+OptionalAsPointer(T*) -> OptionalAsPointer<T>;
 
 }  // namespace mojo
 

@@ -1,0 +1,24 @@
+This is a testharness.js-based test.
+[FAIL] WorkletAnimation interface: existence and properties of interface object
+  assert_own_property: self does not have own property "WorkletAnimation" expected property "WorkletAnimation" missing
+[FAIL] WorkletAnimation interface object length
+  assert_own_property: self does not have own property "WorkletAnimation" expected property "WorkletAnimation" missing
+[FAIL] WorkletAnimation interface object name
+  assert_own_property: self does not have own property "WorkletAnimation" expected property "WorkletAnimation" missing
+[FAIL] WorkletAnimation interface: existence and properties of interface prototype object
+  assert_own_property: self does not have own property "WorkletAnimation" expected property "WorkletAnimation" missing
+[FAIL] WorkletAnimation interface: existence and properties of interface prototype object's "constructor" property
+  assert_own_property: self does not have own property "WorkletAnimation" expected property "WorkletAnimation" missing
+[FAIL] WorkletAnimation interface: existence and properties of interface prototype object's @@unscopables property
+  assert_own_property: self does not have own property "WorkletAnimation" expected property "WorkletAnimation" missing
+[FAIL] WorkletAnimation interface: attribute animatorName
+  assert_own_property: self does not have own property "WorkletAnimation" expected property "WorkletAnimation" missing
+[FAIL] WorkletAnimation must be primary interface of new WorkletAnimation("name")
+  assert_equals: Unexpected exception when evaluating object expected null but got object "ReferenceError: WorkletAnimation is not defined"
+[FAIL] Stringification of new WorkletAnimation("name")
+  assert_equals: Unexpected exception when evaluating object expected null but got object "ReferenceError: WorkletAnimation is not defined"
+[FAIL] WorkletAnimation interface: new WorkletAnimation("name") must inherit property "animatorName" with the proper type
+  assert_equals: Unexpected exception when evaluating object expected null but got object "ReferenceError: WorkletAnimation is not defined"
+[FAIL] CSS namespace: attribute animationWorklet
+  assert_own_property: CSS does not have property "animationWorklet" expected property "animationWorklet" missing
+Harness: the test ran to completion.

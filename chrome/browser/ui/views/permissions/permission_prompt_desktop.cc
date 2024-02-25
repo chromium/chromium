@@ -19,7 +19,7 @@ PermissionPromptDesktop::PermissionPromptDesktop(
 PermissionPromptDesktop::~PermissionPromptDesktop() = default;
 
 bool PermissionPromptDesktop::UpdateBrowser() {
-  Browser* current_browser = chrome::FindBrowserWithWebContents(web_contents_);
+  Browser* current_browser = chrome::FindBrowserWithTab(web_contents_);
   // Browser for |web_contents_| might change when for example the tab was
   // dragged to another window.
   bool was_browser_changed = false;
@@ -42,13 +42,17 @@ PermissionPromptDesktop::GetTabSwitchingBehavior() {
       kDestroyPromptButKeepRequestPending;
 }
 
-absl::optional<gfx::Rect> PermissionPromptDesktop::GetViewBoundsInScreen()
+std::optional<gfx::Rect> PermissionPromptDesktop::GetViewBoundsInScreen()
     const {
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 views::Widget* PermissionPromptDesktop::GetPromptBubbleWidgetForTesting() {
   return nullptr;
+}
+
+bool PermissionPromptDesktop::ShouldFinalizeRequestAfterDecided() const {
+  return true;
 }
 
 LocationBarView* PermissionPromptDesktop::GetLocationBarView() {

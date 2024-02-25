@@ -379,9 +379,7 @@ static_assert(ABSL_INTERNAL_INLINE_NAMESPACE_STR[0] != 'h' ||
 #define ABSL_HAVE_EXCEPTIONS 1
 #endif  // defined(__EXCEPTIONS) && ABSL_HAVE_FEATURE(cxx_exceptions)
 // Handle remaining special cases and default to exceptions being supported.
-#elif !(defined(__GNUC__) && (__GNUC__ < 5) && !defined(__EXCEPTIONS)) && \
-    !(ABSL_INTERNAL_HAVE_MIN_GNUC_VERSION(5, 0) &&                        \
-      !defined(__cpp_exceptions)) &&                                      \
+#elif !(defined(__GNUC__) && !defined(__cpp_exceptions)) && \
     !(defined(_MSC_VER) && !defined(_CPPUNWIND))
 #define ABSL_HAVE_EXCEPTIONS 1
 #endif
@@ -609,6 +607,22 @@ static_assert(ABSL_INTERNAL_INLINE_NAMESPACE_STR[0] != 'h' ||
 #define ABSL_HAVE_STD_STRING_VIEW 1
 #endif
 
+// ABSL_HAVE_STD_ORDERING
+//
+// Checks whether C++20 std::{partial,weak,strong}_ordering are available.
+//
+// __cpp_lib_three_way_comparison is missing on libc++
+// (https://github.com/llvm/llvm-project/issues/73953) so treat it as defined
+// when building in C++20 mode.
+#ifdef ABSL_HAVE_STD_ORDERING
+#error "ABSL_HAVE_STD_ORDERING cannot be directly set."
+#elif (defined(__cpp_lib_three_way_comparison) &&    \
+       __cpp_lib_three_way_comparison >= 201907L) || \
+    (defined(ABSL_INTERNAL_CPLUSPLUS_LANG) &&        \
+     ABSL_INTERNAL_CPLUSPLUS_LANG >= 202002L)
+#define ABSL_HAVE_STD_ORDERING 1
+#endif
+
 // ABSL_USES_STD_ANY
 //
 // Indicates whether absl::any is an alias for std::any.
@@ -667,6 +681,22 @@ static_assert(ABSL_INTERNAL_INLINE_NAMESPACE_STR[0] != 'h' ||
     (ABSL_OPTION_USE_STD_STRING_VIEW == 2 &&  \
      defined(ABSL_HAVE_STD_STRING_VIEW))
 #define ABSL_USES_STD_STRING_VIEW 1
+#else
+#error options.h is misconfigured.
+#endif
+
+// ABSL_USES_STD_ORDERING
+//
+// Indicates whether absl::{partial,weak,strong}_ordering are aliases for the
+// std:: ordering types.
+#if !defined(ABSL_OPTION_USE_STD_ORDERING)
+#error options.h is misconfigured.
+#elif ABSL_OPTION_USE_STD_ORDERING == 0 || \
+    (ABSL_OPTION_USE_STD_ORDERING == 2 && !defined(ABSL_HAVE_STD_ORDERING))
+#undef ABSL_USES_STD_ORDERING
+#elif ABSL_OPTION_USE_STD_ORDERING == 1 || \
+    (ABSL_OPTION_USE_STD_ORDERING == 2 && defined(ABSL_HAVE_STD_ORDERING))
+#define ABSL_USES_STD_ORDERING 1
 #else
 #error options.h is misconfigured.
 #endif
@@ -862,6 +892,18 @@ static_assert(ABSL_INTERNAL_INLINE_NAMESPACE_STR[0] != 'h' ||
 #elif !defined(__GNUC__) && !defined(_MSC_VER)
 // Unknown compiler, default to RTTI
 #define ABSL_INTERNAL_HAS_RTTI 1
+#endif
+
+// `ABSL_INTERNAL_HAS_CXA_DEMANGLE` determines whether `abi::__cxa_demangle` is
+// available.
+#ifdef ABSL_INTERNAL_HAS_CXA_DEMANGLE
+#error ABSL_INTERNAL_HAS_CXA_DEMANGLE cannot be directly set
+#elif defined(OS_ANDROID) && (defined(__i386__) || defined(__x86_64__))
+#define ABSL_INTERNAL_HAS_CXA_DEMANGLE 0
+#elif defined(__GNUC__) && !defined(__mips__)
+#define ABSL_INTERNAL_HAS_CXA_DEMANGLE 1
+#elif defined(__clang__) && !defined(_MSC_VER)
+#define ABSL_INTERNAL_HAS_CXA_DEMANGLE 1
 #endif
 
 // ABSL_INTERNAL_HAVE_SSE is used for compile-time detection of SSE support.

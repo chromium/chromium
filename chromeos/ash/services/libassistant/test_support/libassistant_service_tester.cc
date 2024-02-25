@@ -5,7 +5,6 @@
 #include "chromeos/ash/services/libassistant/test_support/libassistant_service_tester.h"
 
 #include "base/base_paths.h"
-#include "chromeos/ash/services/assistant/public/cpp/features.h"
 #include "chromeos/ash/services/libassistant/display_connection.h"
 #include "chromeos/ash/services/libassistant/display_controller.h"
 #include "chromeos/ash/services/libassistant/grpc/services_status_observer.h"
@@ -50,21 +49,14 @@ LibassistantServiceTester::assistant_manager() {
   return libassistant_factory_->assistant_manager();
 }
 
-chromeos::assistant::FakeAssistantManagerInternal&
-LibassistantServiceTester::assistant_manager_internal() {
-  return libassistant_factory_->assistant_manager_internal();
-}
-
 void LibassistantServiceTester::Start() {
   service_controller_->Initialize(mojom::BootupConfig::New(),
                                   BindURLLoaderFactory());
   service_controller_->Start();
   service_controller_.FlushForTesting();
-  if (assistant::features::IsLibAssistantV2Enabled()) {
-    // Simulate gRPC heartbeat of the booting up signal.
-    service_->service_controller().OnServicesStatusChanged(
-        ServicesStatus::ONLINE_BOOTING_UP);
-  }
+  // Simulate gRPC heartbeat of the booting up signal.
+  service_->service_controller().OnServicesStatusChanged(
+      ServicesStatus::ONLINE_BOOTING_UP);
 }
 
 void LibassistantServiceTester::BindControllers() {

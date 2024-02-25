@@ -77,7 +77,7 @@ class ScopedPendingReceiver {
 
  private:
   mojo::PendingReceiver<T> pending_receiver_;
-  const raw_ptr<const ArcBridgeHostImpl, ExperimentalAsh> arc_bridge_host_impl_;
+  const raw_ptr<const ArcBridgeHostImpl> arc_bridge_host_impl_;
 };
 
 // Test that the test fixture class, especially its ArcBridgeHostImpl variable,
@@ -161,7 +161,6 @@ TEST_F(ArcBridgeHostImplTest, TestOnInstanceReady) {
     MAKE_INSTANCE_READY(Keymaster);
     MAKE_INSTANCE_READY_WITH_NAMESPACE(mojom::keymint, KeyMint);
     MAKE_INSTANCE_READY(Kiosk);
-    MAKE_INSTANCE_READY(LockScreen);
     MAKE_INSTANCE_READY(MediaSession);
     MAKE_INSTANCE_READY(Metrics);
     MAKE_INSTANCE_READY(Midis);

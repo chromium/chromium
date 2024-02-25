@@ -8,12 +8,13 @@
 #include <elf.h>
 #include <string.h>
 
+#include <optional>
+
 #include "base/bits.h"
 #include "base/containers/span.h"
 #include "base/hash/sha1.h"
 #include "base/strings/safe_sprintf.h"
 #include "build/build_config.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 // NOTE: This code may be used in crash handling code, so the implementation
 // must avoid dynamic memory allocation or using data structures which rely on
@@ -122,7 +123,7 @@ size_t ReadElfBuildId(const void* elf_mapped_base,
   return 0;
 }
 
-absl::optional<StringPiece> ReadElfLibraryName(const void* elf_mapped_base) {
+std::optional<StringPiece> ReadElfLibraryName(const void* elf_mapped_base) {
   // NOTE: Function should use async signal safe calls only.
 
   const Ehdr* elf_header = GetElfHeader(elf_mapped_base);
@@ -163,7 +164,7 @@ absl::optional<StringPiece> ReadElfLibraryName(const void* elf_mapped_base) {
       return StringPiece(strtab_addr + soname_strtab_offset);
   }
 
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 span<const Phdr> GetElfProgramHeaders(const void* elf_mapped_base) {

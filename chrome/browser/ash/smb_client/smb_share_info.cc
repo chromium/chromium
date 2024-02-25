@@ -6,8 +6,7 @@
 
 #include "base/check.h"
 
-namespace ash {
-namespace smb_client {
+namespace ash::smb_client {
 
 SmbShareInfo::SmbShareInfo(const SmbUrl& share_url,
                            const std::string& display_name,
@@ -31,5 +30,4 @@ SmbShareInfo::SmbShareInfo(const SmbShareInfo&) = default;
 
 SmbShareInfo& SmbShareInfo::operator=(const SmbShareInfo&) = default;
 
-}  // namespace smb_client
-}  // namespace ash
+}  // namespace ash::smb_client

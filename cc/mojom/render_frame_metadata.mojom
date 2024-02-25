@@ -22,7 +22,7 @@ struct DelegatedInkBrowserMetadata {
   bool delegated_ink_is_hovering;
 };
 
-// See components/viz/service/quads/render_frame_metadata.h
+// See cc/trees/render_frame_metadata.h
 struct RenderFrameMetadata {
   // The background color of a CompositorFrame. It can be used for filling the
   // content area if the primary surface is unavailable and fallback is not

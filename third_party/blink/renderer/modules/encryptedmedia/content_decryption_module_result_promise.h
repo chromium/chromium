@@ -54,7 +54,7 @@ class ContentDecryptionModuleResultPromise
 
  protected:
   // |interface_name| and |property_name| must have static life time.
-  ContentDecryptionModuleResultPromise(ScriptState*,
+  ContentDecryptionModuleResultPromise(ScriptPromiseResolver*,
                                        const MediaKeysConfig&,
                                        EmeApiType api_type);
 
@@ -65,6 +65,17 @@ class ContentDecryptionModuleResultPromise
     DCHECK(IsValidToFulfillPromise());
 
     resolver_->Resolve(value...);
+    resolver_.Clear();
+  }
+
+  // Resolves the promise with |value|. Used by subclasses to resolve the
+  // promise.
+  template <typename IDLType, typename... BlinkType>
+  void Resolve(BlinkType&&... value) {
+    DCHECK(IsValidToFulfillPromise());
+
+    resolver_->DowncastTo<IDLType>()->Resolve(
+        std::forward<BlinkType>(value)...);
     resolver_.Clear();
   }
 

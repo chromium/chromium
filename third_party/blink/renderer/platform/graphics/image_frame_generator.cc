@@ -29,6 +29,7 @@
 #include <utility>
 
 #include "base/synchronization/lock.h"
+#include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/renderer/platform/graphics/image_decoder_wrapper.h"
 #include "third_party/blink/renderer/platform/graphics/image_decoding_store.h"
 #include "third_party/blink/renderer/platform/image-decoders/image_decoder.h"
@@ -184,7 +185,8 @@ bool ImageFrameGenerator::DecodeToYUV(
   const bool all_data_received = true;
   std::unique_ptr<ImageDecoder> decoder = ImageDecoder::Create(
       data, all_data_received, ImageDecoder::kAlphaPremultiplied,
-      ImageDecoder::kDefaultBitDepth, decoder_color_behavior_);
+      ImageDecoder::kDefaultBitDepth, decoder_color_behavior_,
+      Platform::GetMaxDecodedImageBytes());
   // getYUVComponentSizes was already called and was successful, so
   // ImageDecoder::create must succeed.
   DCHECK(decoder);
@@ -274,7 +276,8 @@ bool ImageFrameGenerator::GetYUVAInfo(
     return false;
   std::unique_ptr<ImageDecoder> decoder = ImageDecoder::Create(
       data, /*data_complete=*/true, ImageDecoder::kAlphaPremultiplied,
-      ImageDecoder::kDefaultBitDepth, decoder_color_behavior_);
+      ImageDecoder::kDefaultBitDepth, decoder_color_behavior_,
+      Platform::GetMaxDecodedImageBytes());
   DCHECK(decoder);
 
   DCHECK(decoder->CanDecodeToYUV())

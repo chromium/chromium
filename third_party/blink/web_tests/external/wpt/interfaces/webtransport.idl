@@ -9,8 +9,8 @@ interface WebTransportDatagramDuplexStream {
   readonly attribute WritableStream writable;
 
   readonly attribute unsigned long maxDatagramSize;
-  attribute unrestricted double incomingMaxAge;
-  attribute unrestricted double outgoingMaxAge;
+  attribute unrestricted double? incomingMaxAge;
+  attribute unrestricted double? outgoingMaxAge;
   attribute unrestricted double incomingHighWaterMark;
   attribute unrestricted double outgoingHighWaterMark;
 };
@@ -19,7 +19,7 @@ interface WebTransportDatagramDuplexStream {
 interface WebTransport {
   constructor(USVString url, optional WebTransportOptions options = {});
 
-  Promise<WebTransportStats> getStats();
+  Promise<WebTransportConnectionStats> getStats();
   readonly attribute Promise<undefined> ready;
   readonly attribute WebTransportReliabilityMode reliability;
   readonly attribute WebTransportCongestionControl congestionControl;
@@ -38,6 +38,9 @@ interface WebTransport {
       optional WebTransportSendStreamOptions options = {});
   /* a ReadableStream of WebTransportReceiveStream objects */
   readonly attribute ReadableStream incomingUnidirectionalStreams;
+  WebTransportSendGroup createSendGroup();
+
+  static readonly attribute boolean supportsReliableOnly;
 };
 
 enum WebTransportReliabilityMode {
@@ -70,16 +73,16 @@ dictionary WebTransportCloseInfo {
 };
 
 dictionary WebTransportSendStreamOptions {
-  long long? sendOrder = null;
+  WebTransportSendGroup? sendGroup = null;
+  long long sendOrder = 0;
+  boolean waitUntilAvailable = false;
 };
 
-dictionary WebTransportStats {
-  DOMHighResTimeStamp timestamp;
+dictionary WebTransportConnectionStats {
   unsigned long long bytesSent;
   unsigned long long packetsSent;
+  unsigned long long bytesLost;
   unsigned long long packetsLost;
-  unsigned long numOutgoingStreamsCreated;
-  unsigned long numIncomingStreamsCreated;
   unsigned long long bytesReceived;
   unsigned long long packetsReceived;
   DOMHighResTimeStamp smoothedRtt;
@@ -90,7 +93,6 @@ dictionary WebTransportStats {
 };
 
 dictionary WebTransportDatagramStats {
-  DOMHighResTimeStamp timestamp;
   unsigned long long expiredOutgoing;
   unsigned long long droppedIncoming;
   unsigned long long lostOutgoing;
@@ -98,15 +100,20 @@ dictionary WebTransportDatagramStats {
 
 [Exposed=(Window,Worker), SecureContext, Transferable]
 interface WebTransportSendStream : WritableStream {
-  attribute long long? sendOrder;
+  attribute WebTransportSendGroup? sendGroup;
+  attribute long long sendOrder;
   Promise<WebTransportSendStreamStats> getStats();
 };
 
 dictionary WebTransportSendStreamStats {
-  DOMHighResTimeStamp timestamp;
   unsigned long long bytesWritten;
   unsigned long long bytesSent;
   unsigned long long bytesAcknowledged;
+};
+
+[Exposed=(Window,Worker), SecureContext]
+interface WebTransportSendGroup {
+  Promise<WebTransportSendStreamStats> getStats();
 };
 
 [Exposed=(Window,Worker), SecureContext, Transferable]
@@ -115,7 +122,6 @@ interface WebTransportReceiveStream : ReadableStream {
 };
 
 dictionary WebTransportReceiveStreamStats {
-  DOMHighResTimeStamp timestamp;
   unsigned long long bytesReceived;
   unsigned long long bytesRead;
 };

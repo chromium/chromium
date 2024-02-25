@@ -53,7 +53,6 @@
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/cocoa/bookmarks/bookmark_menu_bridge.h"
 #include "chrome/browser/ui/cocoa/history_menu_bridge.h"
-#include "chrome/browser/ui/cocoa/last_active_browser_cocoa.h"
 #include "chrome/browser/ui/cocoa/test/run_loop_testing.h"
 #include "chrome/browser/ui/profiles/profile_picker.h"
 #include "chrome/browser/ui/profiles/profile_ui_test_utils.h"
@@ -86,7 +85,7 @@
 #include "extensions/browser/extension_dialog_auto_confirm.h"
 #include "extensions/common/extension.h"
 #include "extensions/test/extension_test_message_listener.h"
-#include "net/base/mac/url_conversions.h"
+#include "net/base/apple/url_conversions.h"
 #include "net/dns/mock_host_resolver.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "third_party/blink/public/common/features.h"
@@ -97,7 +96,7 @@
 
 namespace {
 
-GURL g_open_shortcut_url = GURL::EmptyGURL();
+GURL g_open_shortcut_url;
 
 // Instructs the NSApp's delegate to open |url|.
 void SendOpenUrlToAppController(const GURL& url) {
@@ -236,53 +235,6 @@ IN_PROC_BROWSER_TEST_F(AppControllerBrowserTest, CommandDuringShutdown) {
                          withObject:cmd_n
                          afterDelay:0];
   // Let the run loop get flushed, during process cleanup and try not to crash.
-}
-
-// Regression test for https://crbug.com/1236073
-// TODO(crbug.com/1373692): Extremely flaky on the mac12-arm64-rel bot.
-IN_PROC_BROWSER_TEST_F(AppControllerBrowserTest,
-                       DISABLED_DeleteEphemeralProfile) {
-  EXPECT_EQ(1u, chrome::GetTotalBrowserCount());
-  Profile* profile = browser()->profile();
-  // Activate the first profile.
-  [NSNotificationCenter.defaultCenter
-      postNotificationName:NSWindowDidBecomeMainNotification
-                    object:browser()
-                               ->window()
-                               ->GetNativeWindow()
-                               .GetNativeNSWindow()];
-  AppController* app_controller = AppController.sharedController;
-  ASSERT_EQ(profile, app_controller.lastProfileIfLoaded);
-
-  // Mark the profile as ephemeral.
-  profile->GetPrefs()->SetBoolean(prefs::kForceEphemeralProfiles, true);
-  ProfileManager* profile_manager = g_browser_process->profile_manager();
-  ProfileAttributesStorage& storage =
-      profile_manager->GetProfileAttributesStorage();
-  ProfileAttributesEntry* entry =
-      storage.GetProfileAttributesWithPath(profile->GetPath());
-  EXPECT_TRUE(entry->IsEphemeral());
-
-  // Add sentinel data to observe profile destruction. Ephemeral profiles are
-  // destroyed immediately upon browser close.
-  ProfileDestructionWaiter waiter(profile);
-
-  // Close browser and wait for the profile to be deleted.
-  CloseBrowserSynchronously(browser());
-  waiter.Wait();
-  EXPECT_EQ(0u, chrome::GetTotalBrowserCount());
-
-  // Create a new profile and activate it.
-  Profile& profile2 = CreateAndWaitForProfile(
-      profile_manager->user_data_dir().AppendASCII("Profile 2"));
-  Browser* browser2 = CreateBrowser(&profile2);
-  // This should not crash.
-  [[NSNotificationCenter defaultCenter]
-      postNotificationName:NSWindowDidBecomeMainNotification
-                    object:browser2->window()
-                               ->GetNativeWindow()
-                               .GetNativeNSWindow()];
-  ASSERT_EQ(&profile2, app_controller.lastProfileIfLoaded);
 }
 
 class AppControllerKeepAliveBrowserTest : public InProcessBrowserTest {
@@ -798,7 +750,7 @@ IN_PROC_BROWSER_TEST_F(AppControllerBrowserTest, OpenInRegularBrowser) {
   EXPECT_EQ(1, browser()->tab_strip_model()->count());
   EXPECT_EQ(1, incognito_browser->tab_strip_model()->count());
   EXPECT_TRUE(incognito_browser->profile()->IsIncognitoProfile());
-  EXPECT_EQ(incognito_browser, chrome::GetLastActiveBrowser());
+  EXPECT_EQ(incognito_browser, chrome::FindLastActive());
   // Assure that `windowDidBecomeMain` is called even if this browser process
   // lost focus because of other browser processes in other shards taking
   // focus. It prevents flakiness.
@@ -842,7 +794,7 @@ IN_PROC_BROWSER_TEST_F(AppControllerBrowserTest,
   Browser* incognito_browser = CreateIncognitoBrowser(profile);
   EXPECT_TRUE(incognito_browser->profile()->IsIncognitoProfile());
   EXPECT_EQ(BrowserList::GetInstance()->size(), 1u);
-  EXPECT_EQ(incognito_browser, chrome::GetLastActiveBrowser());
+  EXPECT_EQ(incognito_browser, chrome::FindLastActive());
   // Assure that `windowDidBecomeMain` is called even if this browser process
   // lost focus because of other browser processes in other shards taking
   // focus. It prevents flakiness.
@@ -860,7 +812,7 @@ IN_PROC_BROWSER_TEST_F(AppControllerBrowserTest,
   event_navigation_observer.Wait();
   // Check that a new regular browser is opened
   // and the url is opened in the regular browser.
-  Browser* new_browser = chrome::GetLastActiveBrowser();
+  Browser* new_browser = chrome::FindLastActive();
   EXPECT_EQ(BrowserList::GetInstance()->size(), 2u);
   EXPECT_TRUE(new_browser->profile()->IsRegularProfile());
   EXPECT_EQ(profile, new_browser->profile());
@@ -882,7 +834,7 @@ IN_PROC_BROWSER_TEST_F(AppControllerBrowserTest, OpenUrlInGuestBrowser) {
   EXPECT_EQ(1, guest_browser->tab_strip_model()->count());
   EXPECT_TRUE(guest_browser->profile()->IsGuestSession());
   guest_browser->window()->Show();
-  EXPECT_EQ(guest_browser, chrome::GetLastActiveBrowser());
+  EXPECT_EQ(guest_browser, chrome::FindLastActive());
   // Assure that `windowDidBecomeMain` is called even if this browser process
   // lost focus because of other browser processes in other shards taking
   // focus. It prevents flakiness.
@@ -928,7 +880,7 @@ IN_PROC_BROWSER_TEST_F(AppControllerBrowserTest, OpenUrlWhenForcedIncognito) {
   event_navigation_observer.Wait();
   // Check that a new incognito browser is opened
   // and the url is opened in the incognito browser.
-  Browser* new_browser = chrome::GetLastActiveBrowser();
+  Browser* new_browser = chrome::FindLastActive();
   EXPECT_EQ(BrowserList::GetInstance()->size(), 1u);
   EXPECT_TRUE(new_browser->profile()->IsIncognitoProfile());
   EXPECT_TRUE(new_browser->profile()->IsPrimaryOTRProfile());
@@ -958,7 +910,7 @@ IN_PROC_BROWSER_TEST_F(AppControllerBrowserTest,
   EXPECT_TRUE(incognito_browser->profile()->IsIncognitoProfile());
   EXPECT_EQ(BrowserList::GetInstance()->size(), 1u);
   EXPECT_EQ(1, incognito_browser->tab_strip_model()->count());
-  EXPECT_EQ(incognito_browser, chrome::GetLastActiveBrowser());
+  EXPECT_EQ(incognito_browser, chrome::FindLastActive());
   // Assure that `windowDidBecomeMain` is called even if this browser process
   // lost focus because of other browser processes in other shards taking
   // focus. It prevents flakiness.
@@ -1177,123 +1129,6 @@ IN_PROC_BROWSER_TEST_F(AppControllerMainMenuBrowserTest,
   EXPECT_EQ(BrowserList::GetInstance()->size(), 1u);
   EXPECT_TRUE(new_browser->profile()->IsPrimaryOTRProfile());
   EXPECT_EQ(profile, new_browser->profile()->GetOriginalProfile());
-}
-
-// Tests opening a new window from dock menu while incognito browser is opened.
-// Regression test for https://crbug.com/1371923
-IN_PROC_BROWSER_TEST_F(AppControllerMainMenuBrowserTest,
-                       WhileIncognitoBrowserIsOpened_NewWindow) {
-  EXPECT_EQ(BrowserList::GetInstance()->size(), 1u);
-
-  // Close the current browser.
-  Profile* profile = browser()->profile();
-  chrome::CloseAllBrowsers();
-  ui_test_utils::WaitForBrowserToClose();
-  EXPECT_TRUE(BrowserList::GetInstance()->empty());
-
-  // Create an incognito browser.
-  Browser* incognito_browser = CreateIncognitoBrowser(profile);
-  EXPECT_TRUE(incognito_browser->profile()->IsIncognitoProfile());
-  EXPECT_EQ(BrowserList::GetInstance()->size(), 1u);
-  EXPECT_EQ(incognito_browser, chrome::GetLastActiveBrowser());
-  // Assure that `windowDidBecomeMain` is called even if this browser process
-  // lost focus because of other browser processes in other shards taking
-  // focus. It prevents flakiness.
-  // See: https://crbug.com/1450491
-  [[NSNotificationCenter defaultCenter]
-      postNotificationName:NSWindowDidBecomeMainNotification
-                    object:incognito_browser->window()
-                               ->GetNativeWindow()
-                               .GetNativeNSWindow()];
-
-  // Simulate click on "New Window".
-  ui_test_utils::BrowserChangeObserver browser_added_observer(
-      nullptr, ui_test_utils::BrowserChangeObserver::ChangeType::kAdded);
-  AppController* app_controller = AppController.sharedController;
-  NSMenu* menu = [app_controller applicationDockMenu:NSApp];
-  ASSERT_TRUE(menu);
-  NSMenuItem* item = [menu itemWithTag:IDC_NEW_WINDOW];
-  ASSERT_TRUE(item);
-  [app_controller commandDispatch:item];
-
-  // Check that a new non-incognito browser is opened.
-  Browser* new_browser = browser_added_observer.Wait();
-  EXPECT_EQ(BrowserList::GetInstance()->size(), 2u);
-  EXPECT_TRUE(new_browser->profile()->IsRegularProfile());
-  EXPECT_EQ(profile, new_browser->profile());
-}
-
-// Test switching from Regular to OTR profiles updates the history menu.
-IN_PROC_BROWSER_TEST_F(AppControllerMainMenuBrowserTest,
-                       SwitchToIncognitoRemovesHistoryItems) {
-  ASSERT_TRUE(embedded_test_server()->Start());
-  AppController* app_controller = AppController.sharedController;
-
-  GURL simple(embedded_test_server()->GetURL("/simple.html"));
-  SendOpenUrlToAppController(simple);
-
-  Profile* profile = browser()->profile();
-  EXPECT_EQ(BrowserList::GetInstance()->size(), 1u);
-
-  // Load profile's History Service backend so it will be assigned to the
-  // HistoryMenuBridge, or else this test will fail flaky.
-  ui_test_utils::WaitForHistoryToLoad(HistoryServiceFactory::GetForProfile(
-      profile, ServiceAccessType::EXPLICIT_ACCESS));
-
-  // Verify that history bridge service is available for regular profiles.
-  EXPECT_TRUE([app_controller historyMenuBridge]->service());
-
-  // Open a URL in Incognito window.
-  ui_test_utils::NavigateToURLWithDisposition(
-      browser(), simple, WindowOpenDisposition::OFF_THE_RECORD,
-      ui_test_utils::BROWSER_TEST_WAIT_FOR_BROWSER);
-
-  // Check that there are exactly 2 browsers (regular and incognito).
-  BrowserList* active_browser_list = BrowserList::GetInstance();
-  EXPECT_EQ(2u, active_browser_list->size());
-
-  // Verify that history bridge service is not available in Incognito.
-  EXPECT_FALSE([app_controller historyMenuBridge]->service());
-
-  // Switch back to the regular profile window.
-  Browser* browser1 = active_browser_list->get(0);
-  browser1->window()->Show();
-
-  // Verify that history bridge service is available again.
-  EXPECT_TRUE([app_controller historyMenuBridge]->service());
-}
-
-class AppControllerIncognitoSwitchTest : public InProcessBrowserTest {
- public:
-  void SetUpCommandLine(base::CommandLine* command_line) override {
-    InProcessBrowserTest::SetUpCommandLine(command_line);
-    command_line->AppendSwitch(switches::kIncognito);
-  }
-};
-
-// Regression test for https://crbug.com/1248661
-IN_PROC_BROWSER_TEST_F(AppControllerIncognitoSwitchTest,
-                       ObserveProfileDestruction) {
-  // Chrome is launched in incognito.
-  Profile* otr_profile = browser()->profile();
-  EXPECT_EQ(otr_profile,
-            otr_profile->GetPrimaryOTRProfile(/*create_if_needed=*/false));
-  EXPECT_EQ(BrowserList::GetInstance()->size(), 1u);
-  AppController* app_controller = AppController.sharedController;
-  [[NSNotificationCenter defaultCenter]
-      postNotificationName:NSWindowDidBecomeMainNotification
-                    object:browser()
-                               ->window()
-                               ->GetNativeWindow()
-                               .GetNativeNSWindow()];
-  // The last profile is the incognito profile.
-  EXPECT_EQ([app_controller lastProfileIfLoaded], otr_profile);
-  // Destroy the incognito profile.
-  ProfileDestructionWaiter waiter(otr_profile);
-  CloseBrowserSynchronously(browser());
-  waiter.Wait();
-  // Check that |-lastProfileIfLoaded| is not pointing to released memory.
-  EXPECT_NE([app_controller lastProfileIfLoaded], otr_profile);
 }
 
 }  // namespace

@@ -72,8 +72,16 @@ void DOMAgentMac::InitializeRootsFromOpenWindows() {
   for (NSWindow* window in NSApp.windows) {
     if (views::Widget* widget =
             views::Widget::GetWidgetForNativeWindow(window)) {
-      widget->AddObserver(this);
-      roots_.push_back(widget);
+      // When in immersive fullscreen mode, an overlay widget has two associated
+      // NSWindows:
+      // 1. An invisible one created by Chrome, which serves as an anchor
+      //    for child widgets.
+      // 2. A visible AppKit-owned NSToolbarFullScreenWindow.
+      // We ensures here that a widget is only observed once.
+      if (!widget->HasObserver(this)) {
+        widget->AddObserver(this);
+        roots_.push_back(widget);
+      }
     }
   }
 }

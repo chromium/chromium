@@ -37,8 +37,8 @@ class BaseRingBufferTest : public testing::Test {
   static const unsigned int kAlignment = 4;
 
   void RunPendingSetToken() {
-    for (std::vector<const volatile void*>::iterator it =
-             set_token_arguments_.begin();
+    for (std::vector<raw_ptr<const volatile void, VectorExperimental>>::iterator
+             it = set_token_arguments_.begin();
          it != set_token_arguments_.end(); ++it) {
       api_mock_->SetToken(cmd::kSetToken, 1, *it);
     }
@@ -81,11 +81,12 @@ class BaseRingBufferTest : public testing::Test {
   std::unique_ptr<CommandBufferDirect> command_buffer_;
   std::unique_ptr<AsyncAPIMock> api_mock_;
   std::unique_ptr<CommandBufferHelper> helper_;
-  std::vector<const volatile void*> set_token_arguments_;
+  std::vector<raw_ptr<const volatile void, VectorExperimental>>
+      set_token_arguments_;
   bool delay_set_token_;
 
   std::unique_ptr<int8_t[]> buffer_;
-  raw_ptr<int8_t, DanglingUntriaged> buffer_start_;
+  raw_ptr<int8_t> buffer_start_ = nullptr;
   base::test::SingleThreadTaskEnvironment task_environment_;
 };
 
@@ -138,6 +139,10 @@ TEST_F(RingBufferTest, TestBasic) {
 // unaligned buffer could cause an alloc using the value returned by
 // GetLargestFreeOrPendingSize to try to allocate more memory than was allowed.
 TEST_F(RingBufferTest, TestCanAllocGetLargestFreeOrPendingSize) {
+  // Nullifying |buffer_start_| here, to prevent dangling this raw_ptr when
+  // buffer_ is subsequently reset.
+  buffer_start_ = nullptr;
+
   // Make sure we aren't actually aligned
   buffer_.reset(new int8_t[kBufferSize + 2 + kBaseOffset]);
   buffer_start_ = buffer_.get() + kBaseOffset;

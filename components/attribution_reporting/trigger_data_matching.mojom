@@ -1,0 +1,16 @@
+// Copyright 2023 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module attribution_reporting.mojom;
+
+// Controls how trigger data is matched against a source's trigger specs.
+// Corresponds to
+// https://wicg.github.io/attribution-reporting-api/#trigger-data-matching-mode
+enum TriggerDataMatching {
+  // Trigger data is taken modulo the default trigger data cardinality.
+  kModulus = 0,
+  // Trigger data must be less than the default trigger data cardinality.
+  // Otherwise, no event-level attribution takes place.
+  kExact = 1,
+};

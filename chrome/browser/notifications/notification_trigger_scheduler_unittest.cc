@@ -21,13 +21,6 @@ using ::testing::_;
 
 namespace {
 
-std::unique_ptr<TestingProfileManager> CreateTestingProfileManager() {
-  std::unique_ptr<TestingProfileManager> profile_manager(
-      new TestingProfileManager(TestingBrowserProcess::GetGlobal()));
-  EXPECT_TRUE(profile_manager->SetUp());
-  return profile_manager;
-}
-
 class MockNotificationTriggerScheduler : public NotificationTriggerScheduler {
  public:
   ~MockNotificationTriggerScheduler() override = default;
@@ -62,38 +55,3 @@ class NotificationTriggerSchedulerTest : public testing::Test {
 
   content::BrowserTaskEnvironment task_environment_;
 };
-
-TEST_F(NotificationTriggerSchedulerTest,
-       TriggerNotificationsCallsAllStoragePartitions) {
-  std::unique_ptr<TestingProfileManager> profile_manager =
-      CreateTestingProfileManager();
-  ProfileTestData data1(profile_manager.get(), "profile1");
-  ProfileTestData data2(profile_manager.get(), "profile2");
-
-  EXPECT_CALL(*data1.scheduler_, TriggerNotificationsForStoragePartition(_))
-      .Times(0);
-  EXPECT_CALL(*data2.scheduler_, TriggerNotificationsForStoragePartition(_))
-      .Times(0);
-
-  auto* partition1 =
-      data1.profile_->GetStoragePartitionForUrl(GURL("http://example.com"));
-  auto* partition2 =
-      data2.profile_->GetStoragePartitionForUrl(GURL("http://example.com"));
-
-  auto now = base::Time::Now();
-  auto delta = base::Seconds(3);
-  data1.service_->ScheduleTrigger(now + delta);
-  data2.service_->ScheduleTrigger(now + delta);
-  base::RunLoop().RunUntilIdle();
-
-  testing::Mock::VerifyAndClearExpectations(data1.scheduler_);
-  testing::Mock::VerifyAndClearExpectations(data2.scheduler_);
-
-  EXPECT_CALL(*data1.scheduler_,
-              TriggerNotificationsForStoragePartition(partition1));
-  EXPECT_CALL(*data2.scheduler_,
-              TriggerNotificationsForStoragePartition(partition2));
-
-  task_environment_.FastForwardBy(delta);
-  base::RunLoop().RunUntilIdle();
-}

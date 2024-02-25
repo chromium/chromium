@@ -80,10 +80,10 @@ class SandboxProfileCache {
 
 }  // namespace
 
-absl::optional<mojo::NamedPlatformChannel>
+std::optional<mojo::NamedPlatformChannel>
 ChildProcessLauncherHelper::CreateNamedPlatformChannelOnLauncherThread() {
   DCHECK(CurrentlyOnProcessLauncherTaskRunner());
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 void ChildProcessLauncherHelper::BeforeLaunchOnClientThread() {

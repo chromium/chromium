@@ -78,4 +78,5 @@ client_filterable_state {
 entropy_values {
     client_id: "client_id"
     low_entropy: 7999
+    limited_entropy_randomization_source: "00000000000000000000000000000001"
 }

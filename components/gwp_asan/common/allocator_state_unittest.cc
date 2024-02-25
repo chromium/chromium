@@ -18,8 +18,6 @@ using GetMetadataReturnType = AllocatorState::GetMetadataReturnType;
 static constexpr size_t kMaxMetadata = AllocatorState::kMaxMetadata;
 static constexpr size_t kMaxRequestedSlots = AllocatorState::kMaxRequestedSlots;
 static constexpr size_t kMaxReservedSlots = AllocatorState::kMaxReservedSlots;
-static constexpr size_t kMaxLightweightMetadata =
-    AllocatorState::kMaxLightweightMetadata;
 
 class AllocatorStateTest : public testing::Test {
  protected:
@@ -29,8 +27,7 @@ class AllocatorStateTest : public testing::Test {
                        size_t total_reserved_pages,
                        int base_addr_offset = 0,
                        int first_page_offset = 0,
-                       int end_addr_offset = 0,
-                       size_t num_lightweight_detector_metadata = 0) {
+                       int end_addr_offset = 0) {
     state_.page_size = page_size;
     state_.num_metadata = num_metadata;
     state_.total_requested_pages = total_requested_pages;
@@ -46,10 +43,6 @@ class AllocatorStateTest : public testing::Test {
     // An invalid address, but it's never dereferenced in AllocatorState.
     state_.metadata_addr = 0x1234;
     state_.slot_to_metadata_addr = 0x1234;
-
-    state_.num_lightweight_detector_metadata =
-        num_lightweight_detector_metadata;
-    state_.lightweight_detector_metadata_addr = 0x1234;
   }
 
   AllocatorState state_;
@@ -223,22 +216,6 @@ TEST_F(AllocatorStateTest, GetMetadataForAddress) {
             GetMetadataReturnType::kErrorOutdatedMetadataIndex);
 
   // It's impossible to trigger kErrorBadSlotIndex.
-}
-
-TEST_F(AllocatorStateTest, LightweightDetector) {
-  InitializeState(base::GetPageSize(), 1, 1, 1, 0, 0, 0, 0);
-  EXPECT_TRUE(state_.IsValid());
-
-  InitializeState(base::GetPageSize(), 1, 1, 1, 0, 0, 0, 1);
-  EXPECT_TRUE(state_.IsValid());
-
-  InitializeState(base::GetPageSize(), 1, 1, 1, 0, 0, 0,
-                  kMaxLightweightMetadata);
-  EXPECT_TRUE(state_.IsValid());
-
-  InitializeState(base::GetPageSize(), 1, 1, 1, 0, 0, 0,
-                  kMaxLightweightMetadata + 1);
-  EXPECT_FALSE(state_.IsValid());
 }
 
 }  // namespace internal

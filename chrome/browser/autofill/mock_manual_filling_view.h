@@ -6,8 +6,8 @@
 #define CHROME_BROWSER_AUTOFILL_MOCK_MANUAL_FILLING_VIEW_H_
 
 #include "chrome/browser/autofill/manual_filling_view_interface.h"
-#include "components/autofill/core/browser/ui/accessory_sheet_data.h"
-#include "components/autofill/core/browser/ui/accessory_sheet_enums.h"
+#include "chrome/browser/keyboard_accessory/android/accessory_sheet_data.h"
+#include "chrome/browser/keyboard_accessory/android/accessory_sheet_enums.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
 class MockManualFillingView : public ManualFillingViewInterface {

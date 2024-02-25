@@ -29,7 +29,7 @@ void WebAppCleanupHandler::Cleanup(CleanupHandlerCallback callback) {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
     // WebAppProvider is intentionally nullptr.
     if (web_app::IsWebAppsCrosapiEnabled()) {
-      std::move(callback).Run(absl::nullopt);
+      std::move(callback).Run(std::nullopt);
       return;
     }
 #endif

@@ -13,10 +13,10 @@
 #include "components/autofill/core/browser/autofill_test_utils.h"
 #include "components/autofill/core/browser/browser_autofill_manager_test_api.h"
 #include "components/autofill/core/browser/payments/test_credit_card_save_manager.h"
-#include "components/autofill/core/browser/payments/test_payments_client.h"
 #include "components/autofill/core/browser/test_autofill_client.h"
 #include "components/autofill/core/browser/test_autofill_driver.h"
 #include "components/autofill/core/browser/test_browser_autofill_manager.h"
+#include "components/autofill/core/common/mojom/autofill_types.mojom-shared.h"
 #include "components/sync/test/test_sync_service.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -24,6 +24,7 @@
 namespace autofill::autofill_metrics {
 
 constexpr char kTestProfileId[] = "00000000-0000-0000-0000-000000000001";
+constexpr char kTestProfile2Id[] = "00000000-0000-0000-0000-000000000002";
 constexpr char kTestLocalCardId[] = "10000000-0000-0000-0000-000000000001";
 constexpr char kTestMaskedCardId[] = "10000000-0000-0000-0000-000000000002";
 constexpr char kTestFullServerCardId[] = "10000000-0000-0000-0000-000000000003";
@@ -38,7 +39,6 @@ class MockAutofillClient : public TestAutofillClient {
  public:
   MockAutofillClient();
   ~MockAutofillClient() override;
-  MOCK_METHOD(bool, IsTouchToFillCreditCardSupported, (), (override));
   MOCK_METHOD(bool,
               ShowTouchToFillCreditCard,
               (base::WeakPtr<TouchToFillDelegate>,
@@ -59,8 +59,7 @@ class AutofillMetricsBaseTest {
   void CreateAmbiguousProfiles();
 
   // Removes all existing profiles and creates one profile.
-  // |is_server| allows creation of |SERVER_PROFILE|.
-  void RecreateProfile(bool is_server);
+  void RecreateProfile();
 
   // Removes all existing credit cards and then invokes CreateCreditCards to
   // create the cards.
@@ -172,23 +171,36 @@ class AutofillMetricsBaseTest {
     return form;
   }
 
-  void DidShowAutofillSuggestions(const FormData& form,
-                                  size_t field_index = 0) {
+  void DidShowAutofillSuggestions(
+      const FormData& form,
+      size_t field_index = 0,
+      PopupItemId suggestion_type = PopupItemId::kAddressEntry) {
     autofill_manager().DidShowSuggestions(
-        /*has_autofill_suggestions=*/true, form, form.fields[field_index]);
+        std::vector<PopupItemId>({suggestion_type}), form,
+        form.fields[field_index]);
   }
 
   void FillTestProfile(const FormData& form) {
-    autofill_manager().FillOrPreviewForm(
-        mojom::AutofillActionPersistence::kFill, form, form.fields.front(),
-        Suggestion::BackendId(kTestProfileId),
+    FillProfileByGUID(form, kTestProfileId);
+  }
+
+  void FillProfileByGUID(const FormData& form,
+                         const std::string& profile_guid) {
+    autofill_manager().FillOrPreviewProfileForm(
+        mojom::ActionPersistence::kFill, form, form.fields.front(),
+        *personal_data().GetProfileByGUID(profile_guid),
         {.trigger_source = AutofillTriggerSource::kPopup});
+  }
+
+  void UndoAutofill(const FormData& form) {
+    autofill_manager().UndoAutofill(mojom::ActionPersistence::kFill, form,
+                                    form.fields.front());
   }
 
   [[nodiscard]] FormData CreateEmptyForm() {
     FormData form;
     form.host_frame = test::MakeLocalFrameToken();
-    form.unique_renderer_id = test::MakeFormRendererId();
+    form.renderer_id = test::MakeFormRendererId();
     form.name = u"TestForm";
     form.url = GURL("https://example.com/form.html");
     form.action = GURL("https://example.com/submit.html");
@@ -205,7 +217,7 @@ class AutofillMetricsBaseTest {
 
   TestBrowserAutofillManager& autofill_manager() {
     return static_cast<TestBrowserAutofillManager&>(
-        *autofill_driver_->autofill_manager());
+        autofill_driver_->GetAutofillManager());
   }
 
   AutofillExternalDelegate& external_delegate() {
@@ -221,7 +233,8 @@ class AutofillMetricsBaseTest {
   }
 
   const bool is_in_any_main_frame_ = true;
-  base::test::TaskEnvironment task_environment_;
+  base::test::TaskEnvironment task_environment_{
+      base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   test::AutofillUnitTestEnvironment autofill_test_environment_;
   std::unique_ptr<MockAutofillClient> autofill_client_;
   syncer::TestSyncService sync_service_;
@@ -230,8 +243,7 @@ class AutofillMetricsBaseTest {
  private:
   void CreateTestAutofillProfiles();
 
-  base::test::ScopedFeatureList scoped_feature_list_async_parse_form_;
-  CreditCard credit_card_ = test::GetMaskedServerCard();
+  CreditCard credit_card_ = test::WithCvc(test::GetMaskedServerCard());
 };
 
 }  // namespace autofill::autofill_metrics

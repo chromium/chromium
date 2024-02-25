@@ -16,11 +16,14 @@
 
 #if BUILDFLAG(IS_ANDROID)
 #include "net/base/network_change_notifier.h"
-#include "ui/accessibility/ax_mode.h"
-#include "ui/accessibility/ax_mode_observer.h"
 #endif
 
 class Profile;
+
+namespace content {
+class ScopedAccessibilityMode;
+class WebContents;
+}
 
 namespace image_annotation {
 class ImageAnnotationService;
@@ -37,14 +40,11 @@ class PrefRegistrySyncable;
 class AccessibilityLabelsService
     : public KeyedService
 #if BUILDFLAG(IS_ANDROID)
-    // On Android, implement NetworkChangeObserver for "only on wifi" option,
-    // and an AXModeObserver for detecting when a screen reader is enabled.
+    // On Android, implement NetworkChangeObserver for "only on wifi" option.
     ,
-      public net::NetworkChangeNotifier::NetworkChangeObserver,
-      public ui::AXModeObserver
+      public net::NetworkChangeNotifier::NetworkChangeObserver
 #endif
 {
-
  public:
   AccessibilityLabelsService(const AccessibilityLabelsService&) = delete;
   AccessibilityLabelsService& operator=(const AccessibilityLabelsService&) =
@@ -59,9 +59,7 @@ class AccessibilityLabelsService
 
   void Init();
 
-  bool IsEnabled();
-
-  void EnableLabelsServiceOnce();
+  void EnableLabelsServiceOnce(content::WebContents* web_contents);
 
   // Routes an Annotator interface receiver to the Image Annotation service for
   // binding.
@@ -79,9 +77,6 @@ class AccessibilityLabelsService
   void OnNetworkChanged(
       net::NetworkChangeNotifier::ConnectionType type) override;
 
-  // ui::AXModeObserver
-  void OnAXModeAdded(ui::AXMode mode) override;
-
   bool GetAndroidEnabledStatus();
 #endif
 
@@ -91,6 +86,10 @@ class AccessibilityLabelsService
   // Use |AccessibilityLabelsServiceFactory::GetForProfile(..)| to get
   // an instance of this service.
   explicit AccessibilityLabelsService(Profile* profile);
+
+  // Returns true if the profile preference is set and, in the case of Android,
+  // the device is on Wi-Fi or the "Only on Wi-Fi" preference is not set.
+  bool IsEnabled();
 
   void OnImageLabelsEnabledChanged();
 
@@ -104,6 +103,10 @@ class AccessibilityLabelsService
   // Implementation of and remote connection to the Image Annotation service.
   std::unique_ptr<image_annotation::ImageAnnotationService> service_;
   mojo::Remote<image_annotation::mojom::ImageAnnotationService> remote_service_;
+
+  // Enables the kLabelImages accessibility mode flag for all tabs associated
+  // with the service's profile.
+  std::unique_ptr<content::ScopedAccessibilityMode> scoped_accessibility_mode_;
 
   base::WeakPtrFactory<AccessibilityLabelsService> weak_factory_{this};
 };

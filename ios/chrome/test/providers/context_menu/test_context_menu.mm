@@ -4,15 +4,14 @@
 
 #import "ios/public/provider/chrome/browser/context_menu/context_menu_api.h"
 
-namespace ios {
-namespace provider {
+namespace ios::provider {
 
 ElementsToAddToContextMenu* GetContextMenuElementsToAdd(
-    ChromeBrowserState* browser_state,
     web::WebState* web_state,
     web::ContextMenuParams params,
     UIViewController* presenting_view_controller,
-    id<MiniMapCommands> mini_map_handler) {
+    id<MiniMapCommands> mini_map_handler,
+    id<UnitConversionCommands> unit_conversion_handler) {
   return nil;
 }
 
@@ -24,31 +23,24 @@ NSTextCheckingType GetHandledIntentTypesForOneTap(web::WebState* web_state) {
   return 0;
 }
 
-BOOL HandleIntentTypesForOneTap(web::WebState* web_state,
-                                NSTextCheckingResult* match,
-                                NSString* text,
-                                UIViewController* presenting_view_controller,
-                                id<MiniMapCommands> mini_map_handler) {
-  return NO;
-}
-
-NSArray<CRWContextMenuItem*>* GetContextMenuElementsToAdd(
+BOOL HandleIntentTypesForOneTap(
     web::WebState* web_state,
     NSTextCheckingResult* match,
     NSString* text,
     CGPoint location,
     UIViewController* presenting_view_controller,
-    id<MiniMapCommands> mini_map_handler) {
-  return nil;
+    id<MiniMapCommands> mini_map_handler,
+    id<UnitConversionCommands> unit_conversion_handler) {
+  return NO;
 }
 
-absl::optional<base::Value> ExtractDataElementsFromText(
+std::optional<std::vector<web::TextAnnotation>> ExtractTextAnnotationFromText(
+    const base::Value::Dict& metadata,
     const std::string& text,
     NSTextCheckingType handled_types,
     ukm::SourceId source_id,
     const base::FilePath& model_path) {
-  return absl::nullopt;
+  return std::nullopt;
 }
 
-}  // namespace provider
-}  // namespace ios
+}  // namespace ios::provider

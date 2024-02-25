@@ -28,6 +28,8 @@
 #include <algorithm>
 
 #include "base/feature_list.h"
+#include "base/metrics/histogram_functions.h"
+#include "base/strings/strcat.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/trace_event/typed_macros.h"
 #include "third_party/blink/public/common/features.h"
@@ -47,6 +49,23 @@
 
 namespace {
 
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+enum class RaceTaskPriority {
+  kLowerPriority = 0,
+  kNormalPriority = 1,
+  kMaxValue = kNormalPriority,
+};
+
+const char* RaceTaskPriorityToString(RaceTaskPriority task_priority) {
+  switch (task_priority) {
+    case RaceTaskPriority::kLowerPriority:
+      return "LowerPriority";
+    case RaceTaskPriority::kNormalPriority:
+      return "NormalPriority";
+  }
+}
+
 void PostTaskWithLowPriorityUntilTimeout(
     const base::Location& from_here,
     base::OnceClosure task,
@@ -62,17 +81,37 @@ void PostTaskWithLowPriorityUntilTimeout(
   // |task| doesn't run more than once. |task| runs on either of
   // |lower_priority_task_runner| and |normal_priority_task_runner| whichever
   // comes first.
-  auto run_task_once =
-      [](scoped_refptr<RefCountedOnceClosure> ref_counted_task) {
-        if (!ref_counted_task->data.is_null())
-          std::move(ref_counted_task->data).Run();
-      };
+  auto run_task_once = [](scoped_refptr<RefCountedOnceClosure> ref_counted_task,
+                          RaceTaskPriority task_priority,
+                          base::TimeTicks post_task_time) {
+    if (!ref_counted_task->data.is_null()) {
+      auto duration = base::TimeTicks::Now() - post_task_time;
+      std::move(ref_counted_task->data).Run();
+      base::UmaHistogramEnumeration(
+          "Blink.Script.PostTaskWithLowPriorityUntilTimeout.RaceTaskPriority",
+          task_priority);
+      base::UmaHistogramMediumTimes(
+          "Blink.Script.PostTaskWithLowPriorityUntilTimeout.Time", duration);
+      base::UmaHistogramMediumTimes(
+          base::StrCat(
+              {"Blink.Script.PostTaskWithLowPriorityUntilTimeout.Time.",
+               RaceTaskPriorityToString(task_priority)}),
+          duration);
+    }
+  };
+
+  base::TimeTicks post_task_time = base::TimeTicks::Now();
 
   lower_priority_task_runner->PostTask(
-      from_here, WTF::BindOnce(run_task_once, ref_counted_task));
+      from_here,
+      WTF::BindOnce(run_task_once, ref_counted_task,
+                    RaceTaskPriority::kLowerPriority, post_task_time));
 
   normal_priority_task_runner->PostDelayedTask(
-      from_here, WTF::BindOnce(run_task_once, ref_counted_task), timeout);
+      from_here,
+      WTF::BindOnce(run_task_once, ref_counted_task,
+                    RaceTaskPriority::kNormalPriority, post_task_time),
+      timeout);
 }
 
 }  // namespace
@@ -186,9 +225,9 @@ void ScriptRunner::RemoveDelayReasonFromScript(PendingScript* pending_script,
 
   // Script is really ready to evaluate.
   pending_async_scripts_.erase(it);
-  base::OnceClosure task =
-      WTF::BindOnce(&ScriptRunner::ExecuteAsyncPendingScript,
-                    WrapWeakPersistent(this), WrapPersistent(pending_script));
+  base::OnceClosure task = WTF::BindOnce(
+      &ScriptRunner::ExecuteAsyncPendingScript, WrapWeakPersistent(this),
+      WrapPersistent(pending_script), base::TimeTicks::Now());
   if (pending_script->IsEligibleForLowPriorityAsyncScriptExecution()) {
     PostTaskWithLowPriorityUntilTimeout(
         FROM_HERE, std::move(task),
@@ -199,7 +238,12 @@ void ScriptRunner::RemoveDelayReasonFromScript(PendingScript* pending_script,
   }
 }
 
-void ScriptRunner::ExecuteAsyncPendingScript(PendingScript* pending_script) {
+void ScriptRunner::ExecuteAsyncPendingScript(
+    PendingScript* pending_script,
+    base::TimeTicks ready_to_evaluate_time) {
+  base::UmaHistogramMediumTimes(
+      "Blink.Script.AsyncScript.FromReadyToStartExecution.Time",
+      base::TimeTicks::Now() - ready_to_evaluate_time);
   DCHECK_GT(number_of_async_scripts_not_evaluated_yet_, 0u);
   ExecutePendingScript(pending_script);
   number_of_async_scripts_not_evaluated_yet_--;

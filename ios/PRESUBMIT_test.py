@@ -90,7 +90,7 @@ class CheckHasNoPipeInCommentTest(unittest.TestCase):
 
     def testFindsIncludeDirectives(self):
         good_lines = [
-            '#if !defined(__has_feature) || !__has_feature(objc_arc)',
+            '#if !defined(a) || !defined(b)',
             '// This does A || B', '// `MySymbol` is correct',
             'bitVariable1 | bitVariable2'
         ]

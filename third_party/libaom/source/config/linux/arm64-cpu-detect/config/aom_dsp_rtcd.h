@@ -3672,7 +3672,12 @@ uint64_t aom_mse_16xh_16bit_c(uint8_t* dst,
                               uint16_t* src,
                               int w,
                               int h);
-#define aom_mse_16xh_16bit aom_mse_16xh_16bit_c
+uint64_t aom_mse_16xh_16bit_neon(uint8_t* dst,
+                                 int dstride,
+                                 uint16_t* src,
+                                 int w,
+                                 int h);
+#define aom_mse_16xh_16bit aom_mse_16xh_16bit_neon
 
 uint64_t aom_mse_wxh_16bit_c(uint8_t* dst,
                              int dstride,

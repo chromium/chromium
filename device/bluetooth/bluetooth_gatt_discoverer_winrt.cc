@@ -170,7 +170,7 @@ bool GetAsVector(IVectorView<T*>* view, std::vector<ComPtr<I>>* vector) {
 
 BluetoothGattDiscovererWinrt::BluetoothGattDiscovererWinrt(
     ComPtr<IBluetoothLEDevice> ble_device,
-    absl::optional<BluetoothUUID> service_uuid)
+    std::optional<BluetoothUUID> service_uuid)
     : ble_device_(std::move(ble_device)),
       service_uuid_(std::move(service_uuid)) {}
 

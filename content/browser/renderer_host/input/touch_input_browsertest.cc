@@ -13,7 +13,6 @@
 #include "content/browser/renderer_host/render_widget_host_impl.h"
 #include "content/browser/renderer_host/render_widget_host_input_event_router.h"
 #include "content/browser/web_contents/web_contents_impl.h"
-#include "content/public/browser/browser_message_filter.h"
 #include "content/public/browser/render_view_host.h"
 #include "content/public/browser/render_widget_host_view.h"
 #include "content/public/common/content_switches.h"
@@ -34,7 +33,7 @@ namespace {
 
 const char kTouchEventDataURL[] =
     "data:text/html;charset=utf-8,"
-#if BUILDFLAG(IS_ANDROID)
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
     "<head>"
     "<meta name=\"viewport\" content=\"width=device-width, initial-scale=1\">"
     "</head>"
@@ -119,9 +118,9 @@ class TouchInputBrowserTest : public ContentBrowserTest {
         host->render_frame_metadata_provider());
     frame_observer.WaitForMetadataChange();
 
-#if !BUILDFLAG(IS_ANDROID)
-    // On non-Android, set a size for the view, and wait for a new frame to be
-    // generated at that size. On Android the size is specified in
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+    // On non mobile profiles, set a size for the view, and wait for a new frame
+    // to be generated at that size. On Android and iOS the size is specified in
     // kTouchEventDataURL.
     host->GetView()->SetSize(gfx::Size(400, 400));
     frame_observer.WaitForAnyFrameSubmission();

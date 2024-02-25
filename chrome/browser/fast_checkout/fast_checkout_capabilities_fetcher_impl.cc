@@ -7,7 +7,6 @@
 #include <memory>
 
 #include "base/metrics/histogram_functions.h"
-#include "chrome/browser/fast_checkout/fast_checkout_features.h"
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
@@ -181,11 +180,6 @@ void FastCheckoutCapabilitiesFetcherImpl::AddFunnelToCache(
 bool FastCheckoutCapabilitiesFetcherImpl::IsTriggerFormSupported(
     const url::Origin& origin,
     autofill::FormSignature form_signature) {
-  if (base::FeatureList::IsEnabled(
-          features::kForceEnableFastCheckoutCapabilities)) {
-    return true;
-  }
-
   if (!cache_.contains(origin)) {
     base::UmaHistogramEnumeration(
         kUmaKeyCacheStateIsTriggerFormSupported,

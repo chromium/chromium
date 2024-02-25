@@ -7,6 +7,7 @@
 #include "base/notreached.h"
 #include "chrome/common/chromeos/extensions/api/diagnostics.h"
 #include "chromeos/crosapi/mojom/diagnostics_service.mojom.h"
+#include "chromeos/crosapi/mojom/telemetry_diagnostic_routine_service.mojom.h"
 
 namespace chromeos::converters::diagnostics {
 
@@ -111,6 +112,9 @@ bool ConvertMojoRoutine(crosapi::DiagnosticsRoutineEnum in,
     case crosapi::DiagnosticsRoutineEnum::kBluetoothPairing:
       *out = cx_diag::RoutineType::kBluetoothPairing;
       return true;
+    case crosapi::DiagnosticsRoutineEnum::kFan:
+      *out = cx_diag::RoutineType::kFan;
+      return true;
     case crosapi::DiagnosticsRoutineEnum::kUnknown:
       return false;
   }
@@ -214,6 +218,22 @@ crosapi::DiagnosticsNvmeSelfTestTypeEnum ConvertNvmeSelfTestRoutineType(
       return crosapi::DiagnosticsNvmeSelfTestTypeEnum::kShortSelfTest;
     case cx_diag::NvmeSelfTestType::kLongTest:
       return crosapi::DiagnosticsNvmeSelfTestTypeEnum::kLongSelfTest;
+  }
+}
+
+crosapi::TelemetryDiagnosticVolumeButtonRoutineArgument::ButtonType
+ConvertVolumeButtonRoutineButtonType(
+    cx_diag::VolumeButtonType volume_button_type) {
+  switch (volume_button_type) {
+    case cx_diag::VolumeButtonType::kNone:
+      return crosapi::TelemetryDiagnosticVolumeButtonRoutineArgument::
+          ButtonType::kUnmappedEnumField;
+    case cx_diag::VolumeButtonType::kVolumeUp:
+      return crosapi::TelemetryDiagnosticVolumeButtonRoutineArgument::
+          ButtonType::kVolumeUp;
+    case cx_diag::VolumeButtonType::kVolumeDown:
+      return crosapi::TelemetryDiagnosticVolumeButtonRoutineArgument::
+          ButtonType::kVolumeDown;
   }
 }
 

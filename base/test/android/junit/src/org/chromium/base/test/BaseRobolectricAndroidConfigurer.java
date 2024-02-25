@@ -13,9 +13,7 @@ import org.chromium.base.ResettersForTesting;
 import org.chromium.base.test.util.TimeoutTimer;
 import org.chromium.testing.local.ChromiumAndroidConfigurer;
 
-/**
- * Tells Robolectric which classes to exclude from its sandbox.
- */
+/** Tells Robolectric which classes to exclude from its sandbox. */
 @AutoService(ChromiumAndroidConfigurer.ExtraConfiguration.class)
 public class BaseRobolectricAndroidConfigurer
         implements ChromiumAndroidConfigurer.ExtraConfiguration {

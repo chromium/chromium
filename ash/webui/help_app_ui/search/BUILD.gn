@@ -12,6 +12,9 @@ mojom("mojo_bindings") {
   sources = [ "search.mojom" ]
   webui_module_path = "/"
 
+  # Help app is still using JS + Closure Compiler.
+  generate_webui_js_bindings = true
+
   public_deps = [ "//mojo/public/mojom/base" ]
 }
 

@@ -9,6 +9,6 @@
 ] interface XRInputSourcesChangeEvent : Event {
   constructor(DOMString type, XRInputSourcesChangeEventInit eventInitDict);
   [SameObject] readonly attribute XRSession session;
-  [SameObject, SaveSameObject] readonly attribute FrozenArray<XRInputSource> added;
-  [SameObject, SaveSameObject] readonly attribute FrozenArray<XRInputSource> removed;
+  [SameObject] readonly attribute FrozenArray<XRInputSource> added;
+  [SameObject] readonly attribute FrozenArray<XRInputSource> removed;
 };

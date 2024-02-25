@@ -27,6 +27,8 @@ source_set("media_transfer_protocol") {
     "mtp_device_manager.h",
   ]
 
+  configs += [ "//build/config/compiler:wexit_time_destructors" ]
+
   public_deps = [ "//services/device/public/mojom" ]
 
   deps = [

@@ -26,6 +26,7 @@ import "gpu/ipc/common/gpu_info.mojom";
 import "gpu/ipc/common/gpu_peak_memory.mojom";
 import "gpu/ipc/common/memory_stats.mojom";
 import "gpu/ipc/common/client_gmb_interface.mojom";
+import "gpu/ipc/common/shared_image_capabilities.mojom";
 import "gpu/ipc/common/surface_handle.mojom";
 import "gpu/ipc/common/sync_token.mojom";
 import "media/mojo/mojom/video_encode_accelerator.mojom";
@@ -40,6 +41,10 @@ import "mojo/public/mojom/base/shared_memory.mojom";
 import "mojo/public/mojom/base/unguessable_token.mojom";
 [EnableIf=is_win]
 import "ui/gfx/mojom/dxgi_info.mojom";
+[EnableIfNot=is_chromeos]
+import "components/ml/webnn/features.mojom";
+[EnableIfNot=is_chromeos]
+import "services/webnn/public/mojom/webnn_context_provider.mojom";
 
 interface GpuService {
   // Tells the GPU service to create a new channel for communication with a
@@ -53,7 +58,8 @@ interface GpuService {
                       bool is_gpu_host)
       => (handle<message_pipe>? channel_handle,
           gpu.mojom.GpuInfo gpu_info,
-          gpu.mojom.GpuFeatureInfo gpu_feature_info);
+          gpu.mojom.GpuFeatureInfo gpu_feature_info,
+          gpu.mojom.SharedImageCapabilities shared_image_capabilities);
 
   // Tells the GPU service the PID of whatever client process is controlling the
   // GpuChannel established by a prior EstablishGpuChannel() call with the given
@@ -132,6 +138,14 @@ interface GpuService {
   CreateVideoEncodeAcceleratorProvider(
       pending_receiver<media.mojom.VideoEncodeAcceleratorProvider>
           vea_provider);
+
+  // Binds the pending receiver used to access the hardware accelerated OS
+  // machine learning APIs.
+  [EnableIfNot=is_chromeos,
+   RuntimeFeature=webnn.mojom.features.kWebMachineLearningNeuralNetwork]
+  BindWebNNContextProvider(
+      pending_receiver<webnn.mojom.WebNNContextProvider>? receiver, int32
+          client_id);
 
   [Sync, NoInterrupt]
   CreateGpuMemoryBuffer(gfx.mojom.GpuMemoryBufferId id,

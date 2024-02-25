@@ -25,7 +25,6 @@
 #include "extensions/browser/process_manager.h"
 #include "extensions/browser/view_type_utils.h"
 #include "extensions/common/api/app_runtime.h"
-#include "extensions/common/extension_messages.h"
 #include "extensions/strings/grit/extensions_strings.h"
 #include "ipc/ipc_message_macros.h"
 
@@ -158,7 +157,7 @@ void AppViewGuest::RequestMediaAccessPermission(
 
 bool AppViewGuest::CheckMediaAccessPermission(
     content::RenderFrameHost* render_frame_host,
-    const GURL& security_origin,
+    const url::Origin& security_origin,
     blink::mojom::MediaStreamType type) {
   if (!app_delegate_) {
     return WebContentsDelegate::CheckMediaAccessPermission(
@@ -205,7 +204,8 @@ void AppViewGuest::CreateWebContents(std::unique_ptr<GuestViewBase> owned_this,
     return;
   }
 
-  const LazyContextId context_id(browser_context(), guest_extension->id());
+  const auto context_id =
+      LazyContextId::ForExtension(browser_context(), guest_extension);
   LazyContextTaskQueue* queue = context_id.GetTaskQueue();
   if (queue->ShouldEnqueueTask(browser_context(), guest_extension)) {
     queue->AddPendingTask(
@@ -256,7 +256,7 @@ void AppViewGuest::CompleteCreateWebContents(
     const Extension* guest_extension,
     std::unique_ptr<GuestViewBase> owned_this,
     WebContentsCreatedCallback callback) {
-  if (!owner_web_contents()) {
+  if (!owner_rfh()) {
     // The owner was destroyed before getting a response to the embedding
     // request, so we can't proceed with creating a guest.
     std::move(callback).Run(std::move(owned_this), nullptr);

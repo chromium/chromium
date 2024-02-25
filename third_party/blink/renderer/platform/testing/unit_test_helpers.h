@@ -27,7 +27,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_TESTING_UNIT_TEST_HELPERS_H_
 
 #include "base/memory/scoped_refptr.h"
-#include "third_party/blink/renderer/platform/timer.h"
+#include "base/time/time.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 
@@ -45,9 +45,6 @@ void RunPendingTasks();
 
 // Waits for delayed task to complete or timers to fire for |delay|.
 void RunDelayedTasks(base::TimeDelta delay);
-
-void EnterRunLoop();
-void ExitRunLoop();
 
 void YieldCurrentThread();
 

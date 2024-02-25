@@ -8,14 +8,18 @@
 
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
+#include "ash/constants/geolocation_access_level.h"
 #include "ash/shell.h"
 #include "ash/system/privacy_hub/camera_privacy_switch_controller.h"
+#include "ash/system/privacy_hub/geolocation_privacy_switch_controller.h"
 #include "ash/system/privacy_hub/microphone_privacy_switch_controller.h"
 #include "ash/system/privacy_hub/speak_on_mute_detection_privacy_switch_controller.h"
 #include "base/feature_list.h"
 #include "base/files/file_util.h"
 #include "base/types/pass_key.h"
+#include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/pref_registry_simple.h"
+#include "components/prefs/pref_service.h"
 
 namespace ash {
 
@@ -36,6 +40,9 @@ PrivacyHubController::CreatePrivacyHubController() {
   auto privacy_hub_controller = std::make_unique<PrivacyHubController>(
       base::PassKey<PrivacyHubController>());
 
+  privacy_hub_controller->geolocation_switch_controller_ =
+      std::make_unique<GeolocationPrivacySwitchController>();
+
   if (features::IsCrosPrivacyHubEnabled()) {
     privacy_hub_controller->camera_controller_ =
         std::make_unique<CameraPrivacySwitchController>();
@@ -43,8 +50,7 @@ PrivacyHubController::CreatePrivacyHubController() {
         std::make_unique<MicrophonePrivacySwitchController>();
     privacy_hub_controller->speak_on_mute_controller_ =
         std::make_unique<SpeakOnMuteDetectionPrivacySwitchController>();
-    privacy_hub_controller->geolocation_switch_controller_ =
-        std::make_unique<GeolocationPrivacySwitchController>();
+
     return privacy_hub_controller;
   }
 
@@ -52,12 +58,12 @@ PrivacyHubController::CreatePrivacyHubController() {
     privacy_hub_controller->camera_disabled_ =
         std::make_unique<CameraPrivacySwitchDisabled>();
   }
-  if (features::IsMicMuteNotificationsEnabled()) {
-    // TODO(b/264388354) Until PrivacyHub is enabled for all keep this around
-    // for the already existing microphone notifications to continue working.
-    privacy_hub_controller->microphone_controller_ =
-        std::make_unique<MicrophonePrivacySwitchController>();
-  }
+
+  // TODO(b/264388354) Until PrivacyHub is enabled for all keep this around
+  // for the already existing microphone notifications to continue working.
+  privacy_hub_controller->microphone_controller_ =
+      std::make_unique<MicrophonePrivacySwitchController>();
+
   return privacy_hub_controller;
 }
 
@@ -76,20 +82,40 @@ PrivacyHubController* PrivacyHubController::Get() {
 void PrivacyHubController::RegisterLocalStatePrefs(
     PrefRegistrySimple* registry) {
   // TODO(b/286526469): Sync this pref with the device owner's location
-  // permission `kUserGeolocationAllowed`.
+  // permission `kUserGeolocationAccessLevel`.
   registry->RegisterIntegerPref(
       prefs::kDeviceGeolocationAllowed,
-      static_cast<int>(PrivacyHubController::AccessLevel::kAllowed));
+      static_cast<int>(GeolocationAccessLevel::kAllowed));
 }
 
 // static
 void PrivacyHubController::RegisterProfilePrefs(PrefRegistrySimple* registry) {
   registry->RegisterBooleanPref(prefs::kUserCameraAllowed, true);
+  registry->RegisterBooleanPref(prefs::kUserCameraAllowedPreviousValue, true);
+  registry->RegisterBooleanPref(prefs::kUserGeolocationAccuracyEnabled, true);
   registry->RegisterBooleanPref(prefs::kUserMicrophoneAllowed, true);
-  registry->RegisterBooleanPref(prefs::kUserSpeakOnMuteDetectionEnabled, false);
-  registry->RegisterBooleanPref(prefs::kShouldShowSpeakOnMuteOptInNudge, true);
-  registry->RegisterIntegerPref(prefs::kSpeakOnMuteOptInNudgeShownCount, 0);
-  registry->RegisterBooleanPref(prefs::kUserGeolocationAllowed, true);
+  registry->RegisterBooleanPref(
+      prefs::kUserSpeakOnMuteDetectionEnabled, false,
+      user_prefs::PrefRegistrySyncable::SYNCABLE_OS_PREF);
+  registry->RegisterBooleanPref(
+      prefs::kShouldShowSpeakOnMuteOptInNudge, true,
+      user_prefs::PrefRegistrySyncable::SYNCABLE_OS_PREF);
+  registry->RegisterIntegerPref(
+      prefs::kSpeakOnMuteOptInNudgeShownCount, 0,
+      user_prefs::PrefRegistrySyncable::SYNCABLE_OS_PREF);
+  registry->RegisterIntegerPref(
+      prefs::kUserGeolocationAccessLevel,
+      static_cast<int>(GeolocationAccessLevel::kAllowed));
+  registry->RegisterIntegerPref(
+      prefs::kUserPreviousGeolocationAccessLevel,
+      static_cast<int>(GeolocationAccessLevel::kDisallowed));
+}
+
+void PrivacyHubController::SetFrontend(PrivacyHubDelegate* ptr) {
+  frontend_ = ptr;
+  if (camera_controller()) {
+    camera_controller()->SetFrontend(frontend_);
+  }
 }
 
 CameraPrivacySwitchController* PrivacyHubController::camera_controller() {
@@ -138,6 +164,20 @@ bool PrivacyHubController::CheckCameraLEDFallbackDirectly() {
   CHECK(file_size_read_success);
 
   return (file_size != 0ll);
+}
+
+// static
+bool PrivacyHubController::CrosToArcGeolocationPermissionMapping(
+    GeolocationAccessLevel access_level) {
+  switch (access_level) {
+    case GeolocationAccessLevel::kAllowed:
+      return true;
+    case GeolocationAccessLevel::kOnlyAllowedForSystem:
+    case GeolocationAccessLevel::kDisallowed:
+      return false;
+    default:
+      NOTREACHED();
+  }
 }
 
 CameraPrivacySwitchSynchronizer*

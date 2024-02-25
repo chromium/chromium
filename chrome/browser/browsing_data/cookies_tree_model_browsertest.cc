@@ -9,6 +9,7 @@
 #include "chrome/test/base/chrome_test_utils.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "components/browsing_data/content/local_shared_objects_container.h"
+#include "components/browsing_data/core/features.h"
 #include "content/public/browser/content_browser_client.h"
 #include "content/public/browser/storage_partition.h"
 #include "content/public/browser/storage_partition_config.h"
@@ -20,6 +21,7 @@
 #include "net/dns/mock_host_resolver.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "net/test/embedded_test_server/request_handler_util.h"
+#include "third_party/blink/public/common/features.h"
 #include "url/gurl.h"
 
 namespace {
@@ -72,17 +74,6 @@ class CookiesTreeObserver : public CookiesTreeModel::Observer {
     run_loop->Quit();
   }
 
-  void TreeNodesAdded(ui::TreeModel* model,
-                      ui::TreeModelNode* parent,
-                      size_t start,
-                      size_t count) override {}
-  void TreeNodesRemoved(ui::TreeModel* model,
-                        ui::TreeModelNode* parent,
-                        size_t start,
-                        size_t count) override {}
-  void TreeNodeChanged(ui::TreeModel* model, ui::TreeModelNode* node) override {
-  }
-
  private:
   std::unique_ptr<base::RunLoop> run_loop;
 };
@@ -90,6 +81,11 @@ class CookiesTreeObserver : public CookiesTreeModel::Observer {
 class CookiesTreeModelBrowserTest : public InProcessBrowserTest {
  public:
   void SetUp() override {
+    if (base::FeatureList::IsEnabled(
+            browsing_data::features::kDeprecateCookiesTreeModel)) {
+      GTEST_SKIP() << "kDeprecateCookiesTreeModel is enabled skipping "
+                      "CookiesTreeModel tests";
+    }
     InitFeatures();
     InProcessBrowserTest::SetUp();
   }
@@ -134,8 +130,12 @@ class CookiesTreeModelBrowserTest : public InProcessBrowserTest {
   }
 
   virtual void InitFeatures() {
-    feature_list()->InitAndDisableFeature(
-        net::features::kThirdPartyStoragePartitioning);
+    feature_list()->InitWithFeatures(
+        // WebSQL is disabled by default as of M119 (crbug/695592).
+        // Enable feature in tests during deprecation trial and enterprise
+        // policy support.
+        {blink::features::kWebSQLAccess},
+        {net::features::kThirdPartyStoragePartitioning});
   }
 
   base::test::ScopedFeatureList* feature_list() { return &feature_list_; }
@@ -145,45 +145,12 @@ class CookiesTreeModelBrowserTest : public InProcessBrowserTest {
   base::test::ScopedFeatureList feature_list_;
 };
 
-IN_PROC_BROWSER_TEST_F(CookiesTreeModelBrowserTest, NoQuotaStorage) {
-  AccessStorage();
-
-  auto tree_model = CookiesTreeModel::CreateForProfileDeprecated(
-      chrome_test_utils::GetProfile(this));
-  CookiesTreeObserver observer;
-  tree_model->AddCookiesTreeObserver(&observer);
-  observer.AwaitTreeModelEndBatch();
-
-  // Quota storage has been accessed, but should not be present in the tree.
-  EXPECT_EQ(17u, tree_model->GetRoot()->GetTotalNodeCount());
-  auto node_counts = GetNodeTypeCounts(tree_model.get());
-  EXPECT_EQ(16u, node_counts.size());
-  EXPECT_EQ(0, node_counts[CookieTreeNode::DetailedInfo::TYPE_QUOTA]);
-
-  EXPECT_EQ(1, node_counts[CookieTreeNode::DetailedInfo::TYPE_ROOT]);
-  EXPECT_EQ(1, node_counts[CookieTreeNode::DetailedInfo::TYPE_HOST]);
-  EXPECT_EQ(2, node_counts[CookieTreeNode::DetailedInfo::TYPE_COOKIE]);
-  EXPECT_EQ(1, node_counts[CookieTreeNode::DetailedInfo::TYPE_COOKIES]);
-  EXPECT_EQ(1, node_counts[CookieTreeNode::DetailedInfo::TYPE_DATABASE]);
-  EXPECT_EQ(1, node_counts[CookieTreeNode::DetailedInfo::TYPE_DATABASES]);
-  EXPECT_EQ(1, node_counts[CookieTreeNode::DetailedInfo::TYPE_LOCAL_STORAGE]);
-  EXPECT_EQ(1, node_counts[CookieTreeNode::DetailedInfo::TYPE_LOCAL_STORAGES]);
-  EXPECT_EQ(1, node_counts[CookieTreeNode::DetailedInfo::TYPE_INDEXED_DB]);
-  EXPECT_EQ(1, node_counts[CookieTreeNode::DetailedInfo::TYPE_INDEXED_DBS]);
-  EXPECT_EQ(1, node_counts[CookieTreeNode::DetailedInfo::TYPE_FILE_SYSTEM]);
-  EXPECT_EQ(1, node_counts[CookieTreeNode::DetailedInfo::TYPE_FILE_SYSTEMS]);
-  EXPECT_EQ(1, node_counts[CookieTreeNode::DetailedInfo::TYPE_SERVICE_WORKER]);
-  EXPECT_EQ(1, node_counts[CookieTreeNode::DetailedInfo::TYPE_SERVICE_WORKERS]);
-  EXPECT_EQ(1, node_counts[CookieTreeNode::DetailedInfo::TYPE_CACHE_STORAGE]);
-  EXPECT_EQ(1, node_counts[CookieTreeNode::DetailedInfo::TYPE_CACHE_STORAGES]);
-}
-
 IN_PROC_BROWSER_TEST_F(CookiesTreeModelBrowserTest, BatchesFinishSync) {
   // Confirm that when all helpers fetch functions return synchronously, that
   // the model has received all expected batches.
   auto shared_objects = browsing_data::LocalSharedObjectsContainer(
       chrome_test_utils::GetProfile(this)->GetDefaultStoragePartition(),
-      /*ignore_empty_localstorage=*/false, {}, base::NullCallback());
+      /*ignore_empty_localstorage=*/false, base::NullCallback());
   auto local_data_container =
       LocalDataContainer::CreateFromLocalSharedObjectsContainer(shared_objects);
 
@@ -258,8 +225,8 @@ IN_PROC_BROWSER_TEST_F(CookiesTreeModelBrowserTest,
   EXPECT_LT(0, node_counts[CookieTreeNode::DetailedInfo::TYPE_HOST]);
   EXPECT_LT(0, node_counts[CookieTreeNode::DetailedInfo::TYPE_COOKIE]);
   EXPECT_LT(0, node_counts[CookieTreeNode::DetailedInfo::TYPE_COOKIES]);
-  EXPECT_LT(0, node_counts[CookieTreeNode::DetailedInfo::TYPE_LOCAL_STORAGE]);
-  EXPECT_LT(0, node_counts[CookieTreeNode::DetailedInfo::TYPE_LOCAL_STORAGES]);
+  EXPECT_EQ(0, node_counts[CookieTreeNode::DetailedInfo::TYPE_LOCAL_STORAGE]);
+  EXPECT_EQ(0, node_counts[CookieTreeNode::DetailedInfo::TYPE_LOCAL_STORAGES]);
   EXPECT_EQ(0, node_counts[CookieTreeNode::DetailedInfo::TYPE_QUOTA]);
 
   // Check that the default StoragePartition is empty.
@@ -269,37 +236,4 @@ IN_PROC_BROWSER_TEST_F(CookiesTreeModelBrowserTest,
   EXPECT_EQ(1u, tree_model->GetRoot()->GetTotalNodeCount());
   node_counts = GetNodeTypeCounts(tree_model.get());
   EXPECT_EQ(1, node_counts[CookieTreeNode::DetailedInfo::TYPE_ROOT]);
-}
-
-class CookiesTreeModelBrowserTestQuotaOnly
-    : public CookiesTreeModelBrowserTest {
- public:
-  void InitFeatures() override {
-    feature_list()->InitAndEnableFeature(
-        net::features::kThirdPartyStoragePartitioning);
-  }
-};
-
-IN_PROC_BROWSER_TEST_F(CookiesTreeModelBrowserTestQuotaOnly, QuotaStorageOnly) {
-  AccessStorage();
-
-  auto tree_model = CookiesTreeModel::CreateForProfileDeprecated(
-      chrome_test_utils::GetProfile(this));
-  CookiesTreeObserver observer;
-  tree_model->AddCookiesTreeObserver(&observer);
-  observer.AwaitTreeModelEndBatch();
-
-  // Quota storage has been accessed, only quota nodes should be present for
-  // quota managed storage types.
-  EXPECT_EQ(8u, tree_model->GetRoot()->GetTotalNodeCount());
-
-  auto node_counts = GetNodeTypeCounts(tree_model.get());
-  EXPECT_EQ(7u, node_counts.size());
-  EXPECT_EQ(1, node_counts[CookieTreeNode::DetailedInfo::TYPE_ROOT]);
-  EXPECT_EQ(1, node_counts[CookieTreeNode::DetailedInfo::TYPE_HOST]);
-  EXPECT_EQ(2, node_counts[CookieTreeNode::DetailedInfo::TYPE_COOKIE]);
-  EXPECT_EQ(1, node_counts[CookieTreeNode::DetailedInfo::TYPE_COOKIES]);
-  EXPECT_EQ(1, node_counts[CookieTreeNode::DetailedInfo::TYPE_LOCAL_STORAGE]);
-  EXPECT_EQ(1, node_counts[CookieTreeNode::DetailedInfo::TYPE_LOCAL_STORAGES]);
-  EXPECT_EQ(1, node_counts[CookieTreeNode::DetailedInfo::TYPE_QUOTA]);
 }

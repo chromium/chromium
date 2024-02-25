@@ -1,8 +1,8 @@
 Name: MediaPipe
 Short Name: mediapipe
 URL: https://github.com/google/mediapipe
-Version: 13bb65db960ff1934c18a1178a225b07148473ac
-Date: 2023/08/16
+Version: d3639a0b1a80f1fa294902e941f6de4158944db5
+Date: 2024-02-07
 License: Apache 2.0
 License File: LICENSE
 Security Critical: Yes
@@ -22,8 +22,9 @@ To update this library
 
 2) Run the `update.sh` script in this directory.
 
-3) Fix the build and get everything compiling and `component_unittests` passing
-  with the gn arg `build_with_mediapipe_lib = true`.
+3) Fix the build and get everything compiling and `components_unittests`
+  passing with the gn arg `build_with_mediapipe_lib = true` and optionally with
+  `mediapipe_build_with_gpu_support = true`.
 
 
 To make a new patch file
@@ -51,7 +52,7 @@ To make a new patch file
 Patches which can be low-friction upstreamed
 ============================================
 * set-executable-bit-for-files-with-shebang.patch - `chmod +x` on all files that
-  have a shebang, per Chromium presubmit checks.
+have a shebang, per Chromium presubmit checks.
 
 * remove-mediapipe-op-resolver-default-value.patch - Removes the
 MediaPipeOpResolver from being always constructed in base_options.h. Chromium
@@ -82,6 +83,16 @@ runfiles or through command line flags is not needed in Chromium, so it's either
 to simply remove all that code than add bazel's runfiles lib and support the
 ABSL_FLAG.
 
+* compile-with-gpu-on-windows.patch - MediaPipe uses pthreads internally when
+built with GPU support enabled - for Windows build, most of the functionality
+can be replaced by std::threads, with an exception that MediaPipe also relies on
+running a callback on thread destruction. This is not something that is allowed
+in Chromium, so it would potentially need to be a more complex change in
+MediaPipe (i.e. we need a replacement for `EnsureEglThreadRelease()` in
+gl_context_egl.cc).
+
+* no-consume.patch - MediaPipe still uses shared_ptr::unique() but only in code that Chrome does not exercise. This needs to actually be fixed properly upstream.
+
 Other patches
 =============
 * update-any-usage.patch - Renames usage of the proto google.protobuf.Any to
@@ -109,3 +120,9 @@ Here's the set of functions that were added to the generated file:
                                        &(const_cast<AnyLite*>(this)->value_));
     return any_metadata.Is<T>();
   }
+
+* dont-use-dedicated-context-for-some-calculators.patch - temporary patch that
+is only needed when unit-testing with GPU support (not yet official). Will be
+removed after MediaPipe w/ GPU is taught how to use Chromium's GL thread and
+GL context instead of creating its own.
+TODO(https://crbug.com/1492217): remove this patch once it is no longer needed.

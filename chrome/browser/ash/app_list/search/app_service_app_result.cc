@@ -43,11 +43,11 @@ AppServiceAppResult::AppServiceAppResult(Profile* profile,
         if (update.Readiness() == apps::Readiness::kDisabledByPolicy) {
           SetAccessibleName(l10n_util::GetStringFUTF16(
               IDS_APP_ACCESSIBILITY_BLOCKED_INSTALLED_APP_ANNOUNCEMENT,
-              base::UTF8ToUTF16(update.ShortName())));
+              base::UTF8ToUTF16(update.Name())));
         } else if (update.Paused().value_or(false)) {
           SetAccessibleName(l10n_util::GetStringFUTF16(
               IDS_APP_ACCESSIBILITY_PAUSED_INSTALLED_APP_ANNOUNCEMENT,
-              base::UTF8ToUTF16(update.ShortName())));
+              base::UTF8ToUTF16(update.Name())));
         }
       });
 
@@ -66,7 +66,6 @@ AppServiceAppResult::AppServiceAppResult(Profile* profile,
       // TODO(crbug.com/826982): Is this SetResultType call necessary?? Does
       // anyone care about the kInternalApp vs kInstalledApp distinction?
       SetResultType(ResultType::kInternalApp);
-      apps::RecordBuiltInAppSearchResult(app_id);
       break;
     case apps::AppType::kChromeApp:
       // TODO(crbug.com/826982): why do we pass the URL and not the app_id??
@@ -113,7 +112,6 @@ ash::SearchResultType AppServiceAppResult::GetSearchResultType() const {
       return ash::BRUSCHETTA_APP;
     case apps::AppType::kExtension:
     case apps::AppType::kStandaloneBrowserExtension:
-    case apps::AppType::kMacOs:
     case apps::AppType::kUnknown:
       NOTREACHED();
       return ash::SEARCH_RESULT_TYPE_BOUNDARY;
@@ -180,7 +178,7 @@ void AppServiceAppResult::CallLoadIcon(bool chip, bool allow_placeholder_icon) {
   // |icon_loader_| that the previous icon is no longer being used, as a hint
   // that it could be flushed from any caches.
   icon_loader_releaser_ = icon_loader_->LoadIcon(
-      app_type_, app_id(), apps::IconType::kStandard, kAppIconDimension,
+      app_id(), apps::IconType::kStandard, kAppIconDimension,
       allow_placeholder_icon,
       base::BindOnce(&AppServiceAppResult::OnLoadIcon,
                      weak_ptr_factory_.GetWeakPtr(), chip));

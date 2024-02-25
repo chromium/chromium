@@ -1,0 +1,20 @@
+[
+  {
+    "os": [
+      "chromeos_ash"
+    ],
+    "policy_pref_mapping_tests": [
+      {
+        "policies": {
+          "RelaunchHeadsUpPeriod": 86400000
+        },
+        "prefs": {
+          "browser.relaunch_heads_up_period": {
+            "location": "local_state",
+            "value": 86400000
+          }
+        }
+      }
+    ]
+  }
+]

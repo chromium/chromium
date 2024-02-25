@@ -4,6 +4,7 @@
 
 #include "chrome/browser/lacros/cert/cert_db_initializer_factory.h"
 
+#include "base/check_is_test.h"
 #include "base/no_destructor.h"
 #include "base/system/sys_info.h"
 #include "chrome/browser/lacros/cert/cert_db_initializer_impl.h"
@@ -22,7 +23,8 @@ CertDbInitializerFactory* CertDbInitializerFactory::GetInstance() {
 CertDbInitializer* CertDbInitializerFactory::GetForBrowserContext(
     content::BrowserContext* context) {
   return static_cast<CertDbInitializerImpl*>(
-      GetInstance()->GetServiceForBrowserContext(context, /*create=*/false));
+      GetInstance()->GetServiceForBrowserContext(
+          context, GetInstance()->should_create_on_demand_));
 }
 
 CertDbInitializerFactory::CertDbInitializerFactory()
@@ -41,14 +43,22 @@ bool CertDbInitializerFactory::ServiceIsCreatedWithBrowserContext() const {
 
 void CertDbInitializerFactory::SetCreateWithBrowserContextForTesting(
     bool should_create) {
+  CHECK_IS_TEST();
   should_create_with_browser_context_ = should_create;
 }
 
-KeyedService* CertDbInitializerFactory::BuildServiceInstanceFor(
+void CertDbInitializerFactory::SetCreateOnDemandForTesting(bool should_create) {
+  CHECK_IS_TEST();
+  should_create_on_demand_ = should_create;
+}
+
+std::unique_ptr<KeyedService>
+CertDbInitializerFactory::BuildServiceInstanceForBrowserContext(
     content::BrowserContext* context) const {
   Profile* profile = Profile::FromBrowserContext(context);
 
-  CertDbInitializerImpl* result = new CertDbInitializerImpl(profile);
+  std::unique_ptr<CertDbInitializerImpl> result =
+      std::make_unique<CertDbInitializerImpl>(profile);
   result->Start();
   return result;
 }

@@ -1,0 +1,14 @@
+Tests that device emulation of device posture is propagated and powers Device Posture API.
+Main frame Posture:
+continuous
+Iframe Posture:
+continuous
+Main frame Posture:
+folded
+Iframe Posture:
+folded
+Main frame Posture:
+continuous
+Iframe Posture:
+continuous
+

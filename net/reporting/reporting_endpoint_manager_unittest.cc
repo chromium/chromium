@@ -4,8 +4,10 @@
 
 #include "net/reporting/reporting_endpoint_manager.h"
 
+#include <optional>
 #include <string>
 
+#include "base/memory/raw_ptr.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/simple_test_tick_clock.h"
 #include "base/time/time.h"
@@ -19,7 +21,6 @@
 #include "net/reporting/reporting_policy.h"
 #include "net/reporting/reporting_test_util.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 
@@ -55,7 +56,7 @@ class TestReportingCache : public ReportingCache {
   }
 
   // Everything below is NOTREACHED.
-  void AddReport(const absl::optional<base::UnguessableToken>& reporting_source,
+  void AddReport(const std::optional<base::UnguessableToken>& reporting_source,
                  const NetworkAnonymizationKey& network_anonymization_key,
                  const GURL& url,
                  const std::string& user_agent,
@@ -68,28 +69,33 @@ class TestReportingCache : public ReportingCache {
     NOTREACHED();
   }
   void GetReports(
-      std::vector<const ReportingReport*>* reports_out) const override {
+      std::vector<raw_ptr<const ReportingReport, VectorExperimental>>*
+          reports_out) const override {
     NOTREACHED();
   }
   base::Value GetReportsAsValue() const override {
     NOTREACHED();
     return base::Value();
   }
-  std::vector<const ReportingReport*> GetReportsToDeliver() override {
+  std::vector<raw_ptr<const ReportingReport, VectorExperimental>>
+  GetReportsToDeliver() override {
     NOTREACHED();
     return {};
   }
-  std::vector<const ReportingReport*> GetReportsToDeliverForSource(
+  std::vector<raw_ptr<const ReportingReport, VectorExperimental>>
+  GetReportsToDeliverForSource(
       const base::UnguessableToken& reporting_source) override {
     NOTREACHED();
     return {};
   }
   void ClearReportsPending(
-      const std::vector<const ReportingReport*>& reports) override {
+      const std::vector<raw_ptr<const ReportingReport, VectorExperimental>>&
+          reports) override {
     NOTREACHED();
   }
   void IncrementReportsAttempts(
-      const std::vector<const ReportingReport*>& reports) override {
+      const std::vector<raw_ptr<const ReportingReport, VectorExperimental>>&
+          reports) override {
     NOTREACHED();
   }
   base::flat_map<url::Origin, std::vector<ReportingEndpoint>>
@@ -113,11 +119,14 @@ class TestReportingCache : public ReportingCache {
     return expired_sources_;
   }
   void RemoveReports(
-      const std::vector<const ReportingReport*>& reports) override {
+      const std::vector<raw_ptr<const ReportingReport, VectorExperimental>>&
+          reports) override {
     NOTREACHED();
   }
-  void RemoveReports(const std::vector<const ReportingReport*>& reports,
-                     bool delivery_success) override {
+  void RemoveReports(
+      const std::vector<raw_ptr<const ReportingReport, VectorExperimental>>&
+          reports,
+      bool delivery_success) override {
     NOTREACHED();
   }
   void RemoveAllReports() override { NOTREACHED(); }
@@ -282,12 +291,12 @@ class ReportingEndpointManagerTest : public testing::Test {
         ReportingEndpoint::EndpointInfo{endpoint, priority, weight}));
   }
 
-  const NetworkAnonymizationKey kNik;
+  const NetworkAnonymizationKey kNak;
   const url::Origin kOrigin = url::Origin::Create(GURL("https://origin/"));
   const SchemefulSite kSite = SchemefulSite(kOrigin);
   const std::string kGroup = "group";
   const ReportingEndpointGroupKey kGroupKey =
-      ReportingEndpointGroupKey(kNik, kOrigin, kGroup);
+      ReportingEndpointGroupKey(kNak, kOrigin, kGroup);
   const GURL kEndpoint = GURL("https://endpoint/");
 
   ReportingPolicy policy_;

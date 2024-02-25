@@ -18,6 +18,7 @@
 #include "cc/paint/transfer_cache_entry.h"
 #include "cc/paint/transfer_cache_serialize_helper.h"
 #include "gpu/GLES2/gl2extchromium.h"
+#include "gpu/command_buffer/client/client_shared_image.h"
 #include "gpu/command_buffer/client/gl_helper.h"
 #include "gpu/command_buffer/client/gles2_implementation.h"
 #include "gpu/command_buffer/client/gles2_interface.h"
@@ -38,9 +39,17 @@ GLenum SkColorTypeToGLDataFormat(SkColorType color_type, bool supports_rg) {
     case kBGRA_8888_SkColorType:
       return GL_BGRA_EXT;
     case kR8G8_unorm_SkColorType:
+    case kR16G16_unorm_SkColorType:
       return GL_RG_EXT;
     case kGray_8_SkColorType:
       return supports_rg ? GL_RED : GL_LUMINANCE;
+    case kAlpha_8_SkColorType:
+    case kA16_unorm_SkColorType:
+      return supports_rg ? GL_RED : GL_ALPHA;
+    // kA16_float_SkColorType is only used by LUMINANCE_F16 format and hence
+    // should only support GL_LUMINANCE.
+    case kA16_float_SkColorType:
+      return GL_LUMINANCE;
     default:
       DLOG(ERROR) << "Unknown SkColorType " << color_type;
   }
@@ -54,7 +63,13 @@ GLenum SkColorTypeToGLDataType(SkColorType color_type) {
     case kBGRA_8888_SkColorType:
     case kR8G8_unorm_SkColorType:
     case kGray_8_SkColorType:
+    case kAlpha_8_SkColorType:
       return GL_UNSIGNED_BYTE;
+    case kA16_unorm_SkColorType:
+    case kR16G16_unorm_SkColorType:
+      return GL_UNSIGNED_SHORT;
+    case kA16_float_SkColorType:
+      return GL_HALF_FLOAT_OES;
     default:
       DLOG(ERROR) << "Unknown SkColorType " << color_type;
   }
@@ -148,7 +163,11 @@ void RasterImplementationGLES::CopySharedImage(
     GLboolean unpack_premultiply_alpha) {
   // CopySharedImage does not support legacy mailboxes so fallback to
   // CopySubTexture.
-  if (capabilities_.supports_yuv_rgb_conversion &&
+  // We don't know if this would require rgb to yuv or yuv to rgb conversion, so
+  // we check for both flags, but in reality validating command decoder doesn't
+  // support either and passthrough command decoder always supports both.
+  if (capabilities_.supports_yuv_to_rgb_conversion &&
+      capabilities_.supports_rgb_to_yuv_conversion &&
       source_mailbox.IsSharedImage() && dest_mailbox.IsSharedImage()) {
     if (width < 0) {
       LOG(ERROR) << "GL_INVALID_VALUE, glCopySharedImage, width < 0";
@@ -243,6 +262,10 @@ void RasterImplementationGLES::WritePixelsYUV(
 
 void RasterImplementationGLES::ConvertYUVAMailboxesToRGB(
     const gpu::Mailbox& dest_mailbox,
+    GLint src_x,
+    GLint src_y,
+    GLsizei width,
+    GLsizei height,
     SkYUVColorSpace planes_yuv_color_space,
     const SkColorSpace* planes_rgb_color_space,
     SkYUVAInfo::PlaneConfig plane_config,
@@ -281,8 +304,9 @@ void RasterImplementationGLES::ConvertYUVAMailboxesToRGB(
   DCHECK_EQ(offset, kByteSize);
 
   gl_->ConvertYUVAMailboxesToRGBINTERNAL(
-      planes_yuv_color_space, static_cast<GLenum>(plane_config),
-      static_cast<GLenum>(subsampling), reinterpret_cast<GLbyte*>(bytes));
+      src_x, src_y, width, height, planes_yuv_color_space,
+      static_cast<GLenum>(plane_config), static_cast<GLenum>(subsampling),
+      reinterpret_cast<GLbyte*>(bytes));
 }
 
 void RasterImplementationGLES::ConvertRGBAToYUVAMailboxes(
@@ -309,6 +333,7 @@ void RasterImplementationGLES::BeginRasterCHROMIUM(
     GLboolean can_use_lcd_text,
     GLboolean visible,
     const gfx::ColorSpace& color_space,
+    float hdr_headroom,
     const GLbyte* mailbox) {
   NOTREACHED();
 }
@@ -524,6 +549,12 @@ GLuint RasterImplementationGLES::CreateAndConsumeForGpuRaster(
   return mailbox.IsSharedImage()
              ? gl_->CreateAndTexStorage2DSharedImageCHROMIUM(mailbox.name)
              : gl_->CreateAndConsumeTextureCHROMIUM(mailbox.name);
+}
+
+GLuint RasterImplementationGLES::CreateAndConsumeForGpuRaster(
+    const scoped_refptr<gpu::ClientSharedImage>& shared_image) {
+  CHECK(shared_image);
+  return CreateAndConsumeForGpuRaster(shared_image->mailbox());
 }
 
 void RasterImplementationGLES::DeleteGpuRasterTexture(GLuint texture) {

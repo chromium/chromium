@@ -21,15 +21,12 @@ class MimeTypesHandler {
 
   static MimeTypesHandler* GetHandler(const extensions::Extension* extension);
 
-  // Sends a UMA stat about usage of the specific type handler.
-  static void ReportUsedHandler(const std::string& extension_id);
-
   MimeTypesHandler();
   ~MimeTypesHandler();
 
   // extension id
   extensions::ExtensionId extension_id() const { return extension_id_; }
-  void set_extension_id(const std::string& extension_id) {
+  void set_extension_id(const extensions::ExtensionId& extension_id) {
     extension_id_ = extension_id;
   }
 

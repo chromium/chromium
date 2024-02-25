@@ -23,7 +23,6 @@
 #include "chrome/browser/ash/app_mode/kiosk_system_session.h"
 #include "chrome/browser/ash/login/app_mode/test/kiosk_base_test.h"
 #include "chrome/browser/ash/login/app_mode/test/kiosk_test_helpers.h"
-#include "chrome/browser/ash/login/app_mode/test/test_browser_closed_waiter.h"
 #include "chrome/browser/ash/login/test/device_state_mixin.h"
 #include "chrome/browser/ash/login/test/js_checker.h"
 #include "chrome/browser/ash/login/test/login_manager_mixin.h"
@@ -42,6 +41,7 @@
 #include "chrome/browser/ui/browser_navigator_params.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/settings_window_manager_chromeos.h"
+#include "chrome/browser/ui/test/test_browser_closed_waiter.h"
 #include "chrome/grit/generated_resources.h"
 #include "chromeos/ash/components/network/portal_detector/network_portal_detector.h"
 #include "components/user_manager/scoped_user_manager.h"
@@ -200,8 +200,8 @@ IN_PROC_BROWSER_TEST_F(KioskDeviceOwnedTest, InstallAndLaunchApp) {
   StartAppLaunchFromLoginScreen(
       NetworkPortalDetector::CAPTIVE_PORTAL_STATUS_ONLINE);
   WaitForAppLaunchSuccess();
-  KioskAppManager::App app;
-  ASSERT_TRUE(KioskAppManager::Get()->GetApp(test_app_id(), &app));
+  KioskChromeAppManager::App app;
+  ASSERT_TRUE(KioskChromeAppManager::Get()->GetApp(test_app_id(), &app));
   EXPECT_FALSE(app.was_auto_launched_with_zero_delay);
   EXPECT_EQ(ManifestLocation::kExternalPref, GetInstalledAppLocation());
 }
@@ -305,17 +305,6 @@ IN_PROC_BROWSER_TEST_F(KioskDeviceOwnedTest, NotSignedInWithGAIAAccount) {
                    ->HasPrimaryAccount(signin::ConsentLevel::kSignin));
 }
 
-IN_PROC_BROWSER_TEST_F(KioskDeviceOwnedTest, PRE_LaunchAppNetworkDown) {
-  // Tests the network down case for the initial app download and launch.
-  RunAppLaunchNetworkDownTest();
-}
-
-IN_PROC_BROWSER_TEST_F(KioskDeviceOwnedTest, LaunchAppNetworkDown) {
-  // Tests the network down case for launching an existing app that is
-  // installed in PRE_LaunchAppNetworkDown.
-  RunAppLaunchNetworkDownTest();
-}
-
 IN_PROC_BROWSER_TEST_F(KioskDeviceOwnedTest,
                        LaunchAppNetworkDownConfigureNotAllowed) {
   auto auto_reset =
@@ -354,8 +343,8 @@ IN_PROC_BROWSER_TEST_F(KioskDeviceOwnedTest, OpenA11ySettings) {
                               /*terminate_app=*/false,
                               /*keep_app_open=*/true);
 
-  Browser* settings_browser =
-      OpenA11ySettingsBrowser(KioskAppManager::Get()->kiosk_system_session());
+  Browser* settings_browser = OpenA11ySettingsBrowser(
+      KioskChromeAppManager::Get()->kiosk_system_session());
   ASSERT_TRUE(settings_browser);
 }
 
@@ -382,7 +371,7 @@ IN_PROC_BROWSER_TEST_F(KioskDeviceOwnedTest, SettingsWindow) {
   // Replace the settings allowlist with `settings_pages`.
   ScopedSettingsPages pages(&settings_pages);
   KioskSystemSession* system_session =
-      KioskAppManager::Get()->kiosk_system_session();
+      KioskChromeAppManager::Get()->kiosk_system_session();
 
   // App session should be initialized.
   ASSERT_TRUE(system_session);
@@ -450,7 +439,7 @@ IN_PROC_BROWSER_TEST_F(KioskDeviceOwnedTest, SettingsWindowShouldBeActive) {
                               /*terminate_app=*/false,
                               /*keep_app_open=*/true);
   KioskSystemSession* system_session =
-      KioskAppManager::Get()->kiosk_system_session();
+      KioskChromeAppManager::Get()->kiosk_system_session();
 
   // App session should be initialized.
   ASSERT_TRUE(system_session);
@@ -497,7 +486,7 @@ IN_PROC_BROWSER_TEST_F(KioskDeviceOwnedTest, SettingsWindowRemainsOpen) {
                               /*terminate_app=*/false,
                               /*keep_app_open=*/true);
   KioskSystemSession* system_session =
-      KioskAppManager::Get()->kiosk_system_session();
+      KioskChromeAppManager::Get()->kiosk_system_session();
   // App session should be initialized.
   ASSERT_NE(system_session, nullptr);
 
@@ -519,7 +508,7 @@ IN_PROC_BROWSER_TEST_F(KioskDeviceOwnedTest, CloseSettingsWindow) {
                               /*terminate_app=*/false,
                               /*keep_app_open=*/true);
   KioskSystemSession* system_session =
-      KioskAppManager::Get()->kiosk_system_session();
+      KioskChromeAppManager::Get()->kiosk_system_session();
   // App session should be initialized.
   ASSERT_NE(system_session, nullptr);
 
@@ -535,7 +524,7 @@ IN_PROC_BROWSER_TEST_F(KioskDeviceOwnedTest, CloseSettingsWindow) {
   settings_browser->window()->Close();
   // Ensure `settings_browser` is closed.
   TestBrowserClosedWaiter browser_closed_waiter{settings_browser};
-  browser_closed_waiter.WaitUntilClosed();
+  ASSERT_TRUE(browser_closed_waiter.WaitUntilClosed());
 
   // No browsers are opened in the chrome app kiosk session.
   EXPECT_EQ(BrowserList::GetInstance()->size(), 0u);
@@ -558,7 +547,7 @@ IN_PROC_BROWSER_TEST_F(KioskDeviceOwnedTest,
   // not possible to inject an auto-launch policy before it runs.
   LoginDisplayHost* login_display_host = LoginDisplayHost::default_host();
   ASSERT_TRUE(login_display_host);
-  login_display_host->StartKiosk(KioskAppId::ForChromeApp(test_app_id()), true);
+  login_display_host->StartKiosk(test_kiosk_app().id(), true);
 
   // Check that no launch has started.
   EXPECT_FALSE(login_display_host->GetKioskLaunchController());

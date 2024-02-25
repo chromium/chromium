@@ -4,7 +4,7 @@
 
 #include "base/memory/platform_shared_memory_mapper.h"
 
-#include "base/allocator/partition_allocator/page_allocator.h"
+#include "base/allocator/partition_allocator/src/partition_alloc/page_allocator.h"
 #include "base/logging.h"
 
 #include <aclapi.h>
@@ -23,7 +23,7 @@ size_t GetMemorySectionSize(void* address) {
 }
 }  // namespace
 
-absl::optional<span<uint8_t>> PlatformSharedMemoryMapper::Map(
+std::optional<span<uint8_t>> PlatformSharedMemoryMapper::Map(
     subtle::PlatformSharedMemoryHandle handle,
     bool write_allowed,
     uint64_t offset,
@@ -41,10 +41,10 @@ absl::optional<span<uint8_t>> PlatformSharedMemoryMapper::Map(
   }
   if (!address) {
     DPLOG(ERROR) << "Failed executing MapViewOfFile";
-    return absl::nullopt;
+    return std::nullopt;
   }
 
-  return make_span(reinterpret_cast<uint8_t*>(address),
+  return make_span(static_cast<uint8_t*>(address),
                    GetMemorySectionSize(address));
 }
 

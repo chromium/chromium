@@ -16,8 +16,8 @@
 namespace {
 
 void OnParseXml(base::OnceClosure quit_loop,
-                absl::optional<base::Value> value,
-                const absl::optional<std::string>& error) {
+                std::optional<base::Value> value,
+                const std::optional<std::string>& error) {
   std::move(quit_loop).Run();
 }
 

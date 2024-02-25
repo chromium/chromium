@@ -17,6 +17,8 @@ namespace ash {
 class COMPONENT_EXPORT(ASSISTANT_UI) AssistantScrollView
     : public views::ScrollView,
       public views::ViewObserver {
+  METADATA_HEADER(AssistantScrollView, views::ScrollView)
+
  public:
   class Observer : public base::CheckedObserver {
    public:
@@ -27,8 +29,6 @@ class COMPONENT_EXPORT(ASSISTANT_UI) AssistantScrollView
     Observer() = default;
     ~Observer() override = default;
   };
-
-  METADATA_HEADER(AssistantScrollView);
 
   AssistantScrollView();
   AssistantScrollView(const AssistantScrollView&) = delete;
@@ -50,8 +50,7 @@ class COMPONENT_EXPORT(ASSISTANT_UI) AssistantScrollView
 
   base::ObserverList<Observer> observers_;
 
-  raw_ptr<views::View, ExperimentalAsh>
-      content_view_;  // Owned by view hierarchy.
+  raw_ptr<views::View> content_view_;  // Owned by view hierarchy.
 };
 
 }  // namespace ash

@@ -40,22 +40,17 @@ zlib_filefunc64_def& ZipWritableMemFile::GetFileFunc64Def() {
   return zlib_filefunc64_def_;
 }
 
-absl::string_view ZipWritableMemFile::GetFileContent() const {
-  return data_;
-}
+absl::string_view ZipWritableMemFile::GetFileContent() const { return data_; }
 
 /* static */
-voidpf ZipWritableMemFile::OpenFile(voidpf opaque,
-                                    const void* filename,
+voidpf ZipWritableMemFile::OpenFile(voidpf opaque, const void* filename,
                                     int mode) {
   // Result is never used, but needs to be non-null for `zipOpen2` not to fail.
   return opaque;
 }
 
 /* static */
-uLong ZipWritableMemFile::ReadFile(voidpf opaque,
-                                   voidpf stream,
-                                   void* buf,
+uLong ZipWritableMemFile::ReadFile(voidpf opaque, voidpf stream, void* buf,
                                    uLong size) {
   auto* mem_file = static_cast<ZipWritableMemFile*>(opaque);
   if (mem_file->offset_ < 0 || mem_file->Size() < mem_file->offset_) {
@@ -72,10 +67,8 @@ uLong ZipWritableMemFile::ReadFile(voidpf opaque,
 }
 
 /* static */
-uLong ZipWritableMemFile::WriteFile(voidpf opaque,
-                                    voidpf stream,
-                                    const void* buf,
-                                    uLong size) {
+uLong ZipWritableMemFile::WriteFile(voidpf opaque, voidpf stream,
+                                    const void* buf, uLong size) {
   auto* mem_file = static_cast<ZipWritableMemFile*>(opaque);
   if (mem_file->offset_ + size > mem_file->Size()) {
     mem_file->data_.resize(mem_file->offset_ + size);

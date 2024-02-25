@@ -17,7 +17,11 @@ from py_utils import discover
 class RenderingStorySet(story.StorySet):
   """Stories related to rendering."""
 
-  def __init__(self, platform, scroll_forever=False, disable_tracing=False):
+  def __init__(self,
+               platform,
+               scroll_forever=False,
+               disable_tracing=False,
+               os_name=None):
     super(RenderingStorySet, self).__init__(
         archive_data_file=('../data/rendering_%s.json' % platform),
         cloud_storage_bucket=story.PARTNER_BUCKET)
@@ -38,8 +42,8 @@ class RenderingStorySet(story.StorySet):
     self.target_scale_factor = 4.0
 
     for story_class in _IterAllRenderingStoryClasses():
-      if (story_class.ABSTRACT_STORY
-          or platform not in story_class.SUPPORTED_PLATFORMS
+      if (story_class.ABSTRACT_STORY or not _IsSupportedPlatform(
+          platform, story_class.SUPPORTED_PLATFORMS, os_name)
           or story_class.DISABLE_TRACING != disable_tracing):
         continue
 
@@ -118,3 +122,24 @@ def _IterAllRenderingStoryClasses():
       top_level_dir=os.path.dirname(start_dir),
       base_class=rendering_story.RenderingStory).items()):
     yield cls
+
+
+# Checks that the OS is within the SUPPORTED_PLATFORMS for the story, as while
+# the top-level benchmark supports multiple platforms, individual stories may
+# only support a sub-set of OSes for those platforms.
+def _IsSupportedPlatform(platform, story_supported_platforms, os_name):
+  if platform in story_supported_platforms:
+    return True
+
+  if platform == platforms.DESKTOP and os_name is not None:
+    # TODO(jonross): port all rendering benchmarks to use stories.exceptions
+    if story_supported_platforms in (platforms.MOBILE, platforms.MOBILE_ONLY,
+                                     platforms.NO_PLATFORMS):
+      return False
+    # Stories can have multiple separate `_TestConditionByPlatformList` set as
+    # expectations, check in each. For details see
+    # third_party/catapult/telemetry/telemetry/story/expectations.py
+    for supported_platform in story_supported_platforms:
+      if os_name in supported_platform.GetSupportedPlatformNames():
+        return True
+  return False

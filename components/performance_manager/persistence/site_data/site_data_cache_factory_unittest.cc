@@ -5,6 +5,7 @@
 #include "components/performance_manager/persistence/site_data/site_data_cache_factory.h"
 
 #include <memory>
+#include <optional>
 #include <utility>
 
 #include "base/functional/callback_helpers.h"
@@ -17,7 +18,6 @@
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/test_browser_context.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace performance_manager {
 
@@ -30,7 +30,7 @@ TEST(SiteDataCacheFactoryTest, EndToEnd) {
   content::TestBrowserContext browser_context;
   cache_factory.AsyncCall(&SiteDataCacheFactory::OnBrowserContextCreated)
       .WithArgs(browser_context.UniqueId(), browser_context.GetPath(),
-                absl::nullopt);
+                std::nullopt);
 
   {
     base::RunLoop run_loop;

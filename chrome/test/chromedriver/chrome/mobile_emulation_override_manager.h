@@ -21,7 +21,7 @@ class Status;
 class MobileEmulationOverrideManager : public DevToolsEventListener {
  public:
   MobileEmulationOverrideManager(DevToolsClient* client,
-                                 absl::optional<MobileDevice> mobile_device,
+                                 std::optional<MobileDevice> mobile_device,
                                  int browser_major_version);
 
   MobileEmulationOverrideManager(const MobileEmulationOverrideManager&) =
@@ -46,7 +46,7 @@ class MobileEmulationOverrideManager : public DevToolsEventListener {
   Status ApplyOverrideIfNeeded();
 
   raw_ptr<DevToolsClient> client_;
-  absl::optional<MobileDevice> mobile_device_;
+  std::optional<MobileDevice> mobile_device_;
   int browser_major_version_ = 0;
 };
 

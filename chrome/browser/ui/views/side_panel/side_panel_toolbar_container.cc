@@ -28,6 +28,8 @@
 #include "components/feature_engagement/public/feature_constants.h"
 #include "components/prefs/pref_service.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/base/models/dialog_model.h"
 #include "ui/base/models/dialog_model_menu_model_adapter.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/animation/ink_drop.h"
@@ -54,7 +56,7 @@ SidePanelToolbarContainer::PinnedSidePanelToolbarButton::
       id_(id) {
   SetTooltipText(name);
   SetAccessibleName(accessible_name);
-  GetViewAccessibility().OverrideDescription(
+  GetViewAccessibility().SetDescription(
       std::u16string(), ax::mojom::DescriptionFrom::kAttributeExplicitlyEmpty);
 
   SetVectorIcon(icon);
@@ -83,7 +85,8 @@ void SidePanelToolbarContainer::PinnedSidePanelToolbarButton::ButtonPressed() {
   browser_view_->NotifyFeatureEngagementEvent(
       "companion_side_panel_accessed_via_toolbar_button");
   browser_view_->CloseFeaturePromo(
-      feature_engagement::kIPHCompanionSidePanelFeature);
+      feature_engagement::kIPHCompanionSidePanelFeature,
+      user_education::EndFeaturePromoReason::kFeatureEngaged);
 }
 
 void SidePanelToolbarContainer::PinnedSidePanelToolbarButton::
@@ -108,6 +111,9 @@ SidePanelToolbarContainer::PinnedSidePanelToolbarButton::CreateMenuModel() {
   return std::make_unique<ui::DialogModelMenuModelAdapter>(
       dialog_model.Build());
 }
+
+BEGIN_METADATA(SidePanelToolbarContainer, PinnedSidePanelToolbarButton)
+END_METADATA
 
 ///////////////////////////////////////////////////////////////////////////////
 // SidePanelToolbarContainer:
@@ -145,8 +151,12 @@ SidePanelToolbarContainer::SidePanelToolbarContainer(BrowserView* browser_view)
   // pin state group (i.e. from the default being false to the default being
   // true) we want to make sure their pin state changes if they have not
   // explicitly changed it themselves.
-  if (PrefService* pref_service = browser_view_->GetProfile()->GetPrefs()) {
-    companion::UpdateCompanionDefaultPinnedToToolbarState(pref_service);
+  if (SearchCompanionSidePanelCoordinator::IsSupported(
+          browser_view_->GetProfile(),
+          /*include_runtime_checks=*/false) &&
+      browser_view_->GetProfile()->GetPrefs()) {
+    companion::UpdateCompanionDefaultPinnedToToolbarState(
+        browser_view_->GetProfile());
   }
   CreatePinnedEntryButtons();
 }
@@ -154,9 +164,10 @@ SidePanelToolbarContainer::SidePanelToolbarContainer(BrowserView* browser_view)
 SidePanelToolbarContainer::~SidePanelToolbarContainer() {}
 
 bool SidePanelToolbarContainer::IsActiveEntryPinnedAndVisible() {
-  absl::optional<SidePanelEntry::Id> active_id =
+  std::optional<SidePanelEntry::Id> active_id =
       GetSidePanelCoordinator()->GetCurrentEntryId();
-  for (auto* pinned_button : pinned_entry_buttons_) {
+  for (SidePanelToolbarContainer::PinnedSidePanelToolbarButton* pinned_button :
+       pinned_entry_buttons_) {
     if (pinned_button->id() == active_id) {
       return pinned_button->GetVisible();
     }
@@ -167,7 +178,8 @@ bool SidePanelToolbarContainer::IsActiveEntryPinnedAndVisible() {
 void SidePanelToolbarContainer::UpdateAllIcons() {
   GetSidePanelButton()->UpdateIcon();
 
-  for (auto* const pinned_entry_button : pinned_entry_buttons_) {
+  for (SidePanelToolbarContainer::PinnedSidePanelToolbarButton* const
+           pinned_entry_button : pinned_entry_buttons_) {
     pinned_entry_button->UpdateIcon();
   }
 }
@@ -179,7 +191,10 @@ SidePanelToolbarButton* SidePanelToolbarContainer::GetSidePanelButton() const {
 ToolbarButton& SidePanelToolbarContainer::GetPinnedButtonForId(
     SidePanelEntry::Id id) {
   const auto iter = base::ranges::find(
-      pinned_entry_buttons_, id, [](auto* button) { return button->id(); });
+      pinned_entry_buttons_, id,
+      [](SidePanelToolbarContainer::PinnedSidePanelToolbarButton* button) {
+        return button->id();
+      });
   // TODO(crbug.com/1447841): Remove all companion related special case code
   // once a generalized path forward has been determined.
   CHECK(iter != pinned_entry_buttons_.end());
@@ -248,9 +263,13 @@ void SidePanelToolbarContainer::RemovePinnedEntryButtonFor(
     return;
   }
   const auto iter = base::ranges::find(
-      pinned_entry_buttons_, id, [](auto* button) { return button->id(); });
+      pinned_entry_buttons_, id,
+      [](SidePanelToolbarContainer::PinnedSidePanelToolbarButton* button) {
+        return button->id();
+      });
   DCHECK(iter != pinned_entry_buttons_.end());
-  RemoveChildView(*iter);
+  // This returns a unique_ptr which is immediately destroyed.
+  RemoveChildViewT(*iter);
   pinned_entry_buttons_.erase(iter);
   pinned_button_visibility_change_subscription_ =
       base::CallbackListSubscription();
@@ -269,7 +288,7 @@ bool SidePanelToolbarContainer::IsPinned(SidePanelEntry::Id id) {
 void SidePanelToolbarContainer::UpdateSidePanelContainerButtonsState() {
   bool side_panel_visible = browser_view_->unified_side_panel()->GetVisible();
   bool side_panel_button_highlighted = side_panel_visible;
-  absl::optional<SidePanelEntry::Id> current_active_id =
+  std::optional<SidePanelEntry::Id> current_active_id =
       GetSidePanelCoordinator()->GetCurrentEntryId();
   for (PinnedSidePanelToolbarButton* pinned_button : pinned_entry_buttons_) {
     if (browser_view_->unified_side_panel()->GetVisible() &&
@@ -293,7 +312,10 @@ void SidePanelToolbarContainer::UpdateSidePanelContainerButtonsState() {
 
 bool SidePanelToolbarContainer::HasPinnedEntryButtonFor(SidePanelEntry::Id id) {
   const auto iter = base::ranges::find(
-      pinned_entry_buttons_, id, [](auto* button) { return button->id(); });
+      pinned_entry_buttons_, id,
+      [](SidePanelToolbarContainer::PinnedSidePanelToolbarButton* button) {
+        return button->id();
+      });
   return iter != pinned_entry_buttons_.end();
 }
 
@@ -327,3 +349,6 @@ SidePanelCoordinator* SidePanelToolbarContainer::GetSidePanelCoordinator() {
   return SidePanelUtil::GetSidePanelCoordinatorForBrowser(
       browser_view_->browser());
 }
+
+BEGIN_METADATA(SidePanelToolbarContainer)
+END_METADATA

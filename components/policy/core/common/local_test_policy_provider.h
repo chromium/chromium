@@ -9,7 +9,6 @@
 #include "components/policy/core/common/local_test_policy_loader.h"
 #include "components/policy/policy_export.h"
 #include "components/prefs/pref_registry_simple.h"
-
 #include "components/version_info/channel.h"
 
 namespace policy {
@@ -24,8 +23,6 @@ class POLICY_EXPORT LocalTestPolicyProvider
   static std::unique_ptr<LocalTestPolicyProvider> CreateIfAllowed(
       version_info::Channel channel);
 
-  static bool IsAllowed(version_info::Channel channel);
-
   LocalTestPolicyProvider(const LocalTestPolicyProvider&) = delete;
   LocalTestPolicyProvider& operator=(const LocalTestPolicyProvider&) = delete;
 
@@ -34,9 +31,10 @@ class POLICY_EXPORT LocalTestPolicyProvider
   void LoadJsonPolicies(const std::string& json_policies_string);
   void ClearPolicies();
   void SetUserAffiliated(bool affiliated);
+  const std::string& GetPolicies() const;
 
   // ConfigurationPolicyProvider implementation
-  void RefreshPolicies() override;
+  void RefreshPolicies(PolicyFetchReason reason) override;
   bool IsFirstPolicyLoadComplete(PolicyDomain domain) const override;
 
   static void RegisterLocalStatePrefs(PrefRegistrySimple* registry);

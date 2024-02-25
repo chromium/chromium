@@ -8,12 +8,12 @@
 #include <stddef.h>
 
 #include <memory>
+#include <optional>
 #include <vector>
 
 #include "cc/paint/filter_operations.h"
 #include "components/viz/common/quads/quad_list.h"
 #include "components/viz/common/viz_common_export.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/display_color_spaces.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/rrect_f.h"
@@ -54,8 +54,10 @@ class VIZ_COMMON_EXPORT RenderPassInternal {
   // backdrop of the render pass, from behind it.
   cc::FilterOperations backdrop_filters;
 
-  // Clipping bounds for backdrop filter.
-  absl::optional<gfx::RRectF> backdrop_filter_bounds;
+  // Clipping bounds for backdrop filter. If defined, is in a coordinate space
+  // equivalent to render pass physical pixels after applying
+  // `RenderPassDrawQuad::filter_scale`.
+  std::optional<gfx::RRectF> backdrop_filter_bounds;
 
   // If false, the pixels in the render pass' texture are all opaque.
   bool has_transparent_background = true;

@@ -6,7 +6,7 @@
 
 #include <set>
 
-#include "base/allocator/partition_allocator/partition_alloc_buildflags.h"
+#include "base/allocator/partition_allocator/src/partition_alloc/partition_alloc_buildflags.h"
 #include "base/feature_list.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
@@ -26,7 +26,6 @@
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/ukm/test_ukm_recorder.h"
 #include "content/public/browser/network_service_util.h"
-#include "content/public/browser/notification_service.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/test_utils.h"
@@ -93,8 +92,8 @@ void OnStartTracingDoneCallback(
     base::OnceClosure quit_closure) {
   memory_instrumentation::MemoryInstrumentation::GetInstance()
       ->RequestGlobalDumpAndAppendToTrace(
-          MemoryDumpType::PERIODIC_INTERVAL, dump_type,
-          MemoryDumpDeterminism::NONE,
+          MemoryDumpType::kPeriodicInterval, dump_type,
+          MemoryDumpDeterminism::kNone,
           BindOnce(&RequestGlobalDumpCallback, std::move(quit_closure)));
 }
 
@@ -286,19 +285,12 @@ void CheckStableMemoryMetrics(const base::HistogramTester& histogram_tester,
     CheckMemoryMetric("Memory.Extension.PrivateMemoryFootprint",
                       histogram_tester, count, ValueRestriction::ABOVE_ZERO,
                       number_of_extension_processes);
-    // Shared memory footprint can be below 1 MB, which is reported as zero.
-    CheckMemoryMetric("Memory.Extension.SharedMemoryFootprint",
-                      histogram_tester, count, ValueRestriction::NONE,
-                      number_of_extension_processes);
     CheckMemoryMetric("Memory.Extension.PrivateSwapFootprint", histogram_tester,
                       count_for_private_swap_footprint, ValueRestriction::NONE,
                       number_of_extension_processes);
   }
 
   int number_of_ns_processes = content::IsOutOfProcessNetworkService() ? 1 : 0;
-  CheckMemoryMetric("Memory.NetworkService.ResidentSet", histogram_tester,
-                    count_for_resident_set, ValueRestriction::ABOVE_ZERO,
-                    number_of_ns_processes);
   CheckMemoryMetric("Memory.NetworkService.PrivateMemoryFootprint",
                     histogram_tester, count, ValueRestriction::ABOVE_ZERO,
                     number_of_ns_processes);
@@ -414,7 +406,7 @@ class ProcessMemoryMetricsEmitterTest
     size_t renderer_entry_count = 0;
     size_t total_entry_count = 0;
 
-    for (const auto* entry : entries) {
+    for (const ukm::mojom::UkmEntry* entry : entries) {
       if (ProcessHasTypeForEntry(entry, ProcessType::BROWSER)) {
         browser_entry_count++;
         CheckUkmBrowserEntry(entry);
@@ -502,7 +494,7 @@ class ProcessMemoryMetricsEmitterTest
         test_ukm_recorder_->GetEntriesByName(UkmEntry::kEntryName);
     size_t found_count = false;
     const ukm::mojom::UkmEntry* last_entry = nullptr;
-    for (const auto* entry : entries) {
+    for (const ukm::mojom::UkmEntry* entry : entries) {
       const ukm::UkmSource* source =
           test_ukm_recorder_->GetSourceForSourceId(entry->source_id);
       if (!source || source->url() != url)
@@ -728,7 +720,7 @@ IN_PROC_BROWSER_TEST_F(ProcessMemoryMetricsEmitterTest,
     ASSERT_TRUE(tracing::BeginTracingWithTraceConfig(
         trace_config,
         BindOnce(&OnStartTracingDoneCallback,
-                 base::trace_event::MemoryDumpLevelOfDetail::DETAILED,
+                 base::trace_event::MemoryDumpLevelOfDetail::kDetailed,
                  run_loop.QuitClosure())));
     run_loop.Run();
   }
@@ -756,7 +748,7 @@ IN_PROC_BROWSER_TEST_F(ProcessMemoryMetricsEmitterTest,
   ASSERT_GT(events.size(), 1u);
   ASSERT_TRUE(trace_analyzer::CountMatches(
       events, trace_analyzer::Query::EventNameIs(
-                  MemoryDumpTypeToString(MemoryDumpType::PERIODIC_INTERVAL))));
+                  MemoryDumpTypeToString(MemoryDumpType::kPeriodicInterval))));
 
   constexpr int kNumRenderers = 2;
   EXPECT_EQ(kNumRenderers, GetNumRenderers(browser()));

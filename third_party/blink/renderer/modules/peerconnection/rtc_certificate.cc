@@ -31,7 +31,6 @@
 #include "third_party/blink/renderer/modules/peerconnection/rtc_certificate.h"
 
 #include "base/memory/ptr_util.h"
-#include "third_party/blink/renderer/platform/bindings/to_v8.h"
 #include "third_party/blink/renderer/platform/bindings/v8_binding.h"
 #include "third_party/webrtc/rtc_base/ssl_certificate.h"
 

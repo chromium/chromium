@@ -31,6 +31,6 @@ found in the LICENSE file.
         android:layout_height="wrap_content"
         android:paddingBottom="16dp"
         android:paddingTop="16dp"
-        android:text="@string/storage_clear_button_title"
+        android:text="@string/storage_delete_button_title"
         app:verticalInset="0dp" />
 </merge>

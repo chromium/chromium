@@ -19,8 +19,6 @@ component("base") {
     "file_icon_util.h",
     "nudge_util.cc",
     "nudge_util.h",
-    "tablet_state.cc",
-    "tablet_state.h",
     "window_pin_type.cc",
     "window_pin_type.h",
     "window_properties.cc",
@@ -33,7 +31,6 @@ component("base") {
 
   deps = [
     "//base",
-    "//build:chromeos_buildflags",
     "//chromeos/constants",
     "//chromeos/ui/vector_icons",
     "//skia",

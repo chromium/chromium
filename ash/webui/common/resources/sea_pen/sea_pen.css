@@ -1,0 +1,51 @@
+/* Copyright 2023 The Chromium Authors
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file. */
+
+/* #css_wrapper_metadata_start
+ * #type=style
+ * #css_wrapper_metadata_end */
+
+wallpaper-grid-item.sea-pen-image {
+  --wallpaper-grid-item-width: 100%;
+  height: 100%;
+}
+
+.sea-pen-image[aria-selected='true']::part(image) {
+  animation: none;
+}
+
+.sea-pen-image[aria-selected='true']::part(icon) {
+  --cr-icon-button-size: 20px;
+  background-color: var(--cros-bg-color);
+  border-bottom-right-radius: 50%;
+  left: -8px;
+  padding: 8px;
+  top: -8px;
+}
+
+.sea-pen-image[aria-selected='true']::part(item) {
+  border-radius: var(--personalization-app-grid-item-border-radius);
+}
+
+.sea-pen-image[aria-selected='true']::part(icon)::before {
+  border-top-left-radius: 50%;
+  top: 8px;
+  box-shadow: 0 -8px 0 0 var(--cros-bg-color);
+  content: "";
+  height: 16px;
+  left: 36px;
+  position: absolute;
+  width: 16px;
+}
+
+.sea-pen-image[aria-selected='true']::part(icon)::after {
+  border-top-left-radius: 50%;
+  box-shadow: -8px 0 0 0 var(--cros-bg-color);
+  content: "";
+  height: 16px;
+  left: 8px;
+  position: absolute;
+  top: 36px;
+  width: 16px;
+}

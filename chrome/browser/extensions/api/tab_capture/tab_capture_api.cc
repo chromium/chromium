@@ -139,7 +139,7 @@ std::string GetAllowlistedExtensionID() {
 }  // namespace
 
 ExtensionFunction::ResponseAction TabCaptureCaptureFunction::Run() {
-  absl::optional<api::tab_capture::Capture::Params> params =
+  std::optional<api::tab_capture::Capture::Params> params =
       TabCapture::Capture::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params);
 
@@ -222,7 +222,7 @@ ExtensionFunction::ResponseAction TabCaptureGetCapturedTabsFunction::Run() {
 }
 
 ExtensionFunction::ResponseAction TabCaptureGetMediaStreamIdFunction::Run() {
-  absl::optional<api::tab_capture::GetMediaStreamId::Params> params =
+  std::optional<api::tab_capture::GetMediaStreamId::Params> params =
       TabCapture::GetMediaStreamId::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params);
 
@@ -259,7 +259,7 @@ ExtensionFunction::ResponseAction TabCaptureGetMediaStreamIdFunction::Run() {
 
   GURL origin;
   int caller_process_id = -1;
-  absl::optional<int> restrict_to_render_frame_id;
+  std::optional<int> restrict_to_render_frame_id;
   bool should_restrict_to_render_frame = extension()->manifest_version() < 3;
   if (params->options && params->options->consumer_tab_id) {
     content::WebContents* consumer_contents = nullptr;

@@ -3,9 +3,18 @@
 // found in the LICENSE file.
 
 #include "net/websockets/websocket_quic_spdy_stream.h"
+
+#include <sys/types.h>  // for struct iovec
+
+#include "base/check.h"
+#include "base/check_op.h"
 #include "net/base/io_buffer.h"
-#include "net/http/http_status_code.h"
-#include "net/third_party/quiche/src/quiche/quic/core/http/spdy_utils.h"
+#include "net/base/net_errors.h"
+#include "net/third_party/quiche/src/quiche/quic/core/http/quic_spdy_client_session_base.h"
+
+namespace quic {
+class QuicHeaderList;
+}  // namespace quic
 
 namespace net {
 

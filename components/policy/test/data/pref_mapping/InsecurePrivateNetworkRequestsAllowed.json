@@ -1,0 +1,43 @@
+[
+  {
+    "os": [
+      "win",
+      "linux",
+      "mac",
+      "chromeos_ash",
+      "chromeos_lacros",
+      "android",
+      "fuchsia"
+    ],
+    "policy_pref_mapping_tests": [
+      {
+        "policies": {},
+        "prefs": {
+          "profile.managed_default_content_settings.insecure_private_network": {
+            "default_value": 0
+          }
+        }
+      },
+      {
+        "policies": {
+          "InsecurePrivateNetworkRequestsAllowed": false
+        },
+        "prefs": {
+          "profile.managed_default_content_settings.insecure_private_network": {
+            "value": 2
+          }
+        }
+      },
+      {
+        "policies": {
+          "InsecurePrivateNetworkRequestsAllowed": true
+        },
+        "prefs": {
+          "profile.managed_default_content_settings.insecure_private_network": {
+            "value": 1
+          }
+        }
+      }
+    ]
+  }
+]

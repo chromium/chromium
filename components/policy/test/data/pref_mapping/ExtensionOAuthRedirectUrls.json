@@ -1,0 +1,34 @@
+[
+  {
+    "os": [
+      "chromeos_ash",
+      "chromeos_lacros"
+    ],
+    "policy_pref_mapping_tests": [
+      {
+        "policies": {
+          "ExtensionOAuthRedirectUrls": {
+            "lcncmkcnkcdbbanbjakcencbaoegdjlp": [
+              "example://example/",
+              "https://lcncmkcnkcdbbanbjakcencbaoegdjlp.chromiumapp.org/"
+            ]
+          }
+        },
+        "prefs": {
+          "extensions.oauth_redirect_urls": {
+            "lcncmkcnkcdbbanbjakcencbaoegdjlp": [
+              "example://example/",
+              "https://lcncmkcnkcdbbanbjakcencbaoegdjlp.chromiumapp.org/"
+            ],
+            "value": {
+              "lcncmkcnkcdbbanbjakcencbaoegdjlp": [
+                "example://example/",
+                "https://lcncmkcnkcdbbanbjakcencbaoegdjlp.chromiumapp.org/"
+              ]
+            }
+          }
+        }
+      }
+    ]
+  }
+]

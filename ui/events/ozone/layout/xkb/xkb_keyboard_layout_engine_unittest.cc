@@ -994,7 +994,7 @@ TEST_F(XkbLayoutEngineVkTest, GetDomCodeByKeysym) {
   };
 
   for (const auto& test_case : kTestCases) {
-    absl::optional<std::vector<base::StringPiece>> modifiers;
+    std::optional<std::vector<base::StringPiece>> modifiers;
     if (test_case.modifiers != kNullopt) {
       std::vector<base::StringPiece> modifiers_content;
       if (test_case.modifiers & kShiftMask)

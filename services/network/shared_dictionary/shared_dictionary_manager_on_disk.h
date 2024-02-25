@@ -5,6 +5,8 @@
 #ifndef SERVICES_NETWORK_SHARED_DICTIONARY_SHARED_DICTIONARY_MANAGER_ON_DISK_H_
 #define SERVICES_NETWORK_SHARED_DICTIONARY_SHARED_DICTIONARY_MANAGER_ON_DISK_H_
 
+#include <optional>
+#include <set>
 #include <string>
 
 #include "base/functional/callback.h"
@@ -12,6 +14,7 @@
 #include "base/time/time.h"
 #include "base/unguessable_token.h"
 #include "build/build_config.h"
+#include "net/disk_cache/disk_cache.h"
 #include "net/extras/shared_dictionary/shared_dictionary_info.h"
 #include "net/extras/sqlite/sqlite_persistent_shared_dictionary_store.h"
 #include "services/network/shared_dictionary/shared_dictionary_disk_cache.h"
@@ -21,9 +24,6 @@
 class GURL;
 
 namespace base {
-namespace android {
-class ApplicationStatusListener;
-}  // namespace android
 class FilePath;
 }  //  namespace base
 
@@ -32,6 +32,9 @@ class BackendFileOperationsFactory;
 }  // namespace disk_cache
 
 namespace network {
+namespace mojom {
+enum class RequestDestination : int32_t;
+}  // namespace mojom
 
 class SharedDictionaryStorage;
 
@@ -44,7 +47,7 @@ class SharedDictionaryManagerOnDisk : public SharedDictionaryManager {
       uint64_t cache_max_size,
       uint64_t cache_max_count,
 #if BUILDFLAG(IS_ANDROID)
-      base::android::ApplicationStatusListener* app_status_listener,
+      disk_cache::ApplicationStatusListenerGetter app_status_listener_getter,
 #endif  // BUILDFLAG(IS_ANDROID)
       scoped_refptr<disk_cache::BackendFileOperationsFactory>
           file_operations_factory);
@@ -91,6 +94,8 @@ class SharedDictionaryManagerOnDisk : public SharedDictionaryManager {
       base::Time response_time,
       base::TimeDelta expiration,
       const std::string& match,
+      const std::set<mojom::RequestDestination>& match_dest,
+      const std::string& id,
       base::OnceCallback<void(net::SharedDictionaryInfo)> callback);
 
   void UpdateDictionaryLastUsedTime(net::SharedDictionaryInfo& info);
@@ -134,6 +139,8 @@ class SharedDictionaryManagerOnDisk : public SharedDictionaryManager {
       base::Time response_time,
       base::TimeDelta expiration,
       const std::string& match,
+      const std::set<mojom::RequestDestination>& match_dest,
+      const std::string& id,
       const base::UnguessableToken& disk_cache_key_token,
       base::OnceCallback<void(net::SharedDictionaryInfo)> callback,
       SharedDictionaryWriterOnDisk::Result result,

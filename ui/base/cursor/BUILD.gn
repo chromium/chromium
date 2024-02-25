@@ -40,6 +40,7 @@ source_set("unittests") {
       "//testing/gtest",
       "//ui/base/cursor/mojom:cursor_type_shared",
       "//ui/gfx:gfx_skia",
+      "//ui/gfx:test_support",
       "//ui/gfx/geometry",
     ]
   }

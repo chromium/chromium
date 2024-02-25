@@ -35,10 +35,8 @@
 #include "third_party/blink/renderer/platform/geometry/layout_unit.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/forward.h"
-#include "ui/gfx/geometry/point_f.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/geometry/size_f.h"
-#include "ui/gfx/geometry/vector2d_f.h"
 
 namespace blink {
 
@@ -49,12 +47,8 @@ class PLATFORM_EXPORT DeprecatedLayoutSize {
 
  public:
   constexpr DeprecatedLayoutSize() = default;
-  constexpr explicit DeprecatedLayoutSize(const gfx::Size& size)
-      : width_(size.width()), height_(size.height()) {}
   constexpr DeprecatedLayoutSize(LayoutUnit width, LayoutUnit height)
       : width_(width), height_(height) {}
-  constexpr DeprecatedLayoutSize(int width, int height)
-      : width_(LayoutUnit(width)), height_(LayoutUnit(height)) {}
 
   constexpr explicit DeprecatedLayoutSize(const gfx::SizeF& size)
       : width_(size.width()), height_(size.height()) {}
@@ -71,63 +65,11 @@ class PLATFORM_EXPORT DeprecatedLayoutSize {
   constexpr LayoutUnit Width() const { return width_; }
   constexpr LayoutUnit Height() const { return height_; }
 
-  void SetWidth(LayoutUnit width) { width_ = width; }
-  void SetHeight(LayoutUnit height) { height_ = height; }
-
-  constexpr bool IsEmpty() const {
-    return width_.RawValue() <= 0 || height_.RawValue() <= 0;
-  }
-
-  void Expand(LayoutUnit width, LayoutUnit height) {
-    width_ += width;
-    height_ += height;
-  }
-
-  void Expand(int width, int height) {
-    Expand(LayoutUnit(width), LayoutUnit(height));
-  }
-
-  void Shrink(LayoutUnit width, LayoutUnit height) {
-    width_ -= width;
-    height_ -= height;
-  }
-
-  void Scale(float scale) {
-    width_ *= scale;
-    height_ *= scale;
-  }
-
-  void Scale(float width_scale, float height_scale) {
-    width_ *= width_scale;
-    height_ *= height_scale;
-  }
-
-  DeprecatedLayoutSize TransposedSize() const {
-    return DeprecatedLayoutSize(height_, width_);
-  }
-
   String ToString() const;
 
  private:
   LayoutUnit width_, height_;
 };
-
-inline DeprecatedLayoutSize& operator+=(DeprecatedLayoutSize& a,
-                                        const DeprecatedLayoutSize& b) {
-  a.SetWidth(a.Width() + b.Width());
-  a.SetHeight(a.Height() + b.Height());
-  return a;
-}
-
-inline DeprecatedLayoutSize operator-(const DeprecatedLayoutSize& a,
-                                      const DeprecatedLayoutSize& b) {
-  return DeprecatedLayoutSize(a.Width() - b.Width(), a.Height() - b.Height());
-}
-
-constexpr bool operator==(const DeprecatedLayoutSize& a,
-                          const DeprecatedLayoutSize& b) {
-  return a.Width() == b.Width() && a.Height() == b.Height();
-}
 
 inline DeprecatedLayoutSize RoundedLayoutSize(const gfx::SizeF& s) {
   return DeprecatedLayoutSize(s);

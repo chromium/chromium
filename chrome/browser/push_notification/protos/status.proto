@@ -1,0 +1,26 @@
+// Copyright 2024 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+// Keep in sync with
+// http://google3/util/task/status.proto
+// Messages not used in Chrome have been omitted. Last copied at cl/546101561.
+
+syntax = "proto2";
+
+package push_notification.proto;
+
+option optimize_for = LITE_RUNTIME;
+
+// Wire-format for a Status object
+message StatusProto {
+  // Numeric code drawn from the space specified below. Often, this is the
+  // canonical error space, and code is drawn from google3/util/task/codes.proto
+  optional int32 code = 1;
+
+  // The following are usually only present when code != 0
+  optional string space = 2;    // Space to which this status belongs
+  optional string message = 3;  // Detail message
+
+  reserved 4;
+}

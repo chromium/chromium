@@ -5,7 +5,7 @@
 #ifndef IOS_CHROME_BROWSER_UI_MAIN_DEFAULT_BROWSER_PROMO_SCENE_AGENT_H_
 #define IOS_CHROME_BROWSER_UI_MAIN_DEFAULT_BROWSER_PROMO_SCENE_AGENT_H_
 
-#import "ios/chrome/browser/promos_manager/promos_manager.h"
+#import "ios/chrome/browser/promos_manager/model/promos_manager.h"
 #import "ios/chrome/browser/shared/coordinator/default_browser_promo/base_default_browser_promo_scene_agent.h"
 
 @class CommandDispatcher;

@@ -210,7 +210,7 @@ TEST_F(CRWSSLStatusUpdaterTest, HttpsItemNoCertReverification) {
   web::NavigationItem* item = nav_manager_->GetLastCommittedItem();
   // Set SSL status manually in the way so cert re-verification is not run.
   item->GetSSL().cert_status_host = base::SysNSStringToUTF8(kHostName);
-  item->GetSSL().certificate = web::CreateCertFromTrust(trust_);
+  item->GetSSL().certificate = web::CreateCertFromTrust(trust_.get());
 
   // Make sure that item change callback was called.
   [[delegate_ expect] SSLStatusUpdater:ssl_status_updater_

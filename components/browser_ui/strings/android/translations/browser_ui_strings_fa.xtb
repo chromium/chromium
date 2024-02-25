@@ -5,9 +5,10 @@
 <translation id="1036348656032585052">خاموش کردن</translation>
 <translation id="1044891598689252897">عملکرد سایت‌ها عادی خواهد بود</translation>
 <translation id="1073417869336441572">‏با گفتن دلیل مجاز کردن کوکی‌های شخص ثالث، به ما در بهبود Chrome کمک کنید. <ph name="BEGIN_LINK" />ارسال بازخورد<ph name="END_LINK" /></translation>
-<translation id="1124090076051167250">با این کار <ph name="DATASIZE" /> از داده‌ها و کوکی‌هایی که سایت‌ها و برنامه‌ها در صفحه اصلی ذخیره کرده‌اند پاک می‌شود.</translation>
+<translation id="1113435009358629918">پنهان کردن کارت کاهش قیمت</translation>
 <translation id="1178581264944972037">مکث</translation>
 <translation id="1181037720776840403">حذف</translation>
+<translation id="1192844206376121885">با این کار همه داده‌ها و کوکی‌های ذخیره‌شده توسط <ph name="ORIGIN" /> حذف می‌شود.</translation>
 <translation id="1201402288615127009">بعدی</translation>
 <translation id="1242008676835033345">جاسازی‌شده در <ph name="WEBSITE_URL" /></translation>
 <translation id="1272079795634619415">توقف</translation>
@@ -20,53 +21,52 @@
 <translation id="1371239764779356792">اجازه دادن به سایتی برای ذخیره کردن داده در دستگاه</translation>
 <translation id="1383876407941801731">جستجو</translation>
 <translation id="1384959399684842514">بارگیری موقتاً متوقف شد</translation>
-<translation id="1409426117486808224">نمای ساده‌شده برای برگه‌های باز</translation>
 <translation id="1415402041810619267">نشانی وب کوتاه‌شده</translation>
-<translation id="1426410128494586442">بله</translation>
-<translation id="1446450296470737166">‏اجازه کنترل کامل دستگاه‌های MIDI</translation>
 <translation id="1448064542941920355">کاهش بزرگ‌نمایی</translation>
+<translation id="146867109637325312">{COUNT,plural, =1{<ph name="SITE_COUNT" /> سایت}one{<ph name="SITE_COUNT" /> سایت}other{<ph name="SITE_COUNT" /> سایت}}</translation>
 <translation id="1510341833810331442">سایت‌ها نمی‌توانند در دستگاه داده ذخیره کنند</translation>
 <translation id="1547123415014299762">کوکی‌های شخص ثالث مجاز است</translation>
+<translation id="1568470248891039841">سایت‌هایی که بازدید می‌کنید می‌توانند از سایت‌های دیگر محتوایی مثل تصویر، آگهی، و نوشتار جاسازی کنند. این سایت‌های دیگر می‌توانند از شما اجازه بخواهند تا از اطلاعاتی که هنگام مرور کردن سایت درباره شما ذخیره کرده‌اند استفاده کنند. <ph name="BEGIN_LINK" />درباره محتوای جاسازی‌شده بیشتر بدانید<ph name="END_LINK" /></translation>
 <translation id="1593426485665524382">کنش‌های جدیدی در نزدیکی بالای صفحه دردسترس است</translation>
 <translation id="1620510694547887537">دوربین</translation>
 <translation id="1633720957382884102">سایت‌های مرتبط</translation>
 <translation id="1644574205037202324">سابقه</translation>
 <translation id="1647582022260550163">مطمئنید می‌خواهید اجازه‌ها را بازنشانی کنید و کوکی‌ها و داده‌های سایت را پاک کنید؟</translation>
+<translation id="1652197001188145583">‏هرگاه روشن باشد، سایت‌ها می‌توانند استفاده از دستگاه‌های NFC را درخواست کنند. هرگاه خاموش باشد، سایت‌ها نمی‌توانند از دستگاه‌های NFC استفاده کنند.</translation>
 <translation id="1660204651932907780">به سایت‌ها اجازه داده شود صدا پخش کنند (توصیه می‌شود)</translation>
 <translation id="1677097821151855053">از کوکی‌ها و دیگر داده‌های سایت برای به‌خاطر سپردن شما استفاده می‌شود؛ برای مثال ورود به سیستم یا نمایش آگهی‌های شخصی‌‏سازی‌‏شده. برای مدیریت کردن کوکی‌ها برای همه سایت‌ها، به <ph name="BEGIN_LINK" />تنظیمات<ph name="END_LINK" /> بروید.</translation>
-<translation id="1688867105868176567">داده‌های سایت پاک شود؟</translation>
 <translation id="169515064810179024">سایت‌ها نمی‌توانند به حسگرهای حرکتی دسترسی داشته باشند</translation>
 <translation id="1717218214683051432">حسگرهای حرکتی</translation>
 <translation id="1743802530341753419">قبل از اجازه دادن به سایت‌ها برای اتصال به دستگاه سؤال شود (توصیه می‌شود)</translation>
 <translation id="1779089405699405702">رمزگشای تصویر</translation>
 <translation id="1785415724048343560">توصیه‌شده برای داشتن بهترین تجربه</translation>
 <translation id="1818308510395330587">‏برای اینکه به <ph name="APP_NAME" /> اجازه دهید از AR استفاده کند، دوربین را در <ph name="BEGIN_LINK" />تنظیمات Android<ph name="END_LINK" /> نیز روشن کنید.</translation>
-<translation id="187227595286001730">سایت‌های مرتبط می‌توانند فعالیت شما را در گروه ببینند</translation>
 <translation id="1887786770086287077">‏دسترسی به مکان برای این دستگاه خاموش است. آن را در <ph name="BEGIN_LINK" />تنظیمات Android<ph name="END_LINK" /> روشن کنید.</translation>
 <translation id="1915307458270490472">قطع تماس</translation>
-<translation id="1919345977826869612">آگهی‌ها</translation>
 <translation id="1919950603503897840">انتخاب مخاطبین</translation>
 <translation id="1923695749281512248">‎<ph name="BYTES_DOWNLOADED_WITH_UNITS" /> / <ph name="FILE_SIZE_WITH_UNITS" />‎</translation>
 <translation id="1979673356880165407">نوشتار و تصاویر را برای همه سایت‌هایی که بازدید می‌کنید بزرگ‌تر یا کوچک‌تر کنید</translation>
 <translation id="1984937141057606926">مجاز، به‌غیراز شخص ثالث</translation>
+<translation id="1985247341569771101">هرگاه روشن باشد، سایت‌ها می‌توانند از حسگرهای حرکتی دستگاه شما استفاده کنند. هرگاه خاموش باشد، سایت‌ها نمی‌توانند از حسگرهای حرکتی استفاده کنند.</translation>
 <translation id="1989112275319619282">مشاهده محتوای موجود در فروشگاه ما</translation>
 <translation id="1994173015038366702">نشانی وب سایت</translation>
-<translation id="1999195646219379110">{COUNT,plural, =1{۱ روز دیگر منقضی می‌شود}one{# روز دیگر منقضی می‌شود}other{# روز دیگر منقضی می‌شود}}</translation>
 <translation id="2004697686368036666">ممکن است ویژگی‌های برخی‌از سایت‌ها کار نکند</translation>
 <translation id="2025115093177348061">واقعیت افزوده</translation>
 <translation id="2030769033451695672">برای برگشتن به <ph name="URL_OF_THE_CURRENT_TAB" /> ضربه بزنید</translation>
 <translation id="2079545284768500474">لغو</translation>
 <translation id="2091887806945687916">صدا</translation>
+<translation id="2096716221239095980">حذف همه داده‌ها</translation>
 <translation id="2117655453726830283">اسلاید بعدی</translation>
 <translation id="2148716181193084225">امروز</translation>
 <translation id="216989819110952009">دوروتی و دوستانش بااینکه عینک‌های سبز به چشم داشتند، اولش با درخشش شهر شگفت‌انگیز مات‌ومبهوت شدند</translation>
 <translation id="2176704795966505152">نمایش گزینه بزرگ‌نمایی در منوی اصلی</translation>
 <translation id="2182457891543959921">قبل از اینکه به سایت‌ها اجازه داده شود نقشه سه‌بعدی از محیط ایجاد کنند یا موقعیت دوربین را ردیابی کنند سؤال شود (توصیه می‌شود)</translation>
+<translation id="2185965788978862351">با این کار <ph name="DATASIZE" /> از داده‌ها و کوکی‌هایی که سایت‌ها و برنامه‌ها در صفحه اصلی ذخیره کرده‌اند حذف می‌شود.</translation>
 <translation id="2194856509914051091">مواردی که باید درنظر داشت</translation>
-<translation id="2212565012507486665">مجاز کردن کوکی ها</translation>
 <translation id="2228071138934252756">‏برای اینکه به <ph name="APP_NAME" /> اجازه دهید به دوربین دسترسی پیدا کند، دوربین را در <ph name="BEGIN_LINK" />تنظیمات Android<ph name="END_LINK" /> نیز روشن کنید.</translation>
 <translation id="2235344399760031203">کوکی‌های شخص ثالث مسدود شده‌اند</translation>
 <translation id="2238944249568001759">جستجوهای پیشنهادی براساس آخرین برگه شما</translation>
+<translation id="2241587408274973373">کارت‌های صفحه برگه جدید</translation>
 <translation id="2241634353105152135">فقط یک بار</translation>
 <translation id="2253414712144136228">برداشتن <ph name="NAME_OF_LIST_ITEM" /></translation>
 <translation id="2253989982043948086">{NUM_SELECTED,plural, =1{یک سایت مسدود است}one{# سایت مسدود است}other{# سایت مسدود هستند}}</translation>
@@ -74,7 +74,6 @@
 <translation id="2289270750774289114">وقتی سایتی می‌خواهد دستگا‌ه‌های بلوتوث اطراف را پیدا کند، سؤال شود (توصیه می‌شود)</translation>
 <translation id="2315043854645842844">انتخاب گواهی سمت کلاینت توسط سیستم‌عامل پشتیبانی نمی‌شود.</translation>
 <translation id="2321958826496381788">لغزنده را بکشید تا زمانی که بتوانید این متن را به راحتی بخوانید. بعد از دو ضربه متوالی روی یک پاراگراف، اندازه نوشتار حداقل باید به این بزرگی باشد.</translation>
-<translation id="2329473609445770916">این سایت علایقی را که دیگر سایت‌ها برای نمایش آگهی استفاده می‌کنند مشخص می‌کند</translation>
 <translation id="2359808026110333948">ادامه</translation>
 <translation id="2379925928934107488">‏استفاده از زمینه تیره برای سایت‌ها وقتی Chrome از زمینه تیره استفاده می‌کند (هرگاه ممکن باشد)</translation>
 <translation id="2387895666653383613">مقیاس‌گذاری نوشتار</translation>
@@ -83,8 +82,10 @@
 <translation id="2404630663942400771">{PERMISSIONS_SUMMARY_ALLOWED,plural, =1{<ph name="PERMISSION_1" />، <ph name="PERMISSION_2" />، و <ph name="NUM_MORE" /> اجازه دیگر مجاز هستند}one{<ph name="PERMISSION_1" />، <ph name="PERMISSION_2" />، و <ph name="NUM_MORE" /> اجازه دیگر مجاز هستند}other{<ph name="PERMISSION_1" />، <ph name="PERMISSION_2" />، و <ph name="NUM_MORE" /> اجازه دیگر مجاز هستند}}</translation>
 <translation id="2410940059315936967">سایتی که بازدید می‌کنید می‌تواند از سایت‌های دیگر محتوایی مثل تصویر، آگهی، و نوشتار جاسازی کند. کوکی‌های تنظیم‌شده توسط سایت‌های دیگر کوکی‌های شخص ثالث نامیده می‌شوند.</translation>
 <translation id="2434158240863470628">بارگیری کامل شد <ph name="SEPARATOR" /> <ph name="BYTES_DOWNLOADED" /></translation>
+<translation id="2438120137003069591">موقتاً به این سایت اجازه دادید از کوکی‌های شخص ثالث استفاده کند. این کار به‌معنی محافظت کمتر هنگام مرور است اما ویژگی‌های سایت به احتمال زیاد طبق انتظار کار خواهند کرد. <ph name="BEGIN_LINK" />ارسال بازخورد<ph name="END_LINK" /></translation>
 <translation id="244264527810019436">ممکن است ویژگی‌های برخی‌از سایت‌ها در «حالت ناشناس» کار نکند</translation>
 <translation id="2442870161001914531">همیشه سایت ویژه رایانه درخواست شود</translation>
+<translation id="2469312991797799607">با این کار، همه داده‌ها و کوکی‌های <ph name="ORIGIN" /> و همه سایت‌های تحت آن حذف خواهد شد</translation>
 <translation id="2479148705183875116">رفتن به تنظیمات</translation>
 <translation id="2482878487686419369">اعلان‌ها</translation>
 <translation id="2485422356828889247">حذف نصب</translation>
@@ -92,6 +93,7 @@
 <translation id="2498359688066513246">راهنمایی و بازخورد</translation>
 <translation id="2501278716633472235">بازگشت</translation>
 <translation id="2546283357679194313">کوکی‌ها و داده‌های سایت</translation>
+<translation id="2550801787432930915">کارت کاهش قیمت</translation>
 <translation id="2569468611847789653">{COOKIE_COUNT,plural, =1{۱ کوکی مسدود شده است}one{# کوکی مسدود شده است}other{# کوکی مسدود شده است}}</translation>
 <translation id="2570922361219980984">‏دسترسی به مکان برای این دستگاه نیز خاموش است. آن را در <ph name="BEGIN_LINK" />تنظیمات Android<ph name="END_LINK" /> روشن کنید.</translation>
 <translation id="257931822824936280">بزرگ‌شده - برای کوچک کردن کلیک کنید.</translation>
@@ -102,10 +104,11 @@
 <translation id="2653659639078652383">ارسال</translation>
 <translation id="2677748264148917807">خروج</translation>
 <translation id="2678468611080193228">کوکی‌های شخص ثالث را به‌طور موقت مجاز کنید. این کار به‌معنی محافظت کمتر است اما ویژگی‌های سایت به احتمال زیاد کار می‌کنند</translation>
-<translation id="2687403674020088961">مسدود کردن همه کوکی‌ها (توصیه نمی‌شود)</translation>
+<translation id="2683434792633810741">حذف و بازنشانی شود؟</translation>
 <translation id="2713106313042589954">خاموش کردن دوربین</translation>
 <translation id="2717722538473713889">آدرس‌های ایمیل</translation>
 <translation id="2750481671343847896">سایت‌ها می‌توانند پیام‌واره‌های ورود به سیستم سرویس‌های تعیین هویت را نشان دهند.</translation>
+<translation id="2790501146643349491">هرگاه روشن باشد، سایت‌های اخیراً بسته‌شده می‌توانند ارسال و دریافت داده را تکمیل کنند. هرگاه خاموش باشد، سایت‌های اخیراً بسته‌شده نمی‌توانند ارسال یا دریافت داده را تکمیل کنند.</translation>
 <translation id="2822354292072154809">مطمئن‌اید می‌خواهید همه مجوزهای سایت مربوط به <ph name="CHOSEN_OBJECT_NAME" /> را بازنشانی کنید؟</translation>
 <translation id="2850913818900871965">درخواست نمای تلفن همراه</translation>
 <translation id="2870560284913253234">سایت</translation>
@@ -113,13 +116,15 @@
 <translation id="2891975107962658722">اجازه ندادن به سایتی برای ذخیره کردن داده در دستگاه</translation>
 <translation id="2903493209154104877">آدرس‌ها</translation>
 <translation id="2910701580606108292">قبل از اجازه دادن به سایت‌ها برای پخش محتوای محافظت‌شده سؤال شود</translation>
-<translation id="2913331724188855103">سایت‌ها مجاز به ذخیره و خواندن داده‌های کوکی باشند (توصیه می‌شود)</translation>
 <translation id="2932883381142163287">گزارش سوءاستفاده</translation>
+<translation id="2939338015096024043">هرگاه روشن باشد، سایت‌ها می‌توانند ردیابی موقعیت دوربین شما را درخواست کنند و درباره محیط اطرافتان اطلاعات دریافت کنند. هرگاه خاموش باشد، سایت‌ها نمی‌توانند موقعیت دوربین شما را ردیابی کنند و درباره محیط اطرافتان اطلاعات دریافت کنند.</translation>
 <translation id="2968755619301702150">بیننده گواهی</translation>
-<translation id="300526633675317032">این کار کل <ph name="SIZE_IN_KB" /> فضای ذخیره‌سازی وب‌سایت را پاک می‌کند.</translation>
-<translation id="3008272652534848354">بازنشانی مجوزها</translation>
-<translation id="301521992641321250">مسدود‌شده به‌طور خودکار</translation>
+<translation id="2979365474350987274">کوکی‌های شخص ثالث محدود شده است</translation>
+<translation id="3008272652534848354">بازنشانی اجازه‌ها</translation>
+<translation id="301521992641321250">به‌طور خودکار مسدود‌شده</translation>
+<translation id="3025010840409371499"><ph name="RECENCY" /> <ph name="SEPARATOR" /> <ph name="HOST_NAME" /></translation>
 <translation id="3069226013421428034">ورود به سیستم شخص ثالث برای سایت خاصی مجاز می‌شود.</translation>
+<translation id="3082992102194421695">{COUNT,plural, =1{فردا منقضی می‌شود}one{‫# روز دیگر منقضی می‌شود}other{‫# روز دیگر منقضی می‌شود}}</translation>
 <translation id="310297983047869047">اسلاید قبلی</translation>
 <translation id="3109724472072898302">جمع شده</translation>
 <translation id="3114012059975132928">پخش‌کننده ویدیو</translation>
@@ -131,7 +136,7 @@
 <translation id="3198916472715691905"><ph name="STORAGE_AMOUNT" /> داده‌های ذخیره شده</translation>
 <translation id="321187648315454507">‏برای اینکه به <ph name="APP_NAME" /> اجازه دهید برایتان اعلان ارسال کند، اعلان‌ها را در <ph name="BEGIN_LINK" />تنظیمات Android<ph name="END_LINK" /> نیز روشن کنید.</translation>
 <translation id="3227137524299004712">میکروفن</translation>
-<translation id="3248611290851046188">‏این سایت علایقی را که دیگر سایت‌ها برای نمایش آگهی استفاده می‌کنند مشخص می‌کند. این سایت علایقتان را نیز از Chrome می‌گیرد تا آگهی‌های مرتبط‌تری به شما نشان دهد.</translation>
+<translation id="3242646949159196181">هرگاه روشن باشد، سایت‌ها می‌توانند صدا پخش کنند. هرگاه روشن باشد، سایت‌ها نمی‌توانند صدا پخش کنند.</translation>
 <translation id="3277252321222022663">مجاز بودن دسترسی سایت‌ها به حسگرها (توصیه می‌شود)</translation>
 <translation id="3285500645985761267">به سایت‌های مرتبط اجازه دهید فعالیت شما را در گروه ببینند</translation>
 <translation id="3295019059349372795">فصل ۱۱: شهر زمردی شگفت‌انگیز اُز</translation>
@@ -142,23 +147,24 @@
 <translation id="3386292677130313581">قبل از اجازه به سایت‌ها برای اطلاع از مکانتان، ابتدا سؤال شود (توصیه می‌شود)</translation>
 <translation id="3403537308306431953"><ph name="ZOOM_LEVEL" /> %%</translation>
 <translation id="344449859752187052">کوکی‌های شخص ثالث مسدود شده است</translation>
+<translation id="3448554387819310837">هرگاه روشن باشد، سایت‌ها می‌توانند استفاده از دوربین را درخواست کنند. هرگاه خاموش باشد، سایت‌ها نمی‌توانند از دوربین استفاده کنند.</translation>
 <translation id="3465378418721443318">{DAYS,plural, =1{‏Chrome کوکی‌ها را فردا دوباره مسدود خواهد کرد}one{‏Chrome کوکی‌ها را # روز دیگر دوباره مسدود خواهد کرد}other{‏Chrome کوکی‌ها را # روز دیگر دوباره مسدود خواهد کرد}}</translation>
 <translation id="3521663503435878242">سایت‌های تحت <ph name="DOMAIN" /></translation>
+<translation id="3536227077203206203">این بار مجاز شد</translation>
 <translation id="3538390592868664640">قابلیت سایت‌ها برای ایجاد نقشه سه‌بعدی از محیط یا ردیابی موقعیت دوربین مسدود می‌شود</translation>
 <translation id="3544058026430919413">شرکت‌ها می‌توانند گروهی از سایت‌ها تعریف کنند که فعالیت شما را بااستفاده از کوکی در گروه هم‌رسانی کنند. این ویژگی در «حالت ناشناس» خاموش است.</translation>
 <translation id="3551268116566418498">از «حالت ناشناس» خارج می‌شوید؟</translation>
 <translation id="3586500876634962664">استفاده از دوربین و میکروفون</translation>
 <translation id="358794129225322306">به سایت اجازه داده شود چند فایل را به‌طور خودکار بارگیری کند.</translation>
 <translation id="3594780231884063836">بی‌صدا کردن ویدیو</translation>
-<translation id="3596414637720633074">مسدود کردن کوکی‌های شخص ثالث در «حالت ناشناس»</translation>
 <translation id="3600792891314830896">سایت‌هایی که صدا پخش می‌کنند بی‌صدا شوند</translation>
 <translation id="3602290021589620013">پیش‌نمایش</translation>
 <translation id="3628308229821498208">جستجوهای پیشنهادی</translation>
+<translation id="3697164069658504920">‏هرگاه روشن باشد، سایت‌ها می‌توانند استفاده از دستگاه‌های USB را درخواست کنند. هرگاه خاموش باشد، سایت‌ها نمی‌توانند از دستگاه‌های USB استفاده کنند.</translation>
 <translation id="3707034683772193706">‏سایتی که از آن بازدید می‌کنید می‌تواند مقدار کمی از اطلاعات را در Chrome ذخیره کند. این کار عمدتاً برای تأیید اینکه شما روبات نیستید انجام می‌شود</translation>
 <translation id="3721953990244350188">بستن و نمایش کنش دردسترس بعدی</translation>
 <translation id="3744111561329211289">همگام‌سازی پس‌زمینه</translation>
 <translation id="3763247130972274048">در سمت راست یا چپ ویدیو دو ضربه سریع بزنید تا ۱۰ ثانیه رد شود</translation>
-<translation id="3794286421982011626">سایتی که بازدید می‌کنید می‌تواند اطلاعاتی درباره کاری که انجام می‌دهید ذخیره کند تا عملکردی مطابق انتظار شما داشته باشد — برای مثال، برای اینکه در سیستم سایت باقی بمانید یا برای ذخیره کردن مواردی که در سبد خریدتان است. سایت‌ها در اغلب موارد این اطلاعات را به‌صورت موقتی در دستگاه ذخیره می‌کنند.</translation>
 <translation id="3797520601150691162">زمینه تیره برای سایت خاصی استفاده نشود</translation>
 <translation id="3803367742635802571">ممکن است سایت‌هایی که بازدید می‌کنید دیگر مطابق طراحی عمل نکنند</translation>
 <translation id="3804247818991980532"><ph name="TYPE_1" />. <ph name="TYPE_2" />.</translation>
@@ -166,37 +172,38 @@
 <translation id="3826050100957962900">ورود به سیستم شخص ثالث</translation>
 <translation id="3835233591525155343">استفاده از دستگاه</translation>
 <translation id="3843916486309149084">‏Chrome کوکی‌ها را امروز دوباره مسدود خواهد کرد</translation>
-<translation id="385051799172605136">بازگشت</translation>
+<translation id="385051799172605136">برگشتن</translation>
 <translation id="3859306556332390985">جستجو به جلو</translation>
 <translation id="3895926599014793903">فعال کردن اجباری بزرگ‌نمایی</translation>
 <translation id="3908288065506437185">کوکی‌های شخص ثالث در «حالت ناشناس» مسدود شود</translation>
 <translation id="3918378745482005425">ممکن است برخی‌از ویژگی‌ها کار نکنند. سایت‌های مرتبط همچنان می‌توانند از کوکی‌های شخص ثالث استفاده کنند.</translation>
 <translation id="3955193568934677022">به سایت‌ها اجازه داده شود محتوای محافظت‌شده پخش کنند (توصیه می‌شود)</translation>
 <translation id="3967822245660637423">بارگیری کامل شد</translation>
+<translation id="3974105241379491420">سایت‌ها می‌توانند درخواست کنند از اطلاعاتی که درباره شما ذخیره کرده‌اند استفاده کنند</translation>
 <translation id="3987993985790029246">کپی پیوند</translation>
 <translation id="3991845972263764475"><ph name="BYTES_DOWNLOADED_WITH_UNITS" /> از ؟</translation>
 <translation id="3992684624889376114">درباره این صفحه</translation>
 <translation id="4002066346123236978">عنوان</translation>
-<translation id="4008040567710660924">کوکی‌ها را برای سایت خاصی مجاز کنید.</translation>
 <translation id="4046123991198612571">آهنگ بعدی</translation>
-<translation id="4053720452172726777">‏‫سفارشی کردن و کنترل Google Chrome</translation>
+<translation id="4149890623864272035">مطمئنید می‌خواهید همه داده‌های محلی، ازجمله کوکی‌ها، حذف شود و تمام اجازه‌های این وب‌سایت بازنشانی شود؟</translation>
 <translation id="4149994727733219643">نمای ساده‌شده برای صفحه‌های وب</translation>
 <translation id="4151930093518524179">بزرگ‌نمایی پیش‌فرض</translation>
 <translation id="4165986682804962316">تنظیمات سایت</translation>
 <translation id="4169549551965910670">‏به دستگاه USB متصل است</translation>
 <translation id="4194328954146351878">‏قبل‌از اینکه به سایت‌ها اجازه داده شود اطلاعات دستگاه‌های NFC را ببینند و تغییر دهند سؤال شود (توصیه می‌شود)</translation>
 <translation id="4200726100658658164">باز کردن «تنظیمات مکان»</translation>
+<translation id="4206661981211220935"><ph name="RECENCY" /> <ph name="SEPARATOR" /> از <ph name="FROM_DEVICE" /></translation>
 <translation id="4226663524361240545">اعلان‌ها ممکن است دستگاه را بلرزانند</translation>
 <translation id="4259722352634471385">پیمایش مسدود شده است: <ph name="URL" /></translation>
 <translation id="4278390842282768270">مجاز است</translation>
 <translation id="429312253194641664">سایتی درحال پخش رسانه است</translation>
 <translation id="42981349822642051">بزرگ کردن</translation>
-<translation id="4336434711095810371">پاک کردن همه داده‌ها</translation>
+<translation id="4336566011000459927">‏‫Chrome کوکی‌ها را امروز دوباره محدود خواهد کرد</translation>
 <translation id="4338831206024587507">همه سایت‌های تحت <ph name="DOMAIN" /></translation>
 <translation id="4402755511846832236">از اینکه سایت‌ها بدانند چه زمانی به‌صورت فعال از این دستگاه استفاده می‌کنید جلوگیری می‌شود</translation>
 <translation id="4412992751769744546">اجازه به کوکی‌های شخص ثالث</translation>
-<translation id="4428065317363009941">شخصی‌سازی آگهی</translation>
 <translation id="4434045419905280838">پنجره‌های بازشو و هدایت‌ها</translation>
+<translation id="443552056913301231">با این کار، همه داده‌های محلی، ازجمله کوکی‌ها، حذف خواهد شد و تمام اجازه‌های <ph name="ORIGIN" /> بازنشانی خواهد شد</translation>
 <translation id="4468959413250150279">سایتی خاص بی‌صدا شود.</translation>
 <translation id="4475912480633855319">{COOKIES,plural, =1{# کوکی}one{# کوکی}other{# کوکی}}</translation>
 <translation id="4478158430052450698">آسان‌تر شدن سفارشی‌سازی بزرگ‌نمایی برای سایت‌های مختلف</translation>
@@ -206,17 +213,20 @@
 <translation id="4566417217121906555">بی‌صدا کردن میکروفون</translation>
 <translation id="4570913071927164677">جزئیات</translation>
 <translation id="4598549027014564149">وقتی در حالت «ناشناس» هستید، سایت‌ها نمی‌توانند از کوکی‌ها برای دیدن فعالیت مرور شما در سایت‌ها (حتی سایت‌های مرتبط) استفاده کنند. فعالیت مرور شما برای چیزهایی مانند آگهی‌های شخصی‌سازی‌شده استفاده نمی‌شود. ممکن است ویژگی‌های برخی‌از سایت‌ها کار نکنند.</translation>
+<translation id="4619615317237390068">برگه‌ها از دستگاه‌های دیگر</translation>
+<translation id="4644713492825682049">حذف و بازنشانی</translation>
 <translation id="4645575059429386691">مدیریت شده توسط والدین شما</translation>
 <translation id="4670064810192446073">واقعیت مجازی</translation>
 <translation id="4751476147751820511">حسگرهای نوری یا حرکتی</translation>
+<translation id="4755971844837804407">هرگاه روشن باشد، سایت‌ها می‌توانند هر آگهی‌ای را به شما نشان دهند. هرگاه خاموش باشد، سایت‌ها نمی‌توانند آگهی‌های مزاحم یا گمراه‌کننده نمایش دهند.</translation>
 <translation id="4779083564647765204">بزرگ‌نمایی</translation>
 <translation id="4811450222531576619">با منبع و موضوعش آشنا شوید</translation>
 <translation id="4836046166855586901">وقتی سایتی می‌خواهد بداند چه زمانی به‌صورت فعال از این دستگاه استفاده می‌کنید سؤال می‌شود</translation>
 <translation id="483914009762354899">لحاظ کردن همه سایت‌های تحت این دامنه</translation>
 <translation id="4883854917563148705">تنظیمات مدیریت‌شده بازنشانی نشدند</translation>
 <translation id="4887024562049524730">قبل از اینکه به سایت‌ها اجازه داده شود به دستگاه و داده‌های واقعیت مجازی دسترسی یابند سؤال شود (توصیه می‌شود)</translation>
-<translation id="4955223779495905865">یکی از سایت‌هایی که بازدید می‌کنید می‌تواند از سایت‌های دیگر محتوایی مثل تصویر، آگهی، و نوشتار جاسازی کند. هریک از این سایت‌ها می‌توانند برای شخصی کردن تجربه شما کوکی و داده‌های دیگر ذخیره کنند.</translation>
-<translation id="4962975101802056554">لغو همه مجوزها برای دستگاه</translation>
+<translation id="4953688446973710931">هرگاه روشن باشد، سایت‌ها می‌توانند بارگیری خودکار چندین فایل را درخواست کنند. هرگاه خاموش باشد، سایت‌ها نمی‌تواند به‌طور خودکار چندین فایل را بارگیری کنند.</translation>
+<translation id="4962975101802056554">لغو همه اجازه‌ها برای دستگاه</translation>
 <translation id="497421865427891073">جلو رفتن</translation>
 <translation id="4976702386844183910">آخرین بازدید: <ph name="DATE" /></translation>
 <translation id="4985206706500620449">کوکی‌های شخص ثالث را برای این سایت مجاز کرده‌اید</translation>
@@ -226,31 +236,35 @@
 <translation id="5039804452771397117">اجازه دادن</translation>
 <translation id="5048398596102334565">مجاز بودن دسترسی سایت‌ها به حسگرهای حرکتی (توصیه می‌شود)</translation>
 <translation id="5050380848339752099">این سایت می‌خواهد خارج از «حالت ناشناس»، اطلاعاتی را با برنامه‌ای هم‌رسانی کند.</translation>
-<translation id="5063480226653192405">کاربر </translation>
+<translation id="5063480226653192405">مصرف</translation>
 <translation id="5091013926750941408">سایت ویژه تلفن همراه</translation>
 <translation id="509133520954049755">درخواست نمای رایانه</translation>
+<translation id="5091663350197390230">هرگاه روشن باشد، سایت‌ها می‌توانند از جاوا اسکریپت استفاده کنند. هرگاه خاموش باشد، سایت‌ها نمی‌توانند از جاوا اسکریپت استفاده کنند.</translation>
+<translation id="5099358668261120049">با این کار همه داده‌ها و کوکی‌هایی که <ph name="ORIGIN" /> و برنامه آن در صفحه اصلی ذخیره کرده‌اند حذف می‌شود.</translation>
 <translation id="5100237604440890931">کوچک شده - برای بزرگ کردن کلیک کنید.</translation>
 <translation id="5123685120097942451">برگه ناشناس</translation>
+<translation id="5139253256813381453">{PRICE_DROP_COUNT,plural, =1{کاهش قیمت در برگه‌های باز}one{کاهش قیمت در برگه‌های باز}other{کاهش قیمت‌ها در برگه‌های باز}}</translation>
 <translation id="5186036860380548585">گزینه مربوطه در نزدیکی بالای صفحه دردسترس است</translation>
 <translation id="5197729504361054390">مخاطبین انتخابی شما با <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" /> هم‌رسانی می‌شود.</translation>
 <translation id="5216942107514965959">آخرین بازدید: امروز</translation>
 <translation id="5225463052809312700">روشن کردن دوربین</translation>
 <translation id="5234764350956374838">رد کردن</translation>
+<translation id="5246825184569358663">با این کار، همه داده‌های محلی، ازجمله کوکی‌ها، حذف خواهد شد و تمام اجازه‌های <ph name="DOMAIN" /> و همه سایت‌های تحت آن بازنشانی خواهند شد</translation>
 <translation id="5264323282659631142">برداشتن «<ph name="CHIP_LABEL" />»</translation>
 <translation id="528192093759286357">برای خروج از حالت تمام صفحه، از بالا صفحه را بکشید و دکمه برگشت را لمس کنید.</translation>
+<translation id="5295729974480418933">هرگاه روشن باشد، سایت‌ها می‌توانند استفاده از اطلاعاتی را که درباره شما ذخیره کرده‌اند درخواست کنند. هرگاه روشن باشد، سایت‌ها نمی‌توانند از اطلاعاتی که درباره شما ذخیره کرده‌اند استفاده کنند.</translation>
 <translation id="5300589172476337783">نمایش</translation>
 <translation id="5301954838959518834">بله، متوجه شدم</translation>
 <translation id="5317780077021120954">ذخیره</translation>
 <translation id="5335288049665977812">مجاز کردن همه سایت‌ها برای اجرای جاوااسکریپت (توصیه‌ می‌شود)</translation>
 <translation id="534295439873310000">‏دستگاه‌های NFC</translation>
 <translation id="5344522958567249764">مدیریت حریم خصوصی آگهی‌ها</translation>
-<translation id="5354152178998424783">با این کار <ph name="DATASIZE" /> از داده‌ها و کوکی‌هایی که سایت ذخیره کرده است پاک خواهد شد.</translation>
+<translation id="5389626883706033615">سایت‌ها نمی‌توانند از شما بخواهند از اطلاعاتی که درباره شما ذخیره کرده‌اند استفاده کنند</translation>
 <translation id="5394307150471348411">{DETAIL_COUNT,plural, =1{(+ ۱ مورد دیگر)}one{(+ # مورد دیگر)}other{(+ # مورد دیگر)}}</translation>
 <translation id="5403592356182871684">نام‌ها</translation>
-<translation id="5412236728747081950">‏این سایت علایقتان را از Chrome می‌گیرد تا آگهی‌های مرتبط‌تری به شما نشان دهد</translation>
 <translation id="5438097262470833822">این گزینه همه اجازه‌های <ph name="WEBSITE" /> را بازنشانی خواهد کرد</translation>
+<translation id="5459413148890178711">هرگاه روشن باشد، سایت‌ها می‌توانند مکان شما را درخواست کنند. هرگاه خاموش باشد، سایت‌ها نمی‌توانند مکان شما را ببینند.</translation>
 <translation id="5489227211564503167">زمان سپری‌شده: <ph name="ELAPSED_TIME" /> از <ph name="TOTAL_TIME" />.</translation>
-<translation id="5494752089476963479">آگهی سایت‌هایی که آگهی‌های مزاحم یا گمراه‌کننده نشان می‌دهند، مسدود می‌شود</translation>
 <translation id="5502860503640766021"><ph name="PERMISSION_1" /> مجاز است، <ph name="PERMISSION_2" /> مسدود است</translation>
 <translation id="5505264765875738116">سایت‌ها نمی‌توانند برای ارسال اعلان درخواست دهند</translation>
 <translation id="5516455585884385570">باز کردن تنظیمات اعلان</translation>
@@ -258,19 +272,21 @@
 <translation id="5545693483061321551">سایت‌ها نمی‌توانند از کوکی‌های شما برای دیدن فعالیت مرور شما در سایت‌های مختلف و برای مثال شخصی‌سازی آگهی‌ها استفاده کنند. ممکن است ویژگی‌های برخی‌از سایت‌ها کار نکند.</translation>
 <translation id="5553374991681107062">جدیدترین</translation>
 <translation id="5556459405103347317">بار کردن مجدد</translation>
+<translation id="5591840828808741583">‫<ph name="SITE_NAME" /> مسدود شده است</translation>
 <translation id="5649053991847567735">بارگیری‌های خودکار</translation>
 <translation id="5668404140385795438">لغو درخواست وب‌سایت برای جلوگیری از بزرگ‌نمایی</translation>
 <translation id="5677928146339483299">مسدود است</translation>
 <translation id="5689516760719285838">مکان</translation>
 <translation id="5690795753582697420">‏«دوربین» در تنظیمات Android خاموش است</translation>
+<translation id="5691080386278724773"><ph name="SITE" /> می‌تواند از اطلاعاتتان درحین مرور استفاده کند</translation>
 <translation id="5700761515355162635">کوکی‌های شخص ثالث مجاز هستند</translation>
 <translation id="5706552988683188916">با این کار کوکی‌ها و دیگر داده‌های سایت برای <ph name="WEBSITE" /> حذف می‌شود</translation>
-<translation id="5719847187258001597">با این کار همه داده‌ها و کوکی‌هایی که <ph name="ORIGIN" /> و برنامه آن در صفحه اصلی ذخیره کرده‌اند پاک می‌شود.</translation>
 <translation id="5723967018671998714">کوکی‌های شخص ثالث در «حالت ناشناس» مسدود شده‌اند</translation>
 <translation id="5740126560802162366">سایت‌ها می‌توانند در دستگاه داده ذخیره کنند</translation>
 <translation id="5771720122942595109"><ph name="PERMISSION_1" /> مسدود شد</translation>
-<translation id="5804241973901381774">مجوزها</translation>
-<translation id="5810805850857689118">با این کار، همه داده‌ها و کوکی‌های <ph name="ORIGIN" /> و همه سایت‌های تحت آن پاک خواهد شد</translation>
+<translation id="5804241973901381774">اجازه‌ها</translation>
+<translation id="5844448279347999754">هرگاه روشن باشد، سایت‌ها می‌توانند از شما بخواهند نوشتار و تصاویر ذخیره‌شده در بریده‌دان شما را ببینند. هرگاه روشن باشد، سایت‌ها نمی‌توانند نوشتار و تصاویر ذخیره‌شده در بریده‌دان شما را ببینند.</translation>
+<translation id="5853982612236235577">هرگاه روشن باشد، سایت‌ها می‌توانند ارسال اعلان را درخواست کنند. هرگاه خاموش باشد، سایت‌ها نمی‌توانند اعلان ارسال کنند.</translation>
 <translation id="5860033963881614850">خاموش</translation>
 <translation id="5876056640971328065">مکث ویدیو</translation>
 <translation id="5884085660368669834">اولویت سایت</translation>
@@ -278,41 +294,48 @@
 <translation id="5916664084637901428">روشن</translation>
 <translation id="5922853908706496913">درحال هم‌رسانی صفحه‌نمایش</translation>
 <translation id="5922967540311291836">مسدود کردن کوکی‌های شخص ثالث:</translation>
+<translation id="5923512600150154850">با این کار <ph name="DATASIZE" /> از داده‌ها و کوکی‌هایی که سایت ذخیره کرده است حذف خواهد شد.</translation>
 <translation id="5939518447894949180">بازنشانی</translation>
+<translation id="5964247741333118902">محتوای جاسازی‌شده</translation>
 <translation id="5968921426641056619">نشانی وب را وارد کنید</translation>
 <translation id="5975083100439434680">دورنمایی کردن</translation>
 <translation id="5976059395673079613"><ph name="PERMISSION" /> - <ph name="WARNING_MESSAGE" /></translation>
 <translation id="6015775454662021376">کنترل کردن دسترسی این سایت به دستگاه</translation>
-<translation id="6018815681665454784">پاکسازی و بازنشانی شود؟</translation>
 <translation id="6040143037577758943">بستن</translation>
 <translation id="6042308850641462728">بیشتر</translation>
 <translation id="6064125863973209585">بارگیری‌های کامل‌شده</translation>
 <translation id="6071501408666570960">ممکن است از سیستم این سایت خارج شده باشید</translation>
+<translation id="6120483543004435978">هرگاه روشن باشد، سایت‌ها می‌توانند مطلع شدن از مواقعی را که فعالانه از دستگاهتان استفاده می‌کنید درخواست کنند. هرگاه خاموش باشد، سایت‌ها نمی‌توانند بدانند چه مواقعی فعالانه از دستگاهتان استفاده می‌کنید.</translation>
 <translation id="6165508094623778733">بیشتر بدانید</translation>
+<translation id="6171020522141473435">هرگاه روشن باشد، سایت‌ها می‌توانند استفاده از دستگاه‌های بلوتوث را درخواست کنند. هرگاه خاموش باشد، سایت‌ها نمی‌توانند از دستگاه‌های بلوتوث استفاده کنند.</translation>
 <translation id="6177111841848151710">برای موتور جستجوی فعلی مسدود شده است</translation>
 <translation id="6177128806592000436">اتصال شما به این سایت امن نیست</translation>
 <translation id="6181444274883918285">افزودن سایتی به استثناها</translation>
 <translation id="6192792657125177640">موارد استثنا</translation>
+<translation id="6194967801833346599">{DAYS,plural, =1{‏Chrome کوکی‌ها را فردا دوباره مسدود خواهد کرد}one{کوکی‌ها # روز دیگر دوباره مسدود خواهد شد}other{کوکی‌ها # روز دیگر دوباره مسدود خواهد شد}}</translation>
+<translation id="6195163219142236913">کوکی‌های شخص ثالث محدود شده است</translation>
 <translation id="6196640612572343990">مسدود کردن کوکی‌های شخص ثالث</translation>
 <translation id="6205314730813004066">حریم خصوصی آگهی</translation>
-<translation id="6216432067784365534">گزینه‌های <ph name="NAME_OF_LIST_ITEM" /></translation>
+<translation id="6207207788774442484">حذف داده‌ها و بازنشانی اجازه‌ها</translation>
 <translation id="6231752747840485235">«<ph name="APP_NAME" />» حذف نصب شود؟</translation>
 <translation id="6262191102408817757">براساس آخرین برگه شما</translation>
 <translation id="6262279340360821358"><ph name="PERMISSION_1" /> و <ph name="PERMISSION_2" /> مسدود هستند</translation>
 <translation id="6270391203985052864">سایت‌ها می‌توانند برای ارسال اعلان درخواست دهند</translation>
 <translation id="6295158916970320988">همه سایت‌ها</translation>
+<translation id="6304434827459067558"><ph name="SITE" /> برای استفاده از اطلاعات شما در این سایت‌ها مسدود شده است:</translation>
 <translation id="6320088164292336938">لرزش</translation>
+<translation id="6344622098450209924">محافظت دربرابر ردیابی</translation>
 <translation id="6367753977865761591">ورود به سیستم شخص ثالث برای سایت خاصی مسدود می‌شود.</translation>
-<translation id="6388207532828177975">پاک کردن و بازنشانی</translation>
 <translation id="6398765197997659313">خروج از حالت تمام صفحه</translation>
 <translation id="640163077447496506">امروز منقضی می‌شود</translation>
 <translation id="6405650995156823521"><ph name="FIRST_PART" /> • <ph name="SECOND_PART" /></translation>
 <translation id="6439114592976064011">دسترسی سایت‌ها به دستگاه و داده‌های واقعیت مجازی مسدود شود</translation>
 <translation id="6447842834002726250">کوکی‌ها</translation>
-<translation id="6467852467360539617">پاک کردن داده‌ها و بازنشانی اجازه‌ها</translation>
+<translation id="6452138246455930388">کاهش قیمت در برگه باز، از <ph name="OLD_PRICE" /> به <ph name="NEW_PRICE" />، <ph name="PRODUCT_NAME" />، <ph name="DOMAIN_NAME" /></translation>
 <translation id="6500423977866688905">وقتی پنجره باریک است، نمای تلفن همراه درخواست شود</translation>
 <translation id="6527303717912515753">اشتراک‌گذاری</translation>
 <translation id="652937045869844725">کوکی‌های شخص ثالث را مجاز کنید. این کار به‌معنی محافظت کمتر است اما ویژگی‌های سایت به احتمال زیاد کار می‌کنند</translation>
+<translation id="6530703012083415527">هرگاه روشن باشد، سایت‌ها می‌توانند از بالاپرها و هدایت کردن استفاده کنند. هرگاه خاموش باشد، سایت‌ها نمی‌توانند از بالاپرها و هدایت کردن استفاده کنند.</translation>
 <translation id="6545864417968258051">اسکن کردن بلوتوث</translation>
 <translation id="6552800053856095716">{PERMISSIONS_SUMMARY_BLOCKED,plural, =1{<ph name="PERMISSION_1" />، <ph name="PERMISSION_2" />، و <ph name="NUM_MORE" /> اجازه دیگر مسدود هستند}one{<ph name="PERMISSION_1" />، <ph name="PERMISSION_2" />، و <ph name="NUM_MORE" /> اجازه دیگر مسدود هستند}other{<ph name="PERMISSION_1" />، <ph name="PERMISSION_2" />، و <ph name="NUM_MORE" /> اجازه دیگر مسدود هستند}}</translation>
 <translation id="6554732001434021288">آخرین بازدید: <ph name="NUM_DAYS" /> روز پیش</translation>
@@ -321,7 +344,6 @@
 <translation id="6608650720463149374"><ph name="GIGABYTES" /> گیگابایت</translation>
 <translation id="6612358246767739896">محتوای محافظت‌شده</translation>
 <translation id="662080504995468778">ماندن</translation>
-<translation id="6643016212128521049">پاک کردن</translation>
 <translation id="6653342741369270081">برای خروج از حالت تمام‌صفحه، دکمه برگشت را فشار دهید.</translation>
 <translation id="6689172468748959065">عکس‌های نمایه</translation>
 <translation id="6697925417670533197">بارگیری‌های فعال</translation>
@@ -333,61 +355,71 @@
 <translation id="6790428901817661496">پخش</translation>
 <translation id="6818926723028410516">انتخاب موارد</translation>
 <translation id="6864395892908308021">‏این دستگاه نمی‌تواند NFC را بخواند</translation>
+<translation id="6867014948848323204">از <ph name="FROM_DEVICE" /></translation>
 <translation id="6912998170423641340">سایت‌ها از خواندن نوشتار و تصاویر بریده‌دان منع شوند</translation>
 <translation id="6945221475159498467">انتخاب</translation>
+<translation id="6950072572526089586">سایتی که بازدید می‌کنید می‌تواند اطلاعاتی درباره کاری که انجام می‌دهید ذخیره کند تا عملکردی مطابق انتظار داشته باشد — برای مثال، برای اینکه در سیستم سایت باقی بمانید یا برای ذخیره کردن مواردی که در سبد خریدتان است. سایت‌ها در اغلب موارد این اطلاعات را به‌صورت موقتی در دستگاهتان ذخیره می‌کنند.</translation>
 <translation id="6965382102122355670">تأیید</translation>
 <translation id="6981982820502123353">دسترس‌پذیری</translation>
 <translation id="6992289844737586249">قبل از اجازه به سایت‌ها برای استفاده از میکروفون ابتدا سؤال شود (توصیه می‌شود)</translation>
 <translation id="7000754031042624318">‏در تنظیمات Android غیرفعال شده است</translation>
 <translation id="7016516562562142042">برای موتور جستجوی فعلی مجاز است</translation>
 <translation id="702275896380648118">‏این سایت چیزهایی را که می‌پسندید شناسایی می‌کند و سپس به سایت‌های دیگر آگهی پیشنهاد می‌دهد. این سایت همچنین موضوع‌های آگهی شما را از Chrome دریافت می‌کند تا آگهی‌های مرتبط‌تری به شما نشان دهد.</translation>
-<translation id="702463548815491781">‏توصیه در زمانی‌که TalkBack یا «دسترسی کلیدی» روشن است</translation>
 <translation id="7053983685419859001">مسدود کردن</translation>
 <translation id="7066151586745993502">{NUM_SELECTED,plural, =1{۱ مورد انتخاب شد}one{# مورد انتخاب شد}other{# مورد انتخاب شد}}</translation>
 <translation id="7087918508125750058"><ph name="ITEM_COUNT" /> مورد انتخاب شد.  گزینه‌ها در نزدیکی بالای صفحه دردسترس است</translation>
 <translation id="7141896414559753902">مسدود کردن نمایش پنجره‌های بازشو و هدایت‌ها در سایت‌ها (توصیه می‌شود)</translation>
 <translation id="7176368934862295254"><ph name="KILOBYTES" /> کیلوبایت</translation>
 <translation id="7180611975245234373">بازآوری</translation>
+<translation id="7180865173735832675">سفارشی کردن</translation>
 <translation id="7188508872042490670">داده‌های سایت‌ها در دستگاه</translation>
+<translation id="7201549776650881587">با این کار همه داده‌ها و کوکی‌های ذخیره‌شده توسط همه سایت‌های تحت <ph name="ORIGIN" /> یا برنامه آن در صفحه اصلی حذف خواهد شد</translation>
 <translation id="7203150201908454328">باز شده</translation>
+<translation id="7219254577985949841">داده‌های سایت حذف شود؟</translation>
 <translation id="723171743924126238">انتخاب تصاویر</translation>
 <translation id="7243308994586599757">گزینه‌ها در نزدیک پایین صفحه نمایش در دسترس هستند</translation>
 <translation id="7250468141469952378"><ph name="ITEM_COUNT" /> مورد انتخاب شد</translation>
 <translation id="7260727271532453612"><ph name="PERMISSION_1" /> و <ph name="PERMISSION_2" /> مجاز هستند</translation>
+<translation id="7276071417425470385">هرگاه روشن باشد، سایت‌ها می‌توانند استفاده از دستگاه‌های واقعیت مجازی را درخواست کنند. هرگاه خاموش باشد، سایت‌ها نمی‌توانند از دستگاه‌های واقعیت مجازی استفاده کنند.</translation>
+<translation id="7284451015630589124">استفاده از کوکی‌های شخص ثالث را برای سایت‌ها مسدود کردید تا سایت‌ها نتوانند هنگامی که مرور می‌کنید شما را ردیابی کنند. برای <ph name="BEGIN_LINK" />مدیریت محافظت دربرابر ردیابی<ph name="END_LINK" />، به تنظیمات مراجعه کنید.</translation>
 <translation id="7302486331832100261">معمولاً اعلان‌ها را مسدود می‌کنید. برای مجاز کردن، روی «جزئیات» ضربه بزنید.</translation>
 <translation id="7366415735885268578">افزودن سایت</translation>
+<translation id="7368695150573390554">همه داده‌های آفلاین حذف خواهند شد</translation>
 <translation id="7383715096023715447">تنظیمات <ph name="DOMAIN" /></translation>
 <translation id="7406113532070524618">این تنظیم بدون شناسایی شما یا اجازه دادن به سایت‌ها برای دیدن سابقه مرورتان کار می‌کند، هرچند سایت‌ها می‌توانند مقدار کمی اطلاعات را به‌عنوان بخشی از درستی‌سنجی هم‌رسانی کنند</translation>
 <translation id="7423098979219808738">ابتدا سؤال شود</translation>
 <translation id="7423538860840206698">خواندن محتوای بریده‌دان مسدود شد</translation>
 <translation id="7425915948813553151">زمینه تیره برای سایت‌ها</translation>
+<translation id="7474522811371247902">‏‫Chrome استفاده از کوکی‌های شخص ثالث را برای اکثر سایت‌ها محدود می‌کند. اما کوکی‌های شخص ثالث در این سایت مجاز است چون این سایت برای ارائه خدمات اولیه بر کوکی‌ها متکی است.\n\nبرای <ph name="BEGIN_LINK" />مدیریت «محافظت دربرابر ردیابی»<ph name="END_LINK" /> به تنظیمات بروید.</translation>
 <translation id="7521387064766892559">جاوا اسکریپت</translation>
+<translation id="7547989957535180761">هرگاه روشن باشد، سایت‌ها می‌توانند درخواست‌های ورود به سیستم نمایش دهند. هرگاه روشن باشد، سایت‌ها نمی‌توانند درخواست‌های ورود به سیستم نمایش دهند.</translation>
 <translation id="7554752735887601236">سایتی درحال استفاده از میکروفونتان است</translation>
 <translation id="7561196759112975576">همیشه</translation>
 <translation id="757524316907819857">مسدود کردن سایت‌ها برای پخش محتوای محافظت‌شده</translation>
-<translation id="7577900504646297215">مدیریت علایق</translation>
 <translation id="7594634374516752650">به دستگاه بلوتوث متصل است</translation>
-<translation id="7641339528570811325">پاک کردن داده‌های محصول مرور…</translation>
+<translation id="7641339528570811325">پاک کردن داده‌های مرور…</translation>
 <translation id="7649070708921625228">راهنما</translation>
 <translation id="7658239707568436148">لغو</translation>
 <translation id="7667547420449112975">جادوگر شهر اُز</translation>
 <translation id="7684642910516280563">اجازه ندادن به سایتی به‌خصوص برای استفاده از کوکی‌های شخص ثالث</translation>
 <translation id="7719367874908701697">بزرگ‌نمایی صفحه</translation>
+<translation id="7759147511335618829">‏برنامه‌ریزی مجدد و کنترل دستگاه MIDI</translation>
 <translation id="7781829728241885113">دیروز</translation>
 <translation id="7791543448312431591">افزودن</translation>
+<translation id="7801888679188438140">{TILE_COUNT,plural, =1{ادامه کار با این برگه}one{ادامه کار با این برگه}other{ادامه کار با این برگه‌ها}}</translation>
 <translation id="780301667611848630">نه متشکرم</translation>
 <translation id="7804248752222191302">سایتی درحال استفاده از دوربینتان است</translation>
 <translation id="7807060072011926525">‏ارائه از Google</translation>
+<translation id="7822573154188733812">‏Chrome سایت‌هایی را که بااستفاده از کوکی‌های شخص ثالث، شما را هنگام مرور وب ردیابی می‌کنند مسدود می‌کند. برای <ph name="BEGIN_LINK" />مدیریت محافظت دربرابر ردیابی<ph name="END_LINK" />، به تنظیمات مراجعه کنید.</translation>
 <translation id="7835852323729233924">درحال پخش رسانه</translation>
 <translation id="783819812427904514">با صدا کردن ویدیو</translation>
 <translation id="7846076177841592234">لغو انتخاب</translation>
 <translation id="7882806643839505685">پخش صدا برای سایت خاصی مجاز شود.</translation>
 <translation id="789180354981963912">مسدود کردن کوکی‌های شخص ثالث در «حالت ناشناس»:</translation>
-<translation id="7895868624847501462">با این کار، همه داده‌های محلی، ازجمله کوکی‌ها، پاک خواهد شد و تمام اجازه‌های <ph name="DOMAIN" /> و همه سایت‌های تحت آن بازنشانی خواهند شد</translation>
 <translation id="7940722705963108451">به من یادآوری شود</translation>
 <translation id="7974024493641668069">{COUNT,plural, =1{<ph name="FPS_MEMBERS_COUNT" /> سایت در گروه سایت‌های <ph name="FPS_OWNER" /> قرار دارد که می‌توانند فعالیت شما را در گروه ببینند}one{<ph name="FPS_MEMBERS_COUNT" /> سایت در گروه سایت‌های <ph name="FPS_OWNER" /> قرار دارد که می‌توانند فعالیت شما را در گروه ببینند}other{<ph name="FPS_MEMBERS_COUNT" /> سایت در گروه سایت‌های <ph name="FPS_OWNER" /> قرار دارد که می‌توانند فعالیت شما را در گروه ببینند}}</translation>
 <translation id="7986741934819883144">مخاطبی انتخاب کنید</translation>
-<translation id="7999064672810608036">مطمئنید که می‌خواهید تمام داده‌های محلی، شامل کوکی‌ها را حذف کنید و تمام مجوزهای این وب‌سایت را بازنشانی کنید؟</translation>
+<translation id="7990211076305263060">هرگاه روشن باشد، سایت‌ها می‌توانند استفاده از میکروفون را درخواست کنند. هرگاه خاموش باشد، سایت‌ها نمی‌توانند از میکروفون استفاده کنند.</translation>
 <translation id="8007176423574883786">برای این دستگاه غیرفعال شد</translation>
 <translation id="802154636333426148">بارگیری نشد</translation>
 <translation id="8042586301629853791">مرتب‌سازی براساس:</translation>
@@ -396,25 +428,24 @@
 <translation id="8077120325605624147">هر سایتی که بازدید کنید می‌تواند هر نوع آگهی را به شما نمایش دهد</translation>
 <translation id="8087000398470557479">‏این محتوا از <ph name="DOMAIN_NAME" /> است و توسط Google ارائه می‌شود.</translation>
 <translation id="8088603949666785339">گزینه‌های بیشتر در <ph name="BANNER_TITLE" /></translation>
+<translation id="8113501330600751161">{DAYS,plural, =1{‏‫Chrome کوکی‌ها را فردا دوباره محدود خواهد کرد}one{‏‫Chrome کوکی‌ها را # روز دیگر دوباره محدود خواهد کرد}other{‏‫Chrome کوکی‌ها را # روز دیگر دوباره محدود خواهد کرد}}</translation>
 <translation id="8116925261070264013">صامت‌شده</translation>
+<translation id="8117244575099414087">هرگاه روشن باشد، سایت‌ها می‌توانند از حسگرهای دستگاه شما استفاده کنند. هرگاه خاموش باشد، سایت‌ها نمی‌توانند از حسگرها استفاده کنند.</translation>
 <translation id="813082847718468539">مشاهدهٔ اطلاعات سایت</translation>
 <translation id="8131740175452115882">تأیید</translation>
-<translation id="8154912474061769055">ممکن است ویژگی‌های بسیاری از سایت‌ها کار نکند</translation>
 <translation id="8168435359814927499">محتوا</translation>
 <translation id="8186479265534291036">سایت کار نمی‌کند؟ کوکی‌های شخص ثالث مسدود شده است</translation>
 <translation id="8197286292360124385"><ph name="PERMISSION_1" /> مجاز است</translation>
 <translation id="8200772114523450471">ازسرگیری</translation>
 <translation id="8206354486702514201">این تنظیم توسط سرپرست شما اجباری شده است.</translation>
-<translation id="8211406090763984747">اتصال امن است</translation>
+<translation id="8211406090763984747">اتصال ایمن است</translation>
 <translation id="8249310407154411074">انتقال به بالا</translation>
 <translation id="8261506727792406068">حذف</translation>
 <translation id="8284326494547611709">زیرنویس‌ها</translation>
 <translation id="8300705686683892304">مدیریت‌شده توسط برنامه</translation>
 <translation id="8324158725704657629">دوباره سؤال نشود</translation>
-<translation id="8338445138528827481">با این کار، همه داده‌های محلی، ازجمله کوکی‌ها، پاک خواهد شد و تمام اجازه‌های <ph name="ORIGIN" /> بازنشانی خواهد شد</translation>
 <translation id="8362795839483915693">می‌توانید در سایت‌هایی که بازدید می‌کنید زوم‌پیش یا زوم‌پس کنید</translation>
 <translation id="8372893542064058268">«همگام‌سازی پس‌زمینه» را برای یک سایت خاص مجاز کنید.</translation>
-<translation id="8376384591331888629">شامل کوکی‌های شخص ثالث در این سایت می‌شود</translation>
 <translation id="83792324527827022">سایتی درحال استفاده از دوربین و میکروفونتان است</translation>
 <translation id="8380167699614421159">این سایتْ آگهی‌های مزاحم یا گمراه‌کننده نشان می‌دهد</translation>
 <translation id="8394832520002899662">برای برگشتن به سایت ضربه بزنید</translation>
@@ -431,38 +462,42 @@
 <translation id="8514955299594277296">سایت‌ها اجازه ندارند در دستگاه داده ذخیره کنند (توصیه نمی‌شود)</translation>
 <translation id="851751545965956758">مسدود کردن سایت‌ها برای اتصال به دستگاه‌ها</translation>
 <translation id="8525306231823319788">تمام صفحه</translation>
-<translation id="8528440122773422556">با این کار همه داده‌ها و کوکی‌های ذخیره‌شده توسط همه سایت‌های تحت <ph name="ORIGIN" /> یا برنامه آن در صفحه اصلی پاک خواهد شد</translation>
 <translation id="8541410041357371550">‏این سایت موضوع‌های آگهی را از Chrome می‌گیرد تا آگهی‌های مرتبط‌تری به شما نشان دهد</translation>
 <translation id="8564613706851221529">{COUNT,plural, =1{کوکی‌ها برای <ph name="FPS_MEMBERS_COUNT" /> سایت <ph name="FPS_OWNER" /> مجاز هستند}one{کوکی‌ها برای <ph name="FPS_MEMBERS_COUNT" /> سایت <ph name="FPS_OWNER" /> مجاز هستند}other{کوکی‌ها برای <ph name="FPS_MEMBERS_COUNT" /> سایت <ph name="FPS_OWNER" /> مجاز هستند}}</translation>
 <translation id="857943718398505171">مجاز (توصیه می‌شود)</translation>
 <translation id="8609465669617005112">انتقال به بالا</translation>
+<translation id="8617611086246832542">هرگاه روشن باشد، نمای رایانه وب‌سایت‌ها نمایش داده می‌شود. هرگاه خاموش باشد، نمای تلفن همراه وب‌سایت‌ها نمایش داده می‌شود.</translation>
+<translation id="8649036394979866943">‏‫Chrome استفاده از کوکی‌های شخص ثالث را برای اکثر سایت‌ها محدود می‌کند تا این سایت‌ها نتوانند هنگامی که مرور می‌کنید شما را ردیابی کنند. برای <ph name="BEGIN_LINK" />مدیریت محافظت دربرابر ردیابی<ph name="END_LINK" />، به تنظیمات مراجعه کنید</translation>
 <translation id="8676374126336081632">پاک کردن ورودی</translation>
 <translation id="8681886425883659911">آگهی‌های نمایش‌داده‌شده در سایت‌هایی که طبق تشخیص ما آگهی‌های مزاحم یا گمراه‌کننده نمایش می‌دهند مسدود می‌شود.</translation>
 <translation id="868929229000858085">جستجوی مخاطبین</translation>
 <translation id="8712637175834984815">متوجه شدم</translation>
 <translation id="8719283222052720129">‏اجازه <ph name="APP_NAME" /> را در <ph name="BEGIN_LINK" />تنظیمات Android<ph name="END_LINK" /> روشن کنید.</translation>
+<translation id="8721719390026067591">هرگاه روشن باشد، سایت‌ها می‌توانند جستجوی دستگاه‌های بلوتوث را درخواست کنند. هرگاه خاموش باشد،‌ سایت‌ها نمی‌توانند دستگاه‌های بلوتوث را جستجو کنند.</translation>
 <translation id="8725066075913043281">سعی مجدد</translation>
 <translation id="8730621377337864115">تمام</translation>
 <translation id="8736193154595564524">{NUM_SELECTED,plural, =1{یک سایت اجازه دارد}one{# سایت اجازه دارد}other{# سایت اجازه دارند}}</translation>
-<translation id="8737217482364735741">با این کار همه داده‌ها و کوکی‌های ذخیره‌شده توسط <ph name="ORIGIN" /> پاک می‌شود.</translation>
 <translation id="8751914237388039244">تصویری انتخاب کنید</translation>
 <translation id="8800034312320686233">سایت کار نمی‌کند؟</translation>
 <translation id="8801436777607969138">مسدود کردن جاوااسکریپت برای سایتی خاص.</translation>
 <translation id="8803526663383843427">وقتی روشن است</translation>
 <translation id="8805385115381080995">مرور کردن سریع‌تر می‌شود زیرا احتمال کمتری وجود دارد که سایتی از شما بخواهد تأیید کنید شما شخص واقعی هستید</translation>
 <translation id="8816026460808729765">سایت‌ها نمی‌توانند به حسگرها دسترسی داشته باشند</translation>
-<translation id="8823559166155093873">مسدود کردن کوکی‌ها</translation>
+<translation id="8843699287283948910">پنهان کردن برگه‌ها در دستگاه‌های دیگر</translation>
 <translation id="8847988622838149491">USB</translation>
+<translation id="8874790741333031443">کوکی‌های شخص ثالث را به‌طور موقت مجاز کنید. این کار به‌معنی محافظت کمتر هنگام مرور است اما ویژگی‌های سایت به احتمال زیاد عملکرد موردنظر را خواهد داشت.</translation>
 <translation id="8889294078294184559">‏همان‌طور که مرور می‌کنید، سایت‌ها می‌توانند ازطریق Chrome بررسی کنند و بااستفاده از سایت قبلی که بازدید کرده‌اید تأیید کنند که احتمالاً شما شخص واقعی هستید</translation>
 <translation id="8899807382908246773">آگهی‌های مزاحم</translation>
 <translation id="8903921497873541725">بزرگ‌نمایی</translation>
 <translation id="8921772741368021346"><ph name="POSITION" /> / <ph name="DURATION" /></translation>
 <translation id="8926666909099850184">‏NFC برای این دستگاه خاموش است. در <ph name="BEGIN_LINK" />تنظیمات Android<ph name="END_LINK" /> آن را روشن کنید.</translation>
 <translation id="8928445016601307354">‏سایت‌ها اجازه نداشته باشند اطلاعات دستگاه‌های NFC را ببینند و تغییر دهند</translation>
-<translation id="8958424370300090006">کوکی‌ها را برای سایت خاصی مسدود کنید.</translation>
+<translation id="8944485226638699751">محدود</translation>
 <translation id="8959122750345127698">پیمایش غیرقابل دسترسی است: <ph name="URL" /></translation>
 <translation id="8986362086234534611">فراموش شود</translation>
 <translation id="8990043154272859344">از سیستم همه سایت‌ها خارج خواهید شد</translation>
+<translation id="9002538116239926534">هرگاه روشن باشد، سایت‌ها می‌توانند در دستگاهتان داده ذخیره کنند. هرگاه خاموش باشد، سایت‌ها نمی‌توانند در دستگاهتان داده ذخیره کنند.</translation>
+<translation id="9011903857143958461">‫<ph name="SITE_NAME" /> مجاز است</translation>
 <translation id="9019902583201351841">مدیریت شده توسط والدین شما</translation>
 <translation id="9039697262778250930">ممکن است از سیستم این سایت‌ها خارج شوید</translation>
 <translation id="9074739597929991885">بلوتوث</translation>
@@ -472,7 +507,6 @@
 <translation id="913657688200966289">‏اجازه‌های <ph name="APP_NAME" /> را در <ph name="BEGIN_LINK" />تنظیمات Android<ph name="END_LINK" /> روشن کنید.</translation>
 <translation id="9138217887606523162">بزرگ‌نمایی کنونی <ph name="ZOOM_LEVEL" /> %% است</translation>
 <translation id="9162462602695099906">این صفحه خطرناک است</translation>
-<translation id="9201023452444595544">هرنوع داده آفلاینی حذف خواهد شد</translation>
 <translation id="930525582205581608">این سایت فراموش شود؟</translation>
 <translation id="947156494302904893">سایت‌هایی که بازدید می‌کنید می‌توانند تأیید کنند که شما شخص واقعی هستید و روبات نیستید</translation>
 <translation id="967624055006145463">داده ذخیره شد</translation>

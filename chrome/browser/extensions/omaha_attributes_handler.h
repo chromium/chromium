@@ -21,7 +21,8 @@ class ExtensionService;
 
 // These values are logged to UMA. Entries should not be renumbered and
 // numeric values should never be reused. Please keep in sync with
-// "ExtensionUpdateCheckDataKey" in src/tools/metrics/histograms/enums.xml.
+// "ExtensionUpdateCheckDataKey" in
+// src/tools/metrics/histograms/metadata/extensions/enums.xml.
 enum class ExtensionUpdateCheckDataKey {
   // No update check data keys were found so no action was taken.
   kNoKey = 0,

@@ -62,7 +62,7 @@ BackgroundEidGenerator::BackgroundEidGenerator(
 
 std::vector<DataWithTimestamp> BackgroundEidGenerator::GenerateNearestEids(
     const std::vector<cryptauth::BeaconSeed>& beacon_seeds) const {
-  int64_t now_timestamp_ms = clock_->Now().ToJavaTime();
+  int64_t now_timestamp_ms = clock_->Now().InMillisecondsSinceUnixEpoch();
   std::vector<DataWithTimestamp> eids;
 
   for (int i = -kEidLookAhead; i <= kEidLookAhead; ++i) {
@@ -119,9 +119,7 @@ std::string BackgroundEidGenerator::IdentifyRemoteDeviceByAdvertisement(
         ss << "BackgroundEidGenerator::IdentifyRemoteDeviceByAdvertisement: "
            << (success ? "Identified " : "Failed to identify ")
            << "the following remote device from advertisement service data 0x"
-           << base::HexEncode(service_data_without_flags.data(),
-                              service_data_without_flags.size())
-           << ": "
+           << base::HexEncode(service_data_without_flags) << ": "
            << "\n  device_name: " << remote_device.name()
            << "\n  device_id: " << remote_device.GetDeviceId()
            << "\n  beacon seeds: ";

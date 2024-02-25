@@ -5,13 +5,17 @@
 package org.chromium.android_webview.common;
 
 import android.content.Context;
+import android.net.Uri;
 import android.os.Handler;
 import android.os.HandlerThread;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 import org.chromium.base.Callback;
 import org.chromium.base.ThreadUtils;
+import org.chromium.content_public.browser.MessagePayload;
+import org.chromium.content_public.browser.MessagePort;
 
 /**
  * This class manages platform-specific services. (i.e. Google Services) The platform
@@ -68,6 +72,12 @@ public abstract class PlatformServiceBridge {
         return false;
     }
 
+    // Returns the versionCode of GMS that the user is currently running.
+    // Will always return 0 if GMS is not installed.
+    public int getGmsVersionCode() {
+        return 0;
+    }
+
     // Overriding implementations may call "callback" asynchronously, on any thread.
     public void querySafeBrowsingUserConsent(@NonNull final Callback<Boolean> callback) {
         // User opt-in preference depends on a SafetyNet API. In purely upstream builds (which don't
@@ -75,12 +85,15 @@ public abstract class PlatformServiceBridge {
         callback.onResult(false);
     }
 
-    // Overriding implementations may call "callback" asynchronously. For simplicity (and not
-    // because of any technical limitation) we require that "queryMetricsSetting" and "callback"
-    // both get called on WebView's UI thread.
+    // Overriding implementations should not call "callback" synchronously, even if the result is
+    // already known. The callback should be posted to the UI thread to run at the next opportunity,
+    // to avoid blocking the critical path for startup.
     public void queryMetricsSetting(Callback<Boolean> callback) {
         ThreadUtils.assertOnUiThread();
-        callback.onResult(false);
+        ThreadUtils.postOnUiThread(
+                () -> {
+                    callback.onResult(false);
+                });
     }
 
     public void setSafeBrowsingHandler() {
@@ -92,6 +105,9 @@ public abstract class PlatformServiceBridge {
     }
 
     // Takes an uncompressed, serialized UMA proto and logs it via a platform-specific mechanism.
+    public void logMetrics(byte[] data) {}
+
+    // TODO(crbug.com/1485663): remove this once downstream lands
     public void logMetrics(byte[] data, boolean useDefaultUploadQos) {}
 
     /**
@@ -110,6 +126,13 @@ public abstract class PlatformServiceBridge {
      * - Cancelled: 16
      * - API not connected (probably means the API is not available on device): 17
      */
+    public int logMetricsBlocking(byte[] data) {
+        // TODO(crbug.com/1248039): remove this once downstream implementation lands.
+        logMetrics(data, true);
+        return 0;
+    }
+
+    // TODO(crbug.com/1485663): remove this once downstream lands
     public int logMetricsBlocking(byte[] data, boolean useDefaultUploadQos) {
         // TODO(crbug.com/1248039): remove this once downstream implementation lands.
         logMetrics(data, useDefaultUploadQos);
@@ -122,4 +145,82 @@ public abstract class PlatformServiceBridge {
      * query SafeModeController to receive mitigation steps.
      */
     public void checkForAppRecovery() {}
+
+    public @Nullable AwSupervisedUserUrlClassifierDelegate getUrlClassifierDelegate() {
+        return null;
+    }
+
+    /**
+     * Inject optional JS interfaces provided by the platform.
+     *
+     * @param context App context
+     * @param receiver Reference to {@link org.chromium.android_webview.AwContents} where interfaces
+     *     should be injected.
+     */
+    public void injectPlatformJsInterfaces(
+            @NonNull Context context, @NonNull AwContentsWrapper receiver) {}
+
+    /**
+     * Wrapper interface to allow us to pass an {@link org.chromium.android_webview.AwContents}
+     * instance through the {@link PlatformServiceBridge} without adding a dependency on the {@code
+     * org.chromium.android_webview package}.
+     *
+     * <p>If this interface is changed, the downstream implementation of {@link
+     * PlatformServiceBridge} must also be updated to use the new interface. Typically, this will
+     * require a 3-way commit.
+     */
+    public interface AwContentsWrapper {
+
+        /** @see org.chromium.android_webview.AwContents#addDocumentStartJavaScript(String, String[]) */
+        void addDocumentStartJavaScript(
+                @NonNull String script, @NonNull String[] allowedOriginRules);
+
+        /**
+         * Add a WebMessageListener to the wrapped AwContents. The WebMessageListener itself is also
+         * a wrapper interface to avoid illegal dependencies.
+         *
+         * @see org.chromium.android_webview.AwContents#addWebMessageListener(String, String[],
+         *     org.chromium.android_webview.WebMessageListener)
+         */
+        void addWrappedWebMessageListener(
+                @NonNull String jsObjectName,
+                @NonNull String[] allowedOriginRules,
+                @NonNull WebMessageListenerWrapper listener);
+
+        /**
+         * Get an identifier for the current profile used by the AwContents.
+         *
+         * <p>This can be used as partitioning information for in-app caches that should be keyed on
+         * Profile.
+         */
+        ProfileIdentifier getProfileIdentifier();
+
+        /** Get the availability status of the WebView Media Integrity API for given URI. */
+        @MediaIntegrityApiStatus int getMediaIntegrityApiStatusForUri(Uri uri);
+    }
+
+    /** @see {@link org.chromium.android_webview.WebMessageListener} */
+    public interface WebMessageListenerWrapper {
+        void onPostMessage(
+                MessagePayload payload,
+                Uri topLevelOrigin,
+                Uri sourceOrigin,
+                boolean isMainFrame,
+                JsReplyProxyWrapper jsReplyProxy,
+                MessagePort[] ports);
+    }
+
+    /** @see org.chromium.android_webview.JsReplyProxy; */
+    public interface JsReplyProxyWrapper {
+        void postMessage(@NonNull final MessagePayload payload);
+    }
+
+    /** Interface for objects that identifies a profile. */
+    public interface ProfileIdentifier {
+        @Override
+        boolean equals(Object o);
+
+        @Override
+        int hashCode();
+    }
 }

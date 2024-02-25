@@ -20,7 +20,6 @@
 class ChromeDownloadManagerDelegate;
 class DownloadHistory;
 class DownloadUIController;
-class ExtensionDownloadsEventRouter;
 class Profile;
 
 namespace content {

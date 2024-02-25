@@ -9,6 +9,7 @@
 
 namespace ui {
 
+using ColorMode = ColorProviderKey::ColorMode;
 using PrefScheme = NativeTheme::PreferredColorScheme;
 using SystemThemeColor = NativeTheme::SystemThemeColor;
 
@@ -18,6 +19,10 @@ class TestNativeThemeWin : public NativeThemeWin {
   TestNativeThemeWin& operator=(const TestNativeThemeWin&) = delete;
 
   ~TestNativeThemeWin() override = default;
+
+  ColorMode GetColorMode() const {
+    return GetColorProviderKey(/*custom_theme=*/nullptr).color_mode;
+  }
 
   // NativeTheme:
   void SetSystemColor(SystemThemeColor system_color, SkColor color) {
@@ -129,6 +134,24 @@ TEST(NativeThemeWinTest, GetPlatformHighContrastColorScheme) {
 
   theme.set_forced_colors(false);
   EXPECT_EQ(theme.GetPlatformHighContrastColorScheme(), HCColorScheme::kNone);
+}
+
+TEST(NativeThemeWinTest, TestColorProviderKeyColorMode) {
+  TestNativeThemeWin theme;
+
+  theme.set_forced_colors(false);
+  theme.set_use_dark_colors(true);
+  EXPECT_EQ(theme.GetColorMode(), ColorMode::kDark);
+
+  theme.set_use_dark_colors(false);
+  EXPECT_EQ(theme.GetColorMode(), ColorMode::kLight);
+
+  theme.set_forced_colors(true);
+  theme.set_preferred_color_scheme(PrefScheme::kDark);
+  EXPECT_EQ(theme.GetColorMode(), ColorMode::kDark);
+
+  theme.set_preferred_color_scheme(PrefScheme::kLight);
+  EXPECT_EQ(theme.GetColorMode(), ColorMode::kLight);
 }
 
 }  // namespace ui

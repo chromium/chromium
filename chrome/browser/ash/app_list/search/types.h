@@ -7,6 +7,7 @@
 
 #include "ash/public/cpp/app_list/app_list_types.h"
 #include "base/containers/flat_map.h"
+#include "chrome/browser/profiles/profile.h"
 
 class ChromeSearchResult;
 
@@ -25,7 +26,8 @@ using DisplayType = ash::SearchResultDisplayType;
 using Results = std::vector<std::unique_ptr<ChromeSearchResult>>;
 using ResultsMap = base::flat_map<ProviderType, Results>;
 
-// All possible categories.
+// All possible categories for the launcher search results. It's used to
+// indicate the category of the result shown to the user in launcher.
 using Category = ash::AppListSearchResultCategory;
 
 // A wrapper struct around a category to hold scoring information.
@@ -43,6 +45,15 @@ struct CategoryMetadata {
 using CategoriesList = std::vector<CategoryMetadata>;
 
 CategoriesList CreateAllCategories();
+
+// The control category of launcher search providers. It's used to indicate
+// whether or not we want to show the results of a particular control category
+// to the user in launcher.
+using ControlCategory = ash::AppListSearchControlCategory;
+
+// The help function to check if the control category is enabled.
+bool IsControlCategoryEnabled(const Profile* profile,
+                              const ControlCategory control_category);
 
 }  // namespace app_list
 

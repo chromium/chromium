@@ -33,7 +33,6 @@
 #include "chrome/browser/background/background_application_list_model.h"
 #include "chrome/browser/background/background_mode_optimizer.h"
 #include "chrome/browser/browser_process.h"
-#include "chrome/browser/chrome_notification_types.h"
 #include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/lifetime/application_lifetime_desktop.h"
 #include "chrome/browser/lifetime/browser_shutdown.h"
@@ -59,8 +58,8 @@
 #include "chrome/common/extensions/extension_constants.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/common/webui_url_constants.h"
+#include "chrome/grit/branded_strings.h"
 #include "chrome/grit/chrome_unscaled_resources.h"
-#include "chrome/grit/chromium_strings.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/keep_alive_registry/keep_alive_registry.h"
 #include "components/keep_alive_registry/keep_alive_types.h"
@@ -257,7 +256,7 @@ BackgroundModeManager::BackgroundModeData::GetNewBackgroundApps() {
   // Copy all current extensions into our list of |current_extensions_|.
   for (const auto& application : *applications_) {
     const extensions::ExtensionId& id = application->id();
-    if (current_extensions_.count(id) == 0) {
+    if (!current_extensions_.contains(id)) {
       // Not found in our set yet - add it and maybe return as a previously
       // unseen extension.
       current_extensions_.insert(id);
@@ -328,8 +327,8 @@ BackgroundModeManager::BackgroundModeManager(
     optimizer_ = BackgroundModeOptimizer::Create();
   }
 
-  // If the -keep-alive-for-test flag is passed, then always keep chrome running
-  // in the background until the user explicitly terminates it.
+  // If the --keep-alive-for-test flag is passed, then always keep the browser
+  // running in the background until the user explicitly terminates it.
   if (command_line.HasSwitch(switches::kKeepAliveForTest))
     keep_alive_for_test_ = true;
 
@@ -471,6 +470,7 @@ size_t BackgroundModeManager::NumberOfBackgroundModeData() {
 void BackgroundModeManager::OnAppTerminating() {
   // Make sure we aren't still keeping the app alive (only happens if we
   // don't receive an EXTENSIONS_READY notification for some reason).
+  ReleaseForceInstalledExtensionsKeepAlive();
   ReleaseStartupKeepAlive();
   // Performing an explicit shutdown, so exit background mode (does nothing
   // if we aren't in background mode currently).

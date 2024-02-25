@@ -25,14 +25,14 @@ TEST(CookiesHelperUnittest, CookieConversionWithInfiniteExpirationDate) {
   auto cookie = net::CanonicalCookie::CreateUnsafeCookieForTesting(
       "cookiename", "cookievalue", "example.com", "/", base::Time::Now(),
       kExpirationDate, base::Time(), base::Time(), false, false,
-      net::CookieSameSite::NO_RESTRICTION, net::COOKIE_PRIORITY_DEFAULT, false);
+      net::CookieSameSite::NO_RESTRICTION, net::COOKIE_PRIORITY_DEFAULT);
 
   // Serialize the cookie to JSON. We need to gracefully handle the infinite
   // expiration date, which should be converted to the maximum value.
   api::cookies::Cookie serialized_cookie =
       cookies_helpers::CreateCookie(*cookie, "1");
   base::Value::Dict value_cookie = serialized_cookie.ToValue();
-  absl::optional<double> expiration_time =
+  std::optional<double> expiration_time =
       value_cookie.FindDouble("expirationDate");
   ASSERT_TRUE(expiration_time);
   EXPECT_EQ(std::numeric_limits<double>::max(), *expiration_time);

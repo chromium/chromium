@@ -24,39 +24,24 @@ Event::Event(scoped_refptr<base::RefCountedMemory> event_bytes,
   auto* xcb_event = reinterpret_cast<xcb_generic_event_t*>(
       const_cast<uint8_t*>(event_bytes->data()));
   uint8_t response_type = xcb_event->response_type & ~kSendEventMask;
-  send_event_ = xcb_event->response_type & kSendEventMask;
-  sequence_ = xcb_event->full_sequence;
-  // KeymapNotify events are the only events that don't have a sequence.
-  if (response_type != KeymapNotifyEvent::opcode) {
-    // On the wire, events are 32 bytes except for generic events which are
-    // trailed by additional data.  XCB inserts an extended 4-byte sequence
-    // between the 32-byte event and the additional data, so we need to shift
-    // the additional data over by 4 bytes so the event is back in its wire
-    // format, which is what Xlib and XProto are expecting.
-    if (response_type == GeGenericEvent::opcode) {
-      auto* ge = reinterpret_cast<xcb_ge_event_t*>(xcb_event);
-      constexpr size_t ge_length = sizeof(xcb_raw_generic_event_t);
-      constexpr size_t offset = sizeof(ge->full_sequence);
-      size_t extended_length = ge->length * 4;
-      if (extended_length < ge_length) {
-        // If the additional data is smaller than the fixed size event, shift
-        // the additional data to the left.
-        memmove(&ge->full_sequence, &ge[1], extended_length);
-      } else {
-        // Otherwise shift the fixed size event to the right.
-        char* addr = reinterpret_cast<char*>(xcb_event);
-        memmove(addr + offset, addr, ge_length);
-        event_bytes = base::MakeRefCounted<OffsetRefCountedMemory>(
-            event_bytes, offset, ge_length + extended_length);
-        xcb_event = reinterpret_cast<xcb_generic_event_t*>(addr + offset);
-      }
-    }
+  if (xcb_event->response_type & kSendEventMask) {
+    send_event_ = true;
   }
-
-  // Xlib sometimes modifies |xcb_event|, so let it handle the event after
-  // we parse it with ReadEvent().
-  ReadBuffer buf(event_bytes);
-  ReadEvent(this, connection, &buf);
+  sequence_ = xcb_event->full_sequence;
+  // On the wire, events are 32 bytes except for generic events which are
+  // trailed by additional data.  XCB inserts an extended 4-byte sequence
+  // between the 32-byte event and the additional data, so we need to shift
+  // the additional data over by 4 bytes so the event is back in its wire
+  // format, which is what XProto is expecting.
+  if (response_type == GeGenericEvent::opcode) {
+    auto* ge = reinterpret_cast<xcb_ge_event_t*>(xcb_event);
+    const size_t extended_length = ge->length * 4;
+    memmove(&ge->full_sequence, &ge[1], extended_length);
+  }
+  connection->GetEventTypeAndOp(event_bytes->data(), &type_id_, &opcode_);
+  if (type_id_) {
+    raw_event_ = event_bytes;
+  }
 }
 
 Event::Event(Event&& event) {
@@ -64,20 +49,33 @@ Event::Event(Event&& event) {
 }
 
 Event& Event::operator=(Event&& event) {
-  // `window_` borrowed from `event_`, so it must be reset first.
-  window_ = std::move(event.window_);
-  event_ = std::move(event.event_);
-  type_id_ = event.type_id_;
-  sequence_ = event.sequence_;
   send_event_ = event.send_event_;
+  fabricated_ = event.fabricated_;
+  type_id_ = event.type_id_;
+  opcode_ = event.opcode_;
+  sequence_ = event.sequence_;
+  raw_event_ = std::move(event.raw_event_);
+  event_ = std::move(event.event_);
 
-  // Clear the old instance, to make sure an invalid state isn't going to be
-  // used:
-  event.type_id_ = 0;
-  event.sequence_ = 0;
+  // Clear the old instance, to make sure it's in a valid state.
   event.send_event_ = false;
+  event.fabricated_ = false;
+  event.type_id_ = 0;
+  event.opcode_ = 0;
+  event.sequence_ = 0;
   return *this;
 }
 
 Event::~Event() = default;
+
+void Event::Parse(void* event, Parser parser, Deleter deleter) {
+  CHECK(type_id_);
+  CHECK(!event_);
+  CHECK(raw_event_);
+  ReadBuffer read_buffer(raw_event_);
+  parser(event, &read_buffer);
+  event_ = {event, deleter};
+  raw_event_.reset();
+}
+
 }  // namespace x11

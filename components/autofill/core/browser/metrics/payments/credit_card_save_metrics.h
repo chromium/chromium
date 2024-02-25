@@ -69,14 +69,8 @@ enum CardUploadDecision {
   // A pair of dropdowns for the user to select expiration date was surfaced
   // in the offer-to-save dialog.
   USER_REQUESTED_TO_PROVIDE_EXPIRATION_DATE = 1 << 14,
-  // All the required conditions were satisfied even though the form is
-  // unfocused after the user entered information into it.
-  UPLOAD_OFFERED_FROM_NON_FOCUSABLE_FIELD = 1 << 15,
   // The card does not satisfy any of the ranges of supported BIN ranges.
   UPLOAD_NOT_OFFERED_UNSUPPORTED_BIN_RANGE = 1 << 16,
-  // All the required conditions were satisfied even though the form is
-  // dynamic changed.
-  UPLOAD_OFFERED_FROM_DYNAMIC_CHANGE_FORM = 1 << 17,
   // The legal message was invalid.
   UPLOAD_NOT_OFFERED_INVALID_LEGAL_MESSAGE = 1 << 18,
   // Update |kNumCardUploadDecisionMetrics| when adding new enum here.
@@ -91,13 +85,13 @@ enum class CardUploadEnabled {
   kSyncServiceNull = 0,
   kSyncServicePaused = 1,
   kSyncServiceMissingAutofillWalletDataActiveType = 2,
-  kSyncServiceMissingAutofillProfileActiveType = 3,
+  kSyncServiceMissingAutofillSelectedType = 3,
   // Deprecated: kAccountWalletStorageUploadDisabled = 4,
   kUsingExplicitSyncPassphrase = 5,
   kLocalSyncEnabled = 6,
   // Deprecated: kPaymentsIntegrationDisabled = 7,
   kEmailEmpty = 8,
-  kEmailDomainNotSupported = 9,
+  // Deprecated: kEmailDomainNotSupported = 9,
   // Deprecated: kAutofillUpstreamDisabled = 10,
   // Deprecated: kCardUploadEnabled = 11,
   kUnsupportedCountry = 12,
@@ -116,7 +110,10 @@ enum class SaveCardPromptOffer {
   // The prompt is not shown because the prompt has been declined by the user
   // too many times.
   kNotShownMaxStrikesReached = 1,
-  kMaxValue = kNotShownMaxStrikesReached,
+  // The prompt is not shown because the required delay since last strike has
+  // not passed.
+  kNotShownRequiredDelay = 2,
+  kMaxValue = kNotShownRequiredDelay,
 };
 
 enum class SaveCardPromptResult {
@@ -228,8 +225,24 @@ void LogSaveCvcPromptResultMetric(SaveCardPromptResult metric,
                                   bool is_uploading,
                                   bool is_reshow);
 
+void LogCvcInfoBarMetric(AutofillMetrics::InfoBarMetric metric,
+                         bool is_uploading);
+
 void LogSaveCardRequestExpirationDateReasonMetric(
     SaveCardRequestExpirationDateReason metric);
+
+void LogCreditCardUploadRanLocalSaveFallbackMetric(bool new_local_card_added);
+
+void LogCreditCardUploadLoadingViewShownMetric(bool is_shown);
+
+void LogCreditCardUploadConfirmationViewShownMetric(bool is_shown,
+                                                    bool is_card_uploaded);
+
+void LogCreditCardUploadLoadingViewResultMetric(SaveCardPromptResult metric);
+
+void LogCreditCardUploadConfirmationViewResultMetric(
+    SaveCardPromptResult metric,
+    bool is_card_uploaded);
 
 // Clank-specific metrics.
 void LogSaveCreditCardPromptResult(

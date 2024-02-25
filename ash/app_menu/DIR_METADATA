@@ -1,3 +1,6 @@
-monorail {
+monorail: {
   component: "UI>Shell>Shelf"
+}
+buganizer_public: {
+  component_id: 1457279
 }

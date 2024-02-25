@@ -7,9 +7,9 @@
 
 #include <vector>
 
+#include <optional>
 #include "base/component_export.h"
 #include "skia/public/mojom/image_info.mojom-shared.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/skia/include/core/SkImageInfo.h"
 
 namespace mojo {
@@ -39,9 +39,9 @@ struct COMPONENT_EXPORT(SKIA_SHARED_TRAITS)
   }
   static uint32_t width(const SkImageInfo& info);
   static uint32_t height(const SkImageInfo& info);
-  static absl::optional<std::vector<float>> color_transfer_function(
+  static std::optional<std::vector<float>> color_transfer_function(
       const SkImageInfo& info);
-  static absl::optional<std::vector<float>> color_to_xyz_matrix(
+  static std::optional<std::vector<float>> color_to_xyz_matrix(
       const SkImageInfo& info);
 
   static bool Read(skia::mojom::ImageInfoDataView data, SkImageInfo* info);
@@ -61,11 +61,11 @@ struct COMPONENT_EXPORT(SKIA_SHARED_TRAITS)
   static uint32_t height(const SkImageInfo& info) {
     return ImageInfoStructTraits::height(info);
   }
-  static absl::optional<std::vector<float>> color_transfer_function(
+  static std::optional<std::vector<float>> color_transfer_function(
       const SkImageInfo& info) {
     return ImageInfoStructTraits::color_transfer_function(info);
   }
-  static absl::optional<std::vector<float>> color_to_xyz_matrix(
+  static std::optional<std::vector<float>> color_to_xyz_matrix(
       const SkImageInfo& info) {
     return ImageInfoStructTraits::color_to_xyz_matrix(info);
   }

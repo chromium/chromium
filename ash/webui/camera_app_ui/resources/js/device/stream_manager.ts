@@ -145,6 +145,7 @@ export class StreamManager {
    */
   async closeCaptureStream(captureStream: MediaStream): Promise<void> {
     assertExists(captureStream.getVideoTracks()[0]).stop();
+    captureStream.getAudioTracks()[0]?.stop();
     const deviceOperator = DeviceOperator.getInstance();
     if (deviceOperator !== null) {
       // We need to cache |virtualId| first since it will be wiped out after

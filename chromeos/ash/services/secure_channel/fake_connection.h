@@ -5,14 +5,15 @@
 #ifndef CHROMEOS_ASH_SERVICES_SECURE_CHANNEL_FAKE_CONNECTION_H_
 #define CHROMEOS_ASH_SERVICES_SECURE_CHANNEL_FAKE_CONNECTION_H_
 
+#include <optional>
 #include <vector>
 
 #include "base/functional/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "chromeos/ash/services/secure_channel/connection.h"
 #include "chromeos/ash/services/secure_channel/file_transfer_update_callback.h"
 #include "chromeos/ash/services/secure_channel/public/mojom/secure_channel_types.mojom.h"
 #include "chromeos/ash/services/secure_channel/register_payload_file_request.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ash::secure_channel {
 
@@ -30,7 +31,7 @@ class FakeConnection : public Connection {
 
   ~FakeConnection() override;
 
-  void set_rssi_to_return(const absl::optional<int32_t>& rssi_to_return) {
+  void set_rssi_to_return(const std::optional<int32_t>& rssi_to_return) {
     rssi_to_return_ = rssi_to_return;
   }
 
@@ -41,7 +42,7 @@ class FakeConnection : public Connection {
   void AddObserver(ConnectionObserver* observer) override;
   void RemoveObserver(ConnectionObserver* observer) override;
   void GetConnectionRssi(
-      base::OnceCallback<void(absl::optional<int32_t>)> callback) override;
+      base::OnceCallback<void(std::optional<int32_t>)> callback) override;
 
   // Completes a connection attempt which was originally started via a call to
   // |Connect()|. If |success| is true, the connection's status shifts to
@@ -64,7 +65,9 @@ class FakeConnection : public Connection {
     return reigster_payload_file_requests_;
   }
 
-  std::vector<ConnectionObserver*>& observers() { return observers_; }
+  std::vector<raw_ptr<ConnectionObserver, VectorExperimental>>& observers() {
+    return observers_;
+  }
 
   using Connection::SetStatus;
 
@@ -90,9 +93,9 @@ class FakeConnection : public Connection {
 
   std::vector<RegisterPayloadFileRequest> reigster_payload_file_requests_;
 
-  std::vector<ConnectionObserver*> observers_;
+  std::vector<raw_ptr<ConnectionObserver, VectorExperimental>> observers_;
 
-  absl::optional<int32_t> rssi_to_return_;
+  std::optional<int32_t> rssi_to_return_;
   const bool should_auto_connect_;
 };
 

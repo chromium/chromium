@@ -38,7 +38,7 @@ PaymentHandlerModalDialogManagerDelegate::GetWebContentsModalDialogHost() {
 
   auto* dialog_manager =
       static_cast<web_modal::WebContentsModalDialogManagerDelegate*>(
-          chrome::FindBrowserWithWebContents(host_web_contents_.get()));
+          chrome::FindBrowserWithTab(host_web_contents_.get()));
   if (!dialog_manager)
     return nullptr;
 

@@ -4,6 +4,8 @@
 
 #include "ash/accelerometer/accelerometer_types.h"
 
+#include <cmath>
+
 #include "base/numerics/math_constants.h"
 #include "ui/gfx/geometry/vector3d_f.h"
 

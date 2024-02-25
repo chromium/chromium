@@ -6,14 +6,13 @@
 #define EXTENSIONS_RENDERER_PROGRAMMATIC_SCRIPT_INJECTOR_H_
 
 #include <memory>
-
+#include <optional>
 #include "base/values.h"
 #include "extensions/common/mojom/css_origin.mojom-shared.h"
 #include "extensions/common/mojom/frame.mojom.h"
 #include "extensions/common/mojom/injection_type.mojom-shared.h"
 #include "extensions/common/mojom/run_location.mojom-shared.h"
 #include "extensions/renderer/script_injection.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
 namespace extensions {
@@ -58,7 +57,7 @@ class ProgrammaticScriptInjector : public ScriptInjector {
       mojom::RunLocation run_location,
       std::set<std::string>* injected_stylesheets,
       size_t* num_injected_stylesheets) const override;
-  void OnInjectionComplete(absl::optional<base::Value> execution_result,
+  void OnInjectionComplete(std::optional<base::Value> execution_result,
                            mojom::RunLocation run_location) override;
   void OnWillNotInject(InjectFailureReason reason) override;
 
@@ -83,7 +82,7 @@ class ProgrammaticScriptInjector : public ScriptInjector {
   std::string origin_for_about_error_;
 
   // The result of the script execution.
-  absl::optional<base::Value> result_;
+  std::optional<base::Value> result_;
 
   // Whether or not this script injection has finished.
   bool finished_ = false;

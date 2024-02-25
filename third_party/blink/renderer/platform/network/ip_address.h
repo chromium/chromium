@@ -18,8 +18,8 @@ struct HashTraits<net::IPAddress> : GenericHashTraits<net::IPAddress> {
   static const bool kEmptyValueIsZero = true;
 
   static unsigned GetHash(const net::IPAddress& ip_address) {
-    return static_cast<unsigned>(base::FastHash(
-        base::make_span(ip_address.bytes().data(), ip_address.size())));
+    return static_cast<unsigned>(
+        base::FastHash(base::span(ip_address.bytes())));
   }
 
   static bool IsDeletedValue(const net::IPAddress& value) {

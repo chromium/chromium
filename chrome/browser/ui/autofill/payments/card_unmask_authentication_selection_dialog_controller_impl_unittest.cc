@@ -2,38 +2,17 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/autofill/payments/card_unmask_authentication_selection_dialog_controller_impl.h"
+#include "components/autofill/core/browser/ui/payments/card_unmask_authentication_selection_dialog_controller_impl.h"
 
 #include "base/test/metrics/histogram_tester.h"
-#include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "components/autofill/core/browser/autofill_test_utils.h"
 #include "components/autofill/core/browser/metrics/autofill_metrics.h"
 #include "components/autofill/core/browser/payments/card_unmask_challenge_option.h"
 
 namespace autofill {
 
-namespace {
-
-class TestCardUnmaskAuthenticationSelectionDialogControllerImpl
-    : public CardUnmaskAuthenticationSelectionDialogControllerImpl {
- public:
-  static void CreateForTesting(content::WebContents* web_contents) {
-    web_contents->SetUserData(
-        UserDataKey(),
-        std::make_unique<
-            TestCardUnmaskAuthenticationSelectionDialogControllerImpl>(
-            web_contents));
-  }
-
-  explicit TestCardUnmaskAuthenticationSelectionDialogControllerImpl(
-      content::WebContents* web_contents)
-      : CardUnmaskAuthenticationSelectionDialogControllerImpl(web_contents) {}
-};
-
-}  // namespace
-
 class CardUnmaskAuthenticationSelectionDialogControllerImplTest
-    : public ChromeRenderViewHostTestHarness {
+    : public testing::Test {
  public:
   CardUnmaskAuthenticationSelectionDialogControllerImplTest() = default;
   CardUnmaskAuthenticationSelectionDialogControllerImplTest(
@@ -44,17 +23,17 @@ class CardUnmaskAuthenticationSelectionDialogControllerImplTest
       delete;
 
   void SetUp() override {
-    ChromeRenderViewHostTestHarness::SetUp();
-    TestCardUnmaskAuthenticationSelectionDialogControllerImpl::CreateForTesting(
-        web_contents());
+    card_unmask_authentication_selection_dialog_controller_ = std::make_unique<
+        CardUnmaskAuthenticationSelectionDialogControllerImpl>();
   }
 
-  TestCardUnmaskAuthenticationSelectionDialogControllerImpl* controller() {
-    return static_cast<
-        TestCardUnmaskAuthenticationSelectionDialogControllerImpl*>(
-        TestCardUnmaskAuthenticationSelectionDialogControllerImpl::
-            FromWebContents(web_contents()));
+  CardUnmaskAuthenticationSelectionDialogControllerImpl* controller() {
+    return card_unmask_authentication_selection_dialog_controller_.get();
   }
+
+ private:
+  std::unique_ptr<CardUnmaskAuthenticationSelectionDialogControllerImpl>
+      card_unmask_authentication_selection_dialog_controller_;
 };
 
 TEST_F(CardUnmaskAuthenticationSelectionDialogControllerImplTest,

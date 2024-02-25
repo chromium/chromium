@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_SYNC_SERVICE_SYNC_SERVICE_H_
 #define COMPONENTS_SYNC_SERVICE_SYNC_SERVICE_H_
 
+#include <map>
 #include <memory>
 #include <string>
 #include <vector>
@@ -29,6 +30,7 @@ class GURL;
 
 namespace syncer {
 
+struct LocalDataDescription;
 class ProtocolEventObserver;
 class SyncCycleSnapshot;
 struct TypeEntitiesCount;
@@ -228,10 +230,11 @@ class SyncService : public KeyedService {
     kError = 2,
   };
 
+  SyncService() = default;
+  ~SyncService() override = default;
+
   SyncService(const SyncService&) = delete;
   SyncService& operator=(const SyncService&) = delete;
-
-  ~SyncService() override {}
 
 #if BUILDFLAG(IS_ANDROID)
   // Return the java object that allows access to the SyncService.
@@ -297,7 +300,7 @@ class SyncService : public KeyedService {
   // Whether the primary account has consented to Sync (see IdentityManager). If
   // this is false, then IsSyncFeatureEnabled will also be false, but
   // Sync-the-transport might still run.
-  // TODO(crbug.com/1462552): Remove once kSync becomes unreachable or is
+  // TODO(crbug.com/40066949): Remove once kSync becomes unreachable or is
   // deleted from the codebase. See ConsentLevel::kSync documentation for
   // details.
   virtual bool HasSyncConsent() const = 0;
@@ -322,20 +325,6 @@ class SyncService : public KeyedService {
   // instead.
   virtual bool RequiresClientUpgrade() const = 0;
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  // Relevant only on ChromeOS (Ash), since the state is unreachable otherwise.
-  // Returns if sync-the-feature is disabled because the user cleared data from
-  // the Sync dashboard. It can be re-enabled by invoking
-  // SetSyncFeatureRequested().
-  // TODO(crbug.com/1443446): Consider removing this API, for example by
-  // reporting IsInitialSyncFeatureSetupComplete()==false which is otherwise
-  // unreachable on ChromeOS Ash.
-  // TODO(crbug.com/1462552): Remove once kSync becomes unreachable or is
-  // deleted from the codebase. See ConsentLevel::kSync documentation for
-  // details.
-  virtual bool IsSyncFeatureDisabledViaDashboard() const = 0;
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-
   //////////////////////////////////////////////////////////////////////////////
   // DERIVED STATE ACCESS
   //////////////////////////////////////////////////////////////////////////////
@@ -345,7 +334,7 @@ class SyncService : public KeyedService {
   // first-time Sync setup has been completed by the user.
   // Note: This does not imply that Sync is actually running. Check
   // IsSyncFeatureActive or GetTransportState to get the current state.
-  // TODO(crbug.com/1462552): Remove once kSync becomes unreachable or is
+  // TODO(crbug.com/40066949): Remove once kSync becomes unreachable or is
   // deleted from the codebase. See ConsentLevel::kSync documentation for
   // details.
   bool IsSyncFeatureEnabled() const;
@@ -367,7 +356,7 @@ class SyncService : public KeyedService {
   // even if this is false.
   // TODO(crbug.com/1444344): Remove this API, in favor of
   // IsSyncFeatureEnabled().
-  // TODO(crbug.com/1462552): Remove once kSync becomes unreachable or is
+  // TODO(crbug.com/40066949): Remove once kSync becomes unreachable or is
   // deleted from the codebase. See ConsentLevel::kSync documentation for
   // details.
   bool CanSyncFeatureStart() const;
@@ -378,7 +367,7 @@ class SyncService : public KeyedService {
   // To see which datatypes are actually syncing, see GetActiveDataTypes().
   // Note: This refers to Sync-the-feature. Sync-the-transport may be active
   // even if this is false.
-  // TODO(crbug.com/1462552): Remove once kSync becomes unreachable or is
+  // TODO(crbug.com/40066949): Remove once kSync becomes unreachable or is
   // deleted from the codebase. See ConsentLevel::kSync documentation for
   // details.
   bool IsSyncFeatureActive() const;
@@ -425,9 +414,30 @@ class SyncService : public KeyedService {
 
   // Returns the datatypes which have local changes that have not yet been
   // synced with the server.
+  // Note: This only queries the datatypes in `requested_types`.
   // Note: This includes deletions as well.
   virtual void GetTypesWithUnsyncedData(
+      ModelTypeSet requested_types,
       base::OnceCallback<void(ModelTypeSet)> callback) const = 0;
+
+  // Queries the count and description/preview of existing local data for
+  // `types` data types. This is an asynchronous method which returns the result
+  // via the callback `callback` once the information for all the data types in
+  // `types` is available.
+  // Note: Only data types that are enabled and support this functionality are
+  // part of the response.
+  virtual void GetLocalDataDescriptions(
+      ModelTypeSet types,
+      base::OnceCallback<void(std::map<ModelType, LocalDataDescription>)>
+          callback) = 0;
+
+  // Requests sync service to move all local data to account for `types` data
+  // types. This is an asynchronous method which moves the local data for all
+  // `types` to the account store locally. Upload to the server will happen as
+  // part of the regular commit process, and is NOT part of this method.
+  // Note: Only data types that are enabled and support this functionality are
+  // triggered for upload.
+  virtual void TriggerLocalDataMigration(ModelTypeSet types) = 0;
 
   //////////////////////////////////////////////////////////////////////////////
   // ACTIONS / STATE CHANGE REQUESTS
@@ -463,6 +473,20 @@ class SyncService : public KeyedService {
   // only when user is interested in session sync data, e.g. the history sync
   // page is opened.
   virtual void SetInvalidationsForSessionsEnabled(bool enabled) = 0;
+
+  // Necessary condition for SendExplicitPassphraseToPlatformClient() (not
+  // sufficient).
+  // TODO(crbug.com/1524184): Stop exposing this when UPM unenrollment is gone.
+  virtual bool SupportsExplicitPassphrasePlatformClient() = 0;
+
+  // Shares the explicit passphrase content with layers outside of the browser
+  // which have an independent sync client, and thus separate encryption
+  // infrastructure. That way, if the user has entered their passphrase in the
+  // browser, it does not need to be entered again.
+  // No-ops if SupportsExplicitPassphrasePlatformClient() is false, or the user
+  // didn't enter their passphrase in the browser yet, or never set up a custom
+  // passphrase in the first place.
+  virtual void SendExplicitPassphraseToPlatformClient() = 0;
 
   //////////////////////////////////////////////////////////////////////////////
   // OBSERVERS
@@ -537,21 +561,11 @@ class SyncService : public KeyedService {
   virtual ModelTypeDownloadStatus GetDownloadStatusFor(
       ModelType type) const = 0;
 
- protected:
-  SyncService() = default;
-
-  // This is needed here for CanSyncFeatureStart().
-  //
-  // Returns whether SyncService should consider the user opted into enabling
-  // sync-the-feature, given two alternative ways to determine it (except on
-  // Ash where both are relevant). Historically, this was referred to as NOT
-  // having DISABLE_REASON_USER_CHOICE.
-  // TODO(crbug.com/1444344): Remove this API together with
-  // CanSyncFeatureStart().
-  // TODO(crbug.com/1219990): This API may also be removed once feature
-  // kSyncIgnoreSyncRequestedPreference is cleaned up, since HasSyncConsent()
-  // and GetDisableReasons() guarantee that this function returns true.
-  virtual bool IsSyncFeatureConsideredRequested() const = 0;
+  // TODO(crbug.com/1425071): remove once investigation of timeouts complete.
+  // Records the reason if the `type` is waiting for updates to be downloaded.
+  virtual void RecordReasonIfWaitingForUpdates(
+      ModelType type,
+      const std::string& histogram_name) const = 0;
 };
 
 }  // namespace syncer

@@ -23,7 +23,7 @@ namespace {
 
 ExecutableMetadata CreateExecutableMetadata(
     bool is_running,
-    const absl::optional<std::vector<std::string>>& public_keys_hashes) {
+    const std::optional<std::vector<std::string>>& public_keys_hashes) {
   ExecutableMetadata metadata;
   metadata.is_running = is_running;
   metadata.public_keys_hashes = public_keys_hashes;
@@ -81,13 +81,13 @@ TEST_F(ExecutableMetadataServiceTest, GetAllExecutableMetadata_Success) {
       .WillOnce(Return(expected_keys));
   EXPECT_CALL(*mock_platform_delegate_,
               GetSigningCertificatesPublicKeys(not_running_path))
-      .WillOnce(Return(absl::nullopt));
+      .WillOnce(Return(std::nullopt));
 
   FilePathMap<ExecutableMetadata> expected_metadata_map;
   expected_metadata_map.insert(
       {running_path, CreateExecutableMetadata(true, expected_keys.hashes)});
   expected_metadata_map.insert(
-      {not_running_path, CreateExecutableMetadata(false, absl::nullopt)});
+      {not_running_path, CreateExecutableMetadata(false, std::nullopt)});
 
   EXPECT_EQ(
       executable_metadata_service_->GetAllExecutableMetadata(executable_files),

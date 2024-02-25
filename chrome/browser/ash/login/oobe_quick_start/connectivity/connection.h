@@ -6,19 +6,21 @@
 #define CHROME_BROWSER_ASH_LOGIN_OOBE_QUICK_START_CONNECTIVITY_CONNECTION_H_
 
 #include <memory>
+#include <optional>
 #include <vector>
 
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
-#include "base/timer/elapsed_timer.h"
 #include "base/timer/timer.h"
 #include "base/values.h"
+#include "chrome/browser/ash/login/oobe_quick_start/connectivity/account_transfer_client_data.h"
 #include "chrome/browser/ash/login/oobe_quick_start/connectivity/fido_assertion_info.h"
 #include "chrome/browser/ash/login/oobe_quick_start/connectivity/session_context.h"
 #include "chrome/browser/ash/login/oobe_quick_start/connectivity/target_device_connection_broker.h"
 #include "chrome/browser/nearby_sharing/public/cpp/nearby_connection.h"
+#include "chromeos/ash/components/quick_start/quick_start_metrics.h"
 #include "chromeos/ash/components/quick_start/quick_start_response_type.h"
 #include "chromeos/ash/components/quick_start/types.h"
 #include "chromeos/ash/services/nearby/public/mojom/quick_start_decoder.mojom.h"
@@ -27,19 +29,18 @@
 #include "components/cbor/values.h"
 #include "mojo/public/cpp/bindings/shared_remote.h"
 #include "mojo/public/cpp/bindings/struct_ptr.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/origin.h"
 
 namespace ash::quick_start {
 
 class QuickStartMessage;
 
-// Represents a connection to the remote source device and is an abstraction of
-// a Nearby Connection.
+// Represents a high-level connection used to exchange Quick Start messages with
+// the remote source device using a NearbyConnection.
 class Connection
     : public TargetDeviceConnectionBroker::AuthenticatedConnection {
  public:
-  static constexpr base::TimeDelta kDefaultRoundTripTimeout = base::Seconds(3);
+  static constexpr base::TimeDelta kDefaultRoundTripTimeout = base::Seconds(60);
 
   using HandshakeSuccessCallback = base::OnceCallback<void(bool)>;
   using ConnectionAuthenticatedCallback = base::OnceCallback<void(
@@ -54,6 +55,12 @@ class Connection
     kClosed    // The connection is closed
   };
 
+  enum class AuthenticationMethod {
+    kQR,
+    kPin,
+    kResumeAfterUpdate,
+  };
+
   class Factory {
    public:
     Factory() = default;
@@ -63,14 +70,14 @@ class Connection
 
     virtual std::unique_ptr<Connection> Create(
         NearbyConnection* nearby_connection,
-        SessionContext session_context,
+        SessionContext* session_context,
         mojo::SharedRemote<mojom::QuickStartDecoder> quick_start_decoder,
         ConnectionClosedCallback on_connection_closed,
         ConnectionAuthenticatedCallback on_connection_authenticated);
   };
 
   Connection(NearbyConnection* nearby_connection,
-             SessionContext session_context,
+             SessionContext* session_context,
              mojo::SharedRemote<mojom::QuickStartDecoder> quick_start_decoder,
              ConnectionClosedCallback on_connection_closed,
              ConnectionAuthenticatedCallback on_connection_authenticated);
@@ -89,7 +96,7 @@ class Connection
   // Changes the connection state to authenticated and invokes the
   // ConnectionAuthenticatedCallback. The caller must ensure that the connection
   // is authenticated before calling this function.
-  void MarkConnectionAuthenticated();
+  void MarkConnectionAuthenticated(AuthenticationMethod auth_method);
 
   // Sends a cryptographic challenge to the source device. If the source device
   // can prove that it posesses the shared secret, then the connection is
@@ -104,57 +111,60 @@ class Connection
   friend class ConnectionTest;
 
   using ConnectionResponseCallback =
-      base::OnceCallback<void(absl::optional<std::vector<uint8_t>>)>;
+      base::OnceCallback<void(std::optional<std::vector<uint8_t>>)>;
   using PayloadResponseCallback =
-      base::OnceCallback<void(absl::optional<std::vector<uint8_t>>)>;
-  using BootstrapConfigurationsCallback =
-      base::OnceCallback<void(absl::optional<std::vector<uint8_t>>)>;
+      base::OnceCallback<void(std::optional<std::vector<uint8_t>>)>;
+  using OnDecodingCompleteCallback =
+      base::OnceCallback<void(mojom::QuickStartMessagePtr)>;
 
   // TargetDeviceConnectionBroker::AuthenticatedConnection:
-  void RequestWifiCredentials(int32_t session_id,
-                              RequestWifiCredentialsCallback callback) override;
-  void NotifySourceOfUpdate(int32_t session_id,
-                            NotifySourceOfUpdateCallback callback) override;
+  void RequestWifiCredentials(RequestWifiCredentialsCallback callback) override;
+  void NotifySourceOfUpdate(NotifySourceOfUpdateCallback callback) override;
+  void RequestAccountInfo(RequestAccountInfoCallback callback) override;
   void RequestAccountTransferAssertion(
       const Base64UrlString& challenge,
       RequestAccountTransferAssertionCallback callback) override;
   void WaitForUserVerification(AwaitUserVerificationCallback callback) override;
   base::Value::Dict GetPrepareForUpdateInfo() override;
+  void NotifyPhoneSetupComplete() override;
 
-  void OnUserVerificationRequested(
+  void DoWaitForUserVerification(size_t attempt_number,
+                                 AwaitUserVerificationCallback callback);
+
+  // Called each time any one of the three user verification packets
+  // (UserVerificationRequested, UserVerificationMethod,
+  // UserVerificationResponse) is decoded. |attempt_number| tracks how many user
+  // verification packets have been decoded, since only three are expected.
+  void OnUserVerificationPacketDecoded(
+      size_t attempt_number,
       AwaitUserVerificationCallback callback,
-      absl::optional<mojom::UserVerificationRequested>
-          user_verification_request);
+      mojom::QuickStartMessagePtr quick_start_message);
 
   void OnNotifySourceOfUpdateResponse(
       NotifySourceOfUpdateCallback callback,
-      absl::optional<std::vector<uint8_t>> response_bytes);
-
-  void HandleNotifySourceOfUpdateResponse(NotifySourceOfUpdateCallback callback,
-                                          absl::optional<bool> ack_received);
+      mojom::QuickStartMessagePtr quick_start_message);
 
   // Parses a raw AssertionResponse and converts it into a FidoAssertionInfo
   void OnRequestAccountTransferAssertionResponse(
       RequestAccountTransferAssertionCallback callback,
-      absl::optional<std::vector<uint8_t>> response_bytes);
-
-  void GenerateFidoAssertionInfo(
-      RequestAccountTransferAssertionCallback callback,
-      ash::quick_start::mojom::FidoAssertionResponsePtr fido_response,
-      absl::optional<::ash::quick_start::mojom::QuickStartDecoderError> error);
+      mojom::QuickStartMessagePtr quick_start_message);
 
   void OnBootstrapConfigurationsResponse(
-      BootstrapConfigurationsCallback callback,
-      absl::optional<std::vector<uint8_t>> response_bytes);
+      RequestAccountInfoCallback callback,
+      mojom::QuickStartMessagePtr quick_start_message);
 
-  void ParseBootstrapConfigurationsResponse(
-      absl::optional<mojom::BootstrapConfigurations> bootstrap_configurations);
-
-  void SendMessageAndReadResponse(
+  void SendMessageAndDecodeResponse(
       std::unique_ptr<QuickStartMessage> message,
       QuickStartResponseType response_type,
-      ConnectionResponseCallback callback,
+      OnDecodingCompleteCallback callback,
       base::TimeDelta timeout = kDefaultRoundTripTimeout);
+  void SendMessageAndDiscardResponse(
+      std::unique_ptr<QuickStartMessage> message,
+      QuickStartResponseType response_type,
+      base::OnceClosure callback,
+      base::TimeDelta timeout = kDefaultRoundTripTimeout);
+  void SendMessageWithoutResponse(std::unique_ptr<QuickStartMessage> message,
+                                  QuickStartResponseType message_type);
   void SendBytesAndReadResponse(
       std::vector<uint8_t>&& bytes,
       QuickStartResponseType response_type,
@@ -163,7 +173,7 @@ class Connection
 
   void OnHandshakeResponse(const std::string& authentication_token,
                            HandshakeSuccessCallback callback,
-                           absl::optional<std::vector<uint8_t>> response_bytes);
+                           std::optional<std::vector<uint8_t>> response_bytes);
 
   void OnConnectionClosed(
       TargetDeviceConnectionBroker::ConnectionClosedReason reason);
@@ -171,41 +181,25 @@ class Connection
   void OnResponseTimeout(QuickStartResponseType response_type);
   void OnResponseReceived(ConnectionResponseCallback callback,
                           QuickStartResponseType response_type,
-                          absl::optional<std::vector<uint8_t>> response_bytes);
-
-  template <typename T>
-  using DecoderResponseCallback =
-      base::OnceCallback<void(mojo::InlinedStructPtr<T>,
-                              absl::optional<mojom::QuickStartDecoderError>)>;
-
-  template <typename T>
-  using DecoderMethod = void (mojom::QuickStartDecoder::*)(
-      const absl::optional<std::vector<uint8_t>>&,
-      DecoderResponseCallback<T>);
-
-  template <typename T>
-  using OnDecodingCompleteCallback =
-      base::OnceCallback<void(absl::optional<T>)>;
+                          std::optional<std::vector<uint8_t>> response_bytes);
 
   // Generic method to decode data using QuickStartDecoder. If a decoding error
-  // occurs, return empty data. On success, on_success will be called
-  // with the decoded data.
-  template <typename T>
-  void DecodeData(DecoderMethod<T> decoder_method,
-                  OnDecodingCompleteCallback<T> on_decoding_complete,
-                  absl::optional<std::vector<uint8_t>> data);
+  // occurs, return invoke |on_decoding_complete| with nullptr. On success,
+  // |on_decoding_complete| will be called with the decoded data.
+  void DecodeQuickStartMessage(OnDecodingCompleteCallback on_decoding_complete,
+                               std::optional<std::vector<uint8_t>> data);
 
   base::OneShotTimer response_timeout_timer_;
-  raw_ptr<NearbyConnection, ExperimentalAsh> nearby_connection_;
-  SessionContext session_context_;
+  raw_ptr<NearbyConnection> nearby_connection_;
+  raw_ptr<SessionContext> session_context_;
   State connection_state_ = State::kOpen;
   ConnectionClosedCallback on_connection_closed_;
   bool authenticated_ = false;
   ConnectionAuthenticatedCallback on_connection_authenticated_;
   std::string challenge_b64url_;
   mojo::SharedRemote<mojom::QuickStartDecoder> decoder_;
-  std::unique_ptr<base::ElapsedTimer> message_elapsed_timer_;
-  std::unique_ptr<base::ElapsedTimer> handshake_elapsed_timer_;
+  std::unique_ptr<AccountTransferClientData> client_data_;
+  QuickStartMetrics quick_start_metrics_;
 
   // Separate WeakPtrFactory for use with |OnResponseReceived()| to allow for
   // canceling the response.

@@ -90,8 +90,8 @@ class CallbackRunningObserver {
     }
 
    private:
-    raw_ptr<ui::LayerAnimator, ExperimentalAsh> animator_;
-    raw_ptr<CallbackRunningObserver, ExperimentalAsh> observer_;
+    raw_ptr<ui::LayerAnimator> animator_;
+    raw_ptr<CallbackRunningObserver> observer_;
   };
 
   size_t completed_counter_;

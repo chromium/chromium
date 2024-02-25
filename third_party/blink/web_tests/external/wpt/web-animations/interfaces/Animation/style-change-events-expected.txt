@@ -1,0 +1,5 @@
+This is a testharness.js-based test.
+[FAIL] Animation.commitStyles produces expected style change events
+  assert_true: A transition should have been triggered expected true got false
+Harness: the test ran to completion.
+

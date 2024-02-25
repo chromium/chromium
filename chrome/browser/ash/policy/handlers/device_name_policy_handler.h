@@ -5,9 +5,10 @@
 #ifndef CHROME_BROWSER_ASH_POLICY_HANDLERS_DEVICE_NAME_POLICY_HANDLER_H_
 #define CHROME_BROWSER_ASH_POLICY_HANDLERS_DEVICE_NAME_POLICY_HANDLER_H_
 
+#include <optional>
+
 #include "base/observer_list.h"
 #include "base/observer_list_types.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace policy {
 
@@ -49,7 +50,7 @@ class DeviceNamePolicyHandler {
 
   // Provides hostname if requested by administrator.
   // Returns null if no hostname was requested by administrator.
-  virtual absl::optional<std::string> GetHostnameChosenByAdministrator()
+  virtual std::optional<std::string> GetHostnameChosenByAdministrator()
       const = 0;
 
   void AddObserver(Observer* observer);

@@ -26,7 +26,7 @@ class MockKeyPersistenceDelegate : public KeyPersistenceDelegate {
               (override));
   MOCK_METHOD(scoped_refptr<enterprise_connectors::SigningKeyPair>,
               LoadKeyPair,
-              (KeyStorageType),
+              (KeyStorageType, LoadPersistedKeyResult*),
               (override));
   MOCK_METHOD(scoped_refptr<enterprise_connectors::SigningKeyPair>,
               CreateKeyPair,

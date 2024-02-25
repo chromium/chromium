@@ -15,6 +15,7 @@
 #include "base/logging.h"
 #include "base/process/launch.h"
 #include "base/process/process.h"
+#include "base/strings/strcat_win.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
@@ -144,11 +145,10 @@ base::Process LaunchNativeHostViaCmd(const std::wstring& command,
   ::GetEnvironmentVariable(
       L"COMSPEC", base::WriteInto(&comspec, comspec_length), comspec_length);
 
-  std::wstring wrapped_command = base::StringPrintf(
-      L"%ls /d /s /c \"%ls\" < %ls > %ls", comspec.c_str(), command.c_str(),
-      in_pipe_name.c_str(), out_pipe_name.c_str());
-
-  return base::LaunchProcess(wrapped_command, options);
+  return base::LaunchProcess(
+      base::StrCat({comspec, L" /d /s /c \"", command, L"\" < ", in_pipe_name,
+                    L" > ", out_pipe_name}),
+      options);
 }
 
 }  // namespace
@@ -189,7 +189,8 @@ bool NativeProcessLauncher::LaunchNativeProcess(
     const base::CommandLine& command_line,
     base::Process* process,
     base::File* read_file,
-    base::File* write_file) {
+    base::File* write_file,
+    bool native_hosts_executables_launch_directly) {
   // Timeout for the IO pipes.
   const DWORD kTimeoutMs = 5000;
 
@@ -204,10 +205,12 @@ bool NativeProcessLauncher::LaunchNativeProcess(
 
   uint64_t pipe_name_token;
   crypto::RandBytes(&pipe_name_token, sizeof(pipe_name_token));
-  std::wstring out_pipe_name = base::StringPrintf(
-      L"\\\\.\\pipe\\chrome.nativeMessaging.out.%llx", pipe_name_token);
-  std::wstring in_pipe_name = base::StringPrintf(
-      L"\\\\.\\pipe\\chrome.nativeMessaging.in.%llx", pipe_name_token);
+  const std::wstring pipe_name_token_str =
+      base::ASCIIToWide(base::StringPrintf("%llx", pipe_name_token));
+  const std::wstring out_pipe_name =
+      L"\\\\.\\pipe\\chrome.nativeMessaging.out." + pipe_name_token_str;
+  const std::wstring in_pipe_name =
+      L"\\\\.\\pipe\\chrome.nativeMessaging.in." + pipe_name_token_str;
 
   // Create the pipes to read and write from.
   base::win::ScopedHandle stdout_pipe(::CreateNamedPipeW(
@@ -236,9 +239,8 @@ bool NativeProcessLauncher::LaunchNativeProcess(
   options.start_hidden = true;
 
   bool use_direct_launch =
-      base::FeatureList::IsEnabled(
-          extensions_features::kLaunchWindowsNativeHostsDirectly) &&
-      command_line.GetProgram().MatchesFinalExtension(L".exe");
+      command_line.GetProgram().MatchesFinalExtension(L".exe") &&
+      native_hosts_executables_launch_directly;
 
   base::Process launched_process;
   if (use_direct_launch) {

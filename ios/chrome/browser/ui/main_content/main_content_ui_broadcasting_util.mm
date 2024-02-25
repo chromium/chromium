@@ -7,44 +7,50 @@
 #import "ios/chrome/browser/ui/broadcaster/chrome_broadcaster.h"
 #import "ios/chrome/browser/ui/main_content/main_content_ui.h"
 #import "ios/chrome/browser/ui/main_content/main_content_ui_state.h"
+#import "ios/web/common/features.h"
 
 void StartBroadcastingMainContentUI(id<MainContentUI> main_content,
                                     ChromeBroadcaster* broadcaster) {
-  [broadcaster broadcastValue:@"scrollViewSize"
-                     ofObject:main_content.mainContentUIState
-                     selector:@selector(broadcastScrollViewSize:)];
   [broadcaster broadcastValue:@"contentSize"
                      ofObject:main_content.mainContentUIState
                      selector:@selector(broadcastScrollViewContentSize:)];
-  [broadcaster broadcastValue:@"contentInset"
-                     ofObject:main_content.mainContentUIState
-                     selector:@selector(broadcastScrollViewContentInset:)];
-  [broadcaster broadcastValue:@"yContentOffset"
-                     ofObject:main_content.mainContentUIState
-                     selector:@selector(broadcastContentScrollOffset:)];
-  [broadcaster broadcastValue:@"scrolling"
-                     ofObject:main_content.mainContentUIState
-                     selector:@selector(broadcastScrollViewIsScrolling:)];
-  [broadcaster broadcastValue:@"zooming"
-                     ofObject:main_content.mainContentUIState
-                     selector:@selector(broadcastScrollViewIsZooming:)];
-  [broadcaster broadcastValue:@"dragging"
-                     ofObject:main_content.mainContentUIState
-                     selector:@selector(broadcastScrollViewIsDragging:)];
+  if (base::FeatureList::IsEnabled(web::features::kSmoothScrollingDefault)) {
+    [broadcaster broadcastValue:@"scrollViewSize"
+                       ofObject:main_content.mainContentUIState
+                       selector:@selector(broadcastScrollViewSize:)];
+    [broadcaster broadcastValue:@"scrolling"
+                       ofObject:main_content.mainContentUIState
+                       selector:@selector(broadcastScrollViewIsScrolling:)];
+    [broadcaster broadcastValue:@"dragging"
+                       ofObject:main_content.mainContentUIState
+                       selector:@selector(broadcastScrollViewIsDragging:)];
+    [broadcaster broadcastValue:@"zooming"
+                       ofObject:main_content.mainContentUIState
+                       selector:@selector(broadcastScrollViewIsZooming:)];
+    [broadcaster broadcastValue:@"contentInset"
+                       ofObject:main_content.mainContentUIState
+                       selector:@selector(broadcastScrollViewContentInset:)];
+    [broadcaster broadcastValue:@"yContentOffset"
+                       ofObject:main_content.mainContentUIState
+                       selector:@selector(broadcastContentScrollOffset:)];
+  }
 }
 
 void StopBroadcastingMainContentUI(ChromeBroadcaster* broadcaster) {
-  [broadcaster stopBroadcastingForSelector:@selector(broadcastScrollViewSize:)];
   [broadcaster
       stopBroadcastingForSelector:@selector(broadcastScrollViewContentSize:)];
-  [broadcaster
-      stopBroadcastingForSelector:@selector(broadcastScrollViewContentInset:)];
-  [broadcaster
-      stopBroadcastingForSelector:@selector(broadcastContentScrollOffset:)];
-  [broadcaster
-      stopBroadcastingForSelector:@selector(broadcastScrollViewIsScrolling:)];
-  [broadcaster
-      stopBroadcastingForSelector:@selector(broadcastScrollViewIsZooming:)];
-  [broadcaster
-      stopBroadcastingForSelector:@selector(broadcastScrollViewIsDragging:)];
+  if (base::FeatureList::IsEnabled(web::features::kSmoothScrollingDefault)) {
+    [broadcaster
+        stopBroadcastingForSelector:@selector(broadcastScrollViewSize:)];
+    [broadcaster
+        stopBroadcastingForSelector:@selector(broadcastScrollViewIsScrolling:)];
+    [broadcaster
+        stopBroadcastingForSelector:@selector(broadcastScrollViewIsDragging:)];
+    [broadcaster
+        stopBroadcastingForSelector:@selector(broadcastScrollViewIsZooming:)];
+    [broadcaster stopBroadcastingForSelector:@selector
+                 (broadcastScrollViewContentInset:)];
+    [broadcaster
+        stopBroadcastingForSelector:@selector(broadcastContentScrollOffset:)];
+  }
 }

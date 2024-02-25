@@ -85,7 +85,24 @@ BrowserAccessibilityManagerWin::BrowserAccessibilityManagerWin(
   Initialize(initial_tree);
 }
 
-BrowserAccessibilityManagerWin::~BrowserAccessibilityManagerWin() = default;
+BrowserAccessibilityManagerWin::~BrowserAccessibilityManagerWin() {
+  // In some cases, an iframe's HWND is destroyed before the hypertext
+  // on the parent child tree owner is destroyed. In this case, we reset
+  // the parent's hypertext to avoid API calls involving stale hypertext.
+  BrowserAccessibility* parent =
+      GetParentNodeFromParentTreeAsBrowserAccessibility();
+  if (!parent) {
+    return;
+  }
+
+  ui::AXPlatformNode* parent_ax_platform_node = parent->GetAXPlatformNode();
+  if (!parent_ax_platform_node) {
+    return;
+  }
+
+  static_cast<ui::AXPlatformNodeWin*>(parent_ax_platform_node)
+      ->ResetComputedHypertext();
+}
 
 // static
 ui::AXTreeUpdate BrowserAccessibilityManagerWin::GetEmptyDocument() {
@@ -99,7 +116,7 @@ ui::AXTreeUpdate BrowserAccessibilityManagerWin::GetEmptyDocument() {
   return update;
 }
 
-HWND BrowserAccessibilityManagerWin::GetParentHWND() {
+HWND BrowserAccessibilityManagerWin::GetParentHWND() const {
   WebAXPlatformTreeManagerDelegate* delegate = GetDelegateFromRootManager();
   if (!delegate)
     return NULL;
@@ -796,14 +813,15 @@ void BrowserAccessibilityManagerWin::FireIA2SelectionEvents(
   } else {
     const bool container_is_multiselectable =
         container && container->HasState(ax::mojom::State::kMultiselectable);
-    for (auto* item : changes.added) {
+    for (content::BrowserAccessibility* item : changes.added) {
       if (container_is_multiselectable)
         FireWinAccessibilityEvent(EVENT_OBJECT_SELECTIONADD, item);
       else
         FireWinAccessibilityEvent(EVENT_OBJECT_SELECTION, item);
     }
-    for (auto* item : changes.removed)
+    for (content::BrowserAccessibility* item : changes.removed) {
       FireWinAccessibilityEvent(EVENT_OBJECT_SELECTIONREMOVE, item);
+    }
   }
 }
 
@@ -817,8 +835,9 @@ void BrowserAccessibilityManagerWin::FireUIASelectionEvents(
                               only_selected_child);
     FireUiaPropertyChangedEvent(UIA_SelectionItemIsSelectedPropertyId,
                                 only_selected_child);
-    for (auto* item : changes.removed)
+    for (content::BrowserAccessibility* item : changes.removed) {
       FireUiaPropertyChangedEvent(UIA_SelectionItemIsSelectedPropertyId, item);
+    }
   } else {
     // Per UIA documentation, beyond the "invalidate limit" we're supposed to
     // fire a 'SelectionInvalidated' event.  The exact value isn't specified,
@@ -830,7 +849,7 @@ void BrowserAccessibilityManagerWin::FireUIASelectionEvents(
     } else {
       const bool container_is_multiselectable =
           container && container->HasState(ax::mojom::State::kMultiselectable);
-      for (auto* item : changes.added) {
+      for (content::BrowserAccessibility* item : changes.added) {
         if (container_is_multiselectable) {
           FireUiaAccessibilityEvent(
               UIA_SelectionItem_ElementAddedToSelectionEventId, item);
@@ -841,7 +860,7 @@ void BrowserAccessibilityManagerWin::FireUIASelectionEvents(
         FireUiaPropertyChangedEvent(UIA_SelectionItemIsSelectedPropertyId,
                                     item);
       }
-      for (auto* item : changes.removed) {
+      for (content::BrowserAccessibility* item : changes.removed) {
         FireUiaAccessibilityEvent(
             UIA_SelectionItem_ElementRemovedFromSelectionEventId, item);
         FireUiaPropertyChangedEvent(UIA_SelectionItemIsSelectedPropertyId,
@@ -925,6 +944,26 @@ void BrowserAccessibilityManagerWin::EnqueueSelectionChangedEvent(
   selection_changed_nodes_.insert(&node);
 }
 
+gfx::Rect BrowserAccessibilityManagerWin::GetViewBoundsInScreenCoordinates()
+    const {
+  WebAXPlatformTreeManagerDelegate* delegate = GetDelegateFromRootManager();
+  if (!delegate) {
+    return gfx::Rect();
+  }
+
+  gfx::Rect bounds = delegate->AccessibilityGetViewBounds();
+
+  // On Windows, we cannot directly multiply the bounds in screen DIPs by the
+  // display's scale factor to get screen physical coordinates like we can on
+  // other platforms. We need to go through the ScreenWin::DIPToScreenRect
+  // helper function to perform the right set of offset transformations needed.
+  //
+  // This is because Chromium transforms the screen physical coordinates it
+  // receives from Windows into an internal representation of screen physical
+  // coordinates adjusted for multiple displays of different resolutions.
+  return display::win::ScreenWin::DIPToScreenRect(GetParentHWND(), bounds);
+}
+
 void BrowserAccessibilityManagerWin::BeforeAccessibilityEvents() {
   BrowserAccessibilityManager::BeforeAccessibilityEvents();
 
@@ -934,7 +973,7 @@ void BrowserAccessibilityManagerWin::BeforeAccessibilityEvents() {
   DCHECK(ignored_changed_nodes_.empty());
 
   for (const auto& targeted_event : event_generator()) {
-    if (targeted_event.event_params.event ==
+    if (targeted_event.event_params->event ==
         ui::AXEventGenerator::Event::IGNORED_CHANGED) {
       BrowserAccessibility* event_target = GetFromID(targeted_event.node_id);
       if (!event_target)

@@ -2,7 +2,6 @@
 :host {
   border-top: 1px solid var(--cr-separator-color);
   display: flex;
-  padding-block: var(--cr-section-vertical-padding);
 }
 
 .card-content {
@@ -14,10 +13,15 @@
   color: var(--cr-secondary-text-color);
 }
 
+.card-content .subtitle {
+  font-size: smaller;
+  color: var(--cr-secondary-text-color);
+  margin-inline-start: 1ex;
+}
+
 cr-button {
   flex: 0;
   margin-block-start: var(--cr-section-vertical-padding);
-  margin-inline-end: var(--cr-section-padding);
 }
 
 ol {
@@ -27,22 +31,54 @@ ol {
 li {
   margin-block: 1ex;
 }
+
+#instructions,
+#data {
+  margin-inline: var(--cr-section-padding);
+}
+
+#data cr-button {
+  margin-block-start: 0;
+}
+
 </style>
 <div class="card-content">
-  <h3>[[promo.displayTitle]]</h3>
-  <p>Added on [[formatDate_()]]</p>
+  <h3>[[promo.displayTitle]]
+    <span hidden$="[[!showMilestone_()]]"
+        class="subtitle">[M[[promo.addedMilestone]]]</span></h3>
   <p hidden$="[[!showDescription_()]]">
     [[promo.displayDescription]]
   </p>
   <p><b>Type:</b> [[promo.type]]</p>
-  <p><b>OS: </b>[[formatPlatforms_()]]</p>
-  <div hidden$="[[!showInstructions_()]]">
-    <p><b>Instructions:</b></p>
-    <ol>
+  <p><b>Platforms: </b>[[formatPlatforms_()]]</p>
+  <p hidden$="[[!showRequiredFeatures_()]]">
+    <b>Required features: </b>[[formatRequiredFeatures_()]]
+  </p>
+  <cr-expand-button hidden$="[[!showInstructions_()]]"
+      expanded="{{instructionsExpanded_}}">
+    <div id="label"><b>Full Details</b></div>
+  </cr-expand-button>
+  <ol id="instructions" hidden="[[!instructionsExpanded_]]">
     <template is="dom-repeat" items="[[promo.instructions]]">
       <li>[[item]]</li>
     </template>
-    </ol>
+    <li hidden$="[[!showFollowedBy_()]]">
+      Followed by
+      <a href="#[[getFollowedByAnchor_()]]" on-click="scrollToFollowedBy_">
+        [[promo.followedByInternalName]]
+      </a>
+    </li>
+  </ol>
+  <cr-expand-button hidden$="[[!showData_()]]" expanded="{{dataExpanded_}}">
+    <div id="label"><b>Stored Data</b></div>
+  </cr-expand-button>
+  <div id="data" hidden="[[!dataExpanded_]]">
+    <template is="dom-repeat" items="[[promo.data]]">
+      <p><b>[[item.name]]</b> [[item.value]]</p>
+    </template>
+    <cr-button id="clear" on-click="clearData_">
+      Clear Data
+    </cr-button>
   </div>
 </div>
 <cr-button class="action-button" id="launch" on-click="launchPromo_">

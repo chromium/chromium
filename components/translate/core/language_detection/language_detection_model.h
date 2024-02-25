@@ -63,6 +63,12 @@ class LanguageDetectionModel {
                                     bool* is_prediction_reliable,
                                     float& prediction_reliability_score) const;
 
+  struct Prediction {
+    std::string language;
+    float reliability;
+  };
+  Prediction DetectLanguage(const std::u16string& contents) const;
+
   std::string GetModelVersion() const;
 
  private:

@@ -2,12 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/memory/raw_ptr.h"
+#include "extensions/common/mojom/context_type.mojom.h"
 #include "extensions/renderer/api/automation/automation_internal_custom_bindings.h"
 
 #include "base/test/bind.h"
 #include "extensions/common/constants.h"
 #include "extensions/common/extension_builder.h"
-#include "extensions/common/extension_messages.h"
 #include "extensions/common/features/feature_provider.h"
 #include "extensions/renderer/bindings/api_binding_test_util.h"
 #include "extensions/renderer/native_extension_bindings_system.h"
@@ -33,14 +34,14 @@ class AutomationInternalCustomBindingsTest
     v8::HandleScope handle_scope(isolate());
     v8::Local<v8::Context> context = MainContext();
     ScriptContext* script_context = CreateScriptContext(
-        context, extension.get(), Feature::BLESSED_EXTENSION_CONTEXT);
+        context, extension.get(), mojom::ContextType::kPrivilegedExtension);
     script_context->set_url(extension->url());
     bindings_system()->UpdateBindingsForContext(script_context);
 
+    // TODO(crbug/1487002) Add tests for service worker.
     auto automation_internal_bindings =
         std::make_unique<AutomationInternalCustomBindings>(script_context,
                                                            bindings_system());
-    automation_internal_bindings_ = automation_internal_bindings.get();
     script_context->module_system()->RegisterNativeHandler(
         "automationInternal", std::move(automation_internal_bindings));
 
@@ -52,9 +53,6 @@ class AutomationInternalCustomBindingsTest
         automation_api->IsAvailableToExtension(extension.get());
     EXPECT_TRUE(availability.is_available()) << availability.message();
   }
-
- private:
-  AutomationInternalCustomBindings* automation_internal_bindings_ = nullptr;
 };
 
 TEST_F(AutomationInternalCustomBindingsTest, ActionStringMapping) {

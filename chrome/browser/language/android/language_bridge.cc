@@ -32,7 +32,7 @@ PrefService* GetPrefService() {
 namespace language {
 std::vector<std::string> LanguageBridge::GetULPLanguagesFromDevice(
     std::string account_name) {
-  JNIEnv* env = base::android::AttachCurrentThread();
+  JNIEnv* env = jni_zero::AttachCurrentThread();
   ScopedJavaLocalRef<jstring> account_name_java =
       ConvertUTF8ToJavaString(env, account_name);
   ScopedJavaLocalRef<jobjectArray> languages_java =

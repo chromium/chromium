@@ -52,15 +52,15 @@ const std::string& CapabilityAccessUpdate::AppId() const {
   return delta_ ? delta_->app_id : state_->app_id;
 }
 
-absl::optional<bool> CapabilityAccessUpdate::Camera() const {
-  GET_VALUE_WITH_FALLBACK(camera, absl::nullopt)
+std::optional<bool> CapabilityAccessUpdate::Camera() const {
+  GET_VALUE_WITH_FALLBACK(camera, std::nullopt)
 }
 
 bool CapabilityAccessUpdate::CameraChanged() const {
     RETURN_OPTIONAL_VALUE_CHANGED(camera)}
 
-absl::optional<bool> CapabilityAccessUpdate::Microphone() const {
-  GET_VALUE_WITH_FALLBACK(microphone, absl::nullopt)
+std::optional<bool> CapabilityAccessUpdate::Microphone() const {
+  GET_VALUE_WITH_FALLBACK(microphone, std::nullopt)
 }
 
 bool CapabilityAccessUpdate::MicrophoneChanged() const {

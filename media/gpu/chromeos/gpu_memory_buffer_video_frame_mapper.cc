@@ -8,6 +8,7 @@
 
 #include "base/functional/bind.h"
 #include "base/memory/ptr_util.h"
+#include "media/gpu/chromeos/chromeos_compressed_gpu_memory_buffer_video_frame_utils.h"
 #include "media/gpu/macros.h"
 #include "ui/gfx/gpu_memory_buffer.h"
 
@@ -22,8 +23,8 @@ GpuMemoryBufferVideoFrameMapper::GpuMemoryBufferVideoFrameMapper(
     VideoPixelFormat format)
     : VideoFrameMapper(format) {}
 
-scoped_refptr<VideoFrame> GpuMemoryBufferVideoFrameMapper::Map(
-    scoped_refptr<const VideoFrame> video_frame,
+scoped_refptr<VideoFrame> GpuMemoryBufferVideoFrameMapper::MapFrame(
+    scoped_refptr<const FrameResource> video_frame,
     int permissions) const {
   if (!video_frame) {
     LOG(ERROR) << "Video frame is nullptr";
@@ -39,6 +40,12 @@ scoped_refptr<VideoFrame> GpuMemoryBufferVideoFrameMapper::Map(
       VideoFrame::StorageType::STORAGE_GPU_MEMORY_BUFFER) {
     VLOGF(1) << "VideoFrame's storage type is not GPU_MEMORY_BUFFER: "
              << video_frame->storage_type();
+    return nullptr;
+  }
+
+  if (IsIntelMediaCompressedModifier(video_frame->layout().modifier())) {
+    VLOGF(1)
+        << "This mapper doesn't support Intel media compressed VideoFrames";
     return nullptr;
   }
 
@@ -88,7 +95,7 @@ scoped_refptr<VideoFrame> GpuMemoryBufferVideoFrameMapper::Map(
   // Pass |video_frame| so that it outlives |mapped_frame| and the mapped buffer
   // is unmapped on destruction.
   mapped_frame->AddDestructionObserver(base::BindOnce(
-      [](scoped_refptr<const VideoFrame> frame) {
+      [](scoped_refptr<const FrameResource> frame) {
         DCHECK(frame->HasGpuMemoryBuffer());
         frame->GetGpuMemoryBuffer()->Unmap();
       },

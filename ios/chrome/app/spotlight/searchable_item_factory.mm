@@ -8,8 +8,10 @@
 
 #import <string>
 
+#import "base/containers/span.h"
 #import "base/functional/bind.h"
 #import "base/hash/md5.h"
+#import "base/memory/raw_ptr.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/task/cancelable_task_tracker.h"
 #import "build/branding_buildflags.h"
@@ -19,7 +21,7 @@
 #import "components/favicon_base/favicon_types.h"
 #import "ios/chrome/app/spotlight/spotlight_logger.h"
 #import "ios/chrome/grit/ios_strings.h"
-#import "net/base/mac/url_conversions.h"
+#import "net/base/apple/url_conversions.h"
 #import "skia/ext/skia_utils_ios.h"
 #import "ui/base/l10n/l10n_util.h"
 
@@ -75,7 +77,7 @@ UIImage* GetFallbackImageWithStringAndColor(NSString* string,
   spotlight::Domain _spotlightDomain;
 
   // Service to retrieve large favicon or colors for a fallback icon.
-  favicon::LargeIconService* _largeIconService;  // weak
+  raw_ptr<favicon::LargeIconService> _largeIconService;  // weak
 
   // Queue to query large icons.
   std::unique_ptr<base::CancelableTaskTracker> _largeIconTaskTracker;
@@ -289,10 +291,9 @@ UIImage* GetFallbackImageWithStringAndColor(NSString* string,
   NSString* key = [NSString
       stringWithFormat:@"%@ %@", base::SysUTF8ToNSString(URL.spec()), title];
   const std::string clipboard = base::SysNSStringToUTF8(key);
-  const char* c_string = clipboard.c_str();
 
   base::MD5Digest hash;
-  base::MD5Sum(c_string, strlen(c_string), &hash);
+  base::MD5Sum(base::as_byte_span(clipboard), &hash);
   uint64_t md5 = *(reinterpret_cast<uint64_t*>(hash.a));
   return md5;
 }

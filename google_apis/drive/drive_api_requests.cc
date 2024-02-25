@@ -6,6 +6,7 @@
 
 #include <stddef.h>
 
+#include <string_view>
 #include <utility>
 
 #include "base/functional/bind.h"
@@ -17,7 +18,6 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
-#include "base/strings/string_piece.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
@@ -173,12 +173,12 @@ bool ParseMultipartResponse(const std::string& content_type,
   if (response.empty())
     return false;
 
-  base::StringPiece content_type_piece(content_type);
+  std::string_view content_type_piece(content_type);
   if (!base::StartsWith(content_type_piece, kMultipartMixedMimeTypePrefix)) {
     return false;
   }
   content_type_piece.remove_prefix(
-      base::StringPiece(kMultipartMixedMimeTypePrefix).size());
+      std::string_view(kMultipartMixedMimeTypePrefix).size());
 
   if (content_type_piece.empty())
     return false;
@@ -194,7 +194,7 @@ bool ParseMultipartResponse(const std::string& content_type,
   const std::string header = "--" + boundary;
   const std::string terminator = "--" + boundary + "--";
 
-  std::vector<base::StringPiece> lines = base::SplitStringPieceUsingSubstr(
+  std::vector<std::string_view> lines = base::SplitStringPieceUsingSubstr(
       response, kHttpBr, base::KEEP_WHITESPACE, base::SPLIT_WANT_ALL);
 
   enum {
@@ -219,8 +219,7 @@ bool ParseMultipartResponse(const std::string& content_type,
       if (base::StartsWith(line, kHttpStatusPrefix)) {
         int int_code;
         base::StringToInt(
-            line.substr(base::StringPiece(kHttpStatusPrefix).size()),
-            &int_code);
+            line.substr(std::string_view(kHttpStatusPrefix).size()), &int_code);
         if (int_code > 0)
           code = static_cast<ApiErrorCode>(int_code);
         else
@@ -237,7 +236,7 @@ bool ParseMultipartResponse(const std::string& content_type,
       body.clear();
       continue;
     }
-    const base::StringPiece chopped_line =
+    const std::string_view chopped_line =
         base::TrimString(line, " \t", base::TRIM_TRAILING);
     const bool is_new_part = chopped_line == header;
     const bool was_last_part = chopped_line == terminator;

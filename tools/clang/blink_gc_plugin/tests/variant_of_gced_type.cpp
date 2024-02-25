@@ -7,19 +7,37 @@
 namespace blink {
 
 void ForbidsVariantsOfGcedTypes() {
-  absl::variant<Base> not_ok;
-  (void)not_ok;
+  {
+    absl::variant<Base> not_ok;
+    (void)not_ok;
 
-  absl::variant<Base, Base> similarly_not_ok;
-  (void)similarly_not_ok;
+    absl::variant<Base, Base> similarly_not_ok;
+    (void)similarly_not_ok;
 
-  absl::variant<int, Base> not_ok_either;
-  (void)not_ok_either;
+    absl::variant<int, Base> not_ok_either;
+    (void)not_ok_either;
 
-  absl::variant<int, Derived> ditto;
-  (void)ditto;
+    absl::variant<int, Derived> ditto;
+    (void)ditto;
 
-  new absl::variant<Mixin>;
+    new absl::variant<Mixin>;
+  }
+
+  {
+    std::variant<Base> not_ok;
+    (void)not_ok;
+
+    std::variant<Base, Base> similarly_not_ok;
+    (void)similarly_not_ok;
+
+    std::variant<int, Base> not_ok_either;
+    (void)not_ok_either;
+
+    std::variant<int, Derived> ditto;
+    (void)ditto;
+
+    new std::variant<Mixin>;
+  }
 }
 
 }  // namespace blink

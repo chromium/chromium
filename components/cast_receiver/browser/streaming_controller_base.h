@@ -79,7 +79,7 @@ class StreamingControllerBase : public StreamingController,
   PlaybackStartedCB playback_started_cb_;
 
   // Populated in InitializeReceiverSession()
-  absl::optional<cast_streaming::ReceiverConfig> config_ = absl::nullopt;
+  std::optional<cast_streaming::ReceiverConfig> config_ = std::nullopt;
   cast_streaming::ReceiverSession::Client* client_ = nullptr;
 
   // Mojo connections. Initially populated in MainFrameReadyToCommitNavigation()

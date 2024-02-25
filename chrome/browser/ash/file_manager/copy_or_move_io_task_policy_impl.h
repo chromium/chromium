@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_ASH_FILE_MANAGER_COPY_OR_MOVE_IO_TASK_POLICY_IMPL_H_
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -15,11 +16,12 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ash/file_manager/copy_or_move_io_task_impl.h"
+#include "chrome/browser/ash/policy/dlp/dialogs/files_policy_dialog.h"
+#include "chrome/browser/enterprise/connectors/analysis/file_transfer_analysis_delegate.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/safe_browsing/cloud_content_scanning/deep_scanning_utils.h"
 #include "storage/browser/file_system/file_system_context.h"
 #include "storage/browser/file_system/file_system_url.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace enterprise_connectors {
 class FileTransferAnalysisDelegate;
@@ -55,7 +57,7 @@ class CopyOrMoveIOTaskPolicyImpl : public CopyOrMoveIOTaskImpl {
       OperationType type,
       ProgressStatus& progress,
       std::vector<base::FilePath> destination_file_names,
-      std::vector<absl::optional<enterprise_connectors::AnalysisSettings>>
+      std::vector<std::optional<enterprise_connectors::AnalysisSettings>>
           settings,
       storage::FileSystemURL destination_folder,
       Profile* profile,
@@ -95,14 +97,12 @@ class CopyOrMoveIOTaskPolicyImpl : public CopyOrMoveIOTaskImpl {
   // Returns whether the warning was shown.
   bool MaybeShowConnectorsWarning();
 
-  // Notify FilesPolicyNotificationManager of files that were blocked by
-  // enterprise connectors to show proper blocked dialog.
-  // This is not done if the new UI for enterprise connectors is disabled.
-  void MaybeSendConnectorsBlockedFilesNotification();
-
-  // Called after the warning dialog is proceed or cancelled.
-  // This resumes the transfer and allows for the warned files to be
-  void OnConnectorsWarnDialogResult(bool should_proceed);
+  // Called after the warning dialog is proceeded or cancelled.
+  // This resumes the transfer and allows for the warned files to be transferred
+  // if the warning is proceeded.
+  void OnConnectorsWarnDialogResult(
+      std::optional<std::u16string> user_justification,
+      bool should_proceed);
 
   // Checks `file_transfer_analysis_delegates_[idx]` whether a transfer is
   // allowed for the source-destination-pair.
@@ -119,13 +119,15 @@ class CopyOrMoveIOTaskPolicyImpl : public CopyOrMoveIOTaskImpl {
   void OnCheckIfTransferAllowed(
       std::vector<storage::FileSystemURL> blocked_entries);
 
-  raw_ptr<Profile, ExperimentalAsh> profile_;
+  // Returns the total number of files in `connectors_blocked_files_`.
+  size_t GetConnectorsBlockedFilesNum() const;
+
+  raw_ptr<Profile> profile_;
   scoped_refptr<storage::FileSystemContext> file_system_context_;
 
   // Stores the settings, only valid until creation of respective.
   // FileTransferAnalysisDelegate.
-  std::vector<absl::optional<enterprise_connectors::AnalysisSettings>>
-      settings_;
+  std::vector<std::optional<enterprise_connectors::AnalysisSettings>> settings_;
   // Stores the delegates responsible for the file scanning.
   // Will be empty if the FileTransferConnector is disabled. If scanning is
   // disabled for a source-destination-pair, the unique_ptr will be nullptr. If
@@ -138,12 +140,13 @@ class CopyOrMoveIOTaskPolicyImpl : public CopyOrMoveIOTaskImpl {
   // This is set to true if `block_until_verdict` is 0.
   bool report_only_scans_ = false;
 
-  // The number of files blocked by policies.
-  size_t blocked_files_ = 0;
+  // The list of files blocked by Data Leak Prevention policy.
+  std::set<base::FilePath> dlp_blocked_files_;
 
-  std::vector<base::FilePath> connectors_blocked_files_;
-  // The name of the first blocked file, if any. Used for notifications.
-  std::string blocked_file_name_;
+  // Maps block reasons to their associated enterprise connector blocked file
+  // paths.
+  std::map<policy::FilesPolicyDialog::BlockReason, std::vector<base::FilePath>>
+      connectors_blocked_files_;
 
   base::WeakPtrFactory<CopyOrMoveIOTaskPolicyImpl> weak_ptr_factory_{this};
 };

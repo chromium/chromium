@@ -106,7 +106,7 @@ void DataObserver::OnURLVisited(history::HistoryService* history_service,
   data_changed_callback_.Run();
   std::string id = DeltaFileEntryWithData::UrlToId(url_row.url().spec());
   usage_reports_buffer_service_->AddVisit(
-      id, new_visit.visit_time.ToJavaTime(),
+      id, new_visit.visit_time.InMillisecondsSinceUnixEpoch(),
       usage_report_util::IsTypedVisit(new_visit.transition));
   // We stop any usage reporting to wait for gmscore to query the provider
   // for this url. We do not want to report usage for a URL which might

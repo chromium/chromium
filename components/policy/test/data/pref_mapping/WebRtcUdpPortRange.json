@@ -1,0 +1,25 @@
+[
+  {
+    "os": [
+      "win",
+      "linux",
+      "mac",
+      "chromeos_ash",
+      "chromeos_lacros",
+      "android",
+      "fuchsia"
+    ],
+    "policy_pref_mapping_tests": [
+      {
+        "policies": {
+          "WebRtcUdpPortRange": "10000-11999"
+        },
+        "prefs": {
+          "webrtc.udp_port_range": {
+            "value": "10000-11999"
+          }
+        }
+      }
+    ]
+  }
+]

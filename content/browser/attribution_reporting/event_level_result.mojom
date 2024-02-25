@@ -1,0 +1,35 @@
+// Copyright 2023 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module attribution_reporting.mojom;
+
+// Represents the potential event-level outcomes from attempting to register
+// a trigger.
+//
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+enum EventLevelResult {
+  kSuccess = 0,
+  // The report was stored successfully, but it replaced an existing report
+  // with a lower priority.
+  kSuccessDroppedLowerPriority = 1,
+  kInternalError = 2,
+  kNoCapacityForConversionDestination = 3,
+  kNoMatchingImpressions = 4,
+  kDeduplicated = 5,
+  kExcessiveAttributions = 6,
+  kPriorityTooLow = 7,
+  // Equivalent to the "noised" trigger result described in the spec.
+  kNeverAttributedSource = 8,
+  kExcessiveReportingOrigins = 9,
+  kNoMatchingSourceFilterData = 10,
+  kProhibitedByBrowserPolicy = 11,
+  kNoMatchingConfigurations = 12,
+  kExcessiveReports = 13,
+  kFalselyAttributedSource = 14,
+  kReportWindowPassed = 15,
+  kNotRegistered = 16,
+  kReportWindowNotStarted = 17,
+  kNoMatchingTriggerData = 18,
+};

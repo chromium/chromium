@@ -35,7 +35,7 @@ void AppsGridViewTestApi::LayoutToIdealBounds() {
     view_->reorder_timer_.Stop();
     view_->OnReorderTimer();
   }
-  view_->Layout();
+  view_->DeprecatedLayoutImmediately();
 }
 
 gfx::Rect AppsGridViewTestApi::GetItemTileRectOnCurrentPageAt(int row,

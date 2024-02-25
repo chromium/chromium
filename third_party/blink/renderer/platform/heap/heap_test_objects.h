@@ -101,7 +101,7 @@ class LinkedObject : public GarbageCollected<LinkedObject> {
   explicit LinkedObject(LinkedObject* next) : next_(next) {}
 
   void set_next(LinkedObject* next) { next_ = next; }
-  LinkedObject* next() const { return next_; }
+  LinkedObject* next() const { return next_.Get(); }
   Member<LinkedObject>& next_ref() { return next_; }
 
   virtual void Trace(Visitor* visitor) const { visitor->Trace(next_); }

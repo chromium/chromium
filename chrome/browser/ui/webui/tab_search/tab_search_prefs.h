@@ -15,6 +15,10 @@ namespace tab_search_prefs {
 
 extern const char kTabSearchRecentlyClosedSectionExpanded[];
 
+extern const char kTabSearchTabIndex[];
+
+extern const char kTabOrganizationShowFRE[];
+
 void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry);
 
 }  // namespace tab_search_prefs

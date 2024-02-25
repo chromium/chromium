@@ -25,14 +25,13 @@ class AXAuraObjCache;
 class AXAuraObjWrapper;
 
 // This class exposes the views hierarchy as an accessibility tree permitting
-// use with other accessibility classes. Subclasses must implement GetRoot().
-// The root can be an existing object in the Widget/View hierarchy or a new node
-// (for example to create the "desktop" node for the extension API call
-// chrome.automation.getDesktop()).
+// use with other accessibility classes. The root can be an existing object in
+// the Widget/View hierarchy or a new node (for example to create the "desktop"
+// node for the extension API call chrome.automation.getDesktop()).
 class VIEWS_EXPORT AXTreeSourceViews
     : public ui::AXTreeSource<AXAuraObjWrapper*> {
  public:
-  AXTreeSourceViews(AXAuraObjWrapper* root,
+  AXTreeSourceViews(ui::AXNodeID root_id,
                     const ui::AXTreeID& tree_id,
                     AXAuraObjCache* cache);
   AXTreeSourceViews(const AXTreeSourceViews&) = delete;
@@ -65,13 +64,13 @@ class VIEWS_EXPORT AXTreeSourceViews
   const ui::AXTreeID tree_id() const { return tree_id_; }
 
  private:
-  // The top-level object to use for the AX tree. See class comment.
-  const raw_ptr<AXAuraObjWrapper, DanglingUntriaged> root_ = nullptr;
+  // The ID of the top-level object to use for the AX tree.
+  const ui::AXNodeID root_id_;
 
   // ID to use for the AX tree.
   const ui::AXTreeID tree_id_;
 
-  raw_ptr<views::AXAuraObjCache, DanglingUntriaged> cache_;
+  const raw_ptr<views::AXAuraObjCache> cache_;
 };
 
 }  // namespace views

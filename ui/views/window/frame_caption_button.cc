@@ -56,7 +56,7 @@ class FrameCaptionButton::HighlightPathGenerator
   ~HighlightPathGenerator() override = default;
 
   // views::HighlightPathGenerator:
-  absl::optional<gfx::RRectF> GetRoundRect(const gfx::RectF& rect) override {
+  std::optional<gfx::RRectF> GetRoundRect(const gfx::RectF& rect) override {
     gfx::Rect bounds = gfx::ToRoundedRect(rect);
     bounds.Inset(frame_caption_button_->GetInkdropInsets(bounds.size()));
     return gfx::RRectF(gfx::RectF(bounds),
@@ -402,7 +402,7 @@ void FrameCaptionButton::UpdateInkDropBaseColor() {
       GetColorWithMaxContrast(GetColorWithMaxContrast(button_color)));
 }
 
-BEGIN_METADATA(FrameCaptionButton, Button)
+BEGIN_METADATA(FrameCaptionButton)
 ADD_PROPERTY_METADATA(int, InkDropCornerRadius)
 ADD_READONLY_PROPERTY_METADATA(CaptionButtonIcon, Icon)
 ADD_PROPERTY_METADATA(bool, PaintAsActive)

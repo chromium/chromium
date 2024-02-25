@@ -10,7 +10,7 @@
 #include "base/containers/span.h"
 #include "base/strings/string_piece.h"
 #include "third_party/blink/public/common/common_export.h"
-#include "third_party/blink/public/common/origin_trials/origin_trial_feature.h"
+#include "third_party/blink/public/mojom/origin_trial_feature/origin_trial_feature.mojom-forward.h"
 
 namespace blink {
 
@@ -45,29 +45,31 @@ BLINK_COMMON_EXPORT bool IsTrialPersistentToNextResponse(
 BLINK_COMMON_EXPORT bool IsDeprecationTrial(base::StringPiece trial_name);
 
 // Returns the trial type of the given |feature|.
-BLINK_COMMON_EXPORT OriginTrialType GetTrialType(OriginTrialFeature feature);
+BLINK_COMMON_EXPORT OriginTrialType
+GetTrialType(blink::mojom::OriginTrialFeature feature);
 
 // Return origin trials features that are enabled by the passed |trial_name|.
 // The trial name MUST be valid (call IsTrialValid() before calling this
 // function).
-BLINK_COMMON_EXPORT base::span<const OriginTrialFeature> FeaturesForTrial(
-    base::StringPiece trial_name);
+BLINK_COMMON_EXPORT base::span<const blink::mojom::OriginTrialFeature>
+FeaturesForTrial(base::StringPiece trial_name);
 
 // Return the list of features which will also be enabled if the given
 // |feature| is enabled.
-BLINK_COMMON_EXPORT base::span<const OriginTrialFeature> GetImpliedFeatures(
-    OriginTrialFeature feature);
+BLINK_COMMON_EXPORT base::span<const blink::mojom::OriginTrialFeature>
+GetImpliedFeatures(blink::mojom::OriginTrialFeature feature);
 
 // Returns true if |feature| is enabled on the current platform.
-BLINK_COMMON_EXPORT bool FeatureEnabledForOS(OriginTrialFeature feature);
+BLINK_COMMON_EXPORT bool FeatureEnabledForOS(
+    blink::mojom::OriginTrialFeature feature);
 
 // Returns true if |feature| can be enabled across navigations.
 BLINK_COMMON_EXPORT bool FeatureEnabledForNavigation(
-    OriginTrialFeature feature);
+    blink::mojom::OriginTrialFeature feature);
 
 // Returns true if |feature| has an expiry grace period.
 BLINK_COMMON_EXPORT bool FeatureHasExpiryGracePeriod(
-    OriginTrialFeature feature);
+    blink::mojom::OriginTrialFeature feature);
 
 }  // namespace origin_trials
 

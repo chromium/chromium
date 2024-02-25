@@ -11,7 +11,6 @@
 #include "base/time/time.h"
 #include "mojo/public/cpp/bindings/message.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
-#include "services/device/compute_pressure/cpu_probe.h"
 
 namespace device {
 
@@ -24,8 +23,9 @@ std::unique_ptr<PressureManagerImpl> PressureManagerImpl::Create() {
 
 PressureManagerImpl::PressureManagerImpl(base::TimeDelta sampling_interval)
     // base::Unretained usage is safe here because the callback is only run
-    // while `cpu_probe_` is alive, and `cpu_probe_` is owned by this instance.
-    : cpu_probe_(CpuProbe::Create(
+    // while `cpu_probe_manager_` is alive, and `cpu_probe_manager_` is owned by
+    // this instance.
+    : cpu_probe_manager_(std::make_unique<CpuProbeManager>(
           sampling_interval,
           base::BindRepeating(&PressureManagerImpl::UpdateClients,
                               base::Unretained(this),
@@ -63,12 +63,12 @@ void PressureManagerImpl::AddClient(
 
   switch (source) {
     case mojom::PressureSource::kCpu: {
-      if (!cpu_probe_) {
+      if (!cpu_probe_manager_) {
         std::move(callback).Run(mojom::PressureStatus::kNotSupported);
         return;
       }
       clients_[source].Add(std::move(client));
-      cpu_probe_->EnsureStarted();
+      cpu_probe_manager_->EnsureStarted();
       std::move(callback).Run(mojom::PressureStatus::kOk);
       break;
     }
@@ -94,18 +94,18 @@ void PressureManagerImpl::OnClientRemoteDisconnected(
   if (clients_[source].empty()) {
     switch (source) {
       case mojom::PressureSource::kCpu: {
-        cpu_probe_->Stop();
+        cpu_probe_manager_->Stop();
         return;
       }
     }
   }
 }
 
-void PressureManagerImpl::SetCpuProbeForTesting(
-    std::unique_ptr<CpuProbe> cpu_probe) {
+void PressureManagerImpl::SetCpuProbeManagerForTesting(
+    std::unique_ptr<CpuProbeManager> cpu_probe_manager) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  cpu_probe_ = std::move(cpu_probe);
+  cpu_probe_manager_ = std::move(cpu_probe_manager);
 }
 
 }  // namespace device

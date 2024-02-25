@@ -4,14 +4,9 @@
 
 import("//build/config/compiler/compiler.gni")
 import("//build/config/sysroot.gni")
+import("//build/toolchain/cros/cros_config.gni")
 import("//build/toolchain/cros_toolchain.gni")
 import("//build/toolchain/gcc_toolchain.gni")
-
-declare_args() {
-  # If set, build lacros with Chromium's toolchain instead of with Chrome OS's.
-  # TODO(thakis): Set this to `= chromeos_is_browser_only` once that works.
-  lacros_use_chromium_toolchain = false
-}
 
 # This is mostly identical to gcc_toolchain, but handles relativizing toolchain
 # paths. This is needed for CrOS since these paths often change based on the
@@ -33,10 +28,10 @@ template("cros_toolchain") {
       # it the gomacc path via cmd-line arg. Otherwise, for both CrOS's host
       # wrapper (used in the ebuild) and Chrome's clang (used in Simple Chrome),
       # prepend gomacc like normal.
-      if (use_goma && toolchain_args.needs_gomacc_path_arg) {
+      if (use_goma && invoker.needs_gomacc_path_arg) {
         extra_cppflags += " --gomacc-path $goma_dir/gomacc"
       }
-      if (use_remoteexec && toolchain_args.needs_gomacc_path_arg) {
+      if (use_remoteexec && invoker.needs_gomacc_path_arg) {
         extra_cppflags += "--rewrapper-path $rbe_cros_cc_wrapper --rewrapper-cfg ${rbe_cc_cfg_file}"
       }
 
@@ -87,7 +82,7 @@ cros_toolchain("target") {
     extra_cxxflags = cros_target_extra_cxxflags
     extra_ldflags = cros_target_extra_ldflags
 
-    toolchain_args.needs_gomacc_path_arg = true
+    needs_gomacc_path_arg = true
   }
 }
 
@@ -125,7 +120,7 @@ cros_toolchain("nacl_bootstrap") {
     extra_cxxflags = cros_nacl_bootstrap_extra_cxxflags
     extra_ldflags = cros_nacl_bootstrap_extra_ldflags
 
-    toolchain_args.needs_gomacc_path_arg = true
+    needs_gomacc_path_arg = true
   }
 
   # We build for ARM32, even when the rest of the build targets ARM64.
@@ -171,7 +166,7 @@ cros_toolchain("nacl_helper_arm32") {
   extra_ldflags = ""
 
   if (!lacros_use_chromium_toolchain) {
-    toolchain_args.needs_gomacc_path_arg = true
+    needs_gomacc_path_arg = true
   }
 }
 
@@ -200,7 +195,7 @@ cros_toolchain("host") {
     extra_cxxflags = cros_host_extra_cxxflags
     extra_ldflags = cros_host_extra_ldflags
 
-    toolchain_args.needs_gomacc_path_arg = false
+    needs_gomacc_path_arg = false
   }
 }
 
@@ -234,7 +229,7 @@ cros_toolchain("v8_snapshot") {
     extra_cxxflags = cros_v8_snapshot_extra_cxxflags
     extra_ldflags = cros_v8_snapshot_extra_ldflags
 
-    toolchain_args.needs_gomacc_path_arg = false
+    needs_gomacc_path_arg = false
   }
 }
 
@@ -250,6 +245,10 @@ if (also_build_lacros_chrome_for_architecture != "") {
     } else if (also_build_lacros_chrome_for_architecture == "arm") {
       lacros_args =
           read_file("//build/args/chromeos/arm-generic-crostoolchain.gni",
+                    "scope")
+    } else if (also_build_lacros_chrome_for_architecture == "arm64") {
+      lacros_args =
+          read_file("//build/args/chromeos/arm64-generic-crostoolchain.gni",
                     "scope")
     } else {
       assert(false,
@@ -306,7 +305,7 @@ if (also_build_lacros_chrome_for_architecture != "") {
       extra_cxxflags = lacros_args.cros_target_extra_cxxflags
       extra_ldflags = lacros_args.cros_target_extra_ldflags
 
-      toolchain_args.needs_gomacc_path_arg = true
+      needs_gomacc_path_arg = true
     }
   }
 }

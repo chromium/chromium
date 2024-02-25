@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/views/relaunch_notification/relaunch_notification_controller.h"
 
 #include <memory>
+#include <optional>
 #include <utility>
 
 #include "ash/public/cpp/update_types.h"
@@ -26,7 +27,6 @@
 #include "chrome/test/base/testing_browser_process.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "ash/shell.h"
@@ -971,12 +971,10 @@ class RelaunchNotificationControllerPlatformImplTest : public ::testing::Test {
   content::BrowserTaskEnvironment task_environment_;
   RelaunchNotificationControllerPlatformImpl impl_;
   ash::AshTestHelper ash_test_helper_;
-  raw_ptr<ash::FakeChromeUserManager, DanglingUntriaged | ExperimentalAsh>
-      user_manager_;
+  raw_ptr<ash::FakeChromeUserManager, DanglingUntriaged> user_manager_;
   std::unique_ptr<user_manager::ScopedUserManager> scoped_user_manager_;
   std::unique_ptr<display::test::ActionLogger> logger_;
-  raw_ptr<display::NativeDisplayDelegate, ExperimentalAsh>
-      native_display_delegate_;
+  raw_ptr<display::NativeDisplayDelegate> native_display_delegate_;
 };
 
 // SynchronousNotification
@@ -1148,7 +1146,7 @@ class RelaunchNotificationControllerPlatformImplTest
   RelaunchNotificationControllerPlatformImpl& platform_impl() { return *impl_; }
 
  private:
-  absl::optional<RelaunchNotificationControllerPlatformImpl> impl_;
+  std::optional<RelaunchNotificationControllerPlatformImpl> impl_;
 };
 
 // Flaky on all platforms: https://crbug.com/1294032

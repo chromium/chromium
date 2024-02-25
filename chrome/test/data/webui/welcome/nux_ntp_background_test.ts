@@ -7,8 +7,9 @@ import 'chrome://welcome/ntp_background/nux_ntp_background.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {NtpBackgroundMetricsProxyImpl} from 'chrome://welcome/ntp_background/ntp_background_metrics_proxy.js';
-import {NtpBackgroundData, NtpBackgroundProxyImpl} from 'chrome://welcome/ntp_background/ntp_background_proxy.js';
-import {NuxNtpBackgroundElement} from 'chrome://welcome/ntp_background/nux_ntp_background.js';
+import type {NtpBackgroundData} from 'chrome://welcome/ntp_background/ntp_background_proxy.js';
+import {NtpBackgroundProxyImpl} from 'chrome://welcome/ntp_background/ntp_background_proxy.js';
+import type {NuxNtpBackgroundElement} from 'chrome://welcome/ntp_background/nux_ntp_background.js';
 
 import {TestMetricsProxy} from './test_metrics_proxy.js';
 import {TestNtpBackgroundProxy} from './test_ntp_background_proxy.js';
@@ -161,14 +162,6 @@ suite('NuxNtpBackgroundTest', function() {
             testNtpBackgroundProxy.getCallCount(
                 'recordBackgroundImageFailedToLoad'));
       });
-
-  test('test metrics for load times of background images', function() {
-    testNtpBackgroundProxy.setPreloadImageSuccess(true);
-    const options =
-        testElement.shadowRoot!.querySelectorAll<HTMLButtonElement>('.option');
-    options[1]!.click();
-    return testNtpBackgroundProxy.whenCalled('recordBackgroundImageLoadTime');
-  });
 
   test('test metrics for doing nothing and navigating away', function() {
     testElement.onRouteUnload();

@@ -39,11 +39,11 @@ const CSSValue* CSSTimeInterpolationType::CreateCSSValue(
 
 InterpolationValue CSSTimeInterpolationType::CreateTimeValue(
     double seconds) const {
-  return InterpolationValue(std::make_unique<InterpolableNumber>(seconds));
+  return InterpolationValue(MakeGarbageCollected<InterpolableNumber>(seconds));
 }
 
 // static
-absl::optional<double> CSSTimeInterpolationType::GetSeconds(
+std::optional<double> CSSTimeInterpolationType::GetSeconds(
     const CSSPropertyID& property,
     const ComputedStyle& style) {
   switch (property) {
@@ -53,11 +53,11 @@ absl::optional<double> CSSTimeInterpolationType::GetSeconds(
       return style.PopoverHideDelay();
     default:
       NOTREACHED();
-      return absl::optional<double>();
+      return std::optional<double>();
   }
 }
 
-absl::optional<double> CSSTimeInterpolationType::GetSeconds(
+std::optional<double> CSSTimeInterpolationType::GetSeconds(
     const ComputedStyle& style) const {
   return GetSeconds(CssProperty().PropertyID(), style);
 }
@@ -120,19 +120,18 @@ InterpolationValue CSSTimeInterpolationType::MaybeConvertInitial(
 class InheritedTimeChecker : public CSSInterpolationType::CSSConversionChecker {
  public:
   InheritedTimeChecker(const CSSProperty& property,
-                       absl::optional<double> seconds)
+                       std::optional<double> seconds)
       : property_(property), seconds_(seconds) {}
 
  private:
   bool IsValid(const StyleResolverState& state,
                const InterpolationValue& underlying) const final {
-    absl::optional<double> parent_seconds =
-        CSSTimeInterpolationType::GetSeconds(property_.PropertyID(),
-                                             *state.ParentStyle());
+    std::optional<double> parent_seconds = CSSTimeInterpolationType::GetSeconds(
+        property_.PropertyID(), *state.ParentStyle());
     return seconds_ == parent_seconds;
   }
   const CSSProperty& property_;
-  const absl::optional<double> seconds_;
+  const std::optional<double> seconds_;
 };
 
 InterpolationValue CSSTimeInterpolationType::MaybeConvertInherit(
@@ -140,9 +139,9 @@ InterpolationValue CSSTimeInterpolationType::MaybeConvertInherit(
     ConversionCheckers& conversion_checkers) const {
   if (!state.ParentStyle())
     return nullptr;
-  absl::optional<double> inherited_seconds = GetSeconds(*state.ParentStyle());
-  conversion_checkers.push_back(
-      std::make_unique<InheritedTimeChecker>(CssProperty(), inherited_seconds));
+  std::optional<double> inherited_seconds = GetSeconds(*state.ParentStyle());
+  conversion_checkers.push_back(MakeGarbageCollected<InheritedTimeChecker>(
+      CssProperty(), inherited_seconds));
   if (!inherited_seconds)
     return nullptr;
   return CreateTimeValue(*inherited_seconds);

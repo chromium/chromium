@@ -4,13 +4,16 @@
 
 import("//build/config/ios/asset_catalog.gni")
 
-colorset("background_color_swiftui_ios14") {
-  sources = [ "background_color_swiftui_ios14.colorset/Contents.json" ]
-}
-
-colorset("grouped_primary_background_color_swiftui_ios14") {
-  sources = [
-    "grouped_primary_background_color_swiftui_ios14.colorset/Contents.json",
+group("resources") {
+  deps = [
+    ":omnibox_popout_overlay_color",
+    ":omnibox_popout_suggestion_row_separator_color",
+    ":omnibox_suggestion_answer_icon_color",
+    ":omnibox_suggestion_answer_icon_dark_color",
+    ":omnibox_suggestion_icon_color",
+    ":omnibox_suggestion_icon_dark_color",
+    ":omnibox_suggestion_row_highlight_color",
+    ":omnibox_suggestion_row_separator_color",
   ]
 }
 
@@ -33,4 +36,17 @@ colorset("omnibox_suggestion_icon_dark_color") {
 
 colorset("omnibox_suggestion_row_highlight_color") {
   sources = [ "omnibox_suggestion_row_highlight_color.colorset/Contents.json" ]
+}
+
+colorset("omnibox_suggestion_row_separator_color") {
+  sources = [ "omnibox_suggestion_row_separator_color.colorset/Contents.json" ]
+}
+
+colorset("omnibox_popout_suggestion_row_separator_color") {
+  sources =
+      [ "omnibox_popout_suggestion_row_separator_color.colorset/Contents.json" ]
+}
+
+colorset("omnibox_popout_overlay_color") {
+  sources = [ "omnibox_popout_overlay_color.colorset/Contents.json" ]
 }

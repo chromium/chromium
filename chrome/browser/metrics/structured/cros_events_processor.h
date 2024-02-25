@@ -25,6 +25,8 @@ class CrOSEventsProcessor : public EventsProcessorInterface {
   // EventsProcessorInterface:
   bool ShouldProcessOnEventRecord(const Event& event) override;
   void OnEventsRecord(Event* event) override;
+  void OnEventRecorded(StructuredEventProto* event) override;
+
   void OnProvideIndependentMetrics(
       ChromeUserMetricsExtension* uma_proto) override;
 

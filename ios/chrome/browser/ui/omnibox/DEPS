@@ -6,3 +6,9 @@ include_rules = [
   "+ios/chrome/browser/ui/ntp/metrics/home_metrics.h",
   "+ios/chrome/browser/ui/toolbar/public",
 ]
+
+specific_include_rules = {
+  "^omnibox_coordinator.mm": [
+    "+ios/chrome/browser/ui/bubble/bubble_presenter.h",
+  ],
+}

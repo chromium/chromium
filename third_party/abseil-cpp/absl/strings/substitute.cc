@@ -22,6 +22,7 @@
 
 #include "absl/base/config.h"
 #include "absl/base/internal/raw_logging.h"
+#include "absl/base/nullability.h"
 #include "absl/strings/ascii.h"
 #include "absl/strings/escaping.h"
 #include "absl/strings/internal/resize_uninitialized.h"
@@ -33,9 +34,9 @@ namespace absl {
 ABSL_NAMESPACE_BEGIN
 namespace substitute_internal {
 
-void SubstituteAndAppendArray(std::string* output, absl::string_view format,
-                              const absl::string_view* args_array,
-                              size_t num_args) {
+void SubstituteAndAppendArray(
+    absl::Nonnull<std::string*> output, absl::string_view format,
+    absl::Nullable<const absl::string_view*> args_array, size_t num_args) {
   // Determine total size needed.
   size_t size = 0;
   for (size_t i = 0; i < format.size(); i++) {
@@ -104,7 +105,7 @@ void SubstituteAndAppendArray(std::string* output, absl::string_view format,
   assert(target == output->data() + output->size());
 }
 
-Arg::Arg(const void* value) {
+Arg::Arg(absl::Nullable<const void*> value) {
   static_assert(sizeof(scratch_) >= sizeof(value) * 2 + 2,
                 "fix sizeof(scratch_)");
   if (value == nullptr) {

@@ -4,6 +4,7 @@
 
 #include "chromeos/ash/services/secure_channel/nearby_initiator_connection_attempt.h"
 
+#include "base/functional/bind.h"
 #include "base/memory/ptr_util.h"
 #include "chromeos/ash/services/secure_channel/nearby_initiator_operation.h"
 
@@ -57,6 +58,15 @@ NearbyInitiatorConnectionAttempt::CreateConnectToDeviceOperation(
         ConnectionFailedCallback& failure_callback) {
   return NearbyInitiatorOperation::Factory::Create(
       nearby_connection_manager_, std::move(success_callback), failure_callback,
+      base::BindRepeating(
+          &NearbyInitiatorConnectionAttempt::OnBleDiscoveryStateChanged,
+          weak_ptr_factory_.GetWeakPtr()),
+      base::BindRepeating(
+          &NearbyInitiatorConnectionAttempt::OnNearbyConnectionStateChanged,
+          weak_ptr_factory_.GetWeakPtr()),
+      base::BindRepeating(
+          &NearbyInitiatorConnectionAttempt::OnSecureChannelStateChanged,
+          weak_ptr_factory_.GetWeakPtr()),
       device_id_pair, connection_priority);
 }
 

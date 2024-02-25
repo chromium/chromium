@@ -12,9 +12,9 @@
 #include "base/types/cxx23_to_underlying.h"
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/ui/autofill/autofill_popup_controller.h"
+#include "components/autofill/core/browser/filling_product.h"
 #include "components/autofill/core/browser/ui/autofill_resource_utils.h"
 #include "components/autofill/core/browser/ui/popup_item_ids.h"
-#include "components/autofill/core/browser/ui/popup_types.h"
 #include "components/autofill/core/browser/ui/suggestion.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/grit/components_scaled_resources.h"
@@ -67,8 +67,8 @@ NSImage* GetCreditCardTouchBarImage(int iconId) {
     (autofill::AutofillPopupController*)controller {
   if ((self = [super init])) {
     _controller = controller;
-    _is_credit_card_popup =
-        (_controller->GetPopupType() == autofill::PopupType::kCreditCards);
+    _is_credit_card_popup = (_controller->GetMainFillingProduct() ==
+                             autofill::FillingProduct::kCreditCard);
   }
   return self;
 }
@@ -132,8 +132,8 @@ NSImage* GetCreditCardTouchBarImage(int iconId) {
   std::vector<std::vector<autofill::Suggestion::Text>> suggestion_labels =
       _controller->GetSuggestionLabelsAt(row);
   if (!suggestion_labels.empty()) {
-    DCHECK_EQ(suggestion_labels.size(), 1U);
-    DCHECK_EQ(suggestion_labels[0].size(), 1U);
+    CHECK_GT(suggestion_labels.size(), 0U);
+    CHECK_GT(suggestion_labels[0].size(), 0U);
     subtext =
         base::SysUTF16ToNSString(std::move(suggestion_labels[0][0].value));
   }
@@ -189,7 +189,7 @@ NSImage* GetCreditCardTouchBarImage(int iconId) {
 }
 
 - (void)acceptCreditCard:(id)sender {
-  _controller->AcceptSuggestion([sender tag]);
+  _controller->AcceptSuggestion([sender tag], base::TimeTicks::Now());
 }
 
 - (void)setIsCreditCardPopup:(bool)is_credit_card_popup {

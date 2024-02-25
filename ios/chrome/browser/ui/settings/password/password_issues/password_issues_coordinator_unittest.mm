@@ -7,22 +7,24 @@
 #import "base/memory/scoped_refptr.h"
 #import "base/test/bind.h"
 #import "base/test/ios/wait_util.h"
+#import "base/test/metrics/histogram_tester.h"
 #import "base/test/scoped_feature_list.h"
 #import "components/password_manager/core/browser/password_manager_test_utils.h"
-#import "components/password_manager/core/browser/test_password_store.h"
-#import "ios/chrome/browser/passwords/ios_chrome_password_check_manager.h"
-#import "ios/chrome/browser/passwords/ios_chrome_password_check_manager_factory.h"
-#import "ios/chrome/browser/passwords/ios_chrome_password_store_factory.h"
-#import "ios/chrome/browser/passwords/password_checkup_utils.h"
+#import "components/password_manager/core/browser/password_store/test_password_store.h"
+#import "ios/chrome/browser/passwords/model/ios_chrome_password_check_manager.h"
+#import "ios/chrome/browser/passwords/model/ios_chrome_password_check_manager_factory.h"
+#import "ios/chrome/browser/passwords/model/ios_chrome_profile_password_store_factory.h"
+#import "ios/chrome/browser/passwords/model/metrics/ios_password_manager_metrics.h"
+#import "ios/chrome/browser/passwords/model/password_checkup_utils.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
-#import "ios/chrome/browser/shared/coordinator/scene/scene_state_browser_agent.h"
 #import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/shared/model/browser_state/test_chrome_browser_state.h"
 #import "ios/chrome/browser/shared/public/commands/application_commands.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
-#import "ios/chrome/browser/sync/mock_sync_service_utils.h"
-#import "ios/chrome/browser/sync/sync_service_factory.h"
+#import "ios/chrome/browser/shared/public/commands/settings_commands.h"
+#import "ios/chrome/browser/sync/model/mock_sync_service_utils.h"
+#import "ios/chrome/browser/sync/model/sync_service_factory.h"
 #import "ios/chrome/browser/ui/settings/password/password_issues/password_issues_coordinator.h"
 #import "ios/chrome/browser/ui/settings/password/password_issues/password_issues_table_view_controller.h"
 #import "ios/chrome/browser/ui/settings/password/password_manager_ui_features.h"
@@ -49,7 +51,7 @@ class PasswordIssuesCoordinatorTest : public PlatformTest {
     TestChromeBrowserState::Builder builder;
     // Add test password store. Used by the mediator.
     builder.AddTestingFactory(
-        IOSChromePasswordStoreFactory::GetInstance(),
+        IOSChromeProfilePasswordStoreFactory::GetInstance(),
         base::BindRepeating(
             &password_manager::BuildPasswordStore<
                 web::BrowserState, password_manager::TestPasswordStore>));
@@ -57,8 +59,13 @@ class PasswordIssuesCoordinatorTest : public PlatformTest {
     builder.AddTestingFactory(SyncServiceFactory::GetInstance(),
                               base::BindRepeating(&CreateMockSyncService));
 
+    // Create scene state for reauthentication coordinator.
+    scene_state_ = [[SceneState alloc] initWithAppState:nil];
+    scene_state_.activationLevel = SceneActivationLevelForegroundActive;
+
     browser_state_ = builder.Build();
-    browser_ = std::make_unique<TestBrowser>(browser_state_.get());
+    browser_ =
+        std::make_unique<TestBrowser>(browser_state_.get(), scene_state_);
 
     // Keep a scoped reference to IOSChromePasswordCheckManager until the test
     // finishes, otherwise it gets destroyed as soon as PasswordIssuesMediator
@@ -68,17 +75,17 @@ class PasswordIssuesCoordinatorTest : public PlatformTest {
             browser_state_.get());
 
     // Mock ApplicationCommands. Since ApplicationCommands conforms to
-    // ApplicationSettingsCommands, it must be mocked as well.
+    // SettingsCommands, it must be mocked as well.
     mocked_application_commands_handler_ =
         OCMStrictProtocolMock(@protocol(ApplicationCommands));
     [browser_->GetCommandDispatcher()
         startDispatchingToTarget:mocked_application_commands_handler_
                      forProtocol:@protocol(ApplicationCommands)];
     id mocked_application_settings_command_handler =
-        OCMProtocolMock(@protocol(ApplicationSettingsCommands));
+        OCMProtocolMock(@protocol(SettingsCommands));
     [browser_->GetCommandDispatcher()
         startDispatchingToTarget:mocked_application_settings_command_handler
-                     forProtocol:@protocol(ApplicationSettingsCommands)];
+                     forProtocol:@protocol(SettingsCommands)];
 
     // Init navigation controller with a root vc.
     base_navigation_controller_ = [[UINavigationController alloc]
@@ -96,11 +103,6 @@ class PasswordIssuesCoordinatorTest : public PlatformTest {
                          browser:browser_.get()];
 
     coordinator_.reauthModule = mock_reauth_module_;
-
-    // Create scene state for reauthentication coordinator.
-    scene_state_ = [[SceneState alloc] initWithAppState:nil];
-    scene_state_.activationLevel = SceneActivationLevelForegroundActive;
-    SceneStateBrowserAgent::CreateForBrowser(browser_.get(), scene_state_);
 
     scoped_window_.Get().rootViewController = base_navigation_controller_;
   }
@@ -137,6 +139,14 @@ class PasswordIssuesCoordinatorTest : public PlatformTest {
         isKindOfClass:[PasswordIssuesTableViewController class]]);
   }
 
+  // Verifies that a given number of password issues visits have been recorded.
+  void CheckPasswordIssuesVisitMetricsCount(int count) {
+    histogram_tester_.ExpectUniqueSample(
+        /*name=*/password_manager::kPasswordManagerSurfaceVisitHistogramName,
+        /*sample=*/password_manager::PasswordManagerSurface::kPasswordIssues,
+        /*count=*/count);
+  }
+
   web::WebTaskEnvironment task_environment_;
   std::unique_ptr<ChromeBrowserState> browser_state_;
   std::unique_ptr<TestBrowser> browser_;
@@ -149,14 +159,19 @@ class PasswordIssuesCoordinatorTest : public PlatformTest {
   MockReauthenticationModule* mock_reauth_module_ = nil;
   base::test::ScopedFeatureList scoped_feature_list_;
   id mocked_application_commands_handler_;
+  base::HistogramTester histogram_tester_;
   PasswordIssuesCoordinator* coordinator_ = nil;
 };
 
 // Tests that Password Issues is presented without authentication required.
 TEST_F(PasswordIssuesCoordinatorTest, PasswordIssuesPresentedWithoutAuth) {
+  CheckPasswordIssuesVisitMetricsCount(0);
+
   StartCoordinatorSkippingAuth(/*skip_auth_on_start=*/YES);
 
   CheckPasswordIssuesIsPresented();
+
+  CheckPasswordIssuesVisitMetricsCount(1);
 }
 
 // Tests that Password Issues is presented only after passing authentication
@@ -166,10 +181,43 @@ TEST_F(PasswordIssuesCoordinatorTest, PasswordIssuesPresentedWithAuth) {
   // Password Issues should be covered until auth is passed.
   CheckPasswordIssuesIsNotPresented();
 
-  [mock_reauth_module_ returnMockedReathenticationResult];
+  // No visits logged until successful auth.
+  CheckPasswordIssuesVisitMetricsCount(0);
 
-  // Successful auth should leave Password Issues visible.
+  [mock_reauth_module_ returnMockedReauthenticationResult];
+
+  // Successful auth should leave Password Issues visible and record visit.
   CheckPasswordIssuesIsPresented();
+
+  CheckPasswordIssuesVisitMetricsCount(1);
+}
+
+// Tests that Password Issues visits are only logged once after the first
+// successful authentication.
+TEST_F(PasswordIssuesCoordinatorTest, PasswordIssuesVisitRecordedOnlyOnce) {
+  StartCoordinatorSkippingAuth(/*skip_auth_on_start=*/NO);
+
+  // Password Issues should be covered until auth is passed.
+  CheckPasswordIssuesIsNotPresented();
+
+  // No visits logged until successful auth.
+  CheckPasswordIssuesVisitMetricsCount(0);
+
+  [mock_reauth_module_ returnMockedReauthenticationResult];
+  // Visit should be recorded after passing auth.
+  CheckPasswordIssuesVisitMetricsCount(1);
+
+  // Simulate scene transitioning to the background and back to foreground. This
+  // should trigger an auth request.
+  scene_state_.activationLevel = SceneActivationLevelForegroundInactive;
+  scene_state_.activationLevel = SceneActivationLevelBackground;
+  scene_state_.activationLevel = SceneActivationLevelForegroundInactive;
+  scene_state_.activationLevel = SceneActivationLevelForegroundActive;
+
+  [mock_reauth_module_ returnMockedReauthenticationResult];
+
+  // Validate no new visits were recorded.
+  CheckPasswordIssuesVisitMetricsCount(1);
 }
 
 }  // namespace password_manager

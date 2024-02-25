@@ -147,7 +147,7 @@ class COMPONENT_EXPORT(APP_RESTORE) ArcReadHandler {
   // |arc_window_candidates_| is used to record those initialized ARC app
   // windows, whose tasks have not been created. Once the task for the window is
   // created, the window is removed from |arc_window_candidates_|.
-  std::set<aura::Window*> arc_window_candidates_;
+  std::set<raw_ptr<aura::Window, SetExperimental>> arc_window_candidates_;
 
   // ARC app tasks could be created before the window initialized.
   // `not_restored_task_ids_` is used to record tasks not created by the restore
@@ -155,7 +155,7 @@ class COMPONENT_EXPORT(APP_RESTORE) ArcReadHandler {
   // from the hidden container.
   std::set<int32_t> not_restored_task_ids_;
 
-  raw_ptr<Delegate, ExperimentalAsh> delegate_;
+  raw_ptr<Delegate> delegate_;
 };
 
 }  // namespace app_restore

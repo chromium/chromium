@@ -3,17 +3,16 @@
 // found in the LICENSE file.
 
 import '../cr_icon_button/cr_icon_button.js';
-import '../cr_icons.css.js';
-import '../cr_hidden_style.css.js';
-import '../cr_shared_vars.css.js';
 import '../icons.html.js';
 import '//resources/polymer/v3_0/iron-media-query/iron-media-query.js';
 import './cr_toolbar_search_field.js';
 
-import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {assert} from '//resources/js/assert.js';
+import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
 
-import {getTemplate} from './cr_toolbar.html.js';
-import {CrToolbarSearchFieldElement} from './cr_toolbar_search_field.js';
+import {getCss} from './cr_toolbar.css.js';
+import {getHtml} from './cr_toolbar.html.js';
+import type {CrToolbarSearchFieldElement} from './cr_toolbar_search_field.js';
 
 export interface CrToolbarElement {
   $: {
@@ -21,51 +20,53 @@ export interface CrToolbarElement {
   };
 }
 
-export class CrToolbarElement extends PolymerElement {
+export class CrToolbarElement extends CrLitElement {
   static get is() {
     return 'cr-toolbar';
   }
 
-  static get template() {
-    return getTemplate();
+  static override get styles() {
+    return getCss();
   }
 
-  static get properties() {
+  override render() {
+    return getHtml.bind(this)();
+  }
+
+  static override get properties() {
     return {
       // Name to display in the toolbar, in titlecase.
-      pageName: String,
+      pageName: {type: String},
 
       // Prompt text to display in the search field.
-      searchPrompt: String,
+      searchPrompt: {type: String},
 
       // Tooltip to display on the clear search button.
-      clearLabel: String,
+      clearLabel: {type: String},
 
       // Tooltip to display on the menu button.
-      menuLabel: String,
+      menuLabel: {type: String},
 
       // Value is proxied through to cr-toolbar-search-field. When true,
       // the search field will show a processing spinner.
-      spinnerActive: Boolean,
+      spinnerActive: {type: Boolean},
 
       // Controls whether the menu button is shown at the start of the menu.
-      showMenu: {type: Boolean, value: false},
+      showMenu: {type: Boolean},
 
       // Controls whether the search field is shown.
-      showSearch: {type: Boolean, value: true},
+      showSearch: {type: Boolean},
 
       // Controls whether the search field is autofocused.
       autofocus: {
         type: Boolean,
-        value: false,
-        reflectToAttribute: true,
+        reflect: true,
       },
 
       // True when the toolbar is displaying in narrow mode.
       narrow: {
         type: Boolean,
-        reflectToAttribute: true,
-        readonly: true,
+        reflect: true,
         notify: true,
       },
 
@@ -75,18 +76,16 @@ export class CrToolbarElement extends PolymerElement {
        */
       narrowThreshold: {
         type: Number,
-        value: 900,
       },
 
       alwaysShowLogo: {
         type: Boolean,
-        value: false,
-        reflectToAttribute: true,
+        reflect: true,
       },
 
       showingSearch_: {
         type: Boolean,
-        reflectToAttribute: true,
+        reflect: true,
       },
     };
   }
@@ -96,38 +95,43 @@ export class CrToolbarElement extends PolymerElement {
   clearLabel: string;
   menuLabel: string;
   spinnerActive: boolean;
-  showMenu: boolean;
-  showSearch: boolean;
-  override autofocus: boolean;
+  showMenu: boolean = false;
+  showSearch: boolean = true;
+  override autofocus: boolean = false;
   narrow: boolean;
-  narrowThreshold: number;
-  alwaysShowLogo: boolean;
-  private showingSearch_: boolean;
+  narrowThreshold: number = 900;
+  alwaysShowLogo: boolean = false;
+  protected showingSearch_: boolean;
 
   getSearchField(): CrToolbarSearchFieldElement {
     return this.$.search;
   }
 
-  private onMenuClick_() {
-    this.dispatchEvent(new CustomEvent(
-        'cr-toolbar-menu-click', {bubbles: true, composed: true}));
+  protected onMenuClick_() {
+    this.fire('cr-toolbar-menu-click');
   }
 
-  focusMenuButton() {
-    requestAnimationFrame(() => {
-      // Wait for next animation frame in case dom-if has not applied yet and
-      // added the menu button.
-      const menuButton =
-          this.shadowRoot!.querySelector<HTMLElement>('#menuButton');
-      if (menuButton) {
-        menuButton.focus();
-      }
-    });
+  async focusMenuButton() {
+    assert(this.showMenu);
+    // Wait for rendering to finish to ensure menuButton exists on the DOM.
+    await this.updateComplete;
+    const menuButton =
+        this.shadowRoot!.querySelector<HTMLElement>('#menuButton');
+    assert(!!menuButton);
+    menuButton.focus();
   }
 
   isMenuFocused(): boolean {
     return !!this.shadowRoot!.activeElement &&
         this.shadowRoot!.activeElement.id === 'menuButton';
+  }
+
+  protected onShowingSearchChanged_(e: CustomEvent<{value: boolean}>) {
+    this.showingSearch_ = e.detail.value;
+  }
+
+  protected onQueryMatchesChanged_(e: CustomEvent<{value: boolean}>) {
+    this.narrow = e.detail.value;
   }
 }
 

@@ -185,6 +185,13 @@ class MODULES_EXPORT UserMediaRequest final
     return dynamic_surface_switching_requested_;
   }
 
+  void set_exclude_monitor_type_surfaces(bool value) {
+    exclude_monitor_type_surfaces_ = value;
+  }
+  bool exclude_monitor_type_surfaces() const {
+    return exclude_monitor_type_surfaces_;
+  }
+
   void set_suppress_local_audio_playback(bool value) {
     suppress_local_audio_playback_ = value;
   }
@@ -203,10 +210,10 @@ class MODULES_EXPORT UserMediaRequest final
     transferred_track_transfer_id_ = transfer_id;
     transferred_track_ = track;
   }
-  absl::optional<base::UnguessableToken> GetSessionId() const {
+  std::optional<base::UnguessableToken> GetSessionId() const {
     return transferred_track_session_id_;
   }
-  absl::optional<base::UnguessableToken> GetTransferId() const {
+  std::optional<base::UnguessableToken> GetTransferId() const {
     return transferred_track_transfer_id_;
   }
   bool IsTransferredTrackRequest() const {
@@ -231,6 +238,7 @@ class MODULES_EXPORT UserMediaRequest final
   mojom::blink::PreferredDisplaySurface preferred_display_surface_ =
       mojom::blink::PreferredDisplaySurface::NO_PREFERENCE;
   bool dynamic_surface_switching_requested_ = true;
+  bool exclude_monitor_type_surfaces_ = false;
   bool suppress_local_audio_playback_ = false;
   const bool auto_select_all_screens_ = false;
   bool should_disable_hardware_noise_suppression_;
@@ -243,8 +251,8 @@ class MODULES_EXPORT UserMediaRequest final
   IdentifiableSurface surface_;
   bool is_resolved_ = false;
 
-  absl::optional<base::UnguessableToken> transferred_track_session_id_;
-  absl::optional<base::UnguessableToken> transferred_track_transfer_id_;
+  std::optional<base::UnguessableToken> transferred_track_session_id_;
+  std::optional<base::UnguessableToken> transferred_track_transfer_id_;
   Member<TransferredMediaStreamTrack> transferred_track_;
 };
 

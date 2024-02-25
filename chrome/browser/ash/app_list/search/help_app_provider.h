@@ -50,7 +50,7 @@ class HelpAppResult : public ChromeSearchResult {
   void Open(int event_flags) override;
 
  private:
-  const raw_ptr<Profile, ExperimentalAsh> profile_;
+  const raw_ptr<Profile> profile_;
   const std::string url_path_;
   const std::string help_app_content_id_;
 };
@@ -88,9 +88,9 @@ class HelpAppProvider : public SearchProvider,
   void OnLoadIcon(apps::IconValuePtr icon_value);
   void LoadIcon();
 
-  const raw_ptr<Profile, ExperimentalAsh> profile_;
+  const raw_ptr<Profile> profile_;
 
-  raw_ptr<ash::help_app::SearchHandler, ExperimentalAsh> search_handler_;
+  raw_ptr<ash::help_app::SearchHandler> search_handler_;
   ui::ImageModel icon_;
 
   // Last search query. It is reset when the view is closed.

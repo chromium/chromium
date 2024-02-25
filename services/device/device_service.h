@@ -20,7 +20,6 @@
 #include "services/device/geolocation/geolocation_provider_impl.h"
 #include "services/device/geolocation/public_ip_address_geolocation_provider.h"
 #include "services/device/public/mojom/battery_monitor.mojom.h"
-#include "services/device/public/mojom/device_posture_provider.mojom.h"
 #include "services/device/public/mojom/device_service.mojom.h"
 #include "services/device/public/mojom/fingerprint.mojom.h"
 #include "services/device/public/mojom/geolocation.mojom.h"
@@ -75,13 +74,8 @@ class HidManagerImpl;
 class SerialPortManagerImpl;
 #endif
 
-#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_WIN)
-class DevicePostureProviderImpl;
-#endif
-
 class DeviceService;
 class GeolocationManager;
-class PlatformSensorProvider;
 class PowerMonitorMessageBroadcaster;
 class PressureManagerImpl;
 class PublicIpAddressLocationNotifier;
@@ -127,8 +121,8 @@ class DeviceService : public mojom::DeviceService {
 
   void AddReceiver(mojo::PendingReceiver<mojom::DeviceService> receiver);
 
-  void SetPlatformSensorProviderForTesting(
-      std::unique_ptr<PlatformSensorProvider> provider);
+  void SetSensorProviderImplForTesting(
+      std::unique_ptr<SensorProviderImpl> sensor_provider);
 
   // Supports global override of GeolocationContext binding within the service.
   using GeolocationContextBinder = base::RepeatingCallback<void(
@@ -205,11 +199,6 @@ class DeviceService : public mojom::DeviceService {
   void BindSensorProvider(
       mojo::PendingReceiver<mojom::SensorProvider> receiver) override;
 
-#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_WIN)
-  void BindDevicePostureProvider(
-      mojo::PendingReceiver<mojom::DevicePostureProvider> receiver) override;
-#endif
-
   void BindSerialPortManager(
       mojo::PendingReceiver<mojom::SerialPortManager> receiver) override;
 
@@ -263,10 +252,6 @@ class DeviceService : public mojom::DeviceService {
 #if defined(IS_SERIAL_ENABLED_PLATFORM)
   base::SequenceBound<SerialPortManagerImpl> serial_port_manager_;
 #endif  // defined(IS_SERIAL_ENABLED_PLATFORM)
-
-#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_WIN)
-  std::unique_ptr<DevicePostureProviderImpl> device_posture_provider_;
-#endif
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   std::unique_ptr<MtpDeviceManager> mtp_device_manager_;

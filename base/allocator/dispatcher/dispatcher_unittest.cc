@@ -2,22 +2,23 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "base/allocator/partition_allocator/partition_root.h"
+#include "base/allocator/partition_allocator/src/partition_alloc/partition_root.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 #include "base/allocator/dispatcher/configuration.h"
 #include "base/allocator/dispatcher/dispatcher.h"
+#include "base/allocator/dispatcher/notification_data.h"
 #include "base/allocator/dispatcher/testing/dispatcher_test.h"
 #include "base/allocator/dispatcher/testing/tools.h"
-#include "base/allocator/partition_allocator/partition_alloc_buildflags.h"
+#include "base/allocator/partition_allocator/src/partition_alloc/partition_alloc_buildflags.h"
 #include "build/build_config.h"
 
 #if BUILDFLAG(USE_PARTITION_ALLOC)
-#include "base/allocator/partition_allocator/partition_alloc_for_testing.h"
+#include "base/allocator/partition_allocator/src/partition_alloc/partition_alloc_for_testing.h"
 #endif
 
 #if BUILDFLAG(USE_ALLOCATOR_SHIM)
-#include "base/allocator/partition_allocator/shim/allocator_shim.h"
+#include "base/allocator/partition_allocator/src/partition_alloc/shim/allocator_shim.h"
 #endif
 
 #include <tuple>
@@ -34,13 +35,12 @@ using testing::DispatcherTest;
 // Allocator and Allocator Shim, implementing an observer with Google Mock
 // results in endless recursion.
 struct ObserverMock {
-  void OnAllocation(void* address,
-                    size_t size,
-                    AllocationSubsystem sub_system,
-                    const char* type_name) {
+  void OnAllocation(const AllocationNotificationData& notification_data) {
     ++on_allocation_calls_;
   }
-  void OnFree(void* address) { ++on_free_calls_; }
+  void OnFree(const FreeNotificationData& notification_data) {
+    ++on_free_calls_;
+  }
 
   void Reset() {
     on_allocation_calls_ = 0;
@@ -99,7 +99,7 @@ TEST_F(BaseAllocatorDispatcherTest, VerifyInitialization) {
 // because it makes PartitionAlloc take a different path that doesn't provide
 // notifications to observer hooks.
 struct PartitionAllocator {
-  void* Alloc(size_t size) { return alloc_.AllocWithFlags(0, size, nullptr); }
+  void* Alloc(size_t size) { return alloc_.AllocInline(size); }
   void Free(void* data) { alloc_.Free(data); }
   ~PartitionAllocator() {
     // Use |DisallowLeaks| to confirm that there is no memory allocated and

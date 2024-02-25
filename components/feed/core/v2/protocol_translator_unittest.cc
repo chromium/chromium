@@ -23,6 +23,8 @@
 #include "components/feed/core/v2/proto_util.h"
 #include "components/feed/core/v2/test/proto_printer.h"
 #include "components/feed/feed_feature_list.h"
+#include "components/supervised_user/core/browser/proto/get_discover_feed_response.pb.h"
+#include "components/supervised_user/core/common/buildflags.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace feed {
@@ -40,7 +42,8 @@ AccountInfo TestAccountInfo() {
 feedwire::Response TestWireResponse() {
   // Read and parse response.binarypb.
   base::FilePath response_file_path;
-  CHECK(base::PathService::Get(base::DIR_SOURCE_ROOT, &response_file_path));
+  CHECK(base::PathService::Get(base::DIR_SRC_TEST_DATA_ROOT,
+                               &response_file_path));
   response_file_path = response_file_path.AppendASCII(kResponsePbPath);
 
   CHECK(base::PathExists(response_file_path));
@@ -104,9 +107,17 @@ RefreshResponseData TranslateWireResponse(feedwire::Response response,
 RefreshResponseData TranslateWireResponse(feedwire::Response response) {
   return TranslateWireResponse(response, TestAccountInfo());
 }
-absl::optional<feedstore::DataOperation> TranslateDataOperation(
+
+std::optional<feedstore::DataOperation> TranslateDataOperation(
     feedwire::DataOperation operation) {
   return ::feed::TranslateDataOperation(base::Time(), std::move(operation));
+}
+
+RefreshResponseData TranslateWireResponse(
+    supervised_user::GetDiscoverFeedResponse response) {
+  return TranslateWireResponse(response,
+                               StreamModelUpdateRequest::Source::kNetworkUpdate,
+                               TestAccountInfo(), kCurrentTime);
 }
 
 }  // namespace
@@ -320,7 +331,7 @@ TEST_F(ProtocolTranslatorTest, MissingResponseVersion) {
 TEST_F(ProtocolTranslatorTest, TranslateContent) {
   feedwire::DataOperation wire_operation =
       MakeDataOperationWithContent(feedwire::DataOperation::UPDATE_OR_APPEND);
-  absl::optional<feedstore::DataOperation> translated =
+  std::optional<feedstore::DataOperation> translated =
       TranslateDataOperation(wire_operation);
   EXPECT_TRUE(translated);
   EXPECT_EQ("content", translated->content().frame());
@@ -889,6 +900,75 @@ TEST_F(ProtocolTranslatorTest, TranslateDismissData) {
 }
 )",
             ToTextProto(result[1]));
+}
+
+TEST_F(ProtocolTranslatorTest, TranslateEmptyDiscoverFeedResponse) {
+  supervised_user::GetDiscoverFeedResponse response;
+  EXPECT_TRUE(TranslateWireResponse(response).model_update_request);
+}
+
+TEST_F(ProtocolTranslatorTest, TranslateDiscoverFeedResponse) {
+  supervised_user::GetDiscoverFeedResponse response;
+  supervised_user::RenderedResult rendered_result1;
+  rendered_result1.set_elements_output("content 1");
+  *response.mutable_discover_feed()->add_rendered_result() = rendered_result1;
+
+  supervised_user::RenderedResult rendered_result2;
+  rendered_result2.set_elements_output("content 2");
+  *response.mutable_discover_feed()->add_rendered_result() = rendered_result2;
+
+  RefreshResponseData translated = TranslateWireResponse(response);
+  std::stringstream ss;
+  ss << *translated.model_update_request;
+  EXPECT_EQ(R"(source: 0
+stream_data: {
+}
+content: {
+  content_id {
+    type: 4
+    id: 2
+  }
+  frame: "content 1"
+}
+content: {
+  content_id {
+    type: 4
+    id: 3
+  }
+  frame: "content 2"
+}
+stream_structure: {
+  operation: 2
+  content_id {
+    id: 1
+  }
+  type: 1
+}
+stream_structure: {
+  operation: 2
+  content_id {
+    type: 4
+    id: 2
+  }
+  parent_id {
+    id: 1
+  }
+  type: 3
+}
+stream_structure: {
+  operation: 2
+  content_id {
+    type: 4
+    id: 3
+  }
+  parent_id {
+    id: 1
+  }
+  type: 3
+}
+max_structure_sequence_number: 0
+)",
+            ss.str());
 }
 
 }  // namespace feed

@@ -39,12 +39,11 @@ api::wm_desks_private::SavedDeskType ToSavedDeskType(
     const crosapi::mojom::SavedDeskType type) {
   switch (type) {
     case crosapi::mojom::SavedDeskType::kTemplate:
-      return api::wm_desks_private::SavedDeskType::SAVED_DESK_TYPE_KTEMPLATE;
+      return api::wm_desks_private::SavedDeskType::kTemplate;
     case crosapi::mojom::SavedDeskType::kSaveAndRecall:
-      return api::wm_desks_private::SavedDeskType::
-          SAVED_DESK_TYPE_KSAVEANDRECALL;
+      return api::wm_desks_private::SavedDeskType::kSaveAndRecall;
     case crosapi::mojom::SavedDeskType::kUnknown:
-      return api::wm_desks_private::SavedDeskType::SAVED_DESK_TYPE_KUNKNOWN;
+      return api::wm_desks_private::SavedDeskType::kUnknown;
   }
 }
 

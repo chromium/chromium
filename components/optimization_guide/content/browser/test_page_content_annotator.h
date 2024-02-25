@@ -6,6 +6,7 @@
 #define COMPONENTS_OPTIMIZATION_GUIDE_CONTENT_BROWSER_TEST_PAGE_CONTENT_ANNOTATOR_H_
 
 #include "base/containers/flat_map.h"
+#include "base/containers/flat_set.h"
 #include "components/optimization_guide/content/browser/page_content_annotator.h"
 #include "components/optimization_guide/core/page_content_annotations_common.h"
 
@@ -20,24 +21,11 @@ class TestPageContentAnnotator : public PageContentAnnotator {
   TestPageContentAnnotator();
   ~TestPageContentAnnotator() override;
 
-  // The given page entities are used for the matching BatchAnnotationResults by
-  // input string. If the input is not found, the output is left as nullopt.
-  void UsePageEntities(
-      const absl::optional<ModelInfo>& model_info,
-      const base::flat_map<std::string, std::vector<ScoredEntityMetadata>>&
-          entities_by_input);
-
   // The given visibility score is used for the matching BatchAnnotationResults
   // by input string. If the input is not found, the output is left as nullopt.
   void UseVisibilityScores(
-      const absl::optional<ModelInfo>& model_info,
+      const std::optional<ModelInfo>& model_info,
       const base::flat_map<std::string, double>& visibility_scores_for_input);
-
-  // The given text embedding is used for the matching BatchAnnotationResults
-  // by input string. If the input is not found, the output is left as nullopt.
-  void UseTextEmbeddings(const absl::optional<ModelInfo>& model_info,
-                         const base::flat_map<std::string, std::vector<float>>&
-                             text_embeddings_for_input);
 
   // When set, |Annotate| will never call its callback.
   void SetAlwaysHang(bool hang);
@@ -56,7 +44,7 @@ class TestPageContentAnnotator : public PageContentAnnotator {
   void Annotate(BatchAnnotationCallback callback,
                 const std::vector<std::string>& inputs,
                 AnnotationType annotation_type) override;
-  absl::optional<ModelInfo> GetModelInfoForType(
+  std::optional<ModelInfo> GetModelInfoForType(
       AnnotationType annotation_type) const override;
   void RequestAndNotifyWhenModelAvailable(
       AnnotationType type,
@@ -66,15 +54,8 @@ class TestPageContentAnnotator : public PageContentAnnotator {
   // When set, |Annotate| will never call its callback.
   bool always_hang_ = false;
 
-  absl::optional<ModelInfo> entities_model_info_;
-  base::flat_map<std::string, std::vector<ScoredEntityMetadata>>
-      entities_by_input_;
-
-  absl::optional<ModelInfo> visibility_scores_model_info_;
+  std::optional<ModelInfo> visibility_scores_model_info_;
   base::flat_map<std::string, double> visibility_scores_for_input_;
-
-  absl::optional<ModelInfo> text_embeddings_model_info_;
-  base::flat_map<std::string, std::vector<float>> text_embeddings_for_input_;
 
   std::vector<AnnotateInputsAndType> annotation_requests_;
 

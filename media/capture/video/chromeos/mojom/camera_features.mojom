@@ -21,3 +21,12 @@ struct PortraitModeConfig {
   // Turns on/off face distortion correction.
   bool enable_rectiface;
 };
+
+// The status of Portrait Mode segmentation result.
+enum PortraitModeSegResult {
+  kSuccess = 0,   // Portrait mode segmentation succeeds.
+  kFailure = 1,   // Portrait mode segmentation fails.
+  kTimeout = 2,   // Portrait processing timeout.
+  kNoFaces = 3,   // Portrait mode segmentation fails with no face detected.
+  kUnknown = 4,   // Portrait mode segmentation fails with unknown reason.
+};

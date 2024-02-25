@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_ASH_REMOTE_APPS_REMOTE_APPS_IMPL_H_
 
 #include <map>
+#include <optional>
 #include <string>
 
 #include "base/memory/raw_ptr.h"
@@ -16,7 +17,6 @@
 #include "mojo/public/cpp/bindings/receiver_set.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "mojo/public/cpp/bindings/remote_set.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
 namespace content {
@@ -50,7 +50,7 @@ class RemoteAppsImpl : public chromeos::remote_apps::mojom::RemoteApps {
   ~RemoteAppsImpl() override;
 
   void BindRemoteAppsAndAppLaunchObserver(
-      const absl::optional<std::string>& source_id,
+      const std::optional<std::string>& source_id,
       mojo::PendingReceiver<chromeos::remote_apps::mojom::RemoteApps>
           pending_remote_apps,
       mojo::PendingRemote<chromeos::remote_apps::mojom::RemoteAppLaunchObserver>
@@ -84,7 +84,7 @@ class RemoteAppsImpl : public chromeos::remote_apps::mojom::RemoteApps {
 
   void DisconnectHandler(mojo::RemoteSetElementId id);
 
-  raw_ptr<RemoteAppsManager, ExperimentalAsh> manager_ = nullptr;
+  raw_ptr<RemoteAppsManager> manager_ = nullptr;
   SourceToRemoteIds source_id_to_remote_id_map_;
   mojo::ReceiverSet<chromeos::remote_apps::mojom::RemoteApps> receivers_;
   // Observers with an associated source in `source_id_to_remote_id_map_`.

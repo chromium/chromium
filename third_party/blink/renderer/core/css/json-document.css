@@ -1,0 +1,29 @@
+/* Copyright 2024 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file. */
+
+body > pre {
+  padding-top: 20px;
+  word-wrap: break-word;
+  white-space: pre-wrap;
+}
+.json-formatter-container {
+  position: fixed;
+  top: 0px;
+  width: 100%;
+}
+body {
+  margin: 0;
+}
+.json-formatter-container::-internal-json-formatter-control {
+  width: 100%;
+  font-size: initial;
+  font-family: monospace;
+  user-select: none;
+  background-color: light-dark(rgb(240, 240, 240),rgb(60, 60, 60));
+  border-bottom: 1px solid rgb(187, 187, 187);
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+}
+

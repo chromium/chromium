@@ -122,8 +122,8 @@ void HQPPerfTestOnePopularURL::SetUp() {
   ASSERT_NO_FATAL_FAILURE(PrepareData());
 
   client_->set_in_memory_url_index(std::make_unique<InMemoryURLIndex>(
-      client_->GetLocalOrSyncableBookmarkModel(), client_->GetHistoryService(),
-      nullptr, history_dir_.GetPath(), SchemeSet()));
+      client_->GetBookmarkModel(), client_->GetHistoryService(), nullptr,
+      history_dir_.GetPath(), SchemeSet()));
   client_->GetInMemoryURLIndex()->Init();
 
   // Block until History has processed InMemoryURLIndex initialization.
@@ -170,7 +170,7 @@ void HQPPerfTestOnePopularURL::PrintMeasurements(
   // Strip off trailing comma.
   durations.pop_back();
 
-  auto metric_prefix = std::string(test_info->test_case_name()) + "_" +
+  auto metric_prefix = std::string(test_info->test_suite_name()) + "_" +
                        std::string(test_info->name());
   perf_test::PerfResultReporter reporter(metric_prefix, story_name);
   reporter.RegisterImportantMetric(".duration", "ms");

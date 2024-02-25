@@ -92,8 +92,9 @@ PowerButtonMenuCurtainView::PowerButtonMenuCurtainView() {
   layer()->SetFillsBoundsOpaquely(false);
   layer()->SetRoundedCornerRadius(
       gfx::RoundedCornersF(kPowerButtonMenuCornerRadius));
-  layer()->SetBackgroundBlur(kPowerButtonMenuBlurType);
-  GetViewAccessibility().OverrideRole(ax::mojom::Role::kDialog);
+  layer()->SetBackgroundBlur(ColorProvider::kBackgroundBlurSigma);
+  layer()->SetBackdropFilterQuality(ColorProvider::kBackgroundBlurQuality);
+  GetViewAccessibility().SetRole(ax::mojom::Role::kDialog);
   Initialize();
 
   // Create a system shadow for current view.
@@ -186,7 +187,7 @@ void PowerButtonMenuCurtainView::OnImplicitAnimationsCompleted() {
   }
 }
 
-BEGIN_METADATA(PowerButtonMenuCurtainView, views::FlexLayoutView)
+BEGIN_METADATA(PowerButtonMenuCurtainView)
 END_METADATA
 
 }  // namespace ash

@@ -1,0 +1,75 @@
+# Copyright 2023 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("model") {
+  sources = [
+    "photos_service.h",
+    "photos_service.mm",
+    "photos_service_configuration.h",
+    "photos_service_configuration.mm",
+  ]
+  public_deps = [
+    ":metrics",
+    "//base",
+    "//components/keyed_service/core",
+  ]
+}
+
+source_set("policy") {
+  sources = [ "photos_policy.h" ]
+}
+
+source_set("metrics") {
+  sources = [
+    "photos_metrics.h",
+    "photos_metrics.mm",
+  ]
+}
+
+source_set("photos_service_factory") {
+  sources = [
+    "photos_service_factory.h",
+    "photos_service_factory.mm",
+  ]
+  deps = [
+    ":model",
+    "//base",
+    "//components/keyed_service/ios",
+    "//ios/chrome/browser/shared/model/application_context",
+    "//ios/chrome/browser/shared/model/browser_state",
+    "//ios/chrome/browser/signin/model",
+    "//ios/public/provider/chrome/browser/photos:photos_api",
+  ]
+}
+
+source_set("photos_availability") {
+  sources = [
+    "photos_availability.h",
+    "photos_availability.mm",
+  ]
+  deps = [
+    ":model",
+    ":photos_service_factory",
+    ":policy",
+    "//components/prefs",
+    "//components/signin/public/base",
+    "//components/signin/public/identity_manager",
+    "//ios/chrome/browser/shared/model/browser_state",
+    "//ios/chrome/browser/shared/model/prefs:pref_names",
+    "//ios/chrome/browser/shared/public/features",
+    "//ios/chrome/browser/signin/model",
+    "//url",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "photos_service_factory_unittest.mm" ]
+  deps = [
+    ":photos_service_factory",
+    "//base/test:test_support",
+    "//ios/chrome/browser/shared/model/browser_state:test_support",
+    "//testing/gtest",
+  ]
+}

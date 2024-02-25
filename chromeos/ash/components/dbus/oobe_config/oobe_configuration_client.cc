@@ -84,7 +84,7 @@ class OobeConfigurationClientImpl : public OobeConfigurationClient {
     std::move(callback).Run(true, response_proto.chrome_config_json());
   }
 
-  raw_ptr<dbus::ObjectProxy, ExperimentalAsh> proxy_ = nullptr;
+  raw_ptr<dbus::ObjectProxy> proxy_ = nullptr;
 
   // Note: This should remain the last member so it'll be destroyed and
   // invalidate its weak pointers before any other members are destroyed.

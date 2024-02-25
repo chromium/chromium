@@ -25,15 +25,15 @@
 #include "content/public/browser/browser_thread.h"
 #include "extensions/browser/api/declarative_net_request/constants.h"
 #include "extensions/browser/api/declarative_net_request/parse_info.h"
-#include "extensions/browser/api/declarative_net_request/rules_count_pair.h"
+#include "extensions/browser/api/declarative_net_request/rule_counts.h"
 #include "extensions/browser/api/declarative_net_request/utils.h"
 #include "extensions/browser/extension_file_task_runner.h"
 #include "extensions/common/api/declarative_net_request.h"
 #include "extensions/common/error_utils.h"
+#include "extensions/common/extension_features.h"
 #include "services/data_decoder/public/cpp/data_decoder.h"
 
-namespace extensions {
-namespace declarative_net_request {
+namespace extensions::declarative_net_request {
 
 namespace {
 
@@ -169,7 +169,7 @@ UpdateDynamicRulesStatus GetUpdateDynamicRuleStatus(LoadRulesetResult result) {
 bool GetNewDynamicRules(const FileBackedRulesetSource& source,
                         std::vector<int> rule_ids_to_remove,
                         std::vector<dnr_api::Rule> rules_to_add,
-                        const RulesCountPair& rule_limit,
+                        const RuleCounts& rule_limit,
                         std::vector<dnr_api::Rule>* new_rules,
                         std::string* error,
                         UpdateDynamicRulesStatus* status) {
@@ -216,6 +216,18 @@ bool GetNewDynamicRules(const FileBackedRulesetSource& source,
     return false;
   }
 
+  if (base::FeatureList::IsEnabled(
+          extensions_features::kDeclarativeNetRequestSafeRuleLimits)) {
+    size_t unsafe_rule_count = base::ranges::count_if(
+        *new_rules,
+        [](const dnr_api::Rule& rule) { return !IsRuleSafe(rule); });
+    if (unsafe_rule_count > rule_limit.unsafe_rule_count) {
+      *status = UpdateDynamicRulesStatus::kErrorUnsafeRuleCountExceeded;
+      *error = kDynamicUnsafeRuleCountExceeded;
+      return false;
+    }
+  }
+
   size_t regex_rule_count = base::ranges::count_if(
       *new_rules,
       [](const dnr_api::Rule& rule) { return !!rule.condition.regex_filter; });
@@ -233,7 +245,7 @@ bool GetNewDynamicRules(const FileBackedRulesetSource& source,
 bool UpdateAndIndexDynamicRules(const FileBackedRulesetSource& source,
                                 std::vector<int> rule_ids_to_remove,
                                 std::vector<dnr_api::Rule> rules_to_add,
-                                const RulesCountPair& rule_limit,
+                                const RuleCounts& rule_limit,
                                 int* ruleset_checksum,
                                 std::string* error,
                                 UpdateDynamicRulesStatus* status) {
@@ -347,7 +359,7 @@ std::unique_ptr<RulesetMatcher> RulesetInfo::TakeMatcher() {
   return std::move(matcher_);
 }
 
-const absl::optional<LoadRulesetResult>& RulesetInfo::load_ruleset_result()
+const std::optional<LoadRulesetResult>& RulesetInfo::load_ruleset_result()
     const {
   // |matcher_| is valid only on success.
   DCHECK_EQ(load_ruleset_result_ == LoadRulesetResult::kSuccess, !!matcher_);
@@ -366,8 +378,10 @@ void RulesetInfo::CreateVerifiedMatcher() {
       source_.CreateVerifiedMatcher(*expected_checksum_, &matcher_);
 }
 
-LoadRequestData::LoadRequestData(ExtensionId extension_id)
-    : extension_id(std::move(extension_id)) {}
+LoadRequestData::LoadRequestData(ExtensionId extension_id,
+                                 base::Version extension_version)
+    : extension_id(std::move(extension_id)),
+      extension_version(std::move(extension_version)) {}
 LoadRequestData::~LoadRequestData() = default;
 LoadRequestData::LoadRequestData(LoadRequestData&&) = default;
 LoadRequestData& LoadRequestData::operator=(LoadRequestData&&) = default;
@@ -425,7 +439,7 @@ void FileSequenceHelper::UpdateDynamicRules(
     LoadRequestData load_data,
     std::vector<int> rule_ids_to_remove,
     std::vector<api::declarative_net_request::Rule> rules_to_add,
-    const RulesCountPair& rule_limit,
+    const RuleCounts& rule_limit,
     UpdateDynamicRulesUICallback ui_callback) const {
   DCHECK(GetExtensionFileTaskRunner()->RunsTasksInCurrentSequence());
   DCHECK_EQ(1u, load_data.rulesets.size());
@@ -434,7 +448,7 @@ void FileSequenceHelper::UpdateDynamicRules(
   DCHECK(!dynamic_ruleset.expected_checksum());
 
   auto log_status_and_dispatch_callback = [&ui_callback, &load_data](
-                                              absl::optional<std::string> error,
+                                              std::optional<std::string> error,
                                               UpdateDynamicRulesStatus status) {
     base::UmaHistogramEnumeration(kUpdateDynamicRulesStatusHistogram, status);
 
@@ -471,7 +485,7 @@ void FileSequenceHelper::UpdateDynamicRules(
   }
 
   // Success.
-  log_status_and_dispatch_callback(absl::nullopt, status);
+  log_status_and_dispatch_callback(std::nullopt, status);
 }
 
 void FileSequenceHelper::OnRulesetsIndexed(LoadRulesetsUICallback ui_callback,
@@ -494,5 +508,4 @@ void FileSequenceHelper::OnRulesetsIndexed(LoadRulesetsUICallback ui_callback,
                  base::BindOnce(std::move(ui_callback), std::move(load_data)));
 }
 
-}  // namespace declarative_net_request
-}  // namespace extensions
+}  // namespace extensions::declarative_net_request

@@ -52,6 +52,9 @@ input.lang = 'en-us';
 debug('Step mismatch')
 shouldBeEqualToString('testIt("55", "0", "100", "10")', 'Please enter a valid value. The two nearest valid values are 50 and 60.');
 
+debug('Range invalid');
+shouldBeEqualToString('testIt("10", "100", "50")', 'Minimum value (100) must be less than the maximum value (50).');
+
 </script>
 </body>
 </html>

@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ash/arc/fileapi/arc_file_system_operation_runner.h"
 
+#include <optional>
 #include <utility>
 
 #include "ash/components/arc/arc_browser_context_keyed_service_factory_base.h"
@@ -18,7 +19,6 @@
 #include "chrome/browser/ash/arc/session/arc_session_manager.h"
 #include "chrome/browser/profiles/profile.h"
 #include "content/public/browser/browser_thread.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
 using content::BrowserThread;
@@ -149,7 +149,7 @@ void ArcFileSystemOperationRunner::GetMimeType(const GURL& url,
       arc_bridge_service_->file_system(), GetMimeType);
   if (!file_system_instance) {
     base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
-        FROM_HERE, base::BindOnce(std::move(callback), absl::nullopt));
+        FROM_HERE, base::BindOnce(std::move(callback), std::nullopt));
     return;
   }
   file_system_instance->GetMimeType(url.spec(), std::move(callback));
@@ -275,7 +275,7 @@ void ArcFileSystemOperationRunner::GetChildDocuments(
       arc_bridge_service_->file_system(), GetChildDocuments);
   if (!file_system_instance) {
     base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
-        FROM_HERE, base::BindOnce(std::move(callback), absl::nullopt));
+        FROM_HERE, base::BindOnce(std::move(callback), std::nullopt));
     return;
   }
   file_system_instance->GetChildDocuments(authority, parent_document_id,
@@ -298,7 +298,7 @@ void ArcFileSystemOperationRunner::GetRecentDocuments(
       arc_bridge_service_->file_system(), GetRecentDocuments);
   if (!file_system_instance) {
     base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
-        FROM_HERE, base::BindOnce(std::move(callback), absl::nullopt));
+        FROM_HERE, base::BindOnce(std::move(callback), std::nullopt));
     return;
   }
   file_system_instance->GetRecentDocuments(authority, root_id,
@@ -317,7 +317,7 @@ void ArcFileSystemOperationRunner::GetRoots(GetRootsCallback callback) {
       ARC_GET_INSTANCE_FOR_METHOD(arc_bridge_service_->file_system(), GetRoots);
   if (!file_system_instance) {
     base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
-        FROM_HERE, base::BindOnce(std::move(callback), absl::nullopt));
+        FROM_HERE, base::BindOnce(std::move(callback), std::nullopt));
     return;
   }
   file_system_instance->GetRoots(std::move(callback));

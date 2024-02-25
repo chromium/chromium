@@ -5,11 +5,12 @@
 #ifndef ASH_SYSTEM_UPDATE_UPDATE_NOTIFICATION_CONTROLLER_H_
 #define ASH_SYSTEM_UPDATE_UPDATE_NOTIFICATION_CONTROLLER_H_
 
+#include <optional>
+
 #include "ash/ash_export.h"
 #include "ash/system/model/update_model.h"
 #include "base/files/file_path.h"
 #include "base/memory/raw_ptr.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace gfx {
 struct VectorIcon;
@@ -51,16 +52,15 @@ class ASH_EXPORT UpdateNotificationController : public UpdateObserver {
   std::u16string GetMessage() const;
   const gfx::VectorIcon& GetIcon() const;
   message_center::SystemNotificationWarningLevel GetWarningLevel() const;
-  void HandleNotificationClick(absl::optional<int> index);
+  void HandleNotificationClick(std::optional<int> index);
   void GenerateUpdateNotification(
-      absl::optional<bool> slow_boot_file_path_exists);
+      std::optional<bool> slow_boot_file_path_exists);
 
-  const raw_ptr<UpdateModel, ExperimentalAsh> model_;
+  const raw_ptr<UpdateModel> model_;
 
   base::FilePath slow_boot_file_path_;
   bool slow_boot_file_path_exists_ = false;
-  raw_ptr<ShutdownConfirmationDialog, ExperimentalAsh> confirmation_dialog_ =
-      nullptr;
+  raw_ptr<ShutdownConfirmationDialog> confirmation_dialog_ = nullptr;
 
   base::WeakPtrFactory<UpdateNotificationController> weak_ptr_factory_{this};
 };

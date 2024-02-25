@@ -45,6 +45,8 @@ target(link_target_type, "child") {
     "child_histogram_fetcher_impl.h",
     "child_process.cc",
     "child_process.h",
+    "child_process_synthetic_trial_syncer.cc",
+    "child_process_synthetic_trial_syncer.h",
     "child_thread_impl.cc",
     "child_thread_impl.h",
     "field_trial.cc",
@@ -70,6 +72,8 @@ target(link_target_type, "child") {
     "//cc/paint",
     "//components/discardable_memory/client",
     "//components/discardable_memory/public/mojom",
+    "//components/ml/webnn:features",
+    "//components/permissions:permissions_common",
     "//components/tracing:startup_tracing",
     "//components/variations",
     "//components/webcrypto",
@@ -118,6 +122,8 @@ target(link_target_type, "child") {
     sources += [
       "child_process_sandbox_support_impl_linux.cc",
       "child_process_sandbox_support_impl_linux.h",
+      "sandboxed_process_thread_type_handler.cc",
+      "sandboxed_process_thread_type_handler.h",
     ]
     deps += [
       "//components/services/font/public/cpp",

@@ -147,7 +147,7 @@ std::unique_ptr<CookieChangeSubscription>
 CookieMonsterChangeDispatcher::AddCallbackForCookie(
     const GURL& url,
     const std::string& name,
-    const absl::optional<CookiePartitionKey>& cookie_partition_key,
+    const std::optional<CookiePartitionKey>& cookie_partition_key,
     CookieChangeCallback callback) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
 
@@ -163,7 +163,7 @@ CookieMonsterChangeDispatcher::AddCallbackForCookie(
 std::unique_ptr<CookieChangeSubscription>
 CookieMonsterChangeDispatcher::AddCallbackForUrl(
     const GURL& url,
-    const absl::optional<CookiePartitionKey>& cookie_partition_key,
+    const std::optional<CookiePartitionKey>& cookie_partition_key,
     CookieChangeCallback callback) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
 

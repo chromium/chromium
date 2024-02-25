@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="zh-CN">
+<translation id="1012241361789814178">调试程序已在另一个标签页中暂停，点击可切换到该标签页。</translation>
 <translation id="1088086359088493902">秒</translation>
 <translation id="1142001580032786438">显示星期选择器</translation>
 <translation id="1171774979989969504">请输入电子邮件地址。</translation>
@@ -16,6 +17,7 @@
 <translation id="1729654308190250600">请输入有效的电子邮件地址。</translation>
 <translation id="1758486001363313524">其他...</translation>
 <translation id="1787192514241997742">总时间：<ph name="REMAINING_TIME" /></translation>
+<translation id="1800494066469288780">允许使用摄像头</translation>
 <translation id="1822429046913737220">上午/下午</translation>
 <translation id="1832974991323546415">在远程设备上播放</translation>
 <translation id="1921819250265091946">日</translation>
@@ -24,10 +26,12 @@
 <translation id="1993104285338243655">已切换到镜像</translation>
 <translation id="2031987842108996681">红色通道</translation>
 <translation id="2060505056492490888">“<ph name="INVALIDDOMAIN" />”中“<ph name="DOT" />”的位置不正确。</translation>
+<translation id="2068711044993563745">最小值 (<ph name="MINIMUM" />) 必须小于最大值 (<ph name="MAXIMUM" />)。</translation>
 <translation id="2148716181193084225">今天</translation>
 <translation id="2226276347425096477">请将该文本减少为 <ph name="MAX_CHARACTERS" /> 个字符或更少（您当前使用了 <ph name="CURRENT_LENGTH" /> 个字符）。</translation>
 <translation id="2247351761944213033"><ph name="YEAR" /> 年第 <ph name="WEEKNUMBER" /> 周</translation>
 <translation id="2277199496770840904">字幕轨 <ph name="NUMBER" /></translation>
+<translation id="2353297238722298836">已允许使用摄像头和麦克风</translation>
 <translation id="2393030564806080191">十六进制颜色值</translation>
 <translation id="2398813069815436052">对话框已打开。</translation>
 <translation id="245932805758469625">视频剩余时间（以秒为单位）</translation>
@@ -44,11 +48,13 @@
 <translation id="2761667185364618470">如果要继续，请选中此框。</translation>
 <translation id="2908441821576996758">请输入用逗号分隔的电子邮件地址的列表。</translation>
 <translation id="3049748772180311791"><ph name="QUANTITY" /> MB</translation>
+<translation id="3053226512517284904">显示语音描述菜单</translation>
 <translation id="3075154866155599887">请输入一个有效值。该字段不完整或存在无效日期。</translation>
 <translation id="310520048233152454">请输入网址。</translation>
 <translation id="3220661731597678625">当前步骤</translation>
 <translation id="3321030238473337787">播放速度</translation>
 <translation id="3329013043687509092">饱和度</translation>
+<translation id="3377518164566272702">允许使用麦克风和摄像头</translation>
 <translation id="3450233048674729344">值必须小于或等于 <ph name="MAXIMUM" />。</translation>
 <translation id="3732799496749320381">月</translation>
 <translation id="3754210790023674521">退出“画中画”模式</translation>
@@ -56,14 +62,17 @@
 <translation id="3822383571486410024">请将该文本增加为 <ph name="MIN_CHARACTERS" /> 个字符或更多（您当前使用的是 <ph name="CURRENT_LENGTH" /> 个字符）。</translation>
 <translation id="383465348367842624">“<ph name="ATSIGN" />”前面的内容不应包含符号“<ph name="INVALIDCHARACTER" />”。</translation>
 <translation id="3846214748874656680">退出全屏模式</translation>
+<translation id="4031179711345676612">已允许使用麦克风</translation>
 <translation id="4103419683916926126">毫秒</translation>
 <translation id="4201051445878709314">显示上一个月</translation>
 <translation id="4360991593054037559">请输入有效值。两个最接近的有效值分别为<ph name="VALID_VALUE_LOW" />和<ph name="VALID_VALUE_HIGHER" />。</translation>
 <translation id="4522570452068850558">详情</translation>
+<translation id="4663373278480897665">已允许使用摄像头</translation>
 <translation id="4664250907885839816">“<ph name="ATSIGN" />”后面的内容不应包含符号“<ph name="INVALIDCHARACTER" />”。</translation>
 <translation id="4718048029184481307">以“画中画”模式播放</translation>
 <translation id="4748357248530471599">开启/关闭全屏模式中的刘海屏</translation>
 <translation id="4763480195061959176">视频</translation>
+<translation id="4792862212177489858">分享位置信息</translation>
 <translation id="4812940957355064477">请输入一个数字。</translation>
 <translation id="4912200001568447310">当前项</translation>
 <translation id="4915360478455618802">显示时间选择器</translation>
@@ -73,6 +82,7 @@
 <translation id="4975562563186953947">选择了<ph name="SELECTED_COUNT" />项</translation>
 <translation id="4992066212339426712">取消静音</translation>
 <translation id="49969490063480558">请在“<ph name="ATSIGN" />”后面输入内容。“<ph name="INVALIDADDRESS" />”不完整。</translation>
+<translation id="5037575921016181960">安全系数高的密码</translation>
 <translation id="5090250355906949916">视频时间进度条</translation>
 <translation id="509897012892853729">蓝色通道</translation>
 <translation id="5117590920725113268">显示下一个月</translation>
@@ -131,6 +141,7 @@
 <translation id="6941933287844615239">下载媒体</translation>
 <translation id="698788488269350478">已展开。</translation>
 <translation id="6989848892321993519">请将该内容增加到 <ph name="MIN_CHARACTERS" /> 个或更多字符（目前您使用了 1 个字符）。</translation>
+<translation id="7080893216867146095">已允许分享位置信息</translation>
 <translation id="709897737746224366">请与所请求的格式保持一致。</translation>
 <translation id="7102274145889307184">当前位置</translation>
 <translation id="7263440858009898357">请在列表中选择一项。</translation>
@@ -177,6 +188,7 @@
 <translation id="9132465097189459683">其他...</translation>
 <translation id="9155987714137265666"><ph name="WEEK" />，从 <ph name="WEEK_START_DATE" />开始</translation>
 <translation id="916607977885256133">画中画</translation>
+<translation id="918430632320614861">允许使用麦克风</translation>
 <translation id="945780513535800434">已部分选中</translation>
 <translation id="954003015749068518">进入“画中画”模式</translation>
 </translationbundle>

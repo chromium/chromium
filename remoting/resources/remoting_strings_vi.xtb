@@ -4,7 +4,6 @@
 <translation id="1002108253973310084">Đã phát hiện một phiên bản giao thức không tương thích. Vui lòng đảm bảo rằng bạn đã cài đặt phiên bản mới nhất của phần mềm trên cả hai máy tính và thử lại.</translation>
 <translation id="1008557486741366299">Để sau</translation>
 <translation id="1201402288615127009">Tiếp theo</translation>
-<translation id="1296511125400541222">Bản quyền 2023 The Chromium Authors. Bảo lưu mọi quyền.</translation>
 <translation id="1297009705180977556">Lỗi khi kết nối với <ph name="HOSTNAME" /></translation>
 <translation id="1450760146488584666">Đối tượng yêu cầu không tồn tại.</translation>
 <translation id="1480046233931937785">Tín dụng</translation>
@@ -89,7 +88,6 @@ Nếu đã chọn '<ph name="SERVICE_SCRIPT_NAME" />', hãy bỏ chọn rồi ch
 <translation id="4808503597364150972">Vui lòng nhập mã PIN của bạn cho <ph name="HOSTNAME" />.</translation>
 <translation id="4812684235631257312">Máy chủ</translation>
 <translation id="4867841927763172006">Gửi PrtScn</translation>
-<translation id="4960795469833295568">Bản quyền 2023 Google LLC. Bảo lưu mọi quyền.</translation>
 <translation id="4974476491460646149">Đã ngắt kết nối khỏi <ph name="HOSTNAME" /></translation>
 <translation id="4985296110227979402">Trước tiên, bạn cần thiết lập máy tính để truy cập từ xa</translation>
 <translation id="4987330545941822761">Chrome Remote Desktop không thể xác định được trình duyệt để mở URL trên thiết bị. Vui lòng chọn trình duyệt trong danh sách dưới đây.</translation>
@@ -148,12 +146,13 @@ Nếu đã chọn '<ph name="SERVICE_SCRIPT_NAME" />', hãy bỏ chọn rồi ch
 <translation id="7535110896613603182">Mở phần Cài đặt ứng dụng mặc định</translation>
 <translation id="7628469622942688817">Nhớ mã PIN của tôi trên thiết bị này.</translation>
 <translation id="7649070708921625228">Trợ giúp</translation>
-<translation id="7658239707568436148">Hủy</translation>
+<translation id="7658239707568436148">Huỷ</translation>
 <translation id="7665369617277396874">Thêm tài khoản</translation>
 <translation id="7678209621226490279">Gắn vào bên trái</translation>
 <translation id="7693372326588366043">Làm mới danh sách máy chủ</translation>
 <translation id="7714222945760997814">Báo cáo nội dung này</translation>
 <translation id="7868137160098754906">Hãy nhập mã PIN của bạn cho máy tính từ xa.</translation>
+<translation id="7881455334687220899">Bản quyền 2024 The Chromium Authors. Bảo lưu mọi quyền.</translation>
 <translation id="7895403300744144251">Chính sách quyền riêng tư trên máy tính từ xa không cho phép các kết nối từ tài khoản của bạn.</translation>
 <translation id="7936528439960309876">Gắn vào bên phải</translation>
 <translation id="7970576581263377361">Xác thực bị lỗi. Vui lòng đăng nhập lại vào Chromium.</translation>
@@ -185,6 +184,7 @@ Nếu đã đánh dấu vào hộp '<ph name="SERVICE_SCRIPT_NAME" />', hãy b�
 <translation id="8747048596626351634">Phiên bị lỗi hoặc không bắt đầu được. Nếu đã có ~/.chrome-remote-desktop-session trên máy tính từ xa, hãy đảm bảo rằng phiên này bắt đầu chạy một quy trình ở nền trước trong thời gian dài, chẳng hạn như môi trường máy tính để bàn hoặc trình quản lý cửa sổ.</translation>
 <translation id="8804164990146287819">Chính sách quyền riêng tư</translation>
 <translation id="8906511416443321782">Bạn cần phải cho phép sử dụng micrô để ghi âm và truyền đến ứng dụng Chrome Remote Desktop.</translation>
+<translation id="9042277333359847053">Bản quyền 2024 Google LLC. Bảo lưu mọi quyền.</translation>
 <translation id="9111855907838866522">Bạn đã kết nối với thiết bị từ xa. Để mở menu, vui lòng nhấn vào màn hình bằng 4 ngón tay.</translation>
 <translation id="9126115402994542723">Không yêu cầu lại mã PIN khi kết nối với máy chủ này từ thiết bị này.</translation>
 <translation id="916856682307586697">Chạy XSession mặc định</translation>

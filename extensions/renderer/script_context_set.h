@@ -9,11 +9,12 @@
 
 #include <memory>
 #include <set>
-#include <string>
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "extensions/common/extension_id.h"
 #include "extensions/common/features/feature.h"
+#include "extensions/common/mojom/context_type.mojom-forward.h"
 #include "extensions/common/mojom/view_type.mojom.h"
 #include "extensions/renderer/renderer_extension_registry.h"
 #include "extensions/renderer/script_context_set_iterable.h"
@@ -94,14 +95,20 @@ class ScriptContextSet : public ScriptContextSetIterable {
   static ScriptContext* GetMainWorldContextForFrame(
       content::RenderFrame* render_frame);
 
-  // ScriptContextIterable:
+  // ScriptContextSetIterable:
   void ForEach(
-      const std::string& extension_id,
+      const mojom::HostID& host_id,
       content::RenderFrame* render_frame,
       const base::RepeatingCallback<void(ScriptContext*)>& callback) override;
 
+  // Runs |callback| after verifying |render_frame| matches context's.
+  void ExecuteCallbackWithContext(
+      ScriptContext* context,
+      content::RenderFrame* render_frame,
+      const base::RepeatingCallback<void(ScriptContext*)>& callback);
+
   // Cleans up contexts belonging to an unloaded extension.
-  void OnExtensionUnloaded(const std::string& extension_id);
+  void OnExtensionUnloaded(const ExtensionId& extension_id);
 
   void set_is_lock_screen_context(bool is_lock_screen_context) {
     is_lock_screen_context_ = is_lock_screen_context;
@@ -119,8 +126,8 @@ class ScriptContextSet : public ScriptContextSetIterable {
                                                  int32_t world_id,
                                                  bool use_effective_url);
 
-  // Returns the Feature::Context type of context for a JavaScript context.
-  Feature::Context ClassifyJavaScriptContext(
+  // Returns the mojom::ContextType type of context for a JavaScript context.
+  mojom::ContextType ClassifyJavaScriptContext(
       const Extension* extension,
       int32_t world_id,
       const GURL& url,
@@ -130,10 +137,10 @@ class ScriptContextSet : public ScriptContextSetIterable {
 
   // Weak reference to all installed Extensions that are also active in this
   // process.
-  ExtensionIdSet* active_extension_ids_;
+  raw_ptr<ExtensionIdSet> active_extension_ids_;
 
   // The set of all ScriptContexts we own.
-  std::set<ScriptContext*> contexts_;
+  std::set<raw_ptr<ScriptContext, SetExperimental>> contexts_;
 
   // Whether the script context set is associated with the renderer active on
   // the Chrome OS lock screen.

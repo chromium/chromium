@@ -139,11 +139,11 @@ syncer::SyncDataList CreateBadAppRemoteData(const std::string& id) {
   // All fields empty.
   sync_list.push_back(CreateAppRemoteData(
       "", "", "", "", "", sync_pb::AppListSpecifics_AppListItemType_TYPE_APP,
-      absl::nullopt, ""));
+      std::nullopt, ""));
   sync_list.push_back(
       CreateAppRemoteData(kUnset, kUnset, kUnset, kUnset, kUnset,
                           sync_pb::AppListSpecifics_AppListItemType_TYPE_APP,
-                          absl::nullopt, kUnset));
+                          std::nullopt, kUnset));
 
   return sync_list;
 }
@@ -602,11 +602,11 @@ TEST_F(AppListSyncableServiceTest, InitialMerge) {
   syncer::SyncDataList sync_list;
   sync_list.push_back(CreateAppRemoteData(
       kItemId1, "item_name1", GenerateId("parent_id1"), "ordinal", "pinordinal",
-      sync_pb::AppListSpecifics_AppListItemType_TYPE_APP, absl::nullopt,
+      sync_pb::AppListSpecifics_AppListItemType_TYPE_APP, std::nullopt,
       "promise_package_id1"));
   sync_list.push_back(CreateAppRemoteData(
       kItemId2, "item_name2", GenerateId("parent_id2"), "ordinal", "pinordinal",
-      sync_pb::AppListSpecifics_AppListItemType_TYPE_APP, absl::nullopt,
+      sync_pb::AppListSpecifics_AppListItemType_TYPE_APP, std::nullopt,
       "promise_package_id2"));
 
   app_list_syncable_service()->MergeDataAndStartSyncing(
@@ -711,7 +711,7 @@ TEST_F(AppListSyncableServiceTest, InitialMergeAndUpdate) {
   syncer::SyncDataList sync_list;
   sync_list.push_back(CreateAppRemoteData(
       kItemId1, "item_name1", kParentId(), "ordinal", "pinordinal",
-      sync_pb::AppListSpecifics_AppListItemType_TYPE_APP, absl::nullopt,
+      sync_pb::AppListSpecifics_AppListItemType_TYPE_APP, std::nullopt,
       "promise_package_id1"));
   sync_list.push_back(CreateAppRemoteData(kItemId2, "item_name2", kParentId(),
                                           "ordinal", "pinordinal"));
@@ -2714,19 +2714,19 @@ TEST_F(AppListSyncableServiceTest, SortMixedPositionValidityItems) {
 
   using SyncItem = AppListSyncableService::SyncItem;
   const std::string kItemId1 = CreateNextAppId(extensions::kWebStoreAppId);
-  auto item1 =
-      std::make_unique<SyncItem>(kItemId1, sync_pb::AppListSpecifics::TYPE_APP);
+  auto item1 = std::make_unique<SyncItem>(
+      kItemId1, sync_pb::AppListSpecifics::TYPE_APP, /*is_new=*/false);
   item1->item_name = "a";
   item1->item_ordinal = syncer::StringOrdinal(GetLastPositionString());
 
   const std::string kItemId2 = CreateNextAppId(kItemId1);
-  auto item2 =
-      std::make_unique<SyncItem>(kItemId2, sync_pb::AppListSpecifics::TYPE_APP);
+  auto item2 = std::make_unique<SyncItem>(
+      kItemId2, sync_pb::AppListSpecifics::TYPE_APP, /*is_new=*/true);
   item2->item_name = "b";
 
   const std::string kItemId3 = CreateNextAppId(kItemId2);
-  auto item3 =
-      std::make_unique<SyncItem>(kItemId3, sync_pb::AppListSpecifics::TYPE_APP);
+  auto item3 = std::make_unique<SyncItem>(
+      kItemId3, sync_pb::AppListSpecifics::TYPE_APP, /*is_new=*/false);
   item3->item_name = "c";
 
   std::vector<std::unique_ptr<SyncItem>> sync_items;
@@ -2764,18 +2764,18 @@ TEST_F(AppListSyncableServiceTest, SortInvalidPositionItems) {
 
   using SyncItem = AppListSyncableService::SyncItem;
   const std::string kItemId1 = CreateNextAppId(extensions::kWebStoreAppId);
-  auto item1 =
-      std::make_unique<SyncItem>(kItemId1, sync_pb::AppListSpecifics::TYPE_APP);
+  auto item1 = std::make_unique<SyncItem>(
+      kItemId1, sync_pb::AppListSpecifics::TYPE_APP, /*is_new=*/false);
   item1->item_name = "a";
 
   const std::string kItemId2 = CreateNextAppId(kItemId1);
-  auto item2 =
-      std::make_unique<SyncItem>(kItemId2, sync_pb::AppListSpecifics::TYPE_APP);
+  auto item2 = std::make_unique<SyncItem>(
+      kItemId2, sync_pb::AppListSpecifics::TYPE_APP, /*is_new=*/false);
   item2->item_name = "b";
 
   const std::string kItemId3 = CreateNextAppId(kItemId2);
-  auto item3 =
-      std::make_unique<SyncItem>(kItemId3, sync_pb::AppListSpecifics::TYPE_APP);
+  auto item3 = std::make_unique<SyncItem>(
+      kItemId3, sync_pb::AppListSpecifics::TYPE_APP, /*is_new=*/true);
   item3->item_name = "c";
 
   std::vector<std::unique_ptr<SyncItem>> sync_items;

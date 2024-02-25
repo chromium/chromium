@@ -8,6 +8,9 @@
 #import "base/test/metrics/user_action_tester.h"
 #import "components/bookmarks/browser/bookmark_model.h"
 #import "ios/chrome/browser/bookmarks/model/bookmark_ios_unit_test_support.h"
+#import "ios/chrome/browser/shared/model/browser_state/test_chrome_browser_state.h"
+#import "ios/chrome/browser/signin/model/authentication_service.h"
+#import "ios/chrome/browser/signin/model/authentication_service_factory.h"
 #import "testing/platform_test.h"
 
 namespace {
@@ -56,9 +59,12 @@ TEST_F(BookmarksEditorViewControllerTest, CanSyncBeforeLoad) {
   const bookmarks::BookmarkNode* bookmark = AddBookmark(mobile_node, u"foo");
   BookmarksEditorMediator* mediator = [[BookmarksEditorMediator alloc]
       initWithLocalOrSyncableBookmarkModel:local_or_syncable_bookmark_model_
-                      accountBookmarkModel:nullptr
+                      accountBookmarkModel:account_bookmark_model_
                               bookmarkNode:bookmark
                                      prefs:nullptr
+                     authenticationService:AuthenticationServiceFactory::
+                                               GetForBrowserState(
+                                                   chrome_browser_state_.get())
                                syncService:nullptr
                               browserState:nullptr];
   _controller.mutator = mediator;

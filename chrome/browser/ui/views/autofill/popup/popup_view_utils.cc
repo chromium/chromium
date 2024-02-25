@@ -198,16 +198,13 @@ void CalculatePopupYAndHeight(int popup_preferred_height,
   popup_bounds->set_height(popup_preferred_height);
   popup_bounds->set_y(top_growth_end);
 
-  if (bottom_available >= popup_preferred_height ||
-      bottom_available >= top_available) {
-    popup_bounds->AdjustToFit(
-        gfx::Rect(popup_bounds->x(), element_bounds.bottom(),
-                  popup_bounds->width(), bottom_available));
-  } else {
-    popup_bounds->AdjustToFit(gfx::Rect(popup_bounds->x(),
-                                        content_area_bounds.y(),
-                                        popup_bounds->width(), top_available));
-  }
+  int y_adjustment = (bottom_available >= popup_preferred_height ||
+                      bottom_available >= top_available)
+                         ? element_bounds.bottom()
+                         : content_area_bounds.y();
+  popup_bounds->AdjustToFit(gfx::Rect(popup_bounds->x(), y_adjustment,
+                                      popup_bounds->width(),
+                                      content_area_bounds.height()));
 }
 
 gfx::Rect CalculatePopupBounds(const gfx::Size& desired_size,
@@ -259,11 +256,15 @@ bool CanShowDropdownHere(int item_height,
 // Keep in sync with TryToCloseAllPrompts() from autofill_uitest.cc.
 bool BoundsOverlapWithAnyOpenPrompt(const gfx::Rect& screen_bounds,
                                     content::WebContents* web_contents) {
-  gfx::NativeView top_level_view =
-      platform_util::GetViewForWindow(web_contents->GetTopLevelNativeWindow());
-  if (!top_level_view) {
+  gfx::NativeWindow top_level_window = web_contents->GetTopLevelNativeWindow();
+  // `top_level_window` can be `nullptr` if `web_contents` is not attached to
+  // a window, e.g. in unit test runs.
+  if (!top_level_window) {
     return false;
   }
+  gfx::NativeView top_level_view =
+      platform_util::GetViewForWindow(top_level_window);
+
   // We generally want to ensure that no prompt overlaps with |screen_bounds|.
   // It is possible, however, that a <datalist> is part of a prompt (e.g. an
   // extension popup can render a <datalist>). Therefore, we exclude the widget
@@ -292,7 +293,7 @@ bool BoundsOverlapWithAnyOpenPrompt(const gfx::Rect& screen_bounds,
 bool BoundsOverlapWithOpenPermissionsPrompt(
     const gfx::Rect& screen_bounds,
     content::WebContents* web_contents) {
-  Browser* browser = chrome::FindBrowserWithWebContents(web_contents);
+  Browser* browser = chrome::FindBrowserWithTab(web_contents);
   if (!browser) {
     return false;
   }
@@ -317,7 +318,7 @@ bool BoundsOverlapWithOpenPermissionsPrompt(
 }
 
 bool BoundsOverlapWithPictureInPictureWindow(const gfx::Rect& screen_bounds) {
-  absl::optional<gfx::Rect> pip_window_bounds =
+  std::optional<gfx::Rect> pip_window_bounds =
       PictureInPictureWindowManager::GetInstance()
           ->GetPictureInPictureWindowBounds();
   return pip_window_bounds && pip_window_bounds->Intersects(screen_bounds);
@@ -409,12 +410,10 @@ bool IsPopupPlaceableOnSideOfElement(const gfx::Rect& content_area_bounds,
 views::BubbleArrowSide GetOptimalArrowSide(
     const gfx::Rect& content_area_bounds,
     const gfx::Rect& element_bounds,
-    const gfx::Size& popup_preferred_size) {
+    const gfx::Size& popup_preferred_size,
+    base::span<const views::BubbleArrowSide> popup_preferred_sides) {
   // Probe for a side of the element on which the popup can be shown entirely.
-  const std::vector<views::BubbleArrowSide> sides_by_preference(
-      {views::BubbleArrowSide::kTop, views::BubbleArrowSide::kBottom,
-       views::BubbleArrowSide::kLeft, views::BubbleArrowSide::kRight});
-  for (views::BubbleArrowSide possible_side : sides_by_preference) {
+  for (views::BubbleArrowSide possible_side : popup_preferred_sides) {
     if (IsPopupPlaceableOnSideOfElement(
             content_area_bounds, element_bounds, popup_preferred_size,
             BubbleBorder::kVisibleArrowLength, possible_side) &&
@@ -442,11 +441,13 @@ BubbleBorder::Arrow GetOptimalPopupPlacement(
     int scrollbar_width,
     int maximum_pixel_offset_to_center,
     int maximum_width_percentage_to_center,
-    gfx::Rect& popup_bounds) {
+    gfx::Rect& popup_bounds,
+    base::span<const views::BubbleArrowSide> popup_preferred_sides) {
   // Determine the best side of the element to put the popup and get a
   // corresponding arrow.
-  views::BubbleArrowSide side = GetOptimalArrowSide(
-      content_area_bounds, element_bounds, popup_preferred_size);
+  views::BubbleArrowSide side =
+      GetOptimalArrowSide(content_area_bounds, element_bounds,
+                          popup_preferred_size, popup_preferred_sides);
   BubbleBorder::Arrow arrow =
       GetBubbleArrowForBubbleArrowSide(side, right_to_left);
 
@@ -533,16 +534,6 @@ BubbleBorder::Arrow GetOptimalPopupPlacement(
   return arrow;
 }
 
-bool IsGroupFillingPopupItemId(PopupItemId popup_item_id) {
-  switch (popup_item_id) {
-    case PopupItemId::kFillFullAddress:
-    case PopupItemId::kFillFullName:
-      return true;
-    default:
-      return false;
-  }
-}
-
 bool IsFooterPopupItemId(PopupItemId popup_item_id) {
   switch (popup_item_id) {
     case PopupItemId::kScanCreditCard:
@@ -556,11 +547,108 @@ bool IsFooterPopupItemId(PopupItemId popup_item_id) {
     case PopupItemId::kClearForm:
     case PopupItemId::kAutofillOptions:
     case PopupItemId::kSeePromoCodeDetails:
+    case PopupItemId::kEditAddressProfile:
     case PopupItemId::kDeleteAddressProfile:
+    case PopupItemId::kViewPasswordDetails:
       return true;
-    default:
+    case PopupItemId::kAccountStoragePasswordEntry:
+    case PopupItemId::kAddressEntry:
+    case PopupItemId::kAddressFieldByFieldFilling:
+    case PopupItemId::kAutocompleteEntry:
+    case PopupItemId::kCompose:
+    case PopupItemId::kCreateNewPlusAddress:
+    case PopupItemId::kCreditCardEntry:
+    case PopupItemId::kCreditCardFieldByFieldFilling:
+    case PopupItemId::kDatalistEntry:
+    case PopupItemId::kDevtoolsTestAddressEntry:
+    case PopupItemId::kDevtoolsTestAddresses:
+    case PopupItemId::kFillExistingPlusAddress:
+    case PopupItemId::kFillFullAddress:
+    case PopupItemId::kFillFullName:
+    case PopupItemId::kFillFullEmail:
+    case PopupItemId::kFillFullPhoneNumber:
+    case PopupItemId::kGeneratePasswordEntry:
+    case PopupItemId::kIbanEntry:
+    case PopupItemId::kInsecureContextPaymentDisabledMessage:
+    case PopupItemId::kMerchantPromoCodeEntry:
+    case PopupItemId::kMixedFormMessage:
+    case PopupItemId::kPasswordEntry:
+    case PopupItemId::kSeparator:
+    case PopupItemId::kVirtualCreditCardEntry:
+    case PopupItemId::kWebauthnCredential:
+    case PopupItemId::kWebauthnSignInWithAnotherDevice:
+    case PopupItemId::kPasswordFieldByFieldFilling:
+    case PopupItemId::kFillPassword:
       return false;
   }
+}
+
+bool IsExpandablePopupItemId(PopupItemId popup_item_id) {
+  switch (popup_item_id) {
+    case PopupItemId::kAddressEntry:
+    case PopupItemId::kAddressFieldByFieldFilling:
+    case PopupItemId::kCreditCardFieldByFieldFilling:
+    case PopupItemId::kDevtoolsTestAddresses:
+    case PopupItemId::kFillFullAddress:
+    case PopupItemId::kFillFullName:
+    case PopupItemId::kFillFullEmail:
+    case PopupItemId::kFillFullPhoneNumber:
+    case PopupItemId::kCreditCardEntry:
+    case PopupItemId::kPasswordEntry:
+      return true;
+    case PopupItemId::kAccountStoragePasswordEntry:
+    case PopupItemId::kAllSavedPasswordsEntry:
+    case PopupItemId::kAutocompleteEntry:
+    case PopupItemId::kAutofillOptions:
+    case PopupItemId::kClearForm:
+    case PopupItemId::kCompose:
+    case PopupItemId::kCreateNewPlusAddress:
+    case PopupItemId::kDatalistEntry:
+    case PopupItemId::kDevtoolsTestAddressEntry:
+    case PopupItemId::kDeleteAddressProfile:
+    case PopupItemId::kEditAddressProfile:
+    case PopupItemId::kFillEverythingFromAddressProfile:
+    case PopupItemId::kFillExistingPlusAddress:
+    case PopupItemId::kGeneratePasswordEntry:
+    case PopupItemId::kIbanEntry:
+    case PopupItemId::kInsecureContextPaymentDisabledMessage:
+    case PopupItemId::kMerchantPromoCodeEntry:
+    case PopupItemId::kMixedFormMessage:
+    case PopupItemId::kPasswordAccountStorageEmpty:
+    case PopupItemId::kPasswordAccountStorageOptIn:
+    case PopupItemId::kPasswordAccountStorageOptInAndGenerate:
+    case PopupItemId::kPasswordAccountStorageReSignin:
+    case PopupItemId::kPasswordFieldByFieldFilling:
+    case PopupItemId::kFillPassword:
+    case PopupItemId::kViewPasswordDetails:
+    case PopupItemId::kScanCreditCard:
+    case PopupItemId::kSeePromoCodeDetails:
+    case PopupItemId::kSeparator:
+    case PopupItemId::kShowAccountCards:
+    case PopupItemId::kVirtualCreditCardEntry:
+    case PopupItemId::kWebauthnCredential:
+    case PopupItemId::kWebauthnSignInWithAnotherDevice:
+      return false;
+  }
+}
+
+bool ShouldApplyNewAutofillPopupStyle() {
+  return base::FeatureList::IsEnabled(
+             features::kAutofillShowAutocompleteDeleteButton) ||
+         base::FeatureList::IsEnabled(
+             features::kAutofillGranularFillingAvailable);
+}
+
+views::style::TextStyle GetPrimaryTextStyle() {
+  return ShouldApplyNewAutofillPopupStyle()
+             ? views::style::TextStyle::STYLE_BODY_3_MEDIUM
+             : views::style::TextStyle::STYLE_PRIMARY;
+}
+
+views::style::TextStyle GetSecondaryTextStyle() {
+  return ShouldApplyNewAutofillPopupStyle()
+             ? views::style::TextStyle::STYLE_BODY_4
+             : views::style::TextStyle::STYLE_SECONDARY;
 }
 
 }  // namespace autofill

@@ -27,14 +27,11 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.LinkedHashSet;
 
-/**
- * Tests for the AppPromoDialog class.
- */
+/** Tests for the AppPromoDialog class. */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
 public class AppLanguagePromoDialogTest {
-    @Rule
-    public JniMocker mJniMocker = new JniMocker();
+    @Rule public JniMocker mJniMocker = new JniMocker();
 
     LanguageItem mFollowSystem;
     LanguageItem mLangAf;
@@ -56,8 +53,9 @@ public class AppLanguagePromoDialogTest {
         mLangAf = new LanguageItem("af", "Afrikaans", "Afrikaans", true);
         mLangAz = new LanguageItem("az", "Azerbaijani", "azərbaycan", true);
         mLangEnGb = new LanguageItem("en-GB", "English (UK)", "English (UK)", true);
-        mLangEnUs = new LanguageItem(
-                "en-US", "English (United States)", "English (United States", true);
+        mLangEnUs =
+                new LanguageItem(
+                        "en-US", "English (United States)", "English (United States", true);
         mLangEs = new LanguageItem("es", "Spanish", "español", true);
         mLangZu = new LanguageItem("zu", "Zulu", "isiZulu", true);
         mUiLanguages =
@@ -82,59 +80,87 @@ public class AppLanguagePromoDialogTest {
     public void testGetTopLanguagesHelper() {
         // Current override language is mFollowSystem, System Language is en-US
         LinkedHashSet<LanguageItem> topLanguages =
-                AppLanguagePromoDialog.getTopLanguagesHelper(mUiLanguages,
+                AppLanguagePromoDialog.getTopLanguagesHelper(
+                        mUiLanguages,
                         new LinkedHashSet<>(Arrays.asList("af", "an", "en-US", "en-AU", "zu")),
-                        mFollowSystem, LocaleUtils.forLanguageTag("en-US"));
+                        mFollowSystem,
+                        LocaleUtils.forLanguageTag("en-US"));
         Assert.assertEquals(
                 new ArrayList<>(topLanguages), Arrays.asList(mFollowSystem, mLangAf, mLangZu));
 
         // Current override language is mFollowSystem, System Language is Zulu
-        topLanguages = AppLanguagePromoDialog.getTopLanguagesHelper(mUiLanguages,
-                new LinkedHashSet<>(Arrays.asList("en-US", "en-AU", "an", "af", "zu")),
-                mFollowSystem, LocaleUtils.forLanguageTag("zu"));
+        topLanguages =
+                AppLanguagePromoDialog.getTopLanguagesHelper(
+                        mUiLanguages,
+                        new LinkedHashSet<>(Arrays.asList("en-US", "en-AU", "an", "af", "zu")),
+                        mFollowSystem,
+                        LocaleUtils.forLanguageTag("zu"));
         Assert.assertEquals(
                 new ArrayList<>(topLanguages), Arrays.asList(mFollowSystem, mLangEnUs, mLangAf));
 
         // Current override language is en-US, System Language is en-US
-        topLanguages = AppLanguagePromoDialog.getTopLanguagesHelper(mUiLanguages,
-                new LinkedHashSet<>(Arrays.asList("zu", "af", "an", "en-AU", "en-US", "en-GB")),
-                mLangEnUs, LocaleUtils.forLanguageTag("en-US"));
-        Assert.assertEquals(new ArrayList<>(topLanguages),
+        topLanguages =
+                AppLanguagePromoDialog.getTopLanguagesHelper(
+                        mUiLanguages,
+                        new LinkedHashSet<>(
+                                Arrays.asList("zu", "af", "an", "en-AU", "en-US", "en-GB")),
+                        mLangEnUs,
+                        LocaleUtils.forLanguageTag("en-US"));
+        Assert.assertEquals(
+                new ArrayList<>(topLanguages),
                 Arrays.asList(mLangEnUs, mLangZu, mLangAf, mLangEnGb));
 
         // Current override language is Afrikaans, System Language is Zulu
-        topLanguages = AppLanguagePromoDialog.getTopLanguagesHelper(mUiLanguages,
-                new LinkedHashSet<>(Arrays.asList("an", "en-US", "en-AU", "zu", "af")), mLangAf,
-                LocaleUtils.forLanguageTag("zu"));
+        topLanguages =
+                AppLanguagePromoDialog.getTopLanguagesHelper(
+                        mUiLanguages,
+                        new LinkedHashSet<>(Arrays.asList("an", "en-US", "en-AU", "zu", "af")),
+                        mLangAf,
+                        LocaleUtils.forLanguageTag("zu"));
         Assert.assertEquals(
                 new ArrayList<>(topLanguages), Arrays.asList(mFollowSystem, mLangAf, mLangEnUs));
 
         // Current override language is Afrikaans, System Language is Afrikaans (South Africa)
-        topLanguages = AppLanguagePromoDialog.getTopLanguagesHelper(mUiLanguages,
-                new LinkedHashSet<>(Arrays.asList("af-ZA", "an", "zu", "en-US", "en-AU")), mLangAf,
-                LocaleUtils.forLanguageTag("af-ZA"));
+        topLanguages =
+                AppLanguagePromoDialog.getTopLanguagesHelper(
+                        mUiLanguages,
+                        new LinkedHashSet<>(Arrays.asList("af-ZA", "an", "zu", "en-US", "en-AU")),
+                        mLangAf,
+                        LocaleUtils.forLanguageTag("af-ZA"));
         Assert.assertEquals(
                 new ArrayList<>(topLanguages), Arrays.asList(mLangAf, mLangZu, mLangEnUs));
 
         // Current override language is en-US, System Language is Afrikaans (South Africa)
-        topLanguages = AppLanguagePromoDialog.getTopLanguagesHelper(mUiLanguages,
-                new LinkedHashSet<>(Arrays.asList("af-ZA", "af", "an", "en-US", "en-AU", "zu")),
-                mLangEnUs, LocaleUtils.forLanguageTag("af-ZA"));
+        topLanguages =
+                AppLanguagePromoDialog.getTopLanguagesHelper(
+                        mUiLanguages,
+                        new LinkedHashSet<>(
+                                Arrays.asList("af-ZA", "af", "an", "en-US", "en-AU", "zu")),
+                        mLangEnUs,
+                        LocaleUtils.forLanguageTag("af-ZA"));
         Assert.assertEquals(
                 new ArrayList<>(topLanguages), Arrays.asList(mFollowSystem, mLangEnUs, mLangZu));
 
         // Current override language is mFollowSystem, System Language is Afrikaans (South Africa)
-        topLanguages = AppLanguagePromoDialog.getTopLanguagesHelper(mUiLanguages,
-                new LinkedHashSet<>(Arrays.asList("af-ZA", "af", "an", "en-US", "en-AU", "zu")),
-                mFollowSystem, LocaleUtils.forLanguageTag("af-ZA"));
+        topLanguages =
+                AppLanguagePromoDialog.getTopLanguagesHelper(
+                        mUiLanguages,
+                        new LinkedHashSet<>(
+                                Arrays.asList("af-ZA", "af", "an", "en-US", "en-AU", "zu")),
+                        mFollowSystem,
+                        LocaleUtils.forLanguageTag("af-ZA"));
         Assert.assertEquals(
                 new ArrayList<>(topLanguages), Arrays.asList(mFollowSystem, mLangEnUs, mLangZu));
 
         // Test that country specific top languages are converted to their base language.
-        topLanguages = AppLanguagePromoDialog.getTopLanguagesHelper(mUiLanguages,
-                new LinkedHashSet<>(
-                        Arrays.asList("af-ZA", "af-NA", "an", "as", "en-US", "en-AU", "zu-XX")),
-                mFollowSystem, LocaleUtils.forLanguageTag("en-US"));
+        topLanguages =
+                AppLanguagePromoDialog.getTopLanguagesHelper(
+                        mUiLanguages,
+                        new LinkedHashSet<>(
+                                Arrays.asList(
+                                        "af-ZA", "af-NA", "an", "as", "en-US", "en-AU", "zu-XX")),
+                        mFollowSystem,
+                        LocaleUtils.forLanguageTag("en-US"));
         Assert.assertEquals(
                 new ArrayList<>(topLanguages), Arrays.asList(mFollowSystem, mLangAf, mLangZu));
     }
@@ -162,10 +188,11 @@ public class AppLanguagePromoDialogTest {
     @SmallTest
     public void testLanguageItemAdapterGetItemCount() {
         LanguageItemAdapter adapter =
-                makeLanguageItemAdapter(Arrays.asList(mLangAf, mLangAz), // top languages
+                makeLanguageItemAdapter(
+                        Arrays.asList(mLangAf, mLangAz), // top languages
                         Arrays.asList(mLangEnGb, mLangEnUs, mLangZu), // other languages,
                         mLangAf // current language
-                );
+                        );
 
         // Only the top languages plus "More languages" item are showing to start.
         Assert.assertEquals(3, adapter.getItemCount());
@@ -182,10 +209,11 @@ public class AppLanguagePromoDialogTest {
     @SmallTest
     public void testLanguageItemAdapterGetLanguageItemAt() {
         LanguageItemAdapter adapter =
-                makeLanguageItemAdapter(Arrays.asList(mLangAf, mLangAz), // top languages
+                makeLanguageItemAdapter(
+                        Arrays.asList(mLangAf, mLangAz), // top languages
                         Arrays.asList(mLangEnGb, mLangEnUs, mLangZu), // other languages,
                         mLangAf // current language
-                );
+                        );
 
         Assert.assertEquals(mLangAz, adapter.getLanguageItemAt(1)); // topLanguage
         Assert.assertEquals(mLangEnGb, adapter.getLanguageItemAt(3)); // otherLanguage
@@ -197,10 +225,11 @@ public class AppLanguagePromoDialogTest {
     @SmallTest
     public void testLanguageItemAdapterGetPositionForLanguageItem() {
         LanguageItemAdapter adapter =
-                makeLanguageItemAdapter(Arrays.asList(mLangAf, mLangAz), // top languages
+                makeLanguageItemAdapter(
+                        Arrays.asList(mLangAf, mLangAz), // top languages
                         Arrays.asList(mLangEnGb, mLangEnUs, mLangZu), // other languages,
                         mLangAf // current language
-                );
+                        );
 
         Assert.assertEquals(1, adapter.getPositionForLanguageItem(mLangAz)); // topLanguage
         Assert.assertEquals(3, adapter.getPositionForLanguageItem(mLangEnGb)); // otherLanguage
@@ -212,10 +241,11 @@ public class AppLanguagePromoDialogTest {
     @SmallTest
     public void testLanguageItemAdapterGetItemViewType() {
         LanguageItemAdapter adapter =
-                makeLanguageItemAdapter(Arrays.asList(mLangAf, mLangAz), // top languages
+                makeLanguageItemAdapter(
+                        Arrays.asList(mLangAf, mLangAz), // top languages
                         Arrays.asList(mLangEnGb, mLangEnUs, mLangZu), // other languages,
                         mLangAf // current language
-                );
+                        );
 
         // More Languages is showing to start
         Assert.assertEquals(AppLanguagePromoDialog.ItemType.LANGUAGE, adapter.getItemViewType(0));
@@ -238,10 +268,11 @@ public class AppLanguagePromoDialogTest {
     @SmallTest
     public void testLanguageItemAdapterSetSelectedLanguage() {
         LanguageItemAdapter adapter =
-                makeLanguageItemAdapter(Arrays.asList(mLangAf, mLangAz), // top languages
+                makeLanguageItemAdapter(
+                        Arrays.asList(mLangAf, mLangAz), // top languages
                         Arrays.asList(mLangEnGb, mLangEnUs, mLangZu), // other languages,
                         mLangAf // current language
-                );
+                        );
 
         Assert.assertTrue(adapter.isTopLanguageSelected());
         Assert.assertEquals(mLangAf, adapter.getSelectedLanguage());
@@ -283,7 +314,8 @@ public class AppLanguagePromoDialogTest {
     }
 
     private static LanguageItemAdapter makeLanguageItemAdapter(
-            Collection<LanguageItem> topLanguages, Collection<LanguageItem> otherLanguages,
+            Collection<LanguageItem> topLanguages,
+            Collection<LanguageItem> otherLanguages,
             LanguageItem currentLanguage) {
         return new AppLanguagePromoDialog.LanguageItemAdapter(
                 topLanguages, otherLanguages, currentLanguage);

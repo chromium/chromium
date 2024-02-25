@@ -4,6 +4,8 @@
 
 #include "media/gpu/mac/video_toolbox_frame_converter.h"
 
+#include <optional>
+
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/logging.h"
@@ -16,10 +18,10 @@
 #include "gpu/ipc/common/gpu_memory_buffer_impl_io_surface.h"
 #include "gpu/ipc/service/gpu_channel.h"
 #include "gpu/ipc/service/shared_image_stub.h"
+#include "media/base/mac/video_frame_mac.h"
 #include "media/base/media_log.h"
 #include "media/base/media_switches.h"
-#include "media/gpu/mac/video_toolbox_decode_metadata.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
+#include "media/gpu/mac/video_toolbox_decompression_metadata.h"
 #include "ui/gfx/color_space.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/size.h"
@@ -29,25 +31,41 @@ namespace media {
 
 namespace {
 
+// The SharedImages created by this class to back VideoFrames can be read by the
+// raster interface for canvas and by the GLES2 interface for WebGL in addition
+// to being sent to the display compositor and/or used as overlays.
 constexpr uint32_t kSharedImageUsage =
     gpu::SHARED_IMAGE_USAGE_DISPLAY_READ | gpu::SHARED_IMAGE_USAGE_SCANOUT |
     gpu::SHARED_IMAGE_USAGE_MACOS_VIDEO_TOOLBOX |
-    gpu::SHARED_IMAGE_USAGE_RASTER | gpu::SHARED_IMAGE_USAGE_GLES2;
+    gpu::SHARED_IMAGE_USAGE_RASTER_READ | gpu::SHARED_IMAGE_USAGE_GLES2_READ;
 
 constexpr char kSharedImageDebugLabel[] = "VideoToolboxVideoDecoder";
 
-absl::optional<viz::SharedImageFormat> PixelFormatToImageFormat(
+std::optional<viz::SharedImageFormat> PixelFormatToImageFormat(
     OSType pixel_format) {
   switch (pixel_format) {
     case kCVPixelFormatType_420YpCbCr8BiPlanarVideoRange:
       return viz::MultiPlaneFormat::kNV12;
+    case kCVPixelFormatType_420YpCbCr10BiPlanarVideoRange:
+      return viz::MultiPlaneFormat::kP010;
+    case kCVPixelFormatType_420YpCbCr8VideoRange_8A_TriPlanar:
+      return viz::MultiPlaneFormat::kNV12A;
     default:
-      return absl::nullopt;
+      return std::nullopt;
   }
 }
 
-bool IsWebGPUCompatible(OSType pixel_format) {
-  return pixel_format == kCVPixelFormatType_420YpCbCr8BiPlanarVideoRange;
+VideoPixelFormat PixelFormatToVideoPixelFormat(OSType pixel_format) {
+  switch (pixel_format) {
+    case kCVPixelFormatType_420YpCbCr8BiPlanarVideoRange:
+      return PIXEL_FORMAT_NV12;
+    case kCVPixelFormatType_420YpCbCr10BiPlanarVideoRange:
+      return PIXEL_FORMAT_P016LE;
+    case kCVPixelFormatType_420YpCbCr8VideoRange_8A_TriPlanar:
+      return PIXEL_FORMAT_NV12A;
+    default:
+      return PIXEL_FORMAT_UNKNOWN;
+  }
 }
 
 }  // namespace
@@ -142,20 +160,20 @@ void VideoToolboxFrameConverter::Convert(
     return;
   }
 
-  const gfx::Size coded_size(CVPixelBufferGetWidth(image),
-                             CVPixelBufferGetHeight(image));
-  const gfx::Rect visible_rect(CVImageBufferGetCleanRect(image));
+  const gfx::Size coded_size(CVPixelBufferGetWidth(image.get()),
+                             CVPixelBufferGetHeight(image.get()));
+  const gfx::Rect visible_rect(CVImageBufferGetCleanRect(image.get()));
   const gfx::Size natural_size =
       metadata->aspect_ratio.GetNaturalSize(visible_rect);
 
   gfx::GpuMemoryBufferHandle handle;
   handle.id = gfx::GpuMemoryBufferHandle::kInvalidId;
   handle.type = gfx::GpuMemoryBufferType::IO_SURFACE_BUFFER;
-  handle.io_surface.reset(CVPixelBufferGetIOSurface(image),
+  handle.io_surface.reset(CVPixelBufferGetIOSurface(image.get()),
                           base::scoped_policy::RETAIN);
 
-  OSType pixel_format = IOSurfaceGetPixelFormat(handle.io_surface);
-  absl::optional<viz::SharedImageFormat> format =
+  OSType pixel_format = IOSurfaceGetPixelFormat(handle.io_surface.get());
+  std::optional<viz::SharedImageFormat> format =
       PixelFormatToImageFormat(pixel_format);
   if (!format) {
     MEDIA_LOG(ERROR, media_log_.get())
@@ -163,6 +181,9 @@ void VideoToolboxFrameConverter::Convert(
     std::move(output_cb).Run(nullptr, std::move(metadata));
     return;
   }
+
+  VideoPixelFormat video_pixel_format =
+      PixelFormatToVideoPixelFormat(pixel_format);
 
   gpu::Mailbox mailbox = gpu::Mailbox::GenerateForSharedImage();
   bool result = sis_->CreateSharedImage(
@@ -174,6 +195,10 @@ void VideoToolboxFrameConverter::Convert(
     std::move(output_cb).Run(nullptr, std::move(metadata));
     return;
   }
+
+  // Extract IOSurface webgpu compatible attribute before image is moved.
+  const bool is_webgpu_compatible =
+      IOSurfaceIsWebGPUCompatible(CVPixelBufferGetIOSurface(image.get()));
 
   GLenum target = texture_rectangle_ ? GL_TEXTURE_RECTANGLE_ARB : GL_TEXTURE_2D;
 
@@ -191,7 +216,7 @@ void VideoToolboxFrameConverter::Convert(
   // which would allow the renderer to map the IOSurface, but this is more
   // expensive whenever the renderer is not doing readback.
   scoped_refptr<VideoFrame> frame = VideoFrame::WrapNativeTextures(
-      PIXEL_FORMAT_NV12, mailbox_holders, std::move(release_cb), coded_size,
+      video_pixel_format, mailbox_holders, std::move(release_cb), coded_size,
       visible_rect, natural_size, metadata->timestamp);
 
   if (!frame) {
@@ -209,16 +234,19 @@ void VideoToolboxFrameConverter::Convert(
   // IOSurface color space. There doesn't seem to be a way to specify it for
   // H.264 unless we create the format description manually.
   frame->set_color_space(metadata->color_space);
+  frame->set_hdr_metadata(metadata->hdr_metadata);
   frame->set_shared_image_format_type(
       IsMultiPlaneFormatForHardwareVideoEnabled()
           ? SharedImageFormatType::kSharedImageFormat
           : SharedImageFormatType::kLegacy);
-  frame->metadata().frame_duration = metadata->duration;
+  if (metadata->duration != kNoTimestamp && !metadata->duration.is_zero()) {
+    frame->metadata().frame_duration = metadata->duration;
+  }
   frame->metadata().allow_overlay = true;
   // Releasing |image| must happen after command buffer commands are complete
   // (not just submitted).
   frame->metadata().read_lock_fences_enabled = true;
-  frame->metadata().is_webgpu_compatible = IsWebGPUCompatible(pixel_format);
+  frame->metadata().is_webgpu_compatible = is_webgpu_compatible;
   // TODO(crbug.com/1331597): VideoToolbox can report software usage, should
   // we plumb that through?
   frame->metadata().power_efficient = true;

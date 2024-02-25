@@ -8,9 +8,10 @@ import android.content.Context;
 
 import androidx.annotation.Nullable;
 
-import org.chromium.base.annotations.CalledByNative;
-import org.chromium.base.annotations.JNINamespace;
-import org.chromium.base.annotations.NativeMethods;
+import org.jni_zero.CalledByNative;
+import org.jni_zero.JNINamespace;
+import org.jni_zero.NativeMethods;
+
 import org.chromium.chrome.browser.ui.autofill.data.AuthenticatorOption;
 import org.chromium.chrome.browser.ui.autofill.internal.R;
 import org.chromium.ui.base.WindowAndroid;
@@ -20,17 +21,17 @@ import org.chromium.ui.modaldialog.ModalDialogManager;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * JNI Bridge for {@link AuthenticatorSelectionDialog}
- */
+/** JNI Bridge for {@link AuthenticatorSelectionDialog} */
 @JNINamespace("autofill")
 public class AuthenticatorSelectionDialogBridge implements AuthenticatorSelectionDialog.Listener {
     private final long mNativeCardUnmaskAuthenticationSelectionDialogView;
     private final Context mContext;
     private AuthenticatorSelectionDialog mAuthenticatorSelectionDialog;
 
-    public AuthenticatorSelectionDialogBridge(long nativeAuthenticatorSelectionDialogView,
-            Context context, ModalDialogManager modalDialogManager) {
+    public AuthenticatorSelectionDialogBridge(
+            long nativeAuthenticatorSelectionDialogView,
+            Context context,
+            ModalDialogManager modalDialogManager) {
         mNativeCardUnmaskAuthenticationSelectionDialogView = nativeAuthenticatorSelectionDialogView;
         mContext = context;
         mAuthenticatorSelectionDialog =
@@ -71,8 +72,11 @@ public class AuthenticatorSelectionDialogBridge implements AuthenticatorSelectio
      *         should be shown.
      */
     @CalledByNative
-    private static void createAuthenticatorOptionAndAddToList(List<AuthenticatorOption> list,
-            String title, String identifier, String description,
+    private static void createAuthenticatorOptionAndAddToList(
+            List<AuthenticatorOption> list,
+            String title,
+            String identifier,
+            String description,
             @CardUnmaskChallengeOptionType int type) {
         if (list == null) {
             return;
@@ -93,13 +97,14 @@ public class AuthenticatorSelectionDialogBridge implements AuthenticatorSelectio
                 // This will never happen
                 assert false : "Attempted to offer CardUnmaskChallengeOption with Unknown type";
         }
-        AuthenticatorOption authenticatorOption = new AuthenticatorOption.Builder()
-                                                          .setTitle(title)
-                                                          .setIdentifier(identifier)
-                                                          .setDescription(description)
-                                                          .setIconResId(iconResId)
-                                                          .setType(type)
-                                                          .build();
+        AuthenticatorOption authenticatorOption =
+                new AuthenticatorOption.Builder()
+                        .setTitle(title)
+                        .setIdentifier(identifier)
+                        .setDescription(description)
+                        .setIconResId(iconResId)
+                        .setType(type)
+                        .build();
         list.add(authenticatorOption);
     }
 
@@ -113,9 +118,7 @@ public class AuthenticatorSelectionDialogBridge implements AuthenticatorSelectio
         mAuthenticatorSelectionDialog.show(authenticatorOptions);
     }
 
-    /**
-     * Dismisses the Authenticator Selection Dialog.
-     */
+    /** Dismisses the Authenticator Selection Dialog. */
     @CalledByNative
     public void dismiss() {
         mAuthenticatorSelectionDialog.dismiss(DialogDismissalCause.DISMISSED_BY_NATIVE);
@@ -128,21 +131,25 @@ public class AuthenticatorSelectionDialogBridge implements AuthenticatorSelectio
      */
     @Override
     public void onOptionSelected(String authenticatorOptionIdentifier) {
-        AuthenticatorSelectionDialogBridgeJni.get().onOptionSelected(
-                mNativeCardUnmaskAuthenticationSelectionDialogView, authenticatorOptionIdentifier);
+        AuthenticatorSelectionDialogBridgeJni.get()
+                .onOptionSelected(
+                        mNativeCardUnmaskAuthenticationSelectionDialogView,
+                        authenticatorOptionIdentifier);
     }
 
     /** Notify that the dialog was dismissed. */
     @Override
     public void onDialogDismissed() {
-        AuthenticatorSelectionDialogBridgeJni.get().onDismissed(
-                mNativeCardUnmaskAuthenticationSelectionDialogView);
+        AuthenticatorSelectionDialogBridgeJni.get()
+                .onDismissed(mNativeCardUnmaskAuthenticationSelectionDialogView);
     }
 
     @NativeMethods
     interface Natives {
-        void onOptionSelected(long nativeAuthenticatorSelectionDialogViewAndroid,
+        void onOptionSelected(
+                long nativeAuthenticatorSelectionDialogViewAndroid,
                 String authenticatorOptionIdentifier);
+
         void onDismissed(long nativeAuthenticatorSelectionDialogViewAndroid);
     }
 }

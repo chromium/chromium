@@ -81,12 +81,14 @@ void DedicatedWorkerHostFactoryClient::CreateWorkerHost(
     network::mojom::CredentialsMode credentials_mode,
     const blink::WebFetchClientSettingsObject& fetch_client_settings_object,
     blink::CrossVariantMojoRemote<blink::mojom::BlobURLTokenInterfaceBase>
-        blob_url_token) {
+        blob_url_token,
+    bool has_storage_access) {
   DCHECK(base::FeatureList::IsEnabled(blink::features::kPlzDedicatedWorker));
   factory_->CreateWorkerHostAndStartScriptLoad(
       dedicated_worker_token, script_url, credentials_mode,
       FetchClientSettingsObjectFromWebToMojom(fetch_client_settings_object),
-      std::move(blob_url_token), receiver_.BindNewPipeAndPassRemote());
+      std::move(blob_url_token), receiver_.BindNewPipeAndPassRemote(),
+      has_storage_access);
 }
 
 scoped_refptr<blink::WebWorkerFetchContext>

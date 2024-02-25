@@ -38,8 +38,6 @@ namespace {
 
 // Below constants are used to construct MockBluetoothDevice for testing.
 constexpr char kTestBleDeviceAddress1[] = "11:12:13:14:15:16";
-constexpr char kTestBleDeviceAddress2[] = "16:15:14:13:12:11";
-constexpr char kTestBleDeviceAddress3[] = "16:15:14:11:12:13";
 constexpr char kTestBleDeviceName[] = "Test Device Name";
 
 std::unique_ptr<device::MockBluetoothDevice> CreateTestBluetoothDevice(
@@ -178,8 +176,8 @@ class FastPairScannerImplTest : public testing::Test {
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   scoped_refptr<FakeBluetoothAdapter> adapter_;
   scoped_refptr<FastPairScanner> scanner_;
-  raw_ptr<device::MockBluetoothLowEnergyScanSession, ExperimentalAsh>
-      mock_scan_session_ = nullptr;
+  raw_ptr<device::MockBluetoothLowEnergyScanSession> mock_scan_session_ =
+      nullptr;
   std::unique_ptr<FastPairScannerObserver> scanner_observer_;
   base::WeakPtr<device::BluetoothLowEnergyScanSession::Delegate> delegate_;
   base::WeakPtrFactory<FastPairScannerImplTest> weak_ptr_factory_{this};
@@ -194,7 +192,7 @@ TEST_F(FastPairScannerImplTest, FactoryCreate) {
 
 TEST_F(FastPairScannerImplTest, SessionStartedSuccessfully) {
   delegate_->OnSessionStarted(mock_scan_session_,
-                              /*error_code=*/absl::nullopt);
+                              /*error_code=*/std::nullopt);
   TriggerOnDeviceFound(kTestBleDeviceAddress1);
   EXPECT_TRUE(scanner_observer().DoesDeviceListContainTestDevice(
       kTestBleDeviceAddress1));
@@ -330,24 +328,6 @@ TEST_F(FastPairScannerImplTest, IgnoresEventDuringActiveHandshake) {
   TriggerOnDeviceFound(kTestBleDeviceAddress1);
   EXPECT_TRUE(scanner_observer().DoesDeviceListContainTestDevice(
       kTestBleDeviceAddress1));
-  EXPECT_EQ(scanner_observer().on_device_found_count(), 2);
-}
-
-TEST_F(FastPairScannerImplTest, LowPowerMode) {
-  base::test::ScopedFeatureList feature_list{ash::features::kFastPairLowPower};
-  SetUp();
-
-  TriggerOnDeviceFound(kTestBleDeviceAddress1);
-  EXPECT_EQ(scanner_observer().on_device_found_count(), 1);
-
-  task_environment_.FastForwardBy(base::Seconds(2));
-
-  TriggerOnDeviceFound(kTestBleDeviceAddress2);
-  EXPECT_EQ(scanner_observer().on_device_found_count(), 1);
-
-  task_environment_.FastForwardBy(base::Seconds(3));
-
-  TriggerOnDeviceFound(kTestBleDeviceAddress3);
   EXPECT_EQ(scanner_observer().on_device_found_count(), 2);
 }
 

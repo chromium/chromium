@@ -139,7 +139,7 @@ void NativeThemeMac::Paint(cc::PaintCanvas* canvas,
                            const gfx::Rect& rect,
                            const ExtraParams& extra,
                            ColorScheme color_scheme,
-                           const absl::optional<SkColor>& accent_color) const {
+                           const std::optional<SkColor>& accent_color) const {
   ColorScheme color_scheme_updated = color_scheme;
   if (color_scheme_updated == ColorScheme::kDefault)
     color_scheme_updated = GetDefaultSystemColorScheme();
@@ -280,7 +280,7 @@ void NativeThemeMac::PaintScrollBarTrackGradient(
 
   // And draw.
   cc::PaintFlags flags;
-  absl::optional<SkColor> track_color =
+  std::optional<SkColor> track_color =
       GetScrollbarColor(ScrollbarPart::kTrack, color_scheme, extra_params);
   if (track_color.has_value()) {
     flags.setAntiAlias(true);
@@ -418,7 +418,7 @@ void NativeThemeMac::PaintMacScrollbarThumb(
   paint_canvas.DrawRoundRect(bounds, radius, flags);
 }
 
-absl::optional<SkColor> NativeThemeMac::GetScrollbarColor(
+std::optional<SkColor> NativeThemeMac::GetScrollbarColor(
     ScrollbarPart part,
     ColorScheme color_scheme,
     const ScrollbarExtraParams& extra_params) const {
@@ -467,7 +467,7 @@ absl::optional<SkColor> NativeThemeMac::GetScrollbarColor(
     }
   }
 
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 SkColor NativeThemeMac::GetSystemButtonPressedColor(SkColor base_color) const {
@@ -612,7 +612,8 @@ void NativeThemeMac::ConfigureWebInstance() {
 }
 
 NativeThemeMacWeb::NativeThemeMacWeb()
-    : NativeThemeAura(IsOverlayScrollbarEnabled(), false) {}
+    : NativeThemeAura(/*use_overlay_scrollbars=*/IsOverlayScrollbarEnabled(),
+                      /*should_only_use_dark_colors=*/false) {}
 
 // static
 NativeThemeMacWeb* NativeThemeMacWeb::instance() {

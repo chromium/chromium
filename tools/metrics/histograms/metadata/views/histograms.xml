@@ -22,8 +22,76 @@ chromium-metrics-reviews@google.com.
 
 <histograms>
 
+<variants name="BubbleName">
+  <variant name="All" summary="Aggregated metrics for all bubbles"/>
+  <variant name="DownloadBubbleContentsView"
+      summary="Aggregated metrics DownloadBubbleContentsView bubbles"/>
+  <variant name="ExtensionsMenuView"
+      summary="Aggregated metrics for ExtensionsMenuView bubbles"/>
+  <variant name="PageInfoBubbleViewBase"
+      summary="Aggregated metrics for PageInfoBubbleViewBase bubbles"/>
+  <variant name="PermissionPromptBaseView"
+      summary="Aggregated metrics for PermissionPromptBaseView bubbles"/>
+  <variant name="ProfileMenuViewBase"
+      summary="Aggregated metrics for ProfileMenuViewBase bubbles"/>
+</variants>
+
+<histogram name="Bubble.{BubbleName}.CloseReason" enum="WidgetClosedReason"
+    expires_after="2024-09-01">
+  <owner>kerenzhu@chromium.org</owner>
+  <owner>dayeung@chromium.org</owner>
+  <owner>temao@chromium.org</owner>
+  <owner>yuhengh@chromium.org</owner>
+  <owner>tluk@chromium.org</owner>
+  <owner>robliao@chromium.org</owner>
+  <summary>Records the reason a bubble was closed.</summary>
+  <token key="BubbleName" variants="BubbleName"/>
+</histogram>
+
+<histogram name="Bubble.{BubbleName}.CreateToPresentationTime" units="ms"
+    expires_after="2024-09-01">
+  <owner>temao@chromium.org</owner>
+  <owner>yuhengh@chromium.org</owner>
+  <owner>kerenzhu@chromium.org</owner>
+  <owner>dayeung@chromium.org</owner>
+  <owner>tluk@chromium.org</owner>
+  <owner>robliao@chromium.org</owner>
+  <summary>
+    Records the time it takes from a bubble construction to when the compositor
+    finishes the first presentation.
+  </summary>
+  <token key="BubbleName" variants="BubbleName"/>
+</histogram>
+
+<histogram name="Bubble.{BubbleName}.CreateToVisibleTime" units="ms"
+    expires_after="2024-09-01">
+  <owner>temao@chromium.org</owner>
+  <owner>yuhengh@chromium.org</owner>
+  <owner>kerenzhu@chromium.org</owner>
+  <owner>dayeung@chromium.org</owner>
+  <owner>tluk@chromium.org</owner>
+  <owner>robliao@chromium.org</owner>
+  <summary>
+    Records the time it takes from a bubble construction to when the bubble
+    becomes visible.
+  </summary>
+  <token key="BubbleName" variants="BubbleName"/>
+</histogram>
+
+<histogram name="Bubble.{BubbleName}.TimeVisible" units="ms"
+    expires_after="2024-09-01">
+  <owner>yuhengh@chromium.org</owner>
+  <owner>kerenzhu@chromium.org</owner>
+  <owner>dayeung@chromium.org</owner>
+  <owner>temao@chromium.org</owner>
+  <owner>tluk@chromium.org</owner>
+  <owner>robliao@chromium.org</owner>
+  <summary>Records the time a bubble is visible.</summary>
+  <token key="BubbleName" variants="BubbleName"/>
+</histogram>
+
 <histogram name="Views.ColorProviderCacheSize" units="entries"
-    expires_after="2023-12-24">
+    expires_after="2024-06-30">
   <owner>pkasting@chromium.org</owner>
   <owner>tluk@chromium.org</owner>
   <owner>skau@chromium.org</owner>
@@ -36,9 +104,50 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Views.InvalidatesDuringLayout" units="count"
+    expires_after="2024-12-31">
+  <owner>dpranke@chromium.org</owner>
+  <owner>elainechien@chromium.org</owner>
+  <owner>kylixrd@chromium.org</owner>
+  <summary>
+    Records the number of times a view's InvalidateLayout() method is called
+    during a Layout() call. Calling InvalidateLayout() during a layout call
+    should never be necessary.
+  </summary>
+</histogram>
+
+<histogram name="Views.LayoutCallDepth" units="count"
+    expires_after="2024-12-31">
+  <owner>dpranke@chromium.org</owner>
+  <owner>elainechien@chromium.org</owner>
+  <owner>kylixrd@chromium.org</owner>
+  <summary>
+    The maximum reentrant call depth seen during a view's layout. Normally this
+    value will be one (Layout() was not reentered). But, we know Layout() is
+    reentered sometimes in some views (where the value will be two), and want to
+    measure how often that is. We also want to know if Layout() is ever
+    reentered more than two deep.
+  </summary>
+</histogram>
+
+<histogram name="Views.UnnecessaryLayouts" units="count"
+    expires_after="2024-12-31">
+  <owner>elainechien@chromium.org</owner>
+  <owner>kylixrd@chromium.org</owner>
+  <owner>pkasting@chromium.org</owner>
+  <summary>
+    Records excess layouts of a view that will not be visible. This includes
+    doing more than one layout between paints, or any layouts after the final
+    paint. While some such layouts might be unavoidable in computing
+    layout-related properties during other operations, these mostly represent
+    unnecessary work. The zero bucket counts cases where all the layouts we did
+    were necessary, i.e. paints that had a single preceding layout.
+  </summary>
+</histogram>
+
 <histogram
     name="Views.{Process}.NumColorProvidersInitializedDuringOnNativeThemeUpdated"
-    units="providers" expires_after="2024-04-16">
+    units="providers" expires_after="2024-08-18">
   <owner>pkasting@chromium.org</owner>
   <owner>tluk@chromium.org</owner>
   <owner>skau@chromium.org</owner>
@@ -55,7 +164,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Views.{Process}.TimeSpentInitializingColorProvider" units="ms"
-    expires_after="2024-04-16">
+    expires_after="2024-08-18">
   <owner>pkasting@chromium.org</owner>
   <owner>tluk@chromium.org</owner>
   <owner>skau@chromium.org</owner>
@@ -72,7 +181,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Views.{Process}.TimeSpentProcessingOnNativeThemeUpdatedEvent"
-    units="ms" expires_after="2024-04-16">
+    units="ms" expires_after="2024-08-18">
   <owner>pkasting@chromium.org</owner>
   <owner>tluk@chromium.org</owner>
   <owner>skau@chromium.org</owner>

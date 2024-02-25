@@ -4,7 +4,7 @@
 
 #include "ash/wm/window_cycle/window_cycle_controller.h"
 
-#include "ash/accessibility/accessibility_controller_impl.h"
+#include "ash/accessibility/accessibility_controller.h"
 #include "ash/constants/ash_pref_names.h"
 #include "ash/events/event_rewriter_controller_impl.h"
 #include "ash/metrics/task_switch_metrics_recorder.h"
@@ -17,6 +17,7 @@
 #include "ash/wm/desks/desk.h"
 #include "ash/wm/desks/desk_bar_controller.h"
 #include "ash/wm/desks/desks_util.h"
+#include "ash/wm/mru_window_tracker.h"
 #include "ash/wm/overview/overview_controller.h"
 #include "ash/wm/screen_pinning_controller.h"
 #include "ash/wm/snap_group/snap_group.h"
@@ -93,44 +94,6 @@ void ReportPossibleDesksSwitchStats(int active_desk_container_id_before_cycle) {
   base::UmaHistogramExactLinear(kAltTabDesksSwitchDistanceHistogramName,
                                 desks_switch_distance,
                                 desks_util::kDesksUpperLimit);
-}
-
-// Builds the window list for window cycler, `desks_mru_type` determines whether
-// to include or exclude windows from the inactive desks. The list is built
-// based on the mru list and revised so that windows in a snap group are put
-// together with primary window comes before secondary snapped window.
-MruWindowTracker::WindowList BuildWindowList(DesksMruType desks_mru_type) {
-  const auto window_list =
-      Shell::Get()->mru_window_tracker()->BuildWindowForCycleWithPipList(
-          desks_mru_type);
-
-  SnapGroupController* snap_group_controller =
-      Shell::Get()->snap_group_controller();
-  if (!snap_group_controller) {
-    return window_list;
-  }
-
-  MruWindowTracker::WindowList adjusted_window_list;
-  for (auto* window : window_list) {
-    // The latter-activated window in a snap group should have been added. Skip
-    // inserting to de-dupe.
-    if (base::Contains(adjusted_window_list, window)) {
-      continue;
-    }
-
-    if (SnapGroup* snap_group =
-            snap_group_controller->GetSnapGroupForGivenWindow(window)) {
-      // Insert the windows if they belong to a group following the order of the
-      // actual window layout, i.e. primary snapped window comes first followed
-      // by the secondary snapped window.
-      adjusted_window_list.push_back(snap_group->window1());
-      adjusted_window_list.push_back(snap_group->window2());
-    } else {
-      adjusted_window_list.push_back(window);
-    }
-  }
-
-  return adjusted_window_list;
 }
 
 }  // namespace
@@ -320,7 +283,7 @@ bool WindowCycleController::IsEventInCycleView(
 }
 
 aura::Window* WindowCycleController::GetWindowAtPoint(
-    const ui::LocatedEvent* event) const {
+    const ui::LocatedEvent* event) {
   return window_cycle_list_ ? window_cycle_list_->GetWindowAtPoint(event)
                             : nullptr;
 }
@@ -432,8 +395,8 @@ void WindowCycleController::OnDeskRemoved(const Desk* desk) {
 // WindowCycleController, private:
 
 WindowCycleController::WindowList WindowCycleController::CreateWindowList() {
-  WindowCycleController::WindowList window_list =
-      BuildWindowList(IsAltTabPerActiveDesk() ? kActiveDesk : kAllDesks);
+  WindowList window_list = BuildWindowListForWindowCycling(
+      IsAltTabPerActiveDesk() ? kActiveDesk : kAllDesks);
 
   // Window cycle list windows will handle showing their transient related
   // windows, so if a window in |window_list| has a transient root also in
@@ -441,6 +404,42 @@ WindowCycleController::WindowList WindowCycleController::CreateWindowList() {
   // the window.
   window_util::EnsureTransientRoots(&window_list);
   return window_list;
+}
+
+MruWindowTracker::WindowList
+WindowCycleController::BuildWindowListForWindowCycling(
+    DesksMruType desks_mru_type) {
+  const auto window_list =
+      Shell::Get()->mru_window_tracker()->BuildWindowForCycleWithPipList(
+          desks_mru_type);
+
+  SnapGroupController* snap_group_controller =
+      Shell::Get()->snap_group_controller();
+  if (!snap_group_controller) {
+    return window_list;
+  }
+
+  MruWindowTracker::WindowList adjusted_window_list;
+  for (aura::Window* window : window_list) {
+    // The latter-activated window in a snap group should have been added. Skip
+    // inserting to avoid duplicates.
+    if (base::Contains(adjusted_window_list, window)) {
+      continue;
+    }
+
+    if (SnapGroup* snap_group =
+            snap_group_controller->GetSnapGroupForGivenWindow(window)) {
+      // Insert the windows if they belong to a group following the order of the
+      // actual window layout, i.e. primary snapped window comes first followed
+      // by the secondary snapped window.
+      adjusted_window_list.push_back(snap_group->window1());
+      adjusted_window_list.push_back(snap_group->window2());
+    } else {
+      adjusted_window_list.push_back(window);
+    }
+  }
+
+  return adjusted_window_list;
 }
 
 void WindowCycleController::SaveCurrentActiveDeskAndWindow(
@@ -524,7 +523,7 @@ void WindowCycleController::OnAltTabModePrefChanged() {
 
   // After the cycle is reset, imitate the same forward cycling behavior as
   // starting alt-tab with `Step()`, which makes sure the correct window is
-  // selected and highlighted.
+  // selected and focused.
   Step(WindowCyclingDirection::kForward,
        /*starting_alt_tab_or_switching_mode=*/true);
 
@@ -535,7 +534,7 @@ void WindowCycleController::OnAltTabModePrefChanged() {
 }
 
 bool WindowCycleController::IsValidKeyboardNavigation(
-    KeyboardNavDirection direction) {
+    KeyboardNavDirection direction) const {
   // Only allow Left and Right arrow keys if interactive alt-tab mode is not
   // in use.
   if (!IsInteractiveAltTabModeAllowed()) {

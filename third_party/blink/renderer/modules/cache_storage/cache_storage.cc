@@ -196,17 +196,18 @@ void CacheStorage::OpenImpl(const String& cache_name,
           trace_id)));
 }
 
-ScriptPromise CacheStorage::has(ScriptState* script_state,
-                                const String& cache_name,
-                                ExceptionState& exception_state) {
+ScriptPromiseTyped<IDLBoolean> CacheStorage::has(
+    ScriptState* script_state,
+    const String& cache_name,
+    ExceptionState& exception_state) {
   int64_t trace_id = blink::cache_storage::CreateTraceId();
   TRACE_EVENT_WITH_FLOW1("CacheStorage", "CacheStorage::Has",
                          TRACE_ID_GLOBAL(trace_id), TRACE_EVENT_FLAG_FLOW_OUT,
                          "name", CacheStorageTracedValue(cache_name));
 
-  auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(
+  auto* resolver = MakeGarbageCollected<ScriptPromiseResolverTyped<IDLBoolean>>(
       script_state, exception_state.GetContext());
-  ScriptPromise promise = resolver->Promise();
+  auto promise = resolver->Promise();
 
   ExecutionContext* context = ExecutionContext::From(script_state);
   DCHECK(context->IsContextThread());
@@ -221,7 +222,7 @@ ScriptPromise CacheStorage::has(ScriptState* script_state,
 
 void CacheStorage::HasImpl(const String& cache_name,
                            int64_t trace_id,
-                           ScriptPromiseResolver* resolver) {
+                           ScriptPromiseResolverTyped<IDLBoolean>* resolver) {
   MaybeInit();
 
   // The context may be destroyed and the mojo connection unbound. However the
@@ -239,7 +240,7 @@ void CacheStorage::HasImpl(const String& cache_name,
       cache_name, trace_id,
       resolver->WrapCallbackInScriptScope(WTF::BindOnce(
           [](base::TimeTicks start_time, int64_t trace_id,
-             ScriptPromiseResolver* resolver,
+             ScriptPromiseResolverTyped<IDLBoolean>* resolver,
              mojom::blink::CacheStorageError result) {
             base::UmaHistogramTimes(
                 "ServiceWorkerCache.CacheStorage.Renderer.Has",
@@ -263,17 +264,18 @@ void CacheStorage::HasImpl(const String& cache_name,
           base::TimeTicks::Now(), trace_id)));
 }
 
-ScriptPromise CacheStorage::Delete(ScriptState* script_state,
-                                   const String& cache_name,
-                                   ExceptionState& exception_state) {
+ScriptPromiseTyped<IDLBoolean> CacheStorage::Delete(
+    ScriptState* script_state,
+    const String& cache_name,
+    ExceptionState& exception_state) {
   int64_t trace_id = blink::cache_storage::CreateTraceId();
   TRACE_EVENT_WITH_FLOW1("CacheStorage", "CacheStorage::Delete",
                          TRACE_ID_GLOBAL(trace_id), TRACE_EVENT_FLAG_FLOW_OUT,
                          "name", CacheStorageTracedValue(cache_name));
 
-  auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(
+  auto* resolver = MakeGarbageCollected<ScriptPromiseResolverTyped<IDLBoolean>>(
       script_state, exception_state.GetContext());
-  ScriptPromise promise = resolver->Promise();
+  auto promise = resolver->Promise();
 
   ExecutionContext* context = ExecutionContext::From(script_state);
   DCHECK(context->IsContextThread());
@@ -286,9 +288,10 @@ ScriptPromise CacheStorage::Delete(ScriptState* script_state,
   return promise;
 }
 
-void CacheStorage::DeleteImpl(const String& cache_name,
-                              int64_t trace_id,
-                              ScriptPromiseResolver* resolver) {
+void CacheStorage::DeleteImpl(
+    const String& cache_name,
+    int64_t trace_id,
+    ScriptPromiseResolverTyped<IDLBoolean>* resolver) {
   MaybeInit();
 
   // The context may be destroyed and the mojo connection unbound. However the
@@ -306,7 +309,7 @@ void CacheStorage::DeleteImpl(const String& cache_name,
       cache_name, trace_id,
       resolver->WrapCallbackInScriptScope(WTF::BindOnce(
           [](base::TimeTicks start_time, int64_t trace_id,
-             ScriptPromiseResolver* resolver,
+             ScriptPromiseResolverTyped<IDLBoolean>* resolver,
              mojom::blink::CacheStorageError result) {
             base::UmaHistogramTimes(
                 "ServiceWorkerCache.CacheStorage.Renderer.Delete",
@@ -331,15 +334,17 @@ void CacheStorage::DeleteImpl(const String& cache_name,
           base::TimeTicks::Now(), trace_id)));
 }
 
-ScriptPromise CacheStorage::keys(ScriptState* script_state,
-                                 ExceptionState& exception_state) {
+ScriptPromiseTyped<IDLSequence<IDLString>> CacheStorage::keys(
+    ScriptState* script_state,
+    ExceptionState& exception_state) {
   int64_t trace_id = blink::cache_storage::CreateTraceId();
   TRACE_EVENT_WITH_FLOW0("CacheStorage", "CacheStorage::Keys",
                          TRACE_ID_GLOBAL(trace_id), TRACE_EVENT_FLAG_FLOW_OUT);
 
-  auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(
-      script_state, exception_state.GetContext());
-  ScriptPromise promise = resolver->Promise();
+  auto* resolver =
+      MakeGarbageCollected<ScriptPromiseResolverTyped<IDLSequence<IDLString>>>(
+          script_state, exception_state.GetContext());
+  ScriptPromiseTyped<IDLSequence<IDLString>> promise = resolver->Promise();
 
   ExecutionContext* context = ExecutionContext::From(script_state);
   DCHECK(context->IsContextThread());
@@ -352,7 +357,9 @@ ScriptPromise CacheStorage::keys(ScriptState* script_state,
   return promise;
 }
 
-void CacheStorage::KeysImpl(int64_t trace_id, ScriptPromiseResolver* resolver) {
+void CacheStorage::KeysImpl(
+    int64_t trace_id,
+    ScriptPromiseResolverTyped<IDLSequence<IDLString>>* resolver) {
   MaybeInit();
 
   // The context may be destroyed and the mojo connection unbound. However the
@@ -370,7 +377,8 @@ void CacheStorage::KeysImpl(int64_t trace_id, ScriptPromiseResolver* resolver) {
       trace_id,
       resolver->WrapCallbackInScriptScope(WTF::BindOnce(
           [](base::TimeTicks start_time, int64_t trace_id,
-             ScriptPromiseResolver* resolver, const Vector<String>& keys) {
+             ScriptPromiseResolverTyped<IDLSequence<IDLString>>* resolver,
+             const Vector<String>& keys) {
             base::UmaHistogramTimes(
                 "ServiceWorkerCache.CacheStorage.Renderer.Keys",
                 base::TimeTicks::Now() - start_time);

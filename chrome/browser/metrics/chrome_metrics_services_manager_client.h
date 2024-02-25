@@ -13,6 +13,7 @@
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "components/metrics_services_manager/metrics_services_manager_client.h"
+#include "components/variations/synthetic_trial_registry.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chrome/browser/ash/settings/stats_reporting_controller.h"  // nogncheck
@@ -58,6 +59,11 @@ class ChromeMetricsServicesManagerClient
   // there was user consent, then metrics and crashes would be reported.
   static bool IsClientInSample();
 
+#if BUILDFLAG(IS_WIN)
+  // Same as above, but specifically just for crash reporting.
+  static bool IsClientInSampleForCrash();
+#endif  // BUILDFLAG(IS_WIN)
+
   // Gets the sample rate for in-sample clients. If the sample rate is not
   // defined, returns false, and |rate| is unchanged, otherwise returns true,
   // and |rate| contains the sample rate. If the client isn't in-sample, the
@@ -79,10 +85,10 @@ class ChromeMetricsServicesManagerClient
   class ChromeEnabledStateProvider;
 
   // metrics_services_manager::MetricsServicesManagerClient:
-  std::unique_ptr<variations::VariationsService> CreateVariationsService()
-      override;
-  std::unique_ptr<metrics::MetricsServiceClient> CreateMetricsServiceClient()
-      override;
+  std::unique_ptr<variations::VariationsService> CreateVariationsService(
+      variations::SyntheticTrialRegistry* synthetic_trial_registry) override;
+  std::unique_ptr<metrics::MetricsServiceClient> CreateMetricsServiceClient(
+      variations::SyntheticTrialRegistry* synthetic_trial_registry) override;
   metrics::MetricsStateManager* GetMetricsStateManager() override;
   scoped_refptr<network::SharedURLLoaderFactory> GetURLLoaderFactory() override;
   bool IsMetricsReportingEnabled() override;

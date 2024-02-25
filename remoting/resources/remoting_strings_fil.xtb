@@ -4,7 +4,6 @@
 <translation id="1002108253973310084">Nakakita ng hindi tugmang bersyon ng protocol. Pakitiyak na na-install mo ang pinakabagong bersyon ng software sa parehong computer at subukan ulit.</translation>
 <translation id="1008557486741366299">Hindi Ngayon</translation>
 <translation id="1201402288615127009">Susunod</translation>
-<translation id="1296511125400541222">Copyright 2023 Ang Mga May-akda ng Chromium. Nakalaan ang Lahat ng Karapatan.</translation>
 <translation id="1297009705180977556">Nagkaroon ng error sa pagkonekta sa <ph name="HOSTNAME" /></translation>
 <translation id="1450760146488584666">Hindi umiiral ang hiniling na bagay.</translation>
 <translation id="1480046233931937785">Mga Credit</translation>
@@ -89,7 +88,6 @@ Kung mayroon nang check ang '<ph name="SERVICE_SCRIPT_NAME" />,' i-uncheck ito a
 <translation id="4808503597364150972">Pakilagay ang iyong PIN para sa <ph name="HOSTNAME" />.</translation>
 <translation id="4812684235631257312">Host</translation>
 <translation id="4867841927763172006">Magpadala ng PrtScn</translation>
-<translation id="4960795469833295568">Copyright 2023 Google LLC. Nakalaan ang Lahat ng Karapatan.</translation>
 <translation id="4974476491460646149">Isinara ang koneksyon para sa <ph name="HOSTNAME" /></translation>
 <translation id="4985296110227979402">Kailangan mo munang i-set up ang iyong computer para sa remote na access</translation>
 <translation id="4987330545941822761">Hindi matukoy ng Remote na Desktop ng Chrome ang browser para lokal na magbukas ng mga URL. Pakipili ito mula sa listahan sa ibaba.</translation>
@@ -154,6 +152,7 @@ Kung mayroon nang check ang '<ph name="SERVICE_SCRIPT_NAME" />,' i-uncheck ito a
 <translation id="7693372326588366043">I-refresh ang listahan ng mga host</translation>
 <translation id="7714222945760997814">Iulat ito</translation>
 <translation id="7868137160098754906">Pakilagay ang iyong PIN para sa remote na computer.</translation>
+<translation id="7881455334687220899">Copyright 2024 Ang Mga Gumawa ng Chromium. Nakalaan ang Lahat ng Karapatan.</translation>
 <translation id="7895403300744144251">Hindi pinapayagan ng mga patakaran sa seguridad sa remote na computer ang mga koneksyon mula sa iyong account.</translation>
 <translation id="7936528439960309876">I-dock sa Kanan</translation>
 <translation id="7970576581263377361">Hindi naisagawa ang pagpapatotoo. Mangyaring muling mag-sign in sa Chromium.</translation>
@@ -185,6 +184,7 @@ Kung mayroon nang check ang '<ph name="SERVICE_SCRIPT_NAME" />,' i-uncheck ito a
 <translation id="8747048596626351634">Nag-crash o hindi nagsimula ang session. Kung may ~/.chrome-remote-desktop-session sa malayuang computer, tiyaking nagsisimula ito ng matagal na paggana ng proseso sa foreground gaya ng desktop environment o window manager.</translation>
 <translation id="8804164990146287819">Patakaran sa Privacy</translation>
 <translation id="8906511416443321782">Kinakailangan ang access sa mikropono para ma-capture ang audio at ma-stream ito sa client ng Remote na Desktop ng Chrome.</translation>
+<translation id="9042277333359847053">Copyright 2024 Google LLC. Nakalaan ang Lahat ng Karapatan.</translation>
 <translation id="9111855907838866522">Nakakonekta ka sa iyong remote device. Upang buksan ang menu, paki-tap ang screen gamit ang apat na daliri.</translation>
 <translation id="9126115402994542723">Huwag muling humingi ng PIN kapag kumokonekta sa host na ito mula sa device na ito.</translation>
 <translation id="916856682307586697">Ilunsad ang default na XSession</translation>

@@ -10,16 +10,11 @@
 
 namespace apps {
 
-GameExtras::GameExtras(
-    const absl::optional<std::vector<std::u16string>>& platforms,
-    const std::u16string& source,
-    const std::u16string& publisher,
-    const base::FilePath& relative_icon_path,
-    const bool is_icon_masking_allowed,
-    const GURL& deeplink_url)
-    : platforms_(platforms),
-      source_(source),
-      publisher_(publisher),
+GameExtras::GameExtras(const std::u16string& source,
+                       const base::FilePath& relative_icon_path,
+                       const bool is_icon_masking_allowed,
+                       const GURL& deeplink_url)
+    : source_(source),
       relative_icon_path_(relative_icon_path),
       is_icon_masking_allowed_(is_icon_masking_allowed),
       deeplink_url_(deeplink_url) {}
@@ -36,17 +31,8 @@ GameExtras* GameExtras::AsGameExtras() {
   return this;
 }
 
-const absl::optional<std::vector<std::u16string>>& GameExtras::GetPlatforms()
-    const {
-  return platforms_;
-}
-
 const std::u16string& GameExtras::GetSource() const {
   return source_;
-}
-
-const std::u16string& GameExtras::GetPublisher() const {
-  return publisher_;
 }
 
 const base::FilePath& GameExtras::GetRelativeIconPath() const {

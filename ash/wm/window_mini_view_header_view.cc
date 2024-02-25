@@ -9,7 +9,8 @@
 #include "ash/wm/snap_group/snap_group.h"
 #include "ash/wm/snap_group/snap_group_controller.h"
 #include "ash/wm/window_mini_view.h"
-#include "chromeos/constants/chromeos_features.h"
+#include "ash/wm/window_util.h"
+#include "ash/wm/wm_constants.h"
 #include "chromeos/ui/base/window_properties.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
@@ -32,11 +33,7 @@ namespace {
 constexpr int kLabelFontDelta = 2;
 
 // Padding between header items.
-constexpr int kHeaderPaddingDp = 12;
-constexpr int kHeaderPaddingDpCrOSNext = 8;
-
-// The corner radius for the top corners for the header.
-constexpr int kHeaderTopCornerRadius = 16;
+constexpr int kHeaderPaddingDp = 8;
 
 // The size in dp of the window icon shown on the alt-tab/overview window next
 // to the title.
@@ -62,14 +59,10 @@ WindowMiniViewHeaderView::WindowMiniViewHeaderView(
     : window_mini_view_(window_mini_view) {
   SetOrientation(views::BoxLayout::Orientation::kVertical);
 
-  const bool is_jellyroll_enabled = chromeos::features::IsJellyrollEnabled();
-
   icon_label_view_ = AddChildView(std::make_unique<views::BoxLayoutView>());
   icon_label_view_->SetOrientation(views::BoxLayout::Orientation::kHorizontal);
-  icon_label_view_->SetInsideBorderInsets(is_jellyroll_enabled ? kHeaderInsets
-                                                               : gfx::Insets());
-  icon_label_view_->SetBetweenChildSpacing(
-      is_jellyroll_enabled ? kHeaderPaddingDpCrOSNext : kHeaderPaddingDp);
+  icon_label_view_->SetInsideBorderInsets(kHeaderInsets);
+  icon_label_view_->SetBetweenChildSpacing(kHeaderPaddingDp);
 
   title_label_ = icon_label_view_->AddChildView(std::make_unique<views::Label>(
       GetWindowTitle(window_mini_view_->source_window())));
@@ -78,19 +71,15 @@ WindowMiniViewHeaderView::WindowMiniViewHeaderView(
   title_label_->SetSubpixelRenderingEnabled(false);
   title_label_->SetFontList(gfx::FontList().Derive(
       kLabelFontDelta, gfx::Font::NORMAL, gfx::Font::Weight::MEDIUM));
-  title_label_->SetEnabledColorId(
-      is_jellyroll_enabled
-          ? cros_tokens::kCrosSysPrimary
-          : static_cast<ui::ColorId>(kColorAshTextColorPrimary));
+  title_label_->SetEnabledColorId(cros_tokens::kCrosSysPrimary);
   icon_label_view_->SetFlexForView(title_label_, 1);
 
-  if (is_jellyroll_enabled) {
-    RefreshHeaderViewRoundedCorners();
+  RefreshHeaderViewRoundedCorners();
 
-    views::Separator* separator =
-        AddChildView(std::make_unique<views::Separator>());
-    separator->SetColorId(kColorAshWindowHeaderStrokeColor);
-  }
+  views::Separator* separator =
+      AddChildView(std::make_unique<views::Separator>());
+  separator->SetColorId(kColorAshWindowHeaderStrokeColor);
+
   SetFlexForView(icon_label_view_, 1);
 }
 
@@ -121,38 +110,27 @@ void WindowMiniViewHeaderView::UpdateTitleLabel(aura::Window* window) {
 
 void WindowMiniViewHeaderView::RefreshHeaderViewRoundedCorners() {
   SetBackground(views::CreateThemedRoundedRectBackground(
-      chromeos::features::IsJellyrollEnabled()
-          ? cros_tokens::kCrosSysHeader
-          : static_cast<ui::ColorId>(kColorAshShieldAndBase80),
-      GetHeaderRoundedCorners(window_mini_view_->source_window()),
-      /*for_border_thickness=*/0));
+      cros_tokens::kCrosSysHeader,
+      GetHeaderRoundedCorners(window_mini_view_->source_window())));
+}
+
+void WindowMiniViewHeaderView::SetHeaderViewRoundedCornerRadius(
+    gfx::RoundedCornersF& header_view_rounded_corners) {
+  header_view_rounded_corners_ = header_view_rounded_corners;
+}
+
+void WindowMiniViewHeaderView::ResetRoundedCorners() {
+  header_view_rounded_corners_.reset();
 }
 
 gfx::RoundedCornersF WindowMiniViewHeaderView::GetHeaderRoundedCorners(
     aura::Window* window) const {
-  const float scale = window->layer()->GetTargetTransform().To2dScale().x();
-  const float scaled_corner_radius = kHeaderTopCornerRadius / scale;
-  SnapGroupController* snap_group_controller =
-      Shell::Get()->snap_group_controller();
-  if (snap_group_controller) {
-    SnapGroup* snap_group =
-        snap_group_controller->GetSnapGroupForGivenWindow(window);
-    if (snap_group) {
-      auto* window1 = snap_group->window1();
-      auto* window2 = snap_group->window2();
-      CHECK(window == window1 || window == window2);
-      // `window1` is guaranteed to be the primary snapped window in a snap
-      // group and `window2` is guaranteed to be the secondary snapped window in
-      // a snap group.
-      return window == window1
-                 ? gfx::RoundedCornersF(scaled_corner_radius, 0, 0, 0)
-                 : gfx::RoundedCornersF(0, scaled_corner_radius, 0, 0);
-    }
-  }
-  return gfx::RoundedCornersF(scaled_corner_radius, scaled_corner_radius, 0, 0);
+  const int corner_radius = window_util::GetMiniWindowRoundedCornerRadius();
+  return header_view_rounded_corners_.value_or(
+      gfx::RoundedCornersF(corner_radius, corner_radius, 0, 0));
 }
 
-BEGIN_METADATA(WindowMiniViewHeaderView, views::View)
+BEGIN_METADATA(WindowMiniViewHeaderView)
 END_METADATA
 
 }  // namespace ash

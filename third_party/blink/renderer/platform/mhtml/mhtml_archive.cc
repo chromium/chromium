@@ -33,8 +33,10 @@
 #include <stddef.h>
 
 #include "base/containers/contains.h"
+#include "base/i18n/time_formatting.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/numerics/safe_conversions.h"
+#include "base/strings/stringprintf.h"
 #include "build/build_config.h"
 #include "services/network/public/cpp/is_potentially_trustworthy.h"
 #include "third_party/blink/public/mojom/loader/mhtml_load_result.mojom-blink.h"
@@ -310,8 +312,6 @@ void MHTMLArchive::GenerateMHTMLHeader(const String& boundary,
   DCHECK(!boundary.empty());
   DCHECK(!mime_type.empty());
 
-  auto date_string = MakeRFC2822DateString(date, 0);
-
   StringBuilder string_builder;
   string_builder.Append("From: <Saved by Blink>\r\n");
 
@@ -322,10 +322,11 @@ void MHTMLArchive::GenerateMHTMLHeader(const String& boundary,
 
   string_builder.Append("\r\nSubject: ");
   string_builder.Append(ConvertToPrintableCharacters(title));
-  if (date_string) {
-    string_builder.Append("\r\nDate: ");
-    string_builder.Append(*date_string);
-  }
+  string_builder.Append("\r\nDate: ");
+  string_builder.Append(
+      // See http://tools.ietf.org/html/rfc2822#section-3.3.
+      String(base::UnlocalizedTimeFormatWithPattern(date,
+                                                    "E, d MMM y HH:mm:ss xx")));
   string_builder.Append("\r\nMIME-Version: 1.0\r\n");
   string_builder.Append("Content-Type: multipart/related;\r\n");
   string_builder.Append("\ttype=\"");

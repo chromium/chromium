@@ -83,6 +83,7 @@ IndexedDBKey::IndexedDBKey(std::u16string string)
                      (string_.length() * sizeof(std::u16string::value_type))) {}
 
 IndexedDBKey::IndexedDBKey(const IndexedDBKey& other) = default;
+IndexedDBKey::IndexedDBKey(IndexedDBKey&& other) = default;
 IndexedDBKey::~IndexedDBKey() = default;
 IndexedDBKey& IndexedDBKey::operator=(const IndexedDBKey& other) = default;
 

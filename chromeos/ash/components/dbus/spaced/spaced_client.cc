@@ -141,7 +141,7 @@ class SpacedClientImpl : public SpacedClient {
  private:
   void HandleBoolResponse(BoolCallback callback, dbus::Response* response) {
     if (!response) {
-      std::move(callback).Run(absl::nullopt);
+      std::move(callback).Run(std::nullopt);
       return;
     }
 
@@ -151,7 +151,7 @@ class SpacedClientImpl : public SpacedClient {
     if (!reader.PopBool(&result)) {
       LOG(ERROR) << "Spaced D-Bus method " << response->GetMember()
                  << ": Invalid response. " + response->ToString();
-      std::move(callback).Run(absl::nullopt);
+      std::move(callback).Run(std::nullopt);
       return;
     }
 
@@ -162,7 +162,7 @@ class SpacedClientImpl : public SpacedClient {
   void HandleGetSizeResponse(GetSizeCallback callback,
                              dbus::Response* response) {
     if (!response) {
-      std::move(callback).Run(absl::nullopt);
+      std::move(callback).Run(std::nullopt);
       return;
     }
 
@@ -172,7 +172,7 @@ class SpacedClientImpl : public SpacedClient {
     if (!reader.PopInt64(&size)) {
       LOG(ERROR) << "Spaced D-Bus method " << response->GetMember()
                  << ": Invalid response. " + response->ToString();
-      std::move(callback).Run(absl::nullopt);
+      std::move(callback).Run(std::nullopt);
       return;
     }
 
@@ -201,7 +201,7 @@ class SpacedClientImpl : public SpacedClient {
     DCHECK_EQ(signal_name, spaced::kStatefulDiskSpaceUpdate);
   }
 
-  raw_ptr<dbus::ObjectProxy, ExperimentalAsh> proxy_ = nullptr;
+  raw_ptr<dbus::ObjectProxy> proxy_ = nullptr;
 
   // Note: This should remain the last member so it'll be destroyed and
   // invalidate its weak pointers before any other members are destroyed.

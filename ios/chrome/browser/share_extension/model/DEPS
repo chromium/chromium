@@ -1,0 +1,4 @@
+include_rules = [
+  "+ios/chrome/browser/bookmarks/model",
+  "+ios/chrome/browser/reading_list/model",
+]

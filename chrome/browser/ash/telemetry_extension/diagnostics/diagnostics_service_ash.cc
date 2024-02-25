@@ -100,7 +100,7 @@ void DiagnosticsServiceAsh::GetRoutineUpdate(
 
 void DiagnosticsServiceAsh::RunAcPowerRoutine(
     crosapi::mojom::DiagnosticsAcPowerStatusEnum expected_status,
-    const absl::optional<std::string>& expected_power_type,
+    const std::optional<std::string>& expected_power_type,
     RunAcPowerRoutineCallback callback) {
   GetService()->RunAcPowerRoutine(
       converters::diagnostics::Convert(expected_status), expected_power_type,
@@ -319,6 +319,16 @@ void DiagnosticsServiceAsh::RunEmmcLifetimeRoutine(
       std::move(callback)));
 }
 
+void DiagnosticsServiceAsh::RunFanRoutine(RunFanRoutineCallback callback) {
+  GetService()->RunFanRoutine(base::BindOnce(
+      [](crosapi::mojom::DiagnosticsService::RunFanRoutineCallback callback,
+         cros_healthd::mojom::RunRoutineResponsePtr ptr) {
+        std::move(callback).Run(
+            converters::diagnostics::ConvertDiagnosticsPtr(std::move(ptr)));
+      },
+      std::move(callback)));
+}
+
 void DiagnosticsServiceAsh::RunFingerprintAliveRoutine(
     RunFingerprintAliveRoutineCallback callback) {
   GetService()->RunFingerprintAliveRoutine(base::BindOnce(
@@ -373,7 +383,7 @@ void DiagnosticsServiceAsh::RunLanConnectivityRoutine(
 void DiagnosticsServiceAsh::RunMemoryRoutine(
     RunMemoryRoutineCallback callback) {
   GetService()->RunMemoryRoutine(
-      absl::nullopt,
+      std::nullopt,
       base::BindOnce(
           [](crosapi::mojom::DiagnosticsService::RunMemoryRoutineCallback
                  callback,

@@ -47,7 +47,7 @@ class ShelfWindowWatcher : public ::wm::ActivationChangeObserver,
     void OnWindowAdded(aura::Window* new_window) override;
     void OnWindowDestroying(aura::Window* window) override;
 
-    raw_ptr<ShelfWindowWatcher, ExperimentalAsh> window_watcher_;
+    raw_ptr<ShelfWindowWatcher> window_watcher_;
   };
 
   // Observes individual user windows to detect when they are closed or when
@@ -70,7 +70,7 @@ class ShelfWindowWatcher : public ::wm::ActivationChangeObserver,
     void OnWindowVisibilityChanged(aura::Window* window, bool visible) override;
     void OnWindowTitleChanged(aura::Window* window) override;
 
-    raw_ptr<ShelfWindowWatcher, ExperimentalAsh> window_watcher_;
+    raw_ptr<ShelfWindowWatcher> window_watcher_;
   };
 
   // Creates a ShelfItem for |window|.
@@ -100,7 +100,7 @@ class ShelfWindowWatcher : public ::wm::ActivationChangeObserver,
   // ShellObserver:
   void OnRootWindowAdded(aura::Window* root_window) override;
 
-  raw_ptr<ShelfModel, ExperimentalAsh> model_;
+  raw_ptr<ShelfModel> model_;
 
   ContainerWindowObserver container_window_observer_{this};
   UserWindowObserver user_window_observer_{this};
@@ -111,7 +111,7 @@ class ShelfWindowWatcher : public ::wm::ActivationChangeObserver,
       observed_user_windows_;
 
   // The set of windows with shelf items managed by this ShelfWindowWatcher.
-  std::set<aura::Window*> user_windows_with_items_;
+  std::set<raw_ptr<aura::Window, SetExperimental>> user_windows_with_items_;
 };
 
 }  // namespace ash

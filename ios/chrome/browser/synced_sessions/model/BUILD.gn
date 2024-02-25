@@ -1,0 +1,56 @@
+# Copyright 2023 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("model") {
+  sources = [
+    "distant_session.h",
+    "distant_session.mm",
+    "distant_tab.h",
+    "distant_tab.mm",
+    "synced_sessions.h",
+    "synced_sessions.mm",
+    "synced_sessions_bridge.h",
+    "synced_sessions_bridge.mm",
+    "synced_sessions_util.h",
+    "synced_sessions_util.mm",
+  ]
+  deps = [
+    "//components/sessions",
+    "//components/signin/public/identity_manager",
+    "//components/sync",
+    "//components/sync_device_info",
+    "//ios/chrome/browser/signin/model",
+    "//ios/chrome/browser/sync/model",
+    "//ios/chrome/browser/url_loading/model",
+    "//ios/chrome/browser/url_loading/model:url_loading_params_header",
+    "//ui/base",
+  ]
+  public_deps = [ "//components/sync_sessions" ]
+}
+
+source_set("test_support") {
+  testonly = true
+  sources = [
+    "fake_synced_sessions.h",
+    "fake_synced_sessions.mm",
+  ]
+  deps = [ ":model" ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "synced_sessions_util_unittest.mm" ]
+  deps = [
+    ":model",
+    "//base",
+    "//base/test:test_support",
+    "//ios/chrome/browser/shared/model/browser/test:test_support",
+    "//ios/chrome/browser/shared/model/browser_state:test_support",
+    "//ios/chrome/browser/shared/model/prefs:pref_names",
+    "//ios/chrome/browser/url_loading/model",
+    "//ios/chrome/browser/url_loading/model:test_support",
+    "//ios/web/public/test",
+    "//testing/gtest",
+  ]
+}

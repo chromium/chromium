@@ -7,176 +7,113 @@ import("//build/config/features.gni")
 import(
     "//chrome/browser/resources/chromeos/accessibility/tools/run_jsbundler.gni")
 import("//chrome/common/features.gni")
-import("//chrome/test/base/js2gtest.gni")
+import("//chrome/test/base/ash/js2gtest.gni")
 import("//testing/test.gni")
-import("//third_party/closure_compiler/compile_js.gni")
-import("//third_party/closure_compiler/js_unit_tests.gni")
+import("//tools/typescript/ts_library.gni")
 
 assert(is_chromeos_ash)
 
 accessibility_common_out_dir =
     "$root_out_dir/resources/chromeos/accessibility/common"
+tsc_out_dir = "$target_gen_dir/tsc"
 
 group("build") {
   deps = [
-    ":accessibility_common_copied_files",
+    ":copied_files",
     "tutorial:build",
   ]
 }
 
-run_jsbundler("accessibility_common_copied_files") {
+js_sources = [
+  "async_util.js",
+  "browser_util.js",
+  "gdocs_script.js",
+  "key_code.js",
+  "testing/accessibility_test_base.js",
+  "testing/test_node_generator.js",
+]
+
+# Add typescript files to compile here.
+ts_modules = [
+  "array_util.ts",
+  "automation_predicate.ts",
+  "automation_util.ts",
+  "chrome_event_handler.ts",
+  "constants.ts",
+  "cursors/cursor.ts",
+  "cursors/range.ts",
+  "cursors/recovery_strategy.ts",
+  "event_generator.ts",
+  "event_handler.ts",
+  "flags.ts",
+  "instance_checker.ts",
+  "local_storage.ts",
+  "node_navigation_utils.ts",
+  "node_utils.ts",
+  "paragraph_utils.ts",
+  "rect_util.ts",
+  "repeated_event_handler.ts",
+  "repeated_tree_change_handler.ts",
+  "sentence_utils.ts",
+  "settings.ts",
+  "string_util.ts",
+  "word_utils.ts",
+  "testing/test_import_manager.ts",
+  "tree_walker.ts",
+  "action_fulfillment/context_checker.ts",
+  "action_fulfillment/input_controller.ts",
+  "action_fulfillment/macros/mouse_click_macro.ts",
+  "action_fulfillment/macros/delete_prev_sent_macro.ts",
+  "action_fulfillment/macros/toggle_dictation_macro.ts",
+  "action_fulfillment/macros/input_text_view_macro.ts",
+  "action_fulfillment/macros/macro.ts",
+  "action_fulfillment/macros/macro_names.ts",
+  "action_fulfillment/macros/nav_sent_macro.ts",
+  "action_fulfillment/macros/repeat_macro.ts",
+  "action_fulfillment/macros/repeatable_key_press_macro.ts",
+  "action_fulfillment/macros/smart_delete_phrase_macro.ts",
+  "action_fulfillment/macros/smart_insert_before_macro.ts",
+  "action_fulfillment/macros/smart_replace_phrase_macro.ts",
+  "action_fulfillment/macros/smart_select_between_macro.ts",
+]
+
+ts_definitions = [
+  "../definitions/accessibility_private_mv2.d.ts",
+  "../definitions/automation.d.ts",
+  "../definitions/command_line_private.d.ts",
+  "../definitions/extensions.d.ts",
+  "../definitions/extension_types.d.ts",
+  "../definitions/i18n.d.ts",
+  "../definitions/runtime.d.ts",
+  "../definitions/settings_private_mv2.d.ts",
+  "../definitions/storage_mv2.d.ts",
+  "../definitions/tabs.d.ts",
+  "../definitions/tts.d.ts",
+  "//tools/typescript/definitions/windows.d.ts",
+]
+
+ts_library("ts_build") {
+  out_dir = tsc_out_dir
+  definitions = ts_definitions
+  composite = true
+  in_files = ts_modules + js_sources
+
+  deps = [ "//tools/typescript/definitions:library" ]
+
+  tsconfig_base = "../tsconfig.base.json"
+}
+
+run_jsbundler("copied_files") {
   mode = "copy"
   dest_dir = accessibility_common_out_dir
-  sources = [
-    "array_util.js",
-    "async_util.js",
-    "automation_predicate.js",
-    "automation_util.js",
-    "browser_util.js",
-    "chrome_event_handler.js",
-    "closure_shim.js",
-    "constants.js",
-    "cursors/cursor.js",
-    "cursors/range.js",
-    "cursors/recovery_strategy.js",
-    "event_generator.js",
-    "event_handler.js",
-    "flags.js",
-    "gdocs_script.js",
-    "instance_checker.js",
-    "key_code.js",
-    "local_storage.js",
-    "node_navigation_utils.js",
-    "node_utils.js",
-    "paragraph_utils.js",
-    "rect_util.js",
-    "repeated_event_handler.js",
-    "repeated_tree_change_handler.js",
-    "sentence_utils.js",
-    "settings.js",
-    "string_util.js",
-    "testing/accessibility_test_base.js",
-    "testing/test_node_generator.js",
-    "tree_walker.js",
-    "word_utils.js",
+  deps = [ ":ts_build" ]
+  sources =
+      js_sources + filter_include(get_target_outputs(":ts_build"), [ "*.js" ])
+
+  rewrite_rules = [
+    rebase_path(tsc_out_dir, root_build_dir) + ":",
+    rebase_path(".", root_build_dir) + ":",
   ]
-  rewrite_rules = [ rebase_path(".", root_build_dir) + ":" ]
-}
-
-js_library("tree_walker") {
-  sources = [ "tree_walker.js" ]
-  deps = [
-    ":automation_predicate",
-    ":constants",
-  ]
-  externs_list = [
-    "$externs_path/automation.js",
-    "$externs_path/chrome_extensions.js",
-  ]
-}
-
-js_library("array_util") {
-  sources = [ "array_util.js" ]
-}
-
-js_library("automation_predicate") {
-  sources = [ "automation_predicate.js" ]
-  deps = [ ":constants" ]
-  externs_list = [
-    "$externs_path/automation.js",
-    "$externs_path/chrome_extensions.js",
-  ]
-}
-
-js_library("constants") {
-  sources = [ "constants.js" ]
-}
-
-js_library("closure_shim") {
-}
-
-js_library("automation_util") {
-  deps = [
-    ":automation_predicate",
-    ":constants",
-    ":tree_walker",
-  ]
-  externs_list = [
-    "$externs_path/automation.js",
-    "$externs_path/chrome_extensions.js",
-  ]
-}
-
-js_library("chrome_event_handler") {
-  externs_list = [ "$externs_path/automation.js" ]
-}
-
-js_library("event_generator") {
-  deps = [ ":key_code" ]
-  externs_list = [ "$externs_path/accessibility_private.js" ]
-}
-
-js_library("event_handler") {
-  externs_list = [ "$externs_path/automation.js" ]
-}
-
-js_library("flags") {
-  externs_list = [ "$externs_path/command_line_private.js" ]
-}
-
-js_library("key_code") {
-}
-
-js_library("instance_checker") {
-  deps = [ ":closure_shim" ]
-}
-
-js_library("node_navigation_utils") {
-  deps = [
-    ":node_utils",
-    ":paragraph_utils",
-  ]
-  externs_list = [ "$externs_path/automation.js" ]
-}
-
-js_library("node_utils") {
-  deps = [
-    ":paragraph_utils",
-    ":rect_util",
-  ]
-  externs_list = [ "$externs_path/automation.js" ]
-}
-
-js_library("paragraph_utils") {
-  externs_list = [
-    "$externs_path/accessibility_private.js",
-    "$externs_path/automation.js",
-  ]
-}
-
-js_library("rect_util") {
-  externs_list = [ "$externs_path/accessibility_private.js" ]
-}
-
-js_library("repeated_event_handler") {
-  externs_list = [ "$externs_path/automation.js" ]
-}
-
-js_library("repeated_tree_change_handler") {
-  externs_list = [ "$externs_path/automation.js" ]
-}
-
-js_library("sentence_utils") {
-  deps = [ ":paragraph_utils" ]
-  externs_list = [ "$externs_path/automation.js" ]
-}
-
-js_library("string_util") {
-}
-
-js_library("word_utils") {
-  deps = [ ":paragraph_utils" ]
-  externs_list = [ "$externs_path/automation.js" ]
 }
 
 source_set("browser_tests") {
@@ -213,6 +150,7 @@ js2gtest("accessibility_tests") {
     "rect_util_test.js",
     "repeated_event_handler_test.js",
     "repeated_tree_change_handler_test.js",
+    "string_util_test.js",
     "tree_walker_test.js",
   ]
 

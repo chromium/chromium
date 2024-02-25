@@ -12,9 +12,10 @@ import("//printing/buildflags/buildflags.gni")
 import("//testing/test.gni")
 if (is_android) {
   import("//build/config/android/rules.gni")
+  import("//third_party/jni_zero/jni_zero.gni")
 }
 
-if (enable_printing_unittests) {
+if (enable_printing_tests) {
   import("//build/config/ios/bundle_data_from_filelist.gni")
 } else {
   assert(enable_printing)
@@ -71,6 +72,7 @@ component("printing_base") {
   public_deps = [
     "//build:chromeos_buildflags",
     "//printing/buildflags",
+    "//printing/mojom",
   ]
   deps = [
     "//base",
@@ -329,7 +331,7 @@ static_library("test_support") {
   ]
 }
 
-if (enable_printing_unittests) {
+if (enable_printing_tests) {
   bundle_data_from_filelist("pdf_metafile_cg_mac_unittest_bundle_data") {
     testonly = true
     filelist_name = "test/pdf_metafile_cg_mac_unittest_bundle_data.filelist"
@@ -392,7 +394,7 @@ test("printing_unittests") {
       "test/data/pdf_cg/",
       "../pdf/test/data/",
     ]
-  } else if (enable_printing_unittests) {
+  } else if (enable_printing_tests) {
     deps += [
       ":pdf_metafile_cg_mac_unittest_bundle_data",
       "//pdf:pdf_test_bundle_data",
@@ -472,9 +474,9 @@ if (is_android) {
   android_library("printing_java") {
     deps = [
       "//base:base_java",
-      "//base:jni_java",
       "//build/android:build_java",
       "//third_party/androidx:androidx_annotation_annotation_java",
+      "//third_party/jni_zero:jni_zero_java",
       "//ui/android:ui_java",
     ]
     srcjar_deps = [ ":printing_jni_headers" ]

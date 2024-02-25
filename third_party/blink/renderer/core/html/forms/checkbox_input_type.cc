@@ -46,10 +46,6 @@ void CheckboxInputType::CountUsage() {
   CountUsageIfVisible(WebFeature::kInputTypeCheckbox);
 }
 
-const AtomicString& CheckboxInputType::FormControlType() const {
-  return input_type_names::kCheckbox;
-}
-
 ControlPart CheckboxInputType::AutoAppearance() const {
   return kCheckboxPart;
 }
@@ -97,6 +93,10 @@ void CheckboxInputType::DidDispatchClick(Event& event,
     GetElement().setIndeterminate(state.indeterminate);
     GetElement().SetChecked(state.checked);
   } else {
+    if (event.isTrusted()) {
+      // This is needed in order to match :user-valid/:user-invalid
+      GetElement().SetUserHasEditedTheField();
+    }
     GetElement().DispatchInputAndChangeEventIfNeeded();
   }
   is_in_click_handler_ = false;

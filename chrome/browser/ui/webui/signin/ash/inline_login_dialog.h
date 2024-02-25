@@ -51,7 +51,7 @@ class InlineLoginDialog : public SystemWebDialogDelegate,
 
   InlineLoginDialog(
       const GURL& url,
-      absl::optional<account_manager::AccountAdditionOptions> options,
+      std::optional<account_manager::AccountAdditionOptions> options,
       base::OnceClosure close_dialog_closure);
   ~InlineLoginDialog() override;
 
@@ -83,13 +83,13 @@ class InlineLoginDialog : public SystemWebDialogDelegate,
 
   static void ShowInternal(
       const std::string& email,
-      absl::optional<account_manager::AccountAdditionOptions> options,
+      std::optional<account_manager::AccountAdditionOptions> options,
       base::OnceClosure close_dialog_closure = base::DoNothing());
 
   std::unique_ptr<ModalDialogManagerCleanup> modal_dialog_manager_cleanup_;
   InlineLoginHandlerModalDelegate delegate_;
   const GURL url_;
-  absl::optional<account_manager::AccountAdditionOptions> add_account_options_;
+  std::optional<account_manager::AccountAdditionOptions> add_account_options_;
   base::OnceClosure close_dialog_closure_;
   base::ObserverList<web_modal::ModalDialogHostObserver>::Unchecked
       modal_dialog_host_observer_list_;

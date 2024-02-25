@@ -7,6 +7,7 @@
 
 #include <map>
 #include <memory>
+#include <optional>
 #include <set>
 
 #include "base/functional/callback.h"
@@ -16,7 +17,6 @@
 #include "content/public/test/url_loader_interceptor.h"
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/mojom/url_loader_completion_status.mojom.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
 namespace content {
@@ -51,13 +51,13 @@ class URLLoaderMonitor {
 
   // Returns the network::ResourceRequest for the most recently observed request
   // for `url`. If no such request has been observed, returns nullptr.
-  absl::optional<network::ResourceRequest> GetRequestInfo(const GURL& url);
+  std::optional<network::ResourceRequest> GetRequestInfo(const GURL& url);
 
   // Returns the network::URLLoaderCompletionStatus of the most recently
   // completed request for `url`. It's possible for GetRequestInfo() and
   // GetCompletionStatus() to return information on different requests,
   // depending on request start/completion ordering.
-  absl::optional<network::URLLoaderCompletionStatus> GetCompletionStatus(
+  std::optional<network::URLLoaderCompletionStatus> GetCompletionStatus(
       const GURL& url);
 
   // Waits for all the URLs in `urls_to_wait_for` and those passed in to the

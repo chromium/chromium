@@ -9,7 +9,16 @@ mojom("mojom") {
 
   public_deps = [
     "//media/mojo/mojom",
-    "//sandbox/policy/mojom",
+    "//ui/accessibility:ax_features_mojo",
     "//ui/accessibility/mojom",
+  ]
+}
+
+mojom("factory") {
+  disable_variants = true
+  sources = [ "screen_ai_factory.mojom" ]
+  public_deps = [
+    ":mojom",
+    "//sandbox/policy/mojom",
   ]
 }

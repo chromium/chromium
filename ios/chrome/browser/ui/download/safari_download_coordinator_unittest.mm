@@ -12,16 +12,20 @@
 #import "base/test/metrics/histogram_tester.h"
 #import "base/test/scoped_feature_list.h"
 #import "base/test/task_environment.h"
-#import "ios/chrome/browser/download/download_test_util.h"
-#import "ios/chrome/browser/download/safari_download_tab_helper.h"
-#import "ios/chrome/browser/download/safari_download_tab_helper_delegate.h"
+#import "ios/chrome/browser/download/model/download_test_util.h"
+#import "ios/chrome/browser/download/model/mime_type_util.h"
+#import "ios/chrome/browser/download/model/safari_download_tab_helper.h"
+#import "ios/chrome/browser/download/model/safari_download_tab_helper_delegate.h"
 #import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
 #import "ios/chrome/browser/shared/model/browser_state/test_chrome_browser_state.h"
-#import "ios/chrome/browser/shared/model/web_state_list/test/fake_web_state_list_delegate.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_opener.h"
 #import "ios/chrome/test/scoped_key_window.h"
 #import "ios/web/public/test/fakes/fake_web_state.h"
+#import "net/base/apple/url_conversions.h"
+#import "net/test/embedded_test_server/embedded_test_server.h"
+#import "net/test/embedded_test_server/http_request.h"
+#import "net/test/embedded_test_server/http_response.h"
 #import "testing/platform_test.h"
 
 using base::test::ios::WaitUntilConditionOrTimeout;
@@ -29,14 +33,22 @@ using base::test::ios::kWaitForUIElementTimeout;
 
 namespace {
 
-// Returns the absolute path for the .mobileconfig file in the test data
-// directory.
-base::FilePath GetMobileConfigFilePath() {
-  base::FilePath file_path;
-  base::PathService::Get(base::DIR_ASSETS, &file_path);
-  file_path =
-      file_path.Append(FILE_PATH_LITERAL(testing::kMobileConfigFilePath));
-  return file_path;
+// The path to the .mobileconfig file on the test server.
+const char kMobileConfigPath[] = "/mobileconfig";
+
+// Request handler for loading a .mobileconfig file.
+std::unique_ptr<net::test_server::HttpResponse> GetMobileConfigResponse(
+    const net::test_server::HttpRequest& request) {
+  auto result = std::make_unique<net::test_server::BasicHttpResponse>();
+  result->set_code(net::HTTP_OK);
+
+  if (request.GetURL().path() == kMobileConfigPath) {
+    result->AddCustomHeader("Content-Type", kMobileConfigurationType);
+    result->set_content(
+        testing::GetTestFileContents(testing::kMobileConfigFilePath));
+  }
+
+  return result;
 }
 
 // Returns the absolute path for the .ics file in the test data directory.
@@ -63,9 +75,7 @@ class SafariDownloadCoordinatorTest : public PlatformTest {
     auto web_state = std::make_unique<web::FakeWebState>();
     auto* web_state_ptr = web_state.get();
     SafariDownloadTabHelper::CreateForWebState(web_state_ptr);
-    browser_->GetWebStateList()->InsertWebState(0, std::move(web_state),
-                                                WebStateList::INSERT_NO_FLAGS,
-                                                WebStateOpener());
+    browser_->GetWebStateList()->InsertWebState(std::move(web_state));
     [coordinator_ start];
   }
 
@@ -96,9 +106,7 @@ TEST_F(SafariDownloadCoordinatorTest, InstallDelegates) {
   SafariDownloadTabHelper::CreateForWebState(web_state_ptr2);
   EXPECT_FALSE(
       SafariDownloadTabHelper::FromWebState(web_state_ptr2)->delegate());
-  browser_->GetWebStateList()->InsertWebState(0, std::move(web_state2),
-                                              WebStateList::INSERT_NO_FLAGS,
-                                              WebStateOpener());
+  browser_->GetWebStateList()->InsertWebState(std::move(web_state2));
   EXPECT_TRUE(
       SafariDownloadTabHelper::FromWebState(web_state_ptr2)->delegate());
 
@@ -116,11 +124,13 @@ TEST_F(SafariDownloadCoordinatorTest, InstallDelegates) {
 
 // Tests presenting an UI alert before downloading a valid .mobileconfig file.
 TEST_F(SafariDownloadCoordinatorTest, ValidMobileConfigFile) {
-  base::FilePath path = GetMobileConfigFilePath();
-  NSURL* fileURL =
-      [NSURL fileURLWithPath:base::SysUTF8ToNSString(path.value())];
+  net::EmbeddedTestServer server;
+  server.RegisterRequestHandler(base::BindRepeating(&GetMobileConfigResponse));
+  ASSERT_TRUE(server.Start());
+  GURL config_url = server.GetURL(kMobileConfigPath);
 
-  [tab_helper()->delegate() presentMobileConfigAlertFromURL:fileURL];
+  [tab_helper()->delegate()
+      presentMobileConfigAlertFromURL:net::NSURLWithGURL(config_url)];
 
   EXPECT_TRUE(WaitUntilConditionOrTimeout(kWaitForUIElementTimeout, ^{
     return [base_view_controller_.presentedViewController class] ==

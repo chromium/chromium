@@ -28,6 +28,9 @@ interface PinSettingsApi {
   // confirmation does not match the first PIN.
   SetPinButFailConfirmation(string first_pin, string second_pin) => ();
 
+  // Starts PIN setup but expect to fail due to an internal error.
+  SetPinButInternalError(string pin) => ();
+
   // Tries to set the PIN to |short_pin|, but expects that the PIN cannot be
   // submitted. Then enters |ok_pin| before entering |short_pin| again to check
   // that an error message is displayed.

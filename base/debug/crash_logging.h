@@ -99,7 +99,7 @@ BASE_EXPORT void OutputCrashKeysToStream(std::ostream& out);
 
 // A scoper that sets the specified key to value for the lifetime of the
 // object, and clears it on destruction.
-class BASE_EXPORT ScopedCrashKeyString {
+class BASE_EXPORT [[nodiscard]] ScopedCrashKeyString {
  public:
   ScopedCrashKeyString(CrashKeyString* crash_key, base::StringPiece value);
   ScopedCrashKeyString(ScopedCrashKeyString&& other);
@@ -172,7 +172,7 @@ class BASE_EXPORT ScopedCrashKeyString {
                                    ::base::debug::CrashKeySize::Size1024)
 
 #define SCOPED_CRASH_KEY_BOOL(category, name, data)                       \
-  static_assert(std::is_same<std::decay_t<decltype(data)>, bool>::value,  \
+  static_assert(std::is_same_v<std::decay_t<decltype(data)>, bool>,       \
                 "SCOPED_CRASH_KEY_BOOL must be passed a boolean value."); \
   SCOPED_CRASH_KEY_STRING32(category, name, (data) ? "true" : "false")
 

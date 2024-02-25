@@ -67,7 +67,7 @@ class ServiceWorkerStorage {
   using FindRegistrationForClientUrlDataCallback =
       base::OnceCallback<void(mojom::ServiceWorkerRegistrationDataPtr data,
                               std::unique_ptr<ResourceList> resources,
-                              const absl::optional<std::vector<GURL>>& scopes,
+                              const std::optional<std::vector<GURL>>& scopes,
                               ServiceWorkerDatabase::Status status)>;
   using FindRegistrationDataCallback =
       base::OnceCallback<void(mojom::ServiceWorkerRegistrationDataPtr data,
@@ -367,7 +367,7 @@ class ServiceWorkerStorage {
   using FindForClientUrlInDBCallback =
       base::OnceCallback<void(mojom::ServiceWorkerRegistrationDataPtr data,
                               std::unique_ptr<ResourceList> resources,
-                              const absl::optional<std::vector<GURL>>& scopes,
+                              const std::optional<std::vector<GURL>>& scopes,
                               ServiceWorkerDatabase::Status status)>;
   using FindInDBCallback =
       base::OnceCallback<void(mojom::ServiceWorkerRegistrationDataPtr data,

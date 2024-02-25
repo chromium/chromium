@@ -63,7 +63,6 @@ const char kSecureTokenName[] = "secure";
 const char kHttpOnlyTokenName[] = "httponly";
 const char kSameSiteTokenName[] = "samesite";
 const char kPriorityTokenName[] = "priority";
-const char kSamePartyTokenName[] = "sameparty";
 const char kPartitionedTokenName[] = "partitioned";
 
 const char kTerminator[] = "\n\r\0";
@@ -145,14 +144,11 @@ ParsedCookie::ParsedCookie(const std::string& cookie_line,
   ParseTokenValuePairs(cookie_line, block_truncated, *status_out);
   if (IsValid()) {
     SetupAttributes();
-  } else if (status_out->IsInclude()) {
-    // TODO(crbug.com/1228815): Apply more specific exclusion reasons.
-    status_out->AddExclusionReason(
-        CookieInclusionStatus::EXCLUDE_FAILURE_TO_STORE);
+  } else {
+    // Status should indicate exclusion if the resulting ParsedCookie is
+    // invalid.
+    CHECK(!status_out->IsInclude());
   }
-
-  // Status should indicate exclusion if the resulting ParsedCookie is invalid.
-  DCHECK(IsValid() || !status_out->IsInclude());
 }
 
 ParsedCookie::~ParsedCookie() = default;
@@ -274,10 +270,6 @@ bool ParsedCookie::SetPriority(const std::string& priority) {
   return SetString(&priority_index_, kPriorityTokenName, priority);
 }
 
-bool ParsedCookie::SetIsSameParty(bool is_same_party) {
-  return SetBool(&same_party_index_, kSamePartyTokenName, is_same_party);
-}
-
 bool ParsedCookie::SetIsPartitioned(bool is_partitioned) {
   return SetBool(&partitioned_index_, kPartitionedTokenName, is_partitioned);
 }
@@ -293,7 +285,6 @@ std::string ParsedCookie::ToCookieLine() const {
     // we need to consider whether the name component is a special token.
     if (it == pairs_.begin() ||
         (it->first != kSecureTokenName && it->first != kHttpOnlyTokenName &&
-         it->first != kSamePartyTokenName &&
          it->first != kPartitionedTokenName)) {
       out.append("=");
       out.append(it->second);
@@ -477,9 +468,8 @@ bool ParsedCookie::IsValidCookieNameValuePair(
   // Ignore cookies with neither name nor value.
   if (name.empty() && value.empty()) {
     if (status_out != nullptr) {
-      // TODO(crbug.com/1228815): Apply more specific exclusion reasons.
       status_out->AddExclusionReason(
-          CookieInclusionStatus::EXCLUDE_FAILURE_TO_STORE);
+          CookieInclusionStatus::EXCLUDE_NO_COOKIE_CONTENT);
     }
     // TODO(crbug.com/1228815) Note - if the exclusion reasons change to no
     // longer be the same, we'll need to not return right away and evaluate all
@@ -554,9 +544,8 @@ void ParsedCookie::ParseTokenValuePairs(const std::string& cookie_line,
 
   // Exit early for an empty cookie string.
   if (it == end) {
-    // TODO(crbug.com/1228815): Apply more specific exclusion reasons.
     status_out.AddExclusionReason(
-        CookieInclusionStatus::EXCLUDE_FAILURE_TO_STORE);
+        CookieInclusionStatus::EXCLUDE_NO_COOKIE_CONTENT);
     return;
   }
 
@@ -679,8 +668,6 @@ void ParsedCookie::SetupAttributes() {
       same_site_index_ = i;
     } else if (pairs_[i].first == kPriorityTokenName) {
       priority_index_ = i;
-    } else if (pairs_[i].first == kSamePartyTokenName) {
-      same_party_index_ = i;
     } else if (pairs_[i].first == kPartitionedTokenName) {
       partitioned_index_ = i;
     } else {
@@ -754,10 +741,10 @@ void ParsedCookie::ClearAttributePair(size_t index) {
   if (index == 0)
     return;
 
-  size_t* indexes[] = {&path_index_,       &domain_index_,   &expires_index_,
-                       &maxage_index_,     &secure_index_,   &httponly_index_,
-                       &same_site_index_,  &priority_index_, &same_party_index_,
-                       &partitioned_index_};
+  size_t* indexes[] = {
+      &path_index_,      &domain_index_,   &expires_index_,
+      &maxage_index_,    &secure_index_,   &httponly_index_,
+      &same_site_index_, &priority_index_, &partitioned_index_};
   for (size_t* attribute_index : indexes) {
     if (*attribute_index == index)
       *attribute_index = 0;

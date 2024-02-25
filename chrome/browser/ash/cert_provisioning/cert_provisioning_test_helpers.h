@@ -5,6 +5,8 @@
 #ifndef CHROME_BROWSER_ASH_CERT_PROVISIONING_CERT_PROVISIONING_TEST_HELPERS_H_
 #define CHROME_BROWSER_ASH_CERT_PROVISIONING_CERT_PROVISIONING_TEST_HELPERS_H_
 
+#include <optional>
+
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/ash/cert_provisioning/cert_provisioning_common.h"
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
@@ -13,7 +15,6 @@
 #include "chrome/test/base/testing_profile_manager.h"
 #include "components/user_manager/scoped_user_manager.h"
 #include "testing/gmock/include/gmock/gmock.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace user_manager {
 class User;
@@ -41,7 +42,7 @@ struct CertificateHelperForTesting {
   // certificate.
   scoped_refptr<net::X509Certificate> AddCert(
       CertScope cert_scope,
-      const absl::optional<CertProfileId>& cert_profile_id,
+      const std::optional<CertProfileId>& cert_profile_id,
       chromeos::platform_keys::Status status,
       base::Time not_valid_before,
       base::Time not_valid_after);
@@ -50,13 +51,13 @@ struct CertificateHelperForTesting {
   // |cert_profile_id|.
   scoped_refptr<net::X509Certificate> AddCert(
       CertScope cert_scope,
-      const absl::optional<CertProfileId>& cert_profile_id);
+      const std::optional<CertProfileId>& cert_profile_id);
 
   // Simplified version of AddCert(). The certificate is not expired, but fails
   // to retrieve |cert_profile_id|.
   scoped_refptr<net::X509Certificate> AddCert(
       CertScope cert_scope,
-      const absl::optional<CertProfileId>& cert_profile_id,
+      const std::optional<CertProfileId>& cert_profile_id,
       chromeos::platform_keys::Status status);
 
   void ClearCerts();
@@ -66,8 +67,8 @@ struct CertificateHelperForTesting {
   void GetCertificates(chromeos::platform_keys::TokenId token_id,
                        platform_keys::GetCertificatesCallback callback);
 
-  raw_ptr<platform_keys::MockPlatformKeysService, ExperimentalAsh>
-      platform_keys_service_ = nullptr;
+  raw_ptr<platform_keys::MockPlatformKeysService> platform_keys_service_ =
+      nullptr;
   scoped_refptr<net::X509Certificate> template_cert_;
   net::CertificateList cert_list_;
 };
@@ -92,8 +93,8 @@ class ProfileHelperForTesting {
   TestingProfileManager testing_profile_manager_;
   user_manager::TypedScopedUserManager<FakeChromeUserManager>
       fake_user_manager_{std::make_unique<FakeChromeUserManager>()};
-  raw_ptr<TestingProfile, ExperimentalAsh> testing_profile_ = nullptr;
-  raw_ptr<user_manager::User, ExperimentalAsh> user_ = nullptr;
+  raw_ptr<TestingProfile> testing_profile_ = nullptr;
+  raw_ptr<user_manager::User> user_ = nullptr;
 };
 
 }  // namespace cert_provisioning

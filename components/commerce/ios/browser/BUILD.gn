@@ -8,6 +8,8 @@ static_library("browser") {
     "commerce_internals_ui.mm",
     "commerce_tab_helper.h",
     "commerce_tab_helper.mm",
+    "web_extractor_impl.h",
+    "web_extractor_impl.mm",
     "web_state_wrapper.h",
     "web_state_wrapper.mm",
   ]
@@ -15,11 +17,27 @@ static_library("browser") {
   deps = [
     "//base",
     "//components/commerce/core:shopping_service",
+    "//components/resources:components_resources_grit",
+    "//components/ukm/ios:ukm_url_recorder",
     "//ios/web",
     "//ios/web/public",
     "//ios/web/public/js_messaging",
     "//ios/web/public/webui",
+    "//services/data_decoder/public/cpp",
   ]
 
   public_deps = [ "//components/commerce/core/internals" ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "web_extractor_impl_unittest.mm" ]
+  deps = [
+    ":browser",
+    "//base/test:test_support",
+    "//components/commerce/core:commerce_constants",
+    "//ios/web/public/test",
+    "//ios/web/public/test:test_fixture",
+    "//services/data_decoder/public/cpp:test_support",
+  ]
 }

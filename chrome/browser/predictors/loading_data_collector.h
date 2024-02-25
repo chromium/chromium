@@ -7,6 +7,7 @@
 
 #include <map>
 #include <memory>
+#include <optional>
 #include <string>
 
 #include "base/containers/flat_set.h"
@@ -17,7 +18,6 @@
 #include "chrome/browser/predictors/loading_predictor_config.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
 #include "services/network/public/mojom/fetch_api.mojom-forward.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/mojom/loader/resource_load_info.mojom-forward.h"
 #include "url/gurl.h"
 #include "url/origin.h"
@@ -80,7 +80,7 @@ struct PageRequestSummary {
 
   // The time for which the first resource prefetch was initiated for the
   // navigation.
-  absl::optional<base::TimeTicks> first_prefetch_initiated;
+  std::optional<base::TimeTicks> first_prefetch_initiated;
 
  private:
   void UpdateOrAddToOrigins(
@@ -125,7 +125,7 @@ class LoadingDataCollector {
   // up to this point are the only ones considered.
   virtual void RecordMainFrameLoadComplete(
       NavigationId navigation_id,
-      const absl::optional<OptimizationGuidePrediction>&
+      const std::optional<OptimizationGuidePrediction>&
           optimization_guide_prediction);
 
   // Called after the main frame's first contentful paint.
@@ -169,7 +169,7 @@ class LoadingDataCollector {
       const std::string& mime_type);
 
   // Cleanup inflight_navigations_ and call a cleanup for stats_collector_.
-  void CleanupAbandonedNavigations(NavigationId navigation_id);
+  void CleanupAbandonedNavigations();
 
   const raw_ptr<ResourcePrefetchPredictor, DanglingUntriaged> predictor_;
   const raw_ptr<LoadingStatsCollector> stats_collector_;

@@ -34,7 +34,6 @@ class ASH_EXPORT HotspotNotifier
   HotspotNotifier& operator=(const HotspotNotifier&) = delete;
   ~HotspotNotifier() override;
 
-  static const char kWiFiTurnedOffNotificationId[];
   static const char kAdminRestrictedNotificationId[];
   static const char kWiFiTurnedOnNotificationId[];
   static const char kAutoDisabledNotificationId[];
@@ -45,7 +44,7 @@ class ASH_EXPORT HotspotNotifier
   friend class HotspotNotifierTest;
 
   // HotspotEnabledStateObserver:
-  void OnHotspotTurnedOn(bool wifi_turned_off) override;
+  void OnHotspotTurnedOn() override;
   void OnHotspotTurnedOff(
       hotspot_config::mojom::DisableReason disable_reason) override;
 
@@ -62,7 +61,7 @@ class ASH_EXPORT HotspotNotifier
   void OnGetHotspotInfo(hotspot_config::mojom::HotspotInfoPtr hotspot_info);
 
   void DisableHotspotHandler(const char* notification_id,
-                             absl::optional<int> index);
+                             std::optional<int> index);
 
   std::unique_ptr<message_center::Notification> CreateNotification(
       const std::u16string& title_id,
@@ -71,9 +70,8 @@ class ASH_EXPORT HotspotNotifier
       scoped_refptr<message_center::NotificationDelegate> delegate);
 
   void EnableHotspotHandler(const char* notification_id,
-                            absl::optional<int> index);
-  void EnableWiFiHandler(const char* notification_id,
-                         absl::optional<int> index);
+                            std::optional<int> index);
+  void EnableWiFiHandler(const char* notification_id, std::optional<int> index);
 
   mojo::Remote<hotspot_config::mojom::CrosHotspotConfig>
       remote_cros_hotspot_config_;

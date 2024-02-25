@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="cy">
+<translation id="1012241361789814178">Dadfygiwr wedi'i seibio mewn tab arall, cliciwch i newid i'r tab hwnnw.</translation>
 <translation id="1088086359088493902">Eiliadau</translation>
 <translation id="1142001580032786438">Dangos y dewisydd wythnos</translation>
 <translation id="1171774979989969504">Rhowch gyfeiriad e-bost.</translation>
@@ -16,6 +17,7 @@
 <translation id="1729654308190250600">Rhowch gyfeiriad e-bost nad yw'n wag.</translation>
 <translation id="1758486001363313524">Arall...</translation>
 <translation id="1787192514241997742">cyfanswm yr amser: <ph name="REMAINING_TIME" /></translation>
+<translation id="1800494066469288780">Caniatáu'r camera</translation>
 <translation id="1822429046913737220">AM/PM</translation>
 <translation id="1832974991323546415">chwarae ar ddyfais o bell</translation>
 <translation id="1921819250265091946">dd</translation>
@@ -24,10 +26,12 @@
 <translation id="1993104285338243655">Wedi newid i adlewyrchu</translation>
 <translation id="2031987842108996681">Sianel goch</translation>
 <translation id="2060505056492490888">Defnyddir '<ph name="DOT" />' mewn safle anghywir yn '<ph name="INVALIDDOMAIN" />'.</translation>
+<translation id="2068711044993563745">Rhaid i isafswm gwerth (<ph name="MINIMUM" />) fod yn llai na'r gwerth mwyaf (<ph name="MAXIMUM" />).</translation>
 <translation id="2148716181193084225">Heddiw</translation>
 <translation id="2226276347425096477">Mae angen cwtogi'r testun hwn i <ph name="MAX_CHARACTERS" /> o nodau neu lai (rydych yn defnyddio <ph name="CURRENT_LENGTH" /> nod ar hyn o bryd).</translation>
 <translation id="2247351761944213033">Wythnos <ph name="WEEKNUMBER" />, <ph name="YEAR" /></translation>
 <translation id="2277199496770840904">Olrhain <ph name="NUMBER" /></translation>
+<translation id="2353297238722298836">Caniateir y camera a'r meicroffon</translation>
 <translation id="2393030564806080191">Gwerth lliw hecsadegol</translation>
 <translation id="2398813069815436052">cafodd deialog ei agor.</translation>
 <translation id="245932805758469625">nifer yr eiliadau o fideo sydd ar ôl</translation>
@@ -44,11 +48,13 @@
 <translation id="2761667185364618470">Ticiwch y blwch hwn os hoffech barhau.</translation>
 <translation id="2908441821576996758">Rhowch gyfeiriadau e-bost sydd wedi'u gwahanu gan atalnodau.</translation>
 <translation id="3049748772180311791"><ph name="QUANTITY" /> MB</translation>
+<translation id="3053226512517284904">dangos dewislen disgrifiadau sain</translation>
 <translation id="3075154866155599887">Rhowch werth dilys. Mae'r maes yn anghyflawn neu mae ganddo ddyddiad annilys.</translation>
 <translation id="310520048233152454">Rhowch URL.</translation>
 <translation id="3220661731597678625">cam presennol</translation>
 <translation id="3321030238473337787">Cyflymder chwarae</translation>
 <translation id="3329013043687509092">Dirlawnder</translation>
+<translation id="3377518164566272702">Caniatáu'r meicroffon a'r camera</translation>
 <translation id="3450233048674729344">Rhaid i'r gwerth fod yn llai na neu'n hafal i <ph name="MAXIMUM" />.</translation>
 <translation id="3732799496749320381">mm</translation>
 <translation id="3754210790023674521">Gadael llun-mewn-llun</translation>
@@ -56,14 +62,17 @@
 <translation id="3822383571486410024">Estynnwch y testun hwn i <ph name="MIN_CHARACTERS" /> nod neu fwy (rydych yn defnyddio <ph name="CURRENT_LENGTH" /> nod ar hyn o bryd).</translation>
 <translation id="383465348367842624">Ni ddylai rhan sy'n dilyn '<ph name="ATSIGN" />' gynnwys y symbol '<ph name="INVALIDCHARACTER" />'.</translation>
 <translation id="3846214748874656680">Gadael y sgrîn lawn</translation>
+<translation id="4031179711345676612">Caniateir meicroffon</translation>
 <translation id="4103419683916926126">Milieiliadau</translation>
 <translation id="4201051445878709314">Dangos y mis blaenorol</translation>
 <translation id="4360991593054037559">Rhowch werth dilys. Y ddau werth dilys agosaf yw <ph name="VALID_VALUE_LOW" /> a <ph name="VALID_VALUE_HIGHER" />.</translation>
 <translation id="4522570452068850558">Manylion</translation>
+<translation id="4663373278480897665">Caniateir camera</translation>
 <translation id="4664250907885839816">Ni ddylai rhan sy'n dilyn '<ph name="ATSIGN" />' gynnwys y symbol '<ph name="INVALIDCHARACTER" />'.</translation>
 <translation id="4718048029184481307">Wrthi'n chwarae llun-mewn-llun</translation>
 <translation id="4748357248530471599">toglo dangos llun torri sgrîn lawn</translation>
 <translation id="4763480195061959176">fideo</translation>
+<translation id="4792862212177489858">Rhannu lleoliad</translation>
 <translation id="4812940957355064477">Rhowch rif.</translation>
 <translation id="4912200001568447310">eitem bresennol</translation>
 <translation id="4915360478455618802">Dangos y dewisydd amser</translation>
@@ -73,6 +82,7 @@
 <translation id="4975562563186953947"><ph name="SELECTED_COUNT" /> wedi'i ddewis</translation>
 <translation id="4992066212339426712">Dad-dddistewi</translation>
 <translation id="49969490063480558">Rhowch ran yn dilyn '<ph name="ATSIGN" />'. Mae '<ph name="INVALIDADDRESS" />' yn anghyflawn.</translation>
+<translation id="5037575921016181960">Cyfrinair cryf</translation>
 <translation id="5090250355906949916">sgwriwr amser fideo</translation>
 <translation id="509897012892853729">Sianel las</translation>
 <translation id="5117590920725113268">Dangos y mis nesaf</translation>
@@ -131,6 +141,7 @@
 <translation id="6941933287844615239">lawrlwytho cyfryngau</translation>
 <translation id="698788488269350478">wedi'i ehangu.</translation>
 <translation id="6989848892321993519">Estynnwch y testun hwn i <ph name="MIN_CHARACTERS" /> nod neu fwy (rydych yn defnyddio 1 nod ar hyn o bryd).</translation>
+<translation id="7080893216867146095">Caniateir rhannu lleoliad</translation>
 <translation id="709897737746224366">Defnyddiwch y fformat y gofynnwyd amdano.</translation>
 <translation id="7102274145889307184">lleoliad presennol</translation>
 <translation id="7263440858009898357">Dewiswch eitem yn y rhestr.</translation>
@@ -177,6 +188,7 @@
 <translation id="9132465097189459683">Arall...</translation>
 <translation id="9155987714137265666"><ph name="WEEK" />, yn dechrau ar <ph name="WEEK_START_DATE" /></translation>
 <translation id="916607977885256133">Llun mewn Llun</translation>
+<translation id="918430632320614861">Caniatáu'r meicroffon</translation>
 <translation id="945780513535800434">Wedi'i Dicio'n Rhannol</translation>
 <translation id="954003015749068518">dechrau llun-mewn-llun</translation>
 </translationbundle>

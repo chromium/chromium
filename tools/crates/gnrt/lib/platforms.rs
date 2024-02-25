@@ -201,31 +201,48 @@ fn cfg_expr_filter_visitor(cfg_expr: &mut cargo_platform::CfgExpr) -> ExprValidi
             }
         }
         cargo_platform::CfgExpr::Value(cfg) => {
+            transform_cfg(cfg);
             if supported_os_cfgs().iter().any(|c| c == cfg) {
                 Valid
             } else {
+                // TODO(danakj): Maybe this should be `Valid`, if there are conditions that are
+                // sometimes true depending on which OS we're targeting.
                 AlwaysFalse
             }
         }
     }
 }
 
+/// Some cfgs imply other cfgs, so we can just convert them to the other.
+fn transform_cfg(cfg: &mut Cfg) {
+    match cfg {
+        // Chromium always uses the "msvc" env if and only if we're on windows, so we can uplift
+        // the env to say the rule always applies to windows.
+        Cfg::KeyPair(a, b) if a == "target_env" && b == "msvc" => {
+            *cfg = Cfg::Name("windows".to_string())
+        }
+        // Chromium never targets UWP.
+        Cfg::KeyPair(a, b) if a == "target_vendor" && b == "uwp" => {
+            *cfg = Cfg::Name("false".to_string())
+        }
+        _ => (),
+    }
+}
+
 fn supported_os_cfgs() -> &'static [Cfg] {
     static CFG_SET: OnceCell<Vec<Cfg>> = OnceCell::new();
     CFG_SET.get_or_init(|| {
-        let mut cfg_set: Vec<Cfg> = [
+        [
             // Set of supported OSes for `cfg(target_os = ...)`.
             "android", "darwin", "fuchsia", "ios", "linux", "windows",
         ]
         .into_iter()
         .map(|os| Cfg::KeyPair("target_os".to_string(), os.to_string()))
-        .collect();
-
-        cfg_set.extend(
+        .chain(
             // Alternative syntax `cfg(unix)` or `cfg(windows)`.
             ["unix", "windows"].into_iter().map(|os| Cfg::Name(os.to_string())),
-        );
-        cfg_set
+        )
+        .collect()
     })
 }
 
@@ -237,8 +254,10 @@ static SUPPORTED_NAMED_PLATFORMS: &[&str] = &[
     "aarch64-fuchsia",
     "x86_64-fuchsia",
     "aarch64-apple-ios",
+    "aarch64-apple-ios-macabi",
     "armv7-apple-ios",
     "x86_64-apple-ios",
+    "x86_64-apple-ios-macabi",
     "i386-apple-ios",
     "i686-pc-windows-msvc",
     "x86_64-pc-windows-msvc",
@@ -307,6 +326,30 @@ mod tests {
                 CfgExpr::from_str("not(target_os = \"wasi\")").unwrap()
             )),
             None
+        );
+
+        assert_eq!(
+            filter_unsupported_platform_terms(Platform::Cfg(
+                CfgExpr::from_str("not(all(windows, target_vendor = \"uwp\"))").unwrap()
+            )),
+            None
+        );
+
+        assert_eq!(
+            filter_unsupported_platform_terms(Platform::Cfg(
+                CfgExpr::from_str("not(all(windows, target_env = \"msvc\"))").unwrap()
+            )),
+            Some(Platform::Cfg(CfgExpr::from_str("not(all(windows, windows))").unwrap()))
+        );
+
+        assert_eq!(
+            filter_unsupported_platform_terms(Platform::Cfg(
+                CfgExpr::from_str(
+                    "not(all(windows, target_env = \"msvc\", not(target_vendor = \"uwp\")))"
+                )
+                .unwrap()
+            )),
+            Some(Platform::Cfg(CfgExpr::from_str("not(all(windows, windows))").unwrap()))
         );
     }
 }

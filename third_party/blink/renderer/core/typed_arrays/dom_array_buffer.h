@@ -5,7 +5,9 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_TYPED_ARRAYS_DOM_ARRAY_BUFFER_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_TYPED_ARRAYS_DOM_ARRAY_BUFFER_H_
 
-#include "base/allocator/partition_allocator/oom.h"
+#include <algorithm>
+
+#include "base/allocator/partition_allocator/src/partition_alloc/oom.h"
 #include "base/containers/span.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/typed_arrays/array_buffer/array_buffer_contents.h"
@@ -40,7 +42,9 @@ class CORE_EXPORT DOMArrayBuffer : public DOMArrayBufferBase {
     if (UNLIKELY(!contents.Data())) {
       OOM_CRASH(byte_length);
     }
-    memcpy(contents.Data(), source, byte_length);
+    const uint8_t* source_bytes = static_cast<const uint8_t*>(source);
+    std::copy(source_bytes, source_bytes + byte_length,
+              static_cast<uint8_t*>(contents.Data()));
     return Create(std::move(contents));
   }
 
@@ -83,7 +87,7 @@ class CORE_EXPORT DOMArrayBuffer : public DOMArrayBufferBase {
   // the ArrayBuffer while at the same time exposing a NonShared TypedArray.
   virtual bool ShareNonSharedForInternalUse(ArrayBufferContents& result);
 
-  v8::MaybeLocal<v8::Value> Wrap(ScriptState*) override;
+  v8::Local<v8::Value> Wrap(ScriptState*) override;
 
   void Trace(Visitor*) const override;
 

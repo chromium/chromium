@@ -4,10 +4,12 @@
 
 // <if expr="chromeos_ash">
 import {NativeEventTarget as EventTarget} from 'chrome://resources/ash/common/event_target.js';
+
 // </if>
 
 import {Channel} from './channel.js';
 import {PostMessageChannel} from './post_message_channel.js';
+import {SafeXMLUtils} from './safe_xml_utils.js';
 import {PasswordAttributes, readPasswordAttributes} from './saml_password_attributes.js';
 import {maybeAutofillUsername} from './saml_username_autofill.js';
 import {WebviewEventManager} from './webview_event_manager.js';
@@ -49,13 +51,13 @@ import {WebviewEventManager} from './webview_event_manager.js';
       'x-verified-access-challenge-response';
 
   /** @const */
-  const BEGIN_CERTIFICATE = '-----BEGIN CERTIFICATE-----';
-
-  /** @const */
-  const END_CERTIFICATE = '-----END CERTIFICATE-----';
-
-  /** @const */
   const injectedScriptName = 'samlInjected';
+
+  /** @const */
+  const SAML_API_Error = 'ChromeOS.SAML.APIError';
+
+  /** @const */
+  const SAML_INCORRECT_ATTESTATION = 'ChromeOS.SAML.IncorrectAttestation';
 
   /**
    * The script to inject into webview and its sub frames.
@@ -147,6 +149,50 @@ import {WebviewEventManager} from './webview_event_manager.js';
         // The attestation flow belongs to Device Trust. It should be ignored by
         // the Verified Access for SAML feature implemented in this file.
         DEVICE_TRUST_FLOW: 5,
+      };
+
+      /**
+       * This enum is tied directly to a UMA enum defined in
+       * //tools/metrics/histograms/metadata/chromeos/enums.xml, and should
+       * always reflect it (do not change one without changing the other). These
+       * values are persisted to logs. Entries should not be renumbered and
+       * numeric values should never be reused.
+       * @enum {number}
+       */
+      SamlHandler.ApiErrorType = {
+        // IdP sent unsupported key type.
+        UNSUPPORTED_KEY: 0,
+        // Gaia wanted to create an account while feature is not supported.
+        UNSUPPORTED_MESSAGE: 1,
+        // Gaia wanted to create an account for a user that wasn't added.
+        CREATE_TOKEN_MISMATCH: 2,
+        // IdP confirmed token that wasn't added.
+        CONFIRM_TOKEN_MISMATCH: 3,
+        // IdP sent a message that isn't supported in SAML API.
+        UNKNOWN_MESSAGE: 4,
+        // IdP didn't send user's password confirmation.
+        PASSWORD_NOT_CONFIRMED: 5,
+        // Enum Max value.
+        MAX: 6,
+      };
+
+      /**
+       * This enum is tied directly to a UMA enum defined in
+       * //tools/metrics/histograms/metadata/chromeos/enums.xml, and should
+       * always reflect it (do not change one without changing the other). These
+       * values are persisted to logs. Entries should not be renumbered and
+       * numeric values should never be reused.
+       * @enum {number}
+       */
+      SamlHandler.IncorrectAttestationStage = {
+        // onBeforeRequest_(details) method.
+        ON_BEFORE_REQUEST: 0,
+        // onBeforeSendHeaders_(details) method.
+        ON_BEFORE_SEND_HEADERS: 1,
+        // continueDelayedRedirect_(url, challengeResponse) method.
+        CONTINUE_DELAYED_REDIRECT: 2,
+        // Enum Max value.
+        MAX: 3,
       };
 
       /**
@@ -250,6 +296,13 @@ import {WebviewEventManager} from './webview_event_manager.js';
        * @private {?string}
        */
       this.verifiedAccessChallengeResponse_ = null;
+
+      /**
+       * If set, this should handle the account creation message.
+       * If not set, this will log any account creation message as invalid call.
+       * @public {?boolean}
+       */
+      this.shouldHandleAccountCreationMessage = false;
 
       /**
        * Certificate that were extracted from the SAMLResponse.
@@ -441,8 +494,7 @@ import {WebviewEventManager} from './webview_event_manager.js';
      * Resets all auth states
      */
     reset() {
-      // TODO(b/261613412): Change warn to info.
-      console.warn('SamlHandler.reset: resets all auth states');
+      console.info('SamlHandler.reset: resets all auth states');
       this.isSamlPage_ = this.startsOnSamlPage_;
       this.pendingIsSamlPage_ = this.startsOnSamlPage_;
       this.passwordStore_ = {};
@@ -554,21 +606,8 @@ import {WebviewEventManager} from './webview_event_manager.js';
      * @private
      */
     setX509certificate_(samlResponse) {
-      const parser = new DOMParser();
-      const xmlDoc = parser.parseFromString(samlResponse, 'text/xml');
-      let certificate = xmlDoc.getElementsByTagName('ds:X509Certificate');
-      if (!certificate || certificate.length === 0) {
-        // tag 'ds:X509Certificate' doesn't exist
-        certificate = xmlDoc.getElementsByTagName('X509Certificate');
-      }
-
-      if (certificate && certificate.length > 0 && certificate[0].childNodes &&
-          certificate[0].childNodes[0] &&
-          certificate[0].childNodes[0].nodeValue) {
-        certificate = certificate[0].childNodes[0].nodeValue;
-        this.x509certificate = BEGIN_CERTIFICATE + '\n' + certificate.trim() +
-            '\n' + END_CERTIFICATE + '\n';
-      }
+      const xmlUtils = new SafeXMLUtils(samlResponse);
+      this.x509certificate = xmlUtils.getX509Certificate();
     }
 
     /**
@@ -641,8 +680,10 @@ import {WebviewEventManager} from './webview_event_manager.js';
     continueDelayedRedirect_(url, challengeResponse) {
       if (this.deviceAttestationStage_ !==
           SamlHandler.DeviceAttestationStage.ORIGINAL_REDIRECT_CANCELED) {
-        console.error(
+        console.warn(
             'SamlHandler.continueDelayedRedirect_: incorrect attestation stage');
+        this.recordInIncorrectAttestationHistogram_(
+            SamlHandler.IncorrectAttestationStage.CONTINUE_DELAYED_REDIRECT);
         return;
       }
 
@@ -701,8 +742,9 @@ import {WebviewEventManager} from './webview_event_manager.js';
 
       // Reset state in case of unexpected requests during device attestation.
       this.deviceAttestationStage_ = SamlHandler.DeviceAttestationStage.NONE;
-      console.error(
-          'SamlHandler.onBeforeRequest_: incorrect attestation stage');
+      console.warn('SamlHandler.onBeforeRequest_: incorrect attestation stage');
+      this.recordInIncorrectAttestationHistogram_(
+          SamlHandler.IncorrectAttestationStage.ON_BEFORE_REQUEST);
       return {};
     }
 
@@ -761,8 +803,10 @@ import {WebviewEventManager} from './webview_event_manager.js';
 
       // Reset state in case of unexpected navigation during device attestation.
       this.deviceAttestationStage_ = SamlHandler.DeviceAttestationStage.NONE;
-      console.error(
+      console.warn(
           'SamlHandler.onBeforeSendHeaders_: incorrect attestation stage');
+      this.recordInIncorrectAttestationHistogram_(
+          SamlHandler.IncorrectAttestationStage.ON_BEFORE_SEND_HEADERS);
       return {};
     }
 
@@ -787,12 +831,10 @@ import {WebviewEventManager} from './webview_event_manager.js';
         if (headerName === SAML_HEADER) {
           const action = header.value.toLowerCase();
           if (action === 'start') {
-            // TODO(b/261613412): Change warn to info.
-            console.warn('SamlHandler.onHeadersReceived_: SAML flow start');
+            console.info('SamlHandler.onHeadersReceived_: SAML flow start');
             this.pendingIsSamlPage_ = true;
           } else if (action === 'end') {
-            // TODO(b/261613412): Change warn to info.
-            console.warn('SamlHandler.onHeadersReceived_: SAML flow end');
+            console.info('SamlHandler.onHeadersReceived_: SAML flow end');
             this.pendingIsSamlPage_ = false;
           }
         }
@@ -852,6 +894,37 @@ import {WebviewEventManager} from './webview_event_manager.js';
     }
 
     /**
+     * Invoked to record value in ChromeOS.SAML.APIError metric.
+     * @private
+     */
+    recordInAPIErrorHistogram_(value) {
+      chrome.send(
+          'metricsHandler:recordInHistogram',
+          [SAML_API_Error, value, SamlHandler.ApiErrorType.MAX]);
+    }
+
+    /**
+     * Invoked to record value in ChromeOS.SAML.IncorrectAttestation metric.
+     * @private
+     */
+    recordInIncorrectAttestationHistogram_(value) {
+      chrome.send('metricsHandler:recordInHistogram', [
+        SAML_INCORRECT_ATTESTATION,
+        value,
+        SamlHandler.IncorrectAttestationStage.MAX,
+      ]);
+    }
+
+    /**
+     * Invoked to record that password wasn't confirmed in
+     * ChromeOS.SAML.APIError metric.
+     */
+    recordPasswordNotConfirmedError() {
+      this.recordInAPIErrorHistogram_(
+          SamlHandler.ApiErrorType.PASSWORD_NOT_CONFIRMED);
+    }
+
+    /**
      * Handlers for channel messages.
      * @param {Channel} channel A channel to send back response.
      * @param {ApiCallMessage} msg Received message.
@@ -859,47 +932,66 @@ import {WebviewEventManager} from './webview_event_manager.js';
      */
     onAPICall_(channel, msg) {
       const call = msg.call;
-      // TODO(b/261613412): Change warn to info.
-      console.warn('SamlHandler.onAPICall_: call.method = ' + call.method);
+      console.info('SamlHandler.onAPICall_: call.method = ' + call.method);
       if (call.method === 'initialize') {
         if (!Number.isInteger(call.requestedVersion) ||
             call.requestedVersion < MIN_API_VERSION_VERSION) {
           this.sendInitializationFailure_(channel);
+          this.recordInAPIErrorHistogram_(
+              SamlHandler.ApiErrorType.UNSUPPORTED_KEY);
           return;
         }
 
         this.apiVersion_ =
             Math.min(call.requestedVersion, MAX_API_VERSION_VERSION);
         this.apiInitialized_ = true;
-        // TODO(b/261613412): Change warn to info.
-        console.warn('SamlHandler.onAPICall_ is initialized successfully');
+        console.info('SamlHandler.onAPICall_ is initialized successfully');
         this.sendInitializationSuccess_(channel);
         return;
       }
 
       if (call.method === 'add') {
         if (API_KEY_TYPES.indexOf(call.keyType) === -1) {
-          console.error('SamlHandler.onAPICall_: unsupported key type');
+          console.warn('SamlHandler.onAPICall_: unsupported key type');
+          this.recordInAPIErrorHistogram_(
+              SamlHandler.ApiErrorType.UNSUPPORTED_KEY);
           return;
         }
         // Not setting |email_| and |gaiaId_| because this API call will
         // eventually be followed by onCompleteLogin_() which does set it.
         this.apiTokenStore_[call.token] = call;
         this.lastApiPasswordBytes_ = call.passwordBytes;
-        // TODO(b/261613412): Change warn to info.
-        console.warn('SamlHandler.onAPICall_: password added');
+        console.info('SamlHandler.onAPICall_: password added');
         this.dispatchEvent(new CustomEvent('apiPasswordAdded'));
+      } else if (call.method === 'createaccount') {
+        if (!this.shouldHandleAccountCreationMessage) {
+          console.warn('SamlHandler.onAPICall_: message not supported');
+          this.recordInAPIErrorHistogram_(
+              SamlHandler.ApiErrorType.UNSUPPORTED_MESSAGE);
+          return;
+        }
+        if (!(call.token in this.apiTokenStore_)) {
+          console.warn('SamlHandler.onAPICall_: token mismatch');
+          this.recordInAPIErrorHistogram_(
+              SamlHandler.ApiErrorType.CREATE_TOKEN_MISMATCH);
+          return;
+        }
+        console.info('SamlHandler.onAPICall_: new account created');
+        this.dispatchEvent(new CustomEvent('apiAccountCreated'));
       } else if (call.method === 'confirm') {
         if (!(call.token in this.apiTokenStore_)) {
-          console.error('SamlHandler.onAPICall_: token mismatch');
+          console.warn('SamlHandler.onAPICall_: token mismatch');
+          this.recordInAPIErrorHistogram_(
+              SamlHandler.ApiErrorType.CONFIRM_TOKEN_MISMATCH);
         } else {
           this.confirmToken_ = call.token;
-          // TODO(b/261613412): Change warn to info.
-          console.warn('SamlHandler.onAPICall_: password confirmed');
+          console.info('SamlHandler.onAPICall_: password confirmed');
           this.dispatchEvent(new CustomEvent('apiPasswordConfirmed'));
         }
       } else {
-        console.error('SamlHandler.onAPICall_: unknown message');
+        console.warn('SamlHandler.onAPICall_: unknown message');
+        this.recordInAPIErrorHistogram_(
+            SamlHandler.ApiErrorType.UNKNOWN_MESSAGE);
       }
     }
 

@@ -5,6 +5,7 @@ Revision: See DEPS
 License: BSD 3-clause
 License File: gyp/LICENSE
 Security Critical: no
+Shipped: no
 
 Description:
 GYP is used to generate build files.

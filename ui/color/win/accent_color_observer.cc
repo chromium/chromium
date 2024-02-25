@@ -36,8 +36,20 @@ base::CallbackListSubscription AccentColorObserver::Subscribe(
   return callbacks_.Add(std::move(callback));
 }
 
+void AccentColorObserver::SetAccentColorForTesting(
+    std::optional<SkColor> accent_color) {
+  accent_color_ = accent_color;
+  callbacks_.Notify();
+}
+
+void AccentColorObserver::SetUseDwmFrameColorForTesting(
+    bool use_dwm_frame_color) {
+  use_dwm_frame_color_ = use_dwm_frame_color;
+  callbacks_.Notify();
+}
+
 void AccentColorObserver::OnDwmKeyUpdated() {
-  accent_border_color_ = absl::nullopt;
+  accent_border_color_ = std::nullopt;
   DWORD colorization_color, colorization_color_balance;
   if ((dwm_key_->ReadValueDW(L"ColorizationColor", &colorization_color) ==
        ERROR_SUCCESS) &&
@@ -64,22 +76,24 @@ void AccentColorObserver::OnDwmKeyUpdated() {
                                 colorization_color_balance / 100.0f);
   }
 
-  accent_color_ = absl::nullopt;
-  accent_color_inactive_ = absl::nullopt;
-  DWORD accent_color, color_prevalence;
-  bool use_dwm_frame_color =
-      dwm_key_->ReadValueDW(L"AccentColor", &accent_color) == ERROR_SUCCESS &&
-      dwm_key_->ReadValueDW(L"ColorPrevalence", &color_prevalence) ==
-          ERROR_SUCCESS &&
-      color_prevalence == 1;
-  if (use_dwm_frame_color) {
+  accent_color_ = std::nullopt;
+  accent_color_inactive_ = std::nullopt;
+  DWORD accent_color = 0;
+  if (dwm_key_->ReadValueDW(L"AccentColor", &accent_color) == ERROR_SUCCESS) {
     accent_color_ = skia::COLORREFToSkColor(accent_color);
-    DWORD accent_color_inactive;
+    DWORD accent_color_inactive = 0;
     if (dwm_key_->ReadValueDW(L"AccentColorInactive", &accent_color_inactive) ==
         ERROR_SUCCESS) {
       accent_color_inactive_ = skia::COLORREFToSkColor(accent_color_inactive);
     }
   }
+
+  DWORD color_prevalence;
+  use_dwm_frame_color_ =
+      accent_color_.has_value() &&
+      (dwm_key_->ReadValueDW(L"ColorPrevalence", &color_prevalence) ==
+       ERROR_SUCCESS) &&
+      color_prevalence == 1;
 
   callbacks_.Notify();
 

@@ -80,9 +80,8 @@ void UsbPrinterNotification::Close(bool by_user) {
   visible_ = false;
 }
 
-void UsbPrinterNotification::Click(
-    const absl::optional<int>& button_index,
-    const absl::optional<std::u16string>& reply) {
+void UsbPrinterNotification::Click(const std::optional<int>& button_index,
+                                   const std::optional<std::u16string>& reply) {
   if (!button_index) {
     // Body of notification clicked.
     visible_ = false;

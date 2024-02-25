@@ -1,0 +1,18 @@
+{% from 'templates/macros.tmpl' import license, source_files_for_generated_file %}
+{{license()}}
+
+{{source_files_for_generated_file(template_file, input_files)}}
+
+module blink.mojom;
+
+// These enum values should not be persisted nor logged to histograms.
+enum OriginTrialFeature {
+  // For testing
+  kNonExisting,
+
+  {% for feature in features %}
+  {% if feature.origin_trial_feature_name %}
+  k{{feature.name}},
+  {% endif %}
+  {% endfor %}
+};

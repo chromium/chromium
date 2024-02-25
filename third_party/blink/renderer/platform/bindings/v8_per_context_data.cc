@@ -120,8 +120,24 @@ v8::Local<v8::Function> V8PerContextData::ConstructorForTypeSlowCase(
   v8::Context::Scope scope(context);
 
   v8::Local<v8::Function> parent_interface_object;
-  if (type->parent_class) {
-    parent_interface_object = ConstructorForType(type->parent_class);
+  if (auto* parent = type->parent_class) {
+    if (parent->is_skipped_in_interface_object_prototype_chain) {
+      // This is a special case for WindowProperties.
+      // We need to set up the inheritance of Window as the following:
+      //   Window.__proto__ === EventTarget
+      // although the prototype chain is the following:
+      //   Window.prototype.__proto__           === the named properties object
+      //   Window.prototype.__proto__.__proto__ === EventTarget.prototype
+      // where the named properties object is WindowProperties.prototype in
+      // our implementation (although WindowProperties is not JS observable).
+      // Let WindowProperties be skipped and make
+      // Window.__proto__ == EventTarget.
+      DCHECK(parent->parent_class);
+      DCHECK(!parent->parent_class
+                  ->is_skipped_in_interface_object_prototype_chain);
+      parent = parent->parent_class;
+    }
+    parent_interface_object = ConstructorForType(parent);
   }
 
   const DOMWrapperWorld& world = DOMWrapperWorld::World(context);

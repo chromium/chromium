@@ -12,7 +12,6 @@
 #include "base/system/sys_info.h"
 #include "build/config/chromebox_for_meetings/buildflags.h"  // PLATFORM_CFM
 #include "chrome/browser/ash/settings/device_settings_service.h"
-#include "chrome/browser/ash/wilco_dtc_supportd/wilco_dtc_supportd_client.h"
 #include "chrome/common/chrome_paths.h"
 #include "chromeos/ash/components/attestation/attestation_features.h"
 #include "chromeos/ash/components/cryptohome/system_salt_getter.h"
@@ -30,6 +29,7 @@
 #include "chromeos/ash/components/dbus/biod/biod_client.h"
 #include "chromeos/ash/components/dbus/cdm_factory_daemon/cdm_factory_daemon_client.h"
 #include "chromeos/ash/components/dbus/cec_service/cec_service_client.h"
+#include "chromeos/ash/components/dbus/chaps/chaps_client.h"
 #include "chromeos/ash/components/dbus/chunneld/chunneld_client.h"
 #include "chromeos/ash/components/dbus/cicerone/cicerone_client.h"
 #include "chromeos/ash/components/dbus/concierge/concierge_client.h"
@@ -37,6 +37,7 @@
 #include "chromeos/ash/components/dbus/cups_proxy/cups_proxy_client.h"
 #include "chromeos/ash/components/dbus/dbus_thread_manager.h"
 #include "chromeos/ash/components/dbus/debug_daemon/debug_daemon_client.h"
+#include "chromeos/ash/components/dbus/device_management/install_attributes_client.h"
 #include "chromeos/ash/components/dbus/dlcservice/dlcservice_client.h"
 #include "chromeos/ash/components/dbus/easy_unlock/easy_unlock_client.h"
 #include "chromeos/ash/components/dbus/featured/featured_client.h"
@@ -62,6 +63,7 @@
 #include "chromeos/ash/components/dbus/runtime_probe/runtime_probe_client.h"
 #include "chromeos/ash/components/dbus/seneschal/seneschal_client.h"
 #include "chromeos/ash/components/dbus/session_manager/session_manager_client.h"
+#include "chromeos/ash/components/dbus/shill/modem_3gpp_client.h"
 #include "chromeos/ash/components/dbus/shill/shill_clients.h"
 #include "chromeos/ash/components/dbus/smbprovider/smb_provider_client.h"
 #include "chromeos/ash/components/dbus/spaced/spaced_client.h"
@@ -71,14 +73,13 @@
 #include "chromeos/ash/components/dbus/typecd/typecd_client.h"
 #include "chromeos/ash/components/dbus/update_engine/update_engine_client.h"
 #include "chromeos/ash/components/dbus/upstart/upstart_client.h"
-#include "chromeos/ash/components/dbus/userdataauth/arc_quota_client.h"
 #include "chromeos/ash/components/dbus/userdataauth/cryptohome_misc_client.h"
 #include "chromeos/ash/components/dbus/userdataauth/cryptohome_pkcs11_client.h"
-#include "chromeos/ash/components/dbus/userdataauth/install_attributes_client.h"
 #include "chromeos/ash/components/dbus/userdataauth/userdataauth_client.h"
 #include "chromeos/ash/components/dbus/virtual_file_provider/virtual_file_provider_client.h"
 #include "chromeos/ash/components/dbus/vm_plugin_dispatcher/vm_plugin_dispatcher_client.h"
 #include "chromeos/ash/components/install_attributes/install_attributes.h"
+#include "chromeos/ash/components/language_packs/language_pack_manager.h"
 #include "chromeos/dbus/constants/dbus_paths.h"
 #include "chromeos/dbus/dlp/dlp_client.h"
 #include "chromeos/dbus/init/initialize_dbus_client.h"
@@ -152,12 +153,12 @@ void InitializeDBus() {
   InitializeDBusClient<ArcKeyMintClient>(bus);
   InitializeDBusClient<ArcMidisClient>(bus);
   InitializeDBusClient<ArcObbMounterClient>(bus);
-  InitializeDBusClient<ArcQuotaClient>(bus);
   InitializeDBusClient<ArcVmDataMigratorClient>(bus);
   InitializeDBusClient<AttestationClient>(bus);
   InitializeDBusClient<BiodClient>(bus);  // For device::Fingerprint.
   InitializeDBusClient<CdmFactoryDaemonClient>(bus);
   InitializeDBusClient<CecServiceClient>(bus);
+  InitializeDBusClient<ChapsClient>(bus);
   InitializeDBusClient<ChunneldClient>(bus);
   InitializeDBusClient<CiceroneClient>(bus);
   // ConciergeClient depends on CiceroneClient.
@@ -171,7 +172,6 @@ void InitializeDBus() {
   InitializeDBusClient<DlcserviceClient>(bus);
   InitializeDBusClient<chromeos::DlpClient>(bus);
   InitializeDBusClient<EasyUnlockClient>(bus);
-  InitializeDBusClient<featured::FeaturedClient>(bus);
   InitializeDBusClient<FederatedClient>(bus);
   InitializeDBusClient<GnubbyClient>(bus);
   hermes_clients::Initialize(bus);
@@ -218,6 +218,9 @@ void InitializeDBus() {
   DeviceSettingsService::Initialize();
   InstallAttributes::Initialize();
 
+  // Depends on `DlcserviceClient`.
+  language_packs::LanguagePackManager::Initialise();
+
   if (g_dbus_helper_observer) {
     g_dbus_helper_observer->PostInitializeDBus();
   }
@@ -253,12 +256,19 @@ void InitializeFeatureListDependentDBus() {
     InitializeDBusClient<RmadClient>(bus);
   }
   InitializeDBusClient<RgbkbdClient>(bus);
-  InitializeDBusClient<WilcoDtcSupportdClient>(bus);
 
   if (features::IsSnoopingProtectionEnabled() ||
       features::IsQuickDimEnabled()) {
     InitializeDBusClient<HumanPresenceDBusClient>(bus);
   }
+
+  if (features::IsCellularCarrierLockEnabled()) {
+    InitializeDBusClient<Modem3gppClient>(bus);
+  }
+
+  // FeaturedClient is not a feature and instead uses the FieldTrialList (which
+  // is initialized with the FeatureList) to record early-boot trials in UMA.
+  InitializeDBusClient<featured::FeaturedClient>(bus);
 }
 
 void ShutdownDBus() {
@@ -268,11 +278,14 @@ void ShutdownDBus() {
 
   // Feature list-dependent D-Bus clients are shut down first because we try to
   // shut down in reverse order of initialization (in case of dependencies).
+  if (features::IsCellularCarrierLockEnabled()) {
+    Modem3gppClient::Shutdown();
+  }
+
   if (features::IsSnoopingProtectionEnabled() ||
       features::IsQuickDimEnabled()) {
     HumanPresenceDBusClient::Shutdown();
   }
-  WilcoDtcSupportdClient::Shutdown();
 #if BUILDFLAG(PLATFORM_CFM)
   if (base::FeatureList::IsEnabled(cfm::features::kMojoServices)) {
     CfmHotlineClient::Shutdown();
@@ -284,6 +297,10 @@ void ShutdownDBus() {
   } else {
     bluez::BluezDBusManager::Shutdown();
   }
+
+  // Depends on `DlcserviceClient`.
+  language_packs::LanguagePackManager::Shutdown();
+
   // Other D-Bus clients are shut down, also in reverse order of initialization.
   VmPluginDispatcherClient::Shutdown();
   VirtualFileProviderClient::Shutdown();
@@ -345,7 +362,6 @@ void ShutdownDBus() {
   BiodClient::Shutdown();
   AttestationClient::Shutdown();
   ArcVmDataMigratorClient::Shutdown();
-  ArcQuotaClient::Shutdown();
   ArcObbMounterClient::Shutdown();
   ArcMidisClient::Shutdown();
   ArcKeyMintClient::Shutdown();

@@ -6,9 +6,9 @@
 #define BASE_I18N_CASE_CONVERSION_H_
 
 #include <string>
+#include <string_view>
 
 #include "base/i18n/base_i18n_export.h"
-#include "base/strings/string_piece.h"
 
 namespace base {
 namespace i18n {
@@ -33,15 +33,15 @@ namespace i18n {
 // the input.
 
 // Returns the lower case equivalent of string. Uses ICU's current locale.
-BASE_I18N_EXPORT std::u16string ToLower(StringPiece16 string);
+BASE_I18N_EXPORT std::u16string ToLower(std::u16string_view string);
 
 // Returns the upper case equivalent of string. Uses ICU's current locale.
-BASE_I18N_EXPORT std::u16string ToUpper(StringPiece16 string);
+BASE_I18N_EXPORT std::u16string ToUpper(std::u16string_view string);
 
 // Convert the given string to a canonical case, independent of the current
 // locale. For ASCII the canonical form is lower case.
 // See http://unicode.org/faq/casemap_charprop.html#2
-BASE_I18N_EXPORT std::u16string FoldCase(StringPiece16 string);
+BASE_I18N_EXPORT std::u16string FoldCase(std::u16string_view string);
 
 }  // namespace i18n
 }  // namespace base

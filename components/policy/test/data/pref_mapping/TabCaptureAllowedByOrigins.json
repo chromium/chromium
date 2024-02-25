@@ -1,0 +1,32 @@
+[
+  {
+    "os": [
+      "win",
+      "linux",
+      "mac",
+      "chromeos_lacros",
+      "chromeos_ash",
+      "fuchsia"
+    ],
+    "policy_pref_mapping_tests": [
+      {
+        "policies": {
+          "TabCaptureAllowedByOrigins": [
+            "[*.]google.com",
+            "example.com",
+            "https://example2.com"
+          ]
+        },
+        "prefs": {
+          "hardware.tab_capture_allowed_by_origins": {
+            "value": [
+              "[*.]google.com",
+              "example.com",
+              "https://example2.com"
+            ]
+          }
+        }
+      }
+    ]
+  }
+]

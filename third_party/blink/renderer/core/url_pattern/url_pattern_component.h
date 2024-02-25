@@ -5,9 +5,10 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_URL_PATTERN_URL_PATTERN_COMPONENT_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_URL_PATTERN_URL_PATTERN_COMPONENT_H_
 
+#include <optional>
+
 #include "base/types/pass_key.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
-#include "third_party/blink/renderer/bindings/core/v8/script_regexp.h"
+#include "third_party/blink/renderer/platform/bindings/script_regexp.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/heap/member.h"
 #include "third_party/blink/renderer/platform/heap/trace_traits.h"
@@ -48,7 +49,8 @@ class Component final : public GarbageCollected<Component> {
   // compiled for.  This will select the correct encoding callback,
   // liburlpattern options, and populate errors messages with the correct
   // component string.
-  static Component* Compile(StringView pattern,
+  static Component* Compile(v8::Isolate* isolate,
+                            StringView pattern,
                             Type type,
                             Component* protocol_component,
                             const URLPatternOptions& external_options,
@@ -85,6 +87,12 @@ class Component final : public GarbageCollected<Component> {
   // `data:foo`.  This should only be called for kProtocol components.
   bool ShouldTreatAsStandardURL() const;
 
+  // Returns if this component has at least one part that uses an ECMAScript
+  // regular expression.
+  bool HasRegExpGroups() const { return pattern_.HasRegexGroups(); }
+
+  const std::vector<liburlpattern::Part>& PartList() const;
+
   void Trace(Visitor* visitor) const;
 
  private:
@@ -106,7 +114,7 @@ class Component final : public GarbageCollected<Component> {
   // The cached result of computing if a protocol component should cause the
   // pattern to be treated as a standard URL.  This should only be set and read
   // by protocol components executing ShouldTreatAsStandardURL().
-  mutable absl::optional<bool> should_treat_as_standard_url_;
+  mutable std::optional<bool> should_treat_as_standard_url_;
 };
 
 }  // namespace url_pattern

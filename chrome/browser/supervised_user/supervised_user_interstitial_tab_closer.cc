@@ -24,7 +24,7 @@ void TabCloser::CheckIfInBrowserThenCloseTab(
   // Close the tab only if there is a browser for it (which is not the case
   // for example in a <webview>).
 #if !BUILDFLAG(IS_ANDROID)
-  if (!chrome::FindBrowserWithWebContents(web_contents)) {
+  if (!chrome::FindBrowserWithTab(web_contents)) {
     return;
   }
 #endif
@@ -39,9 +39,9 @@ TabCloser::TabCloser(content::WebContents* web_contents)
 }
 
 void TabCloser::CloseTabImpl() {
-  // On Android, FindBrowserWithWebContents and TabStripModel don't exist.
+  // On Android, FindBrowserWithTab and TabStripModel don't exist.
 #if !BUILDFLAG(IS_ANDROID)
-  Browser* browser = chrome::FindBrowserWithWebContents(&GetWebContents());
+  Browser* browser = chrome::FindBrowserWithTab(&GetWebContents());
   DCHECK(browser);
   TabStripModel* tab_strip = browser->tab_strip_model();
   DCHECK_NE(TabStripModel::kNoTab,

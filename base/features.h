@@ -21,12 +21,17 @@ BASE_EXPORT BASE_DECLARE_FEATURE(kNotReachedIsFatal);
 
 BASE_EXPORT BASE_DECLARE_FEATURE(kOptimizeDataUrls);
 
-BASE_EXPORT BASE_DECLARE_FEATURE(kSupportsUserDataFlatHashMap);
+BASE_EXPORT BASE_DECLARE_FEATURE(kUseRustJsonParser);
+
+BASE_EXPORT BASE_DECLARE_FEATURE(kJsonNegativeZero);
+
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_CHROMEOS)
+BASE_EXPORT BASE_DECLARE_FEATURE(kPartialLowEndModeOn3GbDevices);
+BASE_EXPORT BASE_DECLARE_FEATURE(kPartialLowEndModeOnMidRangeDevices);
+#endif
 
 #if BUILDFLAG(IS_ANDROID)
-BASE_EXPORT BASE_DECLARE_FEATURE(kPartialLowEndModeOnMidRangeDevices);
-extern const BASE_EXPORT FeatureParam<bool>
-    kPartialLowEndModeExcludeLowEndBackgroundCleanup;
+BASE_EXPORT BASE_DECLARE_FEATURE(kCollectAndroidFrameTimelineMetrics);
 #endif
 
 }  // namespace base::features

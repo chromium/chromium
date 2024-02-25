@@ -10,7 +10,7 @@ import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 import {assertEquals, assertFalse, assertThrows, assertTrue} from 'chrome://webui-test/chromeos/chai_assert.js';
 import {eventToPromise} from 'chrome://webui-test/test_util.js';
 
-export function navigationViewPanelTestSuite() {
+suite('navigationViewPanelTestSuite', () => {
   /** @type {?NavigationViewPanelElement} */
   let viewElement = null;
 
@@ -256,6 +256,54 @@ export function navigationViewPanelTestSuite() {
     assertTrue(drawer.wasCanceled());
   });
 
+  test('CloseDrawerWhenClickingSameItem', async () => {
+    const pageType = 'myPageType';
+    const id1 = 'id1';
+    const id2 = 'id2';
+
+    viewElement.title = 'title';
+
+    await addNavigationSections([
+      viewElement.createSelectorItem('Page 1', pageType, /*icon=*/ '', 'id1'),
+      viewElement.createSelectorItem('Page 2', pageType, /*icon=*/ '', 'id2'),
+    ]);
+
+    // The first element is visible, others hidden.
+    assertTrue(!!viewElement.shadowRoot.querySelector(`#${id1}`));
+    assertFalse(viewElement.shadowRoot.querySelector(`#${id1}`).hidden);
+    assertFalse(!!viewElement.shadowRoot.querySelector(`#${id2}`));
+
+    const drawer = getDrawer();
+    drawer.openDrawer();
+    await eventToPromise('cr-drawer-opened', drawer);
+    assertTrue(drawer.open);
+
+    // Clicking the first entry closes the drawer.
+    const navElements = getNavElements();
+    navElements[0].click();
+    await flushTasks();
+
+    await eventToPromise('close', drawer);
+    assertFalse(drawer.open);
+
+    // The first element is visible, others hidden.
+    assertTrue(!!viewElement.shadowRoot.querySelector(`#${id1}`));
+    assertFalse(viewElement.shadowRoot.querySelector(`#${id1}`).hidden);
+    assertFalse(!!viewElement.shadowRoot.querySelector(`#${id2}`));
+
+    // Re-open and click the first navigation item, expect drawer to close.
+    drawer.openDrawer();
+    await eventToPromise('cr-drawer-opened', drawer);
+    assertTrue(drawer.open);
+
+    const navElements1 = getNavElements();
+    navElements1[0].click();
+    await flushTasks();
+
+    await eventToPromise('close', drawer);
+    assertFalse(drawer.open);
+  });
+
   test('removeSelectedPage', async () => {
     await addNavigationSections([
       viewElement.createSelectorItem(
@@ -315,4 +363,4 @@ export function navigationViewPanelTestSuite() {
     viewElement.selectPageById('does-not-exist');
     assertEquals('dummy3', viewElement.selectedItem.id);
   });
-}
+});

@@ -125,6 +125,8 @@ class VIEWS_EXPORT DesktopWindowTreeHost {
   // window reverts to rectangular.
   virtual void SetShape(std::unique_ptr<Widget::ShapeRects> native_shape) = 0;
 
+  virtual void SetParent(gfx::AcceleratedWidget parent) = 0;
+
   virtual void Activate() = 0;
   virtual void Deactivate() = 0;
   virtual bool IsActive() const = 0;
@@ -190,9 +192,6 @@ class VIEWS_EXPORT DesktopWindowTreeHost {
   // Returns true if the Widget was closed but is still showing because of
   // animations.
   virtual bool IsAnimatingClosed() const = 0;
-
-  // Returns true if the Widget supports translucency.
-  virtual bool IsTranslucentWindowOpacitySupported() const = 0;
 
   // Called when the window's size constraints change.
   virtual void SizeConstraintsChanged() = 0;

@@ -9,8 +9,8 @@
 #include <utility>
 
 #include "ash/ambient/ambient_view_delegate_impl.h"
+#include "ash/ambient/metrics/ambient_animation_metrics_recorder.h"
 #include "ash/ambient/metrics/ambient_metrics.h"
-#include "ash/ambient/metrics/ambient_session_metrics_recorder.h"
 #include "ash/ambient/model/ambient_animation_attribution_provider.h"
 #include "ash/ambient/model/ambient_backend_model.h"
 #include "ash/ambient/model/ambient_photo_config.h"
@@ -33,6 +33,7 @@
 #include "ash/public/cpp/shell_window_ids.h"
 #include "ash/shell.h"
 #include "ash/style/ash_color_id.h"
+#include "ash/webui/personalization_app/mojom/personalization_app.mojom-shared.h"
 #include "base/check.h"
 #include "base/functional/bind.h"
 #include "base/location.h"
@@ -98,13 +99,15 @@ void OnCompositorThroughputReported(
     const cc::FrameSequenceMetrics::CustomReportData& data) {
   base::TimeDelta duration = base::TimeTicks::Now() - logging_start_time;
   float duration_sec = duration.InSecondsF();
-  VLOG(1) << "Compositor throughput report: frames_expected="
-          << data.frames_expected << " frames_produced=" << data.frames_produced
-          << " jank_count=" << data.jank_count
-          << " expected_fps=" << data.frames_expected / duration_sec
-          << " actual_fps=" << data.frames_produced / duration_sec
+  VLOG(1) << "Compositor throughput report: frames_expected_v3="
+          << data.frames_expected_v3
+          << " frames_dropped_v3=" << data.frames_dropped_v3
+          << " jank_count_v3=" << data.jank_count_v3
+          << " expected_fps=" << data.frames_expected_v3 / duration_sec
+          << " actual_fps="
+          << (data.frames_expected_v3 - data.frames_dropped_v3) / duration_sec
           << " duration=" << duration;
-  metrics_util::ForSmoothness(
+  metrics_util::ForSmoothnessV3(
       base::BindRepeating(&LogCompositorThroughput, ui_settings))
       .Run(data);
 }
@@ -142,9 +145,13 @@ gfx::Outsets GetTextShadowCorrection(const gfx::ShadowValues& text_shadows) {
 // The border serves as padding between the GlanceableInfoView and its
 // parent view's bounds.
 std::unique_ptr<views::Border> CreateGlanceableInfoBorder(
+    bool include_text_shadow,
     const gfx::Vector2d& jitter = gfx::Vector2d()) {
-  gfx::Outsets shadow_text_correction =
-      GetTextShadowCorrection(ambient::util::GetTextShadowValues(nullptr));
+  gfx::Outsets shadow_text_correction;
+  if (include_text_shadow) {
+    shadow_text_correction =
+        GetTextShadowCorrection(ambient::util::GetTextShadowValues(nullptr));
+  }
   int top_padding =
       kWeatherTimeBorderPaddingDip - shadow_text_correction.top() + jitter.y();
   int left_padding =
@@ -177,12 +184,15 @@ AmbientAnimationView::AmbientAnimationView(
     AmbientViewDelegateImpl* view_delegate,
     AmbientAnimationProgressTracker* progress_tracker,
     std::unique_ptr<const AmbientAnimationStaticResources> static_resources,
-    AmbientSessionMetricsRecorder* session_metrics_recorder,
+    AmbientAnimationMetricsRecorder* animation_metrics_recorder,
     AmbientAnimationFrameRateController* frame_rate_controller)
     : view_delegate_(view_delegate),
       progress_tracker_(progress_tracker),
       static_resources_(std::move(static_resources)),
       frame_rate_controller_(frame_rate_controller),
+      add_glanceable_info_text_shadow_(
+          static_resources_->GetUiSettings().theme() !=
+          personalization_app::mojom::AmbientTheme::kFeelTheBreeze),
       animation_photo_provider_(static_resources_.get(),
                                 view_delegate->GetAmbientBackendModel()),
       animation_jitter_calculator_(
@@ -190,13 +200,13 @@ AmbientAnimationView::AmbientAnimationView(
   DCHECK(view_delegate_);
   DCHECK(frame_rate_controller_);
   SetID(AmbientViewID::kAmbientAnimationView);
-  Init(session_metrics_recorder);
+  Init(animation_metrics_recorder);
 }
 
 AmbientAnimationView::~AmbientAnimationView() = default;
 
 void AmbientAnimationView::Init(
-    AmbientSessionMetricsRecorder* session_metrics_recorder) {
+    AmbientAnimationMetricsRecorder* animation_metrics_recorder) {
   SetUseDefaultFillLayout(true);
 
   views::View* animation_container_view =
@@ -219,8 +229,8 @@ void AmbientAnimationView::Init(
       static_resources_->GetSkottieWrapper(), cc::SkottieColorMap(),
       &animation_photo_provider_);
   animation_observer_.Observe(animation.get());
-  DCHECK(session_metrics_recorder);
-  session_metrics_recorder->RegisterScreen(animation.get());
+  DCHECK(animation_metrics_recorder);
+  animation_metrics_recorder->RegisterAnimation(animation.get());
   animated_image_view_->SetAnimatedImage(std::move(animation));
   animated_image_view_observer_.Observe(animated_image_view_.get());
   animation_attribution_provider_ =
@@ -285,9 +295,11 @@ void AmbientAnimationView::Init(
       views::BoxLayout::MainAxisAlignment::kStart);
   glanceable_info_container_->SetCrossAxisAlignment(
       views::BoxLayout::CrossAxisAlignment::kStart);
-  glanceable_info_container_->SetBorder(CreateGlanceableInfoBorder());
+  glanceable_info_container_->SetBorder(
+      CreateGlanceableInfoBorder(add_glanceable_info_text_shadow_));
   glanceable_info_container_->AddChildView(std::make_unique<GlanceableInfoView>(
-      view_delegate_.get(), this, kTimeFontSizeDip));
+      view_delegate_.get(), this, kTimeFontSizeDip,
+      add_glanceable_info_text_shadow_));
 
   // Media string should appear in the top-right corner of the
   // AmbientAnimationView's bounds.
@@ -346,7 +358,7 @@ void AmbientAnimationView::OnViewBoundsChanged(View* observed_view) {
   // decision is to just omit the tree shadow in portrait mode. If/when
   // portrait versions of the animation are made, this logic can be removed.
   if (static_resources_->GetUiSettings().theme() ==
-      AmbientTheme::kFeelTheBreeze) {
+      personalization_app::mojom::AmbientTheme::kFeelTheBreeze) {
     bool tree_shadow_toggled = animation_photo_provider_.ToggleStaticImageAsset(
         cc::HashSkottieResourceId(ambient::resources::kTreeShadowAssetId),
         /*enabled=*/content_bounds.width() >= content_bounds.height());
@@ -433,7 +445,8 @@ void AmbientAnimationView::ApplyJitter() {
   // Sharing the same jitter between the animation and other peripheral content
   // keeps the spacing between features consistent.
   animated_image_view_->SetAdditionalTranslation(jitter);
-  glanceable_info_container_->SetBorder(CreateGlanceableInfoBorder(jitter));
+  glanceable_info_container_->SetBorder(
+      CreateGlanceableInfoBorder(add_glanceable_info_text_shadow_, jitter));
   media_string_container_->SetBorder(CreateMediaStringBorder(jitter));
 }
 
@@ -441,7 +454,7 @@ JitterCalculator* AmbientAnimationView::GetJitterCalculatorForTesting() {
   return &animation_jitter_calculator_;
 }
 
-BEGIN_METADATA(AmbientAnimationView, views::View)
+BEGIN_METADATA(AmbientAnimationView)
 END_METADATA
 
 }  // namespace ash

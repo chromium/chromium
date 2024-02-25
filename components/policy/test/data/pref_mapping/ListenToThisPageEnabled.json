@@ -1,0 +1,41 @@
+[
+  {
+    "os": [
+      "android"
+    ],
+    "policy_pref_mapping_tests": [
+      {
+        "note": "Default value (no policies set).",
+        "policies": {},
+        "prefs": {
+          "readaloud.listen_to_this_page_enabled": {
+            "default_value": true,
+            "location": "user_profile"
+          }
+        }
+      },
+      {
+        "policies": {
+          "ListenToThisPageEnabled": true
+        },
+        "prefs": {
+          "readaloud.listen_to_this_page_enabled": {
+            "location": "user_profile",
+            "value": true
+          }
+        }
+      },
+      {
+        "policies": {
+          "ListenToThisPageEnabled": false
+        },
+        "prefs": {
+          "readaloud.listen_to_this_page_enabled": {
+            "location": "user_profile",
+            "value": false
+          }
+        }
+      }
+    ]
+  }
+]

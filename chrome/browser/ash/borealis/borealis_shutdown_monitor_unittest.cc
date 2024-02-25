@@ -10,6 +10,7 @@
 #include "chrome/browser/ash/borealis/borealis_context_manager_mock.h"
 #include "chrome/browser/ash/borealis/borealis_features.h"
 #include "chrome/browser/ash/borealis/borealis_service_fake.h"
+#include "chrome/browser/ash/borealis/borealis_window_manager.h"
 #include "chrome/test/base/testing_profile.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -23,15 +24,20 @@ class BorealisShutdownMonitorTest : public testing::Test {
   BorealisShutdownMonitorTest()
       : service_fake_(BorealisServiceFake::UseFakeForTesting(&profile_)),
         features_(&profile_) {
+    borealis_window_manager_ =
+        std::make_unique<BorealisWindowManager>(&profile_);
+
     service_fake_->SetFeaturesForTesting(&features_);
     service_fake_->SetContextManagerForTesting(&context_manager_mock_);
+    service_fake_->SetWindowManagerForTesting(borealis_window_manager_.get());
   }
 
   Profile* profile() { return &profile_; }
 
   content::BrowserTaskEnvironment task_environment_;
   TestingProfile profile_;
-  raw_ptr<BorealisServiceFake, ExperimentalAsh> service_fake_;
+  std::unique_ptr<BorealisWindowManager> borealis_window_manager_;
+  raw_ptr<BorealisServiceFake> service_fake_;
   BorealisFeatures features_;
   testing::StrictMock<BorealisContextManagerMock> context_manager_mock_;
 };

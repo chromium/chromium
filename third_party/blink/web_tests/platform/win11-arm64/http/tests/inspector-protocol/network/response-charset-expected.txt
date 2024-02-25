@@ -1,0 +1,12 @@
+Tests that Network.Response includes the charset
+Network Enabled
+Fetching with no charset
+Network.Response.charset: 
+Fetching with utf-8
+Network.Response.charset: 
+Fetching with iso-8869-1
+Network.Response.charset: 
+Fetching utf-16 content
+Network.Response.charset: utf-16
+Response body: <p>Iñtërnâtiônàlizætiøn☃𝌆</p>
+

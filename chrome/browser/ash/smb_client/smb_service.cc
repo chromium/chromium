@@ -37,6 +37,7 @@
 #include "chrome/browser/ash/smb_client/smb_url.h"
 #include "chrome/browser/platform_util.h"
 #include "chrome/browser/ui/webui/ash/smb_shares/smb_credentials_dialog.h"
+#include "chrome/browser/ui/webui/ash/smb_shares/smb_handler.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/pref_names.h"
 #include "chromeos/ash/components/dbus/dbus_thread_manager.h"
@@ -49,8 +50,7 @@
 #include "net/base/network_interfaces.h"
 #include "url/url_util.h"
 
-namespace ash {
-namespace smb_client {
+namespace ash::smb_client {
 
 namespace {
 
@@ -138,7 +138,7 @@ SmbService::SmbService(Profile* profile,
         std::make_unique<SmbKerberosCredentialsUpdater>(
             credentials_manager,
             base::BindRepeating(&SmbService::UpdateKerberosCredentials,
-                                AsWeakPtr()));
+                                weak_ptr_factory_.GetWeakPtr()));
     SetupKerberos(kerberos_credentials_updater_->active_account_name());
     return;
   }
@@ -147,7 +147,8 @@ SmbService::SmbService(Profile* profile,
   // expectations setup after constructing an instance. It also mirrors the
   // behaviour when Kerberos is being used.
   base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
-      FROM_HERE, base::BindOnce(&SmbService::CompleteSetup, AsWeakPtr()));
+      FROM_HERE, base::BindOnce(&SmbService::CompleteSetup,
+                                weak_ptr_factory_.GetWeakPtr()));
 }
 
 SmbService::~SmbService() {
@@ -317,8 +318,7 @@ void SmbService::Mount(const std::string& display_name,
     // Only generate a salt if there's a password and we've been asked to save
     // credentials. If there is no password, there's nothing for smbfs to store
     // and the salt is unused.
-    salt.resize(kSaltLength);
-    crypto::RandBytes(salt);
+    salt = crypto::RandBytesAsVector(kSaltLength);
   }
   SmbShareInfo info(parsed_url, display_name, username, workgroup, use_kerberos,
                     salt);
@@ -386,12 +386,12 @@ void SmbService::MountInternal(
   if (info.use_kerberos()) {
     if (user->IsActiveDirectoryUser()) {
       smbfs_options.kerberos_options =
-          absl::make_optional<SmbFsShare::KerberosOptions>(
+          std::make_optional<SmbFsShare::KerberosOptions>(
               SmbFsShare::KerberosOptions::Source::kActiveDirectory,
               user->GetAccountId().GetObjGuid());
     } else if (kerberos_credentials_updater_) {
       smbfs_options.kerberos_options =
-          absl::make_optional<SmbFsShare::KerberosOptions>(
+          std::make_optional<SmbFsShare::KerberosOptions>(
               SmbFsShare::KerberosOptions::Source::kKerberos,
               kerberos_credentials_updater_->active_account_name());
     } else {
@@ -410,8 +410,9 @@ void SmbService::MountInternal(
   SmbFsShare* raw_mount = mount.get();
   const std::string mount_id = mount->mount_id();
   smbfs_shares_[mount_id] = std::move(mount);
-  raw_mount->Mount(base::BindOnce(&SmbService::OnSmbfsMountDone, AsWeakPtr(),
-                                  mount_id, std::move(callback)));
+  raw_mount->Mount(base::BindOnce(&SmbService::OnSmbfsMountDone,
+                                  weak_ptr_factory_.GetWeakPtr(), mount_id,
+                                  std::move(callback)));
 }
 
 void SmbService::OnSmbfsMountDone(const std::string& smbfs_mount_id,
@@ -453,7 +454,7 @@ void SmbService::RestoreMounts() {
 
   if (!saved_smbfs_shares.empty() || !preconfigured_shares.empty()) {
     share_finder_->DiscoverHostsInNetwork(base::BindOnce(
-        &SmbService::OnHostsDiscovered, AsWeakPtr(),
+        &SmbService::OnHostsDiscovered, weak_ptr_factory_.GetWeakPtr(),
         std::move(saved_smbfs_shares), std::move(preconfigured_shares)));
   }
 }
@@ -475,12 +476,12 @@ void SmbService::SetRestoredShareMountDoneCallbackForTesting(
 }
 
 void SmbService::MountSavedSmbfsShare(const SmbShareInfo& info) {
-  MountInternal(
-      info, "" /* password */, true /* save_credentials */,
-      true /* skip_connect */,
-      restored_share_mount_done_callback_.is_null()
-          ? base::BindOnce(&SmbService::OnMountSavedSmbfsShareDone, AsWeakPtr())
-          : std::move(restored_share_mount_done_callback_));
+  MountInternal(info, "" /* password */, true /* save_credentials */,
+                true /* skip_connect */,
+                restored_share_mount_done_callback_.is_null()
+                    ? base::BindOnce(&SmbService::OnMountSavedSmbfsShareDone,
+                                     weak_ptr_factory_.GetWeakPtr())
+                    : std::move(restored_share_mount_done_callback_));
 }
 
 void SmbService::OnMountSavedSmbfsShareDone(SmbMountResult result,
@@ -499,7 +500,7 @@ void SmbService::MountPreconfiguredShare(const SmbUrl& share_url) {
                 true /* skip_connect */,
                 restored_share_mount_done_callback_.is_null()
                     ? base::BindOnce(&SmbService::OnMountPreconfiguredShareDone,
-                                     AsWeakPtr())
+                                     weak_ptr_factory_.GetWeakPtr())
                     : std::move(restored_share_mount_done_callback_));
 }
 
@@ -521,9 +522,9 @@ void SmbService::SetupKerberos(const std::string& account_identifier) {
     return;
   }
 
-  client->SetupKerberos(
-      account_identifier,
-      base::BindOnce(&SmbService::OnSetupKerberosResponse, AsWeakPtr()));
+  client->SetupKerberos(account_identifier,
+                        base::BindOnce(&SmbService::OnSetupKerberosResponse,
+                                       weak_ptr_factory_.GetWeakPtr()));
 }
 
 void SmbService::UpdateKerberosCredentials(
@@ -536,7 +537,7 @@ void SmbService::UpdateKerberosCredentials(
   client->SetupKerberos(
       account_identifier,
       base::BindOnce(&SmbService::OnUpdateKerberosCredentialsResponse,
-                     AsWeakPtr()));
+                     weak_ptr_factory_.GetWeakPtr()));
 }
 
 void SmbService::OnUpdateKerberosCredentialsResponse(bool success) {
@@ -699,5 +700,14 @@ void SmbService::RecordMountCount() const {
                            file_systems.size() + smbfs_shares_.size());
 }
 
-}  // namespace smb_client
-}  // namespace ash
+bool SmbService::IsAnySmbShareConfigured() {
+  std::vector<SmbUrl> preconfigured_shares =
+      GetPreconfiguredSharePathsForPremount();
+
+  std::vector<SmbShareInfo> saved_smbfs_shares;
+  saved_smbfs_shares = registry_.GetAll();
+
+  return !saved_smbfs_shares.empty() || !preconfigured_shares.empty();
+}
+
+}  // namespace ash::smb_client

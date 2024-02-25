@@ -46,6 +46,8 @@ std::vector<Command> supported_commands = {
     Command::kOpenPerformanceSettings,
     Command::kOpenNTPAndStartCustomizeChromeTutorial,
     Command::kStartPasswordManagerTutorial,
+    Command::kStartSavedTabGroupTutorial,
+    Command::kOpenAISettings,
 };
 
 const ui::ElementContext kTestContext1(1);
@@ -78,11 +80,12 @@ class TestCommandHandler : public BrowserCommandHandler {
     // cannot be executed in a unittest.
   }
 
-  user_education::TutorialService* GetTutorialService() override {
-    return tutorial_service_;
+  void OpenAISettings() override {
+    // The functionality of opening the AI settings is removed, as it
+    // cannot be executed in a unittest.
   }
 
-  ui::ElementContext GetUiElementContext() override { return kTestContext1; }
+  bool TutorialServiceExists() override { return tutorial_service_exists_; }
 
   CommandUpdater* GetCommandUpdater() override {
     if (command_updater_) {
@@ -97,8 +100,8 @@ class TestCommandHandler : public BrowserCommandHandler {
     EnableSupportedCommands();
   }
 
-  void SetTutorialService(user_education::TutorialService* service) {
-    tutorial_service_ = service;
+  void SetTutorialServiceExists(bool tutorial_service_exists) {
+    tutorial_service_exists_ = tutorial_service_exists;
   }
 
   void SetBrowserSupportsTabGroups(bool is_supported) {
@@ -111,6 +114,10 @@ class TestCommandHandler : public BrowserCommandHandler {
 
   void SetDefaultSearchProviderToGoogle(bool is_google) {
     default_search_provider_is_google_ = is_google;
+  }
+
+  void SetBrowserSupportsSavedTabGroups(bool is_supported) {
+    saved_tab_groups_feature_supported_ = is_supported;
   }
 
  protected:
@@ -126,13 +133,18 @@ class TestCommandHandler : public BrowserCommandHandler {
     return default_search_provider_is_google_;
   }
 
+  bool BrowserSupportsSavedTabGroups() override {
+    return saved_tab_groups_feature_supported_;
+  }
+
  private:
-  raw_ptr<user_education::TutorialService> tutorial_service_;
+  bool tutorial_service_exists_;
   std::unique_ptr<CommandUpdater> command_updater_;
 
   bool tab_groups_feature_supported_ = true;
   bool customize_chrome_side_panel_feature_supported_ = true;
   bool default_search_provider_is_google_ = true;
+  bool saved_tab_groups_feature_supported_ = true;
 };
 
 class TestTutorialService : public user_education::TutorialService {
@@ -156,12 +168,12 @@ class TestTutorialService : public user_education::TutorialService {
   }
 
   bool IsRunningTutorial(
-      absl::optional<user_education::TutorialIdentifier> id) const override {
+      std::optional<user_education::TutorialIdentifier> id) const override {
     return id.has_value() ? id == running_id_ : running_id_.has_value();
   }
 
  private:
-  absl::optional<user_education::TutorialIdentifier> running_id_;
+  std::optional<user_education::TutorialIdentifier> running_id_;
 };
 
 class MockTutorialService : public TestTutorialService {
@@ -182,13 +194,15 @@ class MockTutorialService : public TestTutorialService {
               LogStartedFromWhatsNewPage,
               (user_education::TutorialIdentifier, bool));
   MOCK_CONST_METHOD1(IsRunningTutorial,
-                     bool(absl::optional<user_education::TutorialIdentifier>));
+                     bool(std::optional<user_education::TutorialIdentifier>));
 };
 
 class MockCommandHandler : public TestCommandHandler {
  public:
   explicit MockCommandHandler(Profile* profile) : TestCommandHandler(profile) {}
   ~MockCommandHandler() override = default;
+
+  MOCK_METHOD(void, StartTutorial, (StartTutorialInPage::Params params));
 
   MOCK_METHOD(void, NavigateToEnhancedProtectionSetting, ());
 
@@ -197,6 +211,8 @@ class MockCommandHandler : public TestCommandHandler {
   MOCK_METHOD(void, OpenFeedbackForm, ());
 
   MOCK_METHOD(void, OpenPasswordManager, ());
+
+  MOCK_METHOD(void, OpenAISettings, ());
 };
 
 class MockCommandUpdater : public CommandUpdaterImpl {
@@ -468,7 +484,7 @@ TEST_F(BrowserCommandHandlerTest, OpenPrivacyGuideCommand) {
 
 TEST_F(BrowserCommandHandlerTest, StartTabGroupTutorialCommand) {
   // Command cannot be executed if the tutorial service doesn't exist.
-  command_handler_->SetTutorialService(nullptr);
+  command_handler_->SetTutorialServiceExists(false);
   EXPECT_FALSE(CanExecuteCommand(Command::kStartTabGroupTutorial));
 
   // Create mock service so the command can be executed.
@@ -476,7 +492,9 @@ TEST_F(BrowserCommandHandlerTest, StartTabGroupTutorialCommand) {
       std::make_unique<user_education::HelpBubbleFactoryRegistry>();
   user_education::TutorialRegistry registry;
   MockTutorialService service(&registry, bubble_factory_registry.get());
-  command_handler_->SetTutorialService(&service);
+
+  // Allow command to be executed.
+  command_handler_->SetTutorialServiceExists(true);
 
   // If the browsers Tab Strip does not support tutorials, dont run the command.
   command_handler_->SetBrowserSupportsTabGroups(false);
@@ -490,11 +508,10 @@ TEST_F(BrowserCommandHandlerTest, StartTabGroupTutorialCommand) {
   // The StartTabGroupTutorial command should start the tab group tutorial.
   {
     ClickInfoPtr info = ClickInfo::New();
-    EXPECT_CALL(service, StartTutorial(kTabGroupTutorialId, kTestContext1,
-                                       testing::_, testing::_))
-        .Times(1);
-    EXPECT_CALL(service, IsRunningTutorial).WillOnce(testing::Return(true));
-    EXPECT_CALL(service, LogStartedFromWhatsNewPage(kTabGroupTutorialId, true));
+    EXPECT_CALL(*command_handler_, StartTutorial)
+        .WillOnce([&](StartTutorialInPage::Params params) {
+          EXPECT_EQ(params.tutorial_id, kTabGroupTutorialId);
+        });
     EXPECT_TRUE(
         ExecuteCommand(Command::kStartTabGroupTutorial, std::move(info)));
   }
@@ -532,7 +549,7 @@ TEST_F(BrowserCommandHandlerTest, OpenPerformanceSettings) {
 TEST_F(BrowserCommandHandlerTest,
        OpenNTPAndStartCustomizeChromeTutorialCommand) {
   // Command cannot be executed if the tutorial service doesn't exist.
-  command_handler_->SetTutorialService(nullptr);
+  command_handler_->SetTutorialServiceExists(false);
   EXPECT_FALSE(
       CanExecuteCommand(Command::kOpenNTPAndStartCustomizeChromeTutorial));
 
@@ -541,7 +558,9 @@ TEST_F(BrowserCommandHandlerTest,
       std::make_unique<user_education::HelpBubbleFactoryRegistry>();
   user_education::TutorialRegistry registry;
   MockTutorialService service(&registry, bubble_factory_registry.get());
-  command_handler_->SetTutorialService(&service);
+
+  // Allow command to be executed.
+  command_handler_->SetTutorialServiceExists(true);
 
   // If the customize chrome side panel is not enabled, dont run the command.
   command_handler_->SetBrowserSupportsCustomizeChromeSidePanel(false);
@@ -564,15 +583,10 @@ TEST_F(BrowserCommandHandlerTest,
   // start the customize chrome tutorial.
   {
     ClickInfoPtr info = ClickInfo::New();
-    EXPECT_CALL(service, StartTutorial(kSidePanelCustomizeChromeTutorialId,
-                                       kTestContext1, testing::_, testing::_))
-        .Times(1);
-    EXPECT_CALL(service, IsRunningTutorial).WillOnce(testing::Return(true));
-    EXPECT_CALL(service, LogStartedFromWhatsNewPage(
-                             kSidePanelCustomizeChromeTutorialId, true));
-    EXPECT_CALL(*command_handler_,
-                NavigateToURL(GURL(chrome::kChromeUINewTabPageURL),
-                              DispositionFromClick(*info)));
+    EXPECT_CALL(*command_handler_, StartTutorial)
+        .WillOnce([&](StartTutorialInPage::Params params) {
+          EXPECT_EQ(params.tutorial_id, kSidePanelCustomizeChromeTutorialId);
+        });
     EXPECT_TRUE(ExecuteCommand(Command::kOpenNTPAndStartCustomizeChromeTutorial,
                                std::move(info)));
   }
@@ -580,7 +594,7 @@ TEST_F(BrowserCommandHandlerTest,
 
 TEST_F(BrowserCommandHandlerTest, StartPasswordManagerTutorialCommand) {
   // Command cannot be executed if the tutorial service doesn't exist.
-  command_handler_->SetTutorialService(nullptr);
+  command_handler_->SetTutorialServiceExists(false);
   EXPECT_FALSE(CanExecuteCommand(Command::kStartPasswordManagerTutorial));
 
   // Create mock service so the command can be executed.
@@ -588,17 +602,85 @@ TEST_F(BrowserCommandHandlerTest, StartPasswordManagerTutorialCommand) {
       std::make_unique<user_education::HelpBubbleFactoryRegistry>();
   user_education::TutorialRegistry registry;
   MockTutorialService service(&registry, bubble_factory_registry.get());
-  command_handler_->SetTutorialService(&service);
+
+  // Allow command to be executed.
+  command_handler_->SetTutorialServiceExists(true);
 
   EXPECT_TRUE(CanExecuteCommand(Command::kStartPasswordManagerTutorial));
 
   ClickInfoPtr info = ClickInfo::New();
-  EXPECT_CALL(service, StartTutorial(kPasswordManagerTutorialId, kTestContext1,
-                                     testing::_, testing::_))
-      .Times(1);
-  EXPECT_CALL(service, IsRunningTutorial).WillOnce(testing::Return(true));
-  EXPECT_CALL(service,
-              LogStartedFromWhatsNewPage(kPasswordManagerTutorialId, true));
+  EXPECT_CALL(*command_handler_, StartTutorial)
+      .WillOnce([&](StartTutorialInPage::Params params) {
+        EXPECT_EQ(params.tutorial_id, kPasswordManagerTutorialId);
+      });
   EXPECT_TRUE(
       ExecuteCommand(Command::kStartPasswordManagerTutorial, std::move(info)));
+
+  EXPECT_CALL(service, IsRunningTutorial).WillOnce(testing::Return(true));
+  EXPECT_CALL(service, LogStartedFromWhatsNewPage)
+      .WillOnce(
+          [&](user_education::TutorialIdentifier tutorial_id, bool is_running) {
+            EXPECT_EQ(tutorial_id, kPasswordManagerTutorialId);
+            EXPECT_TRUE(is_running);
+            return;
+          });
+
+  // Manually call tutorial started callback.
+  command_handler_->OnTutorialStarted(kPasswordManagerTutorialId, &service);
+}
+
+TEST_F(BrowserCommandHandlerTest, StartSavedTabGroupTutorialCommand) {
+  // Command cannot be executed if the tutorial service doesn't exist.
+  command_handler_->SetTutorialServiceExists(false);
+  EXPECT_FALSE(CanExecuteCommand(Command::kStartSavedTabGroupTutorial));
+
+  // Create mock service so the command can be executed.
+  auto bubble_factory_registry =
+      std::make_unique<user_education::HelpBubbleFactoryRegistry>();
+  user_education::TutorialRegistry registry;
+  MockTutorialService service(&registry, bubble_factory_registry.get());
+
+  // Allow command to be executed.
+  command_handler_->SetTutorialServiceExists(true);
+
+  // If the browser does not support saved tab groups, dont run the command.
+  command_handler_->SetBrowserSupportsSavedTabGroups(false);
+  EXPECT_FALSE(CanExecuteCommand(Command::kStartSavedTabGroupTutorial));
+
+  // If the browser supports the new password manager and has a tutorial
+  // service it should allow running commands.
+  command_handler_->SetBrowserSupportsSavedTabGroups(true);
+  EXPECT_TRUE(CanExecuteCommand(Command::kStartSavedTabGroupTutorial));
+
+  ClickInfoPtr info = ClickInfo::New();
+  EXPECT_CALL(*command_handler_, StartTutorial)
+      .WillOnce([&](StartTutorialInPage::Params params) {
+        EXPECT_EQ(params.tutorial_id, kSavedTabGroupTutorialId);
+      });
+  EXPECT_TRUE(
+      ExecuteCommand(Command::kStartSavedTabGroupTutorial, std::move(info)));
+
+  EXPECT_CALL(service, IsRunningTutorial).WillOnce(testing::Return(true));
+  EXPECT_CALL(service, LogStartedFromWhatsNewPage)
+      .WillOnce(
+          [&](user_education::TutorialIdentifier tutorial_id, bool is_running) {
+            EXPECT_EQ(tutorial_id, kSavedTabGroupTutorialId);
+            EXPECT_TRUE(is_running);
+            return;
+          });
+
+  // Manually call tutorial started callback.
+  command_handler_->OnTutorialStarted(kSavedTabGroupTutorialId, &service);
+}
+
+TEST_F(BrowserCommandHandlerTest, OpenAISettingsCommand) {
+  // By default, opening the password manager is allowed.
+  EXPECT_TRUE(CanExecuteCommand(Command::kOpenAISettings));
+  ClickInfoPtr info = ClickInfo::New();
+  info->middle_button = true;
+  info->meta_key = true;
+  // The OpenAISettings command opens a new settings window with the
+  // AI settings and the correct disposition.
+  EXPECT_CALL(*command_handler_, OpenAISettings());
+  EXPECT_TRUE(ExecuteCommand(Command::kOpenAISettings, std::move(info)));
 }

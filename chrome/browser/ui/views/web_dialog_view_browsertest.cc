@@ -135,8 +135,9 @@ IN_PROC_BROWSER_TEST_F(WebDialogBrowserTest, MAYBE_SizeWindow) {
   // used for window modals like this dialog, always centers them within the
   // parent window regardless of the requested origin. The size is still
   // honored.
-  if (base::mac::IsAtLeastOS11())
+  if (base::mac::MacOSMajorVersion() >= 11) {
     centered_in_window = true;
+  }
 #endif
 
   gfx::Rect set_bounds = view_->GetWidget()->GetClientAreaBoundsInScreen();

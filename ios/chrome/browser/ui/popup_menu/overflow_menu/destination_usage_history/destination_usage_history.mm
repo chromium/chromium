@@ -10,6 +10,7 @@
 #import <set>
 #import <vector>
 
+#import "base/memory/raw_ptr.h"
 #import "base/ranges/algorithm.h"
 #import "base/strings/string_number_conversions.h"
 #import "base/strings/sys_string_conversions.h"
@@ -72,7 +73,7 @@ DestinationRanking SortByUsage(
 
 @implementation DestinationUsageHistory {
   // Pref service to retrieve/store preference values.
-  PrefService* _prefService;
+  raw_ptr<PrefService> _prefService;
 
   // Nested dictionary containing the device's destination usage history. Has
   // the following shape:

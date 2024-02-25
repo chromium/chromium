@@ -4,7 +4,6 @@
 
 #include "components/viz/common/gpu/context_cache_controller.h"
 
-#include <chrono>
 #include <utility>
 
 #include "base/check_op.h"

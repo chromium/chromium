@@ -1,0 +1,35 @@
+caption: Allow the listed sites to make requests to more-private network endpoints
+  in an insecure manner.
+desc: |-
+  List of URL patterns. Requests initiated from websites served by matching origins are not subject to <ph name="PRIVATE_NETWORK_ACCESS">Private Network Access</ph> checks.
+
+            If unset, this policy behaves as if set to the empty list.
+
+            For origins not covered by the patterns specified here, the global default value will be used either from the <ph name="INSECURE_PRIVATE_NETWORK_REQUESTS_ALLOWED_POLICY_NAME">InsecurePrivateNetworkRequestsAllowed</ph> policy, if it is set, or the user's personal configuration otherwise.
+
+            For detailed information on valid URL patterns, please see https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns.
+example_value:
+- http://www.example.com:8080
+- '[*.]example.edu'
+features:
+  dynamic_refresh: true
+  per_profile: true
+future_on:
+- fuchsia
+owners:
+- titouan@chromium.org
+- clamy@chromium.org
+- mkwst@chromium.org
+- phao@chromium.org
+schema:
+  items:
+    type: string
+  type: array
+supported_on:
+- chrome.*:92-
+- chrome_os:92-
+- android:92-
+- webview_android:92-
+tags:
+- system-security
+type: list

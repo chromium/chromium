@@ -1,0 +1,45 @@
+[
+  {
+    "os": [
+      "win",
+      "linux",
+      "mac",
+      "chromeos_ash",
+      "chromeos_lacros",
+      "fuchsia"
+    ],
+    "policy_pref_mapping_tests": [
+      {
+        "policies": {},
+        "prefs": {
+          "ssl.rev_checking.required_for_local_anchors": {
+            "default_value": false,
+            "location": "local_state"
+          }
+        }
+      },
+      {
+        "policies": {
+          "RequireOnlineRevocationChecksForLocalAnchors": true
+        },
+        "prefs": {
+          "ssl.rev_checking.required_for_local_anchors": {
+            "location": "local_state",
+            "value": true
+          }
+        }
+      },
+      {
+        "policies": {
+          "RequireOnlineRevocationChecksForLocalAnchors": false
+        },
+        "prefs": {
+          "ssl.rev_checking.required_for_local_anchors": {
+            "location": "local_state",
+            "value": false
+          }
+        }
+      }
+    ]
+  }
+]

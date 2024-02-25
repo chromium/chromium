@@ -28,7 +28,6 @@
 
 import logging
 import os
-import tempfile
 
 from blinkpy.common.exit_codes import SYS_DEPS_EXIT_STATUS
 from blinkpy.web_tests.breakpad.dump_reader_multipart import DumpReaderLinux
@@ -55,8 +54,6 @@ class LinuxPort(base.Port):
         super(LinuxPort, self).__init__(host, port_name, **kwargs)
         (self._version, ) = self.SUPPORTED_VERSIONS
         self._architecture = 'x86_64'
-        assert port_name == 'linux', ('Only one version of Linux is '
-                                      'supported. See crbug.com/1468322')
 
         if not self.get_option('disable_breakpad'):
             self._dump_reader = DumpReaderLinux(host, self.build_path())
@@ -84,6 +81,11 @@ class LinuxPort(base.Port):
                 self._dump_reader.crash_dumps_directory()
             ]
         return flags
+
+    def configuration_specifier_macros(self):
+        if self.flag_specific_config_name():
+            return {self.port_name: list(self.SUPPORTED_VERSIONS)}
+        return super().configuration_specifier_macros()
 
     def check_build(self, needs_http, printer):
         result = super(LinuxPort, self).check_build(needs_http, printer)
@@ -208,8 +210,8 @@ class LinuxPort(base.Port):
             env['TMPDIR'] = '/tmp'
 
         _log.debug('Starting Xvfb with display "%s".', display)
-        self._xvfb_stdout = tempfile.NamedTemporaryFile(delete=False)
-        self._xvfb_stderr = tempfile.NamedTemporaryFile(delete=False)
+        self._xvfb_stdout, _ = self.host.filesystem.open_binary_tempfile()
+        self._xvfb_stderr, _ = self.host.filesystem.open_binary_tempfile()
         self._xvfb_process = self.host.executive.popen(
             ['Xvfb', display] + self.xvfb_flags(),
             stdout=self._xvfb_stdout,
@@ -273,10 +275,6 @@ class LinuxPort(base.Port):
     def _stop_xvfb(self, save_logs):
         if self._original_display:
             self.host.environ['DISPLAY'] = self._original_display
-        if self._xvfb_stdout:
-            self._xvfb_stdout.close()
-        if self._xvfb_stderr:
-            self._xvfb_stderr.close()
         if self._xvfb_process and self._xvfb_process.poll() is None:
             self._xvfb_process.terminate()
             start_time = self.host.time()
@@ -291,16 +289,18 @@ class LinuxPort(base.Port):
                            self._xvfb_process.pid)
                 self._xvfb_process.kill()
                 self._xvfb_process.wait()
-        if save_logs and self._xvfb_stdout and self.host.filesystem.exists(
-                self._xvfb_stdout.name):
-            for line in self.host.filesystem.read_text_file(
-                    self._xvfb_stdout.name).splitlines():
-                _log.warn('Xvfb stdout:  %s', line)
-            self.host.filesystem.remove(self._xvfb_stdout.name)
-        if save_logs and self._xvfb_stderr and self.host.filesystem.exists(
-                self._xvfb_stderr.name):
-            for line in self.host.filesystem.read_text_file(
-                    self._xvfb_stderr.name).splitlines():
-                _log.warn('Xvfb stderr:  %s', line)
-            self.host.filesystem.remove(self._xvfb_stderr.name)
+
+        for name, tmp_file in [('stdout', self._xvfb_stdout),
+                               ('stderr', self._xvfb_stderr)]:
+            if not tmp_file:
+                continue
+            tmp_file.close()
+            if not self.host.filesystem.exists(tmp_file.name):
+                continue
+            if save_logs:
+                with self.host.filesystem.open_text_file_for_reading(
+                        tmp_file.name) as log:
+                    for line in log:
+                        _log.warn('Xvfb %s: %s', name, line)
+            self.host.filesystem.remove(tmp_file.name)
         self._xvfb_stdout = self._xvfb_stderr = self._xvfb_process = None

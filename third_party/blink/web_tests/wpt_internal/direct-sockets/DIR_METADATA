@@ -1,4 +1,6 @@
-monorail {
+monorail: {
   component: "Blink>Network"
 }
-
+buganizer_public: {
+  component_id: 1456852
+}

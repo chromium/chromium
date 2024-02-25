@@ -5,7 +5,6 @@
 // Use the <code>chrome.sockets.tcp</code> API to send and receive data over the
 // network using TCP connections. This API supersedes the TCP functionality
 // previously found in the <code>chrome.socket</code> API.
-[modernised_enums]
 namespace sockets.tcp {
   // The socket properties specified in the <code>create</code> or
   // <code>update</code> function. Each property is optional. If a property
@@ -197,6 +196,8 @@ namespace sockets.tcp {
     // |delay| : Set the delay seconds between the last data packet received
     // and the first keepalive probe. Default is 0.
     // |callback| : Called when the setKeepAlive attempt is complete.
+    [doesNotSupportPromises=
+        "Sets error along with callback arguments crbug.com/1504372"]
     static void setKeepAlive(long socketId,
                              boolean enable,
                              optional long delay,
@@ -207,6 +208,8 @@ namespace sockets.tcp {
     // |socketId| : The socket identifier.
     // |noDelay| : If true, disables Nagle's algorithm.
     // |callback| : Called when the setNoDelay attempt is complete.
+    [doesNotSupportPromises=
+        "Sets error along with callback arguments crbug.com/1504372"]
     static void setNoDelay(long socketId,
                            boolean noDelay,
                            SetNoDelayCallback callback);
@@ -223,6 +226,8 @@ namespace sockets.tcp {
     // |peerPort| : The port of the remote machine.
     // |dnsQueryType| : The address resolution preference.
     // |callback| : Called when the connect attempt is complete.
+    [doesNotSupportPromises=
+        "Sets error along with callback arguments crbug.com/1504372"]
     static void connect(long socketId,
                         DOMString peerAddress,
                         long peerPort,
@@ -239,6 +244,8 @@ namespace sockets.tcp {
     // |socketId| : The existing, connected socket to use.
     // |options| : Constraints and parameters for the TLS connection.
     // |callback| : Called when the connection attempt is complete.
+    [doesNotSupportPromises=
+        "Sets error along with callback arguments crbug.com/1504372"]
     static void secure(long socketId,
                        optional SecureOptions options,
                        SecureCallback callback);
@@ -247,6 +254,8 @@ namespace sockets.tcp {
     // |socketId| : The socket identifier.
     // |data| : The data to send.
     // |callback| : Called when the <code>send</code> operation completes.
+    [doesNotSupportPromises=
+        "Sets error along with callback arguments crbug.com/1504372"]
     static void send(long socketId,
                      ArrayBuffer data,
                      SendCallback callback);

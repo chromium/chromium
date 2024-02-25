@@ -17,6 +17,7 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.widget.Toolbar;
 
 import org.chromium.base.BuildInfo;
+import org.chromium.components.browser_ui.util.AutomotiveUtils;
 
 /**
  * Full screen AlertDialog in Clank
@@ -42,8 +43,12 @@ public class FullscreenAlertDialog extends AlertDialog {
     @Override
     public void setView(View view) {
         if (BuildInfo.getInstance().isAutomotive) {
-            View automotiveLayout = LayoutInflater.from(mContext).inflate(
-                    R.layout.automotive_layout_with_back_button_toolbar, null);
+            View automotiveLayout =
+                    LayoutInflater.from(mContext)
+                            .inflate(
+                                    AutomotiveUtils.getAutomotiveLayoutWithBackButtonToolbar(
+                                            mContext),
+                                    null);
             ((ViewGroup) automotiveLayout).addView(view);
             mAutomotiveToolbar = automotiveLayout.findViewById(R.id.back_button_toolbar);
             super.setView(automotiveLayout);
@@ -53,13 +58,23 @@ public class FullscreenAlertDialog extends AlertDialog {
     }
 
     @Override
-    public void setView(View view, int viewSpacingLeft, int viewSpacingTop, int viewSpacingRight,
+    public void setView(
+            View view,
+            int viewSpacingLeft,
+            int viewSpacingTop,
+            int viewSpacingRight,
             int viewSpacingBottom) {
         if (BuildInfo.getInstance().isAutomotive) {
             MarginLayoutParams params = (MarginLayoutParams) view.getLayoutParams();
             params.setMargins(viewSpacingLeft, viewSpacingTop, viewSpacingRight, viewSpacingBottom);
-            ViewGroup automotiveLayout = (ViewGroup) LayoutInflater.from(mContext).inflate(
-                    R.layout.automotive_layout_with_back_button_toolbar, null);
+            ViewGroup automotiveLayout =
+                    (ViewGroup)
+                            LayoutInflater.from(mContext)
+                                    .inflate(
+                                            AutomotiveUtils
+                                                    .getAutomotiveLayoutWithBackButtonToolbar(
+                                                            mContext),
+                                            null);
             automotiveLayout.addView(view, params);
             mAutomotiveToolbar = automotiveLayout.findViewById(R.id.back_button_toolbar);
             super.setView(automotiveLayout);
@@ -72,7 +87,9 @@ public class FullscreenAlertDialog extends AlertDialog {
     private void setAutomotiveToolbarBackButtonAction() {
         if (mAutomotiveToolbar != null) {
             mAutomotiveToolbar.setNavigationOnClickListener(
-                    backButtonClick -> { this.getOnBackPressedDispatcher().onBackPressed(); });
+                    backButtonClick -> {
+                        this.getOnBackPressedDispatcher().onBackPressed();
+                    });
         }
     }
 
@@ -89,8 +106,12 @@ public class FullscreenAlertDialog extends AlertDialog {
         @Override
         public Builder setView(int layoutResId) {
             if (BuildInfo.getInstance().isAutomotive) {
-                View automotiveLayout = LayoutInflater.from(mContext).inflate(
-                        R.layout.automotive_layout_with_back_button_toolbar, null);
+                View automotiveLayout =
+                        LayoutInflater.from(mContext)
+                                .inflate(
+                                        AutomotiveUtils.getAutomotiveLayoutWithBackButtonToolbar(
+                                                mContext),
+                                        null);
                 mAutomotiveToolbar = automotiveLayout.findViewById(R.id.back_button_toolbar);
                 ViewStub stub = automotiveLayout.findViewById(R.id.original_layout);
                 stub.setLayoutResource(layoutResId);
@@ -105,8 +126,14 @@ public class FullscreenAlertDialog extends AlertDialog {
         @Override
         public Builder setView(View view) {
             if (BuildInfo.getInstance().isAutomotive) {
-                ViewGroup automotiveLayout = (ViewGroup) LayoutInflater.from(mContext).inflate(
-                        R.layout.automotive_layout_with_back_button_toolbar, null);
+                ViewGroup automotiveLayout =
+                        (ViewGroup)
+                                LayoutInflater.from(mContext)
+                                        .inflate(
+                                                AutomotiveUtils
+                                                        .getAutomotiveLayoutWithBackButtonToolbar(
+                                                                mContext),
+                                                null);
                 mAutomotiveToolbar = automotiveLayout.findViewById(R.id.back_button_toolbar);
                 automotiveLayout.addView(view);
                 super.setView(automotiveLayout);
@@ -120,9 +147,10 @@ public class FullscreenAlertDialog extends AlertDialog {
         public AlertDialog create() {
             mAlertDialog = super.create();
             if (mAutomotiveToolbar != null) {
-                mAutomotiveToolbar.setNavigationOnClickListener(backButtonClick -> {
-                    mAlertDialog.getOnBackPressedDispatcher().onBackPressed();
-                });
+                mAutomotiveToolbar.setNavigationOnClickListener(
+                        backButtonClick -> {
+                            mAlertDialog.getOnBackPressedDispatcher().onBackPressed();
+                        });
             }
             return mAlertDialog;
         }

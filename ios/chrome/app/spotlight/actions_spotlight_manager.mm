@@ -16,8 +16,9 @@
 #import "ios/chrome/browser/ui/lens/lens_availability.h"
 #import "ios/chrome/browser/ui/lens/lens_entrypoint.h"
 #import "ios/chrome/common/app_group/app_group_constants.h"
+#import "ios/chrome/grit/ios_branded_strings.h"
 #import "ios/chrome/grit/ios_strings.h"
-#import "net/base/mac/url_conversions.h"
+#import "net/base/apple/url_conversions.h"
 #import "ui/base/l10n/l10n_util.h"
 #import "url/gurl.h"
 
@@ -141,11 +142,8 @@ BOOL SetStartupParametersForSpotlightAction(
 - (instancetype)
     initWithSpotlightInterface:(SpotlightInterface*)spotlightInterface
          searchableItemFactory:(SearchableItemFactory*)searchableItemFactory {
-  self = [super init];
-  if (self) {
-    _spotlightInterface = spotlightInterface;
-    _searchableItemFactory = searchableItemFactory;
-  }
+  self = [super initWithSpotlightInterface:spotlightInterface
+                     searchableItemFactory:searchableItemFactory];
   return self;
 }
 
@@ -253,10 +251,6 @@ BOOL SetStartupParametersForSpotlightAction(
   return [self.searchableItemFactory searchableItem:title
                                              itemID:itemID
                                  additionalKeywords:@[]];
-}
-
-- (void)shutdown {
-  [self.searchableItemFactory cancelItemsGeneration];
 }
 
 @end

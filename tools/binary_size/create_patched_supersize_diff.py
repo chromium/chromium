@@ -26,9 +26,7 @@ def main():
   script = ['d = Diff(size_info1, size_info2)']
   for i in range(len(args.sizediff_files)):
     i = i * 2 + 4  # 4, 6, 8, ...
-    script += [
-        f'd.raw_symbols += Diff(size_info{i}, size_info{i - 1}).raw_symbols'
-    ]
+    script += [f'd.MergeDeltaSizeInfo(Diff(size_info{i}, size_info{i - 1}))']
   script += [f'SaveDeltaSizeInfo(d, {repr(args.output)})']
 
   supersize = os.path.join(os.path.dirname(__file__), 'supersize')

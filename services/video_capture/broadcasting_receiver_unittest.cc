@@ -92,8 +92,7 @@ TEST_F(
   broadcaster_.OnFrameReadyInBuffer(
       media::ReadyFrameInBuffer(kArbitraryBufferId, kArbitraryFrameFeedbackId,
                                 std::make_unique<StubReadWritePermission>(),
-                                media::mojom::VideoFrameInfo::New()),
-      {});
+                                media::mojom::VideoFrameInfo::New()));
 
   // mock_video_frame_handler_1_ finishes consuming immediately.
   // mock_video_frame_handler_2_ continues consuming.
@@ -151,8 +150,7 @@ TEST_F(BroadcastingReceiverTest,
   broadcaster_.OnFrameReadyInBuffer(
       media::ReadyFrameInBuffer(kArbitraryBufferId, kArbitraryFrameFeedbackId,
                                 std::make_unique<StubReadWritePermission>(),
-                                media::mojom::VideoFrameInfo::New()),
-      {});
+                                media::mojom::VideoFrameInfo::New()));
 
   // Because the clients are suspended, frames are automatically released.
   base::RunLoop().RunUntilIdle();
@@ -165,8 +163,7 @@ TEST_F(BroadcastingReceiverTest,
   broadcaster_.OnFrameReadyInBuffer(
       media::ReadyFrameInBuffer(kArbitraryBufferId, kArbitraryFrameFeedbackId,
                                 std::make_unique<StubReadWritePermission>(),
-                                media::mojom::VideoFrameInfo::New()),
-      {});
+                                media::mojom::VideoFrameInfo::New()));
 
   // This time the buffer is not released automatically.
   base::RunLoop().RunUntilIdle();
@@ -178,66 +175,6 @@ TEST_F(BroadcastingReceiverTest,
   mock_video_frame_handler_2_->ReleaseAccessedFrames();
   base::RunLoop().RunUntilIdle();
   DCHECK_EQ(HoldBufferContextSize(), 0u);
-}
-
-TEST_F(BroadcastingReceiverTest, ForwardsScaledFrames) {
-  const int kBufferId = 10;
-  const int kScaledBufferId = 11;
-
-  mock_video_frame_handler_1_->HoldAccessPermissions();
-
-  media::mojom::VideoBufferHandlePtr buffer_handle =
-      media::mojom::VideoBufferHandle::NewUnsafeShmemRegion(
-          base::UnsafeSharedMemoryRegion::Create(kArbitraryDummyBufferSize));
-  broadcaster_.OnNewBuffer(kBufferId, std::move(buffer_handle));
-
-  media::mojom::VideoBufferHandlePtr scaled_buffer_handle =
-      media::mojom::VideoBufferHandle::NewUnsafeShmemRegion(
-          base::UnsafeSharedMemoryRegion::Create(kArbitraryDummyBufferSize));
-  broadcaster_.OnNewBuffer(kScaledBufferId, std::move(scaled_buffer_handle));
-
-  // Suspend the second client so that the first client alone controls buffer
-  // access.
-  broadcaster_.SuspendClient(client_id_2_);
-
-  base::RunLoop on_buffer_ready;
-  EXPECT_CALL(*mock_video_frame_handler_1_, DoOnFrameReadyInBuffer(_, _, _))
-      .WillOnce(
-          InvokeWithoutArgs([&on_buffer_ready]() { on_buffer_ready.Quit(); }));
-
-  media::ReadyFrameInBuffer ready_buffer =
-      media::ReadyFrameInBuffer(kBufferId, kArbitraryFrameFeedbackId,
-                                std::make_unique<StubReadWritePermission>(),
-                                media::mojom::VideoFrameInfo::New());
-
-  std::vector<media::ReadyFrameInBuffer> scaled_ready_buffers;
-  scaled_ready_buffers.emplace_back(kScaledBufferId, kArbitraryFrameFeedbackId,
-                                    std::make_unique<StubReadWritePermission>(),
-                                    media::mojom::VideoFrameInfo::New());
-
-  broadcaster_.OnFrameReadyInBuffer(std::move(ready_buffer),
-                                    std::move(scaled_ready_buffers));
-  on_buffer_ready.Run();
-  DCHECK_EQ(HoldBufferContextSize(), 2u);
-
-  // Releasing the handler's buffers releases both frame and scaled frame.
-  mock_video_frame_handler_1_->ReleaseAccessedFrames();
-  base::RunLoop().RunUntilIdle();
-  DCHECK_EQ(HoldBufferContextSize(), 0u);
-
-  // Scaled buffers also get retired.
-  base::RunLoop on_both_buffers_retired;
-  size_t num_buffers_retired = 0u;
-  EXPECT_CALL(*mock_video_frame_handler_1_, DoOnBufferRetired(_))
-      .WillRepeatedly(
-          InvokeWithoutArgs([&on_both_buffers_retired, &num_buffers_retired]() {
-            ++num_buffers_retired;
-            if (num_buffers_retired == 2u)
-              on_both_buffers_retired.Quit();
-          }));
-  broadcaster_.OnBufferRetired(kBufferId);
-  broadcaster_.OnBufferRetired(kScaledBufferId);
-  on_both_buffers_retired.Run();
 }
 
 TEST_F(BroadcastingReceiverTest, AccessPermissionsSurviveStop) {
@@ -254,8 +191,7 @@ TEST_F(BroadcastingReceiverTest, AccessPermissionsSurviveStop) {
   broadcaster_.OnFrameReadyInBuffer(
       media::ReadyFrameInBuffer(kArbitraryBufferId, kArbitraryFrameFeedbackId,
                                 std::make_unique<StubReadWritePermission>(),
-                                media::mojom::VideoFrameInfo::New()),
-      {});
+                                media::mojom::VideoFrameInfo::New()));
   base::RunLoop().RunUntilIdle();
 
   // The first frame has not been released yet.
@@ -279,12 +215,10 @@ TEST_F(BroadcastingReceiverTest, AccessPermissionsSurviveStop) {
   broadcaster_.OnNewBuffer(kArbitraryBufferId + 1, std::move(buffer_handle2));
   EXPECT_CALL(*mock_video_frame_handler_1_, DoOnFrameReadyInBuffer(_, _, _))
       .Times(1);
-  broadcaster_.OnFrameReadyInBuffer(
-      media::ReadyFrameInBuffer(kArbitraryBufferId + 1,
-                                kArbitraryFrameFeedbackId + 1,
-                                std::make_unique<StubReadWritePermission>(),
-                                media::mojom::VideoFrameInfo::New()),
-      {});
+  broadcaster_.OnFrameReadyInBuffer(media::ReadyFrameInBuffer(
+      kArbitraryBufferId + 1, kArbitraryFrameFeedbackId + 1,
+      std::make_unique<StubReadWritePermission>(),
+      media::mojom::VideoFrameInfo::New()));
   base::RunLoop().RunUntilIdle();
 
   // Neither frame has been released.

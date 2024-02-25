@@ -3,6 +3,7 @@
 # found in the LICENSE file.
 
 import("//build/config/android/rules.gni")
+import("//third_party/jni_zero/jni_zero.gni")
 
 android_library("delegate_java") {
   sources = [
@@ -14,8 +15,8 @@ android_library("delegate_java") {
   deps = [
     ":uma_java",
     "//base:base_java",
+    "//base/version_info/android:version_constants_java",
     "//components/embedder_support/android:util_java",
-    "//components/version_info/android:version_constants_java",
     "//third_party/androidx:androidx_annotation_annotation_java",
   ]
 
@@ -58,15 +59,15 @@ android_library("java") {
     ":helper_java",
     ":uma_java",
     "//base:base_java",
-    "//base:jni_java",
+    "//base/version_info/android:version_constants_java",
     "//chrome/browser/android/lifecycle:java",
     "//chrome/browser/flags:java",
     "//chrome/browser/preferences:java",
     "//components/embedder_support/android:util_java",
     "//components/url_formatter/android:url_formatter_java",
-    "//components/version_info/android:version_constants_java",
     "//content/public/android:content_main_dex_java",
     "//third_party/androidx:androidx_annotation_annotation_java",
+    "//third_party/jni_zero:jni_zero_java",
     "//url:gurl_java",
   ]
 }
@@ -135,7 +136,6 @@ robolectric_library("junit") {
     "//third_party/junit:junit",
     "//third_party/mockito:mockito_java",
     "//url:gurl_java",
-    "//url:gurl_junit_shadows",
     "//url:gurl_junit_test_support",
   ]
 }

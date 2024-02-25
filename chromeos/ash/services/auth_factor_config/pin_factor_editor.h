@@ -17,9 +17,7 @@ class AuthFactorConfig;
 // The implementation of the PinFactorEditor mojo service.
 class PinFactorEditor : public mojom::PinFactorEditor {
  public:
-  PinFactorEditor(AuthFactorConfig*,
-                  PinBackendDelegate* pin_backend,
-                  QuickUnlockStorageDelegate* storage);
+  PinFactorEditor(AuthFactorConfig*, PinBackendDelegate* pin_backend);
   ~PinFactorEditor() override;
 
   PinFactorEditor(const PinFactorEditor&) = delete;
@@ -36,10 +34,27 @@ class PinFactorEditor : public mojom::PinFactorEditor {
   void BindReceiver(mojo::PendingReceiver<mojom::PinFactorEditor> receiver);
 
  private:
+  void ObtainContext(
+      const std::string& auth_token,
+      base::OnceCallback<void(std::unique_ptr<UserContext>)> callback);
+  void RemovePinWithContext(
+      const std::string& auth_token,
+      base::OnceCallback<void(mojom::ConfigureResult)> callback,
+      std::unique_ptr<UserContext> context);
   void OnPinConfigured(
       const std::string& auth_token,
       base::OnceCallback<void(mojom::ConfigureResult)> callback,
       bool success);
+  void OnPinConfiguredWithContext(
+      const std::string& auth_token,
+      base::OnceCallback<void(mojom::ConfigureResult)> callback,
+      bool success,
+      std::unique_ptr<UserContext> context);
+  void SetPinWithContext(
+      const std::string& auth_token,
+      const std::string& pin,
+      base::OnceCallback<void(mojom::ConfigureResult)> callback,
+      std::unique_ptr<UserContext> context);
   void OnIsPinConfiguredForRemove(
       const AccountId account_id,
       const std::string& auth_token,
@@ -48,7 +63,6 @@ class PinFactorEditor : public mojom::PinFactorEditor {
 
   raw_ptr<AuthFactorConfig> auth_factor_config_;
   raw_ptr<PinBackendDelegate> pin_backend_;
-  raw_ptr<QuickUnlockStorageDelegate> quick_unlock_storage_;
   mojo::ReceiverSet<mojom::PinFactorEditor> receivers_;
   AuthFactorEditor auth_factor_editor_;
   base::WeakPtrFactory<PinFactorEditor> weak_factory_{this};

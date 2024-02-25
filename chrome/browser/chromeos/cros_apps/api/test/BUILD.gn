@@ -1,0 +1,25 @@
+# Copyright 2023 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/chromeos/ui_mode.gni")
+
+assert(is_chromeos)
+
+source_set("apitest_support") {
+  testonly = true
+
+  sources = [
+    "cros_apps_apitest.cc",
+    "cros_apps_apitest.h",
+  ]
+
+  deps = [ "//chromeos/constants" ]
+
+  public_deps = [
+    "//chrome/browser/chromeos/cros_apps/api",
+    "//chrome/test:test_support_ui",
+    "//testing/gtest",
+    "//third_party/blink/public/mojom/runtime_feature_state",
+  ]
+}

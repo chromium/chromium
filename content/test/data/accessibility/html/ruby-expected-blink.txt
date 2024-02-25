@@ -4,12 +4,8 @@ rootWebArea
 ++++++ruby description='ruby text' descriptionFrom=rubyAnnotation
 ++++++++staticText name='ruby base'
 ++++++++++inlineTextBox name='ruby base'
-++++++++rubyAnnotation ignored invisible
-++++++++++staticText ignored invisible name='('
 ++++++++rubyAnnotation ignored
 ++++++++++staticText ignored name='ruby text'
-++++++++rubyAnnotation ignored invisible
-++++++++++staticText ignored invisible name=')'
 ++++++paragraph
 ++++++++ruby description='ruby text' descriptionFrom=rubyAnnotation
 ++++++++++staticText name='ruby base'

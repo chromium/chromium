@@ -1,6 +1,9 @@
 {
   "$build/chromium_tests_builder_config": {
     "builder_config": {
+      "additional_exclusions": [
+        "infra/config/generated/builders/ci/Android ASAN (dbg)/gn-args.json"
+      ],
       "builder_db": {
         "entries": [
           {
@@ -41,6 +44,12 @@
           "builder": "Android ASAN (dbg)",
           "project": "chromium"
         }
+      ],
+      "mirroring_builder_group_and_names": [
+        {
+          "builder": "android-asan-compile-dbg",
+          "group": "tryserver.chromium.android"
+        }
       ]
     }
   },
@@ -58,8 +67,5 @@
     ]
   },
   "builder_group": "chromium.android",
-  "recipe": "chromium",
-  "sheriff_rotations": [
-    "android"
-  ]
+  "recipe": "chromium"
 }

@@ -56,14 +56,14 @@ class VIZ_SERVICE_EXPORT OverlayProcessorDelegated
       gfx::Rect* damage_rect,
       std::vector<gfx::Rect>* content_bounds) final;
 
-  // This function takes a pointer to the absl::optional instance so the
+  // This function takes a pointer to the std::optional instance so the
   // instance can be reset. When the overlay strategy covers the entire output
   // surface, we no longer need the output surface as a separate overlay. This
   // is also used by SurfaceControl to adjust rotation.
   // TODO(weiliangc): Internalize the |output_surface_plane| inside the overlay
   // processor.
   void AdjustOutputSurfaceOverlay(
-      absl::optional<OutputSurfaceOverlayPlane>* output_surface_plane) override;
+      std::optional<OutputSurfaceOverlayPlane>* output_surface_plane) override;
 
   gfx::RectF GetUnassignedDamage() const override;
 
@@ -93,7 +93,8 @@ class VIZ_SERVICE_EXPORT OverlayProcessorDelegated
     kCompositedCandidateNotSharedImage = 17,
     kCompositedCandidateMaskFilter = 18,
     kCompositedCandidateTransformCantClip = 19,
-    kMaxValue = kCompositedCandidateTransformCantClip
+    kCompositedCandidateRpdqWithTransform = 20,
+    kMaxValue = kCompositedCandidateRpdqWithTransform
   };
 
   gfx::RectF GetPrimaryPlaneDisplayRect(
@@ -131,6 +132,7 @@ class VIZ_SERVICE_EXPORT OverlayProcessorDelegated
   bool supports_out_of_window_clip_rect_ = false;
   bool needs_background_image_ = false;
   bool supports_affine_transform_ = false;
+  bool has_transformation_fix_ = false;
   gfx::RectF unassigned_damage_;
   // Used to count the number of frames we should wait until allowing delegation
   // again.

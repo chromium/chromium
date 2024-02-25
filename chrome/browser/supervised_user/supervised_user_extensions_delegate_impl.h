@@ -6,12 +6,12 @@
 #define CHROME_BROWSER_SUPERVISED_USER_SUPERVISED_USER_EXTENSIONS_DELEGATE_IMPL_H_
 
 #include <memory>
+#include <optional>
 
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/supervised_user/supervised_user_extensions_manager.h"
 #include "extensions/browser/supervised_user_extensions_delegate.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 #if BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/supervised_user/chromeos/parent_access_extension_approvals_manager.h"
@@ -90,7 +90,7 @@ class SupervisedUserExtensionsDelegateImpl
   // state internally.
   void RequestExtensionApproval(
       const Extension& extension,
-      absl::optional<base::WeakPtr<content::WebContents>> contents,
+      std::optional<base::WeakPtr<content::WebContents>> contents,
       const gfx::ImageSkia& icon);
 
   // The V1 dialog pointer is only destroyed when a new dialog is created or the

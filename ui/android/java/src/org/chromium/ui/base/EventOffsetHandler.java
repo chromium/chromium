@@ -14,12 +14,12 @@ import android.view.ViewGroup;
  * caused by top control.
  */
 public class EventOffsetHandler {
-    /**
-     * A delegate for EventOffsetHandler.
-     */
+    /** A delegate for EventOffsetHandler. */
     public interface EventOffsetHandlerDelegate {
         float getTop();
+
         void setCurrentTouchEventOffsets(float top);
+
         void setCurrentDragEventOffsets(float dx, float dy);
     }
 
@@ -45,7 +45,8 @@ public class EventOffsetHandler {
      * @param action Drag event action.
      */
     public void onPostDispatchDragEvent(int action) {
-        if (action == DragEvent.ACTION_DRAG_EXITED || action == DragEvent.ACTION_DRAG_ENDED
+        if (action == DragEvent.ACTION_DRAG_EXITED
+                || action == DragEvent.ACTION_DRAG_ENDED
                 || action == DragEvent.ACTION_DROP) {
             setTouchEventOffsets(0.f);
             setDragEventOffsets(0.f, 0.f);

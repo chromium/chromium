@@ -6,6 +6,7 @@
 #define CHROMEOS_ASH_COMPONENTS_TPM_TPM_TOKEN_INFO_GETTER_H_
 
 #include <memory>
+#include <optional>
 #include <string>
 
 #include "base/component_export.h"
@@ -18,7 +19,6 @@
 #include "chromeos/ash/components/dbus/userdataauth/cryptohome_pkcs11_client.h"
 #include "chromeos/dbus/tpm_manager/tpm_manager.pb.h"
 #include "components/account_id/account_id.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base {
 class TaskRunner;
@@ -31,7 +31,7 @@ namespace ash {
 class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_TPM) TPMTokenInfoGetter {
  public:
   using TpmTokenInfoCallback = base::OnceCallback<void(
-      absl::optional<user_data_auth::TpmTokenInfo> token_info)>;
+      std::optional<user_data_auth::TpmTokenInfo> token_info)>;
 
   // Factory method for TPMTokenInfoGetter for a user token.
   static std::unique_ptr<TPMTokenInfoGetter> CreateForUserToken(
@@ -92,7 +92,7 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_TPM) TPMTokenInfoGetter {
 
   // Cryptohome methods callbacks.
   void OnPkcs11GetTpmTokenInfo(
-      absl::optional<user_data_auth::Pkcs11GetTpmTokenInfoReply> token_info);
+      std::optional<user_data_auth::Pkcs11GetTpmTokenInfoReply> token_info);
 
   // The task runner used to run delayed tasks when retrying failed Cryptohome
   // calls.
@@ -117,7 +117,7 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_TPM) TPMTokenInfoGetter {
   // TPM. Will be adapted after each attempt.
   base::TimeDelta tpm_request_delay_;
 
-  raw_ptr<CryptohomePkcs11Client, ExperimentalAsh> cryptohome_pkcs11_client_;
+  raw_ptr<CryptohomePkcs11Client> cryptohome_pkcs11_client_;
 
   base::WeakPtrFactory<TPMTokenInfoGetter> weak_factory_{this};
 };

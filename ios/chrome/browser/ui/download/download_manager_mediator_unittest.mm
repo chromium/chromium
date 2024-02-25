@@ -9,8 +9,8 @@
 #import "base/apple/foundation_util.h"
 #import "base/run_loop.h"
 #import "base/test/ios/wait_util.h"
-#import "ios/chrome/browser/download/download_directory_util.h"
-#import "ios/chrome/browser/download/external_app_util.h"
+#import "ios/chrome/browser/download/model/download_directory_util.h"
+#import "ios/chrome/browser/download/model/external_app_util.h"
 #import "ios/chrome/test/fakes/fake_download_manager_consumer.h"
 #import "ios/web/public/test/fakes/fake_download_task.h"
 #import "ios/web/public/test/web_task_environment.h"
@@ -61,7 +61,7 @@ TEST_F(DownloadManagerMediatorTest, DestoryTaskAfterStart) {
   auto task =
       std::make_unique<web::FakeDownloadTask>(GURL(kTestUrl), kTestMimeType);
   mediator_.SetDownloadTask(task.get());
-  mediator_.StartDowloading();
+  mediator_.StartDownloading();
   task.reset();
 }
 
@@ -72,7 +72,7 @@ TEST_F(DownloadManagerMediatorTest, StartTempDownload) {
   task()->SetGeneratedFileName(base::FilePath(kTestSuggestedFileName));
   mediator_.SetDownloadTask(task());
   mediator_.SetConsumer(consumer_);
-  mediator_.StartDowloading();
+  mediator_.StartDownloading();
 
   // Starting download is async for task and sync for consumer.
   EXPECT_EQ(kDownloadManagerStateInProgress, consumer_.state);
@@ -103,7 +103,7 @@ TEST_F(DownloadManagerMediatorTest, StartDownload) {
   task()->SetGeneratedFileName(base::FilePath(kTestSuggestedFileName));
   mediator_.SetDownloadTask(task());
   mediator_.SetConsumer(consumer_);
-  mediator_.StartDowloading();
+  mediator_.StartDownloading();
 
   // Starting download is async for task and sync for consumer.
   EXPECT_EQ(kDownloadManagerStateInProgress, consumer_.state);
@@ -136,7 +136,7 @@ TEST_F(DownloadManagerMediatorTest, ConsumerInstantUpdate) {
   task()->SetGeneratedFileName(base::FilePath(kTestSuggestedFileName));
   mediator_.SetDownloadTask(task());
   mediator_.SetConsumer(consumer_);
-  mediator_.StartDowloading();
+  mediator_.StartDownloading();
 
   // Starting download is async for task and sync for consumer.
   EXPECT_EQ(kDownloadManagerStateInProgress, consumer_.state);
@@ -183,7 +183,7 @@ TEST_F(DownloadManagerMediatorTest, ConsumerSuceededStateUpdate) {
   task()->SetGeneratedFileName(base::FilePath(kTestSuggestedFileName));
   mediator_.SetDownloadTask(task());
   mediator_.SetConsumer(consumer_);
-  mediator_.StartDowloading();
+  mediator_.StartDownloading();
 
   // Starting download is async for task and sync for consumer.
   EXPECT_EQ(kDownloadManagerStateInProgress, consumer_.state);
@@ -207,7 +207,7 @@ TEST_F(DownloadManagerMediatorTest,
   task()->SetGeneratedFileName(base::FilePath(kTestSuggestedFileName));
   mediator_.SetDownloadTask(task());
   mediator_.SetConsumer(consumer_);
-  mediator_.StartDowloading();
+  mediator_.StartDownloading();
 
   // Starting download is async for task and sync for consumer.
   EXPECT_EQ(kDownloadManagerStateInProgress, consumer_.state);
@@ -240,7 +240,7 @@ TEST_F(DownloadManagerMediatorTest, SetConsumerAfterDownloadComplete) {
   task()->SetGeneratedFileName(base::FilePath(kTestSuggestedFileName));
   mediator_.SetDownloadTask(task());
   mediator_.SetConsumer(consumer_);
-  mediator_.StartDowloading();
+  mediator_.StartDownloading();
 
   // Starting download is async for task and sync for consumer.
   EXPECT_EQ(kDownloadManagerStateInProgress, consumer_.state);

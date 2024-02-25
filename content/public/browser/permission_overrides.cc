@@ -18,7 +18,7 @@ PermissionOverrides::PermissionOverrides(PermissionOverrides&& other) = default;
 PermissionOverrides& PermissionOverrides::operator=(
     PermissionOverrides&& other) = default;
 
-void PermissionOverrides::Set(const absl::optional<url::Origin>& origin,
+void PermissionOverrides::Set(const std::optional<url::Origin>& origin,
                               blink::PermissionType permission,
                               const blink::mojom::PermissionStatus& status) {
   PermissionOverridesMap& origin_overrides =
@@ -37,23 +37,23 @@ void PermissionOverrides::Set(const absl::optional<url::Origin>& origin,
   }
 }
 
-absl::optional<PermissionStatus> PermissionOverrides::Get(
+std::optional<PermissionStatus> PermissionOverrides::Get(
     const url::Origin& origin,
     blink::PermissionType permission) const {
   auto current_override = overrides_.find(origin);
   if (current_override == overrides_.end())
     current_override = overrides_.find(global_overrides_origin_);
   if (current_override == overrides_.end())
-    return absl::nullopt;
+    return std::nullopt;
 
   auto new_status = current_override->second.find(permission);
   if (new_status != current_override->second.end())
-    return absl::make_optional(new_status->second);
-  return absl::nullopt;
+    return std::make_optional(new_status->second);
+  return std::nullopt;
 }
 
 const PermissionOverridesMap& PermissionOverrides::GetAllForTest(
-    const absl::optional<url::Origin>& origin) const {
+    const std::optional<url::Origin>& origin) const {
   static const base::NoDestructor<PermissionOverridesMap> empty_overrides;
   auto it = origin ? overrides_.find(*origin) : overrides_.end();
   if (it == overrides_.end())
@@ -63,12 +63,12 @@ const PermissionOverridesMap& PermissionOverrides::GetAllForTest(
   return it->second;
 }
 
-void PermissionOverrides::Reset(const absl::optional<url::Origin>& origin) {
+void PermissionOverrides::Reset(const std::optional<url::Origin>& origin) {
   overrides_.erase(origin.value_or(global_overrides_origin_));
 }
 
 void PermissionOverrides::GrantPermissions(
-    const absl::optional<url::Origin>& origin,
+    const std::optional<url::Origin>& origin,
     const std::vector<blink::PermissionType>& permissions) {
   const std::vector<blink::PermissionType>& kAllPermissionTypes =
       blink::GetAllPermissionTypes();

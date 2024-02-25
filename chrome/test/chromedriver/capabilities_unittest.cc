@@ -39,9 +39,9 @@ testing::AssertionResult StatusOk(const Status& status) {
 
 void CheckDefaults(const ClientHints& client_hints) {
   EXPECT_EQ("", client_hints.architecture);
-  EXPECT_EQ(absl::nullopt, client_hints.brands);
+  EXPECT_EQ(std::nullopt, client_hints.brands);
   EXPECT_EQ("", client_hints.bitness);
-  EXPECT_EQ(absl::nullopt, client_hints.full_version_list);
+  EXPECT_EQ(std::nullopt, client_hints.full_version_list);
   EXPECT_EQ("", client_hints.model);
   EXPECT_EQ("", client_hints.platform_version);
   EXPECT_FALSE(client_hints.wow64);
@@ -807,7 +807,7 @@ namespace {
 
 base::Value::Dict CreateCapabilitiesDict(const std::string& mobile_emulation) {
   base::Value::Dict result;
-  absl::optional<base::Value> maybe_mobile_emulation =
+  std::optional<base::Value> maybe_mobile_emulation =
       base::JSONReader::Read(mobile_emulation);
   EXPECT_TRUE(maybe_mobile_emulation.has_value() &&
               maybe_mobile_emulation->is_dict());

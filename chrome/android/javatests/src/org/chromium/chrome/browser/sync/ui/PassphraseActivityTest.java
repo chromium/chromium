@@ -27,13 +27,10 @@ import org.chromium.chrome.browser.sync.SyncServiceFactory;
 import org.chromium.chrome.test.ChromeBrowserTestRule;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 
-/**
- * Tests for PassphraseActivity.
- */
+/** Tests for PassphraseActivity. */
 @RunWith(BaseJUnit4ClassRunner.class)
 public class PassphraseActivityTest {
-    @Rule
-    public final ChromeBrowserTestRule mChromeBrowserTestRule = new ChromeBrowserTestRule();
+    @Rule public final ChromeBrowserTestRule mChromeBrowserTestRule = new ChromeBrowserTestRule();
 
     private Context mContext;
 
@@ -42,9 +39,7 @@ public class PassphraseActivityTest {
         mContext = ApplicationProvider.getApplicationContext();
     }
 
-    /**
-     * This is a regression test for http://crbug.com/469890.
-     */
+    /** This is a regression test for http://crbug.com/469890. */
     @Test
     @SmallTest
     @Feature({"Sync"})
@@ -57,15 +52,16 @@ public class PassphraseActivityTest {
         // Create the activity.
         final PassphraseActivity activity = launchPassphraseActivity();
         Assert.assertNotNull(activity);
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            // Fake backgrounding the activity.
-            Bundle bundle = new Bundle();
-            InstrumentationRegistry.getInstrumentation().callActivityOnPause(activity);
-            InstrumentationRegistry.getInstrumentation().callActivityOnSaveInstanceState(
-                    activity, bundle);
-            // Fake sync's backend finishing its initialization.
-            fakeSyncService.setEngineInitialized(true);
-        });
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    // Fake backgrounding the activity.
+                    Bundle bundle = new Bundle();
+                    InstrumentationRegistry.getInstrumentation().callActivityOnPause(activity);
+                    InstrumentationRegistry.getInstrumentation()
+                            .callActivityOnSaveInstanceState(activity, bundle);
+                    // Fake sync's backend finishing its initialization.
+                    fakeSyncService.setEngineInitialized(true);
+                });
         // Nothing crashed; success!
 
         // Finish the activity before resetting the state.
@@ -81,19 +77,21 @@ public class PassphraseActivityTest {
         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         // Clears the task stack above this activity if it already exists.
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-        ActivityMonitor monitor = InstrumentationRegistry.getInstrumentation().addMonitor(
-                PassphraseActivity.class.getName(), null, false);
+        ActivityMonitor monitor =
+                InstrumentationRegistry.getInstrumentation()
+                        .addMonitor(PassphraseActivity.class.getName(), null, false);
         mContext.startActivity(intent);
-        return (PassphraseActivity) InstrumentationRegistry.getInstrumentation().waitForMonitor(
-                monitor);
+        return (PassphraseActivity)
+                InstrumentationRegistry.getInstrumentation().waitForMonitor(monitor);
     }
 
     private FakeSyncServiceImpl overrideSyncService() {
-        return TestThreadUtils.runOnUiThreadBlockingNoException(() -> {
-            // PSS has to be constructed on the UI thread.
-            FakeSyncServiceImpl fakeSyncService = new FakeSyncServiceImpl();
-            SyncServiceFactory.setInstanceForTesting(fakeSyncService);
-            return fakeSyncService;
-        });
+        return TestThreadUtils.runOnUiThreadBlockingNoException(
+                () -> {
+                    // PSS has to be constructed on the UI thread.
+                    FakeSyncServiceImpl fakeSyncService = new FakeSyncServiceImpl();
+                    SyncServiceFactory.setInstanceForTesting(fakeSyncService);
+                    return fakeSyncService;
+                });
     }
 }

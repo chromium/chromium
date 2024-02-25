@@ -1,0 +1,22 @@
+[
+  {
+    "os": [
+      "win",
+      "mac",
+      "linux",
+      "fuchsia"
+    ],
+    "policy_pref_mapping_tests": [
+      {
+        "policies": {
+          "PrintPreviewUseSystemDefaultPrinter": false
+        },
+        "prefs": {
+          "printing.use_system_default_printer": {
+            "value": false
+          }
+        }
+      }
+    ]
+  }
+]

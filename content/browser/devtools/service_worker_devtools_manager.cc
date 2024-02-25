@@ -4,6 +4,9 @@
 
 #include "content/browser/devtools/service_worker_devtools_manager.h"
 
+#include <optional>
+
+#include "base/containers/contains.h"
 #include "base/no_destructor.h"
 #include "base/observer_list.h"
 #include "base/ranges/algorithm.h"
@@ -17,7 +20,6 @@
 #include "ipc/ipc_listener.h"
 #include "services/network/public/cpp/devtools_observer_util.h"
 #include "services/network/public/mojom/devtools_observer.mojom.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace content {
 
@@ -151,7 +153,7 @@ void ServiceWorkerDevToolsManager::WorkerStarting(
     bool* pause_on_start) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   const WorkerId worker_id(worker_process_id, worker_route_id);
-  DCHECK(live_hosts_.find(worker_id) == live_hosts_.end());
+  DCHECK(!base::Contains(live_hosts_, worker_id));
 
   scoped_refptr<ServiceWorkerDevToolsAgentHost> agent_host =
       TakeStoppedHost(context_wrapper.get(), version_id);
@@ -310,7 +312,7 @@ void ServiceWorkerDevToolsManager::NavigationPreloadRequestSent(
     network->RequestSent(request_id, std::string(), request.headers,
                          *request_info,
                          protocol::Network::Initiator::TypeEnum::Preload,
-                         /*initiator_url=*/absl::nullopt,
+                         /*initiator_url=*/std::nullopt,
                          /*initiator_devtools_request_id=*/"", timestamp);
   }
 }

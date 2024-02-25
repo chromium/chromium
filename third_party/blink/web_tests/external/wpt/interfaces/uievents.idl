@@ -32,6 +32,8 @@ interface MouseEvent : UIEvent {
   readonly attribute long screenY;
   readonly attribute long clientX;
   readonly attribute long clientY;
+  readonly attribute long layerX;
+  readonly attribute long layerY;
 
   readonly attribute boolean ctrlKey;
   readonly attribute boolean shiftKey;
@@ -99,7 +101,7 @@ dictionary WheelEventInit : MouseEventInit {
 [Exposed=Window]
 interface InputEvent : UIEvent {
   constructor(DOMString type, optional InputEventInit eventInitDict = {});
-  readonly attribute DOMString? data;
+  readonly attribute USVString? data;
   readonly attribute boolean isComposing;
   readonly attribute DOMString inputType;
 };
@@ -145,7 +147,7 @@ dictionary KeyboardEventInit : EventModifierInit {
 [Exposed=Window]
 interface CompositionEvent : UIEvent {
   constructor(DOMString type, optional CompositionEventInit eventInitDict = {});
-  readonly attribute DOMString data;
+  readonly attribute USVString data;
 };
 
 dictionary CompositionEventInit : UIEventInit {
@@ -224,25 +226,6 @@ partial dictionary KeyboardEventInit {
   unsigned long keyCode = 0;
 };
 
-[Exposed=Window]
-interface MutationEvent : Event {
-  // attrChangeType
-  const unsigned short MODIFICATION = 1;
-  const unsigned short ADDITION = 2;
-  const unsigned short REMOVAL = 3;
-
-  readonly attribute Node? relatedNode;
-  readonly attribute DOMString prevValue;
-  readonly attribute DOMString newValue;
-  readonly attribute DOMString attrName;
-  readonly attribute unsigned short attrChange;
-
-  undefined initMutationEvent(DOMString typeArg,
-    optional boolean bubblesArg = false,
-    optional boolean cancelableArg = false,
-    optional Node? relatedNodeArg = null,
-    optional DOMString prevValueArg = "",
-    optional DOMString newValueArg = "",
-    optional DOMString attrNameArg = "",
-    optional unsigned short attrChangeArg = 0);
-};
+// Removed MutationEvents manually here.
+// This really needs to be removed from the spec:
+// https://w3c.github.io/uievents/#interface-mutationevent

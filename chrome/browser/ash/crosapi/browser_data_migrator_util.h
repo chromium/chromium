@@ -7,14 +7,15 @@
 
 #include <atomic>
 #include <map>
+#include <optional>
 #include <string>
+#include <string_view>
 
 #include "base/files/file_path.h"
 #include "base/synchronization/atomic_flag.h"
 #include "base/values.h"
 #include "chrome/browser/ash/crosapi/migration_progress_tracker.h"
 #include "components/sync/base/model_type.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/leveldatabase/env_chromium.h"
 
 namespace base {
@@ -241,6 +242,12 @@ constexpr char kCopySwitchValue[] =
     "copy";  // Corresponds to kCopy. No longer in use.
 constexpr char kMoveSwitchValue[] = "move";  // Corresponds to KMove.
 
+// Preference that indicates that sync setup has been completed at least once.
+// Doesn't exist in Ash and need to be set explicitly during the migration.
+// Exposed for testing.
+constexpr char kSyncInitialSyncFeatureSetupCompletePrefName[] =
+    "sync.has_setup_completed";
+
 // The type of LevelDB schema.
 enum class LevelDBType {
   kLocalStorage = 0,
@@ -290,7 +297,7 @@ constexpr const char* kLacrosOnlyPreferencesKeys[] = {
 };
 
 // List of data types in Sync Data that have to stay in Ash and Ash only.
-static_assert(49 == syncer::GetNumModelTypes(),
+static_assert(50 == syncer::GetNumModelTypes(),
               "If adding a new sync data type, update the lists below if"
               " you want to keep the new data type in Ash only.");
 constexpr syncer::ModelType kAshOnlySyncDataTypes[] = {
@@ -454,7 +461,7 @@ void RecordTotalSize(int64_t size);
 
 // Given a key in Sync Data's leveldb, returns true if (based on its prefix) its
 // data type has to stay in Ash and Ash only, false otherwise.
-bool IsAshOnlySyncDataType(base::StringPiece key);
+bool IsAshOnlySyncDataType(std::string_view key);
 
 // Given an extension id, return the paths of the associated blob
 // and leveldb directories inside IndexedDB.
@@ -490,13 +497,13 @@ bool MigrateSyncDataLevelDB(const base::FilePath& original_path,
 // If the entry is a list in any other format, if it doesn't exist,
 // or if it's not container type, no changes will be performed.
 void UpdatePreferencesKeyByType(base::Value::Dict* root_dict,
-                                const base::StringPiece key,
+                                const std::string_view key,
                                 ChromeType chrome_type);
 
 // Given a `original_contents` string containing the original Preferences
 // file, return the migrated Ash and Lacros versions of Preferences.
-absl::optional<PreferencesContents> MigratePreferencesContents(
-    const base::StringPiece original_contents);
+std::optional<PreferencesContents> MigratePreferencesContents(
+    const std::string_view original_contents);
 
 // Migrate Preferences to Ash and Lacros.
 bool MigratePreferences(const base::FilePath& original_path,

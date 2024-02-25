@@ -33,8 +33,9 @@ import org.tensorflow.lite.support.tensorbuffer.TensorBuffer;
  * as 0.
  */
 public class QuantizeOp extends NormalizeOp implements TensorOperator {
-    public QuantizeOp(float zeroPoint, float scale) {
-        // Quantization: f = (q - z) * s, i.e. q = f / s + z = (f - (-z * s)) / s
-        super(-zeroPoint * scale, scale);
-    }
+
+  public QuantizeOp(float zeroPoint, float scale) {
+    // Quantization: f = (q - z) * s, i.e. q = f / s + z = (f - (-z * s)) / s
+    super(-zeroPoint * scale, scale);
+  }
 }

@@ -4,6 +4,8 @@
 
 #include "chrome/browser/ash/file_manager/volume.h"
 
+#include <string_view>
+
 #include "ash/constants/ash_features.h"
 #include "base/strings/strcat.h"
 #include "chrome/browser/ash/arc/fileapi/arc_documents_provider_util.h"
@@ -40,7 +42,7 @@ VolumeType MountTypeToVolumeType(ash::MountType type) {
 }
 
 // Returns a string representation of the given volume type.
-base::StringPiece VolumeTypeToString(const VolumeType type) {
+std::string_view VolumeTypeToString(const VolumeType type) {
   switch (type) {
     case VOLUME_TYPE_GOOGLE_DRIVE:
       return "drive";
@@ -88,24 +90,24 @@ std::string GenerateVolumeId(const Volume& volume) {
 }
 
 // Returns the localized label for a given media view.
-std::string MediaViewDocumentIdToLabel(const base::StringPiece id) {
-  if (id == arc::kAudioRootDocumentId) {
+std::string MediaViewRootIdToLabel(std::string_view root_id) {
+  if (root_id == arc::kAudioRootId) {
     return GetStringUTF8(IDS_FILE_BROWSER_MEDIA_VIEW_AUDIO_ROOT_LABEL);
   }
 
-  if (id == arc::kImagesRootDocumentId) {
+  if (root_id == arc::kImagesRootId) {
     return GetStringUTF8(IDS_FILE_BROWSER_MEDIA_VIEW_IMAGES_ROOT_LABEL);
   }
 
-  if (id == arc::kVideosRootDocumentId) {
+  if (root_id == arc::kVideosRootId) {
     return GetStringUTF8(IDS_FILE_BROWSER_MEDIA_VIEW_VIDEOS_ROOT_LABEL);
   }
 
-  if (id == arc::kDocumentsRootDocumentId) {
+  if (root_id == arc::kDocumentsRootId) {
     return GetStringUTF8(IDS_FILE_BROWSER_MEDIA_VIEW_DOCUMENTS_ROOT_LABEL);
   }
 
-  NOTREACHED() << "Unexpected root document ID: " << id;
+  NOTREACHED() << "Unexpected root ID: " << root_id;
   return "";
 }
 
@@ -133,7 +135,9 @@ std::unique_ptr<Volume> Volume::CreateForDrive(base::FilePath drive_path) {
 
 // static
 std::unique_ptr<Volume> Volume::CreateForDownloads(
-    base::FilePath downloads_path) {
+    base::FilePath downloads_path,
+    base::FilePath optional_fusebox_path,
+    const char* optional_fusebox_volume_label) {
   std::unique_ptr<Volume> volume(new Volume());
   volume->type_ = VOLUME_TYPE_DOWNLOADS_DIRECTORY;
   // Keep source_path empty.
@@ -142,6 +146,27 @@ std::unique_ptr<Volume> Volume::CreateForDownloads(
   volume->volume_id_ = GenerateVolumeId(*volume);
   volume->volume_label_ = GetStringUTF8(IDS_FILE_BROWSER_MY_FILES_ROOT_LABEL);
   volume->watchable_ = true;
+
+  if (!optional_fusebox_path.empty()) {
+    // Leaving the type_ as VOLUME_TYPE_DOWNLOADS_DIRECTORY means that, for
+    // some unknown reason, it doesn't show up in the CrOS Files app. Use a
+    // different but arbitrary type instead.
+    //
+    // It doesn't need to be well polished. It's just for debugging FuseBox. We
+    // wouldn't normally need a FuseBox wrapper (exposing to the kernel-level
+    // file system) for something like Downloads that's typically on local disk
+    // (and hence already on the kernel-level file system).
+    volume->type_ = VOLUME_TYPE_MTP;
+
+    volume->file_system_type_ = util::kFuseBox;
+    volume->mount_path_ = std::move(optional_fusebox_path);
+    volume->volume_id_ =
+        base::StrCat({util::kFuseBox, std::move(volume->volume_id_)});
+    if (optional_fusebox_volume_label) {
+      volume->volume_label_ = optional_fusebox_volume_label;
+    }
+  }
+
   return volume;
 }
 
@@ -181,11 +206,9 @@ std::unique_ptr<Volume> Volume::CreateForRemovable(
 // static
 std::unique_ptr<Volume> Volume::CreateForProvidedFileSystem(
     const ash::file_system_provider::ProvidedFileSystemInfo& file_system_info,
-    MountContext mount_context) {
+    MountContext mount_context,
+    base::FilePath optional_fusebox_path) {
   std::unique_ptr<Volume> volume(new Volume());
-
-  volume->file_system_id_ = file_system_info.file_system_id();
-  volume->provider_id_ = file_system_info.provider_id();
 
   switch (file_system_info.source()) {
     case extensions::SOURCE_FILE:
@@ -211,51 +234,25 @@ std::unique_ptr<Volume> Volume::CreateForProvidedFileSystem(
   volume->icon_set_ = file_system_info.icon_set();
 
   volume->volume_id_ = GenerateVolumeId(*volume);
-  return volume;
-}
 
-// static
-std::unique_ptr<Volume> Volume::CreateForFuseBoxProvidedFileSystem(
-    base::FilePath mount_path,
-    const ash::file_system_provider::ProvidedFileSystemInfo& file_system_info,
-    MountContext mount_context) {
-  std::unique_ptr<Volume> volume(new Volume());
+  if (!optional_fusebox_path.empty()) {
+    volume->file_system_type_ = util::kFuseBox;
+    if (ash::features::IsFileManagerFuseBoxDebugEnabled()) {
+      volume->volume_label_.insert(0, "fusebox ");
+    }
+    volume->mount_path_ = std::move(optional_fusebox_path);
+    // Even though the underlying FSP may support watchers, fusebox needs
+    // to implement watchers in order to match the capability of the FSP.
+    // TODO(crbug.com/1353673): Add watcher support to fusebox.
+    volume->watchable_ = false;
+    // "fusebox" prefix the original FSP volume id.
+    volume->volume_id_ =
+        base::StrCat({util::kFuseBox, GenerateVolumeId(*volume)});
 
-  switch (file_system_info.source()) {
-    case extensions::SOURCE_FILE:
-      volume->source_ = SOURCE_FILE;
-      break;
-    case extensions::SOURCE_DEVICE:
-      volume->source_ = SOURCE_DEVICE;
-      break;
-    case extensions::SOURCE_NETWORK:
-      volume->source_ = SOURCE_NETWORK;
-      break;
+  } else {
+    volume->file_system_id_ = file_system_info.file_system_id();
+    volume->provider_id_ = file_system_info.provider_id();
   }
-
-  volume->volume_label_ = file_system_info.display_name();
-  if (ash::features::IsFileManagerFuseBoxDebugEnabled()) {
-    volume->volume_label_.insert(0, "fusebox ");
-  }
-
-  volume->type_ = VOLUME_TYPE_PROVIDED;
-  volume->file_system_type_ = util::kFuseBox;
-  volume->mount_path_ = std::move(mount_path);
-  volume->mount_context_ = mount_context;
-
-  volume->is_parent_ = true;
-  volume->is_read_only_ = !file_system_info.writable();
-  volume->configurable_ = file_system_info.configurable();
-  volume->icon_set_ = file_system_info.icon_set();
-
-  // "fusebox" prefix the original FSP volume id.
-  volume->volume_id_ =
-      base::StrCat({util::kFuseBox, GenerateVolumeId(*volume)});
-
-  // Even though the underlying FSP may support watchers, fusebox needs
-  // to implement watchers in order to match the capability of the FSP.
-  // TODO(crbug.com/1353673): Add watcher support to fusebox.
-  volume->watchable_ = false;
 
   return volume;
 }
@@ -263,7 +260,8 @@ std::unique_ptr<Volume> Volume::CreateForFuseBoxProvidedFileSystem(
 // static
 std::unique_ptr<Volume> Volume::CreateForMTP(base::FilePath mount_path,
                                              std::string label,
-                                             bool read_only) {
+                                             bool read_only,
+                                             bool use_fusebox) {
   std::unique_ptr<Volume> volume(new Volume());
   volume->type_ = VOLUME_TYPE_MTP;
   volume->mount_path_ = mount_path;
@@ -279,50 +277,29 @@ std::unique_ptr<Volume> Volume::CreateForMTP(base::FilePath mount_path,
   // seem to work (perhaps something missing in mtpd).
   volume->watchable_ = false;
 
-  return volume;
-}
-
-// static
-std::unique_ptr<Volume> Volume::CreateForFuseBoxMTP(base::FilePath mount_path,
-                                                    std::string label,
-                                                    bool read_only) {
-  std::unique_ptr<Volume> volume(new Volume());
-  volume->type_ = VOLUME_TYPE_MTP;
-  volume->file_system_type_ = util::kFuseBox;
-  volume->device_type_ = ash::DeviceType::kMobile;
-  volume->source_path_ = mount_path;
-  volume->source_ = SOURCE_DEVICE;
-  volume->mount_path_ = std::move(mount_path);
-  volume->is_parent_ = true;
-  volume->is_read_only_ = read_only;
-  // "fusebox" prefix the original MTP volume id.
-  volume->volume_id_ =
-      base::StrCat({util::kFuseBox, kMtpVolumeIdPrefix, label});
-  volume->volume_label_ = std::move(label);
-  if (ash::features::IsFileManagerFuseBoxDebugEnabled()) {
-    volume->volume_label_.insert(0, "fusebox ");
+  if (use_fusebox) {
+    volume->file_system_type_ = util::kFuseBox;
+    volume->volume_id_ =
+        base::StrCat({util::kFuseBox, std::move(volume->volume_id_)});
+    if (ash::features::IsFileManagerFuseBoxDebugEnabled()) {
+      volume->volume_label_.insert(0, "fusebox ");
+    }
   }
 
-  // MTP does have watcher support via WatcherManager but it doesn't
-  // seem to work. Therefore the fusebox version also doesn't allow
-  // watching.
-  volume->watchable_ = false;
-
   return volume;
 }
 
 // static
-std::unique_ptr<Volume> Volume::CreateForMediaView(
-    const std::string& root_document_id) {
+std::unique_ptr<Volume> Volume::CreateForMediaView(const std::string& root_id) {
   std::unique_ptr<Volume> volume(new Volume());
   volume->type_ = VOLUME_TYPE_MEDIA_VIEW;
   volume->source_ = SOURCE_SYSTEM;
   volume->mount_path_ = arc::GetDocumentsProviderMountPath(
-      arc::kMediaDocumentsProviderAuthority, root_document_id);
-  volume->volume_label_ = MediaViewDocumentIdToLabel(root_document_id);
+      arc::kMediaDocumentsProviderAuthority, root_id);
+  volume->volume_label_ = MediaViewRootIdToLabel(root_id);
   volume->is_read_only_ = false;
   volume->watchable_ = false;
-  volume->volume_id_ = arc::GetMediaViewVolumeId(root_document_id);
+  volume->volume_id_ = arc::GetMediaViewVolumeId(root_id);
   return volume;
 }
 
@@ -382,7 +359,6 @@ std::unique_ptr<Volume> Volume::CreateForAndroidFiles(
 std::unique_ptr<Volume> Volume::CreateForDocumentsProvider(
     const std::string& authority,
     const std::string& root_id,
-    const std::string& document_id,
     const std::string& title,
     const std::string& summary,
     const GURL& icon_url,
@@ -392,8 +368,7 @@ std::unique_ptr<Volume> Volume::CreateForDocumentsProvider(
   volume->type_ = VOLUME_TYPE_DOCUMENTS_PROVIDER;
   // Keep source_path empty.
   volume->source_ = SOURCE_SYSTEM;
-  volume->mount_path_ =
-      arc::GetDocumentsProviderMountPath(authority, document_id);
+  volume->mount_path_ = arc::GetDocumentsProviderMountPath(authority, root_id);
   volume->volume_label_ = title;
   volume->is_read_only_ = read_only;
   volume->watchable_ = false;
@@ -404,6 +379,7 @@ std::unique_ptr<Volume> Volume::CreateForDocumentsProvider(
                      icon_url);
     volume->icon_set_ = icon_set;
   }
+
   if (!optional_fusebox_subdir.empty()) {
     volume->file_system_type_ = util::kFuseBox;
     volume->volume_id_.insert(0, util::kFuseBox);
@@ -413,6 +389,7 @@ std::unique_ptr<Volume> Volume::CreateForDocumentsProvider(
       volume->volume_label_.insert(0, "fusebox ");
     }
   }
+
   return volume;
 }
 
@@ -488,7 +465,7 @@ std::unique_ptr<Volume> Volume::CreateForTesting(base::FilePath device_path,
 std::unique_ptr<Volume> Volume::CreateForTesting(
     base::FilePath path,
     VolumeType volume_type,
-    absl::optional<guest_os::VmType> vm_type,
+    std::optional<guest_os::VmType> vm_type,
     base::FilePath source_path) {
   std::unique_ptr<Volume> volume(new Volume());
   volume->mount_path_ = std::move(path);

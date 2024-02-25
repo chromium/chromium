@@ -49,13 +49,13 @@ FakeBluetoothHelper::GenerateForegroundAdvertisement(
       device_id_pair_to_service_data_map_.at(device_id_pair));
 }
 
-absl::optional<BluetoothHelper::DeviceWithBackgroundBool>
+std::optional<BluetoothHelper::DeviceWithBackgroundBool>
 FakeBluetoothHelper::PerformIdentifyRemoteDevice(
     const std::string& service_data,
     const DeviceIdPairSet& device_id_pair_set) {
   if (!base::Contains(service_data_to_device_with_background_bool_map_,
                       service_data)) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   return service_data_to_device_with_background_bool_map_.at(service_data);

@@ -279,7 +279,16 @@ bool DataPack::SanityCheckFileAndRegisterResources(size_t margin_to_skip,
     }
   }
 
-  // 3) Verify the aliases are within the appropriate bounds.
+  // 3) Verify the entries are ordered correctly.
+  for (size_t i = 0; i < resource_count_; ++i) {
+    if (resource_table_[i].file_offset > resource_table_[i + 1].file_offset) {
+      LOG(ERROR) << "Data pack file corruption: " << "Entry #" << i + 1
+                 << " before Entry #" << i << ".";
+      return false;
+    }
+  }
+
+  // 4) Verify the aliases are within the appropriate bounds.
   for (size_t i = 0; i < alias_count_; ++i) {
     if (alias_table_[i].entry_index >= resource_count_) {
       LOG(ERROR) << "Data pack file corruption: "
@@ -296,8 +305,9 @@ bool DataPack::LoadImpl(std::unique_ptr<DataPack::DataSource> data_source) {
   size_t data_length = data_source->GetLength();
   // Parse the version and check for truncated header.
   uint32_t version = 0;
-  if (data_length > sizeof(version))
-    version = reinterpret_cast<const uint32_t*>(data)[0];
+  if (data_length > sizeof(version)) {
+    memcpy(&version, data, sizeof(uint32_t));
+  }
   size_t header_length =
       version == kFileFormatV4 ? kHeaderLengthV4 : kHeaderLengthV5;
   if (version == 0 || data_length < header_length) {
@@ -307,14 +317,14 @@ bool DataPack::LoadImpl(std::unique_ptr<DataPack::DataSource> data_source) {
 
   // Parse the header of the file.
   if (version == kFileFormatV4) {
-    resource_count_ = reinterpret_cast<const uint32_t*>(data)[1];
+    memcpy(&resource_count_, data + 4, sizeof(uint32_t));
     alias_count_ = 0;
     text_encoding_type_ = static_cast<TextEncodingType>(data[8]);
   } else if (version == kFileFormatV5) {
     // Version 5 added the alias table and changed the header format.
     text_encoding_type_ = static_cast<TextEncodingType>(data[4]);
-    resource_count_ = reinterpret_cast<const uint16_t*>(data)[4];
-    alias_count_ = reinterpret_cast<const uint16_t*>(data)[5];
+    memcpy(&resource_count_, data + 8, sizeof(uint16_t));
+    memcpy(&alias_count_, data + 10, sizeof(uint16_t));
   } else {
     LOG(ERROR) << "Bad data pack version: got " << version << ", expected "
                << kFileFormatV4 << " or " << kFileFormatV5;
@@ -366,7 +376,7 @@ base::StringPiece DataPack::GetStringPieceFromOffset(
   return {reinterpret_cast<const char*>(data_source + target_offset), length};
 }
 
-absl::optional<base::StringPiece> DataPack::GetStringPiece(
+std::optional<base::StringPiece> DataPack::GetStringPiece(
     uint16_t resource_id) const {
   // It won't be hard to make this endian-agnostic, but it's not worth
   // bothering to do right now.
@@ -376,7 +386,7 @@ absl::optional<base::StringPiece> DataPack::GetStringPiece(
 
   const Entry* target = LookupEntryById(resource_id);
   if (!target)
-    return absl::nullopt;
+    return std::nullopt;
 
   const Entry* next_entry = target + 1;
   // If the next entry points beyond the end of the file this data pack's entry
@@ -390,7 +400,15 @@ absl::optional<base::StringPiece> DataPack::GetStringPiece(
     LOG(ERROR) << "Entry #" << entry_index << " in data pack points off end "
                << "of file. This should have been caught when loading. Was the "
                << "file modified?";
-    return absl::nullopt;
+    return std::nullopt;
+  }
+  if (target->file_offset > next_entry->file_offset) {
+    size_t entry_index = target - resource_table_;
+    size_t next_index = next_entry - resource_table_;
+    LOG(ERROR) << "Entry #" << next_index << " in data pack is before Entry #"
+               << entry_index << ". This should have been caught when loading. "
+               << "Was the file modified?";
+    return std::nullopt;
   }
 
   MaybePrintResourceId(resource_id);

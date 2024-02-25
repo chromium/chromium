@@ -50,16 +50,16 @@ VisitContentModelAnnotations::Category::Category(const std::string& id,
 VisitContentModelAnnotations::Category::Category() = default;
 
 // static
-absl::optional<VisitContentModelAnnotations::Category>
+std::optional<VisitContentModelAnnotations::Category>
 VisitContentModelAnnotations::Category::FromStringVector(
     const std::vector<std::string>& vector) {
   if (vector.size() != 2)
-    return absl::nullopt;
+    return std::nullopt;
 
   VisitContentModelAnnotations::Category category;
   category.id = vector[0];
   if (!base::StringToInt(vector[1], &category.weight))
-    return absl::nullopt;
+    return std::nullopt;
   return category;
 }
 
@@ -167,7 +167,8 @@ URLResult::URLResult(URLResult&& other) noexcept
       content_annotations_(other.content_annotations_),
       snippet_(std::move(other.snippet_)),
       title_match_positions_(std::move(other.title_match_positions_)),
-      blocked_visit_(other.blocked_visit_) {}
+      blocked_visit_(other.blocked_visit_),
+      app_id_(std::move(other.app_id_)) {}
 
 URLResult::~URLResult() = default;
 
@@ -180,6 +181,7 @@ void URLResult::SwapResult(URLResult* other) {
   snippet_.Swap(&other->snippet_);
   title_match_positions_.swap(other->title_match_positions_);
   std::swap(blocked_visit_, other->blocked_visit_);
+  std::swap(app_id_, other->app_id_);
 }
 
 // static

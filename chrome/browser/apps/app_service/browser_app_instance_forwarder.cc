@@ -22,44 +22,45 @@ BrowserAppInstanceForwarder::BrowserAppInstanceForwarder(
     mojo::Remote<crosapi::mojom::BrowserAppInstanceRegistry>& registry)
     : registry_(registry), tracker_(tracker) {
   tracker_observation_.Observe(&tracker);
-  registry_->RegisterController(
-      controller_receiver_.BindNewPipeAndPassRemoteWithVersion());
+  (*registry_)
+      ->RegisterController(
+          controller_receiver_.BindNewPipeAndPassRemoteWithVersion());
 }
 BrowserAppInstanceForwarder::~BrowserAppInstanceForwarder() = default;
 
 void BrowserAppInstanceForwarder::OnBrowserWindowAdded(
     const apps::BrowserWindowInstance& instance) {
-  registry_->OnBrowserWindowAdded(instance.ToUpdate());
+  (*registry_)->OnBrowserWindowAdded(instance.ToUpdate());
 }
 
 void BrowserAppInstanceForwarder::OnBrowserWindowUpdated(
     const apps::BrowserWindowInstance& instance) {
-  registry_->OnBrowserWindowUpdated(instance.ToUpdate());
+  (*registry_)->OnBrowserWindowUpdated(instance.ToUpdate());
 }
 
 void BrowserAppInstanceForwarder::OnBrowserWindowRemoved(
     const apps::BrowserWindowInstance& instance) {
-  registry_->OnBrowserWindowRemoved(instance.ToUpdate());
+  (*registry_)->OnBrowserWindowRemoved(instance.ToUpdate());
 }
 
 void BrowserAppInstanceForwarder::OnBrowserAppAdded(
     const apps::BrowserAppInstance& instance) {
-  registry_->OnBrowserAppAdded(instance.ToUpdate());
+  (*registry_)->OnBrowserAppAdded(instance.ToUpdate());
 }
 
 void BrowserAppInstanceForwarder::OnBrowserAppUpdated(
     const apps::BrowserAppInstance& instance) {
-  registry_->OnBrowserAppUpdated(instance.ToUpdate());
+  (*registry_)->OnBrowserAppUpdated(instance.ToUpdate());
 }
 
 void BrowserAppInstanceForwarder::OnBrowserAppRemoved(
     const apps::BrowserAppInstance& instance) {
-  registry_->OnBrowserAppRemoved(instance.ToUpdate());
+  (*registry_)->OnBrowserAppRemoved(instance.ToUpdate());
 }
 
 void BrowserAppInstanceForwarder::ActivateTabInstance(
     const base::UnguessableToken& id) {
-  tracker_.ActivateTabInstance(id);
+  tracker_->ActivateTabInstance(id);
 }
 
 }  // namespace apps

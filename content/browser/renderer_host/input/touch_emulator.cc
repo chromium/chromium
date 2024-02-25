@@ -170,7 +170,7 @@ void TouchEmulator::InitCursors() {
 
 ui::Cursor TouchEmulator::InitCursorFromResource(int resource_id) {
   const gfx::Image& cursor_image =
-      content::GetContentClient()->GetNativeImageNamed(resource_id);
+      GetContentClient()->GetNativeImageNamed(resource_id);
   SkBitmap bitmap = cursor_image.AsBitmap();
   gfx::Point hotspot(bitmap.width() / 2, bitmap.height() / 2);
   return ui::Cursor::NewCustom(std::move(bitmap), std::move(hotspot),

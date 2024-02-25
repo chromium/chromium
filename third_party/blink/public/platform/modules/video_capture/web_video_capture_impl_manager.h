@@ -70,10 +70,13 @@ class BLINK_PLATFORM_EXPORT WebVideoCaptureImplManager {
   // |deliver_frame_cb| will be called on the IO thread when a video
   // frame is ready.
   //
-  // |crop_version_cb| will be called on the IO thread when a new crop
-  // version is successfully applied, and it is guaranteed that all
+  // |sub_capture_target_version_cb| will be called on the IO thread when a new
+  // crop version is successfully applied, and it is guaranteed that all
   // subsequent frames delivered to |deliver_frame_cb|, will have this
-  // crop version or later.
+  // sub-capture-target version or later.
+  //
+  // |frame_dropped_cb| will be called when a frame was dropped prior to
+  // delivery (i.e. |deliver_frame_cb| was not called for this frame).
   //
   // Returns a callback that is used to stop capturing. Note that stopping
   // video capture is not synchronous. Client should handle the case where
@@ -84,7 +87,9 @@ class BLINK_PLATFORM_EXPORT WebVideoCaptureImplManager {
       const media::VideoCaptureParams& params,
       const VideoCaptureStateUpdateCB& state_update_cb,
       const VideoCaptureDeliverFrameCB& deliver_frame_cb,
-      const VideoCaptureCropVersionCB& crop_version_cb);
+      const VideoCaptureSubCaptureTargetVersionCB&
+          sub_capture_target_version_cb,
+      const VideoCaptureNotifyFrameDroppedCB& frame_dropped_cb);
 
   // Requests that the video capturer send a frame "soon" (e.g., to resolve
   // picture loss or quality issues).
@@ -113,8 +118,6 @@ class BLINK_PLATFORM_EXPORT WebVideoCaptureImplManager {
   void SuspendDevices(const MediaStreamDevices& video_devices, bool suspend);
 
   void OnLog(const media::VideoCaptureSessionId& id, const WebString& message);
-  void OnFrameDropped(const media::VideoCaptureSessionId& id,
-                      media::VideoCaptureFrameDropReason reason);
 
   // Get the feedback callback for the corresponding capture session.
   // Consumers may call the returned callback in any thread to provide

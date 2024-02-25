@@ -1,0 +1,41 @@
+[
+  {
+    "os": [
+      "linux",
+      "android"
+    ],
+    "policy_pref_mapping_tests": [
+      {
+        "policies": {
+          "OutOfProcessSystemDnsResolutionEnabled": false
+        },
+        "prefs": {
+          "net.out_of_process_system_dns_resolution_enabled": {
+            "location": "local_state",
+            "value": false
+          }
+        }
+      },
+      {
+        "policies": {
+          "OutOfProcessSystemDnsResolutionEnabled": true
+        },
+        "prefs": {
+          "net.out_of_process_system_dns_resolution_enabled": {
+            "location": "local_state",
+            "value": true
+          }
+        }
+      },
+      {
+        "policies": {},
+        "prefs": {
+          "net.out_of_process_system_dns_resolution_enabled": {
+            "default_value": true,
+            "location": "local_state"
+          }
+        }
+      }
+    ]
+  }
+]

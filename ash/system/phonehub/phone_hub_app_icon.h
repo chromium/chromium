@@ -6,11 +6,14 @@
 #define ASH_SYSTEM_PHONEHUB_PHONE_HUB_APP_ICON_H_
 
 #include "ash/ash_export.h"
+#include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/controls/image_view.h"
 
 namespace ash {
 
 class ASH_EXPORT AppIcon : public views::ImageView {
+  METADATA_HEADER(AppIcon, views::ImageView)
+
  public:
   // Measured in DIPs.
   static constexpr int kSizeSmall = 20;
@@ -28,10 +31,8 @@ class ASH_EXPORT AppIcon : public views::ImageView {
   AppIcon(const AppIcon&) = delete;
   AppIcon& operator=(const AppIcon&) = delete;
   ~AppIcon() override = default;
-
-  // views::View:
-  const char* GetClassName() const override;
 };
+
 }  // namespace ash
 
 #endif  // ASH_SYSTEM_PHONEHUB_PHONE_HUB_APP_ICON_H_

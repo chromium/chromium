@@ -18,7 +18,6 @@
 #include "net/base/test_completion_callback.h"
 #include "net/base/upload_bytes_element_reader.h"
 #include "net/base/upload_data_stream.h"
-#include "net/cert/ct_policy_enforcer.h"
 #include "net/cert/mock_cert_verifier.h"
 #include "net/cert/multi_log_ct_verifier.h"
 #include "net/dns/mapped_host_resolver.h"
@@ -108,7 +107,6 @@ class QuicEndToEndTest : public ::testing::Test, public WithTaskEnvironment {
     session_context_.host_resolver = &host_resolver_;
     session_context_.cert_verifier = &cert_verifier_;
     session_context_.transport_security_state = &transport_security_state_;
-    session_context_.ct_policy_enforcer = &ct_policy_enforcer_;
     session_context_.proxy_resolution_service = proxy_resolution_service_.get();
     session_context_.ssl_config_service = ssl_config_service_.get();
     session_context_.http_auth_handler_factory = auth_handler_factory_.get();
@@ -170,10 +168,10 @@ class QuicEndToEndTest : public ::testing::Test, public WithTaskEnvironment {
 
   // Adds an entry to the cache used by the QUIC server to serve
   // responses.
-  void AddToCache(absl::string_view path,
+  void AddToCache(std::string_view path,
                   int response_code,
-                  absl::string_view response_detail,
-                  absl::string_view body) {
+                  std::string_view response_detail,
+                  std::string_view body) {
     memory_cache_backend_.AddSimpleResponse("test.example.com", path,
                                             response_code, body);
   }
@@ -217,7 +215,6 @@ class QuicEndToEndTest : public ::testing::Test, public WithTaskEnvironment {
   MappedHostResolver host_resolver_;
   MockCertVerifier cert_verifier_;
   TransportSecurityState transport_security_state_;
-  DefaultCTPolicyEnforcer ct_policy_enforcer_;
   std::unique_ptr<SSLConfigServiceDefaults> ssl_config_service_;
   std::unique_ptr<ProxyResolutionService> proxy_resolution_service_;
   std::unique_ptr<HttpAuthHandlerFactory> auth_handler_factory_;
@@ -247,9 +244,6 @@ TEST_F(QuicEndToEndTest, LargeGetWithNoPacketLoss) {
                                    transaction_factory_.get());
   consumer.Start(&request_, NetLogWithSource());
 
-  // Will terminate when the last consumer completes.
-  base::RunLoop().Run();
-
   CheckResponse(consumer, "HTTP/1.1 200", response);
 }
 
@@ -266,9 +260,6 @@ TEST_F(QuicEndToEndTest, LargePostWithNoPacketLoss) {
   TestTransactionConsumer consumer(DEFAULT_PRIORITY,
                                    transaction_factory_.get());
   consumer.Start(&request_, NetLogWithSource());
-
-  // Will terminate when the last consumer completes.
-  base::RunLoop().Run();
 
   CheckResponse(consumer, "HTTP/1.1 200", kResponseBody);
 }
@@ -287,9 +278,6 @@ TEST_F(QuicEndToEndTest, LargePostWithPacketLoss) {
   TestTransactionConsumer consumer(DEFAULT_PRIORITY,
                                    transaction_factory_.get());
   consumer.Start(&request_, NetLogWithSource());
-
-  // Will terminate when the last consumer completes.
-  base::RunLoop().Run();
 
   CheckResponse(consumer, "HTTP/1.1 200", kResponseBody);
 }
@@ -312,9 +300,6 @@ TEST_F(QuicEndToEndTest, UberTest) {
     consumer->Start(&request_, NetLogWithSource());
   }
 
-  // Will terminate when the last consumer completes.
-  base::RunLoop().Run();
-
   for (const auto& consumer : consumers)
     CheckResponse(*consumer.get(), "HTTP/1.1 200", kResponseBody);
 }
@@ -333,9 +318,6 @@ TEST_F(QuicEndToEndTest, EnableKyber) {
   TestTransactionConsumer consumer(DEFAULT_PRIORITY,
                                    transaction_factory_.get());
   consumer.Start(&request_, NetLogWithSource());
-
-  // Will terminate when the last consumer completes.
-  base::RunLoop().Run();
 
   CheckResponse(consumer, "HTTP/1.1 200", kResponseBody);
   EXPECT_EQ(consumer.response_info()->ssl_info.key_exchange_group,
@@ -356,9 +338,6 @@ TEST_F(QuicEndToEndTest, KyberDisabled) {
   TestTransactionConsumer consumer(DEFAULT_PRIORITY,
                                    transaction_factory_.get());
   consumer.Start(&request_, NetLogWithSource());
-
-  // Will terminate when the last consumer completes.
-  base::RunLoop().Run();
 
   // Connection should fail because there's no supported group in common between
   // client and server.

@@ -42,7 +42,6 @@
 #include "chrome/common/chrome_switches.h"
 #include "chrome/common/extensions/extension_constants.h"
 #include "chrome/common/pref_names.h"
-#include "chromeos/components/kiosk/kiosk_utils.h"
 #include "components/crx_file/id_util.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/browser/browser_thread.h"
@@ -57,6 +56,8 @@
 
 #if BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/chromeos/app_mode/kiosk_app_external_loader.h"
+#include "chromeos/components/kiosk/kiosk_utils.h"
+#include "chromeos/components/mgs/managed_guest_session_utils.h"
 #endif  // BUIDLFLAG(IS_CHROMEOS)
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -377,13 +378,13 @@ void ExternalProviderImpl::RetrieveExtensionsFromPrefs(
     }
 
     int creation_flags = creation_flags_;
-    absl::optional<bool> is_from_webstore =
+    std::optional<bool> is_from_webstore =
         extension_dict.FindBool(kIsFromWebstore);
     if (is_from_webstore.value_or(false)) {
       creation_flags |= Extension::FROM_WEBSTORE;
     }
 
-    absl::optional<bool> is_bookmark_app =
+    std::optional<bool> is_bookmark_app =
         extension_dict.FindBool(kIsBookmarkApp);
     if (is_bookmark_app.value_or(false)) {
       // Bookmark apps are obsolete, ignore any remaining dregs that haven't
@@ -421,12 +422,12 @@ void ExternalProviderImpl::RetrieveExtensionsFromPrefs(
       }
     }
 
-    absl::optional<bool> was_installed_by_oem =
+    std::optional<bool> was_installed_by_oem =
         extension_dict.FindBool(kWasInstalledByOem);
     if (was_installed_by_oem.value_or(false)) {
       creation_flags |= Extension::WAS_INSTALLED_BY_OEM;
     }
-    absl::optional<bool> may_be_untrusted =
+    std::optional<bool> may_be_untrusted =
         extension_dict.FindBool(kMayBeUntrusted);
     if (may_be_untrusted.value_or(false)) {
       creation_flags |= Extension::MAY_BE_UNTRUSTED;
@@ -612,7 +613,7 @@ bool ExternalProviderImpl::HandleDoNotInstallForEnterprise(
     const base::Value::Dict& extension,
     const std::string& extension_id,
     std::set<std::string>* unsupported_extensions) {
-  absl::optional<bool> do_not_install_for_enterprise =
+  std::optional<bool> do_not_install_for_enterprise =
       extension.FindBool(kDoNotInstallForEnterprise);
   if (do_not_install_for_enterprise.value_or(false)) {
     const policy::ProfilePolicyConnector* const connector =
@@ -684,7 +685,7 @@ void ExternalProviderImpl::CreateExternalProviders(
     }
   }
 #elif BUILDFLAG(IS_CHROMEOS_LACROS)
-  if (chromeos::IsKioskSession() || profiles::IsManagedGuestSession()) {
+  if (chromeos::IsKioskSession() || chromeos::IsManagedGuestSession()) {
     if (DeviceLocalAccountExtensionInstallerLacros::Get()) {
       external_loader =
           DeviceLocalAccountExtensionInstallerLacros::Get()->extension_loader();

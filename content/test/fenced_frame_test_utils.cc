@@ -31,11 +31,11 @@ void SimulateSharedStorageURNMappingComplete(
     FencedFrameURLMapping& fenced_frame_url_mapping,
     const GURL& urn_uuid,
     const GURL& mapped_url,
-    const url::Origin& shared_storage_origin,
+    const net::SchemefulSite& shared_storage_site,
     double budget_to_charge,
     scoped_refptr<FencedFrameReporter> fenced_frame_reporter) {
   SharedStorageBudgetMetadata budget_metadata = {
-      .origin = shared_storage_origin, .budget_to_charge = budget_to_charge};
+      .site = shared_storage_site, .budget_to_charge = budget_to_charge};
 
   fenced_frame_url_mapping.OnSharedStorageURNMappingResultDetermined(
       urn_uuid,
@@ -50,7 +50,7 @@ TestFencedFrameURLMappingResultObserver::
     ~TestFencedFrameURLMappingResultObserver() = default;
 
 void TestFencedFrameURLMappingResultObserver::OnFencedFrameURLMappingComplete(
-    const absl::optional<FencedFrameProperties>& properties) {
+    const std::optional<FencedFrameProperties>& properties) {
   mapping_complete_observed_ = true;
   observed_fenced_frame_properties_ = properties;
 }
@@ -72,7 +72,7 @@ void FencedFrameURLMappingTestPeer::GetSharedStorageReportingMap(
   DCHECK(urn_it != fenced_frame_url_mapping_->urn_uuid_to_url_map_.end());
 
   scoped_refptr<FencedFrameReporter> fenced_frame_reporter =
-      urn_it->second.fenced_frame_reporter_;
+      urn_it->second.fenced_frame_reporter();
   if (!fenced_frame_reporter) {
     return;
   }
@@ -95,14 +95,6 @@ void FencedFrameURLMappingTestPeer::FillMap(const GURL& url) {
   }
 
   DCHECK(fenced_frame_url_mapping_->IsFull());
-}
-
-void FencedFrameURLMappingTestPeer::SetId(FencedFrameURLMapping::Id id) {
-  fenced_frame_url_mapping_->id_for_testing_ = id;
-}
-
-FencedFrameURLMapping::Id FencedFrameURLMappingTestPeer::GetNextId() const {
-  return FencedFrameURLMapping::GetNextId();
 }
 
 bool PollUntilEvalToTrue(const std::string& script, RenderFrameHost* rfh) {

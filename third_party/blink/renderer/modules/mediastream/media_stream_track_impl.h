@@ -28,12 +28,14 @@
 
 #include <memory>
 
+#include "build/build_config.h"
 #include "third_party/blink/renderer/bindings/core/v8/active_script_wrappable.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_capture_handle.h"
 #include "third_party/blink/renderer/modules/event_target_modules.h"
 #include "third_party/blink/renderer/modules/mediastream/media_constraints.h"
 #include "third_party/blink/renderer/modules/mediastream/media_stream_track.h"
+#include "third_party/blink/renderer/modules/mediastream/media_stream_track_video_stats.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_set.h"
 #include "third_party/blink/renderer/platform/mediastream/media_stream_descriptor.h"
@@ -45,6 +47,7 @@
 namespace blink {
 
 class AudioSourceProvider;
+class DOMException;
 class ImageCapture;
 class MediaTrackCapabilities;
 class MediaTrackConstraints;
@@ -89,7 +92,7 @@ class MODULES_EXPORT MediaStreamTrackImpl : public MediaStreamTrack,
   MediaTrackCapabilities* getCapabilities() const override;
   MediaTrackConstraints* getConstraints() const override;
   MediaTrackSettings* getSettings() const override;
-  ScriptPromise getFrameStats(ScriptState*) const override;
+  MediaStreamTrackVideoStats* stats() override;
   CaptureHandle* getCaptureHandle() const override;
   ScriptPromise applyConstraints(ScriptState*,
                                  const MediaTrackConstraints*) override;
@@ -113,7 +116,7 @@ class MODULES_EXPORT MediaStreamTrackImpl : public MediaStreamTrack,
     return ready_state_;
   }
 
-  MediaStreamComponent* Component() const override { return component_; }
+  MediaStreamComponent* Component() const override { return component_.Get(); }
   bool Ended() const override;
 
   void RegisterMediaStream(MediaStream*) override;
@@ -125,15 +128,28 @@ class MODULES_EXPORT MediaStreamTrackImpl : public MediaStreamTrack,
   void AddedEventListener(const AtomicString&,
                           RegisteredEventListener&) override;
 
+#if !BUILDFLAG(IS_ANDROID)
+  void SendWheel(double relative_x,
+                 double relative_y,
+                 int wheel_delta_x,
+                 int wheel_delta_y,
+                 base::OnceCallback<void(DOMException*)> callback) override;
+  void SetZoomLevel(int zoom_level,
+                    base::OnceCallback<void(DOMException*)> callback) override;
+#endif
+
   // ScriptWrappable
   bool HasPendingActivity() const final;
 
   std::unique_ptr<AudioSourceProvider> CreateWebAudioSource(
-      int context_sample_rate) override;
+      int context_sample_rate,
+      uint32_t context_buffer_size) override;
 
-  ImageCapture* GetImageCapture() override { return image_capture_; }
+  MediaStreamTrackPlatform::VideoFrameStats GetVideoFrameStats() const;
 
-  absl::optional<const MediaStreamDevice> device() const override;
+  ImageCapture* GetImageCapture() override { return image_capture_.Get(); }
+
+  std::optional<const MediaStreamDevice> device() const override;
 
   void BeingTransferred(const base::UnguessableToken& transfer_id) override;
   bool TransferAllowed(String& message) const override;
@@ -157,14 +173,13 @@ class MODULES_EXPORT MediaStreamTrackImpl : public MediaStreamTrack,
   void applyConstraints(ScriptPromiseResolver*,
                         const MediaTrackConstraints*) override;
 
-  void OnDeliverableVideoFramesCount(Persistent<ScriptPromiseResolver> resolver,
-                                     size_t deliverable_frames) const;
-
   // MediaStreamSource::Observer
   void SourceChangedState() override;
   void SourceChangedCaptureConfiguration() override;
   void SourceChangedCaptureHandle() override;
-
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+  void SourceChangedZoomLevel(int) override {}
+#endif
   void PropagateTrackEnded();
 
   void SendLogMessage(const WTF::String& message);
@@ -188,6 +203,17 @@ class MODULES_EXPORT MediaStreamTrackImpl : public MediaStreamTrack,
   FrameScheduler::SchedulingAffectingFeatureHandle
       feature_handle_for_scheduler_;
 
+  // This handle notifies the scheduler about a live media stream track
+  // for the purpose of disabling/enabling BFCache. When there is a live stream
+  // track, the page should not be BFCached.
+  // TODO(crbug.com/1502395): Currently we intentionally use this handler for
+  // BFCache although its behavior is almost the same as the one above. The one
+  // above uses the WebRTC feature even though it's not necessarily related to
+  // Web RTC. Discuss with those who own the handler and merge the two handlers
+  // into one.
+  FrameScheduler::SchedulingAffectingFeatureHandle
+      feature_handle_for_scheduler_on_live_media_stream_track_;
+
   MediaStreamSource::ReadyState ready_state_;
   HeapHashSet<Member<MediaStream>> registered_media_streams_;
   bool is_iterating_registered_media_streams_ = false;
@@ -197,19 +223,8 @@ class MODULES_EXPORT MediaStreamTrackImpl : public MediaStreamTrack,
   HeapHashSet<WeakMember<MediaStreamTrack::Observer>> observers_;
   bool muted_ = false;
   MediaConstraints constraints_;
-  absl::optional<bool> suppress_local_audio_playback_setting_;
-  // Video-only.
-  //   It is the source' job to keep track of the true number of discarded or
-  // dropped frames. But tracks, unlike sources, can be cloned or disabled so
-  // we need to keep track of the baseline for when the track was cloned and
-  // a snapshot for when the track was disabled.
-  size_t video_source_discarded_frames_baseline_ = 0u;
-  size_t video_source_dropped_frames_baseline_ = 0u;
-  // To avoid counters increasing while the track is disabled, a snapshot of the
-  // discarded/dropped stats are taken at the time of disabling the track. These
-  // are also used when adjusting the baseline when the track is re-enabled.
-  size_t discarded_frames_at_last_disable_ = 0u;
-  size_t dropped_frames_at_last_disable_ = 0u;
+  std::optional<bool> suppress_local_audio_playback_setting_;
+  Member<MediaStreamTrackVideoStats> video_stats_;
 };
 
 }  // namespace blink

@@ -10,6 +10,7 @@
 
 #include "base/command_line.h"
 #include "base/files/file_path.h"
+#include "base/format_macros.h"
 #include "base/hash/sha1.h"
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
@@ -27,6 +28,7 @@
 #include "base/win/security_descriptor.h"
 #include "base/win/win_util.h"
 #include "base/win/windows_version.h"
+#include "build/build_config.h"
 #include "sandbox/features.h"
 #include "sandbox/win/src/app_container_base.h"
 #include "sandbox/win/tests/common/controller.h"
@@ -42,15 +44,15 @@ const wchar_t kAppContainerSid[] =
     L"924012148-2839372144";
 
 std::wstring GenerateRandomPackageName() {
-  return base::StringPrintf(L"%016lX%016lX", base::RandUint64(),
-                            base::RandUint64());
+  return base::ASCIIToWide(base::StringPrintf(
+      "%016" PRIX64 "%016" PRIX64, base::RandUint64(), base::RandUint64()));
 }
 
 const char* TokenTypeToName(bool impersonation) {
   return impersonation ? "Impersonation Token" : "Primary Token";
 }
 
-void CheckToken(const absl::optional<base::win::AccessToken>& token,
+void CheckToken(const std::optional<base::win::AccessToken>& token,
                 bool impersonation,
                 PSECURITY_CAPABILITIES security_capabilities,
                 bool restricted) {
@@ -64,7 +66,7 @@ void CheckToken(const absl::optional<base::win::AccessToken>& token,
     EXPECT_FALSE(token->IsIdentification()) << TokenTypeToName(impersonation);
   }
 
-  absl::optional<base::win::Sid> package_sid = token->AppContainerSid();
+  std::optional<base::win::Sid> package_sid = token->AppContainerSid();
   ASSERT_TRUE(package_sid) << TokenTypeToName(impersonation);
   EXPECT_TRUE(package_sid->Equal(security_capabilities->AppContainerSid))
       << TokenTypeToName(impersonation);
@@ -133,12 +135,12 @@ std::wstring GetAppContainerProfileName() {
   // multiple tests are running concurrently they don't mess with each other's
   // app containers.
   std::string appcontainer_id(
-      testing::UnitTest::GetInstance()->current_test_info()->test_case_name());
+      testing::UnitTest::GetInstance()->current_test_info()->test_suite_name());
   appcontainer_id +=
       testing::UnitTest::GetInstance()->current_test_info()->name();
   auto sha1 = base::SHA1HashString(appcontainer_id);
-  std::string profile_name = base::StrCat(
-      {sandbox_base_name, base::HexEncode(sha1.data(), sha1.size())});
+  std::string profile_name =
+      base::StrCat({sandbox_base_name, base::HexEncode(sha1)});
   // CreateAppContainerProfile requires that the profile name is at most 64
   // characters but 50 on WCOS systems.  The size of sha1 is a constant 40, so
   // validate that the base names are sufficiently short that the total length
@@ -236,8 +238,9 @@ SBOX_TESTS_COMMAND int AppContainerEvent_Open(int argc, wchar_t** argv) {
       ::OpenEvent(EVENT_ALL_ACCESS, false, argv[0]));
   DWORD error_open = ::GetLastError();
 
-  if (event_open.IsValid())
+  if (event_open.is_valid()) {
     return SBOX_TEST_SUCCEEDED;
+  }
 
   if (ERROR_ACCESS_DENIED == error_open)
     return SBOX_TEST_DENIED;
@@ -251,7 +254,7 @@ TEST_F(AppContainerTest, DenyOpenEventForLowBox) {
 
   base::win::ScopedHandle event(
       ::CreateEvent(nullptr, false, false, kAppContainerSid));
-  ASSERT_TRUE(event.IsValid());
+  ASSERT_TRUE(event.is_valid());
 
   TestRunner runner(JobLevel::kUnprotected, USER_UNPROTECTED, USER_UNPROTECTED);
   EXPECT_EQ(SBOX_ALL_OK,
@@ -462,6 +465,14 @@ TEST_F(AppContainerTest, ChildProcessMitigationLowBox) {
   }
 
   TestRunner runner(JobLevel::kUnprotected, USER_UNPROTECTED, USER_UNPROTECTED);
+
+#if defined(ARCH_CPU_ARM64) && !defined(NDEBUG)
+  // TODO(crbug.com/1524390) A DPLOG issued when CreateProcess() fails conflicts
+  // with Csrss lockdown on Win11 ARM64 - so allow Csrss to allow the process to
+  // run the right exitcode and not an access violation crash.
+  runner.SetDisableCsrss(false);
+#endif  // defined(ARCH_CPU_ARM64) && !defined(NDEBUG)
+
   EXPECT_EQ(SBOX_ALL_OK,
             runner.GetPolicy()->GetConfig()->SetLowBox(kAppContainerSid));
 

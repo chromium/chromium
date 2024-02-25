@@ -29,7 +29,7 @@ void BackForwardCacheRestoration::Trace(Visitor* visitor) const {
 void BackForwardCacheRestoration::BuildJSONValue(
     V8ObjectBuilder& builder) const {
   PerformanceEntry::BuildJSONValue(builder);
-  builder.Add("pageshowEventStart", pageshow_event_start_);
-  builder.Add("pageshowEventEnd", pageshow_event_end_);
+  builder.AddNumber("pageshowEventStart", pageshow_event_start_);
+  builder.AddNumber("pageshowEventEnd", pageshow_event_end_);
 }
 }  // namespace blink

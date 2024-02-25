@@ -21,6 +21,7 @@ namespace blink {
 
 class ExecutionContext;
 class NavigatorBase;
+class PermissionStatus;
 class ScriptPromiseResolver;
 class ScriptState;
 class ScriptValue;
@@ -42,9 +43,8 @@ class Permissions final : public ScriptWrappable,
   ScriptPromise query(ScriptState*, const ScriptValue&, ExceptionState&);
   ScriptPromise request(ScriptState*, const ScriptValue&, ExceptionState&);
   ScriptPromise revoke(ScriptState*, const ScriptValue&, ExceptionState&);
-  ScriptPromise requestAll(ScriptState*,
-                           const HeapVector<ScriptValue>&,
-                           ExceptionState&);
+  ScriptPromiseTyped<IDLSequence<PermissionStatus>>
+  requestAll(ScriptState*, const HeapVector<ScriptValue>&, ExceptionState&);
 
   // ExecutionContextLifecycleStateObserver:
   void ContextDestroyed() override;
@@ -86,7 +86,7 @@ class Permissions final : public ScriptWrappable,
   PermissionStatusListener* GetOrCreatePermissionStatusListener(
       mojom::blink::PermissionStatus status,
       mojom::blink::PermissionDescriptorPtr descriptor);
-  absl::optional<PermissionType> GetPermissionType(
+  std::optional<PermissionType> GetPermissionType(
       const mojom::blink::PermissionDescriptor& descriptor);
   mojom::blink::PermissionDescriptorPtr CreatePermissionVerificationDescriptor(
       PermissionType descriptor_type);

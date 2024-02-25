@@ -30,6 +30,7 @@
 #include "components/services/app_service/public/cpp/app_types.h"
 #include "components/strings/grit/components_strings.h"
 #include "content/public/test/browser_test.h"
+#include "content/public/test/browser_test_utils.h"
 #include "content/public/test/test_navigation_observer.h"
 #include "extensions/browser/extension_system.h"
 #include "extensions/common/constants.h"
@@ -160,7 +161,7 @@ class SystemFeaturesPolicyTest : public PolicyTest {
     auto web_app_info = std::make_unique<web_app::WebAppInstallInfo>();
     web_app_info->start_url = app_url;
     web_app_info->scope = app_url.GetWithoutFilename();
-    web_app::AppId installed_app_id = web_app::test::InstallWebApp(
+    webapps::AppId installed_app_id = web_app::test::InstallWebApp(
         browser()->profile(), std::move(web_app_info));
     EXPECT_EQ(app_id, installed_app_id);
   }

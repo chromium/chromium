@@ -9,6 +9,7 @@
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
+#include "base/memory/raw_ptr.h"
 #include "base/path_service.h"
 #include "base/run_loop.h"
 #include "base/test/scoped_feature_list.h"
@@ -68,13 +69,13 @@ class FakeContentTranslateDriver
 
   void ResetNewPageValues() {
     called_new_page_ = false;
-    details_ = absl::nullopt;
+    details_ = std::nullopt;
     page_level_translation_criteria_met_ = false;
   }
 
   bool called_new_page_ = false;
   bool page_level_translation_criteria_met_ = false;
-  absl::optional<translate::LanguageDetectionDetails> details_;
+  std::optional<translate::LanguageDetectionDetails> details_;
 
  private:
   mojo::ReceiverSet<translate::mojom::ContentTranslateDriver> receivers_;
@@ -91,7 +92,7 @@ base::File LoadModelFile(const base::FilePath& model_file_path) {
 
 base::FilePath model_file_path() {
   base::FilePath source_root_dir;
-  base::PathService::Get(base::DIR_SOURCE_ROOT, &source_root_dir);
+  base::PathService::Get(base::DIR_SRC_TEST_DATA_ROOT, &source_root_dir);
   return source_root_dir.AppendASCII("components")
       .AppendASCII("test")
       .AppendASCII("data")
@@ -121,8 +122,8 @@ class TestTranslateAgent : public translate::TranslateAgent {
     // Reset result values firstly.
     page_translated_ = false;
     trans_result_cancelled_ = false;
-    trans_result_source_lang_ = absl::nullopt;
-    trans_result_translated_lang_ = absl::nullopt;
+    trans_result_source_lang_ = std::nullopt;
+    trans_result_translated_lang_ = std::nullopt;
     trans_result_error_type_ = translate::TranslateErrors::NONE;
 
     // Will get new result values via OnPageTranslated.
@@ -173,8 +174,8 @@ class TestTranslateAgent : public translate::TranslateAgent {
 
   bool page_translated_;
   bool trans_result_cancelled_;
-  absl::optional<std::string> trans_result_source_lang_;
-  absl::optional<std::string> trans_result_translated_lang_;
+  std::optional<std::string> trans_result_source_lang_;
+  std::optional<std::string> trans_result_translated_lang_;
   translate::TranslateErrors trans_result_error_type_;
 };
 
@@ -210,7 +211,7 @@ class TranslateAgentBrowserTest : public ChromeRenderViewTest {
     ChromeRenderViewTest::TearDown();
   }
 
-  TestTranslateAgent* translate_agent_;
+  raw_ptr<TestTranslateAgent, DanglingUntriaged> translate_agent_;
   FakeContentTranslateDriver fake_translate_driver_;
   base::test::ScopedFeatureList scoped_feature_list_;
 };

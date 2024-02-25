@@ -28,6 +28,7 @@ import static org.chromium.content_public.browser.test.util.TestThreadUtils.runO
 
 import android.view.View;
 
+import androidx.test.espresso.Espresso;
 import androidx.test.filters.MediumTest;
 
 import org.junit.Before;
@@ -51,6 +52,7 @@ import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.SheetState;
+import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.StateChangeReason;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetTestSupport;
 import org.chromium.components.browser_ui.widget.RadioButtonWithDescription;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -68,15 +70,14 @@ public class PasswordMigrationWarningViewTest {
 
     @Rule
     public final MockitoRule mMockitoRule = MockitoJUnit.rule().strictness(Strictness.STRICT_STUBS);
+
     @Rule
     public ChromeTabbedActivityTestRule mActivityTestRule = new ChromeTabbedActivityTestRule();
 
-    @Mock
-    private Runnable mOnShowEventListener;
-    @Mock
-    private Callback<Integer> mDismissCallback;
-    @Mock
-    private PasswordMigrationWarningOnClickHandler mOnClickHandler;
+    @Mock private Runnable mOnShowEventListener;
+    @Mock private Callback<Integer> mDismissCallback;
+    @Mock private PasswordMigrationWarningOnClickHandler mOnClickHandler;
+    @Mock private PasswordMigrationWarningView.OnSheetClosedCallback mOnSheetClosedCallback;
 
     private BottomSheetController mBottomSheetController;
     private PasswordMigrationWarningView mView;
@@ -88,17 +89,28 @@ public class PasswordMigrationWarningViewTest {
     public void setupTest() throws InterruptedException {
         MockitoAnnotations.initMocks(this);
         mActivityTestRule.startMainActivityOnBlankPage();
-        mBottomSheetController = mActivityTestRule.getActivity()
-                                         .getRootUiCoordinatorForTesting()
-                                         .getBottomSheetController();
-        runOnUiThreadBlocking(() -> {
-            mModel = PasswordMigrationWarningProperties.createDefaultModel(
-                    mOnShowEventListener, mDismissCallback, mOnClickHandler);
-            mView = new PasswordMigrationWarningView(mActivityTestRule.getActivity(),
-                    mBottomSheetController, () -> {}, (Throwable exception) -> fail());
-            PropertyModelChangeProcessor.create(mModel, mView,
-                    PasswordMigrationWarningViewBinder::bindPasswordMigrationWarningView);
-        });
+        mBottomSheetController =
+                mActivityTestRule
+                        .getActivity()
+                        .getRootUiCoordinatorForTesting()
+                        .getBottomSheetController();
+        runOnUiThreadBlocking(
+                () -> {
+                    mModel =
+                            PasswordMigrationWarningProperties.createDefaultModel(
+                                    mOnShowEventListener, mDismissCallback, mOnClickHandler);
+                    mView =
+                            new PasswordMigrationWarningView(
+                                    mActivityTestRule.getActivity(),
+                                    mBottomSheetController,
+                                    () -> {},
+                                    (Throwable exception) -> fail(),
+                                    mOnSheetClosedCallback);
+                    PropertyModelChangeProcessor.create(
+                            mModel,
+                            mView,
+                            PasswordMigrationWarningViewBinder::bindPasswordMigrationWarningView);
+                });
     }
 
     @Test
@@ -113,6 +125,7 @@ public class PasswordMigrationWarningViewTest {
         runOnUiThreadBlocking(() -> mModel.set(VISIBLE, false));
         pollUiThread(() -> getBottomSheetState() == BottomSheetController.SheetState.HIDDEN);
         assertThat(mView.getContentView().isShown(), is(false));
+        verify(mOnSheetClosedCallback).onSheetClosed(StateChangeReason.NONE, false);
     }
 
     @Test
@@ -122,11 +135,12 @@ public class PasswordMigrationWarningViewTest {
         BottomSheetTestSupport.waitForOpen(mBottomSheetController);
         runOnUiThreadBlocking(() -> mModel.set(CURRENT_SCREEN, ScreenType.INTRO_SCREEN));
         // Wait for the fragment containing the button to be attached.
-        pollUiThread(()
-                             -> mActivityTestRule.getActivity().findViewById(
-                                        R.id.acknowledge_password_migration_button)
-                        != null);
-        verify(mOnShowEventListener).run();
+        pollUiThread(
+                () ->
+                        mActivityTestRule
+                                        .getActivity()
+                                        .findViewById(R.id.acknowledge_password_migration_button)
+                                != null);
     }
 
     @Test
@@ -141,6 +155,7 @@ public class PasswordMigrationWarningViewTest {
 
         // The dismiss callback was called.
         verify(mDismissCallback).onResult(BottomSheetController.StateChangeReason.NONE);
+        verify(mOnSheetClosedCallback).onSheetClosed(StateChangeReason.NONE, false);
     }
 
     @Test
@@ -152,10 +167,12 @@ public class PasswordMigrationWarningViewTest {
         // Setting the introduction screen.
         runOnUiThreadBlocking(() -> mModel.set(CURRENT_SCREEN, ScreenType.INTRO_SCREEN));
         // The test waits for the fragment containing the button to be attached.
-        pollUiThread(()
-                             -> mActivityTestRule.getActivity().findViewById(
-                                        R.id.acknowledge_password_migration_button)
-                        != null);
+        pollUiThread(
+                () ->
+                        mActivityTestRule
+                                        .getActivity()
+                                        .findViewById(R.id.acknowledge_password_migration_button)
+                                != null);
         onView(withId(R.id.migration_warning_sheet_subtitle)).check(matches(isDisplayed()));
         onView(withId(R.id.acknowledge_password_migration_button)).check(matches(isDisplayed()));
         onView(withId(R.id.password_migration_more_options_button)).check(matches(isDisplayed()));
@@ -172,16 +189,21 @@ public class PasswordMigrationWarningViewTest {
         // Setting the options screen.
         runOnUiThreadBlocking(() -> mModel.set(CURRENT_SCREEN, ScreenType.OPTIONS_SCREEN));
         // The test waits for the fragment containing the button to be attached.
-        pollUiThread(()
-                             -> mActivityTestRule.getActivity().findViewById(
-                                        R.id.password_migration_cancel_button)
-                        != null);
+        pollUiThread(
+                () ->
+                        mActivityTestRule
+                                        .getActivity()
+                                        .findViewById(R.id.password_migration_cancel_button)
+                                != null);
         onView(withId(R.id.radio_button_layout)).check(matches(isDisplayed()));
-        runOnUiThreadBlocking(() -> {
-            RadioButtonWithDescription signInOrSyncButton =
-                    mActivityTestRule.getActivity().findViewById(R.id.radio_sign_in_or_sync);
-            assertTrue(signInOrSyncButton.isChecked());
-        });
+        runOnUiThreadBlocking(
+                () -> {
+                    RadioButtonWithDescription signInOrSyncButton =
+                            mActivityTestRule
+                                    .getActivity()
+                                    .findViewById(R.id.radio_sign_in_or_sync);
+                    assertTrue(signInOrSyncButton.isChecked());
+                });
         onView(withId(R.id.password_migration_next_button)).check(matches(isDisplayed()));
         onView(withId(R.id.password_migration_cancel_button)).check(matches(isDisplayed()));
     }
@@ -197,21 +219,29 @@ public class PasswordMigrationWarningViewTest {
         // Setting the options screen.
         runOnUiThreadBlocking(() -> mModel.set(CURRENT_SCREEN, ScreenType.OPTIONS_SCREEN));
         // The test waits for the fragment containing the button to be attached.
-        pollUiThread(()
-                             -> mActivityTestRule.getActivity().findViewById(
-                                        R.id.password_migration_cancel_button)
-                        != null);
+        pollUiThread(
+                () ->
+                        mActivityTestRule
+                                        .getActivity()
+                                        .findViewById(R.id.password_migration_cancel_button)
+                                != null);
         onView(withId(R.id.radio_button_layout)).check(matches(isDisplayed()));
-        runOnUiThreadBlocking(() -> {
-            RadioButtonWithDescription signInOrSyncButton =
-                    mActivityTestRule.getActivity().findViewById(R.id.radio_sign_in_or_sync);
-            assertEquals(View.GONE, signInOrSyncButton.getVisibility());
-        });
-        runOnUiThreadBlocking(() -> {
-            RadioButtonWithDescription exportButton =
-                    mActivityTestRule.getActivity().findViewById(R.id.radio_password_export);
-            assertTrue(exportButton.isChecked());
-        });
+        runOnUiThreadBlocking(
+                () -> {
+                    RadioButtonWithDescription signInOrSyncButton =
+                            mActivityTestRule
+                                    .getActivity()
+                                    .findViewById(R.id.radio_sign_in_or_sync);
+                    assertEquals(View.GONE, signInOrSyncButton.getVisibility());
+                });
+        runOnUiThreadBlocking(
+                () -> {
+                    RadioButtonWithDescription exportButton =
+                            mActivityTestRule
+                                    .getActivity()
+                                    .findViewById(R.id.radio_password_export);
+                    assertTrue(exportButton.isChecked());
+                });
         onView(withId(R.id.password_migration_next_button)).check(matches(isDisplayed()));
         onView(withId(R.id.password_migration_cancel_button)).check(matches(isDisplayed()));
     }
@@ -227,22 +257,28 @@ public class PasswordMigrationWarningViewTest {
         // Setting the options screen.
         runOnUiThreadBlocking(() -> mModel.set(CURRENT_SCREEN, ScreenType.OPTIONS_SCREEN));
         // The test waits for the fragment containing the button to be attached.
-        pollUiThread(()
-                             -> mActivityTestRule.getActivity().findViewById(
-                                        R.id.password_migration_cancel_button)
-                        != null);
+        pollUiThread(
+                () ->
+                        mActivityTestRule
+                                        .getActivity()
+                                        .findViewById(R.id.password_migration_cancel_button)
+                                != null);
         onView(withId(R.id.radio_button_layout)).check(matches(isDisplayed()));
 
         // Verify that the sync button is checked by default.
-        runOnUiThreadBlocking(() -> {
-            RadioButtonWithDescription signInOrSyncButton =
-                    mActivityTestRule.getActivity().findViewById(R.id.radio_sign_in_or_sync);
-            assertTrue(signInOrSyncButton.isChecked());
-        });
+        runOnUiThreadBlocking(
+                () -> {
+                    RadioButtonWithDescription signInOrSyncButton =
+                            mActivityTestRule
+                                    .getActivity()
+                                    .findViewById(R.id.radio_sign_in_or_sync);
+                    assertTrue(signInOrSyncButton.isChecked());
+                });
 
         onView(withId(R.id.password_migration_next_button)).perform(click());
         verify(mOnClickHandler)
-                .onNext(eq(MigrationOption.SYNC_PASSWORDS),
+                .onNext(
+                        eq(MigrationOption.SYNC_PASSWORDS),
                         eq(mActivityTestRule.getActivity().getSupportFragmentManager()));
     }
 
@@ -255,22 +291,28 @@ public class PasswordMigrationWarningViewTest {
         // Setting the options screen.
         runOnUiThreadBlocking(() -> mModel.set(CURRENT_SCREEN, ScreenType.OPTIONS_SCREEN));
         // The test waits for the fragment containing the button to be attached.
-        pollUiThread(()
-                             -> mActivityTestRule.getActivity().findViewById(
-                                        R.id.password_migration_cancel_button)
-                        != null);
+        pollUiThread(
+                () ->
+                        mActivityTestRule
+                                        .getActivity()
+                                        .findViewById(R.id.password_migration_cancel_button)
+                                != null);
         onView(withId(R.id.radio_button_layout)).check(matches(isDisplayed()));
 
         // Select the export button.
-        runOnUiThreadBlocking(() -> {
-            RadioButtonWithDescription exportButton =
-                    mActivityTestRule.getActivity().findViewById(R.id.radio_password_export);
-            exportButton.setChecked(true);
-        });
+        runOnUiThreadBlocking(
+                () -> {
+                    RadioButtonWithDescription exportButton =
+                            mActivityTestRule
+                                    .getActivity()
+                                    .findViewById(R.id.radio_password_export);
+                    exportButton.setChecked(true);
+                });
 
         onView(withId(R.id.password_migration_next_button)).perform(click());
         verify(mOnClickHandler)
-                .onNext(eq(MigrationOption.EXPORT_AND_DELETE),
+                .onNext(
+                        eq(MigrationOption.EXPORT_AND_DELETE),
                         eq(mActivityTestRule.getActivity().getSupportFragmentManager()));
     }
 
@@ -287,10 +329,12 @@ public class PasswordMigrationWarningViewTest {
         runOnUiThreadBlocking(() -> mModel.set(VISIBLE, true));
         BottomSheetTestSupport.waitForOpen(mBottomSheetController);
 
-        pollUiThread(()
-                             -> mActivityTestRule.getActivity().findViewById(
-                                        R.id.acknowledge_password_migration_button)
-                        != null);
+        pollUiThread(
+                () ->
+                        mActivityTestRule
+                                        .getActivity()
+                                        .findViewById(R.id.acknowledge_password_migration_button)
+                                != null);
         onView(withId(R.id.migration_warning_sheet_subtitle)).check(matches(isDisplayed()));
         onView(withId(R.id.acknowledge_password_migration_button)).check(matches(isDisplayed()));
         onView(withId(R.id.password_migration_more_options_button)).check(matches(isDisplayed()));
@@ -309,11 +353,53 @@ public class PasswordMigrationWarningViewTest {
         runOnUiThreadBlocking(() -> mModel.set(VISIBLE, true));
         BottomSheetTestSupport.waitForOpen(mBottomSheetController);
 
-        pollUiThread(()
-                             -> mActivityTestRule.getActivity().findViewById(
-                                        R.id.password_migration_next_button)
-                        != null);
+        pollUiThread(
+                () ->
+                        mActivityTestRule
+                                        .getActivity()
+                                        .findViewById(R.id.password_migration_next_button)
+                                != null);
         onView(withText(TEST_EMAIL)).check(matches(isDisplayed()));
+    }
+
+    @Test
+    @MediumTest
+    public void testEmptySheetClosedWithoutUserInteractionCallsOnSheetClosedCallback() {
+        runOnUiThreadBlocking(() -> mModel.set(VISIBLE, true));
+        BottomSheetTestSupport.waitForOpen(mBottomSheetController);
+        runOnUiThreadBlocking(() -> mModel.set(VISIBLE, false));
+        BottomSheetTestSupport.waitForState(mBottomSheetController, SheetState.HIDDEN);
+
+        verify(mOnSheetClosedCallback).onSheetClosed(StateChangeReason.NONE, false);
+    }
+
+    @Test
+    @MediumTest
+    public void testEmptySheetClosedByUserInteractionCallsOnSheetClosedCallback() {
+        runOnUiThreadBlocking(() -> mModel.set(VISIBLE, true));
+        BottomSheetTestSupport.waitForOpen(mBottomSheetController);
+        Espresso.pressBack();
+        BottomSheetTestSupport.waitForState(mBottomSheetController, SheetState.HIDDEN);
+
+        verify(mOnSheetClosedCallback).onSheetClosed(StateChangeReason.BACK_PRESS, false);
+    }
+
+    @Test
+    @MediumTest
+    public void testClosingTheSheetWithFullContentCallsOnSheetClosedCallback() {
+        runOnUiThreadBlocking(() -> mModel.set(CURRENT_SCREEN, ScreenType.INTRO_SCREEN));
+        runOnUiThreadBlocking(() -> mModel.set(VISIBLE, true));
+        BottomSheetTestSupport.waitForOpen(mBottomSheetController);
+        pollUiThread(
+                () ->
+                        mActivityTestRule
+                                        .getActivity()
+                                        .findViewById(R.id.acknowledge_password_migration_button)
+                                != null);
+        Espresso.pressBack();
+        BottomSheetTestSupport.waitForState(mBottomSheetController, SheetState.HIDDEN);
+
+        verify(mOnSheetClosedCallback).onSheetClosed(StateChangeReason.BACK_PRESS, true);
     }
 
     private @SheetState int getBottomSheetState() {

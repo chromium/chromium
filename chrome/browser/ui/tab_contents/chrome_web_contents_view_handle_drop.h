@@ -13,8 +13,8 @@ struct DropData;
 }  // namespace content
 
 // Common code to be called from the implementation of
-// WebContentsViewDelegate::OnPerformDrop() for each platform.
-void HandleOnPerformDrop(
+// WebContentsViewDelegate::OnPerformingDrop() for each platform.
+void HandleOnPerformingDrop(
     content::WebContents* web_contents,
     content::DropData drop_data,
     content::WebContentsViewDelegate::DropCompletionCallback callback);

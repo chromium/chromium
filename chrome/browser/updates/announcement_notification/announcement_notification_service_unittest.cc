@@ -150,10 +150,8 @@ class AnnouncementNotificationServiceTest : public testing::Test {
     // Setup test target objects.
     auto delegate = std::make_unique<NiceMock<MockDelegate>>();
     delegate_ = delegate.get();
-    service_ = base::WrapUnique<AnnouncementNotificationService>(
-        AnnouncementNotificationService::Create(test_profile_.get(),
-                                                pref_service_.get(),
-                                                std::move(delegate), &clock_));
+    service_ = AnnouncementNotificationService::Create(
+        test_profile_.get(), pref_service_.get(), std::move(delegate), &clock_);
   }
 
  private:

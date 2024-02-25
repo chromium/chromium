@@ -9,9 +9,7 @@ import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.components.browser_ui.widget.gesture.BackPressHandler;
 
-/**
- * Back gesture handler for {@link TextBubble}.
- */
+/** Back gesture handler for {@link TextBubble}. */
 public class TextBubbleBackPressHandler implements BackPressHandler {
     private final ObservableSupplierImpl<Boolean> mSupplier = new ObservableSupplierImpl<>();
     private final Callback<Integer> mCallback = (count) -> mSupplier.set(count != 0);

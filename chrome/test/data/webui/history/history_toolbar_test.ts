@@ -4,7 +4,8 @@
 
 import 'chrome://history/history.js';
 
-import {BrowserServiceImpl, ensureLazyLoaded, HistoryAppElement, HistoryEntry} from 'chrome://history/history.js';
+import type {HistoryAppElement, HistoryEntry} from 'chrome://history/history.js';
+import {BrowserServiceImpl, ensureLazyLoaded} from 'chrome://history/history.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 
@@ -41,6 +42,7 @@ suite('history-toolbar', function() {
     await flushTasks();
     const item = app.$.history.shadowRoot!.querySelector('history-item')!;
     item.$.checkbox.click();
+    await item.$.checkbox.updateComplete;
 
     const toolbar = app.$.toolbar;
 
@@ -50,6 +52,7 @@ suite('history-toolbar', function() {
     assertTrue(toolbar.$.mainToolbar.hasAttribute('has-overlay'));
 
     item.$.checkbox.click();
+    await item.$.checkbox.updateComplete;
 
     // Ensure that when an item is deselected the count held by the
     // toolbar decreases.

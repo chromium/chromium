@@ -7,13 +7,10 @@
 
 #include "base/no_destructor.h"
 #include "chrome/browser/profiles/profile_keyed_service_factory.h"
+#include "components/plus_addresses/plus_address_service.h"
 
 namespace content {
 class BrowserContext;
-}
-
-namespace plus_addresses {
-class PlusAddressService;
 }
 
 // A standard ProfileKeyedServiceFactory implementation for (eventually)
@@ -38,6 +35,7 @@ class PlusAddressServiceFactory : public ProfileKeyedServiceFactory {
   // BrowserContextKeyedServiceFactory:
   std::unique_ptr<KeyedService> BuildServiceInstanceForBrowserContext(
       content::BrowserContext* context) const override;
+  bool ServiceIsCreatedWithBrowserContext() const override;
 };
 
 #endif  // CHROME_BROWSER_PLUS_ADDRESSES_PLUS_ADDRESS_SERVICE_FACTORY_H_

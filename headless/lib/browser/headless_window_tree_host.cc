@@ -79,7 +79,7 @@ void HeadlessWindowTreeHost::SetCapture() {}
 void HeadlessWindowTreeHost::ReleaseCapture() {}
 
 bool HeadlessWindowTreeHost::CaptureSystemKeyEventsImpl(
-    absl::optional<base::flat_set<ui::DomCode>> codes) {
+    std::optional<base::flat_set<ui::DomCode>> codes) {
   return false;
 }
 

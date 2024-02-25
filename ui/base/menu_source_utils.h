@@ -7,6 +7,8 @@
 
 #include "base/component_export.h"
 #include "build/branding_buildflags.h"
+#include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "ui/base/ui_base_types.h"
 
 namespace ui {

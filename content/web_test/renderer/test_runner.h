@@ -8,6 +8,7 @@
 #include <stdint.h>
 
 #include <memory>
+#include <optional>
 #include <set>
 #include <string>
 #include <vector>
@@ -16,6 +17,7 @@
 #include "base/containers/flat_set.h"
 #include "base/files/file_path.h"
 #include "base/functional/callback_forward.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/values.h"
 #include "content/web_test/common/web_test.mojom.h"
@@ -28,7 +30,6 @@
 #include "content/web_test/renderer/web_test_content_settings_client.h"
 #include "printing/buildflags/buildflags.h"
 #include "printing/page_range.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/platform/web_effective_connection_type.h"
 #include "third_party/blink/public/platform/web_url.h"
 #include "third_party/skia/include/core/SkBitmap.h"
@@ -95,9 +96,10 @@ class TestRunner {
   // layout and animation etc.
   // This does *not* run as part of loading finishing because that happens in
   // the middle of blink call stacks that have inconsistent state.
-  void FinishTestIfReady();
+  void FinishTestIfReady(blink::WebLocalFrame& source);
+  void FinishTestIfReady(WebFrameTestProxy& source);
   // Notification that another renderer has explicitly asked the test to end.
-  void TestFinishedFromSecondaryRenderer();
+  void TestFinishedFromSecondaryRenderer(WebFrameTestProxy& source);
 
   // Performs a reset at the end of a test, in order to prepare for the next
   // test.
@@ -105,12 +107,8 @@ class TestRunner {
 
   // Track the set of all main frames in the process, which is also the set of
   // windows rooted in this process.
-  void AddMainFrame(WebFrameTestProxy* frame);
-  void RemoveMainFrame(WebFrameTestProxy* frame);
-
-  // Returns a mock WebContentSettings that is used for web tests. An
-  // embedder should use this for all WebViews it creates.
-  blink::WebContentSettingsClient* GetWebContentSettings();
+  void AddMainFrame(WebFrameTestProxy& frame);
+  void RemoveMainFrame(WebFrameTestProxy& frame);
 
   // Returns true if the test output should be an audio file, rather than text
   // or pixel results.
@@ -132,10 +130,14 @@ class TestRunner {
   bool CanDumpPixelsFromRenderer() const;
 
 #if BUILDFLAG(ENABLE_PRINTING)
-  // Returns the page size to be used for printing. This is either the size that
-  // was explicitly set via SetPrintingSize or the size of the frame if no size
-  // was set.
+  // Returns the default page size to be used for printing. This is either the
+  // size that was explicitly set via SetPrintingSize or the size of the frame
+  // if no size was set.
   gfx::Size GetPrintingPageSize(blink::WebLocalFrame* frame) const;
+
+  // Returns the default page margin size to be used for printing. The value
+  // applies to all four sides of the page.
+  int GetPrintingMargin() const;
 
   // Returns the page ranges to be printed. This is specified in the document
   // via a tag of the form <meta name=reftest-pages content="1,2-3,5-">. If no
@@ -176,10 +178,10 @@ class TestRunner {
   std::string CustomDumpText() const;
   void ShowDevTools(const std::string& settings,
                     const std::string& frontend_url);
-  void SetShouldDumpAsLayout(bool);
-  void SetCustomTextOutput(const std::string& text);
-  void SetShouldGeneratePixelResults(bool);
-  void SetShouldDumpFrameLoadCallbacks(bool);
+  void SetShouldDumpAsLayout(bool, WebFrameTestProxy& source);
+  void SetCustomTextOutput(const std::string& text, WebFrameTestProxy& source);
+  void SetShouldGeneratePixelResults(bool, WebFrameTestProxy& source);
+  void SetShouldDumpFrameLoadCallbacks(bool, WebFrameTestProxy& source);
   bool ShouldDumpEditingCallbacks() const;
   bool ShouldDumpFrameLoadCallbacks() const;
   bool ShouldDumpPingLoaderCallbacks() const;
@@ -191,7 +193,7 @@ class TestRunner {
   const std::set<std::string>* HttpHeadersToClear() const;
   bool ClearReferrer() const;
   bool IsWebPlatformTestsMode() const;
-  void SetIsWebPlatformTestsMode();
+  void SetIsWebPlatformTestsMode(WebFrameTestProxy& source);
   bool animation_requires_raster() const { return animation_requires_raster_; }
   void SetAnimationRequiresRaster(bool do_raster);
 
@@ -200,22 +202,22 @@ class TestRunner {
   // Note: Only one renderer process is really tracking the loading frames. This
   //       is the first to observe one. Both local and remote frames are tracked
   //       by this process.
-  void AddLoadingFrame(blink::WebFrame* frame);
+  void AddLoadingFrame(blink::WebLocalFrame* frame);
 
   // Remove |frame| from the set of loading frames.
   //
   // When there are no more loading frames, this potentially finishes the test,
   // unless TestRunner.WaitUntilDone() was called and/or there are pending load
   // requests in WorkQueue.
-  void RemoveLoadingFrame(blink::WebFrame* frame);
+  void RemoveLoadingFrame(blink::WebLocalFrame* frame);
 
   // Called when a main frame has been navigated away.
-  void OnFrameDeactivated(WebFrameTestProxy* frame);
+  void OnFrameDeactivated(WebFrameTestProxy& frame);
 
   // Called when a main frame has been restored from backward/forward cache.
-  void OnFrameReactivated(WebFrameTestProxy* frame);
+  void OnFrameReactivated(WebFrameTestProxy& frame);
 
-  void PolicyDelegateDone();
+  void PolicyDelegateDone(WebFrameTestProxy& source);
   bool PolicyDelegateEnabled() const;
   bool PolicyDelegateIsPermissive() const;
   bool PolicyDelegateShouldNotifyDone() const;
@@ -225,26 +227,20 @@ class TestRunner {
   bool ShouldDumpConsoleMessages() const;
   // Controls whether console messages produced by the page are dumped
   // to test output.
-  void SetDumpConsoleMessages(bool value);
-
-  // The following trigger navigations on the main WebView.
-  void GoToOffset(int offset);
-  void Reload();
-  void LoadURLForFrame(const GURL& url, const std::string& frame_name);
+  void SetDumpConsoleMessages(bool value, WebFrameTestProxy& source);
 
   // Add a message to the text dump for the web test.
-  void PrintMessage(const std::string& message);
-  // Add a message to stderr (not saved to expected output files, for debugging
-  // only).
-  void PrintMessageToStderr(const std::string& message);
+  void PrintMessage(const std::string& message, WebFrameTestProxy& source);
 
   // Register a new isolated filesystem with the given files, and return the
   // new filesystem id.
   blink::WebString RegisterIsolatedFileSystem(
-      const std::vector<base::FilePath>& file_paths);
+      const std::vector<base::FilePath>& file_paths,
+      WebFrameTestProxy& source);
 
-  void ProcessWorkItem(mojom::WorkItemPtr work_item);
-  void ReplicateWorkQueueStates(const base::Value::Dict& changed_values);
+  void ProcessWorkItem(mojom::WorkItemPtr work_item, WebFrameTestProxy& source);
+  void ReplicateWorkQueueStates(const base::Value::Dict& changed_values,
+                                WebFrameTestProxy& source);
 
   blink::WebEffectiveConnectionType effective_connection_type() const {
     return effective_connection_type_;
@@ -270,8 +266,10 @@ class TestRunner {
   // In general, drag and drop will automatically be performed because web tests
   // do not have drag and drop enabled. If you need to control the drag and drop
   // lifecycle yourself, you can disable it here.
-  void DisableAutomaticDragDrop();
+  void DisableAutomaticDragDrop(WebFrameTestProxy& source);
   bool AutomaticDragDropEnabled();
+
+  const WebTestRuntimeFlags& GetFlags();
 
  private:
   friend class TestRunnerBindings;
@@ -290,13 +288,15 @@ class TestRunner {
     // Reset the state of the class between tests.
     void Reset();
 
-    void AddWork(mojom::WorkItemPtr work_item);
-    void RequestWork();
-    void ProcessWorkItem(mojom::WorkItemPtr work_item);
-    void ReplicateStates(const base::Value::Dict& values);
+    void AddWork(mojom::WorkItemPtr work_item, WebFrameTestProxy& source);
+    void RequestWork(WebFrameTestProxy& source);
+    void ProcessWorkItem(mojom::WorkItemPtr work_item,
+                         WebFrameTestProxy& source);
+    void ReplicateStates(const base::Value::Dict& values,
+                         WebFrameTestProxy& source);
 
     // Takes care of notifying the browser after a change to the state.
-    void OnStatesChanged();
+    void OnStatesChanged(WebFrameTestProxy& source);
 
     void set_loading(bool value) { loading_ = value; }
 
@@ -307,12 +307,13 @@ class TestRunner {
     bool has_items() const { return GetStateValue(kDictKeyWorkQueueHasItems); }
 
    private:
-    bool ProcessWorkItemInternal(mojom::WorkItemPtr work_item);
+    bool ProcessWorkItemInternal(mojom::WorkItemPtr work_item,
+                                 WebFrameTestProxy& source);
 
     bool is_frozen() const { return GetStateValue(kKeyFrozen); }
 
     bool GetStateValue(const char* key) const {
-      absl::optional<bool> value =
+      std::optional<bool> value =
           states_.current_values().FindBoolByDottedPath(key);
       DCHECK(value.has_value());
       return value.value();
@@ -322,7 +323,7 @@ class TestRunner {
     // Collection of flags to be synced with the browser process.
     TrackedDictionary states_;
 
-    TestRunner* controller_;
+    raw_ptr<TestRunner> controller_;
   };
 
   // If the main test window's main frame is hosted in this renderer process,
@@ -335,37 +336,39 @@ class TestRunner {
 
   // By default, tests end when page load is complete. These methods are used
   // to delay the completion of the test until NotifyDone is called.
-  void WaitUntilDone();
-  void NotifyDone();
+  void WaitUntilDone(WebFrameTestProxy& source);
+  void NotifyDone(WebFrameTestProxy& source);
 
   // When there are no conditions left to wait for, this is called to cause the
   // test to end, collect results, and inform the browser.
-  void FinishTest();
+  void FinishTest(WebFrameTestProxy& source);
 
   // Methods for adding actions to the work queue. Used in conjunction with
   // WaitUntilDone/NotifyDone above.
-  void QueueBackNavigation(int how_far_back);
-  void QueueForwardNavigation(int how_far_forward);
-  void QueueReload();
-  void QueueLoadingScript(const std::string& script);
-  void QueueNonLoadingScript(const std::string& script);
+  void QueueBackNavigation(int how_far_back, WebFrameTestProxy& source);
+  void QueueForwardNavigation(int how_far_forward, WebFrameTestProxy& source);
+  void QueueReload(WebFrameTestProxy& source);
+  void QueueLoadingScript(const std::string& script, WebFrameTestProxy& source);
+  void QueueNonLoadingScript(const std::string& script,
+                             WebFrameTestProxy& source);
   void QueueLoad(const GURL& current_url,
                  const std::string& relative_url,
-                 const std::string& target);
+                 const std::string& target,
+                 WebFrameTestProxy& source);
 
   // Called from the TestRunnerBindings to inform that the test has modified
   // the TestPreferences. This will update the WebkitPreferences in the renderer
   // and the browser.
   void OnTestPreferencesChanged(const TestPreferences& test_prefs,
-                                RenderFrame* frame);
+                                WebFrameTestProxy& frame);
 
   // Causes navigation actions just printout the intended navigation instead
   // of taking you to the page. This is used for cases like mailto, where you
   // don't actually want to open the mail program.
-  void SetCustomPolicyDelegate(gin::Arguments* args);
+  void SetCustomPolicyDelegate(gin::Arguments* args, WebFrameTestProxy& source);
 
   // Delays completion of the test until the policy delegate runs.
-  void WaitForPolicyDelegate();
+  void WaitForPolicyDelegate(WebFrameTestProxy& source);
 
   // This is the count of windows which have their main frame in this renderer
   // process. A cross-origin window would not appear in this count.
@@ -385,13 +388,10 @@ class TestRunner {
   void SetTextSubpixelPositioning(bool value);
 
   // Set the mock orientation on |view| to |orientation|.
-  void SetMockScreenOrientation(blink::WebView* view,
-                                const std::string& orientation);
+  void SetMockScreenOrientation(const std::string& orientation,
+                                WebFrameTestProxy& frame);
   // Disable any mock orientation on |view| that is set.
   void DisableMockScreenOrientation(blink::WebView* view);
-
-  // Modify accept_languages in blink::RendererPreferences.
-  void SetAcceptLanguages(const std::string& accept_languages);
 
   ///////////////////////////////////////////////////////////////////////////
   // Methods that modify the state of TestRunner
@@ -399,41 +399,41 @@ class TestRunner {
   // This function sets a flag that tells the test runner to print a line of
   // descriptive text for each editing command. It takes no arguments, and
   // ignores any that may be present.
-  void DumpEditingCallbacks();
+  void DumpEditingCallbacks(WebFrameTestProxy& source);
 
   // This function sets a flag that tells the test runner to dump pages as
   // plain text. The pixel results will not be generated for this test.
   // It has higher priority than DumpAsMarkup() and DumpAsLayout().
-  void DumpAsText();
+  void DumpAsText(WebFrameTestProxy& source);
 
   // This function sets a flag that tells the test runner to dump pages as
   // the DOM contents, rather than as a text representation of the renderer's
   // state. The pixel results will not be generated for this test. It has
   // higher priority than DumpAsLayout(), but lower than DumpAsText().
-  void DumpAsMarkup();
+  void DumpAsMarkup(WebFrameTestProxy& source);
 
   // This function sets a flag that tells the test runner to dump pages as
   // plain text. It will also generate a pixel dump for the test.
-  void DumpAsTextWithPixelResults();
+  void DumpAsTextWithPixelResults(WebFrameTestProxy& source);
 
   // This function sets a flag that tells the test runner to dump pages as
   // text representation of the layout. The pixel results will not be generated
   // for this test. It has lower priority than DumpAsText() and DumpAsMarkup().
-  void DumpAsLayout();
+  void DumpAsLayout(WebFrameTestProxy& source);
 
   // This function sets a flag that tells the test runner to dump pages as
   // text representation of the layout. It will also generate a pixel dump for
   // the test.
-  void DumpAsLayoutWithPixelResults();
+  void DumpAsLayoutWithPixelResults(WebFrameTestProxy& source);
 
   // This function sets a flag that tells the test runner to recursively dump
   // all frames as text, markup or layout depending on which of DumpAsText,
   // DumpAsMarkup and DumpAsLayout is effective.
-  void DumpChildFrames();
+  void DumpChildFrames(WebFrameTestProxy& source);
 
   // This function sets a flag that tells the test runner to print out the
   // information about icon changes notifications from WebKit.
-  void DumpIconChanges();
+  void DumpIconChanges(WebFrameTestProxy& source);
 
   // Deals with Web Audio WAV file data.
   void SetAudioData(const gin::ArrayBufferView& view);
@@ -441,19 +441,19 @@ class TestRunner {
   // This function sets a flag that tells the test runner to print a line of
   // descriptive text for each frame load callback. It takes no arguments, and
   // ignores any that may be present.
-  void DumpFrameLoadCallbacks();
+  void DumpFrameLoadCallbacks(WebFrameTestProxy& source);
 
   // This function sets a flag that tells the test runner to print a line of
   // descriptive text for each PingLoader dispatch. It takes no arguments, and
   // ignores any that may be present.
-  void DumpPingLoaderCallbacks();
+  void DumpPingLoaderCallbacks(WebFrameTestProxy& source);
 
   // This function sets a flag that tells the test runner to print a line of
   // user gesture status text for some frame load callbacks. It takes no
   // arguments, and ignores any that may be present.
-  void DumpUserGestureInFrameLoadCallbacks();
+  void DumpUserGestureInFrameLoadCallbacks(WebFrameTestProxy& source);
 
-  void DumpTitleChanges();
+  void DumpTitleChanges(WebFrameTestProxy& source);
 
   // This function sets a flag that tells the test runner to dump the MIME type
   // for each resource that was loaded. It takes no arguments, and ignores any
@@ -461,24 +461,27 @@ class TestRunner {
   void DumpResourceResponseMIMETypes();
 
   // WebContentSettingsClient related.
-  void SetImagesAllowed(bool allowed);
-  void SetScriptsAllowed(bool allowed);
-  void SetStorageAllowed(bool allowed);
-  void SetAllowRunningOfInsecureContent(bool allowed);
-  void DumpPermissionClientCallbacks();
+  void SetImagesAllowed(bool allowed, WebFrameTestProxy& source);
+  void SetStorageAllowed(bool allowed, WebFrameTestProxy& source);
+  void SetAllowRunningOfInsecureContent(bool allowed,
+                                        WebFrameTestProxy& source);
+  void DumpPermissionClientCallbacks(WebFrameTestProxy& source);
 
   // This function sets a flag that tells the test runner to print out a text
   // representation of the back/forward list. It ignores all arguments.
   void DumpBackForwardList();
 
-  void DumpSelectionRect();
+  void DumpSelectionRect(WebFrameTestProxy& source);
 
-  // Causes layout to happen as if targetted to printed pages.
-  void SetPrinting();
-  void SetPrintingForFrame(const std::string& frame_name);
-  void SetPrintingSize(int width, int height);
+  // Causes layout to happen as if targeted to printed pages.
+  void SetPrinting(WebFrameTestProxy& source);
+  void SetPrintingForFrame(const std::string& frame_name,
+                           WebFrameTestProxy& source);
+  void SetPrintingSize(int width, int height, WebFrameTestProxy& source);
+  void SetPrintingMargin(int size, WebFrameTestProxy& source);
 
-  void SetShouldStayOnPageAfterHandlingBeforeUnload(bool value);
+  void SetShouldStayOnPageAfterHandlingBeforeUnload(bool value,
+                                                    WebFrameTestProxy& source);
 
   // Causes WillSendRequest to clear certain headers.
   // Note: This cannot be used to clear the request's `Referer` header, as this
@@ -492,20 +495,20 @@ class TestRunner {
 
   // Sets a flag that causes the test to be marked as completed when the
   // WebLocalFrameClient receives a LoadURLExternally() call.
-  void WaitUntilExternalURLLoad();
+  void WaitUntilExternalURLLoad(WebFrameTestProxy& source);
 
   // This function sets a flag to dump the drag image when the next drag&drop is
   // initiated. It is equivalent to DumpAsTextWithPixelResults but the pixel
   // results will be the drag image instead of a snapshot of the page.
-  void DumpDragImage();
+  void DumpDragImage(WebFrameTestProxy& source);
 
   // Sets a flag that sets a flag to dump the default navigation policy passed
   // to the DecidePolicyForNavigation callback.
-  void DumpNavigationPolicy();
+  void DumpNavigationPolicy(WebFrameTestProxy& source);
 
   // Controls whether JavaScript dialogs such as alert() are dumped to test
   // output.
-  void SetDumpJavaScriptDialogs(bool value);
+  void SetDumpJavaScriptDialogs(bool value, WebFrameTestProxy& source);
 
   // Overrides the NetworkQualityEstimator's estimated network type. If |type|
   // is TypeUnknown the NQE's value is used. Be sure to call this with
@@ -515,16 +518,10 @@ class TestRunner {
 
   // Takes care of notifying the browser after a change to web test runtime
   // flags.
-  void OnWebTestRuntimeFlagsChanged();
+  void OnWebTestRuntimeFlagsChanged(WebFrameTestProxy& source);
 
   ///////////////////////////////////////////////////////////////////////////
   // Internal helpers
-
-  mojo::AssociatedRemote<mojom::WebTestControlHost>&
-  GetWebTestControlHostRemote();
-  void HandleWebTestControlHostDisconnected();
-  mojo::AssociatedRemote<mojom::WebTestControlHost>
-      web_test_control_host_remote_;
 
   mojom::WebTestBluetoothFakeAdapterSetter& GetBluetoothFakeAdapterSetter();
   void HandleBluetoothFakeAdapterSetterDisconnected();
@@ -568,7 +565,7 @@ class TestRunner {
   std::vector<std::unique_ptr<MainWindowTracker>> main_windows_;
 
   // This is non empty when a load is in progress.
-  std::vector<blink::WebFrame*> loading_frames_;
+  std::vector<raw_ptr<blink::WebFrame, VectorExperimental>> loading_frames_;
   // We do not want the test to end until the main frame finishes loading. This
   // starts as true at the beginning of the test, and will be set to false once
   // we run out of frames to load at any time.
@@ -582,7 +579,6 @@ class TestRunner {
   // test that was not waiting for NotifyDone() at all.
   bool did_notify_done_ = false;
 
-  WebTestContentSettingsClient test_content_settings_client_;
   FakeScreenOrientationImpl fake_screen_orientation_impl_;
   GamepadController gamepad_controller_;
 

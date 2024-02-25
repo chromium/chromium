@@ -5,11 +5,23 @@ Use of this source code is governed by a BSD-style license that can be
 found in the LICENSE file.
 -->
 
-<TextView
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout
+    android:layout_width="wrap_content"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/error_message"
-    android:textAppearance="@style/TextAppearance.ErrorCaption"
-    style="@style/AlertDialogContent"
-    android:layout_width="match_parent"
-    android:layout_height="wrap_content"/>
+    xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <ViewStub
+        android:id="@+id/title_with_icon_stub"
+        android:inflatedId="@+id/title_with_icon"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
+
+    <TextView
+        android:id="@+id/error_message"
+        android:textAppearance="@style/TextAppearance.ErrorCaption"
+        style="@style/AlertDialogContent"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"/>
+</LinearLayout>

@@ -327,7 +327,8 @@ void Unpack::MakeDecodeTables(byte *LengthTable,DecodeTable *Dec,uint Size)
       Dec->QuickBits=MAX_QUICK_DECODE_BITS;
       break;
     default:
-      Dec->QuickBits=MAX_QUICK_DECODE_BITS-3;
+      Dec->QuickBits =
+          MAX_QUICK_DECODE_BITS > 3 ? MAX_QUICK_DECODE_BITS - 3 : 0;
       break;
   }
 

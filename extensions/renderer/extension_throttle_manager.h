@@ -16,12 +16,15 @@
 
 namespace blink {
 class URLLoaderThrottle;
-class WebURLRequest;
 }  // namespace blink
 
 namespace net {
 struct RedirectInfo;
 }  // namespace net
+
+namespace network {
+struct ResourceRequest;
+}  // namespace network
 
 namespace extensions {
 
@@ -46,7 +49,7 @@ class ExtensionThrottleManager {
   // Creates a throttle which uses this class to prevent extensions from
   // requesting a URL too often, if such a throttle is needed.
   std::unique_ptr<blink::URLLoaderThrottle> MaybeCreateURLLoaderThrottle(
-      const blink::WebURLRequest& request);
+      const network::ResourceRequest& request);
 
   // Determine if a request to |request_url| should be rejected.
   bool ShouldRejectRequest(const GURL& request_url);

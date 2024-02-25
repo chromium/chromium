@@ -56,17 +56,17 @@ class DeviceSyncCryptAuthSchedulerImplTest : public testing::Test {
   }
 
   void CreateScheduler(
-      const absl::optional<cryptauthv2::ClientDirective>&
+      const std::optional<cryptauthv2::ClientDirective>&
           persisted_client_directive,
-      const absl::optional<cryptauthv2::ClientMetadata>&
+      const std::optional<cryptauthv2::ClientMetadata>&
           persisted_enrollment_client_metadata,
-      const absl::optional<base::Time>& persisted_last_enrollment_attempt_time,
-      const absl::optional<base::Time>&
+      const std::optional<base::Time>& persisted_last_enrollment_attempt_time,
+      const std::optional<base::Time>&
           persisted_last_successful_enrollment_time,
-      const absl::optional<cryptauthv2::ClientMetadata>&
+      const std::optional<cryptauthv2::ClientMetadata>&
           persisted_device_sync_client_metadata,
-      const absl::optional<base::Time>& persisted_last_device_sync_attempt_time,
-      const absl::optional<base::Time>&
+      const std::optional<base::Time>& persisted_last_device_sync_attempt_time,
+      const std::optional<base::Time>&
           persisted_last_successful_device_sync_time) {
     if (persisted_client_directive) {
       pref_service_.Set(prefs::kCryptAuthSchedulerClientDirective,
@@ -174,8 +174,8 @@ class DeviceSyncCryptAuthSchedulerImplTest : public testing::Test {
 
   void VerifyLastClientMetadataReceivedByEnrollmentDelegate(
       size_t total_received,
-      const absl::optional<cryptauthv2::ClientMetadata>& last_received =
-          absl::nullopt) {
+      const std::optional<cryptauthv2::ClientMetadata>& last_received =
+          std::nullopt) {
     VerifyLastClientMetadataReceivedByDelegate(
         fake_enrollment_delegate_.client_metadata_from_enrollment_requests(),
         total_received, last_received);
@@ -183,8 +183,8 @@ class DeviceSyncCryptAuthSchedulerImplTest : public testing::Test {
 
   void VerifyLastClientMetadataReceivedByDeviceSyncDelegate(
       size_t total_received,
-      const absl::optional<cryptauthv2::ClientMetadata>& last_received =
-          absl::nullopt) {
+      const std::optional<cryptauthv2::ClientMetadata>& last_received =
+          std::nullopt) {
     VerifyLastClientMetadataReceivedByDelegate(
         fake_device_sync_delegate_.client_metadata_from_device_sync_requests(),
         total_received, last_received);
@@ -192,8 +192,8 @@ class DeviceSyncCryptAuthSchedulerImplTest : public testing::Test {
 
   void VerifyLastPolicyReferenceReceivedByEnrollmentDelegate(
       size_t total_received,
-      const absl::optional<cryptauthv2::PolicyReference>& last_received =
-          absl::nullopt) {
+      const std::optional<cryptauthv2::PolicyReference>& last_received =
+          std::nullopt) {
     EXPECT_EQ(total_received, fake_enrollment_delegate_
                                   .policy_references_from_enrollment_requests()
                                   .size());
@@ -221,7 +221,7 @@ class DeviceSyncCryptAuthSchedulerImplTest : public testing::Test {
   }
 
   void VerifyLastSuccessfulEnrollmentTime(
-      const absl::optional<base::Time>& expected_time) {
+      const std::optional<base::Time>& expected_time) {
     EXPECT_EQ(expected_time, scheduler_->GetLastSuccessfulEnrollmentTime());
 
     EXPECT_EQ(pref_service_.GetTime(
@@ -230,7 +230,7 @@ class DeviceSyncCryptAuthSchedulerImplTest : public testing::Test {
   }
 
   void VerifyLastSuccessfulDeviceSyncTime(
-      const absl::optional<base::Time>& expected_time) {
+      const std::optional<base::Time>& expected_time) {
     EXPECT_EQ(expected_time, scheduler_->GetLastSuccessfulDeviceSyncTime());
 
     EXPECT_EQ(pref_service_.GetTime(
@@ -239,14 +239,14 @@ class DeviceSyncCryptAuthSchedulerImplTest : public testing::Test {
   }
 
   void VerifyLastEnrollmentAttemptTime(
-      const absl::optional<base::Time>& expected_time) {
+      const std::optional<base::Time>& expected_time) {
     EXPECT_EQ(pref_service_.GetTime(
                   prefs::kCryptAuthSchedulerLastEnrollmentAttemptTime),
               expected_time.value_or(base::Time()));
   }
 
   void VerifyLastDeviceSyncAttemptTime(
-      const absl::optional<base::Time>& expected_time) {
+      const std::optional<base::Time>& expected_time) {
     EXPECT_EQ(pref_service_.GetTime(
                   prefs::kCryptAuthSchedulerLastDeviceSyncAttemptTime),
               expected_time.value_or(base::Time()));
@@ -326,7 +326,7 @@ class DeviceSyncCryptAuthSchedulerImplTest : public testing::Test {
   void VerifyLastClientMetadataReceivedByDelegate(
       const std::vector<cryptauthv2::ClientMetadata>& delegate_client_metadata,
       size_t total_received,
-      const absl::optional<cryptauthv2::ClientMetadata>& last_received) {
+      const std::optional<cryptauthv2::ClientMetadata>& last_received) {
     EXPECT_EQ(total_received, delegate_client_metadata.size());
 
     if (delegate_client_metadata.empty())
@@ -358,10 +358,8 @@ class DeviceSyncCryptAuthSchedulerImplTest : public testing::Test {
   FakeCryptAuthSchedulerDeviceSyncDelegate fake_device_sync_delegate_;
   TestingPrefServiceSimple pref_service_;
   base::SimpleTestClock test_clock_;
-  raw_ptr<base::MockOneShotTimer, DanglingUntriaged | ExperimentalAsh>
-      mock_enrollment_timer_;
-  raw_ptr<base::MockOneShotTimer, DanglingUntriaged | ExperimentalAsh>
-      mock_device_sync_timer_;
+  raw_ptr<base::MockOneShotTimer, DanglingUntriaged> mock_enrollment_timer_;
+  raw_ptr<base::MockOneShotTimer, DanglingUntriaged> mock_device_sync_timer_;
   NetworkStateTestHelper network_helper_{
       false /* use_default_devices_and_services */};
   std::string wifi_network_service_path_;
@@ -373,23 +371,24 @@ TEST_F(DeviceSyncCryptAuthSchedulerImplTest,
   AddDisconnectedWifiNetwork();
   SetWifiNetworkStatus(NetworkConnectionStatus::kConnected);
 
-  const base::Time kStartTime = base::Time::FromDoubleT(1600600000);
+  const base::Time kStartTime =
+      base::Time::FromSecondsSinceUnixEpoch(1600600000);
   const base::Time kInitializationFinishTime = kStartTime + base::Seconds(5);
 
   clock()->SetNow(kStartTime);
 
-  CreateScheduler(absl::nullopt /* persisted_client_directive */,
-                  absl::nullopt /* persisted_enrollment_client_metadata */,
-                  absl::nullopt /* persisted_last_enrollment_attempt_time */,
-                  absl::nullopt /* persisted_last_successful_enrollment_time */,
-                  absl::nullopt /* persisted_device_sync_client_metadata */,
-                  absl::nullopt /* persisted_last_device_sync_attempt_time */,
-                  absl::nullopt /* persisted_last_successful_device_sync_time */
+  CreateScheduler(std::nullopt /* persisted_client_directive */,
+                  std::nullopt /* persisted_enrollment_client_metadata */,
+                  std::nullopt /* persisted_last_enrollment_attempt_time */,
+                  std::nullopt /* persisted_last_successful_enrollment_time */,
+                  std::nullopt /* persisted_device_sync_client_metadata */,
+                  std::nullopt /* persisted_last_device_sync_attempt_time */,
+                  std::nullopt /* persisted_last_successful_device_sync_time */
   );
 
   // No enrollment has been scheduled yet.
   EXPECT_FALSE(enrollment_timer()->IsRunning());
-  EXPECT_EQ(absl::nullopt, scheduler()->GetTimeToNextEnrollmentRequest());
+  EXPECT_EQ(std::nullopt, scheduler()->GetTimeToNextEnrollmentRequest());
 
   EXPECT_FALSE(scheduler()->HasEnrollmentSchedulingStarted());
   scheduler()->StartEnrollmentScheduling(fake_enrollment_delegate());
@@ -399,7 +398,7 @@ TEST_F(DeviceSyncCryptAuthSchedulerImplTest,
   cryptauthv2::ClientMetadata expected_scheduled_enrollment_request =
       cryptauthv2::BuildClientMetadata(
           0 /* retry_count */, cryptauthv2::ClientMetadata::INITIALIZATION,
-          absl::nullopt /* session_id */);
+          std::nullopt /* session_id */);
   VerifyScheduledEnrollment(expected_scheduled_enrollment_request,
                             kZeroTimeDelta /* expected_delay */);
 
@@ -409,7 +408,7 @@ TEST_F(DeviceSyncCryptAuthSchedulerImplTest,
   // There is no policy reference until CryptAuth sends one with a
   // ClientDirective.
   VerifyLastPolicyReferenceReceivedByEnrollmentDelegate(
-      1 /* total_received */, absl::nullopt /* last_received*/);
+      1 /* total_received */, std::nullopt /* last_received*/);
   VerifyLastClientMetadataReceivedByEnrollmentDelegate(
       1 /* total_received */, expected_scheduled_enrollment_request);
 
@@ -424,7 +423,7 @@ TEST_F(DeviceSyncCryptAuthSchedulerImplTest,
   // A periodic enrollment attempt is now scheduled.
   expected_scheduled_enrollment_request = cryptauthv2::BuildClientMetadata(
       0 /* retry_count */, cryptauthv2::ClientMetadata::PERIODIC,
-      absl::nullopt /* session_id */);
+      std::nullopt /* session_id */);
   VerifyScheduledEnrollment(
       expected_scheduled_enrollment_request,
       scheduler()->GetRefreshPeriod() /* expected_delay */);
@@ -444,7 +443,7 @@ TEST_F(DeviceSyncCryptAuthSchedulerImplTest,
   // scheduler continues to use last-known ClientDirective.
   scheduler()->HandleEnrollmentResult(CryptAuthEnrollmentResult(
       CryptAuthEnrollmentResult::ResultCode::kSuccessNoNewKeysNeeded,
-      absl::nullopt /* client_directive */));
+      std::nullopt /* client_directive */));
   VerifyLastEnrollmentAttemptTime(periodic_fired_time);
   VerifyLastSuccessfulEnrollmentTime(periodic_fired_time);
   VerifyClientDirective(cryptauthv2::GetClientDirectiveForTest());
@@ -455,23 +454,24 @@ TEST_F(DeviceSyncCryptAuthSchedulerImplTest,
   AddDisconnectedWifiNetwork();
   SetWifiNetworkStatus(NetworkConnectionStatus::kConnected);
 
-  const base::Time kStartTime = base::Time::FromDoubleT(1600600000);
+  const base::Time kStartTime =
+      base::Time::FromSecondsSinceUnixEpoch(1600600000);
   const base::Time kInitializationFinishTime = kStartTime + base::Seconds(5);
 
   clock()->SetNow(kStartTime);
 
-  CreateScheduler(absl::nullopt /* persisted_client_directive */,
-                  absl::nullopt /* persisted_enrollment_client_metadata */,
-                  absl::nullopt /* persisted_last_enrollment_attempt_time */,
-                  absl::nullopt /* persisted_last_successful_enrollment_time */,
-                  absl::nullopt /* persisted_device_sync_client_metadata */,
-                  absl::nullopt /* persisted_last_device_sync_attempt_time */,
-                  absl::nullopt /* persisted_last_successful_device_sync_time */
+  CreateScheduler(std::nullopt /* persisted_client_directive */,
+                  std::nullopt /* persisted_enrollment_client_metadata */,
+                  std::nullopt /* persisted_last_enrollment_attempt_time */,
+                  std::nullopt /* persisted_last_successful_enrollment_time */,
+                  std::nullopt /* persisted_device_sync_client_metadata */,
+                  std::nullopt /* persisted_last_device_sync_attempt_time */,
+                  std::nullopt /* persisted_last_successful_device_sync_time */
   );
 
   // No DeviceSync has been scheduled yet.
   EXPECT_FALSE(device_sync_timer()->IsRunning());
-  EXPECT_EQ(absl::nullopt, scheduler()->GetTimeToNextDeviceSyncRequest());
+  EXPECT_EQ(std::nullopt, scheduler()->GetTimeToNextDeviceSyncRequest());
 
   EXPECT_FALSE(scheduler()->HasDeviceSyncSchedulingStarted());
   scheduler()->StartDeviceSyncScheduling(fake_device_sync_delegate());
@@ -481,7 +481,7 @@ TEST_F(DeviceSyncCryptAuthSchedulerImplTest,
   cryptauthv2::ClientMetadata expected_scheduled_device_sync_request =
       cryptauthv2::BuildClientMetadata(
           0 /* retry_count */, cryptauthv2::ClientMetadata::INITIALIZATION,
-          absl::nullopt /* session_id */);
+          std::nullopt /* session_id */);
   VerifyScheduledDeviceSync(expected_scheduled_device_sync_request,
                             kZeroTimeDelta /* expected_delay */);
 
@@ -502,7 +502,7 @@ TEST_F(DeviceSyncCryptAuthSchedulerImplTest,
 
   // No periodic DeviceSyncs are scheduled.
   EXPECT_FALSE(device_sync_timer()->IsRunning());
-  EXPECT_EQ(absl::nullopt, scheduler()->GetTimeToNextDeviceSyncRequest());
+  EXPECT_EQ(std::nullopt, scheduler()->GetTimeToNextDeviceSyncRequest());
 }
 
 TEST_F(DeviceSyncCryptAuthSchedulerImplTest, FailedRequests) {
@@ -511,19 +511,19 @@ TEST_F(DeviceSyncCryptAuthSchedulerImplTest, FailedRequests) {
 
   CreateScheduler(
       cryptauthv2::GetClientDirectiveForTest() /* persisted_client_directive */,
-      absl::nullopt /* persisted_enrollment_client_metadata */,
-      absl::nullopt /* persisted_last_enrollment_attempt_time */,
-      absl::nullopt /* persisted_last_successful_enrollment_time */,
-      absl::nullopt /* persisted_device_sync_client_metadata */,
-      absl::nullopt /* persisted_last_device_sync_attempt_time */,
-      absl::nullopt /* persisted_last_successful_device_sync_time */
+      std::nullopt /* persisted_enrollment_client_metadata */,
+      std::nullopt /* persisted_last_enrollment_attempt_time */,
+      std::nullopt /* persisted_last_successful_enrollment_time */,
+      std::nullopt /* persisted_device_sync_client_metadata */,
+      std::nullopt /* persisted_last_device_sync_attempt_time */,
+      std::nullopt /* persisted_last_successful_device_sync_time */
   );
 
   // Queue up manual requests before scheduler starts.
   scheduler()->RequestEnrollment(cryptauthv2::ClientMetadata::MANUAL,
-                                 absl::nullopt /* session_id */);
+                                 std::nullopt /* session_id */);
   scheduler()->RequestDeviceSync(cryptauthv2::ClientMetadata::MANUAL,
-                                 absl::nullopt /* session_id */);
+                                 std::nullopt /* session_id */);
 
   scheduler()->StartEnrollmentScheduling(fake_enrollment_delegate());
   scheduler()->StartDeviceSyncScheduling(fake_device_sync_delegate());
@@ -531,7 +531,7 @@ TEST_F(DeviceSyncCryptAuthSchedulerImplTest, FailedRequests) {
   cryptauthv2::ClientMetadata expected_request =
       cryptauthv2::BuildClientMetadata(0 /* retry_count */,
                                        cryptauthv2::ClientMetadata::MANUAL,
-                                       absl::nullopt /* session_id */);
+                                       std::nullopt /* session_id */);
   VerifyScheduledEnrollment(expected_request,
                             kZeroTimeDelta /* expected_delay */);
   VerifyScheduledDeviceSync(expected_request,
@@ -555,12 +555,12 @@ TEST_F(DeviceSyncCryptAuthSchedulerImplTest, FailedRequests) {
 
     scheduler()->HandleEnrollmentResult(CryptAuthEnrollmentResult(
         CryptAuthEnrollmentResult::ResultCode::kErrorCryptAuthServerOverloaded,
-        absl::nullopt /* client_directive */));
+        std::nullopt /* client_directive */));
     scheduler()->HandleDeviceSyncResult(
         CryptAuthDeviceSyncResult(CryptAuthDeviceSyncResult::ResultCode::
                                       kErrorSyncMetadataApiCallBadRequest,
                                   false /* device_registry_changed */,
-                                  absl::nullopt /* client_directive */));
+                                  std::nullopt /* client_directive */));
 
     // Verify the next scheduled Enrollment/DeviceSync. At this point, note that
     // the number of failed attempts == |attempt| == retry count of the next
@@ -581,13 +581,13 @@ TEST_F(DeviceSyncCryptAuthSchedulerImplTest,
   AddDisconnectedWifiNetwork();
   SetWifiNetworkStatus(NetworkConnectionStatus::kConnected);
 
-  CreateScheduler(absl::nullopt /* persisted_client_directive */,
-                  absl::nullopt /* persisted_enrollment_client_metadata */,
-                  absl::nullopt /* persisted_last_enrollment_attempt_time */,
-                  absl::nullopt /* persisted_last_successful_enrollment_time */,
-                  absl::nullopt /* persisted_device_sync_client_metadata */,
-                  absl::nullopt /* persisted_last_device_sync_attempt_time */,
-                  absl::nullopt /* persisted_last_successful_device_sync_time */
+  CreateScheduler(std::nullopt /* persisted_client_directive */,
+                  std::nullopt /* persisted_enrollment_client_metadata */,
+                  std::nullopt /* persisted_last_enrollment_attempt_time */,
+                  std::nullopt /* persisted_last_successful_enrollment_time */,
+                  std::nullopt /* persisted_device_sync_client_metadata */,
+                  std::nullopt /* persisted_last_device_sync_attempt_time */,
+                  std::nullopt /* persisted_last_successful_device_sync_time */
   );
 
   scheduler()->RequestEnrollment(cryptauthv2::ClientMetadata::MANUAL,
@@ -614,13 +614,13 @@ TEST_F(DeviceSyncCryptAuthSchedulerImplTest,
   AddDisconnectedWifiNetwork();
   SetWifiNetworkStatus(NetworkConnectionStatus::kConnected);
 
-  CreateScheduler(absl::nullopt /* persisted_client_directive */,
-                  absl::nullopt /* persisted_enrollment_client_metadata */,
-                  absl::nullopt /* persisted_last_enrollment_attempt_time */,
-                  absl::nullopt /* persisted_last_successful_enrollment_time */,
-                  absl::nullopt /* persisted_device_sync_client_metadata */,
-                  absl::nullopt /* persisted_last_device_sync_attempt_time */,
-                  absl::nullopt /* persisted_last_successful_device_sync_time */
+  CreateScheduler(std::nullopt /* persisted_client_directive */,
+                  std::nullopt /* persisted_enrollment_client_metadata */,
+                  std::nullopt /* persisted_last_enrollment_attempt_time */,
+                  std::nullopt /* persisted_last_successful_enrollment_time */,
+                  std::nullopt /* persisted_device_sync_client_metadata */,
+                  std::nullopt /* persisted_last_device_sync_attempt_time */,
+                  std::nullopt /* persisted_last_successful_device_sync_time */
   );
 
   scheduler()->StartEnrollmentScheduling(fake_enrollment_delegate());
@@ -636,10 +636,10 @@ TEST_F(DeviceSyncCryptAuthSchedulerImplTest,
 
   // Make requests while attempts are in progress.
   scheduler()->RequestEnrollment(cryptauthv2::ClientMetadata::MANUAL,
-                                 absl::nullopt /* session_id */);
+                                 std::nullopt /* session_id */);
   EXPECT_FALSE(enrollment_timer()->IsRunning());
   scheduler()->RequestDeviceSync(cryptauthv2::ClientMetadata::MANUAL,
-                                 absl::nullopt /* session_id */);
+                                 std::nullopt /* session_id */);
   EXPECT_FALSE(device_sync_timer()->IsRunning());
 
   scheduler()->HandleEnrollmentResult(CryptAuthEnrollmentResult(
@@ -655,7 +655,7 @@ TEST_F(DeviceSyncCryptAuthSchedulerImplTest,
   cryptauthv2::ClientMetadata expected_request =
       cryptauthv2::BuildClientMetadata(0 /* retry_count */,
                                        cryptauthv2::ClientMetadata::MANUAL,
-                                       absl::nullopt /* session_id */);
+                                       std::nullopt /* session_id */);
   VerifyScheduledEnrollment(expected_request,
                             kZeroTimeDelta /* expected_delay */);
   VerifyScheduledDeviceSync(expected_request,
@@ -666,13 +666,13 @@ TEST_F(DeviceSyncCryptAuthSchedulerImplTest, ScheduledRequestOverwritten) {
   AddDisconnectedWifiNetwork();
   SetWifiNetworkStatus(NetworkConnectionStatus::kConnected);
 
-  CreateScheduler(absl::nullopt /* persisted_client_directive */,
-                  absl::nullopt /* persisted_enrollment_client_metadata */,
-                  absl::nullopt /* persisted_last_enrollment_attempt_time */,
-                  absl::nullopt /* persisted_last_successful_enrollment_time */,
-                  absl::nullopt /* persisted_device_sync_client_metadata */,
-                  absl::nullopt /* persisted_last_device_sync_attempt_time */,
-                  absl::nullopt /* persisted_last_successful_device_sync_time */
+  CreateScheduler(std::nullopt /* persisted_client_directive */,
+                  std::nullopt /* persisted_enrollment_client_metadata */,
+                  std::nullopt /* persisted_last_enrollment_attempt_time */,
+                  std::nullopt /* persisted_last_successful_enrollment_time */,
+                  std::nullopt /* persisted_device_sync_client_metadata */,
+                  std::nullopt /* persisted_last_device_sync_attempt_time */,
+                  std::nullopt /* persisted_last_successful_device_sync_time */
   );
 
   scheduler()->StartEnrollmentScheduling(fake_enrollment_delegate());
@@ -694,13 +694,13 @@ TEST_F(DeviceSyncCryptAuthSchedulerImplTest, ScheduledRequestOverwritten) {
 
   // New requests made before the timers fires overwrite existing requests.
   scheduler()->RequestEnrollment(cryptauthv2::ClientMetadata::MANUAL,
-                                 absl::nullopt /* session_id */);
+                                 std::nullopt /* session_id */);
   scheduler()->RequestDeviceSync(cryptauthv2::ClientMetadata::MANUAL,
-                                 absl::nullopt /* session_id */);
+                                 std::nullopt /* session_id */);
 
   expected_request = cryptauthv2::BuildClientMetadata(
       0 /* retry_count */, cryptauthv2::ClientMetadata::MANUAL,
-      absl::nullopt /* session_id */);
+      std::nullopt /* session_id */);
   VerifyScheduledEnrollment(expected_request,
                             kZeroTimeDelta /* expected_delay */);
   VerifyScheduledDeviceSync(expected_request,
@@ -712,7 +712,8 @@ TEST_F(DeviceSyncCryptAuthSchedulerImplTest,
   AddDisconnectedWifiNetwork();
   SetWifiNetworkStatus(NetworkConnectionStatus::kConnected);
 
-  const base::Time kLastEnrollmentTime = base::Time::FromDoubleT(1600600000);
+  const base::Time kLastEnrollmentTime =
+      base::Time::FromSecondsSinceUnixEpoch(1600600000);
   const base::Time kLastEnrollmentAttemptTime =
       kLastEnrollmentTime + base::Days(30);
   const base::Time kStartTime =
@@ -723,11 +724,11 @@ TEST_F(DeviceSyncCryptAuthSchedulerImplTest,
   cryptauthv2::ClientMetadata persisted_enrollment_request =
       cryptauthv2::BuildClientMetadata(5 /* retry_count */,
                                        cryptauthv2::ClientMetadata::PERIODIC,
-                                       absl::nullopt /* session_id */);
+                                       std::nullopt /* session_id */);
   cryptauthv2::ClientMetadata persisted_device_sync_request =
       cryptauthv2::BuildClientMetadata(0 /* retry_count */,
                                        cryptauthv2::ClientMetadata::MANUAL,
-                                       absl::nullopt /* session_id */);
+                                       std::nullopt /* session_id */);
 
   CreateScheduler(
       cryptauthv2::GetClientDirectiveForTest() /* persisted_client_directive */,
@@ -735,8 +736,8 @@ TEST_F(DeviceSyncCryptAuthSchedulerImplTest,
       kLastEnrollmentAttemptTime /* persisted_last_enrollment_attempt_time */,
       kLastEnrollmentTime /* persisted_last_successful_enrollment_time */,
       persisted_device_sync_request /* persisted_device_sync_client_metadata */,
-      absl::nullopt /* persisted_last_device_sync_attempt_time */,
-      absl::nullopt /* persisted_last_successful_device_sync_time */
+      std::nullopt /* persisted_last_device_sync_attempt_time */,
+      std::nullopt /* persisted_last_successful_device_sync_time */
   );
 
   scheduler()->StartEnrollmentScheduling(fake_enrollment_delegate());
@@ -757,17 +758,18 @@ TEST_F(DeviceSyncCryptAuthSchedulerImplTest, HandleInvokeNext) {
   AddDisconnectedWifiNetwork();
   SetWifiNetworkStatus(NetworkConnectionStatus::kConnected);
 
-  const base::Time kLastSuccessTime = base::Time::FromDoubleT(1600600000);
+  const base::Time kLastSuccessTime =
+      base::Time::FromSecondsSinceUnixEpoch(1600600000);
   const base::Time kLastAttemptTime = kLastSuccessTime + base::Days(30);
   const base::Time kStartTime = kLastAttemptTime + (kImmediateRetryDelay / 2);
   clock()->SetNow(kStartTime);
 
   CreateScheduler(
       cryptauthv2::GetClientDirectiveForTest() /* persisted_client_directive */,
-      absl::nullopt /* persisted_enrollment_client_metadata */,
+      std::nullopt /* persisted_enrollment_client_metadata */,
       kLastAttemptTime /* persisted_last_enrollment_attempt_time */,
       kLastSuccessTime /* persisted_last_successful_enrollment_time */,
-      absl::nullopt /* persisted_device_sync_client_metadata */,
+      std::nullopt /* persisted_device_sync_client_metadata */,
       kLastAttemptTime /* persisted_last_device_sync_attempt_time */,
       kLastSuccessTime /* persisted_last_successful_device_sync_time */
   );
@@ -819,7 +821,7 @@ TEST_F(DeviceSyncCryptAuthSchedulerImplTest,
   AddDisconnectedWifiNetwork();
   SetWifiNetworkStatus(NetworkConnectionStatus::kConnected);
 
-  const base::Time kNow = base::Time::FromDoubleT(1600600000);
+  const base::Time kNow = base::Time::FromSecondsSinceUnixEpoch(1600600000);
   clock()->SetNow(kNow);
 
   cryptauthv2::ClientMetadata expected_device_sync_request =
@@ -832,12 +834,12 @@ TEST_F(DeviceSyncCryptAuthSchedulerImplTest,
 
   CreateScheduler(
       old_client_directive /* persisted_client_directive */,
-      absl::nullopt /* persisted_enrollment_client_metadata */,
+      std::nullopt /* persisted_enrollment_client_metadata */,
       kNow /* persisted_last_enrollment_attempt_time */,
       kNow /* persisted_last_successful_enrollment_time */,
       expected_device_sync_request /* persisted_device_sync_client_metadata */,
       kNow /* persisted_last_device_sync_attempt_time */,
-      absl::nullopt /* persisted_last_successful_device_sync_time */
+      std::nullopt /* persisted_last_successful_device_sync_time */
   );
 
   scheduler()->StartEnrollmentScheduling(fake_enrollment_delegate());
@@ -846,7 +848,7 @@ TEST_F(DeviceSyncCryptAuthSchedulerImplTest,
   cryptauthv2::ClientMetadata expected_enrollment_request =
       cryptauthv2::BuildClientMetadata(0 /* retry_count */,
                                        cryptauthv2::ClientMetadata::PERIODIC,
-                                       absl::nullopt /* session_id */);
+                                       std::nullopt /* session_id */);
   VerifyScheduledEnrollment(
       expected_enrollment_request,
       base::Milliseconds(
@@ -883,13 +885,13 @@ TEST_F(DeviceSyncCryptAuthSchedulerImplTest, RequestsMadeWhileOffline) {
   AddDisconnectedWifiNetwork();
   SetWifiNetworkStatus(NetworkConnectionStatus::kDisconnected);
 
-  CreateScheduler(absl::nullopt /* persisted_client_directive */,
-                  absl::nullopt /* persisted_enrollment_client_metadata */,
-                  absl::nullopt /* persisted_last_enrollment_attempt_time */,
-                  absl::nullopt /* persisted_last_successful_enrollment_time */,
-                  absl::nullopt /* persisted_device_sync_client_metadata */,
-                  absl::nullopt /* persisted_last_device_sync_attempt_time */,
-                  absl::nullopt /* persisted_last_successful_device_sync_time */
+  CreateScheduler(std::nullopt /* persisted_client_directive */,
+                  std::nullopt /* persisted_enrollment_client_metadata */,
+                  std::nullopt /* persisted_last_enrollment_attempt_time */,
+                  std::nullopt /* persisted_last_successful_enrollment_time */,
+                  std::nullopt /* persisted_device_sync_client_metadata */,
+                  std::nullopt /* persisted_last_device_sync_attempt_time */,
+                  std::nullopt /* persisted_last_successful_device_sync_time */
   );
 
   scheduler()->StartEnrollmentScheduling(fake_enrollment_delegate());
@@ -898,14 +900,14 @@ TEST_F(DeviceSyncCryptAuthSchedulerImplTest, RequestsMadeWhileOffline) {
   cryptauthv2::ClientMetadata expected_enrollment_request =
       cryptauthv2::BuildClientMetadata(
           0 /* retry_count */, cryptauthv2::ClientMetadata::INITIALIZATION,
-          absl::nullopt /* session_id */);
+          std::nullopt /* session_id */);
   VerifyScheduledEnrollment(expected_enrollment_request,
                             kZeroTimeDelta /* expected_delay */);
 
   cryptauthv2::ClientMetadata expected_device_sync_request =
       cryptauthv2::BuildClientMetadata(
           0 /* retry_count */, cryptauthv2::ClientMetadata::SERVER_INITIATED,
-          absl::nullopt /* session_id */);
+          std::nullopt /* session_id */);
   scheduler()->RequestDeviceSync(
       expected_device_sync_request.invocation_reason(),
       expected_device_sync_request.session_id());
@@ -933,7 +935,7 @@ TEST_F(DeviceSyncCryptAuthSchedulerImplTest, RequestsMadeWhileOffline) {
 
   EXPECT_TRUE(scheduler()->IsWaitingForEnrollmentResult());
   VerifyLastPolicyReferenceReceivedByEnrollmentDelegate(
-      1 /* total_received */, absl::nullopt /* last_received*/);
+      1 /* total_received */, std::nullopt /* last_received*/);
   VerifyLastClientMetadataReceivedByEnrollmentDelegate(
       1 /* total_received */, expected_enrollment_request);
 
@@ -943,16 +945,16 @@ TEST_F(DeviceSyncCryptAuthSchedulerImplTest, RequestsMadeWhileOffline) {
 }
 
 TEST_F(DeviceSyncCryptAuthSchedulerImplTest, RequestsMadeWithNoWifiNetwork) {
-  const base::Time kNow = base::Time::FromDoubleT(1600600000);
+  const base::Time kNow = base::Time::FromSecondsSinceUnixEpoch(1600600000);
   clock()->SetNow(kNow);
   cryptauthv2::ClientMetadata expected_enrollment_request =
       cryptauthv2::BuildClientMetadata(0 /* retry_count */,
                                        cryptauthv2::ClientMetadata::PERIODIC,
-                                       absl::nullopt /* session_id */);
+                                       std::nullopt /* session_id */);
   cryptauthv2::ClientMetadata expected_device_sync_request =
       cryptauthv2::BuildClientMetadata(0 /* retry_count */,
                                        cryptauthv2::ClientMetadata::MANUAL,
-                                       absl::nullopt /* session_id */);
+                                       std::nullopt /* session_id */);
   CreateScheduler(
       cryptauthv2::GetClientDirectiveForTest() /* persisted_client_directive */,
       expected_enrollment_request /* persisted_enrollment_client_metadata */,
@@ -991,13 +993,13 @@ TEST_F(DeviceSyncCryptAuthSchedulerImplTest,
   AddDisconnectedWifiNetwork();
   SetWifiNetworkStatus(NetworkConnectionStatus::kConnected);
 
-  CreateScheduler(absl::nullopt /* persisted_client_directive */,
-                  absl::nullopt /* persisted_enrollment_client_metadata */,
-                  absl::nullopt /* persisted_last_enrollment_attempt_time */,
-                  absl::nullopt /* persisted_last_successful_enrollment_time */,
-                  absl::nullopt /* persisted_device_sync_client_metadata */,
-                  absl::nullopt /* persisted_last_device_sync_attempt_time */,
-                  absl::nullopt /* persisted_last_successful_device_sync_time */
+  CreateScheduler(std::nullopt /* persisted_client_directive */,
+                  std::nullopt /* persisted_enrollment_client_metadata */,
+                  std::nullopt /* persisted_last_enrollment_attempt_time */,
+                  std::nullopt /* persisted_last_successful_enrollment_time */,
+                  std::nullopt /* persisted_device_sync_client_metadata */,
+                  std::nullopt /* persisted_last_device_sync_attempt_time */,
+                  std::nullopt /* persisted_last_successful_device_sync_time */
   );
 
   scheduler()->StartEnrollmentScheduling(fake_enrollment_delegate());
@@ -1006,14 +1008,14 @@ TEST_F(DeviceSyncCryptAuthSchedulerImplTest,
   cryptauthv2::ClientMetadata expected_enrollment_request =
       cryptauthv2::BuildClientMetadata(
           0 /* retry_count */, cryptauthv2::ClientMetadata::INITIALIZATION,
-          absl::nullopt /* session_id */);
+          std::nullopt /* session_id */);
   VerifyScheduledEnrollment(expected_enrollment_request,
                             kZeroTimeDelta /* expected_delay */);
 
   cryptauthv2::ClientMetadata expected_device_sync_request =
       cryptauthv2::BuildClientMetadata(
           0 /* retry_count */, cryptauthv2::ClientMetadata::SERVER_INITIATED,
-          absl::nullopt /* session_id */);
+          std::nullopt /* session_id */);
   scheduler()->RequestDeviceSync(
       expected_device_sync_request.invocation_reason(),
       expected_device_sync_request.session_id());

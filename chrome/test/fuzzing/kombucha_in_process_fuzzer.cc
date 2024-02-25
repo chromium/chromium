@@ -3,11 +3,14 @@
 // found in the LICENSE file.
 
 #include "chrome/test/fuzzing/kombucha_in_process_fuzzer.h"
+#include "chrome/test/fuzzing/in_process_fuzzer_buildflags.h"
 
 #include <vector>
 
 #include "base/test/scoped_feature_list.h"
+#include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/ui/accelerator_utils.h"
+#include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/tabs/tab_group_model.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/tabs/tab.h"
@@ -15,6 +18,7 @@
 #include "chrome/browser/ui/views/tabs/tab_strip.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "content/public/browser/browser_thread.h"
+#include "content/public/common/content_switches.h"
 #include "net/dns/mock_host_resolver.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "testing/libfuzzer/proto/lpm_interface.h"
@@ -34,19 +38,42 @@
 #include "ui/platform_window/common/platform_window_defaults.h"
 #endif  // defined(USE_AURA) && BUILDFLAG(IS_OZONE)
 
-#define DEFINE_BINARY_PROTO_IN_PROCESS_FUZZER(arg) \
-  DEFINE_PROTO_FUZZER_IN_PROCESS_IMPL(true, arg)
+namespace {
+ui::ElementTracker::ElementList GetTargetableEvents() {
+  // Only views can be targeted by clicks or mouse drag.
+  // See ui/views/interaction/interactive_views_test.cc:330.
+  auto elements =
+      ui::ElementTracker::GetElementTracker()->GetAllElementsForTesting();
+  base::EraseIf(elements, [](auto* e1) {
+    // We must ensure to never select `kInteractiveTestPivotElementId` because
+    // it is an internal element of the interactive test framework. Selecting it
+    // will likely result in asserting in the framework.
+    return !e1->template IsA<views::TrackedElementViews>() ||
+           e1->identifier() ==
+               ui::test::internal::kInteractiveTestPivotElementId;
+  });
+  return elements;
+}
 
-#define DEFINE_PROTO_FUZZER_IN_PROCESS_IMPL(use_binary, arg)      \
-  static void TestOneProtoInput(arg);                             \
-  using FuzzerProtoType =                                         \
-      protobuf_mutator::libfuzzer::macro_internal::GetFirstParam< \
-          decltype(&TestOneProtoInput)>::type;                    \
-  DEFINE_CUSTOM_PROTO_MUTATOR_IMPL(use_binary, FuzzerProtoType)   \
-  DEFINE_CUSTOM_PROTO_CROSSOVER_IMPL(use_binary, FuzzerProtoType) \
-  DEFINE_POST_PROCESS_PROTO_MUTATION_IMPL(FuzzerProtoType)
+void WaitForClosingBrowsersToClose() {
+  const BrowserList::BrowserSet& closing_browsers =
+      BrowserList::GetInstance()->currently_closing_browsers();
+  if (closing_browsers.empty()) {
+    return;
+  }
 
-KombuchaInProcessFuzzer::KombuchaInProcessFuzzer() = default;
+  ui_test_utils::WaitForBrowserToClose(*closing_browsers.begin());
+  return WaitForClosingBrowsersToClose();
+}
+
+}  // namespace
+
+KombuchaInProcessFuzzer::KombuchaInProcessFuzzer()
+    : InteractiveBrowserTestT(InProcessFuzzerOptions{
+          .run_loop_timeout_behavior = RunLoopTimeoutBehavior::kContinue,
+          .run_loop_timeout = base::Seconds(10),
+      }) {}
+
 KombuchaInProcessFuzzer::~KombuchaInProcessFuzzer() = default;
 
 #if BUILDFLAG(IS_WIN)
@@ -127,9 +154,57 @@ KombuchaInProcessFuzzer::HandleHTTPRequest(
   return response;
 }
 
+// Ideally, we do not want to spend time cleaning the browser state in between
+// fuzzer runs. However, it turned out Centipede was having trouble finding
+// reproducers without doing it, which is why this code exists in the first
+// place.
+void KombuchaInProcessFuzzer::CleanInProcessBrowserState() {
+  WaitForClosingBrowsersToClose();
+
+  const BrowserList* const browser_list = BrowserList::GetInstance();
+  if (browser_list->empty()) {
+    // The browser process is most likely shutting down now.
+    // TODO(paulsemel): should we rather try relaunching the browser process
+    // (does it make a difference between just terminating this instance
+    // and relaunching?).
+    DeclareInfiniteLoop();
+    return;
+  }
+
+  if (browser_list->size() > 1) {
+    const BrowserList& browsers = *BrowserList::GetInstance();
+    std::vector<Browser*> extra_browsers(std::next(browsers.begin()),
+                                         browsers.end());
+    for (Browser* browser : extra_browsers) {
+      CloseBrowserSynchronously(browser);
+    }
+    SelectFirstBrowser();
+  }
+
+  TabStripModel* tab_strip_model = browser()->tab_strip_model();
+  for (int i = 1; i < tab_strip_model->count(); i++) {
+    auto* contents = tab_strip_model->GetActiveWebContents();
+    int idx = tab_strip_model->GetIndexOfWebContents(contents);
+    tab_strip_model->CloseWebContentsAt(idx, TabCloseTypes::CLOSE_NONE);
+  }
+}
+
 int KombuchaInProcessFuzzer::Fuzz(const uint8_t* data, size_t size) {
   FuzzCase fuzz_case;
   fuzz_case.ParseFromArray(data, size);
+
+  // This will be used to ignore internal kombucha errors. For instance, some
+  // actions are not authorized when being followed by other actions, and our
+  // fuzzing process doesn't know about this. To avoid hitting unnecessary
+  // failures, we should just ignore those and keep fuzzing.
+  // We need to reset this callback at each iteration because this is a once
+  // callback, and once it's being used, the default behaviour will for
+  // internal kombucha state failure will kick back in.
+  private_test_impl().set_aborted_callback_for_testing(
+      base::BindLambdaForTesting(
+          [](const ui::InteractionSequence::AbortedData& data) {
+            LOG(WARNING) << "Aborted callback fired: " << data;
+          }));
 
   // Used to reassign target with NameElement
   constexpr char TargetName[] = "name";
@@ -159,22 +234,11 @@ int KombuchaInProcessFuzzer::Fuzz(const uint8_t* data, size_t size) {
       case test::fuzzing::ui_fuzzing::Step::kClickAt: {
         int target = step.click_at().target();
         AddStep(input_buffer,
-                NameElement(
-                    TargetName, base::BindLambdaForTesting([target]() {
-                      auto elements = ui::ElementTracker::GetElementTracker()
-                                          ->GetAllElementsForTesting();
-                      auto* choice = elements[target % elements.size()];
-                      // TODO(xrosado) Make sure we don't ever select this
-                      // element in the first place
-                      // Check if we chose the internal test element
-                      // This isn't a valid element, so we have to ignore it.
-                      if (choice->identifier() ==
-                          ui::test::internal::kInteractiveTestPivotElementId) {
-                        choice = elements[(target - 1) % elements.size()];
-                      }
-
-                      return choice;
-                    })));
+                NameElement(TargetName, base::BindLambdaForTesting([target]() {
+                              auto elements = GetTargetableEvents();
+                              auto* choice = elements[target % elements.size()];
+                              return choice;
+                            })));
 
         AddStep(input_buffer,
                 Steps(step.click_at().right_click() ? ClickRight(TargetName)
@@ -188,26 +252,32 @@ int KombuchaInProcessFuzzer::Fuzz(const uint8_t* data, size_t size) {
         int dest = step.drag_from_to().dest();
         AddStep(input_buffer,
                 NameElement(TargetName, base::BindLambdaForTesting([source]() {
-                              auto elements =
-                                  ui::ElementTracker::GetElementTracker()
-                                      ->GetAllElementsForTesting();
+                              auto elements = GetTargetableEvents();
                               auto* choice = elements[source % elements.size()];
                               return choice;
                             })));
-        AddStep(input_buffer,
-                NameElement(
-                    OtherTargetName, base::BindLambdaForTesting([dest]() {
-                      auto elements = ui::ElementTracker::GetElementTracker()
-                                          ->GetAllElementsForTesting();
-                      auto* choice = elements[dest % elements.size()];
-                      return choice;
-                    })));
+        AddStep(
+            input_buffer,
+            NameElement(OtherTargetName, base::BindLambdaForTesting([dest]() {
+                          auto elements = GetTargetableEvents();
+                          auto* choice = elements[dest % elements.size()];
+                          return choice;
+                        })));
         AddStep(input_buffer, DragFromTo(TargetName, OtherTargetName));
         AddStep(input_buffer, Log("[KOMB] Added DragFromTo"));
         break;
       }
       case test::fuzzing::ui_fuzzing::Step::kSendAccelerator: {
         int chosen_id = step.send_accelerator().target();
+        if (chosen_id == IDC_NEW_INCOGNITO_WINDOW &&
+            base::CommandLine::ForCurrentProcess()->HasSwitch(
+                switches::kSingleProcess)) {
+          // This action will hit a CHECK in single process mode.
+          // Since we won't generate different protos depending on a build flag,
+          // we will just ignore it and ask for another payload.
+          return -1;
+        }
+
         AddStep(input_buffer, Log("[KOMB] Adding Accelerator: ", chosen_id));
 
         // Set current_accelerator_ to chosen id's accelerator then add it to
@@ -227,8 +297,8 @@ int KombuchaInProcessFuzzer::Fuzz(const uint8_t* data, size_t size) {
                    [&, target]() {
                      auto index =
                          target % browser()->tab_strip_model()->count();
-                     return Steps(ClickTab(target, right_click),
-                                  Log("[KOMB] Added ClickTab", index,
+                     return Steps(ClickTab(index, right_click),
+                                  Log("[KOMB] Added ClickTab index:", index,
                                       " target: ", target, " tab_count: ",
                                       browser()->tab_strip_model()->count()));
                    }()));
@@ -311,9 +381,8 @@ int KombuchaInProcessFuzzer::Fuzz(const uint8_t* data, size_t size) {
   }
   AddStep(ui_input, std::move(input_buffer));
   RunTestSequence(std::move(ui_input));
+  CleanInProcessBrowserState();
   return 0;
 }
 
-REGISTER_IN_PROCESS_FUZZER(KombuchaInProcessFuzzer)
-DEFINE_BINARY_PROTO_IN_PROCESS_FUZZER(
-    KombuchaInProcessFuzzer::FuzzCase testcase)
+REGISTER_BINARY_PROTO_IN_PROCESS_FUZZER(KombuchaInProcessFuzzer)

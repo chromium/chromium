@@ -6,8 +6,8 @@
 
 namespace content {
 
-absl::optional<std::string> BrowserChildProcessHostDelegate::GetServiceName() {
-  return absl::nullopt;
+std::optional<std::string> BrowserChildProcessHostDelegate::GetServiceName() {
+  return std::nullopt;
 }
 
 bool BrowserChildProcessHostDelegate::OnMessageReceived(

@@ -299,7 +299,7 @@ ScriptPromise NavigatorShare::share(ScriptState* script_state,
   if (has_files) {
     files.ReserveInitialCapacity(data->files().size());
     for (const blink::Member<blink::File>& file : data->files()) {
-      absl::optional<base::SafeBaseName> name =
+      std::optional<base::SafeBaseName> name =
           base::SafeBaseName::Create(StringToFilePath(file->name()));
       if (!name) {
         execution_context->AddConsoleMessage(

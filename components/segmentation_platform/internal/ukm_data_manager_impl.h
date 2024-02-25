@@ -6,12 +6,12 @@
 #define COMPONENTS_SEGMENTATION_PLATFORM_INTERNAL_UKM_DATA_MANAGER_IMPL_H_
 
 #include <memory>
+#include <optional>
 
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
 #include "components/segmentation_platform/internal/ukm_data_manager.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace segmentation_platform {
 
@@ -31,8 +31,8 @@ class UkmDataManagerImpl : public UkmDataManager {
                             UkmObserver* ukm_observer);
 
   // UkmDataManager implementation:
-  void Initialize(const base::FilePath& database_path,
-                  UkmObserver* ukm_observer) override;
+  void Initialize(const base::FilePath& database_path, bool in_memory) override;
+  void StartObservation(UkmObserver* ukm_observer) override;
   bool IsUkmEngineEnabled() override;
   void StartObservingUkm(const UkmConfig& config) override;
   void PauseOrResumeObservation(bool pause) override;
@@ -47,18 +47,17 @@ class UkmDataManagerImpl : public UkmDataManager {
 
  private:
   // Helper method for initializing this object.
-  void InitiailizeImpl(std::unique_ptr<UkmDatabase> ukm_database,
-                       UkmObserver* ukm_observer);
+  void InitiailizeImpl(std::unique_ptr<UkmDatabase> ukm_database);
 
   void RunCleanupTask();
 
   int ref_count_ = 0;
-  raw_ptr<UkmObserver, DanglingUntriaged> ukm_observer_ = nullptr;
+  raw_ptr<UkmObserver> ukm_observer_ = nullptr;
   std::unique_ptr<UkmDatabase> ukm_database_;
   std::unique_ptr<UrlSignalHandler> url_signal_handler_;
   std::unique_ptr<UkmConfig> pending_ukm_config_;
 
-  absl::optional<bool> is_ukm_allowed_;
+  std::optional<bool> is_ukm_allowed_;
 
   SEQUENCE_CHECKER(sequence_check_);
 

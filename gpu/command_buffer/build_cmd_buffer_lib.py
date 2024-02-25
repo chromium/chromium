@@ -432,13 +432,6 @@ _STATE_INFO = {
         'enum': 'GL_FRAGMENT_SHADER_DERIVATIVE_HINT_OES',
         'default': 'GL_DONT_CARE',
         'extension_flag': 'oes_standard_derivatives'
-      },
-      {
-        'name': 'hint_texture_filtering',
-        'type': 'GLenum',
-        'enum': 'GL_TEXTURE_FILTERING_HINT_CHROMIUM',
-        'default': 'GL_NICEST',
-        'extension_flag': 'chromium_texture_filtering_hint'
       }
     ],
   },
@@ -3283,9 +3276,10 @@ TEST_P(%(test_name)s, %(name)sInvalidArgs%(arg_index)d_%(value_index)d) {
       f.write("  }\n")
     else:
       f.write("  uint32_t count = %d;" % self.GetArrayCount(func))
-    f.write("  for (uint32_t ii = 0; ii < count; ++ii)\n")
+    f.write("  for (uint32_t ii = 0; ii < count; ++ii) {\n")
     f.write('    GPU_CLIENT_LOG("value[" << ii << "]: " << %s[ii]);\n' %
                func.GetLastOriginalArg().name)
+    f.write("  }\n")
     for arg in func.GetOriginalArgs():
       arg.WriteClientSideValidationCode(f, func)
     f.write("  helper_->%sImmediate(%s);\n" %

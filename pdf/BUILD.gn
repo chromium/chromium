@@ -104,6 +104,8 @@ if (enable_pdf) {
       "pdfium/pdfium_api_string_buffer_adapter.h",
       "pdfium/pdfium_document.cc",
       "pdfium/pdfium_document.h",
+      "pdfium/pdfium_document_metadata.cc",
+      "pdfium/pdfium_document_metadata.h",
       "pdfium/pdfium_engine.cc",
       "pdfium/pdfium_engine.h",
       "pdfium/pdfium_engine_exports.cc",
@@ -172,9 +174,13 @@ if (enable_pdf) {
         "pdfium/pdfium_font_linux.h",
       ]
 
-      deps += [
-        ":font_table_linux",
-        "//components/services/font/public/cpp",
+      deps += [ "//components/services/font/public/cpp" ]
+    }
+
+    if (is_chromeos) {
+      sources += [
+        "flatten_pdf_result.cc",
+        "flatten_pdf_result.h",
       ]
     }
   }
@@ -304,20 +310,6 @@ if (enable_pdf) {
       "//ui/gfx/range",
       "//ui/latency:latency",
     ]
-  }
-
-  if (is_linux || is_chromeos) {
-    # TODO(crbug.com/702990): After PPAPI deprecation, there will only be one
-    # caller left. Move inside the file with the caller.
-    static_library("font_table_linux") {
-      sources = [ "font_table_linux.cc" ]
-
-      configs += [ ":strict" ]
-
-      public = [ "font_table_linux.h" ]
-
-      deps = [ "//base" ]
-    }
   }
 
   test("pdf_unittests") {

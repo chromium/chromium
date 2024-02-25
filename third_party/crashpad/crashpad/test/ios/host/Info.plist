@@ -9,7 +9,7 @@
   <key>CFBundleExecutable</key>
   <string>${EXECUTABLE_NAME}</string>
   <key>CFBundleIdentifier</key>
-  <string>${IOS_BUNDLE_ID_PREFIX}.googletest.${EXECUTABLE_NAME:rfc1034identifier}</string>
+  <string>${BUNDLE_IDENTIFIER}</string>
   <key>CFBundleInfoDictionaryVersion</key>
   <string>6.0</string>
   <key>CFBundleName</key>

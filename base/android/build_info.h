@@ -13,8 +13,7 @@
 #include "base/base_export.h"
 #include "base/memory/singleton.h"
 
-namespace base {
-namespace android {
+namespace base::android {
 
 // This enumeration maps to the values returned by BuildInfo::sdk_int(),
 // indicating the Android release associated with a given SDK version.
@@ -37,6 +36,7 @@ enum SdkVersion {
   SDK_VERSION_S = 31,
   SDK_VERSION_Sv2 = 32,
   SDK_VERSION_T = 33,
+  SDK_VERSION_U = 34,
 };
 
 // BuildInfo is a singleton class that stores android build and device
@@ -87,10 +87,21 @@ class BASE_EXPORT BuildInfo {
     return gms_version_code_;
   }
 
+  // The package name of the host app which has loaded WebView, retrieved from
+  // the application context. In the context of the SDK Runtime, the package
+  // name of the app that owns this particular instance of the SDK Runtime will
+  // also be included. e.g.
+  // com.google.android.sdksandbox:com:com.example.myappwithads
   const char* host_package_name() const { return host_package_name_; }
 
+  // The application name (e.g. "Chrome"). For WebView, this is name of the
+  // embedding app. In the context of the SDK Runtime, this is the name of the
+  // app that owns this particular instance of the SDK Runtime.
   const char* host_version_code() const { return host_version_code_; }
 
+  // By default: same as versionCode. For WebView: versionCode of the embedding
+  // app. In the context of the SDK Runtime, this is the versionCode of the app
+  // that owns this particular instance of the SDK Runtime.
   const char* host_package_label() const { return host_package_label_; }
 
   const char* package_version_code() const {
@@ -149,6 +160,8 @@ class BASE_EXPORT BuildInfo {
 
   const char* codename() const { return codename_; }
 
+  bool is_foldable() const { return is_foldable_; }
+
   // Available only on Android T+.
   int32_t vulkan_deqp_level() const { return vulkan_deqp_level_; }
 
@@ -193,9 +206,9 @@ class BASE_EXPORT BuildInfo {
   const bool targets_at_least_u_;
   const char* const codename_;
   const int32_t vulkan_deqp_level_;
+  const bool is_foldable_;
 };
 
-}  // namespace android
-}  // namespace base
+}  // namespace base::android
 
 #endif  // BASE_ANDROID_BUILD_INFO_H_

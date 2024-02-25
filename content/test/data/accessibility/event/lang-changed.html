@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<!-- Adding a lang will cause a normally ignored node to be included in the Blink tree, but it is still ignored on the platform layer. Adding an id causes it to be included n the platform layer as well -->
+<div>
+  <div>
+    <span>
+      <input type="checkbox">Gift</input>
+    </span>
+  </div>
+</div>
+<script>
+  const span = document.querySelector('span');
+  const cbox = document.querySelector('input');
+  const go_passes = [
+    () => span.setAttribute('lang', "de-DE"),
+    () => { span.id = 'xyz'; cbox.checked = true; },
+    () => { span.removeAttribute('id'); cbox.checked = false; },
+    () => span.removeAttribute('lang'),
+  ];
+
+  var current_pass = 0;
+  function go() {
+    go_passes[current_pass++].call();
+    return current_pass < go_passes.length;
+  }
+</script>

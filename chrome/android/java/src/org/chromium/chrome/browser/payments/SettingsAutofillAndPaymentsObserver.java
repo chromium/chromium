@@ -72,12 +72,14 @@ public class SettingsAutofillAndPaymentsObserver {
      */
     public void notifyOnAddressUpdated(AutofillAddress address) {
         for (Observer observer : sObservers) {
-            PostTask.postTask(TaskTraits.UI_DEFAULT, new Runnable() {
-                @Override
-                public void run() {
-                    observer.onAddressUpdated(address);
-                }
-            });
+            PostTask.postTask(
+                    TaskTraits.UI_DEFAULT,
+                    new Runnable() {
+                        @Override
+                        public void run() {
+                            observer.onAddressUpdated(address);
+                        }
+                    });
         }
     }
 
@@ -88,12 +90,14 @@ public class SettingsAutofillAndPaymentsObserver {
      */
     public void notifyOnAddressDeleted(String guid) {
         for (Observer observer : sObservers) {
-            PostTask.postTask(TaskTraits.UI_DEFAULT, new Runnable() {
-                @Override
-                public void run() {
-                    observer.onAddressDeleted(guid);
-                }
-            });
+            PostTask.postTask(
+                    TaskTraits.UI_DEFAULT,
+                    new Runnable() {
+                        @Override
+                        public void run() {
+                            observer.onAddressDeleted(guid);
+                        }
+                    });
         }
     }
 }

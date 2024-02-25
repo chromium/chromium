@@ -12,6 +12,7 @@
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "content/public/test/browser_test.h"
+#include "content/public/test/browser_test_utils.h"
 #include "content/public/test/test_navigation_observer.h"
 #include "extensions/browser/renderer_startup_helper.h"
 #include "extensions/browser/script_executor.h"
@@ -130,7 +131,7 @@ class UserScriptWorldBrowserTest : public ExtensionApiTest {
 
   // Sets the user script world properties in the renderer(s).
   void SetUserScriptWorldProperties(const Extension& extension,
-                                    absl::optional<std::string> csp,
+                                    std::optional<std::string> csp,
                                     bool enable_messaging) {
     RendererStartupHelperFactory::GetForBrowserContext(profile())
         ->SetUserScriptWorldProperties(extension, std::move(csp),
@@ -151,7 +152,7 @@ IN_PROC_BROWSER_TEST_F(UserScriptWorldBrowserTest,
 
   // Enable messaging to get the full suite of possible APIs exposed to
   // user script worlds.
-  SetUserScriptWorldProperties(*extension, absl::nullopt,
+  SetUserScriptWorldProperties(*extension, std::nullopt,
                                /*enable_messaging=*/true);
 
   GURL example_com =
@@ -335,7 +336,7 @@ IN_PROC_BROWSER_TEST_F(UserScriptWorldBrowserTest, SendMessageAPI) {
   ASSERT_TRUE(extension);
 
   // Enable messaging.
-  SetUserScriptWorldProperties(*extension, absl::nullopt,
+  SetUserScriptWorldProperties(*extension, std::nullopt,
                                /*enable_messaging=*/true);
 
   NavigateToURL(embedded_test_server()->GetURL("example.com", "/simple.html"));
@@ -410,7 +411,7 @@ IN_PROC_BROWSER_TEST_F(UserScriptWorldBrowserTest, ConnectAPI) {
   ASSERT_TRUE(extension);
 
   // Enable messaging.
-  SetUserScriptWorldProperties(*extension, absl::nullopt,
+  SetUserScriptWorldProperties(*extension, std::nullopt,
                                /*enable_messaging=*/true);
 
   NavigateToURL(embedded_test_server()->GetURL("example.com", "/simple.html"));
@@ -461,7 +462,7 @@ IN_PROC_BROWSER_TEST_F(UserScriptWorldBrowserTest,
   ASSERT_TRUE(extension);
 
   // Enable messaging.
-  SetUserScriptWorldProperties(*extension, absl::nullopt,
+  SetUserScriptWorldProperties(*extension, std::nullopt,
                                /*enable_messaging=*/true);
 
   NavigateToURL(embedded_test_server()->GetURL("example.com", "/simple.html"));
@@ -525,7 +526,7 @@ IN_PROC_BROWSER_TEST_F(UserScriptWorldBrowserTest,
   }
 
   // Flip the bit to allow messaging APIs and refresh the page.
-  SetUserScriptWorldProperties(*extension, absl::nullopt,
+  SetUserScriptWorldProperties(*extension, std::nullopt,
                                /*enable_messaging=*/true);
   NavigateToURL(example_com);
 

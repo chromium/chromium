@@ -26,19 +26,16 @@ desc: |-
   release process.
 
   This policy is a temporary workaround in the event that enterprises
-  experience breakage due to this change. This policy will be removed
-  in version 122.
+  experience breakage due to this change. The last supported version of this
+  policy was version 121. It was removed in version 122.
 
 # On ChromeOS, this policy should reach an LTS release before being removed.
-# TODO(crbug.com/1261928): The supported_on range is intended to be 113-121,
-# but until_version doesn't allow future versions. In M122, set the
-# until_version and remove the supporting code.
 supported_on:
-- chrome.*:113-
-- chrome_os:113-
-- fuchsia:113-
+- chrome.*:113-121
+- chrome_os:113-121
+- fuchsia:113-121
 
-supported_chrome_os_management: ['google_cloud', 'active_directory']
+deprecated: true
 
 # While this policy on its own could be dynamic, the GuestView MPArch
 # migration (crbug.com/1261928), which depends on this policy being disabled,

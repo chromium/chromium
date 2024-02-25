@@ -4,17 +4,16 @@
 
 #include "ash/components/arc/pay/arc_payment_app_bridge.h"
 
+#include <optional>
 #include <utility>
 
 #include "ash/components/arc/session/arc_bridge_service.h"
 #include "ash/components/arc/session/arc_service_manager.h"
 #include "ash/components/arc/test/arc_payment_app_bridge_test_support.h"
-#include "ash/components/arc/test/test_browser_context.h"
 #include "chromeos/components/payments/mojom/payment_app_types.mojom.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace arc {
 namespace {
@@ -49,7 +48,7 @@ class ArcPaymentAppBridgeTest : public testing::Test {
   chromeos::payments::mojom::IsPaymentImplementedResultPtr is_implemented_;
   chromeos::payments::mojom::IsReadyToPayResultPtr is_ready_to_pay_;
   chromeos::payments::mojom::InvokePaymentAppResultPtr invoke_app_;
-  absl::optional<bool> abort_app_;
+  std::optional<bool> abort_app_;
 };
 
 TEST_F(ArcPaymentAppBridgeTest, UnableToConnectInIsImplemented) {

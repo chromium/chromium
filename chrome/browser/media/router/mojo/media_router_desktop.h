@@ -9,6 +9,7 @@
 
 #include <map>
 #include <memory>
+#include <optional>
 #include <set>
 #include <string>
 #include <vector>
@@ -39,7 +40,6 @@
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
 #include "mojo/public/cpp/bindings/remote.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/mojom/presentation/presentation.mojom.h"
 
 namespace content {
@@ -57,9 +57,7 @@ class DualMediaSinkService;
 class WiredDisplayMediaRouteProvider;
 
 // MediaRouter implementation that uses the desktop MediaRouteProviders.
-class MediaRouterDesktop : public MediaRouterBase,
-                           public mojom::MediaRouter,
-                           public base::SupportsWeakPtr<MediaRouterDesktop> {
+class MediaRouterDesktop : public MediaRouterBase, public mojom::MediaRouter {
  public:
   explicit MediaRouterDesktop(content::BrowserContext* context);
   MediaRouterDesktop(const MediaRouterDesktop&) = delete;
@@ -77,15 +75,13 @@ class MediaRouterDesktop : public MediaRouterBase,
                    const url::Origin& origin,
                    content::WebContents* web_contents,
                    MediaRouteResponseCallback callback,
-                   base::TimeDelta timeout,
-                   bool off_the_record) final;
+                   base::TimeDelta timeout) final;
   void JoinRoute(const MediaSource::Id& source_id,
                  const std::string& presentation_id,
                  const url::Origin& origin,
                  content::WebContents* web_contents,
                  MediaRouteResponseCallback callback,
-                 base::TimeDelta timeout,
-                 bool off_the_record) final;
+                 base::TimeDelta timeout) final;
   void TerminateRoute(const MediaRoute::Id& route_id) final;
   // TODO(https://crbug.com/1198580): Remove DetachRoute(), SendRouteMessage(),
   // and SendRouteBinaryMessage().
@@ -165,7 +161,7 @@ class MediaRouterDesktop : public MediaRouterBase,
   // `result_code`: The result of the request.
   void OnTerminateRouteResult(const MediaRoute::Id& route_id,
                               mojom::MediaRouteProviderId provider_id,
-                              const absl::optional<std::string>& error_text,
+                              const std::optional<std::string>& error_text,
                               mojom::RouteRequestResultCode result_code);
 
   // Adds `route` to the list of routes. Called in the callback for
@@ -178,16 +174,15 @@ class MediaRouterDesktop : public MediaRouterBase,
   // into a local callback.
   void RouteResponseReceived(const std::string& presentation_id,
                              mojom::MediaRouteProviderId provider_id,
-                             bool is_off_the_record,
                              MediaRouteResponseCallback callback,
                              bool is_join,
-                             const absl::optional<MediaRoute>& media_route,
+                             const std::optional<MediaRoute>& media_route,
                              mojom::RoutePresentationConnectionPtr connection,
-                             const absl::optional<std::string>& error_text,
+                             const std::optional<std::string>& error_text,
                              mojom::RouteRequestResultCode result_code);
 
-  // Callback called by MRP's CreateMediaRouteController().
-  void OnMediaControllerCreated(const MediaRoute::Id& route_id, bool success);
+  // Callback called by MRP's BindMediaController().
+  void OnMediaControllerBound(const MediaRoute::Id& route_id, bool success);
 
   void AddMirroringMediaControllerHost(const MediaRoute& route);
 
@@ -231,7 +226,6 @@ class MediaRouterDesktop : public MediaRouterBase,
       const url::Origin& origin,
       content::WebContents* web_contents,
       base::TimeDelta timeout,
-      bool off_the_record,
       mojom::MediaRouteProvider::CreateRouteCallback mr_callback,
       const std::string& err,
       content::DesktopMediaID media_id);
@@ -240,11 +234,11 @@ class MediaRouterDesktop : public MediaRouterBase,
 
   // Methods for obtaining a pointer to the provider associated with the given
   // ID. They return a nullopt when such a provider is not found.
-  absl::optional<mojom::MediaRouteProviderId> GetProviderIdForPresentation(
+  std::optional<mojom::MediaRouteProviderId> GetProviderIdForPresentation(
       const std::string& presentation_id);
-  absl::optional<mojom::MediaRouteProviderId> GetProviderIdForRoute(
+  std::optional<mojom::MediaRouteProviderId> GetProviderIdForRoute(
       const MediaRoute::Id& route_id);
-  absl::optional<mojom::MediaRouteProviderId> GetProviderIdForSink(
+  std::optional<mojom::MediaRouteProviderId> GetProviderIdForSink(
       const MediaSink::Id& sink_id);
 
   // Returns a pointer to the MediaSink whose ID is `sink_id`, or nullptr if not
@@ -300,8 +294,6 @@ class MediaRouterDesktop : public MediaRouterBase,
   friend class MediaRouterIntegrationBrowserTest;
   friend class MediaRouterNativeIntegrationBrowserTest;
   FRIEND_TEST_ALL_PREFIXES(MediaRouterDesktopTest, JoinRouteTimedOutFails);
-  FRIEND_TEST_ALL_PREFIXES(MediaRouterDesktopTest,
-                           JoinRouteIncognitoMismatchFails);
   FRIEND_TEST_ALL_PREFIXES(MediaRouterDesktopTest, HandleIssue);
   FRIEND_TEST_ALL_PREFIXES(MediaRouterDesktopTest,
                            PresentationConnectionStateChangedCallback);
@@ -310,7 +302,6 @@ class MediaRouterDesktop : public MediaRouterBase,
   FRIEND_TEST_ALL_PREFIXES(MediaRouterDesktopTest,
                            TestRecordPresentationRequestUrlBySink);
   FRIEND_TEST_ALL_PREFIXES(MediaRouterDesktopTest, TestGetCurrentRoutes);
-  FRIEND_TEST_ALL_PREFIXES(MediaRouterDesktopTest, CreateIncognitoRoute);
   FRIEND_TEST_ALL_PREFIXES(MediaRouterDesktopTest, CreateRouteFails);
   FRIEND_TEST_ALL_PREFIXES(MediaRouterDesktopTest,
                            CreateRouteIncognitoMismatchFails);
@@ -404,7 +395,7 @@ class MediaRouterDesktop : public MediaRouterBase,
     bool HasObserver(MediaRoutesObserver* observer) const;
     bool HasObservers() const;
 
-    const absl::optional<std::vector<MediaRoute>>& cached_route_list() const {
+    const std::optional<std::vector<MediaRoute>>& cached_route_list() const {
       return cached_route_list_;
     }
     const base::flat_map<mojom::MediaRouteProviderId, std::vector<MediaRoute>>&
@@ -414,7 +405,7 @@ class MediaRouterDesktop : public MediaRouterBase,
 
    private:
     // Cached list of routes for the query.
-    absl::optional<std::vector<MediaRoute>> cached_route_list_;
+    std::optional<std::vector<MediaRoute>> cached_route_list_;
 
     // Per-MRP lists of routes for the query.
     // TODO(crbug.com/1374496): Consider making MRP ID an attribute of

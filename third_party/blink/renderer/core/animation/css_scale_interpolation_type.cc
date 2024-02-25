@@ -58,11 +58,11 @@ struct Scale {
   bool is_none;
 };
 
-std::unique_ptr<InterpolableValue> CreateScaleIdentity() {
-  auto list = std::make_unique<InterpolableList>(3);
+InterpolableValue* CreateScaleIdentity() {
+  auto* list = MakeGarbageCollected<InterpolableList>(3);
   for (wtf_size_t i = 0; i < 3; i++)
-    list->Set(i, std::make_unique<InterpolableNumber>(1));
-  return std::move(list);
+    list->Set(i, MakeGarbageCollected<InterpolableNumber>(1));
+  return list;
 }
 
 class InheritedScaleChecker
@@ -142,15 +142,15 @@ struct DowncastTraits<CSSScaleNonInterpolableValue> {
 
 InterpolationValue Scale::CreateInterpolationValue() const {
   if (is_none) {
-    return InterpolationValue(std::make_unique<InterpolableList>(0),
+    return InterpolationValue(MakeGarbageCollected<InterpolableList>(0),
                               CSSScaleNonInterpolableValue::Create(*this));
   }
 
-  auto list = std::make_unique<InterpolableList>(3);
-  for (wtf_size_t i = 0; i < 3; i++)
-    list->Set(i, std::make_unique<InterpolableNumber>(array[i]));
-  return InterpolationValue(std::move(list),
-                            CSSScaleNonInterpolableValue::Create(*this));
+  auto* list = MakeGarbageCollected<InterpolableList>(3);
+  for (wtf_size_t i = 0; i < 3; i++) {
+    list->Set(i, MakeGarbageCollected<InterpolableNumber>(array[i]));
+  }
+  return InterpolationValue(list, CSSScaleNonInterpolableValue::Create(*this));
 }
 
 InterpolationValue CSSScaleInterpolationType::MaybeConvertNeutral(
@@ -170,7 +170,7 @@ InterpolationValue CSSScaleInterpolationType::MaybeConvertInherit(
     ConversionCheckers& conversion_checkers) const {
   Scale inherited_scale(state.ParentStyle()->Scale());
   conversion_checkers.push_back(
-      std::make_unique<InheritedScaleChecker>(inherited_scale));
+      MakeGarbageCollected<InheritedScaleChecker>(inherited_scale));
   return inherited_scale.CreateInterpolationValue();
 }
 
@@ -257,11 +257,16 @@ void CSSScaleInterpolationType::Composite(
   for (wtf_size_t i = 0; i < 3; i++) {
     auto& underlying = To<InterpolableNumber>(*underlying_list.GetMutable(i));
 
-    double start = metadata.Start().array[i] *
-                   (metadata.IsStartAdditive() ? underlying.Value() : 1);
-    double end = metadata.end().array[i] *
-                 (metadata.IsEndAdditive() ? underlying.Value() : 1);
-    underlying.Set(Blend(start, end, interpolation_fraction));
+    InterpolableNumber& start_number =
+        metadata.IsStartAdditive()
+            ? *underlying.Clone()
+            : *MakeGarbageCollected<InterpolableNumber>(1);
+    start_number.Scale(metadata.Start().array[i]);
+    InterpolableNumber& end_number =
+        metadata.IsEndAdditive() ? *underlying.Clone()
+                                 : *MakeGarbageCollected<InterpolableNumber>(1);
+    end_number.Scale(metadata.end().array[i]);
+    start_number.Interpolate(end_number, interpolation_fraction, underlying);
   }
 }
 
@@ -274,7 +279,7 @@ void CSSScaleInterpolationType::ApplyStandardPropertyValue(
     state.StyleBuilder().SetScale(nullptr);
     return;
   }
-  state.StyleBuilder().SetScale(ScaleTransformOperation::Create(
+  state.StyleBuilder().SetScale(MakeGarbageCollected<ScaleTransformOperation>(
       scale.array[0], scale.array[1], scale.array[2],
       TransformOperation::kScale3D));
 }

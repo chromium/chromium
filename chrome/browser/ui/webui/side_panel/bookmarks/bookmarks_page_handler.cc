@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/webui/side_panel/bookmarks/bookmarks_page_handler.h"
 
 #include "base/memory/ptr_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/metrics/user_metrics.h"
 #include "base/metrics/user_metrics_action.h"
 #include "chrome/app/chrome_command_ids.h"
@@ -49,7 +50,8 @@ class BookmarkContextMenu : public ui::SimpleMenuModel,
   explicit BookmarkContextMenu(
       Browser* browser,
       base::WeakPtr<ui::MojoBubbleWebUIController::Embedder> embedder,
-      std::vector<const bookmarks::BookmarkNode*> bookmarks,
+      std::vector<raw_ptr<const bookmarks::BookmarkNode, VectorExperimental>>
+          bookmarks,
       const side_panel::mojom::ActionSource& source,
       commerce::ShoppingListContextMenuController* shopping_list_controller)
       : ui::SimpleMenuModel(this),
@@ -142,7 +144,8 @@ class BookmarkContextMenu : public ui::SimpleMenuModel,
   std::unique_ptr<BookmarkContextMenuController> controller_;
   raw_ptr<commerce::ShoppingListContextMenuController>
       shopping_list_controller_;
-  std::vector<const bookmarks::BookmarkNode*> bookmarks_;
+  std::vector<raw_ptr<const bookmarks::BookmarkNode, VectorExperimental>>
+      bookmarks_;
 };
 
 std::unique_ptr<BookmarkContextMenu> ContextMenuFromNodes(
@@ -157,7 +160,8 @@ std::unique_ptr<BookmarkContextMenu> ContextMenuFromNodes(
 
   bookmarks::BookmarkModel* bookmark_model =
       BookmarkModelFactory::GetForBrowserContext(browser->profile());
-  std::vector<const bookmarks::BookmarkNode*> bookmarks = {};
+  std::vector<raw_ptr<const bookmarks::BookmarkNode, VectorExperimental>>
+      bookmarks = {};
   for (const int64_t id : node_ids) {
     const bookmarks::BookmarkNode* bookmark =
         bookmarks::GetBookmarkNodeByID(bookmark_model, id);

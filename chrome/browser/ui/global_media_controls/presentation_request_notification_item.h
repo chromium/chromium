@@ -51,7 +51,7 @@ class PresentationRequestNotificationItem final
   void MediaSessionInfoChanged(
       media_session::mojom::MediaSessionInfoPtr session_info) override {}
   void MediaSessionMetadataChanged(
-      const absl::optional<media_session::MediaMetadata>& metadata) override;
+      const std::optional<media_session::MediaMetadata>& metadata) override;
   void MediaSessionActionsChanged(
       const std::vector<media_session::mojom::MediaSessionAction>& actions)
       override {}
@@ -60,7 +60,7 @@ class PresentationRequestNotificationItem final
                            std::vector<media_session::MediaImage>>& images)
       override;
   void MediaSessionPositionChanged(
-      const absl::optional<media_session::MediaPosition>& position) override {}
+      const std::optional<media_session::MediaPosition>& position) override {}
 
   base::WeakPtr<PresentationRequestNotificationItem> GetWeakPtr() {
     return weak_ptr_factory_.GetWeakPtr();
@@ -102,7 +102,7 @@ class PresentationRequestNotificationItem final
 
   // The metadata for the Media Session associated with the WebContents that
   // this presentation request is associated with.
-  absl::optional<media_session::MediaMetadata> metadata_;
+  std::optional<media_session::MediaMetadata> metadata_;
 
   // The favicon/artwork images for the Media Session associated with the
   // WebContents this presentation request is associated with.

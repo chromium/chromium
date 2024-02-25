@@ -36,8 +36,7 @@ const char kDriveV2UploadExistingFileUrlPrefix[] = "upload/drive/v2/files/";
 const char kDriveV2BatchUploadUrl[] = "upload/drive";
 const char kDriveV2PermissionsUrlFormat[] = "drive/v2/files/%s/permissions";
 const char kDriveV2DownloadUrlFormat[] = "drive/v2/files/%s?alt=media";
-const char kDriveV2ThumbnailUrlFormat[] = "d/%s=w%d-h%d";
-const char kDriveV2ThumbnailUrlWithCropFormat[] = "d/%s=w%d-h%d-c";
+const char kDriveV2ThumbnailUrlFormat[] = "d/%s=w%d-h%d%s";
 const char kDriveV2TeamDrivesUrl[] = "drive/v2/teamdrives";
 
 const char kIncludeTeamDriveItems[] = "includeTeamDriveItems";
@@ -321,8 +320,8 @@ GURL DriveApiUrlGenerator::GetThumbnailUrl(const std::string& resource_id,
                                            int height,
                                            bool crop) const {
   return base_thumbnail_url_.Resolve(base::StringPrintf(
-      crop ? kDriveV2ThumbnailUrlWithCropFormat : kDriveV2ThumbnailUrlFormat,
-      base::EscapePath(resource_id).c_str(), width, height));
+      kDriveV2ThumbnailUrlFormat, base::EscapePath(resource_id).c_str(), width,
+      height, crop ? "-c" : ""));
 }
 
 GURL DriveApiUrlGenerator::GetBatchUploadUrl() const {

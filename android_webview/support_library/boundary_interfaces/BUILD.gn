@@ -12,6 +12,8 @@ android_library("boundary_interface_java") {
     "src/org/chromium/support_lib_boundary/IsomorphicObjectBoundaryInterface.java",
     "src/org/chromium/support_lib_boundary/JsReplyProxyBoundaryInterface.java",
     "src/org/chromium/support_lib_boundary/ProcessGlobalConfigConstants.java",
+    "src/org/chromium/support_lib_boundary/ProfileBoundaryInterface.java",
+    "src/org/chromium/support_lib_boundary/ProfileStoreBoundaryInterface.java",
     "src/org/chromium/support_lib_boundary/ProxyControllerBoundaryInterface.java",
     "src/org/chromium/support_lib_boundary/SafeBrowsingResponseBoundaryInterface.java",
     "src/org/chromium/support_lib_boundary/ScriptHandlerBoundaryInterface.java",
@@ -60,7 +62,7 @@ android_apk("boundary_interface_example_apk") {
   # against the minSdkVersion of the webkit support library module. As the
   # minSdkVersion of the support library increases, so should this value. See
   # http://crbug.com/828184 for more details.
-  min_sdk_version = 14
+  lint_min_sdk_version = 14
 
   # Explicitly enable lint for this apk.
   enable_lint = true

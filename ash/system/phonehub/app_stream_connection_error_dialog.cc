@@ -18,8 +18,8 @@
 #include "ash/style/typography.h"
 #include "base/memory/raw_ptr.h"
 #include "chromeos/ash/components/phonehub/url_constants.h"
-#include "chromeos/constants/chromeos_features.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/models/image_model.h"
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
 #include "ui/color/color_provider.h"
@@ -67,6 +67,7 @@ constexpr int kMarginBetweenButtons = 8;
 
 // The real error dialog with content.
 class ConnectionErrorDialogDelegateView : public views::WidgetDelegateView {
+  METADATA_HEADER(ConnectionErrorDialogDelegateView, views::WidgetDelegateView)
  public:
   ConnectionErrorDialogDelegateView(
       StartTetheringCallback start_tethering_callback,
@@ -78,10 +79,15 @@ class ConnectionErrorDialogDelegateView : public views::WidgetDelegateView {
     SetPaintToLayer();
     layer()->SetBackgroundBlur(ColorProvider::kBackgroundBlurSigma);
     layer()->SetBackdropFilterQuality(ColorProvider::kBackgroundBlurQuality);
+    layer()->SetRoundedCornerRadius(
+        gfx::RoundedCornersF(kDialogRoundedCornerRadius));
 
     SetBackground(views::CreateThemedRoundedRectBackground(
-        GetColorProvider()->GetColor(kColorAshShieldAndBase80),
+        static_cast<ui::ColorId>(cros_tokens::kCrosSysBaseElevated),
         kDialogRoundedCornerRadius));
+    SetBorder(std::make_unique<views::HighlightBorder>(
+        kDialogRoundedCornerRadius,
+        views::HighlightBorder::Type::kHighlightBorder1));
 
     view_shadow_ = std::make_unique<ViewShadow>(this, kDialogShadowElevation);
     view_shadow_->SetRoundedCornerRadius(kDialogRoundedCornerRadius);
@@ -113,11 +119,8 @@ class ConnectionErrorDialogDelegateView : public views::WidgetDelegateView {
     title_->SetHorizontalAlignment(gfx::ALIGN_LEFT);
     title_->SetAutoColorReadabilityEnabled(false);
 
-    if (chromeos::features::IsJellyrollEnabled()) {
-      TypographyProvider::Get()->StyleLabel(ash::TypographyToken::kCrosTitle1,
-                                            *title_);
-    }
-
+    TypographyProvider::Get()->StyleLabel(ash::TypographyToken::kCrosTitle1,
+                                          *title_);
     title_->SetPaintToLayer();
     title_->layer()->SetFillsBoundsOpaquely(false);
 
@@ -150,8 +153,6 @@ class ConnectionErrorDialogDelegateView : public views::WidgetDelegateView {
         AshColorProvider::ContentLayerType::kTextColorPrimary);
     body_->AddStyleRange(gfx::Range(0, offset), style);
 
-    // TODO(b/273822975): Change Learn More link to a different page than the
-    // default Phone Hub help page.
     views::StyledLabel::RangeStyleInfo link_style =
         views::StyledLabel::RangeStyleInfo::CreateForLink(base::BindRepeating(
             &ConnectionErrorDialogDelegateView::LearnMoreLinkPressed,
@@ -225,23 +226,8 @@ class ConnectionErrorDialogDelegateView : public views::WidgetDelegateView {
 
   ~ConnectionErrorDialogDelegateView() override = default;
 
-  // views::View:
-  const char* GetClassName() const override {
-    return "ConnectionErrorDialogDelegateView";
-  }
-
   gfx::Size CalculatePreferredSize() const override {
     return gfx::Size(kDialogWidth, GetHeightForWidth(kDialogWidth));
-  }
-
-  void OnThemeChanged() override {
-    views::WidgetDelegateView::OnThemeChanged();
-
-    SetBorder(std::make_unique<views::HighlightBorder>(
-        kDialogRoundedCornerRadius,
-        views::HighlightBorder::Type::kHighlightBorder1));
-    title_->SetEnabledColor(AshColorProvider::Get()->GetContentLayerColor(
-        AshColorProvider::ContentLayerType::kTextColorPrimary));
   }
 
   void OnStartTetheringClicked(const ui::Event& event) {
@@ -266,12 +252,15 @@ class ConnectionErrorDialogDelegateView : public views::WidgetDelegateView {
   StartTetheringCallback start_tethering_callback_;
   std::unique_ptr<ViewShadow> view_shadow_;
 
-  raw_ptr<views::ImageView, ExperimentalAsh> icon_ = nullptr;
-  raw_ptr<views::Label, ExperimentalAsh> title_ = nullptr;
-  raw_ptr<views::StyledLabel, ExperimentalAsh> body_ = nullptr;
-  raw_ptr<views::Button, ExperimentalAsh> cancel_button_ = nullptr;
-  raw_ptr<views::Button, ExperimentalAsh> accept_button_ = nullptr;
+  raw_ptr<views::ImageView> icon_ = nullptr;
+  raw_ptr<views::Label> title_ = nullptr;
+  raw_ptr<views::StyledLabel> body_ = nullptr;
+  raw_ptr<views::Button> cancel_button_ = nullptr;
+  raw_ptr<views::Button> accept_button_ = nullptr;
 };
+
+BEGIN_METADATA(ConnectionErrorDialogDelegateView)
+END_METADATA
 
 }  // namespace
 

@@ -1,0 +1,20 @@
+[
+  {
+    "os": [
+      "linux"
+    ],
+    "policy_pref_mapping_tests": [
+      {
+        "policies": {
+          "GSSAPILibraryName": "libwhatever.so"
+        },
+        "prefs": {
+          "auth.gssapi_library_name": {
+            "location": "local_state",
+            "value": "libwhatever.so"
+          }
+        }
+      }
+    ]
+  }
+]

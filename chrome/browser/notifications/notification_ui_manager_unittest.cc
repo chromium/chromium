@@ -106,4 +106,15 @@ TEST_F(NotificationUIManagerTest, GetAllIdsReturnsOriginalId) {
   EXPECT_EQ(*ids.begin(), "test");
 }
 
+TEST_F(NotificationUIManagerTest, GetAllIdsByOriginReturnsOriginalId) {
+  EXPECT_TRUE(message_center()->NotificationCount() == 0);
+  notification_manager()->Add(GetANotification("test"), profile());
+  std::set<std::string> ids =
+      notification_manager()->GetAllIdsByProfileAndOrigin(
+          ProfileNotification::GetProfileID(profile()),
+          GURL("chrome-extension://adflkjsdflkdsfdsflkjdsflkdjfs"));
+  ASSERT_EQ(1u, ids.size());
+  EXPECT_EQ(*ids.begin(), "test");
+}
+
 }  // namespace message_center

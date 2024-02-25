@@ -36,13 +36,13 @@
 #include "third_party/blink/renderer/core/execution_context/agent.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/modules/indexed_db_names.h"
+#include "third_party/blink/renderer/modules/indexeddb/idb_cursor.h"
 #include "third_party/blink/renderer/modules/indexeddb/idb_database.h"
 #include "third_party/blink/renderer/modules/indexeddb/idb_event_dispatcher.h"
 #include "third_party/blink/renderer/modules/indexeddb/idb_index.h"
 #include "third_party/blink/renderer/modules/indexeddb/idb_object_store.h"
 #include "third_party/blink/renderer/modules/indexeddb/idb_open_db_request.h"
 #include "third_party/blink/renderer/modules/indexeddb/idb_request_queue_item.h"
-#include "third_party/blink/renderer/modules/indexeddb/indexed_db_dispatcher.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/bindings/script_state.h"
 #include "third_party/blink/renderer/platform/bindings/v8_per_isolate_data.h"
@@ -178,7 +178,7 @@ IDBObjectStore* IDBTransaction::objectStore(const String& name,
 
   IDBObjectStoreMap::iterator it = object_store_map_.find(name);
   if (it != object_store_map_.end())
-    return it->value;
+    return it->value.Get();
 
   if (!IsVersionChange() && !scope_.Contains(name)) {
     exception_state.ThrowDOMException(
@@ -493,8 +493,8 @@ void IDBTransaction::StartAborting(DOMException* error, bool from_frontend) {
   // due to a constraint error), we're already asynchronous.
   AbortOutstandingRequests(/*queue_tasks=*/from_frontend);
 
-  if (from_frontend && BackendDB()) {
-    BackendDB()->Abort(id_);
+  if (from_frontend && database_->IsConnectionOpen()) {
+    database_->Abort(id_);
   }
 }
 
@@ -502,11 +502,15 @@ void IDBTransaction::CreateObjectStore(int64_t object_store_id,
                                        const String& name,
                                        const IDBKeyPath& key_path,
                                        bool auto_increment) {
-  remote_->CreateObjectStore(object_store_id, name, key_path, auto_increment);
+  if (remote_.is_connected()) {
+    remote_->CreateObjectStore(object_store_id, name, key_path, auto_increment);
+  }
 }
 
 void IDBTransaction::DeleteObjectStore(int64_t object_store_id) {
-  remote_->DeleteObjectStore(object_store_id);
+  if (remote_.is_connected()) {
+    remote_->DeleteObjectStore(object_store_id);
+  }
 }
 
 void IDBTransaction::Put(int64_t object_store_id,
@@ -515,7 +519,16 @@ void IDBTransaction::Put(int64_t object_store_id,
                          mojom::blink::IDBPutMode put_mode,
                          Vector<IDBIndexKeys> index_keys,
                          mojom::blink::IDBTransaction::PutCallback callback) {
-  IndexedDBDispatcher::ResetCursorPrefetchCaches(id_, nullptr);
+  if (!remote_.is_connected()) {
+    std::move(callback).Run(
+        mojom::blink::IDBTransactionPutResult::NewErrorResult(
+            mojom::blink::IDBError::New(
+                mojom::blink::IDBException::kUnknownError,
+                "Unknown transaction")));
+    return;
+  }
+
+  IDBCursor::ResetCursorPrefetchCaches(id_, nullptr);
 
   size_t index_keys_size = 0;
   for (const auto& index_key : index_keys) {
@@ -570,10 +583,6 @@ mojom::blink::IDBTransactionMode IDBTransaction::StringToMode(
     return mojom::blink::IDBTransactionMode::VersionChange;
   NOTREACHED();
   return mojom::blink::IDBTransactionMode::ReadOnly;
-}
-
-WebIDBDatabase* IDBTransaction::BackendDB() const {
-  return database_->Backend();
 }
 
 const String& IDBTransaction::mode() const {

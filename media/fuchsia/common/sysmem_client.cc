@@ -47,19 +47,19 @@ void SysmemCollectionClient::Initialize(
       fit::bind_member(this, &SysmemCollectionClient::OnError));
   collection_->SetName(name_priority, std::string(name));
 
-  // If Sync() is not required then constraints can be set immediately.
-  if (sync_completion_closures_.empty()) {
-    collection_->SetConstraints(/*has_constraints=*/true,
-                                std::move(constraints));
-    return;
+  // We may need to send a Sync to ensure previously-started CreateSharedToken()
+  // calls can complete. The Sync completion is how we know that sysmem knows
+  // about the existence of the tokens created by the CreateSharedToken() calls,
+  // which is needed before we can send the token to a different participant.
+  //
+  // CreateSharedToken can complete as soon as this Sync is done.
+  if (!shared_token_ready_closures_.empty()) {
+    collection_->Sync(
+        fit::bind_member(this, &SysmemCollectionClient::OnSyncComplete));
   }
 
-  sync_completion_closures_.push_back(
-      base::BindOnce(&fuchsia::sysmem::BufferCollection::SetConstraints,
-                     base::Unretained(collection_.get()),
-                     /*have_constraints=*/true, std::move(constraints)));
-  collection_->Sync(
-      fit::bind_member(this, &SysmemCollectionClient::OnSyncComplete));
+  collection_->SetConstraints(/*have_constraints=*/true,
+                              std::move(constraints));
 }
 
 void SysmemCollectionClient::CreateSharedToken(
@@ -76,7 +76,7 @@ void SysmemCollectionClient::CreateSharedToken(
     token->SetDebugClientInfo(std::string(debug_client_name), debug_client_id);
   }
 
-  sync_completion_closures_.push_back(
+  shared_token_ready_closures_.push_back(
       base::BindOnce(std::move(cb), std::move(token)));
 }
 
@@ -98,7 +98,7 @@ void SysmemCollectionClient::OnSyncComplete() {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
 
   std::vector<base::OnceClosure> sync_closures =
-      std::move(sync_completion_closures_);
+      std::move(shared_token_ready_closures_);
   for (auto& cb : sync_closures) {
     std::move(cb).Run();
   }

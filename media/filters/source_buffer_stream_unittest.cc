@@ -27,7 +27,6 @@
 #include "media/base/media_util.h"
 #include "media/base/mock_media_log.h"
 #include "media/base/test_helpers.h"
-#include "media/base/text_track_config.h"
 #include "media/base/timestamp_constants.h"
 #include "media/base/webvtt_util.h"
 #include "media/filters/source_buffer_range.h"
@@ -92,13 +91,6 @@ class SourceBufferStreamTest : public testing::Test {
     frames_per_second_ = frames_per_second;
     keyframes_per_second_ = keyframes_per_second;
     frame_duration_ = ConvertToFrameDuration(frames_per_second);
-  }
-
-  void SetTextStream() {
-    video_config_ = TestVideoConfig::Invalid();
-    TextTrackConfig config(kTextSubtitles, "", "", "");
-    ResetStream<>(config);
-    SetStreamInfo(2, 2);
   }
 
   void SetAudioStream() {
@@ -340,9 +332,6 @@ class SourceBufferStreamTest : public testing::Test {
           case SourceBufferStreamType::kAudio:
             stream_->GetCurrentAudioDecoderConfig();
             break;
-          case SourceBufferStreamType::kText:
-            stream_->GetCurrentTextTrackConfig();
-            break;
         }
 
         EXPECT_EQ("C", timestamps[i]);
@@ -445,8 +434,6 @@ class SourceBufferStreamTest : public testing::Test {
         return DemuxerStream::AUDIO;
       case SourceBufferStreamType::kVideo:
         return DemuxerStream::VIDEO;
-      case SourceBufferStreamType::kText:
-        return DemuxerStream::TEXT;
     }
     NOTREACHED_NORETURN();
   }
@@ -4288,73 +4275,6 @@ TEST_F(SourceBufferStreamTest,
   Seek(0);
   CheckExpectedBuffers("9998K 9998K 10000K", TimeGranularity::kMicrosecond);
   CheckNoNextBuffer();
-}
-
-TEST_F(SourceBufferStreamTest, Text_Append_SingleRange) {
-  SetTextStream();
-  NewCodedFrameGroupAppend("0K 500K 1000K");
-  CheckExpectedRangesByTimestamp("{ [0,1500) }");
-
-  Seek(0);
-  CheckExpectedBuffers("0K 500K 1000K");
-}
-
-TEST_F(SourceBufferStreamTest, Text_Append_DisjointAfter) {
-  SetTextStream();
-  NewCodedFrameGroupAppend("0K 500K 1000K");
-  CheckExpectedRangesByTimestamp("{ [0,1500) }");
-  NewCodedFrameGroupAppend("3000K 3500K 4000K");
-  CheckExpectedRangesByTimestamp("{ [0,4500) }");
-
-  Seek(0);
-  CheckExpectedBuffers("0K 500K 1000K 3000K 3500K 4000K");
-}
-
-TEST_F(SourceBufferStreamTest, Text_Append_DisjointBefore) {
-  SetTextStream();
-  NewCodedFrameGroupAppend("3000K 3500K 4000K");
-  CheckExpectedRangesByTimestamp("{ [3000,4500) }");
-  NewCodedFrameGroupAppend("0K 500K 1000K");
-  CheckExpectedRangesByTimestamp("{ [0,4500) }");
-
-  Seek(0);
-  CheckExpectedBuffers("0K 500K 1000K 3000K 3500K 4000K");
-}
-
-TEST_F(SourceBufferStreamTest, Text_CompleteOverlap) {
-  SetTextStream();
-  NewCodedFrameGroupAppend("3000K 3500K 4000K");
-  CheckExpectedRangesByTimestamp("{ [3000,4500) }");
-  NewCodedFrameGroupAppend(
-      "0K 501K 1001K 1501K 2001K 2501K "
-      "3001K 3501K 4001K 4501K 5001K");
-  CheckExpectedRangesByTimestamp("{ [0,5501) }");
-
-  Seek(0);
-  CheckExpectedBuffers("0K 501K 1001K 1501K 2001K 2501K "
-                       "3001K 3501K 4001K 4501K 5001K");
-}
-
-TEST_F(SourceBufferStreamTest, Text_OverlapAfter) {
-  SetTextStream();
-  NewCodedFrameGroupAppend("0K 500K 1000K 1500K 2000K");
-  CheckExpectedRangesByTimestamp("{ [0,2500) }");
-  NewCodedFrameGroupAppend("1499K 2001K 2501K 3001K");
-  CheckExpectedRangesByTimestamp("{ [0,3501) }");
-
-  Seek(0);
-  CheckExpectedBuffers("0K 500K 1000K 1499K 2001K 2501K 3001K");
-}
-
-TEST_F(SourceBufferStreamTest, Text_OverlapBefore) {
-  SetTextStream();
-  NewCodedFrameGroupAppend("1500K 2000K 2500K 3000K 3500K");
-  CheckExpectedRangesByTimestamp("{ [1500,4000) }");
-  NewCodedFrameGroupAppend("0K 501K 1001K 1501K 2001K");
-  CheckExpectedRangesByTimestamp("{ [0,4000) }");
-
-  Seek(0);
-  CheckExpectedBuffers("0K 501K 1001K 1501K 2001K 3000K 3500K");
 }
 
 TEST_F(SourceBufferStreamTest, Audio_SpliceTrimmingForOverlap) {

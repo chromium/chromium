@@ -18,7 +18,9 @@
 #include "google_apis/common/test_util.h"
 #include "google_apis/gaia/gaia_urls.h"
 #include "google_apis/gaia/gaia_urls_overrider_for_testing.h"
+#include "google_apis/tasks/tasks_api_request_types.h"
 #include "google_apis/tasks/tasks_api_response_types.h"
+#include "google_apis/tasks/tasks_api_task_status.h"
 #include "google_apis/tasks/tasks_api_url_generator_utils.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "net/test/embedded_test_server/http_request.h"
@@ -91,8 +93,8 @@ TEST_F(TasksApiRequestsTest, ListTaskListsRequest) {
   base::test::TestFuture<
       base::expected<std::unique_ptr<TaskLists>, ApiErrorCode>>
       future;
-  auto request = std::make_unique<ListTaskListsRequest>(request_sender(),
-                                                        future.GetCallback());
+  auto request = std::make_unique<ListTaskListsRequest>(
+      request_sender(), /*page_token=*/"", future.GetCallback());
   request_sender()->StartRequestWithAuthRetry(std::move(request));
   ASSERT_TRUE(future.Wait());
 
@@ -111,7 +113,7 @@ TEST_F(TasksApiRequestsTest, ListTaskListsWithOptionalArgsRequest) {
       base::expected<std::unique_ptr<TaskLists>, ApiErrorCode>>
       future;
   auto request = std::make_unique<ListTaskListsRequest>(
-      request_sender(), future.GetCallback(), /*page_token=*/"qwerty");
+      request_sender(), /*page_token=*/"qwerty", future.GetCallback());
   request_sender()->StartRequestWithAuthRetry(std::move(request));
   ASSERT_TRUE(future.Wait());
 
@@ -130,6 +132,7 @@ TEST_F(TasksApiRequestsTest, ListTaskListsRequestHandlesError) {
       base::expected<std::unique_ptr<TaskLists>, ApiErrorCode>>
       future;
   auto request = std::make_unique<ListTaskListsRequest>(request_sender(),
+                                                        /*page_token=*/"",
                                                         future.GetCallback());
   request_sender()->StartRequestWithAuthRetry(std::move(request));
   ASSERT_TRUE(future.Wait());
@@ -143,7 +146,7 @@ TEST_F(TasksApiRequestsTest, ListTasksRequest) {
   base::test::TestFuture<base::expected<std::unique_ptr<Tasks>, ApiErrorCode>>
       future;
   auto request = std::make_unique<ListTasksRequest>(
-      request_sender(), future.GetCallback(), kTaskListId);
+      request_sender(), kTaskListId, /*page_token=*/"", future.GetCallback());
   request_sender()->StartRequestWithAuthRetry(std::move(request));
   ASSERT_TRUE(future.Wait());
 
@@ -162,9 +165,9 @@ TEST_F(TasksApiRequestsTest, ListTasksWithOptionalArgsRequest) {
 
   base::test::TestFuture<base::expected<std::unique_ptr<Tasks>, ApiErrorCode>>
       future;
-  auto request =
-      std::make_unique<ListTasksRequest>(request_sender(), future.GetCallback(),
-                                         kTaskListId, /*page_token=*/"qwerty");
+  auto request = std::make_unique<ListTasksRequest>(
+      request_sender(), kTaskListId, /*page_token=*/"qwerty",
+      future.GetCallback());
   request_sender()->StartRequestWithAuthRetry(std::move(request));
   ASSERT_TRUE(future.Wait());
 
@@ -184,7 +187,7 @@ TEST_F(TasksApiRequestsTest, ListTasksRequestHandlesError) {
   base::test::TestFuture<base::expected<std::unique_ptr<Tasks>, ApiErrorCode>>
       future;
   auto request = std::make_unique<ListTasksRequest>(
-      request_sender(), future.GetCallback(), kTaskListId);
+      request_sender(), kTaskListId, /*page_token=*/"", future.GetCallback());
   request_sender()->StartRequestWithAuthRetry(std::move(request));
   ASSERT_TRUE(future.Wait());
 
@@ -194,14 +197,16 @@ TEST_F(TasksApiRequestsTest, ListTasksRequestHandlesError) {
 TEST_F(TasksApiRequestsTest, PatchTaskRequest) {
   set_test_file_path("tasks/task.json");
 
-  base::test::TestFuture<ApiErrorCode> future;
+  base::test::TestFuture<base::expected<std::unique_ptr<Task>, ApiErrorCode>>
+      future;
   auto request = std::make_unique<PatchTaskRequest>(
-      request_sender(), future.GetCallback(), kTaskListId, kTaskId,
-      Task::Status::kCompleted);
+      request_sender(), kTaskListId, kTaskId,
+      TaskRequestPayload{.status = TaskStatus::kCompleted},
+      future.GetCallback());
   request_sender()->StartRequestWithAuthRetry(std::move(request));
   ASSERT_TRUE(future.Wait());
 
-  EXPECT_EQ(future.Get(), HTTP_SUCCESS);
+  EXPECT_TRUE(future.Get().has_value());
   EXPECT_EQ(last_request().method, net::test_server::METHOD_PATCH);
   EXPECT_EQ(last_request().GetURL(), GetPatchTaskUrl(kTaskListId, kTaskId));
   EXPECT_EQ(last_request().headers.at("Content-Type"),
@@ -212,14 +217,57 @@ TEST_F(TasksApiRequestsTest, PatchTaskRequest) {
 TEST_F(TasksApiRequestsTest, PatchTaskRequestHandlesError) {
   set_test_file_path("tasks/invalid_file_to_simulate_404_error.json");
 
-  base::test::TestFuture<ApiErrorCode> future;
+  base::test::TestFuture<base::expected<std::unique_ptr<Task>, ApiErrorCode>>
+      future;
   auto request = std::make_unique<PatchTaskRequest>(
-      request_sender(), future.GetCallback(), kTaskListId, kTaskId,
-      Task::Status::kCompleted);
+      request_sender(), kTaskListId, kTaskId,
+      TaskRequestPayload{.status = TaskStatus::kCompleted},
+      future.GetCallback());
   request_sender()->StartRequestWithAuthRetry(std::move(request));
   ASSERT_TRUE(future.Wait());
 
-  EXPECT_EQ(future.Get(), HTTP_NOT_FOUND);
+  EXPECT_THAT(future.Get(), base::test::ErrorIs(HTTP_NOT_FOUND));
+}
+
+TEST_F(TasksApiRequestsTest, InsertTaskRequest) {
+  set_test_file_path("tasks/task.json");
+
+  base::test::TestFuture<base::expected<std::unique_ptr<Task>, ApiErrorCode>>
+      future;
+  auto request = std::make_unique<InsertTaskRequest>(
+      request_sender(), kTaskListId, /*previous_task_id=*/"",
+      TaskRequestPayload{.title = "New task",
+                         .status = TaskStatus::kNeedsAction},
+      future.GetCallback());
+  request_sender()->StartRequestWithAuthRetry(std::move(request));
+  ASSERT_TRUE(future.Wait());
+
+  EXPECT_EQ(last_request().method, net::test_server::METHOD_POST);
+  EXPECT_EQ(last_request().GetURL(),
+            GetInsertTaskUrl(kTaskListId, /*previous_task_id=*/""));
+  EXPECT_EQ(last_request().headers.at("Content-Type"),
+            "application/json; charset=utf-8");
+  EXPECT_EQ(last_request().content,
+            "{\"status\":\"needsAction\",\"title\":\"New task\"}");
+
+  ASSERT_TRUE(future.Get().has_value());
+  EXPECT_EQ(future.Get().value()->id(), "qwe");
+}
+
+TEST_F(TasksApiRequestsTest, InsertTaskRequestHandlesError) {
+  set_test_file_path("tasks/invalid_file_to_simulate_404_error.json");
+
+  base::test::TestFuture<base::expected<std::unique_ptr<Task>, ApiErrorCode>>
+      future;
+  auto request = std::make_unique<InsertTaskRequest>(
+      request_sender(), kTaskListId, /*previous_task_id=*/"",
+      TaskRequestPayload{.title = "New task",
+                         .status = TaskStatus::kNeedsAction},
+      future.GetCallback());
+  request_sender()->StartRequestWithAuthRetry(std::move(request));
+  ASSERT_TRUE(future.Wait());
+
+  EXPECT_THAT(future.Get(), base::test::ErrorIs(HTTP_NOT_FOUND));
 }
 
 }  // namespace google_apis::tasks

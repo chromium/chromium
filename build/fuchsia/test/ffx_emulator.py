@@ -9,14 +9,11 @@ import logging
 import os
 import json
 import random
-import subprocess
 
 from contextlib import AbstractContextManager
 
-from common import run_ffx_command, IMAGES_ROOT, SDK_ROOT
+from common import run_ffx_command, IMAGES_ROOT, INTERNAL_IMAGES_ROOT, SDK_ROOT
 from compatible_utils import get_host_arch
-
-_EMU_COMMAND_RETRIES = 3
 
 
 class FfxEmulator(AbstractContextManager):
@@ -26,7 +23,10 @@ class FfxEmulator(AbstractContextManager):
         if args.product:
             self._product = args.product
         else:
-            self._product = 'terminal.qemu-' + get_host_arch()
+            if get_host_arch() == 'x64':
+                self._product = 'terminal.x64'
+            else:
+                self._product = 'terminal.qemu-arm64'
 
         self._enable_graphics = args.enable_graphics
         self._hardware_gpu = args.hardware_gpu
@@ -43,6 +43,7 @@ class FfxEmulator(AbstractContextManager):
         else:
             self._node_name = 'fuchsia-emulator-' + str(random.randint(
                 1, 9999))
+        self._device_spec = args.device_spec
 
     def _everlasting(self) -> bool:
         return self._node_name == 'fuchsia-everlasting-emulator'
@@ -56,6 +57,8 @@ class FfxEmulator(AbstractContextManager):
         logging.info('Starting emulator %s', self._node_name)
         prod, board = self._product.split('.', 1)
         image_dir = os.path.join(IMAGES_ROOT, prod, board)
+        if not os.path.isdir(image_dir):
+            image_dir = os.path.join(INTERNAL_IMAGES_ROOT, prod, board)
         emu_command = ['emu', 'start', image_dir, '--name', self._node_name]
         if not self._enable_graphics:
             emu_command.append('-H')
@@ -70,6 +73,8 @@ class FfxEmulator(AbstractContextManager):
             emu_command.extend(['--net', 'user'])
         if self._everlasting():
             emu_command.extend(['--reuse-with-check'])
+        if self._device_spec:
+            emu_command.extend(['--device', self._device_spec])
 
         # TODO(https://fxbug.dev/99321): remove when ffx has native support
         # for starting emulator on arm64 host.
@@ -108,28 +113,15 @@ class FfxEmulator(AbstractContextManager):
             qemu_arm64_meta = data.replace(r'tools/x64', 'tools/arm64')
             with open(qemu_arm64_meta_file, "w+") as f:
                 json.dump(ast.literal_eval(qemu_arm64_meta), f)
+
+        # Always use qemu for arm64 images, no matter it runs on arm64 hosts or
+        # x64 hosts with simulation.
+        if self._product.endswith('arm64'):
             emu_command.extend(['--engine', 'qemu'])
 
-        for i in range(_EMU_COMMAND_RETRIES):
-
-            # If the ffx daemon fails to establish a connection with
-            # the emulator after 85 seconds, that means the emulator
-            # failed to be brought up and a retry is needed.
-            # TODO(fxb/103540): Remove retry when start up issue is fixed.
-            try:
-                if i > 0:
-                    logging.warning(
-                        'Emulator failed to start.')
-                configs = ['emu.start.timeout=90']
-                if self._everlasting():
-                    configs.append('emu.instance_dir=' \
-                                   '/home/chrome-bot/.fuchsia_emulator/')
-                run_ffx_command(cmd=emu_command,
-                                timeout=100,
-                                configs=configs)
-                break
-            except (subprocess.TimeoutExpired, subprocess.CalledProcessError):
-                run_ffx_command(cmd=('emu', 'stop'))
+        run_ffx_command(cmd=emu_command,
+                        timeout=310,
+                        configs=['emu.start.timeout=300'])
 
         return self._node_name
 

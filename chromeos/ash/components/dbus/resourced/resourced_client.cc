@@ -12,6 +12,7 @@
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/thread_pool.h"
 #include "base/time/time.h"
+#include "chromeos/ash/components/dbus/resource_manager/resource_manager.pb.h"
 #include "chromeos/ash/components/dbus/resourced/fake_resourced_client.h"
 #include "dbus/bus.h"
 #include "dbus/message.h"
@@ -52,6 +53,14 @@ class ResourcedClientImpl : public ResourcedClient {
                             weak_factory_.GetWeakPtr()),
         base::BindOnce(&ResourcedClientImpl::MemoryPressureConnected,
                        weak_factory_.GetWeakPtr()));
+    proxy_->ConnectToSignal(
+        resource_manager::kResourceManagerInterface,
+        resource_manager::kMemoryPressureArcContainer,
+        base::BindRepeating(
+            &ResourcedClientImpl::MemoryPressureArcContainerReceived,
+            weak_factory_.GetWeakPtr()),
+        base::BindOnce(&ResourcedClientImpl::MemoryPressureConnected,
+                       weak_factory_.GetWeakPtr()));
   }
 
   // ResourcedClient interface.
@@ -64,6 +73,12 @@ class ResourcedClientImpl : public ResourcedClient {
                            uint32_t moderate_margin,
                            SetMemoryMarginsBpsCallback callback) override;
 
+  void ReportBackgroundProcesses(Component component,
+                                 const std::vector<int32_t>& pids) override;
+
+  void ReportBrowserProcesses(Component component,
+                              const std::vector<Process>& processes) override;
+
   void AddObserver(Observer* observer) override;
 
   void RemoveObserver(Observer* observer) override;
@@ -71,6 +86,10 @@ class ResourcedClientImpl : public ResourcedClient {
   void AddArcVmObserver(ArcVmObserver* observer) override;
 
   void RemoveArcVmObserver(ArcVmObserver* observer) override;
+
+  void AddArcContainerObserver(ArcContainerObserver* observer) override;
+
+  void RemoveArcContainerObserver(ArcContainerObserver* observer) override;
 
  private:
   // D-Bus response handlers.
@@ -91,9 +110,11 @@ class ResourcedClientImpl : public ResourcedClient {
 
   void MemoryPressureArcVmReceived(dbus::Signal* signal);
 
+  void MemoryPressureArcContainerReceived(dbus::Signal* signal);
+
   // Member variables.
 
-  raw_ptr<dbus::ObjectProxy, ExperimentalAsh> proxy_ = nullptr;
+  raw_ptr<dbus::ObjectProxy> proxy_ = nullptr;
 
   // Caches the total memory for reclaim_target_kb sanity check. The default
   // value is 32 GiB in case reading total memory failed.
@@ -104,6 +125,9 @@ class ResourcedClientImpl : public ResourcedClient {
 
   // A list of observers listening for ARCVM memory pressure signals.
   base::ObserverList<ArcVmObserver> arcvm_observers_;
+
+  // A list of observers listening for ARC container memory pressure signals.
+  base::ObserverList<ArcContainerObserver> arc_container_observers_;
 
   base::WeakPtrFactory<ResourcedClientImpl> weak_factory_{this};
 };
@@ -120,14 +144,24 @@ ResourcedClientImpl::ResourcedClientImpl() {
 void ResourcedClientImpl::MemoryPressureReceived(dbus::Signal* signal) {
   dbus::MessageReader signal_reader(signal);
 
+  memory_pressure::ReclaimTarget reclaim_target;
   uint8_t pressure_level_byte;
   PressureLevel pressure_level;
-  uint64_t reclaim_target_kb;
 
   if (!signal_reader.PopByte(&pressure_level_byte) ||
-      !signal_reader.PopUint64(&reclaim_target_kb)) {
+      !signal_reader.PopUint64(&reclaim_target.target_kb)) {
     LOG(ERROR) << "Error reading signal from resourced: " << signal->ToString();
     return;
+  }
+
+  int64_t signal_origin_timestamp_ms = -1;
+  // The signal origin timestamp may not be included by resourced, and if it is,
+  // it might be an invalid value.
+  if (signal_reader.PopInt64(&signal_origin_timestamp_ms) &&
+      signal_origin_timestamp_ms > 0) {
+    // Signal origin timestamp is received as a ms value from CLOCK_MONOTONIC.
+    reclaim_target.origin_time =
+        base::TimeTicks::FromUptimeMillis(signal_origin_timestamp_ms);
   }
 
   if (pressure_level_byte == resource_manager::PressureLevelChrome::NONE) {
@@ -143,13 +177,14 @@ void ResourcedClientImpl::MemoryPressureReceived(dbus::Signal* signal) {
     return;
   }
 
-  if (reclaim_target_kb > total_memory_kb_) {
-    LOG(ERROR) << "reclaim_target_kb is too large: " << reclaim_target_kb;
+  if (reclaim_target.target_kb > total_memory_kb_) {
+    LOG(ERROR) << "reclaim_target_kb is too large: "
+               << reclaim_target.target_kb;
     return;
   }
 
   for (auto& observer : observers_) {
-    observer.OnMemoryPressure(pressure_level, reclaim_target_kb);
+    observer.OnMemoryPressure(pressure_level, reclaim_target);
   }
 }
 
@@ -198,6 +233,52 @@ void ResourcedClientImpl::MemoryPressureArcVmReceived(dbus::Signal* signal) {
   }
 }
 
+void ResourcedClientImpl::MemoryPressureArcContainerReceived(
+    dbus::Signal* signal) {
+  dbus::MessageReader signal_reader(signal);
+
+  uint8_t pressure_level_byte;
+  PressureLevelArcContainer pressure_level;
+  uint64_t reclaim_target_kb;
+
+  if (!signal_reader.PopByte(&pressure_level_byte) ||
+      !signal_reader.PopUint64(&reclaim_target_kb)) {
+    LOG(ERROR) << "Error reading signal from resourced: " << signal->ToString();
+    return;
+  }
+  switch (static_cast<resource_manager::PressureLevelArcContainer>(
+      pressure_level_byte)) {
+    case resource_manager::PressureLevelArcContainer::NONE:
+      pressure_level = PressureLevelArcContainer::kNone;
+      break;
+
+    case resource_manager::PressureLevelArcContainer::CACHED:
+      pressure_level = PressureLevelArcContainer::kCached;
+      break;
+
+    case resource_manager::PressureLevelArcContainer::PERCEPTIBLE:
+      pressure_level = PressureLevelArcContainer::kPerceptible;
+      break;
+
+    case resource_manager::PressureLevelArcContainer::FOREGROUND:
+      pressure_level = PressureLevelArcContainer::kForeground;
+      break;
+
+    default:
+      LOG(ERROR) << "Unknown memory pressure level: " << pressure_level_byte;
+      return;
+  }
+
+  if (reclaim_target_kb > total_memory_kb_) {
+    LOG(ERROR) << "reclaim_target_kb is too large: " << reclaim_target_kb;
+    return;
+  }
+
+  for (auto& observer : arc_container_observers_) {
+    observer.OnMemoryPressure(pressure_level, reclaim_target_kb);
+  }
+}
+
 void ResourcedClientImpl::MemoryPressureConnected(
     const std::string& interface_name,
     const std::string& signal_name,
@@ -212,7 +293,7 @@ void ResourcedClientImpl::HandleSetGameModeWithTimeoutResponse(
   dbus::MessageReader reader(response);
   uint8_t previous;
   if (!reader.PopByte(&previous)) {
-    std::move(callback).Run(absl::nullopt);
+    std::move(callback).Run(std::nullopt);
     return;
   }
   std::move(callback).Run(static_cast<GameMode>(previous));
@@ -287,6 +368,72 @@ void ResourcedClientImpl::SetMemoryMarginsBps(
                      moderate_margin, std::move(callback)));
 }
 
+void ResourcedClientImpl::ReportBackgroundProcesses(
+    Component component,
+    const std::vector<int32_t>& pids) {
+  resource_manager::ReportBackgroundProcesses request;
+
+  if (component == ResourcedClient::Component::kAsh) {
+    request.set_component(
+        resource_manager::ReportBackgroundProcesses_Component_ASH);
+  } else if (component == ResourcedClient::Component::kLacros) {
+    request.set_component(
+        resource_manager::ReportBackgroundProcesses_Component_LACROS);
+  } else {
+    NOTREACHED();
+  }
+
+  for (auto it = pids.begin(); it != pids.end(); ++it) {
+    request.add_pids(*it);
+  }
+
+  dbus::MethodCall method_call(
+      resource_manager::kResourceManagerInterface,
+      resource_manager::kReportBackgroundProcessesMethod);
+  if (!dbus::MessageWriter(&method_call).AppendProtoAsArrayOfBytes(request)) {
+    LOG(ERROR) << "Error serializing "
+               << resource_manager::kReportBackgroundProcessesMethod
+               << " request";
+    return;
+  }
+
+  proxy_->CallMethod(&method_call, kResourcedDBusTimeoutMilliseconds,
+                     base::DoNothing());
+}
+
+void ResourcedClientImpl::ReportBrowserProcesses(
+    Component component,
+    const std::vector<Process>& processes) {
+  resource_manager::ReportBrowserProcesses request;
+
+  if (component == ResourcedClient::Component::kAsh) {
+    request.set_browser_type(resource_manager::BrowserType::ASH);
+  } else if (component == ResourcedClient::Component::kLacros) {
+    request.set_browser_type(resource_manager::BrowserType::LACROS);
+  } else {
+    NOTREACHED();
+  }
+
+  for (auto it = processes.begin(); it != processes.end(); ++it) {
+    auto* process = request.add_processes();
+    process->set_pid(it->pid);
+    process->set_protected_(it->is_protected);
+    process->set_visible(it->is_visible);
+    process->set_focused(it->is_focused);
+  }
+
+  dbus::MethodCall method_call(resource_manager::kResourceManagerInterface,
+                               resource_manager::kReportBrowserProcessesMethod);
+  if (!dbus::MessageWriter(&method_call).AppendProtoAsArrayOfBytes(request)) {
+    LOG(ERROR) << "Error serializing "
+               << resource_manager::kReportBrowserProcessesMethod << " request";
+    return;
+  }
+
+  proxy_->CallMethod(&method_call, kResourcedDBusTimeoutMilliseconds,
+                     base::DoNothing());
+}
+
 void ResourcedClientImpl::AddObserver(Observer* observer) {
   observers_.AddObserver(observer);
 }
@@ -301,6 +448,16 @@ void ResourcedClientImpl::AddArcVmObserver(ArcVmObserver* observer) {
 
 void ResourcedClientImpl::RemoveArcVmObserver(ArcVmObserver* observer) {
   arcvm_observers_.RemoveObserver(observer);
+}
+
+void ResourcedClientImpl::AddArcContainerObserver(
+    ArcContainerObserver* observer) {
+  arc_container_observers_.AddObserver(observer);
+}
+
+void ResourcedClientImpl::RemoveArcContainerObserver(
+    ArcContainerObserver* observer) {
+  arc_container_observers_.RemoveObserver(observer);
 }
 
 }  // namespace

@@ -10,9 +10,9 @@
 #include "third_party/blink/renderer/core/execution_context/execution_context_lifecycle_observer.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
 
-class ScriptState;
-
 namespace blink {
+
+class ScriptState;
 
 // Constructible version of EventTarget. Calls to EventTarget
 // constructor in JavaScript will return an instance of this class.

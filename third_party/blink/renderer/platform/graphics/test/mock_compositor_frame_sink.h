@@ -41,10 +41,11 @@ class MockCompositorFrameSink : public viz::mojom::blink::CompositorFrameSink {
   MOCK_METHOD1(SetNeedsBeginFrame, void(bool));
   MOCK_METHOD0(SetWantsAnimateOnlyBeginFrames, void(void));
   MOCK_METHOD0(SetWantsBeginFrameAcks, void(void));
+  MOCK_METHOD0(SetAutoNeedsBeginFrame, void(void));
   void SubmitCompositorFrame(
       const viz::LocalSurfaceId&,
       viz::CompositorFrame frame,
-      absl::optional<viz::HitTestRegionList> hit_test_region_list,
+      std::optional<viz::HitTestRegionList> hit_test_region_list,
       uint64_t) override {
     SubmitCompositorFrame_(&frame);
   }
@@ -52,7 +53,7 @@ class MockCompositorFrameSink : public viz::mojom::blink::CompositorFrameSink {
   void SubmitCompositorFrameSync(
       const viz::LocalSurfaceId&,
       viz::CompositorFrame frame,
-      absl::optional<viz::HitTestRegionList> hit_test_region_list,
+      std::optional<viz::HitTestRegionList> hit_test_region_list,
       uint64_t,
       SubmitCompositorFrameSyncCallback cb) override {
     SubmitCompositorFrameSync_(&frame);

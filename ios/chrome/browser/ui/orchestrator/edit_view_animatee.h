@@ -10,8 +10,8 @@
 // An object that represents the edit state location bar for focusing animation.
 @protocol EditViewAnimatee<NSObject>
 
-// Toggles the visibility of the leading icon.
-- (void)setLeadingIconFaded:(BOOL)faded;
+// Sets the scale of the leading icon.
+- (void)setLeadingIconScale:(CGFloat)scale;
 
 // Toggles the visibility of the clear button.
 - (void)setClearButtonFaded:(BOOL)faded;

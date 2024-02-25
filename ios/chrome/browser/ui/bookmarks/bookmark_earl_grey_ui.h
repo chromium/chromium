@@ -9,6 +9,8 @@
 
 #import "ios/testing/earl_grey/base_eg_test_helper_impl.h"
 
+enum class BookmarkModelType;
+
 @protocol GREYMatcher;
 
 // Public macro to invoke helper methods in test methods (Test Process). Usage
@@ -81,15 +83,15 @@ id<GREYMatcher> SearchIconButton();
 // Adds a bookmark for the current tab. Must be called when on a tab.
 - (void)starCurrentTab;
 
-// Creates a new folder starting from the folder picker.
+// Creates a new folder in `model` starting from the folder picker.
 // Passing a `name` of 0 length will use the default value.
-- (void)addFolderWithName:(NSString*)name;
+- (void)addFolderWithName:(NSString*)name inModel:(BookmarkModelType)model;
 
 // Waits for the disparition of the given `title` in the UI.
 - (void)waitForDeletionOfBookmarkWithTitle:(NSString*)title;
 
-// Wait for Undo toast to go away.
-- (void)waitForUndoToastToGoAway;
+// Tap on the snackbar to make it go away.
+- (void)closeUndoSnackbarAndWait;
 
 // Rename folder title to `folderTitle`. Must be in edit folder UI.
 - (void)renameBookmarkFolderWithFolderTitle:(NSString*)folderTitle;

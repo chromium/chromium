@@ -2,15 +2,16 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// https://whatpr.org/fetch/1647/094ea69...152d725.html#fetch-later-method
+// https://whatpr.org/fetch/1647/9ca4bda...9994c1d.html#dom-global-fetch-later
 
 [
     ImplementedAs=FetchLaterResult,
     RuntimeEnabled=FetchLaterAPI,
+    Exposed=Window,
     SecureContext
 ]
 interface FetchLaterResult {
-  readonly attribute boolean sent;
+  [Measure] readonly attribute boolean activated;
 };
 
 [
@@ -20,6 +21,7 @@ interface FetchLaterResult {
 ] partial interface Window {
     [
         CallWith=ScriptState,
+        Measure,
         NewObject,
         RaisesException
     ] FetchLaterResult fetchLater(RequestInfo input, optional DeferredRequestInit init = {});

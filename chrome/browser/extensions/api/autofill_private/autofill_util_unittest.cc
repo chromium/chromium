@@ -9,6 +9,7 @@
 #include "base/functional/callback_forward.h"
 #include "base/test/mock_callback.h"
 #include "chrome/test/base/in_process_browser_test.h"
+#include "components/autofill/core/common/autofill_test_utils.h"
 #include "components/device_reauth/mock_device_authenticator.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/browser_test.h"
@@ -29,11 +30,12 @@ class AutofillUtilTest : public InProcessBrowserTest {
 
   void SetUpOnMainThread() override {
     mock_device_authenticator_ =
-        base::MakeRefCounted<device_reauth::MockDeviceAuthenticator>();
+        std::make_unique<device_reauth::MockDeviceAuthenticator>();
   }
 
  protected:
-  scoped_refptr<device_reauth::MockDeviceAuthenticator>
+  autofill::test::AutofillBrowserTestEnvironment autofill_test_environment_;
+  std::unique_ptr<device_reauth::MockDeviceAuthenticator>
       mock_device_authenticator_;
 };
 
@@ -52,8 +54,8 @@ IN_PROC_BROWSER_TEST_F(AutofillUtilTest, AuthenticateUser_SuccessfulAuth) {
               AuthenticateWithMessage(mock_prompt_message, testing::_))
       .Times(1);
 
-  AuthenticateUser(mock_device_authenticator_, mock_prompt_message,
-                   mock_result_callback.Get());
+  mock_device_authenticator_->AuthenticateWithMessage(
+      mock_prompt_message, mock_result_callback.Get());
 #endif
 }
 
@@ -72,8 +74,8 @@ IN_PROC_BROWSER_TEST_F(AutofillUtilTest, AuthenticateUser_UnSuccessfulAuth) {
               AuthenticateWithMessage(mock_prompt_message, testing::_))
       .Times(1);
 
-  AuthenticateUser(mock_device_authenticator_, mock_prompt_message,
-                   mock_result_callback.Get());
+  mock_device_authenticator_->AuthenticateWithMessage(
+      mock_prompt_message, mock_result_callback.Get());
 #endif
 }
 

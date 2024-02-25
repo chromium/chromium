@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #import "ios/chrome/browser/ui/settings/password/password_details/password_details_mediator.h"
+#import "ios/chrome/browser/ui/settings/password/password_details/password_details_mediator+Testing.h"
 
 #import <memory>
 #import <utility>
@@ -14,20 +15,24 @@
 #import "base/memory/raw_ptr.h"
 #import "base/ranges/algorithm.h"
 #import "base/strings/sys_string_conversions.h"
+#import "components/password_manager/core/browser/features/password_manager_features_util.h"
 #import "components/password_manager/core/browser/password_form.h"
-#import "components/password_manager/core/browser/password_manager_features_util.h"
+#import "components/password_manager/core/browser/password_manager_metrics_util.h"
+#import "components/password_manager/core/browser/password_sync_util.h"
 #import "components/password_manager/core/browser/ui/credential_ui_entry.h"
 #import "components/password_manager/core/common/password_manager_features.h"
+#import "components/password_manager/core/common/password_manager_pref_names.h"
 #import "components/signin/public/identity_manager/account_info.h"
-#import "components/sync/base/features.h"
 #import "components/sync/service/sync_service.h"
-#import "ios/chrome/browser/passwords/password_check_observer_bridge.h"
-#import "ios/chrome/browser/passwords/password_checkup_metrics.h"
-#import "ios/chrome/browser/passwords/password_checkup_utils.h"
+#import "ios/chrome/browser/passwords/model/ios_chrome_password_check_manager.h"
+#import "ios/chrome/browser/passwords/model/ios_chrome_password_check_manager_factory.h"
+#import "ios/chrome/browser/passwords/model/password_check_observer_bridge.h"
+#import "ios/chrome/browser/passwords/model/password_checkup_metrics.h"
+#import "ios/chrome/browser/passwords/model/password_checkup_utils.h"
+#import "ios/chrome/browser/sync/model/sync_service_factory.h"
 #import "ios/chrome/browser/ui/settings/password/account_storage_utils.h"
 #import "ios/chrome/browser/ui/settings/password/password_details/password_details.h"
 #import "ios/chrome/browser/ui/settings/password/password_details/password_details_consumer.h"
-#import "ios/chrome/browser/ui/settings/password/password_details/password_details_mediator+private.h"
 #import "ios/chrome/browser/ui/settings/password/password_details/password_details_mediator_delegate.h"
 #import "ios/chrome/browser/ui/settings/password/password_details/password_details_metrics_utils.h"
 #import "ios/chrome/browser/ui/settings/password/password_details/password_details_table_view_controller_delegate.h"
@@ -37,16 +42,27 @@ using password_manager::CredentialUIEntry;
 
 namespace {
 
-bool IsPasswordNotesWithBackupEnabled() {
-  return base::FeatureList::IsEnabled(syncer::kPasswordNotesWithBackup);
-}
-
 bool MatchesRealmUsernameAndPassword(PasswordDetails* password,
                                      const CredentialUIEntry& credential) {
   return base::SysNSStringToUTF8(password.signonRealm) ==
              credential.GetFirstSignonRealm() &&
          base::SysNSStringToUTF16(password.username) == credential.username &&
          base::SysNSStringToUTF16(password.password) == credential.password;
+}
+
+// Whether displaying a credential as compromised is supported in the current
+// context.
+bool CanDisplayCredentialAsCompromised(DetailsContext details_context) {
+  switch (details_context) {
+    case DetailsContext::kPasswordSettings:
+    case DetailsContext::kOutsideSettings:
+    case DetailsContext::kCompromisedIssues:
+    case DetailsContext::kDismissedWarnings:
+      return true;
+    case DetailsContext::kReusedIssues:
+    case DetailsContext::kWeakIssues:
+      return false;
+  }
 }
 
 // Helper that determines if a credential should be displayed as compromised in
@@ -57,22 +73,29 @@ bool ShouldDisplayCredentialAsCompromised(
     DetailsContext details_context,
     const CredentialUIEntry& credential,
     std::vector<password_manager::CredentialUIEntry> insecure_credentials) {
+  if (!CanDisplayCredentialAsCompromised(details_context)) {
+    return false;
+  }
+
+  for (const auto& insecure_credential : insecure_credentials) {
+    if (credential == insecure_credential) {
+      return IsCredentialUnmutedCompromised(insecure_credential);
+    }
+  }
+  return false;
+}
+
+// Whether displaying a credential as muted is supported in the current context.
+bool CanDisplayCredentialAsMuted(DetailsContext details_context) {
   switch (details_context) {
     case DetailsContext::kPasswordSettings:
     case DetailsContext::kOutsideSettings:
     case DetailsContext::kCompromisedIssues:
-    case DetailsContext::kDismissedWarnings:
-      for (const auto& insecure_credential : insecure_credentials) {
-        if (credential == insecure_credential) {
-          return password_manager::features::IsPasswordCheckupEnabled()
-                     ? IsCredentialUnmutedCompromised(insecure_credential)
-                     : IsCompromised(insecure_credential);
-        }
-      }
-      return false;
     case DetailsContext::kReusedIssues:
     case DetailsContext::kWeakIssues:
       return false;
+    case DetailsContext::kDismissedWarnings:
+      return true;
   }
 }
 
@@ -84,27 +107,16 @@ bool ShouldDisplayCredentialAsMuted(
     DetailsContext details_context,
     const CredentialUIEntry& credential,
     std::vector<password_manager::CredentialUIEntry> insecure_credentials) {
-  // Muted credentials are only available when kIOSPasswordCheckup feature is
-  // enabled.
-  if (!password_manager::features::IsPasswordCheckupEnabled()) {
+  if (!CanDisplayCredentialAsMuted(details_context)) {
     return false;
   }
 
-  switch (details_context) {
-    case DetailsContext::kPasswordSettings:
-    case DetailsContext::kOutsideSettings:
-    case DetailsContext::kCompromisedIssues:
-    case DetailsContext::kReusedIssues:
-    case DetailsContext::kWeakIssues:
-      return false;
-    case DetailsContext::kDismissedWarnings:
-      for (const auto& insecure_credential : insecure_credentials) {
-        if (credential == insecure_credential) {
-          return insecure_credential.IsMuted();
-        }
-      }
-      return false;
+  for (const auto& insecure_credential : insecure_credentials) {
+    if (credential == insecure_credential) {
+      return insecure_credential.IsMuted();
+    }
   }
+  return false;
 }
 
 }  // namespace
@@ -137,19 +149,20 @@ bool ShouldDisplayCredentialAsMuted(
 // Display name to use for the Password Details view.
 @property(nonatomic, strong) NSString* displayName;
 
+// The context in which the password details are accessed.
+@property(nonatomic, assign) DetailsContext context;
+
 @end
 
 @implementation PasswordDetailsMediator
 
 - (instancetype)
-       initWithPasswords:(const std::vector<CredentialUIEntry>&)credentials
-             displayName:(NSString*)displayName
-    passwordCheckManager:(scoped_refptr<IOSChromePasswordCheckManager>)manager
-             prefService:(PrefService*)prefService
-             syncService:(syncer::SyncService*)syncService
-                 context:(DetailsContext)context
-                delegate:(id<PasswordDetailsMediatorDelegate>)delegate {
-  DCHECK(manager);
+    initWithPasswords:(const std::vector<CredentialUIEntry>&)credentials
+          displayName:(NSString*)displayName
+         browserState:(ChromeBrowserState*)browserState
+              context:(DetailsContext)context
+             delegate:(id<PasswordDetailsMediatorDelegate>)delegate {
+  DCHECK(browserState);
   DCHECK(!credentials.empty());
 
   self = [super init];
@@ -157,47 +170,18 @@ bool ShouldDisplayCredentialAsMuted(
     return nil;
   }
 
-  _manager = manager;
+  _manager =
+      IOSChromePasswordCheckManagerFactory::GetForBrowserState(browserState)
+          .get();
   _passwordCheckObserver =
-      std::make_unique<PasswordCheckObserverBridge>(self, manager.get());
+      std::make_unique<PasswordCheckObserverBridge>(self, _manager.get());
   _credentials = credentials;
   _displayName = displayName;
   _context = context;
-  _prefService = prefService;
-  _syncService = syncService;
+  _prefService = browserState->GetPrefs();
+  _syncService = SyncServiceFactory::GetForBrowserState(browserState);
   _delegate = delegate;
 
-  // TODO(crbug.com/1400692): Improve saved passwords logic when helper is
-  // available in SavedPasswordsPresenter.
-  _usernamesWithSameDomainDict = [[NSMutableDictionary alloc] init];
-  NSMutableSet<NSString*>* signonRealms = [[NSMutableSet alloc] init];
-  auto savedCredentials =
-      manager->GetSavedPasswordsPresenter()->GetSavedCredentials();
-
-  // Store all usernames by domain.
-  for (const auto& credential : self.credentials) {
-    [signonRealms
-        addObject:[NSString
-                      stringWithCString:credential.GetFirstSignonRealm().c_str()
-                               encoding:[NSString defaultCStringEncoding]]];
-  }
-  for (const auto& cred : savedCredentials) {
-    NSString* signonRealm =
-        [NSString stringWithCString:cred.GetFirstSignonRealm().c_str()
-                           encoding:[NSString defaultCStringEncoding]];
-    if ([signonRealms containsObject:signonRealm]) {
-      NSMutableSet* set =
-          [_usernamesWithSameDomainDict objectForKey:signonRealm];
-      if (!set) {
-        set = [[NSMutableSet alloc] init];
-        [set addObject:base::SysUTF16ToNSString(cred.username)];
-        [_usernamesWithSameDomainDict setObject:set forKey:signonRealm];
-
-      } else {
-        [set addObject:base::SysUTF16ToNSString(cred.username)];
-      }
-    }
-  }
   return self;
 }
 
@@ -215,6 +199,12 @@ bool ShouldDisplayCredentialAsMuted(
   if (self.credentials[0].blocked_by_user) {
     DCHECK_EQ(self.credentials.size(), 1u);
     [_consumer setIsBlockedSite:YES];
+  }
+
+  if ([self shouldDisplayShareButton]) {
+    [_consumer setupRightShareButton:
+                   _prefService->GetBoolean(
+                       password_manager::prefs::kPasswordSharingEnabled)];
   }
 }
 
@@ -243,7 +233,7 @@ bool ShouldDisplayCredentialAsMuted(
   }
 
   // Use the iterator before base::Erase() makes it invalid.
-  _manager->GetSavedPasswordsPresenter()->RemoveCredential(*it);
+  self.savedPasswordsPresenter->RemoveCredential(*it);
   // TODO(crbug.com/1359392). Once kPasswordsGrouping launches, the mediator
   // should update the passwords model and receive the updates via
   // SavedPasswordsPresenterObserver, instead of replicating the updates to its
@@ -271,7 +261,7 @@ bool ShouldDisplayCredentialAsMuted(
   }
 
   it->stored_in = {password_manager::PasswordForm::Store::kAccountStore};
-  _manager->GetSavedPasswordsPresenter()->MoveCredentialsToAccount(
+  self.savedPasswordsPresenter->MoveCredentialsToAccount(
       {*it}, password_manager::metrics_util::MoveToAccountStoreTrigger::
                  kExplicitlyTriggeredInSettings);
   [self providePasswordsToConsumer];
@@ -282,7 +272,7 @@ bool ShouldDisplayCredentialAsMuted(
       _credentials, [password](const CredentialUIEntry& credential) {
         return MatchesRealmUsernameAndPassword(password, credential);
       });
-  absl::optional<CredentialUIEntry> accountCredential =
+  std::optional<CredentialUIEntry> accountCredential =
       [self conflictingAccountPassword:password];
   DCHECK(localCredential != _credentials.end());
   DCHECK(accountCredential.has_value());
@@ -314,6 +304,10 @@ bool ShouldDisplayCredentialAsMuted(
   _manager->MuteCredential(*it);
 }
 
+- (password_manager::SavedPasswordsPresenter*)savedPasswordsPresenter {
+  return _manager->GetSavedPasswordsPresenter();
+}
+
 #pragma mark - PasswordDetailsTableViewControllerDelegate
 
 - (void)passwordDetailsViewController:
@@ -337,9 +331,8 @@ bool ShouldDisplayCredentialAsMuted(
                                                credential.username)] &&
               [oldPassword isEqualToString:base::SysUTF16ToNSString(
                                                credential.password)] &&
-              (!IsPasswordNotesWithBackupEnabled() ||
-               [oldNote
-                   isEqualToString:base::SysUTF16ToNSString(credential.note)]);
+              [oldNote
+                  isEqualToString:base::SysUTF16ToNSString(credential.note)];
         });
 
     // There should be no reason not to find the credential in the vector of
@@ -350,10 +343,8 @@ bool ShouldDisplayCredentialAsMuted(
     CredentialUIEntry updated_credential = original_credential;
     updated_credential.username = SysNSStringToUTF16(password.username);
     updated_credential.password = SysNSStringToUTF16(password.password);
-    if (IsPasswordNotesWithBackupEnabled()) {
-      updated_credential.note = SysNSStringToUTF16(password.note);
-    }
-    if (_manager->GetSavedPasswordsPresenter()->EditSavedCredentials(
+    updated_credential.note = SysNSStringToUTF16(password.note);
+    if (self.savedPasswordsPresenter->EditSavedCredentials(
             original_credential, updated_credential) ==
         password_manager::SavedPasswordsPresenter::EditResult::kSuccess) {
       // Update the usernames by domain dictionary.
@@ -413,7 +404,7 @@ bool ShouldDisplayCredentialAsMuted(
 - (BOOL)isUsernameReused:(NSString*)newUsername forDomain:(NSString*)domain {
   // It is more efficient to check set of the usernames for the same origin
   // instead of delegating this to the `_manager`.
-  return [[_usernamesWithSameDomainDict objectForKey:domain]
+  return [[self.usernamesWithSameDomainDict objectForKey:domain]
       containsObject:newUsername];
 }
 
@@ -446,12 +437,54 @@ bool ShouldDisplayCredentialAsMuted(
 
 #pragma mark - Private
 
+- (NSMutableDictionary<NSString*, NSMutableSet<NSString*>*>*)
+    usernamesWithSameDomainDict {
+  if (!_usernamesWithSameDomainDict) {
+    // TODO(crbug.com/1400692): Improve saved passwords logic when helper is
+    // available in SavedPasswordsPresenter.
+    _usernamesWithSameDomainDict = [[NSMutableDictionary alloc] init];
+    NSMutableSet<NSString*>* signonRealms = [[NSMutableSet alloc] init];
+    auto savedCredentials = self.savedPasswordsPresenter->GetSavedCredentials();
+
+    // Store all usernames by domain.
+    for (const auto& credential : self.credentials) {
+      [signonRealms
+          addObject:[NSString
+                        stringWithCString:credential.GetFirstSignonRealm()
+                                              .c_str()
+                                 encoding:[NSString defaultCStringEncoding]]];
+    }
+    for (const auto& cred : savedCredentials) {
+      NSString* signonRealm =
+          [NSString stringWithCString:cred.GetFirstSignonRealm().c_str()
+                             encoding:[NSString defaultCStringEncoding]];
+      if ([signonRealms containsObject:signonRealm]) {
+        NSMutableSet* set =
+            [_usernamesWithSameDomainDict objectForKey:signonRealm];
+        if (!set) {
+          set = [[NSMutableSet alloc] init];
+          [set addObject:base::SysUTF16ToNSString(cred.username)];
+          [_usernamesWithSameDomainDict setObject:set forKey:signonRealm];
+
+        } else {
+          [set addObject:base::SysUTF16ToNSString(cred.username)];
+        }
+      }
+    }
+  }
+  return _usernamesWithSameDomainDict;
+}
+
 // Pushes password details to the consumer.
 - (void)providePasswordsToConsumer {
   NSMutableArray<PasswordDetails*>* passwords = [NSMutableArray array];
   // Fetch the insecure credentials to get their updated version.
-  std::vector<password_manager::CredentialUIEntry> insecureCredentials =
-      _manager->GetInsecureCredentials();
+  std::vector<password_manager::CredentialUIEntry> insecureCredentials;
+  // Only fetch insecure credentials if they are going to be used.
+  if (CanDisplayCredentialAsCompromised(self.context) ||
+      CanDisplayCredentialAsMuted(self.context)) {
+    insecureCredentials = _manager->GetInsecureCredentials();
+  }
   for (const CredentialUIEntry& credential : self.credentials) {
     PasswordDetails* password =
         [[PasswordDetails alloc] initWithCredential:credential];
@@ -490,7 +523,8 @@ bool ShouldDisplayCredentialAsMuted(
     return;
   }
 
-  NSMutableSet* set = [_usernamesWithSameDomainDict objectForKey:signonRealm];
+  NSMutableSet* set =
+      [self.usernamesWithSameDomainDict objectForKey:signonRealm];
   if (set) {
     [set removeObject:oldUsername];
     [set addObject:newUsername];
@@ -499,7 +533,7 @@ bool ShouldDisplayCredentialAsMuted(
 
 // Returns a credential that a) is saved in the user account, and b) has the
 // same website/username as `password`, but a different password value.
-- (absl::optional<CredentialUIEntry>)conflictingAccountPassword:
+- (std::optional<CredentialUIEntry>)conflictingAccountPassword:
     (PasswordDetails*)password {
   // All credentials for the same website are in `_credentials` due to password
   // grouping. So it's enough to search that reduced list and not all saved
@@ -516,9 +550,19 @@ bool ShouldDisplayCredentialAsMuted(
                    credential.password;
       });
   if (it == _credentials.end()) {
-    return absl::nullopt;
+    return std::nullopt;
   }
   return *it;
+}
+
+// Returns YES if all of the following conditions are met:
+// * User is syncing or signed in and opted in to account storage.
+// * Password sending feature is enabled.
+- (BOOL)shouldDisplayShareButton {
+  return password_manager::sync_util::GetAccountForSaving(_prefService,
+                                                          _syncService) &&
+         base::FeatureList::IsEnabled(
+             password_manager::features::kSendPasswords);
 }
 
 @end

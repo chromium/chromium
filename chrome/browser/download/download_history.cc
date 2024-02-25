@@ -30,12 +30,11 @@
 #include "chrome/browser/download/download_history.h"
 
 #include <memory>
+#include <optional>
 #include <utility>
 
 #include "base/functional/bind.h"
 #include "base/memory/ptr_util.h"
-#include "base/metrics/histogram_functions.h"
-#include "base/metrics/histogram_macros.h"
 #include "base/observer_list.h"
 #include "build/build_config.h"
 #include "chrome/browser/download/download_crx_util.h"
@@ -52,7 +51,6 @@
 #include "content/public/browser/download_manager.h"
 #include "content/public/browser/storage_partition_config.h"
 #include "extensions/buildflags/buildflags.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
 #include "chrome/browser/extensions/api/downloads/downloads_api.h"
@@ -334,8 +332,9 @@ DownloadHistory::DownloadHistory(content::DownloadManager* manager,
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   download::SimpleDownloadManager::DownloadVector items;
   notifier_.GetManager()->GetAllDownloads(&items);
-  for (auto* item : items)
+  for (download::DownloadItem* item : items) {
     OnDownloadCreated(notifier_.GetManager(), item);
+  }
   history_->QueryDownloads(base::BindOnce(&DownloadHistory::QueryCallback,
                                           weak_ptr_factory_.GetWeakPtr()));
 }
@@ -376,10 +375,6 @@ void DownloadHistory::LoadHistoryDownloads(
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   DCHECK(notifier_.GetManager());
 
-  base::UmaHistogramCounts1000("Download.LoadHistoryDownloads.DownloadRows",
-                               rows.size());
-  SCOPED_UMA_HISTOGRAM_TIMER("Download.LoadHistoryDownloadsTime");
-
   std::map<std::string, int> file_name_count;
   CountFilePathOccurences(rows, &file_name_count);
 
@@ -407,9 +402,6 @@ void DownloadHistory::LoadHistoryDownloads(
           notifier_.GetManager()->GetStoragePartitionConfigForSiteUrl(
               row.site_url);
     } else {
-      SCOPED_UMA_HISTOGRAM_TIMER(
-          "Download.LoadHistoryDownloads."
-          "DeserializeStoragePartitionConfigTime");
       storage_partition_config =
           notifier_.GetManager()
               ->SerializedEmbedderDownloadDataToStoragePartitionConfig(
@@ -418,7 +410,7 @@ void DownloadHistory::LoadHistoryDownloads(
     download::DownloadItem* item = notifier_.GetManager()->CreateDownloadItem(
         row.guid, loading_id_, row.current_path, row.target_path, url_chain,
         row.referrer_url, storage_partition_config, row.tab_url,
-        row.tab_referrer_url, absl::nullopt, row.mime_type,
+        row.tab_referrer_url, std::nullopt, row.mime_type,
         row.original_mime_type, row.start_time, row.end_time, row.etag,
         row.last_modified, row.received_bytes, row.total_bytes,
         std::string(),  // TODO(asanka): Need to persist and restore hash of
@@ -453,8 +445,6 @@ void DownloadHistory::LoadHistoryDownloads(
     bool should_update_observers = false;
 #if BUILDFLAG(ENABLE_EXTENSIONS)
     if (!row.by_ext_id.empty() && !row.by_ext_name.empty()) {
-      SCOPED_UMA_HISTOGRAM_TIMER(
-          "Download.LoadHistoryDownloads.AddExtensionInfoAndNotifyTime");
       new extensions::DownloadedByExtension(item, row.by_ext_id,
                                             row.by_ext_name);
       should_update_observers = true;
@@ -479,12 +469,8 @@ void DownloadHistory::LoadHistoryDownloads(
       content::DownloadManager::DOWNLOAD_INITIALIZATION_DEPENDENCY_HISTORY_DB);
 
   initial_history_query_complete_ = true;
-  {
-    SCOPED_UMA_HISTOGRAM_TIMER(
-        "Download.LoadHistoryDownloads.NotifyObserversTime");
-    for (Observer& observer : observers_) {
-      observer.OnHistoryQueryComplete();
-    }
+  for (Observer& observer : observers_) {
+    observer.OnHistoryQueryComplete();
   }
 }
 

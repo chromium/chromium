@@ -21,8 +21,6 @@ crosapi::mojom::ProxyLocation::Scheme NetSchemeToCrosapiScheme(
   switch (in) {
     case net::ProxyServer::Scheme::SCHEME_INVALID:
       return crosapi::mojom::ProxyLocation::Scheme::kInvalid;
-    case net::ProxyServer::Scheme::SCHEME_DIRECT:
-      return crosapi::mojom::ProxyLocation::Scheme::kDirect;
     case net::ProxyServer::Scheme::SCHEME_HTTP:
       return crosapi::mojom::ProxyLocation::Scheme::kHttp;
     case net::ProxyServer::Scheme::SCHEME_SOCKS4:
@@ -40,9 +38,12 @@ crosapi::mojom::ProxyLocation::Scheme NetSchemeToCrosapiScheme(
 
 std::vector<crosapi::mojom::ProxyLocationPtr> TranslateProxyLocations(
     const net::ProxyList& proxy_list) {
-  std::vector<net::ProxyServer> proxies = proxy_list.GetAll();
   std::vector<crosapi::mojom::ProxyLocationPtr> proxy_ptr_list;
-  for (const auto& proxy : proxies) {
+  for (const auto& proxy_chain : proxy_list.AllChains()) {
+    // TODO(crbug.com/1491092): Remove single hop check when multi-hop proxy
+    // chains are supported.
+    CHECK(proxy_chain.is_single_proxy());
+    net::ProxyServer proxy = proxy_chain.First();
     crosapi::mojom::ProxyLocationPtr proxy_ptr;
     proxy_ptr = crosapi::mojom::ProxyLocation::New();
     proxy_ptr->host = proxy.host_port_pair().host();

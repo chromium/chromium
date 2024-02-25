@@ -53,8 +53,7 @@ class AffiliationMixin final : public InProcessBrowserTestMixin {
  private:
   AffiliationTestHelper GetAffiliationTestHelper() const;
 
-  const raw_ptr<DevicePolicyCrosTestHelper, ExperimentalAsh>
-      policy_test_helper_;
+  const raw_ptr<DevicePolicyCrosTestHelper> policy_test_helper_;
   bool affiliated_ = true;
   AccountId account_id_;
   std::unique_ptr<UserPolicyBuilder> user_policy_;

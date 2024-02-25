@@ -10,6 +10,7 @@
 #include "base/test/task_environment.h"
 #include "base/unguessable_token.h"
 #include "components/global_media_controls/public/mojom/device_service.mojom.h"
+#include "components/global_media_controls/public/test/mock_device_service.h"
 #include "components/global_media_controls/public/test/mock_media_item_manager.h"
 #include "content/public/test/browser_task_environment.h"
 #include "mojo/public/cpp/bindings/receiver.h"
@@ -17,25 +18,7 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-class MockDevicePickerObserver
-    : public global_media_controls::mojom::DevicePickerObserver {
- public:
-  ~MockDevicePickerObserver() override { receiver_.FlushForTesting(); }
-
-  MOCK_METHOD(void, OnMediaUIOpened, ());
-  MOCK_METHOD(void, OnMediaUIClosed, ());
-  MOCK_METHOD(void, OnMediaUIUpdated, ());
-  MOCK_METHOD(void, OnPickerDismissed, ());
-
-  mojo::PendingRemote<global_media_controls::mojom::DevicePickerObserver>
-  PassRemote() {
-    return receiver_.BindNewPipeAndPassRemote();
-  }
-
- private:
-  mojo::Receiver<global_media_controls::mojom::DevicePickerObserver> receiver_{
-      this};
-};
+using global_media_controls::test::MockDevicePickerObserver;
 
 class SupplementalDevicePickerProducerTest : public testing::Test {
  public:
@@ -106,22 +89,26 @@ TEST_F(SupplementalDevicePickerProducerTest, OnMediaDialogOpened) {
   std::unique_ptr<MockDevicePickerObserver> observer = CreateObserver();
   EXPECT_CALL(*observer, OnMediaUIOpened);
   notification_producer_.OnMediaDialogOpened();
+  observer->FlushForTesting();
 }
 
 TEST_F(SupplementalDevicePickerProducerTest, OnMediaDialogClosed) {
   std::unique_ptr<MockDevicePickerObserver> observer = CreateObserver();
   EXPECT_CALL(*observer, OnMediaUIClosed);
   notification_producer_.OnMediaDialogClosed();
+  observer->FlushForTesting();
 }
 
 TEST_F(SupplementalDevicePickerProducerTest, OnItemListChanged) {
   std::unique_ptr<MockDevicePickerObserver> observer = CreateObserver();
   EXPECT_CALL(*observer, OnMediaUIUpdated);
   notification_producer_.OnItemListChanged();
+  observer->FlushForTesting();
 }
 
 TEST_F(SupplementalDevicePickerProducerTest, OnMediaItemUIDismissed) {
   std::unique_ptr<MockDevicePickerObserver> observer = CreateObserver();
   EXPECT_CALL(*observer, OnPickerDismissed);
   notification_producer_.OnMediaItemUIDismissed(ShowItem());
+  observer->FlushForTesting();
 }

@@ -6,11 +6,9 @@
 #define COMPONENTS_AUTOFILL_CORE_BROWSER_DATA_MODEL_DATA_MODEL_UTILS_H_
 
 #include <string>
+#include <string_view>
 
-
-namespace autofill {
-
-namespace data_util {
+namespace autofill::data_util {
 
 // Converts the integer |expiration_month| to std::u16string. Returns a value
 // between ["01"-"12"].
@@ -47,11 +45,12 @@ bool SetExpirationMonth(int value, int* expiration_month);
 bool SetExpirationYear(int value, int* expiration_year);
 
 // Finds possible country code in |text| by fetching the first sub-group when
-// matched with |kAugmentedPhoneCountryCodeRe| regex.
-std::u16string FindPossiblePhoneCountryCode(const std::u16string& text);
+// matched with |kAugmentedPhoneCountryCodeRe| regex. It basically looks for a
+// phone country code in the style of "+49" or "0049" in |text|. Preceding and
+// following text is allowed unless that text contains digits. It returns the
+// country code in the form of "49" in the example or an empty string.
+std::u16string FindPossiblePhoneCountryCode(std::u16string_view text);
 
-}  // namespace data_util
-
-}  // namespace autofill
+}  // namespace autofill::data_util
 
 #endif  // COMPONENTS_AUTOFILL_CORE_BROWSER_DATA_MODEL_DATA_MODEL_UTILS_H_

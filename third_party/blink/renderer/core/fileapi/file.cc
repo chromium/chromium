@@ -40,7 +40,6 @@
 #include "third_party/blink/renderer/core/html/forms/form_controller.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/bindings/script_state.h"
-#include "third_party/blink/renderer/platform/bindings/to_v8.h"
 #include "third_party/blink/renderer/platform/blob/blob_data.h"
 #include "third_party/blink/renderer/platform/file_metadata.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
@@ -75,7 +74,7 @@ static scoped_refptr<BlobDataHandle> CreateBlobDataHandleForFileWithType(
   return BlobDataHandle::CreateForFile(
       FileBackedBlobFactoryDispatcher::GetFileBackedBlobFactory(context), path,
       /*offset=*/0, BlobData::kToEndOfFile,
-      /*expected_modification_time=*/absl::nullopt, content_type);
+      /*expected_modification_time=*/std::nullopt, content_type);
 }
 
 static scoped_refptr<BlobDataHandle> CreateBlobDataHandleForFile(
@@ -101,10 +100,18 @@ static scoped_refptr<BlobDataHandle> CreateBlobDataHandleForFileWithName(
 }
 
 static scoped_refptr<BlobDataHandle> CreateBlobDataHandleForFileWithMetadata(
+    ExecutionContext* context,
     const String& file_system_name,
     const FileMetadata& metadata) {
-  return BlobDataHandle::CreateForFile(
-      /*file_backed_blob_factory=*/nullptr, metadata.platform_path,
+  // We are creating a handle for a snapshot file. The FileSystemManager may
+  // have to create a read permission needed on the browser side for this
+  // operation. As the manager might revoke this permission directly after the
+  // call, we have to ensure the permission is available while we create the
+  // handle. So we need create a handle using the synchronous version of the
+  // IPC.
+  return BlobDataHandle::CreateForFileSync(
+      FileBackedBlobFactoryDispatcher::GetFileBackedBlobFactory(context),
+      metadata.platform_path,
       /*offset=*/0, metadata.length, metadata.modification_time,
       GetContentTypeFromFileName(file_system_name,
                                  File::kWellKnownContentTypes));
@@ -119,8 +126,8 @@ File* File::Create(ExecutionContext* context,
 
   base::Time last_modified;
   if (options->hasLastModified()) {
-    // We don't use base::Time::FromJsTime(double) here because
-    // options->lastModified() is a 64-bit integer, and casting it to
+    // We don't use base::Time::FromMillisecondsSinceUnixEpoch(double) here
+    // because options->lastModified() is a 64-bit integer, and casting it to
     // double is lossy.
     last_modified =
         base::Time::UnixEpoch() + base::Milliseconds(options->lastModified());
@@ -224,7 +231,7 @@ File::File(const String& path,
            UserVisibility user_visibility,
            bool has_snapshot_data,
            uint64_t size,
-           const absl::optional<base::Time>& last_modified,
+           const std::optional<base::Time>& last_modified,
            scoped_refptr<BlobDataHandle> blob_data_handle)
     : Blob(std::move(blob_data_handle)),
       has_backing_file_(!path.empty() || !relative_path.empty()),
@@ -238,7 +245,7 @@ File::File(const String& path,
 }
 
 File::File(const String& name,
-           const absl::optional<base::Time>& modification_time,
+           const std::optional<base::Time>& modification_time,
            scoped_refptr<BlobDataHandle> blob_data_handle)
     : Blob(std::move(blob_data_handle)),
       has_backing_file_(false),
@@ -250,17 +257,19 @@ File::File(const String& name,
     snapshot_size_ = size;
 }
 
-File::File(const String& name,
+File::File(ExecutionContext* context,
+           const String& name,
            const FileMetadata& metadata,
            UserVisibility user_visibility)
-    : Blob(CreateBlobDataHandleForFileWithMetadata(name, metadata)),
+    : Blob(CreateBlobDataHandleForFileWithMetadata(context, name, metadata)),
       has_backing_file_(true),
       user_visibility_(user_visibility),
       path_(metadata.platform_path),
       name_(name),
       snapshot_modification_time_(metadata.modification_time) {
-  if (metadata.length >= 0)
+  if (metadata.length >= 0) {
     snapshot_size_ = metadata.length;
+  }
 }
 
 File::File(const KURL& file_system_url,
@@ -319,11 +328,10 @@ ScriptValue File::lastModifiedDate(ScriptState* script_state) const {
   return ScriptValue(
       script_state->GetIsolate(),
       ToV8Traits<IDLNullable<IDLDate>>::ToV8(
-          script_state, absl::optional<base::Time>(LastModifiedTime()))
-          .ToLocalChecked());
+          script_state, std::optional<base::Time>(LastModifiedTime())));
 }
 
-absl::optional<base::Time> File::LastModifiedTimeForSerialization() const {
+std::optional<base::Time> File::LastModifiedTimeForSerialization() const {
   CaptureSnapshotIfNeeded();
 
   return snapshot_modification_time_;

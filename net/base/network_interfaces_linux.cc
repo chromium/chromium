@@ -5,6 +5,7 @@
 #include "net/base/network_interfaces_linux.h"
 
 #include <memory>
+#include <optional>
 
 #include "build/build_config.h"
 
@@ -33,12 +34,12 @@
 #include "net/base/ip_endpoint.h"
 #include "net/base/net_errors.h"
 #include "net/base/network_interfaces_posix.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
 #if BUILDFLAG(IS_ANDROID)
+#include <string_view>
+
 #include "base/android/build_info.h"
-#include "base/strings/string_piece.h"
 #include "net/android/network_library.h"
 #include "net/base/network_interfaces_getifaddrs.h"
 #endif
@@ -233,8 +234,8 @@ bool GetNetworkList(NetworkInterfaceList* networks, int policy) {
     // so use a Chromium's own implementation to workaround.
     // See https://crbug.com/1240237 for more context.
     bool use_alternative_getifaddrs =
-        base::StringPiece(build_info->brand()) == "samsung" &&
-        base::StartsWith(build_info->hardware(), "mt");
+        std::string_view(build_info->brand()) == "samsung" &&
+        std::string_view(build_info->hardware()).starts_with("mt");
     bool ret = internal::GetNetworkListUsingGetifaddrs(
         networks, policy, use_alternative_getifaddrs);
     // Use GetInterfaceConnectionType() to sharpen up interface types.
@@ -245,7 +246,7 @@ bool GetNetworkList(NetworkInterfaceList* networks, int policy) {
 #endif  // BUILDFLAG(IS_ANDROID)
 
   const AddressMapOwnerLinux* map_owner = nullptr;
-  absl::optional<internal::AddressTrackerLinux> temp_tracker;
+  std::optional<internal::AddressTrackerLinux> temp_tracker;
 #if BUILDFLAG(IS_LINUX)
   // If NetworkChangeNotifier already maintains a map owner in this process, use
   // it.

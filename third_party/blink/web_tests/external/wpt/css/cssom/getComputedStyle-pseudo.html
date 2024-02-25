@@ -4,6 +4,7 @@
 <link rel="help" href="https://drafts.csswg.org/cssom/#dom-window-getcomputedstyle">
 <link rel="help" href="https://drafts.csswg.org/cssom/#resolved-values">
 <link rel="author" title="Emilio Cobos Álvarez" href="mailto:emilio@crisal.io">
+<link rel="author" title="Karl Dubost" href="https://github.com/karlcow">
 <script src=/resources/testharness.js></script>
 <script src=/resources/testharnessreport.js></script>
 <style>
@@ -54,6 +55,45 @@
 #contents-pseudos-dynamic.contents::after {
   display: contents;
 }
+#pseudo-invalid::backdrop {
+  color: rgb(0, 128, 0);
+}
+#pseudo-invalid::file-selector-button {
+  color: rgb(0, 128, 0);
+}
+#pseudo-invalid::grammar-error {
+  color: rgb(0, 128, 0);
+}
+#pseudo-invalid::highlight(name) {
+  color: rgb(0, 128, 0);
+}
+#pseudo-invalid::marker {
+  color: rgb(0, 128, 0);
+}
+#pseudo-invalid::placeholder {
+  color: rgb(0, 128, 0);
+}
+#pseudo-invalid::spelling-error {
+  color: rgb(0, 128, 0);
+}
+#pseudo-invalid::view-transition {
+  color: rgb(0, 128, 0);
+}
+#pseudo-invalid::view-transition-image-pair(name) {
+  color: rgb(0, 128, 0);
+}
+#pseudo-invalid::view-transition-group(name) {
+  color: rgb(0, 128, 0);
+}
+#pseudo-invalid::view-transition-old(name) {
+  color: rgb(0, 128, 0);
+}
+#pseudo-invalid::view-transition-new(name) {
+  color: rgb(0, 128, 0);
+}
+#pseudo-invalid {
+  color: rgb(255, 0, 0)
+}
 </style>
 <div id="test">
   <div id="contents"></div>
@@ -62,20 +102,65 @@
   <div id="flex-no-pseudo"></div>
   <div id="contents-pseudos"></div>
   <div id="contents-pseudos-dynamic"></div>
+  <ul><li id="pseudo-invalid">Item</li></ul>
 </div>
 <script>
-test(function() {
-  var div = document.getElementById('test');
-  [":before", ":after"].forEach(function(pseudo) {
+test(() => {
+  const div = document.getElementById('test');
+  ["before", "after"].forEach(pseudo => {
+    assert_equals(getComputedStyle(div, pseudo).width, "100px");
+  });
+}, "Resolution of width is correct when pseudo-element argument is ignored (due to no colon)");
+
+test(() => {
+  const div = document.getElementById('test');
+  [
+    ":before ",
+    "::before ",
+    "::before\t",
+    "::before\f",
+    "::before\n",
+    "::before,",
+    "::before,::after",
+    "::before@after",
+    "::before#after",
+    "::\"before\"",
+    "::before\u0000",
+    "::before-->",
+    "::before0",
+  ].forEach(pseudo => {
+    assert_equals(getComputedStyle(div, pseudo).width, "", pseudo);
+  });
+}, "Resolution of width is correct when pseudo-element argument is invalid (due to a trailing token)");
+
+test(() => {
+  const div = document.getElementById('test');
+  [":before", ":after"].forEach(pseudo => {
     assert_equals(getComputedStyle(div, pseudo).width, "50px");
   });
-}, "Resolution of width is correct for ::before and ::after pseudo-elements");
+}, "Resolution of width is correct for ::before and ::after pseudo-elements (single-colon)");
+
+test(() => {
+  const div = document.getElementById('test');
+  ["::before", "::after"].forEach(pseudo => {
+    assert_equals(getComputedStyle(div, pseudo).width, "50px");
+  });
+}, "Resolution of width is correct for ::before and ::after pseudo-elements (double-colon)");
+
+test(function() {
+  const div = document.getElementById('test');
+  [":bef\\oRE", "::\\000041fter"].forEach(pseudo => {
+    assert_equals(getComputedStyle(div, pseudo).width, "50px");
+  });
+}, "Pseudo-elements can use the full range of CSS syntax");
+
 test(function() {
   var contents = document.getElementById('contents');
   [":before", ":after"].forEach(function(pseudo) {
     assert_equals(getComputedStyle(contents, pseudo).width, "50px");
   });
 }, "Resolution of width is correct for ::before and ::after pseudo-elements of display: contents elements");
+
 test(function() {
   var has_no_pseudos = document.body;
   has_no_pseudos.style.position = "relative";
@@ -88,6 +173,7 @@ test(function() {
                   "definite size");
   });
 }, "Resolution of nonexistent pseudo-element styles");
+
 test(function() {
   var none = document.getElementById('none');
   [":before", ":after"].forEach(function(pseudo) {
@@ -95,6 +181,7 @@ test(function() {
                   "Pseudo-styles of display: none elements should be correct");
   });
 }, "Resolution of pseudo-element styles in display: none elements");
+
 test(function() {
   var flex = document.getElementById('flex');
   [":before", ":after"].forEach(function(pseudo) {
@@ -102,6 +189,7 @@ test(function() {
                   "Pseudo-styles of display: flex elements should get blockified");
   });
 }, "Item-based blockification of pseudo-elements");
+
 test(function() {
   var flexNoPseudo = document.getElementById('flex-no-pseudo');
   [":before", ":after"].forEach(function(pseudo) {
@@ -109,6 +197,7 @@ test(function() {
                   "Pseudo-styles of display: flex elements should get blockified");
   });
 }, "Item-based blockification of nonexistent pseudo-elements");
+
 test(function() {
   var contentsPseudos = document.getElementById('contents-pseudos');
   [":before", ":after"].forEach(function(pseudo) {
@@ -120,6 +209,7 @@ test(function() {
                   "display: contents in " + pseudo + " should reflect other non-inherited properties in CSSOM");
   });
 }, "display: contents on pseudo-elements");
+
 test(function() {
   var contentsPseudosDynamic = document.getElementById('contents-pseudos-dynamic');
   [":before", ":after"].forEach(function(pseudo) {
@@ -136,8 +226,9 @@ test(function() {
                   "display: contents in " + pseudo + " should reflect other non-inherited properties in CSSOM");
   });
 }, "Dynamically change to display: contents on pseudo-elements");
-test(function() {
-  var div = document.getElementById('test');
+
+test(() => {
+  const div = document.getElementById('test');
   // Note that these assertions deliberately avoid assert_[not_]equals to
   // avoid gCS().length in the failure output.
   assert_true(
@@ -150,4 +241,54 @@ test(function() {
     getComputedStyle(div, ":totallynotapseudo").length == 0,
     "Should return an empty style for unknown pseudo-elements starting with colon");
 }, "Unknown pseudo-elements");
+
+test(() => {
+  const div = document.getElementById('test');
+
+  const style1 = getComputedStyle(div, "totallynotapseudo");
+  assert_throws_dom("NoModificationAllowedError", () => style1.color = "1");
+  assert_throws_dom("NoModificationAllowedError", () => style1.margin = "10px");
+
+  const style2 = getComputedStyle(div, "::totallynotapseudo");
+  assert_throws_dom("NoModificationAllowedError", () => style2.color = "1");
+  assert_throws_dom("NoModificationAllowedError", () => style2.margin = "10px");
+
+  const style3 = getComputedStyle(div, ":totallynotapseudo");
+  assert_throws_dom("NoModificationAllowedError", () => style3.color = "1");
+  assert_throws_dom("NoModificationAllowedError", () => style3.margin = "10px");
+}, "CSSStyleDeclaration is immutable");
+
+// If you add a pseudo-element identifier here, don't forget to add the corresponding style rule in
+// <style> above.
+[
+  "backdrop",
+  "file-selector-button",
+  "grammar-error",
+  "highlight(name)",
+  "marker",
+  "placeholder",
+  "spelling-error",
+  "view-transition",
+  "view-transition-image-pair(name)",
+  "view-transition-group(name)",
+  "view-transition-old(name)",
+  "view-transition-new(name)"
+].forEach(pseudoIdentifier => {
+  test(() => {
+    assert_implements_optional(CSS.supports(`selector(::${pseudoIdentifier})`), `::${pseudoIdentifier}`);
+    const li = document.querySelector('li');
+    assert_true(
+      getComputedStyle(li, `:${pseudoIdentifier}`).length == 0,
+      `Should return an empty style for :${pseudoIdentifier}`);
+    assert_true(
+      getComputedStyle(li, pseudoIdentifier).length != 0,
+      `Should return the element style for ${pseudoIdentifier}`);
+    assert_equals(
+      getComputedStyle(li, pseudoIdentifier).color, "rgb(255, 0, 0)",
+      `Should return the element style for ${pseudoIdentifier}`);
+    assert_equals(
+    getComputedStyle(li, `::${pseudoIdentifier}`).color, "rgb(0, 128, 0)",
+    `Should return the ::${pseudoIdentifier} style`);
+  }, `Unknown pseudo-element with a known identifier: ${pseudoIdentifier}`);
+});
 </script>

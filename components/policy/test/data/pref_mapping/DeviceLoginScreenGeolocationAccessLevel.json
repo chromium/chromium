@@ -1,0 +1,77 @@
+[
+  {
+    "os": [
+      "chromeos_ash"
+    ],
+    "policy_pref_mapping_tests": [
+      {
+        "note": "Check default value (no policies set)",
+        "policies": {},
+        "prefs": {
+          "ash.device.geolocation_allowed": {
+            "default_value": 1,
+            "location": "local_state"
+          }
+        }
+      },
+      {
+        "policies": {
+          "DeviceLoginScreenGeolocationAccessLevel": 0
+        },
+        "prefs": {
+          "ash.device.geolocation_allowed": {
+            "location": "local_state",
+            "value": 0
+          }
+        }
+      },
+      {
+        "policies": {
+          "DeviceLoginScreenGeolocationAccessLevel": 1
+        },
+        "prefs": {
+          "ash.device.geolocation_allowed": {
+            "location": "local_state",
+            "value": 1
+          }
+        }
+      },
+      {
+        "note": "future values should be handled as kDisallowed",
+        "policies": {
+          "DeviceLoginScreenGeolocationAccessLevel": 2
+        },
+        "prefs": {
+          "ash.device.geolocation_allowed": {
+            "location": "local_state",
+            "value": 0
+          }
+        }
+      },
+      {
+        "note": "future values should be handled as kDisallowed",
+        "policies": {
+          "DeviceLoginScreenGeolocationAccessLevel": -1
+        },
+        "prefs": {
+          "ash.device.geolocation_allowed": {
+            "location": "local_state",
+            "value": 0
+          }
+        }
+      },
+      {
+        "note": "future values should be handled as kDisallowed",
+        "policies": {
+          "DeviceLoginScreenGeolocationAccessLevel": 123456
+        },
+        "prefs": {
+          "ash.device.geolocation_allowed": {
+            "location": "local_state",
+            "value": 0
+          }
+        }
+      }
+    ]
+  }
+]

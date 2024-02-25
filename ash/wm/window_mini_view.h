@@ -10,6 +10,7 @@
 #include "base/scoped_observation.h"
 #include "ui/aura/window_observer.h"
 #include "ui/base/metadata/metadata_header_macros.h"
+#include "ui/gfx/geometry/rounded_corners_f.h"
 #include "ui/views/view.h"
 
 namespace aura {
@@ -18,11 +19,10 @@ class Window;
 
 namespace gfx {
 class Point;
-class RoundedCornersF;
 }  // namespace gfx
 
 namespace views {
-class View;
+class HighlightPathGenerator;
 }  // namespace views
 
 namespace ash {
@@ -33,12 +33,17 @@ class WindowPreviewView;
 // installation and update logic to be used or implemented by `WindowMiniView`
 // and `GroupContainerCycleView`.
 class WindowMiniViewBase : public views::View {
- public:
-  METADATA_HEADER(WindowMiniViewBase);
+  METADATA_HEADER(WindowMiniViewBase, views::View)
 
+ public:
   WindowMiniViewBase(const WindowMiniViewBase&) = delete;
   WindowMiniViewBase& operator=(const WindowMiniViewBase&) = delete;
   ~WindowMiniViewBase() override;
+
+  // Sets rounded corners on the exposed corners, the inner corners will be
+  // sharp.
+  void SetRoundedCornersRadius(
+      const gfx::RoundedCornersF& exposed_rounded_corners);
 
   // Shows or hides a focus ring around this.
   void UpdateFocusState(bool focus);
@@ -51,9 +56,12 @@ class WindowMiniViewBase : public views::View {
   virtual aura::Window* GetWindowAtPoint(
       const gfx::Point& screen_point) const = 0;
 
-  // Shows the preview and icon. For performance reasons, these are not created
-  // on construction. This should be called at most one time during the lifetime
-  // of `this`.
+  // Creates or deletes preview view as needed. For performance reasons, these
+  // are not created on construction. Note that this may create or destroy a
+  // `WindowPreviewView` which is an expensive operation.
+  virtual void SetShowPreview(bool show) = 0;
+
+  // Refreshes the rounded corners and optionally updates the icon view.
   virtual void RefreshItemVisuals() = 0;
 
   // Try removing the mini view representation of the `destroying_window`.
@@ -65,13 +73,25 @@ class WindowMiniViewBase : public views::View {
   // Returns the exposed rounded corners.
   virtual gfx::RoundedCornersF GetRoundedCorners() const = 0;
 
+  // Sets `this` as selected for focus and applies the focus ring around it.
+  // Note that `window` is the window that will be activated if `this` is
+  // selected while focused. `window` must be contained within `this` (See
+  // `Contains()` above).
+  virtual void SetSelectedWindowForFocus(aura::Window* window) = 0;
+
+  // Clears the focus on all the windows associated with `this`.
+  virtual void ClearFocusSelection() = 0;
+
  protected:
   WindowMiniViewBase();
 
- private:
-  void InstallFocusRing();
+  // If these optional values are set, the preset rounded corners will be used
+  // otherwise the default rounded corners will be used.
+  std::optional<gfx::RoundedCornersF> exposed_rounded_corners_;
+  std::optional<gfx::RoundedCornersF> header_view_rounded_corners_;
+  std::optional<gfx::RoundedCornersF> preview_view_rounded_corners_;
 
-  // True if this view is focused when using keyboard navigation.
+  // True if `this` is focused when using keyboard navigation.
   bool is_focused_ = false;
 };
 
@@ -80,25 +100,16 @@ class WindowMiniViewBase : public views::View {
 // `SetShowPreview` in their constructors (or later on if they like).
 class ASH_EXPORT WindowMiniView : public WindowMiniViewBase,
                                   public aura::WindowObserver {
- public:
-  METADATA_HEADER(WindowMiniView);
+  METADATA_HEADER(WindowMiniView, WindowMiniViewBase)
 
+ public:
   WindowMiniView(const WindowMiniView&) = delete;
   WindowMiniView& operator=(const WindowMiniView&) = delete;
   ~WindowMiniView() override;
 
-  static constexpr int kHeaderHeightDp = 40;
   // The size in dp of the window icon shown on the alt-tab/overview window next
   // to the title.
   static constexpr gfx::Size kIconSize = gfx::Size(24, 24);
-
-  // The corner radius for WindowMiniView. Please notice, instead of setting the
-  // corner radius directly on the window mini view, setting the corner radius
-  // on its children (header view, preview header). The reasons are:
-  // 1. The WindowMiniView might have a non-empty border.
-  // 2. The focus ring which is a child view of the WindowMiniView couldn't be
-  // drawn correctly if its parent's layer is clipped.
-  static constexpr int kWindowMiniViewCornerRadius = 16;
 
   aura::Window* source_window() { return source_window_; }
   const aura::Window* source_window() const { return source_window_; }
@@ -110,34 +121,29 @@ class ASH_EXPORT WindowMiniView : public WindowMiniViewBase,
   // Sets the visibility of |backdrop_view_|. Creates it if it is null.
   void SetBackdropVisibility(bool visible);
 
-  // Creates or deletes |preview_view_| as needed.
-  void SetShowPreview(bool show);
-
   // Sets or hides rounded corners on `preview_view_`, if it exists.
-  void UpdatePreviewRoundedCorners(bool show);
+  void RefreshPreviewRoundedCorners(bool show);
 
   // Updates the rounded corners on `header_view_`, if it exists.
-  void UpdateHeaderViewRoundedCorners();
+  void RefreshHeaderViewRoundedCorners();
+
+  // Applies the corresponding rounded corners on the focus ring to match the
+  // visuals of the `header_view_` and `preview_view_`.
+  void RefreshFocusRingVisuals();
+
+  // Resets the preset rounded corners values i.e.
+  // `header_view_rounded_corners_` and `preview_view_rounded_corners_`.
+  void ResetRoundedCorners();
 
   // WindowMiniViewBase:
   bool Contains(aura::Window* window) const override;
   aura::Window* GetWindowAtPoint(const gfx::Point& screen_point) const override;
+  void SetShowPreview(bool show) override;
   int TryRemovingChildItem(aura::Window* destroying_window) override;
   gfx::RoundedCornersF GetRoundedCorners() const override;
-
- protected:
-  explicit WindowMiniView(aura::Window* source_window);
-
-  // Returns the bounds where the backdrop and preview should go.
-  gfx::Rect GetContentAreaBounds() const;
-
-  // Subclasses can override these functions to provide customization for
-  // margins and layouts of certain elements.
-  virtual gfx::Rect GetHeaderBounds() const;
-  virtual gfx::Size GetPreviewViewSize() const;
-
-  // views::View:
-  void Layout() override;
+  void SetSelectedWindowForFocus(aura::Window* window) override;
+  void ClearFocusSelection() override;
+  void Layout(PassKey) override;
   void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
 
   // aura::WindowObserver:
@@ -147,21 +153,39 @@ class ASH_EXPORT WindowMiniView : public WindowMiniViewBase,
   void OnWindowDestroying(aura::Window* window) override;
   void OnWindowTitleChanged(aura::Window* window) override;
 
+ protected:
+  explicit WindowMiniView(aura::Window* source_window);
+
+  // Returns the bounds where the backdrop and preview should go.
+  gfx::Rect GetContentAreaBounds() const;
+
+  gfx::Rect GetHeaderBounds() const;
+
+  // Subclasses can override this function to provide customization for margins
+  // and layouts of the preview view.
+  virtual gfx::Size GetPreviewViewSize() const;
+
  private:
+  void InstallFocusRing();
+
+  // Generates the focus ring path for `this`, which has four rounded corners by
+  // default. If this is part of a snap group, the path should match the rounded
+  // corners of the `this`.
+  std::unique_ptr<views::HighlightPathGenerator> GenerateFocusRingPath();
+
   // The window this class is meant to be a header for. This class also may
   // optionally show a mirrored view of this window.
-  raw_ptr<aura::Window, ExperimentalAsh> source_window_;
+  raw_ptr<aura::Window> source_window_;
 
   // A view that represents the header of `this`.
-  raw_ptr<WindowMiniViewHeaderView, ExperimentalAsh> header_view_ = nullptr;
+  raw_ptr<WindowMiniViewHeaderView> header_view_ = nullptr;
 
   // A view that covers the area except the header. It is null when the window
   // associated is not pillar or letter boxed.
-  raw_ptr<views::View, ExperimentalAsh> backdrop_view_ = nullptr;
+  raw_ptr<views::View> backdrop_view_ = nullptr;
 
   // Optionally shows a preview of |window_|.
-  raw_ptr<WindowPreviewView, DanglingUntriaged | ExperimentalAsh>
-      preview_view_ = nullptr;
+  raw_ptr<WindowPreviewView, DanglingUntriaged> preview_view_ = nullptr;
 
   base::ScopedObservation<aura::Window, aura::WindowObserver>
       window_observation_{this};

@@ -209,6 +209,9 @@ class MockFile(object):
         self._scm_diff += "+%s\n" % l
     self._old_contents = old_contents
 
+  def __str__(self):
+    return self._local_path
+
   def Action(self):
     return self._action
 

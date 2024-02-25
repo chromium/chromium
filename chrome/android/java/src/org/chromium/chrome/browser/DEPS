@@ -10,6 +10,7 @@ include_rules = [
   "+chrome/browser/ui/android/theme",
   "+chrome/browser/ui/android/toolbar",
   "+third_party/blink/public/mojom:mojom_platform_java",
+  "+components/browser_ui/device_lock/android",
 ]
 
 specific_include_rules = {
@@ -69,7 +70,7 @@ specific_include_rules = {
   "ChromeTabCreator\.java": [
     "+chrome/android/java/src/org/chromium/chrome/browser/app/ChromeActivity.java",
   ],
-  "TabDelegate\.java": [
+  "ChromeAsyncTabLauncher\.java": [
     "+chrome/android/java/src/org/chromium/chrome/browser/app/ChromeActivity.java",
   ],
   "ReturnToChromeUtil\.java": [
@@ -123,7 +124,10 @@ specific_include_rules = {
   "TabModelImpl\.java": [
     "+chrome/android/java/src/org/chromium/chrome/browser/ChromeTabbedActivity.java"
   ],
-  "TabDelegate\.java": [
+  "ChromeAsyncTabLauncher\.java": [
+    "+chrome/android/java/src/org/chromium/chrome/browser/ChromeTabbedActivity.java"
+  ],
+  "DragAndDropLauncherActivity\.java": [
     "+chrome/android/java/src/org/chromium/chrome/browser/ChromeTabbedActivity.java"
   ],
 }

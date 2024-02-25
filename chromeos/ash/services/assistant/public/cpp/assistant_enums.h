@@ -79,7 +79,8 @@ enum class AssistantEntryPoint {
   // kLauncherChip = 11,
   // Deprecated, please do not reuse
   // kBloom = 12,
-  kMaxValue = kLauncherSearchBoxIcon,
+  kLauncherSearchIphChip = 13,
+  kMaxValue = kLauncherSearchIphChip
 };
 
 // Enumeration of Assistant exit points. These values are persisted to logs.
@@ -102,7 +103,8 @@ enum class AssistantExitPoint {
   kLauncherOpen = 10,
   kScreenshot = 11,
   kOverviewMode = 12,
-  kMaxValue = kOverviewMode,
+  kLauncherSearchIphChip = 13,
+  kMaxValue = kLauncherSearchIphChip,
 };
 
 // These values are persisted to logs. Entries should not be renumbered and
@@ -132,6 +134,22 @@ enum class LibassistantDlcLoadStatus {
   kLoaded = 1,
 
   kMaxValue = kLoaded,
+};
+
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+// If any value is added, please update enums.xml
+// Assistant.LauncherSearchIphQueryType.{SearchBox, AssistantPage}
+// Enumeration of the query types of the chip inside LauncherSearchIph.
+enum class LauncherSearchIphQueryType {
+  kWeather = 0,
+  kUnitConversion1 = 1,
+  kUnitConversion2 = 2,
+  kTranslation = 3,
+  kDefinition = 4,
+  kCalculation = 5,
+
+  kMaxValue = kCalculation,
 };
 
 }  // namespace ash::assistant

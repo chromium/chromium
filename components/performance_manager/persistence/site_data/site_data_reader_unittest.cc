@@ -147,7 +147,7 @@ TEST_F(SiteDataReaderTest, FreeingReaderDoesntCauseWriteOperation) {
   auto read_from_store_mock_impl =
       [&](const url::Origin& origin,
           SiteDataStore::ReadSiteDataFromStoreCallback& callback) {
-        std::move(callback).Run(absl::optional<SiteDataProto>(proto));
+        std::move(callback).Run(std::optional<SiteDataProto>(proto));
       };
 
   EXPECT_CALL(data_store, OnReadSiteDataFromStore(

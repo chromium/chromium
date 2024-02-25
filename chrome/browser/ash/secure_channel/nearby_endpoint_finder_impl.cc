@@ -33,17 +33,12 @@ void OnStopDiscoveryDestructorResult(Status status) {
     PA_LOG(WARNING) << "Failed to stop discovery as part of destructor";
 }
 
-std::vector<uint8_t> GenerateRandomByteArray(size_t length) {
-  std::string endpoint_info = base::RandBytesAsString(length);
-  return std::vector<uint8_t>(endpoint_info.begin(), endpoint_info.end());
-}
-
 std::string GenerateEndpointId() {
   // Generate a random array of bytes; as long as it is of size of at least
   // 3/4 kEndpointInfoLength, the final substring of the Base64-encoded array
   // will be of size kEndpointInfoLength.
   std::vector<uint8_t> raw_endpoint_info =
-      GenerateRandomByteArray(kEndpointIdLength);
+      base::RandBytesAsVector(kEndpointIdLength);
 
   // Return the first kEndpointIdLength characters of the Base64-encoded string.
   return base::Base64Encode(raw_endpoint_info).substr(0, kEndpointIdLength);
@@ -51,7 +46,7 @@ std::string GenerateEndpointId() {
 
 std::vector<uint8_t> GenerateEndpointInfo(const std::vector<uint8_t>& eid) {
   if (eid.size() < 2) {
-    return GenerateRandomByteArray(kEndpointInfoLength);
+    return base::RandBytesAsVector(kEndpointInfoLength);
   }
 
   std::vector<uint8_t> endpoint_info = {
@@ -106,7 +101,7 @@ void NearbyEndpointFinderImpl::PerformFindEndpoint() {
                                                  /*ble=*/false,
                                                  /*webrtc=*/false,
                                                  /*wifi_lan=*/false),
-                            /*fast_advertisement_service_uuid=*/absl::nullopt,
+                            /*fast_advertisement_service_uuid=*/std::nullopt,
                             /*is_out_of_band_connection=*/true),
       endpoint_discovery_listener_receiver_.BindNewPipeAndPassRemote(),
       base::BindOnce(&NearbyEndpointFinderImpl::OnStartDiscoveryResult,
@@ -134,7 +129,7 @@ void NearbyEndpointFinderImpl::OnStartDiscoveryResult(Status status) {
   if (status != Status::kSuccess) {
     PA_LOG(WARNING) << "Failed to start Nearby discovery: " << status;
     is_discovery_active_ = false;
-    NotifyEndpointDiscoveryFailure();
+    NotifyEndpointDiscoveryFailure(status);
     return;
   }
 
@@ -152,7 +147,7 @@ void NearbyEndpointFinderImpl::OnInjectBluetoothEndpointResult(Status status) {
 
   if (status != Status::kSuccess) {
     PA_LOG(WARNING) << "Failed to inject Bluetooth endpoint: " << status;
-    NotifyEndpointDiscoveryFailure();
+    NotifyEndpointDiscoveryFailure(status);
     return;
   }
 
@@ -168,7 +163,7 @@ void NearbyEndpointFinderImpl::OnStopDiscoveryResult(
 
   if (status != Status::kSuccess) {
     PA_LOG(WARNING) << "Failed to stop Nearby discovery: " << status;
-    NotifyEndpointDiscoveryFailure();
+    NotifyEndpointDiscoveryFailure(status);
     return;
   }
 

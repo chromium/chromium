@@ -51,6 +51,7 @@ CONTENT_EXPORT extern const char kChromeUIProcessInternalsHost[];
 CONTENT_EXPORT extern const char kChromeUIQuotaInternalsHost[];
 CONTENT_EXPORT extern const char kChromeUIResourcesHost[];
 CONTENT_EXPORT extern const char kChromeUIServiceWorkerInternalsHost[];
+CONTENT_EXPORT extern const char kChromeUITracesInternalsHost[];
 CONTENT_EXPORT extern const char kChromeUITracingHost[];
 CONTENT_EXPORT extern const char kChromeUIUkmHost[];
 CONTENT_EXPORT extern const char kChromeUIUntrustedResourcesURL[];

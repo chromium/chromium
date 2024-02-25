@@ -7,11 +7,11 @@ import {BindingsTestRunner} from 'bindings_test_runner';
 import {SourcesTestRunner} from 'sources_test_runner';
 
 import * as Workspace from 'devtools/models/workspace/workspace.js';
+import * as SourcesModule from 'devtools/panels/sources/sources.js';
+import * as Persistence from 'devtools/models/persistence/persistence.js';
 
 (async function() {
   TestRunner.addResult(`Tests that ScriptSearchScope performs search across all sources correctly.\n`);
-  await TestRunner.loadLegacyModule('sources');
-  await TestRunner.loadLegacyModule('search');
   await TestRunner.showPanel('sources');
 
   const workspace = Workspace.Workspace.WorkspaceImpl.instance();
@@ -27,7 +27,7 @@ import * as Workspace from 'devtools/models/workspace/workspace.js';
     return uiSourceCodes;
   }
 
-  var scope = new Sources.SourcesSearchScope();
+  var scope = new SourcesModule.SourcesSearchScope.SourcesSearchScope();
   var names = ['search.html', 'search.js', 'search.css'];
   var fs = new BindingsTestRunner.TestFileSystem('/var/www');
 
@@ -65,7 +65,7 @@ import * as Workspace from 'devtools/models/workspace/workspace.js';
       var paths = [];
       for (var i = 0; i < names.length; ++i)
         paths.push('/var/www/' + names[i]);
-      Persistence.isolatedFileSystemManager.onSearchCompleted(
+      Persistence.IsolatedFileSystemManager.IsolatedFileSystemManager.instance().onSearchCompleted(
           {data: {requestId: requestId, fileSystemPath: path, files: paths}});
     }
   };

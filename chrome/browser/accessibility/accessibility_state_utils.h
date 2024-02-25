@@ -13,6 +13,10 @@ bool IsScreenReaderEnabled();
 // Overrides |IsScreenReaderEnabled| for testing.
 void OverrideIsScreenReaderEnabledForTesting(bool enabled);
 
+// Returns true if Select-to-Speak is enabled on ChromeOS; returns false on
+// other platforms.
+bool IsSelectToSpeakEnabled();
+
 }  // namespace accessibility_state_utils
 
 #endif  // CHROME_BROWSER_ACCESSIBILITY_ACCESSIBILITY_STATE_UTILS_H_

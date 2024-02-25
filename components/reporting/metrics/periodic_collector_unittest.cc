@@ -5,10 +5,12 @@
 #include "components/reporting/metrics/periodic_collector.h"
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <vector>
 
 #include "base/run_loop.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
 #include "components/reporting/metrics/fakes/fake_metric_report_queue.h"
@@ -18,7 +20,6 @@
 #include "components/reporting/proto/synced/metric_data.pb.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 using ::testing::Eq;
 
@@ -44,6 +45,7 @@ class PeriodicCollectorTest : public ::testing::Test {
   std::unique_ptr<test::FakeReportingSettings> settings_;
   std::unique_ptr<test::FakeSampler> sampler_;
   std::unique_ptr<test::FakeMetricReportQueue> metric_report_queue_;
+  base::HistogramTester histogram_tester_;
 };
 
 TEST_F(PeriodicCollectorTest, InitiallyEnabled) {
@@ -115,6 +117,8 @@ TEST_F(PeriodicCollectorTest, InitiallyEnabled) {
   }
   base::RunLoop().RunUntilIdle();
   EXPECT_TRUE(metric_report_queue_->IsEmpty());
+  histogram_tester_.ExpectTotalCount(
+      PeriodicCollector::kNoMetricDataMetricsName, /*expected_count=*/0);
 }
 
 TEST_F(PeriodicCollectorTest, InitiallyEnabled_Delayed) {
@@ -165,15 +169,16 @@ TEST_F(PeriodicCollectorTest, InitiallyEnabled_Delayed) {
   base::RunLoop().RunUntilIdle();
   EXPECT_TRUE(metric_report_queue_->IsEmpty());
 
-  sampler_->SetMetricData(absl::nullopt);
+  sampler_->SetMetricData(std::nullopt);
+  histogram_tester_.ExpectTotalCount(
+      PeriodicCollector::kNoMetricDataMetricsName, /*expected_count=*/0);
 }
 
 TEST_F(PeriodicCollectorTest, NoMetricData) {
   settings_->SetReportingEnabled(kEnableSettingPath, true);
   settings_->SetInteger(kRateSettingPath, interval.InMilliseconds());
 
-  sampler_->SetMetricData(absl::nullopt);
-
+  sampler_->SetMetricData(std::nullopt);
   PeriodicCollector collector(sampler_.get(), metric_report_queue_.get(),
                               settings_.get(), kEnableSettingPath,
                               /*setting_enabled_default_value=*/false,
@@ -184,6 +189,11 @@ TEST_F(PeriodicCollectorTest, NoMetricData) {
 
   base::RunLoop().RunUntilIdle();
   ASSERT_TRUE(metric_report_queue_->IsEmpty());
+  histogram_tester_.ExpectBucketCount(
+      PeriodicCollector::kNoMetricDataMetricsName,
+      metric_report_queue_->GetDestination(), /*expected_count=*/1);
+  histogram_tester_.ExpectTotalCount(
+      PeriodicCollector::kNoMetricDataMetricsName, /*expected_count=*/1);
 }
 
 TEST_F(PeriodicCollectorTest, InitiallyDisabled) {
@@ -242,6 +252,8 @@ TEST_F(PeriodicCollectorTest, InitiallyDisabled) {
 
   base::RunLoop().RunUntilIdle();
   EXPECT_TRUE(metric_report_queue_->IsEmpty());
+  histogram_tester_.ExpectTotalCount(
+      PeriodicCollector::kNoMetricDataMetricsName, /*expected_count=*/0);
 }
 
 TEST_F(PeriodicCollectorTest, DefaultEnabled) {
@@ -278,6 +290,8 @@ TEST_F(PeriodicCollectorTest, DefaultEnabled) {
 
   base::RunLoop().RunUntilIdle();
   EXPECT_TRUE(metric_report_queue_->IsEmpty());
+  histogram_tester_.ExpectTotalCount(
+      PeriodicCollector::kNoMetricDataMetricsName, /*expected_count=*/0);
 }
 
 TEST_F(PeriodicCollectorTest, DefaultDisabled) {
@@ -298,6 +312,8 @@ TEST_F(PeriodicCollectorTest, DefaultDisabled) {
   // Setting is disabled by default, no data collected.
   EXPECT_THAT(sampler_->GetNumCollectCalls(), Eq(0));
   EXPECT_TRUE(metric_report_queue_->IsEmpty());
+  histogram_tester_.ExpectTotalCount(
+      PeriodicCollector::kNoMetricDataMetricsName, /*expected_count=*/0);
 }
 }  // namespace
 }  // namespace reporting

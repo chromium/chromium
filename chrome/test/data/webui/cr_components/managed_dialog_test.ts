@@ -6,7 +6,7 @@
 
 import 'chrome://resources/cr_components/managed_dialog/managed_dialog.js';
 
-import {ManagedDialogElement} from 'chrome://resources/cr_components/managed_dialog/managed_dialog.js';
+import type {ManagedDialogElement} from 'chrome://resources/cr_components/managed_dialog/managed_dialog.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {assertFalse, assertNotEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 

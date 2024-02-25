@@ -46,12 +46,12 @@ std::string GetBrowserAppName(
     const std::unique_ptr<app_restore::AppRestoreData>& app_restore_data,
     const std::string& app_id) {
   const bool app_type_browser =
-      app_restore_data->app_type_browser.value_or(false);
+      app_restore_data->browser_extra_info.app_type_browser.value_or(false);
   if (!app_type_browser)
     return std::string();
 
-  const absl::optional<std::string>& maybe_app_name =
-      app_restore_data->app_name;
+  const std::optional<std::string>& maybe_app_name =
+      app_restore_data->browser_extra_info.app_name;
   return maybe_app_name.has_value() && !maybe_app_name.value().empty()
              ? maybe_app_name.value()
              : app_id;
@@ -119,7 +119,7 @@ bool DesksTemplatesAppLaunchHandler::ShouldLaunchSystemWebAppOrChromeApp(
 
   // A SWA can handle multiple instances if it can open multiple windows.
   if (is_system_web_app) {
-    absl::optional<ash::SystemWebAppType> swa_type =
+    std::optional<ash::SystemWebAppType> swa_type =
         ash::GetSystemWebAppTypeForAppId(profile(), app_id);
     if (swa_type.has_value()) {
       auto* swa_manager = ash::SystemWebAppManager::Get(profile());
@@ -178,13 +178,15 @@ void DesksTemplatesAppLaunchHandler::LaunchBrowsers() {
       const std::unique_ptr<app_restore::AppRestoreData>& app_restore_data =
           window_iter.second;
 
-      const std::vector<GURL>& urls = app_restore_data->urls;
+      const app_restore::BrowserExtraInfo browser_extra_info =
+          app_restore_data->browser_extra_info;
+      const std::vector<GURL>& urls = browser_extra_info.urls;
       if (urls.empty()) {
         continue;
       }
 
       const gfx::Rect current_bounds =
-          app_restore_data->current_bounds.value_or(gfx::Rect());
+          app_restore_data->window_info.current_bounds.value_or(gfx::Rect());
       const std::string app_name = GetBrowserAppName(app_restore_data, app_id);
       if (!app_name.empty() && !IsBrowserAppInstalled(app_name)) {
         continue;
@@ -202,8 +204,8 @@ void DesksTemplatesAppLaunchHandler::LaunchBrowsers() {
       create_params.restore_id = window_iter.first;
       create_params.creation_source = Browser::CreationSource::kDeskTemplate;
 
-      absl::optional<chromeos::WindowStateType> window_state_type(
-          app_restore_data->window_state_type);
+      const std::optional<chromeos::WindowStateType>& window_state_type =
+          app_restore_data->window_info.window_state_type;
       if (window_state_type) {
         create_params.initial_show_state =
             chromeos::ToWindowShowState(*window_state_type);
@@ -214,8 +216,8 @@ void DesksTemplatesAppLaunchHandler::LaunchBrowsers() {
 
       Browser* browser = Browser::Create(create_params);
 
-      absl::optional<int32_t> active_tab_index =
-          app_restore_data->active_tab_index;
+      std::optional<int32_t> active_tab_index =
+          browser_extra_info.active_tab_index;
       for (size_t i = 0; i < urls.size(); i++) {
         chrome::AddTabAt(browser, urls[i], /*index=*/-1,
                          /*foreground=*/
@@ -223,16 +225,16 @@ void DesksTemplatesAppLaunchHandler::LaunchBrowsers() {
                           base::checked_cast<int32_t>(i) == *active_tab_index));
       }
 
-      if (!app_restore_data->tab_group_infos.empty()) {
+      if (!browser_extra_info.tab_group_infos.empty()) {
         chrome_desks_util::AttachTabGroupsToBrowserInstance(
-            app_restore_data->tab_group_infos, browser);
+            browser_extra_info.tab_group_infos, browser);
       }
 
-      if (app_restore_data->first_non_pinned_tab_index.has_value() &&
-          app_restore_data->first_non_pinned_tab_index.value() <=
+      if (browser_extra_info.first_non_pinned_tab_index.has_value() &&
+          browser_extra_info.first_non_pinned_tab_index.value() <=
               static_cast<int>(urls.size())) {
         chrome_desks_util::SetBrowserPinnedTabs(
-            app_restore_data->first_non_pinned_tab_index.value(), browser);
+            browser_extra_info.first_non_pinned_tab_index.value(), browser);
       }
 
       // We need to handle minimized windows separately since unlike other
@@ -312,7 +314,9 @@ void DesksTemplatesAppLaunchHandler::MaybeLaunchLacrosBrowsers() {
     int windows_count = 0;
 
     for (const auto& [restore_window_id, app_restore_data] : iter.second) {
-      if (app_restore_data->urls.empty()) {
+      const app_restore::BrowserExtraInfo& browser_extra_info =
+          app_restore_data->browser_extra_info;
+      if (browser_extra_info.urls.empty()) {
         continue;
       }
       const std::string app_name = GetBrowserAppName(app_restore_data, app_id);
@@ -323,20 +327,20 @@ void DesksTemplatesAppLaunchHandler::MaybeLaunchLacrosBrowsers() {
       // TODO(crbug.com/1442076): Remove after issue is root caused.
       windows_count++;
       LOG(ERROR) << "window " << restore_window_id << " launched by Ash with "
-                 << app_restore_data->urls.size() << " tabs";
+                 << app_restore_data->browser_extra_info.urls.size() << " tabs";
 
       crosapi::BrowserManager::Get()->CreateBrowserWithRestoredData(
-          app_restore_data->urls,
-          app_restore_data->current_bounds.value_or(gfx::Rect()),
-          app_restore_data->tab_group_infos,
+          browser_extra_info.urls,
+          app_restore_data->window_info.current_bounds.value_or(gfx::Rect()),
+          browser_extra_info.tab_group_infos,
           chromeos::ToWindowShowState(
-              app_restore_data->window_state_type.value_or(
+              app_restore_data->window_info.window_state_type.value_or(
                   chromeos::WindowStateType::kDefault)),
-          app_restore_data->active_tab_index.value_or(0),
+          browser_extra_info.active_tab_index.value_or(0),
           // Values of 0 will be ignored, other type constraints are
           // enforced on the browser side.
-          app_restore_data->first_non_pinned_tab_index.value_or(0), app_name,
-          restore_window_id);
+          browser_extra_info.first_non_pinned_tab_index.value_or(0), app_name,
+          restore_window_id, browser_extra_info.lacros_profile_id.value_or(0));
     }
     // TODO(crbug.com/1442076): Remove after issue is root caused.
     LOG(ERROR) << windows_count

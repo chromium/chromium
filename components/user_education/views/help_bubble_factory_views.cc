@@ -5,18 +5,19 @@
 #include "components/user_education/views/help_bubble_factory_views.h"
 
 #include <memory>
+#include <optional>
 
 #include "base/callback_list.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
+#include "components/user_education/common/events.h"
 #include "components/user_education/common/help_bubble.h"
 #include "components/user_education/common/help_bubble_params.h"
 #include "components/user_education/common/user_education_class_properties.h"
 #include "components/user_education/views/help_bubble_delegate.h"
 #include "components/user_education/views/help_bubble_view.h"
 #include "components/user_education/views/toggle_tracked_element_attention_utils.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/base/interaction/element_tracker.h"
 #include "ui/views/accessible_pane_view.h"

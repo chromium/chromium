@@ -12,6 +12,7 @@
 
 #include <map>
 #include <memory>
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -21,6 +22,7 @@
 #include "base/values.h"
 #import "ios/web/navigation/navigation_manager_delegate.h"
 #import "ios/web/navigation/navigation_manager_impl.h"
+#import "ios/web/public/navigation/form_warning_type.h"
 #import "ios/web/public/navigation/web_state_policy_decider.h"
 #import "ios/web/public/web_state.h"
 #import "ios/web/public/web_state_delegate.h"
@@ -78,7 +80,7 @@ class WebStateImpl final : public WebState {
   // callbacks are used to load the complete serialized data from disk when
   // the WebState transition to the realized state.
   WebStateImpl(BrowserState* browser_state,
-               SessionID unique_identifier,
+               WebStateID unique_identifier,
                proto::WebStateMetadataStorage metadata,
                WebStateStorageLoader storage_loader,
                NativeSessionFetcher session_fetcher);
@@ -138,8 +140,7 @@ class WebStateImpl final : public WebState {
 
   // Notifies web state observers when any of the web state's permission has
   // changed.
-  void OnStateChangedForPermission(Permission permission)
-      API_AVAILABLE(ios(15.0));
+  void OnStateChangedForPermission(Permission permission);
 
   // Returns the NavigationManager for this WebState.
   NavigationManagerImpl& GetNavigationManagerImpl();
@@ -224,7 +225,8 @@ class WebStateImpl final : public WebState {
   void SendChangeLoadProgress(double progress);
 
   // Notifies the delegate that a Form Repost dialog needs to be presented.
-  void ShowRepostFormWarningDialog(base::OnceCallback<void(bool)> callback);
+  void ShowRepostFormWarningDialog(FormWarningType warning_type,
+                                   base::OnceCallback<void(bool)> callback);
 
   // Notifies the delegate that a JavaScript alert dialog needs to be presented.
   void RunJavaScriptAlertDialog(const GURL& origin_url,
@@ -276,12 +278,12 @@ class WebStateImpl final : public WebState {
   // Removes all current web frames.
   void RemoveAllWebFrames();
 
-  // Requests the user's permission to access requested `permissions`.
-  typedef void (^PermissionDecisionHandler)(WKPermissionDecision decision)
-      API_AVAILABLE(ios(15.0));
+  // Requests the user's permission to access requested `permissions` on
+  // top-level `origin`.
+  typedef void (^PermissionDecisionHandler)(WKPermissionDecision decision);
   void RequestPermissionsWithDecisionHandler(NSArray<NSNumber*>* permissions,
-                                             PermissionDecisionHandler handler)
-      API_AVAILABLE(ios(15.0));
+                                             const GURL& origin,
+                                             PermissionDecisionHandler handler);
 
   // WebState:
   void SerializeToProto(proto::WebStateStorage& storage) const final;
@@ -304,11 +306,10 @@ class WebStateImpl final : public WebState {
   base::WeakPtr<WebState> GetWeakPtr() final;
   void OpenURL(const WebState::OpenURLParams& params) final;
   void LoadSimulatedRequest(const GURL& url,
-                            NSString* response_html_string) final
-      API_AVAILABLE(ios(15.0));
+                            NSString* response_html_string) final;
   void LoadSimulatedRequest(const GURL& url,
                             NSData* response_data,
-                            NSString* mime_type) final API_AVAILABLE(ios(15.0));
+                            NSString* mime_type) final;
   void Stop() final;
   const NavigationManager* GetNavigationManager() const final;
   NavigationManager* GetNavigationManager() final;
@@ -321,7 +322,7 @@ class WebStateImpl final : public WebState {
   void LoadData(NSData* data, NSString* mime_type, const GURL& url) final;
   void ExecuteUserJavaScript(NSString* javaScript) final;
   NSString* GetStableIdentifier() const final;
-  SessionID GetUniqueIdentifier() const final;
+  WebStateID GetUniqueIdentifier() const final;
   const std::string& GetContentsMimeType() const final;
   bool ContentIsHTML() const final;
   const std::u16string& GetTitle() const final;
@@ -337,14 +338,14 @@ class WebStateImpl final : public WebState {
   int GetNavigationItemCount() const final;
   const GURL& GetVisibleURL() const final;
   const GURL& GetLastCommittedURL() const final;
-  absl::optional<GURL> GetLastCommittedURLIfTrusted() const final;
+  std::optional<GURL> GetLastCommittedURLIfTrusted() const final;
   id<CRWWebViewProxy> GetWebViewProxy() const final;
   void DidChangeVisibleSecurityState() final;
   InterfaceBinder* GetInterfaceBinderForMainFrame() final;
   bool HasOpener() const final;
   void SetHasOpener(bool has_opener) final;
   bool CanTakeSnapshot() const final;
-  void TakeSnapshot(const gfx::RectF& rect, SnapshotCallback callback) final;
+  void TakeSnapshot(const CGRect rect, SnapshotCallback callback) final;
   void CreateFullPagePdf(base::OnceCallback<void(NSData*)> callback) final;
   void CloseMediaPresentations() final;
   void AddObserver(WebStateObserver* observer) final;
@@ -352,22 +353,20 @@ class WebStateImpl final : public WebState {
   void CloseWebState() final;
   bool SetSessionStateData(NSData* data) final;
   NSData* SessionStateData() final;
-  PermissionState GetStateForPermission(Permission permission) const final
-      API_AVAILABLE(ios(15.0));
-  void SetStateForPermission(PermissionState state, Permission permission) final
-      API_AVAILABLE(ios(15.0));
-  NSDictionary<NSNumber*, NSNumber*>* GetStatesForAllPermissions() const final
-      API_AVAILABLE(ios(15.0));
+  PermissionState GetStateForPermission(Permission permission) const final;
+  void SetStateForPermission(PermissionState state,
+                             Permission permission) final;
+  NSDictionary<NSNumber*, NSNumber*>* GetStatesForAllPermissions() const final;
   void DownloadCurrentPage(NSString* destination_file,
                            id<CRWWebViewDownloadDelegate> delegate,
-                           void (^handler)(id<CRWWebViewDownload>)) final
-      API_AVAILABLE(ios(14.5));
+                           void (^handler)(id<CRWWebViewDownload>)) final;
   bool IsFindInteractionSupported() final;
   bool IsFindInteractionEnabled() final;
   void SetFindInteractionEnabled(bool enabled) final;
   id<CRWFindInteraction> GetFindInteraction() final API_AVAILABLE(ios(16));
   id GetActivityItem() final API_AVAILABLE(ios(16.4));
   UIColor* GetThemeColor() final;
+  UIColor* GetUnderPageBackgroundColor() final;
 
  protected:
   // WebState:

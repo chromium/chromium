@@ -4,6 +4,7 @@
 
 #include "media/remoting/receiver.h"
 
+#include <optional>
 #include <utility>
 
 #include "base/check.h"
@@ -22,7 +23,6 @@
 #include "media/remoting/mock_receiver_controller.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 using base::test::RunOnceCallback;
 using openscreen::cast::RpcMessenger;
@@ -82,7 +82,7 @@ class MockSender {
         break;
       }
       case openscreen::cast::RpcMessage::RPC_RC_ONBUFFERINGSTATECHANGE: {
-        absl::optional<BufferingState> state =
+        std::optional<BufferingState> state =
             media::cast::ToMediaBufferingState(
                 message->rendererclient_onbufferingstatechange_rpc().state());
         if (state.has_value())

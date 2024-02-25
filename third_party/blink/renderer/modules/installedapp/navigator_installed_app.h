@@ -5,22 +5,25 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_INSTALLEDAPP_NAVIGATOR_INSTALLED_APP_H_
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_INSTALLEDAPP_NAVIGATOR_INSTALLED_APP_H_
 
+#include "third_party/blink/renderer/bindings/core/v8/idl_types.h"
+#include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 
 namespace blink {
 
 class ExceptionState;
 class Navigator;
-class ScriptPromise;
+class RelatedApplication;
 class ScriptState;
 
 class NavigatorInstalledApp final {
   STATIC_ONLY(NavigatorInstalledApp);
 
  public:
-  static ScriptPromise getInstalledRelatedApps(ScriptState*,
-                                               Navigator&,
-                                               ExceptionState& exception_state);
+  static ScriptPromiseTyped<IDLSequence<RelatedApplication>>
+  getInstalledRelatedApps(ScriptState*,
+                          Navigator&,
+                          ExceptionState& exception_state);
 };
 
 }  // namespace blink

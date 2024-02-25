@@ -80,7 +80,7 @@ void OnDownloadedManifestIcon(base::OnceClosure callback,
 
 void OnGotMurmur2Hash(
     base::OnceClosure callback,
-    absl::optional<std::map<std::string, webapps::WebApkIconHasher::Icon>>
+    std::optional<std::map<std::string, webapps::WebApkIconHasher::Icon>>
         hashes) {
   std::move(callback).Run();
 }

@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<style>
+embed {
+  display: block;
+  width: 100px;
+  height: 100px;
+  background: green;
+  padding: 30px;
+  box-sizing: border-box;
+}
+</style>
+<script src="../../resources/run-after-layout-and-paint.js"></script>
+<script>
+onload = () => {
+  if (window.testRunner)
+    testRunner.waitUntilDone();
+
+  runAfterLayoutAndPaint(function() {
+    var embed = document.createElement('embed');
+    embed.type = 'application/x-blink-test-plugin';
+    embed.addEventListener("message", function(message) {
+      if (message.data == 'loaded') {
+        if (window.testRunner)
+          testRunner.notifyDone();
+      }
+    });
+    document.body.appendChild(embed);
+  });
+};
+</script>

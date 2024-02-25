@@ -35,20 +35,15 @@ import org.chromium.ui.modelutil.PropertyModel;
 /** Tests for ads blocked dialog. */
 @RunWith(BaseRobolectricTestRunner.class)
 public class AdsBlockedDialogTest {
-    @Rule
-    public MockitoRule mMockitoRule = MockitoJUnit.rule();
+    @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
-    @Mock
-    private ModalDialogManager mModalDialogManagerMock;
+    @Mock private ModalDialogManager mModalDialogManagerMock;
 
-    @Rule
-    public JniMocker jniMocker = new JniMocker();
+    @Rule public JniMocker jniMocker = new JniMocker();
 
-    @Mock
-    private AdsBlockedDialog.Natives mNativeMock;
+    @Mock private AdsBlockedDialog.Natives mNativeMock;
 
-    @Mock
-    private Handler mDialogHandler;
+    @Mock private Handler mDialogHandler;
 
     private long mNativeDialog;
     private AdsBlockedDialog mDialog;
@@ -69,29 +64,34 @@ public class AdsBlockedDialogTest {
         createAndShowDialog(false);
         Resources resources = ApplicationProvider.getApplicationContext().getResources();
 
-        Assert.assertEquals("Dialog title should match.",
+        Assert.assertEquals(
+                "Dialog title should match.",
                 resources.getString(R.string.blocked_ads_dialog_title),
                 mModalDialogModel.get(ModalDialogProperties.TITLE));
-        Assert.assertEquals("Dialog message should match.", mDialog.getFormattedMessageText(),
+        Assert.assertEquals(
+                "Dialog message should match.",
+                mDialog.getFormattedMessageText(),
                 mModalDialogModel.get(ModalDialogProperties.MESSAGE_PARAGRAPH_1));
-        Assert.assertEquals("Dialog positive button text should match.",
+        Assert.assertEquals(
+                "Dialog positive button text should match.",
                 resources.getString(R.string.blocked_ads_dialog_always_allow),
                 mModalDialogModel.get(ModalDialogProperties.POSITIVE_BUTTON_TEXT));
-        Assert.assertEquals("Dialog negative button text should match.",
+        Assert.assertEquals(
+                "Dialog negative button text should match.",
                 resources.getString(R.string.cancel),
                 mModalDialogModel.get(ModalDialogProperties.NEGATIVE_BUTTON_TEXT));
-        Assert.assertTrue("Dialog should be dismissed on touch outside.",
+        Assert.assertTrue(
+                "Dialog should be dismissed on touch outside.",
                 mModalDialogModel.get(ModalDialogProperties.CANCEL_ON_TOUCH_OUTSIDE));
-        Assert.assertTrue("Dialog should gain focus for accessibility.",
+        Assert.assertTrue(
+                "Dialog should gain focus for accessibility.",
                 mModalDialogModel.get(ModalDialogProperties.FOCUS_DIALOG));
 
         Mockito.verify(mModalDialogManagerMock)
                 .showDialog(mModalDialogModel, ModalDialogManager.ModalDialogType.TAB);
     }
 
-    /**
-     * Tests that the dialog is dismissed when the user taps on the positive button.
-     */
+    /** Tests that the dialog is dismissed when the user taps on the positive button. */
     @Test
     public void testDialogDismissedWithPositiveButton() {
         createAndShowDialog(false);
@@ -104,9 +104,7 @@ public class AdsBlockedDialogTest {
                 .dismissDialog(mModalDialogModel, DialogDismissalCause.POSITIVE_BUTTON_CLICKED);
     }
 
-    /**
-     * Tests that the dialog is dismissed when the user taps on the negative button.
-     */
+    /** Tests that the dialog is dismissed when the user taps on the negative button. */
     @Test
     public void testDialogDismissedWithNegativeButton() {
         createAndShowDialog(false);
@@ -119,9 +117,7 @@ public class AdsBlockedDialogTest {
                 .dismissDialog(mModalDialogModel, DialogDismissalCause.NEGATIVE_BUTTON_CLICKED);
     }
 
-    /**
-     * Tests that the native #onDismissed is called when the dialog is dismissed.
-     */
+    /** Tests that the native #onDismissed is called when the dialog is dismissed. */
     @Test
     public void testDialogDismissedCallsNative() {
         createAndShowDialog(false);
@@ -134,8 +130,8 @@ public class AdsBlockedDialogTest {
     }
 
     /**
-     * Tests that the native #onLearnMoreClicked is called when the dialog message link
-     * text is clicked.
+     * Tests that the native #onLearnMoreClicked is called when the dialog message link text is
+     * clicked.
      */
     @Test
     public void testDialogMessageLinkCallback() {
@@ -144,9 +140,7 @@ public class AdsBlockedDialogTest {
         Mockito.verify(mNativeMock).onLearnMoreClicked(anyLong());
     }
 
-    /**
-     * Tests that the dialog is shown using Handler#post when shouldPostDialog is true.
-     */
+    /** Tests that the dialog is shown using Handler#post when shouldPostDialog is true. */
     @Test
     public void testPostDialog() {
         createAndShowDialog(true);
@@ -158,13 +152,14 @@ public class AdsBlockedDialogTest {
     }
 
     /**
-     * Helper function that creates AdsBlockedDialog, calls show() and captures the
-     * property model for modal dialog view.
+     * Helper function that creates AdsBlockedDialog, calls show() and captures the property model
+     * for modal dialog view.
      */
     private void createAndShowDialog(boolean shouldPostDialog) {
         // Set nativeDialog to a non-zero value to pass assertion check
-        mDialog = new AdsBlockedDialog(
-                1, RuntimeEnvironment.application, mModalDialogManagerMock, mDialogHandler);
+        mDialog =
+                new AdsBlockedDialog(
+                        1, RuntimeEnvironment.application, mModalDialogManagerMock, mDialogHandler);
         mDialog.show(shouldPostDialog);
         mModalDialogModel = mDialog.getDialogModelForTesting();
         mClickableSpan = mDialog.getMessageClickableSpanForTesting();

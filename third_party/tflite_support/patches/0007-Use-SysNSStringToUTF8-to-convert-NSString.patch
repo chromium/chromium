@@ -1,0 +1,25 @@
+From 95fbbe296dc22a585b1453d85aab6b561aa639d1 Mon Sep 17 00:00:00 2001
+From: Robert Ogden <robertogden@chromium.org>
+Date: Wed, 30 Nov 2022 10:24:35 -0800
+Subject: [PATCH 07/10] Use SysNSStringToUTF8 to convert NSString
+
+---
+ .../tensorflow_lite_support/ios/utils/Sources/TFLStringUtil.mm  | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/third_party/tflite_support/src/tensorflow_lite_support/ios/utils/Sources/TFLStringUtil.mm b/third_party/tflite_support/src/tensorflow_lite_support/ios/utils/Sources/TFLStringUtil.mm
+index 39c7b655ff3f2..830eab4359067 100644
+--- a/third_party/tflite_support/src/tensorflow_lite_support/ios/utils/Sources/TFLStringUtil.mm
++++ b/third_party/tflite_support/src/tensorflow_lite_support/ios/utils/Sources/TFLStringUtil.mm
+@@ -14,7 +14,7 @@ limitations under the License.
+ ==============================================================================*/
+ #import "tensorflow_lite_support/ios/utils/Sources/TFLStringUtil.h"
+ 
+-std::string MakeString(NSString* str) { return std::string([str UTF8String]); }
++std::string MakeString(NSString* str) { return base::SysNSStringToUTF8(str); }
+ 
+ NSString* MakeNSString(const std::string& str) {
+   return [[NSString alloc] initWithBytes:const_cast<void*>(static_cast<const void*>(str.data()))
+-- 
+2.42.0.515.g380fc7ccd1-goog
+

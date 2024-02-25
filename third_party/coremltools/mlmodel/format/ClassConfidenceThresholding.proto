@@ -1,0 +1,39 @@
+// Copyright (c) 2022, Apple Inc. All rights reserved.
+//
+// Use of this source code is governed by a BSD-3-clause license that can be
+// found in LICENSE.txt or at https://opensource.org/licenses/BSD-3-Clause
+
+syntax = "proto3";
+option optimize_for = LITE_RUNTIME;
+
+import public "DataStructures.proto";
+
+package CoreML.Specification;
+
+/* A model to filter classification labels by confidence thresholds.
+ *
+ * The model has one input:
+ * - A multi-array of type FP16, FP32, or FP64 and shape [C], where C
+ * is the number of classes.
+ *
+ * The model has one output:
+ * - A multi-array of type FP16, FP32, or FP64 and shape [2, C], where
+ *   C is the number of classes. The values in [0, :] is the same as
+ *   the confidence inputs. The values in [1, :] is either 0 or 1,
+ *   where 1 means the class is present and 0 means it is not.
+ *
+ * Currently, the model simply takes all the classes.
+ *
+ *   filteredClassConfidences[0, :] = classConfidences[:]
+ *   filteredClassConfidences[1, :] = 1
+ */
+
+message ClassConfidenceThresholding {
+  /**
+   * The precision-recall curve for each class label.
+   *
+   * The field is optional. When it exists, the number of curves
+   * must match the number of class labels.
+   */
+  repeated PrecisionRecallCurve precisionRecallCurves = 100;
+}

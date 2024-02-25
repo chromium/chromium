@@ -97,7 +97,7 @@ void ClipboardRestrictionService::UpdateSettings() {
   url_matcher::util::AddFilters(disable_url_matcher_.get(), false, &next_id_,
                                 *disable);
 
-  absl::optional<int> min_data_size = settings.FindInt(
+  std::optional<int> min_data_size = settings.FindInt(
       enterprise::content::kCopyPreventionSettingsMinDataSizeFieldName);
   DCHECK(min_data_size);
   DCHECK(min_data_size >= 0);

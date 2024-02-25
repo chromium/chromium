@@ -102,7 +102,7 @@ class FakeObserver : public mojom::SignalingMessageObserver {
   }
 
  private:
-  raw_ptr<TaskRunner, ExperimentalAsh> task_runner_;
+  raw_ptr<TaskRunner> task_runner_;
   std::vector<uint8_t> received_signals_;
   mojo::Receiver<mojom::SignalingMessageObserver> receiver_;
 };
@@ -129,7 +129,7 @@ class FakeEcheConnector : public EcheConnector {
   void AttemptNearbyConnection() override {}
 
  private:
-  raw_ptr<TaskRunner, ExperimentalAsh> task_runner_;
+  raw_ptr<TaskRunner> task_runner_;
   std::vector<proto::ExoMessage> sent_messages_;
 };
 
@@ -250,7 +250,7 @@ class EcheSignalerTest : public AshTestBase {
   base::test::ScopedFeatureList feature_list_;
 
  private:
-  raw_ptr<EcheTray, DanglingUntriaged | ExperimentalAsh> eche_tray_ = nullptr;
+  raw_ptr<EcheTray, DanglingUntriaged> eche_tray_ = nullptr;
   secure_channel::FakeConnectionManager fake_connection_manager_;
   std::unique_ptr<EcheConnectionStatusHandler> eche_connection_status_handler_;
   std::unique_ptr<AppsLaunchInfoProvider> apps_launch_info_provider_;

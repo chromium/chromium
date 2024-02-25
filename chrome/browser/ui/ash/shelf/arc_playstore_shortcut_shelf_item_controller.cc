@@ -7,10 +7,13 @@
 #include <utility>
 
 #include "ash/components/arc/metrics/arc_metrics_constants.h"
+#include "ash/public/cpp/shelf_types.h"
 #include "chrome/browser/ash/app_list/arc/arc_app_launcher.h"
 #include "chrome/browser/ash/app_list/arc/arc_app_utils.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/scalable_iph/scalable_iph_factory.h"
 #include "chrome/browser/ui/ash/shelf/chrome_shelf_controller.h"
+#include "chromeos/ash/components/scalable_iph/scalable_iph.h"
 #include "ui/events/event_constants.h"
 #include "ui/gfx/image/image_skia.h"
 
@@ -27,6 +30,18 @@ void ArcPlaystoreShortcutShelfItemController::ItemSelected(
     ash::ShelfLaunchSource source,
     ItemSelectedCallback callback,
     const ItemFilterPredicate& filter_predicate) {
+  Profile* profile = ChromeShelfController::instance()->profile();
+
+  // Launches from app list are covered in `AppListClientImpl::ActivateItem`.
+  if (source == ash::ShelfLaunchSource::LAUNCH_FROM_SHELF) {
+    scalable_iph::ScalableIph* scalable_iph =
+        ScalableIphFactory::GetForBrowserContext(profile);
+    if (scalable_iph) {
+      scalable_iph->RecordEvent(
+          scalable_iph::ScalableIph::Event::kShelfItemActivationGooglePlay);
+    }
+  }
+
   // Report |callback| now, once Play Store launch request may cause inline
   // replacement of this controller to deferred launch controller and |callback|
   // will never be delivered to ash.
@@ -35,9 +50,9 @@ void ArcPlaystoreShortcutShelfItemController::ItemSelected(
     // Play Store launch request has never been scheduled.
     std::unique_ptr<ArcAppLauncher> playstore_launcher =
         std::make_unique<ArcAppLauncher>(
-            ChromeShelfController::instance()->profile(), arc::kPlayStoreAppId,
-            nullptr /* launch_intent */, true /* deferred_launch_allowed */,
-            display_id, apps::LaunchSource::kFromShelf);
+            profile, arc::kPlayStoreAppId, nullptr /* launch_intent */,
+            true /* deferred_launch_allowed */, display_id,
+            apps::LaunchSource::kFromShelf);
     // ArcAppLauncher may launch Play Store in case it exists already. In this
     // case this instance of ArcPlaystoreShortcutShelfItemController may be
     // deleted. If Play Store does not exist at this moment, then let

@@ -4,10 +4,10 @@
 
 #include "components/keyed_service/core/dependency_graph.h"
 
+#include <string_view>
+
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
-#include "base/numerics/safe_conversions.h"
-#include "base/strings/string_piece.h"
 #include "components/keyed_service/core/dependency_node.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/re2/src/re2/re2.h"
@@ -36,12 +36,12 @@ TEST_F(DependencyGraphTest, SingleCase) {
   DependencyGraph graph;
   DummyNode node(&graph);
 
-  std::vector<DependencyNode*> construction_order;
+  std::vector<raw_ptr<DependencyNode, VectorExperimental>> construction_order;
   EXPECT_TRUE(graph.GetConstructionOrder(&construction_order));
   ASSERT_EQ(1U, construction_order.size());
   EXPECT_EQ(&node, construction_order[0]);
 
-  std::vector<DependencyNode*> destruction_order;
+  std::vector<raw_ptr<DependencyNode, VectorExperimental>> destruction_order;
   EXPECT_TRUE(graph.GetDestructionOrder(&destruction_order));
   ASSERT_EQ(1U, destruction_order.size());
   EXPECT_EQ(&node, destruction_order[0]);
@@ -55,13 +55,13 @@ TEST_F(DependencyGraphTest, SimpleDependency) {
 
   graph.AddEdge(&parent, &child);
 
-  std::vector<DependencyNode*> construction_order;
+  std::vector<raw_ptr<DependencyNode, VectorExperimental>> construction_order;
   EXPECT_TRUE(graph.GetConstructionOrder(&construction_order));
   ASSERT_EQ(2U, construction_order.size());
   EXPECT_EQ(&parent, construction_order[0]);
   EXPECT_EQ(&child, construction_order[1]);
 
-  std::vector<DependencyNode*> destruction_order;
+  std::vector<raw_ptr<DependencyNode, VectorExperimental>> destruction_order;
   EXPECT_TRUE(graph.GetDestructionOrder(&destruction_order));
   ASSERT_EQ(2U, destruction_order.size());
   EXPECT_EQ(&child, destruction_order[0]);
@@ -78,14 +78,14 @@ TEST_F(DependencyGraphTest, TwoChildrenOneParent) {
   graph.AddEdge(&parent, &child1);
   graph.AddEdge(&parent, &child2);
 
-  std::vector<DependencyNode*> construction_order;
+  std::vector<raw_ptr<DependencyNode, VectorExperimental>> construction_order;
   EXPECT_TRUE(graph.GetConstructionOrder(&construction_order));
   ASSERT_EQ(3U, construction_order.size());
   EXPECT_EQ(&parent, construction_order[0]);
   EXPECT_EQ(&child1, construction_order[1]);
   EXPECT_EQ(&child2, construction_order[2]);
 
-  std::vector<DependencyNode*> destruction_order;
+  std::vector<raw_ptr<DependencyNode, VectorExperimental>> destruction_order;
   EXPECT_TRUE(graph.GetDestructionOrder(&destruction_order));
   ASSERT_EQ(3U, destruction_order.size());
   EXPECT_EQ(&child2, destruction_order[0]);
@@ -110,7 +110,7 @@ TEST_F(DependencyGraphTest, MConfiguration) {
   DummyNode child_of_2(&graph);
   graph.AddEdge(&parent2, &child_of_2);
 
-  std::vector<DependencyNode*> construction_order;
+  std::vector<raw_ptr<DependencyNode, VectorExperimental>> construction_order;
   EXPECT_TRUE(graph.GetConstructionOrder(&construction_order));
   ASSERT_EQ(5U, construction_order.size());
   EXPECT_EQ(&parent1, construction_order[0]);
@@ -119,7 +119,7 @@ TEST_F(DependencyGraphTest, MConfiguration) {
   EXPECT_EQ(&child_of_12, construction_order[3]);
   EXPECT_EQ(&child_of_2, construction_order[4]);
 
-  std::vector<DependencyNode*> destruction_order;
+  std::vector<raw_ptr<DependencyNode, VectorExperimental>> destruction_order;
   EXPECT_TRUE(graph.GetDestructionOrder(&destruction_order));
   ASSERT_EQ(5U, destruction_order.size());
   EXPECT_EQ(&child_of_2, destruction_order[0]);
@@ -145,7 +145,7 @@ TEST_F(DependencyGraphTest, DiamondConfiguration) {
   graph.AddEdge(&middle1, &bottom);
   graph.AddEdge(&middle2, &bottom);
 
-  std::vector<DependencyNode*> construction_order;
+  std::vector<raw_ptr<DependencyNode, VectorExperimental>> construction_order;
   EXPECT_TRUE(graph.GetConstructionOrder(&construction_order));
   ASSERT_EQ(4U, construction_order.size());
   EXPECT_EQ(&parent, construction_order[0]);
@@ -153,7 +153,7 @@ TEST_F(DependencyGraphTest, DiamondConfiguration) {
   EXPECT_EQ(&middle2, construction_order[2]);
   EXPECT_EQ(&bottom, construction_order[3]);
 
-  std::vector<DependencyNode*> destruction_order;
+  std::vector<raw_ptr<DependencyNode, VectorExperimental>> destruction_order;
   EXPECT_TRUE(graph.GetDestructionOrder(&destruction_order));
   ASSERT_EQ(4U, destruction_order.size());
   EXPECT_EQ(&bottom, destruction_order[0]);
@@ -171,7 +171,7 @@ std::string NodeNameProvider(const std::string& name, DependencyNode* node) {
 // as valid identifiers, but those are not used in the production code calling
 // the tested DumpAsGraphviz.
 // [1] http://www.graphviz.org/content/dot-language
-bool IsValidDotId(base::StringPiece name) {
+bool IsValidDotId(std::string_view name) {
   static const char pattern[] =
       "[a-zA-Z\\200-\\377_][0-9a-zA-Z\\200-\\377_]*"
       "|-?(?:\\.[0-9]+|[0-9]+(\\.[0-9]*)?)"
@@ -181,8 +181,8 @@ bool IsValidDotId(base::StringPiece name) {
 
 // Returns the source name of the first edge of the graphstr described in DOT
 // format in |graphstr|.
-base::StringPiece LocateNodeNameInGraph(base::StringPiece graphstr) {
-  re2::StringPiece name;
+std::string_view LocateNodeNameInGraph(std::string_view graphstr) {
+  std::string_view name;
   EXPECT_TRUE(RE2::FullMatch(
       graphstr, "(?sm).*^[ \\t]*([^ \\t]*(?:[ \\t]+[^ \\t]+)*)[ \\t]*->.*",
       &name))
@@ -208,7 +208,7 @@ TEST_F(DependencyGraphTest, DumpAsGraphviz_Escaping) {
     SCOPED_TRACE(testing::Message("name=") << name);
     std::string graph_str = graph.DumpAsGraphviz(
         "Test", base::BindRepeating(&NodeNameProvider, name));
-    base::StringPiece dumped_name(LocateNodeNameInGraph(graph_str));
+    std::string_view dumped_name(LocateNodeNameInGraph(graph_str));
     EXPECT_TRUE(IsValidDotId(dumped_name)) << "dumped_name=" << dumped_name;
   }
 }

@@ -4,7 +4,6 @@ load(
 )
 
 package(
-    default_applicable_licenses = ["//tensorflow_lite_support:license"],
     default_visibility = [
         "//visibility:private",
     ],
@@ -18,7 +17,7 @@ cc_test_with_tflite(
         "//tensorflow_lite_support/cc/test/testdata/task/text:bert_nl_classifier_models",
     ],
     tflite_deps = [
-        "@org_tensorflow//tensorflow/lite/core/shims:cc_shims_test_util",
+        "@org_tensorflow//tensorflow/lite:test_util",
         "//tensorflow_lite_support/cc/task/text:bert_nl_classifier",
     ],
     deps = [
@@ -44,7 +43,7 @@ cc_test(
         "//tensorflow_lite_support/cc/task/core:task_utils",
         "//tensorflow_lite_support/cc/task/text:bert_question_answerer",
         "//tensorflow_lite_support/cc/test:test_utils",
-        "@org_tensorflow//tensorflow/lite/core/shims:cc_shims_test_util",
+        "@org_tensorflow//tensorflow/lite:test_util",
     ],
 )
 
@@ -60,7 +59,7 @@ cc_test(
         "//tensorflow_lite_support/cc/task/text/proto:retrieval_cc_proto",
         "//tensorflow_lite_support/cc/task/text/utils:text_op_resolver",
         "//tensorflow_lite_support/cc/test:test_utils",
-        "@org_tensorflow//tensorflow/lite/core/shims:cc_shims_test_util",
+        "@org_tensorflow//tensorflow/lite:test_util",
     ],
 )
 
@@ -93,6 +92,7 @@ cc_test(
         "//tensorflow_lite_support/cc/test/testdata/task/text:regex_embedding_with_metadata",
         "//tensorflow_lite_support/cc/test/testdata/task/text:universal_sentence_encoder_qa",
     ],
+    tags = ["not_run:arm"],
     deps = [
         "//tensorflow_lite_support/cc/port:gtest_main",
         "//tensorflow_lite_support/cc/task/core/proto:base_options_proto_inc",
@@ -102,7 +102,7 @@ cc_test(
         "//tensorflow_lite_support/cc/test:test_utils",
         "@com_google_absl//absl/status",
         "@com_google_absl//absl/strings",
-        "@org_tensorflow//tensorflow/lite/core/shims:cc_shims_test_util",
+        "@org_tensorflow//tensorflow/lite:test_util",
     ],
 )
 
@@ -116,6 +116,7 @@ cc_test(
         "//tensorflow_lite_support/cc/test/testdata/task/text:test_searchers",
         "//tensorflow_lite_support/cc/test/testdata/task/text:universal_sentence_encoder_qa",
     ],
+    tags = ["not_run:arm"],
     deps = [
         "//tensorflow_lite_support/cc:common",
         "//tensorflow_lite_support/cc/port:gtest_main",
@@ -132,7 +133,7 @@ cc_test(
         "@com_google_absl//absl/status",
         "@com_google_absl//absl/strings",
         "@com_google_absl//absl/strings:cord",
+        "@org_tensorflow//tensorflow/lite:test_util",
         "@org_tensorflow//tensorflow/lite/core/api:op_resolver",
-        "@org_tensorflow//tensorflow/lite/core/shims:cc_shims_test_util",
     ],
 )

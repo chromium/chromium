@@ -39,9 +39,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-/**
- * Container for all parameters related to creating a customizable button.
- */
+/** Container for all parameters related to creating a customizable button. */
 public class CustomButtonParamsImpl implements CustomButtonParams {
     private static final String TAG = "CustomTabs";
 
@@ -55,8 +53,13 @@ public class CustomButtonParamsImpl implements CustomButtonParams {
     @VisibleForTesting
     static final String SHOW_ON_TOOLBAR = "android.support.customtabs.customaction.SHOW_ON_TOOLBAR";
 
-    private CustomButtonParamsImpl(int id, Bitmap icon, String description,
-            @Nullable PendingIntent pendingIntent, boolean tinted, boolean onToolbar) {
+    private CustomButtonParamsImpl(
+            int id,
+            Bitmap icon,
+            String description,
+            @Nullable PendingIntent pendingIntent,
+            boolean tinted,
+            boolean onToolbar) {
         mId = id;
         mIcon = icon;
         mDescription = description;
@@ -65,9 +68,7 @@ public class CustomButtonParamsImpl implements CustomButtonParams {
         mIsOnToolbar = onToolbar;
     }
 
-    /**
-     * Replaces the current icon and description with new ones.
-     */
+    /** Replaces the current icon and description with new ones. */
     @Override
     public void update(@NonNull Bitmap icon, @NonNull String description) {
         mIcon = icon;
@@ -131,8 +132,10 @@ public class CustomButtonParamsImpl implements CustomButtonParams {
             Context context, ViewGroup parent, OnClickListener listener) {
         assert !mIsOnToolbar;
 
-        ImageButton button = (ImageButton) LayoutInflater.from(context).inflate(
-                R.layout.custom_tabs_bottombar_item, parent, false);
+        ImageButton button =
+                (ImageButton)
+                        LayoutInflater.from(context)
+                                .inflate(R.layout.custom_tabs_bottombar_item, parent, false);
         button.setId(mId);
         button.setImageBitmap(mIcon);
         button.setContentDescription(mDescription);
@@ -141,23 +144,30 @@ public class CustomButtonParamsImpl implements CustomButtonParams {
         } else {
             button.setOnClickListener(listener);
         }
-        button.setOnLongClickListener(new OnLongClickListener() {
-            @Override
-            public boolean onLongClick(View view) {
-                final int screenWidth = view.getResources().getDisplayMetrics().widthPixels;
-                final int screenHeight = view.getResources().getDisplayMetrics().heightPixels;
-                final int[] screenPos = new int[2];
-                view.getLocationOnScreen(screenPos);
-                final int width = view.getWidth();
+        button.setOnLongClickListener(
+                new OnLongClickListener() {
+                    @Override
+                    public boolean onLongClick(View view) {
+                        final int screenWidth = view.getResources().getDisplayMetrics().widthPixels;
+                        final int screenHeight =
+                                view.getResources().getDisplayMetrics().heightPixels;
+                        final int[] screenPos = new int[2];
+                        view.getLocationOnScreen(screenPos);
+                        final int width = view.getWidth();
 
-                Toast toast = Toast.makeText(
-                        view.getContext(), view.getContentDescription(), Toast.LENGTH_SHORT);
-                toast.setGravity(Gravity.BOTTOM | Gravity.END,
-                        screenWidth - screenPos[0] - width / 2, screenHeight - screenPos[1]);
-                toast.show();
-                return true;
-            }
-        });
+                        Toast toast =
+                                Toast.makeText(
+                                        view.getContext(),
+                                        view.getContentDescription(),
+                                        Toast.LENGTH_SHORT);
+                        toast.setGravity(
+                                Gravity.BOTTOM | Gravity.END,
+                                screenWidth - screenPos[0] - width / 2,
+                                screenHeight - screenPos[1]);
+                        toast.show();
+                        return true;
+                    }
+                });
         return button;
     }
 
@@ -172,10 +182,12 @@ public class CustomButtonParamsImpl implements CustomButtonParams {
 
         Bundle singleBundle =
                 IntentUtils.safeGetBundleExtra(intent, CustomTabsIntent.EXTRA_ACTION_BUTTON_BUNDLE);
-        ArrayList<Bundle> bundleList = IntentUtils.getParcelableArrayListExtra(
-                intent, CustomTabsIntent.EXTRA_TOOLBAR_ITEMS);
-        boolean tinted = IntentUtils.safeGetBooleanExtra(
-                intent, CustomTabsIntent.EXTRA_TINT_ACTION_BUTTON, false);
+        ArrayList<Bundle> bundleList =
+                IntentUtils.getParcelableArrayListExtra(
+                        intent, CustomTabsIntent.EXTRA_TOOLBAR_ITEMS);
+        boolean tinted =
+                IntentUtils.safeGetBooleanExtra(
+                        intent, CustomTabsIntent.EXTRA_TINT_ACTION_BUTTON, false);
         if (singleBundle != null) {
             CustomButtonParams singleParams = fromBundle(context, singleBundle, tinted, false);
             if (singleParams != null) paramsList.add(singleParams);
@@ -208,8 +220,9 @@ public class CustomButtonParamsImpl implements CustomButtonParams {
         if (bundle == null) return null;
 
         if (fromList && !bundle.containsKey(CustomTabsIntent.KEY_ID)) return null;
-        int id = IntentUtils.safeGetInt(
-                bundle, CustomTabsIntent.KEY_ID, CustomTabsIntent.TOOLBAR_ACTION_BUTTON_ID);
+        int id =
+                IntentUtils.safeGetInt(
+                        bundle, CustomTabsIntent.KEY_ID, CustomTabsIntent.TOOLBAR_ACTION_BUTTON_ID);
 
         Bitmap bitmap = parseBitmapFromBundle(bundle);
         if (bitmap == null) {
@@ -225,13 +238,15 @@ public class CustomButtonParamsImpl implements CustomButtonParams {
             return null;
         }
 
-        boolean onToolbar = id == CustomTabsIntent.TOOLBAR_ACTION_BUTTON_ID
-                || IntentUtils.safeGetBoolean(bundle, SHOW_ON_TOOLBAR, false);
+        boolean onToolbar =
+                id == CustomTabsIntent.TOOLBAR_ACTION_BUTTON_ID
+                        || IntentUtils.safeGetBoolean(bundle, SHOW_ON_TOOLBAR, false);
         if (onToolbar && !doesIconFitToolbar(context, bitmap)) {
             onToolbar = false;
-            Log.w(TAG,
-                    "Button's icon not suitable for toolbar, putting it to bottom bar instead."
-                            + "See: https://developer.android.com/reference/android/support/customtabs/"
+            Log.w(
+                    TAG,
+                    "Button's icon not suitable for toolbar, putting it to bottom bar instead.See:"
+                            + " https://developer.android.com/reference/android/support/customtabs/"
                             + "CustomTabsIntent.html#KEY_ICON");
         }
 
@@ -249,16 +264,18 @@ public class CustomButtonParamsImpl implements CustomButtonParams {
                 id, bitmap, description, pendingIntent, tinted, onToolbar);
     }
 
-    /**
-     * Creates and returns a {@link CustomButtonParams} for a share button in the toolbar.
-     */
+    /** Creates and returns a {@link CustomButtonParams} for a share button in the toolbar. */
     static CustomButtonParams createShareButton(Context context, int backgroundColor) {
         int id = CustomTabsIntent.TOOLBAR_ACTION_BUTTON_ID;
         String description = context.getResources().getString(R.string.share);
         Intent shareIntent = new Intent(context, CustomTabsShareBroadcastReceiver.class);
-        PendingIntent pendingIntent = PendingIntent.getBroadcast(context, 0, shareIntent,
-                PendingIntent.FLAG_UPDATE_CURRENT
-                        | IntentUtils.getPendingIntentMutabilityFlag(true));
+        PendingIntent pendingIntent =
+                PendingIntent.getBroadcast(
+                        context,
+                        0,
+                        shareIntent,
+                        PendingIntent.FLAG_UPDATE_CURRENT
+                                | IntentUtils.getPendingIntentMutabilityFlag(true));
 
         TintedDrawable drawable =
                 TintedDrawable.constructTintedDrawable(context, R.drawable.ic_share_white_24dp);
@@ -267,7 +284,7 @@ public class CustomButtonParamsImpl implements CustomButtonParams {
         Bitmap bitmap = ((BitmapDrawable) drawable).getBitmap();
 
         return new CustomButtonParamsImpl(
-                id, bitmap, description, pendingIntent, /*tinted=*/true, /*onToolbar=*/true);
+                id, bitmap, description, pendingIntent, /* tinted= */ true, /* onToolbar= */ true);
     }
 
     /**
@@ -281,9 +298,7 @@ public class CustomButtonParamsImpl implements CustomButtonParams {
         return bitmap;
     }
 
-    /**
-     * Remove the bitmap contained in the given {@link Bundle}. Used when the bitmap is invalid.
-     */
+    /** Remove the bitmap contained in the given {@link Bundle}. Used when the bitmap is invalid. */
     private static void removeBitmapFromBundle(Bundle bundle) {
         if (bundle == null) return;
 

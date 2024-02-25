@@ -5,6 +5,8 @@
 #include "chrome/browser/ash/customization/customization_document.h"
 
 #include <memory>
+#include <optional>
+#include <string_view>
 #include <utility>
 
 #include "ash/constants/ash_paths.h"
@@ -55,7 +57,6 @@
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/public/cpp/simple_url_loader.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ash {
 namespace {
@@ -127,7 +128,7 @@ constexpr net::NetworkTrafficAnnotationTag kCustomizationDocumentNetworkTag =
         })");
 
 struct CustomizationDocumentTestOverride {
-  raw_ptr<ServicesCustomizationDocument, DanglingUntriaged | ExperimentalAsh>
+  raw_ptr<ServicesCustomizationDocument, DanglingUntriaged>
       customization_document = nullptr;
   scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory;
 };
@@ -135,22 +136,6 @@ struct CustomizationDocumentTestOverride {
 // Global overrider for ServicesCustomizationDocument for tests.
 CustomizationDocumentTestOverride* g_test_overrides = nullptr;
 
-// Services customization document load results reported via the
-// "ServicesCustomization.LoadResult" histogram.
-// It is append-only enum due to use in a histogram!
-enum HistogramServicesCustomizationLoadResult {
-  HISTOGRAM_LOAD_RESULT_SUCCESS = 0,
-  HISTOGRAM_LOAD_RESULT_FILE_NOT_FOUND = 1,
-  HISTOGRAM_LOAD_RESULT_PARSING_ERROR = 2,
-  HISTOGRAM_LOAD_RESULT_RETRIES_FAIL = 3,
-  HISTOGRAM_LOAD_RESULT_MAX_VALUE = 4
-};
-
-void LogManifestLoadResult(HistogramServicesCustomizationLoadResult result) {
-  UMA_HISTOGRAM_ENUMERATION("ServicesCustomization.LoadResult",
-                            result,
-                            HISTOGRAM_LOAD_RESULT_MAX_VALUE);
-}
 
 std::string GetLocaleSpecificStringImpl(const base::Value::Dict& root,
                                         const std::string& locale,
@@ -200,15 +185,9 @@ std::string ReadFileInBackground(const base::FilePath& file) {
 
 }  // anonymous namespace
 
-// Template URL where to fetch OEM services customization manifest from.
-const char ServicesCustomizationDocument::kManifestUrl[] =
-    "https://ssl.gstatic.com/chrome/chromeos-customization/%s.json";
-
 // A custom extensions::ExternalLoader that the ServicesCustomizationDocument
 // creates and uses to publish OEM default apps to the extensions system.
-class ServicesCustomizationExternalLoader
-    : public extensions::ExternalLoader,
-      public base::SupportsWeakPtr<ServicesCustomizationExternalLoader> {
+class ServicesCustomizationExternalLoader : public extensions::ExternalLoader {
  public:
   explicit ServicesCustomizationExternalLoader(Profile* profile)
       : profile_(profile) {}
@@ -246,13 +225,19 @@ class ServicesCustomizationExternalLoader
     LoadFinished(apps_.Clone());
   }
 
+  base::WeakPtr<ServicesCustomizationExternalLoader> AsWeakPtr() {
+    return weak_ptr_factory_.GetWeakPtr();
+  }
+
  protected:
   ~ServicesCustomizationExternalLoader() override {}
 
  private:
   bool is_apps_set_ = false;
   base::Value::Dict apps_;
-  raw_ptr<Profile, ExperimentalAsh> profile_;
+  raw_ptr<Profile> profile_;
+  base::WeakPtrFactory<ServicesCustomizationExternalLoader> weak_ptr_factory_{
+      this};
 };
 
 // CustomizationDocument implementation. ---------------------------------------
@@ -358,7 +343,7 @@ void StartupCustomizationDocument::Init(
     if (keyboard_layout_ptr)
       keyboard_layout_ = *keyboard_layout_ptr;
 
-    if (const absl::optional<base::StringPiece> hwid =
+    if (const std::optional<std::string_view> hwid =
             statistics_provider->GetMachineStatistic(
                 system::kHardwareClassKey)) {
       base::Value::List* hwid_list = root_->FindList(kHwidMapAttr);
@@ -402,16 +387,16 @@ void StartupCustomizationDocument::Init(
   }
 
   // If manifest doesn't exist still apply values from VPD.
-  if (const absl::optional<base::StringPiece> locale_statistic =
+  if (const std::optional<std::string_view> locale_statistic =
           statistics_provider->GetMachineStatistic(system::kInitialLocaleKey)) {
     initial_locale_ = std::string(locale_statistic.value());
   }
-  if (const absl::optional<base::StringPiece> timezone_statistic =
+  if (const std::optional<std::string_view> timezone_statistic =
           statistics_provider->GetMachineStatistic(
               system::kInitialTimezoneKey)) {
     initial_timezone_ = std::string(timezone_statistic.value());
   }
-  if (const absl::optional<base::StringPiece> keyboard_statistic =
+  if (const std::optional<std::string_view> keyboard_statistic =
           statistics_provider->GetMachineStatistic(
               system::kKeyboardLayoutKey)) {
     keyboard_layout_ = std::string(keyboard_statistic.value());
@@ -457,7 +442,7 @@ class ServicesCustomizationDocument::ApplyingTask {
   void Finished(bool success);
 
  private:
-  raw_ptr<ServicesCustomizationDocument, ExperimentalAsh> document_;
+  raw_ptr<ServicesCustomizationDocument> document_;
 
   // This is error-checking flag to prevent destroying unfinished task
   // or double finish.
@@ -590,7 +575,7 @@ void ServicesCustomizationDocument::StartFetching() {
   if (!url_.is_valid()) {
     system::StatisticsProvider* provider =
         system::StatisticsProvider::GetInstance();
-    const absl::optional<base::StringPiece> customization_id =
+    const std::optional<std::string_view> customization_id =
         provider->GetMachineStatistic(system::kCustomizationIdKey);
     if (customization_id && !customization_id->empty()) {
       url_ = GURL(base::StringPrintf(
@@ -657,12 +642,10 @@ void ServicesCustomizationDocument::DoStartFileFetch() {
 bool ServicesCustomizationDocument::LoadManifestFromString(
     const std::string& manifest) {
   if (CustomizationDocument::LoadManifestFromString(manifest)) {
-    LogManifestLoadResult(HISTOGRAM_LOAD_RESULT_SUCCESS);
     OnManifestLoaded();
     return true;
   }
 
-  LogManifestLoadResult(HISTOGRAM_LOAD_RESULT_PARSING_ERROR);
   return false;
 }
 
@@ -710,7 +693,6 @@ void ServicesCustomizationDocument::OnSimpleLoaderComplete(
                << " response code = " << response_code
                << " URL = " << url_.spec();
 
-    LogManifestLoadResult(HISTOGRAM_LOAD_RESULT_RETRIES_FAIL);
   }
   load_started_ = false;
 }
@@ -736,10 +718,10 @@ bool ServicesCustomizationDocument::GetDefaultWallpaperUrl(
   return true;
 }
 
-absl::optional<base::Value::Dict>
-ServicesCustomizationDocument::GetDefaultApps() const {
+std::optional<base::Value::Dict> ServicesCustomizationDocument::GetDefaultApps()
+    const {
   if (!IsReady())
-    return absl::nullopt;
+    return std::nullopt;
 
   return GetDefaultAppsInProviderFormat(*root_);
 }
@@ -821,7 +803,6 @@ extensions::ExternalLoader* ServicesCustomizationDocument::CreateExternalLoader(
 }
 
 void ServicesCustomizationDocument::OnCustomizationNotFound() {
-  LogManifestLoadResult(HISTOGRAM_LOAD_RESULT_FILE_NOT_FOUND);
   LoadManifestFromString(kEmptyServicesCustomizationManifest);
 }
 
@@ -859,7 +840,7 @@ void ServicesCustomizationDocument::InitializeForTesting(
   // `base::TimeDelta()` means zero time delta - i.e. the request will be
   // started immediately.
   g_test_overrides->customization_document->custom_network_delay_ =
-      absl::make_optional(base::TimeDelta());
+      std::make_optional(base::TimeDelta());
   g_test_overrides->url_loader_factory = std::move(factory);
 }
 

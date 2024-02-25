@@ -56,12 +56,27 @@ class ASH_PUBLIC_EXPORT MockInputDeviceSettingsController
               GetPointingStickSettings,
               (DeviceId id),
               (override));
+  MOCK_METHOD(const mojom::GraphicsTabletSettings*,
+              GetGraphicsTabletSettings,
+              (DeviceId id),
+              (override));
+  MOCK_METHOD(const mojom::Keyboard*, GetKeyboard, (DeviceId id), (override));
+  MOCK_METHOD(const mojom::Mouse*, GetMouse, (DeviceId id), (override));
+  MOCK_METHOD(const mojom::Touchpad*, GetTouchpad, (DeviceId id), (override));
+  MOCK_METHOD(const mojom::PointingStick*,
+              GetPointingStick,
+              (DeviceId id),
+              (override));
+  MOCK_METHOD(const mojom::GraphicsTablet*,
+              GetGraphicsTablet,
+              (DeviceId id),
+              (override));
   MOCK_METHOD(const mojom::KeyboardPolicies&,
               GetKeyboardPolicies,
               (),
               (override));
   MOCK_METHOD(const mojom::MousePolicies&, GetMousePolicies, (), (override));
-  MOCK_METHOD(void,
+  MOCK_METHOD(bool,
               SetKeyboardSettings,
               (DeviceId id, mojom::KeyboardSettingsPtr settings),
               (override));
@@ -69,25 +84,35 @@ class ASH_PUBLIC_EXPORT MockInputDeviceSettingsController
               RestoreDefaultKeyboardRemappings,
               (DeviceId id),
               (override));
-  MOCK_METHOD(void,
+  MOCK_METHOD(bool,
               SetTouchpadSettings,
               (DeviceId id, mojom::TouchpadSettingsPtr settings),
               (override));
-  MOCK_METHOD(void,
+  MOCK_METHOD(bool,
               SetMouseSettings,
               (DeviceId id, mojom::MouseSettingsPtr settings),
               (override));
-  MOCK_METHOD(void,
+  MOCK_METHOD(bool,
               SetPointingStickSettings,
               (DeviceId id, mojom::PointingStickSettingsPtr settings),
               (override));
-  MOCK_METHOD(void,
+  MOCK_METHOD(bool,
               SetGraphicsTabletSettings,
               (DeviceId id, mojom::GraphicsTabletSettingsPtr settings),
               (override));
   MOCK_METHOD(void,
               OnLoginScreenFocusedPodChanged,
               (const AccountId&),
+              (override));
+  MOCK_METHOD(void, StartObservingButtons, (DeviceId id), (override));
+  MOCK_METHOD(void, StopObservingButtons, (), (override));
+  MOCK_METHOD(void,
+              OnMouseButtonPressed,
+              (DeviceId device_id, const mojom::Button& button),
+              (override));
+  MOCK_METHOD(void,
+              OnGraphicsTabletButtonPressed,
+              (DeviceId device_id, const mojom::Button& button),
               (override));
   MOCK_METHOD(void, AddObserver, (Observer * observer), (override));
   MOCK_METHOD(void, RemoveObserver, (Observer * observer), (override));

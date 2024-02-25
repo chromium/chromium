@@ -7,6 +7,7 @@
 #include <cmath>
 #include <utility>
 
+#include "base/not_fatal_until.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_dom_point_init.h"
 #include "third_party/blink/renderer/core/geometry/dom_point_read_only.h"
 #include "third_party/blink/renderer/modules/xr/xr_utils.h"
@@ -33,8 +34,9 @@ XRRigidTransform::XRRigidTransform(const gfx::Transform& transformationMatrix)
 
 void XRRigidTransform::DecomposeMatrix() {
   // decompose matrix to position and orientation
-  absl::optional<gfx::DecomposedTransform> decomp = matrix_->Decompose();
-  DCHECK(decomp) << "Matrix decompose failed for " << matrix_->ToString();
+  std::optional<gfx::DecomposedTransform> decomp = matrix_->Decompose();
+  CHECK(decomp, base::NotFatalUntil::M129)
+      << "Matrix decompose failed for " << matrix_->ToString();
 
   position_ = DOMPointReadOnly::Create(
       decomp->translate[0], decomp->translate[1], decomp->translate[2], 1.0);
@@ -119,12 +121,12 @@ DOMFloat32Array* XRRigidTransform::matrix() {
     return nullptr;
   }
 
-  return matrix_array_;
+  return matrix_array_.Get();
 }
 
 XRRigidTransform* XRRigidTransform::inverse() {
   EnsureInverse();
-  return inverse_;
+  return inverse_.Get();
 }
 
 gfx::Transform XRRigidTransform::InverseTransformMatrix() {

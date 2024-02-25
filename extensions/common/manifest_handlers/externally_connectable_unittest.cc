@@ -193,11 +193,11 @@ TEST_F(ExternallyConnectableTest, AllIDs) {
 
 TEST_F(ExternallyConnectableTest, IdCanConnect) {
   // Not in order to test that ExternallyConnectableInfo sorts it.
-  std::string matches_ids_array[] = {"g", "h", "c", "i", "a", "z", "b"};
-  std::vector<std::string> matches_ids(
+  ExtensionId matches_ids_array[] = {"g", "h", "c", "i", "a", "z", "b"};
+  std::vector<ExtensionId> matches_ids(
       matches_ids_array, matches_ids_array + std::size(matches_ids_array));
 
-  std::string nomatches_ids_array[] = {"2", "3", "1"};
+  ExtensionId nomatches_ids_array[] = {"2", "3", "1"};
 
   // all_ids = false.
   {
@@ -269,8 +269,21 @@ TEST_F(ExternallyConnectableTest, TLD) {
 }
 
 TEST_F(ExternallyConnectableTest, WarningNothingSpecified) {
+  LoadAndExpectWarning("externally_connectable_empty_ids.json",
+                       errors::kErrorNothingSpecified);
+  LoadAndExpectWarning("externally_connectable_empty_matches.json",
+                       errors::kErrorNothingSpecified);
   LoadAndExpectWarning("externally_connectable_nothing_specified.json",
                        errors::kErrorNothingSpecified);
+}
+
+TEST_F(ExternallyConnectableTest, WarningUnusedAcceptsTlsChannelId) {
+  std::vector<std::string> expected_warnings;
+  expected_warnings.emplace_back(errors::kErrorNothingSpecified);
+  expected_warnings.emplace_back(errors::kErrorUnusedAcceptsTlsChannelId);
+  LoadAndExpectWarnings(
+      "externally_connectable_accepts_tls_channel_id_without_matches.json",
+      expected_warnings);
 }
 
 // Tests that the deprecated externally_connectable.all_urls permission doesn't

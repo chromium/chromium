@@ -38,8 +38,8 @@ class HibernateManagerTest : public testing::Test {
   }
 
   void ResumeAuthOpCallback(std::unique_ptr<UserContext> user_context,
-                            absl::optional<AuthenticationError> error) {
-    if (error == absl::nullopt) {
+                            std::optional<AuthenticationError> error) {
+    if (error == std::nullopt) {
       successful_callbacks_++;
     } else {
       failed_callbacks_++;
@@ -47,7 +47,7 @@ class HibernateManagerTest : public testing::Test {
   }
 
  protected:
-  raw_ptr<FakeHibermanClient, ExperimentalAsh> hiberman_client_;
+  raw_ptr<FakeHibermanClient> hiberman_client_;
   HibernateManager hibernate_manager_;
   std::unique_ptr<UserContext> user_context_;
   int successful_callbacks_ = 0;

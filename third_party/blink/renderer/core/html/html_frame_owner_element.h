@@ -69,12 +69,14 @@ class CORE_EXPORT HTMLFrameOwnerElement : public HTMLElement,
 
   virtual FrameOwnerElementType OwnerType() const = 0;
 
+  virtual const QualifiedName& SubResourceAttributeName() const;
+
   Document* getSVGDocument(ExceptionState&) const;
 
   void SetEmbeddedContentView(EmbeddedContentView*);
   EmbeddedContentView* ReleaseEmbeddedContentView();
   EmbeddedContentView* OwnedEmbeddedContentView() const {
-    return embedded_content_view_;
+    return embedded_content_view_.Get();
   }
 
   void SetColorScheme(mojom::blink::ColorScheme);
@@ -100,7 +102,7 @@ class CORE_EXPORT HTMLFrameOwnerElement : public HTMLElement,
   };
 
   // FrameOwner overrides:
-  Frame* ContentFrame() const final { return content_frame_; }
+  Frame* ContentFrame() const final { return content_frame_.Get(); }
   void SetContentFrame(Frame&) final;
   void ClearContentFrame() final;
   void AddResourceTiming(mojom::blink::ResourceTimingInfoPtr) final;
@@ -148,7 +150,8 @@ class CORE_EXPORT HTMLFrameOwnerElement : public HTMLElement,
   bool LoadOrRedirectSubframe(const KURL&,
                               const AtomicString& frame_name,
                               bool replace_current_item);
-  bool IsKeyboardFocusable() const override;
+  bool IsKeyboardFocusable(UpdateBehavior update_behavior =
+                               UpdateBehavior::kStyleAndLayout) const override;
   void FrameOwnerPropertiesChanged() override;
 
   void DisposePluginSoon(WebPluginContainerImpl*);

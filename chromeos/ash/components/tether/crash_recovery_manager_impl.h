@@ -5,13 +5,13 @@
 #ifndef CHROMEOS_ASH_COMPONENTS_TETHER_CRASH_RECOVERY_MANAGER_IMPL_H_
 #define CHROMEOS_ASH_COMPONENTS_TETHER_CRASH_RECOVERY_MANAGER_IMPL_H_
 
+#include <optional>
 #include <string>
 
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "chromeos/ash/components/tether/active_host.h"
 #include "chromeos/ash/components/tether/crash_recovery_manager.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ash {
 
@@ -66,13 +66,13 @@ class CrashRecoveryManagerImpl : public CrashRecoveryManager {
   void OnActiveHostFetched(
       base::OnceClosure on_restoration_finished,
       ActiveHost::ActiveHostStatus active_host_status,
-      absl::optional<multidevice::RemoteDeviceRef> active_host,
+      std::optional<multidevice::RemoteDeviceRef> active_host,
       const std::string& tether_network_guid,
       const std::string& wifi_network_guid);
 
-  raw_ptr<NetworkStateHandler, ExperimentalAsh> network_state_handler_;
-  raw_ptr<ActiveHost, ExperimentalAsh> active_host_;
-  raw_ptr<HostScanCache, ExperimentalAsh> host_scan_cache_;
+  raw_ptr<NetworkStateHandler> network_state_handler_;
+  raw_ptr<ActiveHost> active_host_;
+  raw_ptr<HostScanCache> host_scan_cache_;
 
   base::WeakPtrFactory<CrashRecoveryManagerImpl> weak_ptr_factory_{this};
 };

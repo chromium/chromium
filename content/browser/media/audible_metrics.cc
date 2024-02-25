@@ -35,22 +35,6 @@ void AudibleMetrics::WebContentsDestroyed(const WebContents* web_contents,
                                           bool recently_audible) {
   if (base::Contains(audible_web_contents_, web_contents))
     RemoveAudibleWebContents(web_contents);
-
-  // If we have two web contents and we go down to one, we should record
-  // whether we destroyed the most recent one. This is used to determine
-  // whether a user closes a new or old tab after starting playback if
-  // they have multiple tabs.
-  if (audible_web_contents_.size() == 1 && recently_audible) {
-    ExitConcurrentPlaybackContents value =
-        last_audible_web_contents_.back() == web_contents
-            ? ExitConcurrentPlaybackContents::kMostRecent
-            : ExitConcurrentPlaybackContents::kOlder;
-
-    UMA_HISTOGRAM_ENUMERATION(
-        "Media.Audible.CloseNewestToExitConcurrentPlayback", value);
-  }
-
-  last_audible_web_contents_.remove(web_contents);
 }
 
 void AudibleMetrics::SetClockForTest(const base::TickClock* test_clock) {
@@ -63,11 +47,6 @@ void AudibleMetrics::AddAudibleWebContents(const WebContents* web_contents) {
       1, 10, 11);
 
   audible_web_contents_.insert(web_contents);
-
-  // Since the web contents is newly audible then move it to the back of the
-  // last audible web contents list.
-  last_audible_web_contents_.remove(web_contents);
-  last_audible_web_contents_.push_back(web_contents);
 
   if (audible_web_contents_.size() > 1 &&
       concurrent_web_contents_start_time_.is_null()) {

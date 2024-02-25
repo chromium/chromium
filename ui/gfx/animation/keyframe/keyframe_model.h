@@ -5,10 +5,10 @@
 #ifndef UI_GFX_ANIMATION_KEYFRAME_KEYFRAME_MODEL_H_
 #define UI_GFX_ANIMATION_KEYFRAME_KEYFRAME_MODEL_H_
 
+#include <optional>
 #include <string>
 
 #include "base/time/time.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/animation/keyframe/animation_curve.h"
 #include "ui/gfx/animation/keyframe/keyframe_animation_export.h"
 #include "ui/gfx/animation/keyframe/keyframed_animation_curve.h"
@@ -160,7 +160,7 @@ class GFX_KEYFRAME_ANIMATION_EXPORT KeyframeModel {
                 int target_property_id);
 
   void ForceRunState(RunState run_state) { run_state_ = run_state; }
-  absl::optional<base::TimeDelta> CalculateActiveTime(
+  std::optional<base::TimeDelta> CalculateActiveTime(
       base::TimeTicks monotonic_time) const;
 
  private:
@@ -206,7 +206,7 @@ class GFX_KEYFRAME_ANIMATION_EXPORT KeyframeModel {
   double playback_rate_;
   FillMode fill_mode_;
 
-  absl::optional<base::TimeTicks> start_time_;
+  std::optional<base::TimeTicks> start_time_;
 
   // The time offset effectively pushes the start of the keyframe model back in
   // time. This is used for resuming paused KeyframeModels -- an animation is

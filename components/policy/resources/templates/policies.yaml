@@ -980,7 +980,7 @@ policies:
   979: LocalFontsBlockedForUrls
   980: ProjectorDogfoodForFamilyLinkEnabled
   981: UrlParamFilterEnabled
-  982: ScreenTimeEnabled
+  982: ''
   983: DefaultClipboardSetting
   984: ClipboardAllowedForUrls
   985: ClipboardBlockedForUrls
@@ -1082,11 +1082,11 @@ policies:
   1081: DeviceSystemAecEnabled
   1082: HttpAllowlist
   1083: HttpsUpgradesEnabled
-  1084: RealTimeDownloadProtectionRequestAllowed
+  1084: ''
   1085: MandatoryExtensionsForIncognitoNavigation
   1086: CredentialProviderPromoEnabled
   1087: RemoteAccessHostAllowEnterpriseRemoteSupportConnections
-  1088: ClientSidePhishingProtectionAllowed
+  1088: ''
   1089: UserAvatarCustomizationSelectorsEnabled
   1090: DefaultThirdPartyStoragePartitioningSetting
   1091: ThirdPartyStoragePartitioningBlockedForOrigins
@@ -1096,7 +1096,7 @@ policies:
   1095: InsecureHashesInTLSHandshakesEnabled
   1096: DeviceLoginScreenGeolocationAccessLevel
   1097: DeviceReportNetworkEvents
-  1098: SafeBrowsingExtensionProtectionAllowed
+  1098: ''
   1099: ShowDisplaySizeScreenEnabled
   1100: EssentialSearchEnabled
   1101: LegacyTechReportAllowlist
@@ -1126,9 +1126,9 @@ policies:
   1125: ArcVmDataMigrationStrategy
   1126: AccessibilityPerformanceFilteringAllowed
   1127: RemoteAccessHostAllowEnterpriseFileTransfer
-  1128: DefaultMidiSetting
-  1129: MidiAllowedForUrls
-  1130: MidiBlockedForUrls
+  1128: ''
+  1129: ''
+  1130: ''
   1131: GlanceablesEnabled
   1132: DeviceAuthenticationURLBlocklist
   1133: DeviceAuthenticationURLAllowlist
@@ -1147,6 +1147,90 @@ policies:
   1146: GoogleWorkspaceCloudUpload
   1147: ShortcutCustomizationAllowed
   1148: MicrosoftOneDriveMount
+  1149: ExtensionOAuthRedirectUrls
+  1150: CreatePasskeysInICloudKeychain
+  1151: QuickOfficeForceFileDownloadEnabled
+  1152: ProfileSeparationSettings
+  1153: ProfileSeparationDataMigrationSettings
+  1154: ProfileSeparationDomainExceptionList
+  1155: FullRestoreMode
+  1156: ''
+  1157: SafeBrowsingDeepScanningEnabled
+  1158: DriveFileSyncAvailable
+  1159: DeviceSwitchFunctionKeysBehaviorEnabled
+  1160: DeviceDlcPredownloadList
+  1161: DataControlsRules
+  1162: DeviceEphemeralNetworkPoliciesEnabled
+  1163: PPAPISharedImagesForVideoDecoderAllowed
+  1164: ProfileReauthPrompt
+  1165: RelatedWebsiteSetsEnabled
+  1166: DeviceExtendedFkeysModifier
+  1167: UnaffiliatedDeviceArcAllowed
+  1168: RelatedWebsiteSetsOverrides
+  1169: ShowHumanPresenceSensorScreenEnabled
+  1170: PasswordSharingEnabled
+  1171: ZstdContentEncodingEnabled
+  1172: IPv6ReachabilityOverrideEnabled
+  1173: UserFeedbackWithLowLevelDebugDataAllowed
+  1174: MicrosoftOneDriveAccountRestrictions
+  1175: DeviceFlexHwDataForProductImprovementEnabled
+  1176: SiteSearchSettings
+  1177: PrivateNetworkAccessRestrictionsEnabled
+  1178: ContextMenuPhotoSharingSettings
+  1179: ExtensionInstallTypeBlocklist
+  1180: ParcelTrackingEnabled
+  1181: NativeHostsExecutablesLaunchDirectly
+  1182: FeedbackSurveysEnabled
+  1183: DeskAPIDeskSaveAndShareEnabled
+  1184: OopPrintDriversAllowed
+  1185: DeviceHardwareVideoDecodingEnabled
+  1186: TabOrganizerSettings
+  1187: HelpMeWriteSettings
+  1188: CreateThemesSettings
+  1189: ListenToThisPageEnabled
+  1190: AlwaysOnVpnPreConnectUrlAllowlist
+  1191: CACertificates
+  1192: CADistrustedCertificates
+  1193: CAHintCertificates
+  1194: DeviceLoginScreenTouchVirtualKeyboardEnabled
+  1195: DeviceExtendedAutoUpdateEnabled
+  1196: CAPlatformIntegrationEnabled
+  1197: FloatingSsoEnabled
+  1198: FloatingSsoDomainBlocklist
+  1199: FloatingSsoDomainBlocklistExceptions
+  1200: F11KeyModifier
+  1201: F12KeyModifier
+  1202: VirtualKeyboardSmartVisibilityEnabled
+  1203: WebAnnotations
+  1204: DeleteKeyModifier
+  1205: HomeAndEndKeysModifier
+  1206: PageUpAndPageDownKeysModifier
+  1207: InsertKeyModifier
+  1208: ToolbarAvatarLabelSettings
+  1209: DeviceWeeklyScheduledSuspend
+  1210: RemoteAccessHostAllowUrlForwarding
+  1211: ScreenCaptureLocation
+  1212: AllowedDomainsForAppsList
+  1213: ChromeForTestingAllowed
+  1214: GoogleLocationServicesEnabled
+  1215: ProvisionManagedClientCertificateForUser
+  1216: LocalUserFilesAllowed
+  1217: ''
+  1218: SubAppsAPIsAllowedWithoutGestureAndAuthorizationForOrigins
+  1219: DefaultWebPrintingSetting
+  1220: WebPrintingAllowedForUrls
+  1221: WebPrintingBlockedForUrls
+  1222: DocumentScanAPITrustedExtensions
+  1223: RemoteAccessHostAllowPinAuthentication
+  1224: DownloadManagerSaveToDriveSettings
+  1225: AutomaticFullscreenAllowedForUrls
+  1226: AutomaticFullscreenBlockedForUrls
+  1227: MutationEventsEnabled
+  1228: DevToolsGenAiSettings
+  1229: CACertificatesWithConstraints
+  1230: DefaultDirectSocketsSetting
+  1231: DirectSocketsAllowedForUrls
+  1232: DirectSocketsBlockedForUrls
 atomic_groups:
   1: Homepage
   2: RemoteAccess
@@ -1195,4 +1279,8 @@ atomic_groups:
   45: PrivacySandbox
   46: KerberosPrefilledConfig
   47: ThirdPartyStoragePartitioningSettings
-  48: MidiSettings
+  48: ''
+  49: ProfileSeparation
+  50: FloatingSso
+  51: WebPrintingSettings
+  52: DirectSocketsSettings

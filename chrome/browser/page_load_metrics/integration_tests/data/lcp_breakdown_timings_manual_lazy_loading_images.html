@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<title>LCP Breakdown Timings: Images Lazily Loaded By Script</title>
+<script src="resources/util.js"></script>
+
+<div>
+  <img style="width: 200px; height:200vh;">
+  <img id="test_image" style="width: 200px; height:200px; left: 0px" data-src="/images/lcp-16x16.png">
+</div>
+
+<script>
+
+  const loadImageOnIntersection = async (entries) => {
+    entries.forEach(async (entry) => {
+      if (entry.isIntersecting) {
+        await new Promise(resolve => {
+          entry.target.addEventListener('load', resolve);
+          entry.target.src = entry.target.dataset.src;
+        })
+        entry.target.src = entry.target.dataset.src;
+        observer.unobserve(entry.target);
+      }
+    });
+  }
+
+  const observer = new IntersectionObserver(loadImageOnIntersection);
+  observer.observe(document.getElementById('test_image'));
+
+  const scrollToLoadImage = async (resource) => {
+    await new Promise(resolve => {
+      // Do not use buffered=true so that it verifies the image is loaded lazily.
+      const observer = new PerformanceObserver((list) => {
+        if (list.getEntries().filter(e => e.name.includes(resource)).length > 0) {
+          resolve();
+        }
+      }).observe({ type: "resource" });
+      window.scroll(100, 1100);
+    });
+  }
+</script>

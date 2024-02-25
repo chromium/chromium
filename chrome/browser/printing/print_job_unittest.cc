@@ -13,7 +13,6 @@
 #include "base/run_loop.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
-#include "chrome/browser/chrome_notification_types.h"
 #include "chrome/browser/printing/print_job_worker.h"
 #include "chrome/browser/printing/printer_query.h"
 #include "content/public/browser/child_process_host.h"
@@ -44,7 +43,7 @@ class TestQuery : public PrinterQuery {
   TestQuery() : PrinterQuery(content::GlobalRenderFrameHostId()) {}
 
   void GetSettingsDone(base::OnceClosure callback,
-                       absl::optional<bool> maybe_is_modifiable,
+                       std::optional<bool> maybe_is_modifiable,
                        std::unique_ptr<PrintSettings> new_settings,
                        mojom::ResultCode result) override {
     FAIL();

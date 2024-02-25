@@ -187,7 +187,7 @@ bool StructTraits<
   // help debug crbug.com/1062637.
   if (!data.ReadTrustTokenParams(&out->trust_token_params.as_ptr())) {
     // We don't return false here to avoid duplicate reports.
-    out->trust_token_params = absl::nullopt;
+    out->trust_token_params = std::nullopt;
     base::debug::DumpWithoutCrashing();
   }
 
@@ -198,12 +198,12 @@ bool StructTraits<
   out->priority_incremental = data.priority_incremental();
   out->originated_from_service_worker = data.originated_from_service_worker();
   out->skip_service_worker = data.skip_service_worker();
-  out->corb_detachable = data.corb_detachable();
   out->destination = data.destination();
   out->keepalive = data.keepalive();
   out->browsing_topics = data.browsing_topics();
   out->ad_auction_headers = data.ad_auction_headers();
-  out->shared_storage_writable = data.shared_storage_writable();
+  out->shared_storage_writable_eligible =
+      data.shared_storage_writable_eligible();
   out->has_user_gesture = data.has_user_gesture();
   out->enable_load_timing = data.enable_load_timing();
   out->enable_upload_progress = data.enable_upload_progress();
@@ -222,8 +222,10 @@ bool StructTraits<
   out->attribution_reporting_support = data.attribution_reporting_support();
   out->attribution_reporting_eligibility =
       data.attribution_reporting_eligibility();
+  out->is_ad_tagged = data.is_ad_tagged();
   out->shared_dictionary_writer_enabled =
       data.shared_dictionary_writer_enabled();
+  out->required_ip_address_space = data.required_ip_address_space();
 #if BUILDFLAG(IS_ANDROID)
   if (!data.ReadCreatedLocation(&out->created_location)) {
     return false;

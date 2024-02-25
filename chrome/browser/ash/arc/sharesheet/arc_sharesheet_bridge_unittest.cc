@@ -47,7 +47,7 @@ class ArcSharesheetBridgeTest : public testing::Test {
   ArcServiceManager arc_service_manager_;
   FakeSharesheetInstance sharesheet_instance_;
   TestingProfile profile_;
-  raw_ptr<ArcSharesheetBridge, ExperimentalAsh> bridge_ = nullptr;
+  raw_ptr<ArcSharesheetBridge> bridge_ = nullptr;
 };
 
 TEST_F(ArcSharesheetBridgeTest, ConstructDestruct) {

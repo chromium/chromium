@@ -78,10 +78,6 @@ class GaiaAuthFetcherTest : public testing::Test {
  protected:
   GaiaAuthFetcherTest()
       : oauth2_token_source_(GaiaUrls::GetInstance()->oauth2_token_url()),
-        merge_session_source_(GaiaUrls::GetInstance()->merge_session_url()),
-        uberauth_token_source_(
-            GaiaUrls::GetInstance()->oauth1_login_url().Resolve(
-                "?source=&issueuberauth=1")),
         task_environment_(base::test::TaskEnvironment::MainThreadType::UI),
         test_shared_loader_factory_(
             base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
@@ -102,8 +98,6 @@ class GaiaAuthFetcherTest : public testing::Test {
   }
 
   GURL oauth2_token_source_;
-  GURL merge_session_source_;
-  GURL uberauth_token_source_;
 
  protected:
   void OnResourceIntercepted(const network::ResourceRequest& resource) {
@@ -128,18 +122,12 @@ class MockGaiaConsumer : public GaiaAuthConsumer {
   MOCK_METHOD1(OnClientOAuthCode, void(const std::string& data));
   MOCK_METHOD1(OnClientOAuthSuccess,
                void(const GaiaAuthConsumer::ClientOAuthResult& result));
-  MOCK_METHOD1(OnMergeSessionSuccess, void(const std::string& data));
   MOCK_METHOD1(OnOAuthMultiloginFinished,
                void(const OAuthMultiloginResult& result));
-  MOCK_METHOD1(OnUberAuthTokenSuccess, void(const std::string& data));
   MOCK_METHOD1(OnClientOAuthFailure,
       void(const GoogleServiceAuthError& error));
   MOCK_METHOD1(OnOAuth2RevokeTokenCompleted,
                void(GaiaAuthConsumer::TokenRevocationStatus status));
-  MOCK_METHOD1(OnMergeSessionFailure, void(
-      const GoogleServiceAuthError& error));
-  MOCK_METHOD1(OnUberAuthTokenFailure, void(
-      const GoogleServiceAuthError& error));
   MOCK_METHOD1(OnListAccountsSuccess, void(const std::string& data));
   MOCK_METHOD0(OnLogOutSuccess, void());
   MOCK_METHOD1(OnLogOutFailure, void(const GoogleServiceAuthError& error));
@@ -330,19 +318,6 @@ TEST_F(GaiaAuthFetcherTest, StartAuthCodeForOAuth2TokenExchangeFailure) {
   EXPECT_FALSE(auth.HasPendingFetch());
 }
 
-TEST_F(GaiaAuthFetcherTest, MergeSessionSuccess) {
-  MockGaiaConsumer consumer;
-  EXPECT_CALL(consumer, OnMergeSessionSuccess("<html></html>")).Times(1);
-
-  TestGaiaAuthFetcher auth(&consumer, GetURLLoaderFactory());
-  auth.StartMergeSession("myubertoken", std::string());
-
-  EXPECT_TRUE(auth.HasPendingFetch());
-  auth.TestOnURLLoadCompleteInternal(net::OK, net::HTTP_OK, "<html></html>");
-
-  EXPECT_FALSE(auth.HasPendingFetch());
-}
-
 TEST_F(GaiaAuthFetcherTest, MultiloginRequestFormat) {
   MockGaiaConsumer consumer;
   TestGaiaAuthFetcher auth(&consumer, GetURLLoaderFactory());
@@ -462,19 +437,6 @@ TEST_F(GaiaAuthFetcherTest, MultiloginFailureServerError) {
   EXPECT_TRUE(auth.HasPendingFetch());
   auth.TestOnURLLoadCompleteInternal(net::OK, net::HTTP_OK,
                                      "\n{\"status\": \"ERROR\"}");
-
-  EXPECT_FALSE(auth.HasPendingFetch());
-}
-
-TEST_F(GaiaAuthFetcherTest, UberAuthTokenSuccess) {
-  MockGaiaConsumer consumer;
-  EXPECT_CALL(consumer, OnUberAuthTokenSuccess("uberToken")).Times(1);
-
-  TestGaiaAuthFetcher auth(&consumer, GetURLLoaderFactory());
-  auth.StartTokenFetchForUberAuthExchange("myAccessToken");
-
-  EXPECT_TRUE(auth.HasPendingFetch());
-  auth.TestOnURLLoadCompleteInternal(net::OK, net::HTTP_OK, "uberToken");
 
   EXPECT_FALSE(auth.HasPendingFetch());
 }

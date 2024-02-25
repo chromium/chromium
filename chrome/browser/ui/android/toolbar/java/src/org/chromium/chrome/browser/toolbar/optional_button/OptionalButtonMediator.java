@@ -5,13 +5,12 @@
 package org.chromium.chrome.browser.toolbar.optional_button;
 
 import android.content.res.ColorStateList;
-import android.view.ViewGroup;
+
+import androidx.annotation.ColorInt;
 
 import org.chromium.base.Callback;
 import org.chromium.chrome.browser.toolbar.ButtonData;
 import org.chromium.ui.modelutil.PropertyModel;
-
-import java.util.function.BooleanSupplier;
 
 class OptionalButtonMediator {
     private final PropertyModel mModel;
@@ -27,24 +26,15 @@ class OptionalButtonMediator {
         }
     }
 
-    void setTransitionRoot(ViewGroup transitionRoot) {
-        mModel.set(OptionalButtonProperties.TRANSITION_ROOT, transitionRoot);
-    }
-
     void setTransitionStartedCallback(Callback<Integer> transitionStartedCallback) {
         mModel.set(OptionalButtonProperties.TRANSITION_STARTED_CALLBACK, transitionStartedCallback);
-    }
-
-    void setTransitionFinishedCallback(Callback<Integer> transitionFinishedCallback) {
-        mModel.set(
-                OptionalButtonProperties.TRANSITION_FINISHED_CALLBACK, transitionFinishedCallback);
     }
 
     void setIconForegroundColor(ColorStateList colorStateList) {
         mModel.set(OptionalButtonProperties.ICON_TINT_LIST, colorStateList);
     }
 
-    void setBackgroundColorFilter(int backgroundColor) {
+    void setBackgroundColorFilter(@ColorInt int backgroundColor) {
         mModel.set(OptionalButtonProperties.ICON_BACKGROUND_COLOR, backgroundColor);
     }
 
@@ -53,7 +43,8 @@ class OptionalButtonMediator {
     }
 
     public void setOnBeforeHideTransitionCallback(Runnable onBeforeHideTransitionCallback) {
-        mModel.set(OptionalButtonProperties.ON_BEFORE_HIDE_TRANSITION_CALLBACK,
+        mModel.set(
+                OptionalButtonProperties.ON_BEFORE_HIDE_TRANSITION_CALLBACK,
                 onBeforeHideTransitionCallback);
     }
 
@@ -63,10 +54,5 @@ class OptionalButtonMediator {
 
     public void cancelTransition() {
         mModel.set(OptionalButtonProperties.TRANSITION_CANCELLATION_REQUESTED, true);
-    }
-
-    public void setIsAnimationAllowedPredicate(BooleanSupplier isAnimationAllowedPredicate) {
-        mModel.set(OptionalButtonProperties.IS_ANIMATION_ALLOWED_PREDICATE,
-                isAnimationAllowedPredicate);
     }
 }

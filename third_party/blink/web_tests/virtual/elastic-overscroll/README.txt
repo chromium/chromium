@@ -1,2 +1,1 @@
-This directory contains tests specific to ElasticOverscroll and
-FixedElementsDontOverscroll.
+This directory contains tests specific to ElasticOverscroll.

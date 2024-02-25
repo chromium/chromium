@@ -12,15 +12,12 @@
 
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
-#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/threading/platform_thread.h"
 #include "components/sync/base/client_tag_hash.h"
-#include "components/sync/base/features.h"
 #include "components/sync/base/model_type.h"
 #include "components/sync/base/sync_mode.h"
 #include "components/sync/engine/commit_and_get_updates_types.h"
@@ -228,7 +225,7 @@ class TestModelTypeSyncBridge : public FakeModelTypeSyncBridge {
     return supports_incremental_updates_;
   }
 
-  absl::optional<ModelError> MergeFullSyncData(
+  std::optional<ModelError> MergeFullSyncData(
       std::unique_ptr<MetadataChangeList> metadata_change_list,
       EntityChangeList entity_data) override {
     merge_call_count_++;
@@ -240,7 +237,7 @@ class TestModelTypeSyncBridge : public FakeModelTypeSyncBridge {
     return FakeModelTypeSyncBridge::MergeFullSyncData(
         std::move(metadata_change_list), std::move(entity_data));
   }
-  absl::optional<ModelError> ApplyIncrementalSyncChanges(
+  std::optional<ModelError> ApplyIncrementalSyncChanges(
       std::unique_ptr<MetadataChangeList> metadata_change_list,
       EntityChangeList entity_changes) override {
     apply_call_count_++;
@@ -515,7 +512,7 @@ class ClientTagBasedModelTypeProcessorTest : public ::testing::Test {
     EXPECT_TRUE(expect_error_);
     histogram_tester_->ExpectBucketCount("Sync.ModelTypeErrorSite.PREFERENCE",
                                          *expect_error_, /*count=*/1);
-    expect_error_ = absl::nullopt;
+    expect_error_ = std::nullopt;
     error_reported_ = true;
     // Do not expect for a start callback anymore.
     if (run_loop_) {
@@ -551,7 +548,7 @@ class ClientTagBasedModelTypeProcessorTest : public ::testing::Test {
   std::unique_ptr<MockModelTypeWorker> worker_;
 
   // Whether to expect an error from the processor (and from which site).
-  absl::optional<ClientTagBasedModelTypeProcessor::ErrorSite> expect_error_;
+  std::optional<ClientTagBasedModelTypeProcessor::ErrorSite> expect_error_;
   std::unique_ptr<base::HistogramTester> histogram_tester_;
   bool error_reported_ = false;
 };
@@ -789,26 +786,26 @@ TEST_F(ClientTagBasedModelTypeProcessorTest, ShouldReportErrorDuringMerge) {
 // Test that errors before it's called are passed to |start_callback| correctly.
 TEST_F(ClientTagBasedModelTypeProcessorTest, ShouldDeferErrorsBeforeStart) {
   type_processor()->ReportError({FROM_HERE, "boom"});
-  ExpectError(ClientTagBasedModelTypeProcessor::ErrorSite::kBridgeInitiated);
+  ExpectError(ClientTagBasedModelTypeProcessor::ErrorSite::kReportedByBridge);
   OnSyncStarting();
 
   // Test OnSyncStarting happening first.
   ResetState(false);
   OnSyncStarting();
-  ExpectError(ClientTagBasedModelTypeProcessor::ErrorSite::kBridgeInitiated);
+  ExpectError(ClientTagBasedModelTypeProcessor::ErrorSite::kReportedByBridge);
   type_processor()->ReportError({FROM_HERE, "boom"});
 
   // Test an error loading pending data.
   ResetStateWriteItem(kKey1, kValue1);
   bridge()->ErrorOnNextCall();
   InitializeToMetadataLoaded();
-  ExpectError(ClientTagBasedModelTypeProcessor::ErrorSite::kBridgeInitiated);
+  ExpectError(ClientTagBasedModelTypeProcessor::ErrorSite::kReportedByBridge);
   OnSyncStarting();
 
   // Test an error prior to metadata load.
   ResetState(false);
   type_processor()->ReportError({FROM_HERE, "boom"});
-  ExpectError(ClientTagBasedModelTypeProcessor::ErrorSite::kBridgeInitiated);
+  ExpectError(ClientTagBasedModelTypeProcessor::ErrorSite::kReportedByBridge);
   OnSyncStarting();
   ModelReadyToSync();
 
@@ -816,7 +813,7 @@ TEST_F(ClientTagBasedModelTypeProcessorTest, ShouldDeferErrorsBeforeStart) {
   ResetStateWriteItem(kKey1, kValue1);
   InitializeToMetadataLoaded();
   type_processor()->ReportError({FROM_HERE, "boom"});
-  ExpectError(ClientTagBasedModelTypeProcessor::ErrorSite::kBridgeInitiated);
+  ExpectError(ClientTagBasedModelTypeProcessor::ErrorSite::kReportedByBridge);
   OnSyncStarting();
 }
 
@@ -3147,7 +3144,7 @@ TEST_F(ClientTagBasedModelTypeProcessorTest,
   EXPECT_FALSE(bridge()->sync_started());
 }
 
-TEST_F(ClientTagBasedModelTypeProcessorTest, ShouldClearMetadataWhileStopped) {
+TEST_F(ClientTagBasedModelTypeProcessorTest, ShouldClearMetadataIfStopped) {
   // Bring the processor to a stopped state.
   InitializeToReadyState();
   WritePrefItem(bridge(), kKey1, kValue1);
@@ -3160,11 +3157,12 @@ TEST_F(ClientTagBasedModelTypeProcessorTest, ShouldClearMetadataWhileStopped) {
   base::HistogramTester histogram_tester;
 
   // Should clear the metadata even if already stopped.
-  type_processor()->ClearMetadataWhileStopped();
+  type_processor()->ClearMetadataIfStopped();
   EXPECT_FALSE(type_processor()->IsTrackingMetadata());
   EXPECT_EQ(0U, db()->model_type_state().ByteSizeLong());
   EXPECT_EQ(0U, db()->metadata_count());
   // Expect an entry to the histogram.
+  histogram_tester.ExpectTotalCount("Sync.ClearMetadataWhileStopped", 1);
   histogram_tester.ExpectTotalCount(
       "Sync.ClearMetadataWhileStopped.ImmediateClear", 1);
 
@@ -3173,13 +3171,14 @@ TEST_F(ClientTagBasedModelTypeProcessorTest, ShouldClearMetadataWhileStopped) {
 }
 
 TEST_F(ClientTagBasedModelTypeProcessorTest,
-       ShouldClearMetadataWhileStoppedUponModelReadyToSync) {
+       ShouldClearMetadataIfStoppedUponModelReadyToSync) {
   base::HistogramTester histogram_tester;
 
   // Called before ModelReadyToSync().
-  type_processor()->ClearMetadataWhileStopped();
+  type_processor()->ClearMetadataIfStopped();
 
   // Nothing recorded to the histograms yet.
+  histogram_tester.ExpectTotalCount("Sync.ClearMetadataWhileStopped", 0);
   histogram_tester.ExpectTotalCount(
       "Sync.ClearMetadataWhileStopped.ImmediateClear", 0);
   histogram_tester.ExpectTotalCount(
@@ -3202,6 +3201,7 @@ TEST_F(ClientTagBasedModelTypeProcessorTest,
   EXPECT_EQ(0U, db()->model_type_state().ByteSizeLong());
   EXPECT_EQ(0U, db()->metadata_count());
   // Expect recording of the delayed clear.
+  histogram_tester.ExpectTotalCount("Sync.ClearMetadataWhileStopped", 1);
   histogram_tester.ExpectTotalCount(
       "Sync.ClearMetadataWhileStopped.ImmediateClear", 0);
   histogram_tester.ExpectTotalCount(
@@ -3216,9 +3216,10 @@ TEST_F(ClientTagBasedModelTypeProcessorTest,
   base::HistogramTester histogram_tester;
 
   // Called before ModelReadyToSync().
-  type_processor()->ClearMetadataWhileStopped();
+  type_processor()->ClearMetadataIfStopped();
 
   // Nothing recorded to the histograms yet.
+  histogram_tester.ExpectTotalCount("Sync.ClearMetadataWhileStopped", 0);
   histogram_tester.ExpectTotalCount(
       "Sync.ClearMetadataWhileStopped.ImmediateClear", 0);
   histogram_tester.ExpectTotalCount(
@@ -3234,6 +3235,7 @@ TEST_F(ClientTagBasedModelTypeProcessorTest,
   EXPECT_EQ(0U, db()->model_type_state().ByteSizeLong());
   ASSERT_EQ(0U, db()->metadata_count());
   // Expect recording of the delayed clear.
+  histogram_tester.ExpectTotalCount("Sync.ClearMetadataWhileStopped", 1);
   histogram_tester.ExpectTotalCount(
       "Sync.ClearMetadataWhileStopped.ImmediateClear", 0);
   histogram_tester.ExpectTotalCount(
@@ -3244,7 +3246,28 @@ TEST_F(ClientTagBasedModelTypeProcessorTest,
 }
 
 TEST_F(ClientTagBasedModelTypeProcessorTest,
-       ShouldNotClearMetadataWhileStoppedIfNotTracking) {
+       ShouldNotClearMetadataIfNotStopped) {
+  // Initialize the processor with some metadata.
+  InitializeToReadyState();
+  WritePrefItem(bridge(), kKey1, kValue1);
+
+  // Metadata is being kept and tracked.
+  ASSERT_TRUE(type_processor()->IsTrackingMetadata());
+  ASSERT_EQ(1U, db()->metadata_count());
+
+  base::HistogramTester histogram_tester;
+
+  // Should NOT clear the metadata since the processor is not stopped.
+  type_processor()->ClearMetadataIfStopped();
+  EXPECT_TRUE(type_processor()->IsTrackingMetadata());
+  EXPECT_NE(0U, db()->model_type_state().ByteSizeLong());
+  EXPECT_NE(0U, db()->metadata_count());
+  // Expect no entries in the histogram.
+  histogram_tester.ExpectTotalCount("Sync.ClearMetadataWhileStopped", 0);
+}
+
+TEST_F(ClientTagBasedModelTypeProcessorTest,
+       ShouldNotClearMetadataIfStoppedIfNotTracking) {
   // Bring the processor to a stopped state.
   InitializeToReadyState();
   type_processor()->OnSyncStopping(CLEAR_METADATA);
@@ -3255,75 +3278,66 @@ TEST_F(ClientTagBasedModelTypeProcessorTest,
   base::HistogramTester histogram_tester;
 
   // Should do nothing since there's nothing to clear.
-  type_processor()->ClearMetadataWhileStopped();
+  type_processor()->ClearMetadataIfStopped();
   // Expect no entry to the histogram.
+  histogram_tester.ExpectTotalCount("Sync.ClearMetadataWhileStopped", 0);
   histogram_tester.ExpectTotalCount(
       "Sync.ClearMetadataWhileStopped.ImmediateClear", 0);
 }
 
 TEST_F(ClientTagBasedModelTypeProcessorTest,
-       ShouldNotClearMetadataWhileStoppedWithoutMetadataInitially) {
+       ShouldNotClearMetadataIfStoppedWithoutMetadataInitially) {
   InitializeToMetadataLoaded(
       sync_pb::ModelTypeState::INITIAL_SYNC_STATE_UNSPECIFIED);
   ASSERT_FALSE(type_processor()->IsTrackingMetadata());
 
   base::HistogramTester histogram_tester;
 
-  // Call ClearMetadataWhileStopped() without a prior call to OnSyncStopping().
+  // Call ClearMetadataIfStopped() without a prior call to OnSyncStopping().
   // Since there's no metadata, this should do nothing.
-  type_processor()->ClearMetadataWhileStopped();
+  type_processor()->ClearMetadataIfStopped();
   // Expect no entry to the histogram.
+  histogram_tester.ExpectTotalCount("Sync.ClearMetadataWhileStopped", 0);
   histogram_tester.ExpectTotalCount(
       "Sync.ClearMetadataWhileStopped.ImmediateClear", 0);
 }
 
 TEST_F(ClientTagBasedModelTypeProcessorTest,
-       ShouldNotClearMetadataWhileStoppedUponModelReadyToSyncWithoutMetadata) {
+       ShouldNotClearMetadataIfStoppedUponModelReadyToSyncWithoutMetadata) {
   base::HistogramTester histogram_tester;
 
   // Called before ModelReadyToSync().
-  type_processor()->ClearMetadataWhileStopped();
+  type_processor()->ClearMetadataIfStopped();
 
   InitializeToMetadataLoaded(
       sync_pb::ModelTypeState::INITIAL_SYNC_STATE_UNSPECIFIED);
   ASSERT_FALSE(type_processor()->IsTrackingMetadata());
   // Nothing recorded to the histograms.
+  histogram_tester.ExpectTotalCount("Sync.ClearMetadataWhileStopped", 0);
   histogram_tester.ExpectTotalCount(
       "Sync.ClearMetadataWhileStopped.ImmediateClear", 0);
   histogram_tester.ExpectTotalCount(
       "Sync.ClearMetadataWhileStopped.DelayedClear", 0);
 }
 
-// The param indicates whether the password notes feature is enabled.
 class PasswordsClientTagBasedModelTypeProcessorTest
-    : public testing::WithParamInterface<bool>,
-      public ClientTagBasedModelTypeProcessorTest {
+    : public ClientTagBasedModelTypeProcessorTest {
  public:
   PasswordsClientTagBasedModelTypeProcessorTest() {
-    feature_list_.InitWithFeatureState(syncer::kPasswordNotesWithBackup,
-                                       GetParam());
   }
 
  protected:
   ModelType GetModelType() override { return PASSWORDS; }
-
- private:
-  base::test::ScopedFeatureList feature_list_;
 };
 
-TEST_P(PasswordsClientTagBasedModelTypeProcessorTest,
+TEST_F(PasswordsClientTagBasedModelTypeProcessorTest,
        ShouldSetPasswordsRedownloadedForNotesFlag) {
   ModelReadyToSync();
   OnSyncStarting();
   worker()->UpdateFromServer(UpdateResponseDataList());
 
-  EXPECT_EQ(base::FeatureList::IsEnabled(syncer::kPasswordNotesWithBackup),
-            db()->model_type_state()
-                .notes_enabled_before_initial_sync_for_passwords());
+  EXPECT_TRUE(db()->model_type_state()
+                  .notes_enabled_before_initial_sync_for_passwords());
 }
-
-INSTANTIATE_TEST_SUITE_P(All,
-                         PasswordsClientTagBasedModelTypeProcessorTest,
-                         testing::Bool());
 
 }  // namespace syncer

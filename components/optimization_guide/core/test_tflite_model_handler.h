@@ -23,16 +23,16 @@ class TestTFLiteModelHandler
             model_provider,
             background_task_runner,
             std::move(executor),
-            /*model_inference_timeout=*/absl::nullopt,
+            /*model_inference_timeout=*/std::nullopt,
             proto::OptimizationTarget::OPTIMIZATION_TARGET_PAINFUL_PAGE_LOAD,
-            /*model_metadata=*/absl::nullopt) {}
+            /*model_metadata=*/std::nullopt) {}
   ~TestTFLiteModelHandler() override = default;
   TestTFLiteModelHandler(const TestTFLiteModelHandler&) = delete;
   TestTFLiteModelHandler& operator=(const TestTFLiteModelHandler&) = delete;
 
   // There is a method on the base class that exposes the returned supported
   // features, if provided by the loaded model received from the server.
-  // absl::optional<T> ParsedSupportedFeaturesForLoadedModel();
+  // std::optional<T> ParsedSupportedFeaturesForLoadedModel();
 };
 
 }  // namespace optimization_guide

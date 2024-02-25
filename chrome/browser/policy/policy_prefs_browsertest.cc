@@ -63,7 +63,7 @@ base::FilePath GetTestCasePath() {
       .Append(FILE_PATH_LITERAL("policy"))
       .Append(FILE_PATH_LITERAL("test"))
       .Append(FILE_PATH_LITERAL("data"))
-      .Append(FILE_PATH_LITERAL("policy_test_cases.json"));
+      .Append(FILE_PATH_LITERAL("pref_mapping"));
 }
 
 size_t GetNumChunks() {

@@ -3,8 +3,8 @@
 // found in the LICENSE file.
 
 // These constants should match the ones in
-// third_party/blink/renderer/modules/indexeddb/web_idb_cursor_impl.h to
-// make sure the test hits the right code paths.
+// third_party/blink/renderer/modules/indexeddb/idb_cursor.h to make sure the
+// test hits the right code paths.
 var kPrefetchThreshold = 2;
 var kMinPrefetchAmount = 5;
 

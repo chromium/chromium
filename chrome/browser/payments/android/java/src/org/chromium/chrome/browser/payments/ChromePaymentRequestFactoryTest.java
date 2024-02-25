@@ -34,19 +34,16 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 /** A test for ChromePaymentRequestFactory. */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(manifest = Config.NONE, shadows = {ShadowWebContentsStatics.class, ShadowProfile.class})
+@Config(
+        manifest = Config.NONE,
+        shadows = {ShadowWebContentsStatics.class, ShadowProfile.class})
 public class ChromePaymentRequestFactoryTest {
-    @Rule
-    public MockitoRule mMockitoRule = MockitoJUnit.rule().strictness(Strictness.LENIENT);
-    @Rule
-    public JUnitProcessor mFeaturesProcessor = new JUnitProcessor();
+    @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule().strictness(Strictness.LENIENT);
+    @Rule public JUnitProcessor mFeaturesProcessor = new JUnitProcessor();
 
-    @Mock
-    RenderFrameHost mRenderFrameHost;
-    @Mock
-    WebContents mWebContents;
-    @Mock
-    Profile mProfile;
+    @Mock RenderFrameHost mRenderFrameHost;
+    @Mock WebContents mWebContents;
+    @Mock Profile mProfile;
 
     @Before
     public void setUp() {
@@ -78,8 +75,9 @@ public class ChromePaymentRequestFactoryTest {
     @Test
     @Feature({"Payments"})
     public void testNullFrameCausesInvalidPaymentRequest() {
-        Assert.assertTrue(createFactory(/*renderFrameHost=*/null).createImpl()
-                                  instanceof InvalidPaymentRequest);
+        Assert.assertTrue(
+                createFactory(/* renderFrameHost= */ null).createImpl()
+                        instanceof InvalidPaymentRequest);
     }
 
     @Test
@@ -87,10 +85,11 @@ public class ChromePaymentRequestFactoryTest {
     public void testDisabledPolicyCausesBadMessage() {
         setPaymentPermissionsPolicy(false);
         AtomicInteger isKilledReason = new AtomicInteger(0);
-        Mockito.doAnswer(invocation -> {
-                   isKilledReason.set((int) invocation.getArguments()[0]);
-                   return null;
-               })
+        Mockito.doAnswer(
+                        invocation -> {
+                            isKilledReason.set((int) invocation.getArguments()[0]);
+                            return null;
+                        })
                 .when(mRenderFrameHost)
                 .terminateRendererDueToBadMessage(Mockito.anyInt());
         Assert.assertNull(createFactory(mRenderFrameHost).createImpl());

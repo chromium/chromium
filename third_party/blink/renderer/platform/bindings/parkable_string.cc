@@ -6,10 +6,11 @@
 
 #include <array>
 
-#include "base/allocator/partition_allocator/oom.h"
-#include "base/allocator/partition_allocator/partition_alloc.h"
+#include "base/allocator/partition_allocator/src/partition_alloc/oom.h"
+#include "base/allocator/partition_allocator/src/partition_alloc/partition_alloc.h"
 #include "base/check_op.h"
 #include "base/functional/bind.h"
+#include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/numerics/safe_conversions.h"
@@ -130,9 +131,9 @@ class NullableCharBuffer final {
  public:
   explicit NullableCharBuffer(size_t size) {
     data_ = reinterpret_cast<char*>(
-        WTF::Partitions::BufferPartition()->AllocWithFlags(
-            partition_alloc::AllocFlags::kReturnNull, size,
-            "NullableCharBuffer"));
+        WTF::Partitions::BufferPartition()
+            ->AllocInline<partition_alloc::AllocFlags::kReturnNull>(
+                size, "NullableCharBuffer"));
     size_ = size;
   }
 
@@ -177,7 +178,7 @@ struct BackgroundTaskParams final {
 
   const scoped_refptr<base::SingleThreadTaskRunner> callback_task_runner;
   const scoped_refptr<ParkableStringImpl> string;
-  const void* data;
+  raw_ptr<const void> data;
   const size_t size;
   std::unique_ptr<ReservedChunk> reserved_chunk;
 };
@@ -712,7 +713,7 @@ void ParkableStringImpl::CompressInBackground(
   // Compression touches the string.
   AsanUnpoisonString(params->string->string_);
   bool ok;
-  base::StringPiece data(reinterpret_cast<const char*>(params->data),
+  base::StringPiece data(reinterpret_cast<const char*>(params->data.get()),
                          params->size);
   std::unique_ptr<Vector<uint8_t>> compressed;
 

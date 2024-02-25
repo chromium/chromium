@@ -71,8 +71,7 @@ FakeInstallableManager::CreateForWebContentsWithManifest(
   auto installable_data = std::make_unique<InstallableData>(
       std::move(errors), installable_manager->manifest_url_,
       *installable_manager->manifest_, *installable_manager->web_page_metadata_,
-      GURL::EmptyGURL(), icon.get(), false, std::vector<Screenshot>(),
-      valid_manifest);
+      GURL(), icon.get(), false, std::vector<Screenshot>(), valid_manifest);
 
   installable_manager->data_ = std::move(installable_data);
 

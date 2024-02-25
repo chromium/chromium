@@ -2,6 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "chrome/browser/preloading/prefetch/search_prefetch/search_prefetch_service.h"
+
+#include <optional>
+
 #include "base/containers/contains.h"
 #include "base/memory/raw_ptr.h"
 #include "base/ranges/algorithm.h"
@@ -13,13 +17,12 @@
 #include "chrome/browser/autocomplete/chrome_autocomplete_scheme_classifier.h"
 #include "chrome/browser/chrome_content_browser_client.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
-#include "chrome/browser/prefetch/prefetch_prefs.h"
 #include "chrome/browser/preloading/chrome_preloading.h"
 #include "chrome/browser/preloading/prefetch/search_prefetch/field_trial_settings.h"
 #include "chrome/browser/preloading/prefetch/search_prefetch/search_prefetch_browser_test_base.h"
-#include "chrome/browser/preloading/prefetch/search_prefetch/search_prefetch_service.h"
 #include "chrome/browser/preloading/prefetch/search_prefetch/search_prefetch_service_factory.h"
 #include "chrome/browser/preloading/prefetch/search_prefetch/streaming_search_prefetch_url_loader.h"
+#include "chrome/browser/preloading/preloading_prefs.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/search_engines/template_url_service_factory.h"
 #include "chrome/browser/ssl/security_state_tab_helper.h"
@@ -54,7 +57,6 @@
 #include "services/metrics/public/cpp/ukm_recorder.h"
 #include "services/network/public/mojom/clear_data_filter.mojom.h"
 #include "services/network/public/mojom/network_context.mojom.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/loader/url_loader_throttle.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "third_party/blink/public/mojom/service_worker/service_worker_registration_options.mojom.h"
@@ -132,7 +134,8 @@ class ThrottleAllContentBrowserClient : public ChromeContentBrowserClient {
       content::BrowserContext* browser_context,
       const base::RepeatingCallback<content::WebContents*()>& wc_getter,
       content::NavigationUIData* navigation_ui_data,
-      int frame_tree_node_id) override {
+      int frame_tree_node_id,
+      std::optional<int64_t> navigation_id) override {
     std::vector<std::unique_ptr<blink::URLLoaderThrottle>> throttles;
     throttles.push_back(std::make_unique<DeferringThrottle>());
     return throttles;
@@ -163,7 +166,8 @@ class CancelAllContentBrowserClient : public ChromeContentBrowserClient {
       content::BrowserContext* browser_context,
       const base::RepeatingCallback<content::WebContents*()>& wc_getter,
       content::NavigationUIData* navigation_ui_data,
-      int frame_tree_node_id) override {
+      int frame_tree_node_id,
+      std::optional<int64_t> navigation_id) override {
     std::vector<std::unique_ptr<blink::URLLoaderThrottle>> throttles;
     throttles.push_back(std::make_unique<CancellingThrottle>());
     return throttles;
@@ -194,7 +198,8 @@ class AddHeaderContentBrowserClient : public ChromeContentBrowserClient {
       content::BrowserContext* browser_context,
       const base::RepeatingCallback<content::WebContents*()>& wc_getter,
       content::NavigationUIData* navigation_ui_data,
-      int frame_tree_node_id) override {
+      int frame_tree_node_id,
+      std::optional<int64_t> navigation_id) override {
     std::vector<std::unique_ptr<blink::URLLoaderThrottle>> throttles;
     throttles.push_back(std::make_unique<AddHeaderModifyingThrottle>());
     return throttles;
@@ -226,7 +231,8 @@ class AddQueryParamContentBrowserClient : public ChromeContentBrowserClient {
       content::BrowserContext* browser_context,
       const base::RepeatingCallback<content::WebContents*()>& wc_getter,
       content::NavigationUIData* navigation_ui_data,
-      int frame_tree_node_id) override {
+      int frame_tree_node_id,
+      std::optional<int64_t> navigation_id) override {
     std::vector<std::unique_ptr<blink::URLLoaderThrottle>> throttles;
     throttles.push_back(std::make_unique<AddQueryParamModifyingThrottle>());
     return throttles;
@@ -258,7 +264,8 @@ class ChangeQueryContentBrowserClient : public ChromeContentBrowserClient {
       content::BrowserContext* browser_context,
       const base::RepeatingCallback<content::WebContents*()>& wc_getter,
       content::NavigationUIData* navigation_ui_data,
-      int frame_tree_node_id) override {
+      int frame_tree_node_id,
+      std::optional<int64_t> navigation_id) override {
     std::vector<std::unique_ptr<blink::URLLoaderThrottle>> throttles;
     throttles.push_back(std::make_unique<ChangeQueryModifyingThrottle>());
     return throttles;
@@ -735,7 +742,8 @@ class HeaderObserverContentBrowserClient : public ChromeContentBrowserClient {
       content::BrowserContext* browser_context,
       const base::RepeatingCallback<content::WebContents*()>& wc_getter,
       content::NavigationUIData* navigation_ui_data,
-      int frame_tree_node_id) override;
+      int frame_tree_node_id,
+      std::optional<int64_t> navigation_id) override;
 
   bool had_raw_request_info() { return had_raw_request_info_; }
 
@@ -753,11 +761,12 @@ HeaderObserverContentBrowserClient::CreateURLLoaderThrottles(
     content::BrowserContext* browser_context,
     const base::RepeatingCallback<content::WebContents*()>& wc_getter,
     content::NavigationUIData* navigation_ui_data,
-    int frame_tree_node_id) {
+    int frame_tree_node_id,
+    std::optional<int64_t> navigation_id) {
   std::vector<std::unique_ptr<blink::URLLoaderThrottle>> throttles =
       ChromeContentBrowserClient::CreateURLLoaderThrottles(
           request, browser_context, wc_getter, navigation_ui_data,
-          frame_tree_node_id);
+          frame_tree_node_id, navigation_id);
   return throttles;
 }
 
@@ -1909,7 +1918,7 @@ IN_PROC_BROWSER_TEST_P(SearchPrefetchServiceEnabledBrowserTest,
 
   omnibox->model()->OpenSelection();
 
-  WaitUntilStatusChangesTo(canonical_search_url, absl::nullopt);
+  WaitUntilStatusChangesTo(canonical_search_url, std::nullopt);
 
   prefetch_status = search_prefetch_service->GetSearchPrefetchStatusForTesting(
       canonical_search_url);
@@ -1951,7 +1960,7 @@ IN_PROC_BROWSER_TEST_P(SearchPrefetchServiceEnabledBrowserTest,
 
   omnibox->model()->OpenSelection();
 
-  WaitUntilStatusChangesTo(canonical_search_url, absl::nullopt);
+  WaitUntilStatusChangesTo(canonical_search_url, std::nullopt);
 
   prefetch_status = search_prefetch_service->GetSearchPrefetchStatusForTesting(
       canonical_search_url);
@@ -1984,7 +1993,7 @@ IN_PROC_BROWSER_TEST_P(SearchPrefetchServiceEnabledBrowserTest,
       autocomplete_controller->result().match_at(0).destination_url);
 
   omnibox->model()->OpenSelection();
-  WaitUntilStatusChangesTo(canonical_search_url, absl::nullopt);
+  WaitUntilStatusChangesTo(canonical_search_url, std::nullopt);
   DispatchDelayedResponseTask();
 
   content::WaitForLoadStop(GetWebContents());
@@ -2031,7 +2040,7 @@ IN_PROC_BROWSER_TEST_P(SearchPrefetchServiceEnabledBrowserTest,
   omnibox->model()->OpenSelection();
 
   // Wait until it is served to a real navigation.
-  WaitUntilStatusChangesTo(canonical_search_url, absl::nullopt);
+  WaitUntilStatusChangesTo(canonical_search_url, std::nullopt);
 
   // Dispatch the response which is an invalid one.
   DispatchDelayedResponseTask();
@@ -2095,7 +2104,7 @@ IN_PROC_BROWSER_TEST_P(SearchPrefetchServiceEnabledBrowserTest,
   omnibox->model()->OpenSelection();
 
   // Wait until it is served to a real navigation.
-  WaitUntilStatusChangesTo(canonical_search_url, absl::nullopt);
+  WaitUntilStatusChangesTo(canonical_search_url, std::nullopt);
 
   // Dispatch the response.
   DispatchDelayedResponseTask();
@@ -2140,7 +2149,7 @@ IN_PROC_BROWSER_TEST_P(SearchPrefetchServiceEnabledBrowserTest,
 
   omnibox->model()->OpenSelection();
   // Wait until it is served to the navigation.
-  WaitUntilStatusChangesTo(canonical_search_url, absl::nullopt);
+  WaitUntilStatusChangesTo(canonical_search_url, std::nullopt);
 
   // Dispatch the response which is an invalid one. And then it would
   // fallback.
@@ -2179,7 +2188,7 @@ IN_PROC_BROWSER_TEST_P(SearchPrefetchServiceEnabledBrowserTest,
           canonical_search_url);
   EXPECT_TRUE(prefetch_status.has_value());
 
-  ClearBrowsingCacheData(absl::nullopt);
+  ClearBrowsingCacheData(std::nullopt);
   prefetch_status = search_prefetch_service->GetSearchPrefetchStatusForTesting(
       canonical_search_url);
   EXPECT_FALSE(prefetch_status.has_value());
@@ -3061,7 +3070,7 @@ IN_PROC_BROWSER_TEST_F(SearchPrefetchServiceZeroCacheTimeBrowserTest,
           canonical_search_url);
   EXPECT_TRUE(prefetch_status.has_value());
 
-  WaitUntilStatusChangesTo(canonical_search_url, absl::nullopt);
+  WaitUntilStatusChangesTo(canonical_search_url, std::nullopt);
   prefetch_status = search_prefetch_service->GetSearchPrefetchStatusForTesting(
       canonical_search_url);
 
@@ -3092,7 +3101,7 @@ IN_PROC_BROWSER_TEST_F(SearchPrefetchServiceZeroCacheTimeBrowserTest,
 
   WaitUntilStatusChangesTo(
       GetCanonicalSearchURL(GetSearchServerQueryURL("prefetch_1")),
-      absl::nullopt);
+      std::nullopt);
 
   EXPECT_TRUE(search_prefetch_service->MaybePrefetchURL(
       GetSearchServerQueryURL("prefetch_4"), GetWebContents()));
@@ -3261,9 +3270,7 @@ IN_PROC_BROWSER_TEST_F(GooglePFTestFieldTrialOverride,
 class GooglePFTestDefaultFieldTrialValue : public GooglePFTest {
  public:
   GooglePFTestDefaultFieldTrialValue() {
-    feature_list_.InitAndEnableFeatureWithParameters(
-        kSearchNavigationPrefetch,
-        {{"suggest_prefetch_param", ""}, {"navigation_prefetch_param", ""}});
+    feature_list_.InitAndEnableFeature(kSearchNavigationPrefetch);
   }
 
  private:

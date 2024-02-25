@@ -8,6 +8,7 @@
 
 #import "base/feature_list.h"
 #import "base/functional/callback_helpers.h"
+#import "base/memory/raw_ptr.h"
 #import "base/run_loop.h"
 #import "base/strings/sys_string_conversions.h"
 #import "components/consent_auditor/fake_consent_auditor.h"
@@ -15,25 +16,25 @@
 #import "components/sync/test/mock_sync_service.h"
 #import "components/sync_preferences/pref_service_mock_factory.h"
 #import "components/sync_preferences/pref_service_syncable.h"
-#import "ios/chrome/browser/consent_auditor/consent_auditor_factory.h"
-#import "ios/chrome/browser/consent_auditor/consent_auditor_test_utils.h"
+#import "ios/chrome/browser/consent_auditor/model/consent_auditor_factory.h"
+#import "ios/chrome/browser/consent_auditor/model/consent_auditor_test_utils.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
 #import "ios/chrome/browser/shared/model/browser_state/test_chrome_browser_state.h"
-#import "ios/chrome/browser/signin/authentication_service.h"
-#import "ios/chrome/browser/signin/authentication_service_factory.h"
-#import "ios/chrome/browser/signin/chrome_account_manager_service_factory.h"
-#import "ios/chrome/browser/signin/fake_authentication_service_delegate.h"
-#import "ios/chrome/browser/signin/fake_system_identity.h"
-#import "ios/chrome/browser/signin/fake_system_identity_manager.h"
-#import "ios/chrome/browser/signin/identity_manager_factory.h"
-#import "ios/chrome/browser/sync/mock_sync_service_utils.h"
-#import "ios/chrome/browser/sync/sync_service_factory.h"
-#import "ios/chrome/browser/sync/sync_setup_service_factory.h"
-#import "ios/chrome/browser/sync/sync_setup_service_mock.h"
+#import "ios/chrome/browser/signin/model/authentication_service.h"
+#import "ios/chrome/browser/signin/model/authentication_service_factory.h"
+#import "ios/chrome/browser/signin/model/chrome_account_manager_service_factory.h"
+#import "ios/chrome/browser/signin/model/fake_authentication_service_delegate.h"
+#import "ios/chrome/browser/signin/model/fake_system_identity.h"
+#import "ios/chrome/browser/signin/model/fake_system_identity_manager.h"
+#import "ios/chrome/browser/signin/model/identity_manager_factory.h"
+#import "ios/chrome/browser/sync/model/mock_sync_service_utils.h"
+#import "ios/chrome/browser/sync/model/sync_service_factory.h"
+#import "ios/chrome/browser/sync/model/sync_setup_service_factory.h"
+#import "ios/chrome/browser/sync/model/sync_setup_service_mock.h"
 #import "ios/chrome/browser/ui/authentication/authentication_flow.h"
 #import "ios/chrome/browser/ui/authentication/authentication_flow_performer.h"
-#import "ios/chrome/browser/unified_consent/unified_consent_service_factory.h"
+#import "ios/chrome/browser/unified_consent/model/unified_consent_service_factory.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
 #import "ios/web/public/test/web_task_environment.h"
@@ -281,7 +282,7 @@ class UserSigninMediatorTest : public PlatformTest {
   AuthenticationFlow* authentication_flow_ = nullptr;
   std::unique_ptr<Browser> browser_;
   std::unique_ptr<TestChromeBrowserState> browser_state_;
-  consent_auditor::FakeConsentAuditor* fake_consent_auditor_ = nullptr;
+  raw_ptr<consent_auditor::FakeConsentAuditor> fake_consent_auditor_ = nullptr;
   const std::vector<int> consent_string_ids_;
 
   UserSigninMediator* mediator_ = nil;
@@ -289,8 +290,8 @@ class UserSigninMediatorTest : public PlatformTest {
   id<UserSigninMediatorDelegate> mediator_delegate_mock_ = nil;
   AuthenticationFlowPerformer* performer_mock_ = nil;
   UIViewController* presenting_view_controller_mock_ = nil;
-  SyncSetupServiceMock* sync_setup_service_mock_ = nullptr;
-  syncer::MockSyncService* sync_service_mock_ = nullptr;
+  raw_ptr<SyncSetupServiceMock> sync_setup_service_mock_ = nullptr;
+  raw_ptr<syncer::MockSyncService> sync_service_mock_ = nullptr;
   ProceduralBlock interrupted_completion_block_ = nil;
 };
 

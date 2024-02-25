@@ -9,7 +9,7 @@
 #include <cmath>
 #include <memory>
 
-#include "ash/accessibility/accessibility_controller_impl.h"
+#include "ash/accessibility/accessibility_controller.h"
 #include "ash/accessibility/ui/accessibility_cursor_ring_layer.h"
 #include "ash/accessibility/ui/accessibility_focus_ring_controller_impl.h"
 #include "ash/public/cpp/shell_window_ids.h"
@@ -115,8 +115,8 @@ class AccessibilityHighlightControllerTest : public AshTestBase {
         run_loop->Quit();
       };
       base::RunLoop run_loop;
-      ui::GrabWindowSnapshotAsync(
-          window, bounds, base::BindOnce(on_got_snapshot, &run_loop, image));
+      ui::GrabWindowSnapshot(window, bounds,
+                             base::BindOnce(on_got_snapshot, &run_loop, image));
       run_loop.Run();
       if (image->Size() != bounds.size()) {
         LOG(INFO) << "Bitmap not correct size, trying to capture again";
@@ -311,7 +311,7 @@ TEST_F(AccessibilityHighlightControllerTest, SetCaretBounds) {
   std::unique_ptr<views::Widget> window = CreateTestWidget();
   window->SetBounds(gfx::Rect(5, 5, 300, 300));
 
-  AccessibilityControllerImpl* accessibility_controller =
+  AccessibilityController* accessibility_controller =
       Shell::Get()->accessibility_controller();
   accessibility_controller->caret_highlight().SetEnabled(true);
 

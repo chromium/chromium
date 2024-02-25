@@ -1,6 +1,9 @@
 {
   "$build/chromium_tests_builder_config": {
     "builder_config": {
+      "additional_exclusions": [
+        "infra/config/generated/builders/try/ios-simulator/gn-args.json"
+      ],
       "builder_db": {
         "entries": [
           {
@@ -60,6 +63,15 @@
     "metrics_project": "chromium-reclient-metrics",
     "scandeps_server": true
   },
+  "$build/siso": {
+    "configs": [
+      "builder"
+    ],
+    "enable_cloud_profiler": true,
+    "enable_cloud_trace": true,
+    "experiments": [],
+    "project": "rbe-chromium-untrusted"
+  },
   "$recipe_engine/resultdb/test_presentation": {
     "column_keys": [],
     "grouping_keys": [
@@ -69,5 +81,5 @@
   },
   "builder_group": "tryserver.chromium.mac",
   "recipe": "chromium/compilator",
-  "xcode_build_version": "15a5229h"
+  "xcode_build_version": "15c500b"
 }

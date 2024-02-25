@@ -13,13 +13,9 @@ import androidx.annotation.VisibleForTesting;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
-/**
- * A class intended to process input events for non-android views.
- */
+/** A class intended to process input events for non-android views. */
 public abstract class EventFilter {
-    /**
-     * The type of input event that will be intercepted and handled by the filter.
-     */
+    /** The type of input event that will be intercepted and handled by the filter. */
     @IntDef({EventType.UNKNOWN, EventType.TOUCH, EventType.HOVER})
     @Retention(RetentionPolicy.SOURCE)
     public @interface EventType {

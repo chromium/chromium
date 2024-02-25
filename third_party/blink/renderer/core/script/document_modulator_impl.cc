@@ -15,7 +15,8 @@ ModuleScriptFetcher* DocumentModulatorImpl::CreateModuleScriptFetcher(
     ModuleScriptCustomFetchType custom_fetch_type,
     base::PassKey<ModuleScriptLoader> pass_key) {
   DCHECK_EQ(ModuleScriptCustomFetchType::kNone, custom_fetch_type);
-  return MakeGarbageCollected<DocumentModuleScriptFetcher>(pass_key);
+  return MakeGarbageCollected<DocumentModuleScriptFetcher>(
+      GetExecutionContext(), pass_key);
 }
 
 bool DocumentModulatorImpl::IsDynamicImportForbidden(String* reason) {

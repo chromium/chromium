@@ -6,16 +6,17 @@
 #define COMPONENTS_PASSWORD_MANAGER_CORE_BROWSER_PASSWORD_CREDENTIAL_FILLER_H_
 
 #include <string>
+
 #include "base/memory/weak_ptr.h"
 #include "components/autofill/core/common/mojom/autofill_types.mojom-shared.h"
 #include "components/password_manager/core/browser/password_manager_driver.h"
+#include "url/gurl.h"
 
 namespace password_manager {
 
 // PasswordCredentialFiller class is responsible for filling (username,
 // passwords) using a PasswordManagerDriver. It can also submit the form.
-class PasswordCredentialFiller
-    : public base::SupportsWeakPtr<PasswordCredentialFiller> {
+class PasswordCredentialFiller {
  public:
   using SubmissionReadinessState = autofill::mojom::SubmissionReadinessState;
   using ToShowVirtualKeyboard = PasswordManagerDriver::ToShowVirtualKeyboard;
@@ -39,11 +40,14 @@ class PasswordCredentialFiller
   virtual SubmissionReadinessState GetSubmissionReadinessState() const = 0;
 
   // Returns the frame URL this filler is interacting with.
-  virtual const GURL& GetFrameUrl() const = 0;
+  virtual GURL GetFrameUrl() const = 0;
 
   // Cleans up the filler and shows the virtual keyboard depending on
   // `should_show`.
   virtual void Dismiss(ToShowVirtualKeyboard should_show) = 0;
+
+  // Get a WeakPtr to the instance.
+  virtual base::WeakPtr<PasswordCredentialFiller> AsWeakPtr() = 0;
 };
 
 }  // namespace password_manager

@@ -76,6 +76,9 @@ class MultiplexedChannelImpl : public MultiplexedChannel,
   void OnDisconnected() override;
   void OnMessageReceived(const std::string& feature,
                          const std::string& payload) override;
+  void OnNearbyConnectionStateChanged(
+      mojom::NearbyConnectionStep step,
+      mojom::NearbyConnectionStepResult result) override;
 
   // SingleClientProxy::Delegate:
   void OnSendMessageRequested(const std::string& message_feaure,

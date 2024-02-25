@@ -100,9 +100,8 @@ void SvgIconTranscoder::Transcode(const std::string& svg_data,
   }
   // Form a data: uri from the svg_data starting at the <svg. Excess ASCII
   // whitespace is also removed.
-  std::string base64_svg;
-  base::Base64Encode(base::CollapseWhitespaceASCII(svg_data.substr(pos), false),
-                     &base64_svg);
+  std::string base64_svg = base::Base64Encode(
+      base::CollapseWhitespaceASCII(svg_data.substr(pos), false));
 
   GURL data_url(kSvgDataUrlPrefix + base64_svg);
 

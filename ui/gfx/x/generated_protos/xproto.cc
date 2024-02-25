@@ -7,36 +7,19 @@
 //    ../../third_party/xcbproto/src \
 //    gen/ui/gfx/x \
 //    bigreq \
-//    composite \
-//    damage \
-//    dpms \
-//    dri2 \
 //    dri3 \
-//    ge \
 //    glx \
-//    present \
 //    randr \
-//    record \
 //    render \
-//    res \
 //    screensaver \
 //    shape \
 //    shm \
 //    sync \
-//    xc_misc \
-//    xevie \
-//    xf86dri \
-//    xf86vidmode \
 //    xfixes \
-//    xinerama \
 //    xinput \
 //    xkb \
-//    xprint \
 //    xproto \
-//    xselinux \
-//    xtest \
-//    xv \
-//    xvmc
+//    xtest
 
 #include "xproto.h"
 
@@ -46,6 +29,7 @@
 
 #include "base/logging.h"
 #include "base/posix/eintr_wrapper.h"
+#include "ui/gfx/x/connection.h"
 #include "ui/gfx/x/xproto_internal.h"
 
 namespace x11 {
@@ -450,7 +434,7 @@ void ReadEvent<KeyEvent>(KeyEvent* event_, ReadBuffer* buffer) {
   // pad0
   Pad(&buf, 1);
 
-  DCHECK_LE(buf.offset, 32ul);
+  CHECK_LE(buf.offset, 32ul);
 }
 
 template <>
@@ -582,7 +566,7 @@ void ReadEvent<ButtonEvent>(ButtonEvent* event_, ReadBuffer* buffer) {
   // pad0
   Pad(&buf, 1);
 
-  DCHECK_LE(buf.offset, 32ul);
+  CHECK_LE(buf.offset, 32ul);
 }
 
 template <>
@@ -719,7 +703,7 @@ void ReadEvent<MotionNotifyEvent>(MotionNotifyEvent* event_,
   // pad0
   Pad(&buf, 1);
 
-  DCHECK_LE(buf.offset, 32ul);
+  CHECK_LE(buf.offset, 32ul);
 }
 
 template <>
@@ -790,7 +774,7 @@ void ReadEvent<CrossingEvent>(CrossingEvent* event_, ReadBuffer* buffer) {
   // same_screen_focus
   Read(&same_screen_focus, &buf);
 
-  DCHECK_LE(buf.offset, 32ul);
+  CHECK_LE(buf.offset, 32ul);
 }
 
 template <>
@@ -826,7 +810,7 @@ void ReadEvent<FocusEvent>(FocusEvent* event_, ReadBuffer* buffer) {
   // pad0
   Pad(&buf, 3);
 
-  DCHECK_LE(buf.offset, 32ul);
+  CHECK_LE(buf.offset, 32ul);
 }
 
 template <>
@@ -848,7 +832,7 @@ void ReadEvent<KeymapNotifyEvent>(KeymapNotifyEvent* event_,
     Read(&keys_elem, &buf);
   }
 
-  DCHECK_LE(buf.offset, 32ul);
+  CHECK_LE(buf.offset, 32ul);
 }
 
 template <>
@@ -942,7 +926,7 @@ void ReadEvent<ExposeEvent>(ExposeEvent* event_, ReadBuffer* buffer) {
   // pad1
   Pad(&buf, 2);
 
-  DCHECK_LE(buf.offset, 32ul);
+  CHECK_LE(buf.offset, 32ul);
 }
 
 template <>
@@ -998,7 +982,7 @@ void ReadEvent<GraphicsExposureEvent>(GraphicsExposureEvent* event_,
   // pad1
   Pad(&buf, 3);
 
-  DCHECK_LE(buf.offset, 32ul);
+  CHECK_LE(buf.offset, 32ul);
 }
 
 template <>
@@ -1033,7 +1017,7 @@ void ReadEvent<NoExposureEvent>(NoExposureEvent* event_, ReadBuffer* buffer) {
   // pad1
   Pad(&buf, 1);
 
-  DCHECK_LE(buf.offset, 32ul);
+  CHECK_LE(buf.offset, 32ul);
 }
 
 template <>
@@ -1067,7 +1051,7 @@ void ReadEvent<VisibilityNotifyEvent>(VisibilityNotifyEvent* event_,
   // pad1
   Pad(&buf, 3);
 
-  DCHECK_LE(buf.offset, 32ul);
+  CHECK_LE(buf.offset, 32ul);
 }
 
 template <>
@@ -1123,7 +1107,7 @@ void ReadEvent<CreateNotifyEvent>(CreateNotifyEvent* event_,
   // pad1
   Pad(&buf, 1);
 
-  DCHECK_LE(buf.offset, 32ul);
+  CHECK_LE(buf.offset, 32ul);
 }
 
 template <>
@@ -1152,7 +1136,7 @@ void ReadEvent<DestroyNotifyEvent>(DestroyNotifyEvent* event_,
   // window
   Read(&window, &buf);
 
-  DCHECK_LE(buf.offset, 32ul);
+  CHECK_LE(buf.offset, 32ul);
 }
 
 template <>
@@ -1222,7 +1206,7 @@ void ReadEvent<UnmapNotifyEvent>(UnmapNotifyEvent* event_, ReadBuffer* buffer) {
   // pad1
   Pad(&buf, 3);
 
-  DCHECK_LE(buf.offset, 32ul);
+  CHECK_LE(buf.offset, 32ul);
 }
 
 template <>
@@ -1257,7 +1241,7 @@ void ReadEvent<MapNotifyEvent>(MapNotifyEvent* event_, ReadBuffer* buffer) {
   // pad1
   Pad(&buf, 3);
 
-  DCHECK_LE(buf.offset, 32ul);
+  CHECK_LE(buf.offset, 32ul);
 }
 
 template <>
@@ -1285,7 +1269,7 @@ void ReadEvent<MapRequestEvent>(MapRequestEvent* event_, ReadBuffer* buffer) {
   // window
   Read(&window, &buf);
 
-  DCHECK_LE(buf.offset, 32ul);
+  CHECK_LE(buf.offset, 32ul);
 }
 
 template <>
@@ -1333,7 +1317,7 @@ void ReadEvent<ReparentNotifyEvent>(ReparentNotifyEvent* event_,
   // pad1
   Pad(&buf, 3);
 
-  DCHECK_LE(buf.offset, 32ul);
+  CHECK_LE(buf.offset, 32ul);
 }
 
 template <>
@@ -1393,7 +1377,7 @@ void ReadEvent<ConfigureNotifyEvent>(ConfigureNotifyEvent* event_,
   // pad1
   Pad(&buf, 1);
 
-  DCHECK_LE(buf.offset, 32ul);
+  CHECK_LE(buf.offset, 32ul);
 }
 
 template <>
@@ -1455,7 +1439,7 @@ void ReadEvent<ConfigureRequestEvent>(ConfigureRequestEvent* event_,
   Read(&tmp20, &buf);
   value_mask = static_cast<ConfigWindow>(tmp20);
 
-  DCHECK_LE(buf.offset, 32ul);
+  CHECK_LE(buf.offset, 32ul);
 }
 
 template <>
@@ -1492,7 +1476,7 @@ void ReadEvent<GravityNotifyEvent>(GravityNotifyEvent* event_,
   // y
   Read(&y, &buf);
 
-  DCHECK_LE(buf.offset, 32ul);
+  CHECK_LE(buf.offset, 32ul);
 }
 
 template <>
@@ -1525,7 +1509,7 @@ void ReadEvent<ResizeRequestEvent>(ResizeRequestEvent* event_,
   // height
   Read(&height, &buf);
 
-  DCHECK_LE(buf.offset, 32ul);
+  CHECK_LE(buf.offset, 32ul);
 }
 
 template <>
@@ -1565,7 +1549,7 @@ void ReadEvent<CirculateEvent>(CirculateEvent* event_, ReadBuffer* buffer) {
   // pad2
   Pad(&buf, 3);
 
-  DCHECK_LE(buf.offset, 32ul);
+  CHECK_LE(buf.offset, 32ul);
 }
 
 template <>
@@ -1648,7 +1632,7 @@ void ReadEvent<PropertyNotifyEvent>(PropertyNotifyEvent* event_,
   // pad1
   Pad(&buf, 3);
 
-  DCHECK_LE(buf.offset, 32ul);
+  CHECK_LE(buf.offset, 32ul);
 }
 
 template <>
@@ -1681,7 +1665,7 @@ void ReadEvent<SelectionClearEvent>(SelectionClearEvent* event_,
   // selection
   Read(&selection, &buf);
 
-  DCHECK_LE(buf.offset, 32ul);
+  CHECK_LE(buf.offset, 32ul);
 }
 
 template <>
@@ -1726,7 +1710,7 @@ void ReadEvent<SelectionRequestEvent>(SelectionRequestEvent* event_,
   // property
   Read(&property, &buf);
 
-  DCHECK_LE(buf.offset, 32ul);
+  CHECK_LE(buf.offset, 32ul);
 }
 
 template <>
@@ -1807,7 +1791,7 @@ void ReadEvent<SelectionNotifyEvent>(SelectionNotifyEvent* event_,
   // property
   Read(&property, &buf);
 
-  DCHECK_LE(buf.offset, 32ul);
+  CHECK_LE(buf.offset, 32ul);
 }
 
 template <>
@@ -1849,7 +1833,7 @@ void ReadEvent<ColormapNotifyEvent>(ColormapNotifyEvent* event_,
   // pad1
   Pad(&buf, 2);
 
-  DCHECK_LE(buf.offset, 32ul);
+  CHECK_LE(buf.offset, 32ul);
 }
 
 template <>
@@ -1916,7 +1900,7 @@ void ReadEvent<ClientMessageEvent>(ClientMessageEvent* event_,
   // data
   Read(&data, &buf);
 
-  DCHECK_LE(buf.offset, 32ul);
+  CHECK_LE(buf.offset, 32ul);
 }
 
 template <>
@@ -1954,7 +1938,7 @@ void ReadEvent<MappingNotifyEvent>(MappingNotifyEvent* event_,
   // pad1
   Pad(&buf, 1);
 
-  DCHECK_LE(buf.offset, 32ul);
+  CHECK_LE(buf.offset, 32ul);
 }
 
 template <>
@@ -1987,7 +1971,7 @@ void ReadEvent<GeGenericEvent>(GeGenericEvent* event_, ReadBuffer* buffer) {
   Pad(&buf, 22);
 
   Align(&buf, 4);
-  DCHECK_EQ(buf.offset, 32 + 4 * length);
+  CHECK_EQ(buf.offset, 32 + 4 * length);
 }
 
 std::string RequestError::ToString() const {
@@ -2033,8 +2017,9 @@ void ReadError<RequestError>(RequestError* error_, ReadBuffer* buffer) {
   // pad0
   Pad(&buf, 1);
 
-  DCHECK_LE(buf.offset, 32ul);
+  CHECK_LE(buf.offset, 32ul);
 }
+
 std::string ValueError::ToString() const {
   std::stringstream ss_;
   ss_ << "ValueError{";
@@ -2078,8 +2063,9 @@ void ReadError<ValueError>(ValueError* error_, ReadBuffer* buffer) {
   // pad0
   Pad(&buf, 1);
 
-  DCHECK_LE(buf.offset, 32ul);
+  CHECK_LE(buf.offset, 32ul);
 }
+
 std::string WindowError::ToString() const {
   std::stringstream ss_;
   ss_ << "WindowError{";
@@ -2123,8 +2109,9 @@ void ReadError<WindowError>(WindowError* error_, ReadBuffer* buffer) {
   // pad0
   Pad(&buf, 1);
 
-  DCHECK_LE(buf.offset, 32ul);
+  CHECK_LE(buf.offset, 32ul);
 }
+
 std::string PixmapError::ToString() const {
   std::stringstream ss_;
   ss_ << "PixmapError{";
@@ -2168,8 +2155,9 @@ void ReadError<PixmapError>(PixmapError* error_, ReadBuffer* buffer) {
   // pad0
   Pad(&buf, 1);
 
-  DCHECK_LE(buf.offset, 32ul);
+  CHECK_LE(buf.offset, 32ul);
 }
+
 std::string AtomError::ToString() const {
   std::stringstream ss_;
   ss_ << "AtomError{";
@@ -2213,8 +2201,9 @@ void ReadError<AtomError>(AtomError* error_, ReadBuffer* buffer) {
   // pad0
   Pad(&buf, 1);
 
-  DCHECK_LE(buf.offset, 32ul);
+  CHECK_LE(buf.offset, 32ul);
 }
+
 std::string CursorError::ToString() const {
   std::stringstream ss_;
   ss_ << "CursorError{";
@@ -2258,8 +2247,9 @@ void ReadError<CursorError>(CursorError* error_, ReadBuffer* buffer) {
   // pad0
   Pad(&buf, 1);
 
-  DCHECK_LE(buf.offset, 32ul);
+  CHECK_LE(buf.offset, 32ul);
 }
+
 std::string FontError::ToString() const {
   std::stringstream ss_;
   ss_ << "FontError{";
@@ -2303,8 +2293,9 @@ void ReadError<FontError>(FontError* error_, ReadBuffer* buffer) {
   // pad0
   Pad(&buf, 1);
 
-  DCHECK_LE(buf.offset, 32ul);
+  CHECK_LE(buf.offset, 32ul);
 }
+
 std::string MatchError::ToString() const {
   std::stringstream ss_;
   ss_ << "MatchError{";
@@ -2348,8 +2339,9 @@ void ReadError<MatchError>(MatchError* error_, ReadBuffer* buffer) {
   // pad0
   Pad(&buf, 1);
 
-  DCHECK_LE(buf.offset, 32ul);
+  CHECK_LE(buf.offset, 32ul);
 }
+
 std::string DrawableError::ToString() const {
   std::stringstream ss_;
   ss_ << "DrawableError{";
@@ -2393,8 +2385,9 @@ void ReadError<DrawableError>(DrawableError* error_, ReadBuffer* buffer) {
   // pad0
   Pad(&buf, 1);
 
-  DCHECK_LE(buf.offset, 32ul);
+  CHECK_LE(buf.offset, 32ul);
 }
+
 std::string AccessError::ToString() const {
   std::stringstream ss_;
   ss_ << "AccessError{";
@@ -2438,8 +2431,9 @@ void ReadError<AccessError>(AccessError* error_, ReadBuffer* buffer) {
   // pad0
   Pad(&buf, 1);
 
-  DCHECK_LE(buf.offset, 32ul);
+  CHECK_LE(buf.offset, 32ul);
 }
+
 std::string AllocError::ToString() const {
   std::stringstream ss_;
   ss_ << "AllocError{";
@@ -2483,8 +2477,9 @@ void ReadError<AllocError>(AllocError* error_, ReadBuffer* buffer) {
   // pad0
   Pad(&buf, 1);
 
-  DCHECK_LE(buf.offset, 32ul);
+  CHECK_LE(buf.offset, 32ul);
 }
+
 std::string ColormapError::ToString() const {
   std::stringstream ss_;
   ss_ << "ColormapError{";
@@ -2528,8 +2523,9 @@ void ReadError<ColormapError>(ColormapError* error_, ReadBuffer* buffer) {
   // pad0
   Pad(&buf, 1);
 
-  DCHECK_LE(buf.offset, 32ul);
+  CHECK_LE(buf.offset, 32ul);
 }
+
 std::string GContextError::ToString() const {
   std::stringstream ss_;
   ss_ << "GContextError{";
@@ -2573,8 +2569,9 @@ void ReadError<GContextError>(GContextError* error_, ReadBuffer* buffer) {
   // pad0
   Pad(&buf, 1);
 
-  DCHECK_LE(buf.offset, 32ul);
+  CHECK_LE(buf.offset, 32ul);
 }
+
 std::string IDChoiceError::ToString() const {
   std::stringstream ss_;
   ss_ << "IDChoiceError{";
@@ -2618,8 +2615,9 @@ void ReadError<IDChoiceError>(IDChoiceError* error_, ReadBuffer* buffer) {
   // pad0
   Pad(&buf, 1);
 
-  DCHECK_LE(buf.offset, 32ul);
+  CHECK_LE(buf.offset, 32ul);
 }
+
 std::string NameError::ToString() const {
   std::stringstream ss_;
   ss_ << "NameError{";
@@ -2663,8 +2661,9 @@ void ReadError<NameError>(NameError* error_, ReadBuffer* buffer) {
   // pad0
   Pad(&buf, 1);
 
-  DCHECK_LE(buf.offset, 32ul);
+  CHECK_LE(buf.offset, 32ul);
 }
+
 std::string LengthError::ToString() const {
   std::stringstream ss_;
   ss_ << "LengthError{";
@@ -2708,8 +2707,9 @@ void ReadError<LengthError>(LengthError* error_, ReadBuffer* buffer) {
   // pad0
   Pad(&buf, 1);
 
-  DCHECK_LE(buf.offset, 32ul);
+  CHECK_LE(buf.offset, 32ul);
 }
+
 std::string ImplementationError::ToString() const {
   std::stringstream ss_;
   ss_ << "ImplementationError{";
@@ -2754,8 +2754,9 @@ void ReadError<ImplementationError>(ImplementationError* error_,
   // pad0
   Pad(&buf, 1);
 
-  DCHECK_LE(buf.offset, 32ul);
+  CHECK_LE(buf.offset, 32ul);
 }
+
 Future<void> XProto::CreateWindow(const CreateWindowRequest& request) {
   if (!connection_->Ready())
     return {};
@@ -2969,21 +2970,21 @@ Future<void> XProto::CreateWindow(
     const uint16_t& border_width,
     const WindowClass& c_class,
     const VisualId& visual,
-    const absl::optional<Pixmap>& background_pixmap,
-    const absl::optional<uint32_t>& background_pixel,
-    const absl::optional<Pixmap>& border_pixmap,
-    const absl::optional<uint32_t>& border_pixel,
-    const absl::optional<Gravity>& bit_gravity,
-    const absl::optional<Gravity>& win_gravity,
-    const absl::optional<BackingStore>& backing_store,
-    const absl::optional<uint32_t>& backing_planes,
-    const absl::optional<uint32_t>& backing_pixel,
-    const absl::optional<Bool32>& override_redirect,
-    const absl::optional<Bool32>& save_under,
-    const absl::optional<EventMask>& event_mask,
-    const absl::optional<EventMask>& do_not_propogate_mask,
-    const absl::optional<ColorMap>& colormap,
-    const absl::optional<Cursor>& cursor) {
+    const std::optional<Pixmap>& background_pixmap,
+    const std::optional<uint32_t>& background_pixel,
+    const std::optional<Pixmap>& border_pixmap,
+    const std::optional<uint32_t>& border_pixel,
+    const std::optional<Gravity>& bit_gravity,
+    const std::optional<Gravity>& win_gravity,
+    const std::optional<BackingStore>& backing_store,
+    const std::optional<uint32_t>& backing_planes,
+    const std::optional<uint32_t>& backing_pixel,
+    const std::optional<Bool32>& override_redirect,
+    const std::optional<Bool32>& save_under,
+    const std::optional<EventMask>& event_mask,
+    const std::optional<EventMask>& do_not_propogate_mask,
+    const std::optional<ColorMap>& colormap,
+    const std::optional<Cursor>& cursor) {
   return XProto::CreateWindow(CreateWindowRequest{depth,
                                                   wid,
                                                   parent,
@@ -3181,21 +3182,21 @@ Future<void> XProto::ChangeWindowAttributes(
 
 Future<void> XProto::ChangeWindowAttributes(
     const Window& window,
-    const absl::optional<Pixmap>& background_pixmap,
-    const absl::optional<uint32_t>& background_pixel,
-    const absl::optional<Pixmap>& border_pixmap,
-    const absl::optional<uint32_t>& border_pixel,
-    const absl::optional<Gravity>& bit_gravity,
-    const absl::optional<Gravity>& win_gravity,
-    const absl::optional<BackingStore>& backing_store,
-    const absl::optional<uint32_t>& backing_planes,
-    const absl::optional<uint32_t>& backing_pixel,
-    const absl::optional<Bool32>& override_redirect,
-    const absl::optional<Bool32>& save_under,
-    const absl::optional<EventMask>& event_mask,
-    const absl::optional<EventMask>& do_not_propogate_mask,
-    const absl::optional<ColorMap>& colormap,
-    const absl::optional<Cursor>& cursor) {
+    const std::optional<Pixmap>& background_pixmap,
+    const std::optional<uint32_t>& background_pixel,
+    const std::optional<Pixmap>& border_pixmap,
+    const std::optional<uint32_t>& border_pixel,
+    const std::optional<Gravity>& bit_gravity,
+    const std::optional<Gravity>& win_gravity,
+    const std::optional<BackingStore>& backing_store,
+    const std::optional<uint32_t>& backing_planes,
+    const std::optional<uint32_t>& backing_pixel,
+    const std::optional<Bool32>& override_redirect,
+    const std::optional<Bool32>& save_under,
+    const std::optional<EventMask>& event_mask,
+    const std::optional<EventMask>& do_not_propogate_mask,
+    const std::optional<ColorMap>& colormap,
+    const std::optional<Cursor>& cursor) {
   return XProto::ChangeWindowAttributes(ChangeWindowAttributesRequest{
       window, background_pixmap, background_pixel, border_pixmap, border_pixel,
       bit_gravity, win_gravity, backing_store, backing_planes, backing_pixel,
@@ -3337,7 +3338,7 @@ std::unique_ptr<GetWindowAttributesReply> detail::ReadReply<
   Pad(&buf, 2);
 
   Align(&buf, 4);
-  DCHECK_EQ(buf.offset < 32 ? 0 : buf.offset - 32, 4 * length);
+  CHECK_EQ(buf.offset < 32 ? 0 : buf.offset - 32, 4 * length);
 
   return reply;
 }
@@ -3707,13 +3708,13 @@ Future<void> XProto::ConfigureWindow(const ConfigureWindowRequest& request) {
 
 Future<void> XProto::ConfigureWindow(
     const Window& window,
-    const absl::optional<int32_t>& x,
-    const absl::optional<int32_t>& y,
-    const absl::optional<uint32_t>& width,
-    const absl::optional<uint32_t>& height,
-    const absl::optional<uint32_t>& border_width,
-    const absl::optional<Window>& sibling,
-    const absl::optional<StackMode>& stack_mode) {
+    const std::optional<int32_t>& x,
+    const std::optional<int32_t>& y,
+    const std::optional<uint32_t>& width,
+    const std::optional<uint32_t>& height,
+    const std::optional<uint32_t>& border_width,
+    const std::optional<Window>& sibling,
+    const std::optional<StackMode>& stack_mode) {
   return XProto::ConfigureWindow(ConfigureWindowRequest{
       window, x, y, width, height, border_width, sibling, stack_mode});
 }
@@ -3837,7 +3838,7 @@ std::unique_ptr<GetGeometryReply> detail::ReadReply<GetGeometryReply>(
   Pad(&buf, 2);
 
   Align(&buf, 4);
-  DCHECK_EQ(buf.offset < 32 ? 0 : buf.offset - 32, 4 * length);
+  CHECK_EQ(buf.offset < 32 ? 0 : buf.offset - 32, 4 * length);
 
   return reply;
 }
@@ -3920,7 +3921,7 @@ std::unique_ptr<QueryTreeReply> detail::ReadReply<QueryTreeReply>(
   }
 
   Align(&buf, 4);
-  DCHECK_EQ(buf.offset < 32 ? 0 : buf.offset - 32, 4 * length);
+  CHECK_EQ(buf.offset < 32 ? 0 : buf.offset - 32, 4 * length);
 
   return reply;
 }
@@ -3954,7 +3955,7 @@ Future<InternAtomReply> XProto::InternAtom(const InternAtomRequest& request) {
   Pad(&buf, 2);
 
   // name
-  DCHECK_EQ(static_cast<size_t>(name_len), name.size());
+  CHECK_EQ(static_cast<size_t>(name_len), name.size());
   for (auto& name_elem : name) {
     // name_elem
     buf.Write(&name_elem);
@@ -3998,7 +3999,7 @@ std::unique_ptr<InternAtomReply> detail::ReadReply<InternAtomReply>(
   Read(&atom, &buf);
 
   Align(&buf, 4);
-  DCHECK_EQ(buf.offset < 32 ? 0 : buf.offset - 32, 4 * length);
+  CHECK_EQ(buf.offset < 32 ? 0 : buf.offset - 32, 4 * length);
 
   return reply;
 }
@@ -4074,7 +4075,7 @@ std::unique_ptr<GetAtomNameReply> detail::ReadReply<GetAtomNameReply>(
   }
 
   Align(&buf, 4);
-  DCHECK_EQ(buf.offset < 32 ? 0 : buf.offset - 32, 4 * length);
+  CHECK_EQ(buf.offset < 32 ? 0 : buf.offset - 32, 4 * length);
 
   return reply;
 }
@@ -4279,7 +4280,7 @@ std::unique_ptr<GetPropertyReply> detail::ReadReply<GetPropertyReply>(
   value = buffer->ReadAndAdvance((value_len) * ((format) / (8)));
 
   Align(&buf, 4);
-  DCHECK_EQ(buf.offset < 32 ? 0 : buf.offset - 32, 4 * length);
+  CHECK_EQ(buf.offset < 32 ? 0 : buf.offset - 32, 4 * length);
 
   return reply;
 }
@@ -4356,7 +4357,7 @@ std::unique_ptr<ListPropertiesReply> detail::ReadReply<ListPropertiesReply>(
   }
 
   Align(&buf, 4);
-  DCHECK_EQ(buf.offset < 32 ? 0 : buf.offset - 32, 4 * length);
+  CHECK_EQ(buf.offset < 32 ? 0 : buf.offset - 32, 4 * length);
 
   return reply;
 }
@@ -4466,7 +4467,7 @@ std::unique_ptr<GetSelectionOwnerReply> detail::ReadReply<
   Read(&owner, &buf);
 
   Align(&buf, 4);
-  DCHECK_EQ(buf.offset < 32 ? 0 : buf.offset - 32, 4 * length);
+  CHECK_EQ(buf.offset < 32 ? 0 : buf.offset - 32, 4 * length);
 
   return reply;
 }
@@ -4672,7 +4673,7 @@ std::unique_ptr<GrabPointerReply> detail::ReadReply<GrabPointerReply>(
   Read(&length, &buf);
 
   Align(&buf, 4);
-  DCHECK_EQ(buf.offset < 32 ? 0 : buf.offset - 32, 4 * length);
+  CHECK_EQ(buf.offset < 32 ? 0 : buf.offset - 32, 4 * length);
 
   return reply;
 }
@@ -4970,7 +4971,7 @@ std::unique_ptr<GrabKeyboardReply> detail::ReadReply<GrabKeyboardReply>(
   Read(&length, &buf);
 
   Align(&buf, 4);
-  DCHECK_EQ(buf.offset < 32 ? 0 : buf.offset - 32, 4 * length);
+  CHECK_EQ(buf.offset < 32 ? 0 : buf.offset - 32, 4 * length);
 
   return reply;
 }
@@ -5289,7 +5290,7 @@ std::unique_ptr<QueryPointerReply> detail::ReadReply<QueryPointerReply>(
   Pad(&buf, 2);
 
   Align(&buf, 4);
-  DCHECK_EQ(buf.offset < 32 ? 0 : buf.offset - 32, 4 * length);
+  CHECK_EQ(buf.offset < 32 ? 0 : buf.offset - 32, 4 * length);
 
   return reply;
 }
@@ -5389,7 +5390,7 @@ std::unique_ptr<GetMotionEventsReply> detail::ReadReply<GetMotionEventsReply>(
   }
 
   Align(&buf, 4);
-  DCHECK_EQ(buf.offset < 32 ? 0 : buf.offset - 32, 4 * length);
+  CHECK_EQ(buf.offset < 32 ? 0 : buf.offset - 32, 4 * length);
 
   return reply;
 }
@@ -5481,7 +5482,7 @@ std::unique_ptr<TranslateCoordinatesReply> detail::ReadReply<
   Read(&dst_y, &buf);
 
   Align(&buf, 4);
-  DCHECK_EQ(buf.offset < 32 ? 0 : buf.offset - 32, 4 * length);
+  CHECK_EQ(buf.offset < 32 ? 0 : buf.offset - 32, 4 * length);
 
   return reply;
 }
@@ -5653,7 +5654,7 @@ std::unique_ptr<GetInputFocusReply> detail::ReadReply<GetInputFocusReply>(
   Read(&focus, &buf);
 
   Align(&buf, 4);
-  DCHECK_EQ(buf.offset < 32 ? 0 : buf.offset - 32, 4 * length);
+  CHECK_EQ(buf.offset < 32 ? 0 : buf.offset - 32, 4 * length);
 
   return reply;
 }
@@ -5717,7 +5718,7 @@ std::unique_ptr<QueryKeymapReply> detail::ReadReply<QueryKeymapReply>(
   }
 
   Align(&buf, 4);
-  DCHECK_EQ(buf.offset < 32 ? 0 : buf.offset - 32, 4 * length);
+  CHECK_EQ(buf.offset < 32 ? 0 : buf.offset - 32, 4 * length);
 
   return reply;
 }
@@ -5754,7 +5755,7 @@ Future<void> XProto::OpenFont(const OpenFontRequest& request) {
   Pad(&buf, 2);
 
   // name
-  DCHECK_EQ(static_cast<size_t>(name_len), name.size());
+  CHECK_EQ(static_cast<size_t>(name_len), name.size());
   for (auto& name_elem : name) {
     // name_elem
     buf.Write(&name_elem);
@@ -6015,7 +6016,7 @@ std::unique_ptr<QueryFontReply> detail::ReadReply<QueryFontReply>(
   }
 
   Align(&buf, 4);
-  DCHECK_EQ(buf.offset < 32 ? 0 : buf.offset - 32, 4 * length);
+  CHECK_EQ(buf.offset < 32 ? 0 : buf.offset - 32, 4 * length);
 
   return reply;
 }
@@ -6047,7 +6048,7 @@ Future<QueryTextExtentsReply> XProto::QueryTextExtents(
   buf.Write(&font);
 
   // string
-  DCHECK_EQ(static_cast<size_t>(string_len), string.size());
+  CHECK_EQ(static_cast<size_t>(string_len), string.size());
   for (auto& string_elem : string) {
     // string_elem
     {
@@ -6129,7 +6130,7 @@ std::unique_ptr<QueryTextExtentsReply> detail::ReadReply<QueryTextExtentsReply>(
   Read(&overall_right, &buf);
 
   Align(&buf, 4);
-  DCHECK_EQ(buf.offset < 32 ? 0 : buf.offset - 32, 4 * length);
+  CHECK_EQ(buf.offset < 32 ? 0 : buf.offset - 32, 4 * length);
 
   return reply;
 }
@@ -6163,7 +6164,7 @@ Future<ListFontsReply> XProto::ListFonts(const ListFontsRequest& request) {
   buf.Write(&pattern_len);
 
   // pattern
-  DCHECK_EQ(static_cast<size_t>(pattern_len), pattern.size());
+  CHECK_EQ(static_cast<size_t>(pattern_len), pattern.size());
   for (auto& pattern_elem : pattern) {
     // pattern_elem
     buf.Write(&pattern_elem);
@@ -6231,7 +6232,7 @@ std::unique_ptr<ListFontsReply> detail::ReadReply<ListFontsReply>(
   }
 
   Align(&buf, 4);
-  DCHECK_EQ(buf.offset < 32 ? 0 : buf.offset - 32, 4 * length);
+  CHECK_EQ(buf.offset < 32 ? 0 : buf.offset - 32, 4 * length);
 
   return reply;
 }
@@ -6266,7 +6267,7 @@ Future<ListFontsWithInfoReply> XProto::ListFontsWithInfo(
   buf.Write(&pattern_len);
 
   // pattern
-  DCHECK_EQ(static_cast<size_t>(pattern_len), pattern.size());
+  CHECK_EQ(static_cast<size_t>(pattern_len), pattern.size());
   for (auto& pattern_elem : pattern) {
     // pattern_elem
     buf.Write(&pattern_elem);
@@ -6445,7 +6446,7 @@ std::unique_ptr<ListFontsWithInfoReply> detail::ReadReply<
   }
 
   Align(&buf, 4);
-  DCHECK_EQ(buf.offset < 32 ? 0 : buf.offset - 32, 4 * length);
+  CHECK_EQ(buf.offset < 32 ? 0 : buf.offset - 32, 4 * length);
 
   return reply;
 }
@@ -6479,7 +6480,7 @@ Future<void> XProto::SetFontPath(const SetFontPathRequest& request) {
   Pad(&buf, 2);
 
   // font
-  DCHECK_EQ(static_cast<size_t>(font_qty), font.size());
+  CHECK_EQ(static_cast<size_t>(font_qty), font.size());
   for (auto& font_elem : font) {
     // font_elem
     {
@@ -6491,7 +6492,7 @@ Future<void> XProto::SetFontPath(const SetFontPathRequest& request) {
       buf.Write(&name_len);
 
       // name
-      DCHECK_EQ(static_cast<size_t>(name_len), name.size());
+      CHECK_EQ(static_cast<size_t>(name_len), name.size());
       for (auto& name_elem : name) {
         // name_elem
         buf.Write(&name_elem);
@@ -6587,7 +6588,7 @@ std::unique_ptr<GetFontPathReply> detail::ReadReply<GetFontPathReply>(
   }
 
   Align(&buf, 4);
-  DCHECK_EQ(buf.offset < 32 ? 0 : buf.offset - 32, 4 * length);
+  CHECK_EQ(buf.offset < 32 ? 0 : buf.offset - 32, 4 * length);
 
   return reply;
 }
@@ -6916,29 +6917,29 @@ Future<void> XProto::CreateGC(const CreateGCRequest& request) {
 Future<void> XProto::CreateGC(
     const GraphicsContext& cid,
     const Drawable& drawable,
-    const absl::optional<Gx>& function,
-    const absl::optional<uint32_t>& plane_mask,
-    const absl::optional<uint32_t>& foreground,
-    const absl::optional<uint32_t>& background,
-    const absl::optional<uint32_t>& line_width,
-    const absl::optional<LineStyle>& line_style,
-    const absl::optional<CapStyle>& cap_style,
-    const absl::optional<JoinStyle>& join_style,
-    const absl::optional<FillStyle>& fill_style,
-    const absl::optional<FillRule>& fill_rule,
-    const absl::optional<Pixmap>& tile,
-    const absl::optional<Pixmap>& stipple,
-    const absl::optional<int32_t>& tile_stipple_x_origin,
-    const absl::optional<int32_t>& tile_stipple_y_origin,
-    const absl::optional<Font>& font,
-    const absl::optional<SubwindowMode>& subwindow_mode,
-    const absl::optional<Bool32>& graphics_exposures,
-    const absl::optional<int32_t>& clip_x_origin,
-    const absl::optional<int32_t>& clip_y_origin,
-    const absl::optional<Pixmap>& clip_mask,
-    const absl::optional<uint32_t>& dash_offset,
-    const absl::optional<uint32_t>& dashes,
-    const absl::optional<ArcMode>& arc_mode) {
+    const std::optional<Gx>& function,
+    const std::optional<uint32_t>& plane_mask,
+    const std::optional<uint32_t>& foreground,
+    const std::optional<uint32_t>& background,
+    const std::optional<uint32_t>& line_width,
+    const std::optional<LineStyle>& line_style,
+    const std::optional<CapStyle>& cap_style,
+    const std::optional<JoinStyle>& join_style,
+    const std::optional<FillStyle>& fill_style,
+    const std::optional<FillRule>& fill_rule,
+    const std::optional<Pixmap>& tile,
+    const std::optional<Pixmap>& stipple,
+    const std::optional<int32_t>& tile_stipple_x_origin,
+    const std::optional<int32_t>& tile_stipple_y_origin,
+    const std::optional<Font>& font,
+    const std::optional<SubwindowMode>& subwindow_mode,
+    const std::optional<Bool32>& graphics_exposures,
+    const std::optional<int32_t>& clip_x_origin,
+    const std::optional<int32_t>& clip_y_origin,
+    const std::optional<Pixmap>& clip_mask,
+    const std::optional<uint32_t>& dash_offset,
+    const std::optional<uint32_t>& dashes,
+    const std::optional<ArcMode>& arc_mode) {
   return XProto::CreateGC(CreateGCRequest{cid,
                                           drawable,
                                           function,
@@ -7205,29 +7206,29 @@ Future<void> XProto::ChangeGC(const ChangeGCRequest& request) {
 
 Future<void> XProto::ChangeGC(
     const GraphicsContext& gc,
-    const absl::optional<Gx>& function,
-    const absl::optional<uint32_t>& plane_mask,
-    const absl::optional<uint32_t>& foreground,
-    const absl::optional<uint32_t>& background,
-    const absl::optional<uint32_t>& line_width,
-    const absl::optional<LineStyle>& line_style,
-    const absl::optional<CapStyle>& cap_style,
-    const absl::optional<JoinStyle>& join_style,
-    const absl::optional<FillStyle>& fill_style,
-    const absl::optional<FillRule>& fill_rule,
-    const absl::optional<Pixmap>& tile,
-    const absl::optional<Pixmap>& stipple,
-    const absl::optional<int32_t>& tile_stipple_x_origin,
-    const absl::optional<int32_t>& tile_stipple_y_origin,
-    const absl::optional<Font>& font,
-    const absl::optional<SubwindowMode>& subwindow_mode,
-    const absl::optional<Bool32>& graphics_exposures,
-    const absl::optional<int32_t>& clip_x_origin,
-    const absl::optional<int32_t>& clip_y_origin,
-    const absl::optional<Pixmap>& clip_mask,
-    const absl::optional<uint32_t>& dash_offset,
-    const absl::optional<uint32_t>& dashes,
-    const absl::optional<ArcMode>& arc_mode) {
+    const std::optional<Gx>& function,
+    const std::optional<uint32_t>& plane_mask,
+    const std::optional<uint32_t>& foreground,
+    const std::optional<uint32_t>& background,
+    const std::optional<uint32_t>& line_width,
+    const std::optional<LineStyle>& line_style,
+    const std::optional<CapStyle>& cap_style,
+    const std::optional<JoinStyle>& join_style,
+    const std::optional<FillStyle>& fill_style,
+    const std::optional<FillRule>& fill_rule,
+    const std::optional<Pixmap>& tile,
+    const std::optional<Pixmap>& stipple,
+    const std::optional<int32_t>& tile_stipple_x_origin,
+    const std::optional<int32_t>& tile_stipple_y_origin,
+    const std::optional<Font>& font,
+    const std::optional<SubwindowMode>& subwindow_mode,
+    const std::optional<Bool32>& graphics_exposures,
+    const std::optional<int32_t>& clip_x_origin,
+    const std::optional<int32_t>& clip_y_origin,
+    const std::optional<Pixmap>& clip_mask,
+    const std::optional<uint32_t>& dash_offset,
+    const std::optional<uint32_t>& dashes,
+    const std::optional<ArcMode>& arc_mode) {
   return XProto::ChangeGC(ChangeGCRequest{gc,
                                           function,
                                           plane_mask,
@@ -7330,7 +7331,7 @@ Future<void> XProto::SetDashes(const SetDashesRequest& request) {
   buf.Write(&dashes_len);
 
   // dashes
-  DCHECK_EQ(static_cast<size_t>(dashes_len), dashes.size());
+  CHECK_EQ(static_cast<size_t>(dashes_len), dashes.size());
   for (auto& dashes_elem : dashes) {
     // dashes_elem
     buf.Write(&dashes_elem);
@@ -7384,7 +7385,7 @@ Future<void> XProto::SetClipRectangles(
   buf.Write(&clip_y_origin);
 
   // rectangles
-  DCHECK_EQ(static_cast<size_t>(rectangles_len), rectangles.size());
+  CHECK_EQ(static_cast<size_t>(rectangles_len), rectangles.size());
   for (auto& rectangles_elem : rectangles) {
     // rectangles_elem
     {
@@ -7689,7 +7690,7 @@ Future<void> XProto::PolyPoint(const PolyPointRequest& request) {
   buf.Write(&gc);
 
   // points
-  DCHECK_EQ(static_cast<size_t>(points_len), points.size());
+  CHECK_EQ(static_cast<size_t>(points_len), points.size());
   for (auto& points_elem : points) {
     // points_elem
     {
@@ -7749,7 +7750,7 @@ Future<void> XProto::PolyLine(const PolyLineRequest& request) {
   buf.Write(&gc);
 
   // points
-  DCHECK_EQ(static_cast<size_t>(points_len), points.size());
+  CHECK_EQ(static_cast<size_t>(points_len), points.size());
   for (auto& points_elem : points) {
     // points_elem
     {
@@ -7806,7 +7807,7 @@ Future<void> XProto::PolySegment(const PolySegmentRequest& request) {
   buf.Write(&gc);
 
   // segments
-  DCHECK_EQ(static_cast<size_t>(segments_len), segments.size());
+  CHECK_EQ(static_cast<size_t>(segments_len), segments.size());
   for (auto& segments_elem : segments) {
     // segments_elem
     {
@@ -7869,7 +7870,7 @@ Future<void> XProto::PolyRectangle(const PolyRectangleRequest& request) {
   buf.Write(&gc);
 
   // rectangles
-  DCHECK_EQ(static_cast<size_t>(rectangles_len), rectangles.size());
+  CHECK_EQ(static_cast<size_t>(rectangles_len), rectangles.size());
   for (auto& rectangles_elem : rectangles) {
     // rectangles_elem
     {
@@ -7932,7 +7933,7 @@ Future<void> XProto::PolyArc(const PolyArcRequest& request) {
   buf.Write(&gc);
 
   // arcs
-  DCHECK_EQ(static_cast<size_t>(arcs_len), arcs.size());
+  CHECK_EQ(static_cast<size_t>(arcs_len), arcs.size());
   for (auto& arcs_elem : arcs) {
     // arcs_elem
     {
@@ -8018,7 +8019,7 @@ Future<void> XProto::FillPoly(const FillPolyRequest& request) {
   Pad(&buf, 2);
 
   // points
-  DCHECK_EQ(static_cast<size_t>(points_len), points.size());
+  CHECK_EQ(static_cast<size_t>(points_len), points.size());
   for (auto& points_elem : points) {
     // points_elem
     {
@@ -8077,7 +8078,7 @@ Future<void> XProto::PolyFillRectangle(
   buf.Write(&gc);
 
   // rectangles
-  DCHECK_EQ(static_cast<size_t>(rectangles_len), rectangles.size());
+  CHECK_EQ(static_cast<size_t>(rectangles_len), rectangles.size());
   for (auto& rectangles_elem : rectangles) {
     // rectangles_elem
     {
@@ -8142,7 +8143,7 @@ Future<void> XProto::PolyFillArc(const PolyFillArcRequest& request) {
   buf.Write(&gc);
 
   // arcs
-  DCHECK_EQ(static_cast<size_t>(arcs_len), arcs.size());
+  CHECK_EQ(static_cast<size_t>(arcs_len), arcs.size());
   for (auto& arcs_elem : arcs) {
     // arcs_elem
     {
@@ -8363,7 +8364,7 @@ std::unique_ptr<GetImageReply> detail::ReadReply<GetImageReply>(
   data = buffer->ReadAndAdvance((length) * (4));
 
   Align(&buf, 4);
-  DCHECK_EQ(buf.offset < 32 ? 0 : buf.offset - 32, 4 * length);
+  CHECK_EQ(buf.offset < 32 ? 0 : buf.offset - 32, 4 * length);
 
   return reply;
 }
@@ -8405,7 +8406,7 @@ Future<void> XProto::PolyText8(const PolyText8Request& request) {
   buf.Write(&y);
 
   // items
-  DCHECK_EQ(static_cast<size_t>(items_len), items.size());
+  CHECK_EQ(static_cast<size_t>(items_len), items.size());
   for (auto& items_elem : items) {
     // items_elem
     buf.Write(&items_elem);
@@ -8461,7 +8462,7 @@ Future<void> XProto::PolyText16(const PolyText16Request& request) {
   buf.Write(&y);
 
   // items
-  DCHECK_EQ(static_cast<size_t>(items_len), items.size());
+  CHECK_EQ(static_cast<size_t>(items_len), items.size());
   for (auto& items_elem : items) {
     // items_elem
     buf.Write(&items_elem);
@@ -8518,7 +8519,7 @@ Future<void> XProto::ImageText8(const ImageText8Request& request) {
   buf.Write(&y);
 
   // string
-  DCHECK_EQ(static_cast<size_t>(string_len), string.size());
+  CHECK_EQ(static_cast<size_t>(string_len), string.size());
   for (auto& string_elem : string) {
     // string_elem
     buf.Write(&string_elem);
@@ -8575,7 +8576,7 @@ Future<void> XProto::ImageText16(const ImageText16Request& request) {
   buf.Write(&y);
 
   // string
-  DCHECK_EQ(static_cast<size_t>(string_len), string.size());
+  CHECK_EQ(static_cast<size_t>(string_len), string.size());
   for (auto& string_elem : string) {
     // string_elem
     {
@@ -8853,7 +8854,7 @@ std::unique_ptr<ListInstalledColormapsReply> detail::ReadReply<
   }
 
   Align(&buf, 4);
-  DCHECK_EQ(buf.offset < 32 ? 0 : buf.offset - 32, 4 * length);
+  CHECK_EQ(buf.offset < 32 ? 0 : buf.offset - 32, 4 * length);
 
   return reply;
 }
@@ -8950,7 +8951,7 @@ std::unique_ptr<AllocColorReply> detail::ReadReply<AllocColorReply>(
   Read(&pixel, &buf);
 
   Align(&buf, 4);
-  DCHECK_EQ(buf.offset < 32 ? 0 : buf.offset - 32, 4 * length);
+  CHECK_EQ(buf.offset < 32 ? 0 : buf.offset - 32, 4 * length);
 
   return reply;
 }
@@ -8988,7 +8989,7 @@ Future<AllocNamedColorReply> XProto::AllocNamedColor(
   Pad(&buf, 2);
 
   // name
-  DCHECK_EQ(static_cast<size_t>(name_len), name.size());
+  CHECK_EQ(static_cast<size_t>(name_len), name.size());
   for (auto& name_elem : name) {
     // name_elem
     buf.Write(&name_elem);
@@ -9057,7 +9058,7 @@ std::unique_ptr<AllocNamedColorReply> detail::ReadReply<AllocNamedColorReply>(
   Read(&visual_blue, &buf);
 
   Align(&buf, 4);
-  DCHECK_EQ(buf.offset < 32 ? 0 : buf.offset - 32, 4 * length);
+  CHECK_EQ(buf.offset < 32 ? 0 : buf.offset - 32, 4 * length);
 
   return reply;
 }
@@ -9159,7 +9160,7 @@ std::unique_ptr<AllocColorCellsReply> detail::ReadReply<AllocColorCellsReply>(
   }
 
   Align(&buf, 4);
-  DCHECK_EQ(buf.offset < 32 ? 0 : buf.offset - 32, 4 * length);
+  CHECK_EQ(buf.offset < 32 ? 0 : buf.offset - 32, 4 * length);
 
   return reply;
 }
@@ -9275,7 +9276,7 @@ std::unique_ptr<AllocColorPlanesReply> detail::ReadReply<AllocColorPlanesReply>(
   }
 
   Align(&buf, 4);
-  DCHECK_EQ(buf.offset < 32 ? 0 : buf.offset - 32, 4 * length);
+  CHECK_EQ(buf.offset < 32 ? 0 : buf.offset - 32, 4 * length);
 
   return reply;
 }
@@ -9309,7 +9310,7 @@ Future<void> XProto::FreeColors(const FreeColorsRequest& request) {
   buf.Write(&plane_mask);
 
   // pixels
-  DCHECK_EQ(static_cast<size_t>(pixels_len), pixels.size());
+  CHECK_EQ(static_cast<size_t>(pixels_len), pixels.size());
   for (auto& pixels_elem : pixels) {
     // pixels_elem
     buf.Write(&pixels_elem);
@@ -9351,7 +9352,7 @@ Future<void> XProto::StoreColors(const StoreColorsRequest& request) {
   buf.Write(&cmap);
 
   // items
-  DCHECK_EQ(static_cast<size_t>(items_len), items.size());
+  CHECK_EQ(static_cast<size_t>(items_len), items.size());
   for (auto& items_elem : items) {
     // items_elem
     {
@@ -9432,7 +9433,7 @@ Future<void> XProto::StoreNamedColor(const StoreNamedColorRequest& request) {
   Pad(&buf, 2);
 
   // name
-  DCHECK_EQ(static_cast<size_t>(name_len), name.size());
+  CHECK_EQ(static_cast<size_t>(name_len), name.size());
   for (auto& name_elem : name) {
     // name_elem
     buf.Write(&name_elem);
@@ -9477,7 +9478,7 @@ Future<QueryColorsReply> XProto::QueryColors(
   buf.Write(&cmap);
 
   // pixels
-  DCHECK_EQ(static_cast<size_t>(pixels_len), pixels.size());
+  CHECK_EQ(static_cast<size_t>(pixels_len), pixels.size());
   for (auto& pixels_elem : pixels) {
     // pixels_elem
     buf.Write(&pixels_elem);
@@ -9549,7 +9550,7 @@ std::unique_ptr<QueryColorsReply> detail::ReadReply<QueryColorsReply>(
   }
 
   Align(&buf, 4);
-  DCHECK_EQ(buf.offset < 32 ? 0 : buf.offset - 32, 4 * length);
+  CHECK_EQ(buf.offset < 32 ? 0 : buf.offset - 32, 4 * length);
 
   return reply;
 }
@@ -9587,7 +9588,7 @@ Future<LookupColorReply> XProto::LookupColor(
   Pad(&buf, 2);
 
   // name
-  DCHECK_EQ(static_cast<size_t>(name_len), name.size());
+  CHECK_EQ(static_cast<size_t>(name_len), name.size());
   for (auto& name_elem : name) {
     // name_elem
     buf.Write(&name_elem);
@@ -9651,7 +9652,7 @@ std::unique_ptr<LookupColorReply> detail::ReadReply<LookupColorReply>(
   Read(&visual_blue, &buf);
 
   Align(&buf, 4);
-  DCHECK_EQ(buf.offset < 32 ? 0 : buf.offset - 32, 4 * length);
+  CHECK_EQ(buf.offset < 32 ? 0 : buf.offset - 32, 4 * length);
 
   return reply;
 }
@@ -9997,7 +9998,7 @@ std::unique_ptr<QueryBestSizeReply> detail::ReadReply<QueryBestSizeReply>(
   Read(&height, &buf);
 
   Align(&buf, 4);
-  DCHECK_EQ(buf.offset < 32 ? 0 : buf.offset - 32, 4 * length);
+  CHECK_EQ(buf.offset < 32 ? 0 : buf.offset - 32, 4 * length);
 
   return reply;
 }
@@ -10031,7 +10032,7 @@ Future<QueryExtensionReply> XProto::QueryExtension(
   Pad(&buf, 2);
 
   // name
-  DCHECK_EQ(static_cast<size_t>(name_len), name.size());
+  CHECK_EQ(static_cast<size_t>(name_len), name.size());
   for (auto& name_elem : name) {
     // name_elem
     buf.Write(&name_elem);
@@ -10087,7 +10088,7 @@ std::unique_ptr<QueryExtensionReply> detail::ReadReply<QueryExtensionReply>(
   Read(&first_error, &buf);
 
   Align(&buf, 4);
-  DCHECK_EQ(buf.offset < 32 ? 0 : buf.offset - 32, 4 * length);
+  CHECK_EQ(buf.offset < 32 ? 0 : buf.offset - 32, 4 * length);
 
   return reply;
 }
@@ -10169,7 +10170,7 @@ std::unique_ptr<ListExtensionsReply> detail::ReadReply<ListExtensionsReply>(
   }
 
   Align(&buf, 4);
-  DCHECK_EQ(buf.offset < 32 ? 0 : buf.offset - 32, 4 * length);
+  CHECK_EQ(buf.offset < 32 ? 0 : buf.offset - 32, 4 * length);
 
   return reply;
 }
@@ -10208,8 +10209,8 @@ Future<void> XProto::ChangeKeyboardMapping(
   Pad(&buf, 2);
 
   // keysyms
-  DCHECK_EQ(static_cast<size_t>((keycode_count) * (keysyms_per_keycode)),
-            keysyms.size());
+  CHECK_EQ(static_cast<size_t>((keycode_count) * (keysyms_per_keycode)),
+           keysyms.size());
   for (auto& keysyms_elem : keysyms) {
     // keysyms_elem
     buf.Write(&keysyms_elem);
@@ -10305,7 +10306,7 @@ std::unique_ptr<GetKeyboardMappingReply> detail::ReadReply<
   }
 
   Align(&buf, 4);
-  DCHECK_EQ(buf.offset < 32 ? 0 : buf.offset - 32, 4 * length);
+  CHECK_EQ(buf.offset < 32 ? 0 : buf.offset - 32, 4 * length);
 
   return reply;
 }
@@ -10411,14 +10412,14 @@ Future<void> XProto::ChangeKeyboardControl(
 }
 
 Future<void> XProto::ChangeKeyboardControl(
-    const absl::optional<int32_t>& key_click_percent,
-    const absl::optional<int32_t>& bell_percent,
-    const absl::optional<int32_t>& bell_pitch,
-    const absl::optional<int32_t>& bell_duration,
-    const absl::optional<uint32_t>& led,
-    const absl::optional<LedMode>& led_mode,
-    const absl::optional<KeyCode32>& key,
-    const absl::optional<AutoRepeatMode>& auto_repeat_mode) {
+    const std::optional<int32_t>& key_click_percent,
+    const std::optional<int32_t>& bell_percent,
+    const std::optional<int32_t>& bell_pitch,
+    const std::optional<int32_t>& bell_duration,
+    const std::optional<uint32_t>& led,
+    const std::optional<LedMode>& led_mode,
+    const std::optional<KeyCode32>& key,
+    const std::optional<AutoRepeatMode>& auto_repeat_mode) {
   return XProto::ChangeKeyboardControl(ChangeKeyboardControlRequest{
       key_click_percent, bell_percent, bell_pitch, bell_duration, led, led_mode,
       key, auto_repeat_mode});
@@ -10510,7 +10511,7 @@ std::unique_ptr<GetKeyboardControlReply> detail::ReadReply<
   }
 
   Align(&buf, 4);
-  DCHECK_EQ(buf.offset < 32 ? 0 : buf.offset - 32, 4 * length);
+  CHECK_EQ(buf.offset < 32 ? 0 : buf.offset - 32, 4 * length);
 
   return reply;
 }
@@ -10665,7 +10666,7 @@ std::unique_ptr<GetPointerControlReply> detail::ReadReply<
   Pad(&buf, 18);
 
   Align(&buf, 4);
-  DCHECK_EQ(buf.offset < 32 ? 0 : buf.offset - 32, 4 * length);
+  CHECK_EQ(buf.offset < 32 ? 0 : buf.offset - 32, 4 * length);
 
   return reply;
 }
@@ -10796,7 +10797,7 @@ std::unique_ptr<GetScreenSaverReply> detail::ReadReply<GetScreenSaverReply>(
   Pad(&buf, 18);
 
   Align(&buf, 4);
-  DCHECK_EQ(buf.offset < 32 ? 0 : buf.offset - 32, 4 * length);
+  CHECK_EQ(buf.offset < 32 ? 0 : buf.offset - 32, 4 * length);
 
   return reply;
 }
@@ -10838,7 +10839,7 @@ Future<void> XProto::ChangeHosts(const ChangeHostsRequest& request) {
   buf.Write(&address_len);
 
   // address
-  DCHECK_EQ(static_cast<size_t>(address_len), address.size());
+  CHECK_EQ(static_cast<size_t>(address_len), address.size());
   for (auto& address_elem : address) {
     // address_elem
     buf.Write(&address_elem);
@@ -10948,7 +10949,7 @@ std::unique_ptr<ListHostsReply> detail::ReadReply<ListHostsReply>(
   }
 
   Align(&buf, 4);
-  DCHECK_EQ(buf.offset < 32 ? 0 : buf.offset - 32, 4 * length);
+  CHECK_EQ(buf.offset < 32 ? 0 : buf.offset - 32, 4 * length);
 
   return reply;
 }
@@ -11077,7 +11078,7 @@ Future<void> XProto::RotateProperties(const RotatePropertiesRequest& request) {
   buf.Write(&delta);
 
   // atoms
-  DCHECK_EQ(static_cast<size_t>(atoms_len), atoms.size());
+  CHECK_EQ(static_cast<size_t>(atoms_len), atoms.size());
   for (auto& atoms_elem : atoms) {
     // atoms_elem
     buf.Write(&atoms_elem);
@@ -11148,7 +11149,7 @@ Future<SetPointerMappingReply> XProto::SetPointerMapping(
   Pad(&buf, sizeof(uint16_t));
 
   // map
-  DCHECK_EQ(static_cast<size_t>(map_len), map.size());
+  CHECK_EQ(static_cast<size_t>(map_len), map.size());
   for (auto& map_elem : map) {
     // map_elem
     buf.Write(&map_elem);
@@ -11192,7 +11193,7 @@ std::unique_ptr<SetPointerMappingReply> detail::ReadReply<
   Read(&length, &buf);
 
   Align(&buf, 4);
-  DCHECK_EQ(buf.offset < 32 ? 0 : buf.offset - 32, 4 * length);
+  CHECK_EQ(buf.offset < 32 ? 0 : buf.offset - 32, 4 * length);
 
   return reply;
 }
@@ -11261,7 +11262,7 @@ std::unique_ptr<GetPointerMappingReply> detail::ReadReply<
   }
 
   Align(&buf, 4);
-  DCHECK_EQ(buf.offset < 32 ? 0 : buf.offset - 32, 4 * length);
+  CHECK_EQ(buf.offset < 32 ? 0 : buf.offset - 32, 4 * length);
 
   return reply;
 }
@@ -11289,8 +11290,7 @@ Future<SetModifierMappingReply> XProto::SetModifierMapping(
   Pad(&buf, sizeof(uint16_t));
 
   // keycodes
-  DCHECK_EQ(static_cast<size_t>((keycodes_per_modifier) * (8)),
-            keycodes.size());
+  CHECK_EQ(static_cast<size_t>((keycodes_per_modifier) * (8)), keycodes.size());
   for (auto& keycodes_elem : keycodes) {
     // keycodes_elem
     buf.Write(&keycodes_elem);
@@ -11336,7 +11336,7 @@ std::unique_ptr<SetModifierMappingReply> detail::ReadReply<
   Read(&length, &buf);
 
   Align(&buf, 4);
-  DCHECK_EQ(buf.offset < 32 ? 0 : buf.offset - 32, 4 * length);
+  CHECK_EQ(buf.offset < 32 ? 0 : buf.offset - 32, 4 * length);
 
   return reply;
 }
@@ -11406,7 +11406,7 @@ std::unique_ptr<GetModifierMappingReply> detail::ReadReply<
   }
 
   Align(&buf, 4);
-  DCHECK_EQ(buf.offset < 32 ? 0 : buf.offset - 32, 4 * length);
+  CHECK_EQ(buf.offset < 32 ? 0 : buf.offset - 32, 4 * length);
 
   return reply;
 }

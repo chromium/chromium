@@ -6,44 +6,39 @@
  * @fileoverview 'settings-internet-detail-menu' is a menu that provides
  * additional actions for a network in the network detail page.
  */
-import 'chrome://resources/cr_elements/cr_action_menu/cr_action_menu.js';
-import 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.js';
-import 'chrome://resources/cr_elements/cr_lazy_render/cr_lazy_render.js';
-import 'chrome://resources/cr_elements/cr_shared_vars.css.js';
+import 'chrome://resources/ash/common/cr_elements/cr_action_menu/cr_action_menu.js';
+import 'chrome://resources/ash/common/cr_elements/cr_icon_button/cr_icon_button.js';
+import 'chrome://resources/ash/common/cr_elements/cr_lazy_render/cr_lazy_render.js';
+import 'chrome://resources/ash/common/cr_elements/cr_shared_vars.css.js';
 import '../settings_shared.css.js';
 
-import {ESimManagerListenerBehavior, ESimManagerListenerBehaviorInterface} from 'chrome://resources/ash/common/cellular_setup/esim_manager_listener_behavior.js';
+import {ESimManagerListenerMixin} from 'chrome://resources/ash/common/cellular_setup/esim_manager_listener_mixin.js';
 import {MojoInterfaceProviderImpl} from 'chrome://resources/ash/common/network/mojo_interface_provider.js';
 import {OncMojo} from 'chrome://resources/ash/common/network/onc_mojo.js';
-import {CrActionMenuElement} from 'chrome://resources/cr_elements/cr_action_menu/cr_action_menu.js';
-import {CrLazyRenderElement} from 'chrome://resources/cr_elements/cr_lazy_render/cr_lazy_render.js';
+import {CrActionMenuElement} from 'chrome://resources/ash/common/cr_elements/cr_action_menu/cr_action_menu.js';
+import {CrLazyRenderElement} from 'chrome://resources/ash/common/cr_elements/cr_lazy_render/cr_lazy_render.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {NetworkType, OncSource} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/network_types.mojom-webui.js';
-import {afterNextRender, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {afterNextRender, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {castExists} from '../assert_extras.js';
-import {Constructor} from '../common/types.js';
-import {DeepLinkingMixin, DeepLinkingMixinInterface} from '../deep_linking_mixin.js';
+import {DeepLinkingMixin} from '../common/deep_linking_mixin.js';
+import {RouteObserverMixin} from '../common/route_observer_mixin.js';
 import {Setting} from '../mojom-webui/setting.mojom-webui.js';
-import {RouteObserverMixin, RouteObserverMixinInterface} from '../route_observer_mixin.js';
 import {Route, Router, routes} from '../router.js';
 
 import {getTemplate} from './internet_detail_menu.html.js';
 
-interface SettingsInternetDetailMenuElement {
+export interface SettingsInternetDetailMenuElement {
   $: {
     menu: CrLazyRenderElement<CrActionMenuElement>,
   };
 }
 
-const SettingsInternetDetailMenuElementBase =
-    mixinBehaviors(
-        [ESimManagerListenerBehavior],
-        DeepLinkingMixin(RouteObserverMixin(PolymerElement))) as
-    Constructor<PolymerElement&RouteObserverMixinInterface&
-                DeepLinkingMixinInterface&ESimManagerListenerBehaviorInterface>;
+const SettingsInternetDetailMenuElementBase = ESimManagerListenerMixin(
+    DeepLinkingMixin(RouteObserverMixin(PolymerElement)));
 
-class SettingsInternetDetailMenuElement extends
+export class SettingsInternetDetailMenuElement extends
     SettingsInternetDetailMenuElementBase {
   static get is() {
     return 'settings-internet-detail-menu' as const;
@@ -134,7 +129,7 @@ class SettingsInternetDetailMenuElement extends
   /**
    * RouteObserverMixin override
    */
-  override currentRouteChanged(route: Route) {
+  override currentRouteChanged(route: Route): void {
     this.eSimNetworkState_ = null;
     this.guid_ = '';
     if (route !== routes.NETWORK_DETAIL) {
@@ -161,7 +156,7 @@ class SettingsInternetDetailMenuElement extends
   /**
    * ESimManagerListenerBehavior override
    */
-  override onProfileChanged() {
+  override onProfileChanged(): void {
     this.setEsimNetworkState_();
   }
 

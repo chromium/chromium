@@ -1,6 +1,9 @@
 {
   "$build/chromium_tests_builder_config": {
     "builder_config": {
+      "additional_exclusions": [
+        "infra/config/generated/builders/ci/TSAN Debug/gn-args.json"
+      ],
       "builder_db": {
         "entries": [
           {
@@ -25,7 +28,8 @@
                 ],
                 "build_config": "Debug",
                 "config": "chromium_clang",
-                "target_bits": 64
+                "target_bits": 64,
+                "target_platform": "linux"
               },
               "legacy_gclient_config": {
                 "config": "chromium"
@@ -39,6 +43,12 @@
           "bucket": "ci",
           "builder": "TSAN Debug",
           "project": "chromium"
+        }
+      ],
+      "mirroring_builder_group_and_names": [
+        {
+          "builder": "linux-tsan-dbg",
+          "group": "tryserver.chromium.fuzz"
         }
       ]
     }

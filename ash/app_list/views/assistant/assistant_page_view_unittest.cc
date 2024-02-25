@@ -39,19 +39,19 @@ namespace {
 using assistant::AssistantInteractionMetadata;
 using assistant::AssistantInteractionType;
 
-#define EXPECT_INTERACTION_OF_TYPE(type_)                      \
-  ({                                                           \
-    absl::optional<AssistantInteractionMetadata> interaction = \
-        current_interaction();                                 \
-    ASSERT_TRUE(interaction.has_value());                      \
-    EXPECT_EQ(interaction->type, type_);                       \
+#define EXPECT_INTERACTION_OF_TYPE(type_)                     \
+  ({                                                          \
+    std::optional<AssistantInteractionMetadata> interaction = \
+        current_interaction();                                \
+    ASSERT_TRUE(interaction.has_value());                     \
+    EXPECT_EQ(interaction->type, type_);                      \
   })
 
-#define EXPECT_NO_INTERACTION()                                \
-  ({                                                           \
-    absl::optional<AssistantInteractionMetadata> interaction = \
-        current_interaction();                                 \
-    ASSERT_FALSE(interaction.has_value());                     \
+#define EXPECT_NO_INTERACTION()                               \
+  ({                                                          \
+    std::optional<AssistantInteractionMetadata> interaction = \
+        current_interaction();                                \
+    ASSERT_FALSE(interaction.has_value());                    \
   })
 
 // Ensures that the given view has the focus. If it doesn't, this will print a
@@ -112,13 +112,14 @@ class FocusChangeListenerStub : public views::FocusChangeListener {
   }
 
   // Returns all views that received the focus at some point.
-  const std::vector<views::View*>& focused_views() const {
+  const std::vector<raw_ptr<views::View, VectorExperimental>>& focused_views()
+      const {
     return focused_views_;
   }
 
  private:
-  std::vector<views::View*> focused_views_;
-  raw_ptr<views::FocusManager, ExperimentalAsh> focus_manager_;
+  std::vector<raw_ptr<views::View, VectorExperimental>> focused_views_;
+  raw_ptr<views::FocusManager> focus_manager_;
 };
 
 // |ViewObserver| that simply remembers whether the given view was drawn
@@ -150,7 +151,7 @@ class VisibilityObserver : public views::ViewObserver {
       was_drawn_ = true;
   }
 
-  const raw_ptr<views::View, ExperimentalAsh> observed_view_;
+  const raw_ptr<views::View> observed_view_;
   bool was_drawn_ = false;
 };
 
@@ -190,12 +191,6 @@ class AssistantPageViewTest : public AssistantAshTestBase {
 
   const views::View* GetFocusedView() {
     return page_view()->GetWidget()->GetFocusManager()->GetFocusedView();
-  }
-
-  // Ensures the onboarding views will not be shown.
-  void DoNotShowOnboardingViews() {
-    SetNumberOfSessionsWhereOnboardingShown(
-        assistant::ui::kOnboardingMaxSessionsShown);
   }
 };
 
@@ -298,39 +293,6 @@ TEST_F(AssistantPageViewTest, FocusShouldRemainInAssistantViewWhenPressingTab) {
   } while (focused_view != initial_focused_view);
 }
 
-TEST_F(AssistantPageViewTest,
-       FocusShouldCycleThroughOnboardingSuggestionsWhenPressingTab) {
-  constexpr int kMaxIterations = 100;
-
-  // Show Assistant UI and verify onboarding suggestions exist.
-  ShowAssistantUi();
-  auto onboarding_suggestions = GetOnboardingSuggestionViews();
-  ASSERT_FALSE(onboarding_suggestions.empty());
-
-  // Cache the first focused view.
-  auto* first_focused_view = GetFocusedView();
-
-  // Advance focus to the first onboarding suggestion.
-  int num_iterations = 0;
-  while (GetFocusedView() != onboarding_suggestions.at(0)) {
-    PressKeyAndWait(ui::VKEY_TAB);
-    ASSERT_LE(++num_iterations, kMaxIterations);  // Validity check.
-  }
-
-  // Verify we can cycle through them.
-  for (auto* onboarding_suggestion : onboarding_suggestions) {
-    ASSERT_EQ(GetFocusedView(), onboarding_suggestion);
-    PressKeyAndWait(ui::VKEY_TAB);
-  }
-
-  // Confirm that we eventually get back to our first focused view.
-  num_iterations = 0;
-  while (GetFocusedView() != first_focused_view) {
-    PressKeyAndWait(ui::VKEY_TAB);
-    ASSERT_LE(++num_iterations, kMaxIterations);  // Validity check.
-  }
-}
-
 TEST_F(AssistantPageViewTest, ShouldFocusMicWhenOpeningWithHotword) {
   ShowAssistantUi(AssistantEntryPoint::kHotword);
 
@@ -338,44 +300,22 @@ TEST_F(AssistantPageViewTest, ShouldFocusMicWhenOpeningWithHotword) {
 }
 
 TEST_F(AssistantPageViewTest, ShouldShowGreetingLabelWhenOpening) {
-  DoNotShowOnboardingViews();
-
   ShowAssistantUi();
 
   EXPECT_TRUE(greeting_label()->IsDrawn());
   EXPECT_FALSE(onboarding_view()->IsDrawn());
 }
 
-TEST_F(AssistantPageViewTest, ShouldShowOnboardingWhenOpening) {
-  ShowAssistantUi();
-
-  EXPECT_TRUE(onboarding_view()->IsDrawn());
-  EXPECT_FALSE(greeting_label()->IsDrawn());
-}
-
 TEST_F(AssistantPageViewTest, ShouldDismissGreetingLabelAfterQuery) {
-  DoNotShowOnboardingViews();
-
   ShowAssistantUi();
 
   MockTextInteraction().WithTextResponse("The response");
 
   EXPECT_FALSE(greeting_label()->IsDrawn());
   EXPECT_FALSE(onboarding_view()->IsDrawn());
-}
-
-TEST_F(AssistantPageViewTest, ShouldDismissOnboardingAfterQuery) {
-  ShowAssistantUi();
-
-  MockTextInteraction().WithTextResponse("The response");
-
-  EXPECT_FALSE(onboarding_view()->IsDrawn());
-  EXPECT_FALSE(greeting_label()->IsDrawn());
 }
 
 TEST_F(AssistantPageViewTest, ShouldShowGreetingLabelAgainAfterReopening) {
-  DoNotShowOnboardingViews();
-
   ShowAssistantUi();
 
   // Cause the label to be hidden.
@@ -392,8 +332,6 @@ TEST_F(AssistantPageViewTest, ShouldShowGreetingLabelAgainAfterReopening) {
 
 TEST_F(AssistantPageViewTest,
        ShouldNotShowGreetingLabelWhenOpeningFromSearchResult) {
-  DoNotShowOnboardingViews();
-
   ShowAssistantUi(AssistantEntryPoint::kLauncherSearchResult);
 
   EXPECT_FALSE(greeting_label()->IsDrawn());
@@ -406,75 +344,6 @@ TEST_F(AssistantPageViewTest,
 
   EXPECT_FALSE(onboarding_view()->IsDrawn());
   EXPECT_FALSE(greeting_label()->IsDrawn());
-}
-
-TEST_F(AssistantPageViewTest, ShouldShowOnboardingForNewUsers) {
-  // A user is considered new if they haven't had an Assistant interaction in
-  // the past 28 days.
-  const base::Time new_user_cutoff = base::Time::Now() - base::Days(28);
-
-  SetTimeOfLastInteraction(new_user_cutoff + base::Minutes(1));
-  ShowAssistantUi();
-
-  // This user *has* interacted with Assistant more recently than 28 days ago so
-  // they are *not* considered new. Therefore, onboarding should *not* be shown.
-  EXPECT_FALSE(onboarding_view()->IsDrawn());
-
-  SetTimeOfLastInteraction(new_user_cutoff);
-
-  CloseAssistantUi();
-  ShowAssistantUi();
-
-  // This user has *not* interacted with Assistant more recently than 28 days
-  // ago so they *are* considered new. Therefore, onboarding *should* be shown.
-  EXPECT_TRUE(onboarding_view()->IsDrawn());
-}
-
-TEST_F(AssistantPageViewTest, ShouldShowOnboardingUntilInteractionOccurs) {
-  SetTimeOfLastInteraction(base::Time::Now() - base::Days(28));
-  ShowAssistantUi();
-
-  // This user has *not* interacted with Assistant more recently than 28 days
-  // ago so they *are* considered new. Therefore, onboarding *should* be shown.
-  EXPECT_TRUE(onboarding_view()->IsDrawn());
-
-  CloseAssistantUi();
-  ShowAssistantUi();
-
-  // The user has *not* yet interacted with Assistant in this user session, so
-  // we should continue to show onboarding.
-  EXPECT_TRUE(onboarding_view()->IsDrawn());
-
-  MockTextInteraction().WithQuery("Any Query").WithTextResponse("Any Response");
-
-  CloseAssistantUi();
-  ShowAssistantUi();
-
-  // The user *has* had an interaction with Assistant in this user session, so
-  // we should *not* show onboarding anymore.
-  EXPECT_FALSE(onboarding_view()->IsDrawn());
-}
-
-TEST_F(AssistantPageViewTest,
-       ShouldShowOnboardingToExistingUsersIfShownPreviouslyInDifferentSession) {
-  SetTimeOfLastInteraction(base::Time::Now());
-  SetNumberOfSessionsWhereOnboardingShown(1);
-
-  ShowAssistantUi();
-
-  // This user *has* interacted with Assistant more recently than 28 days ago so
-  // so they are *not* considered new. Onboarding would not normally be shown
-  // but, since it *was* shown in a previous user session, we *do* show it.
-  EXPECT_TRUE(onboarding_view()->IsDrawn());
-
-  MockTextInteraction().WithQuery("Any Query").WithTextResponse("Any Response");
-
-  CloseAssistantUi();
-  ShowAssistantUi();
-
-  // But once the user has had an interaction with Assistant in this user
-  // session, we still expect onboarding to no longer show.
-  EXPECT_FALSE(onboarding_view()->IsDrawn());
 }
 
 TEST_F(AssistantPageViewTest,
@@ -519,8 +388,38 @@ TEST_F(AssistantPageViewTest,
   EXPECT_FALSE(current_interaction().has_value());
 }
 
+TEST_F(AssistantPageViewTest, ShouldNotShowOptInViewWithZeroStateView) {
+  ShowAssistantUi();
+
+  // When Launcher Search IPH is enabled, there is no suggestion or opt-in chips
+  // on the zero state page.
+  const views::View* suggestion_chips = suggestion_chip_container();
+  const views::View* opt_in = opt_in_view();
+
+  SetConsentStatus(ConsentStatus::kUnauthorized);
+  EXPECT_FALSE(opt_in->IsDrawn());
+  EXPECT_FALSE(suggestion_chips->IsDrawn());
+
+  SetConsentStatus(ConsentStatus::kNotFound);
+  EXPECT_FALSE(opt_in->IsDrawn());
+  EXPECT_FALSE(suggestion_chips->IsDrawn());
+
+  SetConsentStatus(ConsentStatus::kUnknown);
+  EXPECT_FALSE(opt_in->IsDrawn());
+  EXPECT_FALSE(suggestion_chips->IsDrawn());
+
+  SetConsentStatus(ConsentStatus::kActivityControlAccepted);
+  EXPECT_FALSE(opt_in->IsDrawn());
+  EXPECT_FALSE(suggestion_chips->IsDrawn());
+}
+
 TEST_F(AssistantPageViewTest, ShouldShowOptInViewUnlessUserHasGivenConsent) {
   ShowAssistantUi();
+
+  // When Launcher Search IPH is enabled and it is not in zero state view, we
+  // show the suggestion or opt-in chips as needed.
+  MockTextInteraction().WithTextResponse("The response");
+
   const views::View* suggestion_chips = suggestion_chip_container();
   const views::View* opt_in = opt_in_view();
 
@@ -718,20 +617,12 @@ TEST_F(AssistantPageViewTest, RememberAndShowHistory) {
   EXPECT_TRUE(input_text_field()->GetText().empty());
 }
 
-TEST_F(AssistantPageViewTest, ShouldHaveConversationStarters) {
-  DoNotShowOnboardingViews();
-
+TEST_F(AssistantPageViewTest, ShouldNotHaveConversationStarters) {
   ShowAssistantUi();
 
   EXPECT_FALSE(onboarding_view()->IsDrawn());
-  EXPECT_FALSE(GetSuggestionChips().empty());
-}
 
-TEST_F(AssistantPageViewTest,
-       ShouldNotHaveConversationStartersWhenShowingOnboarding) {
-  ShowAssistantUi();
-
-  EXPECT_TRUE(onboarding_view()->IsDrawn());
+  // When Launcher Search IPH is enabled, there is no suggestion chips.
   EXPECT_TRUE(GetSuggestionChips().empty());
 }
 
@@ -765,13 +656,12 @@ TEST_F(AssistantPageViewTest, PageViewHasBackgroundBlurInTabletMode) {
   EXPECT_FALSE(page_view_layer->fills_bounds_opaquely());
   EXPECT_EQ(page_view_layer->background_blur(),
             ColorProvider::kBackgroundBlurSigma);
-  EXPECT_EQ(page_view_layer->GetTargetColor(),
-            ColorProvider::Get()->GetBaseLayerColor(
-                ColorProvider::BaseLayerType::kTransparent80));
+  EXPECT_EQ(
+      page_view_layer->GetTargetColor(),
+      page_view()->GetColorProvider()->GetColor(kColorAshShieldAndBase80));
 }
 
 TEST_F(AssistantPageViewTest, BackgroundColorInDarkLightMode) {
-  auto* color_provider = AshColorProvider::Get();
   auto* dark_light_mode_controller = DarkLightModeControllerImpl::Get();
   dark_light_mode_controller->OnActiveUserPrefServiceChanged(
       Shell::Get()->session_controller()->GetActivePrefService());
@@ -783,18 +673,18 @@ TEST_F(AssistantPageViewTest, BackgroundColorInDarkLightMode) {
 
   const bool initial_dark_mode_status =
       dark_light_mode_controller->IsDarkModeEnabled();
-  EXPECT_EQ(page_view()->layer()->GetTargetColor(),
-            color_provider->GetBaseLayerColor(
-                ColorProvider::BaseLayerType::kTransparent80));
+  EXPECT_EQ(
+      page_view()->layer()->GetTargetColor(),
+      page_view()->GetColorProvider()->GetColor(kColorAshShieldAndBase80));
 
   // Switch the color mode.
   dark_light_mode_controller->ToggleColorMode();
   ASSERT_NE(initial_dark_mode_status,
             dark_light_mode_controller->IsDarkModeEnabled());
 
-  EXPECT_EQ(page_view()->layer()->GetTargetColor(),
-            color_provider->GetBaseLayerColor(
-                ColorProvider::BaseLayerType::kTransparent80));
+  EXPECT_EQ(
+      page_view()->layer()->GetTargetColor(),
+      page_view()->GetColorProvider()->GetColor(kColorAshShieldAndBase80));
 }
 
 //------------------------------------------------------------------------------

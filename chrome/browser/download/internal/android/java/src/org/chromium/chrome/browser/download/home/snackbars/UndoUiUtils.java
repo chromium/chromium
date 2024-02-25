@@ -19,8 +19,9 @@ final class UndoUiUtils {
 
     /** @return A {@link String} representing the title text for an undo snackbar. */
     public static String getTitleFor(Collection<OfflineItem> items) {
-        return items.size() == 1 ? items.iterator().next().title
-                                 : String.format(Locale.getDefault(), "%d", items.size());
+        return items.size() == 1
+                ? items.iterator().next().title
+                : String.format(Locale.getDefault(), "%d", items.size());
     }
 
     /** @return A {@link String} representing the template text for an undo snackbar. */

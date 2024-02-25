@@ -4,11 +4,12 @@
 
 #import "ios/chrome/browser/ui/default_promo/video_default_browser_promo_view_controller.h"
 
+#import "base/i18n/rtl.h"
 #import "base/values.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/confirmation_alert/confirmation_alert_view_controller.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
-#import "ios/chrome/grit/ios_chromium_strings.h"
+#import "ios/chrome/grit/ios_branded_strings.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ios/public/provider/chrome/browser/lottie/lottie_animation_api.h"
 #import "ios/public/provider/chrome/browser/lottie/lottie_animation_configuration.h"
@@ -17,8 +18,12 @@
 namespace {
 constexpr CGFloat kSpacingBeforeImageIfNoNavigationBar = 24;
 constexpr CGFloat kpacingAfterImageWithAnimation = 24;
-NSString* const kDarkModeAnimationSuffix = @"_darkmode";
 NSString* const kDefaultBrowserAnimation = @"default_browser_animation";
+NSString* const kDefaultBrowserAnimationRtl = @"default_browser_animation_rtl";
+NSString* const kDefaultBrowserAnimationDarkmode =
+    @"default_browser_animation_darkmode";
+NSString* const kDefaultBrowserAnimationRtlDarkmode =
+    @"default_browser_animation_rtl_darkmode";
 NSString* const kDefaultBrowserAppKeypath = @"IDS_DEFAULT_BROWSER_APP";
 NSString* const kDefaultBrowserApp2Keypath = @"IDS_DEFAULT_BROWSER_APP_2";
 NSString* const kChromeKeypath = @"IDS_CHROME";
@@ -49,10 +54,18 @@ NSString* const kChromeSettingsKeypath = @"IDS_CHROME_SETTINGS";
 - (instancetype)init {
   self = [super initWithNibName:nil bundle:nil];
   if (self) {
-    _animationViewWrapper = [self createAnimation:kDefaultBrowserAnimation];
-    _animationViewWrapperDarkMode = [self
-        createAnimation:[kDefaultBrowserAnimation
-                            stringByAppendingString:kDarkModeAnimationSuffix]];
+    // TODO(crbug.com/1508131): Handle the case when the promo is displayed and
+    // the user switches between LTR and RLT.
+    if (base::i18n::IsRTL()) {
+      _animationViewWrapper =
+          [self createAnimation:kDefaultBrowserAnimationRtl];
+      _animationViewWrapperDarkMode =
+          [self createAnimation:kDefaultBrowserAnimationRtlDarkmode];
+    } else {
+      _animationViewWrapper = [self createAnimation:kDefaultBrowserAnimation];
+      _animationViewWrapperDarkMode =
+          [self createAnimation:kDefaultBrowserAnimationDarkmode];
+    }
 
     // Set the text localization.
     NSDictionary* textProvider = @{
@@ -75,6 +88,11 @@ NSString* const kChromeSettingsKeypath = @"IDS_CHROME_SETTINGS";
 - (void)viewDidLoad {
   [super viewDidLoad];
   self.view.backgroundColor = [UIColor colorNamed:kGrey100Color];
+  NSString* tertiaryActionString =
+      (self.showRemindMeLater)
+          ? l10n_util::GetNSString(
+                IDS_IOS_DEFAULT_BROWSER_VIDEO_PROMO_TERTIARY_BUTTON_TEXT)
+          : nil;
   [self
       createConfirmationAlertScreen:
           l10n_util::GetNSString(IDS_IOS_DEFAULT_BROWSER_VIDEO_PROMO_TITLE_TEXT)
@@ -86,7 +104,8 @@ NSString* const kChromeSettingsKeypath = @"IDS_CHROME_SETTINGS";
                         IDS_IOS_DEFAULT_BROWSER_VIDEO_PROMO_PRIMARY_BUTTON_TEXT)
               secondaryActionString:
                   l10n_util::GetNSString(
-                      IDS_IOS_DEFAULT_BROWSER_VIDEO_PROMO_SECONDARY_BUTTON_TEXT)];
+                      IDS_IOS_DEFAULT_BROWSER_VIDEO_PROMO_SECONDARY_BUTTON_TEXT)
+               tertiaryActionString:tertiaryActionString];
 
   [self configureAnimationView];
   [self configureAlertScreen];
@@ -110,7 +129,8 @@ NSString* const kChromeSettingsKeypath = @"IDS_CHROME_SETTINGS";
 - (void)createConfirmationAlertScreen:(NSString*)titleString
                        subtitleString:(NSString*)subtitleString
                   primaryActionString:(NSString*)primaryActionString
-                secondaryActionString:(NSString*)secondaryActionString {
+                secondaryActionString:(NSString*)secondaryActionString
+                 tertiaryActionString:(NSString*)tertiaryActionString {
   DCHECK(!self.alertScreen);
   ConfirmationAlertViewController* alertScreen =
       [[ConfirmationAlertViewController alloc] init];
@@ -118,6 +138,7 @@ NSString* const kChromeSettingsKeypath = @"IDS_CHROME_SETTINGS";
   alertScreen.subtitleString = subtitleString;
   alertScreen.primaryActionString = primaryActionString;
   alertScreen.secondaryActionString = secondaryActionString;
+  alertScreen.tertiaryActionString = tertiaryActionString;
   alertScreen.actionHandler = self.actionHandler;
   alertScreen.modalPresentationStyle = UIModalPresentationFullScreen;
   self.alertScreen = alertScreen;

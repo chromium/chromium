@@ -5,11 +5,11 @@
 #ifndef CONTENT_PUBLIC_BROWSER_CHILD_PROCESS_SECURITY_POLICY_H_
 #define CONTENT_PUBLIC_BROWSER_CHILD_PROCESS_SECURITY_POLICY_H_
 
+#include <optional>
 #include <string>
 #include <vector>
 
 #include "content/common/content_export.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 
@@ -210,14 +210,17 @@ class ChildProcessSecurityPolicy {
   virtual void GrantSendMidiSysExMessage(int child_id) = 0;
 
   // Returns true if the process is permitted to read and modify the data for
-  // the origin of |url|. This is currently used to protect data such as
-  // cookies, passwords, and local storage. Does not affect cookies attached to
-  // or set by network requests.
+  // the given `origin`. This is used to protect data such as cookies,
+  // passwords, and local storage. Does not affect cookies attached to or set by
+  // network requests.
   //
-  // This can only return false for processes locked to a particular origin,
-  // which can happen for any origin when the --site-per-process flag is used,
-  // or for isolated origins that require a dedicated process (see
-  // AddFutureIsolatedOrigins).
+  // This function performs two kinds of security checks:
+  // - "Jail" check: ensures that a process locked to a particular site can
+  //   only access data belonging to that site.
+  // - "Citadel" check: ensures that a process that is *not* locked to a
+  //   particular site does not access data belonging to a site that requires a
+  //   dedicated process. This check is mainly relevant on Android, where only
+  //   some sites require site isolation.
   virtual bool CanAccessDataForOrigin(int child_id,
                                       const url::Origin& origin) = 0;
 
@@ -322,7 +325,7 @@ class ChildProcessSecurityPolicy {
   // by the source of how they were added and/or by BrowserContext.
   //
   // If |source| is provided, only origins that were added with the same source
-  // will be returned; if |source| is absl::nullopt, origins from all sources
+  // will be returned; if |source| is std::nullopt, origins from all sources
   // will be returned.
   //
   // If |browser_context| is null, only globally applicable origins will be
@@ -338,7 +341,7 @@ class ChildProcessSecurityPolicy {
   // Origin-Agent-Cluster as well as COOP documents loaded without user
   // activation.)
   virtual std::vector<url::Origin> GetIsolatedOrigins(
-      absl::optional<IsolatedOriginSource> source = absl::nullopt,
+      std::optional<IsolatedOriginSource> source = std::nullopt,
       BrowserContext* browser_context = nullptr) = 0;
 
   // Returns whether the site of |origin| is isolated and was added by the

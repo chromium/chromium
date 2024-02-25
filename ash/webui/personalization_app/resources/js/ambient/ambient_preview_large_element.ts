@@ -9,26 +9,26 @@
  * the personalization app main page.
  */
 
-import 'chrome://resources/cr_elements/cr_auto_img/cr_auto_img.js';
+import 'chrome://resources/ash/common/personalization/common.css.js';
+import 'chrome://resources/ash/common/personalization/cros_button_style.css.js';
+import 'chrome://resources/ash/common/cr_elements/cr_auto_img/cr_auto_img.js';
 import 'chrome://resources/polymer/v3_0/paper-spinner/paper-spinner-lite.js';
 import './ambient_zero_state_svg_element.js';
-import '../../css/common.css.js';
-import '../../css/cros_button_style.css.js';
 
-import {assert} from 'chrome://resources/js/assert_ts.js';
+import {isNonEmptyArray} from 'chrome://resources/ash/common/sea_pen/sea_pen_utils.js';
+import {assert} from 'chrome://resources/js/assert.js';
 import {Url} from 'chrome://resources/mojo/url/mojom/url.mojom-webui.js';
 
 import {TopicSource} from '../../personalization_app.mojom-webui.js';
 import {logAmbientModeOptInUMA} from '../personalization_metrics_logger.js';
-import {Paths, PersonalizationRouter, ScrollableTarget} from '../personalization_router_element.js';
-import {isNonEmptyArray} from '../utils.js';
+import {Paths, PersonalizationRouterElement, ScrollableTarget} from '../personalization_router_element.js';
 
 import {setAmbientModeEnabled} from './ambient_controller.js';
 import {getAmbientProvider} from './ambient_interface_provider.js';
 import {AmbientPreviewBase} from './ambient_preview_base.js';
 import {getTemplate} from './ambient_preview_large_element.html.js';
 
-export class AmbientPreviewLarge extends AmbientPreviewBase {
+export class AmbientPreviewLargeElement extends AmbientPreviewBase {
   static get is() {
     return 'ambient-preview-large';
   }
@@ -93,7 +93,7 @@ export class AmbientPreviewLarge extends AmbientPreviewBase {
   }
 
   private onClickAmbientSubpageLink_() {
-    PersonalizationRouter.instance().goToRoute(Paths.AMBIENT);
+    PersonalizationRouterElement.instance().goToRoute(Paths.AMBIENT);
   }
 
   /** Enable ambient mode and navigates to the ambient subpage. */
@@ -103,13 +103,13 @@ export class AmbientPreviewLarge extends AmbientPreviewBase {
     logAmbientModeOptInUMA();
     await setAmbientModeEnabled(
         /*ambientModeEnabled=*/ true, getAmbientProvider(), this.getStore());
-    PersonalizationRouter.instance().goToRoute(Paths.AMBIENT);
+    PersonalizationRouterElement.instance().goToRoute(Paths.AMBIENT);
   }
 
   /** Navigates to the ambient subpage. */
   private onClickPreviewImage_(event: Event) {
     event.stopPropagation();
-    PersonalizationRouter.instance().goToRoute(Paths.AMBIENT);
+    PersonalizationRouterElement.instance().goToRoute(Paths.AMBIENT);
   }
 
   /**
@@ -117,7 +117,7 @@ export class AmbientPreviewLarge extends AmbientPreviewBase {
    */
   private onClickThumbnails_(event: Event) {
     event.stopPropagation();
-    PersonalizationRouter.instance().goToRoute(
+    PersonalizationRouterElement.instance().goToRoute(
         Paths.AMBIENT, {scrollTo: ScrollableTarget.TOPIC_SOURCE_LIST});
   }
 
@@ -128,7 +128,8 @@ export class AmbientPreviewLarge extends AmbientPreviewBase {
   private onClickPhotoCollage_(event: Event) {
     assert(typeof this.topicSource_ === 'number', 'topic source required');
     event.stopPropagation();
-    PersonalizationRouter.instance().selectAmbientAlbums(this.topicSource_);
+    PersonalizationRouterElement.instance().selectAmbientAlbums(
+        this.topicSource_);
   }
 
   private getThumbnailContainerClass_(): string {
@@ -140,4 +141,5 @@ export class AmbientPreviewLarge extends AmbientPreviewBase {
   }
 }
 
-customElements.define(AmbientPreviewLarge.is, AmbientPreviewLarge);
+customElements.define(
+    AmbientPreviewLargeElement.is, AmbientPreviewLargeElement);

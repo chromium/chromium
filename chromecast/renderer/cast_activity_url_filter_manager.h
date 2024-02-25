@@ -15,6 +15,7 @@
 #include "mojo/public/cpp/bindings/associated_receiver_set.h"
 #include "mojo/public/cpp/bindings/pending_associated_receiver.h"
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_registry.h"
+#include "third_party/blink/public/common/tokens/tokens.h"
 
 namespace chromecast {
 
@@ -32,10 +33,11 @@ class CastActivityUrlFilterManager {
   ~CastActivityUrlFilterManager();
 
   // Returns nullptr if no Activity URL filter exists for the render frame.
-  ActivityUrlFilter* GetActivityUrlFilterForRenderFrameID(int render_frame_id);
+  ActivityUrlFilter* GetActivityUrlFilterForRenderFrameToken(
+      const blink::LocalFrameToken& frame_token);
 
   void OnRenderFrameCreated(content::RenderFrame* render_frame);
-  void OnRenderFrameRemoved(int render_frame_id);
+  void OnRenderFrameRemoved(const blink::LocalFrameToken& frame_token);
 
  private:
   class UrlFilterReceiver
@@ -80,7 +82,8 @@ class CastActivityUrlFilterManager {
     base::WeakPtrFactory<UrlFilterReceiver> weak_factory_;
   };
 
-  base::flat_map<int, UrlFilterReceiver*> activity_url_filters_;
+  base::flat_map<blink::LocalFrameToken, UrlFilterReceiver*>
+      activity_url_filters_;
 
   base::WeakPtr<CastActivityUrlFilterManager> weak_this_;
   base::WeakPtrFactory<CastActivityUrlFilterManager> weak_factory_;

@@ -23,12 +23,12 @@ std::string GetDigestString(const std::string& key,
   if (!hmac.Init(key) || !hmac.Sign(message, &digest[0], digest.size())) {
     return std::string();
   }
-  return base::HexEncode(&digest[0], digest.size());
+  return base::HexEncode(digest);
 }
 
 }  // namespace
 
-absl::optional<psm_rlwe::RlwePlaintextId> GeneratePsmIdentifier(
+std::optional<psm_rlwe::RlwePlaintextId> GeneratePsmIdentifier(
     const std::string& high_entropy_seed,
     const std::string& psm_use_case_str,
     const std::string& window_id) {
@@ -37,7 +37,7 @@ absl::optional<psm_rlwe::RlwePlaintextId> GeneratePsmIdentifier(
     LOG(ERROR)
         << "Failed to generate PSM id without the high entropy seed, use "
         << "case, and window id being defined.";
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   std::string unhashed_psm_id =
@@ -55,7 +55,7 @@ absl::optional<psm_rlwe::RlwePlaintextId> GeneratePsmIdentifier(
 
   // Failed HMAC-SHA256 hash on PSM id.
   LOG(ERROR) << "Failed to calculate HMAC-256 has on PSM id.";
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 }  // namespace ash::report::utils

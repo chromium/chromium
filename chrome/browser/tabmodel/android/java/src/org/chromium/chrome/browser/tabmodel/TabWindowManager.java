@@ -7,6 +7,8 @@ package org.chromium.chrome.browser.tabmodel;
 import android.app.Activity;
 import android.util.Pair;
 
+import org.chromium.base.supplier.OneshotSupplier;
+import org.chromium.chrome.browser.profiles.ProfileProvider;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.NextTabPolicy.NextTabPolicySupplier;
 import org.chromium.ui.base.WindowAndroid;
@@ -30,26 +32,36 @@ public interface TabWindowManager {
     // ChromeTabbedActivity.
     public static final int MAX_SELECTORS_S = 5;
 
+    static final String ASSERT_INDICES_MATCH_HISTOGRAM_NAME =
+            "Android.MultiWindowMode.AssertIndicesMatch";
+    static final String ASSERT_INDICES_MATCH_HISTOGRAM_SUFFIX_NOT_REASSIGNED = ".NotReassigned";
+    static final String ASSERT_INDICES_MATCH_HISTOGRAM_SUFFIX_REASSIGNED = ".Reassigned";
+
     /**
      * @return The maximum number of simultaneous TabModelSelector instances in this Application.
      */
     int getMaxSimultaneousSelectors();
 
     /**
-     * Called to request a {@link TabModelSelector} based on {@code index}. Note that the
-     * {@link TabModelSelector} returned might not actually be the one related to {@code index} and
-     * {@link #getIndexForWindow(Activity)} should be called to grab the actual index if required.
+     * Called to request a {@link TabModelSelector} based on {@code index}. Note that the {@link
+     * TabModelSelector} returned might not actually be the one related to {@code index} and {@link
+     * #getIndexForWindow(Activity)} should be called to grab the actual index if required.
      *
+     * @param profileProviderSupplier The provider of the Profiles used in the selector.
      * @param tabCreatorManager An instance of {@link TabCreatorManager}.
      * @param nextTabPolicySupplier An instance of {@link NextTabPolicySupplier}.
+     * @param mismatchedIndicesHandler An instance of {@link MismatchedIndicesHandler}.
      * @param index The index of the requested {@link TabModelSelector}. Not guaranteed to be the
-     *              index of the {@link TabModelSelector} returned.
+     *     index of the {@link TabModelSelector} returned.
      * @return {@link Pair} of the index and the {@link TabModelSelector} assigned to that index, or
-     *         {@code null} if there are too many
-     *         {@link TabModelSelector}s already built.
+     *     {@code null} if there are too many {@link TabModelSelector}s already built.
      */
-    Pair<Integer, TabModelSelector> requestSelector(Activity activity,
-            TabCreatorManager tabCreatorManager, NextTabPolicySupplier nextTabPolicySupplier,
+    Pair<Integer, TabModelSelector> requestSelector(
+            Activity activity,
+            OneshotSupplier<ProfileProvider> profileProviderSupplier,
+            TabCreatorManager tabCreatorManager,
+            NextTabPolicySupplier nextTabPolicySupplier,
+            MismatchedIndicesHandler mismatchedIndicesHandler,
             int index);
 
     /**

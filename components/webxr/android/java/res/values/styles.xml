@@ -11,4 +11,8 @@ found in the LICENSE file.
         <item name="android:background">@android:color/transparent</item>
         <item name="android:padding">9dip</item>
     </style>
+    <style name="CardboardSettingsPopupMenu" parent="@style/Widget.AppCompat.PopupMenu">
+        <item name="android:dropDownHorizontalOffset">@dimen/pop_up_menu_margin_horizontal</item>
+        <item name="android:dropDownVerticalOffset">@dimen/pop_up_menu_margin_vertical</item>
+    </style>
 </resources>

@@ -95,7 +95,8 @@ void ArcScreenCaptureBridge::RequestPermission(
   source_lists.emplace_back(
       std::make_unique<DesktopMediaListAsh>(DesktopMediaList::Type::kScreen));
   const std::u16string display_name16 = base::UTF8ToUTF16(display_name);
-  DesktopMediaPicker::Params picker_params;
+  DesktopMediaPicker::Params picker_params{
+      DesktopMediaPicker::Params::RequestSource::kArcScreenCapture};
   picker_params.context = ash::Shell::GetRootWindowForDisplayId(
       display::Screen::GetScreen()->GetPrimaryDisplay().id());
   picker_params.modality = ui::ModalType::MODAL_TYPE_SYSTEM;

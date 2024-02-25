@@ -9,6 +9,12 @@
 
 namespace message_center {
 
+  // NotificationDelegate:
+
+NotificationDelegate* NotificationDelegate::GetDelegateForParentCopy() {
+  return this;
+}
+
 // ThunkNotificationDelegate:
 
 ThunkNotificationDelegate::ThunkNotificationDelegate(
@@ -21,8 +27,8 @@ void ThunkNotificationDelegate::Close(bool by_user) {
 }
 
 void ThunkNotificationDelegate::Click(
-    const absl::optional<int>& button_index,
-    const absl::optional<std::u16string>& reply) {
+    const std::optional<int>& button_index,
+    const std::optional<std::u16string>& reply) {
   if (impl_)
     impl_->Click(button_index, reply);
 }
@@ -39,6 +45,14 @@ void ThunkNotificationDelegate::DisableNotification() {
 
 void ThunkNotificationDelegate::ExpandStateChanged(bool expanded) {
   // Not implemented by default.
+}
+
+void ThunkNotificationDelegate::SnoozeButtonClicked() {
+  // Not implemented by default.
+}
+
+NotificationDelegate* ThunkNotificationDelegate::GetDelegateForParentCopy() {
+  return this;
 }
 
 ThunkNotificationDelegate::~ThunkNotificationDelegate() = default;
@@ -66,7 +80,7 @@ void HandleNotificationClickDelegate::SetCallback(
     // and just runs the provided closure.
     callback_ = base::BindRepeating(
         [](const base::RepeatingClosure& closure,
-           absl::optional<int> button_index) {
+           std::optional<int> button_index) {
           DCHECK(!button_index);
           closure.Run();
         },
@@ -77,8 +91,8 @@ void HandleNotificationClickDelegate::SetCallback(
 HandleNotificationClickDelegate::~HandleNotificationClickDelegate() {}
 
 void HandleNotificationClickDelegate::Click(
-    const absl::optional<int>& button_index,
-    const absl::optional<std::u16string>& reply) {
+    const std::optional<int>& button_index,
+    const std::optional<std::u16string>& reply) {
   if (!callback_.is_null())
     callback_.Run(button_index);
 }

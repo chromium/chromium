@@ -7,18 +7,19 @@
 #include "services/network/public/cpp/resource_request.h"
 #include "third_party/blink/public/platform/resource_load_info_notifier_wrapper.h"
 #include "third_party/blink/public/platform/web_url_request_extra_data.h"
+#include "third_party/blink/renderer/platform/weborigin/security_origin.h"
 
 namespace blink {
 
 void NoopURLLoader::LoadSynchronously(
     std::unique_ptr<network::ResourceRequest> request,
-    scoped_refptr<WebURLRequestExtraData> url_request_extra_data,
-    bool pass_response_pipe_to_client,
+    scoped_refptr<const SecurityOrigin> top_frame_origin,
+    bool download_to_blob,
     bool no_mime_sniffing,
     base::TimeDelta timeout_interval,
     URLLoaderClient*,
     WebURLResponse&,
-    absl::optional<WebURLError>&,
+    std::optional<WebURLError>&,
     scoped_refptr<SharedBuffer>&,
     int64_t& encoded_data_length,
     uint64_t& encoded_body_length,
@@ -30,10 +31,11 @@ void NoopURLLoader::LoadSynchronously(
 
 void NoopURLLoader::LoadAsynchronously(
     std::unique_ptr<network::ResourceRequest> request,
-    scoped_refptr<WebURLRequestExtraData> url_request_extra_data,
+    scoped_refptr<const SecurityOrigin> top_frame_origin,
     bool no_mime_sniffing,
     std::unique_ptr<blink::ResourceLoadInfoNotifierWrapper>
         resource_load_info_notifier_wrapper,
+    CodeCacheHost* code_cache_host,
     URLLoaderClient*) {}
 
 }  // namespace blink

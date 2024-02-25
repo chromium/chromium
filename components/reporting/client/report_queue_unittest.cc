@@ -21,6 +21,7 @@
 using ::testing::_;
 using ::testing::Eq;
 using ::testing::Invoke;
+using ::testing::Return;
 using ::testing::WithArg;
 
 namespace reporting {
@@ -40,6 +41,8 @@ TEST_F(ReportQueueTest, EnqueueTest) {
       .WillOnce(WithArg<2>(Invoke([](ReportQueue::EnqueueCallback cb) {
         std::move(cb).Run(Status::StatusOK());
       })));
+  EXPECT_CALL(queue, GetDestination)
+      .WillOnce(Return(Destination::EVENT_METRIC));
   base::test::TestFuture<Status> test_future;
   queue.Enqueue("Record", FAST_BATCH, test_future.GetCallback());
   ASSERT_OK(test_future.Take());
@@ -47,7 +50,17 @@ TEST_F(ReportQueueTest, EnqueueTest) {
                                       error::OK,
                                       /*expected_count=*/1);
   histogram_tester_.ExpectTotalCount(ReportQueue::kEnqueueMetricsName,
-                                     /*count=*/1);
+                                     /*expected_count=*/1);
+  histogram_tester_.ExpectBucketCount(
+      ReportQueue::kEnqueueSuccessDestinationMetricsName,
+      Destination::EVENT_METRIC,
+      /*expected_count=*/1);
+  histogram_tester_.ExpectTotalCount(
+      ReportQueue::kEnqueueSuccessDestinationMetricsName,
+      /*expected_count=*/1);
+  histogram_tester_.ExpectTotalCount(
+      ReportQueue::kEnqueueFailedDestinationMetricsName,
+      /*expected_count=*/0);
 }
 
 TEST_F(ReportQueueTest, EnqueueWithErrorTest) {
@@ -56,6 +69,8 @@ TEST_F(ReportQueueTest, EnqueueWithErrorTest) {
       .WillOnce(WithArg<2>(Invoke([](ReportQueue::EnqueueCallback cb) {
         std::move(cb).Run(Status(error::CANCELLED, "Cancelled by test"));
       })));
+  EXPECT_CALL(queue, GetDestination)
+      .WillOnce(Return(Destination::EVENT_METRIC));
   base::test::TestFuture<Status> test_future;
   queue.Enqueue("Record", FAST_BATCH, test_future.GetCallback());
   const auto result = test_future.Take();
@@ -65,7 +80,17 @@ TEST_F(ReportQueueTest, EnqueueWithErrorTest) {
                                       error::CANCELLED,
                                       /*expected_count=*/1);
   histogram_tester_.ExpectTotalCount(ReportQueue::kEnqueueMetricsName,
-                                     /*count=*/1);
+                                     /*expected_count=*/1);
+  histogram_tester_.ExpectBucketCount(
+      ReportQueue::kEnqueueFailedDestinationMetricsName,
+      Destination::EVENT_METRIC,
+      /*expected_count=*/1);
+  histogram_tester_.ExpectTotalCount(
+      ReportQueue::kEnqueueFailedDestinationMetricsName,
+      /*expected_count=*/1);
+  histogram_tester_.ExpectTotalCount(
+      ReportQueue::kEnqueueSuccessDestinationMetricsName,
+      /*expected_count=*/0);
 }
 
 TEST_F(ReportQueueTest, FlushTest) {

@@ -1,0 +1,11 @@
+This is a testharness.js-based test.
+Found 4 FAIL, 0 TIMEOUT, 0 NOTRUN.
+[FAIL] test unit: ex - circle(50ex at 50% 50%) - computed
+  assert_equals: expected "circle(640px at 50% 50%)" but got "circle(400px at 50% 50%)"
+[FAIL] test unit: ex - circle(50ex) - computed
+  assert_equals: expected "circle(640px)" but got "circle(400px)"
+[FAIL] test unit: ch - circle(50ch at 50% 50%) - computed
+  assert_equals: expected "circle(800px at 50% 50%)" but got "circle(400px at 50% 50%)"
+[FAIL] test unit: ch - circle(50ch) - computed
+  assert_equals: expected "circle(800px)" but got "circle(400px)"
+Harness: the test ran to completion.

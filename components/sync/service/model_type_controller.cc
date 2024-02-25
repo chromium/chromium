@@ -7,13 +7,10 @@
 #include <utility>
 
 #include "base/functional/bind.h"
-#include "base/location.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/notreached.h"
 #include "base/task/sequenced_task_runner.h"
-#include "components/signin/public/identity_manager/account_info.h"
-#include "components/sync/base/features.h"
 #include "components/sync/base/model_type.h"
 #include "components/sync/engine/data_type_activation_response.h"
 #include "components/sync/model/data_type_activation_request.h"
@@ -87,9 +84,10 @@ void ModelTypeController::InitModelTypeController(
     //   delegate, see SyncEngineBackend::LoadAndConnectNigoriController().
     // * BOOKMARKS and READING_LIST: Support is WIP.
     // * PASSWORDS: Already supported on desktop; mobile is WIP.
+    // * INCOMING_PASSWORD_SHARING_INVITATION: Depends on PASSWORDS support.
     // * PREFERENCES in all variants: Support is WIP.
-    // * History-related types (HISTORY, HISTORY_DELETE_DIRECTIVES, TYPED_URLS,
-    //   SESSIONS) are okay to *not* support transport mode.
+    // * History-related types (HISTORY, HISTORY_DELETE_DIRECTIVES, SESSIONS)
+    //   are okay to *not* support transport mode.
     // * APPS/APP_SETTINGS: Deprecated and will eventually be removed.
     // * AUTOFILL/AUTOFILL_PROFILE: Semi-deprecated; will eventually be removed
     //   or replaced by CONTACT_INFO.
@@ -107,6 +105,7 @@ void ModelTypeController::InitModelTypeController(
         BOOKMARKS,
         PREFERENCES,
         PASSWORDS,
+        INCOMING_PASSWORD_SHARING_INVITATION,
         AUTOFILL_PROFILE,
         AUTOFILL,
         AUTOFILL_WALLET_DATA,
@@ -114,7 +113,6 @@ void ModelTypeController::InitModelTypeController(
         AUTOFILL_WALLET_OFFER,
         AUTOFILL_WALLET_USAGE,
         THEMES,
-        TYPED_URLS,
         EXTENSIONS,
         SEARCH_ENGINES,
         SESSIONS,
@@ -151,7 +149,7 @@ void ModelTypeController::LoadModels(
   CHECK_EQ(NOT_RUNNING, state_);
 
   auto it = delegate_map_.find(configure_context.sync_mode);
-  DCHECK(it != delegate_map_.end()) << ModelTypeToDebugString(type());
+  CHECK(it != delegate_map_.end()) << ModelTypeToDebugString(type());
   delegate_ = it->second.get();
   CHECK(delegate_);
 
@@ -176,6 +174,12 @@ void ModelTypeController::LoadModels(
   delegate_->OnSyncStarting(
       request, base::BindOnce(&ModelTypeController::OnDelegateStarted,
                               base::AsWeakPtr(this)));
+
+  // Ensure that the metadata for any *other* delegate is cleared. Note that
+  // this is a no-op for the delegate that was just started. Note^2 that that
+  // also covers the case of data types using the same underlying delegate for
+  // both modes.
+  ClearMetadataIfStopped();
 }
 
 std::unique_ptr<DataTypeActivationResponse> ModelTypeController::Connect() {
@@ -196,13 +200,17 @@ void ModelTypeController::Stop(SyncStopMetadataFate fate,
 
   switch (state()) {
     case NOT_RUNNING:
-    case FAILED:
       // Nothing to stop.
       std::move(callback).Run();
       // Clear metadata if needed.
       if (fate == CLEAR_METADATA) {
-        ClearMetadataWhileStopped();
+        ClearMetadataIfStopped();
       }
+      return;
+
+    case FAILED:
+      // Nothing to stop.
+      std::move(callback).Run();
       return;
 
     case STOPPING:
@@ -269,6 +277,14 @@ void ModelTypeController::RecordMemoryUsageAndCountsHistograms() {
   if (delegate_) {
     delegate_->RecordMemoryUsageAndCountsHistograms();
   }
+}
+
+void ModelTypeController::ReportBridgeErrorForTest() {
+  DCHECK(CalledOnValidThread());
+
+  // Tests are supposed to call this method when `delegate_` exists.
+  CHECK(delegate_);
+  delegate_->ReportBridgeErrorForTest();  // IN-TEST
 }
 
 ModelTypeControllerDelegate* ModelTypeController::GetDelegateForTesting(
@@ -385,13 +401,12 @@ void ModelTypeController::TriggerCompletionCallbacks(const SyncError& error) {
   }
 }
 
-void ModelTypeController::ClearMetadataWhileStopped() {
-  CHECK(state_ == NOT_RUNNING || state_ == FAILED);
+void ModelTypeController::ClearMetadataIfStopped() {
   for (auto& [sync_mode, delegate] : delegate_map_) {
     // `delegate` can be null during testing.
     // TODO(crbug.com/1418351): Remove test-only code-path.
     if (delegate) {
-      delegate->ClearMetadataWhileStopped();
+      delegate->ClearMetadataIfStopped();
     }
   }
 }

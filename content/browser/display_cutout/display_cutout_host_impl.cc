@@ -5,29 +5,18 @@
 #include "content/browser/display_cutout/display_cutout_host_impl.h"
 
 #include "content/browser/display_cutout/display_cutout_constants.h"
+#include "content/browser/display_cutout/safe_area_insets_host.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/browser/web_contents/web_contents_impl.h"
 #include "content/public/browser/navigation_handle.h"
-#include "mojo/public/cpp/bindings/associated_remote.h"
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_provider.h"
 
 namespace content {
 
 DisplayCutoutHostImpl::DisplayCutoutHostImpl(WebContentsImpl* web_contents)
-    : receivers_(web_contents, this), web_contents_impl_(web_contents) {}
+    : SafeAreaInsetsHost(web_contents) {}
 
 DisplayCutoutHostImpl::~DisplayCutoutHostImpl() = default;
-
-void DisplayCutoutHostImpl::BindReceiver(
-    mojo::PendingAssociatedReceiver<blink::mojom::DisplayCutoutHost> receiver,
-    RenderFrameHost* rfh) {
-  receivers_.Bind(rfh, std::move(receiver));
-}
-
-void DisplayCutoutHostImpl::NotifyViewportFitChanged(
-    blink::mojom::ViewportFit value) {
-  ViewportFitChangedForFrame(receivers_.GetCurrentTargetFrame(), value);
-}
 
 void DisplayCutoutHostImpl::ViewportFitChangedForFrame(
     RenderFrameHost* rfh,
@@ -60,14 +49,21 @@ void DisplayCutoutHostImpl::DidFinishNavigation(
     return;
   }
 
+  // When Edge To Edge on Android is enabled it needs the messaging sent to
+  // Java.
+  bool is_not_just_fullscreen =
+      base::FeatureList::IsEnabled(features::kDrawCutoutEdgeToEdge);
+
   // If we finish a main frame navigation and the |WebDisplayMode| is
   // fullscreen then we should make the main frame the current
   // |RenderFrameHost|.  Note that this is probably not correct; we do not check
   // that the navigation completed successfully, nor do we check if the main
   // frame is still IsRenderFrameLive().
   blink::mojom::DisplayMode mode = web_contents_impl_->GetDisplayMode();
-  if (mode == blink::mojom::DisplayMode::kFullscreen)
+  if (is_not_just_fullscreen ||
+      mode == blink::mojom::DisplayMode::kFullscreen) {
     SetCurrentRenderFrameHost(web_contents_impl_->GetPrimaryMainFrame());
+  }
 }
 
 void DisplayCutoutHostImpl::RenderFrameDeleted(RenderFrameHost* rfh) {
@@ -90,8 +86,15 @@ void DisplayCutoutHostImpl::SetDisplayCutoutSafeArea(gfx::Insets insets) {
 }
 
 void DisplayCutoutHostImpl::SetCurrentRenderFrameHost(RenderFrameHost* rfh) {
-  if (current_rfh_.get() == rfh)
+  if (current_rfh_.get() == rfh) {
+    if (rfh) {
+      // Send an update even when navigating to the same page or doing a reload.
+      // When we finish navigation we need to push the Safe Area back to the
+      // client to set env() variables for that frame so it can draw correctly.
+      SendSafeAreaToFrame(rfh, insets_);
+    }
     return;
+  }
 
   // If we had a previous frame then we should clear the insets on that frame.
   if (current_rfh_)
@@ -114,18 +117,6 @@ void DisplayCutoutHostImpl::SetCurrentRenderFrameHost(RenderFrameHost* rfh) {
 
   // Notify the WebContentsObservers that the viewport fit value has changed.
   web_contents_impl_->NotifyViewportFitChanged(GetValueOrDefault(rfh));
-}
-
-void DisplayCutoutHostImpl::SendSafeAreaToFrame(RenderFrameHost* rfh,
-                                                gfx::Insets insets) {
-  blink::AssociatedInterfaceProvider* provider =
-      rfh->GetRemoteAssociatedInterfaces();
-  if (!provider)
-    return;
-
-  mojo::AssociatedRemote<blink::mojom::DisplayCutoutClient> client;
-  provider->GetInterface(client.BindNewEndpointAndPassReceiver());
-  client->SetSafeArea(insets);
 }
 
 blink::mojom::ViewportFit DisplayCutoutHostImpl::GetValueOrDefault(

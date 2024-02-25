@@ -186,6 +186,7 @@ chrome.automation.RoleType = {
   DIALOG: 'dialog',
   DIRECTORY: 'directory',
   DISCLOSURE_TRIANGLE: 'disclosureTriangle',
+  DISCLOSURE_TRIANGLE_GROUPED: 'disclosureTriangleGrouped',
   DOC_ABSTRACT: 'docAbstract',
   DOC_ACKNOWLEDGMENTS: 'docAcknowledgments',
   DOC_AFTERWORD: 'docAfterword',
@@ -309,7 +310,7 @@ chrome.automation.RoleType = {
   PLUGIN_OBJECT: 'pluginObject',
   POP_UP_BUTTON: 'popUpButton',
   PORTAL: 'portal',
-  PRE: 'pre',
+  PRE_DEPRECATED: 'preDeprecated',
   PROGRESS_INDICATOR: 'progressIndicator',
   RADIO_BUTTON: 'radioButton',
   RADIO_GROUP: 'radioGroup',
@@ -427,6 +428,7 @@ chrome.automation.ActionType = {
   SHOW_CONTEXT_MENU: 'showContextMenu',
   SIGNAL_END_OF_TEST: 'signalEndOfTest',
   SHOW_TOOLTIP: 'showTooltip',
+  STITCH_CHILD_TREE: 'stitchChildTree',
   START_DUCKING_MEDIA: 'startDuckingMedia',
   STOP_DUCKING_MEDIA: 'stopDuckingMedia',
   SUSPEND_MEDIA: 'suspendMedia',
@@ -2557,19 +2559,6 @@ chrome.automation.AutomationNode.prototype.getNextTextMatch = function(searchStr
  */
 chrome.automation.AutomationNode.prototype.createPosition = function(type, offset, isUpstream) {};
 
-
-/**
- * Get the automation tree for the tab with the given tabId, or the current tab
- * if no tabID is given, enabling automation if necessary. Returns a tree with a
- * placeholder root node; listen for the "loadComplete" event to get a
- * notification that the tree has fully loaded (the previous root node reference
- * will stop working at or before this point).
- * @param {number=} tabId
- * @param {function(!chrome.automation.AutomationNode): void=} callback Called
- *     when the <code>AutomationNode</code> for the page is available.
- * @see https://developer.chrome.com/extensions/automation#method-getTree
- */
-chrome.automation.getTree = function(tabId, callback) {};
 
 /**
  * Get the automation tree for the whole desktop which consists of all on screen

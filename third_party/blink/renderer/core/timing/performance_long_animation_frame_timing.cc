@@ -44,11 +44,6 @@ DOMHighResTimeStamp PerformanceLongAnimationFrameTiming::renderStart() const {
   return ToMonotonicTime(info_->RenderStartTime());
 }
 
-DOMHighResTimeStamp PerformanceLongAnimationFrameTiming::desiredRenderStart()
-    const {
-  return ToMonotonicTime(info_->DesiredRenderStartTime());
-}
-
 DOMHighResTimeStamp PerformanceLongAnimationFrameTiming::ToMonotonicTime(
     base::TimeTicks time) const {
   return Performance::MonotonicTimeToDOMHighResTimeStamp(
@@ -105,12 +100,11 @@ void PerformanceLongAnimationFrameTiming::BuildJSONValue(
   PerformanceEntry::BuildJSONValue(builder);
   builder.AddNumber("renderStart", renderStart());
   builder.AddNumber("styleAndLayoutStart", styleAndLayoutStart());
-  builder.AddNumber("desiredRenderStart", desiredRenderStart());
   builder.AddNumber("firstUIEventTimestamp", firstUIEventTimestamp());
   builder.AddNumber("blockingDuration", blockingDuration());
-  builder.Add("scripts", ToV8Traits<IDLArray<PerformanceScriptTiming>>::ToV8(
-                             builder.GetScriptState(), scripts())
-                             .ToLocalChecked());
+  builder.AddV8Value("scripts",
+                     ToV8Traits<IDLArray<PerformanceScriptTiming>>::ToV8(
+                         builder.GetScriptState(), scripts()));
 }
 
 void PerformanceLongAnimationFrameTiming::Trace(Visitor* visitor) const {

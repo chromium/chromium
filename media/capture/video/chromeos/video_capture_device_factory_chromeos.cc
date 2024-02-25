@@ -30,7 +30,6 @@ VideoCaptureDeviceFactoryChromeOS::~VideoCaptureDeviceFactoryChromeOS() {
   camera_app_device_bridge->UnsetCameraInfoGetter();
   camera_app_device_bridge->UnsetVirtualDeviceController();
   if (camera_hal_delegate_) {
-    camera_hal_delegate_->Reset();
     if (vcd_task_runner_ && !vcd_task_runner_->RunsTasksInCurrentSequence()) {
       vcd_task_runner_->DeleteSoon(FROM_HERE, std::move(camera_hal_delegate_));
     }

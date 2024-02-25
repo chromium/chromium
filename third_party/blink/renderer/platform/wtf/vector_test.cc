@@ -26,9 +26,10 @@
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 
 #include <memory>
+#include <optional>
+
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/renderer/platform/wtf/hash_set.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 #include "third_party/blink/renderer/platform/wtf/wtf_test_helper.h"
@@ -641,7 +642,7 @@ TEST(VectorTest, InitializerList) {
 }
 
 TEST(VectorTest, Optional) {
-  absl::optional<Vector<int>> vector;
+  std::optional<Vector<int>> vector;
   EXPECT_FALSE(vector);
   vector.emplace(3);
   EXPECT_TRUE(vector);
@@ -722,6 +723,20 @@ TEST(VectorTest, WTFEraseIf) {
   Vector<int> v = {1, 2, 3, 4, 5, 6};
   WTF::EraseIf(v, [](int x) { return x % 2 == 0; });
   EXPECT_THAT(v, testing::ElementsAre(1, 3, 5));
+}
+
+TEST(VectorTest, CopyWithProjection) {
+  {
+    using ValueType = std::pair<int, int>;
+    Vector<ValueType> v1 = {{1, 2}, {3, 4}, {5, 6}};
+    Vector<int> v2(v1, &ValueType::second);
+    EXPECT_THAT(v2, testing::ElementsAre(2, 4, 6));
+  }
+  {
+    Vector<int> v1 = {1, 2, 3, 4, 5, 6};
+    Vector<int> v2(v1, std::negate<>());
+    EXPECT_THAT(v2, testing::ElementsAre(-1, -2, -3, -4, -5, -6));
+  }
 }
 
 static_assert(VectorTraits<int>::kCanCopyWithMemcpy,

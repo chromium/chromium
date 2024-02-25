@@ -100,13 +100,18 @@ class SSLClientAuthHandler::Core : public base::RefCountedThreadSafe<Core> {
 
 SSLClientAuthHandler::SSLClientAuthHandler(
     std::unique_ptr<net::ClientCertStore> client_cert_store,
-    ContextGetter context_getter,
+    base::WeakPtr<BrowserContext> browser_context,
+    base::WeakPtr<WebContents> web_contents,
     net::SSLCertRequestInfo* cert_request_info,
     Delegate* delegate)
-    : context_getter_(std::move(context_getter)),
+    : browser_context_(browser_context),
+      web_contents_(web_contents),
       cert_request_info_(cert_request_info),
       delegate_(delegate) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  if (web_contents_) {
+    CHECK_EQ(web_contents_->GetBrowserContext(), browser_context_.get());
+  }
 
   core_ = new Core(weak_factory_.GetWeakPtr(), std::move(client_cert_store),
                    cert_request_info_.get());
@@ -132,9 +137,7 @@ void SSLClientAuthHandler::DidGetClientCerts(
     net::ClientCertIdentityList client_certs) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
-  auto [browser_context, web_contents] = context_getter_.Run();
-
-  if (!browser_context) {
+  if (!browser_context_) {
     delegate_->CancelCertificateSelection();
     return;
   }
@@ -144,7 +147,7 @@ void SSLClientAuthHandler::DidGetClientCerts(
   base::WeakPtr<SSLClientAuthHandler> weak_self = weak_factory_.GetWeakPtr();
   base::OnceClosure cancellation_callback =
       GetContentClient()->browser()->SelectClientCertificate(
-          browser_context, web_contents, cert_request_info_.get(),
+          browser_context_.get(), web_contents_.get(), cert_request_info_.get(),
           std::move(client_certs),
           std::make_unique<ClientCertificateDelegateImpl>(weak_self));
   if (weak_self) {

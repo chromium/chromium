@@ -11,6 +11,14 @@
 #include "third_party/blink/public/mojom/manifest/manifest.mojom.h"
 #include "ui/gfx/skia_util.h"
 
+// This definition needs to be in the top-level namespace to be picked up by
+// IconBitmaps::operator==().
+static bool operator==(const SkBitmap& a, const SkBitmap& b) {
+  return gfx::BitmapsAreEqual(a, b);
+}
+
+namespace web_app {
+
 namespace {
 
 template <typename T>
@@ -21,12 +29,6 @@ std::string ConvertToString(const T& value) {
 }
 
 }  // namespace
-
-// This definition doesn't get picked up by IconBitmaps::operator==() when in
-// the anonymous namespace but it does as a static free function.
-static bool operator==(const SkBitmap& a, const SkBitmap& b) {
-  return gfx::BitmapsAreEqual(a, b);
-}
 
 apps::IconInfo::Purpose ManifestPurposeToIconInfoPurpose(
     IconPurpose manifest_purpose) {
@@ -248,9 +250,73 @@ base::Value WebAppShortcutsMenuItemInfo::AsDebugValue() const {
   return base::Value(std::move(root));
 }
 
-// WebAppInstallInfo
+// IconsWithSizeAny
+IconsWithSizeAny::IconsWithSizeAny() = default;
+IconsWithSizeAny::~IconsWithSizeAny() = default;
+IconsWithSizeAny::IconsWithSizeAny(
+    const IconsWithSizeAny& icons_with_size_any) = default;
+IconsWithSizeAny& IconsWithSizeAny::operator=(
+    const IconsWithSizeAny& icons_with_size_any) = default;
+bool IconsWithSizeAny::operator==(
+    const IconsWithSizeAny& icons_with_size_any) const = default;
 
-namespace web_app {
+base::Value IconsWithSizeAny::ToDebugValue() const {
+  base::Value::Dict icons;
+  base::Value::Dict manifest;
+  for (const auto& icon : manifest_icons) {
+    manifest.Set(ConvertToString(icon.first), icon.second.spec());
+  }
+  icons.Set("manifest_icons", base::Value(std::move(manifest)));
+  base::Value::List manifest_sizes;
+  for (const auto& size : manifest_icon_provided_sizes) {
+    manifest_sizes.Append(size.ToString());
+  }
+  icons.Set("manifest_provided_sizes", base::Value(std::move(manifest_sizes)));
+
+  base::Value::Dict shortcut_icon;
+  for (const auto& shicon : shortcut_menu_icons) {
+    shortcut_icon.Set(ConvertToString(shicon.first), shicon.second.spec());
+  }
+  icons.Set("shortcut_icons", base::Value(std::move(shortcut_icon)));
+  base::Value::List shortcut_sizes;
+  for (const auto& size : shortcut_menu_icons_provided_sizes) {
+    shortcut_sizes.Append(size.ToString());
+  }
+  icons.Set("shortcut_menu_icons_provided_sizes",
+            base::Value(std::move(shortcut_sizes)));
+
+  base::Value::Dict file_handlers;
+  for (const auto& fhicon : file_handling_icons) {
+    file_handlers.Set(ConvertToString(fhicon.first), fhicon.second.spec());
+  }
+  icons.Set("file_handling_icons", base::Value(std::move(file_handlers)));
+  base::Value::List file_handling_sizes;
+  for (const auto& size : file_handling_icon_provided_sizes) {
+    file_handling_sizes.Append(size.ToString());
+  }
+  icons.Set("file_handling_icons_manifest_provided_sizes",
+            base::Value(std::move(file_handling_sizes)));
+
+  base::Value::Dict tab_icons;
+  for (const auto& thicon : home_tab_icons) {
+    tab_icons.Set(ConvertToString(thicon.first), thicon.second.spec());
+  }
+  icons.Set("home_tab_icons", base::Value(std::move(tab_icons)));
+  base::Value::List home_tab_sizes;
+  for (const auto& size : home_tab_icon_provided_sizes) {
+    home_tab_sizes.Append(size.ToString());
+  }
+  icons.Set("home_tab_icons_manifest_provided_sizes",
+            base::Value(std::move(home_tab_sizes)));
+
+  return base::Value(std::move(icons));
+}
+
+std::string IconsWithSizeAny::ToString() const {
+  return ToDebugValue().DebugString();
+}
+
+// WebAppInstallInfo
 
 // static
 WebAppInstallInfo WebAppInstallInfo::CreateInstallInfoForCreateShortcut(
@@ -258,7 +324,7 @@ WebAppInstallInfo WebAppInstallInfo::CreateInstallInfoForCreateShortcut(
     const std::u16string& document_title,
     const WebAppInstallInfo& other) {
   WebAppInstallInfo create_shortcut_info(
-      web_app::GenerateManifestIdFromStartUrlOnly(document_url));
+      GenerateManifestIdFromStartUrlOnly(document_url));
   create_shortcut_info.title = document_title;
   create_shortcut_info.description = other.description;
   create_shortcut_info.start_url = document_url;
@@ -282,18 +348,20 @@ WebAppInstallInfo WebAppInstallInfo::CreateInstallInfoForCreateShortcut(
 // static
 std::unique_ptr<WebAppInstallInfo>
 WebAppInstallInfo::CreateWithStartUrlForTesting(const GURL& start_url) {
-  return std::make_unique<WebAppInstallInfo>(
+  auto info = std::make_unique<WebAppInstallInfo>(
       GenerateManifestIdFromStartUrlOnly(start_url), start_url);
+  info->scope = start_url.GetWithoutFilename();
+  return info;
 }
 
 WebAppInstallInfo::WebAppInstallInfo() = default;
 
-WebAppInstallInfo::WebAppInstallInfo(const web_app::ManifestId& manifest_id)
+WebAppInstallInfo::WebAppInstallInfo(const webapps::ManifestId& manifest_id)
     : manifest_id(manifest_id) {
   CHECK(manifest_id.is_valid());
 }
 
-WebAppInstallInfo::WebAppInstallInfo(const web_app::ManifestId& manifest_id,
+WebAppInstallInfo::WebAppInstallInfo(const webapps::ManifestId& manifest_id,
                                      const GURL& start_url)
     : manifest_id(manifest_id), start_url(start_url) {
   CHECK(manifest_id.is_valid());
@@ -312,8 +380,6 @@ WebAppInstallInfo::~WebAppInstallInfo() = default;
 WebAppInstallInfo WebAppInstallInfo::Clone() const {
   return WebAppInstallInfo(*this);
 }
-
-}  // namespace web_app
 
 bool operator==(const IconSizes& icon_sizes1, const IconSizes& icon_sizes2) {
   return std::tie(icon_sizes1.any, icon_sizes1.maskable,
@@ -335,3 +401,5 @@ bool operator==(const WebAppShortcutsMenuItemInfo& shortcut_info1,
          std::tie(shortcut_info2.name, shortcut_info2.url, shortcut_info2.any,
                   shortcut_info2.maskable, shortcut_info2.monochrome);
 }
+
+}  // namespace web_app

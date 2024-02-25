@@ -8,6 +8,7 @@
 #include <sstream>
 #include <type_traits>
 
+#include "base/hash/hash.h"
 #include "base/values.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -20,14 +21,14 @@ void TestSmallerThanOperator(const UnguessableToken& a,
 }
 
 TEST(UnguessableTokenTest, VerifyEveryBit) {
-  absl::optional<UnguessableToken> token = UnguessableToken::Deserialize(1, 2);
+  std::optional<UnguessableToken> token = UnguessableToken::Deserialize(1, 2);
   ASSERT_TRUE(token.has_value());
   uint64_t high = 1;
   uint64_t low = 2;
 
   for (uint64_t bit = 1; bit != 0; bit <<= 1) {
     uint64_t new_high = high ^ bit;
-    absl::optional<UnguessableToken> new_token =
+    std::optional<UnguessableToken> new_token =
         UnguessableToken::Deserialize(new_high, low);
     ASSERT_TRUE(new_token.has_value());
     EXPECT_FALSE(*token == *new_token);
@@ -35,7 +36,7 @@ TEST(UnguessableTokenTest, VerifyEveryBit) {
 
   for (uint64_t bit = 1; bit != 0; bit <<= 1) {
     uint64_t new_low = low ^ bit;
-    absl::optional<UnguessableToken> new_token =
+    std::optional<UnguessableToken> new_token =
         UnguessableToken::Deserialize(high, new_low);
     ASSERT_TRUE(new_token.has_value());
     EXPECT_FALSE(*token == *new_token);
@@ -95,7 +96,7 @@ TEST(UnguessableTokenTest, VerifySerialization) {
   EXPECT_TRUE(high);
   EXPECT_TRUE(low);
 
-  absl::optional<UnguessableToken> Deserialized =
+  std::optional<UnguessableToken> Deserialized =
       UnguessableToken::Deserialize(high, low);
   ASSERT_TRUE(Deserialized.has_value());
   EXPECT_EQ(token, *Deserialized);
@@ -140,9 +141,37 @@ TEST(UnguessableTokenTest, VerifyToStringUniqueness) {
 }
 
 TEST(UnguessableTokenTest, VerifyDeserializeZeroes) {
-  absl::optional<UnguessableToken> token = UnguessableToken::Deserialize(0, 0);
+  std::optional<UnguessableToken> token = UnguessableToken::Deserialize(0, 0);
 
   EXPECT_FALSE(token.has_value());
+}
+
+TEST(UnguessableTokenTest, VerifyDeserializeFromString) {
+  auto expected = UnguessableToken::CreateForTesting(1, 2);
+  auto actual = UnguessableToken::DeserializeFromString(
+      "00000000000000010000000000000002");
+  EXPECT_TRUE(actual.has_value());
+  EXPECT_TRUE(actual.value() == expected);
+}
+
+TEST(UnguessableTokenTest, VerifyDeserializeFromInvalidString) {
+  const char* invalid_representations[] = {
+      // Not a hex string representing 128 bits.
+      "1234",
+      // A string with valid length of 128 bits but 'X' is not a hex value.
+      "XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX",
+      // A invalid hex string because of the lower case letters.
+      "0123456789abcdef0123456789abcdef",
+      // A zeroed out token is not a valid `UnguessableToken`.
+      "00000000000000000000000000000000"};
+  for (auto* invalid_representation : invalid_representations) {
+    auto actual =
+        UnguessableToken::DeserializeFromString(invalid_representation);
+    EXPECT_FALSE(actual.has_value())
+        << "'" << invalid_representation
+        << "' should not be deserialized to an UnguessableToken.";
+    ;
+  }
 }
 
 TEST(UnguessableTokenTest, VerifySmallerThanOperator) {

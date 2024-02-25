@@ -14,6 +14,7 @@
 #include "third_party/blink/renderer/bindings/modules/v8/v8_idle_options.h"
 #include "third_party/blink/renderer/core/dom/events/native_event_listener.h"
 #include "third_party/blink/renderer/modules/idle/idle_manager.h"
+#include "third_party/blink/renderer/platform/testing/task_environment.h"
 
 namespace blink {
 
@@ -30,14 +31,14 @@ class MockEventListener final : public NativeEventListener {
 class FakeIdleService final : public mojom::blink::IdleManager {
  public:
   FakeIdleService() {
-    SetState(/*idle_time=*/absl::nullopt, /*screen_locked=*/false);
+    SetState(/*idle_time=*/std::nullopt, /*screen_locked=*/false);
   }
 
   mojo::PendingRemote<mojom::blink::IdleManager> BindNewPipeAndPassRemote() {
     return receiver_.BindNewPipeAndPassRemote();
   }
 
-  void SetState(absl::optional<base::TimeDelta> idle_time,
+  void SetState(std::optional<base::TimeDelta> idle_time,
                 bool screen_locked,
                 bool override = false) {
     state_ = mojom::blink::IdleState::New();
@@ -65,6 +66,7 @@ class FakeIdleService final : public mojom::blink::IdleManager {
 }  // namespace
 
 TEST(IdleDetectorTest, Start) {
+  test::TaskEnvironment task_environment;
   V8TestingScope scope;
   FakeIdleService idle_service;
 
@@ -90,6 +92,7 @@ TEST(IdleDetectorTest, Start) {
 }
 
 TEST(IdleDetectorTest, StartIdleWithLongThreshold) {
+  test::TaskEnvironment task_environment;
   V8TestingScope scope;
   FakeIdleService idle_service;
   auto task_runner = base::MakeRefCounted<base::TestMockTimeTaskRunner>();
@@ -133,6 +136,7 @@ TEST(IdleDetectorTest, StartIdleWithLongThreshold) {
 }
 
 TEST(IdleDetectorTest, LockScreen) {
+  test::TaskEnvironment task_environment;
   V8TestingScope scope;
   FakeIdleService idle_service;
 
@@ -157,11 +161,12 @@ TEST(IdleDetectorTest, LockScreen) {
         EXPECT_EQ("locked", detector->screenState());
         loop.Quit();
       })));
-  idle_service.SetState(/*idle_time=*/absl::nullopt, /*screen_locked=*/true);
+  idle_service.SetState(/*idle_time=*/std::nullopt, /*screen_locked=*/true);
   loop.Run();
 }
 
 TEST(IdleDetectorTest, BecomeIdle) {
+  test::TaskEnvironment task_environment;
   V8TestingScope scope;
   FakeIdleService idle_service;
 
@@ -192,6 +197,7 @@ TEST(IdleDetectorTest, BecomeIdle) {
 }
 
 TEST(IdleDetectorTest, BecomeIdleAndLockScreen) {
+  test::TaskEnvironment task_environment;
   V8TestingScope scope;
   FakeIdleService idle_service;
 
@@ -221,6 +227,7 @@ TEST(IdleDetectorTest, BecomeIdleAndLockScreen) {
 }
 
 TEST(IdleDetectorTest, BecomeIdleAndLockScreenWithLongThreshold) {
+  test::TaskEnvironment task_environment;
   V8TestingScope scope;
   FakeIdleService idle_service;
   auto task_runner = base::MakeRefCounted<base::TestMockTimeTaskRunner>();
@@ -263,6 +270,7 @@ TEST(IdleDetectorTest, BecomeIdleAndLockScreenWithLongThreshold) {
 }
 
 TEST(IdleDetectorTest, BecomeIdleAndLockAfterWithLongThreshold) {
+  test::TaskEnvironment task_environment;
   V8TestingScope scope;
   FakeIdleService idle_service;
   auto task_runner = base::MakeRefCounted<base::TestMockTimeTaskRunner>();
@@ -318,6 +326,7 @@ TEST(IdleDetectorTest, BecomeIdleAndLockAfterWithLongThreshold) {
 }
 
 TEST(IdleDetectorTest, BecomeIdleThenActiveBeforeThreshold) {
+  test::TaskEnvironment task_environment;
   V8TestingScope scope;
   FakeIdleService idle_service;
   auto task_runner = base::MakeRefCounted<base::TestMockTimeTaskRunner>();
@@ -348,7 +357,7 @@ TEST(IdleDetectorTest, BecomeIdleThenActiveBeforeThreshold) {
 
   // 15s later the user becomes active again.
   task_runner->FastForwardBy(base::Seconds(15));
-  idle_service.SetState(/*idle_time=*/absl::nullopt, /*screen_locked=*/false);
+  idle_service.SetState(/*idle_time=*/std::nullopt, /*screen_locked=*/false);
 
   // 15s later we would have fired an event but shouldn't because the user
   // became active.
@@ -359,6 +368,7 @@ TEST(IdleDetectorTest, BecomeIdleThenActiveBeforeThreshold) {
 }
 
 TEST(IdleDetectorTest, SetAndClearOverrides) {
+  test::TaskEnvironment task_environment;
   V8TestingScope scope;
   FakeIdleService idle_service;
   auto task_runner = base::MakeRefCounted<base::TestMockTimeTaskRunner>();

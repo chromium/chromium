@@ -4,11 +4,10 @@
 
 #include "third_party/blink/renderer/core/css/cssom/style_property_map_read_only_main_thread.h"
 
-#include "third_party/blink/renderer/core/css/css_custom_property_declaration.h"
 #include "third_party/blink/renderer/core/css/css_property_name.h"
 #include "third_party/blink/renderer/core/css/css_property_names.h"
+#include "third_party/blink/renderer/core/css/css_unparsed_declaration_value.h"
 #include "third_party/blink/renderer/core/css/css_value_list.h"
-#include "third_party/blink/renderer/core/css/css_variable_reference_value.h"
 #include "third_party/blink/renderer/core/css/cssom/css_style_value.h"
 #include "third_party/blink/renderer/core/css/cssom/css_unparsed_value.h"
 #include "third_party/blink/renderer/core/css/cssom/css_unsupported_style_value.h"
@@ -63,7 +62,7 @@ CSSStyleValue* StylePropertyMapReadOnlyMainThread::get(
     const ExecutionContext* execution_context,
     const String& property_name,
     ExceptionState& exception_state) const {
-  absl::optional<CSSPropertyName> name =
+  std::optional<CSSPropertyName> name =
       CSSPropertyName::From(execution_context, property_name);
 
   if (!name) {
@@ -97,7 +96,7 @@ CSSStyleValueVector StylePropertyMapReadOnlyMainThread::getAll(
     const ExecutionContext* execution_context,
     const String& property_name,
     ExceptionState& exception_state) const {
-  absl::optional<CSSPropertyName> name =
+  std::optional<CSSPropertyName> name =
       CSSPropertyName::From(execution_context, property_name);
 
   if (!name) {

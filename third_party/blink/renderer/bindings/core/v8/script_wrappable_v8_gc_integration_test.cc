@@ -36,8 +36,7 @@ TEST_F(ScriptWrappableV8GCIntegrationTest, V8ReportsLiveObjectsDuringFullGc) {
     observer.Observe(object);
 
     holder.Reset(GetIsolate(), ToV8Traits<DeathAwareScriptWrappable>::ToV8(
-                                   scope.GetScriptState(), object)
-                                   .ToLocalChecked());
+                                   scope.GetScriptState(), object));
   }
 
   RunV8MinorGC();
@@ -60,8 +59,7 @@ TEST_F(ScriptWrappableV8GCIntegrationTest,
 
     // Creates new V8 wrapper and associates it with global scope
     holder.Reset(GetIsolate(), ToV8Traits<DeathAwareScriptWrappable>::ToV8(
-                                   scope.GetScriptState(), object)
-                                   .ToLocalChecked());
+                                   scope.GetScriptState(), object));
   }
 
   RunV8MinorGC();
@@ -85,7 +83,7 @@ TEST_F(ScriptWrappableV8GCIntegrationTest,
 
     // Creates new V8 wrapper and associates it with global scope
     ToV8Traits<DeathAwareScriptWrappable>::ToV8(scope.GetScriptState(), object)
-        .ToLocalChecked();
+        .IsEmpty();
   }
 
   RunV8MinorGC();

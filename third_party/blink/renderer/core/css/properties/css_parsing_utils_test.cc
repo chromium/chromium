@@ -12,6 +12,7 @@
 #include "third_party/blink/renderer/core/html/html_html_element.h"
 #include "third_party/blink/renderer/core/testing/dummy_page_holder.h"
 #include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
+#include "third_party/blink/renderer/platform/testing/task_environment.h"
 
 namespace blink {
 namespace {
@@ -28,6 +29,7 @@ CSSParserContext* MakeContext(CSSParserMode mode = kHTMLStandardMode) {
 }
 
 TEST(CSSParsingUtilsTest, BasicShapeUseCount) {
+  test::TaskEnvironment task_environment;
   auto dummy_page_holder =
       std::make_unique<DummyPageHolder>(gfx::Size(800, 600));
   Page::InsertOrdinaryPageForTesting(&dummy_page_holder->GetPage());
@@ -47,13 +49,13 @@ TEST(CSSParsingUtilsTest, Revert) {
 double ConsumeAngleValue(String target) {
   auto tokens = CSSTokenizer(target).TokenizeToEOF();
   CSSParserTokenRange range(tokens);
-  return ConsumeAngle(range, *MakeContext(), absl::nullopt)->ComputeDegrees();
+  return ConsumeAngle(range, *MakeContext(), std::nullopt)->ComputeDegrees();
 }
 
 double ConsumeAngleValue(String target, double min, double max) {
   auto tokens = CSSTokenizer(target).TokenizeToEOF();
   CSSParserTokenRange range(tokens);
-  return ConsumeAngle(range, *MakeContext(), absl::nullopt, min, max)
+  return ConsumeAngle(range, *MakeContext(), std::nullopt, min, max)
       ->ComputeDegrees();
 }
 

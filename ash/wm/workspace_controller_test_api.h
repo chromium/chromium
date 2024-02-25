@@ -28,7 +28,7 @@ class ASH_EXPORT WorkspaceControllerTestApi {
   aura::Window* GetBackdropWindow();
 
  private:
-  raw_ptr<WorkspaceController, ExperimentalAsh> controller_;
+  raw_ptr<WorkspaceController> controller_;
 };
 
 }  // namespace ash

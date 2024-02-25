@@ -9,11 +9,13 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/ranges/algorithm.h"
 #include "chrome/browser/enterprise/browser_management/management_service_factory.h"
+#include "chrome/browser/enterprise/connectors/connectors_service.h"
 #include "chrome/browser/enterprise/util/affiliation.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/safe_browsing/advanced_protection_status_manager.h"
 #include "chrome/browser/safe_browsing/advanced_protection_status_manager_factory.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
+#include "chromeos/components/mgs/managed_guest_session_utils.h"
 #include "components/policy/core/common/management/management_service.h"
 #include "components/safe_browsing/content/browser/web_ui/safe_browsing_ui.h"
 #include "components/safe_browsing/core/common/features.h"
@@ -61,17 +63,18 @@ net::NetworkTrafficAnnotationTag GetTrafficAnnotationTag(bool is_app) {
     return net::DefineNetworkTrafficAnnotation(
         "safe_browsing_binary_upload_app", R"(
         semantics {
-          sender: "Advanced Protection Program"
+          sender: "Safe Browsing"
           description:
-            "For users part of Google's Advanced Protection Program, when a "
-            "file is downloaded, Chrome will upload that file to Safe Browsing "
-            "for detailed scanning."
+            "For users opted in to Enhanced Safe Browsing or Google's Advanced "
+            "Protection Program, when a file is downloaded, Chrome may upload "
+            "that file to Safe Browsing for detailed scanning."
           trigger:
             "The browser will upload the file to Google when the user "
-            "downloads a file, and the browser is enrolled into the "
-            "Advanced Protection Program."
+            "downloads a suspicious file and the user is opted in to Enhanced "
+            "Safe Browsing or Google's Advanced Protection Program."
           data:
-            "The downloaded file. Also an access token (enterprise only)."
+            "The downloaded file and metadata about how the user came to "
+            "download that file (including URLs)."
           destination: GOOGLE_OWNED_SERVICE
           internal {
             contacts {
@@ -85,13 +88,13 @@ net::NetworkTrafficAnnotationTag GetTrafficAnnotationTag(bool is_app) {
           last_reviewed: "2023-07-28"
         }
         policy {
-          cookies_allowed: YES
-          cookies_store: "Safe Browsing Cookie Store"
+          cookies_allowed: NO
           setting: "This is disabled by default an can only be enabled by "
-            "policy."
+            "opting in to Enhanced Safe Browsing or the Advanced Protection "
+            "Program."
           chrome_policy {
-            AdvancedProtectionAllowed {
-              AdvancedProtectionAllowed: false
+            SafeBrowsingDeepScanningEnabled: {
+              SafeBrowsingDeepScanningEnabled: false
             }
           }
         }
@@ -173,7 +176,14 @@ bool CanUseAccessToken(const BinaryUploadService::Request& request,
     return true;
   }
 
-  return chrome::enterprise_util::IsProfileAffiliated(profile);
+  // The access token can always be included in affiliated use cases.
+  if (chrome::enterprise_util::IsProfileAffiliated(profile)) {
+    return true;
+  }
+
+  // This code being reached implies that the browser and profile are
+  // not affiliated.
+  return request.per_profile_request();
 }
 
 }  // namespace
@@ -244,7 +254,10 @@ void CloudBinaryUploadService::MaybeUploadForDeepScanning(
     return;
   }
 
-  if (!can_upload_enterprise_data_.contains(token_and_connector)) {
+  // Validate if `token_and_connector` is authorized to upload data if this is
+  // the first time or the previous check failed.
+  if (!can_upload_enterprise_data_.contains(token_and_connector) ||
+      !can_upload_enterprise_data_[token_and_connector]) {
     // Get data from `request` before calling `IsAuthorized` since it is about
     // to move.
     GURL url = request->GetUrlWithParams();
@@ -270,6 +283,10 @@ void CloudBinaryUploadService::MaybeCancelRequests(
     std::unique_ptr<CancelRequests> cancel) {
   // Nothing to do for cloud upload service.
   // TODO(1374944): Might consider canceling requests in `request_queue_`.
+}
+
+base::WeakPtr<BinaryUploadService> CloudBinaryUploadService::AsWeakPtr() {
+  return weakptr_factory_.GetWeakPtr();
 }
 
 void CloudBinaryUploadService::MaybeUploadForDeepScanningCallback(
@@ -486,7 +503,7 @@ void CloudBinaryUploadService::OnGetRequestData(Request::Id request_id,
 
   std::string metadata;
   request->SerializeToString(&metadata);
-  base::Base64Encode(metadata, &metadata);
+  metadata = base::Base64Encode(metadata);
 
   GURL url = request->GetUrlWithParams();
   if (!url.is_valid())
@@ -517,7 +534,8 @@ void CloudBinaryUploadService::OnGetRequestData(Request::Id request_id,
   upload_request->set_access_token(request->access_token());
 
   WebUIInfoSingleton::GetInstance()->AddToDeepScanRequests(
-      request->per_profile_request(), request->content_analysis_request());
+      request->per_profile_request(), request->access_token(),
+      request->content_analysis_request());
 
   // |request| might have been deleted by the call to Start() in tests, so don't
   // dereference it afterwards.
@@ -625,7 +643,8 @@ void CloudBinaryUploadService::FinishRequest(
   // We add the request here in case we never actually uploaded anything, so
   // it wasn't added in OnGetRequestData
   WebUIInfoSingleton::GetInstance()->AddToDeepScanRequests(
-      request->per_profile_request(), request->content_analysis_request());
+      request->per_profile_request(), request->access_token(),
+      request->content_analysis_request());
   WebUIInfoSingleton::GetInstance()->AddToDeepScanResponses(
       active_tokens_[request->id()], ResultToString(result), response);
 
@@ -780,7 +799,10 @@ void CloudBinaryUploadService::IsAuthorized(
   }
 
   TokenAndConnector token_and_connector = {dm_token, connector};
-  if (!can_upload_enterprise_data_.contains(token_and_connector)) {
+  // Validate if `token_and_connector` is authorized to upload data if this is
+  // the first time or the previous check failed.
+  if (!can_upload_enterprise_data_.contains(token_and_connector) ||
+      !can_upload_enterprise_data_[token_and_connector]) {
     // Send a request to check if the browser can upload data.
     authorization_callbacks_[token_and_connector].push_back(
         std::move(callback));
@@ -797,6 +819,17 @@ void CloudBinaryUploadService::IsAuthorized(
       request->set_device_token(dm_token);
       request->set_analysis_connector(connector);
       request->set_per_profile_request(per_profile_request);
+
+#if BUILDFLAG(IS_CHROMEOS)
+      // WebProtect handles requests from ChromeOS Managed Guest Sessions
+      // differently, as it cannot rely on the GAIA ID to determine whether or
+      // not the user has the BCE license.
+      enterprise_connectors::ClientMetadata client_metadata;
+      client_metadata.mutable_profile()->set_is_chrome_os_managed_guest_session(
+          chromeos::IsManagedGuestSession());
+      request->set_client_metadata(std::move(client_metadata));
+#endif
+
       QueueForDeepScanning(std::move(request));
     }
     return;

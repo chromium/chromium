@@ -138,7 +138,7 @@ void InstallLimiter::RunInstall(const scoped_refptr<CrxInstaller>& installer,
 }
 
 void InstallLimiter::OnInstallerDone(
-    const absl::optional<CrxInstallError>& error) {
+    const std::optional<CrxInstallError>& error) {
   CHECK(num_running_installs_ > 0);
   num_running_installs_--;
   CheckAndRunDeferrredInstalls();

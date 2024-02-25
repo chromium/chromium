@@ -4,9 +4,7 @@
 
 package org.chromium.chrome.browser.password_manager;
 
-/**
- * Factory for creating {@link PasswordManagerResourceProvider}
- */
+/** Factory for creating {@link PasswordManagerResourceProvider} */
 public class PasswordManagerResourceProviderFactory {
     /**
      * Creates an instance of PasswordManagerResourceProvider

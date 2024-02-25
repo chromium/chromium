@@ -4,6 +4,7 @@
 
 #include "components/signin/public/identity_manager/identity_test_utils.h"
 
+#include <optional>
 #include <vector>
 
 #include "base/run_loop.h"
@@ -26,7 +27,6 @@
 #include "components/signin/public/identity_manager/test_identity_manager_observer.h"
 #include "google_apis/gaia/gaia_auth_util.h"
 #include "google_apis/gaia/gaia_constants.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 #if BUILDFLAG(IS_CHROMEOS)
 #include "components/account_manager_core/account.h"
@@ -134,8 +134,8 @@ AccountAvailabilityOptions::AccountAvailabilityOptions(base::StringPiece email)
 AccountAvailabilityOptions::AccountAvailabilityOptions(
     base::StringPiece email,
     base::StringPiece gaia_id,
-    absl::optional<ConsentLevel> consent_level,
-    absl::optional<std::string> refresh_token,
+    std::optional<ConsentLevel> consent_level,
+    std::optional<std::string> refresh_token,
     raw_ptr<network::TestURLLoaderFactory> url_loader_factory_for_cookies,
     signin_metrics::AccessPoint access_point)
     : email(email),
@@ -200,7 +200,7 @@ AccountAvailabilityOptionsBuilder::WithRefreshToken(
 
 AccountAvailabilityOptionsBuilder&
 AccountAvailabilityOptionsBuilder::WithoutRefreshToken() {
-  refresh_token_ = absl::nullopt;
+  refresh_token_ = std::nullopt;
   return *this;
 }
 
@@ -238,13 +238,13 @@ void WaitForRefreshTokensLoaded(IdentityManager* identity_manager) {
   DCHECK(identity_manager->AreRefreshTokensLoaded());
 }
 
-absl::optional<signin::ConsentLevel> GetPrimaryAccountConsentLevel(
+std::optional<signin::ConsentLevel> GetPrimaryAccountConsentLevel(
     IdentityManager* identity_manager) {
   if (!identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSignin)) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
-  // TODO(crbug.com/1462978): revisit this once `ConsentLevel::kSync` is
+  // TODO(crbug.com/40067058): revisit this once `ConsentLevel::kSync` is
   // removed.
   return identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSync)
              ? signin::ConsentLevel::kSync
@@ -304,7 +304,7 @@ AccountInfo MakePrimaryAccountAvailable(IdentityManager* identity_manager,
 }
 
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
-// TODO(crbug.com/1462978): remove this function once `ConsentLevel::kSync` is
+// TODO(crbug.com/40067058): remove this function once `ConsentLevel::kSync` is
 // removed.
 void RevokeSyncConsent(IdentityManager* identity_manager) {
   if (!identity_manager->HasPrimaryAccount(ConsentLevel::kSync))
@@ -414,9 +414,8 @@ AccountInfo MakeAccountAvailable(IdentityManager* identity_manager,
     auto consent_level = options.consent_level.value();
     PrimaryAccountManager* primary_account_manager =
         identity_manager->GetPrimaryAccountManager();
-    primary_account_manager->SetPrimaryAccountInfo(
-        account_info, consent_level,
-        signin_metrics::AccessPoint::ACCESS_POINT_UNKNOWN);
+    primary_account_manager->SetPrimaryAccountInfo(account_info, consent_level,
+                                                   options.access_point);
     CHECK_EQ(account_info.gaia,
              identity_manager->GetPrimaryAccountInfo(consent_level).gaia);
   }
@@ -520,7 +519,7 @@ void SetCookieAccounts(
   std::vector<CookieParams> gaia_cookie_accounts;
   for (const CookieParamsForTest& params : cookie_accounts) {
     gaia_cookie_accounts.push_back({params.email, params.gaia_id,
-                                    /*valid=*/true, /*signed_out=*/false,
+                                    /*valid=*/true, params.signed_out,
                                     /*verified=*/true});
   }
 

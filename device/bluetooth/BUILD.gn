@@ -1,12 +1,14 @@
 # Copyright 2014 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
+import("//build/buildflag_header.gni")
 import("//build/config/chromeos/ui_mode.gni")
 import("//build/config/features.gni")
 import("//device/bluetooth/cast_bluetooth.gni")
 
 if (is_android) {
-  import("//build/config/android/rules.gni")  # For generate_jni().
+  import("//build/config/android/rules.gni")
+  import("//third_party/jni_zero/jni_zero.gni")
 }
 
 config("bluetooth_config") {
@@ -66,6 +68,7 @@ source_set("deprecated_experimental_mojo") {
     # Approved clients:
     "//chrome/browser/ash/nearby:*",
     "//chrome/browser/ui/webui/bluetooth_internals:*",
+    "//chrome/services/sharing/nearby/platform:*",
 
     # Implementation tests
     # Ideally only device_unittests, however android & fushia generate
@@ -136,7 +139,6 @@ component("bluetooth") {
     "bluetooth_local_gatt_characteristic.h",
     "bluetooth_local_gatt_descriptor.cc",
     "bluetooth_local_gatt_descriptor.h",
-    "bluetooth_local_gatt_service.cc",
     "bluetooth_local_gatt_service.h",
     "bluetooth_low_energy_scan_filter.cc",
     "bluetooth_low_energy_scan_filter.h",
@@ -564,6 +566,8 @@ component("bluetooth") {
         "floss/floss_sdp_types.h",
         "floss/floss_socket_manager.cc",
         "floss/floss_socket_manager.h",
+        "floss/floss_version.cc",
+        "floss/floss_version.h",
         "floss/test_helpers.h",
       ]
       if (is_chromeos) {
@@ -586,7 +590,7 @@ component("bluetooth") {
         }
       }
       if (use_dbus) {
-        deps += [ "//dbus" ]
+        public_deps += [ "//dbus" ]
       }
     } else {  # !use_bluez
       defines += [ "LINUX_WITHOUT_DBUS" ]
@@ -690,10 +694,10 @@ if (is_android) {
     sources = java_sources_needing_jni
     deps = [
       "//base:base_java",
-      "//base:jni_java",
       "//build/android:build_java",
       "//components/location/android:location_java",
       "//third_party/androidx:androidx_annotation_annotation_java",
+      "//third_party/jni_zero:jni_zero_java",
     ]
   }
 }

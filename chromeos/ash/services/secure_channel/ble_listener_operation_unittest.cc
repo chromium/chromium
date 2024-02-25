@@ -106,7 +106,7 @@ class SecureChannelBleListenerOperationTest : public testing::Test {
   DeviceIdPair device_id_pair_;
 
   std::unique_ptr<AuthenticatedChannel> channel_from_callback_;
-  absl::optional<BleListenerFailureType> failure_type_from_callback_;
+  std::optional<BleListenerFailureType> failure_type_from_callback_;
 
   std::unique_ptr<ConnectToDeviceOperation<BleListenerFailureType>> operation_;
 };

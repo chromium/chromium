@@ -7,8 +7,8 @@
 
 #include <memory>
 
-#include "ios/chrome/browser/discover_feed/discover_feed_configuration.h"
-#include "ios/chrome/browser/discover_feed/discover_feed_service.h"
+#include "ios/chrome/browser/discover_feed/model/discover_feed_configuration.h"
+#include "ios/chrome/browser/discover_feed/model/discover_feed_service.h"
 
 namespace ios {
 namespace provider {

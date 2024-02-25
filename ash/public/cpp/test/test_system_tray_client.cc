@@ -4,6 +4,8 @@
 
 #include "ash/public/cpp/test/test_system_tray_client.h"
 
+#include <string_view>
+
 namespace ash {
 
 TestSystemTrayClient::TestSystemTrayClient() = default;
@@ -26,7 +28,7 @@ void TestSystemTrayClient::ShowBluetoothSettings(const std::string& device_id) {
 }
 
 void TestSystemTrayClient::ShowBluetoothPairingDialog(
-    absl::optional<base::StringPiece> device_address) {
+    std::optional<std::string_view> device_address) {
   show_bluetooth_pairing_dialog_count_++;
 }
 
@@ -106,6 +108,11 @@ void TestSystemTrayClient::ShowSettingsSimUnlock() {
   ++show_sim_unlock_settings_count_;
 }
 
+void TestSystemTrayClient::ShowApnSubpage(const std::string& network_id) {
+  ++show_apn_subpage_count_;
+  last_apn_subpage_network_id_ = network_id;
+}
+
 void TestSystemTrayClient::ShowThirdPartyVpnCreate(
     const std::string& extension_id) {
   ++show_third_party_vpn_create_count_;
@@ -143,7 +150,7 @@ void TestSystemTrayClient::ShowAccessCodeCastingDialog(
 }
 
 void TestSystemTrayClient::ShowCalendarEvent(
-    const absl::optional<GURL>& event_url,
+    const std::optional<GURL>& event_url,
     const base::Time& date,
     bool& opened_pwa,
     GURL& final_event_url) {
@@ -176,6 +183,14 @@ void TestSystemTrayClient::ShowEolInfoPage() {
 }
 
 void TestSystemTrayClient::RecordEolNoticeShown() {}
+
+void TestSystemTrayClient::ShowGraphicsTabletSettings() {
+  ++show_graphics_tablet_settings_count_;
+}
+
+void TestSystemTrayClient::ShowMouseSettings() {
+  ++show_mouse_settings_count_;
+}
 
 void TestSystemTrayClient::ShowTouchpadSettings() {
   ++show_touchpad_settings_count_;

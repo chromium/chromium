@@ -44,7 +44,7 @@ class ASH_PUBLIC_EXPORT ViewShadow : public views::ViewObserver,
   void OnViewLayerBoundsSet(views::View* view) override;
   void OnViewIsDeleting(views::View* view) override;
 
-  raw_ptr<views::View, ExperimentalAsh> view_;
+  raw_ptr<views::View> view_;
   std::unique_ptr<ui::Shadow> shadow_;
 };
 

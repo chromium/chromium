@@ -18,30 +18,13 @@ script_test("chrome_ios_wpt") {
     "--target",
     "Release",
     "--zero-tests-executed-ok",
-
-    # TODO(crbug.com/1351820): Enable more tests to run, update the dependency to third_party/blink/tools build file.
-    "external/wpt/css/css-transforms/",
+    "--no-retry-failures",
+    "--use-upstream-wpt",
   ]
   deps = [ ":all_tests" ]
-  data = [
-    "//third_party/blink/tools/run_wpt_tests.py",
-    "//third_party/wpt_tools/",
-    "//third_party/blink/tools/blinkpy/",
-    "//build/skia_gold_common/",
-    "//third_party/blink/web_tests/external/",
-    "//third_party/blink/web_tests/wpt_internal/",
-    "//third_party/blink/web_tests/resources/testdriver-vendor.js",
-    "//third_party/blink/web_tests/wptrunner.blink.ini",
-    "//third_party/blink/web_tests/FlagSpecificConfig",
-    "//third_party/blink/web_tests/TestLists/",
-    "//third_party/blink/web_tests/VirtualTestSuites",
-    "//.vpython3",
-  ]
   data_deps = [
     ":tools",
-    "//testing:test_scripts_shared",
-    "//third_party/catapult/third_party/typ:typ",
-    "//tools/imagediff",
+    "//third_party/blink/tools:wpt_tests_isolate",
   ]
 }
 
@@ -142,7 +125,7 @@ source_set("app_support") {
     "//ios/chrome/app:tests_hook",
     "//ios/chrome/browser/shared/model/browser",
     "//ios/chrome/browser/shared/model/web_state_list",
-    "//ios/chrome/browser/tabs:tabs",
+    "//ios/chrome/browser/tabs/model",
     "//ios/chrome/test/app:test_support",
     "//ios/testing:nserror_support",
     "//ios/third_party/edo",

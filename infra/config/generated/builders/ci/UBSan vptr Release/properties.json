@@ -1,6 +1,9 @@
 {
   "$build/chromium_tests_builder_config": {
     "builder_config": {
+      "additional_exclusions": [
+        "infra/config/generated/builders/ci/UBSan vptr Release/gn-args.json"
+      ],
       "builder_db": {
         "entries": [
           {
@@ -24,7 +27,8 @@
                 ],
                 "build_config": "Release",
                 "config": "chromium_linux_ubsan_vptr",
-                "target_bits": 64
+                "target_bits": 64,
+                "target_platform": "linux"
               },
               "legacy_gclient_config": {
                 "config": "chromium"
@@ -38,6 +42,12 @@
           "bucket": "ci",
           "builder": "UBSan vptr Release",
           "project": "chromium"
+        }
+      ],
+      "mirroring_builder_group_and_names": [
+        {
+          "builder": "linux-ubsan-vptr-rel",
+          "group": "tryserver.chromium.fuzz"
         }
       ]
     }

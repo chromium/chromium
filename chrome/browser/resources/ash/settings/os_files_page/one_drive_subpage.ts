@@ -2,11 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import 'chrome://resources/cr_elements/cr_link_row/cr_link_row.js';
+import 'chrome://resources/ash/common/cr_elements/cr_link_row/cr_link_row.js';
 
-import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
-import {assert} from 'chrome://resources/js/assert_ts.js';
+import {I18nMixin} from 'chrome://resources/ash/common/cr_elements/i18n_mixin.js';
+import {assert} from 'chrome://resources/js/assert.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+
+import {assertExhaustive} from '../assert_extras.js';
 
 import {OneDriveBrowserProxy} from './one_drive_browser_proxy.js';
 import {getTemplate} from './one_drive_subpage.html.js';
@@ -54,21 +56,22 @@ export class SettingsOneDriveSubpageElement extends
     this.initPromise = this.updateUserEmailAddress_();
   }
 
-  private connectionState_: string;
+  private connectionState_: OneDriveConnectionState;
   private userEmailAddress_: string|null;
   private oneDriveProxy_: OneDriveBrowserProxy;
 
-  override connectedCallback() {
+  override connectedCallback(): void {
     super.connectedCallback();
     this.oneDriveProxy_.observer.onODFSMountOrUnmount.addListener(
         this.updateUserEmailAddress_.bind(this));
   }
 
-  updateConnectionStateForTesting(connectionState: string) {
+  updateConnectionStateForTesting(connectionState: OneDriveConnectionState):
+      void {
     this.connectionState_ = connectionState;
   }
 
-  private async updateUserEmailAddress_() {
+  private async updateUserEmailAddress_(): Promise<void> {
     this.connectionState_ = OneDriveConnectionState.LOADING;
     const {email} = await this.oneDriveProxy_.handler.getUserEmailAddress();
     this.userEmailAddress_ = email;
@@ -77,16 +80,16 @@ export class SettingsOneDriveSubpageElement extends
         OneDriveConnectionState.CONNECTED;
   }
 
-  private isConnected_(connectionState: string) {
-    return connectionState === OneDriveConnectionState.CONNECTED;
+  private isConnected_(): boolean {
+    return this.connectionState_ === OneDriveConnectionState.CONNECTED;
   }
 
-  private isLoading_(connectionState: string) {
-    return connectionState === OneDriveConnectionState.LOADING;
+  private isLoading_(): boolean {
+    return this.connectionState_ === OneDriveConnectionState.LOADING;
   }
 
-  private signedInAsLabel_(connectionState: string): TrustedHTML {
-    switch (connectionState) {
+  private signedInAsLabel_(): TrustedHTML {
+    switch (this.connectionState_) {
       case OneDriveConnectionState.CONNECTED:
         assert(this.userEmailAddress_);
         return this.i18nAdvanced(
@@ -94,14 +97,16 @@ export class SettingsOneDriveSubpageElement extends
             {tags: ['strong'], substitutions: [this.userEmailAddress_]});
       case OneDriveConnectionState.DISCONNECTED:
         return this.i18nAdvanced('oneDriveDisconnected');
+      case OneDriveConnectionState.LOADING:
+        return this.i18nAdvanced('oneDriveLoading');
       default:
-        return window.trustedTypes!.emptyHTML;
+        assertExhaustive(this.connectionState_);
     }
   }
 
-  private connectDisconnectButtonLabel_(connectionState: string) {
+  private connectDisconnectButtonLabel_(): string {
     return this.i18n(
-        connectionState === OneDriveConnectionState.CONNECTED ?
+        this.connectionState_ === OneDriveConnectionState.CONNECTED ?
             'oneDriveDisconnect' :
             'oneDriveConnect');
   }
@@ -124,8 +129,11 @@ export class SettingsOneDriveSubpageElement extends
         }
         break;
       }
-      default:
+      case OneDriveConnectionState.LOADING:
         console.warn('Connect button clicked when connection state is loading');
+        break;
+      default:
+        assertExhaustive(this.connectionState_);
     }
     // The UI is updated by listening to `onODFSMountOrUnmount`.
   }

@@ -297,8 +297,9 @@ class URLDatabase {
   bool URLTableContainsAutoincrement();
 
   // Convenience to fill a URLRow. Must be in sync with the fields in
-  // kHistoryURLRowFields.
-  static void FillURLRow(sql::Statement& s, URLRow* i);
+  // kHistoryURLRowFields. Returns true if the data was valid and |*i| was
+  // actually populated.
+  [[nodiscard]] static bool FillURLRow(sql::Statement& s, URLRow* i);
 
   // Returns the database for the functions in this interface. The descendant of
   // this class implements these functions to return its objects.

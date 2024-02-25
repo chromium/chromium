@@ -61,7 +61,7 @@ class SearchMetricsReporter : public mojom::SearchMetricsReporter {
   // |daily_event_|.
   void ReportDailyMetrics(metrics::DailyEvent::IntervalType type);
 
-  raw_ptr<PrefService, ExperimentalAsh> pref_service_;  // Not owned.
+  raw_ptr<PrefService> pref_service_;  // Not owned.
 
   std::unique_ptr<metrics::DailyEvent> daily_event_;
 

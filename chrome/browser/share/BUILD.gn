@@ -6,6 +6,7 @@ import("//chrome/browser/buildflags.gni")
 if (is_android) {
   import("//build/config/android/config.gni")
   import("//build/config/android/rules.gni")
+  import("//third_party/jni_zero/jni_zero.gni")
 }
 
 source_set("share") {
@@ -25,11 +26,10 @@ source_set("share") {
   deps = [
     "//base",
     "//chrome/browser/favicon",
-    "//chrome/browser/profiles:profile",
+    "//chrome/browser/profiles",
     "//chrome/browser/share/proto:proto",
-    "//chrome/services/qrcode_generator/public/cpp",
-    "//chrome/services/qrcode_generator/public/mojom",
     "//components/leveldb_proto:leveldb_proto",
+    "//components/qr_code_generator:bitmap_generator",
     "//components/shared_highlighting/core/common",
     "//content/public/browser",
     "//skia",
@@ -43,8 +43,7 @@ source_set("share") {
       "default_ranking_android.cc",
       "editor_screenshot_task.cc",
       "link_to_text_bridge.cc",
-      "qr_code_generation_request.cc",
-      "qr_code_generation_request.h",
+      "qr_code_generator_android.cc",
     ]
     deps += [
       ":jni_headers",
@@ -52,7 +51,7 @@ source_set("share") {
       "//components/history/core/browser:browser",
       "//components/ukm/content:content",
       "//ui/android",
-      "//url:gurl_android",
+      "//url",
     ]
   }
 }
@@ -71,7 +70,6 @@ if (is_android) {
     deps = [
       ":jni_headers",
       "//base:base_java",
-      "//base:jni_java",
       "//build/android:build_java",
       "//chrome/browser/preferences:java",
       "//chrome/browser/profiles/android:java",
@@ -79,6 +77,7 @@ if (is_android) {
       "//components/browser_ui/share/android:java",
       "//content/public/android:content_java",
       "//third_party/androidx:androidx_annotation_annotation_java",
+      "//third_party/jni_zero:jni_zero_java",
       "//url:gurl_java",
     ]
   }

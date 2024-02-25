@@ -6,6 +6,7 @@
 #define CONTENT_PUBLIC_BROWSER_BACKGROUND_FETCH_DELEGATE_H_
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -14,7 +15,6 @@
 #include "content/common/content_export.h"
 #include "content/public/browser/web_contents.h"
 #include "services/network/public/mojom/fetch_api.mojom-shared.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/mojom/background_fetch/background_fetch.mojom.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 
@@ -141,8 +141,8 @@ class CONTENT_EXPORT BackgroundFetchDelegate {
   // Updates the UI shown for the fetch job associated with |job_unique_id| to
   // display a new |title| or |icon|.
   virtual void UpdateUI(const std::string& job_unique_id,
-                        const absl::optional<std::string>& title,
-                        const absl::optional<SkBitmap>& icon) = 0;
+                        const std::optional<std::string>& title,
+                        const std::optional<SkBitmap>& icon) = 0;
 };
 
 }  // namespace content

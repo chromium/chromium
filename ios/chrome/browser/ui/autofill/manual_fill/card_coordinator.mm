@@ -4,12 +4,13 @@
 
 #import "ios/chrome/browser/ui/autofill/manual_fill/card_coordinator.h"
 
+#import "base/memory/raw_ptr.h"
 #import "base/memory/ref_counted.h"
 #import "components/autofill/core/browser/data_model/credit_card.h"
 #import "components/autofill/core/browser/personal_data_manager.h"
 #import "components/autofill/ios/browser/autofill_driver_ios.h"
 #import "components/autofill/ios/browser/personal_data_manager_observer_bridge.h"
-#import "ios/chrome/browser/autofill/personal_data_manager_factory.h"
+#import "ios/chrome/browser/autofill/model/personal_data_manager_factory.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
@@ -26,7 +27,7 @@
 
 @interface CardCoordinator () <CardListDelegate, PersonalDataManagerObserver> {
   // Personal data manager to be observed.
-  autofill::PersonalDataManager* _personalDataManager;
+  raw_ptr<autofill::PersonalDataManager> _personalDataManager;
 
   // C++ to ObjC bridge for PersonalDataManagerObserver.
   std::unique_ptr<autofill::PersonalDataManagerObserverBridge>
@@ -130,6 +131,10 @@
     [weakSelf.cardRequester requestFullCreditCard:*autofillCreditCard
                            withBaseViewController:weakSelf.baseViewController];
   }];
+}
+
+- (void)openURL:(CrURL*)url {
+  // TODO: b/322521955 Open the URL.
 }
 
 #pragma mark - PersonalDataManagerObserver

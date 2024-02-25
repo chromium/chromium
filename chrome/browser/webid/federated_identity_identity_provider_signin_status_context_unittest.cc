@@ -49,7 +49,7 @@ TEST_F(FederatedIdentityIdentityProviderSigninStatusContextTest,
   const url::Origin idp = url::Origin::Create(GURL("https://idp.example"));
 
   // Check unset sign-in status.
-  EXPECT_EQ(absl::nullopt, context()->GetSigninStatus(idp));
+  EXPECT_EQ(std::nullopt, context()->GetSigninStatus(idp));
 
   // Check that setting a sign-in status for a new origin works.
   context()->SetSigninStatus(idp, true);

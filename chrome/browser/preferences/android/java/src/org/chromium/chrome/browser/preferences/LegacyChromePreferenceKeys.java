@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.preferences;
 
+import org.chromium.base.shared_preferences.KeyPrefix;
 import org.chromium.build.annotations.CheckDiscard;
 
 import java.util.Arrays;
@@ -21,9 +22,7 @@ public class LegacyChromePreferenceKeys {
      *     format.
      */
     static List<String> getKeysInUse() {
-        // clang-format off
         return Arrays.asList(
-                ChromePreferenceKeys.ACCESSIBILITY_TAB_SWITCHER,
                 ChromePreferenceKeys.APP_LOCALE,
                 ChromePreferenceKeys.AUTOFILL_ASSISTANT_ENABLED,
                 ChromePreferenceKeys.AUTOFILL_ASSISTANT_ONBOARDING_ACCEPTED,
@@ -45,6 +44,7 @@ public class LegacyChromePreferenceKeys {
                 ChromePreferenceKeys.CRASH_UPLOAD_SUCCESS_OTHER,
                 ChromePreferenceKeys.CRASH_UPLOAD_SUCCESS_RENDERER,
                 ChromePreferenceKeys.CUSTOM_TABS_LAST_URL,
+                ChromePreferenceKeys.DEPRECATED_HOMEPAGE_CUSTOM_URI,
                 ChromePreferenceKeys.DOWNLOAD_AUTO_RESUMPTION_ATTEMPT_LEFT,
                 ChromePreferenceKeys.DOWNLOAD_FOREGROUND_SERVICE_OBSERVERS,
                 ChromePreferenceKeys.DOWNLOAD_IS_DOWNLOAD_HOME_ENABLED,
@@ -57,15 +57,9 @@ public class LegacyChromePreferenceKeys {
                 ChromePreferenceKeys.FIRST_RUN_FLOW_SIGNIN_SETUP,
                 ChromePreferenceKeys.FIRST_RUN_LIGHTWEIGHT_FLOW_COMPLETE,
                 ChromePreferenceKeys.FIRST_RUN_SKIP_WELCOME_PAGE,
-                ChromePreferenceKeys.FLAGS_CACHED_ADAPTIVE_TOOLBAR_ENABLED,
-                ChromePreferenceKeys.FLAGS_CACHED_COMMAND_LINE_ON_NON_ROOTED_ENABLED,
-                ChromePreferenceKeys.FLAGS_CACHED_GRID_TAB_SWITCHER_ENABLED,
-                ChromePreferenceKeys.FLAGS_CACHED_START_SURFACE_ENABLED,
-                ChromePreferenceKeys.FLAGS_CACHED_TAB_GROUPS_ANDROID_ENABLED,
                 ChromePreferenceKeys.FONT_USER_FONT_SCALE_FACTOR,
                 ChromePreferenceKeys.FONT_USER_SET_FORCE_ENABLE_ZOOM,
                 ChromePreferenceKeys.HISTORY_SHOW_HISTORY_INFO,
-                ChromePreferenceKeys.HOMEPAGE_CUSTOM_URI,
                 ChromePreferenceKeys.HOMEPAGE_ENABLED,
                 ChromePreferenceKeys.HOMEPAGE_USE_DEFAULT_URI,
                 ChromePreferenceKeys.INCOGNITO_SHORTCUT_ADDED,
@@ -95,7 +89,6 @@ public class LegacyChromePreferenceKeys {
                 ChromePreferenceKeys.PRIVACY_METRICS_IN_SAMPLE,
                 ChromePreferenceKeys.PROFILES_BOOT_TIMESTAMP,
                 ChromePreferenceKeys.PROMOS_SKIPPED_ON_FIRST_START,
-                ChromePreferenceKeys.REACHED_CODE_PROFILER_GROUP,
                 ChromePreferenceKeys.RLZ_NOTIFIED,
                 ChromePreferenceKeys.SEARCH_ENGINE_CHOICE_DEFAULT_TYPE_BEFORE,
                 ChromePreferenceKeys.SEARCH_ENGINE_CHOICE_PRESENTED_VERSION,
@@ -122,7 +115,6 @@ public class LegacyChromePreferenceKeys {
                 ChromePreferenceKeys.SIGNIN_PROMO_SETTINGS_PERSONALIZED_DISMISSED,
                 ChromePreferenceKeys.SIGNIN_LEGACY_SYNC_ACCOUNT_EMAIL,
                 ChromePreferenceKeys.SNAPSHOT_DATABASE_REMOVED,
-                ChromePreferenceKeys.SURVEY_DATE_LAST_ROLLED,
                 ChromePreferenceKeys.SYNC_ERROR_MESSAGE_SHOWN_AT_TIME,
                 ChromePreferenceKeys.TABBED_ACTIVITY_LAST_BACKGROUNDED_TIME_MS_PREF,
                 ChromePreferenceKeys.TABMODEL_ACTIVE_TAB_ID,
@@ -137,13 +129,10 @@ public class LegacyChromePreferenceKeys {
                 ChromePreferenceKeys.UI_THEME_SETTING,
                 ChromePreferenceKeys.VERIFIED_DIGITAL_ASSET_LINKS,
                 ChromePreferenceKeys.WEBAPK_UNINSTALLED_PACKAGES,
-                ChromePreferenceKeys.KEY_ZERO_SUGGEST_LIST_SIZE
-        );
-        // clang-format on
+                ChromePreferenceKeys.KEY_ZERO_SUGGEST_LIST_SIZE);
     }
 
     static List<KeyPrefix> getPrefixesInUse() {
-        // clang-format off
         return Arrays.asList(
                 ChromePreferenceKeys.CUSTOM_TABS_DEX_LAST_UPDATE_TIME_PREF_PREFIX,
                 ChromePreferenceKeys.PAYMENTS_PAYMENT_INSTRUMENT_USE_COUNT,
@@ -159,8 +148,6 @@ public class LegacyChromePreferenceKeys {
                 ChromePreferenceKeys.KEY_ZERO_SUGGEST_IS_DELETABLE_PREFIX,
                 ChromePreferenceKeys.KEY_ZERO_SUGGEST_IS_STARRED_PREFIX,
                 ChromePreferenceKeys.KEY_ZERO_SUGGEST_POST_CONTENT_TYPE_PREFIX,
-                ChromePreferenceKeys.KEY_ZERO_SUGGEST_POST_CONTENT_DATA_PREFIX
-        );
-        // clang-format on
+                ChromePreferenceKeys.KEY_ZERO_SUGGEST_POST_CONTENT_DATA_PREFIX);
     }
 }

@@ -1,4 +1,4 @@
-// Copyright 2022 The Chromium Authors. All rights reserved.
+// Copyright 2022 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,9 +9,7 @@ import org.chromium.url.GURL;
 
 import java.io.Serializable;
 
-/**
- * Used by {@link WebsiteRowPreference} to display various information about one or multiple sites.
- */
+/** Used by {@link WebsiteRowPreference} to display various information about one or multiple sites. */
 public interface WebsiteEntry extends Serializable {
     /** @return the title to display in a {@link WebsiteRowPreference}. */
     String getTitleForPreferenceRow();

@@ -7,11 +7,11 @@
 
 #include <stdint.h>
 
+#include <optional>
 #include <vector>
 
 #include "base/containers/span.h"
 #include "base/functional/callback_forward.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/gfx/gfx_export.h"
 
@@ -176,7 +176,7 @@ GFX_EXPORT std::vector<Swatch> CalculateColorSwatches(
     const SkBitmap& bitmap,
     size_t max_swatches,
     const gfx::Rect& region,
-    absl::optional<ColorSwatchFilter> filter);
+    std::optional<ColorSwatchFilter> filter);
 
 // Returns a vector of RGB colors that represents the bitmap based on the
 // |color_profiles| provided. For each value, if a value is succesfully

@@ -1,0 +1,19 @@
+# Copyright 2023 The Chromium Authors
+# Use of this source code is governed by a BSD - style license that can be
+# found in the LICENSE file.
+
+import("//third_party/blink/renderer/modules/modules.gni")
+
+blink_modules_sources("printing") {
+  sources = [
+    "web_print_job.cc",
+    "web_print_job.h",
+    "web_printer.cc",
+    "web_printer.h",
+    "web_printing_manager.cc",
+    "web_printing_manager.h",
+    "web_printing_type_converters.cc",
+    "web_printing_type_converters.h",
+  ]
+  deps = [ "//printing/buildflags" ]
+}

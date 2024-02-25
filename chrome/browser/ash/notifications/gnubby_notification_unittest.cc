@@ -37,7 +37,7 @@ class GnubbyNotificationTest : public BrowserWithTestWindowTest {
     notification_count_ = 0;
   }
 
-  absl::optional<message_center::Notification> GetNotification() {
+  std::optional<message_center::Notification> GetNotification() {
     return tester_->GetNotification("gnubby_notification");
   }
 

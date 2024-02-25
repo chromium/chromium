@@ -56,7 +56,7 @@ function toggle_solid_color(use_solid_color) {
 var expected = {
   "layers": [
     {
-      "name": "Scrolling background of LayoutNGView #document",
+      "name": "Scrolling background of LayoutView #document",
       "bounds": [800, 2016],
       "contentsOpaque": true,
       "backgroundColor": "#FFFFFF",
@@ -82,6 +82,13 @@ var expected = {
       "bounds": [300, 300],
       "drawsContent": false,
       "transform": 3
+    },
+    {
+      "name": "LayoutNGBlockFlow (relative positioned) DIV id='scrollable'",
+      "position": [1, 1],
+      "bounds": [795, 1491],
+      "drawsContent": false,
+      "transform": 4
     },
     {
       "name": "LayoutNGBlockFlow (relative positioned) DIV id='transform'",
@@ -161,7 +168,7 @@ var expected = {
 var actual = {
   "layers": [
     {
-      "name": "Scrolling background of LayoutNGView #document",
+      "name": "Scrolling background of LayoutView #document",
       "bounds": [800, 2016],
       "contentsOpaque": true,
       "backgroundColor": "#FFFFFF",
@@ -187,6 +194,13 @@ var actual = {
       "bounds": [300, 300],
       "drawsContent": false,
       "transform": 3
+    },
+    {
+      "name": "LayoutNGBlockFlow (relative positioned) DIV id='scrollable'",
+      "position": [1, 1],
+      "bounds": [795, 1491],
+      "drawsContent": false,
+      "transform": 4
     },
     {
       "name": "LayoutNGBlockFlow (relative positioned) DIV id='transform'",

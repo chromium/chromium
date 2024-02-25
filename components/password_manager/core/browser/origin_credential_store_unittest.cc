@@ -9,6 +9,7 @@
 
 #include "base/strings/string_piece.h"
 #include "base/strings/utf_string_conversions.h"
+#include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_manager_util.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -20,6 +21,7 @@ namespace {
 
 using base::ASCIIToUTF16;
 using testing::ElementsAre;
+using testing::Property;
 
 using BlocklistedStatus = OriginCredentialStore::BlocklistedStatus;
 
@@ -34,6 +36,15 @@ UiCredential MakeUiCredential(
   return UiCredential(base::UTF8ToUTF16(username), base::UTF8ToUTF16(password),
                       url::Origin::Create(GURL(origin)), match_type,
                       base::Time());
+}
+
+password_manager::PasswordForm CreateTestPasswordForm(int index = 0) {
+  password_manager::PasswordForm form;
+  form.url = GURL("https://test" + base::NumberToString(index) + ".com");
+  form.signon_realm = form.url.spec();
+  form.username_value = u"username" + base::NumberToString16(index);
+  form.password_value = u"password" + base::NumberToString16(index);
+  return form;
 }
 
 }  // namespace
@@ -56,6 +67,15 @@ TEST_F(OriginCredentialStoreTest, StoresCredentials) {
                           MakeUiCredential("Adam", "Pas83B"),
                           MakeUiCredential("Dora", "PakudC"),
                           MakeUiCredential("Carl", "P1238C")));
+}
+
+TEST_F(OriginCredentialStoreTest, StoresUnnotifiedSharedCredentials) {
+  store()->SaveUnnotifiedSharedCredentials(
+      {CreateTestPasswordForm(1), CreateTestPasswordForm(2)});
+
+  EXPECT_THAT(
+      store()->GetUnnotifiedSharedCredentials(),
+      ElementsAre(CreateTestPasswordForm(1), CreateTestPasswordForm(2)));
 }
 
 TEST_F(OriginCredentialStoreTest, StoresOnlyNormalizedOrigins) {
@@ -139,6 +159,23 @@ TEST_F(OriginCredentialStoreTest, NeverBlocklistedStaysTheSame) {
   store()->SetBlocklistedStatus(false);
   EXPECT_EQ(BlocklistedStatus::kNeverBlocklisted,
             store()->GetBlocklistedStatus());
+}
+
+TEST_F(OriginCredentialStoreTest, SaveSharedPasswords) {
+  password_manager::PasswordForm shared_password;
+  shared_password.username_value = u"username";
+  shared_password.password_value = u"password";
+  shared_password.signon_realm = kExampleSite;
+  shared_password.match_type =
+      password_manager::PasswordForm::MatchType::kExact;
+  shared_password.type =
+      password_manager::PasswordForm::Type::kReceivedViaSharing;
+
+  store()->SaveCredentials(
+      {UiCredential(shared_password, url::Origin::Create(GURL(kExampleSite)))});
+
+  EXPECT_THAT(store()->GetCredentials(),
+              ElementsAre(Property(&UiCredential::is_shared, true)));
 }
 
 }  // namespace password_manager

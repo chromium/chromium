@@ -1,10 +1,10 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="ko">
+<translation id="1324575488877808473">Chrome을 열어 가장 많이 방문한 사이트를 확인하세요.</translation>
 <translation id="2513892053093488070">음성 검색</translation>
 <translation id="2535710892645968259">잠금 화면에서 Chrome 공룡 게임을 바로 시작합니다.</translation>
 <translation id="2542770169955243077">Chrome 공룡 게임</translation>
-<translation id="2803429804752388720">비밀번호 검색</translation>
 <translation id="2922313168575194078">Google 비밀번호 관리자에서 저장된 비밀번호를 안전하게 검색하세요.</translation>
 <translation id="302608144225178783">홈 화면에서 Chrome 공룡 게임을 바로 시작하세요.</translation>
 <translation id="3296938369177810197">음성 검색</translation>
@@ -29,6 +29,7 @@
 <translation id="6691821786147477657">iPad 홈페이지에서 새로운 검색을 시작하거나 가장 자주 방문한 사이트를 엽니다.</translation>
 <translation id="6721566127904256183">자주 방문한 사이트가 여기에 표시됩니다.</translation>
 <translation id="6855322554930231468">검색</translation>
+<translation id="6973491011026415905">Google 비밀번호 관리자에서 비밀번호 검색</translation>
 <translation id="7010831364920321713">시크릿 검색</translation>
 <translation id="7048549665319929185">검색 또는
 URL 입력</translation>

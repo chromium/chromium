@@ -48,8 +48,8 @@ class InlineLoginDialogOnboarding : public InlineLoginDialog {
     // views::WidgetObserver:
     void OnWidgetClosing(views::Widget* widget) override;
 
-    raw_ptr<InlineLoginDialogOnboarding, ExperimentalAsh> dialog_ = nullptr;
-    raw_ptr<views::Widget, ExperimentalAsh> widget_ = nullptr;
+    raw_ptr<InlineLoginDialogOnboarding> dialog_ = nullptr;
+    raw_ptr<views::Widget> widget_ = nullptr;
   };
 
   static InlineLoginDialogOnboarding* Show(

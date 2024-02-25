@@ -1,0 +1,28 @@
+Tests that each Emulation handler keeps track of its sensor overrides
+
+Creating virtual sensors
+PASS: Attempting to override sensor already overridden in other session fails
+
+Disconnecting |session3|
+PASS: 'accelerometer' is being overridden
+PASS: 'gravity' is being overridden
+PASS: 'gyroscope' is being overridden
+
+Removing GravitySensor virtual sensor
+PASS: 'gravity' is not being overridden
+PASS: 'accelerometer' is being overridden
+PASS: 'gyroscope' is being overridden
+
+Disconnecting |session2|
+PASS: 'accelerometer' is not being overridden
+PASS: 'gravity' is not being overridden
+PASS: 'gyroscope' is being overridden
+
+Creating a new virtual accelerometer
+PASS: setSensorOverrideEnabled() does not fail this time
+
+Disconnection session
+PASS: 'accelerometer' is not being overridden
+PASS: 'gravity' is not being overridden
+PASS: 'gyroscope' is not being overridden
+

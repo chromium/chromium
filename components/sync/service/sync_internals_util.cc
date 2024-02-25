@@ -447,6 +447,8 @@ base::Value::Dict ConstructAboutInformation(
                    /*is_good=*/user_actionable_error ==
                        SyncService::UserActionableError::kNone);
   disable_reasons->Set(GetDisableReasonsString(service->GetDisableReasons()));
+  // TODO(crbug.com/40067058): Delete this when ConsentLevel::kSync is deleted.
+  // See ConsentLevel::kSync documentation for details.
   feature_enabled->Set(service->IsSyncFeatureEnabled());
   setup_in_progress->Set(service->IsSetupInProgress());
   std::string auth_error_str = service->GetAuthError().ToString();
@@ -478,6 +480,8 @@ base::Value::Dict ConstructAboutInformation(
   }
   if (!is_local_sync_enabled_state) {
     username->Set(service->GetAccountInfo().email);
+    // TODO(crbug.com/40067058): Delete this when ConsentLevel::kSync is
+    // deleted. See ConsentLevel::kSync documentation for details.
     user_has_consent->Set(service->HasSyncConsent());
   }
 
@@ -498,6 +502,8 @@ base::Value::Dict ConstructAboutInformation(
           token_status.connection_status == CONNECTION_OK);
   last_synced->Set(
       GetLastSyncedTimeString(service->GetLastSyncedTimeForDebugging()));
+  // TODO(crbug.com/40067058): Delete this when ConsentLevel::kSync is deleted.
+  // See ConsentLevel::kSync documentation for details.
   is_setup_complete->Set(
       service->GetUserSettings()->IsInitialSyncFeatureSetupComplete());
   if (is_status_valid) {
@@ -523,7 +529,7 @@ base::Value::Dict ConstructAboutInformation(
   }
 
   // Encryption.
-  if (service->IsSyncFeatureActive()) {
+  if (service->IsEngineInitialized()) {
     is_using_explicit_passphrase->Set(
         service->GetUserSettings()->IsUsingExplicitPassphrase());
     is_passphrase_required->Set(
@@ -561,12 +567,14 @@ base::Value::Dict ConstructAboutInformation(
                         /*is_good=*/!get_key_failed_state);
     SyncerError download_result_err =
         snapshot.model_neutral_state().last_download_updates_result;
-    download_result->Set(download_result_err.ToString(),
-                         /*is_good=*/!download_result_err.IsActualError());
+    download_result->Set(
+        download_result_err.ToString(),
+        /*is_good=*/download_result_err.type() == SyncerError::Type::kSuccess);
     SyncerError commit_result_err =
         snapshot.model_neutral_state().commit_result;
-    commit_result->Set(commit_result_err.ToString(),
-                       /*is_good=*/!commit_result_err.IsActualError());
+    commit_result->Set(
+        commit_result_err.ToString(),
+        /*is_good=*/commit_result_err.type() == SyncerError::Type::kSuccess);
   }
 
   // Running Totals.

@@ -16,8 +16,7 @@
 #include "ui/message_center/public/cpp/notification_types.h"
 #include "ui/message_center/public/cpp/notifier_id.h"
 
-namespace ash {
-namespace file_system_provider {
+namespace ash::file_system_provider {
 namespace {
 
 // Extension icon size for the notification.
@@ -60,8 +59,8 @@ void NotificationManager::HideUnresponsiveNotification(int id) {
   }
 }
 
-void NotificationManager::Click(const absl::optional<int>& button_index,
-                                const absl::optional<std::u16string>& reply) {
+void NotificationManager::Click(const std::optional<int>& button_index,
+                                const std::optional<std::u16string>& reply) {
   if (!button_index)
     return;
 
@@ -72,8 +71,11 @@ void NotificationManager::Close(bool by_user) {
   OnNotificationResult(CONTINUE);
 }
 
-void NotificationManager::OnAppImageUpdated(const std::string& id,
-                                            const gfx::ImageSkia& image) {
+void NotificationManager::OnAppImageUpdated(
+    const std::string& id,
+    const gfx::ImageSkia& image,
+    bool is_placeholder_icon,
+    const std::optional<gfx::ImageSkia>& badge_image) {
   extension_icon_ = ui::ImageModel::FromImageSkia(image);
   ShowNotification();
 }
@@ -126,5 +128,4 @@ void NotificationManager::OnNotificationResult(NotificationResult result) {
   }
 }
 
-}  // namespace file_system_provider
-}  // namespace ash
+}  // namespace ash::file_system_provider

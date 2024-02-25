@@ -11,6 +11,9 @@ namespace views {
 
 class Widget;
 
+// Used with Widget::GetNativeWindowProperty() to identify a widget.
+VIEWS_EXPORT extern const char kWidgetIdentifierKey[];
+
 namespace internal {
 class NativeWidgetPrivate;
 }

@@ -1,0 +1,7 @@
+WebView textSize:16.0 style:0 htmlInfo:[{htmlTag="#document"}, {display=""}]
+++View textSize:16.0 style:0 htmlInfo:[{htmlTag="div"}, {display="block"}, {id="parent"}]
+++++Image text:"alternative text" textSize:16.0 style:0 htmlInfo:[{htmlTag="::before"}, {display="inline"}]
+++++TextView text:" " textSize:16.0 style:0 htmlInfo:[{htmlTag=""}, {display=""}]
+++++TextView text:"DOM text" textSize:16.0 style:0 htmlInfo:[{htmlTag=""}, {display=""}]
+++++TextView text:" " textSize:16.0 style:0 htmlInfo:[{htmlTag=""}, {display=""}]
+++++Image textSize:16.0 style:0 htmlInfo:[{htmlTag="::after"}, {display="inline"}]

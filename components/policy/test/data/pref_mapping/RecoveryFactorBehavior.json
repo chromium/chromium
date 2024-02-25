@@ -1,0 +1,42 @@
+[
+  {
+    "can_be_recommended": true,
+    "os": [
+      "chromeos_ash"
+    ],
+    "policy_pref_mapping_tests": [
+      {
+        "policies": {},
+        "prefs": {
+          "ash.recovery.recovery_factor_behavior": {
+            "check_for_recommended": false,
+            "location": "user_profile",
+            "value": false
+          }
+        }
+      },
+      {
+        "policies": {
+          "RecoveryFactorBehavior": true
+        },
+        "prefs": {
+          "ash.recovery.recovery_factor_behavior": {
+            "location": "user_profile",
+            "value": true
+          }
+        }
+      },
+      {
+        "policies": {
+          "RecoveryFactorBehavior": false
+        },
+        "prefs": {
+          "ash.recovery.recovery_factor_behavior": {
+            "location": "user_profile",
+            "value": false
+          }
+        }
+      }
+    ]
+  }
+]

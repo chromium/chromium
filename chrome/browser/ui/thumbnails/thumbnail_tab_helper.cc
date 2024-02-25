@@ -6,6 +6,7 @@
 
 #include <stdint.h>
 #include <algorithm>
+#include <optional>
 #include <set>
 #include <utility>
 
@@ -25,7 +26,6 @@
 #include "content/public/browser/render_widget_host.h"
 #include "content/public/browser/render_widget_host_view.h"
 #include "content/public/browser/web_contents.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/gfx/geometry/skia_conversions.h"
 #include "ui/native_theme/native_theme.h"
@@ -289,7 +289,7 @@ void ThumbnailTabHelper::StoreThumbnailForTabSwitch(base::TimeTicks start_time,
   UMA_HISTOGRAM_CUSTOM_TIMES("Tab.Preview.TimeToStoreAfterTabSwitch",
                              base::TimeTicks::Now() - start_time,
                              base::Milliseconds(1), base::Seconds(1), 50);
-  StoreThumbnail(CaptureType::kCopyFromView, bitmap, absl::nullopt);
+  StoreThumbnail(CaptureType::kCopyFromView, bitmap, std::nullopt);
 }
 
 void ThumbnailTabHelper::StoreThumbnailForBackgroundCapture(
@@ -300,7 +300,7 @@ void ThumbnailTabHelper::StoreThumbnailForBackgroundCapture(
 
 void ThumbnailTabHelper::StoreThumbnail(CaptureType type,
                                         const SkBitmap& bitmap,
-                                        absl::optional<uint64_t> frame_id) {
+                                        std::optional<uint64_t> frame_id) {
   // Failed requests will return an empty bitmap. In tests this can be triggered
   // on threads other than the UI thread.
   if (bitmap.drawsNothing())
@@ -360,7 +360,7 @@ ThumbnailCaptureInfo ThumbnailTabHelper::GetInitialCaptureInfo(
           ->GetPartSize(ui::NativeTheme::Part::kScrollbarVerticalTrack,
                         ui::NativeTheme::State::kNormal,
                         ui::NativeTheme::ExtraParams(
-                            absl::in_place_type<
+                            std::in_place_type<
                                 ui::NativeTheme::ScrollbarTrackExtraParams>))
           .width();
   // Round up to make sure any scrollbar pixls are eliminated. It's better to

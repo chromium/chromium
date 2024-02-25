@@ -50,6 +50,7 @@
 #include "third_party/blink/renderer/core/frame/local_frame_view.h"
 #include "third_party/blink/renderer/core/frame/remote_frame.h"
 #include "third_party/blink/renderer/core/frame/settings.h"
+#include "third_party/blink/renderer/core/html/fenced_frame/html_fenced_frame_element.h"
 #include "third_party/blink/renderer/core/html/forms/html_form_control_element.h"
 #include "third_party/blink/renderer/core/html/forms/html_form_element.h"
 #include "third_party/blink/renderer/core/html/forms/html_select_element.h"
@@ -58,7 +59,6 @@
 #include "third_party/blink/renderer/core/html/html_iframe_element.h"
 #include "third_party/blink/renderer/core/html/html_plugin_element.h"
 #include "third_party/blink/renderer/core/html/html_slot_element.h"
-#include "third_party/blink/renderer/core/html/portal/html_portal_element.h"
 #include "third_party/blink/renderer/core/html_names.h"
 #include "third_party/blink/renderer/core/input/event_handler.h"
 #include "third_party/blink/renderer/core/layout/hit_test_result.h"
@@ -143,7 +143,7 @@ class FocusNavigation : public GarbageCollected<FocusNavigation> {
 
   Element* Owner() {
     if (slot_)
-      return slot_;
+      return slot_.Get();
 
     return FindOwner(*root_);
   }
@@ -175,7 +175,7 @@ class FocusNavigation : public GarbageCollected<FocusNavigation> {
   Element* FindOwner(ContainerNode& node) {
     auto result = owner_map_.find(&node);
     if (result != owner_map_.end())
-      return result->value;
+      return result->value.Get();
 
     // Fallback contents owner is set to the nearest ancestor slot node even if
     // the slot node have assigned nodes.
@@ -499,10 +499,21 @@ inline bool IsShadowHostWithoutCustomFocusLogic(const Element& element) {
 }
 
 inline bool IsNonKeyboardFocusableShadowHost(const Element& element) {
-  return IsShadowHostWithoutCustomFocusLogic(element) &&
-         !(element.GetShadowRoot()
-               ? (element.IsFocusable() || element.DelegatesFocus())
-               : element.IsKeyboardFocusable());
+  if (!IsShadowHostWithoutCustomFocusLogic(element) ||
+      element.DelegatesFocus()) {
+    return false;
+  }
+  if (!element.IsFocusable()) {
+    return true;
+  }
+  if (element.IsKeyboardFocusable()) {
+    return false;
+  }
+  // This host supports focus, but cannot be keyboard focused. For example:
+  // - Tabindex is negative
+  // - It is a scroller with focusable children
+  // When tabindex is negative, we should not visit the host.
+  return !(element.GetIntegralAttribute(html_names::kTabindexAttr, 0) < 0);
 }
 
 inline bool IsKeyboardFocusableShadowHost(const Element& element) {
@@ -516,6 +527,9 @@ inline bool IsNonFocusableFocusScopeOwner(Element& element) {
 }
 
 inline bool ShouldVisit(Element& element) {
+  DCHECK(!element.IsKeyboardFocusable() ||
+         FocusController::AdjustedTabIndex(element) >= 0)
+      << "Keyboard focusable element with negative tabindex" << element;
   return element.IsKeyboardFocusable() || element.DelegatesFocus() ||
          IsNonFocusableFocusScopeOwner(element);
 }
@@ -816,7 +830,14 @@ Element* FindFocusableElementAcrossFocusScopesBackward(
   while (IsOpenPopoverInvoker(found)) {
     ScopedFocusNavigation inner_scope =
         ScopedFocusNavigation::OwnedByPopoverInvoker(*found, owner_map);
-    found = FindFocusableElementRecursivelyBackward(inner_scope, owner_map);
+    // If no inner element is focusable, then focus should be on the current
+    // found popover invoker.
+    if (Element* inner_found =
+            FindFocusableElementRecursivelyBackward(inner_scope, owner_map)) {
+      found = inner_found;
+    } else {
+      break;
+    }
   }
 
   // If there's no focusable element to advance to, move up the focus scopes
@@ -862,6 +883,22 @@ void FocusController::SetFocusedFrame(Frame* frame, bool notify_embedder) {
     return;
 
   is_changing_focused_frame_ = true;
+
+  // Fenced frames will try to pass focus to a dummy frame that represents the
+  // inner frame tree. We instead want to give focus to the outer
+  // HTMLFencedFrameElement. This will allow methods like document.activeElement
+  // and document.hasFocus() to properly handle when a fenced frame has focus.
+  if (frame && IsA<HTMLFrameOwnerElement>(frame->Owner())) {
+    auto* fenced_frame = DynamicTo<HTMLFencedFrameElement>(
+        To<HTMLFrameOwnerElement>(frame->Owner()));
+    if (fenced_frame) {
+      // SetFocusedElement will call back to FocusController::SetFocusedFrame.
+      // However, `is_changing_focused_frame_` will be true when it is called,
+      // causing the function to early return, so we still need the rest of this
+      // invocation of the function to run.
+      SetFocusedElement(fenced_frame, frame);
+    }
+  }
 
   auto* old_frame = DynamicTo<LocalFrame>(focused_frame_.Get());
   auto* new_frame = DynamicTo<LocalFrame>(frame);
@@ -962,11 +999,28 @@ HTMLFrameOwnerElement* FocusController::FocusedFrameOwnerElement(
 }
 
 bool FocusController::IsDocumentFocused(const Document& document) const {
-  if (!IsActive() || !IsFocused())
+  if (!IsActive()) {
     return false;
+  }
 
-  return focused_frame_ &&
-         focused_frame_->Tree().IsDescendantOf(document.GetFrame());
+  if (!focused_frame_) {
+    return false;
+  }
+
+  if (IsA<HTMLFrameOwnerElement>(focused_frame_->Owner())) {
+    auto* fenced_frame = DynamicTo<HTMLFencedFrameElement>(
+        To<HTMLFrameOwnerElement>(focused_frame_->Owner()));
+    if (fenced_frame && fenced_frame == document.ActiveElement()) {
+      return fenced_frame->GetDocument().GetFrame()->Tree().IsDescendantOf(
+          document.GetFrame());
+    }
+  }
+
+  if (!IsFocused()) {
+    return false;
+  }
+
+  return focused_frame_->Tree().IsDescendantOf(document.GetFrame());
 }
 
 void FocusController::FocusHasChanged() {
@@ -1136,7 +1190,8 @@ bool FocusController::AdvanceFocusInDocumentOrder(
 
     // We didn't find an element to focus, so we should try to pass focus to
     // Chrome.
-    if (!initial_focus && page_->GetChromeClient().CanTakeFocus(type)) {
+    if ((!initial_focus || document->GetFrame()->IsFencedFrameRoot()) &&
+        page_->GetChromeClient().CanTakeFocus(type)) {
       document->ClearFocusedElement();
       document->SetSequentialFocusNavigationStartingPoint(nullptr);
       SetFocusedFrame(nullptr);
@@ -1179,20 +1234,11 @@ bool FocusController::AdvanceFocusInDocumentOrder(
   auto* owner = DynamicTo<HTMLFrameOwnerElement>(element);
   bool has_remote_frame =
       owner && owner->ContentFrame() && owner->ContentFrame()->IsRemoteFrame();
-  // Portals do not currently allow input events, so we block focus from
-  // advancing into the portal's content frame.
-  bool is_portal = IsA<HTMLPortalElement>(owner);
-  if (owner && !is_portal &&
-      (has_remote_frame || !IsA<HTMLPlugInElement>(*element) ||
-       !element->IsKeyboardFocusable())) {
+  if (owner && (has_remote_frame || !IsA<HTMLPlugInElement>(*element) ||
+                !element->IsKeyboardFocusable())) {
     // FIXME: We should not focus frames that have no scrollbars, as focusing
     // them isn't useful to the user.
     if (!owner->ContentFrame()) {
-      // TODO (liviutinta) remove TRACE after fixing crbug.com/1063548
-      TRACE_EVENT_INSTANT1(
-          "input", "FocusController::AdvanceFocusInDocumentOrder",
-          TRACE_EVENT_SCOPE_THREAD, "reason_for_no_focus_element",
-          "portal blocks focus");
       return false;
     }
 
@@ -1308,22 +1354,13 @@ Element* FocusController::NextFocusableElementForImeAndAutofill(
     if (next_form_control_element->formOwner() != form_owner ||
         next_form_control_element->IsDisabledOrReadOnly())
       continue;
-    // Focusless spatial navigation supports all form types. However, submit
-    // buttons are explicitly excluded as moving to them isn't necessary - the
-    // IME should just submit instead.
-    if (RuntimeEnabledFeatures::FocuslessSpatialNavigationEnabled() &&
-        page_->GetSettings().GetSpatialNavigationEnabled() &&
-        !next_form_control_element->CanBeSuccessfulSubmitButton()) {
-      return next_element;
-    }
     LayoutObject* layout = next_element->GetLayoutObject();
     if (layout && layout->IsTextControl()) {
       // TODO(crbug.com/1320441): Extend it for radio buttons and checkboxes.
       return next_element;
     }
 
-    if (auto* select_element =
-            DynamicTo<HTMLSelectElement>(next_form_control_element)) {
+    if (IsA<HTMLSelectElement>(next_form_control_element)) {
       return next_element;
     }
   }
@@ -1503,12 +1540,8 @@ int FocusController::AdjustedTabIndex(const Element& element) {
     // missing values.
     return element.GetIntegralAttribute(html_names::kTabindexAttr, 0);
   }
-  bool default_focusable =
-      element.SupportsFocus() ||
-      (RuntimeEnabledFeatures::KeyboardFocusableScrollersEnabled() &&
-       IsScrollableNode(&element));
   return element.GetIntegralAttribute(html_names::kTabindexAttr,
-                                      default_focusable ? 0 : -1);
+                                      element.IsFocusable() ? 0 : -1);
 }
 
 void FocusController::Trace(Visitor* visitor) const {

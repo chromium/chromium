@@ -35,6 +35,7 @@
 #include "third_party/blink/renderer/platform/wtf/conditional_destructor.h"
 #include "third_party/blink/renderer/platform/wtf/construct_traits.h"
 #include "third_party/blink/renderer/platform/wtf/hash_traits.h"
+#include "third_party/blink/renderer/platform/wtf/type_traits.h"
 
 #if !defined(DUMP_HASHTABLE_STATS)
 #define DUMP_HASHTABLE_STATS 0
@@ -95,19 +96,6 @@
 #endif
 
 namespace WTF {
-
-// This is for tracing inside collections that have special support for weak
-// pointers.
-//
-// Structure:
-// - |Trace|: Traces the contents and returns true if there are still unmarked
-//   objects left to process
-//
-// Default implementation for non-weak types is to use the regular non-weak
-// TraceTrait. Default implementation for types with weakness is to
-// call |TraceInCollection| on the type's trait.
-template <WeakHandlingFlag weakness, typename T, typename Traits>
-struct TraceInCollectionTrait;
 
 #if DUMP_HASHTABLE_STATS || DUMP_HASHTABLE_STATS_PER_TABLE
 struct WTF_EXPORT HashTableStats {
@@ -250,10 +238,9 @@ class HashTableConstIterator final {
                                  KeyTraits,
                                  Allocator>
       const_iterator;
-  typedef Value ValueType;
-  using value_type = ValueType;
+  using value_type = Value;
   typedef typename Traits::IteratorConstGetType GetType;
-  typedef const ValueType* PointerType;
+  typedef const value_type* PointerType;
 
   friend class HashTable<Key, Value, Extractor, Traits, KeyTraits, Allocator>;
   friend class HashTableIterator<Key,
@@ -430,9 +417,9 @@ class HashTableIterator final {
                                  KeyTraits,
                                  Allocator>
       const_iterator;
-  typedef Value ValueType;
+  using value_type = Value;
   typedef typename Traits::IteratorGetType GetType;
-  typedef ValueType* PointerType;
+  typedef value_type* PointerType;
 
   friend class HashTable<Key, Value, Extractor, Traits, KeyTraits, Allocator>;
 
@@ -769,8 +756,8 @@ class HashTable final
 
   ValueType** GetBufferSlot() { return &table_; }
 
-  template <typename VisitorDispatcher, typename A = Allocator>
-  std::enable_if_t<A::kIsGarbageCollected> Trace(VisitorDispatcher) const;
+  void Trace(auto visitor) const
+    requires Allocator::kIsGarbageCollected;
 
 #if DCHECK_IS_ON()
   void EnterAccessForbiddenScope() {
@@ -798,10 +785,8 @@ class HashTable final
 #endif
 
  protected:
-  template <typename VisitorDispatcher, typename A = Allocator>
-  std::enable_if_t<A::kIsGarbageCollected> TraceTable(
-      VisitorDispatcher,
-      const ValueType* table) const;
+  void TraceTable(auto visitor, const ValueType* table) const
+    requires Allocator::kIsGarbageCollected;
 
  private:
   static ValueType* AllocateTable(unsigned size);
@@ -1532,9 +1517,8 @@ HashTable<Key, Value, Extractor, Traits, KeyTraits, Allocator>::AllocateTable(
       "empty value cannot be zero for things with a vtable");
   static_assert(
       Allocator::kIsGarbageCollected ||
-          ((!IsDisallowNew<KeyType>::value || !IsTraceable<KeyType>::value) &&
-           (!IsDisallowNew<ValueType>::value ||
-            !IsTraceable<ValueType>::value)),
+          ((!IsDisallowNew<KeyType> || !IsTraceable<KeyType>::value) &&
+           (!IsDisallowNew<ValueType> || !IsTraceable<ValueType>::value)),
       "Cannot put DISALLOW_NEW objects that "
       "have trace methods into an off-heap HashTable");
 
@@ -1973,12 +1957,11 @@ template <typename Key,
           typename Traits,
           typename KeyTraits,
           typename Allocator>
-template <typename VisitorDispatcher, typename A>
-std::enable_if_t<A::kIsGarbageCollected>
-HashTable<Key, Value, Extractor, Traits, KeyTraits, Allocator>::Trace(
-    VisitorDispatcher visitor) const {
-  static_assert(WTF::IsWeak<ValueType>::value ||
-                    IsTraceableInCollectionTrait<Traits>::value,
+void HashTable<Key, Value, Extractor, Traits, KeyTraits, Allocator>::Trace(
+    auto visitor) const
+  requires Allocator::kIsGarbageCollected
+{
+  static_assert(WTF::IsWeak<ValueType>::value || IsTraceable<ValueType>::value,
                 "Value should not be traced");
   TraceTable(visitor, AsAtomicPtr(&table_)->load(std::memory_order_relaxed));
 }
@@ -1989,11 +1972,11 @@ template <typename Key,
           typename Traits,
           typename KeyTraits,
           typename Allocator>
-template <typename VisitorDispatcher, typename A>
-std::enable_if_t<A::kIsGarbageCollected>
-HashTable<Key, Value, Extractor, Traits, KeyTraits, Allocator>::TraceTable(
-    VisitorDispatcher visitor,
-    const ValueType* table) const {
+void HashTable<Key, Value, Extractor, Traits, KeyTraits, Allocator>::TraceTable(
+    auto visitor,
+    const ValueType* table) const
+  requires Allocator::kIsGarbageCollected
+{
   if (!WTF::IsWeak<ValueType>::value) {
     // Strong HashTable.
     Allocator::template TraceHashTableBackingStrongly<ValueType, HashTable>(
@@ -2007,8 +1990,8 @@ HashTable<Key, Value, Extractor, Traits, KeyTraits, Allocator>::TraceTable(
     // weakly multiple times.
     Allocator::template TraceHashTableBackingWeakly<ValueType, HashTable>(
         visitor, table, &table_,
-        WeakProcessingHashTableHelper<WeakHandlingTrait<ValueType>::value, Key,
-                                      Value, Extractor, Traits, KeyTraits,
+        WeakProcessingHashTableHelper<kWeakHandlingTrait<ValueType>, Key, Value,
+                                      Extractor, Traits, KeyTraits,
                                       Allocator>::Process,
         this);
   }
@@ -2021,7 +2004,7 @@ struct HashTableConstIteratorAdapter {
   static_assert(!IsTraceable<typename Traits::TraitType>::value);
 
   using iterator_category = std::bidirectional_iterator_tag;
-  using value_type = HashTableType;
+  using value_type = HashTableType::ValueType;
   using difference_type = ptrdiff_t;
   using pointer = value_type*;
   using reference = value_type&;
@@ -2073,7 +2056,7 @@ struct HashTableConstIteratorAdapter<
 
  public:
   using iterator_category = std::bidirectional_iterator_tag;
-  using value_type = HashTableType;
+  using value_type = HashTableType::ValueType;
   using difference_type = ptrdiff_t;
   using pointer = value_type*;
   using reference = value_type&;
@@ -2125,6 +2108,13 @@ std::ostream& operator<<(
 template <typename HashTableType, typename Traits, typename Enable = void>
 struct HashTableIteratorAdapter {
   static_assert(!IsTraceable<typename Traits::TraitType>::value);
+
+  using iterator_category = std::bidirectional_iterator_tag;
+  using value_type = HashTableType::ValueType;
+  using difference_type = ptrdiff_t;
+  using pointer = value_type*;
+  using reference = value_type&;
+
   typedef typename Traits::IteratorGetType GetType;
   typedef typename HashTableType::ValueTraits::IteratorGetType SourceGetType;
 
@@ -2167,6 +2157,12 @@ struct HashTableIteratorAdapter<
   STACK_ALLOCATED();
 
  public:
+  using iterator_category = std::bidirectional_iterator_tag;
+  using value_type = HashTableType::ValueType;
+  using difference_type = ptrdiff_t;
+  using pointer = value_type*;
+  using reference = value_type&;
+
   typedef typename Traits::IteratorGetType GetType;
   typedef typename HashTableType::ValueTraits::IteratorGetType SourceGetType;
 

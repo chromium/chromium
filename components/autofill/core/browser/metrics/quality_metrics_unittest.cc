@@ -11,6 +11,7 @@
 #include "components/autofill/core/browser/autofill_test_utils.h"
 #include "components/autofill/core/browser/browser_autofill_manager_test_api.h"
 #include "components/autofill/core/browser/metrics/autofill_metrics_test_base.h"
+#include "components/autofill/core/browser/metrics/placeholder_metrics.h"
 #include "components/autofill/core/browser/metrics/ukm_metrics_test_utils.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -19,7 +20,7 @@ namespace autofill {
 
 // This is defined in the autofill_metrics.cc implementation file.
 int GetFieldTypeGroupPredictionQualityMetric(
-    ServerFieldType field_type,
+    FieldType field_type,
     AutofillMetrics::FieldTypeQualityMetric metric);
 
 namespace autofill_metrics {
@@ -42,9 +43,7 @@ std::string SerializeAndEncode(const AutofillQueryResponse& response) {
     LOG(ERROR) << "Cannot serialize the response proto";
     return "";
   }
-  std::string response_string;
-  base::Base64Encode(unencoded_response_string, &response_string);
-  return response_string;
+  return base::Base64Encode(unencoded_response_string);
 }
 
 }  // namespace
@@ -80,21 +79,21 @@ TEST_F(QualityMetricsTest, QualityMetrics) {
                  {.role = NO_SERVER_DATA,
                   .heuristic_type = UNKNOWN_TYPE,
                   .value = u"USA",
-                  .form_control_type = "select-one",
+                  .form_control_type = FormControlType::kSelectOne,
                   .is_autofilled = false},
                  {.role = PHONE_HOME_CITY_AND_NUMBER,
                   .heuristic_type = PHONE_HOME_CITY_AND_NUMBER,
                   .value = u"2345678901",
-                  .form_control_type = "tel",
+                  .form_control_type = FormControlType::kInputTelephone,
                   .is_autofilled = true}},
-      .unique_renderer_id = test::MakeFormRendererId(),
+      .renderer_id = test::MakeFormRendererId(),
       .main_frame_origin =
           url::Origin::Create(autofill_client_->form_origin())};
 
-  std::vector<ServerFieldType> heuristic_types = {
+  std::vector<FieldType> heuristic_types = {
       NAME_FULL,         PHONE_HOME_NUMBER, NAME_FULL,
       PHONE_HOME_NUMBER, UNKNOWN_TYPE,      PHONE_HOME_CITY_AND_NUMBER};
-  std::vector<ServerFieldType> server_types = {
+  std::vector<FieldType> server_types = {
       NAME_FIRST,    EMAIL_ADDRESS,  NAME_FIRST,
       EMAIL_ADDRESS, NO_SERVER_DATA, PHONE_HOME_CITY_AND_NUMBER};
 
@@ -104,7 +103,7 @@ TEST_F(QualityMetricsTest, QualityMetrics) {
   SubmitForm(form);
 
   // Auxiliary function for GetAllSamples() expectations.
-  auto b = [](ServerFieldType field_type,
+  auto b = [](FieldType field_type,
               AutofillMetrics::FieldTypeQualityMetric metric,
               base::HistogramBase::Count count) {
     return Bucket(GetFieldTypeGroupPredictionQualityMetric(field_type, metric),
@@ -168,31 +167,36 @@ TEST_F(QualityMetricsTest, QualityMetrics) {
 // only_fill_when_focused and are supposed to log RATIONALIZATION_OK.
 TEST_F(QualityMetricsTest, LoggedCorrecltyForRationalizationOk) {
   FormData form = CreateForm(
-      {CreateTestFormField("Name", "name", "Elvis Aaron Presley", "text"),
+      {CreateTestFormField("Name", "name", "Elvis Aaron Presley",
+                           FormControlType::kInputText),
        CreateTestFormField("Address", "address", "3734 Elvis Presley Blvd.",
-                           "text"),
-       CreateTestFormField("Phone", "phone", "2345678901", "text"),
+                           FormControlType::kInputText),
+       CreateTestFormField("Phone", "phone", "2345678901",
+                           FormControlType::kInputText),
        // RATIONALIZATION_OK because it's ambiguous value.
-       CreateTestFormField("Phone1", "phone1", "nonsense value", "text"),
+       CreateTestFormField("Phone1", "phone1", "nonsense value",
+                           FormControlType::kInputText),
        // RATIONALIZATION_OK because it's same type but different to what is in
        // the profile.
-       CreateTestFormField("Phone2", "phone2", "2345678902", "text"),
+       CreateTestFormField("Phone2", "phone2", "2345678902",
+                           FormControlType::kInputText),
        // RATIONALIZATION_OK because it's a type mismatch.
-       CreateTestFormField("Phone3", "phone3", "Elvis Aaron Presley", "text")});
+       CreateTestFormField("Phone3", "phone3", "Elvis Aaron Presley",
+                           FormControlType::kInputText)});
   form.fields[2].is_autofilled = true;
 
-  std::vector<ServerFieldType> heuristic_types = {NAME_FULL,
-                                                  ADDRESS_HOME_LINE1,
-                                                  PHONE_HOME_CITY_AND_NUMBER,
-                                                  PHONE_HOME_CITY_AND_NUMBER,
-                                                  PHONE_HOME_CITY_AND_NUMBER,
-                                                  PHONE_HOME_CITY_AND_NUMBER};
-  std::vector<ServerFieldType> server_types = {NAME_FULL,
-                                               ADDRESS_HOME_LINE1,
-                                               PHONE_HOME_CITY_AND_NUMBER,
-                                               PHONE_HOME_WHOLE_NUMBER,
-                                               PHONE_HOME_CITY_AND_NUMBER,
-                                               PHONE_HOME_WHOLE_NUMBER};
+  std::vector<FieldType> heuristic_types = {NAME_FULL,
+                                            ADDRESS_HOME_LINE1,
+                                            PHONE_HOME_CITY_AND_NUMBER,
+                                            PHONE_HOME_CITY_AND_NUMBER,
+                                            PHONE_HOME_CITY_AND_NUMBER,
+                                            PHONE_HOME_CITY_AND_NUMBER};
+  std::vector<FieldType> server_types = {NAME_FULL,
+                                         ADDRESS_HOME_LINE1,
+                                         PHONE_HOME_CITY_AND_NUMBER,
+                                         PHONE_HOME_WHOLE_NUMBER,
+                                         PHONE_HOME_CITY_AND_NUMBER,
+                                         PHONE_HOME_WHOLE_NUMBER};
 
   base::UserActionTester user_action_tester;
   autofill_manager().AddSeenForm(form, heuristic_types, server_types);
@@ -218,17 +222,20 @@ TEST_F(QualityMetricsTest, LoggedCorrecltyForRationalizationOk) {
 // only_fill_when_focused and are supposed to log RATIONALIZATION_GOOD.
 TEST_F(QualityMetricsTest, LoggedCorrecltyForRationalizationGood) {
   FormData form = CreateForm(
-      {CreateTestFormField("Name", "name", "Elvis Aaron Presley", "text"),
+      {CreateTestFormField("Name", "name", "Elvis Aaron Presley",
+                           FormControlType::kInputText),
        CreateTestFormField("Address", "address", "3734 Elvis Presley Blvd.",
-                           "text"),
-       CreateTestFormField("Phone", "phone", "2345678901", "text"),
+                           FormControlType::kInputText),
+       CreateTestFormField("Phone", "phone", "2345678901",
+                           FormControlType::kInputText),
        // RATIONALIZATION_GOOD because it's empty.
-       CreateTestFormField("Phone1", "phone1", "", "text")});
+       CreateTestFormField("Phone1", "phone1", "",
+                           FormControlType::kInputText)});
   form.fields[2].is_autofilled = true;
 
-  std::vector<ServerFieldType> field_types = {NAME_FULL, ADDRESS_HOME_LINE1,
-                                              PHONE_HOME_CITY_AND_NUMBER,
-                                              PHONE_HOME_CITY_AND_NUMBER};
+  std::vector<FieldType> field_types = {NAME_FULL, ADDRESS_HOME_LINE1,
+                                        PHONE_HOME_CITY_AND_NUMBER,
+                                        PHONE_HOME_CITY_AND_NUMBER};
 
   base::UserActionTester user_action_tester;
   autofill_manager().AddSeenForm(form, field_types);
@@ -254,22 +261,25 @@ TEST_F(QualityMetricsTest, LoggedCorrecltyForRationalizationGood) {
 // only_fill_when_focused and are supposed to log RATIONALIZATION_BAD.
 TEST_F(QualityMetricsTest, LoggedCorrecltyForRationalizationBad) {
   FormData form = CreateForm({
-      CreateTestFormField("Name", "name", "Elvis Aaron Presley", "text"),
+      CreateTestFormField("Name", "name", "Elvis Aaron Presley",
+                          FormControlType::kInputText),
       CreateTestFormField("Address", "address", "3734 Elvis Presley Blvd.",
-                          "text"),
-      CreateTestFormField("Phone", "phone", "2345678901", "text"),
+                          FormControlType::kInputText),
+      CreateTestFormField("Phone", "phone", "2345678901",
+                          FormControlType::kInputText),
       // RATIONALIZATION_BAD because it's filled with the same value as filled
       // previously.
-      CreateTestFormField("Phone1", "phone1", "2345678901", "text"),
+      CreateTestFormField("Phone1", "phone1", "2345678901",
+                          FormControlType::kInputText),
   });
   form.fields[2].is_autofilled = true;
 
-  std::vector<ServerFieldType> heuristic_types = {NAME_FULL, ADDRESS_HOME_LINE1,
-                                                  PHONE_HOME_CITY_AND_NUMBER,
-                                                  PHONE_HOME_CITY_AND_NUMBER};
-  std::vector<ServerFieldType> server_types = {NAME_FULL, ADDRESS_HOME_LINE1,
-                                               PHONE_HOME_CITY_AND_NUMBER,
-                                               PHONE_HOME_WHOLE_NUMBER};
+  std::vector<FieldType> heuristic_types = {NAME_FULL, ADDRESS_HOME_LINE1,
+                                            PHONE_HOME_CITY_AND_NUMBER,
+                                            PHONE_HOME_CITY_AND_NUMBER};
+  std::vector<FieldType> server_types = {NAME_FULL, ADDRESS_HOME_LINE1,
+                                         PHONE_HOME_CITY_AND_NUMBER,
+                                         PHONE_HOME_WHOLE_NUMBER};
 
   base::UserActionTester user_action_tester;
   autofill_manager().AddSeenForm(form, heuristic_types, server_types);
@@ -296,32 +306,36 @@ TEST_F(QualityMetricsTest, LoggedCorrecltyForRationalizationBad) {
 TEST_F(QualityMetricsTest, LoggedCorrecltyForOnlyFillWhenFocusedField) {
   FormData form = CreateForm(
       {// TRUE_POSITIVE + no rationalization logging
-       CreateTestFormField("Name", "name", "Elvis Aaron Presley", "text"),
+       CreateTestFormField("Name", "name", "Elvis Aaron Presley",
+                           FormControlType::kInputText),
        // TRUE_POSITIVE + no rationalization logging
        CreateTestFormField("Address", "address", "3734 Elvis Presley Blvd.",
-                           "text"),
+                           FormControlType::kInputText),
        // TRUE_POSITIVE + no rationalization logging
-       CreateTestFormField("Phone", "phone", "2345678901", "text"),
+       CreateTestFormField("Phone", "phone", "2345678901",
+                           FormControlType::kInputText),
        // TRUE_NEGATIVE_EMPTY + RATIONALIZATION_GOOD
-       CreateTestFormField("Phone1", "phone1", "", "text"),
+       CreateTestFormField("Phone1", "phone1", "", FormControlType::kInputText),
        // TRUE_POSITIVE + RATIONALIZATION_BAD
-       CreateTestFormField("Phone2", "phone2", "2345678901", "text"),
+       CreateTestFormField("Phone2", "phone2", "2345678901",
+                           FormControlType::kInputText),
        // FALSE_NEGATIVE_MISMATCH + RATIONALIZATION_OK
-       CreateTestFormField("Phone3", "phone3", "Elvis Aaron Presley", "text")});
+       CreateTestFormField("Phone3", "phone3", "Elvis Aaron Presley",
+                           FormControlType::kInputText)});
   form.fields[2].is_autofilled = true;
 
-  std::vector<ServerFieldType> heuristic_types = {NAME_FULL,
-                                                  ADDRESS_HOME_LINE1,
-                                                  PHONE_HOME_CITY_AND_NUMBER,
-                                                  PHONE_HOME_CITY_AND_NUMBER,
-                                                  PHONE_HOME_CITY_AND_NUMBER,
-                                                  PHONE_HOME_CITY_AND_NUMBER};
-  std::vector<ServerFieldType> server_types = {NAME_FULL,
-                                               ADDRESS_HOME_LINE1,
-                                               PHONE_HOME_CITY_AND_NUMBER,
-                                               PHONE_HOME_WHOLE_NUMBER,
-                                               PHONE_HOME_CITY_AND_NUMBER,
-                                               PHONE_HOME_WHOLE_NUMBER};
+  std::vector<FieldType> heuristic_types = {NAME_FULL,
+                                            ADDRESS_HOME_LINE1,
+                                            PHONE_HOME_CITY_AND_NUMBER,
+                                            PHONE_HOME_CITY_AND_NUMBER,
+                                            PHONE_HOME_CITY_AND_NUMBER,
+                                            PHONE_HOME_CITY_AND_NUMBER};
+  std::vector<FieldType> server_types = {NAME_FULL,
+                                         ADDRESS_HOME_LINE1,
+                                         PHONE_HOME_CITY_AND_NUMBER,
+                                         PHONE_HOME_WHOLE_NUMBER,
+                                         PHONE_HOME_CITY_AND_NUMBER,
+                                         PHONE_HOME_WHOLE_NUMBER};
 
   base::UserActionTester user_action_tester;
   autofill_manager().AddSeenForm(form, heuristic_types, server_types);
@@ -334,7 +348,7 @@ TEST_F(QualityMetricsTest, LoggedCorrecltyForOnlyFillWhenFocusedField) {
   SubmitForm(form);
 
   // Auxiliary function for GetAllSamples() expectations.
-  auto b = [](ServerFieldType field_type,
+  auto b = [](FieldType field_type,
               AutofillMetrics::FieldTypeQualityMetric metric,
               base::HistogramBase::Count count) {
     return Bucket(GetFieldTypeGroupPredictionQualityMetric(field_type, metric),
@@ -396,15 +410,15 @@ TEST_F(QualityMetricsTest, LoggedCorrecltyForOnlyFillWhenFocusedField) {
 // are counted correctly.
 
 struct PredictionQualityMetricsTestCase {
-  const ServerFieldType predicted_field_type;
-  const ServerFieldType actual_field_type;
+  const FieldType predicted_field_type;
+  const FieldType actual_field_type;
 };
 
 class PredictionQualityMetricsTest
     : public QualityMetricsTest,
       public testing::WithParamInterface<PredictionQualityMetricsTestCase> {
  public:
-  const char* ValueForType(ServerFieldType type) {
+  const char* ValueForType(FieldType type) {
     switch (type) {
       case EMPTY_TYPE:
         return "";
@@ -454,8 +468,8 @@ class PredictionQualityMetricsTest
   }
 
   bool IsExampleOf(AutofillMetrics::FieldTypeQualityMetric metric,
-                   ServerFieldType predicted_type,
-                   ServerFieldType actual_type) {
+                   FieldType predicted_type,
+                   FieldType actual_type) {
     // The server can send either NO_SERVER_DATA or UNKNOWN_TYPE to indicate
     // that a field is not autofillable:
     //
@@ -511,34 +525,35 @@ class PredictionQualityMetricsTest
     return false;
   }
 
-  static int FieldTypeCross(ServerFieldType predicted_type,
-                            ServerFieldType actual_type) {
+  static int FieldTypeCross(FieldType predicted_type, FieldType actual_type) {
     EXPECT_LE(predicted_type, UINT16_MAX);
     EXPECT_LE(actual_type, UINT16_MAX);
     return (predicted_type << 16) | actual_type;
   }
 
-  const ServerFieldTypeSet unknown_equivalent_types_{UNKNOWN_TYPE, EMPTY_TYPE,
-                                                     AMBIGUOUS_TYPE};
+  const FieldTypeSet unknown_equivalent_types_{UNKNOWN_TYPE, EMPTY_TYPE,
+                                               AMBIGUOUS_TYPE};
 };
 
 TEST_P(PredictionQualityMetricsTest, Classification) {
   const std::vector<std::string> prediction_sources{"Heuristic", "Server",
                                                     "Overall"};
   // Setup the test parameters.
-  ServerFieldType actual_field_type = GetParam().actual_field_type;
-  ServerFieldType predicted_type = GetParam().predicted_field_type;
+  FieldType actual_field_type = GetParam().actual_field_type;
+  FieldType predicted_type = GetParam().predicted_field_type;
 
-  DVLOG(2) << "Test Case = Predicted: "
-           << AutofillType::ServerFieldTypeToString(predicted_type) << "; "
-           << "Actual: "
-           << AutofillType::ServerFieldTypeToString(actual_field_type);
+  DVLOG(2) << "Test Case = Predicted: " << FieldTypeToStringView(predicted_type)
+           << "; "
+           << "Actual: " << FieldTypeToStringView(actual_field_type);
 
   FormData form = CreateForm(
-      {CreateTestFormField("first", "first", ValueForType(NAME_FIRST), "text"),
-       CreateTestFormField("last", "last", ValueForType(NAME_LAST), "test"),
+      {CreateTestFormField("first", "first", ValueForType(NAME_FIRST),
+                           FormControlType::kInputText),
+       CreateTestFormField("last", "last", ValueForType(NAME_LAST),
+                           FormControlType::kInputText),
        CreateTestFormField("Unknown", "Unknown",
-                           ValueForType(actual_field_type), "text")});
+                           ValueForType(actual_field_type),
+                           FormControlType::kInputText)});
 
   // Resolve any field type ambiguity.
   if (actual_field_type == AMBIGUOUS_TYPE) {
@@ -547,13 +562,12 @@ TEST_P(PredictionQualityMetricsTest, Classification) {
     }
   }
 
-  std::vector<ServerFieldType> heuristic_types = {
+  std::vector<FieldType> heuristic_types = {
       NAME_FIRST, NAME_LAST,
       predicted_type == NO_SERVER_DATA ? UNKNOWN_TYPE : predicted_type};
-  std::vector<ServerFieldType> server_types = {NAME_FIRST, NAME_LAST,
-                                               predicted_type};
-  std::vector<ServerFieldType> actual_types = {NAME_FIRST, NAME_LAST,
-                                               actual_field_type};
+  std::vector<FieldType> server_types = {NAME_FIRST, NAME_LAST, predicted_type};
+  std::vector<FieldType> actual_types = {NAME_FIRST, NAME_LAST,
+                                         actual_field_type};
 
   autofill_manager().AddSeenForm(form, heuristic_types, server_types);
 
@@ -687,21 +701,25 @@ INSTANTIATE_TEST_SUITE_P(
 // but no submission event is sent.
 TEST_F(QualityMetricsTest, NoSubmission) {
   FormData form = CreateForm(
-      {CreateTestFormField("Autofilled", "autofilled", "Elvis", "text"),
+      {CreateTestFormField("Autofilled", "autofilled", "Elvis",
+                           FormControlType::kInputText),
        CreateTestFormField("Autofill Failed", "autofillfailed",
-                           "buddy@gmail.com", "text"),
-       CreateTestFormField("Empty", "empty", "", "text"),
-       CreateTestFormField("Unknown", "unknown", "garbage", "text"),
-       CreateTestFormField("Select", "select", "USA", "select-one"),
-       CreateTestFormField("Phone", "phone", "2345678901", "tel")});
+                           "buddy@gmail.com", FormControlType::kInputText),
+       CreateTestFormField("Empty", "empty", "", FormControlType::kInputText),
+       CreateTestFormField("Unknown", "unknown", "garbage",
+                           FormControlType::kInputText),
+       CreateTestFormField("Select", "select", "USA",
+                           FormControlType::kSelectOne),
+       CreateTestFormField("Phone", "phone", "2345678901",
+                           FormControlType::kInputTelephone)});
   form.fields.front().is_autofilled = true;
   form.fields.back().is_autofilled = true;
 
-  std::vector<ServerFieldType> heuristic_types = {
+  std::vector<FieldType> heuristic_types = {
       NAME_FULL,         PHONE_HOME_NUMBER, NAME_FULL,
       PHONE_HOME_NUMBER, UNKNOWN_TYPE,      PHONE_HOME_CITY_AND_NUMBER};
 
-  std::vector<ServerFieldType> server_types = {
+  std::vector<FieldType> server_types = {
       NAME_FIRST,    EMAIL_ADDRESS,  NAME_FIRST,
       EMAIL_ADDRESS, NO_SERVER_DATA, PHONE_HOME_CITY_AND_NUMBER};
 
@@ -714,7 +732,7 @@ TEST_F(QualityMetricsTest, NoSubmission) {
   // Triggers the metrics.
   autofill_manager().Reset();
 
-  auto Buck = [](ServerFieldType field_type,
+  auto Buck = [](FieldType field_type,
                  AutofillMetrics::FieldTypeQualityMetric metric, size_t n) {
     return Bucket(GetFieldTypeGroupPredictionQualityMetric(field_type, metric),
                   n);
@@ -771,20 +789,23 @@ TEST_F(QualityMetricsTest, NoSubmission) {
 TEST_F(QualityMetricsTest, BasedOnAutocomplete) {
   FormData form = CreateForm(
       {// Heuristic value will match with Autocomplete attribute.
-       CreateTestFormField("Last Name", "lastname", "", "text", "family-name"),
+       CreateTestFormField("Last Name", "lastname", "",
+                           FormControlType::kInputText, "family-name"),
        // Heuristic value will NOT match with Autocomplete attribute.
-       CreateTestFormField("First Name", "firstname", "", "text",
-                           "additional-name"),
+       CreateTestFormField("First Name", "firstname", "",
+                           FormControlType::kInputText, "additional-name"),
        // Heuristic value will be unknown.
-       CreateTestFormField("Garbage label", "garbage", "", "text",
-                           "postal-code"),
+       CreateTestFormField("Garbage label", "garbage", "",
+                           FormControlType::kInputText, "postal-code"),
        // No autocomplete attribute. No metric logged.
-       CreateTestFormField("Address", "address", "", "text", "")});
+       CreateTestFormField("Address", "address", "",
+                           FormControlType::kInputText, "")});
 
   std::unique_ptr<FormStructure> form_structure =
       std::make_unique<FormStructure>(form);
   FormStructure* form_structure_ptr = form_structure.get();
-  form_structure->DetermineHeuristicTypes(nullptr, nullptr);
+  form_structure->DetermineHeuristicTypes(GeoIpCountryCode(""), nullptr,
+                                          nullptr);
   ASSERT_TRUE(
       test_api(autofill_manager())
           .mutable_form_structures()
@@ -808,7 +829,7 @@ TEST_F(QualityMetricsTest, BasedOnAutocomplete) {
       .OnLoadedServerPredictions(
           response_string, test::GetEncodedSignatures(*form_structure_ptr));
 
-  // Verify that FormStructure::ParseApiQueryResponse was called (here and
+  // Verify that ParseServerPredictionsQueryResponse was called (here and
   // below).
   EXPECT_THAT(
       histogram_tester.GetAllSamples("Autofill.ServerQueryResponse"),
@@ -866,7 +887,7 @@ TEST_F(QualityMetricsTest, BasedOnAutocomplete) {
   }
 }
 
-// Tests that the Autofill.LabelInference.InferredLabelSource.AtSubmission
+// Tests that the Autofill.LabelInference.InferredLabelSource.AtSubmission2
 // metric is emitted correctly.
 TEST_F(QualityMetricsTest, InferredLabelSourceAtSubmissionMetric) {
   const AutofillProfile& profile =
@@ -883,7 +904,7 @@ TEST_F(QualityMetricsTest, InferredLabelSourceAtSubmissionMetric) {
   name_field.label_source = FormFieldData::LabelSource::kUnknown;
   FormFieldData street_field;
   street_field.value = u"unknown";
-  street_field.label_source = FormFieldData::LabelSource::kFor;
+  street_field.label_source = FormFieldData::LabelSource::kForId;
   FormFieldData country_field;
   country_field.value =
       profile.GetInfo(ADDRESS_HOME_COUNTRY, personal_data().app_locale());
@@ -897,7 +918,7 @@ TEST_F(QualityMetricsTest, InferredLabelSourceAtSubmissionMetric) {
   base::HistogramTester histogram_tester;
   SubmitForm(form);
   EXPECT_THAT(histogram_tester.GetAllSamples(
-                  "Autofill.LabelInference.InferredLabelSource.AtSubmission"),
+                  "Autofill.LabelInference.InferredLabelSource.AtSubmission2"),
               BucketsAre(Bucket(name_field.label_source, 1),
                          Bucket(country_field.label_source, 1)));
 }

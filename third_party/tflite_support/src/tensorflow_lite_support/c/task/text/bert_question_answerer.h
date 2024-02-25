@@ -58,8 +58,7 @@ TfLiteBertQuestionAnswerer* TfLiteBertQuestionAnswererCreate(
 // Invokes the encapsulated TFLite model and answers a question based on
 // context.
 TfLiteQaAnswers* TfLiteBertQuestionAnswererAnswer(
-    const TfLiteBertQuestionAnswerer* question_answerer,
-    const char* context,
+    const TfLiteBertQuestionAnswerer* question_answerer, const char* context,
     const char* question);
 
 void TfLiteBertQuestionAnswererDelete(

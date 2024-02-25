@@ -42,6 +42,12 @@ class TranslateLanguageList {
   void GetSupportedLanguages(bool translate_allowed,
                              std::vector<std::string>* languages);
 
+  // Fills |languages| with the alphabetically sorted list of languages that the
+  // partial translate server can translate to and from. May attempt a language
+  // list request unless |translate_allowed| is false.
+  static void GetSupportedPartialTranslateLanguages(
+      std::vector<std::string>* languages);
+
   // Returns the language code that can be used with the Translate method for a
   // specified |language|. (ex. GetLanguageCode("en-US") will return "en", and
   // GetLanguageCode("zh-CN") returns "zh-CN")
@@ -49,6 +55,9 @@ class TranslateLanguageList {
 
   // Returns true if |language| is supported by the translation server.
   bool IsSupportedLanguage(base::StringPiece language);
+
+  // Returns true if |language| is supported by the partial translation server.
+  static bool IsSupportedPartialTranslateLanguage(base::StringPiece language);
 
   // Fetches the language list from the translate server if resource requests
   // are allowed, and otherwise keeps the request as pending until allowed.

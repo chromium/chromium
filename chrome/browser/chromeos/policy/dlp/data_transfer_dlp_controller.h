@@ -5,6 +5,9 @@
 #ifndef CHROME_BROWSER_CHROMEOS_POLICY_DLP_DATA_TRANSFER_DLP_CONTROLLER_H_
 #define CHROME_BROWSER_CHROMEOS_POLICY_DLP_DATA_TRANSFER_DLP_CONTROLLER_H_
 
+#include <optional>
+
+#include "base/files/file_path.h"
 #include "base/functional/callback.h"
 #include "base/memory/raw_ref.h"
 #include "base/memory/weak_ptr.h"
@@ -12,7 +15,7 @@
 #include "chrome/browser/chromeos/policy/dlp/dlp_clipboard_notifier.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_drag_drop_notifier.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_rules_manager.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
+#include "third_party/abseil-cpp/absl/types/variant.h"
 #include "ui/base/data_transfer_policy/data_transfer_policy_controller.h"
 
 namespace ui {
@@ -37,17 +40,20 @@ class DataTransferDlpController : public ui::DataTransferPolicyController {
   void operator=(const DataTransferDlpController&) = delete;
 
   // ui::DataTransferPolicyController:
-  bool IsClipboardReadAllowed(const ui::DataTransferEndpoint* const data_src,
-                              const ui::DataTransferEndpoint* const data_dst,
-                              const absl::optional<size_t> size) override;
-  void PasteIfAllowed(const ui::DataTransferEndpoint* const data_src,
-                      const ui::DataTransferEndpoint* const data_dst,
-                      const absl::optional<size_t> size,
-                      content::RenderFrameHost* rfh,
-                      base::OnceCallback<void(bool)> paste_cb) override;
-  void DropIfAllowed(const ui::OSExchangeData* drag_data,
-                     const ui::DataTransferEndpoint* data_dst,
-                     base::OnceClosure drop_cb) override;
+  bool IsClipboardReadAllowed(
+      base::optional_ref<const ui::DataTransferEndpoint> data_src,
+      base::optional_ref<const ui::DataTransferEndpoint> data_dst,
+      const std::optional<size_t> size) override;
+  void PasteIfAllowed(
+      base::optional_ref<const ui::DataTransferEndpoint> data_src,
+      base::optional_ref<const ui::DataTransferEndpoint> data_dst,
+      absl::variant<size_t, std::vector<base::FilePath>> pasted_content,
+      content::RenderFrameHost* rfh,
+      base::OnceCallback<void(bool)> paste_cb) override;
+  void DropIfAllowed(
+      const ui::OSExchangeData* drag_data,
+      base::optional_ref<const ui::DataTransferEndpoint> data_dst,
+      base::OnceClosure drop_cb) override;
 
  protected:
   explicit DataTransferDlpController(const DlpRulesManager& dlp_rules_manager);
@@ -60,8 +66,8 @@ class DataTransferDlpController : public ui::DataTransferPolicyController {
 
   // Protected because it needs to be accessible from tests.
   void ReportWarningProceededEvent(
-      const absl::optional<ui::DataTransferEndpoint> maybe_data_src,
-      const absl::optional<ui::DataTransferEndpoint> maybe_data_dst,
+      base::optional_ref<const ui::DataTransferEndpoint> data_src,
+      base::optional_ref<const ui::DataTransferEndpoint> data_dst,
       const std::string& src_pattern,
       const std::string& dst_pattern,
       bool is_clipboard_event,
@@ -69,57 +75,70 @@ class DataTransferDlpController : public ui::DataTransferPolicyController {
 
  private:
   virtual void NotifyBlockedPaste(
-      const ui::DataTransferEndpoint* const data_src,
-      const ui::DataTransferEndpoint* const data_dst);
+      base::optional_ref<const ui::DataTransferEndpoint> data_src,
+      base::optional_ref<const ui::DataTransferEndpoint> data_dst);
 
-  virtual void WarnOnPaste(const ui::DataTransferEndpoint* const data_src,
-                           const ui::DataTransferEndpoint* const data_dst,
-                           base::RepeatingCallback<void()> reporting_cb);
+  virtual void WarnOnPaste(
+      base::optional_ref<const ui::DataTransferEndpoint> data_src,
+      base::optional_ref<const ui::DataTransferEndpoint> data_dst,
+      base::OnceClosure reporting_cb);
 
-  virtual void WarnOnBlinkPaste(const ui::DataTransferEndpoint* const data_src,
-                                const ui::DataTransferEndpoint* const data_dst,
-                                content::WebContents* web_contents,
-                                base::OnceCallback<void(bool)> paste_cb);
+  virtual void WarnOnBlinkPaste(
+      base::optional_ref<const ui::DataTransferEndpoint> data_src,
+      base::optional_ref<const ui::DataTransferEndpoint> data_dst,
+      content::WebContents* web_contents,
+      base::OnceCallback<void(bool)> paste_cb);
 
   virtual bool ShouldPasteOnWarn(
-      const ui::DataTransferEndpoint* const data_dst);
+      base::optional_ref<const ui::DataTransferEndpoint> data_dst);
 
   virtual bool ShouldCancelOnWarn(
-      const ui::DataTransferEndpoint* const data_dst);
+      base::optional_ref<const ui::DataTransferEndpoint> data_dst);
 
   virtual void NotifyBlockedDrop(
-      const ui::DataTransferEndpoint* const data_src,
-      const ui::DataTransferEndpoint* const data_dst);
+      base::optional_ref<const ui::DataTransferEndpoint> data_src,
+      base::optional_ref<const ui::DataTransferEndpoint> data_dst);
 
-  virtual void WarnOnDrop(const ui::DataTransferEndpoint* const data_src,
-                          const ui::DataTransferEndpoint* const data_dst,
-                          base::OnceClosure drop_cb);
+  virtual void WarnOnDrop(
+      base::optional_ref<const ui::DataTransferEndpoint> data_src,
+      base::optional_ref<const ui::DataTransferEndpoint> data_dst,
+      base::OnceClosure drop_cb);
 
-  bool ShouldSkipReporting(const ui::DataTransferEndpoint* const data_src,
-                           const ui::DataTransferEndpoint* const data_dst,
-                           bool is_warning_proceeded,
-                           base::TimeTicks curr_time);
+  bool ShouldSkipReporting(
+      base::optional_ref<const ui::DataTransferEndpoint> data_src,
+      base::optional_ref<const ui::DataTransferEndpoint> data_dst,
+      bool is_warning_proceeded,
+      base::TimeTicks curr_time);
 
-  void ReportEvent(const ui::DataTransferEndpoint* const data_src,
-                   const ui::DataTransferEndpoint* const data_dst,
+  void ReportEvent(base::optional_ref<const ui::DataTransferEndpoint> data_src,
+                   base::optional_ref<const ui::DataTransferEndpoint> data_dst,
                    const std::string& src_pattern,
                    const std::string& dst_pattern,
                    DlpRulesManager::Level level,
                    bool is_clipboard_event,
                    const DlpRulesManager::RuleMetadata& rule_metadata);
 
-  void MaybeReportEvent(const ui::DataTransferEndpoint* const data_src,
-                        const ui::DataTransferEndpoint* const data_dst,
-                        const std::string& src_pattern,
-                        const std::string& dst_pattern,
-                        DlpRulesManager::Level level,
-                        bool is_clipboard_event,
-                        const DlpRulesManager::RuleMetadata& rule_metadata);
+  void MaybeReportEvent(
+      base::optional_ref<const ui::DataTransferEndpoint> data_src,
+      base::optional_ref<const ui::DataTransferEndpoint> data_dst,
+      const std::string& src_pattern,
+      const std::string& dst_pattern,
+      DlpRulesManager::Level level,
+      bool is_clipboard_event,
+      const DlpRulesManager::RuleMetadata& rule_metadata);
 
-  void ContinueDropIfAllowed(const ui::OSExchangeData* drag_data,
-                             const ui::DataTransferEndpoint* data_dst,
-                             base::OnceClosure drop_cb,
-                             bool is_allowed);
+  void ContinueDropIfAllowed(
+      base::optional_ref<const ui::DataTransferEndpoint> data_src,
+      base::optional_ref<const ui::DataTransferEndpoint> data_dst,
+      base::OnceClosure drop_cb);
+
+  // Performs clipbpoard restriction related checks.
+  void ContinuePasteIfClipboardRestrictionsAllow(
+      base::optional_ref<const ui::DataTransferEndpoint> data_src,
+      base::optional_ref<const ui::DataTransferEndpoint> data_dst,
+      size_t size,
+      content::RenderFrameHost* rfh,
+      base::OnceCallback<void(bool)> paste_cb);
 
   // The solution for the issue of sending multiple reporting events for a
   // single user action. When a user triggers a paste (for instance by pressing
@@ -130,13 +149,13 @@ class DataTransferDlpController : public ui::DataTransferPolicyController {
   struct LastReportedEndpoints {
     LastReportedEndpoints();
     ~LastReportedEndpoints();
-    absl::optional<ui::DataTransferEndpoint> data_src;
-    absl::optional<ui::DataTransferEndpoint> data_dst;
-    absl::optional<bool> is_warning_proceeded;
+    std::optional<ui::DataTransferEndpoint> data_src;
+    std::optional<ui::DataTransferEndpoint> data_dst;
+    std::optional<bool> is_warning_proceeded;
     base::TimeTicks time;
   } last_reported_;
 
-  const raw_ref<const DlpRulesManager, ExperimentalAsh> dlp_rules_manager_;
+  const raw_ref<const DlpRulesManager> dlp_rules_manager_;
   DlpClipboardNotifier clipboard_notifier_;
   DlpDragDropNotifier drag_drop_notifier_;
 

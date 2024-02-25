@@ -7,6 +7,7 @@
 
 #include <functional>
 #include <memory>
+#include <optional>
 #include <utility>
 #include <vector>
 
@@ -21,7 +22,6 @@
 #include "third_party/abseil-cpp/absl/container/flat_hash_map.h"
 #include "third_party/abseil-cpp/absl/container/flat_hash_set.h"
 #include "third_party/abseil-cpp/absl/synchronization/mutex.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/abseil-cpp/absl/types/span.h"
 
 namespace ipcz {
@@ -82,7 +82,7 @@ class Node : public APIObjectImpl<Node, APIObject::kNode> {
 
   // Returns a copy of the Connection to the remote node named by `name`, or
   // null if this node has no connection to that node.
-  absl::optional<Node::Connection> GetConnection(const NodeName& name);
+  std::optional<Node::Connection> GetConnection(const NodeName& name);
 
   // Returns a reference to the NodeLink used by this Node to communicate with
   // the remote node identified by `name`; or null if this node has no NodeLink

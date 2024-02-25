@@ -7,6 +7,7 @@
 #include <stddef.h>
 
 #include <memory>
+#include <optional>
 
 #include "base/compiler_specific.h"
 #include "base/files/scoped_temp_dir.h"
@@ -14,7 +15,6 @@
 #include "components/policy/core/common/cloud/resource_cache.h"
 #include "crypto/sha2.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace policy {
 
@@ -61,7 +61,7 @@ void CloudExternalDataStoreTest::SetUp() {
   ASSERT_TRUE(temp_dir_.CreateUniqueTempDir());
   resource_cache_ =
       std::make_unique<ResourceCache>(temp_dir_.GetPath(), task_runner_,
-                                      /* max_cache_size */ absl::nullopt);
+                                      /* max_cache_size */ std::nullopt);
 }
 
 TEST_F(CloudExternalDataStoreTest, StoreAndLoad) {

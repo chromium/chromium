@@ -11,9 +11,11 @@
 #include "ash/app_list/views/app_list_nudge_controller.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
+#include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/view.h"
 
 namespace views {
+class AnimationAbortHandle;
 class Button;
 class LabelButton;
 }  // namespace views
@@ -32,6 +34,8 @@ enum class AppListToastType;
 // A container view accommodating a toast view with type `ToastType`. See
 // `ToastType` for more detail.
 class AppListToastContainerView : public views::View {
+  METADATA_HEADER(AppListToastContainerView, views::View)
+
  public:
   // The visibility state of the container.
   enum class VisibilityState {
@@ -79,6 +83,9 @@ class AppListToastContainerView : public views::View {
   // Creates a reorder nudge view in the container.
   void CreateReorderNudgeView();
 
+  // Creates a tutorial nudge view in the container.
+  void CreateTutorialNudgeView();
+
   // Removes the reorder nudge view if the nudge view is showing.
   void RemoveReorderNudgeView();
 
@@ -91,18 +98,22 @@ class AppListToastContainerView : public views::View {
   // Called when the app list temporary sort order changes. If `new_order` is
   // null, the temporary sort order is cleared.
   void OnTemporarySortOrderChanged(
-      const absl::optional<AppListSortOrder>& new_order);
+      const std::optional<AppListSortOrder>& new_order);
 
   // Returns the toast's target visibility for the specified sort order. If
   // `order` is null, the temporary sort order is cleared.
   bool GetVisibilityForSortOrder(
-      const absl::optional<AppListSortOrder>& order) const;
+      const std::optional<AppListSortOrder>& order) const;
 
   // Fires an accessibility alert with the text of the sort order toast.
   void AnnounceSortOrder(AppListSortOrder new_order);
 
   // Fires an accessibility alert to notify the users that the sort is reverted.
   void AnnounceUndoSort();
+
+  // Updates the toast preferred size to fit `available_width` of available
+  // horizontal space.
+  void ConfigureLayoutForAvailableWidth(int available_width);
 
   // This function expects that `toast_view_` exists.
   views::LabelButton* GetToastButton();
@@ -138,8 +149,7 @@ class AppListToastContainerView : public views::View {
   // Called when the fade out animation for the `toast_view_` is finished.
   void OnFadeOutToastViewComplete();
 
-  const raw_ptr<AppListA11yAnnouncer, DanglingUntriaged | ExperimentalAsh>
-      a11y_announcer_;
+  const raw_ptr<AppListA11yAnnouncer, DanglingUntriaged> a11y_announcer_;
 
   // The app list toast container is visually part of the apps grid and should
   // provide context menu options generally available in the apps grid.
@@ -148,14 +158,12 @@ class AppListToastContainerView : public views::View {
   // Whether the toast container is part of the tablet mode app list UI.
   const bool tablet_mode_;
 
-  raw_ptr<AppListToastView, DanglingUntriaged | ExperimentalAsh> toast_view_ =
-      nullptr;
+  raw_ptr<AppListToastView, DanglingUntriaged> toast_view_ = nullptr;
 
-  const raw_ptr<AppListViewDelegate, ExperimentalAsh> view_delegate_;
-  const raw_ptr<Delegate, ExperimentalAsh> delegate_;
-  const raw_ptr<AppListNudgeController, DanglingUntriaged | ExperimentalAsh>
-      nudge_controller_;
-  const raw_ptr<AppListKeyboardController, DanglingUntriaged | ExperimentalAsh>
+  const raw_ptr<AppListViewDelegate> view_delegate_;
+  const raw_ptr<Delegate> delegate_;
+  const raw_ptr<AppListNudgeController, DanglingUntriaged> nudge_controller_;
+  const raw_ptr<AppListKeyboardController, DanglingUntriaged>
       keyboard_controller_;
 
   // Caches the current toast type.
@@ -171,6 +179,13 @@ class AppListToastContainerView : public views::View {
 
   // True if committing the sort order via the close button is in progress.
   bool committing_sort_order_ = false;
+
+  // The amount of horizontal space available for the toast container.
+  std::optional<int> available_width_;
+
+  // The abort handle for the `toast_view_` fade out animation.
+  std::unique_ptr<views::AnimationAbortHandle>
+      toast_view_fade_out_animation_abort_handle_;
 
   base::WeakPtrFactory<AppListToastContainerView> weak_factory_{this};
 };

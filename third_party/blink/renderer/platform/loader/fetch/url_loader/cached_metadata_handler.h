@@ -55,7 +55,6 @@ class PLATFORM_EXPORT CachedMetadataSender {
   virtual bool IsServedFromCacheStorage() = 0;
 };
 
-// Returns whether we should use isolated code cache for a particular response.
 PLATFORM_EXPORT bool ShouldUseIsolatedCodeCache(
     mojom::blink::RequestContextType,
     const ResourceResponse&);

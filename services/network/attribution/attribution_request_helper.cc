@@ -9,6 +9,7 @@
 
 #include <functional>
 #include <memory>
+#include <optional>
 #include <string>
 #include <utility>
 #include <vector>
@@ -21,7 +22,6 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/rand_util.h"
 #include "base/strings/strcat.h"
-#include "base/strings/string_piece.h"
 #include "base/uuid.h"
 #include "net/base/isolation_info.h"
 #include "net/base/schemeful_site.h"
@@ -40,7 +40,6 @@
 #include "services/network/public/cpp/trust_token_http_headers.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
 #include "services/network/trust_tokens/trust_token_key_commitment_getter.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 
@@ -352,6 +351,9 @@ void SetAttributionReportingHeaders(net::URLRequest& url_request,
           AttributionReportingRuntimeFeature::kCrossAppWeb) &&
       base::FeatureList::IsEnabled(
           features::kAttributionReportingCrossAppWeb)) {
+    base::UmaHistogramEnumeration("Conversions.RequestSupportHeader",
+                                  request.attribution_reporting_support);
+
     url_request.SetExtraRequestHeaderByName(
         "Attribution-Reporting-Support",
         GetAttributionSupportHeader(

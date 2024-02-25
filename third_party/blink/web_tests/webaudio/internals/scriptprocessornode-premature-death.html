@@ -4,6 +4,7 @@
     <title>
       scriptprocessornode-premature-death.html
     </title>
+    <script src="../../resources/gc.js"></script>
     <script src="../../resources/js-test.js"></script>
   </head>
   <body>
@@ -18,7 +19,7 @@
 
       let wasCalled, wasCollectedPrematurely, savedNode, savedCallback;
 
-      function test(saveReference, nextStep) {
+      async function test(saveReference, nextStep) {
         debug(
             'Testing ' + (saveReference ? 'with' : 'without') + ' explicitly ' +
             'keeping a reference to the script processor node alive.');
@@ -50,7 +51,7 @@
         // generate anything
 
         wasCalled = false;
-        let callback = function() {
+        let callback = () => {
           wasCalled = true;
         };
         node.onaudioprocess = callback;
@@ -65,18 +66,15 @@
 
         let observation = internals.observeGC(callback);
         node = callback = null;
-        gc();
+        await asyncGC();
         wasCollectedPrematurely = observation.wasCollected;
-
-        // Make some noise!
-
         source.start(0);
         context.oncomplete = check(nextStep);
         context.startRendering();
       }
 
       function check(nextStep) {
-        return function() {
+        return () => {
           shouldBeFalse('wasCollectedPrematurely');
           shouldBeTrue('wasCalled');
           nextStep();

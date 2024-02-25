@@ -5,12 +5,13 @@
 #ifndef SERVICES_NETWORK_PUBLIC_CPP_CROSS_ORIGIN_RESOURCE_POLICY_H_
 #define SERVICES_NETWORK_PUBLIC_CPP_CROSS_ORIGIN_RESOURCE_POLICY_H_
 
+#include <optional>
+
 #include "base/component_export.h"
 #include "services/network/public/mojom/blocked_by_response_reason.mojom-forward.h"
 #include "services/network/public/mojom/cross_origin_embedder_policy.mojom-forward.h"
 #include "services/network/public/mojom/fetch_api.mojom-forward.h"
 #include "services/network/public/mojom/url_response_head.mojom-forward.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/origin.h"
 
 class GURL;
@@ -43,10 +44,10 @@ class COMPONENT_EXPORT(NETWORK_CPP) CrossOriginResourcePolicy {
   // NetworkService (see how CorsURLLoaderFactory::IsValidRequest checks
   // InitiatorLockCompatibility), but may need extra care in the browser
   // process.
-  [[nodiscard]] static absl::optional<mojom::BlockedByResponseReason> IsBlocked(
+  [[nodiscard]] static std::optional<mojom::BlockedByResponseReason> IsBlocked(
       const GURL& request_url,
       const GURL& original_url,
-      const absl::optional<url::Origin>& request_initiator,
+      const std::optional<url::Origin>& request_initiator,
       const network::mojom::URLResponseHead& response,
       mojom::RequestMode request_mode,
       mojom::RequestDestination request_destination,
@@ -55,11 +56,11 @@ class COMPONENT_EXPORT(NETWORK_CPP) CrossOriginResourcePolicy {
 
   // Same as IsBlocked(), but this method can take a raw value of
   // Cross-Origin-Resource-Policy header instead of using a URLResponseHead.
-  [[nodiscard]] static absl::optional<mojom::BlockedByResponseReason>
+  [[nodiscard]] static std::optional<mojom::BlockedByResponseReason>
   IsBlockedByHeaderValue(const GURL& request_url,
                          const GURL& original_url,
-                         const absl::optional<url::Origin>& request_initiator,
-                         absl::optional<std::string> corp_header_value,
+                         const std::optional<url::Origin>& request_initiator,
+                         std::optional<std::string> corp_header_value,
                          mojom::RequestMode request_mode,
                          mojom::RequestDestination request_destination,
                          bool request_include_credentials,
@@ -74,10 +75,10 @@ class COMPONENT_EXPORT(NETWORK_CPP) CrossOriginResourcePolicy {
   // navigation stack which should ensure that IPCs from renderer processes
   // are verified via VerifyBeginNavigationCommonParams, VerifyOpenURLParams,
   // etc.
-  static absl::optional<mojom::BlockedByResponseReason> IsNavigationBlocked(
+  static std::optional<mojom::BlockedByResponseReason> IsNavigationBlocked(
       const GURL& request_url,
       const GURL& original_url,
-      const absl::optional<url::Origin>& request_initiator,
+      const std::optional<url::Origin>& request_initiator,
       const network::mojom::URLResponseHead& response,
       mojom::RequestDestination request_destination,
       const CrossOriginEmbedderPolicy& embedder_policy,

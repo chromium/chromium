@@ -7,6 +7,7 @@
 
 #include <map>
 #include <memory>
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -38,7 +39,6 @@
 #include "chromeos/dbus/power_manager/power_supply_properties.pb.h"
 #include "components/account_id/account_id.h"
 #include "components/user_manager/multi_user/multi_user_sign_in_policy.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/display/display_observer.h"
 #include "ui/display/screen.h"
@@ -91,8 +91,9 @@ class ASH_EXPORT LockContentsView
       public chromeos::PowerManagerClient::Observer,
       public EnterpriseDomainObserver,
       public views::FocusChangeListener {
+  METADATA_HEADER(LockContentsView, NonAccessibleView)
+
  public:
-  METADATA_HEADER(LockContentsView);
   friend class LockContentsViewTestApi;
 
   enum class DisplayStyle {
@@ -130,7 +131,7 @@ class ASH_EXPORT LockContentsView
   void SetHasKioskApp(bool has_kiosk_apps);
 
   // views::View:
-  void Layout() override;
+  void Layout(PassKey) override;
   void AddedToWidget() override;
   void RemovedFromWidget() override;
   void OnFocus() override;
@@ -159,6 +160,8 @@ class ASH_EXPORT LockContentsView
   void OnAuthDisabledForUser(
       const AccountId& user,
       const AuthDisabledData& auth_disabled_data) override;
+  void OnAuthenticationStageChanged(
+      const AuthenticationStage auth_stage) override;
   void OnSetTpmLockedState(const AccountId& user,
                            bool is_locked,
                            base::TimeDelta time_left) override;
@@ -208,29 +211,6 @@ class ASH_EXPORT LockContentsView
   // ash::EnterpriseDomainObserver
   void OnDeviceEnterpriseInfoChanged() override;
   void OnEnterpriseAccountDomainChanged() override;
-
-  void ShowAuthErrorMessageForDebug(int unlock_attempt);
-
-  // Called for debugging to make |user| managed and display an icon along with
-  // a note in the menu user view.
-  void ToggleManagementForUserForDebug(const AccountId& user);
-
-  // Called for debugging to make |user| having a multi-user-sign-in policy.
-  void SetMultiUserSignInPolicyForUserForDebug(
-      const AccountId& user,
-      user_manager::MultiUserSignInPolicy policy);
-
-  // Called for debugging to toggle forced online sign-in form |user|.
-  void ToggleForceOnlineSignInForUserForDebug(const AccountId& user);
-
-  // Called for debugging to toggle TPM disabled message for |user|.
-  void ToggleDisableTpmForUserForDebug(const AccountId& user);
-
-  // Called for debugging to remove forced online sign-in form |user|.
-  void UndoForceOnlineSignInForUserForDebug(const AccountId& user);
-
-  // Test API. Set device to have kiosk license.
-  void SetKioskLicenseModeForTesting(bool is_kiosk_license_mode);
 
   // Called by LockScreenMediaControlsView.
   void CreateMediaControlsLayout();
@@ -425,35 +405,34 @@ class ASH_EXPORT LockContentsView
 
   std::vector<UserState> users_;
 
-  const raw_ptr<LoginDataDispatcher, ExperimentalAsh>
+  const raw_ptr<LoginDataDispatcher, LeakedDanglingUntriaged>
       data_dispatcher_;  // Unowned.
   std::unique_ptr<LoginDetachableBaseModel> detachable_base_model_;
 
-  raw_ptr<LoginBigUserView, ExperimentalAsh> primary_big_view_ = nullptr;
-  raw_ptr<LoginBigUserView, ExperimentalAsh> opt_secondary_big_view_ = nullptr;
-  raw_ptr<ScrollableUsersListView, ExperimentalAsh> users_list_ = nullptr;
+  raw_ptr<LoginBigUserView> primary_big_view_ = nullptr;
+  raw_ptr<LoginBigUserView> opt_secondary_big_view_ = nullptr;
+  raw_ptr<ScrollableUsersListView> users_list_ = nullptr;
 
   // View for media controls that appear on the lock screen if it is enabled.
   // |media_view_| is used if the flag media::kGlobalMediaControlsCrOSUpdatedUI
   // is enabled, otherwise |media_controls_view_| is used.
-  raw_ptr<LockScreenMediaControlsView, ExperimentalAsh> media_controls_view_ =
-      nullptr;
-  raw_ptr<LockScreenMediaView, ExperimentalAsh> media_view_ = nullptr;
-  raw_ptr<views::View, ExperimentalAsh> middle_spacing_view_ = nullptr;
+  raw_ptr<LockScreenMediaControlsView> media_controls_view_ = nullptr;
+  raw_ptr<LockScreenMediaView> media_view_ = nullptr;
+  raw_ptr<views::View> middle_spacing_view_ = nullptr;
 
   // View that contains the note action button and the system info labels,
   // placed on the top right corner of the screen without affecting layout of
   // other views.
-  raw_ptr<views::View, ExperimentalAsh> top_header_ = nullptr;
+  raw_ptr<views::View> top_header_ = nullptr;
 
   // View for launching a note taking action handler from the lock screen.
-  raw_ptr<NoteActionLaunchButton, ExperimentalAsh> note_action_ = nullptr;
+  raw_ptr<NoteActionLaunchButton> note_action_ = nullptr;
 
   // View for showing the version, enterprise and bluetooth info.
-  raw_ptr<views::View, ExperimentalAsh> system_info_ = nullptr;
+  raw_ptr<views::View> system_info_ = nullptr;
 
   // Contains authentication user and the additional user views.
-  raw_ptr<NonAccessibleView, ExperimentalAsh> main_view_ = nullptr;
+  raw_ptr<NonAccessibleView> main_view_ = nullptr;
 
   // If the kiosk app button is not visible, the kiosk app default message would
   // be shown.
@@ -473,23 +452,23 @@ class ASH_EXPORT LockContentsView
   // All error bubbles and the tooltip view are child views of LockContentsView,
   // and will be torn down when LockContentsView is torn down.
   // Bubble for displaying authentication error.
-  raw_ptr<AuthErrorBubble, ExperimentalAsh> auth_error_bubble_;
+  raw_ptr<AuthErrorBubble> auth_error_bubble_;
   // Bubble for displaying detachable base errors.
-  raw_ptr<LoginErrorBubble, ExperimentalAsh> detachable_base_error_bubble_;
+  raw_ptr<LoginErrorBubble> detachable_base_error_bubble_;
   // Bubble for displaying management details.
-  raw_ptr<ManagementBubble, ExperimentalAsh> management_bubble_;
+  raw_ptr<ManagementBubble> management_bubble_;
   // Indicator at top of screen for displaying a warning message when a
   // secondary user is being added.
-  raw_ptr<views::View, ExperimentalAsh> user_adding_screen_indicator_ = nullptr;
+  raw_ptr<views::View> user_adding_screen_indicator_ = nullptr;
   // Bubble for displaying warning banner message.
-  raw_ptr<LoginErrorBubble, ExperimentalAsh> warning_banner_bubble_;
+  raw_ptr<LoginErrorBubble> warning_banner_bubble_;
 
   // View that is shown on login timeout with camera usage.
   raw_ptr<LoginCameraTimeoutView, AcrossTasksDanglingUntriaged>
       login_camera_timeout_view_ = nullptr;
 
   // Bottom status indicator displaying entreprise domain or ADB enabled alert
-  raw_ptr<BottomStatusIndicator, ExperimentalAsh> bottom_status_indicator_;
+  raw_ptr<BottomStatusIndicator> bottom_status_indicator_;
 
   // Tracks the visibility of the extension Ui window.
   bool extension_ui_visible_ = false;
@@ -516,15 +495,14 @@ class ASH_EXPORT LockContentsView
 
   // Whether the system information should be displayed or not be displayed
   // forcedly according to policy settings.
-  absl::optional<bool> enable_system_info_enforced_ = absl::nullopt;
+  std::optional<bool> enable_system_info_enforced_ = std::nullopt;
 
   // Whether the system information is intended to be displayed if possible.
   // (e.g., Alt-V is pressed, particular OS channels)
   bool enable_system_info_if_possible_ = false;
 
   // Expanded view for public account user to select language and keyboard.
-  raw_ptr<LoginExpandedPublicAccountView, ExperimentalAsh> expanded_view_ =
-      nullptr;
+  raw_ptr<LoginExpandedPublicAccountView> expanded_view_ = nullptr;
 
   // Whether the virtual keyboard is currently shown. Used to determine whether
   // to show the PIN keyboard or not.
@@ -545,7 +523,7 @@ class ASH_EXPORT LockContentsView
 
   // When OnUsersChanged called during authentication this object stores
   // the users info till the authentication finished.
-  absl::optional<std::vector<LoginUserInfo>> pending_users_change_;
+  std::optional<std::vector<LoginUserInfo>> pending_users_change_;
 
   // The widget this view is attached to. This field is here so that we can
   // remove `this` as FocusChangeListener in `RemovedFromWidget`.

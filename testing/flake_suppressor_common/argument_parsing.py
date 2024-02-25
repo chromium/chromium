@@ -16,7 +16,8 @@ def ParseArgs():
                             '"chrome-luci-data.chromium.gpu_ci_test_results".'))
   parser.add_argument('--sample-period',
                       type=int,
-                      default=1,
+                      default=7,
+                      choices=range(1, 30),
                       help=('The number of days to sample data from.'))
   parser.add_argument('--no-group-by-tags',
                       action='store_false',
@@ -74,6 +75,32 @@ def ParseArgs():
       ('Enable this option to only targeting visible failures on CI builders. '
        'The test results will fail the builder runs, flaky results will '
        'consider as pass in this option.'))
+  parser.add_argument(
+      '--build-fail-total-number-threshold',
+      type=int,
+      default=10,
+      help=('Threshold based on failed build number when '
+            '--non-hidden-failures-only is used. A test will be '
+            'suppressed if its failed build number is equal to or more than '
+            'this threshold. All --build-fail*-thresholds must be hit in '
+            'order for a test to actually be suppressed.'))
+  parser.add_argument(
+      '--build-fail-consecutive-days-threshold',
+      type=int,
+      default=2,
+      choices=range(1, 30),
+      help=('Threshold based on number of consecutive days that non-hidden'
+            'failures occur. A test will be suppressed if the number of'
+            'consecutive days that it has non-hidden failures is equal'
+            'to or more than this threshold. All --build-fail*-thresholds '
+            'must be hit in order for a test to actually be suppressed.'))
+  parser.add_argument('--build-fail-recent-days-threshold',
+                      type=int,
+                      default=2,
+                      choices=range(1, 30),
+                      help=('Suppress tests with non-hidden build failures'
+                            ' within |build_fail_recent_day_threshold| days '
+                            'when all other build-fail* thresholds meet.'))
   parser.add_argument('--builder-name',
                       default=[],
                       action="append",
@@ -89,5 +116,7 @@ def ParseArgs():
     if args.flaky_threshold <= args.ignore_threshold:
       raise ValueError(
           '--flaky-threshold must be greater than --ignore-threshold')
+    if args.build_fail_total_number_threshold < 0:
+      raise ValueError('--build-fail-total-number-threshold must be positive')
 
   return args

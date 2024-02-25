@@ -4,7 +4,7 @@
 
 #include "ash/events/select_to_speak_event_handler.h"
 
-#include "ash/accessibility/accessibility_controller_impl.h"
+#include "ash/accessibility/accessibility_controller.h"
 #include "ash/accessibility/accessibility_event_handler_manager.h"
 #include "ash/public/cpp/select_to_speak_event_handler_delegate.h"
 #include "ash/shell.h"
@@ -62,7 +62,7 @@ void SelectToSpeakEventHandler::OnKeyEvent(ui::KeyEvent* event) {
 
   ui::KeyboardCode key_code = event->key_code();
   if (key_code != kSpeakSelectionKey && key_code != ui::VKEY_LWIN &&
-      key_code != ui::VKEY_CONTROL) {
+      key_code != ui::VKEY_RWIN && key_code != ui::VKEY_CONTROL) {
     // No need to track keys besides search, control and s.
     if (state_ == SEARCH_DOWN) {
       // If some other key was pressed and we were in SEARCH_DOWN state,
@@ -87,7 +87,7 @@ void SelectToSpeakEventHandler::OnKeyEvent(ui::KeyEvent* event) {
 
   bool cancel_event = false;
   // Update the state when pressing and releasing the Search key (VKEY_LWIN).
-  if (key_code == ui::VKEY_LWIN) {
+  if (key_code == ui::VKEY_LWIN || key_code == ui::VKEY_RWIN) {
     if (pressed && state_ == INACTIVE) {
       state_ = SEARCH_DOWN;
     } else if (event->type() == ui::ET_KEY_RELEASED) {

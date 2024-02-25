@@ -37,7 +37,7 @@ class ExtensionDictionaryEventRouter
   void DispatchLoadedEventIfLoaded();
 
  private:
-  raw_ptr<content::BrowserContext, ExperimentalAsh> context_;
+  raw_ptr<content::BrowserContext> context_;
   base::WeakPtr<SpellcheckService> service_;
   bool loaded_;
 };

@@ -27,7 +27,6 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/profiles/profile_selections.h"
-#include "chrome/browser/renderer_host/chrome_extension_message_filter.h"
 #include "chrome/browser/sync_file_system/local/sync_file_system_backend.h"
 #include "chrome/common/chrome_constants.h"
 #include "chrome/common/chrome_switches.h"
@@ -49,40 +48,28 @@
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/content_switches.h"
 #include "content/public/common/url_constants.h"
-#include "extensions/browser/api/automation_internal/automation_event_router.h"
-#include "extensions/browser/api/messaging/messaging_api_message_filter.h"
 #include "extensions/browser/api/web_request/web_request_api.h"
 #include "extensions/browser/api/web_request/web_request_api_helpers.h"
 #include "extensions/browser/bad_message.h"
-#include "extensions/browser/event_router.h"
 #include "extensions/browser/extension_host.h"
-#include "extensions/browser/extension_message_filter.h"
 #include "extensions/browser/extension_registry.h"
-#include "extensions/browser/extension_service_worker_message_filter.h"
 #include "extensions/browser/extension_system.h"
-#include "extensions/browser/guest_view/extensions_guest_view.h"
 #include "extensions/browser/guest_view/web_view/web_view_guest.h"
 #include "extensions/browser/guest_view/web_view/web_view_renderer_state.h"
 #include "extensions/browser/process_map.h"
 #include "extensions/browser/renderer_startup_helper.h"
-#include "extensions/browser/service_worker/service_worker_host.h"
 #include "extensions/browser/service_worker_task_queue.h"
 #include "extensions/browser/url_loader_factory_manager.h"
 #include "extensions/browser/url_request_util.h"
 #include "extensions/browser/view_type_utils.h"
 #include "extensions/common/constants.h"
+#include "extensions/common/extension_id.h"
 #include "extensions/common/extension_urls.h"
 #include "extensions/common/manifest_constants.h"
 #include "extensions/common/manifest_handlers/background_info.h"
-#include "extensions/common/manifest_handlers/web_accessible_resources_info.h"
-#include "extensions/common/mojom/automation_registry.mojom.h"
-#include "extensions/common/mojom/event_router.mojom.h"
-#include "extensions/common/mojom/guest_view.mojom.h"
 #include "extensions/common/mojom/manifest.mojom-shared.h"
-#include "extensions/common/mojom/renderer_host.mojom.h"
 #include "extensions/common/permissions/permissions_data.h"
 #include "extensions/common/switches.h"
-#include "third_party/blink/public/common/associated_interfaces/associated_interface_registry.h"
 #include "url/origin.h"
 
 #if BUILDFLAG(IS_CHROMEOS)
@@ -100,6 +87,15 @@ using content::WebContents;
 
 namespace extensions {
 
+// This feature is a kill switch guarding the removal of
+// RenderProcessHostPrivilege buckets for classifying renderer processes.
+// Stricter isolation is already provided by existing site isolation and
+// extension isolation checks, making these buckets unnecessary.
+// See crbug.com/1519931.
+BASE_FEATURE(kStopUsingRenderProcessHostPrivilege,
+             "StopUsingRenderProcessHostPrivilege",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 namespace {
 
 // If non-null, a scope of a service worker to always allow to be unregistered.
@@ -109,12 +105,17 @@ const GURL* g_allow_service_worker_unregistration_scope = nullptr;
 // below.  Extensions and hosted apps require different privileges to be
 // granted to their RenderProcessHosts.  This classification allows us to make
 // sure URLs are served by hosts with the right set of privileges.
+//
+// TODO(crbug.com/1519931): This mechanism is deprecated and will be removed
+// soon.
 enum RenderProcessHostPrivilege {
   PRIV_NORMAL,
   PRIV_HOSTED,
   PRIV_EXTENSION,
 };
 
+// TODO(crbug.com/1519931): Do not add more uses of this function. It is
+// deprecated and will be removed soon.
 RenderProcessHostPrivilege GetPrivilegeRequiredByUrl(
     const GURL& url,
     ExtensionRegistry* registry) {
@@ -137,16 +138,18 @@ RenderProcessHostPrivilege GetPrivilegeRequiredByUrl(
   return PRIV_EXTENSION;
 }
 
+// TODO(crbug.com/1519931): Do not add more uses of this function. It is
+// deprecated and will be removed soon.
 RenderProcessHostPrivilege GetProcessPrivilege(
     content::RenderProcessHost* process_host,
     ProcessMap* process_map,
     ExtensionRegistry* registry) {
-  std::set<std::string> extension_ids =
+  std::set<ExtensionId> extension_ids =
       process_map->GetExtensionsInProcess(process_host->GetID());
   if (extension_ids.empty())
     return PRIV_NORMAL;
 
-  for (const std::string& extension_id : extension_ids) {
+  for (const ExtensionId& extension_id : extension_ids) {
     const Extension* extension =
         registry->enabled_extensions().GetByID(extension_id);
     if (extension && extension->is_hosted_app())
@@ -184,8 +187,9 @@ bool AllowServiceWorker(const GURL& scope,
 
   // If an extension doesn't have a service worker-based background script, it
   // can register a service worker at any scope.
-  if (!extensions::BackgroundInfo::IsServiceWorkerBased(extension))
+  if (!BackgroundInfo::IsServiceWorkerBased(extension)) {
     return true;
+  }
 
   // If the script_url parameter is an empty string, allow it. The
   // infrastructure will call this function at times when the script url is
@@ -201,7 +205,7 @@ bool AllowServiceWorker(const GURL& scope,
   // If an extension is service-worker based, only the script specified in the
   // manifest can be registered at the root scope.
   const std::string& sw_script =
-      extensions::BackgroundInfo::GetBackgroundServiceWorkerScript(extension);
+      BackgroundInfo::GetBackgroundServiceWorkerScript(extension);
   return script_url == extension->GetResourceURL(sw_script);
 }
 
@@ -294,7 +298,7 @@ GURL ChromeContentBrowserClientExtensionsPart::GetEffectiveURL(
   // hosting a disabled extension URL from incorrectly getting reused after
   // re-enabling the extension, which would lead to renderer kills
   // (https://crbug.com/1197360).
-  if (url.SchemeIs(extensions::kExtensionScheme) &&
+  if (url.SchemeIs(kExtensionScheme) &&
       !registry->enabled_extensions().GetExtensionOrAppByURL(url)) {
     return GURL(chrome::kExtensionInvalidRequestURL);
   }
@@ -387,6 +391,26 @@ bool ChromeContentBrowserClientExtensionsPart::DoesSiteRequireDedicatedProcess(
 }
 
 // static
+bool ChromeContentBrowserClientExtensionsPart::
+    ShouldAllowCrossProcessSandboxedFrameForPrecursor(
+        content::BrowserContext* browser_context,
+        const GURL& precursor) {
+  if (precursor.is_empty()) {
+    return true;
+  }
+
+  // Disallow cross-process sandboxed iframes for for cases with an extension
+  // precursor origin (including data: URLs, about:srcdoc, and same-origin
+  // extensions).
+  // TODO(https://crbug.com/1501910): remove this once we have an implementation
+  // that correctly allows sandboxed frames in extensions access to resources.
+  const ExtensionId extension_id = ExtensionRegistry::Get(browser_context)
+                                       ->enabled_extensions()
+                                       .GetExtensionIdByURL(precursor);
+  return extension_id.empty();
+}
+
+// static
 bool ChromeContentBrowserClientExtensionsPart::CanCommitURL(
     content::RenderProcessHost* process_host,
     const GURL& url) {
@@ -418,16 +442,22 @@ bool ChromeContentBrowserClientExtensionsPart::CanCommitURL(
     return true;
   }
 
-  // TODO(creis): We're seeing cases where an extension URL commits in an
-  // extension process but not one registered for it in ProcessMap. This is
-  // surprising and we do not yet have repro steps for it. We should fix this,
-  // but we're primarily concerned with preventing web processes from committing
-  // an extension URL, which is more severe. (Extensions currently share
-  // processes with each other anyway.) Allow it for now, as long as this is an
-  // extension and not a hosted app.
-  if (GetProcessPrivilege(process_host, process_map, registry) ==
-      PRIV_EXTENSION) {
-    return true;
+  // TODO(creis, crbug.com/840857): In the past, there were cases where an
+  // extension URL committed in an extension process but not one registered for
+  // it in ProcessMap. Hence, the code below used to allow this case, as long
+  // as this is an extension process and not a hosted app process. Since
+  // extensions no longer share processes with each other, this workaround
+  // should no longer be needed; this has been validated by the
+  // DumpWithoutCrashing() below which has not produced any reports since it
+  // was added (though if any reports do show up, please mention them on
+  // https://crbug.com/840857). Hence, the workaround is now disabled and
+  // moved behind a kill switch, and should eventually be removed.
+  if (!base::FeatureList::IsEnabled(kStopUsingRenderProcessHostPrivilege)) {
+    if (GetProcessPrivilege(process_host, process_map, registry) ==
+        PRIV_EXTENSION) {
+      base::debug::DumpWithoutCrashing();
+      return true;
+    }
   }
 
   // Most hosted apps (except for the Chrome Web Store) can commit anywhere.
@@ -443,14 +473,14 @@ bool ChromeContentBrowserClientExtensionsPart::CanCommitURL(
   bool is_guest =
       WebViewRendererState::GetInstance()->IsGuest(process_host->GetID());
   if (is_guest) {
-    std::string owner_extension_id;
+    ExtensionId owner_extension_id;
     int owner_process_id = -1;
     bool found_owner = WebViewRendererState::GetInstance()->GetOwnerInfo(
         process_host->GetID(), &owner_process_id, &owner_extension_id);
     DCHECK(found_owner);
     return extension->is_platform_app() &&
            extension->permissions_data()->HasAPIPermission(
-               extensions::mojom::APIPermissionID::kWebView) &&
+               mojom::APIPermissionID::kWebView) &&
            extension->id() == owner_extension_id;
   }
 
@@ -473,12 +503,44 @@ bool ChromeContentBrowserClientExtensionsPart::IsSuitableHost(
   if (!registry || !process_map)
     return true;
 
-  // Otherwise, just make sure the process privilege matches the privilege
-  // required by the site.
-  RenderProcessHostPrivilege privilege_required =
-      GetPrivilegeRequiredByUrl(site_url, registry);
-  return GetProcessPrivilege(process_host, process_map, registry) ==
-         privilege_required;
+  if (base::FeatureList::IsEnabled(kStopUsingRenderProcessHostPrivilege)) {
+    // Don't use a process that's not in the ProcessMap for a site URL that
+    // corresponds to an enabled extension. For example, this prevents a
+    // navigation to an enabled extension's URL from reusing a process that has
+    // previously loaded non-functional URLs from that same extension while it
+    // was disabled.
+    //
+    // Note that this is called on site URLs that have been computed after
+    // effective URL translation, so site URLs with an extension scheme capture
+    // SiteInstances for both extensions and hosted apps.
+    const Extension* extension =
+        GetEnabledExtensionFromSiteURL(profile, site_url);
+    if (extension &&
+        !process_map->Contains(extension->id(), process_host->GetID())) {
+      return false;
+    }
+
+    // Conversely, don't use an extension process for a site URL that does not
+    // map to an enabled extension. For example, this prevents a reload of an
+    // extension or app that has just been disabled from staying in the
+    // privileged extension process.
+    if (!extension && process_map->Contains(process_host->GetID())) {
+      return false;
+    }
+
+    // Otherwise, the extensions layer is ok with using `process_host` for
+    // `site_url`.
+    return true;
+  } else {
+    // Make sure the process privilege matches the privilege required by the
+    // site.
+    //
+    // TODO(crbug.com/1519931): Remove this deprecated path.
+    RenderProcessHostPrivilege privilege_required =
+        GetPrivilegeRequiredByUrl(site_url, registry);
+    return GetProcessPrivilege(process_host, process_map, registry) ==
+           privilege_required;
+  }
 }
 
 size_t
@@ -701,8 +763,9 @@ void ChromeContentBrowserClientExtensionsPart::OverrideURLLoaderFactoryParams(
 bool ChromeContentBrowserClientExtensionsPart::IsBuiltinComponent(
     content::BrowserContext* browser_context,
     const url::Origin& origin) {
-  if (origin.scheme() != extensions::kExtensionScheme)
+  if (origin.scheme() != kExtensionScheme) {
     return false;
+  }
 
   const auto& extension_id = origin.host();
 
@@ -738,27 +801,12 @@ base::AutoReset<const GURL*> ChromeContentBrowserClientExtensionsPart::
       &g_allow_service_worker_unregistration_scope, scope);
 }
 
-void ChromeContentBrowserClientExtensionsPart::RenderProcessWillLaunch(
-    content::RenderProcessHost* host) {
-  int id = host->GetID();
-  Profile* profile = Profile::FromBrowserContext(host->GetBrowserContext());
-  if (AreExtensionsDisabledForProfile(profile)) {
-    return;
-  }
-
-  host->AddFilter(new ChromeExtensionMessageFilter(profile));
-  host->AddFilter(new ExtensionMessageFilter(id, profile));
-  host->AddFilter(new ExtensionServiceWorkerMessageFilter(
-      id, profile, host->GetStoragePartition()->GetServiceWorkerContext()));
-  host->AddFilter(new MessagingAPIMessageFilter(id, profile));
-}
-
-void ChromeContentBrowserClientExtensionsPart::SiteInstanceGotProcess(
+void ChromeContentBrowserClientExtensionsPart::SiteInstanceGotProcessAndSite(
     SiteInstance* site_instance) {
   BrowserContext* context = site_instance->GetProcess()->GetBrowserContext();
 
-  // Only add the process to the map if the SiteInstance's site URL is already
-  // a chrome-extension:// URL. This includes hosted apps, except in rare cases
+  // Only add the process to the map if the SiteInstance's site URL is a
+  // chrome-extension:// URL. This includes hosted apps, except in rare cases
   // that a URL in the hosted app's extent is not treated as a hosted app (e.g.,
   // for isolated origins or cross-site iframes). For that case, don't look up
   // the hosted app's Extension from the site URL using GetExtensionOrAppByURL,
@@ -881,27 +929,6 @@ void ChromeContentBrowserClientExtensionsPart::
   if (process_map->Contains(process->GetID())) {
     command_line->AppendSwitch(switches::kExtensionProcess);
   }
-}
-
-void ChromeContentBrowserClientExtensionsPart::ExposeInterfacesToRenderer(
-    service_manager::BinderRegistry* registry,
-    blink::AssociatedInterfaceRegistry* associated_registry,
-    content::RenderProcessHost* host) {
-  associated_registry->AddInterface<mojom::EventRouter>(
-      base::BindRepeating(&EventRouter::BindForRenderer, host->GetID()));
-  associated_registry->AddInterface<guest_view::mojom::GuestViewHost>(
-      base::BindRepeating(&ExtensionsGuestView::CreateForComponents,
-                          host->GetID()));
-  associated_registry->AddInterface<mojom::GuestView>(base::BindRepeating(
-      &ExtensionsGuestView::CreateForExtensions, host->GetID()));
-  associated_registry->AddInterface<mojom::RendererHost>(base::BindRepeating(
-      &RendererStartupHelper::BindForRenderer, host->GetID()));
-  associated_registry->AddInterface<mojom::ServiceWorkerHost>(
-      base::BindRepeating(&ServiceWorkerHost::BindReceiver, host->GetID()));
-  associated_registry
-      ->AddInterface<extensions::mojom::RendererAutomationRegistry>(
-          base::BindRepeating(&AutomationEventRouter::BindForRenderer,
-                              host->GetID()));
 }
 
 }  // namespace extensions

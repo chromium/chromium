@@ -8,6 +8,7 @@
 #include "third_party/abseil-cpp/absl/base/attributes.h"
 
 namespace base {
+namespace internal {
 
 namespace {
 
@@ -17,6 +18,8 @@ base::AtomicSequenceNumber g_task_token_generator;
 
 ABSL_CONST_INIT thread_local SequenceToken current_sequence_token;
 ABSL_CONST_INIT thread_local TaskToken current_task_token;
+ABSL_CONST_INIT thread_local bool current_task_is_thread_bound = true;
+ABSL_CONST_INIT thread_local bool current_task_is_running_synchronously = false;
 
 }  // namespace
 
@@ -41,6 +44,10 @@ SequenceToken SequenceToken::Create() {
 }
 
 SequenceToken SequenceToken::GetForCurrentThread() {
+  if (!current_sequence_token.IsValid()) {
+    current_sequence_token = SequenceToken::Create();
+    DCHECK(current_task_is_thread_bound);
+  }
   return current_sequence_token;
 }
 
@@ -64,22 +71,36 @@ TaskToken TaskToken::GetForCurrentThread() {
   return current_task_token;
 }
 
-ScopedSetSequenceTokenForCurrentThread::ScopedSetSequenceTokenForCurrentThread(
-    const SequenceToken& sequence_token)
-    // The lambdas here exist because invalid tokens don't compare equal, so
-    // passing invalid sequence/task tokens as the third args to AutoReset
-    // constructors doesn't work.
-    : sequence_token_resetter_(&current_sequence_token,
-                               [&sequence_token]() {
-                                 DCHECK(!current_sequence_token.IsValid());
-                                 return sequence_token;
-                               }()),
-      task_token_resetter_(&current_task_token, [] {
-        DCHECK(!current_task_token.IsValid());
-        return TaskToken::Create();
-      }()) {}
+bool CurrentTaskIsThreadBound() {
+  return current_task_is_thread_bound;
+}
 
-ScopedSetSequenceTokenForCurrentThread::
-    ~ScopedSetSequenceTokenForCurrentThread() = default;
+TaskScope::TaskScope(SequenceToken sequence_token,
+                     bool is_single_threaded,
+                     bool is_running_synchronously)
+    : previous_task_token_(TaskToken::GetForCurrentThread()),
+      previous_sequence_token_(SequenceToken::GetForCurrentThread()),
+      previous_task_is_thread_bound_(current_task_is_thread_bound),
+      previous_task_is_running_synchronously_(
+          current_task_is_running_synchronously) {
+  current_task_token = TaskToken::Create();
+  current_sequence_token = sequence_token;
+  current_task_is_thread_bound = is_single_threaded;
+  current_task_is_running_synchronously = is_running_synchronously;
+}
+
+TaskScope::~TaskScope() {
+  current_task_token = previous_task_token_;
+  current_sequence_token = previous_sequence_token_;
+  current_task_is_thread_bound = previous_task_is_thread_bound_;
+  current_task_is_running_synchronously =
+      previous_task_is_running_synchronously_;
+}
+
+}  // namespace internal
+
+bool CurrentTaskIsRunningSynchronously() {
+  return internal::current_task_is_running_synchronously;
+}
 
 }  // namespace base

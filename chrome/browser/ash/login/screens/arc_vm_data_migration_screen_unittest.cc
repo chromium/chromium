@@ -4,6 +4,8 @@
 
 #include "chrome/browser/ash/login/screens/arc_vm_data_migration_screen.h"
 
+#include <optional>
+
 #include "ash/components/arc/arc_prefs.h"
 #include "ash/components/arc/arc_util.h"
 #include "ash/session/session_controller_impl.h"
@@ -34,7 +36,6 @@
 #include "chromeos/dbus/power/fake_power_manager_client.h"
 #include "components/user_manager/scoped_user_manager.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ash {
 namespace {
@@ -81,7 +82,8 @@ class FakeWakeLock : public device::mojom::WakeLock {
 
 // Fake ArcVmDataMigrationScreenView implementation to expose the UI state and
 // free disk space / battery state info sent from ArcVmDataMigrationScreen.
-class FakeArcVmDataMigrationScreenView : public ArcVmDataMigrationScreenView {
+class FakeArcVmDataMigrationScreenView final
+    : public ArcVmDataMigrationScreenView {
  public:
   FakeArcVmDataMigrationScreenView() = default;
   ~FakeArcVmDataMigrationScreenView() override = default;
@@ -100,6 +102,10 @@ class FakeArcVmDataMigrationScreenView : public ArcVmDataMigrationScreenView {
   double migration_progress() { return migration_progress_; }
   base::TimeDelta estimated_remaining_time() {
     return estimated_remaining_time_;
+  }
+
+  base::WeakPtr<ArcVmDataMigrationScreenView> AsWeakPtr() override {
+    return weak_ptr_factory_.GetWeakPtr();
   }
 
  private:
@@ -135,6 +141,7 @@ class FakeArcVmDataMigrationScreenView : public ArcVmDataMigrationScreenView {
   bool is_connected_to_charger_ = false;
   double migration_progress_ = 0.0;
   base::TimeDelta estimated_remaining_time_ = base::TimeDelta();
+  base::WeakPtrFactory<ArcVmDataMigrationScreenView> weak_ptr_factory_{this};
 };
 
 // Fake ArcVmDataMigrationScreen that exposes whether it has encountered a fatal
@@ -176,6 +183,8 @@ class ArcVmDataMigrationScreenTest : public ChromeAshTestBase,
 
     wizard_context_ = std::make_unique<WizardContext>();
 
+    fake_user_manager_.Reset(std::make_unique<ash::FakeChromeUserManager>());
+
     // Set up a primary profile.
     profile_manager_ = std::make_unique<TestingProfileManager>(
         TestingBrowserProcess::GetGlobal());
@@ -183,11 +192,8 @@ class ArcVmDataMigrationScreenTest : public ChromeAshTestBase,
     profile_ = profile_manager_->CreateTestingProfile(kProfileName);
     const AccountId account_id =
         AccountId::FromUserEmailGaiaId(profile_->GetProfileUserName(), kGaiaId);
-    auto fake_user_manager = std::make_unique<FakeChromeUserManager>();
-    fake_user_manager->AddUser(account_id);
-    fake_user_manager->LoginUser(account_id);
-    user_manager_ = std::make_unique<user_manager::ScopedUserManager>(
-        std::move(fake_user_manager));
+    fake_user_manager_->AddUser(account_id);
+    fake_user_manager_->LoginUser(account_id);
     DCHECK(ash::ProfileHelper::IsPrimaryProfile(profile_));
 
     // Set the default states. They can be overwritten by individual test cases.
@@ -215,10 +221,11 @@ class ArcVmDataMigrationScreenTest : public ChromeAshTestBase,
     screen_.reset();
     view_.reset();
 
-    user_manager_.reset();
     profile_manager_->DeleteTestingProfile(kProfileName);
     profile_ = nullptr;
     profile_manager_.reset();
+
+    fake_user_manager_.Reset();
 
     wizard_context_.reset();
 
@@ -288,10 +295,11 @@ class ArcVmDataMigrationScreenTest : public ChromeAshTestBase,
   base::SimpleTestTickClock tick_clock_;
 
   std::unique_ptr<WizardContext> wizard_context_;
+  user_manager::TypedScopedUserManager<ash::FakeChromeUserManager>
+      fake_user_manager_;
   std::unique_ptr<TestingProfileManager> profile_manager_;
-  raw_ptr<TestingProfile, DanglingUntriaged | ExperimentalAsh> profile_ =
+  raw_ptr<TestingProfile, DanglingUntriaged> profile_ =
       nullptr;  // Owned by |profile_manager_|.
-  std::unique_ptr<user_manager::ScopedUserManager> user_manager_;
 
   std::unique_ptr<TestArcVmDataMigrationScreen> screen_;
   std::unique_ptr<FakeArcVmDataMigrationScreenView> view_;
@@ -385,7 +393,7 @@ TEST_F(ArcVmDataMigrationScreenTest, ScreenLockIsDisabledWhileScreenIsShown) {
 
 TEST_F(ArcVmDataMigrationScreenTest, StopArcVmFailureIsFatal) {
   auto* fake_concierge_client = FakeConciergeClient::Get();
-  fake_concierge_client->set_stop_vm_response(absl::nullopt);
+  fake_concierge_client->set_stop_vm_response(std::nullopt);
 
   screen_->Show(wizard_context_.get());
   task_environment()->RunUntilIdle();
@@ -461,7 +469,7 @@ TEST_F(ArcVmDataMigrationScreenTest,
 
 TEST_F(ArcVmDataMigrationScreenTest, GetAndroidDataSizeFailureIsFatal) {
   FakeArcVmDataMigratorClient::Get()->set_get_android_data_info_response(
-      absl::nullopt);
+      std::nullopt);
 
   screen_->Show(wizard_context_.get());
   task_environment()->RunUntilIdle();
@@ -539,7 +547,7 @@ TEST_F(ArcVmDataMigrationScreenTest,
   arc::SetArcVmDataMigrationStatus(profile_->GetPrefs(),
                                    arc::ArcVmDataMigrationStatus::kStarted);
   // Assume that ARCVM is running but cannot be stopped.
-  FakeConciergeClient::Get()->set_stop_vm_response(absl::nullopt);
+  FakeConciergeClient::Get()->set_stop_vm_response(std::nullopt);
 
   screen_->Show(wizard_context_.get());
   task_environment()->RunUntilIdle();

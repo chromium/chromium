@@ -32,8 +32,9 @@ constexpr int kBadgedProfilePhotoHeight = BadgedProfilePhoto::kImageSize;
 // A custom ImageView that removes the part where the badge will be placed
 // including the (transparent) border.
 class CustomImageView : public views::ImageView {
+  METADATA_HEADER(CustomImageView, views::ImageView)
+
  public:
-  METADATA_HEADER(CustomImageView);
   CustomImageView() = default;
   CustomImageView(const CustomImageView&) = delete;
   CustomImageView& operator=(const CustomImageView&) = delete;
@@ -43,7 +44,7 @@ class CustomImageView : public views::ImageView {
   void OnPaint(gfx::Canvas* canvas) override;
 };
 
-BEGIN_METADATA(CustomImageView, views::ImageView)
+BEGIN_METADATA(CustomImageView)
 END_METADATA
 
 void CustomImageView::OnPaint(gfx::Canvas* canvas) {
@@ -58,7 +59,9 @@ void CustomImageView::OnPaint(gfx::Canvas* canvas) {
   ImageView::OnPaint(canvas);
 }
 
-class BadgeView : public ::views::ImageView {
+class BadgeView : public views::ImageView {
+  METADATA_HEADER(BadgeView, views::ImageView)
+
  public:
   explicit BadgeView(BadgedProfilePhoto::BadgeType badge_type)
       : badge_type_(badge_type) {
@@ -109,6 +112,9 @@ class BadgeView : public ::views::ImageView {
   const BadgedProfilePhoto::BadgeType badge_type_;
 };
 
+BEGIN_METADATA(BadgeView)
+END_METADATA
+
 }  // namespace
 
 // BadgedProfilePhoto -------------------------------------------------
@@ -123,7 +129,8 @@ BadgedProfilePhoto::BadgedProfilePhoto(BadgeType badge_type,
   views::ImageView* profile_photo_view = badge_type == BADGE_TYPE_NONE
                                              ? new views::ImageView()
                                              : new CustomImageView();
-  profile_photo_view->SetImage(*profile_photo_circular.ToImageSkia());
+  profile_photo_view->SetImage(
+      ui::ImageModel::FromImage(profile_photo_circular));
   profile_photo_view->SizeToPreferredSize();
   AddChildView(profile_photo_view);
 
@@ -134,5 +141,5 @@ BadgedProfilePhoto::BadgedProfilePhoto(BadgeType badge_type,
       gfx::Size(kBadgedProfilePhotoWidth, kBadgedProfilePhotoHeight));
 }
 
-BEGIN_METADATA(BadgedProfilePhoto, views::View)
+BEGIN_METADATA(BadgedProfilePhoto)
 END_METADATA

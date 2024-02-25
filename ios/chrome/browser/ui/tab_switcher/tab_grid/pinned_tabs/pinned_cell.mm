@@ -143,8 +143,6 @@ UIColor* GetInterfaceStyleDarkColor(UIColor* dynamicColor) {
 
 - (void)prepareForReuse {
   [super prepareForReuse];
-
-  self.itemIdentifier = nil;
   self.icon = nil;
   self.title = nil;
   self.snapshot = nil;
@@ -177,8 +175,7 @@ UIColor* GetInterfaceStyleDarkColor(UIColor* dynamicColor) {
 }
 
 - (void)setTitle:(NSString*)title {
-  NSTextAlignment titleTextAligment =
-      [self determineBestAlignmentForText:title];
+  NSTextAlignment titleTextAligment = DetermineBestAlignmentForText(title);
 
   _titleLabel.text = [title copy];
   _titleLabel.textAlignment = titleTextAligment;
@@ -254,9 +251,9 @@ UIColor* GetInterfaceStyleDarkColor(UIColor* dynamicColor) {
 - (void)setupSnapshotView {
   TopAlignedImageView* snapshotView = [[TopAlignedImageView alloc] init];
   snapshotView.translatesAutoresizingMaskIntoConstraints = NO;
-  // Snapshot view is shown only during the animation transtion to the Tab
-  // view. The Tab view uses not static, but dynaic colors. Therefore, it is
-  // safe to apply dynaimc color here.
+  // Snapshot view is shown only during the animation transition to the Tab
+  // view. The Tab view uses not static, but dynamic colors. Therefore, it is
+  // safe to apply dynamic color here.
   snapshotView.backgroundColor = [UIColor colorNamed:kSecondaryBackgroundColor];
   snapshotView.hidden = YES;
   _snapshotView = snapshotView;
@@ -507,20 +504,6 @@ UIColor* GetInterfaceStyleDarkColor(UIColor* dynamicColor) {
   }
 }
 
-// Determines the best aligment for the provided `text`.
-- (NSTextAlignment)determineBestAlignmentForText:(NSString*)text {
-  if (text.length) {
-    NSString* lang = CFBridgingRelease(CFStringTokenizerCopyBestStringLanguage(
-        (CFStringRef)text, CFRangeMake(0, text.length)));
-
-    if ([NSLocale characterDirectionForLanguage:lang] ==
-        NSLocaleLanguageDirectionRightToLeft) {
-      return NSTextAlignmentRight;
-    }
-  }
-  return NSTextAlignmentLeft;
-}
-
 - (NSString*)accessibilityLabelWithTitle:(NSString*)title {
   return l10n_util::GetNSStringF(IDS_IOS_PINNED_TAB_ACCESSIBILITY_LABEL,
                                  base::SysNSStringToUTF16(title));
@@ -704,6 +687,7 @@ UIColor* GetInterfaceStyleDarkColor(UIColor* dynamicColor) {
 
 // Scales the tab views relative to the current width of the cell.
 - (void)scaleTabViews {
+  DUMP_WILL_BE_CHECK_NE(_previousTabViewWidth, 0);
   CGFloat scale = self.bounds.size.width / _previousTabViewWidth;
   ScaleView(self.topTabView, scale);
   ScaleView(self.mainTabView, scale);

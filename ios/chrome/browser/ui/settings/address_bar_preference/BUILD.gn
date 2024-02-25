@@ -15,7 +15,9 @@ source_set("address_bar_preference") {
     "//ios/chrome/browser/shared/coordinator/chrome_coordinator",
     "//ios/chrome/browser/shared/model/browser",
     "//ios/chrome/browser/shared/model/browser_state",
+    "//ios/chrome/browser/shared/model/prefs",
     "//ios/chrome/browser/shared/model/prefs:pref_names",
+    "//ios/chrome/browser/shared/model/utils",
     "//ios/chrome/browser/shared/ui/table_view:utils",
     "//ios/chrome/browser/ui/settings/address_bar_preference/cells",
     "//ios/chrome/browser/ui/settings/cells",
@@ -44,6 +46,8 @@ source_set("eg2_tests") {
   sources = [ "address_bar_preference_egtest.mm" ]
   deps = [
     "//ios/chrome/app/strings",
+    "//ios/chrome/browser/shared/model/prefs:pref_names",
+    "//ios/chrome/browser/shared/public/features",
     "//ios/chrome/browser/ui/settings:eg_test_support+eg2",
     "//ios/chrome/test/earl_grey:eg_test_support+eg2",
     "//ios/testing/earl_grey:eg_test_support+eg2",

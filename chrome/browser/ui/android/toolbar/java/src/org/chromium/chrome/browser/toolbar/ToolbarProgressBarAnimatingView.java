@@ -87,9 +87,7 @@ public class ToolbarProgressBarAnimatingView extends ImageView {
     /** The ratio of px to dp. */
     private float mDpToPx;
 
-    /**
-     * An animation update listener that moves an ImageView across the progress bar.
-     */
+    /** An animation update listener that moves an ImageView across the progress bar. */
     private class ProgressBarUpdateListener implements AnimatorUpdateListener {
         @Override
         public void onAnimationUpdate(ValueAnimator animation) {
@@ -130,26 +128,25 @@ public class ToolbarProgressBarAnimatingView extends ImageView {
 
         mAnimatorSet.playSequentially(mSlowAnimation, mFastAnimation);
 
-        AnimatorListener listener = new AnimatorListenerAdapter() {
-            @Override
-            public void onAnimationEnd(Animator a) {
-                // Replay the animation if it has not been canceled.
-                if (mIsCanceled) return;
-                // Repeats of the animation should have a start delay.
-                mAnimatorSet.setStartDelay(ANIMATION_DELAY_MS);
-                updateAnimationDuration();
-                // Only restart the animation if the last animation is ending.
-                if (a == mFastAnimation) mAnimatorSet.start();
-            }
-        };
+        AnimatorListener listener =
+                new AnimatorListenerAdapter() {
+                    @Override
+                    public void onAnimationEnd(Animator a) {
+                        // Replay the animation if it has not been canceled.
+                        if (mIsCanceled) return;
+                        // Repeats of the animation should have a start delay.
+                        mAnimatorSet.setStartDelay(ANIMATION_DELAY_MS);
+                        updateAnimationDuration();
+                        // Only restart the animation if the last animation is ending.
+                        if (a == mFastAnimation) mAnimatorSet.start();
+                    }
+                };
 
         mSlowAnimation.addListener(listener);
         mFastAnimation.addListener(listener);
     }
 
-    /**
-     * Update the duration of the animation based on the width of the progress bar.
-     */
+    /** Update the duration of the animation based on the width of the progress bar. */
     private void updateAnimationDuration() {
         // If progress is <= 0, the duration is also 0.
         if (mProgressWidth <= 0) return;
@@ -163,9 +160,7 @@ public class ToolbarProgressBarAnimatingView extends ImageView {
         mFastAnimation.setDuration((long) (totalDuration * FAST_ANIMATION_FRACTION));
     }
 
-    /**
-     * Start the animation if it hasn't been already.
-     */
+    /** Start the animation if it hasn't been already. */
     public void startAnimation() {
         mIsCanceled = false;
         if (!mAnimatorSet.isStarted()) {
@@ -179,8 +174,10 @@ public class ToolbarProgressBarAnimatingView extends ImageView {
             mAnimatorSet.start();
 
             // Fade in to look nice on sites that trigger many loads that end quickly.
-            animate().alpha(1.0f).setDuration(500).setInterpolator(
-                    Interpolators.LINEAR_OUT_SLOW_IN_INTERPOLATOR);
+            animate()
+                    .alpha(1.0f)
+                    .setDuration(500)
+                    .setInterpolator(Interpolators.LINEAR_OUT_SLOW_IN_INTERPOLATOR);
         }
     }
 
@@ -244,9 +241,7 @@ public class ToolbarProgressBarAnimatingView extends ImageView {
         return !mIsCanceled;
     }
 
-    /**
-     * Cancel the animation.
-     */
+    /** Cancel the animation. */
     public void cancelAnimation() {
         mIsCanceled = true;
         mAnimatorSet.cancel();

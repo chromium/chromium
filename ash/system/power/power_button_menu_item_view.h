@@ -10,6 +10,7 @@
 #include "ash/ash_export.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/raw_ref.h"
+#include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/controls/button/image_button.h"
 
 namespace views {
@@ -26,6 +27,8 @@ namespace ash {
 // PowerButtonMenuItemView represents an item of the power button menu. It
 // includes an icon and title.
 class ASH_EXPORT PowerButtonMenuItemView : public views::ImageButton {
+  METADATA_HEADER(PowerButtonMenuItemView, views::ImageButton)
+
  public:
   // Height of the menu item in pixels.
   static constexpr int kMenuItemHeight = 84;
@@ -42,12 +45,9 @@ class ASH_EXPORT PowerButtonMenuItemView : public views::ImageButton {
   PowerButtonMenuItemView& operator=(const PowerButtonMenuItemView&) = delete;
   ~PowerButtonMenuItemView() override;
 
-  // views::View:
-  const char* GetClassName() const override;
-
  private:
   // views::View:
-  void Layout() override;
+  void Layout(PassKey) override;
   gfx::Size CalculatePreferredSize() const override;
   void OnFocus() override;
   void OnBlur() override;
@@ -56,10 +56,10 @@ class ASH_EXPORT PowerButtonMenuItemView : public views::ImageButton {
   void PaintButtonContents(gfx::Canvas* canvas) override;
 
   // Owned by views hierarchy.
-  raw_ptr<views::ImageView, ExperimentalAsh> icon_view_ = nullptr;
-  raw_ptr<views::Label, ExperimentalAsh> title_ = nullptr;
+  raw_ptr<views::ImageView> icon_view_ = nullptr;
+  raw_ptr<views::Label> title_ = nullptr;
 
-  const raw_ref<const gfx::VectorIcon, ExperimentalAsh> icon_;
+  const raw_ref<const gfx::VectorIcon> icon_;
 };
 
 }  // namespace ash

@@ -5,8 +5,10 @@
 #include "chrome/browser/ash/app_list/search/local_image_search/image_annotation_worker.h"
 
 #include <algorithm>
+#include <fstream>
+#include <iostream>
 #include <memory>
-#include <set>
+#include <string>
 #include <vector>
 
 #include "ash/public/cpp/image_util.h"
@@ -14,22 +16,15 @@
 #include "base/files/file_path.h"
 #include "base/files/file_path_watcher.h"
 #include "base/files/file_util.h"
-#include "base/files/memory_mapped_file.h"
 #include "base/logging.h"
-#include "base/strings/string_util.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/thread_pool.h"
-#include "base/threading/platform_thread.h"
 #include "base/time/time.h"
 #include "chrome/browser/ash/app_list/search/local_image_search/annotation_storage.h"
 #include "chrome/browser/ash/app_list/search/local_image_search/search_utils.h"
-#include "chrome/browser/screen_ai/screen_ai_install_state.h"
 #include "chromeos/ash/components/string_matching/tokenized_string.h"
-#include "chromeos/services/machine_learning/public/cpp/service_connection.h"
-#include "chromeos/services/machine_learning/public/mojom/image_content_annotation.mojom.h"
-#include "chromeos/services/machine_learning/public/mojom/machine_learning_service.mojom.h"
-#include "content/public/browser/browser_thread.h"
 
 namespace app_list {
 namespace {
@@ -37,23 +32,126 @@ namespace {
 using TokenizedString = ::ash::string_matching::TokenizedString;
 using Mode = ::ash::string_matching::TokenizedString::Mode;
 
-// ~ 20MiB
-constexpr int kMaxFileSizeBytes = 2e+7;
+constexpr int kMaxFileSizeBytes = 2e+7;    // ~ 20MiB
 constexpr int kConfidenceThreshold = 128;  // 50% of 255 (max of ICA)
+constexpr int kOcrMinWordLength = 3;
 constexpr base::TimeDelta kInitialIndexingDelay = base::Seconds(1);
+constexpr base::TimeDelta kRetryDelay = base::Seconds(1);
+constexpr base::TimeDelta kMaxImageProcessingTime = base::Minutes(2);
 
+// These values persist to logs. Entries should not be renumbered and numeric
+// values should never be reused.
+enum class Status {
+  kOk = 0,
+  kFailedToInitializeIca = 1,
+  kFailedToInitializeOcr = 2,
+  kFailedToDecodeImage = 3,
+  kImageProcessingTimeOut = 4,
+  kMaxValue = kImageProcessingTimeOut,
+};
+
+void LogStatusUma(Status status) {
+  base::UmaHistogramEnumeration(
+      "Apps.AppList.AnnotationStorage.ImageAnnotationWorker.Status", status);
+}
+
+// Exclude animated WebPs.
+bool IsStaticWebp(const base::FilePath& path) {
+  std::ifstream file(path.value(), std::ios::binary);
+  if (!file) {
+    LOG(ERROR) << "Unable to open file: " << path;
+    return false;
+  }
+
+  char buffer[30];
+  file.read(buffer, sizeof(buffer));
+  file.close();
+
+  // Checking for RIFF header and WebP identifier as in the
+  // https://developers.google.com/speed/webp/docs/riff_container
+  if (std::string(buffer, 4) == "RIFF" &&
+      std::string(buffer + 8, 4) == "WEBP") {
+    // Checking the VP8X chunk for animation
+    if (std::string(buffer + 12, 4) == "VP8X") {
+      // VP8X header is 8 bytes then the flags byte.
+      const char flags = buffer[20];
+      // The second bit indicates if it's animated.
+      return !static_cast<bool>(flags & 0x02);
+    }
+
+    return true;
+  }
+
+  return false;
+}
+
+bool IsJpeg(const base::FilePath& path) {
+  std::ifstream file(path.value(), std::ios::binary);
+  if (!file) {
+    LOG(ERROR) << "Unable to open file: " << path;
+    return false;
+  }
+
+  char buffer[4];
+  file.read(buffer, sizeof(buffer));
+  file.close();
+
+  // Check for JPEG magic numbers
+  return (buffer[0] == (char)0xFF && buffer[1] == (char)0xD8 &&
+          buffer[2] == (char)0xFF &&
+          (buffer[3] == (char)0xE0 || buffer[3] == (char)0xE1));
+}
+
+bool IsPng(const base::FilePath& path) {
+  std::ifstream file(path.value(), std::ios::binary);
+  if (!file) {
+    LOG(ERROR) << "Unable to open file: " << path;
+    return false;
+  }
+
+  uint8_t buffer[8];
+  file.read(reinterpret_cast<char*>(buffer), sizeof(buffer));
+  file.close();
+
+  const uint8_t pngSignature[8] = {0x89, 0x50, 0x4E, 0x47,
+                                   0x0D, 0x0A, 0x1A, 0x0A};
+  for (int i = 0; i < 8; ++i) {
+    if (buffer[i] != pngSignature[i]) {
+      return false;
+    }
+  }
+
+  return true;
+}
+
+// Checks for supported extensions.
 bool IsImage(const base::FilePath& path) {
   DVLOG(1) << "IsImage? " << path.Extension();
-  const std::string extension = path.Extension();
+  const std::string extension = base::ToLowerASCII(path.Extension());
   // Note: The UI design stipulates jpg, png, gif, and svg, but we use
-  // the subset that ICA can handle.
+  // the subset that ICA can handle
   return extension == ".jpeg" || extension == ".jpg" || extension == ".png" ||
-         extension == ".webp" || extension == ".JPEG" || extension == ".JPG" ||
-         extension == ".PNG" || extension == ".WEBP";
+         extension == ".webp";
+}
+
+// Check headers for correctness.
+bool IsSupportedImage(const base::FilePath& path) {
+  DVLOG(1) << "IsSupportedImage? " << path.Extension();
+  const std::string extension = base::ToLowerASCII(path.Extension());
+  if (extension == ".jpeg" || extension == ".jpg") {
+    return IsJpeg(path);
+  } else if (extension == ".png") {
+    return IsPng(path);
+  } else if (extension == ".webp") {
+    return IsStaticWebp(path);
+  } else {
+    return false;
+  }
 }
 
 bool IsPathExcluded(const base::FilePath& path,
                     const std::vector<base::FilePath>& excluded_paths) {
+  DVLOG(1) << "IsPathExcluded: " << path;
   return std::any_of(excluded_paths.begin(), excluded_paths.end(),
                      [&path](const base::FilePath& prefix) {
                        return base::StartsWith(path.value(), prefix.value(),
@@ -61,32 +159,17 @@ bool IsPathExcluded(const base::FilePath& path,
                      });
 }
 
-// Returns deleted files. Needs to be done in background.
-std::set<base::FilePath> GetDeletedPaths(const std::vector<ImageInfo>& images) {
-  std::set<base::FilePath> deleted_paths;
-  for (const auto& image : images) {
-    if (!base::PathExists(image.path)) {
-      deleted_paths.insert(image.path);
-    }
-  }
-  return deleted_paths;
-}
-
-bool IsOcrServiceReady() {
-  return (
-      screen_ai::ScreenAIInstallState::GetInstance() &&
-      screen_ai::ScreenAIInstallState::GetInstance()->IsComponentAvailable());
-}
-
 }  // namespace
 
 ImageAnnotationWorker::ImageAnnotationWorker(
     const base::FilePath& root_path,
     const std::vector<base::FilePath>& excluded_paths,
+    bool use_file_watchers,
     bool use_ocr,
     bool use_ica)
     : root_path_(root_path),
       excluded_paths_(excluded_paths),
+      use_file_watchers_(use_file_watchers),
       use_ica_(use_ica),
       use_ocr_(use_ocr),
       task_runner_(base::ThreadPool::CreateSequencedTaskRunner(
@@ -105,27 +188,14 @@ void ImageAnnotationWorker::Initialize(AnnotationStorage* annotation_storage) {
   on_file_change_callback_ = base::BindRepeating(
       &ImageAnnotationWorker::OnFileChange, weak_ptr_factory_.GetWeakPtr());
 
-  LOG(INFO) << "Initializing DLCs.";
   if (use_ocr_) {
     DVLOG(1) << "Initializing OCR DLC.";
-    if (IsOcrServiceReady()) {
-      EnsureOcrAnnotatorIsConnected();
-    } else {
-      // DLC downloader cannot run from current sequence.
-      content::GetUIThreadTaskRunner()->PostTask(
-          FROM_HERE, base::BindOnce([]() {
-            // Screen AI Install State may be unavailable for tests.
-            if (screen_ai::ScreenAIInstallState::GetInstance()) {
-              screen_ai::ScreenAIInstallState::GetInstance()
-                  ->DownloadComponent();
-            }
-          }));
-    }
+    optical_character_recognizer_.InitializeComponent();
   }
 
   if (use_ica_) {
     DVLOG(1) << "Initializing ICA DLC.";
-    EnsureIcaAnnotatorIsConnected();
+    image_content_annotator_.EnsureAnnotatorIsConnected();
   }
 
   base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
@@ -136,26 +206,43 @@ void ImageAnnotationWorker::Initialize(AnnotationStorage* annotation_storage) {
 }
 
 void ImageAnnotationWorker::OnDlcInstalled() {
-  bool ocr_dlc_installed = IsOcrServiceReady();
-  if ((use_ocr_ && !ocr_dlc_installed) || (use_ica_ && !ica_dlc_initialized_)) {
-    LOG(INFO) << "DLC is not ready. OCR: " << ocr_dlc_installed << "/"
-              << use_ocr_ << " ICA: " << ica_dlc_initialized_ << "/" << use_ica_
-              << " Waiting.";
+  bool is_ica_dlc_installed = image_content_annotator_.IsDlcInitialized();
+  bool is_ocr_dlc_installed = optical_character_recognizer_.IsServiceReady();
+
+  if ((use_ocr_ && !is_ocr_dlc_installed) ||
+      (use_ica_ && !is_ica_dlc_installed)) {
+    DVLOG(1) << "DLCs are not ready. OCR: " << is_ocr_dlc_installed << "/"
+             << use_ocr_ << " ICA: " << is_ica_dlc_installed << "/" << use_ica_
+             << ". Waiting.";
+
+    if (num_retries_left_ > 0) {
+      num_retries_left_ -= 1;
+    } else {
+      if (use_ica_ && !is_ica_dlc_installed) {
+        LOG(ERROR) << "Failed to initialize ICA.";
+        LogStatusUma(Status::kFailedToInitializeIca);
+      }
+      if (use_ocr_ && !is_ocr_dlc_installed) {
+        LOG(ERROR) << "Failed to initialize OCR.";
+        LogStatusUma(Status::kFailedToInitializeOcr);
+      }
+      return;
+    }
+
     // It is expected to be ready on a first try. Also, it is not a time
     // sensitive task, so we do not need to implement a full-fledged observer.
     base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
         FROM_HERE,
         base::BindOnce(&ImageAnnotationWorker::OnDlcInstalled,
                        weak_ptr_factory_.GetWeakPtr()),
-        base::Seconds(1));
+        kRetryDelay);
     return;
   }
 
-  if (use_ica_ || use_ocr_) {
-    LOG(INFO) << "DLCs are ready. Watching for file changes.";
+  if (use_file_watchers_) {
+    DVLOG(1) << "DLCs are ready. Watching for file changes: " << root_path_;
     file_watcher_ = std::make_unique<base::FilePathWatcher>();
 
-    DVLOG(1) << "Start WatchWithOptions " << root_path_;
     // `file_watcher_` needs to be deleted in the same sequence it was
     // initialized.
     file_watcher_->WatchWithOptions(
@@ -165,122 +252,106 @@ void ImageAnnotationWorker::OnDlcInstalled() {
         on_file_change_callback_);
   }
 
-  task_runner_->PostTaskAndReplyWithResult(
-      FROM_HERE,
-      base::BindOnce(
-          [](base::FilePath root_path)
-              -> std::unique_ptr<base::FileEnumerator> {
-            DVLOG(1) << "Commencing start up indexing. ";
-            return std::make_unique<base::FileEnumerator>(
-                root_path,
-                /*recursive=*/true, base::FileEnumerator::FILES,
-                // There is an image extension test down the pipe.
-                "*.[j,p,J,P,w,W][p,n,P,N,e,E]*[g,G,p,P]",
-                base::FileEnumerator::FolderSearchPolicy::ALL);
-          },
-          root_path_),
-      base::BindOnce(
-          [](base::FilePathWatcher::Callback on_file_change_callback,
-             std::unique_ptr<base::FileEnumerator> file_enumerator) {
-            for (base::FilePath file = file_enumerator->Next(); !file.empty();
-                 file = file_enumerator->Next()) {
-              DVLOG(1) << "Found files: " << file;
-              on_file_change_callback.Run(std::move(file), /*error=*/false);
-            }
-          },
-          on_file_change_callback_));
-
-  FindAndRemoveDeletedImages(annotation_storage_->GetAllAnnotations());
-}
-
-void ImageAnnotationWorker::EnsureIcaAnnotatorIsConnected() {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (ml_service_.is_bound() && image_content_annotator_.is_bound()) {
-    return;
-  }
-
-  if (!ml_service_.is_bound()) {
-    chromeos::machine_learning::ServiceConnection::GetInstance()
-        ->BindMachineLearningService(ml_service_.BindNewPipeAndPassReceiver());
-    ml_service_.reset_on_disconnect();
-  }
-
-  if (!image_content_annotator_.is_bound()) {
-    ConnectToImageAnnotator();
-    image_content_annotator_.reset_on_disconnect();
-  }
-}
-
-void ImageAnnotationWorker::EnsureOcrAnnotatorIsConnected() {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (screen_ai_annotator_.is_bound()) {
-    return;
-  }
-
-  DCHECK(IsOcrServiceReady());
-  screen_ai_service_router_.BindScreenAIAnnotator(
-      screen_ai_annotator_.BindNewPipeAndPassReceiver());
-  screen_ai_annotator_.reset_on_disconnect();
-}
-
-void ImageAnnotationWorker::ConnectToImageAnnotator() {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
-  auto config = chromeos::machine_learning::mojom::ImageAnnotatorConfig::New();
-  config->locale = "en-US";
-
-  DVLOG(1) << "Binding ICA.";
-  ml_service_->LoadImageAnnotator(
-      std::move(config), image_content_annotator_.BindNewPipeAndPassReceiver(),
-      base::BindOnce(
-          [](bool* ica_dlc_initialized,
-             const chromeos::machine_learning::mojom::LoadModelResult result) {
-            DVLOG(1) << result;
-            if (result ==
-                chromeos::machine_learning::mojom::LoadModelResult::OK) {
-              *ica_dlc_initialized = true;
-              DVLOG(1) << "ICA bind is done.";
-            } else {
-              LOG(ERROR) << "Failed to bind ICA.";
-              *ica_dlc_initialized = false;
-            }
-          },
-          &ica_dlc_initialized_));
+  LogStatusUma(Status::kOk);
+  OnFileChange(root_path_, /*error=*/false);
+  FindAndRemoveDeletedFiles(annotation_storage_->GetAllFiles());
 }
 
 void ImageAnnotationWorker::OnFileChange(const base::FilePath& path,
                                          bool error) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DVLOG(1) << "OnFileChange: " << path;
-  if (error || DirectoryExists(path) || !IsImage(path) ||
-      IsPathExcluded(path, excluded_paths_)) {
+  if (error || IsPathExcluded(path, excluded_paths_)) {
+    DVLOG(1) << "Skipping.";
     return;
   }
 
   DVLOG(1) << "Adding to a queue";
-  images_being_processed_.push(std::move(path));
-  if (images_being_processed_.size() == 1) {
-    ProcessNextImage();
+  files_to_process_.push(std::move(path));
+  if (files_to_process_.size() == 1) {
+    return ProcessNextItem();
   }
+  return;
+}
+
+void ImageAnnotationWorker::ProcessNextItem() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (files_to_process_.empty()) {
+    DVLOG(1) << "The queue is empty.";
+    image_content_annotator_.DisconnectAnnotator();
+    optical_character_recognizer_.DisconnectAnnotator();
+    return;
+  }
+
+  const base::FilePath path = files_to_process_.front();
+  DVLOG(1) << "ProcessNextItem " << path;
+  if (base::PathExists(path)) {
+    if (base::DirectoryExists(path)) {  // It's a directory.
+      return ProcessNextDirectory();
+    } else {  // It's a file.
+      if (IsImage(path)) {
+        return ProcessNextImage();
+      } else {
+        files_to_process_.pop();
+        return ProcessNextItem();
+      }
+    }
+  } else {
+    if (path.FinalExtension().empty()) {
+      return RemoveOldDirectory();
+    } else {
+      annotation_storage_->Remove(path);
+      files_to_process_.pop();
+      return ProcessNextItem();
+    }
+  }
+}
+
+void ImageAnnotationWorker::ProcessNextDirectory() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  base::FilePath directory_path = files_to_process_.front();
+  DVLOG(1) << "ProcessNextDirectory " << directory_path;
+
+  // We need to re-index all the files in the directory.
+  auto file_enumerator = base::FileEnumerator(
+      directory_path,
+      /*recursive=*/false, base::FileEnumerator::NAMES_ONLY, "*",
+      base::FileEnumerator::FolderSearchPolicy::ALL);
+
+  for (base::FilePath file_path = file_enumerator.Next(); !file_path.empty();
+       file_path = file_enumerator.Next()) {
+    DVLOG(1) << "Found file: " << file_path;
+    OnFileChange(std::move(file_path), /*error=*/false);
+  }
+  files_to_process_.pop();
+  return ProcessNextItem();
+}
+
+void ImageAnnotationWorker::RemoveOldDirectory() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  base::FilePath directory_path = files_to_process_.front();
+  DVLOG(1) << "RemoveOldDirectory " << directory_path;
+
+  auto files = annotation_storage_->SearchByDirectory(directory_path);
+  for (const auto& file : files) {
+    OnFileChange(file, /*error=*/false);
+  }
+
+  files_to_process_.pop();
+  return ProcessNextItem();
 }
 
 void ImageAnnotationWorker::ProcessNextImage() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DVLOG(1) << "ProcessNextImage";
-
-  if (images_being_processed_.empty()) {
-    DVLOG(1) << "The queue is empty.";
-    return;
-  }
-
-  base::FilePath image_path = images_being_processed_.front();
+  base::FilePath image_path = files_to_process_.front();
+  DVLOG(1) << "ProcessNextImage " << image_path;
 
   auto file_info = std::make_unique<base::File::Info>();
   if (!base::GetFileInfo(image_path, file_info.get()) || file_info->size == 0 ||
-      file_info->size > kMaxFileSizeBytes) {
+      file_info->size > kMaxFileSizeBytes || !IsSupportedImage(image_path)) {
     annotation_storage_->Remove(image_path);
-    images_being_processed_.pop();
-    return ProcessNextImage();
+    files_to_process_.pop();
+    return ProcessNextItem();
   }
   DCHECK(file_info);
 
@@ -294,15 +365,16 @@ void ImageAnnotationWorker::ProcessNextImage() {
     // modified time. So skip inserting the image annotations if the file
     // has not changed since the last update.
     if (file_info->last_modified == stored_annotations.front().last_modified) {
-      images_being_processed_.pop();
-      return ProcessNextImage();
+      files_to_process_.pop();
+      return ProcessNextItem();
     }
   }
 
   DVLOG(1) << "Processing new " << image_path << " "
            << file_info->last_modified;
   annotation_storage_->Remove(image_path);
-  ImageInfo image_info({}, image_path, file_info->last_modified);
+  ImageInfo image_info({}, image_path, file_info->last_modified,
+                       file_info->size);
 
   if (use_ocr_ || use_ica_) {
     ash::image_util::DecodeImageFile(
@@ -317,22 +389,35 @@ void ImageAnnotationWorker::ProcessNextImage() {
 void ImageAnnotationWorker::OnDecodeImageFile(
     ImageInfo image_info,
     const gfx::ImageSkia& image_skia) {
-  DVLOG(1) << "OnDecodeImageFile. Is decoded " << !image_skia.size().IsEmpty();
+  DVLOG(1) << "OnDecodeImageFile.";
+  if (image_skia.size().IsEmpty()) {
+    LOG(ERROR) << "Failed to decode image.";
+    LogStatusUma(Status::kFailedToDecodeImage);
+    files_to_process_.pop();
+    return ProcessNextItem();
+  }
+
+  timeout_timer_.Start(
+      FROM_HERE, kMaxImageProcessingTime,
+      base::BindOnce(&ImageAnnotationWorker::OnImageProcessTimeout,
+                     weak_ptr_factory_.GetWeakPtr()));
+
   if (use_ocr_ && use_ica_) {
-    EnsureOcrAnnotatorIsConnected();
-    screen_ai_annotator_->PerformOcrAndReturnAnnotation(
+    optical_character_recognizer_.ReadImage(
         *image_skia.bitmap(),
         base::BindOnce(&ImageAnnotationWorker::OnPerformOcr,
                        weak_ptr_factory_.GetWeakPtr(), image_info)
-            .Then(base::BindOnce(&ImageAnnotationWorker::CallIca,
-                                 weak_ptr_factory_.GetWeakPtr(),
-                                 std::move(image_info))));
+            .Then(base::BindOnce(
+                &ImageContentAnnotator::AnnotateEncodedImage,
+                base::Unretained(&image_content_annotator_), image_info.path,
+                base::BindOnce(&ImageAnnotationWorker::OnPerformIca,
+                               weak_ptr_factory_.GetWeakPtr(),
+                               std::move(image_info)))));
     return;
   }
 
   if (use_ocr_) {
-    EnsureOcrAnnotatorIsConnected();
-    screen_ai_annotator_->PerformOcrAndReturnAnnotation(
+    optical_character_recognizer_.ReadImage(
         *image_skia.bitmap(),
         base::BindOnce(&ImageAnnotationWorker::OnPerformOcr,
                        weak_ptr_factory_.GetWeakPtr(), std::move(image_info)));
@@ -340,7 +425,10 @@ void ImageAnnotationWorker::OnDecodeImageFile(
   }
 
   if (use_ica_) {
-    CallIca(std::move(image_info));
+    image_content_annotator_.AnnotateEncodedImage(
+        image_info.path,
+        base::BindOnce(&ImageAnnotationWorker::OnPerformIca,
+                       weak_ptr_factory_.GetWeakPtr(), std::move(image_info)));
     return;
   }
   NOTREACHED();
@@ -355,7 +443,7 @@ void ImageAnnotationWorker::OnPerformOcr(
                            Mode::kWords);
     for (const auto& word : tokens.tokens()) {
       std::string lower_case_word = base::UTF16ToUTF8(word);
-      if (word.size() > 3 && !IsStopWord(lower_case_word) &&
+      if (word.size() >= kOcrMinWordLength && !IsStopWord(lower_case_word) &&
           base::IsAsciiAlpha(lower_case_word[0])) {
         image_info.annotations.insert(std::move(lower_case_word));
       }
@@ -367,29 +455,10 @@ void ImageAnnotationWorker::OnPerformOcr(
 
   // OCR is the first in the pipeline.
   if (!use_ica_) {
-    images_being_processed_.pop();
-    ProcessNextImage();
+    timeout_timer_.Stop();
+    files_to_process_.pop();
+    ProcessNextItem();
   }
-}
-
-void ImageAnnotationWorker::CallIca(ImageInfo image_info) {
-  DVLOG(1) << "Making a MemoryMappedFile.";
-  base::MemoryMappedFile data;
-  if (!data.Initialize(image_info.path)) {
-    LOG(ERROR) << "Could not create a memory mapped file for an "
-                  "image file to generate annotations";
-  }
-  base::MappedReadOnlyRegion mapped_region =
-      base::ReadOnlySharedMemoryRegion::Create(data.length());
-  memcpy(mapped_region.mapping.memory(), data.data(), data.length());
-  DCHECK(mapped_region.IsValid());
-  DCHECK(mapped_region.region.IsValid());
-
-  EnsureIcaAnnotatorIsConnected();
-  image_content_annotator_->AnnotateEncodedImage(
-      std::move(mapped_region.region),
-      base::BindOnce(&ImageAnnotationWorker::OnPerformIca,
-                     weak_ptr_factory_.GetWeakPtr(), std::move(image_info)));
 }
 
 void ImageAnnotationWorker::OnPerformIca(
@@ -415,23 +484,42 @@ void ImageAnnotationWorker::OnPerformIca(
   }
 
   // ICA is the last in the pipeline.
-  images_being_processed_.pop();
-  ProcessNextImage();
+  timeout_timer_.Stop();
+  files_to_process_.pop();
+  ProcessNextItem();
 }
 
-void ImageAnnotationWorker::FindAndRemoveDeletedImages(
-    const std::vector<ImageInfo> images) {
+void ImageAnnotationWorker::FindAndRemoveDeletedFiles(
+    const std::vector<base::FilePath> files) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DVLOG(1) << "FindAndRemoveDeletedImages.";
   task_runner_->PostTaskAndReplyWithResult(
-      FROM_HERE, base::BindOnce(&GetDeletedPaths, std::move(images)),
+      FROM_HERE,
+      base::BindOnce(
+          [](const std::vector<base::FilePath>& files) {
+            std::vector<base::FilePath> deleted_paths;
+            for (const auto& file_path : files) {
+              if (!base::PathExists(file_path)) {
+                deleted_paths.push_back(file_path);
+              }
+            }
+            return deleted_paths;
+          },
+          std::move(files)),
       base::BindOnce(
           [](AnnotationStorage* const annotation_storage,
-             std::set<base::FilePath> paths) {
+             std::vector<base::FilePath> paths) {
             std::for_each(paths.begin(), paths.end(),
                           [&](auto path) { annotation_storage->Remove(path); });
           },
           annotation_storage_));
+}
+
+void ImageAnnotationWorker::OnImageProcessTimeout() {
+  LOG(ERROR) << "Annotators timed out.";
+  LogStatusUma(Status::kImageProcessingTimeOut);
+  files_to_process_.pop();
+  ProcessNextItem();
 }
 
 void ImageAnnotationWorker::RunFakeImageAnnotator(ImageInfo image_info) {
@@ -441,8 +529,8 @@ void ImageAnnotationWorker::RunFakeImageAnnotator(ImageInfo image_info) {
       image_info.path.BaseName().RemoveFinalExtension().value();
   image_info.annotations.insert(std::move(annotation));
   annotation_storage_->Insert(std::move(image_info));
-  images_being_processed_.pop();
-  ProcessNextImage();
+  files_to_process_.pop();
+  ProcessNextItem();
 }
 
 void ImageAnnotationWorker::TriggerOnFileChangeForTests(

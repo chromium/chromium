@@ -16,7 +16,6 @@
 #include "chromeos/ash/services/bluetooth_config/public/mojom/cros_bluetooth_config.mojom.h"
 
 namespace views {
-class Separator;
 class View;
 }  // namespace views
 
@@ -64,15 +63,12 @@ class ASH_EXPORT BluetoothDeviceListControllerImpl
       base::flat_map<std::string, BluetoothDeviceListItemView*>* previous_views,
       size_t index);
 
-  const raw_ptr<BluetoothDetailedView, DanglingUntriaged | ExperimentalAsh>
+  const raw_ptr<BluetoothDetailedView, DanglingUntriaged>
       bluetooth_detailed_view_;
 
   bool is_bluetooth_enabled_ = false;
   base::flat_map<std::string, BluetoothDeviceListItemView*>
       device_id_to_view_map_;
-  // This field is not a raw_ptr<> because it was filtered by the rewriter
-  // for: #addr-of
-  RAW_PTR_EXCLUSION views::Separator* device_list_separator_ = nullptr;
   // This field is not a raw_ptr<> because it was filtered by the rewriter
   // for: #addr-of
   RAW_PTR_EXCLUSION views::View* connected_sub_header_ = nullptr;

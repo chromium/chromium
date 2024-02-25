@@ -5,11 +5,12 @@
 #ifndef CONTENT_PUBLIC_BROWSER_NAVIGATION_THROTTLE_H_
 #define CONTENT_PUBLIC_BROWSER_NAVIGATION_THROTTLE_H_
 
+#include <optional>
+
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "content/common/content_export.h"
 #include "net/base/net_errors.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace content {
 class NavigationHandle;
@@ -36,6 +37,12 @@ class CONTENT_EXPORT NavigationThrottle {
     // NavigationHandle::Resume or NavigationHandle::CancelDeferredRequest. If
     // the NavigationHandle is destroyed while the navigation is deferred, the
     // navigation will be canceled in the network stack.
+    // Note: since this slows page load it should be avoided unless there's no
+    // other option. An example necessary case would be locked down users where
+    // a server check needs to be done before starting the navigation. For other
+    // cases, please consider alternatives like sending data to the renderer
+    // asynchronously, showing interstitials later when possible etc. It's good
+    // practice to add histograms to know how long the delay takes.
     DEFER,
 
     // Cancels the navigation.
@@ -110,7 +117,7 @@ class CONTENT_EXPORT NavigationThrottle {
     // Construct with an action, error, and error page HTML.
     ThrottleCheckResult(ThrottleAction action,
                         net::Error net_error_code,
-                        absl::optional<std::string> error_page_content);
+                        std::optional<std::string> error_page_content);
 
     ThrottleCheckResult(const ThrottleCheckResult& other);
 
@@ -118,14 +125,14 @@ class CONTENT_EXPORT NavigationThrottle {
 
     ThrottleAction action() const { return action_; }
     net::Error net_error_code() const { return net_error_code_; }
-    const absl::optional<std::string>& error_page_content() {
+    const std::optional<std::string>& error_page_content() {
       return error_page_content_;
     }
 
    private:
     ThrottleAction action_;
     net::Error net_error_code_;
-    absl::optional<std::string> error_page_content_;
+    std::optional<std::string> error_page_content_;
   };
 
   NavigationThrottle(NavigationHandle* navigation_handle);

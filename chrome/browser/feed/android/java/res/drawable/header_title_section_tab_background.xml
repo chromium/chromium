@@ -7,13 +7,6 @@ found in the LICENSE file.
 
 <selector xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
-  <item android:state_enabled="false">
-      <org.chromium.components.browser_ui.widget.SurfaceColorDrawable
-          android:shape="rectangle"
-          app:surfaceElevation="@dimen/default_elevation_1">
-        <corners android:radius="@dimen/feed_header_background_corner_radius"/>
-      </org.chromium.components.browser_ui.widget.SurfaceColorDrawable>
-  </item>
   <item android:state_enabled="true">
     <org.chromium.components.browser_ui.widget.SurfaceColorDrawable
         android:shape="rectangle"

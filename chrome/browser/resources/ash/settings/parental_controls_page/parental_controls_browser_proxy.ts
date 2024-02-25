@@ -29,15 +29,15 @@ export class ParentalControlsBrowserProxyImpl implements
     return instance || (instance = new ParentalControlsBrowserProxyImpl());
   }
 
-  static setInstanceForTesting(obj: ParentalControlsBrowserProxy) {
+  static setInstanceForTesting(obj: ParentalControlsBrowserProxy): void {
     instance = obj;
   }
 
-  showAddSupervisionDialog() {
+  showAddSupervisionDialog(): void {
     chrome.send('showAddSupervisionDialog');
   }
 
-  launchFamilyLinkSettings() {
+  launchFamilyLinkSettings(): void {
     chrome.send('launchFamilyLinkSettings');
   }
 }

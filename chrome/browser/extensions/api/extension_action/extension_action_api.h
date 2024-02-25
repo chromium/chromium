@@ -17,6 +17,7 @@
 #include "extensions/browser/extension_event_histogram_value.h"
 #include "extensions/browser/extension_function.h"
 #include "extensions/browser/extension_host_registry.h"
+#include "extensions/common/extension_id.h"
 #include "third_party/skia/include/core/SkColor.h"
 
 namespace content {
@@ -95,7 +96,7 @@ class ExtensionActionAPI : public BrowserContextKeyedAPI {
 
   // The DispatchEvent methods forward events to the |context|'s event router.
   void DispatchEventToExtension(content::BrowserContext* context,
-                                const std::string& extension_id,
+                                const ExtensionId& extension_id,
                                 events::HistogramValue histogram_value,
                                 const std::string& event_name,
                                 base::Value::List event_args);

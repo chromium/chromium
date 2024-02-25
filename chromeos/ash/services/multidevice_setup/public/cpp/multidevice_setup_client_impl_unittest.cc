@@ -5,6 +5,7 @@
 #include "chromeos/ash/services/multidevice_setup/public/cpp/multidevice_setup_client_impl.h"
 
 #include <algorithm>
+#include <optional>
 #include <tuple>
 #include <utility>
 
@@ -23,7 +24,6 @@
 #include "chromeos/ash/services/multidevice_setup/public/cpp/fake_multidevice_setup.h"
 #include "chromeos/ash/services/multidevice_setup/public/mojom/multidevice_setup.mojom.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ash {
 
@@ -101,10 +101,10 @@ class TestMultiDeviceSetupClientObserver
   std::vector<MultiDeviceSetupClient::FeatureStatesMap> feature_state_updates_;
 };
 
-absl::optional<multidevice::RemoteDevice> GetRemoteDeviceFromRef(
-    const absl::optional<multidevice::RemoteDeviceRef>& remote_device_ref) {
+std::optional<multidevice::RemoteDevice> GetRemoteDeviceFromRef(
+    const std::optional<multidevice::RemoteDeviceRef>& remote_device_ref) {
   if (!remote_device_ref)
-    return absl::optional<multidevice::RemoteDevice>();
+    return std::optional<multidevice::RemoteDevice>();
 
   return *multidevice::GetMutableRemoteDevice(*remote_device_ref);
 }
@@ -270,7 +270,7 @@ class MultiDeviceSetupClientImplTest : public testing::Test {
 
   void CallSetFeatureEnabledState(mojom::Feature feature,
                                   bool enabled,
-                                  const absl::optional<std::string>& auth_token,
+                                  const std::optional<std::string>& auth_token,
                                   bool should_succeed) {
     size_t num_set_feature_enabled_args_before_call =
         fake_multidevice_setup_->set_feature_enabled_args().size();
@@ -402,7 +402,7 @@ class MultiDeviceSetupClientImplTest : public testing::Test {
   void OnGetHostStatusCompleted(
       base::OnceClosure quit_closure,
       mojom::HostStatus host_status,
-      const absl::optional<multidevice::RemoteDeviceRef>& host_device) {
+      const std::optional<multidevice::RemoteDeviceRef>& host_device) {
     get_host_status_result_ = std::make_pair(host_status, host_device);
     std::move(quit_closure).Run();
   }
@@ -435,23 +435,22 @@ class MultiDeviceSetupClientImplTest : public testing::Test {
 
   const base::test::TaskEnvironment task_environment_;
 
-  raw_ptr<FakeMultiDeviceSetup, DanglingUntriaged | ExperimentalAsh>
-      fake_multidevice_setup_;
+  raw_ptr<FakeMultiDeviceSetup, DanglingUntriaged> fake_multidevice_setup_;
   std::unique_ptr<FakeMultiDeviceSetupInitializerFactory>
       fake_multidevice_setup_impl_factory_;
   std::unique_ptr<MultiDeviceSetupService> service_;
   std::unique_ptr<MultiDeviceSetupClient> client_;
 
-  absl::optional<multidevice::RemoteDeviceRefList> eligible_host_devices_;
-  absl::optional<bool> set_host_device_success_;
-  absl::optional<std::pair<mojom::HostStatus,
-                           absl::optional<multidevice::RemoteDeviceRef>>>
+  std::optional<multidevice::RemoteDeviceRefList> eligible_host_devices_;
+  std::optional<bool> set_host_device_success_;
+  std::optional<
+      std::pair<mojom::HostStatus, std::optional<multidevice::RemoteDeviceRef>>>
       get_host_status_result_;
-  absl::optional<bool> set_feature_enabled_state_success_;
-  absl::optional<base::flat_map<mojom::Feature, mojom::FeatureState>>
+  std::optional<bool> set_feature_enabled_state_success_;
+  std::optional<base::flat_map<mojom::Feature, mojom::FeatureState>>
       get_feature_states_result_;
-  absl::optional<bool> retry_set_host_now_success_;
-  absl::optional<bool> trigger_event_for_debugging_success_;
+  std::optional<bool> retry_set_host_now_success_;
+  std::optional<bool> trigger_event_for_debugging_success_;
 };
 
 TEST_F(MultiDeviceSetupClientImplTest, GetHostStatus) {
@@ -460,7 +459,7 @@ TEST_F(MultiDeviceSetupClientImplTest, GetHostStatus) {
 
   MultiDeviceSetupClient::HostStatusWithDevice host_status_with_device =
       std::make_pair(mojom::HostStatus::kNoEligibleHosts,
-                     absl::nullopt /* expected_host_device */);
+                     std::nullopt /* expected_host_device */);
   SimulateHostStatusChange(host_status_with_device);
   EXPECT_EQ(host_status_with_device, client()->GetHostStatus());
 

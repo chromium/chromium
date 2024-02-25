@@ -6,6 +6,7 @@
 #include "base/feature_list_buildflags.h"
 #include "base/test/metrics/user_action_tester.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/time/time.h"
 #include "base/time/time_override.h"
 #include "chrome/browser/content_settings/cookie_settings_factory.h"
 #include "chrome/browser/profiles/profile.h"
@@ -17,15 +18,18 @@
 #include "chrome/browser/ui/webui/feedback/feedback_dialog.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/test/base/in_process_browser_test.h"
-#include "chrome/test/interaction/feature_engagement_initialized_observer.h"
 #include "chrome/test/interaction/interactive_browser_test.h"
+#include "chrome/test/user_education/interactive_feature_promo_test.h"
 #include "components/content_settings/core/browser/cookie_settings.h"
 #include "components/content_settings/core/common/features.h"
 #include "components/content_settings/core/common/pref_names.h"
 #include "components/feature_engagement/public/feature_constants.h"
+#include "components/privacy_sandbox/tracking_protection_prefs.h"
 #include "components/site_engagement/content/site_engagement_service.h"
 #include "components/user_education/views/help_bubble_view.h"
 #include "content/public/test/browser_test.h"
+#include "content/public/test/browser_test_utils.h"
+#include "content/public/test/content_mock_cert_verifier.h"
 #include "net/dns/mock_host_resolver.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "ui/base/interaction/interaction_sequence.h"
@@ -42,29 +46,53 @@ const char kUMABubbleAllowThirdPartyCookies[] =
 const char kUMABubbleBlockThirdPartyCookies[] =
     "CookieControls.Bubble.BlockThirdPartyCookies";
 const char kUMABubbleSendFeedback[] = "CookieControls.Bubble.SendFeedback";
+const char kUMABubbleReloadingShown[] = "CookieControls.Bubble.ReloadingShown";
+const char kUMABubbleReloadingTimeout[] =
+    "CookieControls.Bubble.ReloadingTimeout";
 }  // namespace
 
-class CookieControlsInteractiveUiTest : public InteractiveBrowserTest {
+class CookieControlsInteractiveUiBaseTest : public InteractiveFeaturePromoTest {
  public:
-  CookieControlsInteractiveUiTest() {
+  explicit CookieControlsInteractiveUiBaseTest(
+      std::vector<base::test::FeatureRef> iph_features = {})
+      : InteractiveFeaturePromoTest(
+            UseDefaultTrackerAllowingPromos(iph_features)) {
     https_server_ = std::make_unique<net::EmbeddedTestServer>(
         net::EmbeddedTestServer::TYPE_HTTPS);
   }
 
-  ~CookieControlsInteractiveUiTest() override = default;
+  ~CookieControlsInteractiveUiBaseTest() override = default;
 
   void SetUp() override {
-    iph_feature_list_.InitAndEnableFeatures(EnabledFeatures());
+    disabled_features_.InitWithFeatures({}, DisabledFeatures());
     https_server()->SetSSLConfig(net::EmbeddedTestServer::CERT_TEST_NAMES);
-    https_server()->ServeFilesFromSourceDirectory(GetChromeTestDataDir());
+    https_server()->AddDefaultHandlers(GetChromeTestDataDir());
 
     set_open_about_blank_on_browser_launch(true);
     ASSERT_TRUE(https_server()->InitializeAndListen());
-    InteractiveBrowserTest::SetUp();
+    InteractiveFeaturePromoTest::SetUp();
+  }
+
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    InteractiveFeaturePromoTest::SetUpCommandLine(command_line);
+    mock_cert_verifier_.SetUpCommandLine(command_line);
+  }
+
+  void SetUpInProcessBrowserTestFixture() override {
+    mock_cert_verifier_.SetUpInProcessBrowserTestFixture();
+    InteractiveFeaturePromoTest::SetUpInProcessBrowserTestFixture();
+  }
+
+  void TearDownInProcessBrowserTestFixture() override {
+    InteractiveFeaturePromoTest::TearDownInProcessBrowserTestFixture();
+    mock_cert_verifier_.TearDownInProcessBrowserTestFixture();
   }
 
   void SetUpOnMainThread() override {
-    InteractiveBrowserTest::SetUpOnMainThread();
+    InteractiveFeaturePromoTest::SetUpOnMainThread();
+    // This test uses a mock time, so use mock cert verifier to not have cert
+    // verification depend on the current mocked time.
+    mock_cert_verifier_.mock_cert_verifier()->set_default_result(net::OK);
     host_resolver()->AddRule("*", "127.0.0.1");
     content::SetupCrossSiteRedirector(https_server());
     https_server()->StartAcceptingConnections();
@@ -72,12 +100,12 @@ class CookieControlsInteractiveUiTest : public InteractiveBrowserTest {
 
   void TearDownOnMainThread() override {
     EXPECT_TRUE(https_server()->ShutdownAndWaitUntilComplete());
-    InteractiveBrowserTest::TearDownOnMainThread();
+    InteractiveFeaturePromoTest::TearDownOnMainThread();
   }
 
  protected:
-  virtual std::vector<base::test::FeatureRef> EnabledFeatures() {
-    return {content_settings::features::kUserBypassUI};
+  virtual std::vector<base::test::FeatureRef> DisabledFeatures() {
+    return {content_settings::features::kTrackingProtection3pcd};
   }
 
   auto CheckIcon(ElementSpecifier view,
@@ -106,15 +134,15 @@ class CookieControlsInteractiveUiTest : public InteractiveBrowserTest {
 
   auto CheckStateForTemporaryException() {
     return Steps(
-        CheckViewProperty(CookieControlsContentView::kTitle,
-                          &views::Label::GetText,
-                          l10n_util::GetPluralStringFUTF16(
-                              IDS_COOKIE_CONTROLS_BUBBLE_BLOCKING_RESTART_TITLE,
-                              ExceptionDurationInDays())),
+        CheckViewProperty(
+            CookieControlsContentView::kTitle, &views::Label::GetText,
+            l10n_util::GetPluralStringFUTF16(
+                IDS_TRACKING_PROTECTION_BUBBLE_BLOCKING_RESTART_TITLE,
+                ExceptionDurationInDays())),
         CheckViewProperty(
             CookieControlsContentView::kDescription, &views::Label::GetText,
             l10n_util::GetStringUTF16(
-                IDS_COOKIE_CONTROLS_BUBBLE_BLOCKING_RESTART_DESCRIPTION_TODAY)),
+                IDS_TRACKING_PROTECTION_BUBBLE_BLOCKING_RESTART_DESCRIPTION)),
         CheckViewProperty(CookieControlsContentView::kToggleButton,
                           &views::ToggleButton::GetIsOn, true),
         CheckIcon(RichControlsContainerView::kIcon, views::kEyeIcon,
@@ -132,11 +160,65 @@ class CookieControlsInteractiveUiTest : public InteractiveBrowserTest {
         CheckViewProperty(
             CookieControlsContentView::kDescription, &views::Label::GetText,
             l10n_util::GetStringUTF16(
-                ExceptionDurationInDays() == 0
-                    ? IDS_COOKIE_CONTROLS_BUBBLE_SITE_NOT_WORKING_DESCRIPTION_PERMANENT
-                    : IDS_COOKIE_CONTROLS_BUBBLE_SITE_NOT_WORKING_DESCRIPTION_TEMPORARY)),
+                IDS_TRACKING_PROTECTION_BUBBLE_SITE_NOT_WORKING_DESCRIPTION)),
         CheckIcon(RichControlsContainerView::kIcon, views::kEyeCrossedIcon,
                   views::kEyeCrossedRefreshIcon));
+  }
+
+  auto CheckTrackingProtectionAllowedState() {
+    return Steps(
+        CheckViewProperty(CookieControlsContentView::kToggleButton,
+                          &views::ToggleButton::GetIsOn, true),
+        CheckViewProperty(
+            CookieControlsContentView::kTitle, &views::Label::GetText,
+            l10n_util::GetPluralStringFUTF16(
+                browser()->profile()->GetPrefs()->GetBoolean(
+                    prefs::kBlockAll3pcToggleEnabled)
+                    ? IDS_TRACKING_PROTECTION_BUBBLE_BLOCKING_RESTART_TITLE
+                    : IDS_TRACKING_PROTECTION_BUBBLE_LIMITING_RESTART_TITLE,
+                ExceptionDurationInDays())),
+        CheckViewProperty(
+            CookieControlsContentView::kDescription, &views::Label::GetText,
+            l10n_util::GetStringUTF16(
+                IDS_TRACKING_PROTECTION_BUBBLE_BLOCKING_RESTART_DESCRIPTION)),
+        CheckViewProperty(
+            CookieControlsContentView::kToggleLabel, &views::Label::GetText,
+            l10n_util::GetStringUTF16(
+                IDS_TRACKING_PROTECTION_BUBBLE_COOKIES_ALLOWED_LABEL)),
+        CheckIcon(RichControlsContainerView::kIcon, views::kEyeIcon,
+                  views::kEyeRefreshIcon));
+  }
+
+  auto CheckTrackingProtectionBlockedState() {
+    return Steps(
+        CheckViewProperty(CookieControlsContentView::kToggleButton,
+                          &views::ToggleButton::GetIsOn, false),
+        CheckViewProperty(
+            CookieControlsContentView::kTitle, &views::Label::GetText,
+            l10n_util::GetStringUTF16(
+                IDS_COOKIE_CONTROLS_BUBBLE_SITE_NOT_WORKING_TITLE)),
+        CheckViewProperty(
+            CookieControlsContentView::kDescription, &views::Label::GetText,
+            l10n_util::GetStringUTF16(
+                IDS_TRACKING_PROTECTION_BUBBLE_SITE_NOT_WORKING_DESCRIPTION)),
+        CheckViewProperty(
+            CookieControlsContentView::kToggleLabel, &views::Label::GetText,
+            l10n_util::GetStringUTF16(
+                browser()->profile()->GetPrefs()->GetBoolean(
+                    prefs::kBlockAll3pcToggleEnabled)
+                    ? IDS_TRACKING_PROTECTION_BUBBLE_COOKIES_BLOCKED_LABEL
+                    : IDS_TRACKING_PROTECTION_BUBBLE_COOKIES_LIMITED_LABEL)),
+        CheckIcon(RichControlsContainerView::kIcon, views::kEyeCrossedIcon,
+                  views::kEyeCrossedRefreshIcon));
+  }
+
+  auto CheckFeedbackButtonVisible(bool visible) {
+    if (visible) {
+      return Steps(EnsurePresent(CookieControlsContentView::kFeedbackButton));
+    } else {
+      return Steps(
+          EnsureNotPresent(CookieControlsContentView::kFeedbackButton));
+    }
   }
 
   int ExceptionDurationInDays() {
@@ -144,15 +226,24 @@ class CookieControlsInteractiveUiTest : public InteractiveBrowserTest {
         .InDays();
   }
 
-  void BlockThirdPartyCookies() {
-    browser()->profile()->GetPrefs()->SetInteger(
-        prefs::kCookieControlsMode,
-        static_cast<int>(
-            content_settings::CookieControlsMode::kBlockThirdParty));
+  void SetBlockAll3pcToggle(bool enabled) {
+    browser()->profile()->GetPrefs()->SetBoolean(
+        prefs::kBlockAll3pcToggleEnabled, enabled);
   }
 
-  void BlockCookiesAndSetHighConfidenceForSite() {
-    BlockThirdPartyCookies();
+  void BlockThirdPartyCookies(bool use_3pcd = false) {
+    if (use_3pcd) {
+      browser()->profile()->GetPrefs()->SetBoolean(
+          prefs::kTrackingProtection3pcdEnabled, true);
+    } else {
+      browser()->profile()->GetPrefs()->SetInteger(
+          prefs::kCookieControlsMode,
+          static_cast<int>(
+              content_settings::CookieControlsMode::kBlockThirdParty));
+    }
+  }
+
+  void SetHighSiteEngagement() {
     // Force high site engagement.
     auto* site_engagement =
         site_engagement::SiteEngagementService::Get(browser()->profile());
@@ -161,15 +252,20 @@ class CookieControlsInteractiveUiTest : public InteractiveBrowserTest {
   }
 
   net::EmbeddedTestServer* https_server() { return https_server_.get(); }
-  ui::ElementContext context() const {
-    return browser()->window()->GetElementContext();
-  }
   content_settings::CookieSettings* cookie_settings() {
     return CookieSettingsFactory::GetForProfile(browser()->profile()).get();
   }
-  GURL third_party_cookie_page_url() {
-    return https_server()->GetURL("a.test",
-                                  "/third_party_partitioned_cookies.html");
+
+  // If slow is set to true will return a URL for a page that never finishes
+  // loading.
+  GURL third_party_cookie_page_url(bool slow = false) {
+    if (slow) {
+      return https_server()->GetURL(
+          "a.test", "/third_party_partitioned_cookies_slow.html");
+    } else {
+      return https_server()->GetURL("a.test",
+                                    "/third_party_partitioned_cookies.html");
+    }
   }
 
   static base::Time GetReferenceTime() {
@@ -181,30 +277,53 @@ class CookieControlsInteractiveUiTest : public InteractiveBrowserTest {
   // Overriding `base::Time::Now()` to obtain a consistent X days until
   // exception expiration calculation regardless of the time the test runs.
   base::subtle::ScopedTimeClockOverrides time_override_{
-      &CookieControlsInteractiveUiTest::GetReferenceTime,
+      &CookieControlsInteractiveUiBaseTest::GetReferenceTime,
       /*time_ticks_override=*/nullptr, /*thread_ticks_override=*/nullptr};
 
   base::UserActionTester user_actions_;
-  feature_engagement::test::ScopedIphFeatureList iph_feature_list_;
+  base::test::ScopedFeatureList disabled_features_;
   std::unique_ptr<net::EmbeddedTestServer> https_server_;
+  content::ContentMockCertVerifier mock_cert_verifier_;
 };
 
-IN_PROC_BROWSER_TEST_F(CookieControlsInteractiveUiTest, BubbleOpens) {
-  BlockThirdPartyCookies();
-  RunTestSequenceInContext(
-      context(), InstrumentTab(kWebContentsElementId),
+class CookieControlsInteractiveUiTest
+    : public CookieControlsInteractiveUiBaseTest,
+      public testing::WithParamInterface<bool> {};
+
+INSTANTIATE_TEST_SUITE_P(All, CookieControlsInteractiveUiTest, testing::Bool());
+
+class CookieControlsInteractiveUiNoFeedbackTest
+    : public CookieControlsInteractiveUiTest {
+ public:
+  CookieControlsInteractiveUiNoFeedbackTest() = default;
+  ~CookieControlsInteractiveUiNoFeedbackTest() override = default;
+
+ protected:
+  std::vector<base::test::FeatureRef> DisabledFeatures() override {
+    return {content_settings::features::kUserBypassFeedback,
+            content_settings::features::kTrackingProtection3pcd};
+  }
+};
+
+IN_PROC_BROWSER_TEST_P(CookieControlsInteractiveUiTest,
+                       BubbleOpensWhenIconPressed) {
+  BlockThirdPartyCookies(GetParam());
+  RunTestSequence(
+      InstrumentTab(kWebContentsElementId),
       NavigateWebContents(kWebContentsElementId, third_party_cookie_page_url()),
       PressButton(kCookieControlsIconElementId),
       InAnyContext(
-          WaitForShow(CookieControlsBubbleView::kCookieControlsBubble)));
+          WaitForShow(CookieControlsBubbleView::kCookieControlsBubble)),
+      CheckFeedbackButtonVisible(false));
 }
 
-IN_PROC_BROWSER_TEST_F(CookieControlsInteractiveUiTest, CreateException) {
+IN_PROC_BROWSER_TEST_F(CookieControlsInteractiveUiTest,
+                       CreateExceptionPre3pcd) {
   // Open the bubble while 3PC are blocked, re-enable them for the site, and
   // confirm the appropriate exception is created.
   BlockThirdPartyCookies();
-  RunTestSequenceInContext(
-      context(), InstrumentTab(kWebContentsElementId),
+  RunTestSequence(
+      InstrumentTab(kWebContentsElementId),
       NavigateWebContents(kWebContentsElementId, third_party_cookie_page_url()),
       PressButton(kCookieControlsIconElementId),
       InAnyContext(WaitForShow(CookieControlsContentView::kToggleButton)),
@@ -212,57 +331,73 @@ IN_PROC_BROWSER_TEST_F(CookieControlsInteractiveUiTest, CreateException) {
       CheckViewProperty(CookieControlsContentView::kToggleButton,
                         &views::ToggleButton::GetIsOn, false),
       PressButton(CookieControlsContentView::kToggleButton),
-      CheckStateForTemporaryException());
+      CheckFeedbackButtonVisible(true), CheckStateForTemporaryException());
 }
 
-IN_PROC_BROWSER_TEST_F(CookieControlsInteractiveUiTest, RemoveException) {
+IN_PROC_BROWSER_TEST_F(CookieControlsInteractiveUiNoFeedbackTest,
+                       CreateExceptionFeedbackDisabledPre3pcd) {
+  // Open the bubble while 3PC are blocked, re-enable them for the site, and
+  // confirm the appropriate exception is created.
+  BlockThirdPartyCookies();
+  RunTestSequence(
+      InstrumentTab(kWebContentsElementId),
+      NavigateWebContents(kWebContentsElementId, third_party_cookie_page_url()),
+      PressButton(kCookieControlsIconElementId),
+      InAnyContext(WaitForShow(CookieControlsContentView::kToggleButton)),
+      CheckStateForNoException(),
+      CheckViewProperty(CookieControlsContentView::kToggleButton,
+                        &views::ToggleButton::GetIsOn, false),
+      PressButton(CookieControlsContentView::kToggleButton),
+      CheckFeedbackButtonVisible(false), CheckStateForTemporaryException());
+}
+
+IN_PROC_BROWSER_TEST_F(CookieControlsInteractiveUiTest,
+                       RemoveExceptionPre3pcd) {
   // Open the bubble while 3PC are blocked, but the page already has an
   // exception. Disable 3PC for the page, and confirm the exception is removed.
-  BlockCookiesAndSetHighConfidenceForSite();
+  BlockThirdPartyCookies();
+  SetHighSiteEngagement();
   cookie_settings()->SetCookieSettingForUserBypass(
       third_party_cookie_page_url());
-  RunTestSequenceInContext(
-      context(), InstrumentTab(kWebContentsElementId),
+  RunTestSequence(
+      InstrumentTab(kWebContentsElementId),
       NavigateWebContents(kWebContentsElementId, third_party_cookie_page_url()),
       PressButton(kCookieControlsIconElementId),
       InAnyContext(WaitForShow(CookieControlsContentView::kToggleButton)),
       CheckStateForTemporaryException(),
       PressButton(CookieControlsContentView::kToggleButton),
+      CheckFeedbackButtonVisible(false),
       CheckViewProperty(kCookieControlsIconElementId,
                         &CookieControlsIconView::is_animating_label, false),
       CheckStateForNoException());
 }
 
-IN_PROC_BROWSER_TEST_F(CookieControlsInteractiveUiTest,
-                       NavigateHighConfidence) {
-  BlockCookiesAndSetHighConfidenceForSite();
-  RunTestSequenceInContext(
-      context(), InstrumentTab(kWebContentsElementId),
+IN_PROC_BROWSER_TEST_P(CookieControlsInteractiveUiTest,
+                       IconAnimatesOnHighSiteEngagement) {
+  BlockThirdPartyCookies(GetParam());
+  SetHighSiteEngagement();
+  RunTestSequence(
+      InstrumentTab(kWebContentsElementId),
       NavigateWebContents(kWebContentsElementId, third_party_cookie_page_url()),
       CheckViewProperty(kCookieControlsIconElementId,
                         &CookieControlsIconView::is_animating_label, true));
 }
 
 // Need a separate fixture to override the enabled feature list.
-class CookieControlsInteractiveUiWithIphTest
-    : public CookieControlsInteractiveUiTest {
+class CookieControlsInteractiveUiWithCookieControlsIphTest
+    : public CookieControlsInteractiveUiBaseTest {
  public:
-  CookieControlsInteractiveUiWithIphTest() = default;
-  ~CookieControlsInteractiveUiWithIphTest() override = default;
-
- protected:
-  std::vector<base::test::FeatureRef> EnabledFeatures() override {
-    return {content_settings::features::kUserBypassUI,
-            feature_engagement::kIPHCookieControlsFeature};
-  }
+  CookieControlsInteractiveUiWithCookieControlsIphTest()
+      : CookieControlsInteractiveUiBaseTest(
+            {feature_engagement::kIPHCookieControlsFeature}) {}
+  ~CookieControlsInteractiveUiWithCookieControlsIphTest() override = default;
 };
 
-IN_PROC_BROWSER_TEST_F(CookieControlsInteractiveUiWithIphTest,
-                       NavigateHighConfidenceDismissIph) {
-  BlockCookiesAndSetHighConfidenceForSite();
-  RunTestSequenceInContext(
-      context(), ObserveState(kFeatureEngagementInitializedState, browser()),
-      WaitForState(kFeatureEngagementInitializedState, true),
+IN_PROC_BROWSER_TEST_F(CookieControlsInteractiveUiWithCookieControlsIphTest,
+                       ShowAndDismissIphOnHighSiteEngagement) {
+  BlockThirdPartyCookies();
+  SetHighSiteEngagement();
+  RunTestSequence(
       InstrumentTab(kWebContentsElementId),
       NavigateWebContents(kWebContentsElementId, third_party_cookie_page_url()),
       // Check that label doesn't animate.
@@ -279,12 +414,11 @@ IN_PROC_BROWSER_TEST_F(CookieControlsInteractiveUiWithIphTest,
       EnsureNotPresent(CookieControlsBubbleView::kCookieControlsBubble));
 }
 
-IN_PROC_BROWSER_TEST_F(CookieControlsInteractiveUiWithIphTest,
-                       NavigateHighConfidenceOpenCookieControlsViaIph) {
-  BlockCookiesAndSetHighConfidenceForSite();
-  RunTestSequenceInContext(
-      context(), ObserveState(kFeatureEngagementInitializedState, browser()),
-      WaitForState(kFeatureEngagementInitializedState, true),
+IN_PROC_BROWSER_TEST_F(CookieControlsInteractiveUiWithCookieControlsIphTest,
+                       OpenUserBypassViaIph) {
+  BlockThirdPartyCookies();
+  SetHighSiteEngagement();
+  RunTestSequence(
       InstrumentTab(kWebContentsElementId),
       NavigateWebContents(kWebContentsElementId, third_party_cookie_page_url()),
       // Check that IPH shows, then open cookie controls bubble via IPH button.
@@ -298,12 +432,50 @@ IN_PROC_BROWSER_TEST_F(CookieControlsInteractiveUiWithIphTest,
           user_education::HelpBubbleView::kHelpBubbleElementIdForTesting));
 }
 
-IN_PROC_BROWSER_TEST_F(CookieControlsInteractiveUiWithIphTest,
-                       NavigateHighConfidenceOpenCookieControlsViaIcon) {
-  BlockCookiesAndSetHighConfidenceForSite();
-  RunTestSequenceInContext(
-      context(), ObserveState(kFeatureEngagementInitializedState, browser()),
-      WaitForState(kFeatureEngagementInitializedState, true),
+IN_PROC_BROWSER_TEST_F(CookieControlsInteractiveUiWithCookieControlsIphTest,
+                       OpenUserBypassViaIconWhenIphVisible) {
+  BlockThirdPartyCookies();
+  SetHighSiteEngagement();
+  RunTestSequence(
+      InstrumentTab(kWebContentsElementId),
+      NavigateWebContents(kWebContentsElementId, third_party_cookie_page_url()),
+      // Check that IPH shows, then open cookie controls bubble via icon.
+      InAnyContext(WaitForShow(
+          user_education::HelpBubbleView::kHelpBubbleElementIdForTesting)),
+      PressButton(kCookieControlsIconElementId),
+      // Cookie controls bubble should show and IPH should close.
+      InAnyContext(
+          WaitForShow(CookieControlsBubbleView::kCookieControlsBubble)),
+      EnsureNotPresent(
+          user_education::HelpBubbleView::kHelpBubbleElementIdForTesting));
+}
+
+class CookieControlsInteractiveUiWith3pcdUserBypassIphTest
+    : public CookieControlsInteractiveUiBaseTest {
+ public:
+  CookieControlsInteractiveUiWith3pcdUserBypassIphTest()
+      : CookieControlsInteractiveUiBaseTest(
+            {feature_engagement::kIPH3pcdUserBypassFeature}) {}
+  ~CookieControlsInteractiveUiWith3pcdUserBypassIphTest() override = default;
+};
+
+IN_PROC_BROWSER_TEST_F(CookieControlsInteractiveUiWith3pcdUserBypassIphTest,
+                       ShowAndHide3pcdUbIph) {
+  BlockThirdPartyCookies(/*use_3pcd=*/true);
+  RunTestSequence(
+      InstrumentTab(kWebContentsElementId),
+      NavigateWebContents(kWebContentsElementId, third_party_cookie_page_url()),
+      InAnyContext(WaitForShow(
+          user_education::HelpBubbleView::kHelpBubbleElementIdForTesting)),
+      PressButton(user_education::HelpBubbleView::kCloseButtonIdForTesting),
+      WaitForHide(
+          user_education::HelpBubbleView::kHelpBubbleElementIdForTesting));
+}
+
+IN_PROC_BROWSER_TEST_F(CookieControlsInteractiveUiWith3pcdUserBypassIphTest,
+                       Show3pcdUbIphAndOpenCookieControlsViaIcon) {
+  BlockThirdPartyCookies(/*use_3pcd=*/true);
+  RunTestSequence(
       InstrumentTab(kWebContentsElementId),
       NavigateWebContents(kWebContentsElementId, third_party_cookie_page_url()),
       // Check that IPH shows, then open cookie controls bubble via icon.
@@ -321,12 +493,12 @@ IN_PROC_BROWSER_TEST_F(CookieControlsInteractiveUiWithIphTest,
 // which cannot be easily tested here. Instead, LaCrOS has a separate feedback
 // browser test which gives some coverage.
 #if !BUILDFLAG(IS_CHROMEOS)
-IN_PROC_BROWSER_TEST_F(CookieControlsInteractiveUiTest, FeedbackOpens) {
-  BlockThirdPartyCookies();
+IN_PROC_BROWSER_TEST_P(CookieControlsInteractiveUiTest, FeedbackOpens) {
+  BlockThirdPartyCookies(GetParam());
   cookie_settings()->SetCookieSettingForUserBypass(
       third_party_cookie_page_url());
-  RunTestSequenceInContext(
-      context(), InstrumentTab(kWebContentsElementId),
+  RunTestSequence(
+      InstrumentTab(kWebContentsElementId),
       NavigateWebContents(kWebContentsElementId, third_party_cookie_page_url()),
       PressButton(kCookieControlsIconElementId),
       PressButton(CookieControlsContentView::kFeedbackButton),
@@ -335,12 +507,12 @@ IN_PROC_BROWSER_TEST_F(CookieControlsInteractiveUiTest, FeedbackOpens) {
 }
 #endif
 
-IN_PROC_BROWSER_TEST_F(CookieControlsInteractiveUiTest, ReloadView) {
+IN_PROC_BROWSER_TEST_P(CookieControlsInteractiveUiTest, ReloadView) {
   // Test that opening the bubble, then closing it after making a change,
   // results in the reload view being displayed.
-  BlockThirdPartyCookies();
-  RunTestSequenceInContext(
-      context(), InstrumentTab(kWebContentsElementId),
+  BlockThirdPartyCookies(GetParam());
+  RunTestSequence(
+      InstrumentTab(kWebContentsElementId),
       NavigateWebContents(kWebContentsElementId, third_party_cookie_page_url()),
       PressButton(kCookieControlsIconElementId),
       InAnyContext(WaitForShow(CookieControlsBubbleView::kContentView)),
@@ -350,21 +522,51 @@ IN_PROC_BROWSER_TEST_F(CookieControlsInteractiveUiTest, ReloadView) {
       WaitForHide(CookieControlsBubbleView::kCookieControlsBubble));
   EXPECT_EQ(user_actions_.GetActionCount(kUMABubbleAllowThirdPartyCookies), 1);
   EXPECT_EQ(user_actions_.GetActionCount(kUMABubbleBlockThirdPartyCookies), 0);
+  EXPECT_EQ(user_actions_.GetActionCount(kUMABubbleReloadingTimeout), 0);
+  EXPECT_EQ(user_actions_.GetActionCount(kUMABubbleReloadingShown), 1);
 }
 
-IN_PROC_BROWSER_TEST_F(CookieControlsInteractiveUiTest,
+IN_PROC_BROWSER_TEST_P(CookieControlsInteractiveUiTest, ReloadViewTimeout) {
+  // Test that opening the bubble, then closing it after making a change,
+  // results in the reload view being displayed and then timing out.
+  //
+  // The page loaded in this test will never finish loading, so the timeout
+  // must be configured shorter than the test timeout.
+  BlockThirdPartyCookies(GetParam());
+  RunTestSequence(
+      /*context(),*/ InstrumentTab(kWebContentsElementId),
+      EnterText(kOmniboxElementId,
+                base::UTF8ToUTF16(
+                    "https://" +
+                    third_party_cookie_page_url(/*slow=*/true).GetContent())),
+      Confirm(kOmniboxElementId),
+      InAnyContext(WaitForShow(kCookieControlsIconElementId)),
+      PressButton(kCookieControlsIconElementId),
+      InAnyContext(WaitForShow(CookieControlsBubbleView::kContentView)),
+      PressButton(CookieControlsContentView::kToggleButton),
+      PressButton(kLocationIconElementId),
+      InAnyContext(WaitForShow(CookieControlsBubbleView::kReloadingView)),
+      WaitForHide(CookieControlsBubbleView::kCookieControlsBubble));
+
+  EXPECT_EQ(user_actions_.GetActionCount(kUMABubbleAllowThirdPartyCookies), 1);
+  EXPECT_EQ(user_actions_.GetActionCount(kUMABubbleBlockThirdPartyCookies), 0);
+  EXPECT_EQ(user_actions_.GetActionCount(kUMABubbleReloadingTimeout), 1);
+  EXPECT_EQ(user_actions_.GetActionCount(kUMABubbleReloadingShown), 1);
+}
+
+IN_PROC_BROWSER_TEST_P(CookieControlsInteractiveUiTest,
                        ReloadView_TabChanged_NoReload) {
   // Test that opening the bubble making a change, then changing tabs while
   // the bubble is open, then re-opening the bubble on the new tab and closing
   // _doesn't_ reload the page. Regression test for crbug.com/1470275.
-  BlockThirdPartyCookies();
+  BlockThirdPartyCookies(GetParam());
   const GURL third_party_cookie_page_url_one = third_party_cookie_page_url();
   const GURL third_party_cookie_page_url_two =
       https_server()->GetURL("b.test", "/third_party_partitioned_cookies.html");
 
-  RunTestSequenceInContext(
+  RunTestSequence(
       // Setup 2 tabs, second tab becomes active.
-      context(), InstrumentTab(kWebContentsElementId),
+      InstrumentTab(kWebContentsElementId),
       NavigateWebContents(kWebContentsElementId,
                           third_party_cookie_page_url_one),
       AddInstrumentedTab(kSecondWebContentsElementId,
@@ -393,23 +595,24 @@ IN_PROC_BROWSER_TEST_F(CookieControlsInteractiveUiTest,
       PressButton(kLocationIconElementId),
       EnsureNotPresent(CookieControlsBubbleView::kReloadingView),
       WaitForHide(CookieControlsBubbleView::kCookieControlsBubble));
+  EXPECT_EQ(user_actions_.GetActionCount(kUMABubbleReloadingTimeout), 0);
 }
 
-IN_PROC_BROWSER_TEST_F(CookieControlsInteractiveUiTest,
+IN_PROC_BROWSER_TEST_P(CookieControlsInteractiveUiTest,
                        ReloadView_TabChanged_Reload) {
   // Test that opening the bubble, _not_ making a change, then changing tabs
   // while the bubble is open, then re-opening the bubble on the new tab and
   // making a change _does_ reload the page, and that on page reload the
   // reload view should be closed.
   // Regression test for crbug.com/1470275.
-  BlockThirdPartyCookies();
+  BlockThirdPartyCookies(GetParam());
   const GURL third_party_cookie_page_url_one = third_party_cookie_page_url();
   const GURL third_party_cookie_page_url_two =
       https_server()->GetURL("b.test", "/third_party_partitioned_cookies.html");
 
-  RunTestSequenceInContext(
+  RunTestSequence(
       // Setup 2 tabs, focus moves to the second tab.
-      context(), InstrumentTab(kWebContentsElementId),
+      InstrumentTab(kWebContentsElementId),
       NavigateWebContents(kWebContentsElementId,
                           third_party_cookie_page_url_one),
       AddInstrumentedTab(kSecondWebContentsElementId,
@@ -436,24 +639,26 @@ IN_PROC_BROWSER_TEST_F(CookieControlsInteractiveUiTest,
       PressButton(kLocationIconElementId),
       InAnyContext(WaitForShow(CookieControlsBubbleView::kReloadingView)),
       WaitForHide(CookieControlsBubbleView::kCookieControlsBubble));
+  EXPECT_EQ(user_actions_.GetActionCount(kUMABubbleReloadingTimeout), 0);
+  EXPECT_EQ(user_actions_.GetActionCount(kUMABubbleReloadingShown), 1);
 }
 
-IN_PROC_BROWSER_TEST_F(CookieControlsInteractiveUiTest,
+IN_PROC_BROWSER_TEST_P(CookieControlsInteractiveUiTest,
                        ReloadView_TabChangedDifferentSetting_NoReload) {
   // Test that loading a page with cookies allowed, then swapping to a tab
   // where cookies are disabled, then opening and closing the bubble without
   // making a change _does not_ reload the page.
   // Regression test for crbug.com/1470275.
-  BlockThirdPartyCookies();
+  BlockThirdPartyCookies(GetParam());
   const GURL third_party_cookie_page_url_one = third_party_cookie_page_url();
   const GURL third_party_cookie_page_url_two =
       https_server()->GetURL("b.test", "/third_party_partitioned_cookies.html");
   cookie_settings()->SetCookieSettingForUserBypass(
       third_party_cookie_page_url_two);
 
-  RunTestSequenceInContext(
+  RunTestSequence(
       // Setup 2 tabs, focus moves to the second tab.
-      context(), InstrumentTab(kWebContentsElementId),
+      InstrumentTab(kWebContentsElementId),
       NavigateWebContents(kWebContentsElementId,
                           third_party_cookie_page_url_one),
       AddInstrumentedTab(kSecondWebContentsElementId,
@@ -480,14 +685,16 @@ IN_PROC_BROWSER_TEST_F(CookieControlsInteractiveUiTest,
       PressButton(kLocationIconElementId),
       EnsureNotPresent(CookieControlsBubbleView::kReloadingView),
       WaitForHide(CookieControlsBubbleView::kCookieControlsBubble));
+  EXPECT_EQ(user_actions_.GetActionCount(kUMABubbleReloadingTimeout), 0);
+  EXPECT_EQ(user_actions_.GetActionCount(kUMABubbleReloadingShown), 0);
 }
 
-IN_PROC_BROWSER_TEST_F(CookieControlsInteractiveUiTest, NoReloadView) {
+IN_PROC_BROWSER_TEST_P(CookieControlsInteractiveUiTest, NoReloadView) {
   // Test that opening the bubble, then closing it without making an effective
   // change to cookie settings, does not show the reload view.
-  BlockThirdPartyCookies();
-  RunTestSequenceInContext(
-      context(), InstrumentTab(kWebContentsElementId),
+  BlockThirdPartyCookies(GetParam());
+  RunTestSequence(
+      InstrumentTab(kWebContentsElementId),
       NavigateWebContents(kWebContentsElementId, third_party_cookie_page_url()),
       PressButton(kCookieControlsIconElementId),
       InAnyContext(WaitForShow(CookieControlsBubbleView::kContentView)),
@@ -499,4 +706,61 @@ IN_PROC_BROWSER_TEST_F(CookieControlsInteractiveUiTest, NoReloadView) {
   EXPECT_EQ(user_actions_.GetActionCount(kUMABubbleAllowThirdPartyCookies), 1);
   EXPECT_EQ(user_actions_.GetActionCount(kUMABubbleBlockThirdPartyCookies), 1);
   EXPECT_EQ(user_actions_.GetActionCount(kUMABubbleSendFeedback), 0);
+  EXPECT_EQ(user_actions_.GetActionCount(kUMABubbleReloadingShown), 0);
+  EXPECT_EQ(user_actions_.GetActionCount(kUMABubbleReloadingTimeout), 0);
 }
+
+class CookieControlsInteractiveUi3pcdTest
+    : public CookieControlsInteractiveUiBaseTest,
+      public testing::WithParamInterface<testing::tuple<bool, bool>> {
+ protected:
+  std::vector<base::test::FeatureRef> DisabledFeatures() override {
+    if (!testing::get<1>(GetParam())) {
+      return {content_settings::features::kUserBypassFeedback};
+    }
+    return {};
+  }
+};
+
+IN_PROC_BROWSER_TEST_P(CookieControlsInteractiveUi3pcdTest, CreateException) {
+  BlockThirdPartyCookies(/*use_3pcd=*/true);
+  SetBlockAll3pcToggle(std::get<0>(GetParam()));
+  RunTestSequence(
+      InstrumentTab(kWebContentsElementId),
+      NavigateWebContents(kWebContentsElementId, third_party_cookie_page_url()),
+      PressButton(kCookieControlsIconElementId),
+      InAnyContext(WaitForShow(CookieControlsBubbleView::kContentView)),
+      CheckTrackingProtectionBlockedState(),
+      PressButton(CookieControlsContentView::kToggleButton),
+      CheckFeedbackButtonVisible(testing::get<1>(GetParam())),
+      EnsureNotPresent(CookieControlsBubbleView::kReloadingView),
+      CheckTrackingProtectionAllowedState());
+}
+
+IN_PROC_BROWSER_TEST_P(CookieControlsInteractiveUi3pcdTest, RemoveException) {
+  // Open the bubble while 3PC are blocked, but the page already has an
+  // exception. Disable 3PC for the page, and confirm the exception is removed.
+  BlockThirdPartyCookies(/*use_3pcd=*/true);
+  SetHighSiteEngagement();
+  SetBlockAll3pcToggle(std::get<0>(GetParam()));
+  cookie_settings()->SetCookieSettingForUserBypass(
+      third_party_cookie_page_url());
+  RunTestSequence(
+      InstrumentTab(kWebContentsElementId),
+      NavigateWebContents(kWebContentsElementId, third_party_cookie_page_url()),
+      PressButton(kCookieControlsIconElementId),
+      InAnyContext(WaitForShow(CookieControlsContentView::kToggleButton)),
+      CheckTrackingProtectionAllowedState(),
+      CheckFeedbackButtonVisible(testing::get<1>(GetParam())),
+      PressButton(CookieControlsContentView::kToggleButton),
+      CheckFeedbackButtonVisible(false),
+      CheckViewProperty(kCookieControlsIconElementId,
+                        &CookieControlsIconView::is_animating_label, false),
+      CheckTrackingProtectionBlockedState());
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    CookieControlsInteractiveUi3pcdTest,
+    testing::Combine(/*block_all_third_party_cookies*/ testing::Bool(),
+                     /*show_feedback_button*/ testing::Bool()));

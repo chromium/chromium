@@ -9,9 +9,7 @@ This demonstrates a bug: the content in the blockquote that's not in a list is p
 | "
 more Lorem!
 "
-| <blockquote>
-|   class="webkit-indent-blockquote"
-|   style="margin: 0 0 0 40px;"
+| <br>
 | "ipsum"
 | <br>
 | <blockquote>

@@ -18,18 +18,20 @@ BOILERPLATES = {
   </body>
 </html>""",
     "xml": """<?xml version="1.0" encoding="{charset}"?>\n{src}""",
+    "js": "",
 }
 MIME_TYPES = {
     "html": "text/html",
     "xhtml": "application/xhtml+xml",
     "xml": "text/xml",
+    "js": "text/javascript",
 }
 
 
 def build_inline(build_url, src,
                  doctype: str = "html",
                  mime: Optional[str] = None, charset: Optional[str] = None,
-                 parameters = None, **kwargs):
+                 parameters=None, **kwargs):
     if mime is None:
         mime = MIME_TYPES[doctype]
     if charset is None:

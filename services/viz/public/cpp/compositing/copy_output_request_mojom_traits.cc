@@ -87,11 +87,13 @@ StructTraits<viz::mojom::CopyOutputRequestDataView,
   auto pending_receiver = result_sender.InitWithNewPipeAndPassReceiver();
   // Receiving the result requires an expensive deserialize operation, so by
   // default we want the pipe to operate on the ThreadPool, and then it will
-  // PostTask back to the current sequence.
+  // PostTask back to the result task runner, or the current sequence.
   auto impl = std::make_unique<CopyOutputResultSenderImpl>(
       request->result_format(), request->result_destination(),
       std::move(request->result_callback_),
-      base::SequencedTaskRunner::GetCurrentDefault());
+      request->has_result_task_runner()
+          ? request->result_task_runner_
+          : base::SequencedTaskRunner::GetCurrentDefault());
   auto runner = base::ThreadPool::CreateSequencedTaskRunner({base::MayBlock()});
   runner->PostTask(
       FROM_HERE,

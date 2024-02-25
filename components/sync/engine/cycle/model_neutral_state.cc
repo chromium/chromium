@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "components/sync/engine/cycle/model_neutral_state.h"
+#include "components/sync/engine/syncer_error.h"
 
 namespace syncer {
 
@@ -13,11 +14,10 @@ ModelNeutralState::ModelNeutralState(const ModelNeutralState& other) = default;
 ModelNeutralState::~ModelNeutralState() = default;
 
 bool HasSyncerError(const ModelNeutralState& state) {
-  const bool get_key_error = state.last_get_key_failed;
-  const bool download_updates_error =
-      state.last_download_updates_result.IsActualError();
-  const bool commit_error = state.commit_result.IsActualError();
-  return get_key_error || download_updates_error || commit_error;
+  return state.last_get_key_failed ||
+         state.last_download_updates_result.type() !=
+             SyncerError::Type::kSuccess ||
+         state.commit_result.type() != SyncerError::Type::kSuccess;
 }
 
 }  // namespace syncer

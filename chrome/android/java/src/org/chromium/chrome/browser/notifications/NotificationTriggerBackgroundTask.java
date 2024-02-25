@@ -9,7 +9,6 @@ import android.content.Context;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.ContextUtils;
-import org.chromium.base.Log;
 import org.chromium.components.background_task_scheduler.BackgroundTaskSchedulerFactory;
 import org.chromium.components.background_task_scheduler.NativeBackgroundTask;
 import org.chromium.components.background_task_scheduler.TaskIds;
@@ -20,8 +19,7 @@ import org.chromium.components.background_task_scheduler.TaskParameters;
  * This task calls NotificationTriggerScheduler::triggerNotifications after loading native code.
  */
 public class NotificationTriggerBackgroundTask extends NativeBackgroundTask {
-    @VisibleForTesting
-    protected static final String KEY_TIMESTAMP = "Timestamp";
+    @VisibleForTesting protected static final String KEY_TIMESTAMP = "Timestamp";
 
     /** Indicates whether we should reschedule this task if it gets stopped. */
     private boolean mShouldReschedule = true;
@@ -31,10 +29,12 @@ public class NotificationTriggerBackgroundTask extends NativeBackgroundTask {
             Context context, TaskParameters taskParameters, TaskFinishedCallback callback) {
         assert taskParameters.getTaskId() == TaskIds.NOTIFICATION_TRIGGER_JOB_ID;
         // Check if we need to continue by waking up native or this trigger got handled already.
-        mShouldReschedule = NotificationTriggerScheduler.getInstance().checkAndResetTrigger(
-                taskParameters.getExtras().getLong(KEY_TIMESTAMP));
-        return mShouldReschedule ? StartBeforeNativeResult.LOAD_NATIVE
-                                 : StartBeforeNativeResult.DONE;
+        mShouldReschedule =
+                NotificationTriggerScheduler.getInstance()
+                        .checkAndResetTrigger(taskParameters.getExtras().getLong(KEY_TIMESTAMP));
+        return mShouldReschedule
+                ? StartBeforeNativeResult.LOAD_NATIVE
+                : StartBeforeNativeResult.DONE;
     }
 
     @Override
@@ -61,21 +61,11 @@ public class NotificationTriggerBackgroundTask extends NativeBackgroundTask {
     }
 
     /**
-     * Schedules and replaces a task to trigger notifications at |timestamp|.
-     * @param timestamp The time at which this task should trigger.
-     * @param delay The delay from now in milliseconds when this task should trigger.
-     */
-    public static void schedule(long timestamp, long delay) {
-        // See crbug.com/1379251.
-        Log.e("NotifTrigBT", "Scheduling BackgroundTasks with exact timing is unsupported");
-    }
-
-    /**
      * Cancels any pending tasks with this ID. Note that a task that has already started executing
      * might still continue to run after this has been called.
      */
     public static void cancel() {
-        BackgroundTaskSchedulerFactory.getScheduler().cancel(
-                ContextUtils.getApplicationContext(), TaskIds.NOTIFICATION_TRIGGER_JOB_ID);
+        BackgroundTaskSchedulerFactory.getScheduler()
+                .cancel(ContextUtils.getApplicationContext(), TaskIds.NOTIFICATION_TRIGGER_JOB_ID);
     }
 }

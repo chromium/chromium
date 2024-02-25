@@ -208,14 +208,13 @@ class ContentIndexDatabaseTest : public ::testing::Test {
       const std::string& description_id) {
     base::RunLoop run_loop;
     std::unique_ptr<ContentIndexEntry> out_entry;
-    database_->GetEntry(service_worker_registration_id_, description_id,
-                        base::BindLambdaForTesting(
-                            [&](absl::optional<ContentIndexEntry> entry) {
-                              if (entry)
-                                out_entry = std::make_unique<ContentIndexEntry>(
-                                    std::move(*entry));
-                              run_loop.Quit();
-                            }));
+    database_->GetEntry(
+        service_worker_registration_id_, description_id,
+        base::BindLambdaForTesting([&](std::optional<ContentIndexEntry> entry) {
+          if (entry)
+            out_entry = std::make_unique<ContentIndexEntry>(std::move(*entry));
+          run_loop.Quit();
+        }));
     run_loop.Run();
     return out_entry;
   }

@@ -5,11 +5,14 @@
 #include "chrome/browser/ui/safety_hub/safety_hub_service.h"
 
 #include <memory>
+#include <string>
 #include <utility>
 
+#include "base/json/values_util.h"
 #include "base/observer_list_types.h"
 #include "base/run_loop.h"
 #include "base/time/time.h"
+#include "base/values.h"
 #include "chrome/browser/ui/safety_hub/safety_hub_test_util.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "chrome/test/base/testing_profile.h"
@@ -21,9 +24,32 @@ constexpr base::TimeDelta kUpdateIntervalForTest = base::Days(7);
 
 class MockSafetyHubResult : public SafetyHubService::Result {
  public:
+  explicit MockSafetyHubResult(base::Time timestamp = base::Time::Now())
+      : SafetyHubService::Result(timestamp) {}
   ~MockSafetyHubResult() override = default;
 
-  int GetVal() { return val_; }
+  std::unique_ptr<SafetyHubService::Result> Clone() const override {
+    return std::make_unique<MockSafetyHubResult>(*this);
+  }
+
+  base::Value::Dict ToDictValue() const override { return BaseToDictValue(); }
+
+  bool IsTriggerForMenuNotification() const override { return true; }
+
+  bool WarrantsNewMenuNotification(
+      const base::Value::Dict& previousResult) const override {
+    return true;
+  }
+
+  std::u16string GetNotificationString() const override {
+    return std::u16string();
+  }
+
+  int GetNotificationCommandId() const override { return 0; }
+
+  int GetVal() const { return val_; }
+
+  void SetVal(int val) { val_ = val; }
 
   void IncreaseVal() { ++val_; }
 
@@ -33,6 +59,13 @@ class MockSafetyHubResult : public SafetyHubService::Result {
 
 class MockSafetyHubService : public SafetyHubService {
  public:
+  MockSafetyHubService() {
+    // Note: for testing purposes, the repeated updates are not started in the
+    // constructor.
+
+    InitializeLatestResult();
+  }
+
   // Returns the number of times that the UpdateOnBackgroundThread function was
   // called.
   int GetNumBackgroundUpdates() const { return num_updates_background_; }
@@ -40,6 +73,14 @@ class MockSafetyHubService : public SafetyHubService {
   // Returns the number of times that the UpdateOnBackgroundThread function was
   // called.
   int GetNumUIUpdates() const { return num_updates_ui_; }
+
+  // Set the latest result to a specific value - 42 in this case.
+  std::unique_ptr<SafetyHubService::Result> InitializeLatestResultImpl()
+      override {
+    auto init_result = std::make_unique<MockSafetyHubResult>();
+    init_result->SetVal(42);
+    return init_result;
+  }
 
  protected:
   // For testing purposes, the UpdateOnBackgroundThread function will be
@@ -175,4 +216,24 @@ TEST_F(SafetyHubServiceTest, UpdateOnBackgroundThread) {
   loop2.Run();
   EXPECT_EQ(service()->GetNumUIUpdates(), 2);
   EXPECT_EQ(service()->GetNumBackgroundUpdates(), 2);
+}
+
+TEST_F(SafetyHubServiceTest, GetCachedResult) {
+  // The mock service initializes the latest result on construction, so its
+  // value should be those that we'd expect.
+  std::optional<std::unique_ptr<SafetyHubService::Result>> opt_result =
+      service()->GetCachedResult();
+  EXPECT_TRUE(opt_result.has_value());
+  MockSafetyHubResult* result =
+      static_cast<MockSafetyHubResult*>(opt_result.value().get());
+  EXPECT_EQ(result->GetVal(), 42);
+}
+
+TEST_F(SafetyHubServiceTest, ResultBaseToDict) {
+  base::Time time = base::Time::Now() - base::Days(5);
+  auto result = std::make_unique<MockSafetyHubResult>(time);
+  EXPECT_EQ(result->timestamp(), time);
+  // The timestamp saved in the dict should be the Value of time.
+  base::Value::Dict dict = result->ToDictValue();
+  EXPECT_EQ(*dict.Find(kSafetyHubTimestampResultKey), base::TimeToValue(time));
 }

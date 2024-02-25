@@ -1,4 +1,6 @@
-monorail {
-  component: "UI>Browser>DeviceLock"
+monorail: {
+  component: "UI>Browser>Mobile>DeviceLock"
 }
-
+buganizer_public: {
+  component_id: 1457027
+}

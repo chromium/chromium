@@ -127,7 +127,7 @@ bool RetrieveCrashReportDetails(const std::string& crash_guid,
     return false;
   }
 
-  absl::optional<base::Value::Dict> opt_metadata =
+  std::optional<base::Value::Dict> opt_metadata =
       base::JSONReader::ReadDict(metadata_file_contents);
   if (!opt_metadata.has_value()) {
     error_reason = "Failed to parse metadata file contents";

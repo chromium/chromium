@@ -5,6 +5,7 @@
 #include "third_party/blink/renderer/core/paint/frame_painter.h"
 
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_core.h"
+#include "third_party/blink/renderer/core/execution_context/agent.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/frame/local_frame_view.h"
 #include "third_party/blink/renderer/core/inspector/inspector_trace_events.h"
@@ -14,7 +15,6 @@
 #include "third_party/blink/renderer/core/paint/paint_layer.h"
 #include "third_party/blink/renderer/core/paint/paint_layer_painter.h"
 #include "third_party/blink/renderer/core/paint/timing/frame_paint_timing.h"
-#include "third_party/blink/renderer/platform/bindings/v8_per_isolate_data.h"
 #include "third_party/blink/renderer/platform/graphics/graphics_context.h"
 #include "third_party/blink/renderer/platform/graphics/paint/drawing_recorder.h"
 #include "third_party/blink/renderer/platform/graphics/paint/scoped_display_item_fragment.h"
@@ -45,7 +45,7 @@ void FramePainter::Paint(GraphicsContext& context, PaintFlags paint_flags) {
     return;
 
   GetFrameView().NotifyPageThatContentAreaWillPaint();
-  ENTER_EMBEDDER_STATE(V8PerIsolateData::MainThreadIsolate(),
+  ENTER_EMBEDDER_STATE(document->GetAgent().isolate(),
                        &GetFrameView().GetFrame(), BlinkState::PAINT);
   LayoutView* layout_view = GetFrameView().GetLayoutView();
   if (!layout_view) {

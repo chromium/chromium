@@ -4,7 +4,7 @@
 
 package org.chromium.components.crash;
 
-import org.chromium.base.annotations.CalledByNative;
+import org.jni_zero.CalledByNative;
 
 /**
  * This UncaughtExceptionHandler will upload the stacktrace when there is an uncaught exception.
@@ -47,8 +47,9 @@ public class PureJavaExceptionHandler implements Thread.UncaughtExceptionHandler
 
     public static void installHandler(JavaExceptionReporterFactory reporterFactory) {
         if (sIsEnabled) {
-            Thread.setDefaultUncaughtExceptionHandler(new PureJavaExceptionHandler(
-                    Thread.getDefaultUncaughtExceptionHandler(), reporterFactory));
+            Thread.setDefaultUncaughtExceptionHandler(
+                    new PureJavaExceptionHandler(
+                            Thread.getDefaultUncaughtExceptionHandler(), reporterFactory));
         }
     }
 

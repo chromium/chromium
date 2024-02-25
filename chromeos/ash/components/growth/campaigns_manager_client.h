@@ -1,0 +1,65 @@
+// Copyright 2023 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#ifndef CHROMEOS_ASH_COMPONENTS_GROWTH_CAMPAIGNS_MANAGER_CLIENT_H_
+#define CHROMEOS_ASH_COMPONENTS_GROWTH_CAMPAIGNS_MANAGER_CLIENT_H_
+
+#include <map>
+#include <memory>
+#include <optional>
+
+#include "base/files/file_path.h"
+#include "base/functional/callback.h"
+#include "chromeos/ash/components/growth/action_performer.h"
+
+namespace base {
+class Version;
+}
+
+namespace growth {
+
+using CampaignComponentLoadedCallback = base::OnceCallback<void(
+    const std::optional<const base::FilePath>& file_path)>;
+
+using ActionMap = std::map<ActionType, std::unique_ptr<ActionPerformer>>;
+
+class CampaignsManagerClient {
+ public:
+  CampaignsManagerClient() = default;
+  CampaignsManagerClient(const CampaignsManagerClient&) = delete;
+  CampaignsManagerClient& operator=(const CampaignsManagerClient&) = delete;
+  virtual ~CampaignsManagerClient() = default;
+
+  // Loads campaigns component and trigger the `CampaignComponentLoadedCallback`
+  // when loaded.
+  virtual void LoadCampaignsComponent(
+      CampaignComponentLoadedCallback callback) = 0;
+
+  // True if the device is in demo mode.
+  virtual bool IsDeviceInDemoMode() const = 0;
+
+  // True if the device is cloud gaming device.
+  virtual bool IsCloudGamingDevice() const = 0;
+
+  // True if the device is feature aware device.
+  virtual bool IsFeatureAwareDevice() const = 0;
+
+  // Returns application locale.
+  virtual const std::string& GetApplicationLocale() const = 0;
+
+  // Get demo mode app component version.
+  virtual const base::Version& GetDemoModeAppVersion() const = 0;
+
+  // Get the implementations for the various Actions on the growth
+  // framework.
+  virtual ActionMap GetCampaignsActions() const = 0;
+
+  // Register sythetical trial for current session.
+  virtual void RegisterSyntheticFieldTrial(std::optional<int> study_id,
+                                           int campaign_id) const = 0;
+};
+
+}  // namespace growth
+
+#endif  // CHROMEOS_ASH_COMPONENTS_GROWTH_CAMPAIGNS_MANAGER_CLIENT_H_

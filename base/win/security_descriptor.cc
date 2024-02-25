@@ -4,9 +4,12 @@
 
 #include "base/win/security_descriptor.h"
 
+// clang-format off
+#include <windows.h>  // Must be in front of other Windows header files.
+// clang-format on
+
 #include <aclapi.h>
 #include <sddl.h>
-#include <windows.h>
 
 #include <utility>
 #include <vector>
@@ -21,19 +24,19 @@ namespace base::win {
 
 namespace {
 template <typename T>
-absl::optional<T> CloneValue(const absl::optional<T>& value) {
+std::optional<T> CloneValue(const std::optional<T>& value) {
   if (!value)
-    return absl::nullopt;
+    return std::nullopt;
   return value->Clone();
 }
 
-PSID UnwrapSid(const absl::optional<Sid>& sid) {
+PSID UnwrapSid(const std::optional<Sid>& sid) {
   if (!sid)
     return nullptr;
   return sid->GetPSID();
 }
 
-PACL UnwrapAcl(const absl::optional<AccessControlList>& acl) {
+PACL UnwrapAcl(const std::optional<AccessControlList>& acl) {
   if (!acl)
     return nullptr;
   return acl->get();
@@ -108,7 +111,7 @@ GENERIC_MAPPING GetGenericMappingForType(SecurityObjectType object_type) {
 }
 
 template <typename T>
-absl::optional<SecurityDescriptor> GetSecurityDescriptor(
+std::optional<SecurityDescriptor> GetSecurityDescriptor(
     T object,
     SecurityObjectType object_type,
     SECURITY_INFORMATION security_info,
@@ -127,7 +130,7 @@ absl::optional<SecurityDescriptor> GetSecurityDescriptor(
   if (error != ERROR_SUCCESS) {
     ::SetLastError(error);
     DPLOG(ERROR) << "Failed getting security descriptor for object.";
-    return absl::nullopt;
+    return std::nullopt;
   }
   auto sd_ptr = TakeLocalAlloc(sd);
   return SecurityDescriptor::FromPointer(sd_ptr.get());
@@ -174,25 +177,25 @@ bool SetSecurityDescriptor(const SecurityDescriptor& sd,
   return true;
 }
 
-absl::optional<Sid> GetSecurityDescriptorSid(
+std::optional<Sid> GetSecurityDescriptorSid(
     PSECURITY_DESCRIPTOR sd,
     BOOL(WINAPI* get_sid)(PSECURITY_DESCRIPTOR, PSID*, LPBOOL)) {
   PSID sid;
   BOOL defaulted;
   if (!get_sid(sd, &sid, &defaulted) || !sid) {
-    return absl::nullopt;
+    return std::nullopt;
   }
   return Sid::FromPSID(sid);
 }
 
-absl::optional<AccessControlList> GetSecurityDescriptorAcl(
+std::optional<AccessControlList> GetSecurityDescriptorAcl(
     PSECURITY_DESCRIPTOR sd,
     BOOL(WINAPI* get_acl)(PSECURITY_DESCRIPTOR, LPBOOL, PACL*, LPBOOL)) {
   PACL acl;
   BOOL present;
   BOOL defaulted;
   if (!get_acl(sd, &present, &acl, &defaulted) || !present) {
-    return absl::nullopt;
+    return std::nullopt;
   }
   return AccessControlList::FromPACL(acl);
 }
@@ -204,17 +207,17 @@ SecurityDescriptor::SelfRelative::~SelfRelative() = default;
 SecurityDescriptor::SelfRelative::SelfRelative(std::vector<uint8_t>&& sd)
     : sd_(sd) {}
 
-absl::optional<SecurityDescriptor> SecurityDescriptor::FromPointer(
+std::optional<SecurityDescriptor> SecurityDescriptor::FromPointer(
     PSECURITY_DESCRIPTOR sd) {
   if (!sd || !::IsValidSecurityDescriptor(sd)) {
     ::SetLastError(ERROR_INVALID_SECURITY_DESCR);
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   SECURITY_DESCRIPTOR_CONTROL control;
   DWORD revision;
   if (!::GetSecurityDescriptorControl(sd, &control, &revision)) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   return SecurityDescriptor{
@@ -226,13 +229,13 @@ absl::optional<SecurityDescriptor> SecurityDescriptor::FromPointer(
       !!(control & SE_SACL_PROTECTED)};
 }
 
-absl::optional<SecurityDescriptor> SecurityDescriptor::FromFile(
+std::optional<SecurityDescriptor> SecurityDescriptor::FromFile(
     const base::FilePath& path,
     SECURITY_INFORMATION security_info) {
   return FromName(path.value(), SecurityObjectType::kFile, security_info);
 }
 
-absl::optional<SecurityDescriptor> SecurityDescriptor::FromName(
+std::optional<SecurityDescriptor> SecurityDescriptor::FromName(
     const std::wstring& name,
     SecurityObjectType object_type,
     SECURITY_INFORMATION security_info) {
@@ -240,7 +243,7 @@ absl::optional<SecurityDescriptor> SecurityDescriptor::FromName(
                                ::GetNamedSecurityInfo);
 }
 
-absl::optional<SecurityDescriptor> SecurityDescriptor::FromHandle(
+std::optional<SecurityDescriptor> SecurityDescriptor::FromHandle(
     HANDLE handle,
     SecurityObjectType object_type,
     SECURITY_INFORMATION security_info) {
@@ -248,12 +251,12 @@ absl::optional<SecurityDescriptor> SecurityDescriptor::FromHandle(
                                        ::GetSecurityInfo);
 }
 
-absl::optional<SecurityDescriptor> SecurityDescriptor::FromSddl(
+std::optional<SecurityDescriptor> SecurityDescriptor::FromSddl(
     const std::wstring& sddl) {
   PSECURITY_DESCRIPTOR sd;
   if (!::ConvertStringSecurityDescriptorToSecurityDescriptor(
           sddl.c_str(), SDDL_REVISION_1, &sd, nullptr)) {
-    return absl::nullopt;
+    return std::nullopt;
   }
   auto sd_ptr = TakeLocalAlloc(sd);
   return FromPointer(sd_ptr.get());
@@ -286,14 +289,14 @@ bool SecurityDescriptor::WriteToHandle(
                                        security_info, ::SetSecurityInfo);
 }
 
-absl::optional<std::wstring> SecurityDescriptor::ToSddl(
+std::optional<std::wstring> SecurityDescriptor::ToSddl(
     SECURITY_INFORMATION security_info) const {
   SECURITY_DESCRIPTOR sd = {};
   ToAbsolute(sd);
   LPWSTR sddl;
   if (!::ConvertSecurityDescriptorToStringSecurityDescriptor(
           &sd, SDDL_REVISION_1, security_info, &sddl, nullptr)) {
-    return absl::nullopt;
+    return std::nullopt;
   }
   auto sddl_ptr = TakeLocalAlloc(sddl);
   return sddl_ptr.get();
@@ -321,7 +324,7 @@ void SecurityDescriptor::ToAbsolute(SECURITY_DESCRIPTOR& sd) const {
   DCHECK(::IsValidSecurityDescriptor(&sd));
 }
 
-absl::optional<SecurityDescriptor::SelfRelative>
+std::optional<SecurityDescriptor::SelfRelative>
 SecurityDescriptor::ToSelfRelative() const {
   SECURITY_DESCRIPTOR sd = {};
   ToAbsolute(sd);
@@ -332,12 +335,12 @@ SecurityDescriptor::ToSelfRelative() const {
   }
 
   if (::GetLastError() != ERROR_INSUFFICIENT_BUFFER) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   buffer.resize(size);
   if (!::MakeSelfRelativeSD(&sd, buffer.data(), &size)) {
-    return absl::nullopt;
+    return std::nullopt;
   }
   return SelfRelative(std::move(buffer));
 }
@@ -351,9 +354,8 @@ SecurityDescriptor SecurityDescriptor::Clone() const {
 bool SecurityDescriptor::SetMandatoryLabel(DWORD integrity_level,
                                            DWORD inheritance,
                                            DWORD mandatory_policy) {
-  absl::optional<AccessControlList> sacl =
-      AccessControlList::FromMandatoryLabel(integrity_level, inheritance,
-                                            mandatory_policy);
+  std::optional<AccessControlList> sacl = AccessControlList::FromMandatoryLabel(
+      integrity_level, inheritance, mandatory_policy);
   if (!sacl) {
     return false;
   }
@@ -386,7 +388,7 @@ bool SecurityDescriptor::SetDaclEntry(WellKnownSid known_sid,
   return SetDaclEntry(Sid(known_sid), mode, access_mask, inheritance);
 }
 
-absl::optional<AccessCheckResult> SecurityDescriptor::AccessCheck(
+std::optional<AccessCheckResult> SecurityDescriptor::AccessCheck(
     const AccessToken& token,
     ACCESS_MASK desired_access,
     const GENERIC_MAPPING& generic_mapping) {
@@ -405,28 +407,28 @@ absl::optional<AccessCheckResult> SecurityDescriptor::AccessCheck(
   if (!::AccessCheck(&sd, token.get(), desired_access, &local_mapping,
                      reinterpret_cast<PPRIVILEGE_SET>(priv_set.data()),
                      &priv_set_length, &granted_access, &access_status)) {
-    return absl::nullopt;
+    return std::nullopt;
   }
   return AccessCheckResult{granted_access, !!access_status};
 }
 
-absl::optional<AccessCheckResult> SecurityDescriptor::AccessCheck(
+std::optional<AccessCheckResult> SecurityDescriptor::AccessCheck(
     const AccessToken& token,
     ACCESS_MASK desired_access,
     SecurityObjectType object_type) {
   if (object_type == SecurityObjectType::kKernel) {
     ::SetLastError(ERROR_INVALID_PARAMETER);
-    return absl::nullopt;
+    return std::nullopt;
   }
   return AccessCheck(token, desired_access,
                      GetGenericMappingForType(object_type));
 }
 
-SecurityDescriptor::SecurityDescriptor(absl::optional<Sid>&& owner,
-                                       absl::optional<Sid>&& group,
-                                       absl::optional<AccessControlList>&& dacl,
+SecurityDescriptor::SecurityDescriptor(std::optional<Sid>&& owner,
+                                       std::optional<Sid>&& group,
+                                       std::optional<AccessControlList>&& dacl,
                                        bool dacl_protected,
-                                       absl::optional<AccessControlList>&& sacl,
+                                       std::optional<AccessControlList>&& sacl,
                                        bool sacl_protected) {
   owner_.swap(owner);
   group_.swap(group);

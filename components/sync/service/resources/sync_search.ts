@@ -2,9 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {assert} from 'chrome://resources/js/assert_ts.js';
+import {assert} from 'chrome://resources/js/assert.js';
 
-import {getAllNodes, SyncNode, SyncNodeMap, Timer} from './chrome_sync.js';
+import type {SyncNode, SyncNodeMap} from './chrome_sync.js';
+import {getAllNodes, Timer} from './chrome_sync.js';
 
 const ERROR_ATTR: string = 'error';
 const SELECTED_ATTR: string = 'selected';

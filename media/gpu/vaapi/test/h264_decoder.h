@@ -157,12 +157,12 @@ class H264Decoder : public VideoDecoder {
   int prev_frame_num_offset_;
   bool prev_has_memmgmnt5_;
 
-  // These are absl::nullopt unless get recovery point SEI message after Reset.
+  // These are std::nullopt unless get recovery point SEI message after Reset.
   // A frame_num of the frame at output order that is correct in content.
-  absl::optional<int> recovery_frame_num_;
+  std::optional<int> recovery_frame_num_;
   // A value in the recovery point SEI message to compute |recovery_frame_num_|
   // later.
-  absl::optional<int> recovery_frame_cnt_;
+  std::optional<int> recovery_frame_cnt_;
 
   // Buffer object to keep track of our reference images.
   H264DPB dpb_;

@@ -8,7 +8,6 @@
 #include "base/run_loop.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/metrics/histogram_tester.h"
-#include "base/test/scoped_feature_list.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/renderer_context_menu/render_view_context_menu_test_util.h"
@@ -34,12 +33,12 @@ namespace {
 
 // Generates a ContextMenuParams for the Autofill context menu options.
 content::ContextMenuParams CreateContextMenuParams(
-    absl::optional<autofill::FormRendererId> form_renderer_id = absl::nullopt,
+    std::optional<autofill::FormRendererId> form_renderer_id = std::nullopt,
     autofill::FieldRendererId field_render_id = autofill::FieldRendererId(0)) {
   content::ContextMenuParams rv;
   rv.is_editable = true;
   rv.page_url = GURL("http://test.page/");
-  rv.input_field_type = blink::mojom::ContextMenuDataInputFieldType::kPlainText;
+  rv.form_control_type = blink::mojom::FormControlType::kInputText;
   if (form_renderer_id) {
     rv.form_renderer_id = form_renderer_id->value();
   }
@@ -66,13 +65,7 @@ class TestAutofillManager : public BrowserAutofillManager {
 class AutofillContextMenuManagerFeedbackUIBrowserTest
     : public InProcessBrowserTest {
  public:
-  AutofillContextMenuManagerFeedbackUIBrowserTest() {
-    iph_feature_list_.InitAndEnableFeatures(
-        {feature_engagement::kIPHAutofillFeedbackNewBadgeFeature});
-    feature_.InitWithFeatures(
-        /*enabled_features=*/{features::kAutofillFeedback},
-        /*disabled_features=*/{});
-  }
+  AutofillContextMenuManagerFeedbackUIBrowserTest() = default;
 
   void SetUpOnMainThread() override {
     render_view_context_menu_ = std::make_unique<TestRenderViewContextMenu>(
@@ -80,8 +73,7 @@ class AutofillContextMenuManagerFeedbackUIBrowserTest
     render_view_context_menu_->Init();
     autofill_context_menu_manager_ =
         std::make_unique<AutofillContextMenuManager>(
-            nullptr, render_view_context_menu_.get(), nullptr, nullptr,
-            std::make_unique<ScopedNewBadgeTracker>(browser()->profile()));
+            nullptr, render_view_context_menu_.get(), nullptr);
 
     browser()->profile()->GetPrefs()->SetBoolean(prefs::kUserFeedbackAllowed,
                                                  true);
@@ -106,8 +98,6 @@ class AutofillContextMenuManagerFeedbackUIBrowserTest
   test::AutofillBrowserTestEnvironment autofill_test_environment_;
   std::unique_ptr<TestRenderViewContextMenu> render_view_context_menu_;
   std::unique_ptr<AutofillContextMenuManager> autofill_context_menu_manager_;
-  feature_engagement::test::ScopedIphFeatureList iph_feature_list_;
-  base::test::ScopedFeatureList feature_;
   TestAutofillManagerInjector<TestAutofillManager> autofill_manager_injector_;
 };
 
@@ -175,6 +165,22 @@ IN_PROC_BROWSER_TEST_F(AutofillContextMenuManagerFeedbackUIBrowserTest,
   feedback_dialog->GetWidget()->Close();
 }
 
+// Regression test for crbug.com/1493774.
+IN_PROC_BROWSER_TEST_F(AutofillContextMenuManagerFeedbackUIBrowserTest,
+                       TabMoveToOtherBrowserDoesNotCrash) {
+  // Create another browser.
+  Browser* other_browser = CreateBrowser(browser()->profile());
+
+  // Move the tab to the other browser.
+  other_browser->tab_strip_model()->InsertWebContentsAt(
+      0, browser()->tab_strip_model()->DetachWebContentsAtForInsertion(0),
+      AddTabTypes::ADD_ACTIVE);
+  ASSERT_EQ(other_browser->tab_strip_model()->count(), 2);
+
+  // Close the first browser.
+  CloseBrowserSynchronously(browser());
+}
+
 IN_PROC_BROWSER_TEST_F(AutofillContextMenuManagerFeedbackUIBrowserTest,
                        FeedbackDialogArgsAutofillMetadata) {
   std::string expected_metadata;
@@ -195,7 +201,7 @@ IN_PROC_BROWSER_TEST_F(AutofillContextMenuManagerFeedbackUIBrowserTest,
 
   // Extract autofill metadata from dialog arguments and check for correctness.
   std::string dialog_args_str = feedback_dialog->GetDialogArgs();
-  absl::optional<base::Value> value = base::JSONReader::Read(dialog_args_str);
+  std::optional<base::Value> value = base::JSONReader::Read(dialog_args_str);
   ASSERT_TRUE(value.has_value() && value->is_dict());
   const std::string* autofill_metadata =
       value->GetDict().FindString("autofillMetadata");
@@ -207,12 +213,8 @@ IN_PROC_BROWSER_TEST_F(AutofillContextMenuManagerFeedbackUIBrowserTest,
                        IncludesTriggerFormAndFieldSignatures) {
   content::RenderFrameHost* rfh = web_contents()->GetPrimaryMainFrame();
   LocalFrameToken frame_token(rfh->GetFrameToken().value());
-  FormData form;
-  test::CreateTestAddressFormData(&form);
-  form.host_frame = frame_token;
-  for (auto& field : form.fields) {
-    field.host_frame = frame_token;
-  }
+  FormData form = test::CreateFormDataForFrame(
+      test::CreateTestAddressFormData(), frame_token);
   GetAutofillManager()->OnFormsSeen(
       /*updated_forms=*/{form},
       /*removed_forms=*/{});
@@ -244,7 +246,7 @@ IN_PROC_BROWSER_TEST_F(AutofillContextMenuManagerFeedbackUIBrowserTest,
 
   // Extract autofill metadata from dialog arguments and check for correctness.
   std::string dialog_args_str = feedback_dialog->GetDialogArgs();
-  absl::optional<base::Value> value = base::JSONReader::Read(dialog_args_str);
+  std::optional<base::Value> value = base::JSONReader::Read(dialog_args_str);
   ASSERT_TRUE(value.has_value() && value->is_dict());
   const std::string* autofill_metadata =
       value->GetDict().FindString("autofillMetadata");

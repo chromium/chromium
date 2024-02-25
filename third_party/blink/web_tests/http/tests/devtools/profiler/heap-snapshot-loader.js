@@ -7,10 +7,13 @@ import {HeapProfilerTestRunner} from 'heap_profiler_test_runner';
 
 import * as Common from 'devtools/core/common/common.js';
 import * as SDK from 'devtools/core/sdk/sdk.js';
+import * as UI from 'devtools/ui/legacy/legacy.js';
+import * as Profiler from 'devtools/panels/profiler/profiler.js';
+import * as Workspace from 'devtools/models/workspace/workspace.js';
 
 (async function() {
   TestRunner.addResult(`This test checks HeapSnapshots loader.\n`);
-  await TestRunner.showPanel('heap_profiler');
+  await TestRunner.showPanel('heap-profiler');
 
   var source = HeapProfilerTestRunner.createHeapSnapshotMockRaw();
   var sourceStringified = JSON.stringify(source);
@@ -18,7 +21,7 @@ import * as SDK from 'devtools/core/sdk/sdk.js';
 
   async function injectMockProfile(callback) {
     var heapProfilerModel = TestRunner.mainTarget.model(SDK.HeapProfilerModel.HeapProfilerModel);
-    var panel = UI.panels.heap_profiler;
+    var panel = Profiler.HeapProfilerPanel.HeapProfilerPanel.instance();
     panel.reset();
 
     var profileType = Profiler.ProfileTypeRegistry.instance.heapSnapshotProfileType;
@@ -42,10 +45,10 @@ import * as SDK from 'devtools/core/sdk/sdk.js';
       callback(this);
     }
     TestRunner.addSniffer(
-        Profiler.HeapProfileHeader.prototype, 'didWriteToTempFile',
+        Profiler.HeapSnapshotView.HeapProfileHeader.prototype, 'didWriteToTempFile',
         tempFileReady);
-    if (!UI.context.flavor(SDK.HeapProfilerModel.HeapProfilerModel)) {
-      await new Promise(resolve => UI.context.addFlavorChangeListener(SDK.HeapProfilerModel.HeapProfilerModel, resolve));
+    if (!UI.Context.Context.instance().flavor(SDK.HeapProfilerModel.HeapProfilerModel)) {
+      await new Promise(resolve => UI.Context.Context.instance().addFlavorChangeListener(SDK.HeapProfilerModel.HeapProfilerModel, resolve));
     }
     profileType.takeHeapSnapshot();
   }
@@ -61,21 +64,21 @@ import * as SDK from 'devtools/core/sdk/sdk.js';
         function saveMock(url, data) {
           savedSnapshotData = data;
           setTimeout(
-              () => Workspace.fileManager.savedURL({data: {url: url}}), 0);
+              () => Workspace.FileManager.FileManager.instance().savedURL({data: {url: url}}), 0);
         }
         TestRunner.override(InspectorFrontendHost, 'save', saveMock);
 
         var oldAppend = InspectorFrontendHost.append;
         InspectorFrontendHost.append = function appendMock(url, data) {
           savedSnapshotData += data;
-          Workspace.fileManager.appendedToURL({data: url});
+          Workspace.FileManager.FileManager.instance().appendedToURL({data: url});
         };
         function closeMock(url) {
           TestRunner.assertEquals(sourceStringified, savedSnapshotData, 'Saved snapshot data');
           InspectorFrontendHost.append = oldAppend;
           next();
         }
-        TestRunner.override(Workspace.FileManager.prototype, 'close', closeMock);
+        TestRunner.override(Workspace.FileManager.FileManager.prototype, 'close', closeMock);
         profileHeader.saveToFile();
       }
 
@@ -83,11 +86,11 @@ import * as SDK from 'devtools/core/sdk/sdk.js';
     },
 
     function heapSnapshotLoadFromFileTest(next) {
-      var panel = UI.panels.heap_profiler;
+      var panel = Profiler.HeapProfilerPanel.HeapProfilerPanel.instance();
       var file = new File(
           [sourceStringified], 'mock.heapsnapshot', {type: 'text/plain'});
       TestRunner.addSniffer(
-          Profiler.HeapProfileHeader.prototype, 'snapshotReceived', next);
+          Profiler.HeapSnapshotView.HeapProfileHeader.prototype, 'snapshotReceived', next);
       panel.loadFromFile(file);
     },
 

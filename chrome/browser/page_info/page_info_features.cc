@@ -1,4 +1,4 @@
-// Copyright 2022 The Chromium Authors. All rights reserved.
+// Copyright 2022 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -15,6 +15,15 @@ bool IsAboutThisSiteFeatureEnabled() {
   return page_info::IsAboutThisSiteFeatureEnabled(
       g_browser_process->GetApplicationLocale());
 }
+
+bool IsAboutThisSiteAsyncFetchingEnabled() {
+  return IsAboutThisSiteFeatureEnabled() &&
+         base::FeatureList::IsEnabled(kAboutThisSiteAsyncFetching);
+}
+
+BASE_FEATURE(kAboutThisSiteAsyncFetching,
+             "AboutThisSiteAsyncFetching",
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 #if !BUILDFLAG(IS_ANDROID)
 bool IsPersistentSidePanelEntryFeatureEnabled() {

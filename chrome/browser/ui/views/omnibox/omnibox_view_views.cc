@@ -36,6 +36,7 @@
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/browser/ui/omnibox/clipboard_utils.h"
+#include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/view_ids.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
@@ -116,7 +117,7 @@
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
-#include "chromeos/ui/base/tablet_state.h"
+#include "ui/display/screen.h"
 #endif
 
 namespace {
@@ -253,9 +254,6 @@ void OmniboxViewViews::Init() {
 }
 
 void OmniboxViewViews::SaveStateToTab(content::WebContents* tab) {
-  if (base::FeatureList::IsEnabled(omnibox::kDiscardTemporaryInputOnTabSwitch))
-    return;
-
   DCHECK(tab);
 
   // We don't want to keep the IME status, so force quit the current
@@ -276,13 +274,6 @@ void OmniboxViewViews::SaveStateToTab(content::WebContents* tab) {
 }
 
 void OmniboxViewViews::OnTabChanged(content::WebContents* web_contents) {
-  if (base::FeatureList::IsEnabled(
-          omnibox::kDiscardTemporaryInputOnTabSwitch)) {
-    model()->RestoreState(nullptr);
-    ClearEditHistory();
-    return;
-  }
-
   const OmniboxState* state = static_cast<OmniboxState*>(
       web_contents->GetUserData(&OmniboxState::kKey));
   model()->RestoreState(state ? &state->model_state : nullptr);
@@ -310,7 +301,6 @@ void OmniboxViewViews::OnTabChanged(content::WebContents* web_contents) {
 }
 
 void OmniboxViewViews::ResetTabState(content::WebContents* web_contents) {
-  if (!base::FeatureList::IsEnabled(omnibox::kDiscardTemporaryInputOnTabSwitch))
     web_contents->SetUserData(OmniboxState::kKey, nullptr);
 }
 
@@ -487,15 +477,7 @@ bool OmniboxViewViews::IsImeComposing() const {
 }
 
 gfx::Size OmniboxViewViews::GetMinimumSize() const {
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  // TODO(crbug.com/1338087): The minimum size of Lacros toolbar is set too wide
-  // to use split view in tablet mode. Temporally making the minimum size of
-  // omnibox smaller for Lacros to align the behavior with Ash.
-  const int kMinCharacters =
-      chromeos::TabletState::Get()->InTabletMode() ? 8 : 20;
-#else
   const int kMinCharacters = 20;
-#endif
   return gfx::Size(
       GetFontList().GetExpectedTextWidth(kMinCharacters) + GetInsets().width(),
       GetPreferredSize().height());
@@ -635,6 +617,10 @@ void OmniboxViewViews::OnThemeChanged() {
 
   set_placeholder_text_color(GetColorProvider()->GetColor(
       gm3_text_color_enabled ? kColorOmniboxText : kColorOmniboxTextDimmed));
+  SetSelectionBackgroundColor(
+      GetColorProvider()->GetColor(kColorOmniboxSelectionBackground));
+  SetSelectionTextColor(
+      GetColorProvider()->GetColor(kColorOmniboxSelectionForeground));
 
   EmphasizeURLComponents();
 }
@@ -853,8 +839,8 @@ void OmniboxViewViews::SetAccessibilityLabel(const std::u16string& display_text,
     // bypass OmniboxPopupModel and get the label from our synthetic |match|.
     friendly_suggestion_text_ = AutocompleteMatchType::ToAccessibilityLabel(
         match, display_text, OmniboxPopupSelection::kNoMatch,
-        controller()->result().size(), std::u16string(),
-        &friendly_suggestion_text_prefix_length_);
+        controller()->autocomplete_controller()->result().size(),
+        std::u16string(), &friendly_suggestion_text_prefix_length_);
   } else {
     friendly_suggestion_text_ =
         model()->GetPopupAccessibilityLabelForCurrentSelection(
@@ -1261,6 +1247,7 @@ bool OmniboxViewViews::SkipDefaultKeyEventProcessing(
 }
 
 void OmniboxViewViews::GetAccessibleNodeData(ui::AXNodeData* node_data) {
+  Textfield::GetAccessibleNodeData(node_data);
   node_data->role = ax::mojom::Role::kTextField;
   node_data->SetNameChecked(l10n_util::GetStringUTF8(IDS_ACCNAME_LOCATION));
   node_data->AddStringAttribute(ax::mojom::StringAttribute::kAutoComplete,
@@ -1370,9 +1357,14 @@ void OmniboxViewViews::OnFocus() {
 
   GetRenderText()->SetElideBehavior(gfx::NO_ELIDE);
 
+#if BUILDFLAG(SUPPORTS_AX_TEXT_OFFSETS)
+  // The text offsets are no longer valid when the elide behavior changes.
+  SetNeedsAccessibleTextOffsetsUpdate();
+#endif  // BUILDFLAG(SUPPORTS_AX_TEXT_OFFSETS)
+
   // Focus changes can affect the visibility of any keyword hint.
   if (location_bar_view_ && model()->is_keyword_hint())
-    location_bar_view_->Layout();
+    location_bar_view_->DeprecatedLayoutImmediately();
 
   if (location_bar_view_)
     location_bar_view_->OnOmniboxFocused();
@@ -1437,6 +1429,11 @@ void OmniboxViewViews::OnBlur() {
   gfx::RenderText* render_text = GetRenderText();
   render_text->SetElideBehavior(gfx::ELIDE_TAIL);
 
+#if BUILDFLAG(SUPPORTS_AX_TEXT_OFFSETS)
+  // The text offsets are no longer valid when the elide behavior changes.
+  SetNeedsAccessibleTextOffsetsUpdate();
+#endif  // BUILDFLAG(SUPPORTS_AX_TEXT_OFFSETS)
+
   // In cases where there's a lot of whitespace in the text being shown, we want
   // the elision marker to be at the right of the text field, so don't elide
   // whitespace to the left of the elision point.
@@ -1447,7 +1444,7 @@ void OmniboxViewViews::OnBlur() {
   // |location_bar_view_| can be null in tests.
   if (location_bar_view_) {
     if (model()->is_keyword_hint())
-      location_bar_view_->Layout();
+      location_bar_view_->DeprecatedLayoutImmediately();
 
     location_bar_view_->OnOmniboxBlurred();
 
@@ -1710,9 +1707,12 @@ bool OmniboxViewViews::HandleKeyEvent(views::Textfield* textfield,
       break;
 
     case ui::VKEY_SPACE: {
-      if (model()->PopupIsOpen()) {
+      if (model()->PopupIsOpen() && !control && !alt && !shift) {
+        if (model()->OnSpacePressed()) {
+          return true;
+        }
         OmniboxPopupSelection selection = model()->GetPopupSelection();
-        if (selection.IsButtonFocused() && !control && !alt && !shift) {
+        if (selection.IsButtonFocused()) {
           model()->OpenSelection(selection, event.time_stamp());
           return true;
         }
@@ -1824,7 +1824,7 @@ views::View::DropCallback OmniboxViewViews::CreateDropCallback(
 void OmniboxViewViews::UpdateContextMenu(ui::SimpleMenuModel* menu_contents) {
   MaybeAddSendTabToSelfItem(menu_contents);
 
-  absl::optional<size_t> paste_position =
+  std::optional<size_t> paste_position =
       menu_contents->GetIndexOfCommandId(Textfield::kPaste);
   DCHECK(paste_position.has_value());
   menu_contents->InsertItemWithStringIdAt(paste_position.value() + 1,
@@ -1951,7 +1951,7 @@ void OmniboxViewViews::MaybeAddSendTabToSelfItem(
   menu_contents->InsertSeparatorAt(++index, ui::NORMAL_SEPARATOR);
 }
 
-BEGIN_METADATA(OmniboxViewViews, views::Textfield)
+BEGIN_METADATA(OmniboxViewViews)
 ADD_READONLY_PROPERTY_METADATA(bool, SelectionAtEnd)
 ADD_READONLY_PROPERTY_METADATA(int, TextWidth)
 ADD_READONLY_PROPERTY_METADATA(int, UnelidedTextWidth)

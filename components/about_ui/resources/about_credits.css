@@ -37,6 +37,11 @@ body {
 a {
   color: var(--interactive-color);
 }
+.open-sourced {
+  clear: both;
+  padding-top: 10px;
+  font-size: 110%;
+}
 .page-title {
   float: left;
   font-size: 164%;
@@ -64,6 +69,7 @@ a {
 .product .homepage::before {
   content: ' - ';
 }
+.show-all,
 .product .show {
   color: var(--interactive-color);
   float: right;
@@ -71,43 +77,51 @@ a {
   text-align: end;
   text-decoration: underline;
 }
-.licence {
+.license {
   border-radius: 3px;
   clear: both;
   display: none;
   padding: 16px;
 }
-.licence h3 {
+.license h3 {
   margin-top: 0;
 }
-.licence pre {
+.license pre {
   white-space: pre-wrap;
 }
 #print-link {
   float: right;
+  margin: 3px;
 }
 .dialog #print-link,
 .dialog .homepage {
   display: none;
 }
-input + label + div {
+label.show + div.license {
   display: none;
 }
-input + label::after {
+label.show::after {
   content: 'show license';
   cursor: pointer;
 }
-input:checked + label + div {
+label.show-all::after {
+  content: 'show all licenses';
+}
+label.show-all:has(input:checked) ~ * label.show + div.license,
+label.show:has(input:checked) + div {
   display: block;
 }
-input:checked + label::after {
+label.show:has(input:checked)::after {
   content: 'hide license';
   cursor: pointer;
+}
+label.show-all:has(input:checked)::after {
+  content: 'hide all licenses';
 }
 
 /* Strip out color and style when printing. We want dense B&W text. */
 @media print {
-  .licence {
+  .license {
     /* The licensing content is very verbose. Make it dense. */
     display: block;
     font-size: smaller;

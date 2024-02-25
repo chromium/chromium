@@ -19,6 +19,7 @@ import androidx.annotation.VisibleForTesting;
 import org.chromium.base.IntentUtils;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.RecordUserAction;
+import org.chromium.base.shared_preferences.SharedPreferencesManager;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.browser.IntentHandler;
 import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider;
@@ -29,7 +30,7 @@ import org.chromium.chrome.browser.lifecycle.NativeInitObserver;
 import org.chromium.chrome.browser.lifecycle.PauseResumeWithNativeObserver;
 import org.chromium.chrome.browser.lifecycle.StartStopWithNativeObserver;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
-import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
+import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.chrome.browser.webapps.WebappCustomTabTimeSpentLogger;
 
 import java.lang.annotation.Retention;
@@ -38,9 +39,7 @@ import java.lang.annotation.RetentionPolicy;
 import javax.inject.Inject;
 import javax.inject.Named;
 
-/**
- * Handles recording User Metrics for Custom Tab Activity.
- */
+/** Handles recording User Metrics for Custom Tab Activity. */
 @ActivityScope
 public class CustomTabActivityLifecycleUmaTracker
         implements PauseResumeWithNativeObserver, StartStopWithNativeObserver, NativeInitObserver {
@@ -48,8 +47,12 @@ public class CustomTabActivityLifecycleUmaTracker
      * Identifier used for last CCT client App. Used as suffix for histogram
      * "CustomTabs.RetainableSessionsV2.TimeBetweenLaunch".
      */
-    @StringDef({ClientIdentifierType.DIFFERENT, ClientIdentifierType.MIXED,
-            ClientIdentifierType.REFERRER, ClientIdentifierType.PACKAGE_NAME})
+    @StringDef({
+        ClientIdentifierType.DIFFERENT,
+        ClientIdentifierType.MIXED,
+        ClientIdentifierType.REFERRER,
+        ClientIdentifierType.PACKAGE_NAME
+    })
     @Retention(RetentionPolicy.SOURCE)
     @interface ClientIdentifierType {
         String DIFFERENT = ".Different";
@@ -72,8 +75,10 @@ public class CustomTabActivityLifecycleUmaTracker
 
         @IntentHandler.IncognitoCCTCallerId
         int incognitoCCTCallerId = incognitoProvider.getFeatureIdForMetricsCollection();
-        RecordHistogram.recordEnumeratedHistogram("CustomTabs.IncognitoCCTCallerId",
-                incognitoCCTCallerId, IntentHandler.IncognitoCCTCallerId.NUM_ENTRIES);
+        RecordHistogram.recordEnumeratedHistogram(
+                "CustomTabs.IncognitoCCTCallerId",
+                incognitoCCTCallerId,
+                IntentHandler.IncognitoCCTCallerId.NUM_ENTRIES);
 
         // Record which 1P app launched Incognito CCT.
         if (incognitoCCTCallerId == IntentHandler.IncognitoCCTCallerId.GOOGLE_APPS) {
@@ -81,15 +86,19 @@ public class CustomTabActivityLifecycleUmaTracker
             @IntentHandler.ExternalAppId
             int externalId = IntentHandler.mapPackageToExternalAppId(sendersPackageName);
             if (externalId != IntentHandler.ExternalAppId.OTHER) {
-                RecordHistogram.recordEnumeratedHistogram("CustomTabs.ClientAppId.Incognito",
-                        externalId, IntentHandler.ExternalAppId.NUM_ENTRIES);
+                RecordHistogram.recordEnumeratedHistogram(
+                        "CustomTabs.ClientAppId.Incognito",
+                        externalId,
+                        IntentHandler.ExternalAppId.NUM_ENTRIES);
             } else {
                 // Using package name didn't give any meaningful insight on who launched the
                 // Incognito CCT, falling back to check if they provided EXTRA_APPLICATION_ID.
                 externalId =
                         IntentHandler.determineExternalIntentSource(incognitoProvider.getIntent());
-                RecordHistogram.recordEnumeratedHistogram("CustomTabs.ClientAppId.Incognito",
-                        externalId, IntentHandler.ExternalAppId.NUM_ENTRIES);
+                RecordHistogram.recordEnumeratedHistogram(
+                        "CustomTabs.ClientAppId.Incognito",
+                        externalId,
+                        IntentHandler.ExternalAppId.NUM_ENTRIES);
             }
         }
     }
@@ -115,8 +124,10 @@ public class CustomTabActivityLifecycleUmaTracker
     }
 
     @Inject
-    public CustomTabActivityLifecycleUmaTracker(ActivityLifecycleDispatcher lifecycleDispatcher,
-            BrowserServicesIntentDataProvider intentDataProvider, Activity activity,
+    public CustomTabActivityLifecycleUmaTracker(
+            ActivityLifecycleDispatcher lifecycleDispatcher,
+            BrowserServicesIntentDataProvider intentDataProvider,
+            Activity activity,
             @Named(SAVED_INSTANCE_SUPPLIER) Supplier<Bundle> savedInstanceStateSupplier,
             CustomTabsConnection connection) {
         mIntentDataProvider = intentDataProvider;
@@ -136,7 +147,7 @@ public class CustomTabActivityLifecycleUmaTracker
                 RecordUserAction.record("CustomTabs.StartedReopened");
             }
         } else {
-            SharedPreferencesManager preferences = SharedPreferencesManager.getInstance();
+            SharedPreferencesManager preferences = ChromeSharedPreferences.getInstance();
             String lastUrl =
                     preferences.readString(ChromePreferenceKeys.CUSTOM_TABS_LAST_URL, null);
             String urlToLoad = mIntentDataProvider.getUrlToLoad();
@@ -161,10 +172,13 @@ public class CustomTabActivityLifecycleUmaTracker
 
         mIsInitialResume = false;
 
-        mWebappTimeSpentLogger = WebappCustomTabTimeSpentLogger.createInstanceAndStartTimer(
-                mIntentDataProvider.getIntent().getIntExtra(
-                        CustomTabIntentDataProvider.EXTRA_BROWSER_LAUNCH_SOURCE,
-                        CustomTabIntentDataProvider.LaunchSourceType.OTHER));
+        mWebappTimeSpentLogger =
+                WebappCustomTabTimeSpentLogger.createInstanceAndStartTimer(
+                        mIntentDataProvider
+                                .getIntent()
+                                .getIntExtra(
+                                        CustomTabIntentDataProvider.EXTRA_BROWSER_LAUNCH_SOURCE,
+                                        CustomTabIntentDataProvider.LaunchSourceType.OTHER));
     }
 
     @Override
@@ -198,11 +212,15 @@ public class CustomTabActivityLifecycleUmaTracker
      * @param clientPackage Package name get from CCT service
      * @param referrer Referrer of the CCT activity.
      * @param taskId The task Id of CCT activity.
-     * @param preferences Instance from {@link SharedPreferencesManager#getInstance()}.
+     * @param preferences Instance from {@link ChromeSharedPreferences#getInstance()}.
      */
     @VisibleForTesting
-    static void recordForRetainableSessions(String clientPackage, String referrer, int taskId,
-            SharedPreferencesManager preferences, boolean launchWithSameUrl) {
+    static void recordForRetainableSessions(
+            String clientPackage,
+            String referrer,
+            int taskId,
+            SharedPreferencesManager preferences,
+            boolean launchWithSameUrl) {
         String prevClientPackage =
                 preferences.readString(ChromePreferenceKeys.CUSTOM_TABS_LAST_CLIENT_PACKAGE, null);
         String prevReferrer =
@@ -217,8 +235,14 @@ public class CustomTabActivityLifecycleUmaTracker
             return;
         }
 
-        String histogramSuffix = getClientIdentifierType(
-                clientPackage, prevClientPackage, referrer, prevReferrer, taskId, prevTaskId);
+        String histogramSuffix =
+                getClientIdentifierType(
+                        clientPackage,
+                        prevClientPackage,
+                        referrer,
+                        prevReferrer,
+                        taskId,
+                        prevTaskId);
         String histogramPrefix = "CustomTabs.RetainableSessionsV2.TimeBetweenLaunch";
         long time = SystemClock.uptimeMillis();
         long lastClosedTime =
@@ -260,13 +284,16 @@ public class CustomTabActivityLifecycleUmaTracker
      * will be compared back to as the previous session in the next potentially restorable
      * Custom Tab activity.
      *
-     * @param preferences Instance from {@link SharedPreferencesManager#getInstance()}.
+     * @param preferences Instance from {@link ChromeSharedPreferences#getInstance()}.
      * @param clientPackage Package name from CCT service.
      * @param referrer Referrer of the CCT activity.
      * @param taskId The task Id of CCT activity.
      */
-    static void updateSessionPreferences(SharedPreferencesManager preferences, String clientPackage,
-            String referrer, int taskId) {
+    static void updateSessionPreferences(
+            SharedPreferencesManager preferences,
+            String clientPackage,
+            String referrer,
+            int taskId) {
         preferences.writeInt(ChromePreferenceKeys.CUSTOM_TABS_LAST_TASK_ID, taskId);
         if (TextUtils.isEmpty(clientPackage) && TextUtils.isEmpty(referrer)) {
             preferences.removeKey(ChromePreferenceKeys.CUSTOM_TABS_LAST_CLIENT_PACKAGE);
@@ -295,22 +322,29 @@ public class CustomTabActivityLifecycleUmaTracker
      * @param prevTaskId taskId for the previous CCT activity, if one exists.
      * @return ClientIdentifier for the CCT client app.
      */
-    static String getClientIdentifierType(String clientPackage, String prevClientPackage,
-            String referrer, String prevReferrer, int taskId, int prevTaskId) {
+    static String getClientIdentifierType(
+            String clientPackage,
+            String prevClientPackage,
+            String referrer,
+            String prevReferrer,
+            int taskId,
+            int prevTaskId) {
         boolean hasClientPackage = !TextUtils.isEmpty(clientPackage);
         boolean hasReferrer = !TextUtils.isEmpty(referrer);
         String clientIdType = ClientIdentifierType.DIFFERENT;
         if (hasClientPackage && TextUtils.equals(clientPackage, prevClientPackage)) {
             clientIdType = ClientIdentifierType.PACKAGE_NAME;
-        } else if (hasReferrer && TextUtils.equals(referrer, prevReferrer)
+        } else if (hasReferrer
+                && TextUtils.equals(referrer, prevReferrer)
                 && prevTaskId == taskId) {
             clientIdType = ClientIdentifierType.REFERRER;
         } else if (hasClientPackage || prevTaskId == taskId) {
             String currentPackage =
                     hasClientPackage ? clientPackage : Uri.parse(referrer).getHost();
-            String prevPackage = !TextUtils.isEmpty(prevClientPackage)
-                    ? prevClientPackage
-                    : Uri.parse(prevReferrer).getHost();
+            String prevPackage =
+                    !TextUtils.isEmpty(prevClientPackage)
+                            ? prevClientPackage
+                            : Uri.parse(prevReferrer).getHost();
 
             if (TextUtils.equals(currentPackage, prevPackage)
                     && !TextUtils.isEmpty(currentPackage)) {

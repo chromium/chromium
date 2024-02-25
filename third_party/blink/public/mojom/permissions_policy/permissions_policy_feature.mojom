@@ -225,6 +225,28 @@ enum PermissionsPolicyFeature {
   // Client hint for prefers-reduced-transparency
   kClientHintPrefersReducedTransparency = 112,
 
+  // "web-printing" is a isolated context only permissions policy that controls
+  // the use of Web Printing API.
+  kWebPrinting = 113,
+
+  // "usb-unrestricted" is a isolated context only permissions policy that
+  // controls whether protected USB interfaces and blocklisted USB devices can
+  // be accessed with WebUSB.
+  kUsbUnrestricted = 114,
+
+  // Captured Surface Control API
+  kCapturedSurfaceControl = 115,
+
+  // SubApps API
+  kSubApps = 116,
+
+  // Web Authentication (https://w3c.github.io/webauthn/#sctn-permissions-policy)
+  kPublicKeyCredentialsCreate = 117,
+
+  // Allow enumerateDevices to return audio output device and setSinkId to
+  // accept given device id.
+  kSpeakerSelection = 118,
+
   // Don't change assigned numbers of any item, and don't reuse removed slots.
   // Add new features at the end of the enum.
   // Also, run update_permissions_policy_enum.py in

@@ -72,8 +72,8 @@ class CrostiniUpgraderPageHandler
  private:
   // The chrome://crostini-upgrader WebUI that triggered the upgrade.
   // Used to parent open/save dialogs.
-  raw_ptr<content::WebContents, ExperimentalAsh> web_contents_;  // Not owned.
-  raw_ptr<crostini::CrostiniUpgraderUIDelegate, ExperimentalAsh>
+  raw_ptr<content::WebContents> web_contents_;  // Not owned.
+  raw_ptr<crostini::CrostiniUpgraderUIDelegate>
       upgrader_ui_delegate_;  // Not owned.
   mojo::Receiver<crostini_upgrader::mojom::PageHandler> receiver_;
   mojo::Remote<crostini_upgrader::mojom::Page> page_;

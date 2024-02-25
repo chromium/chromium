@@ -68,13 +68,11 @@
                 role="presentation"></iron-icon>
             $i18n{siteSettingsSiteDeleteStorageOfflineData}
           </div>
-          <template is="dom-if" if="[[isPrivacySandboxSettings4_]]">
-            <div class="detail" id="adPersonalization">
-              <iron-icon icon="all-sites:tag" aria-hidden="true"
-                  role="presentation"></iron-icon>
-              $i18n{siteSettingsRemoveSiteAdPersonalization}
-            </div>
-          </template>
+          <div class="detail" id="adPersonalization">
+            <iron-icon icon="all-sites:tag" aria-hidden="true"
+                role="presentation"></iron-icon>
+            $i18n{siteSettingsRemoveSiteAdPersonalization}
+          </div>
         </div>
       </div>
       <div slot="button-container">
@@ -186,7 +184,8 @@
           category="[[contentSettingsTypesEnum_.AUTOMATIC_DOWNLOADS]]"
           icon="cr:file-download" label="$i18n{siteSettingsAutomaticDownloads}">
       </site-details-permission>
-      <site-details-permission category="[[contentSettingsTypesEnum_.MIDI_DEVICES]]"
+      <site-details-permission
+          category="[[contentSettingsTypesEnum_.MIDI_DEVICES]]"
           icon="settings:midi" label="$i18n{siteSettingsMidiDevices}">
       </site-details-permission>
       <site-details-permission category="[[contentSettingsTypesEnum_.USB_DEVICES]]"
@@ -196,6 +195,11 @@
       <site-details-permission category="[[contentSettingsTypesEnum_.SERIAL_PORTS]]"
           icon="settings:serial-port" label="$i18n{siteSettingsSerialPorts}"
           chooser-type="[[chooserTypeEnum_.SERIAL_PORTS]]">
+      </site-details-permission>
+      <site-details-permission
+          category="[[contentSettingsTypesEnum_.WEB_PRINTING]]"
+          icon="settings:printer"
+          label="$i18n{siteSettingsWebPrinting}">
       </site-details-permission>
       <template is="dom-if" if="[[enableWebBluetoothNewPermissionsBackend_]]">
         <site-details-permission
@@ -242,6 +246,11 @@
           label="$i18n{siteSettingsInsecureContent}">
       </site-details-permission>
       <site-details-permission
+          category="[[contentSettingsTypesEnum_.JAVASCRIPT_JIT]]"
+          icon="settings:lock-outline"
+          label="$i18n{siteSettingsJavascriptJit}">
+      </site-details-permission>
+      <site-details-permission
           category="[[contentSettingsTypesEnum_.FEDERATED_IDENTITY_API]]"
           icon="settings:federated-identity-api"
           label="$i18n{siteSettingsFederatedIdentityApi}">
@@ -267,11 +276,17 @@
           icon="settings:local-fonts" label="$i18n{fonts}">
       </site-details-permission>
       <template is="dom-if" if="[[autoPictureInPictureEnabled_]]">
-        <!-- TODO(https://crbug.com/1471051): Use real icon. -->
         <site-details-permission
             category="[[contentSettingsTypesEnum_.AUTO_PICTURE_IN_PICTURE]]"
-            icon="settings:window-management"
+            icon="settings:picture-in-picture"
             label="$i18n{siteSettingsAutoPictureInPicture}">
+        </site-details-permission>
+      </template>
+      <template is="dom-if" if="[[enableAutomaticFullscreenContentSetting_]]">
+        <site-details-permission
+            category="[[contentSettingsTypesEnum_.AUTOMATIC_FULLSCREEN]]"
+            icon="cr:fullscreen"
+            label="$i18n{siteSettingsAutomaticFullscreen}">
         </site-details-permission>
       </template>
     </div>

@@ -1,6 +1,9 @@
 {
   "$build/chromium_tests_builder_config": {
     "builder_config": {
+      "additional_exclusions": [
+        "infra/config/generated/builders/goma/Win Builder Goma RBE Canary/gn-args.json"
+      ],
       "builder_db": {
         "entries": [
           {
@@ -21,7 +24,8 @@
                 ],
                 "build_config": "Release",
                 "config": "chromium",
-                "target_bits": 32
+                "target_bits": 32,
+                "target_platform": "win"
               },
               "legacy_gclient_config": {
                 "config": "chromium"

@@ -107,10 +107,6 @@ TEST_F(PersistentPageConsistencyCheckTaskTest,
   EXPECT_FALSE(store_test_util()->GetPageByOfflineId(page5.offline_id));
   EXPECT_TRUE(store_test_util()->GetPageByOfflineId(page6.offline_id));
   EXPECT_FALSE(IsPageMissingFile(page6));
-
-  histogram_tester()->ExpectUniqueSample(
-      "OfflinePages.ConsistencyCheck.Persistent.Result",
-      static_cast<int>(SyncOperationResult::SUCCESS), 1);
 }
 
 #if BUILDFLAG(IS_WIN)
@@ -142,9 +138,6 @@ TEST_F(PersistentPageConsistencyCheckTaskTest,
       store(), archive_manager(), base::Time::Now(), callback.Get()));
 
   EXPECT_FALSE(store_test_util()->GetPageByOfflineId(page.offline_id));
-  histogram_tester()->ExpectUniqueSample(
-      "OfflinePages.ConsistencyCheck.Persistent.Result",
-      static_cast<int>(SyncOperationResult::SUCCESS), 1);
 }
 
 }  // namespace offline_pages

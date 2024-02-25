@@ -14,9 +14,7 @@ import org.chromium.ui.base.IntentRequestTracker.Delegate;
 
 import java.lang.ref.WeakReference;
 
-/**
- * Chrome's implementation of the delegate of a IntentRequestTracker.
- */
+/** Chrome's implementation of the delegate of a IntentRequestTracker. */
 public class ActivityIntentRequestTrackerDelegate implements Delegate {
     // Just create one ImmutableWeakReference object to avoid gc churn.
     private final ImmutableWeakReference<Activity> mActivityWeakRefHolder;

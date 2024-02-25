@@ -2,18 +2,17 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-include_rules = [
-    # The basic rule is that PartitionAlloc library must not depend on Chromium
-    # project in order to be a standalone library.
-    "-base",
-    "-build",
-    "-build_overrides",
-    "-testing",
-    "-third_party",
+# PartitionAlloc library must not depend on Chromium
+# project in order to be a standalone library.
+noparent = True
 
-    "+base/allocator/partition_allocator",
-    "+build/build_config.h",
-    "+build/buildflag.h",
+include_rules = [
+  # `partition_alloc` can depends on itself, via the `include_dirs` it declares.
+  "+partition_alloc",
+
+  # Build flags to infer the architecture and operating system in use.
+  "+build/build_config.h",
+  "+build/buildflag.h",
 ]
 
 specific_include_rules = {
@@ -34,9 +33,6 @@ specific_include_rules = {
   "extended_api\.cc$": [
     "+base/allocator/allocator_shim_default_dispatch_to_partition_alloc.h",
   ],
-  "gtest_prod_util\.h$": [
-    "+testing/gtest/include/gtest/gtest_prod.h",
-  ],
   "raw_(ptr|ref)_unittest\.cc$": [
     "+base",
     "+third_party/abseil-cpp/absl/types/optional.h",
@@ -47,3 +43,8 @@ specific_include_rules = {
     "+third_party/abseil-cpp/absl/types/optional.h",
   ]
 }
+
+# In the context of a module-level DEPS, the `deps` variable must be defined.
+# Some tools relies on it. For instance dawn/tools/fetch_dawn_dependencies.py
+# This has no use in other contexts.
+deps = {}

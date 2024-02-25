@@ -11,10 +11,11 @@
 typedef NS_ENUM(NSUInteger, SigninCoordinatorResult) {
   // Sign-in has been canceled by the user or by another reason.
   SigninCoordinatorResultCanceledByUser,
-  // Sign-in has been done, but the user didn’t accept nor refuse to sync.
+  // The flow was interrupted, e.g. because the user opened a new URL or the app
+  // was terminated.
+  // Sign-in might have finished or not.
   SigninCoordinatorResultInterrupted,
-  // Sign-in has been done, the user has explicitly accepted or refused
-  // sync.
+  // Sign-in has been done, the user has explicitly accepted sign-in.
   SigninCoordinatorResultSuccess,
   // Sign-in did not complete because it is disabled. This can happen if
   // enterprise policies are updated after sign-in is started.
@@ -22,8 +23,7 @@ typedef NS_ENUM(NSUInteger, SigninCoordinatorResult) {
 };
 
 // User's signed-in state as defined by AuthenticationService.
-// TODO(crbug.com/1462552): After phase 3 migration of syncing users, remove
-// `Sync` from enum name and refactor.
+// TODO(crbug.com/40066949): Revisit after phase 3 migration of syncing users.
 typedef NS_ENUM(NSUInteger, IdentitySigninState) {
   IdentitySigninStateSignedOut,
   IdentitySigninStateSignedInWithSyncDisabled,
@@ -66,6 +66,9 @@ extern NSString* const kWebSigninPrimaryButtonAccessibilityIdentifier;
 extern NSString* const kWebSigninSkipButtonAccessibilityIdentifier;
 // Name of the accessibility identifier for the Tangible Sync view.
 extern NSString* const kTangibleSyncViewAccessibilityIdentifier;
+// Name of the accessibility identifier for the "add account" button in the
+// consistency account chooser.
+extern NSString* const kConsistencyAccountChooserAddAccountIdentifier;
 
 // Action that is required to do to complete the sign-in, or instead of sign-in.
 // This action is in charge of the SigninCoordinator's owner.
@@ -89,5 +92,44 @@ typedef NS_ENUM(NSUInteger, SigninTrustedVaultDialogIntent) {
 // Max dismissal count for web sign-in consistency dialog (the dismissal value
 // is reset as soon as the user shows sign-in intent).
 extern const int kDefaultWebSignInDismissalCount;
+
+// Values of the UMA SSORecallPromo.PromoAction histogram.
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused. When you add a new entry or when you
+// deprecate an existing one, also update SSOPromoUserAction in enums.xml and
+// SyncModelType suffix in histograms.xml.
+typedef NS_ENUM(NSUInteger, UserSigninPromoAction) {
+  PromoActionDismissed = 0,
+  PromoActionEnabledSSOAccount = 1,
+  PromoActionAddedAnotherAccount = 2,
+  PromoActionCount = 3,
+};
+
+// Key in the UserDefaults to record the version of the application when the
+// sign-in promo has been displayed. The value is set on the first cold start to
+// make sure the sign-in promo is not triggered right after the FRE.
+// Exposed for testing.
+extern NSString* const kDisplayedSSORecallForMajorVersionKey;
+// Key in the UserDefaults to record the GAIA id list when the sign-in promo
+// was shown.
+// Exposed for testing.
+extern NSString* const kLastShownAccountGaiaIdVersionKey;
+// Key in the UserDefaults to record the number of times the sign-in promo has
+// been shown.
+// TODO(crbug.com/1312345): Need to merge with kDisplayedSSORecallPromoCountKey.
+// Exposed for testing.
+extern NSString* const kSigninPromoViewDisplayCountKey;
+// Key in the UserDefaults to track how many times the SSO Recall promo has been
+// displayed.
+// TODO(crbug.com/1312345): Need to merge with kSigninPromoViewDisplayCountKey.
+// Exposed for testing.
+extern NSString* const kDisplayedSSORecallPromoCountKey;
+// Name of the UMA SSO Recall histogram.
+extern const char* const kUMASSORecallPromoAction;
+// Name of the histogram recording how many accounts were available on the
+// device when the promo was shown.
+extern const char* const kUMASSORecallAccountsAvailable;
+// Name of the histogram recording how many times the promo has been shown.
+extern const char* const kUMASSORecallPromoSeenCount;
 
 #endif  // IOS_CHROME_BROWSER_UI_AUTHENTICATION_SIGNIN_SIGNIN_CONSTANTS_H_

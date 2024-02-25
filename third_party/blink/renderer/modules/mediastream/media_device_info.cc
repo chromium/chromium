@@ -47,11 +47,11 @@ String MediaDeviceInfo::deviceId() const {
 
 String MediaDeviceInfo::kind() const {
   switch (device_type_) {
-    case mojom::blink::MediaDeviceType::MEDIA_AUDIO_INPUT:
+    case mojom::blink::MediaDeviceType::kMediaAudioInput:
       return "audioinput";
-    case mojom::blink::MediaDeviceType::MEDIA_AUDIO_OUTPUT:
+    case mojom::blink::MediaDeviceType::kMediaAudioOuput:
       return "audiooutput";
-    case mojom::blink::MediaDeviceType::MEDIA_VIDEO_INPUT:
+    case mojom::blink::MediaDeviceType::kMediaVideoInput:
       return "videoinput";
     default:
       NOTREACHED();

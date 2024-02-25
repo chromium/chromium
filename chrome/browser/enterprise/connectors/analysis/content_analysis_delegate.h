@@ -21,6 +21,7 @@
 #include "chrome/browser/safe_browsing/cloud_content_scanning/binary_upload_service.h"
 #include "chrome/browser/safe_browsing/cloud_content_scanning/deep_scanning_utils.h"
 #include "components/enterprise/common/proto/connectors.pb.h"
+#include "content/public/browser/clipboard_types.h"
 #include "url/gurl.h"
 
 class Profile;
@@ -94,6 +95,11 @@ class ContentAnalysisDelegate : public ContentAnalysisDelegateBase {
     Data(Data&& other);
     Data& operator=(Data&&);
     ~Data();
+
+    // Helper function to populate `text` and `image` with the data in a
+    // `content::ClipboardPasteData` object.
+    void AddClipboardData(
+        const content::ClipboardPasteData& clipboard_paste_data);
 
     // URL of the page that is to receive sensitive data.
     GURL url;
@@ -182,7 +188,7 @@ class ContentAnalysisDelegate : public ContentAnalysisDelegateBase {
   // Called when the user decides to bypass the verdict they obtained from DLP.
   // This will allow the upload of files marked as DLP warnings.
   void BypassWarnings(
-      absl::optional<std::u16string> user_justification) override;
+      std::optional<std::u16string> user_justification) override;
 
   // Called when the user decides to cancel the file upload. This will stop the
   // upload to Chrome since the scan wasn't allowed to complete. If `warning` is
@@ -190,15 +196,22 @@ class ContentAnalysisDelegate : public ContentAnalysisDelegateBase {
   // "CancelledByUser" metrics should not be recorded.
   void Cancel(bool warning) override;
 
-  absl::optional<std::u16string> GetCustomMessage() const override;
+  // Returns both rule-based and policy-based custom message without the prefix
+  // if DialogCustomRuleMessageEnabled flag enabled.
+  // TODO(b/322999022) Cleanup comments after custom rule message finch flag
+  // experiment.
+  std::optional<std::u16string> GetCustomMessage() const override;
 
-  absl::optional<GURL> GetCustomLearnMoreUrl() const override;
+  std::optional<GURL> GetCustomLearnMoreUrl() const override;
+
+  std::optional<std::vector<std::pair<gfx::Range, GURL>>>
+  GetCustomRuleMessageRanges() const override;
 
   bool BypassRequiresJustification() const override;
 
   std::u16string GetBypassJustificationLabel() const override;
 
-  absl::optional<std::u16string> OverrideCancelButtonText() const override;
+  std::optional<std::u16string> OverrideCancelButtonText() const override;
 
   // Returns true if the deep scanning feature is enabled in the upload
   // direction via enterprise policies.  If the appropriate enterprise policies
@@ -287,10 +300,25 @@ class ContentAnalysisDelegate : public ContentAnalysisDelegateBase {
   virtual bool CancelDialog();
 
  private:
-  // Uploads data for deep scanning.  Returns true if uploading is occurring in
-  // the background and false if there is nothing to do. Sets `data_uploaded_`
-  // to true right before returning.
-  bool UploadData();
+  // Enum representing the data uploading status.
+  enum class UploadDataStatus {
+    kNoLocalClientFound = 0,
+    kInProgress = 1,
+    kComplete = 2,
+  };
+
+  // Uploads data for deep scanning.  Returns "kNoClientFound" if there's no
+  // client to receive data, "kInProgress" if uploading is occurring in the
+  // background, and "kComplete" if data uploading is finished.
+  UploadDataStatus UploadData();
+
+  // Helper function to evaluate if fail-closed conditions are met.
+  bool IsFailClosed(UploadDataStatus upload_data_status,
+                    bool should_allow_by_default);
+
+  // Helper function to decide if fail-closed settings should be applied when
+  // LCAC cannot establish connection with local client.
+  bool ShouldFailOpenWithoutLocalClient(bool should_allow_by_default);
 
   // Prepares an upload request for the text in `data_`. If `data_.text` is
   // empty, this method does nothing.
@@ -345,8 +373,11 @@ class ContentAnalysisDelegate : public ContentAnalysisDelegateBase {
 
   // Updates `final_result_` following the precedence established by the
   // FinalResult enum.
-  void UpdateFinalResult(FinalContentAnalysisResult message,
-                         const std::string& tag);
+  void UpdateFinalResult(
+      FinalContentAnalysisResult message,
+      const std::string& tag,
+      const ContentAnalysisResponse::Result::TriggeredRule::CustomRuleMessage&
+          custom_rule_message);
 
   // Send an acknowledgement to the service provider of the final result
   // for the requests of this ContentAnalysisDelegate instance.
@@ -355,6 +386,11 @@ class ContentAnalysisDelegate : public ContentAnalysisDelegateBase {
   // Returns the BinaryUploadService used to upload content for deep scanning.
   // Virtual to override in tests.
   virtual safe_browsing::BinaryUploadService* GetBinaryUploadService();
+
+  // Returns the content transfer method for the action. This is only used for
+  // reporting and can be empty if the exact transfer method isn't supported in
+  // reporting.
+  std::string GetContentTransferMethod() const;
 
   // The Profile corresponding to the pending scan request(s).
   raw_ptr<Profile> profile_ = nullptr;
@@ -463,6 +499,10 @@ class ContentAnalysisDelegate : public ContentAnalysisDelegateBase {
   std::string page_content_type_;
 
   base::TimeTicks upload_start_time_;
+
+  // Custom message for rule.
+  ContentAnalysisResponse::Result::TriggeredRule::CustomRuleMessage
+      custom_rule_message_;
 
   base::WeakPtrFactory<ContentAnalysisDelegate> weak_ptr_factory_{this};
 };

@@ -111,6 +111,9 @@ inline constexpr char kOobeComplete[] = "OobeComplete";
 // The name of the screen that has to be shown if OOBE has been interrupted.
 inline constexpr char kOobeScreenPending[] = "OobeScreenPending";
 
+// A time pref stored before the first time pre-login OOBE starts.
+inline constexpr char kOobeStartTime[] = "oobe.oobe_start_time";
+
 // Boolean pref to hold guest metrics consent captured during guest OOBE. Guest
 // OOBE should only be triggered for guest sessions without a device owner. This
 // pref is used to hold that consent across browser restart.

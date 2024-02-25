@@ -10,6 +10,7 @@
 #include "chrome/browser/ui/color/chrome_color_mixers.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/test/views/chrome_test_widget.h"
+#include "components/color/color_mixers.h"
 #include "content/public/test/browser_task_environment.h"
 #include "ui/color/color_provider_manager.h"
 
@@ -50,6 +51,8 @@ void ChromeViewsTestBase::SetUp() {
   test_views_delegate()->set_layout_provider(
       ChromeLayoutProvider::CreateLayoutProvider());
 
+  ui::ColorProviderManager::Get().AppendColorProviderInitializer(
+      base::BindRepeating(color::AddComponentsColorMixers));
   ui::ColorProviderManager::Get().AppendColorProviderInitializer(
       base::BindRepeating(AddChromeColorMixers));
 }

@@ -83,6 +83,12 @@ BASE_FEATURE(kConfigureCaptureBeforeStart,
              "ConfigureCaptureBeforeStart",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+// Allow disabling optimizations (https://crbug.com/1143477,
+// https://crbug.com/959962) because of flickering (https://crbug.com/1515598).
+BASE_FEATURE(kOverrideCameraIOSurfaceColorSpace,
+             "OverrideCameraIOSurfaceColorSpace",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 AVCaptureDeviceFormat* FindBestCaptureFormat(
     NSArray<AVCaptureDeviceFormat*>* formats,
     int width,
@@ -100,15 +106,6 @@ AVCaptureDeviceFormat* FindBestCaptureFormat(
         [VideoCaptureDeviceAVFoundation FourCCToChromiumPixelFormat:fourcc];
     CMVideoDimensions dimensions =
         CMVideoFormatDescriptionGetDimensions(captureFormat.formatDescription);
-    Float64 maxFrameRate = 0;
-    bool matchesFrameRate = false;
-    for (AVFrameRateRange* frameRateRange in captureFormat
-             .videoSupportedFrameRateRanges) {
-      maxFrameRate = std::max(maxFrameRate, frameRateRange.maxFrameRate);
-      matchesFrameRate |=
-          frameRateRange.minFrameRate <= frame_rate + kFrameRateEpsilon &&
-          frame_rate - kFrameRateEpsilon <= frameRateRange.maxFrameRate;
-    }
 
     // If the pixel format is unsupported by our code, then it is not useful.
     if (pixelFormat == VideoPixelFormat::PIXEL_FORMAT_UNKNOWN) {
@@ -121,6 +118,15 @@ AVCaptureDeviceFormat* FindBestCaptureFormat(
       continue;
     }
 
+    Float64 maxFrameRate = 0;
+    bool matchesFrameRate = false;
+    for (AVFrameRateRange* frameRateRange in captureFormat
+             .videoSupportedFrameRateRanges) {
+      maxFrameRate = std::max(maxFrameRate, frameRateRange.maxFrameRate);
+      matchesFrameRate |=
+          frameRateRange.minFrameRate <= frame_rate + kFrameRateEpsilon &&
+          frame_rate - kFrameRateEpsilon <= frameRateRange.maxFrameRate;
+    }
     // Prefer a capture format that handles the requested framerate to one
     // that doesn't.
     if (bestCaptureFormat) {
@@ -227,8 +233,8 @@ AVCaptureDeviceFormat* FindBestCaptureFormat(
 
   // For testing.
   base::RepeatingCallback<void()> _onPhotoOutputStopped;
-  absl::optional<bool> _isPortraitEffectSupportedForTesting;
-  absl::optional<bool> _isPortraitEffectActiveForTesting;
+  std::optional<bool> _isPortraitEffectSupportedForTesting;
+  std::optional<bool> _isPortraitEffectActiveForTesting;
 
   scoped_refptr<base::SingleThreadTaskRunner> _mainThreadTaskRunner;
 }
@@ -309,7 +315,28 @@ AVCaptureDeviceFormat* FindBestCaptureFormat(
     // To avoid races with concurrent callbacks, grab the lock before stopping
     // capture and clearing all the variables.
     base::AutoLock lock(_lock);
+
+    // Cleanup AVCaptureSession
+    // 1. Stop the AVCaptureSession
     [self stopCapture];
+    // 2. Remove AVCaptureInputs and AVCaptureOutputs
+    for (AVCaptureInput* input in _captureSession.inputs) {
+      [_captureSession removeInput:input];
+    }
+    for (AVCaptureOutput* output in _captureSession.outputs) {
+      [_captureSession removeOutput:output];
+    }
+    // 3. Set the AVCaptureSession to nil to remove strong references
+    _captureSession = nil;
+
+    // Cleanup AVCaptureDevice
+    // 1. Unlock any configuration (if locked)
+    [_captureDevice unlockForConfiguration];
+    // 2. Remove observer
+    [_captureDevice removeObserver:self forKeyPath:@"portraitEffectActive"];
+    // 3. Release and deallocate the capture device
+    _captureDevice = nil;
+
     _frameReceiver = nullptr;
     _sampleBufferTransformer.reset();
     _mainThreadTaskRunner = nullptr;
@@ -899,7 +926,8 @@ AVCaptureDeviceFormat* FindBestCaptureFormat(
   // https://crbug.com/1143477 (CPU usage parsing ICC profile)
   // https://crbug.com/959962 (ignoring color space)
   gfx::ColorSpace overriddenColorSpace = colorSpace;
-  if (colorSpace == kColorSpaceRec709Apple) {
+  if (colorSpace == kColorSpaceRec709Apple &&
+      base::FeatureList::IsEnabled(media::kOverrideCameraIOSurfaceColorSpace)) {
     overriddenColorSpace = gfx::ColorSpace(
         gfx::ColorSpace::PrimaryID::BT709, gfx::ColorSpace::TransferID::SRGB,
         gfx::ColorSpace::MatrixID::BT709, gfx::ColorSpace::RangeID::LIMITED);
@@ -1033,15 +1061,15 @@ AVCaptureDeviceFormat* FindBestCaptureFormat(
     // the original size, rotated_pixelBuffer need to scale it to its original
     // size by transforming it.
     base::apple::ScopedCFTypeRef<CVPixelBufferRef> rotated_pixelBuffer =
-        _sampleBufferTransformer->Rotate(pixelBuffer);
+        _sampleBufferTransformer->Rotate(pixelBuffer.get());
     base::apple::ScopedCFTypeRef<CVPixelBufferRef> final_pixel_buffer =
-        _sampleBufferTransformer->Transform(rotated_pixelBuffer);
+        _sampleBufferTransformer->Transform(rotated_pixelBuffer.get());
 
 #endif
 
     const media::VideoCaptureFormat captureFormat(
-        gfx::Size(CVPixelBufferGetWidth(final_pixel_buffer),
-                  CVPixelBufferGetHeight(final_pixel_buffer)),
+        gfx::Size(CVPixelBufferGetWidth(final_pixel_buffer.get()),
+                  CVPixelBufferGetHeight(final_pixel_buffer.get())),
         _frameRate, media::PIXEL_FORMAT_NV12);
     // When the |pixelBuffer| is the result of a conversion (not camera
     // pass-through) then it originates from a CVPixelBufferPool and the color
@@ -1053,7 +1081,7 @@ AVCaptureDeviceFormat* FindBestCaptureFormat(
     // TODO(hbos): Investigate how to successfully parse and/or configure the
     // color space correctly. The implications of this hack is not fully
     // understood.
-    [self processPixelBufferNV12IOSurface:final_pixel_buffer
+    [self processPixelBufferNV12IOSurface:final_pixel_buffer.get()
                             captureFormat:captureFormat
                                colorSpace:kColorSpaceRec709Apple
                                 timestamp:timestamp];

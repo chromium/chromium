@@ -31,6 +31,18 @@ __wptrunner__ = {"product": "chrome",
                  "timeout_multiplier": "get_timeout_multiplier",}
 
 
+def debug_args(debug_info):
+    if debug_info.interactive:
+        # Keep in sync with:
+        # https://chromium.googlesource.com/chromium/src/+/main/third_party/blink/tools/debug_renderer
+        return [
+            "--no-sandbox",
+            "--disable-hang-monitor",
+            "--wait-for-debugger-on-navigation",
+        ]
+    return []
+
+
 def check_args(**kwargs):
     require_arg(kwargs, "webdriver_binary")
 
@@ -88,13 +100,16 @@ def executor_kwargs(logger, test_type, test_environment, run_info_data,
     # Shorten delay for Reporting <https://w3c.github.io/reporting/>.
     chrome_options["args"].append("--short-reporting-delay")
     # Point all .test domains to localhost for Chrome
-    chrome_options["args"].append("--host-resolver-rules=MAP nonexistent.*.test ~NOTFOUND, MAP *.test 127.0.0.1")
+    chrome_options["args"].append("--host-resolver-rules=MAP nonexistent.*.test ^NOTFOUND, MAP *.test 127.0.0.1, MAP *.test. 127.0.0.1")
     # Enable Secure Payment Confirmation for Chrome. This is normally disabled
     # on Linux as it hasn't shipped there yet, but in WPT we enable virtual
     # authenticator devices anyway for testing and so SPC works.
     chrome_options["args"].append("--enable-features=SecurePaymentConfirmationBrowser")
     # For WebTransport tests.
     chrome_options["args"].append("--webtransport-developer-mode")
+    # The GenericSensorExtraClasses flag enables the browser-side
+    # implementation of sensors such as Ambient Light Sensor.
+    chrome_options["args"].append("--enable-features=GenericSensorExtraClasses")
 
     # Classify `http-private`, `http-public` and https variants in the
     # appropriate IP address spaces.
@@ -124,16 +139,17 @@ def executor_kwargs(logger, test_type, test_environment, run_info_data,
     if kwargs["enable_experimental"]:
         chrome_options["args"].extend(["--enable-experimental-web-platform-features"])
 
-    # Pass the --headless flag to Chrome if WPT's own --headless flag was set
-    # or if we're running print reftests because of crbug.com/753118
-    if ((kwargs["headless"] or test_type == "print-reftest") and
-        "--headless" not in chrome_options["args"]):
-        chrome_options["args"].append("--headless")
-
     # Copy over any other flags that were passed in via `--binary-arg`
     for arg in kwargs.get("binary_args", []):
         if arg not in chrome_options["args"]:
             chrome_options["args"].append(arg)
+
+    # Pass the --headless=new flag to Chrome if WPT's own --headless flag was
+    # set. '--headless' should always mean the new headless mode, as the old
+    # headless mode is not used anyway.
+    if kwargs["headless"] and ("--headless=new" not in chrome_options["args"] and
+                               "--headless" not in chrome_options["args"]):
+        chrome_options["args"].append("--headless=new")
 
     if test_type == "wdspec":
         executor_kwargs["binary_args"] = chrome_options["args"]
@@ -148,6 +164,8 @@ def env_extras(**kwargs):
 
 
 def env_options():
+    # TODO(crbug.com/1440021): Support text-based debuggers for `chrome` through
+    # `chromedriver`.
     return {"server_host": "127.0.0.1"}
 
 

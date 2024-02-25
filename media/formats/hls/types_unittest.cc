@@ -709,10 +709,9 @@ TEST(HlsTypesTest, ParseByteRangeExpression) {
   error_test("\"12@34\"");
 
   // Test some valid inputs
-  ok_test("0",
-          types::ByteRangeExpression{.length = 0, .offset = absl::nullopt});
+  ok_test("0", types::ByteRangeExpression{.length = 0, .offset = std::nullopt});
   ok_test("12",
-          types::ByteRangeExpression{.length = 12, .offset = absl::nullopt});
+          types::ByteRangeExpression{.length = 12, .offset = std::nullopt});
   ok_test("12@0", types::ByteRangeExpression{.length = 12, .offset = 0});
   ok_test("12@34", types::ByteRangeExpression{.length = 12, .offset = 34});
   ok_test("0@34", types::ByteRangeExpression{.length = 0, .offset = 34});

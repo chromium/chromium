@@ -27,15 +27,13 @@ namespace sentencepiece {
 // Converts Sentencepiece configuration to flatbuffer format.
 // encoding_offset is used by some encoders that combine different encodings.
 tflite::support::StatusOr<std::string> ConvertSentencepieceModelToFlatBuffer(
-    const std::string& model_config_str,
-    int encoding_offset = 0);
+    const std::string& model_config_str, int encoding_offset = 0);
 
 // Converts Sentencepiece configuration to flatbuffer format for encoder.
 // encoding_offset is used by some encoders that combine different encodings.
 tflite::support::StatusOr<std::string>
 ConvertSentencepieceModelToFlatBufferForDecoder(
-    const std::string& model_config_str,
-    int encoding_offset = 0);
+    const std::string& model_config_str, int encoding_offset = 0);
 
 // The functions that are provided for the Python wrapper.
 std::string ConvertSentencepieceModel(const std::string& model_string);

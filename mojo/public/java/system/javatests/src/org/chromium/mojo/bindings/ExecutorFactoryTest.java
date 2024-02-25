@@ -24,13 +24,10 @@ import java.util.concurrent.Executor;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-/**
- * Testing the executor factory.
- */
+/** Testing the executor factory. */
 @RunWith(BaseJUnit4ClassRunner.class)
 public class ExecutorFactoryTest {
-    @Rule
-    public MojoTestRule mTestRule = new MojoTestRule();
+    @Rule public MojoTestRule mTestRule = new MojoTestRule();
 
     private static final long RUN_LOOP_TIMEOUT_MS = 50;
     private static final int CONCURRENCY_LEVEL = 5;
@@ -48,18 +45,17 @@ public class ExecutorFactoryTest {
         mThreadContainer = new ArrayList<Thread>();
     }
 
-    /**
-     * Testing the {@link Executor} when called from the executor thread.
-     */
+    /** Testing the {@link Executor} when called from the executor thread. */
     @Test
     @SmallTest
     public void testExecutorOnCurrentThread() {
-        Runnable action = new Runnable() {
-            @Override
-            public void run() {
-                mThreadContainer.add(Thread.currentThread());
-            }
-        };
+        Runnable action =
+                new Runnable() {
+                    @Override
+                    public void run() {
+                        mThreadContainer.add(Thread.currentThread());
+                    }
+                };
         mExecutor.execute(action);
         mExecutor.execute(action);
         Assert.assertEquals(0, mThreadContainer.size());
@@ -70,33 +66,33 @@ public class ExecutorFactoryTest {
         }
     }
 
-    /**
-     * Testing the {@link Executor} when called from another thread.
-     */
+    /** Testing the {@link Executor} when called from another thread. */
     @Test
     @SmallTest
     public void testExecutorOnOtherThread() {
         final CyclicBarrier barrier = new CyclicBarrier(CONCURRENCY_LEVEL + 1);
         for (int i = 0; i < CONCURRENCY_LEVEL; ++i) {
-            WORKERS.execute(new Runnable() {
-                @Override
-                public void run() {
-                    mExecutor.execute(new Runnable() {
-
+            WORKERS.execute(
+                    new Runnable() {
                         @Override
                         public void run() {
-                            mThreadContainer.add(Thread.currentThread());
+                            mExecutor.execute(
+                                    new Runnable() {
+
+                                        @Override
+                                        public void run() {
+                                            mThreadContainer.add(Thread.currentThread());
+                                        }
+                                    });
+                            try {
+                                barrier.await();
+                            } catch (InterruptedException e) {
+                                Assert.fail("Unexpected exception: " + e.getMessage());
+                            } catch (BrokenBarrierException e) {
+                                Assert.fail("Unexpected exception: " + e.getMessage());
+                            }
                         }
                     });
-                    try {
-                        barrier.await();
-                    } catch (InterruptedException e) {
-                        Assert.fail("Unexpected exception: " + e.getMessage());
-                    } catch (BrokenBarrierException e) {
-                        Assert.fail("Unexpected exception: " + e.getMessage());
-                    }
-                }
-            });
         }
         try {
             barrier.await();

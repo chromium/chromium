@@ -3,17 +3,16 @@
 // found in the LICENSE file.
 
 import 'chrome://print-management/print_management.js';
-import 'chrome://webui-test/mojo_webui_test_support.js';
+import 'chrome://webui-test/chromeos/mojo_webui_test_support.js';
 
-import {IronIconElement} from '//resources/polymer/v3_0/iron-icon/iron-icon.js';
+import type {IronIconElement} from '//resources/polymer/v3_0/iron-icon/iron-icon.js';
 import {setMetadataProviderForTesting, setPrintManagementHandlerForTesting} from 'chrome://print-management/mojo_interface_provider.js';
-import {PrintJobEntryElement} from 'chrome://print-management/print_job_entry.js';
-import {PrintManagementElement} from 'chrome://print-management/print_management.js';
+import type {PrintJobEntryElement} from 'chrome://print-management/print_job_entry.js';
+import type {PrintManagementElement} from 'chrome://print-management/print_management.js';
 import {PrinterSetupInfoElement} from 'chrome://print-management/printer_setup_info.js';
-import {ActivePrintJobInfo, ActivePrintJobState, CompletedPrintJobInfo, LaunchSource, PrinterErrorCode, PrintingMetadataProviderInterface, PrintJobCompletionStatus, PrintJobInfo, PrintJobsObserverRemote} from 'chrome://print-management/printing_manager.mojom-webui.js';
-import {CrButtonElement} from 'chrome://resources/cr_elements/cr_button/cr_button.js';
-import {assert} from 'chrome://resources/js/assert_ts.js';
-import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
+import {ActivePrintJobState, LaunchSource, PrinterErrorCode, PrintJobCompletionStatus} from 'chrome://print-management/printing_manager.mojom-webui.js';
+import type {ActivePrintJobInfo, CompletedPrintJobInfo, PrintingMetadataProviderInterface, PrintJobInfo, PrintJobsObserverRemote} from 'chrome://print-management/printing_manager.mojom-webui.js';
+import type {CrButtonElement} from 'chrome://resources/ash/common/cr_elements/cr_button/cr_button.js';
 import {PromiseResolver} from 'chrome://resources/js/promise_resolver.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
@@ -348,6 +347,13 @@ suite('PrintManagementTest', () => {
     assertTrue(!!page);
     flush();
     return mojoApi_.whenCalled('observePrintJobs');
+  }
+
+  function initializePrintManagementAppBeforePrintJobs(): void {
+    page = document.createElement('print-management') as PrintManagementElement;
+    document.body.appendChild(page);
+    assertTrue(!!page);
+    flush();
   }
 
   function simulateCancelPrintJob(
@@ -746,42 +752,24 @@ suite('PrintManagementTest', () => {
     verifyPrintJobs(expectedPrintJobArr, getHistoryPrintJobEntries(page!));
   });
 
-  // Verify expected elements display when there are no print jobs and flag is
-  // off.
-  test('EmptyState_SetupAssistanceFlagOff', async () => {
-    // Ensure printer setup assistance flag is disabled for test.
-    loadTimeData.overrideValues({
-      isSetupAssistanceEnabled: false,
-    });
-    await initializePrintManagementApp(/*expectedArr=*/[]);
-    await mojoApi_.whenCalled('getPrintJobs');
-    flush();
+  // Verify expected elements display when there are no print jobs.
+  test('EmptyState', async () => {
+    initializePrintManagementAppBeforePrintJobs();
 
-    // Assert that ongoing list is empty and the empty state message is
-    // not hidden.
-    assertTrue(!querySelector(page!, '#ongoingList'));
-    assertFalse(
+    // Assert that printer setup UI is hidden and ongoing empty state message is
+    // hidden when flag enabled before the print jobs have loaded.
+    assertTrue(
         querySelector<HTMLElement>(page!, '#ongoingEmptyState')?.hidden as
         boolean);
     assertTrue(
         querySelector<PrinterSetupInfoElement>(
             page!, PrinterSetupInfoElement.is)
             ?.hidden as boolean);
-  });
-
-  // Verify expected elements display when there are no print jobs and flag is
-  // on.
-  test('EmptyState_SetupAssistanceFlagOn', async () => {
-    // Ensure printer setup assistance flag is enabled for test.
-    loadTimeData.overrideValues({
-      isSetupAssistanceEnabled: true,
-    });
-    await initializePrintManagementApp(/*expectedArr=*/[]);
-    await mojoApi_.whenCalled('getPrintJobs');
-    flush();
 
     // Assert that printer setup UI is not hidden and ongoing empty state
-    // message is hidden when flag enabled and there are no printer jobs.
+    // message is hidden when flag enabled and the print jobs loaded as empty.
+    await mojoApi_.whenCalled('getPrintJobs');
+    flush();
     assertTrue(
         querySelector<HTMLElement>(page!, '#ongoingEmptyState')?.hidden as
         boolean);
@@ -792,54 +780,8 @@ suite('PrintManagementTest', () => {
   });
 
   // Verify expected elements render when there are no ongoing jobs, at least
-  // one historical job, and the printer setup flag is off.
-  test('CancelOngoingPrintJob_SetupAssistanceFlagOff', async () => {
-    // Ensure printer setup assistance flag is disabled for test.
-    loadTimeData.overrideValues({
-      isSetupAssistanceEnabled: false,
-    });
-    const kId = 'fileA';
-    const kTitle = 'titleA';
-    const kTime =
-        convertToMojoTime(new Date(Date.parse('February 5, 2020 03:23:00')));
-    const expectedArr = [
-      createJobEntry(
-          kId, kTitle, kTime, PrinterErrorCode.kNoError,
-          /*completedInfo=*/ undefined,
-          createOngoingPrintJobInfo(
-              /*printedPages=*/ 0, ActivePrintJobState.kStarted)),
-    ];
-
-    const expectedHistoryList = [createJobEntry(
-        kId, kTitle, kTime, PrinterErrorCode.kNoError,
-        createCompletedPrintJobInfo(PrintJobCompletionStatus.kCanceled))];
-
-    await initializePrintManagementApp(expectedArr);
-    await mojoApi_.whenCalled('getPrintJobs');
-    flush();
-    const jobEntries = getOngoingPrintJobEntries(page!);
-    verifyPrintJobs(expectedArr, jobEntries);
-
-    await simulateCancelPrintJob(
-        jobEntries[0]!, mojoApi_,
-        /*shouldAttemptCancel*/ true, expectedHistoryList);
-    flush();
-
-    // Verify that there are no ongoing print jobs, history list is
-    // populated, and printer setup UI is hidden.
-    assertTrue(!querySelector(page!, '#ongoingList'));
-    verifyPrintJobs(expectedHistoryList, getHistoryPrintJobEntries(page!));
-    assertFalse(isVisible(querySelector<PrinterSetupInfoElement>(
-        page!, PrinterSetupInfoElement.is)));
-  });
-
-  // Verify expected elements render when there are no ongoing jobs, at least
-  // one historical job, and the printer setup flag is on.
-  test('CancelOngoingPrintJob_SetupAssistanceFlagOn', async () => {
-    // Ensure printer setup assistance flag is enabled for test.
-    loadTimeData.overrideValues({
-      isSetupAssistanceEnabled: true,
-    });
+  // one historical job.
+  test('CancelOngoingPrintJob', async () => {
     const kId = 'fileA';
     const kTitle = 'titleA';
     const kTime =
@@ -911,44 +853,17 @@ suite('PrintManagementTest', () => {
     verifyPrintJobs(expectedHistoryList, getHistoryPrintJobEntries(page!));
   });
 
-  test('IsJellyEnabledForPrintManagementUpdatesCSS', async () => {
-    const disabledUrl = 'chrome://resources/chromeos/colors/cros_styles.css';
-    const linkEl = document.createElement('link');
-    linkEl.href = disabledUrl;
-    document.head.appendChild(linkEl);
-
-    // Setup for disabled test.
-    loadTimeData.overrideValues({
-      isJellyEnabledForPrintManagement: false,
-    });
-
+  // Verify 'manage printers' button in header does not show when there are
+  // no active or historical print jobs.
+  test('HeaderManagePrinterButton_HiddenWhenHasNoJobs', async () => {
     await initializePrintManagementApp([]);
 
-    assertTrue(linkEl.href.includes(disabledUrl));
-
-    // Clean up element.
-    page?.remove();
-    page = null;
-    assert(window.trustedTypes);
-    document.body.innerHTML = window.trustedTypes.emptyHTML;
-
-    // Setup for enabled test.
-    loadTimeData.overrideValues({
-      isJellyEnabledForPrintManagement: true,
-    });
-
-    await initializePrintManagementApp([]);
-
-    const enabledUrl = 'chrome://theme/colors.css';
-    assertTrue(linkEl.href.includes(enabledUrl));
-
-    // Clean up test element.
-    document.head.removeChild(linkEl);
+    assertFalse(
+        isVisible(querySelector<CrButtonElement>(page!, '#managePrinters')));
   });
 
-  // Verify 'manage printers' button in header does not show when setup
-  // assistance flag is off.
-  test('HeaderManagePrinterButton_HiddenWhenFlagOff', async () => {
+  // Verify 'manage printers' button in header shows when there any print jobs.
+  test('HeaderManagePrinterButton_Visible', async () => {
     const kId = 'fileA';
     const kTitle = 'titleA';
     const kTime =
@@ -961,52 +876,6 @@ suite('PrintManagementTest', () => {
           createOngoingPrintJobInfo(
               /*printedPages=*/ 0, ActivePrintJobState.kStarted)),
     ];
-
-    // Setup for disabled test.
-    loadTimeData.overrideValues({
-      isSetupAssistanceEnabled: false,
-    });
-
-    await initializePrintManagementApp(jobsArr);
-
-    assertFalse(
-        isVisible(querySelector<CrButtonElement>(page!, '#managePrinters')));
-  });
-
-  // Verify 'manage printers' button in header does not show when setup
-  // assistance flag is on and there are no active or historical print jobs.
-  test('HeaderManagePrinterButton_HiddenWhenFlagOnAndHasNoJobs', async () => {
-    // Setup for disabled test.
-    loadTimeData.overrideValues({
-      isSetupAssistanceEnabled: true,
-    });
-
-    await initializePrintManagementApp([]);
-
-    assertFalse(
-        isVisible(querySelector<CrButtonElement>(page!, '#managePrinters')));
-  });
-
-  // Verify 'manage printers' button in header shows when setup
-  // assistance flag is on and there any print jobs.
-  test('HeaderManagePrinterButton_VisibleWhenFlagOn', async () => {
-    const kId = 'fileA';
-    const kTitle = 'titleA';
-    const kTime =
-        convertToMojoTime(new Date(Date.parse('February 5, 2020 03:23:00')));
-
-    const jobsArr = [
-      createJobEntry(
-          kId, kTitle, kTime, PrinterErrorCode.kNoError,
-          /*completedInfo=*/ undefined,
-          createOngoingPrintJobInfo(
-              /*printedPages=*/ 0, ActivePrintJobState.kStarted)),
-    ];
-
-    // Setup for disabled test.
-    loadTimeData.overrideValues({
-      isSetupAssistanceEnabled: true,
-    });
 
     await initializePrintManagementApp(jobsArr);
 
@@ -1035,11 +904,6 @@ suite('PrintManagementTest', () => {
           createOngoingPrintJobInfo(
               /*printedPages=*/ 0, ActivePrintJobState.kStarted)),
     ];
-
-    // Setup for disabled test.
-    loadTimeData.overrideValues({
-      isSetupAssistanceEnabled: true,
-    });
 
     await initializePrintManagementApp(jobsArr);
     assertEquals(0, pageHandler.getLaunchPrinterSettingsCount());

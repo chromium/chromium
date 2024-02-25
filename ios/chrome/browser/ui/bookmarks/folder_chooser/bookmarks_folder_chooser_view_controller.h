@@ -7,7 +7,7 @@
 
 #import <UIKit/UIKit.h>
 
-#import "ios/chrome/browser/shared/ui/table_view/chrome_table_view_controller.h"
+#import "ios/chrome/browser/shared/ui/table_view/legacy_chrome_table_view_controller.h"
 #import "ios/chrome/browser/ui/bookmarks/folder_chooser/bookmarks_folder_chooser_consumer.h"
 
 @protocol BookmarksFolderChooserDataSource;
@@ -23,7 +23,7 @@ class BookmarkModel;
 // bookmark model can affect this controller's state.
 // The bookmark model is assumed to be loaded, thus also not to be NULL.
 @interface BookmarksFolderChooserViewController
-    : ChromeTableViewController <BookmarksFolderChooserConsumer>
+    : LegacyChromeTableViewController <BookmarksFolderChooserConsumer>
 
 @property(nonatomic, weak)
     id<BookmarksFolderChooserViewControllerPresentationDelegate>

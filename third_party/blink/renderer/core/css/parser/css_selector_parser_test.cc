@@ -5,6 +5,7 @@
 #include "third_party/blink/renderer/core/css/parser/css_selector_parser.h"
 
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/renderer/core/css/css_selector.h"
 #include "third_party/blink/renderer/core/css/css_selector_list.h"
 #include "third_party/blink/renderer/core/css/css_test_helpers.h"
 #include "third_party/blink/renderer/core/css/parser/css_parser_context.h"
@@ -15,6 +16,7 @@
 #include "third_party/blink/renderer/core/testing/dummy_page_holder.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
+#include "third_party/blink/renderer/platform/testing/task_environment.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 
 namespace blink {
@@ -39,9 +41,6 @@ struct SelectorTestCase {
 
 class SelectorParseTest : public ::testing::TestWithParam<SelectorTestCase> {};
 
-class SelectorParseTestForHasForgivingParsing
-    : public ::testing::TestWithParam<SelectorTestCase> {};
-
 TEST_P(SelectorParseTest, Parse) {
   auto param = GetParam();
   SCOPED_TRACE(param.input);
@@ -50,17 +49,8 @@ TEST_P(SelectorParseTest, Parse) {
   EXPECT_EQ(String(expected), list->SelectorsText());
 }
 
-TEST_P(SelectorParseTestForHasForgivingParsing, Parse) {
-  ScopedCSSPseudoHasNonForgivingParsingForTest scoped_feature(false);
-
-  auto param = GetParam();
-  SCOPED_TRACE(param.input);
-  CSSSelectorList* list = css_test_helpers::ParseSelectorList(param.input);
-  const char* expected = param.expected ? param.expected : param.input;
-  EXPECT_EQ(String(expected), list->SelectorsText());
-}
-
 TEST(CSSSelectorParserTest, ValidANPlusB) {
+  test::TaskEnvironment task_environment;
   ANPlusBTestCase test_cases[] = {
       {"odd", 2, 1},
       {"OdD", 2, 1},
@@ -134,6 +124,7 @@ TEST(CSSSelectorParserTest, ValidANPlusB) {
 }
 
 TEST(CSSSelectorParserTest, InvalidANPlusB) {
+  test::TaskEnvironment task_environment;
   // Some of these have token range prefixes which are valid <an+b> and could
   // in theory be valid in consumeANPlusB, but this behaviour isn't needed
   // anywhere and not implemented.
@@ -155,6 +146,7 @@ TEST(CSSSelectorParserTest, InvalidANPlusB) {
 }
 
 TEST(CSSSelectorParserTest, PseudoElementsInCompoundLists) {
+  test::TaskEnvironment task_environment;
   const char* test_cases[] = {":not(::before)",
                               ":not(::content)",
                               ":host(::before)",
@@ -174,12 +166,14 @@ TEST(CSSSelectorParserTest, PseudoElementsInCompoundLists) {
         MakeGarbageCollected<CSSParserContext>(
             kHTMLStandardMode, SecureContextMode::kInsecureContext),
         CSSNestingType::kNone, /*parent_rule_for_nesting=*/nullptr,
+        /*is_within_scope=*/false,
         /*semicolon_aborts_nested_selector=*/false, nullptr, arena);
     EXPECT_EQ(vector.size(), 0u);
   }
 }
 
 TEST(CSSSelectorParserTest, ValidSimpleAfterPseudoElementInCompound) {
+  test::TaskEnvironment task_environment;
   const char* test_cases[] = {"::-webkit-volume-slider:hover",
                               "::selection:window-inactive",
                               "::-webkit-scrollbar:disabled",
@@ -198,12 +192,14 @@ TEST(CSSSelectorParserTest, ValidSimpleAfterPseudoElementInCompound) {
         MakeGarbageCollected<CSSParserContext>(
             kHTMLStandardMode, SecureContextMode::kInsecureContext),
         CSSNestingType::kNone, /*parent_rule_for_nesting=*/nullptr,
+        /*is_within_scope=*/false,
         /*semicolon_aborts_nested_selector=*/false, nullptr, arena);
     EXPECT_GT(vector.size(), 0u);
   }
 }
 
 TEST(CSSSelectorParserTest, InvalidSimpleAfterPseudoElementInCompound) {
+  test::TaskEnvironment task_environment;
   const char* test_cases[] = {
       "::before#id",
       "::after:hover",
@@ -234,14 +230,14 @@ TEST(CSSSelectorParserTest, InvalidSimpleAfterPseudoElementInCompound) {
         MakeGarbageCollected<CSSParserContext>(
             kHTMLStandardMode, SecureContextMode::kInsecureContext),
         CSSNestingType::kNone, /*parent_rule_for_nesting=*/nullptr,
+        /*is_within_scope=*/false,
         /*semicolon_aborts_nested_selector=*/false, nullptr, arena);
     EXPECT_EQ(vector.size(), 0u);
   }
 }
 
 TEST(CSSSelectorParserTest, TransitionPseudoStyles) {
-  ScopedViewTransitionForTest view_transition_enabled(true);
-
+  test::TaskEnvironment task_environment;
   struct TestCase {
     const char* selector;
     bool valid;
@@ -281,6 +277,7 @@ TEST(CSSSelectorParserTest, TransitionPseudoStyles) {
         MakeGarbageCollected<CSSParserContext>(
             kHTMLStandardMode, SecureContextMode::kInsecureContext),
         CSSNestingType::kNone, /*parent_rule_for_nesting=*/nullptr,
+        /*is_within_scope=*/false,
         /*semicolon_aborts_nested_selector=*/false, nullptr, arena);
     EXPECT_EQ(!vector.empty(), test_case.valid);
     if (!test_case.valid) {
@@ -296,11 +293,15 @@ TEST(CSSSelectorParserTest, TransitionPseudoStyles) {
     }
 
     EXPECT_EQ(selector->GetPseudoType(), test_case.type);
-    EXPECT_EQ(selector->Argument(), test_case.argument);
+    EXPECT_EQ(selector->GetPseudoType() == CSSSelector::kPseudoViewTransition
+                  ? selector->Argument()
+                  : selector->IdentList()[0],
+              test_case.argument);
   }
 }
 
 TEST(CSSSelectorParserTest, WorkaroundForInvalidCustomPseudoInUAStyle) {
+  test::TaskEnvironment task_environment;
   // See crbug.com/578131
   const char* test_cases[] = {
       "video::-webkit-media-text-track-region-container.scrolling",
@@ -316,12 +317,14 @@ TEST(CSSSelectorParserTest, WorkaroundForInvalidCustomPseudoInUAStyle) {
         MakeGarbageCollected<CSSParserContext>(
             kUASheetMode, SecureContextMode::kInsecureContext),
         CSSNestingType::kNone, /*parent_rule_for_nesting=*/nullptr,
+        /*is_within_scope=*/false,
         /*semicolon_aborts_nested_selector=*/false, nullptr, arena);
     EXPECT_GT(vector.size(), 0u);
   }
 }
 
 TEST(CSSSelectorParserTest, InvalidPseudoElementInNonRightmostCompound) {
+  test::TaskEnvironment task_environment;
   const char* test_cases[] = {"::-webkit-volume-slider *", "::before *",
                               "::-webkit-scrollbar *", "::cue *",
                               "::selection *"};
@@ -336,12 +339,14 @@ TEST(CSSSelectorParserTest, InvalidPseudoElementInNonRightmostCompound) {
         MakeGarbageCollected<CSSParserContext>(
             kHTMLStandardMode, SecureContextMode::kInsecureContext),
         CSSNestingType::kNone, /*parent_rule_for_nesting=*/nullptr,
+        /*is_within_scope=*/false,
         /*semicolon_aborts_nested_selector=*/false, nullptr, arena);
     EXPECT_EQ(vector.size(), 0u);
   }
 }
 
 TEST(CSSSelectorParserTest, UnresolvedNamespacePrefix) {
+  test::TaskEnvironment task_environment;
   const char* test_cases[] = {"ns|div", "div ns|div", "div ns|div "};
 
   auto* context = MakeGarbageCollected<CSSParserContext>(
@@ -355,13 +360,14 @@ TEST(CSSSelectorParserTest, UnresolvedNamespacePrefix) {
     CSSParserTokenRange range(tokens);
     base::span<CSSSelector> vector = CSSSelectorParser::ParseSelector(
         range, context, CSSNestingType::kNone,
-        /*parent_rule_for_nesting=*/nullptr,
+        /*parent_rule_for_nesting=*/nullptr, /*is_within_scope=*/false,
         /*semicolon_aborts_nested_selector=*/false, sheet, arena);
     EXPECT_EQ(vector.size(), 0u);
   }
 }
 
 TEST(CSSSelectorParserTest, UnexpectedPipe) {
+  test::TaskEnvironment task_environment;
   const char* test_cases[] = {"div | .c", "| div", " | div"};
 
   auto* context = MakeGarbageCollected<CSSParserContext>(
@@ -375,13 +381,14 @@ TEST(CSSSelectorParserTest, UnexpectedPipe) {
     CSSParserTokenRange range(tokens);
     base::span<CSSSelector> vector = CSSSelectorParser::ParseSelector(
         range, context, CSSNestingType::kNone,
-        /*parent_rule_for_nesting=*/nullptr,
+        /*parent_rule_for_nesting=*/nullptr, /*is_within_scope=*/false,
         /*semicolon_aborts_nested_selector=*/false, sheet, arena);
     EXPECT_EQ(vector.size(), 0u);
   }
 }
 
 TEST(CSSSelectorParserTest, SerializedUniversal) {
+  test::TaskEnvironment task_environment;
   const char* test_cases[][2] = {
       {"*::-webkit-volume-slider", "::-webkit-volume-slider"},
       {"*::cue(i)", "::cue(i)"},
@@ -407,7 +414,7 @@ TEST(CSSSelectorParserTest, SerializedUniversal) {
     CSSParserTokenRange range(tokens);
     base::span<CSSSelector> vector = CSSSelectorParser::ParseSelector(
         range, context, CSSNestingType::kNone,
-        /*parent_rule_for_nesting=*/nullptr,
+        /*parent_rule_for_nesting=*/nullptr, /*is_within_scope=*/false,
         /*semicolon_aborts_nested_selector=*/false, sheet, arena);
     CSSSelectorList* list = CSSSelectorList::AdoptSelectorVector(vector);
     EXPECT_TRUE(list->IsValid());
@@ -416,6 +423,7 @@ TEST(CSSSelectorParserTest, SerializedUniversal) {
 }
 
 TEST(CSSSelectorParserTest, AttributeSelectorUniversalInvalid) {
+  test::TaskEnvironment task_environment;
   const char* test_cases[] = {"[*]", "[*|*]"};
 
   auto* context = MakeGarbageCollected<CSSParserContext>(
@@ -430,13 +438,14 @@ TEST(CSSSelectorParserTest, AttributeSelectorUniversalInvalid) {
     CSSParserTokenRange range(tokens);
     base::span<CSSSelector> vector = CSSSelectorParser::ParseSelector(
         range, context, CSSNestingType::kNone,
-        /*parent_rule_for_nesting=*/nullptr,
+        /*parent_rule_for_nesting=*/nullptr, /*is_within_scope=*/false,
         /*semicolon_aborts_nested_selector=*/false, sheet, arena);
     EXPECT_EQ(vector.size(), 0u);
   }
 }
 
 TEST(CSSSelectorParserTest, InternalPseudo) {
+  test::TaskEnvironment task_environment;
   const char* test_cases[] = {"::-internal-whatever",
                               "::-internal-media-controls-text-track-list",
                               ":-internal-is-html",
@@ -444,7 +453,6 @@ TEST(CSSSelectorParserTest, InternalPseudo) {
                               ":-internal-multi-select-focus",
                               ":-internal-shadow-host-has-appearance",
                               ":-internal-spatial-navigation-focus",
-                              ":-internal-spatial-navigation-interest",
                               ":-internal-video-persistent",
                               ":-internal-video-persistent-ancestor"};
 
@@ -460,6 +468,7 @@ TEST(CSSSelectorParserTest, InternalPseudo) {
         MakeGarbageCollected<CSSParserContext>(
             kHTMLStandardMode, SecureContextMode::kInsecureContext),
         CSSNestingType::kNone, /*parent_rule_for_nesting=*/nullptr,
+        /*is_within_scope=*/false,
         /*semicolon_aborts_nested_selector=*/false, nullptr, arena);
     EXPECT_EQ(author_vector.size(), 0u);
 
@@ -468,6 +477,7 @@ TEST(CSSSelectorParserTest, InternalPseudo) {
         MakeGarbageCollected<CSSParserContext>(
             kUASheetMode, SecureContextMode::kInsecureContext),
         CSSNestingType::kNone, /*parent_rule_for_nesting=*/nullptr,
+        /*is_within_scope=*/false,
         /*semicolon_aborts_nested_selector=*/false, nullptr, arena);
     EXPECT_GT(ua_vector.size(), 0u);
   }
@@ -498,6 +508,9 @@ static const SelectorTestCase invalid_pseudo_is_argments_data[] = {
     {":is(:cue)", ":is()"},
     {":is(:first-letter)", ":is()"},
     {":is(:first-line)", ":is()"},
+    // If the selector is nest-containing, it serializes as-is:
+    // https://drafts.csswg.org/css-nesting-1/#syntax
+    {":is(:unknown(&))"},
     // clang-format on
 };
 
@@ -520,7 +533,7 @@ static const SelectorTestCase is_where_nesting_data[] = {
     {"::cue(:is(.a .b))", "::cue(:is())"},
     {"::cue(:is(.a + .b))", "::cue(:is())"},
     {"::cue(:is(.a, .b + .c))", "::cue(:is(.a))"},
-    // Only user-action pseudos + :--state are allowed after kPseudoPart:
+    // Only user-action pseudos + :state() are allowed after kPseudoPart:
     {"::part(foo):is(.a)", "::part(foo):is()"},
     {"::part(foo):is(.a:hover)", "::part(foo):is()"},
     {"::part(foo):is(:hover.a)", "::part(foo):is()"},
@@ -532,6 +545,7 @@ static const SelectorTestCase is_where_nesting_data[] = {
      "::part(foo):is(:hover, :where())"},
     {"::part(foo):is(:hover, .a)", "::part(foo):is(:hover)"},
     {"::part(foo):is(:--bar, .a)", "::part(foo):is(:--bar)"},
+    {"::part(foo):is(:state(bar), .a)", "::part(foo):is(:state(bar))"},
     {"::part(foo):is(:enabled)", "::part(foo):is()"},
     // Only scrollbar pseudos after kPseudoScrollbar:
     {"::-webkit-scrollbar:is(:focus)", "::-webkit-scrollbar:is()"},
@@ -573,6 +587,7 @@ static const SelectorTestCase is_where_nesting_data[] = {
     {"::part(foo):is(:focus, :hover)"},
     {"::part(foo):is(:focus, :is(:hover))"},
     {"::part(foo):is(:focus, :--bar)"},
+    {"::part(foo):is(:focus, :state(bar))"},
     {"::-webkit-scrollbar:is(:enabled)"},
     {"::selection:is(:window-inactive)"},
     {"::-webkit-input-placeholder:is(:hover)"},
@@ -638,6 +653,7 @@ struct ASCIILowerTestCase {
 }  // namespace
 
 TEST(CSSSelectorParserTest, ASCIILowerHTMLStrict) {
+  test::TaskEnvironment task_environment;
   const ASCIILowerTestCase test_cases[] = {
       {"\\212a bd", u"\u212abd", TagLocalName},
       {"[\\212alass]", u"\u212alass", AttributeLocalName},
@@ -656,7 +672,7 @@ TEST(CSSSelectorParserTest, ASCIILowerHTMLStrict) {
     CSSParserTokenRange range(tokens);
     base::span<CSSSelector> vector = CSSSelectorParser::ParseSelector(
         range, context, CSSNestingType::kNone,
-        /*parent_rule_for_nesting=*/nullptr,
+        /*parent_rule_for_nesting=*/nullptr, /*is_within_scope=*/false,
         /*semicolon_aborts_nested_selector=*/false, sheet, arena);
     EXPECT_GT(vector.size(), 0u);
     CSSSelectorList* list = CSSSelectorList::AdoptSelectorVector(vector);
@@ -668,6 +684,7 @@ TEST(CSSSelectorParserTest, ASCIILowerHTMLStrict) {
 }
 
 TEST(CSSSelectorParserTest, ASCIILowerHTMLQuirks) {
+  test::TaskEnvironment task_environment;
   const ASCIILowerTestCase test_cases[] = {
       {"\\212a bd", u"\u212abd", TagLocalName},
       {"[\\212alass]", u"\u212alass", AttributeLocalName},
@@ -686,7 +703,7 @@ TEST(CSSSelectorParserTest, ASCIILowerHTMLQuirks) {
     CSSParserTokenRange range(tokens);
     base::span<CSSSelector> vector = CSSSelectorParser::ParseSelector(
         range, context, CSSNestingType::kNone,
-        /*parent_rule_for_nesting=*/nullptr,
+        /*parent_rule_for_nesting=*/nullptr, /*is_within_scope=*/false,
         /*semicolon_aborts_nested_selector=*/false, sheet, arena);
     EXPECT_GT(vector.size(), 0u);
     CSSSelectorList* list = CSSSelectorList::AdoptSelectorVector(vector);
@@ -698,6 +715,7 @@ TEST(CSSSelectorParserTest, ASCIILowerHTMLQuirks) {
 }
 
 TEST(CSSSelectorParserTest, ShadowPartPseudoElementValid) {
+  test::TaskEnvironment task_environment;
   const char* test_cases[] = {"::part(ident)", "host::part(ident)",
                               "host::part(ident):hover"};
 
@@ -712,6 +730,7 @@ TEST(CSSSelectorParserTest, ShadowPartPseudoElementValid) {
         MakeGarbageCollected<CSSParserContext>(
             kHTMLStandardMode, SecureContextMode::kInsecureContext),
         CSSNestingType::kNone, /*parent_rule_for_nesting=*/nullptr,
+        /*is_within_scope=*/false,
         /*semicolon_aborts_nested_selector=*/false, nullptr, arena);
     CSSSelectorList* list = CSSSelectorList::AdoptSelectorVector(vector);
     EXPECT_EQ(test_case, list->SelectorsText());
@@ -719,6 +738,7 @@ TEST(CSSSelectorParserTest, ShadowPartPseudoElementValid) {
 }
 
 TEST(CSSSelectorParserTest, ShadowPartAndBeforeAfterPseudoElementValid) {
+  test::TaskEnvironment task_environment;
   const char* test_cases[] = {
       "::part(ident)::before",       "::part(ident)::after",
       "::part(ident)::placeholder",  "::part(ident)::first-line",
@@ -735,6 +755,7 @@ TEST(CSSSelectorParserTest, ShadowPartAndBeforeAfterPseudoElementValid) {
         MakeGarbageCollected<CSSParserContext>(
             kHTMLStandardMode, SecureContextMode::kInsecureContext),
         CSSNestingType::kNone, /*parent_rule_for_nesting=*/nullptr,
+        /*is_within_scope=*/false,
         /*semicolon_aborts_nested_selector=*/false, nullptr, arena);
     EXPECT_GT(vector.size(), 0u);
     CSSSelectorList* list = CSSSelectorList::AdoptSelectorVector(vector);
@@ -750,8 +771,7 @@ static bool IsCounted(const char* selector,
   Document* doc = &dummy_holder->GetDocument();
   Page::InsertOrdinaryPageForTesting(&dummy_holder->GetPage());
   auto* context = MakeGarbageCollected<CSSParserContext>(
-      mode, SecureContextMode::kSecureContext, CSSParserContext::kLiveProfile,
-      doc);
+      mode, SecureContextMode::kSecureContext, doc);
   auto* sheet = MakeGarbageCollected<StyleSheetContents>(context);
 
   DCHECK(!doc->IsUseCounted(feature));
@@ -762,6 +782,7 @@ static bool IsCounted(const char* selector,
   HeapVector<CSSSelector> arena;
   CSSSelectorParser::ParseSelector(range, context, CSSNestingType::kNone,
                                    /*parent_rule_for_nesting=*/nullptr,
+                                   /*is_within_scope=*/false,
                                    /*semicolon_aborts_nested_selector=*/false,
                                    sheet, arena);
 
@@ -769,6 +790,7 @@ static bool IsCounted(const char* selector,
 }
 
 TEST(CSSSelectorParserTest, UseCountShadowPseudo) {
+  test::TaskEnvironment task_environment;
   auto ExpectCount = [](const char* selector, WebFeature feature) {
     SCOPED_TRACE(selector);
     EXPECT_TRUE(IsCounted(selector, kHTMLStandardMode, feature));
@@ -888,6 +910,7 @@ TEST(CSSSelectorParserTest, UseCountShadowPseudo) {
 }
 
 TEST(CSSSelectorParserTest, IsWhereUseCount) {
+  test::TaskEnvironment task_environment;
   const auto is_feature = WebFeature::kCSSSelectorPseudoIs;
   EXPECT_FALSE(IsCounted(".a", kHTMLStandardMode, is_feature));
   EXPECT_FALSE(IsCounted(":not(.a)", kHTMLStandardMode, is_feature));
@@ -912,6 +935,7 @@ TEST(CSSSelectorParserTest, IsWhereUseCount) {
 }
 
 TEST(CSSSelectorParserTest, ImplicitShadowCrossingCombinators) {
+  test::TaskEnvironment task_environment;
   struct ShadowCombinatorTest {
     const char* input;
     Vector<std::pair<AtomicString, CSSSelector::RelationType>> expectation;
@@ -968,7 +992,7 @@ TEST(CSSSelectorParserTest, ImplicitShadowCrossingCombinators) {
     CSSParserTokenRange range(tokens);
     base::span<CSSSelector> vector = CSSSelectorParser::ParseSelector(
         range, context, CSSNestingType::kNone,
-        /*parent_rule_for_nesting=*/nullptr,
+        /*parent_rule_for_nesting=*/nullptr, /*is_within_scope=*/false,
         /*semicolon_aborts_nested_selector=*/false, sheet, arena);
     CSSSelectorList* list = CSSSelectorList::AdoptSelectorVector(vector);
     EXPECT_TRUE(list->IsValid());
@@ -983,34 +1007,6 @@ TEST(CSSSelectorParserTest, ImplicitShadowCrossingCombinators) {
       selector = selector->NextSimpleSelector();
     }
     EXPECT_FALSE(selector);
-  }
-}
-
-TEST(CSSSelectorParserTest, WebKitScrollbarPseudoParsing) {
-  const char* test_cases[] = {"::-webkit-resizer",
-                              "::-webkit-scrollbar",
-                              "::-webkit-scrollbar-button",
-                              "::-webkit-scrollbar-corner",
-                              "::-webkit-scrollbar-thumb",
-                              "::-webkit-scrollbar-track",
-                              "::-webkit-scrollbar-track-piece"};
-
-  HeapVector<CSSSelector> arena;
-  bool enabled_states[] = {false, true};
-  for (auto state : enabled_states) {
-    ScopedWebKitScrollbarStylingForTest scoped_feature(state);
-    for (StringView test_case : test_cases) {
-      CSSTokenizer tokenizer(test_case);
-      const auto tokens = tokenizer.TokenizeToEOF();
-      CSSParserTokenRange range(tokens);
-      base::span<CSSSelector> vector = CSSSelectorParser::ParseSelector(
-          range,
-          MakeGarbageCollected<CSSParserContext>(
-              kHTMLStandardMode, SecureContextMode::kInsecureContext),
-          CSSNestingType::kNone, /*parent_rule_for_nesting=*/nullptr,
-          /*semicolon_aborts_nested_selector=*/false, nullptr, arena);
-      EXPECT_EQ(vector.size(), state ? 1u : 0u);
-    }
   }
 }
 
@@ -1101,114 +1097,6 @@ INSTANTIATE_TEST_SUITE_P(NestedHasSelectorValidity,
                          SelectorParseTest,
                          testing::ValuesIn(has_nesting_data));
 
-// TODO(blee@igalia.com) Workaround to make :has() unforgiving to avoid
-// JQuery :has() issue: https://github.com/w3c/csswg-drafts/issues/7676
-// :has() should be valid after all arguments are dropped.
-static const SelectorTestCase invalid_forgiving_pseudo_has_arguments_data[] = {
-    // clang-format off
-    // restrict use of nested :has()
-    {":has(:has(.a))", "" /* should be ":has()" */},
-
-    // restrict use of pseudo element inside :has()
-    {":has(::-webkit-progress-bar)", "" /* should be ":has()" */},
-    {":has(::-webkit-progress-value)", "" /* should be ":has()" */},
-    {":has(::-webkit-slider-runnable-track)", "" /* should be ":has()" */},
-    {":has(::-webkit-slider-thumb)", "" /* should be ":has()" */},
-    {":has(::after)", "" /* should be ":has()" */},
-    {":has(::backdrop)", "" /* should be ":has()" */},
-    {":has(::before)", "" /* should be ":has()" */},
-    {":has(::cue)", "" /* should be ":has()" */},
-    {":has(::first-letter)", "" /* should be ":has()" */},
-    {":has(::first-line)", "" /* should be ":has()" */},
-    {":has(::grammar-error)", "" /* should be ":has()" */},
-    {":has(::marker)", "" /* should be ":has()" */},
-    {":has(::placeholder)", "" /* should be ":has()" */},
-    {":has(::selection)", "" /* should be ":has()" */},
-    {":has(::slotted(*))", "" /* should be ":has()" */},
-    {":has(::part(foo))", "" /* should be ":has()" */},
-    {":has(::spelling-error)", "" /* should be ":has()" */},
-    {":has(:after)", "" /* should be ":has()" */},
-    {":has(:before)", "" /* should be ":has()" */},
-    {":has(:cue)", "" /* should be ":has()" */},
-    {":has(:first-letter)", "" /* should be ":has()" */},
-    {":has(:first-line)", "" /* should be ":has()" */},
-    // clang-format on
-};
-
-INSTANTIATE_TEST_SUITE_P(
-    InvalidPseudoHasArguments,
-    SelectorParseTestForHasForgivingParsing,
-    testing::ValuesIn(invalid_forgiving_pseudo_has_arguments_data));
-
-static const SelectorTestCase has_forgiving_data[] = {
-    // clang-format off
-    {":has(.a, :has(.b), .c)", ":has(.a, .c)"},
-    {":has(.a, :has(.b))", ":has(.a)"},
-    {":has(:has(.a), .b)", ":has(.b)"},
-
-    // TODO(blee@igalia.com) Workaround to make :has() unforgiving to avoid
-    // JQuery :has() issue: https://github.com/w3c/csswg-drafts/issues/7676
-    // :has() should be valid after all arguments are dropped.
-    {":has(:has(.a))", "" /* should be ":has()" */},
-    {":has(,,  ,, )", "" /* should be ":has()" */},
-
-    {":has(.a,,,,)", ":has(.a)"},
-    {":has(,,.a,,)", ":has(.a)"},
-    {":has(,,,,.a)", ":has(.a)"},
-    {":has(@x {,.b,}, .a)", ":has(.a)"},
-    {":has({,.b,} @x, .a)", ":has(.a)"},
-    {":has((@x), .a)", ":has(.a)"},
-    {":has((.b), .a)", ":has(.a)"},
-    {":has(:is(:foo))", ":has(:is())"},
-    {":has(:is(:has(.a)))", ":has(:is())"},
-    // clang-format on
-};
-
-INSTANTIATE_TEST_SUITE_P(HasForgiving,
-                         SelectorParseTestForHasForgivingParsing,
-                         testing::ValuesIn(has_forgiving_data));
-
-// TODO(blee@igalia.com) Workaround to make :has() unforgiving to avoid
-// JQuery :has() issue: https://github.com/w3c/csswg-drafts/issues/7676
-// :has() should be valid after all arguments are dropped.
-static const SelectorTestCase forgiving_has_nesting_data[] = {
-    // clang-format off
-    // :has() is not allowed in the pseudos accepting only compound selectors:
-    {"::slotted(:has(.a))", "" /* should be "::slotted(:has())" */},
-    {":host(:has(.a))", "" /* should be ":host(:has())" */},
-    {":host-context(:has(.a))", "" /* should be ":host-context(:has())" */},
-    {"::cue(:has(.a))", "" /* should be "::cue(:has())" */},
-    // :has() is not allowed after pseudo elements:
-    {"::part(foo):has(:hover)", "" /* should be "::part(foo):has()" */},
-    {"::part(foo):has(:hover:focus)", "" /* should be "::part(foo):has()" */},
-    {"::part(foo):has(:focus, :hover)", "" /* should be "::part(foo):has()" */},
-    {"::part(foo):has(:focus)", "" /* should be "::part(foo):has()" */},
-    {"::part(foo):has(:focus, :--bar)", "" /* should be "::part(foo):has()" */},
-    {"::part(foo):has(.a)", "" /* should be "::part(foo):has()" */},
-    {"::part(foo):has(.a:hover)", "" /* should be "::part(foo):has()" */},
-    {"::part(foo):has(:hover.a)", "" /* should be "::part(foo):has()" */},
-    {"::part(foo):has(:hover + .a)", "" /* should be "::part(foo):has()" */},
-    {"::part(foo):has(.a + :hover)", "" /* should be "::part(foo):has()" */},
-    {"::part(foo):has(:hover:enabled)", "" /* should be "::part(foo):has()" */},
-    {"::part(foo):has(:enabled:hover)", "" /* should be "::part(foo):has()" */},
-    {"::part(foo):has(:hover, :where(.a))",
-     "" /* should be "::part(foo):has()" */},
-    {"::part(foo):has(:hover, .a)", "" /* should be "::part(foo):has()" */},
-    {"::part(foo):has(:--bar, .a)", "" /* should be "::part(foo):has()" */},
-    {"::part(foo):has(:enabled)", "" /* should be "::part(foo):has()" */},
-    {"::-webkit-scrollbar:has(:enabled)",
-     "" /* should be "::-webkit-scrollbar:has()" */},
-    {"::selection:has(:window-inactive)",
-     "" /* should be "::selection:has()" */},
-    {"::-webkit-input-placeholder:has(:hover)",
-     "" /* should be "::-webkit-input-placeholder:has()" */},
-    // clang-format on
-};
-
-INSTANTIATE_TEST_SUITE_P(NestedHasSelectorValidity,
-                         SelectorParseTestForHasForgivingParsing,
-                         testing::ValuesIn(forgiving_has_nesting_data));
-
 static CSSSelectorList* ParseNested(String inner_rule,
                                     CSSNestingType nesting_type) {
   auto dummy_holder = std::make_unique<DummyPageHolder>(gfx::Size(500, 500));
@@ -1219,21 +1107,21 @@ static CSSSelectorList* ParseNested(String inner_rule,
           ? nullptr
           : DynamicTo<StyleRule>(
                 css_test_helpers::ParseRule(document, "div {}"));
-
+  bool is_within_scope = nesting_type == CSSNestingType::kScope;
   CSSSelectorList* list = css_test_helpers::ParseSelectorList(
-      inner_rule, nesting_type, parent_rule_for_nesting);
+      inner_rule, nesting_type, parent_rule_for_nesting, is_within_scope);
   if (!list || !list->First()) {
     return nullptr;
   }
   return list;
 }
 
-static absl::optional<CSSSelector::PseudoType> GetImplicitlyAddedPseudo(
+static std::optional<CSSSelector::PseudoType> GetImplicitlyAddedPseudo(
     String inner_rule,
     CSSNestingType nesting_type) {
   CSSSelectorList* list = ParseNested(inner_rule, nesting_type);
   if (!list) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   Vector<const CSSSelector*> selectors;
@@ -1252,12 +1140,13 @@ static absl::optional<CSSSelector::PseudoType> GetImplicitlyAddedPseudo(
   const CSSSelector* back = !selectors.empty() ? selectors.back() : nullptr;
   if (!back || back->Match() != CSSSelector::kPseudoClass ||
       !back->IsImplicit()) {
-    return absl::nullopt;
+    return std::nullopt;
   }
   return back->GetPseudoType();
 }
 
 TEST(CSSSelectorParserTest, NestingTypeImpliedDescendant) {
+  test::TaskEnvironment task_environment;
   // Nesting selector (&)
   EXPECT_EQ(CSSSelector::kPseudoParent,
             GetImplicitlyAddedPseudo(".foo", CSSNestingType::kNesting));
@@ -1266,11 +1155,11 @@ TEST(CSSSelectorParserTest, NestingTypeImpliedDescendant) {
       GetImplicitlyAddedPseudo(".foo:is(.bar)", CSSNestingType::kNesting));
   EXPECT_EQ(CSSSelector::kPseudoParent,
             GetImplicitlyAddedPseudo("> .foo", CSSNestingType::kNesting));
-  EXPECT_EQ(absl::nullopt,
+  EXPECT_EQ(std::nullopt,
             GetImplicitlyAddedPseudo(".foo > &", CSSNestingType::kNesting));
-  EXPECT_EQ(absl::nullopt, GetImplicitlyAddedPseudo(".foo > :is(.b, &)",
-                                                    CSSNestingType::kNesting));
-  EXPECT_EQ(absl::nullopt,
+  EXPECT_EQ(std::nullopt, GetImplicitlyAddedPseudo(".foo > :is(.b, &)",
+                                                   CSSNestingType::kNesting));
+  EXPECT_EQ(std::nullopt,
             GetImplicitlyAddedPseudo("& .foo", CSSNestingType::kNesting));
 
   // :scope
@@ -1281,46 +1170,46 @@ TEST(CSSSelectorParserTest, NestingTypeImpliedDescendant) {
   EXPECT_EQ(CSSSelector::kPseudoScope,
             GetImplicitlyAddedPseudo("> .foo", CSSNestingType::kScope));
   // :scope makes a selector :scope-containing:
-  EXPECT_EQ(absl::nullopt,
+  EXPECT_EQ(std::nullopt,
             GetImplicitlyAddedPseudo(".foo > :scope", CSSNestingType::kScope));
-  EXPECT_EQ(absl::nullopt, GetImplicitlyAddedPseudo(".foo > :is(.b, :scope)",
-                                                    CSSNestingType::kScope));
-  EXPECT_EQ(absl::nullopt,
+  EXPECT_EQ(std::nullopt, GetImplicitlyAddedPseudo(".foo > :is(.b, :scope)",
+                                                   CSSNestingType::kScope));
+  EXPECT_EQ(std::nullopt,
             GetImplicitlyAddedPseudo(":scope .foo", CSSNestingType::kScope));
   // '&' also makes a selector :scope-containing:
-  EXPECT_EQ(absl::nullopt,
+  EXPECT_EQ(std::nullopt,
             GetImplicitlyAddedPseudo(".foo > &", CSSNestingType::kScope));
-  EXPECT_EQ(absl::nullopt, GetImplicitlyAddedPseudo(".foo > :is(.b, &)",
-                                                    CSSNestingType::kScope));
-  EXPECT_EQ(absl::nullopt, GetImplicitlyAddedPseudo(".foo > :is(.b, !&)",
-                                                    CSSNestingType::kScope));
-  EXPECT_EQ(absl::nullopt, GetImplicitlyAddedPseudo(".foo > :is(.b, :scope)",
-                                                    CSSNestingType::kScope));
-  EXPECT_EQ(absl::nullopt, GetImplicitlyAddedPseudo(".foo > :is(.b, :SCOPE)",
-                                                    CSSNestingType::kScope));
-  EXPECT_EQ(absl::nullopt, GetImplicitlyAddedPseudo(".foo > :is(.b, !:scope)",
-                                                    CSSNestingType::kScope));
-  EXPECT_EQ(absl::nullopt,
+  EXPECT_EQ(std::nullopt, GetImplicitlyAddedPseudo(".foo > :is(.b, &)",
+                                                   CSSNestingType::kScope));
+  EXPECT_EQ(std::nullopt, GetImplicitlyAddedPseudo(".foo > :is(.b, !&)",
+                                                   CSSNestingType::kScope));
+  EXPECT_EQ(std::nullopt, GetImplicitlyAddedPseudo(".foo > :is(.b, :scope)",
+                                                   CSSNestingType::kScope));
+  EXPECT_EQ(std::nullopt, GetImplicitlyAddedPseudo(".foo > :is(.b, :SCOPE)",
+                                                   CSSNestingType::kScope));
+  EXPECT_EQ(std::nullopt, GetImplicitlyAddedPseudo(".foo > :is(.b, !:scope)",
+                                                   CSSNestingType::kScope));
+  EXPECT_EQ(std::nullopt,
             GetImplicitlyAddedPseudo("& .foo", CSSNestingType::kScope));
 
   // kNone
-  EXPECT_EQ(absl::nullopt,
+  EXPECT_EQ(std::nullopt,
             GetImplicitlyAddedPseudo(".foo", CSSNestingType::kNone));
-  EXPECT_EQ(absl::nullopt,
+  EXPECT_EQ(std::nullopt,
             GetImplicitlyAddedPseudo(".foo:is(.bar)", CSSNestingType::kNone));
-  EXPECT_EQ(absl::nullopt,
+  EXPECT_EQ(std::nullopt,
             GetImplicitlyAddedPseudo("> .foo", CSSNestingType::kNone));
-  EXPECT_EQ(absl::nullopt,
+  EXPECT_EQ(std::nullopt,
             GetImplicitlyAddedPseudo(".foo > &", CSSNestingType::kNone));
-  EXPECT_EQ(absl::nullopt, GetImplicitlyAddedPseudo(".foo > :is(.b, &)",
-                                                    CSSNestingType::kNone));
-  EXPECT_EQ(absl::nullopt,
+  EXPECT_EQ(std::nullopt, GetImplicitlyAddedPseudo(".foo > :is(.b, &)",
+                                                   CSSNestingType::kNone));
+  EXPECT_EQ(std::nullopt,
             GetImplicitlyAddedPseudo("& .foo", CSSNestingType::kNone));
-  EXPECT_EQ(absl::nullopt,
+  EXPECT_EQ(std::nullopt,
             GetImplicitlyAddedPseudo(".foo > :scope", CSSNestingType::kNone));
-  EXPECT_EQ(absl::nullopt, GetImplicitlyAddedPseudo(".foo > :is(.b, :scope)",
-                                                    CSSNestingType::kNone));
-  EXPECT_EQ(absl::nullopt,
+  EXPECT_EQ(std::nullopt, GetImplicitlyAddedPseudo(".foo > :is(.b, :scope)",
+                                                   CSSNestingType::kNone));
+  EXPECT_EQ(std::nullopt,
             GetImplicitlyAddedPseudo(":scope .foo", CSSNestingType::kNone));
 }
 
@@ -1403,6 +1292,7 @@ INSTANTIATE_TEST_SUITE_P(CSSSelectorParserTest,
                          testing::ValuesIn(scope_activation_data));
 
 TEST_P(ScopeActivationTest, All) {
+  test::TaskEnvironment task_environment;
   ScopeActivationData param = GetParam();
   SCOPED_TRACE(param.inner_rule);
 
@@ -1437,26 +1327,26 @@ static wtf_size_t CountSimpleSelectors(const CSSSelectorList& list,
 }
 
 template <typename PredicateFunc>
-static absl::optional<wtf_size_t> CountSimpleSelectors(
+static std::optional<wtf_size_t> CountSimpleSelectors(
     String selector_text,
     CSSNestingType nesting_type,
     PredicateFunc predicate) {
   CSSSelectorList* list = ParseNested(selector_text, nesting_type);
   if (!list || !list->First()) {
-    return absl::nullopt;
+    return std::nullopt;
   }
   return CountSimpleSelectors<PredicateFunc>(*list, predicate);
 }
 
-static absl::optional<wtf_size_t> CountPseudoTrue(String selector_text,
-                                                  CSSNestingType nesting_type) {
+static std::optional<wtf_size_t> CountPseudoTrue(String selector_text,
+                                                 CSSNestingType nesting_type) {
   return CountSimpleSelectors(
       selector_text, nesting_type, [](const CSSSelector& selector) {
         return selector.GetPseudoType() == CSSSelector::kPseudoTrue;
       });
 }
 
-static absl::optional<wtf_size_t> CountScopeActivations(
+static std::optional<wtf_size_t> CountScopeActivations(
     String selector_text,
     CSSNestingType nesting_type) {
   return CountSimpleSelectors(
@@ -1465,7 +1355,7 @@ static absl::optional<wtf_size_t> CountScopeActivations(
       });
 }
 
-static absl::optional<wtf_size_t> CountPseudoTrueWithScopeActivation(
+static std::optional<wtf_size_t> CountPseudoTrueWithScopeActivation(
     String selector_text,
     CSSNestingType nesting_type) {
   return CountSimpleSelectors(
@@ -1476,6 +1366,7 @@ static absl::optional<wtf_size_t> CountPseudoTrueWithScopeActivation(
 }
 
 TEST(CSSSelectorParserTest, CountMatchesSelfTest) {
+  test::TaskEnvironment task_environment;
   auto is_focus = [](const CSSSelector& selector) {
     return selector.GetPseudoType() == CSSSelector::kPseudoFocus;
   };
@@ -1537,7 +1428,10 @@ ScopeActivationCountData scope_activation_count_data[] = {
 };
 
 class ScopeActivationCountTest
-    : public ::testing::TestWithParam<ScopeActivationCountData> {};
+    : public ::testing::TestWithParam<ScopeActivationCountData> {
+ private:
+  test::TaskEnvironment task_environment_;
+};
 
 INSTANTIATE_TEST_SUITE_P(CSSSelectorParserTest,
                          ScopeActivationCountTest,

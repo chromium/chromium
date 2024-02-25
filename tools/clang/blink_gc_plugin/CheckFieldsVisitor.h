@@ -23,15 +23,16 @@ class CheckFieldsVisitor : public RecursiveEdgeVisitor {
   enum Error {
     kRawPtrToGCManaged,
     kRefPtrToGCManaged,
-    kWeakPtrToGCManaged,
     kReferencePtrToGCManaged,
     kUniquePtrToGCManaged,
     kMemberToGCUnmanaged,
     kMemberInUnmanaged,
+    kPtrToMemberInUnmanaged,
     kPtrFromHeapToStack,
     kGCDerivedPartObject,
     kIteratorToGCManaged,
     kMemberInStackAllocated,
+    kTraceablePartObjectInUnmanaged,
   };
 
   using Errors = std::vector<std::pair<FieldPoint*, Error>>;

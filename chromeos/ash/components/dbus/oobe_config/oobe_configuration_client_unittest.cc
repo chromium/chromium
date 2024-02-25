@@ -104,8 +104,7 @@ class OobeConfigurationClientTest : public testing::Test {
   // The interface name.
   const std::string interface_name_;
   // The client to be tested.
-  raw_ptr<OobeConfigurationClient, DanglingUntriaged | ExperimentalAsh>
-      client_ = nullptr;
+  raw_ptr<OobeConfigurationClient, DanglingUntriaged> client_ = nullptr;
   // A message loop to emulate asynchronous behavior.
   base::test::SingleThreadTaskEnvironment task_environment_;
   // The mock bus.
@@ -116,7 +115,7 @@ class OobeConfigurationClientTest : public testing::Test {
   // The name of the method which is expected to be called.
   std::string expected_method_name_;
   // The response which the mock proxy returns.
-  raw_ptr<dbus::Response, DanglingUntriaged | ExperimentalAsh> response_;
+  raw_ptr<dbus::Response, DanglingUntriaged> response_;
   // A callback to intercept and check the method call arguments.
   ArgumentCheckCallback argument_checker_;
 

@@ -27,4 +27,6 @@ component("orientation") {
     "//services/device/public/cpp/generic_sensor",
     "//ui/gfx",
   ]
+
+  configs += [ "//build/config/compiler:wexit_time_destructors" ]
 }

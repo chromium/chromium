@@ -43,6 +43,11 @@ chromium-metrics-reviews@google.com.
   <variant name="Video"/>
 </variants>
 
+<variants name="CastStreamingSenderAudioVideo">
+  <variant name="Audio"/>
+  <variant name="Video"/>
+</variants>
+
 <variants name="DbOperation">
   <variant name="Clear" summary="Remove all keys from the DB"/>
   <variant name="Initialize" summary="Initialize the DB."/>
@@ -111,6 +116,18 @@ chromium-metrics-reviews@google.com.
   <variant name="VP9"/>
 </variants>
 
+<variants name="VideoEncoderImpl">
+  <variant name="HW"/>
+  <variant name="SW"/>
+</variants>
+
+<variants name="VideoEncoderUsage">
+  <variant name="CastMirroring"/>
+  <variant name="MediaRecorder"/>
+  <variant name="WebCodecs"/>
+  <variant name="WebRTC"/>
+</variants>
+
 <histogram name="CastStreaming.Sender.Audio.NegotiatedCodec" enum="AudioCodec"
     expires_after="2024-04-07">
   <owner>jophba@chromium.org</owner>
@@ -121,7 +138,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="CastStreaming.Sender.Video.Bitrate" units="kbps"
-    expires_after="2024-02-06">
+    expires_after="2024-06-30">
   <owner>jophba@chromium.org</owner>
   <owner>mfoltz@chromium.org</owner>
   <summary>
@@ -131,7 +148,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="CastStreaming.Sender.Video.NegotiatedCodec" enum="VideoCodec"
-    expires_after="2024-04-07">
+    expires_after="2024-08-18">
   <owner>jophba@chromium.org</owner>
   <owner>mfoltz@chromium.org</owner>
   <summary>
@@ -139,8 +156,146 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram
+    name="CastStreaming.Sender.{CastStreamingSenderAudioVideo}.AverageCaptureLatency"
+    units="ms" expires_after="2024-09-01">
+  <owner>anasr@google.com</owner>
+  <owner>bzielinski@google.com</owner>
+  <owner>jophba@chromium.org</owner>
+  <owner>mfoltz@chromium.org</owner>
+  <owner>cros-edu-eng@google.com</owner>
+  <summary>
+    Records the average {CastStreamingSenderAudioVideo} latency in milliseconds
+    for capturing frames. Histogram is recorded at the end of the mirroring
+    session.
+  </summary>
+  <token key="CastStreamingSenderAudioVideo"
+      variants="CastStreamingSenderAudioVideo"/>
+</histogram>
+
+<histogram
+    name="CastStreaming.Sender.{CastStreamingSenderAudioVideo}.AverageEncodeTime"
+    units="ms" expires_after="2024-09-01">
+  <owner>anasr@google.com</owner>
+  <owner>bzielinski@google.com</owner>
+  <owner>jophba@chromium.org</owner>
+  <owner>mfoltz@chromium.org</owner>
+  <owner>cros-edu-eng@google.com</owner>
+  <summary>
+    Records the average time required to encode {CastStreamingSenderAudioVideo}
+    frames, in milliseconds. Histogram is recorded at the end of the mirroring
+    session.
+  </summary>
+  <token key="CastStreamingSenderAudioVideo"
+      variants="CastStreamingSenderAudioVideo"/>
+</histogram>
+
+<histogram
+    name="CastStreaming.Sender.{CastStreamingSenderAudioVideo}.AverageEndToEndLatency"
+    units="ms" expires_after="2024-09-01">
+  <owner>anasr@google.com</owner>
+  <owner>bzielinski@google.com</owner>
+  <owner>jophba@chromium.org</owner>
+  <owner>mfoltz@chromium.org</owner>
+  <owner>cros-edu-eng@google.com</owner>
+  <summary>
+    Records the average {CastStreamingSenderAudioVideo} latency in milliseconds
+    end to end, from the beginning of capturing a frame to when the frame is
+    played out on the receiver. Histogram is recorded at the end of the
+    mirroring session.
+  </summary>
+  <token key="CastStreamingSenderAudioVideo"
+      variants="CastStreamingSenderAudioVideo"/>
+</histogram>
+
+<histogram
+    name="CastStreaming.Sender.{CastStreamingSenderAudioVideo}.AverageNetworkLatency"
+    units="ms" expires_after="2024-09-01">
+  <owner>anasr@google.com</owner>
+  <owner>bzielinski@google.com</owner>
+  <owner>jophba@chromium.org</owner>
+  <owner>mfoltz@chromium.org</owner>
+  <owner>cros-edu-eng@google.com</owner>
+  <summary>
+    Records the average {CastStreamingSenderAudioVideo} latency in milliseconds
+    from sender to receiver. Histogram is recorded at the end of the mirroring
+    session.
+  </summary>
+  <token key="CastStreamingSenderAudioVideo"
+      variants="CastStreamingSenderAudioVideo"/>
+</histogram>
+
+<histogram
+    name="CastStreaming.Sender.{CastStreamingSenderAudioVideo}.ExceededPlayoutDelayPacketsPercentage"
+    units="%" expires_after="2024-09-01">
+  <owner>anasr@google.com</owner>
+  <owner>bzielinski@google.com</owner>
+  <owner>jophba@chromium.org</owner>
+  <owner>mfoltz@chromium.org</owner>
+  <owner>cros-edu-eng@google.com</owner>
+  <summary>
+    Records number of {CastStreamingSenderAudioVideo} packets that exceeded the
+    playout delay as a percentage of all packets. Histogram is recorded at the
+    end of the mirroring session.
+  </summary>
+  <token key="CastStreamingSenderAudioVideo"
+      variants="CastStreamingSenderAudioVideo"/>
+</histogram>
+
+<histogram
+    name="CastStreaming.Sender.{CastStreamingSenderAudioVideo}.LateFramesPercentage"
+    units="%" expires_after="2024-09-01">
+  <owner>anasr@google.com</owner>
+  <owner>bzielinski@google.com</owner>
+  <owner>jophba@chromium.org</owner>
+  <owner>mfoltz@chromium.org</owner>
+  <owner>cros-edu-eng@google.com</owner>
+  <summary>
+    Records the percentage of {CastStreamingSenderAudioVideo} frames that are
+    reported as late, and therefore dropped by the sender, during a cast
+    mirroring session. Recorded at the end of a cast mirroring session. Logged
+    on all desktop platforms.
+  </summary>
+  <token key="CastStreamingSenderAudioVideo"
+      variants="CastStreamingSenderAudioVideo"/>
+</histogram>
+
+<histogram
+    name="CastStreaming.Sender.{CastStreamingSenderAudioVideo}.RetransmittedPacketsPercentage"
+    units="%" expires_after="2024-09-01">
+  <owner>anasr@google.com</owner>
+  <owner>bzielinski@google.com</owner>
+  <owner>jophba@chromium.org</owner>
+  <owner>mfoltz@chromium.org</owner>
+  <owner>cros-edu-eng@google.com</owner>
+  <summary>
+    Records number of {CastStreamingSenderAudioVideo} packets that had to be
+    retransmitted as a percentage of number of packets sent. Histogram is
+    recorded at the end of the mirroring session.
+  </summary>
+  <token key="CastStreamingSenderAudioVideo"
+      variants="CastStreamingSenderAudioVideo"/>
+</histogram>
+
+<histogram
+    name="CastStreaming.Sender.{CastStreamingSenderAudioVideo}.TransmissionRate"
+    units="kbps" expires_after="2024-09-01">
+  <owner>anasr@google.com</owner>
+  <owner>bzielinski@google.com</owner>
+  <owner>jophba@chromium.org</owner>
+  <owner>mfoltz@chromium.org</owner>
+  <owner>cros-edu-eng@google.com</owner>
+  <summary>
+    Records the {CastStreamingSenderAudioVideo} packet transmission bitrate in
+    kbps during a Cast Streaming session. Histogram is recorded at the end of
+    the mirroring session.
+  </summary>
+  <token key="CastStreamingSenderAudioVideo"
+      variants="CastStreamingSenderAudioVideo"/>
+</histogram>
+
 <histogram name="CastStreaming.Sender.{CastStreamingSender}.FrameDropped"
-    enum="CastStreamingFrameDropReason" expires_after="2024-02-06">
+    enum="CastStreamingFrameDropReason" expires_after="2024-06-30">
   <owner>jophba@chromium.org</owner>
   <owner>mfoltz@chromium.org</owner>
   <summary>
@@ -151,7 +306,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="CastStreaming.Sender.{CastStreamingSender}.PercentDroppedFrames"
-    units="%" expires_after="2024-02-06">
+    units="%" expires_after="2024-06-30">
   <owner>jophba@chromium.org</owner>
   <owner>mfoltz@chromium.org</owner>
   <summary>
@@ -162,7 +317,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Media.AImageReaderGLOwner.AcquireImageResult"
-    enum="MediaStatus" expires_after="2024-01-14">
+    enum="MediaStatus" expires_after="2024-08-11">
   <owner>vikassoni@chromium.org</owner>
   <owner>media-dev-uma@chromium.org</owner>
   <summary>
@@ -174,7 +329,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Media.AImageReaderGLOwner.HasFence" enum="Boolean"
-    expires_after="2023-12-24">
+    expires_after="2024-06-30">
   <owner>vasilyt@chromium.org</owner>
   <owner>media-dev-uma@chromium.org</owner>
   <summary>
@@ -196,7 +351,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Media.Android.GetColorSpaceError" enum="BooleanError"
-    expires_after="2023-12-25">
+    expires_after="2024-07-14">
   <owner>vasilyt@chromium.org</owner>
   <owner>liberato@chromium.org</owner>
   <owner>media-dev-uma@chromium.org</owner>
@@ -207,14 +362,14 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Media.Android.MediaPlayerSuccess" enum="MediaPlayerExitStatus"
-    expires_after="2024-01-14">
+    expires_after="2024-07-21">
   <owner>tguilbert@chromium.org</owner>
   <owner>media-dev-uma@chromium.org</owner>
   <summary>Android: Whether MediaPlayer exited without errors.</summary>
 </histogram>
 
 <histogram name="Media.Android.MediaPlayerWatchTime"
-    enum="MediaPlayerWatchTimeType" expires_after="2024-04-25">
+    enum="MediaPlayerWatchTimeType" expires_after="2024-06-30">
   <owner>sandersd@chromium.org</owner>
   <owner>media-dev-uma@chromium.org</owner>
   <summary>
@@ -224,19 +379,8 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Media.Audible.CloseNewestToExitConcurrentPlayback"
-    enum="ExitConcurrentPlaybackContents" expires_after="2023-09-15">
-  <owner>evliu@google.com</owner>
-  <owner>media-dev-uma@chromium.org</owner>
-  <summary>
-    Records when an audible tab is closed and we now only have one audible tab
-    open. Warning: this histogram was expired from 2019-05-30 to 4-18-22; data
-    may be missing.
-  </summary>
-</histogram>
-
 <histogram name="Media.Audible.ConcurrentTabsTime" units="ms"
-    expires_after="2023-12-31">
+    expires_after="2024-07-07">
   <owner>evliu@google.com</owner>
   <owner>media-dev-uma@chromium.org</owner>
   <summary>
@@ -273,7 +417,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Media.Audio.Autoplay" enum="AutoplaySource"
-    expires_after="2024-08-08">
+    expires_after="2025-01-05">
   <owner>dalecurtis@chromium.org</owner>
   <owner>evliu@google.com</owner>
   <owner>media-dev-uma@chromium.org</owner>
@@ -281,7 +425,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Media.Audio.Capture.DetectedMissingCallbacks"
-    enum="BooleanMissingCallbacks" expires_after="2024-01-14">
+    enum="BooleanMissingCallbacks" expires_after="2024-07-21">
   <owner>guidou@chromium.org</owner>
   <owner>olka@chromium.org</owner>
   <owner>webrtc-audio-uma@google.com</owner>
@@ -292,7 +436,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Media.Audio.Capture.FramesProvided" units="frames"
-    expires_after="2024-02-11">
+    expires_after="2024-06-30">
   <owner>guidou@chromium.org</owner>
   <owner>olka@chromium.org</owner>
   <owner>webrtc-audio-uma@google.com</owner>
@@ -312,7 +456,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Media.Audio.Capture.InputStreamDuration" units="ms"
-    expires_after="2024-05-03">
+    expires_after="2024-07-07">
   <owner>olka@chromium.org</owner>
   <owner>saza@chromium.org</owner>
   <owner>webrtc-audio-uma@google.com</owner>
@@ -324,7 +468,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Media.Audio.Capture.LowLatencyCallbackError"
-    enum="BooleanError" expires_after="2024-01-07">
+    enum="BooleanError" expires_after="2024-07-14">
   <owner>guidou@chromium.org</owner>
   <owner>olka@chromium.org</owner>
   <owner>webrtc-audio-uma@google.com</owner>
@@ -336,7 +480,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Media.Audio.Capture.Mac.MicSystemPermission.FixedTime.SinceFirstFailure"
-    units="ms" expires_after="2024-01-14">
+    units="ms" expires_after="2024-03-17">
   <owner>toprice@chromium.org</owner>
   <owner>video-cmi-apis@google.com</owner>
   <owner>webrtc-audio-uma@google.com</owner>
@@ -365,7 +509,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Media.Audio.Capture.Mac.MicSystemPermission.Startup"
-    enum="SystemMediaCapturePermission" expires_after="2024-01-14">
+    enum="SystemMediaCapturePermission" expires_after="2024-07-14">
   <owner>toprice@chromium.org</owner>
   <owner>video-cmi-apis@google.com</owner>
   <owner>webrtc-audio-uma@google.com</owner>
@@ -396,7 +540,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Media.Audio.Capture.Mac.MicSystemPermission.UserMedia"
-    enum="SystemMediaCapturePermission" expires_after="2024-01-14">
+    enum="SystemMediaCapturePermission" expires_after="2024-03-17">
   <owner>toprice@chromium.org</owner>
   <owner>video-cmi-apis@google.com</owner>
   <owner>webrtc-audio-uma@google.com</owner>
@@ -435,6 +579,45 @@ chromium-metrics-reviews@google.com.
     Number of times over a sampling interval (1000 callbacks) a
     ProcessingAudioFifo has overflowed and dropped buffers. Capped at 100 (1/10
     of all callbacks). Not logged for streams received less than 1000 callbacks.
+  </summary>
+</histogram>
+
+<histogram name="Media.Audio.Capture.SCK.ContentEnumerationTimedOut"
+    enum="Boolean" expires_after="2024-08-09">
+  <owner>mfoltz@chromium.org</owner>
+  <owner>olka@chromium.org</owner>
+  <owner>webrtc-audio-uma@google.com</owner>
+  <summary>
+    Indicates if SCShareableContent enumeration has timed out during a call to
+    SCKAudioInputStream::Open(). The timeout exists to prevent a deadlock if the
+    API is misbehaving. We do not expect any timeouts under normal conditions.
+  </summary>
+</histogram>
+
+<histogram name="Media.Audio.Capture.SCK.ContentEnumerationTimeMs" units="ms"
+    expires_after="2024-08-09">
+  <owner>mfoltz@chromium.org</owner>
+  <owner>olka@chromium.org</owner>
+  <owner>webrtc-audio-uma@google.com</owner>
+  <summary>
+    Measures the time required for SCShareableContent enumeration (displays and
+    open applications/windows) when calling SCKAudioInputStream::Open(). The
+    duration can vary based on the amount of applications and windows open on
+    the system. This enumeration is a blocking operation, and as such should
+    complete as fast as possible. If metrics show long times, the operation
+    might have to be made asynchronous.
+  </summary>
+</histogram>
+
+<histogram name="Media.Audio.Capture.SCK.StreamError" units="errorcode"
+    expires_after="2024-08-09">
+  <owner>mfoltz@chromium.org</owner>
+  <owner>olka@chromium.org</owner>
+  <owner>webrtc-audio-uma@google.com</owner>
+  <summary>
+    Error codes reported by ScreenCaptureKit in
+    SCKAudioInputStream::OnStreamError() during stream setup or while streaming
+    samples.
   </summary>
 </histogram>
 
@@ -488,7 +671,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Media.Audio.Capture.Win.Glitches2" units="glitches"
-    expires_after="2024-01-07">
+    expires_after="2024-07-14">
   <owner>olka@chromium.org</owner>
   <owner>henrika@chromium.org</owner>
   <owner>media-dev-uma@chromium.org</owner>
@@ -503,7 +686,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Media.Audio.Capture.Win.InitError" enum="Hresult"
-    expires_after="2024-01-14">
+    expires_after="2024-07-21">
   <owner>olka@chromium.org</owner>
   <owner>tommi@chromium.org</owner>
   <owner>guidou@chromium.org</owner>
@@ -515,7 +698,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Media.Audio.Capture.Win.InitError.FormatRelated"
-    enum="AudioStreamFormatRelatedInitError" expires_after="2023-10-14">
+    enum="AudioStreamFormatRelatedInitError" expires_after="2024-09-01">
   <owner>fhernqvist@google.com</owner>
   <owner>olka@chromium.org</owner>
   <owner>webrtc-audio-uma@google.com</owner>
@@ -529,9 +712,10 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Media.Audio.Capture.Win.Open" enum="AudioStreamOpenResult"
-    expires_after="2024-01-07">
+    expires_after="2024-12-01">
   <owner>gudiou@chromium.org</owner>
   <owner>olka@chromium.org</owner>
+  <owner>fhernqvist@google.com</owner>
   <owner>webrtc-audio-uma@google.com</owner>
   <summary>
     Success/error cases for opening an audio input stream on Windows.
@@ -539,7 +723,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Media.Audio.CoreAudioDispatchOverrideInitResult"
-    enum="CoreAudioDispatchOverrideInitResult" expires_after="2023-10-01">
+    enum="CoreAudioDispatchOverrideInitResult" expires_after="2024-09-01">
   <owner>fhernqvist@google.com</owner>
   <owner>olka@chromium.org</owner>
   <owner>webrtc-audio-uma@google.com</owner>
@@ -552,7 +736,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Media.Audio.CoreAudioDispatchOverrideLookupEvent"
-    enum="CoreAudioDispatchOverrideLookupEvent" expires_after="2023-10-14">
+    enum="CoreAudioDispatchOverrideLookupEvent" expires_after="2024-09-01">
   <owner>fhernqvist@google.com</owner>
   <owner>olka@chromium.org</owner>
   <owner>webrtc-audio-uma@google.com</owner>
@@ -566,7 +750,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Media.Audio.CrasInputStreamNotifyStreamError"
-    units="errorcode" expires_after="2024-02-11">
+    units="errorcode" expires_after="2024-04-28">
   <owner>peah@chromium.org</owner>
   <owner>hychao@chromium.org</owner>
   <owner>olka@chromium.org</owner>
@@ -577,7 +761,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Media.Audio.CrasInputStreamOpenSuccess"
-    enum="CrasInputStreamOpenSuccess" expires_after="2024-02-11">
+    enum="CrasInputStreamOpenSuccess" expires_after="2024-06-30">
   <owner>peah@chromium.org</owner>
   <owner>hychao@chromium.org</owner>
   <owner>olka@chromium.org</owner>
@@ -588,7 +772,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Media.Audio.CrasInputStreamStartSuccess"
-    enum="CrasInputStreamStartSuccess" expires_after="2024-02-11">
+    enum="CrasInputStreamStartSuccess" expires_after="2024-04-28">
   <owner>peah@chromium.org</owner>
   <owner>hychao@chromium.org</owner>
   <owner>olka@chromium.org</owner>
@@ -599,7 +783,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Media.Audio.CrasUnifiedStreamNotifyStreamError"
-    units="errorcode" expires_after="2024-02-04">
+    units="errorcode" expires_after="2024-04-28">
   <owner>peah@chromium.org</owner>
   <owner>hychao@chromium.org</owner>
   <owner>olka@chromium.org</owner>
@@ -610,7 +794,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Media.Audio.CrasUnifiedStreamOpenSuccess"
-    enum="CrasUnifiedStreamOpenSuccess" expires_after="2024-02-04">
+    enum="CrasUnifiedStreamOpenSuccess" expires_after="2024-06-30">
   <owner>peah@chromium.org</owner>
   <owner>hychao@chromium.org</owner>
   <owner>olka@chromium.org</owner>
@@ -621,7 +805,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Media.Audio.CrasUnifiedStreamStartSuccess"
-    enum="CrasUnifiedStreamStartSuccess" expires_after="2024-02-04">
+    enum="CrasUnifiedStreamStartSuccess" expires_after="2024-04-28">
   <owner>peah@chromium.org</owner>
   <owner>hychao@chromium.org</owner>
   <owner>olka@chromium.org</owner>
@@ -632,25 +816,12 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Media.Audio.InputStartupSuccessMac" enum="BooleanSuccess"
-    expires_after="2024-02-05">
+    expires_after="2024-06-30">
   <owner>henrika@chromium.org</owner>
   <owner>webrtc-audio-uma@google.com</owner>
   <summary>
     Indicates if audio capturing did start after stream startup was requested.
     Sampled once, a few seconds after a stream has been asked to start.
-  </summary>
-</histogram>
-
-<histogram name="Media.Audio.InputVolumeStartsAtZeroWin"
-    enum="BooleanVolumeZero" expires_after="2024-02-20">
-  <owner>henrika@chromium.org</owner>
-  <owner>media-dev-uma@chromium.org</owner>
-  <owner>webrtc-audio-uma@google.com</owner>
-  <summary>
-    Indicates if the volume level of the audio session is set to zero when the
-    input audio session starts. Sampled once when the stream starts but only on
-    Windows platforms. See http://crbug.com/1014443. Warning: this histogram was
-    expired from 2022-10-09 to 2022-12-07; data may be missing.
   </summary>
 </histogram>
 
@@ -679,7 +850,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Media.Audio.Output.Win.{AudioOutputMethod}Error"
-    enum="Hresult" expires_after="M122">
+    enum="Hresult" expires_after="2024-06-30">
   <owner>dalecurtis@chromium.org</owner>
   <owner>media-dev-uma@chromium.org</owner>
   <owner>webrtc-audio-uma@google.com</owner>
@@ -697,7 +868,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Media.Audio.OutputDeviceAuthorizationTime" units="ms"
-    expires_after="2024-01-14">
+    expires_after="2024-05-19">
   <owner>guidou@chromium.org</owner>
   <owner>olka@chromium.org</owner>
   <owner>webrtc-audio-uma@google.com</owner>
@@ -709,7 +880,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Media.Audio.OutputDeviceListener.Duration{Device}" units="ms"
-    expires_after="2023-10-05">
+    expires_after="2024-09-01">
   <owner>olka@chromium.org</owner>
   <owner>tguilbert@chromium.org</owner>
   <owner>webrtc-audio-uma@google.com</owner>
@@ -725,7 +896,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Media.Audio.OutputDeviceMixer.MaxListenerCount{Device}"
-    units="listeners" expires_after="2023-10-05">
+    units="listeners" expires_after="2024-09-01">
   <owner>olka@chromium.org</owner>
   <owner>tguilbert@chromium.org</owner>
   <owner>webrtc-audio-uma@google.com</owner>
@@ -742,7 +913,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Media.Audio.OutputDeviceMixer.MaxMixedStreamCount{Device}"
-    units="streams" expires_after="2023-10-05">
+    units="streams" expires_after="2024-09-01">
   <owner>olka@chromium.org</owner>
   <owner>tguilbert@chromium.org</owner>
   <owner>webrtc-audio-uma@google.com</owner>
@@ -758,7 +929,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Media.Audio.OutputDeviceMixer.MixedPlaybackStatus"
-    enum="AudioOutputDeviceMixerMixedPlaybackStatus" expires_after="2023-12-24">
+    enum="AudioOutputDeviceMixerMixedPlaybackStatus" expires_after="2024-09-01">
   <owner>olka@chromium.org</owner>
   <owner>tguilbert@chromium.org</owner>
   <owner>webrtc-audio-uma@google.com</owner>
@@ -769,7 +940,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Media.Audio.OutputDeviceMixer.MixingDuration{Device}"
-    units="ms" expires_after="2023-10-05">
+    units="ms" expires_after="2024-09-01">
   <owner>olka@chromium.org</owner>
   <owner>tguilbert@chromium.org</owner>
   <owner>webrtc-audio-uma@google.com</owner>
@@ -777,9 +948,7 @@ chromium-metrics-reviews@google.com.
     Duration of the interval between the moment OutputDeviceMixer started mixed
     playback (referece playback signal is requested by at least one listener and
     there is at least one stream managed by the mixer playing) and the moment
-    OutputDeviceMixer stopped mixed playback (there are no more listeners). It
-    may include intervals recorded by
-    Media.Audio.OutputDeviceMixer.NoopMixingDuration histogram.
+    OutputDeviceMixer stopped mixed playback (there are no more listeners).
   </summary>
   <token key="Device">
     <variant name="" summary="All"/>
@@ -788,23 +957,8 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
-<histogram name="Media.Audio.OutputDeviceMixer.NoopMixingDuration" units="ms"
-    expires_after="2023-10-05">
-  <owner>olka@chromium.org</owner>
-  <owner>tguilbert@chromium.org</owner>
-  <owner>webrtc-audio-uma@google.com</owner>
-  <summary>
-    Duration of the interval when there are no output streams to mix but there
-    are reference signal listeners present, so OutputDeviceMixer renders silence
-    and feeds it to the listeners as well. Recorded when an output stream starts
-    playing (and thus playback is not empty any more) or when all listeners are
-    gone (and thus mixing stops). There may be multiple such intervals during an
-    interval recorded by Media.Audio.OutputDeviceMixer.MixingDuration.
-  </summary>
-</histogram>
-
 <histogram name="Media.Audio.OutputDeviceMixer.OvertimeCount" units="count"
-    expires_after="2024-05-03">
+    expires_after="2024-09-01">
   <owner>olka@chromium.org</owner>
   <owner>saza@chromium.org</owner>
   <owner>tguilbert@chromium.org</owner>
@@ -817,34 +971,8 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram
-    name="Media.Audio.OutputDeviceMixer.StreamDuration.{MixingStatus}.{LatencyTag}"
-    units="ms" expires_after="2023-10-05">
-  <owner>olka@chromium.org</owner>
-  <owner>tguilbert@chromium.org</owner>
-  <owner>webrtc-audio-uma@google.com</owner>
-  <summary>
-    Duration of the interval when an output stream managed by OutputDeviceMixer
-    is playing independently (Unmixed) or as a part of the mix (Mixed). Measured
-    between the moment the stream starts playing or its playback mode
-    (Mixed/Unmixed) changes, and the moment the stream stops playing or its
-    playback mode changes.
-  </summary>
-  <token key="MixingStatus">
-    <variant name="Mixed" summary="Stream is played as a part of the mix"/>
-    <variant name="Unmixed" summary="Stream is played independently"/>
-  </token>
-  <token key="LatencyTag">
-    <variant name="LatencyExactMs"/>
-    <variant name="LatencyInteractive"/>
-    <variant name="LatencyPlayback"/>
-    <variant name="LatencyRtc"/>
-    <variant name="LatencyUnknown"/>
-  </token>
-</histogram>
-
 <histogram name="Media.Audio.OutputDeviceMixer.StreamStatus"
-    enum="AudioOutputDeviceMixerStreamStatus" expires_after="2024-02-04">
+    enum="AudioOutputDeviceMixerStreamStatus" expires_after="2024-09-01">
   <owner>olka@chromium.org</owner>
   <owner>tguilbert@chromium.org</owner>
   <owner>webrtc-audio-uma@google.com</owner>
@@ -856,7 +984,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Media.Audio.OutputDeviceMixerManager.StreamCreation"
     enum="AudioOutputDeviceMixerManagerStreamCreation"
-    expires_after="2023-10-05">
+    expires_after="2024-09-01">
   <owner>olka@chromium.org</owner>
   <owner>tguilbert@chromium.org</owner>
   <owner>webrtc-audio-uma@google.com</owner>
@@ -866,7 +994,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Media.Audio.Processing.CaptureDelayMs" units="ms"
-    expires_after="2024-05-03">
+    expires_after="2024-07-07">
   <owner>saza@google.com</owner>
   <owner>olka@chromium.org</owner>
   <owner>webrtc-audio-uma@google.com</owner>
@@ -878,7 +1006,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Media.Audio.Processing.CaptureDelayVarianceMs"
-    units="ms squared" expires_after="2024-05-03">
+    units="ms squared" expires_after="2024-07-07">
   <owner>saza@chromium.org</owner>
   <owner>olka@chromium.org</owner>
   <owner>webrtc-audio-uma@google.com</owner>
@@ -890,7 +1018,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Media.Audio.Processing.RenderDelayMs" units="ms"
-    expires_after="2024-05-03">
+    expires_after="2024-07-07">
   <owner>saza@chromium.org</owner>
   <owner>olka@chromium.org</owner>
   <owner>webrtc-audio-uma@google.com</owner>
@@ -914,7 +1042,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Media.Audio.Processing.TotalDelayMs" units="ms"
-    expires_after="2024-05-03">
+    expires_after="2024-07-07">
   <owner>saza@chromium.org</owner>
   <owner>olka@chromium.org</owner>
   <owner>webrtc-audio-uma@google.com</owner>
@@ -925,7 +1053,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Media.Audio.Processing.TotalDelayVarianceMs"
-    units="ms squared" expires_after="2024-05-03">
+    units="ms squared" expires_after="2024-07-07">
   <owner>saza@chromium.org</owner>
   <owner>olka@chromium.org</owner>
   <owner>webrtc-audio-uma@google.com</owner>
@@ -937,7 +1065,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Media.Audio.RawProcessingSupportedWin" enum="BooleanSupported"
-    expires_after="2024-02-12">
+    expires_after="2024-06-30">
   <owner>henrika@chromium.org</owner>
   <owner>media-dev-uma@chromium.org</owner>
   <owner>webrtc-audio-uma@google.com</owner>
@@ -950,9 +1078,9 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Media.Audio.Render.FramesRequested" units="frames"
-    expires_after="2023-10-01">
-  <owner>guidou@chromium.org</owner>
+    expires_after="2024-10-01">
   <owner>olka@chromium.org</owner>
+  <owner>guidou@chromium.org</owner>
   <owner>webrtc-audio-uma@google.com</owner>
   <summary>
     The number of frames audio is actually rendered at if the number is
@@ -966,8 +1094,8 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Media.Audio.Render.GetSourceDataTime.WebRTC"
-    units="microseconds" expires_after="2023-12-04">
-  <owner>guidou@chromium.org</owner>
+    units="microseconds" expires_after="2024-10-01">
+  <owner>fhernqvist@google.com</owner>
   <owner>olka@chromium.org</owner>
   <owner>webrtc-audio-uma@google.com</owner>
   <summary>
@@ -984,8 +1112,8 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Media.Audio.Render.GetSourceDataTimeMax.WebRTC"
-    units="microseconds" expires_after="2023-11-12">
-  <owner>guidou@chromium.org</owner>
+    units="microseconds" expires_after="2024-10-01">
+  <owner>fhernqvist@google.com</owner>
   <owner>olka@chromium.org</owner>
   <owner>webrtc-audio-uma@google.com</owner>
   <summary>
@@ -1019,7 +1147,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Media.Audio.Render.OutputDeviceAuthorizationTimedOut"
-    enum="BooleanTimedOut" expires_after="2023-12-24">
+    enum="BooleanTimedOut" expires_after="2024-06-30">
   <owner>guidou@chromium.org</owner>
   <owner>olka@chromium.org</owner>
   <owner>webrtc-audio-uma@google.com</owner>
@@ -1030,7 +1158,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Media.Audio.Render.OutputDeviceStartTime2" units="ms"
-    expires_after="2023-12-24">
+    expires_after="2024-06-30">
   <owner>dalecurtis@chromium.org</owner>
   <owner>olka@chromium.org</owner>
   <owner>tguilbert@chromium.org</owner>
@@ -1042,7 +1170,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Media.Audio.Render.OutputDeviceStatus"
-    enum="OutputDeviceStatus" expires_after="2024-01-07">
+    enum="OutputDeviceStatus" expires_after="2024-07-14">
   <owner>dalecurtis@chromium.org</owner>
   <owner>guidou@chromium.org</owner>
   <owner>olka@chromium.org</owner>
@@ -1053,7 +1181,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Media.Audio.Render.OutputStreamDuration2" units="ms"
-    expires_after="2024-02-11">
+    expires_after="2024-06-30">
   <owner>olka@chromium.org</owner>
   <owner>tguilbert@chromium.org</owner>
   <owner>webrtc-audio-uma@google.com</owner>
@@ -1061,17 +1189,6 @@ chromium-metrics-reviews@google.com.
     This histogram measures the duration of every output stream, as seen from
     the renderer. It counts from when it has been successfully started, until it
     is stopped. Streams that fail to start are not logged.
-  </summary>
-</histogram>
-
-<histogram
-    name="Media.Audio.Render.SinkCache.GetOutputDeviceInfoCacheUtilization"
-    enum="GetOutputDeviceInfoCacheHit" expires_after="2024-02-04">
-  <owner>guidou@chromium.org</owner>
-  <owner>olka@chromium.org</owner>
-  <summary>
-    Whether a cached sink was used to get audio output device information, or a
-    new sink was created for that.
   </summary>
 </histogram>
 
@@ -1091,7 +1208,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Media.Audio.Render.SystemDelay" units="ms"
-    expires_after="2024-06-01">
+    expires_after="2024-08-04">
   <owner>fhernqvist@google.com</owner>
   <owner>olka@chromium.org</owner>
   <owner>webrtc-audio-uma@google.com</owner>
@@ -1103,7 +1220,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Media.Audio.TabAudioMuted" enum="Boolean"
-    expires_after="2024-01-14">
+    expires_after="2024-07-21">
   <owner>evliu@google.com</owner>
   <owner>chrome-media-ux@google.com</owner>
   <summary>
@@ -1175,7 +1292,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Media.Audio.{Type}.EarlyGlitchDetected" enum="BooleanDetected"
-    expires_after="2024-05-03">
+    expires_after="2024-07-07">
   <owner>olka@chromium.org</owner>
   <owner>saza@chromium.org</owner>
   <owner>webrtc-audio-uma@google.com</owner>
@@ -1193,7 +1310,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Media.Audio.{Type}.Glitches2" units="glitches"
-    expires_after="2024-05-03">
+    expires_after="2024-07-07">
   <owner>olka@chromium.org</owner>
   <owner>saza@chromium.org</owner>
   <owner>webrtc-audio-uma@google.com</owner>
@@ -1213,7 +1330,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Media.Audio.{Type}.LargestGlitchMs2" units="ms"
-    expires_after="2024-05-03">
+    expires_after="2024-07-07">
   <owner>olka@chromium.org</owner>
   <owner>saza@chromium.org</owner>
   <owner>webrtc-audio-uma@google.com</owner>
@@ -1232,7 +1349,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Media.Audio.{Type}.LostFramesInMs2" units="ms"
-    expires_after="2024-05-03">
+    expires_after="2024-07-07">
   <owner>olka@chromium.org</owner>
   <owner>saza@chromium.org</owner>
   <owner>webrtc-audio-uma@google.com</owner>
@@ -1252,7 +1369,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Media.Audio.{Type}.SystemGlitchDuration" units="ms"
-    expires_after="2024-06-01">
+    expires_after="2024-08-04">
   <owner>fhernqvist@google.com</owner>
   <owner>olka@chromium.org</owner>
   <owner>webrtc-audio-uma@google.com</owner>
@@ -1273,7 +1390,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Media.AudioCapturerAudioGlitches" enum="AudioGlitchResult"
-    expires_after="2024-02-20">
+    expires_after="2024-06-30">
   <owner>olka@chromium.org</owner>
   <owner>gustaf@chromium.org</owner>
   <owner>webrtc-audio-uma@google.com</owner>
@@ -1284,7 +1401,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Media.AudioCapturerDroppedData10sIntervals" units="drops"
-    expires_after="2024-02-04">
+    expires_after="2024-06-30">
   <owner>fhernqvist@google.com</owner>
   <owner>olka@chromium.org</owner>
   <owner>webrtc-audio-uma@google.com</owner>
@@ -1298,29 +1415,8 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Media.AudioCapturerDroppedData2.{Duration}" units="permille"
-    expires_after="2023-10-05">
-  <obsolete>
-    Deprecated in favor of Media.AudioCapturerDroppedData10sIntervals and
-    Media.AudioCapturerDroppedDataBelow10s. Data is no longer collected.
-  </obsolete>
-  <owner>olka@chromium.org</owner>
-  <owner>gustaf@chromium.org</owner>
-  <owner>webrtc-audio-uma@google.com</owner>
-  <summary>
-    The proportion of input audio data that was dropped at the browser/renderer
-    boundary due to for example buffer overflow in the writer side buffer or in
-    the socket. Reported at the destruction of low-latency audio input stream.
-    Rounded up, cropped to 1/10 of all callbacks.
-  </summary>
-  <token key="Duration">
-    <variant name="Long" summary="Streams equal or longer than 3000 callbacks"/>
-    <variant name="Short" summary="Streams shorter than 3000 callbacks"/>
-  </token>
-</histogram>
-
 <histogram name="Media.AudioCapturerDroppedDataBelow10s" units="drops"
-    expires_after="2024-02-04">
+    expires_after="2024-06-30">
   <owner>fhernqvist@google.com</owner>
   <owner>olka@chromium.org</owner>
   <owner>webrtc-audio-uma@google.com</owner>
@@ -1333,7 +1429,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Media.AudioCapturerMissedReadDeadline10sIntervals"
-    units="misses" expires_after="2024-02-04">
+    units="misses" expires_after="2024-06-30">
   <owner>fhernqvist@google.com</owner>
   <owner>olka@chromium.org</owner>
   <owner>webrtc-audio-uma@google.com</owner>
@@ -1347,30 +1443,8 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Media.AudioCapturerMissedReadDeadline2.{Duration}"
-    units="permille" expires_after="2023-10-05">
-  <obsolete>
-    Deprecated in favor of Media.AudioCapturerMissedReadDeadline10sIntervals and
-    Media.AudioCapturerMissedReadDeadlineBelow10s. Data is no longer collected.
-  </obsolete>
-  <owner>olka@chromium.org</owner>
-  <owner>gustaf@chromium.org</owner>
-  <owner>webrtc-audio-uma@google.com</owner>
-  <summary>
-    The proportion of input audio data blocks that had to be buffered because
-    there was not room in the shared memory ring buffer on the browser/renderer
-    boundary. This happens if the reading side hasn't read data in time.
-    Reported at the destruction of low-latency audio input stream. Rounded up,
-    cropped to 1/10 of all callbacks.
-  </summary>
-  <token key="Duration">
-    <variant name="Long" summary="Streams equal or longer than 3000 callbacks"/>
-    <variant name="Short" summary="Streams shorter than 3000 callbacks"/>
-  </token>
-</histogram>
-
 <histogram name="Media.AudioCapturerMissedReadDeadlineBelow10s" units="misses"
-    expires_after="2024-02-04">
+    expires_after="2024-06-30">
   <owner>fhernqvist@google.com</owner>
   <owner>olka@chromium.org</owner>
   <owner>webrtc-audio-uma@google.com</owner>
@@ -1391,10 +1465,28 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Media.AudioCodecProfile.AAC" enum="AudioCodecProfile"
-    expires_after="2024-02-04">
+    expires_after="2025-02-04">
   <owner>dalecurtis@chromium.org</owner>
   <owner>media-dev-uma@chromium.org</owner>
   <summary>Audio codec profile used in HTML5 media for AAC playback.</summary>
+</histogram>
+
+<histogram name="Media.AudioDeviceConnectionStatus.{AudioDeviceType}"
+    enum="AudioDeviceConnectionStatus" expires_after="2025-01-31">
+  <owner>iwells@chromium.org</owner>
+  <owner>clank-readaloud@google.com</owner>
+  <summary>
+    Records connection status changes for {AudioDeviceType} audio devices,
+    emitted when a device is connected or disconnected. Disconnection of
+    Bluetooth devices may be reported more than fifteen seconds after the device
+    is actually disconnected. If using a 3.5mm-to-USB adapter, a 3.5mm device
+    may be reported as USB.
+  </summary>
+  <token key="AudioDeviceType">
+    <variant name="Bluetooth"/>
+    <variant name="USB"/>
+    <variant name="Wired"/>
+  </token>
 </histogram>
 
 <histogram name="Media.AudioInputController" units="ms" expires_after="never">
@@ -1408,7 +1500,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Media.AudioInputDevice.AudioServiceDelay" units="ms"
-    expires_after="2024-02-11">
+    expires_after="2024-06-30">
   <owner>fhernqvist@google.com</owner>
   <owner>olka@chromium.org</owner>
   <owner>webrtc-audio-uma@google.com</owner>
@@ -1419,7 +1511,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Media.AudioInputDevice.AudioServiceGlitchCount{Duration}"
-    units="glitches" expires_after="2024-02-01">
+    units="glitches" expires_after="2024-06-30">
   <owner>fhernqvist@google.com</owner>
   <owner>olka@chromium.org</owner>
   <owner>webrtc-audio-uma@google.com</owner>
@@ -1433,7 +1525,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Media.AudioInputDevice.AudioServiceGlitchDuration{Duration}"
-    units="permille" expires_after="2024-02-01">
+    units="permille" expires_after="2024-06-30">
   <owner>fhernqvist@google.com</owner>
   <owner>olka@chromium.org</owner>
   <owner>webrtc-audio-uma@google.com</owner>
@@ -1447,7 +1539,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Media.AudioOutputController.CallbackError" enum="BooleanError"
-    expires_after="2023-12-24">
+    expires_after="2024-06-30">
   <owner>olka@chromium.org</owner>
   <owner>guidou@chromium.org</owner>
   <owner>webrtc-audio-uma@google.com</owner>
@@ -1473,7 +1565,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Media.AudioOutputController.ProxyStreamCreationResult"
-    enum="AudioOutputStreamCreationResult" expires_after="2023-12-24">
+    enum="AudioOutputStreamCreationResult" expires_after="2024-06-30">
   <owner>guidou@chromium.org</owner>
   <owner>olka@chromium.org</owner>
   <owner>webrtc-audio-uma@google.com</owner>
@@ -1487,7 +1579,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Media.AudioOutputController.ProxyStreamCreationResultForDeviceChange"
-    enum="AudioOutputStreamCreationResult" expires_after="2023-12-24">
+    enum="AudioOutputStreamCreationResult" expires_after="2024-06-30">
   <owner>guidou@chromium.org</owner>
   <owner>olka@chromium.org</owner>
   <owner>webrtc-audio-uma@google.com</owner>
@@ -1527,7 +1619,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Media.AudioOutputDevice.AudioServiceDelay{LatencyTag}"
-    units="ms" expires_after="2024-02-01">
+    units="ms" expires_after="2024-06-30">
   <owner>fhernqvist@google.com</owner>
   <owner>olka@chromium.org</owner>
   <owner>dalecurtis@chromium.org</owner>
@@ -1542,7 +1634,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Media.AudioOutputDevice.AudioServiceGlitchCount{Duration}{LatencyTag}"
-    units="glitches" expires_after="2024-02-01">
+    units="glitches" expires_after="2024-06-30">
   <owner>fhernqvist@google.com</owner>
   <owner>olka@chromium.org</owner>
   <owner>dalecurtis@chromium.org</owner>
@@ -1560,7 +1652,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Media.AudioOutputDevice.AudioServiceGlitchDuration{Duration}{LatencyTag}"
-    units="permille" expires_after="2024-02-01">
+    units="permille" expires_after="2024-06-30">
   <owner>fhernqvist@google.com</owner>
   <owner>olka@chromium.org</owner>
   <owner>dalecurtis@chromium.org</owner>
@@ -1578,7 +1670,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Media.AudioOutputResampler.OpenLowLatencyStream"
     enum="AudioOutputResamplerLowLatencyOpenStreamResult"
-    expires_after="2023-12-24">
+    expires_after="2024-06-30">
   <owner>olka@chromium.org</owner>
   <owner>armax@chromium.org</owner>
   <owner>guidou@chromium.org</owner>
@@ -1593,34 +1685,18 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Media.AudioOutputStreamProxy.StreamFormat"
-    enum="AudioOutputProxyStreamFormat" expires_after="2023-12-04">
+    enum="AudioOutputProxyStreamFormat" expires_after="2024-10-01">
   <owner>olka@chromium.org</owner>
   <owner>tguilbert@chromium.org</owner>
   <owner>webrtc-audio-uma@google.com</owner>
   <summary>
     Records format used by AudioManager to create audio output stream proxy. If
-    a fake stream is created it results in muted audio playback. Warning: this
-    histogram was expired from 2021-01-01 to 2022-01-21; data may be missing.
-  </summary>
-</histogram>
-
-<histogram name="Media.AudioRendererAudioGlitches" enum="AudioGlitchResult"
-    expires_after="2023-04-16">
-  <obsolete>
-    Deprecated in favor of Media.AudioRendererAudioGlitches2. Data is no longer
-    collected.
-  </obsolete>
-  <owner>henrika@chromium.org</owner>
-  <owner>olka@chromium.org</owner>
-  <owner>webrtc-audio-uma@google.com</owner>
-  <summary>
-    Captures if render-side audio glitches are detected or not. Sampled when a
-    low-latency output audio stream is destructed.
+    a fake stream is created it results in muted audio playback.
   </summary>
 </histogram>
 
 <histogram name="Media.AudioRendererAudioGlitches2.{LatencyTag}"
-    enum="AudioGlitchResult" expires_after="2024-02-05">
+    enum="AudioGlitchResult" expires_after="2024-06-30">
   <owner>dalecurtis@chromium.org</owner>
   <owner>olka@chromium.org</owner>
   <owner>tguilbert@chromium.org</owner>
@@ -1641,7 +1717,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Media.AudioRendererImpl.SinkStatus" enum="OutputDeviceStatus"
-    expires_after="2024-01-07">
+    expires_after="2024-07-14">
   <owner>olka@chromium.org</owner>
   <owner>fhernqvist@google.com</owner>
   <owner>webrtc-audio-uma@google.com</owner>
@@ -1655,43 +1731,8 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram
-    name="Media.AudioRendererMissedDeadline2{Mixing}{Duration}{LatencyTag}"
-    units="permille" expires_after="2023-02-05">
-  <obsolete>
-    Deprecated in favor of Media.AudioRendererMissedDeadline3. Data is no longer
-    collected.
-  </obsolete>
-  <owner>dalecurtis@chromium.org</owner>
-  <owner>olka@chromium.org</owner>
-  <owner>tguilbert@chromium.org</owner>
-  <owner>webrtc-audio-uma@google.com</owner>
-  <summary>
-    Proportion of SyncReader::Read() calls where the renderer missed its
-    realtime deadline. Rounded up, clipped to 1/10 of the stream callbacks.
-    Sampled when a low-latency output audio stream is destructed.
-  </summary>
-  <token key="Mixing">
-    <variant name="" summary="Whole stream lifetime"/>
-    <variant name=".Mixing" summary="During mixing"/>
-  </token>
-  <token key="Duration">
-    <variant name=".Long"
-        summary="Streams equal or longer than 3000 callbacks"/>
-    <variant name=".Short" summary="Streams shorter than 3000 callbacks"/>
-  </token>
-  <token key="LatencyTag">
-    <variant name="" summary="All latencies combined"/>
-    <variant name=".LatencyExactMs"/>
-    <variant name=".LatencyInteractive"/>
-    <variant name=".LatencyPlayback"/>
-    <variant name=".LatencyRtc"/>
-    <variant name=".LatencyUnknown"/>
-  </token>
-</histogram>
-
-<histogram
     name="Media.AudioRendererMissedDeadline3{Mixing}{Duration}{LatencyTag}"
-    units="misses" expires_after="2024-02-20">
+    units="misses" expires_after="2024-06-30">
   <owner>fhernqvist@google.com</owner>
   <owner>olka@chromium.org</owner>
   <owner>dalecurtis@chromium.org</owner>
@@ -1721,7 +1762,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Media.AudioService.AudioManagerStartupTime" units="ms"
-    expires_after="2023-10-05">
+    expires_after="2024-09-01">
   <owner>fhernqvist@google.com</owner>
   <owner>olka@chromium.org</owner>
   <owner>webrtc-audio-uma@google.com</owner>
@@ -1732,7 +1773,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Media.AudioSystem.GetDeviceDescription.Result"
-    enum="BooleanSuccess" expires_after="2024-01-21">
+    enum="BooleanSuccess" expires_after="2024-03-24">
   <owner>toprice@chromium.org</owner>
   <owner>olka@chromium.org</owner>
   <summary>
@@ -1754,6 +1795,18 @@ chromium-metrics-reviews@google.com.
     the hang monitor has been initialized. If the thread is detected as hung
     later, a value of &quot;hung&quot; is emitted. If the hung thread later
     recovers a value of &quot;recovered&quot; is emitted.
+  </summary>
+</histogram>
+
+<histogram name="Media.AutoPictureInPicture.PromptResult"
+    enum="MediaAutoPictureInPicturePromptResult" expires_after="2024-06-30">
+  <owner>steimel@chromium.org</owner>
+  <owner>media-dev-uma@chromium.org</owner>
+  <summary>
+    Recorded when the user either selects an option from the Automatic
+    picture-in-picture permission prompt, or when the user manually closes the
+    picture-in-picture window without responding to the prompt. Records their
+    selection (or &quot;Ignored&quot; if they did not select an option).
   </summary>
 </histogram>
 
@@ -1780,7 +1833,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Media.BreakoutBox.Usage" enum="BreakoutBoxUsage"
-    expires_after="2023-12-24">
+    expires_after="2024-06-30">
   <owner>guidou@chromium.org</owner>
   <owner>hta@chromium.org</owner>
   <owner>tguilbert@chromium.org</owner>
@@ -1876,23 +1929,8 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram base="true" name="Media.ConfigChangeDecoderSelectionTime" units="ms"
-    expires_after="2023-01-01">
-  <obsolete>
-    Removed 02/2023 due to lack of further need for this data.
-  </obsolete>
-  <owner>cassew@google.com</owner>
-  <owner>media-dev-uma@chromium.org</owner>
-  <summary>
-    Duration of decoder selection during config changes, measured from first
-    call to 'DecoderSelector::SelectDecoder' to
-    'DecoderSelector::FinalizeSelection'. The HW/SW suffix indicates the type of
-    the decoder that was ultimately selected.
-  </summary>
-</histogram>
-
 <histogram name="Media.Controls.CTR" enum="MediaControlsCTREvent"
-    expires_after="2024-02-11">
+    expires_after="2024-06-30">
   <owner>steimel@chromium.org</owner>
   <owner>media-dev-uma@chromium.org</owner>
   <summary>
@@ -1913,7 +1951,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Media.Controls.OverlayCastButtonIsCovered" enum="Boolean"
-    expires_after="2023-11-12">
+    expires_after="2024-07-14">
   <owner>takumif@chromium.org</owner>
   <owner>muyaoxu@google.com</owner>
   <owner>openscreen-eng@google.com</owner>
@@ -1934,28 +1972,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Media.Controls.Show.Audio" enum="MediaControlsShowReason"
-    expires_after="2023-12-24">
-  <owner>steimel@chromium.org</owner>
-  <owner>media-dev-uma@chromium.org</owner>
-  <summary>
-    Record whether the default media controls of an audio element were shown and
-    why every time they could be shown. Note that audio elements that were not
-    insterted to the DOM and do not have a controls attribute are not taken into
-    account.
-  </summary>
-</histogram>
-
-<histogram name="Media.Controls.Show.Video" enum="MediaControlsShowReason"
-    expires_after="2022-10-30">
-  <owner>steimel@chromium.org</owner>
-  <owner>media-dev-uma@chromium.org</owner>
-  <summary>
-    Record whether the default media controls of a video element were shown and
-    why every time they could be shown.
-  </summary>
-</histogram>
-
 <histogram name="Media.CrosBeamformingDeviceState"
     enum="CrosBeamformingDeviceState" expires_after="M85">
   <owner>dalecurtis@chromium.org</owner>
@@ -1967,40 +1983,45 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Media.CrosGlobalMediaControls.PinAction" enum="BooleanPinned"
-    expires_after="2022-04-24">
+    expires_after="2024-07-07">
   <owner>jazzhsue@chromium.org</owner>
   <owner>media-dev-uma@chromium.org</owner>
   <summary>
-    Record each time user pins/unpins CrOS global media controls.
+    Record each time user pins/unpins CrOS global media controls. Warning: this
+    histogram was expired from 2022-04-24 to 2024-01-04; data may be missing.
   </summary>
 </histogram>
 
 <histogram name="Media.CrosGlobalMediaControls.QuickSettingUserAction"
-    enum="MediaSessionAction" expires_after="2022-04-24">
+    enum="MediaSessionAction" expires_after="2024-07-07">
   <owner>jazzhsue@chromium.org</owner>
   <owner>media-dev-uma@chromium.org</owner>
   <summary>
-    The action user clicked on the media controls in quick settings.
+    The action user clicked on the media controls in quick settings. Warning:
+    this histogram was expired from 2022-04-24 to 2024-01-04; data may be
+    missing.
   </summary>
 </histogram>
 
 <histogram name="Media.CrosGlobalMediaControls.RepeatUsageInQuickSetting"
-    enum="BooleanIsRepeat" expires_after="2022-05-01">
+    enum="BooleanIsRepeat" expires_after="2024-07-07">
   <owner>jazzhsue@chromium.org</owner>
   <owner>media-dev-uma@chromium.org</owner>
   <summary>
     Record each time media controls' sub-menu in quick settings is opened. True
-    if it is a repeat usage.
+    if it is a repeat usage. Warning: this histogram was expired from 2022-05-01
+    to 2024-01-04; data may be missing.
   </summary>
 </histogram>
 
 <histogram name="Media.CrosGlobalMediaControls.RepeatUsageOnShelf"
-    enum="BooleanIsRepeat" expires_after="2022-04-24">
+    enum="BooleanIsRepeat" expires_after="2024-07-07">
   <owner>jazzhsue@chromium.org</owner>
   <owner>media-dev-uma@chromium.org</owner>
   <summary>
     Record each time global media controls on the shelf is opened. True if it is
-    a repeat usage.
+    a repeat usage. Warning: this histogram was expired from 2022-04-24 to
+    2024-01-04; data may be missing.
   </summary>
 </histogram>
 
@@ -2094,7 +2115,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Media.DocumentPictureInPicture.CloseReason"
-    enum="DocumentPictureInPictureCloseReason" expires_after="2024-02-01">
+    enum="DocumentPictureInPictureCloseReason" expires_after="2024-06-30">
   <owner>steimel@chromium.org</owner>
   <owner>liberato@chromium.org</owner>
   <owner>media-dev-uma@chromium.org</owner>
@@ -2118,7 +2139,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Media.DroppedFrameCount2.{RendererType}.{ClearOrEncrypted}"
-    units="units" expires_after="2024-02-20">
+    units="units" expires_after="2024-06-30">
   <owner>dalecurtis@chromium.org</owner>
   <owner>frankli@microsoft.com</owner>
   <owner>media-dev-uma@chromium.org</owner>
@@ -2134,17 +2155,52 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
-<histogram name="Media.DXVAVDA.DecoderLifetimeProgression"
-    enum="DXVALifetimeProgression" expires_after="2022-04-24">
-  <obsolete>
-    Removed 05/2022 due to lack of further need for this data.
-  </obsolete>
-  <owner>liberato@chromium.org</owner>
-  <owner>tmathmeyer@chromium.org</owner>
+<histogram name="Media.ElementCapture.ProduceTarget.Function.Result"
+    enum="ProduceTargetFunctionResult" expires_after="2024-08-29">
+  <owner>eladalon@chromium.org</owner>
+  <owner>jophba@chromium.org</owner>
+  <owner>mfoltz@chromium.org</owner>
   <summary>
-    This enum allows us to count DXVAVideoDecoderWin specific crashes and
-    initialization failures. This is recorded whenever the decoder is
-    initialized or destroyed, or encounters an error.
+    Tracks the result of calls to RestrictionTarget.fromElement(). Specifically,
+    this histogram tracks whether a new Promise was produced, and if not, why
+    not. Another histogram tracks the result of new Promises, i.e. whether they
+    were resolved or rejected.
+  </summary>
+</histogram>
+
+<histogram name="Media.ElementCapture.ProduceTarget.Promise.Result"
+    enum="ProduceTargetPromiseResult" expires_after="2024-08-29">
+  <owner>eladalon@chromium.org</owner>
+  <owner>jophba@chromium.org</owner>
+  <owner>mfoltz@chromium.org</owner>
+  <summary>
+    When RestrictionTarget.fromElement() is called for the first time on a given
+    Element, a new Promise is produced. This histogram tracks the result of this
+    Promise - whether it was resolved or rejected.
+  </summary>
+</histogram>
+
+<histogram name="Media.ElementCapture.RestrictTo.Latency" units="ms"
+    expires_after="2024-09-20">
+  <owner>eladalon@chromium.org</owner>
+  <owner>jophba@chromium.org</owner>
+  <owner>mfoltz@chromium.org</owner>
+  <summary>
+    Duration in milliseconds of the time it takes for a
+    BrowserCaptureMediaStreamTrack.restrictTo() call to resolve (either
+    successfully or with an error). Note a call which never resolves won't be
+    counted in this metric.
+  </summary>
+</histogram>
+
+<histogram name="Media.ElementCapture.RestrictTo.Result"
+    enum="ApplySubCaptureTargetResult" expires_after="2024-09-20">
+  <owner>eladalon@chromium.org</owner>
+  <owner>jophba@chromium.org</owner>
+  <owner>mfoltz@chromium.org</owner>
+  <summary>
+    Tracks the result of calls to BrowserCaptureMediaStreamTrack.restrictTo().
+    Recorded when resolving the promise produced by restrictTo().
   </summary>
 </histogram>
 
@@ -2160,7 +2216,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Media.EME.CdmFileIO.FileSizeKBOnFirstRead" units="KB"
-    expires_after="2024-04-11">
+    expires_after="2024-08-18">
   <owner>xhwang@chromium.org</owner>
   <owner>media-dev-uma@chromium.org</owner>
   <summary>
@@ -2170,7 +2226,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Media.EME.CdmFileIO.TimeTo.{FileOperation}{IncognitoOrNormal}"
-    units="ms" expires_after="2024-04-11">
+    units="ms" expires_after="2024-08-18">
   <owner>jrummell@chromium.org</owner>
   <owner>media-dev-uma@chromium.org</owner>
   <summary>
@@ -2181,8 +2237,18 @@ chromium-metrics-reviews@google.com.
   <token key="IncognitoOrNormal" variants="IncognitoOrNormal"/>
 </histogram>
 
+<histogram name="Media.EME.CdmFileIO.WriteFile.DataSizeKB" units="KB"
+    expires_after="2024-08-18">
+  <owner>vpasupathy@chromium.org</owner>
+  <owner>media-dev-uma@chromium.org</owner>
+  <summary>
+    Size in KB of a file written by the CDM through CDM FileIO. This is recorded
+    once per write through the CDM.
+  </summary>
+</histogram>
+
 <histogram name="Media.EME.CdmFileIO.{FileOperation}{IncognitoOrNormal}"
-    enum="BooleanSuccess" expires_after="2024-04-11">
+    enum="BooleanSuccess" expires_after="2024-08-18">
   <owner>jrummell@chromium.org</owner>
   <owner>media-dev-uma@chromium.org</owner>
   <summary>
@@ -2194,7 +2260,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Media.EME.CdmFileIO::OpenFile" enum="CdmStorageStatus"
-    expires_after="2024-04-11">
+    expires_after="2024-08-18">
   <owner>xhwang@chromium.org</owner>
   <owner>media-dev-uma@chromium.org</owner>
   <summary>
@@ -2224,7 +2290,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Media.EME.CdmLoadErrorCode" enum="WinGetLastError"
-    expires_after="2024-04-11">
+    expires_after="2024-06-16">
   <owner>xhwang@chromium.org</owner>
   <owner>media-dev-uma@chromium.org</owner>
   <summary>
@@ -2233,30 +2299,479 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Media.EME.CdmLoadResult" enum="CdmLoadResult"
-    expires_after="2024-04-11">
+    expires_after="2024-08-18">
   <owner>xhwang@chromium.org</owner>
   <owner>media-dev-uma@chromium.org</owner>
   <summary>The result from an attempt to load a library CDM.</summary>
 </histogram>
 
-<histogram name="Media.EME.CdmLoadTime" units="ms" expires_after="2024-04-11">
+<histogram name="Media.EME.CdmLoadTime" units="ms" expires_after="2024-08-18">
   <owner>xhwang@chromium.org</owner>
   <owner>media-dev-uma@chromium.org</owner>
   <summary>The time spent to load a library CDM.</summary>
 </histogram>
 
-<histogram name="Media.EME.CdmStorageDatabaseSQLiteError"
-    enum="SqliteLoggedResultCode" expires_after="2024-08-11">
+<histogram name="Media.EME.CdmStorageDatabase.IncompatibleDatabaseDetected"
+    enum="Boolean" expires_after="2024-07-21">
   <owner>vpasupathy@chromium.org</owner>
   <owner>media-dev-uma@chromium.org</owner>
   <summary>
-    SQLite specific errors reported while opening and using the Cdm Storage
-    Database. Recorded on any error from a database operation.
+    This UMA records when the CdmStorageDatabase for a profile is incompatible.
+    This UMA is recorded on every OpenDatabase call that detects the database
+    with a version number of one, which means that it is operating under a
+    schema that does not include file_size and last_modified.
   </summary>
 </histogram>
 
+<histogram name="Media.EME.CdmStorageDatabase.WriteFileForBigData"
+    enum="Boolean" expires_after="2024-08-18">
+  <owner>vpasupathy@chromium.org</owner>
+  <owner>media-dev-uma@chromium.org</owner>
+  <summary>
+    This UMA records when the data being written to the CdmStorageDatabase
+    exceeds 15 KB. This UMA is recorded on every write over 15KB that succeeds.
+  </summary>
+</histogram>
+
+<histogram name="Media.EME.CdmStorageDatabaseSQLiteError"
+    enum="SqliteLoggedResultCode" expires_after="2024-06-23">
+  <owner>vpasupathy@chromium.org</owner>
+  <owner>media-dev-uma@chromium.org</owner>
+  <summary>
+    SQLite specific errors reported while using the Cdm Storage Database.
+    Recorded on any error from a database operation.
+  </summary>
+</histogram>
+
+<histogram
+    name="Media.EME.CdmStorageDatabaseSQLiteError.AlterDatabaseForFileSize"
+    enum="SqliteLoggedResultCode" expires_after="2024-04-11">
+  <owner>vpasupathy@chromium.org</owner>
+  <owner>media-dev-uma@chromium.org</owner>
+  <summary>
+    This UMA records SQLite specific errors that occur when altering the Cdm
+    Storage Database to add the column file_size. This UMA is recorded on every
+    error for this operation.
+  </summary>
+</histogram>
+
+<histogram
+    name="Media.EME.CdmStorageDatabaseSQLiteError.AlterDatabaseForLastModified"
+    enum="SqliteLoggedResultCode" expires_after="2024-04-11">
+  <owner>vpasupathy@chromium.org</owner>
+  <owner>media-dev-uma@chromium.org</owner>
+  <summary>
+    This UMA records SQLite specific errors that occur when altering the Cdm
+    Storage Database to add the column last_modified. This UMA is recorded on
+    every error for this operation.
+  </summary>
+</histogram>
+
+<histogram name="Media.EME.CdmStorageDatabaseSQLiteError.ClearDatabase"
+    enum="SqliteLoggedResultCode" expires_after="2024-04-11">
+  <owner>vpasupathy@chromium.org</owner>
+  <owner>media-dev-uma@chromium.org</owner>
+  <summary>
+    This UMA records SQLite specific errors that occur when clearing the Cdm
+    Storage Database. This UMA is recorded on every error for this operation.
+  </summary>
+</histogram>
+
+<histogram name="Media.EME.CdmStorageDatabaseSQLiteError.DeleteFile"
+    enum="SqliteLoggedResultCode" expires_after="2024-04-11">
+  <owner>vpasupathy@chromium.org</owner>
+  <owner>media-dev-uma@chromium.org</owner>
+  <summary>
+    This UMA records SQLite specific errors that occur when deleting a singular
+    file in the Cdm Storage Database. This UMA is recorded on every error for
+    this operation.
+  </summary>
+</histogram>
+
+<histogram name="Media.EME.CdmStorageDatabaseSQLiteError.DeleteForStorageKey"
+    enum="SqliteLoggedResultCode" expires_after="2024-04-11">
+  <owner>vpasupathy@chromium.org</owner>
+  <owner>media-dev-uma@chromium.org</owner>
+  <summary>
+    This UMA records SQLite specific errors that occur when deleting multiple
+    files for a single storage key in the Cdm Storage Database. This UMA is
+    recorded on every error for this operation.
+  </summary>
+</histogram>
+
+<histogram name="Media.EME.CdmStorageDatabaseSQLiteError.DeleteForTimeFrame"
+    enum="SqliteLoggedResultCode" expires_after="2024-04-11">
+  <owner>vpasupathy@chromium.org</owner>
+  <owner>media-dev-uma@chromium.org</owner>
+  <summary>
+    This UMA records SQLite specific errors that occur when deleting multiple
+    files for a specified time frame in the Cdm Storage Database. This UMA is
+    recorded on every error for this operation.
+  </summary>
+</histogram>
+
+<histogram name="Media.EME.CdmStorageDatabaseSQLiteError.DeleteIfEmptyDatabase"
+    enum="SqliteLoggedResultCode" expires_after="2024-04-11">
+  <owner>vpasupathy@chromium.org</owner>
+  <owner>media-dev-uma@chromium.org</owner>
+  <summary>
+    This UMA records SQLite specific errors that occur when getting the count of
+    entries in the Cdm Storage Database. This UMA is recorded on every error for
+    this operation.
+  </summary>
+</histogram>
+
+<histogram name="Media.EME.CdmStorageDatabaseSQLiteError.GetSizeForFile"
+    enum="SqliteLoggedResultCode" expires_after="2024-04-11">
+  <owner>vpasupathy@chromium.org</owner>
+  <owner>media-dev-uma@chromium.org</owner>
+  <summary>
+    This UMA records SQLite specific errors that occur when getting the sum()
+    size of a file in the Cdm Storage Database. This UMA is recorded on every
+    error for this operation.
+  </summary>
+</histogram>
+
+<histogram name="Media.EME.CdmStorageDatabaseSQLiteError.GetSizeForStorageKey"
+    enum="SqliteLoggedResultCode" expires_after="2024-04-11">
+  <owner>vpasupathy@chromium.org</owner>
+  <owner>media-dev-uma@chromium.org</owner>
+  <summary>
+    This UMA records SQLite specific errors that occur when getting the sum()
+    size of files for a single storage key and time frame in the Cdm Storage
+    Database. This UMA is recorded on every error for this operation.
+  </summary>
+</histogram>
+
+<histogram name="Media.EME.CdmStorageDatabaseSQLiteError.GetSizeForTimeFrame"
+    enum="SqliteLoggedResultCode" expires_after="2024-04-11">
+  <owner>vpasupathy@chromium.org</owner>
+  <owner>media-dev-uma@chromium.org</owner>
+  <summary>
+    This UMA records SQLite specific errors that occur when getting the sum()
+    size of files for a time frame in the Cdm Storage Database. This UMA is
+    recorded on every error for this operation.
+  </summary>
+</histogram>
+
+<histogram name="Media.EME.CdmStorageDatabaseSQLiteError.OpenDatabase"
+    enum="SqliteLoggedResultCode" expires_after="2024-07-14">
+  <owner>vpasupathy@chromium.org</owner>
+  <owner>media-dev-uma@chromium.org</owner>
+  <summary>
+    This UMA records SQLite specific errors that occur when opening the Cdm
+    Storage Database. This UMA is recorded on every error for this operation.
+  </summary>
+</histogram>
+
+<histogram name="Media.EME.CdmStorageDatabaseSQLiteError.ReadFile"
+    enum="SqliteLoggedResultCode" expires_after="2024-04-11">
+  <owner>vpasupathy@chromium.org</owner>
+  <owner>media-dev-uma@chromium.org</owner>
+  <summary>
+    This UMA records SQLite specific errors that occur when reading a file from
+    the Cdm Storage Database. This UMA is recorded on every error for this
+    operation.
+  </summary>
+</histogram>
+
+<histogram name="Media.EME.CdmStorageDatabaseSQLiteError.WriteFile"
+    enum="SqliteLoggedResultCode" expires_after="2024-06-23">
+  <owner>vpasupathy@chromium.org</owner>
+  <owner>media-dev-uma@chromium.org</owner>
+  <summary>
+    This UMA records SQLite specific errors that occur when writing a file to
+    the Cdm Storage Database. This UMA is recorded on every error for this
+    operation.
+  </summary>
+</histogram>
+
+<histogram name="Media.EME.CdmStorageManager.DatabaseOpenError"
+    enum="CdmStorageOpenError" expires_after="2024-07-28">
+  <owner>vpasupathy@chromium.org</owner>
+  <owner>media-dev-uma@chromium.org</owner>
+  <summary>
+    This UMA logs overall error rates from opening the CdmStorageDatabase.
+    Recorded on every open.
+  </summary>
+</histogram>
+
+<histogram name="Media.EME.CdmStorageManager.DatabaseOpenError.{ProfileType}"
+    enum="CdmStorageOpenError" expires_after="2024-04-11">
+  <owner>vpasupathy@chromium.org</owner>
+  <owner>media-dev-uma@chromium.org</owner>
+  <summary>
+    This UMA logs overall error rates from opening the CdmStorageDatabase.
+    Recorded on every open from an {ProfileType} profile.
+  </summary>
+  <token key="ProfileType">
+    <variant name="Incognito"/>
+    <variant name="NonIncognito"/>
+  </token>
+</histogram>
+
+<histogram
+    name="Media.EME.CdmStorageManager.DatabaseOpenError.{ProfileType}.Migration"
+    enum="CdmStorageOpenError" expires_after="2024-04-11">
+  <owner>vpasupathy@chromium.org</owner>
+  <owner>media-dev-uma@chromium.org</owner>
+  <summary>
+    This UMA logs overall error rates from opening the CdmStorageDatabase.
+    Recorded on every open from an {ProfileType} profile when
+    'kCdmStorageDatabaseMigration' is enabled.
+  </summary>
+  <token key="ProfileType">
+    <variant name="Incognito"/>
+    <variant name="NonIncognito"/>
+  </token>
+</histogram>
+
+<histogram name="Media.EME.CdmStorageManager.DeleteFileError.{ProfileType}"
+    enum="BooleanError" expires_after="2024-04-11">
+  <owner>vpasupathy@chromium.org</owner>
+  <owner>media-dev-uma@chromium.org</owner>
+  <summary>
+    This UMA logs overall error rates from the DeleteFile function. Recorded
+    after every call of DeleteFile on {ProfileType} profile.
+  </summary>
+  <token key="ProfileType">
+    <variant name="Incognito"/>
+    <variant name="NonIncognito"/>
+  </token>
+</histogram>
+
+<histogram
+    name="Media.EME.CdmStorageManager.DeleteFileError.{ProfileType}.Migration"
+    enum="BooleanError" expires_after="2024-08-18">
+  <owner>vpasupathy@chromium.org</owner>
+  <owner>media-dev-uma@chromium.org</owner>
+  <summary>
+    This UMA logs overall error rates from the DeleteFile function. Recorded
+    after every call of DeleteFile on {ProfileType} profile when
+    'kCdmStorageDatabaseMigration' is enabled.
+  </summary>
+  <token key="ProfileType">
+    <variant name="Incognito"/>
+    <variant name="NonIncognito"/>
+  </token>
+</histogram>
+
+<histogram
+    name="Media.EME.CdmStorageManager.DeleteForStorageKeyError.{ProfileType}"
+    enum="BooleanError" expires_after="2024-04-11">
+  <owner>vpasupathy@chromium.org</owner>
+  <owner>media-dev-uma@chromium.org</owner>
+  <summary>
+    This UMA logs overall error rates from the DeleteForStorageKey function.
+    Recorded after every call of DeleteForStorageKey on {ProfileType} profile.
+  </summary>
+  <token key="ProfileType">
+    <variant name="Incognito"/>
+    <variant name="NonIncognito"/>
+  </token>
+</histogram>
+
+<histogram
+    name="Media.EME.CdmStorageManager.DeleteForStorageKeyError.{ProfileType}.Migration"
+    enum="BooleanError" expires_after="2024-04-11">
+  <owner>vpasupathy@chromium.org</owner>
+  <owner>media-dev-uma@chromium.org</owner>
+  <summary>
+    This UMA logs overall error rates from the DeleteForStorageKey function.
+    Recorded after every call of DeleteForStorageKey on {ProfileType} profile
+    when 'kCdmStorageDatabaseMigration' is enabled.
+  </summary>
+  <token key="ProfileType">
+    <variant name="Incognito"/>
+    <variant name="NonIncognito"/>
+  </token>
+</histogram>
+
+<histogram
+    name="Media.EME.CdmStorageManager.DeleteForTimeFrameError.{ProfileType}"
+    enum="BooleanError" expires_after="2024-04-11">
+  <owner>vpasupathy@chromium.org</owner>
+  <owner>media-dev-uma@chromium.org</owner>
+  <summary>
+    This UMA logs overall error rates from the DeleteForTimeFrame function.
+    Recorded after every call of DeleteForTimeFrame on {ProfileType} profile.
+  </summary>
+  <token key="ProfileType">
+    <variant name="Incognito"/>
+    <variant name="NonIncognito"/>
+  </token>
+</histogram>
+
+<histogram
+    name="Media.EME.CdmStorageManager.DeleteForTimeFrameError.{ProfileType}.Migration"
+    enum="BooleanError" expires_after="2024-04-11">
+  <owner>vpasupathy@chromium.org</owner>
+  <owner>media-dev-uma@chromium.org</owner>
+  <summary>
+    This UMA logs overall error rates from the DeleteForTimeFrame function.
+    Recorded after every call of DeleteForTimeFrame on {ProfileType} profile
+    when 'kCdmStorageDatabaseMigration' is enabled.
+  </summary>
+  <token key="ProfileType">
+    <variant name="Incognito"/>
+    <variant name="NonIncognito"/>
+  </token>
+</histogram>
+
+<histogram name="Media.EME.CdmStorageManager.GetSizeForFileError.{ProfileType}"
+    enum="BooleanError" expires_after="2024-04-11">
+  <owner>vpasupathy@chromium.org</owner>
+  <owner>media-dev-uma@chromium.org</owner>
+  <summary>
+    This UMA logs overall error rates from the GetSizeForFile function. Recorded
+    after every call of GetSizeForFile on {ProfileType} profile.
+  </summary>
+  <token key="ProfileType">
+    <variant name="Incognito"/>
+    <variant name="NonIncognito"/>
+  </token>
+</histogram>
+
+<histogram
+    name="Media.EME.CdmStorageManager.GetSizeForFileError.{ProfileType}.Migration"
+    enum="BooleanError" expires_after="2024-04-11">
+  <owner>vpasupathy@chromium.org</owner>
+  <owner>media-dev-uma@chromium.org</owner>
+  <summary>
+    This UMA logs overall error rates from the GetSizeForFile function. Recorded
+    after every call of GetSizeForFile on {ProfileType} profile when
+    'kCdmStorageDatabaseMigration' is enabled.
+  </summary>
+  <token key="ProfileType">
+    <variant name="Incognito"/>
+    <variant name="NonIncognito"/>
+  </token>
+</histogram>
+
+<histogram
+    name="Media.EME.CdmStorageManager.GetSizeForStorageKeyError.{ProfileType}"
+    enum="BooleanError" expires_after="2024-04-11">
+  <owner>vpasupathy@chromium.org</owner>
+  <owner>media-dev-uma@chromium.org</owner>
+  <summary>
+    This UMA logs overall error rates from the GetSizeForStorageKey function.
+    Recorded after every call of GetSizeForStorageKey on {ProfileType} profile.
+  </summary>
+  <token key="ProfileType">
+    <variant name="Incognito"/>
+    <variant name="NonIncognito"/>
+  </token>
+</histogram>
+
+<histogram
+    name="Media.EME.CdmStorageManager.GetSizeForStorageKeyError.{ProfileType}.Migration"
+    enum="BooleanError" expires_after="2024-04-11">
+  <owner>vpasupathy@chromium.org</owner>
+  <owner>media-dev-uma@chromium.org</owner>
+  <summary>
+    This UMA logs overall error rates from the GetSizeForStorageKey function.
+    Recorded after every call of GetSizeForStorageKey on {ProfileType} profile
+    when 'kCdmStorageDatabaseMigration' is enabled.
+  </summary>
+  <token key="ProfileType">
+    <variant name="Incognito"/>
+    <variant name="NonIncognito"/>
+  </token>
+</histogram>
+
+<histogram
+    name="Media.EME.CdmStorageManager.GetSizeForTimeFrameError.{ProfileType}"
+    enum="BooleanError" expires_after="2024-04-11">
+  <owner>vpasupathy@chromium.org</owner>
+  <owner>media-dev-uma@chromium.org</owner>
+  <summary>
+    This UMA logs overall error rates from the GetSizeForTimeFrame function.
+    Recorded after every call of GetSizeForTimeFrame on {ProfileType} profile.
+  </summary>
+  <token key="ProfileType">
+    <variant name="Incognito"/>
+    <variant name="NonIncognito"/>
+  </token>
+</histogram>
+
+<histogram
+    name="Media.EME.CdmStorageManager.GetSizeForTimeFrameError.{ProfileType}.Migration"
+    enum="BooleanError" expires_after="2024-04-11">
+  <owner>vpasupathy@chromium.org</owner>
+  <owner>media-dev-uma@chromium.org</owner>
+  <summary>
+    This UMA logs overall error rates from the GetSizeForTimeFrame function.
+    Recorded after every call of GetSizeForTimeFrame on {ProfileType} profile
+    when 'kCdmStorageDatabaseMigration' is enabled.
+  </summary>
+  <token key="ProfileType">
+    <variant name="Incognito"/>
+    <variant name="NonIncognito"/>
+  </token>
+</histogram>
+
+<histogram name="Media.EME.CdmStorageManager.ReadFileError.{ProfileType}"
+    enum="BooleanError" expires_after="2024-04-11">
+  <owner>vpasupathy@chromium.org</owner>
+  <owner>media-dev-uma@chromium.org</owner>
+  <summary>
+    This UMA logs overall error rates from the ReadFile function. Recorded after
+    every call of ReadFile on {ProfileType} profile.
+  </summary>
+  <token key="ProfileType">
+    <variant name="Incognito"/>
+    <variant name="NonIncognito"/>
+  </token>
+</histogram>
+
+<histogram
+    name="Media.EME.CdmStorageManager.ReadFileError.{ProfileType}.Migration"
+    enum="BooleanError" expires_after="2024-08-18">
+  <owner>vpasupathy@chromium.org</owner>
+  <owner>media-dev-uma@chromium.org</owner>
+  <summary>
+    This UMA logs overall error rates from the ReadFile function. Recorded after
+    every call of ReadFile on {ProfileType} profile when
+    'kCdmStorageDatabaseMigration' is enabled.
+  </summary>
+  <token key="ProfileType">
+    <variant name="Incognito"/>
+    <variant name="NonIncognito"/>
+  </token>
+</histogram>
+
+<histogram name="Media.EME.CdmStorageManager.WriteFileError.{ProfileType}"
+    enum="BooleanError" expires_after="2024-07-28">
+  <owner>vpasupathy@chromium.org</owner>
+  <owner>media-dev-uma@chromium.org</owner>
+  <summary>
+    This UMA logs overall error rates from the WriteFile function. Recorded
+    after every call of WriteFile on {ProfileType} profile.
+  </summary>
+  <token key="ProfileType">
+    <variant name="Incognito"/>
+    <variant name="NonIncognito"/>
+  </token>
+</histogram>
+
+<histogram
+    name="Media.EME.CdmStorageManager.WriteFileError.{ProfileType}.Migration"
+    enum="BooleanError" expires_after="2024-08-18">
+  <owner>vpasupathy@chromium.org</owner>
+  <owner>media-dev-uma@chromium.org</owner>
+  <summary>
+    This UMA logs overall error rates from the WriteFile function. Recorded
+    after every call of WriteFile on {ProfileType} profile when
+    'kCdmStorageDatabaseMigration' is enabled.
+  </summary>
+  <token key="ProfileType">
+    <variant name="Incognito"/>
+    <variant name="NonIncognito"/>
+  </token>
+</histogram>
+
 <histogram name="Media.EME.CrosCdmType" enum="CrosCdmType"
-    expires_after="2024-01-15">
+    expires_after="2024-05-19">
   <owner>jkardatzke@chromium.org</owner>
   <owner>cros-gfx-video@google.com</owner>
   <summary>
@@ -2362,12 +2877,22 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Media.EME.MediaDrm.PreprovisionedOriginId.PerAppProvisioningDevice"
-    units="units" expires_after="2024-04-11">
+    units="units" expires_after="2024-08-18">
   <owner>jrummell@chromium.org</owner>
   <owner>media-dev-uma@chromium.org</owner>
   <summary>
     The number of pre-provisioned origin IDs available shortly after startup on
     devices that support per-application provisioning.
+  </summary>
+</histogram>
+
+<histogram name="Media.EME.MediaDrm.Provisioning"
+    enum="MediaDrmProvisioningResult" expires_after="2024-08-18">
+  <owner>jrummell@chromium.org</owner>
+  <owner>media-dev-uma@chromium.org</owner>
+  <summary>
+    Result of trying to provision an origin using MediaDrm. Called every time
+    provisioning is attempted, once per origin.
   </summary>
 </histogram>
 
@@ -2392,7 +2917,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Media.EME.MediaFoundationCdm.LoadErrorCode"
-    enum="WinGetLastError" expires_after="2024-04-11">
+    enum="WinGetLastError" expires_after="2024-08-18">
   <owner>sangbaekpark@chromium.org</owner>
   <owner>media-dev-uma@chromium.org</owner>
   <summary>
@@ -2401,7 +2926,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Media.EME.MediaFoundationCdm.LoadResult" enum="CdmLoadResult"
-    expires_after="2024-04-11">
+    expires_after="2024-08-18">
   <owner>sangbaekpark@chromium.org</owner>
   <owner>media-dev-uma@chromium.org</owner>
   <summary>
@@ -2410,7 +2935,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Media.EME.MediaFoundationCdm.LoadTime" units="ms"
-    expires_after="2024-04-11">
+    expires_after="2024-08-18">
   <owner>sangbaekpark@chromium.org</owner>
   <owner>media-dev-uma@chromium.org</owner>
   <summary>The time spent to load a library MediaFoundation CDM.</summary>
@@ -2430,7 +2955,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Media.EME.MediaFoundationCdm.Widevine.HardwareSecure.Initialize"
-    enum="Hresult" expires_after="2024-04-11">
+    enum="Hresult" expires_after="2024-06-23">
   <owner>xhwang@chromium.org</owner>
   <owner>media-dev-uma@chromium.org</owner>
   <summary>
@@ -2440,7 +2965,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Media.EME.MediaFoundationCdm.Widevine.HardwareSecure.{EmeApi}"
-    enum="Hresult" expires_after="2024-04-11">
+    enum="Hresult" expires_after="2024-08-18">
   <owner>xhwang@chromium.org</owner>
   <owner>media-dev-uma@chromium.org</owner>
   <summary>
@@ -2451,7 +2976,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Media.EME.MediaFoundationService.Crash2"
-    enum="BooleanAfterPowerOrDisplayChange" expires_after="2024-04-11">
+    enum="BooleanAfterPowerOrDisplayChange" expires_after="2024-08-18">
   <owner>xhwang@chromium.org</owner>
   <owner>media-dev-uma@chromium.org</owner>
   <summary>
@@ -2495,7 +3020,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Media.EME.MediaFoundationService.IsKeySystemSupported"
-    units="ms" expires_after="2024-04-11">
+    units="ms" expires_after="2024-08-18">
   <owner>xhwang@chromium.org</owner>
   <owner>media-dev-uma@chromium.org</owner>
   <summary>
@@ -2506,7 +3031,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Media.EME.MediaFoundationService.Widevine.HardwareSecure.IsTypeSupported"
-    units="ms" expires_after="2024-04-11">
+    units="ms" expires_after="2024-08-18">
   <owner>xhwang@chromium.org</owner>
   <owner>media-dev-uma@chromium.org</owner>
   <summary>
@@ -2515,6 +3040,18 @@ chromium-metrics-reviews@google.com.
     are called by MediaFoundationService.IsKeySystemSupported() (called once per
     browser session lifetime). IsKeySystemSupported() calls IsTypeSupported()
     multiple times, for different audio/video codecs and encryption schemes.
+  </summary>
+</histogram>
+
+<histogram
+    name="Media.EME.MediaLicenseDatabase.WriteFile.FullDiskDataSizeBytes"
+    units="bytes" expires_after="2024-08-11">
+  <owner>vpasupathy@chromium.org</owner>
+  <owner>media-dev-uma@chromium.org</owner>
+  <summary>
+    This UMA records the bytes of the data that fail to be written to the
+    MediaLicenseDatabase during a full disk error. This histogram is logged when
+    a write fails with a full disk error.
   </summary>
 </histogram>
 
@@ -2529,7 +3066,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Media.EME.MediaLicenseDatabaseOpenQuotaError"
-    enum="QuotaError" expires_after="2024-04-11">
+    enum="QuotaError" expires_after="2024-06-23">
   <owner>vpasupathy@chromium.org</owner>
   <owner>media-dev-uma@chromium.org</owner>
   <summary>
@@ -2539,7 +3076,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Media.EME.MediaLicenseDatabaseOpenSQLiteError"
-    enum="SqliteLoggedResultCode" expires_after="2024-04-11">
+    enum="SqliteLoggedResultCode" expires_after="2024-06-23">
   <owner>vpasupathy@chromium.org</owner>
   <owner>media-dev-uma@chromium.org</owner>
   <summary>
@@ -2549,7 +3086,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Media.EME.MediaLicenseDatabaseSQLiteError"
-    enum="SqliteLoggedResultCode" expires_after="2024-04-11">
+    enum="SqliteLoggedResultCode" expires_after="2024-08-18">
   <owner>vpasupathy@chromium.org</owner>
   <owner>media-dev-uma@chromium.org</owner>
   <summary>
@@ -2558,16 +3095,69 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Media.EME.MediaLicenseStorageHostOpenError"
-    enum="MediaLicenseStorageHostOpenError" expires_after="2024-04-11">
-  <obsolete>
-    Deprecated in favor for Media.EME.MediaLicenseStorageHostOpenError.Incognito
-    and Media.EME.MediaLicenseStorageHostOpenError.NotIncognito in 2/2023.
-  </obsolete>
+<histogram name="Media.EME.MediaLicenseDatabaseSQLiteError.DeleteFile"
+    enum="SqliteLoggedResultCode" expires_after="2024-04-11">
   <owner>vpasupathy@chromium.org</owner>
   <owner>media-dev-uma@chromium.org</owner>
   <summary>
-    General errors reported while attempting to open the MediaLicenseDatabase.
+    This UMA records SQLite specific errors that occur when deleting a file from
+    the Media License Database. This UMA is recorded on every error for this
+    operation.
+  </summary>
+</histogram>
+
+<histogram name="Media.EME.MediaLicenseDatabaseSQLiteError.QueryPageCount"
+    enum="SqliteLoggedResultCode" expires_after="2024-04-11">
+  <owner>vpasupathy@chromium.org</owner>
+  <owner>media-dev-uma@chromium.org</owner>
+  <summary>
+    This UMA records SQLite specific errors that occur when querying for
+    page_count from the Media License Database. This UMA is recorded on every
+    error for this operation.
+  </summary>
+</histogram>
+
+<histogram name="Media.EME.MediaLicenseDatabaseSQLiteError.QueryPageSize"
+    enum="SqliteLoggedResultCode" expires_after="2024-04-11">
+  <owner>vpasupathy@chromium.org</owner>
+  <owner>media-dev-uma@chromium.org</owner>
+  <summary>
+    This UMA records SQLite specific errors that occur when querying for page
+    size from the Media License Database. This UMA is recorded on every error
+    for this operation.
+  </summary>
+</histogram>
+
+<histogram name="Media.EME.MediaLicenseDatabaseSQLiteError.ReadFile"
+    enum="SqliteLoggedResultCode" expires_after="2024-04-11">
+  <owner>vpasupathy@chromium.org</owner>
+  <owner>media-dev-uma@chromium.org</owner>
+  <summary>
+    This UMA records SQLite specific errors that occur when reading a file from
+    the Media License Database. This UMA is recorded on every error for this
+    operation.
+  </summary>
+</histogram>
+
+<histogram name="Media.EME.MediaLicenseDatabaseSQLiteError.WriteFile"
+    enum="SqliteLoggedResultCode" expires_after="2024-08-18">
+  <owner>vpasupathy@chromium.org</owner>
+  <owner>media-dev-uma@chromium.org</owner>
+  <summary>
+    This UMA records SQLite specific errors that occur when writing a file to
+    the Media License Database. This UMA is recorded on every error for this
+    operation.
+  </summary>
+</histogram>
+
+<histogram name="Media.EME.MediaLicenseStorageHost.CurrentDatabaseUsageKB"
+    units="KB" expires_after="2024-04-11">
+  <owner>vpasupathy@chromium.org</owner>
+  <owner>media-dev-uma@chromium.org</owner>
+  <summary>
+    This UMA records the current MediaLicenseDatabase size in KB. This UMA is
+    recorded only once, on the first read, to retrieve usage levels of the
+    MediaLicenseDatabase.
   </summary>
 </histogram>
 
@@ -2583,7 +3173,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Media.EME.MediaLicenseStorageHostOpenError.NotIncognito"
-    enum="MediaLicenseStorageHostOpenError" expires_after="2024-04-11">
+    enum="MediaLicenseStorageHostOpenError" expires_after="2024-06-23">
   <owner>vpasupathy@chromium.org</owner>
   <owner>media-dev-uma@chromium.org</owner>
   <summary>
@@ -2606,7 +3196,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Media.EME.OutputProtection" enum="MediaOutputProtectionStatus"
-    expires_after="2024-04-11">
+    expires_after="2024-08-18">
   <owner>xhwang@chromium.org</owner>
   <owner>media-dev-uma@chromium.org</owner>
   <summary>
@@ -2626,7 +3216,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Media.EME.RequestMediaKeySystemAccess.{KeySystem}"
-    enum="RequestMediaKeySystemAccessStatus" expires_after="2024-04-11">
+    enum="RequestMediaKeySystemAccessStatus" expires_after="2024-08-18">
   <owner>xhwang@chromium.org</owner>
   <owner>media-dev-uma@chromium.org</owner>
   <summary>
@@ -2639,7 +3229,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Media.EME.RequestMediaKeySystemAccess.{KeySystem}.TimeTo.Reject"
-    units="ms" expires_after="2024-04-11">
+    units="ms" expires_after="2024-08-18">
   <owner>vpasupathy@chromium.org</owner>
   <owner>media-dev-uma@chromium.org</owner>
   <summary>
@@ -2676,7 +3266,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Media.EME.Widevine.HardwareSecure.CdmInfoStatus"
-    enum="CdmInfoStatus" expires_after="2024-04-11">
+    enum="CdmInfoStatus" expires_after="2024-08-18">
   <owner>xhwang@chromium.org</owner>
   <owner>media-dev-uma@chromium.org</owner>
   <summary>
@@ -2687,7 +3277,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Media.EME.Widevine.HardwareSecure.ClearLeadSupport.{VideoCodec}"
-    enum="BooleanSupported" expires_after="2024-04-11">
+    enum="BooleanSupported" expires_after="2024-08-18">
   <owner>vpasupathy@chromium.org</owner>
   <owner>media-dev-uma@chromium.org</owner>
   <summary>
@@ -2700,7 +3290,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Media.EME.Widevine.HardwareSecure.Pref" enum="BooleanEnabled"
-    expires_after="2024-04-11">
+    expires_after="2024-08-18">
   <owner>xhwang@chromium.org</owner>
   <owner>media-dev-uma@chromium.org</owner>
   <summary>
@@ -2712,7 +3302,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Media.EME.Widevine.HardwareSecure.Support"
-    enum="BooleanSupported" expires_after="2024-04-11">
+    enum="BooleanSupported" expires_after="2024-08-18">
   <owner>xhwang@chromium.org</owner>
   <owner>media-dev-uma@chromium.org</owner>
   <summary>
@@ -2724,7 +3314,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Media.EME.Widevine.HardwareSecure.Support.{VideoCodec}"
-    enum="BooleanSupported" expires_after="2024-04-11">
+    enum="BooleanSupported" expires_after="2024-08-18">
   <owner>xhwang@chromium.org</owner>
   <owner>media-dev-uma@chromium.org</owner>
   <summary>
@@ -2737,7 +3327,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Media.EME.Widevine.SoftwareSecure.SystemCode"
-    enum="CdmSystemCode" expires_after="2024-04-11">
+    enum="CdmSystemCode" expires_after="2024-08-18">
   <owner>xhwang@chromium.org</owner>
   <owner>media-dev-uma@chromium.org</owner>
   <summary>
@@ -2758,7 +3348,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Media.EME.{KeySystem}.CreateCdm" enum="BooleanSuccess"
-    expires_after="2024-04-11">
+    expires_after="2024-08-18">
   <owner>xhwang@chromium.org</owner>
   <owner>media-dev-uma@chromium.org</owner>
   <summary>
@@ -2770,7 +3360,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Media.EME.{KeySystem}.CreateCdmTime" units="ms"
-    expires_after="2024-04-11">
+    expires_after="2024-08-18">
   <owner>xhwang@chromium.org</owner>
   <owner>media-dev-uma@chromium.org</owner>
   <summary>Time took to create the CDM instance for {KeySystem}.</summary>
@@ -2778,7 +3368,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Media.EME.{KeySystem}.CreateSession.SessionType"
-    enum="EmeSessionType" expires_after="2024-04-11">
+    enum="EmeSessionType" expires_after="2024-08-18">
   <owner>xhwang@chromium.org</owner>
   <owner>media-dev-uma@chromium.org</owner>
   <summary>EME session type passed into CreateSession.</summary>
@@ -2796,7 +3386,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Media.EME.{KeySystem}.InitialKeyStatusMix"
-    enum="CdmKeyStatusMix" expires_after="2024-04-11">
+    enum="CdmKeyStatusMix" expires_after="2024-08-18">
   <owner>xhwang@chromium.org</owner>
   <owner>media-dev-uma@chromium.org</owner>
   <summary>
@@ -2807,7 +3397,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Media.EME.{KeySystem}.KeyStatusSystemCode"
-    enum="CdmSystemCode" expires_after="2024-04-11">
+    enum="CdmSystemCode" expires_after="2024-08-18">
   <owner>xhwang@chromium.org</owner>
   <owner>media-dev-uma@chromium.org</owner>
   <summary>System code associated with key status for {KeySystem}.</summary>
@@ -2828,7 +3418,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Media.EME.{KeySystem}.TimeTo{ResolveOrReject}.{EmeApi}"
-    units="ms" expires_after="2024-04-11">
+    units="ms" expires_after="2024-08-18">
   <owner>xhwang@chromium.org</owner>
   <owner>media-dev-uma@chromium.org</owner>
   <summary>The time it takes to {ResolveOrReject} a EME promise.</summary>
@@ -2837,8 +3427,20 @@ chromium-metrics-reviews@google.com.
   <token key="EmeApi" variants="EmeApi"/>
 </histogram>
 
-<histogram name="Media.EME.{KeySystem}.{EmeApi}" enum="CdmPromiseResult"
+<histogram name="Media.EME.{KeySystem}.WaitingForKey" enum="Boolean"
     expires_after="2024-04-11">
+  <owner>xhwang@chromium.org</owner>
+  <owner>media-dev-uma@chromium.org</owner>
+  <summary>
+    Reports whether a playback with a CDM attached has been blocked waiting for
+    the CDM to be set or waiting for decryption key. Reported once per playback
+    when a CDM attached.
+  </summary>
+  <token key="KeySystem" variants="KeySystemWithRobustness"/>
+</histogram>
+
+<histogram name="Media.EME.{KeySystem}.{EmeApi}" enum="CdmPromiseResult"
+    expires_after="2024-08-18">
   <owner>xhwang@chromium.org</owner>
   <owner>media-dev-uma@chromium.org</owner>
   <summary>Result of EME promises that were handled by Chromium code.</summary>
@@ -2847,74 +3449,12 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Media.EME.{KeySystem}.{EmeApi}.SystemCode"
-    enum="CdmSystemCode" expires_after="2024-04-11">
+    enum="CdmSystemCode" expires_after="2024-08-18">
   <owner>xhwang@chromium.org</owner>
   <owner>media-dev-uma@chromium.org</owner>
   <summary>System code in promise rejection.</summary>
   <token key="KeySystem" variants="KeySystemWithRobustness"/>
   <token key="EmeApi" variants="EmeApi"/>
-</histogram>
-
-<histogram name="Media.Engagement.ScoreAtPlayback" units="%"
-    expires_after="M82">
-  <owner>beccahughes@chromium.org</owner>
-  <owner>media-dev-uma@chromium.org</owner>
-  <summary>
-    The media engagement score recorded at the time of playback. It is converted
-    to a percentage so should be divided by 100 to get the actual score. It is
-    only recorded for playback that is either lacking an audio track or not
-    muted.
-  </summary>
-</histogram>
-
-<histogram
-    name="Media.Engagement.SignificantPlayers.PlayerNotAdded.AfterFirstTime"
-    enum="InsignificantPlaybackReason" expires_after="M82">
-  <owner>beccahughes@chromium.org</owner>
-  <owner>media-dev-uma@chromium.org</owner>
-  <summary>
-    Recorded when the Media Engagement service doesn't determine a player to be
-    significant. If a player is not significant the reasons why will be
-    individually recorded to this histogram each time except for the first time
-    which is recorded to a different histogram.
-
-    The significant state of a player is reevaluated any time the state of the
-    player changes (e.g. muted, playing/paused). If the player was not
-    considered signficiant and still is not then we will record the reasons why
-    in this histogram.
-  </summary>
-</histogram>
-
-<histogram name="Media.Engagement.SignificantPlayers.PlayerNotAdded.FirstTime"
-    enum="InsignificantPlaybackReason" expires_after="M82">
-  <owner>beccahughes@chromium.org</owner>
-  <owner>media-dev-uma@chromium.org</owner>
-  <summary>
-    Recorded when the Media Engagement service doesn't determine a player to be
-    significant. If a player is not significant the reasons why will be
-    individually recorded to this histogram the first time only.
-
-    The significant state of a player is reevaluated any time the state of the
-    player changes (e.g. muted, playing/paused). If the player was not
-    considered signficiant and still is not then we will record the reasons why
-    in this histogram.
-  </summary>
-</histogram>
-
-<histogram name="Media.Engagement.SignificantPlayers.PlayerRemoved"
-    enum="InsignificantPlaybackReason" expires_after="M77">
-  <owner>beccahughes@chromium.org</owner>
-  <owner>media-dev-uma@chromium.org</owner>
-  <summary>
-    Recorded when the Media Engagement service no longer determines a player to
-    be significant. If a player is no longer significant, the reasons why will
-    be individually recorded to this histogram.
-
-    The significant state of a player is re-evaluted any time the state of the
-    player changes (e.g. muted, playing/paused). If the player was previously
-    considered significant and is no longer considered that we will record the
-    reasons why in this histogram.
-  </summary>
 </histogram>
 
 <histogram name="Media.FallbackToHighLatencyAudioPath"
@@ -2930,7 +3470,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Media.FrameInfo.GuessedCodedSizeChangeSuccess"
-    enum="BooleanSuccess" expires_after="2024-02-04">
+    enum="BooleanSuccess" expires_after="2024-06-30">
   <owner>dalecurtis@chromium.org</owner>
   <owner>media-dev-uma@chromium.org</owner>
   <summary>
@@ -2940,7 +3480,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Media.FrameInfo.GuessedInitialCodedSizeSuccess"
-    enum="BooleanSuccess" expires_after="2024-02-04">
+    enum="BooleanSuccess" expires_after="2024-06-30">
   <owner>dalecurtis@chromium.org</owner>
   <owner>media-dev-uma@chromium.org</owner>
   <summary>
@@ -2950,7 +3490,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Media.FrameReadBackCount.{RendererType}" units="frames"
-    expires_after="2023-09-08">
+    expires_after="2024-07-28">
   <owner>dalecurtis@chromium.org</owner>
   <owner>frankli@microsoft.com</owner>
   <owner>media-dev-uma@chromium.org</owner>
@@ -2963,11 +3503,21 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Media.GetDisplayMedia.Constraints.DisplaySurface"
-    enum="GetDisplayMediaConstraintsDisplaySurface" expires_after="2024-01-14">
+    enum="GetDisplayMediaConstraintsDisplaySurface" expires_after="2024-03-17">
   <owner>eladalon@chromium.org</owner>
   <owner>fbeaufort@chromium.org</owner>
   <summary>
     Records whether getDisplayMedia was called with the displaySurface
+    constraint.
+  </summary>
+</histogram>
+
+<histogram name="Media.GetDisplayMedia.Constraints.MonitorTypeSurfaces"
+    enum="GetDisplayMediaIncludeExcludeConstraint" expires_after="2024-09-01">
+  <owner>eladalon@chromium.org</owner>
+  <owner>fbeaufort@chromium.org</owner>
+  <summary>
+    Records whether getDisplayMedia was called with the monitorTypeSurfaces
     constraint.
   </summary>
 </histogram>
@@ -3004,7 +3554,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Media.GetDisplayMedia.Constraints.SystemAudio"
-    enum="GetDisplayMediaIncludeExcludeConstraint" expires_after="2023-12-17">
+    enum="GetDisplayMediaIncludeExcludeConstraint" expires_after="2024-12-07">
   <owner>eladalon@chromium.org</owner>
   <owner>fbeaufort@chromium.org</owner>
   <owner>webrtc-audio-uma@google.com</owner>
@@ -3014,7 +3564,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Media.GetDisplayMedia.RequiresUserActivationResult"
-    enum="GetDisplayMediaTransientActivation" expires_after="2024-03-14">
+    enum="GetDisplayMediaTransientActivation" expires_after="2025-03-14">
   <owner>eladalon@chromium.org</owner>
   <owner>fbeaufort@chromium.org</owner>
   <owner>hendrich@chromium.org</owner>
@@ -3039,7 +3589,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Media.GlobalMediaControls.DeviceSelectorOpened" enum="Boolean"
-    expires_after="2023-12-24">
+    expires_after="2024-07-28">
   <owner>steimel@chromium.org</owner>
   <owner>media-dev-uma@chromium.org</owner>
   <summary>
@@ -3062,7 +3612,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Media.GlobalMediaControls.EntryPoint"
-    enum="GlobalMediaControlsEntryPoint" expires_after="2023-12-24">
+    enum="GlobalMediaControlsEntryPoint" expires_after="2024-06-30">
   <owner>takumif@chromium.org</owner>
   <owner>openscreen-eng@google.com</owner>
   <owner>media-dev-uma@chromium.org</owner>
@@ -3124,7 +3674,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Media.GlobalMediaControls.RepeatUsage" enum="BooleanIsRepeat"
-    expires_after="2024-02-04">
+    expires_after="2024-06-30">
   <owner>steimel@chromium.org</owner>
   <owner>media-dev-uma@chromium.org</owner>
   <summary>
@@ -3135,7 +3685,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Media.GlobalMediaControls.UserActionFocus"
-    enum="BooleanFocused" expires_after="2024-02-04">
+    enum="BooleanFocused" expires_after="2024-06-30">
   <owner>steimel@chromium.org</owner>
   <owner>media-dev-uma@chromium.org</owner>
   <summary>
@@ -3145,17 +3695,8 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Media.GPU.HasEverLostContext" enum="ContextProviderPhase"
-    expires_after="M77">
-  <owner>dcastagna@chromium.org</owner>
-  <summary>
-    Records when a context provider is acquired in media, and when it's released
-    because a context loss has been detected.
-  </summary>
-</histogram>
-
 <histogram name="Media.GPU.OutputFormat" enum="OutputFormat"
-    expires_after="2024-02-04">
+    expires_after="2024-06-30">
   <owner>hitawala@chromium.org</owner>
   <owner>vasilyt@chromium.org</owner>
   <owner>shared-image-team@google.com</owner>
@@ -3167,7 +3708,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Media.GPU.OutputFormatHardwareGmb" enum="OutputFormat"
-    expires_after="2024-02-04">
+    expires_after="2024-06-30">
   <owner>hitawala@chromium.org</owner>
   <owner>vasilyt@chromium.org</owner>
   <owner>shared-image-team@google.com</owner>
@@ -3179,7 +3720,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Media.GPU.OutputFormatSoftwareGmb" enum="OutputFormat"
-    expires_after="2024-02-04">
+    expires_after="2024-06-30">
   <owner>hitawala@chromium.org</owner>
   <owner>vasilyt@chromium.org</owner>
   <owner>shared-image-team@google.com</owner>
@@ -3191,7 +3732,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Media.GPU.VideoDecoderType" enum="VideoDecoderType"
-    expires_after="2024-02-04">
+    expires_after="2024-06-30">
   <owner>dalecurtis@chromium.org</owner>
   <owner>media-dev-uma@chromium.org</owner>
   <summary>
@@ -3246,7 +3787,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Media.GpuMemoryBufferVideoFramePool.UnsupportedFormat"
-    enum="VideoPixelFormatUnion" expires_after="2024-02-11">
+    enum="VideoPixelFormatUnion" expires_after="2024-06-30">
   <owner>magchen@chromium.org</owner>
   <owner>mcasas@chromium.org</owner>
   <summary>
@@ -3293,17 +3834,20 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Media.HardwareKeyPressed" enum="MediaHardwareKeyAction"
-    expires_after="2021-08-29">
+    expires_after="2024-06-30">
   <owner>steimel@chromium.org</owner>
   <owner>media-dev-uma@chromium.org</owner>
   <summary>
     Records media key presses that are handled by the
     HardwareKeyMediaController.
+
+    Warning: this histogram was expired from 2021-08-29 to 2023-10-24; data may
+    be missing.
   </summary>
 </histogram>
 
 <histogram name="Media.HasAcceleratedVideoDecode.{CodecType}"
-    enum="BooleanSupported" expires_after="2024-02-20">
+    enum="BooleanSupported" expires_after="2024-06-30">
   <owner>dalecurtis@chromium.org</owner>
   <owner>media-dev-uma@chromium.org</owner>
   <summary>
@@ -3327,21 +3871,6 @@ chromium-metrics-reviews@google.com.
   <summary>
     Whether a given WebMediaPlayer instance, after preload, started playback;
     recorded once at time of player destruction.
-  </summary>
-</histogram>
-
-<histogram base="true" name="Media.InitialDecoderSelectionTime" units="ms"
-    expires_after="2023-03-25">
-  <obsolete>
-    Removed 02/2023 due to lack of further need for this data.
-  </obsolete>
-  <owner>cassew@google.com</owner>
-  <owner>media-dev-uma@chromium.org</owner>
-  <summary>
-    Duration of initial decoder selection. Measured from first call to
-    'DecoderSelector::SelectDecoder' to 'DecoderSelector::FinalizeSelection'.
-    The HW/SW suffix indicates the type of the decoder that was ultimately
-    selected.
   </summary>
 </histogram>
 
@@ -3378,7 +3907,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Media.InputStreamDurationWithoutCallback" units="ms"
-    expires_after="2023-12-24">
+    expires_after="2024-06-30">
   <owner>olka@chromium.org</owner>
   <owner>henrika@chromium.org</owner>
   <owner>webrtc-audio-uma@google.com</owner>
@@ -3398,17 +3927,8 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Media.LocalRendererSinkStates" enum="LocalRendererSinkStates"
-    expires_after="2018-08-30">
-  <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
-  <summary>
-    State of the WebRtc local renderer, sampled once during the lifetime of a
-    local renderer.
-  </summary>
-</histogram>
-
 <histogram name="Media.LowLatencyAudioCaptureStartupSuccess"
-    enum="AudioCaptureStartupResult" expires_after="2024-01-07">
+    enum="AudioCaptureStartupResult" expires_after="2024-07-14">
   <owner>armax@chromium.org</owner>
   <owner>guidou@chromium.org</owner>
   <owner>olka@chromium.org</owner>
@@ -3430,7 +3950,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Media.MeanTimeBetweenRebuffers" units="ms"
-    expires_after="2024-02-04">
+    expires_after="2024-06-30">
   <owner>dalecurtis@chromium.org</owner>
   <summary>
     The total watch time (see Media.WatchTime) of a given playback divided by
@@ -3441,7 +3961,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Media.MediaDevices.EnumerateDevices.Latency" units="ms"
-    expires_after="2024-01-14">
+    expires_after="2024-07-21">
   <owner>toprice@chromium.org</owner>
   <owner>agpalak@chromium.org</owner>
   <summary>
@@ -3453,7 +3973,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Media.MediaDevices.EnumerateDevices.Result"
-    enum="EnumerateDevicesResult" expires_after="2024-01-14">
+    enum="EnumerateDevicesResult" expires_after="2024-07-21">
   <owner>toprice@chromium.org</owner>
   <owner>agpalak@chromium.org</owner>
   <summary>
@@ -3464,7 +3984,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Media.MediaDevices.GetDisplayMedia.Latency" units="ms"
-    expires_after="2024-01-21">
+    expires_after="2024-06-21">
   <owner>toprice@chromium.org</owner>
   <owner>agpalak@chromium.org</owner>
   <owner>video-cmi-apis@google.com</owner>
@@ -3477,7 +3997,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Media.MediaDevices.GetDisplayMedia.Result"
-    enum="UserMediaRequestResult" expires_after="2024-01-21">
+    enum="UserMediaRequestResult" expires_after="2024-06-21">
   <owner>toprice@chromium.org</owner>
   <owner>agpalak@chromium.org</owner>
   <owner>video-cmi-apis@google.com</owner>
@@ -3512,7 +4032,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Media.MediaDevices.GetUserMedia.Latency" units="ms"
-    expires_after="2024-01-14">
+    expires_after="2024-07-21">
   <owner>toprice@chromium.org</owner>
   <owner>agpalak@chromium.org</owner>
   <owner>video-cmi-apis@google.com</owner>
@@ -3525,7 +4045,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Media.MediaDevices.GetUserMedia.Result"
-    enum="UserMediaRequestResult" expires_after="2024-01-14">
+    enum="UserMediaRequestResult" expires_after="2024-07-21">
   <owner>toprice@chromium.org</owner>
   <owner>agpalak@chromium.org</owner>
   <owner>video-cmi-apis@google.com</owner>
@@ -3547,7 +4067,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Media.MediaDevicesManager.VideoDeviceEnumeration.Result"
-    enum="DeviceEnumerationResult" expires_after="2024-01-14">
+    enum="DeviceEnumerationResult" expires_after="2024-05-19">
   <owner>toprice@chromium.org</owner>
   <owner>agpalak@chromium.org</owner>
   <summary>
@@ -3568,43 +4088,8 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Media.MediaElement.ContentTypeParseable"
-    enum="ContentTypeParseableResult" expires_after="2022-07-03">
-  <obsolete>
-    Removed 07/2022 due to lack of further need for this data.
-  </obsolete>
-  <owner>jrummell@chromium.org</owner>
-  <owner>media-dev-uma@chromium.org</owner>
-  <summary>
-    Whether the content type provided to HTMLMediaElement would parse with
-    ParsedContentType or not.
-  </summary>
-</histogram>
-
-<histogram name="Media.MediaFoundation.VideoColorSpace.PrimaryID"
-    enum="VideoColorSpace.PrimaryID" expires_after="2023-08-27">
-  <owner>dalecurtis@chromium.org</owner>
-  <owner>macrabil@microsoft.com</owner>
-  <owner>media-dev-uma@chromium.org</owner>
-  <summary>
-    Recorded when the VideoColorSpace VideoPrimaries value is passed to
-    MediaFoundation for HDR content.
-  </summary>
-</histogram>
-
-<histogram name="Media.MediaFoundation.VideoColorSpace.TransferID"
-    enum="VideoColorSpace.TransferID" expires_after="2023-08-02">
-  <owner>dalecurtis@chromium.org</owner>
-  <owner>wicarr@microsoft.com</owner>
-  <owner>media-dev-uma@chromium.org</owner>
-  <summary>
-    Recorded when the VideoColorSpace TransferFunction value is passed to
-    MediaFoundation for HDR content.
-  </summary>
-</histogram>
-
 <histogram name="Media.MediaFoundationRenderer.CreateMediaEngineError"
-    enum="Hresult" expires_after="2024-04-11">
+    enum="Hresult" expires_after="2024-07-07">
   <owner>xhwang@chromium.org</owner>
   <owner>media-dev-uma@chromium.org</owner>
   <summary>
@@ -3634,7 +4119,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Media.MediaFoundationRenderer.InvalidHwdrmState.HasReportedPlaying"
-    enum="Boolean" expires_after="2024-04-11">
+    enum="Boolean" expires_after="2024-08-18">
   <owner>xhwang@chromium.org</owner>
   <owner>media-dev-uma@chromium.org</owner>
   <summary>
@@ -3645,7 +4130,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Media.MediaFoundationRenderer.InvalidHwdrmState.VideoFrameDecoded"
-    units="frames" expires_after="2024-04-11">
+    units="frames" expires_after="2024-08-18">
   <owner>xhwang@chromium.org</owner>
   <owner>media-dev-uma@chromium.org</owner>
   <summary>
@@ -3655,7 +4140,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Media.MediaFoundationRenderer.PlaybackError" enum="Hresult"
-    expires_after="2024-04-11">
+    expires_after="2024-08-18">
   <owner>xhwang@chromium.org</owner>
   <owner>media-dev-uma@chromium.org</owner>
   <summary>
@@ -3664,19 +4149,18 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Media.MediaKeysListener.RegisterHotKeyResult"
-    enum="BooleanSuccess" expires_after="M82">
-  <owner>steimel@chromium.org</owner>
+<histogram name="Media.MediaHistory.DatabaseExists" enum="Boolean"
+    expires_after="2024-06-30">
+  <owner>evliu@google.com</owner>
   <owner>media-dev-uma@chromium.org</owner>
   <summary>
-    Whether or not the MediaKeysListener was able to successfully register a hot
-    key. Failure typically indicates that the hotkey was already registered by a
-    different application.
+    Whether or not the media history database exists. Called on the
+    initialization of the profile.
   </summary>
 </histogram>
 
 <histogram name="Media.MediaRecorder.Codec" enum="MediaRecorderCodec"
-    expires_after="2024-02-11">
+    expires_after="2024-06-23">
   <owner>clarissagarvey@chromium.org</owner>
   <owner>mcasas@chromium.org</owner>
   <summary>
@@ -3686,7 +4170,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Media.MediaRecorder.HasCorrectAV1CodecString"
-    enum="BooleanCorrect" expires_after="2023-12-31">
+    enum="BooleanCorrect" expires_after="2024-06-30">
   <owner>hiroh@chromium.org</owner>
   <owner>handellm@google.com</owner>
   <summary>
@@ -3725,7 +4209,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Media.MicrophoneMuted" enum="MicrophoneMuteResult"
-    expires_after="2024-02-20">
+    expires_after="2024-06-30">
   <owner>henrika@chromium.org</owner>
   <owner>webrtc-audio@google.com</owner>
   <summary>
@@ -3735,7 +4219,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Media.Midi.SendReceiveUsage" enum="MidiSendReceiveUsage"
-    expires_after="2023-12-01">
+    expires_after="2024-12-01">
   <owner>hongchan@chromium.org</owner>
   <owner>mjwilson@chromium.org</owner>
   <owner>src/third_party/blink/renderer/modules/webaudio/OWNERS</owner>
@@ -3750,7 +4234,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Media.Midi.SysExMessageSizeUpTo1MB" units="bytes"
-    expires_after="2023-12-01">
+    expires_after="2024-12-01">
   <owner>hongchan@chromium.org</owner>
   <owner>mjwilson@chromium.org</owner>
   <owner>src/third_party/blink/renderer/modules/webaudio/OWNERS</owner>
@@ -3761,7 +4245,7 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Media.Midi.Usage" enum="MidiUsage" expires_after="2023-12-01">
+<histogram name="Media.Midi.Usage" enum="MidiUsage" expires_after="2024-12-01">
   <owner>hongchan@chromium.org</owner>
   <owner>mjwilson@chromium.org</owner>
   <owner>src/third_party/blink/renderer/modules/webaudio/OWNERS</owner>
@@ -3776,7 +4260,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Media.MojoVideoDecoder.ActiveInstances" units="units"
-    expires_after="2024-01-14">
+    expires_after="2024-07-14">
   <owner>sandersd@chromium.org</owner>
   <owner>media-dev-uma@chromium.org</owner>
   <summary>
@@ -3823,7 +4307,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Media.MojoVideoEncodeAccelerator.InputStorageType"
-    enum="VideoFrameStorageType" expires_after="2024-01-18">
+    enum="VideoFrameStorageType" expires_after="2024-05-26">
   <owner>hiroh@chromium.org</owner>
   <owner>mcasas@chromium.org</owner>
   <summary>
@@ -3847,21 +4331,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram base="true" name="Media.MSE.CodecChangeTime" units="ms"
-    expires_after="2023-07-02">
-  <obsolete>
-    Removed 02/2023 due to lack of further need for this data.
-  </obsolete>
-  <owner>wolenetz@chromium.org</owner>
-  <owner>sandersd@chromium.org</owner>
-  <owner>media-dev-uma@chromium.org</owner>
-  <summary>
-    Duration of config changes that include codec changes, measured from before
-    decoder flush until after the first output frame is returned. The HW/SW
-    suffix indicates the type of the decoder that was ultimately selected.
-  </summary>
-</histogram>
-
 <histogram name="Media.MSE.DemuxerDestructionTime" units="ms"
     expires_after="2020-10-11">
   <owner>wolenetz@chromium.org</owner>
@@ -3872,20 +4341,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Media.MSE.DetectedShakaPackagerInMp4" enum="BooleanDetected"
-    expires_after="2022-06-19">
-  <obsolete>
-    Removed 02/2022 due to lack of further need for this data.
-  </obsolete>
-  <owner>dalecurtis@chromium.org</owner>
-  <owner>media-dev-uma@chromium.org</owner>
-  <summary>
-    Tracks if ShakaPackager metadata was detected in the MP4 'moov' atom during
-    MSE based media playback. Recorded for every 'moov' atom, which is expected
-    once per asset. Multiple assets may be played within the same MSE session.
-  </summary>
-</histogram>
-
 <histogram name="Media.MSE.ExecutionContext" enum="MediaSourceExecutionContext"
     expires_after="2020-10-11">
   <owner>wolenetz@chromium.org</owner>
@@ -3893,64 +4348,6 @@ chromium-metrics-reviews@google.com.
   <summary>
     For each MediaSource instance, records the type of thread that created the
     instance.
-  </summary>
-</histogram>
-
-<histogram name="Media.MSE.Mp4ConsecutiveEmptySamples" units="samples"
-    expires_after="2023-07-02">
-  <obsolete>
-    Removed Jan 2023, no further data needed.
-  </obsolete>
-  <owner>wolenetz@chromium.org</owner>
-  <owner>sandersd@chromium.org</owner>
-  <summary>
-    Reports the number of consecutive empty samples in a sequence within a track
-    run. There can be zero or more such sequences in a track run, and each
-    sequence is reported separately. This metric is expected to inform a
-    heuristic to realistically bound the parsing complexity of track runs that
-    may contain empty samples. See https://crbug.com/907268.
-  </summary>
-</histogram>
-
-<histogram name="Media.MSE.Mp4EmptySamplesInTRun" units="samples"
-    expires_after="2022-04-17">
-  <obsolete>
-    Removed Jan 2023, no further data needed.
-  </obsolete>
-  <owner>wolenetz@chromium.org</owner>
-  <owner>sandersd@chromium.org</owner>
-  <summary>
-    Reports the number of empty samples within a track run. This metric is
-    expected to inform a heuristic to realistically bound the parsing complexity
-    of track runs that may contain empty samples. See https://crbug.com/907268.
-  </summary>
-</histogram>
-
-<histogram name="Media.MSE.Mp4SampleSize" units="bytes"
-    expires_after="2023-07-02">
-  <obsolete>
-    Removed Jan 2023, no further data needed.
-  </obsolete>
-  <owner>wolenetz@chromium.org</owner>
-  <owner>sandersd@chromium.org</owner>
-  <summary>
-    Reports the size of each sample parsed. This metric is expected to inform a
-    heuristic to realistically bound the parsing complexity of track runs that
-    may contain empty or huge samples. See https://crbug.com/907268.
-  </summary>
-</histogram>
-
-<histogram name="Media.MSE.Mp4TrunSampleCount" units="samples"
-    expires_after="2023-07-02">
-  <obsolete>
-    Removed Jan 2023, no further data needed.
-  </obsolete>
-  <owner>wolenetz@chromium.org</owner>
-  <owner>sandersd@chromium.org</owner>
-  <summary>
-    Reports the number of samples in each track run. This metric is expected to
-    inform a heuristic to realistically bound the parsing complexity of track
-    runs that may contain huge numbers of samples. See https://crbug.com/907268.
   </summary>
 </histogram>
 
@@ -4001,19 +4398,8 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Media.Notification.ArtworkPresent" enum="Boolean"
-    expires_after="2021-10-25">
-  <owner>beccahughes@chromium.org</owner>
-  <owner>media-dev-uma@chromium.org</owner>
-  <summary>
-    Whether the media notification (including ones for Cast sessions) is
-    displaying artwork. This is recorded when the artwork is updated by the
-    underlying media session.
-  </summary>
-</histogram>
-
 <histogram name="Media.Notification.Cast.Count" units="count"
-    expires_after="2024-01-14">
+    expires_after="2024-07-21">
   <owner>takumif@chromium.org</owner>
   <owner>openscreen-eng@google.com</owner>
   <owner>media-dev-uma@chromium.org</owner>
@@ -4023,42 +4409,22 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Media.Notification.Cast.StartStop"
-    enum="GlobalMediaControlsCastActionAndEntryPoint"
-    expires_after="2024-01-14">
-  <owner>takumif@chromium.org</owner>
-  <owner>openscreen-eng@google.com</owner>
-  <owner>media-dev-uma@chromium.org</owner>
-  <summary>
-    Recorded when the user starts or stops a Cast session. Records the action
-    and how the Global Media Controls UI was opened.
-  </summary>
-</histogram>
-
 <histogram name="Media.Notification.Cast.UserAction" enum="MediaSessionAction"
-    expires_after="2024-01-14">
+    expires_after="2024-07-21">
   <owner>takumif@chromium.org</owner>
   <owner>openscreen-eng@google.com</owner>
   <owner>media-dev-uma@chromium.org</owner>
   <summary>
     Records the type of the action (e.g. pause) whenever the user makes an
     action on a Cast media notification. Starting and stopping casting is
-    recorded in Media.Notification.Cast.StartStop.
-  </summary>
-</histogram>
-
-<histogram name="Media.Notification.Click" enum="MediaNotificationClickSource"
-    expires_after="2020-06-07">
-  <owner>mlamouri@chromium.org</owner>
-  <owner>media-dev-uma@chromium.org</owner>
-  <summary>
-    The type of media notification the user clicked to go back to Chrome.
+    recorded in Media.GlobalMediaControls.MediaCastMode.Start and
+    Media.GlobalMediaControls.MediaCastMode.Stop.
   </summary>
 </histogram>
 
 <histogram name="Media.Notification.Count" units="count"
-    expires_after="2024-01-14">
-  <owner>beccahughes@chromium.org</owner>
+    expires_after="2024-08-04">
+  <owner>yrw@chromium.org</owner>
   <owner>media-dev-uma@chromium.org</owner>
   <summary>
     The number of media notifications that are currently being displayed
@@ -4067,20 +4433,19 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Media.Notification.MetadataPresent"
-    enum="MediaNotificationMetadata" expires_after="2021-10-25">
-  <owner>beccahughes@chromium.org</owner>
+<histogram name="Media.Notification.DisplayPage"
+    enum="MediaNotificationDisplayPage" expires_after="2024-08-04">
+  <owner>yrw@chromium.org</owner>
   <owner>media-dev-uma@chromium.org</owner>
   <summary>
-    Whether the media notification (including ones for Cast sessions) is
-    displaying certain types of metadata. This is recorded when the metadata is
-    updated by the underlying media session.
+    The page where the media notification is displayed to users. This is
+    recorded when a media notification starts being displayed.
   </summary>
 </histogram>
 
 <histogram name="Media.Notification.Source" enum="MediaNotificationSource"
-    expires_after="2024-02-04">
-  <owner>beccahughes@chromium.org</owner>
+    expires_after="2024-08-04">
+  <owner>yrw@chromium.org</owner>
   <owner>media-dev-uma@chromium.org</owner>
   <summary>
     The source of the underlying media session (e.g. ARC, web, Cast) that
@@ -4090,17 +4455,17 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Media.Notification.UserAction" enum="MediaSessionAction"
-    expires_after="2024-01-14">
-  <owner>beccahughes@chromium.org</owner>
+    expires_after="2024-08-04">
+  <owner>yrw@chromium.org</owner>
   <owner>media-dev-uma@chromium.org</owner>
   <summary>
-    The action (e.g. pause) that a user clicked on a media notification
+    The media session action that a user clicked on a media notification
     (including ones for Cast sessions).
   </summary>
 </histogram>
 
 <histogram name="Media.OutputStreamDuration" units="ms"
-    expires_after="2024-01-14">
+    expires_after="2024-07-21">
   <owner>guidou@chromium.org</owner>
   <owner>olka@chromium.org</owner>
   <owner>webrtc-audio-uma@google.com</owner>
@@ -4109,19 +4474,6 @@ chromium-metrics-reviews@google.com.
     when a stream is started until it is stopped. A stream is stopped when it is
     paused, closed (i.e. destructed), or when a device change event causes it to
     be restarted.
-  </summary>
-</histogram>
-
-<histogram name="Media.PeakWebMediaPlayerCount" units="players"
-    expires_after="M100">
-  <obsolete>
-    Removed 04/2022 due to lack of further need for this data.
-  </obsolete>
-  <owner>dalecurtis@google.com</owner>
-  <owner>media-dev-uma@chromium.org</owner>
-  <summary>
-    Records the peak number of WebMediaPlayer objects per RenderFrame upon
-    RenderFrame destruction (both cleanly and via render process termination).
   </summary>
 </histogram>
 
@@ -4168,6 +4520,12 @@ chromium-metrics-reviews@google.com.
                  DecryptingDemuxerStream"/>
     <variant name="DVD" summary="RendererImpl with DecryptingVideoDecoder"/>
     <variant name="HW" summary="RendererImpl with hardware decoder"/>
+    <variant name="MediaDrm.HardwareSecure"
+        summary="RendererImpl with requested hardware secure decryption and
+                 MediaCodecVideoDecoder"/>
+    <variant name="MediaDrm.SoftwareSecure"
+        summary="RendererImpl with requested software secure decryption and
+                 MediaCodecVideoDecoder"/>
     <variant name="MediaFoundationRenderer"/>
     <variant name="SW" summary="RendererImpl with software decoder"/>
     <variant name="UnknownRenderer" summary="an unknown Renderer"/>
@@ -4175,7 +4533,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Media.PipelineStatus.Start" enum="PipelineStatus"
-    expires_after="2024-02-11">
+    expires_after="2024-06-30">
   <owner>xhwang@chromium.org</owner>
   <owner>media-dev-uma@chromium.org</owner>
   <summary>
@@ -4202,17 +4560,6 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
-<histogram name="Media.PlatformVideoDecoding.ChromaSampling"
-    enum="VideoChromaSampling" expires_after="2023-02-08">
-  <owner>tmathmeyer@chromium.org</owner>
-  <owner>media-dev-uma@chromium.org</owner>
-  <summary>
-    Video chroma sub-sampling format requested for decoding through platform
-    decoders. This collection happens regardless of whether the platform decoder
-    supports non-420 video format decoding or not.
-  </summary>
-</histogram>
-
 <histogram name="Media.PlatformVideoDecoding.Decode" units="ms"
     expires_after="never">
 <!-- expires-never: used by ChromeOS test infrastructure -->
@@ -4225,44 +4572,15 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Media.PlaybackPower.BatteryDelta"
-    enum="MediaPlaybackPowerTypes" expires_after="2020-07-31">
-  <owner>liberato@chromium.org</owner>
-  <owner>media-dev-uma@chromium.org</owner>
+<histogram name="Media.PlatformVideoDecoding.VideoCodecProfile"
+    enum="VideoCodecProfile" expires_after="2024-05-01">
+  <owner>mcasas@chromium.org</owner>
+  <owner>chromeos-gfx-video@google.com</owner>
   <summary>
-    Total battery (0-100 percent) consumed by playback. When divided by
-    Media.PlaybackPower.ElapsedTime, this provides the average rate of battery
-    drain for that category of playback. Units are (total) percent. This is
-    recorded when an entire percent (or more) is consumed during playback. Since
-    devices have different battery sizes, methods of measuring battery, and
-    different power consumption rates, it's a good idea to filter by a specific
-    device type and OS version before trying to interpret these results. The
-    magnitude of these numbers, alone, is also likely hard to use, for this
-    reason. Instead, consider comparing A/B experiments to see if they get
-    larger or smaller. Playbacks under one msec are ignored.
-  </summary>
-</histogram>
-
-<histogram name="Media.PlaybackPower.ElapsedTime"
-    enum="MediaPlaybackPowerTypes" expires_after="2020-07-31">
-  <owner>liberato@chromium.org</owner>
-  <owner>media-dev-uma@chromium.org</owner>
-  <summary>
-    Total time, in msec, elapsed while consuming the battery described by
-    Media.PlaybackPower.BatteryDelta. See that histogram for details. Recorded
-    when one or more percent of battery is consumed during playback.
-  </summary>
-</histogram>
-
-<histogram name="Media.ProgressEventTimerState"
-    enum="HTMLMediaElement_ProgressEventTimerState" expires_after="2021-08-01">
-  <owner>fdoray@chromium.org</owner>
-  <owner>media-dev-uma@chromium.org</owner>
-  <summary>
-    Records the state of an HTMLMediaElement when its &quot;progress event&quot;
-    timer fires. Used to determine how often the timer causes unnecessary wake
-    ups, to prioritize crbug.com/1143317 and measure the impact of eventual
-    fixes.
+    VideoCodecProfile used to Initialize() the platform VideoDecoder
+    implementation; this is emitted once per video (or per track, when using
+    MSE) initialization and after verifying that the codec profile is thought to
+    be supported.
   </summary>
 </histogram>
 
@@ -4277,55 +4595,56 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Media.RegionCapture.CropTo.Latency" units="ms"
-    expires_after="2024-01-15">
+    expires_after="2025-01-07">
   <owner>eladalon@chromium.org</owner>
   <owner>jophba@chromium.org</owner>
   <owner>mfoltz@chromium.org</owner>
   <summary>
     Duration in milliseconds of the time it takes for a
-    BrowserCaptureMediaStreamTrack.cropTo() call to resolve(either successfully
+    BrowserCaptureMediaStreamTrack.cropTo() call to resolve (either successfully
     or with an error). Note a call which never resolves won't be counted in this
     metric.
   </summary>
 </histogram>
 
-<histogram name="Media.RegionCapture.CropTo.Result" enum="CropToResult"
-    expires_after="2024-01-15">
+<histogram name="Media.RegionCapture.CropTo.Result2"
+    enum="ApplySubCaptureTargetResult" expires_after="2025-01-07">
   <owner>eladalon@chromium.org</owner>
   <owner>jophba@chromium.org</owner>
   <owner>mfoltz@chromium.org</owner>
   <summary>
     Tracks the result of calls to BrowserCaptureMediaStreamTrack.cropTo().
+    Recorded when resolving the promise produced by cropTo().
   </summary>
 </histogram>
 
 <histogram name="Media.RegionCapture.ProduceCropTarget.Function.Result"
-    enum="ProduceCropTargetFunctionResult" expires_after="2024-01-15">
+    enum="ProduceTargetFunctionResult" expires_after="2025-01-07">
   <owner>eladalon@chromium.org</owner>
   <owner>jophba@chromium.org</owner>
   <owner>mfoltz@chromium.org</owner>
   <summary>
-    Tracks the result of calls to MediaDevices.produceCropTarget().
-    Specifically, this histogram tracks whether a new Promise was produced, and
-    if not, why not. Another histogram tracks the result of new Promises, i.e.
-    whether they were resolved or rejected.
+    Tracks the result of calls to CropTarget.fromElement(). Specifically, this
+    histogram tracks whether a new Promise was produced, and if not, why not.
+    Another histogram tracks the result of new Promises, i.e. whether they were
+    resolved or rejected.
   </summary>
 </histogram>
 
 <histogram name="Media.RegionCapture.ProduceCropTarget.Promise.Result"
-    enum="ProduceCropTargetPromiseResult" expires_after="2024-01-15">
+    enum="ProduceTargetPromiseResult" expires_after="2025-01-07">
   <owner>eladalon@chromium.org</owner>
   <owner>jophba@chromium.org</owner>
   <owner>mfoltz@chromium.org</owner>
   <summary>
-    When ProduceCropTarget() is called for the first time on a given
-    HTMLElement, a new Promise is produced. This histogram tracks the result of
-    this Promise - whether it was resolved or rejected.
+    When CropTarget.fromElement() is called for the first time on a given
+    Element, a new Promise is produced. This histogram tracks the result of this
+    Promise - whether it was resolved or rejected.
   </summary>
 </histogram>
 
 <histogram name="Media.Remoting.AudioBitrate" units="kbps"
-    expires_after="2024-01-14">
+    expires_after="2024-09-12">
   <owner>jophba@chromium.org</owner>
   <owner>openscreen-eng@google.com</owner>
   <summary>
@@ -4334,28 +4653,28 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Media.Remoting.AudioChannelLayout" enum="ChannelLayout"
-    expires_after="2023-09-12">
+    expires_after="2024-09-12">
   <owner>jophba@chromium.org</owner>
   <owner>openscreen-eng@google.com</owner>
   <summary>Audio channel layout used while remoting content.</summary>
 </histogram>
 
 <histogram name="Media.Remoting.AudioCodec" enum="AudioCodec"
-    expires_after="2024-01-14">
+    expires_after="2024-09-12">
   <owner>jophba@chromium.org</owner>
   <owner>openscreen-eng@google.com</owner>
   <summary>Audio codec used while remoting content.</summary>
 </histogram>
 
 <histogram name="Media.Remoting.AudioSamplesPerSecond" enum="AudioSampleRate"
-    expires_after="2023-09-12">
+    expires_after="2024-09-12">
   <owner>jophba@chromium.org</owner>
   <owner>openscreen-eng@google.com</owner>
   <summary>Audio sampling rate while remoting audio content.</summary>
 </histogram>
 
 <histogram name="Media.Remoting.AudioSamplesPerSecondUnexpected" units="Hz"
-    expires_after="2023-09-12">
+    expires_after="2024-09-12">
   <owner>jophba@chromium.org</owner>
   <owner>openscreen-eng@google.com</owner>
   <summary>
@@ -4364,7 +4683,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Media.Remoting.Compatibility" enum="RemotingCompatibility"
-    expires_after="2024-01-14">
+    expires_after="2024-09-12">
   <owner>takumif@chromium.org</owner>
   <owner>openscreen-eng@google.com</owner>
   <summary>
@@ -4375,7 +4694,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Media.Remoting.RemotePlaybackEnabledByPage"
-    enum="BooleanEnabled" expires_after="2024-01-14">
+    enum="BooleanEnabled" expires_after="2024-09-12">
   <owner>jophba@chromium.org</owner>
   <owner>openscreen-eng@google.com</owner>
   <summary>
@@ -4386,35 +4705,35 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Media.Remoting.SessionDuration" units="ms"
-    expires_after="2024-01-14">
+    expires_after="2024-09-12">
   <owner>jophba@chromium.org</owner>
   <owner>openscreen-eng@google.com</owner>
   <summary>Measures the duration of each remoting session.</summary>
 </histogram>
 
 <histogram name="Media.Remoting.SessionStartFailedReason"
-    enum="RemotingStartFailReason" expires_after="2023-12-01">
+    enum="RemotingStartFailReason" expires_after="2024-09-12">
   <owner>muyaoxu@google.com</owner>
   <owner>openscreen-eng@google.com</owner>
   <summary>Tracks the reason that a session failed to start.</summary>
 </histogram>
 
 <histogram name="Media.Remoting.SessionStartTrigger"
-    enum="RemotingStartTrigger" expires_after="2024-01-14">
+    enum="RemotingStartTrigger" expires_after="2024-09-12">
   <owner>jophba@chromium.org</owner>
   <owner>openscreen-eng@google.com</owner>
   <summary>Tracks the trigger for starting a remoting session.</summary>
 </histogram>
 
 <histogram name="Media.Remoting.SessionStopTrigger" enum="RemotingStopTrigger"
-    expires_after="2024-01-14">
+    expires_after="2024-09-12">
   <owner>jophba@chromium.org</owner>
   <owner>openscreen-eng@google.com</owner>
   <summary>Tracks the trigger for stopping a remoting session.</summary>
 </histogram>
 
 <histogram name="Media.Remoting.ShortSessionDuration" units="ms"
-    expires_after="2024-01-14">
+    expires_after="2024-09-12">
   <owner>jophba@chromium.org</owner>
   <owner>openscreen-eng@google.com</owner>
   <summary>
@@ -4423,7 +4742,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Media.Remoting.TimeUntilFirstPlayout" units="ms"
-    expires_after="2024-01-14">
+    expires_after="2024-09-12">
   <owner>jophba@chromium.org</owner>
   <owner>openscreen-eng@google.com</owner>
   <summary>
@@ -4433,7 +4752,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Media.Remoting.TimeUntilRemoteInitialized" units="ms"
-    expires_after="2024-01-14">
+    expires_after="2024-09-12">
   <owner>jophba@chromium.org</owner>
   <owner>openscreen-eng@google.com</owner>
   <summary>
@@ -4443,21 +4762,21 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Media.Remoting.TrackConfiguration"
-    enum="RemotingTrackConfiguration" expires_after="2023-09-12">
+    enum="RemotingTrackConfiguration" expires_after="2024-09-12">
   <owner>jophba@chromium.org</owner>
   <owner>openscreen-eng@google.com</owner>
   <summary>Tracks whether audio or video or both are remoted.</summary>
 </histogram>
 
 <histogram name="Media.Remoting.VideoAspectRatio" units="%"
-    expires_after="2023-09-12">
+    expires_after="2024-09-12">
   <owner>jophba@chromium.org</owner>
   <owner>openscreen-eng@google.com</owner>
   <summary>Aspect ratio of video while remoting content.</summary>
 </histogram>
 
 <histogram name="Media.Remoting.VideoBitrate" units="kbps"
-    expires_after="2024-01-14">
+    expires_after="2024-09-12">
   <owner>jophba@chromium.org</owner>
   <owner>openscreen-eng@google.com</owner>
   <summary>
@@ -4466,28 +4785,28 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Media.Remoting.VideoCodec" enum="VideoCodec"
-    expires_after="2023-09-12">
+    expires_after="2024-09-12">
   <owner>jophba@chromium.org</owner>
   <owner>openscreen-eng@google.com</owner>
   <summary>Video codec used while remoting content.</summary>
 </histogram>
 
 <histogram name="Media.Remoting.VideoCodecProfile" enum="VideoCodecProfile"
-    expires_after="2024-01-14">
+    expires_after="2024-09-12">
   <owner>jophba@chromium.org</owner>
   <owner>openscreen-eng@google.com</owner>
   <summary>Video codec profile used while remoting content.</summary>
 </histogram>
 
 <histogram name="Media.Remoting.VideoNaturalWidth" units="pixels"
-    expires_after="2023-09-12">
+    expires_after="2024-09-12">
   <owner>jophba@chromium.org</owner>
   <owner>openscreen-eng@google.com</owner>
   <summary>Video width while remoting content.</summary>
 </histogram>
 
 <histogram name="Media.Remoting.VideoPixelRateSupport"
-    enum="RemotingVideoPixelRateSupport" expires_after="2024-01-14">
+    enum="RemotingVideoPixelRateSupport" expires_after="2024-09-12">
   <owner>takumif@chromium.org</owner>
   <owner>openscreen-eng@google.com</owner>
   <summary>
@@ -4497,7 +4816,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Media.RtcLowLatencyVideoRenderer.AverageQueueLengthX10"
-    units="frames" expires_after="2023-12-24">
+    units="frames" expires_after="2024-06-30">
   <owner>kron@chromium.org</owner>
   <owner>webrtc-video@google.com</owner>
   <summary>
@@ -4508,7 +4827,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Media.RtcLowLatencyVideoRenderer.DrainedFramesPermille"
-    units="permille" expires_after="2023-12-24">
+    units="permille" expires_after="2024-06-30">
   <owner>kron@chromium.org</owner>
   <owner>webrtc-video@google.com</owner>
   <summary>
@@ -4519,7 +4838,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Media.RtcLowLatencyVideoRenderer.DroppedFramesPermille"
-    units="permille" expires_after="2023-12-24">
+    units="permille" expires_after="2024-06-30">
   <owner>kron@chromium.org</owner>
   <owner>webrtc-video@google.com</owner>
   <summary>
@@ -4530,7 +4849,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Media.RtcLowLatencyVideoRenderer.EnterDrainModeCount"
-    units="count" expires_after="2023-12-24">
+    units="count" expires_after="2024-06-30">
   <owner>kron@chromium.org</owner>
   <owner>webrtc-video@google.com</owner>
   <summary>
@@ -4540,7 +4859,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Media.RtcLowLatencyVideoRenderer.MaxQueueLength"
-    units="frames" expires_after="2023-12-24">
+    units="frames" expires_after="2024-06-30">
   <owner>kron@chromium.org</owner>
   <owner>webrtc-video@google.com</owner>
   <summary>
@@ -4551,7 +4870,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Media.RtcLowLatencyVideoRenderer.MaxSizeDropQueueCount"
-    units="count" expires_after="2023-10-22">
+    units="count" expires_after="2024-06-30">
   <owner>kron@chromium.org</owner>
   <owner>webrtc-video@google.com</owner>
   <summary>
@@ -4562,7 +4881,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Media.RtcLowLatencyVideoRenderer.NoNewFrameToRenderPermille"
-    units="permille" expires_after="2023-12-24">
+    units="permille" expires_after="2024-06-30">
   <owner>kron@chromium.org</owner>
   <owner>webrtc-video@google.com</owner>
   <summary>
@@ -4573,7 +4892,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Media.RtcLowLatencyVideoRenderer.ReduceSteadyStateCount"
-    units="count" expires_after="2023-12-24">
+    units="count" expires_after="2024-06-30">
   <owner>kron@chromium.org</owner>
   <owner>webrtc-video@google.com</owner>
   <summary>
@@ -4584,7 +4903,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Media.RtcLowLatencyVideoRenderer.TotalFrames" units="frames"
-    expires_after="2023-12-24">
+    expires_after="2024-06-30">
   <owner>kron@chromium.org</owner>
   <owner>webrtc-video@google.com</owner>
   <summary>
@@ -4595,7 +4914,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Media.RtcLowLatencyVideoRenderer.TryToRenderFrameCount"
-    units="count" expires_after="2023-12-24">
+    units="count" expires_after="2024-06-30">
   <owner>kron@chromium.org</owner>
   <owner>webrtc-video@google.com</owner>
   <summary>
@@ -4605,7 +4924,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Media.RTCVideoDecoderError" enum="MediaStatusCode"
-    expires_after="2024-04-20">
+    expires_after="2024-06-23">
   <owner>posciak@chromium.org</owner>
   <owner>liberato@chromium.org</owner>
   <owner>webrtc-video@google.com</owner>
@@ -4618,7 +4937,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Media.RTCVideoDecoderFallbackReason.{Codecs}"
-    enum="RTCVideoDecoderFallbackReason" expires_after="2024-02-20">
+    enum="RTCVideoDecoderFallbackReason" expires_after="2024-06-30">
   <owner>kron@chromium.org</owner>
   <owner>webrtc-video@google.com</owner>
   <summary>
@@ -4656,7 +4975,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Media.RTCVideoDecoderInitializationLatencyMs" units="ms"
-    expires_after="2024-02-11">
+    expires_after="2024-06-30">
   <owner>kron@chromium.org</owner>
   <owner>webrtc-video@google.com</owner>
   <summary>
@@ -4689,7 +5008,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Media.RTCVideoDecoderReinitializationLatencyMs" units="ms"
-    expires_after="2023-10-10">
+    expires_after="2024-10-10">
   <owner>kron@chromium.org</owner>
   <owner>webrtc-video@google.com</owner>
   <summary>
@@ -4705,6 +5024,16 @@ chromium-metrics-reviews@google.com.
   <summary>
     This records the media::StatusCode from the RTCVideoDecoderStreamAdapter. It
     is emitted when the adapter encounters an error during decoding.
+  </summary>
+</histogram>
+
+<histogram name="Media.RTCVideoEncoder.Initialize" units="ms"
+    expires_after="2024-09-30">
+  <owner>hiroh@chromium.org</owner>
+  <owner>chromeos-gfx-video@google.com</owner>
+  <summary>
+    The duration of initializing a hardware encoder in WebRTC API. It is
+    recorded whenever RTCVideoEncoder::InitEncode() is called.
   </summary>
 </histogram>
 
@@ -4764,7 +5093,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Media.ScreenCaptureKit.FullscreenModuleMode"
-    enum="ScreenCaptureKitFullscreenModuleMode" expires_after="2024-01-07">
+    enum="ScreenCaptureKitFullscreenModuleMode" expires_after="2024-07-14">
   <owner>kron@chromium.org</owner>
   <owner>webrtc-video@google.com</owner>
   <summary>
@@ -4787,8 +5116,20 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Media.Session.EnterPictureInPicture"
+    enum="MediaSessionEnterPictureInPictureType" expires_after="2024-06-30">
+  <owner>steimel@chromium.org</owner>
+  <owner>media-dev-uma@chromium.org</owner>
+  <summary>
+    Recorded when EnterPictureInPicture or EnterAutoPictureInPicture is called
+    on a MediaSessionImpl. Records why picture-in-picture was triggered (whether
+    it was for the default handler or a website-provided one, and whether the
+    trigger was manual or automatic).
+  </summary>
+</histogram>
+
 <histogram name="Media.Session.Play" enum="MediaSessionActionSource"
-    expires_after="2023-12-31">
+    expires_after="2024-05-05">
   <owner>steimel@chromium.org</owner>
   <owner>media-dev-uma@chromium.org</owner>
   <summary>
@@ -4828,6 +5169,18 @@ chromium-metrics-reviews@google.com.
   <summary>
     Video codec used in plain src= (not MSE) HTML5 media if the media container
     is WebM.
+  </summary>
+</histogram>
+
+<histogram name="Media.ThumbnailCapturerMac.ShareableContentErrorPercentage"
+    units="%" expires_after="2024-09-01">
+  <owner>kron@google.com</owner>
+  <owner>eladalon@google.com</owner>
+  <summary>
+    This histogram tracks the percentage of callbacks where there was no
+    shareable content returned from the OS. This is recorded in the destructor
+    of ThumbnailCapturerMac. The metric is rounded upwards so that a single
+    error shows up as at least 1%.
   </summary>
 </histogram>
 
@@ -4874,9 +5227,58 @@ chromium-metrics-reviews@google.com.
   <summary>Size of HTML5 media (when known), in MB.</summary>
 </histogram>
 
+<histogram
+    name="Media.Ui.GetDisplayMedia.BasicFlow.HighlightedTabDiscardStatus"
+    enum="HighlightedTabDiscardStatus" expires_after="2024-11-06">
+  <owner>eladalon@chromium.org</owner>
+  <owner>mfoltz@chromium.org</owner>
+  <summary>
+    When getDisplayMedia() is called, the user is shown a list of tabs, windows
+    and screens they can choose to capture. If the user highlights a discarded
+    tab, no preview is shown - which is a problem. This histogram tracks how
+    often the user sees at least one missing preview due to highlighting a
+    discarded tab. (Contrast this with SelectedTabDiscardStatus.) The histogram
+    is recorded when the media-picker dialog is closed - either through the user
+    accepting or rejecting the dialog, or if the document that called
+    getDisplayMedia() is unloaded (e.g. if the tab is closed).
+  </summary>
+</histogram>
+
+<histogram name="Media.Ui.GetDisplayMedia.BasicFlow.SelectedTabDiscardStatus"
+    enum="SelectedTabDiscardStatus" expires_after="2024-11-06">
+  <owner>eladalon@chromium.org</owner>
+  <owner>mfoltz@chromium.org</owner>
+  <summary>
+    When getDisplayMedia() is called, the user is shown a list of tabs, windows
+    and screens they can choose to capture. If the user highlights a discarded
+    tab, no preview is shown - which is a problem. This histogram tracks how
+    often the user ends up choosing to share a discarded tab. (Contrast this
+    with HighlightedTabDiscardStatus.) The histogram is recorded when the
+    media-picker dialog is closed - either through the user accepting or
+    rejecting the dialog, or if the document that called getDisplayMedia() is
+    unloaded (e.g. if the tab is closed).
+  </summary>
+</histogram>
+
+<histogram name="Media.Ui.GetDisplayMedia.BasicFlow.SourceCount.{Type}"
+    units="count" expires_after="2024-09-01">
+  <owner>eladalon@chromium.org</owner>
+  <owner>tovep@chromium.org</owner>
+  <summary>
+    Record how many sources of type {Type} were available for the user to choose
+    from. Recorded when the dialog is closed (user selected a source, cancelled,
+    or closed the tab that owns the dialog).
+  </summary>
+  <token key="Type">
+    <variant name="Screens" summary=""/>
+    <variant name="Tabs" summary=""/>
+    <variant name="Windows" summary=""/>
+  </token>
+</histogram>
+
 <histogram name="Media.Ui.GetDisplayMedia.BasicFlow.UserInteraction"
     enum="MediaUiGetDisplayMediaBasicFlowUserInteraction"
-    expires_after="2024-01-14">
+    expires_after="2024-07-21">
   <owner>eladalon@chromium.org</owner>
   <owner>fbeaufort@chromium.org</owner>
   <summary>
@@ -4887,7 +5289,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Media.Ui.GetDisplayMedia.DisplayCapturePolicyResult"
-    enum="DisplayCapturePolicyResult" expires_after="2024-01-14">
+    enum="DisplayCapturePolicyResult" expires_after="2024-03-17">
   <owner>eladalon@chromium.org</owner>
   <owner>guidou@chromium.org</owner>
   <summary>
@@ -4898,7 +5300,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Media.Ui.GetDisplayMedia.PreferCurrentTabFlow.UserInteraction"
     enum="MediaUiGetDisplayMediaPreferCurrentTabFlowUserInteraction"
-    expires_after="2024-01-14">
+    expires_after="2024-07-21">
   <owner>eladalon@chromium.org</owner>
   <owner>fbeaufort@chromium.org</owner>
   <summary>
@@ -4909,7 +5311,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Media.Ui.GetDisplayMedia.{Flow}.DialogDuration" units="ms"
-    expires_after="2024-05-29">
+    expires_after="2024-08-04">
   <owner>tovep@chromium.org</owner>
   <owner>eladalon@chromium.org</owner>
   <summary>
@@ -4951,7 +5353,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Media.V4l2VideoDecoder.Error" enum="V4l2VideoDecoderFunctions"
-    expires_after="2023-12-07">
+    expires_after="2024-05-19">
   <owner>stevecho@chromium.org</owner>
   <owner>chromeos-gfx-video@google.com</owner>
   <summary>
@@ -4962,12 +5364,24 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Media.V4l2VideoDecoder.MediaIoctlError"
-    enum="MediaIoctlRequests" expires_after="2023-12-07">
+    enum="MediaIoctlRequests" expires_after="2024-07-28">
   <owner>stevecho@chromium.org</owner>
   <owner>chromeos-gfx-video@google.com</owner>
   <summary>
     Records when errors happen with media controller API ioctl requests during
     video decoding session using V4L2 API. Depending on a ioctl request, video
+    decoding session can proceed or stop immediately when an error happens. So
+    multiple errors can be recorded during the object lifetime.
+  </summary>
+</histogram>
+
+<histogram name="Media.V4l2VideoDecoder.VidiocIoctlError"
+    enum="VidiocIoctlRequests" expires_after="2024-07-21">
+  <owner>stevecho@chromium.org</owner>
+  <owner>chromeos-gfx-video@google.com</owner>
+  <summary>
+    Records when errors happen with V4L2 API ioctl requests during video
+    decoding session using V4L2 API. Depending on a ioctl request, video
     decoding session can proceed or stop immediately when an error happens. So
     multiple errors can be recorded during the object lifetime.
   </summary>
@@ -4985,7 +5399,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Media.VaapiVideoDecoder.DecodeError" enum="BooleanError"
-    expires_after="2023-12-24">
+    expires_after="2024-06-30">
   <owner>mcasas@chromium.org</owner>
   <owner>chromeos-gfx@chromium.org</owner>
   <summary>
@@ -4995,7 +5409,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Media.VaapiVideoDecoder.VaapiWrapperCreationSuccess"
-    enum="BooleanSuccess" expires_after="2024-02-11">
+    enum="BooleanSuccess" expires_after="2024-06-30">
   <owner>mcasas@chromium.org</owner>
   <owner>chromeos-gfx-video@google.com</owner>
   <summary>
@@ -5005,7 +5419,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Media.VaapiWrapper.VADisplayStateInitializeSuccess"
-    enum="BooleanSuccess" expires_after="2024-04-20">
+    enum="BooleanSuccess" expires_after="2024-06-23">
   <owner>mcasas@chromium.org</owner>
   <owner>chromeos-gfx-video@google.com</owner>
   <summary>
@@ -5026,15 +5440,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Media.VAJEA.EncoderResult" enum="VAJEAEncoderResult"
-    expires_after="M95">
-  <owner>wtlee@chromium.org</owner>
-  <owner>chromeos-gfx@chromium.org</owner>
-  <summary>
-    Result codes reported by jpeg encode using VA-API hardware jpeg encoder.
-  </summary>
-</histogram>
-
 <histogram name="Media.VAVDA.VaapiWrapperCreationSuccess" enum="BooleanSuccess"
     expires_after="2023-02-12">
   <owner>mcasas@chromium.org</owner>
@@ -5045,7 +5450,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Media.Video.Autoplay" enum="AutoplaySource"
-    expires_after="2024-01-14">
+    expires_after="2025-01-05">
   <owner>dalecurtis@chromium.org</owner>
   <owner>evliu@google.com</owner>
   <owner>media-dev-uma@chromium.org</owner>
@@ -5056,7 +5461,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Media.Video.Autoplay.Muted.PlayMethod.BecomesVisible"
-    enum="Boolean" expires_after="2024-01-30">
+    enum="Boolean" expires_after="2025-01-05">
   <owner>dalecurtis@chromium.org</owner>
   <owner>evliu@google.com</owner>
   <owner>media-dev-uma@chromium.org</owner>
@@ -5070,7 +5475,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Media.Video.Autoplay.Muted.PlayMethod.OffscreenDuration"
-    units="ms" expires_after="2024-01-30">
+    units="ms" expires_after="2025-01-05">
   <owner>dalecurtis@chromium.org</owner>
   <owner>evliu@google.com</owner>
   <owner>media-dev-uma@chromium.org</owner>
@@ -5081,7 +5486,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Media.Video.Autoplay.Muted.UnmuteAction" enum="BooleanSuccess"
-    expires_after="2024-08-07">
+    expires_after="2025-01-05">
   <owner>dalecurtis@chromium.org</owner>
   <owner>evliu@google.com</owner>
   <owner>media-dev-uma@chromium.org</owner>
@@ -5147,7 +5552,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Media.Video.Capture.Mac.CameraSystemPermission.UserMedia"
-    enum="SystemMediaCapturePermission" expires_after="2024-01-14">
+    enum="SystemMediaCapturePermission" expires_after="2024-07-21">
   <owner>toprice@chromium.org</owner>
   <owner>video-cmi-apis@google.com</owner>
   <summary>
@@ -5173,7 +5578,7 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Media.Video.Roughness" units="ms" expires_after="2024-01-14">
+<histogram name="Media.Video.Roughness" units="ms" expires_after="2024-07-21">
   <owner>eugene@chromium.org</owner>
   <owner>media-dev-uma@chromium.org</owner>
   <summary>
@@ -5182,7 +5587,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Media.VideoCapture.AspectRatio" units="%"
-    expires_after="2023-12-31">
+    expires_after="2024-05-05">
   <owner>mcasas@chromium.org</owner>
   <owner>jophba@chromium.org</owner>
   <summary>
@@ -5202,8 +5607,20 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Media.VideoCapture.CreateDeviceSuccessLatency" units="ms"
+    expires_after="2024-07-14">
+  <owner>herre@google.com</owner>
+  <owner>video-cmi-apis@google.com</owner>
+  <summary>
+    Time during VideoSourceImpl startup taken to create a video_capture::Device
+    object. Only recorded if the creation was successful. Is a subset of
+    Media.VideoCapture.StartSourceSuccessLatency corresponding to Device
+    creation, rather than capture startup in the device.
+  </summary>
+</histogram>
+
 <histogram name="Media.VideoCapture.DelayUntilFirstFrame" units="ms"
-    expires_after="2024-01-07">
+    expires_after="2024-07-14">
   <owner>armax@chromium.org</owner>
   <owner>video-cmi-mpp@google.com</owner>
   <summary>
@@ -5213,8 +5630,23 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Media.VideoCapture.Device.Effect.{VideoEffect}"
+    enum="BooleanSupported" expires_after="2025-01-23">
+  <owner>mfoltz@chromium.org</owner>
+  <owner>openscreen-eng@google.com</owner>
+  <summary>
+    Records {VideoEffect} support for each video capture device opened. Recorded
+    in DeviceMediaToMojoAdapter::StartInternal in the video capture service.
+  </summary>
+  <token key="VideoEffect">
+    <variant name="BackgroundBlur" summary="Background Blur"/>
+    <variant name="EyeGazeCorrection" summary="Eye Gaze Correction"/>
+    <variant name="FaceFraming" summary="Face Framing"/>
+  </token>
+</histogram>
+
 <histogram name="Media.VideoCapture.Device.Opened.ByModelId" units="usb_id"
-    expires_after="2024-05-23">
+    expires_after="2024-07-28">
   <owner>atadres@chromium.org</owner>
   <summary>
     This metric records an unsigned interger value that corresponds to the USB
@@ -5252,7 +5684,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Media.VideoCapture.Device.SupportedPixelFormat"
-    enum="VideoPixelFormatUnion" expires_after="2024-06-08">
+    enum="VideoPixelFormatUnion" expires_after="2024-08-11">
   <owner>eshr@google.com</owner>
   <owner>handellm@google.com</owner>
   <owner>atadres@chromium.org</owner>
@@ -5280,7 +5712,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Media.VideoCapture.Device.TotalAvailable" units="count"
-    expires_after="2024-05-23">
+    expires_after="2024-07-28">
   <owner>atadres@chromium.org</owner>
   <owner>openscreen-eng@google.com</owner>
   <summary>
@@ -5290,7 +5722,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Media.VideoCapture.Error" enum="VideoCaptureError"
-    expires_after="2024-01-07">
+    expires_after="2024-07-14">
   <owner>mcasas@chromium.org</owner>
   <owner>guidou@chromium.org</owner>
   <owner>armax@chromium.org</owner>
@@ -5303,26 +5735,8 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Media.VideoCapture.FrameDrop"
-    enum="VideoCaptureFrameDropReason" expires_after="2023-12-31">
-  <owner>mcasas@chromium.org</owner>
-  <owner>guidou@chromium.org</owner>
-  <owner>armax@chromium.org</owner>
-  <owner>jophba@chromium.org</owner>
-  <summary>
-    An event for this histogram is emitted once for each time a video frame is
-    dropped on the way from a capture source, e.g. a webcam, to a corresponding
-    media::VideoCaptureController instance running in the Browser process. If
-    more than
-    |VideoCaptureController::max_consecutive_frame_drop_for_same_reason_count()|
-    frames are dropped consecutively for the same reason, no more events for the
-    same reason will be counted for that session until either a frame is
-    delivered successfully or the reason for the frame dropping changes.
-  </summary>
-</histogram>
-
 <histogram name="Media.VideoCapture.FrameRate" units="fps"
-    expires_after="2023-12-31">
+    expires_after="2024-07-07">
   <owner>mcasas@chromium.org</owner>
   <owner>guidou@chromium.org</owner>
   <owner>armax@chromium.org</owner>
@@ -5402,63 +5816,8 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Media.VideoCapture.MacBook.AttemptCountWhenNoCamera"
-    units="attempts" expires_after="2020-03-15">
-  <owner>chfremer@chromium.org</owner>
-  <summary>
-    Indicates how many times Chrome has asked AVFoundation to enumerate devices
-    since the process start when zero devices are returned. This event is only
-    emitted for the first time that zero devices are returned since the process
-    start. This is used in the context of investigating http://crbug.com/582931.
-  </summary>
-</histogram>
-
-<histogram name="Media.VideoCapture.MacBook.HardwareVersionWhenNoCamera"
-    enum="MacBookVersions" expires_after="M82">
-  <owner>perkj@chromium.org</owner>
-  <summary>
-    MacBook hardware version used when Chrome cannot enumerate a video device.
-    This is used for tracking http://crbug.com/582931.
-  </summary>
-</histogram>
-
-<histogram name="Media.VideoCapture.MacBook.NumberOfDevices" units="devices"
-    expires_after="M82">
-  <owner>perkj@chromium.org</owner>
-  <summary>
-    Number of video capture devices detected by Chrome during device
-    enumeration. Zero devices indicate a problem since all MacBooks should have
-    a built-in camera. This is used for tracking http://crbug.com/582931.
-  </summary>
-</histogram>
-
-<histogram name="Media.VideoCapture.MaxFrameDropExceeded"
-    enum="VideoCaptureFrameDropReason" expires_after="M77">
-  <owner>chfremer@chromium.org</owner>
-  <summary>
-    An event for this histogram is emitted when a video capture session drops
-    more than
-    |VideoCaptureController::max_consecutive_frame_drop_for_same_reason_count()|
-    consecutive video frames for the same reason. After this event is emitted
-    once, no additional events are emitted for consecutively dropped frames for
-    the same reason until the count is reset by either a frame being delivered
-    successfully or a frame being dropped for a different reason. See also
-    Media.VideoCapture.FrameDrop.
-  </summary>
-</histogram>
-
-<histogram name="Media.VideoCapture.NumberOfClients" units="units"
-    expires_after="2021-12-12">
-  <owner>fbeaufort@chromium.org</owner>
-  <owner>guidou@chromium.org</owner>
-  <summary>
-    Number of times a video capture device is accessed simultaneously. Recorded
-    when video capturing starts.
-  </summary>
-</histogram>
-
 <histogram name="Media.VideoCapture.ScaleOverride" units="units"
-    expires_after="2023-12-31">
+    expires_after="2024-05-05">
   <owner>jophba@chromium.org</owner>
   <owner>klausw@chromium.org</owner>
   <summary>
@@ -5470,7 +5829,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Media.VideoCapture.ScaleOverrideChangeCount" units="units"
-    expires_after="2023-12-31">
+    expires_after="2024-07-07">
   <owner>jophba@chromium.org</owner>
   <owner>klausw@chromium.org</owner>
   <summary>
@@ -5480,7 +5839,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Media.VideoCapture.Start" enum="Boolean"
-    expires_after="2024-01-07">
+    expires_after="2024-07-14">
   <owner>toprice@chromium.org</owner>
   <owner>guidou@chromium.org</owner>
   <summary>
@@ -5490,7 +5849,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Media.VideoCapture.StartErrorCode" enum="VideoCaptureError"
-    expires_after="2024-01-21">
+    expires_after="2024-07-28">
   <owner>toprice@chromium.org</owner>
   <owner>video-cmi-apis@google.com</owner>
   <summary>
@@ -5503,7 +5862,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Media.VideoCapture.StartOutcome"
-    enum="VideoCaptureStartOutcome" expires_after="2024-01-07">
+    enum="VideoCaptureStartOutcome" expires_after="2024-07-14">
   <owner>toprice@chromium.org</owner>
   <owner>guidou@chromium.org</owner>
   <summary>
@@ -5512,8 +5871,42 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Media.VideoCapture.StartSourceSuccessLatency" units="ms"
+    expires_after="2024-07-14">
+  <owner>herre@google.com</owner>
+  <owner>video-cmi-apis@google.com</owner>
+  <summary>
+    Total time for a VideoSourceImpl to start a device to serve the first push
+    subscription mojo connection. Only recorded if starting is successful.
+  </summary>
+</histogram>
+
+<histogram name="Media.VideoCapture.Track.FrameDrop.{StreamType}"
+    enum="VideoCaptureFrameDropReason" expires_after="2024-03-03">
+  <owner>mcasas@chromium.org</owner>
+  <owner>guidou@chromium.org</owner>
+  <owner>armax@chromium.org</owner>
+  <owner>jophba@chromium.org</owner>
+  <summary>
+    An event for this histogram is emitted once for each time a video frame is
+    dropped for a {StreamType} video source, but gets suppressed after
+    `MediaStreamVideoTrack::kMaxConsecutiveFrameDropForSameReasonCount`
+    consecutive drops. Logging resumes again if another frame is delivered or if
+    the frame drop reason changes. The frame drop is recorder on a per-track
+    basis (i.e. cloned tracks also log) and includes out-of-process frame drops
+    (e.g. a DeviceCapture webcam source dropping frames in the capture process).
+  </summary>
+  <token key="StreamType">
+    <variant name="DeviceCapture"/>
+    <variant name="DisplayCapture"/>
+    <variant name="DisplayCaptureCurrentTab"/>
+    <variant name="GumDesktopCapture"/>
+    <variant name="GumTabCapture"/>
+  </token>
+</histogram>
+
 <histogram name="Media.VideoCapture.Width" units="pixels"
-    expires_after="2023-12-31">
+    expires_after="2024-05-05">
   <owner>mcasas@chromium.org</owner>
   <owner>handellm@chromium.org</owner>
   <owner>jophba@chromium.org</owner>
@@ -5545,7 +5938,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Media.VideoCapture.Win.Device.CapturePixelFormat"
-    enum="VideoPixelFormatUnion" expires_after="2024-03-19">
+    enum="VideoPixelFormatUnion" expires_after="2025-05-19">
   <owner>ilnik@google.com</owner>
   <owner>video-cmi-mpp@google.com</owner>
   <summary>
@@ -5555,7 +5948,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Media.VideoCapture.Win.Device.InternalPixelFormat"
-    enum="VideoPixelFormatUnion" expires_after="2024-06-04">
+    enum="VideoPixelFormatUnion" expires_after="2025-06-04">
   <owner>ilnik@google.com</owner>
   <owner>video-cmi-mpp@google.com</owner>
   <summary>
@@ -5565,7 +5958,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Media.VideoCapture.Win.Device.IsSharedTexture" enum="Boolean"
-    expires_after="2024-02-04">
+    expires_after="2025-04-28">
   <owner>ilnik@google.com</owner>
   <owner>video-cmi-mpp@google.com</owner>
   <summary>
@@ -5575,8 +5968,19 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Media.VideoCapture.Win.Device.MappingAcquireMutexDelayMs"
+    units="ms" expires_after="2024-07-31">
+  <owner>ilnik@google.com</owner>
+  <owner>video-cmi-mpp@google.com</owner>
+  <summary>
+    Counts how long texture mutex acquisition took in ms during mapping process.
+    Recorded after each AcquireSync API call in the mapping subroutine.
+    Temporary metric, for debug purposes only.
+  </summary>
+</histogram>
+
 <histogram name="Media.VideoCapture.Win.Device.RequestedPixelFormat"
-    enum="VideoPixelFormatUnion" expires_after="2024-03-19">
+    enum="VideoPixelFormatUnion" expires_after="2025-03-19">
   <owner>ilnik@google.com</owner>
   <owner>video-cmi-mpp@google.com</owner>
   <summary>
@@ -5586,7 +5990,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Media.VideoCapture.Win.DeviceFactory.CaptureApi"
-    enum="VideoCaptureApi" expires_after="2024-02-11">
+    enum="VideoCaptureApi" expires_after="2024-08-11">
   <owner>ilnik@google.com</owner>
   <owner>handellm@google.com</owner>
   <owner>video-performance-team@google.com</owner>
@@ -5597,7 +6001,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Media.VideoCapture.Win.ErrorEvent" enum="Hresult"
-    expires_after="2024-01-07">
+    expires_after="2024-07-14">
   <owner>toprice@chromium.org</owner>
   <owner>hta@chromium.org</owner>
   <summary>
@@ -5658,55 +6062,19 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Media.VideoCaptureGpuJpegDecoder.InitDecodeSuccess"
-    enum="BooleanSuccess" expires_after="M77">
-  <owner>henryhsu@chromium.org</owner>
-  <summary>
-    Indicates whether we were successful in initializing hardware jpeg decoder
-    for attempts to VideoCaptureGpuJpegDecoder::Initialize().
-  </summary>
-</histogram>
-
 <histogram name="Media.VideoCaptureManager" units="ms" expires_after="M85">
   <owner>mcasas@chromium.org</owner>
   <summary>Measures the time taken for VideoCaptureManager::</summary>
 </histogram>
 
 <histogram name="Media.VideoCaptureManager.DesktopCaptureImplementationAndType"
-    enum="DesktopCaptureImplementationAndType" expires_after="2024-01-23">
+    enum="DesktopCaptureImplementationAndType" expires_after="2024-08-04">
   <owner>handellm@chromium.org</owner>
   <owner>ccameron@chromium.org</owner>
   <summary>
     Indicates which desktop capture implementation and DesktopID::Type was used
     for a desktop capture session. Recorded on instantiation of the desktop
     capturer.
-  </summary>
-</histogram>
-
-<histogram name="Media.VideoCaptureManager.DeviceSessionLockDuration"
-    units="ms" expires_after="2023-04-23">
-  <obsolete>
-    Removed 04/2023. No longer needed.
-  </obsolete>
-  <owner>dalecurtis@chromium.org</owner>
-  <owner>media-dev-uma@chromium.org</owner>
-  <summary>
-    Records the length of time the screen was locked while a device capture
-    session is active. An entry is recorded upon screen unlock or upon closure
-    of all active device capture sessions.
-  </summary>
-</histogram>
-
-<histogram name="Media.VideoCaptureManager.DeviceSessionWasLocked"
-    enum="Boolean" expires_after="2023-04-23">
-  <obsolete>
-    Removed 04/2023. No longer needed.
-  </obsolete>
-  <owner>dalecurtis@chromium.org</owner>
-  <owner>media-dev-uma@chromium.org</owner>
-  <summary>
-    Indicates if a device capture session encountered a screen lock during its
-    lifetime. An entry is recorded once upon session closure.
   </summary>
 </histogram>
 
@@ -5823,6 +6191,91 @@ chromium-metrics-reviews@google.com.
   <token key="DbOperation" variants="DbOperation"/>
 </histogram>
 
+<histogram name="Media.VideoEncoder.{Usage}.{Impl}.Area" units="pixels"
+    expires_after="2024-12-15">
+  <owner>hiroh@chromium.org</owner>
+  <owner>media-dev-uma@chromium.org</owner>
+  <summary>
+    The hundredth of a resolution area (i.e. width x height /100) configured in
+    a video encoder. Recorded when a video encoder is destroyed or reconfigured.
+  </summary>
+  <token key="Usage" variants="VideoEncoderUsage"/>
+  <token key="Impl" variants="VideoEncoderImpl"/>
+</histogram>
+
+<histogram name="Media.VideoEncoder.{Usage}.{Impl}.Frames" units="frames"
+    expires_after="2024-12-15">
+  <owner>hiroh@chromium.org</owner>
+  <owner>media-dev-uma@chromium.org</owner>
+  <summary>
+    The number of successfully encoded frames. Recorded when a video encoder is
+    destroyed or reconfigured.
+  </summary>
+  <token key="Usage" variants="VideoEncoderUsage"/>
+  <token key="Impl" variants="VideoEncoderImpl"/>
+</histogram>
+
+<histogram name="Media.VideoEncoder.{Usage}.{Impl}.Height" units="pixels"
+    expires_after="2024-12-15">
+  <owner>hiroh@chromium.org</owner>
+  <owner>media-dev-uma@chromium.org</owner>
+  <summary>
+    The height configured in a video encoder. Recorded when a video encoder is
+    destroyed or reconfigured.
+  </summary>
+  <token key="Usage" variants="VideoEncoderUsage"/>
+  <token key="Impl" variants="VideoEncoderImpl"/>
+</histogram>
+
+<histogram name="Media.VideoEncoder.{Usage}.{Impl}.Profile"
+    enum="VideoCodecProfile" expires_after="2024-12-15">
+  <owner>hiroh@chromium.org</owner>
+  <owner>media-dev-uma@chromium.org</owner>
+  <summary>
+    Video codec profile used in a video encoder. Recorded when a video encoder
+    is destroyed or reconfigured.
+  </summary>
+  <token key="Usage" variants="VideoEncoderUsage"/>
+  <token key="Impl" variants="VideoEncoderImpl"/>
+</histogram>
+
+<histogram name="Media.VideoEncoder.{Usage}.{Impl}.Status" enum="EncoderStatus"
+    expires_after="2024-12-15">
+  <owner>hiroh@chromium.org</owner>
+  <owner>media-dev-uma@chromium.org</owner>
+  <summary>
+    The last encoder status in a video encoder. If an error occurs, then non kOk
+    value is recorded. Recorded when a video encoder is destroyed or
+    reconfigured.
+  </summary>
+  <token key="Usage" variants="VideoEncoderUsage"/>
+  <token key="Impl" variants="VideoEncoderImpl"/>
+</histogram>
+
+<histogram name="Media.VideoEncoder.{Usage}.{Impl}.SVC"
+    enum="SVCScalabilityMode" expires_after="2024-12-15">
+  <owner>hiroh@chromium.org</owner>
+  <owner>media-dev-uma@chromium.org</owner>
+  <summary>
+    SVC Scalability mode configured in a video encoder. Recorded when a video
+    encoder is destroyed or reconfigured.
+  </summary>
+  <token key="Usage" variants="VideoEncoderUsage"/>
+  <token key="Impl" variants="VideoEncoderImpl"/>
+</histogram>
+
+<histogram name="Media.VideoEncoder.{Usage}.{Impl}.Width" units="pixels"
+    expires_after="2024-12-15">
+  <owner>hiroh@chromium.org</owner>
+  <owner>media-dev-uma@chromium.org</owner>
+  <summary>
+    The width configured in a video encoder. Recorded when a video encoder is
+    destroyed or reconfigured.
+  </summary>
+  <token key="Usage" variants="VideoEncoderUsage"/>
+  <token key="Impl" variants="VideoEncoderImpl"/>
+</histogram>
+
 <histogram name="Media.VideoFrameSubmitter" units="ms" expires_after="never">
 <!-- expires-never: used by ChromeOS test infrastructure -->
 
@@ -5848,7 +6301,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Media.VideoHeight.Initial.{PlaybackType}" units="pixels"
-    expires_after="2024-04-11">
+    expires_after="2024-08-18">
   <owner>xhwang@chromium.org</owner>
   <owner>media-dev-uma@chromium.org</owner>
   <summary>
@@ -5861,45 +6314,6 @@ chromium-metrics-reviews@google.com.
     <variant name="MSE"/>
     <variant name="SRC"/>
   </token>
-</histogram>
-
-<histogram name="Media.VideoPersistence.AttemptResult"
-    enum="VideoPersistenceAttemptResult" expires_after="2021-09-19">
-  <owner>peconn@chromium.org</owner>
-  <owner>media-dev-uma@chromium.org</owner>
-  <summary>
-    Every time a video persistence session could be triggered, it records the
-    result of the attempt.
-  </summary>
-</histogram>
-
-<histogram name="Media.VideoPersistence.ControlsType"
-    enum="VideoPersistenceControlsType" expires_after="2021-09-19">
-  <owner>peconn@chromium.org</owner>
-  <owner>media-dev-uma@chromium.org</owner>
-  <summary>
-    Record the type of controls a persisted video is using. This is recorded
-    every time a video enters persistence mode
-  </summary>
-</histogram>
-
-<histogram name="Media.VideoPersistence.Duration" units="ms"
-    expires_after="M93">
-  <owner>peconn@chromium.org</owner>
-  <owner>media-dev-uma@chromium.org</owner>
-  <summary>
-    Records the length during which a video was in a persistent state. It is
-    recorded once per video persistence session.
-  </summary>
-</histogram>
-
-<histogram name="Media.VideoPersistence.EndReason"
-    enum="VideoPersistenceEndReason" expires_after="2021-09-19">
-  <owner>peconn@chromium.org</owner>
-  <owner>media-dev-uma@chromium.org</owner>
-  <summary>
-    Records the reason why a video persistence session has ended.
-  </summary>
 </histogram>
 
 <histogram name="Media.VideoRenderer.CadenceChanges" units="changes"
@@ -5915,21 +6329,8 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Media.VideoRenderer.LowDelay" enum="Boolean"
-    expires_after="2022-09-11">
-  <obsolete>
-    Removed 09/2022. No longer needed.
-  </obsolete>
-  <owner>xhwang@chromium.org</owner>
-  <owner>media-dev-uma@chromium.org</owner>
-  <summary>
-    Indicates whether video is rendering in low delay mode. It's recorded when a
-    video starts playing.
-  </summary>
-</histogram>
-
 <histogram name="Media.VTVDA.HardwareAccelerated"
-    enum="BooleanHardwareAccelerated" expires_after="2023-10-01">
+    enum="BooleanHardwareAccelerated" expires_after="2024-09-25">
   <owner>sandersd@chromium.org</owner>
   <owner>media-dev-uma@chromium.org</owner>
   <summary>
@@ -5939,7 +6340,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Media.VTVDA.SessionFailureReason"
-    enum="VTVDASessionFailureType" expires_after="2023-12-31">
+    enum="VTVDASessionFailureType" expires_after="2024-07-07">
   <owner>sandersd@chromium.org</owner>
   <owner>media-dev-uma@chromium.org</owner>
   <summary>
@@ -5949,7 +6350,7 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Media.WatchTime" units="ms" expires_after="2024-02-11">
+<histogram name="Media.WatchTime" units="ms" expires_after="2024-06-30">
   <owner>dalecurtis@chromium.org</owner>
   <summary>
     Watch time is defined as the amount of elapsed media time for audio+video
@@ -5971,7 +6372,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Media.WebMediaPlayerImpl.HLS.HasAccessControl" enum="Boolean"
-    expires_after="2024-02-20">
+    expires_after="2024-06-30">
   <owner>tmathmeyer@chromium.org</owner>
   <owner>tguilbert@chromium.org</owner>
   <owner>media-dev-uma@chromium.org</owner>
@@ -5984,7 +6385,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Media.WebMediaPlayerImpl.HLS.IsCorsCrossOrigin" enum="Boolean"
-    expires_after="2024-02-20">
+    expires_after="2024-06-30">
   <owner>tmathmeyer@chromium.org</owner>
   <owner>tguilbert@chromium.org</owner>
   <owner>media-dev-uma@chromium.org</owner>
@@ -5997,7 +6398,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Media.WebMediaPlayerImpl.HLS.IsMixedContent" enum="Boolean"
-    expires_after="2024-02-20">
+    expires_after="2024-06-30">
   <owner>cassew@chromium.org</owner>
   <owner>tguilbert@chromium.org</owner>
   <owner>media-dev-uma@chromium.org</owner>
@@ -6010,7 +6411,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Media.WebMediaPlayerImpl.HLS{Variant}.MimeType"
-    enum="MimeTypeOfHlsManifest" expires_after="2024-02-20">
+    enum="MimeTypeOfHlsManifest" expires_after="2024-06-30">
   <owner>tmathmeyer@chromium.org</owner>
   <owner>lukasza@chromium.org</owner>
   <owner>media-dev-uma@chromium.org</owner>
@@ -6029,23 +6430,9 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
-<histogram name="Media.WebMediaPlayerImpl.WatchTime"
-    enum="WebMediaPlayerWatchTimeType" expires_after="2021-08-01">
-  <obsolete>
-    Removed 09/2022.
-  </obsolete>
-  <owner>sandersd@chromium.org</owner>
-  <owner>media-dev-uma@chromium.org</owner>
-  <summary>
-    Wall time of WebMediaPlayer playbacks. Each count represents one second of
-    media playback. Multiple WebMediaPlayer instances can together accumulate
-    watch time faster than real time.
-  </summary>
-</histogram>
-
 <histogram
     name="Media.WebmMuxer.DidAdjustTimestamp.{StreamTypesRecorded}.{Domain}"
-    enum="Boolean" expires_after="2024-02-20">
+    enum="Boolean" expires_after="2024-04-28">
   <owner>handellm@google.com</owner>
   <owner>video-performance-team@google.com</owner>
   <summary>
@@ -6066,7 +6453,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Media.WebrtcVideoPerfHistory.GetPerfInfoCodecProfile"
-    enum="VideoCodecProfile" expires_after="2024-02-01">
+    enum="VideoCodecProfile" expires_after="2024-06-30">
   <owner>kron@chromium.org</owner>
   <owner>webrtc-video@google.com</owner>
   <summary>
@@ -6076,7 +6463,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Media.WebrtcVideoPerfHistory.SavePerfRecordCodecProfile"
-    enum="VideoCodecProfile" expires_after="2024-02-01">
+    enum="VideoCodecProfile" expires_after="2024-06-30">
   <owner>kron@chromium.org</owner>
   <owner>webrtc-video@google.com</owner>
   <summary>
@@ -6086,7 +6473,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Media.WebrtcVideoPerfHistory.SmoothPrediction.{Operation}"
-    units="custom" expires_after="2024-02-01">
+    units="custom" expires_after="2024-06-30">
   <owner>kron@chromium.org</owner>
   <owner>webrtc-video@google.com</owner>
   <summary>
@@ -6107,7 +6494,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Media.WebrtcVideoPerfHistory.SmoothVolatility.{Operation}.{Framerate}"
-    enum="SmoothVolatility" expires_after="2024-02-01">
+    enum="SmoothVolatility" expires_after="2024-06-30">
   <owner>kron@chromium.org</owner>
   <owner>webrtc-video@google.com</owner>
   <summary>
@@ -6171,7 +6558,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Media.{VaapiClientName}.VAAPIError" enum="VaapiFunctions"
-    expires_after="2024-05-16">
+    expires_after="2024-07-21">
   <owner>mcasas@chromium.org</owner>
   <owner>chromeos-gfx-video@chromium.org</owner>
   <summary>
@@ -6191,50 +6578,6 @@ chromium-metrics-reviews@google.com.
     <variant name="VaapiVideoEncodeAccelerator" summary=""/>
     <variant name="VaapiVideoEncodeAccelerator.Vpp" summary=""/>
   </token>
-</histogram>
-
-<histogram name="MediaGalleries.ScanCancelTime" units="ms" expires_after="M85">
-  <owner>vandebo@chromium.org</owner>
-  <summary>If a media scan was cancelled, the duration (in ms) it ran.</summary>
-</histogram>
-
-<histogram name="MediaGalleries.ScanDirectoriesFound" units="units"
-    expires_after="M85">
-  <owner>vandebo@chromium.org</owner>
-  <summary>
-    The number of directories with media files found during a scan.
-  </summary>
-</histogram>
-
-<histogram name="MediaGalleries.ScanFinishedTime" units="ms"
-    expires_after="M85">
-  <owner>vandebo@chromium.org</owner>
-  <summary>
-    Duration in milliseconds taken to do a media scan that ran to completion.
-  </summary>
-</histogram>
-
-<histogram name="MediaGalleries.ScanGalleriesGranted" units="%"
-    expires_after="M85">
-  <owner>vandebo@chromium.org</owner>
-  <summary>
-    The percentage of galleries accepted (not deselected) from the scan result
-    dialog.
-  </summary>
-</histogram>
-
-<histogram name="MediaGalleries.ScanGalleriesPopulated" units="units"
-    expires_after="M85">
-  <owner>vandebo@chromium.org</owner>
-  <summary>
-    The number of galleries added or updated in preferences after a scan.
-  </summary>
-</histogram>
-
-<histogram name="MediaGalleries.Usage" enum="MediaGalleriesUsageType"
-    expires_after="M77">
-  <owner>vandebo@chromium.org</owner>
-  <summary>Various usage counts for media galleries.</summary>
 </histogram>
 
 <histogram name="MediaLauncherActivity.LaunchResult" enum="BooleanSuccess"
@@ -6257,7 +6600,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram base="true" name="MediaRouter.Cast.App.Availability" units="ms"
-    expires_after="2024-05-01">
+    expires_after="2024-07-14">
 <!-- Name completed by histogram_suffixes name="MediaRouterSuccess" -->
 
   <owner>takumif@chromium.org</owner>
@@ -6270,7 +6613,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="MediaRouter.Cast.Channel.ConnectResult" enum="BooleanSuccess"
-    expires_after="2024-01-14">
+    expires_after="2024-07-21">
   <owner>mfoltz@chromium.org</owner>
   <owner>openscreen-eng@google.com</owner>
   <summary>
@@ -6280,7 +6623,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="MediaRouter.Cast.Channel.Error"
-    enum="MediaRouterCastChannelError" expires_after="2024-01-14">
+    enum="MediaRouterCastChannelError" expires_after="2024-08-04">
   <owner>mfoltz@chromium.org</owner>
   <owner>openscreen-eng@google.com</owner>
   <summary>
@@ -6301,7 +6644,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="MediaRouter.Cast.Discovery.ConnectedDevicesCount"
-    units="devices" expires_after="2024-08-27">
+    units="devices" expires_after="2025-01-11">
   <owner>mfoltz@chromium.org</owner>
   <owner>openscreen-eng@google.com</owner>
   <summary>
@@ -6311,7 +6654,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="MediaRouter.Cast.Discovery.KnownDevicesCount" units="devices"
-    expires_after="2024-01-11">
+    expires_after="2025-01-11">
   <owner>mfoltz@chromium.org</owner>
   <owner>openscreen-eng@google.com</owner>
   <summary>
@@ -6321,7 +6664,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="MediaRouter.Cast.Discovery.SinkSource"
-    enum="MediaRouterCastSinkSource" expires_after="2024-01-11">
+    enum="MediaRouterCastSinkSource" expires_after="2024-05-19">
   <owner>takumif@chromium.org</owner>
   <owner>openscreen-eng@google.com</owner>
   <summary>The source of discovery for a newly-created Cast sink.</summary>
@@ -6335,7 +6678,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="MediaRouter.Cast.LaunchSessionResponse.AppType"
-    enum="MediaRouterResponseReceiverAppType" expires_after="2024-02-04">
+    enum="MediaRouterResponseReceiverAppType" expires_after="2024-06-30">
   <owner>muyaoxu@google.com</owner>
   <owner>openscreen-eng@google.com</owner>
   <summary>
@@ -6345,7 +6688,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="MediaRouter.Cast.Mdns.Channel.Open_Failure" units="ms"
-    expires_after="2024-02-04">
+    expires_after="2024-08-04">
   <owner>mfoltz@chromium.org</owner>
   <owner>openscreen-eng@google.com</owner>
   <summary>
@@ -6392,7 +6735,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="MediaRouter.CastStreaming.Audio.PlaybackOnReceiver"
-    enum="Boolean" expires_after="2023-11-12">
+    enum="Boolean" expires_after="2024-08-04">
   <owner>takumif@chromium.org</owner>
   <owner>muyaoxu@google.com</owner>
   <owner>openscreen-eng@google.com</owner>
@@ -6404,14 +6747,14 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="MediaRouter.CastStreaming.Session.Launch" units="ms"
-    expires_after="2024-02-11">
+    expires_after="2024-06-30">
   <owner>takumif@chromium.org</owner>
   <owner>openscreen-eng@google.com</owner>
   <summary>Total time to launch a Cast Streaming mirror session.</summary>
 </histogram>
 
 <histogram name="MediaRouter.CastStreaming.Session.Length" units="ms"
-    expires_after="2024-02-11">
+    expires_after="2024-06-30">
   <owner>takumif@chromium.org</owner>
   <owner>openscreen-eng@google.com</owner>
   <summary>
@@ -6421,23 +6764,13 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="MediaRouter.CastStreaming.Session.Length.AccessCode"
-    units="ms" expires_after="2024-01-28">
+    units="ms" expires_after="2024-04-28">
   <owner>bzielinski@google.com</owner>
   <owner>cros-edu-eng@google.com</owner>
   <summary>
     Total length of a Cast Streaming mirror session of any type, when the cast
     sink was discovered via access code.
   </summary>
-</histogram>
-
-<histogram name="MediaRouter.CastStreaming.Session.Length.File" units="ms"
-    expires_after="2022-07-01">
-  <obsolete>
-    Removed 04/2022 as local file casting is no longer done via the Cast UI.
-  </obsolete>
-  <owner>takumif@chromium.org</owner>
-  <owner>openscreen-eng@google.com</owner>
-  <summary>Total length of a Cast Streaming File mirror session.</summary>
 </histogram>
 
 <histogram name="MediaRouter.CastStreaming.Session.Length.OffscreenTab"
@@ -6467,7 +6800,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="MediaRouter.CastStreaming.Start.Failure.AccessCodeManualEntry"
-    enum="MirroringServiceErrorType" expires_after="2023-12-01">
+    enum="MirroringServiceErrorType" expires_after="2024-05-01">
   <owner>bzielinski@google.com</owner>
   <owner>cros-edu-eng@google.com</owner>
   <summary>
@@ -6478,7 +6811,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="MediaRouter.CastStreaming.Start.Failure.AccessCodeRememberedDevice"
-    enum="MirroringServiceErrorType" expires_after="2023-12-01">
+    enum="MirroringServiceErrorType" expires_after="2024-05-01">
   <owner>bzielinski@google.com</owner>
   <owner>cros-edu-eng@google.com</owner>
   <summary>
@@ -6489,7 +6822,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="MediaRouter.CastStreaming.Start.Failure.Native"
-    enum="MirroringServiceErrorType" expires_after="2023-11-12">
+    enum="MirroringServiceErrorType" expires_after="2024-07-14">
   <owner>takumif@chromium.org</owner>
   <owner>openscreen-eng@google.com</owner>
   <summary>
@@ -6500,7 +6833,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="MediaRouter.CastStreaming.Start.Success" enum="MirrorType"
-    expires_after="2024-01-14">
+    expires_after="2024-07-21">
   <owner>takumif@chromium.org</owner>
   <owner>openscreen-eng@google.com</owner>
   <summary>
@@ -6510,7 +6843,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="MediaRouter.CastStreaming.Start.Success.AccessCodeManualEntry"
-    enum="MirrorType" expires_after="2024-02-04">
+    enum="MirrorType" expires_after="2024-06-30">
   <owner>bzielinski@google.com</owner>
   <owner>cros-edu-eng@google.com</owner>
   <summary>
@@ -6522,7 +6855,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="MediaRouter.CastStreaming.Start.Success.AccessCodeRememberedDevice"
-    enum="MirrorType" expires_after="2023-12-01">
+    enum="MirrorType" expires_after="2024-03-17">
   <owner>bzielinski@google.com</owner>
   <owner>cros-edu-eng@google.com</owner>
   <summary>
@@ -6544,7 +6877,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="MediaRouter.Dial.CreateRoute"
-    enum="MediaRouterDialCreateRouteResult" expires_after="2024-01-14">
+    enum="MediaRouterDialCreateRouteResult" expires_after="2025-02-05">
   <owner>takumif@chromium.org</owner>
   <owner>mfoltz@chromium.org</owner>
   <owner>openscreen-eng@google.com</owner>
@@ -6567,7 +6900,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="MediaRouter.Dial.FetchAppInfo"
-    enum="MediaRouterDialFetchAppInfoResult" expires_after="2023-12-24">
+    enum="MediaRouterDialFetchAppInfoResult" expires_after="2024-07-16">
   <owner>takumif@chromium.org</owner>
   <owner>mfoltz@chromium.org</owner>
   <owner>openscreen-eng@google.com</owner>
@@ -6589,14 +6922,14 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="MediaRouter.Icon.Click.Location"
-    enum="MediaRouterDialogActivationLocation" expires_after="2024-04-30">
+    enum="MediaRouterDialogActivationLocation" expires_after="2024-06-30">
   <owner>takumif@chromium.org</owner>
   <owner>openscreen-eng@google.com</owner>
   <summary>Location the user clicked to open the Media Router dialog.</summary>
 </histogram>
 
 <histogram name="MediaRouter.MirroringService.SessionError"
-    enum="MirroringServiceErrorType" expires_after="2024-01-14">
+    enum="MirroringServiceErrorType" expires_after="2025-01-02">
   <owner>takumif@chromium.org</owner>
   <owner>openscreen-eng@google.com</owner>
   <summary>
@@ -6607,7 +6940,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="MediaRouter.PresentationRequest.AvailabilityUrlType"
-    enum="PresentationUrlType" expires_after="2024-01-21">
+    enum="PresentationUrlType" expires_after="2024-06-30">
   <owner>takumif@chromium.org</owner>
   <owner>mfoltz@chromium.org</owner>
   <owner>openscreen-eng@google.com</owner>
@@ -6617,7 +6950,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="MediaRouter.PresentationRequest.UrlBySink"
-    enum="PresentationUrlBySink" expires_after="2023-12-31">
+    enum="PresentationUrlBySink" expires_after="2024-05-05">
   <owner>mfoltz@chromium.org</owner>
   <owner>openscreen-eng@google.com</owner>
   <summary>
@@ -6627,7 +6960,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="MediaRouter.Provider.CreateRoute.Result"
-    enum="MediaRouteProviderResult" expires_after="2023-12-24">
+    enum="MediaRouteProviderResult" expires_after="2024-06-30">
 <!-- Name completed by histogram_suffixes name="MediaRouteProvider" -->
 
   <owner>takumif@chromium.org</owner>
@@ -6669,7 +7002,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="MediaRouter.RemotePlayback.SessionLoadTime" units="ms"
-    expires_after="2024-02-04">
+    expires_after="2024-06-30">
   <owner>muyaoxu@chromium.org</owner>
   <owner>openscreen-eng@google.com</owner>
   <summary>
@@ -6682,7 +7015,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="MediaRouter.RemotePlayback.SessionStartsBeforeTimeout"
-    enum="Boolean" expires_after="2024-02-04">
+    enum="Boolean" expires_after="2024-06-30">
   <owner>muyaoxu@chromium.org</owner>
   <owner>openscreen-eng@google.com</owner>
   <summary>
@@ -6691,69 +7024,8 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="MediaRouter.RemotePlayback.SinkCapability.SupportedAudioCodec"
-    enum="AudioCodec" expires_after="2024-02-04">
-  <owner>muyaoxu@google.com</owner>
-  <owner>openscreen-eng@google.com</owner>
-  <summary>
-    Recorded when a Cast sink is discovered for a Remote Playback MediaSource
-    and this sink supports the MediaSource's AudioCodec. It is not recorded if
-    the model is not known to support Remoting, in which case the sink's audio
-    capability is unknown.
-  </summary>
-</histogram>
-
-<histogram name="MediaRouter.RemotePlayback.SinkCapability.SupportedVideoCodec"
-    enum="VideoCodec" expires_after="2024-02-04">
-  <owner>muyaoxu@google.com</owner>
-  <owner>openscreen-eng@google.com</owner>
-  <summary>
-    Recorded when a Cast sink is discovered for a Remote Playback MediaSource
-    and this sink supports the MediaSource's VideoCodec. It is not recorded if
-    the model is not known to support Remoting, in which case the sink's video
-    capability is unknown.
-  </summary>
-</histogram>
-
-<histogram
-    name="MediaRouter.RemotePlayback.SinkCapability.UnsupportedAudioCodec"
-    enum="AudioCodec" expires_after="2023-12-01">
-  <owner>muyaoxu@google.com</owner>
-  <owner>openscreen-eng@google.com</owner>
-  <summary>
-    Recorded when a Cast sink is discovered for a Remote Playback MediaSource
-    and this sink does not support the MediaSource's AudioCodec. It is not
-    recorded if the model is not known to support Remoting, in which case the
-    sink's audio capability is unknown.
-  </summary>
-</histogram>
-
-<histogram
-    name="MediaRouter.RemotePlayback.SinkCapability.UnsupportedVideoCodec"
-    enum="VideoCodec" expires_after="2024-02-04">
-  <owner>muyaoxu@google.com</owner>
-  <owner>openscreen-eng@google.com</owner>
-  <summary>
-    Recorded when a Cast sink is discovered for a Remote Playback MediaSource
-    and this sink does not support the MediaSource's VideoCodec. It is not
-    recorded if the model is not known to support Remoting, in which case the
-    sink's video capability is unknown.
-  </summary>
-</histogram>
-
-<histogram name="MediaRouter.RemotePlayback.SinkModelCompatibility"
-    enum="Boolean" expires_after="2024-02-04">
-  <owner>muyaoxu@google.com</owner>
-  <owner>openscreen-eng@google.com</owner>
-  <summary>
-    Records whether the discovered sink is known to support Media Remoting. It
-    is recorded when media sink query results are sent to the
-    CastMediaRouteProvider.
-  </summary>
-</histogram>
-
 <histogram name="MediaRouter.Sink.SelectedType" enum="MediaSinkType"
-    expires_after="2023-11-12">
+    expires_after="2024-07-07">
   <owner>takumif@chromium.org</owner>
   <owner>openscreen-eng@google.com</owner>
   <summary>
@@ -6764,7 +7036,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="MediaRouter.Sink.SelectedType.{Ui}" enum="MediaSinkType"
-    expires_after="2024-05-03">
+    expires_after="2024-07-07">
   <owner>takumif@chromium.org</owner>
   <owner>openscreen-eng@google.com</owner>
   <summary>
@@ -6778,49 +7050,13 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="MediaRouter.Source.CastingSource"
-    enum="MediaRouterSourceTypes" expires_after="2024-01-14">
+    enum="MediaRouterSourceTypes" expires_after="2024-07-21">
   <owner>takumif@chromium.org</owner>
   <owner>openscreen-eng@google.com</owner>
   <summary>
     The source of a Media Router session. This is recorded to keep track of what
     kind of media is being streamed.
   </summary>
-</histogram>
-
-<histogram name="MediaRouter.Ui.Action.CloseLatency" units="ms"
-    expires_after="2023-11-12">
-  <owner>takumif@chromium.org</owner>
-  <owner>openscreen-eng@google.com</owner>
-  <summary>
-    Duration in milliseconds taken from the user opening the Media Router dialog
-    to the user closing the dialog. This is only recorded if closing the dialog
-    is the first action the user takes.
-  </summary>
-</histogram>
-
-<histogram name="MediaRouter.Ui.Action.StartLocal.Latency" units="ms"
-    expires_after="2023-11-12">
-  <owner>takumif@chromium.org</owner>
-  <owner>openscreen-eng@google.com</owner>
-  <summary>
-    Duration in milliseconds taken from the Media Router dialog showing the sink
-    list and being populated with at least one device to the user selecting a
-    device immediately after to create a new route.
-  </summary>
-</histogram>
-
-<histogram name="MediaRouter.Ui.Action.StartLocalPosition"
-    enum="MediaRouterSinkPositionLabel" expires_after="2023-11-12">
-  <owner>takumif@chromium.org</owner>
-  <owner>openscreen-eng@google.com</owner>
-  <summary>The index of the sink that was selected in the sink list.</summary>
-</histogram>
-
-<histogram name="MediaRouter.Ui.Action.StopRoute" enum="MediaRouteType"
-    expires_after="2023-11-12">
-  <owner>takumif@chromium.org</owner>
-  <owner>openscreen-eng@google.com</owner>
-  <summary>The number of times a user stops different types of routes.</summary>
 </histogram>
 
 <histogram name="MediaRouter.Ui.Android.DialogAction"
@@ -6847,7 +7083,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="MediaRouter.Ui.Device.Count" units="units"
-    expires_after="2023-12-24">
+    expires_after="2024-07-14">
   <owner>takumif@chromium.org</owner>
   <owner>openscreen-eng@google.com</owner>
   <summary>
@@ -6860,7 +7096,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="MediaRouter.Ui.Dialog.ActivationLocationAndCastMode"
     enum="MediaRouterDialogActivationLocationAndCastMode"
-    expires_after="2024-01-14">
+    expires_after="2025-02-05">
   <owner>takumif@chromium.org</owner>
   <owner>openscreen-eng@google.com</owner>
   <summary>
@@ -6870,7 +7106,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="MediaRouter.Ui.Dialog.IconStateAtOpen"
-    enum="MediaRouterIconState" expires_after="2023-11-12">
+    enum="MediaRouterIconState" expires_after="2024-06-30">
   <owner>takumif@chromium.org</owner>
   <owner>openscreen-eng@google.com</owner>
   <summary>
@@ -6889,18 +7125,8 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="MediaRouter.Ui.Dialog.Paint" units="ms"
-    expires_after="2023-11-12">
-  <owner>takumif@chromium.org</owner>
-  <owner>openscreen-eng@google.com</owner>
-  <summary>
-    Duration in milliseconds taken from a user click to open the Media Router
-    dialog to the initial paint.
-  </summary>
-</histogram>
-
 <histogram name="MediaRouter.WiredDisplay.AvailableDevicesCount" units="units"
-    expires_after="2023-12-24">
+    expires_after="2024-04-28">
   <owner>takumif@chromium.org</owner>
   <owner>openscreen-eng@google.com</owner>
   <summary>

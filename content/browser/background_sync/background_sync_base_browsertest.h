@@ -42,6 +42,7 @@ namespace content {
 class Shell;
 class StoragePartitionImpl;
 class WebContents;
+struct EvalJsResult;
 
 class BackgroundSyncBaseBrowserTest : public ContentBrowserTest {
  public:

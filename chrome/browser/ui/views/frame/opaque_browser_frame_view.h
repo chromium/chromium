@@ -42,8 +42,9 @@ class Label;
 class OpaqueBrowserFrameView : public BrowserNonClientFrameView,
                                public TabIconViewModel,
                                public OpaqueBrowserFrameViewLayoutDelegate {
+  METADATA_HEADER(OpaqueBrowserFrameView, BrowserNonClientFrameView)
+
  public:
-  METADATA_HEADER(OpaqueBrowserFrameView);
   // Constructs a non-client view for an BrowserFrame.
   OpaqueBrowserFrameView(BrowserFrame* frame,
                          BrowserView* browser_view,
@@ -65,7 +66,6 @@ class OpaqueBrowserFrameView : public BrowserNonClientFrameView,
   void LayoutWebAppWindowTitle(const gfx::Rect& available_space,
                                views::Label& window_title_label) const override;
   int GetTopInset(bool restored) const override;
-  int GetThemeBackgroundXInset() const override;
   void UpdateThrobber(bool running) override;
   void WindowControlsOverlayEnabledChanged() override;
   gfx::Size GetMinimumSize() const override;
@@ -81,7 +81,6 @@ class OpaqueBrowserFrameView : public BrowserNonClientFrameView,
   void ResetWindowControls() override;
   void UpdateWindowIcon() override;
   void UpdateWindowTitle() override;
-  void SizeConstraintsChanged() override;
 
   // views::View:
   void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
@@ -115,10 +114,9 @@ class OpaqueBrowserFrameView : public BrowserNonClientFrameView,
   FrameButtonStyle GetFrameButtonStyle() const override;
   void UpdateWindowControlsOverlay(
       const gfx::Rect& bounding_rect) const override;
-  bool IsTranslucentWindowOpacitySupported() const override;
   bool ShouldDrawRestoredFrameShadow() const override;
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
-  ui::WindowTiledEdges GetTiledEdges() const override;
+#if BUILDFLAG(IS_LINUX)
+  bool IsTiled() const override;
 #endif
   int WebAppButtonHeight() const override;
 

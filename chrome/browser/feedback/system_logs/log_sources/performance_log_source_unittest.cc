@@ -37,7 +37,7 @@ class QuitRunLoopOnPowerStateChangeObserver
 
 namespace {
 
-constexpr char kHighEfficiencyModeActiveKey[] = "high_efficiency_mode_active";
+constexpr char kMemorySaverModeActiveKey[] = "high_efficiency_mode_active";
 constexpr char kBatterySaverModeStateKey[] = "battery_saver_state";
 constexpr char kBatterySaverModeActiveKey[] = "battery_saver_mode_active";
 constexpr char kBatterySaverModeDisabledForSessionKey[] =
@@ -88,10 +88,10 @@ class PerformanceLogSourceTest : public BrowserWithTestWindowTest {
         static_cast<int>(mode));
   }
 
-  void SetHighEfficiencyModeEnabled(bool enabled) {
+  void SetMemorySaverModeEnabled(bool enabled) {
     performance_manager::user_tuning::UserPerformanceTuningManager::
         GetInstance()
-            ->SetHighEfficiencyModeEnabled(enabled);
+            ->SetMemorySaverModeEnabled(enabled);
   }
 
   void SetOnBatteryPower(bool on_battery_power) {
@@ -113,14 +113,14 @@ class PerformanceLogSourceTest : public BrowserWithTestWindowTest {
   raw_ptr<TestingPrefServiceSimple> local_state_ = nullptr;
 };
 
-TEST_F(PerformanceLogSourceTest, CheckHighEfficiencyModeLogs) {
-  SetHighEfficiencyModeEnabled(true);
+TEST_F(PerformanceLogSourceTest, CheckMemorySaverModeLogs) {
+  SetMemorySaverModeEnabled(true);
   auto response = GetPerformanceLogs();
-  EXPECT_EQ("true", response->at(kHighEfficiencyModeActiveKey));
+  EXPECT_EQ("true", response->at(kMemorySaverModeActiveKey));
 
-  SetHighEfficiencyModeEnabled(false);
+  SetMemorySaverModeEnabled(false);
   response = GetPerformanceLogs();
-  EXPECT_EQ("false", response->at(kHighEfficiencyModeActiveKey));
+  EXPECT_EQ("false", response->at(kMemorySaverModeActiveKey));
 }
 
 TEST_F(PerformanceLogSourceTest, CheckBatterySaverModeLogs) {

@@ -6,9 +6,4 @@ per-file BUILD.gn=*
 fsandrade@chromium.org
 
 # Secondary owner(s)
-rsorokin@google.com
-
-# Previous owners (for general questions, if current owners are not available)
-# Commented out so automatic tools don't prefer.
-# ljusten@chromium.org
-# tomdobro@hromium.org
+emaxx@chromium.org

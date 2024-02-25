@@ -7,6 +7,7 @@
 #include "base/task/single_thread_task_runner.h"
 #include "extensions/browser/extension_function.h"
 #include "extensions/common/error_utils.h"
+#include "extensions/common/extension_id.h"
 
 namespace {
 
@@ -37,7 +38,7 @@ QuotaService::~QuotaService() {
   Purge();
 }
 
-std::string QuotaService::Assess(const std::string& extension_id,
+std::string QuotaService::Assess(const ExtensionId& extension_id,
                                  ExtensionFunction* function,
                                  const base::Value::List& args,
                                  const base::TimeTicks& event_time) {

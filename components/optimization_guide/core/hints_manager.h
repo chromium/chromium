@@ -6,6 +6,7 @@
 #define COMPONENTS_OPTIMIZATION_GUIDE_CORE_HINTS_MANAGER_H_
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -22,11 +23,12 @@
 #include "base/timer/timer.h"
 #include "components/optimization_guide/core/hints_component_info.h"
 #include "components/optimization_guide/core/hints_fetcher.h"
+#include "components/optimization_guide/core/insertion_ordered_set.h"
 #include "components/optimization_guide/core/optimization_guide_decision.h"
+#include "components/optimization_guide/core/optimization_guide_features.h"
 #include "components/optimization_guide/core/optimization_hints_component_observer.h"
 #include "components/optimization_guide/core/push_notification_manager.h"
 #include "components/optimization_guide/proto/hints.pb.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 class OptimizationGuideLogger;
 class OptimizationGuideNavigationData;
@@ -36,6 +38,10 @@ class PrefService;
 namespace network {
 class SharedURLLoaderFactory;
 }  // namespace network
+
+namespace signin {
+class IdentityManager;
+}  // namespace signin
 
 namespace optimization_guide {
 class HintCache;
@@ -60,6 +66,7 @@ class HintsManager : public OptimizationHintsComponentObserver,
       TabUrlProvider* tab_url_provider,
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
       std::unique_ptr<PushNotificationManager> push_notification_manager,
+      signin::IdentityManager* identity_manager,
       OptimizationGuideLogger* optimization_guide_logger);
 
   ~HintsManager() override;
@@ -114,7 +121,8 @@ class HintsManager : public OptimizationHintsComponentObserver,
   // be computed on |url_keyed_hint| or |host_keyed_hint| if possible.
   // |skip_cache| will be used to determine if the decision is unknown.
   OptimizationTypeDecision CanApplyOptimization(
-      const GURL& navigation_url,
+      bool is_on_demand_request,
+      const GURL& url,
       proto::OptimizationType optimization_type,
       const proto::Hint* url_keyed_hint,
       const proto::Hint* host_keyed_hint,
@@ -146,7 +154,8 @@ class HintsManager : public OptimizationHintsComponentObserver,
       const std::vector<GURL>& urls,
       const base::flat_set<proto::OptimizationType>& optimization_types,
       proto::RequestContext request_context,
-      OnDemandOptimizationGuideDecisionRepeatingCallback callback);
+      OnDemandOptimizationGuideDecisionRepeatingCallback callback,
+      proto::RequestContextMetadata* request_context_metadata);
 
   // Clears all fetched hints from |hint_cache_|.
   void ClearFetchedHints();
@@ -205,13 +214,25 @@ class HintsManager : public OptimizationHintsComponentObserver,
   // Add hints to the cache with the provided metadata. For testing only.
   void AddHintForTesting(const GURL& url,
                          proto::OptimizationType optimization_type,
-                         const absl::optional<OptimizationMetadata>& metadata);
+                         const std::optional<OptimizationMetadata>& metadata);
 
  private:
   friend class ::OptimizationGuideTestAppInterfaceWrapper;
   friend class HintsManagerTest;
 
   FRIEND_TEST_ALL_PREFIXES(HintsManagerFetchingTest, BatchUpdateFetcherCleanup);
+  FRIEND_TEST_ALL_PREFIXES(
+      HintsManagerFetchingTest,
+      PageInsightsHubContextRequestContextMetadataPihSentGetHintsRequest);
+  FRIEND_TEST_ALL_PREFIXES(
+      HintsManagerFetchingTest,
+      PageInsightsHubContextNotSentRequestContextMetadataPihSentGetHintsRequest);
+  FRIEND_TEST_ALL_PREFIXES(
+      HintsManagerFetchingTest,
+      PageInsightsHubContextRequestContextMetadataNotPihSentGetHintsRequest);
+  FRIEND_TEST_ALL_PREFIXES(
+      HintsManagerFetchingTest,
+      PageInsightsHubContextRequestContextMetadataPihNotSentGetHintsRequest);
 
   // Processes the optimization filters contained in the hints component.
   void ProcessOptimizationFilters(
@@ -264,7 +285,7 @@ class HintsManager : public OptimizationHintsComponentObserver,
   void OnHintsForActiveTabsFetched(
       const base::flat_set<std::string>& hosts_fetched,
       const base::flat_set<GURL>& urls_fetched,
-      absl::optional<std::unique_ptr<proto::GetHintsResponse>>
+      std::optional<std::unique_ptr<proto::GetHintsResponse>>
           get_hints_response);
 
   // Called when the batch update hints have been fetched from the remote
@@ -278,7 +299,7 @@ class HintsManager : public OptimizationHintsComponentObserver,
       const base::flat_set<GURL>& urls_for_callback,
       const base::flat_set<proto::OptimizationType>& optimization_types,
       OnDemandOptimizationGuideDecisionRepeatingCallback callback,
-      absl::optional<std::unique_ptr<proto::GetHintsResponse>>
+      std::optional<std::unique_ptr<proto::GetHintsResponse>>
           get_hints_response);
 
   // Called when information is ready such that we can invoke any callbacks that
@@ -300,6 +321,19 @@ class HintsManager : public OptimizationHintsComponentObserver,
   // Called to inform |this| that the batch fetcher with |request_id| is no
   // longer needed removes the request from |batch_update_hints_fetchers_|
   void CleanUpBatchUpdateHintsFetcher(int32_t request_id);
+
+  // Fetch batch hints for all `hosts` and `urls` for the `optimization_types`
+  // with the `request_context`. `access_token` can be empty which indicates no
+  // auth is specified.
+  void FetchOptimizationGuideServiceBatchHints(
+      const InsertionOrderedSet<std::string>& hosts,
+      const InsertionOrderedSet<GURL>& urls,
+      const base::flat_set<optimization_guide::proto::OptimizationType>&
+          optimization_types,
+      optimization_guide::proto::RequestContext request_context,
+      OnDemandOptimizationGuideDecisionRepeatingCallback callback,
+      proto::RequestContextMetadata* request_context_metadata,
+      const std::string& access_token);
 
   // Returns decisions for |url| and |optimization_types| based on what's cached
   // locally.
@@ -332,10 +366,10 @@ class HintsManager : public OptimizationHintsComponentObserver,
   // that were requested by |this| to be fetched.
   void OnPageNavigationHintsFetched(
       base::WeakPtr<OptimizationGuideNavigationData> navigation_data_weak_ptr,
-      const absl::optional<GURL>& navigation_url,
+      const std::optional<GURL>& navigation_url,
       const base::flat_set<GURL>& page_navigation_urls_requested,
       const base::flat_set<std::string>& page_navigation_hosts_requested,
-      absl::optional<std::unique_ptr<proto::GetHintsResponse>>
+      std::optional<std::unique_ptr<proto::GetHintsResponse>>
           get_hints_response);
 
   // Called when the fetched hints have been stored in |hint_cache| and are
@@ -349,7 +383,7 @@ class HintsManager : public OptimizationHintsComponentObserver,
   // whose hints should be loaded into memory when invoked.
   void OnFetchedPageNavigationHintsStored(
       base::WeakPtr<OptimizationGuideNavigationData> navigation_data_weak_ptr,
-      const absl::optional<GURL>& navigation_url,
+      const std::optional<GURL>& navigation_url,
       const base::flat_set<std::string>& page_navigation_hosts_requested);
 
   // Returns true if there is a fetch currently in-flight for |navigation_url|.
@@ -425,19 +459,18 @@ class HintsManager : public OptimizationHintsComponentObserver,
   // The logger that plumbs the debug logs to the optimization guide
   // internals page. Not owned. Guaranteed to outlive |this|, since the logger
   // and |this| are owned by the optimization guide keyed service.
-  raw_ptr<OptimizationGuideLogger, DanglingUntriaged>
-      optimization_guide_logger_;
+  raw_ptr<OptimizationGuideLogger> optimization_guide_logger_;
 
   // The information of the latest component delivered by
   // |optimization_guide_service_|.
-  absl::optional<HintsComponentInfo> hints_component_info_;
+  std::optional<HintsComponentInfo> hints_component_info_;
 
   // The component version that failed to process in the last session, if
   // applicable.
-  const absl::optional<base::Version> failed_component_version_;
+  const std::optional<base::Version> failed_component_version_;
 
   // The version of the component that is currently being processed.
-  absl::optional<base::Version> currently_processing_component_version_;
+  std::optional<base::Version> currently_processing_component_version_;
 
   // The set of optimization types that have been registered with the hints
   // manager.
@@ -471,9 +504,6 @@ class HintsManager : public OptimizationHintsComponentObserver,
   // The current applcation locale of Chrome.
   const std::string application_locale_;
 
-  // The set of OAuth scopes to use for personalized metadata.
-  base::flat_set<std::string> oauth_scopes_ = {};
-
   // A reference to the PrefService for this profile. Not owned.
   raw_ptr<PrefService> pref_service_ = nullptr;
 
@@ -503,11 +533,10 @@ class HintsManager : public OptimizationHintsComponentObserver,
   std::unique_ptr<HintsFetcherFactory> hints_fetcher_factory_;
 
   // The top host provider that can be queried. Not owned.
-  raw_ptr<TopHostProvider, DanglingUntriaged> top_host_provider_ = nullptr;
+  raw_ptr<TopHostProvider> top_host_provider_ = nullptr;
 
   // The tab URL provider that can be queried. Not owned.
-  raw_ptr<TabUrlProvider, AcrossTasksDanglingUntriaged> tab_url_provider_ =
-      nullptr;
+  raw_ptr<TabUrlProvider> tab_url_provider_ = nullptr;
 
   // The timer used to schedule fetching hints from the remote Optimization
   // Guide Service.
@@ -516,6 +545,10 @@ class HintsManager : public OptimizationHintsComponentObserver,
   // The class that handles push notification processing and informs |this| of
   // what to do through the implemented Delegate above.
   std::unique_ptr<PushNotificationManager> push_notification_manager_;
+
+  // Unowned IdentityManager for fetching access tokens. Could be null for
+  // incognito profiles.
+  const raw_ptr<signin::IdentityManager> identity_manager_;
 
   // The clock used to schedule fetching from the remote Optimization Guide
   // Service.
@@ -534,6 +567,9 @@ class HintsManager : public OptimizationHintsComponentObserver,
   // first. This will prevent use-after-free issues where the background thread
   // would access other member variables after they have been destroyed.
   scoped_refptr<base::SequencedTaskRunner> background_task_runner_;
+
+  // Requests contexts for which personalized metadata should be enabled.
+  const features::RequestContextSet allowed_contexts_for_personalized_metadata_;
 
   SEQUENCE_CHECKER(sequence_checker_);
 

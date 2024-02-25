@@ -234,9 +234,9 @@ tbody.head th {
   color: red;
 }
 
-.cell-additional-info a {
-  /* Inlined version of cr:file-download icon */
-  background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" height="24" width="24"><path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z"></path></svg>');
+/* icons */
+
+.icon {
   background-position: center;
   background-repeat: no-repeat;
   background-size: contain;
@@ -245,27 +245,24 @@ tbody.head th {
   width: 16px;
 }
 
-.cell-additional-info:not(:hover) a {
-  visibility: hidden;
+td:not(:hover) a.icon {
+  display: none;
 }
 
-/* boolean cells */
-
-.check-mark,
-.x-mark {
-  background-position: center;
-  background-repeat: no-repeat;
-  background-size: contain;
-  height: 16px;
-  width: 16px;
-}
-
-.check-mark {
+.icon.check-icon {
   background-image: url(chrome://resources/images/check_circle_green.svg);
 }
 
-.x-mark {
+.icon.x-icon {
   background-image: url(chrome://resources/images/cancel_red.svg);
+}
+
+.icon.edit-icon {
+  background-image: url(chrome://resources/images/icon_edit.svg);
+}
+
+.icon.download-icon {
+  background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" height="24" width="24"><path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z"></path></svg>');
 }
 
 /* json cells */
@@ -275,22 +272,8 @@ pre.json .key {
   font-weight: bold;
 }
 
-pre.json .string {
-  color: green;
-}
-
-pre.json .number {
+pre.json .value {
   color: blue;
-}
-
-pre.json .boolean {
-  color: slateblue;
-  font-weight: bold;
-}
-
-pre.json .null {
-  color: magenta;
-  font-weight: bold;
 }
 
 /* misc cells */

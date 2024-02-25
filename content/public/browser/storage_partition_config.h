@@ -5,12 +5,12 @@
 #ifndef CONTENT_PUBLIC_BROWSER_STORAGE_PARTITION_CONFIG_H_
 #define CONTENT_PUBLIC_BROWSER_STORAGE_PARTITION_CONFIG_H_
 
+#include <optional>
 #include <string>
 
 #include "base/check.h"
 #include "base/gtest_prod_util.h"
 #include "content/common/content_export.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace content {
 class BrowserContext;
@@ -45,8 +45,8 @@ class CONTENT_EXPORT StoragePartitionConfig {
                                        const std::string& partition_name,
                                        bool in_memory);
 
-  std::string partition_domain() const { return partition_domain_; }
-  std::string partition_name() const { return partition_name_; }
+  const std::string& partition_domain() const { return partition_domain_; }
+  const std::string& partition_name() const { return partition_name_; }
   bool in_memory() const { return in_memory_; }
 
   // Returns true if this config was created by CreateDefault() or is
@@ -79,7 +79,7 @@ class CONTENT_EXPORT StoragePartitionConfig {
   FallbackMode fallback_to_partition_domain_for_blob_urls() const {
     return fallback_to_partition_domain_for_blob_urls_;
   }
-  absl::optional<StoragePartitionConfig> GetFallbackForBlobUrls() const;
+  std::optional<StoragePartitionConfig> GetFallbackForBlobUrls() const;
 
   bool operator<(const StoragePartitionConfig& rhs) const;
   bool operator==(const StoragePartitionConfig& rhs) const;

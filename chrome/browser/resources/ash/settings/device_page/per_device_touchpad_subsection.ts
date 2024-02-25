@@ -10,25 +10,25 @@
 
 import '../icons.html.js';
 import '../settings_shared.css.js';
-import 'chrome://resources/cr_components/localized_link/localized_link.js';
-import 'chrome://resources/cr_elements/cr_radio_button/cr_radio_button.js';
-import 'chrome://resources/cr_elements/cr_shared_vars.css.js';
-import '/shared/settings/controls/settings_dropdown_menu.js';
-import '/shared/settings/controls/settings_radio_group.js';
-import '/shared/settings/controls/settings_slider.js';
-import '/shared/settings/controls/settings_toggle_button.js';
+import 'chrome://resources/ash/common/cr_elements/localized_link/localized_link.js';
+import 'chrome://resources/ash/common/cr_elements/cr_radio_button/cr_radio_button.js';
+import 'chrome://resources/ash/common/cr_elements/cr_shared_vars.css.js';
+import '../controls/settings_dropdown_menu.js';
+import '../controls/settings_radio_group.js';
+import '../controls/settings_slider.js';
+import '../controls/settings_toggle_button.js';
 import './input_device_settings_shared.css.js';
-import 'chrome://resources/cr_elements/cr_slider/cr_slider.js';
+import 'chrome://resources/ash/common/cr_elements/cr_slider/cr_slider.js';
 
-import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
+import {I18nMixin} from 'chrome://resources/ash/common/cr_elements/i18n_mixin.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {PolymerElementProperties} from 'chrome://resources/polymer/v3_0/polymer/interfaces.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
+import {DeepLinkingMixin} from '../common/deep_linking_mixin.js';
 import {isRevampWayfindingEnabled} from '../common/load_time_booleans.js';
-import {DeepLinkingMixin} from '../deep_linking_mixin.js';
+import {RouteObserverMixin} from '../common/route_observer_mixin.js';
 import {Setting} from '../mojom-webui/setting.mojom-webui.js';
-import {RouteObserverMixin} from '../route_observer_mixin.js';
 import {Route, routes} from '../router.js';
 
 import {getInputDeviceSettingsProvider} from './input_device_mojo_interface_provider.js';
@@ -40,7 +40,7 @@ const SettingsPerDeviceTouchpadSubsectionElementBase =
     DeepLinkingMixin(RouteObserverMixin(I18nMixin(PolymerElement)));
 export class SettingsPerDeviceTouchpadSubsectionElement extends
     SettingsPerDeviceTouchpadSubsectionElementBase {
-  static get is(): string {
+  static get is() {
     return 'settings-per-device-touchpad-subsection';
   }
 
@@ -94,28 +94,6 @@ export class SettingsPerDeviceTouchpadSubsectionElement extends
         },
       },
 
-      scrollAccelerationPref: {
-        type: Object,
-        value() {
-          return {
-            key: 'fakeScrollAccelerationPref',
-            type: chrome.settingsPrivate.PrefType.BOOLEAN,
-            value: true,
-          };
-        },
-      },
-
-      scrollSensitivityPref: {
-        type: Object,
-        value() {
-          return {
-            key: 'fakeScrollSensitivityPref',
-            type: chrome.settingsPrivate.PrefType.NUMBER,
-            value: 3,
-          };
-        },
-      },
-
       hapticClickSensitivityPref: {
         type: Object,
         value() {
@@ -159,16 +137,6 @@ export class SettingsPerDeviceTouchpadSubsectionElement extends
                   loadTimeData.getString('touchpadSimulateRightClickOptionAlt'),
             },
           ];
-        },
-      },
-
-      /**
-       * TODO(khorimoto): Remove this conditional once the feature is launched.
-       */
-      allowTouchpadScrollSettings_: {
-        type: Boolean,
-        value() {
-          return loadTimeData.getBoolean('allowTouchpadScrollSettings');
         },
       },
 
@@ -262,8 +230,6 @@ export class SettingsPerDeviceTouchpadSubsectionElement extends
           'enableTapDraggingPref.value,' +
           'accelerationPref.value,' +
           'sensitivityPref.value,' +
-          'scrollAccelerationPref.value,' +
-          'scrollSensitivityPref.value,' +
           'hapticClickSensitivityPref.value,' +
           'simulateRightClickPref.value,' +
           'reverseScrollValue,' +
@@ -289,8 +255,6 @@ export class SettingsPerDeviceTouchpadSubsectionElement extends
   private enableTapDraggingPref: chrome.settingsPrivate.PrefObject;
   private accelerationPref: chrome.settingsPrivate.PrefObject;
   private sensitivityPref: chrome.settingsPrivate.PrefObject;
-  private scrollAccelerationPref: chrome.settingsPrivate.PrefObject;
-  private scrollSensitivityPref: chrome.settingsPrivate.PrefObject;
   private hapticClickSensitivityPref: chrome.settingsPrivate.PrefObject;
   private simulateRightClickPref: chrome.settingsPrivate.PrefObject;
   private reverseScrollValue: boolean;
@@ -319,12 +283,6 @@ export class SettingsPerDeviceTouchpadSubsectionElement extends
     this.set(
         'accelerationPref.value', this.touchpad.settings.accelerationEnabled);
     this.set('sensitivityPref.value', this.touchpad.settings.sensitivity);
-    this.set(
-        'scrollAccelerationPref.value',
-        this.touchpad.settings.scrollAcceleration);
-    this.set(
-        'scrollSensitivityPref.value',
-        this.touchpad.settings.scrollSensitivity);
     this.set(
         'hapticClickSensitivityPref.value',
         this.touchpad.settings.hapticSensitivity);
@@ -364,8 +322,6 @@ export class SettingsPerDeviceTouchpadSubsectionElement extends
       tapDraggingEnabled: this.enableTapDraggingPref.value,
       accelerationEnabled: this.accelerationPref.value,
       sensitivity: this.sensitivityPref.value,
-      scrollAcceleration: this.scrollAccelerationPref.value,
-      scrollSensitivity: this.scrollSensitivityPref.value,
       hapticSensitivity: this.hapticClickSensitivityPref.value,
       simulateRightClick: this.simulateRightClickPref.value,
       reverseScrolling: this.reverseScrollValue,

@@ -11,6 +11,7 @@
 #include <string>
 #include <vector>
 
+#include "base/memory/scoped_refptr.h"
 #include "net/base/completion_once_callback.h"
 #include "net/base/net_export.h"
 #include "net/log/net_log_with_source.h"
@@ -23,6 +24,8 @@ namespace net {
 
 class WebSocketDeflateParameters;
 class WebSocketDeflatePredictor;
+class IOBufferWithSize;
+class NetLogWithSource;
 
 // WebSocketDeflateStream is a WebSocketStream subclass.
 // WebSocketDeflateStream is for permessage-deflate WebSocket extension[1].

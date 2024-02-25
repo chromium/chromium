@@ -126,7 +126,6 @@ TextureDrawQuad* CreateCandidateQuadAt(
   bool premultiplied_alpha = false;
   bool flipped = false;
   bool nearest_neighbor = false;
-  float vertex_opacity[4] = {1.0f, 1.0f, 1.0f, 1.0f};
   gfx::Size resource_size_in_pixels = rect.size();
   bool is_overlay_candidate = true;
   ResourceId resource_id = CreateResource(
@@ -136,8 +135,8 @@ TextureDrawQuad* CreateCandidateQuadAt(
   auto* overlay_quad = render_pass->CreateAndAppendDrawQuad<TextureDrawQuad>();
   overlay_quad->SetNew(shared_quad_state, rect, rect, needs_blending,
                        resource_id, premultiplied_alpha, kUVTopLeft,
-                       kUVBottomRight, SkColors::kTransparent, vertex_opacity,
-                       flipped, nearest_neighbor, /*secure_output_only=*/false,
+                       kUVBottomRight, SkColors::kTransparent, flipped,
+                       nearest_neighbor, /*secure_output_only=*/false,
                        protected_video_type);
   overlay_quad->set_resource_size_in_pixels(resource_size_in_pixels);
 
@@ -201,7 +200,7 @@ class CALayerOverlayTest : public testing::Test {
   std::unique_ptr<SkiaOutputSurface> output_surface_;
   cc::FakeOutputSurfaceClient output_surface_client_;
   std::unique_ptr<DisplayResourceProviderSkia> resource_provider_;
-  absl::optional<DisplayResourceProviderSkia::LockSetForExternalUse>
+  std::optional<DisplayResourceProviderSkia::LockSetForExternalUse>
       lock_set_for_external_use_;
   scoped_refptr<TestContextProvider> child_provider_;
   std::unique_ptr<ClientResourceProvider> child_resource_provider_;
@@ -397,7 +396,7 @@ TEST_F(CALayerOverlayTest, YUVDrawQuadOverlay) {
                      /*multiplier=*/1.0f,
                      /*bits_per_channel=*/8,
                      /*video_type=*/gfx::ProtectedVideoType::kClear,
-                     /*metadata=*/absl::nullopt);
+                     /*metadata=*/std::nullopt);
 
     OverlayCandidateList ca_layer_list;
     OverlayProcessorInterface::FilterOperationsMap render_pass_filters;
@@ -433,7 +432,7 @@ TEST_F(CALayerOverlayTest, YUVDrawQuadOverlay) {
                      /*multiplier=*/1.0f,
                      /*bits_per_channel=*/8,
                      /*video_type=*/gfx::ProtectedVideoType::kClear,
-                     /*metadata=*/absl::nullopt);
+                     /*metadata=*/std::nullopt);
 
     OverlayCandidateList ca_layer_list;
     OverlayProcessorInterface::FilterOperationsMap render_pass_filters;

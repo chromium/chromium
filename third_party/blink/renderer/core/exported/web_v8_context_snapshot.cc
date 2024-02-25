@@ -9,8 +9,8 @@
 
 namespace blink {
 
-v8::StartupData WebV8ContextSnapshot::TakeSnapshot() {
-  return V8ContextSnapshot::TakeSnapshot();
+v8::StartupData WebV8ContextSnapshot::TakeSnapshot(v8::Isolate* isolate) {
+  return V8ContextSnapshot::TakeSnapshot(isolate);
 }
 
 }  // namespace blink

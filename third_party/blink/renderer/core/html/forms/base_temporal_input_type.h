@@ -89,7 +89,7 @@ class BaseTemporalInputType : public InputType {
   InputTypeView* CreateView() override;
   ValueMode GetValueMode() const override;
   double ValueAsDate() const override;
-  void SetValueAsDate(const absl::optional<base::Time>&,
+  void SetValueAsDate(const std::optional<base::Time>&,
                       ExceptionState&) const override;
   double ValueAsDouble() const override;
   void SetValueAsDouble(double,
@@ -102,7 +102,7 @@ class BaseTemporalInputType : public InputType {
   String RangeInvalidText(const Decimal& minimum,
                           const Decimal& maximum) const override;
   Decimal DefaultValueForStepUp() const override;
-  virtual String SerializeWithDate(const absl::optional<base::Time>&) const;
+  virtual String SerializeWithDate(const std::optional<base::Time>&) const;
   String LocalizeValue(const String&) const override;
   bool SupportsReadOnly() const override;
   bool ShouldRespectListAttribute() override;

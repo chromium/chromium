@@ -8,6 +8,7 @@
 
 #include <iterator>
 #include <memory>
+#include <optional>
 #include <set>
 #include <utility>
 
@@ -37,7 +38,6 @@
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/browser_process.h"
-#include "chrome/browser/chrome_notification_types.h"
 #include "chrome/browser/extensions/component_loader.h"
 #include "chrome/browser/extensions/crx_installer.h"
 #include "chrome/browser/extensions/data_deleter.h"
@@ -76,10 +76,10 @@
 #include "chrome/common/url_constants.h"
 #include "components/crx_file/id_util.h"
 #include "components/favicon_base/favicon_url_parser.h"
+#include "components/policy/core/common/policy_pref_names.h"
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
 #include "components/supervised_user/core/common/buildflags.h"
 #include "content/public/browser/browser_thread.h"
-#include "content/public/browser/notification_service.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/storage_partition.h"
 #include "extensions/browser/blocklist_extension_prefs.h"
@@ -105,7 +105,7 @@
 #include "extensions/browser/updater/extension_downloader.h"
 #include "extensions/browser/updater/manifest_fetch_data.h"
 #include "extensions/common/constants.h"
-#include "extensions/common/extension_messages.h"
+#include "extensions/common/extension_features.h"
 #include "extensions/common/extension_urls.h"
 #include "extensions/common/features/feature_developer_mode_only.h"
 #include "extensions/common/manifest_constants.h"
@@ -116,7 +116,6 @@
 #include "extensions/common/permissions/permission_message_provider.h"
 #include "extensions/common/permissions/permissions_data.h"
 #include "extensions/common/switches.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 #if BUILDFLAG(IS_CHROMEOS)
 #include "chromeos/constants/chromeos_features.h"
@@ -131,8 +130,7 @@
 #endif
 
 #if BUILDFLAG(ENABLE_SUPERVISED_USERS)
-#include "chrome/browser/supervised_user/supervised_user_service_factory.h"
-#include "components/supervised_user/core/browser/supervised_user_service.h"
+#include "components/supervised_user/core/browser/supervised_user_preferences.h"
 #endif  // BUILDFLAG(ENABLE_SUPERVISED_USERS)
 
 using content::BrowserContext;
@@ -159,6 +157,8 @@ const char* const kObsoleteComponentExtensionIds[] = {
     "jcgeabjmjgoblfofpppfkcoakmfobdko",  // Video Player
 };
 
+const char kBlockLoadCommandline[] = "command_line";
+
 // ExtensionUnpublishedAvailability policy default value.
 constexpr int kAllowUnpublishedExtensions = 0;
 
@@ -176,6 +176,18 @@ bool SkipDeleteExtensionDir(const Extension& extension,
       profile_path.AppendASCII(extensions::kUnpackedInstallDirectoryName);
   return is_unpacked_location &&
          extension_dir_not_direct_subdir_of_unpacked_extensions_install_dir;
+}
+
+bool ShouldBlockCommandLineExtension(Profile& profile) {
+  const base::Value::List& list =
+      profile.GetPrefs()->GetList(pref_names::kExtensionInstallTypeBlocklist);
+  for (const auto& val : list) {
+    if (val.is_string() && val.GetString() == kBlockLoadCommandline) {
+      return true;
+    }
+  }
+
+  return false;
 }
 }  // namespace
 
@@ -263,7 +275,7 @@ bool ExtensionService::OnExternalExtensionUpdateUrlFound(
 
       // Fetch the installation info from the prefs, and reload the extension
       // with a modified install location.
-      absl::optional<ExtensionInfo> installed_extension(
+      std::optional<ExtensionInfo> installed_extension(
           extension_prefs_->GetInstalledExtensionInfo(info.extension_id));
       installed_extension->extension_location = info.download_location;
 
@@ -540,6 +552,11 @@ void ExtensionService::Init() {
     if (safe_browsing::IsEnhancedProtectionEnabled(*profile_->GetPrefs())) {
       VLOG(1) << "--load-extension is not allowed for users opted into "
               << "Enhanced Safe Browsing, ignoring.";
+    } else if (ShouldBlockCommandLineExtension(*profile_)) {
+      VLOG(1)
+          << "--load-extension is not allowed for users that have the policy "
+          << "have the policy ExtensionInstallTypeBlocklist::command_line, "
+          << "ignoring.";
     } else {
       LoadExtensionsFromCommandLineFlag(switches::kLoadExtension);
     }
@@ -758,7 +775,7 @@ void ExtensionService::LoadExtensionForReload(
 
   // Check the installed extensions to see if what we're reloading was already
   // installed.
-  absl::optional<ExtensionInfo> installed_extension(
+  std::optional<ExtensionInfo> installed_extension(
       extension_prefs_->GetInstalledExtensionInfo(extension_id));
   if (installed_extension && installed_extension->extension_manifest.get()) {
     InstalledLoader(this).Load(*installed_extension, false);
@@ -1299,12 +1316,10 @@ void ExtensionService::CheckManagementPolicy() {
 
     // If this profile is not supervised, then remove any supervised user
     // related disable reasons.
-    bool is_supervised;
+    bool is_supervised = false;
 #if BUILDFLAG(ENABLE_SUPERVISED_USERS)
-    is_supervised = SupervisedUserServiceFactory::GetForProfile(profile())
-                        ->IsSubjectToParentalControls();
-#else
-    is_supervised = false;
+    is_supervised =
+        profile() && supervised_user::IsChildAccount(*profile()->GetPrefs());
 #endif
     if (!is_supervised) {
       disable_reasons &= (~disable_reason::DISABLE_CUSTODIAN_APPROVAL_REQUIRED);
@@ -2071,8 +2086,8 @@ bool ExtensionService::OnExternalExtensionFileFound(
 
 void ExtensionService::InstallationFromExternalFileFinished(
     const std::string& extension_id,
-    const absl::optional<CrxInstallError>& error) {
-  if (error != absl::nullopt) {
+    const std::optional<CrxInstallError>& error) {
+  if (error != std::nullopt) {
     // When installation is finished, the extension should not remain in the
     // pending extension manager. For successful installations this is done in
     // OnExtensionInstalled handler.

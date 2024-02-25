@@ -46,6 +46,9 @@ class ChromiumWPTConfig(ProjectConfig):
         self.gerrit_branch = 'main'
         self.github_factory = WPTGitHub
         self.local_repo_factory = LocalWPT
+        # TODO(crbug.com/1474702): Flip this to True when CQ/CI has switched to
+        # using wptrunner.
+        self.switched_to_wptrunner = False
 
     @property
     def project_root(self):

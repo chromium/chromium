@@ -8,6 +8,7 @@
 #include <memory>
 #include <utility>
 
+#include <optional>
 #include "base/functional/bind.h"
 #include "base/run_loop.h"
 #include "base/test/task_environment.h"
@@ -15,7 +16,6 @@
 #include "build/build_config.h"
 #include "remoting/host/setup/test_util.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace remoting {
 
@@ -47,7 +47,7 @@ class NativeMessagingReaderTest : public testing::Test {
   base::File read_file_;
   base::File write_file_;
   bool on_error_signaled_ = false;
-  absl::optional<base::Value> message_;
+  std::optional<base::Value> message_;
 
  private:
   // MessageLoop declared here, since the NativeMessageReader ctor requires a
@@ -133,7 +133,7 @@ TEST_F(NativeMessagingReaderTest, SingleGoodMessage) {
   ASSERT_TRUE(message_);
 
   ASSERT_TRUE(message_->is_dict());
-  absl::optional<int> result = message_->GetDict().FindInt("foo");
+  std::optional<int> result = message_->GetDict().FindInt("foo");
   ASSERT_TRUE(result.has_value());
   ASSERT_EQ(42, result);
 }
@@ -154,7 +154,7 @@ TEST_F(NativeMessagingReaderTest, MultipleGoodMessages) {
     ASSERT_FALSE(on_error_signaled_);
     ASSERT_TRUE(message_);
     ASSERT_TRUE(message_->is_dict());
-    absl::optional<int> result = message_->GetDict().FindInt("foo");
+    std::optional<int> result = message_->GetDict().FindInt("foo");
     ASSERT_TRUE(result.has_value());
     ASSERT_EQ(42, result);
   }
@@ -165,7 +165,7 @@ TEST_F(NativeMessagingReaderTest, MultipleGoodMessages) {
     ASSERT_FALSE(on_error_signaled_);
     ASSERT_TRUE(message_);
     ASSERT_TRUE(message_->is_dict());
-    absl::optional<int> result = message_->GetDict().FindInt("bar");
+    std::optional<int> result = message_->GetDict().FindInt("bar");
     ASSERT_TRUE(result.has_value());
     ASSERT_EQ(43, result);
   }
@@ -176,7 +176,7 @@ TEST_F(NativeMessagingReaderTest, MultipleGoodMessages) {
     ASSERT_FALSE(on_error_signaled_);
     ASSERT_TRUE(message_);
     ASSERT_TRUE(message_->is_dict());
-    absl::optional<int> result = message_->GetDict().FindInt("baz");
+    std::optional<int> result = message_->GetDict().FindInt("baz");
     ASSERT_TRUE(result.has_value());
     ASSERT_EQ(44, result);
   }

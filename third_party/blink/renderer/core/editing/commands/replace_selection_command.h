@@ -61,6 +61,8 @@ class CORE_EXPORT ReplaceSelectionCommand final : public CompositeEditCommand {
   void DoApply(EditingState*) override;
   InputEvent::InputType GetInputType() const override;
   bool IsReplaceSelectionCommand() const override;
+  void HandleStyleSpansBeforeInsertion(ReplacementFragment& fragment,
+                                       const Position& insertion_pos);
 
   class InsertedNodes {
     STACK_ALLOCATED();

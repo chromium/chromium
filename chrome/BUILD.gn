@@ -31,6 +31,8 @@ import("//tools/v8_context_snapshot/v8_context_snapshot.gni")
 import("//ui/gl/features.gni")
 import("//v8/gni/v8.gni")
 
+assert(!is_fuchsia, "Fuchsia shouldn't use anything in //chrome")
+
 if (is_android) {
   import("//build/config/android/rules.gni")
 } else if (is_linux || is_chromeos) {
@@ -50,15 +52,11 @@ if (is_android) {
   import("//chrome/version.gni")
   import("//content/public/app/mac_helpers.gni")
   import("//media/cdm/library_cdm/cdm_paths.gni")
+  import("//services/on_device_model/on_device_model.gni")
   import("//third_party/icu/config.gni")
 }
 
 declare_args() {
-  # Indicates whether keystone registration framework should be enabled (see
-  # action("keystone_registration_framework") below).  There are some tests
-  # where we'd like for it to be disabled. (https://crbug.com/909080)
-  enable_keystone_registration_framework = true
-
   # On macOS, `is_chrome_branded` builds that have been signed locally will not
   # launch because certain entitlements are tied to the official Google code
   # signing identity. If `include_branded_entitlements` is set to false, these
@@ -117,15 +115,6 @@ group("assert_no_deps") {
   # for no reason and is easy to mess up. See the comment at the top of
   # //chrome/installer/util/BUILD.gn.
   assert_no_deps = [ "//chrome/installer/util:strings" ]
-
-  if (is_fuchsia) {
-    assert_no_deps += [
-      # Chrome should use Perfetto instead of libtrace. Vulkan depends on
-      # trace-engine, but there should be no dependencies on trace-provider.
-      "//third_party/fuchsia-sdk/sdk/pkg/trace",
-      "//third_party/fuchsia-sdk/sdk/pkg/trace-provider-so",
-    ]
-  }
 }
 
 if (!is_android && !is_mac) {
@@ -203,7 +192,7 @@ if (!is_android && !is_mac) {
           ":chrome_dll",
           ":chrome_exe_version",
           ":copy_first_run",
-          ":packed_resources_integrity",
+          ":packed_resources_integrity_header",
           ":visual_elements_resources",
           "//base",
           "//build:branding_buildflags",
@@ -278,7 +267,7 @@ if (!is_android && !is_mac) {
         sources += [ "app/chrome_exe_main_aura.cc" ]
       }
 
-      if (is_linux || is_chromeos || is_fuchsia) {
+      if (is_linux || is_chromeos) {
         sources += [
           "app/chrome_dll_resource.h",
           "app/chrome_main.cc",
@@ -290,6 +279,7 @@ if (!is_android && !is_mac) {
           # On Linux, link the dependencies (libraries) that make up actual
           # Chromium functionality directly into the executable.
           ":dependencies",
+          "//chrome/common:version_header",
 
           # For the sampling profiler.
           "//chrome/common/profiler",
@@ -302,15 +292,12 @@ if (!is_android && !is_mac) {
           "//headless:headless_shell_lib",
         ]
 
-        public_deps = [ "//chrome/common:buildflags" ]
+        public_deps = [
+          ":xdg_mime",  # Needs to be public for installer to consume files.
+          "//chrome/common:buildflags",
+        ]
 
-        if (!is_fuchsia) {
-          public_deps += [
-            ":xdg_mime",  # Needs to be public for installer to consume files.
-          ]
-
-          data_deps += [ "//components/crash/core/app:chrome_crashpad_handler" ]
-        }
+        data_deps += [ "//components/crash/core/app:chrome_crashpad_handler" ]
 
         ldflags = []
 
@@ -358,10 +345,6 @@ if (!is_android && !is_mac) {
 
       if (is_chromeos_ash || is_win) {
         data_deps += [ "//mojo/core:shared_library" ]
-      }
-
-      if (is_chromeos_ash) {
-        data_deps += [ "//mojo/core:shared_libraries_for_arc" ]
       }
 
       # These files are used by the installer so we need a public dep.
@@ -437,6 +420,7 @@ if (is_win) {
       "//chrome/app/theme:chrome_unscaled_resources",
       "//chrome/chrome_elf",
       "//chrome/common:buildflags",
+      "//chrome/common:version_header",
       "//chrome/common/profiler",
       "//chrome/install_static:install_static_util",
       "//chrome/install_static:secondary_module",
@@ -471,7 +455,8 @@ if (is_win) {
   chrome_framework_name = chrome_product_full_name + " Framework"
   chrome_framework_version = chrome_version_full
 
-  verify_dynamic_libraries = !is_component_build && !is_asan
+  verify_dynamic_libraries = !is_component_build && !is_asan && !is_ubsan &&
+                             !is_ubsan_vptr && !is_ubsan_security
   if (host_os == "mac") {
     objdump_path = mac_bin_path
   } else {
@@ -598,11 +583,7 @@ if (is_win) {
     outputs = []
 
     foreach(locale, platform_pak_locales) {
-      if (is_chrome_branded) {
-        _strings_file = "google_chrome_strings"
-      } else {
-        _strings_file = "chromium_strings"
-      }
+      _strings_file = "${branding_path_product}_strings"
 
       inputs += [ "$root_gen_dir/chrome/${_strings_file}_${locale}.pak" ]
     }
@@ -627,7 +608,7 @@ if (is_win) {
           "main",
         ] + platform_pak_locales
 
-    deps = [ "//chrome/app:chromium_strings" ]
+    deps = [ "//chrome/app:branded_strings" ]
   }
 
   foreach(locale, locales_as_apple_outputs) {
@@ -910,12 +891,14 @@ if (is_win) {
     sources = [
       "$root_out_dir/app_mode_loader",
       "$root_out_dir/chrome_crashpad_handler",
+      "$root_out_dir/web_app_shortcut_copier",
     ]
 
     outputs = [ "{{bundle_contents_dir}}/Helpers/{{source_file_part}}" ]
 
     public_deps = [
       "//chrome/app_shim:app_mode_loader",
+      "//chrome/browser/web_applications:web_app_shortcut_copier",
       "//components/crash/core/app:chrome_crashpad_handler",
     ]
 
@@ -955,8 +938,8 @@ if (is_win) {
       # resource bundle because that's the interface that
       # Authorization Services uses.  Also, Authorization Services
       # can't deal with .icns files.
+      "$root_gen_dir/chrome/browser/mac/install.sh",
       "app/theme/default_100_percent/$branding_path_component/product_logo_32.png",
-      "browser/mac/install.sh",
     ]
 
     outputs = [ "{{bundle_resources_dir}}/{{source_file_part}}" ]
@@ -964,14 +947,8 @@ if (is_win) {
     public_deps = [
       ":packed_resources",
       "//chrome/app_shim:app_mode_loader_plist_bundle_data",
+      "//chrome/browser/mac:install",
     ]
-
-    if (is_chrome_branded) {
-      sources += [
-        "browser/mac/keystone_promote_postflight.sh",
-        "browser/mac/keystone_promote_preflight.sh",
-      ]
-    }
 
     if (icu_use_data_file) {
       sources += [ "$root_out_dir/icudtl.dat" ]
@@ -1096,17 +1073,6 @@ if (is_win) {
     }
   }
 
-  if (is_chrome_branded && enable_keystone_registration_framework) {
-    bundle_data("keystone_registration_framework") {
-      sources = [ "//third_party/googlemac/Releases/Keystone/KeystoneRegistration.framework" ]
-
-      outputs = [ "{{bundle_contents_dir}}/Frameworks/{{source_file_part}}" ]
-    }
-  } else {
-    group("keystone_registration_framework") {
-    }
-  }
-
   if (build_with_internal_optimization_guide) {
     # Add the optimization guide .dylib in the MODULE_DIR of Chromium.app
     bundle_data("optimization_guide_library") {
@@ -1182,8 +1148,8 @@ if (is_win) {
       ":dependencies",
       "//build:chromeos_buildflags",
       "//chrome/app:command_ids",
-      "//chrome/app:notification_metrics",
       "//chrome/common:buildflags",
+      "//chrome/common:version_header",
       "//chrome/common/profiler",
       "//components/crash/core/app",
       "//components/memory_system",
@@ -1220,10 +1186,6 @@ if (is_win) {
 
     if (is_chrome_branded) {
       framework_contents += [ "Default Apps" ]
-      if (enable_keystone_registration_framework) {
-        # For KeystoneRegistration.framework.
-        framework_contents += [ "Frameworks" ]
-      }
     }
 
     if (enable_nacl) {
@@ -1247,7 +1209,6 @@ if (is_win) {
       ":chrome_framework_helpers",
       ":chrome_framework_plugins",
       ":chrome_framework_resources",
-      ":keystone_registration_framework",
       ":optimization_guide_library",
       ":swiftshader_library",
       ":widevine_cdm_library",
@@ -1460,6 +1421,7 @@ group("dependencies") {
     "//chrome/renderer",
     "//chrome/utility",
     "//components/about_ui",
+    "//components/crash/core/app",
     "//components/devtools/devtools_pipe",
     "//components/memory_system",
     "//components/startup_metric_utils",
@@ -1507,10 +1469,6 @@ group("dependencies") {
       "//chromeos/ash/components/memory",
     ]
   }
-
-  if (!is_fuchsia) {
-    public_deps += [ "//components/crash/core/app" ]
-  }
 }
 
 if (is_win) {
@@ -1530,11 +1488,6 @@ if (is_win) {
       as_invoker_manifest,
       common_controls_manifest,
     ]
-  }
-
-  process_version_rc_template("nacl64_exe_version") {
-    sources = [ "app/nacl64_exe.ver" ]
-    output = "$target_gen_dir/nacl64_exe_version.rc"
   }
 
   process_version_rc_template("other_version") {
@@ -1628,6 +1581,7 @@ if (!is_android) {
       public_deps = [ ":preinstalled_apps" ]
     }
 
+    # This needs to be in-sync with //chrome/app/packed_resources_integrity.h.
     files_to_hash = [
       "resources.pak",
       "chrome_100_percent.pak",
@@ -1635,6 +1589,15 @@ if (!is_android) {
     if (enable_hidpi) {
       files_to_hash += [ "chrome_200_percent.pak" ]
     }
+  }
+
+  # This is extracted to deserialize build dependency around
+  # :packed_resources_integrity_hash and improve build parallelism.
+  source_set("packed_resources_integrity_header") {
+    sources = [ "app/packed_resources_integrity.h" ]
+
+    # chrome/app/packed_resources_integrity.cc file is generated in dependency.
+    deps = [ ":packed_resources_integrity" ]
   }
 }
 
@@ -1649,7 +1612,7 @@ if (!is_android) {
 
 group("strings") {
   public_deps = [
-    "//chrome/app:chromium_strings",
+    "//chrome/app:branded_strings",
     "//chrome/app:generated_resources",
     "//chrome/app/resources:locale_settings",
   ]
@@ -1702,6 +1665,7 @@ if (is_android) {
       "//chrome/browser/ui",
       "//chrome/child",
       "//chrome/common",
+      "//chrome/common:version_header",
       "//chrome/common/profiler",
       "//chrome/gpu",
       "//chrome/renderer",
@@ -1731,10 +1695,6 @@ if (is_android) {
 
     if (is_chromeos_ash) {
       public_deps += [ "//ui/lottie" ]
-    }
-
-    if (enable_vr) {
-      deps += [ "//third_party/gvr-android-sdk:gvr_shim" ]
     }
   }
 }

@@ -11,14 +11,14 @@
 // `sendOn` to specify the name of the event when the keepalive request should
 // be sent instead of the default 'load'.
 // `mode` to specify the fetch request's CORS mode.
-// `disallowOrigin` to ask the iframe to set up a server that forbids CORS
-// requests.
+// `disallowCrossOrigin` to ask the iframe to set up a server that disallows
+// cross origin requests.
 function getKeepAliveIframeUrl(token, method, {
   frameOrigin = 'DEFAULT',
   requestOrigin = '',
   sendOn = 'load',
   mode = 'cors',
-  disallowOrigin = false
+  disallowCrossOrigin = false
 } = {}) {
   const https = location.protocol.startsWith('https');
   frameOrigin = frameOrigin === 'DEFAULT' ?
@@ -28,7 +28,7 @@ function getKeepAliveIframeUrl(token, method, {
       `token=${token}&` +
       `method=${method}&` +
       `sendOn=${sendOn}&` +
-      `mode=${mode}&` + (disallowOrigin ? `disallowOrigin=1&` : ``) +
+      `mode=${mode}&` + (disallowCrossOrigin ? `disallowCrossOrigin=1&` : ``) +
       `origin=${requestOrigin}`;
 }
 
@@ -72,28 +72,105 @@ async function queryToken(token) {
   return json;
 }
 
+// A helper to assert the existence of `token` that should have been stored in
+// the server by fetching ../resources/stash-put.py.
+//
+// This function simply wait for a custom amount of time before trying to
+// retrieve `token` from the server.
+// `expectTokenExist` tells if `token` should be present or not.
+//
+// NOTE:
 // In order to parallelize the work, we are going to have an async_test
 // for the rest of the work. Note that we want the serialized behavior
 // for the steps so far, so we don't want to make the entire test case
 // an async_test.
-function assertStashedTokenAsync(testName, token, {shouldPass = true} = {}) {
-  async_test((test) => {
-    new Promise((resolve) => test.step_timeout(resolve, 3000))
-        .then(() => {
+function assertStashedTokenAsync(
+    testName, token, {expectTokenExist = true} = {}) {
+  async_test(test => {
+    new Promise(resolve => test.step_timeout(resolve, 3000 /*ms*/))
+        .then(test.step_func(() => {
           return queryToken(token);
-        })
-        .then((result) => {
-          assert_equals(result, 'on');
-        })
-        .then(() => {
-          test.done();
-        })
-        .catch(test.step_func((e) => {
-          if (shouldPass) {
-            assert_unreached(e);
+        }))
+        .then(test.step_func(result => {
+          if (expectTokenExist) {
+            assert_equals(result, 'on', `token should be on (stashed).`);
+            test.done();
+          } else {
+            assert_not_equals(
+                result, 'on', `token should not be on (stashed).`);
+            return Promise.reject(`Failed to retrieve token from server`);
+          }
+        }))
+        .catch(test.step_func(e => {
+          if (expectTokenExist) {
+            test.unreached_func(e);
           } else {
             test.done();
           }
         }));
   }, testName);
+}
+
+/**
+ * In an iframe, and in `load` event handler, test to fetch a keepalive URL that
+ * involves in redirect to another URL.
+ *
+ * `unloadIframe` to unload the iframe before verifying stashed token to
+ * simulate the situation that unloads after fetching. Note that this test is
+ * different from `keepaliveRedirectInUnloadTest()` in that the the latter
+ * performs fetch() call directly in `unload` event handler, while this test
+ * does it in `load`.
+ */
+function keepaliveRedirectTest(desc, {
+  origin1 = '',
+  origin2 = '',
+  withPreflight = false,
+  unloadIframe = false,
+  expectFetchSucceed = true,
+} = {}) {
+  desc = `[keepalive][iframe][load] ${desc}` +
+      (unloadIframe ? ' [unload at end]' : '');
+  promise_test(async (test) => {
+    const tokenToStash = token();
+    const iframe = document.createElement('iframe');
+    iframe.src = getKeepAliveAndRedirectIframeUrl(
+        tokenToStash, origin1, origin2, withPreflight);
+    document.body.appendChild(iframe);
+    await iframeLoaded(iframe);
+    assert_equals(await getTokenFromMessage(), tokenToStash);
+    if (unloadIframe) {
+      iframe.remove();
+    }
+
+    assertStashedTokenAsync(
+        desc, tokenToStash, {expectTokenExist: expectFetchSucceed});
+  }, `${desc}; setting up`);
+}
+
+/**
+ * Opens a different site window, and in `unload` event handler, test to fetch
+ * a keepalive URL that involves in redirect to another URL.
+ */
+function keepaliveRedirectInUnloadTest(desc, {
+  origin1 = '',
+  origin2 = '',
+  url2 = '',
+  withPreflight = false,
+  expectFetchSucceed = true
+} = {}) {
+  desc = `[keepalive][new window][unload] ${desc}`;
+
+  promise_test(async (test) => {
+    const targetUrl =
+        `${HTTP_NOTSAMESITE_ORIGIN}/fetch/api/resources/keepalive-redirect-window.html?` +
+        `origin1=${origin1}&` +
+        `origin2=${origin2}&` +
+        `url2=${url2}&` + (withPreflight ? `with-headers` : ``);
+    const w = window.open(targetUrl);
+    const token = await getTokenFromMessage();
+    w.close();
+
+    assertStashedTokenAsync(
+        desc, token, {expectTokenExist: expectFetchSucceed});
+  }, `${desc}; setting up`);
 }

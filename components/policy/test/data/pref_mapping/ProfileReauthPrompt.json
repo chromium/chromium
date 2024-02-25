@@ -1,0 +1,39 @@
+[
+  {
+    "os": [
+      "win",
+      "linux",
+      "mac"
+    ],
+    "policy_pref_mapping_tests": [
+      {
+        "policies": {
+          "ProfileReauthPrompt": 1
+        },
+        "prefs": {
+          "enterprise_signin.profile_reauth_prompt": {
+            "value": 1
+          }
+        }
+      },
+      {
+        "policies": {
+          "ProfileReauthPrompt": 2
+        },
+        "prefs": {
+          "enterprise_signin.profile_reauth_prompt": {
+            "default_value": 0
+          }
+        }
+      },
+      {
+        "note": "Default value (no policies set).",
+        "prefs": {
+          "enterprise_signin.profile_reauth_prompt": {
+            "default_value": 0
+          }
+        }
+      }
+    ]
+  }
+]

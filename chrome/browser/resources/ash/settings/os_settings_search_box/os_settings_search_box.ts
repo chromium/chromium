@@ -6,8 +6,8 @@
  * @fileoverview 'os-settings-search-box' is the container for the search input
  * and settings search results.
  */
-import 'chrome://resources/cr_elements/cr_button/cr_button.js';
-import 'chrome://resources/cr_elements/cr_toolbar/cr_toolbar_search_field.js';
+import 'chrome://resources/ash/common/cr_elements/cr_button/cr_button.js';
+import 'chrome://resources/ash/common/cr_elements/cr_toolbar/cr_toolbar_search_field.js';
 import 'chrome://resources/js/focus_row.js';
 import 'chrome://resources/polymer/v3_0/iron-dropdown/iron-dropdown.js';
 import 'chrome://resources/polymer/v3_0/iron-icon/iron-icon.js';
@@ -16,11 +16,11 @@ import '../icons.html.js';
 import '../settings_shared.css.js';
 import './os_search_result_row.js';
 
-import {getInstance as getAnnouncerInstance} from 'chrome://resources/cr_elements/cr_a11y_announcer/cr_a11y_announcer.js';
-import {CrToolbarSearchFieldElement} from 'chrome://resources/cr_elements/cr_toolbar/cr_toolbar_search_field.js';
-import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
-import {assert} from 'chrome://resources/js/assert_ts.js';
-import {String16} from 'chrome://resources/mojo/mojo/public/mojom/base/string16.mojom-webui.js';
+import {getInstance as getAnnouncerInstance} from 'chrome://resources/ash/common/cr_elements/cr_a11y_announcer/cr_a11y_announcer.js';
+import {CrToolbarSearchFieldElement} from 'chrome://resources/ash/common/cr_elements/cr_toolbar/cr_toolbar_search_field.js';
+import {I18nMixin} from 'chrome://resources/ash/common/cr_elements/i18n_mixin.js';
+import {assert} from 'chrome://resources/js/assert.js';
+import {stringToMojoString16} from 'chrome://resources/js/mojo_type_util.js';
 import {IronListElement} from 'chrome://resources/polymer/v3_0/iron-list/iron-list.js';
 import {afterNextRender, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
@@ -206,7 +206,7 @@ export class OsSettingsSearchBoxElement extends OsSettingsSearchBoxElementBase
         OsSettingsSearchBoxBrowserProxyImpl.getInstance();
   }
 
-  override ready() {
+  override ready(): void {
     super.ready();
 
     this.addEventListener('blur', this.onBlur_);
@@ -214,7 +214,7 @@ export class OsSettingsSearchBoxElement extends OsSettingsSearchBoxElementBase
     this.addEventListener('search-changed', this.onSearchChanged_);
   }
 
-  override connectedCallback() {
+  override connectedCallback(): void {
     super.connectedCallback();
 
     const toolbarSearchField = this.$.search;
@@ -261,7 +261,7 @@ export class OsSettingsSearchBoxElement extends OsSettingsSearchBoxElementBase
             .bindNewPipeAndPassRemote());
   }
 
-  override disconnectedCallback() {
+  override disconnectedCallback(): void {
     super.disconnectedCallback();
 
     assert(
@@ -279,7 +279,7 @@ export class OsSettingsSearchBoxElement extends OsSettingsSearchBoxElementBase
    * Overrides SearchResultsObserverInterface
    * Overrides PersonalizationSearchResultsObserverInterface
    */
-  onSearchResultsChanged() {
+  onSearchResultsChanged(): void {
     this.fetchSearchResults_();
   }
 
@@ -308,12 +308,12 @@ export class OsSettingsSearchBoxElement extends OsSettingsSearchBoxElementBase
     return this.searchResults_.length !== 0;
   }
 
-  private onSearchChanged_() {
+  private onSearchChanged_(): void {
     this.hasSearchQuery = this.getCurrentQuery_().trim().length !== 0;
     this.fetchSearchResults_();
   }
 
-  private fetchSearchResults_() {
+  private fetchSearchResults_(): void {
     const query = this.getCurrentQuery_();
     if (query === '') {
       this.searchResults_ = [];
@@ -325,8 +325,7 @@ export class OsSettingsSearchBoxElement extends OsSettingsSearchBoxElementBase
     // The C++ layer uses std::u16string, which use 16 bit characters. JS
     // strings support either 8 or 16 bit characters, and must be converted to
     // an array of 16 bit character codes that match std::u16string.
-    const charCodes = Array.from(query, (c) => c.charCodeAt(0));
-    const queryMojoString16: String16 = {data: charCodes};
+    const queryMojoString16 = stringToMojoString16(query);
     const timeOfSearchRequest = Date.now();
     combinedSearch(
         queryMojoString16, MAX_NUM_SEARCH_RESULTS,
@@ -355,7 +354,8 @@ export class OsSettingsSearchBoxElement extends OsSettingsSearchBoxElementBase
    * @param query The string used to find search results.
    * @param results Array of search results.
    */
-  private onSearchResultsReceived_(query: string, results: SearchResult[]) {
+  private onSearchResultsReceived_(query: string, results: SearchResult[]):
+      void {
     chrome.metricsPrivate.recordSparseValue(
         'ChromeOS.Settings.NumSearchResultsFetched', results.length);
 
@@ -379,7 +379,7 @@ export class OsSettingsSearchBoxElement extends OsSettingsSearchBoxElementBase
     recordSearch();
   }
 
-  private onNavigatedToResultRowRoute_() {
+  private onNavigatedToResultRowRoute_(): void {
     // Blur search input to prevent blinking caret. Note that this blur event
     // will not always be propagated to OsSettingsSearchBox (e.g. user decides
     // to click on the same search result twice) so |this.shouldShowDropdown_|
@@ -395,7 +395,7 @@ export class OsSettingsSearchBoxElement extends OsSettingsSearchBoxElementBase
         Object.keys(OsSettingSearchBoxUserAction).length);
   }
 
-  private onBlur_(event: UIEvent) {
+  private onBlur_(event: UIEvent): void {
     event.stopPropagation();
 
     // A blur event generated programmatically (as is most of the time the case
@@ -415,7 +415,7 @@ export class OsSettingsSearchBoxElement extends OsSettingsSearchBoxElementBase
     this.shouldShowDropdown_ = false;
   }
 
-  private onSearchInputFocused_() {
+  private onSearchInputFocused_(): void {
     this.lastFocused_ = null;
 
     if (this.searchResultsExist_) {
@@ -427,7 +427,7 @@ export class OsSettingsSearchBoxElement extends OsSettingsSearchBoxElementBase
     this.fetchSearchResults_();
   }
 
-  private onSearchInputMousedown_() {
+  private onSearchInputMousedown_(): void {
     // If the search input is clicked while the dropdown is closed, and there
     // already contains input text from a previous query, highlight the entire
     // query text so that the user can choose to easily replace the query
@@ -470,7 +470,7 @@ export class OsSettingsSearchBoxElement extends OsSettingsSearchBoxElementBase
     return this.isItemSelected_(item) && this.shouldShowDropdown_ ? 0 : -1;
   }
 
-  private onSearchResultsChanged_() {
+  private onSearchResultsChanged_(): void {
     // Select the first search result if it exists.
     if (this.searchResultsExist_) {
       this.selectedItem_ = this.searchResults_[0];
@@ -495,7 +495,7 @@ export class OsSettingsSearchBoxElement extends OsSettingsSearchBoxElementBase
    * |selectedItem| will be assigned to is stored in
    * |this.$.searchResultList.selectedItem|.
    */
-  private onSelectedItemChanged_() {
+  private onSelectedItemChanged_(): void {
     // <iron-list> causes |this.$.searchResultList.selectedItem| to be null if
     // tapped a second time.
     if (!this.$.searchResultList.selectedItem && this.lastSelectedItem_) {
@@ -514,7 +514,7 @@ export class OsSettingsSearchBoxElement extends OsSettingsSearchBoxElementBase
   /**
    * @param key The string associated with a key.
    */
-  private selectRowViaKeys_(key: string) {
+  private selectRowViaKeys_(key: string): void {
     assert(key === 'ArrowDown' || key === 'ArrowUp', 'Only arrow keys.');
     assert(!!this.selectedItem_, 'There should be a selected item already.');
 
@@ -554,7 +554,7 @@ export class OsSettingsSearchBoxElement extends OsSettingsSearchBoxElementBase
    * interacts with search results in the dropdown. Note that 'Enter' on keyDown
    * when a row is focused is blocked by FocusRowMixin.
    */
-  private onKeyDown_(e: KeyboardEvent) {
+  private onKeyDown_(e: KeyboardEvent): void {
     if (!this.searchResultsExist_ ||
         (!this.$.search.isSearchFocused() && !this.lastFocused_)) {
       // No action should be taken if there are no search results, or when
@@ -576,7 +576,7 @@ export class OsSettingsSearchBoxElement extends OsSettingsSearchBoxElementBase
     }
   }
 
-  private onSearchIconClicked_() {
+  private onSearchIconClicked_(): void {
     this.$.search.getSearchInput().select();
     if (this.getCurrentQuery_()) {
       this.shouldShowDropdown_ = true;

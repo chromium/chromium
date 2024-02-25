@@ -31,6 +31,8 @@
 #include "ui/android/color_utils_android.h"
 #include "url/gurl.h"
 
+using base::android::ConvertJavaStringToUTF16;
+using base::android::ConvertJavaStringToUTF8;
 using base::android::JavaParamRef;
 using base::android::JavaRef;
 using base::android::ScopedJavaGlobalRef;
@@ -40,7 +42,6 @@ namespace {
 // Called after the update either succeeds or fails.
 void OnUpdated(const JavaRef<jobject>& java_callback,
                webapps::WebApkInstallResult result,
-               std::unique_ptr<std::string> serialized_proto,
                bool relax_updates,
                const std::string& webapk_package) {
   JNIEnv* env = base::android::AttachCurrentThread();
@@ -65,6 +66,7 @@ static void JNI_WebApkUpdateManager_StoreWebApkUpdateRequestToFile(
     const JavaParamRef<jstring>& java_scope,
     const JavaParamRef<jstring>& java_name,
     const JavaParamRef<jstring>& java_short_name,
+    jboolean java_has_custom_name,
     const JavaParamRef<jstring>& java_manifest_id,
     const JavaParamRef<jstring>& java_app_key,
     const JavaParamRef<jstring>& java_primary_icon_url,
@@ -107,6 +109,7 @@ static void JNI_WebApkUpdateManager_StoreWebApkUpdateRequestToFile(
   info.scope = GURL(ConvertJavaStringToUTF8(env, java_scope));
   info.name = ConvertJavaStringToUTF16(env, java_name);
   info.short_name = ConvertJavaStringToUTF16(env, java_short_name);
+  info.has_custom_title = java_has_custom_name;
   info.user_title = info.short_name;
   info.display = static_cast<blink::mojom::DisplayMode>(java_display_mode);
   info.orientation =
@@ -254,7 +257,6 @@ static void JNI_WebApkUpdateManager_UpdateWebApkFromFile(
         FROM_HERE,
         base::BindOnce(&OnUpdated, callback_ref,
                        webapps::WebApkInstallResult::FAILURE,
-                       nullptr /* serialized_proto */,
                        false /* relax_updates */, "" /* webapk_package */));
     return;
   }

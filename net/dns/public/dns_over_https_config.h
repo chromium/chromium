@@ -8,11 +8,11 @@
 #include <string>
 #include <vector>
 
+#include <optional>
 #include "base/strings/string_piece.h"
 #include "base/values.h"
 #include "net/base/net_export.h"
 #include "net/dns/public/dns_over_https_server_config.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace net {
 
@@ -33,12 +33,12 @@ class NET_EXPORT DnsOverHttpsConfig {
 
   // Constructs a Config from URI templates of zero or more servers.
   // Returns `nullopt` if any string is invalid.
-  static absl::optional<DnsOverHttpsConfig> FromTemplatesForTesting(
+  static std::optional<DnsOverHttpsConfig> FromTemplatesForTesting(
       std::vector<std::string> servers);
 
   // Constructs a Config from its text form if valid.  Returns `nullopt` if the
   // input is empty or invalid (even partly invalid).
-  static absl::optional<DnsOverHttpsConfig> FromString(
+  static std::optional<DnsOverHttpsConfig> FromString(
       base::StringPiece doh_config);
 
   // Constructs a DnsOverHttpsConfig from its text form, skipping any invalid
@@ -61,7 +61,7 @@ class NET_EXPORT DnsOverHttpsConfig {
  private:
   // Constructs a Config from URI templates of zero or more servers.
   // Returns `nullopt` if any string is invalid.
-  static absl::optional<DnsOverHttpsConfig> FromTemplates(
+  static std::optional<DnsOverHttpsConfig> FromTemplates(
       std::vector<std::string> servers);
 
   std::vector<DnsOverHttpsServerConfig> servers_;

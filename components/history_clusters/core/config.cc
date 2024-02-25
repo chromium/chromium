@@ -9,7 +9,7 @@
 #include "base/feature_list.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/no_destructor.h"
-#include "base/strings/string_piece_forward.h"
+#include "base/strings/string_piece.h"
 #include "base/strings/string_split.h"
 #include "build/build_config.h"
 #include "components/history_clusters/core/features.h"
@@ -168,6 +168,12 @@ Config::Config() {
             "omnibox_history_cluster_provider_score",
             omnibox_history_cluster_provider_score);
 
+    omnibox_history_cluster_provider_inherit_search_match_score =
+        base::GetFieldTrialParamByFeatureAsBool(
+            internal::kOmniboxHistoryClusterProvider,
+            "omnibox_history_cluster_provider_inherit_search_match_score",
+            omnibox_history_cluster_provider_inherit_search_match_score);
+
     omnibox_history_cluster_provider_navigation_intent_score_threshold =
         base::GetFieldTrialParamByFeatureAsInt(
             internal::kOmniboxHistoryClusterProvider,
@@ -251,43 +257,6 @@ Config::Config() {
             features::kUseEngagementScoreCache,
             "engagement_score_cache_refresh_duration_minutes",
             engagement_score_cache_refresh_duration.InMinutes()));
-  }
-
-  // The `kOnDeviceClusteringContentClustering` feature and child params.
-  {
-    content_clustering_enabled = base::FeatureList::IsEnabled(
-        features::kOnDeviceClusteringContentClustering);
-
-    content_clustering_search_visits_only = GetFieldTrialParamByFeatureAsBool(
-        features::kOnDeviceClusteringContentClustering, "search_visits_only",
-        content_clustering_search_visits_only);
-
-    content_clustering_similarity_threshold =
-        GetFieldTrialParamByFeatureAsDouble(
-            features::kOnDeviceClusteringContentClustering,
-            "content_clustering_similarity_threshold",
-            content_clustering_similarity_threshold);
-    // Ensure that the value is [0.0 and 1.0].
-    DCHECK_GE(content_clustering_similarity_threshold, 0.0f);
-    DCHECK_LE(content_clustering_similarity_threshold, 1.0f);
-
-    exclude_entities_that_have_no_collections_from_content_clustering =
-        GetFieldTrialParamByFeatureAsBool(
-            features::kOnDeviceClusteringContentClustering,
-            "exclude_entities_that_have_no_collections",
-            exclude_entities_that_have_no_collections_from_content_clustering);
-
-    collections_to_block_from_content_clustering =
-        JourneysCollectionContentClusteringBlocklist(
-            collections_to_block_from_content_clustering);
-
-    use_pairwise_merge = GetFieldTrialParamByFeatureAsBool(
-        features::kOnDeviceClusteringContentClustering, "use_pairwise_merge",
-        use_pairwise_merge);
-
-    max_pairwise_merge_iterations = GetFieldTrialParamByFeatureAsInt(
-        features::kOnDeviceClusteringContentClustering,
-        "max_pairwise_merge_iterations", max_pairwise_merge_iterations);
   }
 
   // The `kHistoryClustersVisitDeduping` feature and child params.
@@ -408,42 +377,6 @@ Config::~Config() = default;
 
 void SetConfigForTesting(const Config& config) {
   GetConfigInternal() = config;
-}
-
-base::flat_set<std::string> JourneysCollectionContentClusteringBlocklist(
-    const base::flat_set<std::string>& default_value) {
-  const base::FeatureParam<std::string>
-      kJourneysCollectionContentClusteringBlocklist{
-          &features::kOnDeviceClusteringContentClustering,
-          "collections_blocklist", ""};
-  std::string blocklist_string =
-      kJourneysCollectionContentClusteringBlocklist.Get();
-  if (blocklist_string.empty())
-    return default_value;
-
-  auto blocklist = base::SplitString(blocklist_string, ",",
-                                     base::WhitespaceHandling::TRIM_WHITESPACE,
-                                     base::SplitResult::SPLIT_WANT_NONEMPTY);
-
-  return blocklist.empty()
-             ? default_value
-             : base::flat_set<std::string>(blocklist.begin(), blocklist.end());
-}
-
-base::flat_set<std::string> JourneysMidBlocklist() {
-  const base::FeatureParam<std::string> kJourneysMidBlocklist{
-      &internal::kHistoryClustersKeywordFiltering, "JourneysMidBlocklist", ""};
-  std::string blocklist_string = kJourneysMidBlocklist.Get();
-  if (blocklist_string.empty())
-    return {};
-
-  auto blocklist = base::SplitString(blocklist_string, ",",
-                                     base::WhitespaceHandling::TRIM_WHITESPACE,
-                                     base::SplitResult::SPLIT_WANT_NONEMPTY);
-
-  return blocklist.empty()
-             ? base::flat_set<std::string>()
-             : base::flat_set<std::string>(blocklist.begin(), blocklist.end());
 }
 
 bool IsApplicationLocaleSupportedByJourneys(

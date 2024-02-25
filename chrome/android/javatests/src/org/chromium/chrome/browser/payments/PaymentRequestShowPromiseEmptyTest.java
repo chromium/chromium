@@ -24,9 +24,7 @@ import org.chromium.components.autofill.AutofillProfile;
 
 import java.util.concurrent.TimeoutException;
 
-/**
- * A payment integration test for the show promise that resolves with an empty dictionary.
- */
+/** A payment integration test for the show promise that resolves with an empty dictionary. */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 public class PaymentRequestShowPromiseEmptyTest {
@@ -36,17 +34,19 @@ public class PaymentRequestShowPromiseEmptyTest {
 
     @Before
     public void setUp() throws TimeoutException {
-        new AutofillTestHelper().setProfile(AutofillProfile.builder()
-                                                    .setFullName("Jon Doe")
-                                                    .setCompanyName("Google")
-                                                    .setStreetAddress("340 Main St")
-                                                    .setRegion("CA")
-                                                    .setLocality("Los Angeles")
-                                                    .setPostalCode("90291")
-                                                    .setCountryCode("US")
-                                                    .setPhoneNumber("650-253-0000")
-                                                    .setLanguageCode("en-US")
-                                                    .build());
+        new AutofillTestHelper()
+                .setProfile(
+                        AutofillProfile.builder()
+                                .setFullName("Jon Doe")
+                                .setCompanyName("Google")
+                                .setStreetAddress("340 Main St")
+                                .setRegion("CA")
+                                .setLocality("Los Angeles")
+                                .setPostalCode("90291")
+                                .setCountryCode("US")
+                                .setPhoneNumber("650-253-0000")
+                                .setLanguageCode("en-US")
+                                .build());
     }
 
     @Test

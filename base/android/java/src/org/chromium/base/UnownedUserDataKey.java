@@ -62,8 +62,7 @@ import java.util.WeakHashMap;
  * @see UnownedUserData for the marker interface used for this type of data.
  */
 public final class UnownedUserDataKey<T extends UnownedUserData> {
-    @NonNull
-    private final Class<T> mClazz;
+    @NonNull private final Class<T> mClazz;
     // A Set that uses WeakReference<UnownedUserDataHost> internally.
     private final Set<UnownedUserDataHost> mWeakHostAttachments =
             Collections.newSetFromMap(new WeakHashMap<>());

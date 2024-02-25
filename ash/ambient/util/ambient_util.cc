@@ -4,6 +4,8 @@
 
 #include "ash/ambient/util/ambient_util.h"
 
+#include <string_view>
+
 #include "ash/ambient/ambient_constants.h"
 #include "ash/constants/ash_features.h"
 #include "ash/public/cpp/ambient/ambient_backend_controller.h"
@@ -12,6 +14,7 @@
 #include "ash/style/ash_color_id.h"
 #include "ash/style/dark_light_mode_controller_impl.h"
 #include "ash/utility/lottie_util.h"
+#include "ash/webui/personalization_app/mojom/personalization_app.mojom-shared.h"
 #include "base/no_destructor.h"
 #include "base/strings/strcat.h"
 #include "third_party/re2/src/re2/re2.h"
@@ -93,7 +96,7 @@ bool ParsedDynamicAssetId::operator<(const ParsedDynamicAssetId& other) const {
   return idx == other.idx ? position_id < other.position_id : idx < other.idx;
 }
 
-bool ParseDynamicLottieAssetId(base::StringPiece asset_id,
+bool ParseDynamicLottieAssetId(std::string_view asset_id,
                                ParsedDynamicAssetId& parsed_output) {
   static const base::NoDestructor<std::string> kAssetIdPatternStr(
       base::StrCat({kLottieCustomizableIdPrefix,
@@ -101,6 +104,23 @@ bool ParseDynamicLottieAssetId(base::StringPiece asset_id,
   static const base::NoDestructor<RE2> kAssetIdPattern(*kAssetIdPatternStr);
   return RE2::FullMatch(asset_id, *kAssetIdPattern, &parsed_output.position_id,
                         &parsed_output.idx);
+}
+
+std::string_view AmbientThemeToString(
+    personalization_app::mojom::AmbientTheme theme) {
+  // See the "AmbientModeThemes" <variants> tag in histograms.xml. These names
+  // are currently used for metrics purposes, so they cannot be arbitrarily
+  // renamed.
+  switch (theme) {
+    case personalization_app::mojom::AmbientTheme::kSlideshow:
+      return "SlideShow";
+    case personalization_app::mojom::AmbientTheme::kFeelTheBreeze:
+      return "FeelTheBreeze";
+    case personalization_app::mojom::AmbientTheme::kFloatOnBy:
+      return "FloatOnBy";
+    case personalization_app::mojom::AmbientTheme::kVideo:
+      return "Video";
+  }
 }
 
 }  // namespace util

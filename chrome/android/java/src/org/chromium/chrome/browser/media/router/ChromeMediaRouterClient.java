@@ -10,14 +10,14 @@ import android.content.Intent;
 import androidx.fragment.app.FragmentActivity;
 import androidx.fragment.app.FragmentManager;
 
+import org.jni_zero.CalledByNative;
+import org.jni_zero.JNINamespace;
+
 import org.chromium.base.ApplicationStatus;
 import org.chromium.base.ContextUtils;
-import org.chromium.base.annotations.CalledByNative;
-import org.chromium.base.annotations.JNINamespace;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.DeferredStartupHandler;
 import org.chromium.chrome.browser.IntentHandler;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.media.ui.ChromeMediaNotificationManager;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabUtils;
@@ -73,11 +73,6 @@ public class ChromeMediaRouterClient extends MediaRouterClient {
     public void addDeferredTask(Runnable deferredTask) {
         DeferredStartupHandler.getInstance().addDeferredTask(deferredTask);
         DeferredStartupHandler.getInstance().queueDeferredTasksOnIdleHandler();
-    }
-
-    @Override
-    public boolean isCastAnotherContentWhileCastingEnabled() {
-        return ChromeFeatureList.isEnabled(ChromeFeatureList.CAST_ANOTHER_CONTENT_WHILE_CASTING);
     }
 
     @CalledByNative

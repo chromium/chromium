@@ -8,8 +8,8 @@ import org.chromium.chrome.browser.compositor.bottombar.OverlayPanel.StateChange
 
 /**
  * Wrapper for OverlayPanelManager to record and test calls to the show and hide functions. This
- * class should contain the absolute count for the number of times a panel is shown or hidden
- * as it is the only one that controls panel display.
+ * class should contain the absolute count for the number of times a panel is shown or hidden as it
+ * is the only one that controls panel display.
  */
 public class OverlayPanelManagerWrapper extends OverlayPanelManager {
     private int mRequestPanelShowCount;

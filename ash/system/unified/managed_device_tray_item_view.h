@@ -8,6 +8,7 @@
 #include "ash/public/cpp/session/session_observer.h"
 #include "ash/system/enterprise/enterprise_domain_observer.h"
 #include "ash/system/tray/tray_item_view.h"
+#include "ui/base/metadata/metadata_header_macros.h"
 
 namespace ash {
 
@@ -17,6 +18,8 @@ namespace ash {
 class ManagedDeviceTrayItemView : public TrayItemView,
                                   public SessionObserver,
                                   public EnterpriseDomainObserver {
+  METADATA_HEADER(ManagedDeviceTrayItemView, TrayItemView)
+
  public:
   explicit ManagedDeviceTrayItemView(Shelf* shelf);
 
@@ -34,7 +37,6 @@ class ManagedDeviceTrayItemView : public TrayItemView,
   void OnEnterpriseAccountDomainChanged() override;
 
   // views::TrayItemView:
-  const char* GetClassName() const override;
   void OnThemeChanged() override;
   void HandleLocaleChange() override;
   void UpdateLabelOrImageViewColor(bool active) override;

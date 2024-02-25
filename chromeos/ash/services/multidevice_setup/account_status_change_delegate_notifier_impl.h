@@ -119,31 +119,30 @@ class AccountStatusChangeDelegateNotifierImpl
       const HostStatusProvider::HostStatusWithDevice& host_status_with_device);
   void CheckForNoLongerNewUserEvent(
       const HostStatusProvider::HostStatusWithDevice& host_status_with_device,
-      const absl::optional<mojom::HostStatus> host_status_before_update);
+      const std::optional<mojom::HostStatus> host_status_before_update);
   void CheckForExistingUserHostSwitchedEvent(
       const HostStatusProvider::HostStatusWithDevice& host_status_with_device,
-      const absl::optional<std::string>& verified_host_device_id_before_update);
+      const std::optional<std::string>& verified_host_device_id_before_update);
   void CheckForExistingUserChromebookAddedEvent(
       const HostStatusProvider::HostStatusWithDevice& host_status_with_device,
-      const absl::optional<std::string>& verified_host_device_id_before_update);
+      const std::optional<std::string>& verified_host_device_id_before_update);
 
   // Loads data from previous session using PrefService.
-  absl::optional<std::string> LoadHostDeviceIdFromEndOfPreviousSession();
+  std::optional<std::string> LoadHostDeviceIdFromEndOfPreviousSession();
 
-  // Set to absl::nullopt if there was no enabled host in the most recent
+  // Set to std::nullopt if there was no enabled host in the most recent
   // host status update.
-  absl::optional<std::string> verified_host_device_id_from_most_recent_update_;
+  std::optional<std::string> verified_host_device_id_from_most_recent_update_;
 
-  // Set to absl::nullopt until the first host status update.
-  absl::optional<mojom::HostStatus> host_status_from_most_recent_update_;
+  // Set to std::nullopt until the first host status update.
+  std::optional<mojom::HostStatus> host_status_from_most_recent_update_;
 
   mojo::Remote<mojom::AccountStatusChangeDelegate> delegate_remote_;
-  raw_ptr<HostStatusProvider, ExperimentalAsh> host_status_provider_;
-  raw_ptr<PrefService, ExperimentalAsh> pref_service_;
-  raw_ptr<HostDeviceTimestampManager, ExperimentalAsh>
-      host_device_timestamp_manager_;
-  raw_ptr<OobeCompletionTracker, ExperimentalAsh> oobe_completion_tracker_;
-  raw_ptr<base::Clock, ExperimentalAsh> clock_;
+  raw_ptr<HostStatusProvider> host_status_provider_;
+  raw_ptr<PrefService> pref_service_;
+  raw_ptr<HostDeviceTimestampManager> host_device_timestamp_manager_;
+  raw_ptr<OobeCompletionTracker> oobe_completion_tracker_;
+  raw_ptr<base::Clock> clock_;
 };
 
 }  // namespace multidevice_setup

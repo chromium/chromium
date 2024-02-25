@@ -80,11 +80,7 @@ bool IsDeviceBlocked(const char* field, const std::string& block_list) {
 // platforms that would otherwise not default to using EGL bindings.
 BASE_FEATURE(kDefaultPassthroughCommandDecoder,
              "DefaultPassthroughCommandDecoder",
-#if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_ANDROID)
              base::FEATURE_ENABLED_BY_DEFAULT
-#else
-             base::FEATURE_DISABLED_BY_DEFAULT
-#endif
 );
 #endif  // !defined(PASSTHROUGH_COMMAND_DECODER_LAUNCHED)
 
@@ -112,7 +108,7 @@ BASE_FEATURE(kUseBuiltInMetalShaderCache,
 // refresh rate as the vsync interval.
 BASE_FEATURE(kUsePrimaryMonitorVSyncIntervalOnSV3,
              "UsePrimaryMonitorVSyncIntervalOnSV3",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 #endif  // BUILDFLAG(IS_WIN)
 
 bool UseGpuVsync() {

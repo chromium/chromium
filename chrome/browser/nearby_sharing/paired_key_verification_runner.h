@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_NEARBY_SHARING_PAIRED_KEY_VERIFICATION_RUNNER_H_
 #define CHROME_BROWSER_NEARBY_SHARING_PAIRED_KEY_VERIFICATION_RUNNER_H_
 
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -19,7 +20,6 @@
 #include "chrome/browser/nearby_sharing/share_target.h"
 #include "chromeos/ash/services/nearby/public/mojom/nearby_decoder_types.mojom.h"
 #include "chromeos/ash/services/nearby/public/mojom/nearby_share_settings.mojom.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 class PairedKeyVerificationRunner {
  public:
@@ -39,7 +39,7 @@ class PairedKeyVerificationRunner {
       const std::string& endpoint_id,
       const std::vector<uint8_t>& token,
       NearbyConnection* connection,
-      const absl::optional<NearbyShareDecryptedPublicCertificate>& certificate,
+      const std::optional<NearbyShareDecryptedPublicCertificate>& certificate,
       NearbyShareCertificateManager* certificate_manager,
       nearby_share::mojom::Visibility visibility,
       bool restrict_to_contacts,
@@ -53,10 +53,10 @@ class PairedKeyVerificationRunner {
  private:
   void SendPairedKeyEncryptionFrame();
   void OnReadPairedKeyEncryptionFrame(
-      absl::optional<sharing::mojom::V1FramePtr> frame);
+      std::optional<sharing::mojom::V1FramePtr> frame);
   void OnReadPairedKeyResultFrame(
       std::vector<PairedKeyVerificationResult> verification_results,
-      absl::optional<sharing::mojom::V1FramePtr> frame);
+      std::optional<sharing::mojom::V1FramePtr> frame);
   void SendPairedKeyResultFrame(PairedKeyVerificationResult result);
   PairedKeyVerificationResult VerifyRemotePublicCertificate(
       const sharing::mojom::V1FramePtr& frame);
@@ -69,12 +69,12 @@ class PairedKeyVerificationRunner {
   ShareTarget share_target_;
   std::string endpoint_id_;
   std::vector<uint8_t> raw_token_;
-  raw_ptr<NearbyConnection, ExperimentalAsh> connection_;
-  absl::optional<NearbyShareDecryptedPublicCertificate> certificate_;
-  raw_ptr<NearbyShareCertificateManager, ExperimentalAsh> certificate_manager_;
+  raw_ptr<NearbyConnection> connection_;
+  std::optional<NearbyShareDecryptedPublicCertificate> certificate_;
+  raw_ptr<NearbyShareCertificateManager> certificate_manager_;
   nearby_share::mojom::Visibility visibility_;
   bool restrict_to_contacts_;
-  raw_ptr<IncomingFramesReader, ExperimentalAsh> frames_reader_;
+  raw_ptr<IncomingFramesReader> frames_reader_;
   const base::TimeDelta read_frame_timeout_;
   base::OnceCallback<void(PairedKeyVerificationResult)> callback_;
 

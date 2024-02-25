@@ -5,7 +5,7 @@
 #ifndef IOS_CHROME_BROWSER_UI_INFOBARS_MODALS_PERMISSIONS_INFOBAR_PERMISSIONS_TABLE_VIEW_CONTROLLER_H_
 #define IOS_CHROME_BROWSER_UI_INFOBARS_MODALS_PERMISSIONS_INFOBAR_PERMISSIONS_TABLE_VIEW_CONTROLLER_H_
 
-#import "ios/chrome/browser/shared/ui/table_view/chrome_table_view_controller.h"
+#import "ios/chrome/browser/shared/ui/table_view/legacy_chrome_table_view_controller.h"
 #import "ios/chrome/browser/ui/permissions/permissions_consumer.h"
 
 @protocol InfobarModalDelegate;
@@ -13,10 +13,9 @@
 @protocol PermissionsDelegate;
 
 // InfobarPermissionsTableViewController represents the content for the
-// Permissionss InfobarModal.
-API_AVAILABLE(ios(15.0))
+// Permissions InfobarModal.
 @interface InfobarPermissionsTableViewController
-    : ChromeTableViewController <PermissionsConsumer>
+    : LegacyChromeTableViewController <PermissionsConsumer>
 
 - (instancetype)initWithDelegate:
     (id<InfobarModalDelegate, PermissionsDelegate>)modalDelegate

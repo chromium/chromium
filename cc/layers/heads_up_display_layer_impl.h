@@ -10,7 +10,7 @@
 #include <vector>
 
 #include "base/memory/ptr_util.h"
-#include "base/memory/raw_ptr.h"
+#include "base/memory/raw_ptr_exclusion.h"
 #include "base/time/time.h"
 #include "cc/cc_export.h"
 #include "cc/layers/layer_impl.h"
@@ -41,8 +41,10 @@ class CC_EXPORT HeadsUpDisplayLayerImpl : public LayerImpl {
  public:
   static std::unique_ptr<HeadsUpDisplayLayerImpl> Create(
       LayerTreeImpl* tree_impl,
-      int id) {
-    return base::WrapUnique(new HeadsUpDisplayLayerImpl(tree_impl, id));
+      int id,
+      const std::string& paused_localized_message) {
+    return base::WrapUnique(
+        new HeadsUpDisplayLayerImpl(tree_impl, id, paused_localized_message));
   }
   HeadsUpDisplayLayerImpl(const HeadsUpDisplayLayerImpl&) = delete;
   ~HeadsUpDisplayLayerImpl() override;
@@ -54,6 +56,7 @@ class CC_EXPORT HeadsUpDisplayLayerImpl : public LayerImpl {
 
   bool WillDraw(DrawMode draw_mode,
                 viz::ClientResourceProvider* resource_provider) override;
+  void DidDraw(viz::ClientResourceProvider* resource_provider) override;
   void AppendQuads(viz::CompositorRenderPass* render_pass,
                    AppendQuadsData* append_quads_data) override;
   void UpdateHudTexture(DrawMode draw_mode,
@@ -83,7 +86,9 @@ class CC_EXPORT HeadsUpDisplayLayerImpl : public LayerImpl {
   void PushPropertiesTo(LayerImpl* layer) override;
 
  private:
-  HeadsUpDisplayLayerImpl(LayerTreeImpl* tree_impl, int id);
+  HeadsUpDisplayLayerImpl(LayerTreeImpl* tree_impl,
+                          int id,
+                          const std::string& paused_localized_message);
 
   const char* LayerTypeAsString() const override;
 
@@ -91,6 +96,7 @@ class CC_EXPORT HeadsUpDisplayLayerImpl : public LayerImpl {
 
   void UpdateHudContents();
   void DrawHudContents(PaintCanvas* canvas);
+  void DrawDebuggerPaused(PaintCanvas* canvas);
   void DrawText(PaintCanvas* canvas,
                 const PaintFlags& flags,
                 const std::string& text,
@@ -179,7 +185,10 @@ class CC_EXPORT HeadsUpDisplayLayerImpl : public LayerImpl {
   // HUD's contents. The actual quad can't be created until UpdateHudTexture()
   // which happens during draw, so we hold this reference to it when
   // constructing the placeholder between these two steps in the draw process.
-  raw_ptr<viz::DrawQuad> placeholder_quad_ = nullptr;
+  //
+  // RAW_PTR_EXCLUSION: Renderer performance: visible in sampling profiler
+  // stacks.
+  RAW_PTR_EXCLUSION viz::DrawQuad* placeholder_quad_ = nullptr;
   // Used for software raster when it will be uploaded to a texture.
   sk_sp<SkSurface> staging_surface_;
 
@@ -191,7 +200,7 @@ class CC_EXPORT HeadsUpDisplayLayerImpl : public LayerImpl {
 
   uint32_t throughput_value_ = 0.0f;
   // Obtained from the current BeginFrameArgs.
-  absl::optional<base::TimeDelta> frame_interval_;
+  std::optional<base::TimeDelta> frame_interval_;
   MemoryHistory::Entry memory_entry_;
   int paint_rects_fade_step_ = 0;
   int layout_shift_rects_fade_step_ = 0;
@@ -201,6 +210,8 @@ class CC_EXPORT HeadsUpDisplayLayerImpl : public LayerImpl {
   std::unique_ptr<WebVitalMetrics> web_vital_metrics_;
 
   base::TimeTicks time_of_last_graph_update_;
+
+  std::string paused_localized_message_;
 };
 
 }  // namespace cc

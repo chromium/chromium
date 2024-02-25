@@ -5,7 +5,10 @@
 #include "gpu/ipc/common/dxgi_helpers.h"
 
 #include "base/check.h"
+#include "base/debug/crash_logging.h"
+#include "base/debug/dump_without_crashing.h"
 #include "base/logging.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/time/time.h"
 #include "third_party/libyuv/include/libyuv/planar_functions.h"
 
@@ -154,8 +157,26 @@ bool CopyD3D11TexToMem(
 
     // Key equal to 0 is also used by the producer. Therefore, this keyed
     // mutex acts purely as a regular mutex.
-    hr = keyed_mutex->AcquireSync(0, INFINITE);
-    if (FAILED(hr)) {
+    //
+    // TODO(crbug.com/323751343): 5000ms is a temporary workaround to
+    // detect hangs. It should be `INFINITE` after the hang rootcause is
+    // fixed. Wait duration calculation and histogram reporting is also
+    // temporary.
+    base::Time before = base::Time::Now();
+    hr = keyed_mutex->AcquireSync(0, 5000);
+    int wait_duration_ms = (base::Time::Now() - before).InMilliseconds();
+    base::UmaHistogramCounts10000(
+        "Media.VideoCapture.Win.MappingAcquireMutexDelayMs", wait_duration_ms);
+    if (hr == WAIT_TIMEOUT) {
+      // Waited too long, likely a deadlock has happened. Crash report will
+      // have all the threads.
+      SCOPED_CRASH_KEY_NUMBER("KeyedMutexHangDebugging", "wait duration",
+                              wait_duration_ms);
+      base::debug::DumpWithoutCrashing();
+    }
+    // Can't check FAILED(hr), because AcquireSync may return e.g. WAIT_TIMEOUT
+    // value.
+    if (hr != S_OK) {
       DLOG(ERROR) << "Failed to acquire keyed mutex. Error msg: "
                   << logging::SystemErrorCodeToString(hr);
       return false;
@@ -259,7 +280,9 @@ GPU_EXPORT bool CopyMemToD3D11Tex(uint8_t* src_buffer,
     // Key equal to 0 is also used by the producer. Therefore, this keyed
     // mutex acts purely as a regular mutex.
     hr = keyed_mutex->AcquireSync(0, INFINITE);
-    if (FAILED(hr)) {
+    // Can't check FAILED(hr), because AcquireSync may return e.g. WAIT_TIMEOUT
+    // value.
+    if (hr != S_OK) {
       DLOG(ERROR) << "Failed to acquire keyed mutex. Error msg: "
                   << logging::SystemErrorCodeToString(hr);
       return false;

@@ -23,8 +23,6 @@ test(() => {
     'host',
     'input-after'
   ];
-  assert_focus_navigation_forward(elements);
-  elements.reverse();
-  assert_focus_navigation_backward(elements);
+  assert_focus_navigation_bidirectional(elements);
 }, 'Focus navigation should not get stuck.');
 </script>

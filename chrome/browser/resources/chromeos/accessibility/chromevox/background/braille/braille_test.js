@@ -4,23 +4,7 @@
 
 GEN_INCLUDE(['../../testing/chromevox_e2e_test_base.js']);
 
-ChromeVoxBrailleTest = class extends ChromeVoxE2ETest {
-  /** @override */
-  async setUpDeferred() {
-    await super.setUpDeferred();
-
-    await Promise.all([
-      // Alphabetized by file path.
-      importModule(
-          'BrailleBackground',
-          '/chromevox/background/braille/braille_background.js'),
-      importModule('LogStore', '/chromevox/background/logging/log_store.js'),
-      importModule('LogType', '/chromevox/common/log_types.js'),
-      importModule('SettingsManager', '/chromevox/common/settings_manager.js'),
-      importModule('Spannable', '/chromevox/common/spannable.js'),
-    ]);
-  }
-};
+ChromeVoxBrailleTest = class extends ChromeVoxE2ETest {};
 
 AX_TEST_F('ChromeVoxBrailleTest', 'BrailleLog', async function() {
   this.addCallbackPostMethod(

@@ -4,9 +4,7 @@
 
 package org.chromium.chrome.browser.xsurface_provider.hooks;
 
-/**
- * A stub XSurfaceHooks implementation. Replace at build time on internal builds.
- */
+/** A stub XSurfaceHooks implementation. Replace at build time on internal builds. */
 public class XSurfaceHooksImpl implements XSurfaceHooks {
     private static XSurfaceHooks sXSurfaceHooks;
 

@@ -34,9 +34,8 @@ regressions. 3 steps:
                base::FEATURE_DISABLED_BY_DEFAULT);
 
   MyFeature::MyFeature() {
-    enabled = base::FeatureList::IsEnabled(omnibox::kMyFeature);
-    my_param =
-        base::FeatureParam<int>(&omnibox::kMyFeature, "my_param", 0).Get();
+    enabled = base::FeatureList::IsEnabled(kMyFeature);
+    my_param = base::FeatureParam<int>(&kMyFeature, "my_param", 0).Get();
   }
 
 
@@ -47,20 +46,27 @@ regressions. 3 steps:
 
 (3) Override the config in tests:
 
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list_.InitAndEnableFeatureWithParameters(
-      omnibox::kMyFeature, {{"my_param", "1"}});
   omnibox_feature_configs::ScopedConfigForTesting<
       omnibox_feature_configs::MyFeature> scoped_config;
+  scoped_config.Get().enabled = true;
+  scoped_config.Get().my_param = 1;
+  scoped_config.Reset();
+  scoped_config.Get().enabled = true;
+  scoped_config.Get().my_param = 2;
 
+  instead of:
+
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list_.InitAndEnableFeatureWithParameters(
+      omnibox_feature_configs::MyFeature::kMyFeature, {{"my_param", "1"}});
   scoped_feature_list.Reset();
   scoped_feature_list_.InitAndEnableFeatureWithParameters(
-      omnibox::kMyFeature, {{"my_param", "2"}});
-  scoped_config.Reset();
+      omnibox_feature_configs::MyFeature::kMyFeature, {{"my_param", "2"}});
+
 */
 
 // A substitute for `BASE_DECLARE_FEATURE` for nesting in structs.
-#define DECLARE_FEATURE(feature) static CONSTINIT const base::Feature feature
+#define DECLARE_FEATURE(feature) static constinit const base::Feature feature
 
 // Base class other configs should inherit from.
 template <class T>
@@ -76,14 +82,16 @@ class Config {
 template <class T>
 class ScopedConfigForTesting : Config<T> {
  public:
-  ScopedConfigForTesting() : original_config_(T::Get()) { Reset(); }
+  ScopedConfigForTesting() : original_config_(Get()) { Reset(); }
   ScopedConfigForTesting(const ScopedConfigForTesting&) = delete;
   ScopedConfigForTesting& operator=(const ScopedConfigForTesting&) = delete;
-  ~ScopedConfigForTesting() { const_cast<T&>(T::Get()) = original_config_; }
-  void Reset() { const_cast<T&>(T::Get()) = {}; }
+  ~ScopedConfigForTesting() { Get() = original_config_; }
+
+  T& Get() { return const_cast<T&>(T::Get()); }
+  void Reset() { Get() = {}; }
 
  private:
-  T original_config_;
+  const T original_config_;
 };
 
 // Add new configs below, ordered alphabetically.
@@ -102,6 +110,66 @@ struct CalcProvider : Config<CalcProvider> {
   size_t num_non_calc_inputs;
 };
 
+// If enabled, allow document provider requests when all other conditions are
+// met.
+struct DocumentProvider : Config<DocumentProvider> {
+  DocumentProvider();
+  bool enabled;
+  // The minimum input length required before requesting document suggestions.
+  size_t min_query_length;
+  // Whether to ignore the state of the document provider when deciding to
+  // finish debouncing.
+  bool ignore_when_debouncing;
+  // Whether to treat an HTTP 401 response code as a backoff signal.
+  bool backoff_on_401;
+};
+
+// If enabled, pretends all matches are allowed to be default. This is very
+// blunt, and needs refining before being launch ready. E.g. how does this
+// affect transferred matches? This might cause crashes. This can result in
+// misleading inline autocompletion; e.g. the bing.com favicon looks like the
+// search loupe, so inlined bing results will like DSE search suggestions.
+struct ForceAllowedToBeDefault : Config<ForceAllowedToBeDefault> {
+  DECLARE_FEATURE(kForceAllowedToBeDefault);
+  ForceAllowedToBeDefault();
+  bool enabled;
+};
+
+// If enabled, only suggestions from the keyword mode provider and historical
+// keyword mode suggestions will be shown in keyword mode.
+struct LimitKeywordModeSuggestions : Config<LimitKeywordModeSuggestions> {
+  DECLARE_FEATURE(kLimitKeywordModeSuggestions);
+  LimitKeywordModeSuggestions();
+  bool enabled;
+
+  // If enabled, limits document provider suggestions except for the Google
+  // Drive keyword engine.
+  bool limit_document_suggestions;
+  // If enabled, limits history cluster suggestions in keyword mode.
+  bool limit_history_cluster_suggestions;
+  // If enabled, limits default search engine suggestions in keyword mode.
+  bool limit_dse_suggestions;
+  // If enabled, limits on device head uggestions in keyword mode.
+  bool limit_on_device_head_suggestions;
+};
+
+// If enabled, NTP Realbox second column will allow displaying contextual and
+// trending suggestions.
+struct RealboxContextualAndTrendingSuggestions
+    : Config<RealboxContextualAndTrendingSuggestions> {
+  DECLARE_FEATURE(kRealboxContextualAndTrendingSuggestions);
+  RealboxContextualAndTrendingSuggestions();
+  bool enabled;
+
+  // The total number of matches a Section can contain across all Groups.
+  size_t total_limit;
+  // The total number of matches the `omnibox::GROUP_PREVIOUS_SEARCH_RELATED`
+  // Group can contain.
+  size_t contextual_suggestions_limit;
+  // The total number of matches the `omnibox::GROUP_TRENDS` Group can contain.
+  size_t trending_suggestions_limit;
+};
+
 // If enabled, the shortcut provider is more aggressive in scoring.
 struct ShortcutBoosting : Config<ShortcutBoosting> {
   DECLARE_FEATURE(kShortcutBoost);
@@ -114,16 +182,46 @@ struct ShortcutBoosting : Config<ShortcutBoosting> {
   bool counterfactual;
   // Shortcuts are boosted if either:
   // 1) They are the top shortcut.
-  // 2) OR they have more hits than `non_top_hit_threshold`. If this is 1, then
-  //    all shortcuts are boosted, since all have at least 1 hit. If 0
-  //    (default), then no shortcuts will be boosted through (2) - only the top
-  //    shortcut will be boosted.
+  // 2) OR they have more hits than `non_top_hit_[searches_]threshold`. If this
+  //    is 1, then all shortcuts are boosted, since all have at least 1 hit. If
+  //    0 (default), then no shortcuts will be boosted through (2) - only the
+  //    top shortcut will be boosted.
   int non_top_hit_threshold;
+  int non_top_hit_search_threshold;
   // If enabled, boosted shortcuts will be grouped with searches. Unboosted
   // shortcuts are grouped with URLs, like traditionally, regardless of
   // `group_with_searches`.
   bool group_with_searches;
 };
+
+// If enabled, affects autocompleted keywords (e.g. input 'youtu Ispiryan' ->
+// match 'Ispiryan - Search YouTube').
+// 1) These autocompleted keywords will be scored `score` instead of the default
+//    450.
+// 2) Autocompletes keyword even when the full keyword is typed ('youtube.com').
+//    Otherwise, only incomplete keywords ('youtube.co') are autocompleted.
+struct VitalizeAutocompletedKeywords : Config<VitalizeAutocompletedKeywords> {
+  DECLARE_FEATURE(kVitalizeAutocompletedKeywords);
+  VitalizeAutocompletedKeywords();
+  bool enabled;
+  // Should probably be less than 1100; i.e. the score for complete keywords
+  // in `SearchProvider::CalculateRelevanceForKeywordVerbatim()`. Otherwise, it
+  // would be weird if the input 'youtube.co Ispiryan' produces a higher scored
+  // keyword match than 'youtube.com Ispiryan'.
+  int score;
+};
+
+// If enabled, omnibox reports the number of zero-prefix suggestions shown in
+// the session which ends when autocomplete clears the set of results. The
+// current behavior incorrectly reports the number of zero-prefix suggestions in
+// the last set of results, which would be 0 for non-zps queries.
+struct ReportNumZPSInSession : Config<ReportNumZPSInSession> {
+  DECLARE_FEATURE(kReportNumZPSInSession);
+  ReportNumZPSInSession();
+  bool enabled;
+};
+
+#undef DECLARE_FEATURE
 
 }  // namespace omnibox_feature_configs
 

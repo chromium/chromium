@@ -54,13 +54,6 @@
       defines += [ "GRPC_NO_BINDER", ]
     }
 
-    cflags = [
-      "-Wno-implicit-fallthrough",
-      "-Wno-shadow",
-      "-Wno-unreachable-code-return",
-      "-Wno-unreachable-code-break",
-    ]
-
     if (is_android) {
       libs = [ "log" ]  # For __android_log_write
     }
@@ -89,16 +82,17 @@
   }
 
   config("grpc_config_private") {
+    # TODO(b/311287092): Clean up the code and remove this list.
     cflags = [
       "-Wno-c++98-compat-extra-semi",
-      "-Wno-extra-semi",
-      "-Wno-sign-compare",
-      "-Wno-sometimes-uninitialized",
-      "-Wno-string-concatenation",
-      "-Wno-unreachable-code",
-      "-Wno-unused-variable",
-      "-Wno-unused-result",
       "-Wno-deprecated-copy",
+      "-Wno-extra-semi",
+      "-Wno-implicit-fallthrough",
+      "-Wno-shadow",
+      "-Wno-sign-compare",
+      "-Wno-unreachable-code",
+      "-Wno-unreachable-code-break",
+      "-Wno-unreachable-code-return",
     ]
 
     # TODO(b/260740023): Remove when gRPC has CFI checks enabled.

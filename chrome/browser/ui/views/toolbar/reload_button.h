@@ -28,9 +28,9 @@ class CommandUpdater;
 
 class ReloadButton : public ToolbarButton,
                      public ui::SimpleMenuModel::Delegate {
- public:
-  METADATA_HEADER(ReloadButton);
+  METADATA_HEADER(ReloadButton, ToolbarButton)
 
+ public:
   enum class Mode { kReload = 0, kStop };
 
   explicit ReloadButton(CommandUpdater* command_updater);
@@ -42,6 +42,10 @@ class ReloadButton : public ToolbarButton,
   // immediately.
   void ChangeMode(Mode mode, bool force);
   Mode visible_mode() const { return visible_mode_; }
+
+  void SetVectorIconsForMode(Mode mode,
+                             const gfx::VectorIcon& icon,
+                             const gfx::VectorIcon& touch_icon);
 
   // Gets/Sets whether reload drop-down menu is enabled.
   bool GetMenuEnabled() const;
@@ -83,6 +87,12 @@ class ReloadButton : public ToolbarButton,
 
   // This may be NULL when testing.
   raw_ptr<CommandUpdater, DanglingUntriaged> command_updater_;
+
+  // Vector icons to use for both modes.
+  base::raw_ref<const gfx::VectorIcon> reload_icon_;
+  base::raw_ref<const gfx::VectorIcon> reload_touch_icon_;
+  base::raw_ref<const gfx::VectorIcon> stop_icon_;
+  base::raw_ref<const gfx::VectorIcon> stop_touch_icon_;
 
   // The mode we should be in assuming no timers are running.
   Mode intended_mode_ = Mode::kReload;

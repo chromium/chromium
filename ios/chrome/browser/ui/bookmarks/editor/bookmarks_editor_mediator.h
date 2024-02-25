@@ -9,10 +9,12 @@
 
 #import <Foundation/Foundation.h>
 
+class AuthenticationService;
 @protocol BookmarksEditorConsumer;
 @protocol BookmarksEditorMediatorDelegate;
 class ChromeBrowserState;
 class PrefService;
+@protocol SnackbarCommands;
 
 namespace bookmarks {
 class BookmarkModel;
@@ -34,6 +36,8 @@ class SyncService;
 @property(nonatomic, weak) id<BookmarksEditorMediatorDelegate> delegate;
 // Consumer to reflect user’s change in the model.
 @property(nonatomic, weak) id<BookmarksEditorConsumer> consumer;
+// Handler for snackbar commands.
+@property(nonatomic, weak) id<SnackbarCommands> snackbarCommandsHandler;
 
 // Designated initializer.
 // `localOrSyncableBookmarkModel` is the bookmark model for the localOrSyncable
@@ -49,6 +53,8 @@ class SyncService;
                             bookmarkNode:
                                 (const bookmarks::BookmarkNode*)bookmarkNode
                                    prefs:(PrefService*)prefs
+                   authenticationService:
+                       (AuthenticationService*)authenticationService
                              syncService:(syncer::SyncService*)syncService
                             browserState:(ChromeBrowserState*)browserState
     NS_DESIGNATED_INITIALIZER;

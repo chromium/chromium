@@ -14,7 +14,7 @@
       on-click="onSelected_">
     <bluetooth-icon device="[[device.deviceProperties]]"></bluetooth-icon>
     <div class="middle" aria-hidden="true">
-      <div id="deviceName">[[getDeviceName_(device)]]</div>
+      <div id="deviceName">[[getDeviceNameUnsafe_(device)]]</div>
       <template is="dom-if"
           if="[[shouldShowBatteryInfo_(device)]]" restamp>
         <bluetooth-device-battery-info
@@ -40,7 +40,8 @@
       <cr-icon-button id="subpageButton"
           tabindex="-1"
           class="subpage-arrow"
-          on-click="onSelected_">
+          on-click="onSelected_"
+          aria-hidden="true">
       </cr-icon-button>
     </div>
   </div>

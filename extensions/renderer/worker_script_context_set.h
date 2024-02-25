@@ -36,9 +36,14 @@ class WorkerScriptContextSet : public ScriptContextSetIterable,
 
   // ScriptContextSetIterable:
   void ForEach(
-      const std::string& extension_id,
+      const mojom::HostID& host_id,
       content::RenderFrame* render_frame,
       const base::RepeatingCallback<void(ScriptContext*)>& callback) override;
+
+  // Runs |callback| with the given |context|.
+  void ExecuteCallbackWithContext(
+      ScriptContext* context,
+      const base::RepeatingCallback<void(ScriptContext*)>& callback);
 
   // Inserts |context| into the set. Contexts are stored in TLS.
   void Insert(std::unique_ptr<ScriptContext> context);

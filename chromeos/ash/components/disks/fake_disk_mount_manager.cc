@@ -8,6 +8,7 @@
 
 #include "base/containers/contains.h"
 #include "base/functional/bind.h"
+#include "base/strings/string_split.h"
 #include "chromeos/ash/components/disks/disk.h"
 
 namespace ash::disks {
@@ -81,7 +82,23 @@ void FakeDiskMountManager::MountPath(
   mount_requests_.emplace_back(source_path, source_format, mount_label,
                                mount_options, type, access_mode);
 
-  const MountPoint mount_point{source_path, source_path, type};
+  std::string mount_path = source_path;
+
+  if (type == MountType::kNetworkStorage) {
+    // Split the source path into components, first of which would be the URL
+    // scheme.
+    std::vector<std::string> source_components = base::SplitStringUsingSubstr(
+        source_path, "://", base::KEEP_WHITESPACE, base::SPLIT_WANT_ALL);
+    if (source_components.size() > 1u) {
+      const auto registered_mount_path =
+          network_storage_mount_paths_.find(source_components[0]);
+      if (registered_mount_path != network_storage_mount_paths_.end()) {
+        mount_path = registered_mount_path->second;
+      }
+    }
+  }
+
+  const MountPoint mount_point{source_path, mount_path, type};
   mount_points_.insert(mount_point);
   std::move(callback).Run(MountError::kSuccess, mount_point);
   for (auto& observer : observers_) {
@@ -183,6 +200,12 @@ void FakeDiskMountManager::InvokeDiskEventForTest(
     disk->is_auto_mountable() ? observer.OnAutoMountableDiskEvent(event, *disk)
                               : observer.OnBootDeviceDiskEvent(event, *disk);
   }
+}
+
+void FakeDiskMountManager::RegisterMountPointForNetworkStorageScheme(
+    const std::string& scheme,
+    const std::string& mount_path) {
+  network_storage_mount_paths_.emplace(scheme, mount_path);
 }
 
 }  // namespace ash::disks

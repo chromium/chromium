@@ -1,0 +1,41 @@
+[
+  {
+    "os": [
+      "chromeos_ash"
+    ],
+    "policy_pref_mapping_tests": [
+      {
+        "note": "Check default values (no policies set)",
+        "policies": {},
+        "prefs": {
+          "emoji_picker.gif_support_enabled": {
+            "location": "user_profile",
+            "value": false
+          }
+        }
+      },
+      {
+        "policies": {
+          "EmojiPickerGifSupportEnabled": false
+        },
+        "prefs": {
+          "emoji_picker.gif_support_enabled": {
+            "location": "user_profile",
+            "value": false
+          }
+        }
+      },
+      {
+        "policies": {
+          "EmojiPickerGifSupportEnabled": true
+        },
+        "prefs": {
+          "emoji_picker.gif_support_enabled": {
+            "location": "user_profile",
+            "value": true
+          }
+        }
+      }
+    ]
+  }
+]

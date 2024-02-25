@@ -7,6 +7,7 @@
 #include "base/command_line.h"
 #include "base/ranges/algorithm.h"
 #include "base/run_loop.h"
+#include "base/test/to_vector.h"
 #include "base/values.h"
 #include "build/build_config.h"
 #include "chrome/browser/extensions/extension_service.h"
@@ -15,7 +16,6 @@
 #include "chrome/browser/extensions/test_extension_system.h"
 #include "chrome/browser/ui/toolbar/toolbar_action_view_controller.h"
 #include "components/crx_file/id_util.h"
-#include "content/public/browser/notification_service.h"
 #include "content/public/test/test_utils.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/extension_builder.h"
@@ -235,13 +235,10 @@ ExtensionsToolbarUnitTest::GetPinnedExtensionViews() {
 }
 
 std::vector<std::string> ExtensionsToolbarUnitTest::GetPinnedExtensionNames() {
-  std::vector<ToolbarActionView*> views = GetPinnedExtensionViews();
-  std::vector<std::string> result;
-  result.resize(views.size());
-  base::ranges::transform(views, result.begin(), [](ToolbarActionView* view) {
-    return base::UTF16ToUTF8(view->view_controller()->GetActionName());
-  });
-  return result;
+  return base::test::ToVector(
+      GetPinnedExtensionViews(), [](ToolbarActionView* view) {
+        return base::UTF16ToUTF8(view->view_controller()->GetActionName());
+      });
 }
 
 void ExtensionsToolbarUnitTest::WaitForAnimation() {

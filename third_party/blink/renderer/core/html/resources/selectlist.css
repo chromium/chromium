@@ -69,7 +69,7 @@ selectlist optgroup > option {
 }
 
 selectlist::-internal-selectlist-button-icon {
-  background-image: -internal-light-dark(url(images/selectlist_button_icon.svg), url(images/selectlist_button_icon_white.svg));
+  background-image: light-dark(url(images/selectlist_button_icon.svg), url(images/selectlist_button_icon_white.svg));
   background-origin: content-box;
   background-repeat: no-repeat;
   background-size: contain;
@@ -88,14 +88,14 @@ selectlist::-internal-selectlist-button-icon {
 
 selectlist:-internal-autofill-selected::-internal-selectlist-button {
   background-image:none !important;
-  background-color: -internal-light-dark(#E8F0FE, rgba(70,90,126,0.4)) !important;
+  background-color: light-dark(#E8F0FE, rgba(70,90,126,0.4)) !important;
   color: FieldText !important;
 }
 
 selectlist:disabled::-internal-selectlist-button {
-  color: -internal-light-dark(rgba(16, 16, 16, 0.3), rgba(255, 255, 255, 0.3));
-  background-color: -internal-light-dark(rgba(239, 239, 239, 0.3), rgba(59, 59, 59, 0.3));
-  border-color: -internal-light-dark(rgba(118, 118, 118, 0.3), rgba(195, 195, 195, 0.3));
+  color: light-dark(rgba(16, 16, 16, 0.3), rgba(255, 255, 255, 0.3));
+  background-color: light-dark(rgba(239, 239, 239, 0.3), rgba(59, 59, 59, 0.3));
+  border-color: light-dark(rgba(118, 118, 118, 0.3), rgba(195, 195, 195, 0.3));
   opacity: 0.7;
 }
 
@@ -110,11 +110,12 @@ selectlist option:disabled:hover {
 }
 
 selectlist option:checked:disabled {
-  background-color: -internal-light-dark(rgb(176, 176, 176), rgba(59, 59, 59, 0.3));
+  background-color: light-dark(rgb(176, 176, 176), rgba(59, 59, 59, 0.3));
 }
 
 selectlist::-internal-selectlist-listbox,
-selectlist::-internal-selectlist-preview {
+selectlist::-internal-selectlist-preview,
+selectlist > listbox {
   box-shadow: 0px 12.8px 28.8px rgba(0, 0, 0, 0.13), 0px 0px 9.2px rgba(0, 0, 0, 0.11);
   box-sizing: border-box;
   overflow: auto;
@@ -123,7 +124,8 @@ selectlist::-internal-selectlist-preview {
   padding: 0.25em 0;
 }
 
-selectlist::-internal-selectlist-listbox {
+selectlist::-internal-selectlist-listbox,
+selectlist > listbox {
   background-color: Field;
 }
 
@@ -132,36 +134,127 @@ selectlist::-internal-selectlist-listbox {
  * provided from an outer tree scope. */
 selectlist [behavior=listbox],
 selectlist::-internal-selectlist-listbox,
-selectlist::-internal-selectlist-preview {
+selectlist::-internal-selectlist-preview,
+selectlist > listbox {
   margin: 0;
   inset: auto;
   min-inline-size: anchor-size(self-inline);
 }
 
 selectlist [behavior=listbox],
-selectlist::-internal-selectlist-listbox {
+selectlist::-internal-selectlist-listbox,
+selectlist > listbox {
   min-block-size: 1lh;
   position-fallback: -internal-selectlist-listbox-default-fallbacks;
 }
 
+/* TODO(crbug.com/40279608): Use automatic fallbacks */
 @position-fallback -internal-selectlist-listbox-default-fallbacks {
   /* Fallbacks without vertical scrolling */
   @try {
-    inset-block-start: anchor(auto);
-    inset-inline-start: anchor(auto-same);
+    inset-block-start: anchor(self-end);
+    inset-inline-start: anchor(self-start);
   }
+  /* Reverse block axis */
+  @try {
+    inset-block-end: anchor(self-start);
+    inset-inline-start: anchor(self-start);
+  }
+  /* Reverse inline axis */
+  @try {
+    inset-block-start: anchor(self-end);
+    inset-inline-end: anchor(self-end);
+  }
+  /* Reverse both axes */
+  @try {
+    inset-block-end: anchor(self-start);
+    inset-inline-end: anchor(self-end);
+  }
+
   /* Fallbacks with vertical scrolling */
   @try {
-    inset-block-start: anchor(auto);
-    inset-inline-start: anchor(auto-same);
+    inset-block-start: anchor(self-end);
+    inset-inline-start: anchor(self-start);
+    block-size: -webkit-fill-available;
+  }
+  /* Reverse block axis */
+  @try {
+    inset-block-end: anchor(self-start);
+    inset-inline-start: anchor(self-start);
+    block-size: -webkit-fill-available;
+  }
+  /* Reverse inline axis */
+  @try {
+    inset-block-start: anchor(self-end);
+    inset-inline-end: anchor(self-end);
+    block-size: -webkit-fill-available;
+  }
+  /* Reverse both axes */
+  @try {
+    inset-block-end: anchor(self-start);
+    inset-inline-end: anchor(self-end);
     block-size: -webkit-fill-available;
   }
 }
 
 selectlist::-internal-selectlist-preview {
   min-block-size: anchor-size(self-block);
-  inset-block-start: anchor(auto-same);
-  inset-inline-start: anchor(auto-same);
-  background-color: -internal-light-dark(#E8F0FE, rgba(70, 90, 126, 0.4));
+  position-fallback: -internal-selectlist-preview-default-fallbacks;
+  background-color: light-dark(#E8F0FE, rgba(70, 90, 126, 0.4));
 }
 
+/* TODO(crbug.com/40279608): Use automatic fallbacks */
+@position-fallback -internal-selectlist-preview-default-fallbacks {
+  @try {
+    inset-block-start: anchor(self-start);
+    inset-inline-start: anchor(self-start);
+  }
+  /* Reverse block axis */
+  @try {
+    inset-block-end: anchor(self-end);
+    inset-inline-start: anchor(self-start);
+  }
+  /* Reverse inline axis */
+  @try {
+    inset-block-start: anchor(self-start);
+    inset-inline-end: anchor(self-end);
+  }
+  /* Reverse both axes */
+  @try {
+    inset-block-end: anchor(self-end);
+    inset-inline-end: anchor(self-end);
+  }
+}
+
+/* this is a copy of the [popover] styles from html.css. When this gets
+ * merged with html.css, the rules can be combined. */
+selectlist::-internal-selectlist-listbox,
+selectlist > listbox {
+  position: fixed;
+  inset: auto;
+  width: fit-content;
+  height: fit-content;
+  margin: 0;
+  border: solid;
+  padding: 0.25em;
+  overflow: auto;
+  color: CanvasText;
+  background-color: Canvas;
+}
+selectlist::-internal-selectlist-listbox:not(:popover-open),
+selectlist > listbox:not(:popover-open) {
+  display: none;
+}
+selectlist::-internal-selectlist-listbox,
+selectlist > listbox:popover-open {
+  overlay: auto !important;
+}
+selectlist::-internal-selectlist-listbox:-internal-popover-in-top-layer::backdrop,
+selectlist > listbox:-internal-popover-in-top-layer::backdrop {
+  /* From the (modified) fullscreen spec: https://fullscreen.spec.whatwg.org/#user-agent-level-style-sheet-defaults: */
+  position: fixed;
+  inset: 0;
+  /* Specific to [popover]: */
+  pointer-events: none !important;
+  background-color: transparent;
+}

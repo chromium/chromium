@@ -159,7 +159,7 @@
     Unsupported features
   </message>
   <message name="IDS_DEPRECATED_FEATURES_PAGE_WARNING_EXPLANATION" desc="Warning to users that features are deprecated. Shown prominently at the top of the page.">
-    These features are disabled by default. They will not be available in future versions of Chrome.
+    These flags prevent or revert a breaking change and will only be available for a limited time.
   </message>
   <message name="IDS_DEPRECATED_FEATURES_NO_RESULTS" desc="Message shown when searching and no results were found.">
     No matching features

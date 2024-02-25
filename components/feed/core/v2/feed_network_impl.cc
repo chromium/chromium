@@ -19,6 +19,8 @@
 #include "base/strings/string_util.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
+#include "base/trace_event/trace_event.h"
+#include "base/trace_event/typed_macros.h"
 #include "components/feed/core/common/pref_names.h"
 #include "components/feed/core/proto/v2/wire/feed_query.pb.h"
 #include "components/feed/core/proto/v2/wire/request.pb.h"
@@ -34,6 +36,9 @@
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/signin/public/identity_manager/primary_account_access_token_fetcher.h"
 #include "components/signin/public/identity_manager/scope_set.h"
+#include "components/supervised_user/core/browser/proto/get_discover_feed_request.pb.h"
+#include "components/supervised_user/core/browser/proto/get_discover_feed_response.pb.h"
+#include "components/supervised_user/core/common/features.h"
 #include "components/variations/net/variations_http_headers.h"
 #include "google_apis/gaia/gaia_constants.h"
 #include "net/base/isolation_info.h"
@@ -109,9 +114,8 @@ using RawResponse = FeedNetwork::RawResponse;
 
 net::HttpRequestHeaders CreateApiRequestHeaders(
     const RequestMetadata& request_metadata) {
-  std::string encoded_client_info;
-  base::Base64Encode(CreateClientInfo(request_metadata).SerializeAsString(),
-                     &encoded_client_info);
+  const std::string encoded_client_info = base::Base64Encode(
+      CreateClientInfo(request_metadata).SerializeAsString());
   net::HttpRequestHeaders headers;
   headers.SetHeader(kClientInfoHeader, encoded_client_info);
   return headers;
@@ -141,6 +145,34 @@ void ParseAndForwardQueryResponse(
     input_stream.ReadVarintSizeAsInt(&message_size);
 
     auto response_message = std::make_unique<feedwire::Response>();
+    if (response_message->ParseFromCodedStream(&input_stream)) {
+      result.response_body = std::move(response_message);
+    }
+  }
+  std::move(result_callback).Run(std::move(result));
+}
+
+void ParseAndForwardKidFriendlyQueryResponse(
+    base::OnceCallback<void(FeedNetwork::KidFriendlyQueryRequestResult)>
+        result_callback,
+    RawResponse raw_response) {
+  MetricsReporter::NetworkRequestComplete(NetworkRequestType::kSupervisedFeed,
+                                          raw_response.response_info);
+  FeedNetwork::KidFriendlyQueryRequestResult result;
+  result.response_info = raw_response.response_info;
+  result.response_info.fetch_time_ticks = base::TimeTicks::Now();
+  if (result.response_info.status_code == 200) {
+    ::google::protobuf::io::CodedInputStream input_stream(
+        reinterpret_cast<const uint8_t*>(raw_response.response_bytes.data()),
+        raw_response.response_bytes.size());
+
+    // The first few bytes of the body are a varint containing the size of the
+    // message. We need to skip over them.
+    int message_size;
+    input_stream.ReadVarintSizeAsInt(&message_size);
+
+    auto response_message =
+        std::make_unique<supervised_user::GetDiscoverFeedResponse>();
     if (response_message->ParseFromCodedStream(&input_stream)) {
       result.response_body = std::move(response_message);
     }
@@ -420,7 +452,7 @@ class FeedNetworkImpl::NetworkFetch {
   void OnSimpleLoaderComplete(std::unique_ptr<std::string> response) {
     const network::mojom::URLResponseHead* loader_response_info =
         simple_loader_->ResponseInfo();
-    absl::optional<network::URLLoaderCompletionStatus> completion_status =
+    std::optional<network::URLLoaderCompletionStatus> completion_status =
         simple_loader_->CompletionStatus();
 
     NetworkResponseInfo response_info;
@@ -436,21 +468,28 @@ class FeedNetworkImpl::NetworkFetch {
     response_info.encoded_size_bytes =
         completion_status ? completion_status->encoded_data_length : 0;
 
-    // If overriding the feed host, try to grab the Bless nonce. This is
-    // strictly informational, and only displayed in snippets-internals.
-    if (allow_bless_auth_ && loader_response_info) {
+    if (loader_response_info) {
       size_t iter = 0;
+      std::string name;
       std::string value;
-      while (loader_response_info->headers->EnumerateHeader(
-          &iter, "www-authenticate", &value)) {
-        size_t pos = value.find("nonce=\"");
-        if (pos != std::string::npos) {
-          std::string nonce = value.substr(pos + 7, 16);
-          if (nonce.size() == 16) {
-            response_info.bless_nonce = nonce;
-            break;
+      while (loader_response_info->headers->EnumerateHeaderLines(&iter, &name,
+                                                                 &value)) {
+        // If overriding the feed host, try to grab the Bless nonce. This is
+        // strictly informational, and only displayed in snippets-internals.
+        if (allow_bless_auth_ && name == "www-authenticate" &&
+            response_info.bless_nonce.empty()) {
+          size_t pos = value.find("nonce=\"");
+          if (pos != std::string::npos) {
+            std::string nonce = value.substr(pos + 7, 16);
+            if (nonce.size() == 16) {
+              response_info.bless_nonce = nonce;
+            }
           }
         }
+        response_info.response_header_names_and_values.push_back(
+            std::move(name));
+        response_info.response_header_names_and_values.push_back(
+            std::move(value));
       }
     }
 
@@ -463,8 +502,8 @@ class FeedNetworkImpl::NetworkFetch {
       response_body = std::move(*response);
 
       if (response_info.status_code == net::HTTP_UNAUTHORIZED) {
-        CoreAccountId account_id =
-            identity_manager_->GetPrimaryAccountId(signin::ConsentLevel::kSync);
+        CoreAccountId account_id = identity_manager_->GetPrimaryAccountId(
+            signin::ConsentLevel::kSignin);
         if (!account_id.empty()) {
           identity_manager_->RemoveAccessTokenFromCache(
               account_id, GetAuthScopes(), access_token_);
@@ -607,6 +646,8 @@ void FeedNetworkImpl::Send(const GURL& url,
                            net::HttpRequestHeaders headers,
                            bool is_feed_query,
                            base::OnceCallback<void(RawResponse)> callback) {
+  TRACE_EVENT_BEGIN("android.ui.jank", "FeedNetwork",
+                    perfetto::Track::FromPointer(this), "url", url);
   auto fetch = std::make_unique<NetworkFetch>(
       url, request_method, std::move(request_body), delegate_,
       identity_manager_, loader_factory_.get(), api_key_, account_info,
@@ -621,29 +662,50 @@ void FeedNetworkImpl::Send(const GURL& url,
                                       std::move(callback)));
 }
 
+void FeedNetworkImpl::SendKidFriendlyApiRequest(
+    const supervised_user::GetDiscoverFeedRequest& request,
+    const AccountInfo& account_info,
+    base::OnceCallback<void(FeedNetwork::KidFriendlyQueryRequestResult)>
+        callback) {
+  std::string binary_proto;
+  request.SerializeToString(&binary_proto);
+  std::string base64proto;
+  base::Base64UrlEncode(
+      binary_proto, base::Base64UrlEncodePolicy::INCLUDE_PADDING, &base64proto);
+
+  GURL url(supervised_user::kKidFriendlyContentFeedEndpoint.Get());
+  bool host_overriden = false;
+
+  // Overrides with a custom endpoint if available.
+  std::string host_override =
+      pref_service_->GetString(feed::prefs::kDiscoverAPIEndpointOverride);
+  if (!host_override.empty()) {
+    GURL override_url(host_override);
+    if (override_url.is_valid()) {
+      url = override_url;
+      host_overriden = true;
+    }
+  }
+
+  AddMothershipPayloadQueryParams(base64proto, "", url);
+  Send(url, "GET", /*request_body=*/{},
+       /*allow_bless_auth=*/host_overriden, account_info,
+       net::HttpRequestHeaders(),
+       /*is_feed_query=*/false,
+       base::BindOnce(&ParseAndForwardKidFriendlyQueryResponse,
+                      std::move(callback)));
+}
+
 void FeedNetworkImpl::SendDiscoverApiRequest(
     NetworkRequestType request_type,
     base::StringPiece request_path,
     base::StringPiece method,
     std::string request_body,
     const AccountInfo& account_info,
-    absl::optional<RequestMetadata> request_metadata,
+    std::optional<RequestMetadata> request_metadata,
     base::OnceCallback<void(RawResponse)> callback) {
-  GURL url(base::StrCat({kDiscoverHost, request_path}));
-  // Override url if requested.
-  std::string host_override =
-      base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII(
-          "feedv2-discover-host-override");
-  if (host_override.empty()) {
-    host_override =
-        pref_service_->GetString(feed::prefs::kDiscoverAPIEndpointOverride);
-  }
-  if (!host_override.empty()) {
-    GURL override_url(host_override);
-    if (override_url.is_valid()) {
-      url = OverrideUrlSchemeHostPort(url, override_url);
-    }
-  }
+  GURL url =
+      GetOverriddenUrl(GURL(base::StrCat({kDiscoverHost, request_path})));
 
   net::HttpRequestHeaders headers =
       request_metadata ? CreateApiRequestHeaders(*request_metadata)
@@ -657,14 +719,47 @@ void FeedNetworkImpl::SendDiscoverApiRequest(
        /*is_feed_query=*/false, std::move(callback));
 }
 
+void FeedNetworkImpl::SendAsyncDataRequest(
+    const GURL& url,
+    base::StringPiece request_method,
+    net::HttpRequestHeaders request_headers,
+    std::string request_body,
+    const AccountInfo& account_info,
+    base::OnceCallback<void(RawResponse)> callback) {
+  GURL request_url = GetOverriddenUrl(url);
+  Send(request_url, request_method, std::move(request_body),
+       /*allow_bless_auth=*/false, account_info, request_headers,
+       /*is_feed_query=*/false, std::move(callback));
+}
+
 void FeedNetworkImpl::SendComplete(
     NetworkFetch* fetch,
     base::OnceCallback<void(RawResponse)> callback,
     RawResponse raw_response) {
   DCHECK_EQ(1UL, pending_requests_.count(fetch));
+  TRACE_EVENT_END("android.ui.jank", perfetto::Track::FromPointer(this),
+                  "bytes", raw_response.response_info.response_body_bytes);
   pending_requests_.erase(fetch);
 
   std::move(callback).Run(std::move(raw_response));
+}
+
+GURL FeedNetworkImpl::GetOverriddenUrl(const GURL& url) const {
+  // Override url if requested.
+  std::string host_override =
+      base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII(
+          "feedv2-discover-host-override");
+  if (host_override.empty()) {
+    host_override =
+        pref_service_->GetString(feed::prefs::kDiscoverAPIEndpointOverride);
+  }
+  if (!host_override.empty()) {
+    GURL override_url(host_override);
+    if (override_url.is_valid()) {
+      return OverrideUrlSchemeHostPort(url, override_url);
+    }
+  }
+  return url;
 }
 
 }  // namespace feed

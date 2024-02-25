@@ -31,8 +31,8 @@ const test::TaskEnvironment::MainThreadType testing_main_threads[] = {
 #endif
 };
 
-void QuitWhenSignaled(WaitableEvent* event) {
-  RunLoop::QuitCurrentWhenIdleDeprecated();
+void QuitWhenSignaled(base::OnceClosure quit_closure, WaitableEvent* event) {
+  std::move(quit_closure).Run();
 }
 
 class DecrementCountContainer {
@@ -54,18 +54,19 @@ class WaitableEventWatcherTest
 
 TEST_P(WaitableEventWatcherTest, BasicSignalManual) {
   test::TaskEnvironment task_environment(GetParam());
-
+  base::RunLoop loop;
   // A manual-reset event that is not yet signaled.
   WaitableEvent event(WaitableEvent::ResetPolicy::MANUAL,
                       WaitableEvent::InitialState::NOT_SIGNALED);
 
   WaitableEventWatcher watcher;
-  watcher.StartWatching(&event, BindOnce(&QuitWhenSignaled),
+  watcher.StartWatching(&event,
+                        BindOnce(&QuitWhenSignaled, loop.QuitWhenIdleClosure()),
                         SequencedTaskRunner::GetCurrentDefault());
 
   event.Signal();
 
-  RunLoop().Run();
+  loop.Run();
 
   EXPECT_TRUE(event.IsSignaled());
 }
@@ -77,12 +78,14 @@ TEST_P(WaitableEventWatcherTest, BasicSignalAutomatic) {
                       WaitableEvent::InitialState::NOT_SIGNALED);
 
   WaitableEventWatcher watcher;
-  watcher.StartWatching(&event, BindOnce(&QuitWhenSignaled),
+  base::RunLoop loop;
+  watcher.StartWatching(&event,
+                        BindOnce(&QuitWhenSignaled, loop.QuitWhenIdleClosure()),
                         SequencedTaskRunner::GetCurrentDefault());
 
   event.Signal();
 
-  RunLoop().Run();
+  loop.Run();
 
   // The WaitableEventWatcher consumes the event signal.
   EXPECT_FALSE(event.IsSignaled());
@@ -96,8 +99,7 @@ TEST_P(WaitableEventWatcherTest, BasicCancel) {
                       WaitableEvent::InitialState::NOT_SIGNALED);
 
   WaitableEventWatcher watcher;
-
-  watcher.StartWatching(&event, BindOnce(&QuitWhenSignaled),
+  watcher.StartWatching(&event, DoNothing(),
                         SequencedTaskRunner::GetCurrentDefault());
 
   watcher.StopWatching();
@@ -144,7 +146,7 @@ TEST_P(WaitableEventWatcherTest, OutlivesTaskEnvironment) {
       test::TaskEnvironment task_environment(GetParam());
       watcher = std::make_unique<WaitableEventWatcher>();
 
-      watcher->StartWatching(&event, BindOnce(&QuitWhenSignaled),
+      watcher->StartWatching(&event, DoNothing(),
                              SequencedTaskRunner::GetCurrentDefault());
     }
   }
@@ -152,30 +154,32 @@ TEST_P(WaitableEventWatcherTest, OutlivesTaskEnvironment) {
 
 TEST_P(WaitableEventWatcherTest, SignaledAtStartManual) {
   test::TaskEnvironment task_environment(GetParam());
-
+  base::RunLoop loop;
   WaitableEvent event(WaitableEvent::ResetPolicy::MANUAL,
                       WaitableEvent::InitialState::SIGNALED);
 
   WaitableEventWatcher watcher;
-  watcher.StartWatching(&event, BindOnce(&QuitWhenSignaled),
+  watcher.StartWatching(&event,
+                        BindOnce(&QuitWhenSignaled, loop.QuitWhenIdleClosure()),
                         SequencedTaskRunner::GetCurrentDefault());
 
-  RunLoop().Run();
+  loop.Run();
 
   EXPECT_TRUE(event.IsSignaled());
 }
 
 TEST_P(WaitableEventWatcherTest, SignaledAtStartAutomatic) {
   test::TaskEnvironment task_environment(GetParam());
-
+  base::RunLoop loop;
   WaitableEvent event(WaitableEvent::ResetPolicy::AUTOMATIC,
                       WaitableEvent::InitialState::SIGNALED);
 
   WaitableEventWatcher watcher;
-  watcher.StartWatching(&event, BindOnce(&QuitWhenSignaled),
+  watcher.StartWatching(&event,
+                        BindOnce(&QuitWhenSignaled, loop.QuitWhenIdleClosure()),
                         SequencedTaskRunner::GetCurrentDefault());
 
-  RunLoop().Run();
+  loop.Run();
 
   // The watcher consumes the event signal.
   EXPECT_FALSE(event.IsSignaled());
@@ -188,21 +192,19 @@ TEST_P(WaitableEventWatcherTest, StartWatchingInCallback) {
                       WaitableEvent::InitialState::NOT_SIGNALED);
 
   WaitableEventWatcher watcher;
-  watcher.StartWatching(
-      &event,
-      BindOnce(
-          [](WaitableEventWatcher* watcher, WaitableEvent* event) {
-            // |event| is manual, so the second watcher will run
-            // immediately.
-            watcher->StartWatching(event, BindOnce(&QuitWhenSignaled),
-                                   SequencedTaskRunner::GetCurrentDefault());
-          },
-          &watcher),
-      SequencedTaskRunner::GetCurrentDefault());
+  base::RunLoop loop;
+  watcher.StartWatching(&event, BindLambdaForTesting([&](WaitableEvent* event) {
+    // |event| is manual, so the second watcher will run
+    // immediately.
+    watcher.StartWatching(
+        event, BindOnce(&QuitWhenSignaled, loop.QuitWhenIdleClosure()),
+        SequencedTaskRunner::GetCurrentDefault());
+  }),
+                        SequencedTaskRunner::GetCurrentDefault());
 
   event.Signal();
 
-  RunLoop().Run();
+  loop.Run();
 }
 
 TEST_P(WaitableEventWatcherTest, MultipleWatchersManual) {
@@ -326,7 +328,7 @@ TEST_P(WaitableEventWatcherDeletionTest, DeleteUnder) {
     auto* event = new WaitableEvent(WaitableEvent::ResetPolicy::AUTOMATIC,
                                     WaitableEvent::InitialState::NOT_SIGNALED);
 
-    watcher.StartWatching(event, BindOnce(&QuitWhenSignaled),
+    watcher.StartWatching(event, DoNothing(),
                           SequencedTaskRunner::GetCurrentDefault());
 
     if (delay_after_delete) {
@@ -350,14 +352,16 @@ TEST_P(WaitableEventWatcherDeletionTest, SignalAndDelete) {
   test::TaskEnvironment task_environment(main_thread_type);
 
   {
+    base::RunLoop loop;
     WaitableEventWatcher watcher;
 
     auto event = std::make_unique<WaitableEvent>(
         WaitableEvent::ResetPolicy::AUTOMATIC,
         WaitableEvent::InitialState::NOT_SIGNALED);
 
-    watcher.StartWatching(event.get(), BindOnce(&QuitWhenSignaled),
-                          SequencedTaskRunner::GetCurrentDefault());
+    watcher.StartWatching(
+        event.get(), BindOnce(&QuitWhenSignaled, loop.QuitWhenIdleClosure()),
+        SequencedTaskRunner::GetCurrentDefault());
     event->Signal();
     event.reset();
 
@@ -371,7 +375,7 @@ TEST_P(WaitableEventWatcherDeletionTest, SignalAndDelete) {
     }
 
     // Wait for the watcher callback.
-    RunLoop().Run();
+    loop.Run();
   }
 }
 

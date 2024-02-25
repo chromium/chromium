@@ -14,8 +14,11 @@
 #include "ash/capture_mode/test_capture_mode_delegate.h"
 #include "ash/constants/ash_features.h"
 #include "ash/public/cpp/capture_mode/capture_mode_test_api.h"
+#include "ash/shell.h"
 #include "ash/style/icon_button.h"
 #include "ash/test/ash_test_base.h"
+#include "ash/test/ash_test_util.h"
+#include "base/test/gtest_tags.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "ui/events/keycodes/keyboard_codes_posix.h"
@@ -260,6 +263,9 @@ TEST_F(GifRecordingTest, FutureCaptureSessionsAffected) {
 }
 
 TEST_F(GifRecordingTest, TabNavigation) {
+  base::AddFeatureIdTagToTestResult(
+      "screenplay-759f3130-3839-408a-8342-a373654e8927");
+
   auto* controller = StartRegionVideoCapture();
 
   // Tab 15 times until we reach the capture button.
@@ -540,6 +546,8 @@ TEST_F(GifRecordingTest, RecordingMenuOutsideOfBounds) {
   controller->SetRecordingType(RecordingType::kGif);
 
   auto* event_generator = GetEventGenerator();
+  // Move cursor to the second display so capture mode is created there when it
+  // starts.
   event_generator->MoveMouseTo(gfx::Point(1000, 500));
   StartRegionVideoCapture();
   ClickOnDropDownButton();
@@ -551,6 +559,31 @@ TEST_F(GifRecordingTest, RecordingMenuOutsideOfBounds) {
   const gfx::Rect display_bounds{801, 0, 800, 700};
   EXPECT_TRUE(display_bounds.Contains(
       recording_type_menu_widget->GetWindowBoundsInScreen()));
+}
+
+// Regression test for b/319551191.
+TEST_F(GifRecordingTest, RecordingMenuAtTheLeftOrRightEdge) {
+  // Set a region touching the left edge of the screen.
+  const gfx::Size region_size(177, 165);
+  auto* controller = CaptureModeController::Get();
+  controller->SetUserCaptureRegion(gfx::Rect(gfx::Point(0, 0), region_size),
+                                   /*by_user=*/true);
+
+  // There should be no crashes when we open the recording type menu.
+  StartRegionVideoCapture();
+  ClickOnDropDownButton();
+
+  // Restart the session with a region touching the right edge of the screen.
+  controller->Stop();
+  const auto root_bounds = Shell::GetPrimaryRootWindow()->bounds();
+  controller->SetUserCaptureRegion(
+      gfx::Rect(gfx::Point(root_bounds.right() - region_size.width(), 0),
+                region_size),
+      /*by_user=*/true);
+
+  // Similarly, there should be no crashes.
+  StartRegionVideoCapture();
+  ClickOnDropDownButton();
 }
 
 // -----------------------------------------------------------------------------

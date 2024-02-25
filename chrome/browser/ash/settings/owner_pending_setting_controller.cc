@@ -54,9 +54,9 @@ void OwnerPendingSettingController::Set(Profile* profile,
   }
 }
 
-absl::optional<base::Value> OwnerPendingSettingController::GetValue() const {
+std::optional<base::Value> OwnerPendingSettingController::GetValue() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  absl::optional<base::Value> value = GetPendingValue();
+  std::optional<base::Value> value = GetPendingValue();
   if (ShouldReadFromPendingValue() && value.has_value()) {
     // Return the pending value if it exists.
     return value;
@@ -79,7 +79,7 @@ void OwnerPendingSettingController::OnOwnershipTaken(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   VLOG(1) << "OnOwnershipTaken";
 
-  absl::optional<base::Value> pending_value = GetPendingValue();
+  std::optional<base::Value> pending_value = GetPendingValue();
   if (pending_value.has_value()) {
     // At the time ownership is taken, there is a value waiting to be written.
     // Use the OwnerSettingsService of the new owner to write the setting.
@@ -95,8 +95,8 @@ OwnerPendingSettingController::~OwnerPendingSettingController() {
 void OwnerPendingSettingController::OnSignedPolicyStored(bool success) {
   if (!success)
     return;
-  absl::optional<base::Value> pending_value = GetPendingValue();
-  absl::optional<base::Value> signed_value = GetSignedStoredValue();
+  std::optional<base::Value> pending_value = GetPendingValue();
+  std::optional<base::Value> signed_value = GetSignedStoredValue();
   if (pending_value.has_value() && signed_value.has_value() &&
       pending_value == signed_value) {
     is_value_being_set_with_service_ = false;
@@ -157,7 +157,7 @@ void OwnerPendingSettingController::SetWithService(
 
 void OwnerPendingSettingController::NotifyObservers() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  absl::optional<base::Value> current_value = GetValue();
+  std::optional<base::Value> current_value = GetValue();
   if (current_value != value_notified_to_observers_) {
     VLOG(1) << "Notifying observers";
     value_notified_to_observers_ = std::move(current_value);
@@ -177,12 +177,12 @@ OwnerPendingSettingController::GetOwnerSettingsService(Profile* profile) {
   return OwnerSettingsServiceAshFactory::GetForBrowserContext(profile);
 }
 
-absl::optional<base::Value> OwnerPendingSettingController::GetPendingValue()
+std::optional<base::Value> OwnerPendingSettingController::GetPendingValue()
     const {
   if (local_state_->HasPrefPath(pending_pref_name_)) {
     return local_state_->GetValue(pending_pref_name_).Clone();
   }
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 void OwnerPendingSettingController::ClearPendingValue() {
@@ -190,13 +190,13 @@ void OwnerPendingSettingController::ClearPendingValue() {
   local_state_->ClearPref(pending_pref_name_);
 }
 
-absl::optional<base::Value>
-OwnerPendingSettingController::GetSignedStoredValue() const {
+std::optional<base::Value> OwnerPendingSettingController::GetSignedStoredValue()
+    const {
   const base::Value* value = CrosSettings::Get()->GetPref(pref_name_);
   if (value) {
     return value->Clone();
   }
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 bool OwnerPendingSettingController::ShouldReadFromPendingValue() const {

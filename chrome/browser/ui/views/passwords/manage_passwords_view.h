@@ -20,8 +20,11 @@ class ManagePasswordsDetailsView;
 // specific site. A user can see the details of the passwords, and edit the
 // stored password note.
 class ManagePasswordsView : public PasswordBubbleViewBase {
+  METADATA_HEADER(ManagePasswordsView, PasswordBubbleViewBase)
+
  public:
   DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kTopView);
+  DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kFooterId);
 
   ManagePasswordsView(content::WebContents* web_contents,
                       views::View* anchor_view);
@@ -48,6 +51,7 @@ class ManagePasswordsView : public PasswordBubbleViewBase {
   std::unique_ptr<ManagePasswordsListView> CreatePasswordListView();
   std::unique_ptr<ManagePasswordsDetailsView> CreatePasswordDetailsView();
   std::unique_ptr<views::View> CreateFooterView();
+  std::unique_ptr<views::View> CreateMovePasswordFooterView();
 
   // Changes the contents of the page to either display the details of
   // `currently_selected_password_` or the list of passwords when

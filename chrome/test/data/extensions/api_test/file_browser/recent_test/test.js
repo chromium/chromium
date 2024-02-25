@@ -15,8 +15,7 @@ function getVolumeMetadataList() {
 function requestFileSystem(volumeId) {
   return new Promise(function(resolve, reject) {
     chrome.fileSystem.requestFileSystem(
-        {volumeId: volumeId},
-        function(fileSystem) {
+        {volumeId: volumeId}, function(fileSystem) {
           if (!fileSystem) {
             reject(new Error('Failed to acquire volume.'));
           }
@@ -46,7 +45,8 @@ requestAllFileSystems().then(function() {
   chrome.test.runTests([
     function testGetRecentFiles() {
       chrome.fileManagerPrivate.getRecentFiles(
-          'native_source', 'all', false, chrome.test.callbackPass(entries => {
+          'native_source', '', 30, 'all', false,
+          chrome.test.callbackPass(entries => {
             chrome.test.assertTrue(
                 exists(entries, 'all-justice.jpg'),
                 'all-justice.jpg not found');
@@ -58,9 +58,25 @@ requestAllFileSystems().then(function() {
                 'all-justice.mp4 not found');
           }));
     },
+    function testGetRecentFilesWithQuery() {
+      chrome.fileManagerPrivate.getRecentFiles(
+          'native_source', 'jpg', 30, 'all', false,
+          chrome.test.callbackPass(entries => {
+            chrome.test.assertTrue(
+                exists(entries, 'all-justice.jpg'),
+                'all-justice.jpg not found');
+            chrome.test.assertFalse(
+                exists(entries, 'all-justice.mp3'),
+                'all-justice.mp3 unexpectedly found');
+            chrome.test.assertFalse(
+                exists(entries, 'all-justice.mp4'),
+                'all-justice.mp4 unexpectedly found');
+          }));
+    },
     function testGetRecentAudioFiles() {
       chrome.fileManagerPrivate.getRecentFiles(
-          'native_source', 'audio', false, chrome.test.callbackPass(entries => {
+          'native_source', '', 30, 'audio', false,
+          chrome.test.callbackPass(entries => {
             chrome.test.assertFalse(
                 exists(entries, 'all-justice.jpg'),
                 'all-justice.jpg unexpectedly found');
@@ -74,7 +90,8 @@ requestAllFileSystems().then(function() {
     },
     function testGetRecentImageFiles() {
       chrome.fileManagerPrivate.getRecentFiles(
-          'native_source', 'image', false, chrome.test.callbackPass(entries => {
+          'native_source', '', 30, 'image', false,
+          chrome.test.callbackPass(entries => {
             chrome.test.assertTrue(
                 exists(entries, 'all-justice.jpg'),
                 'all-justice.jpg not found');
@@ -88,7 +105,8 @@ requestAllFileSystems().then(function() {
     },
     function testGetRecentVideoFiles() {
       chrome.fileManagerPrivate.getRecentFiles(
-          'native_source', 'video', false, chrome.test.callbackPass(entries => {
+          'native_source', '', 30, 'video', false,
+          chrome.test.callbackPass(entries => {
             chrome.test.assertFalse(
                 exists(entries, 'all-justice.jpg'),
                 'all-justice.jpg unexpectedly found');
@@ -98,6 +116,49 @@ requestAllFileSystems().then(function() {
             chrome.test.assertTrue(
                 exists(entries, 'all-justice.mp4'),
                 'all-justice.mp4 not found');
+          }));
+    },
+    function testGetOlderRecentFiles() {
+      chrome.fileManagerPrivate.getRecentFiles(
+          'native_source', 'all-justice', 61, 'all', false,
+          chrome.test.callbackPass(entries => {
+            chrome.test.assertTrue(
+                exists(entries, 'all-justice.jpg'),
+                'all-justice.jpg not found');
+            chrome.test.assertTrue(
+                exists(entries, 'all-justice.mp3'),
+                'all-justice.mp3 not found');
+            chrome.test.assertTrue(
+                exists(entries, 'all-justice.mp4'),
+                'all-justice.mp4 not found');
+            chrome.test.assertTrue(
+                exists(entries, 'all-justice.txt'),
+                'all-justice.txt not found');
+          }));
+    },
+    function testCheckNonPositiveDeltas() {
+      // Asking for negative deltas is like asking for files modified in the
+      // future. You should never get any results.
+      chrome.fileManagerPrivate.getRecentFiles(
+          'native_source', 'all-justice', 0, 'all', false,
+          chrome.test.callbackPass(entries => {
+            chrome.test.assertEq(0, entries.length);
+          }));
+      chrome.fileManagerPrivate.getRecentFiles(
+          'native_source', 'all-justice', -1, 'all', false,
+          chrome.test.callbackPass(entries => {
+            chrome.test.assertEq(0, entries.length);
+          }));
+      const max31BitValue = Math.pow(2, 31) - 1;
+      chrome.fileManagerPrivate.getRecentFiles(
+          'native_source', 'all-justice', -max31BitValue, 'all', false,
+          chrome.test.callbackPass(entries => {
+            chrome.test.assertEq(0, entries.length);
+          }));
+      chrome.fileManagerPrivate.getRecentFiles(
+          'native_source', 'all-justice', -max31BitValue - 1, 'all', false,
+          chrome.test.callbackPass(entries => {
+            chrome.test.assertEq(0, entries.length);
           }));
     }
   ]);

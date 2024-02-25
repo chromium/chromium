@@ -99,7 +99,7 @@ class ManifestUtilIsArchitectureSupportedTest
 INSTANTIATE_TEST_SUITE_P(
     ManifestUtilIsArchitectureSupportedTestCases,
     ManifestUtilIsArchitectureSupportedTest,
-    ::testing::ValuesIn([]() {
+    ::testing::ValuesIn([] {
       std::vector<ManifestUtilIsArchitectureSupportedTestCase> test_cases;
       for (const std::string current_architecture :
            {update_client::kArchIntel, update_client::kArchAmd64,
@@ -144,7 +144,7 @@ class ManifestUtilIsArchitectureCompatibleTest
 INSTANTIATE_TEST_SUITE_P(
     ManifestUtilIsArchitectureCompatibleTestCases,
     ManifestUtilIsArchitectureCompatibleTest,
-    ::testing::ValuesIn([]() {
+    ::testing::ValuesIn([] {
       std::vector<ManifestUtilIsArchitectureCompatibleTestCase> test_cases;
       for (const std::string current_architecture :
            {update_client::kArchIntel, update_client::kArchAmd64,

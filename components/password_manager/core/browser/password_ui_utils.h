@@ -19,36 +19,17 @@ namespace password_manager {
 class PasswordFormManagerForUI;
 struct PasswordForm;
 struct CredentialUIEntry;
-struct CredentialFacet;
 
-// Reverses order of labels in hostname.
-std::string SplitByDotAndReverse(base::StringPiece host);
-
-// Returns a human readable origin and a link URL for the provided
-// |password_form|.
-//
 // For Web credentials the returned origin is suitable for security display and
-// is stripped off common prefixes like "m.", "mobile." or "www.". Furthermore
-// the link URL is set to the full origin of the original form.
+// is stripped off common prefixes like "m.", "mobile." or "www.".
 //
 //  For Android credentials the returned origin is set to the Play Store name
 //  if available, otherwise it is the reversed package name (e.g.
 //  com.example.android gets transformed to android.example.com).
-// TODO(crbug.com/1330906) Replace the usage with GetShownOrigin and GetShownUrl
-std::pair<std::string, GURL> GetShownOriginAndLinkUrl(
-    const PasswordForm& password_form);
-
-// Together have the same result as |GetShownOriginAndLinkUrl| but works with
-// |CredentialUIEntry|.
 std::string GetShownOrigin(const CredentialUIEntry& credential);
+// Returns URL the full origin of the |credential|. For Android credential the
+// link pints to affiliated website or to the Play Store if missing.
 GURL GetShownUrl(const CredentialUIEntry& credential);
-
-// Equivalent to |GetShownOrigin(CredentialUIEntry)| but works with
-// |CredentialFacet|.
-std::string GetShownOrigin(const CredentialFacet& facet);
-
-// Equivalent to |GetShownOriginAndLinkUrl| but works with |CredentialFacet|.
-GURL GetShownUrl(const CredentialFacet& facet);
 
 // Returns a string suitable for security display to the user (just like
 // |FormatUrlForSecurityDisplay| with OMIT_HTTP_AND_HTTPS) based on origin of
@@ -78,10 +59,6 @@ int GetPlatformAuthenticatorLabel();
 // Returns the username or a label appropriate for display if it is empty.
 std::u16string ToUsernameString(const std::u16string& username);
 std::u16string ToUsernameString(const std::string& username);
-
-// Converts a passkey's relying party identifier into an equivalent URL for
-// display.
-GURL RPIDToURL(const std::string& relying_party_id);
 
 }  // namespace password_manager
 

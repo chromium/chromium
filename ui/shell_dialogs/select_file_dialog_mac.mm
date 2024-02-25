@@ -14,6 +14,7 @@
 #include "components/remote_cocoa/common/native_widget_ns_window.mojom.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
 #include "ui/shell_dialogs/select_file_policy.h"
+#include "ui/shell_dialogs/selected_file_info.h"
 #include "url/gurl.h"
 
 using remote_cocoa::mojom::SelectFileDialogType;
@@ -47,7 +48,8 @@ void SelectFileDialogImpl::FileWasSelected(
     bool is_multi,
     bool was_cancelled,
     const std::vector<base::FilePath>& files,
-    int index) {
+    int index,
+    const std::vector<std::string>& file_tags) {
   auto it = base::ranges::find(dialog_data_list_, dialog_data,
                                [](const DialogData& d) { return &d; });
   DCHECK(it != dialog_data_list_.end());
@@ -64,9 +66,12 @@ void SelectFileDialogImpl::FileWasSelected(
     listener_->FileSelectionCanceled(params);
   } else {
     if (is_multi) {
-      listener_->MultiFilesSelected(files, params);
+      listener_->MultiFilesSelected(FilePathListToSelectedFileInfoList(files),
+                                    params);
     } else {
-      listener_->FileSelected(files[0], index, params);
+      SelectedFileInfo file(files[0]);
+      file.file_tags = file_tags;
+      listener_->FileSelected(file, index, params);
     }
   }
 }

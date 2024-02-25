@@ -5,15 +5,15 @@
 #include "google_apis/classroom/classroom_api_course_work_response_types.h"
 
 #include <memory>
+#include <optional>
 #include <string>
+#include <string_view>
 
 #include "base/json/json_value_converter.h"
-#include "base/strings/string_piece.h"
 #include "base/time/time.h"
 #include "base/values.h"
 #include "google_apis/common/parser_util.h"
 #include "google_apis/common/time_util.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
 namespace google_apis::classroom {
@@ -39,7 +39,7 @@ constexpr char kDueTimeNanosComponent[] = "nanos";
 
 constexpr char kPublishedCourseWorkItemState[] = "PUBLISHED";
 
-bool ConvertCourseWorkItemState(base::StringPiece input,
+bool ConvertCourseWorkItemState(std::string_view input,
                                 CourseWorkItem::State* output) {
   *output = input == kPublishedCourseWorkItemState
                 ? CourseWorkItem::State::kPublished
@@ -47,7 +47,7 @@ bool ConvertCourseWorkItemState(base::StringPiece input,
   return true;
 }
 
-bool ConvertCourseWorkItemAlternateLink(base::StringPiece input, GURL* output) {
+bool ConvertCourseWorkItemAlternateLink(std::string_view input, GURL* output) {
   *output = GURL(input);
   return true;
 }
@@ -70,12 +70,12 @@ base::TimeDelta GetCourseWorkItemDueTime(
          base::Nanoseconds(nanos.value_or(0));
 }
 
-absl::optional<CourseWorkItem::DueDateTime> GetCourseWorkItemDueDateTime(
+std::optional<CourseWorkItem::DueDateTime> GetCourseWorkItemDueDateTime(
     const base::Value::Dict& raw_course_work_item) {
   const auto* const date =
       raw_course_work_item.FindDict(kApiResponseCourseWorkItemDueDateKey);
   if (!date) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   const auto year = date->FindInt(kDueDateYearComponent);
@@ -83,7 +83,7 @@ absl::optional<CourseWorkItem::DueDateTime> GetCourseWorkItemDueDateTime(
   const auto day = date->FindInt(kDueDateDayComponent);
 
   if (!year.has_value() && !month.has_value() && !day.has_value()) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   return CourseWorkItem::DueDateTime{

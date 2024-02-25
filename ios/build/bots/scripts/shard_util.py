@@ -35,6 +35,13 @@ IGNORED_CLASSES = [
     'BaseEarlGreyTestCase', 'ChromeTestCase', 'appConfigurationForTestCase',
     'setUpForTestCase', 'GREYTest'
 ]
+# Test class can inherit from another class so the parent class's test methods
+# will automatically be run in the child class. However, the existing otool
+# parsing logic does not take into account of inheritance.
+# The below dictionary has subclass as the key and superclass as value.
+INHERITANCE_CLASS_DICT = {
+    'PasswordManagerPasswordCheckupDisabledTestCase': 'PasswordManagerTestCase'
+}
 
 
 class OtoolError(test_runner_errors.Error):
@@ -235,12 +242,22 @@ def balance_into_sublists(test_counts, total_shards):
 
   shards = [Shard() for i in range(total_shards)]
 
+  # TODO(crbug.com/1480192): we should implement a programmatic logic
+  # to detect inheritance instead of hardcoding them manually.
+  # It's very challenging to use regex to detect inheritance in otool,
+  # so it be might best to dig around xcodebuild -enumerate-tests.
+  for subclass, superclass in INHERITANCE_CLASS_DICT.items():
+    if superclass in test_counts and subclass in test_counts:
+      test_counts[subclass] += test_counts[superclass]
+
   # Balances test classes between shards to have
   # approximately equal number of tests per shard.
   for test_class, number_of_test_methods in test_counts.most_common():
     min_shard = min(shards, key=lambda shard: shard.size)
     min_shard.test_classes.append(test_class)
     min_shard.size += number_of_test_methods
+    LOGGER.debug('%s test case is allocated to shard %s with %s test methods' %
+                 (test_class, shards.index(min_shard), number_of_test_methods))
 
   sublists = [shard.test_classes for shard in shards]
   return sublists

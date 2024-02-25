@@ -40,7 +40,6 @@
 #include "net/cert/x509_certificate.h"
 #include "net/http/http_util.h"
 #include "net/ssl/ssl_private_key.h"
-#include "services/metrics/public/cpp/ukm_source_id.h"
 #include "services/network/public/cpp/network_switches.h"
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/mojom/network_context.mojom.h"
@@ -223,23 +222,24 @@ void WebEngineContentBrowserClient::RegisterBrowserInterfaceBindersForFrame(
   PopulateFuchsiaFrameBinders(map);
 }
 
-void WebEngineContentBrowserClient::
-    RegisterNonNetworkNavigationURLLoaderFactories(
-        int frame_tree_node_id,
-        ukm::SourceIdObj ukm_source_id,
-        NonNetworkURLLoaderFactoryMap* factories) {
-  if (base::CommandLine::ForCurrentProcess()->HasSwitch(
-          switches::kEnableContentDirectories)) {
-    factories->emplace(kFuchsiaDirScheme,
-                       ContentDirectoryLoaderFactory::Create());
+mojo::PendingRemote<network::mojom::URLLoaderFactory>
+WebEngineContentBrowserClient::CreateNonNetworkNavigationURLLoaderFactory(
+    const std::string& scheme,
+    int frame_tree_node_id) {
+  if (scheme == kFuchsiaDirScheme) {
+    if (base::CommandLine::ForCurrentProcess()->HasSwitch(
+            switches::kEnableContentDirectories)) {
+      return ContentDirectoryLoaderFactory::Create();
+    }
   }
+  return {};
 }
 
 void WebEngineContentBrowserClient::
     RegisterNonNetworkSubresourceURLLoaderFactories(
         int render_process_id,
         int render_frame_id,
-        const absl::optional<url::Origin>& request_initiator_origin,
+        const std::optional<url::Origin>& request_initiator_origin,
         NonNetworkURLLoaderFactoryMap* factories) {
   if (base::CommandLine::ForCurrentProcess()->HasSwitch(
           switches::kEnableContentDirectories)) {
@@ -321,7 +321,7 @@ WebEngineContentBrowserClient::CreateThrottlesForNavigation(
         navigation_handle, frame_impl->navigation_policy_handler()));
   }
 
-  const absl::optional<std::string>& explicit_sites_filter_error_page =
+  const std::optional<std::string>& explicit_sites_filter_error_page =
       frame_impl->explicit_sites_filter_error_page();
 
   if (explicit_sites_filter_error_page) {
@@ -340,9 +340,10 @@ WebEngineContentBrowserClient::CreateURLLoaderThrottles(
     content::BrowserContext* browser_context,
     const base::RepeatingCallback<content::WebContents*()>& wc_getter,
     content::NavigationUIData* navigation_ui_data,
-    int frame_tree_node_id) {
+    int frame_tree_node_id,
+    std::optional<int64_t> navigation_id) {
   if (frame_tree_node_id == content::RenderFrameHost::kNoFrameTreeNodeId) {
-    // TODO(crbug.com/1378791): Add support for workers.
+    // TODO(crbug.com/1378791): Add support for Shared and Service Workers.
     return {};
   }
 

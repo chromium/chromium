@@ -26,7 +26,6 @@
 
 namespace app_list::test {
 
-// Parameterized by feature ProductivityLauncher.
 class ArcPlayStoreSearchProviderTest : public AppListTestBase {
  public:
   ArcPlayStoreSearchProviderTest() = default;
@@ -82,7 +81,7 @@ class ArcPlayStoreSearchProviderTest : public AppListTestBase {
  private:
   std::unique_ptr<::test::TestAppListControllerDelegate> controller_;
   std::unique_ptr<TestSearchController> search_controller_;
-  raw_ptr<ArcPlayStoreSearchProvider, ExperimentalAsh> provider_ = nullptr;
+  raw_ptr<ArcPlayStoreSearchProvider> provider_ = nullptr;
   ArcAppTest arc_test_;
 };
 

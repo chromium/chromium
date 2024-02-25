@@ -69,7 +69,9 @@ class NetworkFetcher {
       ResponseStartedCallback response_started_callback,
       ProgressCallback progress_callback,
       PostRequestCompleteCallback post_request_complete_callback) = 0;
-  virtual void DownloadToFile(
+
+  // Returns a cancellation closure.
+  virtual base::OnceClosure DownloadToFile(
       const GURL& url,
       const base::FilePath& file_path,
       ResponseStartedCallback response_started_callback,

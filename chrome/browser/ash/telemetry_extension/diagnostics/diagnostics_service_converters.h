@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_ASH_TELEMETRY_EXTENSION_DIAGNOSTICS_DIAGNOSTICS_SERVICE_CONVERTERS_H_
 #define CHROME_BROWSER_ASH_TELEMETRY_EXTENSION_DIAGNOSTICS_DIAGNOSTICS_SERVICE_CONVERTERS_H_
 
+#include <optional>
 #include <string>
 #include <utility>
 #include <vector>
@@ -13,7 +14,6 @@
 #include "chromeos/ash/services/cros_healthd/public/mojom/nullable_primitives.mojom.h"
 #include "chromeos/crosapi/mojom/diagnostics_service.mojom-forward.h"
 #include "chromeos/crosapi/mojom/nullable_primitives.mojom.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ash::converters::diagnostics {
 
@@ -42,7 +42,7 @@ cros_healthd::mojom::NullableUint32Ptr UncheckedConvertPtr(
 
 }  // namespace unchecked
 
-absl::optional<crosapi::mojom::DiagnosticsRoutineEnum> Convert(
+std::optional<crosapi::mojom::DiagnosticsRoutineEnum> Convert(
     cros_healthd::mojom::DiagnosticRoutineEnum input);
 
 std::vector<crosapi::mojom::DiagnosticsRoutineEnum> Convert(

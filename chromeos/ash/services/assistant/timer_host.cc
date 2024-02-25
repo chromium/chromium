@@ -43,7 +43,7 @@ class TimerHost::TimerDelegateImpl : public libassistant::mojom::TimerDelegate {
   mojo::Receiver<TimerDelegate> receiver_;
 
   // Owned by the parent |Service|.
-  const raw_ref<ServiceContext, ExperimentalAsh> context_;
+  const raw_ref<ServiceContext> context_;
 };
 
 ////////////////////////////////////////////////////////////////////////////////

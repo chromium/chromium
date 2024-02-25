@@ -6,10 +6,10 @@
 #define COMPONENTS_URL_PATTERN_INDEX_URL_PATTERN_H_
 
 #include <iosfwd>
+#include <optional>
 
 #include "base/strings/string_piece.h"
 #include "components/url_pattern_index/proto/rules.pb.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/third_party/mozilla/url_parse.h"
 
 class GURL;
@@ -51,7 +51,7 @@ class UrlPattern {
     // String to hold the lazily computed lower cased spec.
     mutable std::string lower_case_spec_owner_;
     // Reference to the lower case spec. Computed lazily.
-    mutable absl::optional<base::StringPiece> lower_case_spec_cached_;
+    mutable std::optional<base::StringPiece> lower_case_spec_cached_;
 
     // The url host component.
     const url::Component host_;

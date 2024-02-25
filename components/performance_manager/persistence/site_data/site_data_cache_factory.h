@@ -6,6 +6,7 @@
 #define COMPONENTS_PERFORMANCE_MANAGER_PERSISTENCE_SITE_DATA_SITE_DATA_CACHE_FACTORY_H_
 
 #include <memory>
+#include <optional>
 #include <string>
 
 #include "base/containers/flat_map.h"
@@ -15,7 +16,6 @@
 #include "base/task/sequenced_task_runner.h"
 #include "components/performance_manager/persistence/site_data/site_data_cache.h"
 #include "content/public/browser/browser_context.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace content {
 class BrowserContext;
@@ -77,7 +77,7 @@ class SiteDataCacheFactory {
   // that runs on this object's task runner.
   void OnBrowserContextCreated(const std::string& browser_context_id,
                                const base::FilePath& context_path,
-                               absl::optional<std::string> parent_context_id);
+                               std::optional<std::string> parent_context_id);
   void OnBrowserContextDestroyed(const std::string& browser_context_id);
 
  private:

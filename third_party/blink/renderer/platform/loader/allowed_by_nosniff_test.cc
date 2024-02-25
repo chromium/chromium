@@ -43,7 +43,7 @@ class MockConsoleLogger : public GarbageCollected<MockConsoleLogger>,
                     mojom::ConsoleMessageLevel,
                     const String&,
                     bool,
-                    absl::optional<mojom::ConsoleMessageCategory>));
+                    std::optional<mojom::ConsoleMessageCategory>));
   MOCK_METHOD2(AddConsoleMessageImpl, void(ConsoleMessage*, bool));
 };
 

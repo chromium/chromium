@@ -5,16 +5,17 @@
 import {TestRunner} from 'test_runner';
 import {SourcesTestRunner} from 'sources_test_runner';
 
+import * as SourcesModule from 'devtools/panels/sources/sources.js';
+
 (async function() {
   TestRunner.addResult(`Tests UISourceCode display name.\n`);
-  await TestRunner.loadLegacyModule('sources');
   await TestRunner.showPanel('sources');
 
   async function dumpUISourceCodeDisplayName(url) {
     var uiSourceCode = await SourcesTestRunner.addScriptUISourceCode(url, '');
     TestRunner.addResult(
         'UISourceCode display name for url "' + url + '" is "' +
-        Sources.TabbedEditorContainer.prototype.titleForFile(uiSourceCode) + '".');
+        SourcesModule.TabbedEditorContainer.TabbedEditorContainer.prototype.titleForFile(uiSourceCode) + '".');
   }
 
   const baseURL = 'http://localhost:8080/folder/';

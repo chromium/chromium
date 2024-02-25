@@ -24,7 +24,7 @@ class USBConnectionEvent final : public Event {
   USBConnectionEvent(const AtomicString& type, const USBConnectionEventInit*);
   USBConnectionEvent(const AtomicString& type, USBDevice*);
 
-  USBDevice* device() const { return device_; }
+  USBDevice* device() const { return device_.Get(); }
 
   void Trace(Visitor*) const override;
 

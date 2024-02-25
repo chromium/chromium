@@ -23,10 +23,10 @@ limitations under the License.
 
 #include <iostream>
 
-#include "absl/flags/flag.h"          // from @com_google_absl
-#include "absl/flags/parse.h"         // from @com_google_absl
-#include "absl/status/status.h"       // from @com_google_absl
-#include "absl/strings/match.h"       // from @com_google_absl
+#include "absl/flags/flag.h"  // from @com_google_absl
+#include "absl/flags/parse.h"  // from @com_google_absl
+#include "absl/status/status.h"  // from @com_google_absl
+#include "absl/strings/match.h"  // from @com_google_absl
 #include "absl/strings/str_format.h"  // from @com_google_absl
 #include "tensorflow_lite_support/cc/port/statusor.h"
 #include "tensorflow_lite_support/cc/task/core/external_file_handler.h"
@@ -37,24 +37,16 @@ limitations under the License.
 #include "tensorflow_lite_support/cc/task/vision/utils/frame_buffer_common_utils.h"
 #include "tensorflow_lite_support/cc/task/vision/utils/image_utils.h"
 
-ABSL_FLAG(std::string,
-          model_path,
-          "",
+ABSL_FLAG(std::string, model_path, "",
           "Absolute path to the '.tflite' image segmenter model.");
-ABSL_FLAG(std::string,
-          image_path,
-          "",
+ABSL_FLAG(std::string, image_path, "",
           "Absolute path to the image to segment. The image must be RGB or "
           "RGBA (grayscale is not supported). The image EXIF orientation "
           "flag, if any, is NOT taken into account.");
-ABSL_FLAG(std::string,
-          output_mask_png,
-          "",
+ABSL_FLAG(std::string, output_mask_png, "",
           "Absolute path to the output category mask (confidence masks outputs "
           "are not supported by this tool). Must have a '.png' extension.");
-ABSL_FLAG(bool,
-          use_coral,
-          false,
+ABSL_FLAG(bool, use_coral, false,
           "If true, inference will be delegated to a connected Coral Edge TPU "
           "device.");
 
@@ -112,7 +104,7 @@ absl::Status EncodeMaskToPngFile(const SegmentationResult& result) {
   }
 
   // Encode mask as PNG.
-  RETURN_IF_ERROR(
+  TFLITE_RETURN_IF_ERROR(
       EncodeImageToPngFile(mask, absl::GetFlag(FLAGS_output_mask_png)));
   std::cout << absl::StrFormat("Category mask saved to: %s\n",
                                absl::GetFlag(FLAGS_output_mask_png));
@@ -157,11 +149,11 @@ absl::Status DisplayColorLegend(const SegmentationResult& result) {
 absl::Status Segment() {
   // Build ImageClassifier.
   const ImageSegmenterOptions& options = BuildOptions();
-  ASSIGN_OR_RETURN(std::unique_ptr<ImageSegmenter> image_segmenter,
+  TFLITE_ASSIGN_OR_RETURN(std::unique_ptr<ImageSegmenter> image_segmenter,
                    ImageSegmenter::CreateFromOptions(options));
 
   // Load image in a FrameBuffer.
-  ASSIGN_OR_RETURN(ImageData image,
+  TFLITE_ASSIGN_OR_RETURN(ImageData image,
                    DecodeImageFromFile(absl::GetFlag(FLAGS_image_path)));
   std::unique_ptr<FrameBuffer> frame_buffer;
   if (image.channels == 3) {
@@ -178,7 +170,7 @@ absl::Status Segment() {
 
   // Run segmentation and save category mask.
   auto start_segment = steady_clock::now();
-  ASSIGN_OR_RETURN(SegmentationResult result,
+  TFLITE_ASSIGN_OR_RETURN(SegmentationResult result,
                    image_segmenter->Segment(*frame_buffer));
   auto end_segment = steady_clock::now();
   std::string delegate =
@@ -189,10 +181,10 @@ absl::Status Segment() {
                    .count()
             << " ms" << std::endl;
 
-  RETURN_IF_ERROR(EncodeMaskToPngFile(result));
+  TFLITE_RETURN_IF_ERROR(EncodeMaskToPngFile(result));
 
   // Display the legend.
-  RETURN_IF_ERROR(DisplayColorLegend(result));
+  TFLITE_RETURN_IF_ERROR(DisplayColorLegend(result));
 
   // Cleanup and return.
   ImageDataFree(&image);

@@ -66,7 +66,7 @@ PromoCodeLabelButton::PromoCodeLabelButton(PressedCallback callback,
 
 PromoCodeLabelButton::~PromoCodeLabelButton() = default;
 
-BEGIN_METADATA(PromoCodeLabelButton, views::LabelButton)
+BEGIN_METADATA(PromoCodeLabelButton)
 END_METADATA
 
 }  // namespace autofill

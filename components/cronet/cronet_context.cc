@@ -25,6 +25,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/message_loop/message_pump_type.h"
 #include "base/metrics/statistics_recorder.h"
+#include "base/synchronization/waitable_event.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_restrictions.h"
@@ -132,10 +133,12 @@ class BasicNetworkDelegate : public net::NetworkDelegateImpl {
     return false;
   }
 
-  bool OnCanSetCookie(const net::URLRequest& request,
-                      const net::CanonicalCookie& cookie,
-                      net::CookieOptions* options,
-                      net::CookieInclusionStatus* inclusion_status) override {
+  bool OnCanSetCookie(
+      const net::URLRequest& request,
+      const net::CanonicalCookie& cookie,
+      net::CookieOptions* options,
+      const net::FirstPartySetMetadata& first_party_set_metadata,
+      net::CookieInclusionStatus* inclusion_status) override {
     // Disallow saving cookies by default.
     return false;
   }
@@ -198,7 +201,6 @@ CronetContext::CronetContext(
     : bidi_stream_detect_broken_connection_(
           context_config->bidi_stream_detect_broken_connection),
       heartbeat_interval_(context_config->heartbeat_interval),
-      enable_telemetry_(context_config->enable_telemetry),
       default_load_flags_(
           net::LOAD_NORMAL |
           (context_config->load_disable_cache ? net::LOAD_DISABLE_CACHE : 0)),
@@ -468,7 +470,7 @@ void CronetContext::NetworkTasks::SetSharedURLRequestContextConfig(
     // Add the host pinning.
     context->transport_security_state()->AddHPKP(
         pkp->host, pkp->expiration_date, pkp->include_subdomains,
-        pkp->pin_hashes, GURL::EmptyGURL());
+        pkp->pin_hashes);
   }
 
   context->transport_security_state()
@@ -671,6 +673,24 @@ void CronetContext::StopNetLog() {
   PostTaskToNetworkThread(
       FROM_HERE, base::BindOnce(&CronetContext::NetworkTasks::StopNetLog,
                                 base::Unretained(network_tasks_)));
+}
+
+void CronetContext::FlushWritePropertiesForTesting() {
+  base::WaitableEvent wait_for_callback;
+  network_task_runner_->PostTask(
+      FROM_HERE,
+      base::BindOnce(
+          [](NetworkTasks* network_tasks, base::OnceClosure callback) {
+            network_tasks
+                ->GetURLRequestContext(net::handles::kInvalidNetworkHandle)
+                ->http_server_properties()
+                ->FlushWritePropertiesForTesting(  // IN-TEST
+                    std::move(callback));
+          },
+          network_tasks_,
+          base::BindOnce(&base::WaitableEvent::Signal,
+                         base::Unretained(&wait_for_callback))));
+  wait_for_callback.Wait();
 }
 
 void CronetContext::MaybeDestroyURLRequestContext(

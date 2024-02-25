@@ -2,9 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {assert} from 'chrome://resources/js/assert_ts.js';
+import {assert} from 'chrome://resources/js/assert.js';
 import {EventTracker} from 'chrome://resources/js/event_tracker.js';
-import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import type {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 function isIndexInBetweenStartEnd(
     index: number, start: number, end: number): boolean {
@@ -37,6 +37,12 @@ export interface DraggableTileListInterface {
   getDraggableTile(index: number): HTMLElement;
   // Given a draggable tile, return its corresponding index in the tile list.
   getDraggableTileIndex(tile: HTMLElement): number;
+
+  // On drag end, send back the indices of the tiles that were affected.
+  // initialIndex: is the index of the tile that was dragged.
+  // finalIndex: is the index of the tile that was targeted, the location at
+  // which the dragging tile was dropped.
+  onDragEnd(initialIndex: number, finalIndex: number): void;
 }
 
 // This delegate class allows any Polymer list container of tiles to add the
@@ -51,10 +57,11 @@ export interface DraggableTileListInterface {
 // - 'dragend': triggered once when a tile drag stops, after a drop.
 // A full drag event cycle starts with 'dragstart' and ends with 'dragend'.
 //
-// To activate the drag and drop functionality, a call to
-// `initializeListeners()` (only once) will attach all necessary 'drag-' event
-// listeners to the proper tiles. This method must be called once the HTML
-// tiles, that are intended to be drag and dropped, are properly rendered.
+// The drag and drop functionality will be active once this object is
+// initialized, a call to `initializeListeners_()` will attach all necessary
+// 'drag-' event listeners to the proper tiles. This instance should be
+// constructed once the HTML tiles, that are intended to be drag and dropped,
+// are properly rendered.
 export class DragDropReorderTileListDelegate {
   private polymerElement_: PolymerElement;
   private tileListInterface_: DraggableTileListInterface;
@@ -62,7 +69,6 @@ export class DragDropReorderTileListDelegate {
   private tileCount_: number;
   private transitionDuration_: number;  // Unit: ms.
 
-  private initialized_ = false;
   private isDragEnabled_ = true;
 
   private isDragging_: boolean = false;
@@ -86,16 +92,36 @@ export class DragDropReorderTileListDelegate {
     this.transitionDuration_ = transitionDuration;
 
     this.eventTracker_ = new EventTracker();
+
+    this.initializeListeners_();
   }
+
+  // Clear all drag events listeners and reset tiles drag state.
+  clearListeners() {
+    for (let i = 0; i < this.tileCount_; ++i) {
+      const tile = this.getDraggableTile_(i);
+      tile.draggable = false;
+    }
+
+    this.eventTracker_.removeAll();
+  }
+
+  // Toggle the dragging properties of the tiles on or off.
+  // This could be useful to temporarily turning off the functionality (e.g.
+  // when hovering over some editable elements that are part of a draggable
+  // tile).
+  toggleDrag(toggle: boolean) {
+    this.isDragEnabled_ = toggle;
+  }
+
+  // ---------------------------------------------------------------------------
+  // private section
 
   // Initialize tiles to be able to react to drag events and shift with
   // transition effect based on the 'transform' property.
   // Expected to be called once so that a single event of each type is added to
   // the tiles.
-  initializeListeners() {
-    assert(!this.initialized_);
-    this.initialized_ = true;
-
+  private initializeListeners_() {
     for (let i = 0; i < this.tileCount_; ++i) {
       const tile = this.getDraggableTile_(i);
       tile.draggable = true;
@@ -112,39 +138,31 @@ export class DragDropReorderTileListDelegate {
         this.onDragOver_(event);
       }, false);
 
-      // TODO(http://crbug/1466146): check if this event delay can be removed
-      // for MacOS. It is making the drop have an awkward movement.
       this.eventTracker_.add(tile, 'dragend', (event: DragEvent) => {
         this.onDragEnd_(event);
       });
     }
+
+    // React to all elements being dragged over. We need this global polymer
+    // element listener in order to allow dropping an element on top of another
+    // one. For that, we need a call to `preventDefault()` with the proper
+    // event/element (it could be any sub-element, potentially not the tile
+    // since the tile we are replacing is potentially moved and therefore not
+    // triggering any more drag over events that will be associated with the
+    // dragend of our drag event cycle of interest).
+    // Therefore, we only use this listener to allow properly dropping the tile.
+    this.eventTracker_.add(
+        this.polymerElement_, 'dragover', (event: DragEvent) => {
+          // Only react if we are part of our drag event cycle. This event will
+          // trigger for any element being dragged over within the polymer
+          // element.
+          if (!this.isDragging_) {
+            return;
+          }
+
+          event.preventDefault();
+        });
   }
-
-  // Clear all drag events listeners and reset tiles drag state.
-  clearListeners() {
-    if (!this.initialized_) {
-      return;
-    }
-
-    for (let i = 0; i < this.tileCount_; ++i) {
-      const tile = this.getDraggableTile_(i);
-      tile.draggable = false;
-    }
-
-    this.eventTracker_.removeAll();
-  }
-
-  // Toggle the dragging properties of the tiles on or off.
-  // This could be useful to temporarily turning off the functionality (e.g.
-  // when hovering over some editable elements that are part of a draggable
-  // tile).
-  toggleDrag(toggle: boolean) {
-    assert(this.initialized_);
-    this.isDragEnabled_ = toggle;
-  }
-
-  // ---------------------------------------------------------------------------
-  // private section
 
   // Event 'dragstart' is applied on the tile that will be dragged. We store the
   // tile being dragged in temporary member variables that will be used
@@ -280,6 +298,10 @@ export class DragDropReorderTileListDelegate {
       // will take into account the changes and have all the tiles at their
       // right place.
       this.applyChanges_();
+
+      // Notfiy the list of the changes.
+      this.tileListInterface_.onDragEnd(
+          this.dragStartIndex_, this.dropTargetIndex_);
     }
 
     this.dropTargetIndex_ = -1;
@@ -456,6 +478,7 @@ export class DragDropReorderTileListDelegate {
       tile.classList.remove(SHIFTING_TAG);
       tile.style.removeProperty('transition');
       tile.style.removeProperty('transform');
+      tile.style.removeProperty('z-index');
     }
   }
 

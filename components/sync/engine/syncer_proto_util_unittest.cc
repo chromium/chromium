@@ -17,6 +17,7 @@
 #include "components/sync/test/fake_sync_scheduler.h"
 #include "components/sync/test/mock_connection_manager.h"
 #include "components/sync/test/model_type_test_util.h"
+#include "net/base/net_errors.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -221,7 +222,7 @@ class DummyConnectionManager : public ServerConnectionManager {
                           const std::string& access_token,
                           std::string* buffer_out) override {
     if (send_error_) {
-      return HttpResponse::ForIoErrorForTest();
+      return HttpResponse::ForNetError(net::ERR_FAILED);
     }
 
     response_.SerializeToString(buffer_out);
@@ -280,7 +281,7 @@ TEST_F(SyncerProtoUtilTest, ShouldHandleGetUpdatesRetryDelay) {
   SyncerError error = SyncerProtoUtil::PostClientToServerMessage(
       DefaultGetUpdatesRequest(), &response, &cycle,
       &partial_failure_data_types);
-  EXPECT_EQ(error.value(), SyncerError::SYNCER_OK);
+  EXPECT_EQ(error.type(), SyncerError::Type::kSuccess);
 }
 
 TEST_F(SyncerProtoUtilTest, ShouldIgnoreGetUpdatesRetryDelay) {
@@ -311,7 +312,7 @@ TEST_F(SyncerProtoUtilTest, ShouldIgnoreGetUpdatesRetryDelay) {
   SyncerError error = SyncerProtoUtil::PostClientToServerMessage(
       DefaultGetUpdatesRequest(), &response, &cycle,
       &partial_failure_data_types);
-  EXPECT_EQ(error.value(), SyncerError::SYNCER_OK);
+  EXPECT_EQ(error.type(), SyncerError::Type::kSuccess);
 }
 
 }  // namespace syncer

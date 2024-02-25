@@ -156,8 +156,8 @@ void XRFrameProvider::OnSessionEnded(XRSession* session) {
     immersive_data_provider_.reset();
     immersive_frame_viewer_pose_ = nullptr;
     is_immersive_frame_position_emulated_ = false;
-    first_immersive_frame_time_ = absl::nullopt;
-    first_immersive_frame_time_delta_ = absl::nullopt;
+    first_immersive_frame_time_ = std::nullopt;
+    first_immersive_frame_time_delta_ = std::nullopt;
 
     frame_transport_ = MakeGarbageCollected<XRFrameTransport>(
         session->GetExecutionContext(),
@@ -263,7 +263,11 @@ void XRFrameProvider::ScheduleNonImmersiveFrame(
 void XRFrameProvider::OnImmersiveFrameData(
     device::mojom::blink::XRFrameDataPtr data) {
   TRACE_EVENT0("gpu", __FUNCTION__);
-  DVLOG(2) << __FUNCTION__ << ": data.is_null()=" << data.is_null();
+  if (data.is_null()) {
+    DVLOG(2) << __func__ << ": no data, current frame_id=" << frame_id_;
+  } else {
+    DVLOG(2) << __func__ << ": have data, frame_id=" << data->frame_id;
+  }
 
   // We may have lost the immersive session since the last VSync request.
   if (!immersive_session_) {
@@ -331,10 +335,11 @@ void XRFrameProvider::OnImmersiveFrameData(
   // Used kInternalMedia since 1) this is not spec-ed and 2) this is media
   // related then tasks should not be throttled or frozen in background tabs.
   window->GetTaskRunner(blink::TaskType::kInternalMedia)
-      ->PostTask(FROM_HERE,
-                 WTF::BindOnce(&XRFrameProvider::ProcessScheduledFrame,
-                               WrapWeakPersistent(this), std::move(data),
-                               high_res_now_ms));
+      ->PostTask(
+          FROM_HERE,
+          WTF::BindOnce(&XRFrameProvider::ProcessScheduledFrame,
+                        WrapWeakPersistent(this), std::move(data),
+                        high_res_now_ms, ScheduledFrameType::kImmersive));
 }
 
 void XRFrameProvider::OnNonImmersiveVSync(double high_res_now_ms) {
@@ -352,10 +357,10 @@ void XRFrameProvider::OnNonImmersiveVSync(double high_res_now_ms) {
     return;
 
   window->GetTaskRunner(blink::TaskType::kInternalMedia)
-      ->PostTask(
-          FROM_HERE,
-          WTF::BindOnce(&XRFrameProvider::ProcessScheduledFrame,
-                        WrapWeakPersistent(this), nullptr, high_res_now_ms));
+      ->PostTask(FROM_HERE,
+                 WTF::BindOnce(&XRFrameProvider::ProcessScheduledFrame,
+                               WrapWeakPersistent(this), nullptr,
+                               high_res_now_ms, ScheduledFrameType::kInline));
 }
 
 void XRFrameProvider::OnNonImmersiveFrameData(
@@ -427,7 +432,8 @@ void XRFrameProvider::RequestNonImmersiveFrameData(XRSession* session) {
 
 void XRFrameProvider::ProcessScheduledFrame(
     device::mojom::blink::XRFrameDataPtr frame_data,
-    double high_res_now_ms) {
+    double high_res_now_ms,
+    ScheduledFrameType frame_type) {
   DVLOG(2) << __FUNCTION__ << ": frame_id_=" << frame_id_
            << ", high_res_now_ms=" << high_res_now_ms;
 
@@ -444,6 +450,13 @@ void XRFrameProvider::ProcessScheduledFrame(
   }
 
   if (immersive_session_) {
+    if (frame_type != ScheduledFrameType::kImmersive) {
+      DVLOG(1)
+          << __func__
+          << " Attempted to process non-immersive scheduled frame as immersive";
+      return;
+    }
+
     // Check if immersive session is still valid, it may have ended and be
     // waiting for shutdown acknowledgement.
     if (immersive_session_->ended()) {
@@ -565,7 +578,7 @@ void XRFrameProvider::ProcessScheduledFrame(
                      WTF::BindOnce(&XRFrameProvider::OnPreDispatchInlineFrame,
                                    WrapWeakPersistent(this),
                                    WrapWeakPersistent(session), high_res_now_ms,
-                                   absl::nullopt, absl::nullopt));
+                                   std::nullopt, std::nullopt));
     }
   }
 }
@@ -573,8 +586,8 @@ void XRFrameProvider::ProcessScheduledFrame(
 void XRFrameProvider::OnPreDispatchInlineFrame(
     XRSession* session,
     double timestamp,
-    const absl::optional<gpu::MailboxHolder>& output_mailbox_holder,
-    const absl::optional<gpu::MailboxHolder>& camera_image_mailbox_holder) {
+    const std::optional<gpu::MailboxHolder>& output_mailbox_holder,
+    const std::optional<gpu::MailboxHolder>& camera_image_mailbox_holder) {
   // Do nothing if the session was cleaned up or ended before we were schedueld.
   if (!session || session->ended())
     return;
@@ -639,6 +652,7 @@ void XRFrameProvider::SubmitWebGLLayer(XRWebGLLayer* layer, bool was_changed) {
     return;
 
   TRACE_EVENT1("gpu", "XRFrameProvider::SubmitWebGLLayer", "frame", frame_id_);
+  DVLOG(3) << __func__ << ": frame=" << frame_id_;
 
   WebGLRenderingContextBase* webgl_context = layer->context();
 

@@ -9,6 +9,7 @@
 
 #include "base/apple/scoped_cftyperef.h"
 #include "base/base64.h"
+#import "base/memory/raw_ptr.h"
 #include "base/rand_util.h"
 #include "base/strings/sys_string_conversions.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -21,10 +22,7 @@ const char kTestServicePrefix[] =
     "com.google.ChromeRemoteDesktop.RemotingKeychainTest.";
 
 std::string RandomBase64String(int byte_length) {
-  std::string random_bytes = base::RandBytesAsString(byte_length);
-  std::string random_string;
-  base::Base64Encode(random_bytes, &random_string);
-  return random_string;
+  return base::Base64Encode(base::RandBytesAsVector(byte_length));
 }
 
 NSString* KeyToService(Keychain::Key key) {
@@ -69,7 +67,7 @@ class RemotingKeychainTest : public testing::Test {
                       const std::string& expected_data);
   void RemoveKeychainAndVerify(Keychain::Key key, const std::string& account);
 
-  RemotingKeychain* keychain_;
+  raw_ptr<RemotingKeychain> keychain_;
 };
 
 void RemotingKeychainTest::SetUp() {

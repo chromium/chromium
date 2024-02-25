@@ -8,13 +8,11 @@ component("user_manager") {
   sources = [
     "multi_user/multi_user_sign_in_policy.cc",
     "multi_user/multi_user_sign_in_policy.h",
-    "user_info.cc",
-    "user_info.h",
-    "user_info_impl.cc",
-    "user_info_impl.h",
     "user_manager_export.h",
+    "user_manager_pref_names.h",
     "user_names.cc",
     "user_names.h",
+    "user_type.cc",
     "user_type.h",
   ]
 
@@ -38,6 +36,8 @@ component("user_manager") {
       "include_exclude_account_id_filter.h",
       "known_user.cc",
       "known_user.h",
+      "multi_user/multi_user_sign_in_policy_controller.cc",
+      "multi_user/multi_user_sign_in_policy_controller.h",
       "scoped_user_manager.cc",
       "scoped_user_manager.h",
       "user.cc",

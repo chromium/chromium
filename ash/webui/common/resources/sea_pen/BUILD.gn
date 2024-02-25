@@ -1,0 +1,85 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD - style license that can be
+# found in the LICENSE file.
+
+import("//build/config/chromeos/ui_mode.gni")
+import("//ui/webui/resources/tools/build_webui.gni")
+import("//ui/webui/webui_features.gni")
+
+assert(is_chromeos_ash, "SeaPen is for ChromeOS only.")
+
+build_webui("build_ts") {
+  grd_prefix = "ash_common_sea_pen"
+
+  static_files = [
+    "sea_pen_images/sea_pen_art.jpg",
+    "sea_pen_images/sea_pen_characters.jpg",
+    "sea_pen_images/sea_pen_curious.jpg",
+    "sea_pen_images/sea_pen_dreamscapes.jpg",
+    "sea_pen_images/sea_pen_flower.jpg",
+    "sea_pen_images/sea_pen_mineral.jpg",
+    "sea_pen_images/sea_pen_scifi.jpg",
+    "sea_pen_images/sea_pen_terrain.jpg",
+    "sea_pen_images/sea_pen_tile.jpg",
+    "sea_pen_images/sea_pen_translucent.jpg",
+    "sea_pen_images/sea_pen_dreamscapes_vc.jpg",
+    "sea_pen_images/sea_pen_cafe.jpg",
+    "sea_pen_images/sea_pen_office.jpg",
+    "sea_pen_images/sea_pen_simple.jpg",
+    "sea_pen_images/sea_pen_terrain_vc.jpg",
+  ]
+
+  web_component_files = [
+    "sea_pen_feedback_element.ts",
+    "sea_pen_image_loading_element.ts",
+    "sea_pen_images_element.ts",
+    "sea_pen_input_query_element.ts",
+    "sea_pen_recent_wallpapers_element.ts",
+    "sea_pen_router_element.ts",
+    "sea_pen_template_query_element.ts",
+    "sea_pen_templates_element.ts",
+    "sea_pen_terms_of_service_dialog_element.ts",
+    "surface_effects/sparkle_placeholder.ts",
+  ]
+
+  non_web_component_files = [
+    "constants.ts",
+    "constants_generated.ts",
+    "load_time_booleans.ts",
+    "sea_pen_actions.ts",
+    "sea_pen_controller.ts",
+    "sea_pen_interface_provider.ts",
+    "sea_pen_reducer.ts",
+    "sea_pen_state.ts",
+    "sea_pen_store.ts",
+    "sea_pen_utils.ts",
+    "surface_effects/sparkle_shader.ts",
+    "surface_effects/sparkle.ts",
+    "surface_effects/utils.ts",
+  ]
+
+  icons_html_files = [ "sea_pen_icons.html" ]
+
+  css_files = [ "sea_pen.css" ]
+
+  mojo_files_deps = [ "//ash/webui/common/mojom:sea_pen_ts__generator" ]
+  mojo_files = [
+    "$root_gen_dir/ash/webui/common/mojom/sea_pen.mojom-webui.ts",
+    "$root_gen_dir/ash/webui/common/mojom/sea_pen_generated.mojom-webui.ts",
+  ]
+
+  ts_composite = true
+  ts_definitions = [ "//tools/typescript/definitions/metrics_private.d.ts" ]
+  ts_deps = [
+    "//ash/webui/common/resources/cr_elements:build_ts",
+    "//ash/webui/common/resources/personalization:build_ts",
+    "//third_party/polymer/v3_0:library",
+    "//ui/webui/resources/js:build_ts",
+    "//ui/webui/resources/mojo:build_ts",
+  ]
+  ts_extra_deps = [ "//ash/webui/common/resources:generate_definitions" ]
+  ts_out_dir = "$root_gen_dir/ash/webui/common/resources/preprocessed/sea_pen"
+
+  generate_grdp = true
+  grd_resource_path_prefix = "ash/common/sea_pen"
+}

@@ -8,7 +8,6 @@
 #include "ash/ash_export.h"
 #include "base/time/time.h"
 #include "chromeos/ui/wm/constants.h"
-#include "ui/gfx/geometry/insets.h"
 
 namespace ash {
 
@@ -23,6 +22,9 @@ ASH_EXPORT constexpr float kHighlightScreenEdgePaddingDp = 12;
 // vertical apply to the orientation before rotation (if there is rotation).
 constexpr int kSplitviewLabelHorizontalInsetDp = 16;
 constexpr int kSplitviewLabelVerticalInsetDp = 8;
+
+// App cannot snap toast id.
+constexpr char kAppCannotSnapToastId[] = "split_view_app_cannot_snap";
 
 // The preferred height of a split view label.
 constexpr int kSplitviewLabelPreferredHeightDp = 36;
@@ -50,6 +52,12 @@ constexpr auto kSplitviewDividerSpawnDuration = base::Milliseconds(100);
 
 // The delay before the `split_view_divider_` spawning animation.
 constexpr auto kSplitviewDividerSpawnDelay = base::Milliseconds(183);
+
+// The one-way bouncing animation duration for the `split_view_divider_` when
+// the to-be-snapped window can't fit in the work area. The actual duration when
+// used should be doubled to include the "bouncing out and bounding back in"
+// process.
+constexpr auto kBouncingAnimationOneWayDuration = base::Milliseconds(250);
 
 // The thickness of the `split_view_divider_`'s handler.
 constexpr int kSplitviewWhiteBarShortSideLength = 2;

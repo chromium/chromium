@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_EXTENSIONS_API_TAB_CAPTURE_TAB_CAPTURE_REGISTRY_H_
 #define CHROME_BROWSER_EXTENSIONS_API_TAB_CAPTURE_TAB_CAPTURE_REGISTRY_H_
 
+#include <optional>
 #include <string>
 #include <utility>
 #include <vector>
@@ -19,7 +20,6 @@
 #include "extensions/browser/browser_context_keyed_api_factory.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extension_registry_observer.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace content {
 class BrowserContext;
@@ -69,7 +69,7 @@ class TabCaptureRegistry : public BrowserContextKeyedAPI,
                          const GURL& origin,
                          content::DesktopMediaID source,
                          int caller_render_process_id,
-                         absl::optional<int> restrict_to_render_frame_id);
+                         std::optional<int> restrict_to_render_frame_id);
 
   // Called by MediaStreamDevicesController to verify the request before
   // creating the stream.  |render_process_id| and |render_frame_id| are used to

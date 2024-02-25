@@ -10,8 +10,6 @@
 #include "ios/web_view/internal/sync/web_view_sync_service_factory.h"
 #include "ios/web_view/internal/web_view_browser_state.h"
 
-#include "ios/components/webui/web_ui_provider.h"
-
 namespace web_ui {
 
 syncer::SyncService* GetSyncServiceForWebUI(web::WebUIIOS* web_ui) {

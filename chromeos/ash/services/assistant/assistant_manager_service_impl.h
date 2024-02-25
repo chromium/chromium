@@ -7,6 +7,7 @@
 
 #include <map>
 #include <memory>
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -36,7 +37,6 @@
 #include "mojo/public/cpp/bindings/remote.h"
 #include "services/device/public/mojom/battery_monitor.mojom.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/accessibility/ax_assistant_structure.h"
 #include "ui/accessibility/mojom/ax_assistant_structure.mojom.h"
 
@@ -106,8 +106,8 @@ class COMPONENT_EXPORT(ASSISTANT_SERVICE) AssistantManagerServiceImpl
       ServiceContext* context,
       std::unique_ptr<network::PendingSharedURLLoaderFactory>
           pending_url_loader_factory,
-      absl::optional<std::string> s3_server_uri_override,
-      absl::optional<std::string> device_id_override,
+      std::optional<std::string> s3_server_uri_override,
+      std::optional<std::string> device_id_override,
       // Allows to inect a custom |LibassistantServiceHost| during unittests.
       std::unique_ptr<LibassistantServiceHost> libassistant_service_host =
           nullptr);
@@ -119,11 +119,10 @@ class COMPONENT_EXPORT(ASSISTANT_SERVICE) AssistantManagerServiceImpl
   ~AssistantManagerServiceImpl() override;
 
   // assistant::AssistantManagerService overrides:
-  void Start(const absl::optional<UserInfo>& user,
-             bool enable_hotword) override;
+  void Start(const std::optional<UserInfo>& user, bool enable_hotword) override;
   void Stop() override;
   State GetState() const override;
-  void SetUser(const absl::optional<UserInfo>& user) override;
+  void SetUser(const std::optional<UserInfo>& user) override;
   void EnableListening(bool enable) override;
   void EnableHotword(bool enable) override;
   void SetArcPlayStoreEnabled(bool enable) override;
@@ -187,7 +186,7 @@ class COMPONENT_EXPORT(ASSISTANT_SERVICE) AssistantManagerServiceImpl
 
  private:
   void Initialize();
-  void InitAssistant(const absl::optional<UserInfo>& user);
+  void InitAssistant(const std::optional<UserInfo>& user);
   void OnServiceStarted();
   void OnServiceRunning();
   void OnServiceStopped();
@@ -247,7 +246,7 @@ class COMPONENT_EXPORT(ASSISTANT_SERVICE) AssistantManagerServiceImpl
   base::ObserverList<AssistantInteractionSubscriber> interaction_subscribers_;
 
   // Owned by the parent |Service| which will destroy |this| before |context_|.
-  const raw_ptr<ServiceContext, ExperimentalAsh> context_;
+  const raw_ptr<ServiceContext> context_;
 
   std::unique_ptr<LibassistantServiceHost> libassistant_service_host_;
   std::unique_ptr<DeviceSettingsHost> device_settings_host_;

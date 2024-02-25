@@ -14,6 +14,7 @@
 #include "third_party/blink/renderer/modules/xr/xr_test_utils.h"
 #include "third_party/blink/renderer/modules/xr/xr_utils.h"
 #include "third_party/blink/renderer/platform/bindings/script_state.h"
+#include "third_party/blink/renderer/platform/testing/task_environment.h"
 
 namespace blink {
 namespace {
@@ -62,6 +63,7 @@ static void TestDoubleInverse(DOMPointInit* position,
 }
 
 TEST(XRRigidTransformTest, Compose) {
+  test::TaskEnvironment task_environment;
   DOMPointInit* position = MakePointForTest(1.0, 2.0, 3.0, 1.0);
   DOMPointInit* orientation = MakePointForTest(0.7071068, 0.0, 0.0, 0.7071068);
   XRRigidTransform transform(position, orientation);
@@ -75,6 +77,7 @@ TEST(XRRigidTransformTest, Compose) {
 }
 
 TEST(XRRigidTransformTest, Decompose) {
+  test::TaskEnvironment task_environment;
   auto matrix =
       gfx::Transform::ColMajor(1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0,
                                -1.0, 0.0, 0.0, 1.0, 2.0, 3.0, 1.0);
@@ -86,11 +89,13 @@ TEST(XRRigidTransformTest, Decompose) {
 }
 
 TEST(XRRigidTransformTest, ComposeDecompose) {
+  test::TaskEnvironment task_environment;
   TestComposeDecompose(MakePointForTest(1.0, -1.0, 4.0, 1.0),
                        MakePointForTest(1.0, 0.0, 0.0, 1.0));
 }
 
 TEST(XRRigidTransformTest, ComposeDecompose2) {
+  test::TaskEnvironment task_environment;
   TestComposeDecompose(
       MakePointForTest(1.0, -1.0, 4.0, 1.0),
       MakePointForTest(0.3701005885691383, -0.5678993882056005,
@@ -98,17 +103,20 @@ TEST(XRRigidTransformTest, ComposeDecompose2) {
 }
 
 TEST(XRRigidTransformTest, DoubleInverse) {
+  test::TaskEnvironment task_environment;
   TestDoubleInverse(MakePointForTest(1.0, -1.0, 4.0, 1.0),
                     MakePointForTest(1.0, 0.0, 0.0, 1.0));
 }
 
 TEST(XRRigidTransformTest, DoubleInverse2) {
+  test::TaskEnvironment task_environment;
   TestDoubleInverse(MakePointForTest(1.0, -1.0, 4.0, 1.0),
                     MakePointForTest(0.3701005885691383, -0.5678993882056005,
                                      0.31680366148754113, 0.663438979322567));
 }
 
 TEST(XRRigidTransformTest, InverseObjectEquality) {
+  test::TaskEnvironment task_environment;
   XRRigidTransform* transform = MakeGarbageCollected<XRRigidTransform>(
       MakePointForTest(1.0, 2.0, 3.0, 4.0),
       MakePointForTest(1.0, 0.0, 0.0, 1.0));

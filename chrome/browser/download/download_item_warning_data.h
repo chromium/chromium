@@ -27,13 +27,31 @@ class DownloadItemWarningData : public base::SupportsUserData::Data {
   enum class WarningSurface {
     // Applicable actions: DISCARD, OPEN_SUBPAGE
     BUBBLE_MAINPAGE = 1,
-    // Applicable actions: PROCEED, DISCARD, DISMISS, CLOSE, BACK
+    // Applicable actions: PROCEED, DISCARD, DISMISS, CLOSE, BACK,
+    // PROCEED_DEEP_SCAN, OPEN_LEARN_MORE_LINK
     BUBBLE_SUBPAGE = 2,
-    // Applicable actions: DISCARD, KEEP
+    // Applicable actions: DISCARD, KEEP, PROCEED
+    // Under ImprovedDownloadPageWarnings:
+    // PROCEED on the downloads page indicates saving a "suspicious" download
+    // directly, without going through the prompt. In contrast, KEEP indicates
+    // opening the prompt, for a "dangerous" download.
     DOWNLOADS_PAGE = 3,
     // Applicable actions: PROCEED, CANCEL, CLOSE
+    // Under ImprovedDownloadPageWarnings: CLOSE is no longer a separate option
+    // because the new dialog only has PROCEED and CANCEL buttons, and we treat
+    // dismissing it with Escape the same as pressing cancel.
+    // TODO(chlily): Clean this comment up once the feature launches.
     DOWNLOAD_PROMPT = 4,
-    kMaxValue = DOWNLOAD_PROMPT
+    // Applicable actions: OPEN_SUBPAGE
+    // Note: This is only used on Lacros. DownloadItemWarningData is only
+    // applied for v2 notifications on ChromeOS Lacros, not for the legacy
+    // ChromeOS notifications used on ChromeOS Ash and on Lacros pre-v2. Other
+    // platforms do not have desktop notifications for downloads.
+    // TODO(chlily): CLOSE should be logged as well but there is currently no
+    // way to tell when a download is dangerous on the Ash side, which handles
+    // the notification close.
+    DOWNLOAD_NOTIFICATION = 5,
+    kMaxValue = DOWNLOAD_NOTIFICATION
   };
 
   // Users action on the warning surface.
@@ -41,16 +59,20 @@ class DownloadItemWarningData : public base::SupportsUserData::Data {
   // numeric values should never be reused.
   enum class WarningAction {
     // The warning is shown. This is a special action that may not be triggered
-    // by user. We will use this action as the anchor to track the latency of
-    // other actions.
+    // by user. We will use the first instance of this action as the anchor to
+    // track the latency of other actions.
     SHOWN = 0,
     // The user clicks proceed, which means the user decides to bypass the
-    // warning.
+    // warning. This is a terminal action.
+    // Note that this corresponds to DownloadCommands::Command::KEEP, despite
+    // the confusing naming.
     PROCEED = 1,
     // The user clicks discard, which means the user decides to obey the
     // warning and the dangerous download is deleted from disk.
     DISCARD = 2,
-    // The user has clicked the keep button on the surface.
+    // The user has clicked the keep button on the surface, which causes another
+    // surface (e.g. download prompt) to be displayed. This is not a terminal
+    // action.
     KEEP = 3,
     // The user has clicked the close button on the surface.
     CLOSE = 4,
@@ -62,9 +84,13 @@ class DownloadItemWarningData : public base::SupportsUserData::Data {
     // The user has clicked the back button on the bubble subpage to go back
     // to the bubble main page.
     BACK = 7,
-    // The user has opened the subpage from the main page.
+    // The user has opened the download bubble subpage.
     OPEN_SUBPAGE = 8,
-    kMaxValue = OPEN_SUBPAGE
+    // The user clicks proceed on a prompt for deep scanning.
+    PROCEED_DEEP_SCAN = 9,
+    // The user clicks the learn more link on the bubble subpage.
+    OPEN_LEARN_MORE_LINK = 10,
+    kMaxValue = OPEN_LEARN_MORE_LINK
   };
 
   struct WarningActionEvent {
@@ -99,19 +125,31 @@ class DownloadItemWarningData : public base::SupportsUserData::Data {
                                     WarningAction action);
 
   // Returns whether the download was an encrypted archive.
-  static bool IsEncryptedArchive(download::DownloadItem* download);
+  static bool IsEncryptedArchive(const download::DownloadItem* download);
   static void SetIsEncryptedArchive(download::DownloadItem* download,
                                     bool is_encrypted_archive);
 
   // Returns whether the user has entered an incorrect password for the
   // archive.
-  static bool HasIncorrectPassword(download::DownloadItem* download);
+  static bool HasIncorrectPassword(const download::DownloadItem* download);
   static void SetHasIncorrectPassword(download::DownloadItem* download,
                                       bool has_incorrect_password);
 
   // Converts an `event` to the Safe Browsing report proto format.
   static safe_browsing::ClientSafeBrowsingReportRequest::DownloadWarningAction
   ConstructCsbrrDownloadWarningAction(const WarningActionEvent& event);
+
+  // Returns whether we have shown a local password decryption prompt for this
+  // download.
+  static bool HasShownLocalDecryptionPrompt(
+      const download::DownloadItem* download);
+  static void SetHasShownLocalDecryptionPrompt(download::DownloadItem* download,
+                                               bool has_shown);
+
+  // Returns whether an encrypted archive was fully extracted.
+  static bool IsFullyExtractedArchive(const download::DownloadItem* download);
+  static void SetIsFullyExtractedArchive(download::DownloadItem* download,
+                                         bool extracted);
 
  private:
   DownloadItemWarningData();
@@ -130,6 +168,11 @@ class DownloadItemWarningData : public base::SupportsUserData::Data {
   std::vector<WarningActionEvent> action_events_;
   bool is_encrypted_archive_ = false;
   bool has_incorrect_password_ = false;
+  bool has_shown_local_decryption_prompt_ = false;
+  bool fully_extracted_archive_ = false;
+  // Whether a "shown" event has been logged for the Downloads Page for this
+  // download. Not persisted across restarts.
+  bool logged_downloads_page_shown_ = false;
 };
 
 #endif  // CHROME_BROWSER_DOWNLOAD_DOWNLOAD_ITEM_WARNING_DATA_H_

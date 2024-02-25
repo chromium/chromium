@@ -40,7 +40,7 @@ ChromeMediaAppUIDelegate::ChromeMediaAppUIDelegate(content::WebUI* web_ui)
 
 ChromeMediaAppUIDelegate::~ChromeMediaAppUIDelegate() {}
 
-absl::optional<std::string> ChromeMediaAppUIDelegate::OpenFeedbackDialog() {
+std::optional<std::string> ChromeMediaAppUIDelegate::OpenFeedbackDialog() {
   Profile* profile = Profile::FromWebUI(web_ui_);
   constexpr char kMediaAppFeedbackCategoryTag[] = "FromMediaApp";
 
@@ -57,12 +57,11 @@ absl::optional<std::string> ChromeMediaAppUIDelegate::OpenFeedbackDialog() {
 
   // TODO(crbug/1048368): Showing the feedback dialog can fail, communicate this
   // back to the client with an error string. For now assume dialog opened.
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 void ChromeMediaAppUIDelegate::ToggleBrowserFullscreenMode() {
-  Browser* browser =
-      chrome::FindBrowserWithWebContents(web_ui_->GetWebContents());
+  Browser* browser = chrome::FindBrowserWithTab(web_ui_->GetWebContents());
   if (browser) {
     chrome::ToggleFullscreenMode(browser);
   }
@@ -102,7 +101,7 @@ void ChromeMediaAppUIDelegate::EditInPhotos(
 
 void ChromeMediaAppUIDelegate::IsFileArcWritableImpl(
     base::OnceCallback<void(bool)> is_file_arc_writable_callback,
-    absl::optional<storage::FileSystemURL> url) {
+    std::optional<storage::FileSystemURL> url) {
   if (!url.has_value()) {
     std::move(is_file_arc_writable_callback).Run(false);
     return;
@@ -149,7 +148,7 @@ void ChromeMediaAppUIDelegate::IsFileArcWritableImpl(
 void ChromeMediaAppUIDelegate::EditInPhotosImpl(
     const std::string& mime_type,
     base::OnceCallback<void()> edit_in_photos_callback,
-    absl::optional<storage::FileSystemURL> url) {
+    std::optional<storage::FileSystemURL> url) {
   constexpr char kPhotosKeepOpenExtraName[] =
       "com.google.android.apps.photos.editor.contract.keep_photos_open";
   constexpr char kPhotosKeepOpenExtraValue[] = "true";
@@ -179,7 +178,7 @@ void ChromeMediaAppUIDelegate::EditInPhotosImpl(
           [](base::OnceCallback<void()> callback,
              base::WeakPtr<content::WebContents> web_contents,
              apps::LaunchResult&& result) {
-            if (result.state == apps::State::SUCCESS && web_contents) {
+            if (result.state == apps::State::kSuccess && web_contents) {
               web_contents->Close();
             }
             std::move(callback).Run();

@@ -16,29 +16,34 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.junit.runners.Parameterized;
+import org.junit.runners.Parameterized.UseParametersRunnerFactory;
 
 import org.chromium.android_webview.AwPacProcessor;
 import org.chromium.base.JNIUtils;
 import org.chromium.base.library_loader.LibraryLoader;
 import org.chromium.base.test.util.MinAndroidSdkLevel;
 
-/**
- * Tests for AwPacProcessor class.
- */
-@RunWith(AwJUnit4ClassRunner.class)
+/** Tests for AwPacProcessor class. */
+@RunWith(Parameterized.class)
+@UseParametersRunnerFactory(AwJUnit4ClassRunnerWithParameters.Factory.class)
 @MinAndroidSdkLevel(Build.VERSION_CODES.P)
 @RequiresApi(Build.VERSION_CODES.P)
-public class AwPacProcessorTest {
+public class AwPacProcessorTest extends AwParameterizedTest {
     private AwPacProcessor mProcessor;
 
-    private final String mPacScript = "function FindProxyForURL(url, host) {\n"
-            + "var x = myIpAddress();"
-            + "\treturn \"PROXY \" + x + \":80\";\n"
-            + "}";
+    private final String mPacScript =
+            "function FindProxyForURL(url, host) {\n"
+                    + "var x = myIpAddress();"
+                    + "\treturn \"PROXY \" + x + \":80\";\n"
+                    + "}";
     private final String mTestUrl = "http://testurl.test";
 
-    @Rule
-    public AwActivityTestRule mRule = new AwActivityTestRule();
+    @Rule public AwActivityTestRule mRule;
+
+    public AwPacProcessorTest(AwSettingsMutation param) {
+        this.mRule = new AwActivityTestRule(param.getMutation());
+    }
 
     @Before
     public void setUp() {

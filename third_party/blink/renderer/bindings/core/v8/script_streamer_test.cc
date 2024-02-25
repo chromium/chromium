@@ -9,6 +9,7 @@
 
 #include "base/run_loop.h"
 #include "base/task/single_thread_task_runner.h"
+#include "base/test/scoped_feature_list.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/mojom/fetch/fetch_api_request.mojom-blink.h"
 #include "third_party/blink/public/platform/platform.h"
@@ -19,6 +20,8 @@
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_core.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_testing.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_code_cache.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_local_compile_hints_consumer.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_local_compile_hints_producer.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_script_runner.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/frame/settings.h"
@@ -39,6 +42,7 @@
 #include "third_party/blink/renderer/platform/scheduler/public/thread_scheduler.h"
 #include "third_party/blink/renderer/platform/scheduler/public/worker_pool.h"
 #include "third_party/blink/renderer/platform/testing/mock_context_lifecycle_notifier.h"
+#include "third_party/blink/renderer/platform/testing/task_environment.h"
 #include "third_party/blink/renderer/platform/testing/testing_platform_support_with_mock_scheduler.h"
 #include "third_party/blink/renderer/platform/testing/unit_test_helpers.h"
 #include "third_party/blink/renderer/platform/testing/url_loader_mock_factory.h"
@@ -80,16 +84,17 @@ class TestResourceClient final : public GarbageCollected<TestResourceClient>,
 // the two should probably share the same class.
 class NoopLoaderFactory final : public ResourceFetcher::LoaderFactory {
   std::unique_ptr<URLLoader> CreateURLLoader(
-      const ResourceRequest& request,
+      const network::ResourceRequest& request,
       const ResourceLoaderOptions& options,
       scoped_refptr<base::SingleThreadTaskRunner> freezable_task_runner,
       scoped_refptr<base::SingleThreadTaskRunner> unfreezable_task_runner,
-      BackForwardCacheLoaderHelper*) override {
+      BackForwardCacheLoaderHelper*,
+      const std::optional<base::UnguessableToken>&
+          service_worker_race_network_request_token,
+      bool is_from_origin_dirty_style_sheet) override {
     return std::make_unique<NoopURLLoader>(std::move(freezable_task_runner));
   }
-  std::unique_ptr<WebCodeCacheLoader> CreateCodeCacheLoader() override {
-    return std::make_unique<CodeCacheLoaderMock>();
-  }
+  CodeCacheHost* GetCodeCacheHost() override { return nullptr; }
 
   class NoopURLLoader final : public URLLoader {
    public:
@@ -99,13 +104,13 @@ class NoopLoaderFactory final : public ResourceFetcher::LoaderFactory {
     ~NoopURLLoader() override = default;
     void LoadSynchronously(
         std::unique_ptr<network::ResourceRequest> request,
-        scoped_refptr<WebURLRequestExtraData> url_request_extra_data,
-        bool pass_response_pipe_to_client,
+        scoped_refptr<const SecurityOrigin> top_frame_origin,
+        bool download_to_blob,
         bool no_mime_sniffing,
         base::TimeDelta timeout_interval,
         URLLoaderClient*,
         WebURLResponse&,
-        absl::optional<WebURLError>&,
+        std::optional<WebURLError>&,
         scoped_refptr<SharedBuffer>&,
         int64_t& encoded_data_length,
         uint64_t& encoded_body_length,
@@ -116,10 +121,11 @@ class NoopLoaderFactory final : public ResourceFetcher::LoaderFactory {
     }
     void LoadAsynchronously(
         std::unique_ptr<network::ResourceRequest> request,
-        scoped_refptr<WebURLRequestExtraData> url_request_extra_data,
+        scoped_refptr<const SecurityOrigin> top_frame_origin,
         bool no_mime_sniffing,
         std::unique_ptr<blink::ResourceLoadInfoNotifierWrapper>
             resource_load_info_notifier_wrapper,
+        CodeCacheHost* code_cache_host,
         URLLoaderClient*) override {}
     void Freeze(LoaderFreezeMode) override {}
     void DidChangePriority(WebURLRequest::Priority, int) override {
@@ -137,7 +143,11 @@ class NoopLoaderFactory final : public ResourceFetcher::LoaderFactory {
 
 class ScriptStreamingTest : public testing::Test {
  public:
-  ScriptStreamingTest() : url_("http://www.streaming-test.com/") {
+  ScriptStreamingTest()
+      : url_(String("http://www.streaming-test.com/foo" +
+                    base::NumberToString(url_counter_++))) {}
+
+  void Init(v8::Isolate* isolate) {
     auto* properties = MakeGarbageCollected<TestResourceFetcherProperties>();
     FetchContext* context = MakeGarbageCollected<MockFetchContext>();
     scoped_refptr<base::SingleThreadTaskRunner> task_runner =
@@ -157,17 +167,23 @@ class ScriptStreamingTest : public testing::Test {
     resource_client_ =
         MakeGarbageCollected<TestResourceClient>(run_loop_.QuitClosure());
     FetchParameters params = FetchParameters::CreateForTest(std::move(request));
-    resource_ = ScriptResource::Fetch(params, fetcher, resource_client_,
-                                      ScriptResource::kAllowStreaming);
+    constexpr v8_compile_hints::V8CrowdsourcedCompileHintsProducer*
+        kNoCompileHintsProducer = nullptr;
+    constexpr v8_compile_hints::V8CrowdsourcedCompileHintsConsumer*
+        kNoCompileHintsConsumer = nullptr;
+    resource_ =
+        ScriptResource::Fetch(params, fetcher, resource_client_, isolate,
+                              ScriptResource::kAllowStreaming,
+                              kNoCompileHintsProducer, kNoCompileHintsConsumer);
     resource_->AddClient(resource_client_, task_runner.get());
 
     ResourceResponse response(url_);
     response.SetHttpStatusCode(200);
     resource_->SetResponse(response);
 
-    resource_->Loader()->DidReceiveResponse(WrappedResourceResponse(response));
-    resource_->Loader()->DidStartLoadingResponseBody(
-        std::move(consumer_handle_));
+    resource_->Loader()->DidReceiveResponse(WrappedResourceResponse(response),
+                                            std::move(consumer_handle_),
+                                            /*cached_metadata=*/std::nullopt);
   }
 
   ClassicScript* CreateClassicScript() const {
@@ -207,7 +223,7 @@ class ScriptStreamingTest : public testing::Test {
   }
 
   void Finish() {
-    resource_->Loader()->DidFinishLoading(base::TimeTicks(), 0, 0, 0, false);
+    resource_->Loader()->DidFinishLoading(base::TimeTicks(), 0, 0, 0);
     producer_handle_.reset();
     resource_->SetStatus(ResourceStatus::kCached);
   }
@@ -216,6 +232,9 @@ class ScriptStreamingTest : public testing::Test {
 
   void RunUntilResourceLoaded() { run_loop_.Run(); }
 
+  static int url_counter_;
+
+  test::TaskEnvironment task_environment_;
   KURL url_;
 
   base::RunLoop run_loop_;
@@ -225,9 +244,12 @@ class ScriptStreamingTest : public testing::Test {
   mojo::ScopedDataPipeConsumerHandle consumer_handle_;
 };
 
+int ScriptStreamingTest::url_counter_ = 0;
+
 TEST_F(ScriptStreamingTest, CompilingStreamedScript) {
   // Test that we can successfully compile a streamed script.
   V8TestingScope scope;
+  Init(scope.GetIsolate());
 
   AppendData("function foo() {");
   AppendPadding();
@@ -263,6 +285,8 @@ TEST_F(ScriptStreamingTest, CompilingStreamedScriptWithParseError) {
   // Test that scripts with parse errors are handled properly. In those cases,
   // V8 stops reading the network stream: make sure we handle it gracefully.
   V8TestingScope scope;
+  Init(scope.GetIsolate());
+
   AppendData("function foo() {");
   AppendData("this is the part which will be a parse error");
   // V8 won't realize the parse error until it actually starts parsing the
@@ -298,6 +322,8 @@ TEST_F(ScriptStreamingTest, CancellingStreaming) {
   // Test that the upper layers (PendingScript and up) can be ramped down
   // while streaming is ongoing, and ScriptStreamer handles it gracefully.
   V8TestingScope scope;
+  Init(scope.GetIsolate());
+
   AppendData("function foo() {");
 
   // In general, we cannot control what the background thread is doing
@@ -322,6 +348,7 @@ TEST_F(ScriptStreamingTest, DataAfterCancelling) {
   // Test that the upper layers (PendingScript and up) can be ramped down
   // before streaming is started, and ScriptStreamer handles it gracefully.
   V8TestingScope scope;
+  Init(scope.GetIsolate());
 
   // In general, we cannot control what the background thread is doing
   // (whether it's parsing or waiting for more data). In this test, we have
@@ -352,6 +379,7 @@ TEST_F(ScriptStreamingTest, SuppressingStreaming) {
   // upper layer (ScriptResourceClient) should get a notification when the
   // script is loaded.
   V8TestingScope scope;
+  Init(scope.GetIsolate());
 
   CachedMetadataHandler* cache_handler = resource_->CacheHandler();
   EXPECT_TRUE(cache_handler);
@@ -375,11 +403,70 @@ TEST_F(ScriptStreamingTest, SuppressingStreaming) {
   EXPECT_FALSE(classic_script->Streamer());
 }
 
+TEST_F(ScriptStreamingTest, ConsumeLocalCompileHints) {
+  // If we notice before streaming that there is a compile hints cache, we use
+  // it for eager compilation.
+
+  // Disable features::kProduceCompileHints2 forcefully, because local compile
+  // hints are not used when producing crowdsourced compile hints.
+  base::test::ScopedFeatureList features;
+  features.InitWithFeatureStates({{features::kLocalCompileHints, true},
+                                  {features::kProduceCompileHints2, false}});
+
+  V8TestingScope scope;
+  Init(scope.GetIsolate());
+
+  CachedMetadataHandler* cache_handler = resource_->CacheHandler();
+  EXPECT_TRUE(cache_handler);
+  cache_handler->DisableSendToPlatformForTesting();
+  // CodeCacheHost can be nullptr since we disabled sending data to
+  // GeneratedCodeCacheHost for testing.
+
+  // Create fake compile hints (what the real compile hints are is internal to
+  // v8).
+  std::vector<int> compile_hints = {200, 230};
+  uint64_t timestamp = V8CodeCache::GetTimestamp();
+
+  std::unique_ptr<v8::ScriptCompiler::CachedData> cached_data(
+      v8_compile_hints::V8LocalCompileHintsProducer::
+          CreateCompileHintsCachedDataForScript(compile_hints, timestamp));
+
+  cache_handler->SetCachedMetadata(
+      /*code_cache_host*/ nullptr,
+      V8CodeCache::TagForCompileHints(cache_handler), cached_data->data,
+      cached_data->length);
+
+  // Checks for debugging failures in this test.
+  EXPECT_TRUE(V8CodeCache::HasCompileHints(
+      cache_handler, CachedMetadataHandler::kAllowUnchecked));
+  EXPECT_TRUE(V8CodeCache::HasHotTimestamp(cache_handler));
+
+  AppendData("/*this doesn't matter*/");
+  Finish();
+  RunUntilResourceLoaded();
+  EXPECT_TRUE(resource_client_->Finished());
+
+  ResourceScriptStreamer* resource_script_streamer =
+      std::get<0>(ResourceScriptStreamer::TakeFrom(
+          resource_, mojom::blink::ScriptType::kClassic));
+  EXPECT_TRUE(resource_script_streamer);
+
+  v8_compile_hints::V8LocalCompileHintsConsumer* local_compile_hints_consumer =
+      resource_script_streamer->GetV8LocalCompileHintsConsumer();
+  EXPECT_TRUE(local_compile_hints_consumer);
+
+  EXPECT_TRUE(local_compile_hints_consumer->GetCompileHint(200));
+  EXPECT_FALSE(local_compile_hints_consumer->GetCompileHint(210));
+  EXPECT_TRUE(local_compile_hints_consumer->GetCompileHint(230));
+  EXPECT_FALSE(local_compile_hints_consumer->GetCompileHint(240));
+}
+
 TEST_F(ScriptStreamingTest, EmptyScripts) {
   // Empty scripts should also be streamed properly, that is, the upper layer
   // (ScriptResourceClient) should be notified when an empty script has been
   // loaded.
   V8TestingScope scope;
+  Init(scope.GetIsolate());
 
   // Finish the script without sending any data.
   Finish();
@@ -393,6 +480,7 @@ TEST_F(ScriptStreamingTest, EmptyScripts) {
 TEST_F(ScriptStreamingTest, SmallScripts) {
   // Small scripts shouldn't be streamed.
   V8TestingScope scope;
+  Init(scope.GetIsolate());
 
   // This is the data chunk is small enough to not start streaming (it is less
   // than 4 bytes, so smaller than a UTF-8 BOM).
@@ -412,6 +500,7 @@ TEST_F(ScriptStreamingTest, ScriptsWithSmallFirstChunk) {
   // If a script is long enough, if should be streamed, even if the first data
   // chunk is small.
   V8TestingScope scope;
+  Init(scope.GetIsolate());
 
   // This is the first data chunk which is small enough to not start streaming
   // (it is less than 4 bytes, so smaller than a UTF-8 BOM).
@@ -450,6 +539,8 @@ TEST_F(ScriptStreamingTest, EncodingChanges) {
   // It's possible that the encoding of the Resource changes after we start
   // loading it.
   V8TestingScope scope;
+  Init(scope.GetIsolate());
+
   resource_->SetEncodingForTest("windows-1252");
 
   resource_->SetEncodingForTest("UTF-8");
@@ -484,6 +575,7 @@ TEST_F(ScriptStreamingTest, EncodingFromBOM) {
   // Byte order marks should be removed before giving the data to V8. They
   // will also affect encoding detection.
   V8TestingScope scope;
+  Init(scope.GetIsolate());
 
   // This encoding is wrong on purpose.
   resource_->SetEncodingForTest("windows-1252");
@@ -518,6 +610,7 @@ TEST_F(ScriptStreamingTest, EncodingFromBOM) {
 // A test for crbug.com/711703. Should not crash.
 TEST_F(ScriptStreamingTest, GarbageCollectDuringStreaming) {
   V8TestingScope scope;
+  Init(scope.GetIsolate());
 
   EXPECT_FALSE(resource_client_->Finished());
 
@@ -528,6 +621,7 @@ TEST_F(ScriptStreamingTest, GarbageCollectDuringStreaming) {
 
 TEST_F(ScriptStreamingTest, ResourceSetRevalidatingRequest) {
   V8TestingScope scope;
+  Init(scope.GetIsolate());
 
   // Kick the streaming off.
   AppendData("function foo() {");
@@ -558,12 +652,13 @@ class InlineScriptStreamingTest
 TEST_P(InlineScriptStreamingTest, InlineScript) {
   // Test that we can successfully compile an inline script.
   V8TestingScope scope;
+  Init(scope.GetIsolate());
 
   String source = "function foo() {return 5;} foo();";
   if (GetParam().first)
     source.Ensure16Bit();
   auto streamer = base::MakeRefCounted<BackgroundInlineScriptStreamer>(
-      source, GetParam().second);
+      scope.GetIsolate(), source, GetParam().second);
   worker_pool::PostTask(
       FROM_HERE, {},
       CrossThreadBindOnce(&BackgroundInlineScriptStreamer::Run, streamer));
@@ -583,6 +678,47 @@ TEST_P(InlineScriptStreamingTest, InlineScript) {
             ScriptEvaluationResult::ResultType::kSuccess);
   EXPECT_EQ(
       5, result.GetSuccessValue()->Int32Value(scope.GetContext()).FromJust());
+}
+
+TEST_F(ScriptStreamingTest, ProduceLocalCompileHintsForStreamedScript) {
+  // Test that we can produce local compile hints when a script is streamed.
+  base::test::ScopedFeatureList flag_on(features::kLocalCompileHints);
+  V8TestingScope scope;
+  Init(scope.GetIsolate());
+
+  AppendData("function foo() { return 5; }");
+  AppendData("foo();");
+  EXPECT_FALSE(resource_client_->Finished());
+  Finish();
+
+  // Process tasks on the main thread until the resource has notified that it
+  // has finished loading.
+  RunUntilResourceLoaded();
+  EXPECT_TRUE(resource_client_->Finished());
+  ClassicScript* classic_script = CreateClassicScript();
+  EXPECT_TRUE(classic_script->Streamer());
+  v8::TryCatch try_catch(scope.GetIsolate());
+  v8::Local<v8::Script> script;
+  v8::ScriptCompiler::CompileOptions compile_options;
+  V8CodeCache::ProduceCacheOptions produce_cache_options;
+  v8::ScriptCompiler::NoCacheReason no_cache_reason;
+  std::tie(compile_options, produce_cache_options, no_cache_reason) =
+      V8CodeCache::GetCompileOptions(mojom::blink::V8CacheOptions::kDefault,
+                                     *classic_script);
+  EXPECT_TRUE(V8ScriptRunner::CompileScript(
+                  scope.GetScriptState(), *classic_script,
+                  classic_script->CreateScriptOrigin(scope.GetIsolate()),
+                  compile_options, no_cache_reason)
+                  .ToLocal(&script));
+  EXPECT_FALSE(try_catch.HasCaught());
+
+  v8::Local<v8::Value> return_value;
+  EXPECT_TRUE(script->Run(scope.GetContext()).ToLocal(&return_value));
+
+  // Expect that we got a compile hint for the function which was run. Don't
+  // assert what it is (that's internal to V8).
+  std::vector<int> compile_hints = script->GetProducedCompileHints();
+  EXPECT_EQ(1UL, compile_hints.size());
 }
 
 INSTANTIATE_TEST_SUITE_P(

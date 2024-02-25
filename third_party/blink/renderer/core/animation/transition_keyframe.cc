@@ -59,10 +59,11 @@ void TransitionKeyframe::AddKeyframePropertiesToV8Object(
 
   String property_name =
       AnimationInputHelpers::PropertyHandleToKeyframeAttribute(property_);
-  object_builder.Add(property_name, property_value);
+  object_builder.AddString(property_name, property_value);
 }
 
 void TransitionKeyframe::Trace(Visitor* visitor) const {
+  visitor->Trace(value_);
   visitor->Trace(compositor_value_);
   Keyframe::Trace(visitor);
 }
@@ -95,6 +96,7 @@ TransitionKeyframe::PropertySpecificKeyframe::CreateInterpolation(
 
 void TransitionKeyframe::PropertySpecificKeyframe::Trace(
     Visitor* visitor) const {
+  visitor->Trace(value_);
   visitor->Trace(compositor_value_);
   Keyframe::PropertySpecificKeyframe::Trace(visitor);
 }

@@ -13,8 +13,9 @@ class Profile;
 class TabSearchBubbleHost;
 
 class TabSearchFrameCaptionButton : public views::FrameCaptionButton {
+  METADATA_HEADER(TabSearchFrameCaptionButton, views::FrameCaptionButton)
+
  public:
-  METADATA_HEADER(TabSearchFrameCaptionButton);
   explicit TabSearchFrameCaptionButton(Profile* profile);
   TabSearchFrameCaptionButton(const TabSearchFrameCaptionButton&) = delete;
   TabSearchFrameCaptionButton& operator=(const TabSearchFrameCaptionButton&) =

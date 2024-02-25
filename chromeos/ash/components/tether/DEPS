@@ -5,6 +5,7 @@ include_rules = [
   "+chromeos/ash/services/device_sync/public/cpp",
   "+chromeos/ash/services/multidevice_setup/public",
   "+chromeos/ash/services/secure_channel/public",
+  "+components/cross_device/timer_factory",
   "+device/bluetooth",
   "+components/session_manager/core",
 ]

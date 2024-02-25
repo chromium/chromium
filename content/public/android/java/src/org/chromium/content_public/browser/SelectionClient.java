@@ -18,13 +18,9 @@ import org.chromium.ui.touch_selection.SelectionEventType;
 
 import java.util.List;
 
-/**
- * Interface to a content layer client that can process and modify selection text.
- */
+/** Interface to a content layer client that can process and modify selection text. */
 public interface SelectionClient {
-    /**
-     * The result of the text analysis.
-     */
+    /** The result of the text analysis. */
     public static class Result {
         /**
          * The number of characters that the left boundary of the original
@@ -38,39 +34,25 @@ public interface SelectionClient {
          */
         public int endAdjust;
 
-        /**
-         * Label for the suggested menu item.
-         */
+        /** Label for the suggested menu item. */
         public CharSequence label;
 
-        /**
-         * Icon for the suggested menu item.
-         */
+        /** Icon for the suggested menu item. */
         public Drawable icon;
 
-        /**
-         * Intent for the suggested menu item.
-         */
+        /** Intent for the suggested menu item. */
         public Intent intent;
 
-        /**
-         * OnClickListener for the suggested menu item.
-         */
+        /** OnClickListener for the suggested menu item. */
         public OnClickListener onClickListener;
 
-        /**
-         * TextClassification for logging.
-         */
+        /** TextClassification for logging. */
         public TextClassification textClassification;
 
-        /**
-         * TextSelection for logging.
-         */
+        /** TextSelection for logging. */
         public TextSelection textSelection;
 
-        /**
-         * Icons for additional menu items.
-         */
+        /** Icons for additional menu items. */
         public List<Drawable> additionalIcons;
 
         /**
@@ -82,13 +64,9 @@ public interface SelectionClient {
         }
     }
 
-    /**
-     * The interface that returns the result of the selected text analysis.
-     */
+    /** The interface that returns the result of the selected text analysis. */
     public interface ResultCallback {
-        /**
-         * The result is delivered with this method.
-         */
+        /** The result is delivered with this method. */
         void onClassified(Result result);
     }
 
@@ -127,9 +105,7 @@ public interface SelectionClient {
      */
     void cancelAllRequests();
 
-    /**
-     * Returns a SelectionEventProcessor associated with the SelectionClient or null.
-     */
+    /** Returns a SelectionEventProcessor associated with the SelectionClient or null. */
     default SelectionEventProcessor getSelectionEventProcessor() {
         return null;
     }
@@ -151,9 +127,7 @@ public interface SelectionClient {
         return null;
     }
 
-    /**
-     * Returns the TextClassifier which has been set with setTextClassifier(), or null.
-     */
+    /** Returns the TextClassifier which has been set with setTextClassifier(), or null. */
     default TextClassifier getCustomTextClassifier() {
         return null;
     }

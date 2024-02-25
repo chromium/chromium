@@ -37,14 +37,13 @@ class HelpAppPageHandler : public help_app::mojom::PageHandler {
   void IsLauncherSearchEnabled(
       IsLauncherSearchEnabledCallback callback) override;
   void LaunchMicrosoft365Setup() override;
-  void MaybeShowDiscoverNotification() override;
   void MaybeShowReleaseNotesNotification() override;
   void GetDeviceInfo(GetDeviceInfoCallback callback) override;
   void OpenUrlInBrowserAndTriggerInstallDialog(const GURL& url) override;
 
  private:
   mojo::Receiver<help_app::mojom::PageHandler> receiver_;
-  raw_ptr<HelpAppUI, ExperimentalAsh> help_app_ui_;  // Owns |this|.
+  raw_ptr<HelpAppUI> help_app_ui_;  // Owns |this|.
   bool is_lss_enabled_;
   bool is_launcher_search_enabled_;
 };

@@ -9,6 +9,7 @@
 #import "ios/chrome/browser/ui/settings/settings_root_table_view_controller.h"
 #import "ios/chrome/browser/ui/settings/tabs/tab_pickup/tab_pickup_settings_consumer.h"
 
+@protocol TabPickupSettingsCommands;
 @protocol TabPickupSettingsTableViewControllerDelegate;
 
 // Controller for the UI that allows the user to update tab pickup settings.
@@ -19,6 +20,12 @@
 // The delegate receives events related to this view controller.
 @property(nonatomic, weak) id<TabPickupSettingsTableViewControllerDelegate>
     delegate;
+// the handler to interact with the coordinator layer.
+@property(nonatomic, weak) id<TabPickupSettingsCommands>
+    tabPickupSettingsHandler;
+
+// Reloads the value of the switch item.
+- (void)reloadSwitchItem;
 
 - (instancetype)init NS_DESIGNATED_INITIALIZER;
 - (instancetype)initWithStyle:(UITableViewStyle)style NS_UNAVAILABLE;

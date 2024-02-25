@@ -75,7 +75,8 @@ public class WebContentsTest {
         mActivityTestRule.loadNewShell(TEST_URL_1);
         Assert.assertNotSame("New shell not created", activity.getActiveShell(), originalShell);
 
-        Assert.assertTrue("WebContents incorrectly marked as not destroyed",
+        Assert.assertTrue(
+                "WebContents incorrectly marked as not destroyed",
                 isWebContentsDestroyed(webContents));
     }
 
@@ -98,8 +99,8 @@ public class WebContentsTest {
 
             // Read back the WebContents.
             parcel.setDataPosition(0);
-            WebContents deserializedWebContents = parcel.readParcelable(
-                    WebContents.class.getClassLoader());
+            WebContents deserializedWebContents =
+                    parcel.readParcelable(WebContents.class.getClassLoader());
 
             // Make sure they're equal.
             Assert.assertEquals(
@@ -213,8 +214,8 @@ public class WebContentsTest {
 
             // Try to read back the WebContents.
             parcel.setDataPosition(0);
-            WebContents deserializedWebContents = parcel.readParcelable(
-                    WebContents.class.getClassLoader());
+            WebContents deserializedWebContents =
+                    parcel.readParcelable(WebContents.class.getClassLoader());
 
             // Make sure we weren't able to deserialize the WebContents.
             Assert.assertNull("Unexpectedly deserialized a WebContents", deserializedWebContents);
@@ -246,8 +247,8 @@ public class WebContentsTest {
 
             // Try to read back the WebContents.
             parcel.setDataPosition(0);
-            WebContents deserializedWebContents = parcel.readParcelable(
-                    WebContents.class.getClassLoader());
+            WebContents deserializedWebContents =
+                    parcel.readParcelable(WebContents.class.getClassLoader());
 
             // Make sure we weren't able to deserialize the WebContents.
             Assert.assertNull(
@@ -282,8 +283,8 @@ public class WebContentsTest {
 
             // Try to read back the WebContents.
             parcel.setDataPosition(0);
-            WebContents deserializedWebContents = parcel.readParcelable(
-                    WebContents.class.getClassLoader());
+            WebContents deserializedWebContents =
+                    parcel.readParcelable(WebContents.class.getClassLoader());
 
             // Make sure we weren't able to deserialize the WebContents.
             Assert.assertNull(
@@ -318,15 +319,17 @@ public class WebContentsTest {
 
             // Try to read back the WebContents.
             parcel.setDataPosition(0);
-            WebContents deserializedWebContents = parcel.readParcelable(
-                    WebContents.class.getClassLoader());
+            WebContents deserializedWebContents =
+                    parcel.readParcelable(WebContents.class.getClassLoader());
 
             // Make sure we weren't able to deserialize the WebContents.
             Assert.assertNull("Unexpectedly deserialized a WebContents", deserializedWebContents);
 
             // Make sure we can properly deserialize the String after the WebContents.
-            Assert.assertEquals("Failing to read the WebContents corrupted the parcel",
-                    PARCEL_STRING_TEST_DATA, parcel.readString());
+            Assert.assertEquals(
+                    "Failing to read the WebContents corrupted the parcel",
+                    PARCEL_STRING_TEST_DATA,
+                    parcel.readString());
         } finally {
             parcel.recycle();
         }
@@ -345,54 +348,64 @@ public class WebContentsTest {
         mActivityTestRule.waitForActiveShellToBeDoneLoading();
         final WebContents webContents = activity.getActiveWebContents();
 
-        PostTask.postTask(TaskTraits.UI_DEFAULT, new Runnable() {
-            @Override
-            public void run() {
-                RenderFrameHost frameHost = webContents.getMainFrame();
+        PostTask.postTask(
+                TaskTraits.UI_DEFAULT,
+                new Runnable() {
+                    @Override
+                    public void run() {
+                        RenderFrameHost frameHost = webContents.getMainFrame();
 
-                Assert.assertNotNull(frameHost);
+                        Assert.assertNotNull(frameHost);
 
-                Assert.assertEquals("RenderFrameHost has incorrect last committed URL", TEST_URL_2,
-                        frameHost.getLastCommittedURL().getSpec());
+                        Assert.assertEquals(
+                                "RenderFrameHost has incorrect last committed URL",
+                                TEST_URL_2,
+                                frameHost.getLastCommittedURL().getSpec());
 
-                WebContents associatedWebContents =
-                        WebContentsStatics.fromRenderFrameHost(frameHost);
-                Assert.assertEquals("RenderFrameHost associated with different WebContents",
-                        webContents, associatedWebContents);
-            }
-        });
+                        WebContents associatedWebContents =
+                                WebContentsStatics.fromRenderFrameHost(frameHost);
+                        Assert.assertEquals(
+                                "RenderFrameHost associated with different WebContents",
+                                webContents,
+                                associatedWebContents);
+                    }
+                });
     }
 
     @Test
     @SmallTest
     public void testWebContentsGetAllRenderFrameHosts() {
-        String testUrl = UrlUtils.encodeHtmlDataUri("<html><body>"
-                + "   <iframe srcdoc='<body>frame1</body>'></iframe>"
-                + "   <iframe srcdoc='<body>frame2</body>'></iframe>"
-                + "</body></html>");
+        String testUrl =
+                UrlUtils.encodeHtmlDataUri(
+                        "<html><body>"
+                                + "   <iframe srcdoc='<body>frame1</body>'></iframe>"
+                                + "   <iframe srcdoc='<body>frame2</body>'></iframe>"
+                                + "</body></html>");
 
         final ContentShellActivity activity = mActivityTestRule.launchContentShellWithUrl(testUrl);
         mActivityTestRule.waitForActiveShellToBeDoneLoading();
         final WebContentsImpl webContents = ((WebContentsImpl) activity.getActiveWebContents());
 
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            List<RenderFrameHost> frames = webContents.getAllRenderFrameHosts();
-            Assert.assertEquals(3, frames.size());
-        });
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    List<RenderFrameHost> frames = webContents.getAllRenderFrameHosts();
+                    Assert.assertEquals(3, frames.size());
+                });
     }
 
     private ChildProcessConnection getSandboxedChildProcessConnection() {
-        Callable<ChildProcessConnection> getConnectionCallable = () -> {
-            for (ChildProcessLauncherHelperImpl process :
-                    ChildProcessLauncherHelperImpl.getAllProcessesForTesting().values()) {
-                ChildProcessConnection connection = process.getChildProcessConnection();
-                if (connection.getServiceName().getClassName().indexOf("Sandbox") != -1) {
-                    return connection;
-                }
-            }
-            Assert.assertTrue(false);
-            return null;
-        };
+        Callable<ChildProcessConnection> getConnectionCallable =
+                () -> {
+                    for (ChildProcessLauncherHelperImpl process :
+                            ChildProcessLauncherHelperImpl.getAllProcessesForTesting().values()) {
+                        ChildProcessConnection connection = process.getChildProcessConnection();
+                        if (connection.getServiceName().getClassName().indexOf("Sandbox") != -1) {
+                            return connection;
+                        }
+                    }
+                    Assert.assertTrue(false);
+                    return null;
+                };
         return ChildProcessLauncherTestUtils.runOnLauncherAndGetResult(getConnectionCallable);
     }
 
@@ -412,10 +425,12 @@ public class WebContentsTest {
 
         final ChildProcessConnection connection = getSandboxedChildProcessConnection();
         // Need to poll here because there is an intentional delay for removing binding.
-        CriteriaHelper.pollInstrumentationThread(() -> {
-            return ChildProcessLauncherTestUtils.runOnLauncherAndGetResult(
-                    () -> !connection.isVisibleBindingBound());
-        }, "Failed to remove moderate binding");
+        CriteriaHelper.pollInstrumentationThread(
+                () -> {
+                    return ChildProcessLauncherTestUtils.runOnLauncherAndGetResult(
+                            () -> !connection.isVisibleBindingBound());
+                },
+                "Failed to remove moderate binding");
 
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> webContents.setImportance(ChildProcessImportance.MODERATE));
@@ -441,8 +456,8 @@ public class WebContentsTest {
 
         TestThreadUtils.runOnUiThreadBlocking(() -> webContents.onHide());
         CriteriaHelper.pollInstrumentationThread(
-                ()
-                        -> ChildProcessLauncherTestUtils.runOnLauncherAndGetResult(
+                () ->
+                        ChildProcessLauncherTestUtils.runOnLauncherAndGetResult(
                                 () -> !connection.isStrongBindingBound()),
                 "Failed to remove strong binding");
 
@@ -452,11 +467,12 @@ public class WebContentsTest {
     }
 
     private boolean isWebContentsDestroyed(final WebContents webContents) {
-        return TestThreadUtils.runOnUiThreadBlockingNoException(new Callable<Boolean>() {
-            @Override
-            public Boolean call() {
-                return webContents.isDestroyed();
-            }
-        });
+        return TestThreadUtils.runOnUiThreadBlockingNoException(
+                new Callable<Boolean>() {
+                    @Override
+                    public Boolean call() {
+                        return webContents.isDestroyed();
+                    }
+                });
     }
 }

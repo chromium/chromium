@@ -10,7 +10,7 @@
 #import "ios/web/common/referrer_util.h"
 #import "ios/web/js_features/context_menu/context_menu_constants.h"
 #import "ios/web/public/ui/context_menu_params.h"
-#import "net/base/mac/url_conversions.h"
+#import "net/base/apple/url_conversions.h"
 #import "testing/gtest/include/gtest/gtest.h"
 #import "testing/gtest_mac.h"
 #import "testing/platform_test.h"

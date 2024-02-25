@@ -6,10 +6,10 @@ import {TestRunner} from 'test_runner';
 import {ApplicationTestRunner} from 'application_test_runner';
 import {SourcesTestRunner} from 'sources_test_runner';
 
+import * as BindingsModule from 'devtools/models/bindings/bindings.js';
+
 (async function() {
   TestRunner.addResult(`Tests single resource search in inspector page agent.\n`);
-  await TestRunner.loadLegacyModule('console');
-  await TestRunner.loadLegacyModule('sources');
   await TestRunner.showPanel('sources');
 
   await TestRunner.addIframe('resources/search.html');
@@ -18,7 +18,7 @@ import {SourcesTestRunner} from 'sources_test_runner';
   var resource;
 
   async function step2() {
-    resource = Bindings.resourceForURL('http://127.0.0.1:8000/devtools/search/resources/search.js');
+    resource = BindingsModule.ResourceUtils.resourceForURL('http://127.0.0.1:8000/devtools/search/resources/search.js');
     TestRunner.addResult(resource.url);
 
     // This file should not match search query.

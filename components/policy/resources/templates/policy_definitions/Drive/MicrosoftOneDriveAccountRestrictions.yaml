@@ -1,0 +1,36 @@
+caption: Restricts accounts that can use the <ph name="MICROSOFT_ONE_DRIVE_NAME">Microsoft OneDrive</ph> integration
+desc: |-
+  This policy allows admins to restrict which accounts are allowed to sign-in for <ph name="MICROSOFT_ONE_DRIVE_NAME">Microsoft OneDrive</ph> when the <ph name="MICROSOFT_ONE_DRIVE_MOUNT_POLICY_NAME">MicrosoftOneDriveMount</ph> policy is enabled.
+
+  If this policy contains a value of '<ph name="COMMON_NAME">common</ph>', any account can be used to sign-in.
+
+  If this policy contains a value of '<ph name="ORGANIZATIONS_NAME">organizations</ph>', work or school accounts can be used to sign-in.
+
+  If this policy contains a value of '<ph name="CONSUMERS_NAME">consumers</ph>', personal <ph name="MICROSOFT_NAME">Microsoft</ph> accounts can be used to sign-in.
+
+  If this policy contains domain names or tenant IDs, accounts from these domain names or tenant IDs (see https://learn.microsoft.com/en-us/azure/active-directory/develop/v2-protocols#endpoints) can be used to sign-in.
+
+  If this policy is unset or only contains an empty value, it behaves as if '<ph name="COMMON_NAME">common</ph>' was specified for regular users; for enterprise users it behaves as if '<ph name="ORGANIZATIONS_NAME">organizations</ph>' was specified.
+
+  Changing restrictions might lead to users being signed out of their <ph name="MICROSOFT_ONE_DRIVE_NAME">Microsoft OneDrive</ph> account if it does not adhere to the new restrictions.
+
+  Note: At this time only the first entry will be taken into account. Later extensions will support multiple entries.
+example_value:
+- domain.com
+default: ["common"]
+default_for_enterprise_users: ["organizations"]
+features:
+  dynamic_refresh: true
+  per_profile: false
+owners:
+- lmasopust@chromium.org
+- file://chrome/browser/chromeos/enterprise/cloud_storage/OWNERS
+- cros-commercial-clippy-eng@google.com
+schema:
+  items:
+    type: string
+  type: array
+supported_on:
+- chrome_os:122-
+tags: []
+type: list

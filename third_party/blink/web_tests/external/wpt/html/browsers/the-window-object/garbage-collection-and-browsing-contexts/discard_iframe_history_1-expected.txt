@@ -1,4 +1,5 @@
 This is a testharness.js-based test.
-FAIL Removing iframe from document removes it from history assert_equals: expected 2 but got 1
+[FAIL] Removing iframe from document removes it from history
+  assert_equals: expected 2 but got 1
 Harness: the test ran to completion.
 

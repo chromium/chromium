@@ -13,6 +13,7 @@
 #include "base/task/sequenced_task_runner.h"
 #include "components/viz/service/display_embedder/in_process_gpu_memory_buffer_manager.h"
 #include "components/viz/service/gl/gpu_service_impl.h"
+#include "gpu/command_buffer/client/client_shared_image.h"
 #include "gpu/command_buffer/service/scheduler_sequence.h"
 #include "gpu/command_buffer/service/shared_context_state.h"
 #include "gpu/command_buffer/service/shared_image_interface_in_process.h"
@@ -74,42 +75,48 @@ class GmbVideoFramePoolContext
         size, format, usage, gpu::kNullSurfaceHandle, nullptr);
   }
 
-  void CreateSharedImage(gfx::GpuMemoryBuffer* gpu_memory_buffer,
-                         const SharedImageFormat& si_format,
-                         const gfx::ColorSpace& color_space,
-                         GrSurfaceOrigin surface_origin,
-                         SkAlphaType alpha_type,
-                         uint32_t usage,
-                         gpu::Mailbox& mailbox,
-                         gpu::SyncToken& sync_token) override {
-    mailbox = sii_in_process_->CreateSharedImage(
-        si_format, gpu_memory_buffer->GetSize(), color_space, surface_origin,
-        alpha_type, usage, "VizGmbVideoFramePool",
+  scoped_refptr<gpu::ClientSharedImage> CreateSharedImage(
+      gfx::GpuMemoryBuffer* gpu_memory_buffer,
+      const SharedImageFormat& si_format,
+      const gfx::ColorSpace& color_space,
+      GrSurfaceOrigin surface_origin,
+      SkAlphaType alpha_type,
+      uint32_t usage,
+      gpu::SyncToken& sync_token) override {
+    auto client_shared_image = sii_in_process_->CreateSharedImage(
+        {si_format, gpu_memory_buffer->GetSize(), color_space, surface_origin,
+         alpha_type, usage, "VizGmbVideoFramePool"},
         gpu_memory_buffer->CloneHandle());
+    CHECK(client_shared_image);
     sync_token = sii_in_process_->GenVerifiedSyncToken();
+    return client_shared_image;
   }
 
   // Create a SharedImage representation of a plane of a GpuMemoryBuffer
-  // allocated by this interface. Populate `mailbox` and `sync_token`.
-  void CreateSharedImage(gfx::GpuMemoryBuffer* gpu_memory_buffer,
-                         gfx::BufferPlane plane,
-                         const gfx::ColorSpace& color_space,
-                         GrSurfaceOrigin surface_origin,
-                         SkAlphaType alpha_type,
-                         uint32_t usage,
-                         gpu::Mailbox& mailbox,
-                         gpu::SyncToken& sync_token) override {
-    mailbox = sii_in_process_->CreateSharedImage(
-        gpu_memory_buffer, gpu_memory_buffer_manager_, plane, color_space,
-        surface_origin, alpha_type, usage, "VizGmbVideoFramePool");
-
+  // allocated by this interface. Return a ClientSharedImage pointer and
+  // populate `mailbox` and `sync_token`.
+  scoped_refptr<gpu::ClientSharedImage> CreateSharedImage(
+      gfx::GpuMemoryBuffer* gpu_memory_buffer,
+      gfx::BufferPlane plane,
+      const gfx::ColorSpace& color_space,
+      GrSurfaceOrigin surface_origin,
+      SkAlphaType alpha_type,
+      uint32_t usage,
+      gpu::SyncToken& sync_token) override {
+    auto client_shared_image = sii_in_process_->CreateSharedImage(
+        gpu_memory_buffer, gpu_memory_buffer_manager_, plane,
+        {color_space, surface_origin, alpha_type, usage,
+         "VizGmbVideoFramePool"});
+    CHECK(client_shared_image);
     sync_token = sii_in_process_->GenVerifiedSyncToken();
+    return client_shared_image;
   }
 
   // Destroy a SharedImage created by this interface.
-  void DestroySharedImage(const gpu::SyncToken& sync_token,
-                          const gpu::Mailbox& mailbox) override {
-    sii_in_process_->DestroySharedImage(sync_token, mailbox);
+  void DestroySharedImage(
+      const gpu::SyncToken& sync_token,
+      scoped_refptr<gpu::ClientSharedImage> shared_image) override {
+    sii_in_process_->DestroySharedImage(sync_token, std::move(shared_image));
   }
 
  private:
@@ -126,7 +133,7 @@ class GmbVideoFramePoolContext
     // TODO(bialpio): Move construction to the viz thread once it is no longer
     // necessary to dereference `shared_context_state_` to grab the memory
     // tracker from it.
-    sii_in_process_ = std::make_unique<gpu::SharedImageInterfaceInProcess>(
+    sii_in_process_ = base::MakeRefCounted<gpu::SharedImageInterfaceInProcess>(
         sequence_.get(), gpu_service_->sync_point_manager(),
         gpu_service_->gpu_preferences(),
         gpu_service_->gpu_driver_bug_workarounds(),
@@ -170,7 +177,7 @@ class GmbVideoFramePoolContext
   std::unique_ptr<gpu::SchedulerSequence> sequence_;
   scoped_refptr<gpu::SharedContextState> shared_context_state_;
 
-  std::unique_ptr<gpu::SharedImageInterfaceInProcess> sii_in_process_;
+  scoped_refptr<gpu::SharedImageInterfaceInProcess> sii_in_process_;
 
   SEQUENCE_CHECKER(gpu_sequence_checker_);
 };

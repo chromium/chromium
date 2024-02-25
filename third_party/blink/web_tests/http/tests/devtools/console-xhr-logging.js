@@ -7,10 +7,11 @@ import {ConsoleTestRunner} from 'console_test_runner';
 import {NetworkTestRunner} from 'network_test_runner';
 
 import * as Common from 'devtools/core/common/common.js';
+import * as SDK from 'devtools/core/sdk/sdk.js';
 
 (async function() {
-  TestRunner.addResult(`Tests that XMLHttpRequest Logging works when Enabled and doesn't show logs when Disabled.\n`);
-  await TestRunner.loadLegacyModule('console');
+  // This await is necessary for evaluateInPagePromise to produce accurate line numbers.
+  await TestRunner.addResult(`Tests that XMLHttpRequest Logging works when Enabled and doesn't show logs when Disabled.\n`);
   await TestRunner.evaluateInPagePromise(`
       function requestHelper(method, url)
       {
@@ -19,57 +20,57 @@ import * as Common from 'devtools/core/common/common.js';
           makeSimpleXHR(method, url, false);
       }
   `);
-  Common.Settings.settingForTest('consoleGroupSimilar').set(false);
-  Common.Settings.settingForTest('monitoringXHREnabled').set(true);
+  Common.Settings.settingForTest('console-group-similar').set(false);
+  Common.Settings.settingForTest('monitoring-xhr-enabled').set(true);
 
   TestRunner.evaluateInPage(`requestHelper('GET', 'resources/xhr-exists.html')`);
   await ConsoleTestRunner.waitForConsoleMessagesPromise(2);
   await dumpConsoleMessagesSorted();
-  SDK.ConsoleModel.requestClearMessages();
+  SDK.ConsoleModel.ConsoleModel.requestClearMessages();
   TestRunner.addResult('');
 
   TestRunner.evaluateInPage(`requestHelper('GET', 'resources/xhr-does-not-exist.html')`);
   await ConsoleTestRunner.waitForConsoleMessagesPromise(3);
   await dumpConsoleMessagesSorted();
-  SDK.ConsoleModel.requestClearMessages();
+  SDK.ConsoleModel.ConsoleModel.requestClearMessages();
   TestRunner.addResult('');
 
   TestRunner.evaluateInPageAsync(`requestHelper('POST', 'resources/post-target.cgi')`);
   await ConsoleTestRunner.waitForConsoleMessagesPromise(2);
   await dumpConsoleMessagesSorted();
-  SDK.ConsoleModel.requestClearMessages();
+  SDK.ConsoleModel.ConsoleModel.requestClearMessages();
   TestRunner.addResult('');
 
   TestRunner.evaluateInPageAsync(`requestHelper('GET', 'http://localhost:8000/devtools/resources/cors-disabled/xhr-exists.html')`);
   await ConsoleTestRunner.waitForConsoleMessagesPromise(4);
   await dumpConsoleMessagesSorted();
-  SDK.ConsoleModel.requestClearMessages();
+  SDK.ConsoleModel.ConsoleModel.requestClearMessages();
   TestRunner.addResult('');
 
-  Common.Settings.settingForTest('monitoringXHREnabled').set(false);
+  Common.Settings.settingForTest('monitoring-xhr-enabled').set(false);
 
   TestRunner.evaluateInPageAsync(`requestHelper('GET', 'resources/xhr-exists.html')`);
   await ConsoleTestRunner.waitForConsoleMessagesPromise(1);
   await dumpConsoleMessagesSorted();
-  SDK.ConsoleModel.requestClearMessages();
+  SDK.ConsoleModel.ConsoleModel.requestClearMessages();
   TestRunner.addResult('');
 
   TestRunner.evaluateInPageAsync(`requestHelper('GET', 'resources/xhr-does-not-exist.html')`);
   await ConsoleTestRunner.waitForConsoleMessagesPromise(2);
   await dumpConsoleMessagesSorted();
-  SDK.ConsoleModel.requestClearMessages();
+  SDK.ConsoleModel.ConsoleModel.requestClearMessages();
   TestRunner.addResult('');
 
   TestRunner.evaluateInPageAsync(`requestHelper('POST', 'resources/post-target.cgi')`);
   await ConsoleTestRunner.waitForConsoleMessagesPromise(1);
   await dumpConsoleMessagesSorted();
-  SDK.ConsoleModel.requestClearMessages();
+  SDK.ConsoleModel.ConsoleModel.requestClearMessages();
   TestRunner.addResult('');
 
   TestRunner.evaluateInPageAsync(`requestHelper('GET', 'http://localhost:8000/devtools/resources/cors-disabled/xhr-exists.html')`);
   await ConsoleTestRunner.waitForConsoleMessagesPromise(3);
   await dumpConsoleMessagesSorted();
-  SDK.ConsoleModel.requestClearMessages();
+  SDK.ConsoleModel.ConsoleModel.requestClearMessages();
   TestRunner.addResult('');
 
   TestRunner.deprecatedRunAfterPendingDispatches(async () => {

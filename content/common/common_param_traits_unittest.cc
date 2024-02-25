@@ -138,7 +138,6 @@ TEST(IPCMessageTest, SSLInfo) {
   in.handshake_type = net::SSLInfo::HANDSHAKE_FULL;
   const net::SHA256HashValue kCertPublicKeyHashValue = {{0x01, 0x02}};
   in.public_key_hashes.push_back(net::HashValue(kCertPublicKeyHashValue));
-  in.pinning_failure_log = "foo";
   in.encrypted_client_hello = true;
 
   scoped_refptr<net::ct::SignedCertificateTimestamp> sct(
@@ -157,8 +156,8 @@ TEST(IPCMessageTest, SSLInfo) {
 
   in.ct_policy_compliance =
       net::ct::CTPolicyCompliance::CT_POLICY_NOT_ENOUGH_SCTS;
-  in.ocsp_result.response_status = net::OCSPVerifyResult::PROVIDED;
-  in.ocsp_result.revocation_status = net::OCSPRevocationStatus::REVOKED;
+  in.ocsp_result.response_status = bssl::OCSPVerifyResult::PROVIDED;
+  in.ocsp_result.revocation_status = bssl::OCSPRevocationStatus::REVOKED;
 
   // Now serialize and deserialize.
   IPC::Message msg(1, 2, IPC::Message::PRIORITY_NORMAL);
@@ -180,7 +179,6 @@ TEST(IPCMessageTest, SSLInfo) {
   ASSERT_EQ(in.client_cert_sent, out.client_cert_sent);
   ASSERT_EQ(in.handshake_type, out.handshake_type);
   ASSERT_EQ(in.public_key_hashes, out.public_key_hashes);
-  ASSERT_EQ(in.pinning_failure_log, out.pinning_failure_log);
   ASSERT_EQ(in.encrypted_client_hello, out.encrypted_client_hello);
 
   ASSERT_EQ(in.signed_certificate_timestamps.size(),

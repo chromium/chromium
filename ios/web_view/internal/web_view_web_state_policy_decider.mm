@@ -34,7 +34,7 @@ void WebViewWebStatePolicyDecider::ShouldAllowRequest(
                 (webView:decidePolicyForNavigationAction:decisionHandler:)]) {
     CWVNavigationAction* navigation_action = [[CWVNavigationAction alloc]
         initWithRequest:request
-          userInitiated:request_info.has_user_gesture
+          userInitiated:request_info.is_user_initiated
          navigationType:navigation_type];
 
     __block web::WebStatePolicyDecider::PolicyDecisionCallback block_callback =

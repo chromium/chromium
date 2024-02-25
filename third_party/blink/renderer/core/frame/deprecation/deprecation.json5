@@ -151,6 +151,16 @@
       ],
     },
     {
+      name: "CSSCustomStateDeprecatedSyntax",
+      message: "`:--customstatename` is deprecated. Please use the `:state(customstatename)` syntax instead.",
+      translation_note: "Warning displayed to developers when their website uses `:--customstatename` in CSS. They can simply switch their CSS to `:state(customstatename)` and it will be the same.",
+      web_features: [
+        "kCSSCustomStateDeprecatedSyntax",
+      ],
+      milestone: 122,
+      chrome_status_feature: 5140610730426368,
+    },
+    {
       name: "CSSSelectorInternalMediaControlsOverlayCastButton",
       message: "The `disableRemotePlayback` attribute should be used in order to disable the default Cast integration instead of using `-internal-media-controls-overlay-cast-button` selector.",
       translation_note: "Warning displayed to developers when they hide the Cast button on a video element using the deprecated CSS selector instead of using the disableRemotePlayback attribute on the element.",
@@ -221,16 +231,6 @@
       chrome_status_feature: 5726124632965120,
       milestone: 109,
       obsolete_to_be_removed_after_milestone: 127,
-    },
-    {
-      name: "ExpectCTHeader",
-      message: "The `Expect-CT` header is deprecated and will be removed. Chrome requires Certificate Transparency for all publicly trusted certificates issued after April 30, 2018.",
-      translation_note: "This message is shown when the deprecated Expect-CT header is present.",
-      web_features: [
-        "kExpectCTHeader",
-      ],
-      chrome_status_feature: 6244547273687040,
-      milestone: 107,
     },
     {
       name: "GeolocationInsecureOrigin",
@@ -332,6 +332,7 @@
       ],
       chrome_status_feature: 6239658726391808,
       milestone: 119,
+      obsolete_to_be_removed_after_milestone: 132,
     },
     {
       name: "NoSysexWebMIDIWithoutPermission",
@@ -571,6 +572,33 @@
       ],
       chrome_status_feature: 5687444770914304,
       milestone: 71,
+    },
+    {
+      name: "ThirdPartyCookieAccessError",
+      message: "Cookies marked with `SameSite=None; Secure` and not `Partitioned` are blocked in cross-site contexts.",
+      translation_note: "This error occurs when the website attempts to access third-party cookies and the browser blocks them.",
+      web_features: [
+        // This deprecation is used for Legacy Technology Report generation only.
+      ],
+      chrome_status_feature: 5133113939722240,
+    },
+    {
+      name: "ThirdPartyCookieAccessWarning",
+      message: "In a future version of the browser, cookies marked with `SameSite=None; Secure` and not `Partitioned` will be blocked in cross-site context.",
+      translation_note: "This warning occurs when the website attempts to access third-party cookies but the browser does not block them yet.",
+      web_features: [
+        // This deprecation is used for Legacy Technology Report generation only.
+      ],
+      chrome_status_feature: 5133113939722240,
+    },
+    {
+      name: "UnloadHandler",
+      message: "Unload event listeners are deprecated and will be removed.",
+      translation_note: "A deprecation warning shown in the DevTools Issues tab. It's shown when a listener for the `unload` event is added.",
+      web_features: [
+        "kDocumentUnloadRegistered",
+      ],
+      chrome_status_feature: 5579556305502208,
     },
     {
       name: "V8SharedArrayBufferConstructedInExtensionWithoutIsolation",

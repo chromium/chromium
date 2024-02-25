@@ -5,12 +5,15 @@
 #include "third_party/blink/renderer/platform/graphics/web_graphics_context_3d_video_frame_pool.h"
 
 #include "base/feature_list.h"
+#include "base/memory/raw_ptr.h"
 #include "components/viz/common/gpu/raster_context_provider.h"
 #include "gpu/GLES2/gl2extchromium.h"
+#include "gpu/command_buffer/client/client_shared_image.h"
 #include "gpu/command_buffer/client/context_support.h"
 #include "gpu/command_buffer/client/gpu_memory_buffer_manager.h"
 #include "gpu/command_buffer/client/raster_interface.h"
 #include "gpu/command_buffer/client/shared_image_interface.h"
+#include "gpu/command_buffer/common/shared_image_capabilities.h"
 #include "media/base/video_frame.h"
 #include "media/renderers/video_frame_rgba_to_yuva_converter.h"
 #include "media/video/gpu_video_accelerator_factories.h"
@@ -40,48 +43,54 @@ class Context : public media::RenderableGpuMemoryBufferVideoFramePool::Context {
                : nullptr;
   }
 
-  void CreateSharedImage(gfx::GpuMemoryBuffer* gpu_memory_buffer,
-                         const viz::SharedImageFormat& si_format,
-                         const gfx::ColorSpace& color_space,
-                         GrSurfaceOrigin surface_origin,
-                         SkAlphaType alpha_type,
-                         uint32_t usage,
-                         gpu::Mailbox& mailbox,
-                         gpu::SyncToken& sync_token) override {
+  scoped_refptr<gpu::ClientSharedImage> CreateSharedImage(
+      gfx::GpuMemoryBuffer* gpu_memory_buffer,
+      const viz::SharedImageFormat& si_format,
+      const gfx::ColorSpace& color_space,
+      GrSurfaceOrigin surface_origin,
+      SkAlphaType alpha_type,
+      uint32_t usage,
+      gpu::SyncToken& sync_token) override {
     auto* sii = SharedImageInterface();
     if (!sii) {
-      return;
+      return nullptr;
     }
-    mailbox = sii->CreateSharedImage(
-        si_format, gpu_memory_buffer->GetSize(), color_space, surface_origin,
-        alpha_type, usage, "WebGraphicsContext3DVideoFramePool",
+    auto client_shared_image = sii->CreateSharedImage(
+        {si_format, gpu_memory_buffer->GetSize(), color_space, surface_origin,
+         alpha_type, usage, "WebGraphicsContext3DVideoFramePool"},
         gpu_memory_buffer->CloneHandle());
+    CHECK(client_shared_image);
     sync_token = sii->GenVerifiedSyncToken();
+    return client_shared_image;
   }
 
-  void CreateSharedImage(gfx::GpuMemoryBuffer* gpu_memory_buffer,
-                         gfx::BufferPlane plane,
-                         const gfx::ColorSpace& color_space,
-                         GrSurfaceOrigin surface_origin,
-                         SkAlphaType alpha_type,
-                         uint32_t usage,
-                         gpu::Mailbox& mailbox,
-                         gpu::SyncToken& sync_token) override {
+  scoped_refptr<gpu::ClientSharedImage> CreateSharedImage(
+      gfx::GpuMemoryBuffer* gpu_memory_buffer,
+      gfx::BufferPlane plane,
+      const gfx::ColorSpace& color_space,
+      GrSurfaceOrigin surface_origin,
+      SkAlphaType alpha_type,
+      uint32_t usage,
+      gpu::SyncToken& sync_token) override {
     auto* sii = SharedImageInterface();
     if (!sii || !gmb_manager_)
-      return;
-    mailbox = sii->CreateSharedImage(
-        gpu_memory_buffer, gmb_manager_, plane, color_space, surface_origin,
-        alpha_type, usage, "WebGraphicsContext2DVideoFramePool");
+      return nullptr;
+    auto client_shared_image =
+        sii->CreateSharedImage(gpu_memory_buffer, gmb_manager_, plane,
+                               {color_space, surface_origin, alpha_type, usage,
+                                "WebGraphicsContext2DVideoFramePool"});
+    CHECK(client_shared_image);
     sync_token = sii->GenVerifiedSyncToken();
+    return client_shared_image;
   }
 
-  void DestroySharedImage(const gpu::SyncToken& sync_token,
-                          const gpu::Mailbox& mailbox) override {
+  void DestroySharedImage(
+      const gpu::SyncToken& sync_token,
+      scoped_refptr<gpu::ClientSharedImage> shared_image) override {
     auto* sii = SharedImageInterface();
     if (!sii)
       return;
-    sii->DestroySharedImage(sync_token, mailbox);
+    sii->DestroySharedImage(sync_token, std::move(shared_image));
   }
 
  private:
@@ -96,7 +105,7 @@ class Context : public media::RenderableGpuMemoryBufferVideoFramePool::Context {
 
   base::WeakPtr<blink::WebGraphicsContext3DProviderWrapper>
       weak_context_provider_;
-  gpu::GpuMemoryBufferManager* gmb_manager_;
+  raw_ptr<gpu::GpuMemoryBufferManager> gmb_manager_;
 };
 
 }  // namespace
@@ -152,8 +161,11 @@ bool WebGraphicsContext3DVideoFramePool::CopyRGBATextureToVideoFrame(
 #if BUILDFLAG(IS_WIN)
   // CopyRGBATextureToVideoFrame below needs D3D shared images on Windows so
   // early out before creating the GMB since it's going to fail anyway.
-  if (!context_provider->GetCapabilities().shared_image_d3d)
+  if (!context_provider->SharedImageInterface()
+           ->GetCapabilities()
+           .shared_image_d3d) {
     return false;
+  }
 #endif  // BUILDFLAG(IS_WIN)
 
   auto dst_frame = pool_->MaybeCreateVideoFrame(src_size, dst_color_space);

@@ -5,13 +5,12 @@
 #ifndef GPU_COMMAND_BUFFER_SERVICE_IMAGE_READER_GL_OWNER_H_
 #define GPU_COMMAND_BUFFER_SERVICE_IMAGE_READER_GL_OWNER_H_
 
+#include <media/NdkImageReader.h>
+
 #include <memory>
 
-#include "base/android/android_image_reader_compat.h"
 #include "base/containers/flat_map.h"
 #include "base/memory/raw_ptr.h"
-#include "base/memory/raw_ptr_exclusion.h"
-#include "base/memory/raw_ref.h"
 #include "base/threading/thread_checker.h"
 #include "gpu/command_buffer/service/ref_counted_lock.h"
 #include "gpu/command_buffer/service/texture_owner.h"
@@ -59,6 +58,10 @@ class GPU_GLES2_EXPORT ImageReaderGLOwner : public TextureOwner,
   }
   int32_t max_images_for_testing() const { return max_images_; }
 
+  // MemoryDumpProvider:
+  bool OnMemoryDump(const base::trace_event::MemoryDumpArgs& args,
+                    base::trace_event::ProcessMemoryDump* pmd) override;
+
  protected:
   void ReleaseResources() override;
 
@@ -83,12 +86,8 @@ class GPU_GLES2_EXPORT ImageReaderGLOwner : public TextureOwner,
     base::ScopedFD GetReadyFence() const;
 
    private:
-    // This field is not a raw_ptr<> because it was filtered by the rewriter
-    // for: #union
-    RAW_PTR_EXCLUSION ImageReaderGLOwner* texture_owner_;
-    // This field is not a raw_ptr<> because it was filtered by the rewriter
-    // for: #union
-    RAW_PTR_EXCLUSION AImage* image_;
+    raw_ptr<ImageReaderGLOwner> texture_owner_;
+    raw_ptr<AImage> image_;
     base::ScopedFD ready_fence_;
   };
 
@@ -120,7 +119,7 @@ class GPU_GLES2_EXPORT ImageReaderGLOwner : public TextureOwner,
 
   // Most recently acquired image using image reader. This works like a cached
   // image until next new image is acquired which overwrites this.
-  absl::optional<ScopedCurrentImageRef> current_image_ref_ GUARDED_BY(lock_);
+  std::optional<ScopedCurrentImageRef> current_image_ref_ GUARDED_BY(lock_);
   std::unique_ptr<AImageReader_ImageListener> listener_;
 
   // A map consisting of pending refs on an AImage. If an image has any refs, it
@@ -138,13 +137,12 @@ class GPU_GLES2_EXPORT ImageReaderGLOwner : public TextureOwner,
 
     size_t count = 0u;
     base::ScopedFD release_fence_fd;
+    gfx::Size size;
+    size_t estimated_size_in_bytes = 0;
   };
   using AImageRefMap = base::flat_map<AImage*, ImageRef>;
   AImageRefMap image_refs_ GUARDED_BY(lock_);
-
-  // reference to the class instance which is used to dynamically
-  // load the functions in android libraries at runtime.
-  const raw_ref<base::android::AndroidImageReader> loader_;
+  std::atomic<size_t> total_estimated_size_in_bytes_ = 0;
 
   // The context and surface that were used to create |texture_id_|.
   scoped_refptr<gl::GLContext> context_;

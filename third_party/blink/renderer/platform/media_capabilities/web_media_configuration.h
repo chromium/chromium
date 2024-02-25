@@ -5,7 +5,8 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_MEDIA_CAPABILITIES_WEB_MEDIA_CONFIGURATION_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_MEDIA_CAPABILITIES_WEB_MEDIA_CONFIGURATION_H_
 
-#include "third_party/abseil-cpp/absl/types/optional.h"
+#include <optional>
+
 #include "third_party/blink/renderer/platform/media_capabilities/web_audio_configuration.h"
 #include "third_party/blink/renderer/platform/media_capabilities/web_video_configuration.h"
 
@@ -29,16 +30,16 @@ struct WebMediaConfiguration {
 
   WebMediaConfiguration(
       MediaConfigurationType type,
-      absl::optional<WebAudioConfiguration> audio_configuration,
-      absl::optional<WebVideoConfiguration> video_configuration)
+      std::optional<WebAudioConfiguration> audio_configuration,
+      std::optional<WebVideoConfiguration> video_configuration)
       : type(type),
         audio_configuration(audio_configuration),
         video_configuration(video_configuration) {}
 
   MediaConfigurationType type;
 
-  absl::optional<WebAudioConfiguration> audio_configuration;
-  absl::optional<WebVideoConfiguration> video_configuration;
+  std::optional<WebAudioConfiguration> audio_configuration;
+  std::optional<WebVideoConfiguration> video_configuration;
 };
 
 }  // namespace blink

@@ -12,6 +12,7 @@
 #include "base/files/file.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
+#include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/no_destructor.h"
 #include "base/path_service.h"
@@ -28,6 +29,7 @@
 #include "chrome/browser/browser_switcher/browser_switcher_sitelist.h"
 #include "chrome/browser/browser_switcher/ieem_sitelist_parser.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/common/chrome_switches.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "extensions/browser/extension_registry.h"
@@ -46,8 +48,8 @@ const int kCurrentFileVersion = 1;
 // policies). This stores the rules as raw-pointers rather than unique-pointers,
 // to avoid copying/moving them from their original source.
 struct MergedRuleSet {
-  std::vector<Rule*> sitelist;
-  std::vector<Rule*> greylist;
+  std::vector<raw_ptr<Rule, VectorExperimental>> sitelist;
+  std::vector<raw_ptr<Rule, VectorExperimental>> greylist;
 };
 
 // Creates a RuleSet that is the concatenation of all 3 sources.
@@ -94,7 +96,11 @@ std::string SerializeCacheFile(const BrowserSwitcherPrefs& prefs,
          << std::endl;
 
   buffer << prefs.GetChromePath() << std::endl;
-  buffer << base::JoinString(prefs.GetChromeParameters(), " ") << std::endl;
+  std::vector<std::string> chrome_params = prefs.GetChromeParameters();
+  // Always include "--from-browser-switcher", to record the
+  // Windows.Launch.FromBrowserSwitcher histogram when we come back.
+  chrome_params.push_back(std::string("--") + switches::kFromBrowserSwitcher);
+  buffer << base::JoinString(chrome_params, " ") << std::endl;
 
   const auto rules = GetRules(prefs, sitelist);
 
@@ -137,8 +143,8 @@ void SaveDataToFile(const std::string& data, base::FilePath path) {
 }
 
 // URL to fetch the IEEM sitelist from. Only used for testing.
-absl::optional<std::string>* IeemSitelistUrlForTesting() {
-  static base::NoDestructor<absl::optional<std::string>>
+std::optional<std::string>* IeemSitelistUrlForTesting() {
+  static base::NoDestructor<std::optional<std::string>>
       ieem_sitelist_url_for_testing;
   return ieem_sitelist_url_for_testing.get();
 }
@@ -146,8 +152,7 @@ absl::optional<std::string>* IeemSitelistUrlForTesting() {
 bool IsLBSExtensionEnabled(Profile* profile) {
   auto* reg = extensions::ExtensionRegistry::Get(profile);
   DCHECK(reg);
-  return reg->GetExtensionById(kLBSExtensionId,
-                               extensions::ExtensionRegistry::ENABLED);
+  return reg->enabled_extensions().Contains(kLBSExtensionId);
 }
 
 }  // namespace
@@ -226,8 +231,9 @@ GURL BrowserSwitcherServiceWin::GetIeemSitelistUrl() {
   if (!prefs().UseIeSitelist())
     return GURL();
 
-  if (*IeemSitelistUrlForTesting() != absl::nullopt)
+  if (*IeemSitelistUrlForTesting() != std::nullopt) {
     return GURL((*IeemSitelistUrlForTesting()).value());
+  }
 
   base::win::RegKey key;
   if (ERROR_SUCCESS != key.Open(HKEY_LOCAL_MACHINE, kIeSiteListKey, KEY_READ) &&

@@ -9,7 +9,7 @@
 #include <utility>
 #include <vector>
 
-#include "ash/accessibility/accessibility_controller_impl.h"
+#include "ash/accessibility/accessibility_controller.h"
 #include "ash/accessibility/accessibility_delegate.h"
 #include "ash/accessibility/magnifier/magnifier_utils.h"
 #include "ash/display/root_window_transformers.h"
@@ -224,6 +224,8 @@ void FullscreenMagnifierController::HandleMoveMagnifierToRect(
   if (GetViewportRect().Contains(node_bounds_in_root))
     return;
 
+  // Hide the cursor since this can cause jumps.
+  Shell::Get()->cursor_manager()->HideCursor();
   MoveMagnifierWindowFollowRect(node_bounds_in_root);
 }
 
@@ -438,7 +440,7 @@ ui::EventDispatchDetails FullscreenMagnifierController::RewriteEvent(
                                         it.second->pointer_details());
       touch_cancel_event.set_location_f(it.second->location_f());
       touch_cancel_event.set_root_location_f(it.second->root_location_f());
-      touch_cancel_event.set_flags(it.second->flags());
+      touch_cancel_event.SetFlags(it.second->flags());
 
       // TouchExplorationController is watching event stream and managing its
       // internal state. If an event rewriter (FullscreenMagnifierController)
@@ -957,8 +959,7 @@ void FullscreenMagnifierController::MoveMagnifierWindowFollowRect(
       root_window_->layer()->GetAnimator()->StopAnimating();
       is_on_animation_ = false;
     }
-    RedrawDIP(gfx::PointF(x, y), scale_,
-              0,  // No animation on panning.
+    RedrawDIP(gfx::PointF(x, y), scale_, kDefaultAnimationDurationInMs,
               kDefaultAnimationTweenType);
   }
 }

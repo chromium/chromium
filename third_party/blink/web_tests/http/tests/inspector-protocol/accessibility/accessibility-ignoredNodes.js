@@ -1,4 +1,4 @@
-(async function(testRunner) {
+(async function(/** @type {import('test_runner').TestRunner} */ testRunner) {
   var {page, session, dp} = await testRunner.startHTML(`
   <html data-dump><!-- HTML nodes are ignored -->
     <div>Non-hidden div for comparison</div>

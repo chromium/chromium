@@ -4,6 +4,7 @@
 
 #include "chromeos/ash/components/dbus/image_loader/image_loader_client.h"
 
+#include <optional>
 #include <utility>
 
 #include "base/functional/bind.h"
@@ -14,7 +15,6 @@
 #include "dbus/message.h"
 #include "dbus/object_path.h"
 #include "dbus/object_proxy.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/cros_system_api/dbus/service_constants.h"
 
 namespace ash {
@@ -118,14 +118,14 @@ class ImageLoaderClientImpl : public ImageLoaderClient {
   static void OnBoolMethod(chromeos::DBusMethodCallback<bool> callback,
                            dbus::Response* response) {
     if (!response) {
-      std::move(callback).Run(absl::nullopt);
+      std::move(callback).Run(std::nullopt);
       return;
     }
     dbus::MessageReader reader(response);
     bool result = false;
     if (!reader.PopBool(&result)) {
       LOG(ERROR) << "Invalid response: " << response->ToString();
-      std::move(callback).Run(absl::nullopt);
+      std::move(callback).Run(std::nullopt);
       return;
     }
     std::move(callback).Run(result);
@@ -134,13 +134,13 @@ class ImageLoaderClientImpl : public ImageLoaderClient {
   static void OnStringMethod(chromeos::DBusMethodCallback<std::string> callback,
                              dbus::Response* response) {
     if (!response) {
-      std::move(callback).Run(absl::nullopt);
+      std::move(callback).Run(std::nullopt);
       return;
     }
     dbus::MessageReader reader(response);
     std::string result;
     if (!reader.PopString(&result)) {
-      std::move(callback).Run(absl::nullopt);
+      std::move(callback).Run(std::nullopt);
       LOG(ERROR) << "Invalid response: " << response->ToString();
       return;
     }
@@ -151,20 +151,20 @@ class ImageLoaderClientImpl : public ImageLoaderClient {
       chromeos::DBusMethodCallback<base::FilePath> callback,
       dbus::Response* response) {
     if (!response) {
-      std::move(callback).Run(absl::nullopt);
+      std::move(callback).Run(std::nullopt);
       return;
     }
     dbus::MessageReader reader(response);
     std::string result;
     if (!reader.PopString(&result)) {
-      std::move(callback).Run(absl::nullopt);
+      std::move(callback).Run(std::nullopt);
       LOG(ERROR) << "Invalid response: " << response->ToString();
       return;
     }
     std::move(callback).Run(base::FilePath(std::move(result)));
   }
 
-  raw_ptr<dbus::ObjectProxy, ExperimentalAsh> proxy_ = nullptr;
+  raw_ptr<dbus::ObjectProxy> proxy_ = nullptr;
 };
 
 }  // namespace

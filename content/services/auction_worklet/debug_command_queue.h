@@ -21,9 +21,9 @@ namespace auction_worklet {
 
 // DebugCommandQueue helps coordinate command transfer between Session (lives on
 // V8 thread) and IOSession (lives on mojo thread), as well as blocking
-// execution of V8 thread when paused in debugger. It's owned by the
-// AuctionV8Helper (but may extend its own lifetime a bit to keep callbacks
-// safe).
+// execution of V8 thread when paused in debugger. It's jointly owned by the
+// AuctionV8Helper and IOSession, and may extend its own lifetime a bit to keep
+// callbacks safe.
 class CONTENT_EXPORT DebugCommandQueue
     : public base::RefCountedThreadSafe<DebugCommandQueue> {
  public:

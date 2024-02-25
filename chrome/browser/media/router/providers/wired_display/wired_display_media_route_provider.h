@@ -63,14 +63,12 @@ class WiredDisplayMediaRouteProvider : public mojom::MediaRouteProvider,
                    const url::Origin& origin,
                    int32_t frame_tree_node_id,
                    base::TimeDelta timeout,
-                   bool off_the_record,
                    CreateRouteCallback callback) override;
   void JoinRoute(const std::string& media_source,
                  const std::string& presentation_id,
                  const url::Origin& origin,
                  int32_t frame_tree_node_id,
                  base::TimeDelta timeout,
-                 bool off_the_record,
                  JoinRouteCallback callback) override;
   void TerminateRoute(const std::string& route_id,
                       TerminateRouteCallback callback) override;
@@ -81,20 +79,17 @@ class WiredDisplayMediaRouteProvider : public mojom::MediaRouteProvider,
   void StartObservingMediaSinks(const std::string& media_source) override;
   void StopObservingMediaSinks(const std::string& media_source) override;
   void StartObservingMediaRoutes() override;
-  void StartListeningForRouteMessages(const std::string& route_id) override;
-  void StopListeningForRouteMessages(const std::string& route_id) override;
   void DetachRoute(const std::string& route_id) override;
   void EnableMdnsDiscovery() override;
   void DiscoverSinksNow() override;
-  void CreateMediaRouteController(
+  void BindMediaController(
       const std::string& route_id,
       mojo::PendingReceiver<mojom::MediaController> media_controller,
       mojo::PendingRemote<mojom::MediaStatusObserver> observer,
-      CreateMediaRouteControllerCallback callback) override;
+      BindMediaControllerCallback callback) override;
   void GetState(GetStateCallback callback) override;
 
   // display::DisplayObserver:
-  void OnDidProcessDisplayChanges() override;
   void OnDisplayAdded(const display::Display& new_display) override;
   void OnDisplayRemoved(const display::Display& old_display) override;
   void OnDisplayMetricsChanged(const display::Display& display,
@@ -173,7 +168,7 @@ class WiredDisplayMediaRouteProvider : public mojom::MediaRouteProvider,
   void TerminatePresentationsOnDisplay(const display::Display& display);
 
   // Returns a display associated with |sink_id|, or a nullopt if not found.
-  absl::optional<display::Display> GetDisplayBySinkId(
+  std::optional<display::Display> GetDisplayBySinkId(
       const std::string& sink_id) const;
 
   // Returns a list of available sinks.
@@ -203,7 +198,7 @@ class WiredDisplayMediaRouteProvider : public mojom::MediaRouteProvider,
   // Used for recording UMA metrics for the number of sinks available.
   WiredDisplayDeviceCountMetrics device_count_metrics_;
 
-  absl::optional<display::ScopedDisplayObserver> display_observer_;
+  std::optional<display::ScopedDisplayObserver> display_observer_;
 };
 
 }  // namespace media_router

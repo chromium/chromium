@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 #include "chromeos/ash/components/dbus/system_proxy/system_proxy_client.h"
 
+#include <optional>
 #include <utility>
 
 #include "base/functional/bind.h"
@@ -15,7 +16,6 @@
 #include "dbus/bus.h"
 #include "dbus/message.h"
 #include "dbus/object_proxy.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/cros_system_api/dbus/system_proxy/dbus-constants.h"
 
 namespace ash {
@@ -225,7 +225,7 @@ class SystemProxyClientImpl : public SystemProxyClient {
   AuthenticationRequiredCallback auth_required_callback_;
 
   // D-Bus proxy for the SystemProxy daemon, not owned.
-  raw_ptr<dbus::ObjectProxy, ExperimentalAsh> proxy_ = nullptr;
+  raw_ptr<dbus::ObjectProxy> proxy_ = nullptr;
 
   base::WeakPtrFactory<SystemProxyClientImpl> weak_factory_{this};
 };

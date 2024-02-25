@@ -51,10 +51,6 @@ void ImageInputType::CountUsage() {
   CountUsageIfVisible(WebFeature::kInputTypeImage);
 }
 
-const AtomicString& ImageInputType::FormControlType() const {
-  return input_type_names::kImage;
-}
-
 bool ImageInputType::IsFormDataAppendable() const {
   return true;
 }
@@ -129,8 +125,7 @@ void ImageInputType::AltAttributeChanged() {
 }
 
 void ImageInputType::SrcAttributeChanged() {
-  if (!GetElement().GetLayoutObject() &&
-      !RuntimeEnabledFeatures::LoadInputImageWithoutObjectEnabled()) {
+  if (!GetElement().GetExecutionContext()) {
     return;
   }
   GetElement().EnsureImageLoader().UpdateFromElement(
@@ -162,6 +157,10 @@ bool ImageInputType::CanBeSuccessfulSubmitButton() {
 }
 
 bool ImageInputType::IsEnumeratable() {
+  return false;
+}
+
+bool ImageInputType::IsAutoDirectionalityFormAssociated() const {
   return false;
 }
 
@@ -226,10 +225,6 @@ bool ImageInputType::HasLegalLinkAttribute(const QualifiedName& name) const {
          BaseButtonInputType::HasLegalLinkAttribute(name);
 }
 
-const QualifiedName& ImageInputType::SubResourceAttributeName() const {
-  return html_names::kSrcAttr;
-}
-
 void ImageInputType::EnsureFallbackContent() {
   if (use_fallback_content_)
     return;
@@ -241,6 +236,10 @@ void ImageInputType::SetUseFallbackContent() {
   if (use_fallback_content_)
     return;
   use_fallback_content_ = true;
+  if (!HasCreatedShadowSubtree() &&
+      RuntimeEnabledFeatures::CreateInputShadowTreeDuringLayoutEnabled()) {
+    return;
+  }
   if (GetElement().GetDocument().InStyleRecalc())
     return;
   if (ShadowRoot* root = GetElement().UserAgentShadowRoot())
@@ -252,6 +251,10 @@ void ImageInputType::EnsurePrimaryContent() {
   if (!use_fallback_content_)
     return;
   use_fallback_content_ = false;
+  if (!HasCreatedShadowSubtree() &&
+      RuntimeEnabledFeatures::CreateInputShadowTreeDuringLayoutEnabled()) {
+    return;
+  }
   if (ShadowRoot* root = GetElement().UserAgentShadowRoot())
     root->RemoveChildren();
   CreateShadowSubtree();
@@ -277,11 +280,15 @@ void ImageInputType::CreateShadowSubtree() {
   HTMLImageFallbackHelper::CreateAltTextShadowTree(GetElement());
 }
 
-void ImageInputType::AdjustStyle(ComputedStyleBuilder& builder) {
+// TODO(crbug.com/953707): Avoid marking style dirty in
+// HTMLImageFallbackHelper and use AdjustStyle instead.
+const ComputedStyle* ImageInputType::CustomStyleForLayoutObject(
+    const ComputedStyle* original_style) const {
   if (!use_fallback_content_)
-    return;
-
+    return original_style;
+  ComputedStyleBuilder builder(*original_style);
   HTMLImageFallbackHelper::CustomStyleForAltText(GetElement(), builder);
+  return builder.TakeStyle();
 }
 
 }  // namespace blink

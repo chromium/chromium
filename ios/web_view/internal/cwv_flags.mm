@@ -4,25 +4,25 @@
 
 #import "ios/web_view/internal/cwv_flags_internal.h"
 
-#include <memory>
+#import <memory>
+#import <optional>
 
-#include "base/base_switches.h"
-#include "base/command_line.h"
-#include "base/functional/bind.h"
-#include "base/functional/callback_helpers.h"
-#include "base/notreached.h"
-#include "base/values.h"
-#include "components/autofill/core/common/autofill_switches.h"
-#include "components/flags_ui/feature_entry.h"
-#include "components/flags_ui/feature_entry_macros.h"
-#include "components/flags_ui/flags_state.h"
-#include "components/flags_ui/flags_storage.h"
-#include "components/flags_ui/flags_ui_switches.h"
-#include "components/flags_ui/pref_service_flags_storage.h"
-#include "components/prefs/pref_service.h"
-#include "components/sync/base/command_line_switches.h"
-#include "ios/web_view/internal/app/application_context.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
+#import "base/base_switches.h"
+#import "base/command_line.h"
+#import "base/functional/bind.h"
+#import "base/functional/callback_helpers.h"
+#import "base/notreached.h"
+#import "base/values.h"
+#import "components/autofill/core/common/autofill_switches.h"
+#import "components/flags_ui/feature_entry.h"
+#import "components/flags_ui/feature_entry_macros.h"
+#import "components/flags_ui/flags_state.h"
+#import "components/flags_ui/flags_storage.h"
+#import "components/flags_ui/flags_ui_switches.h"
+#import "components/flags_ui/pref_service_flags_storage.h"
+#import "components/prefs/pref_service.h"
+#import "components/sync/base/command_line_switches.h"
+#import "ios/web_view/internal/app/application_context.h"
 
 namespace ios_web_view {
 
@@ -126,7 +126,7 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
     DCHECK(featureName);
 
     if (*featureName == ios_web_view::kUseSyncSandboxFlagName) {
-      absl::optional<bool> maybeEnabled =
+      std::optional<bool> maybeEnabled =
           supportedFeatureDict->FindBool("enabled");
       DCHECK(maybeEnabled.has_value());
       usesSyncSandbox = *maybeEnabled;
@@ -143,7 +143,7 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
         DCHECK(optionName);
 
         if (*optionName == ios_web_view::kUseWalletSandboxFlagNameEnabled) {
-          absl::optional<bool> maybeSelected = optionDict->FindBool("selected");
+          std::optional<bool> maybeSelected = optionDict->FindBool("selected");
           DCHECK(maybeSelected.has_value());
           usesWalletSandbox = *maybeSelected;
         }

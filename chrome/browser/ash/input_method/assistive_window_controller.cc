@@ -21,10 +21,12 @@
 
 namespace ash {
 namespace input_method {
-
-constexpr base::TimeDelta kShowSuggestionDelayMs = base::Milliseconds(5);
-
 namespace {
+
+constexpr char16_t kAnnouncementViewName[] = u"Assistive Input";
+constexpr base::TimeDelta kAnnouncementDelay = base::Milliseconds(100);
+constexpr base::TimeDelta kShowSuggestionDelay = base::Milliseconds(5);
+
 gfx::NativeView GetParentView() {
   gfx::NativeView parent = gfx::NativeView();
 
@@ -42,8 +44,8 @@ gfx::NativeView GetParentView() {
 AssistiveWindowController::AssistiveWindowController(
     AssistiveWindowControllerDelegate* delegate,
     Profile* profile,
-    ui::ime::AssistiveAccessibilityView* accessibility_view)
-    : delegate_(delegate), accessibility_view_(accessibility_view) {}
+    ui::ime::AnnouncementView* announcement_view)
+    : delegate_(delegate), announcement_view_(announcement_view) {}
 
 AssistiveWindowController::~AssistiveWindowController() {
   ClearPendingSuggestionTimer();
@@ -53,8 +55,9 @@ AssistiveWindowController::~AssistiveWindowController() {
     undo_window_->GetWidget()->RemoveObserver(this);
   if (grammar_suggestion_window_ && grammar_suggestion_window_->GetWidget())
     grammar_suggestion_window_->GetWidget()->RemoveObserver(this);
-  if (accessibility_view_ && accessibility_view_->GetWidget())
-    accessibility_view_->GetWidget()->RemoveObserver(this);
+  if (announcement_view_ && announcement_view_->GetWidget()) {
+    announcement_view_->GetWidget()->RemoveObserver(this);
+  }
   CHECK(!IsInObserverList());
 }
 
@@ -92,14 +95,15 @@ void AssistiveWindowController::InitGrammarSuggestionWindow() {
   widget->Show();
 }
 
-void AssistiveWindowController::InitAccessibilityView() {
-  if (accessibility_view_)
+void AssistiveWindowController::InitAnnouncementView() {
+  if (announcement_view_) {
     return;
+  }
 
   // accessibility_view_ is deleted by DialogDelegateView::DeleteDelegate.
-  accessibility_view_ =
-      new ui::ime::AssistiveAccessibilityView(GetParentView());
-  accessibility_view_->GetWidget()->AddObserver(this);
+  announcement_view_ =
+      new ui::ime::AnnouncementView(GetParentView(), kAnnouncementViewName);
+  announcement_view_->GetWidget()->AddObserver(this);
 }
 
 void AssistiveWindowController::OnWidgetDestroying(views::Widget* widget) {
@@ -118,17 +122,21 @@ void AssistiveWindowController::OnWidgetDestroying(views::Widget* widget) {
     widget->RemoveObserver(this);
     grammar_suggestion_window_ = nullptr;
   }
-  if (accessibility_view_ && widget == accessibility_view_->GetWidget()) {
+  if (announcement_view_ && widget == announcement_view_->GetWidget()) {
     widget->RemoveObserver(this);
-    accessibility_view_ = nullptr;
+    announcement_view_ = nullptr;
   }
 }
 
 void AssistiveWindowController::Announce(const std::u16string& message) {
-  if (!accessibility_view_)
-    InitAccessibilityView();
+  if (!announcement_view_) {
+    InitAnnouncementView();
+  }
 
-  accessibility_view_->Announce(message);
+  // Announcements for assistive suggestions often collide with key press or
+  // text update announcements from ChromeVox. By adding a very small delay
+  // these collisions are *mostly* avoided.
+  announcement_view_->AnnounceAfterDelay(message, kAnnouncementDelay);
 }
 
 // TODO(crbug/1119570): Update AcceptSuggestion signature (either use
@@ -144,7 +152,7 @@ void AssistiveWindowController::AcceptSuggestion(
 }
 
 void AssistiveWindowController::HideSuggestion() {
-  suggestion_text_ = base::EmptyString16();
+  suggestion_text_.clear();
   confirmed_length_ = 0;
   if (suggestion_window_view_)
     suggestion_window_view_->GetWidget()->Close();
@@ -184,7 +192,7 @@ void AssistiveWindowController::ShowSuggestion(
   ClearPendingSuggestionTimer();
   pending_suggestion_timer_ = std::make_unique<base::OneShotTimer>();
   pending_suggestion_timer_->Start(
-      FROM_HERE, kShowSuggestionDelayMs,
+      FROM_HERE, kShowSuggestionDelay,
       base::BindOnce(&AssistiveWindowController::DisplayCompletionSuggestion,
                      weak_ptr_factory_.GetWeakPtr(), details));
 }

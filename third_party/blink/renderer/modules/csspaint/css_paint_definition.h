@@ -76,10 +76,10 @@ class MODULES_EXPORT CSSPaintDefinition final
   }
   const PaintRenderingContext2DSettings* GetPaintRenderingContext2DSettings()
       const {
-    return context_settings_;
+    return context_settings_.Get();
   }
 
-  ScriptState* GetScriptState() const { return script_state_; }
+  ScriptState* GetScriptState() const { return script_state_.Get(); }
 
   void Trace(Visitor* visitor) const override;
   const char* NameInHeapSnapshot() const override {

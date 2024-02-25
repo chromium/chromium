@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_NEARBY_SHARING_CLIENT_NEARBY_SHARE_CLIENT_IMPL_H_
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <utility>
 #include <vector>
@@ -17,7 +18,6 @@
 #include "chromeos/ash/components/nearby/common/client/nearby_api_call_flow.h"
 #include "chromeos/ash/components/nearby/common/client/nearby_http_result.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
 namespace signin {
@@ -52,15 +52,15 @@ class NearbyShareClientImpl : public NearbyShareClient {
   NearbyShareClientImpl& operator=(NearbyShareClientImpl&) = delete;
 
   // NearbyShareClient:
-  void UpdateDevice(const nearbyshare::proto::UpdateDeviceRequest& request,
+  void UpdateDevice(const nearby::sharing::proto::UpdateDeviceRequest& request,
                     UpdateDeviceCallback&& callback,
                     ErrorCallback&& error_callback) override;
   void ListContactPeople(
-      const nearbyshare::proto::ListContactPeopleRequest& request,
+      const nearby::sharing::proto::ListContactPeopleRequest& request,
       ListContactPeopleCallback&& callback,
       ErrorCallback&& error_callback) override;
   void ListPublicCertificates(
-      const nearbyshare::proto::ListPublicCertificatesRequest& request,
+      const nearby::sharing::proto::ListPublicCertificatesRequest& request,
       ListPublicCertificatesCallback&& callback,
       ErrorCallback&& error_callback) override;
   std::string GetAccessTokenUsed() override;
@@ -88,8 +88,8 @@ class NearbyShareClientImpl : public NearbyShareClient {
   void MakeApiCall(
       const GURL& request_url,
       RequestType request_type,
-      const absl::optional<std::string>& serialized_request,
-      const absl::optional<ash::nearby::NearbyApiCallFlow::QueryParameters>&
+      const std::optional<std::string>& serialized_request,
+      const std::optional<ash::nearby::NearbyApiCallFlow::QueryParameters>&
           request_as_query_parameters,
       base::OnceCallback<void(const ResponseProto&)>&& response_callback,
       ErrorCallback&& error_callback,
@@ -100,8 +100,8 @@ class NearbyShareClientImpl : public NearbyShareClient {
   template <class ResponseProto>
   void OnAccessTokenFetched(
       RequestType request_type,
-      const absl::optional<std::string>& serialized_request,
-      const absl::optional<ash::nearby::NearbyApiCallFlow::QueryParameters>&
+      const std::optional<std::string>& serialized_request,
+      const std::optional<ash::nearby::NearbyApiCallFlow::QueryParameters>&
           request_as_query_parameters,
       base::OnceCallback<void(const ResponseProto&)>&& response_callback,
       GoogleServiceAuthError error,
@@ -120,14 +120,14 @@ class NearbyShareClientImpl : public NearbyShareClient {
   // Constructs and executes the actual HTTP request.
   std::unique_ptr<ash::nearby::NearbyApiCallFlow> api_call_flow_;
 
-  raw_ptr<signin::IdentityManager, ExperimentalAsh> identity_manager_;
+  raw_ptr<signin::IdentityManager> identity_manager_;
 
   // Fetches the access token authorizing the API calls.
   std::unique_ptr<signin::PrimaryAccountAccessTokenFetcher>
       access_token_fetcher_;
 
   scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
-  raw_ptr<NearbyShareHttpNotifier, ExperimentalAsh> notifier_ = nullptr;
+  raw_ptr<NearbyShareHttpNotifier> notifier_ = nullptr;
 
   // True if an API call has been started. Remains true even after the API call
   // completes.
@@ -165,10 +165,9 @@ class NearbyShareClientFactoryImpl : public NearbyShareClientFactory {
   std::unique_ptr<NearbyShareClient> CreateInstance() override;
 
  private:
-  raw_ptr<signin::IdentityManager, DanglingUntriaged | ExperimentalAsh>
-      identity_manager_;
+  raw_ptr<signin::IdentityManager, DanglingUntriaged> identity_manager_;
   const scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
-  raw_ptr<NearbyShareHttpNotifier, ExperimentalAsh> notifier_;
+  raw_ptr<NearbyShareHttpNotifier> notifier_;
 };
 
 #endif  // CHROME_BROWSER_NEARBY_SHARING_CLIENT_NEARBY_SHARE_CLIENT_IMPL_H_

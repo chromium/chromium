@@ -88,9 +88,7 @@ TEST_P(SymmetricKeyDeriveKeyFromPasswordUsingPbkdf2Test,
 
   const std::string& raw_key = key->key();
   EXPECT_EQ(test_data.key_size_in_bits / 8, raw_key.size());
-  EXPECT_EQ(test_data.expected,
-            base::ToLowerASCII(base::HexEncode(raw_key.data(),
-                                               raw_key.size())));
+  EXPECT_EQ(test_data.expected, base::ToLowerASCII(base::HexEncode(raw_key)));
 }
 
 TEST_P(SymmetricKeyDeriveKeyFromPasswordUsingScryptTest,

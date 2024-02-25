@@ -6,6 +6,7 @@
 #define IOS_WEB_PUBLIC_TEST_FAKES_FAKE_NAVIGATION_MANAGER_H_
 
 #include "base/functional/callback.h"
+#import "base/memory/raw_ptr.h"
 #import "ios/web/public/navigation/navigation_item.h"
 #import "ios/web/public/navigation/navigation_manager.h"
 #include "ui/base/page_transition_types.h"
@@ -96,11 +97,11 @@ class FakeNavigationManager : public NavigationManager {
   std::vector<std::unique_ptr<NavigationItem>> items_;
   int items_index_ = -1;
   // Individual backing instance variables for Set* test set up methods.
-  NavigationItem* pending_item_ = nullptr;
+  raw_ptr<NavigationItem> pending_item_ = nullptr;
   int pending_item_index_ = -1;
-  NavigationItem* last_committed_item_ = nullptr;
-  NavigationItem* visible_item_ = nullptr;
-  web::BrowserState* browser_state_ = nullptr;
+  raw_ptr<NavigationItem> last_committed_item_ = nullptr;
+  raw_ptr<NavigationItem> visible_item_ = nullptr;
+  raw_ptr<web::BrowserState> browser_state_ = nullptr;
   bool load_url_with_params_was_called_ = false;
   bool load_if_necessary_was_called_ = false;
   bool reload_was_called_ = false;

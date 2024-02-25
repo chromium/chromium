@@ -63,12 +63,12 @@ TEST_F(UkmUrlTableTest, InsertUrl) {
   ASSERT_TRUE(url_table_->InitTable());
   EXPECT_FALSE(url_table_->IsUrlInTable(kUrlId1));
 
-  EXPECT_TRUE(url_table_->WriteUrl(kUrl, kUrlId1, kTimestamp1));
+  EXPECT_TRUE(url_table_->WriteUrl(kUrl, kUrlId1, kTimestamp1, ""));
   EXPECT_TRUE(url_table_->IsUrlInTable(kUrlId1));
   {
     sql::test::ScopedErrorExpecter error_expector;
     error_expector.ExpectError(SQLITE_CONSTRAINT_PRIMARYKEY);
-    EXPECT_FALSE(url_table_->WriteUrl(kUrl, kUrlId1, kTimestamp1));
+    EXPECT_FALSE(url_table_->WriteUrl(kUrl, kUrlId1, kTimestamp1, ""));
     ASSERT_TRUE(error_expector.SawExpectedErrors());
   }
   EXPECT_TRUE(url_table_->IsUrlInTable(kUrlId1));
@@ -76,8 +76,8 @@ TEST_F(UkmUrlTableTest, InsertUrl) {
   test_util::AssertUrlsInTable(*db_, {UrlMatcher{kUrlId1, kUrl}});
   EXPECT_FALSE(url_table_->IsUrlInTable(kUrlId2));
 
-  EXPECT_TRUE(url_table_->WriteUrl(kUrl, kUrlId2, kTimestamp1));
-  EXPECT_TRUE(url_table_->WriteUrl(kUrl, kUrlId3, kTimestamp1));
+  EXPECT_TRUE(url_table_->WriteUrl(kUrl, kUrlId2, kTimestamp1, ""));
+  EXPECT_TRUE(url_table_->WriteUrl(kUrl, kUrlId3, kTimestamp1, ""));
 
   test_util::AssertUrlsInTable(
       *db_, {UrlMatcher{kUrlId1, kUrl}, UrlMatcher{kUrlId2, kUrl},
@@ -111,9 +111,9 @@ TEST_F(UkmUrlTableTest, RemoveUrls) {
   ASSERT_TRUE(url_table_->InitTable());
   EXPECT_TRUE(url_table_->RemoveUrls({kUrlId1}));
 
-  EXPECT_TRUE(url_table_->WriteUrl(kUrl1, kUrlId1, kTimestamp1));
-  EXPECT_TRUE(url_table_->WriteUrl(kUrl2, kUrlId2, kTimestamp1));
-  EXPECT_TRUE(url_table_->WriteUrl(kUrl3, kUrlId3, kTimestamp1));
+  EXPECT_TRUE(url_table_->WriteUrl(kUrl1, kUrlId1, kTimestamp1, ""));
+  EXPECT_TRUE(url_table_->WriteUrl(kUrl2, kUrlId2, kTimestamp1, ""));
+  EXPECT_TRUE(url_table_->WriteUrl(kUrl3, kUrlId3, kTimestamp1, ""));
 
   test_util::AssertUrlsInTable(
       *db_, {UrlMatcher{kUrlId1, kUrl1}, UrlMatcher{kUrlId2, kUrl2},
@@ -139,9 +139,9 @@ TEST_F(UkmUrlTableTest, TimestampExpiration) {
   const UrlId kUrlId3 = UkmUrlTable::GenerateUrlId(kUrl3);
 
   ASSERT_TRUE(url_table_->InitTable());
-  EXPECT_TRUE(url_table_->WriteUrl(kUrl1, kUrlId1, kTimestamp1));
-  EXPECT_TRUE(url_table_->WriteUrl(kUrl2, kUrlId2, kTimestamp2));
-  EXPECT_TRUE(url_table_->WriteUrl(kUrl3, kUrlId3, kTimestamp3));
+  EXPECT_TRUE(url_table_->WriteUrl(kUrl1, kUrlId1, kTimestamp1, ""));
+  EXPECT_TRUE(url_table_->WriteUrl(kUrl2, kUrlId2, kTimestamp2, ""));
+  EXPECT_TRUE(url_table_->WriteUrl(kUrl3, kUrlId3, kTimestamp3, ""));
 
   test_util::AssertUrlsInTable(
       *db_, {UrlMatcher{kUrlId1, kUrl1}, UrlMatcher{kUrlId2, kUrl2},
@@ -160,6 +160,28 @@ TEST_F(UkmUrlTableTest, TimestampExpiration) {
   EXPECT_TRUE(url_table_->DeleteUrlsBeforeTimestamp(kTimestamp3));
 
   test_util::AssertUrlsInTable(*db_, {UrlMatcher{kUrlId2, kUrl2}});
+}
+
+TEST_F(UkmUrlTableTest, MigrateWithProfileId) {
+  const GURL kUrl1("https://www.url1.com");
+  const base::Time kTimestamp1 = base::Time::Now();
+  const UrlId kUrlId1 = UkmUrlTable::GenerateUrlId(kUrl1);
+  const std::string kProfileId = "test_id";
+
+  // Create a urls table without profile_id columns.
+  EXPECT_TRUE(
+      db_->Execute("CREATE TABLE urls("
+                   "url_id INTEGER PRIMARY KEY NOT NULL,"
+                   "url TEXT NOT NULL,"
+                   "last_timestamp INTEGER NOT NULL,"
+                   "counter INTEGER,"
+                   "title TEXT)"));
+
+  // Call init table and trigger the migration.
+  ASSERT_TRUE(url_table_->InitTable());
+  EXPECT_TRUE(url_table_->WriteUrl(kUrl1, kUrlId1, kTimestamp1, ""));
+
+  test_util::AssertUrlsInTable(*db_, {UrlMatcher{kUrlId1, kUrl1}});
 }
 
 }  // namespace segmentation_platform

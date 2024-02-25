@@ -21,8 +21,8 @@ import './load_error.js';
 import './options_dialog.js';
 import './shared_vars.css.js';
 import './sidebar.js';
-import './site_permissions.js';
-import './site_permissions_by_site.js';
+import './site_permissions/site_permissions.js';
+import './site_permissions/site_permissions_by_site.js';
 import './toolbar.js';
 // <if expr="chromeos_ash">
 import './kiosk_dialog.js';
@@ -30,22 +30,23 @@ import './kiosk_dialog.js';
 // </if>
 
 import {CrContainerShadowMixin} from 'chrome://resources/cr_elements/cr_container_shadow_mixin.js';
-import {CrViewManagerElement} from 'chrome://resources/cr_elements/cr_view_manager/cr_view_manager.js';
-import {assert, assertNotReached} from 'chrome://resources/js/assert_ts.js';
+import type {CrViewManagerElement} from 'chrome://resources/cr_elements/cr_view_manager/cr_view_manager.js';
+import {assert, assertNotReached} from 'chrome://resources/js/assert.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {PromiseResolver} from 'chrome://resources/js/promise_resolver.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {ActivityLogExtensionPlaceholder} from './activity_log/activity_log.js';
-import {ExtensionsDetailViewElement} from './detail_view.js';
-import {ExtensionsItemListElement} from './item_list.js';
+import type {ActivityLogExtensionPlaceholder} from './activity_log/activity_log.js';
+import type {ExtensionsDetailViewElement} from './detail_view.js';
+import type {ExtensionsItemListElement} from './item_list.js';
 // <if expr="chromeos_ash">
 import {KioskBrowserProxyImpl} from './kiosk_browser_proxy.js';
 // </if>
 import {getTemplate} from './manager.html.js';
-import {Dialog, navigation, Page, PageState} from './navigation_helper.js';
+import type {PageState} from './navigation_helper.js';
+import {Dialog, navigation, Page} from './navigation_helper.js';
 import {Service} from './service.js';
-import {ExtensionsToolbarElement} from './toolbar.js';
+import type {ExtensionsToolbarElement} from './toolbar.js';
 
 /**
  * Compares two extensions to determine which should come first in the list.
@@ -376,6 +377,7 @@ export class ExtensionsManagerElement extends ExtensionsManagerElementBase {
       case EventType.PERMISSIONS_CHANGED:
       case EventType.SERVICE_WORKER_STARTED:
       case EventType.SERVICE_WORKER_STOPPED:
+      case EventType.PINNED_ACTIONS_CHANGED:
         // |extensionInfo| can be undefined in the case of an extension
         // being unloaded right before uninstallation. There's nothing to do
         // here.
@@ -534,15 +536,38 @@ export class ExtensionsManagerElement extends ExtensionsManagerElementBase {
     }
   }
 
+  // When an item is removed while on the 'item list' page, move focus to the
+  // next item in the list with `listId` if available. If no items are in that
+  // list, focus to the search bar as a fallback.
+  // This is a fix for crbug.com/1416324 which causes focus to linger on a
+  // deleted element, which is then read by the screen reader.
+  private focusAfterItemRemoved_(listId: string, index: number) {
+    // A timeout is used so elements are focused after the DOM is updated.
+    setTimeout(() => {
+      if (this.get(listId).length) {
+        const focusIndex = Math.min(this.get(listId).length - 1, index);
+        const itemToFocusId = this.get([listId, focusIndex])!.id;
+
+        // In the rare case where the item cannot be focused despite existing,
+        // focus the search bar.
+        if (!this.$['items-list'].focusItemButton(itemToFocusId)) {
+          this.$.toolbar.focusSearchInput();
+        }
+      } else {
+        this.$.toolbar.focusSearchInput();
+      }
+    }, 0);
+  }
+
   /**
    * @param itemId The id of item to remove.
    */
   private removeItem_(itemId: string) {
-    // Search for the item to be deleted in |extensions_|.
+    // Search for the item to be deleted in `extensions_`.
     let listId = 'extensions_';
     let index = this.getIndexInList_(listId, itemId);
     if (index === -1) {
-      // If not in |extensions_| it must be in |apps_|.
+      // If not in `extensions_` it must be in `apps_`.
       listId = 'apps_';
       index = this.getIndexInList_(listId, itemId);
     }
@@ -550,11 +575,14 @@ export class ExtensionsManagerElement extends ExtensionsManagerElementBase {
     // We should never try and remove a non-existent item.
     assert(index >= 0);
     this.splice(listId, index, 1);
-    if ((this.currentPage_!.page === Page.ACTIVITY_LOG ||
+    if (this.currentPage_!.page === Page.LIST) {
+      this.focusAfterItemRemoved_(listId, index);
+    } else if (
+        (this.currentPage_!.page === Page.ACTIVITY_LOG ||
          this.currentPage_!.page === Page.DETAILS ||
          this.currentPage_!.page === Page.ERRORS) &&
         this.currentPage_!.extensionId === itemId) {
-      // Leave the details page (the 'list' page is a fine choice).
+      // Leave the details page (the 'item list' page is a fine choice).
       navigation.replaceWith({page: Page.LIST});
     }
   }
@@ -585,6 +613,10 @@ export class ExtensionsManagerElement extends ExtensionsManagerElementBase {
     const toPage = newPage.page;
     let data: chrome.developerPrivate.ExtensionInfo|undefined;
     let activityLogPlaceholder;
+    if (toPage === Page.LIST) {
+      // Dismiss menu notifications for extensions module of Safety Hub.
+      this.delegate.dismissSafetyHubExtensionsMenuNotification();
+    }
     if (newPage.extensionId) {
       data = this.getData_(newPage.extensionId);
       if (!data) {

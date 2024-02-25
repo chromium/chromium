@@ -2,34 +2,64 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/download/download_status_updater.h"
-
 #include <memory>
+#include <optional>
 #include <string>
+#include <utility>
 
+#include "base/check.h"
 #include "base/containers/contains.h"
-#include "base/notreached.h"
+#include "base/files/file_path.h"
+#include "base/files/file_util.h"
+#include "base/functional/bind.h"
+#include "base/functional/callback.h"
+#include "base/logging.h"
+#include "base/memory/weak_ptr.h"
+#include "base/supports_user_data.h"
+#include "base/task/task_traits.h"
+#include "base/task/thread_pool.h"
 #include "chrome/browser/download/bubble/download_bubble_prefs.h"
+#include "chrome/browser/download/bubble/download_bubble_ui_controller.h"
 #include "chrome/browser/download/download_commands.h"
 #include "chrome/browser/download/download_item_model.h"
+#include "chrome/browser/download/download_item_warning_data.h"
+#include "chrome/browser/download/download_status_updater.h"
 #include "chrome/browser/download/download_ui_model.h"
+#include "chrome/browser/download/offline_item_utils.h"
+#include "chrome/browser/image_decoder/image_decoder.h"
 #include "chrome/browser/profiles/keep_alive/scoped_profile_keep_alive.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/profiles/profile_window.h"
+#include "chrome/browser/ui/browser_finder.h"
+#include "chrome/browser/ui/chrome_pages.h"
+#include "chrome/browser/ui/download/download_bubble_info_utils.h"
+#include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chromeos/crosapi/mojom/download_controller.mojom.h"
 #include "chromeos/crosapi/mojom/download_status_updater.mojom.h"
 #include "chromeos/lacros/lacros_service.h"
 #include "components/download/content/public/all_download_item_notifier.h"
 #include "components/download/public/common/download_item_utils.h"
+#include "content/public/browser/browser_thread.h"
 #include "content/public/browser/download_item_utils.h"
 #include "mojo/public/cpp/bindings/receiver.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
+#include "third_party/skia/include/core/SkBitmap.h"
+#include "ui/display/types/display_constants.h"
+#include "ui/gfx/image/image_skia.h"
 
 namespace {
+
+// Constants -------------------------------------------------------------------
+
+// The key referring to an image decoder task.
+constexpr char kImageDecoderTaskKey[] = "kImageDecoderTask";
+
+// Images larger than this threshold should not be decoded.
+constexpr size_t kImageDecoderTaskMaxFileSize = 10 * 1024 * 1024;  // 10 MB
 
 // Helpers ---------------------------------------------------------------------
 
 crosapi::mojom::DownloadStatusUpdater* GetRemote(
-    absl::optional<uint32_t> min_version = absl::nullopt) {
+    std::optional<uint32_t> min_version = std::nullopt) {
   using DownloadStatusUpdater = crosapi::mojom::DownloadStatusUpdater;
   auto* service = chromeos::LacrosService::Get();
   if (!service || !service->IsAvailable<DownloadStatusUpdater>()) {
@@ -43,55 +73,94 @@ crosapi::mojom::DownloadStatusUpdater* GetRemote(
              : nullptr;
 }
 
-bool IsCommandEnabled(DownloadItemModel& model,
-                      DownloadCommands::Command command) {
+bool IsCommandEnabled(
+    const std::vector<DownloadBubbleQuickAction>& quick_actions,
+    DownloadCommands::Command command) {
   // To support other commands, we may need to update checks below to also
-  // inspect `BubbleUIInfo` subpage buttons.
+  // inspect `DownloadBubbleSecurityViewInfo` subpage buttons.
   CHECK(command == DownloadCommands::CANCEL ||
         command == DownloadCommands::PAUSE ||
         command == DownloadCommands::RESUME);
 
-  const bool is_download_bubble_v2_enabled =
-      download::IsDownloadBubbleV2Enabled(Profile::FromBrowserContext(
-          content::DownloadItemUtils::GetBrowserContext(
-              model.GetDownloadItem())));
+  // A command is enabled if the `DownloadBubbleRowViewInfo` contains
+  // a quick action for it. This is preferred over
+  // non-`DownloadBubbleRowViewInfo`-based determination of command
+  // enablement as it takes more signals into account, e.g. if the
+  // download has been marked dangerous.
+  return base::Contains(quick_actions, command,
+                        &DownloadBubbleQuickAction::command);
+}
 
-  // `BubbleUIInfo` contains at most one of either `CANCEL`, `PAUSE`, or
-  // `RESUME` when download bubble v2 is disabled, despite the fact that a
-  // download may be simultaneously cancellable and pausable/resumable. For
-  // this reason, do not use `BubbleUIInfo`-based determination of command
-  // enablement when download bubble v2 is disabled.
-  if (!is_download_bubble_v2_enabled) {
-    DownloadCommands commands(model.GetWeakPtr());
-    return model.IsCommandEnabled(&commands, command);
+// Reads a specified image into binary data. Returns an empty string if
+// unsuccessful. NOTE:
+// 1. This function should be called only when the file size is not greater than
+//    `kImageDecoderTaskMaxFileSize`.
+// 2. This function is blocking so it should not be called from the UI thread.
+std::string ReadImage(const base::FilePath& file_path) {
+  CHECK(!content::BrowserThread::CurrentlyOn(content::BrowserThread::UI));
+
+  std::string data;
+  if (!base::ReadFileToString(file_path, &data)) {
+    return std::string();
   }
 
-  const DownloadUIModel::BubbleUIInfo info =
-      model.GetBubbleUIInfo(/*is_download_bubble_v2_enabled=*/true);
+  if (data.size() > kImageDecoderTaskMaxFileSize) {
+    data.clear();
+    LOG(ERROR) << "Attempted to read a too large image file.";
+  }
 
-  // A command is enabled if `BubbleUIInfo` contains a quick action for it. This
-  // is preferred over non-`BubbleUIInfo`-based determination of command
-  // enablement as it takes more signals into account, e.g. if the download has
-  // been marked dangerous.
-  return base::Contains(info.quick_actions, command,
-                        &DownloadUIModel::BubbleUIInfo::QuickAction::command);
+  return data;
 }
 
-crosapi::mojom::DownloadStatusPtr ConvertToMojoDownloadStatus(
-    download::DownloadItem* download) {
-  DownloadItemModel model(download);
-  auto status = crosapi::mojom::DownloadStatus::New();
-  status->guid = download->GetGuid();
-  status->state = download::download_item_utils::ConvertToMojoDownloadState(
-      download->GetState());
-  status->received_bytes = download->GetReceivedBytes();
-  status->total_bytes = download->GetTotalBytes();
-  status->target_file_path = download->GetTargetFilePath();
-  status->cancellable = IsCommandEnabled(model, DownloadCommands::CANCEL);
-  status->pausable = IsCommandEnabled(model, DownloadCommands::PAUSE);
-  status->resumable = IsCommandEnabled(model, DownloadCommands::RESUME);
-  return status;
-}
+// ImageDecoderTask ------------------------------------------------------------
+
+// Represents an async task to decode a download image. Has two stages:
+// 1. Load the image's binary data.
+// 2. Decode the binary data into a `gfx::ImageSkia`.
+class ImageDecoderTask : public base::SupportsUserData::Data,
+                         public ImageDecoder::ImageRequest {
+ public:
+  void Run(const base::FilePath& image_path,
+           base::OnceClosure task_success_callback) {
+    CHECK(!task_success_callback_);
+    CHECK(task_success_callback);
+    task_success_callback_ = std::move(task_success_callback);
+
+    base::ThreadPool::PostTaskAndReplyWithResult(
+        FROM_HERE,
+        /*traits=*/{base::MayBlock(), base::TaskPriority::BEST_EFFORT},
+        base::BindOnce(&ReadImage, image_path),
+        base::BindOnce(&ImageDecoderTask::OnImageLoaded,
+                       weak_ptr_factory_.GetWeakPtr()));
+  }
+
+  const gfx::ImageSkia& image() const { return image_; }
+
+ private:
+  // ImageDecoder::ImageRequest:
+  void OnImageDecoded(const SkBitmap& decoded_image) override {
+    DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+
+    if (!decoded_image.drawsNothing()) {
+      image_ = gfx::ImageSkia::CreateFrom1xBitmap(decoded_image);
+      std::move(task_success_callback_).Run();
+    }
+  }
+
+  void OnImageLoaded(std::string image_data) {
+    if (!image_data.empty()) {
+      ImageDecoder::Start(/*image_request=*/this, std::move(image_data));
+    }
+  }
+
+  // Called when the task successfully completes.
+  base::OnceClosure task_success_callback_;
+
+  // Caches the decoding result. Null if decoding is in progress or has failed.
+  gfx::ImageSkia image_;
+
+  base::WeakPtrFactory<ImageDecoderTask> weak_ptr_factory_{this};
+};
 
 }  // namespace
 
@@ -118,6 +187,60 @@ class DownloadStatusUpdater::Delegate
   Delegate(const Delegate&) = delete;
   Delegate& operator=(const Delegate&) = delete;
   ~Delegate() override = default;
+
+  // Updates the remote download if it exists. Returns true on success.
+  bool MaybeUpdate(download::DownloadItem* download) {
+    auto* const remote = GetRemote();
+    if (!remote) {
+      return false;
+    }
+
+    DownloadItemModel model(
+        download, std::make_unique<DownloadUIModel::BubbleStatusTextBuilder>());
+    std::vector<DownloadBubbleQuickAction> quick_actions =
+        QuickActionsForDownload(model);
+    auto status = crosapi::mojom::DownloadStatus::New();
+    status->cancellable =
+        IsCommandEnabled(quick_actions, DownloadCommands::CANCEL);
+    status->full_path = download->GetFullPath();
+    status->guid = download->GetGuid();
+    status->pausable = IsCommandEnabled(quick_actions, DownloadCommands::PAUSE);
+    status->resumable =
+        IsCommandEnabled(quick_actions, DownloadCommands::RESUME);
+    status->state = download::download_item_utils::ConvertToMojoDownloadState(
+        download->GetState());
+    status->status_text = model.GetStatusText();
+    status->target_file_path = download->GetTargetFilePath();
+
+    // TODO(http://b/306459683): Remove after the 2-version skew period passes.
+    status->received_bytes_deprecated = download->GetReceivedBytes();
+    status->total_bytes_deprecated = download->GetTotalBytes();
+
+    DownloadBubbleProgressBar progress_bar = ProgressBarForDownload(model);
+    auto progress = crosapi::mojom::DownloadProgress::New();
+    progress->loop = progress_bar.is_looping;
+    progress->received_bytes = download->GetReceivedBytes();
+    progress->total_bytes = download->GetTotalBytes();
+    progress->visible = progress_bar.is_visible;
+    status->progress = std::move(progress);
+
+    // If `task` exists and completes, copy the image generated by `task` to
+    // `status` and delete `task`; otherwise, posts an image decoder task if
+    // conditions satisfied. NOTE: Download updates after image decoding are
+    // assumed to be rare.
+    const auto* task = static_cast<const ImageDecoderTask*>(
+        download->GetUserData(kImageDecoderTaskKey));
+    if (task && !task->image().isNull()) {
+      status->image = task->image();
+      download->RemoveUserData(kImageDecoderTaskKey);
+      task = nullptr;
+    } else if (!task) {
+      MaybePostImageDecoderTask(download);
+    }
+
+    remote->Update(std::move(status));
+    return true;
+  }
 
  private:
   download::DownloadItem* GetDownloadItem(const std::string& guid) {
@@ -158,9 +281,111 @@ class DownloadStatusUpdater::Delegate
 
   void ShowInBrowser(const std::string& guid,
                      ShowInBrowserCallback callback) override {
-    // TODO(http://b/279794441): Implement.
-    NOTIMPLEMENTED();
+    // Look up the profile from the download item and find a relevant browser to
+    // display the download bubble in.
+    Profile* profile = nullptr;
+    Browser* browser = nullptr;
+    if (download::DownloadItem* item = GetDownloadItem(guid); item) {
+      content::BrowserContext* browser_context =
+          content::DownloadItemUtils::GetBrowserContext(item);
+      profile = Profile::FromBrowserContext(browser_context);
+      if (profile) {
+        // TODO(chlily): This doesn't work for web app initiated downloads.
+        browser = chrome::FindTabbedBrowser(profile,
+                                            /*match_original_profiles=*/false,
+                                            display::kInvalidDisplayId,
+                                            /*ignore_closing_browsers=*/true);
+      }
+    }
+
+    if (browser) {
+      // If we found an appropriate browser, show the download bubble in it.
+      OnBrowserLocated(guid, std::move(callback), browser);
+      return;
+    } else if (profile) {
+      // Otherwise, attempt to open a new browser window and do the same.
+      // This can happen if the last browser window shuts down while there are
+      // downloads in progress, and the profile is kept alive. (Some downloads
+      // do not block browser shutdown.)
+      profiles::OpenBrowserWindowForProfile(
+          base::BindOnce(&DownloadStatusUpdater::Delegate::OnBrowserLocated,
+                         weak_factory_.GetWeakPtr(), guid, std::move(callback)),
+          /*always_create=*/false,
+          /*is_new_profile=*/false, /*unblock_extensions=*/true, profile);
+      return;
+    }
     std::move(callback).Run(/*handled=*/false);
+  }
+
+  // Posts an asynchronous task to decode the download image and then updates
+  // the download iff:
+  // 1. The download file exists and its size is not greater than the threshold.
+  // 2. The underlying download is completed.
+  // 3. The underlying download is an image download.
+  // NOTE: This function should be called only when `download` does not have an
+  // associated image decoder task.
+  void MaybePostImageDecoderTask(download::DownloadItem* download) {
+    CHECK(!download->GetUserData(kImageDecoderTaskKey));
+
+    const base::FilePath& target_file_path = download->GetTargetFilePath();
+    if (const std::optional<int64_t>& received_bytes =
+            download->GetReceivedBytes();
+        target_file_path.empty() || !received_bytes ||
+        received_bytes > kImageDecoderTaskMaxFileSize ||
+        download->GetState() != download::DownloadItem::COMPLETE ||
+        !DownloadItemModel(download).HasSupportedImageMimeType()) {
+      return;
+    }
+
+    // `download` outlives `image_decoder_task`. Therefore, it is safe to pass
+    // `download` to the callback.
+    auto image_decoder_task = std::make_unique<ImageDecoderTask>();
+    image_decoder_task->Run(
+        target_file_path,
+        base::BindOnce(
+            base::IgnoreResult(&DownloadStatusUpdater::Delegate::MaybeUpdate),
+            weak_factory_.GetWeakPtr(), download));
+    download->SetUserData(kImageDecoderTaskKey, std::move(image_decoder_task));
+  }
+
+  void OnBrowserLocated(const std::string& guid,
+                        ShowInBrowserCallback callback,
+                        Browser* browser) {
+    if (!browser || !browser->window()) {
+      std::move(callback).Run(/*handled=*/false);
+      return;
+    }
+
+    // Activate the browser so that the bubble or chrome://downloads page can be
+    // visible.
+    if (browser->window()->IsMinimized()) {
+      browser->window()->Restore();
+    }
+    browser->window()->Activate();
+
+    bool showed_bubble = false;
+    DownloadBubbleUIController* bubble_controller =
+        browser->window()->GetDownloadBubbleUIController();
+    // Look up the guid again because the item may have been removed in the
+    // meantime.
+    if (download::DownloadItem* item = GetDownloadItem(guid);
+        item && bubble_controller) {
+      offline_items_collection::ContentId content_id =
+          OfflineItemUtils::GetContentIdForDownload(item);
+      showed_bubble = bubble_controller->OpenMostSpecificDialog(content_id);
+
+      if (item->IsDangerous() && !item->IsDone() && showed_bubble) {
+        DownloadItemWarningData::AddWarningActionEvent(
+            item,
+            DownloadItemWarningData::WarningSurface::DOWNLOAD_NOTIFICATION,
+            DownloadItemWarningData::WarningAction::OPEN_SUBPAGE);
+      }
+    }
+    if (!showed_bubble) {
+      // Fall back to showing chrome://downloads.
+      chrome::ShowDownloads(browser);
+    }
+    std::move(callback).Run(/*handled=*/true);
   }
 
   // The receiver bound to `this` for use by crosapi.
@@ -168,6 +393,8 @@ class DownloadStatusUpdater::Delegate
 
   // Callback allowing the lookup of DownloadItem*s from guids.
   GetDownloadItemCallback get_download_item_callback_;
+
+  base::WeakPtrFactory<DownloadStatusUpdater::Delegate> weak_factory_{this};
 };
 
 // DownloadStatusUpdater -------------------------------------------------------
@@ -181,8 +408,11 @@ DownloadStatusUpdater::~DownloadStatusUpdater() = default;
 
 void DownloadStatusUpdater::UpdateAppIconDownloadProgress(
     download::DownloadItem* download) {
-  if (auto* remote = GetRemote()) {
-    remote->Update(ConvertToMojoDownloadStatus(download));
+  if (delegate_->MaybeUpdate(download) && download->IsDangerous()) {
+    DownloadItemWarningData::AddWarningActionEvent(
+        download,
+        DownloadItemWarningData::WarningSurface::DOWNLOAD_NOTIFICATION,
+        DownloadItemWarningData::WarningAction::SHOWN);
   }
 }
 

@@ -4,13 +4,21 @@
 
 #include "content/browser/file_system_access/file_system_access_watch_scope.h"
 
+#include "storage/browser/file_system/file_system_url.h"
+#include "storage/common/file_system/file_system_types.h"
+#include "storage/common/file_system/file_system_util.h"
+
 namespace content {
 
 namespace {
 
+// TODO(https://crbug.com/1019297): Consider upstreaming this.
 bool IsStrictParent(const storage::FileSystemURL& parent,
                     const storage::FileSystemURL& child) {
-  return parent.IsParent(child) && parent.path() == child.path().DirName();
+  return parent.IsParent(child) &&
+         (parent.path() == child.path().DirName() ||
+          (storage::VirtualPath::IsRootPath(parent.path()) &&
+           storage::VirtualPath::GetComponents(child.path()).size() == 1));
 }
 
 }  // namespace
@@ -28,6 +36,12 @@ FileSystemAccessWatchScope::GetScopeForDirectoryWatch(
     bool is_recursive) {
   return {directory_url, is_recursive ? WatchType::kDirectoryRecursive
                                       : WatchType::kDirectoryNonRecursive};
+}
+
+// static
+FileSystemAccessWatchScope
+FileSystemAccessWatchScope::GetScopeForAllBucketFileSystems() {
+  return {storage::FileSystemURL(), WatchType::kAllBucketFileSystems};
 }
 
 FileSystemAccessWatchScope::FileSystemAccessWatchScope(
@@ -48,6 +62,8 @@ FileSystemAccessWatchScope& FileSystemAccessWatchScope::operator=(
 bool FileSystemAccessWatchScope::Contains(
     const storage::FileSystemURL& url) const {
   switch (watch_type_) {
+    case WatchType::kAllBucketFileSystems:
+      return url.type() == storage::FileSystemType::kFileSystemTypeTemporary;
     case WatchType::kFile:
       return url == root_url();
     case WatchType::kDirectoryNonRecursive:
@@ -60,13 +76,18 @@ bool FileSystemAccessWatchScope::Contains(
 bool FileSystemAccessWatchScope::Contains(
     const FileSystemAccessWatchScope& scope) const {
   switch (watch_type_) {
+    case WatchType::kAllBucketFileSystems:
+      return scope.watch_type_ == WatchType::kAllBucketFileSystems ||
+             scope.root_url().type() ==
+                 storage::FileSystemType::kFileSystemTypeTemporary;
     case WatchType::kFile:
       return *this == scope;
     case WatchType::kDirectoryNonRecursive:
       return *this == scope || (scope.watch_type_ == WatchType::kFile &&
                                 IsStrictParent(root_url(), scope.root_url()));
     case WatchType::kDirectoryRecursive:
-      return Contains(scope.root_url());
+      return scope.watch_type_ != WatchType::kAllBucketFileSystems &&
+             Contains(scope.root_url());
   }
 }
 

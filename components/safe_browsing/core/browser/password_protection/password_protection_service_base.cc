@@ -47,10 +47,12 @@ bool IsSecuritySensitiveVerdict(
     LoginReputationClientResponse::VerdictType verdict_type) {
   switch (verdict_type) {
     case LoginReputationClientResponse::SAFE:
+    // UNSPECIFIED is not considered sensitive because it is the default verdict
+    // if no ping is sent (e.g. timeout, allowlist hit).
+    case LoginReputationClientResponse::VERDICT_TYPE_UNSPECIFIED:
       return false;
     case LoginReputationClientResponse::LOW_REPUTATION:
     case LoginReputationClientResponse::PHISHING:
-    case LoginReputationClientResponse::VERDICT_TYPE_UNSPECIFIED:
       return true;
   }
   NOTREACHED() << "Unexpected verdict_type: " << verdict_type;
@@ -154,13 +156,6 @@ bool PasswordProtectionServiceBase::CanSendPing(
           CanGetReputationOfURL(main_frame_url));
 }
 
-bool PasswordProtectionServiceBase::
-    IsSyncingGMAILPasswordWithSignedInProtectionEnabled(
-        ReusedPasswordAccountType password_type) const {
-  return password_type.account_type() == ReusedPasswordAccountType::GMAIL &&
-         password_type.is_account_syncing();
-}
-
 void PasswordProtectionServiceBase::RequestFinished(
     PasswordProtectionRequest* request,
     RequestOutcome outcome,
@@ -178,15 +173,6 @@ void PasswordProtectionServiceBase::RequestFinished(
     if (outcome != RequestOutcome::RESPONSE_ALREADY_CACHED) {
       CacheVerdict(request->main_frame_url(), request->trigger_type(),
                    password_type, *response, base::Time::Now());
-    }
-
-    // If it's password alert mode and a Gsuite/enterprise account, we do not
-    // show a modal warning.
-    if (outcome == RequestOutcome::PASSWORD_ALERT_MODE &&
-        (password_type.account_type() == ReusedPasswordAccountType::GSUITE ||
-         password_type.account_type() ==
-             ReusedPasswordAccountType::NON_GAIA_ENTERPRISE)) {
-      return;
     }
 
     if (ShouldShowModalWarning(request->trigger_type(), password_type,
@@ -343,7 +329,7 @@ PasswordProtectionServiceBase::GetPasswordProtectionReusedPasswordAccountType(
       return reused_password_account_type;
     case PasswordType::PRIMARY_ACCOUNT_PASSWORD: {
       reused_password_account_type.set_is_account_syncing(
-          IsPrimaryAccountSyncing());
+          IsPrimaryAccountSyncingHistory());
       if (!IsPrimaryAccountSignedIn()) {
         reused_password_account_type.set_account_type(
             ReusedPasswordAccountType::UNKNOWN);
@@ -423,7 +409,7 @@ bool PasswordProtectionServiceBase::IsSupportedPasswordTypeForModalWarning(
 // Currently password reuse warnings are only supported for saved passwords
 // and GAIA passwords on Android.
 #if BUILDFLAG(IS_ANDROID)
-  return IsSyncingGMAILPasswordWithSignedInProtectionEnabled(password_type);
+  return password_type.account_type() == ReusedPasswordAccountType::GMAIL;
 #else
   if (password_type.account_type() ==
       ReusedPasswordAccountType::NON_GAIA_ENTERPRISE)

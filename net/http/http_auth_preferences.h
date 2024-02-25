@@ -6,6 +6,7 @@
 #define NET_HTTP_HTTP_AUTH_PREFERENCES_H_
 
 #include <memory>
+#include <optional>
 #include <set>
 #include <string>
 
@@ -14,7 +15,6 @@
 #include "build/chromeos_buildflags.h"
 #include "net/base/net_export.h"
 #include "net/http/http_auth.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace url {
 class SchemeHostPort;
@@ -50,9 +50,9 @@ class NET_EXPORT HttpAuthPreferences {
 #if BUILDFLAG(IS_ANDROID)
   virtual std::string AuthAndroidNegotiateAccountType() const;
 #endif
-#if BUILDFLAG(IS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX)
   virtual bool AllowGssapiLibraryLoad() const;
-#endif  // BUILDFLAG(IS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX)
   virtual bool CanUseDefaultCredentials(
       const url::SchemeHostPort& auth_scheme_host_port) const;
   virtual HttpAuth::DelegationType GetDelegationType(
@@ -86,18 +86,18 @@ class NET_EXPORT HttpAuthPreferences {
   }
 #endif  // BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_FUCHSIA)
 
-#if BUILDFLAG(IS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX)
   void set_allow_gssapi_library_load(bool allow_gssapi_library_load) {
     allow_gssapi_library_load_ = allow_gssapi_library_load;
   }
-#endif  // BUILDFLAG(IS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX)
 
-  const absl::optional<std::set<std::string>>& allowed_schemes() const {
+  const std::optional<std::set<std::string>>& allowed_schemes() const {
     return allowed_schemes_;
   }
 
   void set_allowed_schemes(
-      const absl::optional<std::set<std::string>>& allowed_schemes) {
+      const std::optional<std::set<std::string>>& allowed_schemes) {
     allowed_schemes_ = allowed_schemes;
   }
 
@@ -137,11 +137,11 @@ class NET_EXPORT HttpAuthPreferences {
   std::string auth_android_negotiate_account_type_;
 #endif  // BUILDFLAG(IS_ANDROID)
 
-#if BUILDFLAG(IS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX)
   bool allow_gssapi_library_load_ = true;
-#endif  // BUILDFLAG(IS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX)
 
-  absl::optional<std::set<std::string>> allowed_schemes_;
+  std::optional<std::set<std::string>> allowed_schemes_;
   std::unique_ptr<URLSecurityManager> security_manager_;
   base::RepeatingCallback<bool(const url::SchemeHostPort&)>
       http_auth_scheme_filter_ =

@@ -75,24 +75,22 @@ public class WebViewThreadTestActivity extends Activity {
         }
         mWebviewLatch = new CountDownLatch(1);
 
-        runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                mWebView = new WebView(WebViewThreadTestActivity.this);
-                mWebView.setWebChromeClient(new WebChromeClient() {
-                    @Override
-                    public boolean onConsoleMessage(ConsoleMessage msg) {
-                        mStringOutput.append(msg.message());
-                        mLoadLatch.countDown();
-                        return true;
-                    }
-
+        runOnUiThread(
+                () -> {
+                    mWebView = new WebView(WebViewThreadTestActivity.this);
+                    mWebView.setWebChromeClient(
+                            new WebChromeClient() {
+                                @Override
+                                public boolean onConsoleMessage(ConsoleMessage msg) {
+                                    mStringOutput.append(msg.message());
+                                    mLoadLatch.countDown();
+                                    return true;
+                                }
+                            });
+                    mWebView.getSettings().setJavaScriptEnabled(true);
+                    setContentView(mWebView);
+                    mWebviewLatch.countDown();
                 });
-                mWebView.getSettings().setJavaScriptEnabled(true);
-                setContentView(mWebView);
-                mWebviewLatch.countDown();
-            }
-        });
         return waitForWebViewCreated(timeout);
     }
 
@@ -105,18 +103,24 @@ public class WebViewThreadTestActivity extends Activity {
         }
         mWebviewLatch = new CountDownLatch(1);
 
-        mWebViewThread = new Thread(new Runnable() {
-            @Override
-            public void run() {
-                Looper.prepare();
-                mHandler = new Handler(Looper.myLooper()) {
+        mWebViewThread = new Thread(this::webViewThreadMain);
+        mWebViewThread.start();
+        return waitForWebViewCreated(timeout);
+    }
+
+    private void webViewThreadMain() {
+        Looper.prepare();
+        mHandler =
+                new Handler(Looper.myLooper()) {
                     @Override
                     public void handleMessage(Message msg) {
                         switch (msg.what) {
                             case OPERATION_LOAD_DATA:
                                 Bundle msgData = msg.getData();
-                                mWebView.loadData(msgData.getString(DATA_KEY),
-                                        msgData.getString(MIME_KEY), msgData.getString(ENCODE_KEY));
+                                mWebView.loadData(
+                                        msgData.getString(DATA_KEY),
+                                        msgData.getString(MIME_KEY),
+                                        msgData.getString(ENCODE_KEY));
                                 break;
                             case OPERATION_LOAD_URL:
                                 Bundle msgUrl = msg.getData();
@@ -133,25 +137,21 @@ public class WebViewThreadTestActivity extends Activity {
                         }
                     }
                 };
-                WindowManager wm = (WindowManager) getSystemService(WINDOW_SERVICE);
-                mWebView = new WebView(WebViewThreadTestActivity.this);
-                mWebView.setWebChromeClient(new WebChromeClient() {
+        WindowManager wm = (WindowManager) getSystemService(WINDOW_SERVICE);
+        mWebView = new WebView(WebViewThreadTestActivity.this);
+        mWebView.setWebChromeClient(
+                new WebChromeClient() {
                     @Override
                     public boolean onConsoleMessage(ConsoleMessage msg) {
                         mStringOutput.append(msg.message());
                         mLoadLatch.countDown();
                         return true;
                     }
-
                 });
-                mWebView.getSettings().setJavaScriptEnabled(true);
-                wm.addView(mWebView, new WindowManager.LayoutParams());
-                mWebviewLatch.countDown();
-                Looper.loop();
-            }
-        });
-        mWebViewThread.start();
-        return waitForWebViewCreated(timeout);
+        mWebView.getSettings().setJavaScriptEnabled(true);
+        wm.addView(mWebView, new WindowManager.LayoutParams());
+        mWebviewLatch.countDown();
+        Looper.loop();
     }
 
     /** Wait for webview to be created, timeout in milliseconds. */
@@ -186,12 +186,13 @@ public class WebViewThreadTestActivity extends Activity {
             throws IllegalStateException, InterruptedException {
         checkLatch(mLoadLatch, false);
         mLoadLatch = new CountDownLatch(1);
-        runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                mWebView.loadData(data, mimeType, encoding);
-            }
-        });
+        runOnUiThread(
+                new Runnable() {
+                    @Override
+                    public void run() {
+                        mWebView.loadData(data, mimeType, encoding);
+                    }
+                });
         return waitForConsoleMessage(timeout);
     }
 
@@ -199,8 +200,9 @@ public class WebViewThreadTestActivity extends Activity {
      * Call loadData from background thread, timeout in milliseconds to wait
      * for console output.
      */
-    public boolean loadDataInNonUiThread(String data, String mimeType, String encoding,
-            long timeout) throws IllegalStateException, InterruptedException {
+    public boolean loadDataInNonUiThread(
+            String data, String mimeType, String encoding, long timeout)
+            throws IllegalStateException, InterruptedException {
         checkLatch(mLoadLatch, false);
         checkHandler();
         mLoadLatch = new CountDownLatch(1);

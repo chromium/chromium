@@ -18,7 +18,6 @@
 #include "base/strings/sys_string_conversions.h"
 #include "components/crash/core/common/crash_key.h"
 #import "components/remote_cocoa/app_shim/bridged_content_view.h"
-#import "components/remote_cocoa/app_shim/immersive_mode_controller.h"
 #import "components/remote_cocoa/app_shim/native_widget_mac_nswindow.h"
 #import "components/remote_cocoa/app_shim/native_widget_ns_window_bridge.h"
 #import "components/remote_cocoa/app_shim/views_nswindow_delegate.h"
@@ -124,7 +123,7 @@ NativeWidgetMac::NativeWidgetMac(internal::NativeWidgetDelegate* delegate)
 
 NativeWidgetMac::~NativeWidgetMac() {
   if (ownership_ == Widget::InitParams::NATIVE_WIDGET_OWNS_WIDGET)
-    delete delegate_;
+    delegate_.ClearAndDelete();
   else
     CloseNow();
 }
@@ -236,7 +235,7 @@ void NativeWidgetMac::InitNativeWidget(Widget::InitParams params) {
     if (auto* parent_widget = Widget::GetWidgetForNativeView(params.parent)) {
       // If our parent is z-ordered above us, then float a bit higher.
       params.z_order =
-          std::max(params.z_order.value_or(ui::ZOrderLevel::kNormal),
+          std::max(params.z_order.value_or(params.EffectiveZOrderLevel()),
                    parent_widget->GetZOrderLevel());
     }
   }
@@ -277,6 +276,50 @@ void NativeWidgetMac::InitNativeWidget(Widget::InitParams params) {
 void NativeWidgetMac::OnWidgetInitDone() {
   OnSizeConstraintsChanged();
   ns_window_host_->OnWidgetInitDone();
+}
+
+void NativeWidgetMac::ReparentNativeViewImpl(gfx::NativeView new_parent) {
+  gfx::NativeView child = GetNativeView();
+  DCHECK_NE(child, new_parent);
+  DCHECK([new_parent.GetNativeNSView() window]);
+  CHECK(new_parent);
+  CHECK_NE([child.GetNativeNSView() superview], new_parent.GetNativeNSView());
+
+  NativeWidgetMacNSWindowHost* child_window_host =
+      NativeWidgetMacNSWindowHost::GetFromNativeView(child);
+  DCHECK(child_window_host);
+  gfx::NativeView widget_view =
+      child_window_host->native_widget_mac()->GetNativeView();
+  DCHECK_EQ(child, widget_view);
+  gfx::NativeWindow widget_window =
+      child_window_host->native_widget_mac()->GetNativeWindow();
+  DCHECK(
+      [child.GetNativeNSView() isDescendantOf:widget_view.GetNativeNSView()]);
+  DCHECK(widget_window && ![widget_window.GetNativeNSWindow() isSheet]);
+
+  NativeWidgetMacNSWindowHost* parent_window_host =
+      NativeWidgetMacNSWindowHost::GetFromNativeView(new_parent);
+
+  // Early out for no-op changes.
+  if (child == widget_view &&
+      child_window_host->parent() == parent_window_host) {
+    return;
+  }
+
+  // First notify all the widgets that they are being disassociated from their
+  // previous parent.
+  Widget::Widgets widgets;
+  GetAllChildWidgets(child, &widgets);
+  for (Widget* widget : widgets) {
+    widget->NotifyNativeViewHierarchyWillChange();
+  }
+
+  child_window_host->SetParent(parent_window_host);
+
+  // And now, notify them that they have a brand new parent.
+  for (Widget* widget : widgets) {
+    widget->NotifyNativeViewHierarchyChanged();
+  }
 }
 
 std::unique_ptr<NonClientFrameView>
@@ -585,8 +628,9 @@ void NativeWidgetMac::CloseNow() {
 
 void NativeWidgetMac::Show(ui::WindowShowState show_state,
                            const gfx::Rect& restore_bounds) {
-  if (!GetNSWindowMojo())
+  if (!GetNSWindowHost()) {
     return;
+  }
 
   switch (show_state) {
     case ui::SHOW_STATE_DEFAULT:
@@ -611,7 +655,7 @@ void NativeWidgetMac::Show(ui::WindowShowState show_state,
                        ? window_state
                        : WindowVisibilityState::kShowInactive;
   }
-  GetNSWindowMojo()->SetVisibilityState(window_state);
+  GetNSWindowHost()->SetVisibilityState(window_state);
 
   // Ignore the SetInitialFocus() result. BridgedContentView should get
   // firstResponder status regardless.
@@ -619,9 +663,10 @@ void NativeWidgetMac::Show(ui::WindowShowState show_state,
 }
 
 void NativeWidgetMac::Hide() {
-  if (!GetNSWindowMojo())
+  if (!GetNSWindowHost()) {
     return;
-  GetNSWindowMojo()->SetVisibilityState(WindowVisibilityState::kHideWindow);
+  }
+  GetNSWindowHost()->SetVisibilityState(WindowVisibilityState::kHideWindow);
 }
 
 bool NativeWidgetMac::IsVisible() const {
@@ -629,9 +674,10 @@ bool NativeWidgetMac::IsVisible() const {
 }
 
 void NativeWidgetMac::Activate() {
-  if (!GetNSWindowMojo())
+  if (!GetNSWindowHost()) {
     return;
-  GetNSWindowMojo()->SetVisibilityState(
+  }
+  GetNSWindowHost()->SetVisibilityState(
       WindowVisibilityState::kShowAndActivateWindow);
 }
 
@@ -848,10 +894,6 @@ void NativeWidgetMac::SetVisibilityAnimationTransition(
   }
   if (GetNSWindowMojo())
     GetNSWindowMojo()->SetTransitionsToAnimate(transitions);
-}
-
-bool NativeWidgetMac::IsTranslucentWindowOpacitySupported() const {
-  return false;
 }
 
 ui::GestureRecognizer* NativeWidgetMac::GetGestureRecognizer() {
@@ -1112,44 +1154,9 @@ void NativeWidgetPrivate::GetAllOwnedWidgets(gfx::NativeView native_view,
 // static
 void NativeWidgetPrivate::ReparentNativeView(gfx::NativeView child,
                                              gfx::NativeView new_parent) {
-  DCHECK_NE(child, new_parent);
-  DCHECK([new_parent.GetNativeNSView() window]);
-  CHECK(new_parent);
-  CHECK_NE([child.GetNativeNSView() superview], new_parent.GetNativeNSView());
-
-  NativeWidgetMacNSWindowHost* child_window_host =
-      NativeWidgetMacNSWindowHost::GetFromNativeView(child);
-  DCHECK(child_window_host);
-  gfx::NativeView widget_view =
-      child_window_host->native_widget_mac()->GetNativeView();
-  DCHECK_EQ(child, widget_view);
-  gfx::NativeWindow widget_window =
-      child_window_host->native_widget_mac()->GetNativeWindow();
-  DCHECK(
-      [child.GetNativeNSView() isDescendantOf:widget_view.GetNativeNSView()]);
-  DCHECK(widget_window && ![widget_window.GetNativeNSWindow() isSheet]);
-
-  NativeWidgetMacNSWindowHost* parent_window_host =
-      NativeWidgetMacNSWindowHost::GetFromNativeView(new_parent);
-
-  // Early out for no-op changes.
-  if (child == widget_view &&
-      child_window_host->parent() == parent_window_host) {
-    return;
-  }
-
-  // First notify all the widgets that they are being disassociated from their
-  // previous parent.
-  Widget::Widgets widgets;
-  GetAllChildWidgets(child, &widgets);
-  for (auto* widget : widgets)
-    widget->NotifyNativeViewHierarchyWillChange();
-
-  child_window_host->SetParent(parent_window_host);
-
-  // And now, notify them that they have a brand new parent.
-  for (auto* widget : widgets)
-    widget->NotifyNativeViewHierarchyChanged();
+  Widget::GetWidgetForNativeView(child)
+      ->native_widget_private()
+      ->ReparentNativeViewImpl(new_parent);
 }
 
 // static

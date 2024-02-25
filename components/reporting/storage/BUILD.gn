@@ -117,7 +117,6 @@ static_library("storage_module") {
     ":storage_uploader_interface",
     "//base",
     "//components/reporting/compression:compression_module",
-    "//components/reporting/encryption:encryption_module",
     "//components/reporting/encryption:encryption_module_interface",
     "//components/reporting/proto:record_constants",
     "//components/reporting/proto:record_proto",
@@ -136,7 +135,6 @@ static_library("missive_storage_module") {
   public_deps = [ ":storage_configuration" ]
 
   deps = [
-    ":storage",
     ":storage_module_interface",
     ":storage_uploader_interface",
     "//base",

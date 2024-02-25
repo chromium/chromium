@@ -49,6 +49,7 @@
 #include "third_party/blink/public/web/web_print_preset_options.h"
 #include "third_party/blink/public/web/web_view_client.h"
 #include "third_party/blink/renderer/bindings/core/v8/sanitize_script_errors.h"
+#include "third_party/blink/renderer/bindings/core/v8/to_v8_traits.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_core.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_element.h"
 #include "third_party/blink/renderer/core/clipboard/clipboard_utilities.h"
@@ -177,7 +178,8 @@ void WebPluginContainerImpl::Paint(GraphicsContext& context,
   if (WantsWheelEvents()) {
     context.GetPaintController().RecordHitTestData(
         *GetLayoutEmbeddedContent(), visual_rect, TouchAction::kAuto,
-        /*blocking_wheel=*/true, cc::HitTestOpaqueness::kMixed);
+        /*blocking_wheel=*/true, cc::HitTestOpaqueness::kMixed,
+        DisplayItem::kWebPluginHitTest);
   }
 
   if (element_->GetRegionCaptureCropId()) {
@@ -457,7 +459,10 @@ void WebPluginContainerImpl::Copy() {
     return;
 
   LocalFrame* frame = element_->GetDocument().GetFrame();
-  frame->GetSystemClipboard()->WriteHTML(web_plugin_->SelectionAsMarkup(),
+  String html = web_plugin_->SelectionAsMarkup();
+  // On Mac, add a meta charset tag for compatibility with native apps.
+  // See comments in AddMetaCharsetTagToHtmlOnMac for more details.
+  frame->GetSystemClipboard()->WriteHTML(AddMetaCharsetTagToHtmlOnMac(html),
                                          KURL());
   String text = web_plugin_->SelectionAsText();
   ReplaceNBSPWithSpace(text);
@@ -550,16 +555,16 @@ v8::Local<v8::Object> WebPluginContainerImpl::V8ObjectForElement() {
   if (!context || !context->CanExecuteScripts(kNotAboutToExecuteScript))
     return v8::Local<v8::Object>();
 
-  ScriptState* script_state =
-      ToScriptState(context, DOMWrapperWorld::MainWorld());
+  ScriptState* script_state = ToScriptStateForMainWorld(context);
   if (!script_state)
     return v8::Local<v8::Object>();
 
-  v8::Local<v8::Value> v8value =
-      ToV8(element_.Get(), script_state->GetContext()->Global(),
-           script_state->GetIsolate());
-  if (v8value.IsEmpty())
+  v8::MaybeLocal<v8::Value> maybe_v8value =
+      ToV8Traits<HTMLPlugInElement>::ToV8(script_state, element_.Get());
+  v8::Local<v8::Value> v8value;
+  if (!maybe_v8value.ToLocal(&v8value)) {
     return v8::Local<v8::Object>();
+  }
   DCHECK(v8value->IsObject());
 
   return v8::Local<v8::Object>::Cast(v8value);

@@ -102,7 +102,10 @@ class MockGit:
             self._filesystem.move(
                 self.absolute_path(origin), self.absolute_path(destination))
 
-    def changed_files(self, diff_filter='ADM'):
+    def changed_files(self,
+                      git_commit: Optional[str] = None,
+                      diff_filter: str = 'ADM',
+                      path: Optional[str] = None):
         return []
 
     def unstaged_changes(self):

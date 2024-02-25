@@ -12,8 +12,9 @@
 </style>
 <div id="container">
   <iron-selector id="selector" on-keydown="onKeyDown_"
-      on-iron-select="onSelectedChanged_" role="listbox"
-      selectable="[[selectableSelector_()]]" selected-class="selected">
+      on-iron-select="onSelectedChanged_"
+      selectable="[[selectableSelector_()]]" selected-class="selected"
+      on-selected-item-changed="onSelectedItemChanged_">
     <slot></slot>
   </iron-selector>
 </div>

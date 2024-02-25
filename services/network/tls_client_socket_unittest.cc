@@ -154,14 +154,14 @@ class TLSClientSocketTestBase {
     base::RunLoop run_loop;
     int net_error = net::ERR_FAILED;
     factory_->CreateTCPConnectedSocket(
-        absl::nullopt /* local_addr */, remote_addr_list,
+        std::nullopt /* local_addr */, remote_addr_list,
         nullptr /* tcp_connected_socket_options */,
         TRAFFIC_ANNOTATION_FOR_TESTS, std::move(receiver),
         pre_tls_observer()->GetObserverRemote(),
         base::BindLambdaForTesting(
             [&](int result,
-                const absl::optional<net::IPEndPoint>& actual_local_addr,
-                const absl::optional<net::IPEndPoint>& peer_addr,
+                const std::optional<net::IPEndPoint>& actual_local_addr,
+                const std::optional<net::IPEndPoint>& peer_addr,
                 mojo::ScopedDataPipeConsumerHandle receive_pipe_handle,
                 mojo::ScopedDataPipeProducerHandle send_pipe_handle) {
               net_error = result;
@@ -185,8 +185,8 @@ class TLSClientSocketTestBase {
         std::move(receiver), mojo::NullRemote() /* observer */,
         base::BindLambdaForTesting(
             [&](int result,
-                const absl::optional<net::IPEndPoint>& actual_local_addr,
-                const absl::optional<net::IPEndPoint>& peer_addr,
+                const std::optional<net::IPEndPoint>& actual_local_addr,
+                const std::optional<net::IPEndPoint>& peer_addr,
                 mojo::ScopedDataPipeConsumerHandle receive_pipe_handle,
                 mojo::ScopedDataPipeProducerHandle send_pipe_handle) {
               net_error = result;
@@ -227,10 +227,10 @@ class TLSClientSocketTestBase {
             [](net::CompletionOnceCallback cb,
                mojo::ScopedDataPipeConsumerHandle* consumer_handle_out,
                mojo::ScopedDataPipeProducerHandle* producer_handle_out,
-               absl::optional<net::SSLInfo>* ssl_info_out, int result,
+               std::optional<net::SSLInfo>* ssl_info_out, int result,
                mojo::ScopedDataPipeConsumerHandle receive_pipe_handle,
                mojo::ScopedDataPipeProducerHandle send_pipe_handle,
-               const absl::optional<net::SSLInfo>& ssl_info) {
+               const std::optional<net::SSLInfo>& ssl_info) {
               *consumer_handle_out = std::move(receive_pipe_handle);
               *producer_handle_out = std::move(send_pipe_handle);
               *ssl_info_out = ssl_info;
@@ -282,7 +282,7 @@ class TLSClientSocketTestBase {
     return &post_tls_send_handle_;
   }
 
-  const absl::optional<net::SSLInfo>& ssl_info() { return ssl_info_; }
+  const std::optional<net::SSLInfo>& ssl_info() { return ssl_info_; }
 
   net::MockClientSocketFactory* mock_client_socket_factory() {
     return &mock_client_socket_factory_;
@@ -303,7 +303,7 @@ class TLSClientSocketTestBase {
   mojo::ScopedDataPipeProducerHandle post_tls_send_handle_;
 
   // SSLInfo obtained from UpgradeToTLS.
-  absl::optional<net::SSLInfo> ssl_info_;
+  std::optional<net::SSLInfo> ssl_info_;
 
   net::MockClientSocketFactory mock_client_socket_factory_;
   std::unique_ptr<net::URLRequestContext> url_request_context_;
@@ -442,7 +442,7 @@ TEST_P(TLSClientSocketTest, UpgradeToTLSTwice) {
     auto upgrade2_callback = base::BindLambdaForTesting(
         [&](int result, mojo::ScopedDataPipeConsumerHandle receive_pipe_handle,
             mojo::ScopedDataPipeProducerHandle send_pipe_handle,
-            const absl::optional<net::SSLInfo>& ssl_info) {
+            const std::optional<net::SSLInfo>& ssl_info) {
           net_error = result;
           run_loop.Quit();
         });
@@ -505,7 +505,7 @@ TEST_P(TLSClientSocketTest, UpgradeToTLSWithCustomSSLConfig) {
   auto upgrade_callback = base::BindLambdaForTesting(
       [&](int result, mojo::ScopedDataPipeConsumerHandle receive_pipe_handle,
           mojo::ScopedDataPipeProducerHandle send_pipe_handle,
-          const absl::optional<net::SSLInfo>& ssl_info) {
+          const std::optional<net::SSLInfo>& ssl_info) {
         net_error = result;
         run_loop.Quit();
       });

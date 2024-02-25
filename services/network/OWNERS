@@ -9,6 +9,7 @@ ricea@chromium.org
 
 # Secondary
 cduvall@chromium.org
+dschinazi@chromium.org
 ericorth@chromium.org
 jam@chromium.org
 kinuko@chromium.org
@@ -32,9 +33,6 @@ per-file *_type_converter*.*=file://ipc/SECURITY_OWNERS
 per-file network_sandbox_hook_linux.*=set noparent
 per-file network_sandbox_hook_linux.*=file://sandbox/linux/OWNERS
 
-per-file network_quality*=file://net/nqe/OWNERS
-
-per-file BUILD.gn=file://net/nqe/OWNERS
 per-file BUILD.gn=file://services/network/resource_scheduler/OWNERS
 per-file BUILD.gn=file://services/network/sct_auditing/OWNERS
 

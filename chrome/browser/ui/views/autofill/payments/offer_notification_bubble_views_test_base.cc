@@ -35,23 +35,13 @@ const char kDefaultTestUsageInstructionsText[] =
     "Click the promo code field at checkout to autofill it.";
 const char kDefaultTestDetailsUrlString[] = "https://pay.google.com";
 
-OfferNotificationBubbleViewsTestBase::OfferNotificationBubbleViewsTestBase(
-    bool promo_code_flag_enabled)
+OfferNotificationBubbleViewsTestBase::OfferNotificationBubbleViewsTestBase()
     : https_server_(net::EmbeddedTestServer::TYPE_HTTPS) {
-  if (promo_code_flag_enabled) {
-    scoped_feature_list_.InitWithFeaturesAndParameters(
-        /*enabled_features=*/
-        {{commerce::kRetailCoupons,
-          {{commerce::kRetailCouponsWithCodeParam, "true"}}},
-         {features::kAutofillEnableOfferNotificationForPromoCodes, {}}},
-        /*disabled_features=*/{});
-  } else {
-    scoped_feature_list_.InitWithFeatures(
-        /*enabled_features=*/{},
-        /*disabled_features=*/{
-            commerce::kRetailCoupons,
-            features::kAutofillEnableOfferNotificationForPromoCodes});
-  }
+  scoped_feature_list_.InitWithFeaturesAndParameters(
+      /*enabled_features=*/
+      {{commerce::kRetailCoupons,
+        {{commerce::kRetailCouponsWithCodeParam, "true"}}}},
+      /*disabled_features=*/{});
 }
 
 OfferNotificationBubbleViewsTestBase::~OfferNotificationBubbleViewsTestBase() =
@@ -200,7 +190,7 @@ void OfferNotificationBubbleViewsTestBase::SetUpOfferDataWithDomains(
 
 void OfferNotificationBubbleViewsTestBase::SetUpCardLinkedOfferDataWithDomains(
     const std::vector<GURL>& domains) {
-  personal_data_->ClearAllServerData();
+  personal_data_->ClearAllServerDataForTesting();
   // CreateCardLinkedOfferDataWithDomains(~) will add the necessary card.
   personal_data_->AddOfferDataForTest(
       CreateCardLinkedOfferDataWithDomains(domains));
@@ -210,7 +200,7 @@ void OfferNotificationBubbleViewsTestBase::SetUpCardLinkedOfferDataWithDomains(
 void OfferNotificationBubbleViewsTestBase::
     SetUpFreeListingCouponOfferDataWithDomains(
         const std::vector<GURL>& domains) {
-  personal_data_->ClearAllServerData();
+  personal_data_->ClearAllServerDataForTesting();
   personal_data_->AddOfferDataForTest(
       CreateFreeListingCouponDataWithDomains(domains));
   personal_data_->NotifyPersonalDataObserver();
@@ -218,7 +208,7 @@ void OfferNotificationBubbleViewsTestBase::
 
 void OfferNotificationBubbleViewsTestBase::
     SetUpGPayPromoCodeOfferDataWithDomains(const std::vector<GURL>& domains) {
-  personal_data_->ClearAllServerData();
+  personal_data_->ClearAllServerDataForTesting();
   personal_data_->AddOfferDataForTest(
       CreateGPayPromoCodeOfferDataWithDomains(domains));
   personal_data_->NotifyPersonalDataObserver();

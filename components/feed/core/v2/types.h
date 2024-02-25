@@ -57,6 +57,7 @@ struct RequestMetadata {
   std::string language_tag;
   std::string client_instance_id;
   std::string session_id;
+  std::string country;
   DisplayMetrics display_metrics{};
   ContentOrder content_order = ContentOrder::kUnspecified;
   bool notice_card_acknowledged = false;

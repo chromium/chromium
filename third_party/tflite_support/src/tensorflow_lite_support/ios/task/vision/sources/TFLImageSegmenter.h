@@ -20,10 +20,9 @@
 NS_ASSUME_NONNULL_BEGIN
 
 /**
- * Specifies the type of the output segmentation mask to be returned as the
- * result of the image segmentation operation. This directs the
- * `TFLImageSegmenter` to choose the type of post-processing to be performed on
- * the raw model results.
+ * Specifies the type of the output segmentation mask to be returned as the result
+ * of the image segmentation operation. This directs the `TFLImageSegmenter` to
+ * choose the type of post-processing to be performed on the raw model results.
  */
 typedef NS_ENUM(NSUInteger, TFLOutputType) {
   /** Unspecified output type. */
@@ -53,7 +52,7 @@ NS_SWIFT_NAME(ImageSegmenterOptions)
  * Base options that is used for creation of any type of task.
  * @discussion Please see `TFLBaseOptions` for more details.
  */
-@property(nonatomic, copy) TFLBaseOptions* baseOptions;
+@property(nonatomic, copy) TFLBaseOptions *baseOptions;
 
 /**
  * Specifies the type of output segmentation mask to be returned as a result
@@ -64,26 +63,24 @@ NS_SWIFT_NAME(ImageSegmenterOptions)
 /**
  * Display names local for display names
  */
-@property(nonatomic, copy) NSString* displayNamesLocale;
+@property(nonatomic, copy) NSString *displayNamesLocale;
 
 /**
- * Initializes a new `TFLImageSegmenterOptions` with the absolute path to the
- * model file stored locally on the device, set to the given the model path.
+ * Initializes a new `TFLImageSegmenterOptions` with the absolute path to the model file
+ * stored locally on the device, set to the given the model path.
  * .
  * @discussion The external model file, must be a single standalone TFLite
  * file. It could be packed with TFLite Model Metadata[1] and associated files
  * if exist. Fail to provide the necessary metadata and associated files might
- * result in errors. Check the
- * [documentation](https://www.tensorflow.org/lite/convert/metadata) for each
- * task about the specific requirement.
+ * result in errors. Check the [documentation](https://www.tensorflow.org/lite/convert/metadata)
+ * for each task about the specific requirement.
  *
- * @param modelPath An absolute path to a TensorFlow Lite model file stored
- * locally on the device.
+ * @param modelPath An absolute path to a TensorFlow Lite model file stored locally on the device.
  *
  * @return An instance of `TFLImageSegmenterOptions` initialized to the given
  * model path.
  */
-- (instancetype)initWithModelPath:(NSString*)modelPath;
+- (instancetype)initWithModelPath:(NSString *)modelPath;
 
 @end
 
@@ -91,19 +88,17 @@ NS_SWIFT_NAME(ImageSegmenter)
 @interface TFLImageSegmenter : NSObject
 
 /**
- * Creates a new instance of `TFLImageSegmenter` from the given
- * `TFLImageSegmenterOptions`.
+ * Creates a new instance of `TFLImageSegmenter` from the given `TFLImageSegmenterOptions`.
  *
  * @param options The options to use for configuring the `TFLImageSegmenter`.
- * @param error An optional error parameter populated when there is an error in
- * initializing the image segmenter.
+ * @param error An optional error parameter populated when there is an error in initializing
+ * the image segmenter.
  *
- * @return A new instance of `TFLImageSegmenter` with the given options. `nil`
- * if there is an error in initializing the image segmenter.
+ * @return A new instance of `TFLImageSegmenter` with the given options. `nil` if there is an error
+ * in initializing the image segmenter.
  */
-+ (nullable instancetype)imageSegmenterWithOptions:
-                             (nonnull TFLImageSegmenterOptions*)options
-                                             error:(NSError**)error
++ (nullable instancetype)imageSegmenterWithOptions:(nonnull TFLImageSegmenterOptions *)options
+                                             error:(NSError **)error
     NS_SWIFT_NAME(segmenter(options:));
 
 + (instancetype)new NS_UNAVAILABLE;
@@ -111,23 +106,22 @@ NS_SWIFT_NAME(ImageSegmenter)
 /**
  * Performs segmentation on the given GMLImage.
  *
- * @discussion This method currently supports segmentation of only the following
- * types of images:
+ * @discussion This method currently supports segmentation of only the following types of images:
  * 1. RGB and RGBA images for `GMLImageSourceTypeImage`.
  * 2. kCVPixelFormatType_32BGRA for `GMLImageSourceTypePixelBuffer` and
- *    `GMLImageSourceTypeSampleBuffer`. If you are using `AVCaptureSession` to
- * setup camera and get the frames for inference, you must request for this
- * format from AVCaptureVideoDataOutput. Otherwise your segmentation results
- * will be wrong.
+ *    `GMLImageSourceTypeSampleBuffer`. If you are using `AVCaptureSession` to setup
+ *    camera and get the frames for inference, you must request for this format
+ *    from AVCaptureVideoDataOutput. Otherwise your segmentation
+ *    results will be wrong.
  *
  * @param image An image to be segmented, represented as a `GMLImage`.
  *
- * @return A TFLSegmentationResult that holds the segmentation masks returned by
- * the image segmentation task. `nil` if there is an error encountered during
- * segmentation. Please see `TFLSegmentationResult` for more details.
+ * @return A TFLSegmentationResult that holds the segmentation masks returned by the image
+ * segmentation task. `nil` if there is an error encountered during segmentation. Please see
+ * `TFLSegmentationResult` for more details.
  */
-- (nullable TFLSegmentationResult*)segmentWithGMLImage:(GMLImage*)image
-                                                 error:(NSError**)error
+- (nullable TFLSegmentationResult *)segmentWithGMLImage:(GMLImage *)image
+                                                  error:(NSError **)error
     NS_SWIFT_NAME(segment(mlImage:));
 
 - (instancetype)init NS_UNAVAILABLE;

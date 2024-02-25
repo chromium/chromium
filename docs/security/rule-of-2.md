@@ -119,20 +119,20 @@ used or admitted anywhere in the project.
 _High privilege_ is a relative term. The very highest-privilege programs are the
 computer's firmware, the bootloader, the kernel, any hypervisor or virtual
 machine monitor, and so on. Below that are processes that run as an OS-level
-account representing a person; this includes the Chrome browser process. We
-consider such processes to have high privilege. (After all, they can do anything
-the person can do, with any and all of the person's valuable data and accounts.)
+account representing a person; this includes the Chrome Browser process and Gpu
+process. We consider such processes to have high privilege. (After all, they
+can do anything the person can do, with any and all of the person's valuable
+data and accounts.)
 
-Processes with slightly reduced privilege include (as of March 2019) the GPU
-process and (hopefully soon) the network process. These are still pretty
-high-privilege processes. We are always looking for ways to reduce their
-privilege without breaking them.
+Processes with slightly reduced privilege will (hopefully soon) include the
+network process. These are still pretty high-privilege processes. We are always
+looking for ways to reduce their privilege without breaking them.
 
 Low-privilege processes include sandboxed utility processes and renderer
-processes with [Site
-Isolation](https://www.chromium.org/Home/chromium-security/site-isolation) (very
-good) or [origin
-isolation](https://cloud.google.com/docs/chrome-enterprise/policies/?policy=IsolateOrigins)
+processes with [Site Isolation](
+https://www.chromium.org/Home/chromium-security/site-isolation) (very good) or
+[origin isolation](
+https://cloud.google.com/docs/chrome-enterprise/policies/?policy=IsolateOrigins)
 (even better).
 
 ### Processing, Parsing, And Deserializing
@@ -157,6 +157,41 @@ Chrome Security Team will generally not approve landing a CL or new feature
 that involves all 3 of untrustworthy inputs, unsafe language, and high
 privilege. To solve this problem, you need to get rid of at least 1 of those 3
 things. Here are some ways to do that.
+
+### Safe Languages
+
+Where possible, it's great to use a memory-safe language. The following
+memory-safe languages are approved for use in Chromium:
+* Java (on Android only)
+* Swift (on iOS only)
+* [Rust](../docs/rust.md) (for [third-party use](
+  ../docs/adding_to_third_party.md#Rust))
+* JavaScript or WebAssembly (although we don't currently use them in
+  high-privilege processes like the browser/gpu process)
+
+One can imagine Kotlin on Android, too, although it is not currently
+used in Chromium.
+
+For an example of image processing, we have the pure-Java class
+[BaseGifImage](https://cs.chromium.org/chromium/src/third_party/gif_player/src/jp/tomorrowkey/android/gifplayer/BaseGifImage.java?rcl=27febd503d1bab047d73df26db83184fff8d6620&l=27).
+On Android, where we can use Java and also face a particularly high cost for
+creating new processes (necessary for sandboxing), using Java to decode tricky
+formats can be a great approach. We do a similar thing with the pure-Java
+[JsonSanitizer](https://cs.chromium.org/chromium/src/services/data_decoder/public/cpp/android/java/src/org/chromium/services/data_decoder/JsonSanitizer.java),
+to 'vet' incoming JSON in a memory-safe way before passing the input to the C++
+JSON implementation.
+
+On Android, many system APIs that are exposed via Java are not actually
+implemented in a safe language, and are instead just facades around an unsafe
+implementation. A canonical example of this is the
+[BitmapFactory](https://developer.android.com/reference/android/graphics/BitmapFactory)
+class, which is a Java wrapper [around C++
+Skia](https://cs.android.com/android/platform/superproject/+/master:frameworks/base/libs/hwui/jni/BitmapFactory.cpp;l=586;drc=864d304156d1ef8985ee39c3c1858349b133b365).
+These APIs are therefore not considered memory-safe under the rule.
+
+The [QR code generator](
+https://source.chromium.org/chromium/chromium/src/+/main:components/qr_code_generator/;l=1;drc=b185db5d502d4995627e09d62c6934590031a5f2)
+is an example of a cross-platform memory-safe Rust library in use in Chromium.
 
 ### Privilege Reduction
 
@@ -283,34 +318,6 @@ input strings, because its grammar is sufficiently limited and hostile input is
 part of the threat model against which it's been tested for years. It is **not**
 the case, however, that text matched by an RE2 regular expression is necessarily
 "sanitized" or "safe". That requires additional security judgment.
-
-### Safe Languages
-
-Where possible, it's great to use a memory-safe language. Of the currently
-approved set of implementation languages in Chromium, the most likely candidates
-are Java (on Android only), Swift (on iOS only), and JavaScript or WebAssembly
-(although we don't currently use them in high-privilege processes like the
-browser). One can imagine Kotlin on Android, too, although it is not currently
-used in Chromium. (Some of us on Security Team aspire to get more of Chromium in
-safer languages, and you may be able to [help with our
-experiments](rust-toolchain.md).)
-
-For an example of image processing, we have the pure-Java class
-[BaseGifImage](https://cs.chromium.org/chromium/src/third_party/gif_player/src/jp/tomorrowkey/android/gifplayer/BaseGifImage.java?rcl=27febd503d1bab047d73df26db83184fff8d6620&l=27).
-On Android, where we can use Java and also face a particularly high cost for
-creating new processes (necessary for sandboxing), using Java to decode tricky
-formats can be a great approach. We do a similar thing with the pure-Java
-[JsonSanitizer](https://cs.chromium.org/chromium/src/services/data_decoder/public/cpp/android/java/src/org/chromium/services/data_decoder/JsonSanitizer.java),
-to 'vet' incoming JSON in a memory-safe way before passing the input to the C++
-JSON implementation.
-
-On Android, many system APIs that are exposed via Java are not actually
-implemented in a safe language, and are instead just facades around an unsafe
-implementation. A canonical example of this is the
-[BitmapFactory](https://developer.android.com/reference/android/graphics/BitmapFactory)
-class, which is a Java wrapper [around C++
-Skia](https://cs.android.com/android/platform/superproject/+/master:frameworks/base/libs/hwui/jni/BitmapFactory.cpp;l=586;drc=864d304156d1ef8985ee39c3c1858349b133b365).
-These APIs are therefore not considered memory-safe under the rule.
 
 ## Safe Types
 

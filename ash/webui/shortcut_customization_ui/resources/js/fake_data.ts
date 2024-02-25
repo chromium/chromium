@@ -5,8 +5,8 @@
 import {stringToMojoString16} from 'chrome://resources/js/mojo_type_util.js';
 import {TimeTicks} from 'chrome://resources/mojo/mojo/public/mojom/base/time.mojom-webui.js';
 
-import {keyToIconNameMap} from './input_key.js';
 import {Accelerator, AcceleratorCategory, AcceleratorKeyState, AcceleratorSource, AcceleratorState, AcceleratorSubcategory, AcceleratorType, LayoutStyle, Modifier, MojoAcceleratorConfig, MojoAcceleratorInfo, MojoLayoutInfo, MojoSearchResult, TextAcceleratorPartType} from './shortcut_types.js';
+import {keyToIconNameMap} from './shortcut_utils.js';
 
 const fakeTimestamp: TimeTicks = {
   internalValue: BigInt(0),

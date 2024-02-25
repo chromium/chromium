@@ -3,11 +3,13 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/apps/app_deduplication_service/app_deduplication_mapper.h"
+
+#include <optional>
+
 #include "base/logging.h"
 #include "chrome/browser/apps/app_deduplication_service/proto/app_deduplication.pb.h"
 #include "chrome/browser/apps/app_deduplication_service/proto/deduplication_data.pb.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace apps::deduplication {
 
@@ -23,7 +25,7 @@ TEST_F(AppDeduplicationMapperTest, TestDeduplicateResponseValid) {
   group->add_package_id();
   group->set_package_id(0, "website:https://web.skype.com/");
 
-  absl::optional<proto::DeduplicateData> data =
+  std::optional<proto::DeduplicateData> data =
       mapper_.ToDeduplicateData(response);
   ASSERT_TRUE(data.has_value());
   EXPECT_EQ(data->app_group_size(), 1);

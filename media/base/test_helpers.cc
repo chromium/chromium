@@ -7,6 +7,7 @@
 #include <stdint.h>
 
 #include <memory>
+#include <optional>
 
 #include "base/check_op.h"
 #include "base/functional/bind.h"
@@ -21,12 +22,231 @@
 #include "media/base/decoder_buffer.h"
 #include "media/base/media_util.h"
 #include "media/base/mock_filters.h"
+#include "third_party/libyuv/include/libyuv.h"
 #include "ui/gfx/geometry/rect.h"
 
 using ::testing::_;
 using ::testing::StrictMock;
 
 namespace media {
+
+namespace {
+
+std::tuple<uint32_t, uint32_t, uint32_t, uint32_t> FourColors(
+    bool opaque,
+    std::optional<uint32_t> xor_mask) {
+  DCHECK_EQ(xor_mask.value_or(0) >> 24, 0u)
+      << "Alpha byte must be zero when using `xor_mask`";
+  const uint32_t mask = xor_mask.value_or(0);
+  const uint32_t alpha = (opaque ? 0xFF : 0x80) << 24;
+  const uint32_t yellow = (0x00FFFF00 ^ mask) | alpha;
+  const uint32_t red = (0x00FF0000 ^ mask) | alpha;
+  const uint32_t blue = (0x000000FF ^ mask) | alpha;
+  const uint32_t green = (0x0000FF00 ^ mask) | alpha;
+  return std::tie(yellow, red, blue, green);
+}
+
+std::tuple<uint8_t, uint8_t, uint8_t, uint8_t> RGBToYUV(uint32_t argb) {
+  // We're not trying to test the quality of Y, U, V, A conversion, just that
+  // it happened. So use the same internal method to convert ARGB to YUV values.
+  uint8_t y, u, v, a;
+  libyuv::ARGBToI444(reinterpret_cast<const uint8_t*>(&argb), 1, &y, 1, &u, 1,
+                     &v, 1, 1, 1);
+  a = argb >> 24;
+  return std::tie(y, u, v, a);
+}
+
+void I4xxxRect(VideoFrame* dest_frame,
+               int x,
+               int y,
+               int width,
+               int height,
+               uint8_t value_y,
+               uint8_t value_u,
+               uint8_t value_v,
+               uint8_t value_a) {
+  const int num_planes = VideoFrame::NumPlanes(dest_frame->format());
+  DCHECK(dest_frame->format() == PIXEL_FORMAT_I420 ||
+         dest_frame->format() == PIXEL_FORMAT_I420A ||
+         dest_frame->format() == PIXEL_FORMAT_I422 ||
+         dest_frame->format() == PIXEL_FORMAT_I422A ||
+         dest_frame->format() == PIXEL_FORMAT_I444 ||
+         dest_frame->format() == PIXEL_FORMAT_I444A)
+      << "Unsupported pixel format: "
+      << VideoPixelFormatToString(dest_frame->format());
+
+  // Write known full size planes first.
+  libyuv::SetPlane(dest_frame->GetWritableVisibleData(VideoFrame::kYPlane) +
+                       y * dest_frame->stride(VideoFrame::kYPlane) + x,
+                   dest_frame->stride(VideoFrame::kYPlane), width, height,
+                   value_y);
+  if (num_planes == 4) {
+    libyuv::SetPlane(dest_frame->GetWritableVisibleData(VideoFrame::kAPlane) +
+                         y * dest_frame->stride(VideoFrame::kAPlane) + x,
+                     dest_frame->stride(VideoFrame::kAPlane), width, height,
+                     value_a);
+  }
+
+  // Adjust rect start and offset.
+  auto start_xy = VideoFrame::PlaneSize(dest_frame->format(),
+                                        VideoFrame::kUPlane, gfx::Size(x, y));
+  auto uv_size = VideoFrame::PlaneSize(
+      dest_frame->format(), VideoFrame::kUPlane, gfx::Size(width, height));
+
+  // Write variable sized planes.
+  libyuv::SetPlane(
+      dest_frame->GetWritableVisibleData(VideoFrame::kUPlane) +
+          start_xy.height() * dest_frame->stride(VideoFrame::kUPlane) +
+          start_xy.width(),
+      dest_frame->stride(VideoFrame::kUPlane), uv_size.width(),
+      uv_size.height(), value_u);
+  libyuv::SetPlane(
+      dest_frame->GetWritableVisibleData(VideoFrame::kVPlane) +
+          start_xy.height() * dest_frame->stride(VideoFrame::kVPlane) +
+          start_xy.width(),
+      dest_frame->stride(VideoFrame::kVPlane), uv_size.width(),
+      uv_size.height(), value_v);
+}
+
+void FillFourColorsFrameYUV(VideoFrame& dest_frame,
+                            std::optional<uint32_t> xor_mask) {
+  DCHECK(dest_frame.format() == PIXEL_FORMAT_NV12 ||
+         dest_frame.format() == PIXEL_FORMAT_NV12A ||
+         dest_frame.format() == PIXEL_FORMAT_I420 ||
+         dest_frame.format() == PIXEL_FORMAT_I420A ||
+         dest_frame.format() == PIXEL_FORMAT_I422 ||
+         dest_frame.format() == PIXEL_FORMAT_I422A ||
+         dest_frame.format() == PIXEL_FORMAT_I444 ||
+         dest_frame.format() == PIXEL_FORMAT_I444A)
+      << "Unsupported pixel format: "
+      << VideoPixelFormatToString(dest_frame.format());
+
+  auto visible_size = dest_frame.visible_rect().size();
+
+  auto* output_frame = &dest_frame;
+  scoped_refptr<VideoFrame> temp_frame;
+  if (dest_frame.format() == PIXEL_FORMAT_NV12 ||
+      dest_frame.format() == PIXEL_FORMAT_NV12A) {
+    temp_frame = VideoFrame::CreateZeroInitializedFrame(
+        dest_frame.format() == PIXEL_FORMAT_NV12 ? PIXEL_FORMAT_I420
+                                                 : PIXEL_FORMAT_I420A,
+        dest_frame.coded_size(), dest_frame.visible_rect(),
+        dest_frame.natural_size(), base::TimeDelta());
+    output_frame = temp_frame.get();
+  }
+
+  uint32_t yellow, red, blue, green;
+  std::tie(yellow, red, blue, green) =
+      FourColors(IsOpaque(dest_frame.format()), xor_mask);
+
+  uint8_t y, u, v, a;
+
+  // Yellow top left.
+  std::tie(y, u, v, a) = RGBToYUV(yellow);
+  I4xxxRect(output_frame, 0, 0, visible_size.width() / 2,
+            visible_size.height() / 2, y, u, v, a);
+
+  // Red top right.
+  std::tie(y, u, v, a) = RGBToYUV(red);
+  I4xxxRect(output_frame, visible_size.width() / 2, 0, visible_size.width() / 2,
+            visible_size.height() / 2, y, u, v, a);
+
+  // Blue bottom left.
+  std::tie(y, u, v, a) = RGBToYUV(blue);
+  I4xxxRect(output_frame, 0, visible_size.height() / 2,
+            visible_size.width() / 2, visible_size.height() / 2, y, u, v, a);
+
+  // Green bottom right.
+  std::tie(y, u, v, a) = RGBToYUV(green);
+  I4xxxRect(output_frame, visible_size.width() / 2, visible_size.height() / 2,
+            visible_size.width() / 2, visible_size.height() / 2, y, u, v, a);
+
+  if (temp_frame) {
+    ASSERT_EQ(libyuv::I420ToNV12(
+                  temp_frame->visible_data(VideoFrame::kYPlane),
+                  temp_frame->stride(VideoFrame::kYPlane),
+                  temp_frame->visible_data(VideoFrame::kUPlane),
+                  temp_frame->stride(VideoFrame::kUPlane),
+                  temp_frame->visible_data(VideoFrame::kVPlane),
+                  temp_frame->stride(VideoFrame::kVPlane),
+                  dest_frame.GetWritableVisibleData(VideoFrame::kYPlane),
+                  dest_frame.stride(VideoFrame::kYPlane),
+                  dest_frame.GetWritableVisibleData(VideoFrame::kUVPlane),
+                  dest_frame.stride(VideoFrame::kUVPlane),
+                  dest_frame.visible_rect().width(),
+                  dest_frame.visible_rect().height()),
+              0);
+    if (dest_frame.format() == PIXEL_FORMAT_NV12A) {
+      libyuv::CopyPlane(
+          temp_frame->visible_data(VideoFrame::kAPlane),
+          temp_frame->stride(VideoFrame::kAPlane),
+          dest_frame.GetWritableVisibleData(VideoFrame::kAPlaneTriPlanar),
+          dest_frame.stride(VideoFrame::kAPlaneTriPlanar),
+          dest_frame.visible_rect().width(),
+          dest_frame.visible_rect().height());
+    }
+  }
+}
+
+void FillFourColorsFrameARGB(VideoFrame& dest_frame,
+                             std::optional<uint32_t> xor_mask) {
+  DCHECK(dest_frame.format() == PIXEL_FORMAT_ARGB ||
+         dest_frame.format() == PIXEL_FORMAT_XRGB ||
+         dest_frame.format() == PIXEL_FORMAT_ABGR ||
+         dest_frame.format() == PIXEL_FORMAT_XBGR)
+      << "Unsupported pixel format: "
+      << VideoPixelFormatToString(dest_frame.format());
+
+  auto visible_size = dest_frame.visible_rect().size();
+
+  uint32_t yellow, red, blue, green;
+  std::tie(yellow, red, blue, green) =
+      FourColors(IsOpaque(dest_frame.format()), xor_mask);
+
+  // Yellow top left.
+  ASSERT_EQ(libyuv::ARGBRect(
+                dest_frame.GetWritableVisibleData(VideoFrame::kARGBPlane),
+                dest_frame.stride(VideoFrame::kARGBPlane), 0, 0,
+                visible_size.width() / 2, visible_size.height() / 2, yellow),
+            0);
+
+  // Red top right.
+  ASSERT_EQ(
+      libyuv::ARGBRect(
+          dest_frame.GetWritableVisibleData(VideoFrame::kARGBPlane),
+          dest_frame.stride(VideoFrame::kARGBPlane), visible_size.width() / 2,
+          0, visible_size.width() / 2, visible_size.height() / 2, red),
+      0);
+
+  // Blue bottom left.
+  ASSERT_EQ(libyuv::ARGBRect(
+                dest_frame.GetWritableVisibleData(VideoFrame::kARGBPlane),
+                dest_frame.stride(VideoFrame::kARGBPlane), 0,
+                visible_size.height() / 2, visible_size.width() / 2,
+                visible_size.height() / 2, blue),
+            0);
+
+  // Green bottom right.
+  ASSERT_EQ(libyuv::ARGBRect(
+                dest_frame.GetWritableVisibleData(VideoFrame::kARGBPlane),
+                dest_frame.stride(VideoFrame::kARGBPlane),
+                visible_size.width() / 2, visible_size.height() / 2,
+                visible_size.width() / 2, visible_size.height() / 2, green),
+            0);
+
+  if (dest_frame.format() == PIXEL_FORMAT_XBGR ||
+      dest_frame.format() == PIXEL_FORMAT_ABGR) {
+    ASSERT_EQ(libyuv::ARGBToABGR(
+                  dest_frame.visible_data(VideoFrame::kARGBPlane),
+                  dest_frame.stride(VideoFrame::kARGBPlane),
+                  dest_frame.GetWritableVisibleData(VideoFrame::kARGBPlane),
+                  dest_frame.stride(VideoFrame::kARGBPlane),
+                  visible_size.width(), visible_size.height()),
+              0);
+  }
+}
+
+}  // namespace
 
 // Utility mock for testing methods expecting Closures and PipelineStatusCBs.
 class MockCallback : public base::RefCountedThreadSafe<MockCallback> {
@@ -222,8 +442,26 @@ VideoDecoderConfig TestVideoConfig::NormalEncrypted(VideoCodec codec,
 
 // static
 VideoDecoderConfig TestVideoConfig::NormalRotated(VideoRotation rotation) {
-  return GetTestConfig(VideoCodec::kVP8, MinProfile(VideoCodec::kVP8),
+  return GetTestConfig(VideoCodec::kAV1, MinProfile(VideoCodec::kAV1),
                        VideoColorSpace::JPEG(), rotation, kNormalSize, false);
+}
+
+VideoDecoderConfig TestVideoConfig::NormalHdr(VideoCodec codec) {
+  auto config = Normal(codec);
+  config.set_color_space_info(
+      VideoColorSpace::FromGfxColorSpace(gfx::ColorSpace::CreateHDR10()));
+  config.set_hdr_metadata(
+      gfx::HDRMetadata::PopulateUnspecifiedWithDefaults(std::nullopt));
+  return config;
+}
+
+VideoDecoderConfig TestVideoConfig::NormalHdrEncrypted(VideoCodec codec) {
+  auto config = NormalEncrypted(codec);
+  config.set_color_space_info(
+      VideoColorSpace::FromGfxColorSpace(gfx::ColorSpace::CreateHDR10()));
+  config.set_hdr_metadata(
+      gfx::HDRMetadata::PopulateUnspecifiedWithDefaults(std::nullopt));
+  return config;
 }
 
 // static
@@ -477,7 +715,6 @@ scoped_refptr<DecoderBuffer> CreateFakeVideoBufferForTest(
 
 scoped_refptr<DecoderBuffer> CreateMismatchedBufferForTest() {
   std::vector<uint8_t> data = {42, 22, 26, 13, 7, 16, 8, 2};
-  std::vector<uint8_t> kFakeData = {36, 23, 36};
   scoped_refptr<media::DecoderBuffer> mismatched_encrypted_buffer =
       media::DecoderBuffer::CopyFrom(data.data(), data.size());
   mismatched_encrypted_buffer->set_timestamp(base::Seconds(42));
@@ -487,6 +724,27 @@ scoped_refptr<DecoderBuffer> CreateMismatchedBufferForTest() {
                                              {{1, 1}, {2, 2}, {3, 3}}));
 
   return mismatched_encrypted_buffer;
+}
+
+scoped_refptr<DecoderBuffer> CreateFakeEncryptedBuffer() {
+  const int buffer_size = 16;  // Need a non-empty buffer;
+  scoped_refptr<DecoderBuffer> buffer(
+      base::MakeRefCounted<DecoderBuffer>(buffer_size));
+
+  const uint8_t kFakeKeyId[] = {0x4b, 0x65, 0x79, 0x20, 0x49, 0x44};
+  const uint8_t kFakeIv[DecryptConfig::kDecryptionKeySize] = {0};
+  buffer->set_decrypt_config(DecryptConfig::CreateCencConfig(
+      std::string(reinterpret_cast<const char*>(kFakeKeyId),
+                  std::size(kFakeKeyId)),
+      std::string(reinterpret_cast<const char*>(kFakeIv), std::size(kFakeIv)),
+      std::vector<SubsampleEntry>()));
+  return buffer;
+}
+
+scoped_refptr<DecoderBuffer> CreateClearBuffer() {
+  const int buffer_size = 16;  // Need a non-empty buffer;
+  auto buffer = base::MakeRefCounted<DecoderBuffer>(buffer_size);
+  return buffer;
 }
 
 bool VerifyFakeVideoBufferForTest(const DecoderBuffer& buffer,
@@ -527,6 +785,14 @@ std::unique_ptr<StrictMock<MockDemuxerStream>> CreateMockDemuxerStream(
   }
 
   return stream;
+}
+
+void FillFourColors(VideoFrame& dest_frame, std::optional<uint32_t> xor_mask) {
+  if (IsRGB(dest_frame.format())) {
+    FillFourColorsFrameARGB(dest_frame, xor_mask);
+  } else {
+    FillFourColorsFrameYUV(dest_frame, xor_mask);
+  }
 }
 
 }  // namespace media

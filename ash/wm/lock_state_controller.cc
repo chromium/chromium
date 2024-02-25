@@ -8,8 +8,9 @@
 #include <string>
 #include <utility>
 
-#include "ash/accessibility/accessibility_controller_impl.h"
+#include "ash/accessibility/accessibility_controller.h"
 #include "ash/cancel_mode.h"
+#include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
 #include "ash/public/cpp/shell_window_ids.h"
 #include "ash/public/cpp/shutdown_controller.h"
@@ -18,11 +19,16 @@
 #include "ash/shell.h"
 #include "ash/shell_delegate.h"
 #include "ash/utility/occlusion_tracker_pauser.h"
+#include "ash/wallpaper/views/wallpaper_view.h"
 #include "ash/wallpaper/views/wallpaper_widget_controller.h"
 #include "ash/wallpaper/wallpaper_controller_impl.h"
+#include "ash/wm/desks/desks_util.h"
 #include "ash/wm/session_state_animator_impl.h"
+#include "ash/wm/window_restore/window_restore_util.h"
 #include "base/command_line.h"
 #include "base/debug/dump_without_crashing.h"
+#include "base/files/file_path.h"
+#include "base/files/file_util.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/json/values_util.h"
@@ -33,9 +39,16 @@
 #include "base/metrics/user_metrics.h"
 #include "base/strings/string_util.h"
 #include "base/system/sys_info.h"
+#include "base/task/bind_post_task.h"
+#include "base/task/current_thread.h"
+#include "base/task/task_traits.h"
+#include "base/task/thread_pool.h"
 #include "base/time/default_clock.h"
 #include "base/time/time.h"
 #include "ui/aura/window_tree_host.h"
+#include "ui/compositor/layer.h"
+#include "ui/gfx/image/image.h"
+#include "ui/snapshot/snapshot.h"
 #include "ui/views/controls/menu/menu_controller.h"
 #include "ui/wm/core/compound_event_filter.h"
 #include "ui/wm/core/cursor_manager.h"
@@ -77,6 +90,49 @@ constexpr base::TimeDelta kPostLockFailTimeout =
 // Additional time to wait after starting the fast-close shutdown animation
 // before actually requesting shutdown, to give the animation time to finish.
 constexpr base::TimeDelta kShutdownRequestDelay = base::Milliseconds(50);
+
+// Records the given `duration` to the given `pref_name` so it can be recorded
+// as an UMA metric on the next startup.
+void SavePineScreenshotDuration(PrefService* local_state,
+                                const std::string& pref_name,
+                                base::TimeDelta duration) {
+  if (!local_state) {
+    return;
+  }
+
+  local_state->SetTimeDelta(pref_name, duration);
+}
+
+// Encodes and saves the given `image` to `file_path`.
+void EncodeAndSavePineImage(const base::FilePath& file_path, gfx::Image image) {
+  CHECK(!base::CurrentUIThread::IsSet());
+  if (image.IsEmpty()) {
+    base::DeleteFile(file_path);
+    return;
+  }
+  auto png_bytes = image.As1xPNGBytes();
+  auto raw_data = base::make_span(png_bytes->data(), png_bytes->size());
+  if (!base::WriteFile(file_path, raw_data)) {
+    LOG(ERROR) << "Failed to write pine image to " << file_path.MaybeAsASCII();
+  }
+}
+
+// If the given `for_test_callback` is valid, `callback` will be modified
+// to be a new callback that runs the original `callback` and then runs
+// `for_test_callback` after the former finishes.
+// `base::BindPostTask()` is used to guarantee that when `for_test_callback`
+// is invoked, it runs on the same thread of the call site (even if `callback`
+// is posted to run on a different thread).
+// Note that `for_test_callback` will be empty after this function returns.
+template <typename Callback>
+void MaybeAppendTestCallback(Callback& callback,
+                             base::OnceClosure& for_test_callback) {
+  if (for_test_callback) {
+    callback = std::move(callback).Then(
+        base::BindPostTask(base::SingleThreadTaskRunner::GetCurrentDefault(),
+                           std::move(for_test_callback)));
+  }
+}
 
 }  // namespace
 
@@ -128,6 +184,10 @@ LockStateController::~LockStateController() {
 void LockStateController::RegisterPrefs(PrefRegistrySimple* registry) {
   registry->RegisterTimePref(prefs::kLoginShutdownTimestampPrefName,
                              base::Time());
+  registry->RegisterTimeDeltaPref(prefs::kPineScreenshotTakenDuration,
+                                  base::TimeDelta());
+  registry->RegisterTimeDeltaPref(prefs::kPineScreenshotEncodeAndSaveDuration,
+                                  base::TimeDelta());
 }
 
 void LockStateController::AddObserver(LockStateObserver* observer) {
@@ -158,11 +218,7 @@ void LockStateController::StartShutdownAnimation(ShutdownReason reason) {
   if (shell->cursor_manager())
     shell->cursor_manager()->HideCursor();
 
-  animator_->StartAnimation(
-      SessionStateAnimator::ROOT_CONTAINER,
-      SessionStateAnimator::ANIMATION_GRAYSCALE_BRIGHTNESS,
-      SessionStateAnimator::ANIMATION_SPEED_SHUTDOWN);
-  StartPreShutdownAnimationTimer();
+  ShutdownOnPine(/*with_pre_animation=*/true);
 }
 
 void LockStateController::LockWithoutAnimation() {
@@ -267,11 +323,7 @@ void LockStateController::RequestShutdown(ShutdownReason reason) {
   cursor_manager->HideCursor();
   cursor_manager->LockCursor();
 
-  animator_->StartAnimation(
-      SessionStateAnimator::ROOT_CONTAINER,
-      SessionStateAnimator::ANIMATION_GRAYSCALE_BRIGHTNESS,
-      SessionStateAnimator::ANIMATION_SPEED_SHUTDOWN);
-  StartRealShutdownTimer(true);
+  ShutdownOnPine(/*with_pre_animation=*/false);
 }
 
 void LockStateController::OnUnlockAnimationBeforeLockUIDestroyedFinished() {
@@ -634,6 +686,110 @@ void LockStateController::OnLockStateEvent(LockStateObserver::EventType event) {
 
   for (auto& observer : observers_)
     observer.OnLockStateEvent(event);
+}
+
+void LockStateController::ShutdownOnPine(bool with_pre_animation) {
+  if (features::IsForestFeatureEnabled()) {
+    TakePineImageAndShutdown(with_pre_animation);
+  } else {
+    StartShutdownProcess(with_pre_animation);
+  }
+}
+
+void LockStateController::TakePineImageAndShutdown(bool with_pre_animation) {
+  // TODO: Finalize the expected behavior on multi-display.
+  auto* root = Shell::GetRootWindowForNewWindows();
+  aura::Window* active_desk = desks_util::GetActiveDeskContainerForRoot(root);
+  CHECK(active_desk);
+  const base::FilePath file_path = GetShutdownPineImagePath();
+
+  if (active_desk->children().empty()) {
+    // If there are no windows in the desk container, taking the pine image will
+    // fail. Delete any existing pine image so on next startup no pine image
+    // preview will be shown.
+    auto delete_image_cb =
+        base::BindOnce(base::IgnoreResult(&base::DeleteFile), file_path);
+    MaybeAppendTestCallback(delete_image_cb, pine_image_callback_for_test_);
+    base::ThreadPool::PostTask(FROM_HERE,
+                               {base::MayBlock(), base::TaskPriority::HIGHEST,
+                                base::TaskShutdownBehavior::BLOCK_SHUTDOWN},
+                               std::move(delete_image_cb));
+
+    StartShutdownProcess(with_pre_animation);
+    return;
+  }
+
+  // Create a new layer that mirrors the painted wallpaper view layer. Adds it
+  // to be the bottom-most child of the active desk container layer, which is
+  // the container we are going to take the pine screenshot. With this,
+  // 1) wallpaper will be included in the screenshot besides the content of the
+  //    active desk.
+  // 2) screenshot will be taken on the whole desktop instead of the specific
+  //    area with windows. This guarantees the windows' relative position inside
+  //    the desktop.
+  auto* wallpaper_layer = RootWindowController::ForWindow(root)
+                              ->wallpaper_widget_controller()
+                              ->wallpaper_view()
+                              ->layer();
+  CHECK(wallpaper_layer && wallpaper_layer->children().empty());
+  mirror_wallpaper_layer_ = wallpaper_layer->Mirror();
+  auto* active_desk_layer = active_desk->layer();
+  active_desk_layer->Add(mirror_wallpaper_layer_.get());
+  active_desk_layer->StackAtBottom(mirror_wallpaper_layer_.get());
+
+  // TODO(b/321117233): Cancel the operation to take the screenshot and proceed
+  // with the shutdown immediately if it takes too long.
+  ui::GrabWindowSnapshot(
+      active_desk, /*source_rect=*/gfx::Rect(active_desk->bounds().size()),
+      base::BindOnce(&LockStateController::OnPineImageTaken,
+                     weak_ptr_factory_.GetWeakPtr(), with_pre_animation,
+                     file_path, base::TimeTicks::Now()));
+}
+
+void LockStateController::StartShutdownProcess(bool with_pre_animation) {
+  animator_->StartAnimation(
+      SessionStateAnimator::ROOT_CONTAINER,
+      SessionStateAnimator::ANIMATION_GRAYSCALE_BRIGHTNESS,
+      SessionStateAnimator::ANIMATION_SPEED_SHUTDOWN);
+
+  if (with_pre_animation) {
+    StartPreShutdownAnimationTimer();
+  } else {
+    StartRealShutdownTimer(true);
+  }
+}
+
+void LockStateController::OnPineImageTaken(bool with_pre_animation,
+                                           const base::FilePath& file_path,
+                                           base::TimeTicks start_time,
+                                           gfx::Image pine_image) {
+  SavePineScreenshotDuration(local_state_, prefs::kPineScreenshotTakenDuration,
+                             base::TimeTicks::Now() - start_time);
+
+  mirror_wallpaper_layer_.reset();
+
+  base::ThreadPool::PostTaskAndReply(
+      FROM_HERE,
+      {base::MayBlock(), base::TaskPriority::HIGHEST,
+       base::TaskShutdownBehavior::BLOCK_SHUTDOWN},
+      base::BindOnce(&EncodeAndSavePineImage, file_path, std::move(pine_image)),
+      base::BindOnce(&LockStateController::OnPineImageSaved,
+                     weak_ptr_factory_.GetWeakPtr(), base::TimeTicks::Now()));
+
+  StartShutdownProcess(with_pre_animation);
+}
+
+void LockStateController::OnPineImageSaved(base::TimeTicks start_time) {
+  SavePineScreenshotDuration(local_state_,
+                             prefs::kPineScreenshotEncodeAndSaveDuration,
+                             // This duration includes the time waiting for the
+                             // `ThreadPool` to start running the task, also the
+                             // time that the UI thread waits to get the reply
+                             // from the `ThreadPool`.
+                             base::TimeTicks::Now() - start_time);
+  if (pine_image_callback_for_test_) {
+    std::move(pine_image_callback_for_test_).Run();
+  }
 }
 
 }  // namespace ash

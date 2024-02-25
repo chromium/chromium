@@ -12,6 +12,7 @@
 #include "third_party/blink/renderer/core/dom/shadow_root.h"
 #include "third_party/blink/renderer/core/html/html_progress_element.h"
 #include "third_party/blink/renderer/core/testing/dummy_page_holder.h"
+#include "third_party/blink/renderer/platform/testing/task_environment.h"
 
 namespace blink {
 
@@ -23,6 +24,7 @@ class ProgressShadowElementTest : public testing::Test {
   Document& GetDocument() { return dummy_page_holder_->GetDocument(); }
 
  private:
+  test::TaskEnvironment task_environment_;
   std::unique_ptr<DummyPageHolder> dummy_page_holder_;
 };
 
@@ -50,7 +52,7 @@ TEST_F(ProgressShadowElementTest, LayoutObjectIsNeeded) {
   EXPECT_TRUE(shadow_element->LayoutObjectIsNeeded(*style));
 }
 
-TEST_F(ProgressShadowElementTest, OnlyChangeDirectionOnShadowElement) {
+TEST_F(ProgressShadowElementTest, DontChangeDirectionOnShadowElement) {
   GetDocument().body()->setInnerHTML(R"HTML(
     <progress id='prog' style='-webkit-appearance:none; writing-mode:vertical-lr; direction: ltr;' />
   )HTML");
@@ -72,7 +74,7 @@ TEST_F(ProgressShadowElementTest, OnlyChangeDirectionOnShadowElement) {
 
   EXPECT_TRUE(shadow_element->GetComputedStyle());
   EXPECT_EQ(shadow_element->GetComputedStyle()->Direction(),
-            TextDirection::kRtl);
+            TextDirection::kLtr);
 }
 
 }  // namespace blink

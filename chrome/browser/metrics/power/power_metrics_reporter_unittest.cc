@@ -22,11 +22,6 @@
 #include "services/metrics/public/cpp/ukm_source_id.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-#if BUILDFLAG(IS_MAC)
-#include "chrome/browser/metrics/power/coalition_resource_usage_provider_test_util_mac.h"
-#include "components/power_metrics/resource_coalition_mac.h"
-#endif
-
 namespace {
 
 base::BatteryLevelProvider::BatteryState MakeBatteryDischargingState(
@@ -50,7 +45,7 @@ struct HistogramSampleExpectation {
   std::string histogram_name_prefix;
   base::Histogram::Sample sample;
 };
-  
+
 #if !BUILDFLAG(IS_WIN) || !defined(ARCH_CPU_ARM64)
 // For each histogram named after the combination of prefixes from
 // `expectations` and suffixes from `suffixes`, verifies that there is a unique
@@ -76,12 +71,12 @@ using UkmEntry = ukm::builders::PowerUsageScenariosIntervalData;
 class FakeBatteryLevelProvider : public base::BatteryLevelProvider {
  public:
   explicit FakeBatteryLevelProvider(
-      std::queue<absl::optional<base::BatteryLevelProvider::BatteryState>>*
+      std::queue<std::optional<base::BatteryLevelProvider::BatteryState>>*
           battery_states)
       : battery_states_(battery_states) {}
 
   void GetBatteryState(
-      base::OnceCallback<void(const absl::optional<BatteryState>&)> callback)
+      base::OnceCallback<void(const std::optional<BatteryState>&)> callback)
       override {
     DCHECK(!battery_states_->empty());
     auto state = battery_states_->front();
@@ -90,7 +85,7 @@ class FakeBatteryLevelProvider : public base::BatteryLevelProvider {
   }
 
  private:
-  raw_ptr<std::queue<absl::optional<base::BatteryLevelProvider::BatteryState>>>
+  raw_ptr<std::queue<std::optional<base::BatteryLevelProvider::BatteryState>>>
       battery_states_;
 };
 
@@ -163,24 +158,8 @@ class PowerMetricsReporterUnitTestBase : public testing::Test {
     auto battery_provider = CreateBatteryLevelProvider();
     battery_provider_ = battery_provider.get();
 
-#if BUILDFLAG(IS_MAC)
-    auto coalition_resource_usage_provider =
-        std::make_unique<TestCoalitionResourceUsageProvider>();
-    // Ensure that coalition resource usage is available from Init().
-    coalition_resource_usage_provider->SetCoalitionResourceUsage(
-        std::make_unique<coalition_resource_usage>());
-    coalition_resource_usage_provider_ =
-        coalition_resource_usage_provider.get();
-#endif  // BUILDFLAG(IS_MAC)
-
     power_metrics_reporter_ = std::make_unique<PowerMetricsReporter>(
-        &process_monitor_, &short_data_store_, &long_data_store_,
-        std::move(battery_provider)
-#if BUILDFLAG(IS_MAC)
-            ,
-        std::move(coalition_resource_usage_provider)
-#endif  // BUILDFLAG(IS_MAC)
-    );
+        &process_monitor_, &long_data_store_, std::move(battery_provider));
 
     // Ensure the first battery state is sampled.
     task_environment_.RunUntilIdle();
@@ -193,7 +172,6 @@ class PowerMetricsReporterUnitTestBase : public testing::Test {
   content::BrowserTaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   TestProcessMonitor process_monitor_;
-  TestUsageScenarioDataStoreImpl short_data_store_;
   TestUsageScenarioDataStoreImpl long_data_store_;
 
   base::HistogramTester histogram_tester_;
@@ -201,11 +179,6 @@ class PowerMetricsReporterUnitTestBase : public testing::Test {
   ukm::TestAutoSetUkmRecorder test_ukm_recorder_;
 
   raw_ptr<base::BatteryLevelProvider, DanglingUntriaged> battery_provider_;
-
-#if BUILDFLAG(IS_MAC)
-  raw_ptr<TestCoalitionResourceUsageProvider, DanglingUntriaged>
-      coalition_resource_usage_provider_;
-#endif  // BUILDFLAG(IS_MAC)
 
   std::unique_ptr<PowerMetricsReporter> power_metrics_reporter_;
 };
@@ -224,7 +197,7 @@ class PowerMetricsReporterUnitTest : public PowerMetricsReporterUnitTestBase {
   }
 
  protected:
-  std::queue<absl::optional<base::BatteryLevelProvider::BatteryState>>
+  std::queue<std::optional<base::BatteryLevelProvider::BatteryState>>
       battery_states_;
 };
 
@@ -285,40 +258,6 @@ TEST_F(PowerMetricsReporterUnitTest, LongIntervalHistograms) {
 #endif
 }
 
-#if BUILDFLAG(IS_MAC)
-TEST_F(PowerMetricsReporterUnitTest, ResourceCoalitionHistograms_EndToEnd) {
-  process_monitor_.SetMetricsToReturn({});
-  battery_states_.push(MakeBatteryDischargingState(30));
-
-  UsageScenarioDataStore::IntervalData interval_data;
-  interval_data.max_tab_count = 1;
-  interval_data.max_visible_window_count = 1;
-  interval_data.time_capturing_video = base::Seconds(1);
-  long_data_store_.SetIntervalDataToReturn(interval_data);
-
-  auto cru1 = std::make_unique<coalition_resource_usage>();
-  cru1->cpu_time = base::Seconds(5).InNanoseconds();
-  coalition_resource_usage_provider_->SetCoalitionResourceUsage(
-      std::move(cru1));
-
-  task_environment_.FastForwardBy(kLongPowerMetricsIntervalDuration -
-                                  kShortPowerMetricsIntervalDuration);
-
-  auto cru2 = std::make_unique<coalition_resource_usage>();
-  cru2->cpu_time = base::Seconds(6).InNanoseconds();
-  coalition_resource_usage_provider_->SetCoalitionResourceUsage(
-      std::move(cru2));
-
-  task_environment_.FastForwardBy(kShortPowerMetricsIntervalDuration);
-
-  const char* kScenarioSuffix = ".VideoCapture";
-  const std::vector<const char*> suffixes({"", kScenarioSuffix});
-  ExpectHistogramSamples(
-      &histogram_tester_, suffixes,
-      {{"PerformanceMonitor.ResourceCoalition.CPUTime2", 500}});
-}
-#endif
-
 TEST_F(PowerMetricsReporterUnitTest, UKMs) {
   int fake_value = 42;
 
@@ -327,7 +266,6 @@ TEST_F(PowerMetricsReporterUnitTest, UKMs) {
 #if BUILDFLAG(IS_MAC)
   fake_metrics.idle_wakeups = ++fake_value;
   fake_metrics.package_idle_wakeups = ++fake_value;
-  fake_metrics.energy_impact = ++fake_value;
 #endif
   process_monitor_.SetMetricsToReturn(fake_metrics);
 
@@ -387,8 +325,6 @@ TEST_F(PowerMetricsReporterUnitTest, UKMs) {
                                        fake_metrics.idle_wakeups);
   test_ukm_recorder_.ExpectEntryMetric(entries[0], UkmEntry::kPackageExitsName,
                                        fake_metrics.package_idle_wakeups);
-  test_ukm_recorder_.ExpectEntryMetric(
-      entries[0], UkmEntry::kEnergyImpactScoreName, fake_metrics.energy_impact);
 #endif
   test_ukm_recorder_.ExpectEntryMetric(
       entries[0], UkmEntry::kMaxTabCountName,
@@ -453,7 +389,6 @@ TEST_F(PowerMetricsReporterUnitTest, UKMsBrowserShuttingDown) {
 #if BUILDFLAG(IS_MAC)
   fake_metrics.idle_wakeups = 42;
   fake_metrics.package_idle_wakeups = 43;
-  fake_metrics.energy_impact = 44;
 #endif
   process_monitor_.SetMetricsToReturn(fake_metrics);
   battery_states_.push(MakeBatteryDischargingState(50));
@@ -551,7 +486,7 @@ TEST_F(PowerMetricsReporterUnitTest, UKMsBatteryStateUnavailable) {
   process_monitor_.SetMetricsToReturn({});
 
   // A nullopt battery value indicates that the battery level is unavailable.
-  battery_states_.push(absl::nullopt);
+  battery_states_.push(std::nullopt);
 
   UsageScenarioDataStore::IntervalData fake_interval_data;
   fake_interval_data.source_id_for_longest_visible_origin =
@@ -581,9 +516,9 @@ TEST_F(PowerMetricsReporterUnitTest, UKMsNoBattery) {
   battery_states_.push(base::BatteryLevelProvider::BatteryState{
       .battery_count = 0,
       .is_external_power_connected = true,
-      .current_capacity = absl::nullopt,
-      .full_charged_capacity = absl::nullopt,
-      .charge_unit = absl::nullopt,
+      .current_capacity = std::nullopt,
+      .full_charged_capacity = std::nullopt,
+      .charge_unit = std::nullopt,
       .capture_time = base::TimeTicks::Now()});
 
   UsageScenarioDataStore::IntervalData fake_interval_data;
@@ -720,34 +655,3 @@ TEST_F(PowerMetricsReporterUnitTest, UKMsWithSleepEvent) {
   test_ukm_recorder_.ExpectEntryMetric(
       entries[0], UkmEntry::kDeviceSleptDuringIntervalName, true);
 }
-
-#if BUILDFLAG(IS_MAC)
-// Verify that "_10sec" resource coalition histograms are recorded when time
-// advances and resource coalition data is available.
-TEST_F(PowerMetricsReporterUnitTest, ShortIntervalHistograms_EndToEnd) {
-  process_monitor_.SetMetricsToReturn({});
-  battery_states_.push(MakeBatteryDischargingState(30));
-
-  UsageScenarioDataStore::IntervalData interval_data;
-  interval_data.max_tab_count = 1;
-  interval_data.max_visible_window_count = 0;
-  short_data_store_.SetIntervalDataToReturn(interval_data);
-
-  auto cru1 = std::make_unique<coalition_resource_usage>();
-  cru1->cpu_time = base::Seconds(4).InNanoseconds();
-  coalition_resource_usage_provider_->SetCoalitionResourceUsage(
-      std::move(cru1));
-  task_environment_.FastForwardBy(kLongPowerMetricsIntervalDuration -
-                                  kShortPowerMetricsIntervalDuration);
-
-  auto cru2 = std::make_unique<coalition_resource_usage>();
-  cru2->cpu_time = base::Seconds(10).InNanoseconds();
-  coalition_resource_usage_provider_->SetCoalitionResourceUsage(
-      std::move(cru2));
-
-  task_environment_.FastForwardBy(kShortPowerMetricsIntervalDuration);
-
-  histogram_tester_.ExpectUniqueSample(
-      "PerformanceMonitor.ResourceCoalition.CPUTime2_10sec", 6000, 1);
-}
-#endif  // BUILDFLAG(IS_MAC)

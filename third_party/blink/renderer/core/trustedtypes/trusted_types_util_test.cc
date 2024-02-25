@@ -17,6 +17,7 @@
 #include "third_party/blink/renderer/core/trustedtypes/trusted_script_url.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
+#include "third_party/blink/renderer/platform/testing/task_environment.h"
 
 namespace blink {
 
@@ -101,11 +102,13 @@ void TrustedTypesCheckForScriptWorks(
 
 // TrustedTypesCheckForHTML tests
 TEST(TrustedTypesUtilTest, TrustedTypesCheckForHTML_String) {
+  test::TaskEnvironment task_environment;
   TrustedTypesCheckForHTMLThrows("A string");
 }
 
 // TrustedTypesCheckForScript tests
 TEST(TrustedTypesUtilTest, TrustedTypesCheckForScript_TrustedScript) {
+  test::TaskEnvironment task_environment;
   auto* script = MakeGarbageCollected<TrustedScript>("A string");
   auto* trusted_value =
       MakeGarbageCollected<V8UnionStringOrTrustedScript>(script);
@@ -113,11 +116,13 @@ TEST(TrustedTypesUtilTest, TrustedTypesCheckForScript_TrustedScript) {
 }
 
 TEST(TrustedTypesUtilTest, TrustedTypesCheckForScript_String) {
+  test::TaskEnvironment task_environment;
   TrustedTypesCheckForScriptThrows("A string");
 }
 
 // TrustedTypesCheckForScriptURL tests
 TEST(TrustedTypesUtilTest, TrustedTypesCheckForScriptURL_String) {
+  test::TaskEnvironment task_environment;
   TrustedTypesCheckForScriptURLThrows("A string");
 }
 }  // namespace blink

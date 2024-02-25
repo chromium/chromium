@@ -24,8 +24,9 @@ class TabStripScrollingOverflowIndicatorStrategy;
 // than can be displayed at one time. When the TabStrip is scrollable, displays
 // buttons that control the scrolling.
 class TabStripScrollContainer : public views::View, views::ViewObserver {
+  METADATA_HEADER(TabStripScrollContainer, views::View)
+
  public:
-  METADATA_HEADER(TabStripScrollContainer);
   explicit TabStripScrollContainer(std::unique_ptr<TabStrip> tab_strip);
   TabStripScrollContainer(const TabStripScrollContainer&) = delete;
   TabStripScrollContainer& operator=(const TabStripScrollContainer&) = delete;

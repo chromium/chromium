@@ -35,7 +35,7 @@ class SensorErrorEvent : public Event {
 
   const AtomicString& InterfaceName() const override;
 
-  DOMException* error() { return error_; }
+  DOMException* error() { return error_.Get(); }
 
  private:
   Member<DOMException> error_;

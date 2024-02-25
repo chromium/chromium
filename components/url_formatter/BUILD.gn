@@ -35,6 +35,7 @@ static_library("url_formatter") {
   deps = [
     "//base",
     "//base:i18n",
+    "//build:robolectric_buildflags",
     "//components/url_formatter:skeleton_generator",
     "//components/url_formatter/spoof_checks/common_words:common",
     "//components/url_formatter/spoof_checks/common_words:common_words_dafsa",
@@ -42,19 +43,21 @@ static_library("url_formatter") {
     "//components/url_formatter/spoof_checks/top_domains:generate_top_domains_trie",
     "//net",
     "//net:preload_decoder",
-    "//ui/gfx",
     "//url",
   ]
 
   public_deps = [ "//third_party/icu" ]
 
-  if (is_android) {
+  if (is_robolectric) {
+    # Make jni.h available.
+    configs += [ "//third_party/jdk" ]
+  }
+  if (is_android || is_robolectric) {
     sources += [ "url_formatter_android.cc" ]
-    deps += [
-      "android:jni_headers",
-      "//url:gurl_android",
-      "//url:origin_android",
-    ]
+    deps += [ "android:jni_headers" ]
+  } else {
+    # Used in elide_url.cc
+    deps += [ "//ui/gfx" ]
   }
 }
 
@@ -78,7 +81,7 @@ source_set("unit_tests") {
     ":url_formatter",
     "//base",
     "//base/test:test_support",
-    "//components/url_formatter/spoof_checks/top_domains:generate_top_domains_test_trie",
+    "//components/url_formatter/spoof_checks/top_domains:generate_idn_top_domains_test_trie",
     "//net",
     "//net:preload_decoder",
     "//testing/gtest",

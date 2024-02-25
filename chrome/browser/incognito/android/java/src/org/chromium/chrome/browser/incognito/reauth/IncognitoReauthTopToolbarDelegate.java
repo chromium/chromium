@@ -4,10 +4,9 @@
 
 package org.chromium.chrome.browser.incognito.reauth;
 
-/**
- * An interface to control the interactability of elements in the tab-switcher toolbar.
- */
+/** An interface to control the interactability of elements in the tab-switcher toolbar. */
 public interface IncognitoReauthTopToolbarDelegate {
     int disableNewTabButton();
+
     void enableNewTabButton(int clientToken);
 }

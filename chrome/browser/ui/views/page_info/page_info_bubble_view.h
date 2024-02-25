@@ -10,16 +10,18 @@
 #include "chrome/browser/ui/views/page_info/page_info_bubble_view_base.h"
 #include "chrome/browser/ui/views/page_info/page_info_history_controller.h"
 #include "chrome/browser/ui/views/page_info/page_info_navigation_handler.h"
+#include "components/content_settings/core/common/content_settings_types.h"
+#include "ui/base/metadata/metadata_header_macros.h"
 
 class ChromePageInfoUiDelegate;
 class PageSwitcherView;
 class PageInfoViewFactory;
 
-enum class ContentSettingsType;
-
 // The views implementation of the page info UI.
 class PageInfoBubbleView : public PageInfoBubbleViewBase,
                            public PageInfoNavigationHandler {
+  METADATA_HEADER(PageInfoBubbleView, PageInfoBubbleViewBase)
+
  public:
   // The column set id of the permissions table for |permissions_view_|.
   static constexpr int kPermissionColumnSetId = 0;

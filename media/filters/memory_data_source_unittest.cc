@@ -6,9 +6,12 @@
 
 #include <memory>
 
+#include "base/containers/span.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
+#include "base/numerics/safe_conversions.h"
 #include "base/rand_util.h"
+#include "base/ranges/algorithm.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -42,8 +45,11 @@ class MemoryDataSourceTest : public ::testing::Test {
         base::BindOnce(&MemoryDataSourceTest::ReadCB, base::Unretained(this)));
 
     if (expected_read_size != DataSource::kReadError) {
-      EXPECT_EQ(
-          0, memcmp(data_.data() + position, data.data(), expected_read_size));
+      size_t positive_expected_size =
+          base::checked_cast<size_t>(expected_read_size);
+      EXPECT_TRUE(base::ranges::equal(
+          base::span(data_).subspan(position, positive_expected_size),
+          base::span(data).first(positive_expected_size)));
     }
   }
 

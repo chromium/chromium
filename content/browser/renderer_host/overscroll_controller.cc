@@ -463,7 +463,7 @@ bool OverscrollController::ProcessOverscroll(float delta_x,
   }
 
   if (delegate_) {
-    absl::optional<float> cap = delegate_->GetMaxOverscrollDelta();
+    std::optional<float> cap = delegate_->GetMaxOverscrollDelta();
     if (cap) {
       DCHECK_LE(0.f, cap.value());
       switch (overscroll_mode_) {

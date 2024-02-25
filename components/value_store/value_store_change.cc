@@ -28,8 +28,8 @@ base::Value ValueStoreChange::ToValue(ValueStoreChangeList changes) {
 }
 
 ValueStoreChange::ValueStoreChange(const std::string& key,
-                                   absl::optional<base::Value> old_value,
-                                   absl::optional<base::Value> new_value)
+                                   std::optional<base::Value> old_value,
+                                   std::optional<base::Value> new_value)
     : key(key),
       old_value(std::move(old_value)),
       new_value(std::move(new_value)) {}

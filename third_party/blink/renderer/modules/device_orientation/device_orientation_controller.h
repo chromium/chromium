@@ -38,6 +38,8 @@ class MODULES_EXPORT DeviceOrientationController
   void SetOverride(DeviceOrientationData*);
   void ClearOverride();
 
+  void RestartPumpIfNeeded();
+
   void Trace(Visitor*) const override;
 
   static void LogToConsolePolicyFeaturesDisabled(

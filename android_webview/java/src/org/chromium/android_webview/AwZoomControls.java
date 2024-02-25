@@ -18,9 +18,11 @@ import org.chromium.android_webview.common.Lifetime;
 @Lifetime.WebView
 public class AwZoomControls {
     private AwContents mAwContents;
+
     // It is advised to use getZoomController() where possible.
     @SuppressWarnings("deprecation")
     private android.widget.ZoomButtonsController mZoomButtonsController;
+
     private boolean mCanZoomIn;
     private boolean mCanZoomOut;
 

@@ -4,6 +4,8 @@
 
 #include "content/browser/media/capture/frame_sink_video_capture_device.h"
 
+#include <optional>
+
 #include "base/check_op.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
@@ -30,9 +32,8 @@
 #include "media/capture/mojom/video_capture_types.mojom.h"
 #include "media/capture/video_capture_types.h"
 #include "services/device/public/mojom/wake_lock_provider.mojom.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
-#if !BUILDFLAG(IS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 #include "content/browser/media/capture/mouse_cursor_overlay_controller.h"
 #endif
 
@@ -46,7 +47,7 @@ namespace content {
 
 namespace {
 
-#if !BUILDFLAG(IS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 constexpr int32_t kMouseCursorStackingIndex = 1;
 #endif
 
@@ -64,7 +65,7 @@ void BindWakeLockProvider(
   GetDeviceService().BindWakeLockProvider(std::move(receiver));
 }
 
-scoped_refptr<viz::ContextProvider> GetContextProvider() {
+scoped_refptr<viz::RasterContextProvider> GetContextProvider() {
 #if BUILDFLAG(IS_MAC) || defined(USE_AURA)
   auto* image_transport_factory = ImageTransportFactory::GetInstance();
   DCHECK(image_transport_factory);
@@ -74,7 +75,7 @@ scoped_refptr<viz::ContextProvider> GetContextProvider() {
     return nullptr;
   }
 
-  return ui_context_factory->SharedMainThreadContextProvider();
+  return ui_context_factory->SharedMainThreadRasterContextProvider();
 #else
   return nullptr;
 #endif
@@ -87,7 +88,7 @@ scoped_refptr<viz::ContextProvider> GetContextProvider() {
 class ContextProviderObserver : viz::ContextLostObserver {
  public:
   using OnGpuCapabilitiesFetched =
-      base::RepeatingCallback<void(absl::optional<gpu::Capabilities>)>;
+      base::RepeatingCallback<void(std::optional<gpu::Capabilities>)>;
 
   // Constructs the instance of the class. The construction can happen on any
   // thread, but the instance must be destroyed on the UI thread.
@@ -132,7 +133,7 @@ class ContextProviderObserver : viz::ContextLostObserver {
 
     context_provider_ = GetContextProvider();
     if (!context_provider_) {
-      on_gpu_capabilities_fetched_.Run(absl::nullopt);
+      on_gpu_capabilities_fetched_.Run(std::nullopt);
       return;
     }
 
@@ -146,7 +147,7 @@ class ContextProviderObserver : viz::ContextLostObserver {
   const OnGpuCapabilitiesFetched on_gpu_capabilities_fetched_;
 
   // Context provider that was used to query the GPU capabilities. May be null.
-  scoped_refptr<viz::ContextProvider> context_provider_
+  scoped_refptr<viz::RasterContextProvider> context_provider_
       GUARDED_BY_CONTEXT(main_sequence_checker_);
 
   SEQUENCE_CHECKER(main_sequence_checker_);
@@ -155,7 +156,7 @@ class ContextProviderObserver : viz::ContextLostObserver {
   base::WeakPtrFactory<ContextProviderObserver> weak_factory_{this};
 };
 
-#if !BUILDFLAG(IS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 FrameSinkVideoCaptureDevice::FrameSinkVideoCaptureDevice()
     : cursor_controller_(
           RescopeToUIThread(std::make_unique<MouseCursorOverlayController>())) {
@@ -173,6 +174,11 @@ FrameSinkVideoCaptureDevice::~FrameSinkVideoCaptureDevice() {
 bool FrameSinkVideoCaptureDevice::CanSupportNV12Format() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
+  // TODO(crbug.com/1518528): Determine if we actually need to know the format
+  // client-side (which is what this method is used for) beyond sending it over
+  // to the service side. If not, compute this information service-side. If yes,
+  // port all of the below code to be a check on SharedImageCapabilities once
+  // the latter is fully fleshed out (crbug.com/1482371).
   auto* gpu_data_manager = GpuDataManagerImpl::GetInstance();
   if (!gpu_data_manager) {
     return false;
@@ -185,11 +191,8 @@ bool FrameSinkVideoCaptureDevice::CanSupportNV12Format() const {
     return false;
   }
 
-  // TODO(crbug.com/1452092): Disable zero-copy NV12 tab capture with Graphite
-  // until Dawn NV12 rendering is supported.
-  if (!gpu_data_manager->IsGpuFeatureInfoAvailable() ||
-      gpu_data_manager->GetFeatureStatus(gpu::GPU_FEATURE_TYPE_SKIA_GRAPHITE) ==
-          gpu::kGpuFeatureStatusEnabled) {
+  // SwiftShader does not support copying directly to NV12.
+  if (gpu_data_manager->GetGPUInfo().UsesSwiftShader()) {
     return false;
   }
 
@@ -202,7 +205,7 @@ bool FrameSinkVideoCaptureDevice::CanSupportNV12Format() const {
   // If present, GPU capabilities should already be up to date (this is ensured
   // by subscribing to context lost events via `context_provider_observer_`
   // helper):
-  return gpu_capabilities_->texture_rg && gpu_capabilities_->gpu_rasterization;
+  return gpu_capabilities_->texture_rg;
 }
 
 media::VideoPixelFormat
@@ -229,7 +232,7 @@ void FrameSinkVideoCaptureDevice::ObserveContextProvider() {
 }
 
 void FrameSinkVideoCaptureDevice::SetGpuCapabilitiesOnDevice(
-    absl::optional<gpu::Capabilities> capabilities) {
+    std::optional<gpu::Capabilities> capabilities) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   gpu_capabilities_ = capabilities;
@@ -333,10 +336,10 @@ void FrameSinkVideoCaptureDevice::AllocateCapturer(
                                       constraints.fixed_aspect_ratio);
 
   if (target_) {
-    capturer_->ChangeTarget(target_, crop_version_);
+    capturer_->ChangeTarget(target_, sub_capture_target_version_);
   }
 
-#if !BUILDFLAG(IS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
   GetUIThreadTaskRunner({})->PostTask(
       FROM_HERE,
       base::BindOnce(&MouseCursorOverlayController::Start,
@@ -395,15 +398,17 @@ void FrameSinkVideoCaptureDevice::Resume() {
   MaybeStartConsuming();
 }
 
-void FrameSinkVideoCaptureDevice::Crop(
-    const base::Token& crop_id,
-    uint32_t crop_version,
-    base::OnceCallback<void(media::mojom::CropRequestResult)> callback) {
+void FrameSinkVideoCaptureDevice::ApplySubCaptureTarget(
+    media::mojom::SubCaptureTargetType type,
+    const base::Token& target,
+    uint32_t sub_capture_target_version,
+    base::OnceCallback<void(media::mojom::ApplySubCaptureTargetResult)>
+        callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(callback);
 
   std::move(callback).Run(
-      media::mojom::CropRequestResult::kUnsupportedCaptureDevice);
+      media::mojom::ApplySubCaptureTargetResult::kUnsupportedCaptureDevice);
 }
 
 void FrameSinkVideoCaptureDevice::StopAndDeAllocate() {
@@ -414,7 +419,7 @@ void FrameSinkVideoCaptureDevice::StopAndDeAllocate() {
     wake_lock_.reset();
   }
 
-#if !BUILDFLAG(IS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
   GetUIThreadTaskRunner({})->PostTask(
       FROM_HERE, base::BindOnce(&MouseCursorOverlayController::Stop,
                                 cursor_controller_->GetWeakPtr()));
@@ -486,7 +491,7 @@ void FrameSinkVideoCaptureDevice::OnFrameCaptured(
   }
   const BufferId buffer_id = static_cast<BufferId>(index);
 
-#if !BUILDFLAG(IS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
   info->metadata.interactive_content =
       cursor_controller_->IsUserInteractingWithView();
 #else
@@ -499,24 +504,23 @@ void FrameSinkVideoCaptureDevice::OnFrameCaptured(
   // passing the shared memory buffer handle and then notifying it that a new
   // frame is ready to be read from the buffer.
   receiver_->OnNewBuffer(buffer_id, std::move(data));
-  receiver_->OnFrameReadyInBuffer(
-      media::ReadyFrameInBuffer(
-          buffer_id, buffer_id,
-          std::make_unique<media::ScopedFrameDoneHelper>(base::BindOnce(
-              &FrameSinkVideoCaptureDevice::OnFramePropagationComplete,
-              weak_factory_.GetWeakPtr(), buffer_id)),
-          std::move(info)),
-      {});
+  receiver_->OnFrameReadyInBuffer(media::ReadyFrameInBuffer(
+      buffer_id, buffer_id,
+      std::make_unique<media::ScopedFrameDoneHelper>(base::BindOnce(
+          &FrameSinkVideoCaptureDevice::OnFramePropagationComplete,
+          weak_factory_.GetWeakPtr(), buffer_id)),
+      std::move(info)));
 }
 
-void FrameSinkVideoCaptureDevice::OnNewCropVersion(uint32_t crop_version) {
+void FrameSinkVideoCaptureDevice::OnNewSubCaptureTargetVersion(
+    uint32_t sub_capture_target_version) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   if (!receiver_) {
     return;
   }
 
-  receiver_->OnNewCropVersion(crop_version);
+  receiver_->OnNewSubCaptureTargetVersion(sub_capture_target_version);
 }
 
 void FrameSinkVideoCaptureDevice::OnFrameWithEmptyRegionCapture() {
@@ -548,22 +552,22 @@ void FrameSinkVideoCaptureDevice::OnLog(const std::string& message) {
 }
 
 void FrameSinkVideoCaptureDevice::OnTargetChanged(
-    const absl::optional<viz::VideoCaptureTarget>& target,
-    uint32_t crop_version) {
+    const std::optional<viz::VideoCaptureTarget>& target,
+    uint32_t sub_capture_target_version) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK_GE(crop_version, crop_version_);
+  DCHECK_GE(sub_capture_target_version, sub_capture_target_version_);
 
   target_ = target;
-  crop_version_ = crop_version;
+  sub_capture_target_version_ = sub_capture_target_version;
 
   if (capturer_) {
-    capturer_->ChangeTarget(target_, crop_version_);
+    capturer_->ChangeTarget(target_, sub_capture_target_version_);
   }
 }
 
 void FrameSinkVideoCaptureDevice::OnTargetPermanentlyLost() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  OnTargetChanged(absl::nullopt, crop_version_);
+  OnTargetChanged(std::nullopt, sub_capture_target_version_);
   OnFatalError("Capture target has been permanently lost.");
 }
 

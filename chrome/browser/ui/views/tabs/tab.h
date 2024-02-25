@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_UI_VIEWS_TABS_TAB_H_
 
 #include <memory>
+#include <optional>
 #include <string>
 
 #include "base/gtest_prod_util.h"
@@ -16,7 +17,6 @@
 #include "chrome/browser/ui/views/tabs/tab_style_views.h"
 #include "components/performance_manager/public/freezing/freezing.h"
 #include "components/tab_groups/tab_group_id.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/gfx/animation/animation_delegate.h"
 #include "ui/gfx/animation/linear_animation.h"
@@ -41,7 +41,7 @@ class LinearAnimation;
 namespace views {
 class Label;
 class View;
-}
+}  // namespace views
 
 ///////////////////////////////////////////////////////////////////////////////
 //
@@ -52,9 +52,9 @@ class Tab : public gfx::AnimationDelegate,
             public views::MaskedTargeterDelegate,
             public views::ViewObserver,
             public TabSlotView {
- public:
-  METADATA_HEADER(Tab);
+  METADATA_HEADER(Tab, TabSlotView)
 
+ public:
   // When the content's width of the tab shrinks to below this size we should
   // hide the close button on inactive tabs. Any smaller and they're too easy
   // to hit on accident.
@@ -78,7 +78,7 @@ class Tab : public gfx::AnimationDelegate,
   bool GetHitTestMask(SkPath* mask) const override;
 
   // TabSlotView:
-  void Layout() override;
+  void Layout(PassKey) override;
   bool OnKeyPressed(const ui::KeyEvent& event) override;
   bool OnKeyReleased(const ui::KeyEvent& event) override;
   bool OnMousePressed(const ui::MouseEvent& event) override;
@@ -109,7 +109,7 @@ class Tab : public gfx::AnimationDelegate,
   bool closing() const { return closing_; }
 
   // Returns the color for the tab's group, if any.
-  absl::optional<SkColor> GetGroupColor() const;
+  std::optional<SkColor> GetGroupColor() const;
 
   // Returns the color used for the alert indicator icon.
   ui::ColorId GetAlertIndicatorColor(TabAlertState state) const;
@@ -129,6 +129,12 @@ class Tab : public gfx::AnimationDelegate,
 
   // Returns true if the tab is selected.
   bool IsSelected() const;
+
+  // Returns true if this tab is discarded.
+  bool IsDiscarded() const;
+
+  // Returns true if this tab has captured a thumbnail.
+  bool HasThumbnail() const;
 
   // Sets the data this tabs displays. Should only be called after Tab is added
   // to widget hierarchy.
@@ -153,14 +159,6 @@ class Tab : public gfx::AnimationDelegate,
   // user to click to select/activate the tab.
   int GetWidthOfLargestSelectableRegion() const;
 
-  // Returns true if this tab became the active tab selected in
-  // response to the last ui::ET_TAP_DOWN gesture dispatched to
-  // this tab. Only used for collecting UMA metrics.
-  // See ash/touch/touch_uma.cc.
-  bool tab_activated_with_last_tap_down() const {
-    return tab_activated_with_last_tap_down_;
-  }
-
   bool mouse_hovered() const { return mouse_hovered_; }
 
   // Returns the TabStyle associated with this tab.
@@ -175,10 +173,10 @@ class Tab : public gfx::AnimationDelegate,
   // Exposed publicly for tests.
   static std::u16string GetTooltipText(
       const std::u16string& title,
-      absl::optional<TabAlertState> alert_state);
+      std::optional<TabAlertState> alert_state);
 
   // Returns an alert state to be shown among given alert states.
-  static absl::optional<TabAlertState> GetAlertStateToShow(
+  static std::optional<TabAlertState> GetAlertStateToShow(
       const std::vector<TabAlertState>& alert_states);
 
   bool showing_close_button_for_testing() const {
@@ -188,6 +186,10 @@ class Tab : public gfx::AnimationDelegate,
   raw_ptr<TabCloseButton> close_button() { return close_button_; }
 
   TabIcon* GetTabIconForTesting() const { return icon_; }
+
+  AlertIndicatorButton* alert_indicator_button_for_testing() {
+    return alert_indicator_button_;
+  }
 
  private:
   class TabCloseButtonObserver;
@@ -248,8 +250,6 @@ class Tab : public gfx::AnimationDelegate,
   gfx::Rect start_title_bounds_;
   gfx::Rect target_title_bounds_;
   gfx::LinearAnimation title_animation_;
-
-  bool tab_activated_with_last_tap_down_ = false;
 
   // For narrow tabs, we show the alert icon or, if there is no alert icon, the
   // favicon even if it won't completely fit. In this case, we need to center

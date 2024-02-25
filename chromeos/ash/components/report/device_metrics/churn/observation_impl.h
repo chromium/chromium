@@ -28,6 +28,12 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_REPORT) ObservationImpl
   // UseCase:
   void Run(base::OnceCallback<void()> callback) override;
 
+  // Used by ReportController to destruct pending callbacks appropriately.
+  base::WeakPtr<ObservationImpl> GetWeakPtr();
+
+  // Testing
+  std::optional<FresnelImportDataRequest> GenerateImportRequestBodyForTesting();
+
  protected:
   // UseCase:
   void CheckMembershipOprf() override;
@@ -44,7 +50,7 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_REPORT) ObservationImpl
   void SetLastPingTimestamp(base::Time ts) override;
   std::vector<private_membership::rlwe::RlwePlaintextId>
   GetPsmIdentifiersToQuery() override;
-  absl::optional<FresnelImportDataRequest> GenerateImportRequestBody() override;
+  std::optional<FresnelImportDataRequest> GenerateImportRequestBody() override;
 
  private:
   // Grant friend access for comprehensive testing of private/protected members.
@@ -52,7 +58,7 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_REPORT) ObservationImpl
   friend class ObservationImplDirectCheckInTest;
 
   // Generates the data that is transmitted with an observation period.
-  absl::optional<FresnelImportData> GenerateObservationImportData(int period);
+  std::optional<FresnelImportData> GenerateObservationImportData(int period);
 
   // Update the churn local state fields based on the new active status value.
   void UpdateLocalStateOnCheckInSuccess();

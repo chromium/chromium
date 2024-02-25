@@ -9,7 +9,6 @@
 #include <numeric>
 #include <set>
 
-#include "base/i18n/break_iterator.h"
 #include "base/i18n/case_conversion.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/escape.h"
@@ -142,8 +141,7 @@ String16Vector String16VectorFromString16(
     word_starts->clear();
 
   String16Vector words;
-  TailoredWordBreakIterator iter(cleaned_uni_string,
-                                 base::i18n::BreakIterator::BREAK_WORD);
+  TailoredWordBreakIterator iter(cleaned_uni_string);
   if (!iter.Init())
     return words;
   while (iter.Advance()) {

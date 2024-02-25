@@ -1,0 +1,20 @@
+Verifies that using :--foo in CSS creates a deprecation issue.
+Issue: {
+    issue : {
+        code : DeprecationIssue
+        details : {
+            deprecationIssueDetails : {
+                affectedFrame : {
+                    frameId : <string>
+                }
+                sourceCodeLocation : {
+                    columnNumber : 0
+                    lineNumber : 6
+                    url : http://127.0.0.1:8000/inspector-protocol/resources/css-custom-state-deprecated-syntax.html
+                }
+                type : CSSCustomStateDeprecatedSyntax
+            }
+        }
+    }
+}
+

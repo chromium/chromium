@@ -19,6 +19,7 @@
 #include "components/safe_browsing/core/browser/password_protection/metrics_util.h"
 #include "components/safe_browsing/core/browser/password_protection/password_protection_request.h"
 #include "components/safe_browsing/core/common/proto/csd.pb.h"
+#include "mojo/public/cpp/bindings/associated_remote.h"
 
 #if BUILDFLAG(SAFE_BROWSING_AVAILABLE)
 #include "components/safe_browsing/content/common/safe_browsing.mojom.h"
@@ -27,8 +28,6 @@
 #endif  // BUILDFLAG(SAFE_BROWSING_AVAILABLE)
 
 class GURL;
-class PasswordProtectionServiceBase;
-class RequestCanceler;
 
 namespace content {
 class WebContents;
@@ -37,10 +36,13 @@ class WebContents;
 namespace safe_browsing {
 
 class PasswordProtectionCommitDeferringCondition;
+class PasswordProtectionServiceBase;
+class RequestCanceler;
 
 using password_manager::metrics_util::PasswordType;
 
-class PasswordProtectionRequestContent : public PasswordProtectionRequest {
+class PasswordProtectionRequestContent final
+    : public PasswordProtectionRequest {
  public:
   // Creates a request instance for testing which will stop short of issuing
   // real requests. See prevent_initiating_url_loader_for_testing_ in the base
@@ -95,9 +97,16 @@ class PasswordProtectionRequestContent : public PasswordProtectionRequest {
   // associated modal warning dialog.
   void ResumeDeferredNavigations();
 
-  std::set<PasswordProtectionCommitDeferringCondition*>&
+  std::set<
+      raw_ptr<PasswordProtectionCommitDeferringCondition, SetExperimental>>&
   get_deferred_navigations_for_testing() {
     return deferred_navigations_;
+  }
+
+  base::WeakPtr<PasswordProtectionRequest> AsWeakPtr() override;
+
+  base::WeakPtr<PasswordProtectionRequestContent> AsWeakPtrImpl() {
+    return weak_factory_.GetWeakPtr();
   }
 
  private:
@@ -124,6 +133,8 @@ class PasswordProtectionRequestContent : public PasswordProtectionRequest {
   void OnGetDomFeatures(mojom::PhishingDetectorResult result,
                         const std::string& verdict);
 
+  void ExtractClientPhishingRequestFeatures(ClientPhishingRequest verdict);
+
   // Called when the DOM feature extraction times out.
   void OnGetDomFeatureTimeout();
 
@@ -132,6 +143,8 @@ class PasswordProtectionRequestContent : public PasswordProtectionRequest {
   // If appropriate, collects visual features, otherwise continues on to sending
   // the request.
   void MaybeCollectVisualFeatures() override;
+
+  bool ShouldCollectVisualFeatures();
 
   // Collects visual features from the current login page.
   void CollectVisualFeatures();
@@ -142,6 +155,7 @@ class PasswordProtectionRequestContent : public PasswordProtectionRequest {
   // Called when the visual feature extraction is complete.
   void OnVisualFeatureCollectionDone(
       std::unique_ptr<VisualFeatures> visual_features);
+
 #endif  // BUILDFLAG(SAFE_BROWSING_AVAILABLE)
 
 #if BUILDFLAG(IS_ANDROID)
@@ -156,7 +170,8 @@ class PasswordProtectionRequestContent : public PasswordProtectionRequest {
 
   // Tracks navigations that are deferred on this request and any associated
   // modal dialog.
-  std::set<PasswordProtectionCommitDeferringCondition*> deferred_navigations_;
+  std::set<raw_ptr<PasswordProtectionCommitDeferringCondition, SetExperimental>>
+      deferred_navigations_;
 
   // If a request is sent, this is the token returned by the WebUI.
   int web_ui_token_;
@@ -166,12 +181,15 @@ class PasswordProtectionRequestContent : public PasswordProtectionRequest {
   base::TimeTicks visual_feature_start_time_;
 
   // The Mojo pipe used for extracting DOM features from the renderer.
-  mojo::Remote<safe_browsing::mojom::PhishingDetector> phishing_detector_;
+  mojo::AssociatedRemote<safe_browsing::mojom::PhishingDetector>
+      phishing_detector_;
 
   // Whether the DOM features collection is finished, either by timeout or by
   // successfully gathering the features.
   bool dom_features_collection_complete_;
 #endif  // BUILDFLAG(SAFE_BROWSING_AVAILABLE)
+
+  base::WeakPtrFactory<PasswordProtectionRequestContent> weak_factory_{this};
 };
 
 }  // namespace safe_browsing

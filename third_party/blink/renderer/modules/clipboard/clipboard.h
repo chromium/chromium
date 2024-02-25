@@ -13,6 +13,7 @@
 
 namespace blink {
 
+class ExceptionState;
 class Navigator;
 class ScriptState;
 class ClipboardUnsanitizedFormats;
@@ -28,17 +29,27 @@ class Clipboard : public EventTarget, public Supplement<Navigator> {
   Clipboard(const Clipboard&) = delete;
   Clipboard& operator=(const Clipboard&) = delete;
 
-  ScriptPromise read(ScriptState*,
-                     ClipboardUnsanitizedFormats* formats = nullptr);
-  ScriptPromise readText(ScriptState*);
+  ScriptPromiseTyped<IDLSequence<ClipboardItem>>
+  read(ScriptState*, ClipboardUnsanitizedFormats* formats, ExceptionState&);
+  ScriptPromiseTyped<IDLSequence<ClipboardItem>> read(
+      ScriptState* script_state,
+      ExceptionState& exception_state) {
+    return read(script_state, nullptr, exception_state);
+  }
+  ScriptPromise readText(ScriptState*, ExceptionState&);
 
-  ScriptPromise write(ScriptState*, const HeapVector<Member<ClipboardItem>>&);
-  ScriptPromise writeText(ScriptState*, const String&);
+  ScriptPromise write(ScriptState*,
+                      const HeapVector<Member<ClipboardItem>>&,
+                      ExceptionState&);
+  ScriptPromise writeText(ScriptState*, const String&, ExceptionState&);
 
   // EventTarget
   const AtomicString& InterfaceName() const override;
   ExecutionContext* GetExecutionContext() const override;
 
+  // Parses `format` as a web custom format type string. If successful, it
+  // returns just the (normalized) MIME type without the "web " prefix;
+  // otherwise returns an empty string.
   static String ParseWebCustomFormat(const String& format);
 
   void Trace(Visitor*) const override;

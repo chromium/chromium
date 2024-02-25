@@ -1,7 +1,0 @@
-include_rules = [
-  "+ios/chrome/browser/passwords",
-  "+ios/chrome/browser/upgrade",
-  "+ios/chrome/browser/omaha",
-  "+ios/chrome/browser/ui/content_suggestions/content_suggestions_constants.h",
-  "+ios/chrome/browser/ui/ntp/metrics/home_metrics.h",
-]

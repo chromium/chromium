@@ -275,7 +275,7 @@ bool MessagePumpFuchsia::HandleIoEventsUntil(zx_time_t deadline) {
       return false;
 
     default:
-      ZX_DLOG(DCHECK, status) << "unexpected wait status";
+      ZX_DLOG(FATAL, status) << "unexpected wait status";
       return false;
   }
 }

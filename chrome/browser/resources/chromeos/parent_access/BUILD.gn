@@ -2,162 +2,62 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//third_party/closure_compiler/compile_js.gni")
-import("//tools/polymer/html_to_js.gni")
+import("//ui/webui/resources/tools/build_webui.gni")
 
-group("closure_compile") {
-  deps = [ ":closure_compile_local" ]
-}
+build_webui("build") {
+  grd_prefix = "parent_access"
 
-js_type_check("closure_compile_local") {
-  is_polymer3 = true
-  closure_flags = default_closure_args + mojom_js_args + [
-                    "js_module_root=" + rebase_path(".", root_build_dir),
-                    "js_module_root=" + rebase_path(
-                            "$root_gen_dir/mojom-webui/chrome/browser/ui/webui/ash/parent_access/",
-                            root_build_dir),
-                  ]
-  deps = [
-    ":parent_access_after",
-    ":parent_access_app",
-    ":parent_access_before",
-    ":parent_access_controller",
-    ":parent_access_disabled",
-    ":parent_access_error",
-    ":parent_access_offline",
-    ":parent_access_screen",
-    ":parent_access_template",
-    ":parent_access_ui",
-    ":parent_access_ui_handler",
-    ":utils",
-    ":webview_manager",
-    "flows:extension_approvals_after",
-    "flows:extension_approvals_before",
-    "flows:extension_approvals_disabled",
-    "flows:extension_approvals_template",
-    "flows:extension_permission",
-    "flows:local_web_approvals_after",
+  static_files = [
+    "parent_access.html",
+    "images/request_approval_dark.svg",
+    "images/request_approval.svg",
   ]
-}
 
-js_library("parent_access_after") {
-  deps = [
-    ":parent_access_screen",
-    ":parent_access_template",
-    "flows:local_web_approvals_after",
-    "//chrome/browser/ui/webui/ash/parent_access:mojo_bindings_webui_js",
-    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
+  web_component_files = [
+    "parent_access_after.ts",
+    "parent_access_app.ts",
+    "parent_access_before.ts",
+    "parent_access_error.ts",
+    "parent_access_offline.ts",
+    "parent_access_disabled.ts",
+    "parent_access_template.ts",
+    "parent_access_ui.ts",
+
+    "flows/extension_approvals_after.ts",
+    "flows/extension_approvals_before.ts",
+    "flows/extension_approvals_disabled.ts",
+    "flows/extension_approvals_template.ts",
+    "flows/extension_permission.ts",
+    "flows/local_web_approvals_after.ts",
   ]
-  externs_list =
-      [ "//ui/webui/resources/cr_elements/cr_button/cr_button_externs.js" ]
-}
 
-js_library("parent_access_before") {
-  deps = [
-    ":parent_access_screen",
-    ":parent_access_template",
-    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
+  non_web_component_files = [
+    "parent_access_controller.ts",
+    "parent_access_ui_handler.ts",
+    "utils.ts",
+    "webview_manager.ts",
+    "parent_access_screen.ts",
   ]
-  externs_list =
-      [ "//ui/webui/resources/cr_elements/cr_button/cr_button_externs.js" ]
-}
 
-js_library("parent_access_disabled") {
-  deps = [
-    ":parent_access_screen",
-    ":parent_access_template",
-    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
+  mojo_files = [ "$root_gen_dir/chrome/browser/ui/webui/ash/parent_access/parent_access_ui.mojom-webui.ts" ]
+  mojo_files_deps = [
+    "//chrome/browser/ui/webui/ash/parent_access:mojo_bindings_ts__generator",
   ]
-  externs_list =
-      [ "//ui/webui/resources/cr_elements/cr_button/cr_button_externs.js" ]
-}
 
-js_library("parent_access_error") {
-  deps = [
-    ":parent_access_template",
-    "//chrome/browser/resources/chromeos/supervision:supervised_user_error",
-    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
+  ts_composite = true
+  ts_definitions = [
+    "//tools/typescript/definitions/webview_tag.d.ts",
+    "//tools/typescript/definitions/web_request.d.ts",
+    "//tools/typescript/definitions/context_menus.d.ts",
+    "//tools/typescript/definitions/tabs.d.ts",
+    "//tools/typescript/definitions/extension_types.d.ts",
   ]
-}
 
-js_library("parent_access_offline") {
-  deps = [
-    ":parent_access_template",
-    "//chrome/browser/resources/chromeos/supervision:supervised_user_offline",
-    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
-  ]
-}
-
-js_library("parent_access_app") {
-  extra_deps =
-      [ "//ui/webui/resources/cr_components/color_change_listener:build_ts" ]
-  deps = [
-    ":parent_access_after",
-    ":parent_access_before",
-    ":parent_access_disabled",
-    ":parent_access_error",
-    ":parent_access_offline",
-    ":parent_access_ui",
-    ":parent_access_ui_handler",
-    "//chrome/browser/ui/webui/ash/parent_access:mojo_bindings_webui_js",
-    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
-  ]
-  externs_list = [ "//ui/webui/resources/cr_elements/cr_view_manager/cr_view_manager_externs.js" ]
-}
-
-js_library("parent_access_controller") {
-  deps = [
-    "//ash/webui/common/resources:promise_resolver",
-    "//ash/webui/common/resources/post_message_api:post_message_api_server",
-  ]
-}
-
-js_library("parent_access_template") {
-  deps = [
-    ":parent_access_ui_handler",
-    "//chrome/browser/ui/webui/ash/parent_access:mojo_bindings_webui_js",
-    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
-  ]
-}
-
-js_library("parent_access_ui") {
-  deps = [
-    ":parent_access_controller",
-    ":parent_access_template",
-    ":parent_access_ui_handler",
-    "//ash/webui/common/resources:load_time_data.m",
-    "//chrome/browser/ui/webui/ash/parent_access:mojo_bindings_webui_js",
-    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
-  ]
-  externs_list = [
-    "$externs_path/chrome_extensions.js",
-    "$externs_path/webview_tag.js",
-  ]
-}
-
-js_library("parent_access_ui_handler") {
-  deps =
-      [ "//chrome/browser/ui/webui/ash/parent_access:mojo_bindings_webui_js" ]
-}
-
-js_library("webview_manager") {
-}
-
-js_library("parent_access_screen") {
-}
-
-js_library("utils") {
-}
-
-html_to_js("web_components") {
-  js_files = [
-    "parent_access_after.js",
-    "parent_access_app.js",
-    "parent_access_before.js",
-    "parent_access_disabled.js",
-    "parent_access_error.js",
-    "parent_access_offline.js",
-    "parent_access_template.js",
-    "parent_access_ui.js",
+  ts_deps = [
+    "//ash/webui/common/resources:build_ts",
+    "//ash/webui/common/resources/cr_elements:build_ts",
+    "//third_party/polymer/v3_0:library",
+    "//ui/webui/resources/cr_components/color_change_listener:build_ts",
+    "//ui/webui/resources/mojo:build_ts",
   ]
 }

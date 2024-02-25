@@ -1,0 +1,4 @@
+This is a testharness.js-based test.
+[FAIL] RequestPort from a sandboxed iframe is valid.
+  assert_equals: expected (object) object "[object Object]" but got (string) "FAIL: NotFoundError: Failed to execute 'requestPort' on 'Serial': No port selected by the user."
+Harness: the test ran to completion.

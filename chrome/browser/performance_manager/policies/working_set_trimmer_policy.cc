@@ -88,10 +88,7 @@ void WorkingSetTrimmerPolicy::TrimWorkingSet(const ProcessNode* process_node) {
   auto* trimmer = mechanism::WorkingSetTrimmer::GetInstance();
   DCHECK(trimmer);
 
-  static int renderers_trimmed = 0;
   if (process_node->GetProcess().IsValid()) {
-    UMA_HISTOGRAM_COUNTS_10000("Memory.WorkingSetTrim.RendererTrimCount",
-                               ++renderers_trimmed);
     SetLastTrimTimeNow(process_node);
     trimmer->TrimWorkingSet(process_node);
   }

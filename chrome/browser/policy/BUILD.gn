@@ -187,21 +187,20 @@ source_set("policy_specific_browser_tests") {
   sources = [
     "policy_network_browsertest.cc",
     "site_isolation_policy_browsertest.cc",
+    "test/automatic_fullscreen_policy_browsertest.cc",
     "test/back_forward_cache_policy_browsertest.cc",
     "test/certificate_transparency_policy_browsertest.cc",
     "test/force_permission_policy_unload_default_enabled_policy_browsertest.cc",
     "test/hsts_policy_browsertest.cc",
+    "test/mutation_events_policy_browsertest.cc",
     "test/network_prediction_policy_browsertest.cc",
-    "test/offset_parent_new_spec_behavior_policy_browsertest.cc",
     "test/policy_statistics_collector_browsertest.cc",
     "test/proxy_policies_browsertest.cc",
     "test/safe_browsing_policy_browsertest.cc",
-    "test/send_mouse_events_disabled_form_controls_policy_browsertest.cc",
     "test/shared_clipboard_enabled_browsertest.cc",
     "test/ssl_error_overriding_allowed_policy_browsertest.cc",
     "test/url_keyed_anonymized_data_collection_enabled_browsertest.cc",
     "test/web_rtc_udp_port_range_policy_browsertest.cc",
-    "test/web_sql_access_policy_browsertest.cc",
   ]
   if (is_chromeos) {
     sources += [ "test/policy_certs_browsertest.cc" ]
@@ -242,14 +241,14 @@ source_set("policy_specific_browser_tests") {
 
   if (!is_android) {
     sources += [
+      "test/autofill_policy_browsertest.cc",
       "test/autoplay_policy_browsertest.cc",
       "test/block_truncated_cookies_policy_browsertest.cc",
       "test/bookmark_bar_enabled_browsertest.cc",
       "test/component_updater_policy_browsertest.cc",
       "test/developer_tools_policy_browsertest.cc",
       "test/download_directory_browsertest.cc",
-      "test/hide_webstore_icon_policy_browsertest.cc",
-      "test/lens_desktop_ntp_search_enabled_policy_browsertest.cc",
+      "test/ipv6_reachability_override_policy_browsertest.cc",
       "test/local_fonts_policy_browsertest.cc",
       "test/media_stream_policy_browsertest.cc",
       "test/quic_allowed_browsertest.cc",
@@ -260,11 +259,14 @@ source_set("policy_specific_browser_tests") {
       "test/web_rtc_local_ips_allowed_urls_policy_browsertest.cc",
       "test/web_rtc_text_log_collection_allowed_policy_browsertest.cc",
       "test/window_management_policy_browsertest.cc",
+      "test/zstd_content_encoding_policy_browsertest.cc",
     ]
 
     deps += [
+      "//chrome/browser/autofill",
       "//chrome/browser/devtools:test_support",
       "//chrome/browser/profiles:profile",
+      "//components/autofill/content/browser:test_support",
       "//components/bookmarks/common:common",
       "//components/enterprise",
       "//components/enterprise:test_support",
@@ -364,12 +366,14 @@ source_set("browser_tests") {
       "test/audio_output_allowed_browsertest.cc",
       "test/note_taking_on_lock_screen_policy_browsertest.cc",
       "test/power_sounds_policy_browsertest.cc",
+      "test/privacy_hub_policy_browsertest.cc",
       "test/screenshot_policy_browsertest.cc",
       "test/session_length_limit_policy_browsertest.cc",
       "test/suggested_content_policy_browsertest.cc",
       "test/system_features_policy_browsertest.cc",
       "test/unified_desktop_enabled_browsertest.cc",
       "test/user_avatar_customization_selectors_enabled_policy_browsertest.cc",
+      "test/virtual_keyboard_policy_browsertest.cc",
     ]
 
     deps += [

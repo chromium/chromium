@@ -9,8 +9,7 @@ import android.text.TextUtils;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
-import org.chromium.base.annotations.NativeMethods;
-import org.chromium.build.annotations.MainDex;
+import org.jni_zero.NativeMethods;
 
 import java.io.File;
 import java.io.FileReader;
@@ -22,12 +21,10 @@ import java.util.Map;
 import java.util.concurrent.atomic.AtomicReference;
 
 /**
- * Java mirror of base/command_line.h.
- * Android applications don't have command line arguments. Instead, they're "simulated" by reading a
- * file at a specific location early during startup. Applications each define their own files, e.g.,
- * ContentShellApplication.COMMAND_LINE_FILE.
-**/
-@MainDex
+ * Java mirror of base/command_line.h. Android applications don't have command line arguments.
+ * Instead, they're "simulated" by reading a file at a specific location early during startup.
+ * Applications each define their own files, e.g., ContentShellApplication.COMMAND_LINE_FILE.
+ */
 public abstract class CommandLine {
     // Public abstract interface, implemented in derived classes.
     // All these methods reflect their native-side counterparts.
@@ -56,9 +53,7 @@ public abstract class CommandLine {
         return TextUtils.isEmpty(value) ? defaultValue : value;
     }
 
-    /**
-     * Return a copy of all switches, along with their values.
-     */
+    /** Return a copy of all switches, along with their values. */
     public abstract Map getSwitches();
 
     /**
@@ -158,8 +153,7 @@ public abstract class CommandLine {
      * Resets both the java proxy and the native command lines. This allows the entire
      * command line initialization to be re-run including the call to onJniLoaded.
      */
-    @VisibleForTesting
-    public static void reset() {
+    static void resetForTesting() {
         setInstance(null);
     }
 
@@ -173,8 +167,8 @@ public abstract class CommandLine {
      */
     @VisibleForTesting
     static String[] tokenizeQuotedArguments(char[] buffer) {
-        // Just field trials can take up to 10K of command line.
-        if (buffer.length > 64 * 1024) {
+        // Just field trials can take over 60K of command line.
+        if (buffer.length > 96 * 1024) {
             // Check that our test runners are setting a reasonable number of flags.
             throw new RuntimeException("Flags file too big: " + buffer.length);
         }
@@ -243,14 +237,6 @@ public abstract class CommandLine {
     }
 
     /**
-     * Set {@link CommandLine} for testing.
-     * @param commandLine The {@link CommandLine} to use.
-     */
-    public static void setInstanceForTesting(CommandLine commandLine) {
-        setInstance(commandLine);
-    }
-
-    /**
      * @param fileName the file to read in.
      * @return Array of chars read from the file, or null if the file cannot be read.
      */
@@ -268,7 +254,8 @@ public abstract class CommandLine {
 
     private CommandLine() {}
 
-    private static class JavaCommandLine extends CommandLine {
+    @VisibleForTesting
+    static class JavaCommandLine extends CommandLine {
         private HashMap<String, String> mSwitches = new HashMap<String, String>();
         private ArrayList<String> mArgs = new ArrayList<String>();
 
@@ -451,12 +438,19 @@ public abstract class CommandLine {
     @NativeMethods
     interface Natives {
         void init(String[] args);
+
         boolean hasSwitch(String switchString);
+
         String getSwitchValue(String switchString);
+
         String[] getSwitchesFlattened();
+
         void appendSwitch(String switchString);
+
         void appendSwitchWithValue(String switchString, String value);
+
         void appendSwitchesAndArguments(String[] array);
+
         void removeSwitch(String switchString);
     }
 }

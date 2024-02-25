@@ -46,7 +46,7 @@ class ThrottledOfflineContentProvider
   void RemoveItem(const ContentId& id) override;
   void CancelDownload(const ContentId& id) override;
   void PauseDownload(const ContentId& id) override;
-  void ResumeDownload(const ContentId& id, bool has_user_gesture) override;
+  void ResumeDownload(const ContentId& id) override;
 
   // Because this class queues updates, a call to Observer::OnItemUpdated might
   // get triggered with the same contents as returned by these getter methods in
@@ -71,13 +71,13 @@ class ThrottledOfflineContentProvider
   void OnItemsAdded(const OfflineItemList& items) override;
   void OnItemRemoved(const ContentId& id) override;
   void OnItemUpdated(const OfflineItem& item,
-                     const absl::optional<UpdateDelta>& update_delta) override;
+                     const std::optional<UpdateDelta>& update_delta) override;
   void OnContentProviderGoingDown() override;
 
   void OnGetAllItemsDone(MultipleItemCallback callback,
                          const OfflineItemList& items);
   void OnGetItemByIdDone(SingleItemCallback callback,
-                         const absl::optional<OfflineItem>& item);
+                         const std::optional<OfflineItem>& item);
 
   // Checks if |item| already has an update pending. If so, replaces the content
   // of the update with |item|.
@@ -98,7 +98,7 @@ class ThrottledOfflineContentProvider
       observation_{this};
 
   typedef std::map<ContentId,
-                   std::pair<OfflineItem, absl::optional<UpdateDelta>>>
+                   std::pair<OfflineItem, std::optional<UpdateDelta>>>
       OfflineItemMap;
   OfflineItemMap updates_;
 

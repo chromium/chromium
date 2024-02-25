@@ -20,6 +20,7 @@
 #include "cc/test/render_pass_test_utils.h"
 #include "cc/test/resource_provider_test_utils.h"
 #include "components/viz/client/client_resource_provider.h"
+#include "components/viz/common/features.h"
 #include "components/viz/common/frame_sinks/copy_output_request.h"
 #include "components/viz/common/frame_sinks/copy_output_result.h"
 #include "components/viz/common/quads/compositor_frame_metadata.h"
@@ -52,8 +53,12 @@ class SoftwareRendererTest : public testing::Test {
     output_surface_->BindToClient(&output_surface_client_);
 
     shared_bitmap_manager_ = std::make_unique<TestSharedBitmapManager>();
+    shared_image_manager_ = std::make_unique<gpu::SharedImageManager>();
+    sync_point_manager_ = std::make_unique<gpu::SyncPointManager>();
+
     resource_provider_ = std::make_unique<DisplayResourceProviderSoftware>(
-        shared_bitmap_manager_.get());
+        shared_bitmap_manager_.get(), shared_image_manager_.get(),
+        sync_point_manager_.get());
     renderer_ = std::make_unique<SoftwareRenderer>(
         &settings_, &debug_settings_, output_surface_.get(),
         resource_provider(), nullptr);
@@ -93,8 +98,8 @@ class SoftwareRendererTest : public testing::Test {
 
     // Makes a resource id that refers to the registered SharedBitmapId.
     return child_resource_provider_->ImportResource(
-        TransferableResource::MakeSoftware(shared_bitmap_id, size,
-                                           SinglePlaneFormat::kRGBA_8888),
+        TransferableResource::MakeSoftware(shared_bitmap_id, gpu::SyncToken(),
+                                           size, SinglePlaneFormat::kRGBA_8888),
         base::DoNothing());
   }
 
@@ -138,6 +143,8 @@ class SoftwareRendererTest : public testing::Test {
   cc::FakeOutputSurfaceClient output_surface_client_;
   std::unique_ptr<FakeSoftwareOutputSurface> output_surface_;
   std::unique_ptr<SharedBitmapManager> shared_bitmap_manager_;
+  std::unique_ptr<gpu::SharedImageManager> shared_image_manager_;
+  std::unique_ptr<gpu::SyncPointManager> sync_point_manager_;
   std::unique_ptr<DisplayResourceProviderSoftware> resource_provider_;
   std::unique_ptr<ClientResourceProvider> child_resource_provider_;
   std::unique_ptr<SoftwareRenderer> renderer_;
@@ -159,8 +166,10 @@ TEST_F(SoftwareRendererTest, SolidColorQuad) {
   SharedQuadState* shared_quad_state =
       root_render_pass->CreateAndAppendSharedQuadState();
   shared_quad_state->SetAll(gfx::Transform(), outer_rect, outer_rect,
-                            gfx::MaskFilterInfo(), absl::nullopt, true, 1.0,
-                            SkBlendMode::kSrcOver, 0);
+                            gfx::MaskFilterInfo(), /*clip=*/std::nullopt,
+                            /*contents_opaque=*/true, /*opacity_f=*/1.0,
+                            SkBlendMode::kSrcOver, /*sorting_context=*/0,
+                            /*layer_id=*/0u, /*fast_rounded_corner=*/false);
   auto* inner_quad =
       root_render_pass->CreateAndAppendDrawQuad<SolidColorDrawQuad>();
   inner_quad->SetNew(shared_quad_state, inner_rect, inner_rect, SkColors::kCyan,
@@ -207,8 +216,10 @@ TEST_F(SoftwareRendererTest, DebugBorderDrawQuad) {
   SharedQuadState* shared_quad_state =
       root_render_pass->CreateAndAppendSharedQuadState();
   shared_quad_state->SetAll(gfx::Transform(), screen_rect, screen_rect,
-                            gfx::MaskFilterInfo(), absl::nullopt, true, 1.0,
-                            SkBlendMode::kSrcOver, 0);
+                            gfx::MaskFilterInfo(), /*clip=*/std::nullopt,
+                            /*contents_opaque=*/true, /*opacity_f=*/1.0,
+                            SkBlendMode::kSrcOver, /*sorting_context=*/0,
+                            /*layer_id=*/0u, /*fast_rounded_corner=*/false);
 
   auto* quad_1 =
       root_render_pass->CreateAndAppendDrawQuad<DebugBorderDrawQuad>();
@@ -301,8 +312,10 @@ TEST_F(SoftwareRendererTest, TileQuad) {
   SharedQuadState* shared_quad_state =
       root_render_pass->CreateAndAppendSharedQuadState();
   shared_quad_state->SetAll(gfx::Transform(), outer_rect, outer_rect,
-                            gfx::MaskFilterInfo(), absl::nullopt, true, 1.0,
-                            SkBlendMode::kSrcOver, 0);
+                            gfx::MaskFilterInfo(), /*clip=*/std::nullopt,
+                            /*contents_opaque=*/true, /*opacity_f=*/1.0,
+                            SkBlendMode::kSrcOver, /*sorting_context=*/0,
+                            /*layer_id=*/0u, /*fast_rounded_corner=*/false);
   auto* inner_quad = root_render_pass->CreateAndAppendDrawQuad<TileDrawQuad>();
   inner_quad->SetNew(shared_quad_state, inner_rect, inner_rect, needs_blending,
                      mapped_resource_cyan, gfx::RectF(gfx::SizeF(inner_size)),
@@ -363,8 +376,10 @@ TEST_F(SoftwareRendererTest, TileQuadVisibleRect) {
   SharedQuadState* shared_quad_state =
       root_render_pass->CreateAndAppendSharedQuadState();
   shared_quad_state->SetAll(gfx::Transform(), tile_rect, tile_rect,
-                            gfx::MaskFilterInfo(), absl::nullopt, true, 1.0,
-                            SkBlendMode::kSrcOver, 0);
+                            gfx::MaskFilterInfo(), /*clip=*/std::nullopt,
+                            /*contents_opaque=*/true, /*opacity_f=*/1.0,
+                            SkBlendMode::kSrcOver, /*sorting_context=*/0,
+                            /*layer_id=*/0u, /*fast_rounded_corner=*/false);
   auto* quad = root_render_pass->CreateAndAppendDrawQuad<TileDrawQuad>();
   quad->SetNew(shared_quad_state, tile_rect, tile_rect, needs_blending,
                mapped_resource_cyan, gfx::RectF(gfx::SizeF(tile_size)),
@@ -519,7 +534,9 @@ TEST_F(SoftwareRendererTest, ClipRoundRect) {
         root_pass->CreateAndAppendSharedQuadState();
     shared_quad_state->SetAll(gfx::Transform(), outer_rect, outer_rect,
                               gfx::MaskFilterInfo(), gfx::Rect(1, 1, 30, 30),
-                              true, 1.0, SkBlendMode::kSrcOver, 0);
+                              /*contents_opaque=*/true, /*opacity_f=*/1.0,
+                              SkBlendMode::kSrcOver, /*sorting_context=*/0,
+                              /*layer_id=*/0u, /*fast_rounded_corner=*/false);
     auto* outer_quad = root_pass->CreateAndAppendDrawQuad<SolidColorDrawQuad>();
     outer_quad->SetNew(shared_quad_state, outer_rect, outer_rect,
                        SkColors::kGreen, false);
@@ -535,7 +552,9 @@ TEST_F(SoftwareRendererTest, ClipRoundRect) {
     shared_quad_state->SetAll(
         gfx::Transform(), inner_rect, inner_rect,
         gfx::MaskFilterInfo(gfx::RRectF(gfx::RectF(5, 5, 10, 10), 2)),
-        absl::nullopt, true, 1.0, SkBlendMode::kSrcOver, 0);
+        /*clip=*/std::nullopt, /*contents_opaque=*/true, /*opacity_f=*/1.0,
+        SkBlendMode::kSrcOver, /*sorting_context=*/0,
+        /*layer_id=*/0u, /*fast_rounded_corner=*/false);
     auto* inner_quad = root_pass->CreateAndAppendDrawQuad<SolidColorDrawQuad>();
     inner_quad->SetNew(shared_quad_state, inner_rect, inner_rect,
                        SkColors::kRed, false);

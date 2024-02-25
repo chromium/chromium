@@ -12,6 +12,7 @@
 #include "chrome/browser/safe_browsing/safe_browsing_navigation_observer_manager_factory.h"
 #include "chrome/browser/ui/browser.h"
 #include "components/safe_browsing/content/browser/safe_browsing_navigation_observer.h"
+#include "content/public/browser/storage_partition.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace safe_browsing {
@@ -33,7 +34,10 @@ void InnerContentsCreationObserver::InnerWebContentsCreated(
 
 TestSafeBrowsingNavigationObserverManager::
     TestSafeBrowsingNavigationObserverManager(Browser* browser)
-    : SafeBrowsingNavigationObserverManager(browser->profile()->GetPrefs()) {
+    : SafeBrowsingNavigationObserverManager(browser->profile()->GetPrefs(),
+                                            browser->profile()
+                                                ->GetDefaultStoragePartition()
+                                                ->GetServiceWorkerContext()) {
   browser->tab_strip_model()->AddObserver(this);
 }
 TestSafeBrowsingNavigationObserverManager::

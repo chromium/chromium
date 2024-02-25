@@ -5,6 +5,7 @@
 #import "ios/chrome/browser/ui/partial_translate/partial_translate_mediator.h"
 
 #import "base/apple/foundation_util.h"
+#import "base/memory/raw_ptr.h"
 #import "base/memory/weak_ptr.h"
 #import "base/metrics/histogram_functions.h"
 #import "components/prefs/pref_member.h"
@@ -17,8 +18,8 @@
 #import "ios/chrome/browser/ui/browser_container/browser_edit_menu_utils.h"
 #import "ios/chrome/browser/ui/browser_container/edit_menu_alert_delegate.h"
 #import "ios/chrome/browser/ui/fullscreen/fullscreen_controller.h"
-#import "ios/chrome/browser/web_selection/web_selection_response.h"
-#import "ios/chrome/browser/web_selection/web_selection_tab_helper.h"
+#import "ios/chrome/browser/web_selection/model/web_selection_response.h"
+#import "ios/chrome/browser/web_selection/model/web_selection_tab_helper.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ios/public/provider/chrome/browser/partial_translate/partial_translate_api.h"
 #import "ios/web/public/web_state.h"
@@ -105,7 +106,7 @@ const NSUInteger kPartialTranslateCharactersLimit = 1000;
 
   // The fullscreen controller to offset sourceRect depending on fullscreen
   // status.
-  FullscreenController* _fullscreenController;
+  raw_ptr<FullscreenController> _fullscreenController;
 }
 
 - (instancetype)initWithWebStateList:(WebStateList*)webStateList

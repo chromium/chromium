@@ -5,7 +5,9 @@
 #include "extensions/browser/verified_contents.h"
 
 #include <stddef.h>
+
 #include <algorithm>
+#include <string_view>
 
 #include "base/base64url.h"
 #include "base/containers/contains.h"
@@ -103,15 +105,14 @@ std::unique_ptr<VerifiedContents> VerifiedContents::CreateFromFile(
 
 std::unique_ptr<VerifiedContents> VerifiedContents::Create(
     base::span<const uint8_t> public_key,
-    base::StringPiece contents) {
+    std::string_view contents) {
   // Note: VerifiedContents constructor is private.
   auto verified_contents = base::WrapUnique(new VerifiedContents(public_key));
   std::string payload;
   if (!verified_contents->GetPayload(contents, &payload))
     return nullptr;
 
-  absl::optional<base::Value> dictionary_value =
-      base::JSONReader::Read(payload);
+  std::optional<base::Value> dictionary_value = base::JSONReader::Read(payload);
   if (!dictionary_value || !dictionary_value->is_dict()) {
     return nullptr;
   }
@@ -145,8 +146,8 @@ std::unique_ptr<VerifiedContents> VerifiedContents::Create(
     if (!format || *format != kTreeHash)
       continue;
 
-    absl::optional<int> block_size = hashes_dict->FindInt(kBlockSizeKey);
-    absl::optional<int> hash_block_size =
+    std::optional<int> block_size = hashes_dict->FindInt(kBlockSizeKey);
+    std::optional<int> hash_block_size =
         hashes_dict->FindInt(kHashBlockSizeKey);
     if (!block_size || !hash_block_size)
       return nullptr;
@@ -248,9 +249,9 @@ bool VerifiedContents::TreeHashRootEquals(const base::FilePath& relative_path,
 // that it is for a given extension), but in the future we may validate using
 // the extension's key too (eg for non-webstore hosted extensions such as
 // enterprise installs).
-bool VerifiedContents::GetPayload(base::StringPiece contents,
+bool VerifiedContents::GetPayload(std::string_view contents,
                                   std::string* payload) {
-  absl::optional<base::Value> top_list = base::JSONReader::Read(contents);
+  std::optional<base::Value> top_list = base::JSONReader::Read(contents);
   if (!top_list || !top_list->is_list())
     return false;
 

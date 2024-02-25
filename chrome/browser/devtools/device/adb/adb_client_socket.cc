@@ -31,16 +31,14 @@ const char kHostTransportCommand[] = "host:transport:%s";
 const char kLocalhost[] = "127.0.0.1";
 
 std::string EncodeMessage(const std::string& message) {
-  static const char kHexChars[] = "0123456789ABCDEF";
-
   size_t length = message.length();
-  std::string result(4, '\0');
-  char b = reinterpret_cast<const char*>(&length)[1];
-  result[0] = kHexChars[(b >> 4) & 0xf];
-  result[1] = kHexChars[b & 0xf];
-  b = reinterpret_cast<const char*>(&length)[0];
-  result[2] = kHexChars[(b >> 4) & 0xf];
-  result[3] = kHexChars[b & 0xf];
+  CHECK_LE(length, 0xffffu);
+  std::string result;
+  result.reserve(4);
+  base::AppendHexEncodedByte(reinterpret_cast<const uint8_t*>(&length)[1],
+                             result);
+  base::AppendHexEncodedByte(reinterpret_cast<const uint8_t*>(&length)[0],
+                             result);
   return result + message;
 }
 
@@ -247,8 +245,8 @@ void AdbClientSocket::ReadResponse(CommandCallback callback,
     std::move(callback).Run(result, "IO error");
     return;
   }
-  scoped_refptr<net::IOBuffer> response_buffer =
-      base::MakeRefCounted<net::IOBuffer>(kBufferSize);
+  auto response_buffer =
+      base::MakeRefCounted<net::IOBufferWithSize>(kBufferSize);
   auto split_callback = base::SplitOnceCallback(
       base::BindOnce(&AdbClientSocket::OnResponseHeader, base::Unretained(this),
                      std::move(callback), is_void, response_buffer));

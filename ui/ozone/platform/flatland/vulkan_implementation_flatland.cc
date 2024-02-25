@@ -110,11 +110,6 @@ VulkanImplementationFlatland::ExportVkFenceToGpuFence(VkDevice vk_device,
   return nullptr;
 }
 
-VkExternalMemoryHandleTypeFlagBits
-VulkanImplementationFlatland::GetExternalImageHandleType() {
-  return VK_EXTERNAL_MEMORY_HANDLE_TYPE_ZIRCON_VMO_BIT_FUCHSIA;
-}
-
 VkExternalSemaphoreHandleTypeFlagBits
 VulkanImplementationFlatland::GetExternalSemaphoreHandleType() {
   return VK_EXTERNAL_SEMAPHORE_HANDLE_TYPE_ZIRCON_EVENT_BIT_FUCHSIA;
@@ -159,7 +154,7 @@ VulkanImplementationFlatland::CreateImageFromGpuMemoryHandle(
     return nullptr;
   }
 
-  absl::optional<gpu::VulkanYCbCrInfo> ycbcr_info;
+  std::optional<gpu::VulkanYCbCrInfo> ycbcr_info;
   if (collection->format() == gfx::BufferFormat::YUV_420_BIPLANAR) {
     VkSamplerYcbcrModelConversion ycbcr_conversion =
         (color_space.GetMatrixID() == gfx::ColorSpace::MatrixID::BT709)

@@ -37,7 +37,7 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
   cbor::Reader::Config config;
   config.allow_invalid_utf8 = true;
   std::vector<uint8_t> input(data, data + size);
-  absl::optional<cbor::Value> input_cbor = cbor::Reader::Read(input, config);
+  std::optional<cbor::Value> input_cbor = cbor::Reader::Read(input, config);
   if (input_cbor) {
     input_cbor =
         FixInvalidUTF8(std::move(*input_cbor),

@@ -37,10 +37,6 @@
 #include "net/cert/nss_cert_database.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace content {
-class ResourceContext;
-}
-
 namespace policy {
 
 namespace {

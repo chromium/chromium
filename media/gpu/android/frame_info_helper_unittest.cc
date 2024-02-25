@@ -64,7 +64,7 @@ class FrameInfoHelperTest : public testing::Test {
   std::unique_ptr<CodecOutputBufferRenderer> CreateBufferRenderer(
       gfx::Size size,
       scoped_refptr<gpu::TextureOwner> texture_owner,
-      absl::optional<gfx::Size> coded_size_alignment = absl::nullopt) {
+      std::optional<gfx::Size> coded_size_alignment = std::nullopt) {
     auto codec_buffer_wait_coordinator =
         texture_owner
             ? base::MakeRefCounted<CodecBufferWaitCoordinator>(

@@ -17,7 +17,8 @@ import {focusWithoutInk} from 'chrome://resources/js/focus_without_ink.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {CertificateProvisioningViewDetailsActionEvent} from './certificate_manager_types.js';
-import {CertificateProvisioningBrowserProxyImpl, CertificateProvisioningProcess} from './certificate_provisioning_browser_proxy.js';
+import type {CertificateProvisioningProcess} from './certificate_provisioning_browser_proxy.js';
+import {CertificateProvisioningBrowserProxyImpl} from './certificate_provisioning_browser_proxy.js';
 import {getTemplate} from './certificate_provisioning_list.html.js';
 
 const CertificateProvisioningListElementBase =

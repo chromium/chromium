@@ -31,6 +31,13 @@ constexpr auto enabled_by_default_desktop_android =
     base::FEATURE_ENABLED_BY_DEFAULT;
 #endif
 
+constexpr auto enabled_by_default_desktop_ios =
+#if BUILDFLAG(IS_ANDROID)
+    base::FEATURE_DISABLED_BY_DEFAULT;
+#else
+    base::FEATURE_ENABLED_BY_DEFAULT;
+#endif
+
 const auto enabled_by_default_android_ios =
 #if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
     base::FEATURE_ENABLED_BY_DEFAULT;
@@ -72,28 +79,6 @@ BASE_FEATURE(kOmniboxDemoteByType,
 // treating fuzzy provider matches as the least preferred.
 BASE_FEATURE(kPreferNonShortcutMatchesWhenDeduping,
              "OmniboxPreferNonShortcutMatchesWhenDeduping",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
-// Determines which are culled when both tail and history cluster suggestions
-// are available. See `MaybeCullTailSuggestions()`.
-// TODO(manukh): Enabled by default 6/1/23 m116. Clean up feature code 8/15 when
-//   m116 reaches stable.
-BASE_FEATURE(kPreferTailOverHistoryClusterSuggestions,
-             "OmniboxPreferTailOverHistoryClusterSuggestions",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
-// When disabled, when providers update their matches, the new set of matches
-// are sorted and culled, then merged with the old matches, then sorted and
-// culled again. When enabled, the first sort and cull is skipped.
-BASE_FEATURE(kSingleSortAndCullPass,
-             "OmniboxSingleSortAndCullPass",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
-// Feature to debounce `AutocompleteController::NotifyChanged()`.
-// TODO(manukh): Enabled by default 7/11/23 m117. Clean up feature code 9/12
-//   when m117 reaches stable.
-BASE_FEATURE(kUpdateResultDebounce,
-             "OmniboxUpdateResultDebounce",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Feature used to cap max zero suggestions shown according to the param
@@ -154,18 +139,6 @@ BASE_FEATURE(kClobberTriggersSRPZeroSuggest,
              "OmniboxClobberTriggersSRPZeroSuggest",
              enabled_by_default_desktop_android);
 
-// Enables on-focus zero-prefix suggestions on the Open Web, that are contextual
-// to the current URL. Will only work if user is signed-in and syncing, or is
-// otherwise eligible to send the current page URL to the suggest server.
-BASE_FEATURE(kFocusTriggersContextualWebZeroSuggest,
-             "OmniboxFocusTriggersContextualWebZeroSuggest",
-             enabled_by_default_android_ios);
-
-// Enables on-focus zero-prefix suggestions on the SRP.
-BASE_FEATURE(kFocusTriggersSRPZeroSuggest,
-             "OmniboxFocusTriggersSRPZeroSuggest",
-             enabled_by_default_android_ios);
-
 // Enables local history zero-prefix suggestions in every context in which the
 // remote zero-prefix suggestions are enabled.
 BASE_FEATURE(kLocalHistoryZeroSuggestBeyondNTP,
@@ -181,7 +154,7 @@ BASE_FEATURE(kLocalHistoryZeroSuggestBeyondNTP,
 // mismatches in the terms.
 BASE_FEATURE(kNormalizeSearchSuggestions,
              "NormalizeSearchSuggestions",
-             base::FEATURE_ENABLED_BY_DEFAULT);
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Mainly used to enable sending INTERACTION_CLOBBER focus type for zero-prefix
 // requests with an empty input on Web/SRP on Mobile. Enabled by default on
@@ -190,13 +163,6 @@ BASE_FEATURE(kNormalizeSearchSuggestions,
 BASE_FEATURE(kOmniboxOnClobberFocusTypeOnContent,
              "OmniboxOnClobberFocusTypeOnContent",
              enabled_by_default_desktop_android);
-
-// If enabled, allows up to
-// `OmniboxFieldTrial::kRealboxMaxPreviousSearchRelatedSuggestions` zero-prefix
-// suggestions in the 2nd column of realbox.
-BASE_FEATURE(kRealboxSecondaryZeroSuggest,
-             "RealboxSecondaryZeroSuggest",
-             enabled_by_default_desktop_only);
 
 // If enabled, zero prefix suggestions will be stored using an in-memory caching
 // service, instead of using the existing prefs-based cache.
@@ -217,12 +183,19 @@ BASE_FEATURE(kZeroSuggestPrefetching,
 // Enables prefetching of the zero prefix suggestions for eligible users on SRP.
 BASE_FEATURE(kZeroSuggestPrefetchingOnSRP,
              "ZeroSuggestPrefetchingOnSRP",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             enabled_by_default_desktop_only);
 
 // Enables prefetching of the zero prefix suggestions for eligible users on the
 // Web (i.e. non-NTP and non-SRP URLs).
 BASE_FEATURE(kZeroSuggestPrefetchingOnWeb,
              "ZeroSuggestPrefetchingOnWeb",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+// Enables storing successful query/match in the shortcut database.
+// Desktop will populate db regardless of this feature.
+// Android will not populate db regardless of this feature.
+BASE_FEATURE(kOmniboxPopulateShortcutsDatabase,
+             "OmniboxPopulateShortcutsDatabase",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Features to provide head and tail non personalized search suggestion from
@@ -258,7 +231,7 @@ BASE_FEATURE(kDocumentProvider,
 // suggestions are available to all clients who meet the other requirements.
 BASE_FEATURE(kDocumentProviderNoSetting,
              "OmniboxDocumentProviderNoSetting",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // If enabled, the requirement to be in an active Sync state is removed and
 // Drive suggestions are available to all clients who meet the other
@@ -274,6 +247,12 @@ BASE_FEATURE(kDomainSuggestions,
              "OmniboxDomainSuggestions",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Feature to determine if omnibox should use a pref based data collection
+// consent helper instead of a history sync based one.
+BASE_FEATURE(kPrefBasedDataCollectionConsentHelper,
+             "PrefBasedDataCollectionConsentHelper",
+             enabled_by_default_desktop_ios);
+
 // Allows Omnibox to dynamically adjust number of offered suggestions to fill in
 // the space between Omnibox and the soft keyboard. The number of suggestions
 // shown will be no less than minimum for the platform (eg. 5 for Android).
@@ -287,11 +266,10 @@ BASE_FEATURE(kClipboardSuggestionContentHidden,
              "ClipboardSuggestionContentHidden",
              enabled_by_default_android_only);
 
-// If enabled, clipboard suggestion for distinct clip data will not show after
-// first use.
-BASE_FEATURE(kSuppressClipboardSuggestionAfterFirstUsed,
-             "SuppressClipboardSuggestionAfterFirstUsed",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+// If enabled, company entity icons may be replaced by a search loupe.
+BASE_FEATURE(kCompanyEntityIconAdjustment,
+             "CompanyEntityIconAdjustment",
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // If enabled, uses the Chrome Refresh 2023 design's shape for action chips in
 // the omnibox suggestion popup.
@@ -313,19 +291,13 @@ BASE_FEATURE(kSuggestionAnswersColorReverse,
              "SuggestionAnswersColorReverse",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-// If enabled, frequently visited sites are presented in form of a single row
-// with a carousel of tiles, instead of one URL per row.
-BASE_FEATURE(kMostVisitedTiles,
-             "OmniboxMostVisitedTiles",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // If enabled, makes Most Visited Tiles a Horizontal render group.
 // Horizontal render group decomposes aggregate suggestions (such as old Most
 // Visited Tiles), expecting individual AutocompleteMatch entry for every
 // element in the carousel.
 BASE_FEATURE(kMostVisitedTilesHorizontalRenderGroup,
              "OmniboxMostVisitedTilesHorizontalRenderGroup",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             enabled_by_default_android_only);
 
 // If enabled, expands autocompletion to possibly (depending on params) include
 // suggestion titles and non-prefixes as opposed to be restricted to URL
@@ -340,14 +312,9 @@ BASE_FEATURE(kNtpRealboxPedals,
              "NtpRealboxPedals",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-// Feature used to enable the simplified actions UI design.
-BASE_FEATURE(kOmniboxActionsUISimplification,
-             "OmniboxActionsUISimplification",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
-// Feature used to enable URL suggestions for inputs that may contain typos.
-BASE_FEATURE(kOmniboxFuzzyUrlSuggestions,
-             "OmniboxFuzzyUrlSuggestions",
+// Feature used to enable the new keyword mode behavior.
+BASE_FEATURE(kOmniboxKeywordModeRefresh,
+             "OmniboxKeywordModeRefresh",
              enabled_by_default_desktop_only);
 
 // Feature used to synchronize the toolbar's and status bar's color.
@@ -355,22 +322,22 @@ BASE_FEATURE(kOmniboxMatchToolbarAndStatusBarColor,
              "OmniboxMatchToolbarAndStatusBarColor",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Feature used to add most visited tiles to the suggestions when the user is on
-// a search result page that does not do search term replacement.
-BASE_FEATURE(kOmniboxMostVisitedTilesOnSrp,
-             "OmniboxMostVisitedTilesOnSrp",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 // If enabled, allows Search Ready Omnibox to populate original search query
 // when the user presses the <edit> button on EditUrl suggestion.
 BASE_FEATURE(kSearchReadyOmniboxAllowQueryEdit,
              "SearchReadyOmniboxAllowQueryEdit",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
+// If enabled, appends Query Tiles to the Omnibox ZPS on New Tab Page.
+BASE_FEATURE(kQueryTilesInZPSOnNTP,
+             "OmniboxQueryTilesInZPSOnNTP",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 // If enabled, adds a grey square background to search icons, and makes answer
 // icon square instead of round.
-// TODO(manukh): Clean up feature code 9/12 when m117 reaches stable; we're
-//   launching the rest of CR23 in m117.
+// TODO(manukh): Partially launched; still experimenting with
+//  `OmniboxSquareSuggestIconWeather`. Clean up when that param launches and
+//  reaches stable.
 BASE_FEATURE(kSquareSuggestIcons,
              "OmniboxSquareIcons",
              base::FEATURE_ENABLED_BY_DEFAULT);
@@ -460,16 +427,10 @@ BASE_FEATURE(kOmniboxSteadyStateTextColor,
              "OmniboxSteadyStateTextColor",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// If enabled, switching tabs will not restore the omnibox state.
-// TODO(manukh): Should also blur the omnibox on tab switch.
-BASE_FEATURE(kDiscardTemporaryInputOnTabSwitch,
-             "OmniboxDiscardTemporaryInputOnTabSwitch",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 // Enable new Omnibox & Suggestions visual style.
 BASE_FEATURE(kOmniboxModernizeVisualUpdate,
              "OmniboxModernizeVisualUpdate",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Android only flag that controls whether the new security indicator should be
 // used, on non-Android platforms this is controlled through the
@@ -496,39 +457,6 @@ BASE_FEATURE(kDefaultTypedNavigationsToHttps,
 // - Otherwise, a new navigation to the the fallback HTTP URL is started.
 const char kDefaultTypedNavigationsToHttpsTimeoutParam[] = "timeout";
 
-// If enabled, Omnibox reports the Assisted Query Stats in the aqs= param in the
-// Search Results Page URL.
-BASE_FEATURE(kReportAssistedQueryStats,
-             "OmniboxReportAssistedQueryStats",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
-// If enabled, `OmniboxEditModel` uses a new version of `current_match_` that
-// should be valid, and therefore usable, more often. The previous
-// `current_match_` is almost always invalid and therefore the model often
-// resorts to recalculating it each time its needed.
-BASE_FEATURE(kRedoCurrentMatch,
-             "OmniboxRedoCurrentMatch",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
-// If enabled, when reverting `OmniboxView`, it will first revert the
-// `OmniboxEditModel` before closing the popup. This should be more performant;
-// see comments in `OmniboxView::RevertAll()`.
-BASE_FEATURE(kRevertModelBeforeClosingPopup,
-             "OmniboxRevertModelBeforeClosingPopup",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
-// If enabled, an existing `AutocompleteClient` will be used instead of
-// generating a new one in `OmniboxEditModel`.
-BASE_FEATURE(kUseExistingAutocompleteClient,
-             "OmniboxUseExistingAutocompleteClient",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
-// If enabled, Omnibox reports the Searchbox Stats in the gs_lcrp= param in the
-// Search Results Page URL.
-BASE_FEATURE(kReportSearchboxStats,
-             "OmniboxReportSearchboxStats",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // If enabled, logs Omnibox URL scoring signals to OmniboxEventProto for
 // training the ML scoring models.
 BASE_FEATURE(kLogUrlScoringSignals,
@@ -537,12 +465,19 @@ BASE_FEATURE(kLogUrlScoringSignals,
 
 // If enabled, runs the ML scoring model to assign new relevance scores to the
 // URL suggestions and reranks them.
-BASE_FEATURE(kMlUrlScoring, "MlUrlScoring", base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kMlUrlScoring, "MlUrlScoring", enabled_by_default_desktop_only);
 
-// If enabled, creates Omnibox autocompete URL scoring model.
+// If enabled, specifies how URL model scores integrate with search traditional
+// scores.
+BASE_FEATURE(kMlUrlSearchBlending,
+             "MlUrlSearchBlending",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+// If enabled, creates Omnibox autocomplete URL scoring model. Prerequisite for
+// `kMlUrlScoring` & `kMlUrlSearchBlending`.
 BASE_FEATURE(kUrlScoringModel,
              "UrlScoringModel",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             enabled_by_default_desktop_only);
 
 // If enabled, appends additional Trending and Recent Search Related Queries to
 // the suggestion list on the NTP and SRP.
@@ -588,4 +523,40 @@ bool IsOmniboxCr23CustomizeGuardedFeatureEnabled(const base::Feature& feature) {
 BASE_FEATURE(kOmniboxTouchDownTriggerForPrefetch,
              "OmniboxTouchDownTriggerForPrefetch",
              base::FEATURE_DISABLED_BY_DEFAULT);
+
+// If enabled, site search engines defined by policy are saved into prefs and
+// committed to the keyword database, so that they can be accessed from the
+// Omnibox and the Settings page.
+BASE_FEATURE(kSiteSearchSettingsPolicy,
+             "SiteSearchSettingsPolicy",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+// If enabled, shows the policy indicator for Default Search Provider set by
+// Enterprise policy chrome://settings.
+BASE_FEATURE(kPolicyIndicationForManagedDefaultSearch,
+             "PolicyIndicationForManagedDefaultSearch",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
+// Enables additional site search providers for the Site search Starter Pack.
+BASE_FEATURE(kStarterPackExpansion,
+             "StarterPackExpansion",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+// When enabled, prefer to use the new recovery module to recover the
+// `ShortcutsDatabase` database. See https://crbug.com/1385500 for details.
+// This is a kill switch and is not intended to be used in a field trial.
+BASE_FEATURE(kShortcutsDatabaseUseBuiltInRecoveryIfSupported,
+             "ShortcutsDatabaseUseBuiltInRecoveryIfSupported",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
+// If enabled, |SearchProvider| will not function in Zero Suggest.
+BASE_FEATURE(kAblateSearchProviderWarmup,
+             "AblateSearchProviderWarmup",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+// Enables storing successful query/match in the shortcut database On Android.
+BASE_FEATURE(kOmniboxShortcutsAndroid,
+             "OmniboxShortcutsAndroid",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 }  // namespace omnibox

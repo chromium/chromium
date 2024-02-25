@@ -345,48 +345,6 @@ TEST_F(CSSSupportsParserTest, ConsumeSupportsSelectorFn) {
             ConsumeSupportsSelectorFn("selector(:host(:has(.a)))"));
   EXPECT_EQ(Result::kUnsupported,
             ConsumeSupportsSelectorFn("selector(::part(foo):has(.a)))"));
-
-  {
-    ScopedCSSPseudoHasNonForgivingParsingForTest scoped_feature(false);
-
-    EXPECT_EQ(Result::kSupported,
-              ConsumeSupportsSelectorFn("selector(:has(.a))"));
-    EXPECT_EQ(Result::kSupported,
-              ConsumeSupportsSelectorFn("selector(:is(:has(.a)))"));
-    EXPECT_EQ(Result::kSupported,
-              ConsumeSupportsSelectorFn("selector(:has(:is(.a)))"));
-
-    EXPECT_EQ(Result::kUnsupported,
-              ConsumeSupportsSelectorFn("selector(:is(:has(:foo)))"));
-    EXPECT_EQ(Result::kUnsupported,
-              ConsumeSupportsSelectorFn("selector(:where(:has(:foo)))"));
-    EXPECT_EQ(Result::kUnsupported,
-              ConsumeSupportsSelectorFn("selector(:has(:foo))"));
-    EXPECT_EQ(Result::kUnsupported,
-              ConsumeSupportsSelectorFn("selector(:has(:is(:foo)))"));
-    EXPECT_EQ(Result::kUnsupported,
-              ConsumeSupportsSelectorFn("selector(:has(.a, :is(:foo)))"));
-    EXPECT_EQ(Result::kUnsupported,
-              ConsumeSupportsSelectorFn("selector(:has(.a, .b, :is(:foo)))"));
-    EXPECT_EQ(Result::kUnsupported,
-              ConsumeSupportsSelectorFn("selector(:has(.a, :foo))"));
-    EXPECT_EQ(Result::kUnsupported,
-              ConsumeSupportsSelectorFn("selector(:has(.a, .b, :foo))"));
-    EXPECT_EQ(Result::kUnsupported,
-              ConsumeSupportsSelectorFn("selector(:has(:has(.a)))"));
-    EXPECT_EQ(Result::kUnsupported,
-              ConsumeSupportsSelectorFn("selector(:has(:is(:has(.a))))"));
-    EXPECT_EQ(Result::kUnsupported,
-              ConsumeSupportsSelectorFn("selector(:has(:is(:has(.a), .b)))"));
-    EXPECT_EQ(Result::kUnsupported,
-              ConsumeSupportsSelectorFn("selector(:has(.a, :has(.b)))"));
-    EXPECT_EQ(Result::kUnsupported,
-              ConsumeSupportsSelectorFn("selector(:has(.a, .b, :has(.c)))"));
-    EXPECT_EQ(Result::kUnsupported,
-              ConsumeSupportsSelectorFn("selector(:host(:has(.a)))"));
-    EXPECT_EQ(Result::kUnsupported,
-              ConsumeSupportsSelectorFn("selector(::part(foo):has(.a)))"));
-  }
 }
 
 TEST_F(CSSSupportsParserTest, ConsumeSupportsDecl) {

@@ -28,7 +28,7 @@
 
   #emoji-button:focus,
   #emoji-button:active {
-    outline-color: var(--cros-focus-ring-color);
+    outline-color: var(--emoji-picker-focus-ring-color);
     outline-style: solid;
     outline-width: 2px;
   }
@@ -77,9 +77,8 @@
   }
 
   #tooltip::part(tooltip) {
-    box-shadow: var(--cr-elevation-1);
-    font-family: 'Roboto', sans-serif;
-    font-size: 12px;
+    box-shadow: var(--cros-elevation-1-shadow);
+    font: var(--cros-annotation-1-font);
     margin: 4px;
     padding: 4px 8px 4px 8px;
     white-space: nowrap;

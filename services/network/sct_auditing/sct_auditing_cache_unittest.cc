@@ -50,7 +50,7 @@ class SCTAuditingCacheTest : public testing::Test {
  protected:
   // Initializes the configuration for the SCTAuditingCache to defaults.
   void InitSCTAuditing(SCTAuditingCache* cache, double sampling_rate = 1.0) {
-    mojom::SCTAuditingConfigurationPtr configuration(absl::in_place);
+    mojom::SCTAuditingConfigurationPtr configuration(std::in_place);
     configuration->sampling_rate = sampling_rate;
     configuration->traffic_annotation =
         net::MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
@@ -314,7 +314,7 @@ TEST_F(SCTAuditingCacheTest, ReportSizeMetrics) {
   MakeTestSCTAndStatus(net::ct::SignedCertificateTimestamp::SCT_EMBEDDED,
                        "extensions", "signature", base::Time::Now(),
                        net::ct::SCT_STATUS_OK, &sct_list);
-  absl::optional<SCTAuditingCache::ReportEntry> entry =
+  std::optional<SCTAuditingCache::ReportEntry> entry =
       cache.MaybeGenerateReportEntry(host_port_pair, chain_.get(), sct_list);
   ASSERT_TRUE(entry);
 

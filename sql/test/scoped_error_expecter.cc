@@ -30,6 +30,10 @@ void ScopedErrorExpecter::ExpectError(int err) {
   errors_expected_.insert(err);
 }
 
+void ScopedErrorExpecter::ExpectError(SqliteResultCode err) {
+  ExpectError(static_cast<int>(err));
+}
+
 bool ScopedErrorExpecter::SawExpectedErrors() {
   checked_ = true;
   return errors_expected_ == errors_seen_;

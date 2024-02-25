@@ -34,9 +34,18 @@ SpellCheckHostChromeImpl::Binder& GetSpellCheckHostBinderOverride() {
 }  // namespace
 
 SpellCheckHostChromeImpl::SpellCheckHostChromeImpl(int render_process_id)
-    : render_process_id_(render_process_id) {}
+    :
+#if BUILDFLAG(USE_BROWSER_SPELLCHECKER)
+      document_tag_(spellcheck_platform::GetDocumentTag()),
+#endif
+      render_process_id_(render_process_id) {
+}
 
-SpellCheckHostChromeImpl::~SpellCheckHostChromeImpl() = default;
+SpellCheckHostChromeImpl::~SpellCheckHostChromeImpl() {
+#if BUILDFLAG(USE_BROWSER_SPELLCHECKER)
+  spellcheck_platform::CloseDocumentWithTag(document_tag_);
+#endif
+}
 
 // static
 void SpellCheckHostChromeImpl::Create(
@@ -56,27 +65,6 @@ void SpellCheckHostChromeImpl::Create(
 // static
 void SpellCheckHostChromeImpl::OverrideBinderForTesting(Binder binder) {
   GetSpellCheckHostBinderOverride() = std::move(binder);
-}
-
-void SpellCheckHostChromeImpl::RequestDictionary() {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-
-  // The renderer has requested that we initialize its spellchecker. This
-  // generally should only be called once per session, as after the first
-  // call, future renderers will be passed the initialization information
-  // on startup (or when the dictionary changes in some way).
-  SpellcheckService* spellcheck = GetSpellcheckService();
-  if (!spellcheck)
-    return;  // Teardown.
-
-  // The spellchecker initialization already started and finished; just
-  // send it to the renderer.
-  auto* host = content::RenderProcessHost::FromID(render_process_id_);
-  if (host)
-    spellcheck->InitForRenderer(host);
-
-  // TODO(rlp): Ensure that we do not initialize the hunspell dictionary
-  // more than once if we get requests from different renderers.
 }
 
 void SpellCheckHostChromeImpl::NotifyChecked(const std::u16string& word,
@@ -155,9 +143,8 @@ std::vector<SpellCheckResult> SpellCheckHostChromeImpl::FilterCustomWordResults(
 
 #if BUILDFLAG(USE_BROWSER_SPELLCHECKER) && BUILDFLAG(ENABLE_SPELLING_SERVICE)
 void SpellCheckHostChromeImpl::CheckSpelling(const std::u16string& word,
-                                             int route_id,
                                              CheckSpellingCallback callback) {
-  bool correct = spellcheck_platform::CheckSpelling(word, route_id);
+  bool correct = spellcheck_platform::CheckSpelling(word, document_tag_);
   std::move(callback).Run(correct);
 }
 
@@ -171,7 +158,6 @@ void SpellCheckHostChromeImpl::FillSuggestionList(
 
 void SpellCheckHostChromeImpl::RequestTextCheck(
     const std::u16string& text,
-    int route_id,
     RequestTextCheckCallback callback) {
   DCHECK(!text.empty());
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
@@ -190,7 +176,7 @@ void SpellCheckHostChromeImpl::RequestTextCheck(
   // OK to store unretained |this| in a |SpellingRequest| owned by |this|.
   requests_.insert(std::make_unique<SpellingRequest>(
       spellcheck->platform_spell_checker(), &client_, text, render_process_id_,
-      route_id, std::move(callback),
+      document_tag_, std::move(callback),
       base::BindOnce(&SpellCheckHostChromeImpl::OnRequestFinished,
                      base::Unretained(this))));
 }
@@ -272,22 +258,6 @@ void SpellCheckHostChromeImpl::CombineResultsForTesting(
 }
 #endif  //  BUILDFLAG(USE_BROWSER_SPELLCHECKER) &&
         //  BUILDFLAG(ENABLE_SPELLING_SERVICE)
-
-#if BUILDFLAG(IS_MAC)
-int SpellCheckHostChromeImpl::ToDocumentTag(int route_id) {
-  if (!tag_map_.count(route_id))
-    tag_map_[route_id] = spellcheck_platform::GetDocumentTag();
-  return tag_map_[route_id];
-}
-
-// TODO(groby): We are currently not notified of retired tags. We need
-// to track destruction of RenderViewHosts on the browser process side
-// to update our mappings when a document goes away.
-void SpellCheckHostChromeImpl::RetireDocumentTag(int route_id) {
-  spellcheck_platform::CloseDocumentWithTag(ToDocumentTag(route_id));
-  tag_map_.erase(route_id);
-}
-#endif  // BUILDFLAG(IS_MAC)
 
 SpellcheckService* SpellCheckHostChromeImpl::GetSpellcheckService() const {
   auto* host = content::RenderProcessHost::FromID(render_process_id_);

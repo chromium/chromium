@@ -133,7 +133,7 @@ class ASH_EXPORT ImeControllerImpl : public ImeController {
       const ui::Accelerator& accelerator) const;
 
   // Client interface back to IME code in chrome.
-  raw_ptr<ImeControllerClient, ExperimentalAsh> client_ = nullptr;
+  raw_ptr<ImeControllerClient> client_ = nullptr;
 
   // Copy of the current IME so we can return it by reference.
   ImeInfo current_ime_;

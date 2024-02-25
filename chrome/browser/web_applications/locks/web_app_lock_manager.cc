@@ -25,10 +25,10 @@
 #include "chrome/browser/web_applications/locks/shared_web_contents_lock.h"
 #include "chrome/browser/web_applications/locks/shared_web_contents_with_app_lock.h"
 #include "chrome/browser/web_applications/web_app_command_manager.h"
-#include "chrome/browser/web_applications/web_app_id.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "components/services/storage/indexed_db/locks/partitioned_lock_id.h"
 #include "components/services/storage/indexed_db/locks/partitioned_lock_manager.h"
+#include "components/webapps/common/web_app_id.h"
 
 namespace web_app {
 
@@ -75,10 +75,10 @@ GetSharedWebContentsLock() {
 }
 
 std::vector<content::PartitionedLockManager::PartitionedLockRequest>
-GetExclusiveAppIdLocks(const base::flat_set<AppId>& app_ids) {
+GetExclusiveAppIdLocks(const base::flat_set<webapps::AppId>& app_ids) {
   std::vector<content::PartitionedLockManager::PartitionedLockRequest>
       lock_requests;
-  for (const AppId& app_id : app_ids) {
+  for (const webapps::AppId& app_id : app_ids) {
     lock_requests.emplace_back(
         content::PartitionedLockId(
             {static_cast<int>(LockPartition::kApp), app_id}),
@@ -243,7 +243,7 @@ void WebAppLockManager::AcquireLock(
 std::unique_ptr<SharedWebContentsWithAppLockDescription>
 WebAppLockManager::UpgradeAndAcquireLock(
     std::unique_ptr<SharedWebContentsLock> lock,
-    const base::flat_set<AppId>& app_ids,
+    const base::flat_set<webapps::AppId>& app_ids,
     base::OnceCallback<void(std::unique_ptr<SharedWebContentsWithAppLock>)>
         on_lock_acquired,
     const base::Location& location) {
@@ -272,7 +272,7 @@ WebAppLockManager::UpgradeAndAcquireLock(
 
 std::unique_ptr<AppLockDescription> WebAppLockManager::UpgradeAndAcquireLock(
     std::unique_ptr<NoopLock> lock,
-    const base::flat_set<AppId>& app_ids,
+    const base::flat_set<webapps::AppId>& app_ids,
     base::OnceCallback<void(std::unique_ptr<AppLock>)> on_lock_acquired,
     const base::Location& location) {
   std::unique_ptr<AppLockDescription> result_lock_description =

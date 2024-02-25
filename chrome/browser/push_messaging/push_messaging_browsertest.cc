@@ -22,7 +22,7 @@
 #include "build/build_config.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/browsing_data/chrome_browsing_data_remover_constants.h"
-#include "chrome/browser/chrome_notification_types.h"
+#include "chrome/browser/content_settings/cookie_settings_factory.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/gcm/gcm_profile_service_factory.h"
 #include "chrome/browser/gcm/instance_id/instance_id_profile_service_factory.h"
@@ -45,6 +45,7 @@
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/browsing_data/content/browsing_data_helper.h"
+#include "components/content_settings/core/browser/cookie_settings.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/content_settings/core/common/content_settings.h"
 #include "components/content_settings/core/common/content_settings_types.h"
@@ -142,7 +143,7 @@ void LegacyRegisterCallback(base::OnceClosure done_callback,
 void DidRegister(base::OnceClosure done_callback,
                  const std::string& registration_id,
                  const GURL& endpoint,
-                 const absl::optional<base::Time>& expiration_time,
+                 const std::optional<base::Time>& expiration_time,
                  const std::vector<uint8_t>& p256dh,
                  const std::vector<uint8_t>& auth,
                  blink::mojom::PushRegistrationStatus status) {
@@ -1382,9 +1383,8 @@ IN_PROC_BROWSER_TEST_F(PushMessagingBrowserTest, PushEventWithoutPermission) {
       1);
 }
 
-// https://crbug.com/458160 test is flaky on all platforms; but mostly linux.
 IN_PROC_BROWSER_TEST_F(PushMessagingBrowserTest,
-                       DISABLED_PushEventEnforcesUserVisibleNotification) {
+                       PushEventEnforcesUserVisibleNotification) {
   ASSERT_NO_FATAL_FAILURE(SubscribeSuccessfully());
   PushMessagingAppIdentifier app_identifier =
       GetAppIdentifierForServiceWorkerRegistration(0LL);
@@ -1463,9 +1463,16 @@ IN_PROC_BROWSER_TEST_F(PushMessagingBrowserTest,
 
   // The notification will be automatically dismissed when the developer shows
   // a new notification themselves at a later point in time.
+  base::RunLoop notification_closed_run_loop;
+  notification_tester_->SetNotificationClosedClosure(
+      notification_closed_run_loop.QuitClosure());
+
   message.raw_data = "shownotification";
   SendMessageAndWaitUntilHandled(app_identifier, message);
   EXPECT_EQ("shownotification", RunScript("resultQueue.pop()", web_contents));
+
+  // Wait for the default notification to dismiss.
+  notification_closed_run_loop.Run();
 
   {
     std::vector<message_center::Notification> notifications =
@@ -1588,7 +1595,7 @@ class PushMessagingBrowserTestWithAbusiveOriginPermissionRevocation
 
  private:
   base::test::ScopedFeatureList feature_list_;
-  absl::optional<testing::ScopedCrowdDenyPreloadDataOverride>
+  std::optional<testing::ScopedCrowdDenyPreloadDataOverride>
       testing_preload_data_;
   scoped_refptr<CrowdDenyFakeSafeBrowsingDatabaseManager>
       fake_database_manager_;
@@ -1865,6 +1872,8 @@ IN_PROC_BROWSER_TEST_P(PushMessagingPartitionedBrowserTest, CrossOriginFrame) {
   const GURL kEmbedderURL = https_server()->GetURL(
       "embedder.com", "/push_messaging/framed_test.html");
   const GURL kRequesterURL = https_server()->GetURL("requester.com", "/");
+  CookieSettingsFactory::GetForProfile(browser()->profile())
+      ->SetCookieSetting(kRequesterURL, CONTENT_SETTING_ALLOW);
 
   ASSERT_TRUE(ui_test_utils::NavigateToURL(GetBrowser(), kEmbedderURL));
 
@@ -2747,7 +2756,7 @@ bool PushSubscriptionWithExpirationTimeTest::IsExpirationTimeValid(
   int64_t output;
   if (!base::StringToInt64(expiration_time, &output))
     return false;
-  return base::Time::Now().ToJsTimeIgnoringNull() < output;
+  return base::Time::Now().InMillisecondsFSinceUnixEpochIgnoringNull() < output;
 }
 
 IN_PROC_BROWSER_TEST_F(PushSubscriptionWithExpirationTimeTest,

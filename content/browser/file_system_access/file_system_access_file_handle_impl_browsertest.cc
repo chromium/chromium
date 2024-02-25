@@ -2,12 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/containers/contains.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/test/scoped_feature_list.h"
 #include "content/browser/file_system_access/features.h"
 #include "content/public/common/content_switches.h"
 #include "content/public/test/browser_test.h"
+#include "content/public/test/browser_test_utils.h"
 #include "content/public/test/content_browser_test.h"
 #include "content/public/test/content_browser_test_utils.h"
 #include "content/public/test/file_system_chooser_test_helpers.h"
@@ -91,8 +93,7 @@ IN_PROC_BROWSER_TEST_F(FileSystemAccessFileHandleImplBrowserTest,
              "(async () => {"
              "const sandboxRoot = await navigator.storage.getDirectory();"
              "return await self.localFile.move(sandboxRoot); })()");
-  EXPECT_TRUE(result.error.find("can not be modified in this way") !=
-              std::string::npos)
+  EXPECT_TRUE(base::Contains(result.error, "can not be modified in this way"))
       << result.error;
 }
 
@@ -111,33 +112,17 @@ IN_PROC_BROWSER_TEST_F(FileSystemAccessFileHandleImplBrowserTest,
              "await writable.write('move me to the local file system');"
              "await writable.close();"
              "return await sandboxFile.move(localDir); })()");
-  EXPECT_TRUE(result.error.find("can not be modified in this way") !=
-              std::string::npos)
+  EXPECT_TRUE(base::Contains(result.error, "can not be modified in this way"))
       << result.error;
 }
 
-class FileSystemAccessFileHandleMoveLocalBrowserTest
-    : public FileSystemAccessFileHandleImplBrowserTest {
- public:
-  FileSystemAccessFileHandleMoveLocalBrowserTest() {
-    scoped_feature_list_.InitAndDisableFeature(
-        features::kFileSystemAccessMoveLocalFiles);
-  }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
-};
-
-IN_PROC_BROWSER_TEST_F(FileSystemAccessFileHandleMoveLocalBrowserTest,
-                       RenameLocal) {
+IN_PROC_BROWSER_TEST_F(FileSystemAccessFileHandleImplBrowserTest, RenameLocal) {
   std::string file_contents = "move me";
   CreateTestFileInDirectory(temp_dir_.GetPath(), file_contents);
 
-  auto result = EvalJs(shell(),
-                       "(async () => {"
-                       "return await self.localFile.move('renamed.txt'); })()");
-  EXPECT_TRUE(result.error.find("not support") != std::string::npos)
-      << result.error;
+  EXPECT_TRUE(ExecJs(shell(),
+                     "(async () => {"
+                     "return await self.localFile.move('renamed.txt'); })()"));
 }
 
 class FileSystemAccessFileHandleGetUniqueIdBrowserTest

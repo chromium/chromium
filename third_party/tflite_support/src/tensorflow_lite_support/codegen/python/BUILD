@@ -1,7 +1,7 @@
+# Placeholder: load py_binary
 load("@org_tensorflow//tensorflow:tensorflow.bzl", "pybind_extension")
 
 package(
-    default_applicable_licenses = ["//tensorflow_lite_support:license"],
     default_visibility = [
         "//visibility:public",
     ],
@@ -13,8 +13,12 @@ pybind_extension(
     srcs = [
         "codegen_lib.cc",
     ],
+    enable_stub_generation = True,
     features = ["-use_header_modules"],
     module_name = "_pywrap_codegen",
+    pytype_srcs = [
+        "_pywrap_codegen.pyi",
+    ],
     deps = [
         "//tensorflow_lite_support/codegen:android_java_generator",
         "//tensorflow_lite_support/codegen:code_generator",

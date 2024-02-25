@@ -10,7 +10,7 @@
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
 #include "base/memory/ref_counted.h"
-#include "base/strings/stringprintf.h"
+#include "base/strings/strcat_win.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
@@ -43,13 +43,13 @@ constexpr wchar_t kPrinters[] = L"Printers";
 // of type |shell_extension_type| that apply to |shell_object_type|.
 std::wstring GetShellExtensionTypePath(const wchar_t* shell_extension_type,
                                        const wchar_t* shell_object_type) {
-  return base::StringPrintf(L"%ls\\shellex\\%ls", shell_object_type,
-                            shell_extension_type);
+  return base::StrCat(
+      {shell_object_type, L"\\shellex\\", shell_extension_type});
 }
 
 // Returns the path to the DLL for an InProcServer32 registration.
 base::FilePath GetInProcServerPath(const wchar_t* guid) {
-  std::wstring key = base::StringPrintf(kClassIdRegistryKeyFormat, guid);
+  const std::wstring key = GuidToClsid(guid);
 
   base::win::RegKey clsid;
   if (clsid.Open(HKEY_CLASSES_ROOT, key.c_str(), KEY_QUERY_VALUE) !=

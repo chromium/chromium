@@ -1,0 +1,23 @@
+// Copyright 2023 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module device.mojom;
+
+import "device/vr/public/mojom/xr_session.mojom";
+
+// XRDeviceId is used in metrics, so don't reorder or reuse.
+// When adding values here be sure to add a corresponding entry to the enum in
+// tools/metrics/histograms/metadata/xr/enums.xml as well.
+enum XRDeviceId {
+  WEB_TEST_DEVICE_ID = 0, // Fake device used by web_tests.
+  FAKE_DEVICE_ID = 1, // Fake device used in unit tests.
+  ORIENTATION_DEVICE_ID = 2,
+  // GVR_DEVICE_ID = 3,
+  // OPENVR_DEVICE_ID = 4,
+  // OCULUS_DEVICE_ID = 5,
+  // WINDOWS_MIXED_REALITY_ID = 6,
+  [EnableIf=enable_arcore] ARCORE_DEVICE_ID = 7,
+  [EnableIf=enable_openxr] OPENXR_DEVICE_ID = 8,
+  [EnableIf=enable_cardboard] CARDBOARD_DEVICE_ID = 9,
+};

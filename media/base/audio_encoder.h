@@ -6,6 +6,7 @@
 #define MEDIA_BASE_AUDIO_ENCODER_H_
 
 #include <memory>
+#include <optional>
 #include <vector>
 
 #include "base/functional/callback.h"
@@ -17,7 +18,6 @@
 #include "media/base/encoder_status.h"
 #include "media/base/media_export.h"
 #include "media/base/timestamp_constants.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace media {
 
@@ -83,16 +83,16 @@ class MEDIA_EXPORT AudioEncoder {
 
     AudioCodec codec;
 
-    absl::optional<int> bitrate;
+    std::optional<int> bitrate;
 
     int channels;
 
     int sample_rate;
 
-    absl::optional<BitrateMode> bitrate_mode;
+    std::optional<BitrateMode> bitrate_mode;
 
-    absl::optional<OpusOptions> opus;
-    absl::optional<AacOptions> aac;
+    std::optional<OpusOptions> opus;
+    std::optional<AacOptions> aac;
   };
 
   // A sequence of codec specific bytes, commonly known as extradata.
@@ -102,7 +102,7 @@ class MEDIA_EXPORT AudioEncoder {
   // invoked on the same sequence on which EncodeAudio() is called.
   using OutputCB =
       base::RepeatingCallback<void(EncodedAudioBuffer output,
-                                   absl::optional<CodecDescription>)>;
+                                   std::optional<CodecDescription>)>;
 
   // Signature of the callback to report errors.
   using EncoderStatusCB = base::OnceCallback<void(EncoderStatus error)>;

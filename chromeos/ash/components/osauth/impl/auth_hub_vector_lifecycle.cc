@@ -4,6 +4,8 @@
 
 #include "chromeos/ash/components/osauth/impl/auth_hub_vector_lifecycle.h"
 
+#include <optional>
+
 #include "base/debug/dump_without_crashing.h"
 #include "base/functional/callback.h"
 #include "base/logging.h"
@@ -14,7 +16,6 @@
 #include "chromeos/ash/components/osauth/public/auth_factor_engine_factory.h"
 #include "chromeos/ash/components/osauth/public/auth_parts.h"
 #include "chromeos/ash/components/osauth/public/string_utils.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ash {
 
@@ -81,12 +82,12 @@ void AuthHubVectorLifecycle::CancelAttempt() {
       LOG(WARNING) << "Request to cancel attempt without actual attempt";
       break;
     case Stage::kStarted:
-      target_attempt_ = absl::nullopt;
+      target_attempt_ = std::nullopt;
       FinishAttempt();
       break;
     case Stage::kStartingAttempt:
     case Stage::kFinishingAttempt:
-      target_attempt_ = absl::nullopt;
+      target_attempt_ = std::nullopt;
       break;
   }
 }
@@ -144,7 +145,7 @@ void AuthHubVectorLifecycle::ProceedIfAllFactorsStarted() {
   stage_ = Stage::kStarted;
   if (initializing_for_ != target_attempt_) {
     // Not notifying owner, just restart for new target.
-    initializing_for_ = absl::nullopt;
+    initializing_for_ = std::nullopt;
     FinishAttempt();
     return;
   }
@@ -237,7 +238,7 @@ void AuthHubVectorLifecycle::ProceedIfAllFactorsFinished() {
     // we need to notify about finish.
     owner_->OnAttemptFinished(*current_attempt_);
   }
-  current_attempt_ = absl::nullopt;
+  current_attempt_ = std::nullopt;
 
   if (target_attempt_.has_value()) {
     StartForTargetAttempt();

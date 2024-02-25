@@ -63,11 +63,7 @@ static jboolean JNI_VariationsSeedLoader_ParseAndSaveSeedProto(
 
   int native_fd = open(native_seed_path.c_str(), O_RDONLY);
   if (native_fd == -1) {
-    // The value of errno should be preserved in case the current `LOG(ERROR)`
-    // call overwrites the current errno.
-    int last_errno = errno;
-    LOG(ERROR) << "Failed to open file for reading. Errno: "
-               << base::NumberToString(last_errno);
+    PLOG(INFO) << "Failed to open file for reading.";
     return false;
   }
 
@@ -119,6 +115,11 @@ std::unique_ptr<AwVariationsSeed> TakeSeed() {
   std::unique_ptr<AwVariationsSeed> seed(g_seed);
   g_seed = nullptr;
   return seed;
+}
+
+void CacheSeedFreshness(long freshness) {
+  JNIEnv* env = jni_zero::AttachCurrentThread();
+  Java_VariationsSeedLoader_cacheSeedFreshness(env, freshness);
 }
 
 }  // namespace android_webview

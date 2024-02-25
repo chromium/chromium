@@ -8,19 +8,19 @@
 
 #import "base/apple/foundation_util.h"
 #import "base/metrics/user_metrics.h"
-#import "ios/chrome/browser/infobars/badge_state.h"
-#import "ios/chrome/browser/infobars/infobar_badge_tab_helper.h"
-#import "ios/chrome/browser/infobars/infobar_badge_tab_helper_delegate.h"
-#import "ios/chrome/browser/infobars/infobar_ios.h"
-#import "ios/chrome/browser/infobars/infobar_manager_impl.h"
-#import "ios/chrome/browser/infobars/infobar_metrics_recorder.h"
-#import "ios/chrome/browser/infobars/infobar_type.h"
-#import "ios/chrome/browser/infobars/overlays/default_infobar_overlay_request_factory.h"
-#import "ios/chrome/browser/infobars/overlays/infobar_overlay_request_inserter.h"
-#import "ios/chrome/browser/infobars/overlays/infobar_overlay_util.h"
-#import "ios/chrome/browser/overlays/public/overlay_presenter.h"
-#import "ios/chrome/browser/overlays/public/overlay_presenter_observer_bridge.h"
-#import "ios/chrome/browser/overlays/public/overlay_request_queue.h"
+#import "ios/chrome/browser/infobars/model/badge_state.h"
+#import "ios/chrome/browser/infobars/model/infobar_badge_tab_helper.h"
+#import "ios/chrome/browser/infobars/model/infobar_badge_tab_helper_delegate.h"
+#import "ios/chrome/browser/infobars/model/infobar_ios.h"
+#import "ios/chrome/browser/infobars/model/infobar_manager_impl.h"
+#import "ios/chrome/browser/infobars/model/infobar_metrics_recorder.h"
+#import "ios/chrome/browser/infobars/model/infobar_type.h"
+#import "ios/chrome/browser/infobars/model/overlays/default_infobar_overlay_request_factory.h"
+#import "ios/chrome/browser/infobars/model/overlays/infobar_overlay_request_inserter.h"
+#import "ios/chrome/browser/infobars/model/overlays/infobar_overlay_util.h"
+#import "ios/chrome/browser/overlays/model/public/overlay_presenter.h"
+#import "ios/chrome/browser/overlays/model/public/overlay_presenter_observer_bridge.h"
+#import "ios/chrome/browser/overlays/model/public/overlay_request_queue.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list_observer_bridge.h"
 #import "ios/chrome/browser/shared/public/commands/browser_coordinator_commands.h"
@@ -74,8 +74,7 @@ const char kInfobarOverflowBadgeShownUserAction[] =
 @property(nonatomic, strong, readonly) NSArray<id<BadgeItem>>* badges;
 
 // The correct badge type for permissions infobar.
-@property(nonatomic, assign, readonly)
-    BadgeType permissionsBadgeType API_AVAILABLE(ios(15.0));
+@property(nonatomic, assign, readonly) BadgeType permissionsBadgeType;
 
 @end
 
@@ -162,11 +161,9 @@ const char kInfobarOverflowBadgeShownUserAction[] =
         BadgeTypeForInfobarType(infobarTypeBadgeStatePair.first);
     // Update BadgeType for permissions to align with current permission states
     // of the web state.
-    if (@available(iOS 15.0, *)) {
-      if (infobarTypeBadgeStatePair.first ==
-          InfobarType::kInfobarTypePermissions) {
-        badgeType = self.permissionsBadgeType;
-      }
+    if (infobarTypeBadgeStatePair.first ==
+        InfobarType::kInfobarTypePermissions) {
+      badgeType = self.permissionsBadgeType;
     }
     BadgeTappableItem* item =
         [[BadgeTappableItem alloc] initWithBadgeType:badgeType];
@@ -288,6 +285,13 @@ const char kInfobarOverflowBadgeShownUserAction[] =
   [self updateConsumerReadStatus];
 }
 
+- (void)parcelTrackingBadgeButtonTapped:(id)sender {
+  BadgeButton* badgeButton = base::apple::ObjCCastStrict<BadgeButton>(sender);
+  DCHECK_EQ(badgeButton.badgeType, kBadgeTypeParcelTracking);
+
+  [self handleTappedBadgeButton:badgeButton];
+}
+
 - (void)showModalForBadgeType:(BadgeType)badgeType {
   [self addModalRequestForInfobarType:InfobarTypeForBadgeType(badgeType)];
 }
@@ -398,8 +402,7 @@ const char kInfobarOverflowBadgeShownUserAction[] =
 #pragma mark - CRWWebStateObserver
 
 - (void)webState:(web::WebState*)webState
-    didChangeStateForPermission:(web::Permission)permission
-    API_AVAILABLE(ios(15.0)) {
+    didChangeStateForPermission:(web::Permission)permission {
   DCHECK_EQ(webState, self.webState);
   [self updateBadgesShownForWebState:webState];
 }
@@ -461,12 +464,12 @@ const char kInfobarOverflowBadgeShownUserAction[] =
 // Returns the infobar in the active WebState's InfoBarManager with `type`.
 - (InfoBarIOS*)infobarWithType:(InfobarType)type {
   InfoBarManagerImpl* manager = InfoBarManagerImpl::FromWebState(self.webState);
-  for (size_t index = 0; index < manager->infobar_count(); ++index) {
-    InfoBarIOS* infobar = static_cast<InfoBarIOS*>(manager->infobar_at(index));
-    if (infobar->infobar_type() == type)
-      return infobar;
-  }
-  return nullptr;
+  const auto it = base::ranges::find(
+      manager->infobars(), type, [](const infobars::InfoBar* infobar) {
+        return static_cast<const InfoBarIOS*>(infobar)->infobar_type();
+      });
+  return it != manager->infobars().cend() ? static_cast<InfoBarIOS*>(*it)
+                                          : nullptr;
 }
 
 // Records Badge tap Histograms through the InfobarMetricsRecorder and then

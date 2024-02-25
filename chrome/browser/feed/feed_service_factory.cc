@@ -29,6 +29,7 @@
 #include "components/feed/core/v2/public/feed_service.h"
 #include "components/feed/feed_feature_list.h"
 #include "components/offline_pages/core/offline_page_feature.h"
+#include "components/search_engines/template_url_service.h"
 #include "components/version_info/version_info.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/storage_partition.h"
@@ -42,6 +43,10 @@
 
 namespace feed {
 const base::FilePath::CharType kFeedv2Folder[] = FILE_PATH_LITERAL("feedv2");
+#if BUILDFLAG(IS_ANDROID)
+const char kEeaCountryOnly[] = "eea_country_only";
+#endif
+
 namespace internal {
 const base::StringPiece GetFollowingFeedFollowCountGroupName(
     size_t follow_count) {
@@ -172,11 +177,13 @@ FeedServiceFactory::FeedServiceFactory()
   DependsOn(IdentityManagerFactory::GetInstance());
   DependsOn(HistoryServiceFactory::GetInstance());
   DependsOn(background_task::BackgroundTaskSchedulerFactory::GetInstance());
+  DependsOn(TemplateURLServiceFactory::GetInstance());
 }
 
 FeedServiceFactory::~FeedServiceFactory() = default;
 
-KeyedService* FeedServiceFactory::BuildServiceInstanceFor(
+std::unique_ptr<KeyedService>
+FeedServiceFactory::BuildServiceInstanceForBrowserContext(
     content::BrowserContext* context) const {
   // Currently feed service is only supported for kWebUiFeed on desktop.
   // TODO(jianli): Update all other places that depend on FeedServiceFactory
@@ -209,14 +216,24 @@ KeyedService* FeedServiceFactory::BuildServiceInstanceFor(
   feed::ChromeInfo chrome_info;
   chrome_info.version = base::Version({CHROME_VERSION});
   chrome_info.channel = chrome::GetChannel();
+  TemplateURLService* template_url_service =
+      TemplateURLServiceFactory::GetForProfile(profile);
 #if BUILDFLAG(IS_ANDROID)
   chrome_info.start_surface =
       base::FeatureList::IsEnabled(chrome::android::kStartSurfaceAndroid);
+  chrome_info.is_new_tab_search_engine_url_android_enabled =
+      base::FeatureList::IsEnabled(
+          chrome::android::kNewTabSearchEngineUrlAndroid) &&
+      (!base::GetFieldTrialParamByFeatureAsBool(
+           chrome::android::kNewTabSearchEngineUrlAndroid, kEeaCountryOnly,
+           false) ||
+       template_url_service->IsEeaChoiceCountry());
 #else
   chrome_info.start_surface = false;
+  chrome_info.is_new_tab_search_engine_url_android_enabled = false;
 #endif
 
-  return new FeedService(
+  return std::make_unique<FeedService>(
       std::make_unique<FeedServiceDelegateImpl>(),
 #if BUILDFLAG(IS_ANDROID)
       std::make_unique<RefreshTaskSchedulerImpl>(
@@ -236,8 +253,7 @@ KeyedService* FeedServiceFactory::BuildServiceInstanceFor(
       HistoryServiceFactory::GetForProfile(profile,
                                            ServiceAccessType::IMPLICIT_ACCESS),
       storage_partition->GetURLLoaderFactoryForBrowserProcess(),
-      background_task_runner, api_key, chrome_info,
-      TemplateURLServiceFactory::GetForProfile(profile));
+      background_task_runner, api_key, chrome_info, template_url_service);
 }
 
 bool FeedServiceFactory::ServiceIsNULLWhileTesting() const {

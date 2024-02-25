@@ -5,13 +5,17 @@
 #ifndef COMPONENTS_WEBAUTHN_CORE_BROWSER_PASSKEY_MODEL_H_
 #define COMPONENTS_WEBAUTHN_CORE_BROWSER_PASSKEY_MODEL_H_
 
+#include <optional>
 #include <string>
+#include <string_view>
 #include <vector>
 
 #include "base/containers/flat_set.h"
+#include "base/containers/span.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list_types.h"
 #include "components/keyed_service/core/keyed_service.h"
+#include "components/webauthn/core/browser/passkey_model_change.h"
 
 namespace sync_pb {
 class WebauthnCredentialSpecifics;
@@ -41,12 +45,28 @@ class PasskeyModel : public KeyedService {
    public:
     // Notifies the observer that passkeys have changed, e.g. because a new one
     // was downloaded or deleted.
-    virtual void OnPasskeysChanged() = 0;
+    virtual void OnPasskeysChanged(
+        const std::vector<PasskeyModelChange>& changes) = 0;
+
+    // Notifies the observer that the passkey model is shutting down.
+    virtual void OnPasskeyModelShuttingDown() = 0;
+  };
+
+  // Represents the WebAuthn PublicKeyCredentialUserEntity passed by the Relying
+  // Party during registration.
+  struct UserEntity {
+    UserEntity(std::vector<uint8_t> id,
+               std::string name,
+               std::string display_name);
+    ~UserEntity();
+    std::vector<uint8_t> id;
+    std::string name;
+    std::string display_name;
   };
 
   // Attributes of a passkey that can be updated. If an attribute is set to
   // empty, then the entity attribute will also be set to empty.
-  struct PasskeyChange {
+  struct PasskeyUpdate {
     std::string user_name;
     std::string user_display_name;
   };
@@ -65,22 +85,55 @@ class PasskeyModel : public KeyedService {
   virtual std::vector<sync_pb::WebauthnCredentialSpecifics> GetAllPasskeys()
       const = 0;
 
-  // Returns the list of passkeys for |rp_id| that are not shadowed, and so are
-  // suitable to fulfill authentication requests.
+  // Returns the passkey matching the given Relying Party and credential ID, if
+  // any. Shadowed entities, which aren't suitable for generating assertions,
+  // are ignored.
+  virtual std::optional<sync_pb::WebauthnCredentialSpecifics>
+  GetPasskeyByCredentialId(const std::string& rp_id,
+                           const std::string& credential_id) const = 0;
+
+  // Returns all passkeys for the given Relying Party ID. Shadowed entities,
+  // which aren't suitable for generating assertions, are ignored.
   virtual std::vector<sync_pb::WebauthnCredentialSpecifics>
   GetPasskeysForRelyingPartyId(const std::string& rp_id) const = 0;
 
-  // Deletes the passkey with the given |credential_id|. If the passkey is the
+  // Deletes the passkey with the given `credential_id`. If the passkey is the
   // head of the shadow chain, then all passkeys for the same (user id, rp id)
   // are deleted as well.
   // Returns true if a passkey was found and deleted, false otherwise.
   virtual bool DeletePasskey(const std::string& credential_id) = 0;
 
-  // Updates attributes of the passkey with the given |credential_id|. Returns
+  // Updates attributes of the passkey with the given `credential_id`. Returns
   // true if the credential was found and updated, false otherwise.
   virtual bool UpdatePasskey(const std::string& credential_id,
-                             PasskeyChange change) = 0;
+                             PasskeyUpdate change) = 0;
 
+  // Creates a passkey for the given RP and user and returns the new entity
+  // specifics.
+  //
+  // The returned entity's `encrypted` field will contain an
+  // `WebauthnCredentialSpecifics_EncryptedData` message, encrypted to
+  // `trusted_vault_key`. `public_key_spki_der_out`, if non-null, will be set to
+  // a DER-serialized X.509 SubjectPublicKeyInfo of the corresponding public
+  // key.
+  //
+  // Any existing passkeys for the same RP and user ID are shadowed (i.e., added
+  // to the new passkey's `newly_shadowed_credential_ids`), causing them not to
+  // be enumerated by other methods in the model.
+  virtual sync_pb::WebauthnCredentialSpecifics CreatePasskey(
+      std::string_view rp_id,
+      const UserEntity& user_entity,
+      base::span<const uint8_t> trusted_vault_key,
+      int32_t trusted_vault_key_version,
+      std::vector<uint8_t>* public_key_spki_der_out) = 0;
+
+  // Creates a passkey from a pre-constructed protobuf.
+  // Existing passkeys for the same RP and user ID will be shadowed, but
+  // otherwise all fields in the entity should be filled by the caller.
+  virtual void CreatePasskey(sync_pb::WebauthnCredentialSpecifics& passkey) = 0;
+
+  // Inserts the given passkey specifics into the model and returns the entity
+  // sync_id.
   virtual std::string AddNewPasskeyForTesting(
       sync_pb::WebauthnCredentialSpecifics passkey) = 0;
 };

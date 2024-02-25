@@ -1,0 +1,8 @@
+specific_include_rules = {
+  "chrome_site_per_process_browsertest.cc": [
+    "+pdf/pdf_features.h",
+  ],
+  "site_per_process_interactive_browsertest.cc": [
+    "+pdf/pdf_features.h",
+  ],
+}

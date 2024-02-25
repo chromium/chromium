@@ -36,8 +36,14 @@ class BrowsingDataCounterUtilsBrowserTest : public SyncTest {
   ~BrowsingDataCounterUtilsBrowserTest() override = default;
 };
 
+// TODO(https://crbug.com/1491584): Test is flaky on ChromeOS.
+#if BUILDFLAG(IS_CHROMEOS)
+#define MAYBE_ShouldShowCookieException DISABLED_ShouldShowCookieException
+#else
+#define MAYBE_ShouldShowCookieException ShouldShowCookieException
+#endif
 IN_PROC_BROWSER_TEST_F(BrowsingDataCounterUtilsBrowserTest,
-                       ShouldShowCookieException) {
+                       MAYBE_ShouldShowCookieException) {
   ASSERT_TRUE(SetupClients());
 
   // By default, a fresh profile is not signed in, nor syncing, so no cookie
@@ -47,13 +53,8 @@ IN_PROC_BROWSER_TEST_F(BrowsingDataCounterUtilsBrowserTest,
   // Sign the profile in.
   EXPECT_TRUE(GetClient(0)->SignInPrimaryAccount());
 
-#if BUILDFLAG(IS_CHROMEOS)
-  // On Chrome OS sync in turned on by default.
-  EXPECT_TRUE(ShouldShowCookieException(GetProfile(0)));
-#else
   // Sign-in alone shouldn't lead to a cookie exception.
   EXPECT_FALSE(ShouldShowCookieException(GetProfile(0)));
-#endif
 
   // Enable sync.
   EXPECT_TRUE(GetClient(0)->SetupSync());

@@ -70,7 +70,7 @@ void ProfilePickerLacrosSignInProvider::OnPrimaryAccountChanged(
 }
 
 void ProfilePickerLacrosSignInProvider::OnLacrosProfileCreated(
-    const absl::optional<AccountProfileMapper::AddAccountResult>& result) {
+    const std::optional<AccountProfileMapper::AddAccountResult>& result) {
   if (!result || result->profile_path.empty()) {
     // Sign-in or profile creation failed.
     std::move(callback_).Run(nullptr);

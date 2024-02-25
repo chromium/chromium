@@ -6,10 +6,11 @@ package org.chromium.printing;
 
 import android.app.Activity;
 
+import org.jni_zero.CalledByNative;
+import org.jni_zero.JNINamespace;
+import org.jni_zero.NativeMethods;
+
 import org.chromium.base.ThreadUtils;
-import org.chromium.base.annotations.CalledByNative;
-import org.chromium.base.annotations.JNINamespace;
-import org.chromium.base.annotations.NativeMethods;
 import org.chromium.ui.base.WindowAndroid;
 
 /**
@@ -112,8 +113,8 @@ public class PrintingContext {
 
     private void askUserForSettingsReply(boolean success) {
         assert mNativeObject != 0;
-        PrintingContextJni.get().askUserForSettingsReply(
-                mNativeObject, PrintingContext.this, success);
+        PrintingContextJni.get()
+                .askUserForSettingsReply(mNativeObject, PrintingContext.this, success);
     }
 
     private void showSystemDialogDone() {
@@ -125,6 +126,7 @@ public class PrintingContext {
     interface Natives {
         void askUserForSettingsReply(
                 long nativePrintingContextAndroid, PrintingContext caller, boolean success);
+
         void showSystemDialogDone(long nativePrintingContextAndroid, PrintingContext caller);
     }
 }

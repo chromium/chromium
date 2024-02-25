@@ -34,6 +34,10 @@ class CompanionSidePanelUntrustedUI
   // Gets a weak pointer to this object.
   base::WeakPtr<CompanionSidePanelUntrustedUI> GetWeakPtr();
 
+  static constexpr std::string GetWebUIName() {
+    return "CompanionSidePanelUntrusted";
+  }
+
  private:
   // side_panel::mojom::CompanionPageHandlerFactory:
   void CreateCompanionPageHandler(
@@ -61,6 +65,8 @@ class CompanionSidePanelUntrustedUIConfig : public content::WebUIConfig {
   CompanionSidePanelUntrustedUIConfig();
   ~CompanionSidePanelUntrustedUIConfig() override = default;
 
+  // content::WebUIConfig:
+  bool IsWebUIEnabled(content::BrowserContext* browser_context) override;
   std::unique_ptr<content::WebUIController> CreateWebUIController(
       content::WebUI* web_ui,
       const GURL& url) override;

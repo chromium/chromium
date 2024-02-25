@@ -19,6 +19,8 @@
 #include "base/task/bind_post_task.h"
 #include "base/task/sequenced_task_runner.h"
 #include "components/viz/common/gpu/raster_context_provider.h"
+#include "components/viz/common/resources/shared_image_format.h"
+#include "gpu/command_buffer/client/client_shared_image.h"
 #include "gpu/command_buffer/client/context_support.h"
 #include "gpu/command_buffer/client/shared_image_interface.h"
 #include "gpu/command_buffer/common/shared_image_usage.h"
@@ -79,12 +81,12 @@ const fuchsia::sysmem::ColorSpaceType kSupportedColorSpaces[] = {
     fuchsia::sysmem::ColorSpaceType::REC709,
 };
 
-absl::optional<gfx::Size> ParseMinBufferSize() {
+std::optional<gfx::Size> ParseMinBufferSize() {
   std::string min_buffer_size_arg =
       base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII(
           switches::kMinVideoDecoderOutputBufferSize);
   if (min_buffer_size_arg.empty())
-    return absl::nullopt;
+    return std::nullopt;
   size_t width;
   size_t height;
   if (sscanf(min_buffer_size_arg.c_str(), "%zux%zu" SCNu32, &width, &height) !=
@@ -92,13 +94,13 @@ absl::optional<gfx::Size> ParseMinBufferSize() {
     LOG(WARNING) << "Invalid value for --"
                  << switches::kMinVideoDecoderOutputBufferSize << ": '"
                  << min_buffer_size_arg << "'";
-    return absl::nullopt;
+    return std::nullopt;
   }
   return gfx::Size(width, height);
 }
 
-absl::optional<gfx::Size> GetMinBufferSize() {
-  static absl::optional<gfx::Size> value = ParseMinBufferSize();
+std::optional<gfx::Size> GetMinBufferSize() {
+  static std::optional<gfx::Size> value = ParseMinBufferSize();
   return value;
 }
 
@@ -110,18 +112,53 @@ class FuchsiaVideoDecoder::OutputMailbox {
  public:
   OutputMailbox(
       scoped_refptr<viz::RasterContextProvider> raster_context_provider,
-      std::unique_ptr<gfx::GpuMemoryBuffer> gmb,
+      gfx::GpuMemoryBufferHandle gmb_handle,
+      gfx::Size& size,
+      gfx::BufferFormat& buffer_format,
+      gfx::ClientNativePixmapFactory* pixmap_factory,
       const gfx::ColorSpace& color_space)
       : raster_context_provider_(raster_context_provider),
-        size_(gmb->GetSize()),
+        size_(size),
         weak_factory_(this) {
     uint32_t usage = gpu::SHARED_IMAGE_USAGE_DISPLAY_READ |
                      gpu::SHARED_IMAGE_USAGE_SCANOUT |
                      gpu::SHARED_IMAGE_USAGE_VIDEO_DECODE;
-    mailbox_ =
-        raster_context_provider_->SharedImageInterface()->CreateSharedImage(
-            gmb.get(), nullptr, color_space, kTopLeft_GrSurfaceOrigin,
-            kPremul_SkAlphaType, usage, "FuchsiaVideoDecoder");
+
+    if (IsMultiPlaneFormatForHardwareVideoEnabled()) {
+      // The GMB is either YUV_420_BIPLANAR (SIF kNV12) or YVU_420 (SIF kYV12).
+      auto shared_image_format = viz::MultiPlaneFormat::kNV12;
+      switch (buffer_format) {
+        case gfx::BufferFormat::YUV_420_BIPLANAR:
+          break;
+        case gfx::BufferFormat::YVU_420:
+          shared_image_format = viz::MultiPlaneFormat::kYV12;
+          break;
+        default:
+          NOTREACHED_NORETURN();
+      }
+      shared_image_format.SetPrefersExternalSampler();
+
+      shared_image_ =
+          raster_context_provider_->SharedImageInterface()->CreateSharedImage(
+              {shared_image_format, size, color_space, usage,
+               "FuchsiaVideoDecoder"},
+              std::move(gmb_handle));
+    } else {
+      // Note that we are keeping |gmb| creation intact here for the sake of not
+      // changing this path. This path should anyways go away when we fully move
+      // to supporting MultiPlanarSI above.
+      auto gmb = gpu::GpuMemoryBufferImplNativePixmap::CreateFromHandle(
+          pixmap_factory, std::move(gmb_handle), size, buffer_format,
+          gfx::BufferUsage::GPU_READ,
+          gpu::GpuMemoryBufferImpl::DestructionCallback());
+
+      shared_image_ =
+          raster_context_provider_->SharedImageInterface()->CreateSharedImage(
+              gmb.get(), nullptr, gfx::BufferPlane::DEFAULT,
+              {color_space, kTopLeft_GrSurfaceOrigin, kPremul_SkAlphaType,
+               usage, "FuchsiaVideoDecoder"});
+    }
+
     create_sync_token_ = raster_context_provider_->SharedImageInterface()
                              ->GenVerifiedSyncToken();
   }
@@ -131,10 +168,10 @@ class FuchsiaVideoDecoder::OutputMailbox {
 
   ~OutputMailbox() {
     raster_context_provider_->SharedImageInterface()->DestroySharedImage(
-        release_sync_token_, mailbox_);
+        release_sync_token_, std::move(shared_image_));
   }
 
-  const gpu::Mailbox& mailbox() { return mailbox_; }
+  const gpu::Mailbox& mailbox() { return shared_image_->mailbox(); }
 
   const gfx::Size& size() { return size_; }
 
@@ -151,7 +188,7 @@ class FuchsiaVideoDecoder::OutputMailbox {
     reuse_callback_ = std::move(reuse_callback);
 
     gpu::MailboxHolder mailboxes[VideoFrame::kMaxPlanes];
-    mailboxes[0].mailbox = mailbox_;
+    mailboxes[0].mailbox = shared_image_->mailbox();
 
     if (create_sync_token_.HasData()) {
       mailboxes[0].sync_token = create_sync_token_;
@@ -163,6 +200,11 @@ class FuchsiaVideoDecoder::OutputMailbox {
         base::BindPostTaskToCurrentDefault(base::BindOnce(
             &OutputMailbox::OnFrameDestroyed, base::Unretained(this))),
         coded_size, visible_rect, natural_size, timestamp);
+
+    if (IsMultiPlaneFormatForHardwareVideoEnabled()) {
+      frame->set_shared_image_format_type(
+          media::SharedImageFormatType::kSharedImageFormatExternalSampler);
+    }
 
     // Request a fence we'll wait on before reusing the buffer.
     frame->metadata().read_lock_fences_enabled = true;
@@ -209,7 +251,7 @@ class FuchsiaVideoDecoder::OutputMailbox {
 
   gfx::Size size_;
 
-  gpu::Mailbox mailbox_;
+  scoped_refptr<gpu::ClientSharedImage> shared_image_;
 
   gpu::SyncToken create_sync_token_;
   gpu::SyncToken release_sync_token_;
@@ -601,14 +643,10 @@ void FuchsiaVideoDecoder::OnStreamProcessorOutputPacket(
     ZX_DCHECK(status == ZX_OK, status);
     gmb_handle.native_pixmap_handle.buffer_index = buffer_index;
 
-    auto gmb = gpu::GpuMemoryBufferImplNativePixmap::CreateFromHandle(
-        client_native_pixmap_factory_.get(), std::move(gmb_handle), coded_size,
-        buffer_format, gfx::BufferUsage::GPU_READ,
-        gpu::GpuMemoryBufferImpl::DestructionCallback());
-
-    output_mailboxes_[buffer_index] =
-        new OutputMailbox(raster_context_provider_, std::move(gmb),
-                          current_config_.color_space_info().ToGfxColorSpace());
+    output_mailboxes_[buffer_index] = new OutputMailbox(
+        raster_context_provider_, std::move(gmb_handle), coded_size,
+        buffer_format, client_native_pixmap_factory_.get(),
+        current_config_.color_space_info().ToGfxColorSpace());
   } else {
     raster_context_provider_->SharedImageInterface()->UpdateSharedImage(
         gpu::SyncToken(), output_mailboxes_[buffer_index]->mailbox());
@@ -653,8 +691,9 @@ void FuchsiaVideoDecoder::OnStreamProcessorOutputPacket(
   // luma (see fxbug.dev/13677). Assume they are cosited with luma. YCbCr info
   // here must match the values passed for the same buffer in
   // ui::SysmemBufferCollection::CreateVkImage() (see
-  // ui/ozone/platform/scenic/sysmem_buffer_collection.cc). |format_features|
-  // are resolved later in the GPU process before this info is passed to Skia.
+  // ui/ozone/platform/flatland/flatland_sysmem_buffer_collection.cc).
+  // |format_features| are resolved later in the GPU process before this info is
+  // passed to Skia.
   frame->set_ycbcr_info(gpu::VulkanYCbCrInfo(
       vk_format, /*external_format=*/0, ycbcr_conversion,
       VK_SAMPLER_YCBCR_RANGE_ITU_NARROW, VK_CHROMA_LOCATION_COSITED_EVEN,

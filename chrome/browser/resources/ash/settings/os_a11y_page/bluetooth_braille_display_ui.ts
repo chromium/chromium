@@ -7,22 +7,22 @@
  * displays.
  */
 
-import 'chrome://resources/cr_components/localized_link/localized_link.js';
-import 'chrome://resources/cr_elements/cr_shared_vars.css.js';
+import 'chrome://resources/ash/common/cr_elements/localized_link/localized_link.js';
+import 'chrome://resources/ash/common/cr_elements/cr_shared_vars.css.js';
 import '../settings_shared.css.js';
 
 import {afterNextRender} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import {DropdownMenuOptionList, SettingsDropdownMenuElement} from '/shared/settings/controls/settings_dropdown_menu.js';
 import {PrefsMixin} from 'chrome://resources/cr_components/settings_prefs/prefs_mixin.js';
-import {CrButtonElement} from 'chrome://resources/cr_elements/cr_button/cr_button.js';
-import {CrInputElement} from 'chrome://resources/cr_elements/cr_input/cr_input.js';
-import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
-import {WebUiListenerMixin} from 'chrome://resources/cr_elements/web_ui_listener_mixin.js';
+import {CrButtonElement} from 'chrome://resources/ash/common/cr_elements/cr_button/cr_button.js';
+import {CrInputElement} from 'chrome://resources/ash/common/cr_elements/cr_input/cr_input.js';
+import {I18nMixin} from 'chrome://resources/ash/common/cr_elements/i18n_mixin.js';
+import {WebUiListenerMixin} from 'chrome://resources/ash/common/cr_elements/web_ui_listener_mixin.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {castExists} from '../assert_extras.js';
-import {DeepLinkingMixin} from '../deep_linking_mixin.js';
+import {DeepLinkingMixin} from '../common/deep_linking_mixin.js';
+import {DropdownMenuOptionList, SettingsDropdownMenuElement} from '../controls/settings_dropdown_menu.js';
 
 import {BluetoothBrailleDisplayListener, BluetoothBrailleDisplayManager} from './bluetooth_braille_display_manager.js';
 import {getTemplate} from './bluetooth_braille_display_ui.html.js';
@@ -105,17 +105,17 @@ export class BluetoothBrailleDisplayUiElement extends
     this.manager_.addListener(this);
   }
 
-  override ready() {
+  override ready(): void {
     super.ready();
     this.manager_.start();
   }
 
-  override disconnectedCallback() {
+  override disconnectedCallback(): void {
     super.disconnectedCallback();
     this.manager_.stop();
   }
 
-  onDisplayListChanged(displays: chrome.bluetooth.Device[]) {
+  onDisplayListChanged(displays: chrome.bluetooth.Device[]): void {
     // If there are no displays, just include a blank menu item.
     if (displays.length === 0) {
       this.brailleDisplayMenuOptions_ = [BLANK_BRAILLE_DISPLAY_MENU_ITEM];
@@ -134,7 +134,7 @@ export class BluetoothBrailleDisplayUiElement extends
     this.updateControls_();
   }
 
-  private onPincodeChanged_(event: Event) {
+  private onPincodeChanged_(event: Event): void {
     if (this.pincodeTimeoutId_) {
       clearTimeout(this.pincodeTimeoutId_);
     }
@@ -147,7 +147,7 @@ export class BluetoothBrailleDisplayUiElement extends
     this.inPinMode_ = false;
   }
 
-  onPincodeRequested(display: chrome.bluetooth.Device) {
+  onPincodeRequested(display: chrome.bluetooth.Device): void {
     this.inPinMode_ = true;
     this.pincodeRequestedDisplay_ = display;
 
@@ -162,7 +162,7 @@ export class BluetoothBrailleDisplayUiElement extends
     });
   }
 
-  private async updateControls_() {
+  private async updateControls_(): Promise<void> {
     // Only update controls if there is a selected display.
     const selectedDisplayAddress = this.brailleDisplayAddressPref_.value;
     if (!selectedDisplayAddress) {

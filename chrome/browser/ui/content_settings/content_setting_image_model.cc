@@ -31,7 +31,7 @@
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/pref_names.h"
-#include "chrome/grit/chromium_strings.h"
+#include "chrome/grit/branded_strings.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/content_settings/browser/page_specific_content_settings.h"
 #include "components/content_settings/core/browser/cookie_settings.h"
@@ -274,7 +274,8 @@ struct ContentSettingsImageDetails {
 
 const ContentSettingsImageDetails kImageDetails[] = {
     {ContentSettingsType::COOKIES, vector_icons::kCookieIcon,
-     IDS_BLOCKED_COOKIES_MESSAGE, 0, IDS_ACCESSED_COOKIES_MESSAGE},
+     IDS_BLOCKED_ON_DEVICE_SITE_DATA_MESSAGE, 0,
+     IDS_ACCESSED_ON_DEVICE_SITE_DATA_MESSAGE},
     {ContentSettingsType::IMAGES, vector_icons::kPhotoIcon,
      IDS_BLOCKED_IMAGES_MESSAGE, 0, 0},
     {ContentSettingsType::JAVASCRIPT, vector_icons::kCodeIcon,
@@ -299,8 +300,8 @@ void GetIconChromeRefresh(ContentSettingsType type,
                           raw_ptr<const gfx::VectorIcon>* icon) {
   switch (type) {
     case ContentSettingsType::COOKIES:
-      *icon = blocked ? &vector_icons::kCookieOffChromeRefreshIcon
-                      : &vector_icons::kCookieChromeRefreshIcon;
+      *icon = blocked ? &vector_icons::kDatabaseOffIcon
+                      : &vector_icons::kDatabaseIcon;
       return;
     case ContentSettingsType::IMAGES:
       *icon = blocked ? &vector_icons::kPhotoOffChromeRefreshIcon
@@ -390,7 +391,7 @@ void GetIconFromType(ContentSettingsType type,
   *badge = (blocked ? &vector_icons::kBlockedBadgeIcon : &gfx::kNoneIcon);
   switch (type) {
     case ContentSettingsType::COOKIES:
-      *icon = &vector_icons::kCookieIcon;
+      *icon = &vector_icons::kDatabaseIcon;
       return;
     case ContentSettingsType::IMAGES:
       *icon = &vector_icons::kPhotoIcon;
@@ -619,6 +620,7 @@ void ContentSettingImageModel::SetBubbleWasAutoOpened(
 }
 
 void ContentSettingImageModel::SetIcon(ContentSettingsType type, bool blocked) {
+  is_blocked_ = blocked;
   GetIconFromType(type, blocked, &icon_, &icon_badge_);
 }
 
@@ -864,13 +866,14 @@ bool ContentSettingMIDISysExImageModel::UpdateAndGetVisibility(
   if (!content_settings)
     return false;
 
-  bool is_allowed =
+  const bool is_allowed =
       content_settings->IsContentAllowed(ContentSettingsType::MIDI_SYSEX);
-  bool is_blocked =
+  const bool is_blocked =
       content_settings->IsContentBlocked(ContentSettingsType::MIDI_SYSEX);
 
-  if (!is_allowed && !is_blocked)
+  if (!is_allowed && !is_blocked) {
     return false;
+  }
 
   SetIcon(ContentSettingsType::MIDI_SYSEX, /*blocked=*/!is_allowed);
   set_tooltip(l10n_util::GetStringUTF16(is_allowed
@@ -946,7 +949,11 @@ ContentSettingMediaImageModel::ContentSettingMediaImageModel()
 
 bool ContentSettingMediaImageModel::UpdateAndGetVisibility(
     WebContents* web_contents) {
+  // The system-level permission's state can be changed. Reset it before
+  // calculating the site-level permission's state.
+  set_blocked_on_system_level(false);
   set_should_auto_open_bubble(false);
+
   PageSpecificContentSettings* content_settings =
       PageSpecificContentSettings::GetForFrame(
           web_contents->GetPrimaryMainFrame());
@@ -977,6 +984,7 @@ bool ContentSettingMediaImageModel::UpdateAndGetVisibility(
       set_accessibility_string_id(IDS_MICROPHONE_CAMERA_BLOCKED);
     } else if (DidCameraAccessFailBecauseOfSystemLevelBlock() ||
                DidMicAccessFailBecauseOfSystemLevelBlock()) {
+      set_blocked_on_system_level(true);
       SetIcon(ContentSettingsType::MEDIASTREAM_CAMERA, /*blocked=*/true);
       set_tooltip(l10n_util::GetStringUTF16(IDS_MICROPHONE_CAMERA_BLOCKED));
       set_accessibility_string_id(IDS_MICROPHONE_CAMERA_BLOCKED);
@@ -1002,6 +1010,7 @@ bool ContentSettingMediaImageModel::UpdateAndGetVisibility(
       set_tooltip(l10n_util::GetStringUTF16(IDS_CAMERA_BLOCKED));
       set_accessibility_string_id(IDS_CAMERA_BLOCKED);
     } else if (DidCameraAccessFailBecauseOfSystemLevelBlock()) {
+      set_blocked_on_system_level(true);
       SetIcon(ContentSettingsType::MEDIASTREAM_CAMERA, /*blocked=*/true);
       set_tooltip(l10n_util::GetStringUTF16(IDS_CAMERA_BLOCKED));
       set_accessibility_string_id(IDS_CAMERA_BLOCKED);
@@ -1024,6 +1033,7 @@ bool ContentSettingMediaImageModel::UpdateAndGetVisibility(
       set_tooltip(l10n_util::GetStringUTF16(IDS_MICROPHONE_BLOCKED));
       set_accessibility_string_id(IDS_MICROPHONE_BLOCKED);
     } else if (DidMicAccessFailBecauseOfSystemLevelBlock()) {
+      set_blocked_on_system_level(true);
       SetIcon(ContentSettingsType::MEDIASTREAM_MIC, /*blocked=*/true);
       set_tooltip(l10n_util::GetStringUTF16(IDS_MICROPHONE_BLOCKED));
       set_accessibility_string_id(IDS_MICROPHONE_BLOCKED);
@@ -1262,15 +1272,11 @@ bool ContentSettingNotificationsImageModel::UpdateAndGetVisibility(
   auto* profile =
       Profile::FromBrowserContext(web_contents->GetBrowserContext());
 
-  // If `kPermissionQuietUIChip` is enabled, we shouldn't show the icon unless
-  // we're a PWA.
+  // We shouldn't show the icon unless we're a PWA.
   // TODO(crbug.com/1221189): Allow PermissionRequestManager to identify the
   // correct UI style of a permission prompt.
-  const bool quiet_icon_allowed =
-      web_app::AppBrowserController::IsWebApp(
-          chrome::FindBrowserWithWebContents(web_contents)) ||
-      !base::FeatureList::IsEnabled(
-          permissions::features::kPermissionQuietChip);
+  const bool quiet_icon_allowed = web_app::AppBrowserController::IsWebApp(
+      chrome::FindBrowserWithTab(web_contents));
 
   if (!quiet_icon_allowed || !manager ||
       !manager->ShouldCurrentRequestUseQuietUI()) {
@@ -1311,9 +1317,14 @@ ContentSettingNotificationsImageModel::CreateBubbleModelImpl(
 // Base class ------------------------------------------------------------------
 
 gfx::Image ContentSettingImageModel::GetIcon(SkColor icon_color) const {
-  int icon_size = GetLayoutConstant(LOCATION_BAR_TRAILING_ICON_SIZE);
+  int icon_size =
+      icon_size_.value_or(GetLayoutConstant(LOCATION_BAR_TRAILING_ICON_SIZE));
   return gfx::Image(gfx::CreateVectorIconWithBadge(*icon_, icon_size,
                                                    icon_color, *icon_badge_));
+}
+
+void ContentSettingImageModel::SetIconSize(int icon_size) {
+  icon_size_ = icon_size;
 }
 
 int ContentSettingImageModel::AccessibilityAnnouncementStringId() const {
@@ -1364,8 +1375,9 @@ ContentSettingImageModel::GenerateContentSettingImageModels() {
   };
 
   std::vector<std::unique_ptr<ContentSettingImageModel>> result;
-  for (auto type : kContentSettingImageOrder)
+  for (auto type : kContentSettingImageOrder) {
     result.push_back(CreateForContentType(type));
+  }
 
   return result;
 }

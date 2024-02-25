@@ -15,7 +15,7 @@
 #include "components/autofill/core/browser/data_model/credit_card.h"
 #include "components/autofill/core/browser/test_personal_data_manager.h"
 #include "components/password_manager/core/browser/password_form.h"
-#include "components/password_manager/core/browser/test_password_store.h"
+#import "components/password_manager/core/browser/password_store/test_password_store.h"
 #include "ios/web/public/test/web_task_environment.h"
 #import "ios/web_view/internal/autofill/cwv_autofill_profile_internal.h"
 #import "ios/web_view/internal/autofill/cwv_credit_card_internal.h"
@@ -51,7 +51,7 @@ class CWVAutofillDataManagerTest : public PlatformTest {
 
     // Set to stub out behavior inside PersonalDataManager.
     personal_data_manager_->SetAutofillProfileEnabled(true);
-    personal_data_manager_->SetAutofillCreditCardEnabled(true);
+    personal_data_manager_->SetAutofillPaymentMethodsEnabled(true);
     personal_data_manager_->SetAutofillWalletImportEnabled(true);
 
     password_store_ = new password_manager::TestPasswordStore(

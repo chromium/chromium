@@ -13,7 +13,7 @@ export const OobeScrollableBehavior = {
   /**
    * Init observers to keep track of the scrollable element size changes.
    */
-  initScrollableObservers(scrollableElement, ...sizeChangeObservableElemenets) {
+  initScrollableObservers(scrollableElement, ...sizeChangeObservableElements) {
     if (!scrollableElement || this.scrollableElement_) {
       return;
     }
@@ -23,8 +23,8 @@ export const OobeScrollableBehavior = {
     this.scrollableElement_.addEventListener(
       'scroll', this.applyScrollClassTags_.bind(this));
     this.resizeObserver_.observe(this.scrollableElement_);
-    for (var i = 0; i < sizeChangeObservableElemenets.length; ++i) {
-      this.resizeObserver_.observe(sizeChangeObservableElemenets[i]);
+    for (let i = 0; i < sizeChangeObservableElements.length; ++i) {
+      this.resizeObserver_.observe(sizeChangeObservableElements[i]);
     }
   },
 
@@ -32,7 +32,7 @@ export const OobeScrollableBehavior = {
    * Applies the class tags to topScrollContainer that control the shadows.
    */
   applyScrollClassTags_() {
-    var el = this.scrollableElement_;
+    const el = this.scrollableElement_;
     el.classList.toggle('can-scroll', el.clientHeight < el.scrollHeight);
     el.classList.toggle('is-scrolled', el.scrollTop > 0);
     el.classList.toggle(
@@ -48,16 +48,9 @@ export const OobeScrollableBehavior = {
   },
 };
 
-/**
- * TODO: Replace with an interface. b/24294625
- * @typedef {{
- *   initScrollableObservers: function()
- * }}
- */
-OobeScrollableBehavior.Proto;
-
 /** @interface */
 export class OobeScrollableBehaviorInterface {
-  initScrollableObservers(scrollableElement, ...sizeChangeObservableElemenets) {
-  }
+  initScrollableObservers(scrollableElement, ...sizeChangeObservableElements) {}
+  applyScrollClassTags_() {}
+  scrollToBottom() {}
 }

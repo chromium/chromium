@@ -147,7 +147,8 @@ class LaunchApplicationTest : public testing::Test {
              error:nil]);
 
     // Register the app with LaunchServices.
-    LSRegisterURL(base::apple::FilePathToCFURL(helper_app_bundle_path_), true);
+    LSRegisterURL(base::apple::FilePathToCFURL(helper_app_bundle_path_).get(),
+                  true);
 
     // Ensure app was registered with LaunchServices. Sometimes it takes a
     // little bit of time for this to happen, and some tests might fail if the
@@ -378,7 +379,7 @@ TEST_F(LaunchApplicationTest, UrlSpecs) {
   EXPECT_NSEQ(LaunchEventName(1), @"applicationDidFinishLaunching");
   EXPECT_NSEQ(LaunchEventName(2), @"openURLs");
 
-  if (IsOS11()) {
+  if (MacOSMajorVersion() == 11) {
     // macOS 11 (and only macOS 11) appears to sometimes trigger the openURLs
     // calls in reverse order.
     std::vector<std::string> received_urls;

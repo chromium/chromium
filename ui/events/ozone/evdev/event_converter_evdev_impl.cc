@@ -8,6 +8,7 @@
 #include <linux/input.h>
 #include <stddef.h>
 
+#include "base/containers/contains.h"
 #include "base/logging.h"
 #include "base/trace_event/trace_event.h"
 #include "build/chromeos_buildflags.h"
@@ -33,6 +34,10 @@ const int kKeyRepeatValue = 2;
 
 // Values for the EV_SW code.
 const int kSwitchStylusInserted = SW_PEN_INSERTED;
+
+constexpr unsigned int kModifierEvdevCodes[] = {
+    KEY_LEFTALT,  KEY_RIGHTALT,  KEY_LEFTMETA,  KEY_RIGHTMETA,
+    KEY_LEFTCTRL, KEY_RIGHTCTRL, KEY_LEFTSHIFT, KEY_RIGHTSHIFT};
 
 }  // namespace
 
@@ -149,6 +154,25 @@ void EventConverterEvdevImpl::SetKeyFilter(bool enable_filter,
   }
 }
 
+void EventConverterEvdevImpl::SetBlockModifiers(bool block_modifiers) {
+  // Release held modifiers if we are changing from not blocking modifiers ->
+  // blocking modifiers.
+  const bool should_release_held_modifiers =
+      block_modifiers && !block_modifiers_;
+  if (should_release_held_modifiers) {
+    base::TimeTicks timestamp = ui::EventTimeForNow();
+    for (const int key : kModifierEvdevCodes) {
+      if (key_state_.test(key)) {
+        OnKeyChange(key, false /* down */, timestamp);
+      }
+    }
+  }
+
+  // Update flag for blocking modifiers only after releasing the already pressed
+  // keys.
+  block_modifiers_ = block_modifiers;
+}
+
 void EventConverterEvdevImpl::OnDisabled() {
   ReleaseKeys();
   ReleaseMouseButtons();
@@ -250,6 +274,12 @@ void EventConverterEvdevImpl::OnKeyChange(unsigned int key,
   if (down && blocked_keys_.test(key))
     return;
 
+  // Block all modifiers from continuing down stream from this device if the
+  // flag is set.
+  if (block_modifiers_ && base::Contains(kModifierEvdevCodes, key)) {
+    return;
+  }
+
   // State transition: !(down) -> (down)
   key_state_.set(key, down);
 
@@ -259,8 +289,8 @@ void EventConverterEvdevImpl::OnKeyChange(unsigned int key,
   // keyboard. Disables Imposter flag and triggers a callback which will update
   // the dispatched list of keyboards with this new information.
   if (key_state_.count() == 1 && IsValidKeyboardKeyPress(key)) {
-    bool was_suspected = IsSuspectedImposter();
-    SetSuspectedImposter(false);
+    bool was_suspected = IsSuspectedKeyboardImposter();
+    SetSuspectedKeyboardImposter(false);
     if (was_suspected && received_valid_input_callback_) {
       received_valid_input_callback_.Run(this);
     }
@@ -310,11 +340,6 @@ void EventConverterEvdevImpl::DispatchMouseButton(const input_event& input) {
 void EventConverterEvdevImpl::OnButtonChange(int code,
                                              bool down,
                                              base::TimeTicks timestamp) {
-  if (code == BTN_SIDE)
-    code = BTN_BACK;
-  else if (code == BTN_EXTRA)
-    code = BTN_FORWARD;
-
   int button_offset = code - BTN_MOUSE;
   if (mouse_button_state_.test(button_offset) == down)
     return;

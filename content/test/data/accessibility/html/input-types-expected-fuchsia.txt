@@ -39,6 +39,8 @@ UNKNOWN focusable has_input_focus
 ++++++++++IMAGE
 ++++++++++STATIC_TEXT label='Submit'
 ++++++++++++UNKNOWN label='Submit'
+++++++STATIC_TEXT label=' '
+++++++++UNKNOWN label=' '
 ++++++UNKNOWN
 ++++++++STATIC_TEXT label='Number: '
 ++++++++++UNKNOWN label='Number: '

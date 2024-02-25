@@ -10,6 +10,7 @@
 #include "base/feature_list.h"
 #include "base/functional/callback.h"
 #include "base/memory/weak_ptr.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/task/single_thread_task_runner.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/signin/signin_features.h"
@@ -52,6 +53,7 @@ class ForcedEnterpriseSigninInterceptionHandle
       const WebSigninInterceptor::Delegate::BubbleParameters& bubble_parameters,
       base::OnceCallback<void(SigninInterceptionResult)> callback)
       : browser_(browser->AsWeakPtr()),
+        bubble_parameters_(bubble_parameters),
         profile_creation_required_by_policy_(
             bubble_parameters.interception_type ==
             WebSigninInterceptor::SigninInterceptionType::kEnterpriseForced),
@@ -59,7 +61,7 @@ class ForcedEnterpriseSigninInterceptionHandle
         callback_(std::move(callback)) {
     DCHECK(browser_);
     DCHECK(callback_);
-    browser_->signin_view_controller()->ShowModalEnterpriseConfirmationDialog(
+    browser_->signin_view_controller()->ShowModalManagedUserNoticeDialog(
         bubble_parameters.intercepted_account,
         profile_creation_required_by_policy_, show_link_data_option_,
         base::BindOnce(&ForcedEnterpriseSigninInterceptionHandle::
@@ -72,32 +74,41 @@ class ForcedEnterpriseSigninInterceptionHandle
       browser_->signin_view_controller()->CloseModalSignin();
     }
     if (callback_) {
+      DiceWebSigninInterceptorDelegate::RecordInterceptionResult(
+          bubble_parameters_, browser_->profile(),
+          SigninInterceptionResult::kDeclined);
       std::move(callback_).Run(SigninInterceptionResult::kDeclined);
     }
   }
 
  private:
   void OnEnterpriseInterceptionDialogClosed(signin::SigninChoice result) {
+    SigninInterceptionResult interception_result =
+        SigninInterceptionResult::kDeclined;
     switch (result) {
       case signin::SIGNIN_CHOICE_NEW_PROFILE:
-        std::move(callback_).Run(SigninInterceptionResult::kAccepted);
+        interception_result = SigninInterceptionResult::kAccepted;
         break;
       case signin::SIGNIN_CHOICE_CONTINUE:
         DCHECK(!profile_creation_required_by_policy_ || show_link_data_option_);
-        std::move(callback_).Run(
-            SigninInterceptionResult::kAcceptedWithExistingProfile);
+        interception_result =
+            SigninInterceptionResult::kAcceptedWithExistingProfile;
         break;
       case signin::SIGNIN_CHOICE_CANCEL:
-        std::move(callback_).Run(SigninInterceptionResult::kDeclined);
+        interception_result = SigninInterceptionResult::kDeclined;
         break;
       case signin::SIGNIN_CHOICE_SIZE:
       default:
         NOTREACHED();
         break;
     }
+    DiceWebSigninInterceptorDelegate::RecordInterceptionResult(
+        bubble_parameters_, browser_->profile(), interception_result);
+    std::move(callback_).Run(interception_result);
   }
 
   base::WeakPtr<Browser> browser_;
+  WebSigninInterceptor::Delegate::BubbleParameters bubble_parameters_;
   const bool profile_creation_required_by_policy_;
   const bool show_link_data_option_;
   base::OnceCallback<void(SigninInterceptionResult)> callback_;
@@ -113,7 +124,7 @@ DiceWebSigninInterceptorDelegate::~DiceWebSigninInterceptorDelegate() = default;
 
 bool DiceWebSigninInterceptorDelegate::IsSigninInterceptionSupported(
     const content::WebContents& web_contents) {
-  Browser* browser = chrome::FindBrowserWithWebContents(&web_contents);
+  Browser* browser = chrome::FindBrowserWithTab(&web_contents);
   // The profile creation flow has no browser.
   if (!browser) {
     return false;
@@ -143,12 +154,12 @@ DiceWebSigninInterceptorDelegate::ShowSigninInterceptionBubble(
           WebSigninInterceptor::SigninInterceptionType::
               kEnterpriseAcceptManagement) {
     return std::make_unique<ForcedEnterpriseSigninInterceptionHandle>(
-        chrome::FindBrowserWithWebContents(web_contents), bubble_parameters,
+        chrome::FindBrowserWithTab(web_contents), bubble_parameters,
         std::move(callback));
   }
 
   return ShowSigninInterceptionBubbleInternal(
-      chrome::FindBrowserWithWebContents(web_contents), bubble_parameters,
+      chrome::FindBrowserWithTab(web_contents), bubble_parameters,
       std::move(callback));
 }
 
@@ -160,4 +171,56 @@ void DiceWebSigninInterceptorDelegate::ShowFirstRunExperienceInNewProfile(
       account_id,
       interception_type ==
           WebSigninInterceptor::SigninInterceptionType::kEnterpriseForced);
+}
+
+// static
+std::string DiceWebSigninInterceptorDelegate::GetHistogramSuffix(
+    WebSigninInterceptor::SigninInterceptionType interception_type) {
+  switch (interception_type) {
+    case WebSigninInterceptor::SigninInterceptionType::kEnterprise:
+    case WebSigninInterceptor::SigninInterceptionType::
+        kEnterpriseAcceptManagement:
+      return ".Enterprise";
+    case WebSigninInterceptor::SigninInterceptionType::kMultiUser:
+      return ".MultiUser";
+    case WebSigninInterceptor::SigninInterceptionType::kProfileSwitch:
+    case WebSigninInterceptor::SigninInterceptionType::kProfileSwitchForced:
+      return ".Switch";
+    case WebSigninInterceptor::SigninInterceptionType::kChromeSignin:
+      return ".ChromeSignin";
+    case WebSigninInterceptor::SigninInterceptionType::kEnterpriseForced:
+      return ".EnterpriseForced";
+  }
+}
+
+// static
+void DiceWebSigninInterceptorDelegate::RecordInterceptionResult(
+    const WebSigninInterceptor::Delegate::BubbleParameters& bubble_parameters,
+    Profile* profile,
+    SigninInterceptionResult result) {
+  std::string histogram_base_name =
+      "Signin.InterceptResult" +
+      GetHistogramSuffix(bubble_parameters.interception_type);
+  // Record aggregated histogram for each interception type.
+  base::UmaHistogramEnumeration(histogram_base_name, result);
+  // Record histogram sliced by Sync status.
+  signin::IdentityManager* identity_manager =
+      IdentityManagerFactory::GetForProfile(profile);
+  std::string sync_suffix =
+      identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSync)
+          ? ".Sync"
+          : ".NoSync";
+  base::UmaHistogramEnumeration(histogram_base_name + sync_suffix, result);
+  // For Enterprise, slice per enterprise status for each account.
+  if (bubble_parameters.interception_type ==
+      WebSigninInterceptor::SigninInterceptionType::kEnterprise) {
+    if (bubble_parameters.intercepted_account.IsManaged()) {
+      std::string histogram_name = histogram_base_name + ".NewIsEnterprise";
+      base::UmaHistogramEnumeration(histogram_name, result);
+    }
+    if (bubble_parameters.primary_account.IsManaged()) {
+      std::string histogram_name = histogram_base_name + ".PrimaryIsEnterprise";
+      base::UmaHistogramEnumeration(histogram_name, result);
+    }
+  }
 }

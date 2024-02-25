@@ -9,7 +9,7 @@
 #include "base/path_service.h"
 #include "base/strings/string_util.h"
 
-#include "chrome/grit/chromium_strings.h"
+#include "chrome/grit/branded_strings.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 #include "ui/base/l10n/l10n_util.h"

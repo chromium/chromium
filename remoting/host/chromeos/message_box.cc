@@ -26,8 +26,9 @@ namespace remoting {
 // Core and the MessageBox hold a raw references to each other, which is
 // invalidated when either side are destroyed.
 class MessageBox::Core : public views::DialogDelegateView {
+  METADATA_HEADER(Core, views::DialogDelegateView)
+
  public:
-  METADATA_HEADER(Core);
   Core(const std::u16string& title_label,
        const std::u16string& message_label,
        const std::u16string& ok_label,
@@ -54,10 +55,10 @@ class MessageBox::Core : public views::DialogDelegateView {
  private:
   const std::u16string title_label_;
   ResultCallback result_callback_;
-  raw_ptr<MessageBox, ExperimentalAsh> message_box_;
+  raw_ptr<MessageBox> message_box_;
 
   // Owned by the native widget hierarchy.
-  raw_ptr<views::MessageBoxView, ExperimentalAsh> message_box_view_;
+  raw_ptr<views::MessageBoxView> message_box_view_;
 };
 
 MessageBox::Core::Core(const std::u16string& title_label,
@@ -137,7 +138,7 @@ void MessageBox::Core::OnMessageBoxDestroyed() {
   result_callback_.Reset();
 }
 
-BEGIN_METADATA(MessageBox, Core, views::DialogDelegateView)
+BEGIN_METADATA(MessageBox, Core)
 END_METADATA
 
 MessageBox::MessageBox(const std::u16string& title_label,

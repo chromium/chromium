@@ -10,12 +10,9 @@ import "ipc/ipc.mojom";
 import "mojo/public/mojom/base/generic_pending_receiver.mojom";
 import "mojo/public/mojom/base/time.mojom";
 import "services/network/public/mojom/network_types.mojom";
-import "services/network/public/mojom/attribution.mojom";
-import "skia/public/mojom/skcolor.mojom";
 import "third_party/blink/public/mojom/browser_interface_broker.mojom";
 import "third_party/blink/public/mojom/origin_trials/origin_trials_settings.mojom";
 import "third_party/blink/public/mojom/user_agent/user_agent_metadata.mojom";
-import "ui/color/color_id.mojom";
 
 struct UpdateScrollbarThemeParams {
   // TODO(avi): Update these to optional values when optional numeric types are
@@ -41,9 +38,8 @@ struct UpdateSystemColorInfoParams {
   // renderer's ColorProviders.
   map<SystemThemeColor, uint32> colors;
 
-  // Maps used to reconstruct ColorProvider instances in the renderer.
-  map<color.mojom.RendererColorId, skia.mojom.SkColor> light_colors;
-  map<color.mojom.RendererColorId, skia.mojom.SkColor> dark_colors;
+  // Accent color used by the system. Currently only set on ChromeOS.
+  uint32? accent_color;
 };
 
 // The background state for the render process.  When backgrounded the process's
@@ -137,6 +133,11 @@ interface Renderer {
   SetProcessState(RenderProcessBackgroundState background_state,
                   RenderProcessVisibleState visible_state);
 
+  // Asks the renderer process to modify its internal settings to bias towards
+  // energy efficiency because the embedder is in battery saver mode. The
+  // default is `false`.
+  SetBatterySaverMode(bool battery_saver_mode_enabled);
+
   // Tells the renderer process that it has been locked to a site (i.e., a
   // scheme plus eTLD+1, such as https://google.com), or to a more specific
   // origin.
@@ -155,6 +156,11 @@ interface Renderer {
   // agents, not both.
   // This is called at most once, prior to committing a navigation.
   SetIsCrossOriginIsolated(bool value);
+
+  // Sets whether `--disable-web-security` has been set.
+  //
+  // This is called at most once on process startup.
+  SetIsWebSecurityDisabled(bool value);
 
   // Set whether this renderer process is allowed to use Isolated Context APIs.
   // Similarly to the `SetIsCrossOriginIsolated()` method above, this flag is
@@ -177,17 +183,11 @@ interface Renderer {
   // |cors_exempt_header_list| sets the CORS exempt header list for sanity
   // checking (e.g. DCHECKs).
   //
-  // |attribution_support| sets whether web or OS-level Attribution Reporting is supported.
-  //
   // |origin_trials_settings| sets the settings used to build a
   // blink::OriginTrialPolicy for the renderer. It can be null if the embedder
   // does not support origin trials.
   InitializeRenderer(string user_agent,
                      blink.mojom.UserAgentMetadata metadata,
                      array<string> cors_exempt_header_list,
-                     network.mojom.AttributionSupport attribution_support,
                      blink.mojom.OriginTrialsSettings? origin_trials_settings);
-
- // Set whether web or OS-level Attribution Reporting is supported.
-  SetAttributionReportingSupport(network.mojom.AttributionSupport attribution_support);
 };

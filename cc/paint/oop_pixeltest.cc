@@ -19,6 +19,7 @@
 #include "cc/paint/paint_flags.h"
 #include "cc/paint/paint_image_builder.h"
 #include "cc/raster/playback_image_provider.h"
+#include "cc/test/fake_paint_image_generator.h"
 #include "cc/test/pixel_comparator.h"
 #include "cc/test/pixel_test_utils.h"
 #include "cc/tiles/gpu_image_decode_cache.h"
@@ -28,11 +29,15 @@
 #include "components/viz/test/paths.h"
 #include "components/viz/test/test_gpu_service_holder.h"
 #include "components/viz/test/test_in_process_context_provider.h"
+#include "gpu/command_buffer/client/client_shared_image.h"
 #include "gpu/command_buffer/client/raster_implementation.h"
 #include "gpu/command_buffer/client/shared_image_interface.h"
 #include "gpu/command_buffer/common/shared_image_usage.h"
 #include "gpu/command_buffer/service/gr_shader_cache.h"
+#include "gpu/command_buffer/service/graphite_utils.h"
+#include "gpu/config/gpu_finch_features.h"
 #include "ipc/common/gpu_client_ids.h"
+#include "skia/ext/font_utils.h"
 #include "skia/ext/legacy_display_globals.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/skia/include/core/SkAlphaType.h"
@@ -48,7 +53,11 @@
 #include "third_party/skia/include/core/SkYUVAInfo.h"
 #include "third_party/skia/include/gpu/GpuTypes.h"
 #include "third_party/skia/include/gpu/GrDirectContext.h"
+#include "third_party/skia/include/gpu/GrTypes.h"
 #include "third_party/skia/include/gpu/ganesh/SkSurfaceGanesh.h"
+#include "third_party/skia/include/gpu/graphite/Context.h"
+#include "third_party/skia/include/gpu/graphite/GraphiteTypes.h"
+#include "third_party/skia/include/gpu/graphite/Surface.h"
 #include "ui/gfx/geometry/rect_conversions.h"
 #include "ui/gfx/geometry/skia_conversions.h"
 #include "ui/gl/gl_implementation.h"
@@ -165,7 +174,7 @@ class OopPixelTest : public testing::Test,
 
   SkBitmap Raster(scoped_refptr<DisplayItemList> display_item_list,
                   const RasterOptions& options) {
-    absl::optional<PlaybackImageProvider::Settings> settings;
+    std::optional<PlaybackImageProvider::Settings> settings;
     settings.emplace(PlaybackImageProvider::Settings());
     settings->raster_mode = options.image_provider_raster_mode;
     PlaybackImageProvider image_provider(oop_image_cache_.get(),
@@ -176,15 +185,19 @@ class OopPixelTest : public testing::Test,
     int height = options.resource_size.height();
 
     // Create and allocate a shared image on the raster interface.
+    // This SharedImage will be used as the destination of the raster of
+    // `display_item_list` before having its contents read back (also via the
+    // raster interface).
     auto* ri = raster_context_provider_->RasterInterface();
     auto* sii = raster_context_provider_->SharedImageInterface();
-    uint32_t flags = gpu::SHARED_IMAGE_USAGE_RASTER |
+    uint32_t flags = gpu::SHARED_IMAGE_USAGE_RASTER_READ |
+                     gpu::SHARED_IMAGE_USAGE_RASTER_WRITE |
                      gpu::SHARED_IMAGE_USAGE_OOP_RASTERIZATION;
-    gpu::Mailbox mailbox = sii->CreateSharedImage(
-        viz::SinglePlaneFormat::kRGBA_8888, gfx::Size(width, height),
-        options.target_color_params.color_space, kTopLeft_GrSurfaceOrigin,
-        kPremul_SkAlphaType, flags, "TestLabel", gpu::kNullSurfaceHandle);
-    EXPECT_TRUE(mailbox.Verify());
+    auto client_shared_image = sii->CreateSharedImage(
+        {viz::SinglePlaneFormat::kRGBA_8888, gfx::Size(width, height),
+         options.target_color_params.color_space, flags, "TestLabel"},
+        gpu::kNullSurfaceHandle);
+    EXPECT_TRUE(client_shared_image->mailbox().Verify());
     ri->WaitSyncTokenCHROMIUM(sii->GenUnverifiedSyncToken().GetConstData());
 
     // Assume legacy MSAA if sample count is positive.
@@ -198,7 +211,8 @@ class OopPixelTest : public testing::Test,
           /*needs_clear=*/options.preclear, options.msaa_sample_count,
           msaa_mode, options.use_lcd_text,
           /*visible=*/true, options.target_color_params.color_space,
-          mailbox.name);
+          options.target_color_params.hdr_max_luminance_relative,
+          client_shared_image->mailbox().name);
       ri->EndRasterCHROMIUM();
     }
 
@@ -211,7 +225,8 @@ class OopPixelTest : public testing::Test,
         /*needs_clear=*/!options.preclear, options.msaa_sample_count, msaa_mode,
         options.use_lcd_text,
         /*visible=*/true, options.target_color_params.color_space,
-        mailbox.name);
+        options.target_color_params.hdr_max_luminance_relative,
+        client_shared_image->mailbox().name);
     size_t max_op_size_limit =
         gpu::raster::RasterInterface::kDefaultMaxOpSizeHint;
     ri->RasterCHROMIUM(display_item_list.get(), &image_provider,
@@ -230,10 +245,11 @@ class OopPixelTest : public testing::Test,
 
     EXPECT_EQ(ri->GetError(), static_cast<unsigned>(GL_NO_ERROR));
 
-    SkBitmap result = ReadbackMailbox(ri, mailbox, options.resource_size);
+    SkBitmap result = ReadbackMailbox(ri, client_shared_image->mailbox(),
+                                      options.resource_size);
     gpu::SyncToken sync_token;
     ri->GenUnverifiedSyncTokenCHROMIUM(sync_token.GetData());
-    sii->DestroySharedImage(sync_token, mailbox);
+    sii->DestroySharedImage(sync_token, std::move(client_shared_image));
     return result;
   }
 
@@ -250,23 +266,26 @@ class OopPixelTest : public testing::Test,
     return result;
   }
 
-  gpu::Mailbox CreateMailboxSharedImage(
+  scoped_refptr<gpu::ClientSharedImage> CreateClientSharedImage(
       gpu::raster::RasterInterface* ri,
       gpu::SharedImageInterface* sii,
       const RasterOptions& options,
       viz::SharedImageFormat image_format,
-      absl::optional<gfx::ColorSpace> color_space = absl::nullopt) {
-    uint32_t flags = gpu::SHARED_IMAGE_USAGE_RASTER |
+      std::optional<gfx::ColorSpace> color_space = std::nullopt) {
+    // These SharedImages serve as both the source of reads and destination of
+    // writes via the raster interface in these tests.
+    uint32_t flags = gpu::SHARED_IMAGE_USAGE_RASTER_READ |
+                     gpu::SHARED_IMAGE_USAGE_RASTER_WRITE |
                      gpu::SHARED_IMAGE_USAGE_OOP_RASTERIZATION;
-    gpu::Mailbox mailbox = sii->CreateSharedImage(
-        image_format, options.resource_size,
-        color_space.value_or(options.target_color_params.color_space),
-        kTopLeft_GrSurfaceOrigin, kPremul_SkAlphaType, flags, "TestLabel",
+    auto client_shared_image = sii->CreateSharedImage(
+        {image_format, options.resource_size,
+         color_space.value_or(options.target_color_params.color_space), flags,
+         "TestLabel"},
         gpu::kNullSurfaceHandle);
-    EXPECT_TRUE(mailbox.Verify());
+    EXPECT_TRUE(client_shared_image->mailbox().Verify());
     ri->WaitSyncTokenCHROMIUM(sii->GenUnverifiedSyncToken().GetConstData());
 
-    return mailbox;
+    return client_shared_image;
   }
 
   void UploadPixels(gpu::raster::RasterInterface* ri,
@@ -628,19 +647,20 @@ TEST_F(OopPixelTest, DrawImageWithTargetColorSpace) {
 TEST_F(OopPixelTest, DrawHdrImageWithMetadata) {
   constexpr gfx::Size kSize(8, 8);
   constexpr gfx::Rect kRect(kSize);
-
-  constexpr float kImageNits = 500.f;
   constexpr float kContentAvgNits = 100;
 
 #if BUILDFLAG(IS_ANDROID)
   // Allow large quantization error on Android.
   // TODO(https://crbug.com/1363056): Ensure higher precision for HDR images.
   constexpr float kEpsilon = 1 / 16.f;
+#elif BUILDFLAG(IS_IOS) && BUILDFLAG(SKIA_USE_METAL)
+  // TODO(crbug.com/1476507): Allow larger errors on iOS as well.
+  constexpr float kEpsilon = 1 / 12.f;
 #else
   constexpr float kEpsilon = 1 / 32.f;
 #endif
 
-  // Create `image` with `kImageNits` in PQ color space.
+  // Create `image` with 500 nits in PQ color space.
   sk_sp<SkImage> image;
   {
     constexpr float kImagePixelValue = 0.6765848107833876f;
@@ -660,36 +680,49 @@ TEST_F(OopPixelTest, DrawHdrImageWithMetadata) {
         gfx::ColorSpace::CreateHDR10().ToSkColorSpace());
   }
 
-  // Create a DisplayItemList drawing `image`.
-  const PaintImage::Id kSomeId = 32;
-  auto builder =
-      PaintImageBuilder::WithDefault().set_image(image, 0).set_id(kSomeId);
-  auto paint_image = builder.TakePaintImage();
-  auto display_item_list = base::MakeRefCounted<DisplayItemList>();
-  display_item_list->StartPaint();
-  SkSamplingOptions sampling(
-      PaintFlags::FilterQualityToSkSamplingOptions(kDefaultFilterQuality));
-  display_item_list->push<DrawImageOp>(paint_image, 0.f, 0.f, sampling,
-                                       nullptr);
-  display_item_list->EndPaintOfUnpaired(kRect);
-  display_item_list->Finalize();
+  const auto make_display_item_list = [&](int i, float peak_luminance,
+                                          PaintFlags* paint_flags = nullptr) {
+    auto image_generator =
+        sk_make_sp<FakePaintImageGenerator>(image->imageInfo());
+    {
+      ImageHeaderMetadata image_metadata;
+      image_metadata.hdr_metadata.emplace(
+          gfx::HdrMetadataCta861_3(peak_luminance, kContentAvgNits));
+      image_generator->SetImageHeaderMetadata(image_metadata);
+      EXPECT_TRUE(image->peekPixels(&image_generator->GetPixmap()));
+    }
+
+    const PaintImage::Id kSomeId = 32 + i;
+    auto paint_image = PaintImageBuilder::WithDefault()
+                           .set_id(kSomeId)
+                           .set_paint_image_generator(image_generator)
+                           .TakePaintImage();
+
+    auto display_item_list = base::MakeRefCounted<DisplayItemList>();
+    display_item_list->StartPaint();
+    SkSamplingOptions sampling(
+        PaintFlags::FilterQualityToSkSamplingOptions(kDefaultFilterQuality));
+    display_item_list->push<DrawImageOp>(paint_image, 0.f, 0.f, sampling,
+                                         paint_flags);
+    display_item_list->EndPaintOfUnpaired(kRect);
+    display_item_list->Finalize();
+
+    return display_item_list;
+  };
+  // Create a DisplayItemList drawing `image` with 10k nits and 500 nits HDR
+  // metadata.
+  scoped_refptr<DisplayItemList> display_item_list_10k_nits =
+      make_display_item_list(0, 10000.f);
+  scoped_refptr<DisplayItemList> display_item_list_500_nits =
+      make_display_item_list(1, 500.f);
   RasterOptions options(kSize);
-  {
-    options.target_color_params.color_space =
-        gfx::ColorSpace::CreateSRGBLinear();
-    options.target_color_params.enable_tone_mapping = true;
-  }
+  options.target_color_params.color_space = gfx::ColorSpace::CreateSRGBLinear();
 
-  // Draw using image HDR metadata indicating that `kImageNits` is the
-  // maximum luminance. The result should map the image to solid white (up
-  // to rounding error).
+  // Draw using image HDR metadata indicating that 500 is the maximum luminance.
+  // The result should map the image to solid white (up to rounding error).
   {
-    constexpr float kContentMaxNits = kImageNits;
     constexpr float kExpected = 1.0;
-
-    options.target_color_params.hdr_metadata = gfx::HDRMetadata(
-        gfx::HdrMetadataCta861_3(kContentMaxNits, kContentAvgNits));
-    auto actual = Raster(display_item_list, options);
+    auto actual = Raster(display_item_list_500_nits, options);
     auto color = actual.getColor4f(0, 0);
     EXPECT_NEAR(color.fR, kExpected, kEpsilon);
     EXPECT_NEAR(color.fG, kExpected, kEpsilon);
@@ -699,33 +732,41 @@ TEST_F(OopPixelTest, DrawHdrImageWithMetadata) {
   // Draw using image HDR metadata indicating that 10,000 nits is the maximum
   // luminance. The result should map the image to something darker than solid
   // white.
+  constexpr float kExpected10kToSdr = 0.7114198123454021f;
   {
-    constexpr float kContentMaxNits = 10000;
-    constexpr float kExpected = 0.7114198123454021f;
+    auto actual = Raster(display_item_list_10k_nits, options);
+    auto color = actual.getColor4f(0, 0);
+    EXPECT_NEAR(color.fR, kExpected10kToSdr, kEpsilon);
+    EXPECT_NEAR(color.fG, kExpected10kToSdr, kEpsilon);
+    EXPECT_NEAR(color.fB, kExpected10kToSdr, kEpsilon);
+  }
 
-    options.target_color_params.hdr_metadata = gfx::HDRMetadata(
-        gfx::HdrMetadataCta861_3(kContentMaxNits, kContentAvgNits));
-    auto actual = Raster(display_item_list, options);
+  // Increase the destination HDR headroom. The result should now be brighter.
+  {
+    constexpr float kExpected = 0.933675419515227f;
+    constexpr float kDstHeadroom = 1.5f;
+    options.target_color_params.hdr_max_luminance_relative = kDstHeadroom;
+    auto actual = Raster(display_item_list_10k_nits, options);
     auto color = actual.getColor4f(0, 0);
     EXPECT_NEAR(color.fR, kExpected, kEpsilon);
     EXPECT_NEAR(color.fG, kExpected, kEpsilon);
     EXPECT_NEAR(color.fB, kExpected, kEpsilon);
   }
 
-  // Increase the destination HDR headroom. The result should now be brighter.
+  // Draw with PaintFlags constraining the dynamic range as if by CSS property
+  // `dynamic-range-limit`. The result should therefore be back to being darker,
+  // despite the (still) increased headroom.
   {
-    constexpr float kContentMaxNits = 10000;
-    constexpr float kExpected = 0.933675419515227f;
-    constexpr float kDstHeadroom = 1.5f;
-
-    options.target_color_params.hdr_max_luminance_relative = kDstHeadroom;
-    options.target_color_params.hdr_metadata = gfx::HDRMetadata(
-        gfx::HdrMetadataCta861_3(kContentMaxNits, kContentAvgNits));
-    auto actual = Raster(display_item_list, options);
+    PaintFlags sdr_paint_flags;
+    sdr_paint_flags.setDynamicRangeLimit(PaintFlags::DynamicRangeLimitMixture(
+        PaintFlags::DynamicRangeLimit::kStandard));
+    scoped_refptr<DisplayItemList> display_item_list_10k_nits_sdr =
+        make_display_item_list(2, 10000.f, &sdr_paint_flags);
+    auto actual = Raster(display_item_list_10k_nits_sdr, options);
     auto color = actual.getColor4f(0, 0);
-    EXPECT_NEAR(color.fR, kExpected, kEpsilon);
-    EXPECT_NEAR(color.fG, kExpected, kEpsilon);
-    EXPECT_NEAR(color.fB, kExpected, kEpsilon);
+    EXPECT_NEAR(color.fR, kExpected10kToSdr, kEpsilon);
+    EXPECT_NEAR(color.fG, kExpected10kToSdr, kEpsilon);
+    EXPECT_NEAR(color.fB, kExpected10kToSdr, kEpsilon);
   }
 }
 
@@ -796,7 +837,7 @@ TEST_F(OopPixelTest, DrawImageWithSourceAndTargetColorSpace) {
 
   auto actual = Raster(display_item_list, options);
 
-#if BUILDFLAG(IS_ANDROID)
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
   // Android has slight differences in color.
   FuzzyPixelOffByOneComparator comparator;
 #else
@@ -872,16 +913,17 @@ TEST_F(OopPixelTest, DrawMailboxBackedImage) {
 
   auto* ri = raster_context_provider_->RasterInterface();
   auto* sii = raster_context_provider_->SharedImageInterface();
-  gpu::Mailbox src_mailbox = CreateMailboxSharedImage(
+  scoped_refptr<gpu::ClientSharedImage> src_client_si = CreateClientSharedImage(
       ri, sii, options, viz::SinglePlaneFormat::kRGBA_8888);
 
-  UploadPixels(ri, src_mailbox, expected_bitmap.info(), expected_bitmap);
+  UploadPixels(ri, src_client_si->mailbox(), expected_bitmap.info(),
+               expected_bitmap);
 
   auto src_paint_image =
       PaintImageBuilder::WithDefault()
           .set_id(PaintImage::GetNextId())
           .set_texture_backing(sk_sp<TestMailboxBacking>(new TestMailboxBacking(
-                                   src_mailbox, backing_info)),
+                                   src_client_si->mailbox(), backing_info)),
                                PaintImage::GetNextContentId())
           .TakePaintImage();
 
@@ -1566,10 +1608,10 @@ TEST_F(OopPixelTest, DrawRectColorSpace) {
 }
 
 sk_sp<SkTextBlob> BuildTextBlob(
-    sk_sp<SkTypeface> typeface = SkTypeface::MakeDefault(),
+    sk_sp<SkTypeface> typeface = skia::DefaultTypeface(),
     bool use_lcd_text = false) {
   if (!typeface) {
-    typeface = SkTypeface::MakeFromName("monospace", SkFontStyle());
+    typeface = skia::MakeTypefaceFromName("monospace", SkFontStyle());
   }
 
   SkFont font;
@@ -1764,20 +1806,39 @@ class OopTextBlobPixelTest
     SkSurfaceProps surface_props =
         UseLcdText() ? skia::LegacyDisplayGlobals::GetSkSurfaceProps(0)
                      : SkSurfaceProps(0, kUnknown_SkPixelGeometry);
-    auto surface = SkSurfaces::RenderTarget(
-        context_state->gr_context(), skgpu::Budgeted::kNo, image_info, 0,
-        kTopLeft_GrSurfaceOrigin, &surface_props);
+    sk_sp<SkSurface> surface = nullptr;
+    if (context_state->gr_context()) {
+      surface = SkSurfaces::RenderTarget(
+          context_state->gr_context(), skgpu::Budgeted::kNo, image_info, 0,
+          kTopLeft_GrSurfaceOrigin, &surface_props);
+    } else if (context_state->graphite_context()) {
+      surface = SkSurfaces::RenderTarget(
+          context_state->gpu_main_graphite_recorder(), image_info,
+          skgpu::Mipmapped::kNo, &surface_props);
+    } else {
+      NOTREACHED();
+    }
 
     SkCanvas* canvas = surface->getCanvas();
     canvas->clear(SkColors::kBlack);
     DrawExpectedToCanvas(*canvas);
-    context_state->gr_context()->flushAndSubmit(surface);
 
     // Readback the expected image into `expected`.
     expected.allocPixels(image_info);
-    bool success = surface->readPixels(expected, 0, 0);
-    ASSERT_TRUE(success);
+    bool success = false;
+    if (context_state->gr_context()) {
+      context_state->gr_context()->flushAndSubmit(surface.get(),
+                                                  GrSyncCpu::kNo);
+      success = surface->readPixels(expected, 0, 0);
+    } else if (context_state->graphite_context()) {
+      success = gpu::GraphiteReadPixelsSync(
+          context_state->graphite_context(),
+          context_state->gpu_main_graphite_recorder(), surface.get(),
+          image_info, expected.pixmap().writable_addr(),
+          expected.pixmap().rowBytes(), 0, 0);
+    }
 
+    ASSERT_TRUE(success);
     waitable.Signal();
   }
 
@@ -1815,7 +1876,7 @@ class OopTextBlobPixelTest
       filter = nullptr;
     }
 
-    auto text_blob = BuildTextBlob(SkTypeface::MakeDefault(), UseLcdText());
+    auto text_blob = BuildTextBlob(skia::DefaultTypeface(), UseLcdText());
 
     if (strategy == TextBlobStrategy::kDirect) {
       // Draw text directly to the SkSurface.
@@ -1903,7 +1964,7 @@ class OopTextBlobPixelTest
                   sk_sp<PaintFilter> filter) {
     TextBlobStrategy strategy = GetTextBlobStrategy(GetParam());
 
-    auto text_blob = BuildTextBlob(SkTypeface::MakeDefault(), UseLcdText());
+    auto text_blob = BuildTextBlob(skia::DefaultTypeface(), UseLcdText());
 
     PaintFlags text_flags;
     text_flags.setStyle(PaintFlags::kFill_Style);
@@ -2076,8 +2137,8 @@ TEST_F(OopPixelTest, DrawTextMultipleRasterCHROMIUM) {
   options.playback_rect = options.full_raster_rect;
   options.target_color_params.color_space = gfx::ColorSpace::CreateSRGB();
 
-  auto sk_typeface_1 = SkTypeface::MakeFromName("monospace", SkFontStyle());
-  auto sk_typeface_2 = SkTypeface::MakeFromName("roboto", SkFontStyle());
+  auto sk_typeface_1 = skia::MakeTypefaceFromName("monospace", SkFontStyle());
+  auto sk_typeface_2 = skia::MakeTypefaceFromName("roboto", SkFontStyle());
 
   auto display_item_list = base::MakeRefCounted<DisplayItemList>();
   display_item_list->StartPaint();
@@ -2162,7 +2223,7 @@ TEST_F(OopPixelTest, WritePixels) {
   RasterOptions options(dest_size);
   auto* ri = raster_context_provider_->RasterInterface();
   auto* sii = raster_context_provider_->SharedImageInterface();
-  gpu::Mailbox dest_mailbox = CreateMailboxSharedImage(
+  auto dest_client_si = CreateClientSharedImage(
       ri, sii, options, viz::SinglePlaneFormat::kRGBA_8888);
   std::vector<SkPMColor> expected_pixels(dest_size.width() * dest_size.height(),
                                          SkPreMultiplyARGB(255, 0, 0, 255));
@@ -2171,12 +2232,13 @@ TEST_F(OopPixelTest, WritePixels) {
       SkImageInfo::MakeN32Premul(dest_size.width(), dest_size.height()),
       expected_pixels.data(), dest_size.width() * sizeof(SkColor));
 
-  UploadPixels(ri, dest_mailbox, expected.info(), expected);
+  UploadPixels(ri, dest_client_si->mailbox(), expected.info(), expected);
 
-  SkBitmap actual = ReadbackMailbox(ri, dest_mailbox, options.resource_size);
+  SkBitmap actual =
+      ReadbackMailbox(ri, dest_client_si->mailbox(), options.resource_size);
   gpu::SyncToken sync_token;
   ri->GenUnverifiedSyncTokenCHROMIUM(sync_token.GetData());
-  sii->DestroySharedImage(sync_token, dest_mailbox);
+  sii->DestroySharedImage(sync_token, std::move(dest_client_si));
   ExpectEquals(actual, expected);
 }
 
@@ -2200,30 +2262,30 @@ TEST_F(OopPixelTest, CopySharedImage) {
   }
 
   // Create an sRGB SharedImage and upload to it.
-  gpu::Mailbox source_mailbox;
+  scoped_refptr<gpu::ClientSharedImage> source_client_si;
   {
     RasterOptions options(size);
     options.target_color_params.color_space = source_color_space;
-    source_mailbox = CreateMailboxSharedImage(
+    source_client_si = CreateClientSharedImage(
         ri, sii, options, viz::SinglePlaneFormat::kRGBA_8888);
     ri->WaitSyncTokenCHROMIUM(sii->GenUnverifiedSyncToken().GetConstData());
 
-    ri->WritePixels(source_mailbox, /*dst_x_offset=*/0, /*dst_y_offset=*/0,
-                    /*dst_plane_index=*/0, GL_TEXTURE_2D,
-                    upload_bitmap.pixmap());
+    ri->WritePixels(
+        source_client_si->mailbox(), /*dst_x_offset=*/0, /*dst_y_offset=*/0,
+        /*dst_plane_index=*/0, GL_TEXTURE_2D, upload_bitmap.pixmap());
   }
 
   // Create a DisplayP3 SharedImage and copy to it.
-  gpu::Mailbox dest_mailbox;
+  scoped_refptr<gpu::ClientSharedImage> dest_client_si;
   {
     RasterOptions options(size);
     options.target_color_params.color_space = dest_color_space;
-    dest_mailbox = CreateMailboxSharedImage(ri, sii, options,
-                                            viz::SinglePlaneFormat::kRGBA_8888);
+    dest_client_si = CreateClientSharedImage(
+        ri, sii, options, viz::SinglePlaneFormat::kRGBA_8888);
     ri->WaitSyncTokenCHROMIUM(sii->GenUnverifiedSyncToken().GetConstData());
 
-    ri->CopySharedImage(source_mailbox, dest_mailbox, GL_TEXTURE_2D, 0, 0, 0, 0,
-                        size.width(), size.height(),
+    ri->CopySharedImage(source_client_si->mailbox(), dest_client_si->mailbox(),
+                        GL_TEXTURE_2D, 0, 0, 0, 0, size.width(), size.height(),
                         /*unpack_flip_y=*/GL_FALSE,
                         /*unpack_premultiply_alpha=*/GL_FALSE);
   }
@@ -2234,7 +2296,7 @@ TEST_F(OopPixelTest, CopySharedImage) {
     readback_bitmap.allocPixels(SkImageInfo::MakeN32Premul(
         size.width(), size.height(), dest_color_space.ToSkColorSpace()));
 
-    ri->ReadbackImagePixels(dest_mailbox, readback_bitmap.info(),
+    ri->ReadbackImagePixels(dest_client_si->mailbox(), readback_bitmap.info(),
                             readback_bitmap.rowBytes(), 0, 0,
                             /*plane_index=*/0, readback_bitmap.getPixels());
   }
@@ -2277,14 +2339,20 @@ TEST_P(OopYUVToRGBPixelTest, ConvertYUVToRGB) {
   auto* ri = raster_context_provider_->RasterInterface();
   auto* sii = raster_context_provider_->SharedImageInterface();
 
-  gpu::Mailbox dest_mailbox = CreateMailboxSharedImage(
+  auto dest_client_si = CreateClientSharedImage(
       ri, sii, options, viz::SinglePlaneFormat::kRGBA_8888, dest_color_space);
 
   constexpr viz::SharedImageFormat format = viz::SinglePlaneFormat::kR_8;
+  scoped_refptr<gpu::ClientSharedImage> yuv_client_si[3]{
+      CreateClientSharedImage(ri, sii, options, format),
+      CreateClientSharedImage(ri, sii, uv_options, format),
+      CreateClientSharedImage(ri, sii, uv_options, format)};
+
   gpu::Mailbox yuv_mailboxes[3]{
-      CreateMailboxSharedImage(ri, sii, options, format),
-      CreateMailboxSharedImage(ri, sii, uv_options, format),
-      CreateMailboxSharedImage(ri, sii, uv_options, format)};
+      yuv_client_si[0]->mailbox(),
+      yuv_client_si[1]->mailbox(),
+      yuv_client_si[2]->mailbox(),
+  };
 
   SkImageInfo y_info = SkImageInfo::Make(
       options.resource_size.width(), options.resource_size.height(),
@@ -2310,18 +2378,19 @@ TEST_P(OopYUVToRGBPixelTest, ConvertYUVToRGB) {
   memset(v_bitmap.getPixels(), 0x6b, v_bitmap.computeByteSize());
 
   // Upload initial Y+U+V planes and convert to RGB.
-  UploadPixels(ri, yuv_mailboxes[0], y_info, y_bitmap);
-  UploadPixels(ri, yuv_mailboxes[1], uv_info, u_bitmap);
-  UploadPixels(ri, yuv_mailboxes[2], uv_info, v_bitmap);
+  UploadPixels(ri, yuv_client_si[0]->mailbox(), y_info, y_bitmap);
+  UploadPixels(ri, yuv_client_si[1]->mailbox(), uv_info, u_bitmap);
+  UploadPixels(ri, yuv_client_si[2]->mailbox(), uv_info, v_bitmap);
 
-  ri->ConvertYUVAMailboxesToRGB(dest_mailbox, kJPEG_SkYUVColorSpace,
-                                TestColorSpaceConversion()
-                                    ? source_color_space.ToSkColorSpace().get()
-                                    : nullptr,
-                                SkYUVAInfo::PlaneConfig::kY_U_V,
-                                SkYUVAInfo::Subsampling::k420, yuv_mailboxes);
+  ri->ConvertYUVAMailboxesToRGB(
+      dest_client_si->mailbox(), 0, 0, options.resource_size.width(),
+      options.resource_size.height(), kJPEG_SkYUVColorSpace,
+      TestColorSpaceConversion() ? source_color_space.ToSkColorSpace().get()
+                                 : nullptr,
+      SkYUVAInfo::PlaneConfig::kY_U_V, SkYUVAInfo::Subsampling::k420,
+      yuv_mailboxes);
   SkBitmap actual_bitmap =
-      ReadbackMailbox(ri, dest_mailbox, options.resource_size,
+      ReadbackMailbox(ri, dest_client_si->mailbox(), options.resource_size,
                       dest_color_space.ToSkColorSpace());
 
   SkColor expected_color =
@@ -2338,10 +2407,10 @@ TEST_P(OopYUVToRGBPixelTest, ConvertYUVToRGB) {
   ExpectEquals(actual_bitmap, expected_bitmap, comparator);
 
   gpu::SyncToken sync_token;
-  sii->DestroySharedImage(sync_token, dest_mailbox);
-  sii->DestroySharedImage(sync_token, yuv_mailboxes[0]);
-  sii->DestroySharedImage(sync_token, yuv_mailboxes[1]);
-  sii->DestroySharedImage(sync_token, yuv_mailboxes[2]);
+  sii->DestroySharedImage(sync_token, std::move(dest_client_si));
+  sii->DestroySharedImage(sync_token, std::move(yuv_client_si[0]));
+  sii->DestroySharedImage(sync_token, std::move(yuv_client_si[1]));
+  sii->DestroySharedImage(sync_token, std::move(yuv_client_si[2]));
 }
 
 INSTANTIATE_TEST_SUITE_P(
@@ -2360,12 +2429,18 @@ TEST_F(OopPixelTest, ConvertNV12ToRGB) {
   auto* ri = raster_context_provider_->RasterInterface();
   auto* sii = raster_context_provider_->SharedImageInterface();
 
-  gpu::Mailbox dest_mailbox = CreateMailboxSharedImage(
-      ri, sii, options, viz::SinglePlaneFormat::kRGBA_8888);
+  scoped_refptr<gpu::ClientSharedImage> dest_client_si =
+      CreateClientSharedImage(ri, sii, options,
+                              viz::SinglePlaneFormat::kRGBA_8888);
+  scoped_refptr<gpu::ClientSharedImage> y_uv_client_si[2]{
+      CreateClientSharedImage(ri, sii, options, viz::SinglePlaneFormat::kR_8),
+      CreateClientSharedImage(ri, sii, uv_options,
+                              viz::SinglePlaneFormat::kRG_88),
+  };
+
   gpu::Mailbox y_uv_mailboxes[2]{
-      CreateMailboxSharedImage(ri, sii, options, viz::SinglePlaneFormat::kR_8),
-      CreateMailboxSharedImage(ri, sii, uv_options,
-                               viz::SinglePlaneFormat::kRG_88),
+      y_uv_client_si[0]->mailbox(),
+      y_uv_client_si[1]->mailbox(),
   };
 
   SkImageInfo y_info = SkImageInfo::Make(
@@ -2392,15 +2467,16 @@ TEST_F(OopPixelTest, ConvertNV12ToRGB) {
   }
 
   // Upload initial Y+UV planes and convert to RGB.
-  UploadPixels(ri, y_uv_mailboxes[0], y_info, y_bitmap);
-  UploadPixels(ri, y_uv_mailboxes[1], uv_info, uv_bitmap);
+  UploadPixels(ri, y_uv_client_si[0]->mailbox(), y_info, y_bitmap);
+  UploadPixels(ri, y_uv_client_si[1]->mailbox(), uv_info, uv_bitmap);
 
-  ri->ConvertYUVAMailboxesToRGB(dest_mailbox, kJPEG_SkYUVColorSpace,
-                                SkColorSpace::MakeSRGB().get(),
-                                SkYUVAInfo::PlaneConfig::kY_UV,
-                                SkYUVAInfo::Subsampling::k420, y_uv_mailboxes);
+  ri->ConvertYUVAMailboxesToRGB(
+      dest_client_si->mailbox(), 0, 0, options.resource_size.width(),
+      options.resource_size.height(), kJPEG_SkYUVColorSpace,
+      SkColorSpace::MakeSRGB().get(), SkYUVAInfo::PlaneConfig::kY_UV,
+      SkYUVAInfo::Subsampling::k420, y_uv_mailboxes);
   SkBitmap actual_bitmap =
-      ReadbackMailbox(ri, dest_mailbox, options.resource_size);
+      ReadbackMailbox(ri, dest_client_si->mailbox(), options.resource_size);
 
   SkBitmap expected_bitmap = MakeSolidColorBitmap(
       options.resource_size,
@@ -2409,9 +2485,9 @@ TEST_F(OopPixelTest, ConvertNV12ToRGB) {
   ExpectEquals(actual_bitmap, expected_bitmap);
 
   gpu::SyncToken sync_token;
-  sii->DestroySharedImage(sync_token, dest_mailbox);
-  sii->DestroySharedImage(sync_token, y_uv_mailboxes[0]);
-  sii->DestroySharedImage(sync_token, y_uv_mailboxes[1]);
+  sii->DestroySharedImage(sync_token, std::move(dest_client_si));
+  sii->DestroySharedImage(sync_token, std::move(y_uv_client_si[0]));
+  sii->DestroySharedImage(sync_token, std::move(y_uv_client_si[1]));
 }
 #endif  // !BUILDFLAG(IS_ANDROID_EMULATOR)
 
@@ -2447,10 +2523,16 @@ class OopPathPixelTest : public OopPixelTest,
     display_item_list->EndPaintOfUnpaired(options.full_raster_rect);
     display_item_list->Finalize();
 
-    // Allow 8 pixels in 100x100 image to be different due to non-AA pixel
-    // rounding.
     auto comparator =
+#if BUILDFLAG(IS_IOS)
+        // TODO(crbug.com/1476507): We have larger errors on the platform, but
+        // the images here still seem visually indistinguishable.
+        FuzzyPixelComparator().SetErrorPixelsPercentageLimit(0.5f);
+#else
+        // Allow 8 pixels in 100x100 image to be different due to non-AA pixel
+        // rounding.
         FuzzyPixelComparator().SetErrorPixelsPercentageLimit(0.08f);
+#endif
     auto actual = Raster(display_item_list, options);
     ExpectEquals(actual, FILE_PATH_LITERAL("oop_path.png"), comparator);
   }

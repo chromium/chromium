@@ -7,6 +7,7 @@
 #include <cmath>
 #include <cstdint>
 #include <memory>
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -26,12 +27,13 @@
 #include "base/time/time.h"
 #include "chrome/browser/ash/drive/drive_integration_service.h"
 #include "chrome/browser/ash/drive/file_system_util.h"
+#include "chrome/browser/ash/file_manager/copy_or_move_encrypted_hook_delegate.h"
 #include "chrome/browser/ash/file_manager/file_manager_copy_or_move_hook_delegate.h"
-#include "chrome/browser/ash/file_manager/file_tasks.h"
 #include "chrome/browser/ash/file_manager/fileapi_util.h"
 #include "chrome/browser/ash/file_manager/filesystem_api_util.h"
 #include "chrome/browser/ash/file_manager/io_task.h"
 #include "chrome/browser/ash/file_manager/io_task_util.h"
+#include "chrome/browser/ash/file_manager/office_file_tasks.h"
 #include "chrome/browser/ash/file_manager/path_util.h"
 #include "chrome/browser/ash/file_manager/volume_manager.h"
 #include "chrome/browser/policy/profile_policy_connector.h"
@@ -41,16 +43,21 @@
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "google_apis/common/task_util.h"
+#include "storage/browser/file_system/copy_or_move_hook_delegate_composite.h"
 #include "storage/browser/file_system/file_system_context.h"
 #include "storage/browser/file_system/file_system_operation.h"
 #include "storage/browser/file_system/file_system_operation_runner.h"
 #include "storage/browser/file_system/file_system_url.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/cros_system_api/constants/cryptohome.h"
 
 namespace file_manager::io_task {
 
 namespace {
+
+bool* DestinationNoSpace() {
+  static bool destination_no_space = false;
+  return &destination_no_space;
+}
 
 // Starts the copy operation via FileSystemOperationRunner.
 storage::FileSystemOperationRunner::OperationID StartCopyOnIOThread(
@@ -184,6 +191,12 @@ bool CopyOrMoveIOTaskImpl::IsCrossFileSystemForTesting(
   return IsCrossFileSystem(profile, source_url, destination_url);
 }
 
+// static
+void CopyOrMoveIOTaskImpl::SetDestinationNoSpaceForTesting(
+    bool destination_no_space) {
+  *DestinationNoSpace() = destination_no_space;
+}
+
 void CopyOrMoveIOTaskImpl::Execute(IOTask::ProgressCallback progress_callback,
                                    IOTask::CompleteCallback complete_callback) {
   progress_callback_ = std::move(progress_callback);
@@ -237,6 +250,11 @@ void CopyOrMoveIOTaskImpl::Complete(State state) {
       base::BindOnce(std::move(complete_callback_), std::move(*progress_)));
 }
 
+void CopyOrMoveIOTaskImpl::CompleteWithError(PolicyError policy_error) {
+  progress_->state = State::kError;
+  progress_->policy_error.emplace(std::move(policy_error));
+}
+
 void CopyOrMoveIOTaskImpl::VerifyTransfer() {
   // TODO(b/280947989) remove this code once Multi-user sign-in is deprecated.
   // Prevent files being copied or moved to ODFS if there is a managed user
@@ -246,7 +264,8 @@ void CopyOrMoveIOTaskImpl::VerifyTransfer() {
                                      progress_->GetDestinationFolder()) &&
       user_manager::UserManager::Get()->GetLoggedInUsers().size() > 1) {
     // Check none of the logged in users are managed.
-    for (auto* user : user_manager::UserManager::Get()->GetLoggedInUsers()) {
+    for (user_manager::User* user :
+         user_manager::UserManager::Get()->GetLoggedInUsers()) {
       Profile* user_profile = Profile::FromBrowserContext(
           ash::BrowserContextHelper::Get()->GetBrowserContextByUser(user));
       if (user_profile->GetProfilePolicyConnector()->IsManaged()) {
@@ -276,10 +295,10 @@ void CopyOrMoveIOTaskImpl::GetFileSize(size_t idx) {
   const base::FilePath& source = progress_->sources[idx].url.path();
   const base::FilePath& destination = progress_->GetDestinationFolder().path();
 
-  constexpr auto metadata_fields =
-      storage::FileSystemOperation::GET_METADATA_FIELD_IS_DIRECTORY |
-      storage::FileSystemOperation::GET_METADATA_FIELD_SIZE |
-      storage::FileSystemOperation::GET_METADATA_FIELD_TOTAL_SIZE;
+  constexpr storage::FileSystemOperation::GetMetadataFieldSet metadata_fields =
+      {storage::FileSystemOperation::GetMetadataField::kIsDirectory,
+       storage::FileSystemOperation::GetMetadataField::kSize,
+       storage::FileSystemOperation::GetMetadataField::kRecursiveSize};
 
   auto get_metadata_callback =
       base::BindOnce(&GetFileMetadataOnIOThread, file_system_context_,
@@ -395,7 +414,7 @@ void CopyOrMoveIOTaskImpl::GotFreeDiskSpace(int64_t free_space) {
     }
   }
 
-  if (required_bytes > free_space) {
+  if (required_bytes > free_space || *DestinationNoSpace()) {
     progress_->outputs.emplace_back(progress_->GetDestinationFolder(),
                                     base::File::FILE_ERROR_NO_SPACE);
     LOG(ERROR) << "Insufficient free space in destination";
@@ -511,12 +530,12 @@ void CopyOrMoveIOTaskImpl::CopyOrMoveFile(
 
   if (!destination_result.has_value()) {
     progress_->outputs.emplace_back(progress_->GetDestinationFolder(),
-                                    absl::nullopt);
+                                    std::nullopt);
     OnCopyOrMoveComplete(idx, destination_result.error());
     return;
   }
 
-  progress_->outputs.emplace_back(destination_result.value(), absl::nullopt);
+  progress_->outputs.emplace_back(destination_result.value(), std::nullopt);
   DCHECK_EQ(idx + 1, progress_->outputs.size());
 
   const storage::FileSystemURL& source_url = progress_->sources[idx].url;
@@ -558,6 +577,7 @@ void CopyOrMoveIOTaskImpl::CopyOrMoveFile(
   // Use it to automatically resolve the conflict (no need to ask the UI).
   if (!conflict_resolve_.empty()) {
     ResumeParams params;
+    params.conflict_params.emplace();
     params.conflict_params->conflict_resolve = conflict_resolve_;
     params.conflict_params->conflict_apply_to_all = true;
     ResumeCopyOrMoveFile(idx, std::move(replace_url),
@@ -576,17 +596,18 @@ void CopyOrMoveIOTaskImpl::CopyOrMoveFile(
 
   // Enter state PAUSED: send pause params to the UI, to ask the user how to
   // resolve the file name conflict.
-  progress_->state = State::kPaused;
-  progress_->pause_params.conflict_params->conflict_name =
-      basename.AsUTF8Unsafe();
-  progress_->pause_params.conflict_params->conflict_multiple =
-      (idx < progress_->sources.size() - 1) ? true : false;
-  progress_->pause_params.conflict_params->conflict_is_directory =
-      progress_->sources[idx].is_directory;
   auto destination_folder = file_system_context_->CreateCrackedFileSystemURL(
       progress_->GetDestinationFolder().storage_key(),
       progress_->GetDestinationFolder().mount_type(),
       progress_->GetDestinationFolder().virtual_path());
+  progress_->state = State::kPaused;
+  progress_->pause_params.conflict_params.emplace();
+  progress_->pause_params.conflict_params->conflict_name =
+      basename.AsUTF8Unsafe();
+  progress_->pause_params.conflict_params->conflict_is_directory =
+      progress_->sources[idx].is_directory;
+  progress_->pause_params.conflict_params->conflict_multiple =
+      (idx < progress_->sources.size() - 1);
   progress_->pause_params.conflict_params->conflict_target_url =
       destination_folder.ToGURL().spec();
   progress_callback_.Run(*progress_);
@@ -718,6 +739,21 @@ CopyOrMoveIOTaskImpl::GetErrorBehavior() {
   return storage::FileSystemOperation::ERROR_BEHAVIOR_ABORT;
 }
 
+bool CopyOrMoveIOTaskImpl::ShouldSkipEncryptedFiles() {
+  if (!base::FeatureList::IsEnabled(ash::features::kDriveFsShowCSEFiles)) {
+    return false;
+  }
+  auto* drive_integration_service =
+      drive::util::GetIntegrationServiceByProfile(profile_);
+  if (!drive_integration_service) {
+    return false;
+  }
+  if (!drive_integration_service->IsMounted()) {
+    return false;
+  }
+  return true;
+}
+
 std::unique_ptr<storage::CopyOrMoveHookDelegate>
 CopyOrMoveIOTaskImpl::GetHookDelegate(size_t idx) {
   // Using CreateRelayCallback to ensure that the callbacks are executed on the
@@ -725,7 +761,19 @@ CopyOrMoveIOTaskImpl::GetHookDelegate(size_t idx) {
   auto progress_callback = google_apis::CreateRelayCallback(
       base::BindRepeating(&CopyOrMoveIOTaskImpl::OnCopyOrMoveProgress,
                           weak_ptr_factory_.GetWeakPtr(), idx));
-  return std::make_unique<FileManagerCopyOrMoveHookDelegate>(progress_callback);
+  auto hook = std::make_unique<FileManagerCopyOrMoveHookDelegate>(
+      std::move(progress_callback));
+
+  if (ShouldSkipEncryptedFiles()) {
+    auto encryptedHook = std::make_unique<CopyOrMoveEncryptedHookDelegate>(
+        profile_,
+        base::BindRepeating(&CopyOrMoveIOTaskImpl::OnEncryptedFileSkipped,
+                            weak_ptr_factory_.GetWeakPtr(), idx));
+    auto combinedHook = storage::CopyOrMoveHookDelegateComposite::CreateOrAdd(
+        std::move(hook), std::move(encryptedHook));
+    return combinedHook;
+  }
+  return hook;
 }
 
 void CopyOrMoveIOTaskImpl::OnCopyOrMoveProgress(
@@ -789,6 +837,14 @@ void CopyOrMoveIOTaskImpl::OnCopyOrMoveProgress(
   progress_callback_.Run(*progress_);
 }
 
+void CopyOrMoveIOTaskImpl::OnEncryptedFileSkipped(size_t idx,
+                                                  storage::FileSystemURL url) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  progress_->skipped_encrypted_files.emplace_back(std::move(url));
+  progress_->sources[idx].error = base::File::FILE_ERROR_FAILED;
+  progress_->outputs[idx].error = base::File::FILE_ERROR_FAILED;
+}
+
 void CopyOrMoveIOTaskImpl::OnCopyOrMoveComplete(size_t idx,
                                                 base::File::Error error) {
   DCHECK(idx < progress_->sources.size());
@@ -796,8 +852,12 @@ void CopyOrMoveIOTaskImpl::OnCopyOrMoveComplete(size_t idx,
 
   operation_id_.reset();
 
-  progress_->sources[idx].error = error;
-  progress_->outputs[idx].error = error;
+  if (!progress_->sources[idx].error) {
+    progress_->sources[idx].error = error;
+  }
+  if (!progress_->outputs[idx].error) {
+    progress_->outputs[idx].error = error;
+  }
 
   auto& [individual_progress, aggregate_progress] = item_progresses[idx];
   individual_progress.clear();

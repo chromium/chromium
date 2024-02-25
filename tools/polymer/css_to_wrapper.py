@@ -3,7 +3,7 @@
 # found in the LICENSE file.
 
 # Generetes a wrapper TS file around a source CSS file holding a Polymer style
-# module, or a Polymer <custom-style> holding CSS variable. Any metadata
+# module, or a Polymer <style> holding CSS variable. Any metadata
 # necessary for populating the wrapper file are provided in the form of special
 # CSS comments. The ID of a style module is inferred from the filename, for
 # example foo_style.css will be held in a module with ID 'foo-style'.
@@ -30,7 +30,7 @@ _INCLUDE_REGEX = '#include='
 _SCHEME_REGEX = '#scheme='
 _TYPE_REGEX = '#type='
 
-_STYLE_TEMPLATE = """import {html} from \'%(scheme)s//resources/polymer/v3_0/polymer/polymer_bundled.min.js\';
+_POLYMER_STYLE_TEMPLATE = """import {html} from \'%(scheme)s//resources/polymer/v3_0/polymer/polymer_bundled.min.js\';
 %(imports)s
 
 const styleMod = document.createElement(\'dom-module\');
@@ -43,17 +43,45 @@ styleMod.appendChild(html`
 `.content);
 styleMod.register(\'%(id)s\');"""
 
-_VARS_TEMPLATE = """import {html} from \'%(scheme)s//resources/polymer/v3_0/polymer/polymer_bundled.min.js\';
+_POLYMER_VARS_TEMPLATE = """import {html} from \'%(scheme)s//resources/polymer/v3_0/polymer/polymer_bundled.min.js\';
 %(imports)s
 
 const template = html`
-<custom-style>
-  <style>
+<style>
 %(content)s
-  </style>
-</custom-style>
+</style>
 `;
 document.head.appendChild(template.content);"""
+
+# Template for Lit component CSS styles.
+_LIT_STYLE_TEMPLATE = """import {css, CSSResultGroup} from '%(scheme)s//resources/lit/v3_0/lit.rollup.js';
+%(imports)s
+
+let instance: CSSResultGroup|null = null;
+export function getCss() {
+  return instance || (instance = [...[%(deps)s], css`%(content)s`]);
+}"""
+
+_LIT_VARS_TEMPLATE = """import {css} from '%(scheme)s//resources/lit/v3_0/lit.rollup.js';
+%(imports)s
+
+const result = css`%(content)s`;
+document.adoptedStyleSheets = [...document.adoptedStyleSheets!, result.styleSheet!];"""
+
+# Map holding all the different types of CSS files to generate wrappers for.
+_TEMPLATE_MAP = {
+    'style': _POLYMER_STYLE_TEMPLATE,
+    'style-lit': _LIT_STYLE_TEMPLATE,
+    'vars': _POLYMER_VARS_TEMPLATE,
+    'vars-lit': _LIT_VARS_TEMPLATE,
+}
+
+# A suffix used for style files that are copies of Polymer styles ported into
+# Lit. It is treated specially below so that the Polymer file acts as a source
+# of truth, to avoid duplication while both files styles need to be available.
+# TODO(crbug.com/40943652): Remove special handling when having the same styles
+# available in both Polymer and Lit is no longer needed.
+_LIT_SUFFIX = "_lit.css"
 
 
 def _parse_style_line(line, metadata):
@@ -63,12 +91,10 @@ def _parse_style_line(line, metadata):
         'include'], f'Found multiple "{_INCLUDE_REGEX}" lines. Only one should exist.'
     metadata['include'] = line[include_match.end():]
 
-  import_match = re.search(_IMPORT_REGEX, line)
-  if import_match:
-    metadata['imports'].append(line[import_match.end():])
+  _parse_import_line(line, metadata)
 
 
-def _parse_vars_line(line, metadata):
+def _parse_import_line(line, metadata):
   import_match = re.search(_IMPORT_REGEX, line)
   if import_match:
     metadata['imports'].append(line[import_match.end():])
@@ -107,7 +133,7 @@ def _extract_metadata(css_file):
           type_match = re.search(_TYPE_REGEX, line)
           if type_match:
             type = line[type_match.end():]
-            assert type in ['style', 'vars']
+            assert type in ['style', 'style-lit', 'vars', 'vars-lit']
 
             if type == 'style':
               id = path.splitext(path.basename(css_file))[0].replace('_', '-')
@@ -119,7 +145,15 @@ def _extract_metadata(css_file):
                   'scheme': metadata['scheme'],
                   'type': type,
               }
-            elif type == 'vars':
+            elif type == 'style-lit':
+              metadata = {
+                  'imports': [],
+                  'include': None,
+                  'metadata_end_line': -1,
+                  'scheme': metadata['scheme'],
+                  'type': type,
+              }
+            elif type == 'vars' or type == 'vars-lit':
               metadata = {
                   'imports': [],
                   'metadata_end_line': -1,
@@ -127,10 +161,10 @@ def _extract_metadata(css_file):
                   'type': type,
               }
 
-        elif metadata['type'] == 'style':
+        elif metadata['type'] == 'style' or metadata['type'] == 'style-lit':
           _parse_style_line(line, metadata)
-        elif metadata['type'] == 'vars':
-          _parse_vars_line(line, metadata)
+        elif metadata['type'] == 'vars' or metadata['type'] == 'vars-lit':
+          _parse_import_line(line, metadata)
 
         if metadata['scheme'] == 'default':
           scheme_match = re.search(_SCHEME_REGEX, line)
@@ -194,14 +228,56 @@ def main(argv):
   def _urls_to_imports(urls):
     return '\n'.join(map(lambda i: f'import \'{i}\';', urls))
 
+  def _dash_case_to_title_case(string):
+    return string.replace('-', ' ').title().replace(' ', '')
+
+  def _urls_to_imports_lit(metadata):
+    if metadata['include'] is None:
+      # Case where no dependencies to other styles exist.
+      return '\n'.join(map(lambda i: f'import \'{i}\';', metadata['imports']))
+
+    # Case where dependencies to other styles exist. Need to generate different
+    # imports for such dependencies
+
+    imports = []
+    style_deps = metadata['include'].split()
+
+    for dep in metadata['imports']:
+      # Convert 'foo/bar/some_style.css.js' to a'some-style' identifier.
+      style_id = path.split(dep)[1].replace('_', '-').replace('.css.js', '')
+      if style_id in style_deps:
+        # Convert 'some-style' to 'SomeStyle'.
+        alias = _dash_case_to_title_case(style_id)
+        imports.append(f'import {{getCss as get{alias}}} from \'{dep}\';')
+      else:
+        imports.append(f'import \'{dep}\';')
+    return '\n'.join(imports)
+
+  def _deps_to_function_calls(style_deps):
+    # Convert 'some-style' to 'getSomeStyle()'.
+    return ','.join(
+        map(lambda d: 'get' + _dash_case_to_title_case(d) + '()', style_deps))
+
   for in_file in args.in_files:
     # Extract metadata from the original file, as the special metadata comments
     # only exist there.
     metadata = _extract_metadata(path.join(in_folder, in_file))
 
-    # Extract the CSS content from either the original or the minified files.
-    content = _extract_content(path.join(wrapper_in_folder, in_file), metadata,
-                               args.minify)
+    content = ''
+
+    if in_file.endswith(_LIT_SUFFIX):
+      # Treat the _LIT_SUFFIX in a special way, so that the CSS content is
+      # actually extracted from the equivalent Polymer file instead.
+      polymer_in_file = in_file.replace(_LIT_SUFFIX, '.css')
+      assert polymer_in_file in args.in_files
+      polymer_metadata = _extract_metadata(path.join(in_folder,
+                                                     polymer_in_file))
+      content = _extract_content(path.join(wrapper_in_folder, polymer_in_file),
+                                 polymer_metadata, args.minify)
+    else:
+      # Extract the CSS content from either the original or the minified files.
+      content = _extract_content(path.join(wrapper_in_folder, in_file),
+                                 metadata, args.minify)
 
     # Extract the URL scheme that should be used for absolute URL imports.
     scheme = None
@@ -210,28 +286,37 @@ def main(argv):
     elif metadata['scheme'] == 'relative':
       scheme = ''
 
-    wrapper = None
+    substitutions = None
     if metadata['type'] == 'style':
       include = ''
       if metadata['include']:
         parsed_include = metadata['include']
         include = f' include="{parsed_include}"'
 
-      wrapper = _STYLE_TEMPLATE % {
+      substitutions = {
           'imports': _urls_to_imports(metadata['imports']),
           'content': content,
           'include': include,
           'id': metadata['id'],
           'scheme': scheme,
       }
-    elif metadata['type'] == 'vars':
-      wrapper = _VARS_TEMPLATE % {
+    elif metadata['type'] == 'style-lit':
+      substitutions = {
+          'imports': _urls_to_imports_lit(metadata),
+          'deps': '' if metadata['include'] is None else \
+              _deps_to_function_calls(metadata['include'].split()),
+          'content': content,
+          'scheme': scheme,
+      }
+    elif metadata['type'] == 'vars' or metadata['type'] == 'vars-lit':
+      substitutions = {
           'imports': _urls_to_imports(metadata['imports']),
           'content': content,
           'scheme': scheme,
       }
 
-    assert wrapper
+    assert substitutions
+    wrapper = _TEMPLATE_MAP[metadata['type']] % substitutions
 
     out_folder_for_file = path.join(out_folder, path.dirname(in_file))
     makedirs(out_folder_for_file, exist_ok=True)

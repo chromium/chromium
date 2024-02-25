@@ -10,6 +10,57 @@ import "chromeos/ash/services/secure_channel/public/mojom/secure_channel_types.m
 // with each connection request.
 const string kServiceId = "secure_channel";
 
+enum NearbyConnectionStep {
+  kDiscoveringEndpointStarted,
+  kDiscoveringEndpointEnded,
+  kRequestingConnectionStarted,
+  kRequestingConnectionEnded,
+  kAcceptingConnectionStarted,
+  kAcceptingConnectionFinished,
+  kWaitingForConnectionToBeAcceptedByRemoteDeviceStarted,
+  kWaitingForConnectionToBeAcceptedByRemoteDeviceEnded,
+  kConnected,
+  kUpgradedToWebRtc,
+  kDisconnectionStarted,
+  kDisconnectionFinished
+};
+
+enum NearbyConnectionStepResult {
+  kSuccess,
+  // The operation to transition to another NearbyConnectionState timeout.
+  kTimeoutTransitionState,
+
+  // The error codes below map to error status of
+  // nearby.connections.mojom::Status
+  kError,
+  kOutOfOrderApiCall,
+  kAlreadyHaveActiveStrategy,
+  kAlreadyAdvertising,
+  kAlreadyDiscovering,
+  kEndpointIOError,
+  kEndpointUnknown,
+  kConnectionRejected,
+  kAlreadyConnectedToEndpoint,
+  kNotConnectedToEndpoint,
+  kBluetoothError,
+  kBleError,
+  kWifiLanError,
+  kPayloadUnknown,
+  kAlreadyListening,
+  kReset,
+  kTimeout,
+  kUnknown,
+};
+
+// Listens to Nearby Connection state change. This is called from non-service
+// browser process code, where the NearbyConnector runs, into SecureChannel
+// service, which runs in the browser process.
+interface NearbyConnectionStateListener {
+  // Called whenever Nearby Connection state changes.
+  OnNearbyConnectionStateChanged(NearbyConnectionStep step,
+                                 NearbyConnectionStepResult result);
+};
+
 // Sends messages over a Nearby Connection.
 interface NearbyMessageSender {
   // Sends |message|, returning whether the message was sent successfully.
@@ -55,7 +106,9 @@ interface NearbyConnector {
   // be notified if a disconnection should occur.
   Connect(array<uint8, 6> bluetooth_public_address,
           array<uint8, 2> eid,
-          pending_remote<NearbyMessageReceiver> message_receiver) =>
+          pending_remote<NearbyMessageReceiver> message_receiver,
+          pending_remote<NearbyConnectionStateListener>
+          nearby_connection_state_listener) =>
       (pending_remote<NearbyMessageSender>? message_sender,
        pending_remote<NearbyFilePayloadHandler>? file_payload_handler);
 };

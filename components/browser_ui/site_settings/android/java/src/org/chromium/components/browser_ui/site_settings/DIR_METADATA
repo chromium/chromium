@@ -1,0 +1,6 @@
+monorail: {
+  component: "UI>Browser>SiteSettings"
+}
+buganizer_public: {
+  component_id: 1457356
+}

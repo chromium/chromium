@@ -28,7 +28,7 @@ class WebApkInstallServiceFactory : public ProfileKeyedServiceFactory {
   WebApkInstallServiceFactory();
   ~WebApkInstallServiceFactory() override;
 
-  KeyedService* BuildServiceInstanceFor(
+  std::unique_ptr<KeyedService> BuildServiceInstanceForBrowserContext(
       content::BrowserContext* context) const override;
 };
 

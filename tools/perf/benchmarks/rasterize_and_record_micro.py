@@ -51,7 +51,7 @@ class _RasterizeAndRecordMicro(perf_benchmark.PerfBenchmark):
 class RasterizeAndRecordMicroTop25(_RasterizeAndRecordMicro):
   """Measures rasterize and record performance on the top 25 web pages.
 
-  http://www.chromium.org/developers/design-documents/rendering-benchmarks"""
+  https://chromium.googlesource.com/chromium/src/+/HEAD/docs/speed/benchmark/harnesses/rendering.md"""
   page_set = page_sets.StaticTop25PageSet
 
   @classmethod

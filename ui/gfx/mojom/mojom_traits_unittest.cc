@@ -351,6 +351,11 @@ TEST_F(StructTraitsTest, HDRMetadata) {
   mojo::test::SerializeAndDeserialize<gfx::mojom::HDRMetadata>(input, output);
   EXPECT_EQ(input, output);
 
+  // Include SDR white level.
+  input.ndwl.emplace(123.f);
+  mojo::test::SerializeAndDeserialize<gfx::mojom::HDRMetadata>(input, output);
+  EXPECT_EQ(input, output);
+
   // Include extended range.
   input.extended_range.emplace(10.f, 4.f);
   mojo::test::SerializeAndDeserialize<gfx::mojom::HDRMetadata>(input, output);

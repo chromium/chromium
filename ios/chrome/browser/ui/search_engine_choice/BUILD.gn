@@ -1,0 +1,137 @@
+# Copyright 2023 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("search_engine_choice") {
+  sources = [
+    "search_engine_choice_consumer.h",
+    "search_engine_choice_coordinator.h",
+    "search_engine_choice_coordinator.mm",
+    "search_engine_choice_mediator.h",
+    "search_engine_choice_mediator.mm",
+    "search_engine_choice_view_controller.h",
+    "search_engine_choice_view_controller.mm",
+  ]
+  deps = [
+    ":constants",
+    ":ui_util",
+    "//base",
+    "//components/search_engines",
+    "//components/strings",
+    "//ios/chrome/app/strings",
+    "//ios/chrome/browser/search_engines/model:template_url_service_factory",
+    "//ios/chrome/browser/shared/coordinator/chrome_coordinator",
+    "//ios/chrome/browser/shared/model/browser",
+    "//ios/chrome/browser/shared/model/browser_state",
+    "//ios/chrome/browser/shared/public/commands",
+    "//ios/chrome/browser/shared/ui/symbols",
+    "//ios/chrome/browser/shared/ui/table_view:utils",
+    "//ios/chrome/browser/shared/ui/table_view/cells",
+    "//ios/chrome/browser/shared/ui/util",
+    "//ios/chrome/browser/ui/first_run:screen_delegate",
+    "//ios/chrome/browser/ui/search_engine_choice/fake_omnibox",
+    "//ios/chrome/browser/ui/search_engine_choice/search_engine_choice_table",
+    "//ios/chrome/browser/ui/search_engine_choice/search_engine_choice_table/cells",
+    "//ios/chrome/browser/ui/search_engine_choice/why_am_i_seeing_this",
+    "//ios/chrome/common/ui/colors:colors",
+    "//ios/chrome/common/ui/util",
+  ]
+  frameworks = [ "UIKit.framework" ]
+}
+
+source_set("constants") {
+  sources = [
+    "search_engine_choice_constants.h",
+    "search_engine_choice_constants.mm",
+  ]
+  deps = [ "//base" ]
+}
+
+source_set("ui_util") {
+  sources = [
+    "search_engine_choice_ui_util.h",
+    "search_engine_choice_ui_util.mm",
+  ]
+  deps = [
+    "//base",
+    "//base:i18n",
+    "//components/search_engines",
+    "//components/strings",
+    "//ios/chrome/app/strings",
+    "//ios/chrome/browser/shared/public/features",
+    "//ios/chrome/browser/shared/ui/symbols",
+    "//ios/chrome/browser/shared/ui/util",
+    "//ios/chrome/browser/ui/search_engine_choice:constants",
+    "//ios/chrome/common/ui/colors",
+    "//ios/chrome/common/ui/util",
+    "//ios/chrome/common/ui/util:image_util",
+    "//ui/base",
+  ]
+  frameworks = [ "UIKit.framework" ]
+}
+
+source_set("earl_grey_ui_test_util") {
+  testonly = true
+  sources = [
+    "search_engine_choice_earl_grey_ui_test_util.h",
+    "search_engine_choice_earl_grey_ui_test_util.mm",
+  ]
+  deps = [
+    "//base",
+    "//base:i18n",
+    "//components/search_engines",
+    "//ios/chrome/app/strings",
+    "//ios/chrome/browser/shared/ui/symbols",
+    "//ios/chrome/browser/shared/ui/util",
+    "//ios/chrome/browser/ui/search_engine_choice:constants",
+    "//ios/chrome/browser/ui/settings:constants",
+    "//ios/chrome/test/earl_grey:eg_test_support+eg2",
+    "//ios/testing/earl_grey:eg_test_support+eg2",
+    "//ui/base",
+  ]
+  frameworks = [ "UIKit.framework" ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "search_engine_choice_coordinator_unittest.mm" ]
+  deps = [
+    ":search_engine_choice",
+    "//base/test:test_support",
+    "//components/country_codes",
+    "//components/prefs:test_support",
+    "//components/search_engines",
+    "//components/strings",
+    "//components/sync_preferences:test_support",
+    "//ios/chrome/browser/promos_manager/model:test_support",
+    "//ios/chrome/browser/search_engines/model:template_url_service_factory",
+    "//ios/chrome/browser/shared/model/browser/test:test_support",
+    "//ios/chrome/browser/shared/model/browser_state:test_support",
+    "//ios/chrome/browser/shared/public/commands",
+    "//ios/chrome/browser/ui/browser_view",
+    "//ios/chrome/browser/ui/first_run:screen_delegate",
+    "//ios/chrome/browser/ui/search_engine_choice/search_engine_choice_table",
+    "//ios/chrome/test:test_support",
+    "//ios/web/public/test",
+    "//testing/gtest",
+    "//third_party/ocmock",
+  ]
+}
+
+source_set("eg2_tests") {
+  configs += [ "//build/config/ios:xctest_config" ]
+  testonly = true
+  sources = [ "search_engine_choice_egtest.mm" ]
+  deps = [
+    ":constants",
+    ":earl_grey_ui_test_util",
+    "//base",
+    "//base/test:test_support",
+    "//build:branding_buildflags",
+    "//components/search_engines",
+    "//components/signin/public/base:signin_switches",
+    "//ios/chrome/browser/ui/settings:eg_test_support+eg2",
+    "//ios/chrome/test/earl_grey:eg_test_support+eg2",
+    "//ios/testing/earl_grey:eg_test_support+eg2",
+  ]
+}

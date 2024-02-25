@@ -4,6 +4,7 @@
 
 #include "components/feed/core/v2/protocol_translator.h"
 
+#include <optional>
 #include <string>
 #include <utility>
 
@@ -23,7 +24,6 @@
 #include "components/feed/core/v2/metrics_reporter.h"
 #include "components/feed/core/v2/proto_util.h"
 #include "components/feed/feed_feature_list.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace feed {
 
@@ -74,7 +74,7 @@ base::TimeDelta TranslateDuration(const feedwire::Duration& v) {
   return base::Seconds(v.seconds()) + base::Nanoseconds(v.nanos());
 }
 
-absl::optional<RequestSchedule> TranslateRequestSchedule(
+std::optional<RequestSchedule> TranslateRequestSchedule(
     base::Time now,
     const feedwire::RequestSchedule& v) {
   RequestSchedule schedule;
@@ -90,14 +90,14 @@ absl::optional<RequestSchedule> TranslateRequestSchedule(
 
 // Fields that should be present at most once in the response.
 struct ConvertedGlobalData {
-  absl::optional<RequestSchedule> request_schedule;
+  std::optional<RequestSchedule> request_schedule;
 };
 
 struct ConvertedDataOperation {
   feedstore::StreamStructure stream_structure;
-  absl::optional<feedstore::Content> content;
-  absl::optional<feedstore::StreamSharedState> shared_state;
-  absl::optional<std::string> next_page_token;
+  std::optional<feedstore::Content> content;
+  std::optional<feedstore::StreamSharedState> shared_state;
+  std::optional<std::string> next_page_token;
 };
 
 bool TranslateFeature(feedwire::Feature* feature,
@@ -128,11 +128,11 @@ bool TranslateFeature(feedwire::Feature* feature,
   return true;
 }
 
-absl::optional<feedstore::StreamSharedState> TranslateSharedState(
+std::optional<feedstore::StreamSharedState> TranslateSharedState(
     feedwire::ContentId content_id,
     feedwire::RenderData& wire_shared_state) {
   if (wire_shared_state.render_data_type() != feedwire::RenderData::XSURFACE) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   feedstore::StreamSharedState shared_state;
@@ -188,7 +188,7 @@ bool TranslatePayload(base::Time now,
   return true;
 }
 
-absl::optional<ConvertedDataOperation> TranslateDataOperationInternal(
+std::optional<ConvertedDataOperation> TranslateDataOperationInternal(
     base::Time now,
     feedwire::DataOperation operation,
     ConvertedGlobalData* global_data) {
@@ -204,18 +204,18 @@ absl::optional<ConvertedDataOperation> TranslateDataOperationInternal(
 
     case feedstore::StreamStructure::UPDATE_OR_APPEND:
       if (!operation.has_metadata() || !operation.metadata().has_content_id())
-        return absl::nullopt;
+        return std::nullopt;
 
       result.stream_structure.set_allocated_content_id(
           operation.mutable_metadata()->release_content_id());
 
       if (!TranslatePayload(now, std::move(operation), global_data, result))
-        return absl::nullopt;
+        return std::nullopt;
       break;
 
     case feedstore::StreamStructure::REMOVE:
       if (!operation.has_metadata() || !operation.metadata().has_content_id())
-        return absl::nullopt;
+        return std::nullopt;
 
       result.stream_structure.set_allocated_content_id(
           operation.mutable_metadata()->release_content_id());
@@ -223,10 +223,39 @@ absl::optional<ConvertedDataOperation> TranslateDataOperationInternal(
 
     case feedstore::StreamStructure::UNKNOWN:  // Fall through
     default:
-      return absl::nullopt;
+      return std::nullopt;
   }
 
   return result;
+}
+
+// Returns StreamStructure to append a feature.
+feedstore::StreamStructure FeatureStreamStructure(int id) {
+  feedstore::StreamStructure feature;
+  feature.set_type(feedstore::StreamStructure::CONTENT);
+  feature.set_operation(feedstore::StreamStructure::UPDATE_OR_APPEND);
+
+  feedwire::ContentId content;
+  content.set_id(id);
+  content.set_type(ContentId::FEATURE);
+
+  *feature.mutable_content_id() = content;
+  return feature;
+}
+
+// Returns StreamStructure to append a root stream.
+feedstore::StreamStructure RootStreamStructure(int id) {
+  feedstore::StreamStructure root;
+  root.set_type(feedstore::StreamStructure::STREAM);
+  root.set_operation(feedstore::StreamStructure::UPDATE_OR_APPEND);
+  root.set_is_root(true);
+
+  feedwire::ContentId content_id;
+  content_id.set_id(id);
+  content_id.set_type(ContentId::TYPE_UNDEFINED);
+
+  *root.mutable_content_id() = content_id;
+  return root;
 }
 
 }  // namespace
@@ -244,7 +273,7 @@ RefreshResponseData::RefreshResponseData(RefreshResponseData&&) = default;
 RefreshResponseData& RefreshResponseData::operator=(RefreshResponseData&&) =
     default;
 
-absl::optional<feedstore::DataOperation> TranslateDataOperation(
+std::optional<feedstore::DataOperation> TranslateDataOperation(
     base::Time now,
     feedwire::DataOperation wire_operation) {
   feedstore::DataOperation store_operation;
@@ -252,15 +281,15 @@ absl::optional<feedstore::DataOperation> TranslateDataOperation(
   // actions embedded in the server protobuf. Some data in data operations
   // aren't supported by this function, which is why we're passing in
   // global_data=nullptr.
-  absl::optional<ConvertedDataOperation> converted =
+  std::optional<ConvertedDataOperation> converted =
       TranslateDataOperationInternal(now, std::move(wire_operation), nullptr);
   if (!converted)
-    return absl::nullopt;
+    return std::nullopt;
 
   // We only support translating StreamSharedStates when they will be attached
   // to StreamModelUpdateRequests.
   if (converted->shared_state)
-    return absl::nullopt;
+    return std::nullopt;
 
   *store_operation.mutable_structure() = std::move(converted->stream_structure);
   if (converted->content)
@@ -286,7 +315,7 @@ RefreshResponseData TranslateWireResponse(
     if (!wire_data_operation.has_operation())
       continue;
 
-    absl::optional<ConvertedDataOperation> operation =
+    std::optional<ConvertedDataOperation> operation =
         TranslateDataOperationInternal(
             current_time, std::move(wire_data_operation), &global_data);
     if (!operation)
@@ -315,7 +344,7 @@ RefreshResponseData TranslateWireResponse(
 
   const auto& response_metadata = feed_response->feed_response_metadata();
 
-  absl::optional<feedstore::Metadata::StreamMetadata::ContentLifetime>
+  std::optional<feedstore::Metadata::StreamMetadata::ContentLifetime>
       content_lifetime;
   if (response_metadata.has_content_lifetime()) {
     content_lifetime =
@@ -352,19 +381,19 @@ RefreshResponseData TranslateWireResponse(
     }
   }
 
-  absl::optional<std::string> session_id = absl::nullopt;
+  std::optional<std::string> session_id = std::nullopt;
   if (!account_info.IsEmpty()) {
     // Signed-in requests don't use session_id tokens; set an empty value to
     // ensure that there are no old session_id tokens left hanging around.
     session_id = std::string();
   } else if (chrome_response_metadata.has_session_id()) {
     // Signed-out requests can set a new session token; otherwise, we leave
-    // the default absl::nullopt value to keep whatever token is already in
+    // the default std::nullopt value to keep whatever token is already in
     // play.
     session_id = chrome_response_metadata.session_id();
   }
 
-  absl::optional<Experiments> experiments =
+  std::optional<Experiments> experiments =
       TranslateExperiments(chrome_response_metadata.experiments());
 
   MetricsReporter::ActivityLoggingEnabled(
@@ -392,12 +421,48 @@ RefreshResponseData TranslateWireResponse(
   return response_data;
 }
 
+RefreshResponseData TranslateWireResponse(
+    supervised_user::GetDiscoverFeedResponse response,
+    StreamModelUpdateRequest::Source source,
+    const AccountInfo& account_info,
+    base::Time current_time) {
+  auto result = std::make_unique<StreamModelUpdateRequest>();
+  result->source = source;
+
+  feedstore::StreamStructure root = RootStreamStructure(/*id=*/1);
+  feedwire::ContentId root_content_id = root.content_id();
+  result->stream_structures.push_back(std::move(root));
+  // TODO(b/306594797): Use unique identifier sent by the server once this has
+  // been configured.
+  int result_id = 2;
+  for (supervised_user::RenderedResult supervised_result :
+       response.discover_feed().rendered_result()) {
+    feedstore::StreamStructure stream_structure =
+        FeatureStreamStructure(result_id);
+    *stream_structure.mutable_parent_id() = root_content_id;
+
+    feedstore::Content content;
+    content.set_allocated_frame(supervised_result.release_elements_output());
+    *content.mutable_content_id() = stream_structure.content_id();
+
+    result->stream_structures.push_back(std::move(stream_structure));
+    result->content.push_back(std::move(content));
+    result_id++;
+  }
+
+  RefreshResponseData response_data;
+  response_data.model_update_request = std::move(result);
+  response_data.last_fetch_timestamp = current_time;
+  response_data.discover_personalization_enabled = false;
+  return response_data;
+}
+
 std::vector<feedstore::DataOperation> TranslateDismissData(
     base::Time current_time,
     feedpacking::DismissData data) {
   std::vector<feedstore::DataOperation> result;
   for (auto& operation : data.data_operations()) {
-    absl::optional<feedstore::DataOperation> translated_operation =
+    std::optional<feedstore::DataOperation> translated_operation =
         TranslateDataOperation(current_time, operation);
     if (translated_operation) {
       result.push_back(std::move(translated_operation.value()));

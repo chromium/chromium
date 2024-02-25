@@ -6,22 +6,24 @@
 
 #include <memory>
 
-#include "ash/app_list/views/app_list_toast_view.h"  //nogncheck
 #include "ash/assistant/model/assistant_ui_model.h"
 #include "ash/assistant/ui/assistant_ui_constants.h"
 #include "ash/assistant/ui/assistant_view_delegate.h"
 #include "ash/assistant/ui/assistant_view_ids.h"
 #include "ash/assistant/ui/main_stage/assistant_onboarding_view.h"
-#include "ash/constants/ash_features.h"
+#include "ash/assistant/ui/main_stage/launcher_search_iph_view.h"
 #include "ash/public/cpp/assistant/assistant_state.h"
 #include "ash/public/cpp/assistant/controller/assistant_controller.h"
 #include "ash/public/cpp/assistant/controller/assistant_ui_controller.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/ash_color_id.h"
+#include "base/feature_list.h"
+#include "base/notreached.h"
 #include "base/strings/string_piece.h"
-#include "chromeos/ash/services/assistant/public/cpp/features.h"
+#include "components/feature_engagement/public/feature_constants.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/chromeos/styles/cros_styles.h"
 #include "ui/color/color_provider.h"
 #include "ui/views/accessibility/view_accessibility.h"
@@ -41,37 +43,17 @@ namespace {
 constexpr int kGreetingLabelTopMarginDip = 28;
 constexpr int kOnboardingViewTopMarginDip = 48;
 
-// TODO(b/274527683): add i18n strings.
-constexpr char16_t kLearnMoreLabelText[] = u"Learn more about Google Assistant";
-constexpr char16_t kLearnMoreButtonA11yName[] = u"Learn more about Assistant";
-
-constexpr base::StringPiece kLearnMoreUrl =
-    "https://support.google.com/chromebook?p=assistant";
-
-constexpr auto kToastMarginDip = gfx::Insets::TLBR(0, 24, 2, 24);
-constexpr auto kToastMarginTabletModeDip = gfx::Insets::TLBR(12, 16, 2, 16);
-
 bool ShouldShowGreetingOrOnboarding(bool in_tablet_mode) {
-  if (assistant::features::IsAssistantLearnMoreEnabled()) {
+  if (base::FeatureList::IsEnabled(
+          feature_engagement::kIPHLauncherSearchHelpUiFeature)) {
     return !in_tablet_mode;
   }
   return true;
 }
 
-bool ShouldShowSpacer(bool in_tablet_mode) {
-  if (assistant::features::IsAssistantLearnMoreEnabled()) {
-    return !in_tablet_mode;
-  }
-  return false;
-}
-
-bool ShouldShowLearnMoreToast() {
-  return assistant::features::IsAssistantLearnMoreEnabled();
-}
-
-int GetMarginWidth(bool in_tablet_mode) {
-  return in_tablet_mode ? kToastMarginTabletModeDip.width()
-                        : kToastMarginDip.width();
+bool ShouldShowIph() {
+  return base::FeatureList::IsEnabled(
+      feature_engagement::kIPHLauncherSearchHelpUiFeature);
 }
 
 }  // namespace
@@ -92,10 +74,6 @@ AssistantZeroStateView::~AssistantZeroStateView() {
     AssistantUiController::Get()->GetModel()->RemoveObserver(this);
 }
 
-const char* AssistantZeroStateView::GetClassName() const {
-  return "AssistantZeroStateView";
-}
-
 gfx::Size AssistantZeroStateView::CalculatePreferredSize() const {
   return gfx::Size(INT_MAX, GetHeightForWidth(INT_MAX));
 }
@@ -106,14 +84,9 @@ void AssistantZeroStateView::ChildPreferredSizeChanged(views::View* child) {
 
 void AssistantZeroStateView::OnBoundsChanged(const gfx::Rect& prev_bounds) {
   if (prev_bounds.size() != bounds().size()) {
-    // Update `learn_more_toast_` preferred size to layout the title label.
-    // The actual height may change based on the text in the toast.
-    const int kToastMaxHeightDip = 64;
-    const auto kToastPreferredSizeDip =
-        gfx::Size(bounds().width() - GetMarginWidth(delegate_->IsTabletMode()),
-                  kToastMaxHeightDip);
-    learn_more_toast_->SetPreferredSize(kToastPreferredSizeDip);
-    learn_more_toast_->SetTitleLabelMaximumWidth();
+    int height = iph_view_->GetPreferredSize().height();
+    auto preferred_size = gfx::Size(bounds().width(), height);
+    iph_view_->SetPreferredSize(preferred_size);
   }
 }
 
@@ -127,8 +100,8 @@ void AssistantZeroStateView::OnAssistantControllerDestroying() {
 void AssistantZeroStateView::OnUiVisibilityChanged(
     AssistantVisibility new_visibility,
     AssistantVisibility old_visibility,
-    absl::optional<AssistantEntryPoint> entry_point,
-    absl::optional<AssistantExitPoint> exit_point) {
+    std::optional<AssistantEntryPoint> entry_point,
+    std::optional<AssistantExitPoint> exit_point) {
   if (new_visibility == AssistantVisibility::kClosed)
     UpdateLayout();
 }
@@ -169,22 +142,12 @@ void AssistantZeroStateView::InitLayout() {
   spacer_ = AddChildView(std::make_unique<views::View>());
   layout->SetFlexForView(spacer_, 1);
 
-  // Learn more toast.
-  learn_more_toast_ = AddChildView(
-      AppListToastView::Builder(kLearnMoreLabelText)
-          .SetButton(l10n_util::GetStringUTF16(IDS_ASH_LEARN_MORE),
-                     base::BindRepeating(
-                         &AssistantZeroStateView::OnLearnMoreButtonPressed,
-                         base::Unretained(this)))
-          .Build());
-  learn_more_toast_->toast_button()->GetViewAccessibility().OverrideRole(
-      ax::mojom::Role::kLink);
-  learn_more_toast_->toast_button()->GetViewAccessibility().OverrideName(
-      kLearnMoreButtonA11yName);
-  learn_more_toast_->SetID(AssistantViewID::kLearnMoreToast);
-  learn_more_toast_->SetProperty(
-      views::kMarginsKey,
-      delegate_->IsTabletMode() ? kToastMarginTabletModeDip : kToastMarginDip);
+  // Launcher search IPH view:
+  iph_view_ = AddChildView(std::make_unique<LauncherSearchIphView>(
+      /*delegate=*/this, delegate_->IsTabletMode(),
+      /*scoped_iph_session=*/nullptr,
+      /*location=*/LauncherSearchIphView::UiLocation::kAssistantPage));
+  iph_view_->SetID(AssistantViewID::kLauncherSearchIph);
 }
 
 void AssistantZeroStateView::UpdateLayout() {
@@ -194,15 +157,21 @@ void AssistantZeroStateView::UpdateLayout() {
   onboarding_view_->SetVisible(show_greeting_or_onboarding && show_onboarding);
   greeting_label_->SetVisible(show_greeting_or_onboarding && !show_onboarding);
 
-  const bool show_spacer = ShouldShowSpacer(delegate_->IsTabletMode());
-  spacer_->SetVisible(show_spacer);
-
-  const bool show_learn_more_toast = ShouldShowLearnMoreToast();
-  learn_more_toast_->SetVisible(show_learn_more_toast);
+  const bool show_iph = ShouldShowIph();
+  spacer_->SetVisible(show_iph);
+  iph_view_->SetVisible(show_iph);
 }
 
-void AssistantZeroStateView::OnLearnMoreButtonPressed() {
-  AssistantController::Get()->OpenUrl(GURL(kLearnMoreUrl));
+void AssistantZeroStateView::RunLauncherSearchQuery(
+    const std::u16string& query) {
+  delegate_->OnLauncherSearchChipPressed(query);
 }
+
+void AssistantZeroStateView::OpenAssistantPage() {
+  NOTREACHED_NORETURN();
+}
+
+BEGIN_METADATA(AssistantZeroStateView)
+END_METADATA
 
 }  // namespace ash

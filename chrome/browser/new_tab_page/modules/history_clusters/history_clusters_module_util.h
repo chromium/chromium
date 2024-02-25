@@ -30,7 +30,9 @@ history_clusters::QueryClustersFilterParams CreateFilterParamsFromFeatureFlags(
     int min_required_related_searches);
 
 // Gets a list of categories associated for a given feature parameter.
-base::flat_set<std::string> GetCategories(const char* feature_param);
+base::flat_set<std::string> GetCategories(
+    const char* feature_param,
+    base::span<const std::string_view> default_categories);
 
 // Gets the minimum number of images required in a cluster's visits to make it
 // suitable for display in the UI.

@@ -18,15 +18,15 @@ TEST(Cxx23ToUnderlying, Basic) {
     kTwo = 2,
   };
 
-  static_assert(std::is_same<decltype(to_underlying(kOne)), int>::value, "");
-  static_assert(std::is_same<decltype(to_underlying(kTwo)), int>::value, "");
+  static_assert(std::is_same_v<decltype(to_underlying(kOne)), int>, "");
+  static_assert(std::is_same_v<decltype(to_underlying(kTwo)), int>, "");
   static_assert(to_underlying(kOne) == 1, "");
   static_assert(to_underlying(kTwo) == 2, "");
 
-  static_assert(
-      std::is_same<decltype(to_underlying(ScopedEnum::kOne)), char>::value, "");
-  static_assert(
-      std::is_same<decltype(to_underlying(ScopedEnum::kTwo)), char>::value, "");
+  static_assert(std::is_same_v<decltype(to_underlying(ScopedEnum::kOne)), char>,
+                "");
+  static_assert(std::is_same_v<decltype(to_underlying(ScopedEnum::kTwo)), char>,
+                "");
   static_assert(to_underlying(ScopedEnum::kOne) == 1, "");
   static_assert(to_underlying(ScopedEnum::kTwo) == 2, "");
 }

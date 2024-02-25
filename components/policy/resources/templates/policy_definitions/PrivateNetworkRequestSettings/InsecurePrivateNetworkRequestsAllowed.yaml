@@ -1,0 +1,44 @@
+caption: Specifies whether to allow websites to make requests to more-private network
+  endpoints in an insecure manner
+desc: |-
+  Controls whether websites are allowed to make requests to more-private network endpoints in an insecure manner.
+
+            When this policy is set to true, all <ph name="PRIVATE_NETWORK_ACCESS">Private Network Access</ph> checks are disabled for all origins. This may allow attackers to perform <ph name="CSRF">CSRF</ph> attacks on private network servers.
+
+            When this policy is either not set or set to false, the default behavior for requests to more-private network endpoints will depend on the user's personal configuration for the <ph name="BLOCK_INSECURE_PRIVATE_NETWORK_REQUESTS_FEATURE_NAME">BlockInsecurePrivateNetworkRequests</ph>, <ph name="PRIVATE_NETWORK_ACCESS_SEND_PREFLIGHTS_FEATURE_NAME">PrivateNetworkAccessSendPreflights</ph>, and <ph name="PRIVATE_NETWORK_ACCESS_RESPECT_PREFLIGHT_RESULTS_FEATURE_NAME">PrivateNetworkAccessRespectPreflightResults</ph> feature flags, which may be set by field trials or on the command line.
+
+            This policy relates to the <ph name="PRIVATE_NETWORK_ACCESS">Private Network Access</ph> specification. See https://wicg.github.io/private-network-access/ for more details.
+
+            A network endpoint is more private than another if:
+            1) Its IP address is localhost and the other is not.
+            2) Its IP address is private and the other is public.
+            In the future, depending on spec evolution, this policy might apply to all cross-origin requests directed at private IPs or localhost.
+
+            When this policy is set to true, websites are allowed to make requests to any network endpoint, subject to other cross-origin checks.
+example_value: false
+features:
+  dynamic_refresh: true
+  per_profile: true
+future_on:
+- fuchsia
+items:
+- caption: Allow websites to make requests to any network endpoint in an insecure manner.
+  value: true
+- caption: Use default behavior when determining if websites can make requests
+    to network endpoints.
+  value: false
+owners:
+- titouan@chromium.org
+- clamy@chromium.org
+- mkwst@chromium.org
+- phao@chromium.org
+schema:
+  type: boolean
+supported_on:
+- chrome.*:92-
+- chrome_os:92-
+- android:92-
+- webview_android:92-
+tags:
+- system-security
+type: main

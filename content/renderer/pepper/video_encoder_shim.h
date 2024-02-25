@@ -11,6 +11,7 @@
 #include <memory>
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/task/sequenced_task_runner.h"
 #include "media/base/bitrate.h"
@@ -47,8 +48,10 @@ class VideoEncoderShim : public media::VideoEncodeAccelerator {
   void Encode(scoped_refptr<media::VideoFrame> frame,
               bool force_keyframe) override;
   void UseOutputBitstreamBuffer(media::BitstreamBuffer buffer) override;
-  void RequestEncodingParametersChange(const media::Bitrate& bitrate,
-                                       uint32_t framerate) override;
+  void RequestEncodingParametersChange(
+      const media::Bitrate& bitrate,
+      uint32_t framerate,
+      const std::optional<gfx::Size>& size) override;
   void Destroy() override;
 
  private:
@@ -65,7 +68,7 @@ class VideoEncoderShim : public media::VideoEncodeAccelerator {
 
   std::unique_ptr<EncoderImpl> encoder_impl_;
 
-  PepperVideoEncoderHost* host_;
+  raw_ptr<PepperVideoEncoderHost> host_;
 
   // Task doing the encoding.
   scoped_refptr<base::SequencedTaskRunner> media_task_runner_;

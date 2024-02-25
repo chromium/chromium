@@ -10,8 +10,7 @@
 #include "extensions/common/api/declarative_net_request.h"
 #include "extensions/common/extension.h"
 
-namespace extensions {
-namespace declarative_net_request {
+namespace extensions::declarative_net_request {
 
 namespace {
 
@@ -175,5 +174,4 @@ size_t GlobalRulesTracker::GetAllocationInPrefs(
   return allocated_rule_count;
 }
 
-}  // namespace declarative_net_request
-}  // namespace extensions
+}  // namespace extensions::declarative_net_request

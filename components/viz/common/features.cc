@@ -33,6 +33,15 @@ const char kDynamicSchedulerPercentile[] = "percentile";
 
 namespace features {
 
+BASE_FEATURE(kUseDrmBlackFullscreenOptimization,
+             "UseDrmBlackFullscreenOptimization",
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+             base::FEATURE_ENABLED_BY_DEFAULT
+#else
+             base::FEATURE_DISABLED_BY_DEFAULT
+#endif
+);
+
 BASE_FEATURE(kUseMultipleOverlays,
              "UseMultipleOverlays",
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -170,18 +179,24 @@ BASE_FEATURE(kCanSkipRenderPassOverlay,
 #if BUILDFLAG(IS_MAC)
 BASE_FEATURE(kCVDisplayLinkBeginFrameSource,
              "CVDisplayLinkBeginFrameSource",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 #endif
 
 // Allow SkiaRenderer to skip drawing render passes that contain a single
 // RenderPassDrawQuad.
 BASE_FEATURE(kAllowBypassRenderPassQuads,
              "AllowBypassRenderPassQuads",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kAllowUndamagedNonrootRenderPassToSkip,
              "AllowUndamagedNonrootRenderPassToSkip",
              base::FEATURE_DISABLED_BY_DEFAULT);
+
+// Allow SurfaceAggregator to merge render passes when they contain quads that
+// require overlay (e.g. protected video). See usage in |EmitSurfaceContent|.
+BASE_FEATURE(kAllowForceMergeRenderPassWithRequireOverlayQuads,
+             "AllowForceMergeRenderPassWithRequireOverlayQuads",
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Whether to:
 // - Perform periodic inactive frame culling.
@@ -205,7 +220,7 @@ BASE_FEATURE(kEagerSurfaceGarbageCollection,
 // vsync rate (the behavior at the time this feature was created.)
 BASE_FEATURE(kOverrideThrottledFrameRateParams,
              "OverrideThrottledFrameRateParams",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Used to gate calling SetPurgeable on OutputPresenter::Image from
 // SkiaOutputDeviceBufferQueue.
@@ -218,49 +233,43 @@ BASE_FEATURE(kBufferQueueImageSetPurgeable,
 // render pass, instead of SkiaOutputDeviceBufferQueue itself.
 BASE_FEATURE(kRendererAllocatesImages,
              "RendererAllocatesImages",
-#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_FUCHSIA) || BUILDFLAG(IS_CHROMEOS)
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_FUCHSIA) || \
+    BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_MAC)
              base::FEATURE_ENABLED_BY_DEFAULT
 #else
              base::FEATURE_DISABLED_BY_DEFAULT
 #endif
 );
 
-// On all platforms when attempting to evict a FrameTree, the active
-// viz::Surface can be not included. This feature ensures that the we always add
-// the active viz::Surface to the eviction list.
-//
-// Furthermore, by default on Android, when a client is being evicted, it only
-// evicts itself. This differs from Destkop platforms which evict the entire
-// FrameTree along with the topmost viz::Surface. When this feature is enabled,
-// Android will begin also evicting the entire FrameTree.
-BASE_FEATURE(kEvictSubtree, "EvictSubtree", base::FEATURE_ENABLED_BY_DEFAULT);
-
 // If enabled, CompositorFrameSinkClient::OnBeginFrame is also treated as the
 // DidReceiveCompositorFrameAck. Both in providing the Ack for the previous
-// frame, and in returning resources. While enabled the separate Ack and
-// ReclaimResources signals will not be sent.
+// frame, and in returning resources. While enabled we attempt to not send
+// separate Ack and ReclaimResources signals. However if while sending an
+// OnBeginFrame there is a pending Ack, then if the Ack arrives before the next
+// OnBeginFrame we will send the Ack immediately, rather than batching it.
 BASE_FEATURE(kOnBeginFrameAcks,
              "OnBeginFrameAcks",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
-// If enabled, and kOnBeginFrameAcks is also enabled, then if we issue an
-// CompositorFrameSinkClient::OnBeginFrame, while we are pending an Ack. If the
-// Ack arrives before the next OnBeginFrame we will send it immediately, instead
-// of batching it. This is to support a frame submission/draw that occurs right
-// near the OnBeginFrame boundary.
-BASE_FEATURE(kOnBeginFrameAllowLateAcks,
-             "OnBeginFrameAllowLateAcks",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+             base::FEATURE_ENABLED_BY_DEFAULT
+#else
+             base::FEATURE_DISABLED_BY_DEFAULT
+#endif
+);
 
 // if enabled, Any CompositorFrameSink of type video that defines a preferred
 // framerate that is below the display framerate will throttle OnBeginFrame
 // callbacks to match the preferred framerate.
 BASE_FEATURE(kOnBeginFrameThrottleVideo,
              "OnBeginFrameThrottleVideo",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+#if BUILDFLAG(IS_ANDROID)
+             base::FEATURE_ENABLED_BY_DEFAULT
+#else
+             base::FEATURE_DISABLED_BY_DEFAULT
+#endif
+             );
 
 BASE_FEATURE(kSharedBitmapToSharedImage,
-             "SharedBitmapToSharedImage",
+             "SharedBitmapToSharedImage_NotToBeEnabled",
              base::FEATURE_DISABLED_BY_DEFAULT);
 // Used to enable the HintSession::Mode::BOOST mode. BOOST mode try to force
 // the ADPF(Android Dynamic Performance Framework) to give Chrome more CPU
@@ -274,13 +283,6 @@ const base::FeatureParam<base::TimeDelta> kADPFBoostTimeout{
     &kEnableADPFScrollBoost, "adpf_boost_mode_timeout",
     base::Milliseconds(200)};
 
-// If enabled, Chrome uses ADPF(Android Dynamic Performance Framework) to
-// request more CPU resources in the middle of a frame production if the frame
-// is taking longer than expected.
-BASE_FEATURE(kEnableADPFMidFrameBoost,
-             "EnableADPFMidFrameBoost",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 // Allows delegating transforms over Wayland when it is also supported by Ash.
 BASE_FEATURE(kDelegateTransforms,
              "DelegateTransforms",
@@ -291,16 +293,11 @@ BASE_FEATURE(kDelegateTransforms,
 #endif
 );
 
-// The deadline for requesting a boost in the middle of a frame production is
-// this multiplier * ADPF target_duration.
-const base::FeatureParam<double> kADPFMidFrameBoostDurationMultiplier{
-    &kEnableADPFMidFrameBoost, "adpf_mid_frame_boost_multiplier", 1.0};
-
 // If enabled, Chrome includes the Renderer Main thread(s) into the
 // ADPF(Android Dynamic Performance Framework) hint session.
 BASE_FEATURE(kEnableADPFRendererMain,
              "EnableADPFRendererMain",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // If enabled, surface activation and draw do not block on dependencies.
 BASE_FEATURE(kDrawImmediatelyWhenInteractive,
@@ -312,12 +309,45 @@ BASE_FEATURE(kDrawImmediatelyWhenInteractive,
 #endif
 );
 
+// When enabled, SDR maximum luminance nits of then current display will be used
+// as the HDR metadata NDWL nits.
+BASE_FEATURE(kUseDisplaySDRMaxLuminanceNits,
+             "UseDisplaySDRMaxLuminanceNits",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 // Invalidate the `viz::LocalSurfaceId` on the browser side when the page is
 // navigated away. This flag serves as the kill-switch for the uncaught edge
 // cases in production.
 BASE_FEATURE(kInvalidateLocalSurfaceIdPreCommit,
              "InvalidateLocalSurfaceIdPreCommit",
-             base::FEATURE_ENABLED_BY_DEFAULT);
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+// On mac, when the RenderWidgetHostViewMac is hidden, also hide the
+// DelegatedFrameHost. Among other things, it unlocks the compositor frames,
+// which can saves hundreds of MiB of memory with bfcache entries.
+BASE_FEATURE(kHideDelegatedFrameHostMac,
+             "HideDelegatedFrameHostMac",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+// When enabled, ClientResourceProvider will attempt to unlock and delete
+// TransferableResources that have been returned as a part of eviction.
+BASE_FEATURE(kEvictionUnlocksResources,
+             "EvictionUnlocksResources",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+// If enabled, FrameRateDecider will toggle to half framerate if there's only
+// one video on screen whose framerate is lower than the display vsync and in
+// perfect cadence.
+BASE_FEATURE(kSingleVideoFrameRateThrottling,
+             "SingleVideoFrameRateThrottling",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+// When enabled, ClientResourceProvider will take callbacks intended to be ran
+// on the Main-thread, and will batch them into a single jump to that thread.
+// Rather than each performing its own separate post task.
+BASE_FEATURE(kBatchMainThreadReleaseCallbacks,
+             "BatchMainThreadReleaseCallbacks",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 bool IsDelegatedCompositingEnabled() {
   return base::FeatureList::IsEnabled(kDelegatedCompositing);
@@ -356,9 +386,9 @@ bool ShouldUseSetPresentDuration() {
 }
 #endif  // BUILDFLAG(IS_WIN)
 
-absl::optional<int> ShouldDrawPredictedInkPoints() {
+std::optional<int> ShouldDrawPredictedInkPoints() {
   if (!base::FeatureList::IsEnabled(kDrawPredictedInkPoint))
-    return absl::nullopt;
+    return std::nullopt;
 
   std::string predicted_points = GetFieldTrialParamValueByFeature(
       kDrawPredictedInkPoint, "predicted_points");
@@ -372,7 +402,7 @@ absl::optional<int> ShouldDrawPredictedInkPoints() {
     return viz::PredictionConfig::k2Points3Ms;
 
   NOTREACHED();
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 std::string InkPredictor() {
@@ -404,27 +434,27 @@ bool UseSurfaceLayerForVideo() {
 
 // Used by Viz to determine if viz::DisplayScheduler should dynamically adjust
 // its frame deadline. Returns the percentile of historic draw times to base the
-// deadline on. Or absl::nullopt if the feature is disabled.
-absl::optional<double> IsDynamicSchedulerEnabledForDraw() {
+// deadline on. Or std::nullopt if the feature is disabled.
+std::optional<double> IsDynamicSchedulerEnabledForDraw() {
   if (!base::FeatureList::IsEnabled(kDynamicSchedulerForDraw))
-    return absl::nullopt;
+    return std::nullopt;
   double result = base::GetFieldTrialParamByFeatureAsDouble(
       kDynamicSchedulerForDraw, kDynamicSchedulerPercentile, -1.0);
   if (result < 0.0)
-    return absl::nullopt;
+    return std::nullopt;
   return result;
 }
 
 // Used by Viz to determine if the frame deadlines provided to CC should be
 // dynamically adjusted. Returns the percentile of historic draw times to base
-// the deadline on. Or absl::nullopt if the feature is disabled.
-absl::optional<double> IsDynamicSchedulerEnabledForClients() {
+// the deadline on. Or std::nullopt if the feature is disabled.
+std::optional<double> IsDynamicSchedulerEnabledForClients() {
   if (!base::FeatureList::IsEnabled(kDynamicSchedulerForClients))
-    return absl::nullopt;
+    return std::nullopt;
   double result = base::GetFieldTrialParamByFeatureAsDouble(
       kDynamicSchedulerForClients, kDynamicSchedulerPercentile, -1.0);
   if (result < 0.0)
-    return absl::nullopt;
+    return std::nullopt;
   return result;
 }
 

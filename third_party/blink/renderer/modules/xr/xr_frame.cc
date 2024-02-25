@@ -4,7 +4,9 @@
 
 #include "third_party/blink/renderer/modules/xr/xr_frame.h"
 
+#include "third_party/blink/renderer/bindings/core/v8/frozen_array.h"
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
+#include "third_party/blink/renderer/modules/xr/xr_hit_test_result.h"
 #include "third_party/blink/renderer/modules/xr/xr_hit_test_source.h"
 #include "third_party/blink/renderer/modules/xr/xr_input_source.h"
 #include "third_party/blink/renderer/modules/xr/xr_joint_space.h"
@@ -13,6 +15,7 @@
 #include "third_party/blink/renderer/modules/xr/xr_plane_set.h"
 #include "third_party/blink/renderer/modules/xr/xr_reference_space.h"
 #include "third_party/blink/renderer/modules/xr/xr_session.h"
+#include "third_party/blink/renderer/modules/xr/xr_transient_input_hit_test_result.h"
 #include "third_party/blink/renderer/modules/xr/xr_transient_input_hit_test_source.h"
 #include "third_party/blink/renderer/modules/xr/xr_view.h"
 #include "third_party/blink/renderer/modules/xr/xr_viewer_pose.h"
@@ -40,13 +43,13 @@ const char kSpacesSequenceTooLarge[] =
 
 const char kMismatchedBufferSizes[] = "Buffer sizes must be equal";
 
-absl::optional<uint64_t> GetPlaneId(
+std::optional<uint64_t> GetPlaneId(
     const device::mojom::blink::XRNativeOriginInformation& native_origin) {
   if (native_origin.is_plane_id()) {
     return native_origin.get_plane_id();
   }
 
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 }  // namespace
@@ -89,7 +92,7 @@ XRViewerPose* XRFrame::getViewerPose(XRReferenceSpace* reference_space,
 
   session_->LogGetPose();
 
-  absl::optional<gfx::Transform> native_from_mojo =
+  std::optional<gfx::Transform> native_from_mojo =
       reference_space->NativeFromMojo();
   if (!native_from_mojo) {
     DVLOG(1) << __func__ << ": native_from_mojo is invalid";
@@ -106,7 +109,7 @@ XRViewerPose* XRFrame::getViewerPose(XRReferenceSpace* reference_space,
     return nullptr;
   }
 
-  absl::optional<gfx::Transform> offset_space_from_viewer =
+  std::optional<gfx::Transform> offset_space_from_viewer =
       reference_space->OffsetFromViewer();
 
   // Can only update an XRViewerPose's views with an invertible matrix.
@@ -267,7 +270,7 @@ bool XRFrame::IsActive() const {
   return is_active_;
 }
 
-HeapVector<Member<XRHitTestResult>> XRFrame::getHitTestResults(
+const FrozenArray<XRHitTestResult>& XRFrame::getHitTestResults(
     XRHitTestSource* hit_test_source,
     ExceptionState& exception_state) {
   if (!hit_test_source ||
@@ -275,13 +278,14 @@ HeapVector<Member<XRHitTestResult>> XRFrame::getHitTestResults(
     // This should only happen when hit test source was already canceled.
     exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
                                       kHitTestSourceUnavailable);
-    return {};
+    return *MakeGarbageCollected<FrozenArray<XRHitTestResult>>();
   }
 
-  return hit_test_source->Results();
+  return *MakeGarbageCollected<FrozenArray<XRHitTestResult>>(
+      hit_test_source->Results());
 }
 
-HeapVector<Member<XRTransientInputHitTestResult>>
+const FrozenArray<XRTransientInputHitTestResult>&
 XRFrame::getHitTestResultsForTransientInput(
     XRTransientInputHitTestSource* hit_test_source,
     ExceptionState& exception_state) {
@@ -290,10 +294,11 @@ XRFrame::getHitTestResultsForTransientInput(
     // This should only happen when hit test source was already canceled.
     exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
                                       kHitTestSourceUnavailable);
-    return {};
+    return *MakeGarbageCollected<FrozenArray<XRTransientInputHitTestResult>>();
   }
 
-  return hit_test_source->Results();
+  return *MakeGarbageCollected<FrozenArray<XRTransientInputHitTestResult>>(
+      hit_test_source->Results());
 }
 
 ScriptPromise XRFrame::createAnchor(ScriptState* script_state,
@@ -374,13 +379,13 @@ ScriptPromise XRFrame::CreateAnchorFromNonStationarySpace(
     ScriptState* script_state,
     const gfx::Transform& native_origin_from_anchor,
     XRSpace* space,
-    absl::optional<uint64_t> maybe_plane_id,
+    std::optional<uint64_t> maybe_plane_id,
     ExceptionState& exception_state) {
   DVLOG(2) << __func__;
 
   // Space is not considered stationary - need to adjust the app-provided pose.
   // Let's ask the session about the appropriate stationary reference space:
-  absl::optional<XRSession::ReferenceSpaceInformation>
+  std::optional<XRSession::ReferenceSpaceInformation>
       reference_space_information = session_->GetStationaryReferenceSpace();
 
   if (!reference_space_information) {
@@ -426,7 +431,7 @@ bool XRFrame::IsSameSession(XRSession* space_session,
   return true;
 }
 
-HeapVector<Member<XRImageTrackingResult>> XRFrame::getImageTrackingResults(
+const FrozenArray<XRImageTrackingResult>& XRFrame::getImageTrackingResults(
     ExceptionState& exception_state) {
   return session_->ImageTrackingResults(exception_state);
 }

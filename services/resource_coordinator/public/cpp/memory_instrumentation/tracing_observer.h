@@ -85,8 +85,9 @@ class COMPONENT_EXPORT(RESOURCE_COORDINATOR_PUBLIC_MEMORY_INSTRUMENTATION)
   bool IsDumpModeAllowed(base::trace_event::MemoryDumpLevelOfDetail) const;
   bool IsMemoryInfraTracingEnabled() const;
 
+  mutable base::Lock memory_dump_config_lock_;
   std::unique_ptr<base::trace_event::TraceConfig::MemoryDumpConfig>
-      memory_dump_config_;
+      memory_dump_config_ GUARDED_BY(memory_dump_config_lock_);
 };
 
 }  // namespace memory_instrumentation

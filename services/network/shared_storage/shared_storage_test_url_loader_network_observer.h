@@ -6,6 +6,7 @@
 #define SERVICES_NETWORK_SHARED_STORAGE_SHARED_STORAGE_TEST_URL_LOADER_NETWORK_OBSERVER_H_
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <tuple>
 #include <utility>
@@ -15,7 +16,6 @@
 #include "base/run_loop.h"
 #include "services/network/public/mojom/url_loader_network_service_observer.mojom.h"
 #include "services/network/test/test_url_loader_network_observer.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/origin.h"
 
 namespace network {
@@ -29,9 +29,9 @@ class SharedStorageTestURLLoaderNetworkObserver
   const std::vector<
       std::pair<url::Origin,
                 std::vector<std::tuple<mojom::SharedStorageOperationType,
-                                       absl::optional<std::string>,
-                                       absl::optional<std::string>,
-                                       absl::optional<bool>>>>>&
+                                       std::optional<std::string>,
+                                       std::optional<std::string>,
+                                       std::optional<bool>>>>>&
   headers_received() const {
     return headers_received_;
   }
@@ -50,9 +50,9 @@ class SharedStorageTestURLLoaderNetworkObserver
   std::vector<
       std::pair<url::Origin,
                 std::vector<std::tuple<mojom::SharedStorageOperationType,
-                                       absl::optional<std::string>,
-                                       absl::optional<std::string>,
-                                       absl::optional<bool>>>>>
+                                       std::optional<std::string>,
+                                       std::optional<std::string>,
+                                       std::optional<bool>>>>>
       headers_received_;
 };
 

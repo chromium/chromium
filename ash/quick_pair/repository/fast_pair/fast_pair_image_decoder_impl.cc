@@ -4,10 +4,10 @@
 
 #include "ash/quick_pair/repository/fast_pair/fast_pair_image_decoder_impl.h"
 
-#include "ash/quick_pair/common/logging.h"
 #include "ash/quick_pair/common/quick_pair_browser_delegate.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
+#include "components/cross_device/logging/logging.h"
 #include "components/image_fetcher/core/image_fetcher.h"
 #include "components/image_fetcher/core/image_fetcher_impl.h"
 #include "components/image_fetcher/core/request_metadata.h"
@@ -60,7 +60,8 @@ void ToImage(DecodeImageCallback on_image_decoded_callback,
              bool resize_to_notification_size,
              const SkBitmap& bitmap) {
   if (bitmap.empty()) {
-    QP_LOG(WARNING) << "Call to DecodeImageIsolated returned null.";
+    CD_LOG(WARNING, Feature::FP)
+        << "Call to DecodeImageIsolated returned null.";
     std::move(on_image_decoded_callback).Run(gfx::Image());
     return;
   }
@@ -99,7 +100,7 @@ void FastPairImageDecoderImpl::DecodeImageFromUrl(
     bool resize_to_notification_size,
     DecodeImageCallback on_image_decoded_callback) {
   if (!fetcher_ && !LoadImageFetcher()) {
-    QP_LOG(INFO) << __func__ << " Could not load image fetcher. ";
+    CD_LOG(INFO, Feature::FP) << __func__ << " Could not load image fetcher. ";
     return;
   }
 

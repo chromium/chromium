@@ -4,11 +4,12 @@
 
 #include "content/web_test/browser/web_test_fedcm_manager.h"
 
+#include <optional>
+
 #include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/browser/webid/federated_auth_request_impl.h"
 #include "content/browser/webid/federated_auth_request_page_data.h"
 #include "content/public/browser/identity_request_dialog_controller.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace content {
 
@@ -21,27 +22,15 @@ WebTestFedCmManager::~WebTestFedCmManager() = default;
 void WebTestFedCmManager::GetDialogType(
     blink::test::mojom::FederatedAuthRequestAutomation::GetDialogTypeCallback
         callback) {
-  if (!render_frame_host_) {
-    std::move(callback).Run(absl::nullopt);
-    return;
-  }
-  FederatedAuthRequestPageData* page_data =
-      PageUserData<FederatedAuthRequestPageData>::GetForPage(
-          render_frame_host_->GetPage());
-  if (!page_data) {
-    std::move(callback).Run(absl::nullopt);
-    return;
-  }
-  FederatedAuthRequestImpl* auth_request =
-      page_data->PendingWebIdentityRequest();
+  FederatedAuthRequestImpl* auth_request = GetAuthRequestImpl();
   if (!auth_request) {
-    std::move(callback).Run(absl::nullopt);
+    std::move(callback).Run(std::nullopt);
     return;
   }
   std::string type_string;
   switch (auth_request->GetDialogType()) {
     case FederatedAuthRequestImpl::kNone:
-      std::move(callback).Run(absl::nullopt);
+      std::move(callback).Run(std::nullopt);
       return;
     case FederatedAuthRequestImpl::kSelectAccount:
       type_string = "AccountChooser";
@@ -49,8 +38,11 @@ void WebTestFedCmManager::GetDialogType(
     case FederatedAuthRequestImpl::kAutoReauth:
       type_string = "AutoReauthn";
       break;
-    case FederatedAuthRequestImpl::kConfirmIdpSignin:
-      type_string = "ConfirmIdpSignin";
+    case FederatedAuthRequestImpl::kConfirmIdpLogin:
+      type_string = "ConfirmIdpLogin";
+      break;
+    case FederatedAuthRequestImpl::kError:
+      type_string = "Error";
       break;
   };
   std::move(callback).Run(type_string);
@@ -59,27 +51,15 @@ void WebTestFedCmManager::GetDialogType(
 void WebTestFedCmManager::GetFedCmDialogTitle(
     blink::test::mojom::FederatedAuthRequestAutomation::
         GetFedCmDialogTitleCallback callback) {
-  if (!render_frame_host_) {
-    std::move(callback).Run(absl::nullopt);
-    return;
-  }
-  FederatedAuthRequestPageData* page_data =
-      PageUserData<FederatedAuthRequestPageData>::GetForPage(
-          render_frame_host_->GetPage());
-  if (!page_data) {
-    std::move(callback).Run(absl::nullopt);
-    return;
-  }
-  FederatedAuthRequestImpl* auth_request =
-      page_data->PendingWebIdentityRequest();
+  FederatedAuthRequestImpl* auth_request = GetAuthRequestImpl();
   if (!auth_request) {
-    std::move(callback).Run(absl::nullopt);
+    std::move(callback).Run(std::nullopt);
     return;
   }
   IdentityRequestDialogController* controller =
       auth_request->GetDialogController();
   if (!controller) {
-    std::move(callback).Run(absl::nullopt);
+    std::move(callback).Run(std::nullopt);
     return;
   }
   std::move(callback).Run(controller->GetTitle());
@@ -88,19 +68,7 @@ void WebTestFedCmManager::GetFedCmDialogTitle(
 void WebTestFedCmManager::SelectFedCmAccount(
     uint32_t account_index,
     SelectFedCmAccountCallback callback) {
-  if (!render_frame_host_) {
-    std::move(callback).Run(false);
-    return;
-  }
-  FederatedAuthRequestPageData* page_data =
-      PageUserData<FederatedAuthRequestPageData>::GetForPage(
-          render_frame_host_->GetPage());
-  if (!page_data) {
-    std::move(callback).Run(false);
-    return;
-  }
-  FederatedAuthRequestImpl* auth_request =
-      page_data->PendingWebIdentityRequest();
+  FederatedAuthRequestImpl* auth_request = GetAuthRequestImpl();
   if (!auth_request) {
     std::move(callback).Run(false);
     return;
@@ -128,19 +96,7 @@ void WebTestFedCmManager::SelectFedCmAccount(
 
 void WebTestFedCmManager::DismissFedCmDialog(
     DismissFedCmDialogCallback callback) {
-  if (!render_frame_host_) {
-    std::move(callback).Run(false);
-    return;
-  }
-  FederatedAuthRequestPageData* page_data =
-      PageUserData<FederatedAuthRequestPageData>::GetForPage(
-          render_frame_host_->GetPage());
-  if (!page_data) {
-    std::move(callback).Run(false);
-    return;
-  }
-  FederatedAuthRequestImpl* auth_request =
-      page_data->PendingWebIdentityRequest();
+  FederatedAuthRequestImpl* auth_request = GetAuthRequestImpl();
   if (!auth_request) {
     std::move(callback).Run(false);
     return;
@@ -154,11 +110,66 @@ void WebTestFedCmManager::DismissFedCmDialog(
       auth_request->DismissAccountsDialogForDevtools(false);
       std::move(callback).Run(true);
       return;
-    case FederatedAuthRequestImpl::kConfirmIdpSignin:
-      auth_request->DismissConfirmIdpSigninDialogForDevtools();
+    case FederatedAuthRequestImpl::kConfirmIdpLogin:
+      auth_request->DismissConfirmIdpLoginDialogForDevtools();
+      std::move(callback).Run(true);
+      return;
+    case FederatedAuthRequestImpl::kError:
+      auth_request->DismissErrorDialogForDevtools();
       std::move(callback).Run(true);
       return;
   }
+}
+
+void WebTestFedCmManager::ClickFedCmDialogButton(
+    blink::test::mojom::DialogButton button,
+    ClickFedCmDialogButtonCallback callback) {
+  FederatedAuthRequestImpl* auth_request = GetAuthRequestImpl();
+  if (!auth_request) {
+    std::move(callback).Run(false);
+    return;
+  }
+  switch (button) {
+    case blink::test::mojom::DialogButton::kConfirmIdpLoginContinue:
+      if (auth_request->GetDialogType() !=
+          FederatedAuthRequestImpl::kConfirmIdpLogin) {
+        std::move(callback).Run(false);
+        return;
+      }
+      auth_request->AcceptConfirmIdpLoginDialogForDevtools();
+      std::move(callback).Run(true);
+      return;
+    case blink::test::mojom::DialogButton::kErrorGotIt:
+      if (auth_request->GetDialogType() != FederatedAuthRequestImpl::kError) {
+        std::move(callback).Run(false);
+        return;
+      }
+      auth_request->ClickErrorDialogGotItForDevtools();
+      std::move(callback).Run(true);
+      return;
+    case blink::test::mojom::DialogButton::kErrorMoreDetails:
+      if (auth_request->GetDialogType() != FederatedAuthRequestImpl::kError) {
+        std::move(callback).Run(false);
+        return;
+      }
+      auth_request->ClickErrorDialogMoreDetailsForDevtools();
+      std::move(callback).Run(true);
+      return;
+  }
+  std::move(callback).Run(false);
+}
+
+FederatedAuthRequestImpl* WebTestFedCmManager::GetAuthRequestImpl() {
+  if (!render_frame_host_) {
+    return nullptr;
+  }
+  FederatedAuthRequestPageData* page_data =
+      PageUserData<FederatedAuthRequestPageData>::GetForPage(
+          render_frame_host_->GetPage());
+  if (!page_data) {
+    return nullptr;
+  }
+  return page_data->PendingWebIdentityRequest();
 }
 
 }  // namespace content

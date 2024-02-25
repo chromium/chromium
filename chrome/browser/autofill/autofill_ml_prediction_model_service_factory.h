@@ -6,32 +6,35 @@
 #define CHROME_BROWSER_AUTOFILL_AUTOFILL_ML_PREDICTION_MODEL_SERVICE_FACTORY_H_
 
 #include "base/no_destructor.h"
-#include "chrome/browser/profiles/profile_keyed_service_factory.h"
-#include "components/autofill/core/browser/ml_model/autofill_model_handler.h"
+#include "components/autofill/core/browser/ml_model/autofill_ml_prediction_model_handler.h"
+#include "components/keyed_service/content/browser_context_keyed_service_factory.h"
 #include "content/public/browser/browser_context.h"
 
 namespace autofill {
 
-// A factory for creating one `AutofillModelHandler` per profile.
-// It will ensure that the same keyed service is used for irregular profiles
-class AutofillMLPredictionModelServiceFactory
-    : public ProfileKeyedServiceFactory {
+// A factory for creating one `AutofillMlPredictionModelHandler` per browser
+// context.
+class AutofillMlPredictionModelServiceFactory
+    : public BrowserContextKeyedServiceFactory {
  public:
-  static AutofillMLPredictionModelServiceFactory* GetInstance();
-  static AutofillModelHandler* GetForBrowserContext(
+  static AutofillMlPredictionModelServiceFactory* GetInstance();
+  static AutofillMlPredictionModelHandler* GetForBrowserContext(
       content::BrowserContext* context);
 
-  AutofillMLPredictionModelServiceFactory(
-      const AutofillMLPredictionModelServiceFactory&) = delete;
-  AutofillMLPredictionModelServiceFactory& operator=(
-      const AutofillMLPredictionModelServiceFactory&) = delete;
+  AutofillMlPredictionModelServiceFactory(
+      const AutofillMlPredictionModelServiceFactory&) = delete;
+  AutofillMlPredictionModelServiceFactory& operator=(
+      const AutofillMlPredictionModelServiceFactory&) = delete;
 
  private:
-  friend base::NoDestructor<AutofillMLPredictionModelServiceFactory>;
+  friend base::NoDestructor<AutofillMlPredictionModelServiceFactory>;
 
-  AutofillMLPredictionModelServiceFactory();
-  ~AutofillMLPredictionModelServiceFactory() override;
+  AutofillMlPredictionModelServiceFactory();
+  ~AutofillMlPredictionModelServiceFactory() override;
 
+  // BrowserContextKeyedServiceFactory overrides:
+  content::BrowserContext* GetBrowserContextToUse(
+      content::BrowserContext* context) const override;
   std::unique_ptr<KeyedService> BuildServiceInstanceForBrowserContext(
       content::BrowserContext* profile) const override;
 };

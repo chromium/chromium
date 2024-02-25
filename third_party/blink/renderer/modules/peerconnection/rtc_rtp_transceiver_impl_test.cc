@@ -5,6 +5,7 @@
 #include "third_party/blink/renderer/modules/peerconnection/rtc_rtp_transceiver_impl.h"
 
 #include <memory>
+#include <optional>
 
 #include "base/check.h"
 #include "base/functional/bind.h"
@@ -15,7 +16,6 @@
 #include "base/task/single_thread_task_runner.h"
 #include "build/build_config.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/platform/scheduler/test/renderer_scheduler_test_support.h"
 #include "third_party/blink/public/web/web_heap.h"
 #include "third_party/blink/renderer/modules/peerconnection/mock_peer_connection_dependency_factory.h"
@@ -25,6 +25,7 @@
 #include "third_party/blink/renderer/platform/mediastream/media_stream_audio_track.h"
 #include "third_party/blink/renderer/platform/mediastream/media_stream_source.h"
 #include "third_party/blink/renderer/platform/testing/io_task_runner_testing_platform_support.h"
+#include "third_party/blink/renderer/platform/testing/task_environment.h"
 
 namespace blink {
 
@@ -109,9 +110,9 @@ class RTCRtpTransceiverImplTest : public ::testing::Test {
   rtc::scoped_refptr<blink::FakeRtpTransceiver> CreateWebRtcTransceiver(
       rtc::scoped_refptr<blink::FakeRtpSender> sender,
       rtc::scoped_refptr<blink::FakeRtpReceiver> receiver,
-      absl::optional<std::string> mid,
+      std::optional<std::string> mid,
       webrtc::RtpTransceiverDirection direction,
-      absl::optional<webrtc::RtpTransceiverDirection> current_direction) {
+      std::optional<webrtc::RtpTransceiverDirection> current_direction) {
     DCHECK(!sender->track() ||
            sender->track()->kind() == receiver->track()->kind());
     return rtc::scoped_refptr<blink::FakeRtpTransceiver>(
@@ -175,6 +176,7 @@ class RTCRtpTransceiverImplTest : public ::testing::Test {
   }
 
  private:
+  test::TaskEnvironment task_environment_;
   ScopedTestingPlatformSupport<IOTaskRunnerTestingPlatformSupport> platform_;
 
  protected:
@@ -191,7 +193,7 @@ TEST_F(RTCRtpTransceiverImplTest, InitializeTransceiverState) {
       CreateWebRtcSender(local_track_adapter->webrtc_track(), "local_stream"),
       CreateWebRtcReceiver(remote_track_adapter->webrtc_track(),
                            "remote_stream"),
-      absl::nullopt, webrtc::RtpTransceiverDirection::kSendRecv, absl::nullopt);
+      std::nullopt, webrtc::RtpTransceiverDirection::kSendRecv, std::nullopt);
   RtpTransceiverState transceiver_state =
       CreateTransceiverState(webrtc_transceiver, std::move(local_track_adapter),
                              std::move(remote_track_adapter));
@@ -239,7 +241,7 @@ TEST_F(RTCRtpTransceiverImplTest, CreateTranceiver) {
       CreateWebRtcSender(local_track_adapter->webrtc_track(), "local_stream"),
       CreateWebRtcReceiver(remote_track_adapter->webrtc_track(),
                            "remote_stream"),
-      absl::nullopt, webrtc::RtpTransceiverDirection::kSendRecv, absl::nullopt);
+      std::nullopt, webrtc::RtpTransceiverDirection::kSendRecv, std::nullopt);
   RtpTransceiverState transceiver_state =
       CreateTransceiverState(webrtc_transceiver, std::move(local_track_adapter),
                              std::move(remote_track_adapter));
@@ -248,7 +250,8 @@ TEST_F(RTCRtpTransceiverImplTest, CreateTranceiver) {
 
   RTCRtpTransceiverImpl transceiver(peer_connection_, track_map_,
                                     std::move(transceiver_state),
-                                    /*encoded_insertable_streams=*/false);
+                                    /*encoded_insertable_streams=*/false,
+                                    /*decode_metronome=*/nullptr);
   EXPECT_TRUE(transceiver.Mid().IsNull());
   EXPECT_TRUE(transceiver.Sender());
   EXPECT_TRUE(transceiver.Receiver());
@@ -266,8 +269,8 @@ TEST_F(RTCRtpTransceiverImplTest, ModifyTransceiver) {
   auto webrtc_receiver = CreateWebRtcReceiver(
       remote_track_adapter->webrtc_track(), "remote_stream");
   auto webrtc_transceiver = CreateWebRtcTransceiver(
-      webrtc_sender, webrtc_receiver, absl::nullopt,
-      webrtc::RtpTransceiverDirection::kSendRecv, absl::nullopt);
+      webrtc_sender, webrtc_receiver, std::nullopt,
+      webrtc::RtpTransceiverDirection::kSendRecv, std::nullopt);
 
   // Create initial state.
   RtpTransceiverState initial_transceiver_state =
@@ -292,7 +295,8 @@ TEST_F(RTCRtpTransceiverImplTest, ModifyTransceiver) {
   // not have affected the transceiver state.
   RTCRtpTransceiverImpl transceiver(peer_connection_, track_map_,
                                     std::move(initial_transceiver_state),
-                                    /*encoded_insertable_streams=*/false);
+                                    /*encoded_insertable_streams=*/false,
+                                    /*decode_metronome=*/nullptr);
   EXPECT_TRUE(transceiver.Mid().IsNull());
   EXPECT_TRUE(transceiver.Sender());
   EXPECT_TRUE(transceiver.Receiver());
@@ -322,8 +326,8 @@ TEST_F(RTCRtpTransceiverImplTest, ShallowCopy) {
   auto webrtc_receiver = CreateWebRtcReceiver(
       remote_track_adapter->webrtc_track(), "remote_stream");
   auto webrtc_transceiver = CreateWebRtcTransceiver(
-      webrtc_sender, webrtc_receiver, absl::nullopt,
-      webrtc::RtpTransceiverDirection::kSendRecv, absl::nullopt);
+      webrtc_sender, webrtc_receiver, std::nullopt,
+      webrtc::RtpTransceiverDirection::kSendRecv, std::nullopt);
 
   std::unique_ptr<RTCRtpTransceiverImpl> transceiver;
   // Create transceiver.
@@ -335,7 +339,7 @@ TEST_F(RTCRtpTransceiverImplTest, ShallowCopy) {
     transceiver_state.Initialize();
     transceiver = std::make_unique<RTCRtpTransceiverImpl>(
         peer_connection_, track_map_, std::move(transceiver_state),
-        /*encoded_insertable_streams=*/false);
+        /*encoded_insertable_streams=*/false, /*decode_metronome=*/nullptr);
   }
   DCHECK(transceiver);
 
@@ -346,8 +350,8 @@ TEST_F(RTCRtpTransceiverImplTest, ShallowCopy) {
   {
     // Modify webrtc transceiver to be inactive.
     webrtc_transceiver->ReplaceWith(*CreateWebRtcTransceiver(
-        webrtc_sender, webrtc_receiver, absl::nullopt,
-        webrtc::RtpTransceiverDirection::kInactive, absl::nullopt));
+        webrtc_sender, webrtc_receiver, std::nullopt,
+        webrtc::RtpTransceiverDirection::kInactive, std::nullopt));
     RtpTransceiverState transceiver_state =
         CreateTransceiverState(webrtc_transceiver, local_track_adapter->Copy(),
                                remote_track_adapter->Copy());
@@ -368,8 +372,8 @@ TEST_F(RTCRtpTransceiverImplTest, TransceiverStateUpdateModeSetDescription) {
   auto webrtc_receiver = CreateWebRtcReceiver(
       remote_track_adapter->webrtc_track(), "remote_stream");
   auto webrtc_transceiver = CreateWebRtcTransceiver(
-      webrtc_sender, webrtc_receiver, absl::nullopt,
-      webrtc::RtpTransceiverDirection::kSendRecv, absl::nullopt);
+      webrtc_sender, webrtc_receiver, std::nullopt,
+      webrtc::RtpTransceiverDirection::kSendRecv, std::nullopt);
 
   // Create initial state.
   RtpTransceiverState initial_transceiver_state =
@@ -394,7 +398,8 @@ TEST_F(RTCRtpTransceiverImplTest, TransceiverStateUpdateModeSetDescription) {
   // Construct a transceiver from the initial state.
   RTCRtpTransceiverImpl transceiver(peer_connection_, track_map_,
                                     std::move(initial_transceiver_state),
-                                    /*encoded_insertable_streams=*/false);
+                                    /*encoded_insertable_streams=*/false,
+                                    /*decode_metronome=*/nullptr);
   // Setting the state with TransceiverStateUpdateMode::kSetDescription should
   // make the transceiver state up-to-date, except leaving
   // "transceiver.direction" and "transceiver.sender.track" unmodified.

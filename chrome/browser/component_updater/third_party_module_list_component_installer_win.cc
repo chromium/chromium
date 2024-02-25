@@ -45,8 +45,9 @@ void OnModuleListComponentReady(const base::FilePath& module_list_path) {
 
   ThirdPartyConflictsManager* manager =
       ModuleDatabase::GetInstance()->third_party_conflicts_manager();
-  if (!manager)
+  if (!manager) {
     return;
+  }
 
   manager->LoadModuleList(module_list_path);
 }
@@ -57,8 +58,9 @@ void OnModuleListComponentRegistered(const base::Version& component_version) {
   // Notify the ThirdPartyConflictsManager.
   ThirdPartyConflictsManager* manager =
       ModuleDatabase::GetInstance()->third_party_conflicts_manager();
-  if (!manager)
+  if (!manager) {
     return;
+  }
 
   manager->OnModuleListComponentRegistered(kComponentId, component_version);
 }

@@ -29,7 +29,8 @@ class MockAffiliatedMatchHelper : public AffiliatedMatchHelper {
   };
 
   MockAffiliatedMatchHelper();
-  explicit MockAffiliatedMatchHelper(AffiliationService* affiliation_service);
+  explicit MockAffiliatedMatchHelper(
+      affiliations::AffiliationService* affiliation_service);
 
   MockAffiliatedMatchHelper(const MockAffiliatedMatchHelper&) = delete;
   MockAffiliatedMatchHelper& operator=(const MockAffiliatedMatchHelper&) =
@@ -73,8 +74,8 @@ class MockAffiliatedMatchHelper : public AffiliatedMatchHelper {
       AffiliatedRealmsCallback result_callback) override;
 
   void InjectAffiliationAndBrandingInformation(
-      std::vector<std::unique_ptr<PasswordForm>> forms,
-      PasswordFormsOrErrorCallback result_callback) override;
+      LoginsResult forms,
+      base::OnceCallback<void(LoginsResultOrError)> result_callback) override;
 };
 
 }  // namespace password_manager

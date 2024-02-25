@@ -19,6 +19,7 @@ android.webkit.WebView focusable focused scrollable
 ++++android.view.View
 ++++++android.widget.TextView name='Image: '
 ++++++android.widget.Button role_description='button' clickable focusable name='Image:'
+++++android.widget.TextView name=' '
 ++++android.view.View
 ++++++android.widget.TextView name='Number: '
 ++++++android.widget.EditText role_description='spin button' clickable editable_text focusable range name='Number:' input_type=2

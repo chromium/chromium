@@ -22,6 +22,8 @@ extern const uint8_t kEmptyPakContents[];
 extern const size_t kEmptyPakSize;
 extern const uint8_t kSampleCorruptPakContents[];
 extern const size_t kSampleCorruptPakSize;
+extern const uint8_t kSampleMisorderedPakContents[];
+extern const size_t kSampleMisorderedPakSize;
 
 }  // namespace ui
 

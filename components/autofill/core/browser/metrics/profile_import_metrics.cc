@@ -4,9 +4,11 @@
 
 #include "components/autofill/core/browser/metrics/profile_import_metrics.h"
 
+#include "base/containers/contains.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/strcat.h"
 #include "components/autofill/core/browser/metrics/autofill_metrics_utils.h"
+#include "components/autofill/core/browser/profile_requirement_utils.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
 
 namespace autofill::autofill_metrics {
@@ -70,11 +72,25 @@ void LogAddressFormImportRequirementMetric(
                                 metric);
 }
 
-void LogAddressFormImportCountrySpecificFieldRequirementsMetric(
-    bool is_zip_missing,
-    bool is_state_missing,
-    bool is_city_missing,
-    bool is_line1_missing) {
+void LogAddressFormImportRequirementMetric(const AutofillProfile& profile) {
+  std::vector<AddressProfileImportRequirementMetric> requirements =
+      ValidateProfileImportRequirements(profile);
+  for (AddressProfileImportRequirementMetric& requirement : requirements) {
+    LogAddressFormImportRequirementMetric(requirement);
+  }
+
+  bool is_zip_missing = base::Contains(
+      requirements,
+      AddressProfileImportRequirementMetric::kZipRequirementViolated);
+  bool is_state_missing = base::Contains(
+      requirements,
+      AddressProfileImportRequirementMetric::kStateRequirementViolated);
+  bool is_city_missing = base::Contains(
+      requirements,
+      AddressProfileImportRequirementMetric::kCityRequirementViolated);
+  bool is_line1_missing = base::Contains(
+      requirements,
+      AddressProfileImportRequirementMetric::kLine1RequirementViolated);
   const auto metric =
       static_cast<AddressProfileImportCountrySpecificFieldRequirementsMetric>(
           (is_zip_missing ? 0b1 : 0) | (is_state_missing ? 0b10 : 0) |
@@ -103,23 +119,10 @@ void LogNewProfileImportDecision(
                                 decision);
 }
 
-void LogNewProfileNumberOfAutocompleteUnrecognizedFields(int count) {
-  base::UmaHistogramExactLinear(
-      "Autofill.ProfileImport.NewProfileNumberOfAutocompleteUnrecognizedFields",
-      count, /*exclusive_max=*/20);
-}
-
 void LogProfileUpdateImportDecision(
     AutofillClient::SaveAddressProfileOfferUserDecision decision) {
   base::UmaHistogramEnumeration("Autofill.ProfileImport.UpdateProfileDecision",
                                 decision);
-}
-
-void LogProfileUpdateNumberOfAutocompleteUnrecognizedFields(int count) {
-  base::UmaHistogramExactLinear(
-      "Autofill.ProfileImport."
-      "UpdateProfileNumberOfAutocompleteUnrecognizedFields",
-      count, /*exclusive_max=*/20);
 }
 
 // static
@@ -129,7 +132,7 @@ void LogRemovedSettingInaccessibleFields(bool did_remove) {
 }
 
 // static
-void LogRemovedSettingInaccessibleField(ServerFieldType field) {
+void LogRemovedSettingInaccessibleField(FieldType field) {
   base::UmaHistogramEnumeration(
       "Autofill.ProfileImport.InaccessibleFieldsRemoved.ByFieldType",
       ConvertSettingsVisibleFieldTypeForMetrics(field));
@@ -141,7 +144,7 @@ void LogPhoneNumberImportParsingResult(bool parsed_successfully) {
                             parsed_successfully);
 }
 
-void LogNewProfileEditedType(ServerFieldType edited_type) {
+void LogNewProfileEditedType(FieldType edited_type) {
   base::UmaHistogramEnumeration(
       "Autofill.ProfileImport.NewProfileEditedType",
       ConvertSettingsVisibleFieldTypeForMetrics(edited_type));
@@ -154,7 +157,7 @@ void LogNewProfileNumberOfEditedFields(int number_of_edited_fields) {
 }
 
 void LogProfileUpdateAffectedType(
-    ServerFieldType affected_type,
+    FieldType affected_type,
     AutofillClient::SaveAddressProfileOfferUserDecision decision) {
   // Record the decision-specific metric.
   base::UmaHistogramEnumeration(
@@ -168,7 +171,7 @@ void LogProfileUpdateAffectedType(
       ConvertSettingsVisibleFieldTypeForMetrics(affected_type));
 }
 
-void LogProfileUpdateEditedType(ServerFieldType edited_type) {
+void LogProfileUpdateEditedType(FieldType edited_type) {
   base::UmaHistogramEnumeration(
       "Autofill.ProfileImport.UpdateProfileEditedType",
       ConvertSettingsVisibleFieldTypeForMetrics(edited_type));
@@ -202,7 +205,7 @@ void LogProfileMigrationImportDecision(
                                 decision);
 }
 
-void LogProfileMigrationEditedType(ServerFieldType edited_type) {
+void LogProfileMigrationEditedType(FieldType edited_type) {
   base::UmaHistogramEnumeration(
       "Autofill.ProfileImport.MigrateProfileEditedType",
       ConvertSettingsVisibleFieldTypeForMetrics(edited_type));

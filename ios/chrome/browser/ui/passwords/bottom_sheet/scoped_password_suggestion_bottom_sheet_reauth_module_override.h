@@ -5,7 +5,7 @@
 #ifndef IOS_CHROME_BROWSER_UI_PASSWORDS_BOTTOM_SHEET_SCOPED_PASSWORD_SUGGESTION_BOTTOM_SHEET_REAUTH_MODULE_OVERRIDE_H_
 #define IOS_CHROME_BROWSER_UI_PASSWORDS_BOTTOM_SHEET_SCOPED_PASSWORD_SUGGESTION_BOTTOM_SHEET_REAUTH_MODULE_OVERRIDE_H_
 
-#import "base/memory/raw_ptr.h"
+#import <memory>
 
 @protocol ReauthenticationProtocol;
 
@@ -16,6 +16,9 @@ class ScopedPasswordSuggestionBottomSheetReauthModuleOverride {
  public:
   ~ScopedPasswordSuggestionBottomSheetReauthModuleOverride();
 
+  // Returns the override module, if one exists.
+  static id<ReauthenticationProtocol> Get();
+
   // Creates a scoped override so that the provided fake/mock/disarmed/etc
   // reauthentication module will be used in place of the production
   // implementation.
@@ -25,10 +28,6 @@ class ScopedPasswordSuggestionBottomSheetReauthModuleOverride {
   static std::unique_ptr<
       ScopedPasswordSuggestionBottomSheetReauthModuleOverride>
   MakeAndArmForTesting(id<ReauthenticationProtocol> module);
-
-  // Singleton instance of this class.
-  static raw_ptr<ScopedPasswordSuggestionBottomSheetReauthModuleOverride>
-      instance;
 
   // The module to be used.
   id<ReauthenticationProtocol> module;

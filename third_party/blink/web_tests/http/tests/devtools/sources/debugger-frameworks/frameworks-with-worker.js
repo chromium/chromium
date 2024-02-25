@@ -9,7 +9,6 @@ import * as Common from 'devtools/core/common/common.js';
 
 (async function() {
   TestRunner.addResult(`Tests that blackboxed script will be skipped while stepping on worker.\n`);
-  await TestRunner.loadLegacyModule('sources');
   await TestRunner.showPanel('sources');
   await TestRunner.evaluateInPagePromise(`
       function installWorker()
@@ -19,7 +18,7 @@ import * as Common from 'devtools/core/common/common.js';
   `);
 
   var frameworkRegexString = 'foo\\.js$';
-  Common.Settings.settingForTest('skipStackFramesPattern').set(frameworkRegexString);
+  Common.Settings.settingForTest('skip-stack-frames-pattern').set(frameworkRegexString);
 
   SourcesTestRunner.startDebuggerTest(step1, true);
   function step1() {

@@ -11,9 +11,11 @@
 
 #include "base/functional/bind.h"
 #include "base/memory/ptr_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/mock_callback.h"
+#include "base/test/to_vector.h"
 #include "components/password_manager/core/browser/mock_password_form_manager_for_ui.h"
 #include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/stub_password_manager_client.h"
@@ -43,12 +45,15 @@ namespace {
 constexpr char kTestOrigin[] = "http://example.com/";
 constexpr char kTestPSLOrigin[] = "http://1.example.com/";
 
-std::vector<const PasswordForm*> GetRawPointers(
+std::vector<raw_ptr<const PasswordForm, VectorExperimental>> GetRawPointers(
     const std::vector<std::unique_ptr<PasswordForm>>& forms) {
-  std::vector<const PasswordForm*> result;
-  base::ranges::transform(forms, std::back_inserter(result),
-                          &std::unique_ptr<PasswordForm>::get);
-  return result;
+  // &std::unique_ptr<PasswordForm>::get returns a non-const ptr and hence
+  // cannot be used instead.
+  return base::test::ToVector(
+      forms,
+      [](const auto& form) -> raw_ptr<const PasswordForm, VectorExperimental> {
+        return form.get();
+      });
 }
 
 class MockPasswordManagerClient
@@ -93,8 +98,10 @@ class ManagePasswordsStateTest : public testing::Test {
   // Returns a mock PasswordFormManager containing |best_matches| and
   // |federated_matches|.
   std::unique_ptr<MockPasswordFormManagerForUI> CreateFormManager(
-      std::vector<const PasswordForm*>* best_matches,
-      const std::vector<const PasswordForm*>& federated_matches);
+      std::vector<raw_ptr<const PasswordForm, VectorExperimental>>*
+          best_matches,
+      const std::vector<raw_ptr<const PasswordForm, VectorExperimental>>&
+          federated_matches);
 
   // Pushes irrelevant updates to |passwords_data_| and checks that they don't
   // affect the state.
@@ -117,8 +124,9 @@ class ManagePasswordsStateTest : public testing::Test {
 
 std::unique_ptr<MockPasswordFormManagerForUI>
 ManagePasswordsStateTest::CreateFormManager(
-    std::vector<const PasswordForm*>* best_matches,
-    const std::vector<const PasswordForm*>& federated_matches) {
+    std::vector<raw_ptr<const PasswordForm, VectorExperimental>>* best_matches,
+    const std::vector<raw_ptr<const PasswordForm, VectorExperimental>>&
+        federated_matches) {
   auto form_manager = std::make_unique<MockPasswordFormManagerForUI>();
   EXPECT_CALL(*form_manager, GetBestMatches())
       .WillOnce(testing::ReturnRef(*best_matches));
@@ -130,7 +138,7 @@ ManagePasswordsStateTest::CreateFormManager(
 }
 
 void ManagePasswordsStateTest::TestNoisyUpdates() {
-  const std::vector<const PasswordForm*> forms =
+  const std::vector<raw_ptr<const PasswordForm, VectorExperimental>> forms =
       GetRawPointers(passwords_data_.GetCurrentForms());
   const password_manager::ui::State state = passwords_data_.state();
   const url::Origin origin = passwords_data_.origin();
@@ -164,7 +172,7 @@ void ManagePasswordsStateTest::TestNoisyUpdates() {
 }
 
 void ManagePasswordsStateTest::TestAllUpdates() {
-  const std::vector<const PasswordForm*> forms =
+  const std::vector<raw_ptr<const PasswordForm, VectorExperimental>> forms =
       GetRawPointers(passwords_data_.GetCurrentForms());
   const password_manager::ui::State state = passwords_data_.state();
   const url::Origin origin = passwords_data_.origin();
@@ -221,7 +229,7 @@ void ManagePasswordsStateTest::TestAllUpdates() {
 }
 
 void ManagePasswordsStateTest::TestBlocklistedUpdates() {
-  const std::vector<const PasswordForm*> forms =
+  const std::vector<raw_ptr<const PasswordForm, VectorExperimental>> forms =
       GetRawPointers(passwords_data_.GetCurrentForms());
   const password_manager::ui::State state = passwords_data_.state();
   const url::Origin origin = passwords_data_.origin();
@@ -256,8 +264,8 @@ TEST_F(ManagePasswordsStateTest, DefaultState) {
 }
 
 TEST_F(ManagePasswordsStateTest, PasswordSubmitted) {
-  std::vector<const PasswordForm*> best_matches = {&saved_match(),
-                                                   &psl_match()};
+  std::vector<raw_ptr<const PasswordForm, VectorExperimental>> best_matches = {
+      &saved_match(), &psl_match()};
   std::unique_ptr<MockPasswordFormManagerForUI> test_form_manager(
       CreateFormManager(&best_matches, {}));
   passwords_data().OnPendingPassword(std::move(test_form_manager));
@@ -272,7 +280,8 @@ TEST_F(ManagePasswordsStateTest, PasswordSubmitted) {
 }
 
 TEST_F(ManagePasswordsStateTest, PasswordSaved) {
-  std::vector<const PasswordForm*> best_matches = {&saved_match()};
+  std::vector<raw_ptr<const PasswordForm, VectorExperimental>> best_matches = {
+      &saved_match()};
   std::unique_ptr<MockPasswordFormManagerForUI> test_form_manager(
       CreateFormManager(&best_matches, {}));
 
@@ -289,7 +298,7 @@ TEST_F(ManagePasswordsStateTest, PasswordSaved) {
 }
 
 TEST_F(ManagePasswordsStateTest, PasswordSubmittedFederationsPresent) {
-  std::vector<const PasswordForm*> best_matches;
+  std::vector<raw_ptr<const PasswordForm, VectorExperimental>> best_matches;
   std::unique_ptr<MockPasswordFormManagerForUI> test_form_manager(
       CreateFormManager(&best_matches, {&local_federated_form()}));
   passwords_data().OnPendingPassword(std::move(test_form_manager));
@@ -342,13 +351,14 @@ TEST_F(ManagePasswordsStateTest, AutoSignin) {
 }
 
 TEST_F(ManagePasswordsStateTest, AutomaticPasswordSave) {
-  std::vector<const PasswordForm*> best_matches = {&saved_match(),
-                                                   &psl_match()};
+  std::vector<raw_ptr<const PasswordForm, VectorExperimental>> best_matches = {
+      &saved_match(), &psl_match()};
   std::unique_ptr<MockPasswordFormManagerForUI> test_form_manager(
       CreateFormManager(&best_matches, {}));
 
   passwords_data().OnAutomaticPasswordSave(std::move(test_form_manager));
-  EXPECT_EQ(password_manager::ui::CONFIRMATION_STATE, passwords_data().state());
+  EXPECT_EQ(password_manager::ui::SAVE_CONFIRMATION_STATE,
+            passwords_data().state());
   EXPECT_EQ(url::Origin::Create(GURL(kTestOrigin)), passwords_data().origin());
   ASSERT_TRUE(passwords_data().form_manager());
   TestAllUpdates();
@@ -362,7 +372,8 @@ TEST_F(ManagePasswordsStateTest, AutomaticPasswordSave) {
 }
 
 TEST_F(ManagePasswordsStateTest, AutomaticPasswordSaveWithFederations) {
-  std::vector<const PasswordForm*> best_matches = {&saved_match()};
+  std::vector<raw_ptr<const PasswordForm, VectorExperimental>> best_matches = {
+      &saved_match()};
   std::unique_ptr<MockPasswordFormManagerForUI> test_form_manager(
       CreateFormManager(&best_matches, {&local_federated_form()}));
 
@@ -373,7 +384,7 @@ TEST_F(ManagePasswordsStateTest, AutomaticPasswordSaveWithFederations) {
 }
 
 TEST_F(ManagePasswordsStateTest, PasswordAutofilled) {
-  std::vector<const PasswordForm*> password_forms;
+  std::vector<raw_ptr<const PasswordForm, VectorExperimental>> password_forms;
   password_forms.push_back(&saved_match());
   const url::Origin origin = url::Origin::Create(GURL(kTestOrigin));
   passwords_data().OnPasswordAutofilled(password_forms, origin, nullptr);
@@ -387,10 +398,10 @@ TEST_F(ManagePasswordsStateTest, PasswordAutofilled) {
 }
 
 TEST_F(ManagePasswordsStateTest, PasswordAutofillWithSavedFederations) {
-  std::vector<const PasswordForm*> password_forms;
+  std::vector<raw_ptr<const PasswordForm, VectorExperimental>> password_forms;
   password_forms.push_back(&saved_match());
   const url::Origin origin = url::Origin::Create(GURL(kTestOrigin));
-  std::vector<const PasswordForm*> federated;
+  std::vector<raw_ptr<const PasswordForm, VectorExperimental>> federated;
   federated.push_back(&local_federated_form());
   passwords_data().OnPasswordAutofilled(password_forms, origin, &federated);
 
@@ -404,9 +415,9 @@ TEST_F(ManagePasswordsStateTest, PasswordAutofillWithSavedFederations) {
 }
 
 TEST_F(ManagePasswordsStateTest, PasswordAutofillWithOnlyFederations) {
-  std::vector<const PasswordForm*> password_forms;
+  std::vector<raw_ptr<const PasswordForm, VectorExperimental>> password_forms;
   const url::Origin origin = url::Origin::Create(GURL(kTestOrigin));
-  std::vector<const PasswordForm*> federated;
+  std::vector<raw_ptr<const PasswordForm, VectorExperimental>> federated;
   federated.push_back(&local_federated_form());
   passwords_data().OnPasswordAutofilled(password_forms, origin, &federated);
 
@@ -417,7 +428,7 @@ TEST_F(ManagePasswordsStateTest, PasswordAutofillWithOnlyFederations) {
 }
 
 TEST_F(ManagePasswordsStateTest, ActiveOnMixedPSLAndNonPSLMatched) {
-  std::vector<const PasswordForm*> password_forms;
+  std::vector<raw_ptr<const PasswordForm, VectorExperimental>> password_forms;
   password_forms.push_back(&saved_match());
   password_forms.push_back(&psl_match());
   const url::Origin origin = url::Origin::Create(GURL(kTestOrigin));
@@ -432,7 +443,7 @@ TEST_F(ManagePasswordsStateTest, ActiveOnMixedPSLAndNonPSLMatched) {
 }
 
 TEST_F(ManagePasswordsStateTest, InactiveOnPSLMatched) {
-  std::vector<const PasswordForm*> password_forms;
+  std::vector<raw_ptr<const PasswordForm, VectorExperimental>> password_forms;
   password_forms.push_back(&psl_match());
   passwords_data().OnPasswordAutofilled(
       password_forms, url::Origin::Create(GURL(kTestOrigin)), nullptr);
@@ -444,7 +455,7 @@ TEST_F(ManagePasswordsStateTest, InactiveOnPSLMatched) {
 }
 
 TEST_F(ManagePasswordsStateTest, OnInactive) {
-  std::vector<const PasswordForm*> best_matches;
+  std::vector<raw_ptr<const PasswordForm, VectorExperimental>> best_matches;
   std::unique_ptr<MockPasswordFormManagerForUI> test_form_manager(
       CreateFormManager(&best_matches, {}));
 
@@ -460,7 +471,7 @@ TEST_F(ManagePasswordsStateTest, OnInactive) {
 }
 
 TEST_F(ManagePasswordsStateTest, PendingPasswordAddBlocklisted) {
-  std::vector<const PasswordForm*> best_matches;
+  std::vector<raw_ptr<const PasswordForm, VectorExperimental>> best_matches;
   std::unique_ptr<MockPasswordFormManagerForUI> test_form_manager(
       CreateFormManager(&best_matches, {}));
   passwords_data().OnPendingPassword(std::move(test_form_manager));
@@ -468,6 +479,22 @@ TEST_F(ManagePasswordsStateTest, PendingPasswordAddBlocklisted) {
             passwords_data().state());
 
   TestBlocklistedUpdates();
+}
+
+TEST_F(ManagePasswordsStateTest, DefaultStoreChanged) {
+  std::vector<raw_ptr<const PasswordForm, VectorExperimental>> best_matches = {
+      &saved_match(), &psl_match()};
+  std::unique_ptr<MockPasswordFormManagerForUI> test_form_manager(
+      CreateFormManager(&best_matches, {}));
+  passwords_data().OnDefaultStoreChanged(std::move(test_form_manager));
+
+  EXPECT_THAT(passwords_data().GetCurrentForms(),
+              ElementsAre(Pointee(saved_match())));
+  EXPECT_EQ(password_manager::ui::PASSWORD_STORE_CHANGED_BUBBLE_STATE,
+            passwords_data().state());
+  EXPECT_EQ(url::Origin::Create(GURL(kTestOrigin)), passwords_data().origin());
+  ASSERT_TRUE(passwords_data().form_manager());
+  TestAllUpdates();
 }
 
 TEST_F(ManagePasswordsStateTest, RequestCredentialsAddBlocklisted) {
@@ -494,17 +521,18 @@ TEST_F(ManagePasswordsStateTest, AutoSigninAddBlocklisted) {
 }
 
 TEST_F(ManagePasswordsStateTest, AutomaticPasswordSaveAddBlocklisted) {
-  std::vector<const PasswordForm*> best_matches;
+  std::vector<raw_ptr<const PasswordForm, VectorExperimental>> best_matches;
   std::unique_ptr<MockPasswordFormManagerForUI> test_form_manager(
       CreateFormManager(&best_matches, {}));
   passwords_data().OnAutomaticPasswordSave(std::move(test_form_manager));
-  EXPECT_EQ(password_manager::ui::CONFIRMATION_STATE, passwords_data().state());
+  EXPECT_EQ(password_manager::ui::SAVE_CONFIRMATION_STATE,
+            passwords_data().state());
 
   TestBlocklistedUpdates();
 }
 
 TEST_F(ManagePasswordsStateTest, BackgroundAutofilledAddBlocklisted) {
-  std::vector<const PasswordForm*> password_forms;
+  std::vector<raw_ptr<const PasswordForm, VectorExperimental>> password_forms;
   password_forms.push_back(&saved_match());
   passwords_data().OnPasswordAutofilled(
       password_forms, url::Origin::Create(password_forms.front()->url),
@@ -515,7 +543,8 @@ TEST_F(ManagePasswordsStateTest, BackgroundAutofilledAddBlocklisted) {
 }
 
 TEST_F(ManagePasswordsStateTest, PasswordUpdateAddBlocklisted) {
-  std::vector<const PasswordForm*> best_matches = {&saved_match()};
+  std::vector<raw_ptr<const PasswordForm, VectorExperimental>> best_matches = {
+      &saved_match()};
   std::unique_ptr<MockPasswordFormManagerForUI> test_form_manager(
       CreateFormManager(&best_matches, {}));
   passwords_data().OnUpdatePassword(std::move(test_form_manager));
@@ -526,8 +555,8 @@ TEST_F(ManagePasswordsStateTest, PasswordUpdateAddBlocklisted) {
 }
 
 TEST_F(ManagePasswordsStateTest, PasswordUpdateSubmitted) {
-  std::vector<const PasswordForm*> best_matches = {&saved_match(),
-                                                   &psl_match()};
+  std::vector<raw_ptr<const PasswordForm, VectorExperimental>> best_matches = {
+      &saved_match(), &psl_match()};
   std::unique_ptr<MockPasswordFormManagerForUI> test_form_manager(
       CreateFormManager(&best_matches, {}));
   passwords_data().OnUpdatePassword(std::move(test_form_manager));
@@ -548,7 +577,8 @@ TEST_F(ManagePasswordsStateTest, AndroidPasswordUpdateSubmitted) {
   android_form.username_value = u"username";
   android_form.password_value = u"old pass";
   android_form.match_type = PasswordForm::MatchType::kAffiliated;
-  std::vector<const PasswordForm*> best_matches = {&android_form};
+  std::vector<raw_ptr<const PasswordForm, VectorExperimental>> best_matches = {
+      &android_form};
   std::unique_ptr<MockPasswordFormManagerForUI> test_form_manager(
       CreateFormManager(&best_matches, {}));
   passwords_data().OnUpdatePassword(std::move(test_form_manager));
@@ -563,7 +593,8 @@ TEST_F(ManagePasswordsStateTest, AndroidPasswordUpdateSubmitted) {
 }
 
 TEST_F(ManagePasswordsStateTest, PasswordUpdateSubmittedWithFederations) {
-  std::vector<const PasswordForm*> best_matches = {&saved_match()};
+  std::vector<raw_ptr<const PasswordForm, VectorExperimental>> best_matches = {
+      &saved_match()};
   std::unique_ptr<MockPasswordFormManagerForUI> test_form_manager(
       CreateFormManager(&best_matches, {&local_federated_form()}));
   passwords_data().OnUpdatePassword(std::move(test_form_manager));
@@ -606,16 +637,22 @@ TEST_F(ManagePasswordsStateTest, ChooseCredentialLocalWithNonEmptyFederation) {
 TEST_F(ManagePasswordsStateTest, AutofillCausedByInternalFormManager) {
   struct OwningPasswordFormManagerForUI : public MockPasswordFormManagerForUI {
     GURL url;
-    std::vector<const password_manager::PasswordForm*> best_matches;
-    std::vector<const password_manager::PasswordForm*> federated_matches;
+    std::vector<
+        raw_ptr<const password_manager::PasswordForm, VectorExperimental>>
+        best_matches;
+    std::vector<
+        raw_ptr<const password_manager::PasswordForm, VectorExperimental>>
+        federated_matches;
 
     const GURL& GetURL() const override { return url; }
-    const std::vector<const password_manager::PasswordForm*>& GetBestMatches()
-        const override {
+    const std::vector<
+        raw_ptr<const password_manager::PasswordForm, VectorExperimental>>&
+    GetBestMatches() const override {
       return best_matches;
     }
-    std::vector<const password_manager::PasswordForm*> GetFederatedMatches()
-        const override {
+    std::vector<
+        raw_ptr<const password_manager::PasswordForm, VectorExperimental>>
+    GetFederatedMatches() const override {
       return federated_matches;
     }
   };
@@ -649,9 +686,10 @@ TEST_F(ManagePasswordsStateTest, ProcessUnsyncedCredentialsWillBeDeleted) {
 }
 
 TEST_F(ManagePasswordsStateTest, OnMovablePasswordSubmitted) {
-  std::vector<const PasswordForm*> password_forms = {&saved_match()};
-  std::vector<const PasswordForm*> federated_matches = {
-      &local_federated_form()};
+  std::vector<raw_ptr<const PasswordForm, VectorExperimental>> password_forms =
+      {&saved_match()};
+  std::vector<raw_ptr<const PasswordForm, VectorExperimental>>
+      federated_matches = {&local_federated_form()};
 
   passwords_data().OnPasswordMovable(
       CreateFormManager(&password_forms, federated_matches));
@@ -660,10 +698,16 @@ TEST_F(ManagePasswordsStateTest, OnMovablePasswordSubmitted) {
       passwords_data().GetCurrentForms(),
       ElementsAre(Pointee(saved_match()), Pointee(local_federated_form())));
   EXPECT_EQ(passwords_data().state(),
-            password_manager::ui::CAN_MOVE_PASSWORD_TO_ACCOUNT_STATE);
+            password_manager::ui::MOVE_CREDENTIAL_AFTER_LOG_IN_STATE);
   EXPECT_EQ(passwords_data().origin(), url::Origin::Create(GURL(kTestOrigin)));
 
   TestAllUpdates();
+}
+
+TEST_F(ManagePasswordsStateTest, OnKeychainError) {
+  passwords_data().OnKeychainError();
+  EXPECT_EQ(password_manager::ui::KEYCHAIN_ERROR_STATE,
+            passwords_data().state());
 }
 
 }  // namespace

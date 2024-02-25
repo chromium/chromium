@@ -19,7 +19,7 @@ SafeArchiveAnalyzer::~SafeArchiveAnalyzer() = default;
 
 void SafeArchiveAnalyzer::AnalyzeZipFile(
     base::File zip_file,
-    const absl::optional<std::string>& password,
+    const std::optional<std::string>& password,
     mojo::PendingRemote<chrome::mojom::TemporaryFileGetter> temp_file_getter,
     AnalyzeZipFileCallback callback) {
   DCHECK(zip_file.IsValid());
@@ -61,7 +61,7 @@ void SafeArchiveAnalyzer::AnalyzeDmgFile(
   // TODO(crbug/1466287): Update DMG analyzer to use passwords and provide the
   // password here.
   dmg_analyzer_.Analyze(std::move(dmg_file), base::FilePath(),
-                        /*password=*/absl::nullopt,
+                        /*password=*/std::nullopt,
                         std::move(analysis_finished_callback),
                         std::move(temp_file_getter_callback), &results_);
 #else
@@ -71,7 +71,7 @@ void SafeArchiveAnalyzer::AnalyzeDmgFile(
 
 void SafeArchiveAnalyzer::AnalyzeRarFile(
     base::File rar_file,
-    const absl::optional<std::string>& password,
+    const std::optional<std::string>& password,
     mojo::PendingRemote<chrome::mojom::TemporaryFileGetter> temp_file_getter,
     AnalyzeRarFileCallback callback) {
   DCHECK(rar_file.IsValid());
@@ -111,7 +111,7 @@ void SafeArchiveAnalyzer::AnalyzeSevenZipFile(
   // TODO(crbug/1466287): Update 7Z analyzer to use passwords and provide the
   // password here.
   seven_zip_analyzer_.Analyze(std::move(seven_zip_file), base::FilePath(),
-                              /*password=*/absl::nullopt,
+                              /*password=*/std::nullopt,
                               std::move(analysis_finished_callback),
                               std::move(temp_file_getter_callback), &results_);
 }

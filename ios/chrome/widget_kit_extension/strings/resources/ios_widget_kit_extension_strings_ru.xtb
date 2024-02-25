@@ -1,10 +1,10 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="ru">
+<translation id="1324575488877808473">Откройте Chrome, чтобы увидеть здесь список наиболее посещаемых вами сайтов.</translation>
 <translation id="2513892053093488070">Голосовой поиск</translation>
 <translation id="2535710892645968259">Запускайте игру Chrome Dino с заблокированного экрана.</translation>
 <translation id="2542770169955243077">Игра Chrome Dino</translation>
-<translation id="2803429804752388720">Поиск паролей</translation>
 <translation id="2922313168575194078">Безопасный поиск паролей, сохраненных в Google Менеджере паролей.</translation>
 <translation id="302608144225178783">Запускайте игру Chrome Dino с главного экрана.</translation>
 <translation id="3296938369177810197">Голосовой поиск</translation>
@@ -29,6 +29,7 @@
 <translation id="6691821786147477657">Выполняйте поиск и переходите на сайты, которые вы открываете чаще всего, с главной страницы на вашем iPad.</translation>
 <translation id="6721566127904256183">Здесь будут сайты, которые вы посещаете чаще всего.</translation>
 <translation id="6855322554930231468">Поиск</translation>
+<translation id="6973491011026415905">Найти пароли в Google Менеджере паролей</translation>
 <translation id="7010831364920321713">Поиск в режиме инкогнито</translation>
 <translation id="7048549665319929185">Введите запрос или URL</translation>
 <translation id="7317302007099170473">Сканировать QR-код</translation>

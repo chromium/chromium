@@ -74,7 +74,7 @@ class WaylandDmabufFeedbackManager {
   void SendTranche(const WaylandDmabufFeedbackTranche* tranche,
                    wl_resource* resource);
 
-  const raw_ptr<Display, ExperimentalAsh> display_;
+  const raw_ptr<Display> display_;
   uint32_t version_;
   IndexedDrmFormatsAndModifiers drm_formats_and_modifiers_;
   std::unique_ptr<base::ReadOnlySharedMemoryRegion> shared_memory_region_;

@@ -10,6 +10,7 @@
 #include <iterator>
 #include <map>
 #include <memory>
+#include <optional>
 #include <ostream>
 #include <set>
 #include <string>
@@ -46,7 +47,6 @@
 #include "net/dns/public/dns_query_type.h"
 #include "net/dns/record_parsed.h"
 #include "net/dns/record_rdata.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace net {
 
@@ -213,7 +213,7 @@ RecordsOrError ExtractResponseRecords(
   DCHECK_EQ(response.question_count(), 1u);
 
   std::vector<std::unique_ptr<const RecordParsed>> data_records;
-  absl::optional<base::TimeDelta> response_ttl;
+  std::optional<base::TimeDelta> response_ttl;
 
   DnsRecordParser parser = response.Parser();
 
@@ -267,7 +267,7 @@ RecordsOrError ExtractResponseRecords(
         alias.second->rdata<CnameRecordRdata>()->cname()));
   }
 
-  absl::optional<base::TimeDelta> error_ttl;
+  std::optional<base::TimeDelta> error_ttl;
   for (unsigned i = 0; i < response.authority_count(); ++i) {
     DnsResourceRecord record;
     if (!parser.ReadRecord(&record)) {
@@ -490,25 +490,38 @@ ResultsOrError ExtractHttpsResults(const DnsResponse& response,
     return base::unexpected(https_records.error());
   }
 
+  // Min TTL among records of full use to Chrome.
+  std::optional<base::TimeDelta> min_ttl;
+
+  // Min TTL among all records considered compatible with Chrome, per
+  // RFC9460#section-8.
+  std::optional<base::TimeDelta> min_compatible_ttl;
+
   std::multimap<HttpsRecordPriority, ConnectionEndpointMetadata> metadatas;
-  auto min_ttl = base::TimeDelta::Max();
   bool compatible_record_found = false;
   bool default_alpn_found = false;
   for (const auto& record : https_records.value()) {
     const HttpsRecordRdata* rdata = record->rdata<HttpsRecordRdata>();
     DCHECK(rdata);
 
+    base::TimeDelta ttl = base::Seconds(record->ttl());
+
     // Chrome does not yet support alias records.
     if (rdata->IsAlias()) {
       // Alias records are always considered compatible because they do not
       // support "mandatory" params.
       compatible_record_found = true;
+      min_compatible_ttl =
+          std::min(ttl, min_compatible_ttl.value_or(base::TimeDelta::Max()));
+
       continue;
     }
 
     const ServiceFormHttpsRecordRdata* service = rdata->AsServiceForm();
     if (service->IsCompatible()) {
       compatible_record_found = true;
+      min_compatible_ttl =
+          std::min(ttl, min_compatible_ttl.value_or(base::TimeDelta::Max()));
     } else {
       // Ignore services incompatible with Chrome's HTTPS record parser.
       // draft-ietf-dnsop-svcb-https-12#section-8
@@ -567,8 +580,7 @@ ResultsOrError ExtractHttpsResults(const DnsResponse& response,
 
     metadatas.emplace(service->priority(), std::move(metadata));
 
-    base::TimeDelta ttl = base::Seconds(record->ttl());
-    min_ttl = std::min(ttl, min_ttl);
+    min_ttl = std::min(ttl, min_ttl.value_or(base::TimeDelta::Max()));
 
     if (service->default_alpn()) {
       default_alpn_found = true;
@@ -590,12 +602,23 @@ ResultsOrError ExtractHttpsResults(const DnsResponse& response,
     metadatas.clear();
   }
 
-  // Empty metadata result signifies that compatible HTTPS records were
-  // received but with no contained metadata of use to Chrome.
-  if (!metadatas.empty() || compatible_record_found) {
+  if (metadatas.empty() && compatible_record_found) {
+    // Empty metadata result signifies that compatible HTTPS records were
+    // received but with no contained metadata of use to Chrome. Use the min TTL
+    // of all compatible records.
+    CHECK(min_compatible_ttl.has_value());
     results.insert(std::make_unique<HostResolverInternalMetadataResult>(
         https_records->front()->name(), DnsQueryType::HTTPS,
-        now_ticks + min_ttl, now + min_ttl, Source::kDns,
+        now_ticks + min_compatible_ttl.value(),
+        now + min_compatible_ttl.value(), Source::kDns,
+        /*metadatas=*/
+        std::multimap<HttpsRecordPriority, ConnectionEndpointMetadata>{}));
+  } else if (!metadatas.empty()) {
+    // Use min TTL only of those records contributing useful metadata.
+    CHECK(min_ttl.has_value());
+    results.insert(std::make_unique<HostResolverInternalMetadataResult>(
+        https_records->front()->name(), DnsQueryType::HTTPS,
+        now_ticks + min_ttl.value(), now + min_ttl.value(), Source::kDns,
         std::move(metadatas)));
   }
 

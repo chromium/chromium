@@ -66,19 +66,14 @@ class EcheRecentAppClickHandler
  private:
   bool IsClickable(FeatureStatus status);
 
-  raw_ptr<phonehub::PhoneHubManager, ExperimentalAsh> phone_hub_manager_;
-  raw_ptr<phonehub::NotificationInteractionHandler, ExperimentalAsh>
-      notification_handler_;
-  raw_ptr<phonehub::RecentAppsInteractionHandler, ExperimentalAsh>
-      recent_apps_handler_;
-  raw_ptr<FeatureStatusProvider, ExperimentalAsh> feature_status_provider_;
-  raw_ptr<LaunchAppHelper, DanglingUntriaged | ExperimentalAsh>
-      launch_app_helper_;
-  raw_ptr<EcheStreamStatusChangeHandler, ExperimentalAsh>
-      stream_status_change_handler_;
+  raw_ptr<phonehub::PhoneHubManager> phone_hub_manager_;
+  raw_ptr<phonehub::NotificationInteractionHandler> notification_handler_;
+  raw_ptr<phonehub::RecentAppsInteractionHandler> recent_apps_handler_;
+  raw_ptr<FeatureStatusProvider> feature_status_provider_;
+  raw_ptr<LaunchAppHelper, DanglingUntriaged> launch_app_helper_;
+  raw_ptr<EcheStreamStatusChangeHandler> stream_status_change_handler_;
   std::vector<phonehub::Notification::AppMetadata> to_stream_apps_;
-  raw_ptr<AppsLaunchInfoProvider, DanglingUntriaged | ExperimentalAsh>
-      apps_launch_info_provider_;
+  raw_ptr<AppsLaunchInfoProvider, DanglingUntriaged> apps_launch_info_provider_;
   bool is_click_handler_set_ = false;
   bool is_stream_started_ = false;
 };

@@ -6,6 +6,7 @@
 
 #include <functional>
 #include <memory>
+#include <string_view>
 #include <utility>
 #include <vector>
 
@@ -19,6 +20,7 @@
 #include "base/thread_annotations.h"
 #include "base/trace_event/trace_event.h"
 #include "cc/paint/skottie_mru_resource_provider.h"
+#include "skia/ext/font_utils.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "third_party/skia/include/core/SkImage.h"
 #include "third_party/skia/modules/skottie/include/Skottie.h"
@@ -249,8 +251,8 @@ class SkottieWrapperImpl : public SkottieWrapper {
                 base::BindRepeating(
                     &SkottieWrapperImpl::RunCurrentFrameDataCallback,
                     base::Unretained(this)),
-                base::StringPiece(reinterpret_cast<const char*>(data.data()),
-                                  data.size()))) {}
+                std::string_view(reinterpret_cast<const char*>(data.data()),
+                                 data.size()))) {}
 
   SkottieWrapperImpl(const SkottieWrapperImpl&) = delete;
   SkottieWrapperImpl& operator=(const SkottieWrapperImpl&) = delete;
@@ -326,7 +328,7 @@ class SkottieWrapperImpl : public SkottieWrapper {
 
   base::span<const uint8_t> raw_data() const override {
     DCHECK(raw_data_.size());
-    return base::as_bytes(base::make_span(raw_data_.data(), raw_data_.size()));
+    return raw_data_;
   }
 
   uint32_t id() const override { return id_; }
@@ -342,6 +344,7 @@ class SkottieWrapperImpl : public SkottieWrapper {
             skottie::Animation::Builder()
                 .setLogger(sk_make_sp<SkottieLogWriter>())
                 .setPropertyObserver(property_manager_)
+                .setFontManager(skia::DefaultFontMgr())
                 .setResourceProvider(skresources::CachingResourceProvider::Make(
                     mru_resource_provider))
                 .setMarkerObserver(marker_store_)

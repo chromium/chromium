@@ -38,8 +38,7 @@ ExtensionViewHost::ExtensionViewHost(const Extension* extension,
     : ExtensionHost(extension, site_instance, url, host_type),
       browser_(browser) {
   // Not used for panels, see PanelHost.
-  DCHECK(host_type == mojom::ViewType::kExtensionDialog ||
-         host_type == mojom::ViewType::kExtensionPopup ||
+  DCHECK(host_type == mojom::ViewType::kExtensionPopup ||
          host_type == mojom::ViewType::kExtensionSidePanel);
 
   // The browser should always be associated with the same original profile as
@@ -74,12 +73,6 @@ ExtensionViewHost::~ExtensionViewHost() {
           host_contents());
   if (manager)
     manager->SetDelegate(nullptr);
-}
-
-void ExtensionViewHost::SetAssociatedWebContents(
-    content::WebContents* web_contents) {
-  associated_web_contents_ =
-      web_contents ? web_contents->GetWeakPtr() : nullptr;
 }
 
 Browser* ExtensionViewHost::GetBrowser() {
@@ -244,13 +237,7 @@ WindowController* ExtensionViewHost::GetExtensionWindowController() const {
   return browser_ ? browser_->extension_window_controller() : nullptr;
 }
 
-content::WebContents* ExtensionViewHost::GetAssociatedWebContents() const {
-  return associated_web_contents_.get();
-}
-
 content::WebContents* ExtensionViewHost::GetVisibleWebContents() const {
-  if (associated_web_contents_)
-    return associated_web_contents_.get();
   return (extension_host_type() == mojom::ViewType::kExtensionPopup)
              ? host_contents()
              : nullptr;

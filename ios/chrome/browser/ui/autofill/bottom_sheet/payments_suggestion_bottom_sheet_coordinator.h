@@ -12,7 +12,8 @@ namespace autofill {
 struct FormActivityParams;
 }  // namespace autofill
 
-@protocol ApplicationCommands;
+@protocol SettingsCommands;
+@protocol BrowserCoordinatorCommands;
 
 // This coordinator is responsible for creating the bottom sheet's mediator and
 // view controller.
@@ -27,8 +28,12 @@ struct FormActivityParams;
                                     params:(const autofill::FormActivityParams&)
                                                params;
 
-// Handler for Application Commands.
-@property(nonatomic, weak) id<ApplicationCommands> applicationCommandsHandler;
+// Handler for Settings Commands.
+@property(nonatomic, weak) id<SettingsCommands> settingsHandler;
+
+// Handler for Browser Coordinator Commands.
+@property(nonatomic, weak) id<BrowserCoordinatorCommands>
+    browserCoordinatorCommandsHandler;
 
 @end
 

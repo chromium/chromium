@@ -27,7 +27,9 @@ class AssociatedInterfaceRegistry;
 namespace content {
 class BrowserContext;
 class BrowserURLHandler;
+class RenderFrameHost;
 class RenderProcessHost;
+struct ServiceWorkerVersionBaseInfo;
 class SiteInstance;
 class WebContents;
 }
@@ -46,13 +48,22 @@ class ChromeContentBrowserClientParts {
   virtual ~ChromeContentBrowserClientParts() {}
 
   virtual void RenderProcessWillLaunch(content::RenderProcessHost* host) {}
-  virtual void SiteInstanceGotProcess(content::SiteInstance* site_instance) {}
+  virtual void SiteInstanceGotProcessAndSite(
+      content::SiteInstance* site_instance) {}
+
+  // Subclasses that override webkit preferences are responsible for ensuring
+  // that their modifications are mututally exclusive.
+  // This is called at startup, and when the user changes their webkit
+  // preferences.
   virtual void OverrideWebkitPrefs(content::WebContents* web_contents,
                                    blink::web_pref::WebPreferences* web_prefs) {
   }
+  // This is called after each navigation. Return |true| if any changes were
+  // made. A response value of |true| will result in IPC to the renderer.
   virtual bool OverrideWebPreferencesAfterNavigation(
       content::WebContents* web_contents,
       blink::web_pref::WebPreferences* web_prefs);
+
   virtual void BrowserURLHandlerCreated(content::BrowserURLHandler* handler) {}
   virtual void GetAdditionalAllowedSchemesForFileSystem(
       std::vector<std::string>* additional_allowed_schemes) {}
@@ -80,6 +91,16 @@ class ChromeContentBrowserClientParts {
       service_manager::BinderRegistry* registry,
       blink::AssociatedInterfaceRegistry* associated_registry,
       content::RenderProcessHost* render_process_host) {}
+
+  // Allows to register browser interfaces exposed to a ServiceWorker.
+  virtual void ExposeInterfacesToRendererForServiceWorker(
+      const content::ServiceWorkerVersionBaseInfo& service_worker_version_info,
+      blink::AssociatedInterfaceRegistry& associated_registry) {}
+
+  // Allows to register browser interfaces exposed to a RenderFrameHost.
+  virtual void ExposeInterfacesToRendererForRenderFrameHost(
+      content::RenderFrameHost& frame_host,
+      blink::AssociatedInterfaceRegistry& associated_registry) {}
 };
 
 #endif  // CHROME_BROWSER_CHROME_CONTENT_BROWSER_CLIENT_PARTS_H_

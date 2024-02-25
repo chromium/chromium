@@ -64,10 +64,7 @@ class PeriodicBackgroundSyncPermissionContext
       const GURL& requesting_origin,
       const GURL& embedding_origin) const override;
   void DecidePermission(
-      const permissions::PermissionRequestID& id,
-      const GURL& requesting_origin,
-      const GURL& embedding_origin,
-      bool user_gesture,
+      permissions::PermissionRequestData request_data,
       permissions::BrowserPermissionCallback callback) override;
   void NotifyPermissionSet(const permissions::PermissionRequestID& id,
                            const GURL& requesting_origin,

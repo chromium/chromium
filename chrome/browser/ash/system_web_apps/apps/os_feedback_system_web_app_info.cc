@@ -83,15 +83,17 @@ OSFeedbackAppDelegate::GetWebAppInfo() const {
   return CreateWebAppInfoForOSFeedbackSystemWebApp();
 }
 
-bool OSFeedbackAppDelegate::IsAppEnabled() const {
-  return base::FeatureList::IsEnabled(ash::features::kOsFeedback);
-}
 bool OSFeedbackAppDelegate::ShouldAllowScriptsToCloseWindows() const {
   return true;
 }
 bool OSFeedbackAppDelegate::ShouldCaptureNavigations() const {
   return true;
 }
+
+bool OSFeedbackAppDelegate::ShouldAllowFullscreen() const {
+  return false;
+}
+
 bool OSFeedbackAppDelegate::ShouldAllowMaximize() const {
   return false;
 }
@@ -103,7 +105,7 @@ bool OSFeedbackAppDelegate::ShouldShowInLauncher() const {
   return false;
 }
 
-bool OSFeedbackAppDelegate::ShouldShowInSearch() const {
+bool OSFeedbackAppDelegate::ShouldShowInSearchAndShelf() const {
   return IsUserFeedbackAllowed(profile());
 }
 

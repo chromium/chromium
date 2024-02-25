@@ -10,8 +10,8 @@ import {LandingViewProxyImpl} from 'chrome://welcome/landing_view_proxy.js';
 import {navigateTo, Routes} from 'chrome://welcome/navigation_mixin.js';
 import {NuxSetAsDefaultProxyImpl} from 'chrome://welcome/set_as_default/nux_set_as_default_proxy.js';
 import {BookmarkProxyImpl} from 'chrome://welcome/shared/bookmark_proxy.js';
-import {DefaultBrowserInfo} from 'chrome://welcome/shared/nux_types.js';
-import {WelcomeAppElement} from 'chrome://welcome/welcome_app.js';
+import type {DefaultBrowserInfo} from 'chrome://welcome/shared/nux_types.js';
+import type {WelcomeAppElement} from 'chrome://welcome/welcome_app.js';
 import {WelcomeBrowserProxyImpl} from 'chrome://welcome/welcome_browser_proxy.js';
 
 import {TestBookmarkProxy} from './test_bookmark_proxy.js';

@@ -1,11 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!-- VR specific strings (included from generated_resources.grd). -->
-<!-- TODO(ddorwin): Use consistent naming schemes for VR strings. -->
 <grit-part>
-  <message name="IDS_PRESS_APP_TO_EXIT" desc="Text displayed in a transient bubble to tell users how to return from presentation mode (where the WebVR page occupies the entire screen) to normal mode.">
-    Press App button to exit
-  </message>
-
   <!-- Powerful feature use and permission indicators. -->
   <message name="IDS_VR_SHELL_SITE_IS_TRACKING_LOCATION" desc="Text displayed in a transient bubble to inform the user that the page is tracking location.">
     Site is tracking your location
@@ -83,32 +78,6 @@
   </if>
 
   <!-- VR browser -->
-  <!-- TODO(https://crbug.com/731802): Only build these when the VR browser is supported. -->
-  <message name="IDS_VR_UPDATE_KEYBOARD_PROMPT" desc="Text shown when the keyboard is not installed or needs to be updated on the user's device">
-    To type text, update the Daydream Keyboard app
-  </message>
-  <message name="IDS_VR_SHELL_EXIT_PROMPT_DESCRIPTION" desc="Text on the exit prompt that shows up when the user tries to use a feature that is not supported in VR">
-    This feature is not supported in VR
-  </message>
-  <message name="IDS_VR_SHELL_EXIT_PROMPT_DESCRIPTION_SITE_INFO" desc="Text on the exit prompt that shows up when the user clicks on URL bar security icon in VR">
-    Site information is not available in VR
-  </message>
-  <message name="IDS_VR_SHELL_AUDIO_PERMISSION_PROMPT_DESCRIPTION" desc="Text on the exit prompt in VR that shows up when the user needs to grant audio permission to Chrome">
-    Allow Chrome to record audio?
-  </message>
-  <message name="IDS_VR_SHELL_AUDIO_PERMISSION_PROMPT_ABORT_BUTTON" desc="Text on the cancel button of the prompt that shows up in VR when user needs to grant audio permission to Chrome">
-    Cancel
-  </message>
-  <message name="IDS_VR_SHELL_AUDIO_PERMISSION_PROMPT_CONTINUE_BUTTON" desc="Text on the exit button of the prompt that shows up when user needs to grant audio permission to Chrome to perform a voice search">
-    Continue
-  </message>
-  <!-- TODO(https://crbug.com/787654): Make mixed case before using in production on a non-Android platform. -->
-  <message name="IDS_VR_SHELL_EXIT_PROMPT_EXIT_VR_BUTTON" desc="Text on the exit button of the exit prompt that shows up when the user clicks on URL bar security icon in VR">
-    EXIT VR
-  </message>
-  <message name="IDS_VR_BROWSER_UNSUPPORTED_PAGE" desc="This text is displayed as a large toast to inform the user that they cannot currently browse the current page in VR and they will soon exit VR mode.">
-    This page contains features not yet supported in VR. Exiting...
-  </message>
   <if expr="is_android">
     <then>
       <message name="IDS_VR_WEB_VR_TIMEOUT_MESSAGE" desc="A message that is shown to the user when the WebVR experience is taking too long to start up.">
@@ -121,40 +90,4 @@
       </message>
     </else>
   </if>
-  <message name="IDS_VR_WEB_VR_EXIT_BUTTON_LABEL" desc="This label is shown below the button that accompanies the message shown when the WebVR experience is taking too long to start up. The intent of this label is to let the user know that clicking the button will cause them to exit VR mode.">
-    Exit
-  </message>
-  <message name="IDS_VR_NO_SPEECH_RECOGNITION_RESULT" desc="Text to be shown if speech recognition failed to recognize a speech due to either no sound or noise.">
-    Sorry, didn't catch that.
-  </message>
-  <message name="IDS_VR_BUTTON_TRACKPAD" desc="The label for the trackpad on the VR controller.">
-    Scroll / Click
-  </message>
-  <message name="IDS_VR_BUTTON_EXIT" desc="The label for the exit button on the VR controller -- shown when in fullscreen mode.">
-    Exit Fullscreen
-  </message>
-  <message name="IDS_VR_BUTTON_BACK" desc="The label for the back button on the VR controller -- shown when the keyboard is visible, we are in voice search, or we are repositioning.">
-    Back
-  </message>
-  <message name="IDS_VR_BUTTON_TRACKPAD_REPOSITION" desc="The label for the trackpad while in window repositioning/resizing mode.">
-    Touch to resize
-  </message>
-  <message name="IDS_VR_BUTTON_APP_REPOSITION" desc="This is the label for the app button while in reposition mode">
-    Finish
-  </message>
-  <message name="IDS_VR_MENU_NEW_INCOGNITO_TAB" desc="Menu item for opening a new Incognito tab that facilitates pseudononymous browsing. [CHAR_LIMIT=27]">
-    New Incognito tab
-  </message>
-  <message name="IDS_VR_MENU_PREFERENCES" desc="Menu item for opening browser preferences. [CHAR_LIMIT=27]">
-    Settings
-  </message>
-  <message name="IDS_VR_MENU_CLOSE_INCOGNITO_TABS" desc="Menu item for closing all open Incognito tabs. [CHAR_LIMIT=27]">
-    Close Incognito tabs
-  </message>
-  <message name="IDS_VR_TABS_BUTTON_REGULAR" desc="Text on button for selecting regular tabs">
-    Tabs
-  </message>
-  <message name="IDS_VR_TABS_BUTTON_INCOGNITO" desc="Text on button for selecting Incognito tabs">
-    Incognito
-  </message>
 </grit-part>

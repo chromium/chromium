@@ -82,7 +82,8 @@ ToBackgroundServiceEvent(const devtools::proto::BackgroundServiceEvent& event) {
   base::Time timestamp = base::Time::FromDeltaSinceWindowsEpoch(
       base::Microseconds(event.timestamp()));
   return protocol::BackgroundService::BackgroundServiceEvent::Create()
-      .SetTimestamp(timestamp.ToJsTime() / 1'000)  // milliseconds -> seconds
+      .SetTimestamp(timestamp.InMillisecondsFSinceUnixEpoch() /
+                    1'000)  // milliseconds -> seconds
       .SetOrigin(event.origin())
       .SetServiceWorkerRegistrationId(
           base::NumberToString(event.service_worker_registration_id()))

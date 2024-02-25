@@ -36,7 +36,7 @@ SystemDnsResolverMojoImpl::SystemDnsResolverMojoImpl() {
 
 // network::mojom::SystemDnsResolver impl:
 void SystemDnsResolverMojoImpl::Resolve(
-    const absl::optional<std::string>& hostname,
+    const std::optional<std::string>& hostname,
     net::AddressFamily addr_family,
     int32_t flags,
     uint64_t network,

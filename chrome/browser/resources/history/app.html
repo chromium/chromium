@@ -87,6 +87,9 @@
           on-selected-item-changed="updateScrollTarget_"
           items="{{items}}">
         <div id="tabs-container" path="history">
+          <template is="dom-if" if="[[enableHistoryEmbeddings_]]">
+            <cr-history-embeddings></cr-history-embeddings>
+          </template>
           <template is="dom-if" if="[[showHistoryClusters_]]">
             <div id="tabs">
               <cr-tabs tab-names="[[tabsNames_]]"

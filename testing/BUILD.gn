@@ -97,6 +97,7 @@ group("testing_pytype") {
 
     "//testing/unexpected_passes_common/",
     "//testing/flake_suppressor_common/",
+    "//third_party/blink/tools/",
     "//third_party/catapult/third_party/typ/",
   ]
 

@@ -38,6 +38,7 @@ extern "C" typedef const struct _GLcolorSpace* GLcolorSpace;
 
 namespace gpu {
 
+class ClientSharedImage;
 struct Mailbox;
 
 namespace raster {
@@ -89,6 +90,10 @@ class RasterInterface : public InterfaceBase {
   // `dest_mailbox`'s color space.
   virtual void ConvertYUVAMailboxesToRGB(
       const gpu::Mailbox& dest_mailbox,
+      GLint src_x,
+      GLint src_y,
+      GLsizei width,
+      GLsizei height,
       SkYUVColorSpace planes_yuv_color_space,
       const SkColorSpace* planes_rgb_color_space,
       SkYUVAInfo::PlaneConfig plane_config,
@@ -112,6 +117,7 @@ class RasterInterface : public InterfaceBase {
                                    GLboolean can_use_lcd_text,
                                    GLboolean visible,
                                    const gfx::ColorSpace& color_space,
+                                   float hdr_headroom,
                                    const GLbyte* mailbox) = 0;
 
   // Heuristic decided on UMA data. This covers 85% of the cases where we need
@@ -201,6 +207,9 @@ class RasterInterface : public InterfaceBase {
 
   // Raster via GrContext.
   virtual GLuint CreateAndConsumeForGpuRaster(const gpu::Mailbox& mailbox) = 0;
+  virtual GLuint CreateAndConsumeForGpuRaster(
+      const scoped_refptr<gpu::ClientSharedImage>& shared_image) = 0;
+
   virtual void DeleteGpuRasterTexture(GLuint texture) = 0;
   virtual void BeginGpuRaster() = 0;
   virtual void EndGpuRaster() = 0;

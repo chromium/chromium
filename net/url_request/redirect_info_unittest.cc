@@ -53,7 +53,7 @@ TEST(RedirectInfoTest, MethodForRedirect) {
         test.original_method, kOriginalUrl, kOriginalSiteForCookies,
         kOriginalFirstPartyUrlPolicy, kOriginalReferrerPolicy,
         kOriginalReferrer, test.http_status_code, kNewLocation,
-        absl::nullopt /* referrer_policy_header */, kInsecureSchemeWasUpgraded,
+        std::nullopt /* referrer_policy_header */, kInsecureSchemeWasUpgraded,
         kCopyFragment);
 
     EXPECT_EQ(test.expected_new_method, redirect_info.new_method);
@@ -104,7 +104,7 @@ TEST(RedirectInfoTest, CopyFragment) {
         kOriginalMethod, GURL(test.original_url), kOriginalSiteForCookies,
         kOriginalFirstPartyUrlPolicy, kOriginalReferrerPolicy,
         kOriginalReferrer, kHttpStatusCode, GURL(test.new_location),
-        absl::nullopt /* referrer_policy_header */, kInsecureSchemeWasUpgraded,
+        std::nullopt /* referrer_policy_header */, kInsecureSchemeWasUpgraded,
         test.copy_fragment);
 
     EXPECT_EQ(GURL(test.expected_new_url), redirect_info.new_url);
@@ -143,7 +143,7 @@ TEST(RedirectInfoTest, FirstPartyURLPolicy) {
         kOriginalMethod, kOriginalUrl, kOriginalSiteForCookies,
         test.original_first_party_url_policy, kOriginalReferrerPolicy,
         kOriginalReferrer, kHttpStatusCode, kNewLocation,
-        absl::nullopt /* referrer_policy_header */, kInsecureSchemeWasUpgraded,
+        std::nullopt /* referrer_policy_header */, kInsecureSchemeWasUpgraded,
         kCopyFragment);
 
     EXPECT_TRUE(redirect_info.new_site_for_cookies.IsEquivalent(

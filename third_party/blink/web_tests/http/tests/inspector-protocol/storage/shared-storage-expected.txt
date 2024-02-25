@@ -1,5 +1,6 @@
 Tests shared storage event tracking & fetching of entries/metadata.
 Metadata: {
+    bytesUsed : 244
     creationTime : <number>
     length : 4
     remainingBudget : 12

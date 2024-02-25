@@ -5,6 +5,7 @@
 #ifndef SERVICES_TRACING_PUBLIC_CPP_TRACE_EVENT_AGENT_H_
 #define SERVICES_TRACING_PUBLIC_CPP_TRACE_EVENT_AGENT_H_
 
+#include <optional>
 #include <set>
 #include <string>
 #include <vector>
@@ -17,7 +18,6 @@
 #include "base/values.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "services/tracing/public/cpp/base_agent.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace tracing {
 

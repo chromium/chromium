@@ -7,12 +7,17 @@
 # is fixed.
 -BookmarkBarViewTest2.HideOnDesktopClick
 
+# TODO(crbug.com/1474921): Requires an additional custom "set bounds using mouse emulation"
+# implementation similar to what was introduced in https://crrev.com/c/4738688.
+-TabDragging/DetachToBrowserTabDragControllerTest.DragDirectlyToSecondWindow/*
+
 # Failing interactive ui tests
 -BookmarkBarViewTest12.CloseWithModalDialog
 -BookmarkBarViewTest13.ClickOnContextMenuSeparator
 -BookmarkBarViewTest15.MenuStaysVisibleAfterDelete
 -BookmarkBarViewTest21.ContextMenusForEmptyFolder
 -BookmarkBarViewTest23.ContextMenusKeyboard
+-BookmarkBarViewTest29.DNDToEmptyMenu
 -BookmarkBarViewTest5.DND
 -BookmarkBarViewTest7.DNDToDifferentMenu
 -BookmarkBarViewTest8.DNDBackToOriginatingMenu
@@ -32,7 +37,6 @@
 -PopupBlockerBrowserTest.ModalPopUnder
 -SameSiteSubframe/DragAndDropBrowserTest.CrossTabDrag/0
 -StartupBrowserCreatorTest.LastUsedProfileActivated
--TabDragging/DetachToBrowserTabDragControllerTest*
 -WebAppProfileSwitcherBrowserTest.SwitchWebAppProfileActivateWindowOnly
 -WidgetInputMethodInteractiveTest.Activation
 -WidgetInputMethodInteractiveTest.OneWindow
@@ -54,3 +58,13 @@
 
 # TODO(crbug.com/1192997): Flaky on the bot. Locally runs fine.
 -BrowserActionInteractiveTest.TestOpenPopup
+
+# TODO(crbug.com/1464645): Enable when feature isn't buggy any more. (Used to pass with Weston 9,
+# but doesn't pass with Weston 12.)
+-FullscreenControlViewTest.MouseAndTouchInteraction_NoInterference
+-FullscreenControlViewTest.MouseExitFullscreen_TimeoutAndRetrigger
+
+# These cannot work because they rely on receiving key events during a DnD session, which isn't
+# possible on Linux Wayland.
+-TabDragging/DetachToBrowserTabDragControllerTest.KeyPressShouldEndDragTest/*
+-TabDragging/DetachToBrowserTabDragControllerTest.Revert*

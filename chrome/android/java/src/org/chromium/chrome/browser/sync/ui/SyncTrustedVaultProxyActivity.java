@@ -8,9 +8,16 @@ import android.app.PendingIntent;
 import android.content.Intent;
 import android.content.IntentSender;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+
 import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
+import org.chromium.base.supplier.OneshotSupplier;
+import org.chromium.base.supplier.OneshotSupplierImpl;
 import org.chromium.chrome.browser.init.AsyncInitializationActivity;
+import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.profiles.ProfileProvider;
 import org.chromium.chrome.browser.sync.TrustedVaultClient;
 import org.chromium.components.sync.TrustedVaultUserActionTriggerForUMA;
 
@@ -46,7 +53,8 @@ public class SyncTrustedVaultProxyActivity extends AsyncInitializationActivity {
      *
      * @return the intent for launching SyncTrustedVaultProxyActivity
      */
-    public static Intent createKeyRetrievalProxyIntent(PendingIntent keyRetrievalIntent,
+    public static Intent createKeyRetrievalProxyIntent(
+            PendingIntent keyRetrievalIntent,
             @TrustedVaultUserActionTriggerForUMA int userActionTrigger) {
         return createProxyIntent(
                 keyRetrievalIntent, userActionTrigger, REQUEST_CODE_TRUSTED_VAULT_KEY_RETRIEVAL);
@@ -65,14 +73,19 @@ public class SyncTrustedVaultProxyActivity extends AsyncInitializationActivity {
     public static Intent createRecoverabilityDegradedProxyIntent(
             PendingIntent recoverabilityDegradedIntent,
             @TrustedVaultUserActionTriggerForUMA int userActionTrigger) {
-        return createProxyIntent(recoverabilityDegradedIntent, userActionTrigger,
+        return createProxyIntent(
+                recoverabilityDegradedIntent,
+                userActionTrigger,
                 REQUEST_CODE_TRUSTED_VAULT_RECOVERABILITY_DEGRADED);
     }
 
-    private static Intent createProxyIntent(PendingIntent proxiedIntent,
-            @TrustedVaultUserActionTriggerForUMA int userActionTrigger, int requestCode) {
-        Intent proxyIntent = new Intent(
-                ContextUtils.getApplicationContext(), SyncTrustedVaultProxyActivity.class);
+    private static Intent createProxyIntent(
+            PendingIntent proxiedIntent,
+            @TrustedVaultUserActionTriggerForUMA int userActionTrigger,
+            int requestCode) {
+        Intent proxyIntent =
+                new Intent(
+                        ContextUtils.getApplicationContext(), SyncTrustedVaultProxyActivity.class);
         proxyIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         proxyIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
         proxyIntent.putExtra(EXTRA_KEY_PROXIED_INTENT, proxiedIntent);
@@ -100,14 +113,46 @@ public class SyncTrustedVaultProxyActivity extends AsyncInitializationActivity {
         assert mUserActionTrigger != -1;
 
         try {
-            startIntentSenderForResult(proxiedIntent.getIntentSender(), mRequestCode,
-                    /* fillInIntent */ null, /* flagsMask */ 0,
-                    /* flagsValues */ 0, /* extraFlags */ 0,
-                    /* options */ null);
+            startIntentSenderForResult(
+                    proxiedIntent.getIntentSender(),
+                    mRequestCode,
+                    /* fillInIntent= */ null,
+                    /* flagsMask= */ 0,
+                    /* flagsValues= */ 0,
+                    /* extraFlags= */ 0,
+                    /* options= */ null);
         } catch (IntentSender.SendIntentException exception) {
             Log.w(TAG, "Error sending trusted vault intent: ", exception);
         }
         onInitialLayoutInflationComplete();
+    }
+
+    @Override
+    protected OneshotSupplier<ProfileProvider> createProfileProvider() {
+        OneshotSupplierImpl<ProfileProvider> supplier = new OneshotSupplierImpl<>();
+        ProfileProvider profileProvider =
+                new ProfileProvider() {
+                    @NonNull
+                    @Override
+                    public Profile getOriginalProfile() {
+                        throw new IllegalStateException(
+                                "Unexpected access of the original profile.");
+                    }
+
+                    @Nullable
+                    @Override
+                    public Profile getOffTheRecordProfile(boolean createIfNeeded) {
+                        throw new IllegalStateException(
+                                "Unexpected access of the incognito profile.");
+                    }
+
+                    @Override
+                    public boolean hasOffTheRecordProfile() {
+                        return false;
+                    }
+                };
+        supplier.set(profileProvider);
+        return supplier;
     }
 
     @Override

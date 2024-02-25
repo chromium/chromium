@@ -23,6 +23,7 @@ import android.content.Context;
 import android.content.res.Resources;
 import android.graphics.Color;
 import android.util.DisplayMetrics;
+import android.view.View;
 
 import org.junit.After;
 import org.junit.Before;
@@ -37,6 +38,8 @@ import org.robolectric.annotation.Config;
 
 import org.chromium.base.UserDataHost;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.util.Features.EnableFeatures;
+import org.chromium.base.test.util.Features.JUnitProcessor;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
 import org.chromium.chrome.browser.compositor.layouts.components.LayoutTab;
 import org.chromium.chrome.browser.compositor.layouts.content.TabContentManager;
@@ -51,8 +54,6 @@ import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelObserver;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.theme.TopUiThemeColorProvider;
-import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
-import org.chromium.chrome.test.util.browser.Features.JUnitProcessor;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.url.GURL;
@@ -61,22 +62,19 @@ import org.chromium.url.JUnitTestGURLs;
 import java.util.Arrays;
 import java.util.Collections;
 
-/**
- * Unit tests for {@link StaticLayout}.
- */
+/** Unit tests for {@link StaticLayout}. */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
 @EnableFeatures(ChromeFeatureList.AVOID_SELECTED_TAB_FOCUS_ON_LAYOUT_DONE_SHOWING)
 public class StaticLayoutUnitTest {
-    @Rule
-    public JUnitProcessor mFeaturesProcessor = new JUnitProcessor();
+    @Rule public JUnitProcessor mFeaturesProcessor = new JUnitProcessor();
 
     private static final int TAB1_ID = 0;
     private static final int TAB2_ID = 789;
     private static final int POSITION1 = 0;
     private static final int POSITION2 = 1;
-    private static final String TAB1_URL = JUnitTestGURLs.URL_1;
-    private static final String TAB2_URL = JUnitTestGURLs.URL_2;
+    private static final String TAB1_URL = JUnitTestGURLs.URL_1.getSpec();
+    private static final String TAB2_URL = JUnitTestGURLs.URL_2.getSpec();
 
     private static final int BACKGROUND_COLOR = Color.WHITE;
     private static final int TOOLBAR_BACKGROUND_COLOR = Color.BLUE;
@@ -84,47 +82,36 @@ public class StaticLayoutUnitTest {
     private static final int WIDTH = 9;
     private static final int HEIGHT = 16;
 
-    @Mock
-    private Context mContext;
-    @Mock
-    private Resources mResources;
-    @Mock
-    private DisplayMetrics mDisplayMetrics;
-    @Mock
-    private LayoutUpdateHost mUpdateHost;
-    @Mock
-    private LayoutRenderHost mRenderHost;
-    @Mock
-    private LayoutManagerHost mViewHost;
-    @Mock
-    StaticTabSceneLayer mStaticTabSceneLayer;
+    @Mock private Context mContext;
+    @Mock private Resources mResources;
+    @Mock private DisplayMetrics mDisplayMetrics;
+    @Mock private LayoutUpdateHost mUpdateHost;
+    @Mock private LayoutRenderHost mRenderHost;
+    @Mock private LayoutManagerHost mViewHost;
+    @Mock StaticTabSceneLayer mStaticTabSceneLayer;
 
     private CompositorModelChangeProcessor.FrameRequestSupplier mRequestSupplier;
 
-    @Mock
-    private TabContentManager mTabContentManager;
+    @Mock private TabContentManager mTabContentManager;
 
-    @Mock
-    private TabModelSelector mTabModelSelector;
-    @Mock
-    private TabModel mTabModel;
-    @Captor
-    private ArgumentCaptor<TabModelObserver> mTabModelObserverCaptor;
+    @Mock private TabModelSelector mTabModelSelector;
+    @Mock private TabModel mTabModel;
+    @Captor private ArgumentCaptor<TabModelObserver> mTabModelObserverCaptor;
 
-    @Mock
-    private BrowserControlsStateProvider mBrowserControlsStateProvider;
+    @Mock private BrowserControlsStateProvider mBrowserControlsStateProvider;
+
     @Captor
     private ArgumentCaptor<BrowserControlsStateProvider.Observer>
             mBrowserControlsStateProviderObserverCaptor;
 
     private UserDataHost mUserDataHost = new UserDataHost();
-    @Mock
-    private TopUiThemeColorProvider mTopUiThemeColorProvider;
+    @Mock private TopUiThemeColorProvider mTopUiThemeColorProvider;
+
+    @Mock private View mTabView;
 
     private Tab mTab1;
     private Tab mTab2;
-    @Captor
-    private ArgumentCaptor<TabObserver> mTabObserverCaptor;
+    @Captor private ArgumentCaptor<TabObserver> mTabObserverCaptor;
 
     private CompositorAnimationHandler mCompositorAnimationHandler;
 
@@ -140,8 +127,8 @@ public class StaticLayoutUnitTest {
         mCompositorAnimationHandler = new CompositorAnimationHandler(mUpdateHost::requestUpdate);
         CompositorAnimationHandler.setTestingMode(true);
 
-        mTab1 = prepareTab(TAB1_ID, JUnitTestGURLs.getGURL(TAB1_URL));
-        mTab2 = prepareTab(TAB2_ID, JUnitTestGURLs.getGURL(TAB2_URL));
+        mTab1 = prepareTab(TAB1_ID, new GURL(TAB1_URL));
+        mTab2 = prepareTab(TAB2_ID, new GURL(TAB2_URL));
 
         doReturn(mResources).when(mContext).getResources();
         doReturn(mDisplayMetrics).when(mResources).getDisplayMetrics();
@@ -170,9 +157,17 @@ public class StaticLayoutUnitTest {
         doReturn(mCompositorAnimationHandler).when(mUpdateHost).getAnimationHandler();
 
         mStaticLayout =
-                new StaticLayout(mContext, mUpdateHost, mRenderHost, mViewHost, mRequestSupplier,
-                        mTabModelSelector, mTabContentManager, mBrowserControlsStateProvider,
-                        () -> mTopUiThemeColorProvider, mStaticTabSceneLayer);
+                new StaticLayout(
+                        mContext,
+                        mUpdateHost,
+                        mRenderHost,
+                        mViewHost,
+                        mRequestSupplier,
+                        mTabModelSelector,
+                        mTabContentManager,
+                        mBrowserControlsStateProvider,
+                        () -> mTopUiThemeColorProvider,
+                        mStaticTabSceneLayer);
         mModel = mStaticLayout.getModelForTesting();
         doReturn(true).when(mUpdateHost).isActiveLayout(mStaticLayout);
 
@@ -201,7 +196,8 @@ public class StaticLayoutUnitTest {
         assertEquals(mTabModelSelector, mStaticLayout.getTabModelSelectorForTesting());
         assertEquals(mTabContentManager, mStaticLayout.getTabContentManagerForTesting());
 
-        assertEquals(mBrowserControlsStateProvider,
+        assertEquals(
+                mBrowserControlsStateProvider,
                 mStaticLayout.getBrowserControlsStateProviderForTesting());
     }
 
@@ -243,8 +239,9 @@ public class StaticLayoutUnitTest {
     public void testBrowserControlsContentOffsetChanged() {
         final int offset = 10;
         doReturn(offset).when(mBrowserControlsStateProvider).getContentOffset();
-        mBrowserControlsStateProviderObserverCaptor.getValue().onControlsOffsetChanged(
-                offset, offset, 0, 0, true);
+        mBrowserControlsStateProviderObserverCaptor
+                .getValue()
+                .onControlsOffsetChanged(offset, offset, 0, 0, true);
         assertEquals(offset, (int) mModel.get(LayoutTab.CONTENT_OFFSET));
     }
 
@@ -252,8 +249,8 @@ public class StaticLayoutUnitTest {
     public void testTabSelection() {
         assertNotEquals(mTab2.getId(), mModel.get(LayoutTab.TAB_ID));
 
-        getTabModelSelectorTabModelObserverFromCaptor().didSelectTab(
-                mTab2, TabSelectionType.FROM_USER, TAB1_ID);
+        getTabModelSelectorTabModelObserverFromCaptor()
+                .didSelectTab(mTab2, TabSelectionType.FROM_USER, TAB1_ID);
 
         assertEquals(mTab2.getId(), mModel.get(LayoutTab.TAB_ID));
         assertFalse(mModel.get(LayoutTab.SHOULD_STALL));
@@ -268,8 +265,8 @@ public class StaticLayoutUnitTest {
         doReturn(false).when(mUpdateHost).isActiveLayout(mStaticLayout);
         assertNotEquals(mTab2.getId(), mModel.get(LayoutTab.TAB_ID));
 
-        getTabModelSelectorTabModelObserverFromCaptor().didSelectTab(
-                mTab2, TabSelectionType.FROM_USER, TAB1_ID);
+        getTabModelSelectorTabModelObserverFromCaptor()
+                .didSelectTab(mTab2, TabSelectionType.FROM_USER, TAB1_ID);
 
         assertEquals(mTab2.getId(), mModel.get(LayoutTab.TAB_ID));
         assertFalse(mModel.get(LayoutTab.SHOULD_STALL));
@@ -284,8 +281,8 @@ public class StaticLayoutUnitTest {
         assertNotEquals(mTab2.getId(), mModel.get(LayoutTab.TAB_ID));
         doReturn(true).when(mTab2).isNativePage();
 
-        getTabModelSelectorTabModelObserverFromCaptor().didSelectTab(
-                mTab2, TabSelectionType.FROM_USER, TAB1_ID);
+        getTabModelSelectorTabModelObserverFromCaptor()
+                .didSelectTab(mTab2, TabSelectionType.FROM_USER, TAB1_ID);
 
         assertEquals(mTab2.getId(), mModel.get(LayoutTab.TAB_ID));
         assertFalse(mModel.get(LayoutTab.SHOULD_STALL));
@@ -300,8 +297,8 @@ public class StaticLayoutUnitTest {
     public void testTabSelection_Stall() {
         doReturn(true).when(mTab2).isFrozen();
 
-        getTabModelSelectorTabModelObserverFromCaptor().didSelectTab(
-                mTab2, TabSelectionType.FROM_USER, TAB1_ID);
+        getTabModelSelectorTabModelObserverFromCaptor()
+                .didSelectTab(mTab2, TabSelectionType.FROM_USER, TAB1_ID);
 
         assertTrue(mModel.get(LayoutTab.SHOULD_STALL));
         assertEquals(1.0f, mModel.get(LayoutTab.STATIC_TO_VIEW_BLEND), 0);
@@ -312,8 +309,8 @@ public class StaticLayoutUnitTest {
 
     @Test
     public void testTabSelection_SameTab() {
-        getTabModelSelectorTabModelObserverFromCaptor().didSelectTab(
-                mTab1, TabSelectionType.FROM_USER, TAB1_ID);
+        getTabModelSelectorTabModelObserverFromCaptor()
+                .didSelectTab(mTab1, TabSelectionType.FROM_USER, TAB1_ID);
 
         assertFalse(mModel.get(LayoutTab.SHOULD_STALL));
         assertEquals(0.0f, mModel.get(LayoutTab.STATIC_TO_VIEW_BLEND), 0);
@@ -324,8 +321,8 @@ public class StaticLayoutUnitTest {
     @Test
     public void testOnPageLoadFinished() {
         doReturn(true).when(mTab2).isFrozen();
-        getTabModelSelectorTabModelObserverFromCaptor().didSelectTab(
-                mTab2, TabSelectionType.FROM_USER, TAB1_ID);
+        getTabModelSelectorTabModelObserverFromCaptor()
+                .didSelectTab(mTab2, TabSelectionType.FROM_USER, TAB1_ID);
         assertTrue(mModel.get(LayoutTab.SHOULD_STALL));
         assertEquals(1.0f, mModel.get(LayoutTab.STATIC_TO_VIEW_BLEND), 0);
         assertEquals(0.0f, mModel.get(LayoutTab.SATURATION), 0);
@@ -333,8 +330,7 @@ public class StaticLayoutUnitTest {
                 .updateVisibleIds(eq(Collections.singletonList(TAB2_ID)), eq(TAB2_ID));
 
         // Index 1 is the TabObserver for mTab2.
-        mTabObserverCaptor.getAllValues().get(1).onPageLoadFinished(
-                mTab2, JUnitTestGURLs.getGURL(TAB2_URL));
+        mTabObserverCaptor.getAllValues().get(1).onPageLoadFinished(mTab2, new GURL(TAB2_URL));
 
         assertFalse(mModel.get(LayoutTab.SHOULD_STALL));
         assertEquals(0.0f, mModel.get(LayoutTab.STATIC_TO_VIEW_BLEND), 0);
@@ -396,5 +392,22 @@ public class StaticLayoutUnitTest {
 
         assertEquals(0.0f, mModel.get(LayoutTab.RENDER_X), 0);
         assertEquals(0.0f, mModel.get(LayoutTab.RENDER_Y), 0);
+    }
+
+    @Test
+    @Config(qualifiers = "sw320dp")
+    public void testTabGainsFocusOnPhoneOnLayoutDoneShowing() {
+        doReturn(mTabView).when(mTab1).getView();
+        doReturn(true).when(mTabView).requestFocus();
+
+        mStaticLayout.doneShowing();
+        verify(mTabView).requestFocus();
+    }
+
+    @Test
+    @Config(qualifiers = "sw600dp")
+    public void testTabDoesNotGainFocusOnTabletOnLayoutDoneShowing() {
+        mStaticLayout.doneShowing();
+        verify(mTabView, never()).requestFocus();
     }
 }

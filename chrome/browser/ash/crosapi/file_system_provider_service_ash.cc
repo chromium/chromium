@@ -221,15 +221,15 @@ std::unique_ptr<ProvidedFileSystemObserver::Changes> ParseChanges(
   return results;
 }
 
-absl::optional<GURL> ToPNGDataURL(const gfx::ImageSkia& image) {
+std::optional<GURL> ToPNGDataURL(const gfx::ImageSkia& image) {
   if (image.isNull()) {
-    return absl::nullopt;
+    return std::nullopt;
   }
   std::vector<unsigned char> output;
   gfx::PNGCodec::EncodeBGRASkBitmap(*image.bitmap(), false, &output);
   GURL url("data:image/png;base64," + base::Base64Encode(output));
   if (url.spec().size() > url::kMaxURLChars) {
-    return absl::nullopt;
+    return std::nullopt;
   }
   return url;
 }
@@ -358,9 +358,9 @@ void FileSystemProviderServiceAsh::ExtensionLoaded(
       break;
   }
 
-  absl::optional<IconSet> icon_set;
-  absl::optional<GURL> url_icon16x16 = ToPNGDataURL(icon16x16);
-  absl::optional<GURL> url_icon32x32 = ToPNGDataURL(icon32x32);
+  std::optional<IconSet> icon_set;
+  std::optional<GURL> url_icon16x16 = ToPNGDataURL(icon16x16);
+  std::optional<GURL> url_icon32x32 = ToPNGDataURL(icon32x32);
   if (url_icon16x16 && url_icon32x32) {
     icon_set = IconSet();
     icon_set->SetIcon(IconSet::IconSize::SIZE_16x16, *url_icon16x16);
@@ -505,7 +505,7 @@ void FileSystemProviderServiceAsh::OperationFinishedWithProfile(
     case mojom::FSPOperationResponse::kUnmountSuccess: {
       using extensions::api::file_system_provider_internal::
           UnmountRequestedSuccess::Params;
-      absl::optional<Params> params = Params::Create(std::move(args));
+      std::optional<Params> params = Params::Create(std::move(args));
       if (!params) {
         error = kDeserializationError;
         break;
@@ -518,7 +518,7 @@ void FileSystemProviderServiceAsh::OperationFinishedWithProfile(
     case mojom::FSPOperationResponse::kGetEntryMetadataSuccess: {
       using extensions::api::file_system_provider_internal::
           GetMetadataRequestedSuccess::Params;
-      absl::optional<Params> params = Params::Create(std::move(args));
+      std::optional<Params> params = Params::Create(std::move(args));
       if (!params) {
         error = kDeserializationError;
         break;
@@ -532,7 +532,7 @@ void FileSystemProviderServiceAsh::OperationFinishedWithProfile(
     case mojom::FSPOperationResponse::kGetActionsSuccess: {
       using extensions::api::file_system_provider_internal::
           GetActionsRequestedSuccess::Params;
-      absl::optional<Params> params = Params::Create(std::move(args));
+      std::optional<Params> params = Params::Create(std::move(args));
       if (!params) {
         error = kDeserializationError;
         break;
@@ -545,7 +545,7 @@ void FileSystemProviderServiceAsh::OperationFinishedWithProfile(
     case mojom::FSPOperationResponse::kReadDirectorySuccess: {
       using extensions::api::file_system_provider_internal::
           ReadDirectoryRequestedSuccess::Params;
-      absl::optional<Params> params = Params::Create(std::move(args));
+      std::optional<Params> params = Params::Create(std::move(args));
       if (!params) {
         error = kDeserializationError;
         break;
@@ -561,7 +561,7 @@ void FileSystemProviderServiceAsh::OperationFinishedWithProfile(
       TRACE_EVENT0("file_system_provider", "ReadFileSuccessWithProfile");
       using extensions::api::file_system_provider_internal::
           ReadFileRequestedSuccess::Params;
-      absl::optional<Params> params = Params::Create(std::move(args));
+      std::optional<Params> params = Params::Create(std::move(args));
       if (!params) {
         error = kDeserializationError;
         break;
@@ -575,7 +575,7 @@ void FileSystemProviderServiceAsh::OperationFinishedWithProfile(
     case mojom::FSPOperationResponse::kGenericSuccess: {
       using extensions::api::file_system_provider_internal::
           OperationRequestedSuccess::Params;
-      absl::optional<Params> params = Params::Create(std::move(args));
+      std::optional<Params> params = Params::Create(std::move(args));
       if (!params) {
         error = kDeserializationError;
         break;
@@ -588,7 +588,7 @@ void FileSystemProviderServiceAsh::OperationFinishedWithProfile(
     case mojom::FSPOperationResponse::kGenericFailure: {
       using extensions::api::file_system_provider_internal::
           OperationRequestedError::Params;
-      absl::optional<Params> params = Params::Create(std::move(args));
+      std::optional<Params> params = Params::Create(std::move(args));
       if (!params) {
         error = kDeserializationError;
         break;
@@ -618,7 +618,7 @@ void FileSystemProviderServiceAsh::MountFinishedWithProfile(
 
   using extensions::api::file_system_provider_internal::RespondToMountRequest::
       Params;
-  absl::optional<Params> params = Params::Create(std::move(args));
+  std::optional<Params> params = Params::Create(std::move(args));
   if (!params) {
     std::move(callback).Run(kDeserializationError);
     return;

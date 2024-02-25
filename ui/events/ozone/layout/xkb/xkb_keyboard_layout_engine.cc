@@ -12,6 +12,7 @@
 
 #include "base/containers/span.h"
 #include "base/functional/bind.h"
+#include "base/functional/callback_forward.h"
 #include "base/functional/callback_helpers.h"
 #include "base/location.h"
 #include "base/logging.h"
@@ -691,21 +692,16 @@ bool XkbKeyboardLayoutEngine::CanSetCurrentLayout() const {
 #endif
 }
 
-bool XkbKeyboardLayoutEngine::SetCurrentLayoutByName(
-    const std::string& layout_name) {
-  return SetCurrentLayoutByNameWithCallback(layout_name, base::DoNothing());
-}
-
-bool XkbKeyboardLayoutEngine::SetCurrentLayoutByNameWithCallback(
+void XkbKeyboardLayoutEngine::SetCurrentLayoutByName(
     const std::string& layout_name,
-    base::OnceClosure callback) {
+    base::OnceCallback<void(bool)> callback) {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   current_layout_name_ = layout_name;
   for (const auto& entry : xkb_keymaps_) {
     if (entry.layout_name == layout_name) {
       SetKeymap(entry.keymap);
-      std::move(callback).Run();
-      return true;
+      std::move(callback).Run(true);
+      return;
     }
   }
   LoadKeymapCallback reply_callback =
@@ -720,11 +716,10 @@ bool XkbKeyboardLayoutEngine::SetCurrentLayoutByNameWithCallback(
 #else
   NOTIMPLEMENTED();
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-  return true;
 }
 
 void XkbKeyboardLayoutEngine::OnKeymapLoaded(
-    base::OnceClosure callback,
+    base::OnceCallback<void(bool)> callback,
     const std::string& layout_name,
     std::unique_ptr<char, base::FreeDeleter> keymap_str) {
   if (keymap_str) {
@@ -735,7 +730,9 @@ void XkbKeyboardLayoutEngine::OnKeymapLoaded(
     xkb_keymaps_.push_back(entry);
     if (layout_name == current_layout_name_) {
       SetKeymap(keymap);
-      std::move(callback).Run();
+      std::move(callback).Run(true);
+    } else {
+      std::move(callback).Run(false);
     }
   } else {
     LOG(FATAL) << "Keymap file failed to load: " << layout_name;
@@ -812,8 +809,8 @@ bool XkbKeyboardLayoutEngine::Lookup(DomCode dom_code,
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
   // Classify the keysym and convert to DOM and VKEY representations.
-  if (xkb_keysym != XKB_KEY_at || (flags & EF_CONTROL_DOWN) == 0) {
-    // Non-character key. (We only support NUL as ^@.)
+  if (dom_code != DomCode::DIGIT2 || (flags & EF_CONTROL_DOWN) == 0) {
+    // Non-character key. (We only support NUL as ^@ and ^2.)
     *dom_key = NonPrintableXKeySymToDomKey(xkb_keysym);
     if (*dom_key != DomKey::NONE) {
       *key_code = NonPrintableDomKeyToKeyboardCode(*dom_key);
@@ -972,7 +969,7 @@ int XkbKeyboardLayoutEngine::UpdateModifiers(uint32_t depressed,
 
 DomCode XkbKeyboardLayoutEngine::GetDomCodeByKeysym(
     uint32_t keysym,
-    const absl::optional<std::vector<base::StringPiece>>& modifiers) const {
+    const std::optional<std::vector<base::StringPiece>>& modifiers) const {
   // Look up all candidates.
   auto range = std::equal_range(
       xkb_keysym_map_.begin(), xkb_keysym_map_.end(), XkbKeysymMapEntry{keysym},

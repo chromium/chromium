@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/views/dark_mode_manager_linux.h"
 
+#include "base/memory/raw_ptr.h"
 #include "dbus/mock_bus.h"
 #include "dbus/mock_object_proxy.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -48,7 +49,7 @@ class MockNativeTheme : public NativeTheme {
                const gfx::Rect& rect,
                const ExtraParams& extra,
                ColorScheme color_scheme,
-               const absl::optional<SkColor>& accent_color),
+               const std::optional<SkColor>& accent_color),
               (const override));
   MOCK_METHOD(bool, SupportsNinePatch, (Part part), (const override));
   MOCK_METHOD(gfx::Size, GetNinePatchCanvasSize, (Part part), (const override));
@@ -130,7 +131,8 @@ class DarkModeManagerLinuxTest : public testing::Test {
         .WillOnce(MethodCallback(&response_callback_, &error_callback_));
 
     mock_linux_ui_ = std::make_unique<MockLinuxUi>();
-    linux_ui_themes_ = std::vector<LinuxUiTheme*>{mock_linux_ui_.get()};
+    linux_ui_themes_ = std::vector<raw_ptr<LinuxUiTheme, VectorExperimental>>{
+        mock_linux_ui_.get()};
 
     mock_native_theme_ = std::make_unique<MockNativeTheme>();
     EXPECT_CALL(*mock_linux_ui_, GetNativeTheme())
@@ -138,7 +140,8 @@ class DarkModeManagerLinuxTest : public testing::Test {
 
     manager_ = std::make_unique<DarkModeManagerLinux>(
         mock_bus_, mock_linux_ui_.get(), &linux_ui_themes_,
-        std::vector<NativeTheme*>{mock_native_theme_.get()});
+        std::vector<raw_ptr<NativeTheme, VectorExperimental>>{
+            mock_native_theme_.get()});
 
     EXPECT_FALSE(manager_->prefer_dark_theme());
     EXPECT_FALSE(mock_native_theme_->ShouldUseDarkColors());
@@ -152,7 +155,7 @@ class DarkModeManagerLinuxTest : public testing::Test {
   }
 
   std::unique_ptr<MockLinuxUi> mock_linux_ui_;
-  std::vector<LinuxUiTheme*> linux_ui_themes_;
+  std::vector<raw_ptr<LinuxUiTheme, VectorExperimental>> linux_ui_themes_;
 
   std::unique_ptr<MockNativeTheme> mock_native_theme_;
 

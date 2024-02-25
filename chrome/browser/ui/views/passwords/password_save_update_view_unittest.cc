@@ -10,15 +10,15 @@
 
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
-#include "chrome/browser/password_manager/password_store_factory.h"
+#include "chrome/browser/password_manager/profile_password_store_factory.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/sync/sync_service_factory.h"
 #include "chrome/browser/ui/views/passwords/password_bubble_view_test_base.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/password_manager/core/browser/mock_password_feature_manager.h"
-#include "components/password_manager/core/browser/mock_password_store_interface.h"
 #include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_manager_test_utils.h"
+#include "components/password_manager/core/browser/password_store/mock_password_store_interface.h"
 #include "components/sync/test/test_sync_service.h"
 #include "content/public/test/navigation_simulator.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -81,7 +81,7 @@ PasswordSaveUpdateViewTest::PasswordSaveUpdateViewTest() {
   ON_CALL(*model_delegate_mock(), GetCurrentForms)
       .WillByDefault(ReturnRef(current_forms_));
 
-  PasswordStoreFactory::GetInstance()->SetTestingFactoryAndUse(
+  ProfilePasswordStoreFactory::GetInstance()->SetTestingFactoryAndUse(
       profile(),
       base::BindRepeating(&password_manager::BuildPasswordStoreInterface<
                           content::BrowserContext,

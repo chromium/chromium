@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_LENS_LENS_REGION_SEARCH_INSTRUCTIONS_VIEW_H_
 #define CHROME_BROWSER_UI_VIEWS_LENS_LENS_REGION_SEARCH_INSTRUCTIONS_VIEW_H_
 
+#include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
 
 namespace views {
@@ -15,6 +16,9 @@ namespace lens {
 
 class LensRegionSearchInstructionsView
     : public views::BubbleDialogDelegateView {
+  METADATA_HEADER(LensRegionSearchInstructionsView,
+                  views::BubbleDialogDelegateView)
+
  public:
   LensRegionSearchInstructionsView(views::View* anchor_view,
                                    base::OnceClosure close_callback,

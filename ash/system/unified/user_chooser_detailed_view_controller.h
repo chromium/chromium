@@ -45,7 +45,7 @@ class ASH_EXPORT UserChooserDetailedViewController
   std::u16string GetAccessibleName() const override;
 
  private:
-  raw_ptr<UnifiedSystemTrayController, ExperimentalAsh> tray_controller_;
+  raw_ptr<UnifiedSystemTrayController> tray_controller_;
 };
 
 }  // namespace ash

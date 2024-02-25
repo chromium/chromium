@@ -11,6 +11,7 @@ import sys
 import tempfile
 from typing import Iterable, Set
 import unittest
+from unittest import mock
 
 import six
 
@@ -19,6 +20,8 @@ from pyfakefs import fake_filesystem_unittest
 from unexpected_passes_common import data_types
 from unexpected_passes_common import result_output
 from unexpected_passes_common import unittest_utils as uu
+
+from blinkpy.common.system import executive
 
 
 def CreateTextOutputPermutations(text: str, inputs: Iterable[str]) -> Set[str]:
@@ -763,6 +766,117 @@ class OutputUrlsForClDescriptionUnittest(fake_filesystem_unittest.TestCase):
     with open(self._filepath) as f:
       self.assertEqual(f.read(), ('Affected bugs for CL description:\n'
                                   'Fixed: 1, 2\n'))
+
+  def testNoAutoCloseBugs(self):
+    """Tests behavior when not auto closing bugs."""
+    urls = [
+        'crbug.com/0',
+        'crbug.com/1',
+    ]
+    orphaned_urls = [
+        'crbug.com/0',
+    ]
+    mock_monorail = MockMonorailApi()
+    with mock.patch.object(result_output,
+                           '_GetMonorailApi',
+                           return_value=mock_monorail):
+      result_output._OutputUrlsForClDescription(urls,
+                                                orphaned_urls,
+                                                self._file_handle,
+                                                auto_close_bugs=False)
+    self._file_handle.close()
+    with open(self._filepath) as f:
+      self.assertEqual(f.read(), ('Affected bugs for CL description:\n'
+                                  'Bug: 1\n'
+                                  'Bug: 0\n'))
+    mock_monorail.insert_comment.assert_called_once_with(
+        'chromium', 0, result_output.MONORAIL_COMMENT)
+
+
+class MockMonorailApi:
+
+  def __init__(self):
+    self.comment_list = {'items': []}
+    self.insert_comment = mock.Mock()
+
+  def get_comment_list(self, _, __) -> dict:
+    return self.comment_list
+
+
+class PostCommentsToOrphanedBugsUnittest(unittest.TestCase):
+
+  def setUp(self):
+    self._monorail_api = MockMonorailApi()
+    self._monorail_patcher = mock.patch.object(result_output,
+                                               '_GetMonorailApi',
+                                               return_value=self._monorail_api)
+    self._monorail_patcher.start()
+    self.addCleanup(self._monorail_patcher.stop)
+
+  def testBasic(self):
+    """Tests the basic/happy path scenario."""
+    self._monorail_api.comment_list = {
+        'items': [
+            {
+                'content': 'Not matching',
+            },
+        ],
+    }
+    result_output._PostCommentsToOrphanedBugs(
+        ['crbug.com/0', 'crbug.com/angleproject/0'])
+    self.assertEqual(self._monorail_api.insert_comment.call_count, 2)
+    self._monorail_api.insert_comment.assert_any_call(
+        'chromium', 0, result_output.MONORAIL_COMMENT)
+    self._monorail_api.insert_comment.assert_any_call(
+        'angleproject', 0, result_output.MONORAIL_COMMENT)
+
+  def testNoDuplicateComments(self):
+    """Tests that duplicate comments are not posted on bugs."""
+    self._monorail_api.comment_list = {
+        'items': [
+            {
+                'content': result_output.MONORAIL_COMMENT,
+            },
+        ],
+    }
+    result_output._PostCommentsToOrphanedBugs(
+        ['crbug.com/0', 'crbug.com/angleproject/0'])
+    self._monorail_api.insert_comment.assert_not_called()
+
+  def testInvalidBugUrl(self):
+    """Tests behavior when a non-crbug URL is provided."""
+
+    def not_called(_, __, ___):
+      raise RuntimeError()
+
+    self._monorail_api.get_comment_list = not_called
+
+    with self.assertLogs(level='WARNING') as log_manager:
+      result_output._PostCommentsToOrphanedBugs(['somesite.com/0'])
+      for message in log_manager.output:
+        if ('Unable to extract Monorail information from '
+            'somesite.com/0') in message:
+          break
+      else:
+        self.fail('Did not find expected log message')
+    self._monorail_api.insert_comment.assert_not_called()
+
+  def testAuthError(self):
+    """Tests behavior when LUCI auth fails."""
+    with mock.patch.object(result_output,
+                           '_ExtractMonorailInfoFromUrl') as mock_extract:
+      with mock.patch.object(result_output,
+                             '_GetMonorailApi',
+                             side_effect=executive.ScriptError):
+        with self.assertLogs(level='ERROR') as log_manager:
+          result_output._PostCommentsToOrphanedBugs(['crbug.com/0'])
+          for message in log_manager.output:
+            if ('Encountered error when authenticating, cannot post '
+                'comments') in message:
+              break
+          else:
+            self.fail('Did not find expected log message')
+        mock_extract.assert_not_called()
 
 
 def _Dedent(s: str) -> str:

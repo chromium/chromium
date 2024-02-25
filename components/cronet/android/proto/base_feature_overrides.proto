@@ -1,0 +1,58 @@
+syntax = "proto2";
+
+package org.chromium.net.httpflags;
+
+option java_package = "org.chromium.net.httpflags";
+option java_multiple_files = true;
+option optimize_for = LITE_RUNTIME;  // crbug/800281
+
+// Describes a set of overrides for `base::Feature` flags.
+message BaseFeatureOverrides {
+  // Describes the state of a given base::Feature.
+  //
+  // Note that currently this doesn't support customizing the name of the fake
+  // field trial (a.k.a study) and group (a.k.a experiment) that will be
+  // associated with the base::Feature. It is highly unlikely you'd need to do
+  // this, though.
+  message FeatureState {
+    // If set, the feature will be overridden to the enabled state (true) or the
+    // disabled state (false). If unset, the feature state will not be
+    //  overridden.
+    optional bool enabled = 1;
+
+    // The set of Feature Params that will be associated with the feature, as
+    // key-value pairs. (More specifically: the set of params that will be
+    // associated with the "fake" field trial and group that the feature is
+    // associated with.)
+    //
+    // The usual Feature Params APIs will return an empty params map for
+    // disabled features. It is possible to work around this limitation, but
+    // typical code wouldn't, so you almost certainly want to explicitly enable
+    // the feature by setting the `enabled` field above to `true` if you want
+    // this field to have any effect.
+    //
+    // Behind the scenes, feature params are always string-valued, which is why
+    // this map is string-valued as well (actually bytes-valued, to hedge
+    // against the remote possibility that someone might want to stuff binary or
+    // non-UTF-8 data in there). The non-string variants of the
+    // base::FeatureParam API (int, float, etc.) are really just convenience
+    // string parsers.
+    //
+    // The base::FeatureParam API will return the param default value if there
+    // is no entry for the corresponding param name, OR if the value is the
+    // empty string. Crucially, this means it is NOT possible to override a
+    // base::FeatureParam to the empty string. This limitation does not apply to
+    // lower-level APIs such as base::GetFieldTrialParamsByFeature().
+    //
+    // If this field is empty, no param map will be associated with the feature.
+    // Note that this is subtly different from an empty param map as that
+    // affects the return value of low-level APIs such as
+    // base::GetFieldTrialParamsByFeature(). The high-level base::FeatureParam
+    // API will not surface that difference, though. This proto does not
+    // currently provide a way to associate an empty map.
+    map<string, bytes> params = 2;
+  }
+
+  // The key is the name of the base::Feature.
+  map<string, FeatureState> feature_states = 1;
+}

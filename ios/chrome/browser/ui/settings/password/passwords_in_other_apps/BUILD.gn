@@ -13,6 +13,9 @@ source_set("passwords_in_other_apps") {
     ":passwords_in_other_apps_ui",
     "//base",
     "//ios/chrome/browser/shared/coordinator/chrome_coordinator",
+    "//ios/chrome/browser/ui/settings/password:features",
+    "//ios/chrome/browser/ui/settings/password/reauthentication",
+    "//ios/chrome/browser/ui/settings/password/reauthentication:reauthentication_delegate",
     "//ios/chrome/browser/ui/settings/utils",
     "//ios/public/provider/chrome/browser/password_auto_fill:password_auto_fill_api",
   ]
@@ -39,7 +42,6 @@ source_set("passwords_in_other_apps_ui") {
     "//ios/chrome/browser/ui/settings/resources:settings_passwords_in_other_apps_banner",
     "//ios/chrome/browser/ui/settings/resources:settings_safe_state",
     "//ios/chrome/browser/ui/settings/utils",
-    "//ios/chrome/common:button_config",
     "//ios/chrome/common:string_util",
     "//ios/chrome/common/ui/colors",
     "//ios/chrome/common/ui/elements",
@@ -60,12 +62,25 @@ source_set("constants") {
 
 source_set("unit_tests") {
   testonly = true
-  sources = [ "passwords_in_other_apps_mediator_unittest.mm" ]
+  sources = [
+    "passwords_in_other_apps_coordinator_unittest.mm",
+    "passwords_in_other_apps_mediator_unittest.mm",
+  ]
   deps = [
     ":passwords_in_other_apps",
     ":passwords_in_other_apps_ui",
+    "//base/test:test_support",
+    "//ios/chrome/browser/shared/coordinator/scene:scene_state_header",
+    "//ios/chrome/browser/shared/model/browser/test:test_support",
+    "//ios/chrome/browser/shared/model/browser_state",
+    "//ios/chrome/browser/shared/model/browser_state:test_support",
+    "//ios/chrome/browser/ui/settings/password:features",
+    "//ios/chrome/browser/ui/settings/password/password_settings:common",
+    "//ios/chrome/browser/ui/settings/password/reauthentication:reauthentication_ui",
     "//ios/chrome/browser/ui/settings/utils",
     "//ios/chrome/test:test_support",
+    "//ios/chrome/test/app:test_support",
+    "//ios/web/public/test",
     "//testing/gtest:gtest",
   ]
 }
@@ -105,7 +120,9 @@ source_set("eg2_tests") {
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/shared/public/features",
     "//ios/chrome/browser/ui/settings:settings_root_constants",
+    "//ios/chrome/browser/ui/settings/password:eg_test_support",
     "//ios/chrome/browser/ui/settings/password:eg_test_support+eg2",
+    "//ios/chrome/browser/ui/settings/password:features",
     "//ios/chrome/browser/ui/settings/password:password_constants",
     "//ios/chrome/browser/ui/settings/password/password_settings:password_settings_constants",
     "//ios/chrome/test/earl_grey:eg_test_support+eg2",

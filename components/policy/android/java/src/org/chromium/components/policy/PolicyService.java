@@ -4,11 +4,13 @@
 
 package org.chromium.components.policy;
 
+import org.jni_zero.CalledByNative;
+import org.jni_zero.JNINamespace;
+import org.jni_zero.NativeClassQualifiedName;
+import org.jni_zero.NativeMethods;
+
+import org.chromium.base.Log;
 import org.chromium.base.ObserverList;
-import org.chromium.base.annotations.CalledByNative;
-import org.chromium.base.annotations.JNINamespace;
-import org.chromium.base.annotations.NativeClassQualifiedName;
-import org.chromium.base.annotations.NativeMethods;
 
 /**
  * Wrapper of the native PolicyService class in the Java layer.
@@ -24,6 +26,8 @@ import org.chromium.base.annotations.NativeMethods;
  */
 @JNINamespace("policy::android")
 public class PolicyService {
+    private static final String TAG = "PolicyService";
+
     private long mNativePolicyService;
     private final ObserverList<Observer> mObservers = new ObserverList<Observer>();
 
@@ -44,6 +48,7 @@ public class PolicyService {
          * @param current PolicyMap contains values after the update.
          */
         default void onPolicyUpdated(PolicyMap previous, PolicyMap current) {}
+
         /**
          * Invoked when Chome policy domain is initialized. Observer must be
          * added before the naitve PolicyService initialization being finished.
@@ -75,34 +80,27 @@ public class PolicyService {
         }
     }
 
-    /**
-     * Returns true if Chrome policy domain has been initialized.
-     */
+    /** Returns true if Chrome policy domain has been initialized. */
     public boolean isInitializationComplete() {
-        return PolicyServiceJni.get().isInitializationComplete(
-                mNativePolicyService, PolicyService.this);
+        return PolicyServiceJni.get()
+                .isInitializationComplete(mNativePolicyService, PolicyService.this);
     }
 
-    /**
-     * Returns {@link PolicyMap} that contains all Chrome policies.
-     */
+    /** Returns {@link PolicyMap} that contains all Chrome policies. */
     public PolicyMap getPolicies() {
         return PolicyServiceJni.get().getPolicies(mNativePolicyService, PolicyService.this);
     }
 
-    /**
-     * Pass the onPolicyServiceInitialized event to the |mObservers|.
-     */
+    /** Pass the onPolicyServiceInitialized event to the |mObservers|. */
     @CalledByNative
     private void onPolicyServiceInitialized() {
+        Log.i(TAG, "#onPolicyServiceInitialized()");
         for (Observer observer : mObservers) {
             observer.onPolicyServiceInitialized();
         }
     }
 
-    /**
-     * Pass the onPolicyUpdated event to the |mObservers|.
-     */
+    /** Pass the onPolicyUpdated event to the |mObservers|. */
     @CalledByNative
     private void onPolicyUpdated(PolicyMap previous, PolicyMap current) {
         for (Observer observer : mObservers) {
@@ -119,10 +117,13 @@ public class PolicyService {
     public interface Natives {
         @NativeClassQualifiedName("PolicyServiceAndroid")
         void addObserver(long nativePolicyService, PolicyService caller);
+
         @NativeClassQualifiedName("PolicyServiceAndroid")
         void removeObserver(long nativePolicyService, PolicyService caller);
+
         @NativeClassQualifiedName("PolicyServiceAndroid")
         boolean isInitializationComplete(long nativePolicyService, PolicyService caller);
+
         @NativeClassQualifiedName("PolicyServiceAndroid")
         PolicyMap getPolicies(long nativePolicyService, PolicyService caller);
     }

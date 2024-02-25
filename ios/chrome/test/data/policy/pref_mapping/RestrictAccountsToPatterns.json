@@ -1,0 +1,46 @@
+[
+  {
+    "os": [
+      "ios"
+    ],
+    "policy_pref_mapping_tests": [
+      {
+        "policies": {},
+        "prefs": {
+          "signin.restrict_accounts_to_patterns": {
+            "default_value": [],
+            "location": "local_state"
+          }
+        }
+      },
+      {
+        "policies": {
+          "RestrictAccountsToPatterns": []
+        },
+        "prefs": {
+          "signin.restrict_accounts_to_patterns": {
+            "location": "local_state",
+            "value": []
+          }
+        }
+      },
+      {
+        "policies": {
+          "RestrictAccountsToPatterns": [
+            "*@domain.com",
+            "user@managedchrome.com"
+          ]
+        },
+        "prefs": {
+          "signin.restrict_accounts_to_patterns": {
+            "location": "local_state",
+            "value": [
+              "*@domain.com",
+              "user@managedchrome.com"
+            ]
+          }
+        }
+      }
+    ]
+  }
+]

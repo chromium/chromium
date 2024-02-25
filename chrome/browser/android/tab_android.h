@@ -6,19 +6,19 @@
 #define CHROME_BROWSER_ANDROID_TAB_ANDROID_H_
 
 #include <jni.h>
-#include <stdint.h>
 
 #include <memory>
 #include <string>
 
 #include "base/android/jni_weak_ref.h"
 #include "base/android/scoped_java_ref.h"
+#include "base/memory/raw_ptr.h"
+#include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/supports_user_data.h"
 #include "chrome/browser/sync/glue/synced_tab_delegate_android.h"
 #include "chrome/browser/tab/web_contents_state.h"
 #include "components/infobars/core/infobar_manager.h"
-#include "components/omnibox/browser/location_bar_model.h"
 #include "components/sessions/core/session_id.h"
 
 class GURL;
@@ -56,7 +56,7 @@ class TabAndroid : public base::SupportsUserData {
 
   // Returns the a vector of native TabAndroid stored in the Java Tab array
   // represented by |obj_array|.
-  static std::vector<TabAndroid*> GetAllNativeTabs(
+  static std::vector<raw_ptr<TabAndroid, VectorExperimental>> GetAllNativeTabs(
       JNIEnv* env,
       const base::android::ScopedJavaLocalRef<jobjectArray>& obj_array);
 
@@ -65,6 +65,7 @@ class TabAndroid : public base::SupportsUserData {
 
   TabAndroid(JNIEnv* env,
              const base::android::JavaRef<jobject>& obj,
+             const base::android::JavaRef<jobject>& profile,
              int tab_id);
 
   TabAndroid(const TabAndroid&) = delete;
@@ -79,6 +80,13 @@ class TabAndroid : public base::SupportsUserData {
 
   // Return the cc::slim::Layer that represents the content for this TabAndroid.
   scoped_refptr<cc::slim::Layer> GetContentLayer() const;
+
+  // Return the Profile* associated with this TabAndroid instance, or null, if
+  // the profile no longer exists.
+  // Note that this function should never return null in healthy situations.
+  // Tabs are associated with a profile. Lack of valid profile indicates that
+  // the Tab object held by caller is likely also not valid.
+  Profile* profile() const { return profile_.get(); }
 
   // Return specific id information regarding this TabAndroid.
   SessionID window_id() const { return session_window_id_; }
@@ -98,13 +106,10 @@ class TabAndroid : public base::SupportsUserData {
   // it.
   bool IsUserInteractable() const;
 
-  // Helper methods to make it easier to access objects from the associated
-  // WebContents.  Can return NULL.
-  Profile* GetProfile() const;
   sync_sessions::SyncedTabDelegate* GetSyncedTabDelegate() const;
 
   // Whether this tab is an incognito tab. Prefer
-  // `GetProfile()->IsOffTheRecord()` unless `web_contents()` is nullptr.
+  // `profile()->IsOffTheRecord()` unless `web_contents()` is nullptr.
   bool IsIncognito() const;
 
   // Returns the time at which the tab was last shown to the user. Note that the
@@ -125,8 +130,6 @@ class TabAndroid : public base::SupportsUserData {
 
   bool IsCustomTab();
   bool IsHidden();
-
-  static bool isHardwareKeyboardAvailable(TabAndroid* tab_android);
 
   // Observers -----------------------------------------------------------------
 
@@ -169,6 +172,12 @@ class TabAndroid : public base::SupportsUserData {
 
   void SetDevToolsAgentHost(scoped_refptr<content::DevToolsAgentHost> host);
 
+  // This should never return null, unless it is called in a state where no
+  // tabs exist (such as on FRE), which should never happen. If it is called
+  // then, a nullptr will be returned and must be handled accordingly.
+  std::unique_ptr<WebContentsStateByteBuffer> GetWebContentsByteBuffer();
+  base::WeakPtr<TabAndroid> GetWeakPtr();
+
  private:
   JavaObjectWeakGlobalRef weak_java_tab_;
 
@@ -184,8 +193,10 @@ class TabAndroid : public base::SupportsUserData {
       web_contents_delegate_;
   scoped_refptr<content::DevToolsAgentHost> devtools_host_;
   std::unique_ptr<browser_sync::SyncedTabDelegateAndroid> synced_tab_delegate_;
-
   base::ObserverList<Observer> observers_;
+
+  const base::WeakPtr<Profile> profile_;
+  base::WeakPtrFactory<TabAndroid> weak_ptr_factory_{this};
 };
 
 #endif  // CHROME_BROWSER_ANDROID_TAB_ANDROID_H_

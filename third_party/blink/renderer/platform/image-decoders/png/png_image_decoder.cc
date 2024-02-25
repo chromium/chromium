@@ -43,6 +43,7 @@
 #include "base/containers/adapters.h"
 #include "base/numerics/checked_math.h"
 #include "media/base/video_color_space.h"
+#include "third_party/blink/renderer/platform/image-decoders/exif_reader.h"
 #include "third_party/skia/include/core/SkColorSpace.h"
 #include "third_party/skia/modules/skcms/skcms.h"
 
@@ -317,9 +318,9 @@ static inline std::unique_ptr<ColorProfile> ReadColorProfile(png_structp png,
 static inline void ReadHDRMetadata(
     png_structp png,
     png_infop info,
-    absl::optional<gfx::HDRMetadata>* hdr_metadata) {
-  absl::optional<gfx::HdrMetadataCta861_3> clli;
-  absl::optional<gfx::HdrMetadataSmpteSt2086> mdcv;
+    std::optional<gfx::HDRMetadata>* hdr_metadata) {
+  std::optional<gfx::HdrMetadataCta861_3> clli;
+  std::optional<gfx::HdrMetadataSmpteSt2086> mdcv;
   png_unknown_chunkp unknown_chunks;
   size_t num_unknown_chunks =
       png_get_unknown_chunks(png, info, &unknown_chunks);
@@ -424,7 +425,7 @@ bool PNGImageDecoder::ImageIsHighBitDepth() {
          repetition_count_ == kAnimationNone;
 }
 
-absl::optional<gfx::HDRMetadata> PNGImageDecoder::GetHDRMetadata() const {
+std::optional<gfx::HDRMetadata> PNGImageDecoder::GetHDRMetadata() const {
   return hdr_metadata_;
 }
 
@@ -481,6 +482,19 @@ void PNGImageDecoder::HeaderAvailable() {
       png_set_gamma(png, kDefaultGamma, gamma);
     } else {
       png_set_gamma(png, kDefaultGamma, kInverseGamma);
+    }
+  }
+
+  // process eXIf chunk
+  png_uint_32 exif_size = 0;
+  png_bytep exif_buffer = nullptr;
+  if (png_get_eXIf_1(png, info, &exif_size, &exif_buffer) != 0) {
+    // exif data exists
+    if (exif_size != 0 && exif_buffer) {
+      DecodedImageMetaData metadata;
+      base::span<const uint8_t> exif_span(exif_buffer, exif_size);
+      ReadExif(exif_span, metadata);
+      ApplyMetadata(metadata, gfx::Size(width, height));
     }
   }
 

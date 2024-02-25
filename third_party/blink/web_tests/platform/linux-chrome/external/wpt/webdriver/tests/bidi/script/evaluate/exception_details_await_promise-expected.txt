@@ -1,0 +1,6 @@
+This is a wdspec test.
+[FAIL] test_exception_details_await_promise[[1, 2][Symbol.iterator]()-expected28]
+  AssertionError
+[FAIL] test_exception_details_await_promise['mystring'[Symbol.iterator]()-expected29]
+  AssertionError
+Harness: the test ran to completion.

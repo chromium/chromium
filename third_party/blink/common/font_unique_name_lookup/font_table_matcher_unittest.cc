@@ -58,7 +58,7 @@ class FontTableMatcherTest : public ::testing::Test {
 
 TEST_F(FontTableMatcherTest, CaseInsensitiveMatchingBothNames) {
   ASSERT_EQ(matcher_->AvailableFonts(), 1u);
-  absl::optional<FontTableMatcher::MatchResult> result =
+  std::optional<FontTableMatcher::MatchResult> result =
       matcher_->MatchName("font name uppercase");
   ASSERT_TRUE(result.has_value());
   ASSERT_EQ(result->font_path, kTestFilePath1);
@@ -73,13 +73,13 @@ TEST_F(FontTableMatcherTest, CaseInsensitiveMatchingBothNames) {
 TEST_F(FontTableMatcherTest, MatchTamilChinese) {
   ASSERT_EQ(matcher_->AvailableFonts(), 1u);
   for (std::string font_name : {"எழுத்துரு பெயர்", "எழுத்துரு-பெயர்", "字體名稱"}) {
-    absl::optional<FontTableMatcher::MatchResult> result =
+    std::optional<FontTableMatcher::MatchResult> result =
         matcher_->MatchName(font_name);
     ASSERT_TRUE(result.has_value());
     ASSERT_EQ(result->font_path, kTestFilePath1);
     ASSERT_EQ(result->ttc_index, 0u);
 
-    absl::optional<FontTableMatcher::MatchResult> result_for_substring =
+    std::optional<FontTableMatcher::MatchResult> result_for_substring =
         matcher_->MatchName(font_name.substr(0, font_name.size() - 2u));
     ASSERT_FALSE(result_for_substring.has_value());
   }
@@ -87,7 +87,7 @@ TEST_F(FontTableMatcherTest, MatchTamilChinese) {
 
 TEST_F(FontTableMatcherTest, NoSubStringMatching) {
   ASSERT_EQ(matcher_->AvailableFonts(), 1u);
-  absl::optional<FontTableMatcher::MatchResult> result =
+  std::optional<FontTableMatcher::MatchResult> result =
       matcher_->MatchName("font name");
   ASSERT_FALSE(result.has_value());
 

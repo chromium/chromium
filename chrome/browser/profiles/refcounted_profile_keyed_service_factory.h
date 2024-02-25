@@ -47,4 +47,4 @@ class RefcountedProfileKeyedServiceFactory
   const ProfileSelections profile_selections_;
 };
 
-#endif  // !CHROME_BROWSER_PROFILES_REFCOUNTED_PROFILE_KEYED_SERVICE_FACTORY_H_
+#endif  // CHROME_BROWSER_PROFILES_REFCOUNTED_PROFILE_KEYED_SERVICE_FACTORY_H_

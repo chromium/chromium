@@ -12,6 +12,7 @@
 #include "third_party/blink/renderer/modules/payments/payment_test_helper.h"
 #include "third_party/blink/renderer/platform/bindings/exception_code.h"
 #include "third_party/blink/renderer/platform/bindings/v8_binding.h"
+#include "third_party/blink/renderer/platform/testing/task_environment.h"
 #include "third_party/blink/renderer/platform/testing/testing_platform_support.h"
 #include "third_party/googletest/src/googletest/include/gtest/gtest.h"
 
@@ -85,7 +86,8 @@ class PaymentRequestForInvalidOriginOrSslTest : public testing::Test {
   std::string GetRejectString(ScriptState* script_state,
                               ScriptPromise& promise) {
     ScriptValue on_reject = GetRejectValue(script_state, promise);
-    return ToCoreString(on_reject.V8Value()
+    return ToCoreString(script_state->GetIsolate(),
+                        on_reject.V8Value()
                             ->ToString(script_state->GetContext())
                             .ToLocalChecked())
         .Ascii()
@@ -99,6 +101,7 @@ class PaymentRequestForInvalidOriginOrSslTest : public testing::Test {
         payment_provider_->CreatePendingRemoteAndBind(), ASSERT_NO_EXCEPTION);
   }
 
+  test::TaskEnvironment task_environment_;
   std::unique_ptr<MockPaymentProvider> payment_provider_;
   ScopedTestingPlatformSupport<TestingPlatformSupport> platform_;
 };

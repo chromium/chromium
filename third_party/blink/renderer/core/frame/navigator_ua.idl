@@ -4,8 +4,6 @@
 
 // https://github.com/WICG/ua-client-hints
 
-[
-    RuntimeEnabled=UserAgentClientHint
-] interface mixin NavigatorUA {
+interface mixin NavigatorUA {
   [SecureContext] readonly attribute NavigatorUAData userAgentData;
 };

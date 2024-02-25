@@ -212,6 +212,7 @@ feedui::ZeroStateSlice::Type GetZeroStateType(LoadStreamStatus status) {
     case LoadStreamStatus::kAbortWithPendingClearAll:
     case LoadStreamStatus::kAlreadyHaveUnreadContent:
     case LoadStreamStatus::kLoadNotAllowedDisabled:
+    case LoadStreamStatus::kLoadNotAllowedDisabledByDse:
       break;
   }
   return feedui::ZeroStateSlice::NO_CARDS_AVAILABLE;

@@ -7,27 +7,29 @@
 
 #include <initializer_list>
 #include <string>
+#include <string_view>
 
 #include "base/base_export.h"
 #include "base/containers/span.h"
-#include "base/strings/string_piece.h"
 
 namespace base {
 
 // The following section contains overloads of the cross-platform APIs for
-// std::wstring and base::WStringPiece.
-BASE_EXPORT void StrAppend(std::wstring* dest, span<const WStringPiece> pieces);
+// std::wstring and std::wstring_view.
+BASE_EXPORT void StrAppend(std::wstring* dest,
+                           span<const std::wstring_view> pieces);
 BASE_EXPORT void StrAppend(std::wstring* dest, span<const std::wstring> pieces);
 
 inline void StrAppend(std::wstring* dest,
-                      std::initializer_list<WStringPiece> pieces) {
+                      std::initializer_list<std::wstring_view> pieces) {
   StrAppend(dest, make_span(pieces));
 }
 
-[[nodiscard]] BASE_EXPORT std::wstring StrCat(span<const WStringPiece> pieces);
+[[nodiscard]] BASE_EXPORT std::wstring StrCat(
+    span<const std::wstring_view> pieces);
 [[nodiscard]] BASE_EXPORT std::wstring StrCat(span<const std::wstring> pieces);
 
-inline std::wstring StrCat(std::initializer_list<WStringPiece> pieces) {
+inline std::wstring StrCat(std::initializer_list<std::wstring_view> pieces) {
   return StrCat(make_span(pieces));
 }
 

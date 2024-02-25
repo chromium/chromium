@@ -4,6 +4,7 @@
 
 #include "services/network/shared_storage/shared_storage_test_utils.h"
 
+#include <optional>
 #include <string>
 #include <utility>
 #include <vector>
@@ -13,7 +14,6 @@
 #include "base/strings/utf_string_conversions.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "services/network/shared_storage/shared_storage_header_utils.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/url_util.h"
 
 namespace network {
@@ -92,10 +92,10 @@ HandleSharedStorageRequestSimple(std::string shared_storage_write,
     return nullptr;
   }
 
-  auto it = request.headers.find(kSharedStorageWritableHeader);
+  auto it = request.headers.find(kSecSharedStorageWritableHeader);
   if (path == MakeSharedStorageBypassPath() ||
       (it != request.headers.end() &&
-       it->second == kSharedStorageWritableValue)) {
+       it->second == kSecSharedStorageWritableValue)) {
     return std::make_unique<SharedStorageResponse>(
         std::move(shared_storage_write));
   }
@@ -111,25 +111,24 @@ HandleSharedStorageRequestMultiple(
     return nullptr;
   }
 
-  absl::optional<std::string> write_header;
-  auto it = request.headers.find(kSharedStorageWritableHeader);
+  std::optional<std::string> write_header;
+  auto it = request.headers.find(kSecSharedStorageWritableHeader);
   if ((base::EndsWith(path, kSharedStorageWritePathSuffix) &&
        it != request.headers.end() &&
-       it->second == kSharedStorageWritableValue) &&
+       it->second == kSecSharedStorageWritableValue) &&
       SharedStorageRequestCount::Increment() <=
           shared_storage_write_headers.size()) {
     write_header = std::move(
         shared_storage_write_headers[SharedStorageRequestCount::Get() - 1]);
   }
-  absl::optional<std::string> location;
+  std::optional<std::string> location;
   const std::string& query = request.GetURL().query();
   if (base::StartsWith(path, MakeSharedStorageRedirectPrefix()) &&
       !query.empty()) {
     url::RawCanonOutputT<char16_t> decode_output;
-    url::DecodeURLEscapeSequences(query.c_str(), query.size(),
-                                  url::DecodeURLMode::kUTF8, &decode_output);
-    location = base::UTF16ToUTF8(
-        std::u16string(decode_output.data(), decode_output.length()));
+    url::DecodeURLEscapeSequences(query, url::DecodeURLMode::kUTF8,
+                                  &decode_output);
+    location = base::UTF16ToUTF8(decode_output.view());
   }
   if (write_header.has_value()) {
     return location.has_value()

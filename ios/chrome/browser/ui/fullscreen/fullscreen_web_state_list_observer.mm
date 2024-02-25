@@ -61,6 +61,7 @@ void FullscreenWebStateListObserver::WebStateListWillChange(
     WebStateList* web_state_list,
     const WebStateListChangeDetach& detach_change,
     const WebStateListStatus& status) {
+  DCHECK_EQ(web_state_list_, web_state_list);
   if (!detach_change.is_closing()) {
     return;
   }
@@ -72,6 +73,7 @@ void FullscreenWebStateListObserver::WebStateListDidChange(
     WebStateList* web_state_list,
     const WebStateListChange& change,
     const WebStateListStatus& status) {
+  DCHECK_EQ(web_state_list_, web_state_list);
   switch (change.type()) {
     case WebStateListChange::Type::kStatusOnly:
       // The activation is handled after this switch statement.
@@ -90,7 +92,7 @@ void FullscreenWebStateListObserver::WebStateListDidChange(
           change.As<WebStateListChangeReplace>();
       WebStateWasRemoved(replace_change.replaced_web_state());
       web::WebState* inserted_web_state = replace_change.inserted_web_state();
-      if (inserted_web_state == web_state_list->GetActiveWebState()) {
+      if (inserted_web_state == web_state_list_->GetActiveWebState()) {
         // Reset the model if the active WebState is replaced.
         model_->ResetForNavigation();
         WebStateWasActivated(inserted_web_state);
@@ -98,9 +100,15 @@ void FullscreenWebStateListObserver::WebStateListDidChange(
       break;
     }
     case WebStateListChange::Type::kInsert: {
-      DCHECK_EQ(web_state_list_, web_state_list);
       if (status.active_web_state_change()) {
-        controller_->ExitFullscreen();
+        // Exit the fullscreen. Disable the animation if a session restoration
+        // is in progress (see https://crbug.com/1485930 for details on the UI
+        // glitch that animation can cause).
+        if (web_state_list_->IsBatchInProgress()) {
+          controller_->ExitFullscreenWithoutAnimation();
+        } else {
+          controller_->ExitFullscreen();
+        }
       }
       break;
     }

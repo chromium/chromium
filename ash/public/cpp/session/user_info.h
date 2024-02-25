@@ -37,7 +37,7 @@ struct ASH_PUBLIC_EXPORT UserInfo {
   UserInfo(const UserInfo& other);
   ~UserInfo();
 
-  user_manager::UserType type = user_manager::USER_TYPE_REGULAR;
+  user_manager::UserType type = user_manager::UserType::kRegular;
   AccountId account_id;
   std::string display_name;
   std::string display_email;

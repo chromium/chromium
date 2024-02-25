@@ -10,6 +10,7 @@
 #include "base/memory/raw_ref.h"
 #include "base/run_loop.h"
 #include "base/strings/strcat.h"
+#include "base/threading/scoped_blocking_call.h"
 #include "components/safe_browsing/core/browser/db/prefix_iterator.h"
 #include "components/safe_browsing/core/common/features.h"
 
@@ -406,6 +407,8 @@ void MmapHashPrefixMap::Reserve(PrefixSize size, size_t capacity) {
 
 ApplyUpdateResult MmapHashPrefixMap::ReadFromDisk(
     const V4StoreFileFormat& file_format) {
+  base::ScopedBlockingCall scoped_blocking_call(FROM_HERE,
+                                                base::BlockingType::MAY_BLOCK);
   DCHECK(file_format.list_update_response().additions().empty());
   for (const auto& hash_file : file_format.hash_files()) {
     PrefixSize prefix_size = hash_file.prefix_size();
@@ -442,6 +445,8 @@ class MmapHashPrefixMapWriteSession : public HashPrefixMap::WriteSession {
 
 std::unique_ptr<HashPrefixMap::WriteSession> MmapHashPrefixMap::WriteToDisk(
     V4StoreFileFormat* file_format) {
+  base::ScopedBlockingCall scoped_blocking_call(FROM_HERE,
+                                                base::BlockingType::MAY_BLOCK);
   for (auto& [size, file_info] : map_) {
     auto* hash_file = file_format->add_hash_files();
     if (!file_info.Finalize(hash_file))

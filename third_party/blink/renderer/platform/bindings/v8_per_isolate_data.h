@@ -32,7 +32,9 @@
 #include "gin/public/gin_embedders.h"
 #include "gin/public/isolate_holder.h"
 #include "third_party/blink/renderer/platform/bindings/active_script_wrappable_manager.h"
+#include "third_party/blink/renderer/platform/bindings/dom_wrapper_world.h"
 #include "third_party/blink/renderer/platform/bindings/runtime_call_stats.h"
+#include "third_party/blink/renderer/platform/bindings/script_regexp.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/heap/persistent.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
@@ -56,6 +58,7 @@ class StringCache;
 class ThreadDebugger;
 class V8PrivateProperty;
 struct WrapperTypeInfo;
+class ScriptRegexp;
 
 // Used to hold data that is associated with a single v8::Isolate object, and
 // has a 1:1 relationship with v8::Isolate.
@@ -122,10 +125,12 @@ class PLATFORM_EXPORT V8PerIsolateData final {
 
   static void WillBeDestroyed(v8::Isolate*);
   static void Destroy(v8::Isolate*);
-  static v8::Isolate* MainThreadIsolate();
 
   static void EnableIdleTasks(v8::Isolate*,
                               std::unique_ptr<gin::V8IdleTaskRunner>);
+
+  // No hash-map / tree-map look-up when it's the main world.
+  DOMWrapperWorld& GetMainWorld() { return *main_world_; }
 
   v8::Isolate* GetIsolate() { return isolate_holder_.isolate(); }
 
@@ -151,6 +156,11 @@ class PLATFORM_EXPORT V8PerIsolateData final {
                      const void* key,
                      v8::Local<v8::Template> value);
 
+  v8::MaybeLocal<v8::DictionaryTemplate> FindV8DictionaryTemplate(
+      const void* key);
+  void AddV8DictionaryTemplate(const void* key,
+                               v8::Local<v8::DictionaryTemplate> value);
+
   bool HasInstance(const WrapperTypeInfo* wrapper_type_info,
                    v8::Local<v8::Value> untrusted_value);
   bool HasInstanceOfUntrustedType(
@@ -174,7 +184,7 @@ class PLATFORM_EXPORT V8PerIsolateData final {
   // compile-time list of related names, such as IDL dictionary keys.
   const base::span<const v8::Eternal<v8::Name>> FindOrCreateEternalNameCache(
       const void* lookup_key,
-      const base::span<const char* const>& names);
+      base::span<const std::string_view> names);
 
   v8::Local<v8::Context> EnsureScriptRegexpContext();
   void ClearScriptRegexpContext();
@@ -187,6 +197,9 @@ class PLATFORM_EXPORT V8PerIsolateData final {
 
   void SetCanvasResourceTracker(V8PerIsolateData::GarbageCollectedData*);
   V8PerIsolateData::GarbageCollectedData* CanvasResourceTracker();
+
+  void SetPasswordRegexp(ScriptRegexp*);
+  ScriptRegexp* GetPasswordRegexp();
 
   ActiveScriptWrappableManager* GetActiveScriptWrappableManager() const {
     return active_script_wrappable_manager_;
@@ -243,6 +256,13 @@ class PLATFORM_EXPORT V8PerIsolateData final {
   V8TemplateMap v8_template_map_for_main_world_;
   V8TemplateMap v8_template_map_for_non_main_worlds_;
 
+  using V8DictTemplateMap = HashMap<const void*,
+                                    v8::Eternal<v8::DictionaryTemplate>,
+                                    SimplePtrHashTraits>;
+
+  HashMap<const void*, v8::Eternal<v8::DictionaryTemplate>, SimplePtrHashTraits>
+      v8_dict_template_map_;
+
   // Contains lists of eternal names, such as dictionary keys.
   HashMap<const void*, Vector<v8::Eternal<v8::Name>>> eternal_name_cache_;
 
@@ -258,10 +278,10 @@ class PLATFORM_EXPORT V8PerIsolateData final {
 
   bool is_handling_recursion_level_error_ = false;
 
-  Vector<base::OnceClosure> end_of_scope_tasks_;
   std::unique_ptr<ThreadDebugger> thread_debugger_;
   Persistent<GarbageCollectedData> profiler_group_;
   Persistent<GarbageCollectedData> canvas_resource_tracker_;
+  Persistent<ScriptRegexp> password_regexp_;
 
   Persistent<ActiveScriptWrappableManager> active_script_wrappable_manager_;
 
@@ -270,6 +290,8 @@ class PLATFORM_EXPORT V8PerIsolateData final {
   v8::Isolate::GCCallback prologue_callback_;
   v8::Isolate::GCCallback epilogue_callback_;
   size_t gc_callback_depth_ = 0;
+
+  Persistent<DOMWrapperWorld> main_world_;
 };
 
 // Creates a histogram for V8. The returned value is a base::Histogram, but

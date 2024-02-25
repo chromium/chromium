@@ -149,8 +149,8 @@ IN_PROC_BROWSER_TEST_F(CastStreamingTest, LoadSuccess) {
   frame.navigation_listener().RunUntilTitleEquals("loadedmetadata");
 
   EXPECT_TRUE(post_result.Wait());
-  EXPECT_NE(sender.audio_decoder_config(), absl::nullopt);
-  EXPECT_NE(sender.video_decoder_config(), absl::nullopt);
+  EXPECT_NE(sender.audio_decoder_config(), std::nullopt);
+  EXPECT_NE(sender.video_decoder_config(), std::nullopt);
 }
 
 // Check that attempting to start a video-only receiver properly disables audio.
@@ -194,6 +194,6 @@ IN_PROC_BROWSER_TEST_F(CastStreamingTest, VideoOnlyReceiver) {
   frame.navigation_listener().RunUntilTitleEquals("loadedmetadata");
 
   EXPECT_TRUE(post_result.Wait());
-  EXPECT_EQ(sender.audio_decoder_config(), absl::nullopt);
-  EXPECT_NE(sender.video_decoder_config(), absl::nullopt);
+  EXPECT_EQ(sender.audio_decoder_config(), std::nullopt);
+  EXPECT_NE(sender.video_decoder_config(), std::nullopt);
 }

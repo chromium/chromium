@@ -2,6 +2,8 @@
 <title>Test document user gesture autoplay policy</title>
 <script src='../../resources/testharness.js'></script>
 <script src='../../resources/testharnessreport.js'></script>
+<script src="../../resources/testdriver.js"></script>
+<script src="../../resources/testdriver-vendor.js"></script>
 <body>
   <div id='target'>target</div>
 </body>
@@ -183,4 +185,23 @@ promise_test(t => {
     document.body.appendChild(iframe);
   });
 }, 'iframe allowed to play if it received a gesture');
+
+promise_test(async t => {
+  t.add_cleanup(() => {
+    internals.settings.setAutoplayPolicy('no-user-gesture-required');
+  });
+
+  internals.settings.setAutoplayPolicy('document-user-activation-required');
+
+  var video = document.createElement('video');
+  video.src = '../content/test.ogv';
+
+  await test_driver.bless('open PiP window');
+  const pipWindow = await documentPictureInPicture.requestWindow();
+  pipWindow.document.body.append(video);
+
+  await test_driver.bless('play PiP video from opener');
+  return video.play();
+}, 'Allowed to autoplay if the document opener was blessed');
+
 </script>

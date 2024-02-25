@@ -51,7 +51,8 @@ public abstract class PasswordSyncControllerDelegateFactory {
      */
     protected PasswordSyncControllerDelegate doCreateDelegate(Context context)
             throws BackendException {
-        throw new BackendException("Downstream implementation is not present.",
+        throw new BackendException(
+                "Downstream implementation is not present.",
                 AndroidBackendErrorType.BACKEND_NOT_AVAILABLE);
     }
 

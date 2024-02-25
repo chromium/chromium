@@ -5,7 +5,8 @@
 // clang-format off
 import {webUIListenerCallback} from 'chrome://resources/js/cr.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import {ActionTypes, IncompatibleApplication, IncompatibleApplicationItemElement, IncompatibleApplicationsBrowserProxy, IncompatibleApplicationsBrowserProxyImpl, SettingsIncompatibleApplicationsPageElement} from 'chrome://settings/lazy_load.js';
+import type {IncompatibleApplication, IncompatibleApplicationItemElement, IncompatibleApplicationsBrowserProxy, SettingsIncompatibleApplicationsPageElement} from 'chrome://settings/lazy_load.js';
+import {ActionTypes, IncompatibleApplicationsBrowserProxyImpl} from 'chrome://settings/lazy_load.js';
 import {loadTimeData} from 'chrome://settings/settings.js';
 import {assertEquals, assertFalse, assertNotEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';

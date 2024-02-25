@@ -1,0 +1,9 @@
+This is a testharness.js-based test.
+[FAIL] WebTransport client should be able to create and handle a bidirectional stream with sendOrder
+  assert_equals: expected (number) 3 but got (undefined) undefined
+[FAIL] WebTransport client should be able to modify unset sendOrder after stream creation
+  assert_equals: expected (object) null but got (undefined) undefined
+[FAIL] WebTransport client should be able to modify existing sendOrder after stream creation
+  assert_equals: expected (number) 3 but got (undefined) undefined
+Harness: the test ran to completion.
+

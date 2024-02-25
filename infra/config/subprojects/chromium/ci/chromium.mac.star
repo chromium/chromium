@@ -7,9 +7,11 @@ load("//lib/args.star", "args")
 load("//lib/branches.star", "branches")
 load("//lib/builder_config.star", "builder_config")
 load("//lib/builder_health_indicators.star", "health_spec")
-load("//lib/builders.star", "cpu", "os", "reclient", "sheriff_rotations", "xcode")
+load("//lib/builders.star", "cpu", "os", "reclient", "sheriff_rotations")
 load("//lib/ci.star", "ci")
 load("//lib/consoles.star", "consoles")
+load("//lib/gn_args.star", "gn_args")
+load("//lib/xcode.star", "xcode")
 
 ci.defaults.set(
     executable = ci.DEFAULT_EXECUTABLE,
@@ -55,7 +57,7 @@ consoles.console_view(
 
 def ios_builder(*, name, **kwargs):
     kwargs.setdefault("sheriff_rotations", sheriff_rotations.IOS)
-    kwargs.setdefault("xcode", xcode.x15main)
+    kwargs.setdefault("xcode", xcode.xcode_default)
     return ci.builder(name = name, **kwargs)
 
 ci.builder(
@@ -74,16 +76,28 @@ ci.builder(
                 "mb",
             ],
             build_config = builder_config.build_config.RELEASE,
+            target_arch = builder_config.target_arch.INTEL,
             target_bits = 64,
             target_platform = builder_config.target_platform.MAC,
         ),
         build_gs_bucket = "chromium-mac-archive",
     ),
+    gn_args = gn_args.config(
+        configs = [
+            "gpu_tests",
+            "release_builder",
+            "reclient",
+            "minimal_symbols",
+            "x64",
+        ],
+    ),
+    cpu = cpu.ARM64,
     console_view_entry = consoles.console_view_entry(
         category = "release",
         short_name = "bld",
     ),
     cq_mirrors_console_view = "mirrors",
+    contact_team_email = "bling-engprod@google.com",
     reclient_instance = reclient.instance.DEFAULT_TRUSTED,
     reclient_jobs = reclient.jobs.DEFAULT,
 )
@@ -101,17 +115,28 @@ ci.builder(
                 "mb",
             ],
             build_config = builder_config.build_config.DEBUG,
+            target_arch = builder_config.target_arch.INTEL,
             target_bits = 64,
             target_platform = builder_config.target_platform.MAC,
         ),
         build_gs_bucket = "chromium-mac-archive",
     ),
+    gn_args = gn_args.config(
+        configs = [
+            "gpu_tests",
+            "debug_builder",
+            "reclient",
+            "x64",
+        ],
+    ),
     os = os.MAC_ANY,
+    cpu = cpu.ARM64,
     console_view_entry = consoles.console_view_entry(
         category = "debug",
         short_name = "bld",
     ),
     cq_mirrors_console_view = "mirrors",
+    contact_team_email = "bling-engprod@google.com",
 )
 
 ci.builder(
@@ -132,7 +157,15 @@ ci.builder(
             build_config = builder_config.build_config.RELEASE,
             target_arch = builder_config.target_arch.ARM,
             target_bits = 64,
+            target_platform = builder_config.target_platform.MAC,
         ),
+    ),
+    gn_args = gn_args.config(
+        configs = [
+            "release_builder",
+            "reclient",
+            "arm64",
+        ],
     ),
     os = os.MAC_DEFAULT,
     cpu = cpu.ARM64,
@@ -140,6 +173,40 @@ ci.builder(
         category = "release|arm64",
         short_name = "a64",
     ),
+    contact_team_email = "bling-engprod@google.com",
+)
+
+ci.builder(
+    name = "mac-arm64-dbg",
+    builder_spec = builder_config.builder_spec(
+        gclient_config = builder_config.gclient_config(
+            config = "chromium",
+        ),
+        chromium_config = builder_config.chromium_config(
+            config = "chromium",
+            apply_configs = [
+                "mb",
+            ],
+            build_config = builder_config.build_config.DEBUG,
+            target_arch = builder_config.target_arch.ARM,
+            target_bits = 64,
+            target_platform = builder_config.target_platform.MAC,
+        ),
+    ),
+    gn_args = gn_args.config(
+        configs = [
+            "debug_builder",
+            "reclient",
+            "arm64",
+        ],
+    ),
+    os = os.MAC_DEFAULT,
+    cpu = cpu.ARM64,
+    console_view_entry = consoles.console_view_entry(
+        category = "debug|arm64",
+        short_name = "bld",
+    ),
+    contact_team_email = "bling-engprod@google.com",
 )
 
 ci.builder(
@@ -160,11 +227,22 @@ ci.builder(
             target_platform = builder_config.target_platform.MAC,
         ),
     ),
+    gn_args = gn_args.config(
+        configs = [
+            "arm64",
+            "gpu_tests",
+            "release_builder",
+            "reclient",
+            "minimal_symbols",
+        ],
+    ),
     os = os.MAC_DEFAULT,
+    cpu = cpu.ARM64,
     console_view_entry = consoles.console_view_entry(
         category = "release|arm64",
         short_name = "bld",
     ),
+    contact_team_email = "bling-engprod@google.com",
 )
 
 ci.builder(
@@ -180,7 +258,15 @@ ci.builder(
             ],
             build_config = builder_config.build_config.RELEASE,
             target_bits = 64,
+            target_platform = builder_config.target_platform.MAC,
         ),
+    ),
+    gn_args = gn_args.config(
+        configs = [
+            "release_builder",
+            "reclient",
+            "x64",
+        ],
     ),
     os = os.MAC_DEFAULT,
     cpu = cpu.ARM64,
@@ -217,6 +303,7 @@ ci.thin_tester(
         category = "release|arm64",
         short_name = "11",
     ),
+    contact_team_email = "bling-engprod@google.com",
 )
 
 ci.thin_tester(
@@ -244,6 +331,7 @@ ci.thin_tester(
         category = "release|arm64",
         short_name = "12",
     ),
+    contact_team_email = "bling-engprod@google.com",
 )
 
 ci.thin_tester(
@@ -271,6 +359,7 @@ ci.thin_tester(
         category = "release|arm64",
         short_name = "13",
     ),
+    contact_team_email = "bling-engprod@google.com",
 )
 
 ci.thin_tester(
@@ -298,6 +387,7 @@ ci.thin_tester(
         short_name = "15",
     ),
     cq_mirrors_console_view = "mirrors",
+    contact_team_email = "bling-engprod@google.com",
 )
 
 ci.thin_tester(
@@ -323,6 +413,7 @@ ci.thin_tester(
         category = "mac",
         short_name = "11",
     ),
+    contact_team_email = "bling-engprod@google.com",
 )
 
 ci.thin_tester(
@@ -348,6 +439,7 @@ ci.thin_tester(
         category = "mac",
         short_name = "12",
     ),
+    contact_team_email = "bling-engprod@google.com",
 )
 
 ci.thin_tester(
@@ -369,8 +461,6 @@ ci.thin_tester(
             target_platform = builder_config.target_platform.MAC,
         ),
     ),
-    # TODO(crbug.com/1449978): Add to rotation when it's stable.
-    sheriff_rotations = args.ignore_default(None),
     console_view_entry = consoles.console_view_entry(
         category = "mac",
         short_name = "13",
@@ -392,6 +482,7 @@ ci.thin_tester(
                 "mb",
             ],
             build_config = builder_config.build_config.DEBUG,
+            target_arch = builder_config.target_arch.INTEL,
             target_bits = 64,
             target_platform = builder_config.target_platform.MAC,
         ),
@@ -425,6 +516,19 @@ ios_builder(
         ),
         build_gs_bucket = "chromium-mac-archive",
     ),
+    gn_args = gn_args.config(
+        configs = [
+            "compile_only",
+            "debug_static_builder",
+            "reclient",
+            "ios_catalyst",
+            "x64",
+            "asan",
+            "libfuzzer",
+            "no_dsyms",
+            "no_remoting",
+        ],
+    ),
     tree_closing = False,
     console_view_entry = [
         consoles.console_view_entry(
@@ -438,10 +542,6 @@ ios_builder(
             short_name = "ctl",
         ),
     ],
-
-    # TODO(crbug/1466746): Xcode 15 is broken due a bug in the SDK.
-    # Remove below once the issue is fixed.
-    xcode = xcode.x14main,
 )
 
 ios_builder(
@@ -462,6 +562,18 @@ ios_builder(
         ),
         build_gs_bucket = "chromium-mac-archive",
     ),
+    gn_args = gn_args.config(
+        configs = [
+            "compile_only",
+            "ios_device",
+            "arm64",
+            "ios_google_cert",
+            "ios_disable_code_signing",
+            "release_builder",
+            "reclient",
+        ],
+    ),
+    cpu = cpu.ARM64,
     console_view_entry = [
         consoles.console_view_entry(
             category = "ios|default",
@@ -497,6 +609,15 @@ ios_builder(
             target_platform = builder_config.target_platform.IOS,
         ),
         build_gs_bucket = "chromium-mac-archive",
+    ),
+    gn_args = gn_args.config(
+        configs = [
+            "debug_static_builder",
+            "reclient",
+            "ios_simulator",
+            "x64",
+            "xctest",
+        ],
     ),
     cpu = cpu.ARM64,
     console_view_entry = [
@@ -536,6 +657,16 @@ ios_builder(
         ),
         build_gs_bucket = "chromium-mac-archive",
     ),
+    gn_args = gn_args.config(
+        configs = [
+            "debug_static_builder",
+            "reclient",
+            "ios_simulator",
+            "x64",
+            "xctest",
+        ],
+    ),
+    cpu = cpu.ARM64,
     console_view_entry = [
         consoles.console_view_entry(
             category = "ios|default",
@@ -568,6 +699,15 @@ ios_builder(
             target_platform = builder_config.target_platform.IOS,
         ),
         build_gs_bucket = "chromium-mac-archive",
+    ),
+    gn_args = gn_args.config(
+        configs = [
+            "debug_static_builder",
+            "reclient",
+            "ios_simulator",
+            "x64",
+            "xctest",
+        ],
     ),
     cpu = cpu.ARM64,
     console_view_entry = [

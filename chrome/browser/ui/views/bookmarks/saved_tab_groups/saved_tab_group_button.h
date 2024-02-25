@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_UI_VIEWS_BOOKMARKS_SAVED_TAB_GROUPS_SAVED_TAB_GROUP_BUTTON_H_
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -14,7 +15,6 @@
 #include "components/tab_groups/tab_group_id.h"
 #include "content/public/browser/page.h"
 #include "content/public/browser/page_navigator.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/views/controls/button/menu_button.h"
@@ -31,8 +31,9 @@ class Canvas;
 // The visual representation of a SavedTabGroup shown in the bookmarks bar.
 class SavedTabGroupButton : public views::MenuButton,
                             public views::DragController {
+  METADATA_HEADER(SavedTabGroupButton, views::MenuButton)
+
  public:
-  METADATA_HEADER(SavedTabGroupButton);
   SavedTabGroupButton(
       const SavedTabGroup& group,
       base::RepeatingCallback<content::PageNavigator*()> page_navigator,
@@ -97,7 +98,7 @@ class SavedTabGroupButton : public views::MenuButton,
   base::Uuid guid_;
 
   // The local guid used to identify the group in the tabstrip if it is open.
-  absl::optional<tab_groups::TabGroupId> local_group_id_;
+  std::optional<tab_groups::TabGroupId> local_group_id_;
 
   // The tabs to be displayed in the context menu. Currently supports tab
   // title, url, and favicon.

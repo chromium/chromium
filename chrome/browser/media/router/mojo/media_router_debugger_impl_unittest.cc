@@ -48,7 +48,21 @@ class MediaRouterDebuggerImplTest : public ::testing::Test {
 };
 
 TEST_F(MediaRouterDebuggerImplTest, ShouldFetchMirroringStats) {
-  // By default reports should be disabled.
+  // By default reports should be enabled.
+  debugger_->ShouldFetchMirroringStats(
+      base::BindOnce([](bool enabled) { EXPECT_TRUE(enabled); }));
+}
+
+TEST_F(MediaRouterDebuggerImplTest, ShouldFetchMirroringStatsFeatureDisabled) {
+  // If the feature is disabled, then stats can still be fetched by enabling
+  // them.
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(media::kEnableRtcpReporting);
+
+  EXPECT_CALL(observer_, OnMirroringStatsUpdated(_)).Times(0);
+  debugger_->NotifyGetMirroringStats(base::Value::Dict());
+
+  // Reports should now be disabled.
   debugger_->ShouldFetchMirroringStats(
       base::BindOnce([](bool enabled) { EXPECT_FALSE(enabled); }));
 
@@ -57,19 +71,12 @@ TEST_F(MediaRouterDebuggerImplTest, ShouldFetchMirroringStats) {
       base::BindOnce([](bool enabled) { EXPECT_TRUE(enabled); }));
 }
 
-TEST_F(MediaRouterDebuggerImplTest, ShouldFetchMirroringStatsFeatureEnabled) {
-  // By default reports should be disabled.
-  debugger_->ShouldFetchMirroringStats(
-      base::BindOnce([](bool enabled) { EXPECT_FALSE(enabled); }));
-
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeatures({media::kEnableRtcpReporting}, {});
-  debugger_->ShouldFetchMirroringStats(
-      base::BindOnce([](bool enabled) { EXPECT_TRUE(enabled); }));
-}
-
 TEST_F(MediaRouterDebuggerImplTest,
        ShouldFetchMirroringStatsAccessCodeCastFeature) {
+  // If the feature is disabled, then fall back to the value of
+  // AccessCodeCastEnabled.
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(media::kEnableRtcpReporting);
   profile_.GetTestingPrefService()->SetManagedPref(
       prefs::kAccessCodeCastEnabled, std::make_unique<base::Value>(true));
   auto debugger_with_feature =
@@ -83,14 +90,7 @@ TEST_F(MediaRouterDebuggerImplTest,
       base::BindOnce([](bool enabled) { EXPECT_FALSE(enabled); }));
 }
 
-TEST_F(MediaRouterDebuggerImplTest, OnMirroringStatsRtcpReportsDisabled) {
-  EXPECT_CALL(observer_, OnMirroringStatsUpdated(_)).Times(0);
-  debugger_->NotifyGetMirroringStats(base::Value::Dict());
-}
-
 TEST_F(MediaRouterDebuggerImplTest, OnMirroringStats) {
-  debugger_->EnableRtcpReports();
-
   base::Value non_dict = base::Value("foo");
   base::Value::Dict empty_dict = base::Value::Dict();
 
@@ -113,18 +113,9 @@ TEST_F(MediaRouterDebuggerImplTest, OnMirroringStats) {
   debugger_->OnMirroringStats(base::Value(dict.Clone()));
 }
 
-TEST_F(MediaRouterDebuggerImplTest, TestShouldFetchMirroringStats) {
-  // Tests default condition.
-  EXPECT_FALSE(debugger_->ShouldFetchMirroringStats());
-
-  // Reports should still be disabled since we the feature flag has not been
-  // set.
-  debugger_->EnableRtcpReports();
-
-  EXPECT_TRUE(debugger_->ShouldFetchMirroringStats());
-}
-
 TEST_F(MediaRouterDebuggerImplTest, GetMirroringStats) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(media::kEnableRtcpReporting);
   EXPECT_TRUE(debugger_->GetMirroringStats().empty());
 
   base::Value::Dict dict = base::Value::Dict();

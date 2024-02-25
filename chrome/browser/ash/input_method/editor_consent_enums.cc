@@ -17,13 +17,12 @@ ConsentStatus GetConsentStatusFromInteger(int status_value) {
       return ConsentStatus::kApproved;
     case base::to_underlying(ConsentStatus::kDeclined):
       return ConsentStatus::kDeclined;
-    case base::to_underlying(ConsentStatus::kImplicitlyDeclined):
-      return ConsentStatus::kImplicitlyDeclined;
     case base::to_underlying(ConsentStatus::kPending):
       return ConsentStatus::kPending;
     default:
       LOG(ERROR) << "Invalid consent status: " << status_value;
-      return ConsentStatus::kInvalid;
+      // For any of the invalid states, treat the consent status as unset.
+      return ConsentStatus::kUnset;
   }
 }
 

@@ -67,20 +67,22 @@ std::vector<url::Origin> GetOrigins(const MediaSource::Id& source_id) {
   return allowed_origins;
 }
 
-media::VideoCodec ParseVideoCodec(const MediaSource& media_source) {
+std::optional<media::VideoCodec> ParseVideoCodec(
+    const MediaSource& media_source) {
   std::string video_codec;
   if (!net::GetValueForKeyInQuery(media_source.url(), "video_codec",
                                   &video_codec)) {
-    return media::VideoCodec::kUnknown;
+    return std::nullopt;
   }
   return media::remoting::ParseVideoCodec(video_codec);
 }
 
-media::AudioCodec ParseAudioCodec(const MediaSource& media_source) {
+std::optional<media::AudioCodec> ParseAudioCodec(
+    const MediaSource& media_source) {
   std::string audio_codec;
   if (!net::GetValueForKeyInQuery(media_source.url(), "audio_codec",
                                   &audio_codec)) {
-    return media::AudioCodec::kUnknown;
+    return std::nullopt;
   }
   return media::remoting::ParseAudioCodec(audio_codec);
 }
@@ -90,10 +92,19 @@ std::vector<MediaSinkInternal> GetRemotePlaybackMediaSourceCompatibleSinks(
     const std::vector<MediaSinkInternal>& sinks) {
   DCHECK(media_source.IsRemotePlaybackSource());
   std::vector<MediaSinkInternal> compatible_sinks;
+
+  // Return an empty list if the source URL contains invalid codecs. It's
+  // possible that the source URL doesn't include an audio codec, which means
+  // the media content doesn't have an audio track. However, there must exist a
+  // valid video codec.
   auto video_codec = ParseVideoCodec(media_source);
+  if (!video_codec.has_value() ||
+      video_codec.value() == media::VideoCodec::kUnknown) {
+    return compatible_sinks;
+  }
   auto audio_codec = ParseAudioCodec(media_source);
-  if (video_codec == media::VideoCodec::kUnknown ||
-      audio_codec == media::AudioCodec::kUnknown) {
+  if (audio_codec.has_value() &&
+      audio_codec.value() == media::AudioCodec::kUnknown) {
     return compatible_sinks;
   }
 
@@ -101,18 +112,18 @@ std::vector<MediaSinkInternal> GetRemotePlaybackMediaSourceCompatibleSinks(
     const std::string& model_name = sink.cast_data().model_name;
     const bool is_supported_model =
         media::remoting::IsKnownToSupportRemoting(model_name);
-    const bool is_supported_audio_codec =
-        media::remoting::IsAudioCodecCompatible(model_name, audio_codec);
     const bool is_supported_video_codec =
-        media::remoting::IsVideoCodecCompatible(model_name, video_codec);
+        media::remoting::IsVideoCodecCompatible(model_name,
+                                                video_codec.value());
+    const bool is_supported_audio_codec =
+        audio_codec.has_value() ? media::remoting::IsAudioCodecCompatible(
+                                      model_name, audio_codec.value())
+                                : true;
 
-    if (is_supported_model && is_supported_audio_codec &&
-        is_supported_video_codec) {
+    if (is_supported_model && is_supported_video_codec &&
+        is_supported_audio_codec) {
       compatible_sinks.push_back(sink);
     }
-    RecordSinkRemotingCompatibility(is_supported_model,
-                                    is_supported_audio_codec, audio_codec,
-                                    is_supported_video_codec, video_codec);
   }
   return compatible_sinks;
 }
@@ -173,7 +184,6 @@ void CastMediaRouteProvider::CreateRoute(const std::string& source_id,
                                          const url::Origin& origin,
                                          int32_t frame_tree_node_id,
                                          base::TimeDelta timeout,
-                                         bool incognito,
                                          CreateRouteCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
@@ -184,7 +194,7 @@ void CastMediaRouteProvider::CreateRoute(const std::string& source_id,
     logger_->LogError(mojom::LogCategory::kRoute, kLoggerComponent,
                       "Attempted to create a route with an invalid sink ID",
                       sink_id, source_id, presentation_id);
-    std::move(callback).Run(absl::nullopt, nullptr,
+    std::move(callback).Run(std::nullopt, nullptr,
                             std::string("Sink not found"),
                             mojom::RouteRequestResultCode::SINK_NOT_FOUND);
     return;
@@ -197,13 +207,12 @@ void CastMediaRouteProvider::CreateRoute(const std::string& source_id,
                       "Attempted to create a route with an invalid source",
                       sink_id, source_id, presentation_id);
     std::move(callback).Run(
-        absl::nullopt, nullptr, std::string("Invalid source"),
+        std::nullopt, nullptr, std::string("Invalid source"),
         mojom::RouteRequestResultCode::NO_SUPPORTED_PROVIDER);
     return;
   }
   activity_manager_->LaunchSession(*cast_source, *sink, presentation_id, origin,
-                                   frame_tree_node_id, incognito,
-                                   std::move(callback));
+                                   frame_tree_node_id, std::move(callback));
 }
 
 void CastMediaRouteProvider::JoinRoute(const std::string& media_source,
@@ -211,13 +220,12 @@ void CastMediaRouteProvider::JoinRoute(const std::string& media_source,
                                        const url::Origin& origin,
                                        int32_t frame_tree_node_id,
                                        base::TimeDelta timeout,
-                                       bool incognito,
                                        JoinRouteCallback callback) {
   std::unique_ptr<CastMediaSource> cast_source =
       CastMediaSource::FromMediaSourceId(media_source);
   if (!cast_source) {
     std::move(callback).Run(
-        absl::nullopt, nullptr, std::string("Invalid source"),
+        std::nullopt, nullptr, std::string("Invalid source"),
         mojom::RouteRequestResultCode::NO_SUPPORTED_PROVIDER);
     logger_->LogError(mojom::LogCategory::kRoute, kLoggerComponent,
                       "Attempted to join a route with an invalid source", "",
@@ -235,14 +243,13 @@ void CastMediaRouteProvider::JoinRoute(const std::string& media_source,
     // but it's initialized in the same place as |activity_manager_|, so it's
     // almost certainly not available here.
     LOG(ERROR) << "missing activity manager";
-    std::move(callback).Run(absl::nullopt, nullptr,
+    std::move(callback).Run(std::nullopt, nullptr,
                             "Internal error: missing activity manager",
                             mojom::RouteRequestResultCode::UNKNOWN_ERROR);
     return;
   }
   activity_manager_->JoinSession(*cast_source, presentation_id, origin,
-                                 frame_tree_node_id, incognito,
-                                 std::move(callback));
+                                 frame_tree_node_id, std::move(callback));
 }
 
 void CastMediaRouteProvider::TerminateRoute(const std::string& route_id,
@@ -273,15 +280,6 @@ void CastMediaRouteProvider::StartObservingMediaSinks(
   if (!cast_source)
     return;
 
-  // A broadcast request is not an actual sink query; it is used to send a
-  // app precache message to receivers.
-  if (cast_source->broadcast_request()) {
-    // TODO(imcheng): Add metric to record broadcast usage.
-    BroadcastMessageToSinks(cast_source->GetAppIds(),
-                            *cast_source->broadcast_request());
-    return;
-  }
-
   sink_queries_[media_source] =
       app_discovery_service_->StartObservingMediaSinks(
           *cast_source,
@@ -300,16 +298,6 @@ void CastMediaRouteProvider::StartObservingMediaRoutes() {
   activity_manager_->NotifyAllOnRoutesUpdated();
 }
 
-void CastMediaRouteProvider::StartListeningForRouteMessages(
-    const std::string& route_id) {
-  NOTIMPLEMENTED();
-}
-
-void CastMediaRouteProvider::StopListeningForRouteMessages(
-    const std::string& route_id) {
-  NOTIMPLEMENTED();
-}
-
 void CastMediaRouteProvider::DetachRoute(const std::string& route_id) {
   // DetachRoute() isn't implemented. Instead, a presentation connection
   // associated with the route will call DidClose(). See CastSessionClientImpl.
@@ -324,12 +312,12 @@ void CastMediaRouteProvider::DiscoverSinksNow() {
   app_discovery_service_->Refresh();
 }
 
-void CastMediaRouteProvider::CreateMediaRouteController(
+void CastMediaRouteProvider::BindMediaController(
     const std::string& route_id,
     mojo::PendingReceiver<mojom::MediaController> media_controller,
     mojo::PendingRemote<mojom::MediaStatusObserver> observer,
-    CreateMediaRouteControllerCallback callback) {
-  std::move(callback).Run(activity_manager_->CreateMediaController(
+    BindMediaControllerCallback callback) {
+  std::move(callback).Run(activity_manager_->BindMediaController(
       route_id, std::move(media_controller), std::move(observer)));
 }
 
@@ -374,16 +362,6 @@ void CastMediaRouteProvider::OnSinkQueryUpdated(
       mojom::MediaRouteProviderId::CAST, source_id,
       GetRemotePlaybackMediaSourceCompatibleSinks(media_source, sinks),
       GetOrigins(source_id));
-}
-
-void CastMediaRouteProvider::BroadcastMessageToSinks(
-    const std::vector<std::string>& app_ids,
-    const cast_channel::BroadcastRequest& request) {
-  for (const auto& id_and_sink : media_sink_service_->GetSinks()) {
-    const MediaSinkInternal& sink = id_and_sink.second;
-    message_handler_->SendBroadcastMessage(sink.cast_data().cast_channel_id,
-                                           app_ids, request);
-  }
 }
 
 }  // namespace media_router

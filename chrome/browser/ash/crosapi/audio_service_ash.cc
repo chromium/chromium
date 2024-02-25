@@ -82,7 +82,7 @@ void AudioServiceAsh::GetDevices(mojom::DeviceFilterPtr filter,
   auto extapi_callback = base::BindOnce(
       [](GetDevicesCallback crosapi_callback, bool success,
          std::vector<extensions::api::audio::AudioDeviceInfo> devices_src) {
-        absl::optional<std::vector<mojom::AudioDeviceInfoPtr>> result;
+        std::optional<std::vector<mojom::AudioDeviceInfoPtr>> result;
 
         if (success) {
           result.emplace();  // construct empty vector in-place

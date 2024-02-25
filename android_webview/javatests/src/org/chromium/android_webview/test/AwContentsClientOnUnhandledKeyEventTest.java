@@ -14,6 +14,8 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.junit.runners.Parameterized;
+import org.junit.runners.Parameterized.UseParametersRunnerFactory;
 
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.Feature;
@@ -23,13 +25,11 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-/**
- * Tests for the WebViewClient.onUnhandledKeyEvent() method.
- */
-@RunWith(AwJUnit4ClassRunner.class)
-public class AwContentsClientOnUnhandledKeyEventTest {
-    @Rule
-    public AwActivityTestRule mActivityTestRule = new AwActivityTestRule();
+/** Tests for the WebViewClient.onUnhandledKeyEvent() method. */
+@RunWith(Parameterized.class)
+@UseParametersRunnerFactory(AwJUnit4ClassRunnerWithParameters.Factory.class)
+public class AwContentsClientOnUnhandledKeyEventTest extends AwParameterizedTest {
+    @Rule public AwActivityTestRule mActivityTestRule;
 
     private KeyEventTestAwContentsClient mContentsClient;
     private AwTestContainerView mTestContainerView;
@@ -61,6 +61,10 @@ public class AwContentsClientOnUnhandledKeyEventTest {
         }
     }
 
+    public AwContentsClientOnUnhandledKeyEventTest(AwSettingsMutation param) {
+        this.mActivityTestRule = new AwActivityTestRule(param.getMutation());
+    }
+
     @Before
     public void setUp() {
         mContentsClient = new KeyEventTestAwContentsClient();
@@ -72,10 +76,13 @@ public class AwContentsClientOnUnhandledKeyEventTest {
     @SmallTest
     @Feature({"AndroidWebView", "TextInput"})
     public void testUnconsumedKeyEvents() throws Throwable {
-        final String data = "<html><head></head><body>Plain page</body>"
-                + "</html>";
-        mActivityTestRule.loadDataSync(mTestContainerView.getAwContents(),
-                mContentsClient.getOnPageFinishedHelper(), data, "text/html", false);
+        final String data = "<html><head></head><body>Plain page</body>" + "</html>";
+        mActivityTestRule.loadDataSync(
+                mTestContainerView.getAwContents(),
+                mContentsClient.getOnPageFinishedHelper(),
+                data,
+                "text/html",
+                false);
 
         int callCount;
 

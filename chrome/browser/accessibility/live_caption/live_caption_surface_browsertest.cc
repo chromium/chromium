@@ -4,6 +4,8 @@
 
 #include "chrome/browser/accessibility/live_caption/live_caption_surface.h"
 
+#include <optional>
+
 #include "base/path_service.h"
 #include "base/test/bind.h"
 #include "base/unguessable_token.h"
@@ -24,7 +26,6 @@
 #include "mojo/public/cpp/bindings/remote.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/mojom/frame/fullscreen.mojom.h"
 #include "ui/base/page_transition_types.h"
 #include "ui/gfx/geometry/rect.h"
@@ -164,7 +165,7 @@ IN_PROC_BROWSER_TEST_F(LiveCaptionSurfaceTest, Bounds) {
 
   // Callback to assign bounds to local variables.
   const auto assign_bounds = [](gfx::Rect* d,
-                                const absl::optional<gfx::Rect>& b) {
+                                const std::optional<gfx::Rect>& b) {
     ASSERT_TRUE(b.has_value());
     *d = *b;
   };
@@ -250,9 +251,7 @@ IN_PROC_BROWSER_TEST_F(LiveCaptionSurfaceTest, SessionIds) {
 }
 
 // Test that a surface reports the end of live caption sessions.
-//
-// TODO(b/266148747): this test is very-occasionaly flaky.
-IN_PROC_BROWSER_TEST_F(LiveCaptionSurfaceTest, DISABLED_Sessions) {
+IN_PROC_BROWSER_TEST_F(LiveCaptionSurfaceTest, Sessions) {
   // Create two tabs with surfaces attached.
   MockSurfaceClient client_1, client_2;
   content::WebContents* wc_1 = LoadNewTab(kAboutBlankUrl);
@@ -289,7 +288,7 @@ IN_PROC_BROWSER_TEST_F(LiveCaptionSurfaceTest, DISABLED_Sessions) {
     ASSERT_EQ(wc_1, browser()->tab_strip_model()->GetActiveWebContents());
 
     chrome::Reload(browser(), WindowOpenDisposition::CURRENT_TAB);
-    content::WaitForLoadStop(wc_2);
+    content::WaitForLoadStop(wc_1);
     base::RunLoop().RunUntilIdle();
     checkpointer.Call(2);
 

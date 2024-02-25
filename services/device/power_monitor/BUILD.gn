@@ -12,6 +12,8 @@ source_set("power_monitor") {
     "power_monitor_message_broadcaster.h",
   ]
 
+  configs += [ "//build/config/compiler:wexit_time_destructors" ]
+
   deps = [
     "//base",
     "//mojo/public/cpp/bindings",

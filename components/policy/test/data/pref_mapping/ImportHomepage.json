@@ -1,0 +1,22 @@
+[
+  {
+    "os": [
+      "win",
+      "mac",
+      "linux",
+      "fuchsia"
+    ],
+    "policy_pref_mapping_tests": [
+      {
+        "policies": {
+          "ImportHomepage": false
+        },
+        "prefs": {
+          "import_home_page": {
+            "value": false
+          }
+        }
+      }
+    ]
+  }
+]

@@ -14,7 +14,6 @@
 #include "content/browser/renderer_host/indexed_db_client_state_checker_factory.h"
 #include "content/browser/storage_partition_impl.h"
 #include "content/public/browser/browser_context.h"
-#include "mojo/public/cpp/bindings/pending_associated_remote.h"
 #include "third_party/blink/public/common/permissions/permission_utils.h"
 
 namespace content {
@@ -142,7 +141,7 @@ void BucketHost::SetExpires(base::Time expires, SetExpiresCallback callback) {
 
 void BucketHost::Expires(ExpiresCallback callback) {
   if (bucket_info_.is_null()) {
-    std::move(callback).Run(absl::nullopt, /*success=*/false);
+    std::move(callback).Run(std::nullopt, /*success=*/false);
     return;
   }
 
@@ -156,7 +155,7 @@ void BucketHost::Expires(ExpiresCallback callback) {
 
 void BucketHost::DidValidateForExpires(ExpiresCallback callback,
                                        bool bucket_exists) {
-  absl::optional<base::Time> expires;
+  std::optional<base::Time> expires;
   if (bucket_exists && !bucket_info_.expiration.is_null()) {
     expires = bucket_info_.expiration;
   }
@@ -174,13 +173,12 @@ void BucketHost::GetIdbFactory(
   GlobalRenderFrameHostId rfh_id =
       bucket_context->GetAssociatedRenderFrameHostId();
 
+  auto [state_checker, token] =
+      IndexedDBClientStateCheckerFactory::InitializePendingRemote(rfh_id);
   bucket_manager_host_->GetStoragePartition()
       ->GetIndexedDBControl()
-      .BindIndexedDBForBucket(
-          bucket_info_.ToBucketLocator(),
-          IndexedDBClientStateCheckerFactory::InitializePendingAssociatedRemote(
-              rfh_id),
-          std::move(receiver));
+      .BindIndexedDB(bucket_info_.ToBucketLocator(), std::move(state_checker),
+                     token, std::move(receiver));
 }
 
 void BucketHost::GetCaches(

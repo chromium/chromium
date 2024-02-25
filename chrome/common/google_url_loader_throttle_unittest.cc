@@ -14,6 +14,8 @@
 #include "chrome/common/renderer_configuration.mojom.h"
 #include "components/signin/public/base/signin_switches.h"
 #include "services/network/public/cpp/resource_request.h"
+#include "services/network/public/cpp/url_loader_completion_status.h"
+#include "services/network/public/mojom/fetch_api.mojom.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -22,23 +24,25 @@
 // This file only contains tests relevant to the bound session credentials
 // feature.
 #if BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
-#include "chrome/common/bound_session_request_throttled_listener.h"
+#include "chrome/common/bound_session_request_throttled_handler.h"
 
 namespace {
 
 enum class RequestAction { kWillStartRequest, kWillRedirectRequest };
 
-class FakeBoundSessionRequestThrottledListener
-    : public BoundSessionRequestThrottledListener {
+class FakeBoundSessionRequestThrottledHandler
+    : public BoundSessionRequestThrottledHandler {
  public:
-  void OnRequestBlockedOnCookie(
+  void HandleRequestBlockedOnCookie(
       ResumeOrCancelThrottledRequestCallback callback) override {
     EXPECT_FALSE(callback_);
     callback_ = std::move(callback);
   }
 
-  void SimulateOnRequestBlockedOnCookieCompleted(UnblockAction unblock_action) {
-    std::move(callback_).Run(unblock_action);
+  void SimulateHandleRequestBlockedOnCookieCompleted(
+      UnblockAction unblock_action,
+      chrome::mojom::ResumeBlockedRequestsTrigger resume_trigger) {
+    std::move(callback_).Run(unblock_action, resume_trigger);
   }
 
   bool IsRequestBlocked() { return !callback_.is_null(); }
@@ -74,7 +78,7 @@ class GoogleURLLoaderThrottleTest
 
   void RunUntilIdle() { task_environment_.RunUntilIdle(); }
 
-  FakeBoundSessionRequestThrottledListener* bound_session_listener() {
+  FakeBoundSessionRequestThrottledHandler* bound_session_listener() {
     return bound_session_listener_.get();
   }
 
@@ -115,24 +119,30 @@ class GoogleURLLoaderThrottleTest
   }
 
   void UnblockRequestAndVerifyCallbackAction(
-      BoundSessionRequestThrottledListener::UnblockAction unblock_action) {
+      BoundSessionRequestThrottledHandler::UnblockAction unblock_action,
+      bool is_expected_navigation = false,
+      chrome::mojom::ResumeBlockedRequestsTrigger resume_trigger =
+          chrome::mojom::ResumeBlockedRequestsTrigger::kObservedFreshCookies) {
     switch (unblock_action) {
-      case BoundSessionRequestThrottledListener::UnblockAction::kResume:
+      case BoundSessionRequestThrottledHandler::UnblockAction::kResume:
         EXPECT_CALL(*delegate(), Resume());
         break;
-      case BoundSessionRequestThrottledListener::UnblockAction::kCancel:
+      case BoundSessionRequestThrottledHandler::UnblockAction::kCancel:
         EXPECT_CALL(*delegate(), CancelWithError(net::ERR_ABORTED, testing::_));
         break;
     }
 
-    bound_session_listener_->SimulateOnRequestBlockedOnCookieCompleted(
-        unblock_action);
+    bound_session_listener_->SimulateHandleRequestBlockedOnCookieCompleted(
+        unblock_action, resume_trigger);
 
     RunUntilIdle();
     testing::Mock::VerifyAndClearExpectations(delegate());
     histogram_tester_->ExpectTotalCount(
         "Signin.BoundSessionCredentials.DeferredRequestDelay",
         /*expected_count=*/1);
+    histogram_tester_->ExpectTotalCount(
+        "Signin.BoundSessionCredentials.DeferredNavigationRequestDelay",
+        /*expected_count=*/is_expected_navigation ? 1 : 0);
     histogram_tester_ = std::make_unique<base::HistogramTester>();
   }
 
@@ -143,9 +153,9 @@ class GoogleURLLoaderThrottleTest
     dynamic_params->bound_session_throttler_params =
         bound_session_throttler_params_.Clone();
 
-    std::unique_ptr<FakeBoundSessionRequestThrottledListener>
+    std::unique_ptr<FakeBoundSessionRequestThrottledHandler>
         bound_session_listener =
-            std::make_unique<FakeBoundSessionRequestThrottledListener>();
+            std::make_unique<FakeBoundSessionRequestThrottledHandler>();
     bound_session_listener_ = bound_session_listener.get();
     delegate_ = std::make_unique<MockThrottleDelegate>();
 
@@ -160,7 +170,7 @@ class GoogleURLLoaderThrottleTest
   base::test::ScopedFeatureList feature_list_{
       switches::kEnableBoundSessionCredentials};
   base::test::TaskEnvironment task_environment_;
-  raw_ptr<FakeBoundSessionRequestThrottledListener, DanglingUntriaged>
+  raw_ptr<FakeBoundSessionRequestThrottledHandler, DanglingUntriaged>
       bound_session_listener_ = nullptr;
   std::unique_ptr<GoogleURLLoaderThrottle> throttle_;
   std::unique_ptr<MockThrottleDelegate> delegate_;
@@ -168,6 +178,122 @@ class GoogleURLLoaderThrottleTest
   std::unique_ptr<base::HistogramTester> histogram_tester_ =
       std::make_unique<base::HistogramTester>();
 };
+
+TEST_F(GoogleURLLoaderThrottleTest,
+       ShouldDeferRequestForBoundSessionNullParams) {
+  EXPECT_FALSE(GoogleURLLoaderThrottle::ShouldDeferRequestForBoundSession(
+      kTestGoogleURL, nullptr));
+}
+
+TEST_F(GoogleURLLoaderThrottleTest,
+       ShouldDeferRequestForBoundSessionEmptyParams) {
+  EXPECT_FALSE(GoogleURLLoaderThrottle::ShouldDeferRequestForBoundSession(
+      kTestGoogleURL,
+      chrome::mojom::BoundSessionThrottlerParams::New("", "", base::Time::Now())
+          .get()));
+}
+
+TEST_F(GoogleURLLoaderThrottleTest,
+       ShouldDeferRequestForBoundSessionCookieFresh) {
+  EXPECT_FALSE(GoogleURLLoaderThrottle::ShouldDeferRequestForBoundSession(
+      kTestGoogleURL,
+      chrome::mojom::BoundSessionThrottlerParams::New(
+          "google.com", "/", base::Time::Now() + base::Minutes(10))
+          .get()));
+}
+
+TEST_F(GoogleURLLoaderThrottleTest,
+       ShouldDeferRequestForBoundSessionNotInBoundSession) {
+  EXPECT_FALSE(GoogleURLLoaderThrottle::ShouldDeferRequestForBoundSession(
+      GURL("https://youtube.com"),
+      chrome::mojom::BoundSessionThrottlerParams::New("google.com", "/",
+                                                      base::Time::Min())
+          .get()));
+}
+
+TEST_F(GoogleURLLoaderThrottleTest,
+       ShouldDeferRequestForBoundSessionCookieExpired) {
+  EXPECT_TRUE(GoogleURLLoaderThrottle::ShouldDeferRequestForBoundSession(
+      kTestGoogleURL, chrome::mojom::BoundSessionThrottlerParams::New(
+                          "google.com", "/", base::Time::Min())
+                          .get()));
+}
+
+TEST_F(GoogleURLLoaderThrottleTest,
+       ShouldDeferRequestForBoundSessionCookieExpiresNow) {
+  EXPECT_TRUE(GoogleURLLoaderThrottle::ShouldDeferRequestForBoundSession(
+      kTestGoogleURL, chrome::mojom::BoundSessionThrottlerParams::New(
+                          "google.com", "/", base::Time::Now())
+                          .get()));
+}
+
+TEST_F(GoogleURLLoaderThrottleTest,
+       ShouldDeferRequestForBoundSessionCookieExpiredDomainWithLeadingDot) {
+  EXPECT_TRUE(GoogleURLLoaderThrottle::ShouldDeferRequestForBoundSession(
+      kTestGoogleURL, chrome::mojom::BoundSessionThrottlerParams::New(
+                          ".google.com", "/", base::Time::Min())
+                          .get()));
+}
+
+TEST_F(GoogleURLLoaderThrottleTest,
+       ShouldDeferRequestForBoundSessionSubdomainUrl) {
+  EXPECT_TRUE(GoogleURLLoaderThrottle::ShouldDeferRequestForBoundSession(
+      kGoogleSubdomainURL, chrome::mojom::BoundSessionThrottlerParams::New(
+                               "google.com", "/", base::Time::Min())
+                               .get()));
+}
+
+TEST_F(GoogleURLLoaderThrottleTest,
+       ShouldDeferRequestForBoundSessionParentDomainUrl) {
+  EXPECT_FALSE(GoogleURLLoaderThrottle::ShouldDeferRequestForBoundSession(
+      kTestGoogleURL, chrome::mojom::BoundSessionThrottlerParams::New(
+                          "accounts.google.com", "/", base::Time::Min())
+                          .get()));
+}
+
+TEST_F(GoogleURLLoaderThrottleTest,
+       ShouldDeferRequestForBoundSessionUrlWithPath) {
+  EXPECT_TRUE(GoogleURLLoaderThrottle::ShouldDeferRequestForBoundSession(
+      GURL("https://google.com/foo/bar.html"),
+      chrome::mojom::BoundSessionThrottlerParams::New("google.com", "/",
+                                                      base::Time::Now())
+          .get()));
+}
+
+TEST_F(GoogleURLLoaderThrottleTest,
+       ShouldDeferRequestForBoundSessionPathEmpty) {
+  EXPECT_TRUE(GoogleURLLoaderThrottle::ShouldDeferRequestForBoundSession(
+      kTestGoogleURL, chrome::mojom::BoundSessionThrottlerParams::New(
+                          "google.com", "", base::Time::Now())
+                          .get()));
+}
+
+TEST_F(GoogleURLLoaderThrottleTest,
+       ShouldDeferRequestForBoundSessionUrlNotOnBoundSessionPath) {
+  EXPECT_FALSE(GoogleURLLoaderThrottle::ShouldDeferRequestForBoundSession(
+      kTestGoogleURL, chrome::mojom::BoundSessionThrottlerParams::New(
+                          "google.com", "/test", base::Time::Now())
+                          .get()));
+}
+
+TEST_F(GoogleURLLoaderThrottleTest,
+       ShouldDeferRequestForBoundSessionUrlWithPathOnBoundSessionPath) {
+  EXPECT_TRUE(GoogleURLLoaderThrottle::ShouldDeferRequestForBoundSession(
+      GURL("https://google.com/test/foo/bar.html"),
+      chrome::mojom::BoundSessionThrottlerParams::New("google.com", "/test",
+                                                      base::Time::Now())
+          .get()));
+}
+
+TEST_F(
+    GoogleURLLoaderThrottleTest,
+    ShouldDeferRequestForBoundSessionSubdomainUrlWithPathOnBoundSessionPath) {
+  EXPECT_TRUE(GoogleURLLoaderThrottle::ShouldDeferRequestForBoundSession(
+      GURL("https://accounts.google.com/test/foo/bar.html"),
+      chrome::mojom::BoundSessionThrottlerParams::New("google.com", "/test",
+                                                      base::Time::Now())
+          .get()));
+}
 
 TEST_P(GoogleURLLoaderThrottleTest, NullBoundSessionThrottlerParams) {
   CallThrottleAndVerifyDeferExpectation(
@@ -178,25 +304,6 @@ TEST_P(GoogleURLLoaderThrottleTest, EmptyBoundSessionThrottlerParams) {
   ConfigureBoundSessionThrottlerParams("", "", base::Time::Now());
   CallThrottleAndVerifyDeferExpectation(
       /*expect_defer=*/false, kGoogleSubdomainURL);
-}
-
-TEST_P(GoogleURLLoaderThrottleTest, NoInterceptBoundSessionCookieFresh) {
-  ConfigureBoundSessionThrottlerParams("google.com", "/",
-                                       base::Time::Now() + base::Minutes(10));
-  CallThrottleAndVerifyDeferExpectation(
-      /*expect_defer=*/false, kGoogleSubdomainURL);
-}
-
-TEST_P(GoogleURLLoaderThrottleTest, NoInterceptDomainNotInBoundSession) {
-  ConfigureBoundSessionThrottlerParams("google.com", "/", base::Time::Min());
-  CallThrottleAndVerifyDeferExpectation(/*expect_defer=*/false,
-                                        GURL("https://youtube.com"));
-}
-
-TEST_P(GoogleURLLoaderThrottleTest, NoInterceptPathNotInBoundSession) {
-  ConfigureBoundSessionThrottlerParams("google.com", "/test",
-                                       base::Time::Min());
-  CallThrottleAndVerifyDeferExpectation(/*expect_defer=*/false, kTestGoogleURL);
 }
 
 TEST_F(GoogleURLLoaderThrottleTest, NoInterceptRequestWithSendCookiesFalse) {
@@ -216,43 +323,37 @@ TEST_P(GoogleURLLoaderThrottleTest, InterceptBoundSessionCookieExpired) {
   CallThrottleAndVerifyDeferExpectation(
       /*expect_defer=*/true, GURL("https://accounts.google.com/test/bar.html"));
   UnblockRequestAndVerifyCallbackAction(
-      BoundSessionRequestThrottledListener::UnblockAction::kResume);
-}
-
-TEST_P(GoogleURLLoaderThrottleTest, InterceptBoundSessionCookieExpiresNow) {
-  ConfigureBoundSessionThrottlerParams("google.com", "/", base::Time::Now());
-
-  CallThrottleAndVerifyDeferExpectation(
-      /*expect_defer=*/true, kGoogleSubdomainURL);
-  UnblockRequestAndVerifyCallbackAction(
-      BoundSessionRequestThrottledListener::UnblockAction::kResume);
-}
-
-TEST_P(GoogleURLLoaderThrottleTest, InterceptBoundSessionPathEmpty) {
-  ConfigureBoundSessionThrottlerParams("google.com", "", base::Time::Now());
-
-  CallThrottleAndVerifyDeferExpectation(
-      /*expect_defer=*/true, kGoogleSubdomainURL);
-  UnblockRequestAndVerifyCallbackAction(
-      BoundSessionRequestThrottledListener::UnblockAction::kResume);
+      BoundSessionRequestThrottledHandler::UnblockAction::kResume);
 }
 
 TEST_P(GoogleURLLoaderThrottleTest,
-       NoInterceptRequestURLNotOnBoundSessionPath) {
-  ConfigureBoundSessionThrottlerParams("google.com", "/test",
-                                       base::Time::Now());
-  CallThrottleAndVerifyDeferExpectation(/*expect_defer=*/false, kTestGoogleURL);
+       InterceptNavigationBoundSessionCookieExpired) {
+  ConfigureBoundSessionThrottlerParams("google.com", "/",
+                                       base::Time::Now() - base::Minutes(10));
+  bool defer = false;
+  network::ResourceRequest request;
+  request.url = GURL("https://accounts.google.com/test/bar.html");
+  // Make `request` look like a main frame navigation request.
+  request.is_outermost_main_frame = true;
+  request.destination = network::mojom::RequestDestination::kDocument;
+  throttle()->WillStartRequest(&request, &defer);
+  EXPECT_TRUE(defer);
+  EXPECT_TRUE(bound_session_listener()->IsRequestBlocked());
+  UnblockRequestAndVerifyCallbackAction(
+      BoundSessionRequestThrottledHandler::UnblockAction::kResume,
+      /*is_expected_navigation=*/true);
 }
 
-TEST_P(GoogleURLLoaderThrottleTest,
-       InterceptRequestURLWithPrefixBoundSessionPath) {
-  ConfigureBoundSessionThrottlerParams("google.com", "/test",
-                                       base::Time::Now());
+TEST_P(GoogleURLLoaderThrottleTest, NoInterceptBoundSessionFeatureOff) {
+  base::test::ScopedFeatureList disable_feature;
+  disable_feature.InitAndDisableFeature(
+      switches::kEnableBoundSessionCredentials);
+
+  ConfigureBoundSessionThrottlerParams("google.com", "/",
+                                       base::Time::Now() - base::Minutes(10));
   CallThrottleAndVerifyDeferExpectation(
-      /*expect_defer=*/true,
-      GURL("https://accounts.google.com/test/foo/bar.html"));
-  UnblockRequestAndVerifyCallbackAction(
-      BoundSessionRequestThrottledListener::UnblockAction::kResume);
+      /*expect_defer=*/false,
+      GURL("https://accounts.google.com/test/bar.html"));
 }
 
 TEST_P(GoogleURLLoaderThrottleTest, InterceptAndCancelRequest) {
@@ -261,7 +362,60 @@ TEST_P(GoogleURLLoaderThrottleTest, InterceptAndCancelRequest) {
   CallThrottleAndVerifyDeferExpectation(
       /*expect_defer=*/true, kGoogleSubdomainURL);
   UnblockRequestAndVerifyCallbackAction(
-      BoundSessionRequestThrottledListener::UnblockAction::kCancel);
+      BoundSessionRequestThrottledHandler::UnblockAction::kCancel);
+}
+
+TEST_P(GoogleURLLoaderThrottleTest,
+       RecordDeferredRequestUnblockTriggerSuccess) {
+  ConfigureBoundSessionThrottlerParams("google.com", "/", base::Time::Now());
+
+  CallThrottleAndVerifyDeferExpectation(
+      /*expect_defer=*/true, kGoogleSubdomainURL);
+  const auto kResumeTrigger =
+      chrome::mojom::ResumeBlockedRequestsTrigger::kCookieRefreshFetchFailure;
+  UnblockRequestAndVerifyCallbackAction(
+      BoundSessionRequestThrottledHandler::UnblockAction::kResume,
+      /*is_expected_navigation=*/false, kResumeTrigger);
+  base::HistogramTester histogram_tester;
+  throttle()->WillProcessResponse(kGoogleSubdomainURL, nullptr, nullptr);
+  histogram_tester.ExpectBucketCount(
+      "Signin.BoundSessionCredentials.DeferredRequestUnblockTrigger.Success",
+      static_cast<int>(kResumeTrigger),
+      /*expected_count=*/1);
+}
+
+TEST_P(GoogleURLLoaderThrottleTest,
+       RecordDeferredRequestUnblockTriggerFailure) {
+  ConfigureBoundSessionThrottlerParams("google.com", "/", base::Time::Now());
+
+  CallThrottleAndVerifyDeferExpectation(
+      /*expect_defer=*/true, kGoogleSubdomainURL);
+  const auto kResumeTrigger =
+      chrome::mojom::ResumeBlockedRequestsTrigger::kCookieRefreshFetchFailure;
+  UnblockRequestAndVerifyCallbackAction(
+      BoundSessionRequestThrottledHandler::UnblockAction::kResume,
+      /*is_expected_navigation=*/false, kResumeTrigger);
+  base::HistogramTester histogram_tester;
+  throttle()->WillOnCompleteWithError(network::URLLoaderCompletionStatus());
+  histogram_tester.ExpectBucketCount(
+      "Signin.BoundSessionCredentials.DeferredRequestUnblockTrigger.Failure",
+      static_cast<int>(kResumeTrigger),
+      /*expected_count=*/1);
+}
+
+TEST_P(GoogleURLLoaderThrottleTest,
+       NoRecordDeferredRequestUnblockTriggerNotDeferred) {
+  ConfigureBoundSessionThrottlerParams("google.com", "/",
+                                       base::Time::Now() + base::Minutes(10));
+
+  CallThrottleAndVerifyDeferExpectation(
+      /*expect_defer=*/false, kGoogleSubdomainURL);
+  base::HistogramTester histogram_tester;
+  throttle()->WillProcessResponse(kGoogleSubdomainURL, nullptr, nullptr);
+  EXPECT_THAT(
+      histogram_tester.GetTotalCountsForPrefix(
+          "Signin.BoundSessionCredentials.DeferredRequestUnblockTrigger."),
+      testing::IsEmpty());
 }
 
 INSTANTIATE_TEST_SUITE_P(WillStartRequest,

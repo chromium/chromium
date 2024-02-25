@@ -589,6 +589,23 @@ int UDPSocketWin::SetDoNotFragment() {
   return rv == 0 ? OK : MapSystemError(WSAGetLastError());
 }
 
+int UDPSocketWin::SetRecvTos() {
+  DCHECK_NE(socket_, INVALID_SOCKET);
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+
+  int rv;
+  unsigned int ecn = 1;
+  if (addr_family_ == AF_INET6) {
+    rv = setsockopt(socket_, IPPROTO_IPV6, IPV6_RECVTCLASS,
+                    reinterpret_cast<const char*>(&ecn), sizeof(ecn));
+  } else {
+    DCHECK_EQ(addr_family_, AF_INET);
+    rv = setsockopt(socket_, IPPROTO_IP, IP_RECVTOS,
+                    reinterpret_cast<const char*>(&ecn), sizeof(ecn));
+  }
+  return rv == 0 ? OK : MapSystemError(WSAGetLastError());
+}
+
 void UDPSocketWin::SetMsgConfirm(bool confirm) {}
 
 int UDPSocketWin::AllowAddressReuse() {
@@ -1193,6 +1210,11 @@ int UDPSocketWin::SetDiffServCodePoint(DiffServCodePoint dscp) {
     return dscp_manager_->PrepareForSend(*remote_address_.get());
 
   return OK;
+}
+
+// TODO(crbug.com/1521435): a stub for future ECN support in Windows.
+int UDPSocketWin::SetTos(DiffServCodePoint dscp, EcnCodePoint ecn) {
+  return SetDiffServCodePoint(dscp);
 }
 
 int UDPSocketWin::SetIPv6Only(bool ipv6_only) {

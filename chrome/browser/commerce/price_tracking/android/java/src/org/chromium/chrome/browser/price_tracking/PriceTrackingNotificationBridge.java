@@ -15,9 +15,10 @@ import com.google.common.primitives.UnsignedLongs;
 import com.google.protobuf.ByteString;
 import com.google.protobuf.InvalidProtocolBufferException;
 
+import org.jni_zero.CalledByNative;
+
 import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
-import org.chromium.base.annotations.CalledByNative;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.commerce.PriceUtils;
 import org.chromium.chrome.browser.price_tracking.PriceDropNotifier.ActionData;
@@ -52,8 +53,10 @@ public class PriceTrackingNotificationBridge {
      *         notification channel.
      */
     @VisibleForTesting
-    PriceTrackingNotificationBridge(long nativePriceTrackingNotificationBridge,
-            PriceDropNotifier notifier, PriceDropNotificationManager notificationManager) {
+    PriceTrackingNotificationBridge(
+            long nativePriceTrackingNotificationBridge,
+            PriceDropNotifier notifier,
+            PriceDropNotificationManager notificationManager) {
         mNativePriceTrackingNotificationBridge = nativePriceTrackingNotificationBridge;
         mNotifier = notifier;
         mPriceDropNotificationManager = notificationManager;
@@ -62,7 +65,8 @@ public class PriceTrackingNotificationBridge {
     @CalledByNative
     private static PriceTrackingNotificationBridge create(
             long nativePriceTrackingNotificationBridge) {
-        return new PriceTrackingNotificationBridge(nativePriceTrackingNotificationBridge,
+        return new PriceTrackingNotificationBridge(
+                nativePriceTrackingNotificationBridge,
                 PriceDropNotifier.create(ContextUtils.getApplicationContext()),
                 PriceDropNotificationManagerFactory.create());
     }
@@ -98,16 +102,22 @@ public class PriceTrackingNotificationBridge {
         }
 
         Context context = ContextUtils.getApplicationContext();
-        String title = context.getString(R.string.price_drop_popup_content_title, priceDrop,
-                priceDropPayload.getProductName());
+        String title =
+                context.getString(
+                        R.string.price_drop_popup_content_title,
+                        priceDrop,
+                        priceDropPayload.getProductName());
 
         Uri productUrl = Uri.parse(priceDropPayload.getDestinationUrl());
         if (productUrl.getHost() == null) {
             Log.e(TAG, "Failed to parse destination URL host.");
             return;
         }
-        String text = context.getString(R.string.price_drop_popup_content_text,
-                buildDisplayPrice(priceDropPayload.getCurrentPrice()), productUrl.getHost());
+        String text =
+                context.getString(
+                        R.string.price_drop_popup_content_text,
+                        buildDisplayPrice(priceDropPayload.getCurrentPrice()),
+                        productUrl.getHost());
 
         // Use UnsignedLongs to convert OfferId to avoid overflow.
         String offerId = UnsignedLongs.toString(priceDropPayload.getOfferId());
@@ -117,9 +127,13 @@ public class PriceTrackingNotificationBridge {
         }
         ChromeMessage chromeMessage = chromeNotification.getChromeMessage();
         PriceDropNotifier.NotificationData notificationData =
-                new PriceDropNotifier.NotificationData(title, text,
+                new PriceDropNotifier.NotificationData(
+                        title,
+                        text,
                         chromeMessage.hasIconImageUrl() ? chromeMessage.getIconImageUrl() : null,
-                        priceDropPayload.getDestinationUrl(), offerId, clusterId,
+                        priceDropPayload.getDestinationUrl(),
+                        offerId,
+                        clusterId,
                         parseActions(chromeNotification));
         mNotifier.showNotification(notificationData);
     }
@@ -171,7 +185,8 @@ public class PriceTrackingNotificationBridge {
         if (priceDropPayload == null) return null;
 
         // Current price must be smaller than previous price, or it's not a price drop.
-        if (!priceDropPayload.hasCurrentPrice() || !priceDropPayload.hasPreviousPrice()
+        if (!priceDropPayload.hasCurrentPrice()
+                || !priceDropPayload.hasPreviousPrice()
                 || (priceDropPayload.getCurrentPrice().getAmountMicros()
                         >= priceDropPayload.getPreviousPrice().getAmountMicros())) {
             return null;
@@ -224,8 +239,9 @@ public class PriceTrackingNotificationBridge {
     }
 
     private static String getPriceDropAmount(PriceDropNotificationPayload priceDropPayload) {
-        long dropAmount = priceDropPayload.getPreviousPrice().getAmountMicros()
-                - priceDropPayload.getCurrentPrice().getAmountMicros();
+        long dropAmount =
+                priceDropPayload.getPreviousPrice().getAmountMicros()
+                        - priceDropPayload.getCurrentPrice().getAmountMicros();
         assert dropAmount > 0;
         return buildDisplayPrice(
                 ProductPrice.newBuilder()

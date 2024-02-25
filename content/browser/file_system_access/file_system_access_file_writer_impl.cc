@@ -4,6 +4,7 @@
 
 #include "content/browser/file_system_access/file_system_access_file_writer_impl.h"
 
+#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/memory/weak_ptr.h"
@@ -13,7 +14,7 @@
 #include "storage/browser/file_system/file_system_context.h"
 #include "storage/browser/file_system/file_system_operation.h"
 #include "storage/browser/file_system/file_system_operation_runner.h"
-#include "third_party/blink/public/mojom/file_system_access/file_system_access_error.mojom.h"
+#include "third_party/blink/public/common/features_generated.h"
 
 using blink::mojom::FileSystemAccessStatus;
 using storage::FileSystemOperation;
@@ -32,8 +33,8 @@ FileSystemAccessFileWriterImpl::FileSystemAccessFileWriterImpl(
     const BindingContext& context,
     const storage::FileSystemURL& url,
     const storage::FileSystemURL& swap_url,
-    scoped_refptr<FileSystemAccessLockManager::Lock> lock,
-    scoped_refptr<FileSystemAccessLockManager::Lock> swap_lock,
+    scoped_refptr<FileSystemAccessLockManager::LockHandle> lock,
+    scoped_refptr<FileSystemAccessLockManager::LockHandle> swap_lock,
     const SharedHandleState& handle_state,
     mojo::PendingReceiver<blink::mojom::FileSystemAccessFileWriter> receiver,
     bool has_transient_user_activation,
@@ -49,8 +50,9 @@ FileSystemAccessFileWriterImpl::FileSystemAccessFileWriterImpl(
       has_transient_user_activation_(has_transient_user_activation),
       auto_close_(auto_close) {
   CHECK_EQ(swap_url.type(), url.type());
-  // TODO(https://crbug.com/1382215): Support exclusively-locked writers.
-  CHECK(!lock_->IsExclusive());
+  CHECK(!lock_->IsExclusive() ||
+        base::FeatureList::IsEnabled(
+            blink::features::kFileSystemAccessLockingScheme));
   CHECK(swap_lock_->IsExclusive());
 
   receiver_.set_disconnect_handler(base::BindOnce(

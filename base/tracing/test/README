@@ -1,0 +1,15 @@
+# PerfettoSQL Chrome Standard Library tests
+
+This directory contains the [Perfetto Diff Tests](https://perfetto.dev/docs/analysis/trace-processor#diff-tests) to test changes to the Chrome standard library.
+
+The diff tests themselves are in `./trace_processor/diff_tests/chrome`. The `./data` directory contains the Perfetto traces that are used by the diff tests.
+
+## Running Diff Tests
+
+Currently, the diff tests only run on Linux. You can build and run the diff tests with the following.
+
+```
+$ gn gen --args='' out/Linux
+$ autoninja -C out/Linux perfetto_diff_tests
+$ out/Linux/bin/run_perfetto_diff_tests
+```

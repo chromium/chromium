@@ -25,13 +25,9 @@ import org.chromium.content_public.browser.test.util.TestThreadUtils;
 
 import java.util.concurrent.TimeoutException;
 
-/**
- * Common utilities for Trusted Web Activity tests.
- */
+/** Common utilities for Trusted Web Activity tests. */
 public class TrustedWebActivityTestUtil {
-    /**
-     * Waits till verification either succeeds or fails.
-     */
+    /** Waits till verification either succeeds or fails. */
     private static class CurrentPageVerifierWaiter extends CallbackHelper {
         private CurrentPageVerifier mVerifier;
 
@@ -56,8 +52,9 @@ public class TrustedWebActivityTestUtil {
 
     /** Creates an Intent that will launch a Custom Tab to the given |url|. */
     public static Intent createTrustedWebActivityIntent(String url) {
-        Intent intent = CustomTabsIntentTestUtils.createMinimalCustomTabIntent(
-                ApplicationProvider.getApplicationContext(), url);
+        Intent intent =
+                CustomTabsIntentTestUtils.createMinimalCustomTabIntent(
+                        ApplicationProvider.getApplicationContext(), url);
         intent.putExtra(TrustedWebUtils.EXTRA_LAUNCH_AS_TRUSTED_WEB_ACTIVITY, true);
         return intent;
     }
@@ -77,8 +74,11 @@ public class TrustedWebActivityTestUtil {
     /** Caches a successful verification for the given |packageName| and |url|. */
     public static void spoofVerification(String packageName, String url) {
         TestThreadUtils.runOnUiThreadBlocking(
-                () -> ChromeOriginVerifier.addVerificationOverride(packageName,
-                                Origin.create(url), CustomTabsService.RELATION_HANDLE_ALL_URLS));
+                () ->
+                        ChromeOriginVerifier.addVerificationOverride(
+                                packageName,
+                                Origin.create(url),
+                                CustomTabsService.RELATION_HANDLE_ALL_URLS));
     }
 
     /** Creates a Custom Tabs Session from the Intent, specifying the |packageName|. */
@@ -93,15 +93,16 @@ public class TrustedWebActivityTestUtil {
     public static boolean isTrustedWebActivity(CustomTabActivity activity) {
         // A key part of the Trusted Web Activity UI is the lack of browser controls.
         @BrowserControlsState
-        int constraints = TestThreadUtils.runOnUiThreadBlockingNoException(() -> {
-            return TabBrowserControlsConstraintsHelper.getConstraints(activity.getActivityTab());
-        });
+        int constraints =
+                TestThreadUtils.runOnUiThreadBlockingNoException(
+                        () -> {
+                            return TabBrowserControlsConstraintsHelper.getConstraints(
+                                    activity.getActivityTab());
+                        });
         return constraints == BrowserControlsState.HIDDEN;
     }
 
-    /**
-     * Waits till {@link CurrentPageVerifier} verification either succeeds or fails.
-     */
+    /** Waits till {@link CurrentPageVerifier} verification either succeeds or fails. */
     public static void waitForCurrentPageVerifierToFinish(CustomTabActivity activity)
             throws TimeoutException {
         CurrentPageVerifier verifier = activity.getComponent().resolveCurrentPageVerifier();

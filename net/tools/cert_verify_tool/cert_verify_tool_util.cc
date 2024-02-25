@@ -11,13 +11,9 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
 #include "build/build_config.h"
-#include "net/cert/pem.h"
 #include "net/cert/x509_certificate.h"
 #include "net/cert/x509_util.h"
-
-#if BUILDFLAG(IS_MAC)
-#include "net/cert/internal/trust_store_mac.h"
-#endif
+#include "third_party/boringssl/src/pki/pem.h"
 
 namespace {
 
@@ -31,7 +27,7 @@ const char kCertificateHeader[] = "CERTIFICATE";
 void ExtractCertificatesFromData(const std::string& data_string,
                                  const base::FilePath& file_path,
                                  std::vector<CertInput>* certs) {
-  net::PEMTokenizer pem_tokenizer(data_string, {kCertificateHeader});
+  bssl::PEMTokenizer pem_tokenizer(data_string, {kCertificateHeader});
   int block = 0;
   while (pem_tokenizer.GetNext()) {
     CertInput cert;
@@ -49,7 +45,7 @@ void ExtractCertificatesFromData(const std::string& data_string,
 
   std::vector<bssl::UniquePtr<CRYPTO_BUFFER>> pkcs7_cert_buffers;
   if (net::x509_util::CreateCertBuffersFromPKCS7Bytes(
-          base::as_bytes(base::make_span(data_string)), &pkcs7_cert_buffers)) {
+          base::as_byte_span(data_string), &pkcs7_cert_buffers)) {
     int n = 0;
     for (const auto& cert_buffer : pkcs7_cert_buffers) {
       CertInput cert;
@@ -123,22 +119,10 @@ void PrintCertError(const std::string& error, const CertInput& cert) {
   std::cerr << "\n";
 }
 
-void PrintDebugData(const base::SupportsUserData* debug_data) {
-#if BUILDFLAG(IS_MAC)
-  auto* mac_trust_debug_info =
-      net::TrustStoreMac::ResultDebugData::Get(debug_data);
-  if (mac_trust_debug_info) {
-    std::cout << base::StringPrintf(
-        "TrustStoreMac::ResultDebugData::combined_trust_debug_info: 0x%x\n",
-        mac_trust_debug_info->combined_trust_debug_info());
-  }
-#endif
-}
-
 std::string FingerPrintCryptoBuffer(const CRYPTO_BUFFER* cert_handle) {
   net::SHA256HashValue hash =
       net::X509Certificate::CalculateFingerprint256(cert_handle);
-  return base::HexEncode(hash.data, std::size(hash.data));
+  return base::HexEncode(hash.data);
 }
 
 std::string SubjectFromX509Certificate(const net::X509Certificate* cert) {

@@ -166,8 +166,7 @@ void BlobData::AppendText(const String& text,
 }
 
 void BlobData::AppendBytes(const void* bytes, size_t length) {
-  AppendDataInternal(
-      base::make_span(reinterpret_cast<const char*>(bytes), length));
+  AppendDataInternal(base::make_span(static_cast<const char*>(bytes), length));
 }
 
 uint64_t BlobData::length() const {
@@ -210,7 +209,7 @@ void BlobData::AppendDataInternal(base::span<const char> data,
       current_memory_population_ += data.size();
     } else if (bytes_element->embedded_data) {
       current_memory_population_ -= bytes_element->embedded_data->size();
-      bytes_element->embedded_data = absl::nullopt;
+      bytes_element->embedded_data = std::nullopt;
     }
   } else {
     if (last_bytes_provider_) {
@@ -227,7 +226,7 @@ void BlobData::AppendDataInternal(base::span<const char> data,
         bytes_provider_remote.InitWithNewPipeAndPassReceiver();
 
     auto bytes_element = DataElementBytes::New(
-        data.size(), absl::nullopt, std::move(bytes_provider_remote));
+        data.size(), std::nullopt, std::move(bytes_provider_remote));
     if (should_embed_bytes) {
       bytes_element->embedded_data = Vector<uint8_t>();
       bytes_element->embedded_data->Append(
@@ -248,7 +247,7 @@ scoped_refptr<BlobDataHandle> BlobDataHandle::CreateForFile(
     const String& path,
     int64_t offset,
     int64_t length,
-    const absl::optional<base::Time>& expected_modification_time,
+    const std::optional<base::Time>& expected_modification_time,
     const String& content_type) {
   mojom::blink::DataElementFilePtr element = mojom::blink::DataElementFile::New(
       WebStringToFilePath(path), offset, length, expected_modification_time);
@@ -257,6 +256,23 @@ scoped_refptr<BlobDataHandle> BlobDataHandle::CreateForFile(
                       : length;
   return base::AdoptRef(new BlobDataHandle(
       file_backed_blob_factory, std::move(element), content_type, size));
+}
+
+// static
+scoped_refptr<BlobDataHandle> BlobDataHandle::CreateForFileSync(
+    mojom::blink::FileBackedBlobFactory* file_backed_blob_factory,
+    const String& path,
+    int64_t offset,
+    int64_t length,
+    const std::optional<base::Time>& expected_modification_time,
+    const String& content_type) {
+  mojom::blink::DataElementFilePtr element = mojom::blink::DataElementFile::New(
+      WebStringToFilePath(path), offset, length, expected_modification_time);
+  uint64_t size = length == BlobData::kToEndOfFile
+                      ? std::numeric_limits<uint64_t>::max()
+                      : length;
+  return base::AdoptRef(new BlobDataHandle(
+      file_backed_blob_factory, std::move(element), content_type, size, true));
 }
 
 // static
@@ -296,16 +312,23 @@ BlobDataHandle::BlobDataHandle(
     mojom::blink::FileBackedBlobFactory* file_backed_blob_factory,
     mojom::blink::DataElementFilePtr file_element,
     const String& content_type,
-    uint64_t size)
+    uint64_t size,
+    bool synchronous_register)
     : uuid_(WTF::CreateCanonicalUUIDString()),
       type_(content_type),
       size_(size),
       is_single_unknown_size_file_(size ==
                                    std::numeric_limits<uint64_t>::max()) {
   if (file_backed_blob_factory) {
-    file_backed_blob_factory->RegisterBlob(
-        blob_remote_.InitWithNewPipeAndPassReceiver(), uuid_,
-        type_.IsNull() ? "" : type_, std::move(file_element));
+    if (synchronous_register) {
+      file_backed_blob_factory->RegisterBlobSync(
+          blob_remote_.InitWithNewPipeAndPassReceiver(), uuid_,
+          type_.IsNull() ? "" : type_, std::move(file_element));
+    } else {
+      file_backed_blob_factory->RegisterBlob(
+          blob_remote_.InitWithNewPipeAndPassReceiver(), uuid_,
+          type_.IsNull() ? "" : type_, std::move(file_element));
+    }
   } else {
     // TODO(b/287417238): Temporarily fallback to the previous BlobRegistry
     // registration when new interface is disabled by its feature flag or the
@@ -400,7 +423,7 @@ void BlobDataHandle::ReadRange(
 
 bool BlobDataHandle::CaptureSnapshot(
     uint64_t* snapshot_size,
-    absl::optional<base::Time>* snapshot_modification_time) {
+    std::optional<base::Time>* snapshot_modification_time) {
   // This method operates on a cloned blob remote; this lets us avoid holding
   // the |blob_remote_lock_| locked during the duration of the (synchronous)
   // CaptureSnapshot call.

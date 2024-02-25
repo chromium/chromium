@@ -1,0 +1,6 @@
+This is a testharness.js-based test.
+[FAIL] custombutton: When the listbox is closed, spacebar should open the listbox.
+  promise_test: Unhandled rejection with value: "error: Action send_keys failed"
+[FAIL] custombutton: When the listbox is closed, all arrow keys should open the listbox.
+  promise_test: Unhandled rejection with value: "error: Action send_keys failed"
+Harness: the test ran to completion.

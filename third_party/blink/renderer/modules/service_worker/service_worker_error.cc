@@ -152,9 +152,8 @@ v8::Local<v8::Value> ServiceWorkerErrorForUpdate::Take(
       return V8ThrowException::CreateTypeError(script_state->GetIsolate(),
                                                web_error.message);
     default:
-      return ToV8(ServiceWorkerError::Take(resolver, web_error),
-                  script_state->GetContext()->Global(),
-                  script_state->GetIsolate());
+      return ToV8Traits<DOMException>::ToV8(
+          script_state, ServiceWorkerError::Take(resolver, web_error));
   }
 }
 

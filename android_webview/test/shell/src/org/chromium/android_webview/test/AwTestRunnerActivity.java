@@ -15,9 +15,7 @@ import org.chromium.android_webview.AwBrowserProcess;
 import org.chromium.android_webview.shell.AwShellResourceProvider;
 import org.chromium.base.StrictModeContext;
 
-/**
- * This is a lightweight activity for tests that only require WebView functionality.
- */
+/** This is a lightweight activity for tests that only require WebView functionality. */
 public class AwTestRunnerActivity extends Activity {
     public static final String FLAG_HIDE_ACTION_BAR = "hide_action_bar";
 
@@ -37,8 +35,8 @@ public class AwTestRunnerActivity extends Activity {
         mLinearLayout = new LinearLayout(this);
         mLinearLayout.setOrientation(LinearLayout.VERTICAL);
         mLinearLayout.setShowDividers(LinearLayout.SHOW_DIVIDER_MIDDLE);
-        mLinearLayout.setLayoutParams(new LayoutParams(LayoutParams.MATCH_PARENT,
-                LayoutParams.MATCH_PARENT));
+        mLinearLayout.setLayoutParams(
+                new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT));
 
         hideActionBarIfNecessary();
 
@@ -62,18 +60,15 @@ public class AwTestRunnerActivity extends Activity {
         return mLinearLayout.getWidth();
     }
 
-    /**
-     * Adds a view to the main linear layout.
-     */
+    /** Adds a view to the main linear layout. */
     public void addView(View view) {
-        view.setLayoutParams(new LinearLayout.LayoutParams(
-                LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT, 1f));
+        view.setLayoutParams(
+                new LinearLayout.LayoutParams(
+                        LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT, 1f));
         mLinearLayout.addView(view);
     }
 
-    /**
-     * Clears the main linear layout.
-     */
+    /** Clears the main linear layout. */
     public void removeAllViews() {
         mLinearLayout.removeAllViews();
     }

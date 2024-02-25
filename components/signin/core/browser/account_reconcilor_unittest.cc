@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "components/signin/core/browser/account_reconcilor.h"
+
 #include <cstring>
 #include <map>
 #include <memory>
@@ -10,6 +12,7 @@
 #include <vector>
 
 #include "base/containers/contains.h"
+#include "base/feature_list.h"
 #include "base/ranges/algorithm.h"
 #include "base/run_loop.h"
 #include "base/scoped_observation.h"
@@ -25,7 +28,6 @@
 #include "components/content_settings/core/browser/content_settings_observer.h"
 #include "components/content_settings/core/common/content_settings_pattern.h"
 #include "components/prefs/pref_service.h"
-#include "components/signin/core/browser/account_reconcilor.h"
 #include "components/signin/core/browser/mirror_account_reconcilor_delegate.h"
 #include "components/signin/public/base/account_consistency_method.h"
 #include "components/signin/public/base/consent_level.h"
@@ -33,6 +35,7 @@
 #include "components/signin/public/base/signin_buildflags.h"
 #include "components/signin/public/base/signin_metrics.h"
 #include "components/signin/public/base/signin_pref_names.h"
+#include "components/signin/public/base/signin_switches.h"
 #include "components/signin/public/base/test_signin_client.h"
 #include "components/signin/public/identity_manager/account_capabilities_test_mutator.h"
 #include "components/signin/public/identity_manager/accounts_in_cookie_jar_info.h"
@@ -41,7 +44,6 @@
 #include "components/signin/public/identity_manager/primary_account_mutator.h"
 #include "components/signin/public/identity_manager/set_accounts_in_cookie_result.h"
 #include "components/supervised_user/core/common/buildflags.h"
-#include "components/supervised_user/core/common/features.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "google_apis/gaia/core_account_id.h"
 #include "google_apis/gaia/gaia_constants.h"
@@ -407,7 +409,6 @@ AccountReconcilorTest::AccountReconcilorTest()
       test_signin_client_(&pref_service_, &test_url_loader_factory_),
       identity_test_env_(/*test_url_loader_factory=*/nullptr,
                          &pref_service_,
-                         account_consistency_,
                          &test_signin_client_) {
   signin::SetListAccountsResponseHttpNotFound(&test_url_loader_factory_);
 
@@ -626,8 +627,16 @@ class BaseAccountReconcilorTestTable : public AccountReconcilorTest {
       EXPECT_EQ(CoreAccountId(), primary_account_id);
   }
 
+  virtual bool ShouldSkipTest(const std::vector<Token>& tokens) {
+    return false;
+  }
+
   void SetupTokens(const char* tokens_string) {
     std::vector<Token> tokens = ParseTokenString(tokens_string);
+    if (ShouldSkipTest(tokens)) {
+      GTEST_SKIP();
+    }
+
     Token primary_account;
     for (const Token& token : tokens) {
       CoreAccountId account_id;
@@ -726,7 +735,9 @@ class BaseAccountReconcilorTestTable : public AccountReconcilorTest {
     // Setup tokens. This triggers listing cookies so we need to setup cookies
     // before that.
     SetupTokens(param.tokens);
-
+    if (testing::Test::IsSkipped()) {
+      return;
+    }
     CreateReconclior();
 
     // Setup expectations.
@@ -1427,32 +1438,20 @@ TEST_F(AccountReconcilorDiceTest, DeleteCookie) {
 
 #if BUILDFLAG(ENABLE_SUPERVISED_USERS)
 class AccountReconcilorDiceTestForSupervisedUsers
-    : public AccountReconcilorDiceTest,
-      public ::testing::WithParamInterface<bool> {
+    : public AccountReconcilorDiceTest {
  public:
   AccountReconcilorDiceTestForSupervisedUsers() {
-    if (is_signout_disallowed_on_cookies_cleared()) {
-      feature_list_.InitAndEnableFeature(
-          supervised_user::kClearingCookiesKeepsSupervisedUsersSignedIn);
-    } else {
-      feature_list_.InitAndDisableFeature(
-          supervised_user::kClearingCookiesKeepsSupervisedUsersSignedIn);
-    }
+    feature_list_.InitWithFeatures(
+        /*enabled_features=*/{}, /*disabled_features=*/{switches::kUnoDesktop});
   }
 
   ~AccountReconcilorDiceTestForSupervisedUsers() override = default;
-
-  bool is_signout_disallowed_on_cookies_cleared() const { return GetParam(); }
 
  private:
   base::test::ScopedFeatureList feature_list_;
 };
 
-INSTANTIATE_TEST_SUITE_P(AccountReconcilorDiceTestForSupervisedUsers,
-                         AccountReconcilorDiceTestForSupervisedUsers,
-                         ::testing::Bool());
-
-TEST_P(AccountReconcilorDiceTestForSupervisedUsers,
+TEST_F(AccountReconcilorDiceTestForSupervisedUsers,
        DeleteCookieForNonSyncingSupervisedUsers) {
   auto* identity_manager = identity_test_env()->identity_manager();
   signin::SetListAccountsResponseOneAccount(kFakeEmail, kFakeGaiaId,
@@ -1473,15 +1472,14 @@ TEST_P(AccountReconcilorDiceTestForSupervisedUsers,
   AccountReconcilor* reconcilor = GetMockReconcilor();
   reconcilor->OnAccountsCookieDeletedByUserAction();
 
-  EXPECT_EQ(
-      is_signout_disallowed_on_cookies_cleared(),
+  EXPECT_TRUE(
       identity_manager->HasAccountWithRefreshToken(account_info.account_id));
   EXPECT_FALSE(
       identity_manager->HasAccountWithRefreshTokenInPersistentErrorState(
           account_info.account_id));
 }
 
-TEST_P(AccountReconcilorDiceTestForSupervisedUsers,
+TEST_F(AccountReconcilorDiceTestForSupervisedUsers,
        DeleteCookieForSyncingSupervisedUsers) {
   auto* identity_manager = identity_test_env()->identity_manager();
   signin::SetListAccountsResponseOneAccount(kFakeEmail, kFakeGaiaId,
@@ -1505,11 +1503,150 @@ TEST_P(AccountReconcilorDiceTestForSupervisedUsers,
 
   EXPECT_TRUE(
       identity_manager->HasAccountWithRefreshToken(account_info.account_id));
-  EXPECT_NE(is_signout_disallowed_on_cookies_cleared(),
-            identity_manager->HasAccountWithRefreshTokenInPersistentErrorState(
-                account_info.account_id));
+  EXPECT_FALSE(
+      identity_manager->HasAccountWithRefreshTokenInPersistentErrorState(
+          account_info.account_id));
 }
 #endif  // BUILDFLAG(ENABLE_SUPERVISED_USERS)
+
+class AccountReconcilorDiceTestWithUnoDesktop
+    : public AccountReconcilorDiceTest,
+      public ::testing::WithParamInterface<bool> {
+ public:
+  AccountReconcilorDiceTestWithUnoDesktop() {
+    if (is_uno_desktop_enabled()) {
+      feature_list_.InitAndEnableFeature(switches::kUnoDesktop);
+    } else {
+      feature_list_.InitAndDisableFeature(switches::kUnoDesktop);
+    }
+  }
+
+  ~AccountReconcilorDiceTestWithUnoDesktop() override = default;
+
+  bool is_uno_desktop_enabled() const { return GetParam(); }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+INSTANTIATE_TEST_SUITE_P(AccountReconcilorDiceTestWithUnoDesktop,
+                         AccountReconcilorDiceTestWithUnoDesktop,
+                         ::testing::Bool());
+
+TEST_P(AccountReconcilorDiceTestWithUnoDesktop, DeleteCookieForSignedInUser) {
+  auto* identity_manager = identity_test_env()->identity_manager();
+  signin::SetListAccountsResponseOneAccount(kFakeEmail, kFakeGaiaId,
+                                            &test_url_loader_factory_);
+  AccountInfo account_info = identity_test_env()->MakePrimaryAccountAvailable(
+      kFakeEmail, signin::ConsentLevel::kSignin);
+
+  ASSERT_TRUE(
+      identity_manager->HasAccountWithRefreshToken(account_info.account_id));
+  ASSERT_FALSE(
+      identity_manager->HasAccountWithRefreshTokenInPersistentErrorState(
+          account_info.account_id));
+
+  AccountReconcilor* reconcilor = GetMockReconcilor();
+  reconcilor->OnAccountsCookieDeletedByUserAction();
+
+  EXPECT_EQ(is_uno_desktop_enabled(),
+            identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSignin));
+  EXPECT_EQ(
+      is_uno_desktop_enabled(),
+      identity_manager->HasAccountWithRefreshToken(account_info.account_id));
+  EXPECT_FALSE(
+      identity_manager->HasAccountWithRefreshTokenInPersistentErrorState(
+          account_info.account_id));
+}
+
+TEST_P(AccountReconcilorDiceTestWithUnoDesktop, DeleteCookieForSyncingUser) {
+  auto* identity_manager = identity_test_env()->identity_manager();
+  signin::SetListAccountsResponseOneAccount(kFakeEmail, kFakeGaiaId,
+                                            &test_url_loader_factory_);
+  AccountInfo account_info = identity_test_env()->MakePrimaryAccountAvailable(
+      kFakeEmail, signin::ConsentLevel::kSync);
+
+  ASSERT_TRUE(
+      identity_manager->HasAccountWithRefreshToken(account_info.account_id));
+  ASSERT_FALSE(
+      identity_manager->HasAccountWithRefreshTokenInPersistentErrorState(
+          account_info.account_id));
+
+  AccountReconcilor* reconcilor = GetMockReconcilor();
+  reconcilor->OnAccountsCookieDeletedByUserAction();
+
+  EXPECT_TRUE(identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSync));
+  EXPECT_TRUE(
+      identity_manager->HasAccountWithRefreshToken(account_info.account_id));
+  EXPECT_TRUE(
+      identity_manager->HasAccountWithRefreshTokenInPersistentErrorState(
+          account_info.account_id));
+}
+
+const std::vector<AccountReconcilorTestTableParam>
+    kDiceParamsUnoPreChromeSignIn = {
+        // clang-format off
+        // See `kDiceParams` above for detailed params format.
+        {  "",     "A",    IsFirstReconcile::kBoth,  "",  "",   "A"    },
+        {  "AB",   "",     IsFirstReconcile::kBoth,  "",  "" ,  ""     },
+        {  "AB",   "A",    IsFirstReconcile::kBoth,  "",  "A",  "A"    },
+        {  "A",    "B",    IsFirstReconcile::kBoth,  "",  "" ,  "B"    },
+        {  "xA",   "A",    IsFirstReconcile::kBoth,  "",  "",   "A"    },
+        {  "xAB",  "A",    IsFirstReconcile::kBoth,  "",  "",   "A"    },
+
+        // Account marked as invalid in cookies.
+        {  "A",    "xA",   IsFirstReconcile::kBoth,  "",  "",   "xA"   },
+        {  "AB",   "AxB",  IsFirstReconcile::kBoth,  "",  "A",  "AxB"  },
+        {  "xA",   "xA",   IsFirstReconcile::kBoth,  "",  "",   "xA"   },
+        // clang-format on
+};
+class AccountReconcilorTestDiceExplicitBrowserSignin
+    : public AccountReconcilorTestTable {
+ public:
+  AccountReconcilorTestDiceExplicitBrowserSignin() {
+    consent_level_for_reconcile_ = signin::ConsentLevel::kSignin;
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_{switches::kUnoDesktop};
+};
+
+using AccountReconcilorTestDicePreChromeSignIn =
+    AccountReconcilorTestDiceExplicitBrowserSignin;
+
+// Checks one row of the `kDiceParamsUnoPreChromeSignIn` table above.
+TEST_P(AccountReconcilorTestDicePreChromeSignIn, TableRowTest) {
+  SetAccountConsistency(signin::AccountConsistencyMethod::kDice);
+  RunRowTest(GetParam());
+}
+
+INSTANTIATE_TEST_SUITE_P(,
+                         AccountReconcilorTestDicePreChromeSignIn,
+                         ::testing::ValuesIn(GenerateTestCasesFromParams(
+                             kDiceParamsUnoPreChromeSignIn)));
+
+class AccountReconcilorTestExplicitBrowserSigninDiceMultiLogin
+    : public AccountReconcilorTestDiceExplicitBrowserSignin {
+ public:
+  bool ShouldSkipTest(const std::vector<Token>& tokens) override {
+    // We use the same set of `kDiceParams`.
+    // In this test suite, the consent level is signin, skip the tests where
+    // there is no authenticated primary account.
+    return !base::ranges::any_of(
+        tokens, [](const Token& token) { return token.is_authenticated; });
+  }
+};
+
+TEST_P(AccountReconcilorTestExplicitBrowserSigninDiceMultiLogin, TableRowTest) {
+  SetAccountConsistency(signin::AccountConsistencyMethod::kDice);
+  CheckReconcileIdempotent(kDiceParams, GetParam());
+  RunRowTest(GetParam());
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    ,
+    AccountReconcilorTestExplicitBrowserSigninDiceMultiLogin,
+    ::testing::ValuesIn(GenerateTestCasesFromParams(kDiceParams)));
 
 #endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
 

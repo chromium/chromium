@@ -1,0 +1,10 @@
+iterator-with-multiple-container.cpp:28:4: error: [iterator-checker] Potentially invalid iterator used.
+  *it = 20;
+   ^
+iterator-with-multiple-container.cpp:81:4: error: [iterator-checker] Potentially invalid iterator used.
+  *it = 20;
+   ^
+iterator-with-multiple-container.cpp:109:4: error: [iterator-checker] Potentially invalid iterator used.
+  *it = 20;
+   ^
+3 errors generated.

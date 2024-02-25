@@ -14,22 +14,57 @@ namespace autofill::features {
 namespace {
 
 const base::Feature* kFeaturesExposedToJava[] = {
-    &kAndroidAutofillViewStructureWithFormHierarchyLayer,
+    &kAndroidAutofillBottomSheetWorkaround,
+    &kAndroidAutofillPrefillRequestsForLoginForms,
+    &kAndroidAutofillSupportVisibilityChanges,
+    &kAndroidAutofillUsePwmPredictionsForOverrides,
 };
 
 }  // namespace
 
-// Adds an additional hierarchy layer for forms into the `ViewStructure` that
-// is passed to Android's `AutofillManager`.
-// If the feature is disabled, AutofillProvider.java returns a `ViewStructure`
-// of depth 1: All form field elements are represented as child nodes of the
-// filled `ViewStructure`.
-// If the feature is enabled, there is an additional hierarchy level:
-// * The child nodes of the filled `ViewStructure` correspond to forms.
-// * The child nodes of nodes representing forms correspond to form field
-//   elements of the respective form.
-BASE_FEATURE(kAndroidAutofillViewStructureWithFormHierarchyLayer,
-             "AndroidAutofillViewStructureWithFormHierarchyLayer",
+// If enabled, we send SparseArrayWithWorkaround class as the PrefillHints for
+// the platform API `AutofillManager.notifyViewReady()` as a workaround for the
+// platform bug, see the comment on the class. This works as a kill switch for
+// the workaround in case any unexpected thing goes wrong.
+BASE_FEATURE(kAndroidAutofillBottomSheetWorkaround,
+             "AndroidAutofillBottomSheetWorkaround",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
+// If enabled, we explicitly cancel the ongoing Android autofill session on new
+// document navigation by calling `AutofillManager.cancel()`, we clear the
+// request state in the java side as it works as an indicator to the current
+// session.
+BASE_FEATURE(kAndroidAutofillCancelSessionOnNavigation,
+             "AndroidAutofillCancelSessionOnNavigation",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+// If enabled, prefill requests (i.e. calls to
+// `AutofillManager.notifyVirtualViewsReady`) are supported. Such prefill
+// requests are sent at most once per WebView session and are limited to forms
+// that are assumed to be login forms.
+// Future features may extend prefill requests to more form types.
+BASE_FEATURE(kAndroidAutofillPrefillRequestsForLoginForms,
+             "AndroidAutofillPrefillRequestsForLoginForms",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+// If enabled, visibility changes of form fields of the form of an ongoing
+// Autofill session are communicated to Android's `AutofillManager` by calling
+// `AutofillManager.notifyViewVisibilityChanged()`.
+// See
+// https://developer.android.com/reference/android/view/autofill/AutofillManager#notifyViewVisibilityChanged(android.view.View,%20int,%20boolean)
+// for more details on the API.
+BASE_FEATURE(kAndroidAutofillSupportVisibilityChanges,
+             "AndroidAutofillSupportVisibilityChanges",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+// If enabled, username and password field predictions are taken from
+// `password_manager::FormDataParser` and overwrite Autofill's native
+// predictions. Furthermore, similarity checks between cached forms and focused
+// forms that serve to decide whether to show a bottomsheet are performed using
+// these predictions: Two forms are considered similar iff they have the same
+// `FormDataParser` predictions.
+BASE_FEATURE(kAndroidAutofillUsePwmPredictionsForOverrides,
+             "AndroidAutofillUsePwmPredictionsForOverrides",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 static jlong JNI_AndroidAutofillFeatures_GetFeature(JNIEnv* env, jint ordinal) {

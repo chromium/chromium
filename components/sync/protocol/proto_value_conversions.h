@@ -20,10 +20,12 @@ class AutofillOfferSpecifics;
 class AutofillWalletCredentialSpecifics;
 class AutofillWalletSpecifics;
 class AutofillWalletUsageSpecifics;
+class BankAccountDetails;
 class BookmarkSpecifics;
 class ClientConfigParams;
 class ClientToServerMessage;
 class ClientToServerResponse;
+class CollaborationGroupSpecifics;
 class ContactInfoSpecifics;
 class CrossUserSharingPublicKey;
 class DebugEventInfo;
@@ -47,6 +49,7 @@ class OsPriorityPreferenceSpecifics;
 class OutgoingPasswordSharingInvitationSpecifics;
 class PasswordSpecifics;
 class PasswordSpecificsData;
+class PaymentInstrument;
 class PaymentsCustomerData;
 class PowerBookmarkSpecifics;
 class PreferenceSpecifics;
@@ -124,10 +127,16 @@ base::Value AutofillWalletUsageSpecificsToValue(
     const sync_pb::AutofillWalletUsageSpecifics&
         autofill_wallet_usage_specifics);
 
+base::Value BankAccountDetailsToValue(
+    const sync_pb::BankAccountDetails& bank_account_details);
+
 base::Value BookmarkSpecificsToValue(
     const sync_pb::BookmarkSpecifics& bookmark_specifics);
 
 base::Value ClientConfigParamsToValue(const sync_pb::ClientConfigParams& proto);
+
+base::Value CollaborationGroupSpecificsToValue(
+    const sync_pb::CollaborationGroupSpecifics& proto);
 
 base::Value ContactInfoSpecificsToValue(
     const sync_pb::ContactInfoSpecifics& proto);
@@ -193,6 +202,9 @@ base::Value PasswordSpecificsDataToValue(
 
 base::Value PowerBookmarkSpecificsToValue(
     const sync_pb::PowerBookmarkSpecifics& power_bookmark_specifics);
+
+base::Value PaymentInstrumentToValue(
+    const sync_pb::PaymentInstrument& payment_instrument);
 
 base::Value PaymentsCustomerDataToValue(
     const sync_pb::PaymentsCustomerData& payments_customer_data);

@@ -5,8 +5,9 @@
 #ifndef CHROME_BROWSER_CHROMEOS_POLICY_DLP_DLP_FILE_DESTINATION_H_
 #define CHROME_BROWSER_CHROMEOS_POLICY_DLP_DLP_FILE_DESTINATION_H_
 
-#include "chrome/browser/enterprise/data_controls/component.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
+#include <optional>
+
+#include "components/enterprise/data_controls/component.h"
 #include "url/gurl.h"
 
 namespace policy {
@@ -34,19 +35,22 @@ class DlpFileDestination {
 
   ~DlpFileDestination();
 
-  absl::optional<GURL> url() const;
+  std::optional<GURL> url() const;
 
-  absl::optional<data_controls::Component> component() const;
+  std::optional<data_controls::Component> component() const;
 
   // Returns if the destination is in a local filesystem (any
   // `data_control::Destination` or MyFiles).
   bool IsFileSystem() const;
 
+  // Returns if the destination is within MyFiles.
+  bool IsMyFiles() const;
+
  private:
   // Destination url or destination path.
-  absl::optional<GURL> url_;
+  std::optional<GURL> url_;
   // Destination component.
-  absl::optional<data_controls::Component> component_;
+  std::optional<data_controls::Component> component_;
 };
 
 }  // namespace policy

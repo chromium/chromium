@@ -52,12 +52,9 @@ BrokeredUdpClientSocket::~BrokeredUdpClientSocket() {
 }
 
 int BrokeredUdpClientSocket::Connect(const net::IPEndPoint& address) {
-#if BUILDFLAG(IS_WIN)
   if (!broker_helper_.ShouldBroker(address.address())) {
-    return ConnectInternal(address, CONNECT,
-                           net::handles::kInvalidNetworkHandle);
+    return ConnectInternal(address);
   }
-#endif
   // Brokered sockets can only support asynchronous connections so this does not
   // need to be implemented. However, this path can still be hit if the sandbox
   // is enabled and a caller attempts to call a synchronous Connect. Callers are
@@ -69,89 +66,59 @@ int BrokeredUdpClientSocket::Connect(const net::IPEndPoint& address) {
 int BrokeredUdpClientSocket::ConnectUsingNetwork(
     net::handles::NetworkHandle network,
     const net::IPEndPoint& address) {
-#if BUILDFLAG(IS_WIN)
-  if (!broker_helper_.ShouldBroker(address.address())) {
-    return ConnectInternal(address, CONNECT_USING_NETWORK, network);
-  }
-#endif
-  // Similar to Connect(), callers are expected to handles failures themselves
-  // if they call this method, so return ERR_NOT_IMPLEMENTED.
+  // NetworkHandles are not supported on Windows, so this method and the
+  // following Connect*Network() methods don't need to return anything.
   return net::ERR_NOT_IMPLEMENTED;
 }
 
 int BrokeredUdpClientSocket::ConnectUsingDefaultNetwork(
     const net::IPEndPoint& address) {
-#if BUILDFLAG(IS_WIN)
-  if (!broker_helper_.ShouldBroker(address.address())) {
-    return ConnectInternal(address, CONNECT_USING_DEFAULT_NETWORK,
-                           net::handles::kInvalidNetworkHandle);
-  }
-#endif
-  // Similar to Connect(), callers are expected to handles failures themselves
-  // if they call this method, so return ERR_NOT_IMPLEMENTED.
   return net::ERR_NOT_IMPLEMENTED;
 }
 
 int BrokeredUdpClientSocket::ConnectAsync(
     const net::IPEndPoint& address,
     net::CompletionOnceCallback callback) {
-  return ConnectAsyncInternal(address, CONNECT,
-                              net::handles::kInvalidNetworkHandle,
-                              std::move(callback));
+  return ConnectAsyncInternal(address, std::move(callback));
 }
 
 int BrokeredUdpClientSocket::ConnectUsingNetworkAsync(
     net::handles::NetworkHandle network,
     const net::IPEndPoint& address,
     net::CompletionOnceCallback callback) {
-  return ConnectAsyncInternal(address, CONNECT_USING_NETWORK, network,
-                              std::move(callback));
+  return net::ERR_NOT_IMPLEMENTED;
 }
 
 int BrokeredUdpClientSocket::ConnectUsingDefaultNetworkAsync(
     const net::IPEndPoint& address,
     net::CompletionOnceCallback callback) {
-  return ConnectAsyncInternal(address, CONNECT_USING_DEFAULT_NETWORK,
-                              net::handles::kInvalidNetworkHandle,
-                              std::move(callback));
+  return net::ERR_NOT_IMPLEMENTED;
 }
 
 int BrokeredUdpClientSocket::ConnectAsyncInternal(
     const net::IPEndPoint& address,
-    WhichConnect which_connect,
-    net::handles::NetworkHandle network,
     net::CompletionOnceCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(callback);
   DCHECK(!socket_);
   CHECK(!connect_called_);
   connect_called_ = true;
-  if ((which_connect == CONNECT_USING_NETWORK ||
-       which_connect == CONNECT_USING_DEFAULT_NETWORK) &&
-      !net::NetworkChangeNotifier::AreNetworkHandlesSupported()) {
-    return net::ERR_NOT_IMPLEMENTED;
-  }
-#if BUILDFLAG(IS_WIN)
   if (!broker_helper_.ShouldBroker(address.address())) {
-    return DidCompleteCreate(/*should_broker=*/false, address, which_connect,
-                             network, std::move(callback),
-                             network::TransferableSocket(), net::OK);
+    return DidCompleteCreate(/*should_broker=*/false, address,
+                             std::move(callback), network::TransferableSocket(),
+                             net::OK);
   }
-#endif
   net_log_source_.BeginEvent(net::NetLogEventType::BROKERED_CREATE_SOCKET);
   client_socket_factory_->BrokerCreateUdpSocket(
       address.GetFamily(),
       base::BindOnce(
           base::IgnoreResult(&BrokeredUdpClientSocket::DidCompleteCreate),
           brokered_weak_ptr_factory_.GetWeakPtr(), /*should_broker=*/true,
-          address, which_connect, network, std::move(callback)));
+          address, std::move(callback)));
   return net::ERR_IO_PENDING;
 }
 
-int BrokeredUdpClientSocket::ConnectInternal(
-    const net::IPEndPoint& address,
-    WhichConnect which_connect,
-    net::handles::NetworkHandle network) {
+int BrokeredUdpClientSocket::ConnectInternal(const net::IPEndPoint& address) {
   socket_ = std::make_unique<net::UDPClientSocket>(bind_type_, net_log_source_,
                                                    network_);
 
@@ -171,26 +138,13 @@ int BrokeredUdpClientSocket::ConnectInternal(
   socket_->ApplySocketTag(tag_);
   socket_->SetMsgConfirm(set_msg_confirm_);
 
-  int connect_rv = net::OK;
-  switch (which_connect) {
-    case CONNECT:
-      connect_rv = socket_->Connect(address);
-      break;
-    case CONNECT_USING_NETWORK:
-      connect_rv = socket_->ConnectUsingNetwork(network, address);
-      break;
-    case CONNECT_USING_DEFAULT_NETWORK:
-      connect_rv = socket_->ConnectUsingDefaultNetwork(address);
-      break;
-  }
+  int connect_rv = socket_->Connect(address);
   return connect_rv;
 }
 
 int BrokeredUdpClientSocket::DidCompleteCreate(
     bool should_broker,
     const net::IPEndPoint& address,
-    WhichConnect which_connect,
-    net::handles::NetworkHandle network,
     net::CompletionOnceCallback callback,
     network::TransferableSocket socket,
     int result) {
@@ -234,22 +188,9 @@ int BrokeredUdpClientSocket::DidCompleteCreate(
   socket_->ApplySocketTag(tag_);
   socket_->SetMsgConfirm(set_msg_confirm_);
 
-  int connect_rv = net::OK;
   auto split_callback = base::SplitOnceCallback(std::move(callback));
-  switch (which_connect) {
-    case CONNECT:
-      connect_rv =
-          socket_->ConnectAsync(address, std::move(split_callback.first));
-      break;
-    case CONNECT_USING_NETWORK:
-      connect_rv = socket_->ConnectUsingNetworkAsync(
-          network, address, std::move(split_callback.first));
-      break;
-    case CONNECT_USING_DEFAULT_NETWORK:
-      connect_rv = socket_->ConnectUsingDefaultNetworkAsync(
-          address, std::move(split_callback.first));
-      break;
-  }
+  const int connect_rv =
+      socket_->ConnectAsync(address, std::move(split_callback.first));
   if (should_broker && connect_rv != net::ERR_IO_PENDING) {
     std::move(split_callback.second).Run(connect_rv);
   }
@@ -334,6 +275,19 @@ int BrokeredUdpClientSocket::SetDoNotFragment() {
   return socket_->SetDoNotFragment();
 }
 
+int BrokeredUdpClientSocket::SetRecvTos() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  DCHECK(socket_);
+  return socket_->SetRecvTos();
+}
+
+int BrokeredUdpClientSocket::SetTos(net::DiffServCodePoint dscp,
+                                    net::EcnCodePoint ecn) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  DCHECK(socket_);
+  return socket_->SetTos(dscp, ecn);
+}
+
 void BrokeredUdpClientSocket::SetMsgConfirm(bool confirm) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   set_msg_confirm_ = confirm;
@@ -366,6 +320,11 @@ void BrokeredUdpClientSocket::SetIOSNetworkServiceType(
     int ios_network_service_type) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   socket_->SetIOSNetworkServiceType(ios_network_service_type);
+}
+
+net::DscpAndEcn BrokeredUdpClientSocket::GetLastTos() const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  return socket_->GetLastTos();
 }
 
 }  // namespace network

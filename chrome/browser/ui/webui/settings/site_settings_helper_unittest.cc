@@ -10,6 +10,7 @@
 #include "base/strings/string_piece.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/test/to_vector.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
@@ -29,10 +30,12 @@
 #include "chrome/test/base/testing_profile.h"
 #include "components/content_settings/core/browser/content_settings_utils.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
+#include "components/content_settings/core/common/content_settings_constraints.h"
 #include "components/content_settings/core/common/content_settings_utils.h"
 #include "components/content_settings/core/common/pref_names.h"
 #include "components/content_settings/core/test/content_settings_mock_provider.h"
 #include "components/content_settings/core/test/content_settings_test_utils.h"
+#include "components/permissions/features.h"
 #include "components/permissions/object_permission_context_base.h"
 #include "components/permissions/permission_decision_auto_blocker.h"
 #include "components/permissions/permissions_client.h"
@@ -40,12 +43,14 @@
 #include "components/prefs/pref_service.h"
 #include "components/privacy_sandbox/privacy_sandbox_features.h"
 #include "components/site_engagement/content/site_engagement_score.h"
+#include "content/public/common/content_features.h"
 #include "content/public/test/browser_task_environment.h"
 #include "extensions/browser/extension_registry.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "services/device/public/cpp/test/fake_usb_device_manager.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/webui/webui_allowlist.h"
 #include "url/gurl.h"
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
@@ -139,7 +144,7 @@ TEST_F(SiteSettingsHelperTest, ExceptionListWithEmbargoedAndBlockedOrigins) {
   ASSERT_EQ(2U, exceptions.size());
 
   // Get last added origin.
-  absl::optional<bool> is_embargoed =
+  std::optional<bool> is_embargoed =
       exceptions[0].GetDict().FindBool(site_settings::kIsEmbargoed);
   ASSERT_TRUE(is_embargoed.has_value());
   // Last added origin is blocked, |embargo| key should be false.
@@ -360,7 +365,7 @@ TEST_F(SiteSettingsHelperTest, ExceptionListFedCmEmbargo) {
   // |exceptions| should have an exception for the embargoed origin.
   ASSERT_EQ(1U, exceptions.size());
 
-  absl::optional<bool> is_embargoed =
+  std::optional<bool> is_embargoed =
       exceptions[0].GetDict().FindBool(site_settings::kIsEmbargoed);
   ASSERT_TRUE(is_embargoed.has_value());
   EXPECT_TRUE(*is_embargoed);
@@ -368,6 +373,44 @@ TEST_F(SiteSettingsHelperTest, ExceptionListFedCmEmbargo) {
       exceptions[0].GetDict().FindString(site_settings::kOrigin);
   ASSERT_TRUE(primary_pattern);
   EXPECT_EQ(kOriginToEmbargo, *primary_pattern);
+}
+
+TEST_F(SiteSettingsHelperTest, ExceptionListIgnoresWebUIAllowlist) {
+  TestingProfile profile;
+  auto* allowlist = WebUIAllowlist::GetOrCreate(&profile);
+
+  // Confirm that WebUI allowlist entries are excluded from the exception list.
+  allowlist->RegisterAutoGrantedPermission(
+      url::Origin::Create(GURL("chrome://example.com")),
+      ContentSettingsType::COOKIES);
+
+  // Secondary patterns should also be ignored.
+  allowlist->RegisterAutoGrantedThirdPartyCookies(
+      url::Origin::Create(GURL("chrome-untrusted://another-example.com")),
+      {
+          ContentSettingsPattern::FromURL(GURL("https://embedded-1.com")),
+          ContentSettingsPattern::FromURL(GURL("https://embedded-2.com")),
+      });
+
+  base::Value::List exceptions;
+  site_settings::GetExceptionsForContentType(ContentSettingsType::COOKIES,
+                                             &profile,
+                                             /*web_ui=*/nullptr,
+                                             /*incognito=*/false, &exceptions);
+  ASSERT_EQ(0U, exceptions.size());
+
+  // Exceptions from other sources that use a WebUI scheme should however be
+  // displayed.
+  auto* map = HostContentSettingsMapFactory::GetForProfile(&profile);
+  map->SetContentSettingDefaultScope(
+      GURL("chrome://example"), GURL("chrome-untrusted://another-example"),
+      ContentSettingsType::COOKIES, CONTENT_SETTING_BLOCK);
+
+  site_settings::GetExceptionsForContentType(ContentSettingsType::COOKIES,
+                                             &profile,
+                                             /*web_ui=*/nullptr,
+                                             /*incognito=*/false, &exceptions);
+  ASSERT_EQ(1U, exceptions.size());
 }
 
 TEST_F(SiteSettingsHelperTest, CheckExceptionOrder) {
@@ -390,7 +433,8 @@ TEST_F(SiteSettingsHelperTest, CheckExceptionOrder) {
   policy_provider->SetWebsiteSetting(
       ContentSettingsPattern::FromString(star_google_com),
       ContentSettingsPattern::Wildcard(), kContentType,
-      base::Value(CONTENT_SETTING_BLOCK));
+      base::Value(CONTENT_SETTING_BLOCK), /*constraints=*/{},
+      content_settings::PartitionKey::GetDefaultForTesting());
   policy_provider->set_read_only(true);
   content_settings::TestUtils::OverrideProvider(
       map, std::move(policy_provider), HostContentSettingsMap::POLICY_PROVIDER);
@@ -408,7 +452,8 @@ TEST_F(SiteSettingsHelperTest, CheckExceptionOrder) {
   extension_provider->SetWebsiteSetting(
       ContentSettingsPattern::FromString(drive_google_com),
       ContentSettingsPattern::Wildcard(), kContentType,
-      base::Value(CONTENT_SETTING_ASK));
+      base::Value(CONTENT_SETTING_ASK), /*constraints=*/{},
+      content_settings::PartitionKey::GetDefaultForTesting());
   extension_provider->set_read_only(true);
   content_settings::TestUtils::OverrideProvider(
       map, std::move(extension_provider),
@@ -482,10 +527,11 @@ TEST_F(SiteSettingsHelperTest, ContentSettingSource) {
 
   // Extension.
   auto extension_provider = std::make_unique<content_settings::MockProvider>();
-  extension_provider->SetWebsiteSetting(ContentSettingsPattern::FromURL(origin),
-                                        ContentSettingsPattern::FromURL(origin),
-                                        kContentType,
-                                        base::Value(CONTENT_SETTING_BLOCK));
+  extension_provider->SetWebsiteSetting(
+      ContentSettingsPattern::FromURL(origin),
+      ContentSettingsPattern::FromURL(origin), kContentType,
+      base::Value(CONTENT_SETTING_BLOCK), /*constraints=*/{},
+      content_settings::PartitionKey::GetDefaultForTesting());
   extension_provider->set_read_only(true);
   content_settings::TestUtils::OverrideProvider(
       map, std::move(extension_provider),
@@ -497,10 +543,11 @@ TEST_F(SiteSettingsHelperTest, ContentSettingSource) {
 
   // Enterprise policy.
   auto policy_provider = std::make_unique<content_settings::MockProvider>();
-  policy_provider->SetWebsiteSetting(ContentSettingsPattern::FromURL(origin),
-                                     ContentSettingsPattern::FromURL(origin),
-                                     kContentType,
-                                     base::Value(CONTENT_SETTING_ALLOW));
+  policy_provider->SetWebsiteSetting(
+      ContentSettingsPattern::FromURL(origin),
+      ContentSettingsPattern::FromURL(origin), kContentType,
+      base::Value(CONTENT_SETTING_ALLOW), /*constraints=*/{},
+      content_settings::PartitionKey::GetDefaultForTesting());
   policy_provider->set_read_only(true);
   content_settings::TestUtils::OverrideProvider(
       map, std::move(policy_provider), HostContentSettingsMap::POLICY_PROVIDER);
@@ -556,46 +603,35 @@ TEST_F(SiteSettingsHelperTest, CookieExceptions) {
         kContentTypeCookies, test_case.initial_setting);
   }
 
-  for (const auto feature_state : std::vector<bool>{true, false}) {
-    base::test::ScopedFeatureList feature_list_;
-    feature_list_.InitWithFeatureState(
-        privacy_sandbox::kPrivacySandboxSettings4, feature_state);
+  base::Value::List exceptions;
+  site_settings::GetExceptionsForContentType(kContentTypeCookies, &profile,
+                                             /*web_ui=*/nullptr,
+                                             /*incognito=*/false, &exceptions);
 
-    base::Value::List exceptions;
-    site_settings::GetExceptionsForContentType(kContentTypeCookies, &profile,
-                                               /*web_ui=*/nullptr,
-                                               /*incognito=*/false,
-                                               &exceptions);
+  // Convert the test cases, and the returned dictionary, into tuples for
+  // unordered comparison, as the order of exception is not relevant.
+  std::vector<std::tuple<std::string, std::string, std::string>> expected =
+      base::test::ToVector(test_cases, [&](const auto& test_case) {
+        // make_tuple as we've some temporary rvalues.
+        return std::make_tuple(
+            test_case.primary_pattern,
+            test_case.secondary_pattern ==
+                    ContentSettingsPattern::Wildcard().ToString()
+                ? ""
+                : test_case.secondary_pattern,
+            content_settings::ContentSettingToString(
+                test_case.updated_setting));
+      });
 
-    // Convert the test cases, and the returned dictionary, into tuples for
-    // unordered comparison, as the order of exception is not relevant.
-    std::vector<std::tuple<std::string, std::string, std::string>> expected;
-    std::vector<std::tuple<std::string, std::string, std::string>> actual;
-    base::ranges::transform(
-        test_cases, std::back_inserter(expected), [&](const auto& test_case) {
-          // make_tuple as we've some temporary rvalues.
-          return std::make_tuple(
-              test_case.primary_pattern,
-              test_case.secondary_pattern ==
-                      ContentSettingsPattern::Wildcard().ToString()
-                  ? ""
-                  : test_case.secondary_pattern,
-              content_settings::ContentSettingToString(
-                  feature_state ? test_case.updated_setting
-                                : test_case.initial_setting));
-        });
-    base::ranges::transform(
-        exceptions, std::back_inserter(actual), [](const auto& exception) {
-          const base::Value::Dict& dict = exception.GetDict();
-          return std::forward_as_tuple(*dict.FindString(kOrigin),
-                                       *dict.FindString(kEmbeddingOrigin),
-                                       *dict.FindString(kSetting));
-        });
+  std::vector<std::tuple<std::string, std::string, std::string>> actual =
+      base::test::ToVector(exceptions, [](const auto& exception) {
+        const base::Value::Dict& dict = exception.GetDict();
+        return std::make_tuple(*dict.FindString(kOrigin),
+                               *dict.FindString(kEmbeddingOrigin),
+                               *dict.FindString(kSetting));
+      });
 
-    EXPECT_THAT(actual, testing::UnorderedElementsAreArray(expected))
-        << "Privacy Sandbox Settings 4 "
-        << (feature_state ? "enabled" : "disabled");
-  }
+  EXPECT_THAT(actual, testing::UnorderedElementsAreArray(expected));
 }
 
 TEST_F(SiteSettingsHelperTest, GetExpirationDescription) {
@@ -711,7 +747,7 @@ void ExpectValidSiteExceptionObject(const base::Value& actual_site_object,
   ASSERT_TRUE(source_value);
   EXPECT_EQ(*source_value, source);
 
-  absl::optional<bool> incognito_value = actual_site_dict.FindBool(kIncognito);
+  std::optional<bool> incognito_value = actual_site_dict.FindBool(kIncognito);
   ASSERT_TRUE(incognito_value.has_value());
   EXPECT_EQ(*incognito_value, incognito);
 }
@@ -829,6 +865,102 @@ TEST_F(SiteSettingsHelperTest, CreateChooserExceptionObject) {
         /*source=*/kPreferenceSource,
         /*incognito=*/false);
   }
+}
+
+TEST_F(SiteSettingsHelperTest, ShowAutograntedRWSPermissions) {
+  TestingProfile profile;
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(
+      permissions::features::kShowRelatedWebsiteSetsPermissionGrants);
+  HostContentSettingsMap* map =
+      HostContentSettingsMapFactory::GetForProfile(&profile);
+  content_settings::ContentSettingConstraints constraint;
+  constraint.set_session_model(
+      content_settings::mojom::SessionModel::NON_RESTORABLE_USER_SESSION);
+  constexpr char kToplevelURL[] = "https://firstparty.com";
+  constexpr char kEmbeddedURL[] = "https://embedded.com";
+  map->SetContentSettingDefaultScope(GURL(kEmbeddedURL), GURL(kToplevelURL),
+                                     ContentSettingsType::STORAGE_ACCESS,
+                                     CONTENT_SETTING_BLOCK, constraint);
+
+  base::Value::List exceptions;
+  site_settings::GetExceptionsForContentType(
+      ContentSettingsType::STORAGE_ACCESS, &profile,
+      /*web_ui=*/nullptr,
+      /*incognito=*/false, &exceptions);
+  EXPECT_EQ(1U, exceptions.size());
+  EXPECT_EQ(exceptions[0].GetDict().Find("setting")->GetString(), "block");
+  EXPECT_EQ(exceptions[0].GetDict().Find("origin")->GetString(),
+            "https://[*.]embedded.com");
+  EXPECT_EQ(exceptions[0].GetDict().Find("embeddingOrigin")->GetString(),
+            "https://[*.]firstparty.com");
+}
+
+TEST_F(SiteSettingsHelperTest, HideAutograntedRWSPermissions) {
+  TestingProfile profile;
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(
+      permissions::features::kShowRelatedWebsiteSetsPermissionGrants);
+  HostContentSettingsMap* map =
+      HostContentSettingsMapFactory::GetForProfile(&profile);
+  content_settings::ContentSettingConstraints constraint;
+  constraint.set_session_model(
+      content_settings::mojom::SessionModel::NON_RESTORABLE_USER_SESSION);
+  constexpr char kToplevelURL[] = "https://firstparty.com";
+  constexpr char kEmbeddedURL[] = "https://embedded.com";
+  map->SetContentSettingDefaultScope(GURL(kEmbeddedURL), GURL(kToplevelURL),
+                                     ContentSettingsType::STORAGE_ACCESS,
+                                     CONTENT_SETTING_BLOCK, constraint);
+
+  base::Value::List exceptions;
+  site_settings::GetExceptionsForContentType(
+      ContentSettingsType::STORAGE_ACCESS, &profile,
+      /*web_ui=*/nullptr,
+      /*incognito=*/false, &exceptions);
+  EXPECT_TRUE(exceptions.empty());
+}
+
+TEST_F(SiteSettingsHelperTest, AutomaticFullscreenVisibility) {
+  TestingProfile profile;
+  base::test::ScopedFeatureList feature_list{
+      features::kAutomaticFullscreenContentSetting};
+  const ContentSettingsType type = ContentSettingsType::AUTOMATIC_FULLSCREEN;
+
+  // Automatic Fullscreen is visible for non-origin-specific lists.
+  auto types = GetVisiblePermissionCategories();
+  EXPECT_TRUE(base::ranges::any_of(types, [](auto& t) { return t == type; }));
+
+  constexpr char kDefault[] = "https://www.default.com:443";
+  constexpr char kAllowed[] = "https://www.allowed.com:443";
+
+  // Automatic Fullscreen is not visible for sites with the default BLOCK value.
+  std::string source;
+  auto* map = HostContentSettingsMapFactory::GetForProfile(&profile);
+  ContentSetting content_setting =
+      GetContentSettingForOrigin(&profile, map, GURL(kDefault), type, &source);
+  EXPECT_EQ(SiteSettingSourceToString(SiteSettingSource::kDefault), source);
+  EXPECT_EQ(CONTENT_SETTING_BLOCK, content_setting);
+  types = GetVisiblePermissionCategories(kDefault, &profile);
+  EXPECT_FALSE(base::ranges::any_of(types, [](auto& t) { return t == type; }));
+
+  // Simulate allowing Automatic Fullscreen through enterprise policy.
+  auto policy_provider = std::make_unique<content_settings::MockProvider>();
+  policy_provider->SetWebsiteSetting(
+      ContentSettingsPattern::FromString(kAllowed),
+      ContentSettingsPattern::FromString(kAllowed), type,
+      base::Value(CONTENT_SETTING_ALLOW), /*constraints=*/{},
+      content_settings::PartitionKey::GetDefaultForTesting());
+  policy_provider->set_read_only(true);
+  content_settings::TestUtils::OverrideProvider(
+      map, std::move(policy_provider), HostContentSettingsMap::POLICY_PROVIDER);
+
+  // Automatic Fullscreen is visible for origins with non-default values.
+  content_setting =
+      GetContentSettingForOrigin(&profile, map, GURL(kAllowed), type, &source);
+  EXPECT_EQ(SiteSettingSourceToString(SiteSettingSource::kPolicy), source);
+  EXPECT_EQ(CONTENT_SETTING_ALLOW, content_setting);
+  types = GetVisiblePermissionCategories(kAllowed, &profile);
+  EXPECT_TRUE(base::ranges::any_of(types, [](auto& t) { return t == type; }));
 }
 
 namespace {
@@ -1024,8 +1156,8 @@ TEST_F(SiteSettingsHelperChooserExceptionTest,
   }
 }
 
-// TODO(crbug.com/1373962): Remove this testing class when
-// Persistent Permissions is launched.
+// TODO(crbug.com/1011533): Remove usage of this testing class when the feature
+// flag for Persistent Permissions is removed.
 class PersistentPermissionsSiteSettingsHelperTest
     : public SiteSettingsHelperTest {
  public:
@@ -1231,6 +1363,11 @@ class SiteSettingsHelperIsolatedWebAppTest : public testing::Test {
 
   Profile* profile() { return &testing_profile_; }
 
+  const GURL kAppUrl{
+      "isolated-app://"
+      "berugqztij5biqquuk3mfwpsaibuegaqcitgfchwuosuofdjabzqaaic"};
+  const std::string kAppName = "test IWA Name";
+
  private:
   content::BrowserTaskEnvironment task_environment_;
   TestingProfile testing_profile_;
@@ -1242,11 +1379,6 @@ class SiteSettingsHelperIsolatedWebAppTest : public testing::Test {
 
 TEST_F(SiteSettingsHelperIsolatedWebAppTest,
        IsolatedWebAppsUseAppNameAsDisplayName) {
-  const GURL kAppUrl(
-      "isolated-app://"
-      "berugqztij5biqquuk3mfwpsaibuegaqcitgfchwuosuofdjabzqaaic");
-  const std::string kAppName("test IWA Name");
-
   const std::string kUsbChooserGroupName(
       ContentSettingsTypeToGroupName(ContentSettingsType::USB_CHOOSER_DATA));
   const std::string& kPolicySource =
@@ -1284,6 +1416,23 @@ TEST_F(SiteSettingsHelperIsolatedWebAppTest,
         /*source=*/kPreferenceSource,
         /*incognito=*/false);
   }
+}
+
+TEST_F(SiteSettingsHelperIsolatedWebAppTest, AutomaticFullscreenVisibility) {
+  base::test::ScopedFeatureList feature_list{
+      features::kAutomaticFullscreenContentSetting};
+  const ContentSettingsType type = ContentSettingsType::AUTOMATIC_FULLSCREEN;
+  InstallIsolatedWebApp(kAppUrl, kAppName);
+
+  // Automatic Fullscreen is visible for IWAs, even with default BLOCK values.
+  std::string source;
+  auto* map = HostContentSettingsMapFactory::GetForProfile(profile());
+  ContentSetting content_setting =
+      GetContentSettingForOrigin(profile(), map, kAppUrl, type, &source);
+  EXPECT_EQ(SiteSettingSourceToString(SiteSettingSource::kDefault), source);
+  EXPECT_EQ(CONTENT_SETTING_BLOCK, content_setting);
+  const auto types = GetVisiblePermissionCategories(kAppUrl.spec(), profile());
+  EXPECT_TRUE(base::ranges::any_of(types, [](auto& t) { return t == type; }));
 }
 
 }  // namespace site_settings

@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 import {addWebUiListener, sendWithPromise} from 'chrome://resources/js/cr.js';
-import {getRequiredElement} from 'chrome://resources/js/util_ts.js';
+import {getRequiredElement} from 'chrome://resources/js/util.js';
 
 type Process = [number, string, boolean];
 

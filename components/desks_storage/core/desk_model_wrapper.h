@@ -71,14 +71,13 @@ class DeskModelWrapper : public DeskModel {
   void OnDeleteAllEntries(DeskModel::DeleteEntryCallback callback,
                           desks_storage::DeskModel::DeleteEntryStatus status);
 
-  raw_ptr<desks_storage::DeskModel, ExperimentalAsh>
-      save_and_recall_desks_model_;
+  raw_ptr<desks_storage::DeskModel> save_and_recall_desks_model_;
 
-  raw_ptr<desks_storage::DeskSyncBridge, ExperimentalAsh> desk_template_model_;
+  raw_ptr<desks_storage::DeskSyncBridge> desk_template_model_;
 
   base::WeakPtrFactory<DeskModelWrapper> weak_ptr_factory_{this};
 };
 
 }  // namespace desks_storage
 
-#endif  // COMPONENTS_DESKS_STORAGE_CORE_LOCAL_DESK_DATA_MANAGER_H_
+#endif  // COMPONENTS_DESKS_STORAGE_CORE_DESK_MODEL_WRAPPER_H_

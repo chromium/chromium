@@ -7,6 +7,7 @@
 #include <stdint.h>
 
 #include <memory>
+#include <optional>
 #include <vector>
 
 #include "base/command_line.h"
@@ -23,7 +24,6 @@
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ash {
 namespace platform_keys {
@@ -35,7 +35,7 @@ using ::testing::_;
 
 // Supports waiting for the result of KeyPermissionsService::IsCorporateKey.
 class IsCorporateKeyExecutionWaiter
-    : public base::test::TestFuture<absl::optional<bool>, Status> {
+    : public base::test::TestFuture<std::optional<bool>, Status> {
  public:
   bool corporate() { return Get<0>().value(); }
   Status status() { return Get<1>(); }
@@ -67,8 +67,8 @@ class KeyPermissionsServiceImplTest : public ::testing::Test {
     // by default unless specified.
     EXPECT_CALL(*user_token_key_permissions_manager_,
                 IsKeyAllowedForUsage(_, _, _))
-        .WillRepeatedly(base::test::RunOnceCallback<0>(/*allowed=*/false,
-                                                       Status::kSuccess));
+        .WillRepeatedly(base::test::RunOnceCallbackRepeatedly<0>(
+            /*allowed=*/false, Status::kSuccess));
 
     system_token_key_permissions_manager_ =
         std::make_unique<platform_keys::MockKeyPermissionsManager>();
@@ -77,8 +77,8 @@ class KeyPermissionsServiceImplTest : public ::testing::Test {
     // by default unless specified.
     EXPECT_CALL(*system_token_key_permissions_manager_,
                 IsKeyAllowedForUsage(_, _, _))
-        .WillRepeatedly(
-            base::test::RunOnceCallback<0>(/*allowed=*/true, Status::kSuccess));
+        .WillRepeatedly(base::test::RunOnceCallbackRepeatedly<0>(
+            /*allowed=*/true, Status::kSuccess));
 
     platform_keys::KeyPermissionsManagerImpl::
         SetSystemTokenKeyPermissionsManagerForTesting(

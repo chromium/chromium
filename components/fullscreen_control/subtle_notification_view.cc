@@ -56,8 +56,9 @@ constexpr char16_t kKeyNameDelimiter[] = u"|";
 // Class containing the instruction text. Contains fancy styling on the keyboard
 // key (not just a simple label).
 class SubtleNotificationView::InstructionView : public views::View {
+  METADATA_HEADER(InstructionView, views::View)
+
  public:
-  METADATA_HEADER(InstructionView);
   // Creates an InstructionView with specific text. |text| may contain one or
   // more segments delimited by a pair of pipes ('|'); each of these segments
   // will be displayed as a keyboard key. e.g., "Press |Alt|+|Q| to exit" will
@@ -178,7 +179,7 @@ void SubtleNotificationView::InstructionView::AddTextSegment(
   AddChildView(key);
 }
 
-BEGIN_METADATA(SubtleNotificationView, InstructionView, views::View)
+BEGIN_METADATA(SubtleNotificationView, InstructionView)
 ADD_PROPERTY_METADATA(std::u16string, Text)
 END_METADATA
 
@@ -207,7 +208,7 @@ void SubtleNotificationView::UpdateContent(
     const std::u16string& instruction_text) {
   instruction_view_->SetText(instruction_text);
   instruction_view_->SetVisible(!instruction_text.empty());
-  Layout();
+  DeprecatedLayoutImmediately();
 }
 
 void SubtleNotificationView::UpdateContent(
@@ -215,7 +216,7 @@ void SubtleNotificationView::UpdateContent(
     std::vector<std::unique_ptr<views::View>> key_images) {
   instruction_view_->SetTextAndImages(instruction_text, std::move(key_images));
   instruction_view_->SetVisible(!instruction_text.empty());
-  Layout();
+  DeprecatedLayoutImmediately();
 }
 
 // static
@@ -257,5 +258,5 @@ void SubtleNotificationView::GetAccessibleNodeData(ui::AXNodeData* node_data) {
   node_data->SetNameChecked(accessible_name);
 }
 
-BEGIN_METADATA(SubtleNotificationView, views::View)
+BEGIN_METADATA(SubtleNotificationView)
 END_METADATA

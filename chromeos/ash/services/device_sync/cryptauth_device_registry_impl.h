@@ -61,7 +61,7 @@ class CryptAuthDeviceRegistryImpl : public CryptAuthDeviceRegistry {
 
   // Contains preferences that outlive the lifetime of this object and across
   // process restarts. Not owned and must outlive this instance.
-  raw_ptr<PrefService, ExperimentalAsh> pref_service_;
+  raw_ptr<PrefService> pref_service_;
 };
 
 }  // namespace device_sync

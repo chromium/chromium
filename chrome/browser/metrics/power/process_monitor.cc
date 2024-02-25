@@ -71,7 +71,6 @@ ProcessMonitor::Metrics SampleMetrics(base::ProcessMetrics& process_metrics) {
 #if BUILDFLAG(IS_MAC)
   metrics.package_idle_wakeups =
       process_metrics.GetPackageIdleWakeupsPerSecond();
-  metrics.energy_impact = process_metrics.GetEnergyImpact();
 #endif
 
   return metrics;
@@ -88,7 +87,6 @@ void ScaleMetrics(ProcessMonitor::Metrics* metrics, double factor) {
 
 #if BUILDFLAG(IS_MAC)
   metrics->package_idle_wakeups *= factor;
-  metrics->energy_impact *= factor;
 #endif
 }
 
@@ -180,7 +178,6 @@ ProcessMonitor::Metrics& operator+=(ProcessMonitor::Metrics& lhs,
 
 #if BUILDFLAG(IS_MAC)
   lhs.package_idle_wakeups += rhs.package_idle_wakeups;
-  lhs.energy_impact += rhs.energy_impact;
 #endif
 
   return lhs;
@@ -266,7 +263,7 @@ void ProcessMonitor::SampleAllProcesses(Observer* observer) {
                    first_interval_duration / kLongPowerMetricsIntervalDuration);
 
       // No longer the first interval after this one.
-      process_info->first_sample_time = absl::nullopt;
+      process_info->first_sample_time = std::nullopt;
     }
 
     aggregated_metrics += metrics;

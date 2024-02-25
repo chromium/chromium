@@ -64,7 +64,11 @@ class LazyContextTaskQueue {
   // extension has a lazy background page or service worker that isn't ready
   // yet).
   virtual bool ShouldEnqueueTask(content::BrowserContext* context,
-                                 const Extension* extension) = 0;
+                                 const Extension* extension) const = 0;
+
+  // Returns true if the lazy context is ready to run tasks (a.k.a active).
+  virtual bool IsReadyToRunTasks(content::BrowserContext* context,
+                                 const Extension* extension) const = 0;
 
   // Adds a task to the queue for a given extension. If this is the first
   // task added for the extension, its "lazy context" (i.e. lazy background

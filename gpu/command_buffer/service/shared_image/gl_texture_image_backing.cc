@@ -9,6 +9,8 @@
 #include <string>
 #include <utility>
 
+#include "base/debug/crash_logging.h"
+#include "base/debug/dump_without_crashing.h"
 #include "build/build_config.h"
 #include "components/viz/common/resources/shared_image_format_utils.h"
 #include "gpu/command_buffer/common/shared_image_usage.h"
@@ -28,6 +30,10 @@
 #include "ui/gl/buildflags.h"
 #include "ui/gl/gl_context.h"
 #include "ui/gl/scoped_make_current.h"
+
+#if BUILDFLAG(USE_DAWN)
+#include "gpu/command_buffer/service/shared_image/dawn_fallback_image_representation.h"
+#endif
 
 #if BUILDFLAG(USE_DAWN) && BUILDFLAG(DAWN_ENABLE_BACKEND_OPENGLES)
 #include "gpu/command_buffer/service/shared_image/dawn_gl_texture_representation.h"
@@ -213,6 +219,8 @@ class SkiaGaneshImageRepresentationImpl : public SkiaGaneshImageRepresentation {
 
 bool GLTextureImageBacking::SupportsPixelReadbackWithFormat(
     viz::SharedImageFormat format) {
+  // NOTE: Using MultiPlaneFormats is okay here are this is only used with
+  // SharedMemory GMBs which correspond to specific multiplanar formats.
   return (format == viz::MultiPlaneFormat::kNV12 ||
           format == viz::MultiPlaneFormat::kYV12 ||
           format == viz::MultiPlaneFormat::kI420 ||
@@ -226,6 +234,8 @@ bool GLTextureImageBacking::SupportsPixelReadbackWithFormat(
 
 bool GLTextureImageBacking::SupportsPixelUploadWithFormat(
     viz::SharedImageFormat format) {
+  // NOTE: Using MultiPlaneFormats is okay here are this is only used with
+  // SharedMemory GMBs which correspond to specific multiplanar formats.
   return (format == viz::MultiPlaneFormat::kNV12 ||
           format == viz::MultiPlaneFormat::kYV12 ||
           format == viz::MultiPlaneFormat::kI420 ||
@@ -250,6 +260,7 @@ GLTextureImageBacking::GLTextureImageBacking(const Mailbox& mailbox,
                                              GrSurfaceOrigin surface_origin,
                                              SkAlphaType alpha_type,
                                              uint32_t usage,
+                                             std::string debug_label,
                                              bool is_passthrough)
     : ClearTrackingSharedImageBacking(mailbox,
                                       format,
@@ -258,6 +269,7 @@ GLTextureImageBacking::GLTextureImageBacking(const Mailbox& mailbox,
                                       surface_origin,
                                       alpha_type,
                                       usage,
+                                      std::move(debug_label),
                                       format.EstimatedSizeInBytes(size),
                                       /*is_thread_safe=*/false),
       is_passthrough_(is_passthrough) {
@@ -366,7 +378,8 @@ std::unique_ptr<DawnImageRepresentation> GLTextureImageBacking::ProduceDawn(
     MemoryTypeTracker* tracker,
     const wgpu::Device& device,
     wgpu::BackendType backend_type,
-    std::vector<wgpu::TextureFormat> view_formats) {
+    std::vector<wgpu::TextureFormat> view_formats,
+    scoped_refptr<SharedContextState> context_state) {
   if (!factory()) {
     DLOG(ERROR) << "No SharedImageFactory to create a dawn representation.";
     return nullptr;
@@ -386,92 +399,21 @@ std::unique_ptr<DawnImageRepresentation> GLTextureImageBacking::ProduceDawn(
   }
 #endif
 
-  // Make SharedContextState from factory the current context
-  SharedContextState* shared_context_state = factory()->GetSharedContextState();
-  if (!shared_context_state->MakeCurrent(nullptr, true)) {
-    DLOG(ERROR) << "Cannot make util SharedContextState the current context";
-    return nullptr;
-  }
+  // TODO (crbug.com/1434885) - Delete this code path if it's not used.
+  // Otherwise optimize this path with a GPU copy.
+  SCOPED_CRASH_KEY_STRING256("", "GLSharedImage_DebugLabel", debug_label());
+  SCOPED_CRASH_KEY_STRING32("", "GLSharedImage_Usage",
+                            base::NumberToString(usage()));
+  base::debug::DumpWithoutCrashing();
 
-  Mailbox dst_mailbox = Mailbox::GenerateForSharedImage();
-
-  bool success = factory()->CreateSharedImage(
-      dst_mailbox, format(), size(), color_space(), kTopLeft_GrSurfaceOrigin,
-      kPremul_SkAlphaType, gpu::kNullSurfaceHandle,
-      usage() | SHARED_IMAGE_USAGE_WEBGPU, "ProduceDawnCommon");
-  if (!success) {
-    DLOG(ERROR) << "Cannot create a shared image resource for internal blit";
-    return nullptr;
-  }
-
-  // Create a representation for current backing to avoid non-expected release
-  // and using scope access methods.
-  std::unique_ptr<GLTextureImageRepresentationBase> src_image;
-  std::unique_ptr<GLTextureImageRepresentationBase> dst_image;
-  if (IsPassthrough()) {
-    src_image = manager->ProduceGLTexturePassthrough(mailbox(), tracker);
-    dst_image = manager->ProduceGLTexturePassthrough(dst_mailbox, tracker);
-  } else {
-    src_image = manager->ProduceGLTexture(mailbox(), tracker);
-    dst_image = manager->ProduceGLTexture(dst_mailbox, tracker);
-  }
-
-  if (!src_image || !dst_image) {
-    DLOG(ERROR) << "ProduceDawn: Couldn't produce shared image for copy";
-    return nullptr;
-  }
-
-  std::unique_ptr<GLTextureImageRepresentationBase::ScopedAccess>
-      source_access = src_image->BeginScopedAccess(
-          GL_SHARED_IMAGE_ACCESS_MODE_READ_CHROMIUM,
-          SharedImageRepresentation::AllowUnclearedAccess::kNo);
-  if (!source_access) {
-    DLOG(ERROR) << "ProduceDawn: Couldn't access shared image for copy.";
-    return nullptr;
-  }
-
-  std::unique_ptr<GLTextureImageRepresentationBase::ScopedAccess> dest_access =
-      dst_image->BeginScopedAccess(
-          GL_SHARED_IMAGE_ACCESS_MODE_READWRITE_CHROMIUM,
-          SharedImageRepresentation::AllowUnclearedAccess::kYes);
-  if (!dest_access) {
-    DLOG(ERROR) << "ProduceDawn: Couldn't access shared image for copy.";
-    return nullptr;
-  }
-
-  GLuint source_texture = src_image->GetTextureBase()->service_id();
-  GLuint dest_texture = dst_image->GetTextureBase()->service_id();
-  DCHECK_NE(source_texture, dest_texture);
-
-  GLenum target = dst_image->GetTextureBase()->target();
-
-  // Ensure skia's internal cache of GL context state is reset before using it.
-  // TODO(crbug.com/1036142): Figure out cases that need this invocation.
-  shared_context_state->PessimisticallyResetGrContext();
-
-  if (IsPassthrough()) {
-    gl::GLApi* gl = shared_context_state->context_state()->api();
-
-    gl->glCopySubTextureCHROMIUMFn(source_texture, 0, target, dest_texture, 0,
-                                   0, 0, 0, 0, dst_image->size().width(),
-                                   dst_image->size().height(), false, false,
-                                   false);
-  } else {
-    // TODO(crbug.com/1036142): Implement copyTextureCHROMIUM for validating
-    // path.
-    NOTREACHED();
-    return nullptr;
-  }
-
-  // Set cleared flag for internal backing to prevent auto clear.
-  dst_image->SetCleared();
-
-  // Safe to destroy factory()'s ref. The backing is kept alive by GL
-  // representation ref.
-  factory()->DestroySharedImage(dst_mailbox);
-
-  return manager->ProduceDawn(dst_mailbox, tracker, device, backend_type,
-                              std::move(view_formats));
+#if BUILDFLAG(USE_DAWN)
+  // This is a slow path with a GPU<=>CPU<=>GPU copy.
+  return std::make_unique<DawnFallbackImageRepresentation>(
+      manager, this, tracker, device, ToDawnFormat(format()),
+      std::move(view_formats));
+#else
+  return nullptr;
+#endif
 }
 
 std::unique_ptr<SkiaGaneshImageRepresentation>
@@ -495,15 +437,9 @@ void GLTextureImageBacking::InitializeGLTexture(
     const std::vector<GLCommonImageBackingFactory::FormatInfo>& format_info,
     base::span<const uint8_t> pixel_data,
     gl::ProgressReporter* progress_reporter,
-    bool framebuffer_attachment_angle,
-    std::string debug_label_from_client) {
-  // If the extension does not exist, pass an empty debug label to avoid
-  // subsequent crashes.
-  std::string debug_label;
-  if (gl::g_current_gl_driver->ext.b_GL_KHR_debug) {
-    debug_label = "GLSharedImage_" + debug_label_from_client;
-  }
-
+    bool framebuffer_attachment_angle) {
+  const std::string debug_label =
+      "GLSharedImage_" + SharedImageBacking::debug_label();
   int num_planes = format().NumberOfPlanes();
   textures_.reserve(num_planes);
   for (int plane = 0; plane < num_planes; ++plane) {

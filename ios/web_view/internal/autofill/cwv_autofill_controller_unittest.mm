@@ -44,7 +44,7 @@
 #import "ios/web_view/internal/passwords/web_view_password_manager_client.h"
 #include "ios/web_view/internal/web_view_browser_state.h"
 #import "ios/web_view/public/cwv_autofill_controller_delegate.h"
-#import "net/base/mac/url_conversions.h"
+#import "net/base/apple/url_conversions.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #import "testing/gtest_mac.h"
 #import "third_party/ocmock/OCMock/OCMock.h"
@@ -100,8 +100,7 @@ class CWVAutofillControllerTest : public web::WebTest {
             /*identity_manager=*/nullptr, /*log_manager=*/nullptr,
             /*profile_store=*/nullptr, /*account_store=*/nullptr,
             /*reuse_manager=*/nullptr,
-            /*requirements_service=*/nullptr,
-            /*password_change_success_tracker=*/nullptr);
+            /*requirements_service=*/nullptr);
     auto password_manager = std::make_unique<password_manager::PasswordManager>(
         password_manager_client.get());
     password_controller_ = OCMClassMock([SharedPasswordController class]);
@@ -304,7 +303,7 @@ TEST_F(CWVAutofillControllerTest, FocusCallback) {
     params.frame_id = web::kMainFakeFrameId;
     params.has_user_gesture = true;
     params.type = "focus";
-    auto frame = web::FakeWebFrame::CreateMainWebFrame(GURL::EmptyGURL());
+    auto frame = web::FakeWebFrame::CreateMainWebFrame(GURL());
     form_activity_tab_helper_->FormActivityRegistered(frame.get(), params);
     [delegate verify];
 }
@@ -329,7 +328,7 @@ TEST_F(CWVAutofillControllerTest, InputCallback) {
     params.frame_id = web::kMainFakeFrameId;
     params.type = "input";
     params.has_user_gesture = true;
-    auto frame = web::FakeWebFrame::CreateMainWebFrame(GURL::EmptyGURL());
+    auto frame = web::FakeWebFrame::CreateMainWebFrame(GURL());
     form_activity_tab_helper_->FormActivityRegistered(frame.get(), params);
     [delegate verify];
 }
@@ -355,7 +354,7 @@ TEST_F(CWVAutofillControllerTest, InputCallbackFromKeyup) {
   params.frame_id = web::kMainFakeFrameId;
   params.type = "keyup";
   params.has_user_gesture = true;
-  auto frame = web::FakeWebFrame::CreateMainWebFrame(GURL::EmptyGURL());
+  auto frame = web::FakeWebFrame::CreateMainWebFrame(GURL());
   form_activity_tab_helper_->FormActivityRegistered(frame.get(), params);
   [delegate verify];
 }
@@ -380,7 +379,7 @@ TEST_F(CWVAutofillControllerTest, BlurCallback) {
   params.frame_id = web::kMainFakeFrameId;
   params.type = "blur";
   params.has_user_gesture = true;
-  auto frame = web::FakeWebFrame::CreateMainWebFrame(GURL::EmptyGURL());
+  auto frame = web::FakeWebFrame::CreateMainWebFrame(GURL());
   form_activity_tab_helper_->FormActivityRegistered(frame.get(), params);
 
   [delegate verify];
@@ -395,7 +394,7 @@ TEST_F(CWVAutofillControllerTest, SubmitCallback) {
                   didSubmitFormWithName:kTestFormName
                                 frameID:frame_id_
                           userInitiated:YES];
-  auto frame = web::FakeWebFrame::CreateMainWebFrame(GURL::EmptyGURL());
+  auto frame = web::FakeWebFrame::CreateMainWebFrame(GURL());
   form_activity_tab_helper_->DocumentSubmitted(
       /*sender_frame*/ frame.get(), base::SysNSStringToUTF8(kTestFormName),
       /*form_data=*/"",
@@ -436,7 +435,8 @@ TEST_F(CWVAutofillControllerTest, NotifyUserOfLeak) {
                                 username:@"fake-username"]);
 
   password_manager_client_->NotifyUserCredentialsWereLeaked(
-      leak_type, leak_url, base::SysNSStringToUTF16(@"fake-username"));
+      leak_type, leak_url, base::SysNSStringToUTF16(@"fake-username"),
+      /* in_account_store = */ false);
 
   [delegate verify];
 }
@@ -472,11 +472,11 @@ TEST_F(CWVAutofillControllerTest, AutoSaveNewAutofillProfile) {
   __block BOOL decision_handler_called = NO;
   auto callback = base::BindOnce(
       ^(autofill::AutofillClient::SaveAddressProfileOfferUserDecision decision,
-        autofill::AutofillProfile profile) {
+        base::optional_ref<const autofill::AutofillProfile> profile) {
         EXPECT_EQ(autofill::AutofillClient::
                       SaveAddressProfileOfferUserDecision::kUserNotAsked,
                   decision);
-        EXPECT_EQ(new_profile, profile);
+        EXPECT_EQ(new_profile, profile.value());
         decision_handler_called = YES;
       });
   [autofill_controller_ confirmSaveAddressProfile:new_profile
@@ -509,11 +509,11 @@ TEST_F(CWVAutofillControllerTest, SaveNewAutofillProfile) {
   __block BOOL decision_handler_called = NO;
   auto callback = base::BindOnce(
       ^(autofill::AutofillClient::SaveAddressProfileOfferUserDecision decision,
-        autofill::AutofillProfile profile) {
+        base::optional_ref<const autofill::AutofillProfile> profile) {
         EXPECT_EQ(autofill::AutofillClient::
                       SaveAddressProfileOfferUserDecision::kAccepted,
                   decision);
-        EXPECT_EQ(new_profile, profile);
+        EXPECT_EQ(new_profile, profile.value());
         decision_handler_called = YES;
       });
   [autofill_controller_ confirmSaveAddressProfile:new_profile

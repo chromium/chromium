@@ -5,10 +5,10 @@
 #include "third_party/blink/renderer/core/fetch/response.h"
 
 #include <memory>
+#include <optional>
 
 #include "base/memory/scoped_refptr.h"
 #include "services/network/public/cpp/header_util.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/mojom/fetch/fetch_api_response.mojom-blink.h"
 #include "third_party/blink/renderer/bindings/core/v8/dictionary.h"
 #include "third_party/blink/renderer/bindings/core/v8/idl_types.h"
@@ -388,7 +388,8 @@ Response* Response::staticJson(ScriptState* script_state,
     return nullptr;
   }
 
-  String string = ToBlinkString<String>(v8_string, kDoNotExternalize);
+  String string = ToBlinkString<String>(script_state->GetIsolate(), v8_string,
+                                        kDoNotExternalize);
 
   // JSON.stringify can fail to produce a string value in one of two ways: it
   // can throw an exception (as with unserializable objects), or it can return
@@ -513,7 +514,7 @@ String Response::statusText() const {
 
 Headers* Response::headers() const {
   // "The headers attribute's getter must return the associated Headers object."
-  return headers_;
+  return headers_.Get();
 }
 
 Response* Response::clone(ScriptState* script_state,

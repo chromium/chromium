@@ -10,7 +10,7 @@
 #import "base/ios/ns_error_util.h"
 #import "ios/net/protocol_handler_util.h"
 #import "ios/web/public/web_client.h"
-#import "net/base/mac/url_conversions.h"
+#import "net/base/apple/url_conversions.h"
 #import "net/base/net_errors.h"
 #import "url/gurl.h"
 

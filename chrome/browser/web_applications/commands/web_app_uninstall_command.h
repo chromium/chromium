@@ -11,6 +11,11 @@
 #include "base/values.h"
 #include "chrome/browser/web_applications/commands/web_app_command.h"
 #include "chrome/browser/web_applications/jobs/uninstall/uninstall_job.h"
+#include "chrome/browser/web_applications/locks/all_apps_lock.h"
+#include "chrome/browser/web_applications/web_app_constants.h"
+
+class GURL;
+class Profile;
 
 namespace webapps {
 enum class UninstallResultCode;
@@ -18,36 +23,71 @@ enum class UninstallResultCode;
 
 namespace web_app {
 
-class AllAppsLock;
-class AllAppsLockDescription;
-class LockDescription;
-
 // This command acquires the AllAppsLock needed by three uninstall related jobs:
 // `RemoveInstallUrlJob`, `RemoveInstallSourceJob`, and `RemoveWebAppJob`.
-class WebAppUninstallCommand : public WebAppCommandTemplate<AllAppsLock> {
+class WebAppUninstallCommand
+    : public WebAppCommand<AllAppsLock, webapps::UninstallResultCode> {
  public:
-  WebAppUninstallCommand(std::unique_ptr<UninstallJob> job,
-                         UninstallJob::Callback callback);
+  static std::unique_ptr<WebAppUninstallCommand> CreateForRemoveInstallUrl(
+      webapps::WebappUninstallSource uninstall_source,
+      Profile& profile,
+      std::optional<webapps::AppId> app_id,
+      WebAppManagement::Type install_source,
+      GURL install_url,
+      UninstallJob::Callback callback);
+
+  static std::unique_ptr<WebAppUninstallCommand>
+  CreateForRemoveInstallManagements(
+      webapps::WebappUninstallSource uninstall_source,
+      Profile& profile,
+      webapps::AppId app_id,
+      WebAppManagementTypes install_sources,
+      UninstallJob::Callback callback);
+
+  static std::unique_ptr<WebAppUninstallCommand>
+  CreateForRemoveUserUninstallableManagement(
+      webapps::WebappUninstallSource uninstall_source,
+      Profile& profile,
+      webapps::AppId app_id,
+      UninstallJob::Callback callback);
+
   ~WebAppUninstallCommand() override;
 
-  // WebAppCommandTemplate<AllAppsLock>:
+  // WebAppCommand:
+  void OnShutdown(base::PassKey<WebAppCommandManager>) const override;
+
+ protected:
+  // WebAppCommand:
   void StartWithLock(std::unique_ptr<AllAppsLock> lock) override;
-  void OnShutdown() override;
-  const LockDescription& lock_description() const override;
-  base::Value ToDebugValue() const override;
 
  private:
-  void CompleteAndSelfDestruct(webapps::UninstallResultCode code);
+  // Constructor for RemoveInstallUrlJob.
+  WebAppUninstallCommand(webapps::WebappUninstallSource uninstall_source,
+                         Profile& profile,
+                         std::optional<webapps::AppId> app_id,
+                         WebAppManagement::Type install_source,
+                         GURL install_url,
+                         UninstallJob::Callback callback);
+  // Constructor for RemoveInstallSourceJob.
+  WebAppUninstallCommand(webapps::WebappUninstallSource uninstall_source,
+                         Profile& profile,
+                         webapps::AppId app_id,
+                         WebAppManagementTypes install_managements,
+                         UninstallJob::Callback callback);
+  // Constructor for RemoveInstallSourceJob with user uninstallable sources.
+  WebAppUninstallCommand(webapps::WebappUninstallSource uninstall_source,
+                         Profile& profile,
+                         webapps::AppId app_id,
+                         UninstallJob::Callback callback);
 
-  std::unique_ptr<AllAppsLockDescription> lock_description_;
+  void OnCompletion(webapps::UninstallResultCode code);
+
   std::unique_ptr<AllAppsLock> lock_;
-
   std::unique_ptr<UninstallJob> job_;
-  UninstallJob::Callback callback_;
 
   base::WeakPtrFactory<WebAppUninstallCommand> weak_factory_{this};
 };
 
 }  // namespace web_app
 
-#endif  // CHROME_BROWSER_WEB_APPLICATIONS_COMMANDS_WEB_APP_INSTALL_COMMAND_H_
+#endif  // CHROME_BROWSER_WEB_APPLICATIONS_COMMANDS_WEB_APP_UNINSTALL_COMMAND_H_

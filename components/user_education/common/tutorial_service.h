@@ -6,6 +6,7 @@
 #define COMPONENTS_USER_EDUCATION_COMMON_TUTORIAL_SERVICE_H_
 
 #include <memory>
+#include <optional>
 #include <string>
 
 #include "base/callback_list.h"
@@ -15,7 +16,6 @@
 #include "base/timer/timer.h"
 #include "components/user_education/common/tutorial.h"
 #include "components/user_education/common/tutorial_identifier.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/interaction/element_tracker.h"
 
 // Declare in the global scope for testing purposes.
@@ -47,12 +47,12 @@ class TutorialService {
   // If `id` is specified, specifically returns whether *that* tutorial is
   // running.
   virtual bool IsRunningTutorial(
-      absl::optional<TutorialIdentifier> id = absl::nullopt) const;
+      std::optional<TutorialIdentifier> id = std::nullopt) const;
 
   // Cancels the tutorial `id` if it is running; or any tutorial if `id` is
   // not specified. Returns whether a tutorial was canceled.
   bool CancelTutorialIfRunning(
-      absl::optional<TutorialIdentifier> id = absl::nullopt);
+      std::optional<TutorialIdentifier> id = std::nullopt);
 
   // Sets the current help bubble stored by the service.
   void SetCurrentBubble(std::unique_ptr<HelpBubble> bubble, bool is_last_step);
@@ -94,7 +94,7 @@ class TutorialService {
   bool RestartTutorial();
 
   // Calls the abort code for the running tutorial.
-  void AbortTutorial(absl::optional<int> abort_step);
+  void AbortTutorial(std::optional<int> abort_step);
 
   // Hides the current help bubble currently being shown by the service.
   void HideCurrentBubbleIfShowing();

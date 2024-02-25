@@ -2,6 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+chromium::import! {
+    "//mojo/public/rust:mojo_system" as system;
+}
+
 use crate::encoding::{
     Bits, Context, DataHeader, DataHeaderValue, MojomPrimitive, DATA_HEADER_SIZE,
 };
@@ -11,7 +15,7 @@ use std::mem;
 use std::ptr;
 use std::vec::Vec;
 
-use system::{self, CastHandle, Handle, UntypedHandle};
+use system::{CastHandle, Handle, UntypedHandle};
 
 #[derive(Debug, Eq, PartialEq)]
 pub enum ValidationError {

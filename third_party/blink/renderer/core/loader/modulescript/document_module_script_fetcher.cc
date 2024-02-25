@@ -8,6 +8,7 @@
 #include "third_party/blink/public/mojom/script/script_type.mojom-blink-forward.h"
 #include "third_party/blink/public/mojom/script/script_type.mojom-shared.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_streamer.h"
+#include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/inspector/console_message.h"
 #include "third_party/blink/renderer/core/loader/resource/script_resource.h"
 #include "third_party/blink/renderer/core/script/pending_script.h"
@@ -19,8 +20,10 @@
 namespace blink {
 
 DocumentModuleScriptFetcher::DocumentModuleScriptFetcher(
+    ExecutionContext* execution_context,
     base::PassKey<ModuleScriptLoader> pass_key)
-    : ModuleScriptFetcher(pass_key) {}
+    : ModuleScriptFetcher(pass_key),
+      ExecutionContextClient(execution_context) {}
 
 void DocumentModuleScriptFetcher::Fetch(
     FetchParameters& fetch_params,
@@ -38,8 +41,15 @@ void DocumentModuleScriptFetcher::Fetch(
   ScriptResource::StreamingAllowed streaming_allowed =
                         IsMainThread() ? ScriptResource::kAllowStreaming
                                        : ScriptResource::kNoStreaming;
+  // TODO(chromium:1406506): Compile hints for modules.
+  constexpr v8_compile_hints::V8CrowdsourcedCompileHintsProducer*
+      kNoCompileHintsProducer = nullptr;
+  constexpr v8_compile_hints::V8CrowdsourcedCompileHintsConsumer*
+      kNoCompileHintsConsumer = nullptr;
   ScriptResource::Fetch(fetch_params, fetch_client_settings_object_fetcher,
-                        this, streaming_allowed);
+                        this, GetExecutionContext()->GetIsolate(),
+                        streaming_allowed, kNoCompileHintsProducer,
+                        kNoCompileHintsConsumer);
 }
 
 void DocumentModuleScriptFetcher::NotifyFinished(Resource* resource) {
@@ -98,6 +108,7 @@ void DocumentModuleScriptFetcher::Trace(Visitor* visitor) const {
   ModuleScriptFetcher::Trace(visitor);
   visitor->Trace(client_);
   ResourceClient::Trace(visitor);
+  ExecutionContextClient::Trace(visitor);
 }
 
 }  // namespace blink

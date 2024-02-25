@@ -10,6 +10,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/ranges/algorithm.h"
 #include "base/unguessable_token.h"
+#include "chrome/browser/feature_engagement/tracker_factory.h"
 #include "chrome/browser/media/router/media_router_feature.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
@@ -21,6 +22,7 @@
 #include "chrome/browser/ui/media_router/cast_dialog_controller.h"
 #include "chrome/browser/ui/media_router/media_router_ui.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
+#include "components/feature_engagement/public/tracker.h"
 #include "components/global_media_controls/public/media_dialog_delegate.h"
 #include "components/global_media_controls/public/media_item_manager.h"
 #include "components/global_media_controls/public/media_item_producer.h"
@@ -74,7 +76,7 @@ void CancelRequest(
 // focused.
 bool IsWebContentsFocused(content::WebContents* web_contents) {
   DCHECK(web_contents);
-  Browser* browser = chrome::FindBrowserWithWebContents(web_contents);
+  Browser* browser = chrome::FindBrowserWithTab(web_contents);
   if (!browser) {
     return false;
   }
@@ -90,17 +92,17 @@ bool IsWebContentsFocused(content::WebContents* web_contents) {
 #if BUILDFLAG(IS_CHROMEOS)
 crosapi::mojom::MediaUI* GetMediaUI() {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  return crosapi::CrosapiManager::Get()->crosapi_ash()->media_ui_ash();
+  if (crosapi::CrosapiManager::IsInitialized()) {
+    return crosapi::CrosapiManager::Get()->crosapi_ash()->media_ui_ash();
+  }
 #elif BUILDFLAG(IS_CHROMEOS_LACROS)
   if (chromeos::LacrosService::Get()->IsAvailable<crosapi::mojom::MediaUI>()) {
     return chromeos::LacrosService::Get()
         ->GetRemote<crosapi::mojom::MediaUI>()
         .get();
   }
-  return nullptr;
-#else
-  return nullptr;
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+  return nullptr;
 }
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
@@ -141,7 +143,7 @@ MediaNotificationService::MediaNotificationService(Profile* profile,
     : profile_(profile), receiver_(this) {
   item_manager_ = global_media_controls::MediaItemManager::Create();
 
-  absl::optional<base::UnguessableToken> source_id;
+  std::optional<base::UnguessableToken> source_id;
   if (!show_from_all_profiles) {
     source_id = content::MediaSession::GetSourceId(profile);
   }
@@ -285,8 +287,27 @@ MediaNotificationService::RegisterIsAudioOutputDeviceSwitchingSupportedCallback(
 void MediaNotificationService::OnMediaRemotingRequested(
     const std::string& item_id) {
   auto item = media_session_item_producer_->GetMediaItem(item_id);
-  if (item) {
-    item->RequestMediaRemoting();
+  if (!item) {
+    return;
+  }
+
+  item->RequestMediaRemoting();
+  auto* web_contents =
+      content::MediaSession::GetWebContentsFromRequestId(item_id);
+  if (web_contents && web_contents->GetLastCommittedURL().SchemeIsFile()) {
+    feature_engagement::TrackerFactory::GetForBrowserContext(profile_)
+        ->NotifyEvent("media_route_started_from_gmc");
+  }
+}
+
+void MediaNotificationService::OnSinksDiscovered(const std::string& item_id) {
+  auto item = media_session_item_producer_->GetMediaItem(item_id);
+  auto* web_contents =
+      content::MediaSession::GetWebContentsFromRequestId(item_id);
+
+  if (web_contents) {
+    should_show_cast_local_media_iph_ =
+        web_contents->GetLastCommittedURL().SchemeIsFile();
   }
 }
 
@@ -320,18 +341,31 @@ void MediaNotificationService::SetDialogDelegateForWebContents(
 
   // When the dialog is opened by a PresentationRequest, there should be only
   // one notification, in the following priority order:
-  // 1. A cast session associated with |contents|.
-  // 2. A local media session associated with |contents|.
+  // 1. A cast presentation session associated with `contents`.
+  // 2. A local media session associated with `contents`. This media session
+  // might potentially be associated with a Remote Playback route.
   // 3. A supplemental notification populated using the PresentationRequest.
   std::string item_id;
 
-  // Find the cast notification item associated with |contents|.
-  auto routes = media_router::WebContentsPresentationManager::Get(contents)
-                    ->GetMediaRoutes();
-  if (!routes.empty()) {
+  // Find the cast presentation route associated with `contents`.
+  // WebContentsPresentationManager manages all presentation routes including
+  // Cast and Remote Playback presentations. For the sake of displaying media
+  // routes in the GMC dialog, Cast presentation routes should be shown as Cast
+  // notification items and Remote Playback presentation routes should be shown
+  // as media session notification items.
+  std::optional<std::string> cast_presentation_route_id;
+  for (auto route : media_router::WebContentsPresentationManager::Get(contents)
+                        ->GetMediaRoutes()) {
+    if (route.media_source().IsCastPresentationUrl()) {
+      cast_presentation_route_id = route.media_route_id();
+      break;
+    }
+  }
+
+  if (cast_presentation_route_id.has_value()) {
     // It is possible for a sender page to connect to two routes. For the
     // sake of the Zenith dialog, only one notification is needed.
-    item_id = routes.begin()->media_route_id();
+    item_id = cast_presentation_route_id.value();
   } else if (HasActiveControllableSessionForWebContents(contents)) {
     item_id = GetActiveControllableSessionForWebContents(contents);
   } else {
@@ -409,9 +443,20 @@ void MediaNotificationService::GetDeviceListHostForSession(
     const std::string& session_id,
     mojo::PendingReceiver<mojom::DeviceListHost> host_receiver,
     mojo::PendingRemote<mojom::DeviceListClient> client_remote) {
+  std::optional<std::string> remoting_session_id;
+  // `remoting_session_id` is used to construct the MediaRemotingCallback for
+  // CastDeviceListHost to request Media Remoting for a MediaSession. This is
+  // used for Media Remoting sessions started from the GMC dialog. However, when
+  // the dialog is opened for RemotePlayback#prompt() (when `context_` is not
+  // nullptr), the Remote Playback API on the blink side handles sending Media
+  // Remoting request and there's no need for requesting Media Remoting from
+  // MNS.
+  if (context_ == nullptr) {
+    remoting_session_id = session_id;
+  }
   CreateCastDeviceListHost(CreateCastDialogControllerForSession(session_id),
                            std::move(host_receiver), std::move(client_remote),
-                           session_id);
+                           remoting_session_id);
 }
 
 void MediaNotificationService::GetDeviceListHostForPresentation(
@@ -419,7 +464,7 @@ void MediaNotificationService::GetDeviceListHostForPresentation(
     mojo::PendingRemote<mojom::DeviceListClient> client_remote) {
   CreateCastDeviceListHost(CreateCastDialogControllerForPresentationRequest(),
                            std::move(host_receiver), std::move(client_remote),
-                           absl::nullopt);
+                           std::nullopt);
 }
 
 void MediaNotificationService::SetDevicePickerProvider(
@@ -479,23 +524,30 @@ void MediaNotificationService::CreateCastDeviceListHost(
     std::unique_ptr<media_router::CastDialogController> dialog_controller,
     mojo::PendingReceiver<mojom::DeviceListHost> host_pending_receiver,
     mojo::PendingRemote<mojom::DeviceListClient> client_remote,
-    absl::optional<std::string> session_id) {
+    std::optional<std::string> remoting_session_id) {
   if (!dialog_controller) {
     // We discard the PendingReceiver/Remote here, and if they have disconnect
     // handlers set, those get called.
     return;
   }
   auto media_remoting_callback_ =
-      session_id.has_value()
+      remoting_session_id.has_value()
           ? base::BindRepeating(
                 &MediaNotificationService::OnMediaRemotingRequested,
-                weak_ptr_factory_.GetWeakPtr(), session_id.value())
+                weak_ptr_factory_.GetWeakPtr(), remoting_session_id.value())
+          : base::DoNothing();
+  auto on_sinks_discovered_callback =
+      remoting_session_id.has_value()
+          ? base::BindRepeating(&MediaNotificationService::OnSinksDiscovered,
+                                weak_ptr_factory_.GetWeakPtr(),
+                                remoting_session_id.value())
           : base::DoNothing();
   auto host = std::make_unique<CastDeviceListHost>(
       std::move(dialog_controller), std::move(client_remote),
       std::move(media_remoting_callback_),
       base::BindRepeating(&global_media_controls::MediaItemManager::HideDialog,
-                          item_manager_->GetWeakPtr()));
+                          item_manager_->GetWeakPtr()),
+      std::move(on_sinks_discovered_callback));
   int host_id = host->id();
   mojo::SelfOwnedReceiverRef<global_media_controls::mojom::DeviceListHost>
       host_receiver = mojo::MakeSelfOwnedReceiver(

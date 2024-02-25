@@ -11,6 +11,7 @@
 #include "base/apple/scoped_cftyperef.h"
 #include "base/functional/bind.h"
 #include "base/strings/sys_string_conversions.h"
+#include "components/variations/net/variations_command_line.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "mojo/public/cpp/system/message_pipe.h"
@@ -122,6 +123,11 @@ const std::vector<GURL>& AppShimHostBootstrap::GetLaunchUrls() const {
   return app_shim_info_->urls;
 }
 
+mojo::PendingReceiver<mac_notifications::mojom::MacNotificationActionHandler>
+AppShimHostBootstrap::TakeNotificationActionHandler() {
+  return std::move(app_shim_info_->notification_action_handler);
+}
+
 bool AppShimHostBootstrap::IsMultiProfile() const {
   // PWAs and bookmark apps are multi-profile capable.
   return app_shim_info_->app_url.is_valid();
@@ -160,6 +166,7 @@ void AppShimHostBootstrap::OnConnectedToHost(
   LogToNSLog("AppShim: Performing OnConnectedToHost for pid %d", pid_);
   std::move(shim_connected_callback_)
       .Run(chrome::mojom::AppShimLaunchResult::kSuccess,
+           variations::VariationsCommandLine::GetForCurrentProcess(),
            std::move(app_shim_receiver));
 }
 
@@ -172,5 +179,6 @@ void AppShimHostBootstrap::OnFailedToConnectToHost(
   // return a dummy receiver.
   mojo::Remote<chrome::mojom::AppShim> dummy_remote;
   std::move(shim_connected_callback_)
-      .Run(result, dummy_remote.BindNewPipeAndPassReceiver());
+      .Run(result, variations::VariationsCommandLine(),
+           dummy_remote.BindNewPipeAndPassReceiver());
 }

@@ -1,4 +1,5 @@
 This is a testharness.js-based test.
-FAIL URL's percent-encoding is always in UTF-8 for WebSocket Failed to construct 'WebSocket': The URL '/?€' is invalid.
+[FAIL] URL's percent-encoding is always in UTF-8 for WebSocket
+  Failed to construct 'WebSocket': The URL '/?€' is invalid.
 Harness: the test ran to completion.
 

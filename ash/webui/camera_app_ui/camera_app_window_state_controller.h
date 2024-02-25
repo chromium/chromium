@@ -53,13 +53,14 @@ class CameraAppWindowStateController
   void OnWidgetActivationChanged(views::Widget* widget, bool active) override;
   void OnWidgetBoundsChanged(views::Widget* widget,
                              const gfx::Rect& new_bounds) override;
+  void OnWidgetDestroying(views::Widget* widget) override;
 
  private:
   void OnWindowStateChanged();
   void OnWindowFocusChanged(bool is_focus);
   base::flat_set<WindowStateType> GetCurrentWindowStates();
 
-  raw_ptr<views::Widget, ExperimentalAsh> widget_;
+  raw_ptr<views::Widget> widget_;
   base::flat_set<WindowStateType> window_states_;
   mojo::ReceiverSet<camera_app::mojom::WindowStateController> receivers_;
   std::vector<mojo::Remote<WindowStateMonitor>> monitors_;

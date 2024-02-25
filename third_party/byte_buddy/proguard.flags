@@ -3,7 +3,10 @@
 # found in the LICENSE file.
 
 -dontwarn net.bytebuddy.**
+-dontwarn com.sun.jna.**
+-dontwarn edu.umd.cs.findbugs.annotations.SuppressFBWarnings
+-dontwarn java.lang.instrument.**
 
--keep class net.bytebuddy.** {
+-keep class com.android.dx.**, net.bytebuddy.** {
   *;
 }

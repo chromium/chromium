@@ -17,7 +17,7 @@
 #endif
 
 static int RunHelper(base::TestSuite* test_suite) {
-  base::FeatureList::InitializeInstance(std::string(), std::string());
+  base::FeatureList::InitInstance(std::string(), std::string());
   std::unique_ptr<base::SingleThreadTaskExecutor> executor;
 #if BUILDFLAG(IS_OZONE)
   executor = std::make_unique<base::SingleThreadTaskExecutor>(

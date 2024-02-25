@@ -10,9 +10,7 @@ import java.net.Proxy;
 import java.net.URL;
 import java.net.URLConnection;
 
-/**
- * Wrapper class for network requests.
- */
+/** Wrapper class for network requests. */
 public final class ChromiumNetworkAdapter {
     private ChromiumNetworkAdapter() {}
 
@@ -40,8 +38,9 @@ public final class ChromiumNetworkAdapter {
      *     what data gets sent, what triggers it, etc.
      * @return a URLConnection linking to the URL.
      */
-    public static URLConnection openConnection(URL url, Proxy proxy,
-            NetworkTrafficAnnotationTag trafficAnnotation) throws IOException {
+    public static URLConnection openConnection(
+            URL url, Proxy proxy, NetworkTrafficAnnotationTag trafficAnnotation)
+            throws IOException {
         return url.openConnection(proxy);
     }
 

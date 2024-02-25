@@ -1,1 +1,1 @@
-per-file cast_crash_keys*=rsesek@chromium.org
+per-file cast_crash_keys*=file://components/crash/OWNERS

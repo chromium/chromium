@@ -7,6 +7,7 @@
 #include "ash/public/cpp/holding_space/holding_space_controller.h"
 #include "ash/public/cpp/holding_space/holding_space_controller_observer.h"
 #include "ash/public/cpp/holding_space/holding_space_item.h"
+#include "ash/public/cpp/holding_space/holding_space_item_updated_fields.h"
 #include "ash/public/cpp/holding_space/holding_space_model.h"
 #include "ash/public/cpp/holding_space/holding_space_model_observer.h"
 #include "ash/public/cpp/holding_space/holding_space_progress.h"
@@ -42,7 +43,7 @@ class HoldingSpaceControllerProgressIndicator
 
  private:
   // ProgressIndicator:
-  absl::optional<float> CalculateProgress() const override {
+  std::optional<float> CalculateProgress() const override {
     // If there is no `model` attached, then there are no in-progress holding
     // space items. Do not paint the progress indication.
     const HoldingSpaceModel* model = controller_->model();
@@ -97,10 +98,12 @@ class HoldingSpaceControllerProgressIndicator
     }
   }
 
-  void OnHoldingSpaceItemUpdated(const HoldingSpaceItem* item,
-                                 uint32_t updated_fields) override {
-    if (item->IsInitialized() && (updated_fields & UpdatedField::kProgress))
+  void OnHoldingSpaceItemUpdated(
+      const HoldingSpaceItem* item,
+      const HoldingSpaceItemUpdatedFields& updated_fields) override {
+    if (item->IsInitialized() && updated_fields.previous_progress) {
       InvalidateLayer();
+    }
   }
 
   void OnHoldingSpaceItemInitialized(const HoldingSpaceItem* item) override {
@@ -110,7 +113,7 @@ class HoldingSpaceControllerProgressIndicator
 
   // The associated holding space `controller_` for which to indicate progress
   // of all holding space items in its attached model.
-  const raw_ptr<HoldingSpaceController, ExperimentalAsh> controller_;
+  const raw_ptr<HoldingSpaceController> controller_;
 
   base::ScopedObservation<HoldingSpaceController,
                           HoldingSpaceControllerObserver>
@@ -138,7 +141,7 @@ class HoldingSpaceItemProgressIndicator : public ProgressIndicator,
 
  private:
   // ProgressIndicator:
-  absl::optional<float> CalculateProgress() const override {
+  std::optional<float> CalculateProgress() const override {
     // If `item_` is `nullptr` it is being destroyed. Ensure the progress
     // indication is not painted in this case. Similarly, ensure the progress
     // indication is not painted when progress is hidden.
@@ -147,10 +150,12 @@ class HoldingSpaceItemProgressIndicator : public ProgressIndicator,
   }
 
   // HoldingSpaceModelObserver:
-  void OnHoldingSpaceItemUpdated(const HoldingSpaceItem* item,
-                                 uint32_t updated_fields) override {
-    if (item_ == item && (updated_fields & UpdatedField::kProgress))
+  void OnHoldingSpaceItemUpdated(
+      const HoldingSpaceItem* item,
+      const HoldingSpaceItemUpdatedFields& updated_fields) override {
+    if (item_ == item && updated_fields.previous_progress) {
       InvalidateLayer();
+    }
   }
 
   void OnHoldingSpaceItemsRemoved(
@@ -165,7 +170,7 @@ class HoldingSpaceItemProgressIndicator : public ProgressIndicator,
 
   // The associated holding space `item` for which to indicate progress.
   // NOTE: May temporarily be `nullptr` during the `item`s destruction sequence.
-  raw_ptr<const HoldingSpaceItem, ExperimentalAsh> item_ = nullptr;
+  raw_ptr<const HoldingSpaceItem> item_ = nullptr;
 
   base::ScopedObservation<HoldingSpaceModel, HoldingSpaceModelObserver>
       model_observation_{this};

@@ -24,8 +24,9 @@ namespace file_manager {
 namespace test {
 
 static const char kODFSSampleUrl[] = "https://1drv.ms/123";
-static const char kSampleUserEmail1[] = "user1@gmail.com";
-static const char kSampleUserEmail2[] = "user2@gmail.com";
+static const char kSampleUserEmail1[] = "user.1@gmail.com";
+static const char kSampleUserUpperCaseEmail1[] = "USER.1@gmail.com";
+static const char kSampleUserEmail2[] = "user.2@gmail.com";
 
 // A dummy folder in a temporary path that is automatically mounted as a
 // Profile's Downloads folder.
@@ -34,14 +35,14 @@ class FolderInMyFiles {
   explicit FolderInMyFiles(Profile* profile);
   ~FolderInMyFiles();
 
-  // Copies additional files into |folder_|, appending to |files_|.
+  // Copies additional files into `folder_`, appending to `files_`.
   void Add(const std::vector<base::FilePath>& files);
 
-  // Copies the contents of |file| to |folder_| with the given |new_base_name|.
+  // Copies the contents of `file` to `folder_` with the given `new_base_name`.
   void AddWithName(const base::FilePath& file,
                    const base::FilePath& new_base_name);
 
-  // Use platform_util::OpenItem() on the file with basename matching |path| to
+  // Use platform_util::OpenItem() on the file with basename matching `path` to
   // simulate a user request to open that path, e.g., from the Files app or
   // chrome://downloads.
   platform_util::OpenOperationResult Open(const base::FilePath& path);
@@ -55,27 +56,39 @@ class FolderInMyFiles {
   FolderInMyFiles(const FolderInMyFiles&) = delete;
   FolderInMyFiles& operator=(const FolderInMyFiles&) = delete;
 
-  const raw_ptr<Profile, ExperimentalAsh> profile_;
+  const raw_ptr<Profile, DanglingUntriaged> profile_;
   base::FilePath folder_;
   std::vector<base::FilePath> files_;
 };
+
+// Take test files from the chromeos/file_manager/ test directory and copy them
+// into a temp folder mounted within MyFiles.
+std::vector<storage::FileSystemURL> CopyTestFilesIntoMyFiles(
+    Profile* profile,
+    std::vector<std::string> file_names);
 
 // Load the default set of component extensions used on ChromeOS. This should be
 // done in an override of InProcessBrowserTest::SetUpOnMainThread().
 void AddDefaultComponentExtensionsOnMainThread(Profile* profile);
 
-// Installs the chrome app at the provided |test_path_ascii| under DIR_TEST_DATA
+// Installs the chrome app at the provided `test_path_ascii` under DIR_TEST_DATA
 // and waits for the background page to start up.
 scoped_refptr<const extensions::Extension> InstallTestingChromeApp(
     Profile* profile,
     const char* test_path_ascii);
 
-// Installs a test File System Provider chrome app that provides a file system
-// containing readwrite.gif and readonly.png files, and wait for the file system
-// to be mounted. Returns a base::WeakPtr<file_manager::Volume> to the mounted
-// file system.
+// Uses InstallTestingChromeApp to install a test File System Provider chrome
+// app that provides a file system containing readwrite.gif and readonly.png
+// files, and wait for the file system to be mounted. Returns a
+// base::WeakPtr<file_manager::Volume> to the mounted file system.
 base::WeakPtr<file_manager::Volume> InstallFileSystemProviderChromeApp(
     Profile* profile);
+// Like above but uses the provided chrome app installation function
+// `install_fn` instead of InstallTestingChromeApp. `install_fn` receives the
+// chrome app's path (relative to DIR_TEST_DATA) as argument.
+base::WeakPtr<file_manager::Volume> InstallFileSystemProviderChromeApp(
+    Profile* profile,
+    base::OnceCallback<void(const char*)> install_fn);
 
 // Gets the list of available tasks for the provided `file`. Note only the path
 // string is used for this helper, so it must have a well-known MIME type
@@ -84,21 +97,21 @@ std::vector<file_tasks::FullTaskDescriptor> GetTasksForFile(
     Profile* profile,
     const base::FilePath& file);
 
-// Add a fake web app with to the |app_service_proxy| with
-// |intent_filters|.
+// Add a fake web app with to the `app_service_proxy` with
+// `intent_filters`.
 void AddFakeAppWithIntentFilters(
     const std::string& app_id,
     std::vector<apps::IntentFilterPtr> intent_filters,
     apps::AppType app_type,
-    absl::optional<bool> handles_intents,
+    std::optional<bool> handles_intents,
     apps::AppServiceProxy* app_service_proxy);
 
-// Add a fake web app with to the |app_service_proxy|.
+// Add a fake web app with to the `app_service_proxy`.
 void AddFakeWebApp(const std::string& app_id,
                    const std::string& mime_type,
                    const std::string& file_extension,
                    const std::string& activity_label,
-                   absl::optional<bool> handles_intents,
+                   std::optional<bool> handles_intents,
                    apps::AppServiceProxy* app_service_proxy);
 
 // Fake DriveFs specific to the `DriveTest`. The alternate URL is the only piece
@@ -152,18 +165,20 @@ class FakeProvidedFileSystemOneDrive
   explicit FakeProvidedFileSystemOneDrive(
       const ash::file_system_provider::ProvidedFileSystemInfo&
           file_system_info);
+  ~FakeProvidedFileSystemOneDrive() override;
 
-  // Fail the create file request with |create_file_error_| if it exists.
-  // Otherwise, create a file as normal.
+  // Fail the create file request with `create_file_error_` if it exists.
+  // Otherwise, create a file as normal. Tests can run a callback on
+  // `CreateFile` via `SetCreateFileCallback()`.
   ash::file_system_provider::AbortCallback CreateFile(
       const base::FilePath& file_path,
       storage::AsyncFileUtil::StatusCallback callback) override;
 
   // Parallel what ODFS does but fail to get non-root entry metadata if
-  // |get_actions_error_| is set:
+  // `get_actions_error_` is set:
   // - If the number of entries requested is not 1, fail.
   // - If the root is requested, return (test) ODFS metadata.
-  // - If |get_actions_error_| is set, fail request with it.
+  // - If `get_actions_error_` is set, fail request with it.
   // - If the entry is found, return (test) entry metadata.
   // - Otherwise, fail.
   ash::file_system_provider::AbortCallback GetActions(
@@ -172,6 +187,9 @@ class FakeProvidedFileSystemOneDrive
 
   // Set error for the `CreateFile` to fail with.
   void SetCreateFileError(base::File::Error error);
+
+  // Set a callback to be called when `CreateFile` is called.
+  void SetCreateFileCallback(base::OnceClosure callback);
 
   // Set error for the `GetActions` to fail with when non-root entry actions are
   // requested.
@@ -184,6 +202,7 @@ class FakeProvidedFileSystemOneDrive
   base::File::Error create_file_error_ = base::File::Error::FILE_OK;
   base::File::Error get_actions_error_ = base::File::Error::FILE_OK;
   bool reauthentication_required_ = false;
+  base::OnceClosure create_file_callback_;
 };
 
 // Fake extension provider to create a `FakeProvidedFileSystemOneDrive`.
@@ -196,18 +215,35 @@ class FakeExtensionProviderOneDrive
   std::unique_ptr<ash::file_system_provider::ProvidedFileSystemInterface>
   CreateProvidedFileSystem(
       Profile* profile,
-      const ash::file_system_provider::ProvidedFileSystemInfo& file_system_info)
-      override;
+      const ash::file_system_provider::ProvidedFileSystemInfo& file_system_info,
+      ash::file_system_provider::ContentCache* content_cache) override;
+
+  // Calls `request_mount_callback` if set.
+  bool RequestMount(
+      Profile* profile,
+      ash::file_system_provider::RequestMountCallback callback) override;
+
+  // `RequestMount()` will call this callback as its implementation.
+  void SetRequestMountImpl(
+      base::OnceCallback<
+          void(ash::file_system_provider::RequestMountCallback)>);
 
  private:
   FakeExtensionProviderOneDrive(
       const extensions::ExtensionId& extension_id,
       const ash::file_system_provider::Capabilities& capabilities);
+  ~FakeExtensionProviderOneDrive() override;
+
+  base::OnceCallback<void(ash::file_system_provider::RequestMountCallback)>
+      request_mount_impl_;
 };
 
 // Mount a `FakeProvidedFileSystemOneDrive`.
 FakeProvidedFileSystemOneDrive* CreateFakeProvidedFileSystemOneDrive(
     Profile* profile);
+
+// Only call this after `CreateFakeProvidedFileSystemOneDrive()`.
+FakeExtensionProviderOneDrive* GetFakeProviderOneDrive(Profile* profile);
 
 }  // namespace test
 }  // namespace file_manager

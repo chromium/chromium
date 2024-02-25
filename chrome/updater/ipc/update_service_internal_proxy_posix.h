@@ -6,6 +6,7 @@
 #define CHROME_UPDATER_IPC_UPDATE_SERVICE_INTERNAL_PROXY_POSIX_H_
 
 #include <memory>
+#include <optional>
 
 #include "base/functional/callback_forward.h"
 #include "base/memory/scoped_refptr.h"
@@ -15,7 +16,6 @@
 #include "chrome/updater/update_service_internal.h"
 #include "chrome/updater/updater_scope.h"
 #include "mojo/public/cpp/bindings/remote.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace mojo {
 class PlatformChannelEndpoint;
@@ -33,8 +33,8 @@ class UpdateServiceInternalProxyImpl
   // It establishes a connection lazily and can be used immediately.
   explicit UpdateServiceInternalProxyImpl(UpdaterScope scope);
 
-  void Run(base::OnceCallback<void(absl::optional<RpcError>)> callback);
-  void Hello(base::OnceCallback<void(absl::optional<RpcError>)> callback);
+  void Run(base::OnceCallback<void(std::optional<RpcError>)> callback);
+  void Hello(base::OnceCallback<void(std::optional<RpcError>)> callback);
 
  private:
   friend class base::RefCountedThreadSafe<UpdateServiceInternalProxyImpl>;
@@ -44,7 +44,7 @@ class UpdateServiceInternalProxyImpl
   void OnDisconnected();
   void OnConnected(
       mojo::PendingReceiver<mojom::UpdateServiceInternal> pending_receiver,
-      absl::optional<mojo::PlatformChannelEndpoint> endpoint);
+      std::optional<mojo::PlatformChannelEndpoint> endpoint);
 
   SEQUENCE_CHECKER(sequence_checker_);
   const UpdaterScope scope_;

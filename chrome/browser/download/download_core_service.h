@@ -13,7 +13,6 @@
 
 class ChromeDownloadManagerDelegate;
 class DownloadUIController;
-class ExtensionDownloadsEventRouter;
 
 namespace content {
 class DownloadManager;

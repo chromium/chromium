@@ -1,17 +1,26 @@
 {
-{%if key is defined %}
+{% if key is defined %}
   "key": "{{key}}",
 {% endif %}
+{% if is_manifest_v3 == '1' %}
+  "manifest_version": 3,
+  "minimum_chrome_version": "93",
+  "background": {
+    "service_worker": "enhanced_network_tts/background.js",
+    "type": "module"
+  },
+{% else %}
   "manifest_version": 2,
+  "background": {
+    "page": "enhanced_network_tts/background.html"
+  },
+{% endif %}
   "name": "__MSG_ENHANCED_NETWORK_TTS_NAME__",
   "version": "{{set_version}}",
   "description": "__MSG_ENHANCED_NETWORK_TTS_DESCRIPTION__",
 {% if is_guest_manifest == '1' %}
   "incognito": "split",
 {% endif %}
-  "background": {
-    "page": "enhanced_network_tts/background.html"
-  },
   "permissions": [
     "ttsEngine"
   ],

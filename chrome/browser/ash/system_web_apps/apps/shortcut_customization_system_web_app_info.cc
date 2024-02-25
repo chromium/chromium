@@ -14,7 +14,6 @@
 #include "chrome/browser/web_applications/web_app_install_info.h"
 #include "third_party/blink/public/mojom/manifest/display_mode.mojom.h"
 #include "ui/base/l10n/l10n_util.h"
-#include "ui/base/ui_base_features.h"
 
 std::unique_ptr<web_app::WebAppInstallInfo>
 CreateWebAppInfoForShortcutCustomizationSystemWebApp() {
@@ -53,7 +52,7 @@ ShortcutCustomizationSystemAppDelegate::GetWebAppInfo() const {
 }
 
 bool ShortcutCustomizationSystemAppDelegate::IsAppEnabled() const {
-  return features::IsShortcutCustomizationAppEnabled();
+  return true;
 }
 
 gfx::Size ShortcutCustomizationSystemAppDelegate::GetMinimumWindowSize() const {

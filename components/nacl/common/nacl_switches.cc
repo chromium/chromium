@@ -15,10 +15,6 @@ const char kEnableNaClDebug[]               = "enable-nacl-debug";
 // Force use of the Subzero as the PNaCl translator instead of LLC.
 const char kForcePNaClSubzero[] = "force-pnacl-subzero";
 
-// Value for --type that causes the process to run as a NativeClient broker
-// (used for launching NaCl loader processes on 64-bit Windows).
-const char kNaClBrokerProcess[]             = "nacl-broker";
-
 // Uses NaCl manifest URL to choose whether NaCl program will be debugged by
 // debug stub.
 // Switch value format: [!]pattern1,pattern2,...,patternN. Each pattern uses

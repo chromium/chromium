@@ -1,0 +1,22 @@
+This is a wdspec test.
+[FAIL] test_detached_shadow_root[top_context]
+  assert 500 == 404
+[FAIL] test_detached_shadow_root[child_context]
+  assert 500 == 404
+[FAIL] test_stale_element[top_context]
+  assert 500 == 404
+[FAIL] test_stale_element[child_context]
+  assert 500 == 404
+[FAIL] test_not_supported_nodes[attribute]
+  AssertionError: assert 200 == 500
+[FAIL] test_not_supported_nodes[text]
+  AssertionError: assert 200 == 500
+[FAIL] test_not_supported_nodes[processing_instruction]
+  AssertionError: assert 200 == 500
+[FAIL] test_not_supported_nodes[comment]
+  AssertionError: assert 200 == 500
+[FAIL] test_not_supported_nodes[document]
+  AssertionError: assert 200 == 500
+[FAIL] test_not_supported_nodes[doctype]
+  AssertionError: assert 200 == 500
+Harness: the test ran to completion.

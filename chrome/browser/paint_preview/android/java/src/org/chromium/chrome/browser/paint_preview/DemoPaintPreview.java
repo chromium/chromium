@@ -39,16 +39,19 @@ public class DemoPaintPreview implements PlayerManager.Listener {
 
     private void show() {
         PaintPreviewCompositorUtils.warmupCompositor();
-        mTabbedPaintPreview.capture(success
-                -> PostTask.runOrPostTask(
-                        TaskTraits.UI_USER_VISIBLE, () -> onCapturedPaintPreview(success)));
+        mTabbedPaintPreview.capture(
+                success ->
+                        PostTask.runOrPostTask(
+                                TaskTraits.UI_USER_VISIBLE, () -> onCapturedPaintPreview(success)));
     }
 
     private void onCapturedPaintPreview(boolean captureSuccess) {
         boolean shown = false;
         if (captureSuccess) shown = mTabbedPaintPreview.maybeShow(this);
-        int toastStringRes = shown ? R.string.paint_preview_demo_capture_success
-                                   : R.string.paint_preview_demo_capture_failure;
+        int toastStringRes =
+                shown
+                        ? R.string.paint_preview_demo_capture_success
+                        : R.string.paint_preview_demo_capture_failure;
         Toast.makeText(mTab.getContext(), toastStringRes, Toast.LENGTH_LONG).show();
         if (!captureSuccess || !shown) {
             PaintPreviewCompositorUtils.stopWarmCompositor();
@@ -71,16 +74,20 @@ public class DemoPaintPreview implements PlayerManager.Listener {
 
     @Override
     public void onCompositorError(int status) {
-        Toast.makeText(mTab.getContext(), R.string.paint_preview_demo_playback_failure,
-                     Toast.LENGTH_LONG)
+        Toast.makeText(
+                        mTab.getContext(),
+                        R.string.paint_preview_demo_playback_failure,
+                        Toast.LENGTH_LONG)
                 .show();
         removePaintPreviewDemo();
     }
 
     @Override
     public void onViewReady() {
-        Toast.makeText(mTab.getContext(), R.string.paint_preview_demo_playback_start,
-                     Toast.LENGTH_LONG)
+        Toast.makeText(
+                        mTab.getContext(),
+                        R.string.paint_preview_demo_playback_start,
+                        Toast.LENGTH_LONG)
                 .show();
     }
 
@@ -114,8 +121,10 @@ public class DemoPaintPreview implements PlayerManager.Listener {
     @Override
     public void onAccessibilityNotSupported() {
         if (isAccessibilityEnabled()) {
-            Toast.makeText(mTab.getContext(), R.string.paint_preview_demo_no_accessibility,
-                         Toast.LENGTH_LONG)
+            Toast.makeText(
+                            mTab.getContext(),
+                            R.string.paint_preview_demo_no_accessibility,
+                            Toast.LENGTH_LONG)
                     .show();
         }
     }

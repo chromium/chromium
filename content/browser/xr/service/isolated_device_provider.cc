@@ -16,7 +16,8 @@ constexpr int kMaxRetries = 3;
 namespace content {
 
 void IsolatedVRDeviceProvider::Initialize(
-    device::VRDeviceProviderClient* client) {
+    device::VRDeviceProviderClient* client,
+    content::WebContents* initializing_web_contents) {
   client_ = client;
   SetupDeviceProvider();
 }

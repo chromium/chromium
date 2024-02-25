@@ -7,6 +7,7 @@
 #include <cmath>
 #include <limits>
 #include <memory>
+#include <string_view>
 #include <unordered_set>
 #include <utility>
 
@@ -29,7 +30,6 @@
 #include "base/process/process_metrics.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/string_number_conversions.h"
-#include "base/strings/string_piece.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_tokenizer.h"
 #include "base/strings/stringprintf.h"
@@ -971,6 +971,9 @@ void TraceLog::InitializePerfettoIfNeeded() {
   g_perfetto_initialized_by_tracelog = true;
   perfetto::TracingInitArgs init_args;
   init_args.backends = perfetto::BackendType::kInProcessBackend;
+  init_args.shmem_batch_commits_duration_ms = 1000;
+  init_args.shmem_size_hint_kb = 4 * 1024;
+  init_args.shmem_direct_patching_enabled = true;
   init_args.disallow_merging_with_system_tracks = true;
   perfetto::Tracing::Initialize(init_args);
   TrackEvent::Register();
@@ -1123,8 +1126,10 @@ void TraceLog::SetDisabledWhileLocked(uint8_t modes_to_disable) {
     // Release trace events lock, so observers can trigger trace events.
     AutoUnlock unlock(lock_);
     AutoLock lock2(observers_lock_);
-    for (auto* it : enabled_state_observers_)
+    for (base::trace_event::TraceLog::EnabledStateObserver* it :
+         enabled_state_observers_) {
       it->OnTraceLogDisabled();
+    }
     for (const auto& it : async_observers_) {
       it.second.task_runner->PostTask(
           FROM_HERE, BindOnce(&AsyncEnabledStateObserver::OnTraceLogDisabled,
@@ -1561,6 +1566,7 @@ bool TraceLog::ShouldAddAfterUpdatingState(
     const char* name,
     uint64_t id,
     PlatformThreadId thread_id,
+    const TimeTicks timestamp,
     TraceArguments* args) {
   if (!*category_group_enabled)
     return false;
@@ -1614,7 +1620,7 @@ bool TraceLog::ShouldAddAfterUpdatingState(
     // ETW export expects non-null event names.
     name = name ? name : "";
     TraceEventETWExport::AddEvent(phase, category_group_enabled, name, id,
-                                  args);
+                                  timestamp, args);
   }
 #endif  // BUILDFLAG(IS_WIN)
   return true;
@@ -1726,7 +1732,7 @@ TraceEventHandle TraceLog::AddTraceEventWithThreadIdAndTimestamps(
     unsigned int flags) NO_THREAD_SAFETY_ANALYSIS {
   TraceEventHandle handle = {0, 0, 0};
   if (!ShouldAddAfterUpdatingState(phase, category_group_enabled, name, id,
-                                   thread_id, args)) {
+                                   thread_id, timestamp, args)) {
     return handle;
   }
   DCHECK(!timestamp.is_null());
@@ -2006,7 +2012,7 @@ void TraceLog::AddMetadataEventsWhileLocked() {
 #endif
 
   if (!process_labels_.empty()) {
-    std::vector<base::StringPiece> labels;
+    std::vector<std::string_view> labels;
     for (const auto& it : process_labels_)
       labels.push_back(it.second);
     AddMetadataEventWhileLocked(current_thread_id, "process_labels", "labels",
@@ -2091,6 +2097,11 @@ void TraceLog::OnSetProcessName(const std::string& process_name) {
     TrackEvent::SetTrackDescriptor(track, std::move(desc));
   }
 #endif
+}
+
+int TraceLog::GetNewProcessLabelId() {
+  AutoLock lock(lock_);
+  return next_process_label_id_++;
 }
 
 void TraceLog::UpdateProcessLabel(int label_id,
@@ -2230,8 +2241,10 @@ void TraceLog::OnStop(const perfetto::DataSourceBase::StopArgs& args) {
   }
 
   AutoLock lock(observers_lock_);
-  for (auto* it : enabled_state_observers_)
+  for (base::trace_event::TraceLog::EnabledStateObserver* it :
+       enabled_state_observers_) {
     it->OnTraceLogDisabled();
+  }
   for (const auto& it : async_observers_) {
     it.second.task_runner->PostTask(
         FROM_HERE, BindOnce(&AsyncEnabledStateObserver::OnTraceLogDisabled,

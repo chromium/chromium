@@ -48,8 +48,10 @@ struct CONTENT_EXPORT AttributionConfig {
     // Controls the time window for reporting origins per site limit.
     base::TimeDelta origins_per_site_window = base::Days(1);
 
-    // When adding new members, the corresponding `Validate()` definition and
-    // `operator==()` definition in `attribution_interop_parser_unittest.cc`
+    friend bool operator==(const RateLimitConfig&,
+                           const RateLimitConfig&) = default;
+
+    // When adding new members, the corresponding `Validate()` definition
     // should also be updated.
   };
 
@@ -66,60 +68,19 @@ struct CONTENT_EXPORT AttributionConfig {
     // Returns true if this config is valid.
     [[nodiscard]] bool Validate() const;
 
-    // Controls the valid range of trigger data.
-    uint64_t navigation_source_trigger_data_cardinality = 8;
-    uint64_t event_source_trigger_data_cardinality = 2;
-
-    // Controls randomized response rates for the API: when a source is
-    // registered, this parameter is used to determine the probability that any
-    // subsequent attributions for the source are handled truthfully, or whether
-    // the source is immediately attributed with zero or more fake reports and
-    // real attributions are dropped. Must be non-negative and non-NaN, but may
-    // be infinite.
-    double randomized_response_epsilon = 14;
-
     // Controls how many reports can be in the storage per attribution
     // destination.
     int max_reports_per_destination = 1024;
 
-    static constexpr int kDefaultMaxAttributionsPerEventSource = 1;
-
-    // Controls how many times a single source can create an event-level report.
-    int max_attributions_per_navigation_source = 3;
-    int max_attributions_per_event_source =
-        kDefaultMaxAttributionsPerEventSource;
-
-    // Default constants for report window deadlines.
-    static constexpr base::TimeDelta kDefaultFirstReportWindowDeadline =
-        base::Days(2);
-    static constexpr base::TimeDelta kDefaultSecondReportWindowDeadline =
-        base::Days(7);
-
-    // Controls the report window deadlines for scheduling navigation report
-    // times.
-    base::TimeDelta first_navigation_report_window_deadline =
-        kDefaultFirstReportWindowDeadline;
-    base::TimeDelta second_navigation_report_window_deadline =
-        kDefaultSecondReportWindowDeadline;
-
-    // Controls the report window deadlines for scheduling event report times.
-    base::TimeDelta first_event_report_window_deadline =
-        kDefaultFirstReportWindowDeadline;
-    base::TimeDelta second_event_report_window_deadline =
-        kDefaultSecondReportWindowDeadline;
-
-    // Default constants for max info gain in bits per source type.
-    // Rounded up to nearest e-5 digit.
-    static constexpr double kDefaultMaxNavigationInfoGain = 11.46173;
-    static constexpr double kDefaultMaxEventInfoGain = 6.5;
-
     // Controls the max number bits of information that can be associated with
     // a single a source.
-    double max_navigation_info_gain = kDefaultMaxNavigationInfoGain;
-    double max_event_info_gain = kDefaultMaxEventInfoGain;
+    double max_navigation_info_gain = 11.5;
+    double max_event_info_gain = 6.5;
 
-    // When adding new members, the corresponding `Validate()` definition and
-    // `operator==()` definition in `attribution_interop_parser_unittest.cc`
+    friend bool operator==(const EventLevelLimit&,
+                           const EventLevelLimit&) = default;
+
+    // When adding new members, the corresponding `Validate()` definition
     // should also be updated.
   };
 
@@ -132,13 +93,6 @@ struct CONTENT_EXPORT AttributionConfig {
     // Controls how many reports can be in the storage per attribution
     // destination.
     int max_reports_per_destination = 1024;
-
-    // Controls the maximum sum of the contributions (values) across all buckets
-    // per source.
-    // When updating the value, the corresponding BUDGET_PER_SOURCE value in
-    // //content/browser/resources/attribution_reporting/attribution_internals.ts
-    // should also be updated.
-    int64_t aggregatable_budget_per_source = 65536;
 
     // Default constants for the report delivery time to be used when declaring
     // field trial params.
@@ -154,8 +108,10 @@ struct CONTENT_EXPORT AttributionConfig {
 
     int max_aggregatable_reports_per_source = 20;
 
-    // When adding new members, the corresponding `Validate()` definition and
-    // `operator==()` definition in `attribution_interop_parser_unittest.cc`
+    friend bool operator==(const AggregateLimit&,
+                           const AggregateLimit&) = default;
+
+    // When adding new members, the corresponding `Validate()` definition
     // should also be updated.
   };
 
@@ -167,8 +123,10 @@ struct CONTENT_EXPORT AttributionConfig {
     int max_per_reporting_site = 50;
     base::TimeDelta rate_limit_window = base::Minutes(1);
 
-    // When adding new members, the corresponding `Validate()` definition and
-    // `operator==()` definition in `attribution_interop_parser_unittest.cc`
+    friend bool operator==(const DestinationRateLimit&,
+                           const DestinationRateLimit&) = default;
+
+    // When adding new members, the corresponding `Validate()` definition
     // should also be updated.
   };
 
@@ -185,7 +143,7 @@ struct CONTENT_EXPORT AttributionConfig {
   [[nodiscard]] bool Validate() const;
 
   // Controls how many sources can be in the storage per source origin.
-  int max_sources_per_origin = 1024;
+  int max_sources_per_origin = 4096;
 
   // Controls the maximum number of distinct attribution destinations that can
   // be in storage at any time for sources with the same <source site, reporting
@@ -197,8 +155,10 @@ struct CONTENT_EXPORT AttributionConfig {
   AggregateLimit aggregate_limit;
   DestinationRateLimit destination_rate_limit;
 
-  // When adding new members, the corresponding `Validate()` definition and
-  // `operator==()` definition in `attribution_interop_parser_unittest.cc`
+  friend bool operator==(const AttributionConfig&,
+                         const AttributionConfig&) = default;
+
+  // When adding new members, the corresponding `Validate()` definition
   // should also be updated.
 };
 

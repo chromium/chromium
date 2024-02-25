@@ -5,6 +5,7 @@
 #include "chrome/browser/ash/crosapi/prefs_ash.h"
 
 #include <memory>
+#include <optional>
 
 #include "ash/constants/ash_pref_names.h"
 #include "base/functional/callback_helpers.h"
@@ -23,7 +24,6 @@
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace crosapi {
 namespace {
@@ -38,7 +38,7 @@ class TestObserver : public mojom::PrefObserver {
   // crosapi::mojom::PrefObserver:
   void OnPrefChanged(base::Value value) override { value_ = std::move(value); }
 
-  absl::optional<base::Value> value_;
+  std::optional<base::Value> value_;
   mojo::Receiver<mojom::PrefObserver> receiver_{this};
 };
 
@@ -76,7 +76,7 @@ void GetExtensionPrefWithControl(mojo::Remote<mojom::Prefs>& prefs_remote,
                                  base::Value* get_value,
                                  mojom::PrefControlState* get_control) {
   prefs_remote->GetExtensionPrefWithControl(
-      path, base::BindLambdaForTesting([&](absl::optional<base::Value> value,
+      path, base::BindLambdaForTesting([&](std::optional<base::Value> value,
                                            mojom::PrefControlState control) {
         *get_value = std::move(*value);
         *get_control = control;
@@ -88,7 +88,7 @@ void GetPref(mojo::Remote<mojom::Prefs>& prefs_remote,
              mojom::PrefPath path,
              base::Value* get_value) {
   prefs_remote->GetPref(
-      path, base::BindLambdaForTesting([&](absl::optional<base::Value> value) {
+      path, base::BindLambdaForTesting([&](std::optional<base::Value> value) {
         *get_value = std::move(*value);
       }));
   prefs_remote.FlushForTesting();
@@ -226,10 +226,10 @@ TEST_F(PrefsAshTest, GetUnknown) {
   prefs_ash.BindReceiver(prefs_remote.BindNewPipeAndPassReceiver());
   mojom::PrefPath path = mojom::PrefPath::kUnknown;
 
-  // Get for an unknown value returns absl::nullopt.
+  // Get for an unknown value returns std::nullopt.
   bool has_value = true;
   prefs_remote->GetPref(
-      path, base::BindLambdaForTesting([&](absl::optional<base::Value> value) {
+      path, base::BindLambdaForTesting([&](std::optional<base::Value> value) {
         has_value = value.has_value();
       }));
   prefs_remote.FlushForTesting();
@@ -252,11 +252,11 @@ TEST_F(PrefsAshTest, GetWithControlUnknown) {
   prefs_ash.BindReceiver(prefs_remote.BindNewPipeAndPassReceiver());
   mojom::PrefPath path = mojom::PrefPath::kUnknown;
 
-  // Get for an unknown value returns absl::nullopt.
+  // Get for an unknown value returns std::nullopt.
   bool has_value = true;
   mojom::PrefControlState get_control;
   prefs_remote->GetExtensionPrefWithControl(
-      path, base::BindLambdaForTesting([&](absl::optional<base::Value> value,
+      path, base::BindLambdaForTesting([&](std::optional<base::Value> value,
                                            mojom::PrefControlState control) {
         has_value = value.has_value();
         get_control = control;

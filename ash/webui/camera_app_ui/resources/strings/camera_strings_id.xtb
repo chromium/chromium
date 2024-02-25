@@ -5,7 +5,6 @@
 <translation id="1076394037877376434">Hapus halaman <ph name="PAGE_NUMBER" /></translation>
 <translation id="1113173431709655881">Mode kamera</translation>
 <translation id="1153190633558910465">Petak nonaktif</translation>
-<translation id="1175958423215084756">Link terdeteksi. <ph name="HOSTNAME" /></translation>
 <translation id="1197694886744716213">Halaman <ph name="PAGE_NUMBER" /> dihapus</translation>
 <translation id="1258009455399840361">Putar 90 derajat searah jarum jam</translation>
 <translation id="1417314334557041815">Edit halaman <ph name="INDEX" /></translation>
@@ -47,6 +46,7 @@
 <translation id="3067436040345934772">Geser ke kanan</translation>
 <translation id="3081586908890909590">Beralih ke mode merekam video</translation>
 <translation id="313467653172006084">30 FPS</translation>
+<translation id="3158534262962737808">Gabung dengan "<ph name="WIFINAME" />"?</translation>
 <translation id="3227137524299004712">Mikrofon</translation>
 <translation id="3240426699337459095">Tautan disalin</translation>
 <translation id="3354465018370944241">Setelan foto</translation>
@@ -60,14 +60,12 @@
 <translation id="3642192109456033823">Memproses video...</translation>
 <translation id="3789724198583203151">Putar 90 derajat berlawanan arah jarum jam</translation>
 <translation id="3810838688059735925">Video</translation>
-<translation id="3892148308691398805">Salin teks</translation>
 <translation id="4060608699153044055">Anda tidak dapat merekam karena ruang penyimpanan perangkat hampir penuh. Untuk mulai merekam, Anda perlu mengosongkan ruang penyimpanan di perangkat.</translation>
 <translation id="4061162772429051350"><ph name="MAGAPIXELS_AMOUNT" /> MP</translation>
 <translation id="4118525110028899586">Jeda rekaman</translation>
 <translation id="4121305183798804752">Dokumen terdeteksi</translation>
 <translation id="414641094616694804">Kamera ini tidak dapat mengubah resolusi</translation>
 <translation id="4176463684765177261">Dinonaktifkan</translation>
-<translation id="4269820728363426813">Salin URL</translation>
 <translation id="428234092390943511">Thumbnail halaman</translation>
 <translation id="4349714250734879769">Skalakan frame di Chrome</translation>
 <translation id="4383571725254449280">Log performa cetak</translation>
@@ -81,14 +79,15 @@
 <translation id="4705093842003735294">Resolusi penuh</translation>
 <translation id="4864143361253542638">Daftar halaman yang dipindai</translation>
 <translation id="4890010094662541459">3 x 3</translation>
+<translation id="4892746741161549733">Salin alamat link <ph name="URL" /></translation>
 <translation id="491895758387112773">Multi-streaming perekaman video</translation>
 <translation id="495170559598752135">Tindakan</translation>
 <translation id="4984613436295737187">Quad HD (1440p)</translation>
 <translation id="5034763830503483128">Rasio lebar tinggi foto</translation>
 <translation id="5057360777601936059">Kamera tidak tersedia untuk saat ini.
         Periksa apakah kamera terhubung dengan benar.</translation>
+<translation id="5157591164390831335">URL terdeteksi.</translation>
 <translation id="5163387177077603948">Berpindah ke arah kanan</translation>
-<translation id="5219374179772385066">Mode Time Lapse kini tersedia.</translation>
 <translation id="5235304959032763950">16 banding 9</translation>
 <translation id="5266635337630551423">Pojok kiri atas dokumen</translation>
 <translation id="5317780077021120954">Simpan</translation>
@@ -114,6 +113,7 @@
 <translation id="6353688143752491039">Terima kasih telah memberikan masukan tentang aplikasi Kamera.
 
 Jika masukan Anda berkaitan dengan kualitas gambar atau video, lampirkan contoh foto atau video serta deskripsikan masalahnya. (Misalnya, foto terlalu gelap atau subjek tidak berada dalam fokus.)</translation>
+<translation id="6519884562954018934">Gabung ke <ph name="WIFINAME" /></translation>
 <translation id="6527303717912515753">Bagikan</translation>
 <translation id="6617916774429601017">Tampilkan semua resolusi</translation>
 <translation id="6631515515009660915">Cermin nonaktif</translation>
@@ -133,6 +133,7 @@ Jika masukan Anda berkaitan dengan kualitas gambar atau video, lampirkan contoh 
 <translation id="7450541714075000668">Teks disalin</translation>
 <translation id="7488619942230388918">Rekam video GIF</translation>
 <translation id="7557677699350329807">Beralih ke kamera berikutnya</translation>
+<translation id="7562584071994185503">Salin teks <ph name="TEXT" /></translation>
 <translation id="7607002721634913082">Dijeda</translation>
 <translation id="7608223098072244877">4 kali 4</translation>
 <translation id="761421184377987513">Berpindah ke arah kiri bawah</translation>
@@ -155,10 +156,12 @@ Jika masukan Anda berkaitan dengan kualitas gambar atau video, lampirkan contoh 
 <translation id="8346544573713510785">Skalakan frame di HAL Kamera</translation>
 <translation id="8425673304802773841">Miringkan ke bawah</translation>
 <translation id="8428213095426709021">Setelan</translation>
+<translation id="8609951387004618906">Buka <ph name="URL" /></translation>
 <translation id="8629662593426079630">360p</translation>
 <translation id="8711011893539266636">Aktifkan/nonaktifkan tombol bisukan mikrofon. Bisukan aktif</translation>
 <translation id="8730621377337864115">Selesai</translation>
 <translation id="8732462232047530626">Lihat pratinjau metadata</translation>
+<translation id="874854738381978209">Jaringan Wi-Fi terdeteksi.</translation>
 <translation id="8815966864175525708">Beralih ke mode mengambil foto potret</translation>
 <translation id="8828441885228359828">Lanjutkan rekaman</translation>
 <translation id="8870695351537079478">Tidak dapat memulai rekaman</translation>

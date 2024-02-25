@@ -8,6 +8,7 @@
 #include <list>
 #include <map>
 #include <memory>
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -36,7 +37,6 @@
 #include "components/reporting/util/refcounted_closure_list.h"
 #include "components/reporting/util/status.h"
 #include "components/reporting/util/statusor.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace reporting {
 
@@ -237,7 +237,7 @@ class StorageQueue : public base::RefCountedDeleteOnSequence<StorageQueue> {
 
     // Flag (valid for opened file only): true if file was opened for reading
     // only, false otherwise.
-    absl::optional<bool> is_readonly_ GUARDED_BY_CONTEXT(sequence_checker_);
+    std::optional<bool> is_readonly_ GUARDED_BY_CONTEXT(sequence_checker_);
 
     const base::FilePath filename_;  // relative to the StorageQueue directory
     uint64_t size_ = 0;  // tracked internally rather than by filesystem
@@ -274,7 +274,7 @@ class StorageQueue : public base::RefCountedDeleteOnSequence<StorageQueue> {
   Status Init();
 
   // Retrieves last record digest (does not exist at a generation start).
-  absl::optional<std::string> GetLastRecordDigest() const;
+  std::optional<std::string> GetLastRecordDigest() const;
 
   // Helper method for Init(): process single data file.
   // Return sequencing_id from <prefix>.<sequencing_id> file name, or Status
@@ -438,7 +438,7 @@ class StorageQueue : public base::RefCountedDeleteOnSequence<StorageQueue> {
 
   // Digest of the last written record (loaded at queue initialization, absent
   // if the new generation has just started, and no records where stored yet).
-  absl::optional<std::string> last_record_digest_;
+  std::optional<std::string> last_record_digest_;
 
   // Queue of the write context instances in the order of creation, sequencing
   // ids and record digests. Context is always removed from this queue before
@@ -467,7 +467,7 @@ class StorageQueue : public base::RefCountedDeleteOnSequence<StorageQueue> {
   // If first_unconfirmed_sequencing_id_ < first_sequencing_id_,
   // [first_unconfirmed_sequencing_id_, first_sequencing_id_) is a gap
   // that cannot be filled in and is uploaded as such.
-  absl::optional<int64_t> first_unconfirmed_sequencing_id_;
+  std::optional<int64_t> first_unconfirmed_sequencing_id_;
 
   // Ordered map of the files by ascending sequencing id.
   std::map<int64_t, scoped_refptr<SingleFile>> files_;

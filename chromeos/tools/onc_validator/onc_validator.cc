@@ -90,7 +90,7 @@ void PrintHelp() {
           kStatusArgumentError);
 }
 
-absl::optional<base::Value::Dict> ReadDictionary(const std::string& filename) {
+std::optional<base::Value::Dict> ReadDictionary(const std::string& filename) {
   base::FilePath path(filename);
   JSONFileValueDeserializer deserializer(path,
                                          base::JSON_ALLOW_TRAILING_COMMAS);
@@ -101,7 +101,7 @@ absl::optional<base::Value::Dict> ReadDictionary(const std::string& filename) {
   if (!value) {
     LOG(ERROR) << "Couldn't json-deserialize file '" << filename
                << "': " << json_error;
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   if (!value->is_dict()) {
@@ -124,7 +124,7 @@ int main(int argc, const char* argv[]) {
     return kStatusArgumentError;
   }
 
-  absl::optional<base::Value::Dict> onc_object = ReadDictionary(args[1]);
+  std::optional<base::Value::Dict> onc_object = ReadDictionary(args[1]);
 
   if (!onc_object) {
     return kStatusJsonError;

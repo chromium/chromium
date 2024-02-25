@@ -20,8 +20,9 @@ struct TargetDeviceInfo;
 // A button representing a device in share bubble. It is highlighted when
 // hovered.
 class SendTabToSelfBubbleDeviceButton : public HoverButton {
+  METADATA_HEADER(SendTabToSelfBubbleDeviceButton, HoverButton)
+
  public:
-  METADATA_HEADER(SendTabToSelfBubbleDeviceButton);
   SendTabToSelfBubbleDeviceButton(SendTabToSelfDevicePickerBubbleView* bubble,
                                   const TargetDeviceInfo& device_info);
   SendTabToSelfBubbleDeviceButton(const SendTabToSelfBubbleDeviceButton&) =

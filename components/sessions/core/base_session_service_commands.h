@@ -6,13 +6,13 @@
 #define COMPONENTS_SESSIONS_CORE_BASE_SESSION_SERVICE_COMMANDS_H_
 
 #include <memory>
+#include <optional>
 #include <string>
 
 #include "components/sessions/core/serialized_user_agent_override.h"
 #include "components/sessions/core/session_command.h"
 #include "components/sessions/core/session_id.h"
 #include "components/sessions/core/sessions_export.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace sessions {
 class SessionCommand;
@@ -82,7 +82,7 @@ bool RestoreSetTabUserAgentOverrideCommand2(
     const SessionCommand& command,
     SessionID* tab_id,
     std::string* user_agent_override,
-    absl::optional<std::string>* opaque_ua_metadata_override);
+    std::optional<std::string>* opaque_ua_metadata_override);
 
 // Backwards compatible version that restores versions that didn't have
 // structured user agent override.

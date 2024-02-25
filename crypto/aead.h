@@ -9,13 +9,13 @@
 #include <stdint.h>
 
 #include <string>
+#include <string_view>
 #include <vector>
 
+#include <optional>
 #include "base/containers/span.h"
 #include "base/memory/raw_ptr.h"
-#include "base/strings/string_piece.h"
 #include "crypto/crypto_export.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 struct evp_aead_st;
 
@@ -23,7 +23,7 @@ namespace crypto {
 
 // This class exposes the AES-128-CTR-HMAC-SHA256 and AES_256_GCM AEAD. Note
 // that there are two versions of most methods: an historical version based
-// around |StringPiece| and a more modern version that takes |base::span|.
+// around |std::string_view| and a more modern version that takes |base::span|.
 // Prefer the latter in new code.
 class CRYPTO_EXPORT Aead {
  public:
@@ -51,19 +51,19 @@ class CRYPTO_EXPORT Aead {
                             base::span<const uint8_t> nonce,
                             base::span<const uint8_t> additional_data) const;
 
-  bool Seal(base::StringPiece plaintext,
-            base::StringPiece nonce,
-            base::StringPiece additional_data,
+  bool Seal(std::string_view plaintext,
+            std::string_view nonce,
+            std::string_view additional_data,
             std::string* ciphertext) const;
 
-  absl::optional<std::vector<uint8_t>> Open(
+  std::optional<std::vector<uint8_t>> Open(
       base::span<const uint8_t> ciphertext,
       base::span<const uint8_t> nonce,
       base::span<const uint8_t> additional_data) const;
 
-  bool Open(base::StringPiece ciphertext,
-            base::StringPiece nonce,
-            base::StringPiece additional_data,
+  bool Open(std::string_view ciphertext,
+            std::string_view nonce,
+            std::string_view additional_data,
             std::string* plaintext) const;
 
   size_t KeyLength() const;
@@ -71,21 +71,17 @@ class CRYPTO_EXPORT Aead {
   size_t NonceLength() const;
 
  private:
-  bool Seal(base::span<const uint8_t> plaintext,
-            base::span<const uint8_t> nonce,
-            base::span<const uint8_t> additional_data,
-            uint8_t* out,
-            size_t* output_length,
-            size_t max_output_length) const;
+  std::optional<size_t> Seal(base::span<const uint8_t> plaintext,
+                             base::span<const uint8_t> nonce,
+                             base::span<const uint8_t> additional_data,
+                             base::span<uint8_t> out) const;
 
-  bool Open(base::span<const uint8_t> ciphertext,
-            base::span<const uint8_t> nonce,
-            base::span<const uint8_t> additional_data,
-            uint8_t* out,
-            size_t* output_length,
-            size_t max_output_length) const;
+  std::optional<size_t> Open(base::span<const uint8_t> ciphertext,
+                             base::span<const uint8_t> nonce,
+                             base::span<const uint8_t> additional_data,
+                             base::span<uint8_t> out) const;
 
-  absl::optional<base::span<const uint8_t>> key_;
+  std::optional<base::span<const uint8_t>> key_;
   raw_ptr<const evp_aead_st> aead_;
 };
 

@@ -72,7 +72,7 @@ void ModelTypeProcessorProxy::OnCommitFailed(SyncCommitError commit_error) {
 void ModelTypeProcessorProxy::OnUpdateReceived(
     const sync_pb::ModelTypeState& type_state,
     UpdateResponseDataList updates,
-    absl::optional<sync_pb::GarbageCollectionDirective> gc_directive) {
+    std::optional<sync_pb::GarbageCollectionDirective> gc_directive) {
   task_runner_->PostTask(
       FROM_HERE,
       base::BindOnce(&ModelTypeProcessor::OnUpdateReceived, processor_,

@@ -89,6 +89,35 @@ class ChromeEnterpriseTestCase(EnterpriseTestCase):
         r'*/chrome/updater/*=2')
     self.RunCommand(instance_name, cmd)
 
+  def GetChromeVersion(self, instance_name):
+    """Get Chrome Version by querying Windows registry"""
+    cmd = (
+        r'reg query' +
+        r' "HKLM\SOFTWARE\Google\Update\Clients\{8A69D345-D564-463C-AFF1-A69D9E530F96}"'
+        + r' /reg:32 /v pv')
+    chrome_version = self.RunCommand(instance_name, cmd)
+
+    return chrome_version.decode().split()[-1]
+
+  def RunGoogleUpdaterTaskSchedulerCommand(self, instance_name, cmd):
+    """Run task scheduler powershell command to Google Updater"""
+    script = r'Get-ScheduledTask -TaskPath \GoogleSystem\GoogleUpdater\ | ' + cmd
+    return self.clients[instance_name].RunPowershell(script).decode().strip()
+
+  def WaitForUpdateCheck(self, instance_name):
+    """Wait for the updater task to be ready again"""
+    max_wait_time_secs = 120
+    total_wait_time_secs = 0
+    delta_secs = 5
+
+    while total_wait_time_secs < max_wait_time_secs:
+      time.sleep(delta_secs)
+      total_wait_time_secs += delta_secs
+      state = self.RunGoogleUpdaterTaskSchedulerCommand(
+          instance_name, 'Select -ExpandProperty "State"')
+      if state == 'Ready':
+        break
+
   def InstallChrome(self, instance_name, system_level=False):
     """Installs chrome.
 
@@ -162,6 +191,14 @@ class ChromeEnterpriseTestCase(EnterpriseTestCase):
                  key, policy_name, policy_value, policy_type)
       self.clients[instance_name].RunPowershell(cmd)
 
+  def SetOmahaPolicy(self, instance_name, policy_name, policy_value,
+                     policy_type):
+    key = r'HKLM\Software\Policies\Google\Update'
+    cmd = (r"Set-GPRegistryValue -Name 'Default Domain Policy' "
+           "-Key %s -ValueName %s -Value %s -Type %s") % (
+               key, policy_name, policy_value, policy_type)
+    self.clients[instance_name].RunPowershell(cmd)
+
   def RemoveDeviceTrustKey(self, instance_name):
     """Removes a device trust key in registry.
 
@@ -193,6 +230,12 @@ class ChromeEnterpriseTestCase(EnterpriseTestCase):
       cmd = (r"Remove-GPRegistryValue -Name 'Default Domain Policy' "
              "-Key %s -ValueName %s") % (key, policy_name)
       self.clients[instance_name].RunPowershell(cmd)
+
+  def GetFileFromGCSBucket(self, path):
+    """Get file from GCS bucket"""
+    path = "gs://%s/%s" % (self.gsbucket, path)
+    cmd = r'gsutil cat ' + path
+    return self.RunCommand(self.win_config['dc'], cmd).rstrip().decode()
 
   def InstallWebDriver(self, instance_name):
     self.RunCommand(instance_name, r'md -Force c:\temp')
@@ -232,8 +275,8 @@ class ChromeEnterpriseTestCase(EnterpriseTestCase):
     args = subprocess.list2cmdline(args)
     self._pythonExecutablePath[instance_name] = (
         r'C:\ProgramData\chocolatey\lib\python\tools\python.exe')
-    cmd = r'%s %s %s' % (self._pythonExecutablePath[instance_name], file_name,
-                         args)
+    cmd = r'%s -u %s %s' % (self._pythonExecutablePath[instance_name],
+                            file_name, args)
     return self.RunCommand(instance_name, cmd).decode()
 
   def EnableHistogramSupport(self, instance_name, base_path):
@@ -256,6 +299,32 @@ class ChromeEnterpriseTestCase(EnterpriseTestCase):
     self.UploadFile(self.win_config['client'],
                     os.path.join(base_path, 'common', 'histogram', 'util.py'),
                     dest_path)
+
+  def EnableDemoAgent(self, instance_name):
+    # enterprise/e2e/connector/common/demo_agent
+    base_path = dir = os.path.dirname(
+        os.path.dirname(os.path.abspath(__file__)))
+    agent_path = os.path.join(base_path, 'connector', 'common', 'demo_agent')
+
+    # create dest path
+    dest_path = join('c:', 'temp', 'demo_agent')
+    cmd = r'New-Item -ItemType Directory -Force -Path ' + dest_path
+    self.clients[instance_name].RunPowershell(cmd)
+
+    # Install Visual C++ Redistributable package as demo agent's dependency
+    gspath = "gs://%s/%s" % (self.gsbucket, 'secrets/VC_redist.x64.exe')
+    cmd = r'gsutil cp ' + gspath + ' ' + dest_path
+
+    self.RunCommand(instance_name, cmd)
+
+    cmd = r'C:\temp\demo_agent\VC_redist.x64.exe /passive'
+    self.RunCommand(instance_name, cmd)
+
+    # upload demo agent
+    self.UploadFile(self.win_config['client'],
+                    os.path.join(agent_path, 'agent.zip'), dest_path)
+    cmd = r'Expand-Archive -Path c:\temp\demo_agent\agent.zip -DestinationPath c:\temp\demo_agent'
+    self.clients[instance_name].RunPowershell(cmd)
 
   def RunUITest(self, instance_name, test_file, timeout=300, args=[]):
     """Runs a UI test on an instance.

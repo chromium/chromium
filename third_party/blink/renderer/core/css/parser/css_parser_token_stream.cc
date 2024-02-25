@@ -59,6 +59,28 @@ void CSSParserTokenStream::UncheckedConsumeComponentValue() {
   } while (!PeekInternal().IsEOF() && nesting_level);
 }
 
+CSSParserTokenRange CSSParserTokenStream::ConsumeComponentValue() {
+  EnsureLookAhead();
+
+  buffer_.Shrink(0);
+
+  if (AtEnd()) {
+    return CSSParserTokenRange(base::span<CSSParserToken>{});
+  }
+
+  unsigned nesting_level = 0;
+  do {
+    buffer_.push_back(UncheckedConsumeInternal());
+    if (buffer_.back().GetBlockType() == CSSParserToken::kBlockStart) {
+      nesting_level++;
+    } else if (buffer_.back().GetBlockType() == CSSParserToken::kBlockEnd) {
+      nesting_level--;
+    }
+  } while (!PeekInternal().IsEOF() && nesting_level);
+
+  return CSSParserTokenRange(buffer_);
+}
+
 void CSSParserTokenStream::UncheckedSkipToEndOfBlock() {
   DCHECK(HasLookAhead());
 

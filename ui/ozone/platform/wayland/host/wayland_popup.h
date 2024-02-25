@@ -91,7 +91,7 @@ class WaylandPopup : public WaylandWindow {
   bool schedule_redraw_ = false;
 
   // The last buffer scale sent to the wayland server.
-  absl::optional<float> last_sent_buffer_scale_;
+  std::optional<float> last_sent_buffer_scale_;
 };
 
 }  // namespace ui

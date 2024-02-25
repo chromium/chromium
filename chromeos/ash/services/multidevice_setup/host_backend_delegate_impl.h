@@ -5,13 +5,14 @@
 #ifndef CHROMEOS_ASH_SERVICES_MULTIDEVICE_SETUP_HOST_BACKEND_DELEGATE_IMPL_H_
 #define CHROMEOS_ASH_SERVICES_MULTIDEVICE_SETUP_HOST_BACKEND_DELEGATE_IMPL_H_
 
+#include <optional>
+
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/timer/timer.h"
 #include "chromeos/ash/components/multidevice/remote_device_ref.h"
 #include "chromeos/ash/services/device_sync/public/cpp/device_sync_client.h"
 #include "chromeos/ash/services/multidevice_setup/host_backend_delegate.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 class PrefRegistrySimple;
 class PrefService;
@@ -65,11 +66,11 @@ class HostBackendDelegateImpl : public HostBackendDelegate,
 
   // HostBackendDelegate:
   void AttemptToSetMultiDeviceHostOnBackend(
-      const absl::optional<multidevice::RemoteDeviceRef>& host_device) override;
+      const std::optional<multidevice::RemoteDeviceRef>& host_device) override;
   bool HasPendingHostRequest() override;
-  absl::optional<multidevice::RemoteDeviceRef> GetPendingHostRequest()
+  std::optional<multidevice::RemoteDeviceRef> GetPendingHostRequest()
       const override;
-  absl::optional<multidevice::RemoteDeviceRef> GetMultiDeviceHostFromBackend()
+  std::optional<multidevice::RemoteDeviceRef> GetMultiDeviceHostFromBackend()
       const override;
 
   // DeviceSyncClient::Observer:
@@ -86,24 +87,23 @@ class HostBackendDelegateImpl : public HostBackendDelegate,
   // in the list of synced devices. If no such device exists, returns null.
   // TODO(https://crbug.com/1019206): When v1 DeviceSync is disabled, only look
   // up by Instance ID since all devices are guaranteed to have one.
-  absl::optional<multidevice::RemoteDeviceRef> FindDeviceById(
+  std::optional<multidevice::RemoteDeviceRef> FindDeviceById(
       const std::string& id) const;
 
   void AttemptNetworkRequest(bool is_retry);
-  absl::optional<multidevice::RemoteDeviceRef> GetHostFromDeviceSync();
+  std::optional<multidevice::RemoteDeviceRef> GetHostFromDeviceSync();
   void OnSetHostNetworkRequestFinished(
       multidevice::RemoteDeviceRef device_for_request,
       bool attempted_to_enable,
       device_sync::mojom::NetworkRequestResult result_code);
 
-  raw_ptr<EligibleHostDevicesProvider, ExperimentalAsh>
-      eligible_host_devices_provider_;
-  raw_ptr<PrefService, ExperimentalAsh> pref_service_;
-  raw_ptr<device_sync::DeviceSyncClient, ExperimentalAsh> device_sync_client_;
+  raw_ptr<EligibleHostDevicesProvider> eligible_host_devices_provider_;
+  raw_ptr<PrefService> pref_service_;
+  raw_ptr<device_sync::DeviceSyncClient> device_sync_client_;
   std::unique_ptr<base::OneShotTimer> timer_;
 
   // The most-recent snapshot of the host on the back-end.
-  absl::optional<multidevice::RemoteDeviceRef> host_from_last_sync_;
+  std::optional<multidevice::RemoteDeviceRef> host_from_last_sync_;
 
   base::WeakPtrFactory<HostBackendDelegateImpl> weak_ptr_factory_{this};
 };

@@ -35,6 +35,14 @@
 // and accessibility trait UIAccessibilityTraitButton.
 + (id<GREYMatcher>)buttonWithAccessibilityLabelID:(int)messageID;
 
+// Matcher for element with foreground color corresponding to `colorName`
+// and accessibility trait UIAccessibilityTraitButton.
++ (id<GREYMatcher>)buttonWithForegroundColor:(NSString*)colorName;
+
+// Matcher for element with background color corresponding to `colorName`
+// and accessibility trait UIAccessibilityTraitButton.
++ (id<GREYMatcher>)buttonWithBackgroundColor:(NSString*)colorName;
+
 // Matcher for context menu items with accessibility label
 // corresponding to `label`.
 + (id<GREYMatcher>)contextMenuItemWithAccessibilityLabel:(NSString*)label;
@@ -48,6 +56,11 @@
 
 // Matcher for element with an image defined by its name in the main bundle.
 + (id<GREYMatcher>)imageViewWithImageNamed:(NSString*)imageName;
+
+// Matcher for element with a custom symbol defined by its name and point size
+// in the main bundle.
++ (id<GREYMatcher>)imageViewWithCustomSymbolNamed:(NSString*)symbolName
+                                        pointSize:(CGFloat)pointSize;
 
 // Matcher for element with an image corresponding to `imageID` and
 // accessibility trait UIAccessibilityTraitButton.
@@ -89,9 +102,6 @@
 // Returns the matcher for an enabled cancel button in a navigation bar.
 + (id<GREYMatcher>)navigationBarCancelButton;
 
-// Returns matcher for a close button.
-+ (id<GREYMatcher>)closeButton;
-
 // Returns matcher for close tab context menu button.
 + (id<GREYMatcher>)closeTabMenuButton;
 
@@ -109,6 +119,12 @@
 
 // Returns a matcher for the omnibox.
 + (id<GREYMatcher>)omnibox;
+
+// Returns a matcher for the omnibox at the bottom.
++ (id<GREYMatcher>)omniboxAtBottom;
+
+// Returns a matcher for the omnibox on the top.
++ (id<GREYMatcher>)omniboxOnTop;
 
 // Returns a matcher for the location view.
 + (id<GREYMatcher>)defocusedLocationView;
@@ -263,6 +279,13 @@
 // "Not johndoe@example.com" button.
 + (id<GREYMatcher>)secondarySignInButton;
 
+// Returns matcher for the identity chooser scrim that is shown behind the
+// identity chooser dialog. Tapping on the scrim dismisses the dialog.
++ (id<GREYMatcher>)identityChooserScrim;
+
+// Returns matcher for the cancel button in the fake add account flow.
++ (id<GREYMatcher>)fakeFakeAddAccountScreenCancelButton;
+
 // Returns matcher for the button for the currently signed in account in the
 // settings menu.
 + (id<GREYMatcher>)settingsAccountButton;
@@ -326,6 +349,10 @@
 // Returns matcher for the Google Services Settings view.
 + (id<GREYMatcher>)googleServicesSettingsView;
 
+// Returns matcher for the Navigation Bar embedded in the Settings Navigation
+// Controller.
++ (id<GREYMatcher>)settingsNavigationBar;
+
 // Returns matcher for the back button on a settings menu.
 + (id<GREYMatcher>)settingsMenuBackButton;
 
@@ -341,6 +368,9 @@
 
 // Returns matcher for the Save passwords cell on the main Settings screen.
 + (id<GREYMatcher>)settingsMenuPasswordsButton;
+
+// Returns matcher for the Safety Check cell on the main Settings screen.
++ (id<GREYMatcher>)settingsMenuSafetyCheckButton;
 
 // Returns matcher for the payment request collection view.
 + (id<GREYMatcher>)paymentRequestView;
@@ -504,6 +534,9 @@
 // PageControl panel always exist only on the tab grid normal mode, So this can
 // be used to validate that the tab grid normal mode is active.
 + (id<GREYMatcher>)tabGridNormalModePageControl;
+
+// Returns the GREYMatcher for the Inactive Tabs button of the tab grid.
++ (id<GREYMatcher>)tabGridInactiveTabsButton;
 
 // Returns the GREYMatcher for the background of the tab grid.
 + (id<GREYMatcher>)tabGridBackground;
@@ -674,9 +707,6 @@
 
 // Returns a matcher for the a password in the manual fallback list.
 + (id<GREYMatcher>)manualFallbackPasswordButtonMatcher;
-
-// Returns a matcher for the PasswordTableView window.
-+ (id<GREYMatcher>)manualFallbackPasswordTableViewWindowMatcher;
 
 // Returns a matcher for the profiles icon in the keyboard accessory bar.
 + (id<GREYMatcher>)manualFallbackProfilesIconMatcher;

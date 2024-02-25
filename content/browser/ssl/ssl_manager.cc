@@ -9,6 +9,7 @@
 
 #include "base/command_line.h"
 #include "base/functional/bind.h"
+#include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/supports_user_data.h"
@@ -96,10 +97,10 @@ class SSLManagerSet : public base::SupportsUserData::Data {
   SSLManagerSet(const SSLManagerSet&) = delete;
   SSLManagerSet& operator=(const SSLManagerSet&) = delete;
 
-  std::set<SSLManager*>& get() { return set_; }
+  std::set<raw_ptr<SSLManager, SetExperimental>>& get() { return set_; }
 
  private:
-  std::set<SSLManager*> set_;
+  std::set<raw_ptr<SSLManager, SetExperimental>> set_;
 };
 
 }  // namespace
@@ -396,7 +397,7 @@ bool SSLManager::UpdateEntry(NavigationEntryImpl* entry,
   // necessarily have site instances.  Without a process, the entry can't
   // possibly have insecure content.  See bug https://crbug.com/12423.
   if (site_instance && ssl_host_state_delegate_) {
-    const absl::optional<url::Origin>& entry_origin =
+    const std::optional<url::Origin>& entry_origin =
         entry->root_node()->frame_entry->committed_origin();
     // In some cases (e.g., unreachable URLs), navigation entries might not have
     // origins attached to them. We don't care about tracking mixed content for
@@ -435,7 +436,7 @@ bool SSLManager::UpdateEntry(NavigationEntryImpl* entry,
 void SSLManager::UpdateLastCommittedEntry(int add_content_status_flags,
                                           int remove_content_status_flags) {
   NavigationEntryImpl* entry;
-  if (controller_->frame_tree().type() == FrameTree::Type::kFencedFrame) {
+  if (controller_->frame_tree().is_fenced_frame()) {
     // Only the primary frame tree's NavigationEntries are exposed outside of
     // content, so the primary frame tree's NavigationController needs to
     // represent an aggregate view of the security state of its inner frame
@@ -461,8 +462,9 @@ void SSLManager::UpdateLastCommittedEntry(int add_content_status_flags,
 }
 
 void SSLManager::NotifyDidChangeVisibleSSLState() {
-  WebContentsImpl* contents =
-      static_cast<WebContentsImpl*>(controller_->DeprecatedGetWebContents());
+  RenderFrameHostImpl* main_frame = controller_->frame_tree().GetMainFrame();
+  WebContentsImpl* contents = static_cast<WebContentsImpl*>(
+      WebContents::FromRenderFrameHost(main_frame));
   contents->DidChangeVisibleSecurityState();
 }
 
@@ -471,7 +473,7 @@ void SSLManager::NotifySSLInternalStateChanged(BrowserContext* context) {
   SSLManagerSet* managers =
       static_cast<SSLManagerSet*>(context->GetUserData(kSSLManagerKeyName));
 
-  for (auto* manager : managers->get()) {
+  for (SSLManager* manager : managers->get()) {
     // TODO(crbug.com/1320302): Ensure proper notify_changes is passed to
     // UpdateEntry.
     manager->UpdateEntry(manager->controller()->GetLastCommittedEntry(), 0, 0,

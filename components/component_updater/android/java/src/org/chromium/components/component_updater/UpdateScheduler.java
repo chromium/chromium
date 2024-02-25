@@ -4,10 +4,11 @@
 
 package org.chromium.components.component_updater;
 
+import org.jni_zero.CalledByNative;
+import org.jni_zero.JNINamespace;
+import org.jni_zero.NativeMethods;
+
 import org.chromium.base.ContextUtils;
-import org.chromium.base.annotations.CalledByNative;
-import org.chromium.base.annotations.JNINamespace;
-import org.chromium.base.annotations.NativeMethods;
 import org.chromium.components.background_task_scheduler.BackgroundTask.TaskFinishedCallback;
 import org.chromium.components.background_task_scheduler.BackgroundTaskSchedulerFactory;
 import org.chromium.components.background_task_scheduler.TaskIds;
@@ -53,14 +54,15 @@ public class UpdateScheduler {
         // update tasks would be cancelled.
         if (mTaskFinishedCallback != null) return;
 
-        TaskInfo taskInfo = TaskInfo.createOneOffTask(TaskIds.COMPONENT_UPDATE_JOB_ID, delayMs,
-                                            Integer.MAX_VALUE)
-                                    .setUpdateCurrent(true)
-                                    .setRequiredNetworkType(TaskInfo.NetworkType.UNMETERED)
-                                    .setIsPersisted(true)
-                                    .build();
-        BackgroundTaskSchedulerFactory.getScheduler().schedule(
-                ContextUtils.getApplicationContext(), taskInfo);
+        TaskInfo taskInfo =
+                TaskInfo.createOneOffTask(
+                                TaskIds.COMPONENT_UPDATE_JOB_ID, delayMs, Integer.MAX_VALUE)
+                        .setUpdateCurrent(true)
+                        .setRequiredNetworkType(TaskInfo.NetworkType.UNMETERED)
+                        .setIsPersisted(true)
+                        .build();
+        BackgroundTaskSchedulerFactory.getScheduler()
+                .schedule(ContextUtils.getApplicationContext(), taskInfo);
     }
 
     @CalledByNative
@@ -86,13 +88,14 @@ public class UpdateScheduler {
 
     @CalledByNative
     private void cancelTask() {
-        BackgroundTaskSchedulerFactory.getScheduler().cancel(
-                ContextUtils.getApplicationContext(), TaskIds.COMPONENT_UPDATE_JOB_ID);
+        BackgroundTaskSchedulerFactory.getScheduler()
+                .cancel(ContextUtils.getApplicationContext(), TaskIds.COMPONENT_UPDATE_JOB_ID);
     }
 
     @NativeMethods
     interface Natives {
         void onStartTask(long nativeBackgroundTaskUpdateScheduler, UpdateScheduler caller);
+
         void onStopTask(long nativeBackgroundTaskUpdateScheduler, UpdateScheduler caller);
     }
 }

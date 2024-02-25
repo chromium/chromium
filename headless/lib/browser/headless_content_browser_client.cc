@@ -5,6 +5,7 @@
 #include "headless/lib/browser/headless_content_browser_client.h"
 
 #include <string>
+#include <string_view>
 #include <unordered_set>
 #include <vector>
 
@@ -15,7 +16,6 @@
 #include "base/i18n/rtl.h"
 #include "base/path_service.h"
 #include "base/strings/string_number_conversions.h"
-#include "base/strings/string_piece.h"
 #include "base/strings/string_split.h"
 #include "build/build_config.h"
 #include "components/embedder_support/switches.h"
@@ -114,12 +114,7 @@ HeadlessContentBrowserClient::~HeadlessContentBrowserClient() = default;
 std::unique_ptr<content::BrowserMainParts>
 HeadlessContentBrowserClient::CreateBrowserMainParts(
     bool /* is_integration_test */) {
-  auto browser_main_parts =
-      std::make_unique<HeadlessBrowserMainParts>(browser_);
-
-  browser_->set_browser_main_parts(browser_main_parts.get());
-
-  return browser_main_parts;
+  return std::make_unique<HeadlessBrowserMainParts>(*browser_);
 }
 
 void HeadlessContentBrowserClient::OverrideWebkitPrefs(
@@ -202,6 +197,9 @@ void HeadlessContentBrowserClient::AppendExtraCommandLineSwitches(
       *base::CommandLine::ForCurrentProcess());
   if (old_command_line.HasSwitch(switches::kDisablePDFTagging))
     command_line->AppendSwitch(switches::kDisablePDFTagging);
+  if (old_command_line.HasSwitch(switches::kGeneratePDFDocumentOutline)) {
+    command_line->AppendSwitch(switches::kGeneratePDFDocumentOutline);
+  }
 
   // If we're spawning a renderer, then override the language switch.
   std::string process_type =
@@ -215,7 +213,7 @@ void HeadlessContentBrowserClient::AppendExtraCommandLineSwitches(
           HeadlessBrowserContextImpl::From(
               render_process_host->GetBrowserContext());
 
-      std::vector<base::StringPiece> languages = base::SplitStringPiece(
+      std::vector<std::string_view> languages = base::SplitStringPiece(
           headless_browser_context_impl->options()->accept_language(), ",",
           base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
       if (!languages.empty()) {
@@ -288,14 +286,16 @@ bool HeadlessContentBrowserClient::IsSharedStorageAllowed(
     content::BrowserContext* browser_context,
     content::RenderFrameHost* rfh,
     const url::Origin& top_frame_origin,
-    const url::Origin& accessing_origin) {
+    const url::Origin& accessing_origin,
+    std::string* out_debug_message) {
   return true;
 }
 
 bool HeadlessContentBrowserClient::IsSharedStorageSelectURLAllowed(
     content::BrowserContext* browser_context,
     const url::Origin& top_frame_origin,
-    const url::Origin& accessing_origin) {
+    const url::Origin& accessing_origin,
+    std::string* out_debug_message) {
   return true;
 }
 
@@ -342,7 +342,7 @@ bool HeadlessContentBrowserClient::CanAcceptUntrustedExchangesIfNeeded() {
 device::GeolocationManager*
 HeadlessContentBrowserClient::GetGeolocationManager() {
 #if BUILDFLAG(IS_MAC)
-  return browser_->browser_main_parts()->GetGeolocationManager();
+  return browser_->GetGeolocationManager();
 #else
   return nullptr;
 #endif
@@ -350,7 +350,7 @@ HeadlessContentBrowserClient::GetGeolocationManager() {
 
 #if BUILDFLAG(IS_WIN)
 void HeadlessContentBrowserClient::SessionEnding(
-    absl::optional<DWORD> control_type) {
+    std::optional<DWORD> control_type) {
   DCHECK_LT(control_type.value_or(0), 0x7fu);
   browser_->ShutdownWithExitCode(control_type.value_or(0) + 0x80u);
 }

@@ -6,6 +6,7 @@
 
 #include <vector>
 
+#include "ash/accelerators/accelerator_prefs.h"
 #include "ash/accelerators/accelerator_table.h"
 #include "ash/accelerators/debug_commands.h"
 #include "ash/constants/ash_features.h"
@@ -21,11 +22,11 @@
 #include "base/containers/cxx20_erase.h"
 #include "base/containers/span.h"
 #include "base/logging.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/values.h"
-#include "chromeos/ui/wm/features.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
 #include "ui/base/accelerators/accelerator.h"
@@ -84,11 +85,11 @@ base::Value AcceleratorModificationDataToValue(
 
 AcceleratorModificationData ValueToAcceleratorModificationData(
     const base::Value::Dict& value) {
-  absl::optional<int> keycode = value.FindInt(kAcceleratorKeyCodeKey);
-  absl::optional<int> modifier = value.FindInt(kAcceleratorModifiersKey);
-  absl::optional<int> modification_action =
+  std::optional<int> keycode = value.FindInt(kAcceleratorKeyCodeKey);
+  std::optional<int> modifier = value.FindInt(kAcceleratorModifiersKey);
+  std::optional<int> modification_action =
       value.FindInt(kAcceleratorModificationActionKey);
-  absl::optional<int> key_state = value.FindInt(kAcceleratorKeyStateKey);
+  std::optional<int> key_state = value.FindInt(kAcceleratorKeyStateKey);
   CHECK(keycode.has_value());
   CHECK(modifier.has_value());
   CHECK(modification_action.has_value());
@@ -135,11 +136,6 @@ std::vector<ash::AcceleratorData> GetDefaultAccelerators() {
             ash::kEnabledWithImprovedDesksKeyboardShortcutsAcceleratorData,
             ash::
                 kEnabledWithImprovedDesksKeyboardShortcutsAcceleratorDataLength));
-  } else if (::features::IsNewShortcutMappingEnabled()) {
-    AppendAcceleratorData(
-        accelerators,
-        base::make_span(ash::kEnableWithNewMappingAcceleratorData,
-                        ash::kEnableWithNewMappingAcceleratorDataLength));
   } else {
     AppendAcceleratorData(
         accelerators,
@@ -153,17 +149,18 @@ std::vector<ash::AcceleratorData> GetDefaultAccelerators() {
             ash::kEnableWithSameAppWindowCycleAcceleratorData,
             ash::kEnableWithSameAppWindowCycleAcceleratorDataLength));
   }
-  if (chromeos::wm::features::IsWindowLayoutMenuEnabled()) {
-    AppendAcceleratorData(
-        accelerators,
-        base::make_span(ash::kEnableWithFloatWindowAcceleratorData,
-                        ash::kEnableWithFloatWindowAcceleratorDataLength));
-  }
+
   if (ash::features::IsGameDashboardEnabled()) {
     AppendAcceleratorData(
         accelerators,
         base::make_span(ash::kToggleGameDashboardAcceleratorData,
                         ash::kToggleGameDashboardAcceleratorDataLength));
+  }
+
+  if (ash::features::IsPickerUpdateEnabled()) {
+    AppendAcceleratorData(
+        accelerators, base::make_span(ash::kTogglePickerAcceleratorData,
+                                      ash::kTogglePickerAcceleratorDataLength));
   }
 
   // Debug accelerators.
@@ -203,40 +200,48 @@ AshAcceleratorConfiguration::~AshAcceleratorConfiguration() {
 // static:
 void AshAcceleratorConfiguration::RegisterProfilePrefs(
     PrefRegistrySimple* registry) {
-  if (!::features::IsShortcutCustomizationEnabled()) {
-    return;
-  }
-
   registry->RegisterDictionaryPref(prefs::kShortcutCustomizationOverrides);
 }
 
 void AshAcceleratorConfiguration::OnActiveUserPrefServiceChanged(
     PrefService* pref_service) {
   // A pref service may not be available in tests.
-  if (!::features::IsShortcutCustomizationEnabled() || !pref_service ||
-      pref_service != GetActiveUserPrefService()) {
+  if (!pref_service || pref_service != GetActiveUserPrefService() ||
+      !Shell::Get()->accelerator_prefs()->IsCustomizationAllowed()) {
     return;
   }
 
   // Store a copy of the pref overrides.
   accelerator_overrides_ =
       pref_service->GetDict(prefs::kShortcutCustomizationOverrides).Clone();
-  // Reset to default first.
-  ResetAllAccelerators();
-  ApplyPrefOverrides();
+
+  base::UmaHistogramCounts1000(
+      "Ash.ShortcutCustomization.CustomizationsLoadedOnStartup",
+      GetTotalNumberOfModifications());
+
+  if (features::IsResetShortcutCustomizationsEnabled()) {
+    VLOG(1) << "ResetShortcutCustomizations flag enabled, "
+            << "resetting all shortcuts.";
+    RestoreAllDefaults();
+  } else {
+    ResetAllAccelerators();
+    ApplyPrefOverrides();
+  }
 }
 
-const std::vector<ui::Accelerator>&
+base::optional_ref<const std::vector<ui::Accelerator>>
 AshAcceleratorConfiguration::GetAcceleratorsForAction(
     AcceleratorActionId action_id) {
   const auto accelerator_iter = id_to_accelerators_.find(action_id);
-  CHECK(accelerator_iter != id_to_accelerators_.end());
+  if (accelerator_iter == id_to_accelerators_.end()) {
+    return std::nullopt;
+  }
 
   return accelerator_iter->second;
 }
 
 bool AshAcceleratorConfiguration::IsMutable() const {
-  return ::features::IsShortcutCustomizationEnabled();
+  return Shell::Get()->accelerator_prefs()->IsCustomizationAllowed();
 }
 
 bool AshAcceleratorConfiguration::IsDeprecated(
@@ -259,7 +264,7 @@ const AcceleratorAction* AshAcceleratorConfiguration::FindAcceleratorAction(
 AcceleratorConfigResult AshAcceleratorConfiguration::AddUserAccelerator(
     AcceleratorActionId action_id,
     const ui::Accelerator& accelerator) {
-  CHECK(::features::IsShortcutCustomizationEnabled());
+  CHECK(Shell::Get()->accelerator_prefs()->IsCustomizationAllowed());
   const AcceleratorConfigResult result =
       DoAddAccelerator(action_id, accelerator, /*save_override=*/true);
 
@@ -277,7 +282,7 @@ AcceleratorConfigResult AshAcceleratorConfiguration::AddUserAccelerator(
 AcceleratorConfigResult AshAcceleratorConfiguration::RemoveAccelerator(
     AcceleratorActionId action_id,
     const ui::Accelerator& accelerator) {
-  CHECK(::features::IsShortcutCustomizationEnabled());
+  CHECK(Shell::Get()->accelerator_prefs()->IsCustomizationAllowed());
   AcceleratorConfigResult result =
       DoRemoveAccelerator(action_id, accelerator, /*save_override=*/true);
 
@@ -295,7 +300,7 @@ AcceleratorConfigResult AshAcceleratorConfiguration::ReplaceAccelerator(
     AcceleratorActionId action_id,
     const ui::Accelerator& old_accelerator,
     const ui::Accelerator& new_accelerator) {
-  CHECK(::features::IsShortcutCustomizationEnabled());
+  CHECK(Shell::Get()->accelerator_prefs()->IsCustomizationAllowed());
 
   const AcceleratorConfigResult result =
       DoReplaceAccelerator(action_id, old_accelerator, new_accelerator);
@@ -374,6 +379,10 @@ AcceleratorConfigResult AshAcceleratorConfiguration::RestoreDefault(
 }
 
 AcceleratorConfigResult AshAcceleratorConfiguration::RestoreAllDefaults() {
+  base::UmaHistogramCounts1000(
+      "Ash.ShortcutCustomization.CustomizationsBeforeResetAll",
+      GetTotalNumberOfModifications());
+
   ResetAllAccelerators();
 
   // Clear the prefs to be back to default.
@@ -425,6 +434,10 @@ void AshAcceleratorConfiguration::RemoveObserver(Observer* observer) {
   observer_list_.RemoveObserver(observer);
 }
 
+bool AshAcceleratorConfiguration::HasObserver(Observer* observer) {
+  return observer_list_.HasObserver(observer);
+}
+
 // This function must only be called after Initialize().
 void AshAcceleratorConfiguration::InitializeDeprecatedAccelerators(
     base::span<const DeprecatedAcceleratorData> deprecated_data,
@@ -455,7 +468,7 @@ AcceleratorConfigResult AshAcceleratorConfiguration::DoRemoveAccelerator(
     AcceleratorActionId action_id,
     const ui::Accelerator& accelerator,
     bool save_override) {
-  CHECK(::features::IsShortcutCustomizationEnabled());
+  CHECK(Shell::Get()->accelerator_prefs()->IsCustomizationAllowed());
 
   // If the accelerator is deprecated, remove it.
   const AcceleratorAction* deprecated_action_id =
@@ -505,7 +518,7 @@ AcceleratorConfigResult AshAcceleratorConfiguration::DoAddAccelerator(
     AcceleratorActionId action_id,
     const ui::Accelerator& accelerator,
     bool save_override) {
-  CHECK(::features::IsShortcutCustomizationEnabled());
+  CHECK(Shell::Get()->accelerator_prefs()->IsCustomizationAllowed());
 
   const auto& accelerators_iter = id_to_accelerators_.find(action_id);
   if (accelerators_iter == id_to_accelerators_.end()) {
@@ -521,7 +534,7 @@ AcceleratorConfigResult AshAcceleratorConfiguration::DoAddAccelerator(
     // save the override as it will be handled implicitly when applying the
     // prefs.
     bool save_remove_override = true;
-    absl::optional<AcceleratorAction> conflict_accelerator_default_id =
+    std::optional<AcceleratorAction> conflict_accelerator_default_id =
         GetIdForDefaultAccelerator(accelerator);
     if (conflict_accelerator_default_id.has_value()) {
       save_remove_override =
@@ -554,7 +567,7 @@ AshAcceleratorConfiguration::DoReplaceAccelerator(
     AcceleratorActionId action_id,
     const ui::Accelerator& old_accelerator,
     const ui::Accelerator& new_accelerator) {
-  CHECK(::features::IsShortcutCustomizationEnabled());
+  CHECK(Shell::Get()->accelerator_prefs()->IsCustomizationAllowed());
 
   // Check that `old_accelerator` belongs to `action_id`.
   const AcceleratorAction* found_id = accelerator_to_id_.Find(old_accelerator);
@@ -573,6 +586,17 @@ AshAcceleratorConfiguration::DoReplaceAccelerator(
   return DoAddAccelerator(action_id, new_accelerator, /*save_override=*/true);
 }
 
+void AshAcceleratorConfiguration::SetUsePositionalLookup(
+    bool use_positional_lookup) {
+  accelerator_to_id_.set_use_positional_lookup(use_positional_lookup);
+  deprecated_accelerators_to_id_.set_use_positional_lookup(
+      use_positional_lookup);
+  default_accelerators_to_id_cache_.set_use_positional_lookup(
+      use_positional_lookup);
+  default_deprecated_accelerators_to_id_cache_.set_use_positional_lookup(
+      use_positional_lookup);
+}
+
 const DeprecatedAcceleratorData*
 AshAcceleratorConfiguration::GetDeprecatedAcceleratorData(
     AcceleratorActionId action) {
@@ -584,7 +608,7 @@ AshAcceleratorConfiguration::GetDeprecatedAcceleratorData(
 }
 
 void AshAcceleratorConfiguration::NotifyAcceleratorsUpdated() {
-  if (!::features::IsShortcutCustomizationEnabled()) {
+  if (!Shell::Get()->accelerator_prefs()->IsCustomizationAllowed()) {
     return;
   }
 
@@ -593,13 +617,12 @@ void AshAcceleratorConfiguration::NotifyAcceleratorsUpdated() {
   }
 }
 
-absl::optional<AcceleratorAction>
+std::optional<AcceleratorAction>
 AshAcceleratorConfiguration::GetIdForDefaultAccelerator(
     ui::Accelerator accelerator) {
   AcceleratorAction* found_id =
       default_accelerators_to_id_cache_.Find(accelerator);
-  return found_id ? absl::optional<AcceleratorAction>(*found_id)
-                  : absl::nullopt;
+  return found_id ? std::optional<AcceleratorAction>(*found_id) : std::nullopt;
 }
 
 std::vector<ui::Accelerator>
@@ -636,7 +659,7 @@ void AshAcceleratorConfiguration::UpdateAndNotifyAccelerators() {
 
   UpdateAccelerators(id_to_accelerators_);
   NotifyAcceleratorsUpdated();
-  if (::features::IsShortcutCustomizationEnabled()) {
+  if (Shell::Get()->accelerator_prefs()->IsCustomizationAllowed()) {
     SaveOverridePrefChanges();
   }
 }
@@ -656,17 +679,39 @@ void AshAcceleratorConfiguration::ApplyPrefOverrides() {
 
   for (auto entry : accelerator_overrides_) {
     int action_id;
-    base::StringToInt(entry.first, &action_id);
+    if (!base::StringToInt(entry.first, &action_id)) {
+      LOG(ERROR) << "Failed to convert entry from accelerator overrides "
+                 << "to an action ID. Skipping applying customization "
+                 << "for this action.";
+      continue;
+    }
     if (!IsValid(action_id)) {
+      VLOG(1) << "Invalid action ID: " << action_id
+              << " found, queuing the ID to be removed.";
       actions_to_be_removed.push_back(action_id);
       continue;
     }
 
+    if (!entry.second.is_list()) {
+      LOG(ERROR) << "Entry for action ID: " << action_id << " does not contain "
+                 << "a list. Skipping applying customization for this action.";
+      continue;
+    }
     base::Value::List& override_list = entry.second.GetList();
-    CHECK(!override_list.empty());
+    if (override_list.empty()) {
+      VLOG(1) << "Override list is unexpectedly empty for action ID: "
+              << action_id << ". Skipping applying customization for "
+              << "this action.";
+      continue;
+    }
 
     auto override_list_iter = override_list.begin();
     while (override_list_iter != override_list.end()) {
+      if (!override_list_iter->is_dict()) {
+        LOG(ERROR) << "Override list does not contain a dict, skipping "
+                   << "applying customization for action ID: " << action_id;
+        continue;
+      }
       base::Value::Dict& override_dict = override_list_iter->GetDict();
       AcceleratorModificationData override_data =
           ValueToAcceleratorModificationData(override_dict);
@@ -711,6 +756,8 @@ void AshAcceleratorConfiguration::ApplyPrefOverrides() {
   // Check if the overridden accelerators are valid, if not then restore all
   // defaults.
   if (!AreAcceleratorsValid()) {
+    LOG(ERROR) << "Detected an error while applying shortcut customization "
+               << "prefs. Restoring to default.";
     RestoreAllDefaults();
   }
 
@@ -734,12 +781,27 @@ void AshAcceleratorConfiguration::UpdateOverrides(
     return;
   }
 
+  if (!action_entry->is_list()) {
+    LOG(ERROR) << "Attempting to update overrides failed, action_entry is not "
+               << "a list. Cannot apply updates for action ID: " << action_id;
+    return;
+  }
   base::Value::List& override_list = action_entry->GetList();
-  CHECK(!override_list.empty());
+  if (action_entry->GetList().empty()) {
+    VLOG(1) << "No entries inside action ID: " << action_id
+            << ". Cannot apply updates.";
+    return;
+  }
+
   // Iterate through the override list, check if the accelerator already exist
   // for `action_id`.
   for (auto override_iter = override_list.begin();
        override_iter != override_list.end(); ++override_iter) {
+    if (!override_iter->is_dict()) {
+      LOG(ERROR) << "Override list does not contain a dict, cannot apply "
+                 << "update for action ID: " << action_id;
+      return;
+    }
     const AcceleratorModificationData accelerator_data =
         ValueToAcceleratorModificationData(override_iter->GetDict());
     if (accelerator == accelerator_data.accelerator) {
@@ -822,6 +884,14 @@ void AshAcceleratorConfiguration::ResetAllAccelerators() {
 
   deprecated_accelerators_to_id_ = default_deprecated_accelerators_to_id_cache_;
   actions_with_deprecations_ = default_actions_with_deprecations_cache_;
+}
+
+int AshAcceleratorConfiguration::GetTotalNumberOfModifications() {
+  int num_entries = 0;
+  for (const auto entry : accelerator_overrides_) {
+    num_entries += entry.second.GetList().size();
+  }
+  return num_entries;
 }
 
 }  // namespace ash

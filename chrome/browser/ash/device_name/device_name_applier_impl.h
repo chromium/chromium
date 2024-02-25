@@ -49,8 +49,7 @@ class DeviceNameApplierImpl : public DeviceNameApplier {
   void ClearRetryAttempts();
 
   std::string device_name_;
-  raw_ptr<NetworkStateHandler, DanglingUntriaged | ExperimentalAsh>
-      network_state_handler_;
+  raw_ptr<NetworkStateHandler, DanglingUntriaged> network_state_handler_;
 
   // Provides us the backoff timers for SetBluetoothAdapterName().
   net::BackoffEntry retry_backoff_;

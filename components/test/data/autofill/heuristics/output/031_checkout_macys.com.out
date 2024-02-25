@@ -8,4 +8,4 @@ ADDRESS_HOME_STATE | currentShipment.shipmentAddress.state | State: | NOSELECTIO
 ADDRESS_HOME_ZIP | currentShipment.shipmentAddress.zipCode | ZipCode: |  | selectedShippingAddress_1
 PHONE_HOME_CITY_CODE_WITH_TRUNK_PREFIX | currentShipment.shipmentAddress.dayPhone.areaCode | Phone: |  | selectedShippingAddress_1
 PHONE_HOME_NUMBER | currentShipment.shipmentAddress.dayPhone.exchangeNbr | * Phone: |  | selectedShippingAddress_1
-PHONE_HOME_WHOLE_NUMBER | currentShipment.shipmentAddress.dayPhone.subscriberNbr | * Phone: |  | selectedShippingAddress_1
+PHONE_HOME_CITY_AND_NUMBER | currentShipment.shipmentAddress.dayPhone.subscriberNbr | * Phone: |  | selectedShippingAddress_1

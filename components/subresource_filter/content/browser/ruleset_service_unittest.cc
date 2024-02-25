@@ -9,6 +9,7 @@
 
 #include <memory>
 #include <string>
+#include <string_view>
 #include <tuple>
 #include <utility>
 #include <vector>
@@ -24,7 +25,6 @@
 #include "base/numerics/safe_conversions.h"
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
-#include "base/strings/string_piece.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -168,7 +168,6 @@ bool MockFailingReplaceFile(const base::FilePath&,
 bool MockCrashingIndexRuleset(UnindexedRulesetStreamGenerator*,
                               RulesetIndexer*) {
   LOG(FATAL) << "Synthetic crash.";
-  return false;
 }
 #else
 bool MockFailingIndexRuleset(UnindexedRulesetStreamGenerator*,
@@ -335,8 +334,7 @@ class SubresourceFilteringRulesetServiceTest : public ::testing::Test {
                     const base::FilePath& license_path = base::FilePath()) {
     return RulesetService::WriteRuleset(
                GetExpectedVersionDirPath(indexed_version), license_path,
-               test_ruleset_pair.indexed.contents.data(),
-               test_ruleset_pair.indexed.contents.size()) ==
+               test_ruleset_pair.indexed.contents) ==
            RulesetService::IndexAndWriteRulesetResult::SUCCESS;
   }
 
@@ -597,13 +595,13 @@ TEST_F(SubresourceFilteringRulesetServiceTest, DeleteObsoleteRulesets) {
   WriteRuleset(test_ruleset_1(), legacy_format_content_version_1);
   WriteRuleset(test_ruleset_2(), legacy_format_content_version_2);
   base::WriteFile(GetExpectedSentinelFilePath(legacy_format_content_version_2),
-                  base::StringPiece());
+                  std::string_view());
 
   WriteRuleset(test_ruleset_1(), current_format_content_version_1);
   WriteRuleset(test_ruleset_2(), current_format_content_version_2);
   WriteRuleset(test_ruleset_3(), current_format_content_version_3);
   base::WriteFile(GetExpectedSentinelFilePath(current_format_content_version_3),
-                  base::StringPiece());
+                  std::string_view());
 
   DeleteObsoleteRulesets(base_dir(), current_format_content_version_2);
 

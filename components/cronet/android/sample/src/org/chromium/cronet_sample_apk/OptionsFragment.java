@@ -27,9 +27,12 @@ public class OptionsFragment extends Fragment {
         mOptionsRecyclerView.addItemDecoration(
                 new DividerItemDecoration(requireActivity(), DividerItemDecoration.HORIZONTAL));
     }
+
     @Nullable
     @Override
-    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
+    public View onCreateView(
+            @NonNull LayoutInflater inflater,
+            @Nullable ViewGroup container,
             @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.options_fragment, container, false);
         init(view);

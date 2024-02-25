@@ -22,12 +22,11 @@ public class AudioViewHolder extends OfflineItemViewHolder {
     private final TextView mCaption;
     private final TextView mTimestamp;
 
-    /**
-     * Creates a new instance of a {@link AudioViewHolder}.
-     */
+    /** Creates a new instance of a {@link AudioViewHolder}. */
     public static AudioViewHolder create(ViewGroup parent) {
-        View view = LayoutInflater.from(parent.getContext())
-                            .inflate(R.layout.download_manager_audio, null);
+        View view =
+                LayoutInflater.from(parent.getContext())
+                        .inflate(R.layout.download_manager_audio, null);
         return new AudioViewHolder(view);
     }
 
@@ -44,7 +43,7 @@ public class AudioViewHolder extends OfflineItemViewHolder {
         super.bind(properties, item);
         ListItem.OfflineItemListItem offlineItem = (ListItem.OfflineItemListItem) item;
 
-        mTitle.setText(offlineItem.item.title);
+        mTitle.setText(UiUtils.formatGenericItemTitle(offlineItem.item));
         mCaption.setText(UiUtils.generatePrefetchCaption(offlineItem.item));
         mTimestamp.setText(UiUtils.generatePrefetchTimestamp(offlineItem.date));
     }

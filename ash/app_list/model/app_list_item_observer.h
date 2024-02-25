@@ -27,6 +27,9 @@ class APP_LIST_MODEL_EXPORT AppListItemObserver : public base::CheckedObserver {
   // Invoked after item's name is changed.
   virtual void ItemNameChanged() {}
 
+  // Invoked after item's host badge icon is changed.
+  virtual void ItemHostBadgeIconChanged() {}
+
   // Invoked when the item's notification badge visibility is changed.
   virtual void ItemBadgeVisibilityChanged() {}
 
@@ -38,6 +41,12 @@ class APP_LIST_MODEL_EXPORT AppListItemObserver : public base::CheckedObserver {
 
   // Invoked when the item is about to be destroyed.
   virtual void ItemBeingDestroyed() {}
+
+  // Invoked when the item progress is updated.
+  virtual void ItemProgressUpdated() {}
+
+  // Invoked when the item app status is updated.
+  virtual void ItemAppStatusUpdated() {}
 
  protected:
   ~AppListItemObserver() override;

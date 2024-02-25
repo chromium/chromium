@@ -80,11 +80,6 @@ using ScreencastManagerTest = SystemWebAppIntegrationTest;
 
 class ScreencastManagerTestWithDriveFs : public ScreencastManagerTest {
  public:
-  ScreencastManagerTestWithDriveFs() {
-    scoped_feature_list_.InitWithFeatures(
-        {}, {ash::features::kFilesInlineSyncStatus});
-  }
-
   // ScreencastManagerTest:
   void SetUpInProcessBrowserTestFixture() override {
     ScreencastManagerTest::SetUpInProcessBrowserTestFixture();
@@ -160,7 +155,7 @@ class ScreencastManagerTestWithDriveFs : public ScreencastManagerTest {
     drivefs::mojom::SyncingStatus syncing_status;
     for (const std::string& path : paths) {
       syncing_status.item_events.emplace_back(
-          absl::in_place, /*stable_id=*/1, /*group_id=*/1, path,
+          std::in_place, /*stable_id=*/1, /*group_id=*/1, path,
           drivefs::mojom::ItemEvent::State::kInProgress,
           /*bytes_transferred=*/50, /*bytes_to_transfer=*/100,
           drivefs::mojom::ItemEventReason::kTransfer);
@@ -293,7 +288,7 @@ IN_PROC_BROWSER_TEST_P(ScreencastManagerTestWithDriveFs, GetVideoSuccess) {
             MockDriveSyncingStatusUpdateForPaths(
                 {test_path.value(), "unrelated file"});
             // Expects 1 notification is shown:
-            VerifyNotificationSize(1);
+            VerifyNotificationSize(0);
 
             // Mocks only one Projector file is syncing:
             MockDriveSyncingStatusUpdateForPaths({test_path.value()});
@@ -309,7 +304,7 @@ IN_PROC_BROWSER_TEST_P(ScreencastManagerTestWithDriveFs, GetVideoSuccess) {
   ProjectorAppClient::Get()->NotifyAppUIActive(false);
   MockDriveSyncingStatusUpdateForPaths({test_path.value()});
   // Expects 1 notification is shown:
-  VerifyNotificationSize(1);
+  VerifyNotificationSize(0);
 }
 
 // Tests that the ScreencastManager rejects malformed video files.

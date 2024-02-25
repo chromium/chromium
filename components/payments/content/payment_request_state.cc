@@ -12,6 +12,7 @@
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/location.h"
+#include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/observer_list.h"
 #include "base/ranges/algorithm.h"
@@ -194,10 +195,9 @@ void PaymentRequestState::OnDoneCreatingPaymentApps() {
     bool has_preferred_app = base::ranges::any_of(
         available_apps_, [](const auto& app) { return app->IsPreferred(); });
     if (has_preferred_app) {
-      available_apps_.erase(
-          std::remove_if(available_apps_.begin(), available_apps_.end(),
-                         [](const auto& app) { return !app->IsPreferred(); }),
-          available_apps_.end());
+      base::EraseIf(available_apps_, [](const auto& app) {
+        return !app->IsPreferred();
+      });
 
       // By design, only one payment app can be preferred.
       DCHECK_EQ(available_apps_.size(), 1u);
@@ -244,10 +244,10 @@ void PaymentRequestState::SetOptOutOffered() {
     journey_logger_->SetOptOutOffered();
 }
 
-absl::optional<base::UnguessableToken>
+std::optional<base::UnguessableToken>
 PaymentRequestState::GetChromeOSTWAInstanceId() const {
   if (!payment_request_delegate_) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   return payment_request_delegate_->GetChromeOSTWAInstanceId();
@@ -556,7 +556,7 @@ void PaymentRequestState::SelectDefaultShippingAddressAndNotifyObservers() {
   if (!shipping_profiles().empty() && spec_ &&
       spec_->selected_shipping_option() &&
       profile_comparator()->IsShippingComplete(shipping_profiles_[0])) {
-    selected_shipping_profile_ = shipping_profiles()[0];
+    selected_shipping_profile_ = shipping_profiles()[0].get();
   }
   UpdateIsReadyToPayAndNotifyObservers();
 }
@@ -596,7 +596,8 @@ void PaymentRequestState::PopulateProfileCache() {
   std::vector<autofill::AutofillProfile*> profiles =
       personal_data_manager_->GetProfilesToSuggest();
 
-  std::vector<autofill::AutofillProfile*> raw_profiles_for_filtering;
+  std::vector<raw_ptr<autofill::AutofillProfile, VectorExperimental>>
+      raw_profiles_for_filtering;
   raw_profiles_for_filtering.reserve(profiles.size());
 
   // PaymentRequest may outlive the Profiles returned by the Data Manager.
@@ -644,7 +645,7 @@ void PaymentRequestState::SetDefaultProfileSelections() {
   // the first one is the best default selection.
   if (!contact_profiles().empty() &&
       profile_comparator()->IsContactInfoComplete(contact_profiles_[0]))
-    selected_contact_profile_ = contact_profiles()[0];
+    selected_contact_profile_ = contact_profiles()[0].get();
 
   // Sort apps.
   PaymentApp::SortApps(&available_apps_);

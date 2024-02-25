@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html>
+<script>
+  function waitForDismissEvent(id) {
+    (async () => {
+      await new Promise(resolve => {
+        document.getElementById(id).ondismiss = function (event) {
+          resolve();
+        };
+      });
+    })();
+    return true;
+  }
+
+  function waitForResolveEvent(id) {
+    (async () => {
+      await new Promise(resolve => {
+        document.getElementById(id).onresolve = function (event) {
+          resolve();
+        };
+      });
+    })();
+    return true;
+  }
+
+  // Create a "ready" element after a second has passed to allow interactive
+  // tests to have a signal that the PEPC elements are ready to be clicked.
+  setTimeout(function() {
+    let el = document.createElement('div');
+    el.id = "ready";
+    document.body.appendChild(el);
+  }, 1000);
+</script>
+<body>
+  <permission id="geolocation" type="geolocation">
+  <permission id="microphone" type="microphone">
+  <permission id="camera" type="camera">
+  <permission id="invalid" type="invalid microphone">
+  <permission id="camera-microphone" type="camera microphone">
+</body>
+</html>

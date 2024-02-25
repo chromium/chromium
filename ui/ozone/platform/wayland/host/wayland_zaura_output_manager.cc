@@ -40,6 +40,14 @@ void WaylandZAuraOutputManager::Instantiate(WaylandConnection* connection,
     return;
   }
 
+  // zaura_output_manager_v2 will be advertised first by the server. If
+  // supported and bound by this client skip binding the older interface.
+  if (connection->zaura_output_manager_v2_) {
+    LOG(WARNING) << "Skipping bind to zaura_output_manager, "
+                    "zaura_output_manager_v2 has already been bound.";
+    return;
+  }
+
   auto output_manager = wl::Bind<struct zaura_output_manager>(
       registry, name, std::min(version, kMaxVersion));
   if (!output_manager) {
@@ -56,22 +64,21 @@ WaylandZAuraOutputManager::WaylandZAuraOutputManager(
     : obj_(output_manager), connection_(connection) {
   DCHECK(obj_);
   DCHECK(connection_);
-
-  static constexpr zaura_output_manager_listener zaura_output_manager_listener =
-      {&OnDone,
-       &OnDisplayId,
-       &OnLogicalPosition,
-       &OnLogicalSize,
-       &OnPhysicalSize,
-       &OnInsets,
-       &OnDeviceScaleFactor,
-       &OnLogicalTransform,
-       &OnPanelTransform,
-       &OnName,
-       &OnDescription,
-       &OnActivated,
-       &OnOverscanInsets};
-  zaura_output_manager_add_listener(obj_.get(), &zaura_output_manager_listener,
+  static constexpr zaura_output_manager_listener kAuraOutputManagerListener = {
+      .done = &OnDone,
+      .display_id = &OnDisplayId,
+      .logical_position = &OnLogicalPosition,
+      .logical_size = &OnLogicalSize,
+      .physical_size = &OnPhysicalSize,
+      .insets = &OnInsets,
+      .device_scale_factor = &OnDeviceScaleFactor,
+      .logical_transform = &OnLogicalTransform,
+      .panel_transform = &OnPanelTransform,
+      .name = &OnName,
+      .description = &OnDescription,
+      .activated = &OnActivated,
+      .overscan_insets = &OnOverscanInsets};
+  zaura_output_manager_add_listener(obj_.get(), &kAuraOutputManagerListener,
                                     this);
 }
 

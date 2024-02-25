@@ -5,6 +5,8 @@ include_rules = [
 
   "-remoting",
   "+remoting/base",
+  "+remoting/internal/base",
+  "+remoting/internal/proto",
   "+remoting/proto",
   "+third_party/libaom",
   "+third_party/libvpx",

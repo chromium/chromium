@@ -7,12 +7,13 @@
 
 #include <stdint.h>
 
+#include <cstddef>
+#include <optional>
 #include <string>
 #include <vector>
 
 #include "base/containers/flat_map.h"
 #include "content/common/content_export.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/interest_group/interest_group.h"
 #include "url/gurl.h"
 #include "url/origin.h"
@@ -21,9 +22,9 @@ namespace content {
 
 // InterestGroupUpdate represents the results of parsing a JSON update for a
 // stored blink::InterestGroup file. It contains all updatable fields of a
-// InterestGroup - that is, everything but `name`, `origin`, `expiry`, and
-// `user_bidding_signals`. All fields are optional, even ones that are mandatory
-// in an InterestGroup, since the value of the original InterestGroup will be
+// InterestGroup - that is, everything but `name`, `origin`, and `expiry`.
+// All fields are optional, even ones that are mandatory in an InterestGroup,
+// since the value of the original InterestGroup will be
 // used when they're not present in an InterestGroupUpdate.
 struct CONTENT_EXPORT InterestGroupUpdate {
   InterestGroupUpdate();
@@ -31,27 +32,48 @@ struct CONTENT_EXPORT InterestGroupUpdate {
   InterestGroupUpdate(InterestGroupUpdate&&);
   ~InterestGroupUpdate();
 
-  absl::optional<double> priority;
-  absl::optional<bool> enable_bidding_signals_prioritization;
-  absl::optional<base::flat_map<std::string, double>> priority_vector;
+  std::optional<double> priority;
+  std::optional<bool> enable_bidding_signals_prioritization;
+  std::optional<base::flat_map<std::string, double>> priority_vector;
   // Unlike other fields, this is merged with the previous value, so can keep
   // old overrides around. Keys mapped to nullopt are deleted.
-  absl::optional<base::flat_map<std::string, absl::optional<double>>>
+  std::optional<base::flat_map<std::string, std::optional<double>>>
       priority_signals_overrides;
-  absl::optional<base::flat_map<url::Origin, blink::SellerCapabilitiesType>>
+  std::optional<base::flat_map<url::Origin, blink::SellerCapabilitiesType>>
       seller_capabilities;
-  absl::optional<blink::SellerCapabilitiesType> all_sellers_capabilities;
-  absl::optional<blink::InterestGroup::ExecutionMode> execution_mode;
-  absl::optional<GURL> bidding_url;
-  absl::optional<GURL> bidding_wasm_helper_url;
-  absl::optional<GURL> daily_update_url;
-  absl::optional<GURL> trusted_bidding_signals_url;
-  absl::optional<std::vector<std::string>> trusted_bidding_signals_keys;
-  absl::optional<std::vector<blink::InterestGroup::Ad>> ads, ad_components;
-  absl::optional<base::flat_map<std::string, blink::AdSize>> ad_sizes;
-  absl::optional<base::flat_map<std::string, std::vector<std::string>>>
+  std::optional<blink::SellerCapabilitiesType> all_sellers_capabilities;
+  std::optional<blink::InterestGroup::ExecutionMode> execution_mode;
+  std::optional<GURL> bidding_url;
+  std::optional<GURL> bidding_wasm_helper_url;
+  std::optional<GURL> daily_update_url;
+  std::optional<GURL> trusted_bidding_signals_url;
+  std::optional<std::vector<std::string>> trusted_bidding_signals_keys;
+  std::optional<blink::InterestGroup::TrustedBiddingSignalsSlotSizeMode>
+      trusted_bidding_signals_slot_size_mode;
+  std::optional<int32_t> max_trusted_bidding_signals_url_length;
+  std::optional<std::string> user_bidding_signals;
+  std::optional<std::vector<blink::InterestGroup::Ad>> ads, ad_components;
+  std::optional<base::flat_map<std::string, blink::AdSize>> ad_sizes;
+  std::optional<base::flat_map<std::string, std::vector<std::string>>>
       size_groups;
-  absl::optional<blink::AuctionServerRequestFlags> auction_server_request_flags;
+  std::optional<blink::AuctionServerRequestFlags> auction_server_request_flags;
+  std::optional<url::Origin> aggregation_coordinator_origin;
+};
+
+// InitialInterestGroupUpdateInfo contains required fields when the update
+// process is initialized, which includes interest_group_key for
+// KAnonymity update, update_url for generating update request and
+// joining_origin for grouped isolation info.
+struct CONTENT_EXPORT InterestGroupUpdateParameter {
+  InterestGroupUpdateParameter();
+  InterestGroupUpdateParameter(blink::InterestGroupKey k,
+                               GURL u,
+                               url::Origin o);
+  ~InterestGroupUpdateParameter();
+
+  blink::InterestGroupKey interest_group_key;
+  GURL update_url;
+  url::Origin joining_origin;
 };
 
 }  // namespace content

@@ -1,3 +1,0 @@
-Test	http://www.w3.org/2001/DOM-Test-Suite/level2/html/HTMLTableElement39
-Status	failure
-Message	rowsLink2: assertEquals failed, actual 2, expected 3.

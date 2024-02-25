@@ -11,6 +11,7 @@
 #include <vector>
 
 #include "absl/container/btree_map.h"
+#include "absl/log/absl_check.h"
 #include "absl/strings/string_view.h"
 #include "google/protobuf/message_lite.h"
 #include "mediapipe/framework/api2/port.h"
@@ -18,7 +19,6 @@
 #include "mediapipe/framework/calculator_contract.h"
 #include "mediapipe/framework/port/any_proto.h"
 #include "mediapipe/framework/port/ret_check.h"
-#include "absl/log/absl_check.h"
 
 namespace mediapipe {
 namespace api2 {
@@ -330,6 +330,14 @@ using MultiSideDestination = MultiPort<SideDestination<T>>;
 
 class NodeBase {
  public:
+  NodeBase() = default;
+  ~NodeBase() = default;
+  NodeBase(NodeBase&&) = default;
+  NodeBase& operator=(NodeBase&&) = default;
+  // Explicitly delete copies to improve error messages.
+  NodeBase(const NodeBase&) = delete;
+  NodeBase& operator=(const NodeBase&) = delete;
+
   // TODO: right now access to an indexed port is made directly by
   // specifying both a tag and an index. It would be better to represent this
   // as a two-step lookup, first getting a multi-port, and then accessing one
@@ -585,6 +593,14 @@ class PacketGenerator {
 
 class Graph {
  public:
+  Graph() = default;
+  ~Graph() = default;
+  Graph(Graph&&) = default;
+  Graph& operator=(Graph&&) = default;
+  // Explicitly delete copies to improve error messages.
+  Graph(const Graph&) = delete;
+  Graph& operator=(const Graph&) = delete;
+
   void SetType(std::string type) { type_ = std::move(type); }
 
   // Creates a node of a specific type. Should be used for calculators whose
@@ -722,14 +738,14 @@ class Graph {
       config.set_type(type_);
     }
     FixUnnamedConnections();
-    CHECK_OK(UpdateBoundaryConfig(&config));
+    ABSL_CHECK_OK(UpdateBoundaryConfig(&config));
     for (const std::unique_ptr<NodeBase>& node : nodes_) {
       auto* out_node = config.add_node();
-      CHECK_OK(UpdateNodeConfig(*node, out_node));
+      ABSL_CHECK_OK(UpdateNodeConfig(*node, out_node));
     }
     for (const std::unique_ptr<PacketGenerator>& node : packet_gens_) {
       auto* out_node = config.add_packet_generator();
-      CHECK_OK(UpdateNodeConfig(*node, out_node));
+      ABSL_CHECK_OK(UpdateNodeConfig(*node, out_node));
     }
     return config;
   }

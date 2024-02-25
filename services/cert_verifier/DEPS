@@ -1,8 +1,10 @@
 include_rules = [
+  "+components/certificate_transparency",
   "+crypto",
   "+net",
   "+mojo/public/cpp",
   "+services/network/public",
   "+services/network/test",
   "+services/network/url_loader.h",
+  "+third_party/boringssl/src/pki",
 ]

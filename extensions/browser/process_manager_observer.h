@@ -5,9 +5,8 @@
 #ifndef EXTENSIONS_BROWSER_PROCESS_MANAGER_OBSERVER_H_
 #define EXTENSIONS_BROWSER_PROCESS_MANAGER_OBSERVER_H_
 
-#include <string>
-
 #include "base/observer_list_types.h"
+#include "extensions/common/extension_id.h"
 
 namespace content {
 class RenderFrameHost;
@@ -32,16 +31,16 @@ class ProcessManagerObserver : public base::CheckedObserver {
   virtual void OnBackgroundHostCreated(ExtensionHost* host) {}
 
   // Called immediately after the extension background host is destroyed.
-  virtual void OnBackgroundHostClose(const std::string& extension_id) {}
+  virtual void OnBackgroundHostClose(const ExtensionId& extension_id) {}
 
   // Called when a RenderFrameHost has been registered in an extension process.
   virtual void OnExtensionFrameRegistered(
-      const std::string& extension_id,
+      const ExtensionId& extension_id,
       content::RenderFrameHost* render_frame_host) {}
 
   // Called when a RenderFrameHost is no longer part of an extension process.
   virtual void OnExtensionFrameUnregistered(
-      const std::string& extension_id,
+      const ExtensionId& extension_id,
       content::RenderFrameHost* render_frame_host) {}
 
   // Called when a service worker is started.

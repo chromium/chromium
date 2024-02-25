@@ -8,8 +8,10 @@
 #include <windows.h>
 
 #include <memory>
+#include <string_view>
 
 #include "base/base_paths.h"
+#include "base/hash/hash.h"
 #include "base/path_service.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/scoped_path_override.h"
@@ -18,6 +20,7 @@
 #include "base/win/shlwapi.h"  // For SHDeleteKey.
 #include "build/branding_buildflags.h"
 #include "chrome/common/chrome_constants.h"
+#include "chrome/install_static/install_details.h"
 #include "chrome/install_static/install_util.h"
 #include "chrome/install_static/test/scoped_install_details.h"
 #include "chrome/installer/util/additional_parameters.h"
@@ -31,8 +34,6 @@
 using base::win::RegKey;
 
 namespace {
-
-const wchar_t kTestExperimentLabel[] = L"test_label_value";
 
 // This test fixture redirects the HKLM and HKCU registry hives for
 // the duration of the test to make it independent of the machine
@@ -53,50 +54,6 @@ class GoogleUpdateSettingsTest : public testing::Test {
         registry_overrides_.OverrideRegistry(HKEY_LOCAL_MACHINE));
     ASSERT_NO_FATAL_FAILURE(
         registry_overrides_.OverrideRegistry(HKEY_CURRENT_USER));
-  }
-
-  // Test the writing and deleting functionality of the experiments label
-  // helper.
-  void TestExperimentsLabelHelper(SystemUserInstall install) {
-    // Install a basic InstallDetails instance.
-    install_static::ScopedInstallDetails details(install == SYSTEM_INSTALL);
-
-    std::wstring value;
-    // Before anything is set, ReadExperimentLabels should succeed but return
-    // an empty string.
-    EXPECT_TRUE(GoogleUpdateSettings::ReadExperimentLabels(&value));
-    EXPECT_EQ(std::wstring(), value);
-
-    EXPECT_TRUE(
-        GoogleUpdateSettings::SetExperimentLabels(kTestExperimentLabel));
-
-    // Validate that something is written. Only worry about the label itself.
-    RegKey key;
-    HKEY root =
-        install == SYSTEM_INSTALL ? HKEY_LOCAL_MACHINE : HKEY_CURRENT_USER;
-    std::wstring state_key = install == SYSTEM_INSTALL
-                                 ? install_static::GetClientStateMediumKeyPath()
-                                 : install_static::GetClientStateKeyPath();
-
-    EXPECT_EQ(ERROR_SUCCESS,
-              key.Open(root, state_key.c_str(), KEY_QUERY_VALUE));
-    EXPECT_EQ(ERROR_SUCCESS,
-              key.ReadValue(google_update::kExperimentLabels, &value));
-    EXPECT_EQ(kTestExperimentLabel, value);
-    EXPECT_TRUE(GoogleUpdateSettings::ReadExperimentLabels(&value));
-    EXPECT_EQ(kTestExperimentLabel, value);
-    key.Close();
-
-    // Now that the label is set, test the delete functionality. An empty label
-    // should result in deleting the value.
-    EXPECT_TRUE(GoogleUpdateSettings::SetExperimentLabels(std::wstring()));
-    EXPECT_EQ(ERROR_SUCCESS,
-              key.Open(root, state_key.c_str(), KEY_QUERY_VALUE));
-    EXPECT_EQ(ERROR_FILE_NOT_FOUND,
-              key.ReadValue(google_update::kExperimentLabels, &value));
-    EXPECT_TRUE(GoogleUpdateSettings::ReadExperimentLabels(&value));
-    EXPECT_EQ(std::wstring(), value);
-    key.Close();
   }
 
   // Creates "ap" key with the value given as parameter. Also adds work
@@ -269,7 +226,7 @@ TEST_F(GoogleUpdateSettingsTest, UpdateGoogleUpdateApKey) {
 
           ASSERT_TRUE(CreateApKey(work_item_list.get(), input));
           installer::AdditionalParameters ap;
-          if (base::WStringPiece(output) == ap.value()) {
+          if (std::wstring_view(output) == ap.value()) {
             EXPECT_FALSE(GoogleUpdateSettings::UpdateGoogleUpdateApKey(
                 archive_type, result, &ap));
           } else {
@@ -620,14 +577,6 @@ TEST_F(GoogleUpdateSettingsTest, UpdatesDisabledByTimeout) {
 
 #endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
 
-TEST_F(GoogleUpdateSettingsTest, ExperimentsLabelHelperSystem) {
-  TestExperimentsLabelHelper(SYSTEM_INSTALL);
-}
-
-TEST_F(GoogleUpdateSettingsTest, ExperimentsLabelHelperUser) {
-  TestExperimentsLabelHelper(USER_INSTALL);
-}
-
 TEST_F(GoogleUpdateSettingsTest, GetDownloadPreference) {
   RegKey policy_key;
 
@@ -835,6 +784,54 @@ TEST_P(GetGoogleUpdateVersion, TestRealValue) {
 INSTANTIATE_TEST_SUITE_P(GetGoogleUpdateVersionAtLevel,
                          GetGoogleUpdateVersion,
                          testing::Bool());
+
+// Tests that GetHashedCohortId returns an empty optional if there's no cohort
+// key.
+TEST_F(GoogleUpdateSettingsTest, GetHashedCohortIdTestNoKey) {
+  EXPECT_FALSE(GoogleUpdateSettings::GetHashedCohortId());
+}
+
+// Tests that GetHashedCohortId returns an empty optional if there's no "id"
+// value in the cohort key.
+TEST_F(GoogleUpdateSettingsTest, GetHashedCohortIdTestNoValue) {
+  RegKey(install_static::InstallDetails::Get().system_level()
+             ? HKEY_LOCAL_MACHINE
+             : HKEY_CURRENT_USER,
+         install_static::GetClientStateKeyPath(
+             install_static::InstallDetails::Get().app_guid())
+             .append(L"\\cohort")
+             .c_str(),
+         KEY_SET_VALUE);
+  EXPECT_FALSE(GoogleUpdateSettings::GetHashedCohortId());
+}
+
+TEST_F(GoogleUpdateSettingsTest, GetHashedCohortIdTestEmptyValue) {
+  RegKey(install_static::InstallDetails::Get().system_level()
+             ? HKEY_LOCAL_MACHINE
+             : HKEY_CURRENT_USER,
+         install_static::GetClientStateKeyPath(
+             install_static::InstallDetails::Get().app_guid())
+             .append(L"\\cohort")
+             .c_str(),
+         KEY_SET_VALUE)
+      .WriteValue(google_update::kRegDefaultField, L"");
+  EXPECT_FALSE(GoogleUpdateSettings::GetHashedCohortId());
+}
+
+TEST_F(GoogleUpdateSettingsTest, GetHashedCohortIdTestRealValue) {
+  RegKey(install_static::InstallDetails::Get().system_level()
+             ? HKEY_LOCAL_MACHINE
+             : HKEY_CURRENT_USER,
+         install_static::GetClientStateKeyPath(
+             install_static::InstallDetails::Get().app_guid())
+             .append(L"\\cohort")
+             .c_str(),
+         KEY_SET_VALUE)
+      .WriteValue(google_update::kRegDefaultField, L"1:qesc2/qesff:qesee@0.5");
+  EXPECT_TRUE(GoogleUpdateSettings::GetHashedCohortId());
+  EXPECT_EQ(*GoogleUpdateSettings::GetHashedCohortId(),
+            base::PersistentHash("1:qesc2/qesff"));
+}
 
 // Test values for use by the CollectStatsConsent test fixture.
 class StatsState {

@@ -4,9 +4,9 @@
 
 #import "ios/chrome/browser/ui/whats_new/promo/whats_new_scene_agent.h"
 
-#import "ios/chrome/browser/promos_manager/constants.h"
-#import "ios/chrome/browser/promos_manager/features.h"
-#import "ios/chrome/browser/promos_manager/promos_manager.h"
+#import "ios/chrome/browser/promos_manager/model/constants.h"
+#import "ios/chrome/browser/promos_manager/model/features.h"
+#import "ios/chrome/browser/promos_manager/model/promos_manager.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/browser/browser_provider.h"
 #import "ios/chrome/browser/shared/model/browser/browser_provider_interface.h"
@@ -36,9 +36,12 @@
     transitionedToActivationLevel:(SceneActivationLevel)level {
   switch (level) {
     case SceneActivationLevelForegroundActive: {
-      if (ShouldRegisterWhatsNewPromo()) {
-        [self registerPromoForSingleDisplay];
+      if (WasWhatsNewUsed()) {
+        return;
       }
+      DCHECK(self.promosManager);
+      self.promosManager->RegisterPromoForContinuousDisplay(
+          promos_manager::Promo::WhatsNew);
       break;
     }
     case SceneActivationLevelUnattached:
@@ -57,18 +60,6 @@
       break;
     }
   }
-}
-
-#pragma mark - Private
-
-// Register the What's New promo for a single display in the promo manager.
-- (void)registerPromoForSingleDisplay {
-  DCHECK(self.promosManager);
-
-  self.promosManager->RegisterPromoForSingleDisplay(
-      promos_manager::Promo::WhatsNew);
-
-  setWhatsNewPromoRegistration();
 }
 
 @end

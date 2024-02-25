@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<title>
+  Tests that the scrollbar styling using ::webkit-scrollbar pseudos is
+  disabled when there is a preference for default scrollbar styles.
+</title>
+<style>
+  p {
+    font-size: 100px;
+  }
+
+  ::-webkit-scrollbar {
+    width: 100px;
+    height: 40px;
+  }
+
+  ::-webkit-scrollbar-button
+  {
+    background-color: red;
+  }
+
+  ::-webkit-scrollbar-corner {
+    background-color: orange;
+  }
+
+  ::-webkit-scrollbar-thumb {
+    background-color: green;
+  }
+
+  ::-webkit-scrollbar-track {
+    background-color: purple;
+  }
+
+  ::-webkit-scrollbar-track-piece {
+    background-color: blue;
+  }
+</style>
+<body>
+  <p>testtesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttest</p>
+  <br><br><br><br><br>
+  <br><br><br><br><br>
+  <br><br><br><br><br>
+  <br><br><br><br><br>
+  <br><br><br><br><br>
+  <br><br><br><br><br>
+  <br><br><br><br><br>
+  <br><br><br><br><br>
+  <br><br><br><br><br>
+  <br><br><br><br><br>
+  <br><br><br><br><br>
+  <br><br><br><br><br>
+  <br><br><br><br><br>
+  <br><br><br><br><br>
+  <br><br><br><br><br>
+  <br><br><br><br><br>
+</body>

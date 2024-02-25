@@ -22,13 +22,13 @@ bool MemoryCacheDumpProvider::OnMemoryDump(
 
   WebMemoryDumpLevelOfDetail level;
   switch (args.level_of_detail) {
-    case base::trace_event::MemoryDumpLevelOfDetail::BACKGROUND:
+    case base::trace_event::MemoryDumpLevelOfDetail::kBackground:
       level = blink::WebMemoryDumpLevelOfDetail::kBackground;
       break;
-    case base::trace_event::MemoryDumpLevelOfDetail::LIGHT:
+    case base::trace_event::MemoryDumpLevelOfDetail::kLight:
       level = blink::WebMemoryDumpLevelOfDetail::kLight;
       break;
-    case base::trace_event::MemoryDumpLevelOfDetail::DETAILED:
+    case base::trace_event::MemoryDumpLevelOfDetail::kDetailed:
       level = blink::WebMemoryDumpLevelOfDetail::kDetailed;
       break;
     default:

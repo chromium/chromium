@@ -29,10 +29,10 @@ void AddWidgetHelper(int render_process_id,
 }  // namespace
 
 RenderWidgetHelper::FrameTokens::FrameTokens(
-    const blink::LocalFrameToken& frame_token,
+    int32_t routing_id,
     const base::UnguessableToken& devtools_frame_token,
     const blink::DocumentToken& document_token)
-    : frame_token(frame_token),
+    : routing_id(routing_id),
       devtools_frame_token(devtools_frame_token),
       document_token(document_token) {}
 
@@ -66,23 +66,27 @@ void RenderWidgetHelper::Init(int render_process_id) {
 
 int RenderWidgetHelper::GetNextRoutingID() {
   int next_routing_id = next_routing_id_.GetNext();
-  CHECK_LT(next_routing_id, std::numeric_limits<int>::max());
+  // Routing IDs are also used for `FrameSinkId` values from the browser.
+  // The must be in the range of [0, INT_MAX] as the renderer generates
+  // the rest of the range.
+  CHECK_LT(next_routing_id, std::numeric_limits<int32_t>::max());
   return next_routing_id + 1;
 }
 
-bool RenderWidgetHelper::TakeFrameTokensForFrameRoutingID(
-    int32_t routing_id,
-    blink::LocalFrameToken& frame_token,
+bool RenderWidgetHelper::TakeStoredDataForFrameToken(
+    const blink::LocalFrameToken& frame_token,
+    int32_t& routing_id,
     base::UnguessableToken& devtools_frame_token,
     blink::DocumentToken& document_token) {
   base::AutoLock lock(frame_token_map_lock_);
-  auto iter = frame_token_routing_id_map_.find(routing_id);
-  if (iter == frame_token_routing_id_map_.end())
+  auto iter = frame_storage_map_.find(frame_token);
+  if (iter == frame_storage_map_.end()) {
     return false;
-  frame_token = iter->second.frame_token;
+  }
+  routing_id = iter->second.routing_id;
   devtools_frame_token = iter->second.devtools_frame_token;
   document_token = iter->second.document_token;
-  frame_token_routing_id_map_.erase(iter);
+  frame_storage_map_.erase(iter);
   return true;
 }
 
@@ -93,9 +97,9 @@ void RenderWidgetHelper::StoreNextFrameRoutingID(
     const blink::DocumentToken& document_token) {
   base::AutoLock lock(frame_token_map_lock_);
   bool result =
-      frame_token_routing_id_map_
-          .emplace(routing_id, FrameTokens(frame_token, devtools_frame_token,
-                                           document_token))
+      frame_storage_map_
+          .emplace(frame_token, FrameTokens(routing_id, devtools_frame_token,
+                                            document_token))
           .second;
   DCHECK(result);
 }

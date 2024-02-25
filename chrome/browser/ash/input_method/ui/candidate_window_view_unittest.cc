@@ -13,6 +13,8 @@
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/ash/input_method/ui/candidate_view.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/views/accessibility/ax_event_manager.h"
+#include "ui/views/test/ax_event_counter.h"
 #include "ui/views/test/views_test_base.h"
 #include "ui/views/widget/widget.h"
 
@@ -113,7 +115,7 @@ class CandidateWindowViewTest : public views::ViewsTestBase {
   }
 
  private:
-  raw_ptr<CandidateWindowView, DanglingUntriaged | ExperimentalAsh>
+  raw_ptr<CandidateWindowView, DanglingUntriaged>
       candidate_window_view_;  // Owned by its Widget.
 };
 
@@ -140,6 +142,33 @@ TEST_F(CandidateWindowViewTest, UpdateCandidatesTest_CursorVisibility) {
   candidate_window.set_is_cursor_visible(true);
   candidate_window_view()->UpdateCandidates(candidate_window);
   EXPECT_EQ(candidate_window_size - 1, selected_candidate_index_in_page());
+}
+
+TEST_F(CandidateWindowViewTest, UpdateCandidatesSendsA11yEvents) {
+  views::test::AXEventCounter event_counter(views::AXEventManager::Get());
+
+  // User is not selecting. (Simulates a state showing suggestions)
+  ui::CandidateWindow candidate_window;
+  const int candidate_window_size = 9;
+  InitCandidateWindowWithCandidatesFilled(candidate_window_size,
+                                          &candidate_window);
+  candidate_window.set_is_user_selecting(false);
+  SelectCandidateAt(0);
+  candidate_window_view()->UpdateCandidates(candidate_window);
+  EXPECT_EQ(0, event_counter.GetCount(ax::mojom::Event::kSelection));
+
+  // User starts selecting.
+  // InitCandidateWindowWithCandidatesFilled sets 0-th item selected.
+  candidate_window.set_is_user_selecting(true);
+  candidate_window_view()->UpdateCandidates(candidate_window);
+  EXPECT_EQ(1, event_counter.GetCount(ax::mojom::Event::kSelection,
+                                      GetCandidateAt(0)));
+
+  // Change the selection.
+  candidate_window.set_cursor_position(1);
+  candidate_window_view()->UpdateCandidates(candidate_window);
+  EXPECT_EQ(1, event_counter.GetCount(ax::mojom::Event::kSelection,
+                                      GetCandidateAt(1)));
 }
 
 TEST_F(CandidateWindowViewTest, SelectCandidateAtTest) {

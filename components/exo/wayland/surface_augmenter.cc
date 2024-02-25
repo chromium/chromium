@@ -4,8 +4,6 @@
 
 #include "components/exo/wayland/surface_augmenter.h"
 
-#include <surface-augmenter-server-protocol.h>
-
 #include <memory>
 
 #include "base/memory/raw_ptr.h"
@@ -20,18 +18,13 @@
 #include "ui/gfx/geometry/rrect_f.h"
 #include "ui/gfx/geometry/size.h"
 
-namespace exo {
-namespace wayland {
+namespace exo::wayland {
 
 namespace {
 
 // A property key containing a boolean set to true if a surface augmenter is
 // associated with with subsurface object.
 DEFINE_UI_CLASS_PROPERTY_KEY(bool, kSubSurfaceHasAugmentedSubSurfaceKey, false)
-
-// The minimum version for `augmented_surface_set_rounded_corners_clip_bounds`
-// with a local coordinates bounds.
-static constexpr int kRoundedCornersInLocalCoordinatesSinceVersion = 9;
 
 ////////////////////////////////////////////////////////////////////////////////
 // augmented_surface_interface:
@@ -69,20 +62,19 @@ class AugmentedSurface : public SurfaceObserver {
                   float top_left,
                   float top_right,
                   float bottom_right,
-                  float bottom_left,
-                  bool is_root_coordinates = true) {
+                  float bottom_left) {
     surface_->SetRoundedCorners(
         gfx::RRectF(gfx::RectF(x, y, width, height),
                     gfx::RoundedCornersF(top_left, top_right, bottom_right,
                                          bottom_left)),
-        is_root_coordinates);
+        /*commit_override=*/false);
   }
 
   void SetDestination(float width, float height) {
     surface_->SetViewport(gfx::SizeF(width, height));
   }
 
-  void SetBackgroundColor(absl::optional<SkColor4f> background_color) {
+  void SetBackgroundColor(std::optional<SkColor4f> background_color) {
     surface_->SetBackgroundColor(background_color);
   }
 
@@ -91,11 +83,15 @@ class AugmentedSurface : public SurfaceObserver {
   }
 
   void SetClipRect(float x, float y, float width, float height) {
-    absl::optional<gfx::RectF> clip_rect;
+    std::optional<gfx::RectF> clip_rect;
     if (width >= 0 && height >= 0) {
       clip_rect = gfx::RectF(x, y, width, height);
     }
     surface_->SetClipRect(clip_rect);
+  }
+
+  void SetFrameTraceId(int64_t frame_trace_id) {
+    surface_->SetFrameTraceId(frame_trace_id);
   }
 
   // SurfaceObserver:
@@ -105,7 +101,7 @@ class AugmentedSurface : public SurfaceObserver {
   }
 
  private:
-  raw_ptr<Surface, ExperimentalAsh> surface_;
+  raw_ptr<Surface> surface_;
 };
 
 void augmented_surface_destroy(wl_client* client, wl_resource* resource) {
@@ -147,29 +143,13 @@ void augmented_surface_set_rounded_corners_bounds_DEPRECATED(
     wl_fixed_t top_right,
     wl_fixed_t bottom_right,
     wl_fixed_t bottom_left) {
-  LOG(WARNING)
-      << "Deprecated. The server will deprecate the support for this request.";
-
-  if (width < 0 || height < 0 || top_left < 0 || bottom_left < 0 ||
-      bottom_right < 0 || top_right < 0) {
-    wl_resource_post_error(resource, AUGMENTED_SURFACE_ERROR_BAD_VALUE,
-                           "The size and corners must have positive values "
-                           "(%d, %d, %d, %d, %d, %d)",
-                           width, height, top_left, top_right, bottom_right,
-                           bottom_left);
-    return;
-  }
-
-  GetUserDataAs<AugmentedSurface>(resource)->SetCorners(
-      x, y, width, height, wl_fixed_to_double(top_left),
-      wl_fixed_to_double(top_right), wl_fixed_to_double(bottom_right),
-      wl_fixed_to_double(bottom_left));
+  LOG(WARNING) << "Deprecated. The server does not support this request.";
 }
 
 void augmented_surface_set_background_color(wl_client* client,
                                             wl_resource* resource,
                                             wl_array* color_data) {
-  absl::optional<SkColor4f> sk_color;
+  std::optional<SkColor4f> sk_color;
   // Empty data means no color.
   if (color_data->size) {
     float* data = reinterpret_cast<float*>(color_data->data);
@@ -205,17 +185,18 @@ void augmented_surface_set_rounded_corners_clip_bounds(wl_client* client,
     return;
   }
 
-  // In the deprecated implementation, the bounds was in its root surface
-  // coordinates. We cannot use SINCE_VERSION here because the protocol is not
-  // changed while its expectation and behavior on the client side has changed.
-  bool is_root_coordinates = (wl_resource_get_version(resource) <
-                              kRoundedCornersInLocalCoordinatesSinceVersion);
+  // Rounded corners on local surface coordinates is supported since version 9.
+  if (wl_resource_get_version(resource) < 9) {
+    LOG(ERROR) << "Rounded corners clip bounds are set on the root surface "
+               << "coordinates which is deperecated. Use 9 or newer version "
+               << "for surface augmenter.";
+  }
 
   GetUserDataAs<AugmentedSurface>(resource)->SetCorners(
       wl_fixed_to_double(x), wl_fixed_to_double(y), wl_fixed_to_double(width),
       wl_fixed_to_double(height), wl_fixed_to_double(top_left),
       wl_fixed_to_double(top_right), wl_fixed_to_double(bottom_right),
-      wl_fixed_to_double(bottom_left), is_root_coordinates);
+      wl_fixed_to_double(bottom_left));
 }
 
 void augmented_surface_set_clip_rect(wl_client* client,
@@ -229,6 +210,25 @@ void augmented_surface_set_clip_rect(wl_client* client,
       wl_fixed_to_double(height));
 }
 
+void augmented_surface_set_frame_trace_id(wl_client* client,
+                                          wl_resource* resource,
+                                          uint32_t id_hi,
+                                          uint32_t id_lo) {
+  base::CheckedNumeric<int64_t> id(id_hi);
+  id <<= 32;
+  id += id_lo;
+
+  if (!id.IsValid()) {
+    wl_resource_post_error(
+        resource, AUGMENTED_SURFACE_ERROR_BAD_VALUE,
+        "The frame trace ID cannot be converted to a valid int64_t (%u, %u)",
+        id_hi, id_lo);
+    return;
+  }
+
+  GetUserDataAs<AugmentedSurface>(resource)->SetFrameTraceId(id.ValueOrDie());
+}
+
 const struct augmented_surface_interface augmented_implementation = {
     augmented_surface_destroy,
     augmented_surface_set_corners_DEPRECATED,
@@ -238,6 +238,7 @@ const struct augmented_surface_interface augmented_implementation = {
     augmented_surface_set_trusted_damage,
     augmented_surface_set_rounded_corners_clip_bounds,
     augmented_surface_set_clip_rect,
+    augmented_surface_set_frame_trace_id,
 };
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -269,15 +270,6 @@ class AugmentedSubSurface : public SubSurfaceObserver {
     sub_surface_->SetPosition(gfx::PointF(x, y));
   }
 
-  void SetClipRect(float x, float y, float width, float height) {
-    absl::optional<gfx::RectF> clip_rect;
-    if (x >= 0 && y >= 0 && width >= 0 && height >= 0) {
-      clip_rect = gfx::RectF(x, y, width, height);
-    }
-    // TODO(rivr): Should we send a protocol error if there are invalid values?
-    sub_surface_->SetClipRect(clip_rect);
-  }
-
   void SetTransform(const gfx::Transform& transform) {
     sub_surface_->SetTransform(transform);
   }
@@ -289,7 +281,7 @@ class AugmentedSubSurface : public SubSurfaceObserver {
   }
 
  private:
-  raw_ptr<SubSurface, ExperimentalAsh> sub_surface_;
+  raw_ptr<SubSurface> sub_surface_;
 };
 
 void augmented_sub_surface_destroy(wl_client* client, wl_resource* resource) {
@@ -310,13 +302,7 @@ void augmented_sub_surface_set_clip_rect_DEPRECATED(wl_client* client,
                                                     wl_fixed_t y,
                                                     wl_fixed_t width,
                                                     wl_fixed_t height) {
-  LOG(WARNING) << "Deprecated. Do NOT use this for new codes.";
-
-  // TODO(crbug.com/1457446): Remove the fallback implementation here once
-  // augmented_surface_set_clip_rect is spread enough.
-  GetUserDataAs<AugmentedSubSurface>(resource)->SetClipRect(
-      wl_fixed_to_double(x), wl_fixed_to_double(y), wl_fixed_to_double(width),
-      wl_fixed_to_double(height));
+  LOG(WARNING) << "Deprecated. The server doesn't support this request.";
 }
 
 void augmented_sub_surface_set_transform(wl_client* client,
@@ -451,5 +437,4 @@ void bind_surface_augmenter(wl_client* client,
                                  nullptr);
 }
 
-}  // namespace wayland
-}  // namespace exo
+}  // namespace exo::wayland

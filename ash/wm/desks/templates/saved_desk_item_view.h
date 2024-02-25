@@ -7,7 +7,7 @@
 
 #include "ash/ash_export.h"
 #include "ash/public/cpp/desk_template.h"
-#include "ash/wm/overview/overview_highlightable_view.h"
+#include "ash/wm/overview/overview_focusable_view.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
@@ -64,12 +64,12 @@ class SystemShadow;
 // The whole view is also a button which does the same thing as `launch_button_`
 // when clicked.
 class ASH_EXPORT SavedDeskItemView : public views::Button,
-                                     public OverviewHighlightableView,
+                                     public OverviewFocusableView,
                                      public views::ViewTargeterDelegate,
                                      public views::TextfieldController {
- public:
-  METADATA_HEADER(SavedDeskItemView);
+  METADATA_HEADER(SavedDeskItemView, views::Button)
 
+ public:
   explicit SavedDeskItemView(std::unique_ptr<DeskTemplate> saved_desk);
   SavedDeskItemView(const SavedDeskItemView&) = delete;
   SavedDeskItemView& operator=(const SavedDeskItemView&) = delete;
@@ -114,7 +114,7 @@ class ASH_EXPORT SavedDeskItemView : public views::Button,
 
   // views::Button:
   void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
-  void Layout() override;
+  void Layout(PassKey) override;
   void OnViewFocused(views::View* observed_view) override;
   void OnViewBlurred(views::View* observed_view) override;
   void OnFocus() override;
@@ -153,28 +153,27 @@ class ASH_EXPORT SavedDeskItemView : public views::Button,
   // Update saved desk name based on `name_view_` string.
   void UpdateSavedDeskName();
 
-  // OverviewHighlightableView:
+  // OverviewFocusableView:
   views::View* GetView() override;
-  void MaybeActivateHighlightedView() override;
-  void MaybeCloseHighlightedView(bool primary_action) override;
-  void MaybeSwapHighlightedView(bool right) override;
-  void OnViewHighlighted() override;
-  void OnViewUnhighlighted() override;
+  void MaybeActivateFocusedView() override;
+  void MaybeCloseFocusedView(bool primary_action) override;
+  void MaybeSwapFocusedView(bool right) override;
+  void OnFocusableViewFocused() override;
+  void OnFocusableViewBlurred() override;
 
   // A copy of the associated saved desk.
   std::unique_ptr<DeskTemplate> saved_desk_;
 
   // Owned by the views hierarchy.
-  raw_ptr<SavedDeskNameView, ExperimentalAsh> name_view_ = nullptr;
+  raw_ptr<SavedDeskNameView> name_view_ = nullptr;
   // When template is managed by admin, `time_view_` will display management
   // description instead.
-  raw_ptr<views::Label, ExperimentalAsh> time_view_ = nullptr;
-  raw_ptr<SavedDeskIconContainer, ExperimentalAsh> icon_container_view_ =
-      nullptr;
-  raw_ptr<IconButton, ExperimentalAsh> delete_button_ = nullptr;
-  raw_ptr<PillButton, ExperimentalAsh> launch_button_ = nullptr;
+  raw_ptr<views::Label> time_view_ = nullptr;
+  raw_ptr<SavedDeskIconContainer> icon_container_view_ = nullptr;
+  raw_ptr<IconButton> delete_button_ = nullptr;
+  raw_ptr<PillButton> launch_button_ = nullptr;
   // Container used for holding all the views that appear on hover.
-  raw_ptr<views::View, ExperimentalAsh> hover_container_ = nullptr;
+  raw_ptr<views::View> hover_container_ = nullptr;
 
   std::unique_ptr<SystemShadow> shadow_;
 

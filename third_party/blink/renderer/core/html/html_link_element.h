@@ -140,7 +140,6 @@ class CORE_EXPORT HTMLLinkElement final : public HTMLElement,
   void RemovedFrom(ContainerNode&) override;
   bool IsURLAttribute(const Attribute&) const override;
   bool HasLegalLinkAttribute(const QualifiedName&) const override;
-  const QualifiedName& SubResourceAttributeName() const override;
   bool SheetLoaded() override;
   void NotifyLoadedSheetAndAllCriticalSubresources(
       LoadedSheetErrorStatus) override;
@@ -152,6 +151,17 @@ class CORE_EXPORT HTMLLinkElement final : public HTMLElement,
   // From LinkLoaderClient
   void LinkLoaded() override;
   void LinkLoadingErrored() override;
+
+  bool MediaQueryMatches() const;
+
+  void HandleExpectBlockingChanges();
+  void HandleExpectHrefChanges(const String& old_value,
+                               const String& new_value);
+  void HandleExpectMediaChanges();
+
+  void RemoveExpectRenderBlockingLink(const String& href = String());
+  void AddExpectRenderBlockingLinkIfNeeded(const String& href = String(),
+                                           bool media_known_to_match = false);
 
   Member<LinkResource> link_;
   Member<LinkLoader> link_loader_;

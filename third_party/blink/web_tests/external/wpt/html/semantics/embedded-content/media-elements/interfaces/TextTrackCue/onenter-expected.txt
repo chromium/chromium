@@ -1,5 +1,7 @@
 This is a testharness.js-based test.
-FAIL TextTrackCue.onenter assert_true: dispatching event expected true got false
-FAIL TextTrackCue.addEventListener/removeEventListener assert_true: expected true got false
+[FAIL] TextTrackCue.onenter
+  assert_true: dispatching event expected true got false
+[FAIL] TextTrackCue.addEventListener/removeEventListener
+  assert_true: expected true got false
 Harness: the test ran to completion.
 

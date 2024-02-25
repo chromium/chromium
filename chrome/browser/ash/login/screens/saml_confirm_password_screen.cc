@@ -12,6 +12,7 @@
 #include "chrome/browser/ash/login/ui/login_display_host.h"
 #include "chrome/browser/ui/webui/ash/login/check_passwords_against_cryptohome_helper.h"
 #include "chrome/browser/ui/webui/ash/login/saml_confirm_password_handler.h"
+#include "chromeos/ash/components/login/auth/public/auth_types.h"
 #include "chromeos/ash/components/login/auth/public/cryptohome_key_constants.h"
 
 namespace ash {
@@ -50,6 +51,7 @@ void SamlConfirmPasswordScreen::TryPassword(const std::string& password) {
   if (scraped_saml_passwords_.empty() ||
       base::Contains(scraped_saml_passwords_, password)) {
     user_context_->SetKey(key);
+    user_context_->SetSamlPassword(SamlPassword{password});
     user_context_->SetPasswordKey(Key(password));
     LoginDisplayHost::default_host()->CompleteLogin(*user_context_);
 

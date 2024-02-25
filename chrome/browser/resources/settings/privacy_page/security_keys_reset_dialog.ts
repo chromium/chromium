@@ -14,11 +14,12 @@ import 'chrome://resources/polymer/v3_0/paper-spinner/paper-spinner-lite.js';
 import '../settings_shared.css.js';
 import '../i18n_setup.js';
 
-import {CrDialogElement} from 'chrome://resources/cr_elements/cr_dialog/cr_dialog.js';
+import type {CrDialogElement} from 'chrome://resources/cr_elements/cr_dialog/cr_dialog.js';
 import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {SecurityKeysResetBrowserProxy, SecurityKeysResetBrowserProxyImpl} from './security_keys_browser_proxy.js';
+import type {SecurityKeysResetBrowserProxy} from './security_keys_browser_proxy.js';
+import {SecurityKeysResetBrowserProxyImpl} from './security_keys_browser_proxy.js';
 import {getTemplate} from './security_keys_reset_dialog.html.js';
 
 export enum ResetDialogPage {

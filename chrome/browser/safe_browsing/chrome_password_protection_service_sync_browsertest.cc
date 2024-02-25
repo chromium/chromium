@@ -74,8 +74,9 @@ class ChromePasswordProtectionServiceSyncBrowserTest : public SyncTest {
 
     ASSERT_TRUE(SetupClients());
 
-    // Sign the profile in.
-    ASSERT_TRUE(GetClient(0)->SignInPrimaryAccount());
+    // Sign the profile in and enable Sync.
+    ASSERT_TRUE(
+        GetClient(0)->SignInPrimaryAccount(signin::ConsentLevel::kSync));
 
     CoreAccountInfo current_info =
         IdentityManagerFactory::GetForProfile(GetProfile(0))

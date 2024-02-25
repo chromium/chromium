@@ -9,17 +9,18 @@
 #include <numeric>
 
 #include "ash/accelerators/accelerator_controller_impl.h"
-#include "ash/accessibility/accessibility_controller_impl.h"
+#include "ash/accessibility/accessibility_controller.h"
 #include "ash/bubble/bubble_constants.h"
 #include "ash/constants/ash_features.h"
 #include "ash/public/cpp/accelerators.h"
 #include "ash/public/cpp/style/color_provider.h"
+#include "ash/shelf/shelf.h"
 #include "ash/shell.h"
 #include "ash/style/ash_color_id.h"
 #include "ash/style/system_shadow.h"
 #include "ash/system/tray/system_tray_notifier.h"
 #include "ash/system/tray/tray_constants.h"
-#include "ash/system/unified/unified_system_tray_view.h"
+#include "ash/system/tray/tray_utils.h"
 #include "base/memory/raw_ptr.h"
 #include "chromeos/constants/chromeos_features.h"
 #include "third_party/skia/include/core/SkCanvas.h"
@@ -35,6 +36,7 @@
 #include "ui/compositor/layer.h"
 #include "ui/compositor/layer_type.h"
 #include "ui/compositor_extra/shadow.h"
+#include "ui/display/manager/display_manager.h"
 #include "ui/events/event.h"
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/color_palette.h"
@@ -112,29 +114,31 @@ class BottomAlignedBoxLayout : public views::BoxLayout {
   ~BottomAlignedBoxLayout() override {}
 
  private:
-  void Layout(View* host) override {
-    if (host->height() >= host->GetPreferredSize().height() ||
+  void LayoutImpl() override {
+    if (host_view()->height() >= host_view()->GetPreferredSize().height() ||
         !bubble_view_->is_gesture_dragging()) {
-      BoxLayout::Layout(host);
+      views::BoxLayout::LayoutImpl();
       return;
     }
 
     int consumed_height = 0;
-    for (auto i = host->children().rbegin();
-         i != host->children().rend() && consumed_height < host->height();
+    for (auto i = host_view()->children().rbegin();
+         i != host_view()->children().rend() &&
+         consumed_height < host_view()->height();
          ++i) {
       View* child = *i;
       if (!child->GetVisible()) {
         continue;
       }
       gfx::Size size = child->GetPreferredSize();
-      child->SetBounds(0, host->height() - consumed_height - size.height(),
-                       host->width(), size.height());
+      child->SetBounds(0,
+                       host_view()->height() - consumed_height - size.height(),
+                       host_view()->width(), size.height());
       consumed_height += size.height();
     }
   }
 
-  raw_ptr<TrayBubbleView, ExperimentalAsh> bubble_view_;
+  raw_ptr<TrayBubbleView> bubble_view_;
 };
 
 }  // namespace
@@ -157,22 +161,15 @@ bool TrayBubbleView::Delegate::ShouldEnableExtraKeyboardAccessibility() {
   return false;
 }
 
-void TrayBubbleView::Delegate::HideBubble(const TrayBubbleView* bubble_view) {
-  // All anchored to shelf corner bubble needs to implement `HideBubble()` and
-  // should not use this default function.
-  // TODO(b/297211055): Refactor the class to make this requirement clearer.
-  CHECK(!bubble_view->IsAnchoredToShelfCorner());
-}
-
 base::WeakPtr<TrayBubbleView::Delegate> TrayBubbleView::Delegate::GetWeakPtr() {
   return weak_ptr_factory_.GetWeakPtr();
 }
 
-absl::optional<AcceleratorAction>
+std::optional<AcceleratorAction>
 TrayBubbleView::Delegate::GetAcceleratorAction() const {
   // TODO(crbug/1234891) Make this a pure virtual function so all
   // bubble delegates need to specify accelerator actions.
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 TrayBubbleView::InitParams::InitParams() = default;
@@ -280,7 +277,7 @@ TrayBubbleView::TrayBubbleView(const InitParams& init_params)
   DCHECK((init_params.anchor_mode != TrayBubbleView::AnchorMode::kView) ||
          anchor_widget());
   set_parent_window(params_.parent_window);
-  AccessibilityControllerImpl* controller =
+  AccessibilityController* controller =
       Shell::Get()->accessibility_controller();
   SetCanActivate(controller->spoken_feedback().enabled() ||
                  controller->dictation().enabled());
@@ -335,12 +332,17 @@ TrayBubbleView::TrayBubbleView(const InitParams& init_params)
   if (init_params.anchor_mode == AnchorMode::kRect) {
     SetAnchorView(nullptr);
     SetAnchorRect(init_params.anchor_rect);
+  } else {
+    SetAnchorView(init_params.anchor_view);
+    SetAnchorRect(gfx::Rect());
   }
 
   message_center::MessageCenter::Get()->AddObserver(this);
+  Shell::Get()->display_manager()->AddObserver(this);
 }
 
 TrayBubbleView::~TrayBubbleView() {
+  Shell::Get()->display_manager()->RemoveObserver(this);
   message_center::MessageCenter::Get()->RemoveObserver(this);
 
   mouse_watcher_.reset();
@@ -406,7 +408,7 @@ gfx::Insets TrayBubbleView::GetBorderInsets() const {
   return bubble_border ? bubble_border->GetInsets() : gfx::Insets();
 }
 
-absl::optional<AcceleratorAction> TrayBubbleView::GetAcceleratorAction() const {
+std::optional<AcceleratorAction> TrayBubbleView::GetAcceleratorAction() const {
   return delegate_->GetAcceleratorAction();
 }
 
@@ -487,13 +489,17 @@ std::unique_ptr<NonClientFrameView> TrayBubbleView::CreateNonClientFrameView(
     bubble_border->SetCornerRadius(params_.corner_radius);
   }
   bubble_border->set_avoid_shadow_overlap(true);
-  if (params_.anchor_mode == AnchorMode::kRect && params_.insets.has_value()) {
+  if (params_.insets.has_value()) {
     bubble_border->set_insets(params_.insets.value());
   }
 
   auto frame = BubbleDialogDelegateView::CreateNonClientFrameView(widget);
-  static_cast<BubbleFrameView*>(frame.get())
-      ->SetBubbleBorder(std::move(bubble_border));
+  auto* frame_ptr = static_cast<views::BubbleFrameView*>(frame.get());
+  frame_ptr->SetBubbleBorder(std::move(bubble_border));
+  if (params_.anchor_mode == AnchorMode::kView) {
+    frame_ptr->set_use_anchor_window_bounds(false);
+  }
+
   return frame;
 }
 
@@ -529,11 +535,11 @@ gfx::Size TrayBubbleView::CalculatePreferredSize() const {
 
 int TrayBubbleView::GetHeightForWidth(int width) const {
   width = std::max(width - GetInsets().width(), 0);
-  const auto visible_height = [width](int height, const views::View* child) {
-    return height + (child->GetVisible() ? child->GetHeightForWidth(width) : 0);
-  };
-  const int height = std::accumulate(children().cbegin(), children().cend(),
-                                     GetInsets().height(), visible_height);
+  const int height = std::transform_reduce(
+      children().cbegin(), children().cend(), GetInsets().height(),
+      std::plus<>(), [width](const views::View* child) {
+        return child->GetVisible() ? child->GetHeightForWidth(width) : 0;
+      });
   if (params_.use_fixed_height) {
     return (params_.max_height != 0) ? params_.max_height : height;
   }
@@ -618,6 +624,30 @@ void TrayBubbleView::OnNotificationDisplayed(
   }
 }
 
+void TrayBubbleView::OnDisplayTabletStateChanged(display::TabletState state) {
+  if (display::IsTabletStateChanging(state)) {
+    // Do nothing when the tablet state is still in the process of transition.
+    return;
+  }
+
+  aura::Window* tray_window = GetWidget()->GetNativeView();
+  Shelf* shelf = Shelf::ForWindow(tray_window);
+  if (params_.anchor_mode == AnchorMode::kRect) {
+    SetAnchorRect(shelf->GetSystemTrayAnchorRect());
+  }
+
+  // The shelf alignment may change when transitioning between tablet and
+  // clamshell mode. In those cases, we need to update the shelf alighment.
+  if (ash::ShelfAlignment current_alignment = shelf->alignment();
+      current_alignment != params_.shelf_alignment) {
+    params_.shelf_alignment = current_alignment;
+    ChangeAnchorAlignment(current_alignment);
+  }
+
+  SetBubbleBorderInsets(GetTrayBubbleInsets(tray_window));
+  UpdateBubble();
+}
+
 void TrayBubbleView::NotifyTrayBubbleOpen() {
   DCHECK(IsAnchoredToStatusArea());
 
@@ -666,7 +696,7 @@ void TrayBubbleView::SetBubbleBorderInsets(gfx::Insets insets) {
   }
 }
 
-BEGIN_METADATA(TrayBubbleView, views::BubbleDialogDelegateView)
+BEGIN_METADATA(TrayBubbleView)
 END_METADATA
 
 }  // namespace ash

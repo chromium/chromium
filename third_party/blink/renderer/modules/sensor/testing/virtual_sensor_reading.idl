@@ -1,0 +1,21 @@
+// Copyright 2023 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+// Represents all possible reading formats described in
+// https://w3c.github.io/sensors/#algorithms-for-parsing-readings
+dictionary VirtualSensorReading {
+  // https://w3c.github.io/sensors/#parse-xyz-reading
+  double x;
+  double y;
+  double z;
+
+  // https://w3c.github.io/sensors/#parse-single-value-number-reading
+  // Specifically for Ambient Light Sensors.
+  double illuminance;
+
+  // https://w3c.github.io/deviceorientation/#deviceorientationevent
+  double alpha;
+  double beta;
+  double gamma;
+};

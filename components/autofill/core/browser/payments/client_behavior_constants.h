@@ -32,6 +32,11 @@ enum class ClientBehaviorConstants {
   // the client_behavior_signals as this retrieves the correct TOS in the footer
   // for Chrome to offer to save a card's CVC.
   kOfferingToSaveCvc = 3,
+
+  // Some UIs are expected to show the account email appended to the legal
+  // message. The payments server will use the presence of this constant to
+  // determine whether to send a legal message that includes the account email.
+  kShowAccountEmailInLegalMessage = 4,
 };
 }  // namespace autofill
 

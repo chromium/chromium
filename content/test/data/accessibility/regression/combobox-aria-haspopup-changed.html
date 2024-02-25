@@ -1,0 +1,39 @@
+<!--
+@MAC-ALLOW:AXHasPopup
+@MAC-ALLOW:AXPopupValue
+@WIN-ALLOW:HASPOPUP*
+@WIN-ALLOW:haspopup*
+@BLINK-ALLOW:haspopup*
+@AURALINUX-ALLOW:haspopup:*
+@WAIT-FOR:Done
+-->
+<!DOCTYPE html>
+<html>
+<body>
+  <input aria-label="combobox unaltered" role="combobox">
+  <input aria-label="combobox menu" role="combobox" aria-haspopup="menu">
+  <input aria-label="combobox grid" role="combobox" aria-haspopup="grid">
+  <input aria-label="combobox dialog" role="combobox" aria-haspopup="dialog">
+
+  <input id="input1" aria-label="combobox changed to menu" role="combobox">
+  <input id="input2" aria-label="combobox changed to grid" role="combobox">
+  <input id="input3" aria-label="combobox changed to dialog" role="combobox">
+
+  <button id="button" aria-label="changed to grid" ></button>
+  <div id="div" aria-label="changed to grid"  tabindex=0 role="combobox"></div>
+  </div>
+
+
+  <script>
+  setTimeout(() => {
+      document.getElementById('input1').setAttribute('aria-haspopup', 'menu');
+      document.getElementById('input2').setAttribute('aria-haspopup', 'grid');
+      document.getElementById('input3').setAttribute('aria-haspopup', 'dialog');
+
+      document.getElementById('button').setAttribute('aria-haspopup', 'grid');
+      document.getElementById('div').setAttribute('aria-haspopup', 'grid');
+      document.title = "Done";
+    }, 1000)
+  </script>
+</body>
+</html>

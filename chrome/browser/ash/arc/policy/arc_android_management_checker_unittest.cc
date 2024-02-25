@@ -58,8 +58,7 @@ class ArcAndroidManagementCheckerTest : public testing::Test {
   signin::IdentityTestEnvironment identity_test_environment_;
 
   std::unique_ptr<TestingProfile> profile_;
-  raw_ptr<policy::FakeAndroidManagementClient,
-          DanglingUntriaged | ExperimentalAsh>
+  raw_ptr<policy::FakeAndroidManagementClient, DanglingUntriaged>
       fake_android_management_client_ = nullptr;
   CoreAccountId account_id_;
 };

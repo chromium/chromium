@@ -4,16 +4,17 @@
 
 #import "base/test/ios/wait_util.h"
 #import "components/autofill/ios/form_util/autofill_test_with_web_state.h"
-#include "components/autofill/ios/form_util/form_activity_tab_helper.h"
+#import "components/autofill/ios/form_util/form_activity_tab_helper.h"
 #import "components/autofill/ios/form_util/form_handlers_java_script_feature.h"
 #import "components/autofill/ios/form_util/form_util_java_script_feature.h"
-#include "components/autofill/ios/form_util/test_form_activity_observer.h"
+#import "components/autofill/ios/form_util/test_form_activity_observer.h"
 #import "ios/web/public/browser_state.h"
 #import "ios/web/public/js_messaging/web_frames_manager.h"
 #import "ios/web/public/test/fakes/fake_web_client.h"
 #import "ios/web/public/test/js_test_util.h"
 #import "ios/web/public/test/web_test_with_web_state.h"
-#include "testing/gtest/include/gtest/gtest.h"
+#import "testing/gtest/include/gtest/gtest.h"
+#import "testing/gtest_mac.h"
 
 using autofill::FieldRendererId;
 using autofill::FormRendererId;
@@ -333,4 +334,26 @@ TEST_F(FormJsTest, AddCustomElement) {
     info = block_observer->form_activity_info();
     return info != nil;
   }));
+}
+
+TEST_F(FormJsTest, GetIframeElements) {
+  LoadHtml(@"<iframe id='frame1' srcdoc='foo'></iframe>"
+           @"<p id='not-an-iframe'>"
+           @"<iframe id='frame2' srcdoc='bar'></iframe>"
+           @"<marquee id='definitely-not-an-iframe'>baz</marquee>"
+           @"</p>");
+
+  web::WebFrame* main_frame = WaitForMainFrame();
+  ASSERT_TRUE(main_frame);
+
+  // Check that the right elements were found.
+  EXPECT_NSEQ(
+      @"frame1,frame2",
+      ExecuteJavaScript(
+          @"const frames = __gCrWeb.form.getIframeElements(document.body);"
+          @"frames.map((f) => { return f.id; }).join();"));
+
+  // Check that the return objects have a truthy contentWindow property.
+  EXPECT_NSEQ(@YES, ExecuteJavaScript(@"!!(frames[0].contentWindow);"));
+  EXPECT_NSEQ(@YES, ExecuteJavaScript(@"!!(frames[1].contentWindow);"));
 }

@@ -25,8 +25,7 @@ namespace gfx {
 class ImageSkia;
 }  // namespace gfx
 
-namespace ash {
-namespace file_system_provider {
+namespace ash::file_system_provider {
 
 // Provided file systems's manager for showing notifications. Shows always
 // up to one notification. If more than one request is unresponsive, then
@@ -49,12 +48,15 @@ class NotificationManager : public NotificationManagerInterface,
   void HideUnresponsiveNotification(int id) override;
 
   // AppIconLoaderDelegate overrides:
-  void OnAppImageUpdated(const std::string& id,
-                         const gfx::ImageSkia& image) override;
+  void OnAppImageUpdated(
+      const std::string& id,
+      const gfx::ImageSkia& image,
+      bool is_placeholder_icon,
+      const std::optional<gfx::ImageSkia>& badge_image) override;
 
   // message_center::NotificationObserver overrides:
-  void Click(const absl::optional<int>& button_index,
-             const absl::optional<std::u16string>& reply) override;
+  void Click(const std::optional<int>& button_index,
+             const std::optional<std::u16string>& reply) override;
   void Close(bool by_user) override;
 
  private:
@@ -71,7 +73,7 @@ class NotificationManager : public NotificationManagerInterface,
   // clearing the list.
   void OnNotificationResult(NotificationResult result);
 
-  raw_ptr<Profile, ExperimentalAsh> profile_;
+  raw_ptr<Profile> profile_;
   ProvidedFileSystemInfo file_system_info_;
   CallbackMap callbacks_;
   std::unique_ptr<AppIconLoader> icon_loader_;
@@ -79,7 +81,6 @@ class NotificationManager : public NotificationManagerInterface,
   base::WeakPtrFactory<NotificationManager> weak_factory_{this};
 };
 
-}  // namespace file_system_provider
-}  // namespace ash
+}  // namespace ash::file_system_provider
 
 #endif  // CHROME_BROWSER_ASH_FILE_SYSTEM_PROVIDER_NOTIFICATION_MANAGER_H_

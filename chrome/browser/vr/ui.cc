@@ -13,13 +13,11 @@
 
 #include "base/functional/bind.h"
 #include "base/logging.h"
-#include "base/numerics/math_constants.h"
+#include "base/numerics/angle_conversions.h"
 #include "base/task/single_thread_task_runner.h"
 #include "build/build_config.h"
-#include "chrome/browser/vr/input_event.h"
 #include "chrome/browser/vr/model/model.h"
 #include "chrome/browser/vr/skia_surface_provider_factory.h"
-#include "chrome/browser/vr/ui_browser_interface.h"
 #include "chrome/browser/vr/ui_element_renderer.h"
 #include "chrome/browser/vr/ui_renderer.h"
 #include "chrome/browser/vr/ui_scene.h"
@@ -32,49 +30,13 @@ namespace vr {
 
 namespace {
 
-constexpr float kMargin = 1.f * base::kPiFloat / 180;
+constexpr float kMargin = base::DegToRad(1.0f);
 
 UiElementName UserFriendlyElementNameToUiElementName(
     UserFriendlyElementName name) {
   switch (name) {
-    case UserFriendlyElementName::kUrl:
-      return kUrlBarOriginRegion;
-    case UserFriendlyElementName::kBackButton:
-      return kUrlBarBackButton;
-    case UserFriendlyElementName::kForwardButton:
-      return kOverflowMenuForwardButton;
-    case UserFriendlyElementName::kReloadButton:
-      return kOverflowMenuReloadButton;
-    case UserFriendlyElementName::kOverflowMenu:
-      return kUrlBarOverflowButton;
-    case UserFriendlyElementName::kPageInfoButton:
-      return kUrlBarSecurityButton;
-    case UserFriendlyElementName::kBrowsingDialog:
-      return k2dBrowsingHostedUiContent;
-    case UserFriendlyElementName::kContentQuad:
-      return kContentQuad;
-    case UserFriendlyElementName::kNewIncognitoTab:
-      return kOverflowMenuNewIncognitoTabItem;
-    case UserFriendlyElementName::kCloseIncognitoTabs:
-      return kOverflowMenuCloseAllIncognitoTabsItem;
-    case UserFriendlyElementName::kExitPrompt:
-      return kExitPrompt;
-    case UserFriendlyElementName::kSuggestionBox:
-      return kOmniboxSuggestions;
-    case UserFriendlyElementName::kOmniboxTextField:
-      return kOmniboxTextField;
-    case UserFriendlyElementName::kOmniboxCloseButton:
-      return kOmniboxCloseButton;
-    case UserFriendlyElementName::kOmniboxVoiceInputButton:
-      return kOmniboxVoiceSearchButton;
-    case UserFriendlyElementName::kVoiceInputCloseButton:
-      return kSpeechRecognitionListeningCloseButton;
-    case UserFriendlyElementName::kAppButtonExitToast:
-      return kWebVrExclusiveScreenToast;
     case UserFriendlyElementName::kWebXrAudioIndicator:
       return kWebVrAudioCaptureIndicator;
-    case UserFriendlyElementName::kWebXrHostedContent:
-      return kWebVrHostedUiContent;
     case UserFriendlyElementName::kMicrophonePermissionIndicator:
       return kAudioCaptureIndicator;
     case UserFriendlyElementName::kWebXrExternalPromptNotification:
@@ -95,14 +57,12 @@ UiElementName UserFriendlyElementNameToUiElementName(
 
 }  // namespace
 
-Ui::Ui(UiBrowserInterface* browser, const UiInitialState& ui_initial_state)
-    : browser_(browser),
-      scene_(std::make_unique<UiScene>()),
-      model_(std::make_unique<Model>()) {
-  UiInitialState state = ui_initial_state;
-  InitializeModel(state);
+Ui::Ui()
+    : scene_(std::make_unique<UiScene>()), model_(std::make_unique<Model>()) {
+  model_->web_vr.has_received_permissions = false;
+  model_->web_vr.state = kWebVrAwaitingFirstFrame;
 
-  UiSceneCreator(browser, scene_.get(), this, model_.get()).CreateScene();
+  UiSceneCreator(scene_.get(), this, model_.get()).CreateScene();
 }
 
 Ui::~Ui() = default;
@@ -132,17 +92,6 @@ void Ui::OnGlInitialized() {
   scene_->OnGlInitialized(provider_.get());
 }
 
-void Ui::OnPause() {}
-
-void Ui::OnMenuButtonClicked() {
-  if (!model_->gvr_input_support) {
-    return;
-  }
-
-  // Menu button click exits the WebVR presentation and fullscreen.
-  browser_->ExitPresent();
-}
-
 void Ui::OnWebXrFrameAvailable() {
   model_->web_vr.state = kWebVrPresenting;
 }
@@ -155,38 +104,11 @@ void Ui::OnWebXrTimedOut() {
   model_->web_vr.state = kWebVrTimedOut;
 }
 
-void Ui::Dump(bool include_bindings) {
-#ifndef NDEBUG
-  std::ostringstream os;
-  os << std::setprecision(3);
-  os << std::endl;
-  scene_->root_element().DumpHierarchy(std::vector<size_t>(), &os,
-                                       include_bindings);
-
-  std::stringstream ss(os.str());
-  std::string line;
-  while (std::getline(ss, line, '\n')) {
-    LOG(ERROR) << line;
-  }
-#endif
-}
-
-void Ui::ReinitializeForTest(const UiInitialState& ui_initial_state) {
-  InitializeModel(ui_initial_state);
-}
-
-bool Ui::GetElementVisibilityForTesting(UserFriendlyElementName element_name) {
+bool Ui::GetElementVisibility(UserFriendlyElementName element_name) {
   auto* target_element = scene()->GetUiElementByName(
       UserFriendlyElementNameToUiElementName(element_name));
   DCHECK(target_element) << "Unsupported test element";
   return target_element->IsVisible();
-}
-
-void Ui::InitializeModel(const UiInitialState& ui_initial_state) {
-  model_->web_vr.has_received_permissions = false;
-  model_->web_vr.state = kWebVrAwaitingFirstFrame;
-
-  model_->gvr_input_support = ui_initial_state.gvr_input_support;
 }
 
 gfx::Point3F Ui::GetTargetPointForTesting(UserFriendlyElementName element_name,
@@ -231,47 +153,12 @@ void Ui::Draw(const vr::RenderInfo& info) {
   ui_renderer_->Draw(info);
 }
 
-void Ui::DrawWebXr(int texture_data_handle, const float (&uv_transform)[16]) {
-  if (!texture_data_handle)
-    return;
-  ui_element_renderer_->DrawTextureCopy(texture_data_handle, uv_transform, 0,
-                                        0);
-}
-
 void Ui::DrawWebVrOverlayForeground(const vr::RenderInfo& info) {
   ui_renderer_->DrawWebVrOverlayForeground(info);
 }
 
 bool Ui::HasWebXrOverlayElementsToDraw() {
   return scene_->HasWebXrOverlayElementsToDraw();
-}
-
-void Ui::HandleMenuButtonEvents(InputEventList* input_event_list) {
-  auto it = input_event_list->begin();
-  while (it != input_event_list->end()) {
-    if (InputEvent::IsMenuButtonEventType((*it)->type())) {
-      switch ((*it)->type()) {
-        case InputEvent::kMenuButtonClicked:
-          // Post a task, rather than calling directly, to avoid modifying UI
-          // state in the midst of frame rendering.
-          base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
-              FROM_HERE,
-              base::BindOnce(&Ui::OnMenuButtonClicked, base::Unretained(this)));
-          break;
-        case InputEvent::kMenuButtonLongPressStart:
-          model_->menu_button_long_pressed = true;
-          break;
-        case InputEvent::kMenuButtonLongPressEnd:
-          model_->menu_button_long_pressed = false;
-          break;
-        default:
-          NOTREACHED();
-      }
-      it = input_event_list->erase(it);
-    } else {
-      ++it;
-    }
-  }
 }
 
 std::pair<FovRectangle, FovRectangle> Ui::GetMinimalFovForWebXrOverlayElements(
@@ -290,14 +177,11 @@ FovRectangle Ui::GetMinimalFov(const gfx::Transform& view_matrix,
                                const FovRectangle& fov_recommended,
                                float z_near) {
   // Calculate boundary of Z near plane in view space.
-  float z_near_left =
-      -z_near * std::tan(fov_recommended.left * base::kPiFloat / 180);
-  float z_near_right =
-      z_near * std::tan(fov_recommended.right * base::kPiFloat / 180);
+  float z_near_left = -z_near * std::tan(base::DegToRad(fov_recommended.left));
+  float z_near_right = z_near * std::tan(base::DegToRad(fov_recommended.right));
   float z_near_bottom =
-      -z_near * std::tan(fov_recommended.bottom * base::kPiFloat / 180);
-  float z_near_top =
-      z_near * std::tan(fov_recommended.top * base::kPiFloat / 180);
+      -z_near * std::tan(base::DegToRad(fov_recommended.bottom));
+  float z_near_top = z_near * std::tan(base::DegToRad(fov_recommended.top));
 
   float left = z_near_right;
   float right = z_near_left;
@@ -363,25 +247,11 @@ FovRectangle Ui::GetMinimalFov(const gfx::Transform& view_matrix,
   bottom = std::max(bottom - margin, z_near_bottom);
   top = std::min(top + margin, z_near_top);
 
-  float left_degrees = std::atan(-left / z_near) * 180 / base::kPiFloat;
-  float right_degrees = std::atan(right / z_near) * 180 / base::kPiFloat;
-  float bottom_degrees = std::atan(-bottom / z_near) * 180 / base::kPiFloat;
-  float top_degrees = std::atan(top / z_near) * 180 / base::kPiFloat;
+  float left_degrees = base::RadToDeg(std::atan(-left / z_near));
+  float right_degrees = base::RadToDeg(std::atan(right / z_near));
+  float bottom_degrees = base::RadToDeg(std::atan(-bottom / z_near));
+  float top_degrees = base::RadToDeg(std::atan(top / z_near));
   return FovRectangle{left_degrees, right_degrees, bottom_degrees, top_degrees};
 }
-
-#if BUILDFLAG(IS_ANDROID)
-extern "C" {
-// This symbol is retrieved from the VR feature module library via dlsym(),
-// where it's bare address is type-cast to a CreateUiFunction pointer and
-// executed. The forward declaration here ensures that the signatures match.
-CreateUiFunction CreateUi;
-__attribute__((visibility("default"))) UiInterface* CreateUi(
-    UiBrowserInterface* browser,
-    const UiInitialState& ui_initial_state) {
-  return new Ui(browser, ui_initial_state);
-}
-}  // extern "C"
-#endif  // BUILDFLAG(IS_ANDROID)
 
 }  // namespace vr

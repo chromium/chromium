@@ -33,8 +33,8 @@ class ActiveHostNetworkStateUpdater final : public ActiveHost::Observer {
       const ActiveHost::ActiveHostChangeInfo& change_info) override;
 
  private:
-  raw_ptr<ActiveHost, ExperimentalAsh> active_host_;
-  raw_ptr<NetworkStateHandler, ExperimentalAsh> network_state_handler_;
+  raw_ptr<ActiveHost> active_host_;
+  raw_ptr<NetworkStateHandler> network_state_handler_;
 };
 
 }  // namespace tether

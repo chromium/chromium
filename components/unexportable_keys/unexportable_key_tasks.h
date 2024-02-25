@@ -7,6 +7,7 @@
 
 #include <cstdint>
 #include <memory>
+#include <optional>
 
 #include "base/containers/span.h"
 #include "base/functional/callback_forward.h"
@@ -14,7 +15,6 @@
 #include "components/unexportable_keys/background_task_impl.h"
 #include "components/unexportable_keys/background_task_priority.h"
 #include "crypto/signature_verifier.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace crypto {
 class UnexportableSigningKey;
@@ -51,8 +51,8 @@ class FromWrappedKeyTask
 };
 
 // A `BackgroundTask` to sign data with `crypto::UnexportableSigningKey`.
-class SignTask : public internal::BackgroundTaskImpl<
-                     absl::optional<std::vector<uint8_t>>> {
+class SignTask
+    : public internal::BackgroundTaskImpl<std::optional<std::vector<uint8_t>>> {
  public:
   SignTask(scoped_refptr<RefCountedUnexportableSigningKey> signing_key,
            base::span<const uint8_t> data,

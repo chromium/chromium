@@ -34,8 +34,6 @@ component("media") {
     "remote_playback_client_wrapper_impl.cc",
     "resource_multi_buffer_data_provider.cc",
     "resource_multi_buffer_data_provider.h",
-    "text_track_impl.cc",
-    "text_track_impl.h",
     "url_index.cc",
     "video_decode_stats_reporter.cc",
     "video_decode_stats_reporter.h",
@@ -47,8 +45,6 @@ component("media") {
     "web_content_decryption_module_session_impl.cc",
     "web_content_decryption_module_session_impl.h",
     "web_encrypted_media_client_impl.cc",
-    "web_inband_text_track_impl.cc",
-    "web_inband_text_track_impl.h",
     "web_media_player_builder.cc",
     "web_media_source_impl.cc",
     "web_media_source_impl.h",
@@ -108,8 +104,8 @@ component("media") {
 
   if (enable_hls_demuxer) {
     sources += [
-      "hls_data_source_provider_impl.cc",
-      "hls_data_source_provider_impl.h",
+      "multi_buffer_data_source_factory.cc",
+      "multi_buffer_data_source_factory.h",
     ]
   }
 }

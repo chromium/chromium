@@ -30,6 +30,7 @@
 #endif
 
 #if !BUILDFLAG(IS_ANDROID)
+#include "gpu/command_buffer/service/abstract_texture.h"
 #include "media/gpu/gles2_decoder_helper.h"
 #endif
 
@@ -189,14 +190,6 @@ class CommandBufferHelperImpl
     textures_.erase(service_id);
   }
 
-  void SetCleared(GLuint service_id) override {
-    DVLOG(2) << __func__ << "(" << service_id << ")";
-    DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-
-    DCHECK(textures_.count(service_id));
-    textures_[service_id]->SetCleared();
-  }
-
  private:
   gpu::Mailbox CreateLegacyMailbox(GLuint service_id) override {
     DVLOG(2) << __func__ << "(" << service_id << ")";
@@ -331,8 +324,8 @@ class CommandBufferHelperImpl
 #if !BUILDFLAG(IS_ANDROID)
   // TODO(sandersd): Merge GLES2DecoderHelper implementation into this class.
   std::unique_ptr<GLES2DecoderHelper> decoder_helper_;
-#endif
   std::map<GLuint, std::unique_ptr<gpu::gles2::AbstractTexture>> textures_;
+#endif
 
   std::vector<WillDestroyStubCB> will_destroy_stub_callbacks_;
 

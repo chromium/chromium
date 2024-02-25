@@ -160,7 +160,7 @@ void PluginVmTestHelper::SetUserRequirementsToAllowPluginVm() {
       testing_profile_->GetProfileUserName(), "id"));
   auto user_manager = std::make_unique<ash::FakeChromeUserManager>();
   auto* user = user_manager->AddUserWithAffiliationAndTypeAndProfile(
-      account_id, true, user_manager::USER_TYPE_REGULAR, testing_profile_);
+      account_id, true, user_manager::UserType::kRegular, testing_profile_);
   user_manager->UserLoggedIn(user->GetAccountId(), user->username_hash(),
                              /*browser_restart=*/false,
                              /*is_child=*/false);
@@ -206,7 +206,8 @@ void PluginVmTestHelper::OpenShelfItem() {
         shelf_id, std::move(delegate));
     shelf_controller->SetItemStatus(shelf_id, ash::STATUS_RUNNING);
   } else {
-    shelf_controller->CreateAppItem(std::move(delegate), ash::STATUS_RUNNING);
+    shelf_controller->CreateAppItem(std::move(delegate), ash::STATUS_RUNNING,
+                                    /*pinned=*/false);
   }
 }
 

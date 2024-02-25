@@ -6,29 +6,18 @@
 
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/strings/strcat.h"
 
 namespace metrics::structured {
 
-void LogInternalError(StructuredMetricsError error) {
-  UMA_HISTOGRAM_ENUMERATION("UMA.StructuredMetrics.InternalError2", error);
-}
-
 void LogEventRecordingState(EventRecordingState state) {
-  UMA_HISTOGRAM_ENUMERATION("UMA.StructuredMetrics.EventRecordingState", state);
+  UMA_HISTOGRAM_ENUMERATION("UMA.StructuredMetrics.EventRecordingState2",
+                            state);
 }
 
 void LogNumEventsInUpload(const int num_events) {
   UMA_HISTOGRAM_COUNTS_1000("UMA.StructuredMetrics.NumEventsInUpload",
                             num_events);
-}
-
-void LogKeyValidation(KeyValidationState state) {
-  UMA_HISTOGRAM_ENUMERATION("UMA.StructuredMetrics.KeyValidationState", state);
-}
-
-void LogIsEventRecordedUsingMojo(bool used_mojo_api) {
-  UMA_HISTOGRAM_BOOLEAN("UMA.StructuredMetrics.EventsRecordedUsingMojo",
-                        used_mojo_api);
 }
 
 void LogNumEventsRecordedBeforeInit(int num_events) {
@@ -63,6 +52,20 @@ void LogExternalMetricsScanInUpload(int num_scans) {
 void LogDroppedExternalMetrics(int num_dropped) {
   base::UmaHistogramCounts1000("StructuredMetrics.ExternalMetricsDropped",
                                num_dropped);
+}
+
+void LogDroppedProjectExternalMetrics(std::string_view project_name,
+                                      int num_dropped) {
+  const std::string histogram_name =
+      base::StrCat({"StructuredMetrics.ExternalMetricsDropped.", project_name});
+  base::UmaHistogramCounts100(histogram_name, num_dropped);
+}
+
+void LogProducedProjectExternalMetrics(std::string_view project_name,
+                                       int num_produced) {
+  const std::string histogram_name = base::StrCat(
+      {"StructuredMetrics.ExternalMetricsProduced.", project_name});
+  base::UmaHistogramCounts100(histogram_name, num_produced);
 }
 
 }  // namespace metrics::structured

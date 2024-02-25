@@ -124,13 +124,20 @@ VULKAN_DEVICE_FUNCTIONS = [
       'vkBindImageMemory',
       'vkBindImageMemory2',
       'vkCmdBeginRenderPass',
+      'vkCmdBindDescriptorSets',
+      'vkCmdBindPipeline',
+      'vkCmdBindVertexBuffers',
       'vkCmdCopyBuffer',
       'vkCmdCopyBufferToImage',
       'vkCmdCopyImageToBuffer',
+      'vkCmdDraw',
       'vkCmdEndRenderPass',
       'vkCmdExecuteCommands',
       'vkCmdNextSubpass',
       'vkCmdPipelineBarrier',
+      'vkCmdPushConstants',
+      'vkCmdSetScissor',
+      'vkCmdSetViewport',
       'vkCreateBuffer',
       'vkCreateCommandPool',
       'vkCreateDescriptorPool',
@@ -140,6 +147,7 @@ VULKAN_DEVICE_FUNCTIONS = [
       'vkCreateGraphicsPipelines',
       'vkCreateImage',
       'vkCreateImageView',
+      'vkCreatePipelineLayout',
       'vkCreateRenderPass',
       'vkCreateSampler',
       'vkCreateSemaphore',
@@ -153,6 +161,8 @@ VULKAN_DEVICE_FUNCTIONS = [
       'vkDestroyFramebuffer',
       'vkDestroyImage',
       'vkDestroyImageView',
+      'vkDestroyPipeline',
+      'vkDestroyPipelineLayout',
       'vkDestroyRenderPass',
       'vkDestroySampler',
       'vkDestroySemaphore',
@@ -566,11 +576,12 @@ struct COMPONENT_EXPORT(VULKAN) VulkanFunctionPointers {
 
 def WriteFunctionPointerInitialization(out_file, proc_addr_function, parent,
                                        functions):
-  template = Template("""  ${name} = reinterpret_cast<PFN_${name}>(
-    ${get_proc_addr}(${parent}, "${name}${extension_suffix}"));
+  template = Template("""  constexpr char k${name}${extension_suffix}[] =
+    "${name}${extension_suffix}";
+  ${name} = reinterpret_cast<PFN_${name}>(
+    ${get_proc_addr}(${parent}, k${name}${extension_suffix}));
   if (!${name}) {
-    DLOG(WARNING) << "Failed to bind vulkan entrypoint: "
-                  << "${name}${extension_suffix}";
+    LogGetProcError(k${name}${extension_suffix});
     return false;
   }
 
@@ -604,10 +615,18 @@ def GenerateSourceFile(out_file):
 
 #include "gpu/vulkan/vulkan_function_pointers.h"
 
+#include "base/check_op.h"
+#include "base/compiler_specific.h"
 #include "base/logging.h"
 #include "base/no_destructor.h"
 
 namespace gpu {
+
+namespace {
+NOINLINE void LogGetProcError(const char* funcName) {
+  LOG(WARNING) << "Failed to bind vulkan entrypoint: " << funcName;
+}
+}
 
 VulkanFunctionPointers* GetVulkanFunctionPointers() {
   static base::NoDestructor<VulkanFunctionPointers> vulkan_function_pointers;
@@ -628,8 +647,10 @@ bool VulkanFunctionPointers::BindUnassociatedFunctionPointersFromLoaderLib(
   vkGetInstanceProcAddr = reinterpret_cast<PFN_vkGetInstanceProcAddr>(
       base::GetFunctionPointerFromNativeLibrary(loader_library_,
                                                 "vkGetInstanceProcAddr"));
-  if (!vkGetInstanceProcAddr)
+  if (!vkGetInstanceProcAddr) {
+    LOG(WARNING) << "Failed to find vkGetInstanceProcAddr";
     return false;
+  }
   return BindUnassociatedFunctionPointersCommon();
 }
 

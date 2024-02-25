@@ -1,0 +1,19 @@
+{
+  "args": [
+    "./disable",
+    "-b",
+    "1492",
+    "-m",
+    "My Custom Bug Message",
+    "8764511400244737329",
+    ".*CalculatorBrowserTest.Model.*",
+    "linux"
+  ],
+  "requests": "{\"QueryTestResults/{\\\"invocations\\\": [\\\"invocations/build-8764511400244737329\\\"], \\\"readMask\\\": {\\\"paths\\\": [\\\"test_id\\\", \\\"test_metadata\\\"]}, \\\"pageSize\\\": 1000, \\\"predicate\\\": {\\\"testIdRegexp\\\": \\\".*CalculatorBrowserTest.Model.*\\\"}}\": \"{\\\"testResults\\\":[{\\\"name\\\":\\\"invocations/task-chromium-swarm.appspot.com-65e35a8b128b4511/tests/ninja:%2F%2Fchrome%2Ftest:browser_tests%2FCalculatorBrowserTest.Model/results/62fcb470-01281\\\",\\\"testId\\\":\\\"ninja://chrome/test:browser_tests/CalculatorBrowserTest.Model\\\",\\\"testMetadata\\\":{\\\"name\\\":\\\"CalculatorBrowserTest.Model\\\",\\\"location\\\":{\\\"repo\\\":\\\"https://chromium.googlesource.com/chromium/src\\\",\\\"fileName\\\":\\\"//chrome/browser/extensions/calculator_app_browsertest.cc\\\",\\\"line\\\":19}}}]}\\n\"}",
+  "read_data": {
+    "chrome/browser/extensions/calculator_app_browsertest.cc": "// Copyright 2012 The Chromium Authors\n// Use of this source code is governed by a BSD-style license that can be\n// found in the LICENSE file.\n\n#include \"base/files/file_path.h\"\n#include \"base/path_service.h\"\n#include \"chrome/browser/ui/browser.h\"\n#include \"chrome/browser/ui/tabs/tab_strip_model.h\"\n#include \"chrome/common/chrome_paths.h\"\n#include \"chrome/test/base/in_process_browser_test.h\"\n#include \"chrome/test/base/ui_test_utils.h\"\n#include \"content/public/browser/web_contents.h\"\n#include \"content/public/test/browser_test.h\"\n#include \"content/public/test/browser_test_utils.h\"\n#include \"net/base/filename_util.h\"\n\nclass CalculatorBrowserTest : public InProcessBrowserTest {};\n\nIN_PROC_BROWSER_TEST_F(CalculatorBrowserTest, Model) {\n  base::FilePath test_file;\n  base::PathService::Get(chrome::DIR_TEST_DATA, &test_file);\n  test_file =\n      test_file.AppendASCII(\"extensions/calculator_app/tests/automatic.html\");\n\n  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(),\n                                           net::FilePathToFileURL(test_file)));\n\n  ASSERT_EQ(true, content::EvalJs(\n                      browser()->tab_strip_model()->GetActiveWebContents(),\n                      \"window.runTests().success\"));\n}\n"
+  },
+  "written_data": {
+    "chrome/browser/extensions/calculator_app_browsertest.cc": "// Copyright 2012 The Chromium Authors\n// Use of this source code is governed by a BSD-style license that can be\n// found in the LICENSE file.\n\n#include \"base/files/file_path.h\"\n#include \"base/path_service.h\"\n#include \"build/build_config.h\"\n#include \"chrome/browser/ui/browser.h\"\n#include \"chrome/browser/ui/tabs/tab_strip_model.h\"\n#include \"chrome/common/chrome_paths.h\"\n#include \"chrome/test/base/in_process_browser_test.h\"\n#include \"chrome/test/base/ui_test_utils.h\"\n#include \"content/public/browser/web_contents.h\"\n#include \"content/public/test/browser_test.h\"\n#include \"content/public/test/browser_test_utils.h\"\n#include \"net/base/filename_util.h\"\n\nclass CalculatorBrowserTest : public InProcessBrowserTest {};\n\n// TODO(crbug.com/1492): My Custom Bug Message\n#if BUILDFLAG(IS_LINUX)\n#define MAYBE_Model DISABLED_Model\n#else\n#define MAYBE_Model Model\n#endif\nIN_PROC_BROWSER_TEST_F(CalculatorBrowserTest, MAYBE_Model) {\n  base::FilePath test_file;\n  base::PathService::Get(chrome::DIR_TEST_DATA, &test_file);\n  test_file =\n      test_file.AppendASCII(\"extensions/calculator_app/tests/automatic.html\");\n\n  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(),\n                                           net::FilePathToFileURL(test_file)));\n\n  ASSERT_EQ(true, content::EvalJs(\n                      browser()->tab_strip_model()->GetActiveWebContents(),\n                      \"window.runTests().success\"));\n}\n"
+  }
+}

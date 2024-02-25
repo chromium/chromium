@@ -14,19 +14,20 @@ import '../settings_shared.css.js';
 import '../i18n_setup.js';
 import './chooser_exception_list_entry.js';
 
-import {CrDialogElement} from 'chrome://resources/cr_elements/cr_dialog/cr_dialog.js';
+import type {CrDialogElement} from 'chrome://resources/cr_elements/cr_dialog/cr_dialog.js';
 import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
 import {ListPropertyUpdateMixin} from 'chrome://resources/cr_elements/list_property_update_mixin.js';
 import {WebUiListenerMixin} from 'chrome://resources/cr_elements/web_ui_listener_mixin.js';
-import {PaperTooltipElement} from 'chrome://resources/polymer/v3_0/paper-tooltip/paper-tooltip.js';
+import type {PaperTooltipElement} from 'chrome://resources/polymer/v3_0/paper-tooltip/paper-tooltip.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {TooltipMixin} from '../tooltip_mixin.js';
 
 import {getTemplate} from './chooser_exception_list.html.js';
-import {ChooserType, ContentSettingsTypes} from './constants.js';
+import type {ContentSettingsTypes} from './constants.js';
+import {ChooserType} from './constants.js';
 import {SiteSettingsMixin} from './site_settings_mixin.js';
-import {ChooserException, RawChooserException, SiteException} from './site_settings_prefs_browser_proxy.js';
+import type {ChooserException, RawChooserException, SiteException} from './site_settings_prefs_browser_proxy.js';
 
 export interface ChooserExceptionListElement {
   $: {

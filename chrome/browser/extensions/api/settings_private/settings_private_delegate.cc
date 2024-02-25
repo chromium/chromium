@@ -30,12 +30,12 @@ SettingsPrivateDelegate::SettingsPrivateDelegate(Profile* profile)
 SettingsPrivateDelegate::~SettingsPrivateDelegate() {
 }
 
-absl::optional<base::Value::Dict> SettingsPrivateDelegate::GetPref(
+std::optional<base::Value::Dict> SettingsPrivateDelegate::GetPref(
     const std::string& name) {
-  absl::optional<api::settings_private::PrefObject> pref =
+  std::optional<api::settings_private::PrefObject> pref =
       prefs_util_->GetPref(name);
   if (!pref)
-    return absl::nullopt;
+    return std::nullopt;
   return pref->ToValue();
 }
 
@@ -44,7 +44,7 @@ base::Value::List SettingsPrivateDelegate::GetAllPrefs() {
 
   const TypedPrefMap& keys = prefs_util_->GetAllowlistedKeys();
   for (const auto& it : keys) {
-    if (absl::optional<base::Value::Dict> pref = GetPref(it.first); pref) {
+    if (std::optional<base::Value::Dict> pref = GetPref(it.first); pref) {
       prefs.Append(std::move(*pref));
     }
   }

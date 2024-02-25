@@ -30,6 +30,7 @@
 #include "net/base/ip_endpoint.h"
 #include "net/dns/public/dns_protocol.h"
 #include "net/dns/public/secure_dns_mode.h"
+#include "services/network/public/cpp/network_context_getter.h"
 #include "services/network/public/mojom/network_service.mojom.h"
 
 namespace chrome_browser_net {
@@ -77,13 +78,12 @@ class DnsProbeServiceImpl
     : public DnsProbeService,
       public network::mojom::DnsConfigChangeManagerClient {
  public:
-  using NetworkContextGetter = DnsProbeServiceFactory::NetworkContextGetter;
   using DnsConfigChangeManagerGetter =
       DnsProbeServiceFactory::DnsConfigChangeManagerGetter;
 
   explicit DnsProbeServiceImpl(content::BrowserContext* context);
   DnsProbeServiceImpl(
-      const NetworkContextGetter& network_context_getter,
+      const network::NetworkContextGetter& network_context_getter,
       const DnsConfigChangeManagerGetter& dns_config_change_manager_getter,
       const base::TickClock* tick_clock);
 
@@ -136,7 +136,7 @@ class DnsProbeServiceImpl
   base::TimeTicks probe_start_time_;
   error_page::DnsProbeStatus cached_result_;
 
-  NetworkContextGetter network_context_getter_;
+  network::NetworkContextGetter network_context_getter_;
   DnsConfigChangeManagerGetter dns_config_change_manager_getter_;
   mojo::Receiver<network::mojom::DnsConfigChangeManagerClient> receiver_{this};
   net::SecureDnsMode current_config_secure_dns_mode_ = net::SecureDnsMode::kOff;
@@ -163,7 +163,7 @@ DnsProbeServiceImpl::DnsProbeServiceImpl(content::BrowserContext* context)
           base::DefaultTickClock::GetInstance()) {}
 
 DnsProbeServiceImpl::DnsProbeServiceImpl(
-    const NetworkContextGetter& network_context_getter,
+    const network::NetworkContextGetter& network_context_getter,
     const DnsConfigChangeManagerGetter& dns_config_change_manager_getter,
     const base::TickClock* tick_clock)
     : state_(STATE_NO_RESULT),
@@ -414,7 +414,7 @@ DnsProbeServiceFactory::BuildServiceInstanceForBrowserContext(
 
 // static
 std::unique_ptr<DnsProbeService> DnsProbeServiceFactory::CreateForTesting(
-    const NetworkContextGetter& network_context_getter,
+    const network::NetworkContextGetter& network_context_getter,
     const DnsConfigChangeManagerGetter& dns_config_change_manager_getter,
     const base::TickClock* tick_clock) {
   return std::make_unique<DnsProbeServiceImpl>(

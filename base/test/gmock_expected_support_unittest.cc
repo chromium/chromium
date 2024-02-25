@@ -19,6 +19,34 @@ TEST(GmockExpectedSupportTest, AssertOkAndAssign) {
   EXPECT_EQ(1, result);
 }
 
+TEST(GmockExpectedSupportTest, VoidOkEquals) {
+  EXPECT_EQ(ok(), ok());
+  EXPECT_NE(ok(), ok("test"));
+  const expected<void, std::string> is_ok = ok();
+  EXPECT_EQ(ok(), is_ok);
+  EXPECT_EQ(is_ok, ok());
+  const expected<void, std::string> not_ok = unexpected("test");
+  EXPECT_NE(ok(), not_ok);
+  EXPECT_NE(not_ok, ok());
+}
+
+TEST(GmockExpectedSupportTest, PrintTest) {
+  EXPECT_EQ(testing::PrintToString(ok()), "ok()");
+  EXPECT_EQ(testing::PrintToString(ok("test")), "ok(test)");
+
+  EXPECT_EQ(testing::PrintToString(unexpected<std::string>("test")),
+            "Unexpected(test)");
+
+  EXPECT_EQ(testing::PrintToString(expected<void, std::string>(ok())),
+            "Expected()");
+  EXPECT_EQ(
+      testing::PrintToString(expected<std::string, std::string>(ok("test"))),
+      "Expected(test)");
+  EXPECT_EQ(testing::PrintToString(
+                expected<std::string, std::string>(unexpected("test"))),
+            "Unexpected(test)");
+}
+
 TEST(GmockExpectedSupportTest, HasValue) {
   const expected<void, std::string> e_void;
   EXPECT_THAT(e_void, HasValue());

@@ -22,6 +22,7 @@
 #include <string>
 
 #include "base/atomic_sequence_num.h"
+#include "base/bits.h"
 #include "base/compiler_specific.h"
 #include "base/containers/span.h"
 #include "base/functional/bind.h"
@@ -205,6 +206,7 @@ GLES2Implementation::GLES2Implementation(
     : ImplementationBase(helper, transfer_buffer, gpu_control),
       helper_(helper),
       chromium_framebuffer_multisample_(kUnknownExtensionStatus),
+      gl_capabilities_(gpu_control->GetGLCapabilities()),
       pack_alignment_(4),
       pack_row_length_(0),
       pack_skip_pixels_(0),
@@ -270,9 +272,9 @@ gpu::ContextResult GLES2Implementation::Initialize(
 
   GLStaticState::ShaderPrecisionMap* shader_precisions =
       &static_state_.shader_precisions;
-  capabilities_.VisitPrecisions(
+  gl_capabilities_.VisitPrecisions(
       [shader_precisions](GLenum shader, GLenum type,
-                          Capabilities::ShaderPrecision* result) {
+                          GLCapabilities::ShaderPrecision* result) {
         const GLStaticState::ShaderPrecisionKey key(shader, type);
         cmds::GetShaderPrecisionFormat::Result cached_result = {
             true, result->min_range, result->max_range, result->precision};
@@ -280,11 +282,12 @@ gpu::ContextResult GLES2Implementation::Initialize(
       });
 
   util_.set_num_compressed_texture_formats(
-      capabilities_.num_compressed_texture_formats);
-  util_.set_num_shader_binary_formats(capabilities_.num_shader_binary_formats);
+      gl_capabilities_.num_compressed_texture_formats);
+  util_.set_num_shader_binary_formats(
+      gl_capabilities_.num_shader_binary_formats);
 
   texture_units_ = std::make_unique<TextureUnit[]>(
-      capabilities_.max_combined_texture_image_units);
+      gl_capabilities_.max_combined_texture_image_units);
 
   buffer_tracker_ = std::make_unique<BufferTracker>(mapped_memory_.get());
   readback_buffer_shadow_tracker_ =
@@ -301,12 +304,12 @@ gpu::ContextResult GLES2Implementation::Initialize(
   }
 
   vertex_array_object_manager_ = std::make_unique<VertexArrayObjectManager>(
-      capabilities_.max_vertex_attribs, reserved_ids_[0], reserved_ids_[1],
+      gl_capabilities_.max_vertex_attribs, reserved_ids_[0], reserved_ids_[1],
       support_client_side_arrays_);
 
   // GL_BIND_GENERATES_RESOURCE_CHROMIUM state must be the same
   // on Client & Service.
-  if (capabilities_.bind_generates_resource_chromium !=
+  if (gl_capabilities_.bind_generates_resource_chromium !=
       (share_group_->bind_generates_resource() ? 1 : 0)) {
     SetGLError(GL_INVALID_OPERATION, "Initialize",
                "Service bind_generates_resource mismatch.");
@@ -769,49 +772,49 @@ bool GLES2Implementation::GetHelper(GLenum pname, GLint* params) {
       *params = bound_framebuffer_;
       return true;
     case GL_MAX_COMBINED_TEXTURE_IMAGE_UNITS:
-      *params = capabilities_.max_combined_texture_image_units;
+      *params = gl_capabilities_.max_combined_texture_image_units;
       return true;
     case GL_MAX_CUBE_MAP_TEXTURE_SIZE:
-      *params = capabilities_.max_cube_map_texture_size;
+      *params = gl_capabilities_.max_cube_map_texture_size;
       return true;
     case GL_MAX_FRAGMENT_UNIFORM_VECTORS:
-      *params = capabilities_.max_fragment_uniform_vectors;
+      *params = gl_capabilities_.max_fragment_uniform_vectors;
       return true;
     case GL_MAX_RENDERBUFFER_SIZE:
-      *params = capabilities_.max_renderbuffer_size;
+      *params = gl_capabilities_.max_renderbuffer_size;
       return true;
     case GL_MAX_TEXTURE_IMAGE_UNITS:
-      *params = capabilities_.max_texture_image_units;
+      *params = gl_capabilities_.max_texture_image_units;
       return true;
     case GL_MAX_TEXTURE_SIZE:
       *params = capabilities_.max_texture_size;
       return true;
     case GL_MAX_VARYING_VECTORS:
-      *params = capabilities_.max_varying_vectors;
+      *params = gl_capabilities_.max_varying_vectors;
       return true;
     case GL_MAX_VERTEX_ATTRIBS:
-      *params = capabilities_.max_vertex_attribs;
+      *params = gl_capabilities_.max_vertex_attribs;
       return true;
     case GL_MAX_VERTEX_TEXTURE_IMAGE_UNITS:
-      *params = capabilities_.max_vertex_texture_image_units;
+      *params = gl_capabilities_.max_vertex_texture_image_units;
       return true;
     case GL_MAX_VERTEX_UNIFORM_VECTORS:
-      *params = capabilities_.max_vertex_uniform_vectors;
+      *params = gl_capabilities_.max_vertex_uniform_vectors;
       return true;
     case GL_MAX_VIEWPORT_DIMS:
-      if (capabilities_.max_viewport_width > 0 &&
-          capabilities_.max_viewport_height > 0) {
-        params[0] = capabilities_.max_viewport_width;
-        params[1] = capabilities_.max_viewport_height;
+      if (gl_capabilities_.max_viewport_width > 0 &&
+          gl_capabilities_.max_viewport_height > 0) {
+        params[0] = gl_capabilities_.max_viewport_width;
+        params[1] = gl_capabilities_.max_viewport_height;
         return true;
       }
       // If they are not cached on the client side yet, query the service side.
       return false;
     case GL_NUM_COMPRESSED_TEXTURE_FORMATS:
-      *params = capabilities_.num_compressed_texture_formats;
+      *params = gl_capabilities_.num_compressed_texture_formats;
       return true;
     case GL_NUM_SHADER_BINARY_FORMATS:
-      *params = capabilities_.num_shader_binary_formats;
+      *params = gl_capabilities_.num_shader_binary_formats;
       return true;
     case GL_RENDERBUFFER_BINDING:
       *params = bound_renderbuffer_;
@@ -858,14 +861,14 @@ bool GLES2Implementation::GetHelper(GLenum pname, GLint* params) {
       return true;
     case GL_VIEWPORT:
       if (state_.viewport_width > 0 && state_.viewport_height > 0 &&
-          capabilities_.max_viewport_width > 0 &&
-          capabilities_.max_viewport_height > 0) {
+          gl_capabilities_.max_viewport_width > 0 &&
+          gl_capabilities_.max_viewport_height > 0) {
         params[0] = state_.viewport_x;
         params[1] = state_.viewport_y;
-        params[2] =
-            std::min(state_.viewport_width, capabilities_.max_viewport_width);
-        params[3] =
-            std::min(state_.viewport_height, capabilities_.max_viewport_height);
+        params[2] = std::min(state_.viewport_width,
+                             gl_capabilities_.max_viewport_width);
+        params[3] = std::min(state_.viewport_height,
+                             gl_capabilities_.max_viewport_height);
         return true;
       }
       // If they haven't been cached on the client side, go to service side
@@ -958,87 +961,87 @@ bool GLES2Implementation::GetHelper(GLenum pname, GLint* params) {
       *params = capabilities_.major_version;
       return true;
     case GL_MAX_3D_TEXTURE_SIZE:
-      *params = capabilities_.max_3d_texture_size;
+      *params = gl_capabilities_.max_3d_texture_size;
       return true;
     case GL_MAX_ARRAY_TEXTURE_LAYERS:
-      *params = capabilities_.max_array_texture_layers;
+      *params = gl_capabilities_.max_array_texture_layers;
       return true;
     case GL_MAX_COLOR_ATTACHMENTS:
-      *params = capabilities_.max_color_attachments;
+      *params = gl_capabilities_.max_color_attachments;
       return true;
     case GL_MAX_COMBINED_FRAGMENT_UNIFORM_COMPONENTS:
       *params = static_cast<GLint>(
-          capabilities_.max_combined_fragment_uniform_components);
+          gl_capabilities_.max_combined_fragment_uniform_components);
       return true;
     case GL_MAX_COMBINED_UNIFORM_BLOCKS:
-      *params = capabilities_.max_combined_uniform_blocks;
+      *params = gl_capabilities_.max_combined_uniform_blocks;
       return true;
     case GL_MAX_COMBINED_VERTEX_UNIFORM_COMPONENTS:
       *params = static_cast<GLint>(
-          capabilities_.max_combined_vertex_uniform_components);
+          gl_capabilities_.max_combined_vertex_uniform_components);
       return true;
     case GL_MAX_DRAW_BUFFERS:
-      *params = capabilities_.max_draw_buffers;
+      *params = gl_capabilities_.max_draw_buffers;
       return true;
     case GL_MAX_ELEMENT_INDEX:
-      *params = static_cast<GLint>(capabilities_.max_element_index);
+      *params = static_cast<GLint>(gl_capabilities_.max_element_index);
       return true;
     case GL_MAX_ELEMENTS_INDICES:
-      *params = capabilities_.max_elements_indices;
+      *params = gl_capabilities_.max_elements_indices;
       return true;
     case GL_MAX_ELEMENTS_VERTICES:
-      *params = capabilities_.max_elements_vertices;
+      *params = gl_capabilities_.max_elements_vertices;
       return true;
     case GL_MAX_FRAGMENT_INPUT_COMPONENTS:
-      *params = capabilities_.max_fragment_input_components;
+      *params = gl_capabilities_.max_fragment_input_components;
       return true;
     case GL_MAX_FRAGMENT_UNIFORM_BLOCKS:
-      *params = capabilities_.max_fragment_uniform_blocks;
+      *params = gl_capabilities_.max_fragment_uniform_blocks;
       return true;
     case GL_MAX_FRAGMENT_UNIFORM_COMPONENTS:
-      *params = capabilities_.max_fragment_uniform_components;
+      *params = gl_capabilities_.max_fragment_uniform_components;
       return true;
     case GL_MAX_PROGRAM_TEXEL_OFFSET:
-      *params = capabilities_.max_program_texel_offset;
+      *params = gl_capabilities_.max_program_texel_offset;
       return true;
     case GL_MAX_SAMPLES:
-      *params = capabilities_.max_samples;
+      *params = gl_capabilities_.max_samples;
       return true;
     case GL_MAX_SERVER_WAIT_TIMEOUT:
-      *params = static_cast<GLint>(capabilities_.max_server_wait_timeout);
+      *params = static_cast<GLint>(gl_capabilities_.max_server_wait_timeout);
       return true;
     case GL_MAX_TEXTURE_LOD_BIAS:
-      *params = static_cast<GLint>(capabilities_.max_texture_lod_bias);
+      *params = static_cast<GLint>(gl_capabilities_.max_texture_lod_bias);
       return true;
     case GL_MAX_TRANSFORM_FEEDBACK_INTERLEAVED_COMPONENTS:
-      *params = capabilities_.max_transform_feedback_interleaved_components;
+      *params = gl_capabilities_.max_transform_feedback_interleaved_components;
       return true;
     case GL_MAX_TRANSFORM_FEEDBACK_SEPARATE_ATTRIBS:
-      *params = capabilities_.max_transform_feedback_separate_attribs;
+      *params = gl_capabilities_.max_transform_feedback_separate_attribs;
       return true;
     case GL_MAX_TRANSFORM_FEEDBACK_SEPARATE_COMPONENTS:
-      *params = capabilities_.max_transform_feedback_separate_components;
+      *params = gl_capabilities_.max_transform_feedback_separate_components;
       return true;
     case GL_MAX_UNIFORM_BLOCK_SIZE:
-      *params = static_cast<GLint>(capabilities_.max_uniform_block_size);
+      *params = static_cast<GLint>(gl_capabilities_.max_uniform_block_size);
       return true;
     case GL_MAX_UNIFORM_BUFFER_BINDINGS:
-      *params = capabilities_.max_uniform_buffer_bindings;
+      *params = gl_capabilities_.max_uniform_buffer_bindings;
       return true;
     case GL_MAX_VARYING_COMPONENTS:
-      *params = capabilities_.max_varying_components;
+      *params = gl_capabilities_.max_varying_components;
       return true;
     case GL_MAX_VERTEX_OUTPUT_COMPONENTS:
-      *params = capabilities_.max_vertex_output_components;
+      *params = gl_capabilities_.max_vertex_output_components;
       return true;
     case GL_MAX_VERTEX_UNIFORM_BLOCKS:
-      *params = capabilities_.max_vertex_uniform_blocks;
+      *params = gl_capabilities_.max_vertex_uniform_blocks;
       return true;
     case GL_MAX_VERTEX_UNIFORM_COMPONENTS:
-      *params = capabilities_.max_vertex_uniform_components;
+      *params = gl_capabilities_.max_vertex_uniform_components;
       return true;
     case GL_MIN_PROGRAM_TEXEL_OFFSET:
-      *params = capabilities_.min_program_texel_offset;
+      *params = gl_capabilities_.min_program_texel_offset;
       return true;
     case GL_MINOR_VERSION:
       *params = capabilities_.minor_version;
@@ -1048,7 +1051,7 @@ bool GLES2Implementation::GetHelper(GLenum pname, GLint* params) {
       *params = cached_extensions_.size();
       return true;
     case GL_NUM_PROGRAM_BINARY_FORMATS:
-      *params = capabilities_.num_program_binary_formats;
+      *params = gl_capabilities_.num_program_binary_formats;
       return true;
     case GL_PACK_SKIP_PIXELS:
       *params = pack_skip_pixels_;
@@ -1069,7 +1072,7 @@ bool GLES2Implementation::GetHelper(GLenum pname, GLint* params) {
       *params = bound_uniform_buffer_;
       return true;
     case GL_UNIFORM_BUFFER_OFFSET_ALIGNMENT:
-      *params = capabilities_.uniform_buffer_offset_alignment;
+      *params = gl_capabilities_.uniform_buffer_offset_alignment;
       return true;
     case GL_UNPACK_SKIP_IMAGES:
       *params = unpack_skip_images_;
@@ -1131,10 +1134,10 @@ bool GLES2Implementation::GetHelper(GLenum pname, GLint* params) {
   // ES31 parameters.
   switch (pname) {
     case GL_MAX_ATOMIC_COUNTER_BUFFER_BINDINGS:
-      *params = capabilities_.max_atomic_counter_buffer_bindings;
+      *params = gl_capabilities_.max_atomic_counter_buffer_bindings;
       return true;
     case GL_MAX_SHADER_STORAGE_BUFFER_BINDINGS:
-      *params = capabilities_.max_shader_storage_buffer_bindings;
+      *params = gl_capabilities_.max_shader_storage_buffer_bindings;
       return true;
     case GL_ATOMIC_COUNTER_BUFFER_BINDING:
       *params = bound_atomic_counter_buffer_;
@@ -1149,7 +1152,7 @@ bool GLES2Implementation::GetHelper(GLenum pname, GLint* params) {
       *params = bound_shader_storage_buffer_;
       return true;
     case GL_SHADER_STORAGE_BUFFER_OFFSET_ALIGNMENT:
-      *params = capabilities_.shader_storage_buffer_offset_alignment;
+      *params = gl_capabilities_.shader_storage_buffer_offset_alignment;
       return true;
 
     // Non-cached ES31 parameters.
@@ -1184,7 +1187,7 @@ bool GLES2Implementation::GetFloatvHelper(GLenum pname, GLfloat* params) {
   // TODO(gman): Make this handle pnames that return more than 1 value.
   switch (pname) {
     case GL_MAX_TEXTURE_LOD_BIAS:
-      *params = capabilities_.max_texture_lod_bias;
+      *params = gl_capabilities_.max_texture_lod_bias;
       return true;
     default:
       break;
@@ -1200,19 +1203,19 @@ bool GLES2Implementation::GetFloatvHelper(GLenum pname, GLfloat* params) {
 bool GLES2Implementation::GetInteger64vHelper(GLenum pname, GLint64* params) {
   switch (pname) {
     case GL_MAX_COMBINED_FRAGMENT_UNIFORM_COMPONENTS:
-      *params = capabilities_.max_combined_fragment_uniform_components;
+      *params = gl_capabilities_.max_combined_fragment_uniform_components;
       return true;
     case GL_MAX_COMBINED_VERTEX_UNIFORM_COMPONENTS:
-      *params = capabilities_.max_combined_vertex_uniform_components;
+      *params = gl_capabilities_.max_combined_vertex_uniform_components;
       return true;
     case GL_MAX_ELEMENT_INDEX:
-      *params = capabilities_.max_element_index;
+      *params = gl_capabilities_.max_element_index;
       return true;
     case GL_MAX_SERVER_WAIT_TIMEOUT:
-      *params = capabilities_.max_server_wait_timeout;
+      *params = gl_capabilities_.max_server_wait_timeout;
       return true;
     case GL_MAX_UNIFORM_BLOCK_SIZE:
-      *params = capabilities_.max_uniform_block_size;
+      *params = gl_capabilities_.max_uniform_block_size;
       return true;
     case GL_TIMESTAMP_EXT:
       // We convert all GPU timestamps to CPU time.
@@ -4986,7 +4989,7 @@ void GLES2Implementation::ActiveTexture(GLenum texture) {
                      << GLES2Util::GetStringEnum(texture) << ")");
   GLuint texture_index = texture - GL_TEXTURE0;
   if (texture_index >=
-      static_cast<GLuint>(capabilities_.max_combined_texture_image_units)) {
+      static_cast<GLuint>(gl_capabilities_.max_combined_texture_image_units)) {
     SetGLErrorInvalidEnum("glActiveTexture", texture, "texture");
     return;
   }
@@ -5140,15 +5143,16 @@ bool GLES2Implementation::UpdateIndexedBufferState(GLenum target,
   switch (target) {
     case GL_ATOMIC_COUNTER_BUFFER:
       if (index >= static_cast<GLuint>(
-                       capabilities_.max_atomic_counter_buffer_bindings)) {
+                       gl_capabilities_.max_atomic_counter_buffer_bindings)) {
         SetGLError(GL_INVALID_VALUE, function_name, "index out of range");
         return false;
       }
       bound_atomic_counter_buffer_ = buffer_id;
       break;
     case GL_TRANSFORM_FEEDBACK_BUFFER:
-      if (index >= static_cast<GLuint>(
-                       capabilities_.max_transform_feedback_separate_attribs)) {
+      if (index >=
+          static_cast<GLuint>(
+              gl_capabilities_.max_transform_feedback_separate_attribs)) {
         SetGLError(GL_INVALID_VALUE, function_name, "index out of range");
         return false;
       }
@@ -5156,7 +5160,7 @@ bool GLES2Implementation::UpdateIndexedBufferState(GLenum target,
       break;
     case GL_SHADER_STORAGE_BUFFER:
       if (index >= static_cast<GLuint>(
-                       capabilities_.max_shader_storage_buffer_bindings)) {
+                       gl_capabilities_.max_shader_storage_buffer_bindings)) {
         SetGLError(GL_INVALID_VALUE, function_name, "index out of range");
         return false;
       }
@@ -5164,7 +5168,7 @@ bool GLES2Implementation::UpdateIndexedBufferState(GLenum target,
       break;
     case GL_UNIFORM_BUFFER:
       if (index >=
-          static_cast<GLuint>(capabilities_.max_uniform_buffer_bindings)) {
+          static_cast<GLuint>(gl_capabilities_.max_uniform_buffer_bindings)) {
         SetGLError(GL_INVALID_VALUE, function_name, "index out of range");
         return false;
       }
@@ -5498,7 +5502,7 @@ void GLES2Implementation::DeleteTexturesHelper(GLsizei n,
 void GLES2Implementation::UnbindTexturesHelper(GLsizei n,
                                                const GLuint* textures) {
   for (GLsizei ii = 0; ii < n; ++ii) {
-    for (GLint tt = 0; tt < capabilities_.max_combined_texture_image_units;
+    for (GLint tt = 0; tt < gl_capabilities_.max_combined_texture_image_units;
          ++tt) {
       TextureUnit& unit = texture_units_[tt];
       if (textures[ii] == unit.bound_texture_2d) {
@@ -6395,7 +6399,7 @@ void GLES2Implementation::BeginQueryEXT(GLenum target, GLuint id) {
       }
       break;
     case GL_SAMPLES_PASSED_ARB:
-      if (!capabilities_.occlusion_query) {
+      if (!gl_capabilities_.occlusion_query) {
         SetGLError(GL_INVALID_OPERATION, "glBeginQueryEXT",
                    "not enabled for occlusion queries");
         return;
@@ -6403,14 +6407,14 @@ void GLES2Implementation::BeginQueryEXT(GLenum target, GLuint id) {
       break;
     case GL_ANY_SAMPLES_PASSED:
     case GL_ANY_SAMPLES_PASSED_CONSERVATIVE:
-      if (!capabilities_.occlusion_query_boolean) {
+      if (!gl_capabilities_.occlusion_query_boolean) {
         SetGLError(GL_INVALID_OPERATION, "glBeginQueryEXT",
                    "not enabled for boolean occlusion queries");
         return;
       }
       break;
     case GL_TIME_ELAPSED_EXT:
-      if (!capabilities_.timer_queries) {
+      if (!gl_capabilities_.timer_queries) {
         SetGLError(GL_INVALID_OPERATION, "glBeginQueryEXT",
                    "not enabled for timing queries");
         return;
@@ -6508,7 +6512,6 @@ void GLES2Implementation::EndQueryEXT(GLenum target) {
   }  // GPU_CLIENT_SINGLE_THREAD_CHECK ends here
 
   if (target == GL_READBACK_SHADOW_COPIES_UPDATED_CHROMIUM) {
-    DCHECK(capabilities_.chromium_nonblocking_readback);
     DCHECK(query);
     auto serial = readback_buffer_shadow_tracker_->buffer_shadow_serial();
     readback_buffer_shadow_tracker_->IncrementSerial();
@@ -6528,7 +6531,7 @@ void GLES2Implementation::QueryCounterEXT(GLuint id, GLenum target) {
     case GL_COMMANDS_ISSUED_TIMESTAMP_CHROMIUM:
       break;
     case GL_TIMESTAMP_EXT:
-      if (!capabilities_.timer_queries) {
+      if (!gl_capabilities_.timer_queries) {
         SetGLError(GL_INVALID_OPERATION, "glQueryCounterEXT",
                    "not enabled for timing queries");
         return;

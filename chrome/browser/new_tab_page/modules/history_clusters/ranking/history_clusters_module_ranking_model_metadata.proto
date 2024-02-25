@@ -23,6 +23,22 @@ enum HistoryClustersModuleRankingModelSignals {
   HISTORY_CLUSTERS_MODULE_RANKING_NUM_UNIQUE_HOSTS = 5;
   // The number of abandoned carts associated with the cluster.
   HISTORY_CLUSTERS_MODULE_RANKING_NUM_ABANDONED_CARTS = 6;
+  // The number of times the cluster was seen by the user in a fixed time range.
+  HISTORY_CLUSTERS_MODULE_RANKING_NUM_TIMES_SEEN = 7;
+  // The number of times the cluster was seen by the user in a fixed time range.
+  HISTORY_CLUSTERS_MODULE_RANKING_NUM_TIMES_USED = 8;
+  // The number of categories associated with the cluster.
+  HISTORY_CLUSTERS_MODULE_RANKING_NUM_ASSOCIATED_CATEGORIES = 9;
+  // Whether the cluster is of the most seen category.
+  HISTORY_CLUSTERS_MODULE_RANKING_BELONGS_TO_MOST_SEEN_CATEGORY = 10;
+  // Whether the cluster is of the most used category.
+  HISTORY_CLUSTERS_MODULE_RANKING_BELONGS_TO_MOST_USED_CATEGORY = 11;
+  // The number of times the most frequently seen category by a user occurred in
+  // a fixed time range.
+  HISTORY_CLUSTERS_MODULE_RANKING_MOST_FREQUENT_SEEN_CATEGORY_COUNT = 12;
+  // The number of times the most frequently used category by a user occurred in
+  // a fixed time range.
+  HISTORY_CLUSTERS_MODULE_RANKING_MOST_FREQUENT_USED_CATEGORY_COUNT = 13;
 }
 
 message HistoryClustersModuleRankingModelMetadata {

@@ -58,18 +58,18 @@ void HitTestAggregator::SendHitTestData() {
                                                   hit_test_data_);
 }
 
-absl::optional<int64_t> HitTestAggregator::GetTraceIdIfUpdated(
+std::optional<int64_t> HitTestAggregator::GetTraceIdIfUpdated(
     const SurfaceId& surface_id,
     uint64_t active_frame_index) {
   bool enabled;
   TRACE_EVENT_CATEGORY_GROUP_ENABLED(
       TRACE_DISABLED_BY_DEFAULT("viz.hit_testing_flow"), &enabled);
   if (!enabled)
-    return absl::nullopt;
+    return std::nullopt;
 
   uint64_t& frame_index = last_active_frame_index_[surface_id.frame_sink_id()];
   if (frame_index == active_frame_index)
-    return absl::nullopt;
+    return std::nullopt;
   frame_index = active_frame_index;
   return ~hit_test_manager_->GetTraceId(surface_id);
 }
@@ -84,7 +84,7 @@ void HitTestAggregator::AppendRoot(const SurfaceId& surface_id) {
   if (!hit_test_region_list)
     return;
 
-  absl::optional<int64_t> trace_id =
+  std::optional<int64_t> trace_id =
       GetTraceIdIfUpdated(surface_id, active_frame_index);
   TRACE_EVENT_WITH_FLOW1(
       TRACE_DISABLED_BY_DEFAULT("viz.hit_testing_flow"), "Event.Pipeline",
@@ -168,7 +168,7 @@ size_t HitTestAggregator::AppendRegion(size_t region_index,
                 region.frame_sink_id);
         SurfaceId surface_id(region.frame_sink_id, local_surface_id);
 
-        absl::optional<int64_t> trace_id =
+        std::optional<int64_t> trace_id =
             GetTraceIdIfUpdated(surface_id, active_frame_index);
         TRACE_EVENT_WITH_FLOW1(
             TRACE_DISABLED_BY_DEFAULT("viz.hit_testing_flow"), "Event.Pipeline",

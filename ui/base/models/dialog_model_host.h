@@ -11,7 +11,6 @@
 namespace ui {
 
 class DialogModel;
-class DialogModelField;
 
 // Platform-agnostic interface for toolkit integrations.
 class COMPONENT_EXPORT(UI_BASE) DialogModelHost {
@@ -23,7 +22,6 @@ class COMPONENT_EXPORT(UI_BASE) DialogModelHost {
 
  protected:
   friend class DialogModel;
-  friend class DialogModelField;
 
   // This PassKey is used to make sure that some methods on DialogModel
   // are only called as part of the host integration.
@@ -31,13 +29,10 @@ class COMPONENT_EXPORT(UI_BASE) DialogModelHost {
     return base::PassKey<DialogModelHost>();
   }
 
-  // Called when various parts of the model changes.
-  // TODO(pbos): Break this down to API that says what was added/removed/changed
-  // to not have to reset everything.
-  virtual void OnFieldAdded(DialogModelField* field) = 0;
-
-  // Called when some aspect of |field| changes.
-  virtual void OnFieldChanged(DialogModelField* field) = 0;
+  // TODO(pbos): Turn this into a RepeatingClosure that can be added to a
+  // subscriber list in DialogModel.
+  // Called when a button changes.
+  virtual void OnDialogButtonChanged() = 0;
 };
 
 }  // namespace ui

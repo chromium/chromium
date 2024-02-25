@@ -6,12 +6,15 @@
 #define CONTENT_PUBLIC_BROWSER_FEDERATED_IDENTITY_API_PERMISSION_CONTEXT_DELEGATE_H_
 
 #include "content/common/content_export.h"
+#include "url/gurl.h"
 
 namespace url {
 class Origin;
 }
 
 namespace content {
+
+class RenderFrameHost;
 
 // Delegate interface for the FedCM implementation to query whether the FedCM
 // API is enabled in Site Settings.
@@ -20,7 +23,6 @@ class CONTENT_EXPORT FederatedIdentityApiPermissionContextDelegate {
   enum class PermissionStatus {
     GRANTED,
     BLOCKED_VARIATIONS,
-    BLOCKED_THIRD_PARTY_COOKIES_BLOCKED,
     BLOCKED_SETTINGS,
     BLOCKED_EMBARGO,
   };
@@ -48,6 +50,12 @@ class CONTENT_EXPORT FederatedIdentityApiPermissionContextDelegate {
   // belong on this delegate but we don't have a better one and it seems
   // wasteful to add one just for this one testing function.
   virtual bool ShouldCompleteRequestImmediately() const;
+
+  // Checks if the IdP has third-party cookies access on the RP top frame.
+  virtual bool HasThirdPartyCookiesAccess(
+      RenderFrameHost& host,
+      const GURL& provider_url,
+      const url::Origin& relying_party_embedder) const = 0;
 };
 
 }  // namespace content

@@ -9,6 +9,8 @@
 #include <algorithm>
 #include <array>
 #include <climits>
+#include <optional>
+#include <string_view>
 
 #include "base/check_op.h"
 #include "base/debug/alias.h"
@@ -17,13 +19,11 @@
 #include "base/notreached.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/strcat.h"
-#include "base/strings/string_piece.h"
 #include "base/strings/string_split.h"
 #include "base/strings/stringprintf.h"
 #include "base/trace_event/memory_usage_estimator.h"
 #include "base/values.h"
 #include "net/base/parse_number.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 #include "url/url_canon_ip.h"
 
@@ -57,6 +57,43 @@ bool IPAddressPrefixCheck(const IPAddressBytes& ip_address,
     if ((ip_address[i] & mask) != (ip_prefix[i] & mask))
       return false;
   }
+  return true;
+}
+
+bool CreateIPMask(IPAddressBytes* ip_address,
+                  size_t prefix_length_in_bits,
+                  size_t ip_address_length) {
+  if (ip_address_length != IPAddress::kIPv4AddressSize &&
+      ip_address_length != IPAddress::kIPv6AddressSize) {
+    return false;
+  }
+  if (prefix_length_in_bits > ip_address_length * 8) {
+    return false;
+  }
+
+  ip_address->Resize(ip_address_length);
+  size_t idx = 0;
+  // Set all fully masked bytes
+  size_t num_entire_bytes_in_prefix = prefix_length_in_bits / 8;
+  for (size_t i = 0; i < num_entire_bytes_in_prefix; ++i) {
+    (*ip_address)[idx++] = 0xff;
+  }
+
+  // In case the prefix was not a multiple of 8, there will be 1 byte
+  // which is only partially masked.
+  size_t remaining_bits = prefix_length_in_bits % 8;
+  if (remaining_bits != 0) {
+    uint8_t remaining_bits_mask = 0xFF << (8 - remaining_bits);
+    (*ip_address)[idx++] = remaining_bits_mask;
+  }
+
+  // Zero out any other bytes.
+  size_t bytes_remaining = ip_address_length - num_entire_bytes_in_prefix -
+                           (remaining_bits != 0 ? 1 : 0);
+  for (size_t i = 0; i < bytes_remaining; ++i) {
+    (*ip_address)[idx++] = 0;
+  }
+
   return true;
 }
 
@@ -121,11 +158,10 @@ bool IsPubliclyRoutableIPv6(const IPAddressBytes& ip_address) {
   return false;
 }
 
-bool ParseIPLiteralToBytes(base::StringPiece ip_literal,
-                           IPAddressBytes* bytes) {
+bool ParseIPLiteralToBytes(std::string_view ip_literal, IPAddressBytes* bytes) {
   // |ip_literal| could be either an IPv4 or an IPv6 literal. If it contains
   // a colon however, it must be an IPv6 address.
-  if (ip_literal.find(':') != base::StringPiece::npos) {
+  if (ip_literal.find(':') != std::string_view::npos) {
     // GURL expects IPv6 hostnames to be surrounded with brackets.
     std::string host_brackets = base::StrCat({"[", ip_literal, "]"});
     url::Component host_comp(0, host_brackets.size());
@@ -193,20 +229,19 @@ size_t IPAddressBytes::EstimateMemoryUsage() const {
 }
 
 // static
-absl::optional<IPAddress> IPAddress::FromValue(const base::Value& value) {
+std::optional<IPAddress> IPAddress::FromValue(const base::Value& value) {
   if (!value.is_string()) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   return IPAddress::FromIPLiteral(value.GetString());
 }
 
 // static
-absl::optional<IPAddress> IPAddress::FromIPLiteral(
-    base::StringPiece ip_literal) {
+std::optional<IPAddress> IPAddress::FromIPLiteral(std::string_view ip_literal) {
   IPAddress address;
   if (!address.AssignFromIPLiteral(ip_literal)) {
-    return absl::nullopt;
+    return std::nullopt;
   }
   DCHECK(address.IsValid());
   return address;
@@ -316,7 +351,12 @@ bool IPAddress::IsLinkLocal() const {
   return false;
 }
 
-bool IPAddress::AssignFromIPLiteral(base::StringPiece ip_literal) {
+bool IPAddress::IsUniqueLocalIPv6() const {
+  // [fc00::]/7
+  return IsIPv6() && ((ip_address_[0] & 0xFE) == 0xFC);
+}
+
+bool IPAddress::AssignFromIPLiteral(std::string_view ip_literal) {
   bool success = ParseIPLiteralToBytes(ip_literal, &ip_address_);
   if (!success)
     ip_address_.Resize(0);
@@ -357,6 +397,20 @@ IPAddress IPAddress::IPv4AllZeros() {
 // static
 IPAddress IPAddress::IPv6AllZeros() {
   return AllZeros(kIPv6AddressSize);
+}
+
+// static
+bool IPAddress::CreateIPv4Mask(IPAddress* ip_address,
+                               size_t mask_prefix_length) {
+  return CreateIPMask(&(ip_address->ip_address_), mask_prefix_length,
+                      kIPv4AddressSize);
+}
+
+// static
+bool IPAddress::CreateIPv6Mask(IPAddress* ip_address,
+                               size_t mask_prefix_length) {
+  return CreateIPMask(&(ip_address->ip_address_), mask_prefix_length,
+                      kIPv6AddressSize);
 }
 
 bool IPAddress::operator==(const IPAddress& that) const {
@@ -461,14 +515,14 @@ bool IPAddressMatchesPrefix(const IPAddress& ip_address,
                               prefix_length_in_bits);
 }
 
-bool ParseCIDRBlock(base::StringPiece cidr_literal,
+bool ParseCIDRBlock(std::string_view cidr_literal,
                     IPAddress* ip_address,
                     size_t* prefix_length_in_bits) {
   // We expect CIDR notation to match one of these two templates:
   //   <IPv4-literal> "/" <number of bits>
   //   <IPv6-literal> "/" <number of bits>
 
-  std::vector<base::StringPiece> parts = base::SplitStringPiece(
+  std::vector<std::string_view> parts = base::SplitStringPiece(
       cidr_literal, "/", base::TRIM_WHITESPACE, base::SPLIT_WANT_ALL);
   if (parts.size() != 2)
     return false;
@@ -491,13 +545,12 @@ bool ParseCIDRBlock(base::StringPiece cidr_literal,
   return true;
 }
 
-bool ParseURLHostnameToAddress(base::StringPiece hostname,
+bool ParseURLHostnameToAddress(std::string_view hostname,
                                IPAddress* ip_address) {
   if (hostname.size() >= 2 && hostname.front() == '[' &&
       hostname.back() == ']') {
     // Strip the square brackets that surround IPv6 literals.
-    auto ip_literal =
-        base::StringPiece(hostname).substr(1, hostname.size() - 2);
+    auto ip_literal = std::string_view(hostname).substr(1, hostname.size() - 2);
     return ip_address->AssignFromIPLiteral(ip_literal) && ip_address->IsIPv6();
   }
 

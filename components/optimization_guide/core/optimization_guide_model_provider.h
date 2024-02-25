@@ -5,9 +5,10 @@
 #ifndef COMPONENTS_OPTIMIZATION_GUIDE_CORE_OPTIMIZATION_GUIDE_MODEL_PROVIDER_H_
 #define COMPONENTS_OPTIMIZATION_GUIDE_CORE_OPTIMIZATION_GUIDE_MODEL_PROVIDER_H_
 
+#include <optional>
+
 #include "components/optimization_guide/core/optimization_target_model_observer.h"
 #include "components/optimization_guide/proto/models.pb.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace optimization_guide {
 
@@ -25,7 +26,7 @@ class OptimizationGuideModelProvider {
   // builds and be a no-op in release builds.
   virtual void AddObserverForOptimizationTargetModel(
       proto::OptimizationTarget optimization_target,
-      const absl::optional<proto::Any>& model_metadata,
+      const std::optional<proto::Any>& model_metadata,
       OptimizationTargetModelObserver* observer) = 0;
 
   // Removes an observer for updates to the model for |optimization_target|.

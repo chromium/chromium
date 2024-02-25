@@ -4,10 +4,10 @@
 
 import {sendWithPromise} from 'chrome://resources/js/cr.js';
 
-import {Cdd} from './data/cdd.js';
-import {PrinterType} from './data/destination.js';
-import {LocalDestinationInfo} from './data/local_parsers.js';
-import {MeasurementSystemUnitType} from './data/measurement_system.js';
+import type {Cdd} from './data/cdd.js';
+import type {PrinterType} from './data/destination.js';
+import type {LocalDestinationInfo} from './data/local_parsers.js';
+import type {MeasurementSystemUnitType} from './data/measurement_system.js';
 
 /**
  * Enumeration of background graphics printing mode restrictions used by

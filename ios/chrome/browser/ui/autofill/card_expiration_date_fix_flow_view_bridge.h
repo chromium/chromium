@@ -10,6 +10,7 @@
 #include <memory>
 #include <string>
 
+#import "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "components/autofill/core/browser/ui/payments/card_expiration_date_fix_flow_controller.h"
 #include "components/autofill/core/browser/ui/payments/card_expiration_date_fix_flow_view.h"
@@ -56,7 +57,7 @@ class CardExpirationDateFixFlowViewBridge
 
  private:
   // The controller `this` queries for logic and state.
-  CardExpirationDateFixFlowController* controller_;  // weak
+  raw_ptr<CardExpirationDateFixFlowController> controller_;  // weak
 
   // Weak reference to the view controller used to present UI.
   __weak UIViewController* presenting_view_controller_;

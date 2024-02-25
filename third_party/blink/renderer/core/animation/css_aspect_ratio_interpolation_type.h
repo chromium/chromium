@@ -34,7 +34,7 @@ class CSSAspectRatioInterpolationType : public CSSInterpolationType {
                  const InterpolationValue&,
                  double interpolation_fraction) const final;
 
-  static std::unique_ptr<InterpolableValue> CreateInterpolableAspectRatio(
+  static InterpolableValue* CreateInterpolableAspectRatio(
       const StyleAspectRatio&);
 
  private:

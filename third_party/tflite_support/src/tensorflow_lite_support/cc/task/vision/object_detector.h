@@ -19,9 +19,9 @@ limitations under the License.
 #include <memory>
 
 #include "absl/container/flat_hash_set.h"  // from @com_google_absl
-#include "absl/status/status.h"            // from @com_google_absl
+#include "absl/status/status.h"  // from @com_google_absl
 #include "tensorflow/lite/core/api/op_resolver.h"
-#include "tensorflow/lite/core/shims/cc/kernels/register.h"
+#include "tensorflow/lite/kernels/register.h"
 #include "tensorflow_lite_support/cc/port/statusor.h"
 #include "tensorflow_lite_support/cc/task/core/external_file_handler.h"
 #include "tensorflow_lite_support/cc/task/vision/core/base_vision_task_api.h"
@@ -86,7 +86,7 @@ class ObjectDetector : public BaseVisionTaskApi<DetectionResult> {
   CreateFromOptions(
       const ObjectDetectorOptions& options,
       std::unique_ptr<tflite::OpResolver> resolver =
-          absl::make_unique<tflite_shims::ops::builtin::BuiltinOpResolver>());
+          absl::make_unique<tflite::ops::builtin::BuiltinOpResolver>());
 
   // Performs actual detection on the provided FrameBuffer.
   //
@@ -123,8 +123,7 @@ class ObjectDetector : public BaseVisionTaskApi<DetectionResult> {
   // Post-processing to transform the raw model outputs into detection results.
   tflite::support::StatusOr<DetectionResult> Postprocess(
       const std::vector<const TfLiteTensor*>& output_tensors,
-      const FrameBuffer& frame_buffer,
-      const BoundingBox& roi) override;
+      const FrameBuffer& frame_buffer, const BoundingBox& roi) override;
 
   // Performs sanity checks on the provided ObjectDetectorOptions.
   static absl::Status SanityCheckOptions(const ObjectDetectorOptions& options);

@@ -5,13 +5,13 @@
 #ifndef CHROME_BROWSER_ASH_SCHEDULER_CONFIGURATION_MANAGER_H_
 #define CHROME_BROWSER_ASH_SCHEDULER_CONFIGURATION_MANAGER_H_
 
+#include <optional>
 #include <utility>
 
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "chromeos/ash/components/system/scheduler_configuration_manager_base.h"
 #include "components/prefs/pref_change_registrar.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 class PrefRegistrySimple;
 class PrefService;
@@ -43,17 +43,17 @@ class SchedulerConfigurationManager : public SchedulerConfigurationManagerBase {
   static void RegisterLocalStatePrefs(PrefRegistrySimple* registry);
 
   // SchedulerConfigurationManagerBase overrides:
-  absl::optional<std::pair<bool, size_t>> GetLastReply() const override;
+  std::optional<std::pair<bool, size_t>> GetLastReply() const override;
 
  private:
   void OnDebugDaemonReady(bool service_is_ready);
   void OnPrefChange();
   void OnConfigurationSet(bool result, size_t num_cores_disabled);
 
-  raw_ptr<DebugDaemonClient, ExperimentalAsh> debug_daemon_client_ = nullptr;
+  raw_ptr<DebugDaemonClient> debug_daemon_client_ = nullptr;
   PrefChangeRegistrar observer_;
   bool debug_daemon_ready_ = false;
-  absl::optional<std::pair<bool, size_t>> last_reply_;
+  std::optional<std::pair<bool, size_t>> last_reply_;
 
   base::WeakPtrFactory<SchedulerConfigurationManager> weak_ptr_factory_{this};
 };

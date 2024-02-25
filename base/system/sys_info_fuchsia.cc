@@ -17,6 +17,7 @@
 #include "base/fuchsia/system_info.h"
 #include "base/logging.h"
 #include "base/no_destructor.h"
+#include "base/notimplemented.h"
 #include "base/numerics/clamped_math.h"
 #include "base/strings/string_piece.h"
 #include "base/synchronization/lock.h"

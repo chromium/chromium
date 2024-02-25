@@ -446,7 +446,7 @@ class HashPrefixMapTypedTest : public ::testing::Test {
   // error. In the latter case, the test will have a non-fatal failure.
   std::unique_ptr<HashPrefixMap> CreateHashPrefixMap();
 
-  absl::optional<base::ScopedTempDir> temp_dir_;
+  std::optional<base::ScopedTempDir> temp_dir_;
   std::unique_ptr<HashPrefixMap> hash_prefix_map_;
   base::test::SingleThreadTaskEnvironment task_env_;
 };

@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_LACROS_MULTITASK_MENU_NUDGE_DELEGATE_LACROS_
-#define CHROME_BROWSER_LACROS_MULTITASK_MENU_NUDGE_DELEGATE_LACROS_
+#ifndef CHROME_BROWSER_LACROS_MULTITASK_MENU_NUDGE_DELEGATE_LACROS_H_
+#define CHROME_BROWSER_LACROS_MULTITASK_MENU_NUDGE_DELEGATE_LACROS_H_
 
 #include "base/values.h"
 #include "chromeos/crosapi/mojom/prefs.mojom.h"
@@ -42,7 +42,7 @@ class MultitaskMenuNudgeDelegateLacros
   // `callback`, which is part of a barrier callback.
   void OnGetPreference(base::OnceCallback<void(PrefPair)> callback,
                        crosapi::mojom::PrefPath pref_path,
-                       absl::optional<base::Value> value);
+                       std::optional<base::Value> value);
 
   // Callback ran when we got both our prefs from the pref service. Parses the
   // values and then uses `callback` to send them to the prefs requester.
@@ -53,4 +53,4 @@ class MultitaskMenuNudgeDelegateLacros
       this};
 };
 
-#endif  // CHROME_BROWSER_LACROS_MULTITASK_MENU_NUDGE_DELEGATE_LACROS_
+#endif  // CHROME_BROWSER_LACROS_MULTITASK_MENU_NUDGE_DELEGATE_LACROS_H_

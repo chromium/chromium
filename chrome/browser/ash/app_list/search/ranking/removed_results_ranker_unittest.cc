@@ -69,7 +69,7 @@ class RemovedResultsRankerTest : public testing::Test {
   content::BrowserTaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   std::unique_ptr<TestingProfileManager> testing_profile_manager_;
-  raw_ptr<TestingProfile, ExperimentalAsh> profile_ = nullptr;
+  raw_ptr<TestingProfile> profile_ = nullptr;
   base::ScopedTempDir temp_dir_;
   std::unique_ptr<RemovedResultsRanker> ranker_;
 };
@@ -151,7 +151,7 @@ TEST_F(RemovedResultsRankerTest, RemoveFileSuggestions) {
   const base::FilePath drive_file_result_path("file_A");
   FileResult drive_file_result(
       "zero_state_drive://" + drive_file_result_path.value(),
-      drive_file_result_path, absl::nullopt,
+      drive_file_result_path, std::nullopt,
       ash::AppListSearchResultType::kZeroStateDrive,
       ash::SearchResultDisplayType::kList, /*relevance=*/0.5f,
       /*query=*/std::u16string(), FileResult::Type::kFile, profile_);
@@ -170,7 +170,7 @@ TEST_F(RemovedResultsRankerTest, RemoveFileSuggestions) {
   const base::FilePath local_file_path("file_B");
   FileResult local_file_result(
       "zero_state_file://" + local_file_path.value(), local_file_path,
-      absl::nullopt, ash::AppListSearchResultType::kZeroStateDrive,
+      std::nullopt, ash::AppListSearchResultType::kZeroStateDrive,
       ash::SearchResultDisplayType::kList, /*relevance=*/0.5f,
       /*query=*/std::u16string(), FileResult::Type::kFile, profile_);
   auto local_file_metadata = local_file_result.CloneMetadata();

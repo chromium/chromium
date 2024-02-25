@@ -1,0 +1,19 @@
+[
+  {
+    "os": [
+      "chromeos_ash"
+    ],
+    "policy_pref_mapping_tests": [
+      {
+        "policies": {
+          "PluginVmRequiredFreeDiskSpace": 25
+        },
+        "prefs": {
+          "plugin_vm.required_free_disk_space": {
+            "value": 25
+          }
+        }
+      }
+    ]
+  }
+]

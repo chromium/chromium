@@ -8,7 +8,8 @@
 
 #include "base/no_destructor.h"
 #include "base/strings/stringprintf.h"
-#include "components/webapps/browser/installable/installable_manager.h"
+#include "components/webapps/browser/installable/installable_evaluator.h"
+#include "content/public/browser/installability_error.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
 #include "third_party/blink/public/mojom/devtools/console_message.mojom.h"
@@ -154,12 +155,12 @@ std::string GetErrorMessage(InstallableStatusCode code) {
     case MANIFEST_MISSING_SUITABLE_ICON:
       message =
           base::StringPrintf(kManifestMissingSuitableIconMessage,
-                             InstallableManager::GetMinimumIconSizeInPx());
+                             InstallableEvaluator::GetMinimumIconSizeInPx());
       break;
     case NO_ACCEPTABLE_ICON:
       message =
           base::StringPrintf(kNoAcceptableIconMessage,
-                             InstallableManager::GetMinimumIconSizeInPx());
+                             InstallableEvaluator::GetMinimumIconSizeInPx());
       break;
     case CANNOT_DOWNLOAD_ICON:
       message = kCannotDownloadIconMessage;
@@ -261,13 +262,13 @@ content::InstallabilityError GetInstallabilityError(
       error_id = kManifestMissingSuitableIconId;
       error_arguments.emplace_back(
           kMinimumIconSizeInPixelsId,
-          base::NumberToString(InstallableManager::GetMinimumIconSizeInPx()));
+          base::NumberToString(InstallableEvaluator::GetMinimumIconSizeInPx()));
       break;
     case NO_ACCEPTABLE_ICON:
       error_id = kNoAcceptableIconId;
       error_arguments.emplace_back(
           kMinimumIconSizeInPixelsId,
-          base::NumberToString(InstallableManager::GetMinimumIconSizeInPx()));
+          base::NumberToString(InstallableEvaluator::GetMinimumIconSizeInPx()));
       break;
     case CANNOT_DOWNLOAD_ICON:
       error_id = kCannotDownloadIconId;

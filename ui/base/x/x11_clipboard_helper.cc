@@ -20,13 +20,11 @@
 #include "ui/base/x/selection_requestor.h"
 #include "ui/base/x/selection_utils.h"
 #include "ui/base/x/x11_util.h"
-#include "ui/gfx/x/connection.h"
+#include "ui/gfx/x/atom_cache.h"
 #include "ui/gfx/x/event.h"
-#include "ui/gfx/x/x11_atom_cache.h"
-#include "ui/gfx/x/x11_window_event_manager.h"
+#include "ui/gfx/x/window_event_manager.h"
 #include "ui/gfx/x/xfixes.h"
 #include "ui/gfx/x/xproto.h"
-#include "ui/gfx/x/xproto_util.h"
 
 namespace ui {
 
@@ -66,11 +64,9 @@ SelectionChangeObserver::SelectionChangeObserver()
     : clipboard_atom_(x11::GetAtom(kClipboard)) {
   auto* connection = x11::Connection::Get();
   auto& xfixes = connection->xfixes();
-  // Let the server know the client version.  No need to sync since we don't
-  // care what version is running on the server.
-  xfixes.QueryVersion({x11::XFixes::major_version, x11::XFixes::minor_version});
-  if (!xfixes.present())
+  if (!xfixes.present()) {
     return;
+  }
 
   auto mask = x11::XFixes::SelectionEventMask::SetSelectionOwner |
               x11::XFixes::SelectionEventMask::SelectionWindowDestroy |
@@ -90,12 +86,9 @@ SelectionChangeObserver* SelectionChangeObserver::Get() {
 
 void SelectionChangeObserver::OnEvent(const x11::Event& xev) {
   if (auto* ev = xev.As<x11::XFixes::SelectionNotifyEvent>()) {
-    DCHECK(ev->selection == x11::Atom::PRIMARY ||
-           ev->selection == clipboard_atom_)
-        << "Unexpected selection atom: "
-        << static_cast<uint32_t>(ev->selection);
-
-    if (callback_) {
+    if ((ev->selection == x11::Atom::PRIMARY ||
+         ev->selection == clipboard_atom_) &&
+        callback_) {
       callback_.Run(ev->selection == x11::Atom::PRIMARY
                         ? ClipboardBuffer::kSelection
                         : ClipboardBuffer::kCopyPaste);
@@ -122,8 +115,9 @@ class XClipboardHelper::TargetList {
 
   bool ContainsText() const {
     for (const auto& atom : GetTextAtomsFrom()) {
-      if (base::Contains(target_list_, atom))
+      if (base::Contains(target_list_, atom)) {
         return true;
+      }
     }
     return false;
   }
@@ -139,19 +133,19 @@ class XClipboardHelper::TargetList {
 
 XClipboardHelper::XClipboardHelper(
     SelectionChangeCallback selection_change_callback)
-    : connection_(x11::Connection::Get()),
+    : connection_(*x11::Connection::Get()),
       x_root_window_(ui::GetX11RootWindow()),
-      x_window_(x11::CreateDummyWindow("Chromium Clipboard Window")),
+      x_window_(connection_->CreateDummyWindow("Chromium Clipboard Window")),
       selection_requestor_(
           std::make_unique<SelectionRequestor>(x_window_, this)),
-      clipboard_owner_(connection_, x_window_, x11::GetAtom(kClipboard)),
-      primary_owner_(connection_, x_window_, x11::Atom::PRIMARY) {
+      clipboard_owner_(connection_.get(), x_window_, x11::GetAtom(kClipboard)),
+      primary_owner_(connection_.get(), x_window_, x11::Atom::PRIMARY) {
   DCHECK(selection_requestor_);
 
-  x11::SetStringProperty(x_window_, x11::Atom::WM_NAME, x11::Atom::STRING,
-                         "Chromium clipboard");
-  x_window_events_ = std::make_unique<x11::XScopedEventSelector>(
-      x_window_, x11::EventMask::PropertyChange);
+  connection_->SetStringProperty(x_window_, x11::Atom::WM_NAME,
+                                 x11::Atom::STRING, "Chromium clipboard");
+  x_window_events_ =
+      connection_->ScopedSelectEvent(x_window_, x11::EventMask::PropertyChange);
   connection_->AddEventObserver(this);
 
   SelectionChangeObserver::Get()->set_callback(
@@ -176,10 +170,11 @@ void XClipboardHelper::InsertMapping(
 }
 
 void XClipboardHelper::TakeOwnershipOfSelection(ClipboardBuffer buffer) {
-  if (buffer == ClipboardBuffer::kCopyPaste)
+  if (buffer == ClipboardBuffer::kCopyPaste) {
     return clipboard_owner_.TakeOwnershipOfSelection(clipboard_data_);
-  else
+  } else {
     return primary_owner_.TakeOwnershipOfSelection(clipboard_data_);
+  }
 }
 
 SelectionData XClipboardHelper::Read(ClipboardBuffer buffer,
@@ -192,8 +187,9 @@ SelectionData XClipboardHelper::Read(ClipboardBuffer buffer,
 
     for (const auto& type : types) {
       auto format_map_it = format_map.find(type);
-      if (format_map_it != format_map.end())
+      if (format_map_it != format_map.end()) {
         return SelectionData(format_map_it->first, format_map_it->second);
+      }
     }
     return SelectionData();
   }
@@ -210,20 +206,27 @@ std::vector<std::string> XClipboardHelper::GetAvailableTypes(
   std::vector<std::string> available_types;
   auto target_list = GetTargetList(buffer);
 
-  if (target_list.ContainsText())
+  if (target_list.ContainsText()) {
     available_types.push_back(kMimeTypeText);
-  if (target_list.ContainsFormat(ClipboardFormatType::HtmlType()))
+  }
+  if (target_list.ContainsFormat(ClipboardFormatType::HtmlType())) {
     available_types.push_back(kMimeTypeHTML);
-  if (target_list.ContainsFormat(ClipboardFormatType::SvgType()))
+  }
+  if (target_list.ContainsFormat(ClipboardFormatType::SvgType())) {
     available_types.push_back(kMimeTypeSvg);
-  if (target_list.ContainsFormat(ClipboardFormatType::RtfType()))
+  }
+  if (target_list.ContainsFormat(ClipboardFormatType::RtfType())) {
     available_types.push_back(kMimeTypeRTF);
-  if (target_list.ContainsFormat(ClipboardFormatType::PngType()))
+  }
+  if (target_list.ContainsFormat(ClipboardFormatType::PngType())) {
     available_types.push_back(kMimeTypePNG);
-  if (target_list.ContainsFormat(ClipboardFormatType::FilenamesType()))
+  }
+  if (target_list.ContainsFormat(ClipboardFormatType::FilenamesType())) {
     available_types.push_back(kMimeTypeURIList);
-  if (target_list.ContainsFormat(ClipboardFormatType::WebCustomDataType()))
+  }
+  if (target_list.ContainsFormat(ClipboardFormatType::WebCustomDataType())) {
     available_types.push_back(kMimeTypeWebCustomData);
+  }
 
   return available_types;
 }
@@ -231,21 +234,24 @@ std::vector<std::string> XClipboardHelper::GetAvailableTypes(
 std::vector<std::string> XClipboardHelper::GetAvailableAtomNames(
     ClipboardBuffer buffer) {
   auto target_list = GetTargetList(buffer).target_list();
-  if (target_list.empty())
+  if (target_list.empty()) {
     return {};
+  }
 
   auto* connection = x11::Connection::Get();
   std::vector<x11::Future<x11::GetAtomNameReply>> futures;
-  for (x11::Atom target : target_list)
+  for (x11::Atom target : target_list) {
     futures.push_back(connection->GetAtomName({target}));
+  }
 
   std::vector<std::string> atom_names;
   atom_names.reserve(target_list.size());
   for (auto& future : futures) {
-    if (auto response = future.Sync())
+    if (auto response = future.Sync()) {
       atom_names.push_back(response->name);
-    else
+    } else {
       atom_names.emplace_back();
+    }
   }
   return atom_names;
 }
@@ -275,24 +281,28 @@ std::vector<x11::Atom> XClipboardHelper::GetAtomsForFormat(
 }
 
 void XClipboardHelper::Clear(ClipboardBuffer buffer) {
-  if (buffer == ClipboardBuffer::kCopyPaste)
+  if (buffer == ClipboardBuffer::kCopyPaste) {
     clipboard_owner_.ClearSelectionOwner();
-  else
+  } else {
     primary_owner_.ClearSelectionOwner();
+  }
 }
 
 void XClipboardHelper::StoreCopyPasteDataAndWait() {
   x11::Atom selection = GetCopyPasteSelection();
-  if (GetSelectionOwner(selection) != x_window_)
+  if (GetSelectionOwner(selection) != x_window_) {
     return;
+  }
 
   x11::Atom clipboard_manager_atom = x11::GetAtom(kClipboardManager);
-  if (GetSelectionOwner(clipboard_manager_atom) == x11::Window::None)
+  if (GetSelectionOwner(clipboard_manager_atom) == x11::Window::None) {
     return;
+  }
 
   const SelectionFormatMap& format_map = LookupStorageForAtom(selection);
-  if (format_map.size() == 0)
+  if (format_map.size() == 0) {
     return;
+  }
   std::vector<x11::Atom> targets = format_map.GetTypes();
 
   selection_requestor_->PerformBlockingConvertSelectionWithParameter(
@@ -307,8 +317,9 @@ XClipboardHelper::TargetList XClipboardHelper::GetTargetList(
     // We can local fastpath and return the list of local targets.
     const SelectionFormatMap& format_map = LookupStorageForAtom(selection_name);
 
-    for (const auto& format : format_map)
+    for (const auto& format : format_map) {
       out.push_back(format.first);
+    }
   } else {
     std::vector<uint8_t> data;
     x11::Atom out_type = x11::Atom::None;
@@ -319,8 +330,9 @@ XClipboardHelper::TargetList XClipboardHelper::GetTargetList(
       if (out_type == x11::Atom::ATOM || out_type == x11::GetAtom(kTargets)) {
         const x11::Atom* atom_array =
             reinterpret_cast<const x11::Atom*>(data.data());
-        for (size_t i = 0; i < data.size() / sizeof(x11::Atom); ++i)
+        for (size_t i = 0; i < data.size() / sizeof(x11::Atom); ++i) {
           out.push_back(atom_array[i]);
+        }
       }
     } else {
       // There was no target list. Most Java apps doesn't offer a TARGETS list,
@@ -346,8 +358,9 @@ XClipboardHelper::TargetList XClipboardHelper::GetTargetList(
 
 bool XClipboardHelper::DispatchEvent(const x11::Event& xev) {
   if (auto* request = xev.As<x11::SelectionRequestEvent>()) {
-    if (request->owner != x_window_)
+    if (request->owner != x_window_) {
       return false;
+    }
     if (request->selection == x11::Atom::PRIMARY) {
       primary_owner_.OnSelectionRequest(*request);
     } else {
@@ -357,13 +370,15 @@ bool XClipboardHelper::DispatchEvent(const x11::Event& xev) {
       clipboard_owner_.OnSelectionRequest(*request);
     }
   } else if (auto* notify = xev.As<x11::SelectionNotifyEvent>()) {
-    if (notify->requestor == x_window_)
+    if (notify->requestor == x_window_) {
       selection_requestor_->OnSelectionNotify(*notify);
-    else
+    } else {
       return false;
+    }
   } else if (auto* clear = xev.As<x11::SelectionClearEvent>()) {
-    if (clear->owner != x_window_)
+    if (clear->owner != x_window_) {
       return false;
+    }
     if (clear->selection == x11::Atom::PRIMARY) {
       primary_owner_.OnSelectionClear(*clear);
     } else {
@@ -373,14 +388,15 @@ bool XClipboardHelper::DispatchEvent(const x11::Event& xev) {
       clipboard_owner_.OnSelectionClear(*clear);
     }
   } else if (auto* prop = xev.As<x11::PropertyNotifyEvent>()) {
-    if (primary_owner_.CanDispatchPropertyEvent(*prop))
+    if (primary_owner_.CanDispatchPropertyEvent(*prop)) {
       primary_owner_.OnPropertyEvent(*prop);
-    else if (clipboard_owner_.CanDispatchPropertyEvent(*prop))
+    } else if (clipboard_owner_.CanDispatchPropertyEvent(*prop)) {
       clipboard_owner_.OnPropertyEvent(*prop);
-    else if (selection_requestor_->CanDispatchPropertyEvent(*prop))
+    } else if (selection_requestor_->CanDispatchPropertyEvent(*prop)) {
       selection_requestor_->OnPropertyEvent(*prop);
-    else
+    } else {
       return false;
+    }
   } else {
     return false;
   }
@@ -397,8 +413,9 @@ void XClipboardHelper::OnEvent(const x11::Event& xev) {
 
 x11::Atom XClipboardHelper::LookupSelectionForClipboardBuffer(
     ClipboardBuffer buffer) const {
-  if (buffer == ClipboardBuffer::kCopyPaste)
+  if (buffer == ClipboardBuffer::kCopyPaste) {
     return GetCopyPasteSelection();
+  }
 
   return x11::Atom::PRIMARY;
 }
@@ -409,8 +426,9 @@ x11::Atom XClipboardHelper::GetCopyPasteSelection() const {
 
 const SelectionFormatMap& XClipboardHelper::LookupStorageForAtom(
     x11::Atom atom) {
-  if (atom == x11::Atom::PRIMARY)
+  if (atom == x11::Atom::PRIMARY) {
     return primary_owner_.selection_format_map();
+  }
 
   DCHECK_EQ(GetCopyPasteSelection(), atom);
   return clipboard_owner_.selection_format_map();

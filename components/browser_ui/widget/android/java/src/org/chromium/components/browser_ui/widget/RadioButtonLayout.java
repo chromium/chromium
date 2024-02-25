@@ -43,8 +43,10 @@ public final class RadioButtonLayout extends RadioGroup {
         if (tags != null) assert tags.size() == messages.size();
 
         for (int i = 0; i < messages.size(); i++) {
-            RadioButton button = (RadioButton) LayoutInflater.from(getContext())
-                                         .inflate(R.layout.radio_button_layout_element, null);
+            RadioButton button =
+                    (RadioButton)
+                            LayoutInflater.from(getContext())
+                                    .inflate(R.layout.radio_button_layout_element, null);
             button.setText(messages.get(i));
             if (tags != null) button.setTag(tags.get(i));
 

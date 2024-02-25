@@ -6,6 +6,7 @@
 #define CONTENT_BROWSER_PRELOADING_PRERENDER_PRERENDER_HOST_H_
 
 #include <memory>
+#include <optional>
 #include <string>
 
 #include "base/memory/raw_ref.h"
@@ -18,7 +19,6 @@
 #include "content/browser/renderer_host/navigation_controller_delegate.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/render_frame_host.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/mojom/navigation/navigation_params.mojom-forward.h"
 #include "url/gurl.h"
 
@@ -109,7 +109,19 @@ class CONTENT_EXPORT PrerenderHost : public FrameTree::Delegate,
   // `HttpRequestHeaders`.
   static bool IsActivationHeaderMatch(
       const net::HttpRequestHeaders& potential_activation_headers,
-      const net::HttpRequestHeaders& prerender_headers);
+      const net::HttpRequestHeaders& prerender_headers,
+      PrerenderCancellationReason& reaosn);
+
+  static bool AreHttpRequestHeadersCompatible(
+      const std::string& potential_activation_headers_str,
+      const std::string& prerender_headers_str,
+      PreloadingTriggerType trigger_type,
+      const std::string& embedder_histogram_suffix,
+      PrerenderCancellationReason& reason);
+
+  // Sets a callback to be called on PrerenderHost creation.
+  static void SetHostCreationCallbackForTesting(
+      base::OnceCallback<void(int host_id)> callback);
 
   PrerenderHost(const PrerenderAttributes& attributes,
                 WebContentsImpl& web_contents,
@@ -135,7 +147,6 @@ class CONTENT_EXPORT PrerenderHost : public FrameTree::Delegate,
   FrameTree* LoadingTree() override;
   int GetOuterDelegateFrameTreeNodeId() override;
   RenderFrameHostImpl* GetProspectiveOuterDocument() override;
-  bool IsPortal() override;
   void SetFocusedFrame(FrameTreeNode* node, SiteInstanceGroup* source) override;
 
   // NavigationControllerDelegate
@@ -151,7 +162,6 @@ class CONTENT_EXPORT PrerenderHost : public FrameTree::Delegate,
   void NotifyNavigationEntriesDeleted() override {}
   void ActivateAndShowRepostFormWarningDialog() override;
   bool ShouldPreserveAbortedURLs() override;
-  WebContents* DeprecatedGetWebContents() override;
   void UpdateOverridingUserAgent() override {}
 
   NavigationControllerImpl& GetNavigationController() {
@@ -180,8 +190,11 @@ class CONTENT_EXPORT PrerenderHost : public FrameTree::Delegate,
   // params in `navigation_request`. This function can be used to determine
   // whether `navigation_request` may be eligible to activate this
   // PrerenderHost.
+  // If the header mismatch occurred, the mismatched headers would be added
+  // into explanation_ in reason.
   bool AreInitialPrerenderNavigationParamsCompatibleWithNavigation(
-      NavigationRequest& navigation_request);
+      NavigationRequest& navigation_request,
+      PrerenderCancellationReason& reason);
 
   bool IsFramePolicyCompatibleWithPrimaryFrameTree();
 
@@ -219,7 +232,7 @@ class CONTENT_EXPORT PrerenderHost : public FrameTree::Delegate,
   // The initial navigation is set by the PrerenderNavigationThrottle
   // when the PrerenderHost is first navigated.
   void SetInitialNavigation(NavigationRequest* navigation);
-  absl::optional<int64_t> GetInitialNavigationId() const;
+  std::optional<int64_t> GetInitialNavigationId() const;
 
   // Returns true if the given `url` indicates the same destination to the
   // initial_url.
@@ -237,13 +250,13 @@ class CONTENT_EXPORT PrerenderHost : public FrameTree::Delegate,
       const url::Origin& origin,
       blink::EnabledClientHints* client_hints) const;
 
-  // Returns absl::nullopt iff prerendering is initiated by the browser (not by
+  // Returns std::nullopt iff prerendering is initiated by the browser (not by
   // a renderer using Speculation Rules API).
-  absl::optional<url::Origin> initiator_origin() const {
+  std::optional<url::Origin> initiator_origin() const {
     return attributes_.initiator_origin;
   }
 
-  absl::optional<base::UnguessableToken> initiator_devtools_navigation_token()
+  std::optional<base::UnguessableToken> initiator_devtools_navigation_token()
       const {
     return attributes_.initiator_devtools_navigation_token;
   }
@@ -266,16 +279,18 @@ class CONTENT_EXPORT PrerenderHost : public FrameTree::Delegate,
 
   bool is_ready_for_activation() const { return is_ready_for_activation_; }
 
-  const absl::optional<PrerenderFinalStatus>& final_status() const {
+  const std::optional<PrerenderFinalStatus>& final_status() const {
     return final_status_;
   }
 
-  PrerenderTriggerType trigger_type() const { return attributes_.trigger_type; }
+  PreloadingTriggerType trigger_type() const {
+    return attributes_.trigger_type;
+  }
   const std::string& embedder_histogram_suffix() const {
     return attributes_.embedder_histogram_suffix;
   }
 
-  absl::optional<blink::mojom::SpeculationEagerness> eagerness() const {
+  std::optional<blink::mojom::SpeculationEagerness> eagerness() const {
     return attributes_.eagerness;
   }
 
@@ -295,7 +310,8 @@ class CONTENT_EXPORT PrerenderHost : public FrameTree::Delegate,
 
   ActivationNavigationParamsMatch
   AreBeginNavigationParamsCompatibleWithNavigation(
-      const blink::mojom::BeginNavigationParams& potential_activation);
+      const blink::mojom::BeginNavigationParams& potential_activation,
+      PrerenderCancellationReason& reason);
   ActivationNavigationParamsMatch
   AreCommonNavigationParamsCompatibleWithNavigation(
       const blink::mojom::CommonNavigationParams& potential_activation);
@@ -310,7 +326,7 @@ class CONTENT_EXPORT PrerenderHost : public FrameTree::Delegate,
   // this is also used for the ID of this PrerenderHost.
   int frame_tree_node_id_ = RenderFrameHost::kNoFrameTreeNodeId;
 
-  absl::optional<PrerenderFinalStatus> final_status_;
+  std::optional<PrerenderFinalStatus> final_status_;
 
   base::ObserverList<Observer> observers_;
 
@@ -332,7 +348,7 @@ class CONTENT_EXPORT PrerenderHost : public FrameTree::Delegate,
       client_hints_type_;
 
   // Holds the navigation ID for the main frame initial navigation.
-  absl::optional<int64_t> initial_navigation_id_;
+  std::optional<int64_t> initial_navigation_id_;
 
   // WebContents where this prerenderer is embedded. Keeping a reference is safe
   // as WebContentsImpl owns PrerenderHostRegistry, which in turn owns

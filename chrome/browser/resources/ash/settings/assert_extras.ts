@@ -7,7 +7,7 @@
  * type narrowing, etc.
  */
 
-import {assert, assertInstanceof, assertNotReached} from 'chrome://resources/js/assert_ts.js';
+import {assert, assertInstanceof, assertNotReached} from 'chrome://resources/js/assert.js';
 
 /**
  * @param arg An argument to check for existence.

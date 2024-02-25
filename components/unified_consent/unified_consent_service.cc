@@ -32,7 +32,7 @@ UnifiedConsentService::SyncState UnifiedConsentService::GetSyncState(
     return SyncState::kSignedInWithoutHistory;
   }
 
-  absl::optional<syncer::PassphraseType> passphrase_type =
+  std::optional<syncer::PassphraseType> passphrase_type =
       sync_service->GetUserSettings()->GetPassphraseType();
 
   if (!passphrase_type.has_value()) {
@@ -191,6 +191,7 @@ void UnifiedConsentService::RegisterPrefs(
       prefs::kUnifiedConsentMigrationState,
       static_cast<int>(MigrationState::kNotInitialized));
 #endif
+  registry->RegisterBooleanPref(prefs::kPageContentCollectionEnabled, false);
 }
 
 void UnifiedConsentService::SetUrlKeyedAnonymizedDataCollectionEnabled(
@@ -212,7 +213,7 @@ void UnifiedConsentService::Shutdown() {
 
 void UnifiedConsentService::OnPrimaryAccountChanged(
     const signin::PrimaryAccountChangeEvent& event) {
-  // TODO(crbug.com/1462552): Simplify once kSync becomes unreachable or is
+  // TODO(crbug.com/40066949): Simplify once kSync becomes unreachable or is
   // deleted from the codebase. See ConsentLevel::kSync documentation for
   // details.
   if (event.GetEventTypeFor(signin::ConsentLevel::kSync) ==

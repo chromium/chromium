@@ -7,13 +7,13 @@
 
 #include <map>
 #include <memory>
+#include <optional>
 #include <string>
 #include <vector>
 
 #include "base/containers/flat_map.h"
 #include "base/values.h"
 #include "components/update_client/protocol_definition.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base {
 class Version;
@@ -40,7 +40,7 @@ protocol_request::Request MakeProtocolRequest(
     const std::string& channel,
     const std::string& os_long_name,
     const std::string& download_preference,
-    absl::optional<bool> domain_joined,
+    std::optional<bool> domain_joined,
     const base::flat_map<std::string, std::string>& additional_attributes,
     const base::flat_map<std::string, std::string>& updater_state_attributes,
     std::vector<protocol_request::App> apps);
@@ -61,10 +61,10 @@ protocol_request::App MakeProtocolApp(
     const std::string& cohort_name,
     const std::string& release_channel,
     const std::vector<int>& disabled_reasons,
-    absl::optional<protocol_request::UpdateCheck> update_check,
+    std::optional<protocol_request::UpdateCheck> update_check,
     const std::vector<protocol_request::Data>& data,
-    absl::optional<protocol_request::Ping> ping,
-    absl::optional<std::vector<base::Value::Dict>> events);
+    std::optional<protocol_request::Ping> ping,
+    std::optional<std::vector<base::Value::Dict>> events);
 
 protocol_request::UpdateCheck MakeProtocolUpdateCheck(
     bool is_update_disabled,

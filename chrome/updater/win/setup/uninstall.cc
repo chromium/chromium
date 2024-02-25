@@ -8,6 +8,7 @@
 #include <windows.h>
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -19,7 +20,7 @@
 #include "base/path_service.h"
 #include "base/process/launch.h"
 #include "base/process/process.h"
-#include "base/strings/stringprintf.h"
+#include "base/strings/strcat_win.h"
 #include "base/win/registry.h"
 #include "base/win/scoped_com_initializer.h"
 #include "chrome/installer/util/install_service_work_item.h"
@@ -30,7 +31,6 @@
 #include "chrome/updater/util/win_util.h"
 #include "chrome/updater/win/setup/setup_util.h"
 #include "chrome/updater/win/win_constants.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace updater {
 namespace {
@@ -76,60 +76,37 @@ void DeleteComService(bool uninstall_all) {
 }
 
 void DeleteComInterfaces(UpdaterScope scope, bool uninstall_all) {
-  for (const IID& iid : JoinVectors(
+  for (const auto& [iid, interface_name] : JoinVectors(
            GetSideBySideInterfaces(scope),
-           uninstall_all ? GetActiveInterfaces(scope) : std::vector<IID>())) {
-    for (const auto& reg_path :
-         {GetComIidRegistryPath(iid), GetComTypeLibRegistryPath(iid)}) {
+           uninstall_all ? GetActiveInterfaces(scope)
+                         : std::vector<std::pair<IID, std::wstring>>())) {
+    {
+      const std::wstring reg_path = GetComIidRegistryPath(iid);
+      for (const auto& key_flag : {KEY_WOW64_32KEY, KEY_WOW64_64KEY}) {
+        installer::DeleteRegistryKey(UpdaterScopeToHKeyRoot(scope), reg_path,
+                                     key_flag);
+      }
+    }
+    {
+      const std::wstring reg_path = GetComTypeLibRegistryPath(iid);
       installer::DeleteRegistryKey(UpdaterScopeToHKeyRoot(scope), reg_path,
                                    WorkItem::kWow64Default);
     }
   }
 }
 
-void DeleteUpdaterKey(UpdaterScope scope) {
-  const HKEY root = UpdaterScopeToHKeyRoot(scope);
-
-  // Delete all the sub keys of `UPDATER_KEY`.
-  std::vector<std::wstring> sub_keys;
-  for (base::win::RegistryKeyIterator updater_key_iter(root, UPDATER_KEY,
-                                                       KEY_WOW64_32KEY);
-       updater_key_iter.Valid(); ++updater_key_iter) {
-    sub_keys.push_back(updater_key_iter.Name());
-  }
-
-  for (const auto& sub_key : sub_keys) {
-    const std::wstring subkey_path =
-        base::StrCat({UPDATER_KEY, L"\\", sub_key});
-    installer::DeleteRegistryKey(root, subkey_path, KEY_WOW64_32KEY);
-  }
-
-  // Delete all the values of `UPDATER_KEY`, except the `LastInstaller*` values.
-  std::vector<std::wstring> values;
-  for (base::win::RegistryValueIterator updater_value_iter(root, UPDATER_KEY,
-                                                           KEY_WOW64_32KEY);
-       updater_value_iter.Valid(); ++updater_value_iter) {
-    if (!base::Contains(kRegValuesLastInstaller, updater_value_iter.Name())) {
-      values.push_back(updater_value_iter.Name());
-    }
-  }
-  for (const auto& value : values) {
-    installer::DeleteRegistryValue(root, UPDATER_KEY, KEY_WOW64_32KEY, value);
-  }
-
-  // Finally, delete `UPDATER_KEY` if it is empty.
-  base::win::RegKey updater_key;
-  if (updater_key.Open(root, UPDATER_KEY, Wow6432(KEY_QUERY_VALUE)) ==
-          ERROR_SUCCESS &&
-      updater_key.GetValueCount().value_or(1) == 0) {
-    updater_key.DeleteKey(L"", base::win::RegKey::RecursiveDelete(false));
+void DeleteClientStateKey(UpdaterScope scope) {
+  base::win::RegKey client_state;
+  if (client_state.Open(UpdaterScopeToHKeyRoot(scope), CLIENT_STATE_KEY,
+                        Wow6432(KEY_QUERY_VALUE)) == ERROR_SUCCESS) {
+    client_state.DeleteKey(L"", base::win::RegKey::RecursiveDelete(true));
   }
 }
 
 void DeleteGoogleUpdateFilesAndKeys(UpdaterScope scope) {
-  DeleteUpdaterKey(scope);
+  DeleteClientStateKey(scope);
 
-  const absl::optional<base::FilePath> target_path =
+  const std::optional<base::FilePath> target_path =
       GetGoogleUpdateExePath(scope);
   if (target_path) {
     base::DeletePathRecursively(target_path->DirName());
@@ -137,13 +114,13 @@ void DeleteGoogleUpdateFilesAndKeys(UpdaterScope scope) {
 }
 
 int RunUninstallScript(UpdaterScope scope, bool uninstall_all) {
-  const absl::optional<base::FilePath> versioned_dir =
+  const std::optional<base::FilePath> versioned_dir =
       GetVersionedInstallDirectory(scope);
   if (!versioned_dir) {
     LOG(ERROR) << "GetVersionedInstallDirectory failed.";
     return kErrorNoVersionedDirectory;
   }
-  const absl::optional<base::FilePath> base_dir = GetInstallDirectory(scope);
+  const std::optional<base::FilePath> base_dir = GetInstallDirectory(scope);
   if (IsSystemInstall(scope) && !base_dir) {
     LOG(ERROR) << "GetInstallDirectory failed.";
     return kErrorNoBaseDirectory;
@@ -158,10 +135,10 @@ int RunUninstallScript(UpdaterScope scope, bool uninstall_all) {
   const base::FilePath script_path =
       versioned_dir->AppendASCII(kUninstallScript);
 
-  const std::wstring cmdline = base::StringPrintf(
-      L"\"%ls\" /Q /C \"\"%ls\" --dir=\"%ls\"\"", cmd_exe_path.value().c_str(),
-      script_path.value().c_str(),
-      (uninstall_all ? base_dir : versioned_dir)->value().c_str());
+  const std::wstring cmdline = base::StrCat(
+      {L"\"", cmd_exe_path.value(), L"\" /Q /C \"\"", script_path.value(),
+       L"\" --dir=\"", (uninstall_all ? base_dir : versioned_dir)->value(),
+       L"\"\""});
   base::LaunchOptions options;
   options.start_hidden = true;
 
@@ -177,7 +154,7 @@ int RunUninstallScript(UpdaterScope scope, bool uninstall_all) {
 
 // Reverses the changes made by setup. This is a best effort uninstall:
 // 1. Deletes the scheduled task.
-// 2. Deletes the Clients and ClientState keys.
+// 2. Deletes the ClientState key.
 // 3. Runs the uninstall script in the install directory of the updater.
 // The execution of this function and the script race each other but the script
 // loops and waits in between iterations trying to delete the install directory.

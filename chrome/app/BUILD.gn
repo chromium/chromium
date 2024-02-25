@@ -18,8 +18,8 @@ if (is_android) {
   import("//build/config/android/rules.gni")
 } else if (is_fuchsia) {
   import("//build/config/fuchsia/packaged_content_embedder_excluded_dirs.gni")
-  import("//third_party/fuchsia-sdk/sdk/build/component.gni")
-  import("//third_party/fuchsia-sdk/sdk/build/package.gni")
+  import("//third_party/fuchsia-gn-sdk/src/component.gni")
+  import("//third_party/fuchsia-gn-sdk/src/package.gni")
 }
 
 # This target is for dependency tracking for the command ID header.
@@ -84,16 +84,6 @@ if (is_win) {
   }
 }
 
-if (is_mac) {
-  source_set("notification_metrics") {
-    sources = [
-      "notification_metrics.cc",
-      "notification_metrics.h",
-    ]
-    deps = [ "//base" ]
-  }
-}
-
 if (is_android) {
   android_generated_java_resources =
       [ "java/res/values/generated_resources.xml" ] +
@@ -126,17 +116,17 @@ if (is_android) {
         rebase_path(android_generated_java_resources, "java/res", ".") +
         rebase_path(strings_java_resources, "java/res", ".")
     deps = [
-      ":chromium_strings",
+      ":branded_strings",
       ":generated_resources",
     ]
   }
 }
 
-grit("chromium_strings") {
+grit("branded_strings") {
   source = "${branding_path_product}_strings.grd"
   defines = chrome_grit_defines
   output_dir = "$root_gen_dir/chrome"
-  outputs = [ "grit/chromium_strings.h" ] +
+  outputs = [ "grit/branded_strings.h" ] +
             process_file_template(
                 all_chrome_locales,
                 [ "${branding_path_product}_strings_{{source_name_part}}.pak" ])
@@ -163,6 +153,7 @@ static_library("test_support") {
     "//chrome/browser/policy:path_parser",
     "//chrome/child",
     "//chrome/common",
+    "//chrome/common:version_header",
     "//chrome/gpu",
     "//chrome/renderer",
     "//chrome/utility",
@@ -241,33 +232,5 @@ static_library("test_support") {
       "//components/nacl/browser",
       "//components/nacl/renderer/plugin:nacl_trusted_plugin",
     ]
-  }
-}
-
-if (is_fuchsia) {
-  # Generate a packaged component, and an installer script to aid development.
-
-  fuchsia_component("chrome_component") {
-    visibility = [ ":*" ]
-    manifest = "chrome.cml"
-    data_deps = [ "//chrome:chrome_initial" ]
-  }
-
-  fuchsia_package("chrome_pkg") {
-    package_name = "chrome"
-    deps = [ ":chrome_component" ]
-
-    excluded_dirs = FUCHSIA_PACKAGED_CONTENT_EMBEDDER_EXCLUDED_DIRS
-  }
-
-  fuchsia_package_installer("chrome_fuchsia") {
-    visibility = [
-      ":*",  # See https://crbug.com/1328459#c4.
-      "//:gn_all",
-      "//chrome/test/*",
-      "//content/test/*",
-    ]
-    package = ":chrome_pkg"
-    package_name = "chrome"
   }
 }

@@ -8,8 +8,8 @@ static_library("content") {
     "content_favicon_driver.h",
     "favicon_url_util.cc",
     "favicon_url_util.h",
-    "large_favicon_provider_getter.cc",
-    "large_favicon_provider_getter.h",
+    "large_icon_service_getter.cc",
+    "large_icon_service_getter.h",
   ]
 
   public_deps = [

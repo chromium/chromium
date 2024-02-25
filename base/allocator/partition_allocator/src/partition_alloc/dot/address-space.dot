@@ -1,0 +1,33 @@
+digraph {
+  node[shape=box]
+  edge[dir=both]
+  compound = true
+  dpi = 192
+  nodesep = 0.91
+  // Allows aligning nodes in different subgraphs.
+  newrank = true
+
+  subgraph cluster_0 {
+    label = "Address Space"
+    reg[label="Regular Pool"]
+    brp[label="BRP Pool"]
+    add[label="Additional Pools"]
+    reg->brp->add[style=invis]
+  }
+
+  manager[label="AddressPoolManager"]
+  manager->reg[constraint=false]
+  manager->brp
+  manager->add[constraint=false]
+
+  subgraph cluster_1 {
+    label = "PartitionRoots"
+    pae[label="PA-E Root"]
+    blink[label="Blink Roots"]
+    etc[style=dotted, label="Other Roots"]
+    pae->blink->etc[style=invis]
+  }
+
+  manager->blink[lhead=cluster_1]
+  {rank=same manager brp blink}
+}

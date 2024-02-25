@@ -10,10 +10,11 @@
 
 #include "base/command_line.h"
 #include "base/files/file.h"
+#include "base/i18n/time_formatting.h"
 #include "base/logging.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/strings/stringprintf.h"
-#include "base/strings/utf_string_conversions.h"
+#include "base/test/test_future.h"
 #include "base/time/time.h"
 #include "content/public/browser/desktop_capture.h"
 #include "third_party/skia/include/core/SkBitmap.h"
@@ -37,6 +38,7 @@ class FrameHolder : public webrtc::DesktopCapturer::Callback {
 
   // Returns the frame that was captured or null in case of failure.
   std::unique_ptr<webrtc::DesktopFrame> TakeFrame() {
+    CHECK(signal_.Wait());
     return std::move(frame_);
   }
 
@@ -46,9 +48,11 @@ class FrameHolder : public webrtc::DesktopCapturer::Callback {
                        std::unique_ptr<webrtc::DesktopFrame> frame) override {
     if (result == webrtc::DesktopCapturer::Result::SUCCESS)
       frame_ = std::move(frame);
+    signal_.SetValue();
   }
 
   std::unique_ptr<webrtc::DesktopFrame> frame_;
+  base::test::TestFuture<void> signal_;
 };
 
 // Captures and returns a snapshot of the screen, or an empty bitmap in case of
@@ -115,23 +119,15 @@ base::FilePath SaveDesktopSnapshot(const base::FilePath& output_dir) {
   }
 
   // Create the output file.
-  base::Time::Exploded exploded;
-  base::Time::Now().LocalExplode(&exploded);
-  const auto filename = base::StringPrintf(
-      "ss_%4d%02d%02d%02d%02d%02d_%03d.png", exploded.year, exploded.month,
-      exploded.day_of_month, exploded.hour, exploded.minute, exploded.second,
-      exploded.millisecond);
+  base::FilePath output_path =
+      output_dir.AppendASCII(base::UnlocalizedTimeFormatWithPattern(
+          base::Time::Now(), "'ss_'yyyyMMddHHmmss_SSS'.png'"));
+  uint32_t flags = base::File::FLAG_CREATE | base::File::FLAG_WRITE;
 #if BUILDFLAG(IS_WIN)
-  base::FilePath output_path(output_dir.Append(base::UTF8ToWide(filename)));
-  base::File file(output_path, base::File::FLAG_CREATE |
-                                   base::File::FLAG_WRITE |
-                                   base::File::FLAG_WIN_SHARE_DELETE |
-                                   base::File::FLAG_CAN_DELETE_ON_CLOSE);
-#else
-  base::FilePath output_path(output_dir.Append(filename));
-  base::File file(output_path,
-                  base::File::FLAG_CREATE | base::File::FLAG_WRITE);
+  flags |=
+      base::File::FLAG_WIN_SHARE_DELETE | base::File::FLAG_CAN_DELETE_ON_CLOSE;
 #endif
+  base::File file(output_path, flags);
 
   if (!file.IsValid()) {
     if (file.error_details() == base::File::FILE_ERROR_EXISTS) {

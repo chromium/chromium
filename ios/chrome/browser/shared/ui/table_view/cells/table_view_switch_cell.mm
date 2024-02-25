@@ -106,8 +106,8 @@ const CGFloat kSwitchTrailingPadding = 22;
       [_switchView.centerYAnchor
           constraintEqualToAnchor:self.contentView.centerYAnchor],
       [textLayoutGuide.trailingAnchor
-          constraintLessThanOrEqualToAnchor:_switchView.leadingAnchor
-                                   constant:-kTableViewHorizontalSpacing],
+          constraintEqualToAnchor:_switchView.leadingAnchor
+                         constant:-kTableViewHorizontalSpacing],
       [textLayoutGuide.centerYAnchor
           constraintEqualToAnchor:self.contentView.centerYAnchor],
 
@@ -126,8 +126,8 @@ const CGFloat kSwitchTrailingPadding = 22;
           constraintEqualToAnchor:self.contentView.bottomAnchor
                          constant:-kTableViewLargeVerticalSpacing],
       [textLayoutGuide.trailingAnchor
-          constraintLessThanOrEqualToAnchor:self.contentView.trailingAnchor
-                                   constant:-kTableViewHorizontalSpacing],
+          constraintEqualToAnchor:self.contentView.trailingAnchor
+                         constant:-kTableViewHorizontalSpacing],
     ];
 
     [NSLayoutConstraint activateConstraints:@[
@@ -176,16 +176,28 @@ const CGFloat kSwitchTrailingPadding = 22;
   return self;
 }
 
-+ (UIColor*)defaultTextColorForState:(UIControlState)state {
-  return (state & UIControlStateDisabled)
-             ? [UIColor colorNamed:kTextSecondaryColor]
-             : [UIColor colorNamed:kTextPrimaryColor];
+- (void)configureCellWithTitle:(NSString*)title
+                      subtitle:(NSString*)subtitle
+                 switchEnabled:(BOOL)enabled
+                            on:(BOOL)on {
+  self.textLabel.text = title;
+  self.detailTextLabel.text = subtitle;
+  self.switchView.enabled = enabled;
+  self.switchView.on = on;
+  self.switchView.accessibilityIdentifier =
+      [NSString stringWithFormat:@"%@, switch", title];
+
+  UIColor* textColor = enabled ? [UIColor colorNamed:kTextPrimaryColor]
+                               : [UIColor colorNamed:kTextSecondaryColor];
+  self.textLabel.textColor = textColor;
+  self.selectionStyle = UITableViewCellSelectionStyleNone;
 }
 
 - (void)setIconImage:(UIImage*)image
            tintColor:(UIColor*)tintColor
      backgroundColor:(UIColor*)backgroundColor
-        cornerRadius:(CGFloat)cornerRadius {
+        cornerRadius:(CGFloat)cornerRadius
+         borderWidth:(CGFloat)borderWidth {
   BOOL hidden = (image == nil);
 
   self.iconImageView.image = image;
@@ -193,6 +205,9 @@ const CGFloat kSwitchTrailingPadding = 22;
 
   _iconBackground.backgroundColor = backgroundColor;
   _iconBackground.layer.cornerRadius = cornerRadius;
+  _iconBackground.layer.borderColor =
+      [UIColor colorNamed:kGrey200Color].CGColor;
+  _iconBackground.layer.borderWidth = borderWidth;
 
   _iconBackground.hidden = hidden;
   if (hidden) {
@@ -231,7 +246,11 @@ const CGFloat kSwitchTrailingPadding = 22;
 
   self.textLabel.text = nil;
   self.detailTextLabel.text = nil;
-  [self setIconImage:nil tintColor:nil backgroundColor:nil cornerRadius:0];
+  [self setIconImage:nil
+            tintColor:nil
+      backgroundColor:nil
+         cornerRadius:0
+          borderWidth:0];
   [_switchView removeTarget:nil
                      action:nil
            forControlEvents:[_switchView allControlEvents]];

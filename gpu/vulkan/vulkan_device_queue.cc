@@ -4,12 +4,12 @@
 
 #include "gpu/vulkan/vulkan_device_queue.h"
 
+#include <bit>
 #include <cstring>
 #include <unordered_set>
 #include <utility>
 #include <vector>
 
-#include "base/bits.h"
 #include "base/feature_list.h"
 #include "base/logging.h"
 #include "base/ranges/algorithm.h"
@@ -28,21 +28,21 @@
 #include "ui/gl/gl_angle_util_vulkan.h"
 
 namespace features {
-// 4MB was picked for the size here by looking at memory usage of Android
-// apps and runs of DM. It seems to be a good compromise of not wasting
-// unused allocated space and not making too many small allocations. The
-// AMD allocator will start making blocks at 1/8 the max size and builds
-// up block size as needed before capping at the max set here.
-//
-// To understand the amount of fragmentation caused by this choice of 4MB as
-// the block size, a few finch experiments are run to try different block
-// sizes.
+// Based on Finch experiment results, the VMA block size does not significantly
+// affect performance.  Too small sizes (such as 4KB) result in instability,
+// likely due to running out of allowed allocations (the
+// |maxMemoryAllocationCount| Vulkan limit).  Too large sizes (such as 4MB)
+// result in significant memory waste due to fragmentation.  Finch results
+// have shown that with a block size of 64KB and below, the amount of
+// fragmentation is ~1MB in the 99th percentile.  For 128KB and higher block
+// sizes, the amount of fragmentation exponentially increases (with 2MB for
+// 128KB block size, 4MB for 256KB, etc).
 BASE_FEATURE(kVulkanVMALargeHeapBlockSizeExperiment,
              "VulkanVMALargeHeapBlockSizeExperiment",
              base::FEATURE_ENABLED_BY_DEFAULT);
 constexpr base::FeatureParam<int> kVulkanVMALargeHeapBlockSize{
     &kVulkanVMALargeHeapBlockSizeExperiment, "VulkanVMALargeHeapBlockSize",
-    4 * 1024 * 1024};
+    64 * 1024};
 }  // namespace features
 
 namespace gpu {
@@ -50,7 +50,7 @@ namespace {
 VkDeviceSize GetPreferredVMALargeHeapBlockSize() {
   const VkDeviceSize block_size =
       ::features::kVulkanVMALargeHeapBlockSize.Get();
-  DCHECK(base::bits::IsPowerOfTwo(block_size));
+  DCHECK(std::has_single_bit(block_size));
   return block_size;
 }
 }  // anonymous namespace
@@ -182,6 +182,7 @@ bool VulkanDeviceQueue::Initialize(
   vk_physical_device_properties_ = physical_device_info.properties;
   vk_physical_device_driver_properties_ =
       physical_device_info.driver_properties;
+  drm_device_id_ = physical_device_info.drm_device_id;
   vk_queue_index_ = queue_index;
 
   float queue_priority = 0.0f;

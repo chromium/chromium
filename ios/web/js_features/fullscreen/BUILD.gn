@@ -1,0 +1,50 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//ios/build/config.gni")
+import("//ios/web/public/js_messaging/optimize_ts.gni")
+
+source_set("fullscreen") {
+  deps = [
+    ":fullscreen_js",
+    "//base",
+    "//ios/web/public/js_messaging",
+    "//ios/web/web_state:web_state_impl_header",
+    "//ios/web/web_state/ui:web_controller_header",
+  ]
+
+  sources = [
+    "fullscreen_java_script_feature.h",
+    "fullscreen_java_script_feature.mm",
+  ]
+}
+
+optimize_ts("fullscreen_js") {
+  visibility = [ ":fullscreen" ]
+
+  sources = [ "resources/fullscreen.ts" ]
+  deps = [
+    "//ios/web/public/js_messaging:frame_id",
+    "//ios/web/public/js_messaging:gcrweb",
+    "//ios/web/public/js_messaging:util_scripts",
+  ]
+}
+
+source_set("unittests") {
+  testonly = true
+
+  deps = [
+    ":fullscreen",
+    "//base/test:test_support",
+    "//ios/web/js_messaging:java_script_feature",
+    "//ios/web/public",
+    "//ios/web/public/js_messaging",
+    "//ios/web/public/test:test_fixture",
+    "//ios/web/web_state:web_state_impl_header",
+    "//ios/web/web_state/ui:web_controller_header",
+    "//testing/gtest",
+  ]
+
+  sources = [ "fullscreen_java_script_feature_unittest.mm" ]
+}

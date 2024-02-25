@@ -1,0 +1,30 @@
+caption: Block Direct Sockets API on these sites
+desc: |-
+  The Direct Sockets API allows communication with arbitrary endpoints using TCP and UDP.
+  Please see https://github.com/WICG/direct-sockets for details.
+
+  Setting the policy lets you list the URL patterns that specify which sites are blocked from using DirectSockets.
+  These may include Chrome Apps, Isolated Web Apps and Web Kiosks; the API is never available on the open web.
+
+  Leaving the policy unset means <ph name="DEFAULT_DIRECT_SOCKETS_SETTING_POLICY_NAME">DefaultDirectSocketsSetting</ph> applies for all sites, if it's set.
+
+  URL patterns must not conflict with <ph name="DIRECT_SOCKETS_ALLOWED_FOR_URLS_POLICY_NAME">DirectSocketsAllowedForUrls</ph>. Neither policy takes precedence if a URL matches with both.
+
+  For detailed information on valid url patterns, please see https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns. <ph name="WILDCARD_VALUE">*</ph> is not an accepted value for this policy.
+example_value:
+- https://www.example.com
+- '[*.]example.edu'
+features:
+  dynamic_refresh: true
+  per_profile: true
+future_on:
+- chrome.*
+- chrome_os
+owners:
+- file://content/browser/direct_sockets/OWNERS
+schema:
+  items:
+    type: string
+  type: array
+tags: []
+type: list

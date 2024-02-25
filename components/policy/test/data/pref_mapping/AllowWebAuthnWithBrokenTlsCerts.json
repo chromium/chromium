@@ -1,0 +1,43 @@
+[
+  {
+    "os": [
+      "win",
+      "linux",
+      "mac",
+      "android",
+      "chromeos_ash",
+      "chromeos_lacros",
+      "fuchsia"
+    ],
+    "policy_pref_mapping_tests": [
+      {
+        "policies": {},
+        "prefs": {
+          "webauthn.allow_with_broken_certs": {
+            "default_value": false
+          }
+        }
+      },
+      {
+        "policies": {
+          "AllowWebAuthnWithBrokenTlsCerts": true
+        },
+        "prefs": {
+          "webauthn.allow_with_broken_certs": {
+            "value": true
+          }
+        }
+      },
+      {
+        "policies": {
+          "AllowWebAuthnWithBrokenTlsCerts": false
+        },
+        "prefs": {
+          "webauthn.allow_with_broken_certs": {
+            "value": false
+          }
+        }
+      }
+    ]
+  }
+]

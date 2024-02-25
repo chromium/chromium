@@ -3,18 +3,20 @@
 # found in the LICENSE file.
 
 import("//build/config/chromeos/ui_mode.gni")
-import("//chrome/test/base/js2gtest.gni")
 import("//testing/test.gni")
 import("//tools/grit/grit_rule.gni")
+
+if (is_chromeos_ash) {
+  import("//chrome/test/base/ash/js2gtest.gni")
+}
 
 group("extensions") {
   deps = [
     ":caretbrowsing",
     ":colorenhancer",
+    ":highcontrast",
+    "chromevoxclassic:chromevox",
   ]
-  if (is_chromeos_ash) {
-    deps += [ "chromevoxclassic:chromevox" ]
-  }
 }
 
 group("extension_tests") {
@@ -90,6 +92,36 @@ locale_files = [
 ]
 
 #
+# Animation Policy
+#
+
+group("animation") {
+  deps = [
+    ":animation_copy",
+    ":animation_strings",
+  ]
+}
+
+grit("animation_strings") {
+  source = "strings/accessibility_extensions_strings.grd"
+  outputs = locale_files
+  output_dir = "$root_out_dir/animation"
+  resource_ids = ""
+}
+
+animation_files = [
+  "animation/animation.png",
+  "animation/manifest.json",
+  "animation/popup.html",
+  "animation/popup.js",
+]
+
+copy("animation_copy") {
+  sources = animation_files
+  outputs = [ "$root_out_dir/{{source_target_relative}}" ]
+}
+
+#
 # Color Enhancer
 #
 
@@ -154,6 +186,79 @@ if (is_chromeos_ash) {
     ]
     defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
   }
+}
+
+#
+# High Contrast
+#
+
+group("highcontrast") {
+  deps = [
+    ":highcontrast_copy",
+    ":highcontrast_strings",
+  ]
+}
+
+grit("highcontrast_strings") {
+  source = "strings/accessibility_extensions_strings.grd"
+  outputs = locale_files
+  output_dir = "$root_out_dir/highcontrast"
+  resource_ids = ""
+}
+
+highcontrast_files = [
+  "highcontrast/manifest.json",
+  "highcontrast/background.js",
+  "highcontrast/common.js",
+  "highcontrast/highcontrast-16.png",
+  "highcontrast/highcontrast-19.png",
+  "highcontrast/highcontrast-48.png",
+  "highcontrast/highcontrast-128.png",
+  "highcontrast/highcontrast.js",
+  "highcontrast/popup.html",
+  "highcontrast/popup.js",
+  "highcontrast/storage.js",
+]
+
+copy("highcontrast_copy") {
+  sources = highcontrast_files
+  outputs = [ "$root_out_dir/{{source_target_relative}}" ]
+}
+
+#
+# Long Descriptions In Context Menu
+#
+
+group("longdesc") {
+  deps = [
+    ":longdesc_copy",
+    ":longdesc_strings",
+  ]
+}
+
+grit("longdesc_strings") {
+  source = "strings/accessibility_extensions_strings.grd"
+  outputs = locale_files
+  output_dir = "$root_out_dir/longdesc"
+  resource_ids = ""
+}
+
+longdesc_files = [
+  "longdesc/background.js",
+  "longdesc/border.css",
+  "longdesc/icon-16.png",
+  "longdesc/icon-48.png",
+  "longdesc/icon-128.png",
+  "longdesc/icon.png",
+  "longdesc/lastRightClick.js",
+  "longdesc/manifest.json",
+  "longdesc/options.html",
+  "longdesc/options.js",
+]
+
+copy("longdesc_copy") {
+  sources = longdesc_files
+  outputs = [ "$root_out_dir/{{source_target_relative}}" ]
 }
 
 #

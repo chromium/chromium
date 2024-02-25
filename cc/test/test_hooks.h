@@ -27,6 +27,7 @@ class SkiaOutputSurface;
 namespace cc {
 
 struct ApplyViewportChangesArgs;
+struct BeginMainFrameMetrics;
 
 // Used by test stubs to notify the test when something interesting happens.
 class TestHooks : public AnimationDelegate {
@@ -42,7 +43,6 @@ class TestHooks : public AnimationDelegate {
                                           bool has_damage) {}
   virtual void DidFinishImplFrameOnThread(LayerTreeHostImpl* host_impl) {}
   virtual void WillSendBeginMainFrameOnThread(LayerTreeHostImpl* host_impl) {}
-  virtual void DidSendBeginMainFrameOnThread(LayerTreeHostImpl* host_impl) {}
   virtual void BeginMainFrameAbortedOnThread(
       LayerTreeHostImpl* host_impl,
       CommitEarlyOutReason reason,
@@ -125,6 +125,7 @@ class TestHooks : public AnimationDelegate {
   virtual void DidReceiveCompositorFrameAck() {}
   virtual void DidActivateSyncTree() {}
   virtual void NotifyThroughputTrackerResults(CustomTrackerResults results) {}
+  virtual std::unique_ptr<BeginMainFrameMetrics> GetBeginMainFrameMetrics();
 
   // AnimationDelegate implementation.
   void NotifyAnimationStarted(base::TimeTicks monotonic_time,
@@ -142,7 +143,7 @@ class TestHooks : public AnimationDelegate {
       base::TimeTicks animation_start_time,
       std::unique_ptr<gfx::AnimationCurve> curve) override {}
   void NotifyLocalTimeUpdated(
-      absl::optional<base::TimeDelta> local_time) override {}
+      std::optional<base::TimeDelta> local_time) override {}
 
   // OutputSurface indirections to the LayerTreeTest, that can be further
   // overridden.

@@ -5,7 +5,7 @@
 #import "ios/chrome/browser/ui/content_suggestions/cells/content_suggestions_most_visited_item.h"
 
 #import "base/check.h"
-#import "ios/chrome/browser/ui/content_suggestions/cells/content_suggestions_gesture_commands.h"
+#import "ios/chrome/browser/ui/content_suggestions/cells/most_visited_tiles_commands.h"
 #import "ios/chrome/common/ui/favicon/favicon_attributes.h"
 #import "ios/chrome/common/ui/favicon/favicon_view.h"
 #import "ios/chrome/grit/ios_strings.h"
@@ -13,13 +13,6 @@
 #import "url/gurl.h"
 
 @implementation ContentSuggestionsMostVisitedItem
-
-@synthesize attributes = _attributes;
-@synthesize title = _title;
-@synthesize URL = _URL;
-@synthesize titleSource = _titleSource;
-@synthesize source = _source;
-@synthesize commandHandler = _commandHandler;
 
 #pragma mark - AccessibilityCustomAction
 

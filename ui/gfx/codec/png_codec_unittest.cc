@@ -8,9 +8,14 @@
 #include <stdint.h>
 
 #include <cmath>
+#include <iomanip>
 
+#include "base/base_paths.h"
 #include "base/check.h"
+#include "base/files/file_path.h"
+#include "base/files/file_util.h"
 #include "base/logging.h"
+#include "base/path_service.h"
 #include "base/ranges/algorithm.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -42,7 +47,9 @@ void MakeRGBImage(int w, int h, std::vector<unsigned char>* data) {
 // be filled with 0xff. With the alpha channel stripped, this should yield the
 // same image as MakeRGBImage above, so the code below can make reference
 // images for conversion testing.
-void MakeRGBAImage(int w, int h, bool use_transparency,
+void MakeRGBAImage(int w,
+                   int h,
+                   bool use_transparency,
                    std::vector<unsigned char>* data) {
   data->resize(w * h * 4);
   for (int y = 0; y < h; y++) {
@@ -52,15 +59,16 @@ void MakeRGBAImage(int w, int h, bool use_transparency,
       org_px[1] = x * 3 + 1;  // g
       org_px[2] = x * 3 + 2;  // b
       if (use_transparency)
-        org_px[3] = x*3 + 3;  // a
+        org_px[3] = x * 3 + 3;  // a
       else
-        org_px[3] = 0xFF;     // a (opaque)
+        org_px[3] = 0xFF;  // a (opaque)
     }
   }
 }
 
 // Creates a palette-based image.
-void MakePaletteImage(int w, int h,
+void MakePaletteImage(int w,
+                      int h,
                       std::vector<unsigned char>* data,
                       std::vector<png_color>* palette,
                       std::vector<unsigned char>* trans_chunk = 0) {
@@ -86,8 +94,7 @@ void MakePaletteImage(int w, int h,
 }
 
 // Creates a grayscale image without an alpha channel.
-void MakeGrayscaleImage(int w, int h,
-                        std::vector<unsigned char>* data) {
+void MakeGrayscaleImage(int w, int h, std::vector<unsigned char>* data) {
   data->resize(w * h);
   for (int y = 0; y < h; y++) {
     for (int x = 0; x < w; x++) {
@@ -97,8 +104,7 @@ void MakeGrayscaleImage(int w, int h,
 }
 
 // Creates a grayscale image with an alpha channel.
-void MakeGrayscaleAlphaImage(int w, int h,
-                             std::vector<unsigned char>* data) {
+void MakeGrayscaleAlphaImage(int w, int h, std::vector<unsigned char>* data) {
   data->resize(w * h * 2);
   for (int y = 0; y < h; y++) {
     for (int x = 0; x < w; x++) {
@@ -111,9 +117,7 @@ void MakeGrayscaleAlphaImage(int w, int h,
 
 // User write function (to be passed to libpng by EncodeImage) which writes
 // into a buffer instead of to a file.
-void WriteImageData(png_structp png_ptr,
-                    png_bytep data,
-                    png_size_t length) {
+void WriteImageData(png_structp png_ptr, png_bytep data, png_size_t length) {
   std::vector<unsigned char>& v =
       *static_cast<std::vector<unsigned char>*>(png_get_io_ptr(png_ptr));
   v.resize(v.size() + length);
@@ -121,20 +125,17 @@ void WriteImageData(png_structp png_ptr,
 }
 
 // User flush function; goes with WriteImageData, above.
-void FlushImageData(png_structp /*png_ptr*/) {
-}
+void FlushImageData(png_structp /*png_ptr*/) {}
 
 // Libpng user error function which allows us to print libpng errors using
 // Chrome's logging facilities instead of stderr.
-void LogLibPNGError(png_structp png_ptr,
-                    png_const_charp error_msg) {
+void LogLibPNGError(png_structp png_ptr, png_const_charp error_msg) {
   DLOG(ERROR) << "libpng encode error: " << error_msg;
   longjmp(png_jmpbuf(png_ptr), 1);
 }
 
 // Goes with LogLibPNGError, above.
-void LogLibPNGWarning(png_structp png_ptr,
-                      png_const_charp warning_msg) {
+void LogLibPNGWarning(png_structp png_ptr, png_const_charp warning_msg) {
   DLOG(ERROR) << "libpng encode warning: " << warning_msg;
 }
 
@@ -197,17 +198,17 @@ bool EncodeImage(const std::vector<unsigned char>& input,
   };
 
   png_struct* png_ptr =
-      png_create_write_struct(PNG_LIBPNG_VER_STRING, NULL, NULL, NULL);
+      png_create_write_struct(PNG_LIBPNG_VER_STRING, nullptr, nullptr, nullptr);
   if (!png_ptr)
     return false;
   png_infop info_ptr = png_create_info_struct(png_ptr);
   if (!info_ptr) {
-    png_destroy_write_struct(&png_ptr, NULL);
+    png_destroy_write_struct(&png_ptr, nullptr);
     return false;
   }
 
   std::vector<png_bytep> row_pointers(height);
-  for (int y = 0 ; y < height; ++y) {
+  for (int y = 0; y < height; ++y) {
     row_pointers[y] = const_cast<unsigned char*>(&input[y * input_rowbytes]);
   }
 
@@ -216,7 +217,7 @@ bool EncodeImage(const std::vector<unsigned char>& input,
     return false;
   }
 
-  png_set_error_fn(png_ptr, NULL, LogLibPNGError, LogLibPNGWarning);
+  png_set_error_fn(png_ptr, nullptr, LogLibPNGError, LogLibPNGWarning);
   png_set_rows(png_ptr, info_ptr, &row_pointers[0]);
   png_set_write_fn(png_ptr, output, WriteImageData, FlushImageData);
   png_set_IHDR(png_ptr, info_ptr, width, height, 8, output_color_type,
@@ -227,11 +228,11 @@ bool EncodeImage(const std::vector<unsigned char>& input,
     if (palette_alpha) {
       unsigned char* alpha_data = &palette_alpha->front();
       size_t alpha_size = palette_alpha->size();
-      png_set_tRNS(png_ptr, info_ptr, alpha_data, alpha_size, NULL);
+      png_set_tRNS(png_ptr, info_ptr, alpha_data, alpha_size, nullptr);
     }
   }
 
-  png_write_png(png_ptr, info_ptr, transforms, NULL);
+  png_write_png(png_ptr, info_ptr, transforms, nullptr);
 
   png_destroy_write_struct(&png_ptr, &info_ptr);
   return true;
@@ -258,8 +259,8 @@ bool NonAlphaColorsClose(uint32_t a, uint32_t b) {
 // Returns true if the BGRA 32-bit SkColor specified by |a| is equivalent to the
 // 8-bit Gray color specified by |b|.
 bool BGRAGrayEqualsA8Gray(uint32_t a, uint8_t b) {
-  return SkColorGetB(a) == b && SkColorGetG(a) ==  b &&
-         SkColorGetR(a) == b && SkColorGetA(a) == 255;
+  return SkColorGetB(a) == b && SkColorGetG(a) == b && SkColorGetR(a) == b &&
+         SkColorGetA(a) == 255;
 }
 
 void MakeTestBGRASkBitmap(int w, int h, SkBitmap* bmp) {
@@ -288,9 +289,8 @@ TEST(PNGCodec, EncodeDecodeRGBA) {
 
   // encode
   std::vector<unsigned char> encoded;
-  ASSERT_TRUE(PNGCodec::Encode(&original[0], PNGCodec::FORMAT_RGBA,
-                               Size(w, h), w * 4, false,
-                               std::vector<PNGCodec::Comment>(),
+  ASSERT_TRUE(PNGCodec::Encode(&original[0], PNGCodec::FORMAT_RGBA, Size(w, h),
+                               w * 4, false, std::vector<PNGCodec::Comment>(),
                                &encoded));
 
   // decode
@@ -326,17 +326,15 @@ TEST(PNGCodec, EncodeDecodeBGRA) {
 
   // Encode.
   std::vector<unsigned char> encoded;
-  ASSERT_TRUE(PNGCodec::Encode(&original[0], PNGCodec::FORMAT_BGRA,
-                               Size(w, h), w * 4, false,
-                               std::vector<PNGCodec::Comment>(),
+  ASSERT_TRUE(PNGCodec::Encode(&original[0], PNGCodec::FORMAT_BGRA, Size(w, h),
+                               w * 4, false, std::vector<PNGCodec::Comment>(),
                                &encoded));
 
   // Decode, it should have the same size as the original.
   std::vector<unsigned char> decoded;
   int outw, outh;
   ASSERT_TRUE(PNGCodec::Decode(&encoded[0], encoded.size(),
-                               PNGCodec::FORMAT_BGRA, &decoded,
-                               &outw, &outh));
+                               PNGCodec::FORMAT_BGRA, &decoded, &outw, &outh));
   ASSERT_EQ(w, outw);
   ASSERT_EQ(h, outh);
   ASSERT_EQ(original.size(), decoded.size());
@@ -356,20 +354,15 @@ TEST(PNGCodec, DecodePalette) {
 
   // encode
   std::vector<unsigned char> encoded;
-  ASSERT_TRUE(EncodeImage(original,
-                          w, h,
-                          COLOR_TYPE_PALETTE,
-                          &encoded,
-                          PNG_INTERLACE_NONE,
-                          &original_palette,
+  ASSERT_TRUE(EncodeImage(original, w, h, COLOR_TYPE_PALETTE, &encoded,
+                          PNG_INTERLACE_NONE, &original_palette,
                           &original_trans_chunk));
 
   // decode
   std::vector<unsigned char> decoded;
   int outw, outh;
   ASSERT_TRUE(PNGCodec::Decode(&encoded[0], encoded.size(),
-                               PNGCodec::FORMAT_RGBA, &decoded,
-                               &outw, &outh));
+                               PNGCodec::FORMAT_RGBA, &decoded, &outw, &outh));
   ASSERT_EQ(w, outw);
   ASSERT_EQ(h, outh);
   ASSERT_EQ(decoded.size(), w * h * 4U);
@@ -401,20 +394,15 @@ TEST(PNGCodec, DecodeInterlacedPalette) {
 
   // encode
   std::vector<unsigned char> encoded;
-  ASSERT_TRUE(EncodeImage(original,
-                          w, h,
-                          COLOR_TYPE_PALETTE,
-                          &encoded,
-                          PNG_INTERLACE_ADAM7,
-                          &original_palette,
+  ASSERT_TRUE(EncodeImage(original, w, h, COLOR_TYPE_PALETTE, &encoded,
+                          PNG_INTERLACE_ADAM7, &original_palette,
                           &original_trans_chunk));
 
   // decode
   std::vector<unsigned char> decoded;
   int outw, outh;
   ASSERT_TRUE(PNGCodec::Decode(&encoded[0], encoded.size(),
-                               PNGCodec::FORMAT_RGBA, &decoded,
-                               &outw, &outh));
+                               PNGCodec::FORMAT_RGBA, &decoded, &outw, &outh));
   ASSERT_EQ(w, outw);
   ASSERT_EQ(h, outh);
   ASSERT_EQ(decoded.size(), w * h * 4U);
@@ -477,17 +465,13 @@ TEST(PNGCodec, DecodeGrayscaleWithAlpha) {
 
   // encode
   std::vector<unsigned char> encoded;
-  ASSERT_TRUE(EncodeImage(original,
-                          w, h,
-                          COLOR_TYPE_GRAY_ALPHA,
-                          &encoded));
+  ASSERT_TRUE(EncodeImage(original, w, h, COLOR_TYPE_GRAY_ALPHA, &encoded));
 
   // decode
   std::vector<unsigned char> decoded;
   int outw, outh;
   ASSERT_TRUE(PNGCodec::Decode(&encoded[0], encoded.size(),
-                               PNGCodec::FORMAT_RGBA, &decoded,
-                               &outw, &outh));
+                               PNGCodec::FORMAT_RGBA, &decoded, &outw, &outh));
   ASSERT_EQ(w, outw);
   ASSERT_EQ(h, outh);
   ASSERT_EQ(decoded.size(), original.size() * 2);
@@ -514,18 +498,14 @@ TEST(PNGCodec, DecodeInterlacedGrayscale) {
 
   // encode
   std::vector<unsigned char> encoded;
-  ASSERT_TRUE(EncodeImage(original,
-                          w, h,
-                          COLOR_TYPE_GRAY,
-                          &encoded,
+  ASSERT_TRUE(EncodeImage(original, w, h, COLOR_TYPE_GRAY, &encoded,
                           PNG_INTERLACE_ADAM7));
 
   // decode
   std::vector<unsigned char> decoded;
   int outw, outh;
   ASSERT_TRUE(PNGCodec::Decode(&encoded[0], encoded.size(),
-                               PNGCodec::FORMAT_RGBA, &decoded,
-                               &outw, &outh));
+                               PNGCodec::FORMAT_RGBA, &decoded, &outw, &outh));
   ASSERT_EQ(w, outw);
   ASSERT_EQ(h, outh);
   ASSERT_EQ(decoded.size(), original.size() * 4);
@@ -552,18 +532,14 @@ TEST(PNGCodec, DecodeInterlacedGrayscaleWithAlpha) {
 
   // encode
   std::vector<unsigned char> encoded;
-  ASSERT_TRUE(EncodeImage(original,
-                          w, h,
-                          COLOR_TYPE_GRAY_ALPHA,
-                          &encoded,
+  ASSERT_TRUE(EncodeImage(original, w, h, COLOR_TYPE_GRAY_ALPHA, &encoded,
                           PNG_INTERLACE_ADAM7));
 
   // decode
   std::vector<unsigned char> decoded;
   int outw, outh;
   ASSERT_TRUE(PNGCodec::Decode(&encoded[0], encoded.size(),
-                               PNGCodec::FORMAT_RGBA, &decoded,
-                               &outw, &outh));
+                               PNGCodec::FORMAT_RGBA, &decoded, &outw, &outh));
   ASSERT_EQ(w, outw);
   ASSERT_EQ(h, outh);
   ASSERT_EQ(decoded.size(), original.size() * 2);
@@ -590,18 +566,14 @@ TEST(PNGCodec, DecodeInterlacedRGBA) {
 
   // encode
   std::vector<unsigned char> encoded;
-  ASSERT_TRUE(EncodeImage(original,
-                          w, h,
-                          COLOR_TYPE_RGBA,
-                          &encoded,
+  ASSERT_TRUE(EncodeImage(original, w, h, COLOR_TYPE_RGBA, &encoded,
                           PNG_INTERLACE_ADAM7));
 
   // decode, it should have the same size as the original
   std::vector<unsigned char> decoded;
   int outw, outh;
   ASSERT_TRUE(PNGCodec::Decode(&encoded[0], encoded.size(),
-                               PNGCodec::FORMAT_RGBA, &decoded,
-                               &outw, &outh));
+                               PNGCodec::FORMAT_RGBA, &decoded, &outw, &outh));
   ASSERT_EQ(w, outw);
   ASSERT_EQ(h, outh);
   ASSERT_EQ(original.size(), decoded.size());
@@ -619,18 +591,14 @@ TEST(PNGCodec, DecodeInterlacedBGR) {
 
   // encode
   std::vector<unsigned char> encoded;
-  ASSERT_TRUE(EncodeImage(original,
-                          w, h,
-                          COLOR_TYPE_BGR,
-                          &encoded,
+  ASSERT_TRUE(EncodeImage(original, w, h, COLOR_TYPE_BGR, &encoded,
                           PNG_INTERLACE_ADAM7));
 
   // decode, it should have the same size as the original
   std::vector<unsigned char> decoded;
   int outw, outh;
   ASSERT_TRUE(PNGCodec::Decode(&encoded[0], encoded.size(),
-                               PNGCodec::FORMAT_BGRA, &decoded,
-                               &outw, &outh));
+                               PNGCodec::FORMAT_BGRA, &decoded, &outw, &outh));
   ASSERT_EQ(w, outw);
   ASSERT_EQ(h, outh);
   ASSERT_EQ(decoded.size(), w * h * 4U);
@@ -656,18 +624,14 @@ TEST(PNGCodec, DecodeInterlacedBGRA) {
 
   // encode
   std::vector<unsigned char> encoded;
-  ASSERT_TRUE(EncodeImage(original,
-                          w, h,
-                          COLOR_TYPE_BGRA,
-                          &encoded,
+  ASSERT_TRUE(EncodeImage(original, w, h, COLOR_TYPE_BGRA, &encoded,
                           PNG_INTERLACE_ADAM7));
 
   // decode, it should have the same size as the original
   std::vector<unsigned char> decoded;
   int outw, outh;
   ASSERT_TRUE(PNGCodec::Decode(&encoded[0], encoded.size(),
-                               PNGCodec::FORMAT_BGRA, &decoded,
-                               &outw, &outh));
+                               PNGCodec::FORMAT_BGRA, &decoded, &outw, &outh));
   ASSERT_EQ(w, outw);
   ASSERT_EQ(h, outh);
   ASSERT_EQ(original.size(), decoded.size());
@@ -687,10 +651,7 @@ TEST(PNGCodec, DecodeInterlacedRGBtoSkBitmap) {
 
   // encode
   std::vector<unsigned char> encoded;
-  ASSERT_TRUE(EncodeImage(original,
-                          w, h,
-                          COLOR_TYPE_RGB,
-                          &encoded,
+  ASSERT_TRUE(EncodeImage(original, w, h, COLOR_TYPE_RGB, &encoded,
                           PNG_INTERLACE_ADAM7));
 
   // Decode the encoded string.
@@ -710,10 +671,8 @@ TEST(PNGCodec, DecodeInterlacedRGBtoSkBitmap) {
   for (int x = 0; x < w; x++) {
     for (int y = 0; y < h; y++) {
       const unsigned char* original_pixel = &original[(y * w + x) * 3];
-      const uint32_t original_pixel_sk = SkPackARGB32(0xFF,
-                                                      original_pixel[0],
-                                                      original_pixel[1],
-                                                      original_pixel[2]);
+      const uint32_t original_pixel_sk = SkPackARGB32(
+          0xFF, original_pixel[0], original_pixel[1], original_pixel[2]);
       const uint32_t decoded_pixel = decoded_bitmap.getAddr32(0, y)[x];
       ASSERT_EQ(original_pixel_sk, decoded_pixel)
           << "; original_pixel_sk = " << std::hex << std::setw(8)
@@ -732,16 +691,13 @@ void DecodeInterlacedRGBAtoSkBitmap(bool use_transparency) {
 
   // encode
   std::vector<unsigned char> encoded;
-  ASSERT_TRUE(EncodeImage(original,
-                          w, h,
-                          COLOR_TYPE_RGBA,
-                          &encoded,
+  ASSERT_TRUE(EncodeImage(original, w, h, COLOR_TYPE_RGBA, &encoded,
                           PNG_INTERLACE_ADAM7));
 
   // Decode the encoded string.
   SkBitmap decoded_bitmap;
-  ASSERT_TRUE(PNGCodec::Decode(&encoded.front(), encoded.size(),
-                               &decoded_bitmap));
+  ASSERT_TRUE(
+      PNGCodec::Decode(&encoded.front(), encoded.size(), &decoded_bitmap));
   EXPECT_EQ(decoded_bitmap.alphaType(),
             use_transparency ? kPremul_SkAlphaType : kOpaque_SkAlphaType);
 
@@ -808,6 +764,78 @@ TEST(PNGCodec, DecodeCorrupted) {
                                 PNGCodec::FORMAT_RGBA, &output, &outw, &outh));
 }
 
+// Test decoding three PNG images, identical except for different gAMA chunks
+// (with gamma values of 1.0, 1.8 and 2.2). All images are 256 x 256 pixels and
+// 8-bit grayscale. The left half of the image is a solid block of medium gray
+// (128 out of 255). The right half of the image alternates between black (0
+// out of 255) and white (255 out of 255) in a checkerboard pattern.
+//
+// For the first file (gamma 1.0, linear), if you squint, the 128/255 left half
+// should look about as bright as the checkerboard right half. PNGCodec::Decode
+// applies gamma correction (assuming a default display gamma of 2.2), so the
+// top left pixel value should be corrected from 128 to 186.
+//
+// The second file (gamma 1.8)'s correction is not as strong: from 128 to 145.
+//
+// The third file (gamma 2.2) matches the default display gamma and so the 128
+// nominal value is unchanged. If you squint, the 128/255 left half should look
+// darker than the right half.
+//
+// When viewing these images in a browser, make sure to apply the "img {
+// image-rendering: pixelated }" CSS. Otherwise, browsers will often blur when
+// up-scaling (e.g. on high DPI displays), trumping the "two halves should have
+// roughly equal / different brightness" effect. You can view the images at
+// https://nigeltao.github.io/blog/2022/gamma-aware-pixelated-images.html
+TEST(PNGCodec, DecodeGamma) {
+  base::FilePath root_dir;
+  ASSERT_TRUE(base::PathService::Get(base::DIR_SRC_TEST_DATA_ROOT, &root_dir));
+  base::FilePath data_dir = root_dir.AppendASCII("ui")
+                                .AppendASCII("gfx")
+                                .AppendASCII("test")
+                                .AppendASCII("data")
+                                .AppendASCII("codec");
+
+  struct SourceFile {
+    double gamma;
+    unsigned char corrected;
+    std::string filename;
+  };
+
+  const SourceFile kSourceFiles[] = {
+      {1.0, 186, "checkerboard.gamma1dot0.png"},
+      {1.8, 145, "checkerboard.gamma1dot8.png"},
+      {2.2, 128, "checkerboard.gamma2dot2.png"},
+  };
+
+  for (const auto& sf : kSourceFiles) {
+    base::FilePath filename = data_dir.AppendASCII(sf.filename);
+    std::optional<const std::vector<uint8_t>> opt_input =
+        base::ReadFileToBytes(filename);
+    ASSERT_TRUE(opt_input.has_value()) << "failed to load: " << filename;
+    const std::vector<uint8_t>& input = opt_input.value();
+    ASSERT_GT(input.size(), 0u);
+
+    std::vector<unsigned char> output;
+    int outw, outh;
+    ASSERT_TRUE(PNGCodec::Decode(&input[0], input.size(), PNGCodec::FORMAT_RGBA,
+                                 &output, &outw, &outh));
+    ASSERT_GT(output.size(), 0u);
+
+    // The floor(etc) formula matches libpng (see github link below). Note that
+    // libpng's png_gamma_8bit_correct function takes a single "png_fixed_point
+    // gamma_val" argument that (1) combines both the PNG-file gAMA chunk value
+    // and the display gamma and (2) is scaled by 100000 since the PNG gAMA
+    // chunk holds an integer value. Here, we use "sf.gamma / 2.2" instead.
+    // sf.gamma represents the PNG-file value and 2.2 is the display gamma.
+    //
+    // https://github.com/glennrp/libpng/blob/e755fb79ba945fea8a318dc343e73d22a39e2f4e/png.c#L3893
+    ASSERT_EQ(static_cast<double>(sf.corrected),
+              floor(255.0 * pow(128.0 / 255.0, sf.gamma / 2.2) + 0.5));
+
+    EXPECT_EQ(output[0], sf.corrected) << "gamma: " << sf.gamma;
+  }
+}
+
 TEST(PNGCodec, EncodeBGRASkBitmapStridePadded) {
   const int kWidth = 20;
   const int kHeight = 20;
@@ -836,8 +864,8 @@ TEST(PNGCodec, EncodeBGRASkBitmapStridePadded) {
 
   // Decode the encoded string.
   SkBitmap decoded_bitmap;
-  EXPECT_TRUE(PNGCodec::Decode(&encoded.front(), encoded.size(),
-                               &decoded_bitmap));
+  EXPECT_TRUE(
+      PNGCodec::Decode(&encoded.front(), encoded.size(), &decoded_bitmap));
 
   // Compare the original bitmap and the output bitmap. We use ColorsClose
   // as SkBitmaps are considered to be pre-multiplied, the unpremultiplication
@@ -865,8 +893,8 @@ TEST(PNGCodec, EncodeBGRASkBitmap) {
 
   // Decode the encoded string.
   SkBitmap decoded_bitmap;
-  EXPECT_TRUE(PNGCodec::Decode(&encoded.front(), encoded.size(),
-                               &decoded_bitmap));
+  EXPECT_TRUE(
+      PNGCodec::Decode(&encoded.front(), encoded.size(), &decoded_bitmap));
 
   // Compare the original bitmap and the output bitmap. We use ColorsClose
   // as SkBitmaps are considered to be pre-multiplied, the unpremultiplication
@@ -894,8 +922,8 @@ TEST(PNGCodec, EncodeA8SkBitmap) {
 
   // Decode the encoded string.
   SkBitmap decoded_bitmap;
-  EXPECT_TRUE(PNGCodec::Decode(&encoded.front(), encoded.size(),
-                               &decoded_bitmap));
+  EXPECT_TRUE(
+      PNGCodec::Decode(&encoded.front(), encoded.size(), &decoded_bitmap));
 
   for (int x = 0; x < w; x++) {
     for (int y = 0; y < h; y++) {
@@ -918,8 +946,8 @@ TEST(PNGCodec, EncodeBGRASkBitmapDiscardTransparency) {
 
   // Decode the encoded string.
   SkBitmap decoded_bitmap;
-  EXPECT_TRUE(PNGCodec::Decode(&encoded.front(), encoded.size(),
-                               &decoded_bitmap));
+  EXPECT_TRUE(
+      PNGCodec::Decode(&encoded.front(), encoded.size(), &decoded_bitmap));
 
   // Compare the original bitmap and the output bitmap. We need to
   // unpremultiply original_pixel, as the decoded bitmap doesn't have an alpha
@@ -934,12 +962,10 @@ TEST(PNGCodec, EncodeBGRASkBitmapDiscardTransparency) {
           SkUnPreMultiply::PMColorToColor(decoded_pixel);
 
       EXPECT_TRUE(NonAlphaColorsClose(unpremultiplied, unpremultiplied_decoded))
-          << "Original_pixel: ("
-          << SkColorGetR(unpremultiplied) << ", "
+          << "Original_pixel: (" << SkColorGetR(unpremultiplied) << ", "
           << SkColorGetG(unpremultiplied) << ", "
           << SkColorGetB(unpremultiplied) << "), "
-          << "Decoded pixel: ("
-          << SkColorGetR(unpremultiplied_decoded) << ", "
+          << "Decoded pixel: (" << SkColorGetR(unpremultiplied_decoded) << ", "
           << SkColorGetG(unpremultiplied_decoded) << ", "
           << SkColorGetB(unpremultiplied_decoded) << ")";
     }
@@ -1006,6 +1032,5 @@ TEST(PNGCodec, EncodeDecodeWithVaryingCompressionLevels) {
       PNGCodec::Decode(&encoded_fast[0], encoded_fast.size(), &decoded));
   EXPECT_TRUE(BitmapsAreEqual(decoded, original_bitmap));
 }
-
 
 }  // namespace gfx

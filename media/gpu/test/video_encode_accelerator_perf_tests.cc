@@ -7,6 +7,7 @@
 #include <iostream>
 #include <map>
 #include <numeric>
+#include <optional>
 #include <vector>
 
 #include "base/command_line.h"
@@ -31,7 +32,6 @@
 #include "media/gpu/test/video_frame_validator.h"
 #include "media/gpu/test/video_test_helpers.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace media {
 namespace test {
@@ -45,10 +45,10 @@ namespace {
 constexpr const char* usage_msg =
     R"(usage: video_encode_accelerator_perf_tests --(speed|quality)
            [--codec=<codec>] [--svc_mode=<svc scalability mode>]
+           [--content_type=(camera|display)]
            [--bitrate_mode=(cbr|vbr)] [--reverse] [--bitrate=<bitrate>]
            [-v=<level>] [--vmodule=<config>] [--output_folder]
            [--output_bitstream]
-           [--disable_vaapi_lock]
            [--gtest_help] [--help]
            [<video path>] [<video metadata path>]
 )";
@@ -76,10 +76,11 @@ The following arguments are supported:
   --num_temporal_layers the number of temporal layers of the encoded
                         bitstream. A default value is 1.
   --svc_mode            SVC scalability mode. Spatial SVC encoding is only
-                        supported with --codec=vp9. The valid svc mode is
-                        "L1T1", "L1T2", "L1T3", "L2T1_KEY", "L2T2_KEY",
-                        "L2T3_KEY", "L3T1_KEY", "L3T2_KEY", "L3T3_KEY". The
-                        default value is "L1T1".
+                        supported with --codec=vp9 and only runs in NV12Dmabuf
+                        test cases. The valid svc mode is "L1T1", "L1T2",
+                        "L1T3", "L2T1_KEY", "L2T2_KEY", "L2T3_KEY", "L3T1_KEY",
+                        "L3T2_KEY", "L3T3_KEY", "S2T1", "S2T2", "S2T3", "S3T1",
+                        "S3T2", "S3T3". The default value is "L1T1".
   --bitrate_mode        The rate control mode for encoding, one of "cbr"
                         (default) or "vbr".
   --reverse             the stream plays backwards if the stream reaches
@@ -94,12 +95,6 @@ The following arguments are supported:
   --output_bitstream    save the output bitstream in either H264 AnnexB
                         format (for H264) or IVF format (for vp8 and
                         vp9) to <output_folder>/<testname>.
-  --disable_vaapi_lock  disable the global VA-API lock if applicable,
-                        i.e., only on devices that use the VA-API with a libva
-                        backend that's known to be thread-safe and only in
-                        portions of the Chrome stack that should be able to
-                        deal with the absence of the lock
-                        (not the VaapiVideoDecodeAccelerator).
 
   --gtest_help          display the gtest help and exit.
   --help                display this help and exit.
@@ -335,13 +330,15 @@ struct BitstreamQualityMetrics {
       const LogLikelihoodRatioVideoFrameValidator* const
           log_likelihood_validator,
       const DecoderBufferValidator* const decoder_buffer_validator,
-      const absl::optional<size_t>& spatial_idx,
-      const absl::optional<size_t>& temporal_idx);
+      const std::optional<size_t>& spatial_idx,
+      const std::optional<size_t>& temporal_idx,
+      size_t num_spatial_layers,
+      SVCInterLayerPredMode inter_layer_pred_mode);
 
   void Output(uint32_t target_bitrate, uint32_t actual_bitrate);
 
-  absl::optional<size_t> spatial_idx;
-  absl::optional<size_t> temporal_idx;
+  std::optional<size_t> spatial_idx;
+  std::optional<size_t> temporal_idx;
 
  private:
   struct QualityStats {
@@ -378,6 +375,9 @@ struct BitstreamQualityMetrics {
       uint32_t target_bitrate,
       uint32_t actual_bitrate) const;
 
+  const size_t num_spatial_layers_;
+  const SVCInterLayerPredMode inter_layer_pred_mode;
+
   const raw_ptr<const PSNRVideoFrameValidator> psnr_validator;
   const raw_ptr<const SSIMVideoFrameValidator> ssim_validator;
   const raw_ptr<const PSNRVideoFrameValidator> bottom_row_psnr_validator;
@@ -392,10 +392,14 @@ BitstreamQualityMetrics::BitstreamQualityMetrics(
     const PSNRVideoFrameValidator* const bottom_row_psnr_validator,
     const LogLikelihoodRatioVideoFrameValidator* const log_likelihood_validator,
     const DecoderBufferValidator* const decoder_buffer_validator,
-    const absl::optional<size_t>& spatial_idx,
-    const absl::optional<size_t>& temporal_idx)
+    const std::optional<size_t>& spatial_idx,
+    const std::optional<size_t>& temporal_idx,
+    size_t num_spatial_layers,
+    SVCInterLayerPredMode inter_layer_pred_mode)
     : spatial_idx(spatial_idx),
       temporal_idx(temporal_idx),
+      num_spatial_layers_(num_spatial_layers),
+      inter_layer_pred_mode(inter_layer_pred_mode),
       psnr_validator(psnr_validator),
       ssim_validator(ssim_validator),
       bottom_row_psnr_validator(bottom_row_psnr_validator),
@@ -452,8 +456,13 @@ BitstreamQualityMetrics::ComputeQualityStats(const std::vector<int>& values) {
 void BitstreamQualityMetrics::Output(uint32_t target_bitrate,
                                      uint32_t actual_bitrate) {
   std::string svc_text;
-  if (spatial_idx)
-    svc_text += "L" + base::NumberToString(*spatial_idx + 1);
+  if (spatial_idx) {
+    svc_text += (inter_layer_pred_mode == SVCInterLayerPredMode::kOff &&
+                         num_spatial_layers_ > 1
+                     ? "S"
+                     : "L") +
+                base::NumberToString(*spatial_idx + 1);
+  }
   if (temporal_idx)
     svc_text += "T" + base::NumberToString(*temporal_idx + 1);
 
@@ -613,7 +622,7 @@ class VideoEncoderTest : public ::testing::Test {
   // is consumed by VideoEncoder. |measure_quality| measures SSIM and PSNR
   // values of encoded bitstream comparing the original input VideoFrames.
   std::unique_ptr<VideoEncoder> CreateVideoEncoder(
-      absl::optional<uint32_t> encode_rate = absl::nullopt,
+      std::optional<uint32_t> encode_rate = std::nullopt,
       bool measure_quality = false,
       size_t num_encode_frames = kNumEncodeFramesForSpeedPerformance) {
     RawVideo* video = g_env->GenerateNV12Video();
@@ -621,10 +630,12 @@ class VideoEncoderTest : public ::testing::Test {
     const media::VideoBitrateAllocation& bitrate = g_env->BitrateAllocation();
     const std::vector<VideoEncodeAccelerator::Config::SpatialLayer>&
         spatial_layers = g_env->SpatialLayers();
+    SVCInterLayerPredMode inter_layer_pred_mode = g_env->InterLayerPredMode();
     std::vector<std::unique_ptr<BitstreamProcessor>> bitstream_processors;
     if (measure_quality) {
       bitstream_processors = CreateBitstreamProcessorsForQualityPerformance(
-          video, profile, num_encode_frames, spatial_layers);
+          video, profile, num_encode_frames, spatial_layers,
+          inter_layer_pred_mode);
     } else {
       auto performance_evaluator = std::make_unique<PerformanceEvaluator>();
       performance_evaluator_ = performance_evaluator.get();
@@ -633,9 +644,9 @@ class VideoEncoderTest : public ::testing::Test {
     LOG_ASSERT(!bitstream_processors.empty())
         << "Failed to create bitstream processors";
 
-    VideoEncoderClientConfig config(video, profile, spatial_layers,
-                                    g_env->InterLayerPredMode(), bitrate,
-                                    g_env->Reverse());
+    VideoEncoderClientConfig config(
+        video, profile, spatial_layers, g_env->InterLayerPredMode(),
+        g_env->ContentType(), bitrate, g_env->Reverse());
     config.input_storage_type =
         VideoEncodeAccelerator::Config::StorageType::kGpuMemoryBuffer;
     config.num_frames_to_encode = num_encode_frames;
@@ -661,10 +672,11 @@ class VideoEncoderTest : public ::testing::Test {
       const VideoCodecProfile profile,
       const gfx::Rect& visible_rect,
       size_t num_encode_frames,
-      const absl::optional<size_t>& spatial_layer_index_to_decode,
-      const absl::optional<size_t>& temporal_layer_index_to_decode,
+      const std::optional<size_t>& spatial_layer_index_to_decode,
+      const std::optional<size_t>& temporal_layer_index_to_decode,
       const std::vector<gfx::Size>& spatial_layer_resolutions,
-      DecoderBufferValidator* const decoder_buffer_validator) {
+      DecoderBufferValidator* const decoder_buffer_validator,
+      SVCInterLayerPredMode inter_layer_pred_mode) {
     std::vector<std::unique_ptr<VideoFrameProcessor>> video_frame_processors;
     VideoFrameValidator::GetModelFrameCB get_model_frame_cb =
         base::BindRepeating(&VideoEncoderTest::GetModelFrame,
@@ -697,7 +709,8 @@ class VideoEncoderTest : public ::testing::Test {
         psnr_validator.get(), ssim_validator.get(),
         bottom_row_psnr_validator.get(), log_likelihood_validator.get(),
         decoder_buffer_validator, spatial_layer_index_to_decode,
-        temporal_layer_index_to_decode));
+        temporal_layer_index_to_decode, spatial_layer_resolutions.size(),
+        inter_layer_pred_mode));
     video_frame_processors.push_back(std::move(ssim_validator));
     video_frame_processors.push_back(std::move(psnr_validator));
     video_frame_processors.push_back(std::move(bottom_row_psnr_validator));
@@ -722,7 +735,8 @@ class VideoEncoderTest : public ::testing::Test {
       VideoCodecProfile profile,
       size_t num_encode_frames,
       const std::vector<VideoEncodeAccelerator::Config::SpatialLayer>&
-          spatial_layers) {
+          spatial_layers,
+      SVCInterLayerPredMode inter_layer_pred_mode) {
     std::vector<std::unique_ptr<BitstreamProcessor>> bitstream_processors;
 
     raw_data_helper_ = std::make_unique<RawDataHelper>(video, g_env->Reverse());
@@ -730,16 +744,18 @@ class VideoEncoderTest : public ::testing::Test {
     auto decoder_buffer_validator = DecoderBufferValidator::Create(
         profile, gfx::Rect(video->Resolution()),
         spatial_layers.empty() ? 1u : spatial_layers.size(),
-        spatial_layers.empty() ? 1u : spatial_layers[0].num_of_temporal_layers);
+        spatial_layers.empty() ? 1u : spatial_layers[0].num_of_temporal_layers,
+        inter_layer_pred_mode);
     decoder_buffer_validator_ = decoder_buffer_validator.get();
     bitstream_processors.push_back(std::move(decoder_buffer_validator));
     if (spatial_layers.empty()) {
       // Simple stream encoding.
       bitstream_processors.push_back(CreateBitstreamValidator(
           profile, gfx::Rect(video->Resolution()), num_encode_frames,
-          /*spatial_layer_index_to_decode=*/absl::nullopt,
-          /*temporal_layer_index_to_decode=*/absl::nullopt,
-          /*spatial_layer_resolutions=*/{}, decoder_buffer_validator_));
+          /*spatial_layer_index_to_decode=*/std::nullopt,
+          /*temporal_layer_index_to_decode=*/std::nullopt,
+          /*spatial_layer_resolutions=*/{}, decoder_buffer_validator_,
+          SVCInterLayerPredMode::kOff));
       if (g_env->SaveOutputBitstream()) {
         bitstream_processors.emplace_back(BitstreamFileWriter::Create(
             g_env->OutputFilePath(VideoCodecProfileToVideoCodec(profile)),
@@ -758,7 +774,7 @@ class VideoEncoderTest : public ::testing::Test {
           bitstream_processors.push_back(CreateBitstreamValidator(
               profile, gfx::Rect(spatial_layer_resolutions[sid]),
               num_encode_frames, sid, tid, spatial_layer_resolutions,
-              decoder_buffer_validator_));
+              decoder_buffer_validator_, inter_layer_pred_mode));
           if (g_env->SaveOutputBitstream()) {
             bitstream_processors.emplace_back(BitstreamFileWriter::Create(
                 g_env->OutputFilePath(VideoCodecProfileToVideoCodec(profile),
@@ -894,7 +910,7 @@ TEST_F(VideoEncoderTest, MeasureProducedBitstreamQuality) {
         << "Skip because this test case is to measure quality performance";
   }
   const size_t num_frames = g_env->Video()->NumFrames();
-  auto encoder = CreateVideoEncoder(/*encode_rate=*/absl::nullopt,
+  auto encoder = CreateVideoEncoder(/*encode_rate=*/std::nullopt,
                                     /*measure_quality=*/true,
                                     /*num_encode_frames=*/num_frames);
   encoder->SetEventWaitTimeout(kQualityTestEventTimeout);
@@ -907,8 +923,8 @@ TEST_F(VideoEncoderTest, MeasureProducedBitstreamQuality) {
 
   const VideoEncoderStats stats = encoder->GetStats();
   for (auto& metrics : quality_metrics_) {
-    absl::optional<size_t> spatial_idx = metrics.spatial_idx;
-    absl::optional<size_t> temporal_idx = metrics.temporal_idx;
+    std::optional<size_t> spatial_idx = metrics.spatial_idx;
+    std::optional<size_t> temporal_idx = metrics.temporal_idx;
     uint32_t target_bitrate = 0;
     uint32_t actual_bitrate = 0;
     if (!spatial_idx && !temporal_idx) {
@@ -955,10 +971,12 @@ int main(int argc, char** argv) {
   base::FilePath video_metadata_path =
       (args.size() >= 2) ? base::FilePath(args[1]) : base::FilePath();
   std::string codec = "h264";
+  media::VideoEncodeAccelerator::Config::ContentType content_type =
+      media::VideoEncodeAccelerator::Config::ContentType::kCamera;
   media::Bitrate::Mode bitrate_mode = media::Bitrate::Mode::kConstant;
   bool reverse = false;
   bool output_bitstream = false;
-  absl::optional<uint32_t> encode_bitrate;
+  std::optional<uint32_t> encode_bitrate;
   std::vector<base::test::FeatureRef> disabled_features;
   std::string svc_mode = "L1T1";
 
@@ -987,6 +1005,15 @@ int main(int argc, char** argv) {
       codec = it->second;
     } else if (it->first == "svc_mode") {
       svc_mode = it->second;
+    } else if (it->first == "content_type") {
+      if (it->second == "display") {
+        content_type =
+            media::VideoEncodeAccelerator::Config::ContentType::kDisplay;
+      } else if (it->second != "camera") {
+        std::cout << "unknown content type \"" << it->second
+                  << "\", possible values are \"camera|display\"\n";
+        return EXIT_FAILURE;
+      }
     } else if (it->first == "bitrate_mode") {
       if (it->second == "vbr") {
         bitrate_mode = media::Bitrate::Mode::kVariable;
@@ -1005,8 +1032,6 @@ int main(int argc, char** argv) {
         return EXIT_FAILURE;
       }
       encode_bitrate = base::checked_cast<uint32_t>(value);
-    } else if (it->first == "disable_vaapi_lock") {
-      disabled_features.push_back(media::kGlobalVaapiLock);
     } else if (it->first == "speed") {
       test_type =
           media::test::VideoEncoderTestEnvironment::TestType::kSpeedPerformance;
@@ -1019,6 +1044,8 @@ int main(int argc, char** argv) {
       return EXIT_FAILURE;
     }
   }
+
+  disabled_features.push_back(media::kGlobalVaapiLock);
 
   if (test_type ==
       media::test::VideoEncoderTestEnvironment::TestType::kValidation) {
@@ -1033,8 +1060,8 @@ int main(int argc, char** argv) {
   media::test::VideoEncoderTestEnvironment* test_environment =
       media::test::VideoEncoderTestEnvironment::Create(
           test_type, video_path, video_metadata_path,
-          base::FilePath(output_folder), codec, svc_mode, output_bitstream,
-          encode_bitrate, bitrate_mode, reverse,
+          base::FilePath(output_folder), codec, svc_mode, content_type,
+          output_bitstream, encode_bitrate, bitrate_mode, reverse,
           media::test::FrameOutputConfig(),
           /*enabled_features=*/{}, disabled_features);
   if (!test_environment)

@@ -1,0 +1,9 @@
+{
+  "gn_args": {
+    "dcheck_always_on": false,
+    "is_component_build": false,
+    "is_debug": false,
+    "use_perfetto_client_library": true,
+    "use_remoteexec": true
+  }
+}

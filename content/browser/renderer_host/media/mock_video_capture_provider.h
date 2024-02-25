@@ -31,26 +31,33 @@ class MockVideoCaptureDeviceLauncher : public VideoCaptureDeviceLauncher {
   MockVideoCaptureDeviceLauncher();
   ~MockVideoCaptureDeviceLauncher() override;
 
-  MOCK_METHOD7(DoLaunchDeviceAsync,
-               void(const std::string& device_id,
-                    blink::mojom::MediaStreamType stream_type,
-                    const media::VideoCaptureParams& params,
-                    base::WeakPtr<media::VideoFrameReceiver>* receiver,
-                    base::OnceClosure* connection_lost_cb,
-                    Callbacks* callbacks,
-                    base::OnceClosure* done_cb));
+  MOCK_METHOD8(
+      DoLaunchDeviceAsync,
+      void(const std::string& device_id,
+           blink::mojom::MediaStreamType stream_type,
+           const media::VideoCaptureParams& params,
+           base::WeakPtr<media::VideoFrameReceiver>* receiver,
+           base::OnceClosure* connection_lost_cb,
+           Callbacks* callbacks,
+           base::OnceClosure* done_cb,
+           mojo::PendingRemote<video_capture::mojom::VideoEffectsManager>
+               video_effects_manager));
 
   MOCK_METHOD0(AbortLaunch, void());
 
-  void LaunchDeviceAsync(const std::string& device_id,
-                         blink::mojom::MediaStreamType stream_type,
-                         const media::VideoCaptureParams& params,
-                         base::WeakPtr<media::VideoFrameReceiver> receiver,
-                         base::OnceClosure connection_lost_cb,
-                         Callbacks* callbacks,
-                         base::OnceClosure done_cb) override {
+  void LaunchDeviceAsync(
+      const std::string& device_id,
+      blink::mojom::MediaStreamType stream_type,
+      const media::VideoCaptureParams& params,
+      base::WeakPtr<media::VideoFrameReceiver> receiver,
+      base::OnceClosure connection_lost_cb,
+      Callbacks* callbacks,
+      base::OnceClosure done_cb,
+      mojo::PendingRemote<video_capture::mojom::VideoEffectsManager>
+          video_effects_manager) override {
     DoLaunchDeviceAsync(device_id, stream_type, params, &receiver,
-                        &connection_lost_cb, callbacks, &done_cb);
+                        &connection_lost_cb, callbacks, &done_cb,
+                        std::move(video_effects_manager));
   }
 };
 
@@ -70,10 +77,13 @@ class MockLaunchedVideoCaptureDevice : public LaunchedVideoCaptureDevice {
                void(media::VideoCaptureDevice::TakePhotoCallback* callback));
   MOCK_METHOD0(MaybeSuspendDevice, void());
   MOCK_METHOD0(ResumeDevice, void());
-  MOCK_METHOD3(Crop,
-               void(const base::Token& crop_id,
-                    uint32_t crop_version,
-                    base::OnceCallback<void(media::mojom::CropRequestResult)>));
+  MOCK_METHOD4(
+      ApplySubCaptureTarget,
+      void(
+          media::mojom::SubCaptureTargetType type,
+          const base::Token& target,
+          uint32_t sub_capture_target_version,
+          base::OnceCallback<void(media::mojom::ApplySubCaptureTargetResult)>));
   MOCK_METHOD0(RequestRefreshFrame, void());
   MOCK_METHOD2(DoSetDesktopCaptureWindowId,
                void(gfx::NativeViewId window_id, base::OnceClosure* done_cb));

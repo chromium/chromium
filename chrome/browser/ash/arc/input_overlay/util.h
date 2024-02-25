@@ -8,6 +8,7 @@
 #include <memory>
 #include <string>
 
+#include "ash/game_dashboard/game_dashboard_utils.h"
 #include "ash/public/cpp/arc_game_controls_flag.h"
 #include "chrome/browser/ash/arc/input_overlay/constants.h"
 #include "chrome/browser/ash/arc/input_overlay/db/proto/app_data.pb.h"
@@ -17,17 +18,22 @@ namespace aura {
 class Window;
 }  // namespace aura
 
+namespace ui {
+class KeyEvent;
+}  // namespace ui
+
 namespace views {
 class View;
 }  // namespace views
 
 namespace arc::input_overlay {
 
+using ash::game_dashboard_utils::IsFlagChanged;
+using ash::game_dashboard_utils::IsFlagSet;
+using ash::game_dashboard_utils::UpdateFlag;
+
 class Action;
 class InputElement;
-
-// Arrow key move distance per key press event.
-constexpr int kArrowKeyMoveDistance = 2;
 
 // Gets the event flags for the modifier domcode. Return ui::DomCode::NONE if
 // `code` is not modifier DomCode.
@@ -49,6 +55,16 @@ void ResetFocusTo(views::View* view);
 
 // Return true if `code` is not allowed to bind.
 bool IsReservedDomCode(ui::DomCode code);
+
+// Returns true if `key_event` has event flags from `Ctrl`, `Shift`, `Alt` or
+// `Search`.
+// Because "modifier key + regular key" may conflict with system shortcut keys,
+// it is not supported currently in Game Controls. This is called when only key
+// pressed event is received. Because if key `G` is pressed first and then press
+// `Ctrl` key, `Action` binded by key `G` has already injected touch event(s)
+// before `Ctrl` key is pressed. Then releasing key `G` while `Ctrl` key is
+// still pressed, `Action` binded by key `G` should also be released.
+bool ContainShortcutEventFlags(const ui::KeyEvent* key_event);
 
 // Turn `flag` on or off for `window` property `ash::kArcGameControlsFlagsKey`.
 void UpdateFlagAndProperty(aura::Window* window,

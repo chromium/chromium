@@ -22,7 +22,7 @@ ParsedPermissionsPolicyDeclaration::ParsedPermissionsPolicyDeclaration(
 ParsedPermissionsPolicyDeclaration::ParsedPermissionsPolicyDeclaration(
     mojom::PermissionsPolicyFeature feature,
     const std::vector<blink::OriginWithPossibleWildcards>& allowed_origins,
-    const absl::optional<url::Origin>& self_if_matches,
+    const std::optional<url::Origin>& self_if_matches,
     bool matches_all_origins,
     bool matches_opaque_src)
     : feature(feature),

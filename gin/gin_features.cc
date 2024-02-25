@@ -61,6 +61,11 @@ BASE_FEATURE(kV8PerContextMarkingWorklist,
              "V8PerContextMarkingWorklist",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Enables profile guided tiering heuristics in V8 GC.
+BASE_FEATURE(kV8ProfileGuidedOptimization,
+             "V8ProfileGuidedOptimization",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Enables flushing of the instruction cache for the embedded blob.
 BASE_FEATURE(kV8FlushEmbeddedBlobICache,
              "V8FlushEmbeddedBlobICache",
@@ -92,7 +97,12 @@ BASE_FEATURE(kV8ExperimentalRegexpEngine,
 BASE_FEATURE(kV8Turbofan, "V8Turbofan", base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Enables Turbofan's new compiler IR Turboshaft.
-BASE_FEATURE(kV8Turboshaft, "V8Turboshaft", base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kV8Turboshaft, "V8Turboshaft", base::FEATURE_ENABLED_BY_DEFAULT);
+
+// Enable running instruction selection on Turboshaft IR directly.
+BASE_FEATURE(kV8TurboshaftInstructionSelection,
+             "V8TurboshaftInstructionSelection",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Enables Maglev compiler. Note that this only sets the V8 flag when
 // manually overridden; otherwise it defers to whatever the V8 default is.
@@ -106,7 +116,6 @@ const base::FeatureParam<int> kV8MemoryReducerGCCount{
     &kV8MemoryReducer, "V8MemoryReducerGCCount", 3};
 
 // Enables MinorMC young generation garbage collector.
-BASE_FEATURE(kV8MinorMC, "V8MinorMC", base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kV8MinorMS, "V8MinorMS", base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Enables Sparkplug compiler. Note that this only sets the V8 flag when
@@ -145,6 +154,13 @@ BASE_FEATURE(kV8MegaDomIC, "V8MegaDomIC", base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kV8SingleThreadedGCInBackground,
              "V8SingleThreadedGCInBackground",
              base::FEATURE_DISABLED_BY_DEFAULT);
+
+// Use V8 efficiency mode for tiering decisions.
+BASE_FEATURE(kV8EfficiencyModeTiering,
+             "V8EfficiencyModeTiering",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+const base::FeatureParam<int> kV8EfficiencyModeTieringDelayTurbofan{
+    &kV8EfficiencyModeTiering, "V8EfficiencyModeTieringDelayTurbofan", 0};
 
 // Enables slow histograms that provide detailed information at increased
 // runtime overheads.
@@ -186,11 +202,13 @@ BASE_FEATURE(kV8IgnitionElideRedundantTdzChecks,
              "V8IgnitionElideRedundantTdzChecks",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-// The currently enabled fallback to the mid-tier register allocator for huge
-// Wasm functions. We want to remove this fallback in the future.
-BASE_FEATURE(kV8MidtierRegallocFallback,
-             "V8MidtierRegallocFallback",
-             base::FEATURE_ENABLED_BY_DEFAULT);
+// Add additional alignment for some jumps in generated x64 code, to mitigate
+// the performance impact of the Intel JCC erratum (https://crbug.com/v8/14225).
+// Currently disabled by default in V8, but adding here temporarily to test
+// real-world performance impact via a Finch experiment.
+BASE_FEATURE(kV8IntelJCCErratumMitigation,
+             "V8IntelJCCErratumMitigation",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 // JavaScript language features.
 
@@ -199,19 +217,9 @@ BASE_FEATURE(kJavaScriptSymbolAsWeakMapKey,
              "JavaScriptSymbolAsWeakMapKey",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-// Enables the change-Array-by-copy proposal.
-BASE_FEATURE(kJavaScriptChangeArrayByCopy,
-             "JavaScriptChangeArrayByCopy",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Enables the Resizable ArrayBuffer proposal.
 BASE_FEATURE(kJavaScriptRabGsab,
              "JavaScriptRabGsab",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
-// Enables the well-formed JavaScript strings proposal.
-BASE_FEATURE(kJavaScriptStringIsWellFormed,
-             "JavaScriptStringIsWellFormed",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Enables the JavaScript RegExp Unicode set notation proposal.
@@ -239,6 +247,36 @@ BASE_FEATURE(kJavaScriptIteratorHelpers,
              "kJavaScriptIteratorHelpers",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+// Enables the Promise.withResolvers proposal.
+BASE_FEATURE(kJavaScriptPromiseWithResolvers,
+             "JavaScriptPromiseWithResolvers",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
+// Enables the Array.fromAsync proposal.
+BASE_FEATURE(kJavaScriptArrayFromAsync,
+             "JavaScriptArrayFromAsync",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
+// Enables the RegExp modifiers proposal.
+BASE_FEATURE(kJavaScriptRegExpModifiers,
+             "JavaScriptRegExpModifiers",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
+// Enables the `with` syntax for the Import Attributes proposal.
+BASE_FEATURE(kJavaScriptImportAttributes,
+             "JavaScriptImportAttributes",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
+// Enables the set methods proposal.
+BASE_FEATURE(kJavaScriptSetMethods,
+             "JavaScriptSetMethods",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
+// Enables the RegExp duplicate named capture groups proposal.
+BASE_FEATURE(kJavaScriptRegExpDuplicateNamedGroups,
+             "JavaScriptRegExpDuplicateNamedGroups",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 // WebAssembly features.
 
 // Enable support for the WebAssembly tail-call proposal:
@@ -251,5 +289,41 @@ BASE_FEATURE(kWebAssemblyTailCall,
 BASE_FEATURE(kWebAssemblyInlining,
              "WebAssemblyInlining",
              base::FEATURE_DISABLED_BY_DEFAULT);
+
+// Enable the generic wasm-to-js wrapper.
+BASE_FEATURE(kWebAssemblyGenericWrapper,
+             "WebAssemblyGenericWrapper",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+// Enable support for multiple memories according to the multi-memory proposal:
+// https://github.com/WebAssembly/multi-memory. See
+// https://chromestatus.com/feature/5106389887746048.
+BASE_FEATURE(kWebAssemblyMultipleMemories,
+             "WebAssemblyMultipleMemories",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
+BASE_FEATURE(kWebAssemblyTurboshaft,
+             "WebAssemblyTurboshaft",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+BASE_FEATURE(kWebAssemblyTurboshaftInstructionSelection,
+             "WebAssemblyTurboshaftInstructionSelection",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+// Feature for more aggressive code caching (https://crbug.com/v8/14411) and
+// three parameters to control caching behavior.
+BASE_FEATURE(kWebAssemblyMoreAggressiveCodeCaching,
+             "WebAssemblyMoreAggressiveCodeCaching",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+const base::FeatureParam<int> kWebAssemblyMoreAggressiveCodeCachingThreshold{
+    &kWebAssemblyMoreAggressiveCodeCaching, "WebAssemblyCodeCachingThreshold",
+    1'000};
+const base::FeatureParam<int> kWebAssemblyMoreAggressiveCodeCachingTimeoutMs{
+    &kWebAssemblyMoreAggressiveCodeCaching, "WebAssemblyCodeCachingTimeoutMs",
+    5000};
+const base::FeatureParam<int>
+    kWebAssemblyMoreAggressiveCodeCachingHardThreshold{
+        &kWebAssemblyMoreAggressiveCodeCaching,
+        "WebAssemblyCodeCachingHardThreshold", 100'000};
 
 }  // namespace features

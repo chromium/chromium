@@ -9,10 +9,11 @@ option optimize_for = LITE_RUNTIME;
 package media;
 
 message WebrtcVideoStatsProto {
-  // Required. Timestamp of this entry from base::Time::ToJsTimeIgnoringNull().
-  // Data will be discarded when the date indicates its very old. This avoids a
-  // circumstance where a few bad outlier playbacks permanently define a
-  // machines capabilities.
+  // Required. Timestamp of this entry from
+  // base::Time::InMillisecondsFSinceUnixEpochIgnoringNull(). Data will be
+  // discarded when the date indicates it's very old. This avoids a circumstance
+  // where a few bad outlier playbacks permanently define a machine's
+  // capabilities.
   optional double timestamp = 1;
   // Required. Number of frames that this entry is based on.
   optional uint32 frames_processed = 2;

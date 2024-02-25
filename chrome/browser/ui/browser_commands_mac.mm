@@ -13,13 +13,14 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/exclusive_access/fullscreen_controller.h"
+#include "chrome/browser/ui/fullscreen_util_mac.h"
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
 #include "chrome/common/pref_names.h"
 #include "components/prefs/pref_service.h"
 
 namespace chrome {
 
-void ToggleFullscreenToolbar(Browser* browser) {
+void ToggleAlwaysShowToolbarInFullscreen(Browser* browser) {
   DCHECK(browser);
 
   // If this browser belongs to an app, toggle the value for that app.
@@ -33,6 +34,14 @@ void ToggleFullscreenToolbar(Browser* browser) {
   PrefService* prefs = browser->profile()->GetPrefs();
   bool show_toolbar = prefs->GetBoolean(prefs::kShowFullscreenToolbar);
   prefs->SetBoolean(prefs::kShowFullscreenToolbar, !show_toolbar);
+}
+
+void SetAlwaysShowToolbarInFullscreenForTesting(Browser* browser,  // IN-TEST
+                                                bool always_show) {
+  if (always_show == fullscreen_utils::IsAlwaysShowToolbarEnabled(browser)) {
+    return;
+  }
+  ToggleAlwaysShowToolbarInFullscreen(browser);
 }
 
 void ToggleJavaScriptFromAppleEventsAllowed(Browser* browser) {

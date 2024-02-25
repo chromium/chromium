@@ -17,7 +17,7 @@ const char kGetUnmaskDetailsRequestPath[] =
 
 GetUnmaskDetailsRequest::GetUnmaskDetailsRequest(
     base::OnceCallback<void(AutofillClient::PaymentsRpcResult,
-                            PaymentsClient::UnmaskDetails&)> callback,
+                            PaymentsNetworkInterface::UnmaskDetails&)> callback,
     const std::string& app_locale,
     const bool full_sync_enabled)
     : callback_(std::move(callback)),
@@ -38,7 +38,7 @@ std::string GetUnmaskDetailsRequest::GetRequestContent() {
   base::Value::Dict request_dict;
   base::Value::Dict context;
   context.Set("language_code", app_locale_);
-  context.Set("billable_service", kUnmaskCardBillableServiceNumber);
+  context.Set("billable_service", kUnmaskPaymentMethodBillableServiceNumber);
   request_dict.Set("context", std::move(context));
 
   base::Value::Dict chrome_user_context;
@@ -63,7 +63,7 @@ void GetUnmaskDetailsRequest::ParseResponse(const base::Value::Dict& response) {
     }
   }
 
-  const absl::optional<bool> offer_fido_opt_in =
+  const std::optional<bool> offer_fido_opt_in =
       response.FindBool("offer_fido_opt_in");
   unmask_details_.offer_fido_opt_in = offer_fido_opt_in.value_or(false);
 

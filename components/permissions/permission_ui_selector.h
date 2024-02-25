@@ -5,10 +5,11 @@
 #ifndef COMPONENTS_PERMISSIONS_PERMISSION_UI_SELECTOR_H_
 #define COMPONENTS_PERMISSIONS_PERMISSION_UI_SELECTOR_H_
 
+#include <optional>
+
 #include "base/functional/callback_forward.h"
 #include "components/permissions/permission_request.h"
 #include "components/permissions/permission_uma_util.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace permissions {
 
@@ -37,30 +38,30 @@ class PermissionUiSelector {
   };
 
   struct Decision {
-    Decision(absl::optional<QuietUiReason> quiet_ui_reason,
-             absl::optional<WarningReason> warning_reason);
+    Decision(std::optional<QuietUiReason> quiet_ui_reason,
+             std::optional<WarningReason> warning_reason);
     ~Decision();
 
     Decision(const Decision&);
     Decision& operator=(const Decision&);
 
-    static constexpr absl::optional<QuietUiReason> UseNormalUi() {
-      return absl::nullopt;
+    static constexpr std::optional<QuietUiReason> UseNormalUi() {
+      return std::nullopt;
     }
 
-    static constexpr absl::optional<WarningReason> ShowNoWarning() {
-      return absl::nullopt;
+    static constexpr std::optional<WarningReason> ShowNoWarning() {
+      return std::nullopt;
     }
 
     static Decision UseNormalUiAndShowNoWarning();
 
-    // The reason for showing the quiet UI, or `absl::nullopt` if the normal UI
+    // The reason for showing the quiet UI, or `std::nullopt` if the normal UI
     // should be used.
-    absl::optional<QuietUiReason> quiet_ui_reason;
+    std::optional<QuietUiReason> quiet_ui_reason;
 
-    // The reason for printing a warning to the console, or `absl::nullopt` if
+    // The reason for printing a warning to the console, or `std::nullopt` if
     // no warning should be printed.
-    absl::optional<WarningReason> warning_reason;
+    std::optional<WarningReason> warning_reason;
   };
 
   using DecisionMadeCallback = base::OnceCallback<void(const Decision&)>;
@@ -69,7 +70,7 @@ class PermissionUiSelector {
 
   // Determines whether animations should be suppressed because we're very
   // confident the user does not want notifications (e.g. they're abusive).
-  static bool ShouldSuppressAnimation(absl::optional<QuietUiReason> reason);
+  static bool ShouldSuppressAnimation(std::optional<QuietUiReason> reason);
 
   // Determines the UI to use for the given |request|, and invokes |callback|
   // when done, either synchronously or asynchronously. The |callback| is
@@ -89,12 +90,12 @@ class PermissionUiSelector {
   // Will return the selector's discretized prediction value, if any is
   // applicable to be recorded in UKMs. This is specific only to a selector that
   // makes use of the Web Permission Predictions Service to make decisions.
-  virtual absl::optional<PermissionUmaUtil::PredictionGrantLikelihood>
+  virtual std::optional<PermissionUmaUtil::PredictionGrantLikelihood>
   PredictedGrantLikelihoodForUKM();
 
   // Will return if the selector's decision was heldback. Currently only the
   // Web Prediction Service selector supports holdbacks.
-  virtual absl::optional<bool> WasSelectorDecisionHeldback();
+  virtual std::optional<bool> WasSelectorDecisionHeldback();
 };
 
 }  // namespace permissions

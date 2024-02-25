@@ -38,9 +38,9 @@ WEBXR_VR_ALL_RUNTIMES_BROWSER_TEST_F(
       "navigator.geolocation.getCurrentPosition( ()=>{}, ()=>{} )");
   base::RunLoop().RunUntilIdle();
   auto utils = UiUtils::Create();
-  utils->PerformActionAndWaitForVisibilityStatus(
+  utils->WaitForVisibilityStatus(
       UserFriendlyElementName::kWebXrExternalPromptNotification,
-      true /* visible */, base::DoNothing());
+      true /* visible */);
 }
 
 // TODO(https://crbug.com/920697): Add tests verifying the notification

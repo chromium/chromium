@@ -6,6 +6,7 @@
 #define CONTENT_BROWSER_CHILD_PROCESS_LAUNCHER_H_
 
 #include <memory>
+#include <optional>
 #include <string>
 
 #include "base/memory/raw_ptr.h"
@@ -40,6 +41,7 @@
 
 namespace base {
 class CommandLine;
+class UnsafeSharedMemoryRegion;
 #if BUILDFLAG(IS_ANDROID)
 namespace android {
 enum class ChildBindingState;
@@ -198,6 +200,7 @@ class CONTENT_EXPORT ChildProcessLauncher {
     // Whether the process can use pre-warmed up connection.
     virtual bool CanUseWarmUpConnection();
 #endif
+
    protected:
     virtual ~Client() {}
   };
@@ -219,6 +222,7 @@ class CONTENT_EXPORT ChildProcessLauncher {
       mojo::OutgoingInvitation mojo_invitation,
       const mojo::ProcessErrorCallback& process_error_callback,
       std::unique_ptr<ChildProcessLauncherFileData> file_data,
+      base::UnsafeSharedMemoryRegion = {},
       bool terminate_on_shutdown = true);
 
   ChildProcessLauncher(const ChildProcessLauncher&) = delete;
@@ -264,7 +268,7 @@ class CONTENT_EXPORT ChildProcessLauncher {
   static bool TerminateProcess(const base::Process& process, int exit_code);
 
   // Replaces the ChildProcessLauncher::Client for testing purposes. Returns the
-  // previous  client.
+  // previous client.
   Client* ReplaceClientForTest(Client* client);
 
 #if BUILDFLAG(IS_ANDROID)

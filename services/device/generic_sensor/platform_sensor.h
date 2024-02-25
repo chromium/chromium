@@ -8,6 +8,7 @@
 #include <list>
 #include <map>
 #include <memory>
+#include <optional>
 
 #include "base/functional/callback_forward.h"
 #include "base/location.h"
@@ -21,12 +22,12 @@
 #include "mojo/public/cpp/system/buffer.h"
 #include "services/device/public/cpp/generic_sensor/sensor_reading.h"
 #include "services/device/public/mojom/sensor.mojom.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace device {
 
 class PlatformSensorProvider;
 class PlatformSensorConfiguration;
+struct SensorReadingSharedBuffer;
 
 // Base class for the sensors provided by the platform. Concrete instances of
 // this class are created by platform specific PlatformSensorProvider.
@@ -132,6 +133,8 @@ class PlatformSensor : public base::RefCountedThreadSafe<PlatformSensor> {
 
   base::ObserverList<Client, true>::Unchecked clients_;
 
+  base::WeakPtr<PlatformSensor> AsWeakPtr();
+
  private:
   friend class base::RefCountedThreadSafe<PlatformSensor>;
 
@@ -161,8 +164,8 @@ class PlatformSensor : public base::RefCountedThreadSafe<PlatformSensor> {
   ConfigMap config_map_;
   raw_ptr<PlatformSensorProvider> provider_;
   bool is_active_ GUARDED_BY(lock_);
-  absl::optional<SensorReading> last_raw_reading_ GUARDED_BY(lock_);
-  absl::optional<SensorReading> last_rounded_reading_ GUARDED_BY(lock_);
+  std::optional<SensorReading> last_raw_reading_ GUARDED_BY(lock_);
+  std::optional<SensorReading> last_rounded_reading_ GUARDED_BY(lock_);
   // Protect last_raw_reading_ & last_rounded_reading_.
   mutable base::Lock lock_;
   base::WeakPtrFactory<PlatformSensor> weak_factory_{this};

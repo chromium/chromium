@@ -34,7 +34,7 @@ class AppDiscoveryMetricsManager {
   bool IsAppSyncEnabled();
 
   // Profile of the current user.
-  raw_ptr<Profile, ExperimentalAsh> profile_;
+  raw_ptr<Profile> profile_;
 };
 
 }  // namespace app_list

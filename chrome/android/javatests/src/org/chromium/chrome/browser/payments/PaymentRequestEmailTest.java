@@ -27,9 +27,7 @@ import org.chromium.components.payments.Event;
 
 import java.util.concurrent.TimeoutException;
 
-/**
- * A payment integration test for a merchant that requests email address.
- */
+/** A payment integration test for a merchant that requests email address. */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 public class PaymentRequestEmailTest {
@@ -41,72 +39,77 @@ public class PaymentRequestEmailTest {
     public void setUp() throws TimeoutException {
         AutofillTestHelper helper = new AutofillTestHelper();
         // The user has a valid email address on disk.
-        helper.setProfile(AutofillProfile.builder()
-                                  .setFullName("Jon Doe")
-                                  .setCompanyName("Google")
-                                  .setStreetAddress("340 Main St")
-                                  .setRegion("CA")
-                                  .setLocality("Los Angeles")
-                                  .setPostalCode("90291")
-                                  .setCountryCode("US")
-                                  .setPhoneNumber("555-555-5555")
-                                  .setEmailAddress("jon.doe@google.com")
-                                  .setLanguageCode("en-US")
-                                  .build());
+        helper.setProfile(
+                AutofillProfile.builder()
+                        .setFullName("Jon Doe")
+                        .setCompanyName("Google")
+                        .setStreetAddress("340 Main St")
+                        .setRegion("CA")
+                        .setLocality("Los Angeles")
+                        .setPostalCode("90291")
+                        .setCountryCode("US")
+                        .setPhoneNumber("555-555-5555")
+                        .setEmailAddress("jon.doe@google.com")
+                        .setLanguageCode("en-US")
+                        .build());
 
         // Add the same profile but with a different address.
-        helper.setProfile(AutofillProfile.builder()
-                                  .setCompanyName("Google")
-                                  .setStreetAddress("999 Main St")
-                                  .setRegion("CA")
-                                  .setLocality("Los Angeles")
-                                  .setPostalCode("90291")
-                                  .setCountryCode("US")
-                                  .setPhoneNumber("555-555-5555")
-                                  .setEmailAddress("jon.doe@google.com")
-                                  .setLanguageCode("en-US")
-                                  .build());
+        helper.setProfile(
+                AutofillProfile.builder()
+                        .setCompanyName("Google")
+                        .setStreetAddress("999 Main St")
+                        .setRegion("CA")
+                        .setLocality("Los Angeles")
+                        .setPostalCode("90291")
+                        .setCountryCode("US")
+                        .setPhoneNumber("555-555-5555")
+                        .setEmailAddress("jon.doe@google.com")
+                        .setLanguageCode("en-US")
+                        .build());
 
         // Add the same profile but without a phone number.
-        helper.setProfile(AutofillProfile.builder()
-                                  .setFullName("Jon Doe")
-                                  .setCompanyName("Google")
-                                  .setStreetAddress("340 Main St")
-                                  .setRegion("CA")
-                                  .setLocality("Los Angeles")
-                                  .setPostalCode("90291")
-                                  .setCountryCode("US")
-                                  .setPhoneNumber("" /* phone_number */)
-                                  .setEmailAddress("jon.doe@google.com")
-                                  .setLanguageCode("en-US")
-                                  .build());
+        helper.setProfile(
+                AutofillProfile.builder()
+                        .setFullName("Jon Doe")
+                        .setCompanyName("Google")
+                        .setStreetAddress("340 Main St")
+                        .setRegion("CA")
+                        .setLocality("Los Angeles")
+                        .setPostalCode("90291")
+                        .setCountryCode("US")
+                        .setPhoneNumber(/* phone_number= */ "")
+                        .setEmailAddress("jon.doe@google.com")
+                        .setLanguageCode("en-US")
+                        .build());
 
         // Add the same profile but without an email.
-        helper.setProfile(AutofillProfile.builder()
-                                  .setFullName("Jon Doe")
-                                  .setCompanyName("Google")
-                                  .setStreetAddress("340 Main St")
-                                  .setRegion("CA")
-                                  .setLocality("Los Angeles")
-                                  .setPostalCode("90291")
-                                  .setCountryCode("US")
-                                  .setPhoneNumber("555-555-5555")
-                                  .setEmailAddress("" /* emailAddress */)
-                                  .setLanguageCode("en-US")
-                                  .build());
+        helper.setProfile(
+                AutofillProfile.builder()
+                        .setFullName("Jon Doe")
+                        .setCompanyName("Google")
+                        .setStreetAddress("340 Main St")
+                        .setRegion("CA")
+                        .setLocality("Los Angeles")
+                        .setPostalCode("90291")
+                        .setCountryCode("US")
+                        .setPhoneNumber("555-555-5555")
+                        .setEmailAddress(/* emailAddress= */ "")
+                        .setLanguageCode("en-US")
+                        .build());
 
         // Add the same profile but without a name.
-        helper.setProfile(AutofillProfile.builder()
-                                  .setCompanyName("Google")
-                                  .setStreetAddress("340 Main St")
-                                  .setRegion("CA")
-                                  .setLocality("Los Angeles")
-                                  .setPostalCode("90291")
-                                  .setCountryCode("US")
-                                  .setPhoneNumber("555-555-5555")
-                                  .setEmailAddress("jon.doe@google.com")
-                                  .setLanguageCode("en-US")
-                                  .build());
+        helper.setProfile(
+                AutofillProfile.builder()
+                        .setCompanyName("Google")
+                        .setStreetAddress("340 Main St")
+                        .setRegion("CA")
+                        .setLocality("Los Angeles")
+                        .setPostalCode("90291")
+                        .setCountryCode("US")
+                        .setPhoneNumber("555-555-5555")
+                        .setEmailAddress("jon.doe@google.com")
+                        .setLanguageCode("en-US")
+                        .build());
 
         mPaymentRequestTestRule.addPaymentAppFactory(
                 AppPresence.HAVE_APPS, FactorySpeed.FAST_FACTORY);
@@ -156,7 +159,8 @@ public class PaymentRequestEmailTest {
                 R.id.payments_section, mPaymentRequestTestRule.getReadyForInput());
         mPaymentRequestTestRule.clickInContactInfoAndWait(
                 R.id.payments_add_option_button, mPaymentRequestTestRule.getReadyToEdit());
-        mPaymentRequestTestRule.setTextInEditorAndWait(new String[] {"jane.jones@google.com"},
+        mPaymentRequestTestRule.setTextInEditorAndWait(
+                new String[] {"jane.jones@google.com"},
                 mPaymentRequestTestRule.getEditorTextUpdate());
         mPaymentRequestTestRule.clickInEditorAndWait(
                 R.id.editor_dialog_done_button, mPaymentRequestTestRule.getReadyToPay());
@@ -195,12 +199,20 @@ public class PaymentRequestEmailTest {
                 R.id.button_primary, mPaymentRequestTestRule.getDismissed());
         mPaymentRequestTestRule.expectResultContains(new String[] {"jon.doe@google.com"});
 
-        int expectedSample = Event.SHOWN | Event.COMPLETED | Event.PAY_CLICKED
-                | Event.HAD_INITIAL_FORM_OF_PAYMENT | Event.HAD_NECESSARY_COMPLETE_SUGGESTIONS
-                | Event.RECEIVED_INSTRUMENT_DETAILS | Event.REQUEST_PAYER_EMAIL
-                | Event.REQUEST_METHOD_BASIC_CARD | Event.REQUEST_METHOD_OTHER
-                | Event.AVAILABLE_METHOD_OTHER | Event.SELECTED_OTHER;
-        Assert.assertEquals(1,
+        int expectedSample =
+                Event.SHOWN
+                        | Event.COMPLETED
+                        | Event.PAY_CLICKED
+                        | Event.HAD_INITIAL_FORM_OF_PAYMENT
+                        | Event.HAD_NECESSARY_COMPLETE_SUGGESTIONS
+                        | Event.RECEIVED_INSTRUMENT_DETAILS
+                        | Event.REQUEST_PAYER_EMAIL
+                        | Event.REQUEST_METHOD_BASIC_CARD
+                        | Event.REQUEST_METHOD_OTHER
+                        | Event.AVAILABLE_METHOD_OTHER
+                        | Event.SELECTED_OTHER;
+        Assert.assertEquals(
+                1,
                 RecordHistogram.getHistogramValueCountForTesting(
                         "PaymentRequest.Events", expectedSample));
     }

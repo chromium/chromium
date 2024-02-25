@@ -329,11 +329,13 @@ class ThreadPoolImplTestBase : public testing::Test {
   void SetupFeatures() {
     std::vector<base::test::FeatureRef> features;
 
-    if (GetUseResourceEfficientThreadGroup())
+    if (GetUseResourceEfficientThreadGroup()) {
       features.push_back(kUseUtilityThreadGroup);
+    }
 
-    if (!features.empty())
+    if (!features.empty()) {
       feature_list_.InitWithFeatures(features, {});
+    }
   }
 
   base::test::ScopedFeatureList feature_list_;
@@ -812,7 +814,7 @@ TEST_P(ThreadPoolImplTest,
 
   // GetMaxConcurrentNonBlockedTasksWithTraitsDeprecated() does not support
   // TaskPriority::BEST_EFFORT.
-  testing::GTEST_FLAG(death_test_style) = "threadsafe";
+  GTEST_FLAG_SET(death_test_style, "threadsafe");
   EXPECT_DCHECK_DEATH({
     thread_pool_->GetMaxConcurrentNonBlockedTasksWithTraitsDeprecated(
         {TaskPriority::BEST_EFFORT});
@@ -1465,9 +1467,12 @@ std::vector<std::unique_ptr<TaskRunnerAndEvents>> CreateTaskRunnersAndEvents(
   // If the task following the priority update is expected to run in the
   // foreground group, it should be after the task posted to the TaskRunner
   // whose priority is updated to USER_VISIBLE.
-  expected_previous_event = CanUseBackgroundThreadTypeForWorkerThread()
-                                ? nullptr
-                                : &task_runners_and_events.back()->task_ran;
+  expected_previous_event =
+      CanUseBackgroundThreadTypeForWorkerThread() ||
+              (test->GetUseResourceEfficientThreadGroup() &&
+               CanUseUtilityThreadTypeForWorkerThread())
+          ? nullptr
+          : &task_runners_and_events.back()->task_ran;
 
   task_runners_and_events.push_back(std::make_unique<TaskRunnerAndEvents>(
       thread_pool->CreateUpdateableSequencedTaskRunner(
@@ -1591,7 +1596,7 @@ TEST_P(ThreadPoolImplTest, UpdatePrioritySequenceScheduled_MustUseForeground) {
 // Verify that a ThreadPolicy has to be specified in TaskTraits to increase
 // TaskPriority from BEST_EFFORT.
 TEST_P(ThreadPoolImplTest, UpdatePriorityFromBestEffortNoThreadPolicy) {
-  testing::GTEST_FLAG(death_test_style) = "threadsafe";
+  GTEST_FLAG_SET(death_test_style, "threadsafe");
   StartThreadPool();
   {
     auto task_runner = thread_pool_->CreateUpdateableSequencedTaskRunner(

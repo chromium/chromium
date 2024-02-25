@@ -17,9 +17,9 @@
 #include "base/strings/string_split.h"
 #include "remoting/protocol/auth_util.h"
 #include "remoting/protocol/channel_authenticator.h"
+#include "remoting/protocol/host_authentication_config.h"
 #include "remoting/protocol/pairing_client_authenticator.h"
 #include "remoting/protocol/spake2_authenticator.h"
-#include "remoting/protocol/v2_authenticator.h"
 #include "third_party/libjingle_xmpp/xmllite/xmlelement.h"
 
 namespace remoting::protocol {
@@ -34,16 +34,10 @@ NegotiatingClientAuthenticator::NegotiatingClientAuthenticator(
       config_(config) {
   if (!config_.fetch_third_party_token_callback.is_null()) {
     AddMethod(Method::THIRD_PARTY_SPAKE2_CURVE25519);
-    AddMethod(Method::THIRD_PARTY_SPAKE2_P224);
   }
 
   AddMethod(Method::PAIRED_SPAKE2_CURVE25519);
-  AddMethod(Method::PAIRED_SPAKE2_P224);
-
   AddMethod(Method::SHARED_SECRET_SPAKE2_CURVE25519);
-  AddMethod(Method::SHARED_SECRET_SPAKE2_P224);
-
-  AddMethod(Method::SHARED_SECRET_PLAIN_SPAKE2_P224);
 }
 
 NegotiatingClientAuthenticator::~NegotiatingClientAuthenticator() = default;
@@ -55,7 +49,7 @@ void NegotiatingClientAuthenticator::ProcessMessage(
   state_ = PROCESSING_MESSAGE;
 
   std::string method_attr = message->Attr(kMethodAttributeQName);
-  Method method = ParseMethodString(method_attr);
+  Method method = HostAuthenticationConfig::ParseMethodString(method_attr);
 
   // The host picked a method different from the one the client had selected.
   if (method != current_method_) {
@@ -93,7 +87,6 @@ NegotiatingClientAuthenticator::GetNextMessage() {
     // If no authentication method has been chosen, see if we can optimistically
     // choose one.
     std::unique_ptr<jingle_xmpp::XmlElement> result;
-    CreatePreferredAuthenticator();
     if (current_authenticator_) {
       DCHECK(current_authenticator_->state() == MESSAGE_READY);
       result = GetNextMessageInternal();
@@ -116,7 +109,7 @@ NegotiatingClientAuthenticator::GetNextMessage() {
       if (!supported_methods.empty()) {
         supported_methods += kSupportedMethodsSeparator;
       }
-      supported_methods += MethodToString(method);
+      supported_methods += HostAuthenticationConfig::MethodToString(method);
     }
     result->AddAttr(kSupportedMethodsAttributeQName, supported_methods);
     state_ = WAITING_MESSAGE;
@@ -135,13 +128,6 @@ void NegotiatingClientAuthenticator::CreateAuthenticatorForCurrentMethod(
       NOTREACHED();
       break;
 
-    case Method::THIRD_PARTY_SPAKE2_P224:
-      current_authenticator_ = std::make_unique<ThirdPartyClientAuthenticator>(
-          base::BindRepeating(&V2Authenticator::CreateForClient),
-          config_.fetch_third_party_token_callback);
-      std::move(resume_callback).Run();
-      break;
-
     case Method::THIRD_PARTY_SPAKE2_CURVE25519:
       current_authenticator_ = std::make_unique<ThirdPartyClientAuthenticator>(
           base::BindRepeating(&Spake2Authenticator::CreateForClient, local_id_,
@@ -149,16 +135,6 @@ void NegotiatingClientAuthenticator::CreateAuthenticatorForCurrentMethod(
           config_.fetch_third_party_token_callback);
       std::move(resume_callback).Run();
       break;
-
-    case Method::PAIRED_SPAKE2_P224: {
-      PairingClientAuthenticator* pairing_authenticator =
-          new PairingClientAuthenticator(
-              config_, base::BindRepeating(&V2Authenticator::CreateForClient));
-      current_authenticator_ = base::WrapUnique(pairing_authenticator);
-      pairing_authenticator->Start(preferred_initial_state,
-                                   std::move(resume_callback));
-      break;
-    }
 
     case Method::PAIRED_SPAKE2_CURVE25519: {
       PairingClientAuthenticator* pairing_authenticator =
@@ -172,8 +148,6 @@ void NegotiatingClientAuthenticator::CreateAuthenticatorForCurrentMethod(
       break;
     }
 
-    case Method::SHARED_SECRET_PLAIN_SPAKE2_P224:
-    case Method::SHARED_SECRET_SPAKE2_P224:
     case Method::SHARED_SECRET_SPAKE2_CURVE25519:
       config_.fetch_secret_callback.Run(
           false,
@@ -182,18 +156,12 @@ void NegotiatingClientAuthenticator::CreateAuthenticatorForCurrentMethod(
               weak_factory_.GetWeakPtr(), preferred_initial_state,
               base::Passed(std::move(resume_callback))));
       break;
-  }
-}
 
-void NegotiatingClientAuthenticator::CreatePreferredAuthenticator() {
-  if (is_paired() && base::Contains(methods_, Method::PAIRED_SPAKE2_P224)) {
-    PairingClientAuthenticator* pairing_authenticator =
-        new PairingClientAuthenticator(
-            config_, base::BindRepeating(&V2Authenticator::CreateForClient));
-    current_authenticator_ = base::WrapUnique(pairing_authenticator);
-    pairing_authenticator->StartPaired(MESSAGE_READY);
-    current_method_ = Method::PAIRED_SPAKE2_P224;
+    case Method::CORP_SESSION_AUTHZ_SPAKE2_CURVE25519:
+      NOTREACHED();
   }
+
+  ChainStateChangeAfterAcceptedWithUnderlying(*current_authenticator_);
 }
 
 void NegotiatingClientAuthenticator::CreateSharedSecretAuthenticator(
@@ -201,17 +169,10 @@ void NegotiatingClientAuthenticator::CreateSharedSecretAuthenticator(
     base::OnceClosure resume_callback,
     const std::string& shared_secret) {
   std::string shared_secret_hash =
-      (current_method_ == Method::SHARED_SECRET_PLAIN_SPAKE2_P224)
-          ? shared_secret
-          : GetSharedSecretHash(config_.host_id, shared_secret);
+      GetSharedSecretHash(config_.host_id, shared_secret);
 
-  if (current_method_ == Method::SHARED_SECRET_SPAKE2_CURVE25519) {
-    current_authenticator_ = Spake2Authenticator::CreateForClient(
-        local_id_, remote_id_, shared_secret_hash, initial_state);
-  } else {
-    current_authenticator_ =
-        V2Authenticator::CreateForClient(shared_secret_hash, initial_state);
-  }
+  current_authenticator_ = Spake2Authenticator::CreateForClient(
+      local_id_, remote_id_, shared_secret_hash, initial_state);
   std::move(resume_callback).Run();
 }
 

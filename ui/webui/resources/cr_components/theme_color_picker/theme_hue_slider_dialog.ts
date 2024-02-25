@@ -2,13 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import 'chrome://resources/cr_elements/cr_action_menu/cr_action_menu.js';
 import 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.js';
 import 'chrome://resources/cr_elements/cr_icons.css.js';
 import 'chrome://resources/cr_elements/cr_slider/cr_slider.js';
 
-import {AnchorAlignment, CrActionMenuElement} from 'chrome://resources/cr_elements/cr_action_menu/cr_action_menu.js';
-import {CrSliderElement} from 'chrome://resources/cr_elements/cr_slider/cr_slider.js';
+import type {CrSliderElement} from 'chrome://resources/cr_elements/cr_slider/cr_slider.js';
 import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
@@ -27,11 +25,11 @@ for (let i = 0; i <= hueDivisions; i++) {
   const hsl = `hsl(${minHue + (maxHue - minHue) * percentage}, 100%, 50%)`;
   hueGradientParts.push(`${hsl} ${percentage * 100}%`);
 }
-const hueGradient = `linear-gradient(to right, ${hueGradientParts.join(',')})`;
+const hueGradient = `${hueGradientParts.join(',')}`;
 
 export interface ThemeHueSliderDialogElement {
   $: {
-    crActionMenu: CrActionMenuElement,
+    dialog: HTMLDialogElement,
     slider: CrSliderElement,
   };
 }
@@ -82,6 +80,13 @@ export class ThemeHueSliderDialogElement extends
   private minHue_: number;
   selectedHue: number;
   private knobHue_: number;
+  private boundPointerdown_: (e: PointerEvent) => void;
+
+  constructor() {
+    super();
+
+    this.boundPointerdown_ = this.onDocumentPointerdown_.bind(this);
+  }
 
   private onSelectedHueChanged_() {
     this.knobHue_ = this.selectedHue;
@@ -92,22 +97,35 @@ export class ThemeHueSliderDialogElement extends
   }
 
   showAt(anchor: HTMLElement) {
+    this.$.dialog.show();
+
+    this.$.dialog.style.left = `${
+        anchor.offsetLeft + anchor.offsetWidth - this.$.dialog.offsetWidth}px`;
+
     // By default, align the dialog below the anchor. If the window is too
-    // small (140px is about the dialog's height with some margin), show it
-    // above the anchor.
-    let anchorAlignmentY = AnchorAlignment.AFTER_END;
-    if (this.getBoundingClientRect().top + 140 >= window.innerHeight) {
-      anchorAlignmentY = AnchorAlignment.BEFORE_START;
+    // small, show it above the anchor.
+    if (anchor.getBoundingClientRect().bottom + this.$.dialog.offsetHeight >=
+        window.innerHeight) {
+      this.$.dialog.style.top =
+          `${anchor.offsetTop - this.$.dialog.offsetHeight}px`;
+    } else {
+      this.$.dialog.style.top = `${anchor.offsetTop + anchor.offsetHeight}px`;
     }
 
-    this.$.crActionMenu.showAt(anchor, {
-      anchorAlignmentY,
-      noOffset: true,
-    });
+    document.addEventListener('pointerdown', this.boundPointerdown_);
   }
 
   hide() {
-    this.$.crActionMenu.close();
+    this.$.dialog.close();
+    document.removeEventListener('pointerdown', this.boundPointerdown_);
+  }
+
+  private onDocumentPointerdown_(e: PointerEvent) {
+    if (e.composedPath().includes(this.$.dialog)) {
+      return;
+    }
+
+    this.hide();
   }
 
   private updateSelectedHueValue_() {

@@ -89,7 +89,7 @@ void DataURLLoaderFactory::CreateLoaderAndStart(
   }
 
   client_remote->OnReceiveResponse(std::move(response), std::move(consumer),
-                                   absl::nullopt);
+                                   std::nullopt);
 
   auto write_data = std::make_unique<WriteData>();
   write_data->client = std::move(client_remote);

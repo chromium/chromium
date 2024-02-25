@@ -21,6 +21,7 @@
 #include "chrome/browser/ui/views/extensions/extensions_menu_view_controller.h"
 #include "chrome/browser/ui/views/extensions/extensions_toolbar_button.h"
 #include "chrome/browser/ui/views/extensions/extensions_toolbar_container.h"
+#include "chrome/browser/ui/views/extensions/extensions_toolbar_coordinator.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
 #include "extensions/common/extension_features.h"
@@ -58,8 +59,11 @@ class ExtensionsMenuTestUtil::Wrapper {
  public:
   explicit Wrapper(Browser* browser)
       : extensions_container_(new ExtensionsToolbarContainer(browser)) {
+    extensions_toolbar_coordinator_ =
+        std::make_unique<ExtensionsToolbarCoordinator>(browser,
+                                                       extensions_container_);
     container_parent_.SetSize(gfx::Size(1000, 1000));
-    container_parent_.Layout();
+    container_parent_.DeprecatedLayoutImmediately();
     container_parent_.AddChildView(extensions_container_.get());
   }
   ~Wrapper() = default;
@@ -74,6 +78,8 @@ class ExtensionsMenuTestUtil::Wrapper {
  private:
   views::View container_parent_;
   raw_ptr<ExtensionsToolbarContainer> extensions_container_ = nullptr;
+  std::unique_ptr<ExtensionsToolbarCoordinator>
+      extensions_toolbar_coordinator_ = nullptr;
 };
 
 ExtensionsMenuTestUtil::ExtensionsMenuTestUtil(Browser* browser,

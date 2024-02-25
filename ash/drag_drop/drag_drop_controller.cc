@@ -141,10 +141,12 @@ DragOperation DragDropController::StartDragAndDrop(
   weak_factory_.InvalidateWeakPtrs();
 
   const ui::OSExchangeDataProvider* provider = &data->provider();
+
   // We do not support touch drag/drop without a drag image, unless it is a tab
   // drag/drop.
   if (source == ui::mojom::DragEventSource::kTouch &&
-      provider->GetDragImage().size().IsEmpty() &&
+      (!allow_no_image_touch_drag_for_test_ &&
+       provider->GetDragImage().size().IsEmpty()) &&
       !toplevel_window_drag_delegate_) {
     return DragOperation::kNone;
   }
@@ -296,8 +298,14 @@ void DragDropController::SetDragImage(const gfx::ImageSkia& image,
   drag_image_final_bounds_for_cancel_animation_ =
       gfx::Rect(start_location_ - image_offset, image.size());
 
-  drag_image_widget_ =
-      DragImageView::Create(source_window->GetRootWindow(), source);
+  // Only create `drag_image_widget_` if it doesn't exist. This prevents the
+  // case when dragging a webui tab in lacros keeps creating fresh
+  // `drag_image_widget_` with kTouch while it should have been set as kMouse to
+  // avoid drag hint. See crbug.com/1384469.
+  if (!drag_image_widget_) {
+    drag_image_widget_ =
+        DragImageView::Create(source_window->GetRootWindow(), source);
+  }
 
   DragImageView* drag_image =
       static_cast<DragImageView*>(drag_image_widget_->GetContentsView());
@@ -536,7 +544,7 @@ void DragDropController::DragUpdate(aura::Window* target,
                                     const ui::LocatedEvent& event) {
   ui::DropTargetEvent e(*drag_data_.get(), event.location_f(),
                         event.root_location_f(), allowed_operations_);
-  e.set_flags(event.flags());
+  e.SetFlags(event.flags());
   ui::Event::DispatcherApi(&e).set_target(target);
 
   aura::client::DragUpdateInfo drag_info;
@@ -623,7 +631,7 @@ void DragDropController::Drop(aura::Window* target,
 
   ui::DropTargetEvent e(*drag_data_.get(), event.location_f(),
                         event.root_location_f(), allowed_operations_);
-  e.set_flags(event.flags());
+  e.SetFlags(event.flags());
   ui::Event::DispatcherApi(&e).set_target(target);
 
   for (aura::client::DragDropClientObserver& observer : observers_) {
@@ -852,9 +860,8 @@ void DragDropController::PerformDrop(
     observer.OnDropCompleted(operation_);
   }
 
-  // Replace `cancel_drag_callback` with an empty closure. Drop completed, so no
-  // need to cancel the drop.
-  cancel_drag_callback.ReplaceClosure(base::DoNothing());
+  // Drop completed, so no need to cancel the drop.
+  std::ignore = cancel_drag_callback.Release();
 }
 
 void DragDropController::CancelIfInProgress() {

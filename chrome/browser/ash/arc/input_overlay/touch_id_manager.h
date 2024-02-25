@@ -5,8 +5,9 @@
 #ifndef CHROME_BROWSER_ASH_ARC_INPUT_OVERLAY_TOUCH_ID_MANAGER_H_
 #define CHROME_BROWSER_ASH_ARC_INPUT_OVERLAY_TOUCH_ID_MANAGER_H_
 
+#include <optional>
+
 #include "base/no_destructor.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace arc::input_overlay {
 

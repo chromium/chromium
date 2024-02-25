@@ -20,7 +20,7 @@ namespace syncer {
 using testing::Return;
 
 SyncServiceImplBundle::SyncServiceImplBundle()
-    : identity_test_env_(&test_url_loader_factory_) {
+    : identity_test_env_(&test_url_loader_factory_, &pref_service_) {
   SyncPrefs::RegisterProfilePrefs(pref_service_.registry());
   identity_test_env_.SetAutomaticIssueOfAccessTokens(true);
 }
@@ -51,7 +51,6 @@ SyncServiceImpl::InitParams SyncServiceImplBundle::CreateBasicInitParams(
   init_params.network_connection_tracker =
       network::TestNetworkConnectionTracker::GetInstance();
   init_params.debug_identifier = "dummyDebugName";
-  init_params.is_regular_profile_for_uma = true;
 
   return init_params;
 }

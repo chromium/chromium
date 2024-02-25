@@ -1,0 +1,79 @@
+<style include="tab-organization-shared-style">
+  :host {
+    --avatar-size: 40px;
+  }
+
+  cr-button {
+    align-self: flex-end;
+    width: fit-content;
+  }
+
+  .account-email {
+    font-size: 12px;
+  }
+
+  .account-image {
+    border-radius: var(--avatar-size);
+    height: var(--avatar-size);
+    width: var(--avatar-size);
+  }
+
+  .account-row {
+    align-items: center;
+    display: flex;
+    gap: 10px;
+  }
+
+  .account-text {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+
+  .tab-organization-link {
+    display: inline;
+  }
+</style>
+
+<div class="tab-organization-container">
+  <tab-organization-not-started-image></tab-organization-not-started-image>
+  <div class="tab-organization-text-container">
+    <div id="header"
+        class="tab-organization-header"
+        aria-live="polite"
+        aria-relevant="all">
+      [[getTitle_(showFre)]]
+    </div>
+    <div class="tab-organization-body">
+      [[getBody_(showFre, sync_, account_)]]
+      <template is="dom-if"
+          if="[[shouldShowBodyLink_(showFre, sync_, account_)]]">
+        <a class="tab-organization-link"
+            role="link"
+            tabindex="0"
+            on-click="onLinkClick_"
+            on-keydown="onLinkKeyDown_">
+            $i18n{notStartedBodyLinkFRE}
+        </a>
+      </template>
+    </div>
+  </div>
+  <template is="dom-if" if="[[shouldShowAccountInfo_(sync_, account_)]]">
+    <div class="account-row">
+      <!-- Decorative image, intentionally empty alt text -->
+      <img class="account-image" alt=""
+          src="[[getAccountImageSrc_(account_.avatarImage)]]">
+      <div class="account-text">
+        <div class="tab-organization-header">[[account_.name]]</div>
+        <div class="tab-organization-body account-email">
+          [[account_.email]]
+        </div>
+      </div>
+    </div>
+  </template>
+  <cr-button class="action-button"
+      aria-label="[[getButtonAriaLabel_(sync_, account_)]]"
+      on-click="onButtonClick_">
+    [[getButtonText_(sync_, account_)]]
+  </cr-button>
+</div>

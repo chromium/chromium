@@ -5,7 +5,7 @@
 // This file contains many long export lines that exceed the max-len limit */
 /* eslint-disable max-len */
 
-export {
+export type {
   PointF,
 } from 'chrome://resources/mojo/ui/gfx/geometry/mojom/geometry.mojom-webui.js';
 export {
@@ -16,18 +16,24 @@ export {
   CameraAppHelperRemote,
   CameraUsageOwnershipMonitorCallbackRouter,
   DocumentOutputFormat,
-  DocumentScannerReadyState,
   ExternalScreenMonitorCallbackRouter,
   FileMonitorResult,
+  LidStateMonitorCallbackRouter,
   ScreenState,
   ScreenStateMonitorCallbackRouter,
   StorageMonitorCallbackRouter,
   StorageMonitorStatus,
   TabletModeMonitorCallbackRouter,
   ToteMetricFormat,
+  WifiEapMethod,
+  WifiEapPhase2Method,
+  WifiSecurityType,
   WindowStateControllerRemote,
   WindowStateMonitorCallbackRouter,
   WindowStateType,
+} from '../../mojom/ash/webui/camera_app_ui/camera_app_helper.mojom-webui.js';
+export type {
+  WifiConfig,
 } from '../../mojom/ash/webui/camera_app_ui/camera_app_helper.mojom-webui.js';
 export {
   Rotation,
@@ -58,6 +64,10 @@ export {
 export type{CameraInfo} from
     '../../mojom/media/capture/video/chromeos/mojom/camera_common.mojom-webui.js';
 export {
+  PortraitModeSegResult,
+} from
+    '../../mojom/media/capture/video/chromeos/mojom/camera_features.mojom-webui.js';
+export {
   EntryType,
 } from
     '../../mojom/media/capture/video/chromeos/mojom/camera_metadata.mojom-webui.js';
@@ -76,3 +86,7 @@ export {
   CameraMetadataTag,
 } from
     '../../mojom/media/capture/video/chromeos/mojom/camera_metadata_tags.mojom-webui.js';
+export {
+  LidState,
+} from
+    '../../mojom/media/capture/video/chromeos/mojom/system_event_monitor.mojom-webui.js';

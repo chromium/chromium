@@ -299,14 +299,11 @@ bool StringToExceptionMask(const base::StringPiece& string,
     size_t pos = -1;
     do {
       ++pos;
-      const char* substring_begin = string.begin() + pos;
+      const size_t start = pos;
       pos = string.find('|', pos);
-      const char* substring_end = (pos == base::StringPiece::npos)
-                                      ? string.end()
-                                      : (string.begin() + pos);
-      base::StringPiece substring = string.substr(
-          substring_begin - string.begin(), substring_end - substring_begin);
-
+      base::StringPiece substring = (pos == base::StringPiece::npos)
+                                        ? string.substr(start)
+                                        : string.substr(start, pos - start);
       exception_mask_t temp_mask;
       if (!StringToExceptionMask(substring, options, &temp_mask)) {
         return false;

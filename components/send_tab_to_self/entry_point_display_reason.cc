@@ -6,7 +6,6 @@
 
 #include "build/chromeos_buildflags.h"
 #include "components/prefs/pref_service.h"
-#include "components/send_tab_to_self/features.h"
 #include "components/send_tab_to_self/send_tab_to_self_model.h"
 #include "components/send_tab_to_self/send_tab_to_self_sync_service.h"
 #include "components/signin/public/base/signin_pref_names.h"
@@ -36,22 +35,21 @@ bool ShouldOfferSignin(syncer::SyncService* sync_service,
 
 namespace internal {
 
-absl::optional<EntryPointDisplayReason> GetEntryPointDisplayReason(
+std::optional<EntryPointDisplayReason> GetEntryPointDisplayReason(
     const GURL& url_to_share,
     syncer::SyncService* sync_service,
     SendTabToSelfModel* send_tab_to_self_model,
     PrefService* pref_service) {
   if (!url_to_share.SchemeIsHTTPOrHTTPS()) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   if (!send_tab_to_self_model || !sync_service) {
     // Send-tab-to-self can't work properly, don't show the entry point.
-    return absl::nullopt;
+    return std::nullopt;
   }
 
-  if (ShouldOfferSignin(sync_service, pref_service) &&
-      base::FeatureList::IsEnabled(kSendTabToSelfSigninPromo)) {
+  if (ShouldOfferSignin(sync_service, pref_service)) {
     return EntryPointDisplayReason::kOfferSignIn;
   }
 
@@ -65,14 +63,11 @@ absl::optional<EntryPointDisplayReason> GetEntryPointDisplayReason(
       // non send-tab-to-self UI. So just treat this as the no device case.
       return EntryPointDisplayReason::kInformNoTargetDevice;
     }
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   if (!send_tab_to_self_model->HasValidTargetDevice()) {
-    return base::FeatureList::IsEnabled(kSendTabToSelfSigninPromo)
-               ? absl::make_optional(
-                     EntryPointDisplayReason::kInformNoTargetDevice)
-               : absl::nullopt;
+    return EntryPointDisplayReason::kInformNoTargetDevice;
   }
 
   return EntryPointDisplayReason::kOfferFeature;

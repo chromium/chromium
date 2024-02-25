@@ -115,8 +115,8 @@
       editContext.updateSelection(0, 0);
       assert_equals(editContext.selectionStart, 0);
       assert_equals(editContext.selectionEnd, 0);
-      assert_throws_dom("IndexSizeError", function() { editContext.updateSelection(1, 0); });
-      assert_equals(editContext.selectionStart, 0);
+      editContext.updateSelection(1, 0);
+      assert_equals(editContext.selectionStart, 1);
       assert_equals(editContext.selectionEnd, 0);
       editContext.updateSelection(0, 1);
       assert_equals(editContext.selectionStart, 0);
@@ -126,6 +126,23 @@
       assert_equals(editContext.selectionEnd, 1);
       editContext.updateControlBounds(viewRect);
       editContext.updateSelectionBounds(caretRect);
+      editContext.updateCharacterBounds(0, [caretRect]);
+
+      assert_throws_js(TypeError, function() { editContext.updateControlBounds(42); });
+      assert_throws_js(TypeError, function() { editContext.updateSelectionBounds(42); });
+      assert_throws_js(TypeError, function() { editContext.updateControlBounds(undefined); });
+      assert_throws_js(TypeError, function() { editContext.updateSelectionBounds(undefined); });
+      assert_throws_js(TypeError, function() { editContext.updateCharacterBounds(0); });
+      assert_throws_js(TypeError, function() { editContext.updateCharacterBounds([caretRect]); });
+      assert_throws_js(TypeError, function() { editContext.updateCharacterBounds(0, caretRect); });
+      assert_throws_js(TypeError, function() { editContext.updateCharacterBounds(0, 42); });
+      assert_throws_js(TypeError, function() { editContext.updateCharacterBounds(0, undefined); });
+      assert_throws_js(TypeError, function() { editContext.updateCharacterBounds(0, [undefined]); });
+
+      viewRect.x = viewRect.y = viewRect.width = viewRect.height = undefined;
+      editContext.updateControlBounds(viewRect);
+      editContext.updateSelectionBounds(viewRect);
+      editContext.updateCharacterBounds(0, [viewRect]);
     }, 'Testing EditContext update text, selection and layout');
 
     test(function() {
@@ -151,17 +168,42 @@
       assert_equals(actualRectArray[1].height, 400);
     }, 'updateCharacterBounds(), characterBounds(), and characterBoundsRangeStart should work properly');
 
+    // The behavior in this test case is not well-defined in the spec.
+    // See https://github.com/w3c/edit-context/issues/88
+    // test(function() {
+    //   const editContext = new EditContext();
+    //   assert_not_equals(editContext, null);
+    //   editContext.updateText(0, 3, "foo");
+    //   assert_equals(editContext.text, "foo");
+    //   assert_throws_dom("IndexSizeError", function() { editContext.updateSelection(10, 0); });
+    //   assert_equals(editContext.selectionStart, 0);
+    //   assert_equals(editContext.selectionEnd, 0);
+    //   assert_throws_dom("IndexSizeError", function() { editContext.updateText(10, 1, "h"); });
+    //   assert_equals(editContext.text, "foo");
+    // }, 'Testing EditContext update text and selection with invalid values');
+
     test(function() {
       const editContext = new EditContext();
       assert_not_equals(editContext, null);
       editContext.updateText(0, 3, "foo");
       assert_equals(editContext.text, "foo");
-      assert_throws_dom("IndexSizeError", function() { editContext.updateSelection(10, 0); });
-      assert_equals(editContext.selectionStart, 0);
+      editContext.updateSelection(3, 0);
+      assert_equals(editContext.selectionStart, 3);
       assert_equals(editContext.selectionEnd, 0);
-      assert_throws_dom("IndexSizeError", function() { editContext.updateText(10, 1, "h"); });
-      assert_equals(editContext.text, "foo");
-    }, 'Testing EditContext update text and selection with invalid values');
+    }, 'EditContext should allow a backwards selection');
+
+    test(function() {
+      const editContext = new EditContext();
+      assert_not_equals(editContext, null);
+      editContext.updateText(6, 0, "abcdef");
+      assert_equals(editContext.text, "abcdef");
+
+      editContext.updateText(2, 5, "ghi");
+      assert_equals(editContext.text, "abghif");
+
+      editContext.updateText(5, 2, "jkl");
+      assert_equals(editContext.text, "abjklf");
+    }, 'updateText can replace substrings including with backwards parameters');
   </script>
 </body>
 </html>

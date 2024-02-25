@@ -1,0 +1,47 @@
+# Copyright 2023 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/chromeos/ui_mode.gni")
+
+assert(is_chromeos_ash, "Status Area Internals is ash-chrome only")
+
+static_library("status_area_internals") {
+  sources = [
+    "status_area_internals_handler.cc",
+    "status_area_internals_handler.h",
+    "status_area_internals_ui.cc",
+    "status_area_internals_ui.h",
+    "url_constants.cc",
+    "url_constants.h",
+  ]
+
+  deps = [
+    "//ash",
+    "//ash/webui/common:trusted_types_util",
+    "//ash/webui/status_area_internals/mojom:mojom",
+    "//ash/webui/status_area_internals/resources:resources",
+    "//components/prefs:prefs",
+    "//content/public/browser",
+    "//ui/webui",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+
+  sources = [ "status_area_internals_handler_unittest.cc" ]
+
+  deps = [
+    ":status_area_internals",
+    "//ash",
+    "//ash:test_support",
+    "//ash/webui/status_area_internals/mojom:mojom",
+    "//base",
+    "//chromeos/ash/components:test_support",
+    "//components/prefs:prefs",
+    "//content/test:test_support",
+    "//testing/gtest",
+    "//ui/webui",
+  ]
+}

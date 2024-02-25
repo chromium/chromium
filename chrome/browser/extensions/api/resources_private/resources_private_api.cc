@@ -22,8 +22,8 @@
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/profiles/profile_types_ash.h"
 #include "chrome/common/pref_names.h"
+#include "chromeos/ash/components/browser_context_helper/browser_context_types.h"
 #include "components/prefs/pref_service.h"
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 #endif  // BUILDFLAG(ENABLE_PDF)
@@ -66,24 +66,23 @@ ResourcesPrivateGetStringsFunction::ResourcesPrivateGetStringsFunction() {}
 ResourcesPrivateGetStringsFunction::~ResourcesPrivateGetStringsFunction() {}
 
 ExtensionFunction::ResponseAction ResourcesPrivateGetStringsFunction::Run() {
-  absl::optional<get_strings::Params> params =
+  std::optional<get_strings::Params> params =
       get_strings::Params::Create(args());
   base::Value::Dict dict;
 
   api::resources_private::Component component = params->component;
 
   switch (component) {
-    case api::resources_private::COMPONENT_IDENTITY:
+    case api::resources_private::Component::kIdentity:
       AddStringsForIdentity(&dict);
       break;
-    case api::resources_private::COMPONENT_PDF: {
+    case api::resources_private::Component::kPdf: {
 #if BUILDFLAG(ENABLE_PDF)
       pdf_extension_util::AddStrings(pdf_extension_util::PdfViewerContext::kAll,
                                      &dict);
       bool enable_printing = true;
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-      Profile* profile = Profile::FromBrowserContext(browser_context());
-      enable_printing = IsUserProfile(profile);
+      enable_printing = ash::IsUserBrowserContext(browser_context());
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
       pdf_extension_util::AddAdditionalData(
@@ -91,7 +90,7 @@ ExtensionFunction::ResponseAction ResourcesPrivateGetStringsFunction::Run() {
 #endif  // BUILDFLAG(ENABLE_PDF)
       break;
     }
-    case api::resources_private::COMPONENT_NONE:
+    case api::resources_private::Component::kNone:
       NOTREACHED();
   }
 

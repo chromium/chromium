@@ -10,6 +10,7 @@ bool StructTraits<audio::mojom::AudioDeviceDescriptionDataView,
                   media::AudioDeviceDescription>::
     Read(audio::mojom::AudioDeviceDescriptionDataView data,
          media::AudioDeviceDescription* output) {
+  output->is_system_default = data.is_system_default();
   return data.ReadDeviceName(&output->device_name) &&
          data.ReadUniqueId(&output->unique_id) &&
          data.ReadGroupId(&output->group_id);

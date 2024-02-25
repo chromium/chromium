@@ -21,7 +21,7 @@ void StoreURLInPasteboard(const GURL& url);
 
 // Stores `urls` in the pasteboard.
 // (Use `ClearPasteboard()` explicitly to clear existing items.)
-void StoreURLsInPasteboard(const std::vector<const GURL>& urls);
+void StoreURLsInPasteboard(const std::vector<GURL>& urls);
 
 // Stores `text` and `url` into the pasteboard.
 void StoreInPasteboard(NSString* text, const GURL& url);

@@ -8,9 +8,7 @@ import org.chromium.chrome.browser.password_entry_edit.CredentialEntryFragmentVi
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 
-/**
- * Properties defined here reflect the visible state of the credential edit UI.
- */
+/** Properties defined here reflect the visible state of the credential edit UI. */
 class CredentialEditProperties {
     static final PropertyModel.WritableObjectPropertyKey<UiActionHandler> UI_ACTION_HANDLER =
             new PropertyModel.WritableObjectPropertyKey<>("ui action handler");
@@ -32,9 +30,17 @@ class CredentialEditProperties {
     static final PropertyModel.WritableBooleanPropertyKey UI_DISMISSED_BY_NATIVE =
             new PropertyModel.WritableBooleanPropertyKey("ui dismissed by native");
 
-    static final PropertyKey[] ALL_KEYS = {UI_ACTION_HANDLER, URL_OR_APP, USERNAME,
-            DUPLICATE_USERNAME_ERROR, PASSWORD_VISIBLE, PASSWORD, EMPTY_PASSWORD_ERROR,
-            FEDERATION_ORIGIN, UI_DISMISSED_BY_NATIVE};
+    static final PropertyKey[] ALL_KEYS = {
+        UI_ACTION_HANDLER,
+        URL_OR_APP,
+        USERNAME,
+        DUPLICATE_USERNAME_ERROR,
+        PASSWORD_VISIBLE,
+        PASSWORD,
+        EMPTY_PASSWORD_ERROR,
+        FEDERATION_ORIGIN,
+        UI_DISMISSED_BY_NATIVE
+    };
 
     private CredentialEditProperties() {}
 }

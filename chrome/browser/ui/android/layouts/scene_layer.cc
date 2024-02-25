@@ -32,7 +32,7 @@ SceneLayer::SceneLayer(JNIEnv* env,
 }
 
 SceneLayer::~SceneLayer() {
-  JNIEnv* env = base::android::AttachCurrentThread();
+  JNIEnv* env = jni_zero::AttachCurrentThread();
   ScopedJavaLocalRef<jobject> jobj = weak_java_scene_layer_.get(env);
   if (jobj.is_null())
     return;

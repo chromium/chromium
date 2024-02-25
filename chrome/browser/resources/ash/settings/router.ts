@@ -2,12 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {assert} from 'chrome://resources/js/assert_ts.js';
+import {assert} from 'chrome://resources/js/assert.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 
 import {castExists} from './assert_extras.js';
+import {RouteObserverMixinInterface} from './common/route_observer_mixin.js';
 import {createRoutes, OsSettingsRoutes, Route} from './os_settings_routes.js';
-import {RouteObserverMixinInterface} from './route_observer_mixin.js';
 
 export {Route};
 
@@ -301,7 +301,7 @@ export class Router {
  *
  * Can be used from tests to re-create a Router with a new set of routes.
  */
-export function createRouter() {
+export function createRouter(): Router {
   return new Router(createRoutes());
 }
 

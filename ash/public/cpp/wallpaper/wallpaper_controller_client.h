@@ -5,13 +5,13 @@
 #ifndef ASH_PUBLIC_CPP_WALLPAPER_WALLPAPER_CONTROLLER_CLIENT_H_
 #define ASH_PUBLIC_CPP_WALLPAPER_WALLPAPER_CONTROLLER_CLIENT_H_
 
+#include <optional>
 #include <string>
 
 #include "ash/public/cpp/ash_public_export.h"
 #include "ash/webui/personalization_app/proto/backdrop_wallpaper.pb.h"
 #include "base/functional/callback.h"
 #include "mojo/public/cpp/bindings/struct_ptr.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 class AccountId;
 
@@ -61,7 +61,7 @@ class ASH_PUBLIC_EXPORT WallpaperControllerClient {
       FetchGooglePhotosPhotoCallback callback) = 0;
 
   using FetchGooglePhotosAccessTokenCallback =
-      base::OnceCallback<void(const absl::optional<std::string>& token)>;
+      base::OnceCallback<void(const std::optional<std::string>& token)>;
   virtual void FetchGooglePhotosAccessToken(
       const AccountId& account_id,
       FetchGooglePhotosAccessTokenCallback callback) = 0;

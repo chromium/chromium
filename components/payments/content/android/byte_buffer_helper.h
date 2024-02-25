@@ -7,24 +7,17 @@
 
 #include <jni.h>
 #include <stdint.h>
+
 #include <vector>
 
 #include "base/android/jni_array.h"
+#include "base/android/jni_bytebuffer.h"
 #include "base/android/scoped_java_ref.h"
 #include "base/check.h"
 #include "mojo/public/cpp/bindings/struct_ptr.h"
 
 namespace payments {
 namespace android {
-
-// Converts a java.nio.ByteBuffer into a vector of bytes. Sample usage:
-//
-//  mojom::PaymentDetailsPtr details;
-//  bool success = mojom::PaymentDetails::Deserialize(
-//      JavaByteBufferToNativeByteVector(env, byte_buffer), &details);
-std::vector<uint8_t> JavaByteBufferToNativeByteVector(
-    JNIEnv* env,
-    const base::android::JavaRef<jobject>& buffer);
 
 // Deserializes a java.nio.ByteBuffer into a native Mojo object. Returns true if
 // deserialization is successful.
@@ -34,7 +27,9 @@ bool DeserializeFromJavaByteBuffer(
     const base::android::JavaRef<jobject>& jbuffer,
     mojo::StructPtr<T>* out) {
   DCHECK(out);
-  return T::Deserialize(JavaByteBufferToNativeByteVector(env, jbuffer), out);
+  base::span<const uint8_t> native_buffer =
+      base::android::JavaByteBufferToSpan(env, jbuffer.obj());
+  return T::Deserialize(native_buffer.data(), native_buffer.size(), out);
 }
 
 // Deserializes a java.nio.ByteBuffer[] into a vector of native Mojo objects.

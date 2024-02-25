@@ -8,6 +8,7 @@
 #include "third_party/blink/renderer/core/clipboard/data_object_item.h"
 #include "third_party/blink/renderer/core/testing/null_execution_context.h"
 #include "third_party/blink/renderer/platform/file_metadata.h"
+#include "third_party/blink/renderer/platform/testing/task_environment.h"
 #include "third_party/blink/renderer/platform/testing/unit_test_helpers.h"
 
 namespace blink {
@@ -17,6 +18,8 @@ class DataObjectTest : public testing::Test {
   DataObjectTest() : data_object_(DataObject::Create()) {}
 
  protected:
+  test::TaskEnvironment task_environment;
+
   Persistent<DataObject> data_object_;
 };
 
@@ -66,7 +69,7 @@ TEST_F(DataObjectTest, DataObjectObserver) {
   data_object_->AddObserver(observer2);
 
   String file_path =
-      test::BlinkRootDir() + "/renderer/core/clipboard/dat_aobject_test.cc";
+      test::BlinkRootDir() + "/renderer/core/clipboard/data_object_test.cc";
   data_object_->AddFilename(&context.GetExecutionContext(), file_path, String(),
                             String());
   EXPECT_EQ(2U, data_object_->length());
@@ -78,10 +81,43 @@ TEST_F(DataObjectTest, DataObjectObserver) {
   EXPECT_EQ(5U, observer->call_count());
   EXPECT_EQ(2U, observer2->call_count());
 
-  data_object_->ClearAll();
-  EXPECT_EQ(0U, data_object_->length());
+  data_object_->ClearStringItems();
+  EXPECT_EQ(1U, data_object_->length());
+  EXPECT_EQ(5U, observer->call_count());
+  EXPECT_EQ(2U, observer2->call_count());
+
+  item = data_object_->Add("new plain item", "text/plain");
+  EXPECT_EQ(2U, data_object_->length());
   EXPECT_EQ(6U, observer->call_count());
   EXPECT_EQ(3U, observer2->call_count());
+
+  item = data_object_->Add("new data item", "Files");
+  EXPECT_EQ(3U, data_object_->length());
+  EXPECT_EQ(7U, observer->call_count());
+  EXPECT_EQ(4U, observer2->call_count());
+
+  String file_path2 =
+      test::BlinkRootDir() + "/renderer/core/clipboard/data_object_test.h";
+  data_object_->AddFilename(&context.GetExecutionContext(), file_path2,
+                            String(), String());
+  EXPECT_EQ(4U, data_object_->length());
+  EXPECT_EQ(8U, observer->call_count());
+  EXPECT_EQ(5U, observer2->call_count());
+
+  data_object_->ClearData("Files");
+  EXPECT_EQ(3U, data_object_->length());
+  EXPECT_EQ(9U, observer->call_count());
+  EXPECT_EQ(6U, observer2->call_count());
+
+  data_object_->ClearStringItems();
+  EXPECT_EQ(2U, data_object_->length());
+  EXPECT_EQ(10U, observer->call_count());
+  EXPECT_EQ(7U, observer2->call_count());
+
+  data_object_->ClearAll();
+  EXPECT_EQ(0U, data_object_->length());
+  EXPECT_EQ(11U, observer->call_count());
+  EXPECT_EQ(8U, observer2->call_count());
 }
 
 TEST_F(DataObjectTest, addItemWithFilenameAndNoTitle) {

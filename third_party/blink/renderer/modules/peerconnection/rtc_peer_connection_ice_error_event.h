@@ -5,7 +5,8 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_PEERCONNECTION_RTC_PEER_CONNECTION_ICE_ERROR_EVENT_H_
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_PEERCONNECTION_RTC_PEER_CONNECTION_ICE_ERROR_EVENT_H_
 
-#include "third_party/abseil-cpp/absl/types/optional.h"
+#include <optional>
+
 #include "third_party/blink/renderer/modules/event_modules.h"
 #include "third_party/blink/renderer/platform/wtf/text/atomic_string.h"
 
@@ -18,7 +19,7 @@ class MODULES_EXPORT RTCPeerConnectionIceErrorEvent final : public Event {
 
  public:
   RTCPeerConnectionIceErrorEvent(const String& address,
-                                 absl::optional<uint16_t> port,
+                                 std::optional<uint16_t> port,
                                  const String& host_candidate,
                                  const String& url,
                                  uint16_t error_code,
@@ -29,7 +30,7 @@ class MODULES_EXPORT RTCPeerConnectionIceErrorEvent final : public Event {
   ~RTCPeerConnectionIceErrorEvent() override;
 
   static RTCPeerConnectionIceErrorEvent* Create(const String& address,
-                                                absl::optional<uint16_t> port,
+                                                std::optional<uint16_t> port,
                                                 const String& host_candidate,
                                                 const String& url,
                                                 int error_code,
@@ -40,7 +41,7 @@ class MODULES_EXPORT RTCPeerConnectionIceErrorEvent final : public Event {
       const RTCPeerConnectionIceErrorEventInit*);
 
   String address() const;
-  absl::optional<uint16_t> port() const;
+  std::optional<uint16_t> port() const;
   String hostCandidate() const;
   String url() const;
   uint16_t errorCode() const;
@@ -51,7 +52,7 @@ class MODULES_EXPORT RTCPeerConnectionIceErrorEvent final : public Event {
 
  private:
   String address_;
-  absl::optional<uint16_t> port_;
+  std::optional<uint16_t> port_;
   String host_candidate_;
   String url_;
   uint16_t error_code_;

@@ -63,14 +63,15 @@ class StringSourceStream : public net::SourceStream {
 
  private:
   size_t read_ofs_ = 0;
-  const raw_ref<const std::string, ExperimentalAsh> src_;
+  const raw_ref<const std::string> src_;
 };
 
 class PpdLineReaderImpl : public PpdLineReader {
  public:
   PpdLineReaderImpl(const std::string& ppd_contents, size_t max_line_length)
       : max_line_length_(max_line_length),
-        read_buf_(base::MakeRefCounted<net::IOBuffer>(kReadBufCapacity)) {
+        read_buf_(
+            base::MakeRefCounted<net::IOBufferWithSize>(kReadBufCapacity)) {
     input_ = std::make_unique<StringSourceStream>(ppd_contents);
     if (IsGZipped(ppd_contents)) {
       input_ = net::GzipSourceStream::Create(std::move(input_),

@@ -4,19 +4,19 @@
 
 package org.chromium.chrome.browser.subresource_filter;
 
-import org.chromium.base.annotations.CalledByNative;
-import org.chromium.base.annotations.NativeMethods;
+import org.jni_zero.CalledByNative;
+import org.jni_zero.NativeMethods;
 
 /**
- * Class which aids in publishing test rulesets for SubresourceFilter instrumentation tests.
- * All methods and members must be called on the UI thread.
+ * Class which aids in publishing test rulesets for SubresourceFilter instrumentation tests. All
+ * methods and members must be called on the UI thread.
  */
 public final class TestRulesetPublisher {
     private boolean mPublished;
 
     public void createAndPublishRulesetDisallowingSuffixForTesting(String suffix) {
-        TestRulesetPublisherJni.get().createAndPublishRulesetDisallowingSuffixForTesting(
-                this, suffix);
+        TestRulesetPublisherJni.get()
+                .createAndPublishRulesetDisallowingSuffixForTesting(this, suffix);
     }
 
     public boolean isPublished() {

@@ -10,7 +10,7 @@
 #include "ash/components/arc/arc_util.h"
 #include "ash/components/arc/metrics/arc_metrics_constants.h"
 #include "chrome/browser/ash/app_list/arc/arc_app_utils.h"
-#include "chrome/browser/ui/ash/window_pin_util.h"
+#include "chrome/browser/ui/chromeos/window_pin_util.h"
 #include "components/exo/shell_surface_util.h"
 #include "components/exo/wm_helper.h"
 #include "ui/aura/env.h"
@@ -91,7 +91,7 @@ void ArcKioskAppLauncher::StopObserving() {
     // position. See b/281992317 for reference.
     exo::WMHelper::GetInstance()->RemoveExoWindowObserver(this);
   }
-  for (auto* window : windows_) {
+  for (aura::Window* window : windows_) {
     window->RemoveObserver(this);
   }
   windows_.clear();

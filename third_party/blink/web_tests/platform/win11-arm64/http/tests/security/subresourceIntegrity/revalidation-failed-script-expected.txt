@@ -1,5 +1,0 @@
-CONSOLE ERROR: Failed to find a valid digest in the 'integrity' attribute for resource 'http://127.0.0.1:8000/cache/resources/etag-200-different.php?revalidation-failed-script' with computed SHA-256 integrity 'yzSDkw2NpAh/DivRaB1uQ3wZx0J/hgSzIbeBfpClP+w='. The resource has been blocked.
-This is a testharness.js-based test.
-FAIL SRI with script with non-empty body after failed revalidation assert_unreached: First request should pass Reached unreachable code
-Harness: the test ran to completion.
-

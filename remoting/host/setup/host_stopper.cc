@@ -27,7 +27,7 @@ void HostStopper::StopLocalHost(std::string access_token,
       base::BindOnce(&HostStopper::OnConfigLoaded, weak_ptr_));
 }
 
-void HostStopper::OnConfigLoaded(absl::optional<base::Value::Dict> config) {
+void HostStopper::OnConfigLoaded(std::optional<base::Value::Dict> config) {
   const std::string* hostId = nullptr;
   if (!config || !(hostId = config->FindString("host_id"))) {
     std::move(on_done_).Run();
@@ -59,7 +59,8 @@ void HostStopper::OnStopped(DaemonController::AsyncResult) {
   std::move(on_done_).Run();
 }
 
-void HostStopper::OnHostRegistered(const std::string& authorization_code) {
+void HostStopper::OnHostRegistered(const std::string& host_id,
+                                   const std::string& authorization_code) {
   NOTREACHED();
 }
 

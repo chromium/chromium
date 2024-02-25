@@ -124,26 +124,28 @@ base::Value::List CreateZippyData(const ActivityControlUi& activity_control_ui,
   auto zippy_list = activity_control_ui.setting_zippy();
   auto learn_more_dialog = activity_control_ui.learn_more_dialog();
   for (auto& setting_zippy : zippy_list) {
-    base::Value::Dict data;
-    data.Set("title", activity_control_ui.title());
-    data.Set("identity", activity_control_ui.identity());
+    auto data =
+        base::Value::Dict()
+            .Set("title", activity_control_ui.title())
+            .Set("identity", activity_control_ui.identity())
+            .Set("name", setting_zippy.title())
+            .Set("iconUri", setting_zippy.icon_uri())
+            .Set("nativeIconType", static_cast<int>(SettingIdToIconType(
+                                       setting_zippy.setting_set_id())))
+            .Set("useNativeIcons", features::IsAssistantNativeIconsEnabled())
+            .Set("popupLink", l10n_util::GetStringUTF16(
+                                  IDS_ASSISTANT_ACTIVITY_CONTROL_POPUP_LINK))
+            .Set("learnMoreDialogButton", learn_more_dialog.dismiss_button())
+            .Set("isMinorMode", is_minor_mode);
     if (activity_control_ui.intro_text_paragraph_size()) {
       data.Set("intro", activity_control_ui.intro_text_paragraph(0));
     }
-    data.Set("name", setting_zippy.title());
     if (setting_zippy.description_paragraph_size()) {
       data.Set("description", setting_zippy.description_paragraph(0));
     }
     if (setting_zippy.additional_info_paragraph_size()) {
       data.Set("additionalInfo", setting_zippy.additional_info_paragraph(0));
     }
-    data.Set("iconUri", setting_zippy.icon_uri());
-    data.Set(
-        "nativeIconType",
-        static_cast<int>(SettingIdToIconType(setting_zippy.setting_set_id())));
-    data.Set("useNativeIcons", features::IsAssistantNativeIconsEnabled());
-    data.Set("popupLink", l10n_util::GetStringUTF16(
-                              IDS_ASSISTANT_ACTIVITY_CONTROL_POPUP_LINK));
     if (is_minor_mode) {
       data.Set("learnMoreDialogTitle", learn_more_dialog.title());
       if (learn_more_dialog.paragraph_size()) {
@@ -157,8 +159,6 @@ base::Value::List CreateZippyData(const ActivityControlUi& activity_control_ui,
                  setting_zippy.additional_info_paragraph(0));
       }
     }
-    data.Set("learnMoreDialogButton", learn_more_dialog.dismiss_button());
-    data.Set("isMinorMode", is_minor_mode);
     zippy_data.Append(std::move(data));
   }
   return zippy_data;
@@ -169,15 +169,15 @@ base::Value::List CreateDisclosureData(
     const SettingZippyList& disclosure_list) {
   base::Value::List disclosure_data;
   for (auto& disclosure : disclosure_list) {
-    base::Value::Dict data;
-    data.Set("title", disclosure.title());
+    auto data = base::Value::Dict()
+                    .Set("title", disclosure.title())
+                    .Set("iconUri", disclosure.icon_uri());
     if (disclosure.description_paragraph_size()) {
       data.Set("description", disclosure.description_paragraph(0));
     }
     if (disclosure.additional_info_paragraph_size()) {
       data.Set("additionalInfo", disclosure.additional_info_paragraph(0));
     }
-    data.Set("iconUri", disclosure.icon_uri());
     disclosure_data.Append(std::move(data));
   }
   return disclosure_data;
@@ -189,10 +189,10 @@ base::Value::Dict GetSettingsUiStrings(const assistant::SettingsUi& settings_ui,
                                        bool equal_weight_buttons) {
   auto consent_ui = settings_ui.consent_flow_ui().consent_ui();
   auto activity_control_ui = consent_ui.activity_control_ui();
-  base::Value::Dict dictionary;
 
-  dictionary.Set("activityControlNeeded", activity_control_needed);
-  dictionary.Set("equalWeightButtons", equal_weight_buttons);
+  auto dictionary = base::Value::Dict()
+                        .Set("activityControlNeeded", activity_control_needed)
+                        .Set("equalWeightButtons", equal_weight_buttons);
 
   // Add activity control string constants.
   if (activity_control_needed) {

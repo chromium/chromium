@@ -157,7 +157,8 @@ def tflite_support_workspace9():
         sha256 = "bb1ddd8172b745cbdc75f06841bd9e7c9de0b3956397723d883423abfab8e176",
         strip_prefix = "protobuf-3.18.0",
         # Patched to give visibility into private targets to pybind11_protobuf
-        patches = [Label("//third_party/pybind11_protobuf:com_google_protobuf_build.patch")],
+        patches = [Label("//third_party/pybind11_protobuf:com_google_protobuf.patch")],
+        patch_args = ["-p1"],
         urls = [
             "https://github.com/protocolbuffers/protobuf/archive/v3.18.0.zip",
         ],
@@ -211,10 +212,10 @@ def tflite_support_workspace9():
 
     http_archive(
         name = "com_googlesource_code_re2",
-        sha256 = "e06b718c129f4019d6e7aa8b7631bee38d3d450dd980246bfaf493eb7db67868",
-        strip_prefix = "re2-fe4a310131c37f9a7e7f7816fa6ce2a8b27d65a8",
+        sha256 = "ef516fb84824a597c4d5d0d6d330daedb18363b5a99eda87d027e6bdd9cba299",
+        strip_prefix = "re2-03da4fc0857c285e3a26782f6bc8931c4c950df4",
         urls = [
-            "https://github.com/google/re2/archive/fe4a310131c37f9a7e7f7816fa6ce2a8b27d65a8.tar.gz",
+            "https://github.com/google/re2/archive/03da4fc0857c285e3a26782f6bc8931c4c950df4.tar.gz",
         ],
     )
 

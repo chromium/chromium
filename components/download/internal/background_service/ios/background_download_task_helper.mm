@@ -25,7 +25,7 @@
 #include "components/download/public/background_service/background_download_service.h"
 #include "components/download/public/background_service/download_params.h"
 #include "components/download/public/background_service/features.h"
-#include "net/base/mac/url_conversions.h"
+#include "net/base/apple/url_conversions.h"
 
 namespace {
 bool g_ignore_localhost_ssl_error_for_testing = false;

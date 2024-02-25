@@ -1,0 +1,25 @@
+[
+  {
+    "os": [
+      "win",
+      "linux",
+      "mac",
+      "chromeos_ash",
+      "chromeos_lacros",
+      "android",
+      "fuchsia"
+    ],
+    "policy_pref_mapping_tests": [
+      {
+        "policies": {
+          "EnterpriseHardwarePlatformAPIEnabled": false
+        },
+        "prefs": {
+          "enterprise_hardware_platform_api.enabled": {
+            "value": false
+          }
+        }
+      }
+    ]
+  }
+]

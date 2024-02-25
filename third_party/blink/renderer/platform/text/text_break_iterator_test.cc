@@ -41,10 +41,10 @@ class TextBreakIteratorTest : public testing::Test {
   void TestIsBreakable(const Vector<int> expected_break_positions,
                        const LazyLineBreakIterator& break_iterator) {
     Vector<int> break_positions;
-    int next_breakable = -1;
     for (unsigned i = 0; i <= test_string_.length(); i++) {
-      if (break_iterator.IsBreakable(i, next_breakable))
+      if (break_iterator.IsBreakable(i)) {
         break_positions.push_back(i);
+      }
     }
     EXPECT_THAT(break_positions,
                 testing::ElementsAreArray(expected_break_positions))

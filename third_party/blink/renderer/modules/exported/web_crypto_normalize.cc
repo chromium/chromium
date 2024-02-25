@@ -47,7 +47,7 @@ WebCryptoAlgorithm NormalizeCryptoAlgorithm(
     int* exception_code,
     WebString* error_details,
     v8::Isolate* isolate) {
-  ExceptionState exception_state(isolate, ExceptionState::kQueryContext,
+  ExceptionState exception_state(isolate, ExceptionContextType::kUnknown,
                                  "WebCryptoAlgorithm", "NormalizeAlgorithm");
 
   V8AlgorithmIdentifier* algorithm_identifier =

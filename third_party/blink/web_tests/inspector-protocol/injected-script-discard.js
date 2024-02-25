@@ -1,4 +1,4 @@
-(async function(testRunner) {
+(async function(/** @type {import('test_runner').TestRunner} */ testRunner) {
   testRunner.log('Tests that injected script is discarded upon front-end close.');
   var page = await testRunner.createPage();
 

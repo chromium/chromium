@@ -22,52 +22,40 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_OVERFLOW_MODEL_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_OVERFLOW_MODEL_H_
 
-#include "third_party/abseil-cpp/absl/types/optional.h"
+#include <optional>
+
 #include "third_party/blink/renderer/core/layout/geometry/physical_rect.h"
 #include "third_party/blink/renderer/platform/geometry/layout_rect.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 
 namespace blink {
 
-inline void UniteLayoutOverflowRect(LayoutRect& layout_overflow,
-                                    const LayoutRect& rect) {
-  LayoutUnit max_x = std::max(rect.MaxX(), layout_overflow.MaxX());
-  LayoutUnit max_y = std::max(rect.MaxY(), layout_overflow.MaxY());
-  LayoutUnit min_x = std::min(rect.X(), layout_overflow.X());
-  LayoutUnit min_y = std::min(rect.Y(), layout_overflow.Y());
-  // In case the width/height is larger than LayoutUnit can represent, fix the
-  // right/bottom edge and shift the top/left ones.
-  layout_overflow.SetWidth(max_x - min_x);
-  layout_overflow.SetHeight(max_y - min_y);
-  layout_overflow.SetX(max_x - layout_overflow.Width());
-  layout_overflow.SetY(max_y - layout_overflow.Height());
-}
-
 // BoxOverflowModel class tracks content that spills out of an object.
 // It is used by LayoutBox.
 //
-// All overflows are in the coordinate space of the object (i.e. physical
-// coordinates with flipped block-flow direction). See documentation of
-// LayoutBoxModelObject and LayoutBox::NoOverflowRect() for more details.
+// All overflows are in the physical coordinate space of the object. See
+// documentation of LayoutBoxModelObject and LayoutBox::NoOverflowRect() for
+// more details.
 //
 // The class models the overflows as rectangles that unite all the sources of
-// overflow. This is the natural choice for layout overflow (scrollbars are
+// overflow. This is the natural choice for scrollable overflow (scrollbars are
 // linear in nature, thus are modeled by rectangles in 2D). For visual overflow
 // and content visual overflow, this is a first order simplification though as
 // they can be thought of as a collection of (potentially overlapping)
 // rectangles.
 //
-// Layout overflow is the overflow that is reachable via scrollbars. It is used
-// to size the scrollbar thumb and determine its position, which is determined
-// by the maximum layout overflow size.
-// Layout overflow cannot occur without an overflow clip as this is the only way
-// to get scrollbars. As its name implies, it is a direct consequence of layout.
-// Example of layout overflow:
+// Scrollable overflow is the overflow that is reachable via scrollbars. It is
+// used to size the scrollbar thumb and determine its position, which is
+// determined by the maximum scrollable overflow size.
+// Scrollable overflow cannot occur without an overflow clip as this is the only
+// way to get scrollbars. As its name implies, it is a direct consequence of
+// layout.
+// Example of scrollable overflow:
 // * in the inline case, a tall image could spill out of a line box.
 // * 'height' / 'width' set to a value smaller than the one needed by the
 //   descendants.
 // Due to how scrollbars work, no overflow in the logical top and logical left
-// direction is allowed(see LayoutBox::AddLayoutOverflow).
+// direction is allowed(see LayoutBox::AddScrollableOverflow).
 //
 // Visual overflow covers all the effects that visually bleed out of the box.
 // Its primary use is to determine the area to invalidate.
@@ -103,57 +91,53 @@ inline void UniteLayoutOverflowRect(LayoutRect& layout_overflow,
 //
 // An overflow model object is allocated only when some of these fields have
 // non-default values in the owning object. Care should be taken to use adder
-// functions (AddLayoutOverflow, AddVisualOverflow, etc.) to keep this
+// functions (AddScrollableOverflow, AddVisualOverflow, etc.) to keep this
 // invariant.
-class BoxLayoutOverflowModel {
+class BoxScrollableOverflowModel {
  public:
-  BoxLayoutOverflowModel(const LayoutRect& layout_rect)
-      : layout_overflow_(layout_rect) {}
-  BoxLayoutOverflowModel(const BoxLayoutOverflowModel&) = delete;
-  BoxLayoutOverflowModel& operator=(const BoxLayoutOverflowModel&) = delete;
+  explicit BoxScrollableOverflowModel(const PhysicalRect& overflow_rect)
+      : scrollable_overflow_(overflow_rect) {}
+  BoxScrollableOverflowModel(const BoxScrollableOverflowModel&) = delete;
+  BoxScrollableOverflowModel& operator=(const BoxScrollableOverflowModel&) =
+      delete;
 
-  const LayoutRect& LayoutOverflowRect() const { return layout_overflow_; }
+  const PhysicalRect& ScrollableOverflowRect() const {
+    return scrollable_overflow_;
+  }
 
  private:
-  LayoutRect layout_overflow_;
+  PhysicalRect scrollable_overflow_;
 };
 
 class BoxVisualOverflowModel {
  public:
-  BoxVisualOverflowModel(const LayoutRect& self_visual_overflow_rect)
+  explicit BoxVisualOverflowModel(const PhysicalRect& self_visual_overflow_rect)
       : self_visual_overflow_(self_visual_overflow_rect) {}
   BoxVisualOverflowModel(const BoxVisualOverflowModel&) = delete;
   BoxVisualOverflowModel& operator=(const BoxVisualOverflowModel&) = delete;
 
-  void SetSelfVisualOverflow(const LayoutRect& rect) {
+  void SetSelfVisualOverflow(const PhysicalRect& rect) {
     self_visual_overflow_ = rect;
   }
 
-  // The resultant rectangle is in the physical coordinate system if
-  // 'LayoutNGNoLocation' flag is enabled.
-  // It's in the flipped block-flow physical coordinate system otherwise.
-  // TODO(crbug.com/1353190): Change the return type to PhysicalRect.
-  const LayoutRect& SelfVisualOverflowRect() const {
+  const PhysicalRect& SelfVisualOverflowRect() const {
     return self_visual_overflow_;
   }
-  void AddSelfVisualOverflow(const LayoutRect& rect) {
+  void AddSelfVisualOverflow(const PhysicalRect& rect) {
     self_visual_overflow_.Unite(rect);
   }
 
-  // The resultant rectangle is in the physical coordinate system if
-  // 'LayoutNGNoLocation' flag is enabled.
-  // It's in the flipped block-flow physical coordinate system otherwise.
-  // TODO(crbug.com/1353190): Change the return type to PhysicalRect.
-  const LayoutRect& ContentsVisualOverflowRect() const {
+  const PhysicalRect& ContentsVisualOverflowRect() const {
     return contents_visual_overflow_;
   }
-  void AddContentsVisualOverflow(const LayoutRect& rect) {
+  void AddContentsVisualOverflow(const PhysicalRect& rect) {
     contents_visual_overflow_.Unite(rect);
   }
 
   void Move(LayoutUnit dx, LayoutUnit dy) {
-    self_visual_overflow_.Move(dx, dy);
-    contents_visual_overflow_.Move(dx, dy);
+    PhysicalOffset offset(dx, dy);
+    self_visual_overflow_.Move(offset);
+    contents_visual_overflow_.Move(offset);
   }
 
   void SetHasSubpixelVisualEffectOutsets(bool b) {
@@ -164,23 +148,23 @@ class BoxVisualOverflowModel {
   }
 
  private:
-  LayoutRect self_visual_overflow_;
-  LayoutRect contents_visual_overflow_;
+  PhysicalRect self_visual_overflow_;
+  PhysicalRect contents_visual_overflow_;
   bool has_subpixel_visual_effect_outsets_ = false;
 };
 
 struct BoxOverflowModel : public GarbageCollected<BoxOverflowModel> {
-  absl::optional<BoxLayoutOverflowModel> layout_overflow;
-  absl::optional<BoxVisualOverflowModel> visual_overflow;
+  std::optional<BoxScrollableOverflowModel> scrollable_overflow;
+  std::optional<BoxVisualOverflowModel> visual_overflow;
 
   // Used by BoxPaintInvalidator. Stores the previous overflow data after the
   // last paint invalidation.
   struct PreviousOverflowData {
-    PhysicalRect previous_physical_layout_overflow_rect;
-    PhysicalRect previous_physical_visual_overflow_rect;
-    PhysicalRect previous_physical_self_visual_overflow_rect;
+    PhysicalRect previous_scrollable_overflow_rect;
+    PhysicalRect previous_visual_overflow_rect;
+    PhysicalRect previous_self_visual_overflow_rect;
   };
-  absl::optional<PreviousOverflowData> previous_overflow_data;
+  std::optional<PreviousOverflowData> previous_overflow_data;
 
   void Trace(Visitor*) const {}
 };

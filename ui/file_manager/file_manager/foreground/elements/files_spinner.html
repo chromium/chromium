@@ -29,18 +29,11 @@ found in the LICENSE file.
 
   circle {
     animation: spin 1.34s ease infinite;
+    stroke: var(--cros-sys-primary);
     stroke-dasharray: 65;
     stroke-linecap: round;
     stroke-width: 3px;
     transform-origin: 50% 50%;
-  }
-
-  :host-context([theme='legacy']) circle {
-    stroke: var(--cros-icon-color-prominent);
-  }
-
-  :host-context([theme='refresh23']) circle {
-    stroke: var(--cros-sys-primary);
   }
 
   @keyframes spin {

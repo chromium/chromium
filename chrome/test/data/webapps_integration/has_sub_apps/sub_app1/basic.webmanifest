@@ -1,0 +1,28 @@
+{
+  "name": "Sub App 1",
+  "icons": [
+    {
+      "src": "48x48-blue.png",
+      "sizes": "48x48",
+      "type": "image/png"
+    },
+    {
+      "src": "128x128-blue.png",
+      "sizes": "128x128",
+      "type": "image/png"
+    },
+    {
+      "src": "192x192-blue.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "256x256-blue.png",
+      "sizes": "256x256",
+      "type": "image/png"
+    }
+  ],
+  "start_url": "/sub_app1/basic.html",
+  "scope": "/sub_app1",
+  "display": "standalone"
+}

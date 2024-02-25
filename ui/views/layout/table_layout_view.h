@@ -18,8 +18,9 @@
 namespace views {
 
 class VIEWS_EXPORT TableLayoutView : public View {
+  METADATA_HEADER(TableLayoutView, View)
+
  public:
-  METADATA_HEADER(TableLayoutView);
   TableLayoutView() = default;
   TableLayoutView(const TableLayoutView&) = delete;
   TableLayoutView& operator=(const TableLayoutView&) = delete;
@@ -39,7 +40,6 @@ class VIEWS_EXPORT TableLayoutView : public View {
   TableLayoutView& LinkColumnSizes(std::vector<size_t> columns);
   TableLayoutView& SetLinkedColumnSizeLimit(int size_limit);
   TableLayoutView& SetMinimumSize(const gfx::Size& size);
-  TableLayoutView& SetIncludeHidden(bool include_hidden);
 
  private:
   raw_ptr<TableLayout> table_layout_ =
@@ -60,7 +60,6 @@ VIEW_BUILDER_METHOD(AddPaddingRow, float, int)
 VIEW_BUILDER_METHOD(LinkColumnSizes, std::vector<size_t>)
 VIEW_BUILDER_PROPERTY(int, LinkedColumnSizeLimit)
 VIEW_BUILDER_PROPERTY(gfx::Size, MinimumSize)
-VIEW_BUILDER_PROPERTY(bool, IncludeHidden)
 END_VIEW_BUILDER
 
 }  // namespace views

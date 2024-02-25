@@ -5,12 +5,12 @@
 #include "chrome/browser/ash/arc/fileapi/file_stream_forwarder.h"
 
 #include <algorithm>
+#include <string_view>
 #include <utility>
 
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
-#include "base/strings/string_piece.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "content/public/browser/browser_task_traits.h"
@@ -120,7 +120,7 @@ void FileStreamForwarder::OnReadCompleted(int result) {
       base::BindOnce(
           [](int fd, scoped_refptr<net::IOBuffer> buf, int size) {
             const bool result = base::WriteFileDescriptor(
-                fd, base::StringPiece(buf->data(), size));
+                fd, std::string_view(buf->data(), size));
             PLOG_IF(ERROR, !result) << "Write failed.";
             return result;
           },

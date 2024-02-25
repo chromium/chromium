@@ -6,10 +6,10 @@
 #define CHROMEOS_ASH_COMPONENTS_BROWSER_CONTEXT_HELPER_BROWSER_CONTEXT_HELPER_H_
 
 #include <string>
+#include <string_view>
 
 #include "base/component_export.h"
 #include "base/files/file_path.h"
-#include "base/strings/string_piece.h"
 
 class AccountId;
 
@@ -51,6 +51,12 @@ class COMPONENT_EXPORT(ASH_BROWSER_CONTEXT_HELPER) BrowserContextHelper {
     // Returns the primary off-the-record BrowserContext instance corresponding
     // to the given `browser_context`. If there is not, creates the one.
     virtual content::BrowserContext* GetOrCreatePrimaryOTRBrowserContext(
+        content::BrowserContext* browser_context) = 0;
+
+    // Returns the original BrowserContext instance. If the given
+    // `browser_context` is not an off-the-record browser context, itself will
+    // be returned.
+    virtual content::BrowserContext* GetOriginalBrowserContext(
         content::BrowserContext* browser_context) = 0;
 
     // Returns the path to the user data directory.
@@ -95,11 +101,11 @@ class COMPONENT_EXPORT(ASH_BROWSER_CONTEXT_HELPER) BrowserContextHelper {
 
   // Returns user browser context dir in a format of "u-${user_id_hash}".
   static std::string GetUserBrowserContextDirName(
-      base::StringPiece user_id_hash);
+      std::string_view user_id_hash);
 
   // Returns browser context path that corresponds to the given |user_id_hash|.
   base::FilePath GetBrowserContextPathByUserIdHash(
-      base::StringPiece user_id_hash);
+      std::string_view user_id_hash);
 
   // Returns the path of signin browser context.
   base::FilePath GetSigninBrowserContextPath() const;

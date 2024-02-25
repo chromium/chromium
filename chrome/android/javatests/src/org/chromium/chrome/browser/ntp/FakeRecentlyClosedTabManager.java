@@ -11,12 +11,9 @@ import org.chromium.chrome.browser.tabmodel.TabModel;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * A fake implementation of {@link RecentlyClosedTabManager} for testing purposes.
- */
+/** A fake implementation of {@link RecentlyClosedTabManager} for testing purposes. */
 public class FakeRecentlyClosedTabManager implements RecentlyClosedTabManager {
-    @Nullable
-    private Runnable mEntriesUpdatedRunnable;
+    @Nullable private Runnable mEntriesUpdatedRunnable;
     private List<RecentlyClosedEntry> mTabs = new ArrayList<>();
 
     public FakeRecentlyClosedTabManager() {

@@ -2,9 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {Origin} from 'chrome://resources/mojo/url/mojom/origin.mojom-webui.js';
+import type {Origin} from 'chrome://resources/mojo/url/mojom/origin.mojom-webui.js';
 
-import {BucketTableEntry, QuotaInternalsHandler} from './quota_internals.mojom-webui.js';
+import type {BucketTableEntry} from './quota_internals.mojom-webui.js';
+import {QuotaInternalsHandler} from './quota_internals.mojom-webui.js';
 
 export enum StorageType {
   TEMPORARY = 0,
@@ -63,10 +64,11 @@ export class QuotaInternalsBrowserProxy {
     const originToTest = (document.body.querySelector<HTMLInputElement>(
         '#origin-to-test'))!.value;
     const originUrl = new URL(originToTest);
-    const newOrigin = new Origin();
-    newOrigin.scheme = originUrl.protocol.replace(/:$/, '');
-    newOrigin.host = originUrl.host;
-    newOrigin.port = urlPort(originUrl);
+    const newOrigin: Origin = {
+      scheme: originUrl.protocol.replace(/:$/, ''),
+      host: originUrl.host,
+      port: urlPort(originUrl),
+    };
 
     this.handler.simulateStoragePressure(newOrigin);
   }

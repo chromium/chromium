@@ -29,9 +29,9 @@ struct FaviconRawBitmapResult;
 // View with the name of a site and a toggle to change the permission of that
 // site.
 class ContentSettingSiteRowView : public views::View {
- public:
-  METADATA_HEADER(ContentSettingSiteRowView);
+  METADATA_HEADER(ContentSettingSiteRowView, views::View)
 
+ public:
   using ToggleCallback =
       base::RepeatingCallback<void(const net::SchemefulSite& site,
                                    bool allowed)>;

@@ -11,6 +11,8 @@
 #include "third_party/blink/renderer/core/dom/tree_scope.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/layout/svg/layout_svg_resource_container.h"
+#include "third_party/blink/renderer/core/loader/resource/image_resource_content.h"
+#include "third_party/blink/renderer/core/svg/graphics/svg_image.h"
 #include "third_party/blink/renderer/core/svg/svg_resource_client.h"
 #include "third_party/blink/renderer/core/svg/svg_resource_document_content.h"
 #include "third_party/blink/renderer/core/svg/svg_uri_reference.h"
@@ -28,6 +30,7 @@ SVGResource::~SVGResource() = default;
 void SVGResource::Trace(Visitor* visitor) const {
   visitor->Trace(target_);
   visitor->Trace(clients_);
+  visitor->Trace(observer_wrappers_);
 }
 
 void SVGResource::AddClient(SVGResourceClient& client) {
@@ -40,7 +43,7 @@ void SVGResource::AddClient(SVGResourceClient& client) {
 
 void SVGResource::RemoveClient(SVGResourceClient& client) {
   auto it = clients_.find(&client);
-  DCHECK(it != clients_.end());
+  CHECK_NE(it, clients_.end());
   it->value.count--;
   if (it->value.count)
     return;
@@ -49,6 +52,59 @@ void SVGResource::RemoveClient(SVGResourceClient& client) {
   // resource's cache.
   if (LayoutSVGResourceContainer* container = ResourceContainerNoCycleCheck())
     container->RemoveClientFromCache(client);
+}
+
+class SVGResource::ImageResourceObserverWrapper
+    : public GarbageCollected<SVGResource::ImageResourceObserverWrapper>,
+      public SVGResourceClient {
+ public:
+  explicit ImageResourceObserverWrapper(ImageResourceObserver& observer)
+      : observer_(observer) {}
+
+  void IncRef() { count_++; }
+  bool DecRef() {
+    --count_;
+    return count_ == 0;
+  }
+
+  void Trace(Visitor* visitor) const override {
+    visitor->Trace(observer_);
+    SVGResourceClient::Trace(visitor);
+  }
+
+ private:
+  void ResourceContentChanged(SVGResource* resource) override {
+    observer_->ImageChanged(static_cast<WrappedImagePtr>(resource),
+                            ImageResourceObserver::CanDeferInvalidation::kNo);
+  }
+
+  Member<ImageResourceObserver> observer_;
+  int count_ = 0;
+};
+
+void SVGResource::AddObserver(ImageResourceObserver& observer) {
+  auto& wrapper =
+      observer_wrappers_.insert(&observer, nullptr).stored_value->value;
+  if (!wrapper) {
+    wrapper = MakeGarbageCollected<ImageResourceObserverWrapper>(observer);
+    AddClient(*wrapper);
+  }
+  wrapper->IncRef();
+}
+
+void SVGResource::RemoveObserver(ImageResourceObserver& observer) {
+  auto it = observer_wrappers_.find(&observer);
+  CHECK_NE(it, observer_wrappers_.end());
+  if (it->value->DecRef()) {
+    RemoveClient(*it->value);
+    observer_wrappers_.erase(it);
+  }
+}
+
+SVGResourceClient* SVGResource::GetObserverResourceClient(
+    ImageResourceObserver& observer) {
+  auto it = observer_wrappers_.find(&observer);
+  return it != observer_wrappers_.end() ? it->value : nullptr;
 }
 
 void SVGResource::InvalidateCycleCache() {
@@ -235,6 +291,54 @@ void ExternalSVGResource::Trace(Visitor* visitor) const {
   visitor->Trace(document_content_);
   SVGResource::Trace(visitor);
   ResourceClient::Trace(visitor);
+}
+
+ExternalSVGResourceImageContent::ExternalSVGResourceImageContent(
+    ImageResourceContent* image_content,
+    const AtomicString& fragment)
+    : image_content_(image_content), fragment_(fragment) {
+  image_content_->AddObserver(this);
+}
+
+void ExternalSVGResourceImageContent::Prefinalize() {
+  image_content_->DidRemoveObserver();
+  image_content_ = nullptr;
+}
+
+Element* ExternalSVGResourceImageContent::ResolveTarget() {
+  if (!image_content_->IsLoaded() || image_content_->ErrorOccurred()) {
+    return nullptr;
+  }
+  if (!fragment_) {
+    return nullptr;
+  }
+  auto* svg_image = DynamicTo<SVGImage>(image_content_->GetImage());
+  if (!svg_image) {
+    return nullptr;
+  }
+  AtomicString decoded_fragment(
+      DecodeURLEscapeSequences(fragment_, DecodeURLMode::kUTF8OrIsomorphic));
+  return svg_image->GetResourceElement(decoded_fragment);
+}
+
+void ExternalSVGResourceImageContent::ImageNotifyFinished(
+    ImageResourceContent*) {
+  Element* new_target = ResolveTarget();
+  if (new_target == target_) {
+    return;
+  }
+  target_ = new_target;
+  NotifyContentChanged();
+}
+
+String ExternalSVGResourceImageContent::DebugName() const {
+  return "ExternalSVGResourceImageContent";
+}
+
+void ExternalSVGResourceImageContent::Trace(Visitor* visitor) const {
+  visitor->Trace(image_content_);
+  SVGResource::Trace(visitor);
+  ImageResourceObserver::Trace(visitor);
 }
 
 }  // namespace blink

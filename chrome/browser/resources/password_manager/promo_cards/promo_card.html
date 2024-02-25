@@ -29,13 +29,24 @@
   }
 
   #closeButton {
+    margin-top: 10px;
+    margin-right: 10px;
     margin-bottom: auto;
   }
 </style>
 <picture id="image">
-  <source class="banner" srcset="./images/[[promoCard.id]]_dark.svg"
-      media="(prefers-color-scheme: dark)">
-  <img class="banner" alt="" src="./images/[[promoCard.id]].svg">
+  <if expr="_google_chrome">
+    <source class="banner" srcset="./images/[[promoCard.id]]_dark.svg"
+        media="(prefers-color-scheme: dark)">
+    <img class="banner" alt="" src="./images/[[promoCard.id]].svg">
+  </if>
+  <if expr="not _google_chrome">
+    <source class="banner"
+        srcset="./images/[[promoCard.id]]_dark_non_branded.svg "
+        media="(prefers-color-scheme: dark)">
+    <img class="banner" alt=""
+        src="./images/[[promoCard.id]]_non_branded.svg ">
+  </if>
 </picture>
 <div id="promoContent">
   <span id="title" class="label">[[promoCard.title]]</span>

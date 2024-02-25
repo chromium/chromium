@@ -50,18 +50,15 @@ import org.chromium.components.omnibox.suggestions.OmniboxSuggestionUiType;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.url.GURL;
 import org.chromium.url.JUnitTestGURLs;
-import org.chromium.url.ShadowGURL;
 
-/**
- * Tests for {@link EntitySuggestionProcessor}.
- */
+/** Tests for {@link EntitySuggestionProcessor}. */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(manifest = Config.NONE, shadows = {ShadowGURL.class})
+@Config(manifest = Config.NONE)
 @CommandLineFlags.Add(BaseSwitches.DISABLE_LOW_END_DEVICE_MODE)
 public class EntitySuggestionProcessorUnitTest {
-    private static final GURL WEB_URL = JUnitTestGURLs.getGURL(JUnitTestGURLs.URL_1);
-    private static final GURL WEB_URL_2 = JUnitTestGURLs.getGURL(JUnitTestGURLs.URL_2);
-    private static final GURL SEARCH_URL = JUnitTestGURLs.getGURL(JUnitTestGURLs.SEARCH_URL);
+    private static final GURL WEB_URL = JUnitTestGURLs.URL_1;
+    private static final GURL WEB_URL_2 = JUnitTestGURLs.URL_2;
+    private static final GURL SEARCH_URL = JUnitTestGURLs.SEARCH_URL;
 
     public @Rule MockitoRule mMockitoRule = MockitoJUnit.rule();
 
@@ -74,8 +71,8 @@ public class EntitySuggestionProcessorUnitTest {
     private EntitySuggestionProcessor mProcessor;
 
     /**
-     * Base Suggestion class that can be used for testing.
-     * Holds all mechanisms that are required to processSuggestion and validate suggestions.
+     * Base Suggestion class that can be used for testing. Holds all mechanisms that are required to
+     * processSuggestion and validate suggestions.
      */
     class SuggestionTestHelper {
         // Stores created AutocompleteMatch
@@ -116,8 +113,13 @@ public class EntitySuggestionProcessorUnitTest {
 
     @Before
     public void setUp() {
-        mProcessor = new EntitySuggestionProcessor(ContextUtils.getApplicationContext(),
-                mSuggestionHost, mTextProvider, mImageSupplier, mBookmarkState);
+        mProcessor =
+                new EntitySuggestionProcessor(
+                        ContextUtils.getApplicationContext(),
+                        mSuggestionHost,
+                        mTextProvider,
+                        mImageSupplier,
+                        mBookmarkState);
         doReturn("").when(mTextProvider).getTextWithoutAutocomplete();
     }
 
@@ -126,9 +128,11 @@ public class EntitySuggestionProcessorUnitTest {
     public void contentTest_basicContent() {
         SuggestionTestHelper suggHelper = createSuggestion("subject", "details", null, SEARCH_URL);
         processSuggestion(suggHelper);
-        Assert.assertEquals("subject",
+        Assert.assertEquals(
+                "subject",
                 suggHelper.mModel.get(SuggestionViewProperties.TEXT_LINE_1_TEXT).toString());
-        Assert.assertEquals("details",
+        Assert.assertEquals(
+                "details",
                 suggHelper.mModel.get(SuggestionViewProperties.TEXT_LINE_2_TEXT).toString());
     }
 
@@ -199,8 +203,13 @@ public class EntitySuggestionProcessorUnitTest {
     @Test
     @SmallTest
     public void fetchImage_withoutSupplier() {
-        mProcessor = new EntitySuggestionProcessor(ContextUtils.getApplicationContext(),
-                mSuggestionHost, mTextProvider, /*imageSupplier=*/null, mBookmarkState);
+        mProcessor =
+                new EntitySuggestionProcessor(
+                        ContextUtils.getApplicationContext(),
+                        mSuggestionHost,
+                        mTextProvider,
+                        /* imageSupplier= */ null,
+                        mBookmarkState);
         SuggestionTestHelper suggHelper = createSuggestion("", "", "red", WEB_URL);
         processSuggestion(suggHelper);
         verifyNoMoreInteractions(mImageSupplier);
@@ -225,5 +234,12 @@ public class EntitySuggestionProcessorUnitTest {
     @Test
     public void getViewTypeId_forFullTestCoverage() {
         Assert.assertEquals(OmniboxSuggestionUiType.ENTITY_SUGGESTION, mProcessor.getViewTypeId());
+    }
+
+    @Test
+    public void populateModel_suggestionTextDoesNotWrap() {
+        SuggestionTestHelper suggHelper = createSuggestion("subject", "details", null, SEARCH_URL);
+        processSuggestion(suggHelper);
+        Assert.assertFalse(suggHelper.mModel.get(SuggestionViewProperties.ALLOW_WRAP_AROUND));
     }
 }

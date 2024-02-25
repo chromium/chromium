@@ -89,7 +89,7 @@ class BLINK_EXPORT AnchorElementInteractionTracker
   void SetTaskRunnerForTesting(
       scoped_refptr<base::SingleThreadTaskRunner> task_runner,
       const base::TickClock* clock);
-  Document* GetDocument() { return document_; }
+  Document* GetDocument() { return document_.Get(); }
 
  private:
   HTMLAnchorElement* FirstAnchorElementIncludingSelf(Node* node);

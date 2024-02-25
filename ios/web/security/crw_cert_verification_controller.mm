@@ -141,8 +141,8 @@ using web::WebThread;
       certStatus |= net::CERT_STATUS_AUTHORITY_INVALID;
       break;
     default:
-      certStatus |=
-          net::CertVerifyProcIOS::GetCertFailureStatusFromError(trustError);
+      certStatus |= net::CertVerifyProcIOS::GetCertFailureStatusFromError(
+          trustError.get());
       if (!net::IsCertStatusError(certStatus)) {
         certStatus |= net::CERT_STATUS_INVALID;
       }
@@ -232,29 +232,16 @@ using web::WebThread;
   }
 
   // Check if user has decided to proceed with this bad cert.
-  // TODO(crbug.com/1418068): Remove after minimum version required is >=
-  // iOS 15.
-  scoped_refptr<net::X509Certificate> leafCert = nil;
-  if (@available(iOS 15.0, *)) {
-    base::apple::ScopedCFTypeRef<CFArrayRef> certificateChain(
-        SecTrustCopyCertificateChain(trust));
-    SecCertificateRef secCertificate =
-        base::apple::CFCastStrict<SecCertificateRef>(
-            CFArrayGetValueAtIndex(certificateChain, 0));
-    leafCert = net::x509_util::CreateX509CertificateFromSecCertificate(
-        base::apple::ScopedCFTypeRef<SecCertificateRef>(
-            secCertificate, base::scoped_policy::RETAIN),
-        {});
-  }
-#if __IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_15_0
-  else {
-    leafCert = net::x509_util::CreateX509CertificateFromSecCertificate(
-        base::apple::ScopedCFTypeRef<SecCertificateRef>(
-            SecTrustGetCertificateAtIndex(trust, 0),
-            base::scoped_policy::RETAIN),
-        {});
-  }
-#endif  // __IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_15_0
+  base::apple::ScopedCFTypeRef<CFArrayRef> certificateChain(
+      SecTrustCopyCertificateChain(trust));
+  SecCertificateRef secCertificate =
+      base::apple::CFCastStrict<SecCertificateRef>(
+          CFArrayGetValueAtIndex(certificateChain.get(), 0));
+  scoped_refptr<net::X509Certificate> leafCert =
+      net::x509_util::CreateX509CertificateFromSecCertificate(
+          base::apple::ScopedCFTypeRef<SecCertificateRef>(
+              secCertificate, base::scoped_policy::RETAIN),
+          {});
 
   if (!leafCert)
     return web::CERT_ACCEPT_POLICY_NON_RECOVERABLE_ERROR;

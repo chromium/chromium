@@ -8,6 +8,7 @@
 #include <stddef.h>
 
 #include <memory>
+#include <optional>
 #include <set>
 
 #include "base/memory/raw_ptr.h"
@@ -19,7 +20,6 @@
 #include "net/base/net_errors.h"
 #include "services/network/public/cpp/network_connection_tracker.h"
 #include "services/network/public/mojom/network_change_manager.mojom.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
 namespace content {
@@ -73,7 +73,7 @@ class NetErrorAutoReloader
 
   // Returns the timer used internally to schedule the next auto-reload task,
   // or null if no auto-reload task is currently scheduled.
-  absl::optional<base::OneShotTimer>& next_reload_timer_for_testing() {
+  std::optional<base::OneShotTimer>& next_reload_timer_for_testing() {
     return next_reload_timer_;
   }
 
@@ -103,9 +103,10 @@ class NetErrorAutoReloader
 
   raw_ptr<network::NetworkConnectionTracker> connection_tracker_;
   bool is_online_ = true;
-  std::set<content::NavigationHandle*> pending_navigations_;
-  absl::optional<base::OneShotTimer> next_reload_timer_;
-  absl::optional<ErrorPageInfo> current_reloadable_error_page_info_;
+  std::set<raw_ptr<content::NavigationHandle, SetExperimental>>
+      pending_navigations_;
+  std::optional<base::OneShotTimer> next_reload_timer_;
+  std::optional<ErrorPageInfo> current_reloadable_error_page_info_;
   size_t num_reloads_for_current_error_ = 0;
   bool is_auto_reload_in_progress_ = false;
   base::WeakPtrFactory<NetErrorAutoReloader> weak_ptr_factory_{this};

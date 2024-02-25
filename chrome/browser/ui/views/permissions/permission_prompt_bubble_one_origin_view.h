@@ -7,6 +7,10 @@
 
 #include "chrome/browser/ui/views/permissions/permission_prompt_bubble_base_view.h"
 
+#if !BUILDFLAG(IS_CHROMEOS) && !BUILDFLAG(IS_FUCHSIA)
+#include "chrome/browser/ui/views/media_preview/media_coordinator.h"
+#endif
+
 // Bubble that prompts the user to grant or deny a permission request from one
 // origin.
 //
@@ -35,10 +39,26 @@ class PermissionPromptBubbleOneOriginView
       const PermissionPromptBubbleOneOriginView&) = delete;
   ~PermissionPromptBubbleOneOriginView() override;
 
+  // PermissionPromptBubbleBaseView:
+  void RunButtonCallback(int button_id) override;
+
  private:
+  // PermissionPromptBubbleBaseView:
+  void ChildPreferredSizeChanged(views::View* child) override;
+
   // Add a line for the |request| at |index| of the view.
   void AddRequestLine(permissions::PermissionRequest* request,
                       std::size_t index);
+
+  // Adds Media (Camera / Mic) live preview feeds.
+  void MaybeAddMediaPreview(
+      std::vector<std::string> requested_audio_capture_device_id,
+      std::vector<std::string> requested_video_capture_device_id,
+      size_t index);
+
+#if !BUILDFLAG(IS_CHROMEOS) && !BUILDFLAG(IS_FUCHSIA)
+  std::optional<MediaCoordinator> media_preview_coordinator_;
+#endif
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_PERMISSIONS_PERMISSION_PROMPT_BUBBLE_ONE_ORIGIN_VIEW_H_

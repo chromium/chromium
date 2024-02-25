@@ -27,7 +27,7 @@
 #include "chrome/common/extensions/api/passwords_private.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/common/url_constants.h"
-#include "chrome/grit/chromium_strings.h"
+#include "chrome/grit/branded_strings.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/prefs/pref_service.h"
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
@@ -102,10 +102,10 @@ bool IsUnmutedCompromisedCredential(
     return false;
   return base::ranges::any_of(
       entry.compromised_info->compromise_types, [](auto type) {
-        return type ==
-                   extensions::api::passwords_private::COMPROMISE_TYPE_LEAKED ||
+        return type == extensions::api::passwords_private::CompromiseType::
+                           kLeaked ||
                type ==
-                   extensions::api::passwords_private::COMPROMISE_TYPE_PHISHED;
+                   extensions::api::passwords_private::CompromiseType::kPhished;
       });
 }
 
@@ -114,7 +114,8 @@ bool IsCredentialWeak(
   DCHECK(entry.compromised_info);
   return base::ranges::any_of(
       entry.compromised_info->compromise_types, [](auto type) {
-        return type == extensions::api::passwords_private::COMPROMISE_TYPE_WEAK;
+        return type ==
+               extensions::api::passwords_private::CompromiseType::kWeak;
       });
 }
 
@@ -124,7 +125,7 @@ bool IsCredentialReused(
   return base::ranges::any_of(
       entry.compromised_info->compromise_types, [](auto type) {
         return type ==
-               extensions::api::passwords_private::COMPROMISE_TYPE_REUSED;
+               extensions::api::passwords_private::CompromiseType::kReused;
       });
 }
 
@@ -190,7 +191,7 @@ void SafetyCheckHandler::PerformSafetyCheck() {
       GetStringForSafeBrowsing(safe_browsing_status_));
 
   if (!version_updater_) {
-    version_updater_.reset(VersionUpdater::Create(web_ui()->GetWebContents()));
+    version_updater_ = VersionUpdater::Create(web_ui()->GetWebContents());
   }
   DCHECK(version_updater_);
   if (!update_helper_) {
@@ -391,10 +392,6 @@ void SafetyCheckHandler::OnExtensionsCheckResult(
             GetStringForExtensions(status, Blocklisted(blocklisted),
                                    reenabled_user, reenabled_admin));
   FireWebUIListener(kExtensionsEvent, event);
-  if (status != ExtensionsStatus::kChecking) {
-    base::UmaHistogramEnumeration("Settings.SafetyCheck.ExtensionsResult",
-                                  status);
-  }
   extensions_status_ = status;
   CompleteParentIfChildrenCompleted();
 }
@@ -430,7 +427,7 @@ std::u16string SafetyCheckHandler::GetStringForUpdates(UpdateStatus status) {
     case UpdateStatus::kDisabledByAdmin:
       return l10n_util::GetStringFUTF16(
           IDS_SETTINGS_SAFETY_CHECK_UPDATES_DISABLED_BY_ADMIN,
-          base::ASCIIToUTF16(chrome::kWhoIsMyAdministratorHelpURL));
+          chrome::kWhoIsMyAdministratorHelpURL);
     // This status is only used in ChromeOS.
     case UpdateStatus::kUpdateToRollbackVersionDisallowed:
       return l10n_util::GetStringUTF16(
@@ -441,7 +438,7 @@ std::u16string SafetyCheckHandler::GetStringForUpdates(UpdateStatus status) {
     case UpdateStatus::kFailed:
       return l10n_util::GetStringFUTF16(
           IDS_SETTINGS_SAFETY_CHECK_UPDATES_FAILED,
-          base::ASCIIToUTF16(chrome::kChromeFixUpdateProblems));
+          chrome::kChromeFixUpdateProblems);
     case UpdateStatus::kUnknown:
       return VersionUI::GetAnnotatedVersionStringForUi();
     // This state is only used on Android for recording metrics. This codepath
@@ -469,7 +466,7 @@ std::u16string SafetyCheckHandler::GetStringForSafeBrowsing(
     case SafeBrowsingStatus::kDisabledByAdmin:
       return l10n_util::GetStringFUTF16(
           IDS_SETTINGS_SAFETY_CHECK_SAFE_BROWSING_DISABLED_BY_ADMIN,
-          base::ASCIIToUTF16(chrome::kWhoIsMyAdministratorHelpURL));
+          chrome::kWhoIsMyAdministratorHelpURL);
     case SafeBrowsingStatus::kDisabledByExtension:
       return l10n_util::GetStringUTF16(
           IDS_SETTINGS_SAFETY_CHECK_SAFE_BROWSING_DISABLED_BY_EXTENSION);
@@ -779,7 +776,7 @@ void SafetyCheckHandler::OnCredentialDone(
       passwords_delegate_->GetPasswordCheckStatus();
   // Send progress updates only if the check is still running.
   if (status.state ==
-          extensions::api::passwords_private::PASSWORD_CHECK_STATE_RUNNING &&
+          extensions::api::passwords_private::PasswordCheckState::kRunning &&
       status.already_processed && status.remaining_in_queue) {
     Done done = Done(*(status.already_processed));
     Total total = Total(*(status.remaining_in_queue) + done.value());
@@ -793,7 +790,7 @@ void SafetyCheckHandler::OnInsecureCredentialsChanged() {
       passwords_delegate_->GetPasswordCheckStatus();
   // Ignore the event, unless the password check is idle with no errors.
   if (status.state !=
-      extensions::api::passwords_private::PASSWORD_CHECK_STATE_IDLE) {
+      extensions::api::passwords_private::PasswordCheckState::kIdle) {
     return;
   }
   UpdatePasswordsResultOnCheckIdle();

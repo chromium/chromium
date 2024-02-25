@@ -8,6 +8,7 @@
 #include "third_party/blink/renderer/bindings/core/v8/v8_union_urlpatterninit_usvstring.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_url_pattern_init.h"
 #include "third_party/blink/renderer/core/dom/document.h"
+#include "third_party/blink/renderer/core/execution_context/agent.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/frame/settings.h"
 #include "third_party/blink/renderer/core/frame/web_feature.h"
@@ -22,12 +23,14 @@ namespace {
 class URLPatternHistogramTest : public PageTestBase {
  protected:
   URLPattern* MakeURLPattern(const String& pattern) {
-    return URLPattern::Create(MakeGarbageCollected<V8URLPatternInput>(pattern),
+    return URLPattern::Create(GetDocument().GetAgent().isolate(),
+                              MakeGarbageCollected<V8URLPatternInput>(pattern),
                               ASSERT_NO_EXCEPTION);
   }
 
   URLPattern* MakeURLPattern(const String& pattern, const String& base) {
-    return URLPattern::Create(MakeGarbageCollected<V8URLPatternInput>(pattern),
+    return URLPattern::Create(GetDocument().GetAgent().isolate(),
+                              MakeGarbageCollected<V8URLPatternInput>(pattern),
                               base, ASSERT_NO_EXCEPTION);
   }
 
@@ -70,6 +73,7 @@ class URLPatternHistogramTest : public PageTestBase {
 
   URLPattern* MakeURLPattern(const URLPatternInitStruct& init) {
     return URLPattern::Create(
+        GetDocument().GetAgent().isolate(),
         MakeGarbageCollected<V8URLPatternInput>(init.ToDictionary()),
         ASSERT_NO_EXCEPTION);
   }
@@ -92,6 +96,10 @@ class URLPatternHistogramTest : public PageTestBase {
              << " did not log feature " << feature;
     }
   }
+
+  // This histogram does not function correctly when the new behavior is
+  // enabled.
+  ScopedURLPatternWildcardMoreOftenForTest new_behavior{false};
 };
 
 TEST_F(URLPatternHistogramTest, OmittedSearchAndHashInString) {

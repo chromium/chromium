@@ -106,7 +106,7 @@ bool IndividualSettings::Parse(const base::Value::Dict& dict,
   // the webstore.
   if (is_policy_installed &&
       !extension_urls::IsWebstoreUpdateUrl(GURL(update_url))) {
-    const absl::optional<bool> is_update_url_overridden =
+    const std::optional<bool> is_update_url_overridden =
         dict.FindBool(schema_constants::kOverrideUpdateUrl);
     if (is_update_url_overridden)
       override_update_url = is_update_url_overridden.value();
@@ -230,6 +230,12 @@ bool IndividualSettings::Parse(const base::Value::Dict& dict,
       LOG(WARNING) << kMalformedPreferenceWarning;
       return false;
     }
+  }
+
+  const std::optional<bool> is_file_url_navigation_allowed =
+      dict.FindBool(schema_constants::kFileUrlNavigationAllowed);
+  if (is_file_url_navigation_allowed) {
+    file_url_navigation_allowed = is_file_url_navigation_allowed.value();
   }
 
   return true;

@@ -5,21 +5,24 @@
 #import "ios/chrome/browser/ui/toolbar/buttons/toolbar_button_actions_handler.h"
 
 #import "base/apple/foundation_util.h"
+#import "base/memory/raw_ptr.h"
 #import "base/metrics/user_metrics.h"
 #import "base/metrics/user_metrics_action.h"
 #import "components/feature_engagement/public/event_constants.h"
 #import "components/feature_engagement/public/tracker.h"
+#import "ios/chrome/browser/intents/intents_donation_helper.h"
+#import "ios/chrome/browser/iph_for_new_chrome_user/model/tab_based_iph_browser_agent.h"
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/shared/public/commands/activity_service_commands.h"
 #import "ios/chrome/browser/shared/public/commands/application_commands.h"
 #import "ios/chrome/browser/shared/public/commands/omnibox_commands.h"
 #import "ios/chrome/browser/shared/public/commands/open_new_tab_command.h"
 #import "ios/chrome/browser/shared/public/commands/popup_menu_commands.h"
-#import "ios/chrome/browser/web/web_navigation_browser_agent.h"
+#import "ios/chrome/browser/web/model/web_navigation_browser_agent.h"
 #import "url/gurl.h"
 
 @implementation ToolbarButtonActionsHandler {
-  feature_engagement::Tracker* _engagementTracker;
+  raw_ptr<feature_engagement::Tracker> _engagementTracker;
 }
 
 - (instancetype)initWithEngagementTracker:
@@ -34,13 +37,16 @@
 
 - (void)backAction {
   self.navigationAgent->GoBack();
+  self.tabBasedIPHAgent->NotifyBackForwardButtonTap();
 }
 
 - (void)forwardAction {
   self.navigationAgent->GoForward();
+  self.tabBasedIPHAgent->NotifyBackForwardButtonTap();
 }
 
 - (void)tabGridTouchDown {
+  [IntentDonationHelper donateIntent:IntentType::kOpenTabGrid];
   [self.applicationHandler prepareTabSwitcher];
 }
 
@@ -81,6 +87,8 @@
 
   _engagementTracker->NotifyEvent(
       feature_engagement::events::kNewTabToolbarItemUsed);
+
+  [IntentDonationHelper donateIntent:IntentType::kOpenNewTab];
 }
 
 - (void)cancelOmniboxFocusAction {

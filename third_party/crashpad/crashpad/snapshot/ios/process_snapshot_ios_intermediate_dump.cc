@@ -122,6 +122,9 @@ bool ProcessSnapshotIOSIntermediateDump::InitializeWithFileInterface(
   }
   system_.Initialize(system_info);
 
+  annotations_simple_map_["crashpad_uptime_ns"] =
+      std::to_string(system_.CrashpadUptime());
+
   // Threads
   const IOSIntermediateDumpList* thread_list =
       GetListFromMap(root_map, Key::kThreads);

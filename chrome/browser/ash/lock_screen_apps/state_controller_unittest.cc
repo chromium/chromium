@@ -32,7 +32,6 @@
 #include "chrome/browser/ash/lock_screen_apps/first_app_run_toast_manager.h"
 #include "chrome/browser/ash/lock_screen_apps/focus_cycler_delegate.h"
 #include "chrome/browser/ash/lock_screen_apps/state_observer.h"
-#include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
 #include "chrome/browser/ash/note_taking_helper.h"
 #include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/extensions/test_extension_system.h"
@@ -45,7 +44,6 @@
 #include "chromeos/ash/components/dbus/concierge/concierge_client.h"
 #include "chromeos/dbus/power/fake_power_manager_client.h"
 #include "chromeos/dbus/power_manager/suspend.pb.h"
-#include "components/user_manager/scoped_user_manager.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/test/browser_task_environment.h"
@@ -77,9 +75,6 @@ namespace {
 // App IDs used for test apps.
 const char kTestAppId[] = "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa";
 const char kSecondaryTestAppId[] = "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb";
-
-// The primary tesing profile.
-const char kPrimaryProfileName[] = "primary_profile";
 
 // Key for pref containing lock screen data crypto key.
 constexpr char kDataCryptoKeyPref[] = "lockScreenAppDataCryptoKey";
@@ -230,8 +225,8 @@ class TestAppManager : public lock_screen_apps::AppManager {
   void ResetLaunchCount() { launch_count_ = 0; }
 
  private:
-  const raw_ptr<const Profile, ExperimentalAsh> expected_primary_profile_;
-  raw_ptr<lock_screen_apps::LockScreenProfileCreator, ExperimentalAsh>
+  const raw_ptr<const Profile> expected_primary_profile_;
+  raw_ptr<lock_screen_apps::LockScreenProfileCreator>
       lock_screen_profile_creator_;
 
   base::RepeatingClosure change_callback_;
@@ -375,20 +370,16 @@ class TestAppWindow : public content::WebContentsObserver {
 
  private:
   std::unique_ptr<content::WebContents> web_contents_;
-  raw_ptr<extensions::AppWindow, ExperimentalAsh> window_;
+  raw_ptr<extensions::AppWindow> window_;
   bool closed_ = false;
   bool initialized_ = false;
 };
 
 class LockScreenAppStateTest : public BrowserWithTestWindowTest {
  public:
-  LockScreenAppStateTest()
-      : fake_user_manager_(new ash::FakeChromeUserManager),
-        user_manager_enabler_(base::WrapUnique(fake_user_manager_.get())) {}
-
+  LockScreenAppStateTest() = default;
   LockScreenAppStateTest(const LockScreenAppStateTest&) = delete;
   LockScreenAppStateTest& operator=(const LockScreenAppStateTest&) = delete;
-
   ~LockScreenAppStateTest() override = default;
 
   void SetUp() override {
@@ -461,19 +452,6 @@ class LockScreenAppStateTest : public BrowserWithTestWindowTest {
     BrowserWithTestWindowTest::TearDown();
     command_line_.reset();
     ash::ConciergeClient::Shutdown();
-  }
-
-  TestingProfile* CreateProfile() override {
-    const AccountId account_id(AccountId::FromUserEmail(kPrimaryProfileName));
-    AddTestUser(account_id);
-    fake_user_manager()->LoginUser(account_id);
-    return profile_manager()->CreateTestingProfile(kPrimaryProfileName);
-  }
-
-  // Adds test user for the primary profile - virtual so test fixture can
-  // override the test user type.
-  virtual void AddTestUser(const AccountId& account_id) {
-    fake_user_manager()->AddUser(account_id);
   }
 
   // Exposed so test fixtures can override default (empty) command line.
@@ -631,8 +609,6 @@ class LockScreenAppStateTest : public BrowserWithTestWindowTest {
     lock_screen_profile_creator_->CreateProfile();
   }
 
-  ash::FakeChromeUserManager* fake_user_manager() { return fake_user_manager_; }
-
   Profile* LockScreenProfile() {
     return lock_screen_profile_creator_->lock_screen_profile();
   }
@@ -673,10 +649,6 @@ class LockScreenAppStateTest : public BrowserWithTestWindowTest {
 
   std::unique_ptr<base::test::ScopedCommandLine> command_line_;
 
-  raw_ptr<ash::FakeChromeUserManager, DanglingUntriaged | ExperimentalAsh>
-      fake_user_manager_;
-  user_manager::ScopedUserManager user_manager_enabler_;
-
   // Run loop used to throttle test until async state controller initialization
   // is fully complete. The quit closure for this run loop will be passed to
   // |state_controller_| as the callback to be run when the state controller is
@@ -697,10 +669,9 @@ class LockScreenAppStateTest : public BrowserWithTestWindowTest {
 
   TestStateObserver observer_;
   TestTrayAction tray_action_;
-  raw_ptr<FakeLockScreenProfileCreator, DanglingUntriaged | ExperimentalAsh>
+  raw_ptr<FakeLockScreenProfileCreator, DanglingUntriaged>
       lock_screen_profile_creator_ = nullptr;
-  raw_ptr<TestAppManager, DanglingUntriaged | ExperimentalAsh> app_manager_ =
-      nullptr;
+  raw_ptr<TestAppManager, DanglingUntriaged> app_manager_ = nullptr;
 
   std::unique_ptr<TestAppWindow> app_window_;
   scoped_refptr<const extensions::Extension> app_;
@@ -721,8 +692,16 @@ class LockScreenAppStateKioskUserTest : public LockScreenAppStateTest {
 
   ~LockScreenAppStateKioskUserTest() override {}
 
-  void AddTestUser(const AccountId& account_id) override {
-    fake_user_manager()->AddKioskAppUser(account_id);
+  // BrowserWithTestWindow:
+  void LogIn(const std::string& email) override {
+    const AccountId account_id = AccountId::FromUserEmail(email);
+    // Log in as a kiosk user.
+    user_manager()->AddKioskAppUser(account_id);
+    user_manager()->UserLoggedIn(
+        account_id,
+        user_manager::FakeUserManager::GetFakeUsernameHash(account_id),
+        /*browser_restart=*/false,
+        /*is_child=*/false);
   }
 };
 
@@ -897,11 +876,8 @@ TEST_F(LockScreenAppStateTest,
 TEST_F(LockScreenAppStateTest,
        InitLockScreenDataLockScreenItemStorage_CryptoKeyExists) {
   std::string crypto_key_in_prefs = "0123456789ABCDEF0123456789ABCDEF";
-  std::string crypto_key_in_prefs_encoded;
-  base::Base64Encode(crypto_key_in_prefs, &crypto_key_in_prefs_encoded);
-
   profile()->GetPrefs()->SetString(kDataCryptoKeyPref,
-                                   crypto_key_in_prefs_encoded);
+                                   base::Base64Encode(crypto_key_in_prefs));
 
   SetPrimaryProfileAndWaitUntilReady();
   CreateLockScreenProfile();

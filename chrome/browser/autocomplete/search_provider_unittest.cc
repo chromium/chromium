@@ -41,6 +41,7 @@
 #include "components/omnibox/browser/autocomplete_provider.h"
 #include "components/omnibox/browser/autocomplete_provider_listener.h"
 #include "components/omnibox/browser/history_url_provider.h"
+#include "components/omnibox/browser/omnibox_feature_configs.h"
 #include "components/omnibox/browser/omnibox_field_trial.h"
 #include "components/omnibox/browser/remote_suggestions_service.h"
 #include "components/omnibox/browser/search_provider.h"
@@ -152,9 +153,7 @@ std::string SerializeAndEncodeEntityInfo(
     const omnibox::EntityInfo& entity_info) {
   std::string serialized_entity_info;
   entity_info.SerializeToString(&serialized_entity_info);
-  std::string encoded_entity_info;
-  base::Base64Encode(serialized_entity_info, &encoded_entity_info);
-  return encoded_entity_info;
+  return base::Base64Encode(serialized_entity_info);
 }
 
 }  // namespace
@@ -1074,6 +1073,14 @@ TEST_F(SearchProviderTest, InlineMixedCaseMatches) {
 // Verifies AutocompleteControllers return results (including keyword
 // results) in the right order and set descriptions for them correctly.
 TEST_F(SearchProviderTest, KeywordOrderingAndDescriptions) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(
+      omnibox_feature_configs::LimitKeywordModeSuggestions::
+          kLimitKeywordModeSuggestions);
+  omnibox_feature_configs::ScopedConfigForTesting<
+      omnibox_feature_configs::LimitKeywordModeSuggestions>
+      scoped_config;
+
   // Add an entry that corresponds to a keyword search with 'term2'.
   AddSearchToHistory(keyword_t_url_, u"term2", 1);
   profile_->BlockUntilHistoryProcessesPendingRequests();
@@ -1120,6 +1127,14 @@ TEST_F(SearchProviderTest, KeywordOrderingAndDescriptions) {
 }
 
 TEST_F(SearchProviderTest, KeywordVerbatim) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(
+      omnibox_feature_configs::LimitKeywordModeSuggestions::
+          kLimitKeywordModeSuggestions);
+  omnibox_feature_configs::ScopedConfigForTesting<
+      omnibox_feature_configs::LimitKeywordModeSuggestions>
+      scoped_config;
+
   TestData cases[] = {
       // Test a simple keyword input.
       {u"k foo",
@@ -1256,6 +1271,14 @@ TEST_F(SearchProviderTest, SuggestRelevance) {
 // when in keyword mode.  This should happen regardless of whether the
 // keyword provider returns suggested relevance scores.
 TEST_F(SearchProviderTest, DefaultProviderNoSuggestRelevanceInKeywordMode) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(
+      omnibox_feature_configs::LimitKeywordModeSuggestions::
+          kLimitKeywordModeSuggestions);
+  omnibox_feature_configs::ScopedConfigForTesting<
+      omnibox_feature_configs::LimitKeywordModeSuggestions>
+      scoped_config;
+
   struct {
     const std::string default_provider_json;
     const std::string keyword_provider_json;
@@ -1565,7 +1588,13 @@ TEST_F(SearchProviderTest, KeywordFetcherSuggestRelevance) {
           {omnibox::kUIExperimentMaxAutocompleteMatches,
            {{OmniboxFieldTrial::kUIMaxAutocompleteMatchesParam, "6"}}},
       },
-      {omnibox::kDynamicMaxAutocomplete});
+      {omnibox::kDynamicMaxAutocomplete,
+       omnibox_feature_configs::LimitKeywordModeSuggestions::
+           kLimitKeywordModeSuggestions});
+  omnibox_feature_configs::ScopedConfigForTesting<
+      omnibox_feature_configs::LimitKeywordModeSuggestions>
+      scoped_config;
+
   struct KeywordFetcherMatch {
     std::string contents;
     bool from_keyword;
@@ -3184,6 +3213,14 @@ TEST_F(SearchProviderTest, ParseEntitySuggestion) {
 
 // A basic test that verifies the prefetch metadata parsing logic.
 TEST_F(SearchProviderTest, PrefetchMetadataParsing) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(
+      omnibox_feature_configs::LimitKeywordModeSuggestions::
+          kLimitKeywordModeSuggestions);
+  omnibox_feature_configs::ScopedConfigForTesting<
+      omnibox_feature_configs::LimitKeywordModeSuggestions>
+      scoped_config;
+
   struct Match {
     std::string contents;
     bool allowed_to_be_prefetched;
@@ -4020,6 +4057,14 @@ class SearchProviderCommandLineOverrideTest : public SearchProviderTest {
 };
 
 TEST_F(SearchProviderCommandLineOverrideTest, CommandLineOverrides) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(
+      omnibox_feature_configs::LimitKeywordModeSuggestions::
+          kLimitKeywordModeSuggestions);
+  omnibox_feature_configs::ScopedConfigForTesting<
+      omnibox_feature_configs::LimitKeywordModeSuggestions>
+      scoped_config;
+
   TemplateURLService* turl_model =
       TemplateURLServiceFactory::GetForProfile(profile_.get());
 

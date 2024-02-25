@@ -7,6 +7,7 @@
 #include "android_webview/browser/metrics/aw_metrics_service_client.h"
 #include "android_webview/common/aw_features.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/test/task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/metrics_proto/chrome_user_metrics_extension.pb.h"
 
@@ -44,6 +45,7 @@ class TestClient : public AwMetricsServiceClient {
 }  // namespace
 
 TEST(AwMetricsFilteringStatusMetricsProviderTest, TestAllMetricsAnnotation) {
+  base::test::SingleThreadTaskEnvironment task_environment;
   TestClient client;
   client.SetShouldApplyMetricsFiltering(false);
   AwMetricsFilteringStatusMetricsProvider test_provider(&client);
@@ -58,6 +60,7 @@ TEST(AwMetricsFilteringStatusMetricsProviderTest, TestAllMetricsAnnotation) {
 
 TEST(AwMetricsFilteringStatusMetricsProviderTest,
      TestOnlyCriticalMetricsAnnotation) {
+  base::test::SingleThreadTaskEnvironment task_environment;
   TestClient client;
   client.SetShouldApplyMetricsFiltering(true);
   AwMetricsFilteringStatusMetricsProvider test_provider(&client);

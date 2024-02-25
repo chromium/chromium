@@ -6,16 +6,17 @@
 
 #import "base/feature_list.h"
 #import "base/functional/bind.h"
+#import "base/memory/raw_ptr.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/uuid.h"
 #import "components/autofill/core/browser/autofill_client.h"
 #import "components/autofill/core/browser/autofill_test_utils.h"
 #import "components/autofill/core/browser/data_model/credit_card.h"
 #import "components/signin/public/identity_manager/account_info.h"
-#import "ios/chrome/browser/infobars/infobar_ios.h"
-#import "ios/chrome/browser/infobars/infobar_type.h"
-#import "ios/chrome/browser/infobars/overlays/browser_agent/interaction_handlers/test/mock_autofill_save_card_infobar_delegate_mobile.h"
-#import "ios/chrome/browser/overlays/public/default/default_infobar_overlay_request_config.h"
+#import "ios/chrome/browser/infobars/model/infobar_ios.h"
+#import "ios/chrome/browser/infobars/model/infobar_type.h"
+#import "ios/chrome/browser/infobars/model/overlays/browser_agent/interaction_handlers/test/mock_autofill_save_card_infobar_delegate_mobile.h"
+#import "ios/chrome/browser/overlays/model/public/default/default_infobar_overlay_request_config.h"
 #import "ios/chrome/browser/ui/infobars/banners/infobar_banner_delegate.h"
 #import "ios/chrome/browser/ui/infobars/banners/test/fake_infobar_banner_consumer.h"
 #import "testing/gtest_mac.h"
@@ -44,16 +45,16 @@ class SaveCardInfobarBannerOverlayMediatorTest : public PlatformTest {
         OverlayRequest::CreateWithConfig<DefaultInfobarOverlayRequestConfig>(
             infobar_.get(), InfobarOverlayType::kBanner);
     consumer_ = [[FakeInfobarBannerConsumer alloc] init];
-    mediator_ = [[SaveCardInfobarBannerOverlayMediator alloc]
-        initWithRequest:request_.get()];
-    ;
+    mediator_ = OCMPartialMock([[SaveCardInfobarBannerOverlayMediator alloc]
+        initWithRequest:request_.get()]);
+
     mediator_.consumer = consumer_;
   }
 
  protected:
   std::unique_ptr<InfoBarIOS> infobar_;
   std::unique_ptr<OverlayRequest> request_;
-  MockAutofillSaveCardInfoBarDelegateMobile* delegate_ = nil;
+  raw_ptr<MockAutofillSaveCardInfoBarDelegateMobile> delegate_ = nil;
   FakeInfobarBannerConsumer* consumer_ = nil;
   SaveCardInfobarBannerOverlayMediator* mediator_ = nil;
 };

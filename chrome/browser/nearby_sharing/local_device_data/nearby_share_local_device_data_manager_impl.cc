@@ -135,31 +135,31 @@ std::string NearbyShareLocalDeviceDataManagerImpl::GetDeviceName() const {
   return device_name.empty() ? GetDefaultDeviceName() : device_name;
 }
 
-absl::optional<std::string> NearbyShareLocalDeviceDataManagerImpl::GetFullName()
+std::optional<std::string> NearbyShareLocalDeviceDataManagerImpl::GetFullName()
     const {
   if (pref_service_->FindPreference(prefs::kNearbySharingFullNamePrefName)
           ->IsDefaultValue()) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   return pref_service_->GetString(prefs::kNearbySharingFullNamePrefName);
 }
 
-absl::optional<std::string> NearbyShareLocalDeviceDataManagerImpl::GetIconUrl()
+std::optional<std::string> NearbyShareLocalDeviceDataManagerImpl::GetIconUrl()
     const {
   if (pref_service_->FindPreference(prefs::kNearbySharingIconUrlPrefName)
           ->IsDefaultValue()) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   return pref_service_->GetString(prefs::kNearbySharingIconUrlPrefName);
 }
 
-absl::optional<std::string>
-NearbyShareLocalDeviceDataManagerImpl::GetIconToken() const {
+std::optional<std::string> NearbyShareLocalDeviceDataManagerImpl::GetIconToken()
+    const {
   if (pref_service_->FindPreference(prefs::kNearbySharingIconTokenPrefName)
           ->IsDefaultValue()) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   return pref_service_->GetString(prefs::kNearbySharingIconTokenPrefName);
@@ -203,21 +203,21 @@ void NearbyShareLocalDeviceDataManagerImpl::DownloadDeviceData() {
 }
 
 void NearbyShareLocalDeviceDataManagerImpl::UploadContacts(
-    std::vector<nearbyshare::proto::Contact> contacts,
+    std::vector<nearby::sharing::proto::Contact> contacts,
     UploadCompleteCallback callback) {
   device_data_updater_->UpdateDeviceData(
       std::move(contacts),
-      /*certificates=*/absl::nullopt,
+      /*certificates=*/std::nullopt,
       base::BindOnce(
           &NearbyShareLocalDeviceDataManagerImpl::OnUploadContactsFinished,
           base::Unretained(this), std::move(callback)));
 }
 
 void NearbyShareLocalDeviceDataManagerImpl::UploadCertificates(
-    std::vector<nearbyshare::proto::PublicCertificate> certificates,
+    std::vector<nearby::sharing::proto::PublicCertificate> certificates,
     UploadCompleteCallback callback) {
   device_data_updater_->UpdateDeviceData(
-      /*contacts=*/absl::nullopt, std::move(certificates),
+      /*contacts=*/std::nullopt, std::move(certificates),
       base::BindOnce(
           &NearbyShareLocalDeviceDataManagerImpl::OnUploadCertificatesFinished,
           base::Unretained(this), std::move(callback)));
@@ -236,7 +236,7 @@ void NearbyShareLocalDeviceDataManagerImpl::OnStop() {
 std::string NearbyShareLocalDeviceDataManagerImpl::GetDefaultDeviceName()
     const {
   std::u16string device_type = ui::GetChromeOSDeviceName();
-  absl::optional<std::u16string> given_name =
+  std::optional<std::u16string> given_name =
       profile_info_provider_->GetGivenName();
   if (!given_name)
     return base::UTF16ToUTF8(device_type);
@@ -256,15 +256,16 @@ std::string NearbyShareLocalDeviceDataManagerImpl::GetDefaultDeviceName()
 
 void NearbyShareLocalDeviceDataManagerImpl::OnDownloadDeviceDataRequested() {
   device_data_updater_->UpdateDeviceData(
-      /*contacts=*/absl::nullopt,
-      /*certificates=*/absl::nullopt,
+      /*contacts=*/std::nullopt,
+      /*certificates=*/std::nullopt,
       base::BindOnce(
           &NearbyShareLocalDeviceDataManagerImpl::OnDownloadDeviceDataFinished,
           base::Unretained(this)));
 }
 
 void NearbyShareLocalDeviceDataManagerImpl::OnDownloadDeviceDataFinished(
-    const absl::optional<nearbyshare::proto::UpdateDeviceResponse>& response) {
+    const std::optional<nearby::sharing::proto::UpdateDeviceResponse>&
+        response) {
   if (response)
     HandleUpdateDeviceResponse(response);
 
@@ -274,7 +275,8 @@ void NearbyShareLocalDeviceDataManagerImpl::OnDownloadDeviceDataFinished(
 
 void NearbyShareLocalDeviceDataManagerImpl::OnUploadContactsFinished(
     UploadCompleteCallback callback,
-    const absl::optional<nearbyshare::proto::UpdateDeviceResponse>& response) {
+    const std::optional<nearby::sharing::proto::UpdateDeviceResponse>&
+        response) {
   // NOTE(http://crbug.com/1211189): Only process the UpdateDevice response for
   // DownloadDeviceData() calls. We want avoid infinite loops if the full name
   // or icon URL unexpectedly change.
@@ -284,7 +286,8 @@ void NearbyShareLocalDeviceDataManagerImpl::OnUploadContactsFinished(
 
 void NearbyShareLocalDeviceDataManagerImpl::OnUploadCertificatesFinished(
     UploadCompleteCallback callback,
-    const absl::optional<nearbyshare::proto::UpdateDeviceResponse>& response) {
+    const std::optional<nearby::sharing::proto::UpdateDeviceResponse>&
+        response) {
   // NOTE(http://crbug.com/1211189): Only process the UpdateDevice response for
   // DownloadDeviceData() calls. We want avoid infinite loops if the full name
   // or icon URL unexpectedly change.
@@ -293,7 +296,8 @@ void NearbyShareLocalDeviceDataManagerImpl::OnUploadCertificatesFinished(
 }
 
 void NearbyShareLocalDeviceDataManagerImpl::HandleUpdateDeviceResponse(
-    const absl::optional<nearbyshare::proto::UpdateDeviceResponse>& response) {
+    const std::optional<nearby::sharing::proto::UpdateDeviceResponse>&
+        response) {
   if (!response)
     return;
 

@@ -10,18 +10,18 @@
  */
 
 import 'chrome://resources/ash/common/network/network_icon.js';
-import 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.js';
-import 'chrome://resources/cr_elements/cr_toggle/cr_toggle.js';
-import 'chrome://resources/cr_elements/cr_shared_vars.css.js';
+import 'chrome://resources/ash/common/cr_elements/cr_icon_button/cr_icon_button.js';
+import 'chrome://resources/ash/common/cr_elements/cr_toggle/cr_toggle.js';
+import 'chrome://resources/ash/common/cr_elements/cr_shared_vars.css.js';
 import 'chrome://resources/polymer/v3_0/iron-flex-layout/iron-flex-layout-classes.js';
 
 import {getSimSlotCount} from 'chrome://resources/ash/common/network/cellular_utils.js';
 import {CrPolicyNetworkBehaviorMojo, CrPolicyNetworkBehaviorMojoInterface} from 'chrome://resources/ash/common/network/cr_policy_network_behavior_mojo.js';
 import {OncMojo} from 'chrome://resources/ash/common/network/onc_mojo.js';
-import {CrToggleElement} from 'chrome://resources/cr_elements/cr_toggle/cr_toggle.js';
-import {I18nMixin, I18nMixinInterface} from 'chrome://resources/cr_elements/i18n_mixin.js';
-import {CrPolicyIndicatorType} from 'chrome://resources/cr_elements/policy/cr_policy_indicator_mixin.js';
-import {assert, assertNotReached} from 'chrome://resources/js/assert_ts.js';
+import {CrToggleElement} from 'chrome://resources/ash/common/cr_elements/cr_toggle/cr_toggle.js';
+import {I18nMixin, I18nMixinInterface} from 'chrome://resources/ash/common/cr_elements/i18n_mixin.js';
+import {CrPolicyIndicatorType} from 'chrome://resources/ash/common/cr_elements/policy/cr_policy_indicator_mixin.js';
+import {assert, assertNotReached} from 'chrome://resources/js/assert.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {GlobalPolicy, VpnType} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/cros_network_config.mojom-webui.js';
 import {ConnectionStateType, DeviceStateType, NetworkType, OncSource, PortalState} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/network_types.mojom-webui.js';
@@ -149,7 +149,7 @@ export class NetworkSummaryItemElement extends NetworkSummaryItemElementBase {
       }
 
       if (deviceState.deviceState === DeviceStateType.kEnabling) {
-        return this.i18n('internetDeviceEnabling');
+        return this.i18n('networkDeviceTurningOn');
       }
     }
     // No device or unknown device state, use 'off'.
@@ -252,7 +252,7 @@ export class NetworkSummaryItemElement extends NetworkSummaryItemElementBase {
       case NetworkType.kVPN:
         return false;
       case NetworkType.kTether:
-        return true;
+        return !this.isInstantHotspotRebrandEnabled_();
       case NetworkType.kWiFi:
       case NetworkType.kCellular:
         return deviceState.deviceState !== DeviceStateType.kUninitialized;
@@ -275,6 +275,7 @@ export class NetworkSummaryItemElement extends NetworkSummaryItemElementBase {
     }
     switch (deviceState!.type) {
       case NetworkType.kTether:
+        return this.i18n('internetToggleTetherA11yLabel');
       case NetworkType.kCellular:
         return this.i18n('internetToggleMobileA11yLabel');
       case NetworkType.kWiFi:
@@ -293,6 +294,14 @@ export class NetworkSummaryItemElement extends NetworkSummaryItemElementBase {
       return 'networkState';
     }
     return '';
+  }
+
+  /**
+   * @return True if instant hotspot rebrand feature flag is enabled.
+   */
+  private isInstantHotspotRebrandEnabled_(): boolean {
+    return loadTimeData.valueExists('isInstantHotspotRebrandEnabled') &&
+        loadTimeData.getBoolean('isInstantHotspotRebrandEnabled');
   }
 
   /**
@@ -565,7 +574,9 @@ export class NetworkSummaryItemElement extends NetworkSummaryItemElementBase {
     // The shared Cellular/Tether subpage is referred to as "Mobile".
     // TODO(khorimoto): Remove once Cellular/Tether are split into their own
     // sections.
-    if (type === NetworkType.kCellular || type === NetworkType.kTether) {
+    if (type === NetworkType.kCellular ||
+        (type === NetworkType.kTether &&
+         !this.isInstantHotspotRebrandEnabled_())) {
       type = NetworkType.kMobile;
     }
     return this.i18n('OncType' + OncMojo.getNetworkTypeString(type));

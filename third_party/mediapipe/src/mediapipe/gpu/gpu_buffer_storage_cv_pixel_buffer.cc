@@ -2,10 +2,11 @@
 
 #include <memory>
 
+#include "absl/log/absl_check.h"
+#include "absl/log/absl_log.h"
 #include "mediapipe/gpu/gl_context.h"
 #include "mediapipe/gpu/gpu_buffer_storage_image_frame.h"
 #include "mediapipe/objc/util.h"
-#include "absl/log/absl_check.h"
 
 namespace mediapipe {
 
@@ -42,7 +43,7 @@ GlTextureView GpuBufferStorageCvPixelBuffer::GetTexture(
   cv_texture.adopt(cv_texture_temp);
   return GlTextureView(
       gl_context.get(), CVOpenGLTextureGetTarget(*cv_texture),
-      CVOpenGLTextureGetName(*cv_texture), width(), height(), *this, plane,
+      CVOpenGLTextureGetName(*cv_texture), width(), height(), plane,
       [cv_texture](mediapipe::GlTextureView&) { /* only retains cv_texture */ },
       done_writing);
 #else
@@ -114,7 +115,7 @@ static void ViewDoneWritingSimulatorWorkaround(CVPixelBufferRef pixel_buffer,
                              view.target(), 0, 0);
       glBindFramebuffer(GL_FRAMEBUFFER, 0);
     } else {
-      LOG(ERROR) << "unsupported pixel format: " << pixel_format;
+      ABSL_LOG(ERROR) << "unsupported pixel format: " << pixel_format;
     }
     err = CVPixelBufferUnlockBaseAddress(pixel_buffer, 0);
     ABSL_CHECK(err == kCVReturnSuccess)
@@ -150,7 +151,7 @@ static std::shared_ptr<GpuBufferStorageCvPixelBuffer> ConvertFromImageFrame(
     std::shared_ptr<GpuBufferStorageImageFrame> frame) {
   auto status_or_buffer =
       CreateCVPixelBufferForImageFrame(frame->image_frame());
-  ABSL_CHECK(status_or_buffer.ok());
+  ABSL_CHECK_OK(status_or_buffer);
   return std::make_shared<GpuBufferStorageCvPixelBuffer>(
       std::move(status_or_buffer).value());
 }

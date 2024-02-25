@@ -233,6 +233,9 @@ class ExtensionManagement : public KeyedService {
   // aren't deferred).
   ExtensionIdSet GetForcePinnedList() const;
 
+  // Returns if an extension with |id| can navigate to file URLs.
+  bool IsFileUrlNavigationAllowed(const ExtensionId& id);
+
  private:
   using SettingsIdMap =
       base::flat_map<ExtensionId,

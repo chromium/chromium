@@ -11,7 +11,6 @@
 #include "device/fido/attestation_statement_formats.h"
 #include "device/fido/attested_credential_data.h"
 #include "device/fido/authenticator_data.h"
-#include "device/fido/device_public_key_extension.h"
 #include "device/fido/fido_constants.h"
 #include "device/fido/fido_parsing_utils.h"
 #include "device/fido/large_blob.h"
@@ -21,22 +20,22 @@
 namespace device {
 
 // static
-absl::optional<AuthenticatorMakeCredentialResponse>
+std::optional<AuthenticatorMakeCredentialResponse>
 AuthenticatorMakeCredentialResponse::CreateFromU2fRegisterResponse(
-    absl::optional<FidoTransportProtocol> transport_used,
+    std::optional<FidoTransportProtocol> transport_used,
     base::span<const uint8_t, kRpIdHashLength> relying_party_id_hash,
     base::span<const uint8_t> u2f_data) {
   auto public_key = P256PublicKey::ExtractFromU2fRegistrationResponse(
       static_cast<int32_t>(CoseAlgorithmIdentifier::kEs256), u2f_data);
   if (!public_key)
-    return absl::nullopt;
+    return std::nullopt;
 
   auto attested_credential_data =
       AttestedCredentialData::CreateFromU2fRegisterResponse(
           u2f_data, std::move(public_key));
 
   if (!attested_credential_data)
-    return absl::nullopt;
+    return std::nullopt;
 
   // Extract the credential_id for packing into the response data.
   std::vector<uint8_t> credential_id =
@@ -55,7 +54,7 @@ AuthenticatorMakeCredentialResponse::CreateFromU2fRegisterResponse(
       FidoAttestationStatement::CreateFromU2fRegisterResponse(u2f_data);
 
   if (!fido_attestation_statement)
-    return absl::nullopt;
+    return std::nullopt;
 
   AuthenticatorMakeCredentialResponse response(
       transport_used, AttestationObject(std::move(authenticator_data),
@@ -65,7 +64,7 @@ AuthenticatorMakeCredentialResponse::CreateFromU2fRegisterResponse(
 }
 
 AuthenticatorMakeCredentialResponse::AuthenticatorMakeCredentialResponse(
-    absl::optional<FidoTransportProtocol> in_transport_used,
+    std::optional<FidoTransportProtocol> in_transport_used,
     AttestationObject in_attestation_object)
     : attestation_object(std::move(in_attestation_object)),
       transport_used(in_transport_used) {}
@@ -84,26 +83,6 @@ std::vector<uint8_t>
 AuthenticatorMakeCredentialResponse::GetCBOREncodedAttestationObject() const {
   return cbor::Writer::Write(AsCBOR(attestation_object))
       .value_or(std::vector<uint8_t>());
-}
-
-absl::optional<device::DevicePublicKeyOutput>
-AuthenticatorMakeCredentialResponse::GetDevicePublicKeyResponse() const {
-  const absl::optional<cbor::Value>& maybe_extensions =
-      attestation_object.authenticator_data().extensions();
-  if (!maybe_extensions) {
-    return absl::nullopt;
-  }
-
-  DCHECK(maybe_extensions->is_map());
-  const cbor::Value::MapValue& extensions = maybe_extensions->GetMap();
-  const auto device_public_key_it =
-      extensions.find(cbor::Value(device::kExtensionDevicePublicKey));
-  if (device_public_key_it == extensions.end()) {
-    return absl::nullopt;
-  }
-
-  return device::DevicePublicKeyOutput::FromExtension(
-      device_public_key_it->second);
 }
 
 const std::array<uint8_t, kRpIdHashLength>&
@@ -127,13 +106,24 @@ std::vector<uint8_t> AsCTAPStyleCBORBytes(
     map.emplace(5, cbor::Value(std::array<uint8_t, kLargeBlobKeyLength>()));
   }
   cbor::Value::MapValue unsigned_extension_outputs;
-  if (response.device_public_key_signature.has_value()) {
-    unsigned_extension_outputs.emplace(kExtensionDevicePublicKey,
-                                       *response.device_public_key_signature);
-  }
   if (response.prf_enabled) {
     cbor::Value::MapValue prf;
     prf.emplace(kExtensionPRFEnabled, true);
+    if (response.prf_results) {
+      const std::vector<uint8_t>& results = *response.prf_results;
+      cbor::Value::MapValue prf_results;
+      if (results.size() == 32) {
+        prf_results.emplace(kExtensionPRFFirst, results);
+      } else {
+        CHECK_EQ(results.size(), 64u);
+        prf_results.emplace(kExtensionPRFFirst,
+                            std::vector<uint8_t>(&results[0], &results[32]));
+        prf_results.emplace(
+            kExtensionPRFSecond,
+            std::vector<uint8_t>(results.begin() + 32, results.end()));
+      }
+      prf.emplace(kExtensionPRFResults, std::move(prf_results));
+    }
     unsigned_extension_outputs.emplace(kExtensionPRF, std::move(prf));
   }
   if (response.large_blob_type == LargeBlobSupportType::kExtension) {

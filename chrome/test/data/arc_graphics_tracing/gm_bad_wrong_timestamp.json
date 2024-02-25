@@ -1,9 +1,7 @@
 {
-   "android": {
-      "buffers": [ [ [ 400, 84134.0 ], [ 401, 65796.0 ] ] ],
+   "chrome": {
+      "buffers": [ [ [ 500, 84134.0 ], [ 501, 65796.0 ] ] ],
                 "global_events": [ ] },
-   "chrome": { "buffers": [ [ [ 500, 1667.0 ], [ 501, 1808.0 ] ] ],
-                "global_events": [ ]  },
    "system": { "threads": {}, "cpu": [], "memory": []},
    "duration": 1053800.0,
    "views": [ {

@@ -1,4 +1,4 @@
-// Copyright 2022 The Chromium Authors. All rights reserved.
+// Copyright 2022 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -32,7 +32,6 @@ class HostResolverNat64Task {
                         NetworkAnonymizationKey network_anonymization_key,
                         NetLogWithSource net_log,
                         ResolveContext* resolve_context,
-                        HostCache* host_cache,
                         base::WeakPtr<HostResolverManager> resolver);
 
   HostResolverNat64Task(const HostResolverNat64Task&) = delete;
@@ -51,7 +50,6 @@ class HostResolverNat64Task {
   const NetworkAnonymizationKey network_anonymization_key_;
   NetLogWithSource net_log_;
   const raw_ptr<ResolveContext> resolve_context_;
-  const raw_ptr<HostCache> host_cache_;
   base::OnceClosure completion_closure_;
   base::WeakPtr<HostResolverManager> resolver_;
 

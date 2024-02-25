@@ -6,8 +6,8 @@
 
 #include <string>
 
+#include "base/version_info/version_info_values.h"
 #include "chrome/install_static/buildflags.h"
-#include "components/version_info/version_info_values.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 

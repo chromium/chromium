@@ -4,7 +4,7 @@
 
 #include "third_party/blink/renderer/core/paint/nine_piece_image_grid.h"
 
-#include "third_party/blink/renderer/core/layout/ng/geometry/ng_box_strut.h"
+#include "third_party/blink/renderer/core/layout/geometry/box_strut.h"
 #include "third_party/blink/renderer/platform/geometry/length_functions.h"
 #include "ui/gfx/geometry/outsets.h"
 
@@ -47,7 +47,7 @@ float ComputeEdgeSlice(const Length& slice, float slice_scale, float maximum) {
 //     to the edge with the highest coverage - giving the starting edge
 //     precedence if tied.
 //
-gfx::Outsets SnapEdgeWidths(const NGPhysicalBoxStrut& edge_widths,
+gfx::Outsets SnapEdgeWidths(const PhysicalBoxStrut& edge_widths,
                             const gfx::Size& snapped_box_size) {
   gfx::Outsets snapped;
   // Allow a small deviation when checking if the the edges are abutting.
@@ -105,7 +105,7 @@ NinePieceImageGrid::NinePieceImageGrid(const NinePieceImage& nine_piece_image,
   const gfx::Vector2dF auto_slice_adjustment(zoom / slice_scale.x(),
                                              zoom / slice_scale.y());
   const BorderImageLengthBox& border_slices = nine_piece_image.BorderSlices();
-  NGPhysicalBoxStrut resolved_widths;
+  PhysicalBoxStrut resolved_widths;
   if (sides_to_include.top) {
     resolved_widths.top = ComputeEdgeWidth(
         border_slices.Top(), border_widths.top(),

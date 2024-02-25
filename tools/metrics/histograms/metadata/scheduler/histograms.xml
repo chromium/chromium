@@ -22,6 +22,17 @@ chromium-metrics-reviews@google.com.
 
 <histograms>
 
+<variants name="Length">
+  <variant name="Any" summary="of arbitrary length"/>
+  <variant name="Medium" summary="lasting between 1 and 100ms"/>
+</variants>
+
+<variants name="NamedThread">
+  <variant name="BrowserIO" summary="the browser IO thread"/>
+  <variant name="BrowserUI" summary="the browser UI thread"/>
+  <variant name="Other"/>
+</variants>
+
 <histogram name="Scheduling.BeginImplFrameLatency2" units="microseconds"
     expires_after="M85">
   <owner>stanisc@chromium.org</owner>
@@ -38,7 +49,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Scheduling.MessagePumpTimeKeeper.{NamedThread}"
-    enum="MessagePumpPhases" expires_after="2024-05-31">
+    enum="MessagePumpPhases" expires_after="2024-08-04">
   <owner>gab@chromium.org</owner>
   <owner>fdoray@chromium.org</owner>
   <owner>spvw@chromium.org</owner>
@@ -47,10 +58,7 @@ chromium-metrics-reviews@google.com.
     {NamedThread}. Each enum value can be analyzed for its total time or as a
     percentage relative to other phases.
   </summary>
-  <token key="NamedThread">
-    <variant name="BrowserIO"/>
-    <variant name="BrowserUI"/>
-  </token>
+  <token key="NamedThread" variants="NamedThread"/>
 </histogram>
 
 <histogram name="Scheduling.Renderer.DeadlineMode"
@@ -88,6 +96,156 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram
+    name="Scheduling.ThreadController.ActiveIntervalDuration.Short.{NamedThread}"
+    units="microseconds" expires_after="2025-01-26">
+  <owner>olivierli@google.com</owner>
+  <owner>etienneb@google.com</owner>
+  <summary>
+    Records the duration of an active period of less than 1 millisecond using
+    ThreadController on {NamedThread}. Recorded when an active period ends.
+    Sub-sampled to 0.1% of intervals.
+
+    WARNING: This metric is not recorded on clients with low-resolution clocks,
+    which means measurments are biased against a portion of the population on
+    Windows. See Windows.HasHighResolutionTimeTicks for additional details.
+  </summary>
+  <token key="NamedThread" variants="NamedThread"/>
+</histogram>
+
+<histogram
+    name="Scheduling.ThreadController.ActiveIntervalDuration.{Length}.{NamedThread}"
+    units="ms" expires_after="2025-01-26">
+  <owner>olivierli@google.com</owner>
+  <owner>etienneb@google.com</owner>
+  <summary>
+    Records the duration of an active period {Length} using ThreadController
+    {NamedThread}. Recorded when an active period ends. Sub-sampled to 0.1% of
+    intervals.
+  </summary>
+  <token key="Length" variants="Length"/>
+  <token key="NamedThread" variants="NamedThread"/>
+</histogram>
+
+<histogram
+    name="Scheduling.ThreadController.ActiveIntervalOffCpuDuration.Short.{NamedThread}"
+    units="microseconds" expires_after="2025-01-26">
+  <owner>olivierli@google.com</owner>
+  <owner>etienneb@google.com</owner>
+  <summary>
+    Records the duration spent off-cpu during an active period of less than 1
+    millisecond using ThreadController on {NamedThread}. Recorded when an active
+    period ends. Sub-sampled to 0.1% of intervals.
+
+    WARNING: This metric is not recorded on clients with low-resolution clocks,
+    which means measurments are biased against a portion of the population on
+    Windows. See Windows.HasHighResolutionTimeTicks for additional details.
+  </summary>
+  <token key="NamedThread" variants="NamedThread"/>
+</histogram>
+
+<histogram
+    name="Scheduling.ThreadController.ActiveIntervalOffCpuDuration.{Length}.{NamedThread}"
+    units="ms" expires_after="2025-01-26">
+  <owner>olivierli@google.com</owner>
+  <owner>etienneb@google.com</owner>
+  <summary>
+    Records the duration spent off-cpu during an active period {Length} operiod
+    using ThreadController on {NamedThread}. Recorded when an active period
+    ends. Sub-sampled to 0.1% of intervals.
+  </summary>
+  <token key="Length" variants="Length"/>
+  <token key="NamedThread" variants="NamedThread"/>
+</histogram>
+
+<histogram
+    name="Scheduling.ThreadController.ActiveIntervalOnCpuDuration.Short.{NamedThread}"
+    units="microseconds" expires_after="2025-01-26">
+  <owner>olivierli@google.com</owner>
+  <owner>etienneb@google.com</owner>
+  <summary>
+    Records the duration spent on-cpu during an active period of less than 1
+    millisecond using ThreadController on {NamedThread}. Recorded when an active
+    period ends. Sub-sampled to 0.1% of intervals.
+
+    WARNING: This metric is not recorded on clients with low-resolution clocks,
+    which means measurments are biased against a portion of the population on
+    Windows. See Windows.HasHighResolutionTimeTicks for additional details.
+  </summary>
+  <token key="NamedThread" variants="NamedThread"/>
+</histogram>
+
+<histogram
+    name="Scheduling.ThreadController.ActiveIntervalOnCpuDuration.{Length}.{NamedThread}"
+    units="ms" expires_after="2025-01-26">
+  <owner>olivierli@google.com</owner>
+  <owner>etienneb@google.com</owner>
+  <summary>
+    Records the duration spent on-cpu during an active period {Length} using
+    ThreadController on {NamedThread}. Recorded when an active period ends.
+    Sub-sampled to 0.1% of intervals.
+  </summary>
+  <token key="Length" variants="Length"/>
+  <token key="NamedThread" variants="NamedThread"/>
+</histogram>
+
+<histogram
+    name="Scheduling.ThreadController.ActiveIntervalOnCpuPercentage.Short.{NamedThread}"
+    units="%" expires_after="2025-01-26">
+  <owner>olivierli@google.com</owner>
+  <owner>etienneb@google.com</owner>
+  <summary>
+    Records the percentage of time a thread stayed on-cpu during an active
+    ThreadController period of less than 1 millisecond on {NamedThread}.
+    Recorded when an active period ends. Sub-sampled to 0.1% of intervals.
+  </summary>
+  <token key="NamedThread" variants="NamedThread"/>
+</histogram>
+
+<histogram
+    name="Scheduling.ThreadController.ActiveIntervalOnCpuPercentage.{Length}.{NamedThread}"
+    units="%" expires_after="2025-01-26">
+  <owner>olivierli@google.com</owner>
+  <owner>etienneb@google.com</owner>
+  <summary>
+    Records the percentage of time a thread stayed on-cpu during an active
+    ThreadController period of {Length} on {NamedThread}. Recorded when an
+    active period ends. Sub-sampled to 0.1% of intervals.
+  </summary>
+  <token key="Length" variants="Length"/>
+  <token key="NamedThread" variants="NamedThread"/>
+</histogram>
+
+<histogram name="Scheduling.ThreadController.IdleDuration.Short.{NamedThread}"
+    units="microseconds" expires_after="2025-01-26">
+  <owner>olivierli@google.com</owner>
+  <owner>etienneb@google.com</owner>
+  <summary>
+    Records the duration of an idle period of less than 1 millisecond using
+    ThreadController on {NamedThread}. Recorded when an active period begins.
+    Sub-sampled to 0.1% of intervals.
+
+    WARNING: This metric is not recorded on clients with low-resolution clocks,
+    which means measurments are biased against a portion of the population on
+    Windows. See Windows.HasHighResolutionTimeTicks for additional details.
+  </summary>
+  <token key="NamedThread" variants="NamedThread"/>
+</histogram>
+
+<histogram
+    name="Scheduling.ThreadController.IdleDuration.{Length}.{NamedThread}"
+    units="ms" expires_after="2025-01-26">
+  <owner>olivierli@google.com</owner>
+  <owner>etienneb@google.com</owner>
+  <summary>
+    Records the duration of an idle period of {Length} using ThreadController on
+    {NamedThread}. Recorded when an active period begins. Sub-sampled to 0.1% of
+    intervals.
+  </summary>
+  <token key="Length" variants="Length"/>
+  <token key="NamedThread" variants="NamedThread"/>
+</histogram>
+
 <histogram base="true" name="ThreadPool.NumTasksBeforeDetach" units="tasks"
     expires_after="M85">
   <owner>fdoray@chromium.org</owner>
@@ -100,7 +258,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram base="true" name="ThreadPool.UnnecessaryWakeup" enum="BooleanHit"
-    expires_after="2024-02-01">
+    expires_after="2024-06-30">
   <owner>spvw@chromium.org</owner>
   <owner>gab@chromium.org</owner>
   <summary>

@@ -88,8 +88,7 @@ class AppSearchProviderTestBase : public AppListTestBase {
   base::ScopedTempDir temp_dir_;
   std::unique_ptr<TestSearchController> search_controller_;
   std::unique_ptr<AppSearchDataSource> data_source_;
-  raw_ptr<SearchProvider, DanglingUntriaged | ExperimentalAsh> app_search_ =
-      nullptr;
+  raw_ptr<SearchProvider, DanglingUntriaged> app_search_ = nullptr;
   std::unique_ptr<::test::TestAppListControllerDelegate> controller_;
   ArcAppTest arc_test_;
 };

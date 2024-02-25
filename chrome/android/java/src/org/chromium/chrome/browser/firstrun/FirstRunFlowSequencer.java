@@ -4,7 +4,6 @@
 
 package org.chromium.chrome.browser.firstrun;
 
-import android.accounts.Account;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
@@ -22,21 +21,22 @@ import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.supplier.OneshotSupplier;
 import org.chromium.chrome.browser.IntentHandler;
 import org.chromium.chrome.browser.LaunchIntentDispatcher;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.locale.LocaleManager;
 import org.chromium.chrome.browser.partnercustomizations.PartnerBrowserCustomizations;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.profiles.ProfileProvider;
 import org.chromium.chrome.browser.search_engines.SearchEnginePromoType;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.signin.services.SigninManager;
+import org.chromium.chrome.browser.ui.signin.history_sync.HistorySyncUtils;
 import org.chromium.components.crash.CrashKeyIndex;
 import org.chromium.components.crash.CrashKeys;
 import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.components.signin.AccountManagerFacadeProvider;
 import org.chromium.components.signin.identitymanager.ConsentLevel;
 import org.chromium.components.signin.identitymanager.IdentityManager;
-
-import java.util.List;
 
 /**
  * A helper to determine what should be the sequence of First Run Experience screens, and whether
@@ -47,7 +47,7 @@ import java.util.List;
  *     override onFlowIsKnown
  * }.start();
  */
-public abstract class FirstRunFlowSequencer  {
+public abstract class FirstRunFlowSequencer {
     private static final String TAG = "firstrun";
 
     /**
@@ -56,28 +56,30 @@ public abstract class FirstRunFlowSequencer  {
      */
     @VisibleForTesting
     public static class FirstRunFlowSequencerDelegate {
-        private final OneshotSupplier<Profile> mProfileSupplier;
+        private final OneshotSupplier<ProfileProvider> mProfileSupplier;
 
-        public FirstRunFlowSequencerDelegate(OneshotSupplier<Profile> profileSupplier) {
+        public FirstRunFlowSequencerDelegate(OneshotSupplier<ProfileProvider> profileSupplier) {
             mProfileSupplier = profileSupplier;
         }
 
         /** Returns true if the sync consent promo page should be shown. */
-        boolean shouldShowSyncConsentPage(
-                Activity activity, List<Account> accounts, boolean isChild) {
-            if (isChild) {
-                // Always show the sync consent page for child account.
-                return true;
-            }
+        boolean shouldShowSyncConsentPage(boolean isChild) {
             assert mProfileSupplier.get() != null;
-            final IdentityManager identityManager =
-                    IdentityServicesProvider.get().getIdentityManager(mProfileSupplier.get());
-            if (identityManager.hasPrimaryAccount(ConsentLevel.SYNC) || !isSyncAllowed()) {
+            Profile profile = mProfileSupplier.get().getOriginalProfile();
+            if (isChild) {
+                return !HistorySyncUtils.isHistorySyncDisabledByCustodian(profile);
+            }
+            if (HistorySyncUtils.isHistorySyncDisabledByPolicy(profile)) {
+                return false;
+            }
+            if (HistorySyncUtils.didAlreadyOptIn(profile) || !isSyncAllowed()) {
                 // No need to show the sync consent page if users already consented to sync or
                 // if sync is not allowed.
                 return false;
             }
-                // Show the sync consent page only to the signed-in users.
+            // Show the sync consent page only to signed-in users.
+            final IdentityManager identityManager =
+                    IdentityServicesProvider.get().getIdentityManager(profile);
             return identityManager.hasPrimaryAccount(ConsentLevel.SIGNIN);
         }
 
@@ -93,20 +95,22 @@ public abstract class FirstRunFlowSequencer  {
         /** @return true if Sync is allowed for the current user. */
         @VisibleForTesting
         protected boolean isSyncAllowed() {
-            SigninManager signinManager =
-                    IdentityServicesProvider.get().getSigninManager(mProfileSupplier.get());
-            return FirstRunUtils.canAllowSync() && !signinManager.isSigninDisabledByPolicy()
-                    && signinManager.isSigninSupported(/*requireUpdatedPlayServices=*/false);
+            Profile profile = mProfileSupplier.get().getOriginalProfile();
+            SigninManager signinManager = IdentityServicesProvider.get().getSigninManager(profile);
+            return FirstRunUtils.canAllowSync()
+                    && !signinManager.isSigninDisabledByPolicy()
+                    && signinManager.isSigninSupported(/* requireUpdatedPlayServices= */ false);
         }
     }
 
     /** Factory that provides Delegate instances for testing. */
     public interface DelegateFactoryForTesting {
         /** Build a test delegate for the given test. */
-        FirstRunFlowSequencerDelegate buildFactory(OneshotSupplier<Profile> profileSupplier);
+        FirstRunFlowSequencerDelegate buildFactory(
+                OneshotSupplier<ProfileProvider> profileSupplier);
     }
 
-    private final Activity mActivity;
+
     /**
      * The delegate to be used by the Sequencer. By default, it's an instance of
      * {@link FirstRunFlowSequencerDelegate}, unless it's overridden by {@code sDelegateForTesting}.
@@ -117,8 +121,8 @@ public abstract class FirstRunFlowSequencer  {
     private static DelegateFactoryForTesting sDelegateFactoryForTesting;
 
     private boolean mIsFlowKnown;
+    private boolean mAccountsAvailable;
     private Boolean mIsChild;
-    private List<Account> mGoogleAccounts;
 
     /**
      * Callback that is called once the flow is determined.
@@ -128,13 +132,14 @@ public abstract class FirstRunFlowSequencer  {
      */
     public abstract void onFlowIsKnown(Bundle freProperties);
 
-    public FirstRunFlowSequencer(Activity activity, OneshotSupplier<Profile> profileSupplier,
+    public FirstRunFlowSequencer(
+            OneshotSupplier<ProfileProvider> profileSupplier,
             OneshotSupplier<Boolean> childAccountStatusSupplier) {
-        mActivity = activity;
 
-        mDelegate = sDelegateFactoryForTesting != null
-                ? sDelegateFactoryForTesting.buildFactory(profileSupplier)
-                : new FirstRunFlowSequencerDelegate(profileSupplier);
+        mDelegate =
+                sDelegateFactoryForTesting != null
+                        ? sDelegateFactoryForTesting.buildFactory(profileSupplier)
+                        : new FirstRunFlowSequencerDelegate(profileSupplier);
 
         childAccountStatusSupplier.onAvailable(this::setChildAccountStatus);
     }
@@ -147,12 +152,18 @@ public abstract class FirstRunFlowSequencer  {
      *                                  method.
      */
     void start() {
-        AccountManagerFacadeProvider.getInstance().getAccounts().then(accounts -> {
-            RecordHistogram.recordCount1MHistogram(
-                    "Signin.AndroidDeviceAccountsNumberWhenEnteringFRE",
-                    Math.min(accounts.size(), 2));
-            setAccountList(accounts);
-        });
+        AccountManagerFacadeProvider.getInstance()
+                .getCoreAccountInfos()
+                .then(
+                        coreAccountInfos -> {
+                            RecordHistogram.recordCount1MHistogram(
+                                    "Signin.AndroidDeviceAccountsNumberWhenEnteringFRE",
+                                    Math.min(coreAccountInfos.size(), 2));
+
+                            assert !mAccountsAvailable;
+                            mAccountsAvailable = true;
+                            maybeProcessFreEnvironmentPreNative();
+                        });
     }
 
     @VisibleForTesting
@@ -161,7 +172,7 @@ public abstract class FirstRunFlowSequencer  {
     }
 
     private boolean shouldShowSyncConsentPage() {
-        return mDelegate.shouldShowSyncConsentPage(mActivity, mGoogleAccounts, mIsChild);
+        return mDelegate.shouldShowSyncConsentPage(mIsChild);
     }
 
     private void setChildAccountStatus(boolean isChild) {
@@ -170,15 +181,9 @@ public abstract class FirstRunFlowSequencer  {
         maybeProcessFreEnvironmentPreNative();
     }
 
-    private void setAccountList(List<Account> accounts) {
-        assert mGoogleAccounts == null && accounts != null;
-        mGoogleAccounts = accounts;
-        maybeProcessFreEnvironmentPreNative();
-    }
-
     private void maybeProcessFreEnvironmentPreNative() {
         // Wait till both child account status and the list of accounts are available.
-        if (mIsChild == null || mGoogleAccounts == null) return;
+        if (mIsChild == null || !mAccountsAvailable) return;
 
         if (mIsFlowKnown) return;
         mIsFlowKnown = true;
@@ -190,13 +195,20 @@ public abstract class FirstRunFlowSequencer  {
     }
 
     /**
-     * Will be called either when policies are initialized, or when native is initialized if we have
-     * no on-device policies.
+     * Will be called when native is initialized and on-device policies are initialized (if any).
+     *
      * @param freProperties Resulting FRE properties bundle.
      */
     public void updateFirstRunProperties(Bundle freProperties) {
+        boolean isHistorySyncEnabled =
+                ChromeFeatureList.isEnabled(
+                        ChromeFeatureList.REPLACE_SYNC_PROMOS_WITH_SIGN_IN_PROMOS);
         freProperties.putBoolean(
-                FirstRunActivity.SHOW_SYNC_CONSENT_PAGE, shouldShowSyncConsentPage());
+                FirstRunActivity.SHOW_SYNC_CONSENT_PAGE,
+                !isHistorySyncEnabled && shouldShowSyncConsentPage());
+        freProperties.putBoolean(
+                FirstRunActivity.SHOW_HISTORY_SYNC_PAGE,
+                isHistorySyncEnabled && shouldShowSyncConsentPage());
         freProperties.putBoolean(
                 FirstRunActivity.SHOW_SEARCH_ENGINE_PAGE, shouldShowSearchEnginePage());
     }
@@ -221,9 +233,10 @@ public abstract class FirstRunFlowSequencer  {
      */
     public static boolean checkIfFirstRunIsNecessary(
             boolean preferLightweightFre, Intent fromIntent) {
-        boolean isCct = fromIntent.getBooleanExtra(
+        boolean isCct =
+                fromIntent.getBooleanExtra(
                                 FirstRunActivityBase.EXTRA_CHROME_LAUNCH_INTENT_IS_CCT, false)
-                || LaunchIntentDispatcher.isCustomTabIntent(fromIntent);
+                        || LaunchIntentDispatcher.isCustomTabIntent(fromIntent);
         return checkIfFirstRunIsNecessary(preferLightweightFre, isCct);
     }
 

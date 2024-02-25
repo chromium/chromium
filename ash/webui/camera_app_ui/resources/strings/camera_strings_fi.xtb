@@ -5,7 +5,6 @@
 <translation id="1076394037877376434">Poista sivu <ph name="PAGE_NUMBER" /></translation>
 <translation id="1113173431709655881">Kameratila</translation>
 <translation id="1153190633558910465">Ruudukko pois</translation>
-<translation id="1175958423215084756">Linkki havaittu. <ph name="HOSTNAME" /></translation>
 <translation id="1197694886744716213">Sivu <ph name="PAGE_NUMBER" /> poistettu</translation>
 <translation id="1258009455399840361">Kierrä 90 astetta myötäpäivään</translation>
 <translation id="1417314334557041815">Muokkaa sivua <ph name="INDEX" /></translation>
@@ -47,6 +46,7 @@
 <translation id="3067436040345934772">Panoroi oikealle</translation>
 <translation id="3081586908890909590">Vaihda videon kuvaamiseen</translation>
 <translation id="313467653172006084">30 FPS</translation>
+<translation id="3158534262962737808">Liity: "<ph name="WIFINAME" />"</translation>
 <translation id="3227137524299004712">Mikrofoni</translation>
 <translation id="3240426699337459095">Linkki kopioitu</translation>
 <translation id="3354465018370944241">Valokuva-asetukset</translation>
@@ -60,14 +60,12 @@
 <translation id="3642192109456033823">Käsitellään videota…</translation>
 <translation id="3789724198583203151">Kierrä 90 astetta vastapäivään</translation>
 <translation id="3810838688059735925">Video</translation>
-<translation id="3892148308691398805">Kopioi teksti</translation>
 <translation id="4060608699153044055">Et voi tallentaa, koska laitteen tallennustila on vähissä. Sinun on vapautettava tilaa laitteelta, jotta voit aloittaa tallennuksen.</translation>
 <translation id="4061162772429051350"><ph name="MAGAPIXELS_AMOUNT" /> Mpx</translation>
 <translation id="4118525110028899586">Keskeytä tallennus</translation>
 <translation id="4121305183798804752">Dokumentti havaittiin</translation>
 <translation id="414641094616694804">Kamera ei voi muuttaa resoluutiota</translation>
 <translation id="4176463684765177261">Pois käytöstä</translation>
-<translation id="4269820728363426813">Kopioi linkin osoite</translation>
 <translation id="428234092390943511">Sivun pikkukuva</translation>
 <translation id="4349714250734879769">Skaalaa kehykset Chromella</translation>
 <translation id="4383571725254449280">Tulosta kehityslokit</translation>
@@ -81,14 +79,15 @@
 <translation id="4705093842003735294">Täysi resoluutio</translation>
 <translation id="4864143361253542638">Skannattujen sivujen lista</translation>
 <translation id="4890010094662541459">3x3</translation>
+<translation id="4892746741161549733">Kopioi linkin osoite <ph name="URL" /></translation>
 <translation id="491895758387112773">Striimaa videotallenne useaan paikkaan</translation>
 <translation id="495170559598752135">Toiminnot</translation>
 <translation id="4984613436295737187">Quad HD (1440p)</translation>
 <translation id="5034763830503483128">Kuvasuhde</translation>
 <translation id="5057360777601936059">Kamerasi ei ole käytettävissä tällä hetkellä.
         Tarkista, onko kamera yhdistetty oikein.</translation>
+<translation id="5157591164390831335">URL-osoite havaittu.</translation>
 <translation id="5163387177077603948">Siirretään oikealle</translation>
-<translation id="5219374179772385066">Nopeutettu kuva on nyt käytettävissä.</translation>
 <translation id="5235304959032763950">Kuvasuhde 16:9</translation>
 <translation id="5266635337630551423">Dokumentin vasen yläkulma</translation>
 <translation id="5317780077021120954">Tallenna</translation>
@@ -114,6 +113,7 @@
 <translation id="6353688143752491039">Kiitos, että annoit palautetta Kamera-sovelluksesta.
 
 Jos palautteesi koskee kuvan tai videon laatua, liitä mukaan esimerkkikuva tai ‑video ja kuvaile ongelmaa (esim. kuva on liian tumma, tai sitä ei ole tarkennettu kohteeseen).</translation>
+<translation id="6519884562954018934">Liity: <ph name="WIFINAME" /></translation>
 <translation id="6527303717912515753">Jaa</translation>
 <translation id="6617916774429601017">Näytä kaikki resoluutiot</translation>
 <translation id="6631515515009660915">Peili pois päältä</translation>
@@ -133,6 +133,7 @@ Jos palautteesi koskee kuvan tai videon laatua, liitä mukaan esimerkkikuva tai 
 <translation id="7450541714075000668">Teksti kopioitu</translation>
 <translation id="7488619942230388918">Kuvaa GIF-video</translation>
 <translation id="7557677699350329807">Vaihda seuraavaan kameraan</translation>
+<translation id="7562584071994185503">Kopioi teksti <ph name="TEXT" /></translation>
 <translation id="7607002721634913082">Keskeytetty</translation>
 <translation id="7608223098072244877">4x4</translation>
 <translation id="761421184377987513">Siirretään alavasemmalle</translation>
@@ -155,10 +156,12 @@ Jos palautteesi koskee kuvan tai videon laatua, liitä mukaan esimerkkikuva tai 
 <translation id="8346544573713510785">Skaalaa kehykset kameran HAL:llä</translation>
 <translation id="8425673304802773841">Kallista alaspäin</translation>
 <translation id="8428213095426709021">Asetukset</translation>
+<translation id="8609951387004618906">Avaa <ph name="URL" /></translation>
 <translation id="8629662593426079630">360p</translation>
 <translation id="8711011893539266636">Mikrofonin mykistys päälle tai pois päältä. Mykistys on päällä</translation>
 <translation id="8730621377337864115">Valmis</translation>
 <translation id="8732462232047530626">Esikatsele sisällönkuvaustiedot</translation>
+<translation id="874854738381978209">Wi-Fi-verkko havaittu.</translation>
 <translation id="8815966864175525708">Vaihda muotokuvatilaan</translation>
 <translation id="8828441885228359828">Jatka tallennusta</translation>
 <translation id="8870695351537079478">Tallennuksen aloittaminen epäonnistui</translation>

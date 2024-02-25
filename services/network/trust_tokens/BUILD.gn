@@ -87,6 +87,8 @@ source_set("trust_tokens") {
   ]
 
   public_deps = [ ":public_proto" ]
+
+  configs += [ "//build/config/compiler:wexit_time_destructors" ]
 }
 
 source_set("test_support") {

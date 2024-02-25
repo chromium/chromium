@@ -5,7 +5,8 @@
 import 'chrome://resources/cr_elements/cr_hidden_style.css.js';
 import './strings.m.js';
 
-import {ClickInfo, Command} from 'chrome://resources/js/browser_command.mojom-webui.js';
+import type {ClickInfo} from 'chrome://resources/js/browser_command.mojom-webui.js';
+import {Command} from 'chrome://resources/js/browser_command.mojom-webui.js';
 import {BrowserCommandProxy} from 'chrome://resources/js/browser_command/browser_command_proxy.js';
 import {EventTracker} from 'chrome://resources/js/event_tracker.js';
 import {isChromeOS} from 'chrome://resources/js/platform.js';
@@ -46,6 +47,7 @@ export class WhatsNewAppElement extends PolymerElement {
   private url_: string;
 
   private isAutoOpen_: boolean = false;
+  private isRefresh_: boolean = false;
   private eventTracker_: EventTracker = new EventTracker();
 
   constructor() {
@@ -53,6 +55,7 @@ export class WhatsNewAppElement extends PolymerElement {
 
     const queryParams = new URLSearchParams(window.location.search);
     this.isAutoOpen_ = queryParams.has('auto');
+    this.isRefresh_ = queryParams.has('refresh');
 
     // There are no subpages in What's New. Also remove the query param here
     // since its value is recorded.
@@ -62,8 +65,9 @@ export class WhatsNewAppElement extends PolymerElement {
   override connectedCallback() {
     super.connectedCallback();
 
-    WhatsNewProxyImpl.getInstance().initialize().then(
-        url => this.handleUrlResult_(url));
+    WhatsNewProxyImpl.getInstance()
+        .initialize(this.isRefresh_)
+        .then(url => this.handleUrlResult_(url));
   }
 
   override disconnectedCallback() {

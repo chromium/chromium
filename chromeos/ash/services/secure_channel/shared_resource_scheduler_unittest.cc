@@ -5,12 +5,12 @@
 #include "chromeos/ash/services/secure_channel/shared_resource_scheduler.h"
 
 #include <memory>
+#include <optional>
 
 #include "base/test/gtest_util.h"
 #include "chromeos/ash/services/secure_channel/device_id_pair.h"
 #include "chromeos/ash/services/secure_channel/public/cpp/shared/connection_priority.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ash::secure_channel {
 

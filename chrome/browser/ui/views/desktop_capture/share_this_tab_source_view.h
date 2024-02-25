@@ -8,6 +8,7 @@
 #include "base/memory/raw_ptr.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_media_capture_id.h"
+#include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/controls/image_view.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/controls/throbber.h"
@@ -16,6 +17,8 @@
 // View displaying a preview, icon and title for the tab being shared, or a
 // throbber while the dialog is not yet activated.
 class ShareThisTabSourceView : public views::View {
+  METADATA_HEADER(ShareThisTabSourceView, views::View)
+
  public:
   explicit ShareThisTabSourceView(
       base::WeakPtr<content::WebContents> web_contents);
@@ -39,7 +42,7 @@ class ShareThisTabSourceView : public views::View {
   // Otherwise, an empty Optional is sent back. In either case, |hash| is the
   // hash value of the frame that was handled.
   void OnCaptureHandled(uint32_t hash,
-                        const absl::optional<gfx::ImageSkia>& image);
+                        const std::optional<gfx::ImageSkia>& image);
 
   raw_ptr<views::Throbber> throbber_ = nullptr;
   raw_ptr<views::ImageView> image_view_ = nullptr;
@@ -51,7 +54,7 @@ class ShareThisTabSourceView : public views::View {
 
   // The hash of the last captured frame. Used to detect identical frames
   // and prevent needless rescaling.
-  absl::optional<uint32_t> last_hash_;
+  std::optional<uint32_t> last_hash_;
 
   // The heavy lifting involved with rescaling images into thumbnails is
   // moved off of the UI thread and onto this task runner.

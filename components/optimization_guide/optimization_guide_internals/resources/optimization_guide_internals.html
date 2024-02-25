@@ -29,6 +29,7 @@ found in the LICENSE file.
     <cr-tab-box hidden>
       <div slot="tab">Event Logs</div>
       <div slot="tab">Models</div>
+      <div slot="tab">Client Ids</div>
 
       <div slot="panel" id="tabpanel-event-logs">
         <div>
@@ -60,6 +61,22 @@ found in the LICENSE file.
                   <th class="downloaded-models-optimization-target">Optimization target</th>
                   <th class="downloaded-models-version">Version</th>
                   <th class="downloaded-models-file-path">File path</th>
+                </tr>
+              </thead>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <div slot="panel" id="tabpanel-client-ids">
+        <div>
+          <div>
+            <h2>Logged Client Ids</h2>
+            Logged Client ids:
+            <table id="logged-client-ids-container">
+              <thead>
+                <tr>
+                  <th class="logged-client-ids">Client Id</th>
                 </tr>
               </thead>
             </table>

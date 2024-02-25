@@ -6,6 +6,8 @@
 
 #include <fcntl.h>
 #include <sys/stat.h>
+
+#include <string_view>
 #include <utility>
 
 #include "base/files/file_util.h"
@@ -44,7 +46,7 @@ namespace {
 
 Server* g_server_instance = nullptr;
 
-bool UseTempFile(const base::StringPiece fs_url_as_string) {
+bool UseTempFile(const std::string_view fs_url_as_string) {
   // MTP (the protocol) does not support incremental writes. When creating an
   // MTP file (via FuseBox), we need to supply its contents as a whole. Up
   // until that transfer, spool incremental writes to a temporary file.
@@ -52,7 +54,7 @@ bool UseTempFile(const base::StringPiece fs_url_as_string) {
                           file_manager::util::kFuseBoxSubdirPrefixMTP);
 }
 
-bool UseEmptyTruncateWorkaround(const base::StringPiece fs_url_as_string,
+bool UseEmptyTruncateWorkaround(const std::string_view fs_url_as_string,
                                 int64_t length) {
   // Not all storage::AsyncFileUtil back-ends implement the CreateFile or
   // Truncate methods. When they don't, and truncating to a zero length, work
@@ -245,10 +247,10 @@ void RunCreateCallback(
     return;
   }
 
-  constexpr auto metadata_fields =
-      storage::FileSystemOperation::GET_METADATA_FIELD_IS_DIRECTORY |
-      storage::FileSystemOperation::GET_METADATA_FIELD_SIZE |
-      storage::FileSystemOperation::GET_METADATA_FIELD_LAST_MODIFIED;
+  constexpr storage::FileSystemOperation::GetMetadataFieldSet metadata_fields =
+      {storage::FileSystemOperation::GetMetadataField::kIsDirectory,
+       storage::FileSystemOperation::GetMetadataField::kSize,
+       storage::FileSystemOperation::GetMetadataField::kLastModified};
 
   auto outer_callback = base::BindPostTaskToCurrentDefault(base::BindOnce(
       &RunCreateAndThenStatCallback, std::move(callback), fs_context, read_only,
@@ -300,10 +302,10 @@ void RunMkDirCallback(
     return;
   }
 
-  constexpr auto metadata_fields =
-      storage::FileSystemOperation::GET_METADATA_FIELD_IS_DIRECTORY |
-      storage::FileSystemOperation::GET_METADATA_FIELD_SIZE |
-      storage::FileSystemOperation::GET_METADATA_FIELD_LAST_MODIFIED;
+  constexpr storage::FileSystemOperation::GetMetadataFieldSet metadata_fields =
+      {storage::FileSystemOperation::GetMetadataField::kIsDirectory,
+       storage::FileSystemOperation::GetMetadataField::kSize,
+       storage::FileSystemOperation::GetMetadataField::kLastModified};
 
   auto outer_callback = base::BindPostTaskToCurrentDefault(
       base::BindOnce(&RunMkDirAndThenStatCallback, std::move(callback),
@@ -398,10 +400,10 @@ void RunTruncateCallback(
     return;
   }
 
-  constexpr auto metadata_fields =
-      storage::FileSystemOperation::GET_METADATA_FIELD_IS_DIRECTORY |
-      storage::FileSystemOperation::GET_METADATA_FIELD_SIZE |
-      storage::FileSystemOperation::GET_METADATA_FIELD_LAST_MODIFIED;
+  constexpr storage::FileSystemOperation::GetMetadataFieldSet metadata_fields =
+      {storage::FileSystemOperation::GetMetadataField::kIsDirectory,
+       storage::FileSystemOperation::GetMetadataField::kSize,
+       storage::FileSystemOperation::GetMetadataField::kLastModified};
 
   auto outer_callback = base::BindPostTaskToCurrentDefault(
       base::BindOnce(&RunTruncateAndThenStatCallback, std::move(callback),
@@ -614,6 +616,12 @@ Server::FuseFileMapEntry::FuseFileMapEntry(FuseFileMapEntry&&) = default;
 
 Server::FuseFileMapEntry::~FuseFileMapEntry() = default;
 
+void Server::FuseFileMapEntry::DoFlush(const FlushRequestProto& request,
+                                       Server::FlushCallback callback) {
+  seqbnd_read_writer_.AsyncCall(&ReadWriter::Flush)
+      .WithArgs(fs_context_, std::move(callback));
+}
+
 void Server::FuseFileMapEntry::DoRead2(const Read2RequestProto& request,
                                        Server::Read2Callback callback) {
   int64_t offset = request.has_offset() ? request.offset() : 0;
@@ -640,7 +648,12 @@ void Server::FuseFileMapEntry::DoWrite2(const Write2RequestProto& request,
 void Server::FuseFileMapEntry::Do(PendingOp& op,
                                   base::WeakPtr<Server> weak_ptr_server,
                                   uint64_t fuse_handle) {
-  if (absl::holds_alternative<PendingRead2>(op)) {
+  if (absl::holds_alternative<PendingFlush>(op)) {
+    PendingFlush& pending = absl::get<PendingFlush>(op);
+    DoFlush(pending.first,
+            base::BindOnce(&Server::OnFlush, weak_ptr_server, fuse_handle,
+                           std::move(pending.second)));
+  } else if (absl::holds_alternative<PendingRead2>(op)) {
     PendingRead2& pending = absl::get<PendingRead2>(op);
     DoRead2(pending.first,
             base::BindOnce(&Server::OnRead2, weak_ptr_server, fuse_handle,
@@ -794,7 +807,7 @@ base::FilePath Server::InverseResolveFSURL(
   // Find the longest registered (in the "called Server::RegisterFSURLPrefix"
   // sense) FileSystemURL that is a prefix of fs_url.
   size_t best_size = 0;
-  base::StringPiece best_subdir;
+  std::string_view best_subdir;
   for (const auto& i : prefix_map_) {
     if ((best_size < i.second.fs_url_prefix.size()) &&
         base::StartsWith(fs_url_as_string, i.second.fs_url_prefix)) {
@@ -927,6 +940,35 @@ void Server::Create(const CreateRequestProto& request_proto,
           // Unretained is safe: fs_context owns its operation runner.
           base::Unretained(parsed->fs_context->operation_runner()),
           parsed->fs_url, exclusive, std::move(outer_callback)));
+}
+
+void Server::Flush(const FlushRequestProto& request_proto,
+                   FlushCallback callback) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+
+  uint64_t fuse_handle =
+      request_proto.has_fuse_handle() ? request_proto.fuse_handle() : 0;
+  auto iter = fuse_file_map_.find(fuse_handle);
+  if (iter == fuse_file_map_.end()) {
+    FlushResponseProto response_proto;
+    response_proto.set_posix_error_code(ENOENT);
+    std::move(callback).Run(response_proto);
+    return;
+  } else if (!iter->second.writable_) {
+    FlushResponseProto response_proto;
+    response_proto.set_posix_error_code(EACCES);
+    std::move(callback).Run(response_proto);
+    return;
+  } else if (iter->second.has_in_flight_op_) {
+    iter->second.pending_ops_.emplace_back(
+        PendingFlush(request_proto, std::move(callback)));
+    return;
+  }
+  iter->second.has_in_flight_op_ = true;
+  iter->second.DoFlush(
+      request_proto,
+      base::BindOnce(&Server::OnFlush, weak_ptr_factory_.GetWeakPtr(),
+                     fuse_handle, std::move(callback)));
 }
 
 void Server::MkDir(const MkDirRequestProto& request_proto,
@@ -1250,10 +1292,10 @@ void Server::Stat2(const Stat2RequestProto& request_proto,
     return;
   }
 
-  constexpr auto metadata_fields =
-      storage::FileSystemOperation::GET_METADATA_FIELD_IS_DIRECTORY |
-      storage::FileSystemOperation::GET_METADATA_FIELD_SIZE |
-      storage::FileSystemOperation::GET_METADATA_FIELD_LAST_MODIFIED;
+  constexpr storage::FileSystemOperation::GetMetadataFieldSet metadata_fields =
+      {storage::FileSystemOperation::GetMetadataField::kIsDirectory,
+       storage::FileSystemOperation::GetMetadataField::kSize,
+       storage::FileSystemOperation::GetMetadataField::kLastModified};
 
   auto outer_callback = base::BindPostTaskToCurrentDefault(
       base::BindOnce(&RunStat2Callback, std::move(callback), parsed->fs_context,
@@ -1478,6 +1520,32 @@ void Server::RemoveTempDir(const std::string& fusebox_file_path) {
             // No-op other than running the base::ScopedTempDir destructor.
           },
           std::move(scoped_temp_dir)));
+}
+
+void Server::OnFlush(uint64_t fuse_handle,
+                     FlushCallback callback,
+                     const FlushResponseProto& response_proto) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+
+  auto iter = fuse_file_map_.find(fuse_handle);
+  if (iter == fuse_file_map_.end()) {
+    FlushResponseProto enoent_response_proto;
+    enoent_response_proto.set_posix_error_code(ENOENT);
+    std::move(callback).Run(enoent_response_proto);
+    return;
+  }
+  FuseFileMapEntry& entry = iter->second;
+  entry.has_in_flight_op_ = false;
+
+  std::move(callback).Run(std::move(response_proto));
+
+  if (entry.pending_ops_.empty()) {
+    return;
+  }
+  PendingOp pending_op = std::move(entry.pending_ops_.front());
+  entry.pending_ops_.pop_front();
+  entry.has_in_flight_op_ = true;
+  entry.Do(pending_op, weak_ptr_factory_.GetWeakPtr(), fuse_handle);
 }
 
 void Server::OnRead2(uint64_t fuse_handle,

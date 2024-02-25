@@ -6,11 +6,13 @@
 
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_testing.h"
+#include "third_party/blink/renderer/platform/testing/task_environment.h"
 #include "v8/include/v8.h"
 
 namespace blink {
 
 TEST(ReferrerScriptInfo, IsDefaultValue) {
+  test::TaskEnvironment task_environment;
   const KURL script_origin_resource_name("http://example.org/script.js");
 
   // TODO(https://crbug.com/1114993): There three cases should be distinguished.
@@ -32,6 +34,7 @@ TEST(ReferrerScriptInfo, IsDefaultValue) {
 }
 
 TEST(ReferrerScriptInfo, ToFromV8NoReferencingScript) {
+  test::TaskEnvironment task_environment;
   V8TestingScope scope;
   const KURL script_origin_resource_name("http://example.org/script.js");
 
@@ -48,6 +51,7 @@ TEST(ReferrerScriptInfo, ToFromV8NoReferencingScript) {
 }
 
 TEST(ReferrerScriptInfo, ToFromV8ScriptOriginBaseUrl) {
+  test::TaskEnvironment task_environment;
   V8TestingScope scope;
   const KURL script_origin_resource_name("http://example.org/script.js");
 
@@ -65,6 +69,7 @@ TEST(ReferrerScriptInfo, ToFromV8ScriptOriginBaseUrl) {
 }
 
 TEST(ReferrerScriptInfo, ToFromV8ScriptNullBaseUrl) {
+  test::TaskEnvironment task_environment;
   V8TestingScope scope;
   const KURL script_origin_resource_name("http://example.org/script.js");
 
@@ -83,6 +88,7 @@ TEST(ReferrerScriptInfo, ToFromV8ScriptNullBaseUrl) {
 }
 
 TEST(ReferrerScriptInfo, ToFromV8) {
+  test::TaskEnvironment task_environment;
   V8TestingScope scope;
   const KURL script_origin_resource_name("http://example.org/script.js");
   const KURL url("http://example.com");

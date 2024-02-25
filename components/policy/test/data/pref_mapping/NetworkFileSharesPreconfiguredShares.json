@@ -1,0 +1,53 @@
+[
+  {
+    "os": [
+      "chromeos_ash"
+    ],
+    "policy_pref_mapping_tests": [
+      {
+        "policies": {
+          "NetworkFileSharesPreconfiguredShares": [
+            {
+              "mode": "drop_down",
+              "share_url": "smb://server/share"
+            },
+            {
+              "mode": "drop_down",
+              "share_url": "\\\\server\\share"
+            },
+            {
+              "mode": "pre_mount",
+              "share_url": "smb://server/share"
+            },
+            {
+              "mode": "pre_mount",
+              "share_url": "\\\\server\\share"
+            }
+          ]
+        },
+        "prefs": {
+          "network_file_shares.preconfigured_shares": {
+            "value": [
+              {
+                "mode": "drop_down",
+                "share_url": "smb://server/share"
+              },
+              {
+                "mode": "drop_down",
+                "share_url": "\\\\server\\share"
+              },
+              {
+                "mode": "pre_mount",
+                "share_url": "smb://server/share"
+              },
+              {
+                "mode": "pre_mount",
+                "share_url": "\\\\server\\share"
+              }
+            ]
+          }
+        }
+      }
+    ]
+  }
+]

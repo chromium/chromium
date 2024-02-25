@@ -7,6 +7,7 @@
 #import <Foundation/Foundation.h>
 #include <stddef.h>
 
+#include <string_view>
 #include <vector>
 
 #include "base/apple/bridging.h"
@@ -91,14 +92,15 @@ OutStringType StringToStringWithEncodingsT(const InStringType& in,
     return OutStringType();
   }
 
-  return CFStringToStringWithEncodingT<OutStringType>(cfstring, out_encoding);
+  return CFStringToStringWithEncodingT<OutStringType>(cfstring.get(),
+                                                      out_encoding);
 }
 
 // Given a StringPiece `in` with an encoding specified by `in_encoding`, returns
 // it as a CFStringRef. Returns null on failure.
 template <typename CharT>
 apple::ScopedCFTypeRef<CFStringRef> StringPieceToCFStringWithEncodingsT(
-    BasicStringPiece<CharT> in,
+    std::basic_string_view<CharT> in,
     CFStringEncoding in_encoding) {
   const auto in_length = in.length();
   if (in_length == 0) {

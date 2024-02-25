@@ -68,6 +68,10 @@ struct StructTraits<printing::mojom::PaperDataView,
       const printing::PrinterSemanticCapsAndDefaults::Paper& p) {
     return p.max_height_um();
   }
+  static bool has_borderless_variant(
+      const printing::PrinterSemanticCapsAndDefaults::Paper& p) {
+    return p.has_borderless_variant();
+  }
 
   static bool Read(printing::mojom::PaperDataView data,
                    printing::PrinterSemanticCapsAndDefaults::Paper* out);
@@ -168,7 +172,7 @@ struct StructTraits<printing::mojom::PageOutputQualityDataView,
     return p.qualities;
   }
 
-  static const absl::optional<std::string>& default_quality(
+  static const std::optional<std::string>& default_quality(
       const ::printing::PageOutputQuality& p) {
     return p.default_quality;
   }
@@ -255,7 +259,7 @@ struct StructTraits<printing::mojom::PrinterSemanticCapsAndDefaultsDataView,
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
 #if BUILDFLAG(IS_WIN)
-  static const absl::optional<printing::PageOutputQuality>& page_output_quality(
+  static const std::optional<printing::PageOutputQuality>& page_output_quality(
       const printing::PrinterSemanticCapsAndDefaults& p) {
     return p.page_output_quality;
   }

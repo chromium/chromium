@@ -7,7 +7,7 @@
 #include "base/observer_list.h"
 #include "components/crx_file/id_util.h"
 #include "content/public/renderer/render_thread.h"
-#include "extensions/common/extension_messages.h"
+#include "extensions/common/extension_id.h"
 #include "extensions/common/mojom/host_id.mojom.h"
 #include "extensions/renderer/dispatcher.h"
 #include "extensions/renderer/script_injection.h"
@@ -36,7 +36,7 @@ UserScriptSetManager::GetInjectionForDeclarativeScript(
     content::RenderFrame* render_frame,
     int tab_id,
     const GURL& url,
-    const std::string& extension_id) {
+    const ExtensionId& extension_id) {
   UserScriptSet* user_script_set = GetScriptsByHostID(
       mojom::HostID(mojom::HostID::HostType::kExtensions, extension_id));
   if (!user_script_set)
@@ -59,7 +59,7 @@ void UserScriptSetManager::GetAllInjections(
 }
 
 void UserScriptSetManager::GetAllActiveExtensionIds(
-    std::set<std::string>* ids) const {
+    std::set<ExtensionId>* ids) const {
   DCHECK(ids);
   for (auto it = scripts_.cbegin(); it != scripts_.cend(); ++it) {
     if (it->first.type == mojom::HostID::HostType::kExtensions &&
@@ -100,7 +100,7 @@ void UserScriptSetManager::OnUpdateUserScripts(
 }
 
 void UserScriptSetManager::OnExtensionUnloaded(
-    const std::string& extension_id) {
+    const ExtensionId& extension_id) {
   auto it = scripts_.find(
       mojom::HostID(mojom::HostID::HostType::kExtensions, extension_id));
   if (it != scripts_.end()) {

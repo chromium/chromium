@@ -7,16 +7,19 @@
 
 #include <stdint.h>
 
+#include <optional>
+
 #include "base/files/file_path.h"
 #include "base/functional/callback.h"
+#include "build/build_config.h"
 #include "components/download/public/common/download_danger_type.h"
 #include "components/download/public/common/download_item.h"
+#include "components/download/public/common/download_target_info.h"
 #include "components/download/public/common/download_url_parameters.h"
 #include "components/download/public/common/quarantine_connection.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/save_page_type.h"
 #include "content/public/browser/web_contents.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/origin.h"
 
 class GURL;
@@ -34,43 +37,25 @@ using SavePackageDownloadCreatedCallback =
 // operation.  If the delegate wants notification of the download item created
 // in response to this operation, the SavePackageDownloadCreatedCallback will be
 // non-null.
-using SavePackagePathPickedCallback =
-    base::OnceCallback<void(const base::FilePath&,
-                            SavePageType,
-                            SavePackageDownloadCreatedCallback)>;
+struct CONTENT_EXPORT SavePackagePathPickedParams {
+  SavePackagePathPickedParams();
+  ~SavePackagePathPickedParams();
 
-// Called with the results of DetermineDownloadTarget().
-//
-// |target_path| should be set to a non-empty path which is taken to be the
-//     final target path for the download. Any file already at this path will be
-//     overwritten.
-//
-// |disposition| and |danger_type| are attributes associated with the download
-//     item and can be accessed via the download::DownloadItem accessors.
-//
-// |intermediate_path| specifies the path to the intermediate file. The download
-//     will be written to this path until all the bytes have been written. Upon
-//     completion, the file will be renamed to |target_path|.
-//     |intermediate_path| could be the same as |target_path|. Both paths must
-//     be in the same directory.
-//
-// |display_name| specifies the suggested file name in case the file name cannot
-//     be determined from target_path. Could be empty.
-//
-// |interrupt_reason| should be set to DOWNLOAD_INTERRUPT_REASON_NONE in
-//     order to proceed with the download. DOWNLOAD_INTERRUPT_REASON_USER_CANCEL
-//     results in the download being marked cancelled. Any other value results
-//     in the download being marked as interrupted. The other fields are only
-//     considered valid if |interrupt_reason| is NONE.
-using DownloadTargetCallback = base::OnceCallback<void(
-    const base::FilePath& target_path,
-    download::DownloadItem::TargetDisposition disposition,
-    download::DownloadDangerType danger_type,
-    download::DownloadItem::InsecureDownloadStatus insecure_download_status,
-    const base::FilePath& intermediate_path,
-    const base::FilePath& display_name,
-    const std::string& mime_type,
-    download::DownloadInterruptReason interrupt_reason)>;
+  SavePackagePathPickedParams(const SavePackagePathPickedParams& other);
+  SavePackagePathPickedParams& operator=(
+      const SavePackagePathPickedParams& other);
+  SavePackagePathPickedParams(SavePackagePathPickedParams&& other);
+  SavePackagePathPickedParams& operator=(SavePackagePathPickedParams&& other);
+
+  base::FilePath file_path;
+  SavePageType save_type;
+#if BUILDFLAG(IS_MAC)
+  std::vector<std::string> file_tags;
+#endif
+};
+using SavePackagePathPickedCallback =
+    base::OnceCallback<void(SavePackagePathPickedParams,
+                            SavePackageDownloadCreatedCallback)>;
 
 // Called when a download delayed by the delegate has completed.
 using DownloadOpenDelayedCallback = base::OnceCallback<void(bool)>;
@@ -108,9 +93,10 @@ class CONTENT_EXPORT DownloadManagerDelegate {
   // SetExternalData()).
   //
   // If the download should be canceled, |callback| should be invoked with an
-  // empty |target_path| argument.
-  virtual bool DetermineDownloadTarget(download::DownloadItem* item,
-                                       DownloadTargetCallback* callback);
+  // empty |DownloadTargetInfo::target_path| argument.
+  virtual bool DetermineDownloadTarget(
+      download::DownloadItem* item,
+      download::DownloadTargetCallback* callback);
 
   // Tests if a file type should be opened automatically. This consider both
   // user and policy settings, and should be called when it doesn't matter
@@ -211,7 +197,7 @@ class CONTENT_EXPORT DownloadManagerDelegate {
       const WebContents::Getter& web_contents_getter,
       const GURL& url,
       const std::string& request_method,
-      absl::optional<url::Origin> request_initiator,
+      std::optional<url::Origin> request_initiator,
       bool from_download_cross_origin_redirect,
       bool content_initiated,
       CheckDownloadAllowedCallback check_download_allowed_cb);
@@ -234,6 +220,10 @@ class CONTENT_EXPORT DownloadManagerDelegate {
   // Attaches any extra per-DownloadItem info.
   virtual void AttachExtraInfo(download::DownloadItem* item) {}
 
+#if BUILDFLAG(IS_ANDROID)
+  // Returns whether download is triggered by an external app.
+  virtual bool IsFromExternalApp(download::DownloadItem* item);
+#endif  // BUILDFLAG(IS_ANDROID)
  protected:
   virtual ~DownloadManagerDelegate();
 };

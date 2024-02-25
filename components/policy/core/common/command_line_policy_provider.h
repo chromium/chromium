@@ -34,7 +34,7 @@ class POLICY_EXPORT CommandLinePolicyProvider
   ~CommandLinePolicyProvider() override;
 
   // ConfigurationPolicyProvider implementation.
-  void RefreshPolicies() override;
+  void RefreshPolicies(PolicyFetchReason reason) override;
   bool IsFirstPolicyLoadComplete(PolicyDomain domain) const override;
 
  private:

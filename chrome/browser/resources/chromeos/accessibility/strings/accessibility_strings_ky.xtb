@@ -99,6 +99,7 @@
 <translation id="1559739829547075274">Артка серептөө</translation>
 <translation id="1565432156062359693">Кийинки тизме жок</translation>
 <translation id="1571643229714746283">ChromeVox даяр</translation>
+<translation id="1588252353131492116">Басылган режим күйүп турганда, "Басуу аракетин өткөрүп жиберүү" буйругу иштебейт</translation>
 <translation id="1594072653727561613">mnu</translation>
 <translation id="1610130962244179598">6 чекиттүү брайлга которуу</translation>
 <translation id="161042844686301425">Көгүлтүр</translation>
@@ -194,6 +195,7 @@
 <translation id="2318372665160196757">Башкы</translation>
 <translation id="2329324941084714723">Өтмөк тактасы</translation>
 <translation id="2347456970887948350">Шилтеме</translation>
+<translation id="2363753371702255035">маркер</translation>
 <translation id="2365384324219615024">Объекттерди Enter баскычы менен да жандандырууга, мисалы, формага текст киргизүүгө болот. Улантуу үчүн Enter баскычын басыңыз.</translation>
 <translation id="2381733276052567791">Кепти өчүрүү/күйгүзүү</translation>
 <translation id="2390264819538553347">Алдыга жылдыруу үчүн "enter" баскычын басыңыз; артка жылдыруу үчүн "backspace" баскычын басыңыз.</translation>
@@ -356,7 +358,7 @@
 <translation id="3300733168898541351">артка кайтаруу</translation>
 <translation id="3307886118343381874">Жадыбалдын аягына өтүү</translation>
 <translation id="3312997241656799641">Кийинки каралган шилтеме.</translation>
-<translation id="3313245066383501820">ChromeVox өзгөртүү баскычы</translation>
+<translation id="3313245066383501820">ChromeVox өзгөртүүчү баскыч</translation>
 <translation id="3317212938060708859">Сыдырма</translation>
 <translation id="3321460131042519426">Сөз боюнча ташымалдоо</translation>
 <translation id="3322936298410871309">Мурунку 1-деңгээлдеги баш аты жок</translation>
@@ -426,7 +428,7 @@
 <translation id="3781428340399460090">Ачык кызгылтым</translation>
 <translation id="3783725005098956899">Таржымалды көрсөтүү</translation>
 <translation id="3801735343383419236">Автотолуктоо тизмеси</translation>
-<translation id="3806327402890551732">Кийинки же мурунку элементке өтүү</translation>
+<translation id="3806327402890551732">Кийинки же мурунку нерсеге өтүү</translation>
 <translation id="3810838688059735925">Видео</translation>
 <translation id="3813387282697781382">Мала маржан түстүү</translation>
 <translation id="3816633764618089385">Кийинки медиа</translation>

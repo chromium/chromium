@@ -6,12 +6,16 @@
 
 #include <algorithm>
 
+#include "base/feature_list.h"
 #include "base/strings/string_piece.h"
 #include "base/time/time.h"
 #include "chrome/browser/profiles/profile_selections.h"
+#include "chrome/browser/tpcd/heuristics/opener_heuristic_tab_helper.h"
 #include "content/public/browser/browser_context.h"
+#include "content/public/browser/cookie_access_details.h"
 #include "content/public/browser/web_contents.h"
 #include "net/base/registry_controlled_domains/registry_controlled_domain.h"
+#include "services/network/public/cpp/features.h"
 #include "url/gurl.h"
 
 base::FilePath GetDIPSFilePath(content::BrowserContext* context) {
@@ -181,4 +185,27 @@ bool HasSameSiteIframe(content::WebContents* web_contents, const GURL& url) {
       });
 
   return found;
+}
+
+const base::TimeDelta kDIPSTimestampUpdateInterval = base::Minutes(1);
+
+bool UpdateTimestamp(std::optional<base::Time>& last_time, base::Time now) {
+  if (!last_time.has_value() ||
+      (now - last_time.value()) >= kDIPSTimestampUpdateInterval) {
+    last_time = now;
+    return true;
+  }
+
+  return false;
+}
+
+OptionalBool IsAdTaggedCookieForHeuristics(
+    const content::CookieAccessDetails& details) {
+  if (!base::FeatureList::IsEnabled(
+          network::features::kSkipTpcdMitigationsForAds) ||
+      !network::features::kSkipTpcdMitigationsForAdsHeuristics.Get()) {
+    return OptionalBool::kUnknown;
+  }
+  return ToOptionalBool(details.cookie_setting_overrides.Has(
+      net::CookieSettingOverride::kSkipTPCDHeuristicsGrant));
 }

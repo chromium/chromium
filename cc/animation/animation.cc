@@ -139,7 +139,30 @@ void Animation::UnregisterAnimation() {
 }
 
 void Animation::PushPropertiesTo(Animation* animation_impl) {
-  keyframe_effect()->PushPropertiesTo(animation_impl->keyframe_effect());
+  std::optional<base::TimeTicks> impl_start_time;
+  if (is_replacement_ && !keyframe_effect()->keyframe_models().empty()) {
+    auto* cc_keyframe_model = KeyframeModel::ToCcKeyframeModel(
+        keyframe_effect()->keyframe_models().front().get());
+    animation_impl->keyframe_effect()->set_replaced_group(
+        cc_keyframe_model->group());
+  }
+
+  if (is_replacement_ && !GetStartTime()) {
+    // If this animation is replacing an existing one before having received a
+    // start time, try to get the start from the animation being replaced.
+    // This is done to prevent a race where the client may cancel and restart
+    // the Animation before having received a start time but after the
+    // Animation has started playing on the compositor thread.
+    impl_start_time = animation_impl->GetStartTime();
+
+    // This should always happen only on the first commit which must need
+    // pushing (and hence, the below call won't no-op).
+    CHECK(keyframe_effect()->needs_push_properties());
+  }
+  is_replacement_ = false;
+
+  keyframe_effect()->PushPropertiesTo(animation_impl->keyframe_effect(),
+                                      impl_start_time);
 }
 
 bool Animation::Tick(base::TimeTicks tick_time) {
@@ -184,22 +207,22 @@ void Animation::DispatchAndDelegateAnimationEvent(const AnimationEvent& event) {
 void Animation::DelegateAnimationEvent(const AnimationEvent& event) {
   if (animation_delegate_) {
     switch (event.type) {
-      case AnimationEvent::STARTED:
+      case AnimationEvent::Type::kStarted:
         animation_delegate_->NotifyAnimationStarted(
             event.monotonic_time, event.target_property, event.group_id);
         break;
 
-      case AnimationEvent::FINISHED:
+      case AnimationEvent::Type::kFinished:
         animation_delegate_->NotifyAnimationFinished(
             event.monotonic_time, event.target_property, event.group_id);
         break;
 
-      case AnimationEvent::ABORTED:
+      case AnimationEvent::Type::kAborted:
         animation_delegate_->NotifyAnimationAborted(
             event.monotonic_time, event.target_property, event.group_id);
         break;
 
-      case AnimationEvent::TAKEOVER:
+      case AnimationEvent::Type::kTakeOver:
         // TODO(crbug.com/1018213): Routing TAKEOVER events is broken.
         DCHECK(!event.is_impl_only);
         DCHECK(event.target_property == TargetProperty::SCROLL_OFFSET);
@@ -209,7 +232,7 @@ void Animation::DelegateAnimationEvent(const AnimationEvent& event) {
             event.animation_start_time, event.curve->Clone());
         break;
 
-      case AnimationEvent::TIME_UPDATED:
+      case AnimationEvent::Type::kTimeUpdated:
         DCHECK(!event.is_impl_only);
         animation_delegate_->NotifyLocalTimeUpdated(event.local_time);
         break;
@@ -228,6 +251,24 @@ bool Animation::AffectsNativeProperty() const {
 void Animation::SetNeedsCommit() {
   DCHECK(animation_host());
   animation_host()->SetNeedsCommit();
+}
+
+std::optional<base::TimeTicks> Animation::GetStartTime() const {
+  CHECK(keyframe_effect());
+
+  if (!keyframe_effect()->keyframe_models().size()) {
+    return std::nullopt;
+  }
+
+  // KeyframeModels should all share the same start time so just use the first
+  // one's.
+  gfx::KeyframeModel& km = *keyframe_effect()->keyframe_models().front();
+
+  if (!km.has_set_start_time()) {
+    return std::nullopt;
+  }
+
+  return km.start_time();
 }
 
 void Animation::SetNeedsPushProperties() {
@@ -288,7 +329,7 @@ void Animation::NotifyKeyframeModelFinishedForTesting(
     int keyframe_model_id,
     TargetProperty::Type target_property,
     int group_id) {
-  AnimationEvent event(AnimationEvent::FINISHED,
+  AnimationEvent event(AnimationEvent::Type::kFinished,
                        {timeline_id, id(), keyframe_model_id}, group_id,
                        target_property, base::TimeTicks());
   DispatchAndDelegateAnimationEvent(event);

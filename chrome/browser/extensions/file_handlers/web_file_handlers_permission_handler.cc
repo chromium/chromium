@@ -4,6 +4,8 @@
 
 #include "chrome/browser/extensions/file_handlers/web_file_handlers_permission_handler.h"
 
+#include <optional>
+
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
 #include "base/strings/utf_string_conversions.h"
@@ -17,7 +19,6 @@
 #include "extensions/common/features/feature.h"
 #include "extensions/common/features/feature_provider.h"
 #include "extensions/common/manifest_handlers/web_file_handlers_info.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace extensions {
 
@@ -33,7 +34,7 @@ ExtensionPrefs* GetExtensionPrefs(Profile* profile) {
 }
 
 // Get dictionary of extension prefs.
-absl::optional<bool> GetExtensionPrefsAsBoolean(
+std::optional<bool> GetExtensionPrefsAsBoolean(
     ExtensionPrefs* extension_prefs,
     const ExtensionId& extension_id) {
   bool out_value = false;
@@ -41,12 +42,12 @@ absl::optional<bool> GetExtensionPrefsAsBoolean(
                                          &out_value)) {
     return out_value;
   }
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 // Get extension pref result.
-absl::optional<bool> GetExtensionPrefsAsBoolean(const Extension& extension,
-                                                Profile* profile) {
+std::optional<bool> GetExtensionPrefsAsBoolean(const Extension& extension,
+                                               Profile* profile) {
   return GetExtensionPrefsAsBoolean(GetExtensionPrefs(profile), extension.id());
 }
 
@@ -85,9 +86,7 @@ void WebFileHandlersPermissionHandler::Confirm(
   // TODO(crbug.com/1448893): Remove the allowlist check after development.
   // Also, for development and manual testing purposes, the manifest_features
   // allowlist can also bypass the dialog.
-  const Feature* feature = FeatureProvider::GetManifestFeature("file_handlers");
-  bool is_id_in_allowlist = feature->IsIdInAllowlist(extension.hashed_id());
-  if (extension.was_installed_by_default() || is_id_in_allowlist) {
+  if (WebFileHandlers::CanBypassPermissionDialog(extension)) {
     std::move(launch_callback).Run(/*should_open=*/true);
     return;
   }
@@ -125,15 +124,16 @@ const apps::FileHandlers WebFileHandlersPermissionHandler::GetAppsFileHandlers(
     return web_file_handlers;
   }
 
-  for (const auto& file_handler : *file_handlers) {
-    apps::FileHandler web_file_handler;
-    web_file_handler.action = GURL(file_handler.action);
-    web_file_handler.display_name = base::UTF8ToUTF16(file_handler.name);
+  for (const auto& web_file_handler : *file_handlers) {
+    apps::FileHandler file_handler;
+    file_handler.action = GURL(web_file_handler.file_handler.action);
+    file_handler.display_name =
+        base::UTF8ToUTF16(web_file_handler.file_handler.name);
 
     // Compute `accept`, which contains all mime types and file extensions.
     apps::FileHandler::Accept accept;
     for (const auto [mime_type, file_extension_list] :
-         file_handler.accept.additional_properties) {
+         web_file_handler.file_handler.accept.additional_properties) {
       apps::FileHandler::AcceptEntry accept_entry;
       accept_entry.mime_type = mime_type;
       base::flat_set<std::string> file_extensions;
@@ -143,15 +143,16 @@ const apps::FileHandlers WebFileHandlersPermissionHandler::GetAppsFileHandlers(
       accept_entry.file_extensions = file_extensions;
       accept.emplace_back(accept_entry);
     }
-    web_file_handler.accept = accept;
+    file_handler.accept = accept;
 
     // The default launch type is single client.
-    web_file_handler.launch_type =
-        file_handler.launch_type != "multiple-client"
+    file_handler.launch_type =
+        web_file_handler.launch_type ==
+                WebFileHandler::LaunchType::kSingleClient
             ? apps::FileHandler::LaunchType::kSingleClient
             : apps::FileHandler::LaunchType::kMultipleClients;
 
-    web_file_handlers.emplace_back(web_file_handler);
+    web_file_handlers.emplace_back(file_handler);
   }
 
   return web_file_handlers;

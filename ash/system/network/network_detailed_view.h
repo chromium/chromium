@@ -14,6 +14,7 @@
 #include "base/memory/weak_ptr.h"
 #include "chromeos/services/network_config/public/mojom/cros_network_config.mojom.h"
 #include "ui/base/metadata/metadata_header_macros.h"
+#include "ui/views/view_tracker.h"
 
 namespace views {
 
@@ -33,9 +34,9 @@ class Button;
 // delegate interface it uses to propagate user interactions.
 class ASH_EXPORT NetworkDetailedView : public TrayDetailedView,
                                        public NetworkInfoBubble::Delegate {
- public:
-  METADATA_HEADER(NetworkDetailedView);
+  METADATA_HEADER(NetworkDetailedView, TrayDetailedView)
 
+ public:
   // This class defines the interface that NetworkDetailedView will use to
   // propagate user interactions.
   class Delegate {
@@ -51,6 +52,8 @@ class ASH_EXPORT NetworkDetailedView : public TrayDetailedView,
   NetworkDetailedView(const NetworkDetailedView&) = delete;
   NetworkDetailedView& operator=(const NetworkDetailedView&) = delete;
   ~NetworkDetailedView() override;
+
+  views::Button* info_button_for_testing() { return info_button_; }
 
  protected:
   NetworkDetailedView(DetailedViewDelegate* detailed_view_delegate,
@@ -74,7 +77,6 @@ class ASH_EXPORT NetworkDetailedView : public TrayDetailedView,
   };
 
   void OnInfoClicked();
-  bool CloseInfoBubble();
   void OnSettingsClicked();
 
   // TrayDetailedView:
@@ -93,17 +95,17 @@ class ASH_EXPORT NetworkDetailedView : public TrayDetailedView,
   // Used to cache the login status on creation.
   const LoginStatus login_;
 
-  raw_ptr<TrayNetworkStateModel, ExperimentalAsh> model_;
+  // Used to track the existence of the `NetworkInfoBubble`
+  views::ViewTracker info_bubble_tracker_;
+
+  raw_ptr<TrayNetworkStateModel> model_;
 
   int title_row_string_id_;
 
-  raw_ptr<views::Button, ExperimentalAsh> info_button_ = nullptr;
-  raw_ptr<views::Button, ExperimentalAsh> settings_button_ = nullptr;
+  raw_ptr<views::Button> info_button_ = nullptr;
+  raw_ptr<views::Button> settings_button_ = nullptr;
 
-  // A small bubble for displaying network info.
-  raw_ptr<NetworkInfoBubble, ExperimentalAsh> info_bubble_ = nullptr;
-
-  raw_ptr<Delegate, ExperimentalAsh> delegate_;
+  raw_ptr<Delegate> delegate_;
 
   base::WeakPtrFactory<NetworkDetailedView> weak_ptr_factory_{this};
 };

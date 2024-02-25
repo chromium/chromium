@@ -6,12 +6,12 @@
 #define CHROME_UPDATER_NET_NETWORK_H_
 
 #include <memory>
+#include <optional>
 
 #include "base/memory/scoped_refptr.h"
 #include "base/sequence_checker.h"
 #include "build/build_config.h"
 #include "components/update_client/network.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace updater {
 
@@ -22,7 +22,7 @@ struct PolicyServiceProxyConfiguration;
 // outlive the lives of the network fetchers it creates.
 class NetworkFetcherFactory : public update_client::NetworkFetcherFactory {
  public:
-  explicit NetworkFetcherFactory(absl::optional<PolicyServiceProxyConfiguration>
+  explicit NetworkFetcherFactory(std::optional<PolicyServiceProxyConfiguration>
                                      policy_service_proxy_configuration);
   NetworkFetcherFactory(const NetworkFetcherFactory&) = delete;
   NetworkFetcherFactory& operator=(const NetworkFetcherFactory&) = delete;

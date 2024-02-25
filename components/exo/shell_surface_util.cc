@@ -76,7 +76,7 @@ aura::WindowTargeter* FindTargeter(ui::EventTarget* target) {
 }  // namespace
 
 void SetShellApplicationId(ui::PropertyHandler* property_handler,
-                           const absl::optional<std::string>& id) {
+                           const std::optional<std::string>& id) {
   TRACE_EVENT1("exo", "SetApplicationId", "application_id", id ? *id : "null");
 
   if (id)
@@ -90,7 +90,7 @@ const std::string* GetShellApplicationId(const aura::Window* property_handler) {
 }
 
 void SetShellStartupId(ui::PropertyHandler* property_handler,
-                       const absl::optional<std::string>& id) {
+                       const std::optional<std::string>& id) {
   TRACE_EVENT1("exo", "SetStartupId", "startup_id", id ? *id : "null");
 
   if (id)
@@ -112,7 +112,7 @@ void SetShellUseImmersiveForFullscreen(aura::Window* window, bool value) {
 }
 
 void SetShellClientAccessibilityId(aura::Window* window,
-                                   const absl::optional<int32_t>& id) {
+                                   const std::optional<int32_t>& id) {
   TRACE_EVENT1("exo", "SetClientAccessibilityId", "id",
                id ? base::NumberToString(*id) : "null");
 
@@ -122,18 +122,18 @@ void SetShellClientAccessibilityId(aura::Window* window,
     window->ClearProperty(ash::kClientAccessibilityIdKey);
 }
 
-const absl::optional<int32_t> GetShellClientAccessibilityId(
+const std::optional<int32_t> GetShellClientAccessibilityId(
     aura::Window* window) {
   auto id = window->GetProperty(ash::kClientAccessibilityIdKey);
   if (id < 0)
-    return absl::nullopt;
+    return std::nullopt;
   else
     return id;
 }
 
 void SetShellClientControlledShellSurface(
     ui::PropertyHandler* property_handler,
-    const absl::optional<ClientControlledShellSurface*>& shell_surface) {
+    const std::optional<ClientControlledShellSurface*>& shell_surface) {
   if (shell_surface)
     property_handler->SetProperty(kClientControlledShellSurface,
                                   shell_surface.value());
@@ -167,11 +167,13 @@ Surface* GetShellRootSurface(const aura::Window* window) {
   return window->GetProperty(kRootSurfaceKey);
 }
 
-ShellSurfaceBase* GetShellSurfaceBaseForWindow(aura::Window* window) {
+ShellSurfaceBase* GetShellSurfaceBaseForWindow(const aura::Window* window) {
   // Only windows with a surface can have a shell surface.
   if (!GetShellRootSurface(window))
     return nullptr;
-  views::Widget* widget = views::Widget::GetWidgetForNativeWindow(window);
+  // This is safe to const-cast for Aura.
+  const views::Widget* widget = views::Widget::GetWidgetForNativeWindow(
+      const_cast<aura::Window*>(window));
   if (!widget)
     return nullptr;
   ShellSurfaceBase* shell_surface_base =
@@ -316,69 +318,8 @@ bool HasPermissionToActivate(aura::Window* window) {
   return permission && permission->Check(Permission::Capability::kActivate);
 }
 
-bool ConsumedByIme(aura::Window* window, const ui::KeyEvent& event) {
-  // TODO(crbug.com/1401822): remove the old behavior, once the fix is
-  // stabilized.
-  if (base::FeatureList::IsEnabled(ash::features::kExoConsumedByImeByFlag)) {
-    return ui::GetKeyboardImeFlags(event) & ui::kPropertyKeyboardImeHandledFlag;
-  }
-
-  // Check if IME consumed the event, to avoid it to be doubly processed.
-  // First let us see whether IME is active and is in text input mode.
-  views::Widget* widget = views::Widget::GetTopLevelWidgetForNativeView(window);
-  ui::InputMethod* ime = widget ? widget->GetInputMethod() : nullptr;
-  if (!ime || ime->GetTextInputType() == ui::TEXT_INPUT_TYPE_NONE ||
-      ime->GetTextInputType() == ui::TEXT_INPUT_TYPE_NULL) {
-    return false;
-  }
-
-  // Case 1:
-  // When IME ate a key event but did not emit character insertion event yet
-  // (e.g., when it is still showing a candidate list UI to the user,) the
-  // consumed key event is re-sent after masked |key_code| by VKEY_PROCESSKEY.
-  if (event.key_code() == ui::VKEY_PROCESSKEY)
-    return true;
-
-  // Except for PROCESSKEY, never discard "key-up" events. A keydown not paired
-  // by a keyup can trigger a never-ending key repeat in the client, which can
-  // never be desirable.
-  if (event.type() == ui::ET_KEY_RELEASED)
-    return false;
-
-  // Case 2:
-  // When IME ate a key event and generated a single character input, it leaves
-  // the key event as-is, and in addition calls the active ui::TextInputClient's
-  // InsertChar() method. (In our case, arc::ArcImeService::InsertChar()).
-  //
-  // In Chrome OS (and Web) convention, the two calls won't cause duplicates,
-  // because key-down events do not mean any character inputs there.
-  // (InsertChar issues a DOM "keypress" event, which is distinct from keydown.)
-  // Unfortunately, this is not necessary the case for our clients that may
-  // treat keydown as a trigger of text inputs. We need suppression for keydown.
-  //
-  // Same condition as ash/components/arc/ime/arc_ime_service.cc#InsertChar.
-  const char16_t ch = event.GetCharacter();
-  const bool is_control_char =
-      (0x00 <= ch && ch <= 0x1f) || (0x7f <= ch && ch <= 0x9f);
-  if (!is_control_char && !ui::IsSystemKeyModifier(event.flags()))
-    return true;
-
-  // Case 3:
-  // Workaround for apps that doesn't handle hardware keyboard events well.
-  // Keys typically on software keyboard and lack of them are fatal, namely,
-  // unmodified enter and backspace keys, are sent through IME.
-  constexpr int kModifierMask = ui::EF_SHIFT_DOWN | ui::EF_CONTROL_DOWN |
-                                ui::EF_ALT_DOWN | ui::EF_COMMAND_DOWN |
-                                ui::EF_ALTGR_DOWN | ui::EF_MOD3_DOWN;
-  // Same condition as ash/components/arc/ime/arc_ime_service.cc#InsertChar.
-  if ((event.flags() & kModifierMask) == 0) {
-    if (event.key_code() == ui::VKEY_RETURN ||
-        event.key_code() == ui::VKEY_BACK) {
-      return true;
-    }
-  }
-
-  return false;
+bool ConsumedByIme(const ui::KeyEvent& event) {
+  return ui::GetKeyboardImeFlags(event) & ui::kPropertyKeyboardImeHandledFlag;
 }
 
 void SetSkipImeProcessingToDescendentSurfaces(aura::Window* window,

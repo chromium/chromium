@@ -6,6 +6,7 @@
 
 #include <algorithm>
 #include <memory>
+#include <optional>
 #include <string>
 #include <utility>
 
@@ -16,6 +17,7 @@
 #include "ash/focus_cycler.h"
 #include "ash/ime/ime_controller_impl.h"
 #include "ash/login/login_screen_controller.h"
+#include "ash/login/ui/auth_error_bubble.h"
 #include "ash/login/ui/bottom_status_indicator.h"
 #include "ash/login/ui/kiosk_app_default_message.h"
 #include "ash/login/ui/lock_contents_view_constants.h"
@@ -57,7 +59,6 @@
 #include "ash/system/status_area_widget.h"
 #include "ash/system/status_area_widget_delegate.h"
 #include "ash/system/tray/system_tray_notifier.h"
-#include "ash/wm/tablet_mode/tablet_mode_controller.h"
 #include "base/command_line.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
@@ -74,7 +75,6 @@
 #include "components/user_manager/multi_user/multi_user_sign_in_policy.h"
 #include "components/user_manager/user_type.h"
 #include "media/base/media_switches.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
@@ -87,6 +87,7 @@
 #include "ui/display/display.h"
 #include "ui/display/manager/display_manager.h"
 #include "ui/display/manager/managed_display_info.h"
+#include "ui/display/screen.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/rect.h"
@@ -136,49 +137,6 @@ void FocusFirstOrLastFocusableChild(views::View* root, bool reverse) {
   }
 }
 
-// Make a section of the text bold.
-// |label|:       The label to apply mixed styles.
-// |text|:        The message to display.
-// |bold_start|:  The position in |text| to start bolding.
-// |bold_length|: The length of bold text.
-void MakeSectionBold(views::StyledLabel* label,
-                     const std::u16string& text,
-                     const absl::optional<int>& bold_start,
-                     int bold_length) {
-  auto create_style = [&](bool is_bold) {
-    views::StyledLabel::RangeStyleInfo style;
-    if (is_bold) {
-      style.custom_font = label->GetFontList().Derive(
-          0, gfx::Font::FontStyle::NORMAL, gfx::Font::Weight::BOLD);
-    }
-    style.override_color = AshColorProvider::Get()->GetContentLayerColor(
-        AshColorProvider::ContentLayerType::kTextColorPrimary);
-    return style;
-  };
-
-  auto add_style = [&](const views::StyledLabel::RangeStyleInfo& style,
-                       int start, int end) {
-    if (start >= end) {
-      return;
-    }
-
-    label->AddStyleRange(gfx::Range(start, end), style);
-  };
-
-  views::StyledLabel::RangeStyleInfo regular_style =
-      create_style(false /*is_bold*/);
-  views::StyledLabel::RangeStyleInfo bold_style =
-      create_style(true /*is_bold*/);
-  if (!bold_start || bold_length == 0) {
-    add_style(regular_style, 0, text.length());
-    return;
-  }
-
-  add_style(regular_style, 0, *bold_start - 1);
-  add_style(bold_style, *bold_start, *bold_start + bold_length);
-  add_style(regular_style, *bold_start + bold_length + 1, text.length());
-}
-
 keyboard::KeyboardUIController* GetKeyboardControllerForWidget(
     const views::Widget* widget) {
   auto* keyboard_ui_controller = keyboard::KeyboardUIController::Get();
@@ -192,11 +150,7 @@ keyboard::KeyboardUIController* GetKeyboardControllerForWidget(
 }
 
 bool IsPublicAccountUser(const LoginUserInfo& user) {
-  return user.basic_user_info.type == user_manager::USER_TYPE_PUBLIC_ACCOUNT;
-}
-
-bool IsTabletMode() {
-  return Shell::Get()->tablet_mode_controller()->InTabletMode();
+  return user.basic_user_info.type == user_manager::UserType::kPublicAccount;
 }
 
 //
@@ -264,6 +218,8 @@ struct MediumViewLayout {
 };
 
 class UserAddingScreenIndicator : public views::View {
+  METADATA_HEADER(UserAddingScreenIndicator, views::View)
+
  public:
   UserAddingScreenIndicator() {
     views::BoxLayout* layout_manager =
@@ -285,8 +241,9 @@ class UserAddingScreenIndicator : public views::View {
     label_->SetText(message);
 
     SetPaintToLayer();
-    layer()->SetBackgroundBlur(ColorProvider::kBackgroundBlurSigma);
     layer()->SetFillsBoundsOpaquely(false);
+    layer()->SetBackgroundBlur(ColorProvider::kBackgroundBlurSigma);
+    layer()->SetBackdropFilterQuality(ColorProvider::kBackgroundBlurQuality);
 
     SetBackground(views::CreateThemedRoundedRectBackground(
         kColorAshShieldAndBase80, kBubbleBorderRadius));
@@ -304,9 +261,12 @@ class UserAddingScreenIndicator : public views::View {
   }
 
  private:
-  raw_ptr<views::ImageView, ExperimentalAsh> info_icon_ = nullptr;
-  raw_ptr<views::Label, ExperimentalAsh> label_ = nullptr;
+  raw_ptr<views::ImageView> info_icon_ = nullptr;
+  raw_ptr<views::Label> label_ = nullptr;
 };
+
+BEGIN_METADATA(UserAddingScreenIndicator)
+END_METADATA
 
 }  // namespace
 
@@ -400,7 +360,11 @@ LockContentsView::LockContentsView(
   warning_banner_bubble_ = AddChildView(std::make_unique<LoginErrorBubble>());
   warning_banner_bubble_->set_persistent(true);
 
-  auth_error_bubble_ = AddChildView(std::make_unique<AuthErrorBubble>());
+  auth_error_bubble_ = AddChildView(std::make_unique<AuthErrorBubble>(
+      base::BindRepeating(&LockContentsView::LearnMoreButtonPressed,
+                          base::Unretained(this)),
+      base::BindRepeating(&LockContentsView::RecoverUserButtonPressed,
+                          base::Unretained(this))));
 
   if (Shell::Get()->session_controller()->GetSessionState() ==
       session_manager::SessionState::LOGIN_SECONDARY) {
@@ -586,15 +550,15 @@ void LockContentsView::SetHasKioskApp(bool has_kiosk_apps) {
   UpdateKioskDefaultMessageVisibility();
 }
 
-void LockContentsView::Layout() {
-  View::Layout();
+void LockContentsView::Layout(PassKey) {
+  LayoutSuperclass<View>(this);
   LayoutTopHeader();
   LayoutBottomStatusIndicator();
   LayoutUserAddingScreenIndicator();
   LayoutPublicSessionView();
 
   if (users_list_) {
-    users_list_->Layout();
+    users_list_->DeprecatedLayoutImmediately();
   }
 }
 
@@ -773,7 +737,7 @@ void LockContentsView::ApplyUserChanges(
 
   // Force layout.
   PreferredSizeChanged();
-  Layout();
+  DeprecatedLayoutImmediately();
 
   // If one of the child views had focus before we deleted them, then this view
   // will get focused. Move focus back to the primary big view.
@@ -993,6 +957,13 @@ void LockContentsView::OnAuthDisabledForUser(
   }
 }
 
+void LockContentsView::OnAuthenticationStageChanged(
+    const AuthenticationStage auth_stage) {
+  if (auth_stage != AuthenticationStage::kIdle && auth_error_bubble_) {
+    HideAuthErrorMessage();
+  }
+}
+
 void LockContentsView::OnSetTpmLockedState(const AccountId& user,
                                            bool is_locked,
                                            base::TimeDelta time_left) {
@@ -1003,7 +974,7 @@ void LockContentsView::OnSetTpmLockedState(const AccountId& user,
   }
 
   state->time_until_tpm_unlock =
-      is_locked ? absl::make_optional(time_left) : absl::nullopt;
+      is_locked ? std::make_optional(time_left) : std::nullopt;
 
   LoginBigUserView* big_user =
       TryToFindBigUser(user, true /*require_auth_active*/);
@@ -1098,7 +1069,7 @@ void LockContentsView::OnSystemInfoChanged(
   if (enforced) {
     enable_system_info_enforced_ = show;
   } else {
-    enable_system_info_enforced_ = absl::nullopt;
+    enable_system_info_enforced_ = std::nullopt;
     enable_system_info_if_possible_ |= show;
   }
 
@@ -1348,119 +1319,6 @@ void LockContentsView::OnDeviceEnterpriseInfoChanged() {
 
 void LockContentsView::OnEnterpriseAccountDomainChanged() {}
 
-void LockContentsView::ShowAuthErrorMessageForDebug(int unlock_attempt) {
-  if (!CurrentBigUserView()) {
-    return;
-  }
-  AccountId account_id =
-      CurrentBigUserView()->GetCurrentUser().basic_user_info.account_id;
-  unlock_attempt_by_user_[account_id] = unlock_attempt;
-  ShowAuthErrorMessage();
-}
-
-void LockContentsView::ToggleManagementForUserForDebug(const AccountId& user) {
-  auto replace = [](const LoginUserInfo& user_info) {
-    auto changed = user_info;
-    if (user_info.user_account_manager) {
-      changed.user_account_manager.reset();
-    } else {
-      changed.user_account_manager = "example@example.com";
-    }
-    return changed;
-  };
-
-  LoginBigUserView* big = TryToFindBigUser(user, false /*require_auth_active*/);
-  if (big) {
-    big->UpdateForUser(replace(big->GetCurrentUser()));
-    return;
-  }
-
-  LoginUserView* user_view =
-      users_list_ ? users_list_->GetUserView(user) : nullptr;
-  if (user_view) {
-    user_view->UpdateForUser(replace(user_view->current_user()),
-                             false /*animate*/);
-    return;
-  }
-}
-
-void LockContentsView::SetMultiUserSignInPolicyForUserForDebug(
-    const AccountId& user,
-    user_manager::MultiUserSignInPolicy policy) {
-  auto replace = [policy](const LoginUserInfo& user_info) {
-    auto changed = user_info;
-    changed.multi_user_sign_in_policy = policy;
-    changed.is_multi_user_sign_in_allowed =
-        policy == user_manager::MultiUserSignInPolicy::kUnrestricted;
-    return changed;
-  };
-
-  LoginBigUserView* big = TryToFindBigUser(user, false /*require_auth_active*/);
-  if (big) {
-    big->UpdateForUser(replace(big->GetCurrentUser()));
-  }
-
-  LoginUserView* user_view =
-      users_list_ ? users_list_->GetUserView(user) : nullptr;
-  if (user_view) {
-    user_view->UpdateForUser(replace(user_view->current_user()),
-                             false /*animate*/);
-  }
-
-  LayoutAuth(CurrentBigUserView(), nullptr /*opt_to_hide*/, true /*animate*/);
-}
-
-void LockContentsView::ToggleForceOnlineSignInForUserForDebug(
-    const AccountId& user) {
-  UserState* state = FindStateForUser(user);
-  if (!state) {
-    LOG(ERROR) << "Unable to find user forcing online sign in";
-    return;
-  }
-  state->force_online_sign_in = !state->force_online_sign_in;
-
-  LoginBigUserView* big_user =
-      TryToFindBigUser(user, true /*require_auth_active*/);
-  if (big_user && big_user->auth_user()) {
-    LayoutAuth(big_user, nullptr /*opt_to_hide*/, true /*animate*/);
-  }
-}
-
-void LockContentsView::ToggleDisableTpmForUserForDebug(const AccountId& user) {
-  UserState* state = FindStateForUser(user);
-  if (!state) {
-    LOG(ERROR) << "Unable to find user to toggle TPM disabled message";
-    return;
-  }
-  if (state->time_until_tpm_unlock.has_value()) {
-    state->time_until_tpm_unlock = absl::nullopt;
-  } else {
-    state->time_until_tpm_unlock = base::Minutes(5);
-  }
-
-  LoginBigUserView* big_user =
-      TryToFindBigUser(user, true /*require_auth_active*/);
-  if (big_user && big_user->auth_user()) {
-    LayoutAuth(big_user, nullptr /*opt_to_hide*/, true /*animate*/);
-  }
-}
-
-void LockContentsView::UndoForceOnlineSignInForUserForDebug(
-    const AccountId& user) {
-  UserState* state = FindStateForUser(user);
-  if (!state) {
-    LOG(ERROR) << "Unable to find user forcing online sign in";
-    return;
-  }
-  state->force_online_sign_in = false;
-
-  LoginBigUserView* big_user =
-      TryToFindBigUser(user, true /*require_auth_active*/);
-  if (big_user && big_user->auth_user()) {
-    LayoutAuth(big_user, nullptr /*opt_to_hide*/, true /*animate*/);
-  }
-}
-
 void LockContentsView::FocusNextWidget(bool reverse) {
   Shelf* shelf = Shelf::ForWindow(GetWidget()->GetNativeWindow());
   // Tell the focus direction to the status area or the shelf so they can focus
@@ -1470,12 +1328,9 @@ void LockContentsView::FocusNextWidget(bool reverse) {
         ->status_area_widget_delegate()
         ->set_default_last_focusable_child(reverse);
     Shell::Get()->focus_cycler()->FocusWidget(shelf->GetStatusAreaWidget());
-  } else if (features::IsUseLoginShelfWidgetEnabled()) {
+  } else {
     shelf->login_shelf_widget()->SetDefaultLastFocusableChild(reverse);
     Shell::Get()->focus_cycler()->FocusWidget(shelf->login_shelf_widget());
-  } else {
-    shelf->shelf_widget()->set_default_last_focusable_child(reverse);
-    Shell::Get()->focus_cycler()->FocusWidget(shelf->shelf_widget());
   }
 }
 
@@ -1548,7 +1403,7 @@ void LockContentsView::HideMediaControlsLayout() {
   // Don't allow media keys to be used on lock screen since controls are hidden.
   Shell::Get()->media_controller()->SetMediaControlsDismissed(true);
 
-  Layout();
+  DeprecatedLayoutImmediately();
 }
 
 void LockContentsView::CreateMediaControlsLayout() {
@@ -1566,7 +1421,7 @@ void LockContentsView::CreateMediaControlsLayout() {
   AddDisplayLayoutAction(base::BindRepeating(
       &LockContentsView::SetMediaControlsSpacing, base::Unretained(this)));
 
-  Layout();
+  DeprecatedLayoutImmediately();
 }
 
 void LockContentsView::OnWillChangeFocus(View* focused_before,
@@ -1813,7 +1668,7 @@ void LockContentsView::DoLayout() {
     action.Run(landscape);
   }
 
-  // SizeToPreferredSize will call Layout().
+  // SizeToPreferredSize will trigger layout.
   SizeToPreferredSize();
 }
 
@@ -1824,7 +1679,7 @@ void LockContentsView::LayoutTopHeader() {
                                   note_action_->GetPreferredSize().height());
   top_header_->SetPreferredSize(gfx::Size(preferred_width, preferred_height));
   top_header_->SizeToPreferredSize();
-  top_header_->Layout();
+  top_header_->DeprecatedLayoutImmediately();
   // Position the top header - the origin is offset to the left from the top
   // right corner of the entire view by the width of this top header view.
   top_header_->SetPosition(GetLocalBounds().top_right() -
@@ -1845,7 +1700,7 @@ void LockContentsView::LayoutBottomStatusIndicator() {
   // If the management bubble is currently displayed, we need to re-layout it as
   // the bottom status indicator is its anchor view.
   if (management_bubble_->GetVisible()) {
-    management_bubble_->Layout();
+    management_bubble_->DeprecatedLayoutImmediately();
   }
 }
 
@@ -2069,7 +1924,7 @@ void LockContentsView::LayoutAuth(LoginBigUserView* to_update,
   capture_animation_state_pre_layout(opt_to_hide);
   enable_auth(to_update);
   disable_auth(opt_to_hide);
-  Layout();
+  DeprecatedLayoutImmediately();
   apply_animation_post_layout(to_update);
   apply_animation_post_layout(opt_to_hide);
   ongoing_auth_layout_ = false;
@@ -2151,119 +2006,11 @@ void LockContentsView::ShowAuthErrorMessage() {
   int unlock_attempt = unlock_attempt_by_user_[account_id];
   UserState* user_state = FindStateForUser(account_id);
 
-  // Show gaia signin if this is login and the user has failed too many times.
-  // Do not show on secondary login screen – even though it has type kLogin – as
-  // there is no OOBE there.
-  if (!ash::features::IsCryptohomeRecoveryEnabled()) {
-    // Pin login attempt does not trigger Gaia dialog. Pin auth method will be
-    // disabled after 5 failed attempts.
-    int pin_unlock_attempt = pin_unlock_attempt_by_user_[account_id];
-    if (screen_type_ == LockScreen::ScreenType::kLogin &&
-        (unlock_attempt - pin_unlock_attempt) >=
-            kLoginAttemptsBeforeGaiaDialog &&
-        Shell::Get()->session_controller()->GetSessionState() !=
-            session_manager::SessionState::LOGIN_SECONDARY) {
-      Shell::Get()->login_screen_controller()->ShowGaiaSignin(
-          big_view->auth_user()->current_user().basic_user_info.account_id);
-      return;
-    }
-  }
-
-  std::u16string error_text;
-  if (ash::features::IsCryptohomeRecoveryEnabled()) {
-    if (user_state->show_pin) {
-      error_text += l10n_util::GetStringUTF16(
-          unlock_attempt > 1 ? IDS_ASH_LOGIN_ERROR_AUTHENTICATING_2ND_TIME_NEW
-                             : IDS_ASH_LOGIN_ERROR_AUTHENTICATING);
-    } else {
-      error_text += l10n_util::GetStringUTF16(
-          unlock_attempt > 1 ? IDS_ASH_LOGIN_ERROR_AUTHENTICATING_PWD_2ND_TIME
-                             : IDS_ASH_LOGIN_ERROR_AUTHENTICATING_PWD);
-    }
-  } else {
-    error_text += l10n_util::GetStringUTF16(
-        unlock_attempt > 1 ? IDS_ASH_LOGIN_ERROR_AUTHENTICATING_2ND_TIME
-                           : IDS_ASH_LOGIN_ERROR_AUTHENTICATING);
-  }
-
-  ImeControllerImpl* ime_controller = Shell::Get()->ime_controller();
-  if (ime_controller->IsCapsLockEnabled()) {
-    base::StrAppend(
-        &error_text,
-        {u" ", l10n_util::GetStringUTF16(IDS_ASH_LOGIN_ERROR_CAPS_LOCK_HINT)});
-  }
-
-  absl::optional<int> bold_start;
-  int bold_length = 0;
-  // Display a hint to switch keyboards if there are other active input
-  // methods in clamshell mode.
-  if (ime_controller->GetVisibleImes().size() > 1 && !IsTabletMode()) {
-    error_text += u" ";
-    bold_start = error_text.length();
-    std::u16string shortcut =
-        l10n_util::GetStringUTF16(IDS_ASH_LOGIN_KEYBOARD_SWITCH_SHORTCUT);
-    bold_length = shortcut.length();
-
-    size_t shortcut_offset_in_string;
-    error_text +=
-        l10n_util::GetStringFUTF16(IDS_ASH_LOGIN_ERROR_KEYBOARD_SWITCH_HINT,
-                                   shortcut, &shortcut_offset_in_string);
-    *bold_start += shortcut_offset_in_string;
-  }
-
-  if (ash::features::IsCryptohomeRecoveryEnabled() && unlock_attempt > 1) {
-    base::StrAppend(&error_text,
-                    {u"\n\n", l10n_util::GetStringUTF16(
-                                  user_state->show_pin
-                                      ? IDS_ASH_LOGIN_ERROR_RECOVER_USER
-                                      : IDS_ASH_LOGIN_ERROR_RECOVER_USER_PWD)});
-  }
-
-  auto label = std::make_unique<views::StyledLabel>();
-  label->SetText(error_text);
-  MakeSectionBold(label.get(), error_text, bold_start, bold_length);
-  label->SetAutoColorReadabilityEnabled(false);
-
-  auto learn_more_button = std::make_unique<PillButton>(
-      base::BindRepeating(&LockContentsView::LearnMoreButtonPressed,
-                          base::Unretained(this)),
-      l10n_util::GetStringUTF16(IDS_ASH_LEARN_MORE));
-
-  auto container = std::make_unique<NonAccessibleView>(kAuthErrorContainerName);
-  auto* container_layout =
-      container->SetLayoutManager(std::make_unique<views::BoxLayout>(
-          views::BoxLayout::Orientation::kVertical, gfx::Insets(),
-          kBubbleBetweenChildSpacingDp));
-  container_layout->set_cross_axis_alignment(
-      views::BoxLayout::CrossAxisAlignment::kStart);
-  container->AddChildView(std::move(label));
-  container->AddChildView(std::move(learn_more_button));
-
-  if (ash::features::IsCryptohomeRecoveryEnabled()) {
-    // The recover user flow is only accessible from the login screen but
-    // not from the lock screen.
-    if (screen_type_ == LockScreen::ScreenType::kLogin &&
-        Shell::Get()->session_controller()->GetSessionState() !=
-            session_manager::SessionState::LOGIN_SECONDARY) {
-      auto recover_user_button = std::make_unique<PillButton>(
-          base::BindRepeating(&LockContentsView::RecoverUserButtonPressed,
-                              base::Unretained(this)),
-          l10n_util::GetStringUTF16(IDS_ASH_LOGIN_RECOVER_USER_BUTTON));
-
-      container->AddChildView(std::move(recover_user_button));
-    }
-  }
-
-  auth_error_bubble_->SetAnchorView(
-      big_view->auth_user()->GetActiveInputView());
-  auth_error_bubble_->SetContent(std::move(container));
-
-  // We set an accessible name when content is not accessible. This happens if
-  // content is a container (e.g. a text and a "learn more" button). In such a
-  // case, it will have multiple subviews but only one which needs to be read
-  // on bubble show – when the alert event occurs.
-  auth_error_bubble_->SetAccessibleName(error_text);
-  auth_error_bubble_->Show();
+  auth_error_bubble_->ShowAuthError(
+      /*anchor_view = */ big_view->auth_user()->GetActiveInputView(),
+      /*unlock_attempt = */ unlock_attempt,
+      /*show_pin = */ user_state->show_pin,
+      /*is_login_screen = */ screen_type_ == LockScreen::ScreenType::kLogin);
 }
 
 void LockContentsView::HideAuthErrorMessage() {
@@ -2338,7 +2085,7 @@ void LockContentsView::RecoverUserButtonPressed() {
                           static_cast<int>(ReauthReason::kForgotPassword));
   RecordAndResetPasswordAttempts(
       AuthEventsRecorder::AuthenticationOutcome::kRecovery, account_id);
-  Shell::Get()->login_screen_controller()->ShowGaiaSignin(account_id);
+  Shell::Get()->login_screen_controller()->StartUserRecovery(account_id);
   HideAuthErrorMessage();
 }
 
@@ -2416,7 +2163,7 @@ void LockContentsView::SetDisplayStyle(DisplayStyle style) {
   main_view_->SetVisible(!show_expanded_view);
   top_header_->SetVisible(!show_expanded_view);
   bottom_status_indicator_->SetVisible(!show_expanded_view);
-  Layout();
+  DeprecatedLayoutImmediately();
 }
 
 bool LockContentsView::OnKeyPressed(const ui::KeyEvent& event) {
@@ -2496,7 +2243,7 @@ bool LockContentsView::GetSystemInfoVisibility() const {
 }
 
 void LockContentsView::UpdateSystemInfoColors() {
-  for (auto* child : system_info_->children()) {
+  for (views::View* child : system_info_->children()) {
     views::Label* label = static_cast<views::Label*>(child);
     label->SetEnabledColorId(kColorAshTextColorPrimary);
   }
@@ -2574,16 +2321,6 @@ void LockContentsView::UpdateKioskDefaultMessageVisibility() {
   kiosk_default_message_->SetVisible(!has_kiosk_apps_);
 }
 
-void LockContentsView::SetKioskLicenseModeForTesting(
-    bool is_kiosk_license_mode) {
-  kiosk_license_mode_ = is_kiosk_license_mode;
-
-  // Normally when management device mode is updated, via
-  // OnDeviceEnterpriseInfoChanged, it updates the visibility of Kiosk default
-  // meesage too.
-  UpdateKioskDefaultMessageVisibility();
-}
-
 void LockContentsView::RecordAndResetPasswordAttempts(
     AuthEventsRecorder::AuthenticationOutcome outcome,
     AccountId account_id) {
@@ -2592,7 +2329,7 @@ void LockContentsView::RecordAndResetPasswordAttempts(
   unlock_attempt_by_user_[account_id] = 0;
 }
 
-BEGIN_METADATA(LockContentsView, NonAccessibleView)
+BEGIN_METADATA(LockContentsView)
 END_METADATA
 
 }  // namespace ash

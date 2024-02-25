@@ -43,8 +43,8 @@ std::vector<EsParserTestBase::Packet> EsParserTestBase::LoadPacketsFromFiles(
     size_t file_count) {
   std::vector<Packet> packets;
   for (size_t i = 0; i < file_count; ++i) {
-    base::FilePath file_path =
-        GetTestDataFilePath(base::StringPrintf(filename_template, i));
+    base::FilePath file_path = GetTestDataFilePath(
+        base::StringPrintfNonConstexpr(filename_template, i));
     base::MemoryMappedFile stream;
     EXPECT_TRUE(stream.Initialize(file_path)) << "Couldn't open stream file: "
                                               << file_path.MaybeAsASCII();

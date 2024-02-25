@@ -42,21 +42,23 @@ class ImageLoaderTest : public ExtensionsTest {
 
   void OnImageLoaded(const gfx::Image& image) {
     image_loaded_count_++;
-    if (quit_in_image_loaded_)
-      base::RunLoop::QuitCurrentWhenIdleDeprecated();
+    if (quit_in_image_loaded_) {
+      loop_.QuitWhenIdle();
+    }
     image_ = image;
   }
 
   void OnImageFamilyLoaded(gfx::ImageFamily image_family) {
     image_loaded_count_++;
-    if (quit_in_image_loaded_)
-      base::RunLoop::QuitCurrentWhenIdleDeprecated();
+    if (quit_in_image_loaded_) {
+      loop_.QuitWhenIdle();
+    }
     image_family_ = std::move(image_family);
   }
 
   void WaitForImageLoad() {
     quit_in_image_loaded_ = true;
-    base::RunLoop().Run();
+    loop_.Run();
     quit_in_image_loaded_ = false;
   }
 
@@ -101,6 +103,7 @@ class ImageLoaderTest : public ExtensionsTest {
  private:
   int image_loaded_count_;
   bool quit_in_image_loaded_;
+  base::RunLoop loop_;
 };
 
 // Tests loading an image works correctly.

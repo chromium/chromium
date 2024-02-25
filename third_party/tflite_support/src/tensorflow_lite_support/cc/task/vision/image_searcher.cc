@@ -19,8 +19,8 @@ limitations under the License.
 #include <utility>
 #include <vector>
 
-#include "absl/memory/memory.h"        // from @com_google_absl
-#include "absl/status/status.h"        // from @com_google_absl
+#include "absl/memory/memory.h"  // from @com_google_absl
+#include "absl/status/status.h"  // from @com_google_absl
 #include "absl/strings/string_view.h"  // from @com_google_absl
 #include "tensorflow/lite/c/common.h"
 #include "tensorflow/lite/core/api/op_resolver.h"
@@ -56,11 +56,11 @@ StatusOr<std::unique_ptr<ImageSearcher>> ImageSearcher::CreateFromOptions(
   // Copy options to ensure the ExternalFile-s outlive the constructed object.
   auto options_copy = absl::make_unique<ImageSearcherOptions>(options);
 
-  ASSIGN_OR_RETURN(auto image_searcher,
+  TFLITE_ASSIGN_OR_RETURN(auto image_searcher,
                    TaskAPIFactory::CreateFromBaseOptions<ImageSearcher>(
                        &options_copy->base_options(), std::move(resolver)));
 
-  RETURN_IF_ERROR(image_searcher->Init(std::move(options_copy)));
+  TFLITE_RETURN_IF_ERROR(image_searcher->Init(std::move(options_copy)));
 
   return image_searcher;
 }
@@ -75,13 +75,13 @@ absl::Status ImageSearcher::Init(
   options_ = std::move(options);
 
   // Perform pre-initialization actions.
-  RETURN_IF_ERROR(PreInit());
+  TFLITE_RETURN_IF_ERROR(PreInit());
 
   // Sanity check and set inputs.
-  RETURN_IF_ERROR(CheckAndSetInputs());
+  TFLITE_RETURN_IF_ERROR(CheckAndSetInputs());
 
   // Create post-processor.
-  ASSIGN_OR_RETURN(
+  TFLITE_ASSIGN_OR_RETURN(
       postprocessor_,
       SearchPostprocessor::Create(GetTfLiteEngine(), 0,
                                   std::make_unique<processor::SearchOptions>(
@@ -110,8 +110,7 @@ StatusOr<absl::string_view> ImageSearcher::GetUserInfo() {
 
 StatusOr<SearchResult> ImageSearcher::Postprocess(
     const std::vector<const TfLiteTensor*>& /*output_tensors*/,
-    const FrameBuffer& /*frame_buffer*/,
-    const BoundingBox& /*roi*/) {
+    const FrameBuffer& /*frame_buffer*/, const BoundingBox& /*roi*/) {
   return postprocessor_->Postprocess();
 }
 

@@ -42,6 +42,7 @@ test("services_unittests") {
       "//services/image_annotation/public/cpp:tests",
       "//services/media_session:tests",
       "//services/media_session/public/cpp:tests",
+      "//services/on_device_model:tests",
       "//services/preferences/tracked:unit_tests",
       "//services/proxy_resolver:tests",
       "//services/resource_coordinator:tests",

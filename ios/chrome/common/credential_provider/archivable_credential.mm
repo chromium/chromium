@@ -8,7 +8,7 @@ namespace {
 
 // Keys used to serialize properties.
 NSString* const kACFaviconKey = @"favicon";
-NSString* const kACKeychainIdentifierKey = @"keychainIdentifier";
+NSString* const kACPasswordKey = @"password";
 NSString* const kACRankKey = @"rank";
 NSString* const kACRecordIdentifierKey = @"recordIdentifier";
 NSString* const kACServiceIdentifierKey = @"serviceIdentifier";
@@ -21,7 +21,7 @@ NSString* const kNoteKey = @"note";
 @implementation ArchivableCredential
 
 @synthesize favicon = _favicon;
-@synthesize keychainIdentifier = _keychainIdentifier;
+@synthesize password = _password;
 @synthesize rank = _rank;
 @synthesize recordIdentifier = _recordIdentifier;
 @synthesize serviceIdentifier = _serviceIdentifier;
@@ -30,7 +30,7 @@ NSString* const kNoteKey = @"note";
 @synthesize note = _note;
 
 - (instancetype)initWithFavicon:(NSString*)favicon
-             keychainIdentifier:(NSString*)keychainIdentifier
+                       password:(NSString*)password
                            rank:(int64_t)rank
                recordIdentifier:(NSString*)recordIdentifier
               serviceIdentifier:(NSString*)serviceIdentifier
@@ -40,7 +40,7 @@ NSString* const kNoteKey = @"note";
   self = [super init];
   if (self) {
     _favicon = favicon;
-    _keychainIdentifier = keychainIdentifier;
+    _password = password;
     _rank = rank;
     _recordIdentifier = recordIdentifier;
     _serviceIdentifier = serviceIdentifier;
@@ -60,8 +60,7 @@ NSString* const kNoteKey = @"note";
     }
     ArchivableCredential* otherCredential = (ArchivableCredential*)other;
     return [self.favicon isEqualToString:otherCredential.favicon] &&
-           [self.keychainIdentifier
-               isEqualToString:otherCredential.keychainIdentifier] &&
+           [self.password isEqualToString:otherCredential.password] &&
            self.rank == otherCredential.rank &&
            [self.recordIdentifier
                isEqualToString:otherCredential.recordIdentifier] &&
@@ -74,8 +73,8 @@ NSString* const kNoteKey = @"note";
 }
 
 - (NSUInteger)hash {
-  // Using record identifier xored with keychain identifier should be enough.
-  return self.recordIdentifier.hash ^ self.keychainIdentifier.hash;
+  // Using record identifier xored with password should be enough.
+  return self.recordIdentifier.hash ^ self.password.hash;
 }
 
 #pragma mark - NSSecureCoding
@@ -86,7 +85,7 @@ NSString* const kNoteKey = @"note";
 
 - (void)encodeWithCoder:(NSCoder*)coder {
   [coder encodeObject:self.favicon forKey:kACFaviconKey];
-  [coder encodeObject:self.keychainIdentifier forKey:kACKeychainIdentifierKey];
+  [coder encodeObject:self.password forKey:kACPasswordKey];
   [coder encodeInt64:self.rank forKey:kACRankKey];
   [coder encodeObject:self.recordIdentifier forKey:kACRecordIdentifierKey];
   [coder encodeObject:self.serviceIdentifier forKey:kACServiceIdentifierKey];
@@ -98,13 +97,13 @@ NSString* const kNoteKey = @"note";
 - (instancetype)initWithCoder:(NSCoder*)coder {
   return
       [self initWithFavicon:[coder decodeObjectForKey:kACFaviconKey]
-          keychainIdentifier:[coder decodeObjectForKey:kACKeychainIdentifierKey]
-                        rank:[coder decodeInt64ForKey:kACRankKey]
-            recordIdentifier:[coder decodeObjectForKey:kACRecordIdentifierKey]
-           serviceIdentifier:[coder decodeObjectForKey:kACServiceIdentifierKey]
-                 serviceName:[coder decodeObjectForKey:kACServiceNameKey]
-                        user:[coder decodeObjectForKey:kACUserKey]
-                        note:[coder decodeObjectForKey:kNoteKey]];
+                   password:[coder decodeObjectForKey:kACPasswordKey]
+                       rank:[coder decodeInt64ForKey:kACRankKey]
+           recordIdentifier:[coder decodeObjectForKey:kACRecordIdentifierKey]
+          serviceIdentifier:[coder decodeObjectForKey:kACServiceIdentifierKey]
+                serviceName:[coder decodeObjectForKey:kACServiceNameKey]
+                       user:[coder decodeObjectForKey:kACUserKey]
+                       note:[coder decodeObjectForKey:kNoteKey]];
 }
 
 @end

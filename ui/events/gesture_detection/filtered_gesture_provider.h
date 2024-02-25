@@ -55,8 +55,8 @@ class GESTURE_DETECTION_EXPORT FilteredGestureProvider final
   void OnTouchEventAck(uint32_t unique_event_id,
                        bool event_consumed,
                        bool is_source_touch_event_set_blocking,
-                       const absl::optional<EventLatencyMetadata>&
-                           event_latency_metadata = absl::nullopt);
+                       const std::optional<EventLatencyMetadata>&
+                           event_latency_metadata = std::nullopt);
 
   void ResetGestureHandlingState();
 

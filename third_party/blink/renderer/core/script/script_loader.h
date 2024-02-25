@@ -179,10 +179,6 @@ class CORE_EXPORT ScriptLoader final : public ResourceFinishObserver,
   // initially true. ...</spec>
   bool force_async_ = true;
 
-  // Non-specified flag. Indicating that the script is a dynamically injected
-  // one with an async attribute, and therefore not render blocking.
-  bool dynamic_async_ = false;
-
   // <spec href="https://html.spec.whatwg.org/C/#concept-script-type">...
   // initially null. It is determined when the element is prepared, based on the
   // type attribute of the element at that time.</spec>

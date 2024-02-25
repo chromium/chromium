@@ -3,6 +3,7 @@
   "compilerOptions": {
     "noUncheckedIndexedAccess": false,
     "noUnusedLocals": false,
-    "strictPropertyInitialization": false
+    "strictPropertyInitialization": false,
+    "useDefineForClassFields": false
   }
 }

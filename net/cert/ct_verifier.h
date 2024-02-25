@@ -5,7 +5,8 @@
 #ifndef NET_CERT_CT_VERIFIER_H_
 #define NET_CERT_CT_VERIFIER_H_
 
-#include "base/strings/string_piece.h"
+#include <string_view>
+
 #include "net/base/net_export.h"
 #include "net/cert/signed_certificate_timestamp_and_status.h"
 
@@ -29,15 +30,11 @@ class NET_EXPORT CTVerifier {
   // TLS extension was negotiated, |sct_list_from_tls_extension| should be an
   // empty string. |output_scts| will be cleared and filled with the SCTs
   // present, if any, along with their verification results.
-  // The |hostname| (or IP address literal) of the server that presented |cert|
-  // must be provided so that inclusion checks for |cert| are able to avoid
-  // leaking information about which servers have been visited.
-  virtual void Verify(base::StringPiece hostname,
-                      X509Certificate* cert,
-                      base::StringPiece stapled_ocsp_response,
-                      base::StringPiece sct_list_from_tls_extension,
+  virtual void Verify(X509Certificate* cert,
+                      std::string_view stapled_ocsp_response,
+                      std::string_view sct_list_from_tls_extension,
                       SignedCertificateTimestampAndStatusList* output_scts,
-                      const NetLogWithSource& net_log) = 0;
+                      const NetLogWithSource& net_log) const = 0;
 };
 
 }  // namespace net

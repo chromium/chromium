@@ -14,7 +14,7 @@ using testing::UnorderedElementsAre;
 namespace network {
 
 TEST(VariantsHeaderTest, ParseVariantsHeader) {
-  absl::optional<std::vector<mojom::VariantsHeaderPtr>> result;
+  std::optional<std::vector<mojom::VariantsHeaderPtr>> result;
 
   // Empty is OK.
   result = ParseVariantsHeaders(" ");

@@ -26,12 +26,12 @@ import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.CriteriaNotSatisfiedException;
 import org.chromium.base.test.util.Feature;
+import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.util.ChromeRenderTestRule;
-import org.chromium.chrome.test.util.browser.Features.DisableFeatures;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.browser.test.util.Coordinates;
 import org.chromium.content_public.browser.test.util.DOMUtils;
@@ -48,14 +48,13 @@ import java.util.concurrent.atomic.AtomicReference;
 /**
  * Tests view-transitions API in relation to Android Chrome UI.
  *
- * These test that view transitions result in correctly sized and positioned transitions in the
+ * <p>These test that view transitions result in correctly sized and positioned transitions in the
  * presence/absence of UI such as virtual-keyboard and moveable URL bar.
  *
- * See https://www.w3.org/TR/css-view-transitions-1/
+ * <p>See https://www.w3.org/TR/css-view-transitions-1/
  */
 @RunWith(ChromeJUnit4ClassRunner.class)
-@CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE,
-        "enable-features=ViewTransition", "hide-scrollbars"})
+@CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE, "hide-scrollbars"})
 @Batch(Batch.PER_CLASS)
 public class ViewTransitionPixelTest {
     @Rule
@@ -80,8 +79,9 @@ public class ViewTransitionPixelTest {
 
     @Before
     public void setUp() {
-        mTestServer = EmbeddedTestServer.createAndStartServer(
-                ApplicationProvider.getApplicationContext());
+        mTestServer =
+                EmbeddedTestServer.createAndStartServer(
+                        ApplicationProvider.getApplicationContext());
     }
 
     private void startKeyboardTest(@VirtualKeyboardMode.EnumType int vkMode) throws Throwable {
@@ -104,36 +104,51 @@ public class ViewTransitionPixelTest {
     }
 
     private void assertWaitForKeyboardStatus(final boolean show) {
-        CriteriaHelper.pollUiThread(() -> {
-            boolean isKeyboardShowing = mActivityTestRule.getKeyboardDelegate().isKeyboardShowing(
-                    mActivityTestRule.getActivity(), mActivityTestRule.getActivity().getTabsView());
-            Criteria.checkThat(isKeyboardShowing, Matchers.is(show));
-        }, TEST_TIMEOUT, CriteriaHelper.DEFAULT_POLLING_INTERVAL);
+        CriteriaHelper.pollUiThread(
+                () -> {
+                    boolean isKeyboardShowing =
+                            mActivityTestRule
+                                    .getKeyboardDelegate()
+                                    .isKeyboardShowing(
+                                            mActivityTestRule.getActivity(),
+                                            mActivityTestRule.getActivity().getTabsView());
+                    Criteria.checkThat(isKeyboardShowing, Matchers.is(show));
+                },
+                TEST_TIMEOUT,
+                CriteriaHelper.DEFAULT_POLLING_INTERVAL);
     }
 
     private void assertWaitForPageHeight(double expectedPageHeight) {
-        CriteriaHelper.pollInstrumentationThread(() -> {
-            try {
-                int curHeight = getPageInnerHeight();
-                // Allow 1px delta to account for device scale factor rounding.
-                Criteria.checkThat(
-                        (double) curHeight, Matchers.closeTo(expectedPageHeight, /*error=*/1.0));
-            } catch (Throwable e) {
-                throw new CriteriaNotSatisfiedException(e);
-            }
-        }, TEST_TIMEOUT, CriteriaHelper.DEFAULT_POLLING_INTERVAL);
+        CriteriaHelper.pollInstrumentationThread(
+                () -> {
+                    try {
+                        int curHeight = getPageInnerHeight();
+                        // Allow 1px delta to account for device scale factor rounding.
+                        Criteria.checkThat(
+                                (double) curHeight,
+                                Matchers.closeTo(expectedPageHeight, /* error= */ 1.0));
+                    } catch (Throwable e) {
+                        throw new CriteriaNotSatisfiedException(e);
+                    }
+                },
+                TEST_TIMEOUT,
+                CriteriaHelper.DEFAULT_POLLING_INTERVAL);
     }
 
     private void assertWaitForVisualViewportHeight(double expectedHeight) {
-        CriteriaHelper.pollInstrumentationThread(() -> {
-            try {
-                double curHeight = getVisualViewportHeight();
-                // Allow 1px delta to account for device scale factor rounding.
-                Criteria.checkThat(curHeight, Matchers.closeTo(expectedHeight, /*error=*/1.0));
-            } catch (Throwable e) {
-                throw new CriteriaNotSatisfiedException(e);
-            }
-        }, TEST_TIMEOUT, CriteriaHelper.DEFAULT_POLLING_INTERVAL);
+        CriteriaHelper.pollInstrumentationThread(
+                () -> {
+                    try {
+                        double curHeight = getVisualViewportHeight();
+                        // Allow 1px delta to account for device scale factor rounding.
+                        Criteria.checkThat(
+                                curHeight, Matchers.closeTo(expectedHeight, /* error= */ 1.0));
+                    } catch (Throwable e) {
+                        throw new CriteriaNotSatisfiedException(e);
+                    }
+                },
+                TEST_TIMEOUT,
+                CriteriaHelper.DEFAULT_POLLING_INTERVAL);
     }
 
     private WebContents getWebContents() {
@@ -141,21 +156,25 @@ public class ViewTransitionPixelTest {
     }
 
     private int getPageInnerHeight() throws Throwable {
-        return Integer.parseInt(JavaScriptUtils.executeJavaScriptAndWaitForResult(
-                getWebContents(), "window.innerHeight"));
+        return Integer.parseInt(
+                JavaScriptUtils.executeJavaScriptAndWaitForResult(
+                        getWebContents(), "window.innerHeight"));
     }
 
     private double getVisualViewportHeight() throws Throwable {
-        return Float.parseFloat(JavaScriptUtils.executeJavaScriptAndWaitForResult(
-                getWebContents(), "window.visualViewport.height"));
+        return Float.parseFloat(
+                JavaScriptUtils.executeJavaScriptAndWaitForResult(
+                        getWebContents(), "window.visualViewport.height"));
     }
 
     private void showAndWaitForKeyboard() throws Throwable {
         DOMUtils.clickNode(getWebContents(), TEXTFIELD_DOM_ID);
-        TestThreadUtils.runOnUiThreadBlocking(()
-                                                      -> mActivityTestRule.getActivity()
-                                                                 .getManualFillingComponent()
-                                                                 .forceShowForTesting());
+        TestThreadUtils.runOnUiThreadBlocking(
+                () ->
+                        mActivityTestRule
+                                .getActivity()
+                                .getManualFillingComponent()
+                                .forceShowForTesting());
 
         assertWaitForKeyboardStatus(true);
 
@@ -191,8 +210,14 @@ public class ViewTransitionPixelTest {
     private double getKeyboardHeightDp() {
         final double dpi = Coordinates.createFor(getWebContents()).getDeviceScaleFactor();
         double keyboardHeightPx =
-                mActivityTestRule.getKeyboardDelegate().calculateTotalKeyboardHeight(
-                        mActivityTestRule.getActivity().getWindow().getDecorView().getRootView());
+                mActivityTestRule
+                        .getKeyboardDelegate()
+                        .calculateTotalKeyboardHeight(
+                                mActivityTestRule
+                                        .getActivity()
+                                        .getWindow()
+                                        .getDecorView()
+                                        .getRootView());
         return keyboardHeightPx / dpi;
     }
 
@@ -202,13 +227,19 @@ public class ViewTransitionPixelTest {
         final CallbackHelper ch = new CallbackHelper();
         final AtomicReference<String> screenshotOutputPath = new AtomicReference<>();
         String cacheDirPath = context.getCacheDir().getAbsolutePath();
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            getWebContents().getRenderWidgetHostView().writeContentBitmapToDiskAsync(
-                    /*width=*/0, /*height=*/0, cacheDirPath, path -> {
-                        screenshotOutputPath.set(path);
-                        ch.notifyCalled();
-                    });
-        });
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    getWebContents()
+                            .getRenderWidgetHostView()
+                            .writeContentBitmapToDiskAsync(
+                                    /* width= */ 0,
+                                    /* height= */ 0,
+                                    cacheDirPath,
+                                    path -> {
+                                        screenshotOutputPath.set(path);
+                                        ch.notifyCalled();
+                                    });
+                });
 
         ch.waitForNext(TEST_TIMEOUT, TimeUnit.SECONDS);
 
@@ -228,7 +259,8 @@ public class ViewTransitionPixelTest {
     // transition animation doesn't start until the test calls startTransitionAnimation.
     private void createTransitionAndWaitUntilDomUpdateDispatched() throws Throwable {
         JavaScriptUtils.executeJavaScriptAndWaitForResult(getWebContents(), "createTransition()");
-        JavaScriptUtils.runJavascriptWithAsyncResult(getWebContents(),
+        JavaScriptUtils.runJavascriptWithAsyncResult(
+                getWebContents(),
                 "readyToStartPromise.then(() => domAutomationController.send(true));");
     }
 
@@ -255,9 +287,12 @@ public class ViewTransitionPixelTest {
     private void waitForFramePresented() throws Throwable {
         final CallbackHelper ch = new CallbackHelper();
 
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            getWebContents().getMainFrame().insertVisualStateCallback(result -> ch.notifyCalled());
-        });
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    getWebContents()
+                            .getMainFrame()
+                            .insertVisualStateCallback(result -> ch.notifyCalled());
+                });
 
         ch.waitForNext(TEST_TIMEOUT, TimeUnit.SECONDS);
 
@@ -265,9 +300,12 @@ public class ViewTransitionPixelTest {
         // to wait until the Viz process has received the new CompositorFrame so that the new frame
         // is available to a CopySurfaceRequest. Waiting for a second frame to be submitted
         // guarantees this since it cannot be sent until the first frame was ACKed by Viz.
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            getWebContents().getMainFrame().insertVisualStateCallback(result -> ch.notifyCalled());
-        });
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    getWebContents()
+                            .getMainFrame()
+                            .insertVisualStateCallback(result -> ch.notifyCalled());
+                });
 
         ch.waitForNext(TEST_TIMEOUT, TimeUnit.SECONDS);
     }
@@ -276,8 +314,8 @@ public class ViewTransitionPixelTest {
      * Test view transitions when going from a state with a virtual keyboard shown to the virtual
      * keyboard hidden.
      *
-     * This tests the default mode where the virtual-keyboard resizes only the visual viewport and
-     * the author hasn't opted into a content-resizing virtual keyboard.
+     * <p>This tests the default mode where the virtual-keyboard resizes only the visual viewport
+     * and the author hasn't opted into a content-resizing virtual keyboard.
      */
     @Test
     @MediumTest
@@ -321,7 +359,7 @@ public class ViewTransitionPixelTest {
      * Test view transitions when going from a state with a virtual keyboard shown to the virtual
      * keyboard hidden.
      *
-     * This tests the mode where the author opts in to the keyboard resizing page content.
+     * <p>This tests the mode where the author opts in to the keyboard resizing page content.
      */
     @Test
     @MediumTest
@@ -364,7 +402,7 @@ public class ViewTransitionPixelTest {
     /**
      * Test view transitions when into a <dialog> element.
      *
-     * Tested here to ensure snapshot viewport positioning behavior with respect to top-layer
+     * <p>Tested here to ensure snapshot viewport positioning behavior with respect to top-layer
      * objects like <dialog>.
      */
     @Test
@@ -388,6 +426,38 @@ public class ViewTransitionPixelTest {
 
         Bitmap newState = takeScreenshot();
         mRenderTestRule.compareForResult(newState, "incoming_dialog_element");
+
+        finishAnimations();
+    }
+
+    /**
+     * Test view transitions in a page wider than the initial containing block.
+     *
+     * <p>Tests that a view-transition fills the viewport when the fixed-containing-block is larger
+     * than the initial-containing-block. This happens when an element on the page horizontally
+     * overflows the initial-containing-block, increasing how much the page can be zoomed out.
+     */
+    @Test
+    @MediumTest
+    @Feature({"RenderTest"})
+    // TODO(crbug.com/1453741): Fix test with CREATE_NEW_TAB_INITIALIZE_RENDERER.
+    @DisableFeatures(ChromeFeatureList.CREATE_NEW_TAB_INITIALIZE_RENDERER)
+    public void testPageWiderThanICB() throws Throwable {
+        String url = "/chrome/test/data/android/view_transition_wider_than_icb.html";
+        mActivityTestRule.startMainActivityWithURL(mTestServer.getURL(url));
+        mActivityTestRule.waitForActivityNativeInitializationComplete();
+
+        createTransitionAndWaitUntilDomUpdateDispatched();
+
+        // Start the animation. The "animation" simply displays the old transition for the full
+        // duration of the test. This test is interested in how the <dialog> element is positioned.
+        // Since that's in the end-state, skip straight to that.
+        startTransitionAnimation();
+        animateToEndState();
+        waitForFramePresented();
+
+        Bitmap newState = takeScreenshot();
+        mRenderTestRule.compareForResult(newState, "wider-than-icb");
 
         finishAnimations();
     }

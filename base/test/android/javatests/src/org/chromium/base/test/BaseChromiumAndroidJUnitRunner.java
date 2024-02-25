@@ -12,9 +12,6 @@ import android.app.job.JobScheduler;
 import android.content.Context;
 import android.content.ContextWrapper;
 import android.content.SharedPreferences;
-import android.content.pm.InstrumentationInfo;
-import android.content.pm.PackageManager;
-import android.content.pm.PackageManager.NameNotFoundException;
 import android.os.Build;
 import android.os.Build.VERSION;
 import android.os.Bundle;
@@ -39,20 +36,22 @@ import org.junit.runner.RunWith;
 
 import org.chromium.base.ActivityState;
 import org.chromium.base.ApplicationStatus;
+import org.chromium.base.CommandLineInitUtil;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.FileUtils;
 import org.chromium.base.LifetimeAssert;
 import org.chromium.base.Log;
+import org.chromium.base.ResettersForTesting;
 import org.chromium.base.library_loader.LibraryLoader;
 import org.chromium.base.metrics.UmaRecorderHolder;
-import org.chromium.base.multidex.ChromiumMultiDexInstaller;
 import org.chromium.base.test.util.CallbackHelper;
+import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.InMemorySharedPreferences;
 import org.chromium.base.test.util.InMemorySharedPreferencesContext;
 import org.chromium.base.test.util.MinAndroidSdkLevel;
 import org.chromium.base.test.util.ScalableTimeout;
 import org.chromium.build.BuildConfig;
-import org.chromium.build.annotations.MainDex;
+import org.chromium.testing.TestListInstrumentationRunListener;
 
 import java.io.File;
 import java.io.IOException;
@@ -62,49 +61,25 @@ import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Enumeration;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
 /**
- * A custom AndroidJUnitRunner that supports multidex installer and lists out test information.
- * Also customizes various TestRunner and Instrumentation behaviors, like when Activities get
- * finished, and adds a timeout to waitForIdleSync.
  *
- * Please beware that is this not a class runner. It is declared in test apk AndroidManifest.xml
- * <instrumentation>
+ *
+ * <pre>
+ * An Instrumentation subclass that:
+ *    * Supports incremental install.
+ *    * Installs an InMemorySharedPreferences, and a few other try-to-make-things-less-flaky things.
+ * </pre>
  */
-@MainDex
 public class BaseChromiumAndroidJUnitRunner extends AndroidJUnitRunner {
-    private static final String LIST_ALL_TESTS_FLAG =
-            "org.chromium.base.test.BaseChromiumAndroidJUnitRunner.TestList";
-    private static final String LIST_TESTS_PACKAGE_FLAG =
-            "org.chromium.base.test.BaseChromiumAndroidJUnitRunner.TestListPackage";
     private static final String IS_UNIT_TEST_FLAG =
             "org.chromium.base.test.BaseChromiumAndroidJUnitRunner.IsUnitTest";
     private static final String EXTRA_CLANG_COVERAGE_DEVICE_FILE =
             "org.chromium.base.test.BaseChromiumAndroidJUnitRunner.ClangCoverageDeviceFile";
-    /**
-     * This flag is supported by AndroidJUnitRunner.
-     *
-     * See the following page for detail
-     * https://developer.android.com/reference/android/support/test/runner/AndroidJUnitRunner.html
-     */
-    private static final String ARGUMENT_TEST_PACKAGE = "package";
 
-    /**
-     * The following arguments are corresponding to AndroidJUnitRunner command line arguments.
-     * `annotation`: run with only the argument annotation
-     * `notAnnotation`: run all tests except the ones with argument annotation
-     * `log`: run in log only mode, do not execute tests
-     *
-     * For more detail, please check
-     * https://developer.android.com/reference/android/support/test/runner/AndroidJUnitRunner.html
-     */
-    private static final String ARGUMENT_ANNOTATION = "annotation";
-    private static final String ARGUMENT_NOT_ANNOTATION = "notAnnotation";
     private static final String ARGUMENT_LOG_ONLY = "log";
 
     private static final String TAG = "BaseJUnitRunner";
@@ -121,28 +96,15 @@ public class BaseChromiumAndroidJUnitRunner extends AndroidJUnitRunner {
     private static final long FINISH_APP_TASKS_POLL_INTERVAL_MS = 100;
 
     static InMemorySharedPreferencesContext sInMemorySharedPreferencesContext;
+    private static boolean sTestListMode;
+
+    static {
+        CommandLineInitUtil.setFilenameOverrideForTesting(CommandLineFlags.getTestCmdLineFile());
+    }
 
     @Override
     public Application newApplication(ClassLoader cl, String className, Context context)
             throws ClassNotFoundException, IllegalAccessException, InstantiationException {
-        Context targetContext = super.getTargetContext();
-        boolean hasUnderTestApk =
-                !getContext().getPackageName().equals(targetContext.getPackageName());
-        // When there is an under-test APK, BuildConfig belongs to it and does not indicate whether
-        // the test apk is multidex. In this case, just assume it is.
-        boolean isTestMultidex = hasUnderTestApk || BuildConfig.IS_MULTIDEX_ENABLED;
-        if (isTestMultidex) {
-            if (hasUnderTestApk) {
-                // Need hacks to have multidex work when there is an under-test apk :(.
-                ChromiumMultiDexInstaller.install(
-                        new BaseChromiumRunnerCommon.MultiDexContextWrapper(
-                                getContext(), targetContext));
-                BaseChromiumRunnerCommon.reorderDexPathElements(cl, getContext(), targetContext);
-            } else {
-                ChromiumMultiDexInstaller.install(getContext());
-            }
-        }
-
         // Wrap |context| here so that calls to getSharedPreferences() from within
         // attachBaseContext() will hit our InMemorySharedPreferencesContext.
         sInMemorySharedPreferencesContext = new InMemorySharedPreferencesContext(context);
@@ -172,6 +134,18 @@ public class BaseChromiumAndroidJUnitRunner extends AndroidJUnitRunner {
         return sInMemorySharedPreferencesContext;
     }
 
+    @Override
+    public void onCreate(Bundle arguments) {
+        if (arguments == null) {
+            arguments = new Bundle();
+        }
+        sTestListMode = "true".equals(arguments.getString(ARGUMENT_LOG_ONLY));
+        // Do not finish activities between tests so that batched tests can start
+        // an activity in @BeforeClass and have it live until @AfterClass.
+        arguments.putString("waitForActivitiesToComplete", "false");
+        super.onCreate(arguments);
+    }
+
     /**
      * Add TestListInstrumentationRunListener when argument ask the runner to list tests info.
      *
@@ -182,20 +156,25 @@ public class BaseChromiumAndroidJUnitRunner extends AndroidJUnitRunner {
     @Override
     public void onStart() {
         Bundle arguments = InstrumentationRegistry.getArguments();
+        ResettersForTesting.enable();
         if (arguments.getString(IS_UNIT_TEST_FLAG) != null) {
             LibraryLoader.setBrowserProcessStartupBlockedForTesting();
         }
 
-        if (shouldListTests()) {
-            Log.w(TAG,
-                    String.format("Runner will list out tests info in JSON without running tests. "
+        if (sTestListMode) {
+            Log.w(
+                    TAG,
+                    String.format(
+                            "Runner will list out tests info in JSON without running tests. "
                                     + "Arguments: %s",
                             arguments.toString()));
             listTests(); // Intentionally not calling super.onStart() to avoid additional work.
         } else {
             if (arguments != null && arguments.getString(ARGUMENT_LOG_ONLY) != null) {
-                Log.e(TAG,
-                        String.format("Runner will log the tests without running tests."
+                Log.e(
+                        TAG,
+                        String.format(
+                                "Runner will log the tests without running tests."
                                         + " If this cause a test run to fail, please report to"
                                         + " crbug.com/754015. Arguments: %s",
                                 arguments.toString()));
@@ -205,11 +184,11 @@ public class BaseChromiumAndroidJUnitRunner extends AndroidJUnitRunner {
             checkOrDeleteOnDiskSharedPreferences(false);
             clearDataDirectory(sInMemorySharedPreferencesContext);
             InstrumentationRegistry.getInstrumentation().setInTouchMode(true);
-            // //third_party/mockito is looking for
-            // android.support.test.InstrumentationRegistry. Manually set target
-            // to override. We can remove this once we roll mockito to support
+            // //third_party/mockito is looking for android.support.test.InstrumentationRegistry.
+            // Manually set target to override. We can remove this once we roll mockito to support
             // androidx.test.
-            System.setProperty("org.mockito.android.target",
+            System.setProperty(
+                    "org.mockito.android.target",
                     InstrumentationRegistry.getTargetContext().getCacheDir().getPath());
             setClangCoverageEnvIfEnabled();
             super.onStart();
@@ -224,12 +203,15 @@ public class BaseChromiumAndroidJUnitRunner extends AndroidJUnitRunner {
     @Override
     public void waitForIdleSync() {
         final CallbackHelper idleCallback = new CallbackHelper();
-        runOnMainSync(() -> {
-            Looper.myQueue().addIdleHandler(() -> {
-                idleCallback.notifyCalled();
-                return false;
-            });
-        });
+        runOnMainSync(
+                () -> {
+                    Looper.myQueue()
+                            .addIdleHandler(
+                                    () -> {
+                                        idleCallback.notifyCalled();
+                                        return false;
+                                    });
+                });
 
         try {
             idleCallback.waitForFirst((int) WAIT_FOR_IDLE_TIMEOUT_MS, TimeUnit.MILLISECONDS);
@@ -238,85 +220,53 @@ public class BaseChromiumAndroidJUnitRunner extends AndroidJUnitRunner {
         }
     }
 
-    // TODO(yolandyan): Move this to test harness side once this class gets removed
-    private void addTestListPackage(Bundle bundle) {
-        PackageManager pm = getContext().getPackageManager();
-        InstrumentationInfo info;
-        try {
-            info = pm.getInstrumentationInfo(getComponentName(), PackageManager.GET_META_DATA);
-        } catch (NameNotFoundException e) {
-            Log.e(TAG, String.format("Could not find component %s", getComponentName()));
-            throw new RuntimeException(e);
-        }
-        Bundle metaDataBundle = info.metaData;
-        if (metaDataBundle != null && metaDataBundle.getString(LIST_TESTS_PACKAGE_FLAG) != null) {
-            bundle.putString(
-                    ARGUMENT_TEST_PACKAGE, metaDataBundle.getString(LIST_TESTS_PACKAGE_FLAG));
-        }
-    }
-
     private void listTests() {
         Bundle results = new Bundle();
-        TestListInstrumentationRunListener listener = new TestListInstrumentationRunListener();
         try {
             TestExecutor.Builder executorBuilder = new TestExecutor.Builder(this);
-            executorBuilder.addRunListener(listener);
-            Bundle junit3Arguments = new Bundle(InstrumentationRegistry.getArguments());
-            junit3Arguments.putString(ARGUMENT_NOT_ANNOTATION, "org.junit.runner.RunWith");
-            addTestListPackage(junit3Arguments);
-            Request listJUnit3TestRequest = createListTestRequest(junit3Arguments);
-            results = executorBuilder.build().execute(listJUnit3TestRequest);
+            executorBuilder.addRunListener(new TestListInstrumentationRunListener(true));
 
-            Bundle junit4Arguments = new Bundle(InstrumentationRegistry.getArguments());
-            junit4Arguments.putString(ARGUMENT_ANNOTATION, "org.junit.runner.RunWith");
-            addTestListPackage(junit4Arguments);
-
-            // Do not use Log runner from android test support.
+            // Do not use androidx's AndroidLogOnlyBuilder.
             //
-            // Test logging and execution skipping is handled by BaseJUnit4ClassRunner,
-            // having ARGUMENT_LOG_ONLY in argument bundle here causes AndroidJUnitRunner
-            // to use its own log-only class runner instead of BaseJUnit4ClassRunner.
+            // We require BaseJUnit4ClassRunner to implement our test skipping / restrictions logic,
+            // but ARGUMENT_LOG_ONLY means that our runner will not be used.
+            // Remove the argument, and have BaseJUnit4ClassRunner run in no-op mode.
+            Bundle junit4Arguments = new Bundle(InstrumentationRegistry.getArguments());
             junit4Arguments.remove(ARGUMENT_LOG_ONLY);
 
             Request listJUnit4TestRequest = createListTestRequest(junit4Arguments);
             results.putAll(executorBuilder.build().execute(listJUnit4TestRequest));
-            listener.saveTestsToJson(
-                    InstrumentationRegistry.getArguments().getString(LIST_ALL_TESTS_FLAG));
         } catch (IOException | RuntimeException e) {
             String msg = "Fatal exception when running tests";
             Log.e(TAG, msg, e);
             // report the exception to instrumentation out
-            results.putString(Instrumentation.REPORT_KEY_STREAMRESULT,
+            results.putString(
+                    Instrumentation.REPORT_KEY_STREAMRESULT,
                     msg + "\n" + Log.getStackTraceString(e));
         }
         finish(Activity.RESULT_OK, results);
     }
 
     private Request createListTestRequest(Bundle arguments) {
-        ArrayList<DexFile> dexFiles = new ArrayList<>();
-        try {
-            Class<?> bootstrapClass =
-                    Class.forName("org.chromium.incrementalinstall.BootstrapApplication");
-            DexFile[] incrementalInstallDexes =
-                    (DexFile[]) bootstrapClass.getDeclaredField("sIncrementalDexFiles").get(null);
-            dexFiles.addAll(Arrays.asList(incrementalInstallDexes));
-        } catch (Exception e) {
-            // Not an incremental apk.
-            if (BuildConfig.IS_MULTIDEX_ENABLED
-                    && Build.VERSION.SDK_INT <= Build.VERSION_CODES.KITKAT) {
-                // Test listing fails for test classes that aren't in the main dex
-                // (crbug.com/903820).
-                addClassloaderDexFiles(dexFiles, getClass().getClassLoader());
-            }
-        }
-        RunnerArgs runnerArgs =
-                new RunnerArgs.Builder().fromManifest(this).fromBundle(this, arguments).build();
         TestRequestBuilder builder;
-        if (!dexFiles.isEmpty()) {
-            builder = new DexFileTestRequestBuilder(this, arguments, dexFiles);
+        if (BuildConfig.IS_INCREMENTAL_INSTALL) {
+            try {
+                Class<?> bootstrapClass =
+                        Class.forName("org.chromium.incrementalinstall.BootstrapApplication");
+                DexFile[] incrementalInstallDexes =
+                        (DexFile[])
+                                bootstrapClass.getDeclaredField("sIncrementalDexFiles").get(null);
+                builder =
+                        new DexFileTestRequestBuilder(
+                                this, arguments, Arrays.asList(incrementalInstallDexes));
+            } catch (Exception e) {
+                throw new RuntimeException(e);
+            }
         } else {
             builder = new TestRequestBuilder(this, arguments);
         }
+        RunnerArgs runnerArgs =
+                new RunnerArgs.Builder().fromManifest(this).fromBundle(this, arguments).build();
         builder.addFromRunnerArgs(runnerArgs);
         builder.addPathToScan(getContext().getPackageCodePath());
 
@@ -327,20 +277,16 @@ public class BaseChromiumAndroidJUnitRunner extends AndroidJUnitRunner {
     }
 
     static boolean shouldListTests() {
-        Bundle arguments = InstrumentationRegistry.getArguments();
-        return arguments != null && arguments.getString(LIST_ALL_TESTS_FLAG) != null;
+        return sTestListMode;
     }
 
     /**
-     * Wraps TestRequestBuilder to make it work with incremental install and for multidex <= K.
+     * Wraps TestRequestBuilder to make it work with incremental install.
      *
-     * TestRequestBuilder does not know to look through the incremental install dex files, and has
-     * no api for telling it to do so. This class checks to see if the list of tests was given
-     * by the runner (mHasClassList), and if not overrides the auto-detection logic in build()
-     * to manually scan all .dex files.
-     *
-     * On <= K, classes not in the main dex file are missed, so we manually list them by grabbing
-     * the loaded DexFiles from the ClassLoader.
+     * <p>TestRequestBuilder does not know to look through the incremental install dex files, and
+     * has no api for telling it to do so. This class checks to see if the list of tests was given
+     * by the runner (mHasClassList), and if not overrides the auto-detection logic in build() to
+     * manually scan all .dex files.
      */
     private static class DexFileTestRequestBuilder extends TestRequestBuilder {
         final List<String> mExcludedPrefixes = new ArrayList<String>();
@@ -449,30 +395,6 @@ public class BaseChromiumAndroidJUnitRunner extends AndroidJUnitRunner {
         return field.get(instance);
     }
 
-    private static void addClassloaderDexFiles(List<DexFile> dexFiles, ClassLoader cl) {
-        // The main apk appears in the classpath twice sometimes, so check for apk path rather
-        // than comparing DexFile instances (e.g. on kitkat without an apk-under-test).
-        Set<String> apkPaths = new HashSet<>();
-        try {
-            Object pathList = getField(cl.getClass().getSuperclass(), cl, "pathList");
-            Object[] dexElements =
-                    (Object[]) getField(pathList.getClass(), pathList, "dexElements");
-            for (Object dexElement : dexElements) {
-                DexFile dexFile = (DexFile) getField(dexElement.getClass(), dexElement, "dexFile");
-                // Prevent adding the main apk twice, and also skip any system libraries added due
-                // to <uses-library> manifest entries.
-                String apkPath = dexFile.getName();
-                if (!apkPaths.contains(apkPath) && !apkPath.startsWith("/system")) {
-                    dexFiles.add(dexFile);
-                    apkPaths.add(apkPath);
-                }
-            }
-        } catch (Exception e) {
-            // No way to recover and test listing will fail.
-            throw new RuntimeException(e);
-        }
-    }
-
     /**
      * ClassLoader that translates NoClassDefFoundError into ClassNotFoundException.
      *
@@ -484,6 +406,7 @@ public class BaseChromiumAndroidJUnitRunner extends AndroidJUnitRunner {
      */
     private static class ForgivingClassLoader extends ClassLoader {
         private final ClassLoader mDelegateLoader = getClass().getClassLoader();
+
         @Override
         public Class<?> loadClass(String name) throws ClassNotFoundException {
             try {
@@ -523,7 +446,8 @@ public class BaseChromiumAndroidJUnitRunner extends AndroidJUnitRunner {
     private static boolean isTestClass(Class<?> loadedClass) {
         try {
             if (Modifier.isAbstract(loadedClass.getModifiers())) {
-                Log.d(TAG,
+                Log.d(
+                        TAG,
                         String.format(
                                 "Skipping abstract class %s: not a test", loadedClass.getName()));
                 return false;
@@ -574,13 +498,14 @@ public class BaseChromiumAndroidJUnitRunner extends AndroidJUnitRunner {
 
     // copied from junit.framework.TestSuite
     private static boolean isTestMethod(Method m) {
-        return m.getParameterTypes().length == 0 && m.getName().startsWith("test")
+        return m.getParameterTypes().length == 0
+                && m.getName().startsWith("test")
                 && m.getReturnType().equals(Void.TYPE);
     }
 
     @Override
     public void finish(int resultCode, Bundle results) {
-        if (shouldListTests()) {
+        if (sTestListMode) {
             super.finish(resultCode, results);
             return;
         }
@@ -622,29 +547,6 @@ public class BaseChromiumAndroidJUnitRunner extends AndroidJUnitRunner {
         super.finish(resultCode, results);
     }
 
-    // Since we prevent the default runner's behaviour of finishing Activities between tests, don't
-    // finish Activities, don't have the runner wait for them to finish either (as this will add a 2
-    // second timeout to each test).
-    @Override
-    protected void waitForActivitiesToComplete() {}
-
-    // Note that in this class we cannot use ThreadUtils to post tasks as some tests initialize the
-    // browser in ways that cause tasks posted through PostTask to not run. This function should be
-    // used instead.
-    @Override
-    public void runOnMainSync(Runnable runner) {
-        if (runner.getClass() == ActivityFinisher.class) {
-            // This is a gross hack.
-            // Without migrating to the androidx runner, we have no way to prevent
-            // MonitoringInstrumentation from trying to kill our activities, and we rely on
-            // MonitoringInstrumentation for many things like result reporting.
-            // In order to allow batched tests to reuse Activities, drop the ActivityFinisher tasks
-            // without running them.
-            return;
-        }
-        super.runOnMainSync(runner);
-    }
-
     /** Finishes all tasks Chrome has listed in Android's Overview. */
     private void finishAllAppTasks(final Context context) {
         // Close all of the tasks one by one.
@@ -653,8 +555,9 @@ public class BaseChromiumAndroidJUnitRunner extends AndroidJUnitRunner {
         for (ActivityManager.AppTask task : activityManager.getAppTasks()) {
             task.finishAndRemoveTask();
         }
-        long endTime = SystemClock.uptimeMillis()
-                + ScalableTimeout.scaleTimeout(FINISH_APP_TASKS_TIMEOUT_MS);
+        long endTime =
+                SystemClock.uptimeMillis()
+                        + ScalableTimeout.scaleTimeout(FINISH_APP_TASKS_TIMEOUT_MS);
         while (activityManager.getAppTasks().size() != 0 && SystemClock.uptimeMillis() < endTime) {
             try {
                 Thread.sleep(FINISH_APP_TASKS_POLL_INTERVAL_MS);
@@ -685,7 +588,9 @@ public class BaseChromiumAndroidJUnitRunner extends AndroidJUnitRunner {
                                 if (ApplicationStatus.isEveryActivityDestroyed()) {
                                     // Allow onDestroy to finish running before we notify.
                                     mainHandler.post(
-                                            () -> { allDestroyedCalledback.notifyCalled(); });
+                                            () -> {
+                                                allDestroyedCalledback.notifyCalled();
+                                            });
                                     ApplicationStatus.unregisterActivityStateListener(this);
                                 }
                                 break;
@@ -700,16 +605,18 @@ public class BaseChromiumAndroidJUnitRunner extends AndroidJUnitRunner {
                     }
                 };
 
-        mainHandler.post(() -> {
-            if (ApplicationStatus.isEveryActivityDestroyed()) {
-                allDestroyedCalledback.notifyCalled();
-            } else {
-                ApplicationStatus.registerStateListenerForAllActivities(activityStateListener);
-            }
-            for (Activity a : ApplicationStatus.getRunningActivities()) {
-                if (!a.isFinishing()) a.finishAndRemoveTask();
-            }
-        });
+        mainHandler.post(
+                () -> {
+                    if (ApplicationStatus.isEveryActivityDestroyed()) {
+                        allDestroyedCalledback.notifyCalled();
+                    } else {
+                        ApplicationStatus.registerStateListenerForAllActivities(
+                                activityStateListener);
+                    }
+                    for (Activity a : ApplicationStatus.getRunningActivities()) {
+                        if (!a.isFinishing()) a.finishAndRemoveTask();
+                    }
+                });
         try {
             allDestroyedCalledback.waitForFirst();
         } catch (TimeoutException e) {
@@ -717,10 +624,11 @@ public class BaseChromiumAndroidJUnitRunner extends AndroidJUnitRunner {
             // called for a handful of tests. We ignore these exceptions.
             Log.w(TAG, "Activity failed to be destroyed after a test");
 
-            runOnMainSync(() -> {
-                // Make sure subsequent tests don't have these notifications firing.
-                ApplicationStatus.unregisterActivityStateListener(activityStateListener);
-            });
+            runOnMainSync(
+                    () -> {
+                        // Make sure subsequent tests don't have these notifications firing.
+                        ApplicationStatus.unregisterActivityStateListener(activityStateListener);
+                    });
         }
     }
 
@@ -739,7 +647,6 @@ public class BaseChromiumAndroidJUnitRunner extends AndroidJUnitRunner {
             if (file.getName().equals("incremental-install-files")) {
                 continue;
             }
-            // E.g. Legacy multidex files.
             if (file.getName().equals("code_cache")) {
                 continue;
             }
@@ -764,22 +671,17 @@ public class BaseChromiumAndroidJUnitRunner extends AndroidJUnitRunner {
     }
 
     private static boolean isSharedPrefFileAllowed(File f) {
-        // Multidex support library prefs need to stay or else multidex extraction will occur
-        // needlessly.
-        if (f.getName().endsWith("multidex.version.xml")) {
-            return true;
-        }
-
         // WebView prefs need to stay because webview tests have no (good) way of hooking
         // SharedPreferences for instantiated WebViews.
-        String[] allowlist = new String[] {
-                "WebViewChromiumPrefs.xml",
-                "org.chromium.android_webview.devui.MainActivity.xml",
-                "AwComponentUpdateServicePreferences.xml",
-                "ComponentsProviderServicePreferences.xml",
-                "org.chromium.webengine.test.instrumentation_test_apk_preferences.xml",
-                "AwOriginVisitLoggerPrefs.xml",
-        };
+        String[] allowlist =
+                new String[] {
+                    "WebViewChromiumPrefs.xml",
+                    "org.chromium.android_webview.devui.MainActivity.xml",
+                    "AwComponentUpdateServicePreferences.xml",
+                    "ComponentsProviderServicePreferences.xml",
+                    "org.chromium.webengine.test.instrumentation_test_apk_preferences.xml",
+                    "AwOriginVisitLoggerPrefs.xml",
+                };
         for (String name : allowlist) {
             // SharedPreferences may also access a ".bak" backup file from a previous run. See
             // https://crbug.com/1462105#c4 and
@@ -813,21 +715,25 @@ public class BaseChromiumAndroidJUnitRunner extends AndroidJUnitRunner {
             }
         }
         if (!badFiles.isEmpty()) {
-            String errorMsg = "Found unexpected shared preferences file(s) after test ran.\n"
-                    + "All code should use ContextUtils.getApplicationContext() when accessing "
-                    + "SharedPreferences so that tests are hooked to use InMemorySharedPreferences."
-                    + " This could also mean needing to override getSharedPreferences() on custom "
-                    + "Context subclasses (e.g. ChromeBaseAppCompatActivity does this to make "
-                    + "Preferences screens work).\n\n";
+            String errorMsg =
+                    "Found unexpected shared preferences file(s) after test ran.\n"
+                        + "All code should use ContextUtils.getApplicationContext() when accessing"
+                        + " SharedPreferences so that tests are hooked to use"
+                        + " InMemorySharedPreferences. This could also mean needing to override"
+                        + " getSharedPreferences() on custom Context subclasses (e.g."
+                        + " ChromeBaseAppCompatActivity does this to make Preferences screens"
+                        + " work).\n\n";
 
-            SharedPreferences testPrefs = ContextUtils.getApplicationContext().getSharedPreferences(
-                    "test", Context.MODE_PRIVATE);
+            SharedPreferences testPrefs =
+                    ContextUtils.getApplicationContext()
+                            .getSharedPreferences("test", Context.MODE_PRIVATE);
             if (!(testPrefs instanceof InMemorySharedPreferences)) {
-                errorMsg += String.format(
-                        "ContextUtils.getApplicationContext() was set to type \"%s\", which does "
-                                + "not delegate to InMemorySharedPreferencesContext (this is "
-                                + "likely the issues).\n\n",
-                        ContextUtils.getApplicationContext().getClass().getName());
+                errorMsg +=
+                        String.format(
+                                "ContextUtils.getApplicationContext() was set to type \"%s\", which"
+                                    + " does not delegate to InMemorySharedPreferencesContext (this"
+                                    + " is likely the issues).\n\n",
+                                ContextUtils.getApplicationContext().getClass().getName());
             }
 
             errorMsg += "Files:\n * " + TextUtils.join("\n * ", badFiles);
@@ -835,15 +741,13 @@ public class BaseChromiumAndroidJUnitRunner extends AndroidJUnitRunner {
         }
     }
 
-    /**
-     * Configure the required environment variable if Clang coverage argument exists.
-     */
+    /** Configure the required environment variable if Clang coverage argument exists. */
     private void setClangCoverageEnvIfEnabled() {
         String clangProfileFile =
                 InstrumentationRegistry.getArguments().getString(EXTRA_CLANG_COVERAGE_DEVICE_FILE);
         if (clangProfileFile != null) {
             try {
-                Os.setenv("LLVM_PROFILE_FILE", clangProfileFile, /*override*/ true);
+                Os.setenv("LLVM_PROFILE_FILE", clangProfileFile, /* override= */ true);
             } catch (Exception e) {
                 Log.w(TAG, "failed to set LLVM_PROFILE_FILE", e);
             }

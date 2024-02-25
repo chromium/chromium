@@ -51,7 +51,7 @@ source_set("remoting_utils") {
     "rpc_call_message_handler.cc",
   ]
   public_configs =
-      [ "//third_party/openscreen/src/build:openscreen_include_dirs" ]
+      [ "//third_party/openscreen/src/build_overrides:openscreen_include_dirs" ]
   public_deps = [
     "//base",
     "//media",

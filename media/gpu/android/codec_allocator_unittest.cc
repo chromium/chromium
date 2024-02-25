@@ -21,6 +21,7 @@
 #include "base/time/tick_clock.h"
 #include "base/time/time.h"
 #include "media/base/android/mock_media_codec_bridge.h"
+#include "media/base/subsample_entry.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 

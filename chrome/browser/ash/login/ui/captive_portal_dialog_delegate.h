@@ -45,17 +45,7 @@ class CaptivePortalDialogDelegate
   void Close();
 
   // ui::WebDialogDelegate:
-  ui::ModalType GetDialogModalType() const override;
-  std::u16string GetDialogTitle() const override;
-  GURL GetDialogContentURL() const override;
-  void GetWebUIMessageHandlers(
-      std::vector<content::WebUIMessageHandler*>* handlers) const override;
   void GetDialogSize(gfx::Size* size) const override;
-  std::string GetDialogArgs() const override;
-  void OnDialogClosed(const std::string& json_retval) override;
-  void OnCloseContents(content::WebContents* source,
-                       bool* out_close_dialog) override;
-  bool ShouldShowDialogTitle() const override;
 
   // ChromeWebModalDialogManagerDelegate:
   web_modal::WebContentsModalDialogHost* GetWebContentsModalDialogHost()
@@ -78,11 +68,9 @@ class CaptivePortalDialogDelegate
   // b/292447218.
   base::WeakPtr<views::Widget> widget_ = nullptr;
 
-  raw_ptr<views::WebDialogView, ExperimentalAsh> view_ = nullptr;
-  raw_ptr<views::WebDialogView, DanglingUntriaged | ExperimentalAsh>
-      host_view_ = nullptr;
-  raw_ptr<content::WebContents, DanglingUntriaged | ExperimentalAsh>
-      web_contents_ = nullptr;
+  raw_ptr<views::WebDialogView> view_ = nullptr;
+  raw_ptr<views::WebDialogView, DanglingUntriaged> host_view_ = nullptr;
+  raw_ptr<content::WebContents, DanglingUntriaged> web_contents_ = nullptr;
 
   class ModalDialogManagerCleanup;
   std::unique_ptr<ModalDialogManagerCleanup> modal_dialog_manager_cleanup_;

@@ -1,4 +1,4 @@
-(async function(testRunner) {
+(async function(/** @type {import('test_runner').TestRunner} */ testRunner) {
   // This test provides coverage for http://crbug.com/999066 -
   // "Animations are not being captured when DevTools are already open".
   var {page, session, dp} = await testRunner.startBlank(

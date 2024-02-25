@@ -14,6 +14,7 @@
 #include "build/chromeos_buildflags.h"
 #include "media/audio/audio_device_description.h"
 #include "media/audio/pulse/pulse_input.h"
+#include "media/audio/pulse/pulse_loopback_manager.h"
 #include "media/audio/pulse/pulse_output.h"
 #include "media/audio/pulse/pulse_util.h"
 #include "media/base/audio_parameters.h"
@@ -257,6 +258,25 @@ AudioInputStream* AudioManagerPulse::MakeInputStream(
     const AudioParameters& params,
     const std::string& device_id,
     LogCallback log_callback) {
+  if (AudioDeviceDescription::IsLoopbackDevice(device_id)) {
+    // We need a loopback manager if we are opening a loopback device.
+    if (!loopback_manager_) {
+      // Unretained is safe as `this` outlives `loopback_manager_` and all
+      // streams. See ~AudioManagerBase.
+      loopback_manager_ = PulseLoopbackManager::Create(
+          base::BindRepeating(&AudioManagerBase::ReleaseInputStream,
+                              base::Unretained(this)),
+          input_context_, input_mainloop_);
+    }
+
+    if (loopback_manager_) {
+      return loopback_manager_->MakeLoopbackStream(params,
+                                                   std::move(log_callback));
+    }
+
+    return nullptr;
+  }
+
   return new PulseAudioInputStream(this, device_id, params, input_mainloop_,
                                    input_context_, std::move(log_callback));
 }

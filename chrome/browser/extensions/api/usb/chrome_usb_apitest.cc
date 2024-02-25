@@ -83,9 +83,11 @@ class ChromeUsbApiTest : public ExtensionBrowserTest {
             kPolicySetting, extension->url().spec().c_str())));
   }
 
-  device::FakeUsbDeviceManager fake_usb_manager_;
-  scoped_refptr<device::FakeUsbDeviceInfo> fake_device_;
+  // `mock_device_`, `fake_device_`, and `fake_usb_manager_` must be declared in
+  // this order to avoid dangling pointers.
   device::MockUsbMojoDevice mock_device_;
+  scoped_refptr<device::FakeUsbDeviceInfo> fake_device_;
+  device::FakeUsbDeviceManager fake_usb_manager_;
 };
 
 IN_PROC_BROWSER_TEST_F(ChromeUsbApiTest, GetDevicesByPolicy) {

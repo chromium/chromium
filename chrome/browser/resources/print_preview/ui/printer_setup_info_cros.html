@@ -8,7 +8,7 @@
     margin-block: 16px 0;
     margin-inline: auto;
     text-align: center;
-    width: 368px;
+    max-width: 368px;
   }
 
   .message-container {
@@ -65,12 +65,15 @@
   }
 </style>
 <div class="container">
-  <iron-icon icon="print-preview:no-printer-available"></iron-icon>
+  <iron-icon icon="print-preview:no-printer-available"
+      hidden$="[[!showIllustration]]">
+  </iron-icon>
   <div class="message-container">
     <h2 class="message-heading">[[getMessageHeading(messageType)]]</h2>
     <p class="message-detail">[[getMessageDetail(messageType)]]</p>
   </div>
-  <cr-button class="action-button" on-click="onManagePrintersClicked">
+  <cr-button class="action-button" on-click="onManagePrintersClicked"
+      hidden$="[[!showManagePrintersButton]]">
     $i18n{managePrintersLabel}
   </cr-button>
 </div>

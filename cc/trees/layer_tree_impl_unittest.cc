@@ -10,6 +10,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
 #include "cc/base/features.h"
+#include "cc/layers/append_quads_data.h"
 #include "cc/layers/heads_up_display_layer_impl.h"
 #include "cc/test/fake_layer_tree_host_impl.h"
 #include "cc/test/fake_raster_source.h"
@@ -194,7 +195,7 @@ TEST_F(LayerTreeImplTest, HitTestingForSingleLayerAndHud) {
   root->SetHitTestOpaqueness(HitTestOpaqueness::kMixed);
 
   // Create hud and add it as a child of root.
-  auto* hud = AddLayer<HeadsUpDisplayLayerImpl>();
+  auto* hud = AddLayer<HeadsUpDisplayLayerImpl>(std::string());
   hud->SetBounds(gfx::Size(200, 200));
   hud->SetDrawsContent(true);
   hud->SetHitTestOpaqueness(HitTestOpaqueness::kMixed);
@@ -2314,9 +2315,7 @@ TEST_F(LayerTreeImplTest, DebugRectHistoryLayoutShiftWithoutHud) {
 
 namespace {
 
-class PersistentSwapPromise
-    : public SwapPromise,
-      public base::SupportsWeakPtr<PersistentSwapPromise> {
+class PersistentSwapPromise final : public SwapPromise {
  public:
   PersistentSwapPromise() = default;
   ~PersistentSwapPromise() override = default;
@@ -2330,11 +2329,16 @@ class PersistentSwapPromise
     return DidNotSwapAction::KEEP_ACTIVE;
   }
   int64_t GetTraceId() const override { return 0; }
+
+  base::WeakPtr<PersistentSwapPromise> AsWeakPtr() {
+    return weak_ptr_factory_.GetWeakPtr();
+  }
+
+ private:
+  base::WeakPtrFactory<PersistentSwapPromise> weak_ptr_factory_{this};
 };
 
-class NotPersistentSwapPromise
-    : public SwapPromise,
-      public base::SupportsWeakPtr<NotPersistentSwapPromise> {
+class NotPersistentSwapPromise final : public SwapPromise {
  public:
   NotPersistentSwapPromise() = default;
   ~NotPersistentSwapPromise() override = default;
@@ -2348,6 +2352,13 @@ class NotPersistentSwapPromise
     return DidNotSwapAction::BREAK_PROMISE;
   }
   int64_t GetTraceId() const override { return 0; }
+
+  base::WeakPtr<NotPersistentSwapPromise> AsWeakPtr() {
+    return weak_ptr_factory_.GetWeakPtr();
+  }
+
+ private:
+  base::WeakPtrFactory<NotPersistentSwapPromise> weak_ptr_factory_{this};
 };
 
 }  // namespace
@@ -2609,6 +2620,51 @@ TEST_F(LayerTreeImplTest, ElementIdToAnimationMapsTrackOnlyOnSyncTree) {
   ASSERT_EQ(filter_map.size(), 0u);
   active_tree->SetFilterMutated(root->element_id(), FilterOperations());
   EXPECT_EQ(filter_map.size(), 1u);
+}
+
+// Verifies that the effect node's |is_fast_rounded_corner| is set to a draw
+// properties of a RenderSurface, and then correctly forwarded to the shared
+// quad state.
+TEST_F(LayerTreeImplTest, CheckRenderSurfaceIsFastRoundedCorner) {
+  const gfx::MaskFilterInfo kMaskFilterWithRoundedCorners(
+      gfx::RectF(5, 5), gfx::RoundedCornersF(2.5), gfx::LinearGradient());
+
+  LayerImpl* root = root_layer();
+  root->SetBounds(gfx::Size(100, 100));
+  root->SetDrawsContent(true);
+  root->SetHitTestOpaqueness(HitTestOpaqueness::kMixed);
+
+  LayerImpl* child1 = AddLayer<LayerImpl>();
+  child1->SetBounds(gfx::Size(50, 50));
+  child1->SetDrawsContent(true);
+  child1->SetHitTestOpaqueness(HitTestOpaqueness::kMixed);
+  CopyProperties(root, child1);
+  auto& node = CreateEffectNode(child1);
+  node.render_surface_reason = RenderSurfaceReason::kRoundedCorner;
+  node.mask_filter_info = kMaskFilterWithRoundedCorners;
+  node.is_fast_rounded_corner = true;
+
+  host_impl().active_tree()->SetDeviceViewportRect(gfx::Rect(root->bounds()));
+  UpdateDrawProperties(host_impl().active_tree());
+
+  // Sanity check the scenario we just created.
+  ASSERT_EQ(2u, GetRenderSurfaceList().size());
+
+  RenderSurfaceImpl* render_surface = GetRenderSurface(child1);
+  EXPECT_TRUE(render_surface->is_fast_rounded_corner());
+
+  auto render_pass = viz::CompositorRenderPass::Create();
+  AppendQuadsData append_quads_data;
+
+  render_surface->AppendQuads(DRAW_MODE_HARDWARE, render_pass.get(),
+                              &append_quads_data);
+
+  ASSERT_EQ(1u, render_pass->shared_quad_state_list.size());
+  viz::SharedQuadState* shared_quad_state =
+      render_pass->shared_quad_state_list.front();
+
+  EXPECT_EQ(kMaskFilterWithRoundedCorners, shared_quad_state->mask_filter_info);
+  EXPECT_TRUE(shared_quad_state->is_fast_rounded_corner);
 }
 
 class LayerTreeImplOcclusionSettings : public LayerListSettings {

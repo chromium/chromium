@@ -60,8 +60,9 @@ TEST_F(ChromeContentRendererClientSearchBoxTest, RewriteThumbnailURL) {
 
   // Create a thumbnail URL containing the correct render frame ID and an
   // arbitrary instant restricted ID.
-  GURL thumbnail_url(base::StringPrintf("chrome-search:/thumb/%i/1",
-                                        render_frame->GetRoutingID()));
+  GURL thumbnail_url(base::StringPrintf(
+      "chrome-search:/thumb/%s/1",
+      render_frame->GetWebFrame()->GetLocalFrameToken().ToString().c_str()));
 
   GURL result;
   // Make sure the SearchBox rewrites a thumbnail request from the main frame.

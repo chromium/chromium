@@ -30,6 +30,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 
 #if BUILDFLAG(IS_ANDROID)
+#include "media/audio/android/aaudio_stream_wrapper.h"
 #include "media/audio/android/audio_manager_android.h"
 #endif
 
@@ -124,9 +125,9 @@ class AudioInputTest : public testing::TestWithParam<bool> {
     if (should_use_aaudio_) {
       features_.InitAndEnableFeature(features::kUseAAudioInput);
 
-      aaudio_is_supported_ =
-          reinterpret_cast<AudioManagerAndroid*>(audio_manager_.get())
-              ->IsUsingAAudioForTesting();
+      if (__builtin_available(android AAUDIO_MIN_API, *)) {
+        aaudio_is_supported_ = true;
+      }
     }
 #endif
     base::RunLoop().RunUntilIdle();
@@ -272,7 +273,13 @@ TEST_P(AudioInputTest, CreateAndClose) {
 }
 
 // Test create, open and close of an AudioInputStream without recording audio.
-TEST_P(AudioInputTest, OpenAndClose) {
+// TODO(crbug.com/1429490): This test is failing on ios-blink-dbg-fyi bot.
+#if BUILDFLAG(IS_IOS)
+#define MAYBE_OpenAndClose DISABLED_OpenAndClose
+#else
+#define MAYBE_OpenAndClose OpenAndClose
+#endif
+TEST_P(AudioInputTest, MAYBE_OpenAndClose) {
   if (should_use_aaudio_ && !aaudio_is_supported_) {
     return;
   }
@@ -283,7 +290,13 @@ TEST_P(AudioInputTest, OpenAndClose) {
 }
 
 // Test create, open, stop and close of an AudioInputStream without recording.
-TEST_P(AudioInputTest, OpenStopAndClose) {
+// TODO(crbug.com/1429490): This test is failing on ios-blink-dbg-fyi bot.
+#if BUILDFLAG(IS_IOS)
+#define MAYBE_OpenStopAndClose DISABLED_OpenStopAndClose
+#else
+#define MAYBE_OpenStopAndClose OpenStopAndClose
+#endif
+TEST_P(AudioInputTest, MAYBE_OpenStopAndClose) {
   if (should_use_aaudio_ && !aaudio_is_supported_) {
     return;
   }

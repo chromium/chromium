@@ -15,6 +15,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace {
+
 class MockPage : public omnibox::mojom::Page {
  public:
   MockPage() = default;
@@ -33,8 +34,19 @@ class MockPage : public omnibox::mojom::Page {
               (omnibox::mojom::AutocompleteResultPtr));
   MOCK_METHOD(void,
               UpdateSelection,
-              (omnibox::mojom::OmniboxPopupSelectionPtr));
+              (omnibox::mojom::OmniboxPopupSelectionPtr,
+               omnibox::mojom::OmniboxPopupSelectionPtr));
 };
+
+class TestObserver : public OmniboxWebUIPopupChangeObserver {
+ public:
+  void OnPopupElementSizeChanged(gfx::Size size) override { called_ = true; }
+  bool called() const { return called_; }
+
+ private:
+  bool called_ = false;
+};
+
 }  // namespace
 
 class RealboxHandlerTest : public ::testing::Test {
@@ -80,32 +92,6 @@ class RealboxHandlerTest : public ::testing::Test {
   void TearDown() override { handler_.reset(); }
 };
 
-TEST_F(RealboxHandlerTest, RealboxLensSearchIsFalseWhenDisabled) {
-  base::test::ScopedFeatureList scoped_feature_list_;
-  scoped_feature_list_.InitWithFeaturesAndParameters(
-      /*enabled_features=*/{},
-      /*disabled_features=*/{ntp_features::kNtpRealboxLensSearch});
-
-  RealboxHandler::SetupWebUIDataSource(source()->GetWebUIDataSource(),
-                                       profile());
-
-  EXPECT_FALSE(
-      source()->GetLocalizedStrings()->FindBool("realboxLensSearch").value());
-}
-
-TEST_F(RealboxHandlerTest, RealboxLensSearchIsTrueWhenEnabled) {
-  base::test::ScopedFeatureList scoped_feature_list_;
-  scoped_feature_list_.InitWithFeaturesAndParameters(
-      /*enabled_features=*/{{ntp_features::kNtpRealboxLensSearch, {{}}}},
-      /*disabled_features=*/{});
-
-  RealboxHandler::SetupWebUIDataSource(source()->GetWebUIDataSource(),
-                                       profile());
-
-  EXPECT_TRUE(
-      source()->GetLocalizedStrings()->FindBool("realboxLensSearch").value());
-}
-
 TEST_F(RealboxHandlerTest, RealboxLensVariationsContainsVariations) {
   RealboxHandler::SetupWebUIDataSource(source()->GetWebUIDataSource(),
                                        profile());
@@ -115,38 +101,58 @@ TEST_F(RealboxHandlerTest, RealboxLensVariationsContainsVariations) {
 }
 
 TEST_F(RealboxHandlerTest, RealboxUpdatesSelection) {
+  omnibox::mojom::OmniboxPopupSelectionPtr old_selection;
   omnibox::mojom::OmniboxPopupSelectionPtr selection;
   EXPECT_CALL(page_, UpdateSelection)
       .Times(4)
-      .WillRepeatedly(testing::Invoke(
-          [&selection](omnibox::mojom::OmniboxPopupSelectionPtr arg) {
-            selection = std::move(arg);
+      .WillRepeatedly(
+          testing::Invoke([&old_selection, &selection](
+                              omnibox::mojom::OmniboxPopupSelectionPtr arg0,
+                              omnibox::mojom::OmniboxPopupSelectionPtr arg1) {
+            old_selection = std::move(arg0);
+            selection = std::move(arg1);
           }));
 
   handler_->UpdateSelection(
+      OmniboxPopupSelection(OmniboxPopupSelection::kNoMatch),
       OmniboxPopupSelection(0, OmniboxPopupSelection::NORMAL));
   page_.FlushForTesting();
   EXPECT_EQ(0, selection->line);
   EXPECT_EQ(omnibox::mojom::SelectionLineState::kNormal, selection->state);
 
   handler_->UpdateSelection(
+      OmniboxPopupSelection(0, OmniboxPopupSelection::NORMAL),
       OmniboxPopupSelection(1, OmniboxPopupSelection::KEYWORD_MODE));
   page_.FlushForTesting();
   EXPECT_EQ(1, selection->line);
   EXPECT_EQ(omnibox::mojom::SelectionLineState::kKeywordMode, selection->state);
 
-  handler_->UpdateSelection(OmniboxPopupSelection(
-      2, OmniboxPopupSelection::FOCUSED_BUTTON_ACTION, 4));
+  handler_->UpdateSelection(
+      OmniboxPopupSelection(2, OmniboxPopupSelection::NORMAL),
+      OmniboxPopupSelection(2, OmniboxPopupSelection::FOCUSED_BUTTON_ACTION,
+                            4));
   page_.FlushForTesting();
   EXPECT_EQ(2, selection->line);
   EXPECT_EQ(4, selection->action_index);
   EXPECT_EQ(omnibox::mojom::SelectionLineState::kFocusedButtonAction,
             selection->state);
 
-  handler_->UpdateSelection(OmniboxPopupSelection(
-      3, OmniboxPopupSelection::FOCUSED_BUTTON_REMOVE_SUGGESTION));
+  handler_->UpdateSelection(
+      OmniboxPopupSelection(3, OmniboxPopupSelection::FOCUSED_BUTTON_ACTION, 4),
+      OmniboxPopupSelection(
+          3, OmniboxPopupSelection::FOCUSED_BUTTON_REMOVE_SUGGESTION));
   page_.FlushForTesting();
   EXPECT_EQ(3, selection->line);
   EXPECT_EQ(omnibox::mojom::SelectionLineState::kFocusedButtonRemoveSuggestion,
             selection->state);
+}
+
+TEST_F(RealboxHandlerTest, RealboxObservationWorks) {
+  TestObserver observer;
+  EXPECT_FALSE(observer.called());
+  handler_->AddObserver(&observer);
+  EXPECT_TRUE(handler_->HasObserver(&observer));
+  handler_->RemoveObserver(&observer);
+  EXPECT_FALSE(handler_->HasObserver(&observer));
+  EXPECT_TRUE(observer.called());
 }

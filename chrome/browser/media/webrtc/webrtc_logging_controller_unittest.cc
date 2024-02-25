@@ -40,8 +40,7 @@ class WebRtcLoggingControllerTest : public ::testing::Test {
   WebRtcLoggingControllerTest()
       : browser_context_(nullptr),
         test_shared_url_loader_factory_(
-            base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
-                &test_url_loader_factory_)) {
+            test_url_loader_factory_.GetSafeWeakWrapper()) {
     TestingBrowserProcess::GetGlobal()->SetSharedURLLoaderFactory(
         test_shared_url_loader_factory_);
 
@@ -59,38 +58,39 @@ class WebRtcLoggingControllerTest : public ::testing::Test {
     }
   }
 
-  void LoadMainTestProfile(absl::optional<bool> text_log_collection_allowed) {
+  void LoadMainTestProfile(std::optional<bool> text_log_collection_allowed) {
     browser_context_ = CreateBrowserContext("browser_context_", true,
                                             text_log_collection_allowed);
     CreateRenderHost();
   }
 
   void UnloadMainTestProfile() {
-    webrtc_log_uploader_->Shutdown();
-    webrtc_log_uploader_.reset();
+    TestingBrowserProcess::GetGlobal()->webrtc_log_uploader()->Shutdown();
+    TestingBrowserProcess::GetGlobal()->SetWebRtcLogUploader(nullptr);
     rph_.reset();
     browser_context_.reset();
   }
 
   void CreateRenderHost() {
     rph_ = std::make_unique<MockRenderProcessHost>(browser_context_.get());
-    webrtc_log_uploader_ = std::make_unique<WebRtcLogUploader>();
-    WebRtcLoggingController::AttachToRenderProcessHost(
-        rph_.get(), webrtc_log_uploader_.get());
+    auto webrtc_log_uploader = std::make_unique<WebRtcLogUploader>();
+    TestingBrowserProcess::GetGlobal()->SetWebRtcLogUploader(
+        std::move(webrtc_log_uploader));
+    WebRtcLoggingController::AttachToRenderProcessHost(rph_.get());
     webrtc_logging_controller_ =
         WebRtcLoggingController::FromRenderProcessHost(rph_.get());
   }
 
   void CreateUnManagedProfile() {
     browser_context_ =
-        CreateBrowserContext("browser_context_", false, absl::nullopt);
+        CreateBrowserContext("browser_context_", false, std::nullopt);
     CreateRenderHost();
   }
 
   std::unique_ptr<TestingProfile> CreateBrowserContext(
       std::string profile_name,
       bool is_managed_profile,
-      absl::optional<bool> text_log_collection_allowed) {
+      std::optional<bool> text_log_collection_allowed) {
     // If profile name not specified, select a unique name.
     if (profile_name.empty()) {
       static size_t index = 0;
@@ -145,7 +145,6 @@ class WebRtcLoggingControllerTest : public ::testing::Test {
 
   // Class under test.
   raw_ptr<WebRtcLoggingController> webrtc_logging_controller_ = nullptr;
-  std::unique_ptr<WebRtcLogUploader> webrtc_log_uploader_ = nullptr;
 
   // Testing utilities.
   content::BrowserTaskEnvironment task_environment_;
@@ -167,13 +166,13 @@ TEST_F(WebRtcLoggingControllerTest, ManagedProfileWithFalsePolicy) {
 }
 
 TEST_F(WebRtcLoggingControllerTest, ManagedProfileWithUnsetPolicy) {
-  LoadMainTestProfile(absl::nullopt);
+  LoadMainTestProfile(std::nullopt);
   EXPECT_TRUE(webrtc_logging_controller_->IsWebRtcTextLogAllowed(
       browser_context_.get()));
 }
 
 TEST_F(WebRtcLoggingControllerTest, IncognitoWithUnsetPolicy) {
-  LoadMainTestProfile(absl::nullopt);
+  LoadMainTestProfile(std::nullopt);
   Profile* incognito_profile =
       browser_context_->GetPrimaryOTRProfile(/*create_if_needed=*/true);
 

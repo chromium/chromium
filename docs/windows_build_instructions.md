@@ -59,7 +59,10 @@ tools is needed in order to support reading the large-page PDBs that Chrome uses
 to allow greater-than 4 GiB PDBs. This can be installed after the matching
 Windows SDK version is installed, from: Control Panel -> Programs and Features
 -> Windows Software Development Kit [version] -> Change -> Debugging Tools for
-Windows.
+Windows. If building on ARM64 Windows then you will need to manually copy the
+Debuggers\x64 directory from another machine because it does not get installed
+on ARM64 and is needed, whether you are building Chromium for x64 or ARM64 on
+ARM64.
 
 ## Install `depot_tools`
 
@@ -131,6 +134,13 @@ $ git config --global user.email "my-name@chromium.org"
 $ git config --global core.autocrlf false
 $ git config --global core.filemode false
 $ git config --global branch.autosetuprebase always
+```
+
+While not necessarily required it can be helpful to configure git to allow long
+path support (beyond the Windows MAX_PATH limit):
+
+```shell
+git config --global core.longpaths true
 ```
 
 Create a `chromium` directory for the checkout and change to it. You can call
@@ -232,6 +242,22 @@ local variable or type information. With `symbol_level = 0` there is no
 source-level debugging but call stacks still have function names. Changing
 `symbol_level` requires recompiling everything.
 
+When invoking ninja, specify 'chrome' as the target to avoid building all test
+binaries as well.
+
+#### Use Reclient
+
+In addition, Google employees should use Reclient, a distributed compilation system.
+Detailed information is available internally but the relevant gn arg is:
+* `use_remoteexec = true`
+
+Google employees can visit
+[go/building-chrome-win#setup-remote-execution](https://goto.google.com/building-chrome-win#setup-remote-execution)
+for more information. For external contributors, Reclient does not support
+Windows builds.
+
+#### Use Goma (deprecated)
+
 In addition, Google employees should use goma, a distributed compilation system.
 Detailed information is available internally but the relevant gn arg is:
 * `use_goma = true`
@@ -244,7 +270,7 @@ will automatically pass an appropriate -j value to ninja for goma or not.
 $ autoninja -C out\Default chrome
 ```
 
-When invoking ninja specify 'chrome' as the target to avoid building all test
+When invoking ninja, specify 'chrome' as the target to avoid building all test
 binaries as well.
 
 Still, builds will take many hours on many machines.
@@ -266,6 +292,10 @@ putting it in a ``src`` directory in the root of a drive)? Have you tried the
 different settings listed above, including different link settings and -j
 values? Have you asked on the chromium-dev mailing list to see if your build is
 slower than expected for your machine's specifications?
+
+If you suspect that Defender is slowing your build then you can try Microsoft's
+[Performance analyzer for Microsoft Defender Antivirus](https://learn.microsoft.com/en-us/microsoft-365/security/defender-endpoint/tune-performance-defender-antivirus?view=o365-worldwide)
+to investigate in detail.
 
 The next step is to gather some data. If you set the ``NINJA_SUMMARIZE_BUILD``
 environment variable to 1 then ``autoninja`` will do three things. First, it

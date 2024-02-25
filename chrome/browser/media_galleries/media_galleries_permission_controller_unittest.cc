@@ -26,10 +26,12 @@
 #include "components/storage_monitor/test_storage_monitor.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/shell_dialogs/selected_file_info.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "chrome/browser/ash/login/users/scoped_test_user_manager.h"
+#include "chrome/browser/ash/login/users/chrome_user_manager_impl.h"
 #include "chrome/browser/ash/settings/scoped_cros_settings_test_helper.h"
+#include "components/user_manager/scoped_user_manager.h"
 #endif
 
 using storage_monitor::StorageInfo;
@@ -160,7 +162,8 @@ class MediaGalleriesPermissionControllerTest : public ::testing::Test {
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   ash::ScopedCrosSettingsTestHelper cros_settings_test_helper_;
-  ash::ScopedTestUserManager test_user_manager_;
+  user_manager::ScopedUserManager test_user_manager_{
+      ash::ChromeUserManagerImpl::CreateChromeUserManager()};
 #endif
 
   TestStorageMonitor monitor_;
@@ -213,8 +216,9 @@ void MediaGalleriesPermissionControllerTest::TestForgottenType(
 
   // Add back and test whether the same pref id is preserved.
   StartDialog();
-  controller()->FileSelected(MakeMediaGalleriesTestingPath("forgotten1"), 0,
-                             nullptr);
+  ui::SelectedFileInfo file(MakeMediaGalleriesTestingPath("forgotten1"),
+                            MakeMediaGalleriesTestingPath("forgotten1"));
+  controller()->FileSelected(file, 0, nullptr);
   controller()->DialogFinished(true);
   EXPECT_EQ(2U, gallery_prefs()->GalleriesForExtension(*extension()).size());
   MediaGalleryPrefInfo retrieved_info;

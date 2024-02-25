@@ -65,20 +65,25 @@ class FileSystemAccessObserverHost
       ObserveCallback callback,
       FileSystemAccessTransferTokenImpl* resolved_token);
 
+  void DidResolveTransferTokenToUnobserve(
+      FileSystemAccessTransferTokenImpl* resolved_token);
+
   void GotObservation(
       absl::variant<std::unique_ptr<FileSystemAccessDirectoryHandleImpl>,
                     std::unique_ptr<FileSystemAccessFileHandleImpl>> handle,
       ObserveCallback callback,
-      std::unique_ptr<FileSystemAccessWatcherManager::Observation> observation);
+      base::expected<
+          std::unique_ptr<FileSystemAccessWatcherManager::Observation>,
+          blink::mojom::FileSystemAccessErrorPtr> observation_or_error);
 
   void OnHostReceiverDisconnect();
 
   SEQUENCE_CHECKER(sequence_checker_);
 
   // The manager which owns `watcher_manager_`.
-  const raw_ptr<FileSystemAccessManagerImpl> manager_;
+  const raw_ptr<FileSystemAccessManagerImpl> manager_ = nullptr;
   // The watcher manager which owns this instance.
-  const raw_ptr<FileSystemAccessWatcherManager> watcher_manager_;
+  const raw_ptr<FileSystemAccessWatcherManager> watcher_manager_ = nullptr;
   const BindingContext binding_context_;
 
   // Observations which maintain mojo pipes that send file change notifications
@@ -91,7 +96,7 @@ class FileSystemAccessObserverHost
   // Connection owned by a FileSystemObserver object. When the
   // FileSystemObserver is destroyed, this instance will remove itself from the
   // manager.
-  // TODO(https://crbug.com/1019297): Make the lifetime not depend on GC.
+  // TODO(https://crbug.com/1488875): Make the lifetime not depend on GC.
   mojo::Receiver<blink::mojom::FileSystemAccessObserverHost> host_receiver_
       GUARDED_BY_CONTEXT(sequence_checker_);
 

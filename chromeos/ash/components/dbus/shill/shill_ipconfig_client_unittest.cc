@@ -50,7 +50,7 @@ class ShillIPConfigClientTest : public ShillClientUnittestBase {
   }
 
  protected:
-  raw_ptr<ShillIPConfigClient, DanglingUntriaged | ExperimentalAsh> client_ =
+  raw_ptr<ShillIPConfigClient, DanglingUntriaged> client_ =
       nullptr;  // Unowned convenience pointer.
 };
 
@@ -117,12 +117,12 @@ TEST_F(ShillIPConfigClientTest, GetProperties) {
   PrepareForMethodCall(shill::kGetPropertiesFunction,
                        base::BindRepeating(&ExpectNoArgument), response.get());
 
-  base::test::TestFuture<absl::optional<base::Value::Dict>>
+  base::test::TestFuture<std::optional<base::Value::Dict>>
       get_properties_result;
   // Call GetProperties.
   client_->GetProperties(dbus::ObjectPath(kExampleIPConfigPath),
                          get_properties_result.GetCallback());
-  absl::optional<base::Value::Dict> result = get_properties_result.Take();
+  std::optional<base::Value::Dict> result = get_properties_result.Take();
   EXPECT_TRUE(result.has_value());
   const base::Value::Dict& result_value = result.value();
   EXPECT_EQ(expected_value, result_value);

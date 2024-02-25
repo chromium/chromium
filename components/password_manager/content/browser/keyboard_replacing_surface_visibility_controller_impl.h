@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_PASSWORD_MANAGER_CONTENT_BROWSER_KEYBOARD_REPLACING_SURFACE_VISIBILITY_CONTROLLER_IMPL_H_
 #define COMPONENTS_PASSWORD_MANAGER_CONTENT_BROWSER_KEYBOARD_REPLACING_SURFACE_VISIBILITY_CONTROLLER_IMPL_H_
 
+#include "base/memory/weak_ptr.h"
 #include "components/password_manager/content/browser/keyboard_replacing_surface_visibility_controller.h"
 #include "content/public/browser/render_widget_host.h"
 
@@ -16,7 +17,7 @@ class ContentPasswordManagerDriver;
 // `kCanBeShown`. The state can be reset, using `Reset()` to redisplay.
 // The lifetime is controlled by the owner (i.e. `PasswordManagerClient`) and
 // the object will be used by `TouchToFillController` and `CredManController`.
-class KeyboardReplacingSurfaceVisibilityControllerImpl
+class KeyboardReplacingSurfaceVisibilityControllerImpl final
     : public KeyboardReplacingSurfaceVisibilityController {
  public:
   enum class State {
@@ -52,12 +53,18 @@ class KeyboardReplacingSurfaceVisibilityControllerImpl
   // suppression if there's one.
   void Reset() override;
 
+  // Get a WeakPtr to the instance.
+  base::WeakPtr<KeyboardReplacingSurfaceVisibilityController> AsWeakPtr()
+      override;
+
  private:
   State state_ = State::kNotShownYet;
   // Password manager driver for the frame on which the Touch-To-Fill was
   // triggered.
   base::WeakPtr<password_manager::ContentPasswordManagerDriver> frame_driver_;
   content::RenderWidgetHost::SuppressShowingImeCallback suppress_callback_;
+  base::WeakPtrFactory<KeyboardReplacingSurfaceVisibilityControllerImpl>
+      weak_ptr_factory_{this};
 };
 
 }  // namespace password_manager

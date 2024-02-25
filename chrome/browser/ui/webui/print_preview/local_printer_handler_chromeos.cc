@@ -58,7 +58,7 @@ void OnGetPrintersComplete(
 
 base::Value::Dict AddProfileUsernameToJobSettings(
     base::Value::Dict settings,
-    const absl::optional<std::string>& username) {
+    const std::optional<std::string>& username) {
   if (username.has_value() && !username->empty()) {
     settings.Set(kSettingUsername, *username);
     settings.Set(kSettingSendUserInfo, true);
@@ -144,6 +144,9 @@ base::Value::Dict LocalPrinterHandlerChromeos::PrinterToValue(
   value.Set(kSettingPrinterName, printer.name);
   value.Set(kSettingPrinterDescription, printer.description);
   value.Set(kCUPSEnterprisePrinter, printer.configured_via_policy);
+  value.Set(kPrinterStatus, printer.printer_status
+                                ? StatusToValue(*printer.printer_status)
+                                : base::Value::Dict());
   return value;
 }
 
@@ -171,7 +174,8 @@ base::Value::Dict LocalPrinterHandlerChromeos::StatusToValue(
     const crosapi::mojom::PrinterStatus& status) {
   base::Value::Dict dict;
   dict.Set("printerId", status.printer_id);
-  dict.Set("timestamp", status.timestamp.ToJsTimeIgnoringNull());
+  dict.Set("timestamp",
+           status.timestamp.InMillisecondsFSinceUnixEpochIgnoringNull());
   base::Value::List status_reasons;
   for (const crosapi::mojom::StatusReasonPtr& reason_ptr :
        status.status_reasons) {
@@ -283,7 +287,7 @@ void LocalPrinterHandlerChromeos::GetUsernamePerPolicy(
               kGetUsernamePerPolicyMinVersion}) {
     LOG(WARNING) << "Ash LocalPrinter version " << local_printer_version_
                  << " does not support GetUsernamePerPolicy().";
-    std::move(add_profile_username_callback).Run(absl::nullopt);
+    std::move(add_profile_username_callback).Run(std::nullopt);
     return;
   }
 #endif
@@ -376,7 +380,7 @@ void LocalPrinterHandlerChromeos::StartPrinterStatusRequest(
   if (!local_printer_) {
     PRINTER_LOG(ERROR)
         << "Local printer not available (StartPrinterStatusRequest)";
-    std::move(callback).Run(absl::nullopt);
+    std::move(callback).Run(std::nullopt);
     return;
   }
   local_printer_->GetStatus(

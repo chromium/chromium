@@ -41,14 +41,10 @@ public interface StylusWritingImeCallback {
      */
     void performEditorAction(int actionCode);
 
-    /**
-     * Send a request to show soft keyboard.
-     */
+    /** Send a request to show soft keyboard. */
     void showSoftKeyboard();
 
-    /**
-     * Send a request to hide the soft keyboard.
-     */
+    /** Send a request to hide the soft keyboard. */
     void hideKeyboard();
 
     /**
@@ -77,8 +73,6 @@ public interface StylusWritingImeCallback {
      */
     void handleStylusWritingGestureAction(int id, StylusWritingGestureData gestureData);
 
-    /**
-     * Finish current text composition in the input field.
-     */
+    /** Finish current text composition in the input field. */
     void finishComposingText();
 }

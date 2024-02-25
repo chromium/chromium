@@ -74,11 +74,6 @@ class CORE_EXPORT HTMLSelectListElement final
 
   enum class PartType { kNone, kButton, kListBox, kOption };
 
-  // If node is a flat tree descendant of an HTMLSelectListElement
-  // and is registered as a part of that HTMLSelectListElement,
-  // returns that HTMLSelectListElement. Else returns null.
-  static HTMLSelectListElement* OwnerSelectList(Node* node);
-
   // For use in the implementation of HTMLOptionElement.
   void OptionSelectionStateChanged(HTMLOptionElement*, bool option_is_selected);
   void OptionElementChildrenChanged(const HTMLOptionElement& option);
@@ -86,10 +81,10 @@ class CORE_EXPORT HTMLSelectListElement final
 
   PartType AssignedPartType(Node* node) const;
 
-  HTMLElement* ButtonPart() const { return button_part_; }
-  HTMLElement* ListBoxPart() const { return listbox_part_; }
+  HTMLElement* ButtonPart() const { return button_part_.Get(); }
+  HTMLElement* ListBoxPart() const { return listbox_part_.Get(); }
   HTMLElement* SuggestedOptionPopoverForTesting() const {
-    return suggested_option_popover_;
+    return suggested_option_popover_.Get();
   }
 
   bool IsRichlyEditableForAccessibility() const override { return false; }
@@ -102,9 +97,13 @@ class CORE_EXPORT HTMLSelectListElement final
   // HTMLSelectElement::GetOptionList().
   const ListItems& GetListItems() const;
 
+  void OpenListbox();
+  void CloseListbox();
   void ListboxWasClosed();
 
   void ResetTypeAheadSessionForTesting();
+
+  void HandleButtonEvent(Event&);
 
  private:
   class SelectMutationCallback;
@@ -112,8 +111,6 @@ class CORE_EXPORT HTMLSelectListElement final
   void DidAddUserAgentShadowRoot(ShadowRoot&) override;
   void DidMoveToNewDocument(Document& old_document) override;
   void DisabledAttributeChanged() override;
-  void OpenListbox();
-  void CloseListbox();
   bool TypeAheadFind(const KeyboardEvent& event, int charCode);
 
   HTMLOptionElement* FirstOptionPart() const;
@@ -149,8 +146,6 @@ class CORE_EXPORT HTMLSelectListElement final
   void ResetOptionParts();
   void ResetToDefaultSelection();
   void DispatchInputAndChangeEventsIfNeeded();
-  void DispatchInputEvent();
-  void DispatchChangeEvent();
 
   bool IsValidButtonPart(const Node* node, bool show_warning) const;
   bool IsValidListboxPart(const Node* node, bool show_warning) const;
@@ -167,14 +162,17 @@ class CORE_EXPORT HTMLSelectListElement final
   bool IsLabelable() const override;
 
   // HTMLFormControlElementWithState overrides:
-  const AtomicString& FormControlType() const override;
+  mojom::blink::FormControlType FormControlType() const override;
+  const AtomicString& FormControlTypeAsString() const override;
   void DefaultEventHandler(Event&) override;
   bool MayTriggerVirtualKeyboard() const override;
   bool AlwaysCreateUserAgentShadowRoot() const override { return false; }
   void AppendToFormData(FormData&) override;
-  bool SupportsFocus() const override { return false; }
+  bool SupportsFocus(UpdateBehavior) const override { return false; }
   FormControlState SaveFormControlState() const override;
   void RestoreFormControlState(const FormControlState&) override;
+
+  bool HandleButtonKeyboardEvent(KeyboardEvent&);
 
   class ButtonPartEventListener : public NativeEventListener {
    public:
@@ -189,7 +187,6 @@ class CORE_EXPORT HTMLSelectListElement final
 
     void AddEventListeners(HTMLElement* button_part);
     void RemoveEventListeners(HTMLElement* button_part);
-    bool HandleKeyboardEvent(const KeyboardEvent& event);
 
    private:
     Member<HTMLSelectListElement> select_list_element_;
@@ -235,6 +232,7 @@ class CORE_EXPORT HTMLSelectListElement final
   Member<HTMLSlotElement> marker_slot_;
   Member<HTMLSlotElement> selected_value_slot_;
   Member<HTMLSlotElement> options_slot_;
+  Member<HTMLListboxElement> default_listbox_;
   Member<HTMLOptionElement> selected_option_;
   Member<HTMLOptionElement> selected_option_when_listbox_opened_;
   Member<HTMLOptionElement> suggested_option_;

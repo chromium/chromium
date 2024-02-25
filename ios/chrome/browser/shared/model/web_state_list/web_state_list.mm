@@ -10,20 +10,18 @@
 #import "base/auto_reset.h"
 #import "base/check_op.h"
 #import "base/containers/adapters.h"
+#import "base/containers/contains.h"
+#import "base/memory/raw_ptr.h"
+#import "ios/chrome/browser/shared/model/web_state_list/order_controller.h"
+#import "ios/chrome/browser/shared/model/web_state_list/order_controller_source_from_web_state_list.h"
+#import "ios/chrome/browser/shared/model/web_state_list/removing_indexes.h"
+#import "ios/chrome/browser/shared/model/web_state_list/tab_group.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list_delegate.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list_observer.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_opener.h"
-#import "ios/chrome/browser/web_state_list/web_state_list_order_controller.h"
-#import "ios/chrome/browser/web_state_list/web_state_list_removing_indexes.h"
-#import "ios/web/public/navigation/navigation_manager.h"
 #import "ios/web/public/web_state.h"
 
 namespace {
-
-// Returns whether the given flag is set in a flagset.
-bool IsInsertionFlagSet(int flagset, WebStateList::InsertionFlags flag) {
-  return (flagset & flag) == flag;
-}
 
 // Returns whether the given flag is set in a flagset.
 bool IsClosingFlagSet(int flagset, WebStateList::ClosingFlags flag) {
@@ -32,86 +30,49 @@ bool IsClosingFlagSet(int flagset, WebStateList::ClosingFlags flag) {
 
 }  // namespace
 
-// Used as a parameter in DetachWebStateAtImpl(). There are 3 situations of
-// detaching a WebState:
+WebStateList::ScopedBatchOperation::ScopedBatchOperation(
+    WebStateList* web_state_list)
+    : web_state_list_(web_state_list) {
+  DCHECK(web_state_list_);
+  DCHECK(!web_state_list_->batch_operation_in_progress_);
+  web_state_list_->batch_operation_in_progress_ = true;
+  for (auto& observer : web_state_list_->observers_) {
+    observer.WillBeginBatchOperation(web_state_list_.get());
+  }
+}
+
+WebStateList::ScopedBatchOperation::~ScopedBatchOperation() {
+  if (web_state_list_) {
+    DCHECK(web_state_list_->batch_operation_in_progress_);
+    web_state_list_->batch_operation_in_progress_ = false;
+    for (auto& observer : web_state_list_->observers_) {
+      observer.BatchOperationEnded(web_state_list_.get());
+    }
+  }
+}
+
+// Used by DetachWebStateAtImpl() and DetachWebStatesAtIndicesImpl() as
+// parameter. There are 3 situations of
 // 1. a WebState is detached.
 // 2. a WebState is detached and closed.
-// 3. multiple WebStates are detached and closed.
-// Detaching(), Closing() and ClosingWithUpdateActiveWebState() are
-// corresponded, respectively.
-class WebStateList::DetachParams {
- public:
+// 3. a WebState is detached and closed due to an user action.
+// The static helper method helps construct a object that represents
+// a valid state.
+struct WebStateList::DetachParams {
   static DetachParams Detaching();
   static DetachParams Closing(bool is_user_action);
-  static DetachParams ClosingWithUpdateActiveWebState(
-      bool is_user_action,
-      web::WebState* old_active_web_state);
 
-  bool is_closing() const { return is_closing_; }
-  bool is_user_action() const { return is_user_action_; }
-
-  web::WebState* SelectOldActiveWebState(
-      bool is_active_web_state_detached,
-      web::WebState* detached_web_state,
-      web::WebState* current_active_web_state) const;
-
- private:
-  DetachParams(bool is_closing,
-               bool is_user_action,
-               bool should_use_old_active_web_state,
-               web::WebState* old_active_web_state);
-
-  const bool is_closing_;
-  const bool is_user_action_;
-  const bool should_use_old_active_web_state_;
-  web::WebState* old_active_web_state_;
+  const bool is_closing;
+  const bool is_user_action;
 };
 
-WebStateList::DetachParams::DetachParams(bool is_closing,
-                                         bool is_user_action,
-                                         bool should_use_old_active_web_state,
-                                         web::WebState* old_active_web_state)
-    : is_closing_(is_closing),
-      is_user_action_(is_user_action),
-      should_use_old_active_web_state_(should_use_old_active_web_state),
-      old_active_web_state_(old_active_web_state) {}
-
 WebStateList::DetachParams WebStateList::DetachParams::Detaching() {
-  return WebStateList::DetachParams(/*is_closing=*/false,
-                                    /*is_user_action=*/false,
-                                    /*should_use_old_active_web_state=*/false,
-                                    /*old_active_web_state=*/nullptr);
+  return {.is_closing = false, .is_user_action = false};
 }
 
 WebStateList::DetachParams WebStateList::DetachParams::Closing(
     bool is_user_action) {
-  return WebStateList::DetachParams(/*is_closing=*/true, is_user_action,
-                                    /*should_use_old_active_web_state=*/false,
-                                    /*old_active_web_state=*/nullptr);
-}
-
-WebStateList::DetachParams
-WebStateList::DetachParams::ClosingWithUpdateActiveWebState(
-    bool is_user_action,
-    web::WebState* old_active_web_state) {
-  return WebStateList::DetachParams(/*is_closing=*/true, is_user_action,
-                                    /*should_use_old_active_web_state=*/true,
-                                    old_active_web_state);
-}
-
-web::WebState* WebStateList::DetachParams::SelectOldActiveWebState(
-    bool is_active_web_state_detached,
-    web::WebState* detached_web_state,
-    web::WebState* current_active_web_state) const {
-  if (should_use_old_active_web_state_) {
-    return old_active_web_state_;
-  }
-
-  if (is_active_web_state_detached) {
-    return detached_web_state;
-  }
-
-  return current_active_web_state;
+  return {.is_closing = true, .is_user_action = is_user_action};
 }
 
 // Wrapper around a WebState stored in a WebStateList.
@@ -129,8 +90,8 @@ class WebStateList::WebStateWrapper {
   // Returns ownership of the wrapped WebState.
   std::unique_ptr<web::WebState> ReleaseWebState();
 
-  // Replaces the wrapped WebState (and clear associated state) and returns the
-  // old WebState after forfeiting ownership.
+  // Replaces the wrapped WebState and returns the old WebState after forfeiting
+  // ownership. The opener is cleared, but the group is kept.
   std::unique_ptr<web::WebState> ReplaceWebState(
       std::unique_ptr<web::WebState> web_state);
 
@@ -144,16 +105,14 @@ class WebStateList::WebStateWrapper {
   bool ShouldResetOpenerOnActiveWebStateChange() const;
   void SetShouldResetOpenerOnActiveWebStateChange(bool should_reset_opener);
 
-  // Returns whether `opener` spawned the wrapped WebState. If `use_group` is
-  // true, also use the opener navigation index to detect navigation changes
-  // during the same session.
-  bool WasOpenedBy(const web::WebState* opener,
-                   int opener_navigation_index,
-                   bool use_group) const;
+  // Gets and sets information about this WebState group.
+  const TabGroup* group() const { return group_; }
+  void SetGroup(const TabGroup* group) { group_ = group; }
 
  private:
   std::unique_ptr<web::WebState> web_state_;
   WebStateOpener opener_;
+  raw_ptr<const TabGroup> group_ = nullptr;
   bool should_reset_opener_ = false;
 };
 
@@ -170,6 +129,7 @@ WebStateList::WebStateWrapper::ReleaseWebState() {
   std::unique_ptr<web::WebState> web_state;
   std::swap(web_state, web_state_);
   opener_ = WebStateOpener();
+  group_ = nullptr;
   return web_state;
 }
 
@@ -188,21 +148,6 @@ void WebStateList::WebStateWrapper::SetOpener(WebStateOpener opener) {
   opener_ = opener;
 }
 
-bool WebStateList::WebStateWrapper::WasOpenedBy(const web::WebState* opener,
-                                                int opener_navigation_index,
-                                                bool use_group) const {
-  DCHECK(opener);
-  if (opener_.opener != opener) {
-    return false;
-  }
-
-  if (!use_group) {
-    return true;
-  }
-
-  return opener_.navigation_index == opener_navigation_index;
-}
-
 bool WebStateList::WebStateWrapper::ShouldResetOpenerOnActiveWebStateChange()
     const {
   return should_reset_opener_;
@@ -219,10 +164,16 @@ WebStateList::WebStateList(WebStateListDelegate* delegate)
 }
 
 WebStateList::~WebStateList() {
-  CloseAllWebStates(CLOSE_NO_FLAGS);
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  DCHECK(!locked_);
+  DCHECK(!batch_operation_in_progress_);
+
   for (auto& observer : observers_) {
     observer.WebStateListDestroyed(this);
   }
+
+  DCHECK(!locked_);
+  DCHECK(!batch_operation_in_progress_);
 }
 
 base::WeakPtr<WebStateList> WebStateList::AsWeakPtr() {
@@ -302,25 +253,11 @@ void WebStateList::SetOpenerOfWebStateAt(int index, WebStateOpener opener) {
   web_state_wrappers_[index]->SetOpener(opener);
 }
 
-int WebStateList::GetIndexOfNextWebStateOpenedBy(const web::WebState* opener,
-                                                 int start_index,
-                                                 bool use_group) const {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return GetIndexOfNthWebStateOpenedBy(opener, start_index, use_group, 1);
-}
-
-int WebStateList::GetIndexOfLastWebStateOpenedBy(const web::WebState* opener,
-                                                 int start_index,
-                                                 bool use_group) const {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return GetIndexOfNthWebStateOpenedBy(opener, start_index, use_group, INT_MAX);
-}
-
 int WebStateList::SetWebStatePinnedAt(int index, bool pinned) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(ContainsIndex(index));
   auto lock = LockForMutation();
-  return SetWebStatePinnedImpl(index, pinned);
+  return SetWebStatePinnedAtImpl(index, pinned);
 }
 
 bool WebStateList::IsWebStatePinnedAt(int index) const {
@@ -329,14 +266,11 @@ bool WebStateList::IsWebStatePinnedAt(int index) const {
   return index < pinned_tabs_count_;
 }
 
-int WebStateList::InsertWebState(int index,
-                                 std::unique_ptr<web::WebState> web_state,
-                                 int insertion_flags,
-                                 WebStateOpener opener) {
+int WebStateList::InsertWebState(std::unique_ptr<web::WebState> web_state,
+                                 InsertionParams params) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   auto lock = LockForMutation();
-  return InsertWebStateImpl(index, std::move(web_state), insertion_flags,
-                            opener);
+  return InsertWebStateImpl(std::move(web_state), params);
 }
 
 void WebStateList::MoveWebStateAt(int from_index, int to_index) {
@@ -344,7 +278,7 @@ void WebStateList::MoveWebStateAt(int from_index, int to_index) {
   auto lock = LockForMutation();
   to_index = ConstrainMoveIndex(to_index, IsWebStatePinnedAt(from_index));
   return MoveWebStateAtImpl(from_index, to_index,
-                            /*pinned_state_change=*/false);
+                            /*pinned_state_changed=*/false);
 }
 
 std::unique_ptr<web::WebState> WebStateList::ReplaceWebStateAt(
@@ -359,32 +293,80 @@ std::unique_ptr<web::WebState> WebStateList::ReplaceWebStateAt(
 std::unique_ptr<web::WebState> WebStateList::DetachWebStateAt(int index) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   auto lock = LockForMutation();
-  return DetachWebStateAtImpl(index, DetachParams::Detaching());
+
+  OrderControllerSourceFromWebStateList source(*this);
+  OrderController order_controller(source);
+
+  const int new_active_index =
+      order_controller.DetermineNewActiveIndex(active_index_, {index});
+
+  return DetachWebStateAtImpl(index, new_active_index,
+                              DetachParams::Detaching());
 }
 
 void WebStateList::CloseWebStateAt(int index, int close_flags) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   auto lock = LockForMutation();
-  const bool is_user_action = IsClosingFlagSet(close_flags, CLOSE_USER_ACTION);
+
+  OrderControllerSourceFromWebStateList source(*this);
+  OrderController order_controller(source);
+
+  const int new_active_index =
+      order_controller.DetermineNewActiveIndex(active_index_, {index});
+
+  const DetachParams detach_params =
+      DetachParams::Closing(IsClosingFlagSet(close_flags, CLOSE_USER_ACTION));
+
   std::unique_ptr<web::WebState> detached_web_state =
-      DetachWebStateAtImpl(index, DetachParams::Closing(is_user_action));
+      DetachWebStateAtImpl(index, new_active_index, detach_params);
 
   // Dropping detached_web_state will destroy it.
 }
 
-void WebStateList::CloseAllWebStates(int close_flags) {
-  CloseAllWebStatesAfterIndex(0, close_flags);
-}
-
-void WebStateList::CloseAllNonPinnedWebStates(int close_flags) {
-  CloseAllWebStatesAfterIndex(pinned_tabs_count_, close_flags);
-}
-
 void WebStateList::ActivateWebStateAt(int index) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(ContainsIndex(index));
+  DCHECK(ContainsIndex(index) || index == kInvalidIndex);
   auto lock = LockForMutation();
   return ActivateWebStateAtImpl(index);
+}
+
+void WebStateList::CloseWebStatesAtIndices(int close_flags,
+                                           RemovingIndexes removing_indexes) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  auto lock = LockForMutation();
+
+  const DetachParams detach_params =
+      DetachParams::Closing(IsClosingFlagSet(close_flags, CLOSE_USER_ACTION));
+
+  // Detach all web states in a first pass, before destroying them at once
+  // later. This avoids odd side effects as a result of WebStateImpl's
+  // destructor notifying observers, including slowness during shutdown due to
+  // quadratic behavior if observers iterate the WebStateList.
+  std::vector<std::unique_ptr<web::WebState>> detached_web_states =
+      DetachWebStatesAtIndicesImpl(removing_indexes, detach_params);
+}
+
+const TabGroup* WebStateList::GetGroupOfWebStateAt(int index) const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  DCHECK(ContainsIndex(index));
+  const TabGroup* group = web_state_wrappers_[index]->group();
+  DCHECK(!group || ContainsGroup(group));
+  return group;
+}
+
+WebStateList::Range WebStateList::GetWebStates(const TabGroup* group) const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  DCHECK(group);
+  DCHECK(ContainsGroup(group));
+  return groups_.find(group)->second;
+}
+
+const TabGroup* WebStateList::CreateGroup(
+    const std::set<int>& indices,
+    const tab_groups::TabGroupVisualData& visual_data) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  auto lock = LockForMutation();
+  return CreateGroupImpl(indices, visual_data);
 }
 
 base::AutoReset<bool> WebStateList::LockForMutation() {
@@ -395,18 +377,16 @@ base::AutoReset<bool> WebStateList::LockForMutation() {
   return base::AutoReset<bool>(&locked_, /*locked=*/true);
 }
 
-int WebStateList::InsertWebStateImpl(int index,
-                                     std::unique_ptr<web::WebState> web_state,
-                                     int insertion_flags,
-                                     WebStateOpener opener) {
+int WebStateList::InsertWebStateImpl(std::unique_ptr<web::WebState> web_state,
+                                     InsertionParams params) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(locked_);
   DCHECK(web_state);
-  const bool activating = IsInsertionFlagSet(insertion_flags, INSERT_ACTIVATE);
-  const bool forced = IsInsertionFlagSet(insertion_flags, INSERT_FORCE_INDEX);
-  const bool inheriting =
-      IsInsertionFlagSet(insertion_flags, INSERT_INHERIT_OPENER);
-  const bool pinned = IsInsertionFlagSet(insertion_flags, INSERT_PINNED);
+  WebStateOpener opener = params.opener;
+  const bool inheriting = params.inherit_opener;
+  const bool activating = params.activate;
+  const bool pinned = params.pinned;
+  int index = params.desired_index;
 
   if (inheriting) {
     for (const auto& wrapper : web_state_wrappers_) {
@@ -415,9 +395,24 @@ int WebStateList::InsertWebStateImpl(int index,
     opener = WebStateOpener(GetActiveWebState());
   }
 
-  WebStateListOrderController order_controller(*this);
-  index = order_controller.DetermineInsertionIndex(index, opener.opener, forced,
-                                                   pinned);
+  const OrderController::Range range{
+      .begin = pinned ? 0 : pinned_tabs_count_,
+      .end = pinned ? pinned_tabs_count_ : count(),
+  };
+
+  const OrderControllerSourceFromWebStateList source(*this);
+  const OrderController order_controller(source);
+  if (index != WebStateList::kInvalidIndex) {
+    index = order_controller.DetermineInsertionIndex(
+        OrderController::InsertionParams::ForceIndex(index, range));
+  } else if (opener.opener) {
+    const int opener_index = GetIndexOfWebState(opener.opener);
+    index = order_controller.DetermineInsertionIndex(
+        OrderController::InsertionParams::WithOpener(opener_index, range));
+  } else {
+    index = order_controller.DetermineInsertionIndex(
+        OrderController::InsertionParams::Automatic(range));
+  }
 
   DCHECK(ContainsIndex(index) || index == count());
   delegate_->WillAddWebState(web_state.get());
@@ -452,10 +447,10 @@ int WebStateList::InsertWebStateImpl(int index,
     SetOpenerOfWebStateAt(index, opener);
   }
 
-  const WebStateListChangeInsert insert_change(web_state_ptr);
+  // TODO(b/325422014): Support Tab Groups when inserting.
+  const WebStateListChangeInsert insert_change(web_state_ptr, index,
+                                               /*group=*/nullptr);
   const WebStateListStatus status = {
-      .index = index,
-      .pinned_state_change = false,
       .old_active_web_state = old_active_web_state,
       .new_active_web_state = GetActiveWebState()};
   for (auto& observer : observers_) {
@@ -467,21 +462,22 @@ int WebStateList::InsertWebStateImpl(int index,
 
 void WebStateList::MoveWebStateAtImpl(int from_index,
                                       int to_index,
-                                      bool pinned_state_change) {
+                                      bool pinned_state_changed) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(locked_);
   DCHECK(ContainsIndex(from_index));
   DCHECK(ContainsIndex(to_index));
 
   if (from_index == to_index) {
-    if (pinned_state_change) {
+    if (pinned_state_changed) {
       // Notify the event to the observers that the pinned state is updated but
       // the layout in WebStateList isn't updated.
+      // TODO(b/325423267): Support Tab Groups when updating the pinned state.
       const WebStateListChangeStatusOnly status_only_change(
-          web_state_wrappers_[to_index]->web_state());
+          web_state_wrappers_[to_index]->web_state(), to_index,
+          /*pinned_state_changed=*/true, /*old_group=*/nullptr,
+          /*new_group=*/nullptr);
       const WebStateListStatus status = {
-          .index = to_index,
-          .pinned_state_change = true,
           // An active WebState doesn't change when a pinned state is updated.
           .old_active_web_state = GetActiveWebState(),
           .new_active_web_state = GetActiveWebState()};
@@ -492,28 +488,15 @@ void WebStateList::MoveWebStateAtImpl(int from_index,
     return;
   }
 
-  std::unique_ptr<WebStateWrapper> web_state_wrapper =
-      std::move(web_state_wrappers_[from_index]);
-  web::WebState* web_state = web_state_wrapper->web_state();
-  web_state_wrappers_.erase(web_state_wrappers_.begin() + from_index);
-  web_state_wrappers_.insert(web_state_wrappers_.begin() + to_index,
-                             std::move(web_state_wrapper));
+  MoveWebStateWrapperAt(from_index, to_index);
 
-  if (active_index_ == from_index) {
-    active_index_ = to_index;
-  } else {
-    int min = std::min(from_index, to_index);
-    int max = std::max(from_index, to_index);
-    int delta = from_index < to_index ? -1 : +1;
-    if (min <= active_index_ && active_index_ <= max) {
-      active_index_ += delta;
-    }
-  }
-
-  const WebStateListChangeMove move_change(web_state, from_index);
+  web::WebState* web_state = GetWebStateAt(to_index);
+  // TODO(b/325422914): Support Tab Groups when moving.
+  const WebStateListChangeMove move_change(web_state, from_index, to_index,
+                                           pinned_state_changed,
+                                           /*old_group=*/nullptr,
+                                           /*new_group=*/nullptr);
   const WebStateListStatus status = {
-      .index = to_index,
-      .pinned_state_change = pinned_state_change,
       // The move operation doesn't insert/delete a WebState and doesn't change
       // an active WebState.
       .old_active_web_state = GetActiveWebState(),
@@ -543,10 +526,8 @@ std::unique_ptr<web::WebState> WebStateList::ReplaceWebStateAtImpl(
   }
 
   const WebStateListChangeReplace replace_change(replaced_web_state.get(),
-                                                 web_state_ptr);
+                                                 web_state_ptr, index);
   const WebStateListStatus status = {
-      .index = index,
-      .pinned_state_change = false,
       .old_active_web_state = (index == active_index_)
                                   ? replaced_web_state.get()
                                   : GetActiveWebState(),
@@ -560,57 +541,69 @@ std::unique_ptr<web::WebState> WebStateList::ReplaceWebStateAtImpl(
 
 std::unique_ptr<web::WebState> WebStateList::DetachWebStateAtImpl(
     int index,
-    const DetachParams& params) {
+    int new_active_index,
+    DetachParams params) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(locked_);
   DCHECK(ContainsIndex(index));
 
   const bool is_active_web_state_detached = (index == active_index_);
   web::WebState* web_state = web_state_wrappers_[index]->web_state();
-  const WebStateListChangeDetach detach_change(web_state, params.is_closing(),
-                                               params.is_user_action());
+  const TabGroup* group = web_state_wrappers_[index]->group();
+  const WebStateListChangeDetach detach_change(
+      web_state, index, params.is_closing, params.is_user_action, group);
+
+  // `new_active_index` may be invalid e.g. when closing all the WebStates,
+  // so use `ContainsIndex(...)` to avoid crashing in `GetWebStateAt(...)`.
+  web::WebState* old_active_web_state = GetActiveWebState();
+  web::WebState* new_active_web_state = ContainsIndex(new_active_index)
+                                            ? GetWebStateAt(new_active_index)
+                                            : nullptr;
+
   {
-    // A new active WebState is null because WebStateList is not updated at this
-    // point and the new active WebState is not determined yet.
     const WebStateListStatus status = {
-        .index = index,
-        .pinned_state_change = false,
-        .old_active_web_state = params.SelectOldActiveWebState(
-            is_active_web_state_detached, web_state, nullptr),
-        .new_active_web_state = nullptr};
+        .old_active_web_state = old_active_web_state,
+        .new_active_web_state = new_active_web_state};
     for (auto& observer : observers_) {
       observer.WebStateListWillChange(this, detach_change, status);
     }
-  }
-
-  // Update the active index to prevent observer from seeing an invalid WebState
-  // as the active one but only send the WebStateActivatedAt notification after
-  // the WebStateListDidChange with kDetach.
-  WebStateListOrderController order_controller(*this);
-  active_index_ =
-      order_controller.DetermineNewActiveIndex(active_index_, {index});
-  if (is_active_web_state_detached) {
-    OnActiveWebStateChanged();
   }
 
   ClearOpenersReferencing(index);
   std::unique_ptr<web::WebState> detached_web_state =
       web_state_wrappers_[index]->ReleaseWebState();
   web_state_wrappers_.erase(web_state_wrappers_.begin() + index);
+
+  // Update the number of pinned tabs if necessary.
   if (index < pinned_tabs_count_) {
     CHECK_GT(pinned_tabs_count_, 0);
     --pinned_tabs_count_;
   }
 
-  // Check that the active element (if there is one) is valid.
+  // TODO(b/325423309): Update Tab Groups ranges when detaching.
+
+  // Update the active index to prevent observer from seeing an invalid WebState
+  // as the active one but only send the WebStateActivatedAt notification after
+  // the WebStateListDidChange with kDetach.
+  active_index_ = new_active_index;
+  if (index < active_index_) {
+    CHECK_GT(active_index_, 0);
+    --active_index_;
+  }
+
+  // Check that the active element (if there is one) is valid and expected.
   DCHECK(active_index_ == kInvalidIndex || ContainsIndex(active_index_));
+  DCHECK_EQ(GetActiveWebState(), new_active_web_state);
+
+  // Inform the delegate that the active WebState changed (it may decide to
+  // force its realization, ...).
+  if (is_active_web_state_detached) {
+    OnActiveWebStateChanged();
+  }
 
   const WebStateListStatus status = {
-      .index = index,
-      .pinned_state_change = false,
-      .old_active_web_state = params.SelectOldActiveWebState(
-          is_active_web_state_detached, web_state, GetActiveWebState()),
-      .new_active_web_state = GetActiveWebState()};
+      .old_active_web_state = old_active_web_state,
+      .new_active_web_state = new_active_web_state};
   for (auto& observer : observers_) {
     observer.WebStateListDidChange(this, detach_change, status);
   }
@@ -618,58 +611,48 @@ std::unique_ptr<web::WebState> WebStateList::DetachWebStateAtImpl(
   return detached_web_state;
 }
 
-void WebStateList::CloseAllWebStatesAfterIndex(int start_index,
-                                               int close_flags) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  auto lock = LockForMutation();
-  PerformBatchOperation(base::BindOnce(
-      [](int start_index, int close_flags, WebStateList* web_state_list) {
-        web_state_list->CloseAllWebStatesAfterIndexImpl(start_index,
-                                                        close_flags);
-      },
-      start_index, close_flags));
-}
-
-void WebStateList::CloseAllWebStatesAfterIndexImpl(int start_index,
-                                                   int close_flags) {
+std::vector<std::unique_ptr<web::WebState>>
+WebStateList::DetachWebStatesAtIndicesImpl(RemovingIndexes removing_indexes,
+                                           DetachParams detach_params) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(locked_);
 
-  // Immediately determine the new active index to avoid
-  // sending multiple notification about changing active
-  // WebState.
-  int new_active_index = kInvalidIndex;
-  if (start_index != 0) {
-    std::vector<int> removing_indexes;
-    removing_indexes.reserve(count() - start_index);
-    for (int i = start_index; i < count(); ++i) {
-      removing_indexes.push_back(i);
+  // Immediately determine the new active index to avoid sending multiple
+  // notification about changing active WebState (as they could force the
+  // realization of the activated WebStates).
+  OrderControllerSourceFromWebStateList source(*this);
+  OrderController order_controller(source);
+
+  int old_active_index = active_index_;
+  int new_active_index =
+      order_controller.DetermineNewActiveIndex(active_index_, removing_indexes);
+
+  // Store the detached WebStates to allow the caller to delete them after
+  // they have all been detached.
+  std::vector<std::unique_ptr<web::WebState>> detached_web_states;
+
+  RemovingIndexes::Range span = removing_indexes.span();
+  for (int i = 0; i < span.count; ++i) {
+    const int index = span.start + span.count - i - 1;
+    if (!removing_indexes.Contains(index)) {
+      continue;
     }
 
-    WebStateListOrderController order_controller(*this);
-    new_active_index = order_controller.DetermineNewActiveIndex(
-        active_index_,
-        WebStateListRemovingIndexes(std::move(removing_indexes)));
+    int active_index = active_index_;
+    if (index == old_active_index) {
+      active_index = new_active_index;
+    } else {
+      if (index < new_active_index) {
+        CHECK_GT(new_active_index, 0);
+        --new_active_index;
+      }
+    }
+
+    detached_web_states.push_back(
+        DetachWebStateAtImpl(index, active_index, detach_params));
   }
 
-  const bool is_user_action = IsClosingFlagSet(close_flags, CLOSE_USER_ACTION);
-  if (new_active_index != active_index_) {
-    web::WebState* old_active_web_state = GetActiveWebState();
-    SetActiveIndex(new_active_index);
-
-    // Notify the event to the observers that a WebState is detached and an
-    // active WebState is updated as well.
-    std::unique_ptr<web::WebState> detached_web_state = DetachWebStateAtImpl(
-        count() - 1, DetachParams::ClosingWithUpdateActiveWebState(
-                         is_user_action, old_active_web_state));
-    // Dropping detached_web_state will destroy it.
-  }
-
-  while (count() > start_index) {
-    std::unique_ptr<web::WebState> detached_web_state = DetachWebStateAtImpl(
-        count() - 1, DetachParams::Closing(is_user_action));
-    // Dropping detached_web_state will destroy it.
-  }
+  return detached_web_states;
 }
 
 void WebStateList::ActivateWebStateAtImpl(int index) {
@@ -685,10 +668,12 @@ void WebStateList::ActivateWebStateAtImpl(int index) {
   web::WebState* old_active_web_state = GetActiveWebState();
   SetActiveIndex(index);
 
-  const WebStateListChangeStatusOnly status_only_change(old_active_web_state);
+  const TabGroup* group =
+      index != kInvalidIndex ? GetGroupOfWebStateAt(index) : nullptr;
+  const WebStateListChangeStatusOnly status_only_change(
+      old_active_web_state, index, /*pinned_state_changed=*/false, group,
+      group);
   const WebStateListStatus status = {
-      .index = index,
-      .pinned_state_change = false,
       .old_active_web_state = old_active_web_state,
       .new_active_web_state = GetActiveWebState()};
   for (auto& observer : observers_) {
@@ -696,88 +681,9 @@ void WebStateList::ActivateWebStateAtImpl(int index) {
   }
 }
 
-void WebStateList::AddObserver(WebStateListObserver* observer) {
+int WebStateList::SetWebStatePinnedAtImpl(int index, bool pinned) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  observers_.AddObserver(observer);
-}
-
-void WebStateList::RemoveObserver(WebStateListObserver* observer) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  observers_.RemoveObserver(observer);
-}
-
-void WebStateList::PerformBatchOperation(
-    base::OnceCallback<void(WebStateList*)> operation) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
-  // Scope to control the lifetime of the `base::AutoReset<>` which is used to
-  // set `batch_operation_in_progress_` to false when the the batch operation is
-  // completed. `base::AutoReset<>` needs to be destroyed before calling
-  // `WebStateListObserver::BatchOperationEnded()`.
-  {
-    DCHECK(!batch_operation_in_progress_);
-    base::AutoReset<bool> lock(&batch_operation_in_progress_, /*locked=*/true);
-
-    for (auto& observer : observers_) {
-      observer.WillBeginBatchOperation(this);
-    }
-    if (!operation.is_null()) {
-      std::move(operation).Run(this);
-    }
-  }
-
-  DCHECK(!batch_operation_in_progress_);
-  for (auto& observer : observers_) {
-    observer.BatchOperationEnded(this);
-  }
-}
-
-void WebStateList::ClearOpenersReferencing(int index) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  web::WebState* old_web_state = web_state_wrappers_[index]->web_state();
-  for (auto& web_state_wrapper : web_state_wrappers_) {
-    if (web_state_wrapper->opener().opener == old_web_state) {
-      web_state_wrapper->SetOpener(WebStateOpener());
-    }
-  }
-}
-
-int WebStateList::GetIndexOfNthWebStateOpenedBy(const web::WebState* opener,
-                                                int start_index,
-                                                bool use_group,
-                                                int n) const {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK_GT(n, 0);
-  if (!opener || !ContainsIndex(start_index)) {
-    return kInvalidIndex;
-  }
-
-  const int opener_navigation_index =
-      use_group ? opener->GetNavigationManager()->GetLastCommittedItemIndex()
-                : -1;
-
-  int found_index = kInvalidIndex;
-  const int list_length = count();
-  for (int i = 1; i < list_length; ++i) {
-    const int index = (start_index + i) % list_length;
-    DCHECK_NE(index, start_index);
-
-    const auto& wrapper = web_state_wrappers_[index];
-    if (!wrapper->WasOpenedBy(opener, opener_navigation_index, use_group)) {
-      continue;
-    }
-
-    found_index = index;
-    if (--n == 0) {
-      break;
-    }
-  }
-
-  return found_index;
-}
-
-int WebStateList::SetWebStatePinnedImpl(int index, bool pinned) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  DCHECK(locked_);
   if (pinned == IsWebStatePinnedAt(index)) {
     // The pinned state is not changed, nothing to do.
     return index;
@@ -799,13 +705,252 @@ int WebStateList::SetWebStatePinnedImpl(int index, bool pinned) {
   // The pinned state update is notified in `MoveWebStateAtImpl()` with the type
   // of `kMove` when a WebState is moved or `kStatusOnly` when a WebState is
   // not moved.
-  MoveWebStateAtImpl(index, new_index, /*pinned_state_change=*/true);
+  MoveWebStateAtImpl(index, new_index, /*pinned_state_changed=*/true);
 
   return new_index;
 }
 
-int WebStateList::GetIndexOfFirstNonPinnedWebState() const {
-  return pinned_tabs_count_;
+const TabGroup* WebStateList::CreateGroupImpl(
+    const std::set<int>& indices,
+    const tab_groups::TabGroupVisualData& visual_data) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  DCHECK(locked_);
+  DCHECK(!indices.empty());
+
+  // Figure out the pivot index.
+  int pivot_index = kInvalidIndex;
+  const int first_index = *indices.begin();
+  if (IsWebStatePinnedAt(first_index)) {
+    // Move to the last pinned tabs.
+    pivot_index = pinned_tabs_count_ - 1;
+  } else {
+    const TabGroup* group = GetGroupOfWebStateAt(first_index);
+    const TabGroup* group_before = ContainsIndex(first_index - 1)
+                                       ? GetGroupOfWebStateAt(first_index - 1)
+                                       : nullptr;
+    if (group && group == group_before) {
+      pivot_index = GetWebStates(group).end() - 1;
+    } else {
+      pivot_index = first_index;
+    }
+  }
+  DCHECK_NE(pivot_index, kInvalidIndex);
+
+  // Create the group.
+  std::unique_ptr<TabGroup> group = std::make_unique<TabGroup>(visual_data);
+  const TabGroup* new_group = group.get();
+  groups_.emplace(std::move(group), Range(pivot_index, 0));
+
+  // Split indices between WebStates left of `pivot_index` moving to their right
+  // and WebStates right of `pivot_index` moving to their left. This is to keep
+  // indices valid during the moves.
+  std::vector<int> before_pivot;
+  std::vector<int> after_pivot;
+  for (const auto& index : indices) {
+    if (index <= pivot_index) {
+      before_pivot.push_back(index);
+    } else {
+      after_pivot.push_back(index);
+    }
+  }
+
+  // Prepare the status for the observers. The moves don't change the active
+  // web state.
+  web::WebState* const active_web_state = GetActiveWebState();
+  const WebStateListStatus status = {.old_active_web_state = active_web_state,
+                                     .new_active_web_state = active_web_state};
+
+  // Iterate over the WebStates on the left of the pivot.
+  // Reverse `before_pivot` to start from the rightmost, to keep indices valid.
+  std::reverse(before_pivot.begin(), before_pivot.end());
+  int to_index = pivot_index;
+  for (int index : before_pivot) {
+    if (index == to_index) {
+      // Unpin if needed.
+      bool pinned_state_changed = false;
+      if (index < pinned_tabs_count_) {
+        CHECK_GT(pinned_tabs_count_, 0);
+        --pinned_tabs_count_;
+        pinned_state_changed = true;
+      }
+
+      // Update the group tag.
+      const TabGroup* old_group = GetGroupOfWebStateAt(index);
+      web_state_wrappers_[index]->SetGroup(new_group);
+
+      // Update the new group range (doing it before updating the old group
+      // range in case the groups are the same, to avoid having a negative
+      // count).
+      {
+        auto it = groups_.find(new_group);
+        DCHECK(it != groups_.end());
+        Range range = it->second;
+        it->second = Range(to_index, range.count() + 1);
+      }
+
+      // Update the old group range.
+      if (old_group) {
+        auto it = groups_.find(old_group);
+        DCHECK(it != groups_.end());
+        Range prior_range = it->second;
+        it->second = Range(prior_range.start(), prior_range.count() - 1);
+      }
+
+      // Notify the changes to the observers.
+      const WebStateListChangeStatusOnly status_only_change(
+          GetWebStateAt(index), index, pinned_state_changed, old_group,
+          new_group);
+      for (auto& observer : observers_) {
+        observer.WebStateListDidChange(this, status_only_change, status);
+      }
+
+      --to_index;
+      continue;
+    }
+
+    // Unpin if needed.
+    bool pinned_state_changed = false;
+    if (index < pinned_tabs_count_) {
+      CHECK_GT(pinned_tabs_count_, 0);
+      --pinned_tabs_count_;
+      pinned_state_changed = true;
+    }
+
+    // Update the group tag.
+    const TabGroup* old_group = GetGroupOfWebStateAt(index);
+    web_state_wrappers_[index]->SetGroup(new_group);
+
+    MoveWebStateWrapperAt(index, to_index);
+
+    // Update the new group range (doing it before updating the old group
+    // range in case the groups are the same, to avoid having a negative
+    // count).
+    {
+      auto it = groups_.find(new_group);
+      DCHECK(it != groups_.end());
+      Range range = it->second;
+      it->second = Range(to_index, range.count() + 1);
+    }
+
+    // Update the old group range.
+    if (old_group) {
+      auto it = groups_.find(old_group);
+      DCHECK(it != groups_.end());
+      Range prior_range = it->second;
+      it->second = Range(prior_range.start(), prior_range.count() - 1);
+    }
+
+    web::WebState* web_state = GetWebStateAt(to_index);
+    const WebStateListChangeMove move_change(
+        web_state, index, to_index, pinned_state_changed, old_group, new_group);
+    for (auto& observer : observers_) {
+      observer.WebStateListDidChange(this, move_change, status);
+    }
+
+    --to_index;
+  }
+
+  // Iterate over the WebStates on the right of the pivot.
+  to_index = pivot_index + 1;
+  for (int index : after_pivot) {
+    if (index == to_index) {
+      // Update the group tag.
+      const TabGroup* old_group = GetGroupOfWebStateAt(index);
+      web_state_wrappers_[index]->SetGroup(new_group);
+
+      // Update the new group range (doing it before updating the old group
+      // range in case the groups are the same, to avoid having a negative
+      // count).
+      {
+        auto it = groups_.find(new_group);
+        DCHECK(it != groups_.end());
+        Range range = it->second;
+        it->second = Range(range.start(), range.count() + 1);
+      }
+
+      // Update the old group range.
+      if (old_group) {
+        auto it = groups_.find(old_group);
+        DCHECK(it != groups_.end());
+        Range prior_range = it->second;
+        it->second = Range(prior_range.start() + 1, prior_range.count() - 1);
+      }
+
+      // Notify the changes to the observers.
+      const WebStateListChangeStatusOnly status_only_change(
+          GetWebStateAt(index), index, /*pinned_state_changed=*/false,
+          old_group, new_group);
+      for (auto& observer : observers_) {
+        observer.WebStateListDidChange(this, status_only_change, status);
+      }
+
+      ++to_index;
+      continue;
+    }
+
+    // Update the group tag.
+    const TabGroup* old_group = GetGroupOfWebStateAt(index);
+    web_state_wrappers_[index]->SetGroup(new_group);
+
+    MoveWebStateWrapperAt(index, to_index);
+
+    // Update the new group range (doing it before updating the old group
+    // range in case the groups are the same, to avoid having a negative
+    // count).
+    {
+      auto it = groups_.find(new_group);
+      DCHECK(it != groups_.end());
+      Range range = it->second;
+      it->second = Range(range.start(), range.count() + 1);
+    }
+
+    // Update the old group range.
+    if (old_group) {
+      auto it = groups_.find(old_group);
+      DCHECK(it != groups_.end());
+      Range prior_range = it->second;
+      it->second = Range(prior_range.start() + 1, prior_range.count() - 1);
+    }
+
+    // Notify the changes to the observers.
+    web::WebState* web_state = GetWebStateAt(to_index);
+    const WebStateListChangeMove move_change(web_state, index, to_index,
+                                             /*pinned_state_changed=*/false,
+                                             old_group, new_group);
+    for (auto& observer : observers_) {
+      observer.WebStateListDidChange(this, move_change, status);
+    }
+
+    ++to_index;
+  }
+
+  return new_group;
+}
+
+void WebStateList::AddObserver(WebStateListObserver* observer) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  observers_.AddObserver(observer);
+}
+
+void WebStateList::RemoveObserver(WebStateListObserver* observer) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  observers_.RemoveObserver(observer);
+}
+
+WebStateList::ScopedBatchOperation WebStateList::StartBatchOperation() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  DCHECK(!batch_operation_in_progress_);
+  return ScopedBatchOperation(this);
+}
+
+void WebStateList::ClearOpenersReferencing(int index) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  web::WebState* old_web_state = web_state_wrappers_[index]->web_state();
+  for (auto& web_state_wrapper : web_state_wrappers_) {
+    if (web_state_wrapper->opener().opener == old_web_state) {
+      web_state_wrapper->SetOpener(WebStateOpener());
+    }
+  }
 }
 
 int WebStateList::ConstrainMoveIndex(int index, bool pinned) const {
@@ -829,6 +974,30 @@ WebStateList::WebStateWrapper* WebStateList::GetWebStateWrapperAt(
   return web_state_wrappers_[index].get();
 }
 
+void WebStateList::MoveWebStateWrapperAt(int from_index, int to_index) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  DCHECK(locked_);
+  DCHECK(ContainsIndex(from_index));
+  DCHECK(ContainsIndex(to_index));
+
+  std::unique_ptr<WebStateWrapper> web_state_wrapper =
+      std::move(web_state_wrappers_[from_index]);
+  web_state_wrappers_.erase(web_state_wrappers_.begin() + from_index);
+  web_state_wrappers_.insert(web_state_wrappers_.begin() + to_index,
+                             std::move(web_state_wrapper));
+
+  if (active_index_ == from_index) {
+    active_index_ = to_index;
+  } else {
+    int min = std::min(from_index, to_index);
+    int max = std::max(from_index, to_index);
+    int delta = from_index < to_index ? -1 : +1;
+    if (min <= active_index_ && active_index_ <= max) {
+      active_index_ += delta;
+    }
+  }
+}
+
 void WebStateList::SetActiveIndex(int active_index) {
   if (active_index_ == active_index) {
     return;
@@ -845,16 +1014,37 @@ void WebStateList::SetActiveIndex(int active_index) {
   OnActiveWebStateChanged();
 }
 
+bool WebStateList::ContainsGroup(const TabGroup* group) const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  return groups_.contains(group);
+}
+
 void WebStateList::OnActiveWebStateChanged() {
   web::WebState* active_web_state = GetActiveWebState();
   if (active_web_state) {
-    // Do not trigger a CheckForOverRealization here, as it's expected
-    // that many WebStates may realize actions like side swipe or quickly
-    // multiple tabs.
-    web::IgnoreOverRealizationCheck();
-    active_web_state->ForceRealized();
+    delegate_->WillActivateWebState(active_web_state);
   }
 }
 
-// static
-const int WebStateList::kInvalidIndex;
+void CloseAllWebStates(WebStateList& web_state_list, int close_flags) {
+  const WebStateList::ScopedBatchOperation batch =
+      web_state_list.StartBatchOperation();
+  web_state_list.CloseWebStatesAtIndices(close_flags,
+                                         RemovingIndexes({
+                                             .start = 0,
+                                             .count = web_state_list.count(),
+                                         }));
+}
+
+void CloseAllNonPinnedWebStates(WebStateList& web_state_list, int close_flags) {
+  const int pinned_tabs_count = web_state_list.pinned_tabs_count();
+  const int regular_tabs_count = web_state_list.count() - pinned_tabs_count;
+
+  const WebStateList::ScopedBatchOperation batch =
+      web_state_list.StartBatchOperation();
+  web_state_list.CloseWebStatesAtIndices(close_flags,
+                                         RemovingIndexes({
+                                             .start = pinned_tabs_count,
+                                             .count = regular_tabs_count,
+                                         }));
+}

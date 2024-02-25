@@ -66,10 +66,6 @@
 #include "ui/gfx/image/image.h"
 #include "url/origin.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "chrome/browser/ash/app_mode/kiosk_app_manager.h"
-#endif
-
 namespace extensions {
 
 using mojom::ManifestLocation;
@@ -566,7 +562,7 @@ TEST_F(ExtensionContextMenuModelTest, ComponentExtensionContextMenu) {
                                    /*is_pinned=*/true, nullptr, true,
                                    ContextMenuSource::kToolbarAction);
     service()->AddExtension(extension.get());
-    EXPECT_TRUE(extensions::OptionsPageInfo::HasOptionsPage(extension.get()));
+    EXPECT_TRUE(OptionsPageInfo::HasOptionsPage(extension.get()));
     EXPECT_EQ(GetCommandState(menu, ExtensionContextMenuModel::OPTIONS),
               CommandState::kEnabled);
   }
@@ -758,7 +754,7 @@ TEST_F(ExtensionContextMenuModelTest, ExtensionContextMenuShowAndHide) {
     ExtensionContextMenuModel menu(page_action, browser,
                                    /*is_pinned=*/true, nullptr, true,
                                    ContextMenuSource::kToolbarAction);
-    absl::optional<size_t> index = menu.GetIndexOfCommandId(visibility_command);
+    std::optional<size_t> index = menu.GetIndexOfCommandId(visibility_command);
     ASSERT_TRUE(index.has_value());
     EXPECT_EQ(unpin_string, menu.GetLabelAt(index.value()));
   }
@@ -767,7 +763,7 @@ TEST_F(ExtensionContextMenuModelTest, ExtensionContextMenuShowAndHide) {
     ExtensionContextMenuModel menu(browser_action, browser,
                                    /*is_pinned=*/true, nullptr, true,
                                    ContextMenuSource::kToolbarAction);
-    absl::optional<size_t> index = menu.GetIndexOfCommandId(visibility_command);
+    std::optional<size_t> index = menu.GetIndexOfCommandId(visibility_command);
     ASSERT_TRUE(index.has_value());
     EXPECT_EQ(unpin_string, menu.GetLabelAt(index.value()));
 
@@ -782,7 +778,7 @@ TEST_F(ExtensionContextMenuModelTest, ExtensionContextMenuShowAndHide) {
     ExtensionContextMenuModel menu(browser_action, browser,
                                    /*is_pinned,=*/false, nullptr, true,
                                    ContextMenuSource::kToolbarAction);
-    absl::optional<size_t> index = menu.GetIndexOfCommandId(visibility_command);
+    std::optional<size_t> index = menu.GetIndexOfCommandId(visibility_command);
     ASSERT_TRUE(index.has_value());
     EXPECT_EQ(pin_string, menu.GetLabelAt(index.value()));
   }
@@ -807,7 +803,7 @@ TEST_F(ExtensionContextMenuModelTest, ExtensionContextMenuForcePinned) {
         }
       })",
       force_pinned_extension->id().c_str());
-  absl::optional<base::Value> parsed = base::JSONReader::Read(json);
+  std::optional<base::Value> parsed = base::JSONReader::Read(json);
   policy::PolicyMap map;
   map.Set("ExtensionSettings", policy::POLICY_LEVEL_MANDATORY,
           policy::POLICY_SCOPE_USER, policy::POLICY_SOURCE_PLATFORM,
@@ -827,7 +823,7 @@ TEST_F(ExtensionContextMenuModelTest, ExtensionContextMenuForcePinned) {
     ExtensionContextMenuModel menu(extension, browser,
                                    /*is_pinned=*/true, nullptr, true,
                                    ContextMenuSource::kToolbarAction);
-    absl::optional<size_t> index = menu.GetIndexOfCommandId(visibility_command);
+    std::optional<size_t> index = menu.GetIndexOfCommandId(visibility_command);
     ASSERT_TRUE(index.has_value());
     EXPECT_TRUE(menu.IsEnabledAt(index.value()));
     EXPECT_EQ(unpin_string, menu.GetLabelAt(index.value()));
@@ -838,7 +834,7 @@ TEST_F(ExtensionContextMenuModelTest, ExtensionContextMenuForcePinned) {
     ExtensionContextMenuModel menu(force_pinned_extension, browser,
                                    /*is_pinned=*/true, nullptr, true,
                                    ContextMenuSource::kToolbarAction);
-    absl::optional<size_t> index = menu.GetIndexOfCommandId(visibility_command);
+    std::optional<size_t> index = menu.GetIndexOfCommandId(visibility_command);
     ASSERT_TRUE(index.has_value());
     EXPECT_FALSE(menu.IsEnabledAt(index.value()));
     EXPECT_EQ(force_pinned_string, menu.GetLabelAt(index.value()));
@@ -1038,7 +1034,7 @@ TEST_F(ExtensionContextMenuModelTest, PageAccess_CustomizeByExtension_Submenu) {
     // Change extension to run "on click". Since we are revoking permissions, we
     // need to automatically accept the reload page bubble.
     action_runner->accept_bubble_for_testing(true);
-    extensions::PermissionsManagerWaiter waiter(permissions_manager);
+    PermissionsManagerWaiter waiter(permissions_manager);
     menu.ExecuteCommand(kOnClick, 0);
     waiter.WaitForExtensionPermissionsUpdate();
     EXPECT_TRUE(menu.IsCommandIdChecked(kOnClick));
@@ -1087,7 +1083,7 @@ TEST_F(ExtensionContextMenuModelTest,
     std::string requested_pattern;
     // The pattern that's granted to the extension, if any. This may be
     // significantly different than the requested pattern.
-    absl::optional<std::string> granted_pattern;
+    std::optional<std::string> granted_pattern;
     // The current URL the context menu will be used on.
     GURL current_url;
     // The set of page access menu entries that should be present.
@@ -1095,7 +1091,7 @@ TEST_F(ExtensionContextMenuModelTest,
     // The set of page access menu entries that should be enabled.
     std::set<MenuEntries> enabled_entries;
     // The selected page access menu entry.
-    absl::optional<MenuEntries> selected_entry;
+    std::optional<MenuEntries> selected_entry;
   } test_cases[] = {
       // Easy cases: site the extension wants to run on, with or without
       // permission granted.
@@ -1106,7 +1102,7 @@ TEST_F(ExtensionContextMenuModelTest,
        {kOnClick, kOnSite},
        kOnSite},
       {"https://google.com/maps",
-       absl::nullopt,
+       std::nullopt,
        GURL("https://google.com/maps"),
        {kOnClick, kOnSite, kOnAllSites},
        {kOnClick, kOnSite},
@@ -1141,7 +1137,7 @@ TEST_F(ExtensionContextMenuModelTest,
        {kOnClick, kOnSite},
        kOnSite},
       {"https://*.google.com/*",
-       absl::nullopt,
+       std::nullopt,
        GURL("https://google.com"),
        {kOnClick, kOnSite, kOnAllSites},
        {kOnClick, kOnSite},
@@ -1160,10 +1156,7 @@ TEST_F(ExtensionContextMenuModelTest,
        kOnClick},
       // On sites the extension doesn't want to run on, no controls should be
       // shown...
-      {"https://*.google.com/*",
-       absl::nullopt,
-       GURL("https://example.com"),
-       {}},
+      {"https://*.google.com/*", std::nullopt, GURL("https://example.com"), {}},
       // ...unless the extension has access to the page, in which case we should
       // display the controls.
       {"https://*.google.com/*",
@@ -1453,7 +1446,7 @@ TEST_F(ExtensionContextMenuModelTest,
   // need to automatically accept the reload page bubble.
   ExtensionActionRunner::GetForWebContents(web_contents)
       ->accept_bubble_for_testing(true);
-  extensions::PermissionsManagerWaiter waiter(permissions_manager);
+  PermissionsManagerWaiter waiter(permissions_manager);
   menu.ExecuteCommand(kOnClick, 0);
   waiter.WaitForExtensionPermissionsUpdate();
   EXPECT_TRUE(menu.IsCommandIdChecked(kOnClick));
@@ -1653,7 +1646,7 @@ TEST_F(ExtensionContextMenuModelTest,
     menu.ExecuteCommand(kOnClick, 0);
     ExtensionActionRunner::GetForWebContents(web_contents)
         ->accept_bubble_for_testing(true);
-    extensions::PermissionsManagerWaiter waiter(permissions_manager);
+    PermissionsManagerWaiter waiter(permissions_manager);
     menu.ExecuteCommand(kOnClick, 0);
     waiter.WaitForExtensionPermissionsUpdate();
   }
@@ -1708,7 +1701,7 @@ TEST_F(ExtensionContextMenuModelTest,
   // page bubble.
   ExtensionActionRunner::GetForWebContents(web_contents)
       ->accept_bubble_for_testing(true);
-  extensions::PermissionsManagerWaiter waiter(permissions_manager);
+  PermissionsManagerWaiter waiter(permissions_manager);
   menu.ExecuteCommand(kOnClick, 0);
   waiter.WaitForExtensionPermissionsUpdate();
 
@@ -2055,11 +2048,11 @@ TEST_P(ExtensionContextMenuModelWithUserHostControlsTest,
   // when the feature is enabled, even if they are added by the manager.
   // Therefore, the context menu should not take into account user site settings
   // when the feature is disabled.
-  auto* manager = extensions::PermissionsManager::Get(profile());
+  auto* manager = PermissionsManager::Get(profile());
 
   {
     // Add site as a user restricted site.
-    extensions::PermissionsManagerWaiter manager_waiter(manager);
+    PermissionsManagerWaiter manager_waiter(manager);
     manager->AddUserRestrictedSite(url::Origin::Create(url));
     manager_waiter.WaitForUserPermissionsSettingsChange();
 
@@ -2155,6 +2148,111 @@ TEST_P(ExtensionContextMenuModelWithUserHostControlsTest,
   }
 }
 
+TEST_P(ExtensionContextMenuModelWithUserHostControlsTest,
+       PolicyInstalledEntryVisibilityBasedOnSiteSettings) {
+  bool is_feature_enabled = GetParam();
+  InitializeEmptyExtensionService();
+
+  const Extension* extension =
+      AddExtensionWithHostPermission("Extension", manifest_keys::kBrowserAction,
+                                     ManifestLocation::kInternal, "<all_urls>");
+  const Extension* enterprise_extension =
+      AddExtension("Enterprise extension", manifest_keys::kBrowserAction,
+                   ManifestLocation::kExternalPolicy);
+  const Extension* enterprise_extension_host_permissions =
+      AddExtensionWithHostPermission(
+          "Enterprise extension requesting host permissions",
+          manifest_keys::kBrowserAction, ManifestLocation::kExternalPolicy,
+          "<all_urls>");
+
+  // Add a tab to the browser.
+  const GURL url("http://www.example.com/");
+  AddTab(url);
+
+  {
+    // Non-enterprise extension has no policy entry.
+    ExtensionContextMenuModel menu(extension, GetBrowser(),
+                                   /*is_pinned=*/true, nullptr, true,
+                                   ContextMenuSource::kToolbarAction);
+    EXPECT_EQ(GetPageAccessCommandState(menu, kPolicyInstalled),
+              CommandState::kAbsent);
+    EXPECT_EQ(GetCommandState(menu, kPolicyInstalled), CommandState::kAbsent);
+  }
+
+  {
+    // By default, the site permission is set to "customize by extension".
+    // Verify "policy installed" entry is visible and disabled in the main menu
+    // when extension doesn't request host permissions.
+    ExtensionContextMenuModel menu(enterprise_extension, GetBrowser(),
+                                   /*is_pinned=*/true, nullptr, true,
+                                   ContextMenuSource::kToolbarAction);
+    EXPECT_EQ(GetPageAccessCommandState(menu, kPolicyInstalled),
+              CommandState::kAbsent);
+    EXPECT_EQ(GetCommandState(menu, kPolicyInstalled), CommandState::kDisabled);
+
+    // Verify "policy installed" entry is visible and disabled when extension
+    // requests host permissions. Entry is in the page access submenu when the
+    // feature is enabled, otherwise is on the main menu.
+    ExtensionContextMenuModel menu_host_permissions(
+        enterprise_extension_host_permissions, GetBrowser(),
+        /*is_pinned=*/true, nullptr, true, ContextMenuSource::kToolbarAction);
+    if (is_feature_enabled) {
+      EXPECT_EQ(
+          GetPageAccessCommandState(menu_host_permissions, kPolicyInstalled),
+          CommandState::kDisabled);
+      EXPECT_EQ(GetCommandState(menu_host_permissions, kPolicyInstalled),
+                CommandState::kAbsent);
+    } else {
+      EXPECT_EQ(GetPageAccessCommandState(menu, kPolicyInstalled),
+                CommandState::kAbsent);
+      EXPECT_EQ(GetCommandState(menu, kPolicyInstalled),
+                CommandState::kDisabled);
+    }
+  }
+
+  // User site settings are only taken into account for site access computations
+  // when the feature is enabled, even if they are added by the manager.
+  // Therefore, the context menu should not take into account user site settings
+  // when the feature is disabled.
+  auto* manager = PermissionsManager::Get(profile());
+
+  {
+    // Add site as a user restricted site.
+    PermissionsManagerWaiter manager_waiter(manager);
+    manager->AddUserRestrictedSite(url::Origin::Create(url));
+    manager_waiter.WaitForUserPermissionsSettingsChange();
+
+    // Verify "policy installed" entry is visible and disabled in the main menu
+    // when extension doesn't request host permissions.
+    ExtensionContextMenuModel menu(enterprise_extension, GetBrowser(),
+                                   /*is_pinned=*/true, nullptr, true,
+                                   ContextMenuSource::kToolbarAction);
+    EXPECT_EQ(GetPageAccessCommandState(menu, kPolicyInstalled),
+              CommandState::kAbsent);
+    EXPECT_EQ(GetCommandState(menu, kPolicyInstalled), CommandState::kDisabled);
+
+    // Verify "policy installed" entry is visible and disabled when extension
+    // requests host permissions. Entry is in the page access submenu when the
+    // feature is enabled, otherwise is on the main menu.
+    ExtensionContextMenuModel menu_host_permissions(
+        enterprise_extension_host_permissions, GetBrowser(),
+        /*is_pinned=*/true, nullptr, true, ContextMenuSource::kToolbarAction);
+
+    if (is_feature_enabled) {
+      EXPECT_EQ(
+          GetPageAccessCommandState(menu_host_permissions, kPolicyInstalled),
+          CommandState::kDisabled);
+      EXPECT_EQ(GetCommandState(menu_host_permissions, kPolicyInstalled),
+                CommandState::kAbsent);
+    } else {
+      EXPECT_EQ(
+          GetPageAccessCommandState(menu_host_permissions, kPolicyInstalled),
+          CommandState::kAbsent);
+      EXPECT_EQ(GetCommandState(menu_host_permissions, kPolicyInstalled),
+                CommandState::kDisabled);
+    }
+  }
+}
 // Test clicking on the "permissions page" item opens the correct link.
 TEST_P(ExtensionContextMenuModelWithUserHostControlsTest,
        TestClickingPageAccessPermissionsPage) {
@@ -2264,11 +2362,11 @@ TEST_P(ExtensionContextMenuModelWithUserHostControlsAndPermittedSitesTest,
   // when the kExtensionsMenuAccessControl feature is enabled, even if they are
   // added by the manager. Therefore, the context menu should not take into
   // account user site settings when the feature is disabled.
-  auto* manager = extensions::PermissionsManager::Get(profile());
+  auto* manager = PermissionsManager::Get(profile());
 
   {
     // Add site as a user permitted site.
-    extensions::PermissionsManagerWaiter manager_waiter(manager);
+    PermissionsManagerWaiter manager_waiter(manager);
     manager->AddUserPermittedSite(url::Origin::Create(url));
     manager_waiter.WaitForUserPermissionsSettingsChange();
 

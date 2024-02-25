@@ -5,6 +5,7 @@
 #include "chromeos/ash/components/system/factory_ping_embargo_check.h"
 
 #include <string>
+#include <string_view>
 
 #include "base/logging.h"
 #include "base/metrics/histogram_macros.h"
@@ -39,7 +40,7 @@ FactoryPingEmbargoState GetPingEmbargoState(
     StatisticsProvider* statistics_provider,
     const std::string& key_name,
     const char* uma_prefix) {
-  const absl::optional<base::StringPiece> ping_embargo_end_date =
+  const std::optional<std::string_view> ping_embargo_end_date =
       statistics_provider->GetMachineStatistic(key_name);
   if (!ping_embargo_end_date) {
     return FactoryPingEmbargoState::kMissingOrMalformed;

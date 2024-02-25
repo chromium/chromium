@@ -8,6 +8,7 @@
 #include <stddef.h>
 
 #include <memory>
+#include <optional>
 
 #include "base/memory/ref_counted.h"
 #include "base/synchronization/waitable_event.h"
@@ -17,7 +18,6 @@
 #include "components/viz/common/resources/returned_resource.h"
 #include "components/viz/common/surfaces/local_surface_id.h"
 #include "content/common/content_export.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/size.h"
 
@@ -64,7 +64,7 @@ class CONTENT_EXPORT SynchronousCompositor {
     std::unique_ptr<viz::CompositorFrame> frame;
     // Invalid if |frame| is nullptr.
     viz::LocalSurfaceId local_surface_id;
-    absl::optional<viz::HitTestRegionList> hit_test_region_list;
+    std::optional<viz::HitTestRegionList> hit_test_region_list;
   };
 
   class FrameFuture : public base::RefCountedThreadSafe<FrameFuture> {

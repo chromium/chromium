@@ -76,7 +76,7 @@ void ClipboardHistoryResourceManager::MaybeQueryUrlTitle(
 
 void ClipboardHistoryResourceManager::OnHistoryQueryComplete(
     const base::UnguessableToken& item_id,
-    absl::optional<std::u16string> maybe_title) {
+    std::optional<std::u16string> maybe_title) {
   auto& items = clipboard_history_->GetItems();
   auto item = base::ranges::find(items, item_id, &ClipboardHistoryItem::id);
   if (item == items.end()) {

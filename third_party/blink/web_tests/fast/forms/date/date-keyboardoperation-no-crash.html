@@ -1,0 +1,28 @@
+
+<!DOCTYPE html>
+<html>
+<script src="../../resources/js-test.js"></script>
+<script>
+// We had a reading near-null address crash in DateTimeFieldElement::DefaultKeyboardEventHandler.
+function runTest() {
+  if (!window.testRunner)
+    return;
+  if (!window.eventSender)
+    return;
+  testRunner.dumpAsText();
+
+  const input = document.createElement('input');
+  document.body.appendChild(input);
+  input.type = "date";
+  input.style.writingMode = "horizontal-tb";
+  input.value = "2023-07-22";
+
+  input.focus();
+  input.style.display = 'none';
+  eventSender.keyDown('ArrowDown');
+  document.body.removeChild(input);
+}
+
+</script>
+<body onload="runTest();">PASS</body>
+</html>

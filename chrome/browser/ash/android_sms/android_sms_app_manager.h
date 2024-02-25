@@ -5,10 +5,11 @@
 #ifndef CHROME_BROWSER_ASH_ANDROID_SMS_ANDROID_SMS_APP_MANAGER_H_
 #define CHROME_BROWSER_ASH_ANDROID_SMS_ANDROID_SMS_APP_MANAGER_H_
 
+#include <optional>
+
 #include "base/observer_list.h"
 #include "base/observer_list_types.h"
 #include "chromeos/ash/services/multidevice_setup/public/cpp/android_sms_app_helper_delegate.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
 namespace ash {
@@ -38,7 +39,7 @@ class AndroidSmsAppManager
   ~AndroidSmsAppManager() override;
 
   // If no app is installed, null is returned.
-  virtual absl::optional<GURL> GetCurrentAppUrl() = 0;
+  virtual std::optional<GURL> GetCurrentAppUrl() = 0;
 
   void AddObserver(Observer* observer);
   void RemoveObserver(Observer* observer);

@@ -4,6 +4,8 @@
 
 #include "chromeos/ash/components/nearby/presence/nearby_presence_service_impl.h"
 
+#include <memory>
+
 #include "base/run_loop.h"
 #include "base/test/mock_callback.h"
 #include "chromeos/ash/components/nearby/presence/credentials/fake_nearby_presence_credential_manager.h"
@@ -12,6 +14,7 @@
 #include "chromeos/ash/services/nearby/public/cpp/mock_nearby_process_manager.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/testing_pref_service.h"
+#include "components/push_notification/fake_push_notification_service.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
 #include "components/signin/public/identity_manager/identity_test_utils.h"
 #include "content/public/test/browser_task_environment.h"
@@ -21,13 +24,17 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-#include <memory>
-
 namespace ash::nearby::presence {
 
+const char kAccountName[] = "Pepper@gmail.com";
 const char kDeviceName[] = "Pepper's Request";
+const char kDeviceProfileUrl[] = "some_url";
 const char kEndpointId[] = "00000001";
 const char kStableDeviceId[] = "00000002";
+const char kUserName[] = "Pepper";
+const char kMalformedTypeId[] = "not_nearby_presence";
+const char kMalformedClientId[] = "not_nearby";
+const std::vector<uint8_t> kMacAddress = {0x11, 0x11, 0x11, 0x11, 0x11, 0x11};
 const mojom::ActionType kAction1 = mojom::ActionType::kInstantTetheringAction;
 const mojom::ActionType kAction2 = mojom::ActionType::kActiveUnlockAction;
 const mojom::ActionType kAction3 = mojom::ActionType::kPhoneHubAction;
@@ -42,17 +49,17 @@ class FakeScanDelegate : public NearbyPresenceService::ScanDelegate {
   ~FakeScanDelegate() override = default;
 
   void OnPresenceDeviceFound(
-      const NearbyPresenceService::PresenceDevice& presence_device) override {
+      NearbyPresenceService::PresenceDevice presence_device) override {
     found_called = true;
     std::move(next_scan_delegate_callback_).Run();
   }
   void OnPresenceDeviceChanged(
-      const NearbyPresenceService::PresenceDevice& presence_device) override {
+      NearbyPresenceService::PresenceDevice presence_device) override {
     changed_called = true;
     std::move(next_scan_delegate_callback_).Run();
   }
   void OnPresenceDeviceLost(
-      const NearbyPresenceService::PresenceDevice& presence_device) override {
+      NearbyPresenceService::PresenceDevice presence_device) override {
     lost_called = true;
     std::move(next_scan_delegate_callback_).Run();
   }
@@ -89,7 +96,6 @@ class NearbyPresenceServiceImplTest : public testing::Test {
   // testing::Test:
   void SetUp() override {
     pref_service_ = std::make_unique<TestingPrefServiceSimple>();
-
     EXPECT_CALL(nearby_process_manager_, GetNearbyProcessReference)
         .WillRepeatedly([&](ash::nearby::NearbyProcessManager::
                                 NearbyProcessStoppedCallback) {
@@ -102,12 +108,22 @@ class NearbyPresenceServiceImplTest : public testing::Test {
                   testing::ReturnRef(fake_nearby_presence_.shared_remote()));
           return std::move(nearby_process_reference_);
         });
+    push_notification_service_ =
+        std::make_unique<push_notification::FakePushNotificationService>();
 
     nearby_presence_service_ = std::make_unique<NearbyPresenceServiceImpl>(
         pref_service_.get(), &nearby_process_manager_,
         identity_test_env_.identity_manager(),
         base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
-            &test_url_loader_factory_));
+            &test_url_loader_factory_),
+        push_notification_service_.get());
+
+    auto fake_credential_manager =
+        std::make_unique<FakeNearbyPresenceCredentialManager>();
+    fake_credential_manager_ptr_ = fake_credential_manager.get();
+    NearbyPresenceCredentialManagerImpl::Creator::
+        SetCredentialManagerForTesting(std::move(fake_credential_manager));
+    EXPECT_FALSE(fake_credential_manager_ptr_->WasUpdateCredentialsCalled());
   }
 
   void TestStartScan(ash::nearby::presence::NearbyPresenceService::IdentityType
@@ -138,10 +154,13 @@ class NearbyPresenceServiceImplTest : public testing::Test {
       actions.push_back(kAction1);
       actions.push_back(kAction2);
       actions.push_back(kAction3);
+
       fake_nearby_presence_.ReturnScanObserver()->OnDeviceFound(
-          mojom::PresenceDevice::New(kEndpointId, kDeviceName,
-                                     mojom::PresenceDeviceType::kPhone, actions,
-                                     kStableDeviceId));
+          mojom::PresenceDevice::New(
+              kEndpointId, actions, kStableDeviceId,
+              mojom::Metadata::New(mojom::PresenceDeviceType::kPhone,
+                                   kAccountName, kDeviceName, kUserName,
+                                   kDeviceProfileUrl, kMacAddress)));
       run_loop.Run();
     }
 
@@ -174,9 +193,12 @@ class NearbyPresenceServiceImplTest : public testing::Test {
   signin::IdentityTestEnvironment identity_test_env_;
   scoped_refptr<network::SharedURLLoaderFactory> shared_factory_;
   network::TestURLLoaderFactory test_url_loader_factory_;
+  std::unique_ptr<push_notification::FakePushNotificationService>
+      push_notification_service_;
   std::unique_ptr<NearbyPresenceService> nearby_presence_service_;
   std::unique_ptr<ash::nearby::presence::NearbyPresenceService::ScanSession>
       scan_session_;
+  raw_ptr<FakeNearbyPresenceCredentialManager> fake_credential_manager_ptr_;
   base::WeakPtrFactory<NearbyPresenceServiceImplTest> weak_ptr_factory_{this};
 };
 
@@ -218,13 +240,15 @@ TEST_F(NearbyPresenceServiceImplTest, StartScan_DeviceChanged) {
     scan_delegate.SetNextScanDelegateCallback(run_loop.QuitClosure());
 
     std::vector<mojom::ActionType> actions;
-    ;
     actions.push_back(kAction1);
     actions.push_back(kAction2);
+
     fake_nearby_presence_.ReturnScanObserver()->OnDeviceChanged(
-        mojom::PresenceDevice::New(kEndpointId, kDeviceName,
-                                   mojom::PresenceDeviceType::kPhone, actions,
-                                   kStableDeviceId));
+        mojom::PresenceDevice::New(
+            kEndpointId, actions, kStableDeviceId,
+            mojom::Metadata::New(mojom::PresenceDeviceType::kPhone,
+                                 kAccountName, kDeviceName, kUserName,
+                                 kDeviceProfileUrl, kMacAddress)));
     run_loop.Run();
   }
 
@@ -255,11 +279,12 @@ TEST_F(NearbyPresenceServiceImplTest, StartScan_DeviceLost) {
     scan_delegate.SetNextScanDelegateCallback(run_loop.QuitClosure());
 
     std::vector<mojom::ActionType> actions;
-    ;
     fake_nearby_presence_.ReturnScanObserver()->OnDeviceLost(
-        mojom::PresenceDevice::New(kEndpointId, kDeviceName,
-                                   mojom::PresenceDeviceType::kPhone, actions,
-                                   kStableDeviceId));
+        mojom::PresenceDevice::New(
+            kEndpointId, actions, kStableDeviceId,
+            mojom::Metadata::New(mojom::PresenceDeviceType::kPhone,
+                                 kAccountName, kDeviceName, kUserName,
+                                 kDeviceProfileUrl, kMacAddress)));
     run_loop.Run();
   }
 
@@ -293,9 +318,11 @@ TEST_F(NearbyPresenceServiceImplTest, EndScan) {
     std::vector<mojom::ActionType> actions;
     actions.push_back(kAction1);
     fake_nearby_presence_.ReturnScanObserver()->OnDeviceFound(
-        mojom::PresenceDevice::New(kEndpointId, kDeviceName,
-                                   mojom::PresenceDeviceType::kPhone, actions,
-                                   kStableDeviceId));
+        mojom::PresenceDevice::New(
+            kEndpointId, actions, kStableDeviceId,
+            mojom::Metadata::New(mojom::PresenceDeviceType::kPhone,
+                                 kAccountName, kDeviceName, kUserName,
+                                 kDeviceProfileUrl, kMacAddress)));
 
     // Allow the ScanObserver function to finish before checking EXPECTs.
     run_loop.Run();
@@ -340,30 +367,56 @@ TEST_F(NearbyPresenceServiceImplTest, EndScanBeforeStart) {
 }
 
 TEST_F(NearbyPresenceServiceImplTest, Initialize) {
-  auto credential_manager =
-      std::make_unique<FakeNearbyPresenceCredentialManager>();
-  auto* fake_credential_manager = credential_manager.get();
-  NearbyPresenceCredentialManagerImpl::Creator::SetCredentialManagerForTesting(
-      std::move(credential_manager));
-
   base::MockCallback<base::OnceClosure> mock_on_initialized_callback;
   EXPECT_CALL(mock_on_initialized_callback, Run);
   nearby_presence_service_->Initialize(mock_on_initialized_callback.Get());
 
   nearby_presence_service_->UpdateCredentials();
-  EXPECT_TRUE(fake_credential_manager->WasUpdateCredentialsCalled());
+  EXPECT_TRUE(fake_credential_manager_ptr_->WasUpdateCredentialsCalled());
 }
 
 TEST_F(NearbyPresenceServiceImplTest, UpdateCredentials) {
-  auto credential_manager =
-      std::make_unique<FakeNearbyPresenceCredentialManager>();
-  auto* fake_credential_manager = credential_manager.get();
-  NearbyPresenceCredentialManagerImpl::Creator::SetCredentialManagerForTesting(
-      std::move(credential_manager));
-
-  EXPECT_FALSE(fake_credential_manager->WasUpdateCredentialsCalled());
   nearby_presence_service_->UpdateCredentials();
-  EXPECT_TRUE(fake_credential_manager->WasUpdateCredentialsCalled());
+  EXPECT_TRUE(fake_credential_manager_ptr_->WasUpdateCredentialsCalled());
+}
+
+TEST_F(NearbyPresenceServiceImplTest, ValidPushNotificationMessageReceived) {
+  push_notification::PushNotificationClientManager::PushNotificationMessage
+      message;
+  message.data.insert_or_assign(push_notification::kNotificationClientIdKey,
+                                kNearbyPresencePushNotificationClientId);
+  message.data.insert_or_assign(push_notification::kNotificationTypeIdKey,
+                                kNearbyPresencePushNotificationTypeId);
+  push_notification_service_->GetPushNotificationClientManager()
+      ->NotifyPushNotificationClientOfMessage(std::move(message));
+
+  EXPECT_TRUE(fake_credential_manager_ptr_->WasUpdateCredentialsCalled());
+}
+
+TEST_F(NearbyPresenceServiceImplTest, InvalidPushNotificationTypeId) {
+  push_notification::PushNotificationClientManager::PushNotificationMessage
+      message;
+  message.data.insert_or_assign(push_notification::kNotificationClientIdKey,
+                                kNearbyPresencePushNotificationClientId);
+  message.data.insert_or_assign(push_notification::kNotificationTypeIdKey,
+                                kMalformedTypeId);
+  push_notification_service_->GetPushNotificationClientManager()
+      ->NotifyPushNotificationClientOfMessage(std::move(message));
+
+  EXPECT_FALSE(fake_credential_manager_ptr_->WasUpdateCredentialsCalled());
+}
+
+TEST_F(NearbyPresenceServiceImplTest, InvalidPushNotificationClientId) {
+  push_notification::PushNotificationClientManager::PushNotificationMessage
+      message;
+  message.data.insert_or_assign(push_notification::kNotificationClientIdKey,
+                                kMalformedClientId);
+  message.data.insert_or_assign(push_notification::kNotificationTypeIdKey,
+                                kNearbyPresencePushNotificationTypeId);
+  push_notification_service_->GetPushNotificationClientManager()
+      ->NotifyPushNotificationClientOfMessage(std::move(message));
+
+  EXPECT_FALSE(fake_credential_manager_ptr_->WasUpdateCredentialsCalled());
 }
 
 TEST_F(NearbyPresenceServiceImplTest, NullProcessReference) {

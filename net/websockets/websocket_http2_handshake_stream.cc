@@ -4,28 +4,32 @@
 
 #include "net/websockets/websocket_http2_handshake_stream.h"
 
-#include <cstddef>
 #include <set>
 #include <utility>
 
+#include "base/check.h"
 #include "base/check_op.h"
 #include "base/functional/bind.h"
+#include "base/functional/callback.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/notreached.h"
+#include "base/strings/strcat.h"
 #include "base/strings/stringprintf.h"
 #include "base/time/time.h"
 #include "net/base/ip_endpoint.h"
 #include "net/http/http_request_headers.h"
 #include "net/http/http_request_info.h"
 #include "net/http/http_response_headers.h"
+#include "net/http/http_response_info.h"
 #include "net/http/http_status_code.h"
 #include "net/spdy/spdy_http_utils.h"
 #include "net/spdy/spdy_session.h"
+#include "net/spdy/spdy_stream.h"
+#include "net/third_party/quiche/src/quiche/spdy/core/http2_header_block.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "net/websockets/websocket_basic_stream.h"
-#include "net/websockets/websocket_deflate_parameters.h"
 #include "net/websockets/websocket_deflate_predictor_impl.h"
 #include "net/websockets/websocket_deflate_stream.h"
-#include "net/websockets/websocket_deflater.h"
 #include "net/websockets/websocket_handshake_constants.h"
 #include "net/websockets/websocket_handshake_request_info.h"
 
@@ -92,7 +96,7 @@ int WebSocketHttp2HandshakeStream::SendRequest(
 
   if (!session_) {
     const int rv = ERR_CONNECTION_CLOSED;
-    OnFailure("Connection closed before sending request.", rv, absl::nullopt);
+    OnFailure("Connection closed before sending request.", rv, std::nullopt);
     return rv;
   }
 
@@ -101,14 +105,14 @@ int WebSocketHttp2HandshakeStream::SendRequest(
   IPEndPoint address;
   int result = session_->GetPeerAddress(&address);
   if (result != OK) {
-    OnFailure("Error getting IP address.", result, absl::nullopt);
+    OnFailure("Error getting IP address.", result, std::nullopt);
     return result;
   }
   http_response_info_->remote_endpoint = address;
 
   auto request = std::make_unique<WebSocketHandshakeRequestInfo>(
       request_info_->url, base::Time::Now());
-  request->headers.CopyFrom(headers);
+  request->headers = headers;
 
   AddVectorHeaderIfNonEmpty(websockets::kSecWebSocketExtensions,
                             requested_extensions_, &request->headers);
@@ -296,11 +300,9 @@ void WebSocketHttp2HandshakeStream::OnHeadersReceived(
   // care of that part.
   http_response_info_->was_alpn_negotiated = true;
   http_response_info_->request_time = stream_->GetRequestTime();
-  http_response_info_->connection_info =
-      HttpResponseInfo::CONNECTION_INFO_HTTP2;
+  http_response_info_->connection_info = HttpConnectionInfo::kHTTP2;
   http_response_info_->alpn_negotiated_protocol =
-      HttpResponseInfo::ConnectionInfoToString(
-          http_response_info_->connection_info);
+      HttpConnectionInfoToString(http_response_info_->connection_info);
 
   if (callback_)
     std::move(callback_).Run(ValidateResponse());
@@ -321,8 +323,8 @@ void WebSocketHttp2HandshakeStream::OnClose(int status) {
   if (!response_headers_complete_)
     result_ = HandshakeResult::HTTP2_FAILED;
 
-  OnFailure(std::string("Stream closed with error: ") + ErrorToString(status),
-            status, absl::nullopt);
+  OnFailure(base::StrCat({"Stream closed with error: ", ErrorToString(status)}),
+            status, std::nullopt);
 
   if (callback_)
     std::move(callback_).Run(status);
@@ -391,14 +393,14 @@ int WebSocketHttp2HandshakeStream::ValidateUpgradeResponse(
 
   const int rv = ERR_INVALID_RESPONSE;
   OnFailure("Error during WebSocket handshake: " + failure_message, rv,
-            absl::nullopt);
+            std::nullopt);
   return rv;
 }
 
 void WebSocketHttp2HandshakeStream::OnFailure(
     const std::string& message,
     int net_error,
-    absl::optional<int> response_code) {
+    std::optional<int> response_code) {
   stream_request_->OnFailure(message, net_error, response_code);
 }
 

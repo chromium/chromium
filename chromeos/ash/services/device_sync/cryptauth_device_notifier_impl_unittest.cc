@@ -5,6 +5,7 @@
 #include "chromeos/ash/services/device_sync/cryptauth_device_notifier_impl.h"
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <utility>
 
@@ -24,7 +25,6 @@
 #include "chromeos/ash/services/device_sync/proto/cryptauth_devicesync.pb.h"
 #include "chromeos/ash/services/device_sync/proto/cryptauth_v2_test_util.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ash {
 
@@ -145,7 +145,7 @@ class DeviceSyncCryptAuthDeviceNotifierImplTest
   void HandleNextBatchNotifyGroupDevicesRequest(
       const cryptauthv2::BatchNotifyGroupDevicesRequest& expected_request,
       RequestAction request_action,
-      absl::optional<NetworkRequestError> error = absl::nullopt) {
+      std::optional<NetworkRequestError> error = std::nullopt) {
     ASSERT_FALSE(batch_notify_group_devices_requests_.empty());
 
     cryptauthv2::BatchNotifyGroupDevicesRequest current_request =
@@ -179,7 +179,7 @@ class DeviceSyncCryptAuthDeviceNotifierImplTest
   }
 
   void VerifyResults(
-      const std::vector<absl::optional<NetworkRequestError>> expected_results) {
+      const std::vector<std::optional<NetworkRequestError>> expected_results) {
     // Verify that all requests were processed.
     EXPECT_TRUE(batch_notify_group_devices_requests_.empty());
     EXPECT_TRUE(batch_notify_group_devices_success_callbacks_.empty());
@@ -199,7 +199,7 @@ class DeviceSyncCryptAuthDeviceNotifierImplTest
         std::move(error_callback));
   }
 
-  void OnNotifyDevicesSuccess() { results_.push_back(absl::nullopt); }
+  void OnNotifyDevicesSuccess() { results_.push_back(std::nullopt); }
 
   void OnNotifyDevicesFailure(NetworkRequestError error) {
     results_.push_back(error);
@@ -212,12 +212,11 @@ class DeviceSyncCryptAuthDeviceNotifierImplTest
   base::queue<CryptAuthClient::ErrorCallback>
       batch_notify_group_devices_failure_callbacks_;
 
-  // absl::nullopt indicates a success.
-  std::vector<absl::optional<NetworkRequestError>> results_;
+  // std::nullopt indicates a success.
+  std::vector<std::optional<NetworkRequestError>> results_;
 
   MockCryptAuthClientFactory mock_client_factory_;
-  raw_ptr<base::MockOneShotTimer, DanglingUntriaged | ExperimentalAsh>
-      mock_timer_ = nullptr;
+  raw_ptr<base::MockOneShotTimer, DanglingUntriaged> mock_timer_ = nullptr;
 
   std::unique_ptr<CryptAuthDeviceNotifier> device_notifier_;
 };
@@ -236,8 +235,8 @@ TEST_F(DeviceSyncCryptAuthDeviceNotifierImplTest, Test) {
   NotifyDevices({"device_id_6"}, cryptauthv2::TargetService::DEVICE_SYNC,
                 CryptAuthFeatureType::kMagicTetherClientSupported);
 
-  // absl::nullopt indicates a success.
-  std::vector<absl::optional<NetworkRequestError>> expected_results;
+  // std::nullopt indicates a success.
+  std::vector<std::optional<NetworkRequestError>> expected_results;
 
   // Timeout waiting for BatchNotifyGroupDevices.
   HandleNextBatchNotifyGroupDevicesRequest(
@@ -257,13 +256,13 @@ TEST_F(DeviceSyncCryptAuthDeviceNotifierImplTest, Test) {
       NotifyEnrollmentBetterTogetherHostEnabledRequest(
           {"device_id_4", "device_id_5"}),
       RequestAction::kSucceed);
-  expected_results.push_back(absl::nullopt);
+  expected_results.push_back(std::nullopt);
 
   // Succeed notifying devices.
   HandleNextBatchNotifyGroupDevicesRequest(
       NotifyDeviceSyncMagicTetherSupportedRequest({"device_id_6"}),
       RequestAction::kSucceed);
-  expected_results.push_back(absl::nullopt);
+  expected_results.push_back(std::nullopt);
 
   VerifyResults(expected_results);
 }

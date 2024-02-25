@@ -12,10 +12,13 @@
 #include "base/files/file_path.h"
 #include "base/functional/callback_forward.h"
 #include "base/functional/callback_helpers.h"
+#include "base/functional/concurrent_closures.h"
 #include "base/memory/weak_ptr.h"
 #include "base/values.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/web_applications/extension_status_utils.h"
 #include "chrome/browser/web_applications/extensions_manager.h"
+#include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_installation_manager.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_url_info.h"
 #include "chrome/browser/web_applications/locks/all_apps_lock.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
@@ -26,36 +29,50 @@
 
 namespace web_app {
 
-GarbageCollectStoragePartititonsCommand::
-    GarbageCollectStoragePartititonsCommand(Profile* profile,
-                                            base::OnceClosure done)
-    : WebAppCommandTemplate<AllAppsLock>(
-          "GarbageCollectStoragePartititonsCommand"),
-      lock_description_(std::make_unique<AllAppsLockDescription>()),
-      profile_(profile),
-      done_closure_(std::move(done)) {
+GarbageCollectStoragePartitionsCommand::GarbageCollectStoragePartitionsCommand(
+    Profile* profile,
+    base::OnceClosure done)
+    : WebAppCommand<AllAppsLock>("GarbageCollectStoragePartitionsCommand",
+                                 AllAppsLockDescription(),
+                                 std::move(done)),
+      profile_(profile) {
   DCHECK(profile);
 }
 
-GarbageCollectStoragePartititonsCommand::
-    ~GarbageCollectStoragePartititonsCommand() = default;
+GarbageCollectStoragePartitionsCommand::
+    ~GarbageCollectStoragePartitionsCommand() = default;
 
-void GarbageCollectStoragePartititonsCommand::StartWithLock(
+void GarbageCollectStoragePartitionsCommand::StartWithLock(
     std::unique_ptr<AllAppsLock> lock) {
   lock_ = std::move(lock);
-  Run();
+  ResetStorageGarbageCollectPref();
 }
 
-const LockDescription&
-GarbageCollectStoragePartititonsCommand::lock_description() const {
-  return *lock_description_;
+void GarbageCollectStoragePartitionsCommand::ResetStorageGarbageCollectPref() {
+  base::ConcurrentClosures concurrent;
+  // TODO(crbug.com/1477027): change this pref to be stateful instead of
+  // resetting to false early.
+  profile_->GetPrefs()->SetBoolean(
+      prefs::kShouldGarbageCollectStoragePartitions, false);
+  // Waits for both prefs to be written to disk before proceeding to prevent
+  // repeating crashes.
+  lock_->extensions_manager().ResetStorageGarbageCollectPref(
+      concurrent.CreateClosure());
+  profile_->GetPrefs()->CommitPendingWrite(concurrent.CreateClosure());
+  std::move(concurrent)
+      .Done(base::BindOnce(&GarbageCollectStoragePartitionsCommand::OnPrefReset,
+                           weak_factory_.GetWeakPtr()));
 }
 
-base::Value GarbageCollectStoragePartititonsCommand::ToDebugValue() const {
-  return base::Value(debug_info_.Clone());
+void GarbageCollectStoragePartitionsCommand::OnPrefReset() {
+  extensions::OnExtensionSystemReady(
+      profile_,
+      base::BindOnce(
+          &GarbageCollectStoragePartitionsCommand::DoGarbageCollection,
+          weak_factory_.GetWeakPtr()));
 }
 
-void GarbageCollectStoragePartititonsCommand::Run() {
+void GarbageCollectStoragePartitionsCommand::DoGarbageCollection() {
   std::unordered_set<base::FilePath> allowlist;
 
   // InstallGate delays extension installations.
@@ -85,27 +102,20 @@ void GarbageCollectStoragePartititonsCommand::Run() {
     }
   }
 
-  base::Value::List* debug_paths = debug_info_.EnsureList("allow_list_paths");
+  base::Value::List* debug_paths =
+      GetMutableDebugValue().EnsureList("allow_list_paths");
   for (const auto& path : allowlist) {
     debug_paths->Append(path.LossyDisplayName());
   }
 
   profile_->GarbageCollectStoragePartitions(
       allowlist,
-      base::BindOnce(&GarbageCollectStoragePartititonsCommand::OnSuccess,
+      base::BindOnce(&GarbageCollectStoragePartitionsCommand::OnSuccess,
                      weak_factory_.GetWeakPtr()));
 }
 
-void GarbageCollectStoragePartititonsCommand::OnShutdown() {
-  SignalCompletionAndSelfDestruct(CommandResult::kShutdown, base::DoNothing());
-}
-
-void GarbageCollectStoragePartititonsCommand::OnSuccess() {
-  profile_->GetPrefs()->SetBoolean(
-      prefs::kShouldGarbageCollectStoragePartitions, false);
-
-  SignalCompletionAndSelfDestruct(CommandResult::kSuccess,
-                                  std::move(done_closure_));
+void GarbageCollectStoragePartitionsCommand::OnSuccess() {
+  CompleteAndSelfDestruct(CommandResult::kSuccess);
 }
 
 }  // namespace web_app

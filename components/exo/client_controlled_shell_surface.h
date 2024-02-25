@@ -99,8 +99,11 @@ class ClientControlledShellSurface : public ShellSurfaceBase,
   // Called when the client was restored.
   void SetRestored();
 
-  // Called when the client changed the fullscreen state.
-  void SetFullscreen(bool fullscreen);
+  // Called when the client changed the fullscreen state. When `fullscreen` is
+  // true, `display_id` indicates the id of the display where the surface should
+  // be shown, otherwise it is ignored. When `display::kInvalidDisplayId` is
+  // specified, the current display may be used.
+  void SetFullscreen(bool fullscreen, int64_t display_id);
 
   // Returns true if this shell surface is currently being dragged.
   bool IsDragging();
@@ -168,12 +171,13 @@ class ClientControlledShellSurface : public ShellSurfaceBase,
   void RebindRootSurface(Surface* root_surface,
                          bool can_minimize,
                          int container,
-                         bool default_scale_cancellation);
+                         bool default_scale_cancellation,
+                         bool supports_floated_state);
 
   // Overridden from SurfaceTreeHost:
   void DidReceiveCompositorFrameAck() override;
 
-  // Overridden from SurfaceDelegate:
+  // ShellSurfaceBase:
   bool IsInputEnabled(Surface* surface) const override;
   void OnSetFrame(SurfaceFrameType type) override;
   void OnSetFrameColors(SkColor active_color, SkColor inactive_color) override;
@@ -181,7 +185,10 @@ class ClientControlledShellSurface : public ShellSurfaceBase,
   void SetSnapSecondary(float snap_ratio) override;
   void SetPip() override;
   void UnsetPip() override;
-  void SetFloat() override;
+  void SetFloatToLocation(
+      chromeos::FloatStartLocation float_start_location) override;
+  void OnDidProcessDisplayChanges(
+      const DisplayConfigurationChange& configuration_change) override;
 
   // Overridden from views::WidgetDelegate:
   bool CanMaximize() const override;
@@ -201,10 +208,6 @@ class ClientControlledShellSurface : public ShellSurfaceBase,
   // Overridden from aura::WindowObserver:
   void OnWindowDestroying(aura::Window* window) override;
   void OnWindowAddedToRootWindow(aura::Window* window) override;
-
-  // Overridden from display::DisplayObserver:
-  void OnDisplayMetricsChanged(const display::Display& display,
-                               uint32_t changed_metrics) override;
 
   // Overridden from ui::CompositorLockClient:
   void CompositorLockTimedOut() override;
@@ -239,6 +242,9 @@ class ClientControlledShellSurface : public ShellSurfaceBase,
   // Overridden from ShellSurfaceBase:
   float GetScale() const override;
 
+  // Overridden from SurfaceTreeHost:
+  float GetScaleFactor() const override;
+
  private:
   FRIEND_TEST_ALL_PREFIXES(ClientControlledShellSurfaceTest,
                            OverlayShadowBounds);
@@ -248,9 +254,10 @@ class ClientControlledShellSurface : public ShellSurfaceBase,
   // Overridden from ShellSurfaceBase:
   void SetWidgetBounds(const gfx::Rect& bounds,
                        bool adjusted_by_server) override;
+  gfx::Rect GetVisibleBounds() const override;
   gfx::Rect GetShadowBounds() const override;
   void InitializeWindowState(ash::WindowState* window_state) override;
-  absl::optional<gfx::Rect> GetWidgetBounds() const override;
+  std::optional<gfx::Rect> GetWidgetBounds() const override;
   gfx::Point GetSurfaceOrigin() const override;
   bool OnPreWidgetCommit() override;
   void OnPostWidgetCommit() override;
@@ -299,8 +306,7 @@ class ClientControlledShellSurface : public ShellSurfaceBase,
   Orientation orientation_ = Orientation::LANDSCAPE;
   Orientation expected_orientation_ = Orientation::LANDSCAPE;
 
-  raw_ptr<ash::ClientControlledState, ExperimentalAsh>
-      client_controlled_state_ = nullptr;
+  raw_ptr<ash::ClientControlledState> client_controlled_state_ = nullptr;
 
   chromeos::WindowStateType pending_window_state_ =
       chromeos::WindowStateType::kNormal;
@@ -353,7 +359,7 @@ class ClientControlledShellSurface : public ShellSurfaceBase,
       ash::ArcResizeLockType::NONE;
 
   // True if the window supports the floated state.
-  const bool supports_floated_state_;
+  bool supports_floated_state_;
 };
 
 }  // namespace exo

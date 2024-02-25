@@ -1,15 +1,16 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 import {TestRunner} from 'test_runner';
 import {AxeCoreTestRunner} from 'axe_core_test_runner';
+import * as UI from 'devtools/ui/legacy/legacy.js';
 
 (async function() {
   TestRunner.addResult('Tests accessibility in the settings tool locations pane using the axe-core linter.');
 
-  await UI.viewManager.showView('emulation-locations');
-  const locationsWidget = await UI.viewManager.view('emulation-locations').widget();
+  await UI.ViewManager.ViewManager.instance().showView('emulation-locations');
+  const locationsWidget = await UI.ViewManager.ViewManager.instance().view('emulation-locations').widget();
 
   async function testAddLocation() {
     const addLocationButton = locationsWidget.defaultFocusedElement;

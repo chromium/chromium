@@ -6,6 +6,7 @@
 #define CONTENT_BROWSER_INTEREST_GROUP_TEST_INTEREST_GROUP_MANAGER_IMPL_H_
 
 #include <list>
+#include <optional>
 #include <vector>
 
 #include "base/functional/callback_forward.h"
@@ -15,14 +16,11 @@
 #include "content/public/browser/k_anonymity_service_delegate.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/public/mojom/client_security_state.mojom.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/interest_group/interest_group.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 
 namespace content {
-
-struct StorageInterestGroup;
 
 // An implementation of InterestGroupManagerImpl for tests. It tracks a number
 // of calls to InterestGroupManagerImpl. Its EnqueueReports() overload uses
@@ -61,6 +59,7 @@ class TestInterestGroupManagerImpl
   void EnqueueReports(
       ReportType report_type,
       std::vector<GURL> report_urls,
+      int frame_tree_node_id,
       const url::Origin& frame_origin,
       const network::mojom::ClientSecurityState& client_security_state,
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory)
@@ -70,10 +69,15 @@ class TestInterestGroupManagerImpl
   //
   // This is used instead of a virtual method for tracking bids, since it has
   // all the information that's needed.
-  void OnInterestGroupAccessed(const base::Time& access_time,
-                               AccessType type,
-                               const url::Origin& owner_origin,
-                               const std::string& name) override;
+  void OnInterestGroupAccessed(
+      base::optional_ref<const std::string> devtools_auction_id,
+      base::Time access_time,
+      AccessType type,
+      const url::Origin& owner_origin,
+      const std::string& name,
+      base::optional_ref<const url::Origin> component_seller_origin,
+      std::optional<double> bid,
+      base::optional_ref<const std::string> bid_currency) override;
 
   // KAnonymityServiceDelegate implementation:
   void JoinSet(std::string id,
@@ -92,12 +96,14 @@ class TestInterestGroupManagerImpl
   // comparison.
   void ExpectReports(const std::vector<Report>& expected_reports);
 
+  void set_use_real_enqueue_reports(bool use_parents_enqueue);
+
   // Alternate way of validating URLs. Returns all the URLs of the requested
   // type, removing them from the internal list in the process.
   std::vector<GURL> TakeReportUrlsOfType(ReportType report_type);
 
   // Returns all interest groups that bid, removing them from the internal list
-  // in the process.
+  // in the process. This is based on observer events, not database ones.
   std::vector<blink::InterestGroupKey> TakeInterestGroupsThatBid();
 
   // Returns all K-anon sets that have been joined, removing them from the
@@ -109,7 +115,7 @@ class TestInterestGroupManagerImpl
 
   // Retrieves the specified interest group if it exists, spinning a RunLoop
   // until the group is retrieved.
-  absl::optional<StorageInterestGroup> BlockingGetInterestGroup(
+  std::optional<SingleStorageInterestGroup> BlockingGetInterestGroup(
       const url::Origin& owner,
       const std::string& name);
 
@@ -118,6 +124,7 @@ class TestInterestGroupManagerImpl
   const network::mojom::ClientSecurityStatePtr expected_client_security_state_;
   const scoped_refptr<network::SharedURLLoaderFactory>
       expected_url_loader_factory_;
+  bool use_real_enqueue_reports_ = false;
 
   std::list<Report> reports_;
   std::vector<blink::InterestGroupKey> interest_groups_that_bid_;
@@ -126,4 +133,4 @@ class TestInterestGroupManagerImpl
 
 }  // namespace content
 
-#endif  // CONTENT_BROWSER_INTEREST_GROUP_INTEREST_GROUP_MANAGER_IMPL_H_
+#endif  // CONTENT_BROWSER_INTEREST_GROUP_TEST_INTEREST_GROUP_MANAGER_IMPL_H_

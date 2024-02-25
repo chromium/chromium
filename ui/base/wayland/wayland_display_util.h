@@ -22,4 +22,4 @@ int64_t FromWaylandDisplayIdPair(WaylandDisplayIdPair&& display_id_pair);
 
 }  // namespace ui::wayland
 
-#endif
+#endif  // UI_BASE_WAYLAND_WAYLAND_DISPLAY_UTIL_H_

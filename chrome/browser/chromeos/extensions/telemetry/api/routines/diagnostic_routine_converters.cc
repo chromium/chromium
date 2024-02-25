@@ -5,6 +5,7 @@
 #include "chrome/browser/chromeos/extensions/telemetry/api/routines/diagnostic_routine_converters.h"
 
 #include <cstdint>
+#include <vector>
 
 #include "base/notreached.h"
 #include "base/uuid.h"
@@ -73,7 +74,59 @@ cx_diag::MemoryRoutineFinishedInfo UncheckedConvertPtr(
   return result;
 }
 
+cx_diag::VolumeButtonRoutineFinishedInfo UncheckedConvertPtr(
+    crosapi::TelemetryDiagnosticVolumeButtonRoutineDetailPtr input,
+    base::Uuid uuid,
+    bool has_passed) {
+  cx_diag::VolumeButtonRoutineFinishedInfo result;
+
+  result.uuid = uuid.AsLowercaseString();
+  result.has_passed = has_passed;
+
+  return result;
+}
+
+cx_diag::FanRoutineFinishedInfo UncheckedConvertPtr(
+    crosapi::TelemetryDiagnosticFanRoutineDetailPtr input,
+    base::Uuid uuid,
+    bool has_passed) {
+  cx_diag::FanRoutineFinishedInfo result;
+
+  std::vector<int> passed_fan_ids = {};
+  for (const auto& passed_fan_id : input->passed_fan_ids) {
+    passed_fan_ids.push_back(passed_fan_id);
+  }
+  result.passed_fan_ids = passed_fan_ids;
+
+  std::vector<int> failed_fan_ids = {};
+  for (const auto& failed_fan_id : input->failed_fan_ids) {
+    failed_fan_ids.push_back(failed_fan_id);
+  }
+  result.failed_fan_ids = failed_fan_ids;
+
+  result.fan_count_status = Convert(input->fan_count_status);
+  result.uuid = uuid.AsLowercaseString();
+  result.has_passed = has_passed;
+  return result;
+}
+
 }  // namespace unchecked
+
+cx_diag::ExceptionReason Convert(
+    crosapi::TelemetryExtensionException::Reason input) {
+  switch (input) {
+    case crosapi::TelemetryExtensionException::Reason::kUnmappedEnumField:
+      return cx_diag::ExceptionReason::kUnknown;
+    case crosapi::TelemetryExtensionException::Reason::
+        kMojoDisconnectWithoutReason:
+      return cx_diag::ExceptionReason::kUnknown;
+    case crosapi::TelemetryExtensionException::Reason::kUnexpected:
+      return cx_diag::ExceptionReason::kUnexpected;
+    case crosapi::TelemetryExtensionException::Reason::kUnsupported:
+      return cx_diag::ExceptionReason::kUnsupported;
+  }
+  NOTREACHED();
+}
 
 cx_diag::RoutineWaitingReason Convert(
     crosapi::TelemetryDiagnosticRoutineStateWaiting::Reason input) {
@@ -95,7 +148,7 @@ cx_diag::MemtesterTestItemEnum Convert(
     crosapi::TelemetryDiagnosticMemtesterTestItemEnum input) {
   switch (input) {
     case crosapi::TelemetryDiagnosticMemtesterTestItemEnum::kUnmappedEnumField:
-      return cx_diag::MemtesterTestItemEnum::kNone;
+      return cx_diag::MemtesterTestItemEnum::kUnknown;
     case crosapi::TelemetryDiagnosticMemtesterTestItemEnum::kUnknown:
       return cx_diag::MemtesterTestItemEnum::kUnknown;
     case crosapi::TelemetryDiagnosticMemtesterTestItemEnum::kStuckAddress:
@@ -131,10 +184,25 @@ cx_diag::MemtesterTestItemEnum Convert(
       return cx_diag::MemtesterTestItemEnum::kWalkingOnes;
     case crosapi::TelemetryDiagnosticMemtesterTestItemEnum::kWalkingZeroes:
       return cx_diag::MemtesterTestItemEnum::kWalkingZeroes;
-    case crosapi::TelemetryDiagnosticMemtesterTestItemEnum::k8BitWrites:
-      return cx_diag::MemtesterTestItemEnum::kByteWrites;
-    case crosapi::TelemetryDiagnosticMemtesterTestItemEnum::k16BitWrites:
-      return cx_diag::MemtesterTestItemEnum::kWordWrites;
+    case crosapi::TelemetryDiagnosticMemtesterTestItemEnum::kEightBitWrites:
+      return cx_diag::MemtesterTestItemEnum::kEightBitWrites;
+    case crosapi::TelemetryDiagnosticMemtesterTestItemEnum::kSixteenBitWrites:
+      return cx_diag::MemtesterTestItemEnum::kSixteenBitWrites;
+  }
+  NOTREACHED_NORETURN();
+}
+
+cx_diag::HardwarePresenceStatus Convert(
+    crosapi::TelemetryDiagnosticHardwarePresenceStatus input) {
+  switch (input) {
+    case crosapi::TelemetryDiagnosticHardwarePresenceStatus::kUnmappedEnumField:
+      return cx_diag::HardwarePresenceStatus::kNone;
+    case crosapi::TelemetryDiagnosticHardwarePresenceStatus::kMatched:
+      return cx_diag::HardwarePresenceStatus::kMatched;
+    case crosapi::TelemetryDiagnosticHardwarePresenceStatus::kNotMatched:
+      return cx_diag::HardwarePresenceStatus::kNotMatched;
+    case crosapi::TelemetryDiagnosticHardwarePresenceStatus::kNotConfigured:
+      return cx_diag::HardwarePresenceStatus::kNotConfigured;
   }
   NOTREACHED_NORETURN();
 }

@@ -21,7 +21,6 @@
 
 #include "third_party/blink/renderer/core/display_lock/display_lock_utilities.h"
 #include "third_party/blink/renderer/core/dom/element_traversal.h"
-#include "third_party/blink/renderer/core/layout/svg/svg_layout_support.h"
 #include "third_party/blink/renderer/core/paint/svg_object_painter.h"
 #include "third_party/blink/renderer/core/svg/svg_animated_length.h"
 #include "third_party/blink/renderer/core/svg/svg_element.h"
@@ -40,21 +39,17 @@ LayoutSVGResourceMasker::~LayoutSVGResourceMasker() = default;
 
 void LayoutSVGResourceMasker::RemoveAllClientsFromCache() {
   NOT_DESTROYED();
-  cached_paint_record_ = absl::nullopt;
+  cached_paint_record_ = std::nullopt;
   MarkAllClientsForInvalidation(kPaintPropertiesInvalidation |
                                 kPaintInvalidation);
 }
 
-PaintRecord LayoutSVGResourceMasker::CreatePaintRecord(
-    const AffineTransform& content_transformation,
-    GraphicsContext& context) {
+PaintRecord LayoutSVGResourceMasker::CreatePaintRecord() {
   NOT_DESTROYED();
   if (cached_paint_record_)
     return *cached_paint_record_;
 
-  SubtreeContentTransformScope content_transform_scope(content_transformation);
-  auto* builder = MakeGarbageCollected<PaintRecordBuilder>(context);
-
+  auto* builder = MakeGarbageCollected<PaintRecordBuilder>();
   for (const SVGElement& child_element :
        Traversal<SVGElement>::ChildrenOf(*GetElement())) {
     const LayoutObject* layout_object = child_element.GetLayoutObject();
@@ -63,7 +58,8 @@ PaintRecord LayoutSVGResourceMasker::CreatePaintRecord(
     if (DisplayLockUtilities::LockedAncestorPreventingLayout(*layout_object) ||
         layout_object->StyleRef().Display() == EDisplay::kNone)
       continue;
-    SVGObjectPainter(*layout_object).PaintResourceSubtree(builder->Context());
+    SVGObjectPainter(*layout_object)
+        .PaintResourceSubtree(builder->Context(), PaintFlag::kPaintingSVGMask);
   }
 
   cached_paint_record_ = builder->EndRecording();

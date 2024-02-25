@@ -1,4 +1,4 @@
-// Copyright 2022 The Chromium Authors
+// Copyright 2023 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -14,6 +14,7 @@
 #include "content/browser/preloading/prefetcher.h"
 #include "content/browser/preloading/preloading_data_impl.h"
 #include "content/browser/preloading/prerenderer.h"
+#include "content/common/features.h"
 #include "content/public/browser/anchor_element_preconnect_delegate.h"
 #include "content/public/common/content_client.h"
 #include "content/public/test/mock_navigation_handle.h"
@@ -35,10 +36,10 @@ class MockAnchorElementPreconnector : public AnchorElementPreconnectDelegate {
   ~MockAnchorElementPreconnector() override = default;
 
   void MaybePreconnect(const GURL& target) override { target_ = target; }
-  absl::optional<GURL>& Target() { return target_; }
+  std::optional<GURL>& Target() { return target_; }
 
  private:
-  absl::optional<GURL> target_;
+  std::optional<GURL> target_;
 };
 
 class TestPrefetchService : public PrefetchService {
@@ -52,17 +53,11 @@ class TestPrefetchService : public PrefetchService {
   }
 
   void EvictPrefetch(size_t index) {
-    DCHECK_LT(index, prefetches_.size());
-    DCHECK(prefetches_[index]);
+    ASSERT_LT(index, prefetches_.size());
+    ASSERT_TRUE(prefetches_[index]);
     base::WeakPtr<PrefetchContainer> prefetch_container = prefetches_[index];
-    std::unique_ptr<PrefetchContainer> owned_prefetch_container =
-        prefetch_container->GetPrefetchDocumentManager()
-            ->ReleasePrefetchContainer(prefetch_container->GetURL());
     prefetches_.erase(prefetches_.begin() + index);
-    PreloadingDecider::GetForCurrentDocument(
-        RenderFrameHost::FromID(
-            prefetch_container->GetReferringRenderFrameHostId()))
-        ->OnPrefetchEvicted(prefetch_container->GetURL());
+    ResetPrefetch(prefetch_container);
   }
 
   std::vector<base::WeakPtr<PrefetchContainer>> prefetches_;
@@ -82,14 +77,39 @@ class MockPrerenderer : public Prerenderer {
 
   bool MaybePrerender(
       const blink::mojom::SpeculationCandidatePtr& candidate) override {
-    return prerenders_.insert(candidate->url).second;
+    if (PrerenderExists(candidate->url)) {
+      return false;
+    }
+    prerenders_.emplace_back(candidate->url, candidate->eagerness);
+    return true;
   }
 
   bool ShouldWaitForPrerenderResult(const GURL& url) override {
-    return prerenders_.find(url) != prerenders_.end();
+    return PrerenderExists(url);
   }
 
-  std::set<GURL> prerenders_;
+  void SetPrerenderCancellationCallback(
+      PrerenderCancellationCallback callback) override {
+    prerender_cancellation_callback_ = std::move(callback);
+  }
+
+  void OnCancel(size_t index) {
+    ASSERT_LT(index, prerenders_.size());
+    const auto& [url, _] = prerenders_[index];
+    prerender_cancellation_callback_.Run(url);
+    prerenders_.erase(prerenders_.begin() + index);
+  }
+
+  bool PrerenderExists(const GURL& url) {
+    return std::find_if(prerenders_.begin(), prerenders_.end(),
+                        [&](const auto& prerender) {
+                          return url == prerender.first;
+                        }) != prerenders_.end();
+  }
+
+  std::vector<std::pair<GURL, blink::mojom::SpeculationEagerness>> prerenders_;
+  PrerenderCancellationCallback prerender_cancellation_callback_ =
+      base::DoNothing();
 };
 
 class ScopedMockPrerenderer {
@@ -103,14 +123,15 @@ class ScopedMockPrerenderer {
   }
 
   ~ScopedMockPrerenderer() {
+    prerenderer_ = nullptr;
     preloading_decider_->SetPrerendererForTesting(std::move(old_prerenderer_));
   }
 
   MockPrerenderer* Get() { return prerenderer_.get(); }
 
  private:
-  raw_ptr<PreloadingDecider> preloading_decider_;
-  raw_ptr<MockPrerenderer, DanglingUntriaged> prerenderer_;
+  raw_ptr<PreloadingDecider> preloading_decider_ = nullptr;
+  raw_ptr<MockPrerenderer> prerenderer_ = nullptr;
   std::unique_ptr<Prerenderer> old_prerenderer_;
 };
 
@@ -135,8 +156,8 @@ class MockContentBrowserClient : public TestContentBrowserClient {
   MockAnchorElementPreconnector* GetDelegate() { return delegate_; }
 
  private:
-  raw_ptr<ContentBrowserClient> old_browser_client_;
-  raw_ptr<MockAnchorElementPreconnector> delegate_;
+  raw_ptr<ContentBrowserClient> old_browser_client_ = nullptr;
+  raw_ptr<MockAnchorElementPreconnector> delegate_ = nullptr;
 };
 
 enum class EventType {
@@ -144,16 +165,8 @@ enum class EventType {
   kPointerHover,
 };
 
-class PreloadingDeciderTest
-    : public RenderViewHostTestHarness,
-      public ::testing::WithParamInterface<
-          std::tuple<EventType, blink::mojom::SpeculationEagerness>> {
+class PreloadingDeciderTest : public RenderViewHostTestHarness {
  public:
-  PreloadingDeciderTest() {
-    scoped_feature_list_.InitAndEnableFeatureWithParameters(
-        features::kPrefetchUseContentRefactor,
-        {{"proxy_host", "https://testproxyhost.com"}});
-  }
   void SetUp() override {
     RenderViewHostTestHarness::SetUp();
 
@@ -171,9 +184,16 @@ class PreloadingDeciderTest
         prefetch_service_.get());
   }
   void TearDown() override {
+    // The PrefetchService we created for the test contains a
+    // PrefetchOriginProber, which holds a raw pointer to the BrowserContext.
+    // When tearing down, it's important to free our PrefetchService
+    // before freeing the BrowserContext, to avoid any chance of a use after
+    // free.
+    PrefetchDocumentManager::SetPrefetchServiceForTesting(nullptr);
+    prefetch_service_.reset();
+
     web_contents_.reset();
     browser_context_.reset();
-    PrefetchDocumentManager::SetPrefetchServiceForTesting(nullptr);
     RenderViewHostTestHarness::TearDown();
   }
 
@@ -196,7 +216,6 @@ class PreloadingDeciderTest
   std::unique_ptr<TestBrowserContext> browser_context_;
   std::unique_ptr<TestWebContents> web_contents_;
   std::unique_ptr<TestPrefetchService> prefetch_service_;
-  base::test::ScopedFeatureList scoped_feature_list_;
   std::unique_ptr<test::ScopedPrerenderWebContentsDelegate>
       web_contents_delegate_;
 };
@@ -247,7 +266,13 @@ TEST_F(PreloadingDeciderTest, DefaultEagernessCandidatesStartOnStandby) {
   }
 }
 
-TEST_P(PreloadingDeciderTest, PrefetchOnPointerEventHeuristics) {
+class PreloadingDeciderPointerEventHeuristicsTest
+    : public PreloadingDeciderTest,
+      public ::testing::WithParamInterface<
+          std::tuple<EventType, blink::mojom::SpeculationEagerness>> {};
+
+TEST_P(PreloadingDeciderPointerEventHeuristicsTest,
+       PrefetchOnPointerEventHeuristics) {
   const auto [event_type, eagerness] = GetParam();
 
   base::test::ScopedFeatureList scoped_features;
@@ -356,7 +381,8 @@ TEST_P(PreloadingDeciderTest, PrefetchOnPointerEventHeuristics) {
   }
 }
 
-TEST_P(PreloadingDeciderTest, PrerenderOnPointerEventHeuristics) {
+TEST_P(PreloadingDeciderPointerEventHeuristicsTest,
+       PrerenderOnPointerEventHeuristics) {
   const auto [event_type, eagerness] = GetParam();
 
   base::test::ScopedFeatureList scoped_features;
@@ -490,7 +516,7 @@ TEST_P(PreloadingDeciderTest, PrerenderOnPointerEventHeuristics) {
 
 INSTANTIATE_TEST_SUITE_P(
     ParametrizedTests,
-    PreloadingDeciderTest,
+    PreloadingDeciderPointerEventHeuristicsTest,
     testing::Combine(
         testing::Values(EventType::kPointerDown, EventType::kPointerHover),
         testing::Values(blink::mojom::SpeculationEagerness::kModerate,
@@ -593,17 +619,97 @@ TEST_F(PreloadingDeciderTest, UmaRecallStats) {
       PredictorConfusionMatrix::kFalseNegative, 0);
 }
 
+class PreloadingDeciderWithParameterizedSpeculationActionTest
+    : public PreloadingDeciderTest,
+      public ::testing::WithParamInterface<blink::mojom::SpeculationAction> {
+ public:
+  PreloadingDeciderWithParameterizedSpeculationActionTest() = default;
+
+  void SetUp() override {
+    PreloadingDeciderTest::SetUp();
+
+    if (GetSpeculationAction() == blink::mojom::SpeculationAction::kPrerender) {
+      old_prerenderer_ =
+          PreloadingDecider::GetOrCreateForCurrentDocument(
+              &GetPrimaryMainFrame())
+              ->SetPrerendererForTesting(std::make_unique<MockPrerenderer>());
+    }
+  }
+
+  void TearDown() override {
+    if (old_prerenderer_) {
+      PreloadingDecider::GetOrCreateForCurrentDocument(&GetPrimaryMainFrame())
+          ->SetPrerendererForTesting(std::move(old_prerenderer_));
+    }
+
+    PreloadingDeciderTest::TearDown();
+  }
+
+  blink::mojom::SpeculationAction GetSpeculationAction() { return GetParam(); }
+
+  MockPrerenderer* GetPrerenderer() {
+    return static_cast<MockPrerenderer*>(
+        &PreloadingDecider::GetOrCreateForCurrentDocument(
+             &GetPrimaryMainFrame())
+             ->GetPrerendererForTesting());
+  }
+
+  size_t GetNumOfExistingPreloads() {
+    switch (GetSpeculationAction()) {
+      case blink::mojom::SpeculationAction::kPrefetch:
+        return GetPrefetchService()->prefetches_.size();
+      case blink::mojom::SpeculationAction::kPrefetchWithSubresources:
+        NOTREACHED_NORETURN();
+      case blink::mojom::SpeculationAction::kPrerender:
+        return GetPrerenderer()->prerenders_.size();
+    }
+  }
+
+  void DiscardPreloads(size_t index) {
+    switch (GetSpeculationAction()) {
+      case blink::mojom::SpeculationAction::kPrefetch:
+        GetPrefetchService()->EvictPrefetch(index);
+        break;
+      case blink::mojom::SpeculationAction::kPrefetchWithSubresources:
+        NOTREACHED_NORETURN();
+      case blink::mojom::SpeculationAction::kPrerender:
+        GetPrerenderer()->OnCancel(index);
+        break;
+    }
+  }
+
+ private:
+  std::unique_ptr<Prerenderer> old_prerenderer_;
+};
+
+INSTANTIATE_TEST_SUITE_P(
+    ParametrizedTests,
+    PreloadingDeciderWithParameterizedSpeculationActionTest,
+    testing::Values(blink::mojom::SpeculationAction::kPrefetch,
+                    blink::mojom::SpeculationAction::kPrerender),
+    [](const testing::TestParamInfo<blink::mojom::SpeculationAction>& info) {
+      switch (info.param) {
+        case blink::mojom::SpeculationAction::kPrefetch:
+          return "kPrefetch";
+        case blink::mojom::SpeculationAction::kPrefetchWithSubresources:
+          NOTREACHED_NORETURN();
+        case blink::mojom::SpeculationAction::kPrerender:
+          return "kPrerender";
+      }
+    });
+
 // Tests that an eager candidate is always processed before a non-eager
 // candidate with the same URL, and that the non-eager candidate isn't marked as
 // "on-standby".
-TEST_F(PreloadingDeciderTest, CandidateWithMultipleEagernessValues) {
+TEST_P(PreloadingDeciderWithParameterizedSpeculationActionTest,
+       CandidateWithMultipleEagernessValues) {
   const GURL url = GetSameOriginUrl("/candidate1.html");
   auto* preloading_decider =
       PreloadingDecider::GetOrCreateForCurrentDocument(&GetPrimaryMainFrame());
   ASSERT_TRUE(preloading_decider);
 
   auto candidate_1 = blink::mojom::SpeculationCandidate::New();
-  candidate_1->action = blink::mojom::SpeculationAction::kPrefetch;
+  candidate_1->action = GetSpeculationAction();
   candidate_1->url = url;
   candidate_1->eagerness = blink::mojom::SpeculationEagerness::kConservative;
   candidate_1->referrer = blink::mojom::Referrer::New();
@@ -615,49 +721,63 @@ TEST_F(PreloadingDeciderTest, CandidateWithMultipleEagernessValues) {
   candidates.push_back(candidate_1.Clone());
   candidates.push_back(candidate_2.Clone());
 
-  // Add conservative prefetch candidate and prefetch on pointer-down.
+  // Add conservative preload candidate and preload on pointer-down.
   preloading_decider->UpdateSpeculationCandidates(candidates);
-  const auto& prefetches = GetPrefetchService()->prefetches_;
-  EXPECT_EQ(1u, prefetches.size());
-  EXPECT_EQ(prefetches[0]->GetPrefetchType().GetEagerness(),
+  ASSERT_EQ(1u, GetNumOfExistingPreloads());
+  auto get_preload_eagerness = [&]() {
+    switch (GetSpeculationAction()) {
+      case blink::mojom::SpeculationAction::kPrefetch:
+        return GetPrefetchService()
+            ->prefetches_[0]
+            ->GetPrefetchType()
+            .GetEagerness();
+      case blink::mojom::SpeculationAction::kPrefetchWithSubresources:
+        NOTREACHED_NORETURN();
+      case blink::mojom::SpeculationAction::kPrerender:
+        const auto& [_, eagerness] = GetPrerenderer()->prerenders_[0];
+        return eagerness;
+    }
+  };
+  EXPECT_EQ(get_preload_eagerness(),
             blink::mojom::SpeculationEagerness::kEager);
-  EXPECT_FALSE(preloading_decider->IsOnStandByForTesting(
-      url, blink::mojom::SpeculationAction::kPrefetch));
+  EXPECT_FALSE(
+      preloading_decider->IsOnStandByForTesting(url, GetSpeculationAction()));
 }
 
-// Tests that a previously prefetched conservative candidate can be reprefetched
-// after eviction (when retriggered).
-TEST_F(PreloadingDeciderTest, CandidateCanBeReprefetchedAfterEviction) {
+// Tests that a previously preloaded conservative candidate can be
+// reprocessed after discard (when retriggered).
+TEST_P(PreloadingDeciderWithParameterizedSpeculationActionTest,
+       CandidateCanBeReprefetchedAfterDiscard) {
   const GURL url = GetSameOriginUrl("/candidate1.html");
   auto* preloading_decider =
       PreloadingDecider::GetOrCreateForCurrentDocument(&GetPrimaryMainFrame());
   ASSERT_TRUE(preloading_decider);
 
   auto candidate = blink::mojom::SpeculationCandidate::New();
-  candidate->action = blink::mojom::SpeculationAction::kPrefetch;
+  candidate->action = GetSpeculationAction();
   candidate->url = url;
   candidate->eagerness = blink::mojom::SpeculationEagerness::kConservative;
   candidate->referrer = blink::mojom::Referrer::New();
   std::vector<blink::mojom::SpeculationCandidatePtr> candidates;
   candidates.push_back(candidate.Clone());
 
-  // Add conservative prefetch candidate and prefetch on pointer-down.
+  // Add conservative preloading candidate and preload on pointer-down.
   preloading_decider->UpdateSpeculationCandidates(candidates);
-  EXPECT_EQ(0u, GetPrefetchService()->prefetches_.size());
+  EXPECT_EQ(0u, GetNumOfExistingPreloads());
   preloading_decider->OnPointerDown(url);
-  EXPECT_EQ(1u, GetPrefetchService()->prefetches_.size());
+  EXPECT_EQ(1u, GetNumOfExistingPreloads());
 
-  // Simulate eviction of non-eager prefetch.
-  GetPrefetchService()->EvictPrefetch(0);
-  EXPECT_EQ(0u, GetPrefetchService()->prefetches_.size());
+  // Simulate discard of non-eager preload.
+  DiscardPreloads(0);
+  EXPECT_EQ(0u, GetNumOfExistingPreloads());
 
-  // Trigger prefetch for same URL again, it should succeed.
+  // Trigger preload for same URL again, it should succeed.
   preloading_decider->OnPointerDown(url);
-  EXPECT_EQ(1u, GetPrefetchService()->prefetches_.size());
+  EXPECT_EQ(1u, GetNumOfExistingPreloads());
 
-  // Simulate eviction of non-eager prefetch.
-  GetPrefetchService()->EvictPrefetch(0);
-  EXPECT_EQ(0u, GetPrefetchService()->prefetches_.size());
+  // Simulate discard of non-eager preload.
+  DiscardPreloads(0);
+  EXPECT_EQ(0u, GetNumOfExistingPreloads());
 
   auto eager_candidate = candidate.Clone();
   candidate->eagerness = blink::mojom::SpeculationEagerness::kEager;
@@ -666,17 +786,14 @@ TEST_F(PreloadingDeciderTest, CandidateCanBeReprefetchedAfterEviction) {
   candidates.push_back(eager_candidate.Clone());
 
   // Add a new eager candidate (but also send the old non-eager candidate). A
-  // prefetch should automatically trigger.
+  // preload should automatically trigger.
   preloading_decider->UpdateSpeculationCandidates(candidates);
-  EXPECT_EQ(1u, GetPrefetchService()->prefetches_.size());
+  EXPECT_EQ(1u, GetNumOfExistingPreloads());
 }
 
 // Tests that candidate removal causes a prefetch to be destroyed, and that
 // a reinserted candidate with the same url is re-processed.
 TEST_F(PreloadingDeciderTest, ProcessCandidates_EagerCandidateRemoval) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitWithFeatures({::features::kPrefetchNewLimits}, {});
-
   auto* preloading_decider =
       PreloadingDecider::GetOrCreateForCurrentDocument(&GetPrimaryMainFrame());
   ASSERT_TRUE(preloading_decider);
@@ -726,9 +843,6 @@ TEST_F(PreloadingDeciderTest, ProcessCandidates_EagerCandidateRemoval) {
 // Tests that candidate removal works correctly for non-eager candidates, and
 // that a non-eager candidate is reprocessed correctly after re-insertion.
 TEST_F(PreloadingDeciderTest, ProcessCandidates_NonEagerCandidateRemoval) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitWithFeatures({::features::kPrefetchNewLimits}, {});
-
   auto* preloading_decider =
       PreloadingDecider::GetOrCreateForCurrentDocument(&GetPrimaryMainFrame());
   ASSERT_TRUE(preloading_decider);
@@ -790,9 +904,6 @@ TEST_F(PreloadingDeciderTest, ProcessCandidates_NonEagerCandidateRemoval) {
 // URL.
 TEST_F(PreloadingDeciderTest,
        ProcessCandidates_SecondCandidateWithSameUrlKeepsPrefetchAlive) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitWithFeatures({::features::kPrefetchNewLimits}, {});
-
   auto* preloading_decider =
       PreloadingDecider::GetOrCreateForCurrentDocument(&GetPrimaryMainFrame());
   ASSERT_TRUE(preloading_decider);
@@ -869,6 +980,42 @@ TEST_F(PreloadingDeciderTest,
   histogram_tester.ExpectBucketCount(
       "Preloading.Experimental.OnPointerHoverWithMotionEstimator.Positive",
       /*100*(75-0/500)=*/15, 1);
+}
+
+TEST_F(PreloadingDeciderTest, OnPreloadingHeuristicsModelDone) {
+  base::HistogramTester histogram_tester;
+
+  GURL url1{"https://www.example.com"};
+  GetPrimaryMainFrame().OnPreloadingHeuristicsModelDone(
+      /*url=*/url1, /*score=*/0.2);
+
+  GURL url2{"https://www.google.com"};
+  GetPrimaryMainFrame().OnPreloadingHeuristicsModelDone(
+      /*url=*/url2, /*score=*/0.9);
+
+  // Navigate to `url2`.
+  WebContents* web_contents =
+      WebContents::FromRenderFrameHost(&GetPrimaryMainFrame());
+  PreloadingDataImpl* preloading_data = static_cast<PreloadingDataImpl*>(
+      PreloadingData::GetOrCreateForWebContents(web_contents));
+  ASSERT_TRUE(preloading_data);
+  MockNavigationHandle navigation_handle{url2,
+                                         web_contents->GetPrimaryMainFrame()};
+  preloading_data->DidStartNavigation(&navigation_handle);
+
+  // Check UMA records.
+  histogram_tester.ExpectBucketCount(
+      "Preloading.Experimental.OnPreloadingHeuristicsMLModel.Negative",
+      /*100*0.2=*/20, 1);
+  histogram_tester.ExpectBucketCount(
+      "Preloading.Experimental.OnPreloadingHeuristicsMLModel.Negative",
+      /*100*0.9=*/90, 0);
+  histogram_tester.ExpectBucketCount(
+      "Preloading.Experimental.OnPreloadingHeuristicsMLModel.Positive",
+      /*100*0.2=*/20, 0);
+  histogram_tester.ExpectBucketCount(
+      "Preloading.Experimental.OnPreloadingHeuristicsMLModel.Positive",
+      /*100*0.9=*/90, 1);
 }
 
 }  // namespace

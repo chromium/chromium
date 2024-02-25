@@ -1,5 +1,7 @@
 file://chrome/browser/resources/settings/OWNERS
 
+per-file accessibility_main_handler*=file://ui/accessibility/OWNERS
+
 per-file people_handler*=msalama@chromium.org
 per-file people_handler*=treib@chromium.org
 
@@ -8,6 +10,7 @@ per-file hats_handler*=sauski@google.com
 per-file privacy_sandbox_handler*=file://components/privacy_sandbox/OWNERS
 per-file *site_settings*=msramek@chromium.org
 per-file *site_settings*=sauski@google.com
+per-file *site_settings*=fsenra@google.com
 per-file safety_hub_handler*=sideyilmaz@chromium.org,rainhard@chromium.org
 per-file safe_browsing_handler*=msramek@chromium.org
 per-file safe_browsing_handler*=sauski@google.com
@@ -15,3 +18,5 @@ per-file safety_check_handler*=andzaytsev@google.com,rainhard@chromium.org,sidey
 per-file settings_clear_browsing_data_handler*=sauski@google.com
 per-file settings_localized_strings_provider*=sauski@google.com
 per-file settings_security_key_handler*=file://device/fido/OWNERS
+
+per-file performance_*=file://chrome/browser/ui/performance_controls/OWNERS

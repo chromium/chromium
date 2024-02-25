@@ -7,6 +7,7 @@
 
 #import <Foundation/Foundation.h>
 
+#import "base/memory/raw_ptr.h"
 #include "components/keyed_service/core/keyed_service.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list_observer.h"
 #include "ios/web/public/web_state_observer.h"
@@ -57,10 +58,10 @@ class TextToSpeechPlaybackController : public KeyedService,
   __strong TextToSpeechNotificationHandler* notification_helper_ = nil;
 
   // The WebStateList.
-  WebStateList* web_state_list_ = nullptr;
+  raw_ptr<WebStateList> web_state_list_ = nullptr;
 
   // The WebState being observed.
-  web::WebState* web_state_ = nullptr;
+  raw_ptr<web::WebState> web_state_ = nullptr;
 };
 
 #endif  // IOS_CHROME_BROWSER_UI_VOICE_TEXT_TO_SPEECH_PLAYBACK_CONTROLLER_H_

@@ -3,24 +3,30 @@
 // found in the LICENSE file.
 
 // https://crbug.com/1453291
-// https://github.com/tbondwilkinson/dom-parts/blob/main/README.md
+// https://github.com/WICG/webcomponents/blob/gh-pages/proposals/DOM-Parts.md
 
 
 [RuntimeEnabled=DOMPartsAPI,Exposed=Window]
 interface mixin PartRootMixin {
   // Retrieve the parts list for this PartRoot, always in tree order breaking
   // ties for a Node using the order Parts were constructed.
-  FrozenArray<Part> getParts();
+  sequence<Part> getParts();
+  // Retrieve getParts()[index].NodeToSortBy. This is experimental.
+  [PerWorldBindings] Node getPartNode(unsigned long index);
   // This clones the PartRoot, and also clones the Node tree itself, starting
   // at the RootContainer. In the case of a DocumentPartRoot, the entire
   // document tree is cloned. In the case of a ChildPartRoot, only the children
   // between `previous_node` and `next_node` are included, inclusive. The
   // `clone()` method returns the cloned PartRoot.
-  [RaisesException] PartRoot clone();
+  [RaisesException] PartRoot clone(optional PartRootCloneOptions options);
   // Return the root container for the PartRoot, which is the Document or
   // DocumentFragment for a DocumentPartRoot, or the parent ContainerNode of
   // a ChildNodePart.
   readonly attribute Node rootContainer;
+};
+
+dictionary PartRootCloneOptions {
+  sequence<DOMString> attributeValues;
 };
 
 DocumentPartRoot includes PartRootMixin;

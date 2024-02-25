@@ -6,9 +6,7 @@ package org.chromium.base.memory;
 
 import org.chromium.base.MemoryPressureLevel;
 
-/**
- * Memory pressure callback interface.
- */
+/** Memory pressure callback interface. */
 @FunctionalInterface
 public interface MemoryPressureCallback {
     public void onPressure(@MemoryPressureLevel int pressure);

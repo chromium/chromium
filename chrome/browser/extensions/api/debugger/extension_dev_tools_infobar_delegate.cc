@@ -18,6 +18,7 @@
 #include "chrome/grit/generated_resources.h"
 #include "components/infobars/core/confirm_infobar_delegate.h"
 #include "components/infobars/core/infobar_delegate.h"
+#include "extensions/common/extension_id.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/gfx/text_constants.h"
 
@@ -25,7 +26,7 @@ namespace extensions {
 
 namespace {
 
-using Delegates = std::map<std::string, ExtensionDevToolsInfoBarDelegate*>;
+using Delegates = std::map<ExtensionId, ExtensionDevToolsInfoBarDelegate*>;
 base::LazyInstance<Delegates>::Leaky g_delegates = LAZY_INSTANCE_INITIALIZER;
 
 }  // namespace
@@ -34,7 +35,7 @@ base::LazyInstance<Delegates>::Leaky g_delegates = LAZY_INSTANCE_INITIALIZER;
 constexpr base::TimeDelta ExtensionDevToolsInfoBarDelegate::kAutoCloseDelay;
 
 base::CallbackListSubscription ExtensionDevToolsInfoBarDelegate::Create(
-    const std::string& extension_id,
+    const ExtensionId& extension_id,
     const std::string& extension_name,
     base::OnceClosure destroyed_callback) {
   Delegates& delegates = g_delegates.Get();
@@ -59,18 +60,6 @@ ExtensionDevToolsInfoBarDelegate::~ExtensionDevToolsInfoBarDelegate() {
   callback_list_.Notify();
   const size_t erased = g_delegates.Get().erase(extension_id_);
   DCHECK(erased);
-}
-
-void ExtensionDevToolsInfoBarDelegate::NotifyExtensionDetached(
-    const std::string& extension_id) {
-  const Delegates& delegates = g_delegates.Get();
-  const auto iter = delegates.find(extension_id);
-  if (iter != delegates.cend()) {
-    // Infobar_ was set in Create() which makes the following access safe.
-    iter->second->timer_.Start(FROM_HERE, kAutoCloseDelay,
-                               iter->second->infobar_.get(),
-                               &GlobalConfirmInfoBar::Close);
-  }
 }
 
 infobars::InfoBarDelegate::InfoBarIdentifier
@@ -111,15 +100,27 @@ int ExtensionDevToolsInfoBarDelegate::GetButtons() const {
 }
 
 ExtensionDevToolsInfoBarDelegate::ExtensionDevToolsInfoBarDelegate(
-    std::string extension_id,
+    ExtensionId extension_id,
     const std::string& extension_name)
     : extension_id_(std::move(extension_id)),
-      extension_name_(base::UTF8ToUTF16(extension_name)) {}
+      extension_name_(base::UTF8ToUTF16(extension_name)) {
+  callback_list_.set_removal_callback(base::BindRepeating(
+      &ExtensionDevToolsInfoBarDelegate::MaybeStartAutocloseTimer,
+      base::Unretained(this)));
+}
 
 base::CallbackListSubscription
 ExtensionDevToolsInfoBarDelegate::RegisterDestroyedCallback(
     base::OnceClosure destroyed_callback) {
   return callback_list_.Add(std::move(destroyed_callback));
+}
+
+void ExtensionDevToolsInfoBarDelegate::MaybeStartAutocloseTimer() {
+  if (callback_list_.empty()) {
+    // infobar_ was set in Create() which makes the following access safe.
+    timer_.Start(FROM_HERE, kAutoCloseDelay, infobar_.get(),
+                 &GlobalConfirmInfoBar::Close);
+  }
 }
 
 }  // namespace extensions

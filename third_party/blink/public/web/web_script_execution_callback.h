@@ -5,8 +5,9 @@
 #ifndef THIRD_PARTY_BLINK_PUBLIC_WEB_WEB_SCRIPT_EXECUTION_CALLBACK_H_
 #define THIRD_PARTY_BLINK_PUBLIC_WEB_WEB_SCRIPT_EXECUTION_CALLBACK_H_
 
+#include <optional>
+
 #include "base/functional/callback.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base {
 class TimeTicks;
@@ -21,7 +22,7 @@ namespace blink {
 // - The script evaluation was successful, and
 // - V8ValueConverter successfully converts the resulting `v8::Local<v8::Value>`
 //   to `base::Value`.
-// Otherwise, `absl::nullopt` is passed.
+// Otherwise, `std::nullopt` is passed.
 //
 // `base::TimeTicks` is the time when the script evaluation is started.
 //
@@ -40,7 +41,7 @@ namespace blink {
 // TODO(https://crbug.com/1323953): Consider introducing a specific type for
 // representing the arguments and invariants.
 using WebScriptExecutionCallback =
-    base::OnceCallback<void(absl::optional<base::Value>, base::TimeTicks)>;
+    base::OnceCallback<void(std::optional<base::Value>, base::TimeTicks)>;
 
 }  // namespace blink
 

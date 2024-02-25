@@ -7,7 +7,7 @@
 
 #import "ios/chrome/browser/shared/coordinator/chrome_coordinator/chrome_coordinator.h"
 
-#import "ios/chrome/browser/default_browser/utils.h"
+#import "ios/chrome/browser/default_browser/model/utils.h"
 #import "ios/chrome/browser/ui/default_promo/default_browser_promo_commands.h"
 
 @interface DefaultBrowserPromoCoordinator : ChromeCoordinator

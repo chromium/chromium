@@ -18,42 +18,9 @@ virtual/* [ Skip ]
 # Crashes
 crbug.com/1401767 external/wpt/html/semantics/forms/the-selectlist-element/selectlist-marker-end-aligned.tentative.html [ Crash ]
 
-# Timeouts
-fast/loader/iframe-navigation-stealing-focus.html [ Skip ]
-
-# Slow prerender tests, needs investigation
-# Using [ Skip ] instead of [ Timeout ] to save time on test run
-crbug.com/1226461 crbug.com/1350124 crbug.com/1126305 external/wpt/speculation-rules/prerender/about-blank-iframes.html [ Skip ]
-crbug.com/1226461 crbug.com/1350124 crbug.com/1126305 external/wpt/speculation-rules/prerender/activation-start.html [ Skip ]
-crbug.com/1226461 crbug.com/1350124 crbug.com/1126305 external/wpt/speculation-rules/prerender/cross-origin-isolated.https.html [ Skip ]
-crbug.com/1226461 crbug.com/1350124 crbug.com/1126305 external/wpt/speculation-rules/prerender/restriction-prompt-by-before-unload.html [ Skip ]
-crbug.com/1226461 crbug.com/1350124 crbug.com/1126305 external/wpt/speculation-rules/prerender/windowclient-navigate-to-cross-origin-url-on-iframe.https.html [ Skip ]
-crbug.com/1226461 crbug.com/1350124 crbug.com/1126305 external/wpt/speculation-rules/prerender/windowclient-navigate-to-same-origin-url-on-iframe.https.html [ Skip ]
-crbug.com/1226461 crbug.com/1350124 crbug.com/1126305 wpt_internal/prerender/cross-origin-iframe.html [ Skip ]
-crbug.com/1226461 crbug.com/1350124 crbug.com/1126305 wpt_internal/prerender/purpose-prefetch-header.https.html [ Skip ]
-crbug.com/1226461 crbug.com/1350124 crbug.com/1126305 wpt_internal/prerender/sandbox-iframe.html [ Skip ]
-crbug.com/1226461 crbug.com/1350124 crbug.com/1126305 wpt_internal/prerender/session-history-subframe-navigation.https.html [ Skip ]
-crbug.com/1226461 crbug.com/1350124 crbug.com/1126305 wpt_internal/prerender/session-history-subframe-reload.https.html [ Skip ]
-crbug.com/1226461 crbug.com/1350124 crbug.com/1126305 wpt_internal/prerender/unload-on-prerender-cross-origin-subframe-navigation.html [ Skip ]
-crbug.com/1226461 crbug.com/1350124 crbug.com/1126305 wpt_internal/prerender/unload-on-prerender-remove-subframe.html [ Skip ]
-crbug.com/1226461 crbug.com/1350124 crbug.com/1126305 wpt_internal/prerender/unload-on-prerender-same-origin-subframe-navigation.html [ Skip ]
-
-# Intentional failures for focusless spatial navigation.
-# Focusless spatial navigation is intentionally disabled when accessibility is turned on.
-# * On bots without --force-renderer-accessibility, the tests are able to reset the accessibility context
-#   and run without any accessibility, in which case the tests pass.
-#   See https://crrev.com/c/1620345.
-# * On bots with --force-renderer-accessibiity, the tests will fail because of the check in
-#   IsInAccessibilityMode() In spatial_navigation_controller.cc.
-#   As this is intentional it is good to test as well via --force-renderer-accessibility.
-virtual/focusless-spat-nav/fast/spatial-navigation/focusless/snav-focusless-basic-movement.html [ Failure ]
-virtual/focusless-spat-nav/fast/spatial-navigation/focusless/snav-focusless-dont-send-keyboard-events.html [ Failure ]
-virtual/focusless-spat-nav/fast/spatial-navigation/focusless/snav-focusless-enter-exit-focus.html [ Failure ]
-crbug.com/985520 virtual/focusless-spat-nav/fast/spatial-navigation/focusless/snav-focusless-enter-from-interest.html [ Failure ]
-virtual/focusless-spat-nav/fast/spatial-navigation/focusless/snav-focusless-navigate-from-focus.html [ Failure ]
-
 # Intentional skips for media tests using proprietary codecs.
 # The linux-blink-web-tests-force-accessibility-rel bot compiles without proprietary codecs.
+external/wpt/html/semantics/embedded-content/media-elements/track/track-element/track-cues-cuechange.html [ Skip ]
 external/wpt/webcodecs/audioDecoder-codec-specific.https.any.worker.html?adts_aac [ Skip ]
 external/wpt/webcodecs/audioDecoder-codec-specific.https.any.worker.html?mp4_aac [ Skip ]
 external/wpt/webcodecs/videoDecoder-codec-specific.https.any.worker.html?h264_annexb [ Skip ]
@@ -71,20 +38,31 @@ external/wpt/webcodecs/videoDecoder-codec-specific.https.any.html?h264_avc [ Ski
 external/wpt/webrtc/RTCRtpTransceiver-setCodecPreferences.html [ Skip ]
 external/wpt/webrtc/protocol/rtp-demuxing.html [ Skip ]
 external/wpt/webrtc/protocol/video-codecs.https.html [ Skip ]
-fast/mediarecorder/MediaRecorder-ignores-oversize-frames-h264.html [ Skip ]
+fast/mediarecorder/MediaRecorder-error-on-oversize-frame-h264.html [ Skip ]
 crbug.com/1126305 external/wpt/speculation-rules/prerender/restriction-encrypted-media.https.html [ Skip ]
-crbug.com/1126305 external/wpt/speculation-rules/prerender/restriction-media-auto-play-attribute.html [ Skip ]
-crbug.com/1126305 external/wpt/speculation-rules/prerender/restriction-media-play.html [ Skip ]
+crbug.com/1126305 external/wpt/speculation-rules/prerender/restriction-media-auto-play-attribute.html?target_hint=_self [ Skip ]
+crbug.com/1126305 external/wpt/speculation-rules/prerender/restriction-media-auto-play-attribute.html?target_hint=_blank [ Skip ]
+crbug.com/1126305 external/wpt/speculation-rules/prerender/restriction-media-play.html?target_hint=_self [ Skip ]
+crbug.com/1126305 external/wpt/speculation-rules/prerender/restriction-media-play.html?target_hint=_blank [ Skip ]
 wpt_internal/mediastream/mediastreamtrackprocessor-transfer-to-worker.html [ Skip ]
 wpt_internal/webcodecs/annexb_decoding.https.any.html [ Skip ]
 wpt_internal/webcodecs/annexb_decoding.https.any.worker.html [ Skip ]
 wpt_internal/webcodecs/avc_encoder_config.https.any.html [ Skip ]
 wpt_internal/webcodecs/avc_encoder_config.https.any.worker.html [ Skip ]
 
-# Most likely a forced style/layout update from accessibiity while we are
-# render blocking, which should not happen.
-
-crbug.com/1445710 external/wpt/css/css-lists/list-marker-containing-control-char-crash.html [ Failure ]
-
 # Times out
 http/tests/inspector-protocol/runtime/serialization-options.js [ Skip ]
+external/wpt/html/select/options-length-too-large.html [ Skip ]
+
+# This test is skipped because it currently times out. This is due to the fact
+# that inline-block elements are now included in the accessibility tree and
+# this test creates 10K of those.
+# The limit imposed on tests is at most 5k accessible objects, so this fails
+# and leads to a time out.
+# This test was not designed for accessibility, and this case is not a
+# realistic scenario in the wild so we deem it safe to simply skip this test
+# when accessibility is enabled.
+fast/events/touch/gesture/gesture-tap-frame-move.html [ Skip ]
+
+# Undiagnosed failure:
+crbug.com/1503980 fast/events/scroll-event-handler-count.html [ Skip ]

@@ -26,8 +26,8 @@ class StringDataView {
   size_t size() const { return data_->size(); }
 
  private:
-  // `data_` is not a raw_ptr<> for performance reasons: based on this sampling
-  // profiler result on Mac. go/brp-mac-prof-diff-20230403
+  // RAW_PTR_EXCLUSION: Performance reasons: based on this sampling profiler
+  // result on Mac. go/brp-mac-prof-diff-20230403
   RAW_PTR_EXCLUSION internal::String_Data* data_ = nullptr;
 };
 

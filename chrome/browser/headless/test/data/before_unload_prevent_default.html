@@ -1,0 +1,12 @@
+<!DOCTYPE html>
+<html>
+  <script>
+    window.addEventListener('beforeunload', function (e) {
+      e.preventDefault();
+      e.returnValue = '';
+    });
+  </script>
+  <body>
+    <p>Hello, world!</p>
+  </body>
+</html>

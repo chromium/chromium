@@ -5,7 +5,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_XR_XR_CPU_DEPTH_INFORMATION_H_
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_XR_XR_CPU_DEPTH_INFORMATION_H_
 
-#include "device/vr/public/mojom/vr_service.mojom-blink-forward.h"
+#include "device/vr/public/mojom/xr_session.mojom-blink-forward.h"
 #include "third_party/blink/renderer/core/typed_arrays/dom_array_buffer.h"
 #include "third_party/blink/renderer/modules/xr/xr_depth_information.h"
 

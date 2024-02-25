@@ -423,7 +423,7 @@ class CORE_EXPORT SerializedScriptValue
   FileSystemAccessTokensArray file_system_access_tokens_;
   HashMap<const void* const*, std::unique_ptr<Attachment>> attachments_;
 
-  absl::optional<v8::SharedValueConveyor> shared_value_conveyor_;
+  std::optional<v8::SharedValueConveyor> shared_value_conveyor_;
   bool has_registered_external_allocation_;
 #if DCHECK_IS_ON()
   bool was_unpacked_ = false;

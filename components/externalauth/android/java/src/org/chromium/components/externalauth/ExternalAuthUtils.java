@@ -45,21 +45,18 @@ public class ExternalAuthUtils {
         mGoogleDelegate = new ExternalAuthGoogleDelegateImpl();
     }
 
-    /**
-     * @return The singleton instance of ExternalAuthUtils.
-     */
+    /** @return The singleton instance of ExternalAuthUtils. */
     public static ExternalAuthUtils getInstance() {
         return sInstance;
     }
 
     /**
      * Gets the calling package names for the current transaction.
-     * @param context The context to use for accessing the package manager.
      * @return The calling package names.
      */
-    private static String[] getCallingPackages(Context context) {
+    private static String[] getCallingPackages() {
         int callingUid = Binder.getCallingUid();
-        PackageManager pm = context.getApplicationContext().getPackageManager();
+        PackageManager pm = ContextUtils.getApplicationContext().getPackageManager();
         return pm.getPackagesForUid(callingUid);
     }
 
@@ -120,12 +117,12 @@ public class ExternalAuthUtils {
      * @param packageToMatch The package name to compare with the caller.
      * @return Whether the caller meets the authentication requirements.
      */
-    private boolean isCallerValid(Context context, int authRequirements, String packageToMatch) {
+    private boolean isCallerValid(int authRequirements, String packageToMatch) {
         boolean shouldBeGoogleSigned = (authRequirements & FLAG_SHOULD_BE_GOOGLE_SIGNED) != 0;
         boolean shouldBeSystem = (authRequirements & FLAG_SHOULD_BE_SYSTEM) != 0;
 
-        String[] callingPackages = getCallingPackages(context);
-        PackageManager pm = context.getApplicationContext().getPackageManager();
+        String[] callingPackages = getCallingPackages();
+        PackageManager pm = ContextUtils.getApplicationContext().getPackageManager();
         boolean matchFound = false;
 
         for (String packageName : callingPackages) {
@@ -147,11 +144,10 @@ public class ExternalAuthUtils {
      * @param packageToMatch The package name to compare with the caller. Should be non-empty.
      * @return Whether the caller meets the authentication requirements.
      */
-    public boolean isCallerValidForPackage(
-            Context context, int authRequirements, String packageToMatch) {
+    public boolean isCallerValidForPackage(int authRequirements, String packageToMatch) {
         assert !TextUtils.isEmpty(packageToMatch);
 
-        return isCallerValid(context, authRequirements, packageToMatch);
+        return isCallerValid(authRequirements, packageToMatch);
     }
 
     /**
@@ -161,8 +157,8 @@ public class ExternalAuthUtils {
      * @param authRequirements The requirements to be exercised on the caller.
      * @return Whether the caller meets the authentication requirements.
      */
-    public boolean isCallerValid(Context context, int authRequirements) {
-        return isCallerValid(context, authRequirements, "");
+    public boolean isCallerValid(int authRequirements) {
+        return isCallerValid(authRequirements, "");
     }
 
     /**
@@ -195,12 +191,13 @@ public class ExternalAuthUtils {
         // resultCode is some kind of error.
         Log.v(TAG, "Unable to use Google Play Services: %s", describeError(resultCode));
         if (isUserRecoverableError(resultCode)) {
-            Runnable errorHandlerTask = new Runnable() {
-                @Override
-                public void run() {
-                    errorHandler.handleError(context, resultCode);
-                }
-            };
+            Runnable errorHandlerTask =
+                    new Runnable() {
+                        @Override
+                        public void run() {
+                            errorHandler.handleError(context, resultCode);
+                        }
+                    };
             PostTask.runOrPostTask(TaskTraits.UI_DEFAULT, errorHandlerTask);
         }
         return false;
@@ -246,9 +243,7 @@ public class ExternalAuthUtils {
         return canUseFirstPartyGooglePlayServices(new UserRecoverableErrorHandler.Silent());
     }
 
-    /**
-     * @return this object's {@link ExternalAuthGoogleDelegate} instance.
-     */
+    /** @return this object's {@link ExternalAuthGoogleDelegate} instance. */
     public ExternalAuthGoogleDelegate getGoogleDelegateForTesting() {
         return mGoogleDelegate;
     }

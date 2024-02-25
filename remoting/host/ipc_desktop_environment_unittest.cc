@@ -508,7 +508,7 @@ void IpcDesktopEnvironmentTest::ResetRemoteUrlForwarderConfigurator() {
   remote_url_forwarder_configurator_ =
       owned_remote_url_forwarder_configurator_.get();
   ON_CALL(*remote_url_forwarder_configurator_, IsUrlForwarderSetUp(_))
-      .WillByDefault(RunOnceCallback<0>(false));
+      .WillByDefault(base::test::RunOnceCallbackRepeatedly<0>(false));
 }
 
 void IpcDesktopEnvironmentTest::OnDisconnectCallback() {
@@ -798,7 +798,7 @@ TEST_F(IpcDesktopEnvironmentTest, SetScreenResolution) {
   screen_controls_->SetScreenResolution(
       ScreenResolution(webrtc::DesktopSize(100, 100),
                        webrtc::DesktopVector(96, 96)),
-      absl::nullopt);
+      std::nullopt);
 }
 
 TEST_F(IpcDesktopEnvironmentTest, CheckUrlForwarderState) {

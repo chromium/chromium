@@ -1,0 +1,60 @@
+<style include="cr-shared-style shimless-rma-shared">
+  #shimless3pDiagReviewPermissionDialogMessage span {
+    white-space: pre-line;
+  }
+</style>
+
+<cr-dialog id="shimless3pDiagFindInstallableDialog"
+    on-cancel="onCancelOrSkipInstallButtonClicked">
+  <div id="shimless3pDiagFindInstallableDialogTitle" slot="title">
+    [[i18n('3pFindInstallalbeDialogTitle', providerName)]]
+  </div>
+  <div id="shimless3pDiagFindInstallableDialogBody" slot="body">
+    [[i18n('3pFindInstallalbeDialogMessage', installableAppPath)]]
+  </div>
+  <div class="dialog-footer" slot="button-container">
+    <cr-button id="shimless3pDiagFindInstallableDialogSkipButton"
+        on-click="onCancelOrSkipInstallButtonClicked">
+      [[i18n('skipButtonLabel')]]
+    </cr-button>
+    <cr-button id="shimless3pDiagFindInstallableDialogInstallButton"
+        class="action-button" on-click="onInstallButtonClicked">
+      [[i18n('installButtonLabel')]]
+    </cr-button>
+  </div>
+</cr-dialog>
+<cr-dialog id="shimless3pDiagReviewPermissionDialog"
+    on-cancel="onCancelOrCancelInstallButtonClicked">
+  <div id="shimless3pDiagReviewPermissionDialogTitle" slot="title">
+    [[i18n('3pReviewPermissionDialogTitle', appInfo.name)]]
+  </div>
+  <div id="shimless3pDiagReviewPermissionDialogMessage" slot="body">
+    <span>[[i18n('3pReviewPermissionDialogMessagePrefix')]]
+      [[appInfo.permissionMessage]]</span>
+  </div>
+  <div class="dialog-footer" slot="button-container">
+    <cr-button id="shimless3pDiagReviewPermissionDialogCancelButton"
+        on-click="onCancelOrCancelInstallButtonClicked">
+      [[i18n('cancelButtonLabel')]]
+    </cr-button>
+    <cr-button id="shimless3pDiagReviewPermissionDialogAcceptButton"
+        class="action-button" on-click="onAcceptPermissionButtonClicked">
+      [[i18n('acceptButtonLabel')]]
+    </cr-button>
+  </div>
+</cr-dialog>
+<cr-dialog id="shimless3pDiagErrorDialog"
+    on-cancel="onErrorDialogCancelOrBackButtonClicked">
+  <div id="shimless3pDiagErrorDialogTitle" slot="title">
+    [[errorTitle]]
+  </div>
+  <div id="shimless3pDiagErrorDialogBody" slot="body">
+    [[errorMessage]]
+  </div>
+  <div class="dialog-footer" slot="button-container">
+    <cr-button id="shimless3pDiagErrorDialogButton" class="action-button"
+        on-click="onErrorDialogCancelOrBackButtonClicked">
+      [[i18n('backButtonLabel')]]
+    </cr-button>
+  </div>
+</cr-dialog>

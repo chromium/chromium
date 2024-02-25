@@ -10,7 +10,6 @@
 @class PermissionInfo;
 
 // Delegate to handle permissions actions.
-API_AVAILABLE(ios(15.0))
 @protocol PermissionsDelegate <NSObject>
 
 // Method invoked when the user taps a switch.

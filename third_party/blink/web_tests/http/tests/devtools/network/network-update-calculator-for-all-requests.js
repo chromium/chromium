@@ -12,7 +12,7 @@ import * as Network from 'devtools/panels/network/network.js';
   TestRunner.addResult(`Tests that time calculator is updated for both visible and hidden requests.\n`);
   await TestRunner.showPanel('network');
 
-  var target = UI.panels.network.networkLogView;
+  var target = Network.NetworkPanel.NetworkPanel.instance().networkLogView;
   target.resourceCategoryFilterUI.toggleTypeFilter(Common.ResourceType.resourceTypes.XHR.category().title(), false);
   TestRunner.addResult('Clicked \'' + Common.ResourceType.resourceTypes.XHR.name() + '\' button.');
   target.reset();

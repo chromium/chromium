@@ -75,7 +75,7 @@ class FakeAuthFactorModel : public AuthFactorModel {
 
   AuthFactorType type_;
   AuthFactorState state_ = AuthFactorState::kReady;
-  raw_ptr<AuthIconView, ExperimentalAsh> icon_ = nullptr;
+  raw_ptr<AuthIconView> icon_ = nullptr;
   bool do_handle_tap_or_click_called_ = false;
   bool should_announce_label_ = false;
   int do_handle_error_timeout_num_calls_ = 0;
@@ -103,7 +103,7 @@ class ScopedAXEventObserver : public views::AXEventObserver {
     }
   }
 
-  raw_ptr<views::View, ExperimentalAsh> view_;
+  raw_ptr<views::View> view_;
   ax::mojom::Event event_type_;
 };
 
@@ -157,7 +157,7 @@ class LoginAuthFactorsViewUnittest : public LoginTestBase {
   size_t GetVisibleIconCount() {
     LoginAuthFactorsView::TestApi test_api(view_);
     size_t count = 0;
-    for (auto* icon : test_api.auth_factor_icon_row()->children()) {
+    for (views::View* icon : test_api.auth_factor_icon_row()->children()) {
       if (icon->GetVisible()) {
         count++;
       }
@@ -210,17 +210,16 @@ class LoginAuthFactorsViewUnittest : public LoginTestBase {
     EXPECT_FALSE(view_->GetFocusManager()->GetFocusedView());
   }
 
-  raw_ptr<views::View, ExperimentalAsh> container_ = nullptr;
-  raw_ptr<LoginAuthFactorsView, ExperimentalAsh> view_ =
-      nullptr;  // Owned by container.
-  std::vector<FakeAuthFactorModel*> auth_factors_;
+  raw_ptr<views::View> container_ = nullptr;
+  raw_ptr<LoginAuthFactorsView> view_ = nullptr;  // Owned by container.
+  std::vector<raw_ptr<FakeAuthFactorModel, VectorExperimental>> auth_factors_;
   bool click_to_enter_called_ = false;
   bool auth_factor_is_hiding_password_ = false;
 };
 
 TEST_F(LoginAuthFactorsViewUnittest, TapOrClickCalled) {
   AddAuthFactors({AuthFactorType::kFingerprint, AuthFactorType::kSmartLock});
-  auto* factor = auth_factors_[0];
+  auto* factor = auth_factors_[0].get();
 
   // RefreshUI() calls UpdateIcon(), which captures a pointer to the
   // icon.
@@ -238,11 +237,11 @@ TEST_F(LoginAuthFactorsViewUnittest, ShouldAnnounceLabel) {
   LoginAuthFactorsView::TestApi test_api(view_);
   views::Label* label = test_api.label();
   ScopedAXEventObserver alert_observer(label, ax::mojom::Event::kAlert);
-  for (auto* factor : auth_factors_) {
+  for (FakeAuthFactorModel* factor : auth_factors_) {
     factor->state_ = AuthFactorState::kAvailable;
   }
 
-  auto* factor = auth_factors_[0];
+  auto* factor = auth_factors_[0].get();
   ASSERT_FALSE(factor->ShouldAnnounceLabel());
   ASSERT_FALSE(alert_observer.event_called);
 
@@ -489,7 +488,7 @@ TEST_F(LoginAuthFactorsViewUnittest, ErrorPermanent) {
   auth_factors_[0]->state_ = AuthFactorState::kErrorPermanent;
   auth_factors_[1]->state_ = AuthFactorState::kReady;
   test_api.UpdateState();
-  auto* factor = auth_factors_[0];
+  auto* factor = auth_factors_[0].get();
 
   EXPECT_TRUE(test_api.auth_factor_icon_row()->GetVisible());
   EXPECT_FALSE(test_api.checkmark_icon()->GetVisible());

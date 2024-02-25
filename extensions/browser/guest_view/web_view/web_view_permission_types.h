@@ -17,6 +17,8 @@ enum WebViewPermissionType {
   WEB_VIEW_PERMISSION_TYPE_FULLSCREEN,
 
   WEB_VIEW_PERMISSION_TYPE_GEOLOCATION,
+  // Permission to request access to Human Interface Devices.
+  WEB_VIEW_PERMISSION_TYPE_HID,
 
   // JavaScript Dialogs: prompt, alert, confirm
   // Note: Even through dialogs do not use the permission API, the dialog API

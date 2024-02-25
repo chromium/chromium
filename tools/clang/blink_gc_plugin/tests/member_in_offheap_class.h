@@ -13,19 +13,26 @@ class HeapObject : public GarbageCollected<HeapObject> { };
 
 class OffHeapObject {
 public:
+ OffHeapObject(Member<HeapObject>& ref) : m_ref(ref) {}
+
  void Trace(Visitor*) const;
 
 private:
     Member<HeapObject> m_obj; // Must not contain Member.
     WeakMember<HeapObject> m_weak;  // Must not contain WeakMember.
     Persistent<HeapVector<Member<HeapObject> > > m_objs; // OK
+    Member<HeapObject>* m_ptr;                           // Member may move
+    Member<HeapObject>& m_ref;                           // Member may move
 };
 
 class StackObject {
   STACK_ALLOCATED();
+  StackObject(Member<HeapObject>& ref) : m_ref(ref) {}
 
  private:
   HeapObject* m_obj;                                        // OK
+  Member<HeapObject>* m_ptr;                                // OK
+  Member<HeapObject>& m_ref;                                // OK
   HeapVector<Member<OffHeapObject>> m_heapVectorMemberOff;  // NOT OK
 };
 

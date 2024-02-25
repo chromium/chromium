@@ -26,6 +26,13 @@ const char kDeviceActiveChurnCohortMonthlyPingTimestamp[] =
 const char kDeviceActiveChurnObservationMonthlyPingTimestamp[] =
     "device_active.last_known_churn_observation_monthly_ping_timestamp";
 
+// Boolean indicating whether |first_active_week| and |last_powerwash_week|
+// was attached in any observation ping for this device before. Defaults to
+// false and set to true after new churn metadata is sent with any observation
+// ping. Data is saved over safe-powerwash via preserved files.
+const char kDeviceActiveChurnObservationFirstObservedNewChurnMetadata[] =
+    "device_active.is_first_observed_new_churn_metadata";
+
 // Int representing the 28 bit Active Status used for the churn use case.
 // The first 10 bits represent number months from 01/01/2000 to current month.
 // Remaining 18 bits represents past 18 months when device was active from
@@ -42,5 +49,9 @@ const char kDeviceActiveLastKnownIsActiveCurrentPeriodMinus1[] =
     "device_active.last_known_is_active_current_period_minus_1";
 const char kDeviceActiveLastKnownIsActiveCurrentPeriodMinus2[] =
     "device_active.last_known_is_active_current_period_minus_2";
+
+// Dictionary storing 28 day rolling history of device active pings.
+const char kDeviceActive28DayActivePingCache[] =
+    "device_active.28day_active_ping_cache";
 
 }  // namespace ash::report::prefs

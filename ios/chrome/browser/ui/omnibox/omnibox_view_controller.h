@@ -17,6 +17,7 @@
 @protocol OmniboxReturnDelegate;
 @class OmniboxViewController;
 class OmniboxTextChangeDelegate;
+@protocol TextFieldViewContaining;
 
 // Delegate for text input changes in OmniboxViewController.
 @protocol OmniboxViewControllerTextInputDelegate
@@ -50,6 +51,10 @@ class OmniboxTextChangeDelegate;
 
 // The textfield used by this view controller.
 @property(nonatomic, readonly, strong) OmniboxTextFieldIOS* textField;
+
+// The view, which contains a text field view.
+@property(nonatomic, readonly)
+    UIView<TextFieldViewContaining>* viewContainingTextField;
 
 // The default leading image to be used on omnibox focus before this is updated
 // via OmniboxConsumer protocol.

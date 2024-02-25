@@ -30,22 +30,22 @@ TEST(CrossUserSharingKeysTest, ShouldConvertEmptyToProto) {
 }
 
 TEST(CrossUserSharingKeysTest, ShouldCreateEmptyFromProto) {
-  EXPECT_THAT(CrossUserSharingKeys::CreateFromProto(
-                  sync_pb::CrossUserSharingKeys(), absl::nullopt),
-              SizeIs(0));
+  EXPECT_THAT(
+      CrossUserSharingKeys::CreateFromProto(sync_pb::CrossUserSharingKeys()),
+      SizeIs(0));
 }
 
 TEST(CrossUserSharingKeysTest, ShouldCreateNonEmptyFromProto) {
   CrossUserSharingKeys original_keys = CrossUserSharingKeys::CreateEmpty();
-  original_keys.AddKeyPair(
+  original_keys.SetKeyPair(
       CrossUserSharingPublicPrivateKeyPair::GenerateNewKeyPair(), 0);
-  original_keys.AddKeyPair(
+  original_keys.SetKeyPair(
       CrossUserSharingPublicPrivateKeyPair::GenerateNewKeyPair(), 1);
 
   ASSERT_THAT(original_keys, SizeIs(2));
 
   const CrossUserSharingKeys restored_keys =
-      CrossUserSharingKeys::CreateFromProto(original_keys.ToProto(), 1);
+      CrossUserSharingKeys::CreateFromProto(original_keys.ToProto());
   EXPECT_THAT(restored_keys, SizeIs(2));
   EXPECT_TRUE(restored_keys.HasKeyPair(0));
   EXPECT_TRUE(restored_keys.HasKeyPair(1));
@@ -53,9 +53,9 @@ TEST(CrossUserSharingKeysTest, ShouldCreateNonEmptyFromProto) {
 
 TEST(CrossUserSharingKeysTest, ShouldCreateNonEmptyFromPartiallyInvalidProto) {
   CrossUserSharingKeys original_keys = CrossUserSharingKeys::CreateEmpty();
-  original_keys.AddKeyPair(
+  original_keys.SetKeyPair(
       CrossUserSharingPublicPrivateKeyPair::GenerateNewKeyPair(), 0);
-  original_keys.AddKeyPair(
+  original_keys.SetKeyPair(
       CrossUserSharingPublicPrivateKeyPair::GenerateNewKeyPair(), 1);
 
   sync_pb::CrossUserSharingKeys malformed_proto = original_keys.ToProto();
@@ -64,7 +64,7 @@ TEST(CrossUserSharingKeysTest, ShouldCreateNonEmptyFromPartiallyInvalidProto) {
       "malformed-key");
 
   CrossUserSharingKeys restored_keys =
-      CrossUserSharingKeys::CreateFromProto(malformed_proto, absl::nullopt);
+      CrossUserSharingKeys::CreateFromProto(malformed_proto);
 
   EXPECT_THAT(restored_keys, SizeIs(1));
   EXPECT_TRUE(restored_keys.HasKeyPair(0));
@@ -74,9 +74,9 @@ TEST(CrossUserSharingKeysTest, ShouldCreateNonEmptyFromPartiallyInvalidProto) {
 TEST(CrossUserSharingKeysTest, ShouldCloneWithKeyPairs) {
   CrossUserSharingKeys original_keys = CrossUserSharingKeys::CreateEmpty();
 
-  original_keys.AddKeyPair(
+  original_keys.SetKeyPair(
       CrossUserSharingPublicPrivateKeyPair::GenerateNewKeyPair(), 0);
-  original_keys.AddKeyPair(
+  original_keys.SetKeyPair(
       CrossUserSharingPublicPrivateKeyPair::GenerateNewKeyPair(), 1);
 
   const CrossUserSharingKeys cloned_keys = original_keys.Clone();
@@ -85,10 +85,10 @@ TEST(CrossUserSharingKeysTest, ShouldCloneWithKeyPairs) {
   EXPECT_TRUE(cloned_keys.HasKeyPair(1));
 }
 
-TEST(CrossUserSharingKeysTest, ShouldAddKeyPair) {
+TEST(CrossUserSharingKeysTest, ShouldSetKeyPair) {
   CrossUserSharingKeys keys = CrossUserSharingKeys::CreateEmpty();
 
-  keys.AddKeyPair(CrossUserSharingPublicPrivateKeyPair::GenerateNewKeyPair(),
+  keys.SetKeyPair(CrossUserSharingPublicPrivateKeyPair::GenerateNewKeyPair(),
                   0);
 
   EXPECT_TRUE(keys.HasKeyPair(0));
@@ -97,11 +97,11 @@ TEST(CrossUserSharingKeysTest, ShouldAddKeyPair) {
 TEST(CrossUserSharingKeysTest, ShouldAddMultipleKeyPairs) {
   CrossUserSharingKeys keys = CrossUserSharingKeys::CreateEmpty();
 
-  keys.AddKeyPair(CrossUserSharingPublicPrivateKeyPair::GenerateNewKeyPair(),
+  keys.SetKeyPair(CrossUserSharingPublicPrivateKeyPair::GenerateNewKeyPair(),
                   0);
-  keys.AddKeyPair(CrossUserSharingPublicPrivateKeyPair::GenerateNewKeyPair(),
+  keys.SetKeyPair(CrossUserSharingPublicPrivateKeyPair::GenerateNewKeyPair(),
                   1);
-  keys.AddKeyPair(CrossUserSharingPublicPrivateKeyPair::GenerateNewKeyPair(),
+  keys.SetKeyPair(CrossUserSharingPublicPrivateKeyPair::GenerateNewKeyPair(),
                   3);
 
   EXPECT_TRUE(keys.HasKeyPair(0));
@@ -112,73 +112,38 @@ TEST(CrossUserSharingKeysTest, ShouldAddMultipleKeyPairs) {
 TEST(CrossUserSharingKeysTest, ShouldCreateNonEmptyKeyPairsFromProto) {
   CrossUserSharingKeys original_keys = CrossUserSharingKeys::CreateEmpty();
 
-  original_keys.AddKeyPair(
+  original_keys.SetKeyPair(
       CrossUserSharingPublicPrivateKeyPair::GenerateNewKeyPair(), 0);
-  original_keys.AddKeyPair(
+  original_keys.SetKeyPair(
       CrossUserSharingPublicPrivateKeyPair::GenerateNewKeyPair(), 1);
 
   const CrossUserSharingKeys restored_keys =
-      CrossUserSharingKeys::CreateFromProto(original_keys.ToProto(),
-                                            absl::nullopt);
+      CrossUserSharingKeys::CreateFromProto(original_keys.ToProto());
 
   EXPECT_TRUE(restored_keys.HasKeyPair(0));
   EXPECT_TRUE(restored_keys.HasKeyPair(1));
 }
 
-TEST(CrossUserSharingKeysTest,
-     ShouldReturnEmptyEncryptionKeyPairVersionForEmptyKeys) {
-  CrossUserSharingKeys original_keys = CrossUserSharingKeys::CreateEmpty();
+TEST(CrossUserSharingKeysTest, ShouldReplacePreexistingKeyPair) {
+  CrossUserSharingKeys keys = CrossUserSharingKeys::CreateEmpty();
+  keys.SetKeyPair(CrossUserSharingPublicPrivateKeyPair::GenerateNewKeyPair(),
+                  0);
+  keys.SetKeyPair(CrossUserSharingPublicPrivateKeyPair::GenerateNewKeyPair(),
+                  1);
 
-  EXPECT_FALSE(original_keys.GetEncryptionKeyPairVersion().has_value());
-}
+  auto raw_existing_private_key0 =
+      keys.GetKeyPair(/*version=*/0).GetRawPrivateKey();
+  auto raw_existing_private_key1 =
+      keys.GetKeyPair(/*version=*/1).GetRawPrivateKey();
 
-TEST(CrossUserSharingKeysTest, ShouldReturnCurrentEncryptionKeyPairVersion) {
-  CrossUserSharingKeys original_keys = CrossUserSharingKeys::CreateEmpty();
+  // Replace the existing key pair.
+  keys.SetKeyPair(CrossUserSharingPublicPrivateKeyPair::GenerateNewKeyPair(),
+                  0);
 
-  original_keys.AddKeyPair(
-      CrossUserSharingPublicPrivateKeyPair::GenerateNewKeyPair(), 0);
-  original_keys.AddKeyPair(
-      CrossUserSharingPublicPrivateKeyPair::GenerateNewKeyPair(), 99);
-  original_keys.AddKeyPair(
-      CrossUserSharingPublicPrivateKeyPair::GenerateNewKeyPair(), 1);
-
-  const CrossUserSharingKeys restored_keys =
-      CrossUserSharingKeys::CreateFromProto(original_keys.ToProto(), 99);
-
-  EXPECT_THAT(restored_keys.GetEncryptionKeyPairVersion().value(), Eq(99U));
-}
-
-TEST(CrossUserSharingKeysTest,
-     ShouldNotReturnEncryptionKeyPairVersionIfExistsAndNotSet) {
-  CrossUserSharingKeys original_keys = CrossUserSharingKeys::CreateEmpty();
-
-  original_keys.AddKeyPair(
-      CrossUserSharingPublicPrivateKeyPair::GenerateNewKeyPair(), 0);
-  original_keys.AddKeyPair(
-      CrossUserSharingPublicPrivateKeyPair::GenerateNewKeyPair(), 99);
-  original_keys.AddKeyPair(
-      CrossUserSharingPublicPrivateKeyPair::GenerateNewKeyPair(), 1);
-
-  const CrossUserSharingKeys restored_keys =
-      CrossUserSharingKeys::CreateFromProto(original_keys.ToProto(),
-                                            absl::nullopt);
-
-  EXPECT_FALSE(restored_keys.GetEncryptionKeyPairVersion().has_value());
-}
-
-TEST(CrossUserSharingKeysTest,
-     ShouldNotReturnEncryptionKeyPairVersionIfSetAndDoesNotExist) {
-  CrossUserSharingKeys original_keys = CrossUserSharingKeys::CreateEmpty();
-
-  original_keys.AddKeyPair(
-      CrossUserSharingPublicPrivateKeyPair::GenerateNewKeyPair(), 0);
-  original_keys.AddKeyPair(
-      CrossUserSharingPublicPrivateKeyPair::GenerateNewKeyPair(), 1);
-
-  const CrossUserSharingKeys restored_keys =
-      CrossUserSharingKeys::CreateFromProto(original_keys.ToProto(), 99U);
-
-  EXPECT_FALSE(restored_keys.GetEncryptionKeyPairVersion().has_value());
+  EXPECT_NE(raw_existing_private_key0,
+            keys.GetKeyPair(/*version=*/0).GetRawPrivateKey());
+  EXPECT_EQ(raw_existing_private_key1,
+            keys.GetKeyPair(/*version=*/1).GetRawPrivateKey());
 }
 
 }  // namespace

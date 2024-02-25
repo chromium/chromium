@@ -1,5 +1,6 @@
 include_rules = [
   "-chrome/browser/ui/android/hats/internal",
+  "+chrome/browser/ui/android/hats/internal/jni_headers",
 ]
 
 specific_include_rules = {

@@ -1,15 +1,17 @@
 
 import {TestRunner} from 'test_runner';
-(async function() {
-  await TestRunner.loadLegacyModule('data_grid');
 
+import * as DataGrid from 'devtools/ui/legacy/components/data_grid/data_grid.js';
+import * as UI from 'devtools/ui/legacy/legacy.js';
+
+(async function() {
   TestRunner.addResult("This tests viewport datagrid.");
 
   var div = document.createElement("div");
-  UI.inspectorView.element.appendChild(div);
+  UI.InspectorView.InspectorView.instance().element.appendChild(div);
 
-  var columns = [{id: "id", title: "ID column", width: "250px"}];
-  var dataGrid = new DataGrid.ViewportDataGrid({displayName: 'Test', columns});
+  var columns = [{id: "id", width: "250px", sortable: false}];
+  var dataGrid = new DataGrid.ViewportDataGrid.ViewportDataGrid({displayName: 'Test', columns});
   var widget = dataGrid.asWidget();
   widget.show(div);
   dataGrid.element.style.width = '100%';
@@ -21,27 +23,27 @@ import {TestRunner} from 'test_runner';
   var nodes = [];
 
   for (var i = 0; i <= 25; i++) {
-    var node = new DataGrid.ViewportDataGridNode({id: "a" + i});
+    var node = new DataGrid.ViewportDataGrid.ViewportDataGridNode({id: "a" + i});
     rootNode.appendChild(node);
     nodes.push(node);
   }
 
   TestRunner.addResult("Nodes 3 and 24 have children but should be collapsed initially");
 
-  node = new DataGrid.ViewportDataGridNode({id: "a" + 3 + "." + 0});
+  node = new DataGrid.ViewportDataGrid.ViewportDataGridNode({id: "a" + 3 + "." + 0});
   nodes.push(node);
   nodes[3].appendChild(node);
-  node = new DataGrid.ViewportDataGridNode({id: "a" + 3 + "." + 1});
+  node = new DataGrid.ViewportDataGrid.ViewportDataGridNode({id: "a" + 3 + "." + 1});
   nodes.push(node);
   nodes[3].appendChild(node);
-  node = new DataGrid.ViewportDataGridNode({id: "a" + 3 + "." + 2});
+  node = new DataGrid.ViewportDataGrid.ViewportDataGridNode({id: "a" + 3 + "." + 2});
   nodes.push(node);
   nodes[3].appendChild(node);
 
-  node = new DataGrid.ViewportDataGridNode({id: "a" + 24 + "." + 0});
+  node = new DataGrid.ViewportDataGrid.ViewportDataGridNode({id: "a" + 24 + "." + 0});
   nodes.push(node);
   nodes[24].appendChild(node);
-  node = new DataGrid.ViewportDataGridNode({id: "a" + 24 + "." + 1});
+  node = new DataGrid.ViewportDataGrid.ViewportDataGridNode({id: "a" + 24 + "." + 1});
   nodes.push(node);
   nodes[24].appendChild(node);
 

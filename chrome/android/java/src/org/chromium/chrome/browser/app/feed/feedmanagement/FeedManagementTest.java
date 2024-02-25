@@ -24,6 +24,7 @@ import org.junit.runner.RunWith;
 
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
+import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.UserActionTester;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.firstrun.FirstRunUtils;
@@ -31,7 +32,6 @@ import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
-import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
 import org.chromium.chrome.test.util.browser.signin.SigninTestRule;
 import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
@@ -43,7 +43,7 @@ import java.io.IOException;
 @Batch(Batch.PER_CLASS)
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE, "vmodule=metrics_reporter=2"})
-@EnableFeatures({ChromeFeatureList.INTEREST_FEED_V2, ChromeFeatureList.WEB_FEED})
+@EnableFeatures({ChromeFeatureList.WEB_FEED})
 public final class FeedManagementTest {
     static final String PACKAGE_NAME = "org.chromium.chrome";
 
@@ -51,18 +51,19 @@ public final class FeedManagementTest {
 
     @Rule
     public ChromeTabbedActivityTestRule mActivityTestRule = new ChromeTabbedActivityTestRule();
-    @Rule
-    public final SigninTestRule mSigninTestRule = new SigninTestRule();
+
+    @Rule public final SigninTestRule mSigninTestRule = new SigninTestRule();
 
     @Before
     public void setUp() {
         mActivityTestRule.startMainActivityOnBlankPage();
         // EULA must be accepted, and internet connectivity is required, or the Feed will not
         // attempt to load.
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            NetworkChangeNotifier.forceConnectivityState(true);
-            FirstRunUtils.setEulaAccepted();
-        });
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    NetworkChangeNotifier.forceConnectivityState(true);
+                    FirstRunUtils.setEulaAccepted();
+                });
         mActionTester = new UserActionTester();
         // Initialize the intent catcher/matcher.
         Intents.init();
@@ -76,7 +77,7 @@ public final class FeedManagementTest {
 
     @Test
     @MediumTest
-    public void launchNTP_launchFeedManagement() throws IOException, InterruptedException {
+    public void launchNtp_launchFeedManagement() throws IOException, InterruptedException {
         // The web feed requires login to enable, so we must log in first.
         mSigninTestRule.addTestAccountThenSigninAndEnableSync();
         // Load the NTP.
@@ -89,7 +90,7 @@ public final class FeedManagementTest {
 
     @Test
     @MediumTest
-    public void launchNTP_launchActivitySettings() throws IOException, InterruptedException {
+    public void launchNtp_launchActivitySettings() throws IOException, InterruptedException {
         // The web feed requires login to enable, so we must log in first.
         mSigninTestRule.addTestAccountThenSigninAndEnableSync();
         // Load the NTP.
@@ -106,7 +107,9 @@ public final class FeedManagementTest {
 
         // Verifies that the Feed Interestitial Activity received an intent
         // with the correct package name and data.
-        intended(allOf(toPackage(PACKAGE_NAME),
-                hasData("https://myactivity.google.com/myactivity?product=50")));
+        intended(
+                allOf(
+                        toPackage(PACKAGE_NAME),
+                        hasData("https://myactivity.google.com/myactivity?product=50")));
     }
 }

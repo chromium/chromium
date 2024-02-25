@@ -9,7 +9,7 @@ namespace ash {
 
 // Used for histograms. Current values should not be renumbered or removed.
 // Please keep in sync with "OverviewStartAction" in
-// tools/metrics/histograms/enums.xml.
+// tools/metrics/histograms/metadata/ash/enums.xml.
 enum class OverviewStartAction {
   kSplitView,
   kAccelerator,
@@ -23,13 +23,16 @@ enum class OverviewStartAction {
   kTests,
   kOverviewDeskSwitch,
   kDeskButton,
-  kMaxValue = kDeskButton,
+  // Partial overview shows automatically on one window snapped.
+  kFasterSplitScreenSetup,
+  kPine,
+  kMaxValue = kPine,
 };
 void RecordOverviewStartAction(OverviewStartAction type);
 
 // Used for histograms. Current values should not be renumbered or removed.
 // Please keep in sync with "OverviewEndAction" in
-// tools/metrics/histograms/enums.xml.
+// tools/metrics/histograms/metadata/ash/enums.xml.
 enum class OverviewEndAction {
   kSplitView,
   kDragWindowFromShelf,
@@ -53,7 +56,9 @@ enum class OverviewEndAction {
   kDevTools,
   kTests,
   kShowGlanceables_DEPRECATED,
-  kMaxValue = kShowGlanceables_DEPRECATED,
+  kWindowDeactivating,
+  kFullRestore,
+  kMaxValue = kFullRestore,
 };
 void RecordOverviewEndAction(OverviewEndAction type);
 

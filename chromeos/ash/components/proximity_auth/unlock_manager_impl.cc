@@ -80,7 +80,7 @@ enum class FirstSmartLockStatus {
   kMaxValue = kPrimaryUserAbsent
 };
 
-absl::optional<FirstSmartLockStatus> GetFirstSmartLockStatus(
+std::optional<FirstSmartLockStatus> GetFirstSmartLockStatus(
     SmartLockState state) {
   switch (state) {
     case SmartLockState::kBluetoothDisabled:
@@ -102,7 +102,7 @@ absl::optional<FirstSmartLockStatus> GetFirstSmartLockStatus(
     case SmartLockState::kPrimaryUserAbsent:
       return FirstSmartLockStatus::kPrimaryUserAbsent;
     default:
-      return absl::nullopt;
+      return std::nullopt;
   }
 }
 
@@ -338,7 +338,7 @@ void UnlockManagerImpl::OnUnlockEventSent(bool success) {
         SmartLockMetricsRecorder::SmartLockAuthResultFailureReason::
             kUnlockEventSentButNotAttemptingAuth);
   } else if (success) {
-    FinalizeAuthAttempt(absl::nullopt /* failure_reason */);
+    FinalizeAuthAttempt(std::nullopt /* failure_reason */);
   } else {
     FinalizeAuthAttempt(
         SmartLockMetricsRecorder::SmartLockAuthResultFailureReason::
@@ -707,7 +707,7 @@ void UnlockManagerImpl::OnInitialScanTimeout() {
 }
 
 void UnlockManagerImpl::FinalizeAuthAttempt(
-    const absl::optional<
+    const std::optional<
         SmartLockMetricsRecorder::SmartLockAuthResultFailureReason>& error) {
   if (error) {
     RecordAuthResultFailure(*error);
@@ -810,7 +810,7 @@ void UnlockManagerImpl::RecordFirstRemoteStatusReceived(bool unlockable) {
 }
 
 void UnlockManagerImpl::RecordFirstStatusShownToUser(SmartLockState new_state) {
-  absl::optional<FirstSmartLockStatus> first_status =
+  std::optional<FirstSmartLockStatus> first_status =
       GetFirstSmartLockStatus(new_state);
   if (!first_status.has_value()) {
     return;

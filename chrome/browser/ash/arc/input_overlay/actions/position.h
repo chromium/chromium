@@ -20,7 +20,7 @@ namespace arc::input_overlay {
 // `key`.
 bool ParsePositiveFraction(const base::Value::Dict& value,
                            const char* key,
-                           absl::optional<float>* output);
+                           std::optional<float>* output);
 
 // Position class for touch point.
 class Position {
@@ -51,9 +51,9 @@ class Position {
     anchor_to_target_ = points_vector;
   }
 
-  absl::optional<float> x_on_y() const { return x_on_y_; }
-  absl::optional<float> y_on_x() const { return y_on_x_; }
-  absl::optional<float> aspect_ratio() const { return aspect_ratio_; }
+  std::optional<float> x_on_y() const { return x_on_y_; }
+  std::optional<float> y_on_x() const { return y_on_x_; }
+  std::optional<float> aspect_ratio() const { return aspect_ratio_; }
 
  private:
   friend class PositionTest;
@@ -104,26 +104,26 @@ class Position {
   // position. The value may be negative if the direction is different from
   // original x and y.
   gfx::Vector2dF anchor_to_target_;
-  absl::optional<int> max_x_;
-  absl::optional<int> max_y_;
+  std::optional<int> max_x_;
+  std::optional<int> max_y_;
 
   // Below is for dependent position.
   // This is for height-dependent position.
   // The length on the direction X to the anchor depends on the direction Y to
   // the anchor. If both x_on_y_ and y_on_x_ are not set, x_on_y_ is set to
   // default -1.
-  absl::optional<float> x_on_y_;
+  std::optional<float> x_on_y_;
 
   // This is for width-dependent position.
   // The length on the direction Y to the anchor depends on the direction X to
   // the anchor.
-  absl::optional<float> y_on_x_;
+  std::optional<float> y_on_x_;
 
   // The is for aspect-ratio-dependent position. Both x_on_y_ and y_on_x_ should
   // be set if aspect_ratio_ is set. If the window aspect ratio >=
   // aspect_ratio_, it becomes height-dependent position. Otherwise, it is
   // width-dependent position.
-  absl::optional<float> aspect_ratio_;
+  std::optional<float> aspect_ratio_;
 };
 
 }  // namespace arc::input_overlay

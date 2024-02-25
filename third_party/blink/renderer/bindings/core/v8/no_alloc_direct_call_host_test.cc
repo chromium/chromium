@@ -7,6 +7,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_testing.h"
 #include "third_party/blink/renderer/platform/bindings/no_alloc_direct_call_exception_state.h"
+#include "third_party/blink/renderer/platform/testing/task_environment.h"
 
 namespace blink {
 
@@ -19,6 +20,7 @@ class NoAllocDirectCallHostTest : public ::testing::Test {
   v8::FastApiCallbackOptions* callback_options() { return &callback_options_; }
 
  private:
+  test::TaskEnvironment task_environment_;
   v8::FastApiCallbackOptions callback_options_ = {false, {0}};
 };
 
@@ -72,7 +74,7 @@ TEST_F(NoAllocDirectCallHostTest, ThrowDOMException) {
   {
     NoAllocDirectCallScope scope(&host, callback_options());
     NoAllocDirectCallExceptionState no_alloc_exception_state(
-        &host, test_scope.GetIsolate(), ExceptionState::kExecutionContext,
+        &host, test_scope.GetIsolate(), ExceptionContextType::kOperationInvoke,
         "foo", "bar");
     ASSERT_FALSE(no_alloc_exception_state.HadException());
     no_alloc_exception_state.ThrowDOMException(
@@ -92,7 +94,7 @@ TEST_F(NoAllocDirectCallHostTest, ThrowTypeError) {
   {
     NoAllocDirectCallScope scope(&host, callback_options());
     NoAllocDirectCallExceptionState no_alloc_exception_state(
-        &host, test_scope.GetIsolate(), ExceptionState::kExecutionContext,
+        &host, test_scope.GetIsolate(), ExceptionContextType::kOperationInvoke,
         "foo", "bar");
     ASSERT_FALSE(no_alloc_exception_state.HadException());
     no_alloc_exception_state.ThrowTypeError("baz");
@@ -111,7 +113,7 @@ TEST_F(NoAllocDirectCallHostTest, ThrowSecurityError) {
   {
     NoAllocDirectCallScope scope(&host, callback_options());
     NoAllocDirectCallExceptionState no_alloc_exception_state(
-        &host, test_scope.GetIsolate(), ExceptionState::kExecutionContext,
+        &host, test_scope.GetIsolate(), ExceptionContextType::kOperationInvoke,
         "foo", "bar");
     ASSERT_FALSE(no_alloc_exception_state.HadException());
     no_alloc_exception_state.ThrowSecurityError("baz", "bam");
@@ -130,7 +132,7 @@ TEST_F(NoAllocDirectCallHostTest, ThrowRangeError) {
   {
     NoAllocDirectCallScope scope(&host, callback_options());
     NoAllocDirectCallExceptionState no_alloc_exception_state(
-        &host, test_scope.GetIsolate(), ExceptionState::kExecutionContext,
+        &host, test_scope.GetIsolate(), ExceptionContextType::kOperationInvoke,
         "foo", "bar");
     ASSERT_FALSE(no_alloc_exception_state.HadException());
     no_alloc_exception_state.ThrowRangeError("baz");
@@ -150,7 +152,7 @@ TEST_F(NoAllocDirectCallHostTest, MultipleExceptions) {
   {
     NoAllocDirectCallScope scope(&host, callback_options());
     NoAllocDirectCallExceptionState no_alloc_exception_state(
-        &host, test_scope.GetIsolate(), ExceptionState::kExecutionContext,
+        &host, test_scope.GetIsolate(), ExceptionContextType::kOperationInvoke,
         "foo", "bar");
     ASSERT_FALSE(no_alloc_exception_state.HadException());
     no_alloc_exception_state.ThrowRangeError("baz");
@@ -170,7 +172,7 @@ TEST_F(NoAllocDirectCallHostTest, ClearException) {
   {
     NoAllocDirectCallScope scope(&host, callback_options());
     NoAllocDirectCallExceptionState no_alloc_exception_state(
-        &host, test_scope.GetIsolate(), ExceptionState::kExecutionContext,
+        &host, test_scope.GetIsolate(), ExceptionContextType::kOperationInvoke,
         "foo", "bar");
     ASSERT_FALSE(no_alloc_exception_state.HadException());
     no_alloc_exception_state.ThrowRangeError("baz");

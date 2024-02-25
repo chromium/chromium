@@ -34,6 +34,10 @@ struct ProcessExitResult {
 // extra arguments.
 using CommandString = StackString<MAX_PATH * 4>;
 
+// A stack-based string large enough to hold a resource type, plus the null
+// terminator.
+using ResourceTypeString = StackString<3>;
+
 // Populates |path| with the path to the previous version's setup.exe, stripping
 // quotes if present.
 ProcessExitResult GetPreviousSetupExePath(const Configuration& configuration,
@@ -49,6 +53,30 @@ bool GetModuleDir(HMODULE module, PathString* directory);
 // verbatim to |buffer|, including all whitespace, quoted arguments,
 // etc. |buffer| is unchanged in case of error.
 void AppendCommandLineFlags(const wchar_t* command_line, CommandString* buffer);
+
+// Finds and writes to disk resources of various types. Returns false
+// if there is a problem in writing any resource to disk. setup.exe resource
+// can come in one of three possible forms:
+// - Resource type 'B7', compressed using LZMA (*.7z)
+// - Resource type 'BL', compressed using LZ (*.ex_)
+// - Resource type 'BN', uncompressed (*.exe)
+// - Resource type 'BD', uncompressed dependencies for component builds
+// If setup.exe is present in more than one form, the precedence order is
+// B7 > BL > BN
+// For more details see chrome/tools/build/win/create_installer_archive.py.
+//
+// For component builds, all files stored as uncompressed 'BD' resources
+// are also extracted. This is generally the set of DLLs/resources needed by
+// setup.exe to run. |max_delete_attempts| is set to the highest number of
+// attempts needed by DeleteWithRetry to delete files that are unpacked and
+// processed (setup_patch.packed.7z, setup.ex_, or setup.exe).
+ProcessExitResult UnpackBinaryResources(HMODULE module,
+                                        const wchar_t* base_path,
+                                        PathString& setup_path,
+                                        ResourceTypeString& setup_type,
+                                        PathString& archive_path,
+                                        ResourceTypeString& archive_type,
+                                        int& max_delete_attempts);
 
 // Main function for Chrome's mini_installer. First gets a working dir, unpacks
 // the resources, and finally executes setup.exe to do the install/update. Also

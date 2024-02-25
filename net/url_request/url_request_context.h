@@ -9,7 +9,9 @@
 #define NET_URL_REQUEST_URL_REQUEST_CONTEXT_H_
 
 #include <stdint.h>
+
 #include <memory>
+#include <optional>
 #include <set>
 #include <string>
 
@@ -26,13 +28,11 @@
 #include "net/net_buildflags.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "net/url_request/url_request.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace net {
 class CertVerifier;
 class ClientSocketFactory;
 class CookieStore;
-class CTPolicyEnforcer;
 class HostResolver;
 class HttpAuthHandlerFactory;
 class HttpNetworkSession;
@@ -53,7 +53,6 @@ class TransportSecurityPersister;
 class TransportSecurityState;
 class URLRequest;
 class URLRequestJobFactory;
-class URLRequestThrottlerManager;
 class URLRequestContextBuilder;
 
 #if BUILDFLAG(ENABLE_REPORTING)
@@ -121,8 +120,8 @@ class NET_EXPORT URLRequestContext final {
       URLRequest::Delegate* delegate,
       NetworkTrafficAnnotationTag traffic_annotation,
       bool is_for_websockets = false,
-      const absl::optional<net::NetLogSource> net_log_source =
-          absl::nullopt) const;
+      const std::optional<net::NetLogSource> net_log_source =
+          std::nullopt) const;
 
   NetLog* net_log() const { return net_log_; }
 
@@ -167,26 +166,17 @@ class NET_EXPORT URLRequestContext final {
     return transport_security_state_.get();
   }
 
-  CTPolicyEnforcer* ct_policy_enforcer() const {
-    return ct_policy_enforcer_.get();
-  }
-
   SCTAuditingDelegate* sct_auditing_delegate() const {
     return sct_auditing_delegate_.get();
   }
 
   const URLRequestJobFactory* job_factory() const { return job_factory_; }
 
-  // May return nullptr.
-  URLRequestThrottlerManager* throttler_manager() const {
-    return throttler_manager_.get();
-  }
-
   QuicContext* quic_context() const { return quic_context_.get(); }
 
   // Gets the URLRequest objects that hold a reference to this
   // URLRequestContext.
-  std::set<const URLRequest*>* url_requests() const {
+  std::set<raw_ptr<const URLRequest, SetExperimental>>* url_requests() const {
     return url_requests_.get();
   }
 
@@ -241,6 +231,14 @@ class NET_EXPORT URLRequestContext final {
     job_factory_ = job_factory;
   }
 
+  const std::optional<std::string>& cookie_deprecation_label() const {
+    return cookie_deprecation_label_;
+  }
+
+  void set_cookie_deprecation_label(const std::optional<std::string>& label) {
+    cookie_deprecation_label_ = label;
+  }
+
  private:
   friend class URLRequestContextBuilder;
 
@@ -267,11 +265,8 @@ class NET_EXPORT URLRequestContext final {
   void set_cookie_store(std::unique_ptr<CookieStore> cookie_store);
   void set_transport_security_state(
       std::unique_ptr<TransportSecurityState> state);
-  void set_ct_policy_enforcer(std::unique_ptr<CTPolicyEnforcer> enforcer);
   void set_sct_auditing_delegate(std::unique_ptr<SCTAuditingDelegate> delegate);
   void set_job_factory(std::unique_ptr<const URLRequestJobFactory> job_factory);
-  void set_throttler_manager(
-      std::unique_ptr<URLRequestThrottlerManager> throttler_manager);
   void set_quic_context(std::unique_ptr<QuicContext> quic_context);
   void set_http_user_agent_settings(
       std::unique_ptr<const HttpUserAgentSettings> http_user_agent_settings);
@@ -310,15 +305,16 @@ class NET_EXPORT URLRequestContext final {
   std::unique_ptr<HostResolver> host_resolver_;
   std::unique_ptr<CertVerifier> cert_verifier_;
   std::unique_ptr<HttpAuthHandlerFactory> http_auth_handler_factory_;
-  std::unique_ptr<ProxyDelegate> proxy_delegate_;
   std::unique_ptr<NetworkDelegate> network_delegate_;
+  // `proxy_resolution_service_` may store a pointer to `proxy_delegate_`, so
+  // ensure that the latter outlives the former.
+  std::unique_ptr<ProxyDelegate> proxy_delegate_;
   std::unique_ptr<ProxyResolutionService> proxy_resolution_service_;
   std::unique_ptr<SSLConfigService> ssl_config_service_;
   std::unique_ptr<HttpServerProperties> http_server_properties_;
   std::unique_ptr<const HttpUserAgentSettings> http_user_agent_settings_;
   std::unique_ptr<CookieStore> cookie_store_;
   std::unique_ptr<TransportSecurityState> transport_security_state_;
-  std::unique_ptr<CTPolicyEnforcer> ct_policy_enforcer_;
   std::unique_ptr<SCTAuditingDelegate> sct_auditing_delegate_;
   std::unique_ptr<QuicContext> quic_context_;
   std::unique_ptr<ClientSocketFactory> client_socket_factory_;
@@ -328,8 +324,6 @@ class NET_EXPORT URLRequestContext final {
   // unique_ptr similarly to the other fields.
   std::unique_ptr<const URLRequestJobFactory> job_factory_storage_;
   raw_ptr<const URLRequestJobFactory> job_factory_ = nullptr;
-
-  std::unique_ptr<URLRequestThrottlerManager> throttler_manager_;
 
 #if BUILDFLAG(ENABLE_REPORTING)
   // Must precede |reporting_service_| and |network_error_logging_service_|
@@ -351,7 +345,8 @@ class NET_EXPORT URLRequestContext final {
 
   std::unique_ptr<TransportSecurityPersister> transport_security_persister_;
 
-  std::unique_ptr<std::set<const URLRequest*>> url_requests_;
+  std::unique_ptr<std::set<raw_ptr<const URLRequest, SetExperimental>>>
+      url_requests_;
 
   // Enables Brotli Content-Encoding support.
   bool enable_brotli_ = false;
@@ -364,6 +359,8 @@ class NET_EXPORT URLRequestContext final {
   // Triggers a DCHECK if a NetworkAnonymizationKey/IsolationInfo is not
   // provided to a request when true.
   bool require_network_anonymization_key_ = false;
+
+  std::optional<std::string> cookie_deprecation_label_;
 
   handles::NetworkHandle bound_network_;
 

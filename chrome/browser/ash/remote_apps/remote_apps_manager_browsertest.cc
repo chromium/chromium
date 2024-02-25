@@ -64,6 +64,7 @@
 #include "components/user_manager/user_manager.h"
 #include "components/user_manager/user_type.h"
 #include "content/public/test/browser_test.h"
+#include "content/public/test/test_utils.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/resource/resource_scale_factor.h"
@@ -106,7 +107,7 @@ gfx::ImageSkia CreateTestIcon(int size, SkColor color) {
   gfx::ImageSkia image_skia;
   const std::vector<ui::ResourceScaleFactor>& scale_factors =
       ui::GetSupportedResourceScaleFactors();
-  for (auto& scale : scale_factors) {
+  for (const auto scale : scale_factors) {
     image_skia.AddRepresentation(
         gfx::ImageSkiaRep(bitmap, ui::GetScaleForResourceScaleFactor(scale)));
   }
@@ -243,7 +244,7 @@ class RemoteAppsManagerBrowsertest
     ExpectImageDownloaderDownload(icon_url, icon);
     apps::AppUpdateWaiter waiter(profile_, app_id, IconChanged());
     AddApp(source_id, name, folder_id, icon_url, add_to_front);
-    waiter.Wait();
+    waiter.Await();
   }
 
   void AddAppAssertError(const std::string& source_id,
@@ -318,20 +319,21 @@ class RemoteAppsManagerBrowsertest
                              "screenplay-446812cc-07af-4094-bfb2-00150301ede3");
   }
 
-  raw_ptr<app_list::AppListSyncableService, ExperimentalAsh>
+  raw_ptr<app_list::AppListSyncableService, DanglingUntriaged>
       app_list_syncable_service_;
-  raw_ptr<AppListModelUpdater, ExperimentalAsh> app_list_model_updater_;
+  raw_ptr<AppListModelUpdater, DanglingUntriaged> app_list_model_updater_;
   ash::AppListTestApi app_list_test_api_;
-  raw_ptr<RemoteAppsManager, ExperimentalAsh> manager_ = nullptr;
-  raw_ptr<MockImageDownloader, ExperimentalAsh> image_downloader_ = nullptr;
-  raw_ptr<Profile, ExperimentalAsh> profile_ = nullptr;
+  raw_ptr<RemoteAppsManager, DanglingUntriaged> manager_ = nullptr;
+  raw_ptr<MockImageDownloader, DanglingUntriaged> image_downloader_ = nullptr;
+  raw_ptr<Profile, DanglingUntriaged> profile_ = nullptr;
   EmbeddedPolicyTestServerMixin policy_test_server_mixin_{&mixin_host_};
 
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-IN_PROC_BROWSER_TEST_F(RemoteAppsManagerBrowsertest, AddApp) {
+// TODO: b/316517034 - Enable the test when flakiness issue is resolved.
+IN_PROC_BROWSER_TEST_F(RemoteAppsManagerBrowsertest, DISABLED_AddApp) {
   AddScreenplayTag();
 
   // Show launcher UI so that app icons are loaded.
@@ -355,7 +357,7 @@ IN_PROC_BROWSER_TEST_F(RemoteAppsManagerBrowsertest, AddApp) {
   iv->icon_type = apps::IconType::kStandard;
   iv->uncompressed = icon;
   apps::ApplyIconEffects(
-      profile_, /*app_id=*/absl::nullopt, apps::IconEffects::kCrOsStandardIcon,
+      profile_, /*app_id=*/std::nullopt, apps::IconEffects::kCrOsStandardIcon,
       /*size_hint_in_dip=*/64, std::move(iv), future.GetCallback());
 
   // App's icon is the downloaded icon.
@@ -364,7 +366,9 @@ IN_PROC_BROWSER_TEST_F(RemoteAppsManagerBrowsertest, AddApp) {
 
 // Adds an app with an empty icon URL and checks if the app gets assigned the
 // default placeholder icon.
-IN_PROC_BROWSER_TEST_F(RemoteAppsManagerBrowsertest, AddAppPlaceholderIcon) {
+// Flaky (b/41483673)
+IN_PROC_BROWSER_TEST_F(RemoteAppsManagerBrowsertest,
+                       DISABLED_AddAppPlaceholderIcon) {
   // Show launcher UI so that app icons are loaded.
   ShowLauncherAppsGrid(/*wait_for_opening_animation=*/true);
 
@@ -386,7 +390,7 @@ IN_PROC_BROWSER_TEST_F(RemoteAppsManagerBrowsertest, AddAppPlaceholderIcon) {
       manager_->GetPlaceholderIcon(kId1, /*size_hint_in_dip=*/64);
   iv->is_placeholder_icon = true;
   apps::ApplyIconEffects(
-      profile_, /*app_id=*/absl::nullopt, apps::IconEffects::kCrOsStandardIcon,
+      profile_, /*app_id=*/std::nullopt, apps::IconEffects::kCrOsStandardIcon,
       /*size_hint_in_dip=*/64, std::move(iv), future.GetCallback());
 
   // App's icon is placeholder.

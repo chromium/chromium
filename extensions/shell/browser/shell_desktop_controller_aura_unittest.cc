@@ -8,6 +8,7 @@
 
 #include "base/memory/ptr_util.h"
 #include "base/time/time.h"
+#include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/web_contents.h"
@@ -119,7 +120,13 @@ TEST_F(ShellDesktopControllerAuraTest, PowerButton) {
 
 // Tests that basic input events are handled and forwarded to the host.
 // TODO(michaelpg): Test other types of input.
-TEST_F(ShellDesktopControllerAuraTest, InputEvents) {
+// Flaky on Linux dbg.  http://crbug.com/1516907
+#if BUILDFLAG(IS_LINUX) && !defined(NDEBUG)
+#define MAYBE_InputEvents DISABLED_InputEvents
+#else
+#define MAYBE_InputEvents InputEvents
+#endif
+TEST_F(ShellDesktopControllerAuraTest, MAYBE_InputEvents) {
   scoped_refptr<const Extension> extension = ExtensionBuilder("Test").Build();
   CreateAppWindow(extension.get());
 

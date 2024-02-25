@@ -13,6 +13,8 @@
 #include "base/files/file_path.h"
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
+#include "base/test/bind.h"
+#include "base/win/window_enumerator.h"
 #include "chrome/test/base/process_lineage_win.h"
 #include "chrome/test/base/save_desktop_snapshot.h"
 #include "ui/display/win/screen_win.h"
@@ -38,64 +40,25 @@ constexpr char kWindowFoundPostTest[] =
     "out. This may have been caused by this test or a previous test and may "
     "cause flakes;";
 
-// A window enumerator that searches for always-on-top windows. A snapshot of
-// the screen is saved if any unexpected on-top windows are found.
-class WindowEnumerator {
- public:
-  // |run_type| influences which log message is used. |child_command_line|, only
-  // specified when |run_type| is AFTER_TEST_TIMEOUT, is the command line of the
-  // child process that timed out.
-  WindowEnumerator(RunType run_type,
-                   const base::CommandLine* child_command_line);
-  WindowEnumerator(const WindowEnumerator&) = delete;
-  WindowEnumerator& operator=(const WindowEnumerator&) = delete;
-  void Run();
+}  // namespace
 
- private:
-  // An EnumWindowsProc invoked by EnumWindows once for each window.
-  static BOOL CALLBACK OnWindowProc(HWND hwnd, LPARAM l_param);
-
-  // Returns true if |hwnd| is an always-on-top window.
-  static bool IsTopmostWindow(HWND hwnd);
-
-  // Returns the class name of |hwnd| or an empty string in case of error.
-  static std::wstring GetWindowClass(HWND hwnd);
-
-  // Returns true if |class_name| is the name of a system dialog.
-  static bool IsSystemDialogClass(const std::wstring& class_name);
-
-  // Returns true if |class_name| is the name of a window owned by the Windows
-  // shell.
-  static bool IsShellWindowClass(const std::wstring& class_name);
-
-  // Main processing function run for each window.
-  BOOL OnWindow(HWND hwnd);
-
-  const base::FilePath output_dir_;
-  const RunType run_type_;
-  const raw_ptr<const base::CommandLine> child_command_line_;
-  bool saved_snapshot_ = false;
-};
-
-WindowEnumerator::WindowEnumerator(RunType run_type,
-                                   const base::CommandLine* child_command_line)
-    : output_dir_(base::CommandLine::ForCurrentProcess()->GetSwitchValuePath(
-          kSnapshotOutputDir)),
-      run_type_(run_type),
-      child_command_line_(child_command_line) {}
-
-void WindowEnumerator::Run() {
-  if (run_type_ == RunType::AFTER_TEST_TIMEOUT && !output_dir_.empty()) {
-    base::FilePath snapshot_file = SaveDesktopSnapshot(output_dir_);
+void KillAlwaysOnTopWindows(RunType run_type,
+                            const base::CommandLine* child_command_line) {
+  const base::FilePath output_dir =
+      base::CommandLine::ForCurrentProcess()->GetSwitchValuePath(
+          kSnapshotOutputDir);
+  bool saved_snapshot = false;
+  if (run_type == RunType::AFTER_TEST_TIMEOUT && !output_dir.empty()) {
+    base::FilePath snapshot_file = SaveDesktopSnapshot(output_dir);
     if (!snapshot_file.empty()) {
-      saved_snapshot_ = true;
+      saved_snapshot = true;
 
       std::wostringstream sstream;
       sstream << "Screen snapshot saved to file: \"" << snapshot_file.value()
               << "\" after timeout of test";
-      if (child_command_line_) {
+      if (child_command_line) {
         sstream << " process with command line: \""
-                << child_command_line_->GetCommandLineString() << "\".";
+                << child_command_line->GetCommandLineString() << "\".";
       } else {
         sstream << ".";
       }
@@ -103,133 +66,101 @@ void WindowEnumerator::Run() {
     }
   }
 
-  ::EnumWindows(&OnWindowProc, reinterpret_cast<LPARAM>(this));
-}
+  base::win::EnumerateChildWindows(
+      ::GetDesktopWindow(), base::BindLambdaForTesting([&](HWND hwnd) {
+        const bool kContinueIterating = false;
 
-// static
-BOOL CALLBACK WindowEnumerator::OnWindowProc(HWND hwnd, LPARAM l_param) {
-  return reinterpret_cast<WindowEnumerator*>(l_param)->OnWindow(hwnd);
-}
+        if (!::IsWindowVisible(hwnd) || ::IsIconic(hwnd) ||
+            !base::win::IsTopmostWindow(hwnd)) {
+          return kContinueIterating;
+        }
 
-// static
-bool WindowEnumerator::IsTopmostWindow(HWND hwnd) {
-  const LONG ex_styles = ::GetWindowLong(hwnd, GWL_EXSTYLE);
-  return (ex_styles & WS_EX_TOPMOST) != 0;
-}
+        const std::wstring class_name = base::win::GetWindowClass(hwnd);
+        if (class_name.empty()) {
+          return kContinueIterating;
+        }
 
-// static
-std::wstring WindowEnumerator::GetWindowClass(HWND hwnd) {
-  wchar_t buffer[257];  // Max is 256.
-  buffer[std::size(buffer) - 1] = L'\0';
-  int name_len = ::GetClassName(hwnd, &buffer[0], std::size(buffer));
-  if (name_len <= 0 || static_cast<size_t>(name_len) >= std::size(buffer))
-    return std::wstring();
-  return std::wstring(&buffer[0], name_len);
-}
+        // Ignore specific windows owned by the shell.
+        if (base::win::IsShellWindow(hwnd)) {
+          return kContinueIterating;
+        }
 
-// static
-bool WindowEnumerator::IsSystemDialogClass(const std::wstring& class_name) {
-  return class_name == L"#32770";
-}
+        // All other always-on-top windows may be problematic, but in theory
+        // tests should not be creating an always on top window that outlives
+        // the test. Prepare details of the command line of the test that timed
+        // out (if provided), the process owning the window, and the location of
+        // a snapshot taken of the screen.
+        std::wstring details;
+        if (LOG_IS_ON(ERROR)) {
+          std::wostringstream sstream;
 
-// static
-bool WindowEnumerator::IsShellWindowClass(const std::wstring& class_name) {
-  // 'Button' is the start button, 'Shell_TrayWnd' the taskbar, and
-  // 'Shell_SecondaryTrayWnd' is the taskbar on non-primary displays.
-  return class_name == L"Button" || class_name == L"Shell_TrayWnd" ||
-         class_name == L"Shell_SecondaryTrayWnd";
-}
+          if (!base::win::IsSystemDialog(hwnd)) {
+            sstream << " window class name: " << class_name << ";";
+          }
 
-BOOL WindowEnumerator::OnWindow(HWND hwnd) {
-  const BOOL kContinueIterating = TRUE;
+          if (child_command_line) {
+            sstream << " subprocess command line: \""
+                    << child_command_line->GetCommandLineString() << "\";";
+          }
 
-  if (!::IsWindowVisible(hwnd) || ::IsIconic(hwnd) || !IsTopmostWindow(hwnd))
-    return kContinueIterating;
+          // Save a snapshot of the screen if one hasn't already been saved and
+          // an output directory was specified.
+          base::FilePath snapshot_file;
+          if (!saved_snapshot && !output_dir.empty()) {
+            snapshot_file = SaveDesktopSnapshot(output_dir);
+            if (!snapshot_file.empty()) {
+              saved_snapshot = true;
+            }
+          }
 
-  std::wstring class_name = GetWindowClass(hwnd);
-  if (class_name.empty())
-    return kContinueIterating;
+          DWORD process_id = 0;
+          GetWindowThreadProcessId(hwnd, &process_id);
+          ProcessLineage lineage = ProcessLineage::Create(process_id);
+          if (!lineage.IsEmpty()) {
+            sstream << " owning process lineage: " << lineage.ToString() << ";";
+          }
 
-  // Ignore specific windows owned by the shell.
-  if (IsShellWindowClass(class_name))
-    return kContinueIterating;
+          if (!snapshot_file.empty()) {
+            sstream << " screen snapshot saved to file: \""
+                    << snapshot_file.value() << "\";";
+          }
 
-  // All other always-on-top windows may be problematic, but in theory tests
-  // should not be creating an always on top window that outlives the test.
-  // Prepare details of the command line of the test that timed out (if
-  // provided), the process owning the window, and the location of a snapshot
-  // taken of the screen.
-  std::wstring details;
-  if (LOG_IS_ON(ERROR)) {
-    std::wostringstream sstream;
+          details = sstream.str();
+        }
 
-    if (!IsSystemDialogClass(class_name))
-      sstream << " window class name: " << class_name << ";";
+        // System dialogs may be present if a child process triggers an
+        // assert(), for example.
+        if (base::win::IsSystemDialog(hwnd)) {
+          LOG(ERROR) << (run_type == RunType::BEFORE_SHARD
+                             ? kDialogFoundBeforeTest
+                             : kDialogFoundPostTest)
+                     << details;
+          // We don't own the dialog, so we can't destroy it. CloseWindow()
+          // results in iconifying the window. An alternative may be to focus
+          // it, then send return and wait for close. As we reboot machines
+          // running interactive ui tests at least every 12 hours we're going
+          // with the simple for now.
+          CloseWindow(hwnd);
+        } else {
+          LOG(ERROR) << (run_type == RunType::BEFORE_SHARD
+                             ? kWindowFoundBeforeTest
+                             : kWindowFoundPostTest)
+                     << details;
+          // Try to strip the style and iconify the window.
+          if (::SetWindowLongPtr(
+                  hwnd, GWL_EXSTYLE,
+                  ::GetWindowLong(hwnd, GWL_EXSTYLE) & ~WS_EX_TOPMOST)) {
+            LOG(ERROR) << "Stripped WS_EX_TOPMOST.";
+          } else {
+            PLOG(ERROR) << "Failed to strip WS_EX_TOPMOST";
+          }
+          if (::ShowWindow(hwnd, SW_FORCEMINIMIZE)) {
+            LOG(ERROR) << "Minimized window.";
+          } else {
+            PLOG(ERROR) << "Failed to minimize window";
+          }
+        }
 
-    if (child_command_line_) {
-      sstream << " subprocess command line: \""
-              << child_command_line_->GetCommandLineString() << "\";";
-    }
-
-    // Save a snapshot of the screen if one hasn't already been saved and an
-    // output directory was specified.
-    base::FilePath snapshot_file;
-    if (!saved_snapshot_ && !output_dir_.empty()) {
-      snapshot_file = SaveDesktopSnapshot(output_dir_);
-      if (!snapshot_file.empty())
-        saved_snapshot_ = true;
-    }
-
-    DWORD process_id = 0;
-    GetWindowThreadProcessId(hwnd, &process_id);
-    ProcessLineage lineage = ProcessLineage::Create(process_id);
-    if (!lineage.IsEmpty())
-      sstream << " owning process lineage: " << lineage.ToString() << ";";
-
-    if (!snapshot_file.empty()) {
-      sstream << " screen snapshot saved to file: \"" << snapshot_file.value()
-              << "\";";
-    }
-
-    details = sstream.str();
-  }
-
-  // System dialogs may be present if a child process triggers an assert(), for
-  // example.
-  if (IsSystemDialogClass(class_name)) {
-    LOG(ERROR) << (run_type_ == RunType::BEFORE_SHARD ? kDialogFoundBeforeTest
-                                                      : kDialogFoundPostTest)
-               << details;
-    // We don't own the dialog, so we can't destroy it. CloseWindow()
-    // results in iconifying the window. An alternative may be to focus it,
-    // then send return and wait for close. As we reboot machines running
-    // interactive ui tests at least every 12 hours we're going with the
-    // simple for now.
-    CloseWindow(hwnd);
-  } else {
-    LOG(ERROR) << (run_type_ == RunType::BEFORE_SHARD ? kWindowFoundBeforeTest
-                                                      : kWindowFoundPostTest)
-               << details;
-    // Try to strip the style and iconify the window.
-    if (::SetWindowLongPtr(
-            hwnd, GWL_EXSTYLE,
-            ::GetWindowLong(hwnd, GWL_EXSTYLE) & ~WS_EX_TOPMOST)) {
-      LOG(ERROR) << "Stripped WS_EX_TOPMOST.";
-    } else {
-      PLOG(ERROR) << "Failed to strip WS_EX_TOPMOST";
-    }
-    if (::ShowWindow(hwnd, SW_FORCEMINIMIZE))
-      LOG(ERROR) << "Minimized window.";
-    else
-      PLOG(ERROR) << "Failed to minimize window";
-  }
-
-  return kContinueIterating;
-}
-
-}  // namespace
-
-void KillAlwaysOnTopWindows(RunType run_type,
-                            const base::CommandLine* child_command_line) {
-  WindowEnumerator(run_type, child_command_line).Run();
+        return kContinueIterating;
+      }));
 }

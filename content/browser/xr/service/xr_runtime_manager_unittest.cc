@@ -43,6 +43,7 @@ class XRRuntimeManagerTest : public testing::Test {
   }
 
   void TearDown() override {
+    ClearProvider();
     DropRuntimeManagerRef();
     EXPECT_EQ(XRRuntimeManager::GetInstanceIfCreated(), nullptr);
   }
@@ -84,8 +85,10 @@ class XRRuntimeManagerTest : public testing::Test {
   // reference counting behavior of the XRRuntimeManagerImpl singleton.
   void DropRuntimeManagerRef() { xr_runtime_manager_ = nullptr; }
 
+  void ClearProvider() { provider_ = nullptr; }
+
  private:
-  raw_ptr<device::FakeVRDeviceProvider, DanglingUntriaged> provider_ = nullptr;
+  raw_ptr<device::FakeVRDeviceProvider> provider_ = nullptr;
   scoped_refptr<XRRuntimeManagerImpl> xr_runtime_manager_;
 };
 
@@ -124,6 +127,7 @@ TEST_F(XRRuntimeManagerTest, DeviceManagerRegistration) {
   EXPECT_EQ(1u, ServiceCount());
   service_2.reset();
 
+  ClearProvider();
   DropRuntimeManagerRef();
   EXPECT_EQ(XRRuntimeManager::GetInstanceIfCreated(), nullptr);
 }

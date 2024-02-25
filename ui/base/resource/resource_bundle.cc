@@ -22,6 +22,7 @@
 #include "base/notreached.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/path_service.h"
+#include "base/ranges/algorithm.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
@@ -199,7 +200,7 @@ void DecompressIfNeeded(base::StringPiece data, OutputBufferType output) {
     DCHECK(success);
   } else {
     base::span<uint8_t> dest = GetBufferForWriting(output, data.size());
-    memcpy(dest.data(), data.data(), dest.size());
+    base::ranges::copy(data, dest.data());
   }
 }
 
@@ -489,12 +490,11 @@ std::string ResourceBundle::LoadLocaleResources(const std::string& pref_locale,
 void ResourceBundle::LoadTestResources(const base::FilePath& path,
                                        const base::FilePath& locale_path) {
   is_test_resources_ = true;
-  DCHECK(!ui::GetSupportedResourceScaleFactors().empty());
   // Use the given resource pak for both common and localized resources.
 
   if (!path.empty()) {
-    const ResourceScaleFactor scale_factor(
-        ui::GetSupportedResourceScaleFactors()[0]);
+    const ResourceScaleFactor scale_factor =
+        ui::GetSupportedResourceScaleFactors()[0];
     auto data_pack = std::make_unique<DataPack>(scale_factor);
     CHECK(data_pack->LoadFromPath(path));
     AddResourceHandle(std::move(data_pack));
@@ -607,7 +607,7 @@ gfx::Image& ResourceBundle::GetImageNamed(int resource_id) {
   return inserted.first->second;
 }
 
-absl::optional<ResourceBundle::LottieData> ResourceBundle::GetLottieData(
+std::optional<ResourceBundle::LottieData> ResourceBundle::GetLottieData(
     int resource_id) const {
   // The prefix that GRIT prepends to Lottie assets, after compression if any.
   // See: tools/grit/grit/node/structure.py
@@ -616,7 +616,7 @@ absl::optional<ResourceBundle::LottieData> ResourceBundle::GetLottieData(
   const base::StringPiece potential_lottie = GetRawDataResource(resource_id);
   if (potential_lottie.substr(0u, std::size(kLottiePrefix)) !=
       base::StringPiece(kLottiePrefix, std::size(kLottiePrefix))) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   LottieData result;
@@ -635,7 +635,7 @@ const ui::ImageModel& ResourceBundle::GetThemedLottieImageNamed(
   if (found != image_models_.end())
     return found->second;
 
-  absl::optional<LottieData> data = GetLottieData(resource_id);
+  std::optional<LottieData> data = GetLottieData(resource_id);
   if (!data) {
     LOG(WARNING) << "Unable to load themed Lottie image with id "
                  << resource_id;
@@ -748,7 +748,7 @@ base::StringPiece ResourceBundle::GetRawDataResourceForScale(
 
 std::string ResourceBundle::LoadDataResourceString(int resource_id) const {
   if (delegate_) {
-    absl::optional<std::string> data =
+    std::optional<std::string> data =
         delegate_->LoadDataResourceString(resource_id);
     if (data)
       return data.value();
@@ -1064,7 +1064,7 @@ void ResourceBundle::InitDefaultFontList() {
 gfx::ImageSkia ResourceBundle::CreateImageSkia(int resource_id) {
   DCHECK(!resource_handles_.empty()) << "Missing call to SetResourcesDataDLL?";
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  absl::optional<LottieData> data = GetLottieData(resource_id);
+  std::optional<LottieData> data = GetLottieData(resource_id);
   if (data) {
     return (*g_parse_lottie_as_still_image_)(std::move(*data));
   }
@@ -1190,7 +1190,7 @@ std::u16string ResourceBundle::GetLocalizedStringImpl(int resource_id) const {
     return std::u16string();
   }
 
-  absl::optional<base::StringPiece> data;
+  std::optional<base::StringPiece> data;
   ResourceHandle::TextEncodingType encoding =
       locale_resources_data_->GetTextEncodingType();
   if (!(data = locale_resources_data_->GetStringPiece(

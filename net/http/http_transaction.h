@@ -227,6 +227,18 @@ class NET_EXPORT_PRIVATE HttpTransaction {
   // byte of the response body has been read, as the connection is no longer in
   // use at that point.
   virtual void CloseConnectionOnDestruction() = 0;
+
+  // Returns true if ProxyInfo has been determined for the transaction and that
+  // the ProxyInfo indicates the origin's domain is on the IP Protection Masked
+  // Domain List. Note that this may not be determined if no network request is
+  // actually made (and thus no ProxyInfo computed). However, the metrics we're
+  // interested in focus on requests which actually reach out to the network, so
+  // this is not a problem. See also HttpResponseInfo's was_mdl_match as a
+  // secondary signal.
+  //
+  // Only use this method for metrics. It may be removed when associated
+  // histograms are removed.
+  virtual bool IsMdlMatchForMetrics() const = 0;
 };
 
 }  // namespace net

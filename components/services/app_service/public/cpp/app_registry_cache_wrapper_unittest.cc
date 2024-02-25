@@ -29,6 +29,13 @@ class AppRegistryCacheWrapperTest : public testing::Test,
     EXPECT_EQ(account_id, last_account_id_);
   }
 
+  void OnApps(AppRegistryCache& cache,
+              std::vector<AppPtr> deltas,
+              apps::AppType app_type,
+              bool should_notify_initialized) {
+    cache.OnApps(std::move(deltas), app_type, should_notify_initialized);
+  }
+
   AccountId& account_id_1() { return account_id_1_; }
   AccountId& account_id_2() { return account_id_2_; }
 
@@ -50,8 +57,8 @@ TEST_F(AppRegistryCacheWrapperTest, OneAccount) {
 
   std::vector<AppPtr> deltas;
   deltas.push_back(std::make_unique<App>(AppType::kArc, "app_id"));
-  cache1.OnApps(std::move(deltas), AppType::kArc,
-                true /* should_notify_initialized */);
+  OnApps(cache1, std::move(deltas), AppType::kArc,
+         /*should_notify_initialized=*/true);
 
   VerifyAccountId(account_id_1());
   observation.Reset();
@@ -72,8 +79,8 @@ TEST_F(AppRegistryCacheWrapperTest, MultipleAccounts) {
 
   std::vector<AppPtr> deltas1;
   deltas1.push_back(std::make_unique<App>(AppType::kArc, "app_id1"));
-  cache1.OnApps(std::move(deltas1), AppType::kArc,
-                /*should_notify_initialized=*/true);
+  OnApps(cache1, std::move(deltas1), AppType::kArc,
+         /*should_notify_initialized=*/true);
 
   VerifyAccountId(account_id_1());
 
@@ -82,8 +89,8 @@ TEST_F(AppRegistryCacheWrapperTest, MultipleAccounts) {
 
   std::vector<AppPtr> deltas2;
   deltas2.push_back(std::make_unique<App>(AppType::kArc, "app_id2"));
-  cache2.OnApps(std::move(deltas2), AppType::kArc,
-                /*should_notify_initialized=*/true);
+  OnApps(cache2, std::move(deltas2), AppType::kArc,
+         /*should_notify_initialized=*/true);
 
   VerifyAccountId(account_id_2());
   observation.Reset();

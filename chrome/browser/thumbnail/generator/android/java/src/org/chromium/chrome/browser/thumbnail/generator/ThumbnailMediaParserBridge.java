@@ -4,8 +4,9 @@
 
 package org.chromium.chrome.browser.thumbnail.generator;
 
+import org.jni_zero.NativeMethods;
+
 import org.chromium.base.Callback;
-import org.chromium.base.annotations.NativeMethods;
 
 /**
  * A JNI bridge for testing native ThumbnailMediaParser, which parses media file safely in an

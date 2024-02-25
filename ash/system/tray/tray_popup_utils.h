@@ -68,7 +68,7 @@ class ASH_EXPORT TrayPopupUtils {
   //
   // The CENTER container has a flexible width.
   //
-  // `use_wide_layout` uses a wider layout, typically for QsRevamp.
+  // `use_wide_layout` uses a wider layout.
   static TriView* CreateDefaultRowView(bool use_wide_layout);
 
   // Creates a container view to be used by system menu sub-section header rows.
@@ -106,7 +106,7 @@ class ASH_EXPORT TrayPopupUtils {
   // Clients can use ConfigureContainer() to configure their own container views
   // before adding them to the returned TriView.
   //
-  // `use_wide_layout` uses a wider layout, typically for QsRevamp.
+  // `use_wide_layout` uses a wider layout.
   static TriView* CreateMultiTargetRowView(bool use_wide_layout);
 
   // Returns a label that has been configured for system menu layout. This
@@ -126,14 +126,17 @@ class ASH_EXPORT TrayPopupUtils {
   //
   // TODO(bruthig): Update all system menu rows to use this.
   //
-  // `use_wide_layout` uses a wider layout, typically for QsRevamp.
+  // `use_wide_layout` uses a wider layout.
   static views::ImageView* CreateMainImageView(bool use_wide_layout);
 
   // Creates a default focus painter used for most things in tray popups.
   static std::unique_ptr<views::Painter> CreateFocusPainter();
 
-  // Sets up |view| to be a sticky header in a tray detail scroll view.
-  static void ConfigureAsStickyHeader(views::View* view);
+  // Sets up `view` with the tray detail scroll view header specs.
+  static void ConfigureHeader(views::View* view);
+
+  // Sets up `ink_drop` according to jelly ux requirements for row buttons.
+  static void ConfigureRowButtonInkdrop(views::InkDropHost* ink_drop);
 
   // Creates a button for use in the system menu. For MD, this is a prominent
   // text
@@ -153,11 +156,6 @@ class ASH_EXPORT TrayPopupUtils {
       views::View* host,
       TrayPopupInkDropStyle ink_drop_style);
 
-  // Create a horizontal separator line to be drawn between rows in a detailed
-  // view above the sub-header rows. Caller assumes ownership of the returned
-  // view.
-  static views::Separator* CreateListSubHeaderSeparator();
-
   // Creates and returns a horizontal separator line to be drawn between rows
   // in a detailed view. If |left_inset| is true, then the separator is inset on
   // the left by the width normally occupied by an icon. Caller assumes
@@ -168,6 +166,11 @@ class ASH_EXPORT TrayPopupUtils {
   // i.e. the user is logged in, not on the lock screen, not adding a secondary
   // user, and not in the supervised user creation flow.
   static bool CanOpenWebUISettings();
+
+  // Returns true if it is possible to show the night light feature tile, i.e.
+  // the `session_manager::SessionState` is ACTIVE, LOGGED_IN_NOT_ACTIVE, or
+  // LOCKED.
+  static bool CanShowNightLightFeatureTile();
 
   // Initializes a row in the system menu as checkable and update the check mark
   // status of this row. If |enterprise_managed| is true, adds an enterprise
@@ -185,12 +188,6 @@ class ASH_EXPORT TrayPopupUtils {
 
   // Creates the check mark.
   static ui::ImageModel CreateCheckMark(ui::ColorId color_id);
-
-  // Sets the font list for |label| based on |style|.
-  // DEPRECATED: Use `TypographyProvider` in new code. If you need legacy fonts,
-  // use TypographyToken::kLegacy*. This function DCHECKs if used when QsRevamp
-  // and Jelly are both enabled.
-  static void SetLabelFontList(views::Label* label, FontStyle style);
 };
 
 }  // namespace ash

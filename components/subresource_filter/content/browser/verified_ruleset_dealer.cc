@@ -11,7 +11,6 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/location.h"
-#include "base/metrics/histogram_macros.h"
 #include "base/notreached.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/trace_event/trace_event.h"
@@ -61,7 +60,7 @@ scoped_refptr<const MemoryMappedRuleset> VerifiedRulesetDealer::GetRuleset() {
     case RulesetVerificationStatus::kNotVerified: {
       auto ruleset = RulesetDealer::GetRuleset();
       if (ruleset) {
-        if (IndexedRulesetMatcher::Verify(ruleset->data(), ruleset->length(),
+        if (IndexedRulesetMatcher::Verify(ruleset->data(),
                                           expected_checksum_)) {
           status_ = RulesetVerificationStatus::kIntact;
         } else {
@@ -71,8 +70,6 @@ scoped_refptr<const MemoryMappedRuleset> VerifiedRulesetDealer::GetRuleset() {
       } else {
         status_ = RulesetVerificationStatus::kInvalidFile;
       }
-      UMA_HISTOGRAM_ENUMERATION("SubresourceFilter.RulesetVerificationStatus",
-                                status_);
       return ruleset;
     }
     case RulesetVerificationStatus::kIntact: {
@@ -96,7 +93,12 @@ VerifiedRulesetDealer::Handle::Handle(
       dealer_(new VerifiedRulesetDealer,
               base::OnTaskRunnerDeleter(std::move(task_runner))) {}
 
-VerifiedRulesetDealer::Handle::~Handle() = default;
+VerifiedRulesetDealer::Handle::~Handle() {
+  // The `base::SequencedTaskRunner` that `task_runner_` points to is owned by
+  // `dealer_`. Make sure to clear it before `dealer_` is destroyed to avoid
+  // holding a dangling pointer.
+  task_runner_ = nullptr;
+}
 
 void VerifiedRulesetDealer::Handle::GetDealerAsync(
     base::OnceCallback<void(VerifiedRulesetDealer*)> callback) {

@@ -8,20 +8,20 @@
 #include <unistd.h>
 
 #include "ash/components/arc/arc_prefs.h"
+#include "ash/components/arc/metrics/arc_metrics_service.h"
 #include "ash/components/arc/metrics/stability_metrics_manager.h"
 #include "ash/components/arc/session/arc_bridge_service.h"
 #include "ash/components/arc/session/arc_service_manager.h"
 #include "ash/components/arc/test/fake_process_instance.h"
-#include "ash/components/arc/test/test_browser_context.h"
 #include "base/memory/raw_ptr.h"
 #include "chromeos/ash/components/dbus/resourced/fake_resourced_client.h"
+#include "chromeos/ash/components/dbus/session_manager/fake_session_manager_client.h"
+#include "components/session_manager/core/session_manager.h"
+#include "components/user_prefs/test/test_browser_context_with_prefs.h"
 #include "content/public/test/browser_task_environment.h"
 #include "mojo/public/cpp/system/platform_handle.h"
 #include "testing/gtest/include/gtest/gtest.h"
-
-#include "ash/components/arc/metrics/arc_metrics_service.h"
-#include "chromeos/ash/components/dbus/session_manager/fake_session_manager_client.h"
-#include "components/session_manager/core/session_manager.h"
+#include "ui/display/test/test_screen.h"
 
 namespace arc {
 namespace {
@@ -76,7 +76,7 @@ class ArcMemoryPressureBridgeTest : public testing::Test {
 
  private:
   static ArcMemoryPressureBridge* GetBridge(
-      TestBrowserContext& context,
+      user_prefs::TestBrowserContextWithPrefs& context,
       TestingPrefServiceSimple& local_state,
       AppKillObserver& kill_observer) {
     prefs::RegisterLocalStatePrefs(local_state.registry());
@@ -94,12 +94,14 @@ class ArcMemoryPressureBridgeTest : public testing::Test {
   AppKillObserver kill_observer_;
   ash::FakeResourcedClient fake_resourced_client_;
   content::BrowserTaskEnvironment task_environment_;
+  display::test::TestScreen test_screen_{/*create_display=*/true,
+                                         /*register_screen=*/true};
   TestingPrefServiceSimple local_state_;
   session_manager::SessionManager session_manager_;
   ArcServiceManager arc_service_manager_;
-  TestBrowserContext context_;
+  user_prefs::TestBrowserContextWithPrefs context_;
   FakeProcessInstance fake_process_instance_;
-  const raw_ptr<ArcMemoryPressureBridge, ExperimentalAsh> bridge_;
+  const raw_ptr<ArcMemoryPressureBridge> bridge_;
 };
 
 TEST_F(ArcMemoryPressureBridgeTest, ConstructDestruct) {}

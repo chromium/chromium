@@ -1,0 +1,50 @@
+// Copyright 2023 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = "proto2";
+
+package related_website_sets.proto;
+
+message Policy {
+  repeated Set replacements = 1;
+  repeated Set additions = 2;
+}
+
+message Set {
+  required Site primary = 1;
+  repeated Site associated = 2;
+  repeated Site service = 3;
+  repeated SitePair cctld_aliases = 4;
+}
+
+message SitePair {
+  required CctldSite alias = 1;
+  required Site canonical = 2;
+}
+
+enum Site {
+  SITE_0 = 0;
+  SITE_1 = 1;
+  SITE_2 = 2;
+  SITE_3 = 3;
+  SITE_4 = 4;
+  SITE_5 = 5;
+  SITE_6 = 6;
+  SITE_7 = 7;
+  SITE_8 = 8;
+  SITE_9 = 9;
+}
+
+enum CctldSite {
+  CCTLD_0 = 0;
+  CCTLD_1 = 1;
+  CCTLD_2 = 2;
+  CCTLD_3 = 3;
+  CCTLD_4 = 4;
+  CCTLD_5 = 5;
+  CCTLD_6 = 6;
+  CCTLD_7 = 7;
+  CCTLD_8 = 8;
+  CCTLD_9 = 9;
+}

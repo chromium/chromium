@@ -106,10 +106,9 @@ void WebTestWithWebState::WaitForBackgroundTasks() {
   web::test::WaitForBackgroundTasks();
 }
 
-void WebTestWithWebState::WaitForCondition(ConditionBlock condition) {
-  // TODO(crbug.com/1462320): Propagate the bool up instead of CHECK-ing.
-  CHECK(base::test::ios::WaitUntilConditionOrTimeout(base::Seconds(1000), true,
-                                                     condition));
+bool WebTestWithWebState::WaitForCondition(ConditionBlock condition) {
+  return base::test::ios::WaitUntilConditionOrTimeout(base::Seconds(1000), true,
+                                                      condition);
 }
 
 bool WebTestWithWebState::WaitUntilLoaded() {

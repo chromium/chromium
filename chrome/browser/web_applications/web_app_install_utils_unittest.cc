@@ -5,8 +5,10 @@
 #include "chrome/browser/web_applications/web_app_install_utils.h"
 
 #include <stddef.h>
+
 #include <map>
 #include <memory>
+#include <optional>
 #include <set>
 #include <string>
 #include <type_traits>
@@ -36,7 +38,6 @@
 #include "components/services/app_service/public/cpp/url_handler_info.h"
 #include "mojo/public/cpp/bindings/struct_ptr.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/manifest/manifest.h"
 #include "third_party/blink/public/common/permissions_policy/origin_with_possible_wildcards.h"
@@ -53,17 +54,6 @@
 #include "url/gurl.h"
 #include "url/origin.h"
 
-#if BUILDFLAG(IS_WIN)
-#include "base/test/bind.h"
-#include "base/test/gmock_callback_support.h"
-#include "chrome/browser/web_applications/test/mock_os_integration_manager.h"
-#include "chrome/common/chrome_features.h"
-#include "components/webapps/browser/installable/installable_metrics.h"
-#include "content/public/test/browser_task_environment.h"
-#include "testing/gmock/include/gmock/gmock-actions.h"
-#include "testing/gmock/include/gmock/gmock.h"
-
-#endif
 namespace web_app {
 
 using Purpose = blink::mojom::ManifestImageResource_Purpose;
@@ -292,7 +282,7 @@ TEST(WebAppInstallUtils, UpdateWebAppInfoFromManifest_EmptyName) {
   WebAppInstallInfo web_app_info;
 
   blink::mojom::Manifest manifest;
-  manifest.name = absl::nullopt;
+  manifest.name = std::nullopt;
   manifest.short_name = kAppTestShortName;
 
   UpdateWebAppInfoFromManifest(
@@ -417,7 +407,7 @@ TEST(WebAppInstallUtils, UpdateWebAppInfoFromManifest_ShareTarget) {
     EXPECT_TRUE(share_target.params.files.empty());
   }
 
-  manifest.share_target = absl::nullopt;
+  manifest.share_target = std::nullopt;
   UpdateWebAppInfoFromManifest(manifest, kAppManifestUrl, &web_app_info);
   EXPECT_FALSE(web_app_info.share_target.has_value());
 }
@@ -1217,6 +1207,143 @@ TEST(WebAppInstallUtils, PopulateHomeTabIcons_TabStrip) {
   EXPECT_EQ(1U, web_app_info.other_icon_bitmaps.size());
 }
 
+// Tests proper parsing of ManifestImageResource icons from the manifest into
+// |icons_with_size_any| based on the absence of a size parameter.
+TEST(WebAppInstallUtils, PopulateAnyIconsCorrectlyManifestParsingSVGOnly) {
+  WebAppFileHandlerManager::SetIconsSupportedByOsForTesting(/*value=*/true);
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures({blink::features::kFileHandlingIcons}, {});
+
+  WebAppInstallInfo web_app_info;
+  // Generate expected data structure for |icons_with_size_any|.
+  IconsWithSizeAny expected_icon_metadata;
+
+  const GURL manifest_icon_no_size_url(
+      "https://www.example.com/manifest_image_no_size.svg");
+  const GURL manifest_icon_size_url(
+      "https://www.example.com/manifest_image_size.svg");
+  const GURL file_handling_no_size_url(
+      "https://www.example.com/file_handling_no_size.svg");
+  const GURL file_handling_size_url(
+      "https://www.example.com/file_handling_size.png");
+  const GURL shortcut_icon_no_size_url(
+      "https://www.example.com/shortcut_menu_icon_no_size.svg");
+  const GURL shortcut_icon_size_url(
+      "https://www.example.com/shortcut_menu_icon_size.svg");
+  const GURL tab_strip_icon_no_size_url(
+      "https://www.example.com/tab_strip_icon_no_size.svg");
+  const GURL tab_strip_icon_size_url(
+      "https://www.example.com/tab_strip_icon_size.jpg");
+
+  blink::mojom::Manifest manifest;
+
+  // Sample manifest icons, one with a size specified, one without.
+  blink::Manifest::ImageResource manifest_icon_no_size;
+  manifest_icon_no_size.src = manifest_icon_no_size_url;
+  manifest_icon_no_size.sizes = {{0, 0}, {196, 196}};
+  manifest_icon_no_size.purpose = {
+      blink::mojom::ManifestImageResource_Purpose::ANY,
+      blink::mojom::ManifestImageResource_Purpose::MONOCHROME};
+  manifest.icons.push_back(std::move(manifest_icon_no_size));
+
+  // Set up the expected icon metadata for manifest icons.
+  expected_icon_metadata.manifest_icons[IconPurpose::ANY] =
+      manifest_icon_no_size_url;
+  expected_icon_metadata.manifest_icons[IconPurpose::MONOCHROME] =
+      manifest_icon_no_size_url;
+  expected_icon_metadata.manifest_icon_provided_sizes.emplace(196, 196);
+
+  blink::Manifest::ImageResource manifest_icon_size;
+  manifest_icon_size.src = manifest_icon_size_url;
+  manifest_icon_size.sizes = {{24, 24}};
+  manifest_icon_size.purpose = {
+      blink::mojom::ManifestImageResource_Purpose::ANY};
+  manifest.icons.push_back(std::move(manifest_icon_size));
+  expected_icon_metadata.manifest_icon_provided_sizes.emplace(24, 24);
+
+  // Sample file handler with no size specified for icons.
+  auto file_handler = blink::mojom::ManifestFileHandler::New();
+  file_handler->action = GURL("https://www.action.com/");
+  file_handler->name = u"Random File";
+  file_handler->accept[u"text/html"] = {u".html"};
+
+  blink::Manifest::ImageResource file_handling_icon_no_size;
+  file_handling_icon_no_size.src = file_handling_no_size_url;
+  file_handling_icon_no_size.sizes = {{0, 0}};
+  file_handling_icon_no_size.purpose = {
+      blink::mojom::ManifestImageResource_Purpose::MASKABLE};
+  file_handler->icons.push_back(std::move(file_handling_icon_no_size));
+
+  // Set up the expected icon metadata for file handling icons.
+  expected_icon_metadata.file_handling_icons[IconPurpose::MASKABLE] =
+      file_handling_no_size_url;
+
+  blink::Manifest::ImageResource file_handling_icon_size;
+  file_handling_icon_size.src = file_handling_size_url;
+  file_handling_icon_size.sizes = {{64, 64}};
+  file_handling_icon_size.purpose = {
+      blink::mojom::ManifestImageResource_Purpose::MONOCHROME};
+  file_handler->icons.push_back(std::move(file_handling_icon_size));
+  manifest.file_handlers.push_back(std::move(file_handler));
+  expected_icon_metadata.file_handling_icon_provided_sizes.emplace(64, 64);
+
+  // Sample shortcut menu item info with no size specified for icons.
+  blink::Manifest::ShortcutItem shortcut_item;
+  shortcut_item.name = u"Shortcut Name";
+  shortcut_item.url = GURL("https://www.example.com");
+
+  blink::Manifest::ImageResource shortcut_icon_no_size;
+  shortcut_icon_no_size.src = shortcut_icon_no_size_url;
+  shortcut_icon_no_size.sizes = {{0, 0}, {512, 512}};
+  shortcut_icon_no_size.purpose = {
+      blink::mojom::ManifestImageResource_Purpose::ANY};
+  shortcut_item.icons.push_back(std::move(shortcut_icon_no_size));
+
+  // Set up the expected icon metadata for shortcut menu icons.
+  expected_icon_metadata.shortcut_menu_icons[IconPurpose::ANY] =
+      shortcut_icon_no_size_url;
+  expected_icon_metadata.shortcut_menu_icons_provided_sizes.emplace(512, 512);
+
+  blink::Manifest::ImageResource shortcut_icon_with_size;
+  shortcut_icon_with_size.src = shortcut_icon_size_url;
+  shortcut_icon_with_size.sizes = {{48, 48}};
+  shortcut_icon_with_size.purpose = {
+      blink::mojom::ManifestImageResource_Purpose::MASKABLE};
+  shortcut_item.icons.push_back(std::move(shortcut_icon_with_size));
+  manifest.shortcuts.push_back(std::move(shortcut_item));
+  expected_icon_metadata.shortcut_menu_icons_provided_sizes.emplace(48, 48);
+
+  // Sample home tab strip metadata with no size specified for icons.
+  TabStrip tab_strip;
+  blink::Manifest::HomeTabParams home_tab_params;
+
+  blink::Manifest::ImageResource tab_strip_icon_no_size;
+  tab_strip_icon_no_size.src = tab_strip_icon_no_size_url;
+  tab_strip_icon_no_size.sizes = {{0, 0}};
+  tab_strip_icon_no_size.purpose = {
+      blink::mojom::ManifestImageResource_Purpose::MONOCHROME};
+  home_tab_params.icons.push_back(std::move(tab_strip_icon_no_size));
+
+  blink::Manifest::ImageResource tab_strip_icon_size;
+  tab_strip_icon_size.src = tab_strip_icon_size_url;
+  tab_strip_icon_size.sizes = {{16, 16}};
+  tab_strip_icon_size.purpose = {
+      blink::mojom::ManifestImageResource_Purpose::ANY};
+  home_tab_params.icons.push_back(std::move(tab_strip_icon_size));
+  tab_strip.home_tab = std::move(home_tab_params);
+  manifest.tab_strip = std::move(tab_strip);
+
+  // Set up the expected icon metadata for home tab icons.
+  expected_icon_metadata.home_tab_icons[IconPurpose::MONOCHROME] =
+      tab_strip_icon_no_size_url;
+  expected_icon_metadata.home_tab_icon_provided_sizes.emplace(16, 16);
+
+  UpdateWebAppInfoFromManifest(
+      manifest, GURL("https://www.random_manifest.com"), &web_app_info);
+
+  ASSERT_EQ(expected_icon_metadata, web_app_info.icons_with_size_any);
+}
+
 class FileHandlersFromManifestTest : public ::testing::TestWithParam<bool> {
  public:
   FileHandlersFromManifestTest() {
@@ -1286,8 +1413,10 @@ TEST_P(FileHandlersFromManifestTest, Basic) {
   std::vector<blink::mojom::ManifestFileHandlerPtr> manifest_file_handlers =
       CreateManifestFileHandlers(6);
 
-  apps::FileHandlers file_handlers =
-      CreateFileHandlersFromManifest(manifest_file_handlers, GetStartUrl());
+  WebAppInstallInfo web_app_info;
+  PopulateFileHandlerInfoFromManifest(manifest_file_handlers, GetStartUrl(),
+                                      &web_app_info);
+  const apps::FileHandlers& file_handlers = web_app_info.file_handlers;
   ASSERT_EQ(file_handlers.size(), 6U);
   for (unsigned i = 0; i < 6U; ++i) {
     EXPECT_EQ(file_handlers[i].action, MakeActionUrl(i));
@@ -1330,8 +1459,8 @@ TEST_P(FileHandlersFromManifestTest, PopulateFileHandlerIcons) {
   std::vector<blink::mojom::ManifestFileHandlerPtr> manifest_file_handlers =
       CreateManifestFileHandlers(1);
   WebAppInstallInfo web_app_info;
-  web_app_info.file_handlers =
-      CreateFileHandlersFromManifest(manifest_file_handlers, GetStartUrl());
+  PopulateFileHandlerInfoFromManifest(manifest_file_handlers, GetStartUrl(),
+                                      &web_app_info);
 
   const GURL first_image_url = MakeImageUrl(0);
   const GURL second_image_url = MakeImageUrlForSecondImage(0);
@@ -1451,8 +1580,8 @@ TEST_P(FileHandlersFromManifestTest, PopulateFileHandlingAndHomeTabIcons) {
   // Put icons in for file handlers
   std::vector<blink::mojom::ManifestFileHandlerPtr> manifest_file_handlers =
       CreateManifestFileHandlers(1);
-  web_app_info.file_handlers =
-      CreateFileHandlersFromManifest(manifest_file_handlers, GetStartUrl());
+  PopulateFileHandlerInfoFromManifest(manifest_file_handlers, GetStartUrl(),
+                                      &web_app_info);
 
   const GURL kFileHandlerIconUrl1 = MakeImageUrlForSecondImage(0);
   const GURL kFileHandlerIconUrl2 = MakeImageUrl(0);
@@ -1655,169 +1784,19 @@ TEST(WebAppInstallUtils, DuplicateIconDownloadURLs) {
     web_app_info.file_handlers.push_back(file_handler);
   }
 
-  base::flat_set<GURL> download_urls = GetValidIconUrlsToDownload(web_app_info);
+  IconUrlSizeSet download_urls = GetValidIconUrlsToDownload(web_app_info);
 
   const size_t download_urls_size = 8;
   EXPECT_EQ(download_urls_size, download_urls.size());
   for (size_t i = 0; i < download_urls_size; i++) {
     std::string url_str = "http://www.chromium.org/image/icon" +
                           base::NumberToString(i + 1) + ".png";
-    EXPECT_EQ(1u, download_urls.count(GURL(url_str)));
+    EXPECT_EQ(1u, download_urls.count(IconUrlWithSize::CreateForUnspecifiedSize(
+                      GURL(url_str))));
   }
 }
 
 INSTANTIATE_TEST_SUITE_P(, FileHandlersFromManifestTest, testing::Bool());
-
-#if BUILDFLAG(IS_WIN)
-
-// TODO(crbug.com/1403999): Refactor to not using MockOsIntegrationManager once
-// removed.
-using RegisterOsSettingsTest = testing::Test;
-
-TEST_F(RegisterOsSettingsTest, MaybeRegisterOsUninstall) {
-  if (AreSubManagersExecuteEnabled()) {
-    GTEST_SKIP() << "Skipping tests as enabling sub managers bypasses "
-                    "existing OS integration flow";
-  }
-  content::BrowserTaskEnvironment task_environment;
-
-  // MaybeRegisterOsUninstall
-  // Scenario 1.
-  // web app sources: kDefault, kPolicy
-  // removed source: kPolicy
-  // check web_app.CanUserUninstallWebApp is false
-  // check RegisterWebAppOsUninstallation is called
-  const AppId app_id = "test";
-  testing::StrictMock<MockOsIntegrationManager> manager;
-  // InstallOsHooks from MaybeRegisterOsUninstall
-  // sets only kUninstallationViaOsSettings that will async call from
-  // InstallOsHooks. Test ends before async is called so we test against
-  // InstallOsHooks.
-  EXPECT_CALL(manager, MacAppShimOnAppInstalledForProfile(app_id)).Times(1);
-  EXPECT_CALL(manager, RegisterWebAppOsUninstallation(app_id, testing::_))
-      .Times(1);
-  EXPECT_CALL(manager, Synchronize(app_id, testing::_, testing::_))
-      .WillOnce(base::test::RunOnceCallback<1>());
-
-  // Scenario 1.
-  auto web_app = std::make_unique<WebApp>(app_id);
-  web_app->AddSource(WebAppManagement::kDefault);
-  web_app->AddSource(WebAppManagement::kPolicy);
-  EXPECT_FALSE(web_app->CanUserUninstallWebApp());
-
-  base::RunLoop run_loop;
-  MaybeRegisterOsUninstall(
-      web_app.get(), WebAppManagement::kPolicy, manager,
-      base::BindLambdaForTesting(
-          [&](OsHooksErrors os_hooks_errors) { run_loop.Quit(); }));
-  run_loop.Run();
-}
-
-TEST_F(RegisterOsSettingsTest, MaybeRegisterOsSettings_NoRegistration) {
-  // MaybeRegisterOsUninstall
-  // Scenario 2.
-  // web app sources: kSync, kPolicy
-  // removed source: kSync
-  // check web_app.CanUserUninstallWebApp is false
-  // check RegisterWebAppOsUninstallation is not called
-
-  // Scenario 3.
-  // web app sources: kDefault, kSync, kWewbAppStore
-  // removed source: kSync
-  // check web_app.CanUserUninstallWebApp is true
-  // check RegisterWebAppOsUninstallation is not called
-  const AppId app_id = "test";
-  testing::StrictMock<MockOsIntegrationManager> manager;
-  // InstallOsHooks from MaybeRegisterOsUninstall
-  // sets only kUninstallationViaOsSettings that will async call from
-  // InstallOsHooks. Test ends before async is called so we test against
-  // InstallOsHooks.
-  EXPECT_CALL(manager, RegisterWebAppOsUninstallation(app_id, testing::_))
-      .Times(0);
-
-  // Scenario 2.
-  auto web_app = std::make_unique<WebApp>(app_id);
-  web_app->AddSource(WebAppManagement::kSync);
-  web_app->AddSource(WebAppManagement::kPolicy);
-  EXPECT_FALSE(web_app->CanUserUninstallWebApp());
-  MaybeRegisterOsUninstall(web_app.get(), WebAppManagement::kSync, manager,
-                           base::DoNothing());
-
-  // Scenario 3.
-  auto web_app2 = std::make_unique<WebApp>(app_id);
-  web_app2->AddSource(WebAppManagement::kDefault);
-  web_app2->AddSource(WebAppManagement::kSync);
-  web_app2->AddSource(WebAppManagement::kWebAppStore);
-  EXPECT_TRUE(web_app2->CanUserUninstallWebApp());
-  MaybeRegisterOsUninstall(web_app2.get(), WebAppManagement::kDefault, manager,
-                           base::DoNothing());
-}
-
-TEST_F(RegisterOsSettingsTest, MaybeUnregisterOsUninstall) {
-  if (AreSubManagersExecuteEnabled()) {
-    GTEST_SKIP() << "Skipping tests as enabling sub managers bypasses "
-                    "existing OS integration flow";
-  }
-  content::BrowserTaskEnvironment task_environment;
-
-  // MaybeUnregisterOsUninstall
-  // Scenario 1.
-  // web app sources: kDefault
-  // added source: kPolicy
-  // check web_app.CanUserUninstallWebApp is false
-  // check UnregisterWebAppOsUninstallation is called
-  const AppId app_id = "test";
-  testing::StrictMock<MockOsIntegrationManager> manager;
-  // InstallOsHooks from MaybeRegisterOsUninstall
-  // sets only kUninstallationViaOsSettings that will async call from
-  // InstallOsHooks. Test ends before async is called so we test against
-  // InstallOsHooks.
-  EXPECT_CALL(manager, Synchronize(app_id, testing::_, testing::_)).Times(1);
-  EXPECT_CALL(manager, UnregisterWebAppOsUninstallation(app_id)).Times(1);
-
-  // Scenario 1.
-  auto web_app = std::make_unique<WebApp>(app_id);
-  web_app->AddSource(WebAppManagement::kDefault);
-  EXPECT_TRUE(web_app->CanUserUninstallWebApp());
-  MaybeUnregisterOsUninstall(web_app.get(), WebAppManagement::kPolicy, manager);
-}
-
-TEST_F(RegisterOsSettingsTest, MaybeUnregisterOsSettings_NoUnregistration) {
-  // MaybeUnregisterOsUninstall
-  // Scenario 2.
-  // web app sources: kSync, kPolicy
-  // added source: kSync
-  // check web_app.CanUserUninstallWebApp is false
-  // check UnregisterWebAppOsUninstallation is not called
-
-  // Scenario 3.
-  // web app sources: kSync
-  // added source: kSync
-  // check web_app.CanUserUninstallWebApp is true
-  // check UnregisterWebAppOsUninstallation is not called
-  const AppId app_id = "test";
-  testing::StrictMock<MockOsIntegrationManager> manager;
-  // InstallOsHooks from MaybeRegisterOsUninstall
-  // sets only kUninstallationViaOsSettings that will async call from
-  // InstallOsHooks. Test ends before async is called so we test against
-  // InstallOsHooks.
-  EXPECT_CALL(manager, UnregisterWebAppOsUninstallation(app_id)).Times(0);
-
-  // Scenario 2.
-  auto web_app = std::make_unique<WebApp>(app_id);
-  web_app->AddSource(WebAppManagement::kPolicy);
-  EXPECT_FALSE(web_app->CanUserUninstallWebApp());
-  MaybeUnregisterOsUninstall(web_app.get(), WebAppManagement::kSync, manager);
-
-  // Scenario 3.
-  auto web_app2 = std::make_unique<WebApp>(app_id);
-  web_app2->AddSource(WebAppManagement::kSync);
-  EXPECT_TRUE(web_app2->CanUserUninstallWebApp());
-  MaybeUnregisterOsUninstall(web_app2.get(), WebAppManagement::kDefault,
-                             manager);
-}
-
-#endif  // BUILDFLAG(IS_WIN)
 
 TEST(WebAppInstallUtils, SetWebAppManifestFields_Summary) {
   WebAppInstallInfo web_app_info;
@@ -1830,8 +1809,8 @@ TEST(WebAppInstallUtils, SetWebAppManifestFields_Summary) {
   web_app_info.background_color = SK_ColorMAGENTA;
   web_app_info.dark_mode_background_color = SK_ColorBLACK;
 
-  const AppId app_id =
-      GenerateAppId(/*manifest_id=*/absl::nullopt, web_app_info.start_url);
+  const webapps::AppId app_id =
+      GenerateAppId(/*manifest_id=*/std::nullopt, web_app_info.start_url);
   auto web_app = std::make_unique<WebApp>(app_id);
   SetWebAppManifestFields(web_app_info, *web_app);
 
@@ -1847,10 +1826,10 @@ TEST(WebAppInstallUtils, SetWebAppManifestFields_Summary) {
   EXPECT_TRUE(web_app->dark_mode_background_color().has_value());
   EXPECT_EQ(*web_app->dark_mode_background_color(), SK_ColorBLACK);
 
-  web_app_info.theme_color = absl::nullopt;
-  web_app_info.dark_mode_theme_color = absl::nullopt;
-  web_app_info.background_color = absl::nullopt;
-  web_app_info.dark_mode_background_color = absl::nullopt;
+  web_app_info.theme_color = std::nullopt;
+  web_app_info.dark_mode_theme_color = std::nullopt;
+  web_app_info.background_color = std::nullopt;
+  web_app_info.dark_mode_background_color = std::nullopt;
   SetWebAppManifestFields(web_app_info, *web_app);
   EXPECT_FALSE(web_app->theme_color().has_value());
   EXPECT_FALSE(web_app->dark_mode_theme_color().has_value());
@@ -1864,8 +1843,8 @@ TEST(WebAppInstallUtils, SetWebAppManifestFields_ShareTarget) {
   web_app_info.scope = web_app_info.start_url.GetWithoutFilename();
   web_app_info.title = u"App Name";
 
-  const AppId app_id =
-      GenerateAppId(/*manifest_id=*/absl::nullopt, web_app_info.start_url);
+  const webapps::AppId app_id =
+      GenerateAppId(/*manifest_id=*/std::nullopt, web_app_info.start_url);
   auto web_app = std::make_unique<WebApp>(app_id);
 
   {
@@ -1928,7 +1907,7 @@ TEST(WebAppInstallUtils, SetWebAppManifestFields_ShareTarget) {
     EXPECT_TRUE(share_target.params.files.empty());
   }
 
-  web_app_info.share_target = absl::nullopt;
+  web_app_info.share_target = std::nullopt;
   SetWebAppManifestFields(web_app_info, *web_app);
   EXPECT_FALSE(web_app->share_target().has_value());
 }

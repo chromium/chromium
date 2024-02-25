@@ -22,6 +22,7 @@ source_set("persisted_state_db") {
     "//base:base",
     "//chrome/browser/profiles:profile",
     "//components/commerce/core:commerce_subscription_db_content_proto",
+    "//components/commerce/core:parcel_tracking_db_content_proto",
     "//components/commerce/core:persisted_state_db_content_proto",
     "//components/keyed_service/content",
     "//components/leveldb_proto",
@@ -38,6 +39,7 @@ source_set("persisted_state_db") {
     deps += [
       "//components/commerce/core:cart_db_content_proto",
       "//components/commerce/core:coupon_db_content_proto",
+      "//components/commerce/core:discounts_db_content_proto",
     ]
   }
 }

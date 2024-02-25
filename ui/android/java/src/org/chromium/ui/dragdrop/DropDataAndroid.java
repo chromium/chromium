@@ -8,13 +8,12 @@ import android.text.TextUtils;
 
 import androidx.annotation.VisibleForTesting;
 
-import org.chromium.base.annotations.CalledByNative;
-import org.chromium.base.annotations.JNINamespace;
+import org.jni_zero.CalledByNative;
+import org.jni_zero.JNINamespace;
+
 import org.chromium.url.GURL;
 
-/**
- * Bare minimal wrapper class of native content::DropData.
- */
+/** Bare minimal wrapper class of native content::DropData. */
 @JNINamespace("ui")
 public class DropDataAndroid {
     public final String text;
@@ -23,9 +22,12 @@ public class DropDataAndroid {
     public final String imageContentExtension;
     public final String imageFilename;
 
-    /** Not generated from java */
-    private DropDataAndroid(String text, GURL gurl, byte[] imageContent,
-            String imageContentExtension, String imageFilename) {
+    protected DropDataAndroid(
+            String text,
+            GURL gurl,
+            byte[] imageContent,
+            String imageContentExtension,
+            String imageFilename) {
         this.text = text;
         this.gurl = gurl;
         this.imageContent = imageContent;
@@ -35,8 +37,12 @@ public class DropDataAndroid {
 
     @VisibleForTesting
     @CalledByNative
-    static DropDataAndroid create(String text, GURL gurl, byte[] imageContent,
-            String imageContentExtension, String imageFilename) {
+    static DropDataAndroid create(
+            String text,
+            GURL gurl,
+            byte[] imageContent,
+            String imageContentExtension,
+            String imageFilename) {
         return new DropDataAndroid(text, gurl, imageContent, imageContentExtension, imageFilename);
     }
 
@@ -52,7 +58,13 @@ public class DropDataAndroid {
 
     /** Return whether this data presents an image. */
     public boolean hasImage() {
-        return imageContent != null && !TextUtils.isEmpty(imageContentExtension)
+        return imageContent != null
+                && !TextUtils.isEmpty(imageContentExtension)
                 && !TextUtils.isEmpty(imageFilename);
+    }
+
+    /** Return whether this data presents browser content. */
+    public boolean hasBrowserContent() {
+        return false;
     }
 }

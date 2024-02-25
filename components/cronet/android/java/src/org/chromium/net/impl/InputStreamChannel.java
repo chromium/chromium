@@ -40,8 +40,9 @@ final class InputStreamChannel implements ReadableByteChannel {
     public int read(ByteBuffer dst) throws IOException {
         final int read;
         if (dst.hasArray()) {
-            read = mInputStream.read(
-                    dst.array(), dst.arrayOffset() + dst.position(), dst.remaining());
+            read =
+                    mInputStream.read(
+                            dst.array(), dst.arrayOffset() + dst.position(), dst.remaining());
             if (read > 0) {
                 dst.position(dst.position() + read);
             }
@@ -51,8 +52,10 @@ final class InputStreamChannel implements ReadableByteChannel {
             // created wrapping a void * in native code, or if it represents a memory-mapped file.
             // Especially in the latter case, we want to avoid allocating a buffer that could be
             // very large.
-            final int possibleToRead = Math.min(
-                    Math.max(mInputStream.available(), MIN_TMP_BUFFER_SIZE), dst.remaining());
+            final int possibleToRead =
+                    Math.min(
+                            Math.max(mInputStream.available(), MIN_TMP_BUFFER_SIZE),
+                            dst.remaining());
             final int reasonableToRead = Math.min(MAX_TMP_BUFFER_SIZE, possibleToRead);
             byte[] tmpBuf = new byte[reasonableToRead];
             read = mInputStream.read(tmpBuf);

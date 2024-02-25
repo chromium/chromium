@@ -9,9 +9,7 @@ import android.view.View;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-/**
- * A class that supplies custom view to TabSwitcher from other non tab switcher clients.
- */
+/** A class that supplies custom view to TabSwitcher from other non tab switcher clients. */
 public class TabSwitcherCustomViewManager {
     /**
      * An interface for tab switcher, via which it can listen for signals concerning
@@ -29,8 +27,11 @@ public class TabSwitcherCustomViewManager {
          * @param clearTabList      A boolean to indicate whether we should clear the tab list when
          *                          showing the custom view.
          */
-        void addCustomView(@NonNull View customView, @Nullable Runnable backPressRunnable,
+        void addCustomView(
+                @NonNull View customView,
+                @Nullable Runnable backPressRunnable,
                 boolean clearTabList);
+
         /**
          * This is fired when the same client has made the view unavailable for it to be shown
          * any longer.
@@ -42,18 +43,23 @@ public class TabSwitcherCustomViewManager {
 
     // The {@link Delegate} that relays the events concerning the availability of the
     // custom view.
-    private final Delegate mDelegate;
+    private @Nullable Delegate mDelegate;
 
-    // The view that is supplied by the clients.
-    private View mCustomView;
+    private @Nullable View mCustomView;
+    private @Nullable Runnable mBackPressRunnable;
+    private boolean mClearTabList;
+
     // Whether a request to show custom view is in-flight.
     private boolean mIsCustomViewRequested;
 
     /**
-     * @param delegate The {@link Delegate} that is responsible for relaying signals from clients
-     *                 to tab switcher.
+     * @param delegate The {@link Delegate} that is responsible for relaying signals from clients to
+     *     tab switcher, may be null if reset.
      */
-    public TabSwitcherCustomViewManager(@NonNull Delegate delegate) {
+    public void setDelegate(@NonNull Delegate delegate) {
+        assert mDelegate == null || delegate == null;
+        unbindDelegate(mDelegate);
+        bindDelegate(delegate);
         mDelegate = delegate;
     }
 
@@ -79,7 +85,9 @@ public class TabSwitcherCustomViewManager {
         }
         mIsCustomViewRequested = true;
         mCustomView = customView;
-        mDelegate.addCustomView(mCustomView, backPressRunnable, clearTabList);
+        mBackPressRunnable = backPressRunnable;
+        mClearTabList = clearTabList;
+        bindDelegate(mDelegate);
         return true;
     }
 
@@ -95,8 +103,22 @@ public class TabSwitcherCustomViewManager {
             return false;
         }
         mIsCustomViewRequested = false;
-        mDelegate.removeCustomView(mCustomView);
+        unbindDelegate(mDelegate);
         mCustomView = null;
+        mBackPressRunnable = null;
+        mClearTabList = false;
         return true;
+    }
+
+    private void bindDelegate(@Nullable Delegate delegate) {
+        if (delegate == null || mCustomView == null) return;
+
+        delegate.addCustomView(mCustomView, mBackPressRunnable, mClearTabList);
+    }
+
+    private void unbindDelegate(@Nullable Delegate delegate) {
+        if (delegate == null || mCustomView == null) return;
+
+        delegate.removeCustomView(mCustomView);
     }
 }

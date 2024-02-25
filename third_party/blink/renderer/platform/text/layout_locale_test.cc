@@ -4,6 +4,8 @@
 
 #include "third_party/blink/renderer/platform/text/layout_locale.h"
 
+#include <optional>
+
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace blink {
@@ -36,7 +38,7 @@ struct LocaleTestData {
   const char* locale;
   UScriptCode script;
   const char* sk_font_mgr = nullptr;
-  absl::optional<UScriptCode> script_for_han;
+  std::optional<UScriptCode> script_for_han;
 } locale_test_data[] = {
     // Country is not relevant to |SkFontMgr|.
     {"en-US", USCRIPT_LATIN, "en"},

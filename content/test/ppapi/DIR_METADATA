@@ -1,4 +1,7 @@
-monorail {
+monorail: {
   component: "Internals>Plugins>Pepper"
 }
 team_email: "pepper-dev@chromium.org"
+buganizer_public: {
+  component_id: 1456989
+}

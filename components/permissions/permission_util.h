@@ -11,6 +11,7 @@
 #include "components/content_settings/core/common/content_settings.h"
 #include "components/content_settings/core/common/content_settings_types.h"
 #include "components/permissions/permission_prompt.h"
+#include "content/public/browser/permission_result.h"
 #include "third_party/blink/public/mojom/permissions/permission_status.mojom.h"
 #include "third_party/blink/public/mojom/permissions_policy/permissions_policy_feature.mojom-forward.h"
 
@@ -21,14 +22,12 @@ enum class PermissionType;
 namespace content {
 class RenderFrameHost;
 class RenderProcessHost;
-struct PermissionResult;
 }  // namespace content
 
 class GURL;
 
 namespace permissions {
 class PermissionRequest;
-struct PermissionResult;
 
 // This enum backs a UMA histogram, so it must be treated as append-only.
 enum class PermissionAction {
@@ -73,7 +72,7 @@ class PermissionUtil {
 
   // Returns the corresponding permissions policy feature to the given content
   // settings type, or nullopt if there is none.
-  static absl::optional<blink::mojom::PermissionsPolicyFeature>
+  static std::optional<blink::mojom::PermissionsPolicyFeature>
   GetPermissionsPolicyFeature(ContentSettingsType type);
 
   // Checks whether the given ContentSettingsType is a permission. Use this
@@ -152,6 +151,13 @@ class PermissionUtil {
   // Returns `true` if at least one of the `delegate->Requests()` was requested
   // with a user gesture.
   static bool HasUserGesture(PermissionPrompt::Delegate* delegate);
+
+  static bool CanPermissionRequestIgnoreStatus(
+      const PermissionRequestData& request,
+      content::PermissionStatusSource source);
+
+  // Returns `true` if the current platform support permission chips.
+  static bool DoesPlatformSupportChip();
 };
 
 }  // namespace permissions

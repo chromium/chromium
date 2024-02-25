@@ -37,11 +37,11 @@ VkSurfaceTransformFlagBitsKHR ToVkSurfaceTransformFlag(
       return VK_SURFACE_TRANSFORM_HORIZONTAL_MIRROR_BIT_KHR;
     case gfx::OVERLAY_TRANSFORM_FLIP_VERTICAL:
       return VK_SURFACE_TRANSFORM_HORIZONTAL_MIRROR_ROTATE_180_BIT_KHR;
-    case gfx::OVERLAY_TRANSFORM_ROTATE_90:
+    case gfx::OVERLAY_TRANSFORM_ROTATE_CLOCKWISE_90:
       return VK_SURFACE_TRANSFORM_ROTATE_90_BIT_KHR;
-    case gfx::OVERLAY_TRANSFORM_ROTATE_180:
+    case gfx::OVERLAY_TRANSFORM_ROTATE_CLOCKWISE_180:
       return VK_SURFACE_TRANSFORM_ROTATE_180_BIT_KHR;
-    case gfx::OVERLAY_TRANSFORM_ROTATE_270:
+    case gfx::OVERLAY_TRANSFORM_ROTATE_CLOCKWISE_270:
       return VK_SURFACE_TRANSFORM_ROTATE_270_BIT_KHR;
     default:
       NOTREACHED() << "transform:" << transform;
@@ -59,11 +59,11 @@ gfx::OverlayTransform FromVkSurfaceTransformFlag(
     case VK_SURFACE_TRANSFORM_HORIZONTAL_MIRROR_ROTATE_180_BIT_KHR:
       return gfx::OVERLAY_TRANSFORM_FLIP_VERTICAL;
     case VK_SURFACE_TRANSFORM_ROTATE_90_BIT_KHR:
-      return gfx::OVERLAY_TRANSFORM_ROTATE_90;
+      return gfx::OVERLAY_TRANSFORM_ROTATE_CLOCKWISE_90;
     case VK_SURFACE_TRANSFORM_ROTATE_180_BIT_KHR:
-      return gfx::OVERLAY_TRANSFORM_ROTATE_180;
+      return gfx::OVERLAY_TRANSFORM_ROTATE_CLOCKWISE_180;
     case VK_SURFACE_TRANSFORM_ROTATE_270_BIT_KHR:
-      return gfx::OVERLAY_TRANSFORM_ROTATE_270;
+      return gfx::OVERLAY_TRANSFORM_ROTATE_CLOCKWISE_270;
     default:
       NOTREACHED() << "transform:" << transform;
       return gfx::OVERLAY_TRANSFORM_INVALID;
@@ -257,7 +257,6 @@ bool VulkanSurface::CreateSwapChain(const gfx::Size& size,
   if (VK_SUCCESS != result) {
     LOG(FATAL) << "vkGetPhysicalDeviceSurfaceCapabilitiesKHR() failed: "
                << result;
-    return false;
   }
 
   auto vk_transform = transform != gfx::OVERLAY_TRANSFORM_INVALID
@@ -285,8 +284,8 @@ bool VulkanSurface::CreateSwapChain(const gfx::Size& size,
       image_size.SetSize(surface_caps.currentExtent.width,
                          surface_caps.currentExtent.height);
     }
-    if (transform == gfx::OVERLAY_TRANSFORM_ROTATE_90 ||
-        transform == gfx::OVERLAY_TRANSFORM_ROTATE_270) {
+    if (transform == gfx::OVERLAY_TRANSFORM_ROTATE_CLOCKWISE_90 ||
+        transform == gfx::OVERLAY_TRANSFORM_ROTATE_CLOCKWISE_270) {
       image_size.SetSize(image_size.height(), image_size.width());
     }
   }

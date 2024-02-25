@@ -152,25 +152,3 @@ TEST_F(AppLauncherAbuseDetectorTest, TestBlockLaunchingApp) {
             [abuseDetector launchPolicyForURL:kAppUrl2
                             fromSourcePageURL:kSourceUrl2]);
 }
-
-// Tests blocking app launch when the target app is Chrome itself.
-TEST_F(AppLauncherAbuseDetectorTest, TestBlockLaunchingChrome) {
-  const GURL kChromeAppUrl1("googlechrome://www.google.com");
-  const GURL kChromeAppUrl2("googlechromes://www.google.com");
-  const GURL kChromeAppUrl3("googlechrome-x-callback://www.google.com");
-  const GURL kSourceUrl("http://www.google.com");
-
-  AppLauncherAbuseDetector* abuseDetector =
-      [[AppLauncherAbuseDetector alloc] init];
-  EXPECT_EQ(ExternalAppLaunchPolicyBlock,
-            [abuseDetector launchPolicyForURL:kChromeAppUrl1
-                            fromSourcePageURL:kSourceUrl]);
-
-  EXPECT_EQ(ExternalAppLaunchPolicyBlock,
-            [abuseDetector launchPolicyForURL:kChromeAppUrl2
-                            fromSourcePageURL:kSourceUrl]);
-
-  EXPECT_EQ(ExternalAppLaunchPolicyBlock,
-            [abuseDetector launchPolicyForURL:kChromeAppUrl3
-                            fromSourcePageURL:kSourceUrl]);
-}

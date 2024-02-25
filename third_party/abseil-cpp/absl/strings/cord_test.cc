@@ -42,6 +42,7 @@
 #include "absl/container/fixed_array.h"
 #include "absl/functional/function_ref.h"
 #include "absl/hash/hash.h"
+#include "absl/hash/hash_testing.h"
 #include "absl/log/check.h"
 #include "absl/log/log.h"
 #include "absl/random/random.h"
@@ -1512,12 +1513,11 @@ TEST_P(CordTest, CompareAfterAssign) {
 // comparison methods from basic_string.
 static void TestCompare(const absl::Cord& c, const absl::Cord& d,
                         RandomEngine* rng) {
-  typedef std::basic_string<uint8_t> ustring;
-  ustring cs(reinterpret_cast<const uint8_t*>(std::string(c).data()), c.size());
-  ustring ds(reinterpret_cast<const uint8_t*>(std::string(d).data()), d.size());
-  // ustring comparison is ideal because we expect Cord comparisons to be
-  // based on unsigned byte comparisons regardless of whether char is signed.
-  int expected = sign(cs.compare(ds));
+  // char_traits<char>::lt is guaranteed to do an unsigned comparison:
+  // https://en.cppreference.com/w/cpp/string/char_traits/cmp. We also expect
+  // Cord comparisons to be based on unsigned byte comparisons regardless of
+  // whether char is signed.
+  int expected = sign(std::string(c).compare(std::string(d)));
   EXPECT_EQ(expected, sign(c.Compare(d))) << c << ", " << d;
 }
 
@@ -2013,6 +2013,26 @@ TEST(CordTest, CordMemoryUsageBTree) {
                 rep2_size);
 }
 
+TEST(CordTest, TestHashFragmentation) {
+  // Make sure we hit these boundary cases precisely.
+  EXPECT_EQ(1024, absl::hash_internal::PiecewiseChunkSize());
+  EXPECT_TRUE(absl::VerifyTypeImplementsAbslHashCorrectly({
+      absl::Cord(),
+      absl::MakeFragmentedCord({std::string(600, 'a'), std::string(600, 'a')}),
+      absl::MakeFragmentedCord({std::string(1200, 'a')}),
+      absl::MakeFragmentedCord({std::string(900, 'b'), std::string(900, 'b')}),
+      absl::MakeFragmentedCord({std::string(1800, 'b')}),
+      absl::MakeFragmentedCord(
+          {std::string(2000, 'c'), std::string(2000, 'c')}),
+      absl::MakeFragmentedCord({std::string(4000, 'c')}),
+      absl::MakeFragmentedCord({std::string(1024, 'd')}),
+      absl::MakeFragmentedCord({std::string(1023, 'd'), "d"}),
+      absl::MakeFragmentedCord({std::string(1025, 'e')}),
+      absl::MakeFragmentedCord({std::string(1024, 'e'), "e"}),
+      absl::MakeFragmentedCord({std::string(1023, 'e'), "e", "e"}),
+  }));
+}
+
 // Regtest for a change that had to be rolled back because it expanded out
 // of the InlineRep too soon, which was observable through MemoryUsage().
 TEST_P(CordTest, CordMemoryUsageInlineRep) {
@@ -2110,8 +2130,6 @@ TEST_P(CordTest, DiabolicalGrowth) {
   // This test exercises a diabolical Append(<one char>) on a cord, making the
   // cord shared before each Append call resulting in a terribly fragmented
   // resulting cord.
-  // TODO(b/183983616): Apply some minimum compaction when copying a shared
-  // source cord into a mutable copy for updates in CordRepRing.
   RandomEngine rng(GTEST_FLAG_GET(random_seed));
   const std::string expected = RandomLowercaseString(&rng, 5000);
   absl::Cord cord;
@@ -2656,6 +2674,13 @@ TEST_P(CordTest, Format) {
   absl::Format(&c, "And %-3llx bad wolf!", 1);
   MaybeHarden(c);
   EXPECT_EQ(c, "There were 0003 little pigs.And 1   bad wolf!");
+}
+
+TEST_P(CordTest, Stringify) {
+  absl::Cord c =
+      absl::MakeFragmentedCord({"A ", "small ", "fragmented ", "Cord", "."});
+  MaybeHarden(c);
+  EXPECT_EQ(absl::StrCat(c), "A small fragmented Cord.");
 }
 
 TEST_P(CordTest, Hardening) {
@@ -3240,6 +3265,12 @@ TEST_P(CordTest, ChecksummedEmptyCord) {
   EXPECT_EQ(cc3.TryFlat(), "");
   EXPECT_EQ(absl::HashOf(c3), absl::HashOf(absl::Cord()));
   EXPECT_EQ(absl::HashOf(c3), absl::HashOf(absl::string_view()));
+}
+
+TEST(CrcCordTest, ChecksummedEmptyCordEstimateMemoryUsage) {
+  absl::Cord cord;
+  cord.SetExpectedChecksum(0);
+  EXPECT_NE(cord.EstimatedMemoryUsage(), 0);
 }
 
 #if defined(GTEST_HAS_DEATH_TEST) && defined(ABSL_INTERNAL_CORD_HAVE_SANITIZER)

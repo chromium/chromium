@@ -4,7 +4,7 @@
 
 #include "ash/system/accessibility/dictation_button_tray.h"
 
-#include "ash/accessibility/accessibility_controller_impl.h"
+#include "ash/accessibility/accessibility_controller.h"
 #include "ash/constants/ash_pref_names.h"
 #include "ash/constants/tray_background_view_catalog.h"
 #include "ash/metrics/user_metrics_recorder.h"
@@ -63,7 +63,7 @@ DictationButtonTray::DictationButtonTray(
     Shelf* shelf,
     TrayBackgroundViewCatalogName catalog_name)
     : TrayBackgroundView(shelf, catalog_name), download_progress_(0) {
-  SetPressedCallback(base::BindRepeating(
+  SetCallback(base::BindRepeating(
       &DictationButtonTray::OnDictationButtonPressed, base::Unretained(this)));
 
   Shell* shell = Shell::Get();
@@ -138,7 +138,7 @@ void DictationButtonTray::Initialize() {
   UpdateVisibility();
 }
 
-void DictationButtonTray::ClickedOutsideBubble() {}
+void DictationButtonTray::ClickedOutsideBubble(const ui::LocatedEvent& event) {}
 
 void DictationButtonTray::UpdateTrayItemColor(bool is_active) {
   if (progress_indicator_) {
@@ -168,9 +168,13 @@ void DictationButtonTray::OnThemeChanged() {
     progress_indicator_->InvalidateLayer();
 }
 
-void DictationButtonTray::Layout() {
-  TrayBackgroundView::Layout();
+void DictationButtonTray::Layout(PassKey) {
+  LayoutSuperclass<TrayBackgroundView>(this);
   UpdateProgressIndicatorBounds();
+}
+
+void DictationButtonTray::HideBubble(const TrayBubbleView* bubble_view) {
+  // This class has no bubbles to hide.
 }
 
 void DictationButtonTray::OnCaretBoundsChanged(
@@ -203,7 +207,7 @@ void DictationButtonTray::UpdateOnSpeechRecognitionDownloadChanged(
     // changed events.
     progress_indicator_ =
         ProgressIndicator::CreateDefaultInstance(base::BindRepeating(
-            [](DictationButtonTray* tray) -> absl::optional<float> {
+            [](DictationButtonTray* tray) -> std::optional<float> {
               // If download is in-progress, return the progress as a decimal.
               // Otherwise, the progress indicator shouldn't be painted.
               const int progress = tray->download_progress();
@@ -258,7 +262,7 @@ void DictationButtonTray::TextInputChanged(const ui::TextInputClient* client) {
   CheckDictationStatusAndUpdateIcon();
 }
 
-BEGIN_METADATA(DictationButtonTray, TrayBackgroundView)
+BEGIN_METADATA(DictationButtonTray)
 END_METADATA
 
 }  // namespace ash

@@ -11,7 +11,9 @@ namespace crosapi {
 
 COMPONENT_EXPORT(CROSAPI) extern const char kLacrosAppIdPrefix[];
 
+COMPONENT_EXPORT(CROSAPI) extern const char kAshDataDir[];
 COMPONENT_EXPORT(CROSAPI) extern const char kLacrosUserDataPath[];
+COMPONENT_EXPORT(CROSAPI) extern const char kLacrosSharedDataPath[];
 
 COMPONENT_EXPORT(CROSAPI) extern const char kSharedResourcesPackName[];
 COMPONENT_EXPORT(CROSAPI) extern const char kSharedChrome100PercentPackName[];

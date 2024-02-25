@@ -10,6 +10,7 @@
 #include "base/logging.h"
 #include "chrome/browser/ash/crostini/crostini_features.h"
 #include "chrome/browser/ash/crostini/crostini_util.h"
+#include "chrome/browser/ash/guest_os/public/guest_os_service.h"
 #include "chrome/browser/ash/guest_os/vm_sk_forwarding_native_message_host.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chromeos/ash/components/dbus/vm_sk_forwarding/sk_forwarding.pb.h"
@@ -70,12 +71,20 @@ void VmSKForwardingServiceProvider::ForwardSecurityKeyMessage(
     return;
   }
 
-  guest_os::VmSKForwardingNativeMessageHost::
-      DeliverMessageToSKForwardingExtension(
-          profile, request.message(),
-          base::BindOnce(&VmSKForwardingServiceProvider::OnResponse,
-                         weak_ptr_factory_.GetWeakPtr(), method_call,
-                         std::move(response_sender)));
+  auto* service = ::guest_os::GuestOsService::GetForProfile(profile);
+  if (!service) {
+    constexpr char error_message[] = "GuestOsService does not exist";
+    std::move(response_sender)
+        .Run(dbus::ErrorResponse::FromMethodCall(method_call, DBUS_ERROR_FAILED,
+                                                 error_message));
+    return;
+  }
+
+  service->SkForwarder()->DeliverMessageToSKForwardingExtension(
+      profile, request.message(),
+      base::BindOnce(&VmSKForwardingServiceProvider::OnResponse,
+                     weak_ptr_factory_.GetWeakPtr(), method_call,
+                     std::move(response_sender)));
 }
 
 void VmSKForwardingServiceProvider::OnResponse(

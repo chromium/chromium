@@ -6,6 +6,7 @@
 
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/run_loop.h"
 #include "base/task/single_thread_task_runner.h"
@@ -246,12 +247,8 @@ class WatchTimeReporterTest
                                         video_frames_dropped);
     }
 
-    void OnCurrentTimestampChanged(base::TimeDelta duration) override {
-      parent_->OnCurrentTimestampChanged(duration);
-    }
-
    private:
-    WatchTimeReporterTest* parent_;
+    raw_ptr<WatchTimeReporterTest, DanglingUntriaged> parent_;
   };
 
   class FakeMediaMetricsProvider : public media::mojom::MediaMetricsProvider {
@@ -283,6 +280,7 @@ class WatchTimeReporterTest
     void Initialize(bool is_mse,
                     media::mojom::MediaURLScheme url_scheme,
                     media::mojom::MediaStreamType media_stream_type) override {}
+    void OnStarted(const media::PipelineStatus& status) override {}
     void OnError(const media::PipelineStatus& status) override {}
     void OnFallback(const media::PipelineStatus& status) override {}
     void SetIsEME() override {}
@@ -293,6 +291,7 @@ class WatchTimeReporterTest
         media::container_names::MediaContainerName container_name) override {}
     void SetRendererType(media::RendererType renderer_type) override {}
     void SetKeySystem(const std::string& key_system) override {}
+    void SetHasWaitingForKey() override {}
     void SetIsHardwareSecure() override {}
     void SetHasPlayed() override {}
     void SetHaveEnough() override {}
@@ -302,7 +301,7 @@ class WatchTimeReporterTest
     void SetAudioPipelineInfo(const media::AudioPipelineInfo& info) override {}
 
    private:
-    WatchTimeReporterTest* parent_;
+    raw_ptr<WatchTimeReporterTest> parent_;
   };
 
   WatchTimeReporterTest()
@@ -650,7 +649,6 @@ class WatchTimeReporterTest
   MOCK_METHOD1(OnSetAutoplayInitiated, void(bool));
   MOCK_METHOD1(OnDurationChanged, void(base::TimeDelta));
   MOCK_METHOD2(OnUpdateVideoDecodeStats, void(uint32_t, uint32_t));
-  MOCK_METHOD1(OnCurrentTimestampChanged, void(base::TimeDelta));
 
   base::test::SingleThreadTaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};

@@ -9,6 +9,7 @@
 #include "base/test/gmock_callback_support.h"
 #include "chrome/browser/optimization_guide/android/native_j_unittests_jni_headers/OptimizationGuideBridgeNativeUnitTest_jni.h"
 #include "chrome/browser/optimization_guide/chrome_hints_manager.h"
+#include "chrome/browser/optimization_guide/mock_optimization_guide_keyed_service.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
@@ -17,6 +18,7 @@
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/base/testing_profile_manager.h"
 #include "components/optimization_guide/core/optimization_guide_prefs.h"
+#include "components/optimization_guide/proto/string_value.pb.h"
 #include "components/prefs/pref_service.h"
 #include "components/prefs/testing_pref_service.h"
 #include "content/public/browser/network_service_instance.h"
@@ -25,6 +27,7 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
+using ::testing::An;
 using ::testing::ByRef;
 using ::testing::DoAll;
 using ::testing::Eq;
@@ -35,29 +38,6 @@ using ::testing::UnorderedElementsAre;
 
 namespace optimization_guide {
 namespace android {
-
-class MockOptimizationGuideKeyedService : public OptimizationGuideKeyedService {
- public:
-  explicit MockOptimizationGuideKeyedService(
-      content::BrowserContext* browser_context)
-      : OptimizationGuideKeyedService(browser_context) {}
-  ~MockOptimizationGuideKeyedService() override = default;
-
-  MOCK_METHOD1(
-      RegisterOptimizationTypes,
-      void(const std::vector<optimization_guide::proto::OptimizationType>&));
-  MOCK_METHOD3(CanApplyOptimization,
-               void(const GURL& gurl,
-                    optimization_guide::proto::OptimizationType,
-                    optimization_guide::OptimizationGuideDecisionCallback));
-  MOCK_METHOD4(
-      CanApplyOptimizationOnDemand,
-      void(const std::vector<GURL>&,
-           const base::flat_set<optimization_guide::proto::OptimizationType>&,
-           optimization_guide::proto::RequestContext,
-           optimization_guide::
-               OnDemandOptimizationGuideDecisionRepeatingCallback));
-};
 
 class OptimizationGuideBridgeTest : public testing::Test {
  public:
@@ -75,16 +55,15 @@ class OptimizationGuideBridgeTest : public testing::Test {
     pref_service_ = std::make_unique<TestingPrefServiceSimple>();
     optimization_guide::prefs::RegisterProfilePrefs(pref_service_->registry());
 
-    optimization_guide_keyed_service_ =
-        static_cast<MockOptimizationGuideKeyedService*>(
-            OptimizationGuideKeyedServiceFactory::GetInstance()
-                ->SetTestingFactoryAndUse(
-                    profile_,
-                    base::BindRepeating([](content::BrowserContext* context)
-                                            -> std::unique_ptr<KeyedService> {
-                      return std::make_unique<
-                          MockOptimizationGuideKeyedService>(context);
-                    })));
+    optimization_guide_keyed_service_ = static_cast<
+        MockOptimizationGuideKeyedService*>(
+        OptimizationGuideKeyedServiceFactory::GetInstance()
+            ->SetTestingFactoryAndUse(
+                profile_,
+                base::BindRepeating([](content::BrowserContext* context)
+                                        -> std::unique_ptr<KeyedService> {
+                  return std::make_unique<MockOptimizationGuideKeyedService>();
+                })));
   }
 
   void RegisterOptimizationTypes() {
@@ -123,9 +102,10 @@ TEST_F(OptimizationGuideBridgeTest, CanApplyOptimizationHasHint) {
   optimization_guide::OptimizationMetadata metadata;
   metadata.SetAnyMetadataForTesting(hints_metadata);
   EXPECT_CALL(*optimization_guide_keyed_service_,
-              CanApplyOptimization(GURL("https://example.com/"),
-                                   optimization_guide::proto::LOADING_PREDICTOR,
-                                   base::test::IsNotNullCallback()))
+              CanApplyOptimization(
+                  GURL("https://example.com/"),
+                  optimization_guide::proto::LOADING_PREDICTOR,
+                  An<optimization_guide::OptimizationGuideDecisionCallback>()))
       .WillOnce(base::test::RunOnceCallback<2>(
           optimization_guide::OptimizationGuideDecision::kTrue,
           ByRef(metadata)));
@@ -167,8 +147,9 @@ TEST_F(OptimizationGuideBridgeTest, CanApplyOptimizationOnDemand) {
                                GURL("https://example2.com/")),
           UnorderedElementsAre(optimization_guide::proto::LOADING_PREDICTOR,
                                optimization_guide::proto::DEFER_ALL_SCRIPT),
-          optimization_guide::proto::CONTEXT_NEW_TAB_PAGE,
-          base::test::IsNotNullCallback()))
+          optimization_guide::proto::CONTEXT_PAGE_INSIGHTS_HUB,
+          base::test::IsNotNullCallback(),
+          An<optimization_guide::proto::RequestContextMetadata*>()))
       .WillOnce(DoAll(base::test::RunCallback<3>(GURL("https://example.com/"),
                                                  ByRef(url1_decisions)),
                       base::test::RunCallback<3>(GURL("https://example2.com/"),

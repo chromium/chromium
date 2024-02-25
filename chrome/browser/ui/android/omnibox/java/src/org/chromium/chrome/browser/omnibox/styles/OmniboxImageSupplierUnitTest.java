@@ -45,13 +45,11 @@ import org.chromium.components.image_fetcher.ImageFetcher;
 import org.chromium.url.GURL;
 import org.chromium.url.JUnitTestGURLs;
 
-/**
- * Tests for {@link OmniboxImageSupplier}.
- */
+/** Tests for {@link OmniboxImageSupplier}. */
 @RunWith(BaseRobolectricTestRunner.class)
 public final class OmniboxImageSupplierUnitTest {
-    private static final GURL NAV_URL = JUnitTestGURLs.getGURL(JUnitTestGURLs.URL_1);
-    private static final GURL NAV_URL_2 = JUnitTestGURLs.getGURL(JUnitTestGURLs.URL_2);
+    private static final GURL NAV_URL = JUnitTestGURLs.URL_1;
+    private static final GURL NAV_URL_2 = JUnitTestGURLs.URL_2;
     private static final int FALLBACK_COLOR = 0xACE0BA5E;
 
     public @Rule MockitoRule mockitoRule = MockitoJUnit.rule();
@@ -77,8 +75,9 @@ public final class OmniboxImageSupplierUnitTest {
         mJniMocker.mock(LargeIconBridgeJni.TEST_HOOKS, mLargeIconBridgeJni);
 
         var context = ContextUtils.getApplicationContext();
-        mFaviconSize = context.getResources().getDimensionPixelSize(
-                R.dimen.omnibox_suggestion_favicon_size);
+        mFaviconSize =
+                context.getResources()
+                        .getDimensionPixelSize(R.dimen.omnibox_suggestion_favicon_size);
         assert mFaviconSize != 0;
         mSupplier = new OmniboxImageSupplier(context);
         mSupplier.setRoundedIconGeneratorForTesting(mIconGenerator);
@@ -90,8 +89,8 @@ public final class OmniboxImageSupplierUnitTest {
     }
 
     /**
-     * Confirm that icon of expected size was requested from LargeIconBridge, and report a
-     * supplied bitmap back to the caller.
+     * Confirm that icon of expected size was requested from LargeIconBridge, and report a supplied
+     * bitmap back to the caller.
      *
      * @param url the url to expect a lookup for
      * @param bitmap the bitmap to return to the caller (may be null)
@@ -99,8 +98,13 @@ public final class OmniboxImageSupplierUnitTest {
     private void verifyLargeIconBridgeRequest(@NonNull GURL url, @Nullable Bitmap bitmap) {
         ShadowLooper.runUiThreadTasks();
         verify(mLargeIconBridgeJni)
-                .getLargeIconForURL(anyLong(), eq(mProfile), eq(url), eq(mFaviconSize / 2),
-                        eq(mFaviconSize), mIconCallbackCaptor.capture());
+                .getLargeIconForURL(
+                        anyLong(),
+                        eq(mProfile),
+                        eq(url),
+                        eq(mFaviconSize / 2),
+                        eq(mFaviconSize),
+                        mIconCallbackCaptor.capture());
         mIconCallbackCaptor.getValue().onLargeIconAvailable(bitmap, FALLBACK_COLOR, true, 0);
     }
 
@@ -115,8 +119,8 @@ public final class OmniboxImageSupplierUnitTest {
     }
 
     /**
-     * Confirm no unexpected calls were made to any of our data producers or consumers and
-     * clear all counters.
+     * Confirm no unexpected calls were made to any of our data producers or consumers and clear all
+     * counters.
      */
     private void verifyNoOtherInteractionsAndClearInteractions() {
         verifyNoMoreInteractions(mLargeIconBridgeJni);
@@ -239,7 +243,7 @@ public final class OmniboxImageSupplierUnitTest {
     public void fetchImage_aggregateMultipleRequestsForSameUrl_successfulFetch() {
         mSupplier.setImageFetcherForTesting(mImageFetcher);
 
-        var url = JUnitTestGURLs.getGURL(JUnitTestGURLs.RED_1);
+        var url = JUnitTestGURLs.RED_1;
 
         // Issue 2 requests for the same URL.
         mSupplier.fetchImage(url, mCallback1);
@@ -253,7 +257,7 @@ public final class OmniboxImageSupplierUnitTest {
         verifyNoMoreInteractions(mImageFetcher);
 
         // Confirm the URL and no callbacks emitted to registered callbacks.
-        assertEquals(JUnitTestGURLs.RED_1, paramCaptor.getValue().url);
+        assertEquals(JUnitTestGURLs.RED_1.getSpec(), paramCaptor.getValue().url);
         verifyNoMoreInteractions(mCallback1, mCallback2);
 
         // Emit reply.
@@ -268,7 +272,7 @@ public final class OmniboxImageSupplierUnitTest {
     public void fetchImage_aggregateMultipleRequestsForSameUrl_failingFetch() {
         mSupplier.setImageFetcherForTesting(mImageFetcher);
 
-        var url = JUnitTestGURLs.getGURL(JUnitTestGURLs.RED_1);
+        var url = JUnitTestGURLs.RED_1;
 
         // Issue 2 requests for the same URL.
         mSupplier.fetchImage(url, mCallback1);
@@ -282,7 +286,7 @@ public final class OmniboxImageSupplierUnitTest {
         verifyNoMoreInteractions(mImageFetcher);
 
         // Confirm the URL and no callbacks emitted to registered callbacks.
-        assertEquals(JUnitTestGURLs.RED_1, paramCaptor.getValue().url);
+        assertEquals(JUnitTestGURLs.RED_1.getSpec(), paramCaptor.getValue().url);
         verifyNoMoreInteractions(mCallback1, mCallback2);
 
         // Emit reply.
@@ -301,7 +305,7 @@ public final class OmniboxImageSupplierUnitTest {
     public void fetchImage_aggregateMultipleRequestsForSameUrl_noFetcher() {
         mSupplier.setImageFetcherForTesting(null);
 
-        var url = JUnitTestGURLs.getGURL(JUnitTestGURLs.RED_1);
+        var url = JUnitTestGURLs.RED_1;
 
         // Issue 2 requests for the same URL.
         mSupplier.fetchImage(url, mCallback1);
@@ -318,7 +322,7 @@ public final class OmniboxImageSupplierUnitTest {
         mSupplier.setImageFetcherForTesting(mImageFetcher);
 
         ArgumentCaptor<Callback<Bitmap>> callbackCaptor = ArgumentCaptor.forClass(Callback.class);
-        var url = JUnitTestGURLs.getGURL(JUnitTestGURLs.RED_1);
+        var url = JUnitTestGURLs.RED_1;
 
         // Issue first request and observe the interaction with ImageFetcher.
         mSupplier.fetchImage(url, mCallback1);
@@ -343,8 +347,8 @@ public final class OmniboxImageSupplierUnitTest {
     public void fetchImage_requestsForNonOverlappingUrlsAreNotAggregated() {
         mSupplier.setImageFetcherForTesting(mImageFetcher);
 
-        var url1 = JUnitTestGURLs.getGURL(JUnitTestGURLs.RED_1);
-        var url2 = JUnitTestGURLs.getGURL(JUnitTestGURLs.RED_2);
+        var url1 = JUnitTestGURLs.RED_1;
+        var url2 = JUnitTestGURLs.RED_2;
         ArgumentCaptor<Callback<Bitmap>> captor1 = ArgumentCaptor.forClass(Callback.class);
         ArgumentCaptor<Callback<Bitmap>> captor2 = ArgumentCaptor.forClass(Callback.class);
 
@@ -370,7 +374,7 @@ public final class OmniboxImageSupplierUnitTest {
     public void fetchImage_resultsAfterResetAreDiscarded() {
         mSupplier.setImageFetcherForTesting(mImageFetcher);
 
-        var url = JUnitTestGURLs.getGURL(JUnitTestGURLs.RED_1);
+        var url = JUnitTestGURLs.RED_1;
 
         mSupplier.fetchImage(url, mCallback1);
 
@@ -393,7 +397,7 @@ public final class OmniboxImageSupplierUnitTest {
     public void fetchImage_resultsAfterProfileSwitchAreDiscarded() {
         mSupplier.setImageFetcherForTesting(mImageFetcher);
 
-        var url = JUnitTestGURLs.getGURL(JUnitTestGURLs.RED_1);
+        var url = JUnitTestGURLs.RED_1;
 
         mSupplier.fetchImage(url, mCallback1);
 
@@ -417,7 +421,7 @@ public final class OmniboxImageSupplierUnitTest {
     public void fetchImage_resultsAfterDestroyAreDiscarded() {
         mSupplier.setImageFetcherForTesting(mImageFetcher);
 
-        var url = JUnitTestGURLs.getGURL(JUnitTestGURLs.RED_1);
+        var url = JUnitTestGURLs.RED_1;
 
         mSupplier.fetchImage(url, mCallback1);
 
@@ -455,7 +459,7 @@ public final class OmniboxImageSupplierUnitTest {
     public void fetchImage_invalidUrlsAreRejected() {
         mSupplier.setImageFetcherForTesting(null);
 
-        var url = JUnitTestGURLs.getGURL(JUnitTestGURLs.INVALID_URL);
+        var url = JUnitTestGURLs.INVALID_URL;
 
         // Issue 2 requests for the same URL.
         mSupplier.fetchImage(url, mCallback1);

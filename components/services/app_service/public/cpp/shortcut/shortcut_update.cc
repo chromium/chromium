@@ -9,6 +9,7 @@
 #include "base/check_op.h"
 #include "base/logging.h"
 #include "base/strings/string_util.h"
+#include "components/services/app_service/public/cpp/icon_types.h"
 #include "components/services/app_service/public/cpp/macros.h"
 #include "components/services/app_service/public/cpp/shortcut/shortcut.h"
 
@@ -70,6 +71,12 @@ void ShortcutUpdate::Merge(Shortcut* state, const Shortcut* delta) {
   SET_OPTIONAL_VALUE(name);
   SET_ENUM_VALUE(shortcut_source, ShortcutSource::kUnknown);
 
+  state->icon_key = MergeIconKey(
+      state && state->icon_key.has_value() ? &state->icon_key.value() : nullptr,
+      delta && delta->icon_key.has_value() ? &delta->icon_key.value()
+                                           : nullptr);
+
+  SET_OPTIONAL_VALUE(allow_removal);
   // When adding new fields to the Shortcut struct, this function should also
   // be updated.
 }
@@ -103,6 +110,37 @@ bool ShortcutUpdate::ShortcutSourceChanged() const {
                                       ShortcutSource::kUnknown);
 }
 
+std::optional<apps::IconKey> ShortcutUpdate::IconKey() const {
+  return MergeIconKey(
+      state_ && state_->icon_key.has_value() ? &state_->icon_key.value()
+                                             : nullptr,
+      delta_ && delta_->icon_key.has_value() ? &delta_->icon_key.value()
+                                             : nullptr);
+}
+
+bool ShortcutUpdate::IconKeyChanged() const {
+  if (!delta_ || !delta_->icon_key.has_value()) {
+    return false;
+  }
+  if (!state_ || !state_->icon_key.has_value()) {
+    return true;
+  }
+  return MergeIconKey(&(state_->icon_key.value()),
+                      &(delta_->icon_key.value())) != state_->icon_key;
+}
+
+std::optional<bool> ShortcutUpdate::AllowRemoval() const {
+  GET_VALUE_WITH_FALLBACK(allow_removal, std::nullopt)
+}
+
+bool ShortcutUpdate::AllowRemovalChanged() const {
+  RETURN_OPTIONAL_VALUE_CHANGED(allow_removal);
+}
+
+bool ShortcutUpdate::ShortcutInitialized() const {
+  return !state_ && delta_;
+}
+
 // For logging and debug purposes.
 COMPONENT_EXPORT(SHORTCUT)
 std::ostream& operator<<(std::ostream& out,
@@ -112,6 +150,8 @@ std::ostream& operator<<(std::ostream& out,
   out << "LocalId: " << shortcut_update.LocalId() << std::endl;
   out << "Name: " << shortcut_update.Name() << std::endl;
   out << "ShortcutSource: " << EnumToString(shortcut_update.ShortcutSource())
+      << std::endl;
+  out << "AllowRemoval: " << PRINT_OPTIONAL_BOOL(shortcut_update.AllowRemoval())
       << std::endl;
   return out;
 }

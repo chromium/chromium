@@ -21,19 +21,19 @@ class ScriptStateImpl final : public ScriptState {
  public:
   static void Init();
 
-  ScriptStateImpl(v8::Local<v8::Context>,
-                  scoped_refptr<DOMWrapperWorld>,
-                  ExecutionContext*);
+  ScriptStateImpl(v8::Local<v8::Context>, DOMWrapperWorld*, ExecutionContext*);
   ScriptStateImpl(const ScriptState&) = delete;
   ScriptStateImpl& operator=(const ScriptState&) = delete;
   ~ScriptStateImpl() override = default;
   void Trace(Visitor*) const override;
 
-  ExecutionContext* GetExecutionContext() const { return execution_context_; }
+  ExecutionContext* GetExecutionContext() const {
+    return execution_context_.Get();
+  }
 
  private:
   static ScriptState* Create(v8::Local<v8::Context>,
-                             scoped_refptr<DOMWrapperWorld>,
+                             DOMWrapperWorld*,
                              ExecutionContext*);
 
   WeakMember<ExecutionContext> execution_context_;

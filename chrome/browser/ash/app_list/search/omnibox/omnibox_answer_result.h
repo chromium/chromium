@@ -53,8 +53,8 @@ class OmniboxAnswerResult : public ChromeSearchResult,
   bool IsDictionaryResult() const;
   bool IsWeatherResult() const;
 
-  raw_ptr<Profile, ExperimentalAsh> profile_;
-  raw_ptr<AppListControllerDelegate, ExperimentalAsh> list_controller_;
+  raw_ptr<Profile> profile_;
+  raw_ptr<AppListControllerDelegate> list_controller_;
   const crosapi::mojom::SearchResultPtr search_result_;
   const std::u16string query_;
   std::unique_ptr<BitmapFetcher> bitmap_fetcher_;

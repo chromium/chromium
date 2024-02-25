@@ -177,6 +177,10 @@ const char kKAnonymityServiceOAuth2Scope[] =
 const char kCalendarReadOnlyOAuth2Scope[] =
     "https://www.googleapis.com/auth/calendar.readonly";
 
+// OAuth 2 scope for Google Password Manager passkey enclaves.
+const char kPasskeysEnclaveOAuth2Scope[] =
+  "https://www.googleapis.com/auth/secureidentity.action";
+
 // OAuth 2 scopes for Google Tasks API.
 const char kTasksReadOnlyOAuth2Scope[] =
     "https://www.googleapis.com/auth/tasks.readonly";
@@ -194,6 +198,12 @@ const char kClassroomReadOnlyStudentSubmissionsSelfOAuth2Scope[] =
 const char kClassroomReadOnlyStudentSubmissionsStudentsOAuth2Scope[] =
     "https://www.googleapis.com/auth/"
     "classroom.student-submissions.students.readonly";
+
+// OAuth2 scopes for Optimization Guide.
+const char kOptimizationGuideServiceGetHintsOAuth2Scope[] =
+    "https://www.googleapis.com/auth/chrome-optimization-guide";
+const char kOptimizationGuideServiceModelExecutionOAuth2Scope[] =
+    "https://www.googleapis.com/auth/chrome-model-execution";
 
 // Used to build ClientOAuth requests.  These are the names of keys used when
 // building base::DictionaryValue that represent the json data that makes up

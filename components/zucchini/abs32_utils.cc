@@ -110,7 +110,7 @@ Abs32RvaExtractorWin32::Abs32RvaExtractorWin32(Abs32RvaExtractorWin32&&) =
 
 Abs32RvaExtractorWin32::~Abs32RvaExtractorWin32() = default;
 
-absl::optional<Abs32RvaExtractorWin32::Unit> Abs32RvaExtractorWin32::GetNext() {
+std::optional<Abs32RvaExtractorWin32::Unit> Abs32RvaExtractorWin32::GetNext() {
   while (cur_abs32_ < end_abs32_) {
     offset_t location = *(cur_abs32_++);
     if (!addr_.Read(location, image_))
@@ -120,7 +120,7 @@ absl::optional<Abs32RvaExtractorWin32::Unit> Abs32RvaExtractorWin32::GetNext() {
       continue;
     return Unit{location, target_rva};
   }
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 /******** Abs32ReaderWin32 ********/
@@ -132,7 +132,7 @@ Abs32ReaderWin32::Abs32ReaderWin32(Abs32RvaExtractorWin32&& abs32_rva_extractor,
 
 Abs32ReaderWin32::~Abs32ReaderWin32() = default;
 
-absl::optional<Reference> Abs32ReaderWin32::GetNext() {
+std::optional<Reference> Abs32ReaderWin32::GetNext() {
   for (auto unit = abs32_rva_extractor_.GetNext(); unit.has_value();
        unit = abs32_rva_extractor_.GetNext()) {
     offset_t location = unit->location;
@@ -140,7 +140,7 @@ absl::optional<Reference> Abs32ReaderWin32::GetNext() {
     if (unsafe_target != kInvalidOffset)
       return Reference{location, unsafe_target};
   }
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 /******** Abs32WriterWin32 ********/

@@ -115,14 +115,15 @@ void ApplyConstraintsProcessor::ProcessVideoRequest() {
     return;
   }
 
-  // The crop version is lost if the capture is restarted, because of this we
-  // don't try to restart the source if cropTo() has ever been called.
+  // The sub-capture-target version is lost if the capture is restarted, because
+  // of this we don't try to restart the source if cropTo() has ever been
+  // called.
   const blink::MediaStreamDevice& device_info = video_source_->device();
   if (device_info.type == blink::mojom::MediaStreamType::DEVICE_VIDEO_CAPTURE) {
     ProcessVideoDeviceRequest();
   } else if (base::FeatureList::IsEnabled(
                  kApplyConstraintsRestartsVideoContentSources) &&
-             video_source_->GetCropVersion() == 0 &&
+             video_source_->GetSubCaptureTargetVersion() == 0 &&
              (device_info.type ==
                   mojom::blink::MediaStreamType::GUM_DESKTOP_VIDEO_CAPTURE ||
               device_info.type ==
@@ -375,7 +376,7 @@ ApplyConstraintsProcessor::SelectVideoDeviceSettings(
       GetCurrentVideoSource()
           ? static_cast<mojom::blink::FacingMode>(
                 GetCurrentVideoSource()->device().video_facing)
-          : mojom::blink::FacingMode::NONE;
+          : mojom::blink::FacingMode::kNone;
   device_capabilities.formats = std::move(formats);
 
   blink::VideoDeviceCaptureCapabilities video_capabilities;

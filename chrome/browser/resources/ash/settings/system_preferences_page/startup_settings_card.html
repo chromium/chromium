@@ -1,0 +1,29 @@
+<style include="settings-shared">
+  #restoreIcon {
+    fill: var(--cros-sys-primary);
+    margin-inline-end: 16px;
+  }
+
+  #textContainer {
+    padding-inline-end: var(--cr-section-padding);
+  }
+</style>
+
+<settings-card header-text="$i18n{onStartupSettingsCardTitle}">
+  <div class="settings-box first two-line">
+    <template is="dom-if" if="[[isRevampWayfindingEnabled_]]">
+      <iron-icon id="restoreIcon" icon="os-settings:restore-revamp">
+      </iron-icon>
+    </template>
+    <div id="textContainer" class="start settings-box-text" aria-hidden="true">
+      $i18n{onStartupTitle}
+      <div class="secondary">$i18n{onStartupDescription}</div>
+    </div>
+    <settings-dropdown-menu id="onStartupDropdown"
+        label="$i18n{onStartupTitle}"
+        pref="{{prefs.settings.restore_apps_and_pages}}"
+        menu-options="[[onStartupDropdownOptions_]]"
+        deep-link-focus-id$="[[Setting.kRestoreAppsAndPages]]">
+    </settings-dropdown-menu>
+  </div>
+</settings-card>

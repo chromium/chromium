@@ -44,20 +44,17 @@ namespace {
 
 constexpr size_t kDefaultPipeSize = 65536;
 
-// An IOBuffer that doesn't own its data.
+// An IOBuffer that doesn't own its data and accepts void* pointers.
 class MojoPipeIOBuffer : public net::IOBuffer {
  public:
-  explicit MojoPipeIOBuffer(void* data)
-      : net::IOBuffer(static_cast<char*>(data)) {}
+  MojoPipeIOBuffer(void* data, size_t size)
+      : net::IOBuffer(base::make_span(static_cast<char*>(data), size)) {}
 
   MojoPipeIOBuffer(const MojoPipeIOBuffer&) = delete;
   MojoPipeIOBuffer& operator=(const MojoPipeIOBuffer&) = delete;
 
  protected:
-  ~MojoPipeIOBuffer() override {
-    // Set data_ to null so ~IOBuffer won't try to delete it.
-    data_ = nullptr;
-  }
+  ~MojoPipeIOBuffer() override = default;
 };
 
 // A helper class to read data from a FileStreamReader, and write it to a
@@ -111,7 +108,7 @@ class FileSystemReaderDataPipeProducer {
 
       DCHECK(base::IsValueInRangeForNumericType<int>(buffer_size));
       scoped_refptr<MojoPipeIOBuffer> io_buffer =
-          base::MakeRefCounted<MojoPipeIOBuffer>(pipe_buffer);
+          base::MakeRefCounted<MojoPipeIOBuffer>(pipe_buffer, buffer_size);
       const int read_size = stream_reader_->Read(
           io_buffer.get(), std::min<int64_t>(buffer_size, remaining_bytes_),
           base::BindOnce(
@@ -222,7 +219,7 @@ class ExternalFileURLLoader : public network::mojom::URLLoader {
       const std::vector<std::string>& removed_headers,
       const net::HttpRequestHeaders& modified_headers,
       const net::HttpRequestHeaders& modified_cors_exempt_headers,
-      const absl::optional<GURL>& new_url) override {}
+      const std::optional<GURL>& new_url) override {}
   void SetPriority(net::RequestPriority priority,
                    int32_t intra_priority_value) override {}
   void PauseReadingBodyFromNet() override {}
@@ -289,7 +286,7 @@ class ExternalFileURLLoader : public network::mojom::URLLoader {
     }
     head_.response_start = base::TimeTicks::Now();
     client_->OnReceiveResponse(head_.Clone(), std::move(consumer_handle),
-                               absl::nullopt);
+                               std::nullopt);
 
     data_producer_ = std::make_unique<FileSystemReaderDataPipeProducer>(
         std::move(producer_handle), std::move(stream_reader), size,

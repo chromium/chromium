@@ -5,6 +5,7 @@
 #include "content/browser/keyboard_lock/keyboard_lock_service_impl.h"
 
 #include <memory>
+#include <optional>
 #include <utility>
 
 #include "base/check.h"
@@ -18,7 +19,6 @@
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_widget_host.h"
 #include "content/public/common/content_features.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/mojom/devtools/console_message.mojom.h"
 #include "third_party/blink/public/mojom/permissions_policy/permissions_policy.mojom.h"
 #include "ui/events/keycodes/dom/dom_code.h"
@@ -100,7 +100,7 @@ void KeyboardLockServiceImpl::RequestKeyboardLock(
     return;
   }
 
-  absl::optional<base::flat_set<ui::DomCode>> dom_code_set;
+  std::optional<base::flat_set<ui::DomCode>> dom_code_set;
   if (!dom_codes.empty())
     dom_code_set = std::move(dom_codes);
 

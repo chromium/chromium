@@ -6,6 +6,7 @@
 #define CHROMEOS_ASH_SERVICES_MULTIDEVICE_SETUP_PUBLIC_CPP_MULTIDEVICE_SETUP_CLIENT_H_
 
 #include <memory>
+#include <optional>
 #include <string>
 
 #include "base/containers/flat_map.h"
@@ -13,7 +14,6 @@
 #include "base/observer_list.h"
 #include "chromeos/ash/components/multidevice/remote_device_ref.h"
 #include "chromeos/ash/services/multidevice_setup/public/mojom/multidevice_setup.mojom.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ash {
 
@@ -23,8 +23,7 @@ namespace multidevice_setup {
 class MultiDeviceSetupClient {
  public:
   using HostStatusWithDevice =
-      std::pair<mojom::HostStatus,
-                absl::optional<multidevice::RemoteDeviceRef>>;
+      std::pair<mojom::HostStatus, std::optional<multidevice::RemoteDeviceRef>>;
   using FeatureStatesMap = base::flat_map<mojom::Feature, mojom::FeatureState>;
 
   class Observer {
@@ -72,7 +71,7 @@ class MultiDeviceSetupClient {
   virtual void SetFeatureEnabledState(
       mojom::Feature feature,
       bool enabled,
-      const absl::optional<std::string>& auth_token,
+      const std::optional<std::string>& auth_token,
       mojom::MultiDeviceSetup::SetFeatureEnabledStateCallback callback) = 0;
   virtual const FeatureStatesMap& GetFeatureStates() const = 0;
   mojom::FeatureState GetFeatureState(mojom::Feature feature) const;

@@ -1,0 +1,27 @@
+# Copyright 2023 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/ui.gni")
+
+source_set("color_headers") {
+  sources = [ "color_id.h" ]
+
+  public_deps = [ "//ui/color:color_headers" ]
+}
+
+static_library("color") {
+  sources = [
+    "color_mixers.cc",
+    "color_mixers.h",
+  ]
+
+  deps = [
+    ":color_headers",
+    "//ui/color",
+  ]
+
+  if (use_aura) {
+    deps += [ "//components/eye_dropper:color_mixer" ]
+  }
+}

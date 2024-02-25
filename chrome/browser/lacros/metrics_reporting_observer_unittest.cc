@@ -55,7 +55,7 @@ TEST_F(MetricsReportingObserverTest, DisablingMetricsReporting) {
   EXPECT_CALL(*mock_metrics_service(), SetReportingEnabled(testing::IsFalse()));
   EXPECT_CALL(*mock_metrics_service(), RecreateClientIdIfNecessary).Times(0);
 
-  observer()->OnMetricsReportingChanged(false, absl::nullopt);
+  observer()->OnMetricsReportingChanged(false, std::nullopt);
 }
 
 TEST_F(MetricsReportingObserverTest, DisablingMetricsReportingWithClientId) {
@@ -64,5 +64,5 @@ TEST_F(MetricsReportingObserverTest, DisablingMetricsReportingWithClientId) {
   EXPECT_CALL(*mock_metrics_service(), SetReportingEnabled(testing::IsFalse()));
   EXPECT_CALL(*mock_metrics_service(), RecreateClientIdIfNecessary).Times(0);
 
-  observer()->OnMetricsReportingChanged(false, absl::nullopt);
+  observer()->OnMetricsReportingChanged(false, std::nullopt);
 }

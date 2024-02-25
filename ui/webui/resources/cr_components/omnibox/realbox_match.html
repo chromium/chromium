@@ -8,6 +8,26 @@
     margin-inline-end: 8px;
   }
 
+  :host-context([expanded-state-layout-chrome-refresh]) #action {
+    margin-inline-end: 2px;
+  }
+
+  #actions-focus-border {
+    overflow: hidden;
+  }
+
+  #actions-focus-border:focus-within,
+  /* Keep outline when chip receives active state after being focused. */
+  #actions-focus-border:focus-within:has(#action:active) {
+    outline: 2px solid var(--color-realbox-results-action-chip-focus-outline);
+    border-radius: 10px;
+    margin-inline-start: -2px;
+  }
+
+  #actions-focus-border:has(#action:active) {
+    outline: none;
+  }
+
   .container {
     align-items: center;
     cursor: default;
@@ -23,8 +43,50 @@
   .container + .container {
     flex-direction: row;
     margin-inline-start: 40px; /* icon width + text padding */
-    padding-bottom: 12px;
     padding-top: 0;
+    padding-bottom: 12px;
+  }
+
+  :host([has-outset-action-focus-ring]:not([realbox-consistent-row-height])) .container {
+    height: 38px;
+    padding-top: 3px;
+    padding-bottom: 3px;
+  }
+
+  :host([realbox-consistent-row-height]) .container {
+    height: 38px;
+    padding-top: 5px;
+    padding-bottom: 5px;
+  }
+
+  :host-context([chrome-refresh-hover-shape])  .container:not(.actions) {
+    margin-inline-end: 16px;
+    border-top-right-radius: 24px;
+    border-bottom-right-radius: 24px;
+  }
+
+  :host-context([chrome-refresh-hover-shape]):host-context([has-secondary-side]):host-context([can-show-secondary-side]) .container:not(.actions) {
+    margin-inline-end: 0px;
+  }
+
+  :host-context([chrome-refresh-hover-shape]) .container:not(.actions):hover,
+  :host-context([chrome-refresh-hover-shape]):host(:is(:focus-visible, [selected]))  .container:not(.actions) {
+    background-color: var(--color-realbox-results-background-hovered);
+  }
+
+  .actions.inlined {
+    align-self: center;
+    flex-grow: 1;
+    flex-shrink: 0;
+    padding-bottom: 0;
+    padding-inline-end: 0px;
+    padding-inline-start: 0px;
+    padding-top: 0;
+  }
+
+  :host([has-action]) .actions.inlined {
+    padding-inline-end: 8px;
+    padding-inline-start: 4px;
   }
 
   #contents,
@@ -39,7 +101,7 @@
   }
 
   #focus-indicator {
-    background-color: var(--google-blue-600);
+    background-color: var(--color-realbox-results-focus-indicator);
     border-radius: 3px;
     display: none;
     height: 100%;
@@ -48,9 +110,12 @@
     width: 6px;
   }
 
-  /* TODO(crbug.com/1430996): Add focus indicator for secondary results. */
-  :host(:is(:focus-visible, [selected]:not(:focus-within)):not(
-      [side-type-class_='secondary-side'])) #focus-indicator {
+  :host-context([expanded-state-layout-chrome-refresh]) #focus-indicator {
+    width: 7px;
+  }
+
+  /* Focus indicator only shown for vertically rendered matches. */
+  :host-context(.vertical):host(:is(:focus-visible, [selected]:not(:focus-within))) #focus-indicator:not(.selected-within) {
     display: block;
   }
 
@@ -69,11 +134,15 @@
   #text-container {
     align-items: center;
     display: flex;
-    flex-grow: 1;
+    flex-grow: 0;
     overflow: hidden;
     padding-inline-end: 8px;
     padding-inline-start: 8px;
     white-space: nowrap;
+  }
+
+  :host([has-action]) #text-container {
+    padding-inline-end: 4px;
   }
 
   :host([is-rich-suggestion]) #text-container {
@@ -90,8 +159,8 @@
     width: 100%;
   }
 
-  /* Deemphasizes description for entities with images. */
-  :host([is-entity-suggestion][has-image]) #description {
+  /* Deemphasizes description for rich suggestions. */
+  :host([is-rich-suggestion]) #description {
     font-size: .875em;
   }
 
@@ -99,8 +168,8 @@
     font-weight: 600;
   }
 
-  /* Uses a dimmed color for description for entities. */
-  :host([is-entity-suggestion]) #description,
+  /* Use dimmed color for descriptions. */
+  #description,
   .dim {
     color: var(--color-realbox-results-foreground-dimmed);
   }
@@ -111,6 +180,8 @@
     color: var(--color-realbox-results-dim-selected);
   }
 
+  /* URL ellipsis color to match the URL text color */
+  #description:has(.url),
   .url {
     color: var(--color-realbox-results-url);
   }
@@ -120,18 +191,15 @@
   }
 
   #remove {
-    margin-inline-end: 1px;
-    opacity: 0; /* Hides the button while keeping it in tab order. */
-  }
-
-  :host-context(cr-realbox-match:hover) #remove {
-    opacity: 1;
-  }
-
-  :host-context(cr-realbox-match:-webkit-any(:focus-within, [selected])) #remove {
     --cr-icon-button-fill-color:
         var(--color-realbox-results-icon-selected);
-    opacity: 1;
+    display: none;
+    margin-inline-end: 1px;
+  }
+
+  :host-context(.primary-side) .container:hover #remove,
+  :host-context(cr-realbox-match:-webkit-any(:focus-within, [selected])):host-context(.primary-side) #remove {
+    display: inline-flex;
   }
 
   .selected {
@@ -139,25 +207,27 @@
         var(--color-realbox-results-icon-focused-outline);
   }
 
-  :host([side-type-class_='secondary-side'][is-entity-suggestion][has-image]) {
+  :host-context(.secondary-side):host-context(.horizontal):host([is-entity-suggestion][has-image]),
+  :host-context([chrome-refresh-hover-shape]):host-context(.secondary-side):host-context(.horizontal):host([is-entity-suggestion][has-image]) .container {
     border-radius: 16px;
   }
 
-  :host([side-type-class_='secondary-side'][is-entity-suggestion][has-image])
+  :host-context(.secondary-side):host-context(.horizontal):host([is-entity-suggestion][has-image])
       .container {
     box-sizing: border-box;
     flex-direction: column;
+    margin-inline-end: 0;
     padding: 6px;
     padding-block-end: 16px;
     width: 102px;
+    height: auto;
   }
-
-  :host([side-type-class_='secondary-side'][is-entity-suggestion][has-image])
+  :host-context(.secondary-side):host-context(.horizontal):host([is-entity-suggestion][has-image])
       .focus-indicator {
     display: none;
   }
 
-  :host([side-type-class_='secondary-side'][is-entity-suggestion][has-image])
+  :host-context(.secondary-side):host-context(.horizontal):host([is-entity-suggestion][has-image])
       #icon {
     --cr-realbox-icon-border-radius: 12px;
     /* Disable placeholder dominant color as the images are large and the
@@ -168,16 +238,16 @@
     width: 90px;
   }
 
-  :host([side-type-class_='secondary-side'][is-entity-suggestion][has-image])
+  :host-context(.secondary-side):host-context(.horizontal):host([is-entity-suggestion][has-image])
       #text-container {
     padding: 0;
     white-space: normal;
     width: 100%;
   }
 
-  :host([side-type-class_='secondary-side'][is-entity-suggestion][has-image])
+  :host-context(.secondary-side):host-context(.horizontal):host([is-entity-suggestion][has-image])
       #contents,
-  :host([side-type-class_='secondary-side'][is-entity-suggestion][has-image])
+  :host-context(.secondary-side):host-context(.horizontal):host([is-entity-suggestion][has-image])
       #description {
     -webkit-box-orient: vertical;
     -webkit-line-clamp: 2;
@@ -186,29 +256,24 @@
     overflow: hidden;
   }
 
-  :host([side-type-class_='secondary-side'][is-entity-suggestion][has-image])
+  :host-context(.secondary-side):host-context(.horizontal):host([is-entity-suggestion][has-image])
       #contents {
     font-size: 13px;
     line-height: 20px;
     margin-block-end: 4px;
   }
 
-  :host([side-type-class_='secondary-side'][is-entity-suggestion][has-image])
+  :host-context(.secondary-side):host-context(.horizontal):host([is-entity-suggestion][has-image])
       #description {
     font-size: 12px;
     line-height: 16px;
   }
 
-
-  :host([side-type-class_='secondary-side'][is-entity-suggestion][has-image])
-      #remove {
-    display: none;
-  }
 </style>
 <div class="container" aria-hidden="true">
   <div id="focus-indicator"></div>
-  <cr-realbox-icon id="icon" match="[[match]]"></cr-realbox-icon>
-  <div id="text-container">
+  <cr-realbox-icon id="icon" match="[[match]]" hidden="[[showCrNonInlinedHoverFill]]"></cr-realbox-icon>
+  <div id="text-container" hidden="[[showCrNonInlinedHoverFill]]">
     <span id="tail-suggest-prefix" hidden$="[[!tailSuggestPrefix_]]">
       <span id="prefix">[[tailSuggestPrefix_]]</span>
       <!-- This is equivalent to AutocompleteMatch::kEllipsis which is
@@ -219,18 +284,30 @@
     <span id="separator" class="dim">[[separatorText_]]</span>
     <span id="description" inner-h-t-m-l="[[descriptionHtml_]]"></span>
   </div>
+  <template is="dom-if" if="[[showActionsInlined_()]]">
+    <div class="actions container inlined" aria-hidden="true">
+      <template is="dom-repeat" items="[[match.actions]]">
+        <template is="dom-if" if="[[expandedStateIconsChromeRefresh]]">
+          <div id="actions-focus-border">
+            <cr-realbox-action id="action" action="[[item]]"
+              action-index="[[actionIndex_(item)]]"
+              on-execute-action="onExecuteAction_" tabindex="1">
+            </cr-realbox-action>
+          </div>
+        </template>
+        <template is="dom-if" if="[[!expandedStateIconsChromeRefresh]]">
+          <cr-realbox-action id="action" action="[[item]]"
+            action-index="[[actionIndex_(item)]]"
+            on-execute-action="onExecuteAction_" tabindex="1">
+          </cr-realbox-action>
+      </template>
+      </template>
+    </div>
+  </template>
   <cr-icon-button id="remove" class="action-icon icon-clear"
     aria-label="[[removeButtonAriaLabel_]]"
     on-click="onRemoveButtonClick_" on-mousedown="onRemoveButtonMouseDown_"
     title="[[removeButtonTitle_]]" hidden$="[[!match.supportsDeletion]]"
     tabindex="2">
   </cr-icon-button>
-</div>
-<div class="container" aria-hidden="true" hidden="[[!match.actions.length]]">
-  <template is="dom-repeat" items="[[match.actions]]">
-    <cr-realbox-action id="action" action="[[item]]"
-      action-index="[[actionIndex_(item)]]"
-      on-execute-action="onExecuteAction_" tabindex="1">
-    </cr-realbox-action>
-  </template>
 </div>

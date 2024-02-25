@@ -22,6 +22,8 @@ import "services/network/public/mojom/network_change_manager.mojom";
 import "services/network/public/mojom/network_context.mojom";
 import "services/network/public/mojom/ip_address_space.mojom";
 import "services/network/public/mojom/network_interface.mojom";
+import "services/network/public/mojom/proxy_config.mojom";
+import "services/network/public/mojom/network_annotation_monitor.mojom";
 import "services/network/public/mojom/network_interface_change_listener.mojom";
 import "services/network/public/mojom/network_param.mojom";
 import "services/network/public/mojom/network_quality_estimator_manager.mojom";
@@ -90,7 +92,7 @@ struct HttpAuthDynamicParams {
   string android_negotiate_account_type;
 
   // Indicates whether the GSSAPI library should be loaded. Only supported on
-  // Chrome OS.
+  // Chrome OS and Linux.
   bool allow_gssapi_library_load = true;
 
   // True if Basic authentication challenges should be allowed for non-secure
@@ -131,6 +133,11 @@ struct NetworkServiceParams {
   // A SystemDnsResolver to provide out-of-process system DNS resolution, in
   // case the system DNS resolver cannot always run sandboxed.
   pending_remote<SystemDnsResolver>? system_dns_resolver;
+
+  // The policy used for bypassing requests that are eligible for IP Protection.
+  // Even if a domain is part of the masked domain list, the bypass policy can
+  // be used to bypass certain network requests from IP Protection.
+  IpProtectionProxyBypassPolicy ip_protection_proxy_bypass_policy;
 };
 
 // Configuration settings for SCT Auditing.
@@ -159,6 +166,14 @@ struct SCTAuditingConfiguration {
 
   // Traffic annotation for the hashdance lookup query.
   MutableNetworkTrafficAnnotationTag hashdance_traffic_annotation;
+};
+
+// GssapiLibraryLoadObserver will be notified once when GSSAPI libraries
+// are about to be loaded, on a "WWW_Authenticate: negotiate" header.
+[EnableIf=is_linux]
+interface GssapiLibraryLoadObserver {
+  // Called only once per network service.
+  OnBeforeGssapiLibraryLoad();
 };
 
 // Implemented by the network service. The browser process sends messages to
@@ -264,11 +279,11 @@ interface NetworkService {
   // (e.g. DevTools attached).
   SetRawHeadersAccess(int32 process_id, array<url.mojom.Origin> origins);
 
-  // Sets the maximum number of connections for a proxy server.
+  // Sets the maximum number of connections for a proxy chain.
   //   * Negative values will set the default proxy connection limit (32)
   //   * Values larger than 99 will saturate to 99.
   //   * Values smaller than 6 will saturate to 6.
-  SetMaxConnectionsPerProxy(int32 max_connections);
+  SetMaxConnectionsPerProxyChain(int32 max_connections);
 
   // Gets the NetworkChangeManager.
   GetNetworkChangeManager(
@@ -307,11 +322,6 @@ interface NetworkService {
   [EnableIf=is_android]
   OnApplicationStateChange(mojo_base.mojom.ApplicationState state);
 
-  // Sets the given environment variables in the network service's process.
-  // This method won't modify variables that aren't present in the
-  // |environment| array.
-  SetEnvironment(array<EnvironmentVariable> environment);
-
   // Sets Trust Tokens key commitment state. |raw_commitments| is the
   // JSON-encoded string representation of a collection of issuers' key
   // commitments according to the format specified, for now, in the Trust
@@ -327,13 +337,9 @@ interface NetworkService {
   [EnableIf=is_ct_supported]
   ConfigureSCTAuditing(SCTAuditingConfiguration configuration);
 
-  // Updates the log list used for CT verification. `update_time` should
-  // contain the timestamp that the log list was considered fresh/current, in
-  // order to ensure that CT is not enforced if the log list is too out of
-  // date.
+  // Updates the log list used for CT auditing.
   [EnableIf=is_ct_supported]
-  UpdateCtLogList(array<CTLogInfo> log_list,
-                  mojo_base.mojom.Time update_time) => ();
+  UpdateCtLogList(array<CTLogInfo> log_list) => ();
 
   // Updates the list of popular SCTs queried during CT hashdance auditing.
   [EnableIf=is_ct_supported]
@@ -375,7 +381,12 @@ interface NetworkService {
   // |raw_mdl| contains the byte string representation of the MaskedDomainList
   // proto. See the proto definition at
   // //components/privacy_sandbox/masked_domain_list/masked_domain_list.proto.
-  UpdateMaskedDomainList(mojo_base.mojom.ByteString raw_mdl);
+  //
+  // |exclusion_list| contains the list of domains which should be excluded
+  // from the MDL. Subdomains of entries on this list should be excluded from
+  // the MDL as well.
+  UpdateMaskedDomainList(mojo_base.mojom.ByteString raw_mdl,
+    array<string> exclusion_list);
 
   // Parses response headers and returns a structured version to the caller.
   // This call originates from the browser process. Used for navigations when
@@ -392,13 +403,21 @@ interface NetworkService {
   // URLLoaderNetworkServiceObserver::OnDataUseUpdate. By default it's not
   // enabled.
   EnableDataUseUpdates(bool enable);
-};
 
-// Service that tests new process overhead on Android.
-// TODO(http://crbug.com/1395707): Remove this once
-// --disable-features=NetworkServiceInProcess2 is launched stable.
-[EnableIf=is_android, ServiceSandbox=sandbox.mojom.Sandbox.kNetwork]
-interface EmptyNetworkService {
-  // Test function to check if the service is available. Returns same `value`.
-  Ping(int32 value) => (int32 value);
+  // Set IPv6 reachability override. When `reachability_override` is true, the
+  // DNS stack queries AAAA record even when the IPv6 reachability probe fails.
+  SetIPv6ReachabilityOverride(bool reachability_override);
+
+  // Set the GssapiLibraryLoadObserver for this network service.
+  // Will only be notified once unless the observer is set again.
+  // TODO(crbug.com/1474362): remove this observer once GSSAPI is brokered
+  // out of the network service.
+  [EnableIf=is_linux]
+  SetGssapiLibraryLoadObserver(
+    pending_remote<GssapiLibraryLoadObserver> gssapi_library_load_observer);
+
+  // Set NetworkAnnotationMonitor remote. This allows network calls to be
+  // reported via `NotifyNetworkRequestWithAnnotation`.
+  SetNetworkAnnotationMonitor(
+    pending_remote<network.mojom.NetworkAnnotationMonitor> remote);
 };

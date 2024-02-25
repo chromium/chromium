@@ -9,8 +9,15 @@
 #include "base/auto_reset.h"
 #include "base/check_op.h"
 #include "base/containers/contains.h"
+#include "base/dcheck_is_on.h"
+#include "base/memory/raw_ptr.h"
 #include "base/trace_event/trace_event.h"
 #include "ui/views/view.h"
+#include "ui/views/view_class_properties.h"
+
+#if DCHECK_IS_ON()
+#include "base/ranges/algorithm.h"
+#endif
 
 namespace views {
 
@@ -42,6 +49,13 @@ gfx::Size LayoutManagerBase::GetPreferredSize(const View* host) const {
   if (!cached_preferred_size_)
     cached_preferred_size_ = CalculateProposedLayout(SizeBounds()).host_size;
   return *cached_preferred_size_;
+}
+
+gfx::Size LayoutManagerBase::GetPreferredSize(
+    const View* host,
+    const SizeBounds& available_size) const {
+  DCHECK_EQ(host_view_, host);
+  return CalculateProposedLayout(available_size).host_size;
 }
 
 gfx::Size LayoutManagerBase::GetMinimumSize(const View* host) const {
@@ -89,8 +103,26 @@ void LayoutManagerBase::Layout(View* host) {
   LayoutImpl();
 }
 
-std::vector<View*> LayoutManagerBase::GetChildViewsInPaintOrder(
-    const View* host) const {
+void LayoutManagerBase::OnViewPropertyChanged(View* observed_view,
+                                              const void* key,
+                                              int64_t old_value) {
+  DCHECK_EQ(GetRootLayoutManager(), this);
+
+  if (key == kViewIgnoredByLayoutKey) {
+    const bool ignored = observed_view->GetProperty(kViewIgnoredByLayoutKey);
+    // TODO(crbug.com/1524149): Shouldn't need to check this, the framework
+    // should avoid calling us when the value hasn't changed.
+    if (ignored == ui::ClassPropertyCaster<bool>::FromInt64(old_value)) {
+      return;
+    }
+    base::AutoReset<bool> setter(&suppress_invalidate_, true);
+    PropagateChildViewIgnoredByLayout(observed_view, ignored);
+    InvalidateHost(false);
+  }
+}
+
+std::vector<raw_ptr<View, VectorExperimental>>
+LayoutManagerBase::GetChildViewsInPaintOrder(const View* host) const {
   DCHECK_EQ(host_view_, host);
   return LayoutManager::GetChildViewsInPaintOrder(host);
 }
@@ -109,25 +141,6 @@ ProposedLayout LayoutManagerBase::GetProposedLayout(
   return cached_layout_;
 }
 
-void LayoutManagerBase::SetChildViewIgnoredByLayout(View* child_view,
-                                                    bool ignored) {
-  auto it = child_infos_.find(child_view);
-  DCHECK(it != child_infos_.end());
-  if (it->second.ignored == ignored)
-    return;
-
-  base::AutoReset<bool> setter(&suppress_invalidate_, true);
-  PropagateChildViewIgnoredByLayout(child_view, ignored);
-  InvalidateHost(false);
-}
-
-bool LayoutManagerBase::IsChildViewIgnoredByLayout(
-    const View* child_view) const {
-  auto it = child_infos_.find(child_view);
-  DCHECK(it != child_infos_.end());
-  return it->second.ignored;
-}
-
 LayoutManagerBase::LayoutManagerBase() = default;
 
 SizeBounds LayoutManagerBase::GetAvailableHostSize() const {
@@ -143,10 +156,15 @@ bool LayoutManagerBase::IsChildIncludedInLayout(const View* child,
   // During callbacks when a child is removed we can get in a state where a view
   // in the child list of the host view is not in |child_infos_|. In that case,
   // the view is being removed and is not part of the layout.
-  if (it == child_infos_.end())
+  // TODO(crbug.com/1524187): This is a symptom of bad removal handling. Fix,
+  // then convert this to a CHECK.
+  if (it == child_infos_.end()) {
     return false;
+  }
 
-  return !it->second.ignored && (include_hidden || it->second.can_be_visible);
+  return !child->GetProperty(kViewIgnoredByLayoutKey) &&
+         !child->GetProperty(kIsDecorativeViewKey) &&
+         (include_hidden || it->second.can_be_visible);
 }
 
 bool LayoutManagerBase::CanBeVisible(const View* child) const {
@@ -155,8 +173,11 @@ bool LayoutManagerBase::CanBeVisible(const View* child) const {
   // During callbacks when a child is removed we can get in a state where a view
   // in the child list of the host view is not in |child_infos_|. In that case,
   // the view is being removed and is not part of the layout.
-  if (it == child_infos_.end())
+  // TODO(crbug.com/1524187): This is a symptom of bad removal handling. Fix,
+  // then convert this to a CHECK.
+  if (it == child_infos_.end()) {
     return false;
+  }
 
   return it->second.can_be_visible;
 }
@@ -174,16 +195,19 @@ void LayoutManagerBase::ApplyLayout(const ProposedLayout& layout) {
     // Since we have a non-const reference to the parent here, we can safely use
     // a non-const reference to the child.
     View* const child_view = child_layout.child_view;
+    // A decorative view manages its own visibility and layout.
+    bool is_decorative = child_view->GetProperty(kIsDecorativeViewKey);
     // Should not be attempting to modify a child view that has been removed.
     DCHECK(host_view()->GetIndexOf(child_view).has_value());
-    if (child_view->GetVisible() != child_layout.visible)
+    if (child_view->GetVisible() != child_layout.visible && !is_decorative) {
       SetViewVisibility(child_view, child_layout.visible);
+    }
 
     // If the child view is not visible and we haven't bothered to specify
     // bounds, don't bother setting them (which would cause another cascade of
     // events that wouldn't do anything useful).
     if (new_available_size != cached_available_size_ || child_layout.visible ||
-        !child_layout.bounds.IsEmpty()) {
+        !child_layout.bounds.IsEmpty() || is_decorative) {
       const bool size_changed =
           child_view->bounds().size() != child_layout.bounds.size();
       if (child_view->bounds() != child_layout.bounds)
@@ -194,7 +218,7 @@ void LayoutManagerBase::ApplyLayout(const ProposedLayout& layout) {
       // it here.
       // TODO(dfried): figure out a better way to handle this.
       if (!size_changed && child_layout.available_size != SizeBounds())
-        child_view->Layout();
+        child_view->DeprecatedLayoutImmediately();
     }
   }
 
@@ -229,12 +253,16 @@ bool LayoutManagerBase::OnChildViewIgnoredByLayout(View* child_view,
 }
 
 bool LayoutManagerBase::OnViewAdded(View* host, View* view) {
-  OnLayoutChanged();
+  if (IsChildIncludedInLayout(view)) {
+    OnLayoutChanged();
+  }
   return false;
 }
 
 bool LayoutManagerBase::OnViewRemoved(View* host, View* view) {
-  OnLayoutChanged();
+  if (IsChildIncludedInLayout(view)) {
+    OnLayoutChanged();
+  }
   return false;
 }
 
@@ -265,6 +293,11 @@ void LayoutManagerBase::Installed(View* host_view) {
   DCHECK(host_view);
   DCHECK(!host_view_);
   DCHECK(child_infos_.empty());
+  DCHECK_EQ(GetRootLayoutManager(), this);
+
+  for (View* child : host_view->children()) {
+    view_observations_.AddObservation(child);
+  }
 
   base::AutoReset<bool> setter(&suppress_invalidate_, true);
   PropagateInstalled(host_view);
@@ -273,6 +306,9 @@ void LayoutManagerBase::Installed(View* host_view) {
 void LayoutManagerBase::ViewAdded(View* host, View* view) {
   DCHECK_EQ(host_view_, host);
   DCHECK(!base::Contains(child_infos_, view));
+  DCHECK_EQ(GetRootLayoutManager(), this);
+
+  view_observations_.AddObservation(view);
 
   base::AutoReset<bool> setter(&suppress_invalidate_, true);
   const bool invalidate = PropagateViewAdded(host, view);
@@ -283,10 +319,14 @@ void LayoutManagerBase::ViewAdded(View* host, View* view) {
 void LayoutManagerBase::ViewRemoved(View* host, View* view) {
   DCHECK_EQ(host_view_, host);
   DCHECK(base::Contains(child_infos_, view));
+  DCHECK_EQ(GetRootLayoutManager(), this);
 
   auto it = child_infos_.find(view);
   DCHECK(it != child_infos_.end());
-  const bool removed_visible = it->second.can_be_visible && !it->second.ignored;
+  const bool removed_visible =
+      it->second.can_be_visible && !view->GetProperty(kViewIgnoredByLayoutKey);
+
+  view_observations_.RemoveObservation(view);
 
   base::AutoReset<bool> setter(&suppress_invalidate_, true);
   const bool invalidate = PropagateViewRemoved(host, view);
@@ -301,7 +341,7 @@ void LayoutManagerBase::ViewVisibilitySet(View* host,
   DCHECK_EQ(host_view_, host);
   auto it = child_infos_.find(view);
   DCHECK(it != child_infos_.end());
-  const bool was_ignored = it->second.ignored;
+  const bool was_ignored = view->GetProperty(kViewIgnoredByLayoutKey);
   if (it->second.can_be_visible == new_visibility)
     return;
 
@@ -316,16 +356,33 @@ void LayoutManagerBase::AddOwnedLayoutInternal(
     std::unique_ptr<LayoutManagerBase> owned_layout) {
   DCHECK(owned_layout);
   DCHECK(!owned_layout->parent_layout_);
+
+  // View observations should only exist on the root.
+#if DCHECK_IS_ON()
+  // If `owned_layout` knows about views the root doesn't, something is going to
+  // go wrong.
+  const LayoutManagerBase* const root_layout = GetRootLayoutManager();
+  base::ranges::for_each(
+      owned_layout->view_observations_.sources(), [&](View* source) {
+        DCHECK(root_layout->view_observations_.IsObservingSource(source));
+      });
+#endif
+  owned_layout->view_observations_.RemoveAllObservations();
+
+  // Inform `owned_layout` about `host_view_` and its children.
   if (host_view_) {
-    owned_layout->Installed(host_view_);
+    base::AutoReset<bool> setter(&suppress_invalidate_, true);
+    owned_layout->PropagateInstalled(host_view_);
     for (View* child_view : host_view_->children()) {
       const ChildInfo& child_info = child_infos_.find(child_view)->second;
-      owned_layout->PropagateChildViewIgnoredByLayout(child_view,
-                                                      child_info.ignored);
+      owned_layout->PropagateChildViewIgnoredByLayout(
+          child_view, child_view->GetProperty(kViewIgnoredByLayoutKey));
       owned_layout->PropagateViewVisibilitySet(host_view_, child_view,
                                                child_info.can_be_visible);
     }
   }
+
+  // Attach `owned_layout` to us.
   owned_layout->parent_layout_ = this;
   owned_layouts_.emplace_back(std::move(owned_layout));
 }
@@ -339,8 +396,6 @@ LayoutManagerBase* LayoutManagerBase::GetRootLayoutManager() {
 
 bool LayoutManagerBase::PropagateChildViewIgnoredByLayout(View* child_view,
                                                           bool ignored) {
-  child_infos_[child_view].ignored = ignored;
-
   bool result = false;
   for (auto& owned_layout : owned_layouts_) {
     result |=
@@ -351,7 +406,7 @@ bool LayoutManagerBase::PropagateChildViewIgnoredByLayout(View* child_view,
 }
 
 bool LayoutManagerBase::PropagateViewAdded(View* host, View* view) {
-  child_infos_.emplace(view, ChildInfo{view->GetVisible(), false});
+  child_infos_.emplace(view, ChildInfo{view->GetVisible()});
 
   bool result = false;
 
@@ -363,14 +418,15 @@ bool LayoutManagerBase::PropagateViewAdded(View* host, View* view) {
 }
 
 bool LayoutManagerBase::PropagateViewRemoved(View* host, View* view) {
-  child_infos_.erase(view);
-
   bool result = false;
 
   for (auto& owned_layout : owned_layouts_)
     result |= owned_layout->PropagateViewRemoved(host, view);
 
   result |= OnViewRemoved(host, view);
+
+  child_infos_.erase(view);
+
   return result;
 }
 
@@ -390,8 +446,8 @@ bool LayoutManagerBase::PropagateViewVisibilitySet(View* host,
 
 void LayoutManagerBase::PropagateInstalled(View* host) {
   host_view_ = host;
-  for (auto* it : host->children()) {
-    child_infos_.emplace(it, ChildInfo{it->GetVisible(), false});
+  for (View* child : host->children()) {
+    child_infos_.emplace(child, ChildInfo{child->GetVisible()});
   }
 
   for (auto& owned_layout : owned_layouts_)
@@ -405,6 +461,29 @@ void LayoutManagerBase::PropagateInvalidateLayout() {
     owned_layout->PropagateInvalidateLayout();
 
   OnLayoutChanged();
+}
+
+ManualLayoutUtil::ManualLayoutUtil(LayoutManagerBase* layout_manager)
+    : layout_manager_(layout_manager) {}
+
+ManualLayoutUtil::~ManualLayoutUtil() = default;
+
+void ManualLayoutUtil::SetViewHidden(View* child_view, bool hidden) {
+  // If the child view is visible but we are not allowing visibility, update its
+  // visibility. This doesn't necessarily invalidate anything.
+  if (child_view->GetVisible() && hidden) {
+    layout_manager_->SetViewVisibility(child_view, false);
+  }
+
+  // If the view cannot be visible, it should be ignored by the layout, and
+  // vice-versa. This may invalidate layout data.
+  const auto it = layout_manager_->child_infos_.find(child_view);
+  CHECK(it != layout_manager_->child_infos_.end());
+  const bool can_be_visible = !hidden;
+  if (can_be_visible != it->second.can_be_visible) {
+    layout_manager_->PropagateViewVisibilitySet(layout_manager_->host_view(),
+                                                child_view, can_be_visible);
+  }
 }
 
 }  // namespace views

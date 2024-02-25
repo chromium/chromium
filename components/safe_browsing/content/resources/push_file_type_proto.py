@@ -26,13 +26,6 @@ def main():
                       '--dir',
                       help='An up-to-date GN/Ninja build directory, '
                       'such as ./out/Debug')
-    parser.add_option('--experiment',
-                      action='store_true',
-                      default=False,
-                      help='When this flag is set to true, '
-                      'push the experiment version of file type policies.'
-                      'This version is defined in '
-                      'download_file_types_experiment.asciipb')
 
     (opts, args) = parser.parse_args()
     if opts.dir is None:
@@ -41,14 +34,14 @@ def main():
 
     # Clear out the target dir before we build so we can be sure we've got
     # the freshest version.
-    all_sub_dir = 'experiment_all' if opts.experiment else 'all'
-    all_dir = os.path.join(opts.dir, "gen", RESOURCE_SUBDIR, all_sub_dir)
+    all_dir = os.path.join(opts.dir, "gen", RESOURCE_SUBDIR, 'all')
     if os.path.isdir(all_dir):
         shutil.rmtree(all_dir)
 
-    script_name = ':make_all_file_types_protobuf_experiment' if \
-      opts.experiment else ':make_all_file_types_protobuf'
-    gn_command = ['ninja', '-C', opts.dir, RESOURCE_SUBDIR + script_name]
+    gn_command = [
+        'ninja', '-C', opts.dir,
+        RESOURCE_SUBDIR + ':make_all_file_types_protobuf'
+    ]
     print("Running the following")
     print("   " + (' '.join(gn_command)))
     if subprocess.call(gn_command):

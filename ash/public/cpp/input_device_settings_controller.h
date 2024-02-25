@@ -55,6 +55,20 @@ class ASH_PUBLIC_EXPORT InputDeviceSettingsController {
         const mojom::GraphicsTablet& graphics_tablet) {}
     virtual void OnGraphicsTabletSettingsUpdated(
         const mojom::GraphicsTablet& graphics_tablet) {}
+
+    virtual void OnCustomizableMouseButtonPressed(const mojom::Mouse& mouse,
+                                                  const mojom::Button& button) {
+    }
+    virtual void OnCustomizableTabletButtonPressed(
+        const mojom::GraphicsTablet& mouse,
+        const mojom::Button& button) {}
+    virtual void OnCustomizablePenButtonPressed(
+        const mojom::GraphicsTablet& mouse,
+        const mojom::Button& button) {}
+
+    virtual void OnCustomizableMouseObservingStarted(
+        const mojom::Mouse& mouse) {}
+    virtual void OnCustomizableMouseObservingStopped() {}
   };
 
   static InputDeviceSettingsController* Get();
@@ -84,6 +98,26 @@ class ASH_PUBLIC_EXPORT InputDeviceSettingsController {
   // nullptr if no such device exists.
   virtual const mojom::PointingStickSettings* GetPointingStickSettings(
       DeviceId id) = 0;
+  // Returns the settings of the pointing stick with a device id of `id` or
+  // nullptr if no such device exists.
+  virtual const mojom::GraphicsTabletSettings* GetGraphicsTabletSettings(
+      DeviceId id) = 0;
+
+  // Returns the keyboard that maps to the given id. Returns nullptr if no
+  // keyboard exists.
+  virtual const mojom::Keyboard* GetKeyboard(DeviceId id) = 0;
+  // Returns the touchpad that maps to the given id. Returns nullptr if no
+  // touchpad exists.
+  virtual const mojom::Touchpad* GetTouchpad(DeviceId id) = 0;
+  // Returns the mouse that maps to the given id. Returns nullptr if no
+  // mouse exists.
+  virtual const mojom::Mouse* GetMouse(DeviceId id) = 0;
+  // Returns the pointing stick that maps to the given id. Returns nullptr if no
+  // pointing stick exists.
+  virtual const mojom::PointingStick* GetPointingStick(DeviceId id) = 0;
+  // Returns the graphics tablet that maps to the given id. Returns nullptr if
+  // no graphics tablet exists.
+  virtual const mojom::GraphicsTablet* GetGraphicsTablet(DeviceId id) = 0;
 
   // Returns the current set of enterprise policies which control keyboard
   // settings.
@@ -97,27 +131,41 @@ class ASH_PUBLIC_EXPORT InputDeviceSettingsController {
   virtual void RestoreDefaultKeyboardRemappings(DeviceId id) = 0;
   // Configure the settings for keyboard of `id` with the provided
   // `settings`.
-  virtual void SetKeyboardSettings(DeviceId id,
+  virtual bool SetKeyboardSettings(DeviceId id,
                                    mojom::KeyboardSettingsPtr settings) = 0;
   // Configure the settings for touchpad of `id` with the provided `settings`.
-  virtual void SetTouchpadSettings(DeviceId id,
+  virtual bool SetTouchpadSettings(DeviceId id,
                                    mojom::TouchpadSettingsPtr settings) = 0;
   // Configure the settings for mouse of `id` with the provided `settings`.
-  virtual void SetMouseSettings(DeviceId id,
+  virtual bool SetMouseSettings(DeviceId id,
                                 mojom::MouseSettingsPtr settings) = 0;
   // Configure the settings for pointing stick of `id` with the provided
   // `settings`.
-  virtual void SetPointingStickSettings(
+  virtual bool SetPointingStickSettings(
       DeviceId id,
       mojom::PointingStickSettingsPtr settings) = 0;
   // Configure the settings for graphics tablet of `id` with the provided
   // `settings`.
-  virtual void SetGraphicsTabletSettings(
+  virtual bool SetGraphicsTabletSettings(
       DeviceId id,
       mojom::GraphicsTabletSettingsPtr settings) = 0;
 
   // Used to configure device settings on the login screen.
   virtual void OnLoginScreenFocusedPodChanged(const AccountId& account_id) = 0;
+
+  // Used to start observing customizable buttons from the given `id`.
+  virtual void StartObservingButtons(DeviceId id) = 0;
+  // Stops observing customizable buttons from all devices.
+  virtual void StopObservingButtons() = 0;
+
+  // Called when a mouse which is currently being "observed" via
+  // `StartObservingButtons` has pressed a customizable button.
+  virtual void OnMouseButtonPressed(DeviceId device_id,
+                                    const mojom::Button& button) = 0;
+  // Called when a graphics tablet which is currently being "observed" via
+  // `StartObservingButtons` has pressed a customizable button.
+  virtual void OnGraphicsTabletButtonPressed(DeviceId device_id,
+                                             const mojom::Button& button) = 0;
 
   virtual void AddObserver(Observer* observer) = 0;
   virtual void RemoveObserver(Observer* observer) = 0;

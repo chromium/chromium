@@ -2,8 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "components/saved_tab_groups/saved_tab_group_sync_bridge.h"
+
 #include <algorithm>
 #include <memory>
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -15,7 +18,6 @@
 #include "components/saved_tab_groups/saved_tab_group.h"
 #include "components/saved_tab_groups/saved_tab_group_model.h"
 #include "components/saved_tab_groups/saved_tab_group_model_observer.h"
-#include "components/saved_tab_groups/saved_tab_group_sync_bridge.h"
 #include "components/saved_tab_groups/saved_tab_group_tab.h"
 #include "components/sync/engine/commit_queue.h"
 #include "components/sync/model/data_batch.h"
@@ -35,7 +37,6 @@
 #include "components/tab_groups/tab_group_visual_data.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
 using testing::_;
@@ -155,9 +156,9 @@ TEST_F(SavedTabGroupSyncBridgeTest, MergeFullSyncData) {
 
   SavedTabGroup group(u"Test Title", tab_groups::TabGroupColorId::kBlue, {}, 0);
   SavedTabGroupTab tab_1(GURL("https://website.com"), u"Website Title",
-                         group.saved_guid(), /*position=*/absl::nullopt);
+                         group.saved_guid(), /*position=*/std::nullopt);
   SavedTabGroupTab tab_2(GURL("https://google.com"), u"Google",
-                         group.saved_guid(), /*position=*/absl::nullopt);
+                         group.saved_guid(), /*position=*/std::nullopt);
   group.AddTabLocally(tab_1).AddTabLocally(tab_2);
 
   // Note: Here the change type does not matter. The initial merge will add
@@ -191,11 +192,11 @@ TEST_F(SavedTabGroupSyncBridgeTest, MergeFullSyncData) {
 // elements.
 TEST_F(SavedTabGroupSyncBridgeTest, MergeFullSyncDataWithExistingData) {
   SavedTabGroup group(u"Test Title", tab_groups::TabGroupColorId::kBlue, {},
-                      /*position=*/absl::nullopt);
+                      /*position=*/std::nullopt);
   SavedTabGroupTab tab_1(GURL("https://website.com"), u"Website Title",
-                         group.saved_guid(), /*position=*/absl::nullopt);
+                         group.saved_guid(), /*position=*/std::nullopt);
   SavedTabGroupTab tab_2(GURL("https://google.com"), u"Google",
-                         group.saved_guid(), /*position=*/absl::nullopt);
+                         group.saved_guid(), /*position=*/std::nullopt);
   group.AddTabLocally(tab_1).AddTabLocally(tab_2);
 
   base::Uuid group_guid = group.saved_guid();
@@ -213,11 +214,11 @@ TEST_F(SavedTabGroupSyncBridgeTest, MergeFullSyncDataWithExistingData) {
   // Create an updated version of `group` using the same creation time and 1
   // less tab.
   SavedTabGroup updated_group(u"New Title", tab_groups::TabGroupColorId::kPink,
-                              {}, /*position=*/0, group_guid, absl::nullopt,
+                              {}, /*position=*/0, group_guid, std::nullopt,
                               group_creation_time);
   SavedTabGroupTab updated_tab_1(GURL("https://support.google.com"), u"Support",
                                  group_guid, /*position=*/0, tab_1_guid,
-                                 absl::nullopt, tab_1_creation_time);
+                                 std::nullopt, tab_1_creation_time);
   updated_group.AddTabLocally(updated_tab_1);
 
   syncer::EntityChangeList entity_change_list = CreateEntityChangeListFromGroup(
@@ -240,7 +241,7 @@ TEST_F(SavedTabGroupSyncBridgeTest, MergeFullSyncDataWithExistingData) {
   // Ensure tab_2 was left untouched.
   SavedTabGroupTab tab_2_replica(GURL("https://google.com"), u"Google",
                                  group_guid, /*position=*/1, tab_2_guid,
-                                 absl::nullopt, tab_2_creation_time);
+                                 std::nullopt, tab_2_creation_time);
   EXPECT_TRUE(AreTabSpecificsEqual(
       *tab_2_replica.ToSpecifics(),
       *group_from_model->GetTab(tab_2_guid)->ToSpecifics()));
@@ -401,9 +402,9 @@ TEST_F(SavedTabGroupSyncBridgeTest, AddSyncData) {
   SavedTabGroup group(u"Test Title", tab_groups::TabGroupColorId::kBlue, {},
                       /*position=*/0);
   SavedTabGroupTab tab_1(GURL("https://website.com"), u"Website Title",
-                         group.saved_guid(), /*position=*/absl::nullopt);
+                         group.saved_guid(), /*position=*/std::nullopt);
   SavedTabGroupTab tab_2(GURL("https://google.com"), u"Google",
-                         group.saved_guid(), /*position=*/absl::nullopt);
+                         group.saved_guid(), /*position=*/std::nullopt);
   group.AddTabLocally(tab_1).AddTabLocally(tab_2);
 
   bridge_->ApplyIncrementalSyncChanges(
@@ -465,11 +466,11 @@ TEST_F(SavedTabGroupSyncBridgeTest, UpdateSyncData) {
                              std::move(empty_change_list));
 
   SavedTabGroup group(u"Test Title", tab_groups::TabGroupColorId::kBlue, {},
-                      /*position=*/absl::nullopt);
+                      /*position=*/std::nullopt);
   SavedTabGroupTab tab_1(GURL("https://website.com"), u"Title",
-                         group.saved_guid(), /*position=*/absl::nullopt);
+                         group.saved_guid(), /*position=*/std::nullopt);
   SavedTabGroupTab tab_2(GURL("https://google.com"), u"Google",
-                         group.saved_guid(), /*position=*/absl::nullopt);
+                         group.saved_guid(), /*position=*/std::nullopt);
   group.AddTabLocally(tab_1).AddTabLocally(tab_2);
   group.SetPosition(0);
 
@@ -510,9 +511,9 @@ TEST_F(SavedTabGroupSyncBridgeTest, DeleteSyncData) {
   SavedTabGroup group(u"Test Title", tab_groups::TabGroupColorId::kBlue, {},
                       /*position=*/0);
   SavedTabGroupTab tab_1(GURL("https://website.com"), u"Website Title",
-                         group.saved_guid(), /*position=*/absl::nullopt);
+                         group.saved_guid(), /*position=*/std::nullopt);
   SavedTabGroupTab tab_2(GURL("https://google.com"), u"Google",
-                         group.saved_guid(), /*position=*/absl::nullopt);
+                         group.saved_guid(), /*position=*/std::nullopt);
   group.AddTabLocally(tab_1).AddTabLocally(tab_2);
 
   EXPECT_EQ(group.saved_tabs().size(), 2u);
@@ -559,11 +560,11 @@ TEST_F(SavedTabGroupSyncBridgeTest, AddGroupLocally) {
   EXPECT_TRUE(saved_tab_group_model_.saved_tab_groups().empty());
 
   SavedTabGroup group(u"Test Title", tab_groups::TabGroupColorId::kBlue, {},
-                      /*position=*/absl::nullopt);
+                      /*position=*/std::nullopt);
   SavedTabGroupTab tab_1(GURL("https://website.com"), u"Website Title",
-                         group.saved_guid(), /*position=*/absl::nullopt);
+                         group.saved_guid(), /*position=*/std::nullopt);
   SavedTabGroupTab tab_2(GURL("https://google.com"), u"Google",
-                         group.saved_guid(), /*position=*/absl::nullopt);
+                         group.saved_guid(), /*position=*/std::nullopt);
   group.AddTabLocally(tab_1).AddTabLocally(tab_2);
 
   base::Uuid group_guid = group.saved_guid();
@@ -583,11 +584,11 @@ TEST_F(SavedTabGroupSyncBridgeTest, RemoveGroupLocally) {
   EXPECT_TRUE(saved_tab_group_model_.saved_tab_groups().empty());
 
   SavedTabGroup group(u"Test Title", tab_groups::TabGroupColorId::kBlue, {},
-                      /*position=*/absl::nullopt);
+                      /*position=*/std::nullopt);
   SavedTabGroupTab tab_1(GURL("https://website.com"), u"Website Title",
-                         group.saved_guid(), /*position=*/absl::nullopt);
+                         group.saved_guid(), /*position=*/std::nullopt);
   SavedTabGroupTab tab_2(GURL("https://google.com"), u"Google",
-                         group.saved_guid(), /*position=*/absl::nullopt);
+                         group.saved_guid(), /*position=*/std::nullopt);
   group.AddTabLocally(tab_1).AddTabLocally(tab_2);
 
   base::Uuid group_guid = group.saved_guid();
@@ -623,11 +624,11 @@ TEST_F(SavedTabGroupSyncBridgeTest, UpdateGroupLocally) {
   EXPECT_TRUE(saved_tab_group_model_.saved_tab_groups().empty());
 
   SavedTabGroup group(u"Test Title", tab_groups::TabGroupColorId::kBlue, {},
-                      /*position=*/absl::nullopt);
+                      /*position=*/std::nullopt);
   SavedTabGroupTab tab_1(GURL("https://website.com"), u"Website Title",
-                         group.saved_guid(), /*position=*/absl::nullopt);
+                         group.saved_guid(), /*position=*/std::nullopt);
   SavedTabGroupTab tab_2(GURL("https://google.com"), u"Google",
-                         group.saved_guid(), /*position=*/absl::nullopt);
+                         group.saved_guid(), /*position=*/std::nullopt);
   group.AddTabLocally(tab_1).AddTabLocally(tab_2);
 
   base::Uuid group_guid = group.saved_guid();
@@ -644,18 +645,52 @@ TEST_F(SavedTabGroupSyncBridgeTest, UpdateGroupLocally) {
   saved_tab_group_model_.UpdateVisualData(group_guid, &visual_data);
 }
 
+// Verify duplicate tab added from sync is merged with the correct tab and not
+// added again to the model.
+TEST_F(SavedTabGroupSyncBridgeTest, AddTabFromSync) {
+  EXPECT_TRUE(saved_tab_group_model_.saved_tab_groups().empty());
+
+  SavedTabGroup group(u"Test Title", tab_groups::TabGroupColorId::kBlue, {},
+                      /*position=*/std::nullopt);
+  SavedTabGroupTab tab_1(GURL("https://website.com"), u"Website Title",
+                         group.saved_guid(), /*position=*/std::nullopt);
+  SavedTabGroupTab tab_2(GURL("https://google.com"), u"Google",
+                         group.saved_guid(), /*position=*/std::nullopt);
+  SavedTabGroupTab tab_3(tab_2);
+  tab_3.SetPosition(0);
+
+  group.AddTabLocally(tab_1).AddTabLocally(tab_2);
+
+  base::Uuid group_guid = group.saved_guid();
+  base::Uuid tab_1_guid = tab_1.saved_tab_guid();
+  base::Uuid tab_2_guid = tab_2.saved_tab_guid();
+  base::Uuid tab_3_guid = tab_3.saved_tab_guid();
+  saved_tab_group_model_.Add(std::move(group));
+  EXPECT_CALL(processor_, Put(tab_3_guid.AsLowercaseString(), _, _)).Times(0);
+  EXPECT_CALL(processor_, Put(tab_1_guid.AsLowercaseString(), _, _)).Times(0);
+  EXPECT_CALL(processor_, Put(tab_2_guid.AsLowercaseString(), _, _)).Times(0);
+  EXPECT_CALL(processor_, Put(group_guid.AsLowercaseString(), _, _)).Times(0);
+
+  saved_tab_group_model_.AddTabToGroupFromSync(group_guid, tab_3);
+
+  EXPECT_EQ(tab_2_guid, tab_3_guid);
+  EXPECT_EQ(
+      saved_tab_group_model_.Get(group_guid)->GetTab(tab_2_guid)->position(),
+      saved_tab_group_model_.Get(group_guid)->GetTab(tab_3_guid)->position());
+}
+
 // Verify that locally added tabs call put on the processor.
 TEST_F(SavedTabGroupSyncBridgeTest, AddTabLocally) {
   EXPECT_TRUE(saved_tab_group_model_.saved_tab_groups().empty());
 
   SavedTabGroup group(u"Test Title", tab_groups::TabGroupColorId::kBlue, {},
-                      /*position=*/absl::nullopt);
+                      /*position=*/std::nullopt);
   SavedTabGroupTab tab_1(GURL("https://website.com"), u"Website Title",
-                         group.saved_guid(), /*position=*/absl::nullopt);
+                         group.saved_guid(), /*position=*/std::nullopt);
   SavedTabGroupTab tab_2(GURL("https://google.com"), u"Google",
-                         group.saved_guid(), /*position=*/absl::nullopt);
+                         group.saved_guid(), /*position=*/std::nullopt);
   SavedTabGroupTab tab_3(GURL("https://youtube.com"), u"Youtube",
-                         group.saved_guid(), /*position=*/absl::nullopt);
+                         group.saved_guid(), /*position=*/std::nullopt);
   group.AddTabLocally(tab_1).AddTabLocally(tab_2);
 
   base::Uuid group_guid = group.saved_guid();
@@ -669,10 +704,6 @@ TEST_F(SavedTabGroupSyncBridgeTest, AddTabLocally) {
   EXPECT_CALL(processor_, Put(tab_2_guid.AsLowercaseString(), _, _)).Times(0);
   EXPECT_CALL(processor_, Put(group_guid.AsLowercaseString(), _, _)).Times(0);
 
-  // TODO(dljames): Because `tab_3` was added to the middle of the group, only
-  // `tab_2` will have its position updated. Once tab ordering is implemented,
-  // only the affected tabs will need to be updated. In that case, the Put()
-  // call for tab_1 can be removed.
   saved_tab_group_model_.AddTabToGroupLocally(group_guid, tab_3);
 }
 
@@ -681,11 +712,11 @@ TEST_F(SavedTabGroupSyncBridgeTest, RemoveTabLocally) {
   EXPECT_TRUE(saved_tab_group_model_.saved_tab_groups().empty());
 
   SavedTabGroup group(u"Test Title", tab_groups::TabGroupColorId::kBlue, {},
-                      /*position=*/absl::nullopt);
+                      /*position=*/std::nullopt);
   SavedTabGroupTab tab_1(GURL("https://website.com"), u"Website Title",
-                         group.saved_guid(), /*position=*/absl::nullopt);
+                         group.saved_guid(), /*position=*/std::nullopt);
   SavedTabGroupTab tab_2(GURL("https://google.com"), u"Goole",
-                         group.saved_guid(), /*position=*/absl::nullopt);
+                         group.saved_guid(), /*position=*/std::nullopt);
   group.AddTabLocally(tab_1).AddTabLocally(tab_2);
 
   base::Uuid group_guid = group.saved_guid();
@@ -705,11 +736,11 @@ TEST_F(SavedTabGroupSyncBridgeTest, UpdateTabLocally) {
   EXPECT_TRUE(saved_tab_group_model_.saved_tab_groups().empty());
 
   SavedTabGroup group(u"Test Title", tab_groups::TabGroupColorId::kBlue, {},
-                      /*position=*/absl::nullopt);
+                      /*position=*/std::nullopt);
   SavedTabGroupTab tab_1(GURL("https://website.com"), u"Website Title",
-                         group.saved_guid(), /*position=*/absl::nullopt);
+                         group.saved_guid(), /*position=*/std::nullopt);
   SavedTabGroupTab tab_2(GURL("https://google.com"), u"Google",
-                         group.saved_guid(), /*position=*/absl::nullopt);
+                         group.saved_guid(), /*position=*/std::nullopt);
   group.AddTabLocally(tab_1).AddTabLocally(tab_2);
 
   SavedTabGroupTab updated_tab_1(group.saved_tabs()[0]);
@@ -733,11 +764,11 @@ TEST_F(SavedTabGroupSyncBridgeTest, ReorderTabsInGroupLocally) {
   EXPECT_TRUE(saved_tab_group_model_.saved_tab_groups().empty());
 
   SavedTabGroup group(u"Test Title", tab_groups::TabGroupColorId::kBlue, {},
-                      /*position=*/absl::nullopt);
+                      /*position=*/std::nullopt);
   SavedTabGroupTab tab_1(GURL("https://website.com"), u"Website Title",
-                         group.saved_guid(), /*position=*/absl::nullopt);
+                         group.saved_guid(), /*position=*/std::nullopt);
   SavedTabGroupTab tab_2(GURL("https://google.com"), u"Google",
-                         group.saved_guid(), /*position=*/absl::nullopt);
+                         group.saved_guid(), /*position=*/std::nullopt);
   group.AddTabLocally(tab_1).AddTabLocally(tab_2);
 
   SavedTabGroupTab updated_tab_1(group.saved_tabs()[0]);
@@ -761,13 +792,13 @@ TEST_F(SavedTabGroupSyncBridgeTest, ReorderGroupLocally) {
   EXPECT_TRUE(saved_tab_group_model_.saved_tab_groups().empty());
 
   SavedTabGroup group(u"Test Title", tab_groups::TabGroupColorId::kBlue, {},
-                      /*position=*/absl::nullopt);
+                      /*position=*/std::nullopt);
   SavedTabGroup group_2(u"Test Title 2", tab_groups::TabGroupColorId::kRed, {},
-                        /*position=*/absl::nullopt);
+                        /*position=*/std::nullopt);
   SavedTabGroupTab tab_1(GURL("https://website.com"), u"Website Title",
-                         group.saved_guid(), /*position=*/absl::nullopt);
+                         group.saved_guid(), /*position=*/std::nullopt);
   SavedTabGroupTab tab_2(GURL("https://google.com"), u"Google",
-                         group.saved_guid(), /*position=*/absl::nullopt);
+                         group.saved_guid(), /*position=*/std::nullopt);
   group.AddTabLocally(tab_1).AddTabLocally(tab_2);
 
   SavedTabGroupTab updated_tab_1(group.saved_tabs()[0]);

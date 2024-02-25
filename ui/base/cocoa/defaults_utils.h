@@ -5,17 +5,18 @@
 #ifndef UI_BASE_COCOA_DEFAULTS_UTILS_H_
 #define UI_BASE_COCOA_DEFAULTS_UTILS_H_
 
+#include <optional>
+
 #include "base/component_export.h"
 #include "base/time/time.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ui {
 
 // Returns a text insertion caret blink period derived from insertion point
 // flash rate settings in NSUserDefaults. If no settings exist in defaults,
-// returns absl::nullopt.
+// returns std::nullopt.
 COMPONENT_EXPORT(UI_BASE)
-absl::optional<base::TimeDelta> TextInsertionCaretBlinkPeriodFromDefaults();
+std::optional<base::TimeDelta> TextInsertionCaretBlinkPeriodFromDefaults();
 
 COMPONENT_EXPORT(UI_BASE)
 bool& BlinkPeriodRefreshFlagForTesting();

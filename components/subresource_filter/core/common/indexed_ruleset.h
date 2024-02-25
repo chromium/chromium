@@ -8,11 +8,14 @@
 #include <stddef.h>
 #include <stdint.h>
 
+#include "base/compiler_specific.h"
+#include "base/containers/span.h"
 #include "base/memory/raw_ptr.h"
 #include "base/numerics/safe_conversions.h"
 #include "components/subresource_filter/core/common/flat/indexed_ruleset_generated.h"
 #include "components/subresource_filter/core/common/load_policy.h"
 #include "components/url_pattern_index/url_pattern_index.h"
+#include "third_party/abseil-cpp/absl/base/attributes.h"
 #include "third_party/flatbuffers/src/include/flatbuffers/flatbuffers.h"
 
 class GURL;
@@ -78,10 +81,9 @@ class RulesetIndexer {
 
   // Returns a pointer to the buffer containing the serialized flat data
   // structures. Should only be called after Finish().
-  const uint8_t* data() const { return builder_.GetBufferPointer(); }
-
-  // Returns the size of the buffer.
-  size_t size() const { return base::strict_cast<size_t>(builder_.GetSize()); }
+  base::span<const uint8_t> data() const ABSL_ATTRIBUTE_LIFETIME_BOUND {
+    return base::span(builder_.GetBufferPointer(), builder_.GetSize());
+  }
 
  private:
   flatbuffers::FlatBufferBuilder builder_;
@@ -100,12 +102,11 @@ class IndexedRulesetMatcher {
  public:
   // Returns whether the |buffer| of the given |size| contains a valid
   // flat::IndexedRuleset FlatBuffer.
-  static bool Verify(const uint8_t* buffer, size_t size, int expected_checksum);
+  static bool Verify(base::span<const uint8_t> buffer, int expected_checksum);
 
   // Creates an instance that matches URLs against the flat::IndexedRuleset
-  // provided as the root object of serialized data in the |buffer| of the given
-  // |size|.
-  IndexedRulesetMatcher(const uint8_t* buffer, size_t size);
+  // provided as the root object of serialized data in the |buffer|.
+  explicit IndexedRulesetMatcher(base::span<const uint8_t> buffer);
 
   IndexedRulesetMatcher(const IndexedRulesetMatcher&) = delete;
   IndexedRulesetMatcher& operator=(const IndexedRulesetMatcher&) = delete;

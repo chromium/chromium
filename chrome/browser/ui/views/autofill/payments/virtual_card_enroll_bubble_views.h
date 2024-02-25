@@ -46,25 +46,34 @@ class VirtualCardEnrollBubbleViews : public AutofillBubbleBase,
   std::u16string GetWindowTitle() const override;
   void WindowClosing() override;
 
+  views::View* GetLoadingProgressRowForTesting();
+
+  void SwitchToLoadingState();
+
  protected:
   VirtualCardEnrollBubbleController* controller() const { return controller_; }
 
   // LocationBarBubbleDelegateView:
   void Init() override;
 
-  void OnDialogAccepted();
+  bool OnDialogAccepted();
   void OnDialogDeclined();
 
  private:
   friend class VirtualCardEnrollBubbleViewsInteractiveUiTest;
 
   std::unique_ptr<views::View> CreateLegalMessageView();
+  std::unique_ptr<views::View> CreateLoadingProgressRow();
 
   void LearnMoreLinkClicked();
   void GoogleLegalMessageClicked(const GURL& url);
   void IssuerLegalMessageClicked(const GURL& url);
 
   raw_ptr<VirtualCardEnrollBubbleController> controller_;
+
+  // Container for the `loading_throbber_`.
+  raw_ptr<views::View> loading_progress_row_ = nullptr;
+  raw_ptr<views::Throbber> loading_throbber_ = nullptr;
 
   base::WeakPtrFactory<VirtualCardEnrollBubbleViews> weak_ptr_factory_{this};
 };

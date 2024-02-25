@@ -6,6 +6,7 @@
 
 #include <algorithm>
 #include <memory>
+#include <string_view>
 
 #include "base/check.h"
 #include "base/time/time.h"
@@ -17,7 +18,7 @@
 
 namespace recording {
 
-AudioStream::AudioStream(base::StringPiece name) : name_(name) {}
+AudioStream::AudioStream(std::string_view name) : name_(name) {}
 
 AudioStream::~AudioStream() = default;
 

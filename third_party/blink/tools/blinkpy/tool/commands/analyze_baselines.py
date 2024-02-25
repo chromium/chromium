@@ -30,8 +30,10 @@ from __future__ import print_function
 
 import logging
 import optparse
+from typing import get_args
 
 from blinkpy.common.checkout.baseline_optimizer import BaselineOptimizer
+from blinkpy.common.net.web_test_results import BaselineSuffix
 from blinkpy.tool.commands.rebaseline import AbstractRebaseliningCommand
 
 _log = logging.getLogger(__name__)
@@ -52,6 +54,7 @@ class AnalyzeBaselines(AbstractRebaseliningCommand):
                 default=False,
                 help='Show missing baselines as well.'),
         ] + self.platform_options)
+        self._baseline_suffix_list = get_args(BaselineSuffix)
         self._optimizer_class = BaselineOptimizer  # overridable for testing
         self._baseline_optimizer = None
         self._port = None

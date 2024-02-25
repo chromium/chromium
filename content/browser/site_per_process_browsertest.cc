@@ -43,6 +43,7 @@
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/run_until.h"
 #include "base/test/test_future.h"
 #include "base/test/test_timeouts.h"
 #include "base/time/time.h"
@@ -58,12 +59,6 @@
 #include "content/browser/renderer_host/cross_process_frame_connector.h"
 #include "content/browser/renderer_host/frame_navigation_entry.h"
 #include "content/browser/renderer_host/frame_tree.h"
-#include "content/browser/renderer_host/input/input_router.h"
-#include "content/browser/renderer_host/input/synthetic_gesture.h"
-#include "content/browser/renderer_host/input/synthetic_gesture_target.h"
-#include "content/browser/renderer_host/input/synthetic_pointer_action.h"
-#include "content/browser/renderer_host/input/synthetic_tap_gesture.h"
-#include "content/browser/renderer_host/input/synthetic_touchscreen_pinch_gesture.h"
 #include "content/browser/renderer_host/navigation_controller_impl.h"
 #include "content/browser/renderer_host/navigation_entry_impl.h"
 #include "content/browser/renderer_host/navigation_entry_restore_context_impl.h"
@@ -82,7 +77,13 @@
 #include "content/common/content_navigation_policy.h"
 #include "content/common/frame.mojom-test-utils.h"
 #include "content/common/input/actions_parser.h"
+#include "content/common/input/input_router.h"
+#include "content/common/input/synthetic_gesture.h"
+#include "content/common/input/synthetic_gesture_target.h"
 #include "content/common/input/synthetic_pinch_gesture_params.h"
+#include "content/common/input/synthetic_pointer_action.h"
+#include "content/common/input/synthetic_tap_gesture.h"
+#include "content/common/input/synthetic_touchscreen_pinch_gesture.h"
 #include "content/common/renderer.mojom.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_task_traits.h"
@@ -345,13 +346,13 @@ void FocusFrame(FrameTreeNode* frame) {
 }
 
 bool ConvertJSONToPoint(const std::string& str, gfx::PointF* point) {
-  absl::optional<base::Value> value = base::JSONReader::Read(str);
+  std::optional<base::Value> value = base::JSONReader::Read(str);
   if (!value.has_value())
     return false;
   if (!value->is_dict())
     return false;
-  absl::optional<double> x = value->GetDict().FindDouble("x");
-  absl::optional<double> y = value->GetDict().FindDouble("y");
+  std::optional<double> x = value->GetDict().FindDouble("x");
+  std::optional<double> y = value->GetDict().FindDouble("y");
   if (!x.has_value())
     return false;
   if (!y.has_value())
@@ -370,7 +371,7 @@ CreateParsedPermissionsPolicyDeclaration(
     blink::mojom::PermissionsPolicyFeature feature,
     const std::vector<GURL>& origins,
     bool match_all_origins = false,
-    const absl::optional<GURL> self_if_matches = absl::nullopt) {
+    const std::optional<GURL> self_if_matches = std::nullopt) {
   blink::ParsedPermissionsPolicyDeclaration declaration;
 
   declaration.feature = feature;
@@ -395,7 +396,7 @@ blink::ParsedPermissionsPolicy CreateParsedPermissionsPolicy(
     const std::vector<blink::mojom::PermissionsPolicyFeature>& features,
     const std::vector<GURL>& origins,
     bool match_all_origins = false,
-    const absl::optional<GURL> self_if_matches = absl::nullopt) {
+    const std::optional<GURL> self_if_matches = std::nullopt) {
   blink::ParsedPermissionsPolicy result;
   result.reserve(features.size());
   for (const auto& feature : features)
@@ -2488,6 +2489,8 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest, SandboxFlagsReplication) {
 
 // Check that dynamic updates to iframe sandbox flags are propagated correctly.
 IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest, DynamicSandboxFlags) {
+  bool sandboxed_iframes_are_isolated =
+      SiteIsolationPolicy::AreIsolatedSandboxedIframesEnabled();
   GURL main_url(
       embedded_test_server()->GetURL("/frame_tree/page_with_two_frames.html"));
   EXPECT_TRUE(NavigateToURL(shell(), main_url));
@@ -2541,20 +2544,28 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest, DynamicSandboxFlags) {
   // flags should take effect.
   GURL bar_url(
       embedded_test_server()->GetURL("bar.com", "/frame_tree/2-4.html"));
-  EXPECT_TRUE(NavigateToURLFromRenderer(root->child_at(0), bar_url));
+  {
+    RenderFrameDeletedObserver deleted_observer(
+        root->child_at(0)->current_frame_host());
+    EXPECT_TRUE(NavigateToURLFromRenderer(root->child_at(0), bar_url));
+    if (sandboxed_iframes_are_isolated) {
+      deleted_observer.WaitUntilDeleted();
+    }
+  }
   // (The new page has a subframe; wait for it to load as well.)
   ASSERT_TRUE(WaitForLoadStop(shell()->web_contents()));
   EXPECT_EQ(bar_url, root->child_at(0)->current_url());
   ASSERT_EQ(1U, root->child_at(0)->child_count());
 
   EXPECT_EQ(
-      " Site A ------------ proxies for B C\n"
-      "   |--Site B ------- proxies for A C\n"
-      "   |    +--Site B -- proxies for A C\n"
-      "   +--Site C ------- proxies for A B\n"
-      "Where A = http://127.0.0.1/\n"
-      "      B = http://bar.com/\n"
-      "      C = http://baz.com/",
+      base::StringPrintf(" Site A ------------ proxies for B C\n"
+                         "   |--Site B ------- proxies for A C\n"
+                         "   |    +--Site B -- proxies for A C\n"
+                         "   +--Site C ------- proxies for A B\n"
+                         "Where A = http://127.0.0.1/\n"
+                         "      B = http://bar.com/%s\n"
+                         "      C = http://baz.com/",
+                         sandboxed_iframes_are_isolated ? " (sandboxed)" : ""),
       DepictFrameTree(root));
 
   // Confirm that the browser process has updated the frame's current sandbox
@@ -2574,21 +2585,54 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest, DynamicSandboxFlags) {
   // is currently a proxy in baz.com's renderer process.  This checks that the
   // proxies of |root->child_at(0)| were also updated with the latest sandbox
   // flags.
+  // TODO(https://crbug.com/1502845): When IsolateSandboxedIframes is enabled,
+  // this test no longer uses the proxy inheritance mentioned above, because
+  // sandboxed and unsandboxed baz.com pages will be in different SiteInstances.
+  // Restructure the test so it still provides coverage for proxy inheritance
+  // when IsolateSandboxedIframes is enabled.
   GURL baz_child_url(embedded_test_server()->GetURL("baz.com", "/title2.html"));
-  EXPECT_TRUE(
-      NavigateToURLFromRenderer(root->child_at(0)->child_at(0), baz_child_url));
+  {
+    RenderFrameDeletedObserver deleted_observer(
+        root->child_at(0)->child_at(0)->current_frame_host());
+    EXPECT_TRUE(NavigateToURLFromRenderer(root->child_at(0)->child_at(0),
+                                          baz_child_url));
+    deleted_observer.WaitUntilDeleted();
+  }
   EXPECT_TRUE(observer.last_navigation_succeeded());
   EXPECT_EQ(baz_child_url, observer.last_navigation_url());
 
-  EXPECT_EQ(
-      " Site A ------------ proxies for B C\n"
-      "   |--Site B ------- proxies for A C\n"
-      "   |    +--Site C -- proxies for A B\n"
-      "   +--Site C ------- proxies for A B\n"
-      "Where A = http://127.0.0.1/\n"
-      "      B = http://bar.com/\n"
-      "      C = http://baz.com/",
-      DepictFrameTree(root));
+  if (sandboxed_iframes_are_isolated) {
+    switch (blink::features::kIsolateSandboxedIframesGroupingParam.Get()) {
+      case blink::features::IsolateSandboxedIframesGrouping::kPerSite:
+      case blink::features::IsolateSandboxedIframesGrouping::kPerOrigin:
+        EXPECT_EQ(
+            " Site A ------------ proxies for B C D\n"
+            "   |--Site B ------- proxies for A C D\n"
+            "   |    +--Site D -- proxies for A B C\n"
+            "   +--Site C ------- proxies for A B D\n"
+            "Where A = http://127.0.0.1/\n"
+            "      B = http://bar.com/ (sandboxed)\n"
+            "      C = http://baz.com/\n"
+            "      D = http://baz.com/ (sandboxed)",
+            DepictFrameTree(root));
+        break;
+      case blink::features::IsolateSandboxedIframesGrouping::kPerDocument:
+        // TODO(https://crbug.com/1501430): Add output for the PerDocument
+        // case, and parameterize this test to run all variants (none, per-site,
+        // per-origin, per-document).
+        break;
+    }
+  } else {
+    EXPECT_EQ(
+        " Site A ------------ proxies for B C\n"
+        "   |--Site B ------- proxies for A C\n"
+        "   |    +--Site C -- proxies for A B\n"
+        "   +--Site C ------- proxies for A B\n"
+        "Where A = http://127.0.0.1/\n"
+        "      B = http://bar.com/\n"
+        "      C = http://baz.com/",
+        DepictFrameTree(root));
+  }
 
   // Opening a popup in the child of a sandboxed frame should fail.
   EXPECT_EQ(false, EvalJs(root->child_at(0)->child_at(0),
@@ -4426,7 +4470,7 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
     std::ignore = params->associated_interface_provider_remote
                       .InitWithNewEndpointAndPassReceiver();
     params->previous_frame_token = previous_frame_token;
-    params->opener_frame_token = absl::nullopt;
+    params->opener_frame_token = std::nullopt;
     params->parent_frame_token =
         shell()->web_contents()->GetPrimaryMainFrame()->GetFrameToken();
     params->frame_owner_properties = blink::mojom::FrameOwnerProperties::New();
@@ -4485,7 +4529,7 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest, ParentDetachRemoteChild) {
       node->current_frame_host()->GetFrameToken();
   int widget_routing_id =
       node->current_frame_host()->GetRenderWidgetHost()->GetRoutingID();
-  absl::optional<blink::FrameToken> parent_frame_token =
+  std::optional<blink::FrameToken> parent_frame_token =
       node->parent()
           ->frame_tree_node()
           ->render_manager()
@@ -4510,10 +4554,10 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest, ParentDetachRemoteChild) {
     std::ignore = params->interface_broker.InitWithNewPipeAndPassReceiver();
     std::ignore = params->associated_interface_provider_remote
                       .InitWithNewEndpointAndPassReceiver();
-    params->previous_frame_token = absl::nullopt;
-    params->opener_frame_token = absl::nullopt;
+    params->previous_frame_token = std::nullopt;
+    params->opener_frame_token = std::nullopt;
     params->parent_frame_token = parent_frame_token;
-    params->previous_sibling_frame_token = absl::nullopt;
+    params->previous_sibling_frame_token = std::nullopt;
     params->frame_owner_properties = blink::mojom::FrameOwnerProperties::New();
     params->widget_params = mojom::CreateFrameWidgetParams::New();
     params->widget_params->routing_id = widget_routing_id;
@@ -5495,6 +5539,60 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
   EXPECT_EQ(orig_site_instance, child->current_frame_host()->GetSiteInstance());
 }
 
+// The site URL for a data: URL is the scheme + the serialized nonce from the
+// origin. This means that two data: URLs with the same body will have different
+// site URLs.
+IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest, DataUrlsHaveUniqueSiteURLs) {
+  // Force process reuse for same-site URLs, to test whether identical data:
+  // URLs share a process with each other.
+  RenderProcessHost::SetMaxRendererProcessCount(1);
+
+  // Load a main frame data: URL.
+  GURL data_url("data:text/html,dataurl");
+  EXPECT_TRUE(NavigateToURL(shell(), data_url));
+
+  // Open another tab, then load the same data: URL in that tab. We need to
+  // first navigate the new tab to a different page, a_url.
+  // Shell::CreateNewWindow opens a new tab to about:blank, then loads the URL
+  // passed in. Since the about:blank is in a new tab, it gets a new process,
+  // and the passed-in URL keeps using that about:blank process. By navigating
+  // from a_url to the data: URL, we exercise the flow that will reuse the
+  // existing data: URL process, if possible.
+  GURL a_url(embedded_test_server()->GetURL("a.com", "/title1.html"));
+  ShellAddedObserver new_shell_observer;
+  Shell* new_shell =
+      Shell::CreateNewWindow(static_cast<NavigationControllerImpl&>(
+                                 shell()->web_contents()->GetController())
+                                 .GetBrowserContext(),
+                             a_url, nullptr, gfx::Size());
+  auto* new_contents = static_cast<WebContentsImpl*>(new_shell->web_contents());
+  EXPECT_TRUE(WaitForLoadStop(new_contents));
+  EXPECT_TRUE(NavigateToURL(new_shell, data_url));
+
+  auto* main_frame = shell()->web_contents()->GetPrimaryMainFrame();
+  auto* new_frame = new_shell->web_contents()->GetPrimaryMainFrame();
+  GURL main_url = main_frame->GetSiteInstance()->GetSiteURL();
+  GURL new_url = new_frame->GetSiteInstance()->GetSiteURL();
+  EXPECT_NE(new_frame->GetSiteInstance(), main_frame->GetSiteInstance());
+  if (base::FeatureList::IsEnabled(features::kDataUrlsHaveOriginAsUrl)) {
+    // The site URL is the data scheme followed by a serialized nonce, which is
+    // unique for every data: URL instance.
+    EXPECT_NE(main_url, new_url);
+    EXPECT_TRUE(main_url.SchemeIs(url::kDataScheme));
+    EXPECT_EQ(new_url.GetContent().length(),
+              base::UnguessableToken::Create().ToString().length());
+    EXPECT_NE(new_frame->GetProcess(), main_frame->GetProcess());
+
+  } else {
+    // Without the feature, the site URL of data: URLs is the entire data: URL,
+    // so if the data is the same in both cases, the site URLs will be the same,
+    // and they will be allowed to share a process.
+    EXPECT_EQ(main_url, new_url);
+    EXPECT_EQ(main_url, data_url);
+    EXPECT_EQ(new_frame->GetProcess(), main_frame->GetProcess());
+  }
+}
+
 // Ensures that subframes navigated to data: URLs start in a process based on
 // their creator, but end up in unique processes after a restore (since
 // SiteInstance relationships are not preserved on restore, until
@@ -5561,23 +5659,22 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
   std::unique_ptr<NavigationEntryImpl> restored_entry =
       NavigationEntryImpl::FromNavigationEntry(
           NavigationController::CreateNavigationEntry(
-              main_url, Referrer(), /* initiator_origin= */ absl::nullopt,
-              /* initiator_base_url= */ absl::nullopt,
+              main_url, Referrer(), /* initiator_origin= */ std::nullopt,
+              /* initiator_base_url= */ std::nullopt,
               ui::PAGE_TRANSITION_RELOAD, false, std::string(),
               controller.GetBrowserContext(),
               nullptr /* blob_url_loader_factory */));
   EXPECT_EQ(0U, restored_entry->root_node()->children.size());
-  std::unique_ptr<NavigationEntryRestoreContextImpl> context =
-      std::make_unique<NavigationEntryRestoreContextImpl>();
-  restored_entry->SetPageState(entry->GetPageState(), context.get());
+  NavigationEntryRestoreContextImpl context;
+  restored_entry->SetPageState(entry->GetPageState(), &context);
   ASSERT_EQ(2U, restored_entry->root_node()->children.size());
 
   // Restore the NavigationEntry into a new tab and check that the data URLs are
   // not loaded into the parent's SiteInstance.
   std::vector<std::unique_ptr<NavigationEntry>> entries;
   entries.push_back(std::move(restored_entry));
-  Shell* new_shell = Shell::CreateNewWindow(
-      controller.GetBrowserContext(), GURL::EmptyGURL(), nullptr, gfx::Size());
+  Shell* new_shell = Shell::CreateNewWindow(controller.GetBrowserContext(),
+                                            GURL(), nullptr, gfx::Size());
   FrameTreeNode* new_root =
       static_cast<WebContentsImpl*>(new_shell->web_contents())
           ->GetPrimaryFrameTree()
@@ -5670,23 +5767,22 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
   std::unique_ptr<NavigationEntryImpl> restored_entry =
       NavigationEntryImpl::FromNavigationEntry(
           NavigationController::CreateNavigationEntry(
-              main_url, Referrer(), /* initiator_origin= */ absl::nullopt,
-              /* initiator_base_url= */ absl::nullopt,
+              main_url, Referrer(), /* initiator_origin= */ std::nullopt,
+              /* initiator_base_url= */ std::nullopt,
               ui::PAGE_TRANSITION_RELOAD, false, std::string(),
               controller.GetBrowserContext(),
               nullptr /* blob_url_loader_factory */));
   EXPECT_EQ(0U, restored_entry->root_node()->children.size());
-  std::unique_ptr<NavigationEntryRestoreContextImpl> context =
-      std::make_unique<NavigationEntryRestoreContextImpl>();
-  restored_entry->SetPageState(entry->GetPageState(), context.get());
+  NavigationEntryRestoreContextImpl context;
+  restored_entry->SetPageState(entry->GetPageState(), &context);
   ASSERT_EQ(2U, restored_entry->root_node()->children.size());
 
   // Restore the NavigationEntry into a new tab and check that the about:blank
   // URLs are not loaded into the parent's SiteInstance.
   std::vector<std::unique_ptr<NavigationEntry>> entries;
   entries.push_back(std::move(restored_entry));
-  Shell* new_shell = Shell::CreateNewWindow(
-      controller.GetBrowserContext(), GURL::EmptyGURL(), nullptr, gfx::Size());
+  Shell* new_shell = Shell::CreateNewWindow(controller.GetBrowserContext(),
+                                            GURL(), nullptr, gfx::Size());
   FrameTreeNode* new_root =
       static_cast<WebContentsImpl*>(new_shell->web_contents())
           ->GetPrimaryFrameTree()
@@ -5772,23 +5868,22 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
   std::unique_ptr<NavigationEntryImpl> restored_entry =
       NavigationEntryImpl::FromNavigationEntry(
           NavigationController::CreateNavigationEntry(
-              main_url, Referrer(), /* initiator_origin= */ absl::nullopt,
-              /* initiator_base_url= */ absl::nullopt,
+              main_url, Referrer(), /* initiator_origin= */ std::nullopt,
+              /* initiator_base_url= */ std::nullopt,
               ui::PAGE_TRANSITION_RELOAD, false, std::string(),
               controller.GetBrowserContext(),
               nullptr /* blob_url_loader_factory */));
   EXPECT_EQ(0U, restored_entry->root_node()->children.size());
-  std::unique_ptr<NavigationEntryRestoreContextImpl> context =
-      std::make_unique<NavigationEntryRestoreContextImpl>();
-  restored_entry->SetPageState(entry->GetPageState(), context.get());
+  NavigationEntryRestoreContextImpl context;
+  restored_entry->SetPageState(entry->GetPageState(), &context);
   ASSERT_EQ(1U, restored_entry->root_node()->children.size());
 
   // Restore the NavigationEntry into a new tab and check that the srcdoc URLs
   // are still loaded into the parent's SiteInstance.
   std::vector<std::unique_ptr<NavigationEntry>> entries;
   entries.push_back(std::move(restored_entry));
-  Shell* new_shell = Shell::CreateNewWindow(
-      controller.GetBrowserContext(), GURL::EmptyGURL(), nullptr, gfx::Size());
+  Shell* new_shell = Shell::CreateNewWindow(controller.GetBrowserContext(),
+                                            GURL(), nullptr, gfx::Size());
   FrameTreeNode* new_root =
       static_cast<WebContentsImpl*>(new_shell->web_contents())
           ->GetPrimaryFrameTree()
@@ -7620,8 +7715,9 @@ class SitePerProcessAndroidImeTest : public SitePerProcessBrowserTest {
         "  input.select();"
         "};";
 
-    for (auto* frame : frames_)
+    for (content::RenderFrameHostImpl* frame : frames_) {
       ASSERT_TRUE(ExecJs(frame, add_input_script));
+    }
   }
 
   // This methods tries to commit |text| by simulating a native call from Java.
@@ -7643,7 +7739,7 @@ class SitePerProcessAndroidImeTest : public SitePerProcessBrowserTest {
         base::android::JavaParamRef<jstring>(env, jtext.obj()), 0);
   }
 
-  std::vector<RenderFrameHostImpl*> frames_;
+  std::vector<raw_ptr<RenderFrameHostImpl, VectorExperimental>> frames_;
 };
 
 // This test verifies that committing text will be applied on the focused
@@ -7996,8 +8092,6 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
 // Tests that IsInert frame flag is correctly updated and propagated.
 IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
                        CrossProcessIsInertPropagation) {
-  base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(
-      switches::kEnableBlinkFeatures, "InertAttribute");
   GURL main_url(embedded_test_server()->GetURL(
       "a.com", "/cross_site_iframe_factory.html?a(b(c))"));
   EXPECT_TRUE(NavigateToURL(shell(), main_url));
@@ -9781,19 +9875,42 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
 // child frames, but are removed when the frame navigates.
 IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
                        ActiveSandboxFlagsMaintainedAcrossNavigation) {
+  bool sandboxed_iframes_are_isolated =
+      SiteIsolationPolicy::AreIsolatedSandboxedIframesEnabled();
   GURL main_url(
       embedded_test_server()->GetURL("a.com", "/sandbox_main_frame_csp.html"));
+  RenderFrameDeletedObserver deleted_observer(
+      web_contents()->GetPrimaryFrameTree().root()->current_frame_host());
   EXPECT_TRUE(NavigateToURL(shell(), main_url));
+  if (sandboxed_iframes_are_isolated) {
+    // The initial navigation is away from an initial un-sandboxed mainframe to
+    // a sandboxed mainframe, so before we call DepictFrameTree below we need to
+    // wait for the RenderFrameHost from the initial mainframe to be deleted and
+    // its proxies removed.
+    // TODO(https://crbug.com/1485586): See if we can reuse the initial RFH for
+    // a navigation to a sandboxed frame instead?
+    deleted_observer.WaitUntilDeleted();
+  }
 
   // It is safe to obtain the root frame tree node here, as it doesn't change.
   FrameTreeNode* root = web_contents()->GetPrimaryFrameTree().root();
   ASSERT_EQ(1u, root->child_count());
 
   EXPECT_EQ(
-      " Site A\n"
-      "   +--Site A\n"
-      "Where A = http://a.com/",
+      base::StringPrintf(" Site A\n"
+                         "   +--Site A\n"
+                         "Where A = http://a.com/%s",
+                         sandboxed_iframes_are_isolated ? " (sandboxed)" : ""),
       DepictFrameTree(root));
+  if (sandboxed_iframes_are_isolated &&
+      blink::features::kIsolateSandboxedIframesGroupingParam.Get() ==
+          blink::features::IsolateSandboxedIframesGrouping::kPerOrigin) {
+    // In per-origin IsolatedSandboxedIframes mode, the server port is retained
+    // in the site URL.
+    GURL main_site(embedded_test_server()->GetURL("a.com", "/"));
+    EXPECT_EQ(main_site,
+              root->current_frame_host()->GetSiteInstance()->GetSiteURL());
+  }
 
   FrameTreeNode* child_node = root->child_at(0);
 
@@ -9963,6 +10080,8 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
 // sandbox flags.
 IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
                        ActiveSandboxFlagsCorrectInProxies) {
+  bool sandboxed_iframes_are_isolated =
+      SiteIsolationPolicy::AreIsolatedSandboxedIframesEnabled();
   GURL main_url(embedded_test_server()->GetURL(
       "foo.com", "/cross_site_iframe_factory.html?foo(bar)"));
   EXPECT_TRUE(NavigateToURL(shell(), main_url));
@@ -9980,34 +10099,93 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
 
   // Navigate the child to a CSP-sandboxed page on the same origin as it is
   // currently. This should update the flags in its proxies as well.
+  auto* child = root->child_at(0);
+  RenderFrameDeletedObserver deleted_observer_child(
+      child->current_frame_host());
   EXPECT_TRUE(NavigateToURLFromRenderer(
       root->child_at(0),
       embedded_test_server()->GetURL("bar.com", "/csp_sandboxed_frame.html")));
-
-  EXPECT_EQ(
-      " Site A ------------ proxies for B\n"
-      "   +--Site B ------- proxies for A\n"
-      "        |--Site B -- proxies for A\n"
-      "        +--Site B -- proxies for A\n"
-      "Where A = http://foo.com/\n"
-      "      B = http://bar.com/",
-      DepictFrameTree(root));
+  // DepictFrameTree remembers all the sites it has seen in the test, so the
+  // expected output changes depending on whether we have additional sites from
+  // process-isolated sandboxed frames. How many additional sites we have
+  // depends on the grouping mode.
+  if (sandboxed_iframes_are_isolated) {
+    // Sandboxed iframes force the RFH to change; wait for the old one to go
+    // away so that proxies in its SiteInstance don't affect DepictFrameTree
+    // output.
+    deleted_observer_child.WaitUntilDeleted();
+    switch (blink::features::kIsolateSandboxedIframesGroupingParam.Get()) {
+      case blink::features::IsolateSandboxedIframesGrouping::kPerSite:
+      case blink::features::IsolateSandboxedIframesGrouping::kPerOrigin:
+        EXPECT_EQ(
+            " Site A ------------ proxies for C\n"
+            "   +--Site C ------- proxies for A\n"
+            "        |--Site C -- proxies for A\n"
+            "        +--Site C -- proxies for A\n"
+            "Where A = http://foo.com/\n"
+            "      C = http://bar.com/ (sandboxed)",
+            DepictFrameTree(root));
+        break;
+      case blink::features::IsolateSandboxedIframesGrouping::kPerDocument:
+        // TODO(https://crbug.com/1501430): Add output for the PerDocument
+        // case, and parameterize this test to run all variants (none, per-site,
+        // per-origin, per-document).
+        break;
+    }
+  } else {
+    EXPECT_EQ(
+        " Site A ------------ proxies for B\n"
+        "   +--Site B ------- proxies for A\n"
+        "        |--Site B -- proxies for A\n"
+        "        +--Site B -- proxies for A\n"
+        "Where A = http://foo.com/\n"
+        "      B = http://bar.com/",
+        DepictFrameTree(root));
+  }
 
   // Now navigate the first grandchild to a page on the same origin as the main
   // frame. It should still be sandboxed, as it should get its flags from its
   // (remote) parent.
+  // TODO(https://crbug.com/1502845): When IsolateSandboxedIframes is enabled,
+  // this test no longer uses proxy inheritance; the grandchild and the main
+  // frame won't be in the same SiteInstance anymore, so this test will no
+  // longer exercise sandbox flags inheritance from an existing remote frame.
+  // Restructure the test so it still provides coverage for proxy inheritance
+  // when IsolateSandboxedIframes is enabled.
   EXPECT_TRUE(NavigateToURLFromRenderer(
       root->child_at(0)->child_at(0),
       embedded_test_server()->GetURL("foo.com", "/title1.html")));
 
-  EXPECT_EQ(
-      " Site A ------------ proxies for B\n"
-      "   +--Site B ------- proxies for A\n"
-      "        |--Site A -- proxies for B\n"
-      "        +--Site B -- proxies for A\n"
-      "Where A = http://foo.com/\n"
-      "      B = http://bar.com/",
-      DepictFrameTree(root));
+  if (sandboxed_iframes_are_isolated) {
+    switch (blink::features::kIsolateSandboxedIframesGroupingParam.Get()) {
+      case blink::features::IsolateSandboxedIframesGrouping::kPerSite:
+      case blink::features::IsolateSandboxedIframesGrouping::kPerOrigin:
+        EXPECT_EQ(
+            " Site A ------------ proxies for C D\n"
+            "   +--Site C ------- proxies for A D\n"
+            "        |--Site D -- proxies for A C\n"
+            "        +--Site C -- proxies for A D\n"
+            "Where A = http://foo.com/\n"
+            "      C = http://bar.com/ (sandboxed)\n"
+            "      D = http://foo.com/ (sandboxed)",
+            DepictFrameTree(root));
+        break;
+      case blink::features::IsolateSandboxedIframesGrouping::kPerDocument:
+        // TODO(https://crbug.com/1501430): Add output for the PerDocument
+        // case, and parameterize this test to run all variants (none, per-site,
+        // per-origin, per-document).
+        break;
+    }
+  } else {
+    EXPECT_EQ(
+        " Site A ------------ proxies for B\n"
+        "   +--Site B ------- proxies for A\n"
+        "        |--Site A -- proxies for B\n"
+        "        +--Site B -- proxies for A\n"
+        "Where A = http://foo.com/\n"
+        "      B = http://bar.com/",
+        DepictFrameTree(root));
+  }
 
   // The child of the sandboxed frame should've inherited sandbox flags, so it
   // should not be able to create popups.
@@ -10026,19 +10204,44 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
   // Finally, navigate the grandchild frame to a new origin, creating a new site
   // instance. Again, the new document should be sandboxed, as it should get its
   // flags from its (remote) parent in B.
+  RenderFrameDeletedObserver deleted_observer_grandchild(
+      root->child_at(0)->child_at(0)->current_frame_host());
   EXPECT_TRUE(NavigateToURLFromRenderer(
       root->child_at(0)->child_at(0),
       embedded_test_server()->GetURL("baz.com", "/title1.html")));
 
-  EXPECT_EQ(
-      " Site A ------------ proxies for B C\n"
-      "   +--Site B ------- proxies for A C\n"
-      "        |--Site C -- proxies for A B\n"
-      "        +--Site B -- proxies for A C\n"
-      "Where A = http://foo.com/\n"
-      "      B = http://bar.com/\n"
-      "      C = http://baz.com/",
-      DepictFrameTree(root));
+  deleted_observer_grandchild.WaitUntilDeleted();
+  if (sandboxed_iframes_are_isolated) {
+    switch (blink::features::kIsolateSandboxedIframesGroupingParam.Get()) {
+      case blink::features::IsolateSandboxedIframesGrouping::kPerSite:
+      case blink::features::IsolateSandboxedIframesGrouping::kPerOrigin:
+        EXPECT_EQ(
+            " Site A ------------ proxies for C E\n"
+            "   +--Site C ------- proxies for A E\n"
+            "        |--Site E -- proxies for A C\n"
+            "        +--Site C -- proxies for A E\n"
+            "Where A = http://foo.com/\n"
+            "      C = http://bar.com/ (sandboxed)\n"
+            "      E = http://baz.com/ (sandboxed)",
+            DepictFrameTree(root));
+        break;
+      case blink::features::IsolateSandboxedIframesGrouping::kPerDocument:
+        // TODO(https://crbug.com/1501430): Add output for the PerDocument
+        // case, and parameterize this test to run all variants (none, per-site,
+        // per-origin, per-document).
+        break;
+    }
+  } else {
+    EXPECT_EQ(
+        " Site A ------------ proxies for B C\n"
+        "   +--Site B ------- proxies for A C\n"
+        "        |--Site C -- proxies for A B\n"
+        "        +--Site B -- proxies for A C\n"
+        "Where A = http://foo.com/\n"
+        "      B = http://bar.com/\n"
+        "      C = http://baz.com/",
+        DepictFrameTree(root));
+  }
 
   // The child of the sandboxed frame should've inherited sandbox flags, so it
   // should not be able to create popups.
@@ -11051,8 +11254,8 @@ class SitePerProcessBrowserTouchActionTest : public SitePerProcessBrowserTest {
       RenderWidgetHostViewBase* rwhv_root,
       RenderWidgetHostViewBase* rwhv_child,
       const gfx::Point& event_position,
-      absl::optional<cc::TouchAction>& effective_touch_action,
-      absl::optional<cc::TouchAction>& allowed_touch_action) {
+      std::optional<cc::TouchAction>& effective_touch_action,
+      std::optional<cc::TouchAction>& allowed_touch_action) {
     InputEventAckWaiter ack_observer(
         rwhv_child->GetRenderWidgetHost(),
         base::BindRepeating([](blink::mojom::InputEventResultSource source,
@@ -11252,8 +11455,8 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTouchActionTest,
 
   WaitForTouchActionUpdated(root_thread_observer.get(),
                             child_thread_observer.get());
-  absl::optional<cc::TouchAction> effective_touch_action;
-  absl::optional<cc::TouchAction> allowed_touch_action;
+  std::optional<cc::TouchAction> effective_touch_action;
+  std::optional<cc::TouchAction> allowed_touch_action;
   cc::TouchAction expected_touch_action = cc::TouchAction::kPan;
   // Gestures are filtered by the intersection of touch-action values of the
   // touched element and all its ancestors up to the one that implements the
@@ -11331,8 +11534,8 @@ IN_PROC_BROWSER_TEST_F(
   // Child should inherit effective touch action none from root.
   WaitForTouchActionUpdated(root_thread_observer.get(),
                             child_thread_observer.get());
-  absl::optional<cc::TouchAction> effective_touch_action;
-  absl::optional<cc::TouchAction> allowed_touch_action;
+  std::optional<cc::TouchAction> effective_touch_action;
+  std::optional<cc::TouchAction> allowed_touch_action;
   cc::TouchAction expected_touch_action = cc::TouchAction::kPan;
   GetTouchActionsForChild(router, rwhv_root, rwhv_child, point_inside_child,
                           effective_touch_action, allowed_touch_action);
@@ -11409,8 +11612,8 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTouchActionTest,
   // Child should inherit effective touch action none from root.
   WaitForTouchActionUpdated(root_thread_observer.get(),
                             child_thread_observer.get());
-  absl::optional<cc::TouchAction> effective_touch_action;
-  absl::optional<cc::TouchAction> allowed_touch_action;
+  std::optional<cc::TouchAction> effective_touch_action;
+  std::optional<cc::TouchAction> allowed_touch_action;
   cc::TouchAction expected_touch_action =
       cc::TouchAction::kPan | cc::TouchAction::kInternalPanXScrolls |
       cc::TouchAction::kInternalNotWritable;
@@ -11812,6 +12015,8 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
 IN_PROC_BROWSER_TEST_P(
     SitePerProcessBrowserTest,
     MAYBE_RenderFrameProxyNotRecreatedDuringProcessShutdown) {
+  DisableBackForwardCacheForTesting(
+      web_contents(), content::BackForwardCache::TEST_REQUIRES_NO_CACHING);
   GURL main_url(embedded_test_server()->GetURL("a.com", "/title1.html"));
   EXPECT_TRUE(NavigateToURL(shell(), main_url));
   FrameTreeNode* root = web_contents()->GetPrimaryFrameTree().root();
@@ -11847,13 +12052,13 @@ IN_PROC_BROWSER_TEST_P(
       };)",
                                         hung_b_url)));
 
-  // In the popup, install an unload handler to send a lot of postMessages to
+  // In the popup, install a pagehide handler to send a lot of postMessages to
   // the opener.  This keeps the MessageLoop in the b.com process busy after
   // navigating away from the current document.  In https://crbug.com/794625,
   // this was needed so that a subsequent IPC to recreate a proxy arrives
   // before the process fully shuts down.
   EXPECT_TRUE(ExecJs(new_shell, R"(
-      window.onunload = () => {
+      window.onpagehide = () => {
         for (var i=0; i<10000; i++)
           opener.postMessage('hi','*');
       })"));
@@ -11868,8 +12073,8 @@ IN_PROC_BROWSER_TEST_P(
   // At this point, popup's original RFH is pending deletion.
   EXPECT_TRUE(rfh->IsPendingDeletion());
 
-  // When the opener receives a postMessage from the popup's unload handler, it
-  // should start a navigation back to b.com.  Wait for it.  This navigation
+  // When the opener receives a postMessage from the popup's pagehide handler,
+  // it should start a navigation back to b.com.  Wait for it.  This navigation
   // creates a speculative RFH which reuses the proxy that was created as part
   // of navigating from |popup_url| to |another_a_url|.
   EXPECT_TRUE(manager.WaitForRequestStart());
@@ -12159,7 +12364,7 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
           ->TransformPointToRootCoordSpaceF(gfx::PointF(10, 10));
 
   // Generate a double-tap.
-  std::string actions_template = R"HTML(
+  static constexpr char kActionsTemplate[] = R"HTML(
       [{
         "source" : "touch",
         "actions" : [
@@ -12172,8 +12377,8 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
       }]
   )HTML";
   std::string double_tap_actions_json =
-      base::StringPrintf(actions_template.c_str(), tap_position.x(),
-                         tap_position.y(), tap_position.x(), tap_position.y());
+      base::StringPrintf(kActionsTemplate, tap_position.x(), tap_position.y(),
+                         tap_position.x(), tap_position.y());
   auto parsed_json =
       base::JSONReader::ReadAndReturnValueWithError(double_tap_actions_json);
   ASSERT_TRUE(parsed_json.has_value()) << parsed_json.error().message;
@@ -12384,20 +12589,12 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
   ASSERT_FALSE(frame_connector->IsHidden());
   ASSERT_TRUE(ExecJs(
       shell(), "document.querySelector('object').style.display = 'none';"));
-  while (!frame_connector->IsHidden()) {
-    base::RunLoop run_loop;
-    base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
-        FROM_HERE, run_loop.QuitClosure(), TestTimeouts::tiny_timeout());
-    run_loop.Run();
-  }
+  EXPECT_TRUE(
+      base::test::RunUntil([&]() { return frame_connector->IsHidden(); }));
   ASSERT_TRUE(ExecJs(
       shell(), "document.querySelector('object').style.display = 'block';"));
-  while (frame_connector->IsHidden()) {
-    base::RunLoop run_loop;
-    base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
-        FROM_HERE, run_loop.QuitClosure(), TestTimeouts::tiny_timeout());
-    run_loop.Run();
-  }
+  EXPECT_TRUE(
+      base::test::RunUntil([&]() { return !frame_connector->IsHidden(); }));
 }
 
 // Pending navigations must be canceled when a frame becomes pending deletion.
@@ -12900,7 +13097,8 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
   EXPECT_THAT(
       result,
       ::testing::MatchesRegex(
-          "SecurityError: Blocked a frame with origin \"http://a.com:\\d+\" "
+          "SecurityError: Failed to read a named property 'document' from "
+          "'Window': Blocked a frame with origin \"http://a.com:\\d+\" "
           "from accessing a cross-origin frame."));
 }
 

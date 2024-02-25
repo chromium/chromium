@@ -35,10 +35,10 @@ namespace {
 
 using SliderType = UnifiedSliderBubbleController::SliderType;
 
-// The padding of QsRevamp toast.
+// The padding of slider toast.
 constexpr auto kQsSliderToastPadding = gfx::Insets::TLBR(8, 8, 8, 12);
 constexpr auto kQsToggleToastPadding = gfx::Insets(12);
-// The rounded corner radius of the QsRevamp `bubble_view_`.
+// The rounded corner radius of the `bubble_view_`.
 constexpr int kQsToastCornerRadius = 28;
 
 // Return true if a system tray bubble is shown in any display.
@@ -53,22 +53,19 @@ bool IsAnyMainBubbleShown() {
 
 void ConfigureSliderViewStyle(UnifiedSliderView* slider_view,
                               SliderType slider_type) {
-  if (features::IsQsRevampEnabled()) {
-    // Toggle toast has only a button and label. Slider toast has a slider, a
-    // button on the slider body, and possible trailing buttons.
-    const bool is_toggle_toast =
-        slider_type == SliderType::SLIDER_TYPE_KEYBOARD_BACKLIGHT_TOGGLE;
-    auto* layout =
-        slider_view->SetLayoutManager(std::make_unique<views::BoxLayout>(
-            views::BoxLayout::Orientation::kHorizontal,
-            is_toggle_toast ? kQsToggleToastPadding : kQsSliderToastPadding,
-            kSliderChildrenViewSpacing));
-    layout->SetFlexForView(slider_view->slider(), /*flex=*/1);
-    layout->set_cross_axis_alignment(
-        views::BoxLayout::CrossAxisAlignment::kCenter);
-    return;
-  }
-  slider_view->SetBorder(views::CreateEmptyBorder(kUnifiedSliderBubblePadding));
+  // Toggle toast has only a button and label. Slider toast has a slider, a
+  // button on the slider body, and possible trailing buttons.
+  const bool is_toggle_toast =
+      slider_type == SliderType::SLIDER_TYPE_KEYBOARD_BACKLIGHT_TOGGLE_ON ||
+      slider_type == SliderType::SLIDER_TYPE_KEYBOARD_BACKLIGHT_TOGGLE_OFF;
+  auto* layout =
+      slider_view->SetLayoutManager(std::make_unique<views::BoxLayout>(
+          views::BoxLayout::Orientation::kHorizontal,
+          is_toggle_toast ? kQsToggleToastPadding : kQsSliderToastPadding,
+          kSliderChildrenViewSpacing));
+  layout->SetFlexForView(slider_view->slider(), /*flex=*/1);
+  layout->set_cross_axis_alignment(
+      views::BoxLayout::CrossAxisAlignment::kCenter);
 }
 
 // Returns whether the `VideoConferenceTray` should be shown.
@@ -147,11 +144,13 @@ void UnifiedSliderBubbleController::OnMouseExitedView() {
   mouse_hovered_ = false;
 }
 
+void UnifiedSliderBubbleController::HideBubble(
+    const TrayBubbleView* bubble_view) {}
+
 void UnifiedSliderBubbleController::DisplayMicrophoneMuteToast() {
   // We will not display the microphone mute toast if no microphone is connected
   // to the device, or if the video conference controls tray is visible.
-  if (features::IsMicMuteNotificationsEnabled() &&
-      CrasAudioHandler::Get()->HasActiveInputDeviceForSimpleUsage() &&
+  if (CrasAudioHandler::Get()->HasActiveInputDeviceForSimpleUsage() &&
       !ShouldVideoConferenceTrayBeShown()) {
     ShowBubble(SLIDER_TYPE_MIC);
   }
@@ -207,7 +206,10 @@ void UnifiedSliderBubbleController::OnKeyboardBrightnessChanged(
              cause == power_manager::
                           BacklightBrightnessChange_Cause_USER_TOGGLED_ON) {
     // User has explicitly toggled the KBL backlight.
-    ShowBubble(SLIDER_TYPE_KEYBOARD_BACKLIGHT_TOGGLE);
+    ShowBubble((cause ==
+                power_manager::BacklightBrightnessChange_Cause_USER_TOGGLED_OFF)
+                   ? SLIDER_TYPE_KEYBOARD_BACKLIGHT_TOGGLE_OFF
+                   : SLIDER_TYPE_KEYBOARD_BACKLIGHT_TOGGLE_ON);
   }
 }
 
@@ -228,16 +230,15 @@ void UnifiedSliderBubbleController::ShowBubble(SliderType slider_type) {
   }
 
   bool is_audio_slider = slider_type == SLIDER_TYPE_MIC;
-  // For QsRevamp: both the volume slider and mic gain slider will be shown in
+  // both the volume slider and mic gain slider will be shown in
   // `AudioDetailedView`.
-  if (features::IsQsRevampEnabled()) {
-    is_audio_slider = is_audio_slider || slider_type == SLIDER_TYPE_VOLUME;
-  }
+  is_audio_slider = is_audio_slider || slider_type == SLIDER_TYPE_VOLUME;
+
   // When tray bubble is already shown, the microphone slider will get shown in
   // audio detailed view. Bail out if the audio details are already showing to
   // avoid resetting the bubble state.
-  // For QsRevamp: If already in the `AudioDetailedView`, bail out if it's
-  // either `SLIDER_TYPE_MIC` or `SLIDER_TYPE_VOLUME`.
+  // If already in the `AudioDetailedView`, bail out if it's either
+  // `SLIDER_TYPE_MIC` or `SLIDER_TYPE_VOLUME`.
   if (is_audio_slider && tray_->bubble() &&
       tray_->bubble()->ShowingAudioDetailedView()) {
     return;
@@ -252,7 +253,11 @@ void UnifiedSliderBubbleController::ShowBubble(SliderType slider_type) {
   }
 
   if (IsAnyMainBubbleShown()) {
-    tray_->EnsureBubbleExpanded();
+    // If a detailed view is showing, first transit to the main view.
+    if (tray_->bubble() && tray_->bubble()->GetBubbleWidget()) {
+      tray_->bubble()->unified_system_tray_controller()->TransitionToMainView(
+          false);
+    }
 
     // Unlike VOLUME and BRIGHTNESS, which are shown in the main bubble view,
     // MIC slider is shown in the audio details view.
@@ -280,7 +285,7 @@ void UnifiedSliderBubbleController::ShowBubble(SliderType slider_type) {
       UnifiedSliderView* slider_view = static_cast<UnifiedSliderView*>(
           bubble_view_->AddChildView(slider_controller_->CreateView()));
       ConfigureSliderViewStyle(slider_view, slider_type);
-      bubble_view_->Layout();
+      bubble_view_->DeprecatedLayoutImmediately();
     }
 
     // If mouse is hovered, do not restart auto close timer.
@@ -305,12 +310,10 @@ void UnifiedSliderBubbleController::ShowBubble(SliderType slider_type) {
   // Use this controller as the delegate rather than the tray.
   init_params.delegate = GetWeakPtr();
 
-  if (features::IsQsRevampEnabled()) {
-    init_params.corner_radius = kQsToastCornerRadius;
-    // `bubble_view_` is fully rounded, so sets it to be true and paints the
-    // shadow on texture layer.
-    init_params.has_large_corner_radius = true;
-  }
+  init_params.corner_radius = kQsToastCornerRadius;
+  // `bubble_view_` is fully rounded, so sets it to be true and paints the
+  // shadow on texture layer.
+  init_params.has_large_corner_radius = true;
 
   bubble_view_ = new TrayBubbleView(init_params);
   bubble_view_->SetCanActivate(false);
@@ -345,9 +348,13 @@ void UnifiedSliderBubbleController::CreateSliderController() {
           base::BindRepeating(&UnifiedSystemTray::ShowDisplayDetailedViewBubble,
                               base::Unretained(tray_)));
       return;
-    case SLIDER_TYPE_KEYBOARD_BACKLIGHT_TOGGLE:
+    case SLIDER_TYPE_KEYBOARD_BACKLIGHT_TOGGLE_OFF:
       slider_controller_ = std::make_unique<KeyboardBacklightToggleController>(
-          tray_->model().get());
+          tray_->model().get(), /*toggled_on=*/false);
+      return;
+    case SLIDER_TYPE_KEYBOARD_BACKLIGHT_TOGGLE_ON:
+      slider_controller_ = std::make_unique<KeyboardBacklightToggleController>(
+          tray_->model().get(), /*toggled_on=*/true);
       return;
     case SLIDER_TYPE_KEYBOARD_BRIGHTNESS:
       slider_controller_ =
@@ -362,8 +369,8 @@ void UnifiedSliderBubbleController::CreateSliderController() {
 
 void UnifiedSliderBubbleController::StartAutoCloseTimer() {
   autoclose_.Stop();
-  autoclose_.Start(FROM_HERE, base::Seconds(kTrayPopupAutoCloseDelayInSeconds),
-                   this, &UnifiedSliderBubbleController::CloseBubble);
+  autoclose_.Start(FROM_HERE, kSecondaryBubbleDuration, this,
+                   &UnifiedSliderBubbleController::CloseBubble);
 }
 
 }  // namespace ash

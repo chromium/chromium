@@ -9,10 +9,16 @@
     {
       "name": "LayoutVideo VIDEO id='video'",
       "bounds": [320, 240],
+      "drawsContent": false,
       "transform": 1
     },
     {
-      "name": "LayoutNGFlexibleBox DIV class='sizing-small test-mode phase-ready state-scrubbing'",
+      "name": "LayoutVideo VIDEO id='video'",
+      "bounds": [320, 240],
+      "transform": 1
+    },
+    {
+      "name": "LayoutFlexibleBox DIV class='sizing-small test-mode phase-ready state-scrubbing'",
       "bounds": [320, 240],
       "transform": 1
     }

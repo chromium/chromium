@@ -33,12 +33,12 @@ void TestSelectURLFencedFrameConfigObserverImpl::OnUrnUuidGenerated(
 }
 
 void TestSelectURLFencedFrameConfigObserverImpl::OnConfigPopulated(
-    const absl::optional<FencedFrameConfig>& config) {
+    const std::optional<FencedFrameConfig>& config) {
   if (config_observed_ || !urn_uuid_.has_value() || !config.has_value() ||
-      (urn_uuid_.value() != config->urn_uuid_)) {
+      (urn_uuid_.value() != config->urn_uuid())) {
     // 1. This observer has already observed a config.
     // 2. This observer hasn't observed an urn::uuid yet.
-    // 3. The given config is `absl::nullopt`.
+    // 3. The given config is `std::nullopt`.
     // 4. The given config does not correspond to the observed urn::uuid.
     return;
   }
@@ -46,12 +46,12 @@ void TestSelectURLFencedFrameConfigObserverImpl::OnConfigPopulated(
   config_ = config;
 }
 
-const absl::optional<GURL>&
+const std::optional<GURL>&
 TestSelectURLFencedFrameConfigObserverImpl::GetUrnUuid() const {
   return urn_uuid_;
 }
 
-const absl::optional<FencedFrameConfig>&
+const std::optional<FencedFrameConfig>&
 TestSelectURLFencedFrameConfigObserverImpl::GetConfig() const {
   return config_;
 }
@@ -79,12 +79,12 @@ TestSelectURLFencedFrameConfigObserver::
   manager->RemoveSharedStorageObserver(impl_.get());
 }
 
-const absl::optional<GURL>& TestSelectURLFencedFrameConfigObserver::GetUrnUuid()
+const std::optional<GURL>& TestSelectURLFencedFrameConfigObserver::GetUrnUuid()
     const {
   return impl_->GetUrnUuid();
 }
 
-const absl::optional<FencedFrameConfig>&
+const std::optional<FencedFrameConfig>&
 TestSelectURLFencedFrameConfigObserver::GetConfig() const {
   return impl_->GetConfig();
 }

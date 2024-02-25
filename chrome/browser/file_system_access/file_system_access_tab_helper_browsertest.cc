@@ -12,6 +12,7 @@
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "content/public/test/browser_test.h"
+#include "content/public/test/browser_test_utils.h"
 #include "content/public/test/prerender_test_util.h"
 #include "net/dns/mock_host_resolver.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -61,6 +62,10 @@ class FileSystemAccessTabHelperPrerenderingBrowserTest
   }
 
   void SetUpOnMainThread() override {
+    // Clear the permission context since setting the testing factory will
+    // destroy the current context outside of the normal shutdown sequence.
+    content::SetFileSystemAccessPermissionContext(browser()->profile(),
+                                                  nullptr);
     FileSystemAccessPermissionContextFactory::GetInstance()
         ->SetTestingFactoryAndUse(
             browser()->profile(),

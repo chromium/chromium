@@ -8,10 +8,11 @@
 #include <stdint.h>
 
 #include <memory>
+#include <optional>
+#include <string>
 
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/ui_base_types.h"
 #include "ui/gfx/geometry/rounded_corners_f.h"
 #include "ui/gfx/native_widget_types.h"
@@ -126,7 +127,7 @@ class VIEWS_EXPORT MenuRunner {
                  base::RepeatingClosure());
 
   // Creates a runner for a custom-created toolkit-views menu.
-  MenuRunner(MenuItemView* menu, int32_t run_types);
+  MenuRunner(std::unique_ptr<MenuItemView> menu, int32_t run_types);
 
   MenuRunner(const MenuRunner&) = delete;
   MenuRunner& operator=(const MenuRunner&) = delete;
@@ -146,13 +147,19 @@ class VIEWS_EXPORT MenuRunner {
   // the context menu. This only works when using `USE_ASH_SYS_UI_LAYOUT`.
   // Note that this is a blocking call for a native menu on Mac. See
   // http://crbug.com/682544.
+  // `show_menu_host_duration_histogram` is the name of the histogram measuring
+  // time from when Widget::Show() is called to when the first frame is
+  // presented for menu. It is recorded in MenuHost and it happens only when the
+  // histogram name is non-empty.
   void RunMenuAt(Widget* parent,
                  MenuButtonController* button_controller,
                  const gfx::Rect& bounds,
                  MenuAnchorPosition anchor,
                  ui::MenuSourceType source_type,
                  gfx::NativeView native_view_for_gestures = gfx::NativeView(),
-                 absl::optional<gfx::RoundedCornersF> corners = absl::nullopt);
+                 std::optional<gfx::RoundedCornersF> corners = std::nullopt,
+                 std::optional<std::string> show_menu_host_duration_histogram =
+                     std::nullopt);
 
   // Returns true if we're in a nested run loop running the menu.
   bool IsRunning() const;
@@ -172,7 +179,7 @@ class VIEWS_EXPORT MenuRunner {
   const int32_t run_types_;
 
   // We own this. No scoped_ptr because it is destroyed by calling Release().
-  raw_ptr<internal::MenuRunnerImplInterface, DanglingUntriaged> impl_;
+  raw_ptr<internal::MenuRunnerImplInterface> impl_;
 
   // An implementation of RunMenuAt. This is usually NULL and ignored. If this
   // is not NULL, this implementation will be used.

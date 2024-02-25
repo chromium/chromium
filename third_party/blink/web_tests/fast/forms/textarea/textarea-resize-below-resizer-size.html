@@ -34,8 +34,8 @@ t.step(() => {
   assert_own_property(chrome, 'gpuBenchmarking');
 
   var textArea = document.getElementById('textInputID');
-  var startX = (textArea.getBoundingClientRect().right - 1) * 3;
-  var startY = (textArea.getBoundingClientRect().bottom - 1) * 3;
+  var startX = (textArea.getBoundingClientRect().right - 1);
+  var startY = (textArea.getBoundingClientRect().bottom - 1);
   drag(startX, startY, 0, 0, t.step_func_done(() => {
     // The textarea should be shrunk so that there is no room for visible
     // content beyond the resizer itself.

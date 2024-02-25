@@ -8,6 +8,7 @@
 #include <memory>
 #include <vector>
 
+#include "base/check_is_test.h"
 #include "base/memory/raw_ptr.h"
 #include "build/build_config.h"
 #include "components/viz/common/quads/aggregated_render_pass.h"
@@ -44,14 +45,12 @@ class VIZ_SERVICE_EXPORT OverlayProcessorWin
   // processor.
   bool NeedsSurfaceDamageRectList() const override;
 
-  // Sets |is_video_capture_enabled_|.
-  void SetIsVideoCaptureEnabled(bool enabled) override;
-
   // Sets |is_page_fullscreen_mode_|.
   void SetIsPageFullscreen(bool enabled) override;
 
-  void AdjustOutputSurfaceOverlay(absl::optional<OutputSurfaceOverlayPlane>*
-                                      output_surface_plane) override {}
+  void AdjustOutputSurfaceOverlay(
+      std::optional<OutputSurfaceOverlayPlane>* output_surface_plane) override {
+  }
 
   // Attempt to replace quads from the specified root render pass with overlays
   // or CALayers. This must be called every frame.
@@ -61,17 +60,58 @@ class VIZ_SERVICE_EXPORT OverlayProcessorWin
       const SkM44& output_color_matrix,
       const FilterOperationsMap& render_pass_filters,
       const FilterOperationsMap& render_pass_backdrop_filters,
-      SurfaceDamageRectList surface_damage_rect_list,
+      SurfaceDamageRectList surface_damage_rect_list_in_root_space,
       OutputSurfaceOverlayPlane* output_surface_plane,
       OverlayCandidateList* overlay_candidates,
-      gfx::Rect* damage_rect,
+      gfx::Rect* root_damage_rect,
       std::vector<gfx::Rect>* content_bounds) override;
 
-  void set_using_dc_layers_for_testing(bool value) { using_dc_layers_ = value; }
+  // Sets whether or not |render_pass_id| will be marked for a DComp surface
+  // backing. If |value| is true, this also resets the frame count since
+  // enabling DC layers.
+  void SetUsingDCLayersForTesting(AggregatedRenderPassId render_pass_id,
+                                  bool value);
+
   void set_frames_since_last_qualified_multi_overlays_for_testing(int value) {
+    CHECK_IS_TEST();
     GetOverlayProcessor()
         ->set_frames_since_last_qualified_multi_overlays_for_testing(value);
   }
+  void set_system_hdr_enabled_for_testing(bool value) {
+    CHECK_IS_TEST();
+    GetOverlayProcessor()->set_system_hdr_enabled_for_testing(value);
+  }
+  void set_has_p010_video_processor_support_for_testing(bool value) {
+    CHECK_IS_TEST();
+    GetOverlayProcessor()->set_has_p010_video_processor_support_for_testing(
+        value);
+  }
+  void set_has_auto_hdr_video_processor_support_for_testing(bool value) {
+    CHECK_IS_TEST();
+    GetOverlayProcessor()->set_has_auto_hdr_video_processor_support_for_testing(
+        value);
+  }
+  void set_is_on_battery_power_for_testing(bool value) {
+    CHECK_IS_TEST();
+    GetOverlayProcessor()->set_is_on_battery_power_for_testing(value);
+  }
+  size_t get_previous_frame_render_pass_count() {
+    CHECK_IS_TEST();
+    return GetOverlayProcessor()->get_previous_frame_render_pass_count();
+  }
+  std::vector<AggregatedRenderPassId> get_previous_frame_render_pass_ids() {
+    CHECK_IS_TEST();
+    return GetOverlayProcessor()->get_previous_frame_render_pass_ids();
+  }
+
+  void ProcessOnDCLayerOverlayProcessorForTesting(
+      DisplayResourceProvider* resource_provider,
+      const FilterOperationsMap& render_pass_filters,
+      const FilterOperationsMap& render_pass_backdrop_filters,
+      SurfaceDamageRectList surface_damage_rect_list,
+      bool is_page_fullscreen_mode,
+      DCLayerOverlayProcessor::RenderPassOverlayDataMap&
+          render_pass_overlay_data_map);
 
  protected:
   // For testing.
@@ -90,15 +130,13 @@ class VIZ_SERVICE_EXPORT OverlayProcessorWin
   // Reference to the global viz singleton.
   const raw_ptr<const DebugRendererSettings> debug_settings_;
 
-  // Whether direct composition layers are being used with SetEnableDCLayers().
-  bool using_dc_layers_ = false;
-  // Number of frames since the last time direct composition layers were used.
-  int frames_since_using_dc_layers_ = 0;
+  // Number of frames since the last time direct composition layers were used
+  // for each render pass we promote overlays from in the frame. Presence in
+  // this map indicates that the render pass is using a DComp surface.
+  base::flat_map<AggregatedRenderPassId, int> frames_since_using_dc_layers_map_;
 
   // TODO(weiliangc): Eventually fold DCLayerOverlayProcessor into this class.
   std::unique_ptr<DCLayerOverlayProcessor> dc_layer_overlay_processor_;
-
-  bool is_video_capture_enabled_ = false;
 
   bool is_page_fullscreen_mode_ = false;
 };

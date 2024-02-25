@@ -4,12 +4,14 @@
 
 #include "chrome/renderer/url_loader_throttle_provider_impl.h"
 
+#include <memory>
 #include <utility>
 
 #include "base/command_line.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/memory/ptr_util.h"
+#include "base/task/sequenced_task_runner.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/common/google_url_loader_throttle.h"
@@ -25,6 +27,7 @@
 #include "content/public/renderer/render_frame.h"
 #include "content/public/renderer/render_thread.h"
 #include "extensions/renderer/extension_localization_throttle.h"
+#include "services/network/public/cpp/resource_request.h"
 #include "third_party/blink/public/common/browser_interface_broker_proxy.h"
 #include "third_party/blink/public/common/loader/resource_type_util.h"
 #include "third_party/blink/public/common/thread_safe_browser_interface_broker_proxy.h"
@@ -88,71 +91,111 @@ void SetExtensionThrottleManagerTestPolicy(
 
 }  // namespace
 
-URLLoaderThrottleProviderImpl::URLLoaderThrottleProviderImpl(
-    blink::ThreadSafeBrowserInterfaceBrokerProxy* broker,
+// static
+std::unique_ptr<blink::URLLoaderThrottleProvider>
+URLLoaderThrottleProviderImpl::Create(
     blink::URLLoaderThrottleProviderType type,
-    ChromeContentRendererClient* chrome_content_renderer_client)
+    ChromeContentRendererClient* chrome_content_renderer_client,
+    blink::ThreadSafeBrowserInterfaceBrokerProxy* broker) {
+  mojo::PendingRemote<safe_browsing::mojom::SafeBrowsing> pending_safe_browsing;
+  broker->GetInterface(pending_safe_browsing.InitWithNewPipeAndPassReceiver());
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+  mojo::PendingRemote<safe_browsing::mojom::ExtensionWebRequestReporter>
+      pending_extension_web_request_reporter;
+  broker->GetInterface(
+      pending_extension_web_request_reporter.InitWithNewPipeAndPassReceiver());
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
+
+  return std::make_unique<URLLoaderThrottleProviderImpl>(
+      type, chrome_content_renderer_client, std::move(pending_safe_browsing),
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+      std::move(pending_extension_web_request_reporter),
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
+      /*main_thread_task_runner=*/
+      content::RenderThread::IsMainThread()
+          ? base::SequencedTaskRunner::GetCurrentDefault()
+          : nullptr,
+      base::PassKey<URLLoaderThrottleProviderImpl>());
+}
+
+URLLoaderThrottleProviderImpl::URLLoaderThrottleProviderImpl(
+    blink::URLLoaderThrottleProviderType type,
+    ChromeContentRendererClient* chrome_content_renderer_client,
+    mojo::PendingRemote<safe_browsing::mojom::SafeBrowsing>
+        pending_safe_browsing,
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+    mojo::PendingRemote<safe_browsing::mojom::ExtensionWebRequestReporter>
+        pending_extension_web_request_reporter,
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
+    scoped_refptr<base::SequencedTaskRunner> main_thread_task_runner,
+    base::PassKey<URLLoaderThrottleProviderImpl>)
     : type_(type),
-      chrome_content_renderer_client_(chrome_content_renderer_client) {
+      chrome_content_renderer_client_(chrome_content_renderer_client),
+      pending_safe_browsing_(std::move(pending_safe_browsing)),
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+      pending_extension_web_request_reporter_(
+          std::move(pending_extension_web_request_reporter)),
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
+      main_thread_task_runner_(std::move(main_thread_task_runner)) {
   DETACH_FROM_SEQUENCE(sequence_checker_);
-  broker->GetInterface(safe_browsing_remote_.InitWithNewPipeAndPassReceiver());
 }
 
 URLLoaderThrottleProviderImpl::~URLLoaderThrottleProviderImpl() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 }
 
-URLLoaderThrottleProviderImpl::URLLoaderThrottleProviderImpl(
-    const URLLoaderThrottleProviderImpl& other)
-    : type_(other.type_),
-      chrome_content_renderer_client_(other.chrome_content_renderer_client_) {
-  DETACH_FROM_SEQUENCE(sequence_checker_);
-  if (other.safe_browsing_) {
-    other.safe_browsing_->Clone(
-        safe_browsing_remote_.InitWithNewPipeAndPassReceiver());
-  }
-  // An ad_delay_factory_ is created, rather than cloning the existing one.
-}
-
 std::unique_ptr<blink::URLLoaderThrottleProvider>
 URLLoaderThrottleProviderImpl::Clone() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (safe_browsing_remote_)
-    safe_browsing_.Bind(std::move(safe_browsing_remote_));
-  return base::WrapUnique(new URLLoaderThrottleProviderImpl(*this));
+  return std::make_unique<URLLoaderThrottleProviderImpl>(
+      type_, chrome_content_renderer_client_, CloneSafeBrowsingPendingRemote(),
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+      CloneExtensionWebRequestReporterPendingRemote(),
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
+      main_thread_task_runner_, base::PassKey<URLLoaderThrottleProviderImpl>());
 }
 
 blink::WebVector<std::unique_ptr<blink::URLLoaderThrottle>>
 URLLoaderThrottleProviderImpl::CreateThrottles(
-    int render_frame_id,
-    const blink::WebURLRequest& request) {
+    base::optional_ref<const blink::LocalFrameToken> local_frame_token,
+    const network::ResourceRequest& request) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   blink::WebVector<std::unique_ptr<blink::URLLoaderThrottle>> throttles;
 
-  const network::mojom::RequestDestination request_destination =
-      request.GetRequestDestination();
-
   // Some throttles have already been added in the browser for frame resources.
   // Don't add them for frame requests.
   bool is_frame_resource =
-      blink::IsRequestDestinationFrame(request_destination);
+      blink::IsRequestDestinationFrame(request.destination);
 
   DCHECK(!is_frame_resource ||
          type_ == blink::URLLoaderThrottleProviderType::kFrame);
 
   if (!is_frame_resource) {
-    if (safe_browsing_remote_)
-      safe_browsing_.Bind(std::move(safe_browsing_remote_));
-    throttles.emplace_back(
-        std::make_unique<safe_browsing::RendererURLLoaderThrottle>(
-            safe_browsing_.get(), render_frame_id));
+    if (pending_safe_browsing_) {
+      safe_browsing_.Bind(std::move(pending_safe_browsing_));
+    }
+
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+    if (pending_extension_web_request_reporter_) {
+      extension_web_request_reporter_.Bind(
+          std::move(pending_extension_web_request_reporter_));
+    }
+
+    auto throttle = std::make_unique<safe_browsing::RendererURLLoaderThrottle>(
+        safe_browsing_.get(), local_frame_token,
+        extension_web_request_reporter_.get());
+#else
+    auto throttle = std::make_unique<safe_browsing::RendererURLLoaderThrottle>(
+        safe_browsing_.get(), local_frame_token);
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
+    throttles.emplace_back(std::move(throttle));
   }
 
   if (type_ == blink::URLLoaderThrottleProviderType::kFrame &&
-      !is_frame_resource) {
-    auto throttle =
-        prerender::NoStatePrefetchHelper::MaybeCreateThrottle(render_frame_id);
+      !is_frame_resource && local_frame_token.has_value()) {
+    auto throttle = prerender::NoStatePrefetchHelper::MaybeCreateThrottle(
+        local_frame_token.value());
     if (throttle)
       throttles.emplace_back(std::move(throttle));
   }
@@ -173,7 +216,8 @@ URLLoaderThrottleProviderImpl::CreateThrottles(
       throttles.emplace_back(std::move(throttle));
   }
   std::unique_ptr<blink::URLLoaderThrottle> localization_throttle =
-      extensions::ExtensionLocalizationThrottle::MaybeCreate(request.Url());
+      extensions::ExtensionLocalizationThrottle::MaybeCreate(local_frame_token,
+                                                             request.url);
   if (localization_throttle) {
     throttles.emplace_back(std::move(localization_throttle));
   }
@@ -181,9 +225,9 @@ URLLoaderThrottleProviderImpl::CreateThrottles(
 
 #if BUILDFLAG(IS_ANDROID)
   std::string client_data_header;
-  if (!is_frame_resource && render_frame_id != MSG_ROUTING_NONE) {
-    client_data_header =
-        ChromeRenderFrameObserver::GetCCTClientHeader(render_frame_id);
+  if (!is_frame_resource && local_frame_token.has_value()) {
+    client_data_header = ChromeRenderFrameObserver::GetCCTClientHeader(
+        local_frame_token.value());
   }
 #endif
 
@@ -193,7 +237,7 @@ URLLoaderThrottleProviderImpl::CreateThrottles(
 #endif
 #if BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
       chrome_content_renderer_client_->GetChromeObserver()
-          ->CreateBoundSessionRequestThrottledListener(),
+          ->CreateBoundSessionRequestThrottledHandler(),
 #endif
       chrome_content_renderer_client_->GetChromeObserver()
           ->GetDynamicParams()));
@@ -204,16 +248,25 @@ URLLoaderThrottleProviderImpl::CreateThrottles(
           ->chromeos_listener()));
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
-  // Workers can call us on a background thread. We don't care about such
-  // requests because we purposefully only look at resources from frames
-  // that the user can interact with.
-  content::RenderFrame* frame =
-      content::RenderThread::IsMainThread()
-          ? content::RenderFrame::FromRoutingID(render_frame_id)
-          : nullptr;
-  if (frame) {
-    auto throttle = content::MaybeCreateIdentityUrlLoaderThrottle(
-        base::BindRepeating(blink::SetIdpSigninStatus, frame->GetWebFrame()));
+  if (local_frame_token.has_value()) {
+    auto throttle =
+        content::MaybeCreateIdentityUrlLoaderThrottle(base::BindRepeating(
+            [](const blink::LocalFrameToken& token,
+               const scoped_refptr<base::SequencedTaskRunner>
+                   main_thread_task_runner,
+               const url::Origin& origin,
+               blink::mojom::IdpSigninStatus status) {
+              if (content::RenderThread::IsMainThread()) {
+                blink::SetIdpSigninStatus(token, origin, status);
+                return;
+              }
+              if (main_thread_task_runner) {
+                main_thread_task_runner->PostTask(
+                    FROM_HERE, base::BindOnce(&blink::SetIdpSigninStatus, token,
+                                              origin, status));
+              }
+            },
+            local_frame_token.value(), main_thread_task_runner_));
     if (throttle)
       throttles.push_back(std::move(throttle));
   }
@@ -227,3 +280,37 @@ void URLLoaderThrottleProviderImpl::SetOnline(bool is_online) {
     extension_throttle_manager_->SetOnline(is_online);
 #endif
 }
+
+mojo::PendingRemote<safe_browsing::mojom::SafeBrowsing>
+URLLoaderThrottleProviderImpl::CloneSafeBrowsingPendingRemote() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  mojo::PendingRemote<safe_browsing::mojom::SafeBrowsing>
+      new_pending_safe_browsing;
+  if (pending_safe_browsing_) {
+    safe_browsing_.Bind(std::move(pending_safe_browsing_));
+  }
+  if (safe_browsing_) {
+    safe_browsing_->Clone(
+        new_pending_safe_browsing.InitWithNewPipeAndPassReceiver());
+  }
+  return new_pending_safe_browsing;
+}
+
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+mojo::PendingRemote<safe_browsing::mojom::ExtensionWebRequestReporter>
+URLLoaderThrottleProviderImpl::CloneExtensionWebRequestReporterPendingRemote() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  mojo::PendingRemote<safe_browsing::mojom::ExtensionWebRequestReporter>
+      new_pending_extension_web_request_reporter;
+  if (pending_extension_web_request_reporter_) {
+    extension_web_request_reporter_.Bind(
+        std::move(pending_extension_web_request_reporter_));
+  }
+  if (extension_web_request_reporter_) {
+    extension_web_request_reporter_->Clone(
+        new_pending_extension_web_request_reporter
+            .InitWithNewPipeAndPassReceiver());
+  }
+  return new_pending_extension_web_request_reporter;
+}
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS)

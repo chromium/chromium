@@ -53,7 +53,7 @@ class NativePixmapGLBindingTest : public testing::Test {
  protected:
   // Overridden from testing::Test:
   void SetUp() override {
-    display_ = GLTestSupport::InitializeGL(absl::nullopt);
+    display_ = GLTestSupport::InitializeGL(std::nullopt);
     surface_ = gl::init::CreateOffscreenGLSurface(display_, gfx::Size());
     context_ =
         gl::init::CreateGLContext(nullptr, surface_.get(), GLContextAttribs());

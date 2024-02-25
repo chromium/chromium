@@ -7,12 +7,13 @@
 
 #include <fuchsia/media/cpp/fidl.h>
 
+#include <optional>
+
 #include "base/memory/shared_memory_mapping.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "media/audio/audio_io.h"
 #include "media/base/audio_parameters.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace media {
 
@@ -96,7 +97,7 @@ class AudioOutputStreamFuchsia : public AudioOutputStream {
 
   // Current min lead time for the stream. This value is not set until the first
   // AudioRenderer::OnMinLeadTimeChanged event.
-  absl::optional<base::TimeDelta> min_lead_time_;
+  std::optional<base::TimeDelta> min_lead_time_;
 
   // Timer that's scheduled to call PumpSamples().
   base::DeadlineTimer timer_;

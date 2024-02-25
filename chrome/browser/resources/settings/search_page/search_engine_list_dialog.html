@@ -1,0 +1,87 @@
+<style include="cr-shared-style settings-shared">
+  :host{
+    --icon-size: var(--search-engine-icon-size, 24px);
+  }
+
+  .subtitle {
+    font-size: 0.75rem;
+    line-height: 22px;
+  }
+
+  .title {
+    margin: 0 0 16px;
+  }
+
+  .dialog-body {
+    color: var(--cr-primary-text-color);
+  }
+
+  .search-engine {
+    align-items: center;
+    display: flex;
+    flex-direction: row;
+    gap: 16px;
+  }
+
+  site-favicon {
+    --site-favicon-border-radius: 4px;
+    --site-favicon-height: var(--icon-size);
+    --site-favicon-width: var(--icon-size);
+  }
+
+  #setAsDefaultButton {
+    margin-inline-start: 12px;
+  }
+
+  cr-dialog {
+    --cr-dialog-body-padding-horizontal: 16px;
+    --cr-dialog-button-container-padding-horizontal: 24px;
+    --cr-dialog-button-container-padding-bottom: 24px;
+    --cr-dialog-button-container-padding-top: 24px;
+    --cr-dialog-title-slot-padding-bottom: 16px;
+    --cr-dialog-title-slot-padding-end: 16px;
+    --cr-dialog-title-slot-padding-start: 16px;
+    --cr-dialog-title-slot-padding-top: 16px;
+  }
+
+  cr-dialog::part(body-container) {
+    max-height: 360px;
+  }
+
+  cr-radio-button {
+    --cr-radio-button-size: 20px;
+    margin: 0 16px;
+  }
+</style>
+
+<cr-dialog id="dialog" on-cancel="onCancelClick_" show-on-attach>
+  <div slot="title">
+    <div class="title">$i18n{searchPageTitle}</div>
+    <div class="subtitle">
+      $i18n{searchEnginesSettingsDialogSubtitle}
+    </div>
+  </div>
+  <div slot="body" class="dialog-body">
+    <cr-radio-group selected="{{selectedEngineId_}}">
+      <template is="dom-repeat" items="[[searchEngines]]">
+        <cr-radio-button class="label-first" name="[[item.id]]">
+          <div class="search-engine">
+            <site-favicon favicon-url="[[item.iconURL]]" url="[[item.url]]"
+                 icon-path="[[item.iconPath]]">
+            </site-favicon>
+            [[item.name]]
+          </div>
+        </cr-radio-button>
+      </template>
+    </cr-radio-group>
+  </div>
+  <div slot="button-container">
+    <cr-button id="cancelButton" on-click="onCancelClick_">
+      $i18n{searchEnginesCancelButton}
+    </cr-button>
+    <cr-button id="setAsDefaultButton" class="action-button"
+        on-click="onSetAsDefaultClick_" disabled="[[!searchEngines.length]]">
+      $i18n{searchEnginesSetAsDefaultButton}
+    </cr-button>
+  </div>
+</cr-dialog>

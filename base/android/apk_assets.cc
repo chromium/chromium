@@ -10,6 +10,8 @@
 #include "base/android/jni_string.h"
 #include "base/android/scoped_java_ref.h"
 #include "base/base_jni/ApkAssets_jni.h"
+#include "base/debug/crash_logging.h"
+#include "base/debug/dump_without_crashing.h"
 #include "base/file_descriptor_store.h"
 
 namespace base {
@@ -49,6 +51,18 @@ bool RegisterApkAssetWithFileDescriptorStore(const std::string& key,
   base::FileDescriptorStore::GetInstance().Set(key, base::ScopedFD(asset_fd),
                                                region);
   return true;
+}
+
+void DumpLastOpenApkAssetFailure() {
+  JNIEnv* env = base::android::AttachCurrentThread();
+  base::android::ScopedJavaLocalRef<jstring> error =
+      Java_ApkAssets_takeLastErrorString(env);
+  if (!error) {
+    return;
+  }
+  SCOPED_CRASH_KEY_STRING256("base", "OpenApkAssetError",
+                             ConvertJavaStringToUTF8(env, error));
+  base::debug::DumpWithoutCrashing();
 }
 
 }  // namespace android

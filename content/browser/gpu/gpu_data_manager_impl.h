@@ -107,7 +107,7 @@ class CONTENT_EXPORT GpuDataManagerImpl : public GpuDataManager,
 
   void UpdateGpuInfo(
       const gpu::GPUInfo& gpu_info,
-      const absl::optional<gpu::GPUInfo>& gpu_info_for_hardware_gpu);
+      const std::optional<gpu::GPUInfo>& gpu_info_for_hardware_gpu);
 #if BUILDFLAG(IS_WIN)
   void UpdateDxDiagNode(const gpu::DxDiagNode& dx_diagnostics);
   void UpdateDx12Info(uint32_t d3d12_feature_level);
@@ -131,7 +131,7 @@ class CONTENT_EXPORT GpuDataManagerImpl : public GpuDataManager,
   // Update the GPU feature info. This updates the blocklist and enabled status
   // of GPU rasterization. In the future this will be used for more features.
   void UpdateGpuFeatureInfo(const gpu::GpuFeatureInfo& gpu_feature_info,
-                            const absl::optional<gpu::GpuFeatureInfo>&
+                            const std::optional<gpu::GpuFeatureInfo>&
                                 gpu_feature_info_for_hardware_gpu);
   void UpdateGpuExtraInfo(const gfx::GpuExtraInfo& gpu_extra_info);
   void UpdateMojoMediaVideoDecoderCapabilities(

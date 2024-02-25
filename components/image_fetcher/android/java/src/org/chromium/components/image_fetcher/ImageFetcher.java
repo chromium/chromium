@@ -10,10 +10,10 @@ import android.media.ThumbnailUtils;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
+import jp.tomorrowkey.android.gifplayer.BaseGifImage;
+
 import org.chromium.base.Callback;
 import org.chromium.url.GURL;
-
-import jp.tomorrowkey.android.gifplayer.BaseGifImage;
 
 /**
  * Blueprint and some implementation for image fetching. Use ImageFetcherFactory for any
@@ -29,11 +29,13 @@ public abstract class ImageFetcher {
     public static final String OMNIBOX_UMA_CLIENT_NAME = "Omnibox";
     public static final String FEED_UMA_CLIENT_NAME = "Feed";
     public static final String NTP_ANIMATED_LOGO_UMA_CLIENT_NAME = "NewTabPageAnimatedLogo";
+    public static final String PASSWORD_BOTTOM_SHEET_CLIENT_NAME = "PasswordBottomSheet";
     public static final String PRICE_DROP_NOTIFICATION = "PriceDropNotification";
     public static final String POWER_BOOKMARKS_CLIENT_NAME = "PowerBookmarks";
     public static final String QUERY_TILE_UMA_CLIENT_NAME = "QueryTiles";
     public static final String WEB_ID_ACCOUNT_SELECTION_UMA_CLIENT_NAME = "WebIDAccountSelection";
     public static final String WEB_NOTES_UMA_CLIENT_NAME = "WebNotes";
+    public static final String PRICE_CHANGE_MODULE_NAME = "PriceChangeModule";
 
     /**
      * Encapsulates image fetching customization options. Supports a subset of the native
@@ -44,7 +46,8 @@ public abstract class ImageFetcher {
 
         /**
          * Creates image fetcher parameters. The image will not be resized.
-         * @See {@link #Params(String, String, int, int, boolean, int)}.
+         *
+         * @see {@link #Params(String, String, int, int, boolean, int)}.
          */
         public static Params create(final GURL url, String clientName) {
             return create(url.getSpec(), clientName);
@@ -52,17 +55,19 @@ public abstract class ImageFetcher {
 
         /**
          * Creates image fetcher parameters. The image will not be resized.
-         * @See {@link #Params(String, String, int, int, boolean, int)}.
+         *
+         * @see {@link #Params(String, String, int, int, boolean, int)}.
          */
         @Deprecated
         public static Params create(final String url, String clientName) {
             return new Params(
-                    url, clientName, 0, 0, /*shouldResize=*/false, INVALID_EXPIRATION_INTERVAL);
+                    url, clientName, 0, 0, /* shouldResize= */ false, INVALID_EXPIRATION_INTERVAL);
         }
 
         /**
          * Creates image fetcher parameters with image size specified.
-         * @See {@link #Params(String, String, int, int, boolean, int)}.
+         *
+         * @see {@link #Params(String, String, int, int, boolean, int)}.
          */
         public static Params create(final GURL url, String clientName, int width, int height) {
             return create(url.getSpec(), clientName, width, height);
@@ -70,7 +75,8 @@ public abstract class ImageFetcher {
 
         /**
          * Creates image fetcher parameters with image size specified.
-         * @See {@link #Params(String, String, int, int, boolean, int)}.
+         *
+         * @see {@link #Params(String, String, int, int, boolean, int)}.
          */
         @Deprecated
         public static Params create(final String url, String clientName, int width, int height) {
@@ -81,25 +87,41 @@ public abstract class ImageFetcher {
 
         /**
          * Creates image fetcher parameters with image size specified.
-         * @See {@link #Params(String, String, int, int, boolean, int)}.
+         *
+         * @see {@link #Params(String, String, int, int, boolean, int)}.
          */
         public static Params createNoResizing(
                 final GURL url, String clientName, int width, int height) {
-            return new Params(url.getSpec(), clientName, width, height, /*shouldResize=*/false,
+            return new Params(
+                    url.getSpec(),
+                    clientName,
+                    width,
+                    height,
+                    /* shouldResize= */ false,
                     INVALID_EXPIRATION_INTERVAL);
         }
 
         /**
          * Only used in rare cases. Creates image fetcher parameters that keeps the cache file for a
          * certain period of time.
-         * @See {@link #Params(String, String, int, int, boolean, int)}.
+         *
+         * @see {@link #Params(String, String, int, int, boolean, int)}.
          */
-        public static Params createWithExpirationInterval(final GURL url, String clientName,
-                int width, int height, int expirationIntervalMinutes) {
+        public static Params createWithExpirationInterval(
+                final GURL url,
+                String clientName,
+                int width,
+                int height,
+                int expirationIntervalMinutes) {
             assert expirationIntervalMinutes > INVALID_EXPIRATION_INTERVAL
-                : "Must specify a positive expiration interval, or use other constructors.";
+                    : "Must specify a positive expiration interval, or use other constructors.";
             boolean shouldResize = (width > 0 && height > 0);
-            return new Params(url.getSpec(), clientName, width, height, shouldResize,
+            return new Params(
+                    url.getSpec(),
+                    clientName,
+                    width,
+                    height,
+                    shouldResize,
                     expirationIntervalMinutes);
         }
 
@@ -117,10 +139,15 @@ public abstract class ImageFetcher {
          * @param expirationIntervalMinutes Specified in rare cases. The length of time in minutes
          *         to keep the cache file on disk. Any value <= 0 will be ignored.
          */
-        private Params(String url, String clientName, int width, int height, boolean shouldResize,
+        private Params(
+                String url,
+                String clientName,
+                int width,
+                int height,
+                boolean shouldResize,
                 int expirationIntervalMinutes) {
             assert expirationIntervalMinutes >= INVALID_EXPIRATION_INTERVAL
-                : "Expiration interval should be non negative.";
+                    : "Expiration interval should be non negative.";
 
             this.url = url;
             this.clientName = clientName;
@@ -136,8 +163,10 @@ public abstract class ImageFetcher {
             if (!(other instanceof ImageFetcher.Params)) return false;
 
             ImageFetcher.Params otherParams = (ImageFetcher.Params) other;
-            return url.equals(otherParams.url) && clientName.equals(otherParams.clientName)
-                    && width == otherParams.width && height == otherParams.height
+            return url.equals(otherParams.url)
+                    && clientName.equals(otherParams.clientName)
+                    && width == otherParams.width
+                    && height == otherParams.height
                     && shouldResize == otherParams.shouldResize
                     && expirationIntervalMinutes == otherParams.expirationIntervalMinutes;
         }
@@ -153,14 +182,10 @@ public abstract class ImageFetcher {
             return result;
         }
 
-        /**
-         * The url to fetch the image from.
-         */
+        /** The url to fetch the image from. */
         public final String url;
 
-        /**
-         * Name of the cached image fetcher client to report UMA metrics for.
-         */
+        /** Name of the cached image fetcher client to report UMA metrics for. */
         public final String clientName;
 
         /**
@@ -182,11 +207,10 @@ public abstract class ImageFetcher {
          * `width` and `height`.
          */
         public final int width;
+
         public final int height;
 
-        /**
-         * Whether the downloaded bitmaps should be resized to `width` and `height`.
-         */
+        /** Whether the downloaded bitmaps should be resized to `width` and `height`. */
         public final boolean shouldResize;
 
         /**
@@ -232,14 +256,17 @@ public abstract class ImageFetcher {
      */
     @VisibleForTesting
     public static Bitmap resizeImage(@Nullable Bitmap bitmap, int width, int height) {
-        if (bitmap != null && width > 0 && height > 0 && bitmap.getWidth() != width
+        if (bitmap != null
+                && width > 0
+                && height > 0
+                && bitmap.getWidth() != width
                 && bitmap.getHeight() != height) {
             /* The resizing rules are the as follows:
-               (1) The image will be scaled up (if smaller) in a way that maximizes the area of the
-               source bitmap that's in the destination bitmap.
-               (2) A crop is made in the middle of the bitmap for the given size (width, height).
-               The x/y are placed appropriately (conceptually just think of it as a properly sized
-               chunk taken from the middle). */
+            (1) The image will be scaled up (if smaller) in a way that maximizes the area of the
+            source bitmap that's in the destination bitmap.
+            (2) A crop is made in the middle of the bitmap for the given size (width, height).
+            The x/y are placed appropriately (conceptually just think of it as a properly sized
+            chunk taken from the middle). */
             return ThumbnailUtils.extractThumbnail(
                     bitmap, width, height, ThumbnailUtils.OPTIONS_RECYCLE_INPUT);
         } else {
@@ -277,9 +304,7 @@ public abstract class ImageFetcher {
      */
     public abstract void fetchImage(final Params params, Callback<Bitmap> callback);
 
-    /**
-     * Clear the cache of any bitmaps that may be in-memory.
-     */
+    /** Clear the cache of any bitmaps that may be in-memory. */
     public abstract void clear();
 
     /**
@@ -290,8 +315,6 @@ public abstract class ImageFetcher {
      */
     public abstract @ImageFetcherConfig int getConfig();
 
-    /**
-     * Destroy method, called to clear resources to prevent leakage.
-     */
+    /** Destroy method, called to clear resources to prevent leakage. */
     public abstract void destroy();
 }

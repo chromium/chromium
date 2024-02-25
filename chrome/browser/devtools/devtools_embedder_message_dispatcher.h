@@ -16,6 +16,13 @@
 #include "ui/gfx/geometry/size.h"
 
 struct RegisterOptions;
+struct ImpressionEvent;
+struct ResizeEvent;
+struct ClickEvent;
+struct HoverEvent;
+struct DragEvent;
+struct ChangeEvent;
+struct KeyDownEvent;
 
 /**
  * Dispatcher for messages sent from the DevTools frontend running in an
@@ -39,6 +46,7 @@ class DevToolsEmbedderMessageDispatcher {
     virtual void InspectedURLChanged(const std::string& url) = 0;
     virtual void SetIsDocked(DispatchCallback callback, bool is_docked) = 0;
     virtual void OpenInNewTab(const std::string& url) = 0;
+    virtual void OpenSearchResultsInNewTab(const std::string& query) = 0;
     virtual void ShowItemInFolder(const std::string& file_system_path) = 0;
     virtual void SaveToFile(const std::string& url,
                             const std::string& content,
@@ -74,8 +82,6 @@ class DevToolsEmbedderMessageDispatcher {
         const std::string& port_forwarding_config,
         bool network_discovery_enabled,
         const std::string& network_discovery_config) = 0;
-    virtual void PerformActionOnRemotePage(const std::string& page_id,
-                                           const std::string& action) = 0;
     virtual void OpenRemotePage(const std::string& browser_id,
                                 const std::string& url) = 0;
     virtual void OpenNodeFrontend() = 0;
@@ -102,6 +108,13 @@ class DevToolsEmbedderMessageDispatcher {
     virtual void RecordPerformanceHistogram(const std::string& name,
                                             double duration) = 0;
     virtual void RecordUserMetricsAction(const std::string& name) = 0;
+    virtual void RecordImpression(const ImpressionEvent& event) = 0;
+    virtual void RecordResize(const ResizeEvent& event) = 0;
+    virtual void RecordClick(const ClickEvent& event) = 0;
+    virtual void RecordHover(const HoverEvent& event) = 0;
+    virtual void RecordDrag(const DragEvent& event) = 0;
+    virtual void RecordChange(const ChangeEvent& event) = 0;
+    virtual void RecordKeyDown(const KeyDownEvent& event) = 0;
     virtual void SendJsonRequest(DispatchCallback callback,
                                  const std::string& browser_id,
                                  const std::string& url) = 0;
@@ -115,6 +128,10 @@ class DevToolsEmbedderMessageDispatcher {
                             const std::string& trigger) = 0;
     virtual void CanShowSurvey(DispatchCallback callback,
                                const std::string& trigger) = 0;
+    virtual void DoAidaConversation(DispatchCallback callback,
+                                    const std::string& request,
+                                    int stream_id) = 0;
+    virtual void RegisterAidaClientEvent(const std::string& request) = 0;
   };
 
   using DispatchCallback = Delegate::DispatchCallback;

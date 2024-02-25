@@ -29,9 +29,7 @@ import org.chromium.base.test.util.CallbackHelper;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * Unit tests for {@link SplitPreloader}.
- */
+/** Unit tests for {@link SplitPreloader}. */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE, sdk = Build.VERSION_CODES.O)
 public class SplitPreloaderTest {
@@ -207,18 +205,20 @@ public class SplitPreloaderTest {
         Context[] backgroundContextHolder = new Context[1];
         Context[] uiContextHolder = new Context[1];
         CallbackHelper helper = new CallbackHelper();
-        mPreloader.preload(SPLIT_A, new SplitPreloader.OnComplete() {
-            @Override
-            public void runImmediatelyInBackgroundThread(Context context) {
-                backgroundContextHolder[0] = context;
-                helper.notifyCalled();
-            }
+        mPreloader.preload(
+                SPLIT_A,
+                new SplitPreloader.OnComplete() {
+                    @Override
+                    public void runImmediatelyInBackgroundThread(Context context) {
+                        backgroundContextHolder[0] = context;
+                        helper.notifyCalled();
+                    }
 
-            @Override
-            public void runInUiThread(Context context) {
-                uiContextHolder[0] = context;
-            }
-        });
+                    @Override
+                    public void runInUiThread(Context context) {
+                        uiContextHolder[0] = context;
+                    }
+                });
         helper.waitForFirst();
         assertEquals(backgroundContextHolder[0], mContext);
 

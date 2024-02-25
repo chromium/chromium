@@ -27,8 +27,12 @@ import android.widget.TextView;
 import androidx.annotation.Nullable;
 
 import org.chromium.base.ApiCompatibilityUtils;
+import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeControllerFactory;
+import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgePadAdjuster;
+import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeSupplier;
 import org.chromium.chrome.ui.messages.R;
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
+import org.chromium.components.browser_ui.widget.InsetObserver;
 import org.chromium.components.browser_ui.widget.text.TemplatePreservingTextView;
 import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.base.WindowAndroid;
@@ -40,7 +44,7 @@ import org.chromium.ui.interpolators.Interpolators;
  */
 // TODO (jianli): Change this class and its methods back to package protected after the offline
 // indicator experiment is done.
-public class SnackbarView {
+public class SnackbarView implements InsetObserver.WindowInsetObserver {
     private static final int MAX_LINES = 5;
 
     private final WindowAndroid mWindowAndroid;
@@ -51,44 +55,83 @@ public class SnackbarView {
     private final ImageView mProfileImageView;
     private final int mAnimationDuration;
     private final boolean mIsTablet;
+    @Nullable private final EdgeToEdgeSupplier mEdgeToEdgeSupplier;
+    @Nullable private final EdgeToEdgePadAdjuster mEdgeToEdgePadAdjuster;
     private ViewGroup mOriginalParent;
     protected ViewGroup mParent;
     protected Snackbar mSnackbar;
     private View mRootContentView;
 
-    // Variables used to calculate the virtual keyboard's height.
+    // Variables used to adjust view position and size when visible frame is changed.
     private Rect mCurrentVisibleRect = new Rect();
     private Rect mPreviousVisibleRect = new Rect();
-    private int[] mTempLocation = new int[2];
 
-    private OnLayoutChangeListener mLayoutListener = new OnLayoutChangeListener() {
-        @Override
-        public void onLayoutChange(View v, int left, int top, int right, int bottom, int oldLeft,
-                int oldTop, int oldRight, int oldBottom) {
-            adjustViewPosition();
-        }
-    };
+    private OnLayoutChangeListener mLayoutListener =
+            new OnLayoutChangeListener() {
+                @Override
+                public void onLayoutChange(
+                        View v,
+                        int left,
+                        int top,
+                        int right,
+                        int bottom,
+                        int oldLeft,
+                        int oldTop,
+                        int oldRight,
+                        int oldBottom) {
+                    adjustViewPosition();
+                }
+            };
 
     /**
      * Creates an instance of the {@link SnackbarView}.
+     *
      * @param activity The activity that displays the snackbar.
      * @param listener An {@link OnClickListener} that will be called when the action button is
-     *                 clicked.
+     *     clicked.
      * @param snackbar The snackbar to be displayed.
      * @param parentView The ViewGroup used to display this snackbar.
      * @param windowAndroid The WindowAndroid used for starting animation. If it is null,
-     *                      Animator#start is called instead.
+     *     Animator#start is called instead.
      */
-    public SnackbarView(Activity activity, OnClickListener listener, Snackbar snackbar,
-            ViewGroup parentView, @Nullable WindowAndroid windowAndroid) {
+    public SnackbarView(
+            Activity activity,
+            OnClickListener listener,
+            Snackbar snackbar,
+            ViewGroup parentView,
+            @Nullable WindowAndroid windowAndroid) {
+        this(activity, listener, snackbar, parentView, windowAndroid, null);
+    }
+
+    /**
+     * Creates an instance of the {@link SnackbarView}.
+     *
+     * @param activity The activity that displays the snackbar.
+     * @param listener An {@link OnClickListener} that will be called when the action button is
+     *     clicked.
+     * @param snackbar The snackbar to be displayed.
+     * @param parentView The ViewGroup used to display this snackbar.
+     * @param windowAndroid The WindowAndroid used for starting animation. If it is null,
+     *     Animator#start is called instead.
+     * @param edgeToEdgeSupplier The supplier publishes the changes of the edge-to-edge state and
+     *     the expected bottom paddings when edge-to-edge is on.
+     */
+    public SnackbarView(
+            Activity activity,
+            OnClickListener listener,
+            Snackbar snackbar,
+            ViewGroup parentView,
+            @Nullable WindowAndroid windowAndroid,
+            @Nullable EdgeToEdgeSupplier edgeToEdgeSupplier) {
         mIsTablet = DeviceFormFactor.isNonMultiDisplayContextOnTablet(activity);
         mOriginalParent = parentView;
         mWindowAndroid = windowAndroid;
 
         mRootContentView = activity.findViewById(android.R.id.content);
         mParent = mOriginalParent;
-        mContainerView = (ViewGroup) LayoutInflater.from(activity).inflate(
-                R.layout.snackbar, mParent, false);
+        mContainerView =
+                (ViewGroup)
+                        LayoutInflater.from(activity).inflate(R.layout.snackbar, mParent, false);
         mSnackbarView = mContainerView.findViewById(R.id.snackbar);
         mAnimationDuration =
                 mContainerView.getResources().getInteger(android.R.integer.config_mediumAnimTime);
@@ -97,71 +140,91 @@ public class SnackbarView {
         mActionButtonView = (TextView) mContainerView.findViewById(R.id.snackbar_button);
         mActionButtonView.setOnClickListener(listener);
         mProfileImageView = (ImageView) mContainerView.findViewById(R.id.snackbar_profile_image);
+        mEdgeToEdgeSupplier = edgeToEdgeSupplier;
+        mEdgeToEdgePadAdjuster =
+                edgeToEdgeSupplier != null
+                        ? EdgeToEdgeControllerFactory.createForView(mSnackbarView)
+                        : null;
 
         updateInternal(snackbar, false);
     }
 
     public void show() {
         addToParent();
-        mContainerView.addOnLayoutChangeListener(new OnLayoutChangeListener() {
-            @Override
-            public void onLayoutChange(View v, int left, int top, int right, int bottom,
-                    int oldLeft, int oldTop, int oldRight, int oldBottom) {
-                mContainerView.removeOnLayoutChangeListener(this);
-                mContainerView.setTranslationY(getYPositionForMoveAnimation());
-                Animator animator = ObjectAnimator.ofFloat(mContainerView, View.TRANSLATION_Y, 0);
-                animator.setInterpolator(Interpolators.STANDARD_INTERPOLATOR);
-                animator.setDuration(mAnimationDuration);
-                startAnimatorOnSurfaceView(animator);
-            }
-        });
+        mContainerView.addOnLayoutChangeListener(
+                new OnLayoutChangeListener() {
+                    @Override
+                    public void onLayoutChange(
+                            View v,
+                            int left,
+                            int top,
+                            int right,
+                            int bottom,
+                            int oldLeft,
+                            int oldTop,
+                            int oldRight,
+                            int oldBottom) {
+                        mContainerView.removeOnLayoutChangeListener(this);
+                        mContainerView.setTranslationY(getYPositionForMoveAnimation());
+                        Animator animator =
+                                ObjectAnimator.ofFloat(mContainerView, View.TRANSLATION_Y, 0);
+                        animator.setInterpolator(Interpolators.STANDARD_INTERPOLATOR);
+                        animator.setDuration(mAnimationDuration);
+                        startAnimatorOnSurfaceView(animator);
+                    }
+                });
+        if (mEdgeToEdgeSupplier != null) {
+            mEdgeToEdgeSupplier.registerAdjuster(mEdgeToEdgePadAdjuster);
+        }
     }
 
     public void dismiss() {
         // Prevent clicks during dismissal animations. Intentionally not using setEnabled(false) to
         // avoid unnecessary text color changes in this transitory state.
         mActionButtonView.setOnClickListener(null);
-        Animator moveAnimator = ObjectAnimator.ofFloat(
-                mContainerView, View.TRANSLATION_Y, getYPositionForMoveAnimation());
+        Animator moveAnimator =
+                ObjectAnimator.ofFloat(
+                        mContainerView, View.TRANSLATION_Y, getYPositionForMoveAnimation());
         moveAnimator.setInterpolator(Interpolators.DECELERATE_INTERPOLATOR);
         moveAnimator.setDuration(mAnimationDuration);
-        moveAnimator.addListener(new AnimatorListenerAdapter() {
-            @Override
-            public void onAnimationEnd(Animator animation) {
-                mRootContentView.removeOnLayoutChangeListener(mLayoutListener);
-                mParent.removeView(mContainerView);
-            }
-        });
+        moveAnimator.addListener(
+                new AnimatorListenerAdapter() {
+                    @Override
+                    public void onAnimationEnd(Animator animation) {
+                        mRootContentView.removeOnLayoutChangeListener(mLayoutListener);
+                        mParent.removeView(mContainerView);
+                    }
+                });
         startAnimatorOnSurfaceView(moveAnimator);
+        if (mEdgeToEdgeSupplier != null) {
+            mEdgeToEdgeSupplier.unregisterAdjuster(mEdgeToEdgePadAdjuster);
+        }
     }
 
     /**
-     * Adjusts the position of the snackbar on top of the soft keyboard, if any.
+     * Adjusts the position when visible area is updated, such as resizing the window, in order to
+     * ensure its maximum width.
      */
     void adjustViewPosition() {
         mParent.getWindowVisibleDisplayFrame(mCurrentVisibleRect);
         // Only update if the visible frame has changed, otherwise there will be a layout loop.
         if (!mCurrentVisibleRect.equals(mPreviousVisibleRect)) {
             mPreviousVisibleRect.set(mCurrentVisibleRect);
-
             FrameLayout.LayoutParams lp = getLayoutParams();
 
-            int prevBottomMargin = lp.bottomMargin;
             int prevWidth = lp.width;
             int prevGravity = lp.gravity;
 
-            lp.bottomMargin = getBottomMarginForLayout();
             if (mIsTablet) {
-                int margin = mParent.getResources().getDimensionPixelSize(
-                        R.dimen.snackbar_margin_tablet);
+                int margin =
+                        mParent.getResources()
+                                .getDimensionPixelSize(R.dimen.snackbar_margin_tablet);
                 int width =
                         mParent.getResources().getDimensionPixelSize(R.dimen.snackbar_width_tablet);
                 lp.width = Math.min(width, mParent.getWidth() - 2 * margin);
                 lp.gravity = Gravity.CENTER_HORIZONTAL | Gravity.BOTTOM;
             }
-
-            if (prevBottomMargin != lp.bottomMargin || prevWidth != lp.width
-                    || prevGravity != lp.gravity) {
+            if (prevWidth != lp.width || prevGravity != lp.gravity) {
                 mContainerView.setLayoutParams(lp);
             }
         }
@@ -169,12 +232,6 @@ public class SnackbarView {
 
     protected int getYPositionForMoveAnimation() {
         return mContainerView.getHeight() + getLayoutParams().bottomMargin;
-    }
-
-    protected int getBottomMarginForLayout() {
-        mParent.getLocationInWindow(mTempLocation);
-        int keyboardHeight = mParent.getHeight() + mTempLocation[1] - mCurrentVisibleRect.bottom;
-        return Math.max(0, keyboardHeight);
     }
 
     /**
@@ -204,11 +261,14 @@ public class SnackbarView {
     public void announceforAccessibility() {
         StringBuilder accessibilityText = new StringBuilder(mMessageView.getContentDescription());
         if (mActionButtonView.getContentDescription() != null) {
-            accessibilityText.append(". ")
+            accessibilityText
+                    .append(". ")
                     .append(mActionButtonView.getContentDescription())
                     .append(". ")
-                    .append(mContainerView.getResources().getString(
-                            R.string.bottom_bar_screen_position));
+                    .append(
+                            mContainerView
+                                    .getResources()
+                                    .getString(R.string.bottom_bar_screen_position));
         }
 
         mMessageView.announceForAccessibility(accessibilityText);
@@ -318,8 +378,9 @@ public class SnackbarView {
             // Set a non-zero end margin on the message view when there is no action text.
             if (mMessageView.getLayoutParams() instanceof LayoutParams) {
                 LayoutParams lp = (LayoutParams) mMessageView.getLayoutParams();
-                lp.setMarginEnd(mParent.getResources().getDimensionPixelSize(
-                        R.dimen.snackbar_text_view_margin));
+                lp.setMarginEnd(
+                        mParent.getResources()
+                                .getDimensionPixelSize(R.dimen.snackbar_text_view_margin));
                 mMessageView.setLayoutParams(lp);
             }
         }
@@ -366,5 +427,13 @@ public class SnackbarView {
         } else {
             view.setText(text);
         }
+    }
+
+    public ViewGroup getViewForTesting() {
+        return mSnackbarView;
+    }
+
+    public EdgeToEdgePadAdjuster getEdgeToEdgePadAdjusterForTesting() {
+        return mEdgeToEdgePadAdjuster;
     }
 }

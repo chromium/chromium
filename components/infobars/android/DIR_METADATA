@@ -1,4 +1,7 @@
-monorail {
+monorail: {
   component: "UI>Browser>Mobile>Messages"
 }
 os: ANDROID
+buganizer_public: {
+  component_id: 1457320
+}

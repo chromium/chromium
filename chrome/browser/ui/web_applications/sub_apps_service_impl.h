@@ -11,9 +11,9 @@
 #include <utility>
 #include <vector>
 
-#include "chrome/browser/web_applications/web_app_id.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
 #include "components/webapps/browser/install_result_code.h"
+#include "components/webapps/common/web_app_id.h"
 #include "content/public/browser/document_service.h"
 #include "third_party/blink/public/mojom/subapps/sub_apps_service.mojom.h"
 
@@ -22,6 +22,21 @@ class RenderFrameHost;
 }
 
 namespace web_app {
+
+namespace {
+
+struct SubAppInstallParams {
+  webapps::ManifestId manifest_id;
+  GURL install_url;
+};
+
+struct SubAppInstallResult {
+  webapps::ManifestId manifest_id;
+  webapps::AppId app_id;
+  webapps::InstallResultCode install_result_code;
+};
+
+}  // namespace
 
 class SubAppsInstallDialogController;
 
@@ -38,7 +53,7 @@ class SubAppsServiceImpl
   ~SubAppsServiceImpl() override;
 
   // We only want to create this object when the Browser* associated with the
-  // WebContents is an installed web app and when the RFH is the main frame.
+  // WebContents is an Isolated Web App and when the RFH is the main frame.
   static void CreateIfAllowed(
       content::RenderFrameHost* render_frame_host,
       mojo::PendingReceiver<blink::mojom::SubAppsService> receiver);
@@ -62,26 +77,24 @@ class SubAppsServiceImpl
     AddResultsMojo results;
   };
 
-  void CollectInstallData(
-      int add_call_id,
-      std::vector<std::pair<ManifestId, GURL>> requested_installs);
+  void CollectInstallData(int add_call_id,
+                          std::vector<SubAppInstallParams> requested_installs,
+                          webapps::ManifestId parent_manifest_id);
   void ProcessInstallData(
       int add_call_id,
-      std::vector<std::pair<ManifestId, std::unique_ptr<WebAppInstallInfo>>>
-          install_data);
+      std::vector<std::pair<webapps::ManifestId,
+                            std::unique_ptr<WebAppInstallInfo>>> install_data);
   void ScheduleSubAppInstalls(int add_call_id);
   void ProcessDialogResponse(int add_call_id, bool dialog_accepted);
   void FinishAddCallOrShowInstallDialog(int add_call_id);
-  void FinishAddCall(
-      int add_call_id,
-      std::vector<std::tuple<ManifestId, AppId, webapps::InstallResultCode>>
-          install_results);
+  void FinishAddCall(int add_call_id,
+                     std::vector<SubAppInstallResult> install_results);
 
   void RemoveSubApp(
       const std::string& manifest_id_path,
       base::OnceCallback<void(blink::mojom::SubAppsServiceRemoveResultPtr)>
           remove_barrier_callback,
-      const AppId* calling_app_id);
+      const webapps::AppId* calling_app_id);
   void NotifyUninstall(
       RemoveCallback result_callback,
       std::vector<blink::mojom::SubAppsServiceRemoveResultPtr> remove_results);

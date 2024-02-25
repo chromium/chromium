@@ -18,13 +18,14 @@
 {% endmacro %}
 
 {%- macro declare_callback(method) -%}
-
-interface {{method|interface_response_name}} extends org.chromium.mojo.bindings.Callbacks.Callback{{method.response_parameters|length}}{% if method.response_parameters %}<
-{%-   for param in method.response_parameters -%}
-{{param.kind|java_type(True)}}
+interface {{method|interface_response_name}} {
+  public void call(
+{%- for param in method.response_parameters %}
+      {{param.kind|java_type(false)}} {{param|name}}
 {%- if not loop.last %}, {% endif %}
-{%-   endfor -%}
->{% endif %} { }
+{%- endfor -%}
+      );
+}
 {%- endmacro -%}
 
 {%- macro run_callback(variable, parameters) -%}
@@ -276,7 +277,7 @@ class {{interface|name}}_Internal {
         }
 
         @Override
-        public void call({{declare_params(method.response_parameters, true)}}) {
+        public void call({{declare_params(method.response_parameters)}}) {
             {{response_struct|name}} _response = new {{response_struct|name}}();
 {%   for param in method.response_parameters %}
             _response.{{param|name}} = {{param|name}};

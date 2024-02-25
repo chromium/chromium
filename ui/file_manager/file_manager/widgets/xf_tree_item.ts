@@ -5,11 +5,9 @@
 import 'chrome://resources/polymer/v3_0/paper-ripple/paper-ripple.js';
 import './xf_icon.js';
 
-import {addCSSPrefixSelector} from '../common/js/dom_utils.js';
-
-import {css, customElement, html, ifDefined, property, PropertyValues, query, state, styleMap, XfBase} from './xf_base.js';
+import {css, customElement, html, ifDefined, property, type PropertyValues, query, state, styleMap, XfBase} from './xf_base.js';
 import type {XfTree} from './xf_tree.js';
-import {isTree, isTreeItem} from './xf_tree_util.js';
+import {handleTreeSlotChange, isTreeItem, isXfTree} from './xf_tree_util.js';
 
 /**
  * The number of pixels to indent per level.
@@ -22,15 +20,6 @@ export const TREE_ITEM_INDENT = 20;
  */
 @customElement('xf-tree-item')
 export class XfTreeItem extends XfBase {
-  // "delegatesFocus = true" will make sure when the tree item is focused, <li>
-  // element inside the shadow DOM will get the focus.
-  static override get shadowRootOptions() {
-    return {
-      ...XfBase.shadowRootOptions,
-      delegatesFocus: true,
-    };
-  }
-
   /**
    * `separator` attribute will show a top border for the tree item. It's
    * mainly used to identify this tree item is a start of the new section.
@@ -61,7 +50,7 @@ export class XfTreeItem extends XfBase {
 
   /**
    * The icon of the tree item, will be displayed before the label text.
-   * The icon value should come from `constants.ICON_TYPES`, it will be passed
+   * The icon value should come from `ICON_TYPES`, it will be passed
    * as `type` to a <xf-icon> widget to render an icon element.
    */
   @property({type: String, reflect: true}) icon = '';
@@ -104,7 +93,9 @@ export class XfTreeItem extends XfBase {
   }
 
   /**
-   * Toggle the focusable for the item.
+   * Toggle the focusable for the item. We put the tabindex on the <li> element
+   * instead of the whole <xf-tree-item> because <xf-tree-item> also includes
+   * all children slots.
    *
    * We are delegate the focus to the <li> element in the shadow DOM, to make
    * sure the update is synchronous, we are operating on the DOM directly here
@@ -125,6 +116,23 @@ export class XfTreeItem extends XfBase {
   }
 
   /**
+   * Override focus() so we can manually focus the tree row element inside
+   * shadow DOM.
+   */
+  override focus() {
+    console.assert(
+        !this.disabled,
+        'Called focus() on a disabled XfTreeItem() isn\'t allowed');
+
+    // Make sure this is the only focusable item in the tree before calling
+    // focus().
+    if (this.tree) {
+      this.tree.focusedItem = this;
+    }
+    this.$treeItem_.focus();
+  }
+
+  /**
    * Return the parent XfTreeItem if there is one, for top level XfTreeItem
    * which doesn't have parent XfTreeItem, return null.
    */
@@ -134,7 +142,7 @@ export class XfTreeItem extends XfBase {
       if (isTreeItem(p)) {
         return p;
       }
-      if (isTree(p)) {
+      if (isXfTree(p)) {
         return null;
       }
       p = p.parentElement;
@@ -144,7 +152,7 @@ export class XfTreeItem extends XfBase {
 
   get tree(): XfTree|null {
     let t = this.parentElement;
-    while (t && !isTree(t)) {
+    while (t && !isXfTree(t)) {
       t = t.parentElement;
     }
     return t;
@@ -159,6 +167,13 @@ export class XfTreeItem extends XfBase {
       pi.expanded = true;
       pi = pi.parentItem;
     }
+  }
+
+  /**
+   * This will be called when tree item is being set as a drop target.
+   */
+  doDropTargetAction() {
+    this.expanded = true;
   }
 
   static override get styles() {
@@ -257,15 +272,9 @@ export class XfTreeItem extends XfBase {
       updateScheduled = true;
     }
 
-    if (this.tree?.selectedItem) {
-      const newItems = new Set(this.items_);
-      if (oldItems.has(this.tree.selectedItem) &&
-          !newItems.has(this.tree.selectedItem)) {
-        // If the currently selected item exists in `oldItems` but not in
-        // `newItems`, it means it's being removed from the children slot,
-        // we need to mark the selected item to null.
-        this.tree.selectedItem = null;
-      }
+    const newItems = new Set(this.items_);
+    if (this.tree) {
+      handleTreeSlotChange(this.tree, oldItems, newItems);
     }
 
     if (!updateScheduled) {
@@ -281,7 +290,8 @@ export class XfTreeItem extends XfBase {
 
   override updated(changedProperties: PropertyValues<this>) {
     super.updated(changedProperties);
-    this.setAttribute('has-children', this.hasChildren().toString());
+    // For browser test use only.
+    this.setAttribute('has-children', String(this.items_.length > 0));
     if (changedProperties.has('expanded')) {
       this.onExpandChanged_();
     }
@@ -338,224 +348,7 @@ export class XfTreeItem extends XfBase {
 }
 
 function getCSS() {
-  const legacyStyle = css`
-    :host {
-      --xf-tree-item-indent: 22;
-    }
-
-    ul {
-      list-style: none;
-      margin: 0;
-      outline: none;
-      padding: 0;
-    }
-
-    li {
-      display: block;
-    }
-
-    li:focus-visible {
-      outline: none;
-    }
-
-    :host([separator])::before {
-      border-bottom: 1px solid var(--cros-separator-color);
-      content: '';
-      display: block;
-      margin: 8px 0;
-      width: 100%;
-    }
-
-    .tree-row {
-      align-items: center;
-      border-inline-start-width: 0 !important;
-      border-radius: 0 20px 20px 0;
-      border: 2px solid transparent;
-      box-sizing: border-box;
-      color: var(--cros-text-color-primary);
-      cursor: pointer;
-      display: flex;
-      height: 32px;
-      margin-inline-end: 6px;
-      padding: 4px 0;
-      position: relative;
-      user-select: none;
-      white-space: nowrap;
-    }
-
-    :host-context(html[dir=rtl]) .tree-row {
-      border-radius: 20px 0 0 20px;
-    }
-
-    :host(:not([selected]):not([disabled]):not([renaming]))
-        li:not(:focus-visible) .tree-row:hover {
-      background-color: var(--cros-ripple-color);
-    }
-
-    :host([selected]) .tree-row {
-      background-color: var(--cros-highlight-color);
-      color: var(--cros-text-color-selection);
-    }
-
-    :host([disabled]) .tree-row {
-      opacity: var(--cros-disabled-opacity);
-      pointer-events: none;
-    }
-
-    :host-context(.pointer-active):host(:not([selected]):not([disabled]):not([renaming]))
-        li:not(:focus-visible) .tree-row:not(:hover):active {
-      background-color: var(--cros-ripple-color);
-    }
-
-    li:focus-visible .tree-row {
-      border: 2px solid var(--cros-focus-ring-color);
-      z-index: 2;
-    }
-
-    :host-context(.pointer-active) .tree-row:not(:active) {
-      cursor: default;
-    }
-
-    :host-context(.pointer-active):host(:not([selected]):not([disabled]):not([renaming]))
-        li:not(:focus-visible) .tree-row:not(:active):hover {
-      background-color: unset;
-    }
-
-    :host-context(html.drag-drop-active):host(.denies) .tree-row {
-      background-color: var(--cros-highlight-color-error);
-    }
-
-    :host-context(html.drag-drop-active):host(.accepts) .tree-row {
-      background-color: var(--cros-ripple-color);
-    }
-
-    .expand-icon {
-      -webkit-mask-image: url(../foreground/images/files/ui/sort_desc.svg);
-      -webkit-mask-position: center;
-      -webkit-mask-repeat: no-repeat;
-      background-color: currentColor;
-      flex: none;
-      height: 20px;
-      padding: 6px;
-      position: relative;
-      transform: rotate(-90deg);
-      transition: all 150ms;
-      visibility: hidden;
-      width: 20px;
-    }
-
-    li[aria-expanded] .expand-icon {
-      visibility: visible;
-    }
-
-    :host-context(html[dir=rtl]) .expand-icon {
-      transform: rotate(90deg);
-    }
-
-    :host([expanded]) .expand-icon {
-      transform: rotate(0);
-    }
-
-    .tree-label-icon {
-      --xf-icon-color: var(--cros-icon-color-primary);
-      flex: none;
-      left: -4px;
-      position: relative;
-      right: -4px;
-    }
-
-    :host([selected]) .tree-label-icon {
-      --xf-icon-color: var(--cros-icon-color-selection);
-    }
-
-    .tree-label {
-      display: block;
-      flex: auto;
-      font-weight: 500;
-      margin: 0 12px;
-      margin-inline-end: 2px;
-      min-width: 0;
-      overflow: hidden;
-      text-overflow: ellipsis;
-      white-space: pre;
-    }
-
-    /** input is attached by DirectoryTreeNamingController. */
-    slot[name="rename"]::slotted(input) {
-      background-color: var(--cros-bg-color);
-      border: none;
-      border-radius: 2px;
-      caret-color: var(--cros-textfield-cursor-color-focus);
-      color: var(--cros-text-color-primary);
-      margin: 0 10px;
-      outline: 2px solid var(--cros-focus-ring-color);
-      overflow: hidden;
-    }
-
-    :host([renaming]) slot[name="rename"]::slotted(input) {
-      display: block;
-    }
-
-    :host([renaming]) .tree-label {
-      display: none;
-    }
-
-    paper-ripple {
-      display: none;
-    }
-
-    /* We need to ensure that even empty labels take up space */
-    .tree-label:empty::after {
-      content: ' ';
-      white-space: pre;
-    }
-
-    .tree-children {
-      display: none;
-    }
-
-    :host([expanded]) .tree-children {
-      display: block;
-    }
-
-    /* Trailing icon styles. */
-    slot[name="trailingIcon"]::slotted(.align-right-icon) {
-      --iron-icon-height: 20px;
-      --iron-icon-width: 20px;
-      border-radius: 16px;
-      border-style: none;
-      box-sizing: border-box;
-      flex: none;
-      height: 32px;
-      left: 1px;
-      position: relative;
-      right: 1px;
-      width: 32px;
-      z-index: 1;
-    }
-
-    slot[name="trailingIcon"]::slotted(.root-eject) {
-      --text-color: currentColor;
-      --hover-bg-color: var(--cros-ripple-color);
-      min-width: 32px;
-      padding: 0;
-    }
-
-    :host-context(html.col-resize) slot[name="trailingIcon"]::slotted(.root-eject:hover) {
-      --hover-bg-color: none;
-    }
-
-    slot[name="trailingIcon"]::slotted(.root-eject:focus) {
-      border: 1px solid var(--cros-focus-ring-color);
-    }
-
-    slot[name="trailingIcon"]::slotted(.root-eject:active) {
-      --ink-color: var(--cros-ripple-color);
-      border-width: 0;
-    }
-  `;
-
-  const refresh23Style = css`
+  return css`
     :host {
       --xf-tree-item-indent: ${TREE_ITEM_INDENT};
       display: block;
@@ -606,8 +399,8 @@ function getCSS() {
       white-space: nowrap;
     }
 
-    :host(:not([selected]):not([disabled]):not([renaming]))
-        li:not(:focus-visible) .tree-row:hover {
+    :host(:not([selected]):not([disabled]):not([renaming]):not(:focus))
+        .tree-row:hover {
       background-color: var(--cros-sys-hover_on_subtle);
     }
 
@@ -621,14 +414,14 @@ function getCSS() {
       pointer-events: none;
     }
 
-    li:focus-visible .tree-row {
+    :host-context(.focus-outline-visible):host(:focus) .tree-row {
       outline: 2px solid var(--cros-sys-focus_ring);
       outline-offset: 2px;
       z-index: 2;
     }
 
-    :host-context(.pointer-active):host(:not([selected]):not([disabled]):not([renaming]))
-        li:not(:focus-visible) .tree-row:not(:hover):active {
+    :host-context(.pointer-active):host(:not([selected]):not([disabled]):not([renaming]):not(:focus))
+        .tree-row:not(:hover):active {
       background-color: var(--cros-sys-hover_on_subtle);
     }
 
@@ -636,8 +429,8 @@ function getCSS() {
       cursor: default;
     }
 
-    :host-context(.pointer-active):host(:not([selected]):not([disabled]):not([renaming]))
-        li:not(:focus-visible) .tree-row:not(:active):hover {
+    :host-context(.pointer-active):host(:not([selected]):not([disabled]):not([renaming]):not(:focus))
+        .tree-row:not(:active):hover {
       background-color: unset;
     }
 
@@ -713,6 +506,7 @@ function getCSS() {
       border: none;
       color: var(--cros-sys-on_surface);
       display: none;
+      font: var(--cros-body-2-font);
       height: 20px;
       margin: 0 10px;
       outline: 2px solid var(--cros-sys-focus_ring);
@@ -778,17 +572,10 @@ function getCSS() {
 
     slot[name="trailingIcon"]::slotted(.root-eject) {
       --text-color: currentColor;
-      --hover-bg-color: var(--cros-sys-hover_on_subtle);
+      --hover-bg-color: none;
+      --ripple-opacity: 1;
       min-width: 32px;
       padding: 0;
-    }
-
-    :host([selected]) slot[name="trailingIcon"]::slotted(.root-eject) {
-      --hover-bg-color: var(--cros-sys-hover_on_prominent);
-    }
-
-    :host-context(html.col-resize) slot[name="trailingIcon"]::slotted(.root-eject:hover) {
-      --hover-bg-color: none;
     }
 
     slot[name="trailingIcon"]::slotted(.root-eject:focus) {
@@ -808,11 +595,6 @@ function getCSS() {
       --ink-color: var(--cros-sys-ripple_neutral_on_prominent);
     }
   `;
-
-  return [
-    addCSSPrefixSelector(legacyStyle, '[theme="legacy"]'),
-    addCSSPrefixSelector(refresh23Style, '[theme="refresh23"]'),
-  ];
 }
 
 /** Type of the tree item expanded custom event. */

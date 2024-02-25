@@ -5,6 +5,7 @@
 #include "chrome/browser/ash/plugin_vm/plugin_vm_diagnostics.h"
 
 #include <string>
+#include <string_view>
 #include <utility>
 
 #include "base/memory/raw_ptr.h"
@@ -40,9 +41,9 @@ std::string CapitalizedBoardName() {
   const std::string uppercase = base::SysInfo::HardwareModelName();
 
   CHECK_GE(uppercase.size(), 1u);
-  base::StringPiece uppercase_first_char(uppercase.c_str(), 1);
-  base::StringPiece uppercase_remaining(uppercase.c_str() + 1,
-                                        uppercase.length() - 1);
+  std::string_view uppercase_first_char(uppercase.c_str(), 1);
+  std::string_view uppercase_remaining(uppercase.c_str() + 1,
+                                       uppercase.length() - 1);
 
   return base::StrCat(
       {uppercase_first_char, base::ToLowerASCII(uppercase_remaining)});
@@ -183,7 +184,7 @@ class PluginVmDiagnostics : public base::RefCounted<PluginVmDiagnostics> {
 
   void CheckDefaultVmExists(bool plugin_vm_is_allowed) {
     if (!plugin_vm_is_allowed) {
-      OnListVmDisks(false, absl::nullopt);
+      OnListVmDisks(false, std::nullopt);
       return;
     }
 
@@ -200,7 +201,7 @@ class PluginVmDiagnostics : public base::RefCounted<PluginVmDiagnostics> {
 
   void OnListVmDisks(
       bool plugin_vm_is_allowed,
-      absl::optional<vm_tools::concierge::ListVmDisksResponse> response) {
+      std::optional<vm_tools::concierge::ListVmDisksResponse> response) {
     EntryBuilder entry(l10n_util::GetStringFUTF8(
         IDS_VM_STATUS_PAGE_DEFAULT_VM_EXISTS_REQUIREMENT,
         l10n_util::GetStringUTF16(IDS_PLUGIN_VM_APP_NAME)));
@@ -281,7 +282,7 @@ class PluginVmDiagnostics : public base::RefCounted<PluginVmDiagnostics> {
     return base::ReplaceStringPlaceholders(string_template, subs, nullptr);
   }
 
-  const raw_ptr<Profile, ExperimentalAsh> active_profile_;
+  const raw_ptr<Profile> active_profile_;
   DiagnosticsCallback callback_;
   guest_os::DiagnosticsBuilder builder_;
 };

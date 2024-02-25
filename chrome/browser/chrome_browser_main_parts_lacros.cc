@@ -7,6 +7,7 @@
 #include "base/check.h"
 #include "base/command_line.h"
 #include "chrome/browser/browser_process.h"
+#include "chrome/browser/chromeos/kcer/kcer_factory.h"
 #include "chrome/browser/lacros/metrics_reporting_observer.h"
 #include "chrome/browser/lacros/prefs_ash_observer.h"
 #include "chrome/browser/metrics/metrics_reporting_state.h"
@@ -15,6 +16,7 @@
 #include "chromeos/startup/browser_params_proxy.h"
 #include "content/public/browser/tts_platform.h"
 #include "content/public/common/result_codes.h"
+#include "ui/ozone/public/ozone_platform.h"
 #include "ui/wm/core/wm_core_switches.h"
 
 ChromeBrowserMainPartsLacros::ChromeBrowserMainPartsLacros(
@@ -98,7 +100,13 @@ void ChromeBrowserMainPartsLacros::PostMainMessageLoopRun() {
   // MetricsReportingObserver depends on metrics service.
   metrics_reporting_observer_.reset();
 
+  // Contains a raw_ptr to ChapsService (an object owned by LacrosService) and
+  // should be shut down before LacrosService.
+  kcer::KcerFactory::Shutdown();
+
   ChromeBrowserMainParts::PostMainMessageLoopRun();
+
+  ui::OzonePlatform::GetInstance()->PostMainMessageLoopRun();
 }
 
 void ChromeBrowserMainPartsLacros::PostDestroyThreads() {

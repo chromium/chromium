@@ -6,14 +6,15 @@
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_WIDGET_INPUT_MAIN_THREAD_EVENT_QUEUE_H_
 
 #include <memory>
+#include <optional>
 
 #include "base/feature_list.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "cc/input/touch_action.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/input/web_input_event.h"
 #include "third_party/blink/public/common/input/web_input_event_attribution.h"
 #include "third_party/blink/public/mojom/input/input_event_result.mojom-shared.h"
@@ -34,7 +35,7 @@ using HandledEventCallback =
     base::OnceCallback<void(mojom::blink::InputEventResultState ack_state,
                             const ui::LatencyInfo& latency_info,
                             mojom::blink::DidOverscrollParamsPtr,
-                            absl::optional<cc::TouchAction>)>;
+                            std::optional<cc::TouchAction>)>;
 
 // All interaction with the MainThreadEventQueueClient will occur
 // on the main thread.
@@ -174,7 +175,7 @@ class PLATFORM_EXPORT MainThreadEventQueue
   friend class QueuedWebInputEvent;
   friend class MainThreadEventQueueTest;
   friend class MainThreadEventQueueInitializationTest;
-  MainThreadEventQueueClient* client_;
+  raw_ptr<MainThreadEventQueueClient> client_;
   bool last_touch_start_forced_nonblocking_due_to_fling_;
   bool needs_low_latency_;
   bool needs_unbuffered_input_for_debugger_;
@@ -211,7 +212,7 @@ class PLATFORM_EXPORT MainThreadEventQueue
  private:
   // Returns false if we are trying to send a gesture scroll event to the main
   // thread when we shouldn't be.  Used for DCHECK in HandleEvent.
-  bool AllowedForUnification(const WebInputEvent& event, bool force_allow);
+  bool Allowed(const WebInputEvent& event, bool force_allow);
 
   // Tracked here for DCHECK purposes only.  For cursor control we allow gesture
   // scroll events to go to main.  See CursorControlHandler (impl-side filter)

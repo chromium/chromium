@@ -11,6 +11,7 @@
 #include "third_party/blink/renderer/core/testing/null_execution_context.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/heap/persistent.h"
+#include "third_party/blink/renderer/platform/testing/task_environment.h"
 
 namespace blink {
 
@@ -89,9 +90,10 @@ class StyleTraversalRootTest : public testing::Test {
     //     `-- div#g
   }
   Document& GetDocument() { return *document_; }
-  Element* DivElement(ElementIndex index) { return elements_->at(index); }
+  Element* DivElement(ElementIndex index) { return elements_->at(index).Get(); }
 
  private:
+  test::TaskEnvironment task_environment_;
   ScopedNullExecutionContext execution_context_;
   Persistent<Document> document_;
   Persistent<HeapVector<Member<Element>, 7>> elements_;

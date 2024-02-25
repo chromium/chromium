@@ -7,6 +7,8 @@
 
 #include "ash/system/scheduled_feature/scheduled_feature.h"
 
+#include "ash/public/cpp/wallpaper/wallpaper_info.h"
+
 namespace ash {
 
 // A scheduler that sends signal to WallpaperController whether the
@@ -22,6 +24,9 @@ class WallpaperDailyRefreshScheduler : public ScheduledFeature {
   ~WallpaperDailyRefreshScheduler() override = default;
 
   static void RegisterProfilePrefs(PrefRegistrySimple* registry);
+
+  // Determines whether the current daily wallpaper should be refreshed.
+  bool ShouldRefreshWallpaper(const WallpaperInfo& info);
 
  private:
   // ScheduledFeature:

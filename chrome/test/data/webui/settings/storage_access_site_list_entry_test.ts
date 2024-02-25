@@ -7,8 +7,8 @@
 // clang-format off
 import 'chrome://settings/lazy_load.js';
 
-import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import {StorageAccessStaticSiteListEntry, StorageAccessSiteException, StorageAccessSiteListEntryElement, ContentSetting, ContentSettingsTypes, SiteSettingsPrefsBrowserProxyImpl} from 'chrome://settings/lazy_load.js';
+import type {CrExpandButtonElement, StorageAccessStaticSiteListEntry, StorageAccessSiteException, StorageAccessSiteListEntryElement} from 'chrome://settings/lazy_load.js';
+import {ContentSetting, ContentSettingsTypes, SiteSettingsPrefsBrowserProxyImpl} from 'chrome://settings/lazy_load.js';
 import {assertEquals, assertDeepEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 import {loadTimeData} from 'chrome://settings/settings.js';
@@ -109,9 +109,11 @@ suite('StorageAccessSiteListEntry', function() {
         secondLine.textContent!.trim());
 
     const expandButton =
-        testElement.shadowRoot.querySelector<HTMLElement>('#expandButton');
+        testElement.shadowRoot.querySelector<CrExpandButtonElement>(
+            '#expandButton');
     assertTrue(!!expandButton);
     expandButton.click();
+    await expandButton.updateComplete;
 
     // Validate the row description when opened.
     assertEquals(
@@ -123,10 +125,11 @@ suite('StorageAccessSiteListEntry', function() {
 
     assertTrue(!!testElement.shadowRoot);
     const expandButton =
-        testElement.shadowRoot.querySelector<HTMLElement>('#expandButton');
+        testElement.shadowRoot.querySelector<CrExpandButtonElement>(
+            '#expandButton');
     assertTrue(!!expandButton);
     expandButton.click();
-    flush();
+    await expandButton.updateComplete;
 
     // Validate that the nested site entries are created on the collapsible
     // element.
@@ -236,7 +239,8 @@ suite('StorageAccessSiteListEntry', function() {
 
     assertTrue(!!testElement.shadowRoot);
     const expandButton =
-        testElement.shadowRoot.querySelector<HTMLElement>('#expandButton');
+        testElement.shadowRoot.querySelector<CrExpandButtonElement>(
+            '#expandButton');
     assertTrue(!!expandButton);
 
     // Validate expand button aria-label when closed.
@@ -246,6 +250,7 @@ suite('StorageAccessSiteListEntry', function() {
         expectedExpandOpenArialLabel, expandButton.getAttribute('aria-label'));
 
     expandButton.click();
+    await expandButton.updateComplete;
 
     // Validate expand button aria-label when opened.
     const expectedExpandCloseArialLabel =

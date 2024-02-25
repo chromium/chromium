@@ -9,9 +9,7 @@
 #include "chrome/common/extensions/api/file_system_provider.h"
 #include "chrome/common/extensions/api/file_system_provider_internal.h"
 
-namespace ash {
-namespace file_system_provider {
-namespace operations {
+namespace ash::file_system_provider::operations {
 
 CreateFile::CreateFile(RequestDispatcher* dispatcher,
                        const ProvidedFileSystemInfo& file_system_info,
@@ -21,8 +19,7 @@ CreateFile::CreateFile(RequestDispatcher* dispatcher,
       file_path_(file_path),
       callback_(std::move(callback)) {}
 
-CreateFile::~CreateFile() {
-}
+CreateFile::~CreateFile() = default;
 
 bool CreateFile::Execute(int request_id) {
   using extensions::api::file_system_provider::CreateFileRequestedOptions;
@@ -57,6 +54,4 @@ void CreateFile::OnError(int /* request_id */,
   std::move(callback_).Run(error);
 }
 
-}  // namespace operations
-}  // namespace file_system_provider
-}  // namespace ash
+}  // namespace ash::file_system_provider::operations

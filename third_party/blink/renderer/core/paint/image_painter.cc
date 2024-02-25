@@ -31,7 +31,7 @@
 #include "third_party/blink/renderer/platform/graphics/paint/drawing_recorder.h"
 #include "third_party/blink/renderer/platform/graphics/path.h"
 #include "third_party/blink/renderer/platform/graphics/placeholder_image.h"
-#include "third_party/blink/renderer/platform/graphics/scoped_interpolation_quality.h"
+#include "third_party/blink/renderer/platform/graphics/scoped_image_rendering_settings.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 
 namespace blink {
@@ -203,7 +203,7 @@ void ImagePainter::PaintReplaced(const PaintInfo& paint_info,
 
   // Disable cache in under-invalidation checking mode for animated image
   // because it may change before it's actually invalidated.
-  absl::optional<DisplayItemCacheSkipper> cache_skipper;
+  std::optional<DisplayItemCacheSkipper> cache_skipper;
   if (RuntimeEnabledFeatures::PaintUnderInvalidationCheckingEnabled() &&
       layout_image_.ImageResource() &&
       layout_image_.ImageResource()->MaybeAnimated())
@@ -276,8 +276,9 @@ void ImagePainter::PaintIntoRect(GraphicsContext& context,
       inspector_paint_image_event::Data, layout_image_, src_rect,
       gfx::RectF(dest_rect));
 
-  ScopedInterpolationQuality interpolation_quality_scope(
-      context, layout_image_.StyleRef().GetInterpolationQuality());
+  ScopedImageRenderingSettings image_rendering_settings_scope(
+      context, layout_image_.StyleRef().GetInterpolationQuality(),
+      layout_image_.StyleRef().GetDynamicRangeLimit());
 
   Node* node = layout_image_.GetNode();
   auto* image_element = DynamicTo<HTMLImageElement>(node);

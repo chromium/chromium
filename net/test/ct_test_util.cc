@@ -169,7 +169,8 @@ void GetX509CertSignedEntry(SignedEntryData* entry) {
 }
 
 void GetX509CertTreeLeaf(MerkleTreeLeaf* tree_leaf) {
-  tree_leaf->timestamp = base::Time::FromJsTime(kTestTimestamp);
+  tree_leaf->timestamp =
+      base::Time::FromMillisecondsSinceUnixEpoch(kTestTimestamp);
   GetX509CertSignedEntry(&tree_leaf->signed_entry);
   tree_leaf->extensions = HexDecode(kDefaultExtensions);
 }
@@ -186,7 +187,8 @@ void GetPrecertSignedEntry(SignedEntryData* entry) {
 }
 
 void GetPrecertTreeLeaf(MerkleTreeLeaf* tree_leaf) {
-  tree_leaf->timestamp = base::Time::FromJsTime(kTestTimestamp);
+  tree_leaf->timestamp =
+      base::Time::FromMillisecondsSinceUnixEpoch(kTestTimestamp);
   GetPrecertSignedEntry(&tree_leaf->signed_entry);
   tree_leaf->extensions = HexDecode(kDefaultExtensions);
 }
@@ -336,14 +338,13 @@ std::string CreateSignedTreeHeadJsonString(size_t tree_size,
       std::string(",\"timestamp\":") + base::NumberToString(timestamp);
 
   if (!sha256_root_hash.empty()) {
-    std::string root_hash_b64;
-    base::Base64Encode(sha256_root_hash, &root_hash_b64);
+    std::string root_hash_b64 = base::Base64Encode(sha256_root_hash);
     sth_json += base::StringPrintf(",\"sha256_root_hash\":\"%s\"",
                                    root_hash_b64.c_str());
   }
   if (!tree_head_signature.empty()) {
-    std::string tree_head_signature_b64;
-    base::Base64Encode(tree_head_signature, &tree_head_signature_b64);
+    std::string tree_head_signature_b64 =
+        base::Base64Encode(tree_head_signature);
     sth_json += base::StringPrintf(",\"tree_head_signature\":\"%s\"",
                                    tree_head_signature_b64.c_str());
   }
@@ -357,8 +358,7 @@ std::string CreateConsistencyProofJsonString(
   std::string consistency_proof_json = std::string("{\"consistency\":[");
 
   for (auto it = raw_nodes.begin(); it != raw_nodes.end(); ++it) {
-    std::string proof_node_b64;
-    base::Base64Encode(*it, &proof_node_b64);
+    std::string proof_node_b64 = base::Base64Encode(*it);
     consistency_proof_json +=
         base::StringPrintf("\"%s\"", proof_node_b64.c_str());
     if (it + 1 != raw_nodes.end())
@@ -372,7 +372,7 @@ std::string CreateConsistencyProofJsonString(
 std::string GetSCTListForTesting() {
   const std::string sct = ct::GetTestSignedCertificateTimestamp();
   std::string sct_list;
-  ct::EncodeSCTListForTesting(sct, &sct_list);
+  ct::EncodeSCTListForTesting({sct}, &sct_list);
   return sct_list;
 }
 
@@ -384,7 +384,7 @@ std::string GetSCTListWithInvalidSCT() {
   sct[15] = 't';
 
   std::string sct_list;
-  ct::EncodeSCTListForTesting(sct, &sct_list);
+  ct::EncodeSCTListForTesting({sct}, &sct_list);
   return sct_list;
 }
 

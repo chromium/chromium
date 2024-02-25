@@ -8,7 +8,7 @@ found in the LICENSE file.
 <link rel="stylesheet" href="foreground/css/common.css">
 <link rel="stylesheet" href="foreground/elements/files_quick_view.css">
 
-<dialog id="dialog" on-close="onDialogClose_">
+<dialog id="dialog" on-close="onDialogClose">
   <div id="toolbar">
     <div class="buttons-group">
       <cr-button id="back-button" on-click="close" aria-label="$i18n{QUICK_VIEW_CLOSE_BUTTON_LABEL}" has-tooltip invert-tooltip>
@@ -18,28 +18,28 @@ found in the LICENSE file.
     </div>
     <div id="file-path">[[filePath]]</div>
     <div class="buttons-group">
-      <cr-button id="open-button" on-click="onOpenInNewButtonTap" hidden$="[[!shouldShowOpenButton_(hasTask, isModal)]]" aria-label="$i18n{QUICK_VIEW_OPEN_IN_NEW_BUTTON_LABEL}" has-tooltip invert-tooltip>
+      <cr-button id="open-button" on-click="onOpenInNewButtonClick" hidden$="[[!shouldShowOpenButton(hasTask, isModal)]]" aria-label="$i18n{QUICK_VIEW_OPEN_IN_NEW_BUTTON_LABEL}" has-tooltip invert-tooltip>
         <span class="icon">$i18n{QUICK_VIEW_OPEN_IN_NEW_BUTTON_LABEL}</span>
       </cr-button>
-      <cr-button id="delete-button" on-click="onDeleteButtonTap" hidden$="[[!shouldShowDeleteButton_(canDelete, isModal)]]" aria-label="$i18n{QUICK_VIEW_DELETE_BUTTON_LABEL}" has-tooltip invert-tooltip>
+      <cr-button id="delete-button" on-click="onDeleteButtonClick" hidden$="[[!shouldShowDeleteButton(canDelete, isModal)]]" aria-label="$i18n{QUICK_VIEW_DELETE_BUTTON_LABEL}" has-tooltip invert-tooltip>
         <span class="icon"></span>
       </cr-button>
-      <cr-button id="info-button" on-click="onMetadataButtonTap_" aria-pressed="{{metadataBoxActive}}" aria-label="$i18n{QUICK_VIEW_TOGGLE_METADATA_BOX_BUTTON_LABEL}" has-tooltip invert-tooltip>
+      <cr-button id="info-button" on-click="onMetadataButtonClick" aria-pressed="{{metadataBoxActive}}" aria-label="$i18n{QUICK_VIEW_TOGGLE_METADATA_BOX_BUTTON_LABEL}" has-tooltip invert-tooltip>
         <span class="icon"></span>
       </cr-button>
     </div>
   </div>
   <div id="mainPanel">
-    <div id="contentPanel" metadata-box-active$="[[metadataBoxActive]]" on-tap="onContentPanelTap_">
+    <div id="contentPanel" metadata-box-active$="[[metadataBoxActive]]" on-tap="onContentPanelClick">
       <div id="innerContentPanel" type$="[[type]]">
         <!-- PDF, Text -->
         <template is="dom-if" if="[[browsable]]">
-          <iframe id="untrusted" style="color: transparent; background: transparent; width: 100%; height: 100%; border: 0px;" on-load="refreshUntrustedIframe_" class="content text-content" src="chrome-untrusted://file-manager/untrusted_resources/files_browsable_content.html"></iframe>
+          <iframe id="untrusted" style="color: transparent; background: transparent; width: 100%; height: 100%; border: 0px;" on-load="refreshUntrustedIframe" class="content text-content" src="chrome-untrusted://file-manager/untrusted_resources/files_browsable_content.html"></iframe>
         </template>
         <!-- document/HTML -->
-        <template is="dom-if" if="[[isHtml_(type, subtype)]]">
-          <files-safe-media hidden="[[!hasContent_(sourceContent)]]" type="html" class="content text-content" src="[[sourceContent]]"></files-safe-media>
-          <template is="dom-if" if="[[!hasContent_(sourceContent)]]">
+        <template is="dom-if" if="[[isHtml(type, subtype)]]">
+          <files-safe-media hidden="[[!hasContent(sourceContent)]]" type="html" class="content text-content" src="[[sourceContent]]"></files-safe-media>
+          <template is="dom-if" if="[[!hasContent(sourceContent)]]">
             <div class="no-preview-container">
               <div generic-thumbnail="[[type]]"></div>
               <div class="no-preview">[[noPreviewText]]</div>
@@ -47,9 +47,9 @@ found in the LICENSE file.
           </template>
         </template>
         <!-- Image -->
-        <template is="dom-if" if="[[isImage_(type)]]">
-          <files-safe-media hidden="[[!hasContent_(sourceContent)]]" type="image" class="content no-close-on-click" src="[[sourceContent]]"></files-safe-media>
-          <template is="dom-if" if="[[!hasContent_(sourceContent)]]">
+        <template is="dom-if" if="[[isImage(type)]]">
+          <files-safe-media hidden="[[!hasContent(sourceContent)]]" type="image" class="content no-close-on-click" src="[[sourceContent]]"></files-safe-media>
+          <template is="dom-if" if="[[!hasContent(sourceContent)]]">
             <div class="no-preview-container">
               <div generic-thumbnail="image"></div>
               <div class="no-preview">[[noPreviewText]]</div>
@@ -57,8 +57,8 @@ found in the LICENSE file.
           </template>
         </template>
         <!-- Video -->
-        <template is="dom-if" if="[[isVideo_(type)]]">
-          <template is="dom-if" if="[[!hasContent_(sourceContent)]]">
+        <template is="dom-if" if="[[isVideo(type)]]">
+          <template is="dom-if" if="[[!hasContent(sourceContent)]]">
             <div class="thumbnail" hidden="[[!videoPoster]]">
               <files-safe-media type="image" id="video-poster" src="[[videoPoster]]"></files-safe-media>
             </div>
@@ -67,28 +67,28 @@ found in the LICENSE file.
               <div class="no-preview">[[noPlaybackText]]</div>
             </div>
           </template>
-          <template is="dom-if" if="[[hasContent_(sourceContent)]]">
+          <template is="dom-if" if="[[hasContent(sourceContent)]]">
             <files-safe-media id="videoSafeMedia" tabindex="0" type="video" class="content no-close-on-click" controls autoplay="[[autoplay]]" src="[[sourceContent]]" poster="[[videoPoster]]"></files-safe-media>
           </template>
         </template>
         <!-- Audio -->
-        <template is="dom-if" if="[[isAudio_(type)]]">
-          <template is="dom-if" if="[[hasContent_(audioArtwork)]]">
+        <template is="dom-if" if="[[isAudio(type)]]">
+          <template is="dom-if" if="[[hasContent(audioArtwork)]]">
             <files-safe-media type="image" id="audio-artwork" class="no-close-on-click" src="[[audioArtwork]]"></files-safe-media>
           </template>
         </template>
         <div>
-          <files-safe-media tabindex="0" type="audio" class="no-close-on-click" controls autoplay="[[autoplay]]" src="[[audioContent_(sourceContent, type)]]" hidden="[[!isAudio_(type)]]"></files-safe-media>
+          <files-safe-media tabindex="0" type="audio" class="no-close-on-click" controls autoplay="[[autoplay]]" src="[[audioContent(sourceContent, type)]]" hidden="[[!isAudio(type)]]"></files-safe-media>
         </div>
-        <template is="dom-if" if="[[isAudio_(type)]]">
-          <template is="dom-if" if="[[!hasContent_(sourceContent)]]">
+        <template is="dom-if" if="[[isAudio(type)]]">
+          <template is="dom-if" if="[[!hasContent(sourceContent)]]">
             <div class="no-preview-container">
               <div generic-thumbnail="audio"></div>
               <div class="no-preview">[[noPlaybackText]]</div>
             </div>
           </template>
         </template>
-        <div class="no-preview-container" hidden="[[!isUnsupported_(type, subtype, browsable)]]">
+        <div class="no-preview-container" hidden="[[!isUnsupported(type, subtype, browsable)]]">
           <div generic-thumbnail$="[[type]]"></div>
           <div class="no-preview">[[noPreviewText]]</div>
         </div>

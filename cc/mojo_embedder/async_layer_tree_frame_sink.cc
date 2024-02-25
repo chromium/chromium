@@ -61,7 +61,7 @@ AsyncLayerTreeFrameSink::UnboundMessagePipes::UnboundMessagePipes(
 AsyncLayerTreeFrameSink::AsyncLayerTreeFrameSink(
     scoped_refptr<viz::RasterContextProvider> context_provider,
     scoped_refptr<RasterContextProviderWrapper> worker_context_provider_wrapper,
-    std::unique_ptr<gpu::ClientSharedImageInterface> shared_image_interface,
+    scoped_refptr<gpu::ClientSharedImageInterface> shared_image_interface,
     InitParams* params)
     : LayerTreeFrameSink(std::move(context_provider),
                          std::move(worker_context_provider_wrapper),
@@ -77,6 +77,8 @@ AsyncLayerTreeFrameSink::AsyncLayerTreeFrameSink(
 #endif
       pipes_(std::move(params->pipes)),
       wants_animate_only_begin_frames_(params->wants_animate_only_begin_frames),
+      auto_needs_begin_frame_(params->auto_needs_begin_frame),
+      wants_begin_frame_acks_(params->wants_begin_frame_acks),
       use_begin_frame_presentation_feedback_(
           params->use_begin_frame_presentation_feedback) {
   DETACH_FROM_THREAD(thread_checker_);
@@ -123,9 +125,15 @@ bool AsyncLayerTreeFrameSink::BindToClient(LayerTreeFrameSinkClient* client) {
     client->SetBeginFrameSource(begin_frame_source_.get());
   }
 
-  if (wants_animate_only_begin_frames_)
+  if (wants_animate_only_begin_frames_) {
     compositor_frame_sink_->SetWantsAnimateOnlyBeginFrames();
-  compositor_frame_sink_ptr_->SetWantsBeginFrameAcks();
+  }
+  if (wants_begin_frame_acks_) {
+    compositor_frame_sink_ptr_->SetWantsBeginFrameAcks();
+  }
+  if (auto_needs_begin_frame_) {
+    compositor_frame_sink_ptr_->SetAutoNeedsBeginFrame();
+  }
 
   compositor_frame_sink_ptr_->InitializeCompositorFrameSinkType(
       viz::mojom::CompositorFrameSinkType::kLayerTree);
@@ -173,6 +181,10 @@ void AsyncLayerTreeFrameSink::SubmitCompositorFrame(
   DCHECK(frame.metadata.begin_frame_ack.has_damage);
   DCHECK(frame.metadata.begin_frame_ack.frame_id.IsSequenceValid());
 
+  if (auto_needs_begin_frame_ && !needs_begin_frames_) {
+    UpdateNeedsBeginFramesInternal(/*needs_begin_frames=*/true);
+  }
+
   TRACE_EVENT(
       "viz,benchmark,graphics.pipeline", "Graphics.Pipeline",
       perfetto::Flow::Global(frame.metadata.begin_frame_ack.trace_id),
@@ -192,7 +204,7 @@ void AsyncLayerTreeFrameSink::SubmitCompositorFrame(
               frame.size_in_pixels().width());
   }
 
-  absl::optional<viz::HitTestRegionList> hit_test_region_list =
+  std::optional<viz::HitTestRegionList> hit_test_region_list =
       client_->BuildHitTestData();
 
   // If |hit_test_data_changed| was set or local_surface_id has been updated,
@@ -206,7 +218,7 @@ void AsyncLayerTreeFrameSink::SubmitCompositorFrame(
                                         last_hit_test_data_)) {
       DCHECK(!viz::HitTestRegionList::IsEqual(*hit_test_region_list,
                                               viz::HitTestRegionList()));
-      hit_test_region_list = absl::nullopt;
+      hit_test_region_list = std::nullopt;
     } else {
       last_hit_test_data_ = *hit_test_region_list;
     }
@@ -360,17 +372,23 @@ void AsyncLayerTreeFrameSink::OnCompositorFrameTransitionDirectiveProcessed(
   client_->OnCompositorFrameTransitionDirectiveProcessed(sequence_id);
 }
 
+void AsyncLayerTreeFrameSink::OnSurfaceEvicted(
+    const viz::LocalSurfaceId& local_surface_id) {
+  client_->OnSurfaceEvicted(local_surface_id);
+}
+
 void AsyncLayerTreeFrameSink::OnNeedsBeginFrames(bool needs_begin_frames) {
   DCHECK(compositor_frame_sink_ptr_);
-  if (needs_begin_frames_ != needs_begin_frames) {
-    if (needs_begin_frames) {
-      TRACE_EVENT_NESTABLE_ASYNC_BEGIN0("cc,benchmark", "NeedsBeginFrames",
-                                        this);
-    } else {
-      TRACE_EVENT_NESTABLE_ASYNC_END0("cc,benchmark", "NeedsBeginFrames", this);
-    }
+
+  // If `auto_needs_begin_frame_` is set to true, rely on unsolicited frames
+  // instead of SetNeedsBeginFrame(true) to indicate that the client needs
+  // BeginFrame requests.
+  if (auto_needs_begin_frame_ && needs_begin_frames) {
+    return;
   }
-  needs_begin_frames_ = needs_begin_frames;
+
+  UpdateNeedsBeginFramesInternal(needs_begin_frames);
+
   compositor_frame_sink_ptr_->SetNeedsBeginFrame(needs_begin_frames);
 }
 
@@ -382,6 +400,20 @@ void AsyncLayerTreeFrameSink::OnMojoConnectionError(
     DLOG(ERROR) << description;
   if (client_)
     client_->DidLoseLayerTreeFrameSink();
+}
+
+void AsyncLayerTreeFrameSink::UpdateNeedsBeginFramesInternal(
+    bool needs_begin_frames) {
+  if (needs_begin_frames_ == needs_begin_frames) {
+    return;
+  }
+
+  if (needs_begin_frames) {
+    TRACE_EVENT_NESTABLE_ASYNC_BEGIN0("cc,benchmark", "NeedsBeginFrames", this);
+  } else {
+    TRACE_EVENT_NESTABLE_ASYNC_END0("cc,benchmark", "NeedsBeginFrames", this);
+  }
+  needs_begin_frames_ = needs_begin_frames;
 }
 
 }  // namespace mojo_embedder

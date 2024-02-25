@@ -119,7 +119,7 @@ class ScopedVulkanRenderFrame {
   }
 
  private:
-  const raw_ptr<VulkanClient, ExperimentalAsh> client_;
+  const raw_ptr<VulkanClient> client_;
   VkCommandBuffer command_buffer_ = VK_NULL_HANDLE;
 };
 

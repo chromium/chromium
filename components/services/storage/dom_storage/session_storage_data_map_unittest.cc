@@ -5,6 +5,7 @@
 #include "components/services/storage/dom_storage/session_storage_data_map.h"
 
 #include <map>
+#include <string_view>
 #include <tuple>
 #include <vector>
 
@@ -34,7 +35,7 @@ MATCHER(OKStatus, "Equality matcher for type OK leveldb::Status") {
   return arg.ok();
 }
 
-base::span<const uint8_t> MakeBytes(base::StringPiece str) {
+base::span<const uint8_t> MakeBytes(std::string_view str) {
   return base::as_bytes(base::make_span(str));
 }
 
@@ -73,7 +74,7 @@ class SessionStorageDataMapTest : public testing::Test {
   SessionStorageDataMapTest() {
     base::RunLoop loop;
     database_ = AsyncDomStorageDatabase::OpenInMemory(
-        absl::nullopt, "SessionStorageDataMapTest",
+        std::nullopt, "SessionStorageDataMapTest",
         base::ThreadPool::CreateSequencedTaskRunner({base::MayBlock()}),
         base::BindLambdaForTesting([&](leveldb::Status status) {
           ASSERT_TRUE(status.ok());

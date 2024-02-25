@@ -8,12 +8,10 @@
 #include <memory>
 #include <string>
 #include <utility>
-#include <vector>
 
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
-#include "base/timer/timer.h"
 #include "base/values.h"
 #include "components/exo/surface_observer.h"
 #include "content/public/browser/tracing_controller.h"
@@ -22,19 +20,17 @@
 #include "ui/events/event_handler.h"
 #include "ui/wm/public/activation_change_observer.h"
 
-namespace arc {
-class ArcGraphicsJankDetector;
-class ArcSystemStatCollector;
-}  // namespace arc
-
 namespace base {
 class FilePath;
 }  // namespace base
 
 namespace exo {
-class Surface;
 class WMHelper;
 }  // namespace exo
+
+namespace aura {
+class Window;
+}  // namespace aura
 
 namespace ash {
 
@@ -44,7 +40,10 @@ class ArcGraphicsTracingHandler : public content::WebUIMessageHandler,
                                   public ui::EventHandler,
                                   public exo::SurfaceObserver {
  public:
-  base::FilePath GetModelPathFromTitle(std::string_view title);
+  struct ActiveTrace;
+
+  base::FilePath GetModelPathFromTitle(std::string_view title,
+                                       base::Time timestamp);
 
   ArcGraphicsTracingHandler();
 
@@ -75,10 +74,12 @@ class ArcGraphicsTracingHandler : public content::WebUIMessageHandler,
   void OnSurfaceDestroying(exo::Surface* surface) override;
   void OnCommit(exo::Surface* surface) override;
 
-  // Visible for testing.
-  base::TimeDelta max_tracing_time() const { return max_tracing_time_; }
+ protected:
+  // Traces stop automatically when they get this long. Visible for testing.
+  base::TimeDelta max_tracing_time_ = base::Seconds(5);
 
  private:
+  virtual aura::Window* GetWebUIWindow();
   virtual void StartTracingOnController(
       const base::trace_event::TraceConfig& trace_config,
       content::TracingController::StartTracingDoneCallback after_start);
@@ -100,14 +101,15 @@ class ArcGraphicsTracingHandler : public content::WebUIMessageHandler,
   // needed for comparison with trace timestamps.
   virtual base::TimeTicks SystemTicksNow();
 
-  virtual void ActivateWebUIWindow();
+  void ActivateWebUIWindow();
   void StartTracing();
   void StopTracing();
   void StopTracingAndActivate();
   void SetStatus(const std::string& status);
 
   void OnTracingStarted();
-  void OnTracingStopped(std::unique_ptr<std::string> trace_data);
+  void OnTracingStopped(std::unique_ptr<ActiveTrace> trace,
+                        std::unique_ptr<std::string> trace_data);
 
   // Called when graphics model is built or load. Extra string parameter
   // contains a status. In case model cannot be built/load empty |base::Value|
@@ -124,36 +126,11 @@ class ArcGraphicsTracingHandler : public content::WebUIMessageHandler,
   // Stops tracking ARC window for janks.
   void DiscardActiveArcWindow();
 
-  // Indicates that tracing was initiated by this handler.
-  bool tracing_active_ = false;
+  std::unique_ptr<ActiveTrace> active_trace_;
 
-  // Determines the maximum tracing time.
-  base::TimeDelta max_tracing_time_ = base::Seconds(5);
+  const raw_ptr<exo::WMHelper> wm_helper_;
 
-  base::OneShotTimer stop_tracing_timer_;
-
-  const raw_ptr<exo::WMHelper, ExperimentalAsh> wm_helper_;
-
-  raw_ptr<aura::Window, ExperimentalAsh> arc_active_window_ = nullptr;
-
-  // Time filter for tracing, since ARC++ window was activated last until
-  // tracing is stopped.
-  base::TimeTicks tracing_time_min_;
-  base::TimeTicks tracing_time_max_;
-
-  // Task id and title for current ARC window.
-  int active_task_id_ = -1;
-
-  // Used to detect janks for the currently active ARC++ window.
-  std::unique_ptr<arc::ArcGraphicsJankDetector> jank_detector_;
-
-  // Collects system stat runtime.
-  std::unique_ptr<arc::ArcSystemStatCollector> system_stat_collector_;
-
-  // Information about active task, title and icon.
-  std::string active_task_title_;
-  std::vector<unsigned char> active_task_icon_png_;
-  base::Time timestamp_;
+  raw_ptr<aura::Window> arc_active_window_ = nullptr;
 
   base::WeakPtrFactory<ArcGraphicsTracingHandler> weak_ptr_factory_{this};
 };

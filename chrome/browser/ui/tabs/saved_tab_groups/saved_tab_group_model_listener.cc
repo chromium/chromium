@@ -56,14 +56,23 @@ void SavedTabGroupModelListener::OnTabGroupChanged(
       return;
     }
 
-    // Ignored because closing empty groups is handled when the last tab is
-    // removed in TabGroupedStateChanged.
+    // We should never get close notifications, because we destroy the
+    // LocalTabGroupListener when the last tab is closed, which happens before
+    // this event is sent out.
     case TabGroupChange::kClosed:
+    // We should never get created notifications, because we only are connected
+    // to the local group after it has been created and populated.
+    case TabGroupChange::kCreated: {
+      // The exception to both of these is when the group is being moved between
+      // browser windows, as it gets created in the new window and destroyed in
+      // the old window. In these cases, tracking must be paused, as otherwise
+      // the saved group will get emptied out during the move.
+      CHECK(local_tab_group_listeners_.at(change.group).IsTrackingPaused());
+      return;
+    }
+
     // Ignored because contents changes are handled in TabGroupedStateChanged.
     case TabGroupChange::kContentsChanged:
-    // Ignored because we explicitly add the TabGroupId to the saved tab group
-    // outside of the observer flow.
-    case TabGroupChange::kCreated:
     // kEditorOpened doesn't affect the SavedTabGroup.
     case TabGroupChange::kEditorOpened:
     // kMoved doesn't affect the order of the saved tab groups.
@@ -74,7 +83,7 @@ void SavedTabGroupModelListener::OnTabGroupChanged(
 }
 
 void SavedTabGroupModelListener::TabGroupedStateChanged(
-    absl::optional<tab_groups::TabGroupId> new_local_group_id,
+    std::optional<tab_groups::TabGroupId> new_local_group_id,
     content::WebContents* contents,
     int index) {
   // Remove `contents` from its current saved group, if it's in one.
@@ -109,28 +118,57 @@ void SavedTabGroupModelListener::OnTabStripModelChanged(
     TabStripModel* tab_strip_model,
     const TabStripModelChange& change,
     const TabStripSelectionChange& selection) {
-  if (change.type() != TabStripModelChange::kMoved) {
-    return;
+  switch (change.type()) {
+    case TabStripModelChange::kReplaced: {
+      std::optional<tab_groups::TabGroupId> local_id =
+          tab_strip_model->GetTabGroupForTab(change.GetReplace()->index);
+
+      // Do nothing if the tab is no longer in a group.
+      if (!local_id.has_value()) {
+        return;
+      }
+
+      // Do nothing if the tab is not part of a saved group.
+      if (!local_tab_group_listeners_.contains(local_id.value())) {
+        return;
+      }
+
+      LocalTabGroupListener& local_tab_group_listener =
+          local_tab_group_listeners_.at(local_id.value());
+
+      local_tab_group_listener.OnReplaceWebContents(
+          change.GetReplace()->old_contents, change.GetReplace()->new_contents);
+      return;
+    }
+    case TabStripModelChange::kMoved: {
+      std::optional<tab_groups::TabGroupId> local_id =
+          tab_strip_model->GetTabGroupForTab(change.GetMove()->to_index);
+
+      // Do nothing if the tab is no longer in a group.
+      if (!local_id.has_value()) {
+        return;
+      }
+
+      // Do nothing if the tab is not part of a saved group.
+      if (!local_tab_group_listeners_.contains(local_id.value())) {
+        return;
+      }
+
+      LocalTabGroupListener& local_tab_group_listener =
+          local_tab_group_listeners_.at(local_id.value());
+
+      local_tab_group_listener.MoveWebContentsFromLocal(
+          tab_strip_model, change.GetMove()->contents,
+          change.GetMove()->to_index);
+
+      return;
+    }
+    case TabStripModelChange::kSelectionOnly:
+    case TabStripModelChange::kInserted:
+    case TabStripModelChange::kRemoved: {
+      return;
+    }
   }
-
-  absl::optional<tab_groups::TabGroupId> local_id =
-      tab_strip_model->GetTabGroupForTab(change.GetMove()->to_index);
-
-  // Do nothing if the tab is no longer in a group.
-  if (!local_id.has_value()) {
-    return;
-  }
-
-  // Do nothing if the tab is not part of a saved group.
-  if (!local_tab_group_listeners_.contains(local_id.value())) {
-    return;
-  }
-
-  LocalTabGroupListener& local_tab_group_listener =
-      local_tab_group_listeners_.at(local_id.value());
-
-  local_tab_group_listener.MoveWebContentsFromLocal(
-      tab_strip_model, change.GetMove()->contents, change.GetMove()->to_index);
 }
 
 void SavedTabGroupModelListener::WillCloseAllTabs(
@@ -150,19 +188,20 @@ void SavedTabGroupModelListener::WillCloseAllTabs(
 
 void SavedTabGroupModelListener::ConnectToLocalTabGroup(
     const SavedTabGroup& saved_tab_group,
-    std::vector<std::pair<content::WebContents*, base::Uuid>> mapping) {
+    std::map<content::WebContents*, base::Uuid> web_contents_map) {
   const tab_groups::TabGroupId local_group_id =
       saved_tab_group.local_group_id().value();
 
-  // `mapping` should have one entry per tab in the local group. This may not
-  // equal the saved group's size, if the saved group contains invalid URLs.
+  // `web_contents_map` should have one entry per tab in the local group. This
+  // may not equal the saved group's size, if the saved group contains invalid
+  // URLs.
   const size_t local_group_size =
       SavedTabGroupUtils::GetTabGroupWithId(local_group_id)->tab_count();
-  CHECK_EQ(local_group_size, mapping.size());
+  CHECK_EQ(local_group_size, web_contents_map.size());
 
   auto [iterator, success] = local_tab_group_listeners_.try_emplace(
       local_group_id, local_group_id, saved_tab_group.saved_guid(), model_,
-      mapping);
+      web_contents_map);
   CHECK(success);
 }
 

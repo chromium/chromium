@@ -74,8 +74,10 @@ class DrawGLFunctor implements AwContents.NativeDrawGLFunctor {
     // technically true, as a way to preserve these methods and their names.
     @UsedByReflection("Android framework manual registration")
     private static native long nativeCreateGLFunctor(long viewContext);
+
     @UsedByReflection("Android framework manual registration")
     private static native void nativeDestroyGLFunctor(long functor);
+
     @UsedByReflection("Android framework manual registration")
     private static native void nativeSetChromiumAwDrawGLFunction(long functionPointer);
 }

@@ -101,13 +101,15 @@ class COMPONENT_EXPORT(AX_PLATFORM) AXPlatformTreeManagerDelegate {
   // the Views layer, there is no such requirement, and thus a much simpler
   // implementation of "hit testing" could be provided.
   //
-  // TODO(nektar): Use `absl::optional` for all optional arguments.
+  // TODO(nektar): Use `std::optional` for all optional arguments.
   virtual void AccessibilityHitTest(
       const gfx::Point& point_in_view_pixels,
       const ax::mojom::Event& opt_event_to_fire,
       int opt_request_id,
       base::OnceCallback<void(AXPlatformTreeManager* hit_manager,
                               AXNodeID hit_node_id)> opt_callback) = 0;
+
+  virtual gfx::NativeWindow GetTopLevelNativeWindow() = 0;
 
  protected:
   AXPlatformTreeManagerDelegate() = default;

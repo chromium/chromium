@@ -7,10 +7,12 @@
 #include <memory>
 #include <vector>
 
+#include "base/auto_reset.h"
+#include "base/barrier_callback.h"
 #include "base/check_is_test.h"
-#include "base/containers/cxx20_erase_set.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
+#include "base/functional/callback_helpers.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/ranges/algorithm.h"
@@ -19,7 +21,8 @@
 #include "chrome/browser/apps/almanac_api_client/device_info_manager.h"
 #include "chrome/browser/apps/app_preload_service/app_preload_service_factory.h"
 #include "chrome/browser/apps/app_preload_service/preload_app_definition.h"
-#include "chrome/browser/apps/app_preload_service/web_app_preload_installer.h"
+#include "chrome/browser/apps/app_service/app_install/app_install_service.h"
+#include "chrome/browser/apps/app_service/app_install/web_app_installer.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/profiles/profile.h"
@@ -55,6 +58,8 @@ bool AreTestAppsEnabled() {
   return base::FeatureList::IsEnabled(apps::kAppPreloadServiceEnableTestApps);
 }
 
+bool g_disable_preloads_on_startup_for_testing_ = false;
+
 }  // namespace
 
 namespace apps {
@@ -75,8 +80,11 @@ BASE_FEATURE(kAppPreloadServiceEnableTestApps,
 AppPreloadService::AppPreloadService(Profile* profile)
     : profile_(profile),
       server_connector_(std::make_unique<AppPreloadServerConnector>()),
-      device_info_manager_(std::make_unique<DeviceInfoManager>(profile)),
-      web_app_installer_(std::make_unique<WebAppPreloadInstaller>(profile)) {
+      device_info_manager_(std::make_unique<DeviceInfoManager>(profile)) {
+  if (g_disable_preloads_on_startup_for_testing_) {
+    return;
+  }
+
   StartFirstLoginFlow();
 }
 
@@ -94,9 +102,15 @@ void AppPreloadService::RegisterProfilePrefs(
 }
 
 void AppPreloadService::StartFirstLoginFlowForTesting(
-    base::OnceCallback<void(bool)> callback) {
-  SetInstallationCompleteCallbackForTesting(std::move(callback));  // IN-TEST
+    PreloadStatusCallback callback) {
+  installation_complete_callback_ = std::move(callback);
   StartFirstLoginFlow();
+}
+
+// static
+base::AutoReset<bool> AppPreloadService::DisablePreloadsOnStartupForTesting() {
+  return base::AutoReset<bool>(&g_disable_preloads_on_startup_for_testing_,
+                               true);
 }
 
 void AppPreloadService::StartFirstLoginFlow() {
@@ -144,20 +158,37 @@ void AppPreloadService::StartAppInstallationForFirstLogin(
 
 void AppPreloadService::OnGetAppsForFirstLoginCompleted(
     base::TimeTicks start_time,
-    absl::optional<std::vector<PreloadAppDefinition>> apps) {
+    std::optional<std::vector<PreloadAppDefinition>> apps) {
   if (!apps.has_value()) {
     OnFirstLoginFlowComplete(start_time, /*success=*/false);
     return;
   }
 
-  // Filter out any apps that should not be installed.
-  base::EraseIf(apps.value(), [this](const PreloadAppDefinition& app) {
-    return !ShouldInstallApp(app);
-  });
+  std::vector<const PreloadAppDefinition*> apps_to_install;
+  for (const PreloadAppDefinition& app : apps.value()) {
+    if (ShouldInstallApp(app)) {
+      apps_to_install.push_back(&app);
+    }
+  }
+  const auto install_barrier_callback = base::BarrierCallback<bool>(
+      apps_to_install.size(),
+      base::BindOnce(&AppPreloadService::OnAppInstallationsCompleted,
+                     weak_ptr_factory_.GetWeakPtr(), start_time));
+  AppInstallService& install_service =
+      AppServiceProxyFactory::GetForProfile(profile_)->AppInstallService();
+  for (const PreloadAppDefinition* app : apps_to_install) {
+    install_service.InstallApp(
+        app->IsDefaultApp() ? AppInstallSurface::kAppPreloadServiceDefault
+                            : AppInstallSurface::kAppPreloadServiceOem,
+        app->ToAppInstallData(), install_barrier_callback);
+  }
+}
 
-  web_app_installer_->InstallAllApps(
-      apps.value(), base::BindOnce(&AppPreloadService::OnFirstLoginFlowComplete,
-                                   weak_ptr_factory_.GetWeakPtr(), start_time));
+void AppPreloadService::OnAppInstallationsCompleted(
+    base::TimeTicks start_time,
+    const std::vector<bool>& results) {
+  OnFirstLoginFlowComplete(start_time,
+                           base::ranges::all_of(results, std::identity{}));
 }
 
 void AppPreloadService::OnFirstLoginFlowComplete(base::TimeTicks start_time,
@@ -182,28 +213,34 @@ bool AppPreloadService::ShouldInstallApp(const PreloadAppDefinition& app) {
     return false;
   }
 
-  // We currently only install apps which were requested by the device OEM. If
-  // the testing feature is enabled, also install test apps.
-  bool install_reason_allowed =
-      app.IsOemApp() || (app.IsTestApp() && AreTestAppsEnabled());
+  // We currently install apps which were requested by the device OEM or
+  // installed by default (i.e. by Google). If the testing feature is enabled,
+  // also install test apps.
+  bool install_reason_allowed = app.IsOemApp() || app.IsDefaultApp() ||
+                                (app.IsTestApp() && AreTestAppsEnabled());
   if (!install_reason_allowed) {
     return false;
   }
 
-  // If the app is already OEM-installed, we do not need to reinstall it. This
-  // avoids extra work in the case where we are retrying the flow after an
-  // install error for a different app.
+  // If the app is already installed with the relevant install reason, we do not
+  // need to reinstall it. This avoids extra work in the case where we are
+  // retrying the flow after an install error for a different app.
+  InstallReason expected_reason =
+      app.IsDefaultApp() ? InstallReason::kDefault : InstallReason::kOem;
   AppServiceProxy* proxy = AppServiceProxyFactory::GetForProfile(profile_);
-  bool oem_installed = false;
+  bool installed = false;
 
   proxy->AppRegistryCache().ForOneApp(
-      web_app_installer_->GetAppId(app),
-      [&oem_installed](const AppUpdate& app) {
-        oem_installed = apps_util::IsInstalled(app.Readiness()) &&
-                        app.InstallReason() == InstallReason::kOem;
+      app.GetWebAppId(), [&installed, expected_reason](const AppUpdate& app) {
+        // It's possible that if APS requests the same app to be installed for
+        // multiple reasons, this check could incorrectly return false, as App
+        // Service only reports the highest priority install reason. This is
+        // acceptable since the check is just an optimization.
+        installed = apps_util::IsInstalled(app.Readiness()) &&
+                    app.InstallReason() == expected_reason;
       });
 
-  return !oem_installed;
+  return !installed;
 }
 
 const base::Value::Dict& AppPreloadService::GetStateManager() const {

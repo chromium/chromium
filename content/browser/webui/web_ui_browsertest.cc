@@ -2,13 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <memory>
 #include <utility>
 
 #include "base/command_line.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
-#include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted_memory.h"
 #include "base/memory/weak_ptr.h"
@@ -21,6 +21,9 @@
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "content/browser/fenced_frame/fenced_frame.h"
+#include "content/browser/renderer_host/navigation_controller_impl.h"
+#include "content/browser/renderer_host/navigation_entry_impl.h"
+#include "content/browser/renderer_host/navigation_entry_restore_context_impl.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/browser/web_contents/web_contents_impl.h"
 #include "content/browser/webui/web_ui_controller_factory_registry.h"
@@ -46,6 +49,7 @@
 #include "content/public/test/test_utils.h"
 #include "content/public/test/web_ui_browsertest_util.h"
 #include "content/shell/browser/shell.h"
+#include "content/test/content_browser_test_utils_internal.h"
 #include "testing/gmock/include/gmock/gmock-matchers.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/input/web_mouse_event.h"
@@ -95,7 +99,7 @@ class TestWebUIMessageHandler : public WebUIMessageHandler {
                             base::Unretained(this)));
     web_ui()->RegisterMessageCallback(
         "sendMessage",
-        base::BindRepeating(&TestWebUIMessageHandler::OnSendMessase,
+        base::BindRepeating(&TestWebUIMessageHandler::OnSendMessage,
                             base::Unretained(this)));
   }
 
@@ -121,7 +125,7 @@ class TestWebUIMessageHandler : public WebUIMessageHandler {
       finish_closure_.Run();
   }
 
-  void OnSendMessase(const base::Value::List& args) {
+  void OnSendMessage(const base::Value::List& args) {
     // This message will be invoked when WebContents changes the main RFH
     // and the old main RFH is still alive during navigating from WebUI page
     // to cross-site. WebUI message should be handled with old main RFH.
@@ -157,10 +161,11 @@ class WebUIRequiringGestureBrowserTest : public ContentBrowserTest {
 
   void SetUpOnMainThread() override {
     ASSERT_TRUE(NavigateToURL(web_contents(), GetWebUIURL(kChromeUIGpuHost)));
-    test_handler_ = new TestWebUIMessageHandler();
-    web_contents()->GetWebUI()->AddMessageHandler(
-        base::WrapUnique(test_handler_.get()));
+    auto test_handler = std::make_unique<TestWebUIMessageHandler>();
+    test_handler_ = test_handler.get();
+    web_contents()->GetWebUI()->AddMessageHandler(std::move(test_handler));
   }
+  void TearDownOnMainThread() override { test_handler_ = nullptr; }
 
  protected:
   void SendMessageAndWaitForFinish() {
@@ -184,7 +189,7 @@ class WebUIRequiringGestureBrowserTest : public ContentBrowserTest {
   base::SimpleTestTickClock clock_;
 
   // Owned by the WebUI associated with the WebContents.
-  raw_ptr<TestWebUIMessageHandler, DanglingUntriaged> test_handler_ = nullptr;
+  raw_ptr<TestWebUIMessageHandler> test_handler_ = nullptr;
 };
 
 }  // namespace
@@ -222,13 +227,25 @@ IN_PROC_BROWSER_TEST_F(WebUIImplBrowserTest, ForceSwapOnDifferenteWebUITypes) {
       web_contents->GetPrimaryMainFrame()->GetProcess()->GetID()));
 }
 
-// Tests that a WebUI page will use a separate SiteInstance when we navigated to
-// it from the initial blank page.
+// Tests that a WebUI page will stay in the initial RenderFrameHost and its
+// SiteInstance when we navigate to it from the initial blank page.
+//
+// While WebUI navigations require a BrowsingInstance swap and hence typically
+// force a RenderFrameHost swap, the initial RenderFrameHost is in an unused
+// process and unassigned SiteInstance, and so it effectively satisfies the
+// BrowsingInstance swap requirement. So, it should be reused without requiring
+// an extra RenderFrameHost swap.
 IN_PROC_BROWSER_TEST_F(WebUIImplBrowserTest,
-                       ForceBrowsingInstanceSwapOnFirstNavigation) {
+                       ReuseInitialRenderFrameHostOnFirstNavigation) {
   WebContents* web_contents = shell()->web_contents();
   scoped_refptr<SiteInstance> orig_site_instance(
       web_contents->GetSiteInstance());
+  EXPECT_FALSE(
+      static_cast<SiteInstanceImpl*>(orig_site_instance.get())->HasSite());
+  RenderFrameHostWrapper initial_rfh(
+      shell()->web_contents()->GetPrimaryMainFrame());
+  EXPECT_TRUE(initial_rfh->GetProcess()->IsUnused());
+
   // Navigate from the initial blank page to the WebUI URL.
   const GURL web_ui_url(GetWebUIURL(kChromeUIHistogramHost));
   EXPECT_TRUE(WebUIControllerFactoryRegistry::GetInstance()->UseWebUIForURL(
@@ -238,8 +255,391 @@ IN_PROC_BROWSER_TEST_F(WebUIImplBrowserTest,
   EXPECT_TRUE(ChildProcessSecurityPolicy::GetInstance()->HasWebUIBindings(
       web_contents->GetPrimaryMainFrame()->GetProcess()->GetID()));
   auto* new_site_instance = web_contents->GetSiteInstance();
-  EXPECT_NE(orig_site_instance, new_site_instance);
-  EXPECT_FALSE(orig_site_instance->IsRelatedSiteInstance(new_site_instance));
+  EXPECT_EQ(orig_site_instance, new_site_instance);
+  EXPECT_TRUE(
+      static_cast<SiteInstanceImpl*>(orig_site_instance.get())->HasSite());
+  EXPECT_EQ(initial_rfh.get(), shell()->web_contents()->GetPrimaryMainFrame());
+  ASSERT_TRUE(initial_rfh);
+  EXPECT_FALSE(initial_rfh->GetProcess()->IsUnused());
+}
+
+// Check that starting a WebUI navigation while an about:blank navigation in an
+// initial RenderFrameHost is pending commit does not crash.  See
+// https://crbug.com/1492076.
+IN_PROC_BROWSER_TEST_F(WebUIImplBrowserTest,
+                       StartWebUINavigationWhileAboutBlankIsPendingCommit) {
+  WebContents* web_contents = shell()->web_contents();
+  RenderFrameHostImplWrapper initial_rfh(web_contents->GetPrimaryMainFrame());
+  EXPECT_TRUE(initial_rfh->GetProcess()->IsUnused());
+  EXPECT_FALSE(initial_rfh->has_committed_any_navigation());
+  EXPECT_TRUE(initial_rfh->is_initial_empty_document());
+
+  // Start an about:blank navigation, but don't wait for commit.  Since
+  // about:blank doesn't run through the typical navigation throttles, it
+  // proceeds straight to CommitNavigation, so when LoadURL() returns,
+  // about:blank is pending commit and waiting for DidCommitNavigation.
+  shell()->LoadURL(GURL(url::kAboutBlankURL));
+
+  // Because has_committed_any_navigation() is modified in CommitNavigation(),
+  // it should have become true now. is_initial_empty_document() is modified in
+  // DidCommitNavigation, so it hasn't been updated yet.
+  EXPECT_TRUE(initial_rfh->has_committed_any_navigation());
+  EXPECT_TRUE(initial_rfh->is_initial_empty_document());
+
+  // Now, start a navigation to a WebUI URL.  This used to crash in
+  // https://crbug.com/1492076.
+  const GURL web_ui_url(GetWebUIURL(kChromeUIHistogramHost));
+  // Note: NavigateToURL() does a WaitForLoadStop() before starting a
+  // navigation, so start the navigation via LoadURL instead.
+  TestNavigationManager manager(web_contents, web_ui_url);
+  shell()->LoadURL(web_ui_url);
+
+  // After the WebUI navigation finishes, check that it didn't reuse the initial
+  // RFH, since it was already considered to have a committed/committing
+  // navigation (to about:blank) when the WebUI navigation started.
+  EXPECT_TRUE(manager.WaitForNavigationFinished());
+  RenderFrameHostImplWrapper final_rfh(web_contents->GetPrimaryMainFrame());
+  EXPECT_NE(initial_rfh.get(), final_rfh.get());
+  EXPECT_TRUE(final_rfh->has_committed_any_navigation());
+  EXPECT_FALSE(final_rfh->is_initial_empty_document());
+}
+
+// Check that navigating to a WebUI page from a crashed about:blank page will
+// work correctly, properly granting WebUI bindings and avoiding the reuse of
+// the initial SiteInstance and process.
+IN_PROC_BROWSER_TEST_F(WebUIImplBrowserTest, NavigateFromCrashedAboutBlank) {
+  WebContents* web_contents = shell()->web_contents();
+  scoped_refptr<SiteInstance> orig_site_instance(
+      web_contents->GetSiteInstance());
+  EXPECT_FALSE(
+      static_cast<SiteInstanceImpl*>(orig_site_instance.get())->HasSite());
+  RenderFrameHostImplWrapper initial_rfh(web_contents->GetPrimaryMainFrame());
+  EXPECT_TRUE(initial_rfh->GetProcess()->IsUnused());
+  EXPECT_TRUE(initial_rfh->is_initial_empty_document());
+  EXPECT_FALSE(initial_rfh->has_committed_any_navigation());
+
+  // Explicitly navigate to about:blank.  Note that this stays in the initial
+  // RenderFrameHost but resets is_initial_empty_document() to false.
+  ASSERT_TRUE(NavigateToURL(web_contents, GURL(url::kAboutBlankURL)));
+  ASSERT_TRUE(initial_rfh.get());
+  EXPECT_FALSE(initial_rfh->is_initial_empty_document());
+  EXPECT_TRUE(initial_rfh->has_committed_any_navigation());
+  EXPECT_TRUE(initial_rfh->GetProcess()->IsUnused());
+
+  // Crash the initial process.  Note that this resets
+  // has_committed_any_navigation(), but is_initial_empty_document() is still
+  // false.
+  RenderProcessHostWatcher crash_observer(
+      initial_rfh->GetProcess(),
+      RenderProcessHostWatcher::WATCH_FOR_PROCESS_EXIT);
+  EXPECT_TRUE(initial_rfh->GetProcess()->Shutdown(0));
+  crash_observer.Wait();
+  EXPECT_FALSE(initial_rfh->is_initial_empty_document());
+  EXPECT_FALSE(initial_rfh->has_committed_any_navigation());
+
+  // Navigate from the crashed blank page to a WebUI URL.
+  const GURL web_ui_url(GetWebUIURL(kChromeUIHistogramHost));
+  EXPECT_TRUE(WebUIControllerFactoryRegistry::GetInstance()->UseWebUIForURL(
+      web_contents->GetBrowserContext(), web_ui_url));
+  ASSERT_TRUE(NavigateToURL(web_contents, web_ui_url));
+
+  // The explicit about:blank commit should prevent subsequent WebUI
+  // navigations from reusing the current RenderFrameHost, as it's no longer
+  // the initial one. Crashing the about:blank page shouldn't affect this, so
+  // the WebUI navigation should end up in a fresh SiteInstance and process.
+  EXPECT_NE(orig_site_instance, web_contents->GetSiteInstance());
+  EXPECT_NE(orig_site_instance->GetProcess(),
+            web_contents->GetPrimaryMainFrame()->GetProcess());
+
+  // Check that the resulting WebUI page has bindings, and its process is
+  // marked as used.
+  EXPECT_TRUE(ChildProcessSecurityPolicy::GetInstance()->HasWebUIBindings(
+      web_contents->GetPrimaryMainFrame()->GetProcess()->GetID()));
+  EXPECT_FALSE(web_contents->GetPrimaryMainFrame()->GetProcess()->IsUnused());
+}
+
+// Check that when over the process limit, a WebUI navigation in one tab does
+// not reuse an initial RFH's unused process in another unrelated tab.
+IN_PROC_BROWSER_TEST_F(WebUIImplBrowserTest,
+                       DoNotReuseInitialRenderFrameHostForDifferentTab) {
+  // Force all SiteInstances to always try to reuse an available process.
+  RenderProcessHost::SetMaxRendererProcessCount(1);
+
+  // Ensure the initial RenderFrameHost has an unused process to start with.
+  WebContents* web_contents = shell()->web_contents();
+  scoped_refptr<SiteInstance> orig_site_instance(
+      web_contents->GetSiteInstance());
+  RenderFrameHostWrapper initial_rfh(
+      shell()->web_contents()->GetPrimaryMainFrame());
+  EXPECT_TRUE(initial_rfh->GetProcess()->IsUnused());
+
+  // Create a new WebUI window in an unrelated SiteInstance. When the new
+  // SiteInstance obtains its process (as part of creating the initial RFH in
+  // the new WebContents), it should *not* reuse the initial process from the
+  // first window.  Despite being unused, that first process should only be
+  // allowed to be used by navigations in `shell()` and not other windows.  In
+  // practice, this matters for scenarios like chrome://*.top-chrome/ WebUI
+  // URLs, which should all share a single process, rather than reusing
+  // arbitrary unused processes from unrelated windows.
+  const GURL web_ui_url(GetWebUIURL(kChromeUIHistogramHost));
+  Shell* new_shell = Shell::CreateNewWindow(
+      shell()->web_contents()->GetBrowserContext(), GURL(),
+      SiteInstanceImpl::CreateForURL(
+          shell()->web_contents()->GetBrowserContext(), web_ui_url),
+      gfx::Size());
+  ASSERT_TRUE(NavigateToURL(new_shell->web_contents(), web_ui_url));
+  EXPECT_NE(initial_rfh->GetProcess(),
+            new_shell->web_contents()->GetPrimaryMainFrame()->GetProcess());
+  EXPECT_TRUE(initial_rfh->GetProcess()->IsUnused());
+
+  // Create a third window and ensure it shares a process with the second
+  // window, rather than reusing the still-unused process from the first window.
+  Shell* new_shell2 = Shell::CreateNewWindow(
+      shell()->web_contents()->GetBrowserContext(), GURL(),
+      SiteInstanceImpl::CreateForURL(
+          shell()->web_contents()->GetBrowserContext(), web_ui_url),
+      gfx::Size());
+  ASSERT_TRUE(NavigateToURL(new_shell2->web_contents(), web_ui_url));
+  EXPECT_NE(initial_rfh->GetProcess(),
+            new_shell2->web_contents()->GetPrimaryMainFrame()->GetProcess());
+  EXPECT_EQ(new_shell->web_contents()->GetPrimaryMainFrame()->GetProcess(),
+            new_shell2->web_contents()->GetPrimaryMainFrame()->GetProcess());
+  EXPECT_TRUE(initial_rfh->GetProcess()->IsUnused());
+}
+
+// Check that if two initial RenderFrameHosts in different tabs share a
+// process, and that process becomes locked to a normal web site after a
+// navigation in the first tab, then that process should not be reused for a
+// WebUI navigation in the second tab, even though it's still the initial
+// RFH's process in that tab.
+IN_PROC_BROWSER_TEST_F(WebUIImplBrowserTest,
+                       DoNotReuseInitialRenderFrameHostWithUsedProcess) {
+  // Force all SiteInstances to always try to reuse an available process.
+  RenderProcessHost::SetMaxRendererProcessCount(1);
+
+  // The test starts with an unused process in the initial RFH.
+  EXPECT_TRUE(
+      shell()->web_contents()->GetPrimaryMainFrame()->GetProcess()->IsUnused());
+
+  // Create a new tab with an unassigned SiteInstance.  That SiteInstance
+  // should reuse the available unused process from the first tab.
+  Shell* new_shell = Shell::CreateNewWindow(
+      shell()->web_contents()->GetBrowserContext(), GURL(),
+      SiteInstanceImpl::Create(shell()->web_contents()->GetBrowserContext()),
+      gfx::Size());
+  EXPECT_EQ(shell()->web_contents()->GetPrimaryMainFrame()->GetProcess(),
+            new_shell->web_contents()->GetPrimaryMainFrame()->GetProcess());
+  EXPECT_TRUE(
+      shell()->web_contents()->GetPrimaryMainFrame()->GetProcess()->IsUnused());
+
+  // Navigate first tab to a normal web URL.  This should mark the corresponding
+  // process as used, but the process is still shared with new_shell's RFH.
+  ASSERT_TRUE(embedded_test_server()->Start());
+  EXPECT_TRUE(
+      NavigateToURL(shell()->web_contents(),
+                    embedded_test_server()->GetURL("/simple_page.html")));
+  EXPECT_FALSE(new_shell->web_contents()
+                   ->GetPrimaryMainFrame()
+                   ->GetProcess()
+                   ->IsUnused());
+  EXPECT_EQ(shell()->web_contents()->GetPrimaryMainFrame()->GetProcess(),
+            new_shell->web_contents()->GetPrimaryMainFrame()->GetProcess());
+  EXPECT_FALSE(ChildProcessSecurityPolicy::GetInstance()->HasWebUIBindings(
+      shell()->web_contents()->GetPrimaryMainFrame()->GetProcess()->GetID()));
+
+  // Navigate the second tab to a WebUI URL.  This should not reuse the
+  // initial RFH's process and should end up in a new process.
+  const GURL web_ui_url(GetWebUIURL(kChromeUIHistogramHost));
+  ASSERT_TRUE(NavigateToURL(new_shell->web_contents(), web_ui_url));
+  EXPECT_NE(shell()->web_contents()->GetPrimaryMainFrame()->GetProcess(),
+            new_shell->web_contents()->GetPrimaryMainFrame()->GetProcess());
+  EXPECT_TRUE(ChildProcessSecurityPolicy::GetInstance()->HasWebUIBindings(
+      new_shell->web_contents()->GetPrimaryMainFrame()->GetProcess()->GetID()));
+}
+
+// Check that if two initial RenderFrameHosts in different tabs share a
+// process, then that process can be reused for a WebUI navigation in one of
+// these tabs.
+IN_PROC_BROWSER_TEST_F(WebUIImplBrowserTest,
+                       ReuseInitialProcessSharedByMultipleTabs) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+
+  // Force all SiteInstances to always try to reuse an available process.
+  RenderProcessHost::SetMaxRendererProcessCount(1);
+
+  // The test starts with an unused process in the initial RFH.
+  EXPECT_TRUE(
+      shell()->web_contents()->GetPrimaryMainFrame()->GetProcess()->IsUnused());
+
+  // Create a new tab with an unassigned SiteInstance.  That SiteInstance
+  // should reuse the available unused process from the first tab.
+  Shell* new_shell = Shell::CreateNewWindow(
+      shell()->web_contents()->GetBrowserContext(), GURL(),
+      SiteInstanceImpl::Create(shell()->web_contents()->GetBrowserContext()),
+      gfx::Size());
+  EXPECT_EQ(shell()->web_contents()->GetPrimaryMainFrame()->GetProcess(),
+            new_shell->web_contents()->GetPrimaryMainFrame()->GetProcess());
+  EXPECT_TRUE(
+      shell()->web_contents()->GetPrimaryMainFrame()->GetProcess()->IsUnused());
+
+  // Create a third tab, also with an unassigned SiteInstance and also reusing
+  // the first tab's initial process.
+  Shell* third_shell = Shell::CreateNewWindow(
+      shell()->web_contents()->GetBrowserContext(), GURL(),
+      SiteInstanceImpl::Create(shell()->web_contents()->GetBrowserContext()),
+      gfx::Size());
+  EXPECT_EQ(shell()->web_contents()->GetPrimaryMainFrame()->GetProcess(),
+            third_shell->web_contents()->GetPrimaryMainFrame()->GetProcess());
+
+  // Navigate the second tab to a WebUI URL.  This should reuse the
+  // initial process, lock it to the WebUI site, and mark it as used.
+  const GURL web_ui_url(GetWebUIURL(kChromeUIHistogramHost));
+  ASSERT_TRUE(NavigateToURL(new_shell->web_contents(), web_ui_url));
+  EXPECT_EQ(shell()->web_contents()->GetPrimaryMainFrame()->GetProcess(),
+            new_shell->web_contents()->GetPrimaryMainFrame()->GetProcess());
+  EXPECT_FALSE(
+      shell()->web_contents()->GetPrimaryMainFrame()->GetProcess()->IsUnused());
+  EXPECT_TRUE(ChildProcessSecurityPolicy::GetInstance()->HasWebUIBindings(
+      shell()->web_contents()->GetPrimaryMainFrame()->GetProcess()->GetID()));
+
+  // Navigate the first tab to a normal web URL.  This should not stay in the
+  // the initial process, which is now used by WebUI.
+  EXPECT_TRUE(
+      NavigateToURL(shell()->web_contents(),
+                    embedded_test_server()->GetURL("/simple_page.html")));
+  EXPECT_NE(shell()->web_contents()->GetPrimaryMainFrame()->GetProcess(),
+            new_shell->web_contents()->GetPrimaryMainFrame()->GetProcess());
+  EXPECT_FALSE(ChildProcessSecurityPolicy::GetInstance()->HasWebUIBindings(
+      shell()->web_contents()->GetPrimaryMainFrame()->GetProcess()->GetID()));
+  EXPECT_TRUE(ChildProcessSecurityPolicy::GetInstance()->HasWebUIBindings(
+      new_shell->web_contents()->GetPrimaryMainFrame()->GetProcess()->GetID()));
+
+  // Navigate the third tab to the same WebUI URL.  This should stay in the
+  // third tab's initial process which is shared with the second tab, since the
+  // second and third tab's WebUI URLs are same-site.
+  ASSERT_TRUE(NavigateToURL(third_shell->web_contents(), web_ui_url));
+  EXPECT_EQ(new_shell->web_contents()->GetPrimaryMainFrame()->GetProcess(),
+            third_shell->web_contents()->GetPrimaryMainFrame()->GetProcess());
+}
+
+// Check that when a tab with a WebUI page is cloned, the new tab reuses the old
+// tab's SiteInstance and process when it loads its copy of the WebUI page.
+IN_PROC_BROWSER_TEST_F(WebUIImplBrowserTest, ReuseProcessInClonedTab) {
+  // Load a normal page and then a WebUI page in the initial tab.
+  ASSERT_TRUE(embedded_test_server()->Start());
+  EXPECT_TRUE(
+      NavigateToURL(shell()->web_contents(),
+                    embedded_test_server()->GetURL("/simple_page.html")));
+
+  const GURL web_ui_url(GetWebUIURL(kChromeUIHistogramHost));
+  ASSERT_TRUE(NavigateToURL(shell()->web_contents(), web_ui_url));
+
+  // Clone the tab with these two NavigationEntries.
+  std::unique_ptr<WebContents> cloned_tab = shell()->web_contents()->Clone();
+  WebContentsImpl* cloned_tab_impl =
+      static_cast<WebContentsImpl*>(cloned_tab.get());
+  NavigationController& new_controller = cloned_tab_impl->GetController();
+  EXPECT_TRUE(new_controller.IsInitialNavigation());
+  EXPECT_TRUE(new_controller.NeedsReload());
+  EXPECT_EQ(2, new_controller.GetEntryCount());
+  EXPECT_EQ(1, new_controller.GetLastCommittedEntryIndex());
+
+  // The cloned WebContents will use the old tab's current SiteInstance for its
+  // initial RFH.  That means its initial SiteInstance should already have a
+  // site, and it should keep the same process (from the old tab).
+  // TODO(crbug.com/1468601): these expectations may change in the future if
+  // duplicating tabs stops inheriting the old tab's SiteInstance.
+  EXPECT_EQ(shell()->web_contents()->GetPrimaryMainFrame()->GetSiteInstance(),
+            cloned_tab->GetPrimaryMainFrame()->GetSiteInstance());
+  EXPECT_TRUE(
+      cloned_tab_impl->GetPrimaryMainFrame()->GetSiteInstance()->HasSite());
+  EXPECT_EQ(shell()->web_contents()->GetPrimaryMainFrame()->GetProcess(),
+            cloned_tab->GetPrimaryMainFrame()->GetProcess());
+  EXPECT_FALSE(
+      cloned_tab_impl->GetPrimaryMainFrame()->GetProcess()->IsUnused());
+
+  // Load the cloned tab.  This should reuse the old tab's WebUI process.
+  // TODO(crbug.com/1468601): this expectation may change in the future if
+  // duplicating tabs stops inheriting the old tab's SiteInstance.
+  {
+    TestNavigationObserver clone_observer(cloned_tab_impl);
+    new_controller.LoadIfNecessary();
+    clone_observer.Wait();
+  }
+  EXPECT_EQ(shell()->web_contents()->GetPrimaryMainFrame()->GetProcess(),
+            cloned_tab->GetPrimaryMainFrame()->GetProcess());
+}
+
+// Check that doing a session restore of a WebUI NavigationEntry in a new tab
+// can reuse the new tab's initial RFH.
+IN_PROC_BROWSER_TEST_F(WebUIImplBrowserTest, ReuseInitialRFHInRestoredTab) {
+  //  Load a WebUI URL.
+  const GURL web_ui_url(GetWebUIURL(kChromeUIHistogramHost));
+  ASSERT_TRUE(NavigateToURL(shell()->web_contents(), web_ui_url));
+  NavigationControllerImpl& controller = static_cast<NavigationControllerImpl&>(
+      shell()->web_contents()->GetController());
+  NavigationEntryImpl* entry = controller.GetLastCommittedEntry();
+
+  // Create a NavigationEntry with the same PageState as the current entry.
+  std::unique_ptr<NavigationEntryImpl> restored_entry =
+      NavigationEntryImpl::FromNavigationEntry(
+          NavigationController::CreateNavigationEntry(
+              web_ui_url, Referrer(), std::nullopt /* initiator_origin= */,
+              /* initiator_base_url= */ std::nullopt,
+              ui::PAGE_TRANSITION_RELOAD, false, std::string(),
+              controller.GetBrowserContext(),
+              nullptr /* blob_url_loader_factory */));
+  std::unique_ptr<NavigationEntryRestoreContextImpl> context =
+      std::make_unique<NavigationEntryRestoreContextImpl>();
+  restored_entry->SetPageState(entry->GetPageState(), context.get());
+
+  // Create a new shell for session restore. At this point, since we haven't
+  // loaded anything yet, the restored shell's initial RFH should still be in an
+  // unassigned SiteInstance and an unused process.
+  Shell* restore_shell = Shell::CreateNewWindow(controller.GetBrowserContext(),
+                                                GURL(), nullptr, gfx::Size());
+  WebContentsImpl* restore_contents =
+      static_cast<WebContentsImpl*>(restore_shell->web_contents());
+  RenderFrameHostWrapper restore_rfh(restore_contents->GetPrimaryMainFrame());
+  scoped_refptr<SiteInstance> restore_site_instance(
+      restore_rfh->GetSiteInstance());
+  EXPECT_TRUE(restore_rfh->GetProcess()->IsUnused());
+  EXPECT_FALSE(
+      static_cast<SiteInstanceImpl*>(restore_site_instance.get())->HasSite());
+  EXPECT_FALSE(ChildProcessSecurityPolicy::GetInstance()->HasWebUIBindings(
+      restore_rfh->GetProcess()->GetID()));
+  EXPECT_NE(shell()->web_contents()->GetPrimaryMainFrame()->GetSiteInstance(),
+            restore_site_instance);
+
+  // Restore and load the WebUI entry in the new shell.
+  std::vector<std::unique_ptr<NavigationEntry>> entries;
+  entries.push_back(std::move(restored_entry));
+  NavigationControllerImpl& restore_controller =
+      restore_contents->GetController();
+  restore_controller.Restore(entries.size() - 1, RestoreType::kRestored,
+                             &entries);
+  ASSERT_EQ(0u, entries.size());
+  EXPECT_EQ(1, restore_controller.GetEntryCount());
+  {
+    TestNavigationObserver restore_observer(restore_contents);
+    restore_controller.LoadIfNecessary();
+    restore_observer.Wait();
+  }
+  // The initial RFH should be reused by the restored WebUI navigation, its
+  // SiteInstance should now have a site, and its process should now be marked
+  // as used and gain WebUI bindings.  Note that SiteInstances and
+  // BrowsingInstances are not currently persisted in session history, so this
+  // does not load in the original tab's SiteInstance and BrowsingInstance. This
+  // could change in the future.
+  EXPECT_EQ(restore_contents->GetPrimaryMainFrame()->GetSiteInstance(),
+            restore_site_instance);
+  EXPECT_TRUE(
+      static_cast<SiteInstanceImpl*>(restore_site_instance.get())->HasSite());
+  EXPECT_EQ(restore_contents->GetPrimaryMainFrame(), restore_rfh.get());
+  ASSERT_TRUE(restore_rfh.get());
+  EXPECT_FALSE(restore_rfh->GetProcess()->IsUnused());
+  EXPECT_TRUE(ChildProcessSecurityPolicy::GetInstance()->HasWebUIBindings(
+      restore_rfh->GetProcess()->GetID()));
 }
 
 // Tests that navigating from chrome:// to chrome-untrusted:// results in
@@ -310,8 +710,9 @@ IN_PROC_BROWSER_TEST_F(WebUIImplBrowserTest, SameDocumentNavigationsAndReload) {
   auto* web_contents = shell()->web_contents();
   ASSERT_TRUE(NavigateToURL(web_contents, GetWebUIURL(kChromeUIHistogramHost)));
 
-  WebUIMessageHandler* test_handler = new TestWebUIMessageHandler;
-  web_contents->GetWebUI()->AddMessageHandler(base::WrapUnique(test_handler));
+  auto owned_test_handler = std::make_unique<TestWebUIMessageHandler>();
+  auto* test_handler = owned_test_handler.get();
+  web_contents->GetWebUI()->AddMessageHandler(std::move(owned_test_handler));
   test_handler->AllowJavascriptForTesting();
 
   // Push onto window.history. Back should now be an in-page navigation.
@@ -335,9 +736,9 @@ IN_PROC_BROWSER_TEST_F(WebUIImplBrowserTest, SameDocumentNavigationsAndReload) {
     // `TestWebUIMessageHandler` will point to a stale WebUI and we can't check
     // the `IsJavascriptAllowed()` value there. So use a new handler here and
     // check the value on the new handler instead.
-    WebUIMessageHandler* test_handler2 = new TestWebUIMessageHandler;
-    web_contents->GetWebUI()->AddMessageHandler(
-        base::WrapUnique(test_handler2));
+    auto owned_test_handler2 = std::make_unique<TestWebUIMessageHandler>();
+    auto* test_handler2 = owned_test_handler2.get();
+    web_contents->GetWebUI()->AddMessageHandler(std::move(owned_test_handler2));
     EXPECT_FALSE(test_handler2->IsJavascriptAllowed());
   }
 }
@@ -429,8 +830,9 @@ IN_PROC_BROWSER_TEST_F(WebUIImplBrowserTest, DISABLED_NavigateWhileWebUISend) {
   auto* web_contents = shell()->web_contents();
   ASSERT_TRUE(NavigateToURL(web_contents, GetWebUIURL(kChromeUIGpuHost)));
 
-  auto* test_handler = new TestWebUIMessageHandler;
-  web_contents->GetWebUI()->AddMessageHandler(base::WrapUnique(test_handler));
+  auto owned_test_handler = std::make_unique<TestWebUIMessageHandler>();
+  auto* test_handler = owned_test_handler.get();
+  web_contents->GetWebUI()->AddMessageHandler(std::move(owned_test_handler));
 
   auto* webui = static_cast<WebUIImpl*>(web_contents->GetWebUI());
   EXPECT_EQ(web_contents->GetPrimaryMainFrame(), webui->GetRenderFrameHost());

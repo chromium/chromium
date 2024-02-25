@@ -1,0 +1,14 @@
+include_rules = [
+  "+ios/chrome/browser/ui/scanner",
+  "+ios/chrome/browser/ui/location_bar",
+  "+ios/chrome/browser/url_loading/model",
+  "+ios/chrome/browser/search_engines/model/template_url_service_factory.h",
+]
+
+specific_include_rules = {
+  # web::HttpServer is deprecated in favor of net::EmbeddedTestServer.
+  # TODO:(crbug.com/891834) Remove this exception.
+  "qr_scanner_view_controller_egtest\.mm": [
+    "+ios/web/public/test/http_server",
+  ],
+}

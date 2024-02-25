@@ -6,6 +6,7 @@
 #define COMPONENTS_VIZ_SERVICE_SURFACES_SURFACE_SAVED_FRAME_H_
 
 #include <memory>
+#include <optional>
 #include <vector>
 
 #include "base/containers/flat_map.h"
@@ -16,7 +17,6 @@
 #include "components/viz/common/quads/compositor_render_pass.h"
 #include "components/viz/common/resources/release_callback.h"
 #include "components/viz/service/viz_service_export.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace viz {
 
@@ -68,7 +68,7 @@ class VIZ_SERVICE_EXPORT SurfaceSavedFrame {
 
     FrameResult& operator=(FrameResult&& other);
 
-    std::vector<absl::optional<OutputCopyResult>> shared_results;
+    std::vector<std::optional<OutputCopyResult>> shared_results;
     base::flat_set<ViewTransitionElementResourceId> empty_resource_ids;
   };
 
@@ -85,7 +85,7 @@ class VIZ_SERVICE_EXPORT SurfaceSavedFrame {
   // frame.
   void RequestCopyOfOutput(Surface* surface);
 
-  [[nodiscard]] absl::optional<FrameResult> TakeResult();
+  [[nodiscard]] std::optional<FrameResult> TakeResult();
 
   // For testing functionality that ensures that we have a valid frame.
   void CompleteSavedFrameForTesting();
@@ -134,7 +134,7 @@ class VIZ_SERVICE_EXPORT SurfaceSavedFrame {
   CompositorFrameTransitionDirective directive_;
   TransitionDirectiveCompleteCallback directive_finished_callback_;
 
-  absl::optional<FrameResult> frame_result_;
+  std::optional<FrameResult> frame_result_;
 
   // This is the number of copy requests we requested. We decrement this value
   // anytime we get a result back. When it reaches 0, we notify that this frame

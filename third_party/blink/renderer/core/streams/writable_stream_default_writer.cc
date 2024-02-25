@@ -74,8 +74,8 @@ WritableStreamDefaultWriter::WritableStreamDefaultWriter(
       //         a new promise.
       if (!WritableStream::CloseQueuedOrInFlight(stream) &&
           stream->HasBackpressure()) {
-        ready_promise_ =
-            MakeGarbageCollected<StreamPromiseResolver>(script_state);
+        ready_promise_ = MakeGarbageCollected<StreamPromiseResolver>(
+            script_state, exception_state);
       } else {
         //      b. Otherwise, set this.[[readyPromise]] to a promise resolved
         //         with undefined.
@@ -83,8 +83,8 @@ WritableStreamDefaultWriter::WritableStreamDefaultWriter(
             StreamPromiseResolver::CreateResolvedWithUndefined(script_state);
       }
       //      c. Set this.[[closedPromise]] to a new promise.
-      closed_promise_ =
-          MakeGarbageCollected<StreamPromiseResolver>(script_state);
+      closed_promise_ = MakeGarbageCollected<StreamPromiseResolver>(
+          script_state, exception_state);
       break;
     }
 
@@ -99,8 +99,8 @@ WritableStreamDefaultWriter::WritableStreamDefaultWriter(
       ready_promise_->MarkAsHandled(isolate);
 
       //      c. Set this.[[closedPromise]] to a new promise.
-      closed_promise_ =
-          MakeGarbageCollected<StreamPromiseResolver>(script_state);
+      closed_promise_ = MakeGarbageCollected<StreamPromiseResolver>(
+          script_state, exception_state);
       break;
     }
 
@@ -271,8 +271,8 @@ ScriptPromise WritableStreamDefaultWriter::write(
   }
 
   //  3. Return ! WritableStreamDefaultWriterWrite(this, chunk).
-  return ScriptPromise(script_state,
-                       Write(script_state, this, chunk.V8Value()));
+  return ScriptPromise(script_state, Write(script_state, this, chunk.V8Value(),
+                                           exception_state));
 }
 
 void WritableStreamDefaultWriter::EnsureReadyPromiseRejected(
@@ -369,7 +369,8 @@ void WritableStreamDefaultWriter::Release(ScriptState* script_state,
 v8::Local<v8::Promise> WritableStreamDefaultWriter::Write(
     ScriptState* script_state,
     WritableStreamDefaultWriter* writer,
-    v8::Local<v8::Value> chunk) {
+    v8::Local<v8::Value> chunk,
+    ExceptionState& exception_state) {
   // https://streams.spec.whatwg.org/#writable-stream-default-writer-write
   //  1. Let stream be writer.[[ownerWritableStream]].
   WritableStream* stream = writer->owner_writable_stream_;
@@ -384,7 +385,7 @@ v8::Local<v8::Promise> WritableStreamDefaultWriter::Write(
   //  4. Let chunkSize be !
   //     WritableStreamDefaultControllerGetChunkSize(controller, chunk).
   double chunk_size = WritableStreamDefaultController::GetChunkSize(
-      script_state, controller, chunk);
+      script_state, controller, chunk, exception_state);
 
   //  5. If stream is not equal to writer.[[ownerWritableStream]], return a
   //     promise rejected with a TypeError exception.
@@ -433,13 +434,13 @@ v8::Local<v8::Promise> WritableStreamDefaultWriter::Write(
   // 12. Perform ! WritableStreamDefaultControllerWrite(controller, chunk,
   //     chunkSize).
   WritableStreamDefaultController::Write(script_state, controller, chunk,
-                                         chunk_size);
+                                         chunk_size, exception_state);
 
   // 13. Return promise.
   return promise;
 }
 
-absl::optional<double> WritableStreamDefaultWriter::GetDesiredSizeInternal()
+std::optional<double> WritableStreamDefaultWriter::GetDesiredSizeInternal()
     const {
   // https://streams.spec.whatwg.org/#writable-stream-default-writer-get-desired-size
   //  1. Let stream be writer.[[ownerWritableStream]].
@@ -452,7 +453,7 @@ absl::optional<double> WritableStreamDefaultWriter::GetDesiredSizeInternal()
     //  3. If state is "errored" or "erroring", return null.
     case WritableStream::kErrored:
     case WritableStream::kErroring:
-      return absl::nullopt;
+      return std::nullopt;
 
       //  4. If state is "closed", return 0.
     case WritableStream::kClosed:
@@ -538,7 +539,7 @@ v8::Local<v8::Value> WritableStreamDefaultWriter::GetDesiredSize(
   //  1. Let stream be writer.[[ownerWritableStream]].
   //  2. Let state be stream.[[state]].
   //  3. If state is "errored" or "erroring", return null.
-  absl::optional<double> desired_size = writer->GetDesiredSizeInternal();
+  std::optional<double> desired_size = writer->GetDesiredSizeInternal();
   if (!desired_size.has_value()) {
     return v8::Null(isolate);
   }

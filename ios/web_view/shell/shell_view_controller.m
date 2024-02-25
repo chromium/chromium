@@ -269,6 +269,8 @@ NSString* const kWebViewShellJavaScriptDialogTextFieldAccessibilityIdentifier =
   [CWVWebView setUserAgentProduct:@"Dummy/1.0"];
   CWVWebView.chromeContextMenuEnabled = YES;
 
+  CWVWebView.webInspectorEnabled = YES;
+
   _authService = [[ShellAuthService alloc] init];
   CWVSyncController.dataSource = _authService;
 
@@ -1307,7 +1309,7 @@ NSString* const kWebViewShellJavaScriptDialogTextFieldAccessibilityIdentifier =
     requestMediaCapturePermissionForType:(CWVMediaCaptureType)type
                          decisionHandler:
                              (void (^)(CWVPermissionDecision decision))
-                                 decisionHandler API_AVAILABLE(ios(15.0)) {
+                                 decisionHandler {
   NSString* mediaCaptureType;
   switch (type) {
     case CWVMediaCaptureTypeCamera:

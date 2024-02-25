@@ -45,9 +45,22 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Input.ToolType.Android" units="tool type"
+    expires_after="2024-07-21">
+  <owner>alexmitra@chromium.org</owner>
+  <owner>flackr@chromium.org</owner>
+  <owner>peconn@chromium.org</owner>
+  <summary>
+    Records tool type values which are sent to Chrome or WebView from Android
+    when a touch event happens. This includes both valid and invalid tool types
+    and can be used both to see which invalid tool types are being sent and the
+    proportion of touch events that are sent with invalid tool types.
+  </summary>
+</histogram>
+
 <histogram name="InputMethod.ActiveCount" units="units"
-    expires_after="2024-01-14">
-  <owner>myy@chromium.org</owner>
+    expires_after="2024-11-01">
+  <owner>shend@chromium.org</owner>
   <owner>essential-inputs-team@google.com</owner>
   <summary>
     The number of enabled input methods. Recorded when the user logs in to
@@ -61,7 +74,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="InputMethod.Assistive.Autocorrect.Actions"
-    enum="IMEAutocorrectActions" expires_after="2024-02-04">
+    enum="IMEAutocorrectActions" expires_after="2024-11-01">
   <owner>jopalmer@google.com</owner>
   <owner>essential-inputs-team@google.com</owner>
   <summary>
@@ -71,18 +84,20 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="InputMethod.Assistive.Autocorrect.Actions.VK"
-    enum="IMEAutocorrectActions" expires_after="2022-12-01">
+    enum="IMEAutocorrectActions" expires_after="2024-11-01">
   <owner>jopalmer@google.com</owner>
   <owner>essential-inputs-team@google.com</owner>
   <summary>
-    The actions taken by assistive autocorrect, such as underlining a word.
-    Recorded after an action is performed when the Virtual Keyboard is visible.
+    Warning: this histogram was expired from 2022-12 to 2023-11; data may be
+    missing. The actions taken by assistive autocorrect, such as underlining a
+    word. Recorded after an action is performed when the Virtual Keyboard is
+    visible.
   </summary>
 </histogram>
 
 <histogram name="InputMethod.Assistive.Autocorrect.Count"
-    enum="IMETextInputClient" expires_after="2023-12-01">
-  <owner>myy@google.com</owner>
+    enum="IMETextInputClient" expires_after="2024-11-01">
+  <owner>mehrab@google.com</owner>
   <owner>essential-inputs-team@google.com</owner>
   <summary>
     Tracks when assistive autocorrect is performed by a text input client.
@@ -92,7 +107,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="InputMethod.Assistive.Autocorrect.Delay" units="ms"
-    expires_after="2023-12-01">
+    expires_after="2024-11-01">
   <owner>jopalmer@google.com</owner>
   <owner>essential-inputs-team@google.com</owner>
   <summary>
@@ -102,7 +117,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="InputMethod.Assistive.AutocorrectV2.Actions.PK"
-    enum="IMEAutocorrectActions" expires_after="2024-02-04">
+    enum="IMEAutocorrectActions" expires_after="2024-11-01">
   <owner>mehrab@google.com</owner>
   <owner>essential-inputs-team@google.com</owner>
   <summary>
@@ -114,7 +129,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="InputMethod.Assistive.AutocorrectV2.Actions.PK.EnabledByDefault"
-    enum="IMEAutocorrectActions" expires_after="2024-02-04">
+    enum="IMEAutocorrectActions" expires_after="2024-11-01">
   <owner>zacpartridge@google.com</owner>
   <owner>essential-inputs-team@google.com</owner>
   <summary>
@@ -126,7 +141,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="InputMethod.Assistive.AutocorrectV2.Actions.VK"
-    enum="IMEAutocorrectActions" expires_after="2024-02-04">
+    enum="IMEAutocorrectActions" expires_after="2024-11-01">
   <owner>mehrab@google.com</owner>
   <owner>essential-inputs-team@google.com</owner>
   <summary>
@@ -138,7 +153,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="InputMethod.Assistive.AutocorrectV2.Distance.OriginalLengthVsLevenshteinDistance.{Keyboard}{Interaction}"
-    units="Distance" expires_after="2023-12-01">
+    units="Distance" expires_after="2024-11-01">
   <owner>zacpartridge@google.com</owner>
   <owner>essential-inputs-team@google.com</owner>
   <summary>
@@ -162,7 +177,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="InputMethod.Assistive.AutocorrectV2.Distance.SuggestedLength.{Keyboard}{Interaction}"
-    units="chars" expires_after="2023-12-01">
+    units="chars" expires_after="2024-11-01">
   <owner>zacpartridge@google.com</owner>
   <owner>essential-inputs-team@google.com</owner>
   <summary>
@@ -180,7 +195,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="InputMethod.Assistive.AutocorrectV2.Internal.PkState"
-    enum="IMEAutocorrectInternalStates" expires_after="2024-02-20">
+    enum="IMEAutocorrectInternalStates" expires_after="2024-11-01">
   <owner>mehrab@google.com</owner>
   <owner>essential-inputs-team@google.com</owner>
   <summary>
@@ -199,7 +214,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="InputMethod.Assistive.AutocorrectV2.Internal.PkState.EnabledByDefault"
-    enum="IMEAutocorrectInternalStates" expires_after="2023-12-01">
+    enum="IMEAutocorrectInternalStates" expires_after="2024-11-01">
   <owner>zacpartridge@google.com</owner>
   <owner>essential-inputs-team@google.com</owner>
   <summary>
@@ -217,7 +232,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="InputMethod.Assistive.AutocorrectV2.Internal.VkState"
-    enum="IMEAutocorrectInternalStates" expires_after="2024-02-11">
+    enum="IMEAutocorrectInternalStates" expires_after="2024-11-01">
   <owner>mehrab@google.com</owner>
   <owner>essential-inputs-team@google.com</owner>
   <summary>
@@ -235,7 +250,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="InputMethod.Assistive.AutocorrectV2.Latency.Accept" units="ms"
-    expires_after="2023-12-01">
+    expires_after="2024-11-01">
   <owner>mehrab@google.com</owner>
   <owner>essential-inputs-team@google.com</owner>
   <summary>
@@ -247,7 +262,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="InputMethod.Assistive.AutocorrectV2.Latency.Accept.EnabledByDefault"
-    units="ms" expires_after="2023-12-01">
+    units="ms" expires_after="2024-11-01">
   <owner>zacpartridge@google.com</owner>
   <owner>essential-inputs-team@google.com</owner>
   <summary>
@@ -258,7 +273,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="InputMethod.Assistive.AutocorrectV2.Latency.ExitField"
-    units="ms" expires_after="2024-02-20">
+    units="ms" expires_after="2024-11-01">
   <owner>mehrab@google.com</owner>
   <owner>essential-inputs-team@google.com</owner>
   <summary>
@@ -270,7 +285,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="InputMethod.Assistive.AutocorrectV2.Latency.ExitField.EnabledByDefault"
-    units="ms" expires_after="2023-12-01">
+    units="ms" expires_after="2024-11-01">
   <owner>zacpartridge@google.com</owner>
   <owner>essential-inputs-team@google.com</owner>
   <summary>
@@ -281,7 +296,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="InputMethod.Assistive.AutocorrectV2.Latency.PkPending"
-    units="ms" expires_after="2023-12-01">
+    units="ms" expires_after="2024-11-01">
   <owner>mehrab@google.com</owner>
   <owner>essential-inputs-team@google.com</owner>
   <summary>
@@ -294,7 +309,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="InputMethod.Assistive.AutocorrectV2.Latency.Reject" units="ms"
-    expires_after="2023-12-01">
+    expires_after="2024-11-01">
   <owner>mehrab@google.com</owner>
   <owner>essential-inputs-team@google.com</owner>
   <summary>
@@ -306,7 +321,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="InputMethod.Assistive.AutocorrectV2.Latency.Reject.EnabledByDefault"
-    units="ms" expires_after="2023-12-01">
+    units="ms" expires_after="2024-11-01">
   <owner>mehrab@google.com</owner>
   <owner>essential-inputs-team@google.com</owner>
   <summary>
@@ -318,7 +333,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="InputMethod.Assistive.AutocorrectV2.Latency.VkPending"
-    units="ms" expires_after="2023-12-01">
+    units="ms" expires_after="2024-11-01">
   <owner>mehrab@google.com</owner>
   <owner>essential-inputs-team@google.com</owner>
   <summary>
@@ -332,7 +347,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="InputMethod.Assistive.AutocorrectV2.PkUserPreference.{Language}"
-    enum="IMEAutocorrectPreference" expires_after="2024-02-20">
+    enum="IMEAutocorrectPreference" expires_after="2024-11-01">
   <owner>mehrab@google.com</owner>
   <owner>essential-inputs-team@google.com</owner>
   <summary>
@@ -350,7 +365,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="InputMethod.Assistive.AutocorrectV2.Quality.PkAccepted"
-    enum="IMEAutocorrectQualityBreakdown" expires_after="2024-02-04">
+    enum="IMEAutocorrectQualityBreakdown" expires_after="2024-11-01">
   <owner>mehrab@google.com</owner>
   <owner>essential-inputs-team@google.com</owner>
   <summary>
@@ -365,7 +380,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="InputMethod.Assistive.AutocorrectV2.Quality.PkAccepted.EnabledByDefault"
-    enum="IMEAutocorrectQualityBreakdown" expires_after="2023-12-01">
+    enum="IMEAutocorrectQualityBreakdown" expires_after="2024-11-01">
   <owner>mehrab@google.com</owner>
   <owner>essential-inputs-team@google.com</owner>
   <summary>
@@ -379,7 +394,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="InputMethod.Assistive.AutocorrectV2.Quality.PkRejected"
-    enum="IMEAutocorrectQualityBreakdown" expires_after="2023-12-01">
+    enum="IMEAutocorrectQualityBreakdown" expires_after="2024-11-01">
   <owner>mehrab@google.com</owner>
   <owner>essential-inputs-team@google.com</owner>
   <summary>
@@ -394,7 +409,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="InputMethod.Assistive.AutocorrectV2.Quality.PkRejected.EnabledByDefault"
-    enum="IMEAutocorrectQualityBreakdown" expires_after="2023-12-01">
+    enum="IMEAutocorrectQualityBreakdown" expires_after="2024-11-01">
   <owner>mehrab@google.com</owner>
   <owner>essential-inputs-team@google.com</owner>
   <summary>
@@ -408,7 +423,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="InputMethod.Assistive.AutocorrectV2.Quality.VkAccepted"
-    enum="IMEAutocorrectQualityBreakdown" expires_after="2023-12-01">
+    enum="IMEAutocorrectQualityBreakdown" expires_after="2024-11-01">
   <owner>mehrab@google.com</owner>
   <owner>essential-inputs-team@google.com</owner>
   <summary>
@@ -422,7 +437,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="InputMethod.Assistive.AutocorrectV2.Quality.VkRejected"
-    enum="IMEAutocorrectQualityBreakdown" expires_after="2023-12-01">
+    enum="IMEAutocorrectQualityBreakdown" expires_after="2024-11-01">
   <owner>mehrab@google.com</owner>
   <owner>essential-inputs-team@google.com</owner>
   <summary>
@@ -436,7 +451,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="InputMethod.Assistive.AutocorrectV2.Rejection.{Keyboard}"
-    enum="IMEAutocorrectRejectionBreakdown" expires_after="2023-12-01">
+    enum="IMEAutocorrectRejectionBreakdown" expires_after="2024-11-01">
   <owner>zacpartridge@google.com</owner>
   <owner>essential-inputs-team@google.com</owner>
   <summary>
@@ -451,7 +466,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="InputMethod.Assistive.AutocorrectV2.SuggestionProvider.Pk"
-    enum="IMEAutocorrectSuggestionProvider" expires_after="2024-02-20">
+    enum="IMEAutocorrectSuggestionProvider" expires_after="2024-11-01">
   <owner>curtismcmullan@google.com</owner>
   <owner>essential-inputs-team@google.com</owner>
   <summary>
@@ -463,7 +478,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="InputMethod.Assistive.AutocorrectV2.UndoWindow.LearnMoreButtonShown"
-    enum="Boolean" expires_after="2023-12-01">
+    enum="Boolean" expires_after="2024-11-01">
   <owner>zacpartridge@google.com</owner>
   <owner>essential-inputs-team@google.com</owner>
   <summary>
@@ -475,7 +490,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="InputMethod.Assistive.AutocorrectV2.UserPrefChange.{Language}.{Type}"
-    enum="IMEAutocorrectPrefStateTransition" expires_after="2024-02-20">
+    enum="IMEAutocorrectPrefStateTransition" expires_after="2024-11-01">
   <owner>curtismcmullan@google.com</owner>
   <owner>essential-inputs-team@google.com</owner>
   <summary>
@@ -495,7 +510,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="InputMethod.Assistive.AutocorrectV2.UserPrefChange.{Type}.{Language}"
-    enum="IMEAutocorrectPrefStateTransition" expires_after="2023-12-01">
+    enum="IMEAutocorrectPrefStateTransition" expires_after="2024-11-01">
   <owner>curtismcmullan@google.com</owner>
   <owner>essential-inputs-team@google.com</owner>
   <summary>
@@ -516,7 +531,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="InputMethod.Assistive.CandidateGenerationTime.MultiWord"
-    units="ms" expires_after="2023-12-01">
+    units="ms" expires_after="2024-11-01">
   <owner>curtismcmullan@google.com</owner>
   <owner>essential-inputs-team@google.com</owner>
   <summary>
@@ -527,7 +542,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="InputMethod.Assistive.Coverage" enum="IMEAssistiveAction"
-    expires_after="2024-02-20">
+    expires_after="2024-11-01">
   <owner>jiwan@google.com</owner>
   <owner>essential-inputs-team@google.com</owner>
   <summary>
@@ -537,7 +552,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="InputMethod.Assistive.Disabled" enum="IMEAssistiveAction"
-    expires_after="2024-02-04">
+    expires_after="2024-11-01">
   <owner>jiwan@google.com</owner>
   <owner>essential-inputs-team@google.com</owner>
   <summary>
@@ -549,19 +564,20 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="InputMethod.Assistive.Disabled.Emoji"
-    enum="IMEAssistiveDisabledReason" expires_after="2023-08-01">
-  <owner>myy@google.com</owner>
+    enum="IMEAssistiveDisabledReason" expires_after="2024-11-01">
+  <owner>curtismcmullan@google.com</owner>
   <owner>essential-inputs-team@google.com</owner>
   <summary>
-    The reason for emoji suggestions not being shown to users. Recorded when the
-    surrounding text could trigger emoji suggestions but the feature was
-    disabled. Only the first applicable reason in IMEAssistiveDisabledReason
+    Warning: this histogram was expired from 2023-08 to 2023-11; data may be
+    missing. The reason for emoji suggestions not being shown to users. Recorded
+    when the surrounding text could trigger emoji suggestions but the feature
+    was disabled. Only the first applicable reason in IMEAssistiveDisabledReason
     enum is recorded per occurrence.
   </summary>
 </histogram>
 
 <histogram name="InputMethod.Assistive.Disabled.MultiWord"
-    enum="IMEAssistiveDisabledReason" expires_after="2023-12-01">
+    enum="IMEAssistiveDisabledReason" expires_after="2024-11-01">
   <owner>curtismcmullan@google.com</owner>
   <owner>essential-inputs-team@google.com</owner>
   <summary>
@@ -585,18 +601,19 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="InputMethod.Assistive.EmojiSuggestAddition.AcceptanceIndex"
-    units="times" expires_after="2022-05-01">
-  <owner>myy@google.com</owner>
+    units="times" expires_after="2024-11-01">
+  <owner>curtismcmullan@google.com</owner>
   <owner>essential-inputs-team@google.com</owner>
   <summary>
-    The number of times an emoji suggest addition is accepted at a given index.
-    Recorded when an user accepts an emoji suggestion appeared after typing an
-    emoji-triggered word.
+    Warning: this histogram was expired from 2022-05 to 2023-11; data may be
+    missing. The number of times an emoji suggest addition is accepted at a
+    given index. Recorded when an user accepts an emoji suggestion appeared
+    after typing an emoji-triggered word.
   </summary>
 </histogram>
 
 <histogram name="InputMethod.Assistive.Grammar.Actions"
-    enum="IMEGrammarActions" expires_after="2023-12-24">
+    enum="IMEGrammarActions" expires_after="2024-11-01">
   <owner>jiwan@google.com</owner>
   <owner>essential-inputs-team@google.com</owner>
   <summary>
@@ -605,22 +622,8 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="InputMethod.Assistive.Grammar.CapitalizationCorrection"
-    enum="IMEGrammarActions" expires_after="2022-03-31">
-  <obsolete>
-    Removed in M100.
-  </obsolete>
-  <owner>jiwan@google.com</owner>
-  <owner>essential-inputs-team@google.com</owner>
-  <summary>
-    The actions taken by on-device grammar checker, such as underlining a word.
-    Recorded after a grammar checker action is performed and the suggestion is
-    only correcting the capitalization of the text.
-  </summary>
-</histogram>
-
 <histogram name="InputMethod.Assistive.Grammar.Count" enum="IMETextInputClient"
-    expires_after="2023-10-22">
+    expires_after="2024-11-01">
   <owner>curtismcmullan@google.com</owner>
   <owner>essential-inputs-team@google.com</owner>
   <summary>
@@ -630,19 +633,8 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="InputMethod.Assistive.InsufficientData"
-    enum="IMEAssistiveAction" expires_after="2022-09-30">
-  <owner>jiwan@google.com</owner>
-  <owner>essential-inputs-team@google.com</owner>
-  <summary>
-    The number of times each assistive action could be triggered but there is
-    insufficient data to generate the suggestion. Recorded when we failed to
-    generate suggestions because of insufficient data.
-  </summary>
-</histogram>
-
 <histogram name="InputMethod.Assistive.Match" enum="IMEAssistiveAction"
-    expires_after="2024-02-20">
+    expires_after="2024-11-01">
   <owner>jiwan@google.com</owner>
   <owner>essential-inputs-team@google.com</owner>
   <summary>
@@ -655,7 +647,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="InputMethod.Assistive.MultiWord.CandidatesGenerated"
-    enum="IMEAssistiveMultiWordSuggestionType" expires_after="2023-12-01">
+    enum="IMEAssistiveMultiWordSuggestionType" expires_after="2024-11-01">
   <owner>curtismcmullan@google.com</owner>
   <owner>essential-inputs-team@google.com</owner>
   <summary>
@@ -666,7 +658,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="InputMethod.Assistive.MultiWord.CouldPossiblyShowSuggestion"
-    enum="IMEAssistiveMultiWordSuggestionType" expires_after="2023-12-01">
+    enum="IMEAssistiveMultiWordSuggestionType" expires_after="2024-11-01">
   <owner>curtismcmullan@google.com</owner>
   <owner>essential-inputs-team@google.com</owner>
   <summary>
@@ -681,7 +673,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="InputMethod.Assistive.MultiWord.EmptyCandidate"
-    enum="IMEAssistiveMultiWordSuggestionType" expires_after="2023-12-01">
+    enum="IMEAssistiveMultiWordSuggestionType" expires_after="2024-11-01">
   <owner>curtismcmullan@google.com</owner>
   <owner>essential-inputs-team@google.com</owner>
   <summary>
@@ -694,7 +686,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="InputMethod.Assistive.MultiWord.ImplicitAcceptance"
-    enum="IMEAssistiveMultiWordSuggestionType" expires_after="2024-02-04">
+    enum="IMEAssistiveMultiWordSuggestionType" expires_after="2024-11-01">
   <owner>curtismcmullan@google.com</owner>
   <owner>essential-inputs-team@google.com</owner>
   <summary>
@@ -706,7 +698,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="InputMethod.Assistive.MultiWord.ImplicitRejection"
-    enum="IMEAssistiveMultiWordSuggestionType" expires_after="2024-02-04">
+    enum="IMEAssistiveMultiWordSuggestionType" expires_after="2024-11-01">
   <owner>curtismcmullan@google.com</owner>
   <owner>essential-inputs-team@google.com</owner>
   <summary>
@@ -717,7 +709,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="InputMethod.Assistive.MultiWord.InputState"
-    enum="IMEAssistiveTextInputState" expires_after="2024-02-04">
+    enum="IMEAssistiveTextInputState" expires_after="2024-11-01">
   <owner>curtismcmullan@google.com</owner>
   <owner>essential-inputs-team@google.com</owner>
   <summary>
@@ -729,7 +721,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="InputMethod.Assistive.MultiWord.PrecedingTextLength"
-    units="chars" expires_after="2023-12-01">
+    units="chars" expires_after="2024-11-01">
   <owner>curtismcmullan@google.com</owner>
   <owner>essential-inputs-team@google.com</owner>
   <summary>
@@ -740,7 +732,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="InputMethod.Assistive.MultiWord.RequestCandidates"
-    enum="IMEAssistiveMultiWordSuggestionType" expires_after="2023-12-01">
+    enum="IMEAssistiveMultiWordSuggestionType" expires_after="2024-11-01">
   <owner>curtismcmullan@google.com</owner>
   <owner>essential-inputs-team@google.com</owner>
   <summary>
@@ -751,7 +743,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="InputMethod.Assistive.MultiWord.SuggestionLength"
-    units="chars" expires_after="2024-02-04">
+    units="chars" expires_after="2024-11-01">
   <owner>curtismcmullan@google.com</owner>
   <owner>essential-inputs-team@google.com</owner>
   <summary>
@@ -762,7 +754,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="InputMethod.Assistive.MultiWord.SuggestionOpportunity"
-    enum="IMEAssistiveMultiWordSuggestionType" expires_after="2024-02-11">
+    enum="IMEAssistiveMultiWordSuggestionType" expires_after="2024-11-01">
   <owner>curtismcmullan@google.com</owner>
   <owner>essential-inputs-team@google.com</owner>
   <summary>
@@ -775,7 +767,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="InputMethod.Assistive.MultiWord.SuggestionState.{Type}"
-    enum="IMEAssistiveMultiWordSuggestionType" expires_after="2023-12-01">
+    enum="IMEAssistiveMultiWordSuggestionType" expires_after="2024-11-01">
   <owner>curtismcmullan@google.com</owner>
   <owner>essential-inputs-team@google.com</owner>
   <summary>
@@ -792,7 +784,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="InputMethod.Assistive.NotAllowed" enum="IMEAssistiveAction"
-    expires_after="2023-12-01">
+    expires_after="2024-11-01">
   <owner>jiwan@google.com</owner>
   <owner>essential-inputs-team@google.com</owner>
   <summary>
@@ -805,7 +797,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="InputMethod.Assistive.Success" enum="IMEAssistiveAction"
-    expires_after="2024-02-04">
+    expires_after="2024-11-01">
   <owner>jiwan@google.com</owner>
   <owner>essential-inputs-team@google.com</owner>
   <summary>
@@ -814,21 +806,8 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="InputMethod.Assistive.TimeToAccept.Emoji" units="ms"
-    expires_after="2021-09-12">
-  <obsolete>
-    Removed in M100.
-  </obsolete>
-  <owner>myy@google.com</owner>
-  <owner>essential-inputs-team@google.com</owner>
-  <summary>
-    The duration from when emoji suggestions show up to when users accept a
-    suggestion. Recorded when users accept the suggestion.
-  </summary>
-</histogram>
-
 <histogram name="InputMethod.Assistive.TimeToAccept.MultiWord" units="ms"
-    expires_after="2023-12-01">
+    expires_after="2024-11-01">
   <owner>curtismcmullan@google.com</owner>
   <owner>essential-inputs-team@google.com</owner>
   <summary>
@@ -838,21 +817,8 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="InputMethod.Assistive.TimeToDismiss.Emoji" units="ms"
-    expires_after="2021-01-01">
-  <obsolete>
-    Removed in M100.
-  </obsolete>
-  <owner>myy@google.com</owner>
-  <owner>essential-inputs-team@google.com</owner>
-  <summary>
-    The duration from when emoji suggestions show up to when users dismiss a
-    suggestion. Recorded when users dismiss the suggestion.
-  </summary>
-</histogram>
-
 <histogram name="InputMethod.Assistive.TimeToDismiss.MultiWord" units="ms"
-    expires_after="2023-12-01">
+    expires_after="2024-11-01">
   <owner>curtismcmullan@google.com</owner>
   <owner>essential-inputs-team@google.com</owner>
   <summary>
@@ -863,18 +829,19 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="InputMethod.Assistive.UserPref.Emoji" enum="BooleanEnabled"
-    expires_after="2023-02-12">
-  <owner>myy@google.com</owner>
+    expires_after="2024-11-01">
+  <owner>curtismcmullan@google.com</owner>
   <owner>essential-inputs-team@google.com</owner>
   <summary>
-    The user's preference for emoji suggestions. Recorded when
+    Warning: this histogram was expired from 2023-02 to 2023-11; data may be
+    missing. The user's preference for emoji suggestions. Recorded when
     AssistiveSuggester is initialised. &quot;Enabled&quot; is logged as the
     default value if the user didn't explicitly set it.
   </summary>
 </histogram>
 
 <histogram name="InputMethod.Assistive.UserPref.MultiWord"
-    enum="BooleanEnabled" expires_after="2023-12-01">
+    enum="BooleanEnabled" expires_after="2024-11-01">
   <owner>curtismcmullan@google.com</owner>
   <owner>essential-inputs-team@google.com</owner>
   <summary>
@@ -887,7 +854,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="InputMethod.Assistive.UserPref.PhysicalKeyboardDiacriticsOnLongpress"
-    enum="BooleanEnabled" expires_after="2024-02-11">
+    enum="BooleanEnabled" expires_after="2024-11-01">
   <owner>jhtin@google.com</owner>
   <owner>essential-inputs-team@google.com</owner>
   <summary>
@@ -898,14 +865,14 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="InputMethod.AutoCorrectLevel" enum="IMECorrectionLevel"
-    expires_after="2024-02-11">
+    expires_after="2024-11-01">
   <owner>shend@chromium.org</owner>
   <owner>essential-inputs-team@google.com</owner>
   <summary>The auto-correction level for suggestion engine.</summary>
 </histogram>
 
 <histogram name="InputMethod.Category" enum="InputMethodCategory"
-    expires_after="2024-01-14">
+    expires_after="2024-11-01">
   <owner>shend@chromium.org</owner>
   <owner>essential-inputs-team@google.com</owner>
   <summary>
@@ -915,8 +882,8 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="InputMethod.CharactersPerSession{InputModality}"
-    units="characters" expires_after="2023-05-01">
-  <owner>keithlee@chromium.org</owner>
+    units="characters" expires_after="2024-11-01">
+  <owner>curtismcmullan@chromium.org</owner>
   <owner>essential-inputs-team@google.com</owner>
   <summary>
     Number of characters entered in a single user session on ChromeOS. A user
@@ -934,7 +901,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="InputMethod.Commit.Index" units="units"
-    expires_after="2024-01-14">
+    expires_after="2024-11-01">
   <owner>shend@chromium.org</owner>
   <owner>essential-inputs-team@google.com</owner>
   <summary>
@@ -944,7 +911,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="InputMethod.Commit.Type2" enum="IMECommitType2"
-    expires_after="2024-01-14">
+    expires_after="2024-11-01">
   <owner>dvallet@chromium.org</owner>
   <owner>shuchen@chromium.org</owner>
   <owner>essential-inputs-team@google.com</owner>
@@ -954,20 +921,13 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="InputMethod.CommitLength" units="characters"
-    expires_after="M95">
+    expires_after="2024-11-01">
   <owner>dvallet@chromium.org</owner>
   <owner>shuchen@chromium.org</owner>
   <owner>essential-inputs-team@google.com</owner>
-  <summary>The number of characters committed with composition text.</summary>
-</histogram>
-
-<histogram name="InputMethod.CompositionWithImm32BasedIme" enum="Boolean"
-    expires_after="M78">
-  <owner>lanwei@chromium.org</owner>
-  <owner>siliu@microsoft.com</owner>
   <summary>
-    Whether the composition is composed by IMM32-based input method processor
-    when TSF is disabled on Windows. Recorded when user starts new composition.
+    Warning: this histogram was expired from M95 to M121; data may be missing.
+    The number of characters committed with composition text.
   </summary>
 </histogram>
 
@@ -982,34 +942,40 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="InputMethod.Handwriting.AlternateMultiToSingle" units="index"
-    expires_after="2022-03-07">
+    expires_after="2024-11-01">
   <owner>curtismcmullan@chromium.org</owner>
   <owner>essential-inputs-team@google.com</owner>
   <summary>
-    The index of the selected suggestion from the handwriting alternative
-    suggestion menu. This metric is recorded when the handwriting text
-    highlighted is multiple words, and the selected suggestion is a single word.
+    Warning: this histogram was expired from 2022-03 to 2023-11; data may be
+    missing. The index of the selected suggestion from the handwriting
+    alternative suggestion menu. This metric is recorded when the handwriting
+    text highlighted is multiple words, and the selected suggestion is a single
+    word.
   </summary>
 </histogram>
 
 <histogram name="InputMethod.Handwriting.AlternateSelected" units="index"
-    expires_after="2022-03-07">
+    expires_after="2024-11-01">
   <owner>curtismcmullan@chromium.org</owner>
   <owner>essential-inputs-team@google.com</owner>
   <summary>
-    The index of the selected suggestion from the handwriting alternative
-    suggestion menu. The metric is recorded when the suggestion is selected.
+    Warning: this histogram was expired from 2022-03 to 2023-11; data may be
+    missing. The index of the selected suggestion from the handwriting
+    alternative suggestion menu. The metric is recorded when the suggestion is
+    selected.
   </summary>
 </histogram>
 
 <histogram name="InputMethod.Handwriting.AlternateSingleToMulti" units="index"
-    expires_after="2022-03-07">
+    expires_after="2024-11-01">
   <owner>curtismcmullan@chromium.org</owner>
   <owner>essential-inputs-team@google.com</owner>
   <summary>
-    The index of the selected suggestion from the handwriting alternative
-    suggestion menu. This metric is recorded when the handwriting text
-    highlighted is a single word, and the selected suggestion is mutliple words.
+    Warning: this histogram was expired from 2022-03 to 2023-11; data may be
+    missing. The index of the selected suggestion from the handwriting
+    alternative suggestion menu. This metric is recorded when the handwriting
+    text highlighted is a single word, and the selected suggestion is mutliple
+    words.
   </summary>
 </histogram>
 
@@ -1044,7 +1010,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="InputMethod.Handwriting.LanguageModelLoadTime" units="ms"
-    expires_after="2023-11-19">
+    expires_after="2024-11-01">
   <owner>curtismcmullan@chromium.org</owner>
   <owner>essential-inputs-team@google.com</owner>
   <summary>
@@ -1055,7 +1021,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="InputMethod.Handwriting.LanguagePackState"
-    enum="LanguagePackState" expires_after="2024-01-21">
+    enum="LanguagePackState" expires_after="2024-11-01">
   <owner>curtismcmullan@chromium.org</owner>
   <owner>essential-inputs-team@google.com</owner>
   <summary>
@@ -1066,7 +1032,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="InputMethod.ID2" enum="InputMethodID2"
-    expires_after="2024-01-14">
+    expires_after="2024-11-01">
   <owner>tranbaoduy@chromium.org</owner>
   <owner>shuchen@chromium.org</owner>
   <owner>essential-inputs-team@google.com</owner>
@@ -1080,19 +1046,20 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="InputMethod.ImeMenu.EmojiHandwritingVoiceButton"
-    enum="ImeMenuButtonType" expires_after="2022-05-01">
+    enum="ImeMenuButtonType" expires_after="2024-11-01">
   <owner>dvallet@chromium.org</owner>
   <owner>azurewei@chromium.org</owner>
   <owner>shuchen@chromium.org</owner>
   <owner>essential-inputs-team@google.com</owner>
   <summary>
-    The number of times users click emoji, handwriting or voice button in opt-in
-    IME menu.
+    Warning: this histogram was expired from 2022-05 to 2023-11; data may be
+    missing. The number of times users click emoji, handwriting or voice button
+    in opt-in IME menu.
   </summary>
 </histogram>
 
 <histogram name="InputMethod.ImeSwitch" enum="IMESwitchType"
-    expires_after="2024-01-14">
+    expires_after="2024-11-01">
   <owner>dvallet@chromium.org</owner>
   <owner>timloh@chromium.org</owner>
   <owner>essential-inputs-team@google.com</owner>
@@ -1100,80 +1067,224 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="InputMethod.KeyEventLatency" units="ms"
-    expires_after="2024-01-14">
+    expires_after="2024-11-01">
   <owner>shend@chromium.org</owner>
   <owner>essential-inputs-team@google.com</owner>
   <summary>Time taken by the engine to handle a key event.</summary>
 </histogram>
 
-<histogram name="InputMethod.ModeChangeKeyAction" enum="ModeChangeKeyAction"
-    expires_after="2019-12-31">
-  <owner>shend@chromium.org</owner>
-  <owner>essential-inputs-team@google.com</owner>
-  <summary>The result of the user pressing the mode change key.</summary>
-</histogram>
-
-<histogram name="InputMethod.MouseWheel.ScrollCharacters" units="characters"
-    expires_after="2021-11-01">
-  <owner>flackr@chromium.org</owner>
-  <owner>shawnpi@microsoft.com</owner>
-  <summary>
-    Records for each horizontal mouse wheel event the Windows system setting for
-    number of characters to horizontally scroll for each wheel tick. Used to
-    determine how this system setting impacts scroll velocity.
-  </summary>
-</histogram>
-
-<histogram name="InputMethod.MouseWheel.ScrollLines" units="lines"
-    expires_after="2021-11-01">
-  <owner>flackr@chromium.org</owner>
-  <owner>shawnpi@microsoft.com</owner>
-  <summary>
-    Records for each vertical mouse wheel event the Windows system setting for
-    number of lines to vertically scroll for each wheel tick. Used to determine
-    how this system setting impacts scroll velocity.
-  </summary>
-</histogram>
-
-<histogram name="InputMethod.MultilingualExperiment.Autocorrect.Actions"
-    enum="IMEAutocorrectActions" expires_after="2023-12-01">
-  <owner>tranbaoduy@google.com</owner>
+<histogram name="InputMethod.Manta.Orca.CharactersInserted.{Mode}"
+    units="characters" expires_after="2024-11-01">
+  <owner>hdchuong@google.com</owner>
+  <owner>zacpartridge@google.com</owner>
   <owner>essential-inputs-team@google.com</owner>
   <summary>
-    Same as InputMethod.Assistive.Autocorrect.Actions but only recorded for CrOS
-    1P experimental multilingual input methods.
+    Counts the number of characters inserted by the editor. This metric is
+    recorded at the time an insertion is performed.
   </summary>
+  <token key="Mode">
+    <variant name="Elaborate"
+        summary="The user initiated Copyeditor by trying to elaborate their
+                 text"/>
+    <variant name="Emojify"
+        summary="The user initiated Copyeditor by trying to emojify their
+                 text"/>
+    <variant name="Formalize"
+        summary="The user initiated Copyeditor by trying to formalize their
+                 text"/>
+    <variant name="FreeformRewrite"
+        summary="The user initiated Copyeditor by trying to rewrite their
+                 text with a freeform prompt"/>
+    <variant name="Rephrase"
+        summary="The user initiated Copyeditor by trying to rephrase their
+                 text"/>
+    <variant name="Rewrite"
+        summary="There is selected text and the user is rewriting it with the
+                 editor"/>
+    <variant name="Shorten"
+        summary="The user initiated Copyeditor by trying to shorten their
+                 text"/>
+    <variant name="Unknown"
+        summary="The user initiated Copyeditor with an unknown method
+                 (potentially a new prompt)"/>
+    <variant name="Unset" summary="The user hasn't yet chosen a tone"/>
+    <variant name="Write" summary="The editor is in freeform write mode"/>
+  </token>
 </histogram>
 
-<histogram name="InputMethod.MultilingualExperiment.Autocorrect.Count"
-    enum="IMETextInputClient" expires_after="2022-12-01">
-  <owner>tranbaoduy@google.com</owner>
+<histogram name="InputMethod.Manta.Orca.CharactersSelectedForInsert.{Mode}"
+    units="characters" expires_after="2024-11-01">
+  <owner>hdchuong@google.com</owner>
+  <owner>zacpartridge@google.com</owner>
   <owner>essential-inputs-team@google.com</owner>
   <summary>
-    Same as InputMethod.Assistive.Autocorrect.Count but only recorded for CrOS
-    1P experimental multilingual input methods.
+    Counts the number of characters selected for insertion. This metric is
+    recorded at the time an insertion is performed.
   </summary>
+  <token key="Mode">
+    <variant name="Elaborate"
+        summary="The user initiated Copyeditor by trying to elaborate their
+                 text"/>
+    <variant name="Emojify"
+        summary="The user initiated Copyeditor by trying to emojify their
+                 text"/>
+    <variant name="Formalize"
+        summary="The user initiated Copyeditor by trying to formalize their
+                 text"/>
+    <variant name="FreeformRewrite"
+        summary="The user initiated Copyeditor by trying to rewrite their
+                 text with a freeform prompt"/>
+    <variant name="Rephrase"
+        summary="The user initiated Copyeditor by trying to rephrase their
+                 text"/>
+    <variant name="Rewrite"
+        summary="There is selected text and the user is rewriting it with the
+                 editor"/>
+    <variant name="Shorten"
+        summary="The user initiated Copyeditor by trying to shorten their
+                 text"/>
+    <variant name="Unknown"
+        summary="The user initiated Copyeditor with an unknown method
+                 (potentially a new prompt)"/>
+    <variant name="Unset" summary="The user hasn't yet chosen a tone"/>
+    <variant name="Write" summary="The editor is in freeform write mode"/>
+  </token>
 </histogram>
 
-<histogram name="InputMethod.MultilingualExperiment.Autocorrect.Delay"
-    units="ms" expires_after="2022-12-01">
-  <owner>tranbaoduy@google.com</owner>
+<histogram name="InputMethod.Manta.Orca.FreeFormCharactersForInsert.{Mode}"
+    units="characters" expires_after="2024-11-01">
+  <owner>hdchuong@google.com</owner>
+  <owner>zacpartridge@google.com</owner>
   <owner>essential-inputs-team@google.com</owner>
   <summary>
-    Same as InputMethod.Assistive.Autocorrect.Delay but only recorded for CrOS
-    1P experimental multilingual input methods.
+    Counts the number of characters in a freeform request (if any) for an
+    insert. This metric is recorded at the time an insertion is performed.
   </summary>
+  <token key="Mode">
+    <variant name="Rewrite"
+        summary="There is selected text and the user is rewriting it with the
+                 editor"/>
+    <variant name="Write" summary="The editor is in freeform write mode"/>
+  </token>
 </histogram>
 
-<histogram
-    name="InputMethod.MultilingualExperiment.DiacriticalAutocorrect.Actions"
-    enum="IMEAutocorrectActions" expires_after="2023-12-01">
-  <owner>tranbaoduy@google.com</owner>
+<histogram name="InputMethod.Manta.Orca.LengthOfLongestResponse.{Mode}"
+    units="characters" expires_after="2024-11-01">
+  <owner>hdchuong@google.com</owner>
   <owner>essential-inputs-team@google.com</owner>
   <summary>
-    Same as InputMethod.MultilingualExperiment.Autocorrect.Actions but only
-    recorded for diacritical autocorrects.
+    Records the number of characters found in the longest response returned from
+    the server. This metric is recorded at the time a response with multiple
+    text suggestion candidates is received from the server.
   </summary>
+  <token key="Mode">
+    <variant name="Elaborate"
+        summary="The user initiated Copyeditor by trying to elaborate their
+                 text"/>
+    <variant name="Emojify"
+        summary="The user initiated Copyeditor by trying to emojify their
+                 text"/>
+    <variant name="Formalize"
+        summary="The user initiated Copyeditor by trying to formalize their
+                 text"/>
+    <variant name="FreeformRewrite"
+        summary="The user initiated Copyeditor by trying to rewrite their
+                 text with a freeform prompt"/>
+    <variant name="Rephrase"
+        summary="The user initiated Copyeditor by trying to rephrase their
+                 text"/>
+    <variant name="Rewrite"
+        summary="There is selected text and the user is rewriting it with the
+                 editor"/>
+    <variant name="Shorten"
+        summary="The user initiated Copyeditor by trying to shorten their
+                 text"/>
+    <variant name="Unknown"
+        summary="The user initiated Copyeditor with an unknown method
+                 (potentially a new prompt)"/>
+    <variant name="Unset" summary="The user hasn't yet chosen a tone"/>
+    <variant name="Write" summary="The editor is in freeform write mode"/>
+  </token>
+</histogram>
+
+<histogram name="InputMethod.Manta.Orca.NumResponses.{Mode}" units="units"
+    expires_after="2024-11-01">
+  <owner>hdchuong@google.com</owner>
+  <owner>essential-inputs-team@google.com</owner>
+  <summary>
+    Counts the number of responses for each request to the server. This metric
+    is recorded at the time a response is received from the server.
+  </summary>
+  <token key="Mode">
+    <variant name="Elaborate"
+        summary="The user initiated Copyeditor by trying to elaborate their
+                 text"/>
+    <variant name="Emojify"
+        summary="The user initiated Copyeditor by trying to emojify their
+                 text"/>
+    <variant name="Formalize"
+        summary="The user initiated Copyeditor by trying to formalize their
+                 text"/>
+    <variant name="FreeformRewrite"
+        summary="The user initiated Copyeditor by trying to rewrite their
+                 text with a freeform prompt"/>
+    <variant name="Rephrase"
+        summary="The user initiated Copyeditor by trying to rephrase their
+                 text"/>
+    <variant name="Rewrite"
+        summary="There is selected text and the user is rewriting it with the
+                 editor"/>
+    <variant name="Shorten"
+        summary="The user initiated Copyeditor by trying to shorten their
+                 text"/>
+    <variant name="Unknown"
+        summary="The user initiated Copyeditor with an unknown method
+                 (potentially a new prompt)"/>
+    <variant name="Unset" summary="The user hasn't yet chosen a tone"/>
+    <variant name="Write" summary="The editor is in freeform write mode"/>
+  </token>
+</histogram>
+
+<histogram name="InputMethod.Manta.Orca.States.{Mode}" enum="IMEEditorStates"
+    expires_after="2024-11-01">
+  <owner>zacpartridge@google.com</owner>
+  <owner>essential-inputs-team@google.com</owner>
+  <summary>
+    The histogram captures user interactions with the editor, focusing on key
+    actions providing a high level funel of interaction. These actions include
+    the initiation of a new request, content insertion, display of the native
+    UI, dismissal of the editor, a refining request, errors from the backend,
+    receiving a successful responses from the backend or a user toggling the
+    thumbs up and down buttons.
+  </summary>
+  <token key="Mode">
+    <variant name="Elaborate"
+        summary="The user initiated Copyeditor by trying to elaborate their
+                 text"/>
+    <variant name="Emojify"
+        summary="The user initiated Copyeditor by trying to emojify their
+                 text"/>
+    <variant name="Formalize"
+        summary="The user initiated Copyeditor by trying to formalize their
+                 text"/>
+    <variant name="FreeformRewrite"
+        summary="The user initiated Copyeditor by trying to rewrite their
+                 text with a freeform prompt"/>
+    <variant name="Rephrase"
+        summary="The user initiated Copyeditor by trying to rephrase their
+                 text"/>
+    <variant name="Rewrite"
+        summary="There is selected text and the user is rewriting it with the
+                 editor"/>
+    <variant name="Shorten"
+        summary="The user initiated Copyeditor by trying to shorten their
+                 text"/>
+    <variant name="Unknown"
+        summary="The user initiated Copyeditor with an unknown method
+                 (potentially a new prompt)"/>
+    <variant name="Unset" summary="The user hasn't yet chosen a tone"/>
+    <variant name="Write" summary="The editor is in freeform write mode"/>
+  </token>
 </histogram>
 
 <histogram name="InputMethod.NextWordPrediction" enum="BooleanEnabled"
@@ -1187,8 +1298,8 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="InputMethod.PhysicalKeyboard.Japanese.StartupAction"
-    enum="JapaneseStartupAction" expires_after="2023-12-31">
-  <owner>keithlee@chromium.org</owner>
+    enum="JapaneseStartupAction" expires_after="2024-11-01">
+  <owner>jhtin@chromium.org</owner>
   <owner>essential-inputs-team@google.com</owner>
   <summary>
     Action performed on IME startup with respect to Japanese data. This will
@@ -1198,7 +1309,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="InputMethod.PhysicalKeyboard.KeyboardShortcut"
-    enum="PhysicalKeyboardShortcut" expires_after="2023-12-31">
+    enum="PhysicalKeyboardShortcut" expires_after="2024-07-07">
   <owner>wbjacksonjr@chromium.org</owner>
   <owner>embedded-experience@google.com</owner>
   <summary>
@@ -1208,7 +1319,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="InputMethod.PhysicalKeyboard.Korean.Action"
-    enum="KoreanAction" expires_after="2024-01-21">
+    enum="KoreanAction" expires_after="2024-11-01">
   <owner>shend@chromium.org</owner>
   <owner>essential-inputs-team@google.com</owner>
   <summary>
@@ -1229,7 +1340,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="InputMethod.PhysicalKeyboard.LongpressDiacritics.AcceptedChar"
     enum="IMEPKLongpressDiacriticUnicodeCharacterCode"
-    expires_after="2023-12-24">
+    expires_after="2024-11-01">
   <owner>jhtin@chromium.org</owner>
   <owner>essential-inputs-team@google.com</owner>
   <summary>
@@ -1239,7 +1350,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="InputMethod.PhysicalKeyboard.LongpressDiacritics.Action"
-    enum="IMEPKLongpressDiacriticAction" expires_after="2024-02-20">
+    enum="IMEPKLongpressDiacriticAction" expires_after="2024-11-01">
   <owner>jhtin@chromium.org</owner>
   <owner>essential-inputs-team@google.com</owner>
   <summary>
@@ -1251,7 +1362,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="InputMethod.PhysicalKeyboard.VietnameseTelex.FlexibleTyping"
-    enum="Boolean" expires_after="2024-01-01">
+    enum="Boolean" expires_after="2024-11-01">
   <owner>jhtin@chromium.org</owner>
   <owner>essential-inputs-team@google.com</owner>
   <summary>
@@ -1261,7 +1372,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="InputMethod.PhysicalKeyboard.VietnameseTelex.ModernToneMark"
-    enum="Boolean" expires_after="2024-01-01">
+    enum="Boolean" expires_after="2024-11-01">
   <owner>jhtin@chromium.org</owner>
   <owner>essential-inputs-team@google.com</owner>
   <summary>
@@ -1271,7 +1382,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="InputMethod.PhysicalKeyboard.VietnameseTelex.ShowUnderline"
-    enum="Boolean" expires_after="2024-01-01">
+    enum="Boolean" expires_after="2024-11-01">
   <owner>jhtin@chromium.org</owner>
   <owner>essential-inputs-team@google.com</owner>
   <summary>
@@ -1281,7 +1392,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="InputMethod.PhysicalKeyboard.VietnameseTelex.UODoubleHorn"
-    enum="Boolean" expires_after="2024-01-01">
+    enum="Boolean" expires_after="2024-11-01">
   <owner>jhtin@chromium.org</owner>
   <owner>essential-inputs-team@google.com</owner>
   <summary>
@@ -1291,7 +1402,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="InputMethod.PhysicalKeyboard.VietnameseTelex.WForUHorn"
-    enum="Boolean" expires_after="2024-01-01">
+    enum="Boolean" expires_after="2024-11-01">
   <owner>jhtin@chromium.org</owner>
   <owner>essential-inputs-team@google.com</owner>
   <summary>
@@ -1301,7 +1412,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="InputMethod.PhysicalKeyboard.VietnameseVNI.FlexibleTyping"
-    enum="Boolean" expires_after="2024-01-01">
+    enum="Boolean" expires_after="2024-11-01">
   <owner>jhtin@chromium.org</owner>
   <owner>essential-inputs-team@google.com</owner>
   <summary>
@@ -1311,7 +1422,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="InputMethod.PhysicalKeyboard.VietnameseVNI.ModernToneMark"
-    enum="Boolean" expires_after="2024-01-01">
+    enum="Boolean" expires_after="2024-11-01">
   <owner>jhtin@chromium.org</owner>
   <owner>essential-inputs-team@google.com</owner>
   <summary>
@@ -1321,7 +1432,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="InputMethod.PhysicalKeyboard.VietnameseVNI.ShowUnderline"
-    enum="Boolean" expires_after="2024-01-01">
+    enum="Boolean" expires_after="2024-11-01">
   <owner>jhtin@chromium.org</owner>
   <owner>essential-inputs-team@google.com</owner>
   <summary>
@@ -1331,7 +1442,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="InputMethod.PhysicalKeyboard.VietnameseVNI.UODoubleHorn"
-    enum="Boolean" expires_after="2024-01-01">
+    enum="Boolean" expires_after="2024-11-01">
   <owner>jhtin@chromium.org</owner>
   <owner>essential-inputs-team@google.com</owner>
   <summary>
@@ -1351,19 +1462,20 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="InputMethod.PkCommit.Type" enum="IMECommitType2"
-    expires_after="2023-05-01">
+    expires_after="2024-11-01">
   <owner>dvallet@chromium.org</owner>
   <owner>shuchen@chromium.org</owner>
   <owner>essential-inputs-team@google.com</owner>
   <summary>
-    The suggestion accuracy type which the user chooses to commit for physical
-    keyboard autocorrect.
+    Warning: this histogram was expired from 2023-05 to 2023-11; data may be
+    missing. The suggestion accuracy type which the user chooses to commit for
+    physical keyboard autocorrect.
   </summary>
 </histogram>
 
 <histogram name="InputMethod.SessionDuration" units="ms"
-    expires_after="2024-01-21">
-  <owner>keithlee@chromium.org</owner>
+    expires_after="2024-11-01">
+  <owner>shend@chromium.org</owner>
   <owner>essential-inputs-team@google.com</owner>
   <summary>
     The average length of user sessions on ChromeOS. This can be combined with
@@ -1377,7 +1489,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="InputMethod.StylusHandwriting.Gesture"
-    enum="StylusHandwritingGesture" expires_after="2024-03-01">
+    enum="StylusHandwritingGesture" expires_after="2024-07-07">
   <owner>peconn@chromium.org</owner>
   <owner>embedded-experience@google.com</owner>
   <summary>
@@ -1388,7 +1500,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="InputMethod.StylusHandwriting.GestureResult"
-    enum="StylusHandwritingGestureResult" expires_after="2024-03-01">
+    enum="StylusHandwritingGestureResult" expires_after="2024-07-28">
   <owner>alexmitra@chromium.org</owner>
   <owner>embedded-experience@google.com</owner>
   <summary>
@@ -1396,8 +1508,8 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="InputMethod.StylusHandwriting.GestureTime" units="ms"
-    expires_after="2024-03-01">
+<histogram name="InputMethod.StylusHandwriting.GestureTime2" units="ms"
+    expires_after="2024-08-04">
   <owner>alexmitra@chromium.org</owner>
   <owner>embedded-experience@google.com</owner>
   <summary>
@@ -1408,7 +1520,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="InputMethod.StylusHandwriting.Triggered"
-    enum="StylusHandwritingApi" expires_after="2024-03-01">
+    enum="StylusHandwritingApi" expires_after="2024-07-07">
   <owner>peconn@chromium.org</owner>
   <owner>embedded-experience@google.com</owner>
   <summary>
@@ -1420,16 +1532,29 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="InputMethod.SystemEmojiPicker.Delay" units="ms"
-    expires_after="2023-09-03">
+    expires_after="2024-11-01">
   <owner>jopalmer@chromium.org</owner>
   <owner>essential-inputs-team@google.com</owner>
   <summary>
-    Time between when emoji picker shown and when the emoji is inserted
+    Warning: this histogram was expired from 2023-09 to 2023-11; data may be
+    missing. Time between when emoji picker shown and when the emoji is inserted
+  </summary>
+</histogram>
+
+<histogram name="InputMethod.SystemEmojiPicker.InsertionLatency" units="ms"
+    expires_after="2024-12-31">
+  <owner>greywang@google.com</owner>
+  <owner>essential-inputs-team@google.com</owner>
+  <summary>
+    Time between when emoji is clicked and when the emoji is successfully
+    inserted (fallback coping to clipboard does not count here). The metric is
+    recorded every time when emoji / image insertion is successfully finished in
+    System Emoji Picker.
   </summary>
 </histogram>
 
 <histogram name="InputMethod.SystemEmojiPicker.LoadTime" units="ms"
-    expires_after="2024-02-09">
+    expires_after="2024-11-01">
   <owner>jopalmer@chromium.org</owner>
   <owner>essential-inputs-team@google.com</owner>
   <summary>
@@ -1440,23 +1565,24 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="InputMethod.SystemEmojiPicker.SearchLength" units="characters"
-    expires_after="2023-02-26">
+    expires_after="2024-11-01">
   <owner>jopalmer@chromium.org</owner>
   <owner>essential-inputs-team@google.com</owner>
   <summary>
-    Length of search string in emoji picker when emoji was inserted.
+    Warning: this histogram was expired from 2023-02 to 2023-11; data may be
+    missing. Length of search string in emoji picker when emoji was inserted.
   </summary>
 </histogram>
 
 <histogram name="InputMethod.SystemEmojiPicker.TriggerType"
-    enum="VirtualKeyboardEmojiTriggerType" expires_after="2024-01-07">
+    enum="VirtualKeyboardEmojiTriggerType" expires_after="2024-11-01">
   <owner>jopalmer@chromium.org</owner>
   <owner>essential-inputs-team@google.com</owner>
   <summary>How emojis were inserted.</summary>
 </histogram>
 
 <histogram name="InputMethod.TouchSelection.DragType"
-    enum="TouchSelectionDragType" expires_after="2024-02-02">
+    enum="TouchSelectionDragType" expires_after="2024-11-01">
   <owner>michellegc@google.com</owner>
   <owner>essential-inputs-team@google.com</owner>
   <summary>
@@ -1466,7 +1592,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="InputMethod.TouchSelection.MenuAction"
-    enum="TouchSelectionMenuAction" expires_after="2024-02-02">
+    enum="TouchSelectionMenuAction" expires_after="2024-11-01">
   <owner>michellegc@google.com</owner>
   <owner>essential-inputs-team@google.com</owner>
   <summary>
@@ -1477,7 +1603,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="InputMethod.TouchSelection.{TouchSelectionResult}Session.TouchDownCount"
-    units="units" expires_after="2024-02-02">
+    units="units" expires_after="2024-11-01">
   <owner>michellegc@google.com</owner>
   <owner>essential-inputs-team@google.com</owner>
   <summary>
@@ -1496,7 +1622,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="InputMethod.VirtualKeyboard.BackspaceCount" units="units"
-    expires_after="2023-12-24">
+    expires_after="2024-11-01">
   <owner>shend@chromium.org</owner>
   <owner>essential-inputs-team@google.com</owner>
   <summary>
@@ -1507,7 +1633,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="InputMethod.VirtualKeyboard.CharactersCommitted" units="units"
-    expires_after="2023-10-08">
+    expires_after="2024-11-01">
   <owner>shend@chromium.org</owner>
   <owner>essential-inputs-team@google.com</owner>
   <summary>
@@ -1518,8 +1644,8 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="InputMethod.VirtualKeyboard.CharactersPerMinute{InputModality}"
-    units="charactersPerMinute" expires_after="2023-05-01">
-  <owner>keithlee@chromium.org</owner>
+    units="charactersPerMinute" expires_after="2024-11-01">
+  <owner>curtismcmullan@chromium.org</owner>
   <owner>essential-inputs-team@google.com</owner>
   <summary>
     Typing speed in each user session on ChromeOS when using the virtual
@@ -1538,8 +1664,8 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="InputMethod.VirtualKeyboard.CharactersPerSession{InputModality}"
-    units="characters" expires_after="2023-05-01">
-  <owner>keithlee@chromium.org</owner>
+    units="characters" expires_after="2024-11-01">
+  <owner>curtismcmullan@chromium.org</owner>
   <owner>essential-inputs-team@google.com</owner>
   <summary>
     Number of characters entered in a single user session on ChromeOS when using
@@ -1557,23 +1683,13 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="InputMethod.VirtualKeyboard.ContainerBehavior"
-    enum="VirtualKeyboardContainerType" expires_after="2024-01-14">
+    enum="VirtualKeyboardContainerType" expires_after="2024-11-01">
   <owner>shend@chromium.org</owner>
   <owner>essential-inputs-team@google.com</owner>
   <summary>
     Chrome OS histogram that counts the number of times each virtual keyboard
     display mode is used. Recorded when the virtual keyboard is opened or a user
     changes the keyboard mode from UI in the virtual keyboard.
-  </summary>
-</histogram>
-
-<histogram name="InputMethod.VirtualKeyboard.DecoderEvent"
-    enum="InputMethodDecoderEvent" expires_after="2021-04-11">
-  <owner>shend@chromium.org</owner>
-  <owner>essential-inputs-team@google.com</owner>
-  <summary>
-    Chrome OS histogram that counts events from the decoder triggered by the
-    virtual keyboard.
   </summary>
 </histogram>
 
@@ -1594,7 +1710,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="InputMethod.VirtualKeyboard.Emoji.TriggerType"
-    enum="VirtualKeyboardEmojiTriggerType" expires_after="2024-01-14">
+    enum="VirtualKeyboardEmojiTriggerType" expires_after="2024-11-01">
   <owner>shend@chromium.org</owner>
   <owner>essential-inputs-team@google.com</owner>
   <summary>How emojis were inserted.</summary>
@@ -1618,18 +1734,19 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="InputMethod.VirtualKeyboard.Handwriting.CommitType"
-    enum="VirtualKeyboardHandwritingCommitType" expires_after="2022-02-01">
+    enum="VirtualKeyboardHandwritingCommitType" expires_after="2024-11-01">
   <owner>curtismcmullan@chromium.org</owner>
   <owner>essential-inputs-team@google.com</owner>
   <summary>
-    What kind of commit method was used when text was committed to an input from
-    the handwriting input method in the virtual keyboard.
+    Warning: this histogram was expired from 2022-02 to 2023-11; data may be
+    missing. What kind of commit method was used when text was committed to an
+    input from the handwriting input method in the virtual keyboard.
   </summary>
 </histogram>
 
 <histogram
     name="InputMethod.VirtualKeyboard.Handwriting.DWServiceCallbackFailed"
-    enum="Boolean" expires_after="2024-02-20">
+    enum="Boolean" expires_after="2024-06-30">
   <owner>alexmitra@chromium.org</owner>
   <owner>peconn@chromium.org</owner>
   <summary>
@@ -1642,27 +1759,29 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="InputMethod.VirtualKeyboard.Handwriting.KeyboardContainerOnCommit"
-    enum="VirtualKeyboardContainerType" expires_after="2021-12-26">
+    enum="VirtualKeyboardContainerType" expires_after="2024-11-01">
   <owner>curtismcmullan@chromium.org</owner>
   <owner>essential-inputs-team@google.com</owner>
   <summary>
-    What type of container was the virtual keyboard in when text was committed
-    from the handwriting input method.
+    Warning: this histogram was expired from 2021-12 to 2023-11; data may be
+    missing. What type of container was the virtual keyboard in when text was
+    committed from the handwriting input method.
   </summary>
 </histogram>
 
 <histogram name="InputMethod.VirtualKeyboard.Handwriting.KeyboardWidthOnCommit"
-    units="px" expires_after="2021-12-26">
+    units="px" expires_after="2024-11-01">
   <owner>curtismcmullan@chromium.org</owner>
   <owner>essential-inputs-team@google.com</owner>
   <summary>
-    How wide was the keyboard container when text was committed from the
-    handwriting input method.
+    Warning: this histogram was expired from 2021-12 to 2023-11; data may be
+    missing. How wide was the keyboard container when text was committed from
+    the handwriting input method.
   </summary>
 </histogram>
 
 <histogram name="InputMethod.VirtualKeyboard.InitLatency.KeyboardShownLongTail"
-    units="ms" expires_after="2024-02-04">
+    units="ms" expires_after="2024-11-01">
   <owner>jopalmer@chromium.org</owner>
   <owner>essential-inputs-team@google.com</owner>
   <summary>
@@ -1673,12 +1792,13 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="InputMethod.VirtualKeyboard.InitLatency{IMEVKLatency}"
-    units="ms" expires_after="M95">
+    units="ms" expires_after="2024-11-01">
   <owner>shend@chromium.org</owner>
   <owner>essential-inputs-team@google.com</owner>
   <summary>
     The on-screen keyboard initialization latency in milliseconds.
-    {IMEVKLatency}
+    {IMEVKLatency}. Warning: this histogram was expired from M95 to 2024-02;
+    data may be missing.
   </summary>
   <token key="IMEVKLatency">
     <variant name=""/>
@@ -1696,22 +1816,12 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="InputMethod.VirtualKeyboard.Layout" enum="IMEVKLayout"
-    expires_after="2023-12-24">
+    expires_after="2024-11-01">
   <owner>shend@chromium.org</owner>
   <owner>essential-inputs-team@google.com</owner>
   <summary>
     The layout of the on-screen keyboard. Logged when the specific layout is
     shown.
-  </summary>
-</histogram>
-
-<histogram name="InputMethod.VirtualKeyboard.LayoutSwitch" units="units"
-    expires_after="M95">
-  <owner>dvallet@google.com</owner>
-  <owner>essential-inputs-team@google.com</owner>
-  <summary>
-    The count of layout switching actions while virtual keyboard is alive.
-    Recorded when the virtual keyboard window is hidden or destroyed.
   </summary>
 </histogram>
 
@@ -1768,19 +1878,20 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="InputMethod.VirtualKeyboard.ResizableWindowWidth" units="px"
-    expires_after="2021-09-05">
+    expires_after="2024-11-01">
   <owner>curtismcmullan@chromium.org</owner>
   <owner>essential-inputs-team@google.com</owner>
   <summary>
-    The width of the virtual keyboard window, in pixels, after a user has
-    completed resizing the virtual keyboard. This is recorded when the user
+    Warning: this histogram was expired from 2021-09 to 2023-11; data may be
+    missing. The width of the virtual keyboard window, in pixels, after a user
+    has completed resizing the virtual keyboard. This is recorded when the user
     lifts their finger at the end of a drag that initiates a resize.
   </summary>
 </histogram>
 
 <histogram name="InputMethod.VirtualKeyboard.SessionDuration" units="ms"
-    expires_after="2023-12-17">
-  <owner>keithlee@chromium.org</owner>
+    expires_after="2024-11-01">
+  <owner>shend@chromium.org</owner>
   <owner>essential-inputs-team@google.com</owner>
   <summary>
     The average length of user sessions on ChromeOS when using the virtual
@@ -1794,17 +1905,68 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="InputMethod.VirtualKeyboard.SwitchMode" enum="IMEVKMode"
-    expires_after="2023-10-08">
+    expires_after="2024-11-01">
   <owner>shend@chromium.org</owner>
   <owner>essential-inputs-team@google.com</owner>
   <summary>
-    The count of user actions to switch keyboard mode (floating, docked).
-    Recorded when the user clicks in the docked/floating keyboard menu option.
+    Warning: this histogram was expired from 2023-08 to 2023-11; data may be
+    missing. The count of user actions to switch keyboard mode (floating,
+    docked). Recorded when the user clicks in the docked/floating keyboard menu
+    option.
+  </summary>
+</histogram>
+
+<histogram name="TextInputClient.CharacterIndex" units="ms"
+    expires_after="2024-08-18">
+  <owner>kouhei@chromium.org</owner>
+  <owner>input-dev@chromium.org</owner>
+  <summary>
+    Recorded per call from a browser process thread to query
+    GetCharacterIndexAtPoint on a renderer process. The call is effectively
+    synchronous, blocking all other tasks from running on the browser thread.
+
+    Only recorded on macOS.
+
+    Warning: this histogram was missing its entry until 2024-01; data may be
+    missing.
+  </summary>
+</histogram>
+
+<histogram name="TextInputClient.FirstRect" units="ms"
+    expires_after="2024-08-18">
+  <owner>kouhei@chromium.org</owner>
+  <owner>input-dev@chromium.org</owner>
+  <summary>
+    Recorded per call from a browser process thread to query
+    GetFirstRectForRange on a renderer process. The call is effectively
+    synchronous, blocking all other tasks from running on the browser thread.
+
+    Only recorded on macOS.
+
+    Warning: this histogram was missing its entry until 2024-01; data may be
+    missing.
+  </summary>
+</histogram>
+
+<histogram name="TextInputClient.LockWait" units="ms"
+    expires_after="2024-08-18">
+  <owner>kouhei@chromium.org</owner>
+  <owner>input-dev@chromium.org</owner>
+  <summary>
+    Time took to acquire TextInputClient mutex lock on the browser process
+    thread, recorded per attempt. The histogram is useful to understand how much
+    of the TextInputClient.FirstRect and TextInputClient.CharacterIndex latency
+    are due to acquring browser-side lock.
+
+    Only recorded on macOS.
+
+    Warning: this histogram was missing its entry until 2024-01; data may be
+    missing.
   </summary>
 </histogram>
 
 <histogram name="Untrusted.InputMethod.PhysicalKeyboard.VietnameseActions"
-    enum="VietnameseActions" expires_after="2024-01-01">
+    enum="VietnameseActions" expires_after="2024-11-01">
   <owner>jhtin@chromium.org</owner>
   <owner>essential-inputs-team@google.com</owner>
   <summary>
@@ -1817,38 +1979,6 @@ chromium-metrics-reviews@google.com.
 These viewport metrics are in input/ since they're related to pinch-zoom, which
 is owned by the Blink input team.
 -->
-
-<histogram name="Viewport.DidScalePage" enum="BooleanDidScalePage"
-    expires_after="M108">
-  <obsolete>
-    Removed in M108.
-  </obsolete>
-  <owner>bokan@chromium.org</owner>
-  <owner>input-dev@chromium.org</owner>
-  <summary>
-    Tracks the proportion of non-mobile optimized (i.e. zoom disabled or layout
-    width matches viewport) page views that had a user-initiated page scale
-    (e.g. pinch-zoom, double-tap). Recorded on navigation to a new page - on
-    Android only.
-  </summary>
-</histogram>
-
-<histogram name="Viewport.MaxPageScale" enum="PageScaleFactorRange"
-    expires_after="M108">
-  <obsolete>
-    Removed in M108.
-  </obsolete>
-  <owner>bokan@chromium.org</owner>
-  <owner>input-dev@chromium.org</owner>
-  <summary>
-    Tracks the maximum scale factor that a user has scaled to over the lifetime
-    of the page. The scale is counted at pinch end (e.g. zooming to 300% and
-    back out to 150% in one gesture would count as 150%). Reported only on
-    non-mobile optimized pages (i.e. zoom disabled or layout width matches
-    viewport) which have had a page scale changing gesture. Recorded on
-    navigation to a new page - on Android only.
-  </summary>
-</histogram>
 
 <histogram name="Viewport.MetaTagType" enum="MetaTagTypeEnum"
     expires_after="2024-03-23">

@@ -9,6 +9,7 @@
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/geometry/point.h"
+#include "ui/views/controls/highlight_path_generator.h"
 
 namespace views {
 class Button;
@@ -25,7 +26,11 @@ gfx::Insets GetToolbarInkDropInsets(const views::View* host_view);
 // This is only needed if you can't use ConfigureInkDropForToolbar().
 SkColor GetToolbarInkDropBaseColor(const views::View* host_view);
 
-void ConfigureInkDropForToolbar(views::Button* host);
+// Installs `highlight_generator` and configures the inkdrop for `host` in
+// toolbar. Creates a highlight generator when it's not provided.
+void ConfigureInkDropForToolbar(views::Button* host,
+                                std::unique_ptr<views::HighlightPathGenerator>
+                                    highlight_generator = nullptr);
 
 // Sets the highlight color callback and ripple color callback for inkdrop when
 // the chrome refresh flag is on.

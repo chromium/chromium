@@ -1,0 +1,6 @@
+WebView textSize:16.0 style:0 htmlInfo:[{htmlTag="#document"}, {display=""}]
+++View textSize:16.0 style:0 htmlInfo:[{htmlTag="body"}, {display="block"}]
+++++EditText text:"The textarea tag defines a multi-line text input control.\n" textSize:13.3 style:0 htmlInfo:[{htmlTag="textarea"}, {display="inline-block"}, {cols="50"}, {readonly=""}, {rows="4"}, {style="font-family: monospace"}]
+++++++View textSize:13.3 style:0 htmlInfo:[{htmlTag="div"}, {display="block"}]
+++++++++TextView text:"The textarea tag defines a multi-line text input control.\n" textSize:13.3 style:0 htmlInfo:[{htmlTag=""}, {display=""}]
+++++++++View text:"\n" textSize:13.3 style:0 htmlInfo:[{htmlTag="br"}, {display=""}]

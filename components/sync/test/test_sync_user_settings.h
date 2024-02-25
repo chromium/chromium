@@ -28,13 +28,19 @@ class TestSyncUserSettings : public SyncUserSettings {
   ~TestSyncUserSettings() override;
 
   bool IsInitialSyncFeatureSetupComplete() const override;
+
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
   void SetInitialSyncFeatureSetupComplete(
       SyncFirstSetupCompleteSource source) override;
+#endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
 
   bool IsSyncEverythingEnabled() const override;
   UserSelectableTypeSet GetSelectedTypes() const override;
   bool IsTypeManagedByPolicy(UserSelectableType type) const override;
   bool IsTypeManagedByCustodian(UserSelectableType type) const override;
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+  int GetNumberOfAccountsWithPasswordsSelected() const override;
+#endif
   void SetSelectedTypes(bool sync_everything,
                         UserSelectableTypeSet types) override;
   void SetSelectedType(UserSelectableType type, bool is_type_on) override;
@@ -47,6 +53,7 @@ class TestSyncUserSettings : public SyncUserSettings {
   UserSelectableTypeSet GetRegisteredSelectableTypes() const override;
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
+  bool IsSyncFeatureDisabledViaDashboard() const override;
   bool IsSyncAllOsTypesEnabled() const override;
   UserSelectableOsTypeSet GetSelectedOsTypes() const override;
   bool IsOsTypeManagedByPolicy(UserSelectableOsType type) const override;
@@ -72,12 +79,14 @@ class TestSyncUserSettings : public SyncUserSettings {
   bool IsTrustedVaultRecoverabilityDegraded() const override;
   bool IsUsingExplicitPassphrase() const override;
   base::Time GetExplicitPassphraseTime() const override;
-  absl::optional<PassphraseType> GetPassphraseType() const override;
+  std::optional<PassphraseType> GetPassphraseType() const override;
 
   void SetEncryptionPassphrase(const std::string& passphrase) override;
   bool SetDecryptionPassphrase(const std::string& passphrase) override;
-  void SetDecryptionNigoriKey(std::unique_ptr<Nigori> nigori) override;
-  std::unique_ptr<Nigori> GetDecryptionNigoriKey() const override;
+  void SetExplicitPassphraseDecryptionNigoriKey(
+      std::unique_ptr<Nigori> nigori) override;
+  std::unique_ptr<Nigori> GetExplicitPassphraseDecryptionNigoriKey()
+      const override;
 
   void SetInitialSyncFeatureSetupComplete();
   void ClearInitialSyncFeatureSetupComplete();
@@ -92,6 +101,9 @@ class TestSyncUserSettings : public SyncUserSettings {
   void SetTrustedVaultKeyRequiredForPreferredDataTypes(bool required);
   void SetTrustedVaultRecoverabilityDegraded(bool degraded);
   void SetIsUsingExplicitPassphrase(bool enabled);
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  void SetSyncFeatureDisabledViaDashboard(bool disabled_via_dashboard);
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
  private:
   const raw_ptr<TestSyncService> service_;
@@ -114,6 +126,10 @@ class TestSyncUserSettings : public SyncUserSettings {
   bool trusted_vault_key_required_for_preferred_data_types_ = false;
   bool trusted_vault_recoverability_degraded_ = false;
   bool using_explicit_passphrase_ = false;
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  bool sync_feature_disabled_via_dashboard_ = false;
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 };
 
 }  // namespace syncer

@@ -8,6 +8,7 @@
 #include <stdint.h>
 
 #include <memory>
+#include <optional>
 #include <utility>
 
 #include "base/command_line.h"
@@ -19,7 +20,6 @@
 #include "content/browser/compositor/image_transport_factory.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/context_factory.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/accelerated_widget_mac/accelerated_widget_mac.h"
 #include "ui/accelerated_widget_mac/window_resize_helper_mac.h"
 #include "ui/compositor/recyclable_compositor_mac.h"
@@ -176,7 +176,7 @@ void BrowserCompositorMac::UpdateSurfaceFromChild(
 void BrowserCompositorMac::SetRenderWidgetHostIsHidden(bool hidden) {
   render_widget_host_is_hidden_ = hidden;
   UpdateState();
-  if (state_ == UseParentLayerCompositor) {
+  if (state_ == UseParentLayerCompositor && !hidden) {
     // UpdateState might not call WasShown when showing a frame using the same
     // ParentLayerCompositor, since it returns early on a no-op state
     // transition.

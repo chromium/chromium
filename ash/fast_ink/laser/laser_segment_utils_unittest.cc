@@ -4,7 +4,7 @@
 
 #include "ash/fast_ink/laser/laser_segment_utils.h"
 #include "ash/test/ash_test_base.h"
-#include "ui/gfx/geometry/angle_conversions.h"
+#include "base/numerics/angle_conversions.h"
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/point_f.h"
 #include "ui/gfx/geometry/vector2d_f.h"
@@ -26,7 +26,7 @@ void CheckAngleOfPointInNewCoordinates(const gfx::PointF& origin,
                                        const gfx::PointF& point,
                                        float expected_angle_degree) {
   float result = AngleOfPointInNewCoordinates(origin, direction, point);
-  EXPECT_NEAR(gfx::DegToRad(expected_angle_degree), result, kEpsilon);
+  EXPECT_NEAR(base::DegToRad(expected_angle_degree), result, kEpsilon);
 }
 
 // Helper function to check if the computed variables match the expected ones.
@@ -116,7 +116,7 @@ TEST_F(LaserSegmentUtilsTest, AngleOfPointInNewCoordinates) {
 
     // The functions range is (-180.0, 180.0).
     for (float angle = -179.0f; angle < 180.0f; angle += 10.0f) {
-      float rad = gfx::DegToRad(angle);
+      float rad = base::DegToRad(angle);
       gfx::PointF new_point(cos(rad), sin(rad));
       CheckAngleOfPointInNewCoordinates(origin, direction, new_point, angle);
     }
@@ -129,7 +129,7 @@ TEST_F(LaserSegmentUtilsTest, AngleOfPointInNewCoordinates) {
 
     // The functions range is (-180.0, 180.0).
     for (float angle = -179.0f; angle < 180.0f; angle += 10.0f) {
-      float rad = gfx::DegToRad(angle + 45.0f);
+      float rad = base::DegToRad(angle + 45.0f);
       gfx::PointF new_point(cos(rad), sin(rad));
       CheckAngleOfPointInNewCoordinates(origin, direction, new_point, angle);
     }
@@ -142,7 +142,7 @@ TEST_F(LaserSegmentUtilsTest, AngleOfPointInNewCoordinates) {
 
     // The functions range is (-180.0f, 180.0f).
     for (float angle = -179.0f; angle < 180.0f; angle += 10.0f) {
-      float rad = gfx::DegToRad(angle);
+      float rad = base::DegToRad(angle);
       gfx::PointF new_point(cos(rad) + origin.x(), sin(rad) + origin.y());
       CheckAngleOfPointInNewCoordinates(origin, direction, new_point, angle);
     }
@@ -156,7 +156,7 @@ TEST_F(LaserSegmentUtilsTest, AngleOfPointInNewCoordinates) {
 
     // The functions range is (-180.0, 180.0).
     for (float angle = -179.0f; angle < 180.0f; angle += 10.0f) {
-      float rad = gfx::DegToRad(angle + 45.0f);
+      float rad = base::DegToRad(angle + 45.0f);
       gfx::PointF new_point(cos(rad) + origin.x(), sin(rad) + origin.y());
       CheckAngleOfPointInNewCoordinates(origin, direction, new_point, angle);
     }

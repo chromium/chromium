@@ -33,7 +33,7 @@ void HotspotEnabledStateNotifier::OnHotspotStatusChanged() {
     return;
   }
 
-  absl::optional<hotspot_config::mojom::DisableReason> disable_reason =
+  std::optional<hotspot_config::mojom::DisableReason> disable_reason =
       hotspot_state_handler_->GetDisableReason();
 
   if (!disable_reason) {
@@ -46,9 +46,9 @@ void HotspotEnabledStateNotifier::OnHotspotStatusChanged() {
   }
 }
 
-void HotspotEnabledStateNotifier::OnHotspotTurnedOn(bool wifi_turned_off) {
+void HotspotEnabledStateNotifier::OnHotspotTurnedOn() {
   for (auto& observer : observers_) {
-    observer->OnHotspotTurnedOn(wifi_turned_off);
+    observer->OnHotspotTurnedOn();
   }
 }
 

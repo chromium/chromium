@@ -6,12 +6,12 @@
 #define BASE_TEST_LAUNCHER_TEST_RESULT_H_
 
 #include <map>
+#include <optional>
 #include <string>
 #include <vector>
 
 #include "base/threading/platform_thread.h"
 #include "base/time/time.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base {
 
@@ -107,17 +107,17 @@ struct TestResult {
 
   // Start time of child test process, the field is optional the test could be
   // NOT_RUN.
-  absl::optional<base::Time> timestamp;
+  std::optional<base::Time> timestamp;
 
   // Thread id of the runner that launching the child process, which is also
   // recorded in TestLauncherTracer.
-  absl::optional<base::PlatformThreadId> thread_id;
+  std::optional<base::PlatformThreadId> thread_id;
 
   // The process num of child process launched it's recorded as event name in
   // TestLauncherTracer.
   // It's used instead of process id to distinguish processes that process id
   // might be reused by OS.
-  absl::optional<int> process_num;
+  std::optional<int> process_num;
 
   // Time it took to run the test.
   base::TimeDelta elapsed_time;

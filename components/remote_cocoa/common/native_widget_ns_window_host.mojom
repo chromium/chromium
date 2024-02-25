@@ -4,6 +4,7 @@
 
 module remote_cocoa.mojom;
 
+import "mojo/public/mojom/base/process_id.mojom";
 import "mojo/public/mojom/base/string16.mojom";
 import "ui/base/accelerators/mojom/accelerator.mojom";
 import "ui/base/mojom/ui_base_types.mojom";
@@ -166,6 +167,19 @@ interface NativeWidgetNSWindowHost {
   // Called when this widget is reparented to another window.
   OnWindowParentChanged(uint64 new_parent_id);
 
+  // Called when the toolbar reveal status changes. The toolbar is visible
+  // either because there are outstanding reveal locks or the mouse is
+  // hovering over the upper border of the screen.
+  OnImmersiveFullscreenToolbarRevealChanged(bool is_revealed);
+
+  // Called when the menubar reveal status changes.
+  // `reveal_amount` ranges in [0, 1]. This is the opacity of the menubar
+  // and the browser window traffic lights.
+  OnImmersiveFullscreenMenuBarRevealChanged(float reveal_amount);
+
+  // Returns height of the menubar if the menubar autohides, otherwise 0.
+  OnAutohidingMenuBarHeightChanged(int32 menu_bar_height);
+
   // Accept or cancel the current dialog window (depending on the value of
   // |button|), if a current dialog exists.
   DoDialogButtonAction(ui.mojom.DialogButton button);
@@ -220,7 +234,7 @@ interface NativeWidgetNSWindowHost {
   // view and in |host_pid| the pid for the host process.
   [Sync]
   GetRootViewAccessibilityToken() =>
-      (int64 host_pid, array<uint8> element_token);
+      (mojo_base.mojom.ProcessId host_pid, array<uint8> element_token);
 
   // Return the result for -[NSUserInterfaceValidations
   // validateUserInterfaceItem] for a given command, along with any state for

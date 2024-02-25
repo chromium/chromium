@@ -41,6 +41,8 @@ namespace chromeos {
 
 namespace {
 
+// The tests cases must be kept sorted for the test to pass. Tests should be
+// grouped by the API type, then sorted alphabetically within the same type.
 std::string GetServiceWorkerForError(const std::string& error) {
   std::string service_worker = R"(
     const tests = [
@@ -135,6 +137,14 @@ std::string GetServiceWorkerForError(const std::string& error) {
         );
         chrome.test.succeed();
       },
+      async function getThermalInfo() {
+        await chrome.test.assertPromiseRejects(
+            chrome.os.telemetry.getThermalInfo(),
+            'Error: Unauthorized access to chrome.os.telemetry.' +
+            'getThermalInfo. %s'
+        );
+        chrome.test.succeed();
+      },
       async function getTpmInfo() {
         await chrome.test.assertPromiseRejects(
             chrome.os.telemetry.getTpmInfo(),
@@ -162,6 +172,50 @@ std::string GetServiceWorkerForError(const std::string& error) {
       },
 
       // Diagnostics APIs.
+      async function cancelRoutine() {
+        await chrome.test.assertPromiseRejects(
+            chrome.os.diagnostics.cancelRoutine({
+              uuid: '123',
+            }),
+            'Error: Unauthorized access to ' +
+            'chrome.os.diagnostics.cancelRoutine. ' +
+            '%s'
+        );
+        chrome.test.succeed();
+      },
+      async function createFanRoutine() {
+        await chrome.test.assertPromiseRejects(
+            chrome.os.diagnostics.createFanRoutine({
+            }),
+            'Error: Unauthorized access to ' +
+            'chrome.os.diagnostics.createFanRoutine. ' +
+            '%s'
+        );
+        chrome.test.succeed();
+      },
+      async function createMemoryRoutine() {
+        await chrome.test.assertPromiseRejects(
+            chrome.os.diagnostics.createMemoryRoutine({
+              maxTestingMemKib: 42,
+            }),
+            'Error: Unauthorized access to ' +
+            'chrome.os.diagnostics.createMemoryRoutine. ' +
+            '%s'
+        );
+        chrome.test.succeed();
+      },
+      async function createVolumeButtonRoutine() {
+        await chrome.test.assertPromiseRejects(
+            chrome.os.diagnostics.createVolumeButtonRoutine({
+              button_type: "volume_up",
+              timeout_seconds: 10,
+            }),
+            'Error: Unauthorized access to ' +
+            'chrome.os.diagnostics.createVolumeButtonRoutine. ' +
+            '%s'
+        );
+        chrome.test.succeed();
+      },
       async function getAvailableRoutines() {
         await chrome.test.assertPromiseRejects(
             chrome.os.diagnostics.getAvailableRoutines(),
@@ -181,6 +235,39 @@ std::string GetServiceWorkerForError(const std::string& error) {
             ),
             'Error: Unauthorized access to ' +
             'chrome.os.diagnostics.getRoutineUpdate. ' +
+            '%s'
+        );
+        chrome.test.succeed();
+      },
+      async function isFanRoutineArgumentSupported() {
+        await chrome.test.assertPromiseRejects(
+            chrome.os.diagnostics.isFanRoutineArgumentSupported({
+            }),
+            'Error: Unauthorized access to ' +
+            'chrome.os.diagnostics.isFanRoutineArgumentSupported. ' +
+            '%s'
+        );
+        chrome.test.succeed();
+      },
+      async function isMemoryRoutineArgumentSupported() {
+        await chrome.test.assertPromiseRejects(
+            chrome.os.diagnostics.isMemoryRoutineArgumentSupported({
+              maxTestingMemKib: 42,
+            }),
+            'Error: Unauthorized access to ' +
+            'chrome.os.diagnostics.isMemoryRoutineArgumentSupported. ' +
+            '%s'
+        );
+        chrome.test.succeed();
+      },
+      async function isVolumeButtonRoutineArgumentSupported() {
+        await chrome.test.assertPromiseRejects(
+            chrome.os.diagnostics.isVolumeButtonRoutineArgumentSupported({
+              button_type: "volume_up",
+              timeout_seconds: 10,
+            }),
+            'Error: Unauthorized access to ' +
+            'chrome.os.diagnostics.isVolumeButtonRoutineArgumentSupported. ' +
             '%s'
         );
         chrome.test.succeed();
@@ -392,6 +479,15 @@ std::string GetServiceWorkerForError(const std::string& error) {
         );
         chrome.test.succeed();
       },
+      async function runFanRoutine() {
+        await chrome.test.assertPromiseRejects(
+            chrome.os.diagnostics.runFanRoutine(),
+            'Error: Unauthorized access to ' +
+            'chrome.os.diagnostics.runFanRoutine. ' +
+            '%s'
+        );
+        chrome.test.succeed();
+      },
       async function runFingerprintAliveRoutine() {
         await chrome.test.assertPromiseRejects(
             chrome.os.diagnostics.runFingerprintAliveRoutine(),
@@ -503,6 +599,17 @@ std::string GetServiceWorkerForError(const std::string& error) {
         );
         chrome.test.succeed();
       },
+      async function startRoutine() {
+        await chrome.test.assertPromiseRejects(
+            chrome.os.diagnostics.startRoutine({
+              uuid: '123',
+            }),
+            'Error: Unauthorized access to ' +
+            'chrome.os.diagnostics.startRoutine. ' +
+            '%s'
+        );
+        chrome.test.succeed();
+      },
       // Event APIs.
       async function isEventSupported() {
         await chrome.test.assertPromiseRejects(
@@ -531,6 +638,36 @@ std::string GetServiceWorkerForError(const std::string& error) {
         );
         chrome.test.succeed();
       },
+      // Management APIs.
+      async function setAudioGain() {
+        await chrome.test.assertPromiseRejects(
+            chrome.os.management.setAudioGain(
+              {
+                nodeId: 1,
+                gain: 100,
+              }
+            ),
+            'Error: Unauthorized access to ' +
+            'chrome.os.management.setAudioGain. ' +
+            '%s'
+        );
+        chrome.test.succeed();
+      },
+      async function setAudioVolume() {
+        await chrome.test.assertPromiseRejects(
+            chrome.os.management.setAudioVolume(
+              {
+                nodeId: 1,
+                volume: 100,
+                isMuted: false,
+              }
+            ),
+            'Error: Unauthorized access to ' +
+            'chrome.os.management.setAudioVolume. ' +
+            '%s'
+        );
+        chrome.test.succeed();
+      },
     ];
 
     chrome.test.runTests([
@@ -545,7 +682,8 @@ std::string GetServiceWorkerForError(const std::string& error) {
         apiNames = [
           ...getMethods(chrome.os.telemetry).sort(),
           ...getMethods(chrome.os.diagnostics).sort(),
-          ...getMethods(chrome.os.events).sort()
+          ...getMethods(chrome.os.events).sort(),
+          ...getMethods(chrome.os.management).sort()
         ];
         chrome.test.assertEq(getTestNames(tests), apiNames);
         chrome.test.succeed();
@@ -695,10 +833,9 @@ IN_PROC_BROWSER_TEST_F(TelemetryExtensionApiGuardRealDelegateBrowserTest,
     return;
   }
 
-  // Setup the device ownership for Lacros
-  auto params = crosapi::mojom::BrowserInitParams::New();
-  params->is_current_user_device_owner = true;
-  chromeos::BrowserInitParams::SetInitParamsForTests(std::move(params));
+  // Check that device ownership is set up.
+  ASSERT_TRUE(
+      chromeos::BrowserInitParams::GetForTests()->is_current_user_device_owner);
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)

@@ -81,8 +81,9 @@ base::LazyInstance<CRLSetData>::Leaky g_crl_set_data =
     LAZY_INSTANCE_INITIALIZER;
 
 void CRLSetData::ConfigureCertVerifierServiceFactory() {
-  if (crl_set_path_.empty())
+  if (crl_set_path_.empty()) {
     return;
+  }
 
   base::ThreadPool::PostTaskAndReplyWithResult(
       FROM_HERE, {base::TaskPriority::BEST_EFFORT, base::MayBlock()},

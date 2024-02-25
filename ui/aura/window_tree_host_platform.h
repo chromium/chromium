@@ -16,7 +16,7 @@
 #include "ui/platform_window/platform_window_delegate.h"
 
 namespace ui {
-enum class DomCode;
+enum class DomCode : uint32_t;
 class PlatformWindow;
 class KeyboardHook;
 struct PlatformWindowInitProperties;
@@ -91,11 +91,12 @@ class AURA_EXPORT WindowTreeHostPlatform : public WindowTreeHost,
   int64_t OnStateUpdate(const PlatformWindowDelegate::State& old,
                         const PlatformWindowDelegate::State& latest) override;
   void SetFrameRateThrottleEnabled(bool enabled) override;
+  bool IsNativeWindowOcclusionTrackingAlwaysEnabled() override;
 
   // Overridden from aura::WindowTreeHost:
   gfx::Point GetLocationOnScreenInPixels() const override;
   bool CaptureSystemKeyEventsImpl(
-      absl::optional<base::flat_set<ui::DomCode>> dom_codes) override;
+      std::optional<base::flat_set<ui::DomCode>> dom_codes) override;
   void ReleaseSystemKeyEventCapture() override;
   bool IsKeyLocked(ui::DomCode dom_code) override;
   base::flat_map<std::string, std::string> GetKeyboardLayoutMap() override;

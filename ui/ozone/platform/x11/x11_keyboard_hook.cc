@@ -46,7 +46,7 @@ const DomCode kDomCodesForLockAllKeys[] = {
 }  // namespace
 
 X11KeyboardHook::X11KeyboardHook(
-    absl::optional<base::flat_set<DomCode>> dom_codes,
+    std::optional<base::flat_set<DomCode>> dom_codes,
     BaseKeyboardHook::KeyEventCallback callback,
     gfx::AcceleratedWidget accelerated_widget)
     : BaseKeyboardHook(std::move(dom_codes), std::move(callback)),
@@ -73,7 +73,7 @@ X11KeyboardHook::~X11KeyboardHook() {
 }
 
 void X11KeyboardHook::RegisterHook(
-    const absl::optional<base::flat_set<DomCode>>& dom_codes) {
+    const std::optional<base::flat_set<DomCode>>& dom_codes) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
 
   // Only one instance of this class can be registered at a time.
@@ -100,7 +100,7 @@ void X11KeyboardHook::CaptureAllKeys() {
 }
 
 void X11KeyboardHook::CaptureSpecificKeys(
-    const absl::optional<base::flat_set<DomCode>>& dom_codes) {
+    const std::optional<base::flat_set<DomCode>>& dom_codes) {
   for (DomCode dom_code : dom_codes.value()) {
     CaptureKeyForDomCode(dom_code);
   }

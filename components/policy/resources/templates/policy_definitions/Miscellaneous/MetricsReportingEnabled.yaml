@@ -1,17 +1,17 @@
 caption: Enable reporting of usage and crash-related data
 default:  null
 desc: |-
-  When this policy is Enabled, anonymous reporting of usage and crash-related data about Chrome to Google is enabled by default. Users will still be able to change this setting in the Chrome settings.
+  When this policy is Enabled, anonymous reporting of usage and crash-related data about <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph> to Google is recommended to be enabled by default. Users will still be able to change this setting.
 
   When this policy is Disabled, anonymous reporting is disabled and no usage or crash data is sent to Google. Users won't be able to change this setting.
 
-  When this policy is not set, users can choose the anonymous reporting behavior at installation or first run, and can later change the setting in the Chrome settings.
+  When this policy is not set, users can choose the anonymous reporting behavior at installation or first run, and can change this setting later.
 
   On <ph name="MS_WIN_NAME">Microsoft® Windows®</ph>, this policy is only available on instances that are joined to a <ph name="MS_AD_NAME">Microsoft® Active Directory®</ph> domain, joined to <ph name="MS_AAD_NAME">Microsoft® Azure® Active Directory®</ph> or enrolled in <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME">Chrome Browser Cloud Management</ph>.
 
   On <ph name="MAC_OS_NAME">macOS</ph>, this policy is only available on instances that are managed via MDM, joined to a domain via MCX or enrolled in <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME">Chrome Browser Cloud Management</ph>.
 
-  (For <ph name="PRODUCT_OS_NAME">$2<ex>Google ChromeOS</ex></ph>, see DeviceMetricsReportingEnabled.)
+  (For <ph name="PRODUCT_OS_NAME">$2<ex>Google ChromeOS</ex></ph>, see <ph name="DEVICE_METRICS_REPORTING_ENABLED_POLICY_NAME">DeviceMetricsReportingEnabled</ph>.)
 example_value: true
 features:
   can_be_recommended: true

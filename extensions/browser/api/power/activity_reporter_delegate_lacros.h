@@ -20,7 +20,7 @@ class ActivityReporterDelegateLacros : public ActivityReporterDelegate {
   ~ActivityReporterDelegateLacros() override;
 
   // PowerApi
-  absl::optional<std::string> ReportActivity() const override;
+  std::optional<std::string> ReportActivity() const override;
 };
 
 }  // namespace extensions

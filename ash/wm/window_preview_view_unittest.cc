@@ -7,6 +7,7 @@
 #include "ash/constants/app_types.h"
 #include "ash/test/ash_test_base.h"
 #include "ash/wm/window_preview_view_test_api.h"
+#include "ash/wm/window_state.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/views/widget/widget.h"
 #include "ui/wm/core/window_util.h"
@@ -153,7 +154,8 @@ TEST_F(WindowPreviewViewTest, LayoutChildWithinParentBounds) {
   // bounds of the parent window.
   auto widget1 = CreateTestWidget();
   auto widget2 = CreateTestWidget();
-  widget1->GetNativeWindow()->SetBounds(gfx::Rect(0, -20, 100, 120));
+  WindowState::Get(widget1->GetNativeWindow())
+      ->SetBoundsDirectForTesting(gfx::Rect(0, -20, 100, 120));
   widget1->GetNativeWindow()->SetProperty(aura::client::kTopViewInset, 20);
   widget2->GetNativeWindow()->SetBounds(gfx::Rect(20, 20, 50, 50));
   widget2->GetNativeWindow()->SetProperty(aura::client::kTopViewInset, 10);
@@ -185,7 +187,8 @@ TEST_F(WindowPreviewViewTest, LayoutChildOutsideParentBounds) {
   // bounds of the parent window.
   auto widget1 = CreateTestWidget();
   auto widget2 = CreateTestWidget();
-  widget1->GetNativeWindow()->SetBounds(gfx::Rect(0, -20, 200, 220));
+  WindowState::Get(widget1->GetNativeWindow())
+      ->SetBoundsDirectForTesting(gfx::Rect(0, -20, 200, 220));
   widget1->GetNativeWindow()->SetProperty(aura::client::kTopViewInset, 20);
   widget2->GetNativeWindow()->SetBounds(gfx::Rect(300, 300, 100, 100));
   widget2->GetNativeWindow()->SetProperty(aura::client::kTopViewInset, 20);

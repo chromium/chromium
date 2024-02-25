@@ -262,7 +262,7 @@ void VideoCaptureDeviceFuchsia::InitializeBufferCollection(
   // need to be specified explicitly.
   fuchsia::sysmem::BufferCollectionConstraints constraints =
       VmoBuffer::GetRecommendedConstraints(kMaxUsedOutputFrames,
-                                           /*min_buffer_size=*/absl::nullopt,
+                                           /*min_buffer_size=*/std::nullopt,
                                            /*writable=*/false);
   buffer_collection_ = sysmem_allocator_.BindSharedCollection(std::move(token));
   buffer_collection_->Initialize(std::move(constraints), "CrVideoCaptureDevice",

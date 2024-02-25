@@ -6,10 +6,6 @@
 
 @implementation FormSuggestionProviderQuery
 
-- (BOOL)isOnPasswordField {
-  return [_fieldType isEqual:kPasswordFieldType];
-}
-
 - (BOOL)hasFocusType {
   return [_type isEqual:@"focus"];
 }

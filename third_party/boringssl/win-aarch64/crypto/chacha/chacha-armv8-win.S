@@ -6,9 +6,6 @@
 #if !defined(OPENSSL_NO_ASM) && defined(OPENSSL_AARCH64) && defined(_WIN32)
 #include <openssl/arm_arch.h>
 
-
-
-
 .section	.rodata
 
 .align	5
@@ -21,27 +18,13 @@ Lone:
 
 .text
 
-.globl	ChaCha20_ctr32
+.globl	ChaCha20_ctr32_nohw
 
-.def ChaCha20_ctr32
+.def ChaCha20_ctr32_nohw
    .type 32
 .endef
 .align	5
-ChaCha20_ctr32:
-	AARCH64_VALID_CALL_TARGET
-	cbz	x2,Labort
-#if defined(OPENSSL_HWASAN) && __clang_major__ >= 10
-	adrp	x5,:pg_hi21_nc:OPENSSL_armcap_P
-#else
-	adrp	x5,OPENSSL_armcap_P
-#endif
-	cmp	x2,#192
-	b.lo	Lshort
-	ldr	w17,[x5,:lo12:OPENSSL_armcap_P]
-	tst	w17,#ARMV7_NEON
-	b.ne	ChaCha20_neon
-
-Lshort:
+ChaCha20_ctr32_nohw:
 	AARCH64_SIGN_LINK_REGISTER
 	stp	x29,x30,[sp,#-96]!
 	add	x29,sp,#0
@@ -256,7 +239,6 @@ Loop:
 	ldp	x27,x28,[x29,#80]
 	ldp	x29,x30,[sp],#96
 	AARCH64_VALIDATE_LINK_REGISTER
-Labort:
 	ret
 
 .align	4
@@ -316,11 +298,13 @@ Loop_tail:
 	ret
 
 
-.def ChaCha20_neon
+.globl	ChaCha20_ctr32_neon
+
+.def ChaCha20_ctr32_neon
    .type 32
 .endef
 .align	5
-ChaCha20_neon:
+ChaCha20_ctr32_neon:
 	AARCH64_SIGN_LINK_REGISTER
 	stp	x29,x30,[sp,#-96]!
 	add	x29,sp,#0

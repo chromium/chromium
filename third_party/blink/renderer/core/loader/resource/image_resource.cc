@@ -84,9 +84,18 @@ class ImageResource::ImageResourceInfoImpl final
 
  private:
   const KURL& Url() const override { return resource_->Url(); }
+  base::TimeTicks LoadEnd() const override {
+    if (ResourceLoadTiming* load_timing =
+            resource_->GetResponse().GetResourceLoadTiming()) {
+      return load_timing->ResponseEnd();
+    }
+    return base::TimeTicks();
+  }
+
   base::TimeTicks LoadResponseEnd() const override {
     return resource_->LoadResponseEnd();
   }
+
   base::TimeTicks LoadStart() const override {
     if (ResourceLoadTiming* load_timing =
             resource_->GetResponse().GetResourceLoadTiming()) {
@@ -94,6 +103,15 @@ class ImageResource::ImageResourceInfoImpl final
     }
     return base::TimeTicks();
   }
+
+  base::TimeTicks DiscoveryTime() const override {
+    if (ResourceLoadTiming* load_timing =
+            resource_->GetResponse().GetResourceLoadTiming()) {
+      return load_timing->DiscoveryTime();
+    }
+    return base::TimeTicks();
+  }
+
   const ResourceResponse& GetResponse() const override {
     return resource_->GetResponse();
   }
@@ -109,10 +127,10 @@ class ImageResource::ImageResourceInfoImpl final
   bool HasCacheControlNoStoreHeader() const override {
     return resource_->HasCacheControlNoStoreHeader();
   }
-  absl::optional<ResourceError> GetResourceError() const override {
+  std::optional<ResourceError> GetResourceError() const override {
     if (resource_->LoadFailedOrCanceled())
       return resource_->GetResourceError();
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   void SetDecodedSize(size_t size) override { resource_->SetDecodedSize(size); }
@@ -149,14 +167,14 @@ class ImageResource::ImageResourceInfoImpl final
     return &resource_->Options().unsupported_image_mime_types->data;
   }
 
-  absl::optional<WebURLRequest::Priority> RequestPriority() const override {
+  std::optional<WebURLRequest::Priority> RequestPriority() const override {
     auto priority = resource_->GetResourceRequest().Priority();
     if (priority == WebURLRequest::Priority::kUnresolved) {
       // This can happen for image documents (e.g. when `<iframe
       // src="title.png">` is the LCP), because the `ImageResource` isn't
       // associated with `ResourceLoader` in such cases. For now, consider the
       // priority not available for such cases by returning nullopt.
-      return absl::nullopt;
+      return std::nullopt;
     }
     return priority;
   }
@@ -197,8 +215,6 @@ ImageResource* ImageResource::Fetch(FetchParameters& params,
   auto* resource = To<ImageResource>(
       fetcher->RequestResource(params, ImageResourceFactory(), nullptr));
 
-  resource->GetContent()->SetDiscoveryTime(params.DiscoveryTime());
-
   // If the fetch originated from user agent CSS we should mark it as a user
   // agent resource.
   if (is_user_agent_resource) {
@@ -218,10 +234,9 @@ bool ImageResource::CanUseCacheValidator() const {
   return Resource::CanUseCacheValidator();
 }
 
-ImageResource* ImageResource::Create(
-    const ResourceRequest& request,
-    scoped_refptr<const DOMWrapperWorld> world) {
-  ResourceLoaderOptions options(std::move(world));
+ImageResource* ImageResource::Create(const ResourceRequest& request,
+                                     const DOMWrapperWorld* world) {
+  ResourceLoaderOptions options(world);
   return MakeGarbageCollected<ImageResource>(
       request, options, ImageResourceContent::CreateNotStarted());
 }
@@ -294,12 +309,6 @@ void ImageResource::DestroyDecodedDataForFailedRevalidation() {
 
 void ImageResource::DestroyDecodedDataIfPossible() {
   GetContent()->DestroyDecodedData();
-  if (GetContent()->HasImage() && !IsUnusedPreload() &&
-      GetContent()->IsRefetchableDataFromDiskCache()) {
-    UMA_HISTOGRAM_MEMORY_KB(
-        "Memory.Renderer.EstimatedDroppableEncodedSize",
-        base::saturated_cast<base::Histogram::Sample>(EncodedSize() / 1024));
-  }
 }
 
 void ImageResource::AllClientsAndObserversRemoved() {
@@ -395,7 +404,7 @@ void ImageResource::DecodeError(bool all_data_received) {
     // Observers are notified via ImageResource::finish().
     // TODO(hiroshige): Do not call didFinishLoading() directly.
     Loader()->AbortResponseBodyLoading();
-    Loader()->DidFinishLoading(base::TimeTicks::Now(), size, size, size, false);
+    Loader()->DidFinishLoading(base::TimeTicks::Now(), size, size, size);
   } else {
     auto result = GetContent()->UpdateImage(
         nullptr, GetStatus(),
@@ -519,11 +528,11 @@ bool ImageResource::IsAccessAllowed(
 }
 
 ImageResourceContent* ImageResource::GetContent() {
-  return content_;
+  return content_.Get();
 }
 
 const ImageResourceContent* ImageResource::GetContent() const {
-  return content_;
+  return content_.Get();
 }
 
 std::pair<ResourcePriority, ResourcePriority>

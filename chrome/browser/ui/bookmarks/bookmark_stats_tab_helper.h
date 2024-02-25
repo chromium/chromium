@@ -36,11 +36,10 @@ class BookmarkStatsTabHelper
       content::NavigationHandle* navigation_handle) override;
   void DidFirstVisuallyNonEmptyPaint() override;
 
-  const absl::optional<BookmarkLaunchAction>& launch_action_for_testing()
-      const {
+  const std::optional<BookmarkLaunchAction>& launch_action_for_testing() const {
     return launch_action_;
   }
-  const absl::optional<WindowOpenDisposition>& tab_disposition_for_testing()
+  const std::optional<WindowOpenDisposition>& tab_disposition_for_testing()
       const {
     return tab_disposition_;
   }
@@ -52,8 +51,8 @@ class BookmarkStatsTabHelper
 
   // The launch action and requested tab disposition for the current navigation.
   // These will be reset after the following navigation begins.
-  absl::optional<BookmarkLaunchAction> launch_action_;
-  absl::optional<WindowOpenDisposition> tab_disposition_;
+  std::optional<BookmarkLaunchAction> launch_action_;
+  std::optional<WindowOpenDisposition> tab_disposition_;
 
   // Tracks whether launch data should be reset as a new primary frame
   // navigation begins.

@@ -6,6 +6,7 @@
 
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "third_party/skia/include/core/SkColor.h"
+#include "ui/actions/actions.h"
 #include "ui/color/color_id.h"
 #include "ui/color/color_provider.h"
 #include "ui/views/background.h"
@@ -38,7 +39,7 @@ TEST_F(MdTextButtonTest, BackgroundColorChangesWithWidgetActivation) {
   std::unique_ptr<Widget> widget = CreateTestWidget();
   auto* button = widget->SetContentsView(
       std::make_unique<MdTextButton>(Button::PressedCallback(), u" "));
-  button->SetProminent(true);
+  button->SetStyle(ui::ButtonStyle::kProminent);
   button->SetBounds(0, 0, 70, 20);
   widget->LayoutRootViewIfNecessary();
 
@@ -72,4 +73,23 @@ TEST_F(MdTextButtonTest, BackgroundColorChangesWithWidgetActivation) {
       color_provider->GetColor(ui::kColorButtonBackgroundProminentDisabled));
 }
 
+using MdTextButtonActionViewInterfaceTest = ViewsTestBase;
+
+TEST_F(MdTextButtonActionViewInterfaceTest, TestActionChanged) {
+  auto md_text_button = std::make_unique<MdTextButton>();
+  const std::u16string test_string = u"test_string";
+  std::unique_ptr<actions::ActionItem> action_item =
+      actions::ActionItem::Builder()
+          .SetText(test_string)
+          .SetActionId(0)
+          .SetEnabled(false)
+          .Build();
+  action_item->SetText(test_string);
+  md_text_button->GetActionViewInterface()->ActionItemChangedImpl(
+      action_item.get());
+  // Test some properties to ensure that the right ActionViewInterface is linked
+  // to the view.
+  EXPECT_EQ(test_string, md_text_button->GetText());
+  EXPECT_FALSE(md_text_button->GetEnabled());
+}
 }  // namespace views

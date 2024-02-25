@@ -38,7 +38,7 @@ bool DesktopScreenWin::IsNativeWindowOccluded(gfx::NativeWindow window) const {
          aura::Window::OcclusionState::OCCLUDED;
 }
 
-absl::optional<bool> DesktopScreenWin::IsWindowOnCurrentVirtualDesktop(
+std::optional<bool> DesktopScreenWin::IsWindowOnCurrentVirtualDesktop(
     gfx::NativeWindow window) const {
   DCHECK(window);
   return window->GetHost()->on_current_workspace();

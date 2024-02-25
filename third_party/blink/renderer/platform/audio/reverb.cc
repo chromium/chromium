@@ -267,7 +267,7 @@ void Reverb::Process(const AudioBus* source_bus,
 
     destination_bus->SumFrom(*temp_buffer_);
   } else {
-    NOTREACHED();
+    DUMP_WILL_BE_NOTREACHED_NORETURN();
     destination_bus->Zero();
   }
 }

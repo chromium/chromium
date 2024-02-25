@@ -4,10 +4,14 @@
 
 import("//build/config/ios/asset_catalog.gni")
 
-imageset("ntp_feed_signin_promo_icon") {
+imageset("notifications_promo_icon") {
   sources = [
-    "ntp_feed_signin_promo_icon.imageset/Contents.json",
-    "ntp_feed_signin_promo_icon.imageset/ntp_feed_signin_promo_icon@2x.png",
-    "ntp_feed_signin_promo_icon.imageset/ntp_feed_signin_promo_icon@3x.png",
+    "notifications_promo_icon.imageset/Contents.json",
+    "notifications_promo_icon.imageset/notifications_promo_icon.png",
+    "notifications_promo_icon.imageset/notifications_promo_icon@2x.png",
+    "notifications_promo_icon.imageset/notifications_promo_icon@3x.png",
+    "notifications_promo_icon.imageset/notifications_promo_icon_dark.png",
+    "notifications_promo_icon.imageset/notifications_promo_icon_dark@2x.png",
+    "notifications_promo_icon.imageset/notifications_promo_icon_dark@3x.png",
   ]
 }

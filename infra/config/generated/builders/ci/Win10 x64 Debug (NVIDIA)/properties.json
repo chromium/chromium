@@ -19,7 +19,8 @@
                 ],
                 "build_config": "Debug",
                 "config": "chromium",
-                "target_bits": 64
+                "target_bits": 64,
+                "target_platform": "win"
               },
               "legacy_gclient_config": {
                 "config": "chromium"
@@ -42,7 +43,8 @@
                 ],
                 "build_config": "Debug",
                 "config": "chromium",
-                "target_bits": 64
+                "target_bits": 64,
+                "target_platform": "win"
               },
               "legacy_gclient_config": {
                 "config": "chromium"
@@ -61,6 +63,12 @@
           "bucket": "ci",
           "builder": "Win10 x64 Debug (NVIDIA)",
           "project": "chromium"
+        }
+      ],
+      "mirroring_builder_group_and_names": [
+        {
+          "builder": "gpu-try-win-nvidia-dbg",
+          "group": "tryserver.chromium.win"
         }
       ]
     }

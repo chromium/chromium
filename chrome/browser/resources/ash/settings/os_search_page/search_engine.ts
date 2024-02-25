@@ -6,22 +6,15 @@
  * @fileoverview 'settings-search-engine' is the settings module for setting
  * the preferred search engine.
  */
-import 'chrome://resources/cr_elements/cr_link_row/cr_link_row.js';
-import 'chrome://resources/cr_elements/icons.html.js';
-import 'chrome://resources/cr_elements/policy/cr_policy_pref_indicator.js';
-import 'chrome://resources/cr_elements/cr_shared_style.css.js';
-import 'chrome://resources/cr_elements/cr_shared_vars.css.js';
-import './os_search_selection_dialog.js';
-import '/shared/settings/controls/extension_controlled_indicator.js';
-import '/shared/settings/controls/controlled_button.js';
-import '/shared/settings/controls/settings_toggle_button.js';
-import 'chrome://resources/cr_components/settings_prefs/prefs.js';
-import 'chrome://resources/cr_components/settings_prefs/pref_util.js';
+import 'chrome://resources/ash/common/cr_elements/cr_link_row/cr_link_row.js';
+import 'chrome://resources/ash/common/cr_elements/icons.html.js';
+import 'chrome://resources/ash/common/cr_elements/policy/cr_policy_pref_indicator.js';
+import 'chrome://resources/ash/common/cr_elements/cr_shared_style.css.js';
+import 'chrome://resources/ash/common/cr_elements/cr_shared_vars.css.js';
 import '../settings_shared.css.js';
-import '../settings_vars.css.js';
 
-import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
-import {WebUiListenerMixin} from 'chrome://resources/cr_elements/web_ui_listener_mixin.js';
+import {I18nMixin} from 'chrome://resources/ash/common/cr_elements/i18n_mixin.js';
+import {WebUiListenerMixin} from 'chrome://resources/ash/common/cr_elements/web_ui_listener_mixin.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {castExists} from '../assert_extras.js';
@@ -32,9 +25,10 @@ import {SearchEngine, SearchEnginesBrowserProxy, SearchEnginesBrowserProxyImpl, 
 const SettingsSearchEngineElementBase =
     I18nMixin(WebUiListenerMixin(PolymerElement));
 
-class SettingsSearchEngineElement extends SettingsSearchEngineElementBase {
+export class SettingsSearchEngineElement extends
+    SettingsSearchEngineElementBase {
   static get is() {
-    return 'settings-search-engine';
+    return 'settings-search-engine' as const;
   }
 
   static get template() {
@@ -43,8 +37,6 @@ class SettingsSearchEngineElement extends SettingsSearchEngineElementBase {
 
   static get properties() {
     return {
-      prefs: Object,
-
       /** The current selected search engine. */
       currentSearchEngine_: Object,
     };
@@ -59,7 +51,7 @@ class SettingsSearchEngineElement extends SettingsSearchEngineElementBase {
     this.browserProxy_ = SearchEnginesBrowserProxyImpl.getInstance();
   }
 
-  override ready() {
+  override ready(): void {
     super.ready();
 
     this.browserProxy_.getSearchEnginesList().then(
@@ -68,43 +60,24 @@ class SettingsSearchEngineElement extends SettingsSearchEngineElementBase {
         'search-engines-changed', this.updateCurrentSearchEngine_.bind(this));
   }
 
-  private updateCurrentSearchEngine_(searchEngines: SearchEnginesInfo) {
+  private updateCurrentSearchEngine_(searchEngines: SearchEnginesInfo): void {
     const defaultSearchEngine = castExists(
         searchEngines.defaults.find(searchEngine => searchEngine.default));
     this.currentSearchEngine_ = defaultSearchEngine;
   }
 
-  override focus() {
-    this.getBrowserSearchSettingsLink_().focus();
+  override focus(): void {
+    this.shadowRoot!.getElementById('browserSearchSettingsLink')!.focus();
   }
 
-  private onDisableExtension_() {
-    const event = new CustomEvent('refresh-pref', {
-      bubbles: true,
-      composed: true,
-      detail: 'default_search_provider.enabled',
-    });
-    this.dispatchEvent(event);
-  }
-
-  private onSearchEngineLinkClick_() {
+  private onSearchEngineLinkClick_(): void {
     this.browserProxy_.openBrowserSearchSettings();
-  }
-
-  private getBrowserSearchSettingsLink_() {
-    return castExists(
-        this.shadowRoot!.getElementById('browserSearchSettingsLink'));
-  }
-
-  private getSearchSelectionDialogButton_() {
-    return castExists(
-        this.shadowRoot!.getElementById('searchSelectionDialogButton'));
   }
 }
 
 declare global {
   interface HTMLElementTagNameMap {
-    'settings-search-engine': SettingsSearchEngineElement;
+    [SettingsSearchEngineElement.is]: SettingsSearchEngineElement;
   }
 }
 

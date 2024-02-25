@@ -17,7 +17,7 @@
 
 namespace ash::network_name_util {
 
-absl::optional<std::string> GetESimProfileName(
+std::optional<std::string> GetESimProfileName(
     CellularESimProfileHandler* cellular_esim_profile_handler,
     const NetworkState* network_state) {
   DCHECK(network_state);
@@ -25,15 +25,15 @@ absl::optional<std::string> GetESimProfileName(
   // CellularESimProfileHandler is not available if the relevant flag is
   // disabled.
   if (!cellular_esim_profile_handler)
-    return absl::nullopt;
+    return std::nullopt;
 
   // Only Cellular networks correspond to eSIM profiles.
   if (network_state->type() != shill::kTypeCellular)
-    return absl::nullopt;
+    return std::nullopt;
 
   // eSIM profiles have an associated EID and ICCID.
   if (network_state->eid().empty() || network_state->iccid().empty())
-    return absl::nullopt;
+    return std::nullopt;
 
   std::vector<CellularESimProfile> profiles =
       cellular_esim_profile_handler->GetESimProfiles();
@@ -56,7 +56,23 @@ absl::optional<std::string> GetESimProfileName(
       return base::UTF16ToUTF8(profile.name());
   }
 
-  return absl::nullopt;
+  return std::nullopt;
+}
+
+std::optional<CellularESimProfile> GetMatchedESimProfile(
+    CellularESimProfileHandler* cellular_esim_profile_handler,
+    const NetworkState* network_state) {
+  std::vector<CellularESimProfile> profiles =
+      cellular_esim_profile_handler->GetESimProfiles();
+  for (const auto& profile : profiles) {
+    if (profile.eid() != network_state->eid() ||
+        profile.iccid() != network_state->iccid()) {
+      continue;
+    }
+    return profile;
+  }
+
+  return std::nullopt;
 }
 
 std::string GetNetworkName(
@@ -64,13 +80,42 @@ std::string GetNetworkName(
     const NetworkState* network_state) {
   DCHECK(network_state);
   if (!network_state->eid().empty()) {
-    absl::optional<std::string> network_name;
+    std::optional<std::string> network_name;
     network_name =
         GetESimProfileName(cellular_esim_profile_handler, network_state);
     if (network_name.has_value())
       return *network_name;
   }
   return network_state->name();
+}
+
+bool HasNickName(CellularESimProfileHandler* cellular_esim_profile_handler,
+                 const NetworkState* network_state) {
+  DCHECK(network_state);
+  if (!cellular_esim_profile_handler) {
+    return false;
+  }
+  std::optional<CellularESimProfile> profile =
+      GetMatchedESimProfile(cellular_esim_profile_handler, network_state);
+  if (profile.has_value() && !profile.value().nickname().empty()) {
+    return true;
+  }
+  return false;
+}
+
+std::string GetServiceProvider(
+    CellularESimProfileHandler* cellular_esim_profile_handler,
+    const NetworkState* network_state) {
+  DCHECK(network_state);
+  if (!cellular_esim_profile_handler) {
+    return "";
+  }
+  std::optional<CellularESimProfile> profile =
+      GetMatchedESimProfile(cellular_esim_profile_handler, network_state);
+  if (profile.has_value()) {
+    return base::UTF16ToUTF8(profile.value().service_provider());
+  }
+  return "";
 }
 
 }  // namespace ash::network_name_util

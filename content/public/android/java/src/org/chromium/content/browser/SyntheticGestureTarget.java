@@ -6,12 +6,10 @@ package org.chromium.content.browser;
 
 import android.view.View;
 
-import org.chromium.base.annotations.CalledByNative;
-import org.chromium.base.annotations.JNINamespace;
+import org.jni_zero.CalledByNative;
+import org.jni_zero.JNINamespace;
 
-/**
- * Fowards synthetic events to MotionEventSynthesizer. Owned by its native.
- */
+/** Forwards synthetic events to MotionEventSynthesizer. Owned by its native. */
 @JNINamespace("content")
 public class SyntheticGestureTarget {
     private final MotionEventSynthesizerImpl mMotionEventSynthesizer;

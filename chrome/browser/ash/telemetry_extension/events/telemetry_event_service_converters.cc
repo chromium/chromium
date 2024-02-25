@@ -25,7 +25,7 @@ crosapi::mojom::UInt32ValuePtr LegacyUncheckedConvertPtr(
   return crosapi::mojom::UInt32Value::New(input->value);
 }
 
-absl::optional<uint32_t> UncheckedConvertPtr(
+std::optional<uint32_t> UncheckedConvertPtr(
     cros_healthd::mojom::NullableUint32Ptr input) {
   return input->value;
 }

@@ -41,6 +41,10 @@ class SignInInternalsHandler : public content::WebUIMessageHandler,
 
   // Notification that the cookie accounts are ready to be displayed.
   void OnCookieAccountsFetched(const base::Value::Dict& info) override;
+
+ private:
+  base::ScopedObservation<AboutSigninInternals, AboutSigninInternals::Observer>
+      about_signin_internals_observeration_{this};
 };
 
 #endif  // CHROME_BROWSER_UI_WEBUI_SIGNIN_INTERNALS_UI_H_

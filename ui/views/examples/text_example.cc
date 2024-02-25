@@ -9,6 +9,8 @@
 
 #include "base/strings/utf_string_conversions.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/metadata/metadata_header_macros.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/color/color_id.h"
 #include "ui/color/color_provider.h"
 #include "ui/gfx/canvas.h"
@@ -44,6 +46,8 @@ void SetFlagFromCheckbox(Checkbox* checkbox, int* flags, int flag) {
 
 // TextExample's content view, which draws stylized string.
 class TextExample::TextExampleView : public View {
+  METADATA_HEADER(TextExampleView, View)
+
  public:
   TextExampleView() = default;
   TextExampleView(const TextExampleView&) = delete;
@@ -111,6 +115,9 @@ class TextExample::TextExampleView : public View {
   // The eliding, fading, or truncating behavior.
   gfx::ElideBehavior elide_ = gfx::NO_ELIDE;
 };
+
+BEGIN_METADATA(TextExample, TextExampleView)
+END_METADATA
 
 TextExample::TextExample()
     : ExampleBase(l10n_util::GetStringUTF8(IDS_TEXT_STYLE_LABEL).c_str()) {}

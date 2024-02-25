@@ -20,8 +20,9 @@ inline constexpr char kAssistPredictiveWritingEnabled[] =
     "assistive_input.predictive_writing_enabled";
 
 // A boolean pref of whether Google Calendar Integration is enabled.
-// Disabling this pref would stop the user from getting their
-// Google Calendar events from the system tray - Calendar widget.
+// Disabling this pref disables calendar list and event list fetches from
+// the user's Google Calendar, preventing them from viewing their Google
+// Calendar events in the system tray - Calendar widget.
 inline constexpr char kCalendarIntegrationEnabled[] =
     "ash.calendar_integration_enabled";
 
@@ -85,6 +86,10 @@ inline constexpr char kManagedCellularIccidSmdpPair[] =
 // A boolean pref for whether playing charging sounds is enabled.
 inline constexpr char kChargingSoundsEnabled[] = "ash.charging_sounds.enabled";
 
+// A boolean pref indicating whether a user has enabled window snap suggestions.
+inline constexpr char kSnapWindowSuggestions[] =
+    "ash.snap_window_suggestions.enabled";
+
 // A boolean pref for whether playing a low battery sound is enabled.
 inline constexpr char kLowBatterySoundEnabled[] =
     "ash.low_battery_sound.enabled";
@@ -115,11 +120,6 @@ inline constexpr char kAudioMute[] = "settings.audio.mute";
 // it, therefore when the policy is lifted the original mute state is restored.
 inline constexpr char kAudioOutputAllowed[] = "hardware.audio_output_enabled";
 
-// A double pref storing the user-requested volume. This setting is here only
-// for migration purposes now. It is being replaced by the
-// |kAudioDevicesVolumePercent| setting.
-inline constexpr char kAudioVolumePercent[] = "settings.audio.volume_percent";
-
 // A dictionary pref that maps stable device id string to |AudioDeviceState|.
 // Different state values indicate whether or not a device has been selected
 // as the active one for audio I/O, or it's a new plugged device.
@@ -138,7 +138,8 @@ inline constexpr char kAudioOutputDevicesUserPriority[] =
     "settings.audio.output_user_priority";
 
 // A dictionary pref that maps device id string to the timestamp of the last
-// time the audio device was connected, in `base::Time::ToDoubleT()`'s format.
+// time the audio device was connected, in
+// `base::Time::InSecondsFSinceUnixEpoch()`'s format.
 inline constexpr char kAudioDevicesLastSeen[] = "settings.audio.last_seen";
 
 // A string pref storing an identifier that is getting sent with parental
@@ -252,6 +253,12 @@ inline constexpr char kSystemWebAppLastAttemptedLocale[] =
 inline constexpr char kLoginDisplayPasswordButtonEnabled[] =
     "login_display_password_button_enabled";
 
+// A boolean user profile pref which indicates that the current Managed Guest
+// Session is lockable. Set by the chrome.login extension API and read by
+// `UserManager`.
+inline constexpr char kLoginExtensionApiCanLockManagedGuestSession[] =
+    "extensions_api.login.can_lock_managed_guest_session";
+
 // Boolean pref indicating whether the user has enabled Suggested Content in
 // OS settings > Privacy > "Suggest new content to explore".
 inline constexpr char kSuggestedContentEnabled[] =
@@ -276,6 +283,11 @@ inline constexpr char kLauncherLastContinueRequestTime[] =
 // the Chrome OS launcher.
 inline constexpr char kLauncherResultEverLaunched[] =
     "launcher.result_ever_launched";
+
+// A dictionary pref that determines if each user-facing category result should
+// show in launcher.
+inline constexpr char kLauncherSearchCategoryControlStatus[] =
+    "launcher.search_category_control_status";
 
 // Dictionary pref to store data on the distribution of provider relevance
 // scores for the launcher normalizer.
@@ -621,6 +633,31 @@ inline constexpr char kAccessibilitySelectToSpeakVoiceSwitching[] =
 inline constexpr char kAccessibilitySelectToSpeakWordHighlight[] =
     "settings.a11y.select_to_speak_word_highlight";
 
+// A boolean pref which determines whether FaceGaze is enabled.
+inline constexpr char kAccessibilityFaceGazeEnabled[] =
+    "settings.a11y.face_gaze.enabled";
+// An integer pref which scales the cursor speed when moving up.
+inline constexpr char kAccessibilityFaceGazeCursorSpeedUp[] =
+    "settings.a11y.face_gaze.cursor_speed_up";
+// An integer pref which scales the cursor speed when moving down.
+inline constexpr char kAccessibilityFaceGazeCursorSpeedDown[] =
+    "settings.a11y.face_gaze.cursor_speed_down";
+// An integer pref which scales the cursor speed when moving left.
+inline constexpr char kAccessibilityFaceGazeCursorSpeedLeft[] =
+    "settings.a11y.face_gaze.cursor_speed_left";
+// An integer pref which scales the cursor speed when moving right.
+inline constexpr char kAccessibilityFaceGazeCursorSpeedRight[] =
+    "settings.a11y.face_gaze.cursor_speed_right";
+// An integer pref which determines how much FaceGaze should smooth cursor
+// movements.
+inline constexpr char kAccessibilityFaceGazeCursorSmoothing[] =
+    "settings.a11y.face_gaze.cursor_smoothing";
+// A boolean pref which determines whether FaceGaze should use cursor
+// acceleration, which makes the cursor move faster when the tracked point moves
+// quickly.
+inline constexpr char kAccessibilityFaceGazeCursorUseAcceleration[] =
+    "settings.a11y.face_gaze.cursor_use_acceleration";
+
 // A boolean pref which determines whether the accessibility menu shows
 // regardless of the state of a11y features.
 inline constexpr char kShouldAlwaysShowAccessibilityMenu[] =
@@ -648,6 +685,12 @@ inline constexpr char kDesksNamesList[] = "ash.desks.desks_names_list";
 // for the primary user on first sign-in. The guids are stored as lowercase
 // strings.
 inline constexpr char kDesksGuidsList[] = "ash.desks.desks_guids_list";
+// A list containing the lacros profile ID associations for desks in the same
+// order of the desks in the overview desks bar. This is used so that desk <->
+// profile associations can be restored. The profile IDs are logically unsigned
+// integers, but stored as strings since they can (and will) be 64-bits large.
+inline constexpr char kDesksLacrosProfileIdList[] =
+    "ash.desks.desks_lacros_profile_id_list";
 // This list stores the metrics of virtual desks. Like |kDesksNamesList|, this
 // list stores entries in the same order of the desks in the overview desks bar.
 // Values are stored as dictionaries.
@@ -748,15 +791,16 @@ inline constexpr char kSecondaryDisplays[] =
 inline constexpr char kAllowMGSToStoreDisplayProperties[] =
     "settings.display.allow_mgs_to_store";
 
+// A list of all displays used by the user and reported to popularity metrics.
+const char kDisplayPopularityUserReportedDisplays[] =
+    "display_popularity.user_reported_displays";
+// A list of all displays used by the user and reported to popularity metrics.
+const char kDisplayPopularityRevNumber[] = "display_popularity.revision_number";
+
 // A boolean pref that enable fullscreen alert bubble.
 // TODO(zxdan): Change to an allowlist in M89.
 inline constexpr char kFullscreenAlertEnabled[] =
     "ash.fullscreen_alert_enabled";
-
-// A boolean pref storing whether the gesture education notification has ever
-// been shown to the user, which we use to stop showing it again.
-inline constexpr char kGestureEducationNotificationShown[] =
-    "ash.gesture_education.notification_shown";
 
 // A boolean pref which stores whether a stylus has been seen before.
 inline constexpr char kHasSeenStylus[] = "ash.has_seen_stylus";
@@ -782,6 +826,16 @@ inline constexpr char kLocalStateDevicePeripheralDataAccessEnabled[] =
 // static
 inline constexpr char kLoginShutdownTimestampPrefName[] =
     "ash.shelf.login_shutdown_timestamp";
+
+// A `TimeDelta` pref indicates the length of time for taking the pine
+// screenshot on shutdown.
+inline constexpr char kPineScreenshotTakenDuration[] =
+    "ash.pine.screenshot_taken_duration";
+
+// A `TimeDelta` pref indicates the length of time for encoding and writing the
+// pine screenshot to the disk.
+inline constexpr char kPineScreenshotEncodeAndSaveDuration[] =
+    "ash.pine.sreenshot_encode_and_save_duration";
 
 // A boolean pref that specifies if the cellular setup notification can be
 // shown or not. This notification should be shown post-OOBE if the user has a
@@ -861,7 +915,7 @@ inline constexpr char kNightLightTemperature[] =
 // respectively.
 // 2 -> NightLight schedule times are explicitly set by the user.
 //
-// See ash::NightLightController::ScheduleType.
+// See ash::ScheduleType.
 inline constexpr char kNightLightScheduleType[] =
     "ash.night_light.schedule_type";
 
@@ -874,14 +928,6 @@ inline constexpr char kNightLightCustomStartTime[] =
     "ash.night_light.custom_start_time";
 inline constexpr char kNightLightCustomEndTime[] =
     "ash.night_light.custom_end_time";
-
-// Double prefs storing the most recent valid geoposition, which is only used
-// when the device lacks connectivity and we're unable to retrieve a valid
-// geoposition to calculate the sunset / sunrise times.
-inline constexpr char kNightLightCachedLatitude[] =
-    "ash.night_light.cached_latitude";
-inline constexpr char kNightLightCachedLongitude[] =
-    "ash.night_light.cached_longitude";
 
 // A boolean pref storing whether the AutoNightLight notification has ever been
 // dismissed by the user, which we use to stop showing it again.
@@ -1015,6 +1061,11 @@ inline constexpr char kPowerQuickDimEnabled[] = "power.quick_dim_enabled";
 // lock to happen if the user is detected to be absent.
 inline constexpr char kPowerQuickLockDelay[] = "power.quick_lock_delay.ms";
 
+// A boolean pref that reflects the value of the policy
+// DeviceEphemeralNetworkPoliciesEnabled.
+inline constexpr char kDeviceEphemeralNetworkPoliciesEnabled[] =
+    "ash.network.device_ephemeral_network_policies_enabled";
+
 // Copy of the `proxy_config::prefs::kProxy` definition; available at compile
 // time.
 inline constexpr char kProxy[] = "proxy";
@@ -1121,6 +1172,15 @@ inline constexpr char kWallpaperDailyRefreshFirstCheckTime[] =
 inline constexpr char kWallpaperDailyRefreshSecondCheckTime[] =
     "ash.wallpaper_daily_refresh.second_check_time";
 
+// Prefs required by `ScheduledFeature` for the time of day wallpaper to follow
+// a sunset-to-sunrise schedule. Nothing in the system ultimately uses them.
+// TODO(b/309020921): Remove these once ScheduledFeature doesn't require prefs
+// to operate.
+inline constexpr char kWallpaperTimeOfDayStatus[] =
+    "ash.wallpaper_time_of_day.status";
+inline constexpr char kWallpaperTimeOfDayScheduleType[] =
+    "ash.wallpaper_time_of_day.schedule_type";
+
 // Boolean pref indicating whether a user has enabled the bluetooth adapter.
 inline constexpr char kUserBluetoothAdapterEnabled[] =
     "ash.user.bluetooth.adapter_enabled";
@@ -1129,11 +1189,14 @@ inline constexpr char kUserBluetoothAdapterEnabled[] =
 inline constexpr char kSystemBluetoothAdapterEnabled[] =
     "ash.system.bluetooth.adapter_enabled";
 
-// Boolean pref to persist the expanded state of the system tray across reboots.
-inline constexpr char kSystemTrayExpanded[] = "ash.system_tray.expanded";
-
 // A boolean pref indicating whether the camera is allowed to be used.
 inline constexpr char kUserCameraAllowed[] = "ash.user.camera_allowed";
+
+// A boolean pref remembering the previous value of `kUserCameraAllowed`.
+// Set to ensure we can restore the previous value (even after a crash) when the
+// preference is temporary changed through the `ForceDisableCameraAccess` API.
+inline constexpr char kUserCameraAllowedPreviousValue[] =
+    "ash.user.camera_allowed_previous_value";
 
 // A boolean pref indicating whether the microphone is allowed to be used.
 inline constexpr char kUserMicrophoneAllowed[] = "ash.user.microphone_allowed";
@@ -1151,13 +1214,24 @@ inline constexpr char kShouldShowSpeakOnMuteOptInNudge[] =
 inline constexpr char kSpeakOnMuteOptInNudgeShownCount[] =
     "ash.user.speak_on_mute_opt_in_nudge_shown_count";
 
-// A boolean pref indicating whether the geolocation is allowed for the user.
-inline constexpr char kUserGeolocationAllowed[] =
-    "ash.user.geolocation_allowed";
+// An enum pref, indicating whether the geolocation is allowed inside user
+// session. Values are from `ash::GeolocationAccessLevel`.
+inline constexpr char kUserGeolocationAccessLevel[] =
+    "ash.user.geolocation_access_level";
 // An enum pref indicating whether the geolocation is allowed outside user
-// session. Values are from PrivacyHubController::AccessLevel.
+// session. Values are from `ash::GeolocationAccessLevel`.
 inline constexpr char kDeviceGeolocationAllowed[] =
     "ash.device.geolocation_allowed";
+// A pref that saves the previous geolocation access level.
+// It has to be different value than the current level saved in
+// `kUserGeolocationAccessLevel`.
+inline constexpr char kUserPreviousGeolocationAccessLevel[] =
+    "ash.user.previous_geolocation_access_level";
+
+// An boolean pref indicating whether a user has enabled the improve location
+// toggle.
+inline constexpr char kUserGeolocationAccuracyEnabled[] =
+    "ash.user.geolocation_accuracy_enabled";
 
 // Double prefs storing the most recent valid geoposition, which is only used
 // when the device lacks connectivity and we're unable to retrieve a valid
@@ -1183,6 +1257,11 @@ inline constexpr char kTouchscreenEnabled[] = "events.touch_screen.enabled";
 // shown to the user during oobe.
 inline constexpr char kShowTouchpadScrollScreenEnabled[] =
     "ash.touchpad_scroll_screen_oobe_enabled";
+
+// Boolean value indicating that the human presence sesnsor screen should be
+// shown to the user during oobe.
+inline constexpr char kShowHumanPresenceSensorScreenEnabled[] =
+    "ash.human_presence_sensor_scren_oobe_enabled";
 
 // Boolean value indicating that the Display size screen should be
 // shown to the user during the first sign-in.
@@ -1317,11 +1396,6 @@ inline constexpr char kAppListReorderNudge[] =
 inline constexpr char kLauncherFilesPrivacyNotice[] =
     "ash.launcher.continue_section_privacy_notice";
 
-// A dictionary pref that determines if the image search privacy notice in the
-// launcher search should be shown or not.
-inline constexpr char kImageSearchPrivacyNotice[] =
-    "ash.launcher.image_search_privacy_notice";
-
 // A boolean pref that indicates whether lock screen media controls are enabled.
 // Controlled by user policy.
 inline constexpr char kLockScreenMediaControlsEnabled[] =
@@ -1352,6 +1426,16 @@ inline constexpr char kXkbAutoRepeatInterval[] =
 inline constexpr char kSendFunctionKeys[] =
     "settings.language.send_function_keys";
 
+// A boolean pref that controls the value of the setting "Use the
+// launcher/search key to change the behavior of function keys".
+inline constexpr char kDeviceSwitchFunctionKeysBehaviorEnabled[] =
+    "ash.settings.switch_function_keys_behavior_enabled";
+
+// A string-enum-list pref that controls if the WiFi firmware dump is allowed to
+// be included in user feedback report.
+inline constexpr char kUserFeedbackWithLowLevelDebugDataAllowed[] =
+    "ash.user_feedback_with_low_level_debug_data_allowed";
+
 // A boolean pref which is true if touchpad reverse scroll is enabled.
 inline constexpr char kNaturalScroll[] = "settings.touchpad.natural_scroll";
 // A boolean pref which is true if mouse reverse scroll is enabled.
@@ -1369,6 +1453,10 @@ inline constexpr char kMultipasteNudges[] = "ash.clipboard.multipaste_nudges";
 // shelf.
 inline constexpr char kAppNotificationBadgingEnabled[] =
     "ash.app_notification_badging_enabled";
+
+// A boolean pref for whether Isolated Web Apps are enabled by the OS.
+inline constexpr char kIsolatedWebAppsEnabled[] =
+    "ash.isolated_web_apps_enabled";
 
 // An integer pref that indicates whether global media controls is pinned to
 // shelf or it's unset and need to be determined by screen size during runtime.
@@ -1467,11 +1555,6 @@ inline constexpr char kProjectorDogfoodForFamilyLinkEnabled[] =
 inline constexpr char kProjectorSWAUIPrefsMigrated[] =
     "ash.projector.swa_ui_prefs_migrated_to_chrome_untrusted";
 
-// A boolean pref that indicates whether the migration of Chromad devices to
-// cloud management can be started.
-inline constexpr char kChromadToCloudMigrationEnabled[] =
-    "ash.chromad_to_cloud_migration_enabled";
-
 // List of Drive Folder Shortcuts in the Files app. Used to sync the shortcuts
 // across devices.
 inline constexpr char kFilesAppFolderShortcuts[] =
@@ -1489,10 +1572,6 @@ inline constexpr char kFilesAppTrashEnabled[] = "ash.filesapp.trash_enabled";
 // Boolean value for the DeviceLoginScreenWebUILazyLoading device policy.
 inline constexpr char kLoginScreenWebUILazyLoading[] =
     "ash.login.LoginScreenWebUILazyLoading";
-
-// Boolean value for the FloatingWorkspaceEnabled policy
-inline constexpr char kFloatingWorkspaceEnabled[] =
-    "ash.floating_workspace_enabled";
 
 // Boolean value for the FloatingWorkspaceV2Enabled policy
 inline constexpr char kFloatingWorkspaceV2Enabled[] =
@@ -1563,6 +1642,10 @@ inline constexpr char kBackgroundBlur[] = "ash.camera.background_blur";
 
 // An boolean pref that indicates whether background replacement is applied.
 inline constexpr char kBackgroundReplace[] = "ash.camera.background_replace";
+
+// An string pref that indicates the image path of the camera background.
+inline constexpr char kBackgroundImagePath[] =
+    "ash.camera.background_image_path";
 
 // An boolean pref that indicates whether portrait relighting is applied.
 inline constexpr char kPortraitRelighting[] = "ash.camera.portrait_relighting";
@@ -1643,6 +1726,8 @@ inline constexpr char kPointingStickAcceleration[] =
     "settings.pointing_stick.acceleration";
 
 // A syncable time pref that stores the time of last session activation.
+// Starting in M119, rounded down to the nearest day since Windows epoch to
+// reduce syncs.
 inline constexpr char kTimeOfLastSessionActivation[] =
     "ash.session.time_of_last_activation";
 
@@ -1795,6 +1880,158 @@ inline constexpr char kHandsFreeProfileInputSuperResolution[] =
 // system shortcut. See the policy at ShortcutCustomizationAllowed.yaml.
 inline constexpr char kShortcutCustomizationAllowed[] =
     "ash.shortcut_customization_allowed";
+
+// A `TimeDelta` pref for the session duration Focus Mode should default to.
+// Based off of the last session, if any.
+inline constexpr char kFocusModeSessionDuration[] =
+    "ash.focus_mode.session_duration";
+// A boolean pref of whether Focus Mode should default to turning on DND. Based
+// off of the last session, if any.
+inline constexpr char kFocusModeDoNotDisturb[] =
+    "ash.focus_mode.do_not_disturb";
+
+// An integer pref that holds enum value of current demo mode configuration.
+// Values are defined by DemoSession::DemoModeConfig enum.
+inline constexpr char kDemoModeConfig[] = "demo_mode.config";
+
+// A string pref holding the value of the current country for demo sessions.
+inline constexpr char kDemoModeCountry[] = "demo_mode.country";
+
+// A string pref holding the value of the retailer name input for demo sessions.
+// This is now mostly called "retailer_name" in code other than in this pref and
+// in Omaha request attributes
+inline constexpr char kDemoModeRetailerId[] = "demo_mode.retailer_id";
+
+// A string pref holding the value of the store number input for demo sessions.
+// This is now mostly called "store_number" in code other than in this pref and
+// in Omaha request attributes
+inline constexpr char kDemoModeStoreId[] = "demo_mode.store_id";
+
+// A string pref holding the value of the default locale for demo sessions.
+inline constexpr char kDemoModeDefaultLocale[] = "demo_mode.default_locale";
+
+// A string pref holding the version of the installed demo mode app.
+inline constexpr char kDemoModeAppVersion[] = "demo_mode.app_version";
+
+// A string pref holding the version of the installed demo mode resources.
+inline constexpr char kDemoModeResourcesVersion[] =
+    "demo_mode.resources_version";
+
+// A dictionary pref containing the set of touchpad settings for the user. This
+// is synced for all user devices.
+inline constexpr char kTouchpadInternalSettings[] =
+    "ash.settings.touchpad.internal";
+
+// A dictionary pref containing the set of pointing stick settings for the user.
+// This is synced for all user devices.
+inline constexpr char kPointingStickInternalSettings[] =
+    "ash.settings.pointing_stick.internal";
+
+// A dictionary pref containing the set of default mouse settings for the user.
+// This is always configured to the settings for the mouse the user last used.
+// These are applied to new mice that are connected to the system. This is
+// synced for all user devices.
+inline constexpr char kMouseDefaultSettings[] = "ash.settings.mouse.defaults";
+
+// A dictionary pref containing the set of default ChromeOS keyboard settings
+// for the user. This is always configured to the settings for the ChromeOS
+// keyboard the user last used. These are applied to new ChromeOS keyboards that
+// are connected to the system. This is synced for all user devices.
+inline constexpr char kKeyboardDefaultChromeOSSettings[] =
+    "ash.settings.keyboard.chromeos_defaults";
+
+// A dictionary pref containing the set of default non-ChromeOS keyboard
+// settings for the user. This is always configured to the settings for the
+// non-ChromeOS keyboard the user last used. These are applied to new
+// non-ChromeOS keyboards that are connected to the system. This is synced for
+// all user devices.
+inline constexpr char kKeyboardDefaultNonChromeOSSettings[] =
+    "ash.settings.keyboard.non_chromeos_defaults";
+
+// A dictionary pref containing the set of default touchpad settings for the
+// user. These are applied to new touchpads that are connected to the system.
+// This is synced for all user devices.
+inline constexpr char kTouchpadDefaultSettings[] =
+    "ash.settings.touchpad.defaults";
+
+// An integer pref that counts the number of times we have shown a form of
+// screen capture education (a nudge or tutorial).
+inline constexpr char kCaptureModeEducationShownCount[] =
+    "ash.capture_mode.capture_mode_education_shown_count";
+
+// A time pref that tracks the most recent instance when we have shown a form of
+// screen capture education (a nudge or tutorial).
+inline constexpr char kCaptureModeEducationLastShown[] =
+    "ash.capture_mode.capture_mode_education_last_shown";
+
+// A dictionary that stores app icons' light vibrant colors.
+inline constexpr char kAshAppIconLightVibrantColorCache[] =
+    "ash.app_icon_light_vibrant_color_cache";
+
+// A dictionary that stores the color group component of app icons' sortable
+// colors.
+inline constexpr char kAshAppIconSortableColorGroupCache[] =
+    "ash.app_icon_sortable_color_group_cache";
+
+// A dictionary that stores the hue component of app icons' sortable colors.
+inline constexpr char kAshAppIconSortableColorHueCache[] =
+    "ash.app_icon_sortable_color_hue_cache";
+
+// An integer pref that controls the state (Disabled, Ctrl, etc) of the
+// F11 setting found in the customize keyboard keys subpage in device
+// settings. Can be controlled through the F11KeyModifier policy.
+inline constexpr char kF11KeyModifier[] = "ash.settings.f11_key_modifier";
+
+// An integer pref that controls the state (Disabled, Ctrl, etc) of the
+// F12 setting found in the customize keyboard keys subpage in device
+// settings. Can be controlled through the F12KeyModifier policy.
+inline constexpr char kF12KeyModifier[] = "ash.settings.f12_key_modifier";
+
+// An integer pref that controls the default shortcut (Alt/Search/Disabled) for
+// remapping a key event to the Home/End "six pack" keys. These settings can be
+// controlled through policy HomeAndEndKeysModifier.
+inline constexpr char kHomeAndEndKeysModifier[] =
+    "ash.settings.home_and_end_keys_modifier";
+
+// An integer pref that controls the default shortcut (Alt/Search/Disabled) for
+// remapping a key event to the PageUp/PageUp "six pack" keys. These settings
+// can be controlled through policy PageUpAndPageDownKeysModifier.
+inline constexpr char kPageUpAndPageDownKeysModifier[] =
+    "ash.settings.page_up_and_page_down_keys_modifier";
+
+// An integer pref that controls the default shortcut (Alt/Search/Disabled) for
+// remapping a key event to the Delete "six pack" key. This setting can be
+// controlled through policy DeleteKeyModifier.
+inline constexpr char kDeleteKeyModifier[] = "ash.settings.delete_key_modifier";
+
+// An integer pref that controls the default shortcut (Search/Disabled) for
+// remapping a key event to the Insert "six pack" key. This setting can be
+// controlled through policy InsertKeyModifier.
+inline constexpr char kInsertKeyModifier[] = "ash.settings.insert_key_modifier";
+
+// An integer pref to define whether restore apps and web pages on startup.
+// Refer to `ash::full_restore::RestoreOption`.
+inline constexpr char kRestoreAppsAndPagesPrefName[] =
+    "settings.restore_apps_and_pages";
+
+// A boolean pref of whether the Game Dashboard should show the welcome dialog
+// on app startup.
+inline constexpr char kGameDashboardShowWelcomeDialog[] =
+    "ash.game_dashboard.show_welcome_dialog";
+
+// An integer pref indicating the system's software scanning mode. Options:
+// (0) Never, (1) Always, (2) Only when charging.
+static constexpr char kSoftwareScanningEnabled[] =
+    "ash.nearby.software_scanning_enabled";
+
+//-----------------------------------------------------------------------------
+// Language related Prefs
+//-----------------------------------------------------------------------------
+
+// A string pref (comma-separated list) that corresponds to the set of enabled
+// 1P input method engine IDs.
+inline constexpr char kLanguagePreloadEngines[] =
+    "settings.language.preload_engines";
 
 // NOTE: New prefs should start with the "ash." prefix. Existing prefs moved
 // into this file should not be renamed, since they may be synced.

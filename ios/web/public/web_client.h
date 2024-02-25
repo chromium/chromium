@@ -7,6 +7,7 @@
 
 #include <map>
 #include <memory>
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -15,7 +16,6 @@
 #include "base/task/thread_pool/thread_pool_instance.h"
 #include "ios/web/common/user_agent.h"
 #include "mojo/public/cpp/bindings/generic_pending_receiver.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/resource/resource_scale_factor.h"
 
 namespace base {
@@ -117,24 +117,6 @@ class WebClient {
   virtual std::vector<JavaScriptFeature*> GetJavaScriptFeatures(
       BrowserState* browser_state) const;
 
-  // Gives the embedder a chance to provide the JavaScript to be injected into
-  // the web view as early as possible. Result must not be nil.
-  // The script returned will be injected in all frames (main and subframes).
-  //
-  // TODO(crbug.com/703964): Change the return value to NSArray<NSString*> to
-  // improve performance.
-  virtual NSString* GetDocumentStartScriptForAllFrames(
-      BrowserState* browser_state) const;
-
-  // Gives the embedder a chance to provide the JavaScript to be injected into
-  // the web view as early as possible. Result must not be nil.
-  // The script returned will only be injected in the main frame.
-  //
-  // TODO(crbug.com/703964): Change the return value to NSArray<NSString*> to
-  // improve performance.
-  virtual NSString* GetDocumentStartScriptForMainFrame(
-      BrowserState* browser_state) const;
-
   // Allows the embedder to bind an interface request for a WebState-scoped
   // interface that originated from the main frame of `web_state`. Called if
   // `web_state` could not bind the receiver itself.
@@ -155,7 +137,7 @@ class WebClient {
                                 NSError* error,
                                 bool is_post,
                                 bool is_off_the_record,
-                                const absl::optional<net::SSLInfo>& info,
+                                const std::optional<net::SSLInfo>& info,
                                 int64_t navigation_id,
                                 base::OnceCallback<void(NSString*)> callback);
 
@@ -211,6 +193,9 @@ class WebClient {
   // set.
   virtual void SetOSLockdownModeEnabled(web::BrowserState* browser_state,
                                         bool enabled);
+
+  virtual bool IsInsecureFormWarningEnabled(
+      web::BrowserState* browser_state) const;
 };
 
 }  // namespace web

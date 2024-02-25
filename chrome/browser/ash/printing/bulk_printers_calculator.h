@@ -24,8 +24,7 @@ namespace ash {
 // ids). All methods must be called from the same sequence and all observers'
 // notifications will be called from this sequence. Resultant list of available
 // printers are calculated asynchronously on a dedicated internal sequence.
-class BulkPrintersCalculator
-    : public base::SupportsWeakPtr<BulkPrintersCalculator> {
+class BulkPrintersCalculator {
  public:
   // Algorithm used to calculate a list of available printers from the content
   // of the "Data" policy.
@@ -79,11 +78,14 @@ class BulkPrintersCalculator
   // if there is no on-going calculations and the method below returns the
   // list of available printers that is up-to-date with current policies.
   virtual bool IsComplete() const = 0;
-  // Returns a reference to a resultant list of available printers. Keys are
-  // printers ids. If the list of available printers cannot be calculated
-  // (because of some error or missing policy), an empty map is returned.
-  virtual const std::unordered_map<std::string, chromeos::Printer>&
-  GetPrinters() const = 0;
+  // Returns the resultant list of available printers. Keys are printers ids. If
+  // the list of available printers cannot be calculated (because of some error
+  // or missing policy), an empty map is returned.
+  virtual std::unordered_map<std::string, chromeos::Printer> GetPrinters()
+      const = 0;
+
+  // Get a WeakPtr to the instance.
+  virtual base::WeakPtr<BulkPrintersCalculator> AsWeakPtr() = 0;
 };
 
 }  // namespace ash

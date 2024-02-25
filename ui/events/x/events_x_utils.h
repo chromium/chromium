@@ -23,6 +23,11 @@ namespace ui {
 // Gets the EventType from a x11::Event.
 EVENTS_X_EXPORT EventType EventTypeFromXEvent(const x11::Event& xev);
 
+// Gets the EventFlags from a x11::KeyEvent.  `send_event` indicates if the
+// event was sent by an X11 client instead of the server.
+EVENTS_X_EXPORT int GetEventFlagsFromXKeyEvent(const x11::KeyEvent& key,
+                                               bool send_event);
+
 // Gets the EventFlags from a x11::Event.
 EVENTS_X_EXPORT int EventFlagsFromXEvent(const x11::Event& xev);
 

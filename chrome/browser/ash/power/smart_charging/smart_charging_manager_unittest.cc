@@ -72,7 +72,7 @@ class SmartChargingManagerTest : public ChromeRenderViewHostTestHarness {
     return smart_charging_manager_->user_charging_event_for_test_;
   }
 
-  absl::optional<power_manager::PowerSupplyProperties::ExternalPower>
+  std::optional<power_manager::PowerSupplyProperties::ExternalPower>
   GetExternalPower() {
     return smart_charging_manager_->external_power_;
   }

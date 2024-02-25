@@ -6,6 +6,7 @@
 #define CONTENT_PUBLIC_TEST_URL_LOADER_INTERCEPTOR_H_
 
 #include <memory>
+#include <optional>
 #include <set>
 #include <string>
 
@@ -15,15 +16,16 @@
 #include "base/strings/string_piece.h"
 #include "base/synchronization/lock.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
-#include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "net/base/net_errors.h"
 #include "net/http/http_request_headers.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/mojom/url_loader.mojom.h"
-#include "services/network/public/mojom/url_loader_factory.mojom.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
+
+namespace network {
+class URLLoaderFactoryBuilder;
+}  // namespace network
 
 namespace content {
 
@@ -64,8 +66,7 @@ class URLLoaderInterceptor {
     ~RequestParams();
     RequestParams(RequestParams&& other);
     RequestParams& operator=(RequestParams&& other);
-    // This is the process_id of the process that is making the request (0 for
-    // browser process).
+    // See the comment for `url_loader_factory::TerminalParams::process_id_`.
     int process_id;
     // The following are the parameters to CreateLoaderAndStart.
     mojo::PendingReceiver<network::mojom::URLLoader> receiver;
@@ -119,12 +120,11 @@ class URLLoaderInterceptor {
   // Helper methods for use when intercepting.
   // Writes the given response body, header, and SSL Info to `client`.
   // If `url` is present, also computes the ParsedHeaders for the response.
-  static void WriteResponse(
-      base::StringPiece headers,
-      base::StringPiece body,
-      network::mojom::URLLoaderClient* client,
-      absl::optional<net::SSLInfo> ssl_info = absl::nullopt,
-      absl::optional<GURL> url = absl::nullopt);
+  static void WriteResponse(base::StringPiece headers,
+                            base::StringPiece body,
+                            network::mojom::URLLoaderClient* client,
+                            std::optional<net::SSLInfo> ssl_info = std::nullopt,
+                            std::optional<GURL> url = std::nullopt);
 
   // Reads the given path, relative to the root source directory, and writes it
   // to |client|. For headers:
@@ -135,20 +135,18 @@ class URLLoaderInterceptor {
   //      guessed from the file extension
   // For SSL info, if |ssl_info| is specified, then it is added to the response.
   // If `url` is present, also computes the ParsedHeaders for the response.
-  static void WriteResponse(
-      const std::string& relative_path,
-      network::mojom::URLLoaderClient* client,
-      const std::string* headers = nullptr,
-      absl::optional<net::SSLInfo> ssl_info = absl::nullopt,
-      absl::optional<GURL> url = absl::nullopt);
+  static void WriteResponse(const std::string& relative_path,
+                            network::mojom::URLLoaderClient* client,
+                            const std::string* headers = nullptr,
+                            std::optional<net::SSLInfo> ssl_info = std::nullopt,
+                            std::optional<GURL> url = std::nullopt);
 
   // Like above, but uses an absolute file path.
-  static void WriteResponse(
-      const base::FilePath& file_path,
-      network::mojom::URLLoaderClient* client,
-      const std::string* headers = nullptr,
-      absl::optional<net::SSLInfo> ssl_info = absl::nullopt,
-      absl::optional<GURL> url = absl::nullopt);
+  static void WriteResponse(const base::FilePath& file_path,
+                            network::mojom::URLLoaderClient* client,
+                            const std::string* headers = nullptr,
+                            std::optional<net::SSLInfo> ssl_info = std::nullopt,
+                            std::optional<GURL> url = std::nullopt);
 
   // Returns an interceptor that (as long as it says alive) will intercept
   // requests to |url| and fail them using the provided |error|.
@@ -177,30 +175,15 @@ class URLLoaderInterceptor {
   const net::HttpRequestHeaders& GetLastRequestHeaders();
 
  private:
-  class BrowserProcessWrapper;
-  class Interceptor;
   class IOState;
-  class RenderProcessHostWrapper;
+  class Interceptor;
   class URLLoaderFactoryGetterWrapper;
-  class URLLoaderFactoryNavigationWrapper;
+  class Wrapper;
 
-  // Used to create a factory associated with a specific RenderProcessHost.
-  void CreateURLLoaderFactoryForRenderProcessHost(
-      mojo::PendingReceiver<network::mojom::URLLoaderFactory> receiver,
-      int process_id,
-      mojo::PendingRemote<network::mojom::URLLoaderFactory> original_factory);
-
-  // Callback on UI thread whenever a
-  // StoragePartition::GetURLLoaderFactoryForBrowserProcess is called on an
-  // object that doesn't have a test factory set up.
-  mojo::PendingRemote<network::mojom::URLLoaderFactory>
-  GetURLLoaderFactoryForBrowserProcess(
-      mojo::PendingRemote<network::mojom::URLLoaderFactory> original_factory);
-
-  // Callback on UI thread whenever NavigationURLLoaderImpl needs a
-  // URLLoaderFactory with a network::mojom::TrustedURLLoaderHeaderClient.
-  void InterceptNavigationRequestCallback(
-      mojo::PendingReceiver<network::mojom::URLLoaderFactory>* receiver);
+  // Adds `this` as an interceptor when a `URLLoaderFactory` is about to be
+  // created. `Wrapper` plumbs related objects to `Intercept()`.
+  void InterceptorCallback(int process_id,
+                           network::URLLoaderFactoryBuilder& factory_builder);
 
   // Attempts to intercept the given request, returning true if it was
   // intercepted.
@@ -219,13 +202,9 @@ class URLLoaderInterceptor {
   base::OnceClosure ready_callback_;
   InterceptCallback callback_;
   scoped_refptr<IOState> io_thread_;
-  // For intecepting non-frame requests from the browser process. There is one
+  // For intercepting non-frame requests from the browser process. There is one
   // per StoragePartition. Only accessed on UI thread.
-  std::set<std::unique_ptr<BrowserProcessWrapper>>
-      browser_process_interceptors_;
-
-  std::set<std::unique_ptr<URLLoaderFactoryNavigationWrapper>>
-      navigation_wrappers_;
+  std::set<std::unique_ptr<Wrapper>> wrappers_on_ui_thread_;
 
   base::Lock last_request_lock_;
   GURL last_request_url_ GUARDED_BY(last_request_lock_);

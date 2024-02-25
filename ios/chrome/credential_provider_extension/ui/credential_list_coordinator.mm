@@ -126,11 +126,9 @@
   [self reauthenticateIfNeededWithCompletionHandler:^(
             ReauthenticationResult result) {
     if (result != ReauthenticationResult::kFailure) {
-      NSString* password =
-          PasswordWithKeychainIdentifier(credential.keychainIdentifier);
       ASPasswordCredential* ASCredential =
           [ASPasswordCredential credentialWithUser:credential.user
-                                          password:password];
+                                          password:credential.password];
       [self.credentialResponseHandler userSelectedCredential:ASCredential];
     }
   }];
@@ -167,9 +165,7 @@
   [self reauthenticateIfNeededWithCompletionHandler:^(
             ReauthenticationResult result) {
     if (result != ReauthenticationResult::kFailure) {
-      NSString* password =
-          PasswordWithKeychainIdentifier(credential.keychainIdentifier);
-      completionHandler(password);
+      completionHandler(credential.password);
     }
   }];
 }

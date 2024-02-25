@@ -21,8 +21,8 @@ import org.chromium.chrome.browser.notifications.NotificationUmaTracker;
 import org.chromium.chrome.browser.notifications.NotificationUmaTracker.SystemNotificationType;
 import org.chromium.chrome.browser.notifications.NotificationWrapperBuilderFactory;
 import org.chromium.chrome.browser.notifications.channels.ChromeChannelDefinitions.ChannelId;
-import org.chromium.components.browser_ui.notifications.NotificationManagerProxy;
-import org.chromium.components.browser_ui.notifications.NotificationManagerProxyImpl;
+import org.chromium.components.browser_ui.notifications.BaseNotificationManagerProxy;
+import org.chromium.components.browser_ui.notifications.BaseNotificationManagerProxyFactory;
 import org.chromium.components.browser_ui.notifications.NotificationMetadata;
 import org.chromium.components.browser_ui.notifications.NotificationWrapper;
 import org.chromium.components.browser_ui.notifications.NotificationWrapperBuilder;
@@ -40,6 +40,7 @@ public class ReengagementNotificationController {
 
     @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
     protected static final String NOTIFICATION_TAG = "reengagement_notification";
+
     @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
     protected static final int NOTIFICATION_ID = 200;
 
@@ -63,19 +64,23 @@ public class ReengagementNotificationController {
     /** Attempt to re-engage the user by showing a notification (if criteria are met). */
     public void tryToReengageTheUser() {
         if (!isEnabled()) return;
-        getDefaultBrowserInfo(info -> {
-            if (info == null || info.browserCount <= 1) return;
+        getDefaultBrowserInfo(
+                info -> {
+                    if (info == null || info.browserCount <= 1) return;
 
-            if (showNotification(FeatureConstants.CHROME_REENGAGEMENT_NOTIFICATION_1_FEATURE)) {
-                return;
-            }
-            if (showNotification(FeatureConstants.CHROME_REENGAGEMENT_NOTIFICATION_2_FEATURE)) {
-                return;
-            }
-            if (showNotification(FeatureConstants.CHROME_REENGAGEMENT_NOTIFICATION_3_FEATURE)) {
-                return;
-            }
-        });
+                    if (showNotification(
+                            FeatureConstants.CHROME_REENGAGEMENT_NOTIFICATION_1_FEATURE)) {
+                        return;
+                    }
+                    if (showNotification(
+                            FeatureConstants.CHROME_REENGAGEMENT_NOTIFICATION_2_FEATURE)) {
+                        return;
+                    }
+                    if (showNotification(
+                            FeatureConstants.CHROME_REENGAGEMENT_NOTIFICATION_3_FEATURE)) {
+                        return;
+                    }
+                });
     }
 
     @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
@@ -84,25 +89,22 @@ public class ReengagementNotificationController {
     }
 
     private boolean showNotification(String feature) {
-        @StringRes
-        int titleId = 0;
-        @StringRes
-        int descriptionId = 0;
-        @SystemNotificationType
-        int notificationUmaType = SystemNotificationType.UNKNOWN;
+        @StringRes int titleId = 0;
+        @StringRes int descriptionId = 0;
+        @SystemNotificationType int notificationUmaType = SystemNotificationType.UNKNOWN;
 
         if (TextUtils.equals(
-                    feature, FeatureConstants.CHROME_REENGAGEMENT_NOTIFICATION_1_FEATURE)) {
+                feature, FeatureConstants.CHROME_REENGAGEMENT_NOTIFICATION_1_FEATURE)) {
             titleId = R.string.chrome_reengagement_notification_1_title;
             descriptionId = R.string.chrome_reengagement_notification_1_description;
             notificationUmaType = SystemNotificationType.CHROME_REENGAGEMENT_1;
         } else if (TextUtils.equals(
-                           feature, FeatureConstants.CHROME_REENGAGEMENT_NOTIFICATION_2_FEATURE)) {
+                feature, FeatureConstants.CHROME_REENGAGEMENT_NOTIFICATION_2_FEATURE)) {
             titleId = R.string.chrome_reengagement_notification_2_title;
             descriptionId = R.string.chrome_reengagement_notification_2_description;
             notificationUmaType = SystemNotificationType.CHROME_REENGAGEMENT_2;
         } else if (TextUtils.equals(
-                           feature, FeatureConstants.CHROME_REENGAGEMENT_NOTIFICATION_3_FEATURE)) {
+                feature, FeatureConstants.CHROME_REENGAGEMENT_NOTIFICATION_3_FEATURE)) {
             titleId = R.string.chrome_reengagement_notification_3_title;
             descriptionId = R.string.chrome_reengagement_notification_3_description;
             notificationUmaType = SystemNotificationType.CHROME_REENGAGEMENT_3;
@@ -123,8 +125,9 @@ public class ReengagementNotificationController {
         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         intent.setAction(LAUNCH_NTP_ACTION);
 
-        PendingIntentProvider intentProvider = PendingIntentProvider.getActivity(
-                mContext, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
+        PendingIntentProvider intentProvider =
+                PendingIntentProvider.getActivity(
+                        mContext, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
 
         builder.setContentTitle(mContext.getString(titleId))
                 .setContentText(mContext.getString(descriptionId))
@@ -132,12 +135,13 @@ public class ReengagementNotificationController {
                 .setContentIntent(intentProvider)
                 .setAutoCancel(true);
 
-        NotificationManagerProxy notificationManager = new NotificationManagerProxyImpl(mContext);
+        BaseNotificationManagerProxy notificationManager =
+                BaseNotificationManagerProxyFactory.create(mContext);
         NotificationWrapper notification = builder.buildNotificationWrapper();
         notificationManager.notify(notification);
 
-        NotificationUmaTracker.getInstance().onNotificationShown(
-                notificationUmaType, notification.getNotification());
+        NotificationUmaTracker.getInstance()
+                .onNotificationShown(notificationUmaType, notification.getNotification());
         return true;
     }
 }

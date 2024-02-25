@@ -4,11 +4,13 @@
 
 #include "chrome/browser/privacy_budget/encountered_surface_tracker.h"
 
+#include "base/containers/flat_set.h"
+#include "base/rand_util.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/privacy_budget/identifiable_surface.h"
 
 namespace {
-uint64_t metric(int i) {
+uint64_t metric(uint64_t i) {
   return blink::IdentifiableSurface::FromTypeAndToken(
              blink::IdentifiableSurface::Type::kWebFeature, i)
       .ToUkmMetricHash();
@@ -22,30 +24,62 @@ TEST(EncounteredSurfaceTrackerTest, Dedup) {
   EXPECT_TRUE(t.IsNewEncounter(1, metric(1)));
 }
 
-TEST(EncounteredSurfaceTrackerTest, SizeLimit) {
+TEST(EncounteredSurfaceTrackerTest, NeverDropsNewSurface) {
   EncounteredSurfaceTracker t;
-  for (uint64_t i = 0; i < EncounteredSurfaceTracker::kMaxTrackedSurfaces;
-       i++) {
-    EXPECT_TRUE(t.IsNewEncounter(0, metric(i))) << ": 0," << i;
+  std::set<uint64_t> rand_numbers;
+  for (uint64_t i = 0; i < 10000; ++i) {
+    uint64_t new_rand_number;
+    bool inserted;
+    do {
+      new_rand_number = base::RandUint64();
+      inserted = rand_numbers.insert(new_rand_number).second;
+    } while (!inserted);
+    EXPECT_TRUE(t.IsNewEncounter(0, metric(new_rand_number)));
   }
-  // Now the tracker should be full, but we will still allow new sources.
-  for (uint64_t i = 0; i < EncounteredSurfaceTracker::kMaxTrackedSurfaces;
-       i++) {
-    EXPECT_FALSE(t.IsNewEncounter(0, metric(i))) << ": 0," << i;
-    EXPECT_TRUE(t.IsNewEncounter(1, metric(i))) << ": 1," << i;
+}
+
+TEST(EncounteredSurfaceTrackerTest, NeverDropsNewSource) {
+  EncounteredSurfaceTracker t;
+  std::set<uint64_t> rand_numbers;
+  for (uint64_t i = 0; i < 10000; ++i) {
+    uint64_t new_rand_number;
+    bool inserted;
+    do {
+      new_rand_number = base::RandUint64();
+      inserted = rand_numbers.insert(new_rand_number).second;
+    } while (!inserted);
+    EXPECT_TRUE(t.IsNewEncounter(new_rand_number, metric(0)));
+  }
+}
+
+TEST(EncounteredSurfaceTrackerTest, SizeLimitForSources) {
+  EncounteredSurfaceTracker t;
+  for (uint64_t i = 0; i < EncounteredSurfaceTracker::kMaxTrackedEntries; i++) {
+    EXPECT_TRUE(t.IsNewEncounter(i, metric(0)));
+  }
+  for (uint64_t i = 0; i < EncounteredSurfaceTracker::kMaxTrackedEntries; i++) {
+    EXPECT_FALSE(t.IsNewEncounter(i, metric(0)));
   }
 
-  // Add an extra one. This should bump one of the surfaces out.
-  t.IsNewEncounter(0, EncounteredSurfaceTracker::kMaxTrackedSurfaces + 1);
+  // Adding a new one should bump the first one out.
+  EXPECT_TRUE(t.IsNewEncounter(EncounteredSurfaceTracker::kMaxTrackedEntries,
+                               metric(0)));
+  EXPECT_TRUE(t.IsNewEncounter(0, metric(0)));
+}
 
-  // We expect only kMaxTrackedSurfaces to return true for a new surface.
-  unsigned num_true = 0;
-  for (uint64_t i = 0; i < EncounteredSurfaceTracker::kMaxTrackedSurfaces + 1;
-       i++) {
-    if (t.IsNewEncounter(2, metric(i)))
-      num_true++;
+TEST(EncounteredSurfaceTrackerTest, SizeLimitForSurfaces) {
+  EncounteredSurfaceTracker t;
+  for (uint64_t i = 0; i < EncounteredSurfaceTracker::kMaxTrackedEntries; i++) {
+    EXPECT_TRUE(t.IsNewEncounter(0, metric(i)));
   }
-  EXPECT_EQ(EncounteredSurfaceTracker::kMaxTrackedSurfaces, num_true);
+  for (uint64_t i = 0; i < EncounteredSurfaceTracker::kMaxTrackedEntries; i++) {
+    EXPECT_FALSE(t.IsNewEncounter(0, metric(i)));
+  }
+
+  // Adding a new one should bump the first one out.
+  EXPECT_TRUE(t.IsNewEncounter(
+      0, metric(EncounteredSurfaceTracker::kMaxTrackedEntries)));
+  EXPECT_TRUE(t.IsNewEncounter(0, metric(0)));
 }
 
 TEST(EncounteredSurfaceTrackerTest, Reset) {

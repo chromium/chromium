@@ -4,7 +4,6 @@
 <translation id="1002108253973310084">Tika konstatēta nesaderīga protokola versija. Lūdzu, pārbaudiet, vai abos datoros ir instalēta programmatūras jaunākā versija, un mēģiniet vēlreiz.</translation>
 <translation id="1008557486741366299">Vēlāk</translation>
 <translation id="1201402288615127009">Tālāk</translation>
-<translation id="1296511125400541222">Autortiesības: Chromium autori (2023). Visas tiesības paturētas.</translation>
 <translation id="1297009705180977556">Kļūda, veidojot savienojumu ar “<ph name="HOSTNAME" />”</translation>
 <translation id="1450760146488584666">Pieprasītais objekts nepastāv.</translation>
 <translation id="1480046233931937785">Titri</translation>
@@ -89,7 +88,6 @@ Ja kastīte “<ph name="SERVICE_SCRIPT_NAME" />” jau ir atzīmēta, noņemiet
 <translation id="4808503597364150972">Lūdzu, ievadiet saimniekdatora <ph name="HOSTNAME" /> PIN.</translation>
 <translation id="4812684235631257312">Saimniekdators</translation>
 <translation id="4867841927763172006">Sūtīt PrtScn</translation>
-<translation id="4960795469833295568">Autortiesības: Google LLC (2023). Visas tiesības paturētas.</translation>
 <translation id="4974476491460646149">Savienojums ar “<ph name="HOSTNAME" />” ir pārtraukts</translation>
 <translation id="4985296110227979402">Vispirms datorā ir jāiestata attālā piekļuve.</translation>
 <translation id="4987330545941822761">Chrome attālā darbvirsma nevarēja noteikt pārlūkprogrammas veidu lokālai URL atvēršanai. Izvēlieties pārlūkprogrammu no tālāk norādītā saraksta.</translation>
@@ -154,6 +152,7 @@ Ja kastīte “<ph name="SERVICE_SCRIPT_NAME" />” jau ir atzīmēta, noņemiet
 <translation id="7693372326588366043">Atsvaidzināt saimniekdatoru sarakstu</translation>
 <translation id="7714222945760997814">Ziņot par šo problēmu</translation>
 <translation id="7868137160098754906">Lūdzu, ievadiet attālā datora PIN.</translation>
+<translation id="7881455334687220899">Autortiesības: Chromium autori (2024). Visas tiesības paturētas.</translation>
 <translation id="7895403300744144251">Drošības politiku dēļ attālajā datorā nav atļauti savienojumi no jūsu konta.</translation>
 <translation id="7936528439960309876">Dokot labajā pusē</translation>
 <translation id="7970576581263377361">Autentificēšana neizdevās. Lūdzu, vēlreiz pierakstieties pārlūkā Chromium.</translation>
@@ -185,6 +184,7 @@ Ja izvēles rūtiņa “<ph name="SERVICE_SCRIPT_NAME" />” jau ir atzīmēta, 
 <translation id="8747048596626351634">Sesija avarēja, vai neizdevās to sākt. Ja attālajā datorā pastāv sesija ~/.chrome-remote-desktop-session, tai ir jāsāk ilgstošs priekšplāna process, piemēram, darbvirsmas vide vai logu pārvaldnieks.</translation>
 <translation id="8804164990146287819">Konfidencialitātes politika</translation>
 <translation id="8906511416443321782">Lai varētu tvert audio un straumēt to Chrome attālās darbvirsmas klientā, nepieciešama piekļuve mikrofonam.</translation>
+<translation id="9042277333359847053">Autortiesības: Google LLC (2024). Visas tiesības paturētas.</translation>
 <translation id="9111855907838866522">Ir izveidots savienojums ar jūsu attālo ierīci. Lai atvērtu izvēlni, pieskarieties pie ekrāna ar četriem pirkstiem.</translation>
 <translation id="9126115402994542723">Nepieprasīt PIN kodu vēlreiz, kad no šīs ierīces izveidoju savienojumu ar šo saimniekdatoru.</translation>
 <translation id="916856682307586697">Uzsākt noklusējuma XSession</translation>

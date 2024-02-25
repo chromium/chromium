@@ -5,19 +5,27 @@
 /**
  * @fileoverview Class to manage the ChromeVox menus.
  */
-import {AsyncUtil} from '../../common/async_util.js';
-import {EventGenerator} from '../../common/event_generator.js';
-import {KeyCode} from '../../common/key_code.js';
-import {StringUtil} from '../../common/string_util.js';
-import {Command, CommandCategory, CommandStore} from '../common/command_store.js';
+import {AsyncUtil} from '/common/async_util.js';
+import {EventGenerator} from '/common/event_generator.js';
+import {KeyCode} from '/common/key_code.js';
+import {StringUtil} from '/common/string_util.js';
+import {TestImportManager} from '/common/testing/test_import_manager.js';
+
+import {BackgroundBridge} from '../common/background_bridge.js';
+import {BrailleCommandData} from '../common/braille/braille_command_data.js';
+import {Command, CommandCategory} from '../common/command.js';
+import {CommandStore} from '../common/command_store.js';
+import {EventSourceType} from '../common/event_source_type.js';
+import {GestureCommandData} from '../common/gesture_command_data.js';
 import {KeyMap} from '../common/key_map.js';
-import {KeySequence} from '../common/key_sequence.js';
+import {KeyBinding, KeySequence} from '../common/key_sequence.js';
 import {KeyUtil} from '../common/key_util.js';
 import {Msgs} from '../common/msgs.js';
-import {PanelNodeMenuData, PanelNodeMenuId, PanelNodeMenuItemData} from '../common/panel_menu_data.js';
+import {ALL_PANEL_MENU_NODE_DATA, PanelNodeMenuData, PanelNodeMenuId, PanelNodeMenuItemData} from '../common/panel_menu_data.js';
 
 import {PanelInterface} from './panel_interface.js';
 import {PanelMenu, PanelNodeMenu, PanelSearchMenu} from './panel_menu.js';
+import {PanelMode} from './panel_mode.js';
 
 const $ = (id) => document.getElementById(id);
 
@@ -70,6 +78,41 @@ export class MenuManager {
   }
 
   /**
+   * @param {!PanelMenu} actionsMenu
+   * @param {!Map<!Command, !KeyBinding>} bindingMap
+   */
+  async addActionsMenuItems(actionsMenu, bindingMap) {
+    const actions =
+        await BackgroundBridge.PanelBackground.getActionsForCurrentNode();
+    for (const standardAction of actions.standardActions) {
+      const actionMsg = ACTION_TO_MSG_ID[standardAction];
+      if (!actionMsg) {
+        continue;
+      }
+      const commandName = CommandStore.commandForMessage(actionMsg);
+      let shortcutName = '';
+      if (commandName) {
+        const commandBinding = bindingMap.get(commandName);
+        shortcutName = commandBinding ? commandBinding.keySeq : '';
+      }
+      const actionDesc = Msgs.getMsg(actionMsg);
+      actionsMenu.addMenuItem(
+          actionDesc, shortcutName, '' /* menuItemBraille */, '' /* gesture */,
+          () => BackgroundBridge.PanelBackground
+                    .performStandardActionOnCurrentNode(standardAction));
+    }
+
+    for (const customAction of actions.customActions) {
+      actionsMenu.addMenuItem(
+          customAction.description, '' /* menuItemShortcut */,
+          '' /* menuItemBraille */, '' /* gesture */,
+          () =>
+              BackgroundBridge.PanelBackground.performCustomActionOnCurrentNode(
+                  customAction.id));
+    }
+  }
+
+  /**
    * Create a new menu with the given name and add it to the menu bar.
    * @param {string} menuMsg The msg id of the new menu to add.
    * @return {!PanelMenu} The menu just created.
@@ -85,6 +128,37 @@ export class MenuManager {
     $('menus_background').appendChild(menu.menuContainerElement);
     this.menus_.push(menu);
     return menu;
+  }
+
+  /**
+   * @param {!KeyBinding} binding
+   * @param {PanelMenu} menu
+   * @param {boolean} isTouchScreen
+   */
+  addMenuItemFromKeyBinding(binding, menu, isTouchScreen) {
+    if (!binding.title || !menu) {
+      return;
+    }
+
+    const gestures = Object.keys(GestureCommandData.GESTURE_COMMAND_MAP);
+    let keyText;
+    let brailleText;
+    let gestureText;
+    if (isTouchScreen) {
+      const gestureData = Object.values(GestureCommandData.GESTURE_COMMAND_MAP);
+      const data = gestureData.find(data => data.command === binding.command);
+      if (data) {
+        gestureText = Msgs.getMsg(data.msgId);
+      }
+    } else {
+      keyText = binding.keySeq;
+      brailleText = BrailleCommandData.getDotShortcut(binding.command, true);
+    }
+
+    menu.addMenuItem(
+        binding.title, keyText, brailleText, gestureText,
+        () => BackgroundBridge.CommandHandler.onCommand(binding.command),
+        binding.command);
   }
 
   /**
@@ -154,6 +228,39 @@ export class MenuManager {
     $('menus_background').appendChild(this.searchMenu_.menuContainerElement);
     this.menus_.push(this.searchMenu_);
     return this.searchMenu_;
+  }
+
+  /** @param {!PanelMenu} touchMenu */
+  addTouchGestureMenuItems(touchMenu) {
+    const touchGestureItems = [];
+    for (const data of Object.values(GestureCommandData.GESTURE_COMMAND_MAP)) {
+      const command = data.command;
+      if (!command) {
+        continue;
+      }
+
+      const gestureText = Msgs.getMsg(data.msgId);
+      const msgForCmd = data.commandDescriptionMsgId ||
+          CommandStore.messageForCommand(command);
+      let titleText;
+      if (msgForCmd) {
+        titleText = Msgs.getMsg(msgForCmd);
+      } else {
+        console.error('No localization for: ' + command + ' (gesture)');
+        titleText = '';
+      }
+      touchGestureItems.push({titleText, gestureText, command});
+    }
+
+    touchGestureItems.sort(
+        (item1, item2) => item1.titleText.localeCompare(item2.titleText));
+
+    for (const item of touchGestureItems) {
+      touchMenu.addMenuItem(
+          item.titleText, '', '', item.gestureText,
+          () => BackgroundBridge.CommandHandler.onCommand(item.command),
+          item.command);
+    }
   }
 
   /**
@@ -228,6 +335,17 @@ export class MenuManager {
   }
 
   /**
+   * Get the callback for whatever item is currently selected.
+   * @return {?Function} The callback for the current item.
+   */
+  getCallbackForCurrentItem() {
+    if (this.activeMenu_) {
+      return this.activeMenu_.getCallbackForCurrentItem();
+    }
+    return null;
+  }
+
+  /**
    * @param {string|undefined} opt_menuTitle
    * @return {!PanelMenu}
    */
@@ -238,8 +356,7 @@ export class MenuManager {
   }
 
   /**
-   * @return {!Promise<Array<Object<{command: string, sequence:
-   *     KeySequence}>>>}
+   * @return {!Promise<!Array<!KeyBinding>>}
    */
   async getSortedKeyBindings() {
     // TODO(accessibility): Commands should be based off of CommandStore and
@@ -256,7 +373,8 @@ export class MenuManager {
       if (!titleMsgId) {
         // Title messages are intentionally missing for some keyboard
         // shortcuts.
-        if (!(command in COMMANDS_WITH_NO_MSG_ID)) {
+        if (!(command in COMMANDS_WITH_NO_MSG_ID) &&
+            !MenuManager.disableMissingMsgsErrorsForTesting) {
           console.error('No localization for: ' + command);
         }
         binding.title = '';
@@ -294,6 +412,17 @@ export class MenuManager {
       [CommandCategory.TABLES]: jumpMenu,
     };
   }
+  /**
+   * @param {!Array<!KeyBinding>} sortedBindings
+   * @return {!Map<!Command, !KeyBinding>}
+   */
+  makeBindingMap(sortedBindings) {
+    const bindingMap = new Map();
+    for (const binding of sortedBindings) {
+      bindingMap.set(binding.command, binding);
+    }
+    return bindingMap;
+  }
 
   /**
    * Activate a menu whose title has been clicked. Stop event propagation at
@@ -305,6 +434,97 @@ export class MenuManager {
     this.activateMenu(menu, true /* activateFirstItem */);
     mouseUpEvent.preventDefault();
     mouseUpEvent.stopPropagation();
+  }
+
+  /**
+   * Open / show the ChromeVox Menus.
+   * @param {Event=} opt_event An optional event that triggered this.
+   * @param {string=} opt_activateMenuTitle Title msg id of menu to open.
+   */
+  async onOpenMenus(opt_event, opt_activateMenuTitle) {
+    // If the menu was already open, close it now and exit early.
+    if (PanelInterface.instance.mode !== PanelMode.COLLAPSED) {
+      PanelInterface.instance.setMode(PanelMode.COLLAPSED);
+      return;
+    }
+
+    // Eat the event so that a mousedown isn't turned into a drag, allowing
+    // users to click-drag-release to select a menu item.
+    if (opt_event) {
+      opt_event.stopPropagation();
+      opt_event.preventDefault();
+    }
+
+    await BackgroundBridge.PanelBackground.saveCurrentNode();
+    PanelInterface.instance.setMode(PanelMode.FULLSCREEN_MENUS);
+
+    // The panel does not get focus immediately when we request to be full
+    // screen (handled in ChromeVoxPanel natively on hash changed). Wait, if
+    // needed, for focus to begin initialization.
+    if (!document.hasFocus()) {
+      await waitForWindowFocus();
+    }
+
+    const eventSource = await BackgroundBridge.EventSource.get();
+    const touchScreen = (eventSource === EventSourceType.TOUCH_GESTURE);
+
+    // Build the top-level menus.
+    const searchMenu = this.addSearchMenu('panel_search_menu');
+    const jumpMenu = this.addMenu('panel_menu_jump');
+    const speechMenu = this.addMenu('panel_menu_speech');
+    const touchMenu =
+        touchScreen ? this.addMenu('panel_menu_touchgestures') : null;
+    const chromevoxMenu = this.addMenu('panel_menu_chromevox');
+    const actionsMenu = this.addMenu('panel_menu_actions');
+
+    // Add a menu item that opens the full list of ChromeBook keyboard
+    // shortcuts. We want this to be at the top of the ChromeVox menu.
+    await this.addOSKeyboardShortcutsMenuItem(chromevoxMenu);
+
+    // Create a mapping between categories from CommandStore, and our
+    // top-level menus. Some categories aren't mapped to any menu.
+    const categoryToMenu = this.makeCategoryMapping(
+        actionsMenu, chromevoxMenu, jumpMenu, speechMenu);
+
+    // Make a copy of the key bindings, get the localized title of each
+    // command, and then sort them.
+    const sortedBindings = await this.getSortedKeyBindings();
+
+    // Insert items from the bindings into the menus.
+    const bindingMap = this.makeBindingMap(sortedBindings);
+    for (const binding of bindingMap.values()) {
+      const category = CommandStore.categoryForCommand(binding.command);
+      const menu = category ? categoryToMenu[category] : null;
+      this.addMenuItemFromKeyBinding(binding, menu, touchScreen);
+    }
+
+    // Add Touch Gestures menu items.
+    if (touchMenu) {
+      this.addTouchGestureMenuItems(touchMenu);
+    }
+
+    if (PanelInterface.instance.sessionState !== 'IN_SESSION') {
+      this.denySignedOut();
+    }
+
+    // Add a menu item that disables / closes ChromeVox.
+    chromevoxMenu.addMenuItem(
+        Msgs.getMsg('disable_chromevox'), 'Ctrl+Alt+Z', '', '',
+        async () => PanelInterface.instance.onClose());
+
+    for (const menuData of ALL_PANEL_MENU_NODE_DATA) {
+      this.addNodeMenu(menuData);
+    }
+    await BackgroundBridge.PanelBackground.createAllNodeMenuBackgrounds(
+        opt_activateMenuTitle);
+
+    await this.addActionsMenuItems(actionsMenu, bindingMap);
+
+    // Activate either the specified menu or the search menu.
+    const selectedMenu = this.getSelectedMenu(opt_activateMenuTitle);
+
+    const activateFirstItem = (selectedMenu !== this.searchMenu);
+    this.activateMenu(selectedMenu, activateFirstItem);
   }
 
   /**
@@ -392,6 +612,10 @@ export class MenuManager {
   }
 }
 
+
+/** @type {boolean} */
+MenuManager.disableMissingMsgsErrorsForTesting = false;
+
 // Local to module.
 
 const COMMANDS_WITH_NO_MSG_ID = [
@@ -408,3 +632,20 @@ const COMMANDS_WITH_NO_MSG_ID = [
   'showTalkBackKeyboardShortcuts',
   'copy',
 ];
+
+const ACTION_TO_MSG_ID = {
+  decrement: 'action_decrement_description',
+  doDefault: 'perform_default_action',
+  increment: 'action_increment_description',
+  scrollBackward: 'action_scroll_backward_description',
+  scrollForward: 'action_scroll_forward_description',
+  showContextMenu: 'show_context_menu',
+  longClick: 'force_long_click_on_current_item',
+};
+
+async function waitForWindowFocus() {
+  return new Promise(
+      resolve => window.addEventListener('focus', resolve, {once: true}));
+}
+
+TestImportManager.exportForTesting(MenuManager);

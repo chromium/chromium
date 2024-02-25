@@ -59,7 +59,7 @@ struct StructTraits<network::mojom::ReportingApiEndpointDataView,
     return endpoint.group_key.network_anonymization_key;
   }
 
-  static const absl::optional<base::UnguessableToken>& reporting_source(
+  static const std::optional<base::UnguessableToken>& reporting_source(
       const net::ReportingEndpoint& endpoint) {
     return endpoint.group_key.reporting_source;
   }

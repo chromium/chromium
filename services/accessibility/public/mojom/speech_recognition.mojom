@@ -1,0 +1,98 @@
+// Copyright 2023 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module ax.mojom;
+
+import "services/accessibility/public/mojom/assistive_technology_type.mojom";
+
+// Possible types of speech recognition.
+enum SpeechRecognitionType {
+  kOnDevice,
+  kNetwork,
+};
+
+// An event that is sent when speech recognition results are available.
+struct SpeechRecognitionResultEvent {
+  // The recognized phrase.
+  string transcript;
+  // Whether the result is a final or an interim result.
+  bool is_final;
+};
+
+// An event that is sent when speech recognition encounters an error.
+struct SpeechRecognitionErrorEvent {
+  // The human-readable error message.
+  string message;
+};
+
+// Options used when starting speech recognition.
+struct StartOptions {
+  // The type of assistive technology requesting speech recognition start.
+  // Note: Currently the only supported assistive technology type is Dictation.
+  AssistiveTechnologyType type;
+  // The locale, in BCP-47 format to use for speech recognition.
+  string? locale;
+  // Whether interim speech results should be returned.
+  bool? interim_results;
+};
+
+// Options used when stopping speech recognition.
+struct StopOptions {
+  // The type of assistive technology requesting speech recognition stop.
+  // This must match the AssistiveTechnologyType used when starting speech
+  // recognition to work as intended.
+  // Note: Currently the only supported assistive technology type is Dictation.
+  AssistiveTechnologyType type;
+};
+
+// This interface receives speech recognition events. The remote is in the OS
+// browser process and the receiver is in the Accessibility Service.
+interface SpeechRecognitionEventObserver {
+  // Called when speech recognition stops. Note that this differs from the
+  // callback of the Stop() method on SpeechRecognition, which gets called when
+  // speech recognition is stopped because of an explicit request from the
+  // caller. Destroys the remote in the browser process so that no other events
+  // will be fired after this gets called.
+  OnStop();
+  // Called when a speech recognition result is returned from the speech
+  // recognition service to the browser process.
+  OnResult(SpeechRecognitionResultEvent event);
+  // Called when a speech recognition error is returned from the speech
+  // recognition service to the browser process. Destroys the remote in the
+  // browser process so that no other events will be fired after this gets
+  // called.
+  OnError(SpeechRecognitionErrorEvent event);
+};
+
+// A union that either holds a SpeechRecognitionEventObserver, in the case
+// that speech recognition started successfully, or an error message, in the
+// case the speech recognition failed to start.
+union ObserverOrError {
+  // An observer that can receive speech recognition events.
+  pending_receiver<SpeechRecognitionEventObserver> observer;
+  // An error message if speech recognition failed to start.
+  string error;
+};
+
+// Information that is returned once speech recognition has started.
+struct SpeechRecognitionStartInfo {
+  // The type of speech recognition being used.
+  SpeechRecognitionType type;
+  ObserverOrError observer_or_error;
+};
+
+// Provides speech recognition services. Implemented in the main OS browser
+// process and called from Accessibility Service Javascript.
+interface SpeechRecognition {
+  // Starts listening to audio from the user. The callback is invoked when
+  // speech recognition has started or failed to start.
+  Start(StartOptions options) => (SpeechRecognitionStartInfo info);
+
+  // Stops listening to audio from the user. The callback is invoked when
+  // speech recognition has stopped. Note that this differs from the OnStop()
+  // method on SpeechRecognitionEventObserver, which gets called when speech
+  // recognition is stopped in the background without an explicit request from
+  // the caller.
+  Stop(StopOptions options) => (string? error);
+};

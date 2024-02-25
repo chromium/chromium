@@ -65,6 +65,10 @@
 #include "third_party/zlib/google/zip.h"
 #include "url/gurl.h"
 
+#if BUILDFLAG(IS_MAC)
+#include "chrome/test/chromedriver/buildflags.h"
+#endif
+
 #if BUILDFLAG(IS_POSIX)
 #include <fcntl.h>
 #include <sys/stat.h>
@@ -126,9 +130,10 @@ Status PrepareDesktopCommandLine(const Capabilities& capabilities,
                                  base::FilePath& user_data_dir) {
   base::FilePath program = capabilities.binary;
   if (program.empty()) {
-    if (!FindChrome(&program))
+    if (!FindBrowser(capabilities.browser_name, program)) {
       return Status(kUnknownError, base::StringPrintf("cannot find %s binary",
                                                       kBrowserShortName));
+    }
   } else if (!base::PathExists(program)) {
     return Status(
         kUnknownError,
@@ -191,7 +196,8 @@ Status PrepareDesktopCommandLine(const Capabilities& capabilities,
     LOG(WARNING) << "excluding remote-debugging-port switch is not supported";
   }
   if (switches.HasSwitch("user-data-dir")) {
-    if (switches.HasSwitch("headless")) {
+    if (capabilities.browser_name == kHeadlessShellCapabilityName ||
+        switches.HasSwitch("headless")) {
       // The old headless mode fails to start without a starting page provided
       // See: https://crbug.com/1414672
       // TODO(https://crbub.com/chromedriver/4358): Remove this workaround
@@ -466,6 +472,17 @@ Status LaunchDesktopChrome(network::mojom::URLLoaderFactory* factory,
   if (status.IsError())
     return status;
 
+  if (command.HasSwitch("remote-debugging-port") &&
+      PipeBuilder::PlatformIsSupported()) {
+    VLOG(logging::LOGGING_INFO)
+        << "ChromeDriver supports communication with Chrome via pipes. "
+           "This is more reliable and more secure.";
+    VLOG(logging::LOGGING_INFO)
+        << "Use the --remote-debugging-pipe Chrome switch "
+           "instead of the default --remote-debugging-port "
+           "to enable this communication mode.";
+  }
+
   base::LaunchOptions options;
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_FUCHSIA)
@@ -541,10 +558,12 @@ Status LaunchDesktopChrome(network::mojom::URLLoaderFactory* factory,
 #endif
 
 #if BUILDFLAG(IS_MAC)
+#if BUILDFLAG(CHROMEDRIVER_DISCLAIM_RESPONSIBILITY)
   // Chrome is a third party process with respect to ChromeDriver. This allows
   // Chrome to get its own permissions attributed on Mac instead of relying on
   // ChromeDriver.
   options.disclaim_responsibility = true;
+#endif  // BUILDFLAG(CHROMEDRIVER_DISCLAIM_RESPONSIBILITY)
 #endif  // BUILDFLAG(IS_MAC)
 
 #if BUILDFLAG(IS_WIN)
@@ -953,7 +972,7 @@ void ConvertHexadecimalToIDAlphabet(std::string& id) {
 std::string GenerateExtensionId(const std::string& input) {
   uint8_t hash[16];
   crypto::SHA256HashString(input, hash, sizeof(hash));
-  std::string output = base::ToLowerASCII(base::HexEncode(hash, sizeof(hash)));
+  std::string output = base::ToLowerASCII(base::HexEncode(hash));
   ConvertHexadecimalToIDAlphabet(output);
   return output;
 }
@@ -1037,7 +1056,7 @@ Status ProcessExtension(const std::string& extension,
         std::string(reinterpret_cast<char*>(&public_key_vector.front()),
                     public_key_vector.size());
     id = GenerateExtensionId(public_key);
-    base::Base64Encode(public_key, &public_key_base64);
+    public_key_base64 = base::Base64Encode(public_key);
   }
 
   // Unzip the crx file.
@@ -1050,7 +1069,7 @@ Status ProcessExtension(const std::string& extension,
   std::string manifest_data;
   if (!base::ReadFileToString(manifest_path, &manifest_data))
     return Status(kUnknownError, "cannot read manifest");
-  absl::optional<base::Value> manifest_value =
+  std::optional<base::Value> manifest_value =
       base::JSONReader::Read(manifest_data);
   base::Value::Dict* manifest =
       manifest_value ? manifest_value->GetIfDict() : nullptr;

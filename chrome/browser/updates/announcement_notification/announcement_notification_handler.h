@@ -5,9 +5,10 @@
 #ifndef CHROME_BROWSER_UPDATES_ANNOUNCEMENT_NOTIFICATION_ANNOUNCEMENT_NOTIFICATION_HANDLER_H_
 #define CHROME_BROWSER_UPDATES_ANNOUNCEMENT_NOTIFICATION_ANNOUNCEMENT_NOTIFICATION_HANDLER_H_
 
+#include <optional>
+
 #include "base/functional/callback.h"
 #include "chrome/browser/notifications/notification_handler.h"  // nogncheck
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 class Profile;
 
@@ -33,8 +34,8 @@ class AnnouncementNotificationHandler : public NotificationHandler {
   void OnClick(Profile* profile,
                const GURL& origin,
                const std::string& notification_id,
-               const absl::optional<int>& action_index,
-               const absl::optional<std::u16string>& reply,
+               const std::optional<int>& action_index,
+               const std::optional<std::u16string>& reply,
                base::OnceClosure completed_closure) override;
 
   void OpenAnnouncement(Profile* profile);

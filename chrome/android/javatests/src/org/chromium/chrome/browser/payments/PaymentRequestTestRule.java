@@ -20,7 +20,6 @@ import org.junit.runner.Description;
 import org.junit.runners.model.Statement;
 
 import org.chromium.base.ThreadUtils;
-import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
 import org.chromium.base.test.util.CallbackHelper;
@@ -39,7 +38,7 @@ import org.chromium.chrome.browser.payments.ui.PaymentRequestSection.OptionSecti
 import org.chromium.chrome.browser.payments.ui.PaymentRequestUI;
 import org.chromium.chrome.browser.payments.ui.PaymentRequestUI.PaymentRequestObserverForTest;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
-import org.chromium.components.payments.AbortReason;
+import org.chromium.components.payments.InputProtector;
 import org.chromium.components.payments.PayerData;
 import org.chromium.components.payments.PaymentApp;
 import org.chromium.components.payments.PaymentAppFactoryDelegate;
@@ -47,6 +46,7 @@ import org.chromium.components.payments.PaymentAppFactoryInterface;
 import org.chromium.components.payments.PaymentAppService;
 import org.chromium.components.payments.PaymentRequestService;
 import org.chromium.components.payments.PaymentRequestService.PaymentRequestServiceObserverForTest;
+import org.chromium.components.payments.test_support.FakeClock;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.browser.test.util.DOMUtils;
 import org.chromium.content_public.browser.test.util.JavaScriptUtils;
@@ -62,20 +62,22 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.TimeoutException;
 import java.util.concurrent.atomic.AtomicReference;
 
-/**
- * Custom ActivityTestRule for integration test for payments.
- */
+/** Custom ActivityTestRule for integration test for payments. */
 /*package*/ class PaymentRequestTestRule extends ChromeTabbedActivityTestRule
-        implements PaymentRequestObserverForTest, PaymentRequestServiceObserverForTest,
-                   ChromePaymentRequestDelegateImplObserverForTest, CardUnmaskObserverForTest,
-                   EditorObserverForTest {
+        implements PaymentRequestObserverForTest,
+                PaymentRequestServiceObserverForTest,
+                ChromePaymentRequestDelegateImplObserverForTest,
+                CardUnmaskObserverForTest,
+                EditorObserverForTest {
+    private static final long SAFE_INPUT_DELAY =
+            InputProtector.POTENTIALLY_UNINTENDED_INPUT_THRESHOLD;
+
     @IntDef({AppPresence.NO_APPS, AppPresence.HAVE_APPS})
     @Retention(RetentionPolicy.SOURCE)
     /* package */ @interface AppPresence {
@@ -113,8 +115,8 @@ import java.util.concurrent.atomic.AtomicReference;
     /* package */ static final int NEXT_YEAR = 1;
 
     /**
-     * The billing address dropdown index for the first billing address. Index 0 is for the
-     * "Select" hint.
+     * The billing address dropdown index for the first billing address. Index 0 is for the "Select"
+     * hint.
      */
     /* package */ static final int FIRST_BILLING_ADDRESS = 1;
 
@@ -122,6 +124,7 @@ import java.util.concurrent.atomic.AtomicReference;
     /* package */ static final String ENABLE_EXPERIMENTAL_WEB_PLATFORM_FEATURES =
             "enable-experimental-web-platform-features";
 
+    private final PaymentsCallbackHelper<PaymentRequestUI> mShowCalled;
     private final PaymentsCallbackHelper<PaymentRequestUI> mReadyForInput;
     private final PaymentsCallbackHelper<PaymentRequestUI> mReadyToPay;
     private final PaymentsCallbackHelper<PaymentRequestUI> mSelectionChecked;
@@ -145,8 +148,11 @@ import java.util.concurrent.atomic.AtomicReference;
     private final CallbackHelper mRendererClosedMojoConnection;
     private ChromePaymentRequestDelegateImpl mChromePaymentRequestDelegateImpl;
     private PaymentRequestUI mUI;
+    private FakeClock mClock;
+    private InputProtector mInputProtector;
 
     private final boolean mDelayStartActivity;
+    private boolean mAutoAdvanceInputProtectorClock;
 
     private final AtomicReference<WebContents> mWebContentsRef;
 
@@ -156,8 +162,9 @@ import java.util.concurrent.atomic.AtomicReference;
 
     /**
      * Creates an instance of PaymentRequestTestRule.
+     *
      * @param testFileName The file name of an test page in //components/test/data/payments,
-     *         'about:blank', or a data url which starts with 'data:'.
+     *     'about:blank', or a data url which starts with 'data:'.
      */
     /* package */ PaymentRequestTestRule(String testFileName) {
         this(testFileName, false);
@@ -165,14 +172,15 @@ import java.util.concurrent.atomic.AtomicReference;
 
     /**
      * Creates an instance of PaymentRequestTestRule.
+     *
      * @param testFileName The file name of an test page in //components/test/data/payments,
-     *         'about:blank', or a data url which starts with 'data:'.
+     *     'about:blank', or a data url which starts with 'data:'.
      * @param delayStartActivity Whether to delay the start of the main activity. When true, {@link
-     *         #startMainActivityWithURL()} needs to be called to start the main activity;
-     *         otherwise, the main activity would start automatically.
+     *     #startMainActivityWithURL()} needs to be called to start the main activity; otherwise,
+     *     the main activity would start automatically.
      */
     /* package */ PaymentRequestTestRule(String testFileName, boolean delayStartActivity) {
-        this(testFileName, /*pathPrefix=*/"components/test/data/payments/", delayStartActivity);
+        this(testFileName, /* pathPrefix= */ "components/test/data/payments/", delayStartActivity);
     }
 
     /**
@@ -180,6 +188,7 @@ import java.util.concurrent.atomic.AtomicReference;
      * pathPrefix and testFileName combined into a path relative to the repository root. For
      * example, if testFileName is "merchant.html", pathPrefix is "components/test/data/payments/",
      * the method would look for a test page at "components/test/data/payments/merchant.html".
+     *
      * @param testFileName The file name of the test page.
      * @param pathPrefix The prefix path to testFileName.
      * @param delayStartActivity Whether to delay the start of the main activity.
@@ -187,6 +196,7 @@ import java.util.concurrent.atomic.AtomicReference;
     private PaymentRequestTestRule(
             String testFilePath, String pathPrefix, boolean delayStartActivity) {
         super();
+        mShowCalled = new PaymentsCallbackHelper<>();
         mReadyForInput = new PaymentsCallbackHelper<>();
         mReadyToPay = new PaymentsCallbackHelper<>();
         mSelectionChecked = new PaymentsCallbackHelper<>();
@@ -215,6 +225,9 @@ import java.util.concurrent.atomic.AtomicReference;
             mTestFilePath = UrlUtils.getIsolatedTestFilePath(pathPrefix + testFilePath);
         }
         mDelayStartActivity = delayStartActivity;
+        mAutoAdvanceInputProtectorClock = true;
+        mClock = new FakeClock();
+        mInputProtector = new InputProtector(mClock);
     }
 
     /* package */ void setObserversAndWaitForInitialPageLoad() throws TimeoutException {
@@ -224,89 +237,115 @@ import java.util.concurrent.atomic.AtomicReference;
             Thread.sleep(2000);
         } catch (Exception ex) {
         }
-        ThreadUtils.runOnUiThreadBlocking(() -> {
-            mWebContentsRef.set(getActivity().getCurrentWebContents());
-            PaymentRequestUI.setEditorObserverForTest(PaymentRequestTestRule.this);
-            PaymentRequestUI.setPaymentRequestObserverForTest(PaymentRequestTestRule.this);
-            PaymentRequestService.setObserverForTest(PaymentRequestTestRule.this);
-            ChromePaymentRequestFactory.setChromePaymentRequestDelegateImplObserverForTest(
-                    PaymentRequestTestRule.this);
-            CardUnmaskPrompt.setObserverForTest(PaymentRequestTestRule.this);
-        });
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    mWebContentsRef.set(getActivity().getCurrentWebContents());
+                    PaymentRequestUI.setEditorObserverForTest(PaymentRequestTestRule.this);
+                    PaymentRequestUI.setPaymentRequestObserverForTest(PaymentRequestTestRule.this);
+                    PaymentRequestService.setObserverForTest(PaymentRequestTestRule.this);
+                    ChromePaymentRequestFactory.setChromePaymentRequestDelegateImplObserverForTest(
+                            PaymentRequestTestRule.this);
+                    CardUnmaskPrompt.setObserverForTest(PaymentRequestTestRule.this);
+                });
         assertWaitForPageScaleFactorMatch(0.5f);
+    }
+
+    /* package */ PaymentsCallbackHelper<PaymentRequestUI> getShowCalled() {
+        return mShowCalled;
     }
 
     /* package */ PaymentsCallbackHelper<PaymentRequestUI> getReadyForInput() {
         return mReadyForInput;
     }
+
     /* package */ PaymentsCallbackHelper<PaymentRequestUI> getReadyToPay() {
         return mReadyToPay;
     }
+
     /* package */ PaymentsCallbackHelper<PaymentRequestUI> getSelectionChecked() {
         return mSelectionChecked;
     }
+
     /* package */ PaymentsCallbackHelper<PaymentRequestUI> getResultReady() {
         return mResultReady;
     }
+
     /* package */ PaymentsCallbackHelper<CardUnmaskPrompt> getReadyForUnmaskInput() {
         return mReadyForUnmaskInput;
     }
+
     /* package */ PaymentsCallbackHelper<CardUnmaskPrompt> getReadyToUnmask() {
         return mReadyToUnmask;
     }
+
     /* package */ PaymentsCallbackHelper<CardUnmaskPrompt> getUnmaskValidationDone() {
         return mUnmaskValidationDone;
     }
+
     /* package */ PaymentsCallbackHelper<CardUnmaskPrompt> getSubmitRejected() {
         return mSubmitRejected;
     }
+
     /* package */ CallbackHelper getReadyToEdit() {
         return mReadyToEdit;
     }
+
     /* package */ CallbackHelper getEditorValidationError() {
         return mEditorValidationError;
     }
+
     /* package */ CallbackHelper getEditorTextUpdate() {
         return mEditorTextUpdate;
     }
+
     /* package */ CallbackHelper getDismissed() {
         return mDismissed;
     }
+
     /* package */ CallbackHelper getUnableToAbort() {
         return mUnableToAbort;
     }
+
     /* package */ CallbackHelper getBillingAddressChangeProcessed() {
         return mBillingAddressChangeProcessed;
     }
+
     /* package */ CallbackHelper getShowFailed() {
         return mShowFailed;
     }
+
     /* package */ CallbackHelper getCanMakePaymentQueryResponded() {
         return mCanMakePaymentQueryResponded;
     }
+
     /* package */ CallbackHelper getHasEnrolledInstrumentQueryResponded() {
         return mHasEnrolledInstrumentQueryResponded;
     }
+
     /* package */ CallbackHelper getExpirationMonthChange() {
         return mExpirationMonthChange;
     }
+
     /* package */ CallbackHelper getPaymentResponseReady() {
         return mPaymentResponseReady;
     }
+
     /* package */ CallbackHelper getCompleteHandled() {
         return mCompleteHandled;
     }
+
     /* package */ CallbackHelper getRendererClosedMojoConnection() {
         return mRendererClosedMojoConnection;
     }
+
     /* package */ PaymentRequestUI getPaymentRequestUI() {
         return mUI;
     }
 
-    /* package */ void triggerUIAndWait(String nodeId,
-            PaymentsCallbackHelper<PaymentRequestUI> helper) throws TimeoutException {
+    /* package */ void triggerUIAndWait(
+            String nodeId, PaymentsCallbackHelper<PaymentRequestUI> helper)
+            throws TimeoutException {
         clickNodeAndWait(nodeId, helper);
-        mUI = helper.getTarget();
     }
 
     /* package */ void retryPaymentRequest(String validationErrors, CallbackHelper helper)
@@ -347,8 +386,10 @@ import java.util.concurrent.atomic.AtomicReference;
      */
     /* package */ String runJavaScriptAndWaitForPromise(String promiseCode)
             throws TimeoutException {
-        String code = promiseCode + ".then(result => domAutomationController.send(result))"
-                + ".catch(error => domAutomationController.send(error));";
+        String code =
+                promiseCode
+                        + ".then(result => domAutomationController.send(result))"
+                        + ".catch(error => domAutomationController.send(error));";
         return JavaScriptUtils.runJavascriptWithUserGestureAndAsyncResult(getWebContents(), code);
     }
 
@@ -369,20 +410,24 @@ import java.util.concurrent.atomic.AtomicReference;
     /** Clicks on an element in the payments UI. */
     /* package */ void clickAndWait(int resourceId, CallbackHelper helper) throws TimeoutException {
         int callCount = helper.getCallCount();
-        CriteriaHelper.pollUiThread(() -> {
-            boolean canClick = mUI.isAcceptingUserInput();
-            if (canClick) mUI.getDialogForTest().findViewById(resourceId).performClick();
-            Criteria.checkThat(canClick, Matchers.is(true));
-        });
+        CriteriaHelper.pollUiThread(
+                () -> {
+                    boolean canClick = mUI.isAcceptingUserInput();
+                    if (canClick) mUI.getDialogForTest().findViewById(resourceId).performClick();
+                    Criteria.checkThat(canClick, Matchers.is(true));
+                });
         helper.waitForCallback(callCount);
     }
 
     /** Clicks on an element in the "Order summary" section of the payments UI. */
     /* package */ void clickInOrderSummaryAndWait(CallbackHelper helper) throws TimeoutException {
         int callCount = helper.getCallCount();
-        ThreadUtils.runOnUiThreadBlocking(() -> {
-            mUI.getOrderSummarySectionForTest().findViewById(R.id.payments_section).performClick();
-        });
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    mUI.getOrderSummarySectionForTest()
+                            .findViewById(R.id.payments_section)
+                            .performClick();
+                });
         helper.waitForCallback(callCount);
     }
 
@@ -390,9 +435,10 @@ import java.util.concurrent.atomic.AtomicReference;
     /* package */ void clickInShippingAddressAndWait(final int resourceId, CallbackHelper helper)
             throws TimeoutException {
         int callCount = helper.getCallCount();
-        ThreadUtils.runOnUiThreadBlocking(() -> {
-            mUI.getShippingAddressSectionForTest().findViewById(resourceId).performClick();
-        });
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    mUI.getShippingAddressSectionForTest().findViewById(resourceId).performClick();
+                });
         helper.waitForCallback(callCount);
     }
 
@@ -400,9 +446,10 @@ import java.util.concurrent.atomic.AtomicReference;
     /* package */ void clickInPaymentMethodAndWait(final int resourceId, CallbackHelper helper)
             throws TimeoutException {
         int callCount = helper.getCallCount();
-        ThreadUtils.runOnUiThreadBlocking(() -> {
-            mUI.getPaymentMethodSectionForTest().findViewById(resourceId).performClick();
-        });
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    mUI.getPaymentMethodSectionForTest().findViewById(resourceId).performClick();
+                });
         helper.waitForCallback(callCount);
     }
 
@@ -410,9 +457,10 @@ import java.util.concurrent.atomic.AtomicReference;
     /* package */ void clickInContactInfoAndWait(final int resourceId, CallbackHelper helper)
             throws TimeoutException {
         int callCount = helper.getCallCount();
-        ThreadUtils.runOnUiThreadBlocking(() -> {
-            mUI.getContactDetailsSectionForTest().findViewById(resourceId).performClick();
-        });
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    mUI.getContactDetailsSectionForTest().findViewById(resourceId).performClick();
+                });
         helper.waitForCallback(callCount);
     }
 
@@ -421,19 +469,25 @@ import java.util.concurrent.atomic.AtomicReference;
             throws TimeoutException {
         int callCount = helper.getCallCount();
         ThreadUtils.runOnUiThreadBlocking(
-                () -> { mUI.getEditorDialog().findViewById(resourceId).performClick(); });
+                () -> {
+                    mUI.getEditorDialog().findViewById(resourceId).performClick();
+                });
         helper.waitForCallback(callCount);
     }
 
     /* package */ void clickAndroidBackButtonInEditorAndWait(CallbackHelper helper)
             throws TimeoutException {
         int callCount = helper.getCallCount();
-        PostTask.runOrPostTask(TaskTraits.UI_DEFAULT, () -> {
-            mUI.getEditorDialog().dispatchKeyEvent(
-                    new KeyEvent(KeyEvent.ACTION_DOWN, KeyEvent.KEYCODE_BACK));
-            mUI.getEditorDialog().dispatchKeyEvent(
-                    new KeyEvent(KeyEvent.ACTION_UP, KeyEvent.KEYCODE_BACK));
-        });
+        PostTask.runOrPostTask(
+                TaskTraits.UI_DEFAULT,
+                () -> {
+                    mUI.getEditorDialog()
+                            .dispatchKeyEvent(
+                                    new KeyEvent(KeyEvent.ACTION_DOWN, KeyEvent.KEYCODE_BACK));
+                    mUI.getEditorDialog()
+                            .dispatchKeyEvent(
+                                    new KeyEvent(KeyEvent.ACTION_UP, KeyEvent.KEYCODE_BACK));
+                });
         helper.waitForCallback(callCount);
     }
 
@@ -441,20 +495,21 @@ import java.util.concurrent.atomic.AtomicReference;
     /* package */ void clickCardUnmaskButtonAndWait(final int dialogButtonId, CallbackHelper helper)
             throws TimeoutException {
         int callCount = helper.getCallCount();
-        ThreadUtils.runOnUiThreadBlocking(() -> {
-            PropertyModel model = mCardUnmaskPrompt.getDialogForTest();
-            model.get(ModalDialogProperties.CONTROLLER).onClick(model, dialogButtonId);
-        });
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    PropertyModel model = mCardUnmaskPrompt.getDialogForTest();
+                    model.get(ModalDialogProperties.CONTROLLER).onClick(model, dialogButtonId);
+                });
         helper.waitForCallback(callCount);
     }
 
     /** Gets the retry error message. */
     /* package */ String getRetryErrorMessage() {
         return ThreadUtils.runOnUiThreadBlockingNoException(
-                ()
-                        -> ((TextView) mUI.getDialogForTest().findViewById(R.id.retry_error))
-                                   .getText()
-                                   .toString());
+                () ->
+                        ((TextView) mUI.getDialogForTest().findViewById(R.id.retry_error))
+                                .getText()
+                                .toString());
     }
 
     /** Gets the button state for the shipping summary section. */
@@ -472,25 +527,26 @@ import java.util.concurrent.atomic.AtomicReference;
     /** Returns the label of the payment app at the specified |index|. */
     /* package */ String getPaymentAppLabel(final int index) {
         return ThreadUtils.runOnUiThreadBlockingNoException(
-                ()
-                        -> ((OptionSection) mUI.getPaymentMethodSectionForTest())
-                                   .getOptionLabelsForTest(index)
-                                   .getText()
-                                   .toString());
+                () ->
+                        ((OptionSection) mUI.getPaymentMethodSectionForTest())
+                                .getOptionLabelsForTest(index)
+                                .getText()
+                                .toString());
     }
 
     /** Returns the label of the selected payment app. */
     /* package */ String getSelectedPaymentAppLabel() {
-        return ThreadUtils.runOnUiThreadBlockingNoException(() -> {
-            OptionSection section = ((OptionSection) mUI.getPaymentMethodSectionForTest());
-            int size = section.getNumberOfOptionLabelsForTest();
-            for (int i = 0; i < size; i++) {
-                if (section.getOptionRowAtIndex(i).isChecked()) {
-                    return section.getOptionRowAtIndex(i).getLabelText().toString();
-                }
-            }
-            return null;
-        });
+        return ThreadUtils.runOnUiThreadBlockingNoException(
+                () -> {
+                    OptionSection section = ((OptionSection) mUI.getPaymentMethodSectionForTest());
+                    int size = section.getNumberOfOptionLabelsForTest();
+                    for (int i = 0; i < size; i++) {
+                        if (section.getOptionRowAtIndex(i).isChecked()) {
+                            return section.getOptionRowAtIndex(i).getLabelText().toString();
+                        }
+                    }
+                    return null;
+                });
     }
 
     /** Returns the total amount in order summary section. */
@@ -502,12 +558,12 @@ import java.util.concurrent.atomic.AtomicReference;
     /** Returns the amount text corresponding to the line item at the specified |index|. */
     /* package */ String getLineItemAmount(int index) {
         return ThreadUtils.runOnUiThreadBlockingNoException(
-                ()
-                        -> mUI.getOrderSummarySectionForTest()
-                                   .getLineItemAmountForTest(index)
-                                   .getText()
-                                   .toString()
-                                   .trim());
+                () ->
+                        mUI.getOrderSummarySectionForTest()
+                                .getLineItemAmountForTest(index)
+                                .getText()
+                                .toString()
+                                .trim());
     }
 
     /** Returns the amount text corresponding to the line item at the specified |index|. */
@@ -522,19 +578,19 @@ import java.util.concurrent.atomic.AtomicReference;
      */
     /* package */ String getContactDetailsSuggestionLabel(final int suggestionIndex) {
         return ThreadUtils.runOnUiThreadBlockingNoException(
-                ()
-                        -> ((OptionSection) mUI.getContactDetailsSectionForTest())
-                                   .getOptionLabelsForTest(suggestionIndex)
-                                   .getText()
-                                   .toString());
+                () ->
+                        ((OptionSection) mUI.getContactDetailsSectionForTest())
+                                .getOptionLabelsForTest(suggestionIndex)
+                                .getText()
+                                .toString());
     }
 
     /** Returns the number of payment apps. */
     /* package */ int getNumberOfPaymentApps() {
         return ThreadUtils.runOnUiThreadBlockingNoException(
-                ()
-                        -> ((OptionSection) mUI.getPaymentMethodSectionForTest())
-                                   .getNumberOfOptionLabelsForTest());
+                () ->
+                        ((OptionSection) mUI.getPaymentMethodSectionForTest())
+                                .getNumberOfOptionLabelsForTest());
     }
 
     /**
@@ -545,19 +601,19 @@ import java.util.concurrent.atomic.AtomicReference;
         Assert.assertTrue(suggestionIndex < getNumberOfPaymentApps());
 
         return ThreadUtils.runOnUiThreadBlockingNoException(
-                ()
-                        -> ((OptionSection) mUI.getPaymentMethodSectionForTest())
-                                   .getOptionLabelsForTest(suggestionIndex)
-                                   .getText()
-                                   .toString());
+                () ->
+                        ((OptionSection) mUI.getPaymentMethodSectionForTest())
+                                .getOptionLabelsForTest(suggestionIndex)
+                                .getText()
+                                .toString());
     }
 
     /** Returns the number of contact detail suggestions. */
     /* package */ int getNumberOfContactDetailSuggestions() {
         return ThreadUtils.runOnUiThreadBlockingNoException(
-                ()
-                        -> ((OptionSection) mUI.getContactDetailsSectionForTest())
-                                   .getNumberOfOptionLabelsForTest());
+                () ->
+                        ((OptionSection) mUI.getContactDetailsSectionForTest())
+                                .getNumberOfOptionLabelsForTest());
     }
 
     /**
@@ -568,56 +624,62 @@ import java.util.concurrent.atomic.AtomicReference;
         Assert.assertTrue(suggestionIndex < getNumberOfShippingAddressSuggestions());
 
         return ThreadUtils.runOnUiThreadBlockingNoException(
-                ()
-                        -> mUI.getShippingAddressSectionForTest()
-                                   .getOptionLabelsForTest(suggestionIndex)
-                                   .getText()
-                                   .toString());
+                () ->
+                        mUI.getShippingAddressSectionForTest()
+                                .getOptionLabelsForTest(suggestionIndex)
+                                .getText()
+                                .toString());
     }
 
     /* package */ String getShippingAddressSummary() {
         return ThreadUtils.runOnUiThreadBlockingNoException(
-                ()
-                        -> mUI.getShippingAddressSectionForTest()
-                                   .getLeftSummaryLabelForTest()
-                                   .getText()
-                                   .toString());
+                () ->
+                        mUI.getShippingAddressSectionForTest()
+                                .getLeftSummaryLabelForTest()
+                                .getText()
+                                .toString());
     }
 
     /* package */ String getShippingOptionSummary() {
         return ThreadUtils.runOnUiThreadBlockingNoException(
-                ()
-                        -> mUI.getShippingOptionSectionForTest()
-                                   .getLeftSummaryLabelForTest()
-                                   .getText()
-                                   .toString());
+                () ->
+                        mUI.getShippingOptionSectionForTest()
+                                .getLeftSummaryLabelForTest()
+                                .getText()
+                                .toString());
     }
 
     /* package */ String getShippingOptionCostSummaryOnBottomSheet() {
         return ThreadUtils.runOnUiThreadBlockingNoException(
-                ()
-                        -> mUI.getShippingOptionSectionForTest()
-                                   .getRightSummaryLabelForTest()
-                                   .getText()
-                                   .toString());
+                () ->
+                        mUI.getShippingOptionSectionForTest()
+                                .getRightSummaryLabelForTest()
+                                .getText()
+                                .toString());
     }
 
     /* package */ String getShippingAddressWarningLabel() {
-        return ThreadUtils.runOnUiThreadBlockingNoException(() -> {
-            View view = mUI.getShippingAddressSectionForTest().findViewById(
-                    R.id.payments_warning_label);
-            return view != null && view instanceof TextView ? ((TextView) view).getText().toString()
-                                                            : null;
-        });
+        return ThreadUtils.runOnUiThreadBlockingNoException(
+                () -> {
+                    View view =
+                            mUI.getShippingAddressSectionForTest()
+                                    .findViewById(R.id.payments_warning_label);
+                    return view != null && view instanceof TextView
+                            ? ((TextView) view).getText().toString()
+                            : null;
+                });
     }
 
     /* package */ String getShippingAddressDescriptionLabel() {
-        return ThreadUtils.runOnUiThreadBlockingNoException(() -> {
-            View view = mUI.getShippingAddressSectionForTest().findViewById(
-                    R.id.payments_description_label);
-            return view != null && view instanceof TextView ? ((TextView) view).getText().toString()
-                                                            : null;
-        });
+        return ThreadUtils.runOnUiThreadBlockingNoException(
+                () -> {
+                    View view =
+                            mUI.getShippingAddressSectionForTest()
+                                    .findViewById(R.id.payments_description_label);
+                    return view != null && view instanceof TextView
+                            ? ((TextView) view).getText().toString()
+                            : null;
+                });
     }
 
     /**
@@ -629,11 +691,12 @@ import java.util.concurrent.atomic.AtomicReference;
         Assert.assertTrue(suggestionIndex < getNumberOfShippingAddressSuggestions());
 
         int callCount = helper.getCallCount();
-        ThreadUtils.runOnUiThreadBlocking(() -> {
-            ((OptionSection) mUI.getShippingAddressSectionForTest())
-                    .getOptionLabelsForTest(suggestionIndex)
-                    .performClick();
-        });
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    ((OptionSection) mUI.getShippingAddressSectionForTest())
+                            .getOptionLabelsForTest(suggestionIndex)
+                            .performClick();
+                });
         helper.waitForCallback(callCount);
     }
 
@@ -646,11 +709,12 @@ import java.util.concurrent.atomic.AtomicReference;
         Assert.assertTrue(suggestionIndex < getNumberOfPaymentApps());
 
         int callCount = helper.getCallCount();
-        ThreadUtils.runOnUiThreadBlocking(() -> {
-            ((OptionSection) mUI.getPaymentMethodSectionForTest())
-                    .getOptionLabelsForTest(suggestionIndex)
-                    .performClick();
-        });
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    ((OptionSection) mUI.getPaymentMethodSectionForTest())
+                            .getOptionLabelsForTest(suggestionIndex)
+                            .performClick();
+                });
         helper.waitForCallback(callCount);
     }
 
@@ -663,11 +727,12 @@ import java.util.concurrent.atomic.AtomicReference;
         Assert.assertTrue(suggestionIndex < getNumberOfContactDetailSuggestions());
 
         int callCount = helper.getCallCount();
-        ThreadUtils.runOnUiThreadBlocking(() -> {
-            ((OptionSection) mUI.getContactDetailsSectionForTest())
-                    .getOptionLabelsForTest(suggestionIndex)
-                    .performClick();
-        });
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    ((OptionSection) mUI.getContactDetailsSectionForTest())
+                            .getOptionLabelsForTest(suggestionIndex)
+                            .performClick();
+                });
         helper.waitForCallback(callCount);
     }
 
@@ -680,52 +745,45 @@ import java.util.concurrent.atomic.AtomicReference;
         Assert.assertTrue(suggestionIndex < getNumberOfPaymentApps());
 
         int callCount = helper.getCallCount();
-        ThreadUtils.runOnUiThreadBlocking(() -> {
-            ((OptionSection) mUI.getPaymentMethodSectionForTest())
-                    .getOptionRowAtIndex(suggestionIndex)
-                    .getEditIconForTest()
-                    .performClick();
-        });
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    ((OptionSection) mUI.getPaymentMethodSectionForTest())
+                            .getOptionRowAtIndex(suggestionIndex)
+                            .getEditIconForTest()
+                            .performClick();
+                });
         helper.waitForCallback(callCount);
     }
 
-    /**
-     * Returns the summary text of the shipping address section.
-     */
+    /** Returns the summary text of the shipping address section. */
     /* package */ String getShippingAddressSummaryLabel() {
         return getShippingAddressSummary();
     }
 
-    /**
-     * Returns the summary text of the shipping option section.
-     */
+    /** Returns the summary text of the shipping option section. */
     /* package */ String getShippingOptionSummaryLabel() {
         return getShippingOptionSummary();
     }
 
-    /**
-     * Returns the cost text of the shipping option section on the bottom sheet.
-     */
+    /** Returns the cost text of the shipping option section on the bottom sheet. */
     /* package */ String getShippingOptionCostSummaryLabelOnBottomSheet() {
         return getShippingOptionCostSummaryOnBottomSheet();
     }
 
-    /**
-     * Returns the number of shipping address suggestions.
-     */
+    /** Returns the number of shipping address suggestions. */
     /* package */ int getNumberOfShippingAddressSuggestions() {
         return ThreadUtils.runOnUiThreadBlockingNoException(
-                ()
-                        -> ((OptionSection) mUI.getShippingAddressSectionForTest())
-                                   .getNumberOfOptionLabelsForTest());
+                () ->
+                        ((OptionSection) mUI.getShippingAddressSectionForTest())
+                                .getNumberOfOptionLabelsForTest());
     }
 
     /** Returns the {@link OptionRow} at the given index for the shipping address section. */
     /* package */ OptionRow getShippingAddressOptionRowAtIndex(final int index) {
         return ThreadUtils.runOnUiThreadBlockingNoException(
-                ()
-                        -> ((OptionSection) mUI.getShippingAddressSectionForTest())
-                                   .getOptionRowAtIndex(index));
+                () ->
+                        ((OptionSection) mUI.getShippingAddressSectionForTest())
+                                .getOptionRowAtIndex(index));
     }
 
     /** Returns the error message visible to the user in the credit card unmask prompt. */
@@ -738,9 +796,9 @@ import java.util.concurrent.atomic.AtomicReference;
             final int selection, CallbackHelper helper) throws TimeoutException {
         int callCount = helper.getCallCount();
         ThreadUtils.runOnUiThreadBlocking(
-                ()
-                        -> ((Spinner) mUI.getEditorDialog().findViewById(R.id.spinner))
-                                   .setSelection(selection));
+                () ->
+                        ((Spinner) mUI.getEditorDialog().findViewById(R.id.spinner))
+                                .setSelection(selection));
         helper.waitForCallback(callCount);
     }
 
@@ -748,44 +806,53 @@ import java.util.concurrent.atomic.AtomicReference;
     /* package */ void setTextInEditorAndWait(final String[] values, CallbackHelper helper)
             throws TimeoutException {
         int callCount = helper.getCallCount();
-        ThreadUtils.runOnUiThreadBlocking(() -> {
-            List<EditText> fields = mUI.getEditorDialog().getEditableTextFieldsForTest();
-            for (int i = 0; i < values.length; i++) {
-                fields.get(i).requestFocus();
-                fields.get(i).setText(values[i]);
-            }
-        });
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    List<EditText> fields = mUI.getEditorDialog().getEditableTextFieldsForTest();
+                    for (int i = 0; i < values.length; i++) {
+                        fields.get(i).requestFocus();
+                        fields.get(i).setText(values[i]);
+                    }
+                });
         helper.waitForCallback(callCount);
     }
 
     /** Directly sets the text in the card unmask UI. */
-    /* package */ void setTextInCardUnmaskDialogAndWait(final int resourceId, final String input,
-            CallbackHelper helper) throws TimeoutException {
+    /* package */ void setTextInCardUnmaskDialogAndWait(
+            final int resourceId, final String input, CallbackHelper helper)
+            throws TimeoutException {
         int callCount = helper.getCallCount();
-        ThreadUtils.runOnUiThreadBlocking(() -> {
-            EditText editText = mCardUnmaskPrompt.getDialogForTest()
-                                        .get(ModalDialogProperties.CUSTOM_VIEW)
-                                        .findViewById(resourceId);
-            editText.setText(input);
-            editText.getOnFocusChangeListener().onFocusChange(null, false);
-        });
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    EditText editText =
+                            mCardUnmaskPrompt
+                                    .getDialogForTest()
+                                    .get(ModalDialogProperties.CUSTOM_VIEW)
+                                    .findViewById(resourceId);
+                    editText.setText(input);
+                    editText.getOnFocusChangeListener().onFocusChange(null, false);
+                });
         helper.waitForCallback(callCount);
     }
 
     /** Directly sets the text in the expired card unmask UI. */
-    /* package */ void setTextInExpiredCardUnmaskDialogAndWait(final int[] resourceIds,
-            final String[] values, CallbackHelper helper) throws TimeoutException {
+    /* package */ void setTextInExpiredCardUnmaskDialogAndWait(
+            final int[] resourceIds, final String[] values, CallbackHelper helper)
+            throws TimeoutException {
         assert resourceIds.length == values.length;
         int callCount = helper.getCallCount();
-        ThreadUtils.runOnUiThreadBlocking(() -> {
-            for (int i = 0; i < resourceIds.length; ++i) {
-                EditText editText = mCardUnmaskPrompt.getDialogForTest()
-                                            .get(ModalDialogProperties.CUSTOM_VIEW)
-                                            .findViewById(resourceIds[i]);
-                editText.setText(values[i]);
-                editText.getOnFocusChangeListener().onFocusChange(null, false);
-            }
-        });
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    for (int i = 0; i < resourceIds.length; ++i) {
+                        EditText editText =
+                                mCardUnmaskPrompt
+                                        .getDialogForTest()
+                                        .get(ModalDialogProperties.CUSTOM_VIEW)
+                                        .findViewById(resourceIds[i]);
+                        editText.setText(values[i]);
+                        editText.getOnFocusChangeListener().onFocusChange(null, false);
+                    }
+                });
         helper.waitForCallback(callCount);
     }
 
@@ -793,80 +860,84 @@ import java.util.concurrent.atomic.AtomicReference;
     /* package */ void hitSoftwareKeyboardSubmitButtonAndWait(
             final int resourceId, CallbackHelper helper) throws TimeoutException {
         int callCount = helper.getCallCount();
-        ThreadUtils.runOnUiThreadBlocking(() -> {
-            EditText editText = mCardUnmaskPrompt.getDialogForTest()
-                                        .get(ModalDialogProperties.CUSTOM_VIEW)
-                                        .findViewById(resourceId);
-            editText.requestFocus();
-            editText.onEditorAction(EditorInfo.IME_ACTION_DONE);
-        });
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    EditText editText =
+                            mCardUnmaskPrompt
+                                    .getDialogForTest()
+                                    .get(ModalDialogProperties.CUSTOM_VIEW)
+                                    .findViewById(resourceId);
+                    editText.requestFocus();
+                    editText.onEditorAction(EditorInfo.IME_ACTION_DONE);
+                });
         helper.waitForCallback(callCount);
     }
 
     /** Verifies the contents of the test webpage. */
     /* package */ void expectResultContains(final String[] contents) {
-        CriteriaHelper.pollInstrumentationThread(() -> {
-            try {
-                String result = DOMUtils.getNodeContents(mWebContentsRef.get(), "result");
-                Criteria.checkThat(
-                        "Cannot find 'result' node on test page", result, Matchers.notNullValue());
-                for (int i = 0; i < contents.length; i++) {
-                    Criteria.checkThat(
-                            "Result '" + result + "' should contain '" + contents[i] + "'", result,
-                            Matchers.containsString(contents[i]));
-                }
-            } catch (TimeoutException e2) {
-                throw new CriteriaNotSatisfiedException(e2);
-            }
-        });
+        CriteriaHelper.pollInstrumentationThread(
+                () -> {
+                    try {
+                        String result = DOMUtils.getNodeContents(mWebContentsRef.get(), "result");
+                        Criteria.checkThat(
+                                "Cannot find 'result' node on test page",
+                                result,
+                                Matchers.notNullValue());
+                        for (int i = 0; i < contents.length; i++) {
+                            Criteria.checkThat(
+                                    "Result '" + result + "' should contain '" + contents[i] + "'",
+                                    result,
+                                    Matchers.containsString(contents[i]));
+                        }
+                    } catch (TimeoutException e2) {
+                        throw new CriteriaNotSatisfiedException(e2);
+                    }
+                });
     }
 
-    /** Will fail if the OptionRow at |index| is not selected in Contact Details.*/
+    /** Will fail if the OptionRow at |index| is not selected in Contact Details. */
     /* package */ void expectContactDetailsRowIsSelected(final int index) {
-        CriteriaHelper.pollInstrumentationThread(() -> {
-            boolean isSelected = ((OptionSection) mUI.getContactDetailsSectionForTest())
-                                         .getOptionRowAtIndex(index)
-                                         .isChecked();
-            Criteria.checkThat("Contact Details row at " + index + " was not selected.", isSelected,
-                    Matchers.is(true));
-        });
+        CriteriaHelper.pollInstrumentationThread(
+                () -> {
+                    boolean isSelected =
+                            ((OptionSection) mUI.getContactDetailsSectionForTest())
+                                    .getOptionRowAtIndex(index)
+                                    .isChecked();
+                    Criteria.checkThat(
+                            "Contact Details row at " + index + " was not selected.",
+                            isSelected,
+                            Matchers.is(true));
+                });
     }
 
-    /** Will fail if the OptionRow at |index| is not selected in Shipping Address section.*/
+    /** Will fail if the OptionRow at |index| is not selected in Shipping Address section. */
     /* package */ void expectShippingAddressRowIsSelected(final int index) {
-        CriteriaHelper.pollInstrumentationThread(() -> {
-            boolean isSelected = ((OptionSection) mUI.getShippingAddressSectionForTest())
-                                         .getOptionRowAtIndex(index)
-                                         .isChecked();
-            Criteria.checkThat("Shipping Address row at " + index + " was not selected.",
-                    isSelected, Matchers.is(true));
-        });
+        CriteriaHelper.pollInstrumentationThread(
+                () -> {
+                    boolean isSelected =
+                            ((OptionSection) mUI.getShippingAddressSectionForTest())
+                                    .getOptionRowAtIndex(index)
+                                    .isChecked();
+                    Criteria.checkThat(
+                            "Shipping Address row at " + index + " was not selected.",
+                            isSelected,
+                            Matchers.is(true));
+                });
     }
 
-    /** Will fail if the OptionRow at |index| is not selected in PaymentMethod section.*/
+    /** Will fail if the OptionRow at |index| is not selected in PaymentMethod section. */
     /* package */ void expectPaymentMethodRowIsSelected(final int index) {
-        CriteriaHelper.pollInstrumentationThread(() -> {
-            boolean isSelected = ((OptionSection) mUI.getPaymentMethodSectionForTest())
-                                         .getOptionRowAtIndex(index)
-                                         .isChecked();
-            Criteria.checkThat("Payment Method row at " + index + " was not selected.", isSelected,
-                    Matchers.is(true));
-        });
-    }
-
-    /**
-     * Asserts that only the specified reason for abort is logged.
-     *
-     * @param abortReason The only bucket in the abort histogram that should have a record.
-     */
-    /* package */ void assertOnlySpecificAbortMetricLogged(int abortReason) {
-        for (int i = 0; i < AbortReason.MAX; ++i) {
-            Assert.assertEquals(
-                    String.format(Locale.getDefault(), "Found %d instead of %d", i, abortReason),
-                    (i == abortReason ? 1 : 0),
-                    RecordHistogram.getHistogramValueCountForTesting(
-                            "PaymentRequest.CheckoutFunnel.Aborted", i));
-        }
+        CriteriaHelper.pollInstrumentationThread(
+                () -> {
+                    boolean isSelected =
+                            ((OptionSection) mUI.getPaymentMethodSectionForTest())
+                                    .getOptionRowAtIndex(index)
+                                    .isChecked();
+                    Criteria.checkThat(
+                            "Payment Method row at " + index + " was not selected.",
+                            isSelected,
+                            Matchers.is(true));
+                });
     }
 
     /* package */ View getPaymentRequestView() {
@@ -876,10 +947,11 @@ import java.util.concurrent.atomic.AtomicReference;
 
     /* package */ View getCardUnmaskView() throws Throwable {
         return ThreadUtils.runOnUiThreadBlocking(
-                ()
-                        -> mCardUnmaskPrompt.getDialogForTest()
-                                   .get(ModalDialogProperties.CUSTOM_VIEW)
-                                   .findViewById(R.id.autofill_card_unmask_prompt));
+                () ->
+                        mCardUnmaskPrompt
+                                .getDialogForTest()
+                                .get(ModalDialogProperties.CUSTOM_VIEW)
+                                .findViewById(R.id.autofill_card_unmask_prompt));
     }
 
     /* package */ View getEditorDialogView() throws Throwable {
@@ -887,12 +959,30 @@ import java.util.concurrent.atomic.AtomicReference;
                 () -> mUI.getEditorDialog().findViewById(R.id.editor_container));
     }
 
+    /* package */ void setAutoAdvanceInputProtectorClock(boolean autoAdvanceInputProtectorClock) {
+        mAutoAdvanceInputProtectorClock = autoAdvanceInputProtectorClock;
+    }
+
+    /* package */ void advanceInputProtectorClock() {
+        mClock.advanceCurrentTimeMillis(SAFE_INPUT_DELAY);
+    }
+
+    @Override
+    public void onPaymentRequestUIShow(PaymentRequestUI ui) {
+        ThreadUtils.assertOnUiThread();
+        mUI = ui;
+        mInputProtector.markShowTime();
+        mUI.setInputProtectorForTest(mInputProtector);
+        // By default, we advance the clock immediately as most tests just wait for ReadyForInput.
+        if (mAutoAdvanceInputProtectorClock) {
+            advanceInputProtectorClock();
+        }
+        mShowCalled.notifyCalled(ui);
+    }
+
     @Override
     public void onPaymentRequestReadyForInput(PaymentRequestUI ui) {
         ThreadUtils.assertOnUiThread();
-        // This happens when the payment request is created by a direct js function call rather than
-        // calling the js function via triggerUIAndWait() which sets the mUI.
-        if (mUI == null) mUI = ui;
         mReadyForInput.notifyCalled(ui);
     }
 
@@ -922,9 +1012,6 @@ import java.util.concurrent.atomic.AtomicReference;
     @Override
     public void onPaymentRequestReadyToPay(PaymentRequestUI ui) {
         ThreadUtils.assertOnUiThread();
-        // This happens when the payment request is created by a direct js function call rather than
-        // calling the js function via triggerUIAndWait() which sets the mUI.
-        if (mUI == null) mUI = ui;
         mReadyToPay.notifyCalled(ui);
     }
 
@@ -1032,9 +1119,7 @@ import java.util.concurrent.atomic.AtomicReference;
         mRendererClosedMojoConnection.notifyCalled();
     }
 
-    /**
-     * Listens for UI notifications.
-     */
+    /** Listens for UI notifications. */
     static class PaymentsCallbackHelper<T> extends CallbackHelper {
         private T mTarget;
 
@@ -1062,7 +1147,7 @@ import java.util.concurrent.atomic.AtomicReference;
     /**
      * Adds a payment app factory for testing.
      *
-     * @param appPresence  Whether the factory has apps.
+     * @param appPresence Whether the factory has apps.
      * @param factorySpeed How quick the factory creates apps.
      * @return The test factory. Can be ignored.
      */
@@ -1074,8 +1159,8 @@ import java.util.concurrent.atomic.AtomicReference;
     /**
      * Adds a payment app factory for testing.
      *
-     * @param methodName   The name of the payment method used in the payment app.
-     * @param appPresence  Whether the factory has apps.
+     * @param methodName The name of the payment method used in the payment app.
+     * @param appPresence Whether the factory has apps.
      * @param factorySpeed How quick the factory creates apps.
      * @return The test factory. Can be ignored.
      */
@@ -1087,14 +1172,17 @@ import java.util.concurrent.atomic.AtomicReference;
     /**
      * Adds a payment app factory for testing.
      *
-     * @param methodName   The name of the payment method used in the payment app.
-     * @param appPresence  Whether the factory has apps.
+     * @param methodName The name of the payment method used in the payment app.
+     * @param appPresence Whether the factory has apps.
      * @param factorySpeed How quick the factory creates apps.
-     * @param appSpeed     How quick the app responds to "invoke".
+     * @param appSpeed How quick the app responds to "invoke".
      * @return The test factory. Can be ignored.
      */
-    /* package */ TestFactory addPaymentAppFactory(String appMethodName, int appPresence,
-            @FactorySpeed int factorySpeed, @AppSpeed int appSpeed) {
+    /* package */ TestFactory addPaymentAppFactory(
+            String appMethodName,
+            int appPresence,
+            @FactorySpeed int factorySpeed,
+            @AppSpeed int appSpeed) {
         TestFactory factory = new TestFactory(appMethodName, appPresence, factorySpeed, appSpeed);
         PaymentAppService.getInstance().addFactory(factory);
         return factory;
@@ -1108,8 +1196,11 @@ import java.util.concurrent.atomic.AtomicReference;
         private final @AppSpeed int mAppSpeed;
         private PaymentAppFactoryDelegate mDelegate;
 
-        private TestFactory(String appMethodName, @AppPresence int appPresence,
-                @FactorySpeed int factorySpeed, @AppSpeed int appSpeed) {
+        private TestFactory(
+                String appMethodName,
+                @AppPresence int appPresence,
+                @FactorySpeed int factorySpeed,
+                @AppSpeed int appSpeed) {
             mAppMethodName = appMethodName;
             mAppPresence = appPresence;
             mFactorySpeed = factorySpeed;
@@ -1118,16 +1209,17 @@ import java.util.concurrent.atomic.AtomicReference;
 
         @Override
         public void create(PaymentAppFactoryDelegate delegate) {
-            Runnable createApp = () -> {
-                if (delegate.getParams().hasClosed()) return;
-                boolean canMakePayment =
-                        delegate.getParams().getMethodData().containsKey(mAppMethodName);
-                delegate.onCanMakePaymentCalculated(canMakePayment);
-                if (canMakePayment && mAppPresence == AppPresence.HAVE_APPS) {
-                    delegate.onPaymentAppCreated(new TestPay(mAppMethodName, mAppSpeed));
-                }
-                delegate.onDoneCreatingPaymentApps(this);
-            };
+            Runnable createApp =
+                    () -> {
+                        if (delegate.getParams().hasClosed()) return;
+                        boolean canMakePayment =
+                                delegate.getParams().getMethodData().containsKey(mAppMethodName);
+                        delegate.onCanMakePaymentCalculated(canMakePayment);
+                        if (canMakePayment && mAppPresence == AppPresence.HAVE_APPS) {
+                            delegate.onPaymentAppCreated(new TestPay(mAppMethodName, mAppSpeed));
+                        }
+                        delegate.onDoneCreatingPaymentApps(this);
+                    };
             if (mFactorySpeed == FactorySpeed.FAST_FACTORY) {
                 createApp.run();
             } else {
@@ -1147,8 +1239,11 @@ import java.util.concurrent.atomic.AtomicReference;
         private final @AppSpeed int mAppSpeed;
 
         TestPay(String defaultMethodName, @AppSpeed int appSpeed) {
-            super(/*id=*/UUID.randomUUID().toString(), /*label=*/defaultMethodName,
-                    /*sublabel=*/null, /*icon=*/null);
+            super(
+                    /* id= */ UUID.randomUUID().toString(),
+                    /* label= */ defaultMethodName,
+                    /* sublabel= */ null,
+                    /* icon= */ null);
             mDefaultMethodName = defaultMethodName;
             mAppSpeed = appSpeed;
         }
@@ -1161,17 +1256,28 @@ import java.util.concurrent.atomic.AtomicReference;
         }
 
         @Override
-        public void invokePaymentApp(String id, String merchantName, String origin,
-                String iframeOrigin, byte[][] certificateChain,
-                Map<String, PaymentMethodData> methodData, PaymentItem total,
-                List<PaymentItem> displayItems, Map<String, PaymentDetailsModifier> modifiers,
-                PaymentOptions paymentOptions, List<PaymentShippingOption> shippingOptions,
+        public void invokePaymentApp(
+                String id,
+                String merchantName,
+                String origin,
+                String iframeOrigin,
+                byte[][] certificateChain,
+                Map<String, PaymentMethodData> methodData,
+                PaymentItem total,
+                List<PaymentItem> displayItems,
+                Map<String, PaymentDetailsModifier> modifiers,
+                PaymentOptions paymentOptions,
+                List<PaymentShippingOption> shippingOptions,
                 InstrumentDetailsCallback detailsCallback) {
-            Runnable respond = () -> {
-                detailsCallback.onInstrumentDetailsReady(mDefaultMethodName,
-                        "{\"transaction\": 1337, \"total\": \"" + total.amount.value + "\"}",
-                        new PayerData());
-            };
+            Runnable respond =
+                    () -> {
+                        detailsCallback.onInstrumentDetailsReady(
+                                mDefaultMethodName,
+                                "{\"transaction\": 1337, \"total\": \""
+                                        + total.amount.value
+                                        + "\"}",
+                                new PayerData());
+                    };
             if (mAppSpeed == AppSpeed.FAST_APP) {
                 respond.run();
             } else {
@@ -1183,17 +1289,24 @@ import java.util.concurrent.atomic.AtomicReference;
         public void dismissInstrument() {}
     }
 
+    public void startMainActivity() {
+        assert mDelayStartActivity;
+        startMainActivityWithURL(mTestFilePath);
+    }
+
     @Override
     public Statement apply(final Statement base, Description description) {
-        return super.apply(new Statement() {
-            @Override
-            public void evaluate() throws Throwable {
-                if (!mDelayStartActivity) {
-                    startMainActivityWithURL(mTestFilePath);
-                    setObserversAndWaitForInitialPageLoad();
-                }
-                base.evaluate();
-            }
-        }, description);
+        return super.apply(
+                new Statement() {
+                    @Override
+                    public void evaluate() throws Throwable {
+                        if (!mDelayStartActivity) {
+                            startMainActivityWithURL(mTestFilePath);
+                            setObserversAndWaitForInitialPageLoad();
+                        }
+                        base.evaluate();
+                    }
+                },
+                description);
     }
 }

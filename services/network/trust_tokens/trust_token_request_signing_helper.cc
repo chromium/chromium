@@ -6,7 +6,9 @@
 
 #include <iterator>
 #include <memory>
+#include <optional>
 #include <string>
+#include <string_view>
 #include <tuple>
 
 #include "base/base64.h"
@@ -16,7 +18,6 @@
 #include "base/strings/strcat.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
-#include "base/time/time_to_iso8601.h"
 #include "base/values.h"
 #include "components/cbor/values.h"
 #include "components/cbor/writer.h"
@@ -30,7 +31,6 @@
 #include "services/network/trust_tokens/proto/public.pb.h"
 #include "services/network/trust_tokens/trust_token_parameterization.h"
 #include "services/network/trust_tokens/trust_token_store.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/url_constants.h"
 
 namespace network {
@@ -39,13 +39,10 @@ namespace {
 
 const char kRedemptionRecordHeaderRedemptionRecordKey[] = "redemption-record";
 
-void LogOutcome(const net::NetLogWithSource& log, base::StringPiece outcome) {
-  log.EndEvent(net::NetLogEventType::TRUST_TOKEN_OPERATION_BEGIN_SIGNING,
-               [outcome]() {
-                 base::Value::Dict ret;
-                 ret.Set("outcome", outcome);
-                 return ret;
-               });
+void LogOutcome(const net::NetLogWithSource& log, std::string_view outcome) {
+  log.EndEvent(
+      net::NetLogEventType::TRUST_TOKEN_OPERATION_BEGIN_SIGNING,
+      [outcome]() { return base::Value::Dict().Set("outcome", outcome); });
 }
 
 }  // namespace
@@ -64,7 +61,7 @@ void AttachRedemptionRecordHeader(net::HttpRequestHeaders& request_headers,
 // issuer-to-RR map but implemented as a Structured Headers Draft 15
 // parameterized list (essentially a list where each member has an associated
 // dictionary).
-absl::optional<std::string> ConstructRedemptionRecordHeader(
+std::optional<std::string> ConstructRedemptionRecordHeader(
     const base::flat_map<SuitableTrustTokenOrigin, TrustTokenRedemptionRecord>&
         records_per_issuer) {
   net::structured_headers::List header_items;
@@ -116,14 +113,14 @@ Params& Params::operator=(Params&&) = default;
 
 void TrustTokenRequestSigningHelper::Begin(
     const GURL& url,
-    base::OnceCallback<void(absl::optional<net::HttpRequestHeaders>,
+    base::OnceCallback<void(std::optional<net::HttpRequestHeaders>,
                             mojom::TrustTokenOperationStatus)> done) {
 #if DCHECK_IS_ON()
   // Add some postcondition checking on return.
   done = base::BindOnce(
-      [](base::OnceCallback<void(absl::optional<net::HttpRequestHeaders>,
+      [](base::OnceCallback<void(std::optional<net::HttpRequestHeaders>,
                                  mojom::TrustTokenOperationStatus)> done,
-         absl::optional<net::HttpRequestHeaders> request_headers,
+         std::optional<net::HttpRequestHeaders> request_headers,
          mojom::TrustTokenOperationStatus result) {
         DCHECK(request_headers->HasHeader(
             kTrustTokensRequestHeaderSecRedemptionRecord));
@@ -149,7 +146,7 @@ void TrustTokenRequestSigningHelper::Begin(
   // 1. For each issuer specified, search storage for a non-expired RR
   // corresponding to that issuer and the request’s initiating top-level origin.
   for (const SuitableTrustTokenOrigin& issuer : params_.issuers) {
-    absl::optional<TrustTokenRedemptionRecord> maybe_redemption_record =
+    std::optional<TrustTokenRedemptionRecord> maybe_redemption_record =
         token_store_->RetrieveNonstaleRedemptionRecord(issuer,
                                                        params_.toplevel);
     if (!maybe_redemption_record)
@@ -171,7 +168,7 @@ void TrustTokenRequestSigningHelper::Begin(
   }
 
   // 2. Attach the RRs in a Sec-Redemption-Record header.
-  if (absl::optional<std::string> maybe_redemption_record_header =
+  if (std::optional<std::string> maybe_redemption_record_header =
           ConstructRedemptionRecordHeader(records_per_issuer)) {
     AttachRedemptionRecordHeader(request_headers,
                                  std::move(*maybe_redemption_record_header));

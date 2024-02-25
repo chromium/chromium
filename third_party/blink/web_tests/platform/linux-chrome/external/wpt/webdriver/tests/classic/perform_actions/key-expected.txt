@@ -1,0 +1,8 @@
+This is a wdspec test.
+[FAIL] test_no_browsing_context
+  Failed: DID NOT RAISE <class 'webdriver.error.NoSuchWindowException'>
+[FAIL] test_element_in_shadow_tree[outer-closed]
+  webdriver.error.NoSuchShadowRootException: no such shadow root (404): no such shadow root
+[FAIL] test_element_in_shadow_tree[inner-closed]
+  webdriver.error.NoSuchShadowRootException: no such shadow root (404): no such shadow root
+Harness: the test ran to completion.

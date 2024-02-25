@@ -163,7 +163,7 @@ void BluetoothDeviceToApiDevice(const device::BluetoothDevice& device,
   }
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  absl::optional<device::BluetoothDevice::BatteryInfo> battery_info =
+  std::optional<device::BluetoothDevice::BatteryInfo> battery_info =
       device.GetBatteryInfo(device::BluetoothDevice::BatteryType::kDefault);
 
   if (battery_info && battery_info->percentage.has_value())

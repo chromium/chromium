@@ -127,19 +127,6 @@ TEST_F(CastMediaNotificationProducerTest, DismissNotification) {
   EXPECT_EQ(1u, notification_producer_->GetActiveItemCount());
 }
 
-// The GlobalMediaControlsCastStartStop flag is disabled on ChromeOS.
-#if BUILDFLAG(IS_CHROMEOS)
-TEST_F(CastMediaNotificationProducerTest, RoutesWithoutNotifications) {
-  // These routes should not have notification items created for them.
-  MediaRoute no_controller_route = CreateRoute("route-1");
-  no_controller_route.set_controller_type(RouteControllerType::kNone);
-  MediaRoute multizone_member_route = CreateRoute("route-2", "cast:705D30C6");
-
-  notification_producer_->OnRoutesUpdated(
-      {no_controller_route, multizone_member_route});
-  EXPECT_EQ(0u, notification_producer_->GetActiveItemCount());
-}
-#else
 TEST_F(CastMediaNotificationProducerTest, RoutesWithoutNotifications) {
   // These routes should not have notification items created for them.
   MediaRoute mirroring_route =
@@ -162,14 +149,27 @@ TEST_F(CastMediaNotificationProducerTest, NonLocalRoutesWithoutNotifications) {
   sync_preferences::TestingPrefServiceSyncable* pref_service =
       profile()->GetTestingPrefService();
 
+  EXPECT_CALL(item_manager_, ShowItem).Times(0);
+  pref_service->SetBoolean(
+      media_router::prefs::kMediaRouterShowCastSessionsStartedByOtherDevices,
+      false);
   notification_producer_->OnRoutesUpdated({non_local_route});
+  testing::Mock::VerifyAndClearExpectations(&item_manager_);
+
+  // When the pref changes to show the non-local route, it is shown the next
+  // time `OnRoutesUpdated()` is called.
+  EXPECT_CALL(item_manager_, ShowItem).Times(1);
+  pref_service->SetBoolean(
+      media_router::prefs::kMediaRouterShowCastSessionsStartedByOtherDevices,
+      true);
+  notification_producer_->OnRoutesUpdated({non_local_route});
+  testing::Mock::VerifyAndClearExpectations(&item_manager_);
   EXPECT_EQ(1u, notification_producer_->GetActiveItemCount());
 
-  // There is no need to call |OnRouteUpdated()| here because this is a
+  // There is no need to call `OnRouteUpdated()` here because this is a
   // client-side change.
   pref_service->SetBoolean(
       media_router::prefs::kMediaRouterShowCastSessionsStartedByOtherDevices,
       false);
   EXPECT_EQ(0u, notification_producer_->GetActiveItemCount());
 }
-#endif  // BUILDFLAG(IS_CHROMEOS)

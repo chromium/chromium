@@ -6,18 +6,39 @@
 
 #include <utility>
 
+#include "third_party/blink/renderer/bindings/modules/v8/v8_decrypt_config.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_encoded_audio_chunk_init.h"
+#include "third_party/blink/renderer/modules/webcodecs/decrypt_config_util.h"
+#include "third_party/blink/renderer/platform/bindings/script_state.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 
 namespace blink {
 
-EncodedAudioChunk* EncodedAudioChunk::Create(
-    const EncodedAudioChunkInit* init) {
-  auto data_wrapper = AsSpan<const uint8_t>(init->data());
-  auto buffer = data_wrapper.empty()
-                    ? base::MakeRefCounted<media::DecoderBuffer>(0)
-                    : media::DecoderBuffer::CopyFrom(data_wrapper.data(),
-                                                     data_wrapper.size());
+EncodedAudioChunk* EncodedAudioChunk::Create(ScriptState* script_state,
+                                             const EncodedAudioChunkInit* init,
+                                             ExceptionState& exception_state) {
+  auto array_span = AsSpan<const uint8_t>(init->data());
+  auto* isolate = script_state->GetIsolate();
+
+  // Try if we can transfer `init.data` into this chunk without copying it.
+  auto buffer_contents = TransferArrayBufferForSpan(
+      init->transfer(), array_span, exception_state, isolate);
+  if (exception_state.HadException()) {
+    return nullptr;
+  }
+
+  scoped_refptr<media::DecoderBuffer> buffer;
+  if (array_span.empty()) {
+    buffer = base::MakeRefCounted<media::DecoderBuffer>(0);
+  } else if (buffer_contents.IsValid()) {
+    buffer = media::DecoderBuffer::FromExternalMemory(
+        std::make_unique<ArrayBufferContentsExternalMemory>(
+            std::move(buffer_contents), array_span));
+  } else {
+    buffer =
+        media::DecoderBuffer::CopyFrom(array_span.data(), array_span.size());
+  }
+  DCHECK(buffer);
 
   // Clamp within bounds of our internal TimeDelta-based duration. See
   // media/base/timestamp_constants.h
@@ -41,6 +62,17 @@ EncodedAudioChunk* EncodedAudioChunk::Create(
           : media::kNoTimestamp);
 
   buffer->set_is_key_frame(init->type() == "key");
+
+  if (init->hasDecryptConfig()) {
+    auto decrypt_config = CreateMediaDecryptConfig(*init->decryptConfig());
+    if (!decrypt_config) {
+      exception_state.ThrowDOMException(DOMExceptionCode::kNotSupportedError,
+                                        "Unsupported decryptConfig");
+      return nullptr;
+    }
+    buffer->set_decrypt_config(std::move(decrypt_config));
+  }
+
   return MakeGarbageCollected<EncodedAudioChunk>(std::move(buffer));
 }
 
@@ -55,9 +87,9 @@ int64_t EncodedAudioChunk::timestamp() const {
   return buffer_->timestamp().InMicroseconds();
 }
 
-absl::optional<uint64_t> EncodedAudioChunk::duration() const {
+std::optional<uint64_t> EncodedAudioChunk::duration() const {
   if (buffer_->duration() == media::kNoTimestamp)
-    return absl::nullopt;
+    return std::nullopt;
   return buffer_->duration().InMicroseconds();
 }
 

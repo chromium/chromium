@@ -11,9 +11,7 @@ import org.junit.runner.RunWith;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 
-/**
- * Tests calculating the hash for Network Traffic Annotations.
- */
+/** Tests calculating the hash for Network Traffic Annotations. */
 @RunWith(BaseRobolectricTestRunner.class)
 public class NetworkTrafficAnnotationTagTest {
     @Test
@@ -24,9 +22,11 @@ public class NetworkTrafficAnnotationTagTest {
         assertEquals(10236504, NetworkTrafficAnnotationTag.iterativeHash("unique_id"));
         assertEquals(70581310, NetworkTrafficAnnotationTag.iterativeHash("123_id"));
         assertEquals(69491511, NetworkTrafficAnnotationTag.iterativeHash("ID123"));
-        assertEquals(98652091,
-                NetworkTrafficAnnotationTag.iterativeHash("a_unique_"
-                        + "looooooooooooooooooooooooooooooooooooooooooooooooooooooong_id"));
+        assertEquals(
+                98652091,
+                NetworkTrafficAnnotationTag.iterativeHash(
+                        "a_unique_"
+                                + "looooooooooooooooooooooooooooooooooooooooooooooooooooooong_id"));
         assertEquals(124751853, NetworkTrafficAnnotationTag.iterativeHash("bébé"));
     }
 }

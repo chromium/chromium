@@ -99,7 +99,8 @@ namespace {
 bool IsInPasswordFieldWithUnrevealedPassword(const Position& position) {
   if (auto* input =
           DynamicTo<HTMLInputElement>(EnclosingTextControl(position))) {
-    return (input->type() == input_type_names::kPassword) &&
+    return input->FormControlType() ==
+               mojom::blink::FormControlType::kInputPassword &&
            !input->ShouldRevealPassword();
   }
   return false;
@@ -119,7 +120,7 @@ SelectionInDOMTree Editor::SelectionForCommand(Event* event) {
   if (!IsTextControl(*event->target()->ToNode()))
     return selection;
   auto* text_control_of_selection_start =
-      EnclosingTextControl(selection.Base());
+      EnclosingTextControl(selection.Anchor());
   auto* text_control_of_target = ToTextControl(event->target()->ToNode());
   if (!selection.IsNone() &&
       text_control_of_target == text_control_of_selection_start)
@@ -224,7 +225,7 @@ bool Editor::CanEditRichly() const {
       GetFrame()
           .Selection()
           .ComputeVisibleSelectionInDOMTreeDeprecated()
-          .Base());
+          .Anchor());
 }
 
 bool Editor::CanCut() const {
@@ -979,9 +980,6 @@ void Editor::ReplaceSelection(const String& text) {
 }
 
 void Editor::ElementRemoved(Element* element) {
-  if (!RuntimeEnabledFeatures::DontLeakDetachedInputEnabled()) {
-    return;
-  }
   if (last_edit_command_ &&
       last_edit_command_->EndingSelection().RootEditableElement() == element) {
     last_edit_command_ = nullptr;

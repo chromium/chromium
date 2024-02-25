@@ -180,6 +180,10 @@ const CGFloat kImageXCenterAlignmentOffset = 14;
   return self.imageView.image;
 }
 
+- (void)setImageViewAlpha:(CGFloat)alpha {
+  _imageView.alpha = alpha;
+}
+
 - (void)setImageViewTintColor:(UIColor*)color {
   _imageView.tintColor = color;
 }
@@ -196,6 +200,7 @@ const CGFloat kImageXCenterAlignmentOffset = 14;
 - (void)prepareForReuse {
   [super prepareForReuse];
   [self alignImageWithFirstLineOfText:NO];
+  _imageView.alpha = 1.0f;
 }
 
 #pragma mark - UIAccessibility

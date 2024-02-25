@@ -2,6 +2,7 @@ include_rules = [
   "+google/protobuf",
   "+google_apis",
   "+mojo/core/embedder",
+  "+mojo/public",
   "+net",
   "+services/network/public/cpp",
   "+services/network/public/mojom",

@@ -24,7 +24,7 @@
 #include "gin/function_template.h"
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_provider.h"
 #include "third_party/blink/public/platform/platform.h"
-#include "third_party/blink/public/web/blink.h"
+#include "third_party/blink/public/platform/scheduler/web_agent_group_scheduler.h"
 #include "third_party/blink/public/web/web_local_frame.h"
 #include "v8/include/v8-array-buffer.h"
 #include "v8/include/v8-context.h"
@@ -58,7 +58,7 @@ std::vector<uint8_t> ArrayBufferAsBytes(
 // will be initialized correctly.
 std::vector<chrome::mojom::TrustedVaultKeyPtr>
 SyncEncryptionKeysToTrustedVaultKeys(
-    const std::vector<v8::Local<v8::ArrayBuffer>>& encryption_keys,
+    const v8::LocalVector<v8::ArrayBuffer>& encryption_keys,
     int32_t last_key_version) {
   std::vector<chrome::mojom::TrustedVaultKeyPtr> trusted_vault_keys;
   for (const v8::Local<v8::ArrayBuffer>& encryption_key : encryption_keys) {
@@ -66,7 +66,7 @@ SyncEncryptionKeysToTrustedVaultKeys(
     // set all the other versions to -1. The remaining version numbers will be
     // ignored by the sync service.
     const bool last_key =
-        encryption_keys.size() == trusted_vault_keys.size() - 1;
+        trusted_vault_keys.size() + 1 == encryption_keys.size();
     trusted_vault_keys.push_back(chrome::mojom::TrustedVaultKey::New(
         /*version=*/last_key ? last_key_version : -1,
         /*bytes=*/ArrayBufferAsBytes(encryption_key)));
@@ -213,10 +213,10 @@ void TrustedVaultEncryptionKeysExtension::DidCreateScriptContext(
 void TrustedVaultEncryptionKeysExtension::Install() {
   DCHECK(render_frame());
 
-  v8::Isolate* isolate = blink::MainThreadIsolate();
+  blink::WebLocalFrame* web_frame = render_frame()->GetWebFrame();
+  v8::Isolate* isolate = web_frame->GetAgentGroupScheduler()->Isolate();
   v8::HandleScope handle_scope(isolate);
-  v8::Local<v8::Context> context =
-      render_frame()->GetWebFrame()->MainWorldScriptContext();
+  v8::Local<v8::Context> context = web_frame->MainWorldScriptContext();
   if (context.IsEmpty()) {
     return;
   }
@@ -307,7 +307,7 @@ void TrustedVaultEncryptionKeysExtension::SetSyncEncryptionKeys(
     return;
   }
 
-  std::vector<v8::Local<v8::ArrayBuffer>> encryption_keys;
+  v8::LocalVector<v8::ArrayBuffer> encryption_keys(args->isolate());
   if (!args->GetNext(&encryption_keys)) {
     RecordCallToSetSyncEncryptionKeysToUma(kInvalidArgs);
     DLOG(ERROR) << "Not array of strings";
@@ -500,14 +500,14 @@ void TrustedVaultEncryptionKeysExtension::RunCompletionCallback(
     return;
   }
 
-  v8::Isolate* isolate = blink::MainThreadIsolate();
+  blink::WebLocalFrame* web_frame = render_frame()->GetWebFrame();
+  v8::Isolate* isolate = web_frame->GetAgentGroupScheduler()->Isolate();
   v8::HandleScope handle_scope(isolate);
-  v8::Local<v8::Context> context =
-      render_frame()->GetWebFrame()->MainWorldScriptContext();
+  v8::Local<v8::Context> context = web_frame->MainWorldScriptContext();
   v8::Context::Scope context_scope(context);
   v8::Local<v8::Function> callback_local =
       v8::Local<v8::Function>::New(isolate, *callback);
 
-  render_frame()->GetWebFrame()->CallFunctionEvenIfScriptDisabled(
+  web_frame->CallFunctionEvenIfScriptDisabled(
       callback_local, v8::Undefined(isolate), /*argc=*/0, /*argv=*/{});
 }

@@ -174,7 +174,7 @@ void TabRankDispatcher::OnForeignSessionUpdated() {
   RecordTabCountAtSyncUpdate(
       tab_fetcher_->GetRemoteTabsCountAfterTime(base::Time()));
 
-  absl::optional<base::Time> sync_session_modified_timestamp =
+  std::optional<base::Time> sync_session_modified_timestamp =
       tab_fetcher_->GetLatestRemoteSessionModifiedTime();
 
   if (!sync_session_modified_timestamp.has_value()) {

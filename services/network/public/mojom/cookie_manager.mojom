@@ -5,6 +5,7 @@
 module network.mojom;
 
 import "components/content_settings/core/common/content_settings.mojom";
+import "components/content_settings/core/common/content_settings_types.mojom";
 import "mojo/public/mojom/base/time.mojom";
 import "sandbox/policy/mojom/context.mojom";
 import "services/network/public/mojom/cookie_partition_key.mojom";
@@ -26,8 +27,16 @@ struct CookieManagerParams {
   // the value).
   bool block_truncated_cookies = true;
 
-  // Content settings for cookies.
-  array<content_settings.mojom.ContentSettingPatternSource> settings;
+  // Whether tracking protection for 3PCD (prefs + UX) is enabled.
+  bool tracking_protection_enabled_for_3pcd = false;
+
+  // Whether Third Party Cookie Deprecation mitigations efforts such as Third
+  // Party Cookie Deprecation Metadata grants are permitted.
+  bool mitigations_enabled_for_3pcd = false;
+
+  // Content settings for CookieManager.
+  map<content_settings.mojom.ContentSettingsType,
+    array<content_settings.mojom.ContentSettingPatternSource>> content_settings;
 
   // Schemes that unconditionally allow cookies from secure origins.
   array<string> secure_origin_cookies_allowed_schemes;
@@ -41,32 +50,6 @@ struct CookieManagerParams {
   // Whether or not to allow cookies for file:// URLs. Can be overridden by
   // CookieManager.AllowFileSchemeCookies().
   bool allow_file_scheme_cookies = false;
-
-  // Content settings for which domains are allowed to use legacy cookie
-  // access rules.
-  array<content_settings.mojom.ContentSettingPatternSource>
-      settings_for_legacy_cookie_access;
-
-  // Content settings for 3PCD support.
-  // Note: This does not override `block_third_party_cookies` or `settings`.
-  array<content_settings.mojom.ContentSettingPatternSource>
-      settings_for_3pcd;
-
-  // Content settings for 3PCD Metadata grants which are set via component
-  // updater installer.
-  array<content_settings.mojom.ContentSettingPatternSource>
-      settings_for_3pcd_metadata_grants;
-
-  // Content settings for which storage access grants have been set using
-  // the Storage Access API.
-  array<content_settings.mojom.ContentSettingPatternSource>
-      settings_for_storage_access;
-  // Much like the Storage Access API, but applicable at the page-level instead
-  // of per-frame. The two permissions are being separated; some duplication
-  // will be present until that process completes. TODO(crbug.com/1385156):
-  // consolidate as much as possible.
-  array<content_settings.mojom.ContentSettingPatternSource>
-      settings_for_top_level_storage_access;
 
   // The type of CookieAccessDelegate to pass to the underlying CookieStore.
   // If these params are not present, CookieManager defaults to using
@@ -115,6 +98,19 @@ enum CookieEffectiveSameSite {
   kStrictMode = 2,
   kLaxModeAllowUnsafe = 3,
   kUndefined = 4,
+};
+
+// Defined in net::CookieInclusionStatus::ExemptionReason.
+enum CookieExemptionReason {
+    kNone = 0,
+    kUserSetting = 1,
+    k3PCDMetadata = 2,
+    k3PCDDeprecationTrial = 3,
+    k3PCDHeuristics = 4,
+    kEnterprisePolicy = 5,
+    kStorageAccess = 6,
+    kTopLevelStorageAccess = 7,
+    kCorsOptIn = 8,
 };
 
 enum ContextType {
@@ -201,7 +197,6 @@ struct CanonicalCookie {
   CookieSameSite site_restrictions = NO_RESTRICTION;
   CookiePriority priority = MEDIUM;
   CookieSourceScheme source_scheme = kUnset;
-  bool same_party = false;
   CookiePartitionKey? partition_key;
   // -1 because of url::PORT_UNSPECIFIED
   // url/third_party/mozilla/url_parse.h
@@ -218,6 +213,8 @@ struct CookieInclusionStatus {
   // Bitfield. Is defined in
   // net::CookieInclusionStatus::WarningReason.
   uint32 warning_reasons;
+
+  CookieExemptionReason exemption_reason;
 };
 
 struct CookieAndLineWithAccessResult {
@@ -473,9 +470,11 @@ interface CookieManager {
   AllowFileSchemeCookies(bool allow) => (bool success);
 
   // Sets content settings for cookies. These are used to determine cookie
-  // access and cookie deletion behavior.
+  // access and cookie deletion behavior. Will
+  // ack the caller with a callback when settings have been updated.
   SetContentSettings(
-      array<content_settings.mojom.ContentSettingPatternSource> settings);
+      content_settings.mojom.ContentSettingsType content_settings_type,
+      array<content_settings.mojom.ContentSettingPatternSource> settings) => ();
 
   // Instructs the cookie store to not discard session only cookies on shutdown.
   SetForceKeepSessionState();
@@ -488,29 +487,14 @@ interface CookieManager {
   // policy to not require a restart to take affect.
   BlockTruncatedCookies(bool block);
 
-  // Sets content settings for which domains are allowed to use legacy cookie
-  // access rules.
-  SetContentSettingsForLegacyCookieAccess(
-      array<content_settings.mojom.ContentSettingPatternSource> settings);
+  // Enables/Disables mitigations for third-party cookies deprecation.
+  SetMitigationsEnabledFor3pcd(bool enable);
 
-  // Note: This does not override settings created with SetContentSettings
-  // or BlockThirdPartyCookies.
-  SetContentSettingsFor3pcd(
-      array<content_settings.mojom.ContentSettingPatternSource> settings);
+  // Enables/Disables tracking protection for 3PCD (prefs + UX).
+  SetTrackingProtectionEnabledFor3pcd(bool enable);
 
-  // Sets content settings for which an entry exist within the 3PCD mitigations
-  // metadata delivered through component updater.
-  SetContentSettingsFor3pcdMetadataGrants(
-    array<content_settings.mojom.ContentSettingPatternSource> settings);
-
-  // Sets content settings for which storage access grants exist. Will ack
-  // the caller with a callback when settings have been updated.
-  SetStorageAccessGrantSettings(
-      array<content_settings.mojom.ContentSettingPatternSource> settings) => ();
-
-  // Sets content settings for both flavors of storage access grants. Will
-  // ack the caller with a callback when settings have been updated.
-  SetAllStorageAccessSettings(
-      array<content_settings.mojom.ContentSettingPatternSource> standard_settings,
-      array<content_settings.mojom.ContentSettingPatternSource> top_level_settings) => ();
+  // Adds a pre-commit delay to the cookie database sqlite persistent store.
+  // This delay occurs before every commit and blocks the background task
+  // runner.
+  SetPreCommitCallbackDelayForTesting(mojo_base.mojom.TimeDelta delay);
 };

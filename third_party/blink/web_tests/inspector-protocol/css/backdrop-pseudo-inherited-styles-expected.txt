@@ -1,0 +1,16 @@
+Tests that ::backdrop inherits from its originating element
+Dumping matched rules: 
+*dialog::backdrop* {    regular
+    opacity: 0.5; @[9:4-9:17]
+    opacity: 0.5; @[undefined-undefined]
+}
+Dumping inherited rules: 
+*dialog* {    regular
+    color: green; @[6:4-6:17]
+    color: green; @[undefined-undefined]
+}
+*:root* {    regular
+    --foo: bar; @[3:4-3:15]
+    --foo: bar; @[undefined-undefined]
+}
+

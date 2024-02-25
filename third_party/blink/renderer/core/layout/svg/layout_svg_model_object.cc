@@ -83,7 +83,7 @@ void LayoutSVGModelObject::AbsoluteQuads(Vector<gfx::QuadF>& quads,
 void LayoutSVGModelObject::AddOutlineRects(OutlineRectCollector& collector,
                                            OutlineInfo* info,
                                            const PhysicalOffset&,
-                                           NGOutlineType) const {
+                                           OutlineType) const {
   NOT_DESTROYED();
   gfx::RectF visual_rect = VisualRectInLocalSVGCoordinates();
   bool was_empty = visual_rect.IsEmpty();
@@ -124,6 +124,26 @@ bool LayoutSVGModelObject::CheckForImplicitTransformChange(
   }
   NOTREACHED();
   return false;
+}
+
+void LayoutSVGModelObject::ImageChanged(WrappedImagePtr image,
+                                        CanDeferInvalidation defer) {
+  NOT_DESTROYED();
+  for (const FillLayer* layer = &StyleRef().MaskLayers(); layer;
+       layer = layer->Next()) {
+    const StyleImage* style_image = layer->GetImage();
+    if (style_image && image == style_image->Data()) {
+      SetShouldDoFullPaintInvalidationWithoutLayoutChange(
+          PaintInvalidationReason::kImage);
+      if (style_image->IsMaskSource()) {
+        // Since an invalid <mask> reference does not yield a paint property on
+        // SVG content (see CSSMaskPainter), we need to update paint properties
+        // when such a reference changes.
+        SetNeedsPaintPropertyUpdate();
+      }
+      break;
+    }
+  }
 }
 
 void LayoutSVGModelObject::StyleDidChange(StyleDifference diff,

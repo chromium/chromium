@@ -4,7 +4,8 @@
 
 #include "url/mojom/scheme_host_port_mojom_traits.h"
 
-#include "base/strings/string_piece.h"
+#include <string_view>
+
 #include "url/mojom/scheme_host_port.mojom-shared.h"
 #include "url/scheme_host_port.h"
 
@@ -13,7 +14,7 @@ namespace mojo {
 // static
 bool StructTraits<url::mojom::SchemeHostPortDataView, url::SchemeHostPort>::
     Read(url::mojom::SchemeHostPortDataView data, url::SchemeHostPort* out) {
-  base::StringPiece scheme, host;
+  std::string_view scheme, host;
   if (!data.ReadScheme(&scheme) || !data.ReadHost(&host))
     return false;
 

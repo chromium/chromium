@@ -60,8 +60,8 @@ class CrostiniPackageNotification
   // message_center::NotificationObserver:
   void Close(bool by_user) override;
 
-  void Click(const absl::optional<int>& button_index,
-             const absl::optional<std::u16string>& reply) override;
+  void Click(const std::optional<int>& button_index,
+             const std::optional<std::u16string>& reply) override;
 
   // GuestOsRegistryService::Observer:
   void OnRegistryUpdated(
@@ -110,8 +110,8 @@ class CrostiniPackageNotification
   base::TimeTicks running_start_time_;
 
   // These notifications are owned by the package service.
-  raw_ptr<CrostiniPackageService, ExperimentalAsh> package_service_;
-  raw_ptr<Profile, ExperimentalAsh> profile_;
+  raw_ptr<CrostiniPackageService> package_service_;
+  raw_ptr<Profile> profile_;
   const NotificationSettings notification_settings_;
 
   std::unique_ptr<message_center::Notification> notification_;

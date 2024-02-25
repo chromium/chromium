@@ -35,7 +35,8 @@ ntp::history_clusters::cart::mojom::CartPtr CartToMojom(
   }
   cart_mojom->relative_date = base::UTF16ToUTF8(ui::TimeFormat::Simple(
       ui::TimeFormat::FORMAT_ELAPSED, ui::TimeFormat::LENGTH_SHORT,
-      base::Time::Now() - base::Time::FromDoubleT(cart.second.timestamp())));
+      base::Time::Now() -
+          base::Time::FromSecondsSinceUnixEpoch(cart.second.timestamp())));
   cart_mojom->discount_text = cart.second.discount_info().discount_text();
   return cart_mojom;
 }
@@ -97,11 +98,11 @@ void CartProcessor::GetCartForCluster(
 
 void CartProcessor::RecordCartHistoryClusterAssociationMetrics(
     std::vector<CartDB::KeyAndValue>& active_carts,
-    std::vector<history::Cluster>& clusters) {
+    std::vector<history::Cluster*> clusters) {
   for (auto cart_pair : active_carts) {
     bool match_cluster = false;
     for (size_t i = 0; i < clusters.size(); i++) {
-      for (auto visit : clusters[i].visits) {
+      for (auto visit : clusters[i]->visits) {
         if (IsCartAssociatedWithVisitURL(cart_pair, visit.normalized_url)) {
           match_cluster = true;
           break;

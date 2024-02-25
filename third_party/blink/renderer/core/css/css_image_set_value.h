@@ -26,19 +26,14 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_CSS_CSS_IMAGE_SET_VALUE_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_CSS_CSS_IMAGE_SET_VALUE_H_
 
-#include "third_party/blink/renderer/core/css/css_image_set_option_value.h"
-#include "third_party/blink/renderer/core/css/css_to_length_conversion_data.h"
 #include "third_party/blink/renderer/core/css/css_value_list.h"
-#include "third_party/blink/renderer/core/style/style_image.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_vector.h"
-#include "third_party/blink/renderer/platform/loader/fetch/cross_origin_attribute_value.h"
-#include "third_party/blink/renderer/platform/loader/fetch/fetch_parameters.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/casting.h"
 
 namespace blink {
 
-class Document;
+class CSSImageSetOptionValue;
 class StyleImage;
 
 class CORE_EXPORT CSSImageSetValue : public CSSValueList {
@@ -48,26 +43,17 @@ class CORE_EXPORT CSSImageSetValue : public CSSValueList {
 
   bool IsCachePending(const float device_scale_factor) const;
   StyleImage* CachedImage(const float device_scale_factor) const;
-  StyleImage* CacheImage(
-      const Document& document,
-      const float device_scale_factor,
-      const FetchParameters::ImageRequestBehavior image_request_behavior,
-      const CrossOriginAttributeValue cross_origin,
-      const CSSToLengthConversionData::ContainerSizes& container_sizes);
+  StyleImage* CacheImage(StyleImage*, const float device_scale_factor);
+
+  const CSSImageSetOptionValue* GetBestOption(const float device_scale_factor);
 
   String CustomCSSText() const;
-
-  // Gets the computed CSS value of the image-set.
-  CSSImageSetValue* ComputedCSSValue(const ComputedStyle& style,
-                                     const bool allow_visited_style) const;
 
   bool HasFailedOrCanceledSubresources() const;
 
   void TraceAfterDispatch(blink::Visitor*) const;
 
  private:
-  const CSSImageSetOptionValue* GetBestOption(const float device_scale_factor);
-
   Member<StyleImage> cached_image_;
   float cached_device_scale_factor_{1.0f};
 

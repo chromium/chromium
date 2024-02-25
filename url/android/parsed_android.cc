@@ -7,7 +7,7 @@
 #include <jni.h>
 
 #include "base/android/jni_android.h"
-#include "url/gurl_jni_headers/Parsed_jni.h"
+#include "url/url_jni_headers/Parsed_jni.h"
 
 using base::android::AttachCurrentThread;
 using base::android::JavaRef;

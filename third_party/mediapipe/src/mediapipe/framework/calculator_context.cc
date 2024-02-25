@@ -13,6 +13,7 @@
 // limitations under the License.
 
 #include "mediapipe/framework/calculator_context.h"
+
 #include "absl/log/absl_check.h"
 
 namespace mediapipe {

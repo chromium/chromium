@@ -39,12 +39,10 @@ TEST(CreateWebRtcAudioProcessingModuleTest, CheckDefaultAudioProcessingConfig) {
   EXPECT_FALSE(config.pre_amplifier.enabled);
   EXPECT_TRUE(config.echo_canceller.enabled);
 
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
-  EXPECT_TRUE(config.gain_controller1.enabled);
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
+    BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_FUCHSIA)
+  EXPECT_FALSE(config.gain_controller1.enabled);
   EXPECT_TRUE(config.gain_controller2.enabled);
-#elif BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_FUCHSIA)
-  EXPECT_TRUE(config.gain_controller1.enabled);
-  EXPECT_FALSE(config.gain_controller2.enabled);
 #elif BUILDFLAG(IS_CASTOS) || BUILDFLAG(IS_CAST_ANDROID)
   EXPECT_TRUE(config.gain_controller1.enabled);
   EXPECT_FALSE(config.gain_controller2.enabled);
@@ -59,7 +57,10 @@ TEST(CreateWebRtcAudioProcessingModuleTest, CheckDefaultAudioProcessingConfig) {
   EXPECT_EQ(config.noise_suppression.level,
             webrtc::AudioProcessing::Config::NoiseSuppression::kHigh);
 
-#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
+    BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_FUCHSIA)
+  EXPECT_FALSE(config.transient_suppression.enabled);
+#elif BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
   // Android and iOS use echo cancellation optimized for mobiles, and does not
   // support keytap suppression.
   EXPECT_TRUE(config.echo_canceller.mobile_mode);
@@ -77,20 +78,26 @@ TEST(CreateWebRtcAudioProcessingModuleTest,
   EXPECT_EQ(config.gain_controller2, kDefaultApmConfig.gain_controller2);
 }
 
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
+    BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_FUCHSIA)
 TEST(CreateWebRtcAudioProcessingModuleTest,
-     InputVolumeAdjustmentEnabledWithHybridAgc) {
+     InputVolumeAdjustmentEnabledWithAgc2) {
   ::base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeature(
       features::kWebRtcAllowInputVolumeAdjustment);
   auto config = CreateApmGetConfig(
       /*settings=*/{.automatic_gain_control = true});
-  EXPECT_TRUE(config.gain_controller1.enabled);
-  EXPECT_TRUE(config.gain_controller1.analog_gain_controller.enabled);
+  EXPECT_FALSE(config.gain_controller1.enabled);
+  EXPECT_FALSE(config.gain_controller1.analog_gain_controller.enabled);
+  EXPECT_TRUE(config.gain_controller2.enabled);
+  EXPECT_TRUE(config.gain_controller2.input_volume_controller.enabled);
 }
+#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) ||
+        // BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_FUCHSIA)
 
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 TEST(CreateWebRtcAudioProcessingModuleTest,
-     CanDisableInputVolumeAdjustmentWithHybridAgc) {
+     CanDisableInputVolumeAdjustmentWithAgc2) {
   ::base::test::ScopedFeatureList feature_list;
   feature_list.InitAndDisableFeature(
       features::kWebRtcAllowInputVolumeAdjustment);
@@ -99,6 +106,8 @@ TEST(CreateWebRtcAudioProcessingModuleTest,
   // Check that AGC1 is entirely disabled since, in the Hybrid AGC setup, AGC1
   // is only used for input volume adaptations.
   EXPECT_FALSE(config.gain_controller1.enabled);
+  // Check that AGC2 input volume controller is disabled.
+  EXPECT_FALSE(config.gain_controller2.input_volume_controller.enabled);
 }
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 
@@ -186,7 +195,9 @@ TEST(CreateWebRtcAudioProcessingModuleTest, ToggleTransientSuppression) {
     auto config = CreateApmGetConfig(/*settings=*/{
         .transient_noise_suppression = transient_suppression_enabled});
 
-#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
+    BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_FUCHSIA) ||               \
+    BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
     // Transient suppression is not supported (nor useful) on mobile platforms.
     EXPECT_FALSE(config.transient_suppression.enabled);
 #else

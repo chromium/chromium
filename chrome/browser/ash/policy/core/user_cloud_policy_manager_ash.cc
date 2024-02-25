@@ -25,7 +25,6 @@
 #include "chrome/browser/ash/login/helper.h"
 #include "chrome/browser/ash/login/session/user_session_manager.h"
 #include "chrome/browser/ash/login/users/affiliation.h"
-#include "chrome/browser/ash/login/users/chrome_user_manager_impl.h"
 #include "chrome/browser/ash/policy/core/policy_oauth2_token_fetcher.h"
 #include "chrome/browser/ash/policy/login/wildcard_login_checker.h"
 #include "chrome/browser/ash/policy/remote_commands/user_commands_factory_ash.h"
@@ -36,7 +35,6 @@
 #include "chrome/browser/invalidation/profile_invalidation_provider_factory.h"
 #include "chrome/browser/lifetime/application_lifetime.h"
 #include "chrome/browser/net/system_network_context_manager.h"
-#include "chrome/browser/policy/cloud/remote_commands_invalidator_impl.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/chrome_content_client.h"
 #include "chrome/common/chrome_features.h"
@@ -52,6 +50,7 @@
 #include "components/policy/core/common/policy_map.h"
 #include "components/policy/core/common/policy_pref_names.h"
 #include "components/policy/core/common/policy_types.h"
+#include "components/policy/core/common/remote_commands/remote_commands_invalidator_impl.h"
 #include "components/policy/policy_constants.h"
 #include "components/session_manager/core/session_manager.h"
 #include "components/user_manager/known_user.h"
@@ -94,7 +93,7 @@ void RegistrationResultUMA(RegistrationResult registration_result) {
 bool IsChildUser(const AccountId& account_id) {
   const user_manager::User* const user =
       user_manager::UserManager::Get()->FindUser(account_id);
-  return user && user->GetType() == user_manager::USER_TYPE_CHILD;
+  return user && user->GetType() == user_manager::UserType::kChild;
 }
 
 // This class is used to subscribe for notifications that the current profile is
@@ -140,11 +139,10 @@ UserCloudPolicyManagerAsh::UserCloudPolicyManagerAsh(
     : CloudPolicyManager(
           dm_protocol::kChromeUserPolicyType,
           std::string(),
-          store.get(),
+          std::move(store),
           task_runner,
           base::BindRepeating(content::GetNetworkConnectionTracker)),
       profile_(profile),
-      store_(std::move(store)),
       external_data_manager_(std::move(external_data_manager)),
       component_policy_cache_path_(component_policy_cache_path),
       waiting_for_policy_fetch_(enforcement_type ==
@@ -414,9 +412,11 @@ void UserCloudPolicyManagerAsh::OnRegistrationStateChanged(
   if (waiting_for_policy_fetch_) {
     // If we're blocked on the policy fetch, now is a good time to issue it.
     if (client()->is_registered()) {
-      service()->RefreshPolicy(base::BindOnce(
-          &UserCloudPolicyManagerAsh::OnInitialPolicyFetchComplete,
-          base::Unretained(this)));
+      service()->RefreshPolicy(
+          base::BindOnce(
+              &UserCloudPolicyManagerAsh::OnInitialPolicyFetchComplete,
+              base::Unretained(this)),
+          PolicyFetchReason::kRegistrationChanged);
     } else {
       // If the client has switched to not registered, we bail out as this
       // indicates the cloud policy setup flow has been aborted.
@@ -452,7 +452,7 @@ void UserCloudPolicyManagerAsh::OnClientError(
     RegistrationResultUMA(RegistrationResult::kReregistrationUnsuccessful);
     LOG(ERROR) << "Re-registration failed, requiring the user to perform an "
                   "online sign-in.";
-    ash::ChromeUserManager::Get()->SaveForceOnlineSignin(account_id_, true);
+    user_manager::UserManager::Get()->SaveForceOnlineSignin(account_id_, true);
   }
 }
 
@@ -493,7 +493,7 @@ void UserCloudPolicyManagerAsh::OnStoreLoaded(
     enforcement_type_ = PolicyEnforcement::kPolicyOptional;
 
     DCHECK(policy_data->has_username());
-    ash::ChromeUserManager::Get()->SetUserAffiliation(
+    user_manager::UserManager::Get()->SetUserAffiliation(
         account_id_,
         base::flat_set<std::string>(policy_data->user_affiliation_ids().begin(),
                                     policy_data->user_affiliation_ids().end()));
@@ -501,7 +501,7 @@ void UserCloudPolicyManagerAsh::OnStoreLoaded(
 }
 
 void UserCloudPolicyManagerAsh::SetPolicyRequired(bool policy_required) {
-  auto* user_manager = ash::ChromeUserManager::Get();
+  auto* user_manager = user_manager::UserManager::Get();
   user_manager::KnownUser known_user(local_state_);
   known_user.SetProfileRequiresPolicy(
       account_id_,
@@ -785,7 +785,7 @@ void UserCloudPolicyManagerAsh::SetUserContextRefreshTokenForTests(
     const std::string& refresh_token) {
   DCHECK(!refresh_token.empty());
   DCHECK(!user_context_refresh_token_for_tests_);
-  user_context_refresh_token_for_tests_ = absl::make_optional(refresh_token);
+  user_context_refresh_token_for_tests_ = std::make_optional(refresh_token);
 }
 
 enterprise_reporting::ReportScheduler*

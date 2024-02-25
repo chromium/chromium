@@ -5,8 +5,6 @@
 import("../build_webui_tests.gni")
 
 build_webui_tests("build") {
-  resource_path_prefix = "css"
-
   files = [
     "color_provider_css_colors_test.ts",
     "text_defaults_test.ts",
@@ -16,5 +14,4 @@ build_webui_tests("build") {
   }
 
   ts_deps = [ "//ui/webui/resources/js:build_ts" ]
-  ts_tsconfig_base = "tsconfig_base.json"
 }

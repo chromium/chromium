@@ -123,6 +123,18 @@ void ChromeCaptureModeDelegate::ShowScreenCaptureItemInFolder(
                                   file_path);
 }
 
+void ChromeCaptureModeDelegate::OpenScreenCaptureItem(
+    const base::FilePath& file_path) {
+  Profile* profile = ProfileManager::GetActiveUserProfile();
+  if (!profile) {
+    return;
+  }
+
+  platform_util::OpenItem(profile, file_path,
+                          platform_util::OpenItemType::OPEN_FILE,
+                          platform_util::OpenOperationCallback());
+}
+
 void ChromeCaptureModeDelegate::OpenScreenshotInImageEditor(
     const base::FilePath& file_path) {
   Profile* profile = ProfileManager::GetActiveUserProfile();

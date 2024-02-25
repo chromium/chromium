@@ -22,6 +22,8 @@ Some SVGs are already pretty minimal, like the ones at [the Material Design Icon
 
 + **My colors are inverted!** There is probably a surplus square path encompassing your icon. For example, `<path d="M0 0h16v16H0z"/>`. Delete this and try again.
 
++ **Nothing is rendering!** Lately, [Google repo icons](https://fonts.google.com/icons) have tended to include an odd viewbox directive: `viewBox="0 -960 960 960"`. Address this by entering 960 as the y offset in Skiafy (see "Translate" `<input>`). Bonus points for [patching Skiafy](https://github.com/evanstade/skiafy/issues/46) to do this automatically.
+
 ## Using .icon files
 
 ### Adding new icons
@@ -55,6 +57,8 @@ Chrome's native UI on desktop platforms. Currently the vector icons are in exten
 ### How can I preview vector icons?
 
 Use [this extension](https://github.com/sadrulhc/vector-icons) to preview icons in [codesearch](http://cs.chromium.org/).
+
+You can also use the [Vector Icon Viewer](https://marketplace.visualstudio.com/items?itemName=adolfdaniel.vscode-chromium-vector-icons) extension for VS Code to preview icons in Visual Studio. This is especially helpful when adding new icons.
 
 You can also build and run the `views_examples_exe` (or `views_examples_with_content_exe`) target and select "Vector Icons" from the dropdown menu. This loads a simple interface which allows you view a provided vector icon file at a specified size and color. Contributions to improve this interface are welcome ([bug](https://bugs.chromium.org/p/chromium/issues/detail?id=630295)).
 

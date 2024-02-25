@@ -166,7 +166,11 @@ def main(argv):
 
   protoc_cmd += ["--proto_path", proto_dir]
   for path in options.import_dir:
-    protoc_cmd += ["--proto_path", path]
+    # TODO: crbug.com/1477926 - Do not specify unused `--import-dir`s.
+    # On a remote worker, it shows `warning: directory does not exist` when
+    # there are no dependencies under the directory.
+    if os.path.exists(path):
+      protoc_cmd += ["--proto_path", path]
 
   protoc_cmd += [os.path.join(proto_dir, name) for name in protos]
 

@@ -57,8 +57,7 @@ class AppServiceAppWindowCrostiniTracker {
                            aura::Window* window,
                            const std::string& app_id) const;
 
-  const raw_ptr<AppServiceAppWindowShelfController, ExperimentalAsh>
-      app_service_controller_;
+  const raw_ptr<AppServiceAppWindowShelfController> app_service_controller_;
 
   CrostiniAppDisplay crostini_app_display_;
 

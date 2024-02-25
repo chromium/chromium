@@ -60,9 +60,9 @@ class ColorPickerHighlightPathGenerator : public views::HighlightPathGenerator {
 // Represents one of the colors the user can pick from. Displayed as a solid
 // circle of the given color.
 class ColorPickerElementView : public views::Button {
- public:
-  METADATA_HEADER(ColorPickerElementView);
+  METADATA_HEADER(ColorPickerElementView, views::Button)
 
+ public:
   ColorPickerElementView(
       base::RepeatingCallback<void(ColorPickerElementView*)> selected_callback,
       const views::BubbleDialogDelegateView* bubble_view,
@@ -97,9 +97,12 @@ class ColorPickerElementView : public views::Button {
     SetAnimateOnStateChange(true);
   }
 
+  ~ColorPickerElementView() override = default;
+
   void SetSelected(bool selected) {
-    if (selected_ == selected)
+    if (selected_ == selected) {
       return;
+    }
     selected_ = selected;
     SchedulePaint();
   }
@@ -202,7 +205,7 @@ class ColorPickerElementView : public views::Button {
   bool selected_ = false;
 };
 
-BEGIN_METADATA(ColorPickerElementView, views::Button)
+BEGIN_METADATA(ColorPickerElementView)
 ADD_PROPERTY_METADATA(bool, Selected)
 END_METADATA
 
@@ -223,8 +226,9 @@ ColorPickerView::ColorPickerView(
         base::BindRepeating(&ColorPickerView::OnColorSelected,
                             base::Unretained(this)),
         bubble_view, color.first, color.second)));
-    if (initial_color_id == color.first)
+    if (initial_color_id == color.first) {
       elements_.back()->SetSelected(true);
+    }
   }
 
   // Set the internal padding to be equal to the horizontal insets of a color
@@ -252,24 +256,22 @@ ColorPickerView::ColorPickerView(
               .WithWeight(1));
 }
 
-ColorPickerView::~ColorPickerView() {
-  // Remove child views early since they have references to us through a
-  // callback.
-  RemoveAllChildViews();
-}
+ColorPickerView::~ColorPickerView() = default;
 
-absl::optional<int> ColorPickerView::GetSelectedElement() const {
+std::optional<int> ColorPickerView::GetSelectedElement() const {
   for (size_t i = 0; i < elements_.size(); ++i) {
-    if (elements_[i]->GetSelected())
+    if (elements_[i]->GetSelected()) {
       return static_cast<int>(i);
+    }
   }
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 views::View* ColorPickerView::GetSelectedViewForGroup(int group) {
   for (ColorPickerElementView* element : elements_) {
-    if (element->GetSelected())
+    if (element->GetSelected()) {
       return element;
+    }
   }
   return nullptr;
 }
@@ -283,14 +285,16 @@ views::Button* ColorPickerView::GetElementAtIndexForTesting(int index) {
 void ColorPickerView::OnColorSelected(ColorPickerElementView* element) {
   // Unselect all other elements so that only one can be selected at a time.
   for (ColorPickerElementView* other_element : elements_) {
-    if (other_element != element)
+    if (other_element != element) {
       other_element->SetSelected(false);
+    }
   }
 
-  if (callback_)
+  if (callback_) {
     callback_.Run();
+  }
 }
 
-BEGIN_METADATA(ColorPickerView, views::View)
-ADD_READONLY_PROPERTY_METADATA(absl::optional<int>, SelectedElement)
+BEGIN_METADATA(ColorPickerView)
+ADD_READONLY_PROPERTY_METADATA(std::optional<int>, SelectedElement)
 END_METADATA

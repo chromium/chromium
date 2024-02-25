@@ -289,9 +289,6 @@ class BASE_EXPORT HistogramBase {
   // "body": "ASCII histogram representation"}
   virtual base::Value::Dict ToGraphDict() const = 0;
 
-  // TODO(bcwhite): Remove this after https://crbug/836875.
-  virtual void ValidateHistogramContents() const;
-
   // Produce a JSON representation of the histogram with |verbosity_level| as
   // the serialization verbosity. This is implemented with the help of
   // GetParameters and GetCountAndBucketData; overwrite them to customize the
@@ -344,7 +341,7 @@ class BASE_EXPORT HistogramBase {
 
   // Gets a permanent string that can be used for histogram objects when the
   // original is not a code constant or held in persistent memory.
-  static const char* GetPermanentName(const std::string& name);
+  static const char* GetPermanentName(std::string_view name);
 
  private:
   friend class HistogramBaseTest;

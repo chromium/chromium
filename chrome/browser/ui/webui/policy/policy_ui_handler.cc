@@ -7,6 +7,7 @@
 #include <stddef.h>
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <utility>
 
@@ -18,6 +19,7 @@
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
 #include "base/i18n/time_formatting.h"
+#include "base/json/json_string_value_serializer.h"
 #include "base/json/json_writer.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
@@ -45,8 +47,9 @@
 #include "chrome/browser/policy/value_provider/value_provider_util.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/chrome_select_file_policy.h"
+#include "chrome/browser/ui/webui/policy/policy_ui.h"
 #include "chrome/browser/ui/webui/webui_util.h"
-#include "chrome/grit/chromium_strings.h"
+#include "chrome/grit/branded_strings.h"
 #include "components/crx_file/id_util.h"
 #include "components/enterprise/browser/controller/browser_dm_token_storage.h"
 #include "components/enterprise/browser/controller/chrome_browser_cloud_management_controller.h"
@@ -73,12 +76,12 @@
 #include "components/policy/proto/device_management_backend.pb.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "components/prefs/pref_service.h"
+#include "components/signin/public/base/signin_pref_names.h"
 #include "components/strings/grit/components_strings.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/web_contents.h"
 #include "extensions/buildflags/buildflags.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/clipboard/clipboard_buffer.h"
 #include "ui/base/clipboard/scoped_clipboard_writer.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -107,9 +110,6 @@ constexpr char kExtensionsKey[] = "extensions";
 PolicyUIHandler::PolicyUIHandler() = default;
 
 PolicyUIHandler::~PolicyUIHandler() {
-  if (export_policies_select_file_dialog_) {
-    export_policies_select_file_dialog_->ListenerDestroyed();
-  }
   policy::RecordPolicyUIButtonUsage(reload_policies_count_,
                                     export_to_json_count_, copy_to_json_count_,
                                     upload_report_count_);
@@ -120,39 +120,41 @@ void PolicyUIHandler::AddCommonLocalizedStringsToSource(
   source->AddLocalizedStrings(policy::kPolicySources);
 
   static constexpr webui::LocalizedString kStrings[] = {
-    {"conflict", IDS_POLICY_LABEL_CONFLICT},
-    {"superseding", IDS_POLICY_LABEL_SUPERSEDING},
-    {"conflictValue", IDS_POLICY_LABEL_CONFLICT_VALUE},
-    {"supersededValue", IDS_POLICY_LABEL_SUPERSEDED_VALUE},
-    {"headerLevel", IDS_POLICY_HEADER_LEVEL},
-    {"headerName", IDS_POLICY_HEADER_NAME},
-    {"headerScope", IDS_POLICY_HEADER_SCOPE},
-    {"headerSource", IDS_POLICY_HEADER_SOURCE},
-    {"headerStatus", IDS_POLICY_HEADER_STATUS},
-    {"headerValue", IDS_POLICY_HEADER_VALUE},
-    {"warning", IDS_POLICY_HEADER_WARNING},
-    {"levelMandatory", IDS_POLICY_LEVEL_MANDATORY},
-    {"levelRecommended", IDS_POLICY_LEVEL_RECOMMENDED},
-    {"error", IDS_POLICY_LABEL_ERROR},
-    {"deprecated", IDS_POLICY_LABEL_DEPRECATED},
-    {"future", IDS_POLICY_LABEL_FUTURE},
-    {"info", IDS_POLICY_LABEL_INFO},
-    {"ignored", IDS_POLICY_LABEL_IGNORED},
-    {"notSpecified", IDS_POLICY_NOT_SPECIFIED},
-    {"ok", IDS_POLICY_OK},
-    {"scopeDevice", IDS_POLICY_SCOPE_DEVICE},
-    {"scopeUser", IDS_POLICY_SCOPE_USER},
-    {"scopeAllUsers", IDS_POLICY_SCOPE_ALL_USERS},
-    {"title", IDS_POLICY_TITLE},
-    {"unknown", IDS_POLICY_UNKNOWN},
-    {"unset", IDS_POLICY_UNSET},
-    {"value", IDS_POLICY_LABEL_VALUE},
-    {"sourceDefault", IDS_POLICY_SOURCE_DEFAULT},
-    {"loadPoliciesDone", IDS_POLICY_LOAD_POLICIES_DONE},
-    {"loadingPolicies", IDS_POLICY_LOADING_POLICIES},
+      {"conflict", IDS_POLICY_LABEL_CONFLICT},
+      {"superseding", IDS_POLICY_LABEL_SUPERSEDING},
+      {"conflictValue", IDS_POLICY_LABEL_CONFLICT_VALUE},
+      {"supersededValue", IDS_POLICY_LABEL_SUPERSEDED_VALUE},
+      {"headerLevel", IDS_POLICY_HEADER_LEVEL},
+      {"headerName", IDS_POLICY_HEADER_NAME},
+      {"headerScope", IDS_POLICY_HEADER_SCOPE},
+      {"headerSource", IDS_POLICY_HEADER_SOURCE},
+      {"headerStatus", IDS_POLICY_HEADER_STATUS},
+      {"headerValue", IDS_POLICY_HEADER_VALUE},
+      {"warning", IDS_POLICY_HEADER_WARNING},
+      {"levelMandatory", IDS_POLICY_LEVEL_MANDATORY},
+      {"levelRecommended", IDS_POLICY_LEVEL_RECOMMENDED},
+      {"error", IDS_POLICY_LABEL_ERROR},
+      {"deprecated", IDS_POLICY_LABEL_DEPRECATED},
+      {"future", IDS_POLICY_LABEL_FUTURE},
+      {"info", IDS_POLICY_LABEL_INFO},
+      {"ignored", IDS_POLICY_LABEL_IGNORED},
+      {"notSpecified", IDS_POLICY_NOT_SPECIFIED},
+      {"ok", IDS_POLICY_OK},
+      {"scopeDevice", IDS_POLICY_SCOPE_DEVICE},
+      {"scopeUser", IDS_POLICY_SCOPE_USER},
+      {"scopeAllUsers", IDS_POLICY_SCOPE_ALL_USERS},
+      {"title", IDS_POLICY_TITLE},
+      {"unknown", IDS_POLICY_UNKNOWN},
+      {"unset", IDS_POLICY_UNSET},
+      {"value", IDS_POLICY_LABEL_VALUE},
+      {"sourceDefault", IDS_POLICY_SOURCE_DEFAULT},
+      {"reloadingPolicies", IDS_POLICY_RELOADING_POLICIES},
+      {"reloadPoliciesDone", IDS_POLICY_RELOAD_POLICIES_DONE},
+      {"copyPoliciesDone", IDS_COPY_POLICIES_DONE},
+      {"exportPoliciesDone", IDS_EXPORT_POLICIES_JSON_DONE},
 #if !BUILDFLAG(IS_CHROMEOS)
-    {"reportUploading", IDS_REPORT_UPLOADING},
-    {"reportUploaded", IDS_REPORT_UPLOADED},
+      {"reportUploading", IDS_REPORT_UPLOADING},
+      {"reportUploaded", IDS_REPORT_UPLOADED},
 #endif  // !BUILDFLAG(IS_CHROMEOS)
   };
   source->AddLocalizedStrings(kStrings);
@@ -172,6 +174,10 @@ void PolicyUIHandler::RegisterMessages() {
       CreateDefaultPolicyValueAndStatusAggregator(Profile::FromWebUI(web_ui()));
   policy_value_and_status_observation_.Observe(
       policy_value_and_status_aggregator_.get());
+
+  schema_registry_observation_.Observe(Profile::FromWebUI(web_ui())
+                                           ->GetPolicySchemaRegistryService()
+                                           ->registry());
 
   web_ui()->RegisterMessageCallback(
       "exportPoliciesJSON",
@@ -212,7 +218,10 @@ void PolicyUIHandler::RegisterMessages() {
       "setUserAffiliation",
       base::BindRepeating(&PolicyUIHandler::HandleSetUserAffiliated,
                           base::Unretained(this)));
-
+  web_ui()->RegisterMessageCallback(
+      "getAppliedTestPolicies",
+      base::BindRepeating(&PolicyUIHandler::HandleGetAppliedTestPolicies,
+                          base::Unretained(this)));
 #if !BUILDFLAG(IS_CHROMEOS)
   web_ui()->RegisterMessageCallback(
       "uploadReport", base::BindRepeating(&PolicyUIHandler::HandleUploadReport,
@@ -228,67 +237,34 @@ void PolicyUIHandler::OnPolicyValueAndStatusChanged() {
   SendStatus();
 }
 
-void PolicyUIHandler::FileSelected(const base::FilePath& path,
-                                   int index,
-                                   void* params) {
-  DCHECK(export_policies_select_file_dialog_);
-
-  WritePoliciesToJSONFile(path);
-
-  export_policies_select_file_dialog_ = nullptr;
+void PolicyUIHandler::OnSchemaRegistryUpdated(bool has_new_schemas) {
+  SendSchema();
 }
 
-void PolicyUIHandler::FileSelectionCanceled(void* params) {
-  DCHECK(export_policies_select_file_dialog_);
-  export_policies_select_file_dialog_ = nullptr;
+void PolicyUIHandler::SendSchema() {
+  Profile* profile = Profile::FromWebUI(web_ui());
+  if (!IsJavascriptAllowed() || !PolicyUI::ShouldLoadTestPage(profile)) {
+    return;
+  }
+  FireWebUIListener("schema-updated", PolicyUI::GetSchema(profile));
 }
 
 void PolicyUIHandler::HandleExportPoliciesJson(const base::Value::List& args) {
   export_to_json_count_ += 1;
-#if BUILDFLAG(IS_ANDROID)
-  // TODO(crbug.com/1228691): Unify download logic between all platforms to
-  // use the WebUI download solution (and remove the Android check).
   if (!IsJavascriptAllowed()) {
     DVLOG(1) << "Tried to export policies as JSON but executing JavaScript is "
                 "not allowed.";
     return;
   }
 
-  // Since file selection doesn't work as well on Android as on other platforms,
-  // simply download the JSON as a file via JavaScript.
   FireWebUIListener("download-json", base::Value(GetPoliciesAsJson()));
-#else
-  // If the "select file" dialog window is already opened, we don't want to open
-  // it again.
-  if (export_policies_select_file_dialog_) {
-    return;
-  }
-
-  content::WebContents* webcontents = web_ui()->GetWebContents();
-
-  // Building initial path based on download preferences.
-  base::FilePath initial_dir =
-      DownloadPrefs::FromBrowserContext(webcontents->GetBrowserContext())
-          ->DownloadPath();
-  base::FilePath initial_path =
-      initial_dir.Append(FILE_PATH_LITERAL("policies.json"));
-
-  export_policies_select_file_dialog_ = ui::SelectFileDialog::Create(
-      this,
-      std::make_unique<ChromeSelectFilePolicy>(web_ui()->GetWebContents()));
-  ui::SelectFileDialog::FileTypeInfo file_type_info;
-  file_type_info.extensions = {{FILE_PATH_LITERAL("json")}};
-  gfx::NativeWindow owning_window = webcontents->GetTopLevelNativeWindow();
-  export_policies_select_file_dialog_->SelectFile(
-      ui::SelectFileDialog::SELECT_SAVEAS_FILE, std::u16string(), initial_path,
-      &file_type_info, 0, base::FilePath::StringType(), owning_window, nullptr);
-#endif
 }
 
 void PolicyUIHandler::HandleListenPoliciesUpdates(
     const base::Value::List& args) {
   // Send initial policy values and status to UI page.
   AllowJavascript();
+  SendSchema();
   SendPolicies();
   SendStatus();
 }
@@ -330,7 +306,7 @@ void PolicyUIHandler::HandleCopyPoliciesJson(const base::Value::List& args) {
 
 void PolicyUIHandler::HandleSetLocalTestPolicies(
     const base::Value::List& args) {
-  std::string json_policies_string = args[1].GetString();
+  std::string policies = args[1].GetString();
 
   policy::LocalTestPolicyProvider* local_test_provider =
       static_cast<policy::LocalTestPolicyProvider*>(
@@ -339,17 +315,33 @@ void PolicyUIHandler::HandleSetLocalTestPolicies(
 
   CHECK(local_test_provider);
 
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS)
+  std::string profile_separation_policy_response = args[2].GetString();
+  Profile::FromWebUI(web_ui())->GetPrefs()->ClearPref(
+      prefs::kUserCloudSigninPolicyResponseFromPolicyTestPage);
+  Profile::FromWebUI(web_ui())->GetPrefs()->SetDefaultPrefValue(
+      prefs::kUserCloudSigninPolicyResponseFromPolicyTestPage,
+      base::Value(profile_separation_policy_response));
+#endif
+
   Profile::FromWebUI(web_ui())
       ->GetProfilePolicyConnector()
       ->UseLocalTestPolicyProvider();
 
-  local_test_provider->LoadJsonPolicies(json_policies_string);
+  local_test_provider->LoadJsonPolicies(policies);
   AllowJavascript();
   ResolveJavascriptCallback(args[0], true);
 }
 
 void PolicyUIHandler::HandleRevertLocalTestPolicies(
     const base::Value::List& args) {
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS)
+  Profile::FromWebUI(web_ui())->GetPrefs()->ClearPref(
+      prefs::kUserCloudSigninPolicyResponseFromPolicyTestPage);
+  Profile::FromWebUI(web_ui())->GetPrefs()->SetDefaultPrefValue(
+      prefs::kUserCloudSigninPolicyResponseFromPolicyTestPage,
+      base::Value(std::string()));
+#endif
   Profile::FromWebUI(web_ui())
       ->GetProfilePolicyConnector()
       ->RevertUseLocalTestPolicyProvider();
@@ -380,8 +372,19 @@ void PolicyUIHandler::HandleSetUserAffiliated(const base::Value::List& args) {
   ResolveJavascriptCallback(args[0], true);
 }
 
+void PolicyUIHandler::HandleGetAppliedTestPolicies(
+    const base::Value::List& args) {
+  CHECK_EQ(static_cast<int>(args.size()), 1);
+
+  auto* local_test_provider = static_cast<policy::LocalTestPolicyProvider*>(
+      g_browser_process->browser_policy_connector()
+          ->local_test_policy_provider());
+
+  AllowJavascript();
+  ResolveJavascriptCallback(args[0], local_test_provider->GetPolicies());
+}
+
 void PolicyUIHandler::HandleGetPolicyLogs(const base::Value::List& args) {
-  DCHECK(policy::PolicyLogger::GetInstance()->IsPolicyLoggingEnabled());
   AllowJavascript();
   ResolveJavascriptCallback(args[0],
                             policy::PolicyLogger::GetInstance()->GetAsList());
@@ -478,17 +481,4 @@ std::string PolicyUIHandler::GetPoliciesAsJson() {
       /*params=*/
       policy::GetChromeMetadataParams(
           /*application_name=*/l10n_util::GetStringUTF8(IDS_PRODUCT_NAME)));
-}
-
-void PolicyUIHandler::WritePoliciesToJSONFile(const base::FilePath& path) {
-  std::string json_policies = GetPoliciesAsJson();
-  base::ThreadPool::PostTask(
-      FROM_HERE,
-      {base::MayBlock(), base::TaskPriority::BEST_EFFORT,
-       base::TaskShutdownBehavior::BLOCK_SHUTDOWN},
-      base::BindOnce(
-          [](const base::FilePath& path, base::StringPiece content) {
-            base::WriteFile(path, content);
-          },
-          path, json_policies));
 }

@@ -1,6 +1,0 @@
-This is a testharness.js-based test.
-Harness Error. harness_status.status = 1 , harness_status.message = Uncaught Error: Got multiple messages from single iframe
-PASS CROSS-ORIGIN: Text directive in iframe doesn't bubble to outer frame.
-PASS SAME-ORIGIN: Text directive in iframe bubbles to outer frame.
-Harness: the test ran to completion.
-

@@ -1,5 +1,7 @@
-monorail {
+monorail: {
   component: "UI>Browser>Creation"
 }
-
 team_email: "chrome-creation@google.com"
+buganizer_public: {
+  component_id: 1457160
+}

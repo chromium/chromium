@@ -5,6 +5,7 @@
 #include "chrome/updater/device_management/dm_policy_builder_for_testing.h"
 
 #include <stdint.h>
+
 #include <memory>
 #include <string>
 #include <utility>

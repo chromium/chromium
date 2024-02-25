@@ -45,7 +45,7 @@ class FilesAppLauncher : public apps::AppRegistryCache::Observer,
   void OnInstanceRegistryWillBeDestroyed(
       apps::InstanceRegistry* cache) override;
 
-  const raw_ptr<apps::AppServiceProxy, ExperimentalAsh> proxy_;
+  const raw_ptr<apps::AppServiceProxy> proxy_;
 
   base::OnceClosure callback_;
 

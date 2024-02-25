@@ -8,6 +8,7 @@
 
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
+#include "base/memory/raw_ptr.h"
 #include "base/numerics/ranges.h"
 #include "base/run_loop.h"
 #include "base/synchronization/waitable_event.h"
@@ -22,6 +23,7 @@
 #include "third_party/blink/renderer/modules/mediastream/mock_media_stream_video_source.h"
 #include "third_party/blink/renderer/modules/mediastream/video_track_adapter_settings.h"
 #include "third_party/blink/renderer/platform/testing/io_task_runner_testing_platform_support.h"
+#include "third_party/blink/renderer/platform/testing/task_environment.h"
 #include "third_party/blink/renderer/platform/testing/video_frame_utils.h"
 #include "third_party/webrtc_overrides/low_precision_timer.h"
 #include "third_party/webrtc_overrides/metronome_source.h"
@@ -41,6 +43,7 @@ using ::testing::NiceMock;
 // Test that cropped sizes with zero-area input frames are correctly computed.
 // Aspect ratio limits should be ignored.
 TEST(VideoTrackAdapterTest, ZeroInputArea) {
+  test::TaskEnvironment task_environment;
   const int kMaxWidth = 640;
   const int kMaxHeight = 480;
   const int kSmallDimension = 300;
@@ -96,6 +99,7 @@ TEST(VideoTrackAdapterTest, ZeroInputArea) {
 // Test that zero-size cropped areas are correctly computed. Aspect ratio
 // limits should be ignored.
 TEST(VideoTrackAdapterTest, ZeroOutputArea) {
+  test::TaskEnvironment task_environment;
   const double kMinAspectRatio = 0.1;
   const double kMaxAspectRatio = 2.0;
   const int kInputWidth = 640;
@@ -162,6 +166,7 @@ TEST(VideoTrackAdapterTest, ZeroOutputArea) {
 
 // Test that large frames are handled correctly.
 TEST(VideoTrackAdapterTest, LargeFrames) {
+  test::TaskEnvironment task_environment;
   const int kInputWidth = std::numeric_limits<int>::max();
   const int kInputHeight = std::numeric_limits<int>::max();
   const int kMaxWidth = std::numeric_limits<int>::max();
@@ -196,6 +201,7 @@ TEST(VideoTrackAdapterTest, LargeFrames) {
 // Test that regular frames are not rescaled if settings do not specify a target
 // resolution.
 TEST(VideoTrackAdapterTest, NoRescaling) {
+  test::TaskEnvironment task_environment;
   const int kInputWidth = 640;
   const int kInputHeight = 480;
 
@@ -280,7 +286,7 @@ class VideoTrackAdapterFixtureTest : public ::testing::Test {
             base::BindRepeating(
                 &VideoTrackAdapterFixtureTest::OnEncodedVideoFrameDelivered,
                 base::Unretained(this)),
-            /*crop_version_callback=*/base::DoNothing(),
+            /*sub_capture_target_version_callback=*/base::DoNothing(),
             /*settings_callback=*/base::DoNothing(),
             /*format_callback=*/base::DoNothing(), adapter_settings));
   }
@@ -302,7 +308,6 @@ class VideoTrackAdapterFixtureTest : public ::testing::Test {
           FROM_HERE,
           base::BindOnce(&VideoTrackAdapter::DeliverFrameOnVideoTaskRunner,
                          adapter_, frame,
-                         std::vector<scoped_refptr<media::VideoFrame>>(),
                          estimated_capture_time));
     };
 
@@ -318,17 +323,16 @@ class VideoTrackAdapterFixtureTest : public ::testing::Test {
 
   void OnFrameDelivered(
       scoped_refptr<media::VideoFrame> frame,
-      std::vector<scoped_refptr<media::VideoFrame>> scaled_frames,
       base::TimeTicks estimated_capture_time) {
     if (frame_validation_callback_) {
-      frame_validation_callback_.Run(frame, {}, estimated_capture_time);
+      frame_validation_callback_.Run(frame, estimated_capture_time);
       frame_processed_.Signal();
     }
   }
 
-  void OnFrameDropped() {
+  void OnFrameDropped(media::VideoCaptureFrameDropReason reason) {
     if (frame_dropped_callback_) {
-      frame_dropped_callback_.Run();
+      frame_dropped_callback_.Run(reason);
       frame_processed_.Signal();
     }
   }
@@ -339,7 +343,7 @@ class VideoTrackAdapterFixtureTest : public ::testing::Test {
   // frame. Returns the number of delivered and dropped frames.
   std::tuple<int, int> GenerateAndCountFrames(
       int num_frames,
-      absl::optional<double> target_frame_rate,
+      std::optional<double> target_frame_rate,
       base::RepeatingCallback<base::TimeDelta(int)> index_to_timestamp) {
     const gfx::Size resolution(10, 10);
     // Any capture format will work. Frames will generated at the
@@ -349,7 +353,7 @@ class VideoTrackAdapterFixtureTest : public ::testing::Test {
     CreateAdapter(stream_format);
 
     VideoTrackAdapterSettings adapter_settings(
-        /*target_size=*/absl::nullopt,
+        /*target_size=*/std::nullopt,
         /*min_aspect_ratio=*/0.0000,
         /*max_aspect_ratio=*/resolution.width(), target_frame_rate);
     ConfigureTrack(adapter_settings);
@@ -359,19 +363,19 @@ class VideoTrackAdapterFixtureTest : public ::testing::Test {
 
     SetFrameValidationCallback(base::BindLambdaForTesting(
         [&](scoped_refptr<media::VideoFrame> frame,
-            std::vector<scoped_refptr<media::VideoFrame>> scaled_frames,
             base::TimeTicks estimated_capture_time) {
           num_delivered++;
           if (num_delivered + num_dropped == num_frames) {
             did_process_all_frames.Signal();
           }
         }));
-    SetFrameDroppedCallback(base::BindLambdaForTesting([&]() {
-      num_dropped++;
-      if (num_delivered + num_dropped == num_frames) {
-        did_process_all_frames.Signal();
-      }
-    }));
+    SetFrameDroppedCallback(
+        base::BindLambdaForTesting([&](media::VideoCaptureFrameDropReason) {
+          num_dropped++;
+          if (num_delivered + num_dropped == num_frames) {
+            did_process_all_frames.Signal();
+          }
+        }));
 
     for (int i = 0; i < num_frames; ++i) {
       auto frame = CreateTestFrame(
@@ -395,7 +399,7 @@ class VideoTrackAdapterFixtureTest : public ::testing::Test {
   // frames.
   std::tuple<int, int> GenerateAndCountFrames(
       int num_frames,
-      absl::optional<double> target_frame_rate,
+      std::optional<double> target_frame_rate,
       double actual_input_frame_rate) {
     auto index_to_timestamp =
         base::BindLambdaForTesting([actual_input_frame_rate](int i) {
@@ -419,7 +423,6 @@ class VideoTrackAdapterFixtureTest : public ::testing::Test {
     ConfigureTrack(cropped_settings);
     auto check_settings =
         [&](scoped_refptr<media::VideoFrame> frame,
-            std::vector<scoped_refptr<media::VideoFrame>> scaled_frames,
             base::TimeTicks estimated_capture_time) {
           EXPECT_FALSE(frame->visible_rect().x() & 1);
           EXPECT_FALSE(frame->visible_rect().y() & 1);
@@ -434,6 +437,7 @@ class VideoTrackAdapterFixtureTest : public ::testing::Test {
 
   ScopedTestingPlatformSupport<IOTaskRunnerTestingPlatformSupport>
       platform_support_;
+  test::TaskEnvironment task_environment_;
   base::Thread testing_render_thread_;
   std::unique_ptr<NiceMock<MockMediaStreamVideoSource>> mock_source_;
   scoped_refptr<VideoTrackAdapter> adapter_;
@@ -468,7 +472,6 @@ TEST_F(VideoTrackAdapterFixtureTest, DeliverFrame_GpuMemoryBuffer) {
   ConfigureTrack(settings_nonscaled);
   auto check_nonscaled =
       [&](scoped_refptr<media::VideoFrame> frame,
-          std::vector<scoped_refptr<media::VideoFrame>> scaled_frames,
           base::TimeTicks estimated_capture_time) {
         // We should get the original frame as-is here.
         EXPECT_EQ(frame->storage_type(),
@@ -487,7 +490,6 @@ TEST_F(VideoTrackAdapterFixtureTest, DeliverFrame_GpuMemoryBuffer) {
   ConfigureTrack(settings_scaled);
   auto check_scaled =
       [&](scoped_refptr<media::VideoFrame> frame,
-          std::vector<scoped_refptr<media::VideoFrame>> scaled_frames,
           base::TimeTicks estimated_capture_time) {
         // The original frame should be wrapped in a new frame, with
         // |kDesiredSize| exposed as natural size of the wrapped frame.
@@ -583,14 +585,13 @@ TEST_F(VideoTrackAdapterFixtureTest,
 
   // We don't provide a target size for the initial track.
   VideoTrackAdapterSettings adapter_settings(
-      /*target_size=*/absl::nullopt,
+      /*target_size=*/std::nullopt,
       /*min_aspect_ratio=*/0.0000,
       /*max_aspect_ratio=*/640.0000, kFrameRate);
   ConfigureTrack(adapter_settings);
   // The delivered frame for the first track should have a portrait orientation.
   auto check_portrait =
       [&](scoped_refptr<media::VideoFrame> frame,
-          std::vector<scoped_refptr<media::VideoFrame>> scaled_frames,
           base::TimeTicks estimated_capture_time) {
         // We should get the original frame as-is here.
         EXPECT_EQ(frame->storage_type(),
@@ -626,7 +627,7 @@ TEST_F(VideoTrackAdapterFixtureTest,
           /*frame_callback=*/base::DoNothing(),
           /*notify_dropped_frame_callback=*/base::DoNothing(),
           /*encoded_frame_callback=*/base::DoNothing(),
-          /*crop_version_callback=*/base::DoNothing(),
+          /*sub_capture_target_version_callback=*/base::DoNothing(),
           /*settings_callback=*/base::BindLambdaForTesting(check_dimensions),
           /*track_callback=*/base::DoNothing(), adapter_settings));
   settings_callback_run_.Wait();
@@ -698,7 +699,7 @@ TEST_F(VideoTrackAdapterFixtureTest, FrameRateReductionSlightMismatch) {
 TEST_F(VideoTrackAdapterFixtureTest, DoNotDropFramesIfNoTargetFrameRate) {
   const int kNumFrames = 100;
   auto [num_delivered, num_dropped] =
-      GenerateAndCountFrames(kNumFrames, /*target_frame_rate=*/absl::nullopt,
+      GenerateAndCountFrames(kNumFrames, /*target_frame_rate=*/std::nullopt,
                              /*actual_input_frame_rate=*/10.0);
   EXPECT_EQ(num_delivered, kNumFrames);
   EXPECT_EQ(num_dropped, 0);
@@ -788,7 +789,7 @@ class VideoTrackAdapterEncodedTest : public ::testing::Test {
           base::BindRepeating(
               &VideoTrackAdapterEncodedTest::OnEncodedVideoFrameDelivered,
               base::Unretained(this)),
-          /*crop_version_callback=*/base::DoNothing(),
+          /*sub_capture_target_version_callback=*/base::DoNothing(),
           /*settings_callback=*/base::DoNothing(),
           /*track_callback=*/base::DoNothing(), VideoTrackAdapterSettings());
     });
@@ -807,9 +808,8 @@ class VideoTrackAdapterEncodedTest : public ::testing::Test {
     run_loop.Run();
   }
 
-  MOCK_METHOD3(OnFrameDelivered,
+  MOCK_METHOD2(OnFrameDelivered,
                void(scoped_refptr<media::VideoFrame> frame,
-                    std::vector<scoped_refptr<media::VideoFrame>> scaled_frames,
                     base::TimeTicks estimated_capture_time));
   MOCK_METHOD2(OnEncodedVideoFrameDelivered,
                void(scoped_refptr<EncodedVideoFrame>,
@@ -818,9 +818,10 @@ class VideoTrackAdapterEncodedTest : public ::testing::Test {
  protected:
   ScopedTestingPlatformSupport<IOTaskRunnerTestingPlatformSupport>
       platform_support_;
+  test::TaskEnvironment task_environment_;
   base::Thread render_thread_;
   WebMediaStreamSource web_source_;
-  MockMediaStreamVideoSource* mock_source_;
+  raw_ptr<MockMediaStreamVideoSource, DanglingUntriaged> mock_source_;
   scoped_refptr<VideoTrackAdapter> adapter_;
 };
 

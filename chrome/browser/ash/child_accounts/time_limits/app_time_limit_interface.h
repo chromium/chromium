@@ -5,10 +5,10 @@
 #ifndef CHROME_BROWSER_ASH_CHILD_ACCOUNTS_TIME_LIMITS_APP_TIME_LIMIT_INTERFACE_H_
 #define CHROME_BROWSER_ASH_CHILD_ACCOUNTS_TIME_LIMITS_APP_TIME_LIMIT_INTERFACE_H_
 
+#include <optional>
 #include <string>
 
 #include "components/services/app_service/public/cpp/app_types.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 class Profile;
 
@@ -48,7 +48,7 @@ class AppTimeLimitInterface {
   // Returns current time limit for the app identified by |app_service_id| and
   // |app_type|.Will return nullopt if there is no limit set or app does not
   // exist.
-  virtual absl::optional<base::TimeDelta> GetTimeLimitForApp(
+  virtual std::optional<base::TimeDelta> GetTimeLimitForApp(
       const std::string& app_service_id,
       apps::AppType app_type) = 0;
 };

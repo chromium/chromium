@@ -16,19 +16,13 @@ class TestVirtualCardEnrollmentManager : public VirtualCardEnrollmentManager {
  public:
   TestVirtualCardEnrollmentManager(
       TestPersonalDataManager* personal_data_manager,
-      payments::TestPaymentsClient* payments_client,
+      payments::TestPaymentsNetworkInterface* payments_network_interface,
       TestAutofillClient* autofill_client);
   TestVirtualCardEnrollmentManager(const TestVirtualCardEnrollmentManager&) =
       delete;
   TestVirtualCardEnrollmentManager& operator=(
       const TestVirtualCardEnrollmentManager&) = delete;
   ~TestVirtualCardEnrollmentManager() override;
-
-  bool GetAvatarAnimationComplete() const { return avatar_animation_complete_; }
-
-  void SetAvatarAnimationComplete(bool avatar_animation_complete) {
-    avatar_animation_complete_ = avatar_animation_complete;
-  }
 
   bool GetEnrollResponseDetailsReceived() const {
     return enroll_response_details_received_;

@@ -1,7 +1,5 @@
 This is a testharness.js-based test.
-FAIL This InsertParagraph non-table layout item into table layout. editing/execCommand/insert-paragraph-into-table.html:7:11)
-	 expected <div contenteditable><table><tbody><tr><td style="display:inline-block"><ruby><rt>a</rt></ruby></td></tr><tr><font size="1">|<br></font></tr></tbody></table></div>,
-	 but got  <div contenteditable><table><tbody><tr><td style="display:inline-block"><ruby><rt>a</rt></ruby></td></tr><tr><span style="font-size: 8px;">|<br></span></tr></tbody></table></div>,
-	 sameupto <div contenteditable><table><tbody><tr><td style="display:inline-block"><ruby><rt>a</rt></ruby></td></tr><tr><
+[FAIL] This InsertParagraph non-table layout item into table layout.
+  editing/execCommand/insert-paragraph-into-table.html:7:11)\n	 expected <div contenteditable><table><tbody><tr><td style="display:inline-block"><ruby><rt>a</rt></ruby></td></tr><tr><font size="1">|<br></font></tr></tbody></table></div>,\n	 but got  <div contenteditable><table><tbody><tr><td style="display:inline-block"><ruby><rt>a</rt></ruby></td></tr><tr><span style="font-size: 8px;">|<br></span></tr></tbody></table></div>,\n	 sameupto <div contenteditable><table><tbody><tr><td style="display:inline-block"><ruby><rt>a</rt></ruby></td></tr><tr><
 Harness: the test ran to completion.
 

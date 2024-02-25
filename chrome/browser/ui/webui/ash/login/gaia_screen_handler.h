@@ -12,18 +12,18 @@
 #include "base/command_line.h"
 #include "base/memory/weak_ptr.h"
 #include "base/values.h"
+#include "chrome/browser/ash/http_auth_dialog.h"
 #include "chrome/browser/ash/login/login_client_cert_usage_observer.h"
 #include "chrome/browser/ash/login/screens/error_screen.h"
 #include "chrome/browser/ash/login/screens/network_error.h"
+#include "chrome/browser/ash/login/wizard_context.h"
 #include "chrome/browser/certificate_provider/security_token_pin_dialog_host.h"
 #include "chrome/browser/ui/webui/ash/login/base_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/network_state_informer.h"
-#include "chrome/browser/ui/webui/ash/login/online_login_helper.h"
+#include "chrome/browser/ui/webui/ash/login/online_login_utils.h"
 #include "chrome/browser/ui/webui/ash/login/saml_challenge_key_handler.h"
 #include "chromeos/components/security_token_pin/constants.h"
 #include "components/user_manager/user_type.h"
-#include "content/public/browser/notification_observer.h"
-#include "content/public/browser/notification_registrar.h"
 #include "net/base/net_errors.h"
 #include "net/cookies/canonical_cookie.h"
 #include "net/cookies/cookie_access_result.h"
@@ -43,15 +43,8 @@ namespace ash {
 class PublicSamlUrlFetcher;
 class ErrorScreensHistogramHelper;
 
-class GaiaView : public base::SupportsWeakPtr<GaiaView> {
+class GaiaView {
  public:
-  enum class GaiaPath {
-    kDefault,
-    kChildSignup,
-    kChildSignin,
-    kReauth,
-  };
-
   enum class GaiaLoginVariant {
     // These values are persisted to logs. Entries should not be renumbered and
     // numeric values should never be reused.
@@ -60,6 +53,16 @@ class GaiaView : public base::SupportsWeakPtr<GaiaView> {
     kAddUser = 2,
     kOnlineSignin = 3,
     kMaxValue = kOnlineSignin
+  };
+
+  enum class PasswordlessSupportLevel {
+    // Passwordless logins are not supported or password logins are enforced.
+    kNone = 0,
+    // Passwordless logins are supported for consumers only, but not for
+    // enterprise users.
+    kConsumersOnly,
+    // Passwordless logins are supported for all users.
+    kAll,
   };
 
   inline constexpr static StaticOobeScreenId kScreenId{"gaia-signin",
@@ -81,12 +84,6 @@ class GaiaView : public base::SupportsWeakPtr<GaiaView> {
   // Shows Gaia screen.
   virtual void Show() = 0;
   virtual void Hide() = 0;
-  // Sets Gaia path for sign-in, child sign-in or child sign-up.
-  virtual void SetGaiaPath(GaiaPath gaia_path) = 0;
-  // Returns the currently set Gaia path
-  virtual GaiaPath GetGaiaPath() = 0;
-  // Show error UI at the end of Gaia flow when user is not allowlisted.
-  virtual void ShowAllowlistCheckFailedError() = 0;
   // Reloads authenticator.
   virtual void ReloadGaiaAuthenticator() = 0;
   // Sets reauth request token in the URL, in order to get reauth proof token
@@ -107,17 +104,23 @@ class GaiaView : public base::SupportsWeakPtr<GaiaView> {
                                        const std::string& password,
                                        const std::string& services) = 0;
   virtual void SetQuickStartEnabled() = 0;
+  // Sets if Gaia password is required during login. If the password is
+  // required, Gaia passwordless login will be disallowed.
+  virtual void SetIsGaiaPasswordRequired(bool is_required) = 0;
 
   // Reset authenticator.
   virtual void Reset() = 0;
+
+  // Gets a WeakPtr to the instance.
+  virtual base::WeakPtr<GaiaView> AsWeakPtr() = 0;
 };
 
 // A class that handles WebUI hooks in Gaia screen.
-class GaiaScreenHandler
+class GaiaScreenHandler final
     : public BaseScreenHandler,
       public GaiaView,
       public chromeos::SecurityTokenPinDialogHost,
-      public content::NotificationObserver,
+      public HttpAuthDialog::Observer,
       public NetworkStateInformer::NetworkStateInformerObserver {
  public:
   using TView = GaiaView;
@@ -152,9 +155,6 @@ class GaiaScreenHandler
   void LoadGaiaAsync(const AccountId& account_id) override;
   void Show() override;
   void Hide() override;
-  void SetGaiaPath(GaiaPath gaia_path) override;
-  GaiaPath GetGaiaPath() override;
-  void ShowAllowlistCheckFailedError() override;
   void ReloadGaiaAuthenticator() override;
   void SetReauthRequestToken(const std::string& reauth_request_token) override;
   void ShowEnrollmentNudge(const std::string& email_domain) override;
@@ -166,8 +166,10 @@ class GaiaScreenHandler
                                const std::string& services) override;
 
   void SetQuickStartEnabled() override;
+  void SetIsGaiaPasswordRequired(bool is_required) override;
 
   void Reset() override;
+  base::WeakPtr<GaiaView> AsWeakPtr() override;
 
   // SecurityTokenPinDialogHost:
   void ShowSecurityTokenPinDialog(
@@ -176,7 +178,7 @@ class GaiaScreenHandler
       bool enable_user_input,
       chromeos::security_token_pin::ErrorLabel error_label,
       int attempts_left,
-      const absl::optional<AccountId>& authenticating_user_account_id,
+      const std::optional<AccountId>& authenticating_user_account_id,
       SecurityTokenPinEnteredCallback pin_entered_callback,
       SecurityTokenPinDialogClosedCallback pin_dialog_closed_callback) override;
   void CloseSecurityTokenPinDialog() override;
@@ -241,7 +243,10 @@ class GaiaScreenHandler
 
   // WebUI message handlers.
   void HandleWebviewLoadAborted(int error_code);
-  void HandleCompleteAuthentication(
+
+  // Handles Authenticator's 'completeAuthentication' event and gathers all the
+  // data into `OnlineSigninArtifacts` and fetches cookies.
+  void HandleCompleteAuthenticationEvent(
       const std::string& gaia_id,
       const std::string& email,
       const std::string& password,
@@ -251,6 +256,22 @@ class GaiaScreenHandler
       bool services_provided,
       const base::Value::Dict& password_attributes,
       const base::Value::Dict& sync_trusted_vault_keys);
+
+  // Intermediate step when cookies are received. The cookies are added into
+  // their final location within `OnlineSigninArtifacts` and then passed to
+  // `CompleteAuthentication`.
+  void CompleteAuthWithCookies(ash::login::OnlineSigninArtifacts artifacts,
+                               login::GaiaCookiesData gaia_cookies);
+
+  // Final step of the `completeAuthentication` flow.
+  // TODO(b/292242156) - Move to OnlineAuthenticationScreen
+  void CompleteAuthentication(ash::login::OnlineSigninArtifacts artifacts);
+
+  // Utility method gathering all the metrics that are being recorded when Gaia
+  // sends 'completeAuthentication'.
+  void RecordCompleteAuthenticationMetrics(
+      const ash::login::OnlineSigninArtifacts& artifacts);
+
   void HandleCompleteLogin(const std::string& gaia_id,
                            const std::string& typed_email,
                            const std::string& password,
@@ -269,7 +290,7 @@ class GaiaScreenHandler
 
   void HandleGaiaUIReady();
 
-  void HandleAuthExtensionLoaded();
+  void HandleAuthenticatorLoaded();
 
   // Allows WebUI to control the login shelf's guest and apps buttons visibility
   // during OOBE.
@@ -289,6 +310,9 @@ class GaiaScreenHandler
   void HandlePasswordEntered();
 
   void HandleShowLoadingTimeoutError();
+
+  // Called when Gaia sends us a "getDeviceId" message.
+  void HandleGetDeviceId(const std::string& callback_id);
 
   // Really handles the complete login message.
   void DoCompleteLogin(const std::string& gaia_id,
@@ -312,23 +336,26 @@ class GaiaScreenHandler
   void SetSAMLPrincipalsAPIUsed(bool is_third_party_idp, bool is_api_used);
 
   void RecordScrapedPasswordCount(int password_count);
-  bool IsSamlUserPasswordless();
+
+  // True when client certificates were used during authentication. This is only
+  // used for SmartCards and only when using SAML.
+  bool ClientCertificatesWereUsed();
 
   // Shows signin screen after dns cache and cookie cleanup operations finish.
   void ShowGaiaScreenIfReady();
 
   // Tells webui to load authentication extension. `force` is used to force the
   // extension reloading, if it has already been loaded.
-  void LoadAuthExtension(bool force);
+  void LoadAuthenticator(bool force);
 
   void UpdateStateInternal(NetworkError::ErrorReason reason, bool force_update);
   void HideOfflineMessage(NetworkStateInformer::State state,
                           NetworkError::ErrorReason reason);
 
-  // content::NotificationObserver implementation:
-  void Observe(int type,
-               const content::NotificationSource& source,
-               const content::NotificationDetails& details) override;
+  // HttpAuthDialog::Observer implementation:
+  void HttpAuthDialogShown(content::WebContents* web_contents) override;
+  void HttpAuthDialogCancelled(content::WebContents* web_contents) override;
+  void HttpAuthDialogSupplied(content::WebContents* web_contents) override;
 
   // Returns true if current visible screen is the Gaia sign-in page.
   bool IsGaiaVisible();
@@ -351,12 +378,6 @@ class GaiaScreenHandler
   FrameState frame_state() const { return frame_state_; }
   net::Error frame_error() const { return frame_error_; }
 
-  // Returns user canonical e-mail. Finds already used account alias, if
-  // user has already signed in.
-  AccountId GetAccountId(const std::string& authenticated_email,
-                         const std::string& id,
-                         const AccountType& account_type) const;
-
   void OnCookieWaitTimeout();
 
   bool is_security_token_pin_dialog_running() const {
@@ -366,9 +387,6 @@ class GaiaScreenHandler
   // Assigns new SamlChallengeKeyHandler object or an object for testing to
   // `saml_challenge_key_handler_`.
   void CreateSamlChallengeKeyHandler();
-
-  void SAMLConfirmPassword(::login::StringList scraped_saml_passwords,
-                           std::unique_ptr<UserContext> user_context);
 
   // Current state of Gaia frame.
   FrameState frame_state_ = FRAME_STATE_UNKNOWN;
@@ -444,8 +462,6 @@ class GaiaScreenHandler
   // canceled by the user.
   bool was_security_token_pin_canceled_ = false;
 
-  GaiaPath gaia_path_ = GaiaPath::kDefault;
-
   bool hidden_ = true;
 
   // Used to record amount of time user needed for successful online login.
@@ -459,7 +475,7 @@ class GaiaScreenHandler
   std::unique_ptr<SamlChallengeKeyHandler> saml_challenge_key_handler_;
   std::unique_ptr<SamlChallengeKeyHandler> saml_challenge_key_handler_for_test_;
 
-  std::unique_ptr<OnlineLoginHelper> online_login_helper_;
+  std::unique_ptr<GaiaCookieRetriever> gaia_cookie_retriever_;
 
   // Network state informer used to keep signin screen up.
   scoped_refptr<NetworkStateInformer> network_state_informer_;
@@ -472,7 +488,8 @@ class GaiaScreenHandler
   base::CancelableOnceCallback<void()> update_state_callback_;
   base::CancelableOnceCallback<void()> connecting_callback_;
 
-  content::NotificationRegistrar registrar_;
+  // Once Lacros is shipped, this will no longer be necessary.
+  std::unique_ptr<HttpAuthDialog::ScopedEnabler> enable_ash_httpauth_;
 
   // Whether we're currently ignoring network state updates because a proxy auth
   // UI pending (or we're waiting for a grace period after the proxy auth UI is
@@ -500,6 +517,8 @@ class GaiaScreenHandler
   base::TimeDelta offline_timeout_ = base::Seconds(1);
 
   std::unique_ptr<ErrorScreensHistogramHelper> histogram_helper_;
+
+  bool is_gaia_password_required_ = false;
 
   base::WeakPtrFactory<GaiaScreenHandler> weak_factory_{this};
 };

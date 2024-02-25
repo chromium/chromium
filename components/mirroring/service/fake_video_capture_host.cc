@@ -64,6 +64,9 @@ void FakeVideoCaptureHost::SendOneFrame(const gfx::Size& size,
     return;
 
   auto shmem = base::ReadOnlySharedMemoryRegion::Create(5000);
+  if (!shmem.IsValid()) {
+    return;
+  }
   memset(shmem.mapping.memory(), 125, 5000);
   observer_->OnNewBuffer(
       0, media::mojom::VideoBufferHandle::NewReadOnlyShmemRegion(
@@ -76,7 +79,7 @@ void FakeVideoCaptureHost::SendOneFrame(const gfx::Size& size,
              base::TimeDelta(), metadata, media::PIXEL_FORMAT_I420, size,
              gfx::Rect(size), kNotPremapped, gfx::ColorSpace::CreateREC709(),
              nullptr));
-  observer_->OnBufferReady(std::move(buffer), {});
+  observer_->OnBufferReady(std::move(buffer));
 }
 
 media::VideoCaptureParams FakeVideoCaptureHost::GetVideoCaptureParams() const {

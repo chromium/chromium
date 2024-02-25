@@ -102,13 +102,8 @@ bool WebContentsCaptureClient::EncodeBitmap(const SkBitmap& bitmap,
   if (!encoded)
     return false;
 
-  base::StringPiece stream_as_string(reinterpret_cast<const char*>(data.data()),
-                                     data.size());
-
-  base::Base64Encode(stream_as_string, base64_result);
-  base64_result->insert(
-      0, base::StringPrintf("data:%s;base64,", mime_type.c_str()));
-
+  *base64_result = base::StringPrintf("data:%s;base64,", mime_type.c_str());
+  base::Base64EncodeAppend(data, base64_result);
   return true;
 }
 

@@ -4,7 +4,9 @@
 
 #include "chrome/browser/lacros/web_app_provider_bridge_lacros.h"
 
+#include "base/files/file_path.h"
 #include "base/functional/bind.h"
+#include "base/functional/callback_helpers.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/apps/app_service/webapk/webapk_utils.h"
 #include "chrome/browser/browser_process.h"
@@ -18,19 +20,34 @@
 #include "chrome/browser/web_applications/web_app_command_manager.h"
 #include "chrome/browser/web_applications/web_app_command_scheduler.h"
 #include "chrome/browser/web_applications/web_app_constants.h"
-#include "chrome/browser/web_applications/web_app_id.h"
 #include "chrome/browser/web_applications/web_app_install_finalizer.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
+#include "chrome/browser/web_applications/web_app_ui_manager.h"
 #include "chromeos/crosapi/mojom/web_app_service.mojom.h"
 #include "chromeos/crosapi/mojom/web_app_types.mojom.h"
 #include "chromeos/crosapi/mojom/web_app_types_mojom_traits.h"
 #include "chromeos/lacros/lacros_service.h"
 #include "components/webapps/browser/install_result_code.h"
 #include "components/webapps/browser/installable/installable_metrics.h"
+#include "components/webapps/common/web_app_id.h"
 #include "url/gurl.h"
 
 namespace crosapi {
+
+namespace {
+
+webapps::WebappInstallSource GetInstallSourceForPreload(
+    mojom::PreloadWebAppInstallSource source) {
+  switch (source) {
+    case mojom::PreloadWebAppInstallSource::kOemPreload:
+      return webapps::WebappInstallSource::PRELOADED_OEM;
+    case mojom::PreloadWebAppInstallSource::kDefaultPreload:
+      return webapps::WebappInstallSource::PRELOADED_DEFAULT;
+  }
+}
+
+}  // namespace
 
 WebAppProviderBridgeLacros::WebAppProviderBridgeLacros() {
   auto* service = chromeos::LacrosService::Get();
@@ -88,7 +105,7 @@ void WebAppProviderBridgeLacros::ScheduleNavigateAndTriggerInstallDialog(
       /*can_trigger_fre=*/true);
 }
 
-void WebAppProviderBridgeLacros::GetSubAppIds(const web_app::AppId& app_id,
+void WebAppProviderBridgeLacros::GetSubAppIds(const webapps::AppId& app_id,
                                               GetSubAppIdsCallback callback) {
   LoadMainProfile(base::BindOnce(&WebAppProviderBridgeLacros::GetSubAppIdsImpl,
                                  app_id, std::move(callback)),
@@ -109,6 +126,15 @@ void WebAppProviderBridgeLacros::InstallPreloadWebApp(
   LoadMainProfile(
       base::BindOnce(&WebAppProviderBridgeLacros::InstallPreloadWebAppImpl,
                      std::move(preload_install_info), std::move(callback)),
+      /*can_trigger_fre=*/false);
+}
+
+void WebAppProviderBridgeLacros::LaunchIsolatedWebAppInstaller(
+    const base::FilePath& bundle_path) {
+  LoadMainProfile(
+      base::BindOnce(
+          &WebAppProviderBridgeLacros::LaunchIsolatedWebAppInstallerImpl,
+          bundle_path),
       /*can_trigger_fre=*/false);
 }
 
@@ -146,7 +172,7 @@ void WebAppProviderBridgeLacros::WebAppUninstalledInArcImpl(
     Profile* profile) {
   DCHECK(profile);
   auto* provider = web_app::WebAppProvider::GetForWebApps(profile);
-  provider->scheduler().RemoveInstallSource(
+  provider->scheduler().RemoveInstallManagementMaybeUninstall(
       app_id, web_app::WebAppManagement::kWebAppStore,
       webapps::WebappUninstallSource::kArc, std::move(callback));
 }
@@ -180,21 +206,22 @@ void WebAppProviderBridgeLacros::ScheduleNavigateAndTriggerInstallDialogImpl(
 }
 
 // static
-void WebAppProviderBridgeLacros::GetSubAppIdsImpl(const web_app::AppId& app_id,
+void WebAppProviderBridgeLacros::GetSubAppIdsImpl(const webapps::AppId& app_id,
                                                   GetSubAppIdsCallback callback,
                                                   Profile* profile) {
   DCHECK(profile);
   auto* provider = web_app::WebAppProvider::GetForWebApps(profile);
 
-  provider->scheduler().ScheduleCallbackWithLock<web_app::AppLock>(
-      "WebAppServiceAsh::GetSubApps",
-      std::make_unique<web_app::AppLockDescription>(app_id),
+  provider->scheduler().ScheduleCallbackWithResult(
+      "WebAppServiceAsh::GetSubApps", web_app::AppLockDescription(app_id),
       base::BindOnce(
-          [](web_app::AppId app_id, web_app::AppLock& lock) {
+          [](const webapps::AppId& app_id, web_app::AppLock& lock,
+             base::Value::Dict&) {
             return lock.registrar().GetAllSubAppIds(app_id);
           },
-          app_id)
-          .Then(std::move(callback)));
+          app_id),
+      std::move(callback),
+      /*arg_for_shutdown=*/std::vector<webapps::AppId>());
 }
 
 // static
@@ -205,27 +232,40 @@ void WebAppProviderBridgeLacros::GetSubAppToParentMapImpl(
   auto* provider = web_app::WebAppProvider::GetForWebApps(profile);
   CHECK(provider);
 
-  provider->scheduler().ScheduleCallbackWithLock<web_app::AllAppsLock>(
+  provider->scheduler().ScheduleCallbackWithResult(
       "WebAppProviderBridgeLacros::GetSubAppToParentMap",
-      std::make_unique<web_app::AllAppsLockDescription>(),
-      base::BindOnce([](web_app::AllAppsLock& lock) {
+      web_app::AllAppsLockDescription(),
+      base::BindOnce([](web_app::AllAppsLock& lock, base::Value::Dict&) {
         return lock.registrar().GetSubAppToParentMap();
-      }).Then(std::move(callback)));
+      }),
+      std::move(callback),
+      /*arg_for_shutdown=*/base::flat_map<webapps::AppId, webapps::AppId>());
 }
 
 // static
 void WebAppProviderBridgeLacros::InstallPreloadWebAppImpl(
     mojom::PreloadWebAppInstallInfoPtr preload_install_info,
-    InstallPreloadWebAppCallback callback, Profile * profile) {
+    InstallPreloadWebAppCallback callback,
+    Profile* profile) {
   CHECK(profile);
   auto* provider = web_app::WebAppProvider::GetForWebApps(profile);
 
   provider->command_manager().ScheduleCommand(
       std::make_unique<web_app::InstallPreloadedVerifiedAppCommand>(
-          webapps::WebappInstallSource::PRELOADED_OEM,
+          GetInstallSourceForPreload(preload_install_info->install_source),
           preload_install_info->document_url,
           preload_install_info->manifest_url, preload_install_info->manifest,
           preload_install_info->expected_app_id, std::move(callback)));
+}
+
+// static
+void WebAppProviderBridgeLacros::LaunchIsolatedWebAppInstallerImpl(
+    const base::FilePath& bundle_path,
+    Profile* profile) {
+  CHECK(profile);
+  auto* provider = web_app::WebAppProvider::GetForWebApps(profile);
+
+  provider->ui_manager().LaunchOrFocusIsolatedWebAppInstaller(bundle_path);
 }
 
 }  // namespace crosapi

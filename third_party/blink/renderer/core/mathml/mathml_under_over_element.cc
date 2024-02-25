@@ -11,11 +11,11 @@ MathMLUnderOverElement::MathMLUnderOverElement(const QualifiedName& tagName,
                                                Document& document)
     : MathMLScriptsElement(tagName, document) {}
 
-absl::optional<bool> MathMLUnderOverElement::Accent() const {
+std::optional<bool> MathMLUnderOverElement::Accent() const {
   return BooleanAttribute(mathml_names::kAccentAttr);
 }
 
-absl::optional<bool> MathMLUnderOverElement::AccentUnder() const {
+std::optional<bool> MathMLUnderOverElement::AccentUnder() const {
   return BooleanAttribute(mathml_names::kAccentunderAttr);
 }
 

@@ -728,16 +728,18 @@ ScriptPromise Cache::match(ScriptState* script_state,
   return MatchImpl(script_state, request_object, options, exception_state);
 }
 
-ScriptPromise Cache::matchAll(ScriptState* script_state,
-                              ExceptionState& exception_state) {
+ScriptPromiseTyped<IDLSequence<Response>> Cache::matchAll(
+    ScriptState* script_state,
+    ExceptionState& exception_state) {
   return MatchAllImpl(script_state, nullptr, CacheQueryOptions::Create(),
                       exception_state);
 }
 
-ScriptPromise Cache::matchAll(ScriptState* script_state,
-                              const V8RequestInfo* request,
-                              const CacheQueryOptions* options,
-                              ExceptionState& exception_state) {
+ScriptPromiseTyped<IDLSequence<Response>> Cache::matchAll(
+    ScriptState* script_state,
+    const V8RequestInfo* request,
+    const CacheQueryOptions* options,
+    ExceptionState& exception_state) {
   Request* request_object = nullptr;
   if (request) {
     switch (request->GetContentType()) {
@@ -748,7 +750,7 @@ ScriptPromise Cache::matchAll(ScriptState* script_state,
         request_object = Request::Create(
             script_state, request->GetAsUSVString(), exception_state);
         if (exception_state.HadException())
-          return ScriptPromise();
+          return ScriptPromiseTyped<IDLSequence<Response>>();
         break;
     }
   }
@@ -795,10 +797,10 @@ ScriptPromise Cache::addAll(ScriptState* script_state,
                     exception_state);
 }
 
-ScriptPromise Cache::Delete(ScriptState* script_state,
-                            const V8RequestInfo* request,
-                            const CacheQueryOptions* options,
-                            ExceptionState& exception_state) {
+ScriptPromiseTyped<IDLBoolean> Cache::Delete(ScriptState* script_state,
+                                             const V8RequestInfo* request,
+                                             const CacheQueryOptions* options,
+                                             ExceptionState& exception_state) {
   DCHECK(request);
   Request* request_object = nullptr;
   switch (request->GetContentType()) {
@@ -809,7 +811,7 @@ ScriptPromise Cache::Delete(ScriptState* script_state,
       request_object = Request::Create(script_state, request->GetAsUSVString(),
                                        exception_state);
       if (exception_state.HadException())
-        return ScriptPromise();
+        return ScriptPromiseTyped<IDLBoolean>();
       break;
   }
   return DeleteImpl(script_state, request_object, options, exception_state);
@@ -856,16 +858,18 @@ ScriptPromise Cache::put(ScriptState* script_state,
   return promise;
 }
 
-ScriptPromise Cache::keys(ScriptState* script_state,
-                          ExceptionState& exception_state) {
+ScriptPromiseTyped<IDLSequence<Request>> Cache::keys(
+    ScriptState* script_state,
+    ExceptionState& exception_state) {
   return KeysImpl(script_state, nullptr, CacheQueryOptions::Create(),
                   exception_state);
 }
 
-ScriptPromise Cache::keys(ScriptState* script_state,
-                          const V8RequestInfo* request,
-                          const CacheQueryOptions* options,
-                          ExceptionState& exception_state) {
+ScriptPromiseTyped<IDLSequence<Request>> Cache::keys(
+    ScriptState* script_state,
+    const V8RequestInfo* request,
+    const CacheQueryOptions* options,
+    ExceptionState& exception_state) {
   Request* request_object = nullptr;
   if (request) {
     switch (request->GetContentType()) {
@@ -876,7 +880,7 @@ ScriptPromise Cache::keys(ScriptState* script_state,
         request_object = Request::Create(
             script_state, request->GetAsUSVString(), exception_state);
         if (exception_state.HadException())
-          return ScriptPromise();
+          return ScriptPromiseTyped<IDLSequence<Request>>();
         break;
     }
   }
@@ -998,13 +1002,15 @@ ScriptPromise Cache::MatchImpl(ScriptState* script_state,
   return promise;
 }
 
-ScriptPromise Cache::MatchAllImpl(ScriptState* script_state,
-                                  const Request* request,
-                                  const CacheQueryOptions* options,
-                                  ExceptionState& exception_state) {
-  auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(
-      script_state, exception_state.GetContext());
-  const ScriptPromise promise = resolver->Promise();
+ScriptPromiseTyped<IDLSequence<Response>> Cache::MatchAllImpl(
+    ScriptState* script_state,
+    const Request* request,
+    const CacheQueryOptions* options,
+    ExceptionState& exception_state) {
+  auto* resolver =
+      MakeGarbageCollected<ScriptPromiseResolverTyped<IDLSequence<Response>>>(
+          script_state, exception_state.GetContext());
+  const auto promise = resolver->Promise();
 
   mojom::blink::CacheQueryOptionsPtr mojo_options =
       mojom::blink::CacheQueryOptions::From(options);
@@ -1032,7 +1038,8 @@ ScriptPromise Cache::MatchAllImpl(ScriptState* script_state,
       std::move(fetch_api_request), std::move(mojo_options), trace_id,
       resolver->WrapCallbackInScriptScope(WTF::BindOnce(
           [](base::TimeTicks start_time, const CacheQueryOptions* options,
-             int64_t trace_id, Cache* _, ScriptPromiseResolver* resolver,
+             int64_t trace_id, Cache* _,
+             ScriptPromiseResolverTyped<IDLSequence<Response>>* resolver,
              mojom::blink::MatchAllResultPtr result) {
             UMA_HISTOGRAM_LONG_TIMES(
                 "ServiceWorkerCache.Cache.Renderer.MatchAll",
@@ -1093,20 +1100,10 @@ ScriptPromise Cache::AddAllImpl(ScriptState* script_state,
   for (wtf_size_t i = 0; i < request_list.size(); ++i) {
     auto* init = RequestInit::Create();
     if (barrier_callback->Signal()) {
-      if (RuntimeEnabledFeatures::AbortSignalAnyEnabled()) {
-        HeapVector<Member<AbortSignal>> signals;
-        signals.push_back(barrier_callback->Signal());
-        signals.push_back(request_list[i]->signal());
-        init->setSignal(
-            MakeGarbageCollected<AbortSignal>(script_state, signals));
-      } else {
-        // Chain the AbortSignal objects together so the requests will abort if
-        // the |barrier_callback| encounters an error.
-        if (barrier_callback->Signal()) {
-          request_list[i]->signal()->Follow(script_state,
-                                            barrier_callback->Signal());
-        }
-      }
+      HeapVector<Member<AbortSignal>> signals;
+      signals.push_back(barrier_callback->Signal());
+      signals.push_back(request_list[i]->signal());
+      init->setSignal(MakeGarbageCollected<AbortSignal>(script_state, signals));
     }
 
     V8RequestInfo* info = MakeGarbageCollected<V8RequestInfo>(request_list[i]);
@@ -1131,13 +1128,14 @@ ScriptPromise Cache::AddAllImpl(ScriptState* script_state,
   return promise;
 }
 
-ScriptPromise Cache::DeleteImpl(ScriptState* script_state,
-                                const Request* request,
-                                const CacheQueryOptions* options,
-                                ExceptionState& exception_state) {
-  auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(
+ScriptPromiseTyped<IDLBoolean> Cache::DeleteImpl(
+    ScriptState* script_state,
+    const Request* request,
+    const CacheQueryOptions* options,
+    ExceptionState& exception_state) {
+  auto* resolver = MakeGarbageCollected<ScriptPromiseResolverTyped<IDLBoolean>>(
       script_state, exception_state.GetContext());
-  const ScriptPromise promise = resolver->Promise();
+  const auto promise = resolver->Promise();
 
   Vector<mojom::blink::BatchOperationPtr> batch_operations;
   batch_operations.push_back(mojom::blink::BatchOperation::New());
@@ -1165,7 +1163,8 @@ ScriptPromise Cache::DeleteImpl(ScriptState* script_state,
       std::move(batch_operations), trace_id,
       resolver->WrapCallbackInScriptScope(WTF::BindOnce(
           [](base::TimeTicks start_time, const CacheQueryOptions* options,
-             int64_t trace_id, Cache* _, ScriptPromiseResolver* resolver,
+             int64_t trace_id, Cache* _,
+             ScriptPromiseResolverTyped<IDLBoolean>* resolver,
              mojom::blink::CacheStorageVerboseErrorPtr error) {
             UMA_HISTOGRAM_LONG_TIMES(
                 "ServiceWorkerCache.Cache.Renderer.DeleteOne",
@@ -1252,13 +1251,15 @@ void Cache::PutImpl(ScriptPromiseResolver* resolver,
   }
 }
 
-ScriptPromise Cache::KeysImpl(ScriptState* script_state,
-                              const Request* request,
-                              const CacheQueryOptions* options,
-                              ExceptionState& exception_state) {
-  auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(
-      script_state, exception_state.GetContext());
-  const ScriptPromise promise = resolver->Promise();
+ScriptPromiseTyped<IDLSequence<Request>> Cache::KeysImpl(
+    ScriptState* script_state,
+    const Request* request,
+    const CacheQueryOptions* options,
+    ExceptionState& exception_state) {
+  auto* resolver =
+      MakeGarbageCollected<ScriptPromiseResolverTyped<IDLSequence<Request>>>(
+          script_state, exception_state.GetContext());
+  const auto promise = resolver->Promise();
 
   mojom::blink::CacheQueryOptionsPtr mojo_options =
       mojom::blink::CacheQueryOptions::From(options);
@@ -1275,7 +1276,7 @@ ScriptPromise Cache::KeysImpl(ScriptState* script_state,
 
   if (request && request->method() != http_names::kGET &&
       !options->ignoreMethod()) {
-    resolver->Resolve(HeapVector<Member<Response>>());
+    resolver->Resolve(HeapVector<Member<Request>>());
     return promise;
   }
 
@@ -1286,7 +1287,8 @@ ScriptPromise Cache::KeysImpl(ScriptState* script_state,
       std::move(fetch_api_request), std::move(mojo_options), trace_id,
       resolver->WrapCallbackInScriptScope(WTF::BindOnce(
           [](base::TimeTicks start_time, const CacheQueryOptions* options,
-             int64_t trace_id, Cache* _, ScriptPromiseResolver* resolver,
+             int64_t trace_id, Cache* _,
+             ScriptPromiseResolverTyped<IDLSequence<Request>>* resolver,
              mojom::blink::CacheKeysResultPtr result) {
             UMA_HISTOGRAM_LONG_TIMES("ServiceWorkerCache.Cache.Renderer.Keys",
                                      base::TimeTicks::Now() - start_time);

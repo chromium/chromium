@@ -7,17 +7,15 @@
 #include "ash/constants/notifier_catalogs.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/user_metrics.h"
-#include "chromeos/constants/chromeos_features.h"
 #include "chromeos/strings/grit/chromeos_strings.h"
 #include "chromeos/ui/base/nudge_util.h"
-#include "chromeos/ui/base/tablet_state.h"
-#include "chromeos/ui/wm/features.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "ui/aura/client/screen_position_client.h"
 #include "ui/aura/window.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/compositor/layer.h"
 #include "ui/display/screen.h"
+#include "ui/display/tablet_state.h"
 #include "ui/gfx/geometry/transform_util.h"
 #include "ui/views/animation/animation_builder.h"
 #include "ui/views/background.h"
@@ -77,7 +75,7 @@ std::unique_ptr<views::Widget> CreateWidget(aura::Window* window) {
   params.parent = window->parent();
 
   auto widget = std::make_unique<views::Widget>(std::move(params));
-  const int message_id = TabletState::Get()->InTabletMode()
+  const int message_id = display::Screen::GetScreen()->InTabletMode()
                              ? IDS_TABLET_MULTITASK_MENU_NUDGE_TEXT
                              : IDS_MULTITASK_MENU_NUDGE_TEXT;
 
@@ -103,10 +101,7 @@ std::unique_ptr<views::Widget> CreateWidget(aura::Window* window) {
   contents_view->SetBackground(views::CreateThemedRoundedRectBackground(
       ui::kColorSysSurface3, corner_radius));
   contents_view->SetBorder(std::make_unique<views::HighlightBorder>(
-      corner_radius,
-      chromeos::features::IsJellyrollEnabled()
-          ? views::HighlightBorder::Type::kHighlightBorderOnShadow
-          : views::HighlightBorder::Type::kHighlightBorder1));
+      corner_radius, views::HighlightBorder::Type::kHighlightBorderOnShadow));
 
   widget->SetContentsView(std::move(contents_view));
   return widget;
@@ -169,8 +164,7 @@ void MultitaskMenuNudgeController::MaybeShowNudge(aura::Window* window,
     return;
   }
 
-  if (!chromeos::wm::features::IsWindowLayoutMenuEnabled() ||
-      g_suppress_nudge_for_testing || nudge_widget_) {
+  if (g_suppress_nudge_for_testing || nudge_widget_) {
     return;
   }
 
@@ -190,7 +184,7 @@ void MultitaskMenuNudgeController::MaybeShowNudge(aura::Window* window,
   // are owned by the frame which also owns `this`. They can be passed safely on
   // tablet since tablet is controlled by ash which is sync.
   g_delegate_instance->GetNudgePreferences(
-      TabletState::Get()->InTabletMode(),
+      display::Screen::GetScreen()->InTabletMode(),
       base::BindOnce(&MultitaskMenuNudgeController::OnGetPreferences,
                      weak_ptr_factory_.GetWeakPtr(), window, anchor_view));
 }
@@ -335,20 +329,31 @@ void MultitaskMenuNudgeController::OnGetPreferences(
     aura::Window* window,
     views::View* anchor_view,
     bool tablet_mode,
-    int shown_count,
-    base::Time last_shown_time) {
+    std::optional<PrefValues> values) {
+  if (!values) {
+    LOG(WARNING) << "Unable to fetch preferences.";
+    return;
+  }
+
   // Tablet state has changed since we fetched preferences.
-  if (tablet_mode != TabletState::Get()->InTabletMode()) {
+  if (tablet_mode != display::Screen::GetScreen()->InTabletMode()) {
+    return;
+  }
+
+  // The nudge is already been shown for this window. This can happen in
+  // lacros, where prefs are read and written to async. In ash, the prefs will
+  // be updated before the next read, so this cannot happen.
+  if (window_) {
     return;
   }
 
   // Nudge has already been shown three times. No need to educate anymore.
-  if (shown_count >= kNudgeMaxShownCount) {
+  if (values->show_count >= kNudgeMaxShownCount) {
     return;
   }
 
   // Nudge has been shown within the last 24 hours already.
-  if ((GetTime() - last_shown_time) < kNudgeTimeBetweenShown) {
+  if ((GetTime() - values->last_shown_time) < kNudgeTimeBetweenShown) {
     return;
   }
 
@@ -408,7 +413,7 @@ void MultitaskMenuNudgeController::OnGetPreferences(
       .SetOpacity(layer, 1.0f, gfx::Tween::LINEAR);
 
   // Update the preferences.
-  g_delegate_instance->SetNudgePreferences(tablet_mode, shown_count + 1,
+  g_delegate_instance->SetNudgePreferences(tablet_mode, values->show_count + 1,
                                            GetTime());
 
   // No need to update pulse or start timer in tablet mode.
@@ -442,7 +447,7 @@ void MultitaskMenuNudgeController::UpdateWidgetAndPulse() {
   CHECK(window_);
   CHECK(nudge_widget_);
 
-  const bool tablet_mode = TabletState::Get()->InTabletMode();
+  const bool tablet_mode = display::Screen::GetScreen()->InTabletMode();
   if (!tablet_mode) {
     CHECK(pulse_layer_);
     CHECK(anchor_view_);

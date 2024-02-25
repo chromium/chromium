@@ -63,7 +63,7 @@ bool FEFlood::SetFloodOpacity(float flood_opacity) {
 sk_sp<PaintFilter> FEFlood::CreateImageFilter() {
   SkColor4f color = flood_color_;
   color.fA *= flood_opacity_;
-  absl::optional<PaintFilter::CropRect> crop_rect = GetCropRect();
+  std::optional<PaintFilter::CropRect> crop_rect = GetCropRect();
   return sk_make_sp<ColorFilterPaintFilter>(
       cc::ColorFilter::MakeBlend(color, SkBlendMode::kSrc), nullptr,
       base::OptionalToPtr(crop_rect));

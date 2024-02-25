@@ -5,16 +5,15 @@
 #import "ios/chrome/browser/ui/bring_android_tabs/bring_android_tabs_test_utils.h"
 
 #import "base/strings/sys_string_conversions.h"
-#import "ios/chrome/browser/bring_android_tabs/features.h"
-#import "ios/chrome/browser/signin/fake_system_identity.h"
+#import "ios/chrome/browser/signin/model/fake_system_identity.h"
 #import "ios/chrome/browser/ui/authentication/signin_earl_grey.h"
 #import "ios/chrome/browser/ui/authentication/signin_earl_grey_ui_test_util.h"
 #import "ios/chrome/browser/ui/bring_android_tabs/bring_android_tabs_app_interface.h"
 #import "ios/chrome/browser/ui/bring_android_tabs/bring_android_tabs_test_session.h"
 #import "ios/chrome/browser/ui/bring_android_tabs/constants.h"
+#import "ios/chrome/browser/ui/first_run/first_run_app_interface.h"
 #import "ios/chrome/common/ui/promo_style/constants.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey.h"
-#import "ios/chrome/test/earl_grey/chrome_earl_grey_app_interface.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey_ui.h"
 #import "ios/testing/earl_grey/app_launch_configuration.h"
 #import "ios/testing/earl_grey/app_launch_manager.h"
@@ -47,8 +46,7 @@ void TapPromoStyleButton(NSString* buttonIdentifier) {
 
 }  // namespace
 
-AppLaunchConfiguration GetConfiguration(BOOL is_android_switcher,
-                                        BOOL show_bottom_message) {
+AppLaunchConfiguration GetConfiguration(BOOL is_android_switcher) {
   AppLaunchConfiguration config;
   config.additional_args.push_back("-FirstRunForceEnabled");
   config.additional_args.push_back("true");
@@ -56,9 +54,6 @@ AppLaunchConfiguration GetConfiguration(BOOL is_android_switcher,
     config.additional_args.push_back("-ForceExperienceForDeviceSwitcher");
     config.additional_args.push_back("AndroidPhone");
   }
-  config.additional_args.push_back(
-      "--enable-features=" + std::string(kBringYourOwnTabsIOS.name) + ":" +
-      kBringYourOwnTabsIOSParam + (show_bottom_message ? "/true" : "/false"));
   // Relaunch app at each test to rewind the startup state.
   config.relaunch_policy = ForceRelaunchByCleanShutdown;
   return config;
@@ -74,6 +69,10 @@ void CompleteFREWithSyncEnabled(BOOL sync) {
                            : kPromoStyleSecondaryActionAccessibilityIdentifier);
   // Default browser promo dismissal.
   TapPromoStyleButton(kPromoStyleSecondaryActionAccessibilityIdentifier);
+  // Omnibox position choice promo dismissal.
+  if ([FirstRunAppInterface isOmniboxPositionChoiceEnabled]) {
+    TapPromoStyleButton(kPromoStylePrimaryActionAccessibilityIdentifier);
+  }
   if (sync) {
     [ChromeEarlGrey
         waitForSyncTransportStateActiveWithTimeout:kSyncOperationTimeout];
@@ -104,20 +103,6 @@ void VerifyConfirmationAlertPromptVisibility(BOOL visibility) {
                                    : grey_notVisible()];
 }
 
-void VerifyBottomMessagePromptVisibility(BOOL visibility) {
-  // SwiftUI is tricky with accessibility... hence this workaround.
-  [[EarlGrey selectElementWithMatcher:
-                 grey_accessibilityID(
-                     kBringAndroidTabsPromptBottomMessageCloseButtonAXId)]
-      assertWithMatcher:visibility ? grey_sufficientlyVisible()
-                                   : grey_notVisible()];
-  [[EarlGrey selectElementWithMatcher:
-                 grey_accessibilityID(
-                     kBringAndroidTabsPromptBottomMessageReviewButtonAXId)]
-      assertWithMatcher:visibility ? grey_sufficientlyVisible()
-                                   : grey_notVisible()];
-}
-
 void VerifyTabListPromptVisibility(BOOL visibility) {
   [[EarlGrey selectElementWithMatcher:grey_accessibilityID(
                                           kBringAndroidTabsPromptTabListAXId)]
@@ -129,28 +114,21 @@ int GetTabCountOnPrompt() {
   return [BringAndroidTabsAppInterface tabsCountForPrompt];
 }
 
-void VerifyThatPromptDoesNotShowOnRestart(BOOL bottom_message,
-                                          const GURL& test_server) {
-  AppLaunchConfiguration config =
-      GetConfiguration(/*is_android_switcher=*/YES,
-                       /*show_bottom_message=*/bottom_message);
+void VerifyThatPromptDoesNotShowOnRestart(const GURL& test_server) {
+  AppLaunchConfiguration config = GetConfiguration(/*is_android_switcher=*/YES);
   [[AppLaunchManager sharedManager] ensureAppLaunchedWithConfiguration:config];
   AddSessionToFakeSyncServerFromTestServer(
       BringAndroidTabsTestSession::kRecentFromAndroidPhone, test_server);
   CompleteFREWithSyncEnabled(YES);
   [ChromeEarlGreyUI openTabGrid];
-  if (bottom_message) {
-    VerifyBottomMessagePromptVisibility(NO);
-  } else {
-    VerifyConfirmationAlertPromptVisibility(NO);
-  }
+  VerifyConfirmationAlertPromptVisibility(NO);
 }
 
 void CleanUp() {
   [SigninEarlGrey signOut];
   [ChromeEarlGrey waitForSyncEngineInitialized:NO
                                    syncTimeout:kSyncOperationTimeout];
-  [ChromeEarlGrey clearSyncServerData];
-  [ChromeEarlGreyAppInterface
-      clearUserPrefWithName:@"ios.bring_android_tabs.prompt_displayed"];
+  [ChromeEarlGrey clearFakeSyncServerData];
+  [ChromeEarlGrey
+      clearUserPrefWithName:"ios.bring_android_tabs.prompt_displayed"];
 }

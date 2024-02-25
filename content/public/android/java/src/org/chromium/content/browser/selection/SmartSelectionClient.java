@@ -13,9 +13,10 @@ import android.view.textclassifier.TextClassifier;
 import androidx.annotation.IntDef;
 import androidx.annotation.Nullable;
 
-import org.chromium.base.annotations.CalledByNative;
-import org.chromium.base.annotations.JNINamespace;
-import org.chromium.base.annotations.NativeMethods;
+import org.jni_zero.CalledByNative;
+import org.jni_zero.JNINamespace;
+import org.jni_zero.NativeMethods;
+
 import org.chromium.content_public.browser.SelectAroundCaretResult;
 import org.chromium.content_public.browser.SelectionClient;
 import org.chromium.content_public.browser.SelectionEventProcessor;
@@ -110,8 +111,8 @@ public class SmartSelectionClient implements SelectionClient {
     @Override
     public void cancelAllRequests() {
         if (mNativeSmartSelectionClient != 0) {
-            SmartSelectionClientJni.get().cancelAllRequests(
-                    mNativeSmartSelectionClient, SmartSelectionClient.this);
+            SmartSelectionClientJni.get()
+                    .cancelAllRequests(mNativeSmartSelectionClient, SmartSelectionClient.this);
         }
 
         mProvider.cancelAllRequests();
@@ -143,8 +144,12 @@ public class SmartSelectionClient implements SelectionClient {
             return;
         }
 
-        SmartSelectionClientJni.get().requestSurroundingText(mNativeSmartSelectionClient,
-                SmartSelectionClient.this, NUM_EXTRA_CHARS, callbackData);
+        SmartSelectionClientJni.get()
+                .requestSurroundingText(
+                        mNativeSmartSelectionClient,
+                        SmartSelectionClient.this,
+                        NUM_EXTRA_CHARS,
+                        callbackData);
     }
 
     @CalledByNative
@@ -175,7 +180,7 @@ public class SmartSelectionClient implements SelectionClient {
         // Returns false when device is not provisioned, i.e. before a new device went through
         // signup process.
         return Settings.Global.getInt(
-                       context.getContentResolver(), Settings.Global.DEVICE_PROVISIONED, 0)
+                        context.getContentResolver(), Settings.Global.DEVICE_PROVISIONED, 0)
                 != 0;
     }
 
@@ -186,8 +191,13 @@ public class SmartSelectionClient implements SelectionClient {
     @NativeMethods
     interface Natives {
         long init(SmartSelectionClient caller, WebContents webContents);
-        void requestSurroundingText(long nativeSmartSelectionClient, SmartSelectionClient caller,
-                int numExtraCharacters, int callbackData);
+
+        void requestSurroundingText(
+                long nativeSmartSelectionClient,
+                SmartSelectionClient caller,
+                int numExtraCharacters,
+                int callbackData);
+
         void cancelAllRequests(long nativeSmartSelectionClient, SmartSelectionClient caller);
     }
 }

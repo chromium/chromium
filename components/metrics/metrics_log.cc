@@ -63,11 +63,14 @@ using base::SampleCountIterator;
 namespace metrics {
 
 LogMetadata::LogMetadata()
-    : samples_count(absl::nullopt), user_id(absl::nullopt) {}
+    : samples_count(std::nullopt), user_id(std::nullopt) {}
 LogMetadata::LogMetadata(
-    const absl::optional<base::HistogramBase::Count> samples_count,
-    const absl::optional<uint64_t> user_id)
-    : samples_count(samples_count), user_id(user_id) {}
+    const std::optional<base::HistogramBase::Count> samples_count,
+    const std::optional<uint64_t> user_id,
+    const std::optional<metrics::UkmLogSourceType> log_source_type)
+    : samples_count(samples_count),
+      user_id(user_id),
+      log_source_type(log_source_type) {}
 LogMetadata::LogMetadata(const LogMetadata& other) = default;
 LogMetadata::~LogMetadata() = default;
 
@@ -124,7 +127,7 @@ void RecordCurrentTime(
     // Ask for a new time zone object each time; don't cache it, as time zones
     // may change while Chrome is running.
     std::unique_ptr<icu::TimeZone> time_zone(icu::TimeZone::createDefault());
-    time_zone->getOffset(now.ToDoubleT() * base::Time::kMillisecondsPerSecond,
+    time_zone->getOffset(now.InMillisecondsFSinceUnixEpoch(),
                          false,  // interpret |now| as from UTC/GMT
                          raw_offset, dst_offset, status);
     base::TimeDelta time_zone_offset =
@@ -369,16 +372,7 @@ void MetricsLog::RecordCoreSystemProfile(
   if (!app_os_arch.empty())
     hardware->set_app_cpu_architecture(app_os_arch);
   hardware->set_system_ram_mb(base::SysInfo::AmountOfPhysicalMemoryMB());
-#if BUILDFLAG(IS_IOS)
-  // Remove any trailing null characters.
-  // TODO(crbug/1247379): Verify that this is WAI. If so, inline this into
-  // iOS's implementation of HardwareModelName().
-  const std::string hardware_class = base::SysInfo::HardwareModelName();
-  hardware->set_hardware_class(
-      hardware_class.substr(0, strlen(hardware_class.c_str())));
-#else
   hardware->set_hardware_class(base::SysInfo::HardwareModelName());
-#endif  // BUILDFLAG(IS_IOS)
 #if BUILDFLAG(IS_WIN)
   hardware->set_dll_base(reinterpret_cast<uint64_t>(CURRENT_MODULE()));
 #endif
@@ -556,7 +550,7 @@ MetricsLog::GetCurrentClockTime(bool record_time_zone) {
 void MetricsLog::FinalizeLog(
     bool truncate_events,
     const std::string& current_app_version,
-    absl::optional<ChromeUserMetricsExtension::RealLocalTime> close_time,
+    std::optional<ChromeUserMetricsExtension::RealLocalTime> close_time,
     std::string* encoded_log) {
   if (truncate_events)
     TruncateEvents();
@@ -615,8 +609,6 @@ void MetricsLog::TruncateEvents() {
   }
 
   if (uma_proto_.omnibox_event_size() > internal::kOmniboxEventLimit) {
-    UMA_HISTOGRAM_COUNTS_100000("UMA.TruncatedEvents.Omnibox",
-                                uma_proto_.omnibox_event_size());
     uma_proto_.mutable_omnibox_event()->DeleteSubrange(
         internal::kOmniboxEventLimit,
         uma_proto_.omnibox_event_size() - internal::kOmniboxEventLimit);

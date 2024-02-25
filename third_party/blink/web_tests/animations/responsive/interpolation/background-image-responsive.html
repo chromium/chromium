@@ -8,14 +8,14 @@ assertCSSResponsive({
   configurations: [{
     state: {underlying: 'url("test://a")'},
     expect: [
-      {at: 0.25, is: '-webkit-cross-fade(url("test://a"), url("test://to"), 0.25)'},
-      {at: 0.75, is: '-webkit-cross-fade(url("test://a"), url("test://to"), 0.75)'},
+      {at: 0.25, is: 'cross-fade(75% url("test://a"), url("test://to"))'},
+      {at: 0.75, is: 'cross-fade(25% url("test://a"), url("test://to"))'},
     ],
   }, {
     state: {underlying: 'url("test://b"), url("test://c")'},
     expect: [
-      {at: 0.25, is: '-webkit-cross-fade(url("test://b"), url("test://to"), 0.25), -webkit-cross-fade(url("test://c"), url("test://to"), 0.25)'},
-      {at: 0.75, is: '-webkit-cross-fade(url("test://b"), url("test://to"), 0.75), -webkit-cross-fade(url("test://c"), url("test://to"), 0.75)'},
+      {at: 0.25, is: 'cross-fade(75% url("test://b"), url("test://to")), cross-fade(75% url("test://c"), url("test://to"))'},
+      {at: 0.75, is: 'cross-fade(25% url("test://b"), url("test://to")), cross-fade(25% url("test://c"), url("test://to"))'},
     ],
   }, {
     state: {underlying: 'none'},
@@ -33,14 +33,14 @@ assertCSSResponsive({
   configurations: [{
     state: {inherited: 'url("test://a")'},
     expect: [
-      {at: 0.25, is: '-webkit-cross-fade(url("test://a"), url("test://to"), 0.25)'},
-      {at: 0.75, is: '-webkit-cross-fade(url("test://a"), url("test://to"), 0.75)'},
+      {at: 0.25, is: 'cross-fade(75% url("test://a"), url("test://to"))'},
+      {at: 0.75, is: 'cross-fade(25% url("test://a"), url("test://to"))'},
     ],
   }, {
     state: {inherited: 'url("test://b"), url("test://c")'},
     expect: [
-      {at: 0.25, is: '-webkit-cross-fade(url("test://b"), url("test://to"), 0.25), -webkit-cross-fade(url("test://c"), url("test://to"), 0.25)'},
-      {at: 0.75, is: '-webkit-cross-fade(url("test://b"), url("test://to"), 0.75), -webkit-cross-fade(url("test://c"), url("test://to"), 0.75)'},
+      {at: 0.25, is: 'cross-fade(75% url("test://b"), url("test://to")), cross-fade(75% url("test://c"), url("test://to"))'},
+      {at: 0.75, is: 'cross-fade(25% url("test://b"), url("test://to")), cross-fade(25% url("test://c"), url("test://to"))'},
     ],
   }, {
     state: {inherited: 'none'},

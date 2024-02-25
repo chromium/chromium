@@ -10,6 +10,7 @@
 #include "ash/components/arc/test/connection_holder_util.h"
 #include "ash/components/arc/test/fake_app_instance.h"
 #include "base/command_line.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
 #include "chrome/browser/ash/app_list/arc/arc_app_list_prefs.h"
@@ -126,7 +127,8 @@ bool SyncArcPackageHelper::HasOnlyTestPackages(Profile* profile,
 }
 
 bool SyncArcPackageHelper::AllProfilesHaveSamePackages() {
-  const std::vector<Profile*>& profiles = test_->GetAllProfiles();
+  const std::vector<raw_ptr<Profile, VectorExperimental>>& profiles =
+      test_->GetAllProfiles();
   for (Profile* profile : profiles) {
     if (profile != profiles.front() &&
         !ArcPackagesMatch(profiles.front(), profile)) {
@@ -143,7 +145,8 @@ bool SyncArcPackageHelper::AllProfilesHaveSamePackageDetails() {
     return false;
   }
 
-  const std::vector<Profile*>& profiles = test_->GetAllProfiles();
+  const std::vector<raw_ptr<Profile, VectorExperimental>>& profiles =
+      test_->GetAllProfiles();
   for (Profile* profile : profiles) {
     if (profile != profiles.front() &&
         !ArcPackageDetailsMatch(profiles.front(), profile)) {

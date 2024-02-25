@@ -20,10 +20,13 @@
 #include "media/base/decoder_status.h"
 #include "media/base/media_log.h"
 #include "media/base/media_switches.h"
+#include "media/base/supported_types.h"
 #include "media/base/video_frame.h"
 #include "media/gpu/accelerated_video_decoder.h"
+#include "media/gpu/av1_decoder.h"
 #include "media/gpu/h264_decoder.h"
-#include "media/gpu/mac/video_toolbox_decode_metadata.h"
+#include "media/gpu/mac/video_toolbox_av1_accelerator.h"
+#include "media/gpu/mac/video_toolbox_decompression_metadata.h"
 #include "media/gpu/mac/video_toolbox_h264_accelerator.h"
 #include "media/gpu/mac/video_toolbox_vp9_accelerator.h"
 #include "media/gpu/vp9_decoder.h"
@@ -38,12 +41,14 @@ namespace media {
 
 namespace {
 
+bool SupportsH264() {
+  return VTIsHardwareDecodeSupported(kCMVideoCodecType_H264);
+}
+
 bool InitializeVP9() {
 #if BUILDFLAG(IS_MAC)
   // TODO(crbug.com/1449877): Enable VP9 on iOS.
   if (__builtin_available(macOS 11.0, *)) {
-    // TODO(crbug.com/1331597): Test whether it is necessary to register VP9
-    // before detecting it.
     VTRegisterSupplementalVideoDecoderIfAvailable(kCMVideoCodecType_VP9);
     return VTIsHardwareDecodeSupported(kCMVideoCodecType_VP9);
   }
@@ -54,6 +59,10 @@ bool InitializeVP9() {
 bool SupportsVP9() {
   static const bool initialized = InitializeVP9();
   return initialized;
+}
+
+bool SupportsAV1() {
+  return VTIsHardwareDecodeSupported(kCMVideoCodecType_AV1);
 }
 
 #if BUILDFLAG(ENABLE_HEVC_PARSER_AND_HW_DECODER)
@@ -144,7 +153,10 @@ void VideoToolboxVideoDecoder::Initialize(const VideoDecoderConfig& config,
       break;
     }
   }
-  if (!profile_supported) {
+
+  // If we don't have support support for a given codec, try to initialize
+  // anyways -- otherwise we're certain to fail playback.
+  if (!profile_supported && IsBuiltInVideoCodec(config.codec())) {
     task_runner_->PostTask(
         FROM_HERE, base::BindOnce(std::move(init_cb),
                                   DecoderStatus::Codes::kUnsupportedProfile));
@@ -184,7 +196,17 @@ void VideoToolboxVideoDecoder::Initialize(const VideoDecoderConfig& config,
     case VideoCodec::kVP9:
       accelerator_ = std::make_unique<VP9Decoder>(
           std::make_unique<VideoToolboxVP9Accelerator>(
-              media_log_->Clone(), std::move(accelerator_decode_cb),
+              media_log_->Clone(), config.hdr_metadata(),
+              std::move(accelerator_decode_cb),
+              std::move(accelerator_output_cb)),
+          config.profile(), config.color_space_info());
+      break;
+
+    case VideoCodec::kAV1:
+      accelerator_ = std::make_unique<AV1Decoder>(
+          std::make_unique<VideoToolboxAV1Accelerator>(
+              media_log_->Clone(), config.hdr_metadata(),
+              std::move(accelerator_decode_cb),
               std::move(accelerator_output_cb)),
           config.profile(), config.color_space_info());
       break;
@@ -253,14 +275,12 @@ void VideoToolboxVideoDecoder::Decode(scoped_refptr<DecoderBuffer> buffer,
     switch (result) {
       case AcceleratedVideoDecoder::kDecodeError:
       case AcceleratedVideoDecoder::kRanOutOfSurfaces:
-      case AcceleratedVideoDecoder::kNeedContextUpdate:
       case AcceleratedVideoDecoder::kTryAgain:
         // More specific reasons are logged to the media log.
         NotifyError(DecoderStatus::Codes::kMalformedBitstream);
         return;
 
       case AcceleratedVideoDecoder::kConfigChange:
-      case AcceleratedVideoDecoder::kColorSpaceChange:
         continue;
 
       case AcceleratedVideoDecoder::kRanOutOfStreamData:
@@ -303,7 +323,9 @@ void VideoToolboxVideoDecoder::ResetInternal(DecoderStatus status) {
     decode_cbs_.pop();
   }
 
-  accelerator_->Reset();
+  if (accelerator_) {
+    accelerator_->Reset();
+  }
   video_toolbox_.Reset();
   output_queue_.Reset(status);
 
@@ -325,6 +347,7 @@ void VideoToolboxVideoDecoder::ReleaseDecodeCallbacks() {
 
 void VideoToolboxVideoDecoder::OnAcceleratorDecode(
     base::apple::ScopedCFTypeRef<CMSampleBufferRef> sample,
+    VideoToolboxDecompressionSessionMetadata session_metadata,
     scoped_refptr<CodecPicture> picture) {
   DVLOG(4) << __func__;
   DCHECK(active_decode_);
@@ -336,12 +359,21 @@ void VideoToolboxVideoDecoder::OnAcceleratorDecode(
   metadata->aspect_ratio = config_.aspect_ratio();
   metadata->color_space = accelerator_->GetVideoColorSpace().ToGfxColorSpace();
   if (!metadata->color_space.IsValid()) {
+    // Note: It is expected that the accelerated video decoders are already
+    // doing something similar, since the config color space is being provided
+    // to them.
     metadata->color_space = config_.color_space_info().ToGfxColorSpace();
   }
+
   metadata->hdr_metadata = accelerator_->GetHDRMetadata();
   if (!metadata->hdr_metadata) {
+    // Note: The VP9 accelerator contains this same logic so that the format
+    // description can include HDR metadata (there is no in-band HDR metadata
+    // in VP9). The other accelerators use only in-band HDR metadata.
     metadata->hdr_metadata = config_.hdr_metadata();
   }
+
+  metadata->session_metadata = session_metadata;
 
   video_toolbox_.Decode(std::move(sample), std::move(metadata));
 }
@@ -418,7 +450,7 @@ VideoToolboxVideoDecoder::GetSupportedVideoDecoderConfigs(
   // TODO(crbug.com/1331597): Test support for other H.264 profiles.
   // TODO(crbug.com/1331597): Exclude resolutions that are not accelerated.
   // TODO(crbug.com/1331597): Check if higher resolutions are supported.
-  if (!gpu_workarounds.disable_accelerated_h264_decode) {
+  if (!gpu_workarounds.disable_accelerated_h264_decode && SupportsH264()) {
     supported.emplace_back(
         /*profile_min=*/H264PROFILE_BASELINE,
         /*profile_max=*/H264PROFILE_HIGH,
@@ -445,6 +477,17 @@ VideoToolboxVideoDecoder::GetSupportedVideoDecoderConfigs(
           /*allow_encrypted=*/false,
           /*require_encrypted=*/false);
     }
+  }
+
+  if (base::FeatureList::IsEnabled(kVideoToolboxAv1Decoding) &&
+      !gpu_workarounds.disable_accelerated_av1_decode && SupportsAV1()) {
+    supported.emplace_back(
+        /*profile_min=*/AV1PROFILE_PROFILE_MAIN,
+        /*profile_max=*/AV1PROFILE_PROFILE_MAIN,
+        /*coded_size_min=*/gfx::Size(16, 16),
+        /*coded_size_max=*/gfx::Size(8192, 8192),
+        /*allow_encrypted=*/false,
+        /*require_encrypted=*/false);
   }
 
 #if BUILDFLAG(ENABLE_HEVC_PARSER_AND_HW_DECODER)

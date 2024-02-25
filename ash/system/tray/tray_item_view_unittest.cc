@@ -56,7 +56,7 @@ class TrayItemViewAnimationWaiter {
 
   // The tray item whose animation is being waited for. Owned by the views
   // hierarchy.
-  raw_ptr<TrayItemView, ExperimentalAsh> tray_item_ = nullptr;
+  raw_ptr<TrayItemView> tray_item_ = nullptr;
 
   base::RunLoop run_loop_;
 
@@ -85,12 +85,21 @@ class TrayItemViewTest : public AshTestBase {
   void SetUp() override {
     AshTestBase::SetUp();
 
+    // Create a hosting widget with non empty bounds so that it actually draws.
     widget_ = CreateFramelessTestWidget();
+    widget_->SetBounds(gfx::Rect(0, 0, 100, 80));
     widget_->Show();
     tray_item_ = widget_->SetContentsView(
         std::make_unique<TestTrayItemView>(GetPrimaryShelf()));
     tray_item_->CreateImageView();
     tray_item_->SetVisible(true);
+
+    // Warms up the compositor so that UI changes are picked up in time before
+    // throughput tracker is stopped.
+    ui::Compositor* const compositor =
+        tray_item()->GetWidget()->GetCompositor();
+    compositor->ScheduleFullRedraw();
+    ASSERT_TRUE(ui::WaitForNextFrameToBePresented(compositor));
   }
 
   void TearDown() override {
@@ -104,10 +113,27 @@ class TrayItemViewTest : public AshTestBase {
     TrayItemViewAnimationWaiter waiter(tray_item());
     waiter.Wait();
 
-    // Ensure there is one more frame presented after animation finishes to
-    // allow animation throughput data to be passed from cc to ui.
-    EXPECT_TRUE(ui::WaitForNextFrameToBePresented(
-        tray_item()->GetWidget()->GetCompositor()));
+    // Force frames and wait for all throughput trackers to be gone to allow
+    // animation throughput data to be passed from cc to ui.
+    ui::Compositor* const compositor =
+        tray_item()->GetWidget()->GetCompositor();
+    while (compositor->has_throughput_trackers_for_testing()) {
+      compositor->ScheduleFullRedraw();
+      std::ignore = ui::WaitForNextFrameToBePresented(compositor,
+                                                      base::Milliseconds(500));
+    }
+  }
+
+  // Helper function that waits for `tray_item()` opacity to change to a value
+  // different from `opacity`.
+  void WaitForAnimationChangeOpacityFrom(float opacity) {
+    ASSERT_TRUE(tray_item()->IsAnimating());
+
+    ui::Compositor* const compositor =
+        tray_item()->GetWidget()->GetCompositor();
+    while (tray_item()->layer()->opacity() == opacity) {
+      ASSERT_TRUE(ui::WaitForNextFrameToBePresented(compositor));
+    }
   }
 
   views::Widget* widget() { return widget_.get(); }
@@ -117,8 +143,7 @@ class TrayItemViewTest : public AshTestBase {
   std::unique_ptr<views::Widget> widget_;
 
   // Owned by `widget`:
-  raw_ptr<TrayItemView, DanglingUntriaged | ExperimentalAsh> tray_item_ =
-      nullptr;
+  raw_ptr<TrayItemView, DanglingUntriaged> tray_item_ = nullptr;
 };
 
 // Tests that scheduling a `TrayItemView`'s show animation while its hide
@@ -277,6 +302,11 @@ TEST_F(TrayItemViewTest, HideSmoothnessMetricRecordedWhenHideInterruptsShow) {
   // Start the tray item's "show" animation, but interrupt it with the "hide"
   // animation. Wait for the "hide" animation to complete.
   tray_item()->SetVisible(true);
+
+  // Wait for animation to change opacity to actually draw on screen. Otherwise,
+  // the interrupted animation may end up as a no-op.
+  WaitForAnimationChangeOpacityFrom(0.0f);
+
   tray_item()->SetVisible(false);
   WaitForAnimation();
 
@@ -298,6 +328,11 @@ TEST_F(TrayItemViewTest, ShowSmoothnessMetricRecordedWhenShowInterruptsHide) {
   // Start the tray item's "hide" animation, but interrupt it with the "show"
   // animation. Wait for the "show" animation to complete.
   tray_item()->SetVisible(false);
+
+  // Wait for animation to change opacity to actually draw on screen. Otherwise,
+  // the interrupted animation may end up as a no-op.
+  WaitForAnimationChangeOpacityFrom(1.0f);
+
   tray_item()->SetVisible(true);
   WaitForAnimation();
 

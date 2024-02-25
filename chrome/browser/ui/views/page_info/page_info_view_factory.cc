@@ -144,33 +144,33 @@ std::unique_ptr<views::View> PageInfoViewFactory::CreateSecurityPageView() {
 }
 
 std::unique_ptr<views::View> PageInfoViewFactory::CreatePermissionPageView(
-    ContentSettingsType type) {
+    ContentSettingsType type,
+    content::WebContents* web_contents) {
   return std::make_unique<PageInfoSubpageView>(
       CreateSubpageHeader(PageInfoUI::PermissionTypeToUIString(type),
                           presenter_->GetSubjectNameForDisplay()),
       std::make_unique<PageInfoPermissionContentView>(presenter_, ui_delegate_,
-                                                      type));
+                                                      type, web_contents));
 }
 
 std::unique_ptr<views::View>
 PageInfoViewFactory::CreateAdPersonalizationPageView() {
-  const auto header_id =
-      base::FeatureList::IsEnabled(privacy_sandbox::kPrivacySandboxSettings4)
-          ? IDS_PAGE_INFO_AD_PRIVACY_HEADER
-          : IDS_PAGE_INFO_AD_PERSONALIZATION_HEADER;
   return std::make_unique<PageInfoSubpageView>(
-      CreateSubpageHeader(l10n_util::GetStringUTF16(header_id),
-                          presenter_->GetSubjectNameForDisplay()),
+      CreateSubpageHeader(
+          l10n_util::GetStringUTF16(IDS_PAGE_INFO_AD_PRIVACY_HEADER),
+          presenter_->GetSubjectNameForDisplay()),
       std::make_unique<PageInfoAdPersonalizationContentView>(presenter_,
                                                              ui_delegate_));
 }
 
-// TODO(crbug.com/1346305): Use translatable strings instead of hardcoded one.
 std::unique_ptr<views::View> PageInfoViewFactory::CreateCookiesPageView() {
+  const std::u16string title_label =
+      ui_delegate_->IsTrackingProtection3pcdEnabled()
+          ? l10n_util::GetStringUTF16(
+                IDS_PAGE_INFO_SUB_PAGE_VIEW_TRACKING_PROTECTION_HEADER)
+          : l10n_util::GetStringUTF16(IDS_PAGE_INFO_COOKIES_HEADER);
   return std::make_unique<PageInfoSubpageView>(
-      CreateSubpageHeader(
-          l10n_util::GetStringUTF16(IDS_PAGE_INFO_COOKIES_HEADER),
-          presenter_->GetSubjectNameForDisplay()),
+      CreateSubpageHeader(title_label, presenter_->GetSubjectNameForDisplay()),
       std::make_unique<PageInfoCookiesContentView>(presenter_));
 }
 
@@ -222,6 +222,7 @@ std::unique_ptr<views::View> PageInfoViewFactory::CreateSubpageHeader(
     title_label->SetTextStyle(views::style::STYLE_HEADLINE_4);
   }
   title_label->SetHorizontalAlignment(gfx::ALIGN_LEFT);
+  title_label->SetID(VIEW_ID_PAGE_INFO_SUBPAGE_TITLE);
 
   if (!subtitle.empty()) {
     auto* subtitle_label =
@@ -253,8 +254,12 @@ const ui::ImageModel PageInfoViewFactory::GetPermissionIcon(
   ContentSetting setting = info.setting == CONTENT_SETTING_DEFAULT
                                ? info.default_setting
                                : info.setting;
+
+  // For guard content settings and Automatic Picture-in-Picture, ASK is treated
+  // as an "on" state.
   const bool show_blocked_badge =
-      !permissions::PermissionUtil::IsGuardContentSetting(info.type)
+      (!permissions::PermissionUtil::IsGuardContentSetting(info.type) &&
+       info.type != ContentSettingsType::AUTO_PICTURE_IN_PICTURE)
           ? setting == CONTENT_SETTING_BLOCK || setting == CONTENT_SETTING_ASK
           : setting == CONTENT_SETTING_BLOCK;
 
@@ -265,8 +270,8 @@ const ui::ImageModel PageInfoViewFactory::GetPermissionIcon(
     const gfx::VectorIcon* icon = nullptr;
     switch (info.type) {
       case ContentSettingsType::COOKIES:
-        icon = show_blocked_badge ? &vector_icons::kCookieOffChromeRefreshIcon
-                                  : &vector_icons::kCookieChromeRefreshIcon;
+        icon = show_blocked_badge ? &vector_icons::kDatabaseOffIcon
+                                  : &vector_icons::kDatabaseIcon;
         break;
       case ContentSettingsType::FEDERATED_IDENTITY_API:
         icon = show_blocked_badge
@@ -410,7 +415,7 @@ const ui::ImageModel PageInfoViewFactory::GetPermissionIcon(
   const gfx::VectorIcon* icon = &gfx::kNoneIcon;
   switch (info.type) {
     case ContentSettingsType::COOKIES:
-      icon = &vector_icons::kCookieIcon;
+      icon = &vector_icons::kDatabaseIcon;
       break;
     case ContentSettingsType::FEDERATED_IDENTITY_API:
       icon = &vector_icons::kAccountCircleIcon;
@@ -498,8 +503,10 @@ const ui::ImageModel PageInfoViewFactory::GetPermissionIcon(
       icon = &vector_icons::kStorageAccessIcon;
       break;
     case ContentSettingsType::AUTO_PICTURE_IN_PICTURE:
-      // TODO(https://crbug.com/1471051): Use real icon.
-      icon = &vector_icons::kSelectWindowIcon;
+      icon = &vector_icons::kPictureInPictureIcon;
+      break;
+    case ContentSettingsType::AUTOMATIC_FULLSCREEN:
+      icon = &kFullscreenIcon;
       break;
     default:
       // All other |ContentSettingsType|s do not have icons on desktop or are
@@ -680,6 +687,13 @@ const ui::ImageModel PageInfoViewFactory::GetBlockingThirdPartyCookiesIcon() {
   return GetImageModel(features::IsChromeRefresh2023()
                            ? views::kEyeCrossedRefreshIcon
                            : views::kEyeCrossedIcon);
+}
+
+// static
+const ui::ImageModel PageInfoViewFactory::GetCookiesAndSiteDataIcon() {
+  return GetImageModel(features::IsChromeRefresh2023()
+                           ? vector_icons::kCookieChromeRefreshIcon
+                           : vector_icons::kCookieIcon);
 }
 
 // static

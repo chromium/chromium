@@ -178,8 +178,6 @@ void CloseAllChromeProcesses(const base::FilePath& target_path) {
   ProcessPathPrefixFilter target_path_filter(target_path.value());
   base::CleanupProcesses(installer::kChromeExe, base::TimeDelta(),
                          content::RESULT_CODE_HUNG, &target_path_filter);
-  base::CleanupProcesses(installer::kNaClExe, base::TimeDelta(),
-                         content::RESULT_CODE_HUNG, &target_path_filter);
 }
 
 // Updates shortcuts to |old_target_exe| that have non-empty args, making them

@@ -5,6 +5,7 @@
 #ifndef GPU_COMMAND_BUFFER_SERVICE_SHARED_IMAGE_OZONE_IMAGE_BACKING_FACTORY_H_
 #define GPU_COMMAND_BUFFER_SERVICE_SHARED_IMAGE_OZONE_IMAGE_BACKING_FACTORY_H_
 
+#include <optional>
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/scoped_refptr.h"
@@ -13,7 +14,6 @@
 #include "gpu/config/gpu_driver_bug_workarounds.h"
 #include "gpu/config/gpu_preferences.h"
 #include "gpu/gpu_gles2_export.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace gpu {
 class SharedContextState;
@@ -24,8 +24,7 @@ class GPU_GLES2_EXPORT OzoneImageBackingFactory
     : public SharedImageBackingFactory {
  public:
   explicit OzoneImageBackingFactory(SharedContextState* shared_context_state,
-                                    const GpuDriverBugWorkarounds& workarounds,
-                                    const GpuPreferences& gpu_preferences);
+                                    const GpuDriverBugWorkarounds& workarounds);
 
   ~OzoneImageBackingFactory() override;
 
@@ -97,6 +96,8 @@ class GPU_GLES2_EXPORT OzoneImageBackingFactory
                    GrContextType gr_context_type,
                    base::span<const uint8_t> pixel_data) override;
 
+  SharedImageBackingType GetBackingType() override;
+
  private:
   bool CanImportNativePixmapToVulkan();
   bool CanVulkanSynchronizeGpuFence();
@@ -105,7 +106,6 @@ class GPU_GLES2_EXPORT OzoneImageBackingFactory
 
   const raw_ptr<SharedContextState> shared_context_state_;
   const GpuDriverBugWorkarounds workarounds_;
-  bool use_passthrough_;
 
   // This method optionally takes BufferUsage as a parameter.
   // TODO(crbug.com/1467584) : BufferUsage will be eventually merged into
@@ -119,7 +119,8 @@ class GPU_GLES2_EXPORT OzoneImageBackingFactory
       GrSurfaceOrigin surface_origin,
       SkAlphaType alpha_type,
       uint32_t usage,
-      absl::optional<gfx::BufferUsage> buffer_usage = absl::nullopt);
+      std::string debug_label,
+      std::optional<gfx::BufferUsage> buffer_usage = std::nullopt);
 };
 
 }  // namespace gpu

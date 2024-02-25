@@ -14,9 +14,7 @@ import org.chromium.base.ContextUtils;
 
 import java.io.File;
 
-/**
- * Utilities for translating a file into content URI.
- */
+/** Utilities for translating a file into content URI. */
 public class FileProviderHelper implements ContentUriUtils.FileProviderUtil {
     // Keep this variable in sync with the value defined in file_paths.xml.
     private static final String API_AUTHORITY_SUFFIX = ".FileProvider";

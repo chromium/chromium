@@ -8,17 +8,26 @@
 #include "base/base_paths.h"
 #include "base/files/file_util.h"
 #include "base/path_service.h"
+#include "base/strings/utf_string_conversions.h"
+#include "base/test/metrics/histogram_tester.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/threading/thread_restrictions.h"
+#include "content/public/browser/browser_context.h"
+#include "content/public/browser/permission_controller.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/content_browser_test.h"
 #include "content/public/test/content_browser_test_utils.h"
+#include "content/public/test/permissions_test_utils.h"
 #include "content/shell/browser/shell.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
+#include "third_party/blink/public/common/features.h"
+#include "third_party/blink/public/common/permissions/permission_utils.h"
 #include "ui/base/clipboard/clipboard_buffer.h"
 #include "ui/base/clipboard/file_info.h"
 #include "ui/base/clipboard/scoped_clipboard_writer.h"
 #include "ui/base/clipboard/test/test_clipboard.h"
+#include "url/origin.h"
 
 namespace content {
 
@@ -32,16 +41,20 @@ class ClipboardHostImplBrowserTest : public ContentBrowserTest {
   };
 
   void SetUp() override {
-    ASSERT_TRUE(embedded_test_server()->Start());
+    ASSERT_TRUE(embedded_https_test_server().Start());
     ui::TestClipboard::CreateForCurrentThread();
     ContentBrowserTest::SetUp();
   }
 
   void TearDown() override { ContentBrowserTest::TearDown(); }
 
+  RenderFrameHost* GetRenderFrameHost() {
+    return ToRenderFrameHost(shell()->web_contents()).render_frame_host();
+  }
+
   void CopyPasteFiles(std::vector<File> files) {
-    ASSERT_TRUE(
-        NavigateToURL(shell(), embedded_test_server()->GetURL("/title1.html")));
+    ASSERT_TRUE(NavigateToURL(
+        shell(), embedded_https_test_server().GetURL("/title1.html")));
     // Create a promise that will resolve on paste with comma-separated
     // '<name>:<type>:<b64-content>' of each file on the clipboard.
     ASSERT_TRUE(
@@ -71,7 +84,8 @@ class ClipboardHostImplBrowserTest : public ContentBrowserTest {
 
     // Put files on clipboard.
     base::FilePath source_root;
-    ASSERT_TRUE(base::PathService::Get(base::DIR_SOURCE_ROOT, &source_root));
+    ASSERT_TRUE(
+        base::PathService::Get(base::DIR_SRC_TEST_DATA_ROOT, &source_root));
     std::vector<std::string> expected;
     std::vector<ui::FileInfo> file_infos;
     std::vector<std::u16string> file_paths;
@@ -120,6 +134,154 @@ IN_PROC_BROWSER_TEST_F(ClipboardHostImplBrowserTest, Multiple) {
       File{"hello.txt", "text/plain"},
       File{"small.jpg", "image/jpeg"},
   });
+}
+
+class ClipboardDocUrlBrowserTestP : public ClipboardHostImplBrowserTest,
+                                    public testing::WithParamInterface<bool> {
+ public:
+  ClipboardDocUrlBrowserTestP() {
+    scoped_feature_list_.InitWithFeatureState(
+        blink::features::kClipboardWellFormedHtmlSanitizationWrite, GetParam());
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+INSTANTIATE_TEST_SUITE_P(ClipboardDocUrlBrowserTests,
+                         ClipboardDocUrlBrowserTestP,
+                         testing::Values(true, false));
+
+IN_PROC_BROWSER_TEST_P(ClipboardDocUrlBrowserTestP, HtmlUrl) {
+  GURL main_url(embedded_https_test_server().GetURL("/title1.html"));
+  ASSERT_TRUE(NavigateToURL(shell(), main_url));
+  PermissionController* permission_controller =
+      GetRenderFrameHost()->GetBrowserContext()->GetPermissionController();
+  url::Origin origin = url::Origin::Create(main_url);
+  SetPermissionControllerOverrideForDevTools(
+      permission_controller, origin,
+      blink::PermissionType::CLIPBOARD_SANITIZED_WRITE,
+      blink::mojom::PermissionStatus::GRANTED);
+  base::RunLoop loop;
+  ASSERT_TRUE(ExecJs(
+      shell(),
+      " const format1 = 'text/html';"
+      " const textInput = '<p>Hello</p>';"
+      " const blobInput1 = new Blob([textInput], {type: format1});"
+      " const clipboardItemInput = new ClipboardItem({[format1]: blobInput1});"
+      " navigator.clipboard.write([clipboardItemInput]);"));
+  loop.RunUntilIdle();
+  // Read HTML format to check that the URL is populated correctly during
+  // write().
+  std::u16string html;
+  std::string src_url;
+  uint32_t fragment_start;
+  uint32_t fragment_end;
+  ui::Clipboard::GetForCurrentThread()->ReadHTML(
+      ui::ClipboardBuffer::kCopyPaste, nullptr, &html, &src_url,
+      &fragment_start, &fragment_end);
+  EXPECT_EQ(src_url, main_url.spec());
+}
+
+class ClipboardBrowserTest : public ClipboardHostImplBrowserTest {
+ public:
+  ClipboardBrowserTest() {
+    scoped_feature_list_.InitWithFeatureState(
+        blink::features::kEmptyClipboardRead, /*enabled*/ true);
+  }
+
+  void SetPermissionOverrideForAsyncClipboardTests(
+      blink::mojom::PermissionStatus status) {
+    content::PermissionController* permission_controller =
+        GetRenderFrameHost()->GetBrowserContext()->GetPermissionController();
+    url::Origin origin = url::Origin::Create(
+        embedded_https_test_server().GetURL("/title1.html"));
+    SetPermissionControllerOverrideForDevTools(
+        permission_controller, origin,
+        blink::PermissionType::CLIPBOARD_READ_WRITE, status);
+  }
+
+  void SetPermissionOverrideForStrictlyProcessedWriteTests(
+      blink::mojom::PermissionStatus status) {
+    content::PermissionController* permission_controller =
+        GetRenderFrameHost()->GetBrowserContext()->GetPermissionController();
+    url::Origin origin = url::Origin::Create(
+        embedded_https_test_server().GetURL("/title1.html"));
+    SetPermissionControllerOverrideForDevTools(
+        permission_controller, origin,
+        blink::PermissionType::CLIPBOARD_SANITIZED_WRITE, status);
+  }
+
+  void NavigateAndSetFocusToPage() {
+    ASSERT_TRUE(NavigateToURL(
+        shell(), embedded_https_test_server().GetURL("/title1.html")));
+    shell()->web_contents()->Focus();
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(ClipboardBrowserTest, EmptyClipboard) {
+  base::HistogramTester histogram_tester;
+  NavigateAndSetFocusToPage();
+  SetPermissionOverrideForAsyncClipboardTests(
+      blink::mojom::PermissionStatus::GRANTED);
+  ui::Clipboard::GetForCurrentThread()->Clear(ui::ClipboardBuffer::kCopyPaste);
+  ASSERT_TRUE(ExecJs(shell(), " navigator.clipboard.read()"));
+  content::FetchHistogramsFromChildProcesses();
+  histogram_tester.ExpectBucketCount("Blink.Clipboard.Read.NumberOfFormats", 0,
+                                     1);
+}
+
+IN_PROC_BROWSER_TEST_F(ClipboardBrowserTest, NumberOfFormatsOnRead) {
+  base::HistogramTester histogram_tester;
+  NavigateAndSetFocusToPage();
+  SetPermissionOverrideForAsyncClipboardTests(
+      blink::mojom::PermissionStatus::GRANTED);
+  ui::Clipboard::GetForCurrentThread()->Clear(ui::ClipboardBuffer::kCopyPaste);
+  ASSERT_TRUE(ExecJs(shell(), " navigator.clipboard.read()"));
+  SetPermissionOverrideForStrictlyProcessedWriteTests(
+      blink::mojom::PermissionStatus::GRANTED);
+  ASSERT_TRUE(ExecJs(
+      shell(),
+      " const format1 = 'text/html';"
+      " const textInput = '<p>Hello</p>';"
+      " const blobInput1 = new Blob([textInput], {type: format1});"
+      " const clipboardItemInput = new ClipboardItem({[format1]: blobInput1});"
+      " navigator.clipboard.write([clipboardItemInput]);"));
+  ASSERT_TRUE(ExecJs(shell(), " navigator.clipboard.read()"));
+  content::FetchHistogramsFromChildProcesses();
+  histogram_tester.ExpectBucketCount("Blink.Clipboard.Read.NumberOfFormats", 0,
+                                     1);
+  histogram_tester.ExpectBucketCount("Blink.Clipboard.Read.NumberOfFormats", 1,
+                                     1);
+}
+
+IN_PROC_BROWSER_TEST_F(ClipboardBrowserTest, CopyPasteHtmlOnMac) {
+  NavigateAndSetFocusToPage();
+  base::RunLoop loop;
+  // Execute copy command to select the content of the body element.
+  ASSERT_TRUE(ExecJs(shell(),
+                     " document.execCommand('selectAll');"
+                     " document.execCommand('copy')"));
+  loop.RunUntilIdle();
+  // Get the HTML content from the clipboard and check that meta tag is added.
+  std::u16string html;
+  std::string url;
+  uint32_t ignore_offsets;
+  ui::Clipboard::GetForCurrentThread()->ReadHTML(
+      ui::ClipboardBuffer::kCopyPaste, nullptr, &html, &url, &ignore_offsets,
+      &ignore_offsets);
+// The meta tag is added only on Mac. See AddMetaCharsetTagToHtmlOnMac for
+// details.
+#if BUILDFLAG(IS_MAC)
+  EXPECT_TRUE(base::UTF16ToUTF8(html).find("<meta charset=\"utf-8\">") !=
+              std::string::npos);
+#else
+  EXPECT_TRUE(base::UTF16ToUTF8(html).find("<meta charset=\"utf-8\">") ==
+              std::string::npos);
+#endif
 }
 
 }  // namespace content

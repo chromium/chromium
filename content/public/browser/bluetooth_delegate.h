@@ -116,7 +116,7 @@ class CONTENT_EXPORT BluetoothDelegate {
       const std::u16string& device_identifier,
       PairPromptCallback callback,
       PairingKind pairing_kind,
-      const absl::optional<std::u16string>& pin) = 0;
+      const std::optional<std::u16string>& pin) = 0;
 
   // This should return the WebBluetoothDeviceId that corresponds to the device
   // with |device_address| in the current |frame|. If there is not a

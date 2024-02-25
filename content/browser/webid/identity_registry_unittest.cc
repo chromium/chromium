@@ -28,7 +28,7 @@ class TestFederatedIdentityModalDialogViewDelegate
  public:
   bool closed_{false};
 
-  void NotifyClose() override { closed_ = true; }
+  void OnClose() override { closed_ = true; }
 
   base::WeakPtr<TestFederatedIdentityModalDialogViewDelegate> GetWeakPtr() {
     return weak_ptr_factory_.GetWeakPtr();
@@ -50,17 +50,20 @@ class IdentityRegistryTest : public RenderViewHostImplTestHarness {
     test_delegate_ =
         std::make_unique<TestFederatedIdentityModalDialogViewDelegate>();
 
-    IdentityRegistry::CreateForWebContents(web_contents(),
-                                           test_delegate_->GetWeakPtr(),
-                                           url::Origin::Create(GURL(kIdpUrl)));
+    IdentityRegistry::CreateForWebContents(
+        web_contents(), test_delegate_->GetWeakPtr(), GURL(kIdpUrl));
     identity_registry_ = IdentityRegistry::FromWebContents(web_contents());
 
     static_cast<TestWebContents*>(web_contents())
         ->NavigateAndCommit(GURL(kRpUrl), ui::PAGE_TRANSITION_LINK);
   }
+  void TearDown() override {
+    identity_registry_ = nullptr;
+    RenderViewHostImplTestHarness::TearDown();
+  }
 
   std::unique_ptr<TestFederatedIdentityModalDialogViewDelegate> test_delegate_;
-  raw_ptr<IdentityRegistry, DanglingUntriaged> identity_registry_;
+  raw_ptr<IdentityRegistry> identity_registry_;
 };
 
 // If notifier origin and registry origin are same-origin, modal dialog should

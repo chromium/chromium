@@ -28,10 +28,11 @@ class TestFrameSinkImpl::TestMojoCompositorFrameSink
   void SetNeedsBeginFrame(bool needs_begin_frame) override {}
   void SetWantsAnimateOnlyBeginFrames() override {}
   void SetWantsBeginFrameAcks() override {}
+  void SetAutoNeedsBeginFrame() override {}
   void SubmitCompositorFrame(
       const viz::LocalSurfaceId& local_surface_id,
       viz::CompositorFrame frame,
-      absl::optional<::viz::HitTestRegionList> hit_test_region_list,
+      std::optional<::viz::HitTestRegionList> hit_test_region_list,
       uint64_t submit_time) override {
     did_submit_ = true;
     last_frame_ = std::move(frame);
@@ -40,7 +41,7 @@ class TestFrameSinkImpl::TestMojoCompositorFrameSink
   void SubmitCompositorFrameSync(
       const viz::LocalSurfaceId& local_surface_id,
       viz::CompositorFrame frame,
-      absl::optional<::viz::HitTestRegionList> hit_test_region_list,
+      std::optional<::viz::HitTestRegionList> hit_test_region_list,
       uint64_t submit_time,
       SubmitCompositorFrameSyncCallback callback) override {}
   void DidNotProduceFrame(const viz::BeginFrameAck& ack) override {
@@ -57,7 +58,7 @@ class TestFrameSinkImpl::TestMojoCompositorFrameSink
 #endif
 
   viz::CompositorFrame TakeLastFrame() { return std::move(last_frame_); }
-  const absl::optional<::viz::HitTestRegionList>& hit_test_region_list() const {
+  const std::optional<::viz::HitTestRegionList>& hit_test_region_list() const {
     return hit_test_region_list_;
   }
 
@@ -75,7 +76,7 @@ class TestFrameSinkImpl::TestMojoCompositorFrameSink
 
  private:
   viz::CompositorFrame last_frame_;
-  absl::optional<::viz::HitTestRegionList> hit_test_region_list_;
+  std::optional<::viz::HitTestRegionList> hit_test_region_list_;
   bool did_submit_ = false;
   bool did_not_produce_frame_ = false;
 };
@@ -125,7 +126,7 @@ viz::CompositorFrame TestFrameSinkImpl::TakeLastFrame() {
   return mojo_sink_->TakeLastFrame();
 }
 
-const absl::optional<::viz::HitTestRegionList>&
+const std::optional<::viz::HitTestRegionList>&
 TestFrameSinkImpl::GetLastHitTestRegionList() const {
   return mojo_sink_->hit_test_region_list();
 }

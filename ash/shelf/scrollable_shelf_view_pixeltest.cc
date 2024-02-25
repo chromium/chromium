@@ -10,6 +10,7 @@
 #include "ash/test/pixel/ash_pixel_test_init_params.h"
 #include "base/test/scoped_feature_list.h"
 #include "chromeos/constants/chromeos_features.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/views/controls/menu/menu_item_view.h"
 #include "ui/views/controls/menu/submenu_view.h"
 
@@ -19,7 +20,10 @@ class ScrollableShelfViewPixelRTLTestBase : public ShelfTestBase {
  public:
   // ScrollableShelfTestBase:
   void SetUp() override {
-    scoped_features_.InitAndEnableFeature(chromeos::features::kJelly);
+    scoped_features_.InitWithFeatures({::features::kChromeRefresh2023,
+                                       ::features::kChromeRefreshSecondary2023,
+                                       ::features::kChromeRefresh2023NTB},
+                                      {});
     ShelfTestBase::SetUp();
     AddAppShortcutsUntilOverflow(/*use_alternative_color=*/true);
   }
@@ -33,7 +37,7 @@ class ScrollableShelfViewPixelRTLTest
       public testing::WithParamInterface<bool /*is_rtl=*/> {
  public:
   // ScrollableShelfViewPixelRTLTestBase:
-  absl::optional<pixel_test::InitParams> CreatePixelTestInitParams()
+  std::optional<pixel_test::InitParams> CreatePixelTestInitParams()
       const override {
     pixel_test::InitParams init_params;
     init_params.under_rtl = GetParam();
@@ -47,7 +51,7 @@ INSTANTIATE_TEST_SUITE_P(RTL, ScrollableShelfViewPixelRTLTest, testing::Bool());
 TEST_P(ScrollableShelfViewPixelRTLTest, Basics) {
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
       "overflow",
-      /*revision_number=*/4, GetPrimaryShelf()->GetWindow()));
+      /*revision_number=*/7, GetPrimaryShelf()->GetWindow()));
 
   ASSERT_TRUE(scrollable_shelf_view_->right_arrow());
   const gfx::Point right_arrow_center =
@@ -58,7 +62,7 @@ TEST_P(ScrollableShelfViewPixelRTLTest, Basics) {
 
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
       "overflow_end",
-      /*revision_number=*/4, GetPrimaryShelf()->GetWindow()));
+      /*revision_number=*/7, GetPrimaryShelf()->GetWindow()));
 }
 
 TEST_P(ScrollableShelfViewPixelRTLTest, LeftRightShelfAlignment) {
@@ -78,20 +82,25 @@ class ScrollableShelfViewWithGuestModePixelTest
       public testing::WithParamInterface<bool /*use_guest_mode=*/> {
  public:
   // ScrollableShelfTestBase:
-  absl::optional<pixel_test::InitParams> CreatePixelTestInitParams()
+  std::optional<pixel_test::InitParams> CreatePixelTestInitParams()
       const override {
     return pixel_test::InitParams();
   }
 
   void SetUp() override {
-    scoped_features_.InitAndEnableFeature(chromeos::features::kJelly);
+    scoped_features_.InitWithFeatures({::features::kChromeRefresh2023,
+                                       ::features::kChromeRefreshSecondary2023,
+                                       ::features::kChromeRefresh2023NTB},
+                                      {});
+
     set_start_session(false);
 
     ShelfTestBase::SetUp();
-    if (GetParam())
+    if (GetParam()) {
       SimulateGuestLogin();
-    else
+    } else {
       SimulateUserLogin("user@gmail.com");
+    }
   }
 
  private:
@@ -113,7 +122,7 @@ TEST_P(ScrollableShelfViewWithGuestModePixelTest, VerifyShelfContextMenu) {
   // Verify the shelf context menu and the shelf.
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
       "shelf_context_menu",
-      /*revision_number=*/9,
+      /*revision_number=*/18,
       GetPrimaryShelf()
           ->shelf_widget()
           ->shelf_view_for_testing()

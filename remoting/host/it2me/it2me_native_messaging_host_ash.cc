@@ -16,8 +16,8 @@
 #include "remoting/host/chromeos/chromeos_enterprise_params.h"
 #include "remoting/host/chromeos/features.h"
 #include "remoting/host/chromoting_host_context.h"
-#include "remoting/host/it2me/connection_details.h"
 #include "remoting/host/it2me/it2me_native_messaging_host.h"
+#include "remoting/host/it2me/reconnect_params.h"
 #include "remoting/host/native_messaging/native_messaging_helpers.h"
 #include "remoting/host/policy_watcher.h"
 
@@ -27,9 +27,9 @@ namespace {
 
 bool ShouldSuppressNotifications(
     const mojom::SupportSessionParams& params,
-    const absl::optional<ChromeOsEnterpriseParams>& enterprise_params) {
+    const std::optional<ChromeOsEnterpriseParams>& enterprise_params) {
   if (enterprise_params.has_value()) {
-    return enterprise_params.value().suppress_notifications;
+    return enterprise_params->suppress_notifications;
   }
 
   // On non-debug builds, do not allow setting this value through the Mojom API.
@@ -42,9 +42,9 @@ bool ShouldSuppressNotifications(
 
 bool ShouldSuppressUserDialog(
     const mojom::SupportSessionParams& params,
-    const absl::optional<ChromeOsEnterpriseParams>& enterprise_params) {
+    const std::optional<ChromeOsEnterpriseParams>& enterprise_params) {
   if (enterprise_params.has_value()) {
-    return enterprise_params.value().suppress_user_dialogs;
+    return enterprise_params->suppress_user_dialogs;
   }
 
   // On non-debug builds, do not allow setting this value through the Mojom API.
@@ -57,9 +57,9 @@ bool ShouldSuppressUserDialog(
 
 bool ShouldTerminateUponInput(
     const mojom::SupportSessionParams& params,
-    const absl::optional<ChromeOsEnterpriseParams>& enterprise_params) {
+    const std::optional<ChromeOsEnterpriseParams>& enterprise_params) {
   if (enterprise_params.has_value()) {
-    return enterprise_params.value().terminate_upon_input;
+    return enterprise_params->terminate_upon_input;
   }
 
   // On non-debug builds, do not allow setting this value through the Mojom API.
@@ -72,13 +72,13 @@ bool ShouldTerminateUponInput(
 
 bool ShouldCurtainLocalUserSession(
     const mojom::SupportSessionParams& params,
-    const absl::optional<ChromeOsEnterpriseParams>& enterprise_params) {
+    const std::optional<ChromeOsEnterpriseParams>& enterprise_params) {
   if (!base::FeatureList::IsEnabled(features::kEnableCrdAdminRemoteAccess)) {
     return false;
   }
 
   if (enterprise_params.has_value()) {
-    return enterprise_params.value().curtain_local_user_session;
+    return enterprise_params->curtain_local_user_session;
   }
 
   // On non-debug builds, do not allow setting this value through the Mojom API.
@@ -90,33 +90,33 @@ bool ShouldCurtainLocalUserSession(
 }
 
 bool ShouldShowTroubleshootingTools(
-    const absl::optional<ChromeOsEnterpriseParams>& enterprise_params) {
+    const std::optional<ChromeOsEnterpriseParams>& enterprise_params) {
   if (enterprise_params.has_value()) {
-    return enterprise_params.value().show_troubleshooting_tools;
+    return enterprise_params->show_troubleshooting_tools;
   }
   return false;
 }
 
 bool ShouldAllowTroubleshootingTools(
-    const absl::optional<ChromeOsEnterpriseParams>& enterprise_params) {
+    const std::optional<ChromeOsEnterpriseParams>& enterprise_params) {
   if (enterprise_params.has_value()) {
-    return enterprise_params.value().allow_troubleshooting_tools;
+    return enterprise_params->allow_troubleshooting_tools;
   }
   return false;
 }
 
 bool ShouldAllowReconnections(
-    const absl::optional<ChromeOsEnterpriseParams>& enterprise_params) {
+    const std::optional<ChromeOsEnterpriseParams>& enterprise_params) {
   if (enterprise_params.has_value()) {
-    return enterprise_params.value().allow_reconnections;
+    return enterprise_params->allow_reconnections;
   }
   return false;
 }
 
 bool ShouldAllowFileTransfer(
-    const absl::optional<ChromeOsEnterpriseParams>& enterprise_params) {
+    const std::optional<ChromeOsEnterpriseParams>& enterprise_params) {
   if (enterprise_params.has_value()) {
-    return enterprise_params.value().allow_file_transfer;
+    return enterprise_params->allow_file_transfer;
   }
   return false;
 }
@@ -153,8 +153,8 @@ It2MeNativeMessageHostAsh::Start(
 
 void It2MeNativeMessageHostAsh::Connect(
     const mojom::SupportSessionParams& params,
-    const absl::optional<ChromeOsEnterpriseParams>& enterprise_params,
-    const absl::optional<ConnectionDetails>& reconnect_params,
+    const std::optional<ChromeOsEnterpriseParams>& enterprise_params,
+    const std::optional<ReconnectParams>& reconnect_params,
     base::OnceClosure connected_callback,
     HostStateConnectedCallback host_state_connected_callback,
     base::OnceClosure host_state_disconnected_callback,
@@ -170,11 +170,24 @@ void It2MeNativeMessageHostAsh::Connect(
   host_state_disconnected_callback_ =
       std::move(host_state_disconnected_callback);
 
+  // The version of Lacros is guaranteed to be at least as new as the code
+  // running in ash so we can remove this shim in M124, however we need it until
+  // then as Lacros will continue sending the oauth2 prefix for back-compat
+  // until that milestone. Basically the shim code in Lacros and Ash can be
+  // removed in the same milestone but the Lacros code needs to stay in place
+  // until the back-compat behavior is no longer required.
+  std::string access_token = params.oauth_access_token;
+  const char kOAuth2ServicePrefix[] = "oauth2:";
+  // Strip the prefix off, if it exists.
+  if (access_token.starts_with(kOAuth2ServicePrefix)) {
+    access_token = access_token.substr(strlen(kOAuth2ServicePrefix));
+  }
+
   auto message =
       base::Value::Dict()
           .Set(kMessageType, kConnectMessage)
           .Set(kUserName, params.user_name)
-          .Set(kAuthServiceWithToken, params.oauth_access_token)
+          .Set(kAccessToken, access_token)
           .Set(kSuppressUserDialogs,
                ShouldSuppressUserDialog(params, enterprise_params))
           .Set(kSuppressNotifications,
@@ -191,36 +204,26 @@ void It2MeNativeMessageHostAsh::Connect(
           .Set(kAllowFileTransfer, ShouldAllowFileTransfer(enterprise_params))
           .Set(kIsEnterpriseAdminUser, enterprise_params.has_value());
   if (params.authorized_helper.has_value()) {
-    message.Set(kAuthorizedHelper, params.authorized_helper.value());
+    message.Set(kAuthorizedHelper, *params.authorized_helper);
   }
 
   if (reconnect_params.has_value()) {
-    // We pass the previously connected user as the `authorized_helper`, to
+    // We persist the previously connected user as the `authorized_helper`, to
     // prevent anyone else from snooping in and connecting to the session.
-    message.Set(kAuthorizedHelper, reconnect_params.value().remote_username);
+    CHECK(params.authorized_helper.has_value());
 
-    if (params.authorized_helper.has_value()) {
-      // Check we did not receive conflicting information.
-      CHECK_EQ(params.authorized_helper.value(),
-               reconnect_params.value().remote_username);
-    }
-
-    // TODO(b/283091055): Send the reconnection params in the connect message,
-    // and use them to reconnect to an existing client.
-    LOG(WARNING) << "Should reconnect to existing client, but that's not "
-                    "implemented yet!";
-    NOTIMPLEMENTED();
+    message.Set(kReconnectParamsDict,
+                ReconnectParams::ToDict(*reconnect_params));
   }
 
-  native_message_host_->OnMessage(base::WriteJson(message).value());
+  native_message_host_->OnMessage(*base::WriteJson(message));
 }
 
 void It2MeNativeMessageHostAsh::Disconnect() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  native_message_host_->OnMessage(
-      base::WriteJson(base::Value::Dict().Set(kMessageType, kDisconnectMessage))
-          .value());
+  native_message_host_->OnMessage(*base::WriteJson(
+      base::Value::Dict().Set(kMessageType, kDisconnectMessage)));
 
   // Notify the owner that the host has been disconnected.  This will result in
   // the destruction of this object so do not access member variables after this
@@ -311,7 +314,7 @@ void It2MeNativeMessageHostAsh::HandleHostStateChangeMessage(
           ErrorCodeToString(protocol::ErrorCode::INCOMPATIBLE_PROTOCOL));
       return;
     }
-    absl::optional<int> access_code_lifetime =
+    std::optional<int> access_code_lifetime =
         message.FindInt(kAccessCodeLifetime);
     if (!access_code_lifetime) {
       LOG(ERROR) << "Missing |" << kAccessCodeLifetime << "| value in message.";
@@ -320,7 +323,7 @@ void It2MeNativeMessageHostAsh::HandleHostStateChangeMessage(
       return;
     }
     remote_->OnHostStateReceivedAccessCode(
-        *access_code, base::Seconds(access_code_lifetime.value()));
+        *access_code, base::Seconds(*access_code_lifetime));
   } else if (*new_state == kHostStateConnecting) {
     remote_->OnHostStateConnecting();
   } else if (*new_state == kHostStateConnected) {
@@ -333,11 +336,13 @@ void It2MeNativeMessageHostAsh::HandleHostStateChangeMessage(
     }
     remote_->OnHostStateConnected(*remote_username);
 
-    // TODO(b/283091055): Update the client connected response to contain
-    // reconnection information (if the session is reconnectable), and add
-    // this information to `ConnectionDetail`.
-    std::move(host_state_connected_callback_)
-        .Run(ConnectionDetails(*remote_username));
+    std::optional<ReconnectParams> reconnect_params;
+    const auto* reconnect_params_ptr = message.FindDict(kReconnectParamsDict);
+    if (reconnect_params_ptr) {
+      reconnect_params.emplace(
+          ReconnectParams::FromDict(*reconnect_params_ptr));
+    }
+    std::move(host_state_connected_callback_).Run(std::move(reconnect_params));
 
   } else if (*new_state == kHostStateError) {
     const std::string* error_code_string =
@@ -370,7 +375,7 @@ void It2MeNativeMessageHostAsh::HandleHostStateChangeMessage(
 void It2MeNativeMessageHostAsh::HandleNatPolicyChangedMessage(
     base::Value::Dict message) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  absl::optional<bool> nat_enabled =
+  std::optional<bool> nat_enabled =
       message.FindBool(kNatPolicyChangedMessageNatEnabled);
   if (!nat_enabled.has_value()) {
     LOG(ERROR) << "Missing |" << kNatPolicyChangedMessageNatEnabled
@@ -379,7 +384,7 @@ void It2MeNativeMessageHostAsh::HandleNatPolicyChangedMessage(
     return;
   }
 
-  absl::optional<bool> relay_enabled =
+  std::optional<bool> relay_enabled =
       message.FindBool(kNatPolicyChangedMessageRelayEnabled);
   if (!nat_enabled.has_value()) {
     LOG(ERROR) << "Missing |" << kNatPolicyChangedMessageRelayEnabled
@@ -389,8 +394,8 @@ void It2MeNativeMessageHostAsh::HandleNatPolicyChangedMessage(
   }
 
   mojom::NatPolicyStatePtr nat_policy = mojom::NatPolicyState::New();
-  nat_policy->nat_enabled = nat_enabled.value();
-  nat_policy->relay_enabled = relay_enabled.value();
+  nat_policy->nat_enabled = *nat_enabled;
+  nat_policy->relay_enabled = *relay_enabled;
   remote_->OnNatPolicyChanged(std::move(nat_policy));
 }
 

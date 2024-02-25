@@ -57,6 +57,8 @@ _IGNORE_WARNINGS = (
     r'OnBackAnimationCallback',
     # We enforce that this class is removed via -checkdiscard.
     r'FastServiceLoader\.class:.*Could not inline ServiceLoader\.load',
+    # We are following up in b/290389974
+    r'AppSearchDocumentClassMap\.class:.*Could not inline ServiceLoader\.load',
 )
 
 _BLOCKLISTED_EXPECTATION_PATHS = [
@@ -74,6 +76,9 @@ def _ParseOptions():
   parser.add_argument('--r8-path',
                       required=True,
                       help='Path to the R8.jar to use.')
+  parser.add_argument('--custom-r8-path',
+                      required=True,
+                      help='Path to our custom R8 wrapepr to use.')
   parser.add_argument('--input-paths',
                       action='append',
                       required=True,
@@ -317,8 +322,8 @@ def _OptimizeWithR8(options, config_paths, libraries, dynamic_config_data):
       cmd += ['-Dcom.android.tools.r8.reportUnknownApiReferences=1']
     cmd += [
         '-cp',
-        options.r8_path,
-        'com.android.tools.r8.R8',
+        '{}:{}'.format(options.r8_path, options.custom_r8_path),
+        'org.chromium.build.CustomR8',
         '--no-data-resources',
         '--map-id-template',
         f'{options.source_file} ({options.package_name})',
@@ -329,6 +334,9 @@ def _OptimizeWithR8(options, config_paths, libraries, dynamic_config_data):
         '--pg-map-output',
         tmp_mapping_path,
     ]
+
+    if options.uses_split:
+      cmd += ['--isolated-splits']
 
     if options.disable_checks:
       cmd += ['--map-diagnostics:CheckDiscardDiagnostic', 'error', 'none']
@@ -505,13 +513,6 @@ Tip: Build with:
        third_party/android_sdk/public/build-tools/*/dexdump -d \
 out/Release/apks/YourApk.apk > dex.txt
 """ + stderr
-
-        if 'FragmentActivity' in stderr:
-          stderr += """
-You may need to update build configs to run FragmentActivityReplacer for
-additional targets. See
-https://chromium.googlesource.com/chromium/src.git/+/main/docs/ui/android/bytecode_rewriting.md.
-"""
       elif had_unfiltered_items:
         # Left only with empty headings. All indented items filtered out.
         stderr = ''

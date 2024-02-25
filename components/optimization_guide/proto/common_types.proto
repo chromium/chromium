@@ -29,8 +29,12 @@ enum RequestContext {
   CONTEXT_JOURNEYS = 8;
   // Requesting metadata for a user when visiting the new tab page.
   CONTEXT_NEW_TAB_PAGE = 9;
-  // Requesting metadata for a user when visiting the page insights hub.
+  // Requesting metadata for a user when visiting the Page Insights feature;
+  // Gaia can be attached to request.
   CONTEXT_PAGE_INSIGHTS_HUB = 11;
+  // Requesting metadata for a user when visiting the Page Insights feature;
+  // Gaia cannot be attached to request.
+  CONTEXT_NON_PERSONALIZED_PAGE_INSIGHTS_HUB = 12;
 }
 
 message FieldTrial {
@@ -82,14 +86,6 @@ message Any {
   optional bytes value = 2;
 }
 
-// Wrapper message for `string`.
-//
-// The JSON representation for `StringValue` is JSON string.
-message StringValue {
-  // The string value.
-  optional string value = 1;
-}
-
 // Information about the request origin, common to all Cacao requests.
 message OriginInfo {
   // The platform for the user's Chrome.
@@ -98,8 +94,8 @@ message OriginInfo {
 
 // The platform for the user's Chrome on which the request was made.
 enum Platform {
-  // Unknown is used when the user's platform cannot be resolved.
-  PLATFORM_UNKNOWN = 0;
+  // Undefined is used when the user's platform cannot be resolved.
+  PLATFORM_UNDEFINED = 0;
   // Android based platforms.
   PLATFORM_ANDROID = 1;
   // ChromeOS platforms including all architectures.

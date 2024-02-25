@@ -21,11 +21,14 @@
 #include "third_party/blink/renderer/core/html/forms/form_controller.h"
 #include "third_party/blink/renderer/core/html/forms/form_data.h"
 #include "third_party/blink/renderer/core/html/forms/html_button_element.h"
+#include "third_party/blink/renderer/core/html/forms/html_form_element.h"
+#include "third_party/blink/renderer/core/html/forms/html_listbox_element.h"
+#include "third_party/blink/renderer/core/html/forms/html_opt_group_element.h"
 #include "third_party/blink/renderer/core/html/forms/html_option_element.h"
 #include "third_party/blink/renderer/core/html/forms/select_list_part_traversal.h"
+#include "third_party/blink/renderer/core/html/html_collection.h"
 #include "third_party/blink/renderer/core/html/html_div_element.h"
 #include "third_party/blink/renderer/core/html/html_slot_element.h"
-#include "third_party/blink/renderer/core/html/html_style_element.h"
 #include "third_party/blink/renderer/core/html_names.h"
 #include "third_party/blink/renderer/core/inspector/console_message.h"
 #include "third_party/blink/renderer/core/keywords.h"
@@ -38,6 +41,9 @@
 #include "third_party/blink/renderer/platform/wtf/text/unicode.h"
 
 namespace blink {
+
+using mojom::blink::FormControlType;
+
 namespace {
 class PreviewPopoverInnerElement : public HTMLDivElement {
  public:
@@ -51,7 +57,8 @@ class PreviewPopoverInnerElement : public HTMLDivElement {
       const StyleRecalcContext& style_recalc_context) override {
     HTMLSelectListElement* selectlist =
         DynamicTo<HTMLSelectListElement>(OwnerShadowHost());
-    if (!selectlist || !selectlist->ButtonPart()) {
+    if (!selectlist || !selectlist->ButtonPart() ||
+        !selectlist->ButtonPart()->GetComputedStyle()) {
       return HTMLDivElement::CustomStyleForLayoutObject(style_recalc_context);
     }
 
@@ -70,11 +77,7 @@ class PreviewPopoverInnerElement : public HTMLDivElement {
           button_style.BorderTopRightRadius());
     }
     if (button_style.HasAuthorBorder()) {
-      style_builder.SetBorderBottomColor(
-          button_style.BorderBottom().GetColor());
-      style_builder.SetBorderLeftColor(button_style.BorderLeft().GetColor());
-      style_builder.SetBorderRightColor(button_style.BorderRight().GetColor());
-      style_builder.SetBorderTopColor(button_style.BorderTop().GetColor());
+      style_builder.SetBorderColorFrom(button_style);
 
       style_builder.SetBorderBottomWidth(button_style.BorderBottomWidth());
       style_builder.SetBorderLeftWidth(button_style.BorderLeftWidth());
@@ -154,6 +157,12 @@ void HTMLSelectListElement::SelectMutationCallback::DidChangeChildren(
             element->getAttribute(html_names::kBehaviorAttr);
         PartInserted(part, element);
         SlotChanged(element->SlotName());
+
+        if (element->HasTagName(html_names::kSelectedoptionTag)) {
+          select_->UpdateSelectedValuePart();
+        } else if (IsA<HTMLListboxElement>(element)) {
+          select_->UpdateListboxPart();
+        }
       }
     }
   } else if (change.type == ChildrenChangeType::kElementRemoved) {
@@ -255,8 +264,7 @@ HTMLSelectListElement::HTMLSelectListElement(Document& document)
   DCHECK(RuntimeEnabledFeatures::HTMLSelectListElementEnabled());
   UseCounter::Count(document, WebFeature::kSelectListElement);
 
-  EnsureUserAgentShadowRoot().SetSlotAssignmentMode(
-      SlotAssignmentMode::kManual);
+  EnsureUserAgentShadowRoot(SlotAssignmentMode::kManual);
   select_mutation_callback_ =
       MakeGarbageCollected<HTMLSelectListElement::SelectMutationCallback>(
           *this);
@@ -267,59 +275,61 @@ HTMLSelectListElement::HTMLSelectListElement(Document& document)
   IncrementImplicitlyAnchoredElementCount();
 }
 
+namespace {
+bool HasOptionElementDescendant(Element* element) {
+  for (auto& descendant : ElementTraversal::DescendantsOf(*element)) {
+    if (DynamicTo<HTMLOptionElement>(descendant)) {
+      return true;
+    }
+  }
+  return false;
+}
+}  // namespace
+
 void HTMLSelectListElement::ManuallyAssignSlots() {
-  Element* button = nullptr;
+  Element* explicit_button = nullptr;
+  VectorOf<Node> button_nodes;
   Element* listbox = nullptr;
   Element* selected_value = nullptr;
   Element* marker = nullptr;
   VectorOf<Node> options;
   for (Node& node : NodeTraversal::ChildrenOf(*this)) {
     if (auto* element = DynamicTo<Element>(node)) {
-      if (!button && element->SlotName() == kButtonPartName) {
-        button = element;
-      } else if (!listbox && element->SlotName() == kListboxPartName) {
+      if (!explicit_button && element->SlotName() == kButtonPartName) {
+        explicit_button = element;
+      } else if (!listbox && (element->SlotName() == kListboxPartName ||
+                              IsA<HTMLListboxElement>(element))) {
         listbox = element;
       } else if (!selected_value &&
                  element->SlotName() == kSelectedValuePartName) {
         selected_value = element;
       } else if (!marker && element->SlotName() == kMarkerPartName) {
         marker = element;
+      } else if (auto* option = DynamicTo<HTMLOptionElement>(element)) {
+        options.push_back(option);
+      } else if (auto* optgroup = DynamicTo<HTMLOptGroupElement>(element)) {
+        options.push_back(optgroup);
+      } else if (HasOptionElementDescendant(element)) {
+        options.push_back(element);
+      } else {
+        button_nodes.push_back(element);
       }
-      if (element->SlotName() == g_empty_atom) {
-        options.push_back(node);
+    } else if (auto* text = DynamicTo<Text>(node)) {
+      if (!text->ContainsOnlyWhitespaceOrEmpty()) {
+        button_nodes.push_back(node);
       }
-    } else if (node.IsSlotable()) {
-      options.push_back(node);
     }
   }
-  button_slot_->Assign(button);
+
+  if (explicit_button) {
+    button_slot_->Assign(explicit_button);
+  } else {
+    button_slot_->Assign(button_nodes);
+  }
   listbox_slot_->Assign(listbox);
   selected_value_slot_->Assign(selected_value);
   marker_slot_->Assign(marker);
   options_slot_->Assign(options);
-}
-
-// static
-HTMLSelectListElement* HTMLSelectListElement::OwnerSelectList(Node* node) {
-  // Do some quick checks in order to avoid, in most cases, walking up the
-  // entire tree if `node` does not have a selectlist ancestor.
-  if (!IsA<HTMLOptionElement>(node)) {
-    HTMLElement* html_element = DynamicTo<HTMLElement>(node);
-    if (!html_element ||
-        !html_element->FastHasAttribute(html_names::kBehaviorAttr)) {
-      return nullptr;
-    }
-  }
-
-  HTMLSelectListElement* nearest_select_list_ancestor =
-      SelectListPartTraversal::NearestSelectListAncestor(*node);
-
-  if (nearest_select_list_ancestor &&
-      nearest_select_list_ancestor->AssignedPartType(node) != PartType::kNone) {
-    return nearest_select_list_ancestor;
-  }
-
-  return nullptr;
 }
 
 HTMLSelectListElement::PartType HTMLSelectListElement::AssignedPartType(
@@ -356,8 +366,8 @@ void HTMLSelectListElement::DidAddUserAgentShadowRoot(ShadowRoot& root) {
   button_slot_->setAttribute(html_names::kNameAttr, button_part);
 
   button_part_ = MakeGarbageCollected<HTMLButtonElement>(document);
+  button_part_->setAttribute(html_names::kTypeAttr, AtomicString("selectlist"));
   button_part_->setAttribute(html_names::kPartAttr, button_part);
-  button_part_->setAttribute(html_names::kBehaviorAttr, button_part);
   button_part_->SetShadowPseudoId(AtomicString("-internal-selectlist-button"));
   button_part_listener_ =
       MakeGarbageCollected<HTMLSelectListElement::ButtonPartEventListener>(
@@ -369,10 +379,9 @@ void HTMLSelectListElement::DidAddUserAgentShadowRoot(ShadowRoot& root) {
   selected_value_slot_->setAttribute(html_names::kNameAttr,
                                      selected_value_part);
 
-  selected_value_part_ = MakeGarbageCollected<HTMLDivElement>(document);
+  selected_value_part_ = MakeGarbageCollected<HTMLElement>(
+      html_names::kSelectedoptionTag, document);
   selected_value_part_->setAttribute(html_names::kPartAttr,
-                                     selected_value_part);
-  selected_value_part_->setAttribute(html_names::kBehaviorAttr,
                                      selected_value_part);
   selected_value_part_->SetShadowPseudoId(
       AtomicString("-internal-selectlist-selected-value"));
@@ -390,13 +399,10 @@ void HTMLSelectListElement::DidAddUserAgentShadowRoot(ShadowRoot& root) {
   listbox_slot_ = MakeGarbageCollected<HTMLSlotElement>(document);
   listbox_slot_->setAttribute(html_names::kNameAttr, listbox_part);
 
-  HTMLElement* new_popover;
-  new_popover = MakeGarbageCollected<HTMLDivElement>(document);
-  new_popover->setAttribute(html_names::kPopoverAttr, keywords::kAuto);
-  new_popover->setAttribute(html_names::kPartAttr, listbox_part);
-  new_popover->setAttribute(html_names::kBehaviorAttr, listbox_part);
-  new_popover->SetShadowPseudoId(AtomicString("-internal-selectlist-listbox"));
-  SetListboxPart(new_popover);
+  default_listbox_ = MakeGarbageCollected<HTMLListboxElement>(document);
+  default_listbox_->setAttribute(html_names::kPartAttr, listbox_part);
+  default_listbox_->SetShadowPseudoId(
+      AtomicString("-internal-selectlist-listbox"));
 
   options_slot_ = MakeGarbageCollected<HTMLSlotElement>(document);
 
@@ -409,11 +415,13 @@ void HTMLSelectListElement::DidAddUserAgentShadowRoot(ShadowRoot& root) {
 
   button_slot_->AppendChild(button_part_);
 
-  listbox_part_->appendChild(options_slot_);
-  listbox_slot_->appendChild(listbox_part_);
+  default_listbox_->appendChild(options_slot_);
+  listbox_slot_->appendChild(default_listbox_);
 
   root.AppendChild(button_slot_);
   root.AppendChild(listbox_slot_);
+
+  SetListboxPart(default_listbox_);
 
   option_part_listener_ =
       MakeGarbageCollected<HTMLSelectListElement::OptionPartEventListener>(
@@ -427,37 +435,6 @@ void HTMLSelectListElement::DidAddUserAgentShadowRoot(ShadowRoot& root) {
   suggested_option_popover_->SetShadowPseudoId(
       AtomicString("-internal-selectlist-preview"));
   root.AppendChild(suggested_option_popover_);
-
-  auto* style =
-      MakeGarbageCollected<HTMLStyleElement>(document, CreateElementFlags());
-  // For small touch screens, expand the touch targets and enlarge the overall
-  // picker, akin to the native <select> picker.
-  // TODO(crbug.com/1121840) Add back (pointer: coarse) once testing is
-  // complete:
-  //   @media (pointer: coarse) and (max-width: 500px) {
-  style->setInnerHTML(R"CSS(
-    @media (max-width: 500px) {
-      ::backdrop,
-      slot[name=listbox]::slotted([popover])::backdrop {
-        background-color: rgba(0, 0, 0, .7);
-      }
-      slot[name=listbox]>div[popover=auto],
-      slot[name=listbox]::slotted([popover]) {
-        box-shadow: none;
-        border-radius: 0.5em;
-        padding: 0.25em 0;
-        border: none;
-        max-height: 50%;
-        inset: 0;
-        margin: auto;
-      }
-      ::slotted(option) {
-        padding: 0.5em;
-        font-size: 1em;
-      }
-    }
-  )CSS");
-  root.AppendChild(style);
 }
 
 void HTMLSelectListElement::DidMoveToNewDocument(Document& old_document) {
@@ -493,7 +470,7 @@ String HTMLSelectListElement::value() const {
 }
 
 void HTMLSelectListElement::setValueForBinding(const String& value) {
-  if (GetAutofillState() != WebAutofillState::kAutofilled) {
+  if (!IsAutofilled()) {
     setValue(value);
   } else {
     String old_value = this->value();
@@ -536,9 +513,9 @@ bool HTMLSelectListElement::open() const {
 
 void HTMLSelectListElement::SetAutofillValue(const String& value,
                                              WebAutofillState autofill_state) {
-  bool user_has_edited_the_field = user_has_edited_the_field_;
+  auto interacted_state = interacted_state_;
   setValue(value, /*send_events=*/true, autofill_state);
-  SetUserHasEditedTheField(user_has_edited_the_field);
+  interacted_state_ = interacted_state;
 }
 
 String HTMLSelectListElement::SuggestedValue() const {
@@ -575,6 +552,9 @@ void HTMLSelectListElement::OpenListbox() {
 
 void HTMLSelectListElement::CloseListbox() {
   if (listbox_part_ && open()) {
+    // TODO(http://crbug.com/1121840): listbox_part_ should always have a
+    // popover attribute. This should probably be a CHECK, and may have been a
+    // remnant of the behavior attribute.
     if (listbox_part_->HasPopoverAttribute()) {
       // We will handle focus directly.
       listbox_part_->HidePopoverInternal(
@@ -582,6 +562,7 @@ void HTMLSelectListElement::CloseListbox() {
           HidePopoverTransitionBehavior::kFireEventsAndWaitForTransitions,
           /*exception_state=*/nullptr);
     }
+    type_ahead_.ResetSession();
   }
 }
 
@@ -643,7 +624,15 @@ bool HTMLSelectListElement::SetListboxPart(HTMLElement* new_listbox_part) {
 bool HTMLSelectListElement::IsValidButtonPart(const Node* node,
                                               bool show_warning) const {
   auto* element = DynamicTo<Element>(node);
-  if (!element ||
+  if (!element) {
+    return false;
+  }
+  auto* button = DynamicTo<HTMLButtonElement>(node);
+
+  // TODO(http://crbug.com/1121840): When the old architecture is fully removed,
+  // this behavior attribute check can be removed and we can just have the
+  // <button type=selectlist> check instead.
+  if (!(button && button->type() == "selectlist") &&
       element->getAttribute(html_names::kBehaviorAttr) != kButtonPartName) {
     return false;
   }
@@ -666,8 +655,19 @@ bool HTMLSelectListElement::IsValidButtonPart(const Node* node,
 bool HTMLSelectListElement::IsValidListboxPart(const Node* node,
                                                bool show_warning) const {
   auto* element = DynamicTo<HTMLElement>(node);
-  if (!element ||
-      element->getAttribute(html_names::kBehaviorAttr) != kListboxPartName) {
+  if (!element) {
+    return false;
+  }
+
+  if (node == default_listbox_) {
+    return true;
+  }
+
+  if (IsA<HTMLListboxElement>(element) && element->parentNode() == this) {
+    return true;
+  }
+
+  if (element->getAttribute(html_names::kBehaviorAttr) != kListboxPartName) {
     return false;
   }
 
@@ -697,6 +697,7 @@ bool HTMLSelectListElement::IsValidListboxPart(const Node* node,
     return false;
   }
 
+  // We only get here if behavior=listbox.
   return true;
 }
 
@@ -786,7 +787,8 @@ HTMLElement* HTMLSelectListElement::FirstValidSelectedValuePart() const {
     }
 
     if (element->getAttribute(html_names::kBehaviorAttr) ==
-        kSelectedValuePartName) {
+            kSelectedValuePartName ||
+        element->HasTagName(html_names::kSelectedoptionTag)) {
       return element;
     }
   }
@@ -814,6 +816,7 @@ void HTMLSelectListElement::EnsureSelectedValuePartIsValid() {
   if (!selected_value_part_ ||
       selected_value_part_->getAttribute(html_names::kBehaviorAttr) !=
           kSelectedValuePartName ||
+      !selected_value_part_->HasTagName(html_names::kSelectedoptionTag) ||
       !SelectListPartTraversal::IsDescendantOf(*selected_value_part_, *this)) {
     UpdateSelectedValuePart();
   }
@@ -896,16 +899,6 @@ void HTMLSelectListElement::DispatchInputAndChangeEventsIfNeeded() {
     // we'll  fire change later when the listbox closes.
     DispatchChangeEvent();
   }
-}
-
-void HTMLSelectListElement::DispatchInputEvent() {
-  Event* input_event = Event::CreateBubble(event_type_names::kInput);
-  input_event->SetComposed(true);
-  DispatchScopedEvent(*input_event);
-}
-
-void HTMLSelectListElement::DispatchChangeEvent() {
-  DispatchScopedEvent(*Event::CreateBubble(event_type_names::kChange));
 }
 
 void HTMLSelectListElement::OptionPartInserted(
@@ -1103,13 +1096,17 @@ void HTMLSelectListElement::OptionElementValueChanged(
 }
 
 void HTMLSelectListElement::SelectNextOption() {
-  for (Node* node = SelectListPartTraversal::Next(*selectedOption(), this);
-       node; node = SelectListPartTraversal::Next(*node, this)) {
+  auto* starting_option = selectedOption();
+  auto* focused_element = GetDocument().FocusedElement();
+  if (IsValidOptionPart(focused_element, /*show_warning=*/false)) {
+    starting_option = To<HTMLOptionElement>(focused_element);
+  }
+  for (Node* node = SelectListPartTraversal::Next(*starting_option, this); node;
+       node = SelectListPartTraversal::Next(*node, this)) {
     if (IsValidOptionPart(node, /*show_warning=*/false)) {
       auto* element = DynamicTo<HTMLOptionElement>(node);
       if (element->IsDisabledFormControl())
         continue;
-      SetSelectedOption(element);
       element->Focus(FocusParams(FocusTrigger::kUserGesture));
       DispatchInputAndChangeEventsIfNeeded();
       return;
@@ -1118,13 +1115,17 @@ void HTMLSelectListElement::SelectNextOption() {
 }
 
 void HTMLSelectListElement::SelectPreviousOption() {
-  for (Node* node = SelectListPartTraversal::Previous(*selectedOption(), this);
+  auto* starting_option = selectedOption();
+  auto* focused_element = GetDocument().FocusedElement();
+  if (IsValidOptionPart(focused_element, /*show_warning=*/false)) {
+    starting_option = To<HTMLOptionElement>(focused_element);
+  }
+  for (Node* node = SelectListPartTraversal::Previous(*starting_option, this);
        node; node = SelectListPartTraversal::Previous(*node, this)) {
     if (IsValidOptionPart(node, /*show_warning=*/false)) {
       auto* element = DynamicTo<HTMLOptionElement>(node);
       if (element->IsDisabledFormControl())
         continue;
-      SetSelectedOption(element);
       element->Focus(FocusParams(FocusTrigger::kUserGesture));
       DispatchInputAndChangeEventsIfNeeded();
       return;
@@ -1158,8 +1159,27 @@ void HTMLSelectListElement::UpdateSelectedValuePartContents() {
   // they want to show something in the button other than the current value of
   // the <selectlist>.
   if (selected_value_part_) {
-    selected_value_part_->setTextContent(
-        selected_option_ ? selected_option_->innerText() : "");
+    // TODO(crbug.com/1121840): when we remove the old architecture, this
+    // should be a CHECK that selected_value_part_ is a <selectedoption>.
+    if (selected_value_part_->HasTagName(html_names::kSelectedoptionTag) &&
+        selected_value_part_->ShadowPseudoId() !=
+            AtomicString("-internal-selectlist-selected-value") &&
+        selected_option_) {
+      // TODO(crbug.com/1121840): should the label attribute be used instead if
+      // it is specified?
+      auto* clone = selected_option_->cloneNode(/*deep=*/true);
+      VectorOf<Node> nodes;
+      for (Node& child : NodeTraversal::ChildrenOf(*clone)) {
+        nodes.push_back(child);
+      }
+      // TODO(crbug.com/1121840): This can likely throw an exception due to
+      // custom element constructors, script elements, etc. What should we do
+      // about it?
+      selected_value_part_->ReplaceChildren(nodes, ASSERT_NO_EXCEPTION);
+    } else {
+      selected_value_part_->setTextContent(
+          selected_option_ ? selected_option_->innerText() : "");
+    }
   }
 }
 
@@ -1188,27 +1208,25 @@ HTMLOptionElement* HTMLSelectListElement::OptionAtListIndex(
 
 void HTMLSelectListElement::ButtonPartEventListener::Invoke(ExecutionContext*,
                                                             Event* event) {
-  if (event->defaultPrevented())
-    return;
+  select_list_element_->HandleButtonEvent(*event);
+}
 
-  if (event->type() == event_type_names::kClick &&
-      !select_list_element_->IsDisabledFormControl()) {
-    if (!select_list_element_->open()) {
-      select_list_element_->OpenListbox();
-    }
-    // TODO(crbug.com/1408838) Close list box if dialog is open.
-  } else if (event->type() == event_type_names::kBlur) {
-    select_list_element_->type_ahead_.ResetSession();
-  } else if (event->IsKeyboardEvent()) {
+void HTMLSelectListElement::HandleButtonEvent(Event& event) {
+  if (event.defaultPrevented()) {
+    return;
+  }
+
+  if (event.type() == event_type_names::kBlur) {
+    type_ahead_.ResetSession();
+  } else if (event.IsKeyboardEvent()) {
     auto* keyboard_event = DynamicTo<KeyboardEvent>(event);
     if (!keyboard_event) {
       return;
     }
 
-    if (!select_list_element_->open() &&
-        !select_list_element_->IsDisabledFormControl() &&
-        HandleKeyboardEvent(*keyboard_event)) {
-      event->SetDefaultHandled();
+    if (!open() && !IsDisabledFormControl() &&
+        HandleButtonKeyboardEvent(*keyboard_event)) {
+      event.SetDefaultHandled();
     }
   }
 }
@@ -1244,14 +1262,13 @@ void HTMLSelectListElement::ButtonPartEventListener::RemoveEventListeners(
                                    /*use_capture=*/false);
 }
 
-bool HTMLSelectListElement::ButtonPartEventListener::HandleKeyboardEvent(
-    const KeyboardEvent& event) {
+bool HTMLSelectListElement::HandleButtonKeyboardEvent(KeyboardEvent& event) {
   if (event.keyCode() == VKEY_SPACE) {
     if (event.type() == event_type_names::kKeydown) {
-      if (select_list_element_->type_ahead_.HasActiveSession(event)) {
-        select_list_element_->TypeAheadFind(event, ' ');
+      if (type_ahead_.HasActiveSession(event)) {
+        TypeAheadFind(event, ' ');
       } else {
-        select_list_element_->OpenListbox();
+        OpenListbox();
       }
     }
     // Override default HTMLButtonElement handling in
@@ -1260,15 +1277,23 @@ bool HTMLSelectListElement::ButtonPartEventListener::HandleKeyboardEvent(
   }
   if (event.keyCode() == VKEY_RETURN &&
       event.type() == event_type_names::kKeydown) {
-    // Handle <RETURN> because not all HTML elements synthesize a click when
-    // <RETURN> is pressed.
-    select_list_element_->OpenListbox();
+    // Attempt to submit the form if there is one, otherwise do nothing.
+    if (Form()) {
+      Form()->PrepareForSubmission(&event, this);
+      return true;
+    }
+    return false;
+  }
+  if (event.type() == event_type_names::kKeydown &&
+      (event.keyCode() == VKEY_UP || event.keyCode() == VKEY_DOWN ||
+       event.keyCode() == VKEY_RIGHT || event.keyCode() == VKEY_LEFT)) {
+    OpenListbox();
     return true;
   }
   // Handled in event_type_names::kKeypress event handler because
   // KeyboardEvent::charCode() == 0 for event_type_names::kKeydown.
   return event.type() == event_type_names::kKeypress &&
-         select_list_element_->TypeAheadFind(event, event.charCode());
+         TypeAheadFind(event, event.charCode());
 }
 
 void HTMLSelectListElement::OptionPartEventListener::Invoke(ExecutionContext*,
@@ -1355,7 +1380,11 @@ bool HTMLSelectListElement::OptionPartEventListener::HandleKeyboardEvent(
   return false;
 }
 
-const AtomicString& HTMLSelectListElement::FormControlType() const {
+FormControlType HTMLSelectListElement::FormControlType() const {
+  return FormControlType::kSelectList;
+}
+
+const AtomicString& HTMLSelectListElement::FormControlTypeAsString() const {
   DEFINE_STATIC_LOCAL(const AtomicString, selectlist, ("selectlist"));
   return selectlist;
 }
@@ -1366,7 +1395,7 @@ void HTMLSelectListElement::DefaultEventHandler(Event& event) {
   }
 
   if (event.type() == event_type_names::kChange) {
-    user_has_edited_the_field_ = true;
+    SetUserHasEditedTheField();
   }
 }
 
@@ -1419,7 +1448,7 @@ void HTMLSelectListElement::CloneNonAttributePropertiesFrom(
     NodeCloningData& data) {
   const auto& source_element =
       static_cast<const HTMLSelectListElement&>(source);
-  user_has_edited_the_field_ = source_element.user_has_edited_the_field_;
+  interacted_state_ = source_element.interacted_state_;
   HTMLFormControlElement::CloneNonAttributePropertiesFrom(source, data);
 }
 
@@ -1492,6 +1521,7 @@ void HTMLSelectListElement::Trace(Visitor* visitor) const {
   visitor->Trace(marker_slot_);
   visitor->Trace(selected_value_slot_);
   visitor->Trace(options_slot_);
+  visitor->Trace(default_listbox_);
   visitor->Trace(selected_option_);
   visitor->Trace(selected_option_when_listbox_opened_);
   visitor->Trace(suggested_option_);

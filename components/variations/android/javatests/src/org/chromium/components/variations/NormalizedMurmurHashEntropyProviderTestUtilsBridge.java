@@ -4,7 +4,7 @@
 
 package org.chromium.components.variations;
 
-import org.chromium.base.annotations.NativeMethods;
+import org.jni_zero.NativeMethods;
 
 /**
  * Bridge used by {@link NormalizedMurmurHashEntropyProviderTest}. Provides access to the native
@@ -18,13 +18,14 @@ public class NormalizedMurmurHashEntropyProviderTestUtilsBridge {
 
     public static double getEntropyForTrial(
             int randomizationSeed, int entropyValue, int entropyRange) {
-        return NormalizedMurmurHashEntropyProviderTestUtilsBridgeJni.get().getEntropyForTrial(
-                randomizationSeed, entropyValue, entropyRange);
+        return NormalizedMurmurHashEntropyProviderTestUtilsBridgeJni.get()
+                .getEntropyForTrial(randomizationSeed, entropyValue, entropyRange);
     }
 
     @NativeMethods
     interface Natives {
         int murmurHash16(int seed, int data);
+
         double getEntropyForTrial(int randomizationSeed, int entropyValue, int entropyRange);
     }
 }

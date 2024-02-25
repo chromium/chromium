@@ -55,8 +55,7 @@ void BackgroundSyncContext::FireBackgroundSyncEventsAcrossPartitions(
 
 void BackgroundSyncContextImpl::Init(
     const scoped_refptr<ServiceWorkerContextWrapper>& service_worker_context,
-    const scoped_refptr<DevToolsBackgroundServicesContextImpl>&
-        devtools_context) {
+    DevToolsBackgroundServicesContextImpl& devtools_context) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   CreateBackgroundSyncManager(service_worker_context, devtools_context);
@@ -184,12 +183,12 @@ void BackgroundSyncContextImpl::FireBackgroundSyncEvents(
 
 void BackgroundSyncContextImpl::CreateBackgroundSyncManager(
     scoped_refptr<ServiceWorkerContextWrapper> service_worker_context,
-    scoped_refptr<DevToolsBackgroundServicesContextImpl> devtools_context) {
+    DevToolsBackgroundServicesContextImpl& devtools_context) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(!background_sync_manager_);
 
   background_sync_manager_ = BackgroundSyncManager::Create(
-      std::move(service_worker_context), std::move(devtools_context));
+      std::move(service_worker_context), devtools_context);
 }
 
 }  // namespace content

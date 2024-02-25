@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_EXTENSIONS_UNPACKED_INSTALLER_H_
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <utility>
 #include <vector>
@@ -18,7 +19,6 @@
 #include "extensions/browser/api/declarative_net_request/ruleset_install_pref.h"
 #include "extensions/browser/preload_check.h"
 #include "extensions/common/manifest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 class Profile;
 
@@ -177,13 +177,13 @@ class UnpackedInstaller
   CompletionCallback callback_;
 
   // Override default file access.
-  absl::optional<bool> allow_file_access_;
+  std::optional<bool> allow_file_access_;
 
   // Override default incognito access.
-  absl::optional<bool> allow_incognito_access_;
+  std::optional<bool> allow_incognito_access_;
 
   // Specify an install param.
-  absl::optional<std::string> install_param_;
+  std::optional<std::string> install_param_;
 };
 
 }  // namespace extensions

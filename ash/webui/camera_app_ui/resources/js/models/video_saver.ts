@@ -145,8 +145,9 @@ export class GifSaver {
       private readonly blobs: Blob[],
       private readonly processor: Comlink.Remote<VideoProcessor>) {}
 
-  async write(frame: Uint8ClampedArray): Promise<void> {
-    await this.processor.write(new Blob([frame]));
+  write(frame: Uint8ClampedArray): void {
+    // processor.write does queuing internally.
+    void this.processor.write(new Blob([frame]));
   }
 
   /**
@@ -192,7 +193,8 @@ class TimeLapseFixedSpeedSaver {
       private readonly processor: Comlink.Remote<VideoProcessor>) {}
 
   write(blob: Blob, frameNo: number): void {
-    this.processor.write(blob);
+    // processor.write does queuing internally.
+    void this.processor.write(blob);
     this.maxWrittenFrame = frameNo;
   }
 
@@ -503,7 +505,8 @@ export class TimeLapseSaver {
       Promise<TimeLapseSaver> {
     const encoderSupport =
         await VideoEncoder.isConfigSupported(encoderArgs.encoderConfig);
-    if (!encoderSupport.supported) {
+    if (encoderSupport.supported === null ||
+        encoderSupport.supported === undefined || !encoderSupport.supported) {
       throw new Error('Video encoder is not supported.');
     }
 

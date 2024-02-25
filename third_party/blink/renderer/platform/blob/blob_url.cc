@@ -49,7 +49,8 @@ String BlobURL::GetOrigin(const KURL& url) {
 
   unsigned start_index = url.PathStart();
   unsigned end_index = url.PathAfterLastSlash();
-  return url.GetString().Substring(start_index, end_index - start_index - 1);
+  return url.GetString().GetString().Substring(start_index,
+                                               end_index - start_index - 1);
 }
 
 KURL BlobURL::CreateBlobURL(const String& origin_string) {

@@ -5,13 +5,13 @@
 #include "services/network/cors/preflight_result.h"
 
 #include <string>
+#include <string_view>
 #include <vector>
 
 #include "base/feature_list.h"
 #include "base/memory/ptr_util.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/string_number_conversions.h"
-#include "base/strings/string_piece.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "base/time/default_tick_clock.h"
@@ -52,7 +52,7 @@ base::TimeTicks Now() {
 }
 
 base::TimeDelta ParseAccessControlMaxAge(
-    const absl::optional<std::string>& max_age) {
+    const std::optional<std::string>& max_age) {
   if (!max_age) {
     return kDefaultTimeout;
   }
@@ -81,7 +81,7 @@ base::TimeDelta ParseAccessControlMaxAge(
 // Parses `string` as a Access-Control-Allow-* header value, storing the result
 // in `set`. This function returns false when `string` does not satisfy the
 // syntax here: https://fetch.spec.whatwg.org/#http-new-header-syntax.
-bool ParseAccessControlAllowList(const absl::optional<std::string>& string,
+bool ParseAccessControlAllowList(const std::optional<std::string>& string,
                                  base::flat_set<std::string>* set,
                                  bool insert_in_lower_case) {
   DCHECK(set);
@@ -91,7 +91,7 @@ bool ParseAccessControlAllowList(const absl::optional<std::string>& string,
 
   net::HttpUtil::ValuesIterator it(string->begin(), string->end(), ',', true);
   while (it.GetNext()) {
-    base::StringPiece value = it.value_piece();
+    std::string_view value = it.value_piece();
     if (!net::HttpUtil::IsToken(value)) {
       set->clear();
       return false;
@@ -104,7 +104,7 @@ bool ParseAccessControlAllowList(const absl::optional<std::string>& string,
 
 // Joins the strings in the given `set ` with commas.
 std::string JoinSet(const base::flat_set<std::string>& set) {
-  std::vector<base::StringPiece> values(set.begin(), set.end());
+  std::vector<std::string_view> values(set.begin(), set.end());
   return base::JoinString(values, ",");
 }
 
@@ -119,13 +119,13 @@ void PreflightResult::SetTickClockForTesting(
 // static
 std::unique_ptr<PreflightResult> PreflightResult::Create(
     const mojom::CredentialsMode credentials_mode,
-    const absl::optional<std::string>& allow_methods_header,
-    const absl::optional<std::string>& allow_headers_header,
-    const absl::optional<std::string>& max_age_header,
-    absl::optional<mojom::CorsError>* detected_error) {
+    const std::optional<std::string>& allow_methods_header,
+    const std::optional<std::string>& allow_headers_header,
+    const std::optional<std::string>& max_age_header,
+    std::optional<mojom::CorsError>* detected_error) {
   std::unique_ptr<PreflightResult> result =
       base::WrapUnique(new PreflightResult(credentials_mode));
-  absl::optional<mojom::CorsError> error =
+  std::optional<mojom::CorsError> error =
       result->Parse(allow_methods_header, allow_headers_header, max_age_header);
   if (error) {
     if (detected_error)
@@ -140,7 +140,7 @@ PreflightResult::PreflightResult(const mojom::CredentialsMode credentials_mode)
 
 PreflightResult::~PreflightResult() = default;
 
-absl::optional<CorsErrorStatus> PreflightResult::EnsureAllowedCrossOriginMethod(
+std::optional<CorsErrorStatus> PreflightResult::EnsureAllowedCrossOriginMethod(
     const std::string& method,
     bool acam_preflight_spec_conformant) const {
   // `normalized_method_allowed`: Request method is normalized to upper case,
@@ -180,18 +180,17 @@ absl::optional<CorsErrorStatus> PreflightResult::EnsureAllowedCrossOriginMethod(
                            : normalized_method_allowed;
 
   if (allowed) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   if (!credentials_ && methods_.find("*") != methods_.end())
-    return absl::nullopt;
+    return std::nullopt;
 
   return CorsErrorStatus(mojom::CorsError::kMethodDisallowedByPreflightResponse,
                          method);
 }
 
-absl::optional<CorsErrorStatus>
-PreflightResult::EnsureAllowedCrossOriginHeaders(
+std::optional<CorsErrorStatus> PreflightResult::EnsureAllowedCrossOriginHeaders(
     const net::HttpRequestHeaders& headers,
     bool is_revalidating,
     NonWildcardRequestHeadersSupport non_wildcard_request_headers_support)
@@ -210,7 +209,7 @@ PreflightResult::EnsureAllowedCrossOriginHeaders(
         return error_status;
       }
     }
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   // Forbidden headers are forbidden to be used by JavaScript, and checked
@@ -226,7 +225,7 @@ PreflightResult::EnsureAllowedCrossOriginHeaders(
           mojom::CorsError::kHeaderDisallowedByPreflightResponse, name);
     }
   }
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 bool PreflightResult::IsExpired() const {
@@ -256,10 +255,10 @@ bool PreflightResult::EnsureAllowedRequest(
   return true;
 }
 
-absl::optional<mojom::CorsError> PreflightResult::Parse(
-    const absl::optional<std::string>& allow_methods_header,
-    const absl::optional<std::string>& allow_headers_header,
-    const absl::optional<std::string>& max_age_header) {
+std::optional<mojom::CorsError> PreflightResult::Parse(
+    const std::optional<std::string>& allow_methods_header,
+    const std::optional<std::string>& allow_headers_header,
+    const std::optional<std::string>& max_age_header) {
   DCHECK(methods_.empty());
   DCHECK(headers_.empty());
 
@@ -274,7 +273,7 @@ absl::optional<mojom::CorsError> PreflightResult::Parse(
   const base::TimeDelta expiry_delta = ParseAccessControlMaxAge(max_age_header);
   absolute_expiry_time_ = Now() + expiry_delta;
 
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 bool PreflightResult::HasAuthorizationCoveredByWildcard(
@@ -288,10 +287,9 @@ bool PreflightResult::HasAuthorizationCoveredByWildcard(
 }
 
 base::Value::Dict PreflightResult::NetLogParams() const {
-  base::Value::Dict dict;
-  dict.Set("access-control-allow-methods", JoinSet(methods_));
-  dict.Set("access-control-allow-headers", JoinSet(headers_));
-  return dict;
+  return base::Value::Dict()
+      .Set("access-control-allow-methods", JoinSet(methods_))
+      .Set("access-control-allow-headers", JoinSet(headers_));
 }
 
 }  // namespace network::cors

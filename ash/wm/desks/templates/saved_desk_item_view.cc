@@ -6,7 +6,8 @@
 
 #include <string>
 
-#include "ash/accessibility/accessibility_controller_impl.h"
+#include "ash/accessibility/accessibility_controller.h"
+#include "ash/public/cpp/style/color_provider.h"
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
@@ -23,12 +24,12 @@
 #include "ash/wm/desks/templates/saved_desk_name_view.h"
 #include "ash/wm/desks/templates/saved_desk_presenter.h"
 #include "ash/wm/desks/templates/saved_desk_util.h"
-#include "ash/wm/overview/overview_constants.h"
 #include "ash/wm/overview/overview_controller.h"
+#include "ash/wm/overview/overview_focus_cycler.h"
 #include "ash/wm/overview/overview_grid.h"
-#include "ash/wm/overview/overview_highlight_controller.h"
 #include "ash/wm/overview/overview_session.h"
 #include "ash/wm/overview/overview_utils.h"
+#include "ash/wm/wm_constants.h"
 #include "base/i18n/time_formatting.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
@@ -145,7 +146,8 @@ SavedDeskItemView::SavedDeskItemView(std::unique_ptr<DeskTemplate> saved_desk)
                               .CopyAddressTo(&name_view_)
                               .SetController(this)
                               .SetText(saved_desk_name)
-                              .SetAccessibleName(saved_desk_name)
+                              .SetAccessibleName(l10n_util::GetStringUTF16(
+                                  IDS_ASH_DESKS_DESK_NAME))
                               .SetReadOnly(!saved_desk_->IsModifiable())
                               // Use the focus behavior specified by the
                               // subclass of `SavedDeskNameView` unless the
@@ -277,12 +279,12 @@ SavedDeskItemView::SavedDeskItemView(std::unique_ptr<DeskTemplate> saved_desk)
                                                 kSaveDeskCornerRadius);
 
   views::FocusRing* focus_ring =
-      StyleUtil::SetUpFocusRingForView(this, kFocusRingHaloInset);
+      StyleUtil::SetUpFocusRingForView(this, kWindowMiniViewFocusRingHaloInset);
   focus_ring->SetHasFocusPredicate(
       base::BindRepeating([](const views::View* view) {
         const auto* v = views::AsViewClass<SavedDeskItemView>(view);
         CHECK(v);
-        return v->IsViewHighlighted();
+        return v->is_focused();
       }));
   focus_ring->SetColorId(cros_tokens::kCrosSysFocusRing);
 
@@ -361,7 +363,7 @@ void SavedDeskItemView::ReplaceSavedDesk(const base::Uuid& uuid) {
   // since we only record the delete operation when the user specifically
   // deletes an entry.
   if (auto* presenter = saved_desk_util::GetSavedDeskPresenter()) {
-    presenter->DeleteEntry(uuid, /*record_for_type=*/absl::nullopt);
+    presenter->DeleteEntry(uuid, /*record_for_type=*/std::nullopt);
     UpdateSavedDeskName();
     RecordReplaceSavedDeskHistogram(saved_desk_->type());
   }
@@ -385,7 +387,6 @@ void SavedDeskItemView::UpdateSavedDesk(
   auto new_name = saved_desk_->template_name();
   DCHECK(!new_name.empty());
   name_view_->SetText(new_name);
-  name_view_->SetAccessibleName(new_name);
   SetAccessibleName(new_name);
 
   // This will trigger `name_view_` to compute its new preferred bounds and
@@ -412,8 +413,8 @@ void SavedDeskItemView::GetAccessibleNodeData(ui::AXNodeData* node_data) {
           IDS_ASH_DESKS_TEMPLATES_LIBRARY_SAVED_DESK_GRID_ITEM_EXTRA_ACCESSIBLE_DESCRIPTION));
 }
 
-void SavedDeskItemView::Layout() {
-  views::View::Layout();
+void SavedDeskItemView::Layout(PassKey) {
+  LayoutSuperclass<views::View>(this);
 
   if (delete_button_) {
     const gfx::Size delete_button_size = delete_button_->GetPreferredSize();
@@ -454,16 +455,14 @@ void SavedDeskItemView::OnViewFocused(views::View* observed_view) {
   hover_container_->layer()->SetOpacity(0.0f);
   icon_container_view_->layer()->SetOpacity(1.0f);
 
-  // Set the Overview highlight to move focus with the `name_view_`.
-  auto* highlight_controller = Shell::Get()
-                                   ->overview_controller()
-                                   ->overview_session()
-                                   ->highlight_controller();
-  if (highlight_controller->IsFocusHighlightVisible()) {
-    highlight_controller->MoveHighlightToView(name_view_);
+  // Move the overview focus ring to `name_view_`.
+  auto* focus_cycler =
+      Shell::Get()->overview_controller()->overview_session()->focus_cycler();
+  if (focus_cycler->IsFocusVisible()) {
+    focus_cycler->MoveFocusToView(name_view_);
 
     // Update a11y focus window.
-    highlight_controller->UpdateA11yFocusWindow(name_view_);
+    focus_cycler->UpdateA11yFocusWindow(name_view_);
   }
 
   if (!defer_select_all_)
@@ -514,7 +513,7 @@ void SavedDeskItemView::OnViewBlurred(views::View* observed_view) {
     for (auto& overview_grid : overview_session->grid_list()) {
       if (SavedDeskLibraryView* library_view =
               overview_grid->GetSavedDeskLibraryView()) {
-        for (auto* grid_view : library_view->grid_views()) {
+        for (ash::SavedDeskGridView* grid_view : library_view->grid_views()) {
           grid_view->SortEntries(/*order_first_uuid=*/{});
         }
       }
@@ -546,13 +545,13 @@ void SavedDeskItemView::OnViewBlurred(views::View* observed_view) {
 }
 
 void SavedDeskItemView::OnFocus() {
-  UpdateOverviewHighlightForFocus(this);
-  OnViewHighlighted();
+  MoveFocusToView(this);
+  OnFocusableViewFocused();
   View::OnFocus();
 }
 
 void SavedDeskItemView::OnBlur() {
-  OnViewUnhighlighted();
+  OnFocusableViewBlurred();
   View::OnBlur();
 }
 
@@ -705,8 +704,8 @@ void SavedDeskItemView::OnDeleteButtonPressed() {
     return;
 
   controller->ShowDeleteDialog(
-      GetWidget()->GetNativeWindow()->GetRootWindow(),
-      name_view_->GetAccessibleName(), saved_desk_->type(),
+      GetWidget()->GetNativeWindow()->GetRootWindow(), name_view_->GetText(),
+      saved_desk_->type(),
       base::BindOnce(&SavedDeskItemView::OnDeleteSavedDesk,
                      weak_ptr_factory_.GetWeakPtr()));
 }
@@ -734,7 +733,6 @@ void SavedDeskItemView::OnSavedDeskNameChanged(const std::u16string& new_name) {
 
   DCHECK(!new_name.empty());
   name_view_->SetText(new_name);
-  name_view_->SetAccessibleName(new_name);
   name_view_->ResetTemporaryName();
   SetAccessibleName(new_name);
 
@@ -747,28 +745,28 @@ views::View* SavedDeskItemView::GetView() {
   return this;
 }
 
-void SavedDeskItemView::MaybeActivateHighlightedView() {
+void SavedDeskItemView::MaybeActivateFocusedView() {
   MaybeLaunchSavedDesk();
 }
 
-void SavedDeskItemView::MaybeCloseHighlightedView(bool primary_action) {
+void SavedDeskItemView::MaybeCloseFocusedView(bool primary_action) {
   if (primary_action)
     OnDeleteButtonPressed();
 }
 
-void SavedDeskItemView::MaybeSwapHighlightedView(bool right) {}
+void SavedDeskItemView::MaybeSwapFocusedView(bool right) {}
 
-void SavedDeskItemView::OnViewHighlighted() {
+void SavedDeskItemView::OnFocusableViewFocused() {
   views::FocusRing::Get(this)->SchedulePaint();
 
   ScrollViewToVisible();
 }
 
-void SavedDeskItemView::OnViewUnhighlighted() {
+void SavedDeskItemView::OnFocusableViewBlurred() {
   views::FocusRing::Get(this)->SchedulePaint();
 }
 
-BEGIN_METADATA(SavedDeskItemView, views::Button)
+BEGIN_METADATA(SavedDeskItemView)
 END_METADATA
 
 }  // namespace ash

@@ -1,0 +1,28 @@
+[
+  {
+    "os": [
+      "chromeos_ash"
+    ],
+    "policy_pref_mapping_tests": [
+      {
+        "policies": {
+          "NetworkThrottlingEnabled": {
+            "download_rate_kbits": "5600",
+            "enabled": "true",
+            "upload_rate_kbits": "5600"
+          }
+        },
+        "prefs": {
+          "net.throttling_enabled": {
+            "location": "local_state",
+            "value": {
+              "download_rate_kbits": "5600",
+              "enabled": "true",
+              "upload_rate_kbits": "5600"
+            }
+          }
+        }
+      }
+    ]
+  }
+]

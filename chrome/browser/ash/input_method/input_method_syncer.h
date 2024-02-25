@@ -79,7 +79,7 @@ class InputMethodSyncer : public sync_preferences::PrefServiceSyncableObserver {
   StringPrefMember preload_engines_syncable_;
   StringPrefMember enabled_imes_syncable_;
 
-  raw_ptr<sync_preferences::PrefServiceSyncable, ExperimentalAsh> prefs_;
+  raw_ptr<sync_preferences::PrefServiceSyncable> prefs_;
   scoped_refptr<InputMethodManager::State> ime_state_;
 
   // Used to ignore PrefChanged events while InputMethodManager is merging.

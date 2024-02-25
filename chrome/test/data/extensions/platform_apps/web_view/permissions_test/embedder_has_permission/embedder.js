@@ -57,6 +57,10 @@ embedder.setUpLoadStop_ = function(webview, testName) {
   window.console.log('embedder.setUpLoadStop_');
   var onWebViewLoadStop = function(e) {
     window.console.log('embedder.onWebViewLoadStop');
+    // User activation is required to use the `requestDevice` method of HID API.
+    // The guest script doesn't have access to `chrome.test.runWithUserGesture`,
+    // so we have an ad hoc handler in the browser to do the activation.
+    chrome.test.sendMessage('performUserActivationInWebview');
     // Send post message to <webview> when it's ready to receive them.
     var msgArray = ['check-permissions', '' + testName];
     window.console.log('embedder.webview.postMessage');
@@ -235,6 +239,47 @@ function testDenyMedia() {
   embedder.registerAndWaitForPostMessage_('testMedia', 'access-denied');
 }
 
+function testAllowHid() {
+  const webview = embedder.setUpGuest_();
+  const onPermissionRequest = function(e) {
+    e.request.allow();
+  };
+  webview.addEventListener('permissionrequest', onPermissionRequest);
+
+  embedder.setUpLoadStop_(webview, 'testHid');
+  embedder.registerAndWaitForPostMessage_('testHid', 'access-granted');
+}
+
+function testDenyHid() {
+  var webview = embedder.setUpGuest_();
+  var onPermissionRequest = function(e) {
+    e.request.deny();
+  };
+  webview.addEventListener('permissionrequest', onPermissionRequest);
+
+  embedder.setUpLoadStop_(webview, 'testHid');
+  embedder.registerAndWaitForPostMessage_('testHid', 'access-denied');
+}
+
+// Tests that closing the app window before the HID request is answered will
+// work correctly.
+// This is meant to verify that no mojo callbacks will be dropped in such case.
+function testHidCloseWindow() {
+  var webview = embedder.setUpGuest_();
+  var onPermissionRequest = function(e) {
+    // Intentionally leave the request pending. The test will continue on the
+    // C++ side.
+    e.preventDefault();
+    embedder.test.succeed();
+    // Prevent the automatic denial that would happen if the request were
+    // garbage collected.
+    window.keepRequestPending = e.request;
+  };
+  webview.addEventListener('permissionrequest', onPermissionRequest);
+
+  embedder.setUpLoadStop_(webview, 'testHid');
+}
+
 embedder.test.testList = {
   'testAllowGeolocation': testAllowGeolocation,
   'testDenyGeolocation': testDenyGeolocation,
@@ -243,7 +288,10 @@ embedder.test.testList = {
   'testAllowMicrophone': testAllowMicrophone,
   'testDenyMicrophone': testDenyMicrophone,
   'testAllowMedia': testAllowMedia,
-  'testDenyMedia': testDenyMedia
+  'testDenyMedia': testDenyMedia,
+  'testAllowHid': testAllowHid,
+  'testDenyHid': testDenyHid,
+  'testHidCloseWindow': testHidCloseWindow,
 };
 
 onload = function() {

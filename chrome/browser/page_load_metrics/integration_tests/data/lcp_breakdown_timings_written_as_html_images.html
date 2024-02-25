@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<title>LCP Breakdown Timings: Image Added As HTML Content</title>
+
+<head>
+  <script src="resources/util.js"></script>
+</head>
+
+<body>
+  <div id="test"></div>div>
+  <script>
+    const WriteToDomAsInnerHtml = () => {
+      var el = document.getElementById("test");
+      el.innerHTML = '<img src="/images/lcp-256x256.png">';
+    }
+    const WriteToDomAsOuterHtml = () => {
+      var el = document.getElementById("test");
+      el.outerHTML = '<img src="/images/lcp-256x256.png">';
+    }
+
+    const AddImageByScript = (fn) => {
+      if (document.readyState === 'ready' || document.readyState === 'complete') {
+        fn();
+      } else {
+        document.onreadystatechange = function () {
+          if (document.readyState == "complete") {
+            fn();
+          }
+        }
+      }
+    }
+  </script>
+</body>

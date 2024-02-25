@@ -11,11 +11,13 @@
 #include "base/functional/callback.h"
 #include "base/json/json_reader.h"
 #include "base/memory/ref_counted.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/no_destructor.h"
 #include "base/rust_buildflags.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/thread_pool.h"
 #include "base/time/time.h"
+#include "base/timer/elapsed_timer.h"
 #include "build/blink_buildflags.h"
 #include "build/build_config.h"
 #include "net/http/structured_headers.h"
@@ -72,13 +74,13 @@ class ValueParseRequest : public base::RefCounted<ValueParseRequest<T, V>> {
     return receiver;
   }
 
-  void OnServiceValue(absl::optional<V> value) {
-    OnServiceValueOrError(std::move(value), absl::nullopt);
+  void OnServiceValue(std::optional<V> value) {
+    OnServiceValueOrError(std::move(value), std::nullopt);
   }
 
   // Handles a successful parse from the service.
-  void OnServiceValueOrError(absl::optional<V> value,
-                             const absl::optional<std::string>& error) {
+  void OnServiceValueOrError(std::optional<V> value,
+                             const std::optional<std::string>& error) {
     if (!callback() || is_cancelled_->data)
       return;
 
@@ -179,7 +181,6 @@ mojom::DataDecoderService* DataDecoder::GetService() {
 #else
       LOG(FATAL) << "data_decoder::ServiceProvider::Set() must be called "
                  << "before any instances of DataDecoder can be used.";
-      return nullptr;
 #endif
     }
 
@@ -192,19 +193,36 @@ mojom::DataDecoderService* DataDecoder::GetService() {
 
 void DataDecoder::ParseJson(const std::string& json,
                             ValueParseCallback callback) {
+  // Measure decoding time by intercepting the callback.
+  callback = base::BindOnce(
+      [](base::ElapsedTimer timer, ValueParseCallback callback,
+         base::expected<base::Value, std::string> result) {
+        base::UmaHistogramTimes("Security.DataDecoder.Json.DecodingTime",
+                                timer.Elapsed());
+        std::move(callback).Run(std::move(result));
+      },
+      base::ElapsedTimer(), std::move(callback));
+
+  if (base::JSONReader::UsingRust()) {
 #if BUILDFLAG(BUILD_RUST_JSON_READER)
-  // Parses JSON directly in the calling process using the memory-safe
-  // Rust parser.
-  base::ThreadPool::PostTaskAndReplyWithResult(
-      FROM_HERE, {base::TaskPriority::BEST_EFFORT},
-      base::BindOnce(
-          [](const std::string& json) {
-            return base::JSONReader::ReadAndReturnValueWithError(
-                json, base::JSON_PARSE_RFC);
-          },
-          json),
-      base::BindOnce(&ParsingComplete, cancel_requests_, std::move(callback)));
-#elif BUILDFLAG(IS_ANDROID)
+    base::ThreadPool::PostTaskAndReplyWithResult(
+        FROM_HERE, {base::TaskPriority::BEST_EFFORT},
+        base::BindOnce(
+            [](const std::string& json) {
+              return base::JSONReader::ReadAndReturnValueWithError(
+                  json, base::JSON_PARSE_RFC);
+            },
+            json),
+        base::BindOnce(&ParsingComplete, cancel_requests_,
+                       std::move(callback)));
+#else   // BUILDFLAG(BUILD_RUST_JSON_READER)
+    CHECK(false)
+        << "UseJsonParserFeature enabled, but not supported in this build.";
+#endif  // BUILDFLAG(BUILD_RUST_JSON_READER)
+    return;
+  }
+
+#if BUILDFLAG(IS_ANDROID)
   // For Android, if the full Rust parser is not available, we use the
   // in-process sanitizer and then parse in-process.
   JsonSanitizer::Sanitize(
@@ -225,7 +243,7 @@ void DataDecoder::ParseJson(const std::string& json,
                                       result.value(), base::JSON_PARSE_RFC));
                 },
                 std::move(callback), cancel_requests_));
-#else
+#else   // BUILDFLAG(IS_ANDROID)
   // Parse JSON out-of-process.
   auto request =
       base::MakeRefCounted<ValueParseRequest<mojom::JsonParser, base::Value>>(
@@ -236,7 +254,7 @@ void DataDecoder::ParseJson(const std::string& json,
       base::BindOnce(&ValueParseRequest<mojom::JsonParser,
                                         base::Value>::OnServiceValueOrError,
                      request));
-#endif
+#endif  // BUILDFLAG(IS_ANDROID)
 }
 
 // static

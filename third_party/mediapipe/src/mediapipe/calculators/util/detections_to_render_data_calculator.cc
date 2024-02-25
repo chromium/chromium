@@ -12,6 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+#include "absl/log/absl_check.h"
 #include "absl/memory/memory.h"
 #include "absl/strings/str_cat.h"
 #include "absl/strings/str_join.h"
@@ -23,7 +24,6 @@
 #include "mediapipe/framework/port/ret_check.h"
 #include "mediapipe/util/color.pb.h"
 #include "mediapipe/util/render_data.pb.h"
-#include "absl/log/absl_check.h"
 namespace mediapipe {
 
 namespace {
@@ -235,7 +235,7 @@ void DetectionsToRenderDataCalculator::AddLabels(
     const DetectionsToRenderDataCalculatorOptions& options,
     float text_line_height, RenderData* render_data) {
   ABSL_CHECK(detection.label().empty() || detection.label_id().empty() ||
-        detection.label_size() == detection.label_id_size())
+             detection.label_size() == detection.label_id_size())
       << "String or integer labels should be of same size. Or only one of them "
          "is present.";
   const auto num_labels =
@@ -363,8 +363,8 @@ void DetectionsToRenderDataCalculator::AddDetectionToRenderData(
     const DetectionsToRenderDataCalculatorOptions& options,
     RenderData* render_data) {
   ABSL_CHECK(detection.location_data().format() == LocationData::BOUNDING_BOX ||
-        detection.location_data().format() ==
-            LocationData::RELATIVE_BOUNDING_BOX)
+             detection.location_data().format() ==
+                 LocationData::RELATIVE_BOUNDING_BOX)
       << "Only Detection with formats of BOUNDING_BOX or RELATIVE_BOUNDING_BOX "
          "are supported.";
   double text_line_height;

@@ -9,6 +9,7 @@
 #include "base/strings/string_number_conversions.h"
 #include "chrome/browser/metrics/chrome_metrics_service_accessor.h"
 #include "chrome/browser/safe_browsing/download_protection/download_protection_service.h"
+#include "components/safe_browsing/content/browser/client_report_util.h"
 #include "components/safe_browsing/content/browser/safe_browsing_navigation_observer_manager.h"
 #include "components/safe_browsing/content/browser/ui_manager.h"
 #include "components/safe_browsing/core/common/features.h"
@@ -56,9 +57,7 @@ void DownloadUrlSBClient::OnDownloadDestroyed(
 }
 
 void DownloadUrlSBClient::StartCheck() {
-  DCHECK_CURRENTLY_ON(base::FeatureList::IsEnabled(kSafeBrowsingOnUIThread)
-                          ? content::BrowserThread::UI
-                          : content::BrowserThread::IO);
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   if (!database_manager_.get() ||
       database_manager_->CheckDownloadUrl(url_chain_, this)) {
     CheckDone(SB_THREAT_TYPE_SAFE);
@@ -111,8 +110,7 @@ void DownloadUrlSBClient::CheckDone(SBThreatType threat_type) {
 void DownloadUrlSBClient::ReportMalware(SBThreatType threat_type) {
   std::string post_data;
   if (!sha256_hash_.empty()) {
-    post_data +=
-        base::HexEncode(sha256_hash_.data(), sha256_hash_.size()) + "\n";
+    post_data += base::HexEncode(sha256_hash_) + "\n";
   }
   for (size_t i = 0; i < url_chain_.size(); ++i) {
     post_data += url_chain_[i].spec() + "\n";
@@ -133,6 +131,11 @@ void DownloadUrlSBClient::ReportMalware(SBThreatType threat_type) {
 
   ui_manager_->MaybeReportSafeBrowsingHit(
       std::move(hit_report), content::DownloadItemUtils::GetWebContents(item_));
+
+  if (base::FeatureList::IsEnabled(
+          safe_browsing::kCreateWarningShownClientSafeBrowsingReports)) {
+    CreateAndMaybeSendClientSafeBrowsingWarningShownReport(post_data);
+  }
 }
 
 void DownloadUrlSBClient::IdentifyReferrerChain() {
@@ -147,6 +150,28 @@ void DownloadUrlSBClient::IdentifyReferrerChain() {
 void DownloadUrlSBClient::UpdateDownloadCheckStats(SBStatsType stat_type) {
   UMA_HISTOGRAM_ENUMERATION("SB2.DownloadChecks", stat_type,
                             DOWNLOAD_CHECKS_MAX);
+}
+
+void DownloadUrlSBClient::
+    CreateAndMaybeSendClientSafeBrowsingWarningShownReport(
+        std::string post_data) {
+  std::unique_ptr<ClientSafeBrowsingReportRequest> report =
+      std::make_unique<ClientSafeBrowsingReportRequest>();
+  report->set_url(url_chain_.back().spec());
+  report->set_page_url(url_chain_.front().spec());
+  report->set_referrer_url(referrer_url_.spec());
+  report->set_type(ClientSafeBrowsingReportRequest::WARNING_SHOWN);
+  report->mutable_client_properties()->set_url_api_type(
+      client_report_utils::GetUrlApiTypeForThreatSource(
+          database_manager_->GetNonBrowseUrlThreatSource()));
+  report->set_warning_shown_timestamp_msec(
+      base::Time::Now().InMillisecondsSinceUnixEpoch());
+  report->mutable_warning_shown_info()->set_warning_type(
+      ClientSafeBrowsingReportRequest::WarningShownInfo::
+          BINARY_MALWARE_DOWNLOAD_WARNING);
+  report->mutable_warning_shown_info()->set_post_data(post_data);
+  ui_manager_->MaybeSendClientSafeBrowsingWarningShownReport(
+      std::move(report), content::DownloadItemUtils::GetWebContents(item_));
 }
 
 }  // namespace safe_browsing

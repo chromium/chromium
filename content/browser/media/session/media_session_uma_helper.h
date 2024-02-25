@@ -29,10 +29,30 @@ class CONTENT_EXPORT MediaSessionUmaHelper {
     kMaxValue = kSystemTransientDuck,
   };
 
+  // These values are persisted to logs. Entries should not be renumbered and
+  // numeric values should never be reused.
+  enum class EnterPictureInPictureType {
+    // EnterPictureInPicture was called for the default handler provided by
+    // MediaSessionImpl.
+    kDefaultHandler = 0,
+
+    // EnterPictureInPicture was called for an enterpictureinpicture handler
+    // provided by the website.
+    kRegisteredManual = 1,
+
+    // EnterAutoPictureInPicture was called for an enterpictureinpicture handler
+    // provided by the website.
+    kRegisteredAutomatic = 2,
+
+    kMaxValue = kRegisteredAutomatic,
+  };
+
   MediaSessionUmaHelper();
   ~MediaSessionUmaHelper();
 
   void RecordSessionSuspended(MediaSessionSuspendedSource source) const;
+
+  void RecordEnterPictureInPicture(EnterPictureInPictureType type) const;
 
   void OnSessionActive();
   void OnSessionSuspended();

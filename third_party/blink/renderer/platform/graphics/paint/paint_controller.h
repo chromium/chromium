@@ -6,15 +6,16 @@
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_GRAPHICS_PAINT_PAINT_CONTROLLER_H_
 
 #include <memory>
+#include <optional>
 #include <utility>
 
 #include "base/check_op.h"
 #include "base/dcheck_is_on.h"
 #include "base/memory/ptr_util.h"
+#include "base/memory/raw_ptr.h"
 #include "cc/input/hit_test_opaqueness.h"
 #include "cc/input/layer_selection_bound.h"
 #include "cc/paint/element_id.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/renderer/platform/geometry/layout_point.h"
 #include "third_party/blink/renderer/platform/graphics/paint/display_item.h"
 #include "third_party/blink/renderer/platform/graphics/paint/display_item_list.h"
@@ -60,7 +61,7 @@ struct FrameFirstPaint {
         text_painted(false),
         image_painted(false) {}
 
-  const void* frame;
+  raw_ptr<const void, DanglingUntriaged> frame;
   bool first_painted : 1;
   bool text_painted : 1;
   bool image_painted : 1;
@@ -125,7 +126,8 @@ class PLATFORM_EXPORT PaintController {
                          const gfx::Rect&,
                          TouchAction,
                          bool blocking_wheel,
-                         cc::HitTestOpaqueness);
+                         cc::HitTestOpaqueness,
+                         DisplayItem::Type type = DisplayItem::kHitTest);
 
   void RecordRegionCaptureData(const DisplayItemClient& client,
                                const RegionCaptureCropId& crop_id,
@@ -135,10 +137,11 @@ class PLATFORM_EXPORT PaintController {
       const DisplayItemClient&,
       DisplayItem::Type,
       const TransformPaintPropertyNode* scroll_translation,
-      const gfx::Rect&);
+      const gfx::Rect&,
+      cc::HitTestOpaqueness);
 
-  void RecordSelection(absl::optional<PaintedSelectionBound> start,
-                       absl::optional<PaintedSelectionBound> end,
+  void RecordSelection(std::optional<PaintedSelectionBound> start,
+                       std::optional<PaintedSelectionBound> end,
                        String debug_info);
   void RecordAnySelectionWasPainted() {
     paint_chunker_.RecordAnySelectionWasPainted();

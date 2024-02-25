@@ -28,9 +28,9 @@
 #include "third_party/blink/renderer/core/html/parser/html_preload_scanner.h"
 
 #include <memory>
+#include <optional>
 
 #include "base/task/sequenced_task_runner.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/mojom/fetch/fetch_api_request.mojom-blink.h"
 #include "third_party/blink/public/mojom/script/script_type.mojom-blink.h"
@@ -169,21 +169,34 @@ class TokenPreloadScanner::StartTagScanner {
   STACK_ALLOCATED();
 
  public:
-  StartTagScanner(const StringImpl* tag_impl,
-                  MediaValuesCached* media_values,
-                  SubresourceIntegrity::IntegrityFeatures features,
-                  TokenPreloadScanner::ScannerType scanner_type,
-                  const HashSet<String>* disabled_image_types)
+  StartTagScanner(
+      const StringImpl* tag_impl,
+      MediaValuesCached* media_values,
+      SubresourceIntegrity::IntegrityFeatures features,
+      TokenPreloadScanner::ScannerType scanner_type,
+      const HashSet<String>* disabled_image_types,
+      features::LcppPreloadLazyLoadImageType preload_lazy_load_image_type)
       : tag_impl_(tag_impl),
         media_values_(media_values),
         integrity_features_(features),
         scanner_type_(scanner_type),
-        disabled_image_types_(disabled_image_types) {
+        disabled_image_types_(disabled_image_types),
+        preload_lazy_load_image_type_(preload_lazy_load_image_type) {
+    switch (preload_lazy_load_image_type_) {
+      case features::LcppPreloadLazyLoadImageType::kCustomLazyLoading:
+      case features::LcppPreloadLazyLoadImageType::kAll:
+        use_data_src_attr_match_for_image_ = true;
+        break;
+      case features::LcppPreloadLazyLoadImageType::kNone:
+      case features::LcppPreloadLazyLoadImageType::kNativeLazyLoading:
+        use_data_src_attr_match_for_image_ = false;
+        break;
+    }
     if (Match(tag_impl_, html_names::kImgTag) ||
         Match(tag_impl_, html_names::kSourceTag) ||
         Match(tag_impl_, html_names::kLinkTag)) {
       source_size_ =
-          SizesAttributeParser(media_values_, String(), nullptr).length();
+          SizesAttributeParser(media_values_, String(), nullptr).Size();
       return;
     }
     if (!Match(tag_impl_, html_names::kInputTag) &&
@@ -232,18 +245,20 @@ class TokenPreloadScanner::StartTagScanner {
       const PictureData& picture_data,
       const CachedDocumentParameters& document_parameters,
       const PreloadRequest::ExclusionInfo* exclusion_info,
-      bool treat_links_as_in_body) {
+      bool treat_links_as_in_body,
+      bool is_potentially_lcp_element) {
     PreloadRequest::RequestType request_type =
         PreloadRequest::kRequestTypePreload;
-    absl::optional<ResourceType> type;
+    std::optional<ResourceType> type;
     if (ShouldPreconnect()) {
       request_type = PreloadRequest::kRequestTypePreconnect;
     } else {
       if (IsLinkRelPreload()) {
         request_type = PreloadRequest::kRequestTypeLinkRelPreload;
         type = ResourceTypeForLinkPreload();
-        if (type == absl::nullopt)
+        if (type == std::nullopt) {
           return nullptr;
+        }
       } else if (IsLinkRelModulePreload()) {
         request_type = PreloadRequest::kRequestTypeLinkRelPreload;
         type = ResourceType::kScript;
@@ -270,8 +285,9 @@ class TokenPreloadScanner::StartTagScanner {
       resource_width_ = source_size;
     }
 
-    if (type == absl::nullopt)
+    if (type == std::nullopt) {
       type = GetResourceType();
+    }
 
     // The element's 'referrerpolicy' attribute (if present) takes precedence
     // over the document's referrer policy.
@@ -312,17 +328,21 @@ class TokenPreloadScanner::StartTagScanner {
               : (is_async_ ? RenderBlockingBehavior::kPotentiallyBlocking
                            : RenderBlockingBehavior::kNonBlocking);
     } else if (is_script || type == ResourceType::kCSSStyleSheet) {
-      // CSS here is render blocking, as non blocking doesn't get preloaded.
-      // JS here is a blocking one, as others would've been caught by the
-      // previous condition.
+      // CSS here is render blocking unless it's disabled, as non blocking
+      // doesn't get preloaded. JS here is a blocking one, as others would've
+      // been caught by the previous condition.
       render_blocking_behavior =
-          treat_links_as_in_body ? RenderBlockingBehavior::kInBodyParserBlocking
-                                 : RenderBlockingBehavior::kBlocking;
+          type == ResourceType::kCSSStyleSheet && disabled_attr_set_
+              ? RenderBlockingBehavior::kNonBlocking
+          : treat_links_as_in_body
+              ? RenderBlockingBehavior::kInBodyParserBlocking
+              : RenderBlockingBehavior::kBlocking;
     }
     request->SetRenderBlockingBehavior(render_blocking_behavior);
 
     if (type == ResourceType::kImage && is_img &&
-        IsLazyLoadImageDeferable(document_parameters)) {
+        IsLazyLoadImageDeferable(document_parameters,
+                                 is_potentially_lcp_element)) {
       return nullptr;
     }
     // Do not set integrity metadata for <link> elements for destinations not
@@ -345,9 +365,9 @@ class TokenPreloadScanner::StartTagScanner {
       request->SetAttributionReportingEligibleImgOrScript(true);
     }
 
-    if (shared_storage_writable_) {
+    if (shared_storage_writable_opted_in_) {
       DCHECK(is_img);
-      request->SetSharedStorageWritable(true);
+      request->SetSharedStorageWritableOptedIn(true);
     }
 
     return request;
@@ -431,7 +451,11 @@ class TokenPreloadScanner::StartTagScanner {
     } else if (Match(attribute_name, html_names::kAttributionsrcAttr)) {
       attributionsrc_attr_set_ = true;
     } else if (Match(attribute_name, html_names::kSharedstoragewritableAttr)) {
-      shared_storage_writable_ = true;
+      shared_storage_writable_opted_in_ = true;
+    } else if (use_data_src_attr_match_for_image_ &&
+               Match(attribute_name, html_names::kDataSrcAttr) &&
+               img_src_url_.IsNull()) {
+      img_src_url_ = attribute_value;
     }
   }
 
@@ -501,6 +525,8 @@ class TokenPreloadScanner::StartTagScanner {
       SetFetchPriorityHint(attribute_value);
     } else if (Match(attribute_name, html_names::kBlockingAttr)) {
       blocking_attribute_value_ = attribute_value;
+    } else if (Match(attribute_name, html_names::kDisabledAttr)) {
+      disabled_attr_set_ = true;
     }
   }
 
@@ -569,10 +595,27 @@ class TokenPreloadScanner::StartTagScanner {
   }
 
   bool IsLazyLoadImageDeferable(
-      const CachedDocumentParameters& document_parameters) {
+      const CachedDocumentParameters& document_parameters,
+      bool is_potentially_lcp_element) {
     if (document_parameters.lazy_load_image_setting ==
         LocalFrame::LazyLoadImageSetting::kDisabled) {
       return false;
+    }
+
+    // LCPP experiment in crbug.com/1498777. If the image is potentially a LCP
+    // element, the scanner doesn't mark it as a deferable image regardless of
+    // whether it has loading="lazy" attribute or not, in order to make the LCP
+    // image load completion faster. An exception to this is "lazy load auto
+    // sizes" which must defer because sizes=auto requires layout information.
+    if (is_potentially_lcp_element && !source_size_is_auto_) {
+      switch (document_parameters.preload_lazy_load_image_type) {
+        case features::LcppPreloadLazyLoadImageType::kNativeLazyLoading:
+        case features::LcppPreloadLazyLoadImageType::kCustomLazyLoading:
+        case features::LcppPreloadLazyLoadImageType::kAll:
+          return false;
+        case features::LcppPreloadLazyLoadImageType::kNone:
+          break;
+      }
     }
 
     return loading_attr_value_ == LoadingAttributeValue::kLazy;
@@ -598,7 +641,7 @@ class TokenPreloadScanner::StartTagScanner {
     return charset_;
   }
 
-  absl::optional<ResourceType> ResourceTypeForLinkPreload() const {
+  std::optional<ResourceType> ResourceTypeForLinkPreload() const {
     DCHECK(link_is_preload_);
     return PreloadHelper::GetResourceTypeFromAsAttribute(as_attribute_value_);
   }
@@ -633,7 +676,7 @@ class TokenPreloadScanner::StartTagScanner {
            !url_to_load_.empty();
   }
 
-  bool ShouldPreloadLink(absl::optional<ResourceType>& type) const {
+  bool ShouldPreloadLink(std::optional<ResourceType>& type) const {
     if (link_is_style_sheet_) {
       return type_attribute_value_.empty() ||
              MIMETypeRegistry::IsSupportedStyleSheetMIMEType(
@@ -660,7 +703,7 @@ class TokenPreloadScanner::StartTagScanner {
     return false;
   }
 
-  bool ShouldPreload(absl::optional<ResourceType>& type) const {
+  bool ShouldPreload(std::optional<ResourceType>& type) const {
     if (url_to_load_.empty())
       return false;
     if (!matched_)
@@ -702,8 +745,9 @@ class TokenPreloadScanner::StartTagScanner {
   }
 
   void ParseSourceSize(const String& attribute_value) {
-    source_size_ =
-        SizesAttributeParser(media_values_, attribute_value, nullptr).length();
+    SizesAttributeParser sizes_parser(media_values_, attribute_value, nullptr);
+    source_size_ = sizes_parser.Size();
+    source_size_is_auto_ = sizes_parser.IsAuto();
     source_size_set_ = true;
   }
 
@@ -750,6 +794,7 @@ class TokenPreloadScanner::StartTagScanner {
   AtomicString resources_attribute_value_;
   bool nomodule_attribute_value_ = false;
   float source_size_ = 0;
+  bool source_size_is_auto_ = false;
   bool source_size_set_ = false;
   FetchParameters::DeferOption defer_ = FetchParameters::kNoDefer;
   CrossOriginAttributeValue cross_origin_ = kCrossOriginAttributeNotSet;
@@ -763,6 +808,7 @@ class TokenPreloadScanner::StartTagScanner {
       network::mojom::ReferrerPolicy::kDefault;
   bool integrity_attr_set_ = false;
   bool is_async_ = false;
+  bool disabled_attr_set_ = false;
   IntegrityMetadataSet integrity_metadata_;
   SubresourceIntegrity::IntegrityFeatures integrity_features_;
   LoadingAttributeValue loading_attr_value_ = LoadingAttributeValue::kAuto;
@@ -770,15 +816,18 @@ class TokenPreloadScanner::StartTagScanner {
   // For explanation, see TokenPreloadScanner's declaration.
   const HashSet<String>* disabled_image_types_;
   bool attributionsrc_attr_set_ = false;
-  bool shared_storage_writable_ = false;
-  absl::optional<float> resource_width_;
-  absl::optional<float> resource_height_;
+  bool shared_storage_writable_opted_in_ = false;
+  std::optional<float> resource_width_;
+  std::optional<float> resource_height_;
+  features::LcppPreloadLazyLoadImageType preload_lazy_load_image_type_;
+  bool use_data_src_attr_match_for_image_ = false;
 };
 
 TokenPreloadScanner::TokenPreloadScanner(
     const KURL& document_url,
     std::unique_ptr<CachedDocumentParameters> document_parameters,
-    const MediaValuesCached::MediaValuesCachedData& media_values_cached_data,
+    std::unique_ptr<MediaValuesCached::MediaValuesCachedData>
+        media_values_cached_data,
     const ScannerType scanner_type,
     Vector<ElementLocator> locators)
     : document_url_(document_url),
@@ -790,12 +839,15 @@ TokenPreloadScanner::TokenPreloadScanner(
       seen_img_(false),
       template_count_(0),
       document_parameters_(std::move(document_parameters)),
-      media_values_(
-          MakeGarbageCollected<MediaValuesCached>(media_values_cached_data)),
+      media_values_cached_data_(std::move(media_values_cached_data)),
       scanner_type_(scanner_type),
-      lcp_element_matcher_(std::move(locators)) {
-  DCHECK(document_parameters_.get());
-  DCHECK(media_values_.Get());
+      lcp_element_matcher_(
+          std::move(locators),
+          features::
+              kLCPCriticalPathPredictorEnableElementLocatorPerformanceImprovements
+                  .Get()) {
+  CHECK(document_parameters_.get());
+  CHECK(media_values_cached_data_.get());
   DCHECK(document_url.IsValid());
   css_scanner_.SetReferrerPolicy(document_parameters_->referrer_policy);
 }
@@ -806,7 +858,7 @@ static void HandleMetaViewport(
     const String& attribute_value,
     const CachedDocumentParameters* document_parameters,
     MediaValuesCached* media_values,
-    absl::optional<ViewportDescription>* viewport) {
+    std::optional<ViewportDescription>* viewport) {
   if (!document_parameters->viewport_meta_enabled)
     return;
   ViewportDescription description(ViewportDescription::kViewportMeta);
@@ -840,7 +892,7 @@ static void HandleMetaReferrer(const String& attribute_value,
 void TokenPreloadScanner::HandleMetaNameAttribute(
     const HTMLToken& token,
     MetaCHValues& meta_ch_values,
-    absl::optional<ViewportDescription>* viewport) {
+    std::optional<ViewportDescription>* viewport) {
   const HTMLToken::Attribute* name_attribute =
       token.GetAttributeItem(html_names::kNameAttr);
   if (!name_attribute)
@@ -855,7 +907,7 @@ void TokenPreloadScanner::HandleMetaNameAttribute(
   String content_attribute_value(content_attribute->Value());
   if (EqualIgnoringASCIICase(name_attribute_value, "viewport")) {
     HandleMetaViewport(content_attribute_value, document_parameters_.get(),
-                       media_values_.Get(), viewport);
+                       EnsureMediaValues(), viewport);
     return;
   }
 
@@ -869,7 +921,7 @@ void TokenPreloadScanner::Scan(const HTMLToken& token,
                                const SegmentedString& source,
                                PreloadRequestStream& requests,
                                MetaCHValues& meta_ch_values,
-                               absl::optional<ViewportDescription>* viewport,
+                               std::optional<ViewportDescription>* viewport,
                                bool* is_csp_meta_tag) {
   if (!document_parameters_->do_html_preload_scanning)
     return;
@@ -921,6 +973,10 @@ void TokenPreloadScanner::Scan(const HTMLToken& token,
       const StringImpl* tag_impl = TagImplFor(token.Data());
       const bool potentially_lcp_element =
           lcp_element_matcher_.ObserveStartTagAndReportMatch(tag_impl, token);
+      if (potentially_lcp_element) {
+        seen_potential_lcp_element_ = true;
+      }
+
       if (Match(tag_impl, html_names::kTemplateTag)) {
         bool is_declarative_shadow_root = false;
         const HTMLToken::Attribute* shadowrootmode_attribute =
@@ -975,9 +1031,7 @@ void TokenPreloadScanner::Scan(const HTMLToken& token,
                                      "content-security-policy")) {
             *is_csp_meta_tag = true;
           } else if (EqualIgnoringASCIICase(equiv_attribute_value,
-                                            http_names::kAcceptCH) &&
-                     RuntimeEnabledFeatures::
-                         ClientHintsMetaHTTPEquivAcceptCHEnabled()) {
+                                            http_names::kAcceptCH)) {
             const HTMLToken::Attribute* content_attribute =
                 token.GetAttributeItem(html_names::kContentAttr);
             if (content_attribute) {
@@ -988,9 +1042,7 @@ void TokenPreloadScanner::Scan(const HTMLToken& token,
                                   scanner_type_ == ScannerType::kMainDocument});
             }
           } else if (EqualIgnoringASCIICase(equiv_attribute_value,
-                                            http_names::kDelegateCH) &&
-                     RuntimeEnabledFeatures::
-                         ClientHintsMetaEquivDelegateCHEnabled()) {
+                                            http_names::kDelegateCH)) {
             const HTMLToken::Attribute* content_attribute =
                 token.GetAttributeItem(html_names::kContentAttr);
             if (content_attribute) {
@@ -1011,6 +1063,19 @@ void TokenPreloadScanner::Scan(const HTMLToken& token,
         seen_body_ = true;
       } else if (Match(tag_impl, html_names::kImgTag)) {
         seen_img_ = true;
+        if (base::FeatureList::IsEnabled(
+                features::kSimplifyLoadingTransparentPlaceholderImage)) {
+          // Skip trying to create a preload request if we know the image is a
+          // data URI, as we do not preload data URIs anyway.
+          const HTMLToken::Attribute* source_attribute =
+              token.GetAttributeItem(html_names::kSrcAttr);
+          if (source_attribute) {
+            String source_attribute_value(source_attribute->Value());
+            if (source_attribute_value.StartsWithIgnoringASCIICase("data:")) {
+              return;
+            }
+          }
+        }
       } else if (Match(tag_impl, html_names::kPictureTag)) {
         in_picture_ = true;
         picture_data_ = PictureData();
@@ -1023,18 +1088,23 @@ void TokenPreloadScanner::Scan(const HTMLToken& token,
         picture_data_.picked = false;
       }
 
+      MediaValuesCached* media_values = EnsureMediaValues();
       StartTagScanner scanner(
-          tag_impl, media_values_, document_parameters_->integrity_features,
-          scanner_type_, &document_parameters_->disabled_image_types);
+          tag_impl, media_values, document_parameters_->integrity_features,
+          scanner_type_, &document_parameters_->disabled_image_types,
+          document_parameters_->preload_lazy_load_image_type);
       scanner.ProcessAttributes(token.Attributes());
 
-      if (in_picture_ && media_values_->Width())
+      if (in_picture_ && media_values->Width()) {
         scanner.HandlePictureSourceURL(picture_data_);
-      if (in_style_)
+      }
+      if (in_style_) {
         css_scanner_.SetMediaMatches(scanner.GetMatched());
+      }
       std::unique_ptr<PreloadRequest> request = scanner.CreatePreloadRequest(
           predicted_base_element_url_, picture_data_, *document_parameters_,
-          exclusion_info_.get(), seen_img_ || seen_body_);
+          exclusion_info_.get(), seen_img_ || seen_body_,
+          potentially_lcp_element);
       if (request) {
         request->SetInitiatorPosition(
             TextPosition(source.CurrentLine(), source.CurrentColumn()));
@@ -1067,19 +1137,18 @@ std::unique_ptr<HTMLPreloadScanner> HTMLPreloadScanner::Create(
     HTMLParserOptions options,
     TokenPreloadScanner::ScannerType scanner_type) {
   Vector<ElementLocator> locators;
-  if (!features::kLCPCriticalPathPredictorDryRun.Get()) {
-    if (LocalFrame* frame = document.GetFrame()) {
-      if (LCPCriticalPathPredictor* lcpp = frame->GetLCPP()) {
-        locators = lcpp->lcp_element_locators();
-      }
+  if (LocalFrame* frame = document.GetFrame()) {
+    if (LCPCriticalPathPredictor* lcpp = frame->GetLCPP()) {
+      locators = lcpp->lcp_element_locators();
     }
   }
 
   return std::make_unique<HTMLPreloadScanner>(
       std::make_unique<HTMLTokenizer>(options), document.Url(),
       std::make_unique<CachedDocumentParameters>(&document),
-      MediaValuesCached::MediaValuesCachedData(document), scanner_type,
-      /* script_token_scanner=*/nullptr, TakePreloadFn(), locators);
+      std::make_unique<MediaValuesCached::MediaValuesCachedData>(document),
+      scanner_type, /* script_token_scanner=*/nullptr, TakePreloadFn(),
+      locators);
 }
 
 // static
@@ -1091,11 +1160,9 @@ HTMLPreloadScanner::BackgroundPtr HTMLPreloadScanner::CreateBackground(
   auto* document = parser->GetDocument();
 
   Vector<ElementLocator> locators;
-  if (!features::kLCPCriticalPathPredictorDryRun.Get()) {
-    if (LocalFrame* frame = document->GetFrame()) {
-      if (LCPCriticalPathPredictor* lcpp = frame->GetLCPP()) {
-        locators = lcpp->lcp_element_locators();
-      }
+  if (LocalFrame* frame = document->GetFrame()) {
+    if (LCPCriticalPathPredictor* lcpp = frame->GetLCPP()) {
+      locators = lcpp->lcp_element_locators();
     }
   }
 
@@ -1103,7 +1170,7 @@ HTMLPreloadScanner::BackgroundPtr HTMLPreloadScanner::CreateBackground(
       new HTMLPreloadScanner(
           std::make_unique<HTMLTokenizer>(options), document->Url(),
           std::make_unique<CachedDocumentParameters>(document),
-          MediaValuesCached::MediaValuesCachedData(*document),
+          std::make_unique<MediaValuesCached::MediaValuesCachedData>(*document),
           TokenPreloadScanner::ScannerType::kMainDocument,
           BackgroundHTMLScanner::ScriptTokenScanner::Create(parser),
           std::move(take_preload), locators),
@@ -1114,7 +1181,8 @@ HTMLPreloadScanner::HTMLPreloadScanner(
     std::unique_ptr<HTMLTokenizer> tokenizer,
     const KURL& document_url,
     std::unique_ptr<CachedDocumentParameters> document_parameters,
-    const MediaValuesCached::MediaValuesCachedData& media_values_cached_data,
+    std::unique_ptr<MediaValuesCached::MediaValuesCachedData>
+        media_values_cached_data,
     const TokenPreloadScanner::ScannerType scanner_type,
     std::unique_ptr<BackgroundHTMLScanner::ScriptTokenScanner>
         script_token_scanner,
@@ -1122,7 +1190,7 @@ HTMLPreloadScanner::HTMLPreloadScanner(
     Vector<ElementLocator> locators)
     : scanner_(document_url,
                std::move(document_parameters),
-               media_values_cached_data,
+               std::move(media_values_cached_data),
                scanner_type,
                std::move(locators)),
       tokenizer_(std::move(tokenizer)),
@@ -1180,6 +1248,10 @@ std::unique_ptr<PendingPreloadData> HTMLPreloadScanner::Scan(
       pending_data = std::make_unique<PendingPreloadData>();
     }
   }
+
+  pending_data->has_located_potential_lcp_element =
+      scanner_.HasLocatedPotentialLcpElement();
+
   return pending_data;
 }
 
@@ -1212,6 +1284,8 @@ CachedDocumentParameters::CachedDocumentParameters(Document* document) {
   } else {
     lazy_load_image_setting = LocalFrame::LazyLoadImageSetting::kDisabled;
   }
+  preload_lazy_load_image_type =
+      features::kLCPCriticalPathPredictorPreloadLazyLoadImageType.Get();
   probe::GetDisabledImageTypes(document->GetExecutionContext(),
                                &disabled_image_types);
 }

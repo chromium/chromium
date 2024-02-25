@@ -96,14 +96,20 @@ void MockPlatformNotificationService::GetDisplayedNotifications(
                                 true /* supports_synchronization */));
 }
 
+void MockPlatformNotificationService::GetDisplayedNotificationsForOrigin(
+    const GURL& origin,
+    DisplayedNotificationsCallback callback) {
+  GetDisplayedNotifications(std::move(callback));
+}
+
 void MockPlatformNotificationService::ScheduleTrigger(base::Time timestamp) {
   if (timestamp > base::Time::Now())
     return;
 
   context_->ForEachLoadedStoragePartition(
-      base::BindRepeating([](content::StoragePartition* partition) {
+      [](content::StoragePartition* partition) {
         partition->GetPlatformNotificationContext()->TriggerNotifications();
-      }));
+      });
 }
 
 base::Time MockPlatformNotificationService::ReadNextTriggerTimestamp() {
@@ -119,8 +125,8 @@ void MockPlatformNotificationService::RecordNotificationUkmEvent(
 
 void MockPlatformNotificationService::SimulateClick(
     const std::string& title,
-    const absl::optional<int>& action_index,
-    const absl::optional<std::u16string>& reply) {
+    const std::optional<int>& action_index,
+    const std::optional<std::u16string>& reply) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   const auto notification_id_iter = notification_id_map_.find(title);
   if (notification_id_iter == notification_id_map_.end())

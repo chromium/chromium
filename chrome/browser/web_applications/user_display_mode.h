@@ -10,12 +10,19 @@
 
 namespace web_app {
 
-::sync_pb::WebAppSpecifics::UserDisplayMode
+sync_pb::WebAppSpecifics::UserDisplayMode
 ConvertUserDisplayModeToWebAppSpecificsUserDisplayMode(
     mojom::UserDisplayMode user_display_mode);
 
 mojom::UserDisplayMode CreateUserDisplayModeFromWebAppSpecificsUserDisplayMode(
-    ::sync_pb::WebAppSpecifics::UserDisplayMode display_mode);
+    sync_pb::WebAppSpecifics::UserDisplayMode display_mode);
+
+// Get the platform-specific UserDisplayMode field in the `sync_proto` based on
+// the current platform (CrOS or non-CrOS), falling back to the other platform's
+// field if unavailable. At least one platform's UserDisplayMode field must be
+// populated.
+mojom::UserDisplayMode ResolvePlatformSpecificUserDisplayMode(
+    const sync_pb::WebAppSpecifics& sync_proto);
 
 }  // namespace web_app
 

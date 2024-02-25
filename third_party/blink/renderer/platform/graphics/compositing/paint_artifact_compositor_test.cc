@@ -64,7 +64,7 @@ class MockScrollCallbacks : public CompositorScrollCallbacks {
   MOCK_METHOD3(DidCompositorScroll,
                void(CompositorElementId,
                     const gfx::PointF&,
-                    const absl::optional<cc::TargetSnapAreaElementIds>&));
+                    const std::optional<cc::TargetSnapAreaElementIds>&));
   MOCK_METHOD2(DidChangeScrollbarsHidden, void(CompositorElementId, bool));
 
   base::WeakPtr<MockScrollCallbacks> GetWeakPtr() {
@@ -104,6 +104,7 @@ class PaintArtifactCompositorTest : public testing::Test,
     // Make sure we remove all child layers to satisfy destructor
     // child layer element id DCHECK.
     WillBeRemovedFromFrame();
+    layer_tree_host_client_.SetLayerTreeHost(nullptr);
   }
 
   cc::PropertyTrees& GetPropertyTrees() {
@@ -153,15 +154,8 @@ class PaintArtifactCompositorTest : public testing::Test,
           scroll_translation_nodes = {}) {
     paint_artifact_compositor_->SetNeedsUpdate();
     paint_artifact_compositor_->Update(artifact, viewport_properties,
-                                       scroll_translation_nodes, {}, {});
+                                       scroll_translation_nodes, {});
     layer_tree_->layer_tree_host()->LayoutAndUpdateLayers();
-  }
-
-  void ClearPropertyTreeChangedState() {
-    if (!RuntimeEnabledFeatures::SimplifiedClearPropertyTreeChangeEnabled()) {
-      paint_artifact_compositor_->ClearPropertyTreeChangedState();
-    }
-    // Otherwise PaintArtifactCompositor::Update() clears the changed state.
   }
 
   void WillBeRemovedFromFrame() {
@@ -455,8 +449,7 @@ TEST_P(PaintArtifactCompositorTest, FlattensInheritedTransform) {
         CreateTransform(*transform1, MakeRotationMatrix(0, 45, 0));
     TransformPaintPropertyNode::State transform3_state{
         {MakeRotationMatrix(0, 45, 0)}};
-    transform3_state.flags.flattens_inherited_transform =
-        transform_is_flattened;
+    transform3_state.flattens_inherited_transform = transform_is_flattened;
     auto transform3 = TransformPaintPropertyNode::Create(
         *transform2, std::move(transform3_state));
 
@@ -509,8 +502,7 @@ TEST_P(PaintArtifactCompositorTest, FlattensInheritedTransformWithAlias) {
     auto transform2 = TransformPaintPropertyNodeAlias::Create(*real_transform2);
     TransformPaintPropertyNode::State transform3_state{
         {MakeRotationMatrix(0, 45, 0)}};
-    transform3_state.flags.flattens_inherited_transform =
-        transform_is_flattened;
+    transform3_state.flattens_inherited_transform = transform_is_flattened;
     auto real_transform3 = TransformPaintPropertyNode::Create(
         *transform2, std::move(transform3_state));
     auto transform3 = TransformPaintPropertyNodeAlias::Create(*real_transform3);
@@ -1101,7 +1093,7 @@ TEST_P(PaintArtifactCompositorTest, OneScrollNodeComposited) {
   EXPECT_EQ(gfx::Vector2dF(3, 5), scroll_layer->offset_to_transform_parent());
   EXPECT_EQ(scroll_layer->scroll_tree_index(), scroll_node.id);
 
-  absl::optional<cc::TargetSnapAreaElementIds> targets;
+  std::optional<cc::TargetSnapAreaElementIds> targets;
   EXPECT_CALL(
       ScrollCallbacks(),
       DidCompositorScroll(scroll_node.element_id, gfx::PointF(1, 2), targets));
@@ -1604,6 +1596,61 @@ TEST_P(PaintArtifactCompositorTest,
   EXPECT_EQ(gfx::PointF(-11, -22), transform_node_c.scroll_offset);
   EXPECT_EQ(gfx::PointF(-11, -22),
             scroll_tree.current_scroll_offset(scroll_node_c.element_id));
+}
+
+TEST_P(PaintArtifactCompositorTest, FixedPositionScrollState) {
+  auto scroll_state_a = ScrollState1();
+  auto& scroll_a = *scroll_state_a.Transform().ScrollNode();
+  auto fixed_transform = CreateFixedPositionTranslation(
+      t0(), 100, 200, scroll_state_a.Transform());
+  PropertyTreeState fixed_state(*fixed_transform, scroll_state_a.Clip(),
+                                scroll_state_a.Effect());
+  // scroll_state_b's has fixed transform space, while the scroll parent is
+  // scroll_a.
+  auto scroll_state_b = CreateCompositedScrollTranslationState(
+      fixed_state, scroll_a, 11, 22, gfx::Rect(10, 20), gfx::Size(50, 60));
+  auto& scroll_b = *scroll_state_b.Transform().ScrollNode();
+
+  TestPaintArtifact artifact;
+  CreateScrollableChunk(artifact, scroll_state_a);
+  artifact.Chunk(fixed_state).RectDrawing(gfx::Rect(50, 100), Color::kBlack);
+  CreateScrollableChunk(artifact, scroll_state_b);
+  Update(artifact.Build());
+
+  auto& scroll_tree = GetPropertyTrees().scroll_tree();
+  auto& transform_tree = GetPropertyTrees().transform_tree();
+  // Node #0 reserved for null. #1 for root render surface. #2 is for scroll_a.
+  // scroll #3 and transform #4 are for scroll_b. Transform #3 is for
+  // fixed_transform.
+  ASSERT_EQ(4u, scroll_tree.size());
+  ASSERT_EQ(5u, transform_tree.size());
+  ASSERT_EQ(3u, LayerCount());
+
+  auto* scroll_node_a = scroll_tree.Node(2);
+  auto* layer_a = LayerAt(0);
+  EXPECT_EQ(scroll_a.GetCompositorElementId(), scroll_node_a->element_id);
+  EXPECT_EQ(1, scroll_node_a->parent_id);
+  EXPECT_EQ(2, scroll_node_a->transform_id);
+  EXPECT_EQ(2, layer_a->scroll_tree_index());
+  EXPECT_EQ(1, layer_a->transform_tree_index());
+
+  auto* fixed_layer = LayerAt(1);
+  if (RuntimeEnabledFeatures::HitTestOpaquenessEnabled()) {
+    EXPECT_EQ(2, fixed_layer->scroll_tree_index());
+  } else {
+    EXPECT_EQ(1, fixed_layer->scroll_tree_index());
+  }
+  EXPECT_EQ(3, fixed_layer->transform_tree_index());
+  auto* fixed_transform_node = transform_tree.Node(3);
+  EXPECT_EQ(1, fixed_transform_node->parent_id);
+
+  auto* scroll_node_b = scroll_tree.Node(3);
+  auto* layer_b = LayerAt(2);
+  EXPECT_EQ(2, scroll_node_b->parent_id);
+  EXPECT_EQ(scroll_b.GetCompositorElementId(), scroll_node_b->element_id);
+  EXPECT_EQ(4, scroll_node_b->transform_id);
+  EXPECT_EQ(3, layer_b->scroll_tree_index());
+  EXPECT_EQ(3, layer_b->transform_tree_index());
 }
 
 TEST_P(PaintArtifactCompositorTest, MergeSimpleChunks) {
@@ -2776,9 +2823,7 @@ TEST_P(PaintArtifactCompositorTest, EffectivelyInvisibleSolidColorChunk) {
   Update(artifact.Build());
   ASSERT_EQ(1u, LayerCount());
   EXPECT_EQ(gfx::Size(10, 10), LayerAt(0)->bounds());
-  if (RuntimeEnabledFeatures::SolidColorLayersEnabled()) {
-    EXPECT_TRUE(LayerAt(0)->IsSolidColorLayerForTesting());
-  }
+  EXPECT_TRUE(LayerAt(0)->IsSolidColorLayerForTesting());
   EXPECT_FALSE(LayerAt(0)->draws_content());
   EXPECT_FALSE(LayerAt(0)->GetPicture());
 }
@@ -3835,9 +3880,7 @@ TEST_P(PaintArtifactCompositorTest, SolidColor) {
   EXPECT_EQ(gfx::Vector2dF(100, 200), layer->offset_to_transform_parent());
   EXPECT_EQ(gfx::Size(300, 400), layer->bounds());
   EXPECT_TRUE(layer->draws_content());
-  if (RuntimeEnabledFeatures::SolidColorLayersEnabled()) {
-    EXPECT_TRUE(LayerAt(0)->IsSolidColorLayerForTesting());
-  }
+  EXPECT_TRUE(LayerAt(0)->IsSolidColorLayerForTesting());
   EXPECT_EQ(SkColors::kBlack, layer->background_color());
 }
 
@@ -4065,7 +4108,7 @@ TEST_P(PaintArtifactCompositorTest, LayerRasterInvalidationWithClip) {
 TEST_P(PaintArtifactCompositorTest, CreatesViewportNodes) {
   auto matrix = MakeScaleMatrix(2);
   TransformPaintPropertyNode::State transform_state{{matrix}};
-  transform_state.flags.in_subtree_of_page_scale = false;
+  transform_state.in_subtree_of_page_scale = false;
   const CompositorElementId compositor_element_id =
       CompositorElementIdFromUniqueObjectId(1);
   transform_state.compositor_element_id = compositor_element_id;
@@ -4090,12 +4133,12 @@ TEST_P(PaintArtifactCompositorTest, CreatesViewportNodes) {
 // the page scale transform node or ancestors, and is set on descendants.
 TEST_P(PaintArtifactCompositorTest, InSubtreeOfPageScale) {
   TransformPaintPropertyNode::State ancestor_transform_state;
-  ancestor_transform_state.flags.in_subtree_of_page_scale = false;
+  ancestor_transform_state.in_subtree_of_page_scale = false;
   auto ancestor_transform = TransformPaintPropertyNode::Create(
       TransformPaintPropertyNode::Root(), std::move(ancestor_transform_state));
 
   TransformPaintPropertyNode::State page_scale_transform_state;
-  page_scale_transform_state.flags.in_subtree_of_page_scale = false;
+  page_scale_transform_state.in_subtree_of_page_scale = false;
   const CompositorElementId page_scale_compositor_element_id =
       CompositorElementIdFromUniqueObjectId(1);
   page_scale_transform_state.compositor_element_id =
@@ -4108,7 +4151,7 @@ TEST_P(PaintArtifactCompositorTest, InSubtreeOfPageScale) {
       CompositorElementIdFromUniqueObjectId(2);
   descendant_transform_state.compositor_element_id =
       descendant_compositor_element_id;
-  descendant_transform_state.flags.in_subtree_of_page_scale = true;
+  descendant_transform_state.in_subtree_of_page_scale = true;
   descendant_transform_state.direct_compositing_reasons =
       CompositingReason::kWillChangeTransform;
   auto descendant_transform = TransformPaintPropertyNode::Create(
@@ -4145,7 +4188,7 @@ TEST_P(PaintArtifactCompositorTest, InSubtreeOfPageScale) {
 TEST_P(PaintArtifactCompositorTest, ViewportPageScale) {
   // Create a page scale transform node with a page scale factor of 2.0.
   TransformPaintPropertyNode::State transform_state{{MakeScaleMatrix(2)}};
-  transform_state.flags.in_subtree_of_page_scale = false;
+  transform_state.in_subtree_of_page_scale = false;
   transform_state.compositor_element_id =
       CompositorElementIdFromUniqueObjectId(1);
   auto scale_transform_node = TransformPaintPropertyNode::Create(
@@ -4708,7 +4751,6 @@ TEST_P(PaintArtifactCompositorTest, TransformChange) {
 
   // Change t1 but not t2.
   layer->ClearSubtreePropertyChangedForTesting();
-  ClearPropertyTreeChangedState();
   t1->Update(
       t0(), TransformPaintPropertyNode::State{{MakeTranslationMatrix(20, 30)}});
   EXPECT_EQ(PaintPropertyChangeType::kChangedOnlySimpleValues,
@@ -4735,7 +4777,6 @@ TEST_P(PaintArtifactCompositorTest, TransformChange) {
 
   // Change t2 but not t1.
   layer->ClearSubtreePropertyChangedForTesting();
-  ClearPropertyTreeChangedState();
   t2->Update(*t1, Transform3dState(MakeRotationMatrix(135)));
   EXPECT_EQ(PaintPropertyChangeType::kUnchanged, t1->NodeChanged());
   EXPECT_EQ(PaintPropertyChangeType::kChangedOnlySimpleValues,
@@ -4759,7 +4800,6 @@ TEST_P(PaintArtifactCompositorTest, TransformChange) {
 
   // Change t2 to be 2d translation which will be decomposited.
   layer->ClearSubtreePropertyChangedForTesting();
-  ClearPropertyTreeChangedState();
   t2->Update(*t1, Transform3dState(MakeTranslationMatrix(20, 30)));
   EXPECT_EQ(PaintPropertyChangeType::kUnchanged, t1->NodeChanged());
   EXPECT_EQ(PaintPropertyChangeType::kChangedOnlyValues, t2->NodeChanged());
@@ -4781,7 +4821,6 @@ TEST_P(PaintArtifactCompositorTest, TransformChange) {
 
   // Change no transform nodes, but invalidate client.
   layer->ClearSubtreePropertyChangedForTesting();
-  ClearPropertyTreeChangedState();
   client.Invalidate(PaintInvalidationReason::kBackground);
   Update(TestPaintArtifact()
              .Chunk(1)
@@ -4810,8 +4849,6 @@ TEST_P(PaintArtifactCompositorTest, EffectChange) {
 
   // Change e1 but not e2.
   layer->ClearSubtreePropertyChangedForTesting();
-  ClearPropertyTreeChangedState();
-
   EffectPaintPropertyNode::State e1_state{&t0()};
   e1_state.opacity = 0.8f;
   e1_state.compositor_element_id = e1->GetCompositorElementId();
@@ -4839,7 +4876,6 @@ TEST_P(PaintArtifactCompositorTest, EffectChange) {
 
   // Change e2 but not e1.
   layer->ClearSubtreePropertyChangedForTesting();
-  ClearPropertyTreeChangedState();
   EffectPaintPropertyNode::State e2_state{&t0()};
   e2_state.opacity = 0.9f;
   e2_state.direct_compositing_reasons = CompositingReason::kWillChangeOpacity;
@@ -4909,17 +4945,9 @@ TEST_P(PaintArtifactCompositorTest, DirectlySetScrollOffset) {
 }
 
 TEST_P(PaintArtifactCompositorTest, AddNonCompositedScrollNodes) {
-  uint32_t main_thread_scrolling_reason =
-      cc::MainThreadScrollingReason::kNotScrollingOnMain;
-  if (!RuntimeEnabledFeatures::CompositeScrollAfterPaintEnabled()) {
-    main_thread_scrolling_reason =
-        cc::MainThreadScrollingReason::kNotOpaqueForTextAndLCDText;
-    ASSERT_TRUE(cc::MainThreadScrollingReason::HasNonCompositedScrollReasons(
-        main_thread_scrolling_reason));
-  }
   auto scroll_state =
       ScrollState1(PropertyTreeState::Root(), CompositingReason::kNone,
-                   main_thread_scrolling_reason);
+                   cc::MainThreadScrollingReason::kNotScrollingOnMain);
 
   WTF::Vector<const TransformPaintPropertyNode*> scroll_translation_nodes;
   scroll_translation_nodes.push_back(&scroll_state.Transform());
@@ -4929,8 +4957,7 @@ TEST_P(PaintArtifactCompositorTest, AddNonCompositedScrollNodes) {
           .Chunk(1)
           .ScrollHitTest(scroll_state.Transform().ScrollNode()->ContainerRect(),
                          &scroll_state.Transform())
-          // In CompositeScrollAfterPaint, this chunk being non-opaque makes
-          // the scroll not composited.
+          // This chunk being non-opaque makes the scroll not composited.
           .Chunk(2)
           .Properties(scroll_state.Transform(), c0(), e0())
           .Build(),
@@ -4946,8 +4973,6 @@ TEST_P(PaintArtifactCompositorTest, AddNonCompositedScrollNodes) {
 TEST_P(PaintArtifactCompositorTest, AddUnpaintedNonCompositedScrollNodes) {
   const uint32_t main_thread_scrolling_reason =
       cc::MainThreadScrollingReason::kNotOpaqueForTextAndLCDText;
-  ASSERT_TRUE(cc::MainThreadScrollingReason::HasNonCompositedScrollReasons(
-      main_thread_scrolling_reason));
   auto scroll_state =
       ScrollState1(PropertyTreeState::Root(), CompositingReason::kNone,
                    main_thread_scrolling_reason);
@@ -4974,7 +4999,6 @@ TEST_P(PaintArtifactCompositorTest, RepaintIndirectScrollHitTest) {
   CreateScrollableChunk(test_artifact, scroll_state);
   auto artifact = test_artifact.Build();
   Update(artifact);
-  ClearPropertyTreeChangedState();
 
   GetPaintArtifactCompositor().UpdateRepaintedLayers(artifact);
   // This test passes if no CHECK occurs.
@@ -4998,7 +5022,6 @@ TEST_P(PaintArtifactCompositorTest, ClearChangedStateWithIndirectTransform) {
                       .RectDrawing(gfx::Rect(2, 2, 2, 2), Color::kBlack)
                       .Build();
   Update(artifact);
-  ClearPropertyTreeChangedState();
   EXPECT_EQ(PaintPropertyChangeType::kUnchanged, t1->NodeChanged());
   EXPECT_EQ(PaintPropertyChangeType::kUnchanged, t2->NodeChanged());
   EXPECT_EQ(PaintPropertyChangeType::kUnchanged, c1->NodeChanged());
@@ -5053,6 +5076,32 @@ TEST_P(PaintArtifactCompositorTest,
   const auto* cc_clip_expander =
       GetPropertyTrees().clip_tree().Node(LayerAt(0)->clip_tree_index());
   EXPECT_TRUE(cc_clip_expander->AppliesLocalClip());
+}
+
+TEST_P(PaintArtifactCompositorTest,
+       CreatePictureLayerForSolidColorBackdropFilterMask) {
+  CompositorFilterOperations filter;
+  filter.AppendBlurFilter(5);
+  auto backdrop_filter = CreateBackdropFilterEffect(e0(), filter);
+
+  EffectPaintPropertyNode::State mask_state;
+  mask_state.local_transform_space = &t0();
+  mask_state.output_clip = &c0();
+  mask_state.blend_mode = SkBlendMode::kDstIn;
+  mask_state.direct_compositing_reasons =
+      CompositingReason::kBackdropFilterMask;
+  auto mask =
+      EffectPaintPropertyNode::Create(*backdrop_filter, std::move(mask_state));
+
+  Update(TestPaintArtifact()
+             .Chunk(t0(), c0(), *backdrop_filter)
+             .RectDrawing(gfx::Rect(150, 150, 100, 100), Color::kWhite)
+             .Chunk(t0(), c0(), *mask)
+             .RectDrawing(gfx::Rect(150, 150, 100, 100), Color::kBlack)
+             .IsSolidColor()
+             .Build());
+  ASSERT_EQ(2u, LayerCount());
+  EXPECT_FALSE(LayerAt(1)->IsSolidColorLayerForTesting());
 }
 
 }  // namespace blink

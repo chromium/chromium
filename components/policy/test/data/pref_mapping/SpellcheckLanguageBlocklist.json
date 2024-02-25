@@ -1,0 +1,65 @@
+[
+  {
+    "os": [
+      "win",
+      "linux",
+      "chromeos_ash",
+      "chromeos_lacros"
+    ],
+    "policy_pref_mapping_tests": [
+      {
+        "note": "Check default values (no policies set)",
+        "prefs": {
+          "spellcheck.blocked_dictionaries": {
+            "default_value": []
+          }
+        }
+      },
+      {
+        "note": "Simple value",
+        "policies": {
+          "SpellcheckLanguageBlocklist": [
+            "fr"
+          ]
+        },
+        "prefs": {
+          "spellcheck.blocked_dictionaries": {
+            "value": [
+              "fr"
+            ]
+          }
+        }
+      },
+      {
+        "note": "SpellcheckEnabled precedence",
+        "policies": {
+          "SpellcheckEnabled": false,
+          "SpellcheckLanguageBlocklist": [
+            "fr"
+          ]
+        },
+        "prefs": {
+          "spellcheck.blocked_dictionaries": {
+            "default_value": []
+          }
+        }
+      },
+      {
+        "note": "SpellcheckLanguage precedence",
+        "policies": {
+          "SpellcheckLanguage": [
+            "fr"
+          ],
+          "SpellcheckLanguageBlocklist": [
+            "fr"
+          ]
+        },
+        "prefs": {
+          "spellcheck.blocked_dictionaries": {
+            "value": []
+          }
+        }
+      }
+    ]
+  }
+]

@@ -12,13 +12,20 @@
 #include "components/password_manager/core/browser/password_manager_metrics_util.h"
 #include "components/password_manager/core/browser/password_reuse_detector.h"
 #include "components/password_manager/core/browser/password_reuse_detector_consumer.h"
+#include "components/password_manager/core/browser/shared_preferences_delegate.h"
+
+namespace signin {
+class IdentityManager;
+}  // namespace signin
 
 class PrefService;
 
 namespace password_manager {
 
+class PasswordManagerClient;
 class PasswordStoreInterface;
 class PasswordStoreSigninNotifier;
+struct PasswordForm;
 
 // Per-store class responsible for detection of password reuse, i.e. that the
 // user input on some site contains the password saved on another site.
@@ -30,13 +37,18 @@ class PasswordReuseManager : public KeyedService {
   PasswordReuseManager& operator=(const PasswordReuseManager&) = delete;
 
   // Always call this on the UI thread.
-  virtual void Init(PrefService* prefs,
-                    PasswordStoreInterface* profile_store,
-                    PasswordStoreInterface* account_store) = 0;
+  virtual void Init(
+      PrefService* prefs,
+      PrefService* local_prefs,
+      PasswordStoreInterface* profile_store,
+      PasswordStoreInterface* account_store,
+      std::unique_ptr<PasswordReuseDetector> password_reuse_detector,
+      signin::IdentityManager* identity_manager = nullptr,
+      std::unique_ptr<SharedPreferencesDelegate> shared_pref_delegate =
+          nullptr) = 0;
 
   // Log whether a sync password hash saved.
-  virtual void ReportMetrics(const std::string& username,
-                             bool is_under_advanced_protection) = 0;
+  virtual void ReportMetrics(const std::string& username) = 0;
 
   // Checks that some suffix of |input| equals to a password saved on another
   // registry controlled domain than |domain|.
@@ -95,6 +107,11 @@ class PasswordReuseManager : public KeyedService {
   // Schedules the update of enterprise login and change password URLs.
   // These URLs are used in enterprise password reuse detection.
   virtual void ScheduleEnterprisePasswordURLUpdate() = 0;
+
+  // Saves the hash version of a password if it corresponds to an
+  // enterprise or gaia password.
+  virtual void MaybeSavePasswordHash(const PasswordForm* submitted_form,
+                                     PasswordManagerClient* client) = 0;
 };
 
 }  // namespace password_manager

@@ -5,9 +5,9 @@
 #include "chrome/browser/ash/printing/ipp_client_info_calculator.h"
 
 #include <memory>
+#include <string_view>
 
 #include "base/memory/raw_ptr.h"
-#include "base/strings/string_piece.h"
 #include "base/test/scoped_chromeos_version_info.h"
 #include "base/time/time.h"
 #include "chrome/browser/ash/policy/core/device_attributes_fake.h"
@@ -49,7 +49,7 @@ class IppClientInfoCalculatorTest : public testing::Test {
         std::move(fake_device_attibutes), "42");
   }
 
-  void SetClientNameTemplatePolicy(base::StringPiece value) {
+  void SetClientNameTemplatePolicy(std::string_view value) {
     testing_cros_settings_.device_settings()->Set(
         kDevicePrintingClientNameTemplate, base::Value(value));
   }
@@ -70,15 +70,14 @@ class IppClientInfoCalculatorTest : public testing::Test {
   base::test::ScopedChromeOSVersionInfo cros_version_info_{kLsbRelease,
                                                            base::Time()};
   ScopedTestingCrosSettings testing_cros_settings_;
-  raw_ptr<policy::FakeDeviceAttributes, DanglingUntriaged | ExperimentalAsh>
-      device_attributes_;
+  raw_ptr<policy::FakeDeviceAttributes, DanglingUntriaged> device_attributes_;
   std::unique_ptr<IppClientInfoCalculator> client_info_calculator_;
 };
 
 TEST_F(IppClientInfoCalculatorTest, OsInfo) {
   const IppClientInfoPtr os_info = GetOsInfo();
   const IppClientInfo expected(IppClientInfo::ClientType::kOperatingSystem,
-                               "ChromeOS", "15183.69.3", "42", absl::nullopt);
+                               "ChromeOS", "15183.69.3", "42", std::nullopt);
   ASSERT_TRUE(os_info);
   ExpectClientInfoEqual(*os_info, expected);
 }
@@ -93,7 +92,7 @@ TEST_F(IppClientInfoCalculatorTest, DeviceInfoSimplePolicy) {
 
   const IppClientInfoPtr device_info = GetDeviceInfo();
   const IppClientInfo expected(IppClientInfo::ClientType::kOther, "chromebook",
-                               absl::nullopt, "", absl::nullopt);
+                               std::nullopt, "", std::nullopt);
   ASSERT_TRUE(device_info);
   ExpectClientInfoEqual(*device_info, expected);
 }
@@ -110,7 +109,7 @@ TEST_F(IppClientInfoCalculatorTest, DeviceInfoPolicyWithVariables) {
   const IppClientInfoPtr device_info = GetDeviceInfo();
   const IppClientInfo expected(IppClientInfo::ClientType::kOther,
                                "chromebook_asset-id_1234-abcd_serial_location",
-                               absl::nullopt, "", absl::nullopt);
+                               std::nullopt, "", std::nullopt);
   ASSERT_TRUE(device_info);
   ExpectClientInfoEqual(*device_info, expected);
 }
@@ -124,7 +123,7 @@ TEST_F(IppClientInfoCalculatorTest, DeviceInfoPolicyChange) {
     SetClientNameTemplatePolicy("initial");
     const IppClientInfoPtr device_info = GetDeviceInfo();
     const IppClientInfo expected(IppClientInfo::ClientType::kOther, "initial",
-                                 absl::nullopt, "", absl::nullopt);
+                                 std::nullopt, "", std::nullopt);
     ASSERT_TRUE(device_info);
     ExpectClientInfoEqual(*device_info, expected);
   }
@@ -133,7 +132,7 @@ TEST_F(IppClientInfoCalculatorTest, DeviceInfoPolicyChange) {
     SetClientNameTemplatePolicy("changed");
     const IppClientInfoPtr device_info = GetDeviceInfo();
     const IppClientInfo expected(IppClientInfo::ClientType::kOther, "changed",
-                                 absl::nullopt, "", absl::nullopt);
+                                 std::nullopt, "", std::nullopt);
     ASSERT_TRUE(device_info);
     ExpectClientInfoEqual(*device_info, expected);
   }

@@ -47,6 +47,9 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) NetworkConnect {
     // Shows UI displaying carrier network account details.
     virtual void ShowCarrierAccountDetail(const std::string& network_id) = 0;
 
+    // Shows UI displaying carrier unlock notification.
+    virtual void ShowCarrierUnlockNotification() = 0;
+
     // Shows portal signin.
     virtual void ShowPortalSignin(const std::string& network_id,
                                   Source source) = 0;
@@ -99,6 +102,9 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) NetworkConnect {
 
   // Opens the carrier account detail page.
   virtual void ShowCarrierAccountDetail(const std::string& network_id) = 0;
+
+  // Shows carrier unlock notification.
+  virtual void ShowCarrierUnlockNotification() = 0;
 
   // Opens the portal signin.
   virtual void ShowPortalSignin(const std::string& network_id,

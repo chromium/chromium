@@ -5,19 +5,23 @@
 #include "chrome/browser/new_tab_page/modules/history_clusters/discount/discount_processor.h"
 
 #include "base/containers/flat_map.h"
+#include "components/commerce/core/commerce_constants.h"
 #include "net/base/url_util.h"
 
 namespace {
-
-constexpr char kUTMSourceLabel[] = "utm_source";
-constexpr char kUTMSourceValue[] = "chrome-history-cluster-with-discount";
-
 ntp::history_clusters::discount::mojom::DiscountPtr DiscountToMojom(
     GURL url,
     commerce::DiscountInfo discount_info) {
   auto discount_mojom = ntp::history_clusters::discount::mojom::Discount::New();
-  discount_mojom->annotated_visit_url =
-      net::AppendOrReplaceQueryParameter(url, kUTMSourceLabel, kUTMSourceValue);
+  url = net::AppendOrReplaceQueryParameter(url, commerce::kUTMSourceLabel,
+                                           commerce::kUTMSourceValue);
+  url = net::AppendOrReplaceQueryParameter(url, commerce::kUTMMediumLabel,
+                                           commerce::kUTMMediumValue);
+  url = net::AppendOrReplaceQueryParameter(
+      url, commerce::kUTMCampaignLabel,
+      commerce::kUTMCampaignValueForDiscounts);
+
+  discount_mojom->annotated_visit_url = url;
   discount_mojom->value_in_text = discount_info.value_in_text;
   return discount_mojom;
 }

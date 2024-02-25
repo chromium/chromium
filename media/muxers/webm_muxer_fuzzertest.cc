@@ -6,6 +6,7 @@
 #include <stdint.h>
 
 #include <memory>
+#include <optional>
 #include <random>
 
 #include "base/functional/bind.h"
@@ -13,11 +14,11 @@
 #include "base/run_loop.h"
 #include "base/strings/string_piece.h"
 #include "base/task/single_thread_task_executor.h"
+#include "base/time/time.h"
 #include "media/base/audio_parameters.h"
 #include "media/base/video_frame.h"
 #include "media/muxers/live_webm_muxer_delegate.h"
 #include "media/muxers/webm_muxer.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 // Min and max number of encodec video/audio packets to send in the WebmMuxer.
 const int kMinNumIterations = 1;
@@ -36,7 +37,7 @@ static struct {
 } kVideoAudioInputTypes[] = {{true, false}, {false, true}, {true, true}};
 
 struct Env {
-  Env() { logging::SetMinLogLevel(logging::LOG_FATAL); }
+  Env() { logging::SetMinLogLevel(logging::LOGGING_FATAL); }
 
   base::SingleThreadTaskExecutor task_executor;
 };
@@ -62,11 +63,14 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
     media::WebmMuxer muxer(audio_codec, input_type.has_video,
                            input_type.has_audio,
                            std::make_unique<media::LiveWebmMuxerDelegate>(
-                               base::BindRepeating(&OnWriteCallback)));
+                               base::BindRepeating(&OnWriteCallback)),
+                           std::nullopt);
     base::RunLoop().RunUntilIdle();
 
     int num_iterations = kMinNumIterations + rng() % kMaxNumIterations;
+    int index = 0;
     do {
+      index++;
       if (input_type.has_video) {
         // VideoFrames cannot be arbitrarily small.
         const auto visible_rect = gfx::Size(16 + rng() % 128, 16 + rng() % 128);
@@ -76,9 +80,11 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
         const auto has_alpha_frame = rng() % 4;
         auto parameters = media::Muxer::VideoParameters(*video_frame);
         parameters.codec = video_codec;
-        muxer.OnEncodedVideo(parameters, str,
-                             has_alpha_frame ? str : std::string(),
-                             absl::nullopt, base::TimeTicks(), is_key_frame);
+        muxer.PutFrame(
+            media::Muxer::EncodedFrame{parameters, std::nullopt, str,
+                                       has_alpha_frame ? str : std::string(),
+                                       is_key_frame != 0},
+            base::TimeDelta() + base::Milliseconds(index));
         base::RunLoop().RunUntilIdle();
       }
 
@@ -92,7 +98,9 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
         const media::AudioParameters params(
             media::AudioParameters::AUDIO_PCM_LOW_LATENCY, layout, sample_rate,
             60 * sample_rate);
-        muxer.OnEncodedAudio(params, str, absl::nullopt, base::TimeTicks());
+        muxer.PutFrame(media::Muxer::EncodedFrame{params, std::nullopt, str,
+                                                  std::string(), true},
+                       base::TimeDelta() + base::Milliseconds(index));
         base::RunLoop().RunUntilIdle();
       }
     } while (num_iterations--);

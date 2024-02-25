@@ -1,3 +1,0 @@
-Test	http://www.w3.org/2001/DOM-Test-Suite/level3/core/attrgetschematypeinfo05
-Status	skip
-Message	HTML loader does not support schemaValidating=true

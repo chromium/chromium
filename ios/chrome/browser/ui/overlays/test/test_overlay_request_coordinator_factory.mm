@@ -4,7 +4,7 @@
 
 #import "ios/chrome/browser/ui/overlays/test/test_overlay_request_coordinator_factory.h"
 
-#import "ios/chrome/browser/overlays/public/overlay_request_support.h"
+#import "ios/chrome/browser/overlays/model/public/overlay_request_support.h"
 #import "ios/chrome/browser/ui/overlays/test_modality/test_contained_overlay_coordinator.h"
 #import "ios/chrome/browser/ui/overlays/test_modality/test_presented_overlay_coordinator.h"
 

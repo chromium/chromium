@@ -16,26 +16,20 @@ import org.chromium.chrome.browser.dependency_injection.ActivityScope;
 
 import javax.inject.Inject;
 
-/**
- * Delegate that manages top bar area inside of {@link CustomTabActivity}.
- */
+/** Delegate that manages top bar area inside of {@link CustomTabActivity}. */
 @ActivityScope
 public class CustomTabTopBarDelegate {
     private final Activity mActivity;
     private ViewGroup mTopBarView;
-    @Nullable
-    private View mTopBarContentView;
-    @Nullable
-    private Integer mTopBarHeight;
+    @Nullable private View mTopBarContentView;
+    @Nullable private Integer mTopBarHeight;
 
     @Inject
     public CustomTabTopBarDelegate(Activity activity) {
         mActivity = activity;
     }
 
-    /**
-     * Adds the top bar, if any, to the view hierarchy and updates its visibility.
-     */
+    /** Adds the top bar, if any, to the view hierarchy and updates its visibility. */
     public void showTopBarIfNecessary(boolean isVisible) {
         if (mTopBarContentView != null && mTopBarContentView.getParent() == null) {
             getTopBarView().addView(mTopBarContentView);
@@ -50,37 +44,27 @@ public class CustomTabTopBarDelegate {
         }
     }
 
-    /**
-     * Sets the content of the top bar.
-     */
+    /** Sets the content of the top bar. */
     public void setTopBarContentView(View view) {
         mTopBarContentView = view;
     }
 
-    /**
-     * Sets the height of the top bar.
-     */
+    /** Sets the height of the top bar. */
     public void setTopBarHeight(int height) {
         mTopBarHeight = height;
     }
 
-    /**
-     * Gets the height of the top bar, or null if it is not specified.
-     */
+    /** Gets the height of the top bar, or null if it is not specified. */
     public @Nullable Integer getTopBarHeight() {
         return mTopBarHeight;
     }
 
-    /**
-     * Gets the top bar content view, or null if it is not specified.
-     */
+    /** Gets the top bar content view, or null if it is not specified. */
     public @Nullable View getTopBarContentView() {
         return mTopBarContentView;
     }
 
-    /**
-     * Gets the {@link ViewGroup} of the top bar. If it has not been inflated, inflate it first.
-     */
+    /** Gets the {@link ViewGroup} of the top bar. If it has not been inflated, inflate it first. */
     private ViewGroup getTopBarView() {
         if (mTopBarView == null) {
             ViewStub topBarStub = ((ViewStub) mActivity.findViewById(R.id.topbar_stub));

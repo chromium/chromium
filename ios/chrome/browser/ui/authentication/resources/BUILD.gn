@@ -13,15 +13,6 @@ imageset("signin_confirmation_more") {
   ]
 }
 
-imageset("signin_promo_close_gray") {
-  sources = [
-    "signin_promo_close_gray.imageset/Contents.json",
-    "signin_promo_close_gray.imageset/signin_promo_close_gray.png",
-    "signin_promo_close_gray.imageset/signin_promo_close_gray@2x.png",
-    "signin_promo_close_gray.imageset/signin_promo_close_gray@3x.png",
-  ]
-}
-
 imageset("signin_promo_logo_chrome_color") {
   sources = [
     "signin_promo_logo_chrome_color.imageset/Contents.json",

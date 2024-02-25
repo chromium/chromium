@@ -252,39 +252,6 @@ TEST_F(HTMLElementTest,
       GetDocument().GetPage()->Animator().has_inline_style_mutation_for_test());
 }
 
-TEST_F(HTMLElementTest, DirAutoByChildChanged) {
-  ScopedCSSPseudoDirForTest scoped_feature(false);
-
-  SetBodyInnerHTML("<div id='target' dir='auto'></div>");
-  auto* element = GetDocument().getElementById(AtomicString("target"));
-  element->setTextContent(u"\u05D1");
-  UpdateAllLifecyclePhasesForTest();
-  EXPECT_EQ(element->GetComputedStyle()->Direction(), TextDirection::kRtl);
-
-  element->RemoveChildren();
-  UpdateAllLifecyclePhasesForTest();
-  EXPECT_EQ(element->GetComputedStyle()->Direction(), TextDirection::kLtr);
-}
-
-TEST_F(HTMLElementTest, SlotDirAutoBySingleSlottedNodeRemoved) {
-  ScopedCSSPseudoDirForTest scoped_feature(false);
-
-  SetBodyInnerHTML("<div id='host'>slotted text</div>");
-  auto* element = GetDocument().getElementById(AtomicString("host"));
-  ShadowRoot& shadow_root =
-      element->AttachShadowRootInternal(ShadowRootType::kOpen);
-  shadow_root.setInnerHTML(
-      "<slot id='inner' dir='auto'><div>&#1571;</div></slot>");
-  UpdateAllLifecyclePhasesForTest();
-
-  Element* slot = shadow_root.getElementById(AtomicString("inner"));
-  EXPECT_EQ(slot->GetComputedStyle()->Direction(), TextDirection::kLtr);
-
-  element->RemoveChildren();
-  UpdateAllLifecyclePhasesForTest();
-  EXPECT_EQ(slot->GetComputedStyle()->Direction(), TextDirection::kRtl);
-}
-
 TEST_F(HTMLElementTest, HasImplicitlyAnchoredElement) {
   ScopedCSSAnchorPositioningForTest scoped_feature(true);
 
@@ -497,7 +464,7 @@ TEST_F(HTMLElementTest, AnchorAttrWithFeatureDisabled) {
   // Shouldn't hook up objects related to anchor attr when the feature is
   // disabled.
   EXPECT_FALSE(anchor->HasImplicitlyAnchoredElement());
-  EXPECT_FALSE(target->GetAnchorElementObserver());
+  EXPECT_FALSE(target->HasAnchorElementObserverForTesting());
 }
 
 }  // namespace blink

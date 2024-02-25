@@ -4,6 +4,7 @@
 
 package org.chromium.ui.permissions;
 
+import android.Manifest;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.content.pm.PackageManager.NameNotFoundException;
@@ -58,8 +59,9 @@ public class PermissionPrefs {
                 // e.g. Requesting first the permission ACCESS_FINE_LOCATION will result in Chrome
                 //      treating ACCESS_COARSE_LOCATION as if it had already been requested as well.
                 PermissionInfo permissionInfo =
-                        ContextUtils.getApplicationContext().getPackageManager().getPermissionInfo(
-                                permission, PackageManager.GET_META_DATA);
+                        ContextUtils.getApplicationContext()
+                                .getPackageManager()
+                                .getPermissionInfo(permission, PackageManager.GET_META_DATA);
 
                 if (!TextUtils.isEmpty(permissionInfo.group)) {
                     return permissionInfo.group;
@@ -82,9 +84,7 @@ public class PermissionPrefs {
         return prefs.getBoolean(getPermissionWasDeniedKey(permission), false);
     }
 
-    /**
-     * Clear the shared pref indicating that {@code permission} was denied by the user.
-     */
+    /** Clear the shared pref indicating that {@code permission} was denied by the user. */
     static void clearPermissionWasDenied(String permission) {
         SharedPreferences prefs = ContextUtils.getAppSharedPreferences();
         SharedPreferences.Editor editor = prefs.edit();
@@ -115,29 +115,29 @@ public class PermissionPrefs {
      * @return The timestamp when the notification permission request was shown last.
      */
     public static long getAndroidNotificationPermissionRequestTimestamp() {
-        String prefName = ANDROID_PERMISSION_REQUEST_TIMESTAMP_KEY_PREFIX
-                + PermissionPrefs.normalizePermissionName(
-                        PermissionConstants.NOTIFICATION_PERMISSION);
+        String prefName =
+                ANDROID_PERMISSION_REQUEST_TIMESTAMP_KEY_PREFIX
+                        + PermissionPrefs.normalizePermissionName(
+                                Manifest.permission.POST_NOTIFICATIONS);
         SharedPreferences prefs = ContextUtils.getAppSharedPreferences();
         return prefs.getLong(prefName, 0);
     }
 
-    /**
-     * Called when the android permission prompt was shown.
-     */
+    /** Called when the android permission prompt was shown. */
     static void onAndroidPermissionRequestUiShown(String[] permissions) {
         boolean isNotification = false;
         for (String permission : permissions) {
-            if (TextUtils.equals(permission, PermissionConstants.NOTIFICATION_PERMISSION)) {
+            if (TextUtils.equals(permission, Manifest.permission.POST_NOTIFICATIONS)) {
                 isNotification = true;
                 break;
             }
         }
         if (!isNotification) return;
 
-        String prefName = ANDROID_PERMISSION_REQUEST_TIMESTAMP_KEY_PREFIX
-                + PermissionPrefs.normalizePermissionName(
-                        PermissionConstants.NOTIFICATION_PERMISSION);
+        String prefName =
+                ANDROID_PERMISSION_REQUEST_TIMESTAMP_KEY_PREFIX
+                        + PermissionPrefs.normalizePermissionName(
+                                Manifest.permission.POST_NOTIFICATIONS);
         SharedPreferences prefs = ContextUtils.getAppSharedPreferences();
         prefs.edit().putLong(prefName, TimeUtils.currentTimeMillis()).apply();
     }

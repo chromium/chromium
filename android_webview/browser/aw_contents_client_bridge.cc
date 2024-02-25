@@ -13,6 +13,7 @@
 #include "base/android/jni_android.h"
 #include "base/android/jni_array.h"
 #include "base/android/jni_string.h"
+#include "base/containers/span.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/task/current_thread.h"
@@ -127,9 +128,8 @@ void AwContentsClientBridge::AllowCertificateError(int cert_error,
 
   base::StringPiece der_string =
       net::x509_util::CryptoBufferAsStringPiece(cert->cert_buffer());
-  ScopedJavaLocalRef<jbyteArray> jcert = base::android::ToJavaByteArray(
-      env, reinterpret_cast<const uint8_t*>(der_string.data()),
-      der_string.length());
+  ScopedJavaLocalRef<jbyteArray> jcert =
+      base::android::ToJavaByteArray(env, base::as_byte_span(der_string));
   ScopedJavaLocalRef<jstring> jurl(
       ConvertUTF8ToJavaString(env, request_url.spec()));
   // We need to add the callback before making the call to java side,

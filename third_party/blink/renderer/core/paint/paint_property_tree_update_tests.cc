@@ -8,7 +8,7 @@
 #include "third_party/blink/renderer/core/frame/visual_viewport.h"
 #include "third_party/blink/renderer/core/html/forms/html_select_element.h"
 #include "third_party/blink/renderer/core/html/html_iframe_element.h"
-#include "third_party/blink/renderer/core/layout/ng/ng_ink_overflow.h"
+#include "third_party/blink/renderer/core/layout/ink_overflow.h"
 #include "third_party/blink/renderer/core/page/focus_controller.h"
 #include "third_party/blink/renderer/core/page/page_animator.h"
 #include "third_party/blink/renderer/core/paint/paint_property_tree_builder_test.h"
@@ -1656,7 +1656,8 @@ TEST_P(PaintPropertyTreeUpdateTest, ChangeDuringAnimation) {
   builder = ComputedStyleBuilder(target->StyleRef());
   TransformOperations transform;
   transform.Operations().push_back(
-      RotateTransformOperation::Create(10, TransformOperation::kRotate));
+      MakeGarbageCollected<RotateTransformOperation>(
+          10, TransformOperation::kRotate));
   builder.SetTransform(transform);
   builder.SetTransformOrigin(
       TransformOrigin(Length::Fixed(70), Length::Fixed(30), 0));
@@ -1667,7 +1668,7 @@ TEST_P(PaintPropertyTreeUpdateTest, ChangeDuringAnimation) {
 #if DCHECK_IS_ON()
     // TODO(crbug.com/1201670): This should not be needed, but DCHECK hits.
     // Needs more investigations.
-    NGInkOverflow::ReadUnsetAsNoneScope read_unset_as_none;
+    InkOverflow::ReadUnsetAsNoneScope read_unset_as_none;
 #endif
     UpdateAllLifecyclePhasesExceptPaint();
   }
@@ -2131,7 +2132,7 @@ TEST_P(PaintPropertyTreeUpdateTest, UpdatesInLockedDisplayHandledCorrectly) {
       ->setAttribute(html_names::kStyleAttr, AtomicString("background:purple"));
   GetDocument()
       .getElementById(AtomicString("locked_display_inner"))
-      ->getBoundingClientRect();
+      ->GetBoundingClientRect();
   EXPECT_TRUE(fast_path_div->GetLayoutObject()->NeedsPaintPropertyUpdate());
   GetDocument().ElementFromPoint(1, 1);
   EXPECT_NEAR(0.8, div_properties->Effect()->Opacity(), 0.001);
@@ -2166,6 +2167,81 @@ TEST_P(PaintPropertyTreeUpdateTest, AnchorPositioningScrollUpdate) {
 
   // Anchor positioning scroll update should not require main thread commits.
   EXPECT_FALSE(GetFrame().View()->GetPaintArtifactCompositor()->NeedsUpdate());
+}
+
+TEST_P(PaintPropertyTreeUpdateTest, ElementCaptureUpdate) {
+  ScopedElementCaptureForTest scoped_element_capture(true);
+
+  SetBodyInnerHTML(R"HTML(
+   <style>
+      div {
+        height: 100px;
+      }
+      .stacking {
+        opacity: 0.9;
+      }
+      #container {
+        columns:4;
+        column-fill:auto;
+      }
+      .fragmentize {
+        height: 50px;
+      }
+      #target {
+        background: linear-gradient(red, blue);
+      }
+    </style>
+
+    <div id='container'>
+      <div id='target' class='stacking'></div>
+    </div>
+  )HTML");
+
+  /// Does not have an effect without a restriction target.
+  Element* element = GetDocument().getElementById(AtomicString("target"));
+  const ObjectPaintProperties* paint_properties =
+      element->GetLayoutObject()->FirstFragment().PaintProperties();
+  EXPECT_FALSE(paint_properties && paint_properties->ElementCaptureEffect());
+
+  // Ensure we have an effect once we have a restriction target token.
+  element->SetRestrictionTargetId(
+      std::make_unique<RestrictionTargetId>(base::Token::CreateRandom()));
+  EXPECT_TRUE(element->GetLayoutObject()->NeedsPaintPropertyUpdate());
+  UpdateAllLifecyclePhasesForTest();
+  EXPECT_FALSE(element->GetLayoutObject()->NeedsPaintPropertyUpdate());
+  paint_properties =
+      element->GetLayoutObject()->FirstFragment().PaintProperties();
+  EXPECT_TRUE(paint_properties && paint_properties->ElementCaptureEffect());
+
+  // Should not have an effect if `#target`'s stacking context is removed.
+  element->setAttribute(html_names::kClassAttr, AtomicString(""));
+  UpdateAllLifecyclePhasesForTest();
+  paint_properties =
+      element->GetLayoutObject()->FirstFragment().PaintProperties();
+  EXPECT_FALSE(paint_properties && paint_properties->ElementCaptureEffect());
+
+  // Should have an effect if `#target` gets a stacking context.
+  element->setAttribute(html_names::kClassAttr, AtomicString("stacking"));
+  UpdateAllLifecyclePhasesForTest();
+  paint_properties =
+      element->GetLayoutObject()->FirstFragment().PaintProperties();
+  EXPECT_TRUE(paint_properties && paint_properties->ElementCaptureEffect());
+
+  // Should not have an effect if `#target` becomes fragmented. This is done
+  // indirectly by resizing the parent.
+  Element* container = GetDocument().getElementById(AtomicString("container"));
+  container->setAttribute(html_names::kClassAttr, AtomicString("fragmentize"));
+  UpdateAllLifecyclePhasesForTest();
+  paint_properties =
+      element->GetLayoutObject()->FirstFragment().PaintProperties();
+  EXPECT_FALSE(paint_properties && paint_properties->ElementCaptureEffect());
+
+  // Should have an effect if `#target`'s becomes unfragmented again.
+  container->setAttribute(html_names::kClassAttr, AtomicString(""));
+  UpdateAllLifecyclePhasesForTest();
+  paint_properties =
+      element->GetLayoutObject()->FirstFragment().PaintProperties();
+  EXPECT_TRUE(paint_properties && paint_properties->ElementCaptureEffect());
 }
 
 }  // namespace blink

@@ -1,0 +1,31 @@
+# Copyright 2023 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("cpp") {
+  output_name = "on_device_model_cpp"
+  sources = [ "on_device_model.h" ]
+  public_deps = [
+    ":model_assets",
+    "//base",
+    "//services/on_device_model/public/mojom",
+  ]
+  defines = [ "IS_ON_DEVICE_MODEL_CPP_IMPL" ]
+}
+
+component("model_assets") {
+  sources = [
+    "adaptation_assets_mojom_traits.cc",
+    "adaptation_assets_mojom_traits.h",
+    "model_assets.cc",
+    "model_assets.h",
+    "model_assets_mojom_traits.cc",
+    "model_assets_mojom_traits.h",
+  ]
+  public_deps = [
+    "//base",
+    "//mojo/public/cpp/base:shared_typemap_traits",
+    "//services/on_device_model/public/mojom:mojom_shared",
+  ]
+  defines = [ "IS_ON_DEVICE_MODEL_ASSETS_CPP_IMPL" ]
+}

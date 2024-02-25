@@ -7,9 +7,7 @@
 #import "base/ios/ios_util.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/ui/autofill/manual_fill/manual_fill_cell_utils.h"
-#import "ios/chrome/common/button_configuration_util.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
-#import "ios/chrome/common/ui/util/sdk_forward_declares.h"
 
 namespace {
 
@@ -56,24 +54,13 @@ static const CGFloat kButtonVerticalMargin = 12;
   self.translatesAutoresizingMaskIntoConstraints = NO;
   self.contentHorizontalAlignment = UIControlContentHorizontalAlignmentLeading;
 
-  if (IsUIButtonConfigurationEnabled()) {
-    UIButtonConfiguration* buttonConfiguration =
-        [UIButtonConfiguration plainButtonConfiguration];
-    buttonConfiguration.contentInsets = NSDirectionalEdgeInsetsMake(
-        kButtonVerticalMargin, kButtonHorizontalMargin, kButtonVerticalMargin,
-        kButtonHorizontalMargin);
-    buttonConfiguration.titleLineBreakMode = NSLineBreakByTruncatingTail;
-    self.configuration = buttonConfiguration;
-  } else {
-    self.titleLabel.font =
-        [UIFont preferredFontForTextStyle:UIFontTextStyleBody];
-    self.titleLabel.lineBreakMode = NSLineBreakByTruncatingTail;
-    self.titleLabel.adjustsFontForContentSizeCategory = YES;
-    UIEdgeInsets contentEdgeInsets =
-        UIEdgeInsetsMake(kButtonVerticalMargin, kButtonHorizontalMargin,
-                         kButtonVerticalMargin, kButtonHorizontalMargin);
-    SetContentEdgeInsets(self, contentEdgeInsets);
-  }
+  UIButtonConfiguration* buttonConfiguration =
+      [UIButtonConfiguration plainButtonConfiguration];
+  buttonConfiguration.contentInsets = NSDirectionalEdgeInsetsMake(
+      kButtonVerticalMargin, kButtonHorizontalMargin, kButtonVerticalMargin,
+      kButtonHorizontalMargin);
+  buttonConfiguration.titleLineBreakMode = NSLineBreakByTruncatingTail;
+  self.configuration = buttonConfiguration;
 }
 
 @end

@@ -8,6 +8,7 @@
 
 #include <algorithm>
 #include <memory>
+#include <optional>
 #include <utility>
 
 #include "ash/public/cpp/ime_controller.h"
@@ -30,10 +31,10 @@
 #include "chrome/test/base/browser_with_test_window_test.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/base/testing_profile_manager.h"
+#include "chromeos/components/kiosk/kiosk_test_utils.h"
 #include "components/account_id/account_id.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/icu/source/common/unicode/uloc.h"
 #include "third_party/icu/source/i18n/unicode/coll.h"
 #include "ui/base/ime/ash/component_extension_ime_manager.h"
@@ -381,13 +382,11 @@ class InputMethodManagerImplTest :  public BrowserWithTestWindowTest {
  protected:
   std::unique_ptr<ChromeKeyboardControllerClientTestHelper>
       chrome_keyboard_controller_client_test_helper_;
-  raw_ptr<InputMethodManagerImpl, DanglingUntriaged | ExperimentalAsh>
-      manager_ = nullptr;
-  raw_ptr<MockCandidateWindowController, ExperimentalAsh>
-      candidate_window_controller_ = nullptr;
+  raw_ptr<InputMethodManagerImpl, DanglingUntriaged> manager_ = nullptr;
+  raw_ptr<MockCandidateWindowController> candidate_window_controller_ = nullptr;
   std::unique_ptr<MockInputMethodEngine> mock_engine_handler_;
-  raw_ptr<FakeImeKeyboard, ExperimentalAsh> keyboard_ = nullptr;
-  raw_ptr<ui::ime::InputMethodMenuManager, ExperimentalAsh> menu_manager_;
+  raw_ptr<FakeImeKeyboard> keyboard_ = nullptr;
+  raw_ptr<ui::ime::InputMethodMenuManager> menu_manager_;
 };
 
 TEST_F(InputMethodManagerImplTest, TestGetImeKeyboard) {
@@ -451,7 +450,7 @@ TEST_F(InputMethodManagerImplTest, TestObserver) {
       extension_ime_util::GetArcInputMethodID(kExtensionId1, "engine_id");
   InputMethodDescriptor descriptor(
       ime_id, "arc ime", "AI", {"us"}, {"en-US"}, false /* is_login_keyboard */,
-      GURL(), GURL(), /*handwriting_language=*/absl::nullopt);
+      GURL(), GURL(), /*handwriting_language=*/std::nullopt);
   manager_->GetActiveIMEState()->AddInputMethodExtension(kExtensionId1,
                                                          {descriptor}, &engine);
   EXPECT_EQ(1, observer.input_method_extension_added_count_);
@@ -1137,7 +1136,7 @@ TEST_F(InputMethodManagerImplTest, TestAddRemoveExtensionInputMethods) {
       "us",  // layout
       languages,
       false,  // is_login_keyboard
-      GURL(), GURL(), /*handwriting_language=*/absl::nullopt);
+      GURL(), GURL(), /*handwriting_language=*/std::nullopt);
   MockInputMethodEngine engine;
   InputMethodDescriptors descriptors;
   descriptors.push_back(descriptor1);
@@ -1167,7 +1166,7 @@ TEST_F(InputMethodManagerImplTest, TestAddRemoveExtensionInputMethods) {
       "us",  // layout
       languages,
       false,  // is_login_keyboard
-      GURL(), GURL(), /*handwriting_language=*/absl::nullopt);
+      GURL(), GURL(), /*handwriting_language=*/std::nullopt);
   descriptors.clear();
   descriptors.push_back(descriptor2);
   MockInputMethodEngine engine2;
@@ -1212,12 +1211,12 @@ TEST_F(InputMethodManagerImplTest, TestAddExtensionInputThenLockScreen) {
 
   const std::string ext_id =
       extension_ime_util::GetInputMethodID(kExtensionId1, "engine_id");
-  const InputMethodDescriptor descriptor(
-      ext_id, "deadbeef input method", "DB",
-      "us(dvorak)",  // layout
-      languages,
-      false,  // is_login_keyboard
-      GURL(), GURL(), /*handwriting_language=*/absl::nullopt);
+  const InputMethodDescriptor descriptor(ext_id, "deadbeef input method", "DB",
+                                         "us(dvorak)",  // layout
+                                         languages,
+                                         false,  // is_login_keyboard
+                                         GURL(), GURL(),
+                                         /*handwriting_language=*/std::nullopt);
   MockInputMethodEngine engine;
   InputMethodDescriptors descriptors;
   descriptors.push_back(descriptor);
@@ -1301,7 +1300,19 @@ TEST_F(InputMethodManagerImplTest, ChangeInputMethodComponentExtensionTwoIME) {
             manager_->GetActiveIMEState()->GetCurrentInputMethod().id());
 }
 
-TEST_F(InputMethodManagerImplTest, MigrateInputMethodTest) {
+TEST_F(InputMethodManagerImplTest, GetMigratedInputMethodIDTest) {
+  EXPECT_EQ(ImeIdFromEngineId("xkb:us::eng"),
+            manager_->GetMigratedInputMethodID("xkb:us::eng"));
+  EXPECT_EQ(ImeIdFromEngineId("xkb:fr::fra"),
+            manager_->GetMigratedInputMethodID("xkb:fr::fra"));
+  EXPECT_EQ(
+      "_comp_ime_asdf_invalid_pinyin",
+      manager_->GetMigratedInputMethodID("_comp_ime_asdf_invalid_pinyin"));
+  EXPECT_EQ(ImeIdFromEngineId("zh-t-i0-pinyin"),
+            manager_->GetMigratedInputMethodID("zh-t-i0-pinyin"));
+}
+
+TEST_F(InputMethodManagerImplTest, MigrateInputMethodsTest) {
   std::vector<std::string> input_method_ids;
   input_method_ids.emplace_back("xkb:us::eng");
   input_method_ids.emplace_back("xkb:fr::fra");
@@ -1311,7 +1322,7 @@ TEST_F(InputMethodManagerImplTest, MigrateInputMethodTest) {
   input_method_ids.emplace_back("_comp_ime_asdf_pinyin");
   input_method_ids.push_back(ImeIdFromEngineId(kPinyinImeId));
 
-  manager_->MigrateInputMethods(&input_method_ids);
+  manager_->GetMigratedInputMethodIDs(&input_method_ids);
 
   ASSERT_EQ(4U, input_method_ids.size());
 
@@ -1333,7 +1344,7 @@ TEST_F(InputMethodManagerImplTest, OverrideKeyboardUrlRefWithKeyset) {
   InputMethodDescriptors descriptors;
   descriptors.push_back(InputMethodDescriptor(
       ime_id, "test", "TE", {}, {}, /*is_login_keyboard=*/false, GURL(),
-      inputview_url, /*handwriting_language=*/absl::nullopt));
+      inputview_url, /*handwriting_language=*/std::nullopt));
 
   MockInputMethodEngine engine;
   std::vector<std::string> enabled_imes = {ime_id};
@@ -1382,7 +1393,7 @@ TEST_F(InputMethodManagerImplTest, OverrideDefaultKeyboardUrlRef) {
   InputMethodDescriptors descriptors;
   descriptors.push_back(InputMethodDescriptor(
       ime_id, "test", "TE", {}, {}, /*is_login_keyboard=*/false, GURL(),
-      default_url, /*handwriting_language=*/absl::nullopt));
+      default_url, /*handwriting_language=*/std::nullopt));
 
   MockInputMethodEngine engine;
   std::vector<std::string> enabled_imes = {ime_id};
@@ -1408,7 +1419,7 @@ TEST_F(InputMethodManagerImplTest, DoesNotResetInputViewUrlWhenOverridden) {
   InputMethodDescriptors descriptors;
   descriptors.push_back(InputMethodDescriptor(
       ime_id, "test", "TE", {}, {}, /*is_login_keyboard=*/false, GURL(),
-      inputview_url, /*handwriting_language=*/absl::nullopt));
+      inputview_url, /*handwriting_language=*/std::nullopt));
 
   MockInputMethodEngine engine;
   std::vector<std::string> enabled_imes = {ime_id};
@@ -1520,19 +1531,16 @@ TEST_F(InputMethodManagerImplTest, AllowedInputMethodsAndExtensions) {
                                    ImeIdFromEngineId(kNaclMozcJpId)));
 }
 
-TEST_F(InputMethodManagerImplTest, EnableAllowedInputMethodsInKiosk) {
-  // Login as a kiosk app user.
-  const std::string user_id = "kiosk@account.user";
-  const std::string user_email = user_id;
-  const AccountId account_id =
-      AccountId::FromUserEmailGaiaId(user_email, user_id);
+class InputMethodManagerImplKioskTest : public InputMethodManagerImplTest {
+ public:
+  void LogIn(const std::string& email) override {
+    chromeos::SetUpFakeKioskSession(email);
+    ash_test_helper()->test_session_controller_client()->AddUserSession(
+        email, user_manager::UserType::kKioskApp);
+  }
+};
 
-  ash::FakeChromeUserManager* fake_user_manager =
-      static_cast<ash::FakeChromeUserManager*>(
-          user_manager::UserManager::Get());
-  fake_user_manager->AddKioskAppUser(account_id);
-  fake_user_manager->LoginUser(account_id);
-
+TEST_F(InputMethodManagerImplKioskTest, EnableAllowedInputMethods) {
   // First, setup xkb:fr::fra input method
   std::string original_input_method(ImeIdFromEngineId("xkb:fr::fra"));
   ASSERT_TRUE(
@@ -1557,8 +1565,6 @@ TEST_F(InputMethodManagerImplTest, EnableAllowedInputMethodsInKiosk) {
   EXPECT_THAT(manager_->GetActiveIMEState()->GetAllowedInputMethodIds(),
               testing::ElementsAre(ImeIdFromEngineId("xkb:us::eng"),
                                    ImeIdFromEngineId("xkb:de::ger")));
-  // Logout kiosk app user.
-  fake_user_manager->RemoveUserFromList(account_id);
 }
 
 TEST_F(InputMethodManagerImplTest, SetLoginDefaultWithAllowedInputMethods) {
@@ -1669,7 +1675,7 @@ TEST_F(InputMethodManagerImplTest, TestAddRemoveArcInputMethods) {
   const InputMethodDescriptor descriptor(
       ime_id, "arc ime", "AI", "us" /* layout */, languages,
       false /* is_login_keyboard */, GURL(), GURL(),
-      /*handwriting_language=*/absl::nullopt);
+      /*handwriting_language=*/std::nullopt);
   InputMethodDescriptors descriptors({descriptor});
   manager_->GetActiveIMEState()->AddInputMethodExtension(kExtensionId1,
                                                          descriptors, &engine);

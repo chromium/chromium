@@ -42,7 +42,7 @@ TEST(PasswordManagerMetricsRecorder, UserModifiedPasswordField) {
   const auto& entries =
       test_ukm_recorder.GetEntriesByName(UkmEntry::kEntryName);
   EXPECT_EQ(1u, entries.size());
-  for (const auto* entry : entries) {
+  for (const ukm::mojom::UkmEntry* entry : entries) {
     EXPECT_EQ(kTestSourceId, entry->source_id);
     test_ukm_recorder.ExpectEntryMetric(
         entry, UkmEntry::kUserModifiedPasswordFieldName, 1);
@@ -61,7 +61,7 @@ TEST(PasswordManagerMetricsRecorder, UserModifiedPasswordFieldMultipleTimes) {
   const auto& entries =
       test_ukm_recorder.GetEntriesByName(UkmEntry::kEntryName);
   EXPECT_EQ(1u, entries.size());
-  for (const auto* entry : entries) {
+  for (const ukm::mojom::UkmEntry* entry : entries) {
     EXPECT_EQ(kTestSourceId, entry->source_id);
     test_ukm_recorder.ExpectEntryMetric(
         entry, UkmEntry::kUserModifiedPasswordFieldName, 1);
@@ -75,7 +75,7 @@ TEST(PasswordManagerMetricsRecorder, UserModifiedPasswordFieldNotCalled) {
   const auto& entries =
       test_ukm_recorder.GetEntriesByName(UkmEntry::kEntryName);
   EXPECT_EQ(1u, entries.size());
-  for (const auto* entry : entries) {
+  for (const ukm::mojom::UkmEntry* entry : entries) {
     EXPECT_EQ(kTestSourceId, entry->source_id);
     EXPECT_FALSE(test_ukm_recorder.EntryHasMetric(
         entry, UkmEntry::kUserModifiedPasswordFieldName));

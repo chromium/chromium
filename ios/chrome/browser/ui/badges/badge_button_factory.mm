@@ -9,7 +9,7 @@
 #import "base/notreached.h"
 #import "build/build_config.h"
 #import "components/autofill/core/browser/autofill_save_update_address_profile_delegate_ios.h"
-#import "ios/chrome/browser/infobars/infobar_ios.h"
+#import "ios/chrome/browser/infobars/model/infobar_ios.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/browser/ui/badges/badge_button.h"
 #import "ios/chrome/browser/ui/badges/badge_constants.h"
@@ -55,6 +55,8 @@ const CGFloat kSymbolIncognitoFullScreenPointSize = 14.;
       return [self permissionsCameraBadgeButton];
     case kBadgeTypePermissionsMicrophone:
       return [self permissionsMicrophoneBadgeButton];
+    case kBadgeTypeParcelTracking:
+      return [self parcelTrackingBadgeButton];
     case kBadgeTypeNone:
       NOTREACHED() << "A badge should not have kBadgeTypeNone";
       return nil;
@@ -131,15 +133,11 @@ const CGFloat kSymbolIncognitoFullScreenPointSize = 14.;
 - (BadgeButton*)incognitoBadgeButton {
   BadgeButton* button;
   UIImage* image;
-  if (@available(iOS 15, *)) {
-    image =
-        SymbolWithPalette(CustomSymbolWithPointSize(kIncognitoCircleFillSymbol,
-                                                    kSymbolIncognitoPointSize),
-                          SmallIncognitoPalette());
-  } else {
-    image = [[UIImage imageNamed:@"incognito_badge_ios14"]
-        imageWithRenderingMode:UIImageRenderingModeAlwaysOriginal];
-  }
+
+  image =
+      SymbolWithPalette(CustomSymbolWithPointSize(kIncognitoCircleFillSymbol,
+                                                  kSymbolIncognitoPointSize),
+                        SmallIncognitoPalette());
   button = [self createButtonForType:kBadgeTypeIncognito image:image];
   button.fullScreenImage = CustomSymbolTemplateWithPointSize(
       kIncognitoSymbol, kSymbolIncognitoFullScreenPointSize);
@@ -195,7 +193,7 @@ const CGFloat kSymbolIncognitoFullScreenPointSize = 14.;
 
 - (BadgeButton*)saveAddressProfileBadgeButton:(InfoBarIOS*)infoBar {
   UIImage* image =
-      CustomSymbolWithPointSize(kLocationFillSymbol, kInfobarSymbolPointSize);
+      CustomSymbolWithPointSize(kLocationSymbol, kInfobarSymbolPointSize);
 
   if (infoBar) {
     autofill::AutofillSaveUpdateAddressProfileDelegateIOS* delegate =
@@ -246,6 +244,21 @@ const CGFloat kSymbolIncognitoFullScreenPointSize = 14.;
       kBadgeButtonPermissionsMicrophoneAccessibilityIdentifier;
   button.accessibilityLabel =
       l10n_util::GetNSString(IDS_IOS_INFOBAR_BADGES_PERMISSIONS_HINT);
+  return button;
+}
+
+- (BadgeButton*)parcelTrackingBadgeButton {
+  UIImage* image =
+      DefaultSymbolWithPointSize(kShippingBoxSymbol, kInfobarSymbolPointSize);
+  BadgeButton* button = [self createButtonForType:kBadgeTypeParcelTracking
+                                            image:image];
+  [button addTarget:self.delegate
+                action:@selector(parcelTrackingBadgeButtonTapped:)
+      forControlEvents:UIControlEventTouchUpInside];
+  button.accessibilityIdentifier =
+      kBadgeButtonParcelTrackingAccessibilityIdentifier;
+  button.accessibilityLabel =
+      l10n_util::GetNSString(IDS_IOS_INFOBAR_BADGES_PARCEL_TRACKING_HINT);
   return button;
 }
 

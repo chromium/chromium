@@ -2,7 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//build/config/chromecast_build.gni")
+import("//build/config/cast.gni")
 import("//build/config/chromeos/ui_mode.gni")
 import("//build/config/linux/pkg_config.gni")
 import("//build/config/logging.gni")
@@ -11,13 +11,6 @@ import("//gpu/vulkan/features.gni")
 import("//testing/test.gni")
 
 visibility = [ "//ui/ozone/*" ]
-
-declare_args() {
-  # Enables commiting of CRTC properties on page flip events.
-  # This is not enabled by default because of a bug on Intel:
-  # https://crbug.com/854753
-  drm_commit_properties_on_page_flip = false
-}
 
 source_set("gbm") {
   sources = [
@@ -132,6 +125,7 @@ source_set("gbm") {
     "//mojo/public/cpp/system",
     "//services/service_manager/public/cpp",
     "//skia",
+    "//skia:skcms",
     "//third_party/libsync",
     "//third_party/minigbm",
     "//ui/base",
@@ -179,23 +173,18 @@ source_set("gbm") {
 
   public_configs = [ "//third_party/khronos:khronos_headers" ]
 
-  defines = [ "OZONE_IMPLEMENTATION" ]
+  defines = [
+    "OZONE_IMPLEMENTATION",
 
-  if (drm_commit_properties_on_page_flip) {
-    defines += [ "COMMIT_PROPERTIES_ON_PAGE_FLIP" ]
-  }
-
-  if (!use_runtime_vlog) {
-    # Enable VLOG(1) when using build time VLOG.
-    defines += [ "ENABLED_VLOG_LEVEL=1" ]
-  }
+    # Enable VLOG(1) so that they are included in field feedbacks.
+    "ENABLED_VLOG_LEVEL=1",
+  ]
 }
 
 source_set("gbm_unittests") {
   testonly = true
   sources = [
     "common/drm_util_unittest.cc",
-    "gpu/drm_display_unittest.cc",
     "gpu/drm_gpu_display_manager_unittest.cc",
     "gpu/drm_overlay_manager_unittest.cc",
     "gpu/drm_overlay_validator_unittest.cc",
@@ -232,10 +221,6 @@ source_set("gbm_unittests") {
     "//ui/ozone:platform",
     "//ui/ozone/common",
   ]
-
-  if (drm_commit_properties_on_page_flip) {
-    defines = [ "COMMIT_PROPERTIES_ON_PAGE_FLIP" ]
-  }
 }
 
 source_set("drm_integration_tests") {
@@ -258,4 +243,23 @@ source_set("drm_integration_tests") {
     "//ui/ozone:platform",
     "//ui/ozone/common",
   ]
+}
+
+source_set("ui_controls") {
+  testonly = true
+
+  sources = [
+    "test/ui_controls_system_input_injector.cc",
+    "test/ui_controls_system_input_injector.h",
+  ]
+
+  deps = [
+    "//base/test:test_support",
+    "//ui/aura:test_support",
+    "//ui/base:test_support",
+    "//ui/ozone:platform",
+    "//ui/ozone/common",
+  ]
+
+  visibility += [ "//chrome/test:test_support" ]
 }

@@ -5,7 +5,6 @@
 <translation id="1076394037877376434">Видалити сторінку <ph name="PAGE_NUMBER" /></translation>
 <translation id="1113173431709655881">Режим камери</translation>
 <translation id="1153190633558910465">Сітку вимкнено</translation>
-<translation id="1175958423215084756">Виявлене посилання. <ph name="HOSTNAME" /></translation>
 <translation id="1197694886744716213">Сторінку <ph name="PAGE_NUMBER" /> видалено</translation>
 <translation id="1258009455399840361">Повернути на 90 градусів за годинниковою стрілкою</translation>
 <translation id="1417314334557041815">Редагувати сторінку <ph name="INDEX" /></translation>
@@ -47,6 +46,7 @@
 <translation id="3067436040345934772">Перемістити вправо</translation>
 <translation id="3081586908890909590">Перейти в режим запису відео</translation>
 <translation id="313467653172006084">30 кадрів/с</translation>
+<translation id="3158534262962737808">Підключитися до мережі "<ph name="WIFINAME" />"</translation>
 <translation id="3227137524299004712">Мікрофон</translation>
 <translation id="3240426699337459095">Посилання скопійовано</translation>
 <translation id="3354465018370944241">Налаштування фотографій</translation>
@@ -60,14 +60,12 @@
 <translation id="3642192109456033823">Триває обробка відео…</translation>
 <translation id="3789724198583203151">Повернути на 90 градусів проти годинникової стрілки</translation>
 <translation id="3810838688059735925">Відео</translation>
-<translation id="3892148308691398805">Копіювати текст</translation>
 <translation id="4060608699153044055">На пристрої недостатньо пам’яті. Щоб почати запис, звільніть місце.</translation>
 <translation id="4061162772429051350"><ph name="MAGAPIXELS_AMOUNT" /> Мп</translation>
 <translation id="4118525110028899586">Призупинити запис</translation>
 <translation id="4121305183798804752">Виявлено документ</translation>
 <translation id="414641094616694804">Для цієї камери не можна змінити роздільну здатність</translation>
 <translation id="4176463684765177261">Вимкнено</translation>
-<translation id="4269820728363426813">Копіювати адресу посилання</translation>
 <translation id="428234092390943511">Зменшене зображення сторінки</translation>
 <translation id="4349714250734879769">Масштабувати фрейми за допомогою Chrome</translation>
 <translation id="4383571725254449280">Друкувати журнали продуктивності</translation>
@@ -81,14 +79,15 @@
 <translation id="4705093842003735294">Максимальна роздільна здатність</translation>
 <translation id="4864143361253542638">Список сканованих сторінок</translation>
 <translation id="4890010094662541459">3 x 3</translation>
+<translation id="4892746741161549733">Копіювати адресу посилання <ph name="URL" /></translation>
 <translation id="491895758387112773">Багатопотоковий відеозапис</translation>
 <translation id="495170559598752135">Дії</translation>
 <translation id="4984613436295737187">Quad HD (1440p)</translation>
 <translation id="5034763830503483128">Формат фотографії</translation>
 <translation id="5057360777601936059">Камера зараз недоступна.
         Перевірте, чи правильно її під’єднано.</translation>
+<translation id="5157591164390831335">Виявлено URL-адресу.</translation>
 <translation id="5163387177077603948">Переміщення вправо</translation>
-<translation id="5219374179772385066">Режим інтервальної зйомки вже доступний!</translation>
 <translation id="5235304959032763950">16:9</translation>
 <translation id="5266635337630551423">Верхній лівий кут документа</translation>
 <translation id="5317780077021120954">Зберегти</translation>
@@ -114,6 +113,7 @@
 <translation id="6353688143752491039">Дякуємо за ваш відгук про додаток Камера.
 
 Якщо ви хочете поділитися враженнями про якість зображення чи відео, долучіть зразок і опишіть проблему (наприклад, "фотографія надто темна" або "об'єкт на зображенні розмитий").</translation>
+<translation id="6519884562954018934">Підключитися до мережі "<ph name="WIFINAME" />"</translation>
 <translation id="6527303717912515753">Надіслати</translation>
 <translation id="6617916774429601017">Показати всі варіанти роздільної здатності</translation>
 <translation id="6631515515009660915">Режим віддзеркалення вимкнено</translation>
@@ -124,7 +124,7 @@
 <translation id="6888362557094394345">Переміщення вниз</translation>
 <translation id="695140971690006676">Скинути все</translation>
 <translation id="6965382102122355670">OK</translation>
-<translation id="6965830616442491568">Портрет</translation>
+<translation id="6965830616442491568">Портретна зйомка</translation>
 <translation id="698156982839284926">3 секунди</translation>
 <translation id="7134221860976209830">Таймер на 10 секунд</translation>
 <translation id="7191890674911603392">Тип запису</translation>
@@ -133,6 +133,7 @@
 <translation id="7450541714075000668">Текст скопійовано</translation>
 <translation id="7488619942230388918">Записати відео у форматі GIF</translation>
 <translation id="7557677699350329807">Перемкнутися на наступну камеру</translation>
+<translation id="7562584071994185503">Копіювати текст "<ph name="TEXT" />"</translation>
 <translation id="7607002721634913082">Призупинено</translation>
 <translation id="7608223098072244877">4 на 4</translation>
 <translation id="761421184377987513">Переміщення вниз і вліво</translation>
@@ -155,10 +156,12 @@
 <translation id="8346544573713510785">Масштабувати фрейми за допомогою HAL камери</translation>
 <translation id="8425673304802773841">Нахилити донизу</translation>
 <translation id="8428213095426709021">Налаштування</translation>
+<translation id="8609951387004618906">Відкрити посилання <ph name="URL" /></translation>
 <translation id="8629662593426079630">360p</translation>
 <translation id="8711011893539266636">Увімкнути або вимкнути мікрофон. Мікрофон вимкнено</translation>
 <translation id="8730621377337864115">Готово</translation>
 <translation id="8732462232047530626">Переглянути метадані</translation>
+<translation id="874854738381978209">Виявлено мережу Wi-Fi.</translation>
 <translation id="8815966864175525708">Перейти в режим портретного фото</translation>
 <translation id="8828441885228359828">Відновити запис</translation>
 <translation id="8870695351537079478">Не вдалося почати запис</translation>

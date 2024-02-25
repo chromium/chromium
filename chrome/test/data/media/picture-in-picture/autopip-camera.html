@@ -8,11 +8,7 @@
 <body></body>
 <script>
 function openPip(details) {
-  // These tests should have `automatic` set to true in the
-  // MediaSessionActionDetails, so only proceed if they do.
-  if (details.automatic) {
-    documentPictureInPicture.requestWindow();
-  }
+  documentPictureInPicture.requestWindow();
 }
 
 navigator.mediaSession.setActionHandler('enterpictureinpicture', openPip);

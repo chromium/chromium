@@ -178,14 +178,6 @@ export function setupI18nElements(rootElement: DocumentFragment|Element): void {
     }
     element.append(getMessage(element, 'i18n-text'));
   }
-  for (const element of getElements('i18n-tooltip-true')) {
-    element.setAttribute(
-        'tooltip-true', getMessage(element, 'i18n-tooltip-true'));
-  }
-  for (const element of getElements('i18n-tooltip-false')) {
-    element.setAttribute(
-        'tooltip-false', getMessage(element, 'i18n-tooltip-false'));
-  }
   for (const attribute of ['i18n-aria', 'i18n-label']) {
     for (const element of getElements(attribute)) {
       setAriaLabel(element, attribute);
@@ -210,6 +202,13 @@ export function blobToImage(blob: Blob): Promise<HTMLImageElement> {
  */
 export function getDefaultFacing(): Facing {
   return state.get(state.State.TABLET) ? Facing.ENVIRONMENT : Facing.USER;
+}
+
+/**
+ * Checks if the lid is closed or not.
+ */
+export function isLidClosed(): boolean {
+  return state.get(state.State.LID_CLOSED);
 }
 
 /**
@@ -248,7 +247,7 @@ export function setInkdropEffect(el: HTMLElement): void {
   const ripple =
       assertInstanceof(tpl.querySelector('.inkdrop-ripple'), HTMLElement);
   el.appendChild(tpl);
-  el.addEventListener('click', async (e) => {
+  el.addEventListener('click', (e) => {
     const tRect =
         assertInstanceof(e.target, HTMLElement).getBoundingClientRect();
     const elRect = el.getBoundingClientRect();
@@ -260,7 +259,7 @@ export function setInkdropEffect(el: HTMLElement): void {
     el.style.setProperty('--drop-x', `${dropX}px`);
     el.style.setProperty('--drop-y', `${dropY}px`);
     el.style.setProperty('--drop-radius', `${radius}px`);
-    await animate.play(ripple);
+    animate.play(ripple);
   });
 }
 

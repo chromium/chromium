@@ -1,6 +1,7 @@
 {
   "extends": "../../../../../tools/typescript/tsconfig_base.json",
   "compilerOptions": {
+    "noUncheckedIndexedAccess": false,
     "allowJs": true
   }
 }

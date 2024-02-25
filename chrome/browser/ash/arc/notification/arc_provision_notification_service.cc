@@ -17,10 +17,10 @@
 #include "chrome/browser/notifications/notification_display_service.h"
 #include "chrome/browser/notifications/notification_display_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/profiles/profiles_state.h"
 #include "chrome/browser/ui/ash/multi_user/multi_user_util.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/grit/theme_resources.h"
+#include "chromeos/components/mgs/managed_guest_session_utils.h"
 #include "components/account_id/account_id.h"
 #include "components/session_manager/core/session_manager.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -151,7 +151,7 @@ void ArcProvisionNotificationService::OnArcPlayStoreEnabledChanged(
 void ArcProvisionNotificationService::OnArcStarted() {
   // Show notification only for managed guest sessions (except for Demo Session)
   // when ARC is going to start.
-  if (profiles::IsManagedGuestSession() &&
+  if (chromeos::IsManagedGuestSession() &&
       !ash::DemoSession::IsDeviceInDemoMode()) {
     MaybeShowNotification();
   }

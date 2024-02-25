@@ -56,7 +56,8 @@ bool CheckSecurityRestrictions(LocalFrame& frame) {
     return false;
   }
 
-  if (frame.GetDocument()->contentType() != "text/html") {
+  AtomicString content_type = frame.GetDocument()->contentType();
+  if (content_type != "text/html" && content_type != "text/plain") {
     TRACE_EVENT_INSTANT("blink", "CheckSecurityRestrictions", "Result",
                         "Invalid ContentType");
     return false;
@@ -482,7 +483,7 @@ void TextFragmentAnchor::DidFinishSearch() {
   metrics_->SetSearchEngineSource(HasSearchEngineSource());
   metrics_->ReportMetrics();
 
-  bool did_find_any_matches = first_match_;
+  bool did_find_any_matches = first_match_ != nullptr;
 
   if (!did_find_any_matches) {
     DCHECK(!element_fragment_anchor_);

@@ -1,0 +1,38 @@
+[
+  {
+    "os": [
+      "chromeos_ash",
+      "chromeos_lacros"
+    ],
+    "policy_pref_mapping_tests": [
+      {
+        "policies": {
+          "DeskAPIDeskSaveAndShareEnabled": true
+        },
+        "prefs": {
+          "desk_api.desk_save_and_share_enabled": {
+            "value": true
+          }
+        }
+      },
+      {
+        "policies": {
+          "DeskAPIDeskSaveAndShareEnabled": false
+        },
+        "prefs": {
+          "desk_api.desk_save_and_share_enabled": {
+            "value": false
+          }
+        }
+      },
+      {
+        "policies": {},
+        "prefs": {
+          "desk_api.desk_save_and_share_enabled": {
+            "default_value": false
+          }
+        }
+      }
+    ]
+  }
+]

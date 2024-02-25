@@ -48,7 +48,6 @@
 #include "third_party/blink/renderer/core/frame/local_frame_view.h"
 #include "third_party/blink/renderer/core/frame/settings.h"
 #include "third_party/blink/renderer/core/layout/layout_view.h"
-#include "third_party/blink/renderer/core/paint/clip_rects.h"
 #include "third_party/blink/renderer/core/paint/compositing/compositing_reason_finder.h"
 #include "third_party/blink/renderer/core/paint/object_paint_properties.h"
 #include "third_party/blink/renderer/core/paint/paint_layer.h"
@@ -187,9 +186,8 @@ PhysicalRect PaintLayerClipper::LocalVisualRect(
   // clipping rect may be larger than its box rect (crbug.com/492871).
   bool affected_by_url_bar = layout_object.IsGlobalRootScroller();
   PhysicalRect layer_bounds_with_visual_overflow =
-      affected_by_url_bar
-          ? layout_object.View()->ViewRect()
-          : To<LayoutBox>(layout_object).PhysicalVisualOverflowRect();
+      affected_by_url_bar ? layout_object.View()->ViewRect()
+                          : To<LayoutBox>(layout_object).VisualOverflowRect();
   return layer_bounds_with_visual_overflow;
 }
 

@@ -2,6 +2,8 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//build/config/chromeos/ui_mode.gni")
+
 assert(is_chromeos)
 
 source_set("utils") {
@@ -10,12 +12,20 @@ source_set("utils") {
     "utils/focus_search.h",
     "utils/pre_target_handler.cc",
     "utils/pre_target_handler.h",
+    "utils/pre_target_handler_view.cc",
+    "utils/pre_target_handler_view.h",
+    "utils/preset_text_query.cc",
+    "utils/preset_text_query.h",
+    "utils/utils.cc",
     "utils/utils.h",
   ]
 
   deps = [
     "//base",
+    "//chrome/browser/ui/views/editor_menu/vector_icons",
+    "//components/vector_icons",
     "//ui/aura",
+    "//ui/display",
     "//ui/events",
     "//ui/gfx",
     "//ui/views",
@@ -29,16 +39,31 @@ source_set("editor_menu") {
   ]
 
   deps = [
+    ":utils",
     ":views",
+    "//ash/webui/settings/public/constants:mojom",
     "//base",
+    "//chrome/browser/profiles:profile",
     "//chromeos/components/editor_menu/public/cpp",
+    "//chromeos/crosapi/mojom",
+    "//content/public/browser:browser",
     "//ui/gfx",
     "//ui/views",
   ]
+
+  if (is_chromeos_ash) {
+    deps += [ "//chrome/browser/ash" ]
+  }
+
+  if (is_chromeos_lacros) {
+    deps += [ "//chromeos/lacros" ]
+  }
 }
 
 source_set("views") {
   sources = [
+    "editor_menu_badge_view.cc",
+    "editor_menu_badge_view.h",
     "editor_menu_chip_view.cc",
     "editor_menu_chip_view.h",
     "editor_menu_promo_card_view.cc",
@@ -53,11 +78,11 @@ source_set("views") {
   deps = [
     ":utils",
     "//base",
+    "//chrome/browser/ui/views/editor_menu/vector_icons",
     "//chromeos/strings:strings_grit",
     "//components/vector_icons",
     "//ui/aura",
     "//ui/base",
-    "//ui/chromeos/styles:cros_tokens_color_mappings_generator",
     "//ui/gfx",
     "//ui/views",
   ]

@@ -19,6 +19,7 @@
 #include "components/viz/service/display/output_surface_client.h"
 #include "components/viz/service/display/output_surface_frame.h"
 #include "gpu/GLES2/gl2extchromium.h"
+#include "gpu/command_buffer/client/client_shared_image.h"
 #include "gpu/command_buffer/common/mailbox_holder.h"
 #include "gpu/command_buffer/common/shared_image_usage.h"
 #include "gpu/command_buffer/common/swap_buffers_complete_params.h"
@@ -118,11 +119,18 @@ SkCanvas* FakeSkiaOutputSurface::BeginPaintCurrentFrame() {
 
 void FakeSkiaOutputSurface::MakePromiseSkImage(
     ImageContext* image_context,
-    const gfx::ColorSpace& yuv_color_space) {
+    const gfx::ColorSpace& yuv_color_space,
+    bool force_rgbx) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
 
-  if (image_context->has_image())
+  if (image_context->has_image()) {
     return;
+  }
+
+  if (image_context->format().is_multi_plane()) {
+    NOTIMPLEMENTED();
+    return;
+  }
 
   GrBackendTexture backend_texture;
   if (!GetGrBackendTexture(*image_context, &backend_texture)) {
@@ -161,7 +169,7 @@ FakeSkiaOutputSurface::CreateImageContext(
     const gfx::Size& size,
     SharedImageFormat format,
     bool concurrent_reads,
-    const absl::optional<gpu::VulkanYCbCrInfo>& ycbcr_info,
+    const std::optional<gpu::VulkanYCbCrInfo>& ycbcr_info,
     sk_sp<SkColorSpace> color_space,
     bool raw_draw_if_possible) {
   return std::make_unique<ExternalUseClient::ImageContext>(
@@ -172,7 +180,8 @@ SkCanvas* FakeSkiaOutputSurface::BeginPaintRenderPass(
     const AggregatedRenderPassId& id,
     const gfx::Size& surface_size,
     SharedImageFormat format,
-    bool mipmap,
+    RenderPassAlphaType alpha_type,
+    skgpu::Mipmapped,
     bool scanout_dcomp_surface,
     sk_sp<SkColorSpace> color_space,
     bool is_overlay,
@@ -277,19 +286,27 @@ void FakeSkiaOutputSurface::CopyOutput(
 
   if (request->result_destination() ==
       CopyOutputResult::Destination::kNativeTextures) {
-    // TODO(rivr): This implementation is incomplete and doesn't copy
-    // anything into the mailbox, but currently the only tests that use this
-    // don't actually check the returned texture data.
+    // NOTE: This implementation is incomplete and doesn't copy anything into
+    // the mailbox, but currently the only tests that use this don't actually
+    // check the returned texture data. A corollary to this fact is that the
+    // usage flags passed in are currently arbitrary, since callers don't
+    // actually do anything meaningful with the SharedImage.
     auto* sii = GetSharedImageInterface();
-    gpu::Mailbox local_mailbox = sii->CreateSharedImage(
-        SinglePlaneFormat::kRGBA_8888, geometry.result_selection.size(),
-        color_space, kTopLeft_GrSurfaceOrigin, kPremul_SkAlphaType,
-        gpu::SHARED_IMAGE_USAGE_GLES2, "CopyOutput", gpu::kNullSurfaceHandle);
+    auto client_shared_image =
+        sii->CreateSharedImage({SinglePlaneFormat::kRGBA_8888,
+                                geometry.result_selection.size(), color_space,
+                                gpu::SHARED_IMAGE_USAGE_GLES2_READ |
+                                    gpu::SHARED_IMAGE_USAGE_GLES2_WRITE,
+                                "CopyOutput"},
+                               gpu::kNullSurfaceHandle);
+    CHECK(client_shared_image);
+    gpu::Mailbox local_mailbox = client_shared_image->mailbox();
 
     CopyOutputResult::ReleaseCallbacks release_callbacks;
-    release_callbacks.push_back(base::BindPostTaskToCurrentDefault(
-        base::BindOnce(&FakeSkiaOutputSurface::DestroyCopyOutputTexture,
-                       weak_ptr_factory_.GetWeakPtr(), local_mailbox)));
+    release_callbacks.push_back(
+        base::BindPostTaskToCurrentDefault(base::BindOnce(
+            &FakeSkiaOutputSurface::DestroyCopyOutputTexture,
+            weak_ptr_factory_.GetWeakPtr(), std::move(client_shared_image))));
 
     request->SendResult(std::make_unique<CopyOutputTextureResult>(
         CopyOutputResult::Format::RGBA, geometry.result_bounds,
@@ -360,9 +377,8 @@ bool FakeSkiaOutputSurface::GetGrBackendTexture(
       image_context.mailbox_holder().sync_token.GetConstData());
   auto texture_id = gl->CreateAndTexStorage2DSharedImageCHROMIUM(
       image_context.mailbox_holder().mailbox.name);
-  auto gl_format_desc = gpu::ToGLFormatDesc(
-      image_context.format(), /*plane_index=*/0,
-      context_provider()->ContextCapabilities().angle_rgbx_internal_format);
+  auto gl_format_desc = gpu::GLFormatCaps().ToGLFormatDesc(
+      image_context.format(), /*plane_index=*/0);
   GrGLTextureInfo gl_texture_info = {
       image_context.mailbox_holder().texture_target, texture_id,
       gl_format_desc.storage_internal_format};
@@ -383,15 +399,20 @@ void FakeSkiaOutputSurface::SwapBuffersAck() {
 }
 
 void FakeSkiaOutputSurface::DestroyCopyOutputTexture(
-    const gpu::Mailbox& mailbox,
+    scoped_refptr<gpu::ClientSharedImage> shared_image,
     const gpu::SyncToken& sync_token,
     bool is_lost) {
-  GetSharedImageInterface()->DestroySharedImage(sync_token, mailbox);
+  GetSharedImageInterface()->DestroySharedImage(sync_token,
+                                                std::move(shared_image));
 }
 
 void FakeSkiaOutputSurface::ScheduleGpuTaskForTesting(
     base::OnceClosure callback,
     std::vector<gpu::SyncToken> sync_tokens) {
+  NOTIMPLEMENTED();
+}
+
+void FakeSkiaOutputSurface::CheckAsyncWorkCompletionForTesting() {
   NOTIMPLEMENTED();
 }
 
@@ -405,6 +426,7 @@ gpu::Mailbox FakeSkiaOutputSurface::CreateSharedImage(
     SharedImageFormat format,
     const gfx::Size& size,
     const gfx::ColorSpace& color_space,
+    RenderPassAlphaType alpha_type,
     uint32_t usage,
     base::StringPiece debug_label,
     gpu::SurfaceHandle surface_handle) {
@@ -415,6 +437,13 @@ gpu::Mailbox FakeSkiaOutputSurface::CreateSolidColorSharedImage(
     const SkColor4f& color,
     const gfx::ColorSpace& color_space) {
   return gpu::Mailbox::GenerateForSharedImage();
+}
+
+void FakeSkiaOutputSurface::SetSharedImagePurgeable(const gpu::Mailbox& mailbox,
+                                                    bool purgeable) {
+  if (set_purgeable_callback_) {
+    set_purgeable_callback_.Run(mailbox, purgeable);
+  }
 }
 
 bool FakeSkiaOutputSurface::SupportsBGRA() const {

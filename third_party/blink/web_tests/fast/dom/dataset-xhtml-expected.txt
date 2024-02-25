@@ -24,9 +24,9 @@ PASS testSet('', 'data-') is true
 PASS testSet('à', 'data-à') is true
 
 
-PASS testSet('-foo', 'dummy') threw exception SyntaxError: Failed to set a named property on 'DOMStringMap': '-foo' is not a valid property name..
-PASS testSet('foo ', 'dummy') threw exception InvalidCharacterError: Failed to set a named property on 'DOMStringMap': 'data-foo ' is not a valid attribute name..
-PASS testSet('foo豈', 'dummy') threw exception InvalidCharacterError: Failed to set a named property on 'DOMStringMap': 'data-foo豈' is not a valid attribute name..
+PASS testSet('-foo', 'dummy') threw exception SyntaxError: Failed to set a named property '-foo' on 'DOMStringMap': '-foo' is not a valid property name..
+PASS testSet('foo ', 'dummy') threw exception InvalidCharacterError: Failed to set a named property 'foo ' on 'DOMStringMap': 'data-foo ' is not a valid attribute name..
+PASS testSet('foo豈', 'dummy') threw exception InvalidCharacterError: Failed to set a named property 'foo豈' on 'DOMStringMap': 'data-foo豈' is not a valid attribute name..
 
 
 PASS testDelete('data-foo', 'foo') is true

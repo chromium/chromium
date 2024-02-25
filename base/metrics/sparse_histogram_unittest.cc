@@ -195,6 +195,26 @@ TEST_P(SparseHistogramTest, UnloggedSamplesTest) {
   EXPECT_EQ(10, samples->sum());
 }
 
+// Check that IsDefinitelyEmpty() works with the results of SnapshotDelta().
+TEST_P(SparseHistogramTest, IsDefinitelyEmpty_SnapshotDelta) {
+  std::unique_ptr<SparseHistogram> histogram(NewSparseHistogram("Sparse"));
+
+  // No samples initially.
+  EXPECT_TRUE(histogram->SnapshotDelta()->IsDefinitelyEmpty());
+
+  histogram->Add(1);
+  EXPECT_FALSE(histogram->SnapshotDelta()->IsDefinitelyEmpty());
+  EXPECT_TRUE(histogram->SnapshotDelta()->IsDefinitelyEmpty());
+  histogram->Add(10);
+  histogram->Add(10);
+  EXPECT_FALSE(histogram->SnapshotDelta()->IsDefinitelyEmpty());
+  EXPECT_TRUE(histogram->SnapshotDelta()->IsDefinitelyEmpty());
+  histogram->Add(1);
+  histogram->Add(50);
+  EXPECT_FALSE(histogram->SnapshotDelta()->IsDefinitelyEmpty());
+  EXPECT_TRUE(histogram->SnapshotDelta()->IsDefinitelyEmpty());
+}
+
 TEST_P(SparseHistogramTest, AddCount_LargeValuesDontOverflow) {
   std::unique_ptr<SparseHistogram> histogram(NewSparseHistogram("Sparse"));
   std::unique_ptr<HistogramSamples> snapshot(histogram->SnapshotSamples());
@@ -467,16 +487,16 @@ TEST_P(SparseHistogramTest, CheckGetCountAndBucketData) {
   // Check the first bucket.
   const base::Value::Dict* bucket1 = buckets_list[0].GetIfDict();
   ASSERT_TRUE(bucket1 != nullptr);
-  EXPECT_EQ(bucket1->FindInt("low"), absl::optional<int>(100));
-  EXPECT_EQ(bucket1->FindInt("high"), absl::optional<int>(101));
-  EXPECT_EQ(bucket1->FindInt("count"), absl::optional<int>(10));
+  EXPECT_EQ(bucket1->FindInt("low"), std::optional<int>(100));
+  EXPECT_EQ(bucket1->FindInt("high"), std::optional<int>(101));
+  EXPECT_EQ(bucket1->FindInt("count"), std::optional<int>(10));
 
   // Check the second bucket.
   const base::Value::Dict* bucket2 = buckets_list[1].GetIfDict();
   ASSERT_TRUE(bucket2 != nullptr);
-  EXPECT_EQ(bucket2->FindInt("low"), absl::optional<int>(200));
-  EXPECT_EQ(bucket2->FindInt("high"), absl::optional<int>(201));
-  EXPECT_EQ(bucket2->FindInt("count"), absl::optional<int>(15));
+  EXPECT_EQ(bucket2->FindInt("low"), std::optional<int>(200));
+  EXPECT_EQ(bucket2->FindInt("high"), std::optional<int>(201));
+  EXPECT_EQ(bucket2->FindInt("count"), std::optional<int>(15));
 }
 
 TEST_P(SparseHistogramTest, WriteAscii) {

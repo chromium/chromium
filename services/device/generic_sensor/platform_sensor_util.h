@@ -6,6 +6,7 @@
 #define SERVICES_DEVICE_GENERIC_SENSOR_PLATFORM_SENSOR_UTIL_H_
 
 #include "services/device/public/cpp/generic_sensor/sensor_reading.h"
+#include "services/device/public/mojom/sensor.mojom-shared.h"
 
 namespace device {
 

@@ -5,6 +5,7 @@
 module webnn.mojom;
 
 import "mojo/public/mojom/base/big_buffer.mojom";
+import "services/webnn/public/mojom/webnn_error.mojom";
 
 // Represents the `MLOperand` which describes not only input and constant
 // operand, but also the output operand of operator.
@@ -15,11 +16,17 @@ struct Operand {
     kFloat16,
     kInt32,
     kUint32,
+    kInt64,
+    kUint64,
     kInt8,
     kUint8,
   };
 
-  enum Kind { kInput, kConstant, kOutput };
+  enum Kind {
+    kInput,
+    kConstant,
+    kOutput,
+  };
 
   Kind kind;
   // The data type of the operand.
@@ -30,12 +37,97 @@ struct Operand {
   string? name;
 };
 
-// Contains the attributes of clamp operator.
-struct ClampAttributes {
+// Computes the indices of the max or min elements of the input tensor's
+// element along the provided axis.
+struct ArgMinMax {
+  enum Kind {
+    kMin,
+    kMax,
+  };
+
+  // The kind of operation.
+  Kind kind;
+  // The input operand referenced by the input id must be distinct from the
+  // output operand referenced by the output id and the output sizes must be
+  // the same as the input sizes, except for the reduced axis.
+  uint64 input_operand_id;
+  uint64 output_operand_id;
+
+  // Axes indicates the dimensions to reduce. The values in the sequence must
+  // be in the range [0, N-1] where N is the rank of the input tensor.
+  array<uint32> axes;
+  // True is to retain reduced dimensions with size 1.
+  bool keep_dimensions = false;
+  // True is to select the last index rather than the first find along axis.
+  bool select_last_index = false;
+};
+
+// Represents normalizing the tensor values of input features across
+// the batch dimension.
+//
+// This operator performs the following batch normalization, defined as:
+// Output = Scale * ((Input - Mean) / sqrt(Variance + Epsilon)) + Bias
+//
+// If Activation is provided, the output will be further processed:
+// Output = Activation(Output)
+struct BatchNormalization {
+  // The id of input operand is used to get the `Operand` description from
+  // `GraphInfo.id_to_operand_map`.
+  uint64 input_operand_id;
+  // The id of mean operand is used to get the `Operand` description from
+  // `GraphInfo.id_to_operand_map`.
+  uint64 mean_operand_id;
+  // The id of variance operand is used to get the `Operand` description from
+  // `GraphInfo.id_to_operand_map`.
+  uint64 variance_operand_id;
+  // The id of output operand is used to get the `Operand` description from
+  // `GraphInfo.id_to_operand_map`.
+  uint64 output_operand_id;
+
+  // The optional 1-D tensor of the bias values whose size is equal to the
+  // size of the input dimension denoted by axis.
+  uint64? scale_operand_id;
+  // The optional 1-D tensor of the scaling values whose is equal to the size
+  // of the input dimension denoted by axis.
+  uint64? bias_operand_id;
+  // A scalar which specifies the index to the feature count dimension of the
+  // input shape for which the mean and variance values are.
+  uint32 axis = 1;
+  // A float scalar which specifies a small value to prevent computational
+  // error due to divide-by-zero.
+  float epsilon = 1e-5;
+  // The optional activation function that immediately follows the
+  // batchNormalization.
+  Activation? activation;
+};
+
+// Clamp the input tensor element-wise within a range specified by the minimum
+// and maximum values.
+struct Clamp {
+  // The id of input operand is used to get the `Operand` description from
+  // `GraphInfo.id_to_operand_map`.
+  uint64 input_operand_id;
+  // The id of output operand is used to get the `Operand` description from
+  // `GraphInfo.id_to_operand_map`.
+  uint64 output_operand_id;
+
   // The minimum value of the range.
   float min_value;
   // The maximum value of the range.
   float max_value;
+};
+
+// Represents the concat operation that concatenates the input tensors along
+// the given axis.
+struct Concat {
+  // The ids of input operand are used to get the `Operand` description from
+  // `GraphInfo.id_to_operand_map`.
+  array<uint64> input_operand_ids;
+  // The id of output operand is used to get the `Operand` description from
+  // `GraphInfo.id_to_operand_map`.
+  uint64 output_operand_id;
+  // The axis used to concatenate along.
+  uint32 axis;
 };
 
 // Represents the `MLInputOperandLayout` that specifies the layout format of
@@ -43,7 +135,10 @@ struct ClampAttributes {
 // width), `kChannelsLast` means `nhwc` (batches, height, width, channels).
 // The type is used to get the spatial dimension from input tensor, thus safe to
 // represent as enum.
-enum InputOperandLayout { kChannelsFirst, kChannelsLast };
+enum InputOperandLayout {
+  kChannelsFirst,
+  kChannelsLast,
+};
 
 // A size has height and width values.
 struct Size2d {
@@ -60,11 +155,258 @@ struct Padding2d {
   Size2d ending;
 };
 
-// Contains the attributes of pool2d operator.
-// The `roundingType` and `outputSizes` array in MLPool2dOptions are not
-// included because they are used to calculate the output dimensions of poo2d in
-// blink side.
-struct Pool2dAttributes {
+// Represents a 2-D convolution given the input and filter tensors.
+//
+// * conv2d (Type == kDirect) only supports `oihw` (output_channels,
+//   input_channels/groups, height, width) filter layout
+// * convTranspose2d (Type == kTransposed) only supports `iohw` (input_channels,
+//   output_channels/groups, height, width) filter layout
+// Support for other layouts are being discussed in the working group
+// https://github.com/webmachinelearning/webnn/issues/324.
+struct Conv2d {
+  enum Type {
+    // Represents a 2-D convolution given 4-D input and filter tensors.
+    kDirect,
+    // Represents a 2-D transposed convolution given 4-D input and filter
+    // tensors.
+    kTransposed,
+  };
+
+  // The type of 2-D convolution.
+  Type type;
+  // The id of input operand is used to get the `Operand` description from
+  // `GraphInfo.id_to_operand_map`.
+  uint64 input_operand_id;
+  // The id of filter operand is used to get the `Operand` description from
+  // `GraphInfo.id_to_operand_map`.
+  uint64 filter_operand_id;
+  // The id of output operand is used to get the `Operand` description from
+  // `GraphInfo.id_to_operand_map`.
+  uint64 output_operand_id;
+
+  // The padding of input tensor which is the explicit pad or calculated pad
+  // with `MLAutoPad` type, input sizes, filter size, strides and dilations in
+  // blink side.
+  Padding2d padding;
+  // The stride of the sliding window for each spatial dimension of input.
+  Size2d strides;
+  // The dilation factor for each spatial dimension of input.
+  Size2d dilations;
+  // The number of groups that input channels and output channels are divided
+  // into.
+  uint32 groups = 1;
+  // The layout format of the input.
+  InputOperandLayout input_layout;
+  // The additional 1-D tensor with the shape of output channels whose values
+  // are added to the convolution result.
+  uint64? bias_operand_id;
+  // The optional activation function that immediately follows the convolution.
+  Activation? activation;
+};
+
+// Represents an element-wise binary operation, mathematically equivalent to:
+// <output_operand> = <lhs_operand> <operation_kind> <rhs_operand>;
+// The shapes of left-hand side (lhs) operand and right-hand side (rhs) operand
+// must be compatible according to numpy-broadcasting-rule:
+// https://www.w3.org/TR/webnn/#biblio-numpy-broadcasting-rule
+struct ElementWiseBinary {
+  enum Kind {
+    kAdd,
+    kSub,
+    kMul,
+    kDiv,
+    kMax,
+    kMin,
+    kPow,
+    kEqual,
+    kGreater,
+    kGreaterOrEqual,
+    kLesser,
+    kLesserOrEqual,
+  };
+
+  // The kind of binary operation.
+  Kind kind;
+  // The id of lhs operand is used to get the `Operand` description from
+  // `GraphInfo.id_to_operand_map`.
+  uint64 lhs_operand;
+  // The id of rhs operand is used to get the `Operand` description from
+  // `GraphInfo.id_to_operand_map`.
+  uint64 rhs_operand;
+  // The id of output operand is used to get the `Operand` description from
+  // `GraphInfo.id_to_operand_map`.
+  uint64 output_operand;
+};
+
+// Represents an element-wise unary operation, mathematically equivalent to:
+// <output_operand> = <operation_kind>(<input_operand>);
+struct ElementWiseUnary {
+  enum Kind {
+    kAbs,
+    kCeil,
+    kCos,
+    kExp,
+    kFloor,
+    kLog,
+    kNeg,
+    kSin,
+    kTan,
+    kLogicalNot,
+    kIdentity,
+    kSqrt,
+    kErf,
+    kReciprocal,
+    kCast,
+  };
+
+  // The kind of unary operation.
+  Kind kind;
+  // The id of input operand is used to get the `Operand` description from
+  // `GraphInfo.id_to_operand_map`.
+  uint64 input_operand_id;
+  // The id of output operand is used to get the `Operand` description from
+  // `GraphInfo.id_to_operand_map`.
+  uint64 output_operand_id;
+};
+
+// Expands the shape of input operand to the output shape according to
+// numpy-broadcasting-rule:
+// https://www.w3.org/TR/webnn/#biblio-numpy-broadcasting-rule
+struct Expand {
+  // The input operand referenced by the input id must be distinct from the
+  // output operand referenced by the output id, and the input shape must be
+  // broadcastable to the output shape.
+  uint64 input_operand_id;
+  uint64 output_operand_id;
+};
+
+// Specifies the different ways to pad a tensor. The padding value is only
+// specified when the mode is "constant".
+struct ConstantPadding {
+  float value = 0;
+};
+
+struct EdgePadding {};
+
+struct ReflectionPadding {};
+
+struct SymmetricPadding {};
+
+union PaddingMode {
+  ConstantPadding constant;
+  EdgePadding edge;
+  ReflectionPadding reflection;
+  SymmetricPadding symmetric;
+};
+
+// This operator performs the following normalization, defined as:
+// Output = scale * (input - mean) / sqrt(variance + epsilon) + bias, where
+// mean and variance are computed per instance per channel. The specified
+// layout determines how to choose the channel.
+struct InstanceNormalization {
+  // The input operand (referenced by input_operand_id) must be distinct from
+  // the output operand (referenced by output_operand_id).
+  uint64 input_operand_id;
+  uint64 output_operand_id;
+
+  // The optional 1-D tensor of the scale values whose size is equal to the
+  // size of the feature dimension of the input.
+  uint64? scale_operand_id;
+  // The optional 1-D tensor of the bias values whose size is equal to the
+  // size of the feature dimension of the input.
+  uint64? bias_operand_id;
+  // A float scalar which specifies a small value to prevent computational
+  // error due to divide-by-zero.
+  float epsilon = 1e-5;
+  // The layout format of the input.
+  InputOperandLayout layout;
+};
+
+// Represents matmul operation which compute the matrix product of two input
+// tensors.
+struct Matmul {
+  // The id of `a` operand is used to get the `Operand` description from
+  // `GraphInfo.id_to_operand_map`.
+  uint64 a_operand_id;
+  // The id of `b` operand is used to get the `Operand` description from
+  // `GraphInfo.id_to_operand_map`.
+  uint64 b_operand_id;
+  // The id of output operand is used to get the `Operand` description from
+  // `GraphInfo.id_to_operand_map`.
+  uint64 output_operand_id;
+};
+
+// Represents a pad operation which inflates the input tensor with constant or
+// mirrored values on the edges.
+struct Pad {
+  // The id of input operand is used to get the `Operand` description from
+  // `GraphInfo.id_to_operand_map`.
+  uint64 input_operand_id;
+  // The id of output operand is used to get the `Operand` description from
+  // `GraphInfo.id_to_operand_map`.
+  uint64 output_operand_id;
+  // The number of padding values to add at the beginning of each input
+  // dimension. The array length should be equal to the rank of input tensor.
+  array<uint32> beginning_padding;
+  // The number of padding values to add at the ending of each input
+  // dimension. The array length should be equal to the rank of input tensor.
+  array<uint32> ending_padding;
+
+  PaddingMode mode;
+};
+
+struct Reduce {
+  enum Kind {
+    kL1,
+    kL2,
+    kLogSum,
+    kLogSumExp,
+    kMax,
+    kMean,
+    kMin,
+    kProduct,
+    kSum,
+    kSumSquare,
+  };
+
+  // The kind of reduce operation.
+  Kind kind;
+  // The id of input operand is used to get the `Operand` description from
+  // `GraphInfo.id_to_operand_map`.
+  uint64 input_operand_id;
+  // The id of output operand is used to get the `Operand` description from
+  // `GraphInfo.id_to_operand_map`.
+  uint64 output_operand_id;
+
+  // Axes indicates the dimensions to reduce. The values in the sequence
+  // must be in the range [0, N-1] where N is the rank of the input tensor.
+  // The length of the sequence should be less than or equal to N.
+  array<uint32> axes;
+  // If true, retains reduced dimensions with size 1.
+  bool keep_dimensions = false;
+};
+
+// Represents an average or max pooling operation across all the elements with
+// moving window over the input tensor.
+// This struct also contains the attributes of pool2d operator, but the
+// `roundingType` and `outputSizes` array in MLPool2dOptions are not included
+// because they are used to calculate the output dimensions of pool2d in blink
+// side.
+struct Pool2d {
+  enum Kind {
+    kAveragePool2d,
+    kL2Pool2d,
+    kMaxPool2d,
+  };
+
+  Kind kind;
+  // The id of input operand is used to get the `Operand` description from
+  // `GraphInfo.id_to_operand_map`.
+  uint64 input_operand_id;
+  // The id of output operand is used to get the `Operand` description from
+  // `GraphInfo.id_to_operand_map`.
+  uint64 output_operand_id;
+
   // The dimensions of the sliding window which is supplied by user or the
   // element of input operand height and width.
   Size2d window_dimensions;
@@ -81,9 +423,115 @@ struct Pool2dAttributes {
   InputOperandLayout layout;
 };
 
-// Contains the attributes of gemm operator.
-struct GemmAttributes {
-  // The optional third tensor in expression alpha * A * B + beta * C.
+struct StartAndSize {
+  uint32 start;
+  uint32 size;
+};
+
+struct Slice {
+  // The id of input operand is used to get the `Operand` description from
+  // `GraphInfo.id_to_operand_map`.
+  uint64 input_operand_id;
+  // The id of output operand is used to get the `Operand` description from
+  // `GraphInfo.id_to_operand_map`.
+  uint64 output_operand_id;
+  // An array containing the number of elements of the input window in each
+  // dimension.
+  array<StartAndSize> starts_and_sizes;
+};
+
+// Represents an operation of exponential linear unit function in the
+// expression max(0, x) + alpha * (exp(min(0, x)) - 1).
+struct Elu {
+  // The id of input operand is used to get the `Operand` description from
+  // `GraphInfo.id_to_operand_map`.
+  uint64 input_operand_id;
+  // The id of output operand is used to get the `Operand` description from
+  // `GraphInfo.id_to_operand_map`.
+  uint64 output_operand_id;
+  // A float scalar multiplier for (exp(min(0, x)) - 1).
+  float alpha = 1.0;
+};
+
+// Represents an operation of gathering elements from the axis dimension of
+// the input tensor indexed by the indices tensor.
+//
+// Specifically, Gather operation returns a new `MLOperand` by replacing the
+// axis dimension of input with the lookup result of `input[...indices...]` as
+// the equation below:
+//
+// output[..., dIndex0, ..., dIndexN, ...] = input[..., indices[], ...]
+//             ^                                        ^ Look up the value
+//             |                                          of `indices` in input
+//      This is dAxis, indicated by `axis` parameter.
+//      This dimension expands to `indices.dimensions`
+//
+// Example 1, given an input = [[ 0,  1,  2],
+//                              [10, 11, 12]] with shape (2, 3),
+// an indices = [1, 0, 1] with shape (3),
+// and axis = 0,
+// the output should be [[10, 11, 12],
+//                       [ 0,  1,  2],
+//                       [10, 11, 12]] with shape (3, 3).
+//
+// Example 2, given an input = [[ 0,  1,  2],
+//                              [10, 11, 12]] with shape (2, 3),
+// an indices = [[0, 1],
+//               [2, 1]] with shape (2, 2),
+// and axis = 1,
+// the output should be [[[ 0,  1],
+//                        [ 2,  1]],
+//                       [[10, 11],
+//                        [12, 11]]] with shape (2, 2, 2).
+//
+// Note the values in `indices` are computed at runtime, so they can exceed
+// the boundary of the `axis` dimension of input. If unchecked, such indices
+// will cause out-of-bounds access.
+//
+// Therefore, the implementation must "sanitize" `indices` before using it to
+// perform memory addressing operations on `input`.
+//
+// For some backends like DirectML, the native ML APIs have already done the
+// "sanitization" so `indices` can be passed directly to the API. For other
+// backends, the specific "sanitization" relies on the browser implementation.
+//
+// Typically, the implementation clamps the values in `indices` to be in range
+// of `-N` (inclusive) to `N` (exclusive), where `N = input.dimensions[axis]`,
+// and negative index means indexing from the end of the `axis` dimension.
+//
+// TODO(crbug.com/1273291): Spec issue, finalize out-of-bounds indices
+// sanitization behavior.
+//
+// TODO(crbug.com/1273291): Add conformance test cases for gather's
+// out-of-bounds access. Tracked by issue
+// https://github.com/webmachinelearning/webnn/issues/244#issuecomment-1820092158
+struct Gather {
+  // The input operand (referenced by input_operand_id) and the indices operand
+  // (referenced by indices_operand_id) must be distinct from the output
+  // operand (referenced by output_operand_id).
+  uint64 input_operand_id;
+  uint64 indices_operand_id;
+  uint64 output_operand_id;
+
+  // The axis dimension of the input tensor to gather on.
+  uint32 axis = 0;
+};
+
+// Represents general matrix multiplication (gemm) operation in the expression
+// `alpha * A * B + beta * C`.
+struct Gemm {
+  // The id of `A` operand is used to get the `Operand` description from
+  // `GraphInfo.id_to_operand_map`.
+  uint64 a_operand_id;
+  // The id of `B` operand is used to get the `Operand` description from
+  // `GraphInfo.id_to_operand_map`.
+  uint64 b_operand_id;
+  // The id of output operand is used to get the `Operand` description from
+  // `GraphInfo.id_to_operand_map`.
+  uint64 output_operand_id;
+
+  // The id of optional `C` operand is used to get the `Operand` description
+  // from `GraphInfo.id_to_operand_map`.
   uint64? c_operand_id;
   // A float scalar multiplier for the `A * B`.
   float alpha = 1.0;
@@ -95,65 +543,335 @@ struct GemmAttributes {
   bool b_transpose = false;
 };
 
-// Holds one of operator attributes.
-union OperatorAttributes {
-  ClampAttributes clamp;
-  GemmAttributes gemm;
-  Pool2dAttributes pool2d;
+// Represents an operation which performs a hard sigmoid function on every
+// element in InputTensor, placing the result into the corresponding
+// element of OutputTensor:
+// Output = max(0, min(alpha * input + beta, 1))
+struct HardSigmoid {
+  // The input operand (referenced by input_operand_id) must be distinct from
+  // the output operand (referenced by output_operand_id).
+  uint64 input_operand_id;
+  uint64 output_operand_id;
+
+  // A float scalar multiplier. The default value is 0.2.
+  float alpha = 0.2;
+  // A float scalar addition. The default value is 0.5.
+  float beta = 0.5;
 };
 
-// Represents the operations defined in `MLGraphBuilder` that describes the
-// functional semantics.
-struct Operator {
-  enum Kind {
-    // Keep the order as the same as build methods of `MLGraphBuilder`.
-    kClamp,
-    kAdd,
-    kSub,
-    kMul,
-    kDiv,
-    kMax,
-    kMin,
-    kGemm,
-    kAveragePool2d,
-    kMaxPool2d,
-    kRelu,
-    kReshape,
-    kSoftmax,
+// Represents an operation which computes the nonlinear function
+// output = input * max(0, min(6, (input + 3))) / 6
+struct HardSwish {
+  // The input operand (referenced by input_operand_id) must be distinct from
+  // the output operand (referenced by output_operand_id).
+  uint64 input_operand_id;
+  uint64 output_operand_id;
+};
+
+// Represents an operation of normalizing the input across the feature
+// dimensions for each individual sample in a batch, where the feature
+// dimensions are the input dimensions indexed by `axes`.
+//
+// The normalization follows the expression below:
+//     Scale * ((Input - Mean) / sqrt(Variance + Epsilon)) + Bias
+// where the mean and variance values are computed on the fly across the
+// feature dimensions.
+struct LayerNormalization {
+  // The input operand (referenced by input_operand_id) must be distinct from
+  // the output operand (referenced by output_operand_id).
+  uint64 input_operand_id;
+  uint64 output_operand_id;
+
+  // The scale operand (referenced by scale_operand_id) includes the scaling
+  // values.
+  uint64? scale_operand_id;
+  // The bias operand (referenced by bias_operand_id) includes the bias values.
+  uint64? bias_operand_id;
+  // The indices to the input dimensions to reduce along.
+  array<uint32> axes;
+  // A float scalar which specifies a small value to prevent computational
+  // error due to divide-by-zero.
+  float epsilon = 1e-5;
+};
+
+// Represents a leaky version of relu operation whose calculation follows the
+// expression max(0, x) + alpha ∗ min(0, x).
+struct LeakyRelu {
+  // The id of input operand is used to get the `Operand` description from
+  // `GraphInfo.id_to_operand_map`.
+  uint64 input_operand_id;
+  // The id of output operand is used to get the `Operand` description from
+  // `GraphInfo.id_to_operand_map`.
+  uint64 output_operand_id;
+  // A float scalar multiplier for min(0, x).
+  float alpha = 0.01;
+};
+
+// Represents a linear operation whose calculation follows the
+// expression alpha * x + beta.
+struct Linear {
+  // The id of input operand is used to get the `Operand` description from
+  // `GraphInfo.id_to_operand_map`.
+  uint64 input_operand_id;
+  // The id of output operand is used to get the `Operand` description from
+  // `GraphInfo.id_to_operand_map`.
+  uint64 output_operand_id;
+  // A float scalar multiplier.
+  float alpha = 1.0;
+  // A float scalar addition.
+  float beta = 0;
+};
+
+// Represents a parametric relu operation whose calculation follows the
+// expression max(0, x) + slope ∗ min(0, x).
+struct Prelu {
+  // The id of input operand is used to get the `Operand` description from
+  // `GraphInfo.id_to_operand_map`.
+  uint64 input_operand_id;
+  // The id of slope operand is used to get the `Operand` description from
+  // `GraphInfo.id_to_operand_map`.
+  uint64 slope_operand_id;
+  // The id of output operand is used to get the `Operand` description from
+  // `GraphInfo.id_to_operand_map`.
+  uint64 output_operand_id;
+};
+
+// Corresponds to `MLOperand relu(MLOperand x)` that compute the rectified
+// linear function of the input tensor.
+struct Relu {
+  // The id of input operand is used to get the `Operand` description from
+  // `GraphInfo.id_to_operand_map`.
+  uint64 input_operand_id;
+  // The id of output operand is used to get the `Operand` description from
+  // `GraphInfo.id_to_operand_map`.
+  uint64 output_operand_id;
+};
+
+// Alters the shape of input operand to the output operand. This operation does
+// not copy or change the content of the input, it just changes the tensor’s
+// logical dimensions.
+struct Reshape {
+  // The id of input operand is used to get the `Operand` description from
+  // `GraphInfo.id_to_operand_map`.
+  uint64 input_operand_id;
+  // The id of output operand is used to get the `Operand` description from
+  // `GraphInfo.id_to_operand_map`.
+  uint64 output_operand_id;
+};
+
+// Corresponds to `MLOperand sigmoid(MLOperand x)` that compute the sigmoid
+// function of the input tensor following the expression 1 / (exp(-x) + 1).
+struct Sigmoid {
+  // The id of input operand is used to get the `Operand` description from
+  // `GraphInfo.id_to_operand_map`.
+  uint64 input_operand_id;
+  // The id of output operand is used to get the `Operand` description from
+  // `GraphInfo.id_to_operand_map`.
+  uint64 output_operand_id;
+};
+
+// Corresponds to `MLOperand softmax(MLOperand x)` that compute the softmax
+// values of the 2-D input tensor along axis 1.
+struct Softmax {
+  // The id of input operand is used to get the `Operand` description from
+  // `GraphInfo.id_to_operand_map`.
+  uint64 input_operand_id;
+  // The id of output operand is used to get the `Operand` description from
+  // `GraphInfo.id_to_operand_map`.
+  uint64 output_operand_id;
+};
+
+// Corresponds to `MLOperand softplus(MLOperand x)` that computes the softplus
+// function of the input tensor following the expression
+// ln(1 + exp(steepness * x)) / steepness.
+struct Softplus {
+  // The input operand (referenced by input_operand_id) must be distinct from
+  // the output operand (referenced by output_operand_id).
+  uint64 input_operand_id;
+  uint64 output_operand_id;
+
+  // The steepness value defaults to 1.0.
+  float steepness = 1.0;
+};
+
+// Corresponds to `MLOperand softsign(MLOperand x)` that computes the softsign
+// function of the input tensor following the expression x / (1 + |x|).
+struct Softsign {
+  // The input operand (referenced by input_operand_id) must be distinct from
+  // the output operand (referenced by output_operand_id).
+  uint64 input_operand_id;
+  uint64 output_operand_id;
+};
+
+// Represents a split operation that splits an input tensor into multiple
+// output tensors. The shape of the outputs and the specified axis determine
+// how the split will be performed. Since axis specifies which input dimension
+// will be split, the sum of all output dimension sizes along the axis
+// dimension must be equal to the input tensor’s axis dimension.
+// Example:
+//  input =     [1, 2, 3, (4)]
+//  axis = 3
+//  output[0] = [1, 2, 3, (1)]
+//  output[1] = [1, 2, 3, (2)]
+//  output[2] = [1, 2, 3, (1)]
+struct Split {
+  // The id of input operand is used to get the `Operand` description from
+  // `GraphInfo.id_to_operand_map`.
+  uint64 input_operand_id;
+  // The ids of output operands used to get the `Operand` description from
+  // `GraphInfo.id_to_operand_map`.
+  array<uint64> output_operand_ids;
+
+  // Axis specifies which input tensor dimension will be split.
+  uint32 axis = 0;
+};
+
+// Corresponds to `MLOperand tanh(MLOperand x)` that compute the hyperbolic
+//tangent function of the input tensor following the expression
+// (exp(2 * x) - 1) / (exp(2 * x) + 1).
+struct Tanh {
+  // The id of input operand is used to get the `Operand` description from
+  // `GraphInfo.id_to_operand_map`.
+  uint64 input_operand_id;
+  // The id of output operand is used to get the `Operand` description from
+  // `GraphInfo.id_to_operand_map`.
+  uint64 output_operand_id;
+};
+
+// Represents the transpose operation that permutes the dimensions of the
+// input tensor following the given permutation.
+struct Transpose {
+  // The id of input operand.
+  uint64 input_operand_id;
+  // The id of output operand.
+  uint64 output_operand_id;
+  // The values used to permute the dimensions of the input tensor.
+  array<uint32> permutation;
+};
+
+// Resample the tensor values from the source to the destination spatial
+// dimensions.
+struct Resample2d {
+  // The id of input operand.
+  uint64 input_operand_id;
+  // The id of output operand.
+  uint64 output_operand_id;
+
+  enum InterpolationMode {
+    kNearestNeighbor,
+    kLinear,
   };
 
-  // The kind of this `Operator`.
-  Kind kind;
-  // The id array from the `GraphInfo.operands` will be used to map the input
-  // operands of `Operator`.
-  array<uint64> input_operands;
-  // The id array from the `GraphInfo.operands` will be used to map the output
-  // operands of `Operator`.
-  array<uint64> output_operands;
-  // The attributes of `Operator`.
-  OperatorAttributes? attributes;
+  InterpolationMode mode;
+  // Specifies the scaling factor in each spatial dimensions of the input.
+  // The scale may not be exactly output size / input size. The backend
+  // needs this information, e.g., for linear interpolation algorithm.
+  array<float, 2>? scales;
+  // Specifies the two consecutive dimensions of the input tensor to which
+  // the interpolation algorithm applies.
+  array<uint32, 2> axes;
+};
+
+// Select the values from the true value or the false value tensor depending
+// on the corresponding Boolean values of the condition tensor. Non-zero
+// elements of condition tensor select from true value tensor, while
+// zero-valued elements select from false value tensor.
+struct Where {
+  // Constraints:
+  // * The shapes of all input operands must be bidirectionally broadcastable.
+  // * The data type of condition operand must be uint8.
+  // * The data types of true value, false value and output operands must be
+  // the same.
+  // * The output operand must be a different operand from condition, true
+  // value and false value operands.
+
+  // The id of condition operand.
+  uint64 condition_operand_id;
+  // The id of true value operand.
+  uint64 true_value_operand_id;
+  // The id of false value operand.
+  uint64 false_value_operand_id;
+  // The id of output operand.
+  uint64 output_operand_id;
+};
+
+// Represents the `MLActivation` which describes an activation function type
+// to create other operations (Conv2d, BatchNormalization, for example).
+union Activation {
+  Clamp clamp;
+  Elu elu;
+  HardSigmoid hard_sigmoid;
+  LeakyRelu leaky_relu;
+  Linear linear;
+  Relu relu;
+  Sigmoid sigmoid;
+  Softmax softmax;
+  Softplus softplus;
+  Softsign softsign;
+  Tanh tanh;
+};
+
+// Holds one of operator.
+union Operation {
+  // Keep the order as the same as build methods of `MLGraphBuilder`.
+  ArgMinMax arg_min_max;
+  BatchNormalization batch_normalization;
+  Clamp clamp;
+  Concat concat;
+  Conv2d conv2d;
+  ElementWiseBinary element_wise_binary;
+  Elu elu;
+  ElementWiseUnary element_wise_unary;
+  Expand expand;
+  Gather gather;
+  Gemm gemm;
+  HardSigmoid hard_sigmoid;
+  HardSwish hard_swish;
+  LayerNormalization layer_normalization;
+  InstanceNormalization instance_normalization;
+  LeakyRelu leaky_relu;
+  Linear linear;
+  Matmul matmul;
+  Pad pad;
+  Pool2d pool2d;
+  Prelu prelu;
+  Reduce reduce;
+  Relu relu;
+  Resample2d resample2d;
+  Reshape reshape;
+  Sigmoid sigmoid;
+  Slice slice;
+  Softmax softmax;
+  Softplus softplus;
+  Softsign softsign;
+  Split split;
+  Tanh tanh;
+  Transpose transpose;
+  Where where;
 };
 
 // Describes an entire WebNN graph information.
 struct GraphInfo {
   // A map of all operands used in this `GraphInfo`, the key is the operand id.
   map<uint64, Operand> id_to_operand_map;
-  // The id array from the `GraphInfo.operands` is used to identify the input
-  // operands of this graph.
+  // The id array from the `GraphInfo.id_to_operand_map` is used to identify the
+  // input operands of this graph.
   array<uint64> input_operands;
-  // The id array from the `GraphInfo.operands` is used to identify the output
-  // operands of this graph.
+  // The id array from the `GraphInfo.id_to_operand_map` is used to identify the
+  // output operands of this graph.
   array<uint64> output_operands;
-  // The operators are sorted in the topological order.
-  array<Operator> operators;
+  // The operations are sorted in the topological order.
+  array<Operation> operations;
+  // The constant weight data specified through the MLGraphBuilder.constant()
+  // method defined in the WebIDL, the key is the constant operand id.
+  map<uint64, mojo_base.mojom.BigBuffer> constant_id_to_buffer_map;
 };
 
-enum ComputeResult {
-  kOk,
-  // The input for inference is invalid.
-  kInvalidInputs,
-  // Something has gone wrong during execution of the graph.
-  kUnknownError,
+// Represents the return value of `WebNNGraph::Compute()`. Let it be
+// `named_outputs` if the computation was successful and `error` otherwise.
+union ComputeResult {
+  map<string, mojo_base.mojom.BigBuffer> named_outputs;
+  Error error;
 };
 
 // WebNNGraph runs in the GPU process and is called by the renderer process to
@@ -164,7 +882,6 @@ interface WebNNGraph {
   // the compiled graph. The key of map is the name of input/output to identify
   // the tensor in the graph, the value is the shared memory to reduce memory
   // copy for inference.
-  Compute(map<string, mojo_base.mojom.BigBuffer>  named_inputs)
-      => (ComputeResult result,
-          map<string, mojo_base.mojom.BigBuffer>? named_outputs);
+  Compute(map<string, mojo_base.mojom.BigBuffer> named_inputs)
+      => (ComputeResult result);
 };

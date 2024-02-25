@@ -1,0 +1,9 @@
+Name: aho-corasick
+URL: https://crates.io/crates/aho-corasick
+Description: Fast multiple substring searching.
+Version: 1.1.2
+Security Critical: no
+Shipped: no
+License: MIT
+License File: //third_party/rust/chromium_crates_io/vendor/aho-corasick-1.1.2/LICENSE-MIT
+Revision: d84a5073d5108fce1774b375105dfdb13fe4e81c

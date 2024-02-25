@@ -6,6 +6,7 @@
 
 #include <map>
 #include <memory>
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -29,7 +30,6 @@
 #include "content/public/test/test_web_ui.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chrome/browser/ash/crosapi/crosapi_manager.h"
@@ -39,6 +39,22 @@
 #endif
 
 namespace printing {
+
+namespace {
+
+std::vector<crosapi::mojom::LocalDestinationInfoPtr>
+ConvertToLocalDestinationInfo(std::vector<std::string> printer_ids) {
+  std::vector<crosapi::mojom::LocalDestinationInfoPtr> local_printers;
+  for (const auto& printer_id : printer_ids) {
+    crosapi::mojom::LocalDestinationInfoPtr local_printer =
+        crosapi::mojom::LocalDestinationInfo::New();
+    local_printer->id = printer_id;
+    local_printers.push_back(std::move(local_printer));
+  }
+  return local_printers;
+}
+
+}  // namespace
 
 const char kSelectedPrintServerId[] = "selected-print-server-id";
 const char kSelectedPrintServerName[] = "Print Server Name";
@@ -76,12 +92,22 @@ class TestLocalPrinter : public FakeLocalPrinter {
     std::move(callback).Run(std::move(config_));
     config_ = nullptr;
   }
+  void AddLocalPrintersObserver(
+      mojo::PendingRemote<crosapi::mojom::LocalPrintersObserver> remote,
+      AddLocalPrintersObserverCallback callback) override {
+    std::move(callback).Run(std::move(local_printers_));
+  }
+
+  void SetLocalPrinters(std::vector<std::string> printer_ids) {
+    local_printers_ = ConvertToLocalDestinationInfo(printer_ids);
+  }
 
  private:
   friend class PrintPreviewHandlerChromeOSTest;
 
+  std::vector<crosapi::mojom::LocalDestinationInfoPtr> local_printers_;
   mojo::Remote<crosapi::mojom::PrintServerObserver> remote_;
-  absl::optional<std::vector<std::string>> print_server_ids_;
+  std::optional<std::vector<std::string>> print_server_ids_;
   crosapi::mojom::PrintServersConfigPtr config_;
 };
 
@@ -218,6 +244,7 @@ class PrintPreviewHandlerChromeOSTest : public testing::Test {
 
     auto preview_handler = std::make_unique<TestPrintPreviewHandlerChromeOS>(
         std::move(printer_handler));
+    preview_handler->SetInitiatorForTesting(preview_web_contents_.get());
     handler_ = preview_handler.get();
     local_printer_ = std::make_unique<TestLocalPrinter>();
     handler_->local_printer_ = local_printer_.get();
@@ -262,6 +289,21 @@ class PrintPreviewHandlerChromeOSTest : public testing::Test {
   void ChangeServerPrinters() { handler_->OnServerPrintersChanged(); }
   TestPrinterHandlerChromeOS* printer_handler() { return printer_handler_; }
   std::vector<PrinterInfo>& printers() { return printers_; }
+
+  void SetLocalPrinters(std::vector<std::string> printer_ids) {
+    local_printer_->SetLocalPrinters(printer_ids);
+  }
+
+  void FireOnLocalPrintersUpdated(std::vector<std::string> printer_ids) {
+    handler_->OnLocalPrintersUpdated(
+        ConvertToLocalDestinationInfo(printer_ids));
+  }
+
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  int LocalPrinterVersion() {
+    return handler_->GetLocalPrinterVersionForTesting();
+  }
+#endif
 
  private:
   content::BrowserTaskEnvironment task_environment_;
@@ -416,6 +458,59 @@ TEST_F(PrintPreviewHandlerChromeOSTest, HandlePrinterSetup) {
   const base::Value::List* options = GetMediaSizeOptionsFromCdd(*cdd_result);
   ASSERT_TRUE(options);
   EXPECT_EQ(expected_media, *options);
+}
+
+// Verify 'getShowManagePrinters' can be called.
+TEST_F(PrintPreviewHandlerChromeOSTest, HandleGetCanShowManagePrinters) {
+  const std::string callback_id = "callback-id";
+  base::Value::List args;
+  args.Append(callback_id);
+  web_ui()->HandleReceivedMessage("getShowManagePrinters", args);
+
+  const content::TestWebUI::CallData& data = *web_ui()->call_data().back();
+  EXPECT_EQ("cr.webUIResponse", data.function_name());
+  ASSERT_TRUE(data.arg1()->is_string());
+  EXPECT_EQ(callback_id, data.arg1()->GetString());
+  ASSERT_TRUE(data.arg2()->is_bool());
+  ASSERT_TRUE(data.arg2()->GetBool());
+}
+
+// Verify 'observeLocalPrinters' can be called.
+TEST_F(PrintPreviewHandlerChromeOSTest, HandleObserveLocalPrinters) {
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  if (int{crosapi::mojom::LocalPrinter::MethodMinVersions::
+              kAddLocalPrintersObserverMinVersion} > LocalPrinterVersion()) {
+    LOG(ERROR) << "Local printer version incompatible";
+    return;
+  }
+#endif
+
+  const std::vector<std::string> printers{"Printer1", "Printer2", "Printer3"};
+  SetLocalPrinters(printers);
+
+  const std::string callback_id = "callback-id";
+  base::Value::List args;
+  args.Append(callback_id);
+  web_ui()->HandleReceivedMessage("observeLocalPrinters", args);
+
+  const content::TestWebUI::CallData& data = *web_ui()->call_data().back();
+  EXPECT_EQ("cr.webUIResponse", data.function_name());
+  ASSERT_TRUE(data.arg1()->is_string());
+  EXPECT_EQ(callback_id, data.arg1()->GetString());
+  // True if ResolveJavascriptCallback and false if RejectJavascriptCallback
+  // is called by the handler.
+  EXPECT_TRUE(data.arg2()->GetBool());
+  EXPECT_EQ(printers.size(), data.arg3()->GetList().size());
+}
+
+// Verify 'local-printers-updated' is fired when the observer is triggered.
+TEST_F(PrintPreviewHandlerChromeOSTest, FireLocalPrintersUpdated) {
+  const std::vector<std::string> printers{"Printer1", "Printer2", "Printer3"};
+  FireOnLocalPrintersUpdated(printers);
+
+  const content::TestWebUI::CallData& data = *web_ui()->call_data().back();
+  AssertWebUIEventFired(data, "local-printers-updated");
+  EXPECT_EQ(printers.size(), data.arg2()->GetList().size());
 }
 
 }  // namespace printing

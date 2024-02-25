@@ -28,9 +28,9 @@ class ASH_EXPORT ContinueSectionView : public views::View,
                                        public views::FocusChangeListener,
                                        public AppListModelProvider::Observer,
                                        public AppListControllerObserver {
- public:
-  METADATA_HEADER(ContinueSectionView);
+  METADATA_HEADER(ContinueSectionView, views::View)
 
+ public:
   ContinueSectionView(AppListViewDelegate* view_delegate,
                       int columns,
                       bool tablet_mode);
@@ -93,6 +93,10 @@ class ASH_EXPORT ContinueSectionView : public views::View,
   // AppListControllerObserver:
   void OnAppListVisibilityChanged(bool shown, int64_t display_id) override;
 
+  // Sets the available width for the privacy toast view, so the privacy toast
+  // preferred size fits within `available_width` of available horizontal space.
+  void ConfigureLayoutForAvailableWidth(int available_width);
+
   AppListNudgeController* nudge_controller_for_test() const {
     return nudge_controller_;
   }
@@ -138,7 +142,11 @@ class ASH_EXPORT ContinueSectionView : public views::View,
   // when the privacy notice does not have enough items after an update.
   void MaybeAnimateOutPrivacyNotice();
 
-  const raw_ptr<AppListViewDelegate, ExperimentalAsh> view_delegate_;
+  const raw_ptr<AppListViewDelegate> view_delegate_;
+
+  // If set, the amount of horizontal space available for the continue section -
+  // used to configure layout for the continue section privacy notice toast.
+  std::optional<int> available_width_;
 
   bool tablet_mode_ = false;
 
@@ -146,13 +154,11 @@ class ASH_EXPORT ContinueSectionView : public views::View,
   base::OneShotTimer privacy_notice_shown_timer_;
 
   // Not owned.
-  raw_ptr<AppListNudgeController, DanglingUntriaged | ExperimentalAsh>
-      nudge_controller_ = nullptr;
-
-  raw_ptr<AppListToastView, DanglingUntriaged | ExperimentalAsh>
-      privacy_toast_ = nullptr;
-  raw_ptr<ContinueTaskContainerView, ExperimentalAsh> suggestions_container_ =
+  raw_ptr<AppListNudgeController, DanglingUntriaged> nudge_controller_ =
       nullptr;
+
+  raw_ptr<AppListToastView, DanglingUntriaged> privacy_toast_ = nullptr;
+  raw_ptr<ContinueTaskContainerView> suggestions_container_ = nullptr;
 
   base::WeakPtrFactory<ContinueSectionView> weak_ptr_factory_{this};
 };

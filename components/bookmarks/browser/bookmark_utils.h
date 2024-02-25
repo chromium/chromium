@@ -44,7 +44,8 @@ struct QueryFields {
 
 class VectorIterator {
  public:
-  explicit VectorIterator(std::vector<const BookmarkNode*>* nodes);
+  explicit VectorIterator(
+      std::vector<raw_ptr<const BookmarkNode, VectorExperimental>>* nodes);
   VectorIterator(const VectorIterator& other) = delete;
   VectorIterator& operator=(const VectorIterator& other) = delete;
   ~VectorIterator();
@@ -52,8 +53,9 @@ class VectorIterator {
   const BookmarkNode* Next();
 
  private:
-  raw_ptr<std::vector<const BookmarkNode*>> nodes_;
-  std::vector<const BookmarkNode*>::iterator current_;
+  raw_ptr<std::vector<raw_ptr<const BookmarkNode, VectorExperimental>>> nodes_;
+  std::vector<raw_ptr<const BookmarkNode, VectorExperimental>>::iterator
+      current_;
 };
 
 // Clones bookmark node, adding newly created nodes to |parent| starting at
@@ -70,10 +72,11 @@ void CloneBookmarkNode(BookmarkModel* model,
 // removed after copied to the clipboard. The nodes are copied in such a way
 // that if pasted again copies are made. Pass the calling context through as
 // `source`.
-void CopyToClipboard(BookmarkModel* model,
-                     const std::vector<const BookmarkNode*>& nodes,
-                     bool remove_nodes,
-                     metrics::BookmarkEditSource source);
+void CopyToClipboard(
+    BookmarkModel* model,
+    const std::vector<raw_ptr<const BookmarkNode, VectorExperimental>>& nodes,
+    bool remove_nodes,
+    metrics::BookmarkEditSource source);
 
 // Pastes from the clipboard. The new nodes are added to |parent|, unless
 // |parent| is null in which case this does nothing. The nodes are inserted
@@ -137,7 +140,8 @@ void RegisterManagedBookmarksPrefs(PrefRegistrySimple* registry);
 // added nodes should be added at.
 const BookmarkNode* GetParentForNewNodes(
     const BookmarkNode* parent,
-    const std::vector<const BookmarkNode*>& selection,
+    const std::vector<raw_ptr<const BookmarkNode, VectorExperimental>>&
+        selection,
     size_t* index);
 
 // Deletes the bookmark folders for the given list of |ids|.
@@ -171,6 +175,8 @@ void RemoveAllBookmarks(BookmarkModel* model, const GURL& url);
 // unescaping, an input string of "a&p" would no longer match this URL.  Note
 // that the resulting unescaped URL may not be directly navigable (which is
 // why it was escaped to begin with).
+//
+// |url| must be a valid URL.
 std::u16string CleanUpUrlForMatching(
     const GURL& gurl,
     base::OffsetAdjuster::Adjustments* adjustments);
@@ -179,10 +185,11 @@ std::u16string CleanUpUrlForMatching(
 // is overly-long.
 std::u16string CleanUpTitleForMatching(const std::u16string& title);
 
-// Returns true if all the |nodes| can be edited by the user,
-// as determined by BookmarkClient::CanBeEditedByUser().
-bool CanAllBeEditedByUser(BookmarkClient* client,
-                          const std::vector<const BookmarkNode*>& nodes);
+// Returns true if all the |nodes| can be edited by the user, which means they
+// aren't enterprise-managed, as BookmarkClient::IsNodeManaged().
+bool CanAllBeEditedByUser(
+    BookmarkClient* client,
+    const std::vector<raw_ptr<const BookmarkNode, VectorExperimental>>& nodes);
 
 // Returns true if |url| has a bookmark in the |model| that can be edited
 // by the user.
@@ -191,16 +198,13 @@ bool IsBookmarkedByUser(BookmarkModel* model, const GURL& url);
 // Returns the node with |id|, or NULL if there is no node with |id|.
 const BookmarkNode* GetBookmarkNodeByID(const BookmarkModel* model, int64_t id);
 
-// Returns the node with |uuid|, or NULL if there is no node with |uuid|.
-const BookmarkNode* GetBookmarkNodeByUuid(const BookmarkModel* model,
-                                          const base::Uuid& uuid);
-
 // Returns true if |node| is a descendant of |root|.
 bool IsDescendantOf(const BookmarkNode* node, const BookmarkNode* root);
 
 // Returns true if any node in |list| is a descendant of |root|.
-bool HasDescendantsOf(const std::vector<const BookmarkNode*>& list,
-                      const BookmarkNode* root);
+bool HasDescendantsOf(
+    const std::vector<raw_ptr<const BookmarkNode, VectorExperimental>>& list,
+    const BookmarkNode* root);
 
 // Returns the parent to add new nodes to, never returns null (as long as
 // the model is loaded). If |url| is non-empty, features will have the

@@ -2,53 +2,38 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {Destination, DestinationErrorType, DestinationStore, DestinationStoreEventType, GooglePromotedDestinationId, LocalDestinationInfo, makeRecentDestination, NativeInitialSettings, NativeLayerImpl, PrinterType} from 'chrome://print/print_preview.js';
+import type {DestinationStore, LocalDestinationInfo, NativeInitialSettings} from 'chrome://print/print_preview.js';
+import {Destination, DestinationErrorType, DestinationOrigin, DestinationStoreEventType, GooglePromotedDestinationId, makeRecentDestination, NativeLayerImpl,
+        // <if expr="is_chromeos">
+        PrinterStatusReason, PrinterStatusSeverity,
+        // </if>
+        PrinterType} from 'chrome://print/print_preview.js';
 // <if expr="not is_chromeos">
-import {RecentDestination} from 'chrome://print/print_preview.js';
-// </if>
-// <if expr="not is_chromeos">
-import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
+import type {RecentDestination} from 'chrome://print/print_preview.js';
 // </if>
 
+// <if expr="is_chromeos">
+import {webUIListenerCallback} from 'chrome://resources/js/cr.js';
+// </if>
+import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {eventToPromise} from 'chrome://webui-test/test_util.js';
 
 // <if expr="is_chromeos">
+import type {NativeLayerCrosStub} from './native_layer_cros_stub.js';
 import {setNativeLayerCrosInstance} from './native_layer_cros_stub.js';
 // </if>
 import {NativeLayerStub} from './native_layer_stub.js';
 import {createDestinationStore, getCddTemplate, getDefaultInitialSettings, getDestinations, getSaveAsPdfDestination, setupTestListenerElement} from './print_preview_test_utils.js';
 
-const destination_store_test = {
-  suiteName: 'DestinationStoreTest',
-  TestNames: {
-    SingleRecentDestination: 'single recent destination',
-    MultipleRecentDestinations: 'multiple recent destinations',
-    RecentDestinationsFallback:
-        'no local or other destinations results in save as pdf',
-    MultipleRecentDestinationsOneRequest:
-        'multiple recent destinations one request',
-    DefaultDestinationSelectionRules: 'default destination selection rules',
-    // <if expr="not is_chromeos">
-    SystemDefaultPrinterPolicy: 'system default printer policy',
-    // </if>
-    KioskModeSelectsFirstPrinter: 'kiosk mode selects first printer',
-    NoPrintersShowsError: 'no printers shows error',
-    RecentSaveAsPdf: 'recent save as pdf',
-    LoadAndSelectDestination: 'select loaded destination',
-    // <if expr="is_chromeos">
-    LoadSaveToDriveCros: 'load Save to Drive Cros',
-    SaveToDriveDisabled: 'Save to Drive disabled',
-    // </if>
-  },
-};
-
-Object.assign(window, {destination_store_test: destination_store_test});
-
-suite(destination_store_test.suiteName, function() {
+suite('DestinationStoreTest', function() {
   let destinationStore: DestinationStore;
 
   let nativeLayer: NativeLayerStub;
+
+  // <if expr="is_chromeos">
+  let nativeLayerCros: NativeLayerCrosStub;
+  // </if>
 
   let initialSettings: NativeInitialSettings;
 
@@ -67,7 +52,7 @@ suite(destination_store_test.suiteName, function() {
     nativeLayer = new NativeLayerStub();
     NativeLayerImpl.setInstance(nativeLayer);
     // <if expr="is_chromeos">
-    setNativeLayerCrosInstance();
+    nativeLayerCros = setNativeLayerCrosInstance();
     // </if>
 
     initialSettings = getDefaultInitialSettings();
@@ -121,7 +106,7 @@ suite(destination_store_test.suiteName, function() {
    * destination is automatically reselected.
    */
   test(
-      destination_store_test.TestNames.SingleRecentDestination, function() {
+      'SingleRecentDestination', function() {
         const recentDestination = makeRecentDestination(destinations[0]!);
         initialSettings.serializedAppStateStr = JSON.stringify({
           version: 2,
@@ -141,7 +126,7 @@ suite(destination_store_test.suiteName, function() {
    * fetched.
    */
   test(
-      destination_store_test.TestNames.MultipleRecentDestinations, function() {
+      'MultipleRecentDestinations', function() {
         const recentDestinations = destinations.slice(0, 3).map(
             destination => makeRecentDestination(destination));
 
@@ -172,7 +157,7 @@ suite(destination_store_test.suiteName, function() {
    * PDF.
    */
   test(
-      destination_store_test.TestNames.RecentDestinationsFallback, function() {
+      'RecentDestinationsFallback', function() {
         initialSettings.serializedAppStateStr = JSON.stringify({
           version: 2,
           recentDestinations: [],
@@ -192,8 +177,7 @@ suite(destination_store_test.suiteName, function() {
    * For crbug.com/666595.
    */
   test(
-      destination_store_test.TestNames.MultipleRecentDestinationsOneRequest,
-      function() {
+      'MultipleRecentDestinationsOneRequest', function() {
         const recentDestinations = destinations.slice(0, 3).map(
             destination => makeRecentDestination(destination));
 
@@ -232,8 +216,7 @@ suite(destination_store_test.suiteName, function() {
    * respected and a matching destination is automatically selected.
    */
   test(
-      destination_store_test.TestNames.DefaultDestinationSelectionRules,
-      function() {
+      'DefaultDestinationSelectionRules', function() {
         initialSettings.serializedDefaultDestinationSelectionRulesStr =
             JSON.stringify({namePattern: '.*Four.*'});
         initialSettings.serializedAppStateStr = '';
@@ -253,7 +236,7 @@ suite(destination_store_test.suiteName, function() {
    * destinations.
    */
   test(
-      destination_store_test.TestNames.SystemDefaultPrinterPolicy, function() {
+      'SystemDefaultPrinterPolicy', function() {
         // Set the policy in loadTimeData.
         loadTimeData.overrideValues({useSystemDefaultPrinter: true});
 
@@ -292,8 +275,7 @@ suite(destination_store_test.suiteName, function() {
    * from printer fetch is selected.
    */
   test(
-      destination_store_test.TestNames.KioskModeSelectsFirstPrinter,
-      function() {
+      'KioskModeSelectsFirstPrinter', function() {
         initialSettings.serializedDefaultDestinationSelectionRulesStr = '';
         initialSettings.serializedAppStateStr = '';
         initialSettings.pdfPrinterDisabled = true;
@@ -317,7 +299,7 @@ suite(destination_store_test.suiteName, function() {
    * destination is null.
    */
   test(
-      destination_store_test.TestNames.NoPrintersShowsError, function() {
+      'NoPrintersShowsError', function() {
         initialSettings.serializedDefaultDestinationSelectionRulesStr = '';
         initialSettings.serializedAppStateStr = '';
         initialSettings.pdfPrinterDisabled = true;
@@ -343,7 +325,7 @@ suite(destination_store_test.suiteName, function() {
    * store (PDF printer), the DestinationStore does not try to select a
    * printer again later. Regression test for https://crbug.com/927162.
    */
-  test(destination_store_test.TestNames.RecentSaveAsPdf, function() {
+  test('RecentSaveAsPdf', function() {
     const pdfPrinter = getSaveAsPdfDestination();
     const recentDestination = makeRecentDestination(pdfPrinter);
     initialSettings.serializedAppStateStr = JSON.stringify({
@@ -371,7 +353,7 @@ suite(destination_store_test.suiteName, function() {
    * destination is automatically reselected.
    */
   test(
-      destination_store_test.TestNames.LoadAndSelectDestination, function() {
+      'LoadAndSelectDestination', function() {
         destinations = getDestinations(localDestinations);
         initialSettings.printerName = '';
         const id1 = 'ID1';
@@ -414,10 +396,41 @@ suite(destination_store_test.suiteName, function() {
             });
       });
 
+  /**
+   * Tests that the destination store will not allow the selected destination
+   * to be selected again unless explicitly requested.
+   */
+  test('DestinationAlreadySelected', function() {
+    return setInitialSettings(false).then(() => {
+      // The default destination is initialized which triggers the first
+      // selection.
+      assertEquals(1, numPrintersSelected);
+
+      // Selecting a new destination will trigger another selection.
+      const printer1 =
+          new Destination('Printer1', DestinationOrigin.LOCAL, 'Printer1');
+      destinationStore.selectDestination(printer1);
+      assertEquals(2, numPrintersSelected);
+
+      // Selecting that same destination again won't trigger another
+      // selection.
+      destinationStore.selectDestination(printer1);
+      assertEquals(2, numPrintersSelected);
+
+      // <if expr="is_chromeos">
+      // Selecting that same destination on CrOS with the `refreshDestination`
+      // parameter triggers a selection.
+      destinationStore.selectDestination(
+          printer1, /*refreshDestination=*/ true);
+      assertEquals(3, numPrintersSelected);
+      // </if>
+    });
+  });
+
   // <if expr="is_chromeos">
   /** Tests that the SAVE_TO_DRIVE_CROS destination is loaded on Chrome OS. */
   test(
-      destination_store_test.TestNames.LoadSaveToDriveCros, function() {
+      'LoadSaveToDriveCros', function() {
         return setInitialSettings(false).then(() => {
           assertTrue(!!destinationStore.destinations().find(
               destination => destination.id ===
@@ -427,7 +440,7 @@ suite(destination_store_test.suiteName, function() {
 
   // Tests that the SAVE_TO_DRIVE_CROS destination is not loaded on Chrome OS
   // when saving to Google Drive is disabled.
-  test(destination_store_test.TestNames.SaveToDriveDisabled, function() {
+  test('SaveToDriveDisabled', function() {
     initialSettings.isDriveMounted =
         false;  // This setting disables saving to Google Drive.
     return setInitialSettings(false).then(() => {
@@ -435,6 +448,203 @@ suite(destination_store_test.suiteName, function() {
           destination => destination.id ===
               GooglePromotedDestinationId.SAVE_TO_DRIVE_CROS));
     });
+  });
+
+  // Tests that the destination store subscribes to the LocalPrintersObserver
+  // upon initialization after a successful destination search.
+  test('ObserveLocalPrintersAfterSuccessfulSearch', function() {
+    const printer1 = {
+      printerName: 'localPrinter1',
+      deviceName: 'localPrinter1',
+    };
+    const printer2 = {
+      printerName: 'localPrinter2',
+      deviceName: 'localPrinter2',
+    };
+    nativeLayerCros.setLocalPrinters([printer1, printer2]);
+
+    loadTimeData.overrideValues({isLocalPrinterObservingEnabled: true});
+    return setInitialSettings(/*expectPrinterFailure=*/ false).then(() => {
+      assertEquals(1, nativeLayerCros.getCallCount('observeLocalPrinters'));
+      assertTrue(!!destinationStore.destinations().find(
+          destination => destination.id === printer1.printerName));
+      assertTrue(!!destinationStore.destinations().find(
+          destination => destination.id === printer2.printerName));
+    });
+  });
+
+  // Tests that the destination store subscribes to the LocalPrintersObserver
+  // upon initialization after no destination search is started.
+  test('ObserveLocalPrintersAfterNoSearch', function() {
+    const printer1 = {
+      printerName: 'localPrinter1',
+      deviceName: 'localPrinter1',
+    };
+    const printer2 = {
+      printerName: 'localPrinter2',
+      deviceName: 'localPrinter2',
+    };
+    nativeLayerCros.setLocalPrinters([printer1, printer2]);
+
+    loadTimeData.overrideValues({isLocalPrinterObservingEnabled: true});
+    // Set to empty string so `systemDefaultDestinationId` destination store
+    // param is empty which triggers no destination search.
+    initialSettings.printerName = '';
+    return setInitialSettings(/*expectPrinterFailure=*/ false).then(() => {
+      assertEquals(1, nativeLayerCros.getCallCount('observeLocalPrinters'));
+      assertTrue(!!destinationStore.destinations().find(
+          destination => destination.id === printer1.printerName));
+      assertTrue(!!destinationStore.destinations().find(
+          destination => destination.id === printer2.printerName));
+    });
+  });
+
+  // Tests that the destination store adds printers from the
+  // 'local-printers-updated' event.
+  test('LocalPrintersUpdatedEventPrintersAdded', function() {
+    const printer1 = {
+      printerName: 'localPrinter1',
+      deviceName: 'localPrinter1',
+    };
+    const printer2 = {
+      printerName: 'localPrinter2',
+      deviceName: 'localPrinter2',
+    };
+
+    loadTimeData.overrideValues({isLocalPrinterObservingEnabled: true});
+    return setInitialSettings(/*expectPrinterFailure=*/ false).then(() => {
+      // Confirm the printers are not in the destination store before the event
+      // fires.
+      assertFalse(!!destinationStore.destinations().find(
+          destination => destination.id === printer1.printerName));
+      assertFalse(!!destinationStore.destinations().find(
+          destination => destination.id === printer2.printerName));
+
+      // Fire the event and expect the destination store to add the local
+      // printers.
+      webUIListenerCallback('local-printers-updated', [printer1, printer2]);
+      assertTrue(!!destinationStore.destinations().find(
+          destination => destination.id === printer1.printerName));
+      assertTrue(!!destinationStore.destinations().find(
+          destination => destination.id === printer2.printerName));
+    });
+  });
+
+  // Tests that the destination store updates printer statuses from the
+  // 'local-printers-updated' event.
+  test('LocalPrintersUpdatedEventStatusUpdate', function() {
+    const printer1 = {
+      printerName: 'localPrinter1',
+      deviceName: 'localPrinter1',
+      printerStatus: {},
+    };
+    const expectedPrinterStatus = {
+      printerId: 'localPrinter1',
+      statusReasons: [{
+        reason: PrinterStatusReason.OUT_OF_INK,
+        severity: PrinterStatusSeverity.WARNING,
+      }],
+    };
+
+    loadTimeData.overrideValues({isLocalPrinterObservingEnabled: true});
+    return setInitialSettings(/*expectPrinterFailure=*/ false)
+        .then(() => {
+          // Fire the event and expect the destination to not have a printer
+          // status.
+          webUIListenerCallback('local-printers-updated', [printer1]);
+          const destination = destinationStore.destinations().find(
+              destination => destination.id === printer1.printerName);
+          assertTrue(!!destination);
+          assertEquals(null, destination.printerStatusReason);
+
+          // Add a printer status then trigger the event again. The printer
+          // status should be parsed and appended to the existing destination.
+          printer1.printerStatus = expectedPrinterStatus;
+          const onPrinterStatusUpdatePromise = eventToPromise(
+              DestinationStoreEventType.DESTINATION_PRINTER_STATUS_UPDATE,
+              destinationStore);
+          webUIListenerCallback('local-printers-updated', [printer1]);
+          return onPrinterStatusUpdatePromise;
+        })
+        .then(() => {
+          const destination = destinationStore.destinations().find(
+              destination => destination.id === printer1.printerName);
+          assertTrue(!!destination);
+          assertEquals(
+              expectedPrinterStatus.statusReasons[0]!.reason,
+              destination.printerStatusReason);
+        });
+  });
+
+  // Tests that the destination store dispatches the correct event attributes
+  // when the printer's online status changes.
+  test('PrinterStatusOnlineChange', function() {
+    const printer1 = {
+      printerName: 'localPrinter1',
+      deviceName: 'localPrinter1',
+      printerStatus: {},
+    };
+
+    loadTimeData.overrideValues({isLocalPrinterObservingEnabled: true});
+    return setInitialSettings(/*expectPrinterFailure=*/ false)
+        .then(() => {
+          // Add an unreachable status then trigger the event to set the
+          // printer's initial status.
+          printer1.printerStatus = {
+            printerId: 'localPrinter1',
+            statusReasons: [{
+              reason: PrinterStatusReason.PRINTER_UNREACHABLE,
+              severity: PrinterStatusSeverity.ERROR,
+            }],
+          };
+
+          const onPrinterStatusUpdatePromise = eventToPromise(
+              DestinationStoreEventType.DESTINATION_PRINTER_STATUS_UPDATE,
+              destinationStore);
+          webUIListenerCallback('local-printers-updated', [printer1]);
+          return onPrinterStatusUpdatePromise;
+        })
+        .then((e) => {
+          assertFalse(e.detail.nowOnline);
+
+          // Update the printer to an online error status and expect the online
+          // variable to be true in the event.
+          printer1.printerStatus = {
+            printerId: 'localPrinter1',
+            statusReasons: [{
+              reason: PrinterStatusReason.PAPER_JAM,
+              severity: PrinterStatusSeverity.ERROR,
+            }],
+          };
+
+          const onPrinterStatusUpdatePromise = eventToPromise(
+              DestinationStoreEventType.DESTINATION_PRINTER_STATUS_UPDATE,
+              destinationStore);
+          webUIListenerCallback('local-printers-updated', [printer1]);
+          return onPrinterStatusUpdatePromise;
+        })
+        .then((e) => {
+          assertTrue(e.detail.nowOnline);
+
+          // Update the printer to a different online error status and expect
+          // the online to be false now since the printer was already online.
+          printer1.printerStatus = {
+            printerId: 'localPrinter1',
+            statusReasons: [{
+              reason: PrinterStatusReason.LOW_ON_INK,
+              severity: PrinterStatusSeverity.ERROR,
+            }],
+          };
+
+          const onPrinterStatusUpdatePromise = eventToPromise(
+              DestinationStoreEventType.DESTINATION_PRINTER_STATUS_UPDATE,
+              destinationStore);
+          webUIListenerCallback('local-printers-updated', [printer1]);
+          return onPrinterStatusUpdatePromise;
+        })
+        .then((e) => {
+          assertFalse(e.detail.nowOnline);
+        });
   });
   // </if>
 });

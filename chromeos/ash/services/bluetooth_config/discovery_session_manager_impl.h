@@ -58,7 +58,7 @@ class DiscoverySessionManagerImpl : public DiscoverySessionManager,
   void DestroyDiscoverySession();
 
   scoped_refptr<device::BluetoothAdapter> bluetooth_adapter_;
-  raw_ptr<FastPairDelegate, ExperimentalAsh> fast_pair_delegate_;
+  raw_ptr<FastPairDelegate> fast_pair_delegate_;
 
   base::ScopedObservation<device::BluetoothAdapter,
                           device::BluetoothAdapter::Observer>

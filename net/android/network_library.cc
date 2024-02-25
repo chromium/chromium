@@ -84,7 +84,7 @@ void ClearTestRootCertificates() {
   Java_AndroidNetworkLibrary_clearTestRootCertificates(env);
 }
 
-bool IsCleartextPermitted(const std::string& host) {
+bool IsCleartextPermitted(base::StringPiece host) {
   JNIEnv* env = AttachCurrentThread();
   ScopedJavaLocalRef<jstring> host_string = ConvertUTF8ToJavaString(env, host);
   return Java_AndroidNetworkLibrary_isCleartextPermitted(env, host_string);
@@ -97,7 +97,7 @@ bool HaveOnlyLoopbackAddresses() {
   return Java_AndroidNetworkLibrary_haveOnlyLoopbackAddresses(env);
 }
 
-bool GetMimeTypeFromExtension(const std::string& extension,
+bool GetMimeTypeFromExtension(base::StringPiece extension,
                               std::string* result) {
   JNIEnv* env = AttachCurrentThread();
 
@@ -140,12 +140,12 @@ void SetWifiEnabledForTesting(bool enabled) {
       base::android::AttachCurrentThread(), enabled);
 }
 
-absl::optional<int32_t> GetWifiSignalLevel() {
+std::optional<int32_t> GetWifiSignalLevel() {
   const int count_buckets = 5;
   int signal_strength = Java_AndroidNetworkLibrary_getWifiSignalLevel(
       base::android::AttachCurrentThread(), count_buckets);
   if (signal_strength < 0)
-    return absl::nullopt;
+    return std::nullopt;
   DCHECK_LE(0, signal_strength);
   DCHECK_GE(count_buckets - 1, signal_strength);
 

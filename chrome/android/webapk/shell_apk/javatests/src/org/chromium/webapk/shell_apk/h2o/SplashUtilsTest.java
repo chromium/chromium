@@ -28,9 +28,12 @@ public class SplashUtilsTest {
         // Request large splash screen so that icon does not take up all of the space.
         final int requestedSplashWidth = 1000;
         final int requestedSplashHeight = 1000;
-        Bitmap screenshot = SplashUtils.createAndImmediatelyScreenshotSplashView(
-                ApplicationProvider.getApplicationContext(), requestedSplashWidth,
-                requestedSplashHeight, 1024 * 1024 * 4 /* maxSizeBytes */);
+        Bitmap screenshot =
+                SplashUtils.createAndImmediatelyScreenshotSplashView(
+                        ApplicationProvider.getApplicationContext(),
+                        requestedSplashWidth,
+                        requestedSplashHeight,
+                        /* maxSizeBytes= */ 1024 * 1024 * 4);
         Assert.assertNotNull(screenshot);
         Assert.assertEquals(requestedSplashWidth, screenshot.getWidth());
         Assert.assertEquals(requestedSplashHeight, screenshot.getHeight());

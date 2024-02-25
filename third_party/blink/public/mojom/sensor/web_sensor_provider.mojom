@@ -1,0 +1,19 @@
+// Copyright 2023 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module blink.mojom;
+
+import "services/device/public/mojom/sensor.mojom";
+import "services/device/public/mojom/sensor_provider.mojom";
+
+// Partial view into the device.mojom.SensorProvider Mojo interface. It only
+// offers the GetSensor() function so that Blink cannot access the more
+// privileged virtual sensor-related methods.
+interface WebSensorProvider {
+  // Retrieves a sensor by the given |type|.
+  // See SensorProvider.GetSensor()'s documentation for more details.
+  GetSensor(device.mojom.SensorType type) =>
+      (device.mojom.SensorCreationResult result,
+       device.mojom.SensorInitParams? init_params);
+};

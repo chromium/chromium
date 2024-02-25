@@ -14,12 +14,15 @@
 #ifndef ABSL_STATUS_INTERNAL_STATUSOR_INTERNAL_H_
 #define ABSL_STATUS_INTERNAL_STATUSOR_INTERNAL_H_
 
+#include <cstdint>
 #include <type_traits>
 #include <utility>
 
 #include "absl/base/attributes.h"
+#include "absl/base/nullability.h"
 #include "absl/meta/type_traits.h"
 #include "absl/status/status.h"
+#include "absl/strings/string_view.h"
 #include "absl/utility/utility.h"
 
 namespace absl {
@@ -123,7 +126,7 @@ using IsForwardingAssignmentValid = absl::disjunction<
 class Helper {
  public:
   // Move type-agnostic error handling to the .cc.
-  static void HandleInvalidStatusCtorArg(Status*);
+  static void HandleInvalidStatusCtorArg(absl::Nonnull<Status*>);
   ABSL_ATTRIBUTE_NORETURN static void Crash(const absl::Status& status);
 };
 
@@ -131,7 +134,8 @@ class Helper {
 // the constructor.
 // This abstraction is here mostly for the gcc performance fix.
 template <typename T, typename... Args>
-ABSL_ATTRIBUTE_NONNULL(1) void PlacementNew(void* p, Args&&... args) {
+ABSL_ATTRIBUTE_NONNULL(1)
+void PlacementNew(absl::Nonnull<void*> p, Args&&... args) {
   new (p) T(std::forward<Args>(args)...);
 }
 
@@ -376,6 +380,53 @@ struct MoveAssignBase<T, false> {
 };
 
 ABSL_ATTRIBUTE_NORETURN void ThrowBadStatusOrAccess(absl::Status status);
+
+// Used to introduce jitter into the output of printing functions for
+// `StatusOr` (i.e. `AbslStringify` and `operator<<`).
+class StringifyRandom {
+  enum BracesType {
+    kBareParens = 0,
+    kSpaceParens,
+    kBareBrackets,
+    kSpaceBrackets,
+  };
+
+  // Returns a random `BracesType` determined once per binary load.
+  static BracesType RandomBraces() {
+    static const BracesType kRandomBraces = static_cast<BracesType>(
+        (reinterpret_cast<uintptr_t>(&kRandomBraces) >> 4) % 4);
+    return kRandomBraces;
+  }
+
+ public:
+  static inline absl::string_view OpenBrackets() {
+    switch (RandomBraces()) {
+      case kBareParens:
+        return "(";
+      case kSpaceParens:
+        return "( ";
+      case kBareBrackets:
+        return "[";
+      case kSpaceBrackets:
+        return "[ ";
+    }
+    return "(";
+  }
+
+  static inline absl::string_view CloseBrackets() {
+    switch (RandomBraces()) {
+      case kBareParens:
+        return ")";
+      case kSpaceParens:
+        return " )";
+      case kBareBrackets:
+        return "]";
+      case kSpaceBrackets:
+        return " ]";
+    }
+    return ")";
+  }
+};
 
 }  // namespace internal_statusor
 ABSL_NAMESPACE_END

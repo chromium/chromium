@@ -2,10 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {Action} from 'chrome://resources/js/store_ts.js';
+import {Action} from 'chrome://resources/js/store.js';
 import {SkColor} from 'chrome://resources/mojo/skia/public/mojom/skcolor.mojom-webui.js';
 
-import {ColorScheme, SampleColorScheme} from '../../personalization_app.mojom-webui.js';
+import {ColorScheme} from '../../color_scheme.mojom-webui.js';
+import {SampleColorScheme} from '../../personalization_app.mojom-webui.js';
 
 /**
  * @fileoverview Defines the actions to change theme state.
@@ -17,11 +18,15 @@ export enum ThemeActionName {
   SET_COLOR_SCHEME = 'set_color_scheme',
   SET_SAMPLE_COLOR_SCHEMES = 'set_sample_color_schemes',
   SET_STATIC_COLOR = 'set_static_color',
+  SET_GEOLOCATION_PERMISSION_ENABLED = 'set_geolocation_permission_enabled',
+  SET_SUNRISE_TIME = 'set_sunrise_time',
+  SET_SUNSET_TIME = 'set_sunset_time',
 }
 
-export type ThemeActions =
-    SetColorModeAutoScheduleAction|SetDarkModeEnabledAction|
-    SetColorSchemeAction|SetSampleColorSchemesAction|SetStaticColorAction;
+export type ThemeActions = SetColorModeAutoScheduleAction|
+    SetDarkModeEnabledAction|SetColorSchemeAction|SetSampleColorSchemesAction|
+    SetStaticColorAction|SetGeolocationPermissionEnabledAction|
+    SetSunriseTimeAction|SetSunsetTimeAction;
 
 export interface SetDarkModeEnabledAction extends Action {
   name: ThemeActionName.SET_DARK_MODE_ENABLED;
@@ -52,6 +57,20 @@ export interface SetStaticColorAction extends Action {
   staticColor: SkColor|null;
 }
 
+export interface SetGeolocationPermissionEnabledAction extends Action {
+  name: ThemeActionName.SET_GEOLOCATION_PERMISSION_ENABLED;
+  enabled: boolean;
+}
+
+export interface SetSunriseTimeAction extends Action {
+  name: ThemeActionName.SET_SUNRISE_TIME;
+  time: string;
+}
+
+export interface SetSunsetTimeAction extends Action {
+  name: ThemeActionName.SET_SUNSET_TIME;
+  time: string;
+}
 
 export function setDarkModeEnabledAction(enabled: boolean):
     SetDarkModeEnabledAction {
@@ -76,4 +95,17 @@ export function setSampleColorSchemesAction(
 export function setStaticColorAction(staticColor: SkColor|
                                      null): SetStaticColorAction {
   return {name: ThemeActionName.SET_STATIC_COLOR, staticColor};
+}
+
+export function setGeolocationPermissionEnabledAction(enabled: boolean):
+    SetGeolocationPermissionEnabledAction {
+  return {name: ThemeActionName.SET_GEOLOCATION_PERMISSION_ENABLED, enabled};
+}
+
+export function setSunriseTimeAction(time: string): SetSunriseTimeAction {
+  return {name: ThemeActionName.SET_SUNRISE_TIME, time};
+}
+
+export function setSunsetTimeAction(time: string): SetSunsetTimeAction {
+  return {name: ThemeActionName.SET_SUNSET_TIME, time};
 }

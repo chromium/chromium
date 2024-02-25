@@ -20,6 +20,7 @@
 #include "net/base/load_flags.h"
 #include "net/base/net_errors.h"
 #include "net/base/network_anonymization_key.h"
+#include "net/http/http_connection_info.h"
 #include "net/http/http_response_headers.h"
 #include "net/url_request/url_request.h"
 #include "net/url_request/url_request_context.h"
@@ -248,7 +249,7 @@ void DomainReliabilityMonitor::OnRequestLegComplete(
 
   DomainReliabilityBeacon beacon_template;
   if (request.response_info.connection_info !=
-      net::HttpResponseInfo::CONNECTION_INFO_UNKNOWN) {
+      net::HttpConnectionInfo::kUNKNOWN) {
     beacon_template.protocol =
         GetDomainReliabilityProtocol(request.response_info.connection_info,
                                      request.response_info.ssl_info.is_valid());

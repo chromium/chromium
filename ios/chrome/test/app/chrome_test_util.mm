@@ -19,7 +19,7 @@
 #import "ios/chrome/app/chrome_overlay_window.h"
 #import "ios/chrome/app/main_application_delegate_testing.h"
 #import "ios/chrome/app/main_controller.h"
-#import "ios/chrome/browser/infobars/infobar_manager_impl.h"
+#import "ios/chrome/browser/infobars/model/infobar_manager_impl.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_controller.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_controller_testing.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
@@ -31,6 +31,7 @@
 #import "ios/chrome/browser/shared/model/browser/browser_provider_interface.h"
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state_manager.h"
+#import "ios/chrome/browser/shared/public/commands/unit_conversion_commands.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/browser/ui/browser_view/browser_view_controller.h"
 #import "ios/chrome/browser/ui/main/bvc_container_view_controller.h"
@@ -39,7 +40,7 @@
 #import "ios/web/public/navigation/navigation_context.h"
 #import "ios/web/public/navigation/navigation_manager.h"
 #import "ios/web/public/test/fakes/fake_web_state_observer.h"
-#import "net/base/mac/url_conversions.h"
+#import "net/base/apple/url_conversions.h"
 
 // A subclass to pass instances of UIOpenURLContext to scene delegate during
 // testing. UIOpenURLContext has no init available, so this can only be
@@ -131,10 +132,13 @@ UIViewController* GetActiveViewController() {
   return active_view_controller;
 }
 
-id<ApplicationCommands, BrowserCommands, BrowserCoordinatorCommands>
+id<ApplicationCommands,
+   BrowserCommands,
+   BrowserCoordinatorCommands,
+   UnitConversionCommands>
 HandlerForActiveBrowser() {
-  return static_cast<
-      id<ApplicationCommands, BrowserCommands, BrowserCoordinatorCommands>>(
+  return static_cast<id<ApplicationCommands, BrowserCommands,
+                        BrowserCoordinatorCommands, UnitConversionCommands>>(
       GetMainBrowser()->GetCommandDispatcher());
 }
 

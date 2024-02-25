@@ -92,7 +92,7 @@ FileHandlingSubManager::FileHandlingSubManager(
 FileHandlingSubManager::~FileHandlingSubManager() = default;
 
 void FileHandlingSubManager::Configure(
-    const AppId& app_id,
+    const webapps::AppId& app_id,
     proto::WebAppOsIntegrationState& desired_state,
     base::OnceClosure configure_done) {
   DCHECK(!desired_state.has_file_handling());
@@ -131,8 +131,8 @@ void FileHandlingSubManager::Configure(
 }
 
 void FileHandlingSubManager::Execute(
-    const AppId& app_id,
-    const absl::optional<SynchronizeOsOptions>& synchronize_options,
+    const webapps::AppId& app_id,
+    const std::optional<SynchronizeOsOptions>& synchronize_options,
     const proto::WebAppOsIntegrationState& desired_state,
     const proto::WebAppOsIntegrationState& current_state,
     base::OnceClosure callback) {
@@ -156,14 +156,25 @@ void FileHandlingSubManager::Execute(
                             desired_state, std::move(callback)));
 }
 
-// TODO(b/279068663): Implement if needed.
-void FileHandlingSubManager::ForceUnregister(const AppId& app_id,
+void FileHandlingSubManager::ForceUnregister(const webapps::AppId& app_id,
                                              base::OnceClosure callback) {
-  std::move(callback).Run();
+  if (!ShouldRegisterFileHandlersWithOs()) {
+    std::move(callback).Run();
+    return;
+  }
+
+  ResultCallback metrics_callback =
+      base::BindOnce([](Result result) {
+        base::UmaHistogramBoolean("WebApp.FileHandlersUnregistration.Result",
+                                  (result == Result::kOk));
+      }).Then(std::move(callback));
+
+  UnregisterFileHandlersWithOs(app_id, profile_path_,
+                               std::move(metrics_callback));
 }
 
 void FileHandlingSubManager::Unregister(
-    const AppId& app_id,
+    const webapps::AppId& app_id,
     const proto::WebAppOsIntegrationState& desired_state,
     const proto::WebAppOsIntegrationState& current_state,
     base::OnceClosure callback) {
@@ -191,7 +202,7 @@ void FileHandlingSubManager::Unregister(
 }
 
 void FileHandlingSubManager::Register(
-    const AppId& app_id,
+    const webapps::AppId& app_id,
     const proto::WebAppOsIntegrationState& desired_state,
     base::OnceClosure callback) {
   if (!HasFileHandling(desired_state)) {

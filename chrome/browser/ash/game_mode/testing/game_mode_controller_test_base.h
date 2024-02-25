@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_ASH_GAME_MODE_GAME_MODE_CONTROLLER_TEST_BASE_H_
-#define CHROME_BROWSER_ASH_GAME_MODE_GAME_MODE_CONTROLLER_TEST_BASE_H_
+#ifndef CHROME_BROWSER_ASH_GAME_MODE_TESTING_GAME_MODE_CONTROLLER_TEST_BASE_H_
+#define CHROME_BROWSER_ASH_GAME_MODE_TESTING_GAME_MODE_CONTROLLER_TEST_BASE_H_
 
 #include <memory>
 
@@ -16,6 +16,18 @@
 #include "content/public/test/browser_task_environment.h"
 
 namespace game_mode {
+
+class MockGameModeObserver
+    : public testing::NiceMock<GameModeController::Observer> {
+ public:
+  MockGameModeObserver() = default;
+  ~MockGameModeObserver() override = default;
+
+  MOCK_METHOD(void,
+              OnSetGameMode,
+              (GameMode mode, ash::WindowState* window_state),
+              (override));
+};
 
 // Test base for all game mode types (e.g. Borealis, ARC).
 class GameModeControllerTestBase : public ChromeAshTestBase {
@@ -31,11 +43,10 @@ class GameModeControllerTestBase : public ChromeAshTestBase {
 
   std::unique_ptr<TestingProfile> profile_;
   std::unique_ptr<GameModeController> game_mode_controller_;
-  raw_ptr<ash::FakeResourcedClient, DanglingUntriaged | ExperimentalAsh>
-      fake_resourced_client_;
+  raw_ptr<ash::FakeResourcedClient, DanglingUntriaged> fake_resourced_client_;
   std::unique_ptr<base::HistogramTester> histogram_tester_;
 };
 
 }  // namespace game_mode
 
-#endif  // CHROME_BROWSER_ASH_GAME_MODE_GAME_MODE_CONTROLLER_TEST_BASE_H_
+#endif  // CHROME_BROWSER_ASH_GAME_MODE_TESTING_GAME_MODE_CONTROLLER_TEST_BASE_H_

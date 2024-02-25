@@ -106,7 +106,8 @@ class TextInputTestHelper : public ui::InputMethodObserver {
   gfx::Range selection_range_;
   bool focus_state_;
   ui::TextInputType latest_text_input_type_;
-  raw_ptr<ui::InputMethod, ExperimentalAsh> input_method_;
+  raw_ptr<ui::InputMethod> input_method_;
+  std::unique_ptr<base::RunLoop> run_loop_;
 };
 
 }  // namespace input_method

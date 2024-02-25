@@ -8,8 +8,10 @@
 #include "ash/ash_export.h"
 #include "ash/public/mojom/input_device_settings.mojom-forward.h"
 #include "ash/public/mojom/input_device_settings.mojom.h"
+#include "ash/system/input_device_settings/input_device_settings_metrics_manager.h"
 #include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
+#include "base/memory/raw_ptr.h"
 #include "base/observer_list.h"
 #include "base/observer_list_types.h"
 #include "ui/events/event.h"
@@ -17,6 +19,8 @@
 #include "ui/events/event_rewriter.h"
 
 namespace ash {
+
+class InputDeviceSettingsController;
 
 // PeripheralCustomizationEventRewriter recognizes and rewrites events from mice
 // and graphics tablets to arbitrary `ui::KeyEvent`s configured by the user via
@@ -29,20 +33,37 @@ class ASH_EXPORT PeripheralCustomizationEventRewriter
 
   enum class DeviceType { kMouse, kGraphicsTablet };
 
-  class Observer : public base::CheckedObserver {
-   public:
-    // Called when a mouse that is currently being observed presses a button
-    // that is remappable on mice.
-    virtual void OnMouseButtonPressed(int device_id,
-                                      const mojom::Button& button) = 0;
-
-    // Called when a graphics tablet that is currently being observed presses a
-    // button that is remappable on graphics tablets.
-    virtual void OnGraphicsTabletButtonPressed(int device_id,
-                                               const mojom::Button& button) = 0;
+  enum class PeripheralCustomizationMetricsType {
+    kMouse,
+    kGraphicsTablet,
+    kGraphicsTabletPen
   };
 
-  PeripheralCustomizationEventRewriter();
+  struct DeviceIdButton {
+    int device_id;
+    mojom::ButtonPtr button;
+
+    DeviceIdButton(int device_id, mojom::ButtonPtr button);
+    DeviceIdButton(DeviceIdButton&& device_id_button);
+    ~DeviceIdButton();
+
+    DeviceIdButton& operator=(DeviceIdButton&& device_id_button);
+    friend bool operator<(const DeviceIdButton& left,
+                          const DeviceIdButton& right);
+  };
+
+  struct RemappingActionResult {
+    raw_ref<mojom::RemappingAction> remapping_action;
+    PeripheralCustomizationMetricsType peripheral_kind;
+
+    RemappingActionResult(mojom::RemappingAction& remapping_action,
+                          PeripheralCustomizationMetricsType peripheral_kind);
+    RemappingActionResult(RemappingActionResult&& result);
+    ~RemappingActionResult();
+  };
+
+  explicit PeripheralCustomizationEventRewriter(
+      InputDeviceSettingsController* input_device_settings_controller);
   PeripheralCustomizationEventRewriter(
       const PeripheralCustomizationEventRewriter&) = delete;
   PeripheralCustomizationEventRewriter& operator=(
@@ -51,12 +72,16 @@ class ASH_EXPORT PeripheralCustomizationEventRewriter
 
   // Starts observing and blocking mouse events for `device_id`. Notifies
   // observers via `OnMouseButtonPressed` whenever an event
-  void StartObservingMouse(int device_id);
+  void StartObservingMouse(
+      int device_id,
+      mojom::CustomizationRestriction customization_restriction);
 
   // Starts observing and blocking graphics tablet events for `device_id`.
   // Notifies observers via `OnGraphicsTabletButtonPressed` whenever an event is
   // received.
-  void StartObservingGraphicsTablet(int device_id);
+  void StartObservingGraphicsTablet(
+      int device_id,
+      mojom::CustomizationRestriction customization_restriction);
 
   // Stops observing for all devices of every type.
   void StopObserving();
@@ -66,55 +91,82 @@ class ASH_EXPORT PeripheralCustomizationEventRewriter
       const ui::Event& event,
       const Continuation continuation) override;
 
-  void AddObserver(Observer* observer);
-  void RemoveObserver(Observer* observer);
-
-  // This is only for testing and will be removed once the controller properly
-  // sends button remapping data to the rewriter.
-  // TODO(dpad): Remove this function once button remapping data can be received
-  // from the settings controller.
-  void SetRemappingActionForTesting(int device_id,
-                                    mojom::ButtonPtr button,
-                                    mojom::RemappingActionPtr remapping_action);
+  const base::flat_map<int, mojom::CustomizationRestriction>&
+  mice_to_observe() {
+    return mice_to_observe_;
+  }
+  const base::flat_map<int, mojom::CustomizationRestriction>&
+  graphics_tablets_to_observe() {
+    return graphics_tablets_to_observe_;
+  }
 
  private:
   // Notifies observers if the given `mouse_event` is a remappable button for
   // the given `device_type`. Returns true if the event should be discarded.
   bool NotifyMouseEventObserving(const ui::MouseEvent& mouse_event,
                                  DeviceType device_type);
+  // Notifies observers if the given `mouse_wheel_event` is a remappable button
+  // for the given `device_type`. Returns true if the event should be discarded.
+  bool NotifyMouseWheelEventObserving(
+      const ui::MouseWheelEvent& mouse_wheel_event,
+      DeviceType device_type);
   // Notifies observers if the given `key_event` is a remappable button for
   // the given `device_type`. Returns true if the event should be discarded.
   bool NotifyKeyEventObserving(const ui::KeyEvent& key_event,
                                DeviceType device_type);
 
+  // Returns if the button is customizable.
+  bool IsButtonCustomizable(const ui::KeyEvent& key_event);
+
   // Rewrites the given event that came from `button` within the
   // `rewritten_event` param. Returns true if the original event should be
   // discarded.
-  bool RewriteEventFromButton(const ui::Event& event,
-                              const mojom::Button& button,
-                              std::unique_ptr<ui::Event>& rewritten_event);
+  bool RewriteEventFromButton(
+      const ui::Event& event,
+      const mojom::Button& button,
+      std::vector<std::unique_ptr<ui::Event>>& rewritten_event);
 
   ui::EventDispatchDetails RewriteMouseEvent(const ui::MouseEvent& mouse_event,
                                              const Continuation continuation);
+  ui::EventDispatchDetails RewriteMouseWheelEvent(
+      const ui::MouseWheelEvent& mouse_event,
+      const Continuation continuation);
   ui::EventDispatchDetails RewriteKeyEvent(const ui::KeyEvent& key_event,
                                            const Continuation continuation);
 
-  absl::optional<DeviceType> GetDeviceTypeToObserve(int device_id);
+  std::optional<DeviceType> GetDeviceTypeToObserve(int device_id);
 
-  const mojom::RemappingAction* GetRemappingAction(int device_id,
-                                                   const mojom::Button& button);
+  std::optional<RemappingActionResult> GetRemappingAction(
+      int device_id,
+      const mojom::Button& button);
+
+  void UpdatePressedButtonMap(
+      mojom::ButtonPtr button,
+      const ui::Event& original_event,
+      const std::vector<std::unique_ptr<ui::Event>>& rewritten_event);
+  void UpdatePressedButtonMapFlags(const ui::KeyEvent& key_event);
 
   // Removes the set of remapped modifiers from the event that should be
   // discarded.
   void RemoveRemappedModifiers(ui::Event& event);
 
-  base::flat_set<int> mice_to_observe_;
-  base::flat_set<int> graphics_tablets_to_observe_;
-  base::ObserverList<Observer> observers_;
+  // Applies all remapped modifiers.
+  void ApplyRemappedModifiers(ui::Event& event);
 
-  // TODO(dpad): Remove once `InputDeviceSettingsController` is updated to
-  // handle button remappings.
-  base::flat_map<int, ButtonRemappingList> button_remappings_for_testing_;
+  std::unique_ptr<ui::Event> CloneEvent(const ui::Event& event);
+
+  base::flat_map<int, mojom::CustomizationRestriction> mice_to_observe_;
+  base::flat_map<int, mojom::CustomizationRestriction>
+      graphics_tablets_to_observe_;
+
+  // Maintains a list of currently pressed buttons and the flags that should
+  // be applied to other events processed.
+  base::flat_map<DeviceIdButton, int> device_button_to_flags_;
+
+  raw_ptr<InputDeviceSettingsController> input_device_settings_controller_;
+
+  // Emit all metrics.
+  std::unique_ptr<InputDeviceSettingsMetricsManager> metrics_manager_;
 };
 
 }  // namespace ash

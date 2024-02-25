@@ -141,7 +141,7 @@ void TailoredSecurityDesktopDialogManager::ShowEnabledDialogForBrowser(
           .AddCancelButton(
               base::BindOnce(&EnabledDialogModelDelegate::OnDialogRejected,
                              base::Unretained(model_delegate_ptr), browser),
-              ui::DialogModelButton::Params().SetLabel(
+              ui::DialogModel::Button::Params().SetLabel(
                   l10n_util::GetStringUTF16(
                       IDS_TAILORED_SECURITY_DIALOG_SETTINGS_BUTTON)))
           .Build();
@@ -179,13 +179,13 @@ void TailoredSecurityDesktopDialogManager::ShowDisabledDialogForBrowser(
           .AddOkButton(
               base::BindOnce(&DisabledDialogModelDelegate::OnDialogAccepted,
                              base::Unretained(model_delegate_ptr)),
-              ui::DialogModelButton::Params().SetLabel(
+              ui::DialogModel::Button::Params().SetLabel(
                   l10n_util::GetStringUTF16(
                       IDS_TAILORED_SECURITY_DISABLED_DIALOG_ACCEPT_BUTTON)))
           .AddCancelButton(
               base::BindOnce(&DisabledDialogModelDelegate::OnDialogRejected,
                              base::Unretained(model_delegate_ptr), browser),
-              ui::DialogModelButton::Params().SetLabel(
+              ui::DialogModel::Button::Params().SetLabel(
                   l10n_util::GetStringUTF16(
                       IDS_TAILORED_SECURITY_DIALOG_SETTINGS_BUTTON)))
           .Build();

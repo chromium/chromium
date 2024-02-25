@@ -10,18 +10,18 @@ namespace page_load_metrics {
 
 mojom::PageLoadTimingPtr CreatePageLoadTiming() {
   return mojom::PageLoadTiming::New(
-      base::Time(), absl::optional<base::TimeDelta>(),
+      base::Time(), std::optional<base::TimeDelta>(),
       mojom::DocumentTiming::New(), mojom::InteractiveTiming::New(),
-      mojom::PaintTiming::New(absl::nullopt, absl::nullopt, absl::nullopt,
-                              absl::nullopt,
+      mojom::PaintTiming::New(std::nullopt, std::nullopt, std::nullopt,
+                              std::nullopt,
                               mojom::LargestContentfulPaintTiming::New(),
                               mojom::LargestContentfulPaintTiming::New(),
-                              absl::nullopt, absl::nullopt, absl::nullopt),
+                              std::nullopt, std::nullopt, std::nullopt),
       mojom::ParseTiming::New(),
       std::vector<mojo::StructPtr<mojom::BackForwardCacheTiming>>{},
-      absl::optional<base::TimeDelta>(), absl::optional<base::TimeDelta>(),
-      absl::optional<base::TimeDelta>(), absl::optional<base::TimeDelta>(),
-      absl::optional<base::TimeDelta>());
+      std::optional<base::TimeDelta>(), std::optional<base::TimeDelta>(),
+      std::optional<base::TimeDelta>(), std::optional<base::TimeDelta>(),
+      std::optional<base::TimeDelta>());
 }
 
 mojom::LargestContentfulPaintTimingPtr CreateLargestContentfulPaintTiming() {
@@ -31,7 +31,7 @@ mojom::LargestContentfulPaintTimingPtr CreateLargestContentfulPaintTiming() {
 mojom::SoftNavigationMetricsPtr CreateSoftNavigationMetrics() {
   return mojom::SoftNavigationMetrics::New(
       blink::kSoftNavigationCountDefaultValue, base::Milliseconds(0),
-      base::EmptyString(), mojom::LargestContentfulPaintTiming::New());
+      std::string(), mojom::LargestContentfulPaintTiming::New());
 }
 
 bool IsEmpty(const page_load_metrics::mojom::DocumentTiming& timing) {
@@ -40,15 +40,12 @@ bool IsEmpty(const page_load_metrics::mojom::DocumentTiming& timing) {
 
 bool IsEmpty(const page_load_metrics::mojom::InteractiveTiming& timing) {
   return !timing.first_input_delay && !timing.first_input_timestamp &&
-         !timing.longest_input_delay && !timing.longest_input_timestamp &&
-         !timing.first_scroll_delay && !timing.first_scroll_timestamp &&
-         !timing.first_input_processing_time;
+         !timing.first_scroll_delay && !timing.first_scroll_timestamp;
 }
 
 bool IsEmpty(const page_load_metrics::mojom::InputTiming& timing) {
-  return !timing.total_input_delay.InMilliseconds() &&
-         !timing.total_adjusted_input_delay.InMilliseconds() &&
-         !timing.num_input_events;
+  // TODO(sullivan): Adjust this to be based on max_event_durations
+  return !timing.num_interactions;
 }
 
 bool IsEmpty(const page_load_metrics::mojom::PaintTiming& timing) {

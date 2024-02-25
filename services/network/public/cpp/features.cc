@@ -8,7 +8,9 @@
 #include "base/metrics/field_trial_params.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/system/sys_info.h"
+#include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
+#include "components/miracle_parameter/common/public/miracle_parameter.h"
 #include "net/base/mime_sniffer.h"
 
 namespace network::features {
@@ -110,6 +112,15 @@ BASE_FEATURE(kMaskedDomainList,
              "MaskedDomainList",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// When set, only resources in the MDL that are part of the experiment group
+// will be loaded into the proxy's allow list.
+const base::FeatureParam<int> kMaskedDomainListExperimentGroup{
+    &kMaskedDomainList, /*name=*/"MaskedDomainListExperimentGroup",
+    /*default_value=*/0};
+
+// Used to build the MDL component's installer attributes and possibly control
+// which release version is retrieved.
+// Altering this value via Finch does not have any effect for WebView.
 const base::FeatureParam<std::string> kMaskedDomainListExperimentalVersion{
     &kMaskedDomainList, /*name=*/"MaskedDomainListExperimentalVersion",
     /*default_value=*/""};
@@ -130,7 +141,7 @@ BASE_FEATURE(kMdnsResponderGeneratedNameListing,
 // Implementing ORB in Chromium is tracked in https://crbug.com/1178928
 BASE_FEATURE(kOpaqueResponseBlockingV02,
              "OpaqueResponseBlockingV02",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Treat ORB blocked responses to script-initiated fetches as errors too.
 // Complements ORB v0.2, which exempts script-initiated fetches.
@@ -209,49 +220,89 @@ BASE_FEATURE(kGetCookiesStringUma,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 namespace {
+
+BASE_FEATURE(kDefaultDataPipeAllocationSizeFeature,
+             "DefaultDataPipeAllocationSizeFeature",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
+BASE_FEATURE(kLargerDataPipeAllocationSizeFeature,
+             "LargerDataPipeAllocationSizeFeature",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
+BASE_FEATURE(kNetAdapterMaxBufSizeFeature,
+             "NetAdapterMaxBufSizeFeature",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
+BASE_FEATURE(kMaxNumConsumedBytesInTaskFeature,
+             "MaxNumConsumedBytesInTaskFeature",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 // The default Mojo ring buffer size, used to send the content body.
-static constexpr uint32_t kDefaultDataPipeAllocationSize = 512 * 1024;
+MIRACLE_PARAMETER_FOR_INT(GetDefaultDataPipeAllocationSize,
+                          kDefaultDataPipeAllocationSizeFeature,
+                          "DefaultDataPipeAllocationSize",
+                          512 * 1024)
+
 // The larger ring buffer size, used primarily for network::URLLoader loads.
 // This value was optimized via Finch: see crbug.com/1041006.
-static constexpr uint32_t kLargerDataPipeAllocationSize = 2 * 1024 * 1024;
+MIRACLE_PARAMETER_FOR_INT(GetLargerDataPipeAllocationSize,
+                          kLargerDataPipeAllocationSizeFeature,
+                          "LargerDataPipeAllocationSize",
+                          2 * 1024 * 1024)
+
+// The max buffer size of NetToMojoPendingBuffer. This buffer size should be
+// smaller than the mojo ring buffer size.
+MIRACLE_PARAMETER_FOR_INT(GetNetAdapterMaxBufSizeParam,
+                          kNetAdapterMaxBufSizeFeature,
+                          "NetAdapterMaxBufSize",
+                          64 * 1024)
 
 // The maximal number of bytes consumed in a loading task. When there are more
 // bytes in the data pipe, they will be consumed in following tasks. Setting too
 // small of a number will generate many tasks but setting a too large of a
 // number will lead to thread janks. This value was optimized via Finch:
 // see crbug.com/1041006.
-static constexpr uint32_t kMaxNumConsumedBytesInTask = 1024 * 1024;
+MIRACLE_PARAMETER_FOR_INT(GetMaxNumConsumedBytesInTask,
+                          kMaxNumConsumedBytesInTaskFeature,
+                          "MaxNumConsumedBytesInTask",
+                          1024 * 1024)
 
-// The smallest buffer size must be larger than the maximum MIME sniffing
-// chunk size. This is assumed several places in content/browser/loader.
-static_assert(kDefaultDataPipeAllocationSize < kLargerDataPipeAllocationSize);
-static_assert(kDefaultDataPipeAllocationSize >= net::kMaxBytesToSniff,
-              "Smallest data pipe size must be at least as large as a "
-              "MIME-type sniffing buffer.");
 }  // namespace
 
 // static
 uint32_t GetDataPipeDefaultAllocationSize(DataPipeAllocationSize option) {
+  // The smallest buffer size must be larger than the maximum MIME sniffing
+  // chunk size. This is assumed several places in content/browser/loader.
+  CHECK_LE(GetDefaultDataPipeAllocationSize(),
+           GetLargerDataPipeAllocationSize());
+  CHECK_GE(GetDefaultDataPipeAllocationSize(), net::kMaxBytesToSniff)
+      << "Smallest data pipe size must be at least as large as a "
+         "MIME-type sniffing buffer.";
+
 #if BUILDFLAG(IS_CHROMEOS)
   // TODO(crbug.com/1306998): ChromeOS experiences a much higher OOM crash
   // rate if the larger data pipe size is used.
-  return kDefaultDataPipeAllocationSize;
+  return GetDefaultDataPipeAllocationSize();
 #else
   // For low-memory devices, always use the (smaller) default buffer size.
   if (base::SysInfo::AmountOfPhysicalMemoryMB() <= 512)
-    return kDefaultDataPipeAllocationSize;
+    return GetDefaultDataPipeAllocationSize();
   switch (option) {
     case DataPipeAllocationSize::kDefaultSizeOnly:
-      return kDefaultDataPipeAllocationSize;
+      return GetDefaultDataPipeAllocationSize();
     case DataPipeAllocationSize::kLargerSizeIfPossible:
-      return kLargerDataPipeAllocationSize;
+      return GetLargerDataPipeAllocationSize();
   }
 #endif
 }
 
+uint32_t GetNetAdapterMaxBufSize() {
+  return GetNetAdapterMaxBufSizeParam();
+}
+
 // static
 uint32_t GetLoaderChunkSize() {
-  return kMaxNumConsumedBytesInTask;
+  return GetMaxNumConsumedBytesInTask();
 }
 
 // https://fetch.spec.whatwg.org/#cors-non-wildcard-request-header-name
@@ -322,14 +373,7 @@ BASE_FEATURE(kLocalNetworkAccessAllowPotentiallyTrustworthySameOrigin,
 // are allowed to access private insecure subresources with user's permission.
 BASE_FEATURE(kPrivateNetworkAccessPermissionPrompt,
              "PrivateNetworkAccessPermissionPrompt",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
-// Enables out-of-process system DNS resolution so getaddrinfo() never runs in
-// the network service sandbox. System DNS resolution will instead be brokered
-// out over Mojo, likely to run in the browser process.
-BASE_FEATURE(kOutOfProcessSystemDnsResolution,
-             "OutOfProcessSystemDnsResolution",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kAccessControlAllowMethodsInCORSPreflightSpecConformant,
              "AccessControlAllowMethodsInCORSPreflightSpecConformant",
@@ -339,11 +383,8 @@ BASE_FEATURE(kPrefetchNoVarySearch,
              "PrefetchNoVarySearch",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-#if BUILDFLAG(IS_ANDROID)
-BASE_FEATURE(kNetworkServiceEmptyOutOfProcess,
-             "NetworkServiceEmptyOutOfProcess",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-#endif
+const base::FeatureParam<bool> kPrefetchNoVarySearchShippedByDefault{
+    &kPrefetchNoVarySearch, "shipped_by_default", true};
 
 // Enables the backend of the compression dictionary transport feature.
 // When this feature is enabled, the following will happen:
@@ -354,7 +395,7 @@ BASE_FEATURE(kNetworkServiceEmptyOutOfProcess,
 //     decompresses the response body using the dictionary.
 BASE_FEATURE(kCompressionDictionaryTransportBackend,
              "CompressionDictionaryTransportBackend",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // When both this feature and the kCompressionDictionaryTransportBackend feature
 // are enabled, the following will happen:
@@ -370,10 +411,61 @@ BASE_FEATURE(kCompressionDictionaryTransport,
              "CompressionDictionaryTransport",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// When this feature is enabled, Chromium can use stored shared dictionaries
+// even when the connection is using HTTP/1 for non-localhost requests.
+BASE_FEATURE(kCompressionDictionaryTransportOverHttp1,
+             "CompressionDictionaryTransportOverHttp1",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+// When this feature is enabled, Chromium will use stored shared dictionaries
+// only if the request URL is a localhost URL or the transport layer is using a
+// certificate rooted at a standard CA root.
+BASE_FEATURE(kCompressionDictionaryTransportRequireKnownRootCert,
+             "CompressionDictionaryTransportRequireKnownRootCert",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 BASE_FEATURE(kVisibilityAwareResourceScheduler,
              "VisibilityAwareResourceScheduler",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(kSharedZstd, "SharedZstd", base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kSharedZstd, "SharedZstd", base::FEATURE_ENABLED_BY_DEFAULT);
+
+// This feature will permits de-duplicating cookie access details that are sent
+// to observers via OnCookiesAccessed.
+BASE_FEATURE(kCookieAccessDetailsNotificationDeDuping,
+             "CookieAccessDetailsNotificationDeDuping",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
+// This feature will reduce TransferSizeUpdated IPC from the network service.
+// When enabled, the network service will send the IPC only when DevTools is
+// attached or the request is for an ad request.
+BASE_FEATURE(kReduceTransferSizeUpdatedIPC,
+             "ReduceTransferSizeUpdatedIPC",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+// This feature allows skipping TPCD mitigation checks when the cookie access
+// is tagged as being used for advertising purposes. This means that cookies
+// will continue to be blocked for cookie accesses on ad requests even if the
+// 3PC mitigations would otherwise allow the access.
+BASE_FEATURE(kSkipTpcdMitigationsForAds,
+             "SkipTpcdMitigationsForAds",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+// Controls whether we ignore opener heuristic grants for 3PC accesses.
+const base::FeatureParam<bool> kSkipTpcdMitigationsForAdsHeuristics{
+    &kSkipTpcdMitigationsForAds, /*name=*/"SkipTpcdMitigationsForAdsHeuristics",
+    /*default_value=*/false};
+// Controls whether we ignore checks on the metadata allowlist for 3PC cookies.
+const base::FeatureParam<bool> kSkipTpcdMitigationsForAdsMetadata{
+    &kSkipTpcdMitigationsForAds, /*name=*/"SkipTpcdMitigationsForAdsMetadata",
+    /*default_value=*/false};
+// Controls whether we ignore checks on the deprecation trial for 3PC.
+const base::FeatureParam<bool> kSkipTpcdMitigationsForAdsTrial{
+    &kSkipTpcdMitigationsForAds, /*name=*/"SkipTpcdMitigationsForAdsSupport",
+    /*default_value=*/false};
+// Controls whether we ignore checks on the top-level deprecation trial for 3PC.
+const base::FeatureParam<bool> kSkipTpcdMitigationsForAdsTopLevelTrial{
+    &kSkipTpcdMitigationsForAds,
+    /*name=*/"SkipTpcdMitigationsForAdsTopLevelTrial",
+    /*default_value=*/false};
 
 }  // namespace network::features

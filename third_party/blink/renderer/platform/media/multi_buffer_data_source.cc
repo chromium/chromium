@@ -11,6 +11,7 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/location.h"
+#include "base/memory/raw_ptr.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/task/single_thread_task_runner.h"
 #include "media/base/media_log.h"
@@ -85,7 +86,7 @@ class MultiBufferDataSource::ReadOperation {
  private:
   const int64_t position_;
   const int size_;
-  uint8_t* data_;
+  raw_ptr<uint8_t> data_;
   media::DataSource::ReadCB callback_;
 };
 
@@ -131,7 +132,7 @@ MultiBufferDataSource::MultiBufferDataSource(
       preload_(AUTO),
       bitrate_(0),
       playback_rate_(0.0),
-      media_log_(media_log),
+      media_log_(media_log->Clone()),
       host_(host),
       downloading_cb_(std::move(downloading_cb)) {
   weak_ptr_ = weak_factory_.GetWeakPtr();
@@ -599,8 +600,16 @@ void MultiBufferDataSource::SetBitrateTask(int bitrate) {
 void MultiBufferDataSource::StartCallback() {
   DCHECK(render_task_runner_->BelongsToCurrentThread());
 
+  // TODO(scherkus): we shouldn't have to lock to signal host(), see
+  // http://crbug.com/113712 for details.
+  base::AutoLock auto_lock(lock_);
+  if (stop_signal_received_) {
+    return;
+  }
+
   if (!init_cb_) {
-    SetReader(nullptr);
+    // Can't call SetReader(nullptr) since we are holding the lock.
+    reader_.reset(nullptr);
     return;
   }
 
@@ -611,10 +620,7 @@ void MultiBufferDataSource::StartCallback() {
       (!AssumeFullyBuffered() || url_data_->length() != kPositionNotSpecified);
 
   if (success) {
-    {
-      base::AutoLock auto_lock(lock_);
-      total_bytes_ = url_data_->length();
-    }
+    total_bytes_ = url_data_->length();
     streaming_ =
         !AssumeFullyBuffered() && (total_bytes_ == kPositionNotSpecified ||
                                    !url_data_->range_supported());
@@ -622,14 +628,9 @@ void MultiBufferDataSource::StartCallback() {
     media_log_->SetProperty<media::MediaLogProperty::kTotalBytes>(total_bytes_);
     media_log_->SetProperty<media::MediaLogProperty::kIsStreaming>(streaming_);
   } else {
-    SetReader(nullptr);
+    // Can't call SetReader(nullptr) since we are holding the lock.
+    reader_.reset(nullptr);
   }
-
-  // TODO(scherkus): we shouldn't have to lock to signal host(), see
-  // http://crbug.com/113712 for details.
-  base::AutoLock auto_lock(lock_);
-  if (stop_signal_received_)
-    return;
 
   if (success) {
     if (total_bytes_ != kPositionNotSpecified) {

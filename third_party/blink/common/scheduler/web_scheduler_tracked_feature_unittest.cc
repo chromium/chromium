@@ -10,11 +10,10 @@ namespace blink {
 namespace scheduler {
 
 TEST(WebSchedulerTrackedFeatureTest, StringToFeature) {
-  ASSERT_EQ(WebSchedulerTrackedFeature::kWebSocket,
-            StringToFeature("websocket"));
+  ASSERT_EQ(WebSchedulerTrackedFeature::kPrinting, StringToFeature("printing"));
   ASSERT_EQ(WebSchedulerTrackedFeature::kDocumentLoaded,
-            StringToFeature("DocumentLoaded"));
-  ASSERT_EQ(absl::nullopt, StringToFeature("FeatureThatNeverExists"));
+            StringToFeature("document-loaded"));
+  ASSERT_EQ(std::nullopt, StringToFeature("FeatureThatNeverExists"));
 }
 
 TEST(WebSchedulerTrackedFeatureTest, ToEnumBitMasks) {

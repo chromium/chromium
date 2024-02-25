@@ -12,6 +12,7 @@ import android.text.TextUtils;
 import androidx.annotation.IntDef;
 import androidx.annotation.VisibleForTesting;
 
+import org.chromium.base.BuildInfo;
 import org.chromium.base.LocaleUtils;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.components.language.AndroidLanguageMetricsBridge;
@@ -37,8 +38,12 @@ public class GlobalAppLocaleController {
      * Do not reorder or remove items, only add new items before NUM_ENTRIES.
      * Keep in sync with LanguageUsage.UI.Android.OverrideLanguage.IsSystemLanguage from enums.xml.
      */
-    @IntDef({OverrideLanguageStatus.DIFFERENT, OverrideLanguageStatus.SAME_BASE,
-            OverrideLanguageStatus.EXACT_MATCH, OverrideLanguageStatus.NO_OVERRIDE})
+    @IntDef({
+        OverrideLanguageStatus.DIFFERENT,
+        OverrideLanguageStatus.SAME_BASE,
+        OverrideLanguageStatus.EXACT_MATCH,
+        OverrideLanguageStatus.NO_OVERRIDE
+    })
     @Retention(RetentionPolicy.SOURCE)
     @interface OverrideLanguageStatus {
         int DIFFERENT = 0;
@@ -66,8 +71,9 @@ public class GlobalAppLocaleController {
             mIsOverridden = false;
         } else {
             mOverrideLanguage = AppLocaleUtils.getAppLanguagePrefStartUp(base);
-            mIsOverridden = shouldOverrideAppLocale(
-                    mOverrideLanguage, LocaleUtils.toLanguageTag(mOriginalSystemLocale));
+            mIsOverridden =
+                    shouldOverrideAppLocale(
+                            mOverrideLanguage, LocaleUtils.toLanguageTag(mOriginalSystemLocale));
         }
         return mIsOverridden;
     }
@@ -113,6 +119,11 @@ public class GlobalAppLocaleController {
 
         Configuration config = getOverrideConfig(base);
         Resources resources = base.getResources();
+        // Resources#updateConfiguration() seems to reset densityDpi if it's not specified by the
+        // configuration, regardless of whether it's specified by the input DisplayMetrics.
+        if (BuildInfo.getInstance().isAutomotive) {
+            config.densityDpi = resources.getConfiguration().densityDpi;
+        }
         // Because of an Android bug with {@link Context#createConfigurationContext} the deprecated
         // method {@link Resources#updateConfiguration} is used. (crbug.com/1075390#c20).
         // TODO(crbug.com/1136096): Use #createConfigurationContext once that method is fixed.
@@ -148,8 +159,9 @@ public class GlobalAppLocaleController {
                 AppLocaleUtils.isFollowSystemLanguage(mOverrideLanguage) ? "" : mOverrideLanguage;
         AndroidLanguageMetricsBridge.reportAppOverrideLanguage(histogramLanguage);
 
-        int status = getOverrideVsSystemLanguageStatus(
-                mOverrideLanguage, LocaleUtils.toLanguageTag(mOriginalSystemLocale));
+        int status =
+                getOverrideVsSystemLanguageStatus(
+                        mOverrideLanguage, LocaleUtils.toLanguageTag(mOriginalSystemLocale));
         RecordHistogram.recordEnumeratedHistogram(
                 IS_SYSTEM_LANGUAGE_HISTOGRAM, status, OverrideLanguageStatus.NUM_ENTRIES);
     }

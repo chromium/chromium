@@ -8,6 +8,7 @@
 #include <wrl/client.h>
 #include <wrl/implements.h>
 
+#include <optional>
 #include <string>
 #include <utility>
 
@@ -32,13 +33,17 @@
 #include "chrome/updater/update_service.h"
 #include "chrome/updater/updater_version.h"
 #include "chrome/updater/util/win_util.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace updater {
 namespace {
 
 // Maximum string length for COM strings.
 constexpr size_t kMaxStringLen = 0x4000;  // 16KB.
+
+using IUpdaterCallbackPtr = Microsoft::WRL::ComPtr<IUpdaterCallback>;
+using IUpdaterInternalCallbackPtr =
+    Microsoft::WRL::ComPtr<IUpdaterInternalCallback>;
+using IUpdaterObserverPtr = Microsoft::WRL::ComPtr<IUpdaterObserver>;
 
 // Implements `IUpdaterAppState`. Initialized with an `UpdateService::AppState`.
 class UpdaterAppStateImpl : public IDispatchImpl<IUpdaterAppState> {
@@ -223,23 +228,29 @@ HRESULT UpdaterImpl::FetchPolicies(IUpdaterCallback* callback) {
   if (!callback) {
     return E_INVALIDARG;
   }
-  scoped_refptr<AppServerWin> com_server = GetAppServerWinInstance();
-  com_server->main_task_runner()->PostTask(
-      FROM_HERE,
+
+  base::OnceCallback<void(int)> updater_callback = base::BindPostTask(
+      base::ThreadPool::CreateSequencedTaskRunner(
+          {base::MayBlock(), base::TaskShutdownBehavior::BLOCK_SHUTDOWN}),
       base::BindOnce(
-          [](scoped_refptr<UpdateService> update_service,
-             base::OnceCallback<void(int)> result_callback) {
-            update_service->FetchPolicies(std::move(result_callback));
+          [](IUpdaterCallbackPtr callback, int result) {
+            HRESULT hr = callback->Run(result);
+            VLOG(2) << "IUpdaterImpl::FetchPolicies. "
+                    << "IUpdaterCallback::Run returned " << std::hex << hr;
           },
-          com_server->update_service(),
-          base::BindPostTask(
-              base::ThreadPool::CreateSequencedTaskRunner(
-                  {base::MayBlock(),
-                   base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN}),
-              base::BindOnce(
-                  [](Microsoft::WRL::ComPtr<IUpdaterCallback> callback,
-                     int result) { callback->Run(result); },
-                  Microsoft::WRL::ComPtr<IUpdaterCallback>(callback)))));
+          IUpdaterCallbackPtr(callback)));
+
+  AppServerWin::PostRpcTask(base::BindOnce(
+      [](base::OnceCallback<void(int)> updater_callback) {
+        scoped_refptr<UpdateService> update_service =
+            GetAppServerWinInstance()->update_service();
+        if (!update_service) {
+          std::move(updater_callback).Run(-1);
+          return;
+        }
+        update_service->FetchPolicies(std::move(updater_callback));
+      },
+      std::move(updater_callback)));
   return S_OK;
 }
 
@@ -255,76 +266,68 @@ HRESULT UpdaterImpl::RegisterApp(const wchar_t* app_id,
   }
 
   // Validates that string parameters are not longer than 16K characters.
-  absl::optional<RegistrationRequest> request =
+  std::optional<RegistrationRequest> request =
       [app_id, brand_code, brand_path, ap, version,
        existence_checker_path]() -> decltype(request) {
     for (const auto* str : {app_id, brand_code, brand_path, ap, version,
                             existence_checker_path}) {
       if (wcsnlen_s(str, kMaxStringLen) == kMaxStringLen) {
-        return absl::nullopt;
+        return std::nullopt;
       }
     }
 
     RegistrationRequest request;
     if (!app_id || !base::WideToUTF8(app_id, wcslen(app_id), &request.app_id)) {
-      return absl::nullopt;
+      return std::nullopt;
     }
     if (!brand_code || !base::WideToUTF8(brand_code, wcslen(brand_code),
                                          &request.brand_code)) {
-      return absl::nullopt;
+      return std::nullopt;
     }
     request.brand_path = base::FilePath(brand_path);
     if (!ap || !base::WideToUTF8(ap, wcslen(ap), &request.ap)) {
-      return absl::nullopt;
+      return std::nullopt;
     }
     std::string version_str;
     if (!version || !base::WideToUTF8(version, wcslen(version), &version_str)) {
-      return absl::nullopt;
+      return std::nullopt;
     }
     request.version = base::Version(version_str);
     if (!request.version.IsValid()) {
-      return absl::nullopt;
+      return std::nullopt;
     }
     request.existence_checker_path = base::FilePath(existence_checker_path);
 
     return request;
   }();
 
-  if (!request)
+  if (!request) {
     return E_INVALIDARG;
+  }
 
-  using IUpdaterCallbackPtr = Microsoft::WRL::ComPtr<IUpdaterCallback>;
-  scoped_refptr<AppServerWin> com_server = GetAppServerWinInstance();
-
-  // This task runner is responsible for sequencing the COM calls and callbacks.
-  auto task_runner = base::ThreadPool::CreateSequencedTaskRunner(
-      {base::MayBlock(), base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN});
-
-  com_server->main_task_runner()->PostTask(
-      FROM_HERE,
+  base::OnceCallback<void(int)> updater_callback = base::BindPostTask(
+      base::ThreadPool::CreateSequencedTaskRunner(
+          {base::MayBlock(), base::TaskShutdownBehavior::BLOCK_SHUTDOWN}),
       base::BindOnce(
-          [](scoped_refptr<UpdateService> update_service,
-             scoped_refptr<base::SequencedTaskRunner> task_runner,
-             const RegistrationRequest& request, IUpdaterCallbackPtr callback) {
-            update_service->RegisterApp(
-                request,
-                base::BindOnce(
-                    [](scoped_refptr<base::SequencedTaskRunner> task_runner,
-                       IUpdaterCallbackPtr callback, int result) {
-                      task_runner->PostTaskAndReplyWithResult(
-                          FROM_HERE,
-                          base::BindOnce(&IUpdaterCallback::Run, callback,
-                                         result),
-                          base::BindOnce([](HRESULT hr) {
-                            VLOG(2) << "UpdaterImpl::RegisterApp "
-                                    << "callback returned " << std::hex << hr;
-                          }));
-                    },
-                    task_runner, callback));
+          [](IUpdaterCallbackPtr callback, int result) {
+            HRESULT hr = callback->Run(result);
+            VLOG(2) << "IUpdaterImpl::RegisterApp. "
+                    << "IUpdaterCallback::Run returned " << std::hex << hr;
           },
-          com_server->update_service(), task_runner, *request,
-          IUpdaterCallbackPtr(callback)));
+          Microsoft::WRL::ComPtr<IUpdaterCallback>(callback)));
 
+  AppServerWin::PostRpcTask(base::BindOnce(
+      [](const RegistrationRequest& request,
+         base::OnceCallback<void(int)> updater_callback) {
+        scoped_refptr<UpdateService> update_service =
+            GetAppServerWinInstance()->update_service();
+        if (!update_service) {
+          std::move(updater_callback).Run(-1);
+          return;
+        }
+        update_service->RegisterApp(request, std::move(updater_callback));
+      },
+      *request, std::move(updater_callback)));
   return S_OK;
 }
 
@@ -335,22 +338,22 @@ HRESULT UpdaterImpl::RunPeriodicTasks(IUpdaterCallback* callback) {
   if (!callback) {
     return E_INVALIDARG;
   }
-  scoped_refptr<AppServerWin> com_server = GetAppServerWinInstance();
-  com_server->main_task_runner()->PostTask(
-      FROM_HERE,
-      base::BindOnce(
-          [](scoped_refptr<UpdateService> update_service,
-             base::OnceClosure callback_closure) {
-            update_service->RunPeriodicTasks(std::move(callback_closure));
-          },
-          com_server->update_service(),
-          base::BindPostTask(
-              base::ThreadPool::CreateSequencedTaskRunner(
-                  {base::MayBlock(),
-                   base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN}),
-              base::BindOnce(base::IgnoreResult(&IUpdaterCallback::Run),
-                             Microsoft::WRL::ComPtr<IUpdaterCallback>(callback),
-                             0))));
+  AppServerWin::PostRpcTask(base::BindOnce(
+      [](base::OnceClosure callback_closure) {
+        scoped_refptr<UpdateService> update_service =
+            GetAppServerWinInstance()->update_service();
+        if (!update_service) {
+          std::move(callback_closure).Run();
+          return;
+        }
+        update_service->RunPeriodicTasks(std::move(callback_closure));
+      },
+      base::BindPostTask(
+          base::ThreadPool::CreateSequencedTaskRunner(
+              {base::MayBlock(), base::TaskShutdownBehavior::BLOCK_SHUTDOWN}),
+          base::BindOnce(base::IgnoreResult(&IUpdaterCallback::Run),
+                         Microsoft::WRL::ComPtr<IUpdaterCallback>(callback),
+                         0))));
   return S_OK;
 }
 
@@ -398,7 +401,7 @@ class StateChangeCallbackFilter {
   Microsoft::WRL::ComPtr<IUpdaterObserver> observer_;
 
   // Most recent download progress value the client has been notified about.
-  absl::optional<int> progress_seen_;
+  std::optional<int> progress_seen_;
 };
 
 }  // namespace
@@ -412,47 +415,47 @@ HRESULT UpdaterImpl::CheckForUpdate(const wchar_t* app_id,
   }
 
   auto task_runner = base::ThreadPool::CreateSequencedTaskRunner(
-      {base::MayBlock(), base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN});
-
-  using IUpdaterObserverPtr = Microsoft::WRL::ComPtr<IUpdaterObserver>;
-  auto observer_local = IUpdaterObserverPtr(observer);
-
-  scoped_refptr<AppServerWin> com_server = GetAppServerWinInstance();
-  com_server->main_task_runner()->PostTask(
-      FROM_HERE,
+      {base::MayBlock(), base::TaskShutdownBehavior::BLOCK_SHUTDOWN});
+  UpdateService::StateChangeCallback state_change_callback =
+      base::BindRepeating(
+          &StateChangeCallbackFilter::OnStateChange,
+          base::Owned(new StateChangeCallbackFilter(task_runner, observer)));
+  UpdateService::Callback complete_callback = base::BindPostTask(
+      task_runner,
       base::BindOnce(
-          [](scoped_refptr<UpdateService> update_service,
-             scoped_refptr<base::SequencedTaskRunner> task_runner,
-             const std::string& app_id, UpdateService::Priority priority,
-             bool same_version_update_allowed, IUpdaterObserverPtr observer) {
-            update_service->CheckForUpdate(
-                app_id, priority,
-                same_version_update_allowed
-                    ? UpdateService::PolicySameVersionUpdate::kAllowed
-                    : UpdateService::PolicySameVersionUpdate::kNotAllowed,
-                base::BindRepeating(&StateChangeCallbackFilter::OnStateChange,
-                                    base::Owned(new StateChangeCallbackFilter(
-                                        task_runner, observer))),
-                base::BindOnce(
-                    [](scoped_refptr<base::SequencedTaskRunner> task_runner,
-                       IUpdaterObserverPtr observer,
-                       UpdateService::Result result) {
-                      task_runner->PostTaskAndReplyWithResult(
-                          FROM_HERE,
-                          base::BindOnce(
-                              &IUpdaterObserver::OnComplete, observer,
-                              MakeComObjectOrCrash<CompleteStatusImpl>(
-                                  static_cast<int>(result), L"")),
-                          base::BindOnce([](HRESULT hr) {
-                            VLOG(2) << "UpdaterImpl::Update "
-                                    << "callback returned " << std::hex << hr;
-                          }));
-                    },
-                    task_runner, observer));
+          [](IUpdaterObserverPtr observer, UpdateService::Result result) {
+            HRESULT hr =
+                observer->OnComplete(MakeComObjectOrCrash<CompleteStatusImpl>(
+                                         static_cast<int>(result), L"")
+                                         .Get());
+            VLOG(2) << "IUpdaterImpl::CheckForUpdate. "
+                    << "IUpdaterObserver::OnComplete returned " << std::hex
+                    << hr;
           },
-          com_server->update_service(), task_runner, base::WideToUTF8(app_id),
-          static_cast<UpdateService::Priority>(priority),
-          same_version_update_allowed, observer_local));
+          IUpdaterObserverPtr(observer)));
+
+  AppServerWin::PostRpcTask(base::BindOnce(
+      [](const std::string& app_id, UpdateService::Priority priority,
+         bool same_version_update_allowed,
+         UpdateService::StateChangeCallback state_change_callback,
+         UpdateService::Callback complete_callback) {
+        scoped_refptr<UpdateService> update_service =
+            GetAppServerWinInstance()->update_service();
+        if (!update_service) {
+          std::move(complete_callback)
+              .Run(UpdateService::Result::kServiceStopped);
+          return;
+        }
+        update_service->CheckForUpdate(
+            app_id, priority,
+            same_version_update_allowed
+                ? UpdateService::PolicySameVersionUpdate::kAllowed
+                : UpdateService::PolicySameVersionUpdate::kNotAllowed,
+            std::move(state_change_callback), std::move(complete_callback));
+      },
+      base::WideToUTF8(app_id), static_cast<UpdateService::Priority>(priority),
+      same_version_update_allowed, std::move(state_change_callback),
+      std::move(complete_callback)));
   return S_OK;
 }
 
@@ -471,53 +474,49 @@ HRESULT UpdaterImpl::Update(const wchar_t* app_id,
     return E_INVALIDARG;
   }
 
-  // This task runner is responsible for sequencing the callbacks posted
-  // by the `UpdateService` and calling the outbound COM functions to
-  // notify the client about state changes in the `UpdateService`.
   auto task_runner = base::ThreadPool::CreateSequencedTaskRunner(
-      {base::MayBlock(), base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN});
-
-  using IUpdaterObserverPtr = Microsoft::WRL::ComPtr<IUpdaterObserver>;
-  auto observer_local = IUpdaterObserverPtr(observer);
-
-  scoped_refptr<AppServerWin> com_server = GetAppServerWinInstance();
-  com_server->main_task_runner()->PostTask(
-      FROM_HERE,
+      {base::MayBlock(), base::TaskShutdownBehavior::BLOCK_SHUTDOWN});
+  UpdateService::StateChangeCallback state_change_callback =
+      base::BindRepeating(
+          &StateChangeCallbackFilter::OnStateChange,
+          base::Owned(new StateChangeCallbackFilter(task_runner, observer)));
+  UpdateService::Callback complete_callback = base::BindPostTask(
+      task_runner,
       base::BindOnce(
-          [](scoped_refptr<UpdateService> update_service,
-             scoped_refptr<base::SequencedTaskRunner> task_runner,
-             const std::string& app_id, const std::string& install_data_index,
-             UpdateService::Priority priority, bool same_version_update_allowed,
-             IUpdaterObserverPtr observer) {
-            update_service->Update(
-                app_id, install_data_index, priority,
-                same_version_update_allowed
-                    ? UpdateService::PolicySameVersionUpdate::kAllowed
-                    : UpdateService::PolicySameVersionUpdate::kNotAllowed,
-                base::BindRepeating(&StateChangeCallbackFilter::OnStateChange,
-                                    base::Owned(new StateChangeCallbackFilter(
-                                        task_runner, observer))),
-                base::BindOnce(
-                    [](scoped_refptr<base::SequencedTaskRunner> task_runner,
-                       IUpdaterObserverPtr observer,
-                       UpdateService::Result result) {
-                      task_runner->PostTaskAndReplyWithResult(
-                          FROM_HERE,
-                          base::BindOnce(
-                              &IUpdaterObserver::OnComplete, observer,
-                              MakeComObjectOrCrash<CompleteStatusImpl>(
-                                  static_cast<int>(result), L"")),
-                          base::BindOnce([](HRESULT hr) {
-                            VLOG(2) << "UpdaterImpl::Update "
-                                    << "callback returned " << std::hex << hr;
-                          }));
-                    },
-                    task_runner, observer));
+          [](IUpdaterObserverPtr observer, UpdateService::Result result) {
+            HRESULT hr =
+                observer->OnComplete(MakeComObjectOrCrash<CompleteStatusImpl>(
+                                         static_cast<int>(result), L"")
+                                         .Get());
+            VLOG(2) << "IUpdaterImpl::Update. "
+                    << "IUpdaterObserver::OnComplete returned " << std::hex
+                    << hr;
           },
-          com_server->update_service(), task_runner, base::WideToUTF8(app_id),
-          base::WideToUTF8(install_data_index),
-          static_cast<UpdateService::Priority>(priority),
-          same_version_update_allowed, observer_local));
+          IUpdaterObserverPtr(observer)));
+
+  AppServerWin::PostRpcTask(base::BindOnce(
+      [](const std::string& app_id, const std::string& install_data_index,
+         UpdateService::Priority priority, bool same_version_update_allowed,
+         UpdateService::StateChangeCallback state_change_callback,
+         UpdateService::Callback complete_callback) {
+        scoped_refptr<UpdateService> update_service =
+            GetAppServerWinInstance()->update_service();
+        if (!update_service) {
+          std::move(complete_callback)
+              .Run(UpdateService::Result::kServiceStopped);
+          return;
+        }
+        update_service->Update(
+            app_id, install_data_index, priority,
+            same_version_update_allowed
+                ? UpdateService::PolicySameVersionUpdate::kAllowed
+                : UpdateService::PolicySameVersionUpdate::kNotAllowed,
+            std::move(state_change_callback), std::move(complete_callback));
+      },
+      base::WideToUTF8(app_id), base::WideToUTF8(install_data_index),
+      static_cast<UpdateService::Priority>(priority),
+      same_version_update_allowed, std::move(state_change_callback),
+      std::move(complete_callback)));
   return S_OK;
 }
 
@@ -527,41 +526,34 @@ HRESULT UpdaterImpl::UpdateAll(IUpdaterObserver* observer) {
     return E_INVALIDARG;
   }
 
-  using IUpdaterObserverPtr = Microsoft::WRL::ComPtr<IUpdaterObserver>;
-  scoped_refptr<AppServerWin> com_server = GetAppServerWinInstance();
-
-  auto task_runner = base::ThreadPool::CreateSequencedTaskRunner(
-      {base::MayBlock(), base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN});
-
-  com_server->main_task_runner()->PostTask(
-      FROM_HERE,
+  UpdateService::Callback complete_callback = base::BindPostTask(
+      base::ThreadPool::CreateSequencedTaskRunner(
+          {base::MayBlock(), base::TaskShutdownBehavior::BLOCK_SHUTDOWN}),
       base::BindOnce(
-          [](scoped_refptr<UpdateService> update_service,
-             scoped_refptr<base::SequencedTaskRunner> task_runner,
-             IUpdaterObserverPtr observer) {
-            update_service->UpdateAll(
-                base::DoNothing(),
-                base::BindOnce(
-                    [](scoped_refptr<base::SequencedTaskRunner> task_runner,
-                       IUpdaterObserverPtr observer,
-                       UpdateService::Result result) {
-                      // The COM RPC outgoing call blocks and it must be posted
-                      // through the thread pool.
-                      task_runner->PostTaskAndReplyWithResult(
-                          FROM_HERE,
-                          base::BindOnce(
-                              &IUpdaterObserver::OnComplete, observer,
-                              MakeComObjectOrCrash<CompleteStatusImpl>(
-                                  static_cast<int>(result), L"")),
-                          base::BindOnce([](HRESULT hr) {
-                            VLOG(2) << "UpdaterImpl::UpdateAll "
-                                    << "callback returned " << std::hex << hr;
-                          }));
-                    },
-                    task_runner, observer));
+          [](IUpdaterObserverPtr observer, UpdateService::Result result) {
+            HRESULT hr =
+                observer->OnComplete(MakeComObjectOrCrash<CompleteStatusImpl>(
+                                         static_cast<int>(result), L"")
+                                         .Get());
+            VLOG(2) << "IUpdaterImpl::UpdateAll. "
+                    << "IUpdaterObserver::OnComplete returned " << std::hex
+                    << hr;
           },
-          com_server->update_service(), task_runner,
           IUpdaterObserverPtr(observer)));
+
+  AppServerWin::PostRpcTask(base::BindOnce(
+      [](UpdateService::Callback complete_callback) {
+        scoped_refptr<UpdateService> update_service =
+            GetAppServerWinInstance()->update_service();
+        if (!update_service) {
+          std::move(complete_callback)
+              .Run(UpdateService::Result::kServiceStopped);
+          return;
+        }
+        update_service->UpdateAll(base::DoNothing(),
+                                  std::move(complete_callback));
+      },
+      std::move(complete_callback)));
   return S_OK;
 }
 
@@ -580,90 +572,88 @@ HRESULT UpdaterImpl::Install(const wchar_t* app_id,
   }
 
   // Validates that string parameters are not longer than 16K characters.
-  absl::optional<RegistrationRequest> request =
+  std::optional<RegistrationRequest> request =
       [app_id, brand_code, brand_path, ap, version, existence_checker_path,
        client_install_data, install_data_index]() -> decltype(request) {
     for (const auto* str :
          {app_id, brand_code, brand_path, ap, version, existence_checker_path,
           client_install_data, install_data_index}) {
       if (wcsnlen_s(str, kMaxStringLen) == kMaxStringLen) {
-        return absl::nullopt;
+        return std::nullopt;
       }
     }
 
     RegistrationRequest request;
     if (!app_id || !base::WideToUTF8(app_id, wcslen(app_id), &request.app_id)) {
-      return absl::nullopt;
+      return std::nullopt;
     }
     if (!brand_code || !base::WideToUTF8(brand_code, wcslen(brand_code),
                                          &request.brand_code)) {
-      return absl::nullopt;
+      return std::nullopt;
     }
     request.brand_path = base::FilePath(brand_path);
     if (!ap || !base::WideToUTF8(ap, wcslen(ap), &request.ap)) {
-      return absl::nullopt;
+      return std::nullopt;
     }
     std::string version_str;
     if (!version || !base::WideToUTF8(version, wcslen(version), &version_str)) {
-      return absl::nullopt;
+      return std::nullopt;
     }
     request.version = base::Version(version_str);
     if (!request.version.IsValid()) {
-      return absl::nullopt;
+      return std::nullopt;
     }
     request.existence_checker_path = base::FilePath(existence_checker_path);
 
     return request;
   }();
 
-  if (!request)
+  if (!request) {
     return E_INVALIDARG;
+  }
 
-  // This task runner is responsible for sequencing the callbacks posted
-  // by the `UpdateService` and calling the outbound COM functions to
-  // notify the client about state changes in the `UpdateService`.
   auto task_runner = base::ThreadPool::CreateSequencedTaskRunner(
-      {base::MayBlock(), base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN});
-
-  using IUpdaterObserverPtr = Microsoft::WRL::ComPtr<IUpdaterObserver>;
-  auto observer_local = IUpdaterObserverPtr(observer);
-
-  scoped_refptr<AppServerWin> com_server = GetAppServerWinInstance();
-  com_server->main_task_runner()->PostTask(
-      FROM_HERE,
+      {base::MayBlock(), base::TaskShutdownBehavior::BLOCK_SHUTDOWN});
+  UpdateService::StateChangeCallback state_change_callback =
+      base::BindRepeating(
+          &StateChangeCallbackFilter::OnStateChange,
+          base::Owned(new StateChangeCallbackFilter(task_runner, observer)));
+  UpdateService::Callback complete_callback = base::BindPostTask(
+      task_runner,
       base::BindOnce(
-          [](scoped_refptr<UpdateService> update_service,
-             scoped_refptr<base::SequencedTaskRunner> task_runner,
-             const RegistrationRequest& request,
-             const std::string& client_install_data,
-             const std::string& install_data_index,
-             UpdateService::Priority priority, IUpdaterObserverPtr observer) {
-            update_service->Install(
-                request, client_install_data, install_data_index, priority,
-                base::BindRepeating(&StateChangeCallbackFilter::OnStateChange,
-                                    base::Owned(new StateChangeCallbackFilter(
-                                        task_runner, observer))),
-                base::BindOnce(
-                    [](scoped_refptr<base::SequencedTaskRunner> task_runner,
-                       IUpdaterObserverPtr observer,
-                       UpdateService::Result result) {
-                      task_runner->PostTaskAndReplyWithResult(
-                          FROM_HERE,
-                          base::BindOnce(
-                              &IUpdaterObserver::OnComplete, observer,
-                              MakeComObjectOrCrash<CompleteStatusImpl>(
-                                  static_cast<int>(result), L"")),
-                          base::BindOnce([](HRESULT hr) {
-                            VLOG(1) << "UpdaterImpl::Install "
-                                    << "callback returned " << std::hex << hr;
-                          }));
-                    },
-                    task_runner, observer));
+          [](IUpdaterObserverPtr observer, UpdateService::Result result) {
+            HRESULT hr =
+                observer->OnComplete(MakeComObjectOrCrash<CompleteStatusImpl>(
+                                         static_cast<int>(result), L"")
+                                         .Get());
+            VLOG(2) << "IUpdaterImpl::Install. "
+                    << "IUpdaterObserver::OnComplete returned " << std::hex
+                    << hr;
           },
-          com_server->update_service(), task_runner, *request,
-          base::WideToUTF8(client_install_data),
-          base::WideToUTF8(install_data_index),
-          static_cast<UpdateService::Priority>(priority), observer_local));
+          IUpdaterObserverPtr(observer)));
+
+  AppServerWin::PostRpcTask(base::BindOnce(
+      [](const RegistrationRequest& request,
+         const std::string& client_install_data,
+         const std::string& install_data_index,
+         UpdateService::Priority priority,
+         UpdateService::StateChangeCallback state_change_callback,
+         UpdateService::Callback complete_callback) {
+        scoped_refptr<UpdateService> update_service =
+            GetAppServerWinInstance()->update_service();
+        if (!update_service) {
+          std::move(complete_callback)
+              .Run(UpdateService::Result::kServiceStopped);
+          return;
+        }
+        update_service->Install(
+            request, client_install_data, install_data_index, priority,
+            std::move(state_change_callback), std::move(complete_callback));
+      },
+      *request, base::WideToUTF8(client_install_data),
+      base::WideToUTF8(install_data_index),
+      static_cast<UpdateService::Priority>(priority),
+      std::move(state_change_callback), std::move(complete_callback)));
   return S_OK;
 }
 
@@ -673,12 +663,16 @@ HRESULT UpdaterImpl::CancelInstalls(const wchar_t* app_id) {
       !base::WideToUTF8(app_id, wcslen(app_id), &app_id_str)) {
     return E_INVALIDARG;
   }
-
-  scoped_refptr<AppServerWin> com_server = GetAppServerWinInstance();
-  com_server->main_task_runner()->PostTask(
-      FROM_HERE, base::BindOnce(&UpdateService::CancelInstalls,
-                                com_server->update_service(), app_id_str));
-
+  AppServerWin::PostRpcTask(base::BindOnce(
+      [](const std::string& app_id_str) {
+        scoped_refptr<UpdateService> update_service =
+            GetAppServerWinInstance()->update_service();
+        if (!update_service) {
+          return;
+        }
+        update_service->CancelInstalls(app_id_str);
+      },
+      app_id_str));
   return S_OK;
 }
 
@@ -729,49 +723,47 @@ HRESULT UpdaterImpl::RunInstaller(const wchar_t* app_id,
     return E_INVALIDARG;
   }
 
-  using IUpdaterObserverPtr = Microsoft::WRL::ComPtr<IUpdaterObserver>;
-  scoped_refptr<AppServerWin> com_server = GetAppServerWinInstance();
-
-  // This task runner is responsible for sequencing the COM calls and callbacks.
   auto task_runner = base::ThreadPool::CreateSequencedTaskRunner(
-      {base::MayBlock(), base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN});
-
-  com_server->main_task_runner()->PostTask(
-      FROM_HERE,
+      {base::MayBlock(), base::TaskShutdownBehavior::BLOCK_SHUTDOWN});
+  UpdateService::StateChangeCallback state_change_callback =
+      base::BindRepeating(
+          &StateChangeCallbackFilter::OnStateChange,
+          base::Owned(new StateChangeCallbackFilter(task_runner, observer)));
+  UpdateService::Callback complete_callback = base::BindPostTask(
+      task_runner,
       base::BindOnce(
-          [](scoped_refptr<UpdateService> update_service,
-             scoped_refptr<base::SequencedTaskRunner> task_runner,
-             const std::string& app_id, const base::FilePath& installer_path,
-             const std::string& install_args, const std::string& install_data,
-             const std::string& install_settings,
-             IUpdaterObserverPtr observer) {
-            update_service->RunInstaller(
-                app_id, installer_path, install_args, install_data,
-                install_settings,
-                base::BindRepeating(&StateChangeCallbackFilter::OnStateChange,
-                                    base::Owned(new StateChangeCallbackFilter(
-                                        task_runner, observer))),
-                base::BindOnce(
-                    [](scoped_refptr<base::SequencedTaskRunner> task_runner,
-                       IUpdaterObserverPtr observer,
-                       const UpdateService::Result result) {
-                      task_runner->PostTaskAndReplyWithResult(
-                          FROM_HERE,
-                          base::BindOnce(
-                              &IUpdaterObserver::OnComplete, observer,
-                              MakeComObjectOrCrash<CompleteStatusImpl>(
-                                  static_cast<int>(result), L"")),
-                          base::BindOnce([](HRESULT hr) {
-                            VLOG(2) << "UpdaterImpl::RunInstaller "
-                                    << "callback returned " << std::hex << hr;
-                          }));
-                    },
-                    task_runner, observer));
+          [](IUpdaterObserverPtr observer, UpdateService::Result result) {
+            HRESULT hr =
+                observer->OnComplete(MakeComObjectOrCrash<CompleteStatusImpl>(
+                                         static_cast<int>(result), L"")
+                                         .Get());
+            VLOG(2) << "IUpdaterImpl::RunInstaller. "
+                    << "IUpdaterObserver::OnComplete returned " << std::hex
+                    << hr;
           },
-          com_server->update_service(), task_runner, app_id_str,
-          base::FilePath(installer_path), install_args_str, install_data_str,
-          install_settings_str, IUpdaterObserverPtr(observer)));
+          IUpdaterObserverPtr(observer)));
 
+  AppServerWin::PostRpcTask(base::BindOnce(
+      [](const std::string& app_id, const base::FilePath& installer_path,
+         const std::string& install_args, const std::string& install_data,
+         const std::string& install_settings,
+         UpdateService::StateChangeCallback state_change_callback,
+         UpdateService::Callback complete_callback) {
+        scoped_refptr<UpdateService> update_service =
+            GetAppServerWinInstance()->update_service();
+        if (!update_service) {
+          std::move(complete_callback)
+              .Run(UpdateService::Result::kServiceStopped);
+          return;
+        }
+        update_service->RunInstaller(app_id, installer_path, install_args,
+                                     install_data, install_settings,
+                                     std::move(state_change_callback),
+                                     std::move(complete_callback));
+      },
+      app_id_str, base::FilePath(installer_path), install_args_str,
+      install_data_str, install_settings_str, std::move(state_change_callback),
+      std::move(complete_callback)));
   return S_OK;
 }
 
@@ -779,45 +771,43 @@ HRESULT UpdaterImpl::GetAppStates(IUpdaterAppStatesCallback* callback) {
   if (!callback) {
     return E_INVALIDARG;
   }
-  scoped_refptr<AppServerWin> com_server = GetAppServerWinInstance();
-  com_server->main_task_runner()->PostTask(
-      FROM_HERE,
-      base::BindOnce(
-          [](scoped_refptr<UpdateService> update_service,
-             base::OnceCallback<void(
-                 const std::vector<UpdateService::AppState>&)>
-                 result_callback) {
-            update_service->GetAppStates(std::move(result_callback));
-          },
-          com_server->update_service(),
-          base::BindPostTask(
-              base::ThreadPool::CreateSequencedTaskRunner(
-                  {base::MayBlock(),
-                   base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN}),
-              base::BindOnce(
-                  [](Microsoft::WRL::ComPtr<IUpdaterAppStatesCallback> callback,
-                     const std::vector<UpdateService::AppState>& app_states) {
-                    // Converts `app_states` into a `SAFEARRAY` of `IDispatch`
-                    // and calls `IUpdaterAppStatesCallback::Run` with the
-                    // resulting `VARIANT`.
-                    base::win::VariantVector updater_app_states;
 
-                    for (const auto& app_state : app_states) {
-                      Microsoft::WRL::ComPtr<IDispatch> dispatch;
-                      CHECK(SUCCEEDED(
-                          MakeAndInitializeComObject<UpdaterAppStateImpl>(
-                              dispatch, app_state)));
-
-                      updater_app_states.Insert<VT_DISPATCH>(dispatch.Get());
-                    }
-
-                    base::win::ScopedVariant variant;
-                    variant.Reset(
-                        updater_app_states.ReleaseAsSafearrayVariant());
-                    callback->Run(variant);
-                  },
-                  Microsoft::WRL::ComPtr<IUpdaterAppStatesCallback>(
-                      callback)))));
+  base::OnceCallback<void(const std::vector<UpdateService::AppState>&)>
+      get_app_states_callback = base::BindPostTask(
+          base::ThreadPool::CreateSequencedTaskRunner(
+              {base::MayBlock(), base::TaskShutdownBehavior::BLOCK_SHUTDOWN}),
+          base::BindOnce(
+              [](Microsoft::WRL::ComPtr<IUpdaterAppStatesCallback> callback,
+                 const std::vector<UpdateService::AppState>& app_states) {
+                // Converts `app_states` into a `SAFEARRAY` of `IDispatch`
+                // and calls `IUpdaterAppStatesCallback::Run` with the
+                // resulting `VARIANT`.
+                base::win::VariantVector updater_app_states;
+                for (const auto& app_state : app_states) {
+                  Microsoft::WRL::ComPtr<IDispatch> dispatch;
+                  CHECK(
+                      SUCCEEDED(MakeAndInitializeComObject<UpdaterAppStateImpl>(
+                          dispatch, app_state)));
+                  updater_app_states.Insert<VT_DISPATCH>(dispatch.Get());
+                }
+                base::win::ScopedVariant variant;
+                variant.Reset(updater_app_states.ReleaseAsSafearrayVariant());
+                callback->Run(variant);
+              },
+              Microsoft::WRL::ComPtr<IUpdaterAppStatesCallback>(callback)));
+  AppServerWin::PostRpcTask(base::BindOnce(
+      [](base::OnceCallback<void(const std::vector<UpdateService::AppState>&)>
+             get_app_states_callback) {
+        scoped_refptr<UpdateService> update_service =
+            GetAppServerWinInstance()->update_service();
+        if (!update_service) {
+          std::move(get_app_states_callback)
+              .Run(std::vector<UpdateService::AppState>());
+          return;
+        }
+        update_service->GetAppStates(std::move(get_app_states_callback));
+      },
+      std::move(get_app_states_callback)));
   return S_OK;
 }
 
@@ -831,35 +821,29 @@ HRESULT UpdaterInternalImpl::Run(IUpdaterInternalCallback* callback) {
     return E_INVALIDARG;
   }
 
-  using IUpdaterInternalCallbackPtr =
-      Microsoft::WRL::ComPtr<IUpdaterInternalCallback>;
-  scoped_refptr<AppServerWin> com_server = GetAppServerWinInstance();
-
-  auto task_runner = base::ThreadPool::CreateSequencedTaskRunner(
-      {base::MayBlock(), base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN});
-
-  com_server->main_task_runner()->PostTask(
-      FROM_HERE,
+  base::OnceClosure updater_internal_callback = base::BindPostTask(
+      base::ThreadPool::CreateSequencedTaskRunner(
+          {base::MayBlock(), base::TaskShutdownBehavior::BLOCK_SHUTDOWN}),
       base::BindOnce(
-          [](scoped_refptr<UpdateServiceInternal> update_service_internal,
-             scoped_refptr<base::SequencedTaskRunner> task_runner,
-             IUpdaterInternalCallbackPtr callback) {
-            update_service_internal->Run(base::BindOnce(
-                [](scoped_refptr<base::SequencedTaskRunner> task_runner,
-                   IUpdaterInternalCallbackPtr callback) {
-                  task_runner->PostTaskAndReplyWithResult(
-                      FROM_HERE,
-                      base::BindOnce(&IUpdaterInternalCallback::Run, callback,
-                                     0),
-                      base::BindOnce([](HRESULT hr) {
-                        VLOG(2) << "UpdaterInternalImpl::Run "
-                                << "callback returned " << std::hex << hr;
-                      }));
-                },
-                task_runner, callback));
+          [](IUpdaterInternalCallbackPtr callback) {
+            HRESULT hr = callback->Run(0);
+            VLOG(2) << "UpdaterInternalImpl::Run. "
+                    << "IUpdaterInternalCallback::Run returned " << std::hex
+                    << hr;
           },
-          com_server->update_service_internal(), task_runner,
           IUpdaterInternalCallbackPtr(callback)));
+
+  AppServerWin::PostRpcTask(base::BindOnce(
+      [](base::OnceClosure updater_internal_callback) {
+        scoped_refptr<UpdateServiceInternal> update_service_internal =
+            GetAppServerWinInstance()->update_service_internal();
+        if (!update_service_internal) {
+          std::move(updater_internal_callback).Run();
+          return;
+        }
+        update_service_internal->Run(std::move(updater_internal_callback));
+      },
+      std::move(updater_internal_callback)));
   return S_OK;
 }
 
@@ -868,35 +852,29 @@ HRESULT UpdaterInternalImpl::Hello(IUpdaterInternalCallback* callback) {
     return E_INVALIDARG;
   }
 
-  using IUpdaterInternalCallbackPtr =
-      Microsoft::WRL::ComPtr<IUpdaterInternalCallback>;
-  scoped_refptr<AppServerWin> com_server = GetAppServerWinInstance();
-
-  auto task_runner = base::ThreadPool::CreateSequencedTaskRunner(
-      {base::MayBlock(), base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN});
-
-  com_server->main_task_runner()->PostTask(
-      FROM_HERE,
+  base::OnceClosure updater_internal_callback = base::BindPostTask(
+      base::ThreadPool::CreateSequencedTaskRunner(
+          {base::MayBlock(), base::TaskShutdownBehavior::BLOCK_SHUTDOWN}),
       base::BindOnce(
-          [](scoped_refptr<UpdateServiceInternal> update_service_internal,
-             scoped_refptr<base::SequencedTaskRunner> task_runner,
-             IUpdaterInternalCallbackPtr callback) {
-            update_service_internal->Hello(base::BindOnce(
-                [](scoped_refptr<base::SequencedTaskRunner> task_runner,
-                   IUpdaterInternalCallbackPtr callback) {
-                  task_runner->PostTaskAndReplyWithResult(
-                      FROM_HERE,
-                      base::BindOnce(&IUpdaterInternalCallback::Run, callback,
-                                     0),
-                      base::BindOnce([](HRESULT hr) {
-                        VLOG(2) << "UpdaterInternalImpl::Hello "
-                                << "callback returned " << std::hex << hr;
-                      }));
-                },
-                task_runner, callback));
+          [](IUpdaterInternalCallbackPtr callback) {
+            HRESULT hr = callback->Run(0);
+            VLOG(2) << "UpdaterInternalImpl::Hello. "
+                    << "IUpdaterInternalCallback::Run returned " << std::hex
+                    << hr;
           },
-          com_server->update_service_internal(), task_runner,
           IUpdaterInternalCallbackPtr(callback)));
+
+  AppServerWin::PostRpcTask(base::BindOnce(
+      [](base::OnceClosure updater_internal_callback) {
+        scoped_refptr<UpdateServiceInternal> update_service_internal =
+            GetAppServerWinInstance()->update_service_internal();
+        if (!update_service_internal) {
+          std::move(updater_internal_callback).Run();
+          return;
+        }
+        update_service_internal->Hello(std::move(updater_internal_callback));
+      },
+      std::move(updater_internal_callback)));
   return S_OK;
 }
 

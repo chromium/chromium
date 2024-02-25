@@ -1,4 +1,4 @@
-(async function (testRunner) {
+(async function(/** @type {import('test_runner').TestRunner} */ testRunner) {
   const { session, dp } = await testRunner.startURL('resources/page-with-oopif-with-fenced-frame.html',
     'Tests that auto-attach of fenced frame inside oopif works correctly');
   await dp.Page.enable();

@@ -13,33 +13,32 @@
 #import "components/omnibox/common/omnibox_features.h"
 #import "components/search_engines/template_url_service.h"
 #import "ios/chrome/browser/autocomplete/model/remote_suggestions_service_factory.h"
-#import "ios/chrome/browser/favicon/ios_chrome_favicon_loader_factory.h"
-#import "ios/chrome/browser/favicon/ios_chrome_large_icon_cache_factory.h"
-#import "ios/chrome/browser/favicon/ios_chrome_large_icon_service_factory.h"
-#import "ios/chrome/browser/feature_engagement/tracker_factory.h"
-#import "ios/chrome/browser/history/top_sites_factory.h"
-#import "ios/chrome/browser/net/crurl.h"
-#import "ios/chrome/browser/policy/policy_util.h"
-#import "ios/chrome/browser/search_engines/template_url_service_factory.h"
+#import "ios/chrome/browser/favicon/model/ios_chrome_favicon_loader_factory.h"
+#import "ios/chrome/browser/favicon/model/ios_chrome_large_icon_cache_factory.h"
+#import "ios/chrome/browser/favicon/model/ios_chrome_large_icon_service_factory.h"
+#import "ios/chrome/browser/feature_engagement/model/tracker_factory.h"
+#import "ios/chrome/browser/history/model/top_sites_factory.h"
+#import "ios/chrome/browser/net/model/crurl.h"
+#import "ios/chrome/browser/policy/model/policy_util.h"
+#import "ios/chrome/browser/search_engines/model/template_url_service_factory.h"
 #import "ios/chrome/browser/shared/coordinator/layout_guide/layout_guide_util.h"
-#import "ios/chrome/browser/shared/coordinator/scene/scene_state_browser_agent.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/shared/public/commands/application_commands.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/omnibox_commands.h"
+#import "ios/chrome/browser/shared/public/commands/settings_commands.h"
 #import "ios/chrome/browser/shared/public/commands/snackbar_commands.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/public/features/system_flags.h"
 #import "ios/chrome/browser/ui/favicon/favicon_attributes_provider.h"
 #import "ios/chrome/browser/ui/menu/browser_action_factory.h"
 #import "ios/chrome/browser/ui/omnibox/omnibox_ui_features.h"
-#import "ios/chrome/browser/ui/omnibox/popup/carousel_item.h"
-#import "ios/chrome/browser/ui/omnibox/popup/carousel_item_menu_provider.h"
+#import "ios/chrome/browser/ui/omnibox/popup/carousel/carousel_item.h"
+#import "ios/chrome/browser/ui/omnibox/popup/carousel/carousel_item_menu_provider.h"
 #import "ios/chrome/browser/ui/omnibox/popup/content_providing.h"
 #import "ios/chrome/browser/ui/omnibox/popup/omnibox_pedal_annotator.h"
-#import "ios/chrome/browser/ui/omnibox/popup/omnibox_popup_container_view.h"
 #import "ios/chrome/browser/ui/omnibox/popup/omnibox_popup_mediator.h"
 #import "ios/chrome/browser/ui/omnibox/popup/omnibox_popup_presenter.h"
 #import "ios/chrome/browser/ui/omnibox/popup/omnibox_popup_view_controller.h"
@@ -120,7 +119,7 @@
   self.mediator.sharingDelegate = self;
   BrowserActionFactory* actionFactory = [[BrowserActionFactory alloc]
       initWithBrowser:self.browser
-             scenario:MenuScenarioHistogram::kOmniboxMostVisitedEntry];
+             scenario:kMenuScenarioHistogramOmniboxMostVisitedEntry];
   self.mediator.mostVisitedActionFactory = actionFactory;
   self.popupViewController.imageRetriever = self.mediator;
   self.popupViewController.faviconRetriever = self.mediator;
@@ -146,24 +145,27 @@
   self.mediator.allowIncognitoActions =
       !IsIncognitoModeDisabled(self.browser->GetBrowserState()->GetPrefs());
 
+  CommandDispatcher* dispatcher = self.browser->GetCommandDispatcher();
   OmniboxPedalAnnotator* annotator = [[OmniboxPedalAnnotator alloc] init];
-  annotator.pedalsEndpoint = HandlerForProtocol(
-      self.browser->GetCommandDispatcher(), ApplicationCommands);
-  annotator.omniboxCommandHandler =
-      HandlerForProtocol(self.browser->GetCommandDispatcher(), OmniboxCommands);
+  annotator.applicationHandler =
+      HandlerForProtocol(dispatcher, ApplicationCommands);
+  annotator.settingsHandler = HandlerForProtocol(dispatcher, SettingsCommands);
+  annotator.omniboxHandler = HandlerForProtocol(dispatcher, OmniboxCommands);
+
   self.mediator.pedalAnnotator = annotator;
 
-  self.mediator.applicationCommandsHandler = HandlerForProtocol(
-      self.browser->GetCommandDispatcher(), ApplicationCommands);
+  self.mediator.applicationCommandsHandler =
+      HandlerForProtocol(dispatcher, ApplicationCommands);
   self.mediator.incognito = isIncognito;
-  self.mediator.sceneState =
-      SceneStateBrowserAgent::FromBrowser(self.browser)->GetSceneState();
+  self.mediator.sceneState = self.browser->GetSceneState();
   self.mediator.presenter = [[OmniboxPopupPresenter alloc]
       initWithPopupPresenterDelegate:self.presenterDelegate
                  popupViewController:self.popupViewController
                    layoutGuideCenter:LayoutGuideCenterForBrowser(self.browser)
                            incognito:isIncognito];
-  self.mediator.prefService = self.browser->GetBrowserState()->GetPrefs();
+  self.mediator.originalPrefService = self.browser->GetBrowserState()
+                                          ->GetOriginalChromeBrowserState()
+                                          ->GetPrefs();
 
   _popupView->SetMediator(self.mediator);
 
@@ -184,6 +186,11 @@
 
 - (id<ToolbarOmniboxConsumer>)toolbarOmniboxConsumer {
   return self.mediator.presenter;
+}
+
+- (void)toggleOmniboxDebuggerView {
+  CHECK(experimental_flags::IsOmniboxDebuggingEnabled());
+  [self.popupViewController toggleOmniboxDebuggerView];
 }
 
 #pragma mark - Property accessor

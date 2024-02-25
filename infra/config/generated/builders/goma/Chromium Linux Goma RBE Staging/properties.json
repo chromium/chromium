@@ -1,6 +1,9 @@
 {
   "$build/chromium_tests_builder_config": {
     "builder_config": {
+      "additional_exclusions": [
+        "infra/config/generated/builders/goma/Chromium Linux Goma RBE Staging/gn-args.json"
+      ],
       "builder_db": {
         "entries": [
           {
@@ -18,7 +21,8 @@
                   "goma_failfast"
                 ],
                 "config": "chromium",
-                "target_bits": 64
+                "target_bits": 64,
+                "target_platform": "linux"
               },
               "legacy_gclient_config": {
                 "config": "chromium"

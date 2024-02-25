@@ -4,8 +4,18 @@
 
 #include "components/paint_preview/common/serial_utils.h"
 
+#include "base/files/file.h"
+#include "base/files/file_path.h"
+#include "base/path_service.h"
 #include "build/build_config.h"
+#include "components/paint_preview/common/file_stream.h"
+#include "skia/ext/font_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/skia/include/codec/SkBmpDecoder.h"
+#include "third_party/skia/include/codec/SkGifDecoder.h"
+#include "third_party/skia/include/codec/SkJpegDecoder.h"
+#include "third_party/skia/include/codec/SkPngDecoder.h"
+#include "third_party/skia/include/codec/SkWebpDecoder.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "third_party/skia/include/core/SkCanvas.h"
 #include "third_party/skia/include/core/SkColor.h"
@@ -18,6 +28,7 @@
 #include "third_party/skia/include/core/SkRect.h"
 #include "third_party/skia/include/core/SkRefCnt.h"
 #include "third_party/skia/include/core/SkSerialProcs.h"
+#include "third_party/skia/include/core/SkStream.h"
 #include "third_party/skia/include/core/SkTypeface.h"
 
 namespace paint_preview {
@@ -25,7 +36,8 @@ namespace paint_preview {
 TEST(PaintPreviewSerialUtils, TestMakeEmptyPicture) {
   sk_sp<SkPicture> pic = MakeEmptyPicture();
   ASSERT_NE(pic, nullptr);
-  auto data = pic->serialize();
+  SkSerialProcs default_procs;
+  auto data = pic->serialize(&default_procs);
   ASSERT_NE(data, nullptr);
   EXPECT_GE(data->size(), 0U);
 }
@@ -51,7 +63,7 @@ TEST(PaintPreviewSerialUtils, TestTransformedPictureProcs) {
       MakeSerialProcs(&picture_ctx, &typeface_ctx, &ictx);
   EXPECT_EQ(serial_procs.fPictureCtx, &picture_ctx);
   EXPECT_EQ(serial_procs.fTypefaceCtx, &typeface_ctx);
-  EXPECT_EQ(serial_procs.fImageCtx, nullptr);
+  EXPECT_EQ(serial_procs.fImageCtx, &ictx);
 
   DeserializationContext deserial_ctx;
   SkDeserialProcs deserial_procs = MakeDeserialProcs(&deserial_ctx);
@@ -82,7 +94,7 @@ TEST(PaintPreviewSerialUtils, TestSerialPictureNotInMap) {
       MakeSerialProcs(&picture_ctx, &typeface_ctx, &ictx);
   EXPECT_EQ(serial_procs.fPictureCtx, &picture_ctx);
   EXPECT_EQ(serial_procs.fTypefaceCtx, &typeface_ctx);
-  EXPECT_EQ(serial_procs.fImageCtx, nullptr);
+  EXPECT_EQ(serial_procs.fImageCtx, &ictx);
 
   auto pic = MakeEmptyPicture();
   EXPECT_EQ(serial_procs.fPictureProc(pic.get(), serial_procs.fPictureCtx),
@@ -95,7 +107,7 @@ TEST(PaintPreviewSerialUtils, TestSerialPictureNotInMap) {
 TEST(PaintPreviewSerialUtils, TestSerialTypeface) {
   PictureSerializationContext picture_ctx;
 
-  auto typeface = SkTypeface::MakeDefault();
+  auto typeface = skia::DefaultTypeface();
   TypefaceUsageMap usage_map;
   std::unique_ptr<GlyphUsage> usage =
       std::make_unique<SparseGlyphUsage>(typeface->countGlyphs());
@@ -112,7 +124,7 @@ TEST(PaintPreviewSerialUtils, TestSerialTypeface) {
       MakeSerialProcs(&picture_ctx, &typeface_ctx, &ictx);
   EXPECT_EQ(serial_procs.fPictureCtx, &picture_ctx);
   EXPECT_EQ(serial_procs.fTypefaceCtx, &typeface_ctx);
-  EXPECT_EQ(serial_procs.fImageCtx, nullptr);
+  EXPECT_EQ(serial_procs.fImageCtx, &ictx);
 
   auto final_data =
       serial_procs.fTypefaceProc(typeface.get(), serial_procs.fTypefaceCtx);
@@ -128,7 +140,7 @@ TEST(PaintPreviewSerialUtils, TestSerialAndroidSystemTypeface) {
   PictureSerializationContext picture_ctx;
 
   // This is a system font serialization of the data will be skipped.
-  auto typeface = SkTypeface::MakeFromName("sans-serif", SkFontStyle::Bold());
+  auto typeface = skia::MakeTypefaceFromName("sans-serif", SkFontStyle::Bold());
   TypefaceUsageMap usage_map;
   std::unique_ptr<GlyphUsage> usage =
       std::make_unique<SparseGlyphUsage>(typeface->countGlyphs());
@@ -145,7 +157,7 @@ TEST(PaintPreviewSerialUtils, TestSerialAndroidSystemTypeface) {
       MakeSerialProcs(&picture_ctx, &typeface_ctx, &ictx);
   EXPECT_EQ(serial_procs.fPictureCtx, &picture_ctx);
   EXPECT_EQ(serial_procs.fTypefaceCtx, &typeface_ctx);
-  EXPECT_EQ(serial_procs.fImageCtx, nullptr);
+  EXPECT_EQ(serial_procs.fImageCtx, &ictx);
 
   auto final_data =
       serial_procs.fTypefaceProc(typeface.get(), serial_procs.fTypefaceCtx);
@@ -161,7 +173,7 @@ TEST(PaintPreviewSerialUtils, TestSerialAndroidSystemTypeface) {
 TEST(PaintPreviewSerialUtils, TestSerialNoTypefaceInMap) {
   PictureSerializationContext picture_ctx;
 
-  auto typeface = SkTypeface::MakeDefault();
+  auto typeface = skia::DefaultTypeface();
   TypefaceUsageMap usage_map;
   TypefaceSerializationContext typeface_ctx(&usage_map);
   ImageSerializationContext ictx;
@@ -170,7 +182,7 @@ TEST(PaintPreviewSerialUtils, TestSerialNoTypefaceInMap) {
       MakeSerialProcs(&picture_ctx, &typeface_ctx, &ictx);
   EXPECT_EQ(serial_procs.fPictureCtx, &picture_ctx);
   EXPECT_EQ(serial_procs.fTypefaceCtx, &typeface_ctx);
-  EXPECT_EQ(serial_procs.fImageCtx, nullptr);
+  EXPECT_EQ(serial_procs.fImageCtx, &ictx);
 
   EXPECT_NE(
       serial_procs.fTypefaceProc(typeface.get(), serial_procs.fTypefaceCtx),
@@ -273,6 +285,123 @@ TEST(PaintPreviewSerialUtils, TestImageContextLimitSize) {
   };
   SkPicture::MakeFromData(data.get(), &deserial_procs);
   EXPECT_EQ(deserialized_images, 1U);
+}
+
+namespace {
+
+struct DeserialImageContext {
+  size_t image_count = 0;
+  SkDeserialImageProc deserial_image_proc = nullptr;
+};
+
+static void TrySerialAndDeserial(sk_sp<SkData> image_data) {
+  sk_sp<SkImage> image = SkImages::DeferredFromEncodedData(image_data);
+  ASSERT_TRUE(image);
+
+  SkPictureRecorder recorder;
+  SkCanvas* canvas = recorder.beginRecording(SkRect::MakeWH(100, 100));
+  canvas->drawImage(image, 0, 0);
+  sk_sp<SkPicture> pic = recorder.finishRecordingAsPicture();
+
+  // Serialize using production `SkSerialProcs` from  `MakeSerialProcs` where
+  // `fImageProc` is `SerializeImage`.
+  PictureSerializationContext picture_ctx;
+  TypefaceUsageMap usage_map;
+  TypefaceSerializationContext typeface_ctx(&usage_map);
+  ImageSerializationContext ictx;
+  SkSerialProcs serial_procs =
+      MakeSerialProcs(&picture_ctx, &typeface_ctx, &ictx);
+  EXPECT_EQ(serial_procs.fPictureCtx, &picture_ctx);
+  EXPECT_EQ(serial_procs.fImageCtx, &ictx);
+
+  sk_sp<SkData> data = pic->serialize(&serial_procs);
+  EXPECT_NE(data, nullptr);
+  EXPECT_FALSE(ictx.memory_budget_exceeded);
+
+  // Deserialize using production `SkDeserialProcs` from `MakeDeserialProcs`.
+  DeserializationContext deserial_ctx;
+  SkDeserialProcs deserial_procs = MakeDeserialProcs(&deserial_ctx);
+  EXPECT_EQ(deserial_procs.fPictureCtx, &deserial_ctx);
+  EXPECT_NE(deserial_procs.fImageProc, nullptr);
+
+  // Spy on the operation by taking `fImageProc` (`DeserializeImage`) from the
+  // production procs and wrapping it as part of the `DeserialImageContext`.
+  // This allows end-to-end validation of its behavior.
+  DeserialImageContext deserial_image_ctx;
+  deserial_image_ctx.deserial_image_proc = deserial_procs.fImageProc;
+  deserial_procs.fImageCtx = &deserial_image_ctx;
+  deserial_procs.fImageProc = [](const void* data, size_t length,
+                                 void* ctx) -> sk_sp<SkImage> {
+    if (length == 0U) {
+      return nullptr;
+    }
+    DeserialImageContext* deserial_image_ctx =
+        reinterpret_cast<DeserialImageContext*>(ctx);
+    deserial_image_ctx->image_count += 1;
+    sk_sp<SkImage> image =
+        (*(deserial_image_ctx->deserial_image_proc))(data, length, nullptr);
+    EXPECT_NE(image, nullptr) << "Invalid decoded image.";
+    return image;
+  };
+  SkPicture::MakeFromData(data.get(), &deserial_procs);
+  EXPECT_EQ(deserial_image_ctx.image_count, 1U);
+}
+
+}  // namespace
+
+TEST(PaintPreviewSerialUtils, TestImageContextEncodeAndDecodePng) {
+  base::FilePath path;
+  CHECK(base::PathService::Get(base::DIR_SRC_TEST_DATA_ROOT, &path));
+  FileRStream stream(base::File(
+      path.AppendASCII("components/test/data/paint_preview/test.png"),
+      base::File::FLAG_OPEN | base::File::FLAG_READ));
+
+  SkCodecs::Register(SkPngDecoder::Decoder());
+  TrySerialAndDeserial(SkData::MakeFromStream(&stream, stream.length()));
+}
+
+TEST(PaintPreviewSerialUtils, TestImageContextEncodeAndDecodeJpeg) {
+  base::FilePath path;
+  ASSERT_TRUE(base::PathService::Get(base::DIR_SRC_TEST_DATA_ROOT, &path));
+  FileRStream stream(base::File(
+      path.AppendASCII("components/test/data/paint_preview/test.jpg"),
+      base::File::FLAG_OPEN | base::File::FLAG_READ));
+
+  SkCodecs::Register(SkJpegDecoder::Decoder());
+  TrySerialAndDeserial(SkData::MakeFromStream(&stream, stream.length()));
+}
+
+TEST(PaintPreviewSerialUtils, TestImageContextEncodeAndDecodeWebp) {
+  base::FilePath path;
+  ASSERT_TRUE(base::PathService::Get(base::DIR_SRC_TEST_DATA_ROOT, &path));
+  FileRStream stream(base::File(
+      path.AppendASCII("components/test/data/paint_preview/test.webp"),
+      base::File::FLAG_OPEN | base::File::FLAG_READ));
+
+  SkCodecs::Register(SkWebpDecoder::Decoder());
+  TrySerialAndDeserial(SkData::MakeFromStream(&stream, stream.length()));
+}
+
+TEST(PaintPreviewSerialUtils, TestImageContextEncodeAndDecodeGif) {
+  base::FilePath path;
+  ASSERT_TRUE(base::PathService::Get(base::DIR_SRC_TEST_DATA_ROOT, &path));
+  FileRStream stream(base::File(
+      path.AppendASCII("components/test/data/paint_preview/test.gif"),
+      base::File::FLAG_OPEN | base::File::FLAG_READ));
+
+  SkCodecs::Register(SkGifDecoder::Decoder());
+  TrySerialAndDeserial(SkData::MakeFromStream(&stream, stream.length()));
+}
+
+TEST(PaintPreviewSerialUtils, TestImageContextEncodeAndDecodeBmp) {
+  base::FilePath path;
+  ASSERT_TRUE(base::PathService::Get(base::DIR_SRC_TEST_DATA_ROOT, &path));
+  FileRStream stream(base::File(
+      path.AppendASCII("components/test/data/paint_preview/test.bmp"),
+      base::File::FLAG_OPEN | base::File::FLAG_READ));
+
+  SkCodecs::Register(SkBmpDecoder::Decoder());
+  TrySerialAndDeserial(SkData::MakeFromStream(&stream, stream.length()));
 }
 
 }  // namespace paint_preview

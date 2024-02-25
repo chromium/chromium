@@ -6,6 +6,7 @@
 #define BASE_TASK_SEQUENCE_MANAGER_WORK_QUEUE_SETS_H_
 
 #include <functional>
+#include <optional>
 #include <vector>
 
 #include "base/base_export.h"
@@ -16,7 +17,6 @@
 #include "base/task/sequence_manager/task_order.h"
 #include "base/task/sequence_manager/task_queue_impl.h"
 #include "base/task/sequence_manager/work_queue.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base {
 namespace sequence_manager {
@@ -75,12 +75,12 @@ class BASE_EXPORT WorkQueueSets {
   void OnQueueBlocked(WorkQueue* work_queue);
 
   // O(1)
-  absl::optional<WorkQueueAndTaskOrder> GetOldestQueueAndTaskOrderInSet(
+  std::optional<WorkQueueAndTaskOrder> GetOldestQueueAndTaskOrderInSet(
       size_t set_index) const;
 
 #if DCHECK_IS_ON()
   // O(1)
-  absl::optional<WorkQueueAndTaskOrder> GetRandomQueueAndTaskOrderInSet(
+  std::optional<WorkQueueAndTaskOrder> GetRandomQueueAndTaskOrderInSet(
       size_t set_index) const;
 #endif
 

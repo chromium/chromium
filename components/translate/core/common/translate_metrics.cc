@@ -28,6 +28,9 @@ const char kTranslateLanguageDeterminedDuration[] =
 const char kTranslatedLanguageDetectionContentLength[] =
     "Translate.Translation.LanguageDetection.ContentLength";
 
+// Note: These string constants are repeated in TranslateCompactInfoBar.java.
+const char kTranslateCompactInfobarEvent[] = "Translate.CompactInfobar.Event";
+
 }  // namespace metrics_internal
 
 void ReportLanguageVerification(LanguageVerificationType type) {
@@ -72,6 +75,11 @@ void ReportTranslatedLanguageDetectionContentLength(size_t content_length) {
   base::UmaHistogramCounts100000(
       metrics_internal::kTranslatedLanguageDetectionContentLength,
       content_length);
+}
+
+void ReportCompactInfobarEvent(InfobarEvent event) {
+  UMA_HISTOGRAM_ENUMERATION(metrics_internal::kTranslateCompactInfobarEvent,
+                            event);
 }
 
 }  // namespace translate

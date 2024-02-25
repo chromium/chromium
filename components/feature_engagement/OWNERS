@@ -8,5 +8,21 @@ per-file ...event_constants.*=twellington@chromium.org
 per-file ...feature_configurations.cc=twellington@chromium.org
 per-file ...feature_constants.*=twellington@chromium.org
 per-file ...feature_list.*=twellington@chromium.org
+per-file ...group_configurations.cc=twellington@chromium.org
+per-file ...group_constants.*=twellington@chromium.org
+per-file ...group_list.cc=twellington@chromium.org
+per-file ...ios_promo_feature_configuration.*=twellington@chromium.org
 per-file ...EventConstants.java=twellington@chromium.org
 per-file ...FeatureConstants.java=twellington@chromium.org
+
+# For iOS:
+per-file ...event_constants.*=rkgibson@google.com
+per-file ...feature_configurations.cc=rkgibson@google.com
+per-file ...feature_constants.*=rkgibson@google.com
+per-file ...feature_list.*=rkgibson@google.com
+per-file ...group_configurations.cc=rkgibson@google.com
+per-file ...group_constants.*=rkgibson@google.com
+per-file ...group_list.cc=rkgibson@google.com
+per-file ...ios_promo_feature_configuration.*=rkgibson@google.com
+per-file ...EventConstants.java=rkgibson@google.com
+per-file ...FeatureConstants.java=rkgibson@google.com

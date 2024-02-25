@@ -4,6 +4,7 @@
 
 #include "extensions/renderer/bindings/api_binding_js_util.h"
 
+#include <optional>
 #include "base/strings/stringprintf.h"
 #include "base/values.h"
 #include "content/public/renderer/v8_value_converter.h"
@@ -19,7 +20,6 @@
 #include "gin/dictionary.h"
 #include "gin/handle.h"
 #include "gin/object_template_builder.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace extensions {
 
@@ -63,7 +63,7 @@ gin::ObjectTemplateBuilder APIBindingJSUtil::GetObjectTemplateBuilder(
 void APIBindingJSUtil::SendRequest(
     gin::Arguments* arguments,
     const std::string& name,
-    const std::vector<v8::Local<v8::Value>>& request_args,
+    const v8::LocalVector<v8::Value>& request_args,
     v8::Local<v8::Value> options) {
   v8::Isolate* isolate = arguments->isolate();
   v8::HandleScope handle_scope(isolate);
@@ -213,7 +213,7 @@ void APIBindingJSUtil::GetLastErrorMessage(gin::Arguments* arguments) {
   v8::Isolate* isolate = arguments->isolate();
   v8::HandleScope handle_scope(isolate);
 
-  absl::optional<std::string> last_error_message =
+  std::optional<std::string> last_error_message =
       request_handler_->last_error()->GetErrorMessage(
           arguments->GetHolderCreationContext());
   if (last_error_message) {
@@ -320,9 +320,7 @@ void APIBindingJSUtil::AddCustomSignature(
   type_refs_->AddCustomSignature(
       custom_signature_name,
       APISignature::CreateFromValues(*base_signature, nullptr /*returns_async*/,
-                                     nullptr /*access_checker*/,
-                                     custom_signature_name,
-                                     false /*is_event_signature*/));
+                                     nullptr /*access_checker*/));
 }
 
 void APIBindingJSUtil::ValidateCustomSignature(
@@ -339,7 +337,7 @@ void APIBindingJSUtil::ValidateCustomSignature(
     NOTREACHED();
   }
 
-  std::vector<v8::Local<v8::Value>> vector_arguments;
+  v8::LocalVector<v8::Value> vector_arguments(isolate);
   if (!gin::ConvertFromV8(isolate, arguments_to_validate, &vector_arguments)) {
     NOTREACHED();
     return;

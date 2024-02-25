@@ -8,10 +8,18 @@ BASE_FEATURE(kCalendarKillSwitch,
              "DownloadKillSwitchCalendar",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(kVCardKillSwitch,
+             "DownloadKillSwitchVcard",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 BASE_FEATURE(kARKillSwitch,
              "DownloadKillSwitchAR",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(kVCardKillSwitch,
-             "DownloadKillSwitchVcard",
+BASE_FEATURE(kPassKitKillSwitch,
+             "DownloadKillSwitchPassKit",
              base::FEATURE_DISABLED_BY_DEFAULT);
+
+BASE_FEATURE(kIOSIncognitoDownloadsWarning,
+             "IOSIncognitoDownloadsWarning",
+             base::FEATURE_ENABLED_BY_DEFAULT);

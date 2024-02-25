@@ -5,10 +5,10 @@
 #ifndef CHROMEOS_ASH_SERVICES_DEVICE_SYNC_CRYPTAUTH_GCM_MANAGER_H_
 #define CHROMEOS_ASH_SERVICES_DEVICE_SYNC_CRYPTAUTH_GCM_MANAGER_H_
 
+#include <optional>
 #include <string>
 
 #include "chromeos/ash/services/device_sync/cryptauth_feature_type.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 class PrefRegistrySimple;
 
@@ -38,8 +38,8 @@ class CryptAuthGCMManager {
     // |feature_type|: Only included in messages resulting from
     //                 BatchNotifyGroupDevices requests and null otherwise.
     virtual void OnReenrollMessage(
-        const absl::optional<std::string>& session_id,
-        const absl::optional<CryptAuthFeatureType>& feature_type);
+        const std::optional<std::string>& session_id,
+        const std::optional<CryptAuthFeatureType>& feature_type);
 
     // Called when a GCM message is received to sync down new devices from
     // CryptAuth.
@@ -49,8 +49,8 @@ class CryptAuthGCMManager {
     // |feature_type|: Only included in messages resulting from
     //                 BatchNotifyGroupDevices requests and null otherwise.
     virtual void OnResyncMessage(
-        const absl::optional<std::string>& session_id,
-        const absl::optional<CryptAuthFeatureType>& feature_type);
+        const std::optional<std::string>& session_id,
+        const std::optional<CryptAuthFeatureType>& feature_type);
   };
 
   virtual ~CryptAuthGCMManager() {}

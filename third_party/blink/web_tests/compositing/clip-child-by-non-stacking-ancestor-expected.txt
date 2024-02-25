@@ -7,7 +7,7 @@
       "backgroundColor": "#FFFFFF"
     },
     {
-      "name": "LayoutNGBlockFlow DIV class='container'",
+      "name": "LayoutNGBlockFlow (children-inline) DIV class='container'",
       "bounds": [100, 100],
       "contentsOpaque": true,
       "backgroundColor": "#C0C0C0",

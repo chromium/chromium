@@ -34,18 +34,13 @@ public class StripStackerUnitTest {
     private static final float BUTTON_WIDTH = 10;
     private static final float TOUCH_OFFSET = 5;
 
-    private StripStacker mTarget = new DummyStacker();
+    private StripStacker mTarget = new TestStacker();
 
-    @Mock
-    private StripLayoutTab mTab1;
-    @Mock
-    private StripLayoutTab mTab2;
-    @Mock
-    private StripLayoutTab mTab3;
-    @Mock
-    private StripLayoutTab mTab4;
-    @Mock
-    private StripLayoutTab mTab5;
+    @Mock private StripLayoutTab mTab1;
+    @Mock private StripLayoutTab mTab2;
+    @Mock private StripLayoutTab mTab3;
+    @Mock private StripLayoutTab mTab4;
+    @Mock private StripLayoutTab mTab5;
     private StripLayoutTab[] mInput;
 
     @Before
@@ -74,9 +69,16 @@ public class StripStackerUnitTest {
     @Test
     @DisabledTest(message = "https://crbug.com/1385702")
     public void testComputeNewTabButtonOffset() {
-        float result = mTarget.computeNewTabButtonOffset(mInput, TAB_OVERLAP, STRIP_LEFT_MARGIN,
-                STRIP_RIGHT_MARGIN, STRIP_WIDTH, BUTTON_WIDTH, TOUCH_OFFSET, CACHED_TAB_WIDTH,
-                true);
+        float result =
+                mTarget.computeNewTabButtonOffset(
+                        mInput,
+                        TAB_OVERLAP,
+                        STRIP_LEFT_MARGIN,
+                        STRIP_RIGHT_MARGIN,
+                        STRIP_WIDTH,
+                        BUTTON_WIDTH,
+                        CACHED_TAB_WIDTH,
+                        true);
         assertThat("New Tab button offset does not match", result, is(35f));
     }
 
@@ -84,25 +86,36 @@ public class StripStackerUnitTest {
     public void testComputeNewTabButtonOffsetRTL() {
         LocalizationUtils.setRtlForTesting(true);
         float expected_res = 3f;
-        // Update idealX for RTL = ((mInput.length -1 ) * TAB_WIDTH) + TOUCH_OFFSET + BUTTON_WIDTH +
-        // expected_res = 4*25 + 5 + 10 + 3
-        float ideal_x = 118f;
+        // Update idealX for RTL = ((mInput.length -1 ) * TAB_WIDTH) + BUTTON_WIDTH +
+        // expected_res = 4*25 + 10 + 3
+        float ideal_x = 113f;
         for (StripLayoutTab tab : mInput) {
             when(tab.getIdealX()).thenReturn(ideal_x);
             ideal_x -= TAB_WIDTH;
         }
-        float result = mTarget.computeNewTabButtonOffset(mInput, TAB_OVERLAP, STRIP_LEFT_MARGIN,
-                STRIP_RIGHT_MARGIN, STRIP_WIDTH, BUTTON_WIDTH, TOUCH_OFFSET, CACHED_TAB_WIDTH,
-                true);
+        float result =
+                mTarget.computeNewTabButtonOffset(
+                        mInput,
+                        TAB_OVERLAP,
+                        STRIP_LEFT_MARGIN,
+                        STRIP_RIGHT_MARGIN,
+                        STRIP_WIDTH,
+                        BUTTON_WIDTH,
+                        CACHED_TAB_WIDTH,
+                        true);
         assertThat("New Tab button offset does not match", result, is(expected_res));
     }
 
-    class DummyStacker extends StripStacker {
+    static class TestStacker extends StripStacker {
         @Override
-        public void setTabOffsets(StripLayoutTab[] indexOrderedTabs, boolean tabClosing,
-                boolean tabCreating, float cachedTabWidth) {}
+        public void setTabOffsets(
+                StripLayoutTab[] indexOrderedTabs,
+                boolean tabClosing,
+                boolean tabCreating,
+                float cachedTabWidth) {}
 
         @Override
-        public void performOcclusionPass(StripLayoutTab[] indexOrderedTabs, float stripWidth) {}
+        public void performOcclusionPass(
+                StripLayoutTab[] indexOrderedTabs, float xOffset, float visibleWidth) {}
     }
 }

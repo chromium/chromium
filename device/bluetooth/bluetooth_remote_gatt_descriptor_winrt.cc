@@ -307,7 +307,7 @@ void BluetoothRemoteGattDescriptorWinrt::OnReadValue(
   }
 
   value_.assign(data, data + length);
-  std::move(pending_read_callback).Run(/*error_code=*/absl::nullopt, value_);
+  std::move(pending_read_callback).Run(/*error_code=*/std::nullopt, value_);
 }
 
 void BluetoothRemoteGattDescriptorWinrt::OnWriteValueWithResult(

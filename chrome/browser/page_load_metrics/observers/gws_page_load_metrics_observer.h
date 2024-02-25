@@ -7,9 +7,18 @@
 
 #include "components/google/core/common/google_util.h"
 #include "components/page_load_metrics/browser/page_load_metrics_observer.h"
+#include "content/public/browser/navigation_handle_timing.h"
 
 namespace internal {
 // Exposed for tests.
+
+extern const char kHistogramGWSNavigationStartToFinalRequestStart[];
+extern const char kHistogramGWSNavigationStartToFinalResponseStart[];
+extern const char kHistogramGWSNavigationStartToFinalLoaderCallback[];
+extern const char kHistogramGWSNavigationStartToFirstRequestStart[];
+extern const char kHistogramGWSNavigationStartToFirstResponseStart[];
+extern const char kHistogramGWSNavigationStartToFirstLoaderCallback[];
+
 extern const char kHistogramGWSFirstContentfulPaint[];
 extern const char kHistogramGWSLargestContentfulPaint[];
 extern const char kHistogramGWSParseStart[];
@@ -47,6 +56,9 @@ class GWSPageLoadMetricsObserver
 
  private:
   void LogMetricsOnComplete();
+  void RecordNavigationTimingHistograms();
+
+  content::NavigationHandleTiming navigation_handle_timing_;
 };
 
-#endif  // CHROME_BROWSER_PAGE_LOAD_METRICS_OBSERVERS_FROM_GWS_PAGE_LOAD_METRICS_OBSERVER_H_
+#endif  // CHROME_BROWSER_PAGE_LOAD_METRICS_OBSERVERS_GWS_PAGE_LOAD_METRICS_OBSERVER_H_

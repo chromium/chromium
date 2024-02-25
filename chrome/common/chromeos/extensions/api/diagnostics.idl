@@ -6,7 +6,7 @@
 //
 // Many types defined here map with Mojo structs defined in
 // chromeos/ash/services/cros_healthd/public/mojom/cros_healthd_diagnostics.mojom.
-[implemented_in = "chrome/browser/chromeos/extensions/telemetry/api/diagnostics/diagnostics_api.h", modernised_enums]
+[implemented_in = "chrome/browser/chromeos/extensions/telemetry/api/diagnostics/diagnostics_api.h"]
 namespace os.diagnostics {
 // Note: Please update documentation as well when this interface is changed.
 // The documentation lives here: //docs/telemetry_extension/api_overview.md.
@@ -44,7 +44,8 @@ namespace os.diagnostics {
     audio_driver,
     bluetooth_discovery,
     bluetooth_scanning,
-    bluetooth_pairing
+    bluetooth_pairing,
+    fan
   };
 
   enum RoutineStatus {
@@ -169,7 +170,8 @@ namespace os.diagnostics {
     RoutineStatus status;
   };
 
-  callback GetAvailableRoutinesCallback = void (GetAvailableRoutinesResponse response);
+  callback GetAvailableRoutinesCallback = void (
+      GetAvailableRoutinesResponse response);
 
   callback GetRoutineUpdateCallback = void (GetRoutineUpdateResponse response);
 
@@ -198,6 +200,28 @@ namespace os.diagnostics {
     RoutineWaitingReason? reason;
     // Additional information, may be used to pass instruction or explanation.
     DOMString? message;
+  };
+
+  enum ExceptionReason {
+    unknown,
+    // Any other exceptions that we don't expect to happen. Clients should
+    // simply report the error.
+    unexpected,
+    // Raises this if clients try to run an unsupported feature. Note that
+    // clients should use methods which return `SupportStatus` for support
+    // status check.
+    unsupported,
+    // The corresponding App UI was closed and thus stopped the routine
+    // execution.
+    app_ui_closed
+  };
+
+  dictionary ExceptionInfo {
+    DOMString? uuid;
+    ExceptionReason reason;
+    // A human readable message for debugging. Don't rely on the content because
+    // it could change anytime.
+    DOMString? debugMessage;
   };
 
   enum MemtesterTestItemEnum {
@@ -247,9 +271,9 @@ namespace os.diagnostics {
 
     // These tests test writing random n bit words across the memory regions.
     // Test Pattern: 8 bit random words.
-    byte_writes,
+    eight_bit_writes,
     // Test Pattern: 16 bit random words.
-    word_writes
+    sixteen_bit_writes
   };
 
   dictionary MemtesterResult {
@@ -266,80 +290,222 @@ namespace os.diagnostics {
     MemtesterResult? result;
   };
 
+  dictionary RunMemoryRoutineArguments {
+    // An optional field to indicate how much memory should be tested. If the
+    // value is null, memory test will run with as much memory as possible.
+    long? maxTestingMemKib;
+  };
+
+  enum VolumeButtonType {
+    // The volume up button.
+    volume_up,
+    // The volume down button.
+    volume_down
+  };
+
+  dictionary VolumeButtonRoutineFinishedInfo {
+    DOMString? uuid;
+    boolean? has_passed;
+  };
+
+  dictionary RunVolumeButtonRoutineArguments {
+    // The volume button to be tested.
+    VolumeButtonType button_type;
+    // Length of time to listen to the volume button events. The value should be
+    // positive and less or equal to 600 seconds.
+    long timeout_seconds;
+  };
+
+  enum HardwarePresenceStatus {
+    // The hardware presence matches the description.
+    matched,
+    // The hardware presence does not match the description.
+    not_matched,
+    // There is no description available, skipping check.
+    not_configured
+  };
+
+  dictionary FanRoutineFinishedInfo {
+    DOMString? uuid;
+    boolean? has_passed;
+    // The ids of fans that can be controlled.
+    long[]? passed_fan_ids;
+    // The ids of fans that cannot be controlled.
+    long[]? failed_fan_ids;
+    // Whether the number of fan probed is matched.
+    HardwarePresenceStatus? fan_count_status;
+  };
+
+  dictionary RunFanRoutineArguments {
+  };
+
+  dictionary CreateRoutineResponse {
+    DOMString? uuid;
+  };
+
+  callback CreateRoutineCallback = void (CreateRoutineResponse response);
+
+  enum RoutineSupportStatus {
+    supported,
+    unsupported
+  };
+
+  dictionary RoutineSupportStatusInfo {
+    RoutineSupportStatus? status;
+  };
+
+  callback RoutineSupportStatusInfoCallback = void (RoutineSupportStatusInfo info);
+
+  dictionary StartRoutineRequest {
+    DOMString uuid;
+  };
+
+  callback StartRoutineCallback = void ();
+
+  dictionary CancelRoutineRequest {
+    DOMString uuid;
+  };
+
+  callback CancelRoutineCallback = void ();
+
   interface Functions {
-    [supportsPromises] static void getAvailableRoutines(GetAvailableRoutinesCallback callback);
+    static void getAvailableRoutines(GetAvailableRoutinesCallback callback);
 
-    [supportsPromises] static void getRoutineUpdate(GetRoutineUpdateRequest request,
-                                                    GetRoutineUpdateCallback callback);
+    static void getRoutineUpdate(
+        GetRoutineUpdateRequest request,
+        GetRoutineUpdateCallback callback);
 
-    [supportsPromises] static void runAcPowerRoutine(RunAcPowerRoutineRequest request,
-                                                     RunRoutineCallback callback);
+    static void runAcPowerRoutine(
+        RunAcPowerRoutineRequest request,
+        RunRoutineCallback callback);
 
-    [supportsPromises] static void runBatteryCapacityRoutine(RunRoutineCallback callback);
+    static void runBatteryCapacityRoutine(RunRoutineCallback callback);
 
-    [supportsPromises] static void runBatteryChargeRoutine(RunBatteryChargeRoutineRequest request,
-                                                           RunRoutineCallback callback);
+    static void runBatteryChargeRoutine(
+        RunBatteryChargeRoutineRequest request,
+        RunRoutineCallback callback);
 
-    [supportsPromises] static void runBatteryDischargeRoutine(RunBatteryDischargeRoutineRequest request,
-                                                              RunRoutineCallback callback);
+    static void runBatteryDischargeRoutine(
+        RunBatteryDischargeRoutineRequest request,
+        RunRoutineCallback callback);
 
-    [supportsPromises] static void runBatteryHealthRoutine(RunRoutineCallback callback);
+    static void runBatteryHealthRoutine(RunRoutineCallback callback);
 
-    [supportsPromises] static void runBluetoothDiscoveryRoutine(RunRoutineCallback callback);
+    static void runBluetoothDiscoveryRoutine(RunRoutineCallback callback);
 
-    [supportsPromises] static void runBluetoothPairingRoutine(RunBluetoothPairingRoutineRequest request,
-                                                              RunRoutineCallback callback);
+    static void runBluetoothPairingRoutine(
+        RunBluetoothPairingRoutineRequest request,
+        RunRoutineCallback callback);
 
-    [supportsPromises] static void runBluetoothPowerRoutine(RunRoutineCallback callback);
+    static void runBluetoothPowerRoutine(RunRoutineCallback callback);
 
-    [supportsPromises] static void runBluetoothScanningRoutine(RunBluetoothScanningRoutineRequest request,
-                                                               RunRoutineCallback callback);
+    static void runBluetoothScanningRoutine(
+        RunBluetoothScanningRoutineRequest request,
+        RunRoutineCallback callback);
 
-    [supportsPromises] static void runCpuCacheRoutine(RunCpuRoutineRequest request,
-                                                      RunRoutineCallback callback);
+    static void runCpuCacheRoutine(
+        RunCpuRoutineRequest request,
+        RunRoutineCallback callback);
 
-    [supportsPromises] static void runCpuFloatingPointAccuracyRoutine(RunCpuRoutineRequest request,
-                                                                      RunRoutineCallback callback);
+    static void runCpuFloatingPointAccuracyRoutine(
+        RunCpuRoutineRequest request,
+        RunRoutineCallback callback);
 
-    [supportsPromises] static void runCpuPrimeSearchRoutine(RunCpuRoutineRequest request,
-                                                            RunRoutineCallback callback);
+    static void runCpuPrimeSearchRoutine(
+        RunCpuRoutineRequest request,
+        RunRoutineCallback callback);
 
-    [supportsPromises] static void runCpuStressRoutine(RunCpuRoutineRequest request,
-                                                       RunRoutineCallback callback);
+    static void runCpuStressRoutine(
+        RunCpuRoutineRequest request,
+        RunRoutineCallback callback);
 
-    [supportsPromises] static void runDiskReadRoutine(RunDiskReadRequest request,
-                                                      RunRoutineCallback callback);
+    static void runDiskReadRoutine(
+        RunDiskReadRequest request,
+        RunRoutineCallback callback);
 
-    [supportsPromises] static void runDnsResolutionRoutine(RunRoutineCallback callback);
+    static void runDnsResolutionRoutine(RunRoutineCallback callback);
 
-    [supportsPromises] static void runDnsResolverPresentRoutine(RunRoutineCallback callback);
+    static void runDnsResolverPresentRoutine(RunRoutineCallback callback);
 
-    [supportsPromises] static void runEmmcLifetimeRoutine(RunRoutineCallback callback);
+    static void runEmmcLifetimeRoutine(RunRoutineCallback callback);
 
-    [supportsPromises] static void runFingerprintAliveRoutine(RunRoutineCallback callback);
+    static void runFingerprintAliveRoutine(RunRoutineCallback callback);
 
-    [supportsPromises] static void runGatewayCanBePingedRoutine(RunRoutineCallback callback);
+    static void runGatewayCanBePingedRoutine(RunRoutineCallback callback);
 
-    [supportsPromises] static void runLanConnectivityRoutine(RunRoutineCallback callback);
+    static void runLanConnectivityRoutine(RunRoutineCallback callback);
 
-    [supportsPromises] static void runMemoryRoutine(RunRoutineCallback callback);
+    static void runMemoryRoutine(RunRoutineCallback callback);
 
-    [supportsPromises] static void runNvmeSelfTestRoutine(RunNvmeSelfTestRequest request, RunRoutineCallback callback);
+    static void runNvmeSelfTestRoutine(
+        RunNvmeSelfTestRequest request,
+        RunRoutineCallback callback);
 
-    [supportsPromises] static void runNvmeWearLevelRoutine(RunNvmeWearLevelRequest request,
-                                                           RunRoutineCallback callback);
+    static void runNvmeWearLevelRoutine(
+        RunNvmeWearLevelRequest request,
+        RunRoutineCallback callback);
 
-    [supportsPromises] static void runSensitiveSensorRoutine(RunRoutineCallback callback);
+    static void runSensitiveSensorRoutine(RunRoutineCallback callback);
 
-    [supportsPromises] static void runSignalStrengthRoutine(RunRoutineCallback callback);
+    static void runSignalStrengthRoutine(RunRoutineCallback callback);
 
-    [supportsPromises] static void runSmartctlCheckRoutine(optional RunSmartctlCheckRequest request, RunRoutineCallback callback);
+    static void runSmartctlCheckRoutine(
+        optional RunSmartctlCheckRequest request,
+        RunRoutineCallback callback);
 
-    [supportsPromises] static void runUfsLifetimeRoutine(RunRoutineCallback callback);
+    static void runUfsLifetimeRoutine(RunRoutineCallback callback);
 
-    [supportsPromises] static void runPowerButtonRoutine(RunPowerButtonRequest request, RunRoutineCallback callback);
+    static void runPowerButtonRoutine(
+        RunPowerButtonRequest request,
+        RunRoutineCallback callback);
 
-    [supportsPromises] static void runAudioDriverRoutine(RunRoutineCallback callback);
+    static void runAudioDriverRoutine(RunRoutineCallback callback);
+
+    static void runFanRoutine(RunRoutineCallback callback);
+
+    // ----------------- DIAGNOSTICS API V2 -----------------
+
+    // Starts execution of a routine. This can only be expected to work after
+    // `onRoutineInitialized` was emitted for the routine with `UUID`.
+    static void startRoutine(
+        StartRoutineRequest request,
+        StartRoutineCallback callback);
+
+    // Stops executing the routine identified by `UUID` and removes all related
+    // resources from the system.
+    static void cancelRoutine(
+        CancelRoutineRequest request,
+        CancelRoutineCallback callback);
+
+    static void createMemoryRoutine(
+        RunMemoryRoutineArguments args,
+        CreateRoutineCallback callback);
+
+    // Checks whether a certain `RunMemoryRoutineArguments` is supported on the
+    // platform.
+    static void isMemoryRoutineArgumentSupported(
+        RunMemoryRoutineArguments args,
+        RoutineSupportStatusInfoCallback callback);
+
+    static void createVolumeButtonRoutine(
+        RunVolumeButtonRoutineArguments args,
+        CreateRoutineCallback callback);
+
+    // Checks whether a certain `RunVolumeButtonRoutineArguments` is supported
+    // on the platform.
+    static void isVolumeButtonRoutineArgumentSupported(
+        RunVolumeButtonRoutineArguments args,
+        RoutineSupportStatusInfoCallback callback);
+
+    static void createFanRoutine(
+        RunFanRoutineArguments args,
+        CreateRoutineCallback callback);
+
+    // Checks whether a certain `RunFanRoutineArguments` is supported on the
+    // platform.
+    static void isFanRoutineArgumentSupported(
+        RunFanRoutineArguments args,
+        RoutineSupportStatusInfoCallback callback);
   };
 
   interface Events {
@@ -360,6 +526,17 @@ namespace os.diagnostics {
 
     // Informs the extension that a memory routine finished.
     static void onMemoryRoutineFinished(MemoryRoutineFinishedInfo finishedInfo);
+
+    // Informs the extension that a volume button routine finished.
+    static void onVolumeButtonRoutineFinished(
+        VolumeButtonRoutineFinishedInfo finishedInfo);
+
+    // Informs the extension that a fan routine finished.
+    static void onFanRoutineFinished(FanRoutineFinishedInfo finishedInfo);
+
+    // Informs the extension that an exception occured. The error passed in
+    // `ExceptionInfo` is non-recoverable.
+    static void onRoutineException(ExceptionInfo exceptionInfo);
   };
 
   // LINT.ThenChange(//docs/telemetry_extension/api_overview.md)

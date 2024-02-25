@@ -29,8 +29,6 @@
 #import "ios/web/public/test/navigation_test_util.h"
 #import "ios/web/public/ui/crw_web_view_proxy.h"
 #import "ios/web/public/web_state.h"
-#import "ui/gfx/geometry/rect_f.h"
-#import "ui/gfx/image/image.h"
 
 using base::test::ios::WaitUntilConditionOrTimeout;
 
@@ -192,7 +190,7 @@ void DispatchSyncOnMainThread(void (^block)(void)) {
                                       inTab:(NSString*)tabID
                                     timeout:(base::TimeDelta)timeout {
   __block BOOL webStateFound = NO;
-  __block absl::optional<base::Value> messageValue;
+  __block std::optional<base::Value> messageValue;
   DispatchSyncOnMainThread(^{
     web::WebState* webState = GetWebStateWithId(tabID);
     if (!webState)
@@ -266,9 +264,9 @@ void DispatchSyncOnMainThread(void (^block)(void)) {
     UIEdgeInsets insets = webState->GetWebViewProxy().contentInset;
     CGRect adjustedBounds = UIEdgeInsetsInsetRect(bounds, insets);
 
-    webState->TakeSnapshot(gfx::RectF(adjustedBounds),
-                           base::BindRepeating(^(const gfx::Image& image) {
-                             snapshot = image.ToUIImage();
+    webState->TakeSnapshot(adjustedBounds,
+                           base::BindRepeating(^(UIImage* image) {
+                             snapshot = image;
                            }));
   });
 

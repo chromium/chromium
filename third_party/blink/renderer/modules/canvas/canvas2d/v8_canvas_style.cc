@@ -57,18 +57,13 @@ bool ExtractV8CanvasStyle(v8::Isolate* isolate,
 
 v8::Local<v8::Value> CanvasStyleToV8(ScriptState* script_state,
                                      const CanvasStyle& style) {
-  // All the types have been validated by this point, so that it's safe to use
-  // ToLocalChecked().
   if (CanvasGradient* gradient = style.GetCanvasGradient()) {
-    return ToV8Traits<CanvasGradient>::ToV8(script_state, gradient)
-        .ToLocalChecked();
+    return ToV8Traits<CanvasGradient>::ToV8(script_state, gradient);
   }
   if (CanvasPattern* pattern = style.GetCanvasPattern()) {
-    return ToV8Traits<CanvasPattern>::ToV8(script_state, pattern)
-        .ToLocalChecked();
+    return ToV8Traits<CanvasPattern>::ToV8(script_state, pattern);
   }
-  return ToV8Traits<IDLString>::ToV8(script_state, style.GetColorAsString())
-      .ToLocalChecked();
+  return ToV8Traits<IDLString>::ToV8(script_state, style.GetColorAsString());
 }
 
 }  // namespace blink

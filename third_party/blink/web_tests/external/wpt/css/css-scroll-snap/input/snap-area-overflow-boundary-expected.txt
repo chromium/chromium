@@ -1,5 +1,0 @@
-This is a testharness.js-based test.
-FAIL Keyboard scrolling with vertical snap-area overflow assert_equals: End boundary of snap-area is valid snap target expected 39 but got 449
-FAIL Mouse-wheel scrolling with vertical snap-area overflow assert_equals: End boundary of snap-area is valid snap target expected 100 but got 0
-Harness: the test ran to completion.
-

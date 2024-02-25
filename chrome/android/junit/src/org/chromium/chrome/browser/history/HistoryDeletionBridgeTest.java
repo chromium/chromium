@@ -20,20 +20,15 @@ import org.chromium.base.test.util.JniMocker;
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
 public class HistoryDeletionBridgeTest {
-    @Rule
-    public JniMocker mocker = new JniMocker();
+    @Rule public JniMocker mocker = new JniMocker();
 
-    @Mock
-    HistoryDeletionBridge.Natives mNativeMocks;
+    @Mock HistoryDeletionBridge.Natives mNativeMocks;
 
-    @Mock
-    HistoryDeletionBridge.Observer mHistoryDeletionBridgeObserverOne;
+    @Mock HistoryDeletionBridge.Observer mHistoryDeletionBridgeObserverOne;
 
-    @Mock
-    HistoryDeletionBridge.Observer mHistoryDeletionBridgeObserverTwo;
+    @Mock HistoryDeletionBridge.Observer mHistoryDeletionBridgeObserverTwo;
 
-    @Mock
-    HistoryDeletionInfo mHistoryDeletionInfo;
+    @Mock HistoryDeletionInfo mHistoryDeletionInfo;
 
     HistoryDeletionBridge mHistoryDeletionBridge;
 

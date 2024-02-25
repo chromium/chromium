@@ -1,0 +1,38 @@
+<!doctype html>
+<!-- Tests that main threaded scrollbars are correctly drawn in Minimal mode for
+     normal and left side vertical scrollbars. -->
+<meta charset="utf-8">
+<meta name="fuzzy" content="0-10;0-10">
+<script src="../../../resources/gesture-util.js"></script>
+<script src="../../../resources/testharness.js"></script>
+<style>
+  body {
+    background-color: green;
+    color-scheme: light dark;
+  }
+
+  .rtl {
+    direction: rtl;
+  }
+
+  .scrollable {
+    height: 200px;
+    overflow: scroll;
+    resize: both;
+    scrollbar-gutter: stable;
+    width: 200px;
+  }
+
+  .content {
+    background-image: radial-gradient(yellow, yellow);
+    height: 400px;
+    overflow: scroll;
+    width: 400px;
+  }
+</style>
+<div class="scrollable">
+  <div class="content"></div>
+</div>
+<div class="scrollable rtl">
+  <div class="content"></div>
+</div>

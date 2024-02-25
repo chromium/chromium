@@ -15,18 +15,17 @@
 
 namespace blink {
 
-class WebURLRequestExtraData;
-
 // URLLoaderFactory for InternetDisconnectedURLLoader.
 class BLINK_PLATFORM_EXPORT InternetDisconnectedURLLoaderFactory final
     : public URLLoaderFactory {
  public:
   std::unique_ptr<URLLoader> CreateURLLoader(
-      const WebURLRequest&,
+      const network::ResourceRequest&,
       scoped_refptr<base::SingleThreadTaskRunner> freezable_task_runner,
       scoped_refptr<base::SingleThreadTaskRunner> unfreezable_task_runner,
       mojo::PendingRemote<mojom::blink::KeepAliveHandle> keep_alive_handle,
-      BackForwardCacheLoaderHelper* back_forward_cache_loader_helper) override;
+      BackForwardCacheLoaderHelper* back_forward_cache_loader_helper,
+      Vector<std::unique_ptr<URLLoaderThrottle>> throttles) override;
 };
 
 // URLLoader which always returns an internet disconnected error. At present,
@@ -38,27 +37,27 @@ class InternetDisconnectedURLLoader final : public URLLoader {
   ~InternetDisconnectedURLLoader() override;
 
   // URLLoader implementation:
-  void LoadSynchronously(
-      std::unique_ptr<network::ResourceRequest> request,
-      scoped_refptr<WebURLRequestExtraData> url_request_extra_data,
-      bool pass_response_pipe_to_client,
-      bool no_mime_sniffing,
-      base::TimeDelta timeout_interval,
-      URLLoaderClient*,
-      WebURLResponse&,
-      absl::optional<WebURLError>&,
-      scoped_refptr<SharedBuffer>&,
-      int64_t& encoded_data_length,
-      uint64_t& encoded_body_length,
-      scoped_refptr<BlobDataHandle>& downloaded_blob,
-      std::unique_ptr<blink::ResourceLoadInfoNotifierWrapper>
-          resource_load_info_notifier_wrapper) override;
+  void LoadSynchronously(std::unique_ptr<network::ResourceRequest> request,
+                         scoped_refptr<const SecurityOrigin> top_frame_origin,
+                         bool download_to_blob,
+                         bool no_mime_sniffing,
+                         base::TimeDelta timeout_interval,
+                         URLLoaderClient*,
+                         WebURLResponse&,
+                         std::optional<WebURLError>&,
+                         scoped_refptr<SharedBuffer>&,
+                         int64_t& encoded_data_length,
+                         uint64_t& encoded_body_length,
+                         scoped_refptr<BlobDataHandle>& downloaded_blob,
+                         std::unique_ptr<blink::ResourceLoadInfoNotifierWrapper>
+                             resource_load_info_notifier_wrapper) override;
   void LoadAsynchronously(
       std::unique_ptr<network::ResourceRequest> request,
-      scoped_refptr<WebURLRequestExtraData> url_request_extra_data,
+      scoped_refptr<const SecurityOrigin> top_frame_origin,
       bool no_mime_sniffing,
       std::unique_ptr<blink::ResourceLoadInfoNotifierWrapper>
           resource_load_info_notifier_wrapper,
+      CodeCacheHost* code_cache_host,
       URLLoaderClient* client) override;
   void Freeze(LoaderFreezeMode mode) override;
   void DidChangePriority(WebURLRequest::Priority, int) override;

@@ -30,8 +30,9 @@ BASIC_EMAIL_REGEXP = r'^[\w\-\+\%\.]+\@[\w\-\+\%\.]+$'
 
 class WPTDirMetadata(NamedTuple):
     team_email: Optional[str] = None
-    component: Optional[str] = None
+    monorail_component: Optional[str] = None
     should_notify: bool = False
+    buganizer_public_component: Optional[str] = None
 
 
 class DirectoryOwnersExtractor:
@@ -188,6 +189,8 @@ class DirectoryOwnersExtractor:
         # The value of `notify` is one of ['TRINARY_UNSPECIFIED', 'YES', 'NO'].
         # Assume that users opt in by default; return False only when notify is
         # 'NO'.
-        return WPTDirMetadata(data.get('teamEmail'),
-                              data.get('monorail', {}).get('component'),
-                              data.get('wpt', {}).get('notify') != 'NO')
+        return WPTDirMetadata(
+            data.get('teamEmail'),
+            data.get('monorail', {}).get('component'),
+            data.get('wpt', {}).get('notify') != 'NO',
+            data.get('buganizerPublic', {}).get('componentId'))

@@ -5,11 +5,11 @@
 #ifndef EXTENSIONS_COMMON_EXTENSION_ICON_SET_H_
 #define EXTENSIONS_COMMON_EXTENSION_ICON_SET_H_
 
-#include <map>
 #include <set>
 #include <string>
+#include <string_view>
 
-#include "base/strings/string_piece.h"
+#include "base/containers/flat_map.h"
 
 namespace base {
 class FilePath;
@@ -27,7 +27,7 @@ class ExtensionIconSet {
   };
 
   // Access to the underlying map from icon size->{path, bitmap}.
-  typedef std::map<int, std::string> IconMap;
+  using IconMap = base::flat_map<int, std::string>;
 
   ExtensionIconSet();
   ExtensionIconSet(const ExtensionIconSet& other);
@@ -48,11 +48,11 @@ class ExtensionIconSet {
   const std::string& Get(int size_in_px, MatchType match_type) const;
 
   // Returns true iff the set contains the specified path.
-  bool ContainsPath(base::StringPiece path) const;
+  bool ContainsPath(std::string_view path) const;
 
   // Returns icon size (in pixels) if the set contains the specified path or 0
   // if not found.
-  int GetIconSizeFromPath(base::StringPiece path) const;
+  int GetIconSizeFromPath(std::string_view path) const;
 
   // Add the paths of all icons in this set into |paths|, handling the
   // conversion of (string) -> (base::FilePath). Note that these paths are not

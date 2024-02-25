@@ -20,10 +20,8 @@ import java.util.concurrent.Executor;
 class TestDrivenDataProvider extends UploadDataProvider {
     private final Executor mExecutor;
     private final List<byte[]> mReads;
-    private final ConditionVariable mWaitForReadRequest =
-            new ConditionVariable();
-    private final ConditionVariable mWaitForRewindRequest =
-            new ConditionVariable();
+    private final ConditionVariable mWaitForReadRequest = new ConditionVariable();
+    private final ConditionVariable mWaitForRewindRequest = new ConditionVariable();
     // Lock used to synchronize access to mReadPending and mRewindPending.
     private final Object mLock = new Object();
 
@@ -61,16 +59,15 @@ class TestDrivenDataProvider extends UploadDataProvider {
 
     // Called by UploadDataSink on the executor thread.
     @Override
-    public void read(final UploadDataSink uploadDataSink,
-                     final ByteBuffer byteBuffer) throws IOException {
+    public void read(final UploadDataSink uploadDataSink, final ByteBuffer byteBuffer)
+            throws IOException {
         synchronized (mLock) {
             ++mNumReadCalls;
             assertIdle();
 
             mReadPending = true;
             if (mNextRead != mReads.size()) {
-                if ((byteBuffer.limit() - byteBuffer.position())
-                        < mReads.get(mNextRead).length) {
+                if ((byteBuffer.limit() - byteBuffer.position()) < mReads.get(mNextRead).length) {
                     throw new IllegalStateException("Read buffer smaller than expected.");
                 }
                 byteBuffer.put(mReads.get(mNextRead));
@@ -91,8 +88,7 @@ class TestDrivenDataProvider extends UploadDataProvider {
 
             if (mNextRead == 0) {
                 // Should never try and rewind when rewinding does nothing.
-                throw new IllegalStateException(
-                        "Unexpected rewind when already at beginning");
+                throw new IllegalStateException("Unexpected rewind when already at beginning");
             }
             mRewindPending = true;
             mNextRead = 0;
@@ -102,36 +98,37 @@ class TestDrivenDataProvider extends UploadDataProvider {
 
     // Called by test fixture on the main thread.
     public void onReadSucceeded(final UploadDataSink uploadDataSink) {
-        Runnable completeRunnable = new Runnable() {
-            @Override
-            public void run() {
-                synchronized (mLock) {
-                    if (!mReadPending) {
-                        throw new IllegalStateException("No read pending.");
+        Runnable completeRunnable =
+                new Runnable() {
+                    @Override
+                    public void run() {
+                        synchronized (mLock) {
+                            if (!mReadPending) {
+                                throw new IllegalStateException("No read pending.");
+                            }
+                            mReadPending = false;
+                            uploadDataSink.onReadSucceeded(false);
+                        }
                     }
-                    mReadPending = false;
-                    uploadDataSink.onReadSucceeded(false);
-                }
-            }
-        };
+                };
         mExecutor.execute(completeRunnable);
     }
 
-
     // Called by test fixture on the main thread.
     public void onRewindSucceeded(final UploadDataSink uploadDataSink) {
-        Runnable completeRunnable = new Runnable() {
-            @Override
-            public void run() {
-                synchronized (mLock) {
-                    if (!mRewindPending) {
-                        throw new IllegalStateException("No rewind pending.");
+        Runnable completeRunnable =
+                new Runnable() {
+                    @Override
+                    public void run() {
+                        synchronized (mLock) {
+                            if (!mRewindPending) {
+                                throw new IllegalStateException("No rewind pending.");
+                            }
+                            mRewindPending = false;
+                            uploadDataSink.onRewindSucceeded();
+                        }
                     }
-                    mRewindPending = false;
-                    uploadDataSink.onRewindSucceeded();
-                }
-            }
-        };
+                };
         mExecutor.execute(completeRunnable);
     }
 
@@ -182,9 +179,7 @@ class TestDrivenDataProvider extends UploadDataProvider {
         }
     }
 
-    /**
-     * Helper method to ensure no read or rewind is in progress.
-     */
+    /** Helper method to ensure no read or rewind is in progress. */
     private void assertIdle() {
         assertReadNotPending();
         assertRewindNotPending();

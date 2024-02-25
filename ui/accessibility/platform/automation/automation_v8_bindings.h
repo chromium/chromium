@@ -42,7 +42,7 @@ class COMPONENT_EXPORT(AX_PLATFORM) AutomationV8Bindings {
   void SendTreeDestroyedEvent(const AXTreeID& tree_id);
   void SendActionResultEvent(const ui::AXActionData& data, bool result);
   void SendGetTextLocationResult(const ui::AXActionData& data,
-                                 const absl::optional<gfx::Rect>& rect);
+                                 const std::optional<gfx::Rect>& rect);
   void SendAutomationEvent(
       const AXTreeID& tree_id,
       const AXEvent& event,

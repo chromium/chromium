@@ -46,8 +46,7 @@ class UnifiedAccessibilityDetailedViewController
  private:
   const std::unique_ptr<DetailedViewDelegate> detailed_view_delegate_;
 
-  raw_ptr<AccessibilityDetailedView, DanglingUntriaged | ExperimentalAsh>
-      view_ = nullptr;
+  raw_ptr<AccessibilityDetailedView, DanglingUntriaged> view_ = nullptr;
 };
 
 }  // namespace ash

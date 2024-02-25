@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_APPS_APP_DISCOVERY_SERVICE_GAME_FETCHER_H_
 
 #include <map>
+#include <optional>
 
 #include "base/callback_list.h"
 #include "base/memory/raw_ptr.h"
@@ -13,7 +14,6 @@
 #include "chrome/browser/apps/app_discovery_service/app_discovery_util.h"
 #include "chrome/browser/apps/app_discovery_service/app_fetcher_manager.h"
 #include "chrome/browser/apps/app_provisioning_service/app_provisioning_data_manager.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace apps {
 
@@ -55,9 +55,9 @@ class GameFetcher : public AppFetcher,
       const apps::proto::LocaleAvailability& app_with_locale,
       Profile* profile);
 
-  absl::optional<std::string> test_country_;
+  std::optional<std::string> test_country_;
 
-  absl::optional<std::string> test_language_;
+  std::optional<std::string> test_language_;
 
   std::vector<Result> last_results_;
 

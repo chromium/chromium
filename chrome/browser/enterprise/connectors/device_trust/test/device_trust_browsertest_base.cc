@@ -6,9 +6,11 @@
 
 #include <utility>
 
+#include "chrome/browser/enterprise/connectors/device_trust/key_management/installer/metrics_util.h"
 #include "chrome/browser/enterprise/connectors/device_trust/test/test_constants.h"
 #include "chrome/browser/enterprise/connectors/test/test_constants.h"
 #include "chrome/browser/ui/browser.h"
+#include "content/public/test/browser_test_utils.h"
 #include "net/dns/mock_host_resolver.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -39,6 +41,11 @@ constexpr char kLatencyFailureHistogramName[] =
 constexpr char kAttestationPolicyLevelHistogramName[] =
     "Enterprise.DeviceTrust.Attestation.PolicyLevel";
 
+constexpr char kKeyRotationStatusHistogramFormat[] =
+    "Enterprise.DeviceTrust.RotateSigningKey.%s.Status";
+constexpr char kWithNonceVariant[] = "WithNonce";
+constexpr char kNoNonceVariant[] = "NoNonce";
+
 constexpr char kChallenge[] =
     "{"
     "\"challenge\": "
@@ -56,7 +63,7 @@ constexpr char kChallenge[] =
 }  // namespace
 
 DeviceTrustBrowserTestBase::DeviceTrustBrowserTestBase(
-    absl::optional<DeviceTrustConnectorState> connector_state)
+    std::optional<DeviceTrustConnectorState> connector_state)
     : challenge_value_(kChallenge) {
   ResetState();
 
@@ -111,8 +118,7 @@ GURL DeviceTrustBrowserTestBase::GetDisallowedUrl() {
   return embedded_test_server()->GetURL(kOtherHost, "/simple.html");
 }
 
-void DeviceTrustBrowserTestBase::TriggerUrlNavigation(
-    absl::optional<GURL> url) {
+void DeviceTrustBrowserTestBase::TriggerUrlNavigation(std::optional<GURL> url) {
   GURL redirect_url = url ? url.value() : GetRedirectUrl();
   content::TestNavigationManager first_navigation(web_contents(), redirect_url);
 
@@ -147,8 +153,10 @@ std::string DeviceTrustBrowserTestBase::GetChallengeResponseHeader() {
   // Response header should always be set, even in error cases (i.e.
   // when using v1 header).
   EXPECT_TRUE(challenge_response_request_.has_value());
+  if (!challenge_response_request_.has_value()) {
+    return std::string();
+  }
 
-  ExpectFunnelStep(DTAttestationFunnelStep::kAttestationFlowStarted);
   ExpectFunnelStep(DTAttestationFunnelStep::kChallengeReceived);
 
   EXPECT_EQ(challenge_response_request_->GetURL().path(),
@@ -160,7 +168,7 @@ std::string DeviceTrustBrowserTestBase::GetChallengeResponseHeader() {
 
 void DeviceTrustBrowserTestBase::VerifyAttestationFlowSuccessful(
     DTAttestationResult success_result,
-    absl::optional<DTAttestationPolicyLevel> policy_level) {
+    std::optional<DTAttestationPolicyLevel> policy_level) {
   std::string challenge_response = GetChallengeResponseHeader();
   // TODO(crbug.com/1241857): Add challenge-response validation.
   EXPECT_TRUE(!challenge_response.empty());
@@ -198,6 +206,13 @@ void DeviceTrustBrowserTestBase::VerifyNoInlineFlowOccurred() {
   histogram_tester_->ExpectTotalCount(kResultHistogramName, 0);
   histogram_tester_->ExpectTotalCount(kLatencySuccessHistogramName, 0);
   histogram_tester_->ExpectTotalCount(kLatencyFailureHistogramName, 0);
+}
+
+void DeviceTrustBrowserTestBase::VerifyKeyRotationSuccess(bool with_nonce) {
+  const char* nonce_string = with_nonce ? kWithNonceVariant : kNoNonceVariant;
+  histogram_tester_->ExpectUniqueSample(
+      base::StringPrintf(kKeyRotationStatusHistogramFormat, nonce_string),
+      enterprise_connectors::RotationStatus::SUCCESS, 1);
 }
 
 content::WebContents* DeviceTrustBrowserTestBase::web_contents(

@@ -8,6 +8,7 @@
 
 #include "base/check_op.h"
 #include "base/notreached.h"
+#include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
 #include "ui/base/metadata/base_type_conversion.h"
 
@@ -57,8 +58,9 @@ base::CallbackListSubscription MetaDataProvider::AddPropertyChangedCallback(
 
 void MetaDataProvider::TriggerChangedCallback(PropertyKey property) {
   auto entry = property_changed_vectors_.find(property);
-  if (entry == property_changed_vectors_.end())
+  if (entry == property_changed_vectors_.end()) {
     return;
+  }
 
   PropertyChangedCallbacks* property_changed_callbacks = entry->second.get();
   property_changed_callbacks->Notify();
@@ -72,6 +74,13 @@ ClassMetaData::ClassMetaData(std::string file, int line) : line_(line) {
 
 ClassMetaData::~ClassMetaData() = default;
 
+const std::string& ClassMetaData::GetUniqueName() const {
+  if (unique_name_.empty()) {
+    unique_name_ = base::StrCat({file_, ":", type_name_});
+  }
+  return unique_name_;
+}
+
 void ClassMetaData::AddMemberData(
     std::unique_ptr<MemberMetaDataBase> member_data) {
   members_.push_back(member_data.release());
@@ -80,8 +89,9 @@ void ClassMetaData::AddMemberData(
 MemberMetaDataBase* ClassMetaData::FindMemberData(
     const std::string& member_name) {
   for (MemberMetaDataBase* member_data : members_) {
-    if (member_data->member_name() == member_name)
+    if (member_data->member_name() == member_name) {
       return member_data;
+    }
   }
 
   if (parent_class_meta_data_ != nullptr)
@@ -141,7 +151,7 @@ bool ClassMetaData::ClassMemberIterator::IsLastMember() const {
 
 std::string ClassMetaData::ClassMemberIterator::GetCurrentCollectionName()
     const {
-  return current_collection_->type_name();
+  return std::string(current_collection_->type_name());
 }
 
 void ClassMetaData::ClassMemberIterator::IncrementHelper() {
@@ -164,7 +174,7 @@ ClassMetaData::ClassMemberIterator ClassMetaData::end() {
   return ClassMemberIterator(nullptr);
 }
 
-void ClassMetaData::SetTypeName(const std::string& type_name) {
+void ClassMetaData::SetTypeName(const std::string_view type_name) {
   type_name_ = type_name;
 }
 

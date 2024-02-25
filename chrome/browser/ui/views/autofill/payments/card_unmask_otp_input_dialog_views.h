@@ -5,10 +5,12 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_AUTOFILL_PAYMENTS_CARD_UNMASK_OTP_INPUT_DIALOG_VIEWS_H_
 #define CHROME_BROWSER_UI_VIEWS_AUTOFILL_PAYMENTS_CARD_UNMASK_OTP_INPUT_DIALOG_VIEWS_H_
 
+#include "components/autofill/core/browser/ui/payments/card_unmask_otp_input_dialog_view.h"
+
 #include <string>
 
 #include "base/memory/raw_ptr.h"
-#include "chrome/browser/ui/autofill/payments/card_unmask_otp_input_dialog_view.h"
+#include "base/memory/weak_ptr.h"
 #include "ui/views/controls/styled_label.h"
 #include "ui/views/controls/textfield/textfield_controller.h"
 #include "ui/views/window/dialog_delegate.h"
@@ -28,7 +30,7 @@ class CardUnmaskOtpInputDialogViews : public CardUnmaskOtpInputDialogView,
                                       public views::TextfieldController {
  public:
   explicit CardUnmaskOtpInputDialogViews(
-      CardUnmaskOtpInputDialogController* controller);
+      base::WeakPtr<CardUnmaskOtpInputDialogController> controller);
   CardUnmaskOtpInputDialogViews(const CardUnmaskOtpInputDialogViews&) = delete;
   CardUnmaskOtpInputDialogViews& operator=(
       const CardUnmaskOtpInputDialogViews&) = delete;
@@ -51,6 +53,7 @@ class CardUnmaskOtpInputDialogViews : public CardUnmaskOtpInputDialogView,
   void ShowInvalidState(const std::u16string& invalid_label_text) override;
   void Dismiss(bool show_confirmation_before_closing,
                bool user_closed_dialog) override;
+  base::WeakPtr<CardUnmaskOtpInputDialogView> GetWeakPtr() override;
 
   // views::DialogDelegateView:
   std::u16string GetWindowTitle() const override;
@@ -98,7 +101,7 @@ class CardUnmaskOtpInputDialogViews : public CardUnmaskOtpInputDialogView,
   // Sets the text and style of the dialog footer.
   void SetDialogFooter(bool enabled);
 
-  raw_ptr<CardUnmaskOtpInputDialogController> controller_ = nullptr;
+  base::WeakPtr<CardUnmaskOtpInputDialogController> controller_;
 
   // Elements related to the otp part of the view.
   raw_ptr<views::BoxLayoutView> otp_input_view_ = nullptr;

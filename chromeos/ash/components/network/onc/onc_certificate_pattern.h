@@ -6,12 +6,12 @@
 #define CHROMEOS_ASH_COMPONENTS_NETWORK_ONC_ONC_CERTIFICATE_PATTERN_H_
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <vector>
 
 #include "base/values.h"
 #include "components/certificate_matching/certificate_principal_pattern.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace net {
 class X509Certificate;
@@ -54,7 +54,7 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) OncCertificatePattern {
   }
 
   // Reads a |OncCertificatePattern| from an ONC dictionary.
-  static absl::optional<OncCertificatePattern> ReadFromONCDictionary(
+  static std::optional<OncCertificatePattern> ReadFromONCDictionary(
       const base::Value::Dict& dictionary);
 
  private:

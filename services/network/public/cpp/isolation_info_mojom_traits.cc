@@ -48,12 +48,11 @@ network::mojom::IsolationInfoRequestType EnumTraits<
 
 bool StructTraits<network::mojom::IsolationInfoDataView, net::IsolationInfo>::
     Read(network::mojom::IsolationInfoDataView data, net::IsolationInfo* out) {
-  absl::optional<url::Origin> top_frame_origin;
-  absl::optional<url::Origin> frame_origin;
-  absl::optional<base::UnguessableToken> nonce;
+  std::optional<url::Origin> top_frame_origin;
+  std::optional<url::Origin> frame_origin;
+  std::optional<base::UnguessableToken> nonce;
   net::SiteForCookies site_for_cookies;
   net::IsolationInfo::RequestType request_type;
-  absl::optional<std::vector<net::SchemefulSite>> mojo_party_context;
 
   if (!data.ReadTopFrameOrigin(&top_frame_origin)) {
     network::debug::SetDeserializationCrashKeyString("isolation_top_origin");
@@ -64,23 +63,14 @@ bool StructTraits<network::mojom::IsolationInfoDataView, net::IsolationInfo>::
     return false;
   }
   if (!data.ReadNonce(&nonce) || !data.ReadSiteForCookies(&site_for_cookies) ||
-      !data.ReadRequestType(&request_type) ||
-      !data.ReadPartyContext(&mojo_party_context)) {
+      !data.ReadRequestType(&request_type)) {
     return false;
   }
 
-  absl::optional<std::set<net::SchemefulSite>> party_context;
-  if (mojo_party_context.has_value()) {
-    party_context = std::set<net::SchemefulSite>(mojo_party_context->begin(),
-                                                 mojo_party_context->end());
-    if (party_context->size() != mojo_party_context->size())
-      return false;
-  }
-
-  absl::optional<net::IsolationInfo> isolation_info =
+  std::optional<net::IsolationInfo> isolation_info =
       net::IsolationInfo::CreateIfConsistent(request_type, top_frame_origin,
                                              frame_origin, site_for_cookies,
-                                             std::move(party_context), nonce);
+                                             nonce);
   if (!isolation_info) {
     network::debug::SetDeserializationCrashKeyString("isolation_inconsistent");
     return false;

@@ -11,9 +11,10 @@ import android.content.Intent;
 
 import androidx.annotation.IntDef;
 
+import org.jni_zero.CalledByNative;
+
 import org.chromium.base.ContextUtils;
 import org.chromium.base.IntentUtils;
-import org.chromium.base.annotations.CalledByNative;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.customtabs.CustomTabActivity;
 import org.chromium.chrome.browser.firstrun.FirstRunStatus;
@@ -23,8 +24,8 @@ import org.chromium.chrome.browser.init.EmptyBrowserParts;
 import org.chromium.chrome.browser.notifications.NotificationUmaTracker;
 import org.chromium.chrome.browser.notifications.NotificationWrapperBuilderFactory;
 import org.chromium.chrome.browser.notifications.channels.ChromeChannelDefinitions;
-import org.chromium.components.browser_ui.notifications.NotificationManagerProxy;
-import org.chromium.components.browser_ui.notifications.NotificationManagerProxyImpl;
+import org.chromium.components.browser_ui.notifications.BaseNotificationManagerProxy;
+import org.chromium.components.browser_ui.notifications.BaseNotificationManagerProxyFactory;
 import org.chromium.components.browser_ui.notifications.NotificationMetadata;
 import org.chromium.components.browser_ui.notifications.NotificationWrapper;
 import org.chromium.components.browser_ui.notifications.NotificationWrapperBuilder;
@@ -44,8 +45,13 @@ public class AnnouncementNotificationManager {
             "org.chromium.chrome.browser.announcement.EXTRA_INTENT_TYPE";
     private static final String EXTRA_URL = "org.chromium.chrome.browser.announcement.EXTRA_URL";
 
-    @IntDef({IntentType.UNKNOWN, IntentType.CLICK, IntentType.CLOSE, IntentType.ACK,
-            IntentType.OPEN})
+    @IntDef({
+        IntentType.UNKNOWN,
+        IntentType.CLICK,
+        IntentType.CLOSE,
+        IntentType.ACK,
+        IntentType.OPEN
+    })
     @Retention(RetentionPolicy.SOURCE)
     public @interface IntentType {
         int UNKNOWN = 0;
@@ -55,37 +61,37 @@ public class AnnouncementNotificationManager {
         int OPEN = 4;
     }
 
-    /**
-     * Receive announcement notification click event.
-     */
+    /** Receive announcement notification click event. */
     public static final class Receiver extends BroadcastReceiver {
         @Override
         public void onReceive(Context context, Intent intent) {
-            final BrowserParts parts = new EmptyBrowserParts() {
-                @Override
-                public void finishNativeInitialization() {
-                    @IntentType
-                    int intentType = IntentUtils.safeGetIntExtra(
-                            intent, EXTRA_INTENT_TYPE, IntentType.UNKNOWN);
-                    String url = IntentUtils.safeGetStringExtra(intent, EXTRA_URL);
-                    switch (intentType) {
-                        case IntentType.UNKNOWN:
-                            break;
-                        case IntentType.CLICK:
-                            openUrl(context, url);
-                            break;
-                        case IntentType.CLOSE:
-                            break;
-                        case IntentType.ACK:
-                            close();
-                            break;
-                        case IntentType.OPEN:
-                            openUrl(context, url);
-                            close();
-                            break;
-                    }
-                }
-            };
+            final BrowserParts parts =
+                    new EmptyBrowserParts() {
+                        @Override
+                        public void finishNativeInitialization() {
+                            @IntentType
+                            int intentType =
+                                    IntentUtils.safeGetIntExtra(
+                                            intent, EXTRA_INTENT_TYPE, IntentType.UNKNOWN);
+                            String url = IntentUtils.safeGetStringExtra(intent, EXTRA_URL);
+                            switch (intentType) {
+                                case IntentType.UNKNOWN:
+                                    break;
+                                case IntentType.CLICK:
+                                    openUrl(context, url);
+                                    break;
+                                case IntentType.CLOSE:
+                                    break;
+                                case IntentType.ACK:
+                                    close();
+                                    break;
+                                case IntentType.OPEN:
+                                    openUrl(context, url);
+                                    close();
+                                    break;
+                            }
+                        }
+                    };
 
             // Try to load native.
             ChromeBrowserInitializer.getInstance().handlePreNativeStartupAndLoadLibraries(parts);
@@ -99,7 +105,7 @@ public class AnnouncementNotificationManager {
         intent.putExtra(EXTRA_INTENT_TYPE, intentType);
         intent.putExtra(EXTRA_URL, url);
         return PendingIntentProvider.getBroadcast(
-                context, intentType /*requestCode*/, intent, PendingIntent.FLAG_UPDATE_CURRENT);
+                context, /* requestCode= */ intentType, intent, PendingIntent.FLAG_UPDATE_CURRENT);
     }
 
     private static void openUrl(Context context, String url) {
@@ -109,7 +115,7 @@ public class AnnouncementNotificationManager {
 
     private static void close() {
         // Dismiss the notification.
-        new NotificationManagerProxyImpl(ContextUtils.getApplicationContext())
+        BaseNotificationManagerProxyFactory.create(ContextUtils.getApplicationContext())
                 .cancel(ANNOUNCEMENT_NOTIFICATION_TAG, ANNOUNCEMENT_NOTIFICATION_ID);
     }
 
@@ -117,8 +123,7 @@ public class AnnouncementNotificationManager {
     private static void showNotification(String url) {
         Context context = ContextUtils.getApplicationContext();
         NotificationWrapperBuilder builder =
-                NotificationWrapperBuilderFactory
-                        .createNotificationWrapperBuilder(
+                NotificationWrapperBuilderFactory.createNotificationWrapperBuilder(
                                 ChromeChannelDefinitions.ChannelId.ANNOUNCEMENT,
                                 new NotificationMetadata(
                                         NotificationUmaTracker.SystemNotificationType.ANNOUNCEMENT,
@@ -132,20 +137,25 @@ public class AnnouncementNotificationManager {
                         .setShowWhen(false)
                         .setAutoCancel(true)
                         .setLocalOnly(true);
-        builder.addAction(0, context.getString(R.string.tos_notification_ack_button_text),
+        builder.addAction(
+                0,
+                context.getString(R.string.tos_notification_ack_button_text),
                 createIntent(context, IntentType.ACK, url),
                 NotificationUmaTracker.ActionType.ANNOUNCEMENT_ACK);
-        builder.addAction(0, context.getString(R.string.tos_notification_review_button_text),
+        builder.addAction(
+                0,
+                context.getString(R.string.tos_notification_review_button_text),
                 createIntent(context, IntentType.OPEN, url),
                 NotificationUmaTracker.ActionType.ANNOUNCEMENT_OPEN);
 
-        NotificationManagerProxy nm = new NotificationManagerProxyImpl(context);
+        BaseNotificationManagerProxy nm = BaseNotificationManagerProxyFactory.create(context);
         NotificationWrapper notification = builder.buildNotificationWrapper();
         nm.notify(notification);
 
-        NotificationUmaTracker.getInstance().onNotificationShown(
-                NotificationUmaTracker.SystemNotificationType.ANNOUNCEMENT,
-                notification.getNotification());
+        NotificationUmaTracker.getInstance()
+                .onNotificationShown(
+                        NotificationUmaTracker.SystemNotificationType.ANNOUNCEMENT,
+                        notification.getNotification());
     }
 
     @CalledByNative

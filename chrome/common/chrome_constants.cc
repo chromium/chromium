@@ -6,7 +6,6 @@
 
 #include "build/branding_buildflags.h"
 #include "build/build_config.h"
-#include "chrome/browser/chrome_for_testing/buildflags.h"
 #include "chrome/common/chrome_version.h"
 
 #define FPL FILE_PATH_LITERAL
@@ -111,9 +110,6 @@ const char kInitialProfile[] = "Default";
 const char kMultiProfileDirPrefix[] = "Profile ";
 const base::FilePath::CharType kGuestProfileDir[] = FPL("Guest Profile");
 const base::FilePath::CharType kSystemProfileDir[] = FPL("System Profile");
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-const char kWebAppProfilePrefix[] = "web-app-profile-";
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 
 // filenames
 const base::FilePath::CharType kAccountPreferencesFilename[] =

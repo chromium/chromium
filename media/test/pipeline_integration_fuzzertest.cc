@@ -189,8 +189,11 @@ class MediaSourcePipelineIntegrationFuzzerTest
     if (size == 0)
       return;
 
-    scoped_refptr<media::DecoderBuffer> buffer(
-        DecoderBuffer::CopyFrom(data, size));
+    auto external_memory =
+        std::make_unique<media::DecoderBuffer::ExternalMemory>(
+            base::make_span(data, size));
+    scoped_refptr<media::DecoderBuffer> buffer =
+        media::DecoderBuffer::FromExternalMemory(std::move(external_memory));
 
     TestMediaSource source(buffer, mimetype, kAppendWholeFile);
 
@@ -233,9 +236,9 @@ struct Environment {
 
     media::InitializeMediaLibrary();
 
-    // Note, instead of LOG_FATAL, use a value at or below logging::LOG_VERBOSE
-    // here to assist local debugging.
-    logging::SetMinLogLevel(logging::LOG_FATAL);
+    // Note, instead of LOGGING_FATAL, use a value at or below
+    // logging::LOGGING_VERBOSE here to assist local debugging.
+    logging::SetMinLogLevel(logging::LOGGING_FATAL);
   }
 };
 

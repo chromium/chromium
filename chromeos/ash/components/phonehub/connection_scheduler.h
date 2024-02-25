@@ -5,6 +5,7 @@
 #ifndef CHROMEOS_ASH_COMPONENTS_PHONEHUB_CONNECTION_SCHEDULER_H_
 #define CHROMEOS_ASH_COMPONENTS_PHONEHUB_CONNECTION_SCHEDULER_H_
 
+#include "chromeos/ash/components/phonehub/phone_hub_structured_metrics_logger.h"
 namespace ash {
 namespace phonehub {
 
@@ -19,7 +20,7 @@ class ConnectionScheduler {
 
   // Attempts a connection immediately, will be exponentially backed-off upon
   // failing to establish a connection.
-  virtual void ScheduleConnectionNow() = 0;
+  virtual void ScheduleConnectionNow(DiscoveryEntryPoint entry_point) = 0;
 
  protected:
   ConnectionScheduler() = default;

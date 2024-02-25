@@ -12,7 +12,8 @@
   <h4 id="d4" aria-hidden="true">Item4</h4>
   <script>
     function go() {
-      // Set aria-hidden from [removed]->false; should not fire an event.
+      // Set aria-hidden from [removed]->false; will fire an event.
+      // Note that aria-hidden="false" has a different meaning than aria-hidden not present.
       document.getElementById('d1').setAttribute('aria-hidden', 'false');
 
       // Set aria-hidden from true->false; should fire an event.

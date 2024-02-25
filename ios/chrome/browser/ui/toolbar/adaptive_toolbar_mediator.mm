@@ -11,11 +11,11 @@
 #import "base/strings/sys_string_conversions.h"
 #import "components/open_from_clipboard/clipboard_recent_content.h"
 #import "components/search_engines/template_url_service.h"
-#import "ios/chrome/browser/ntp/new_tab_page_util.h"
-#import "ios/chrome/browser/overlays/public/overlay_presenter.h"
-#import "ios/chrome/browser/overlays/public/overlay_presenter_observer_bridge.h"
-#import "ios/chrome/browser/policy/policy_util.h"
-#import "ios/chrome/browser/search_engines/search_engines_util.h"
+#import "ios/chrome/browser/ntp/model/new_tab_page_util.h"
+#import "ios/chrome/browser/overlays/model/public/overlay_presenter.h"
+#import "ios/chrome/browser/overlays/model/public/overlay_presenter_observer_bridge.h"
+#import "ios/chrome/browser/policy/model/policy_util.h"
+#import "ios/chrome/browser/search_engines/model/search_engines_util.h"
 #import "ios/chrome/browser/shared/model/url/chrome_url_constants.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list_observer_bridge.h"
@@ -27,10 +27,10 @@
 #import "ios/chrome/browser/ui/lens/lens_availability.h"
 #import "ios/chrome/browser/ui/menu/browser_action_factory.h"
 #import "ios/chrome/browser/ui/toolbar/toolbar_consumer.h"
-#import "ios/chrome/browser/url_loading/image_search_param_generator.h"
-#import "ios/chrome/browser/url_loading/url_loading_browser_agent.h"
-#import "ios/chrome/browser/url_loading/url_loading_params.h"
-#import "ios/chrome/browser/web/web_navigation_browser_agent.h"
+#import "ios/chrome/browser/url_loading/model/image_search_param_generator.h"
+#import "ios/chrome/browser/url_loading/model/url_loading_browser_agent.h"
+#import "ios/chrome/browser/url_loading/model/url_loading_params.h"
+#import "ios/chrome/browser/web/model/web_navigation_browser_agent.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ios/public/provider/chrome/browser/lens/lens_api.h"
@@ -172,7 +172,7 @@
       break;
     case WebStateListChange::Type::kDetach: {
       if (webStateList->IsBatchInProgress()) {
-        return;
+        break;
       }
 
       [self.consumer setTabCount:_webStateList->count() addedInBackground:NO];
@@ -186,7 +186,7 @@
       break;
     case WebStateListChange::Type::kInsert: {
       if (webStateList->IsBatchInProgress()) {
-        return;
+        break;
       }
 
       [self.consumer setTabCount:_webStateList->count()
@@ -268,12 +268,10 @@
     _webStateList->RemoveObserver(_webStateListObserver.get());
   }
 
-  // TODO(crbug.com/727427):Add support for DCHECK(webStateList).
   _webStateList = webStateList;
-  self.webState = nil;
 
   if (_webStateList) {
-    self.webState = self.webStateList->GetActiveWebState();
+    self.webState = _webStateList->GetActiveWebState();
     _webStateList->AddObserver(_webStateListObserver.get());
 
     if (self.consumer) {
@@ -281,6 +279,7 @@
     }
   } else {
     // Clear the web navigation browser agent if the webStateList is nil.
+    self.webState = nil;
     self.navigationBrowserAgent = nil;
   }
 }
@@ -324,8 +323,13 @@
         setLoadingProgressFraction:self.webState->GetLoadingProgress()];
   }
   [self updateShareMenuForWebState:self.webState];
-  if (base::FeatureList::IsEnabled(kThemeColorInToolbar)) {
+  if (base::FeatureList::IsEnabled(kThemeColorInTopToolbar) ||
+      base::FeatureList::IsEnabled(kDynamicThemeColor) ||
+      base::FeatureList::IsEnabled(kDynamicBackgroundColor)) {
     [self.consumer setPageThemeColor:self.webState->GetThemeColor()];
+    [self.consumer
+        setUnderPageBackgroundColor:self.webState
+                                        ->GetUnderPageBackgroundColor()];
   }
 }
 
@@ -369,6 +373,10 @@
   self.webContentAreaShowingOverlay = NO;
 }
 
+- (void)overlayPresenterDestroyed:(OverlayPresenter*)presenter {
+  self.webContentAreaOverlayPresenter = nullptr;
+}
+
 #pragma mark - Private
 
 /// Returns a menu for the `navigationItems`.
@@ -381,14 +389,9 @@
     if ([self shouldUseIncognitoNTPResourcesForURL:navigationItem
                                                        ->GetVirtualURL()]) {
       title = l10n_util::GetNSStringWithFixup(IDS_IOS_NEW_INCOGNITO_TAB);
-      if (@available(iOS 15, *)) {
-        image =
-            SymbolWithPalette(CustomSymbolWithPointSize(
-                                  kIncognitoSymbol, kInfobarSymbolPointSize),
-                              @[ UIColor.whiteColor ]);
-      } else {
-        image = [UIImage imageNamed:@"incognito_badge_ios14"];
-      }
+      image = SymbolWithPalette(
+          CustomSymbolWithPointSize(kIncognitoSymbol, kInfobarSymbolPointSize),
+          @[ UIColor.whiteColor ]);
     } else {
       title = base::SysUTF16ToNSString(navigationItem->GetTitleForDisplay());
       const gfx::Image& gfxImage = navigationItem->GetFaviconStatus().image;
@@ -468,7 +471,7 @@
 
 /// Returns the UIMenuElement for the content of the pasteboard. Can return nil.
 - (UIMenuElement*)menuElementForPasteboard {
-  absl::optional<std::set<ClipboardContentType>> clipboardContentType =
+  std::optional<std::set<ClipboardContentType>> clipboardContentType =
       ClipboardRecentContent::GetInstance()->GetCachedClipboardContentTypes();
 
   if (clipboardContentType.has_value()) {

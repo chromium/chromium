@@ -769,7 +769,7 @@ void MFAudioEncoder::TryProcessOutput(FlushCB flush_cb) {
       return;
     }
 
-    absl::optional<CodecDescription> desc;
+    std::optional<CodecDescription> desc;
     if (!codec_desc_.empty()) {
       desc = codec_desc_;
       codec_desc_.clear();

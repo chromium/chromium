@@ -24,9 +24,9 @@ limitations under the License.
 #endif
 
 #ifdef _WIN32
+#include <windows.h>
 #include <direct.h>
 #include <io.h>
-#include <windows.h>
 #else
 #include <unistd.h>
 #endif
@@ -34,11 +34,11 @@ limitations under the License.
 #include <memory>
 #include <string>
 
-#include "absl/memory/memory.h"       // from @com_google_absl
+#include "absl/memory/memory.h"  // from @com_google_absl
 #include "absl/strings/str_format.h"  // from @com_google_absl
 #include "tensorflow_lite_support/cc/common.h"
-#include "tensorflow_lite_support/cc/port/status_macros.h"
 #include "tensorflow_lite_support/cc/port/statusor.h"
+#include "tensorflow_lite_support/cc/port/status_macros.h"
 
 namespace tflite {
 namespace task {
@@ -53,17 +53,19 @@ using ::tflite::support::TfLiteSupportStatus;
 // Gets the offset aligned to page size for mapping given files into memory by
 // file descriptor correctly, as according to mmap(2), the offset used in mmap
 // must be a multiple of sysconf(_SC_PAGE_SIZE).
-// mmap is ont used on Windows
-#ifndef _WIN32
 int64 GetPageSizeAlignedOffset(int64 offset) {
+#ifdef _WIN32
+  // mmap is not used on Windows
+  return -1;
+#else
   int64 aligned_offset = offset;
   int64 page_size = sysconf(_SC_PAGE_SIZE);
   if (offset % page_size != 0) {
     aligned_offset = offset / page_size * page_size;
   }
   return aligned_offset;
-}
 #endif
+}
 
 }  // namespace
 
@@ -75,7 +77,7 @@ ExternalFileHandler::CreateFromExternalFile(const ExternalFile* external_file) {
   std::unique_ptr<ExternalFileHandler> handler =
       absl::WrapUnique(new ExternalFileHandler(external_file));
 
-  RETURN_IF_ERROR(handler->MapExternalFile());
+  TFLITE_RETURN_IF_ERROR(handler->MapExternalFile());
 
   return handler;
 }
@@ -86,9 +88,10 @@ absl::Status ExternalFileHandler::MapExternalFile() {
   }
 // TODO(b/195588083): Add Windows support
 #ifdef _WIN32
-  return CreateStatusWithPayload(StatusCode::kFailedPrecondition,
-                                 "File loading is not yet supported on Windows",
-                                 TfLiteSupportStatus::kFileReadError);
+  return CreateStatusWithPayload(
+      StatusCode::kFailedPrecondition,
+      "File loading is not yet supported on Windows",
+      TfLiteSupportStatus::kFileReadError);
 #else
   if (external_file_.file_name().empty() &&
       !external_file_.has_file_descriptor_meta()) {

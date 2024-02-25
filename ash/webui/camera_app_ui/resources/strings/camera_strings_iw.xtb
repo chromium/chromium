@@ -5,7 +5,6 @@
 <translation id="1076394037877376434">מחיקת דף מס' <ph name="PAGE_NUMBER" /></translation>
 <translation id="1113173431709655881">מצב מצלמה</translation>
 <translation id="1153190633558910465">הסתרת הרשת</translation>
-<translation id="1175958423215084756">זוהה קישור. <ph name="HOSTNAME" /></translation>
 <translation id="1197694886744716213">דף מס' <ph name="PAGE_NUMBER" /> נמחק</translation>
 <translation id="1258009455399840361">סיבוב ב-90 מעלות בכיוון השעון</translation>
 <translation id="1417314334557041815">עריכת דף מס' <ph name="INDEX" /></translation>
@@ -47,6 +46,7 @@
 <translation id="3067436040345934772">הזזה ימינה</translation>
 <translation id="3081586908890909590">מעבר לצילום וידאו</translation>
 <translation id="313467653172006084">30FPS</translation>
+<translation id="3158534262962737808">הצטרפות לרשת <ph name="WIFINAME" /></translation>
 <translation id="3227137524299004712">מיקרופון</translation>
 <translation id="3240426699337459095">הקישור הועתק</translation>
 <translation id="3354465018370944241">הגדרות תמונה</translation>
@@ -60,14 +60,12 @@
 <translation id="3642192109456033823">הסרטון בעיבוד…</translation>
 <translation id="3789724198583203151">סיבוב ב-90 מעלות נגד כיוון השעון</translation>
 <translation id="3810838688059735925">סרטון</translation>
-<translation id="3892148308691398805">העתקת הטקסט</translation>
 <translation id="4060608699153044055">לא ניתן לצלם כי אין מספיק מקום אחסון במכשיר. כדי לצלם סרטון, עליך לפנות מקום במכשיר.</translation>
 <translation id="4061162772429051350">‎<ph name="MAGAPIXELS_AMOUNT" /> MP</translation>
 <translation id="4118525110028899586">השהיית ההקלטה</translation>
 <translation id="4121305183798804752">זוהה מסמך</translation>
 <translation id="414641094616694804">המצלמה הזו לא יכולה לשנות את הרזולוציה</translation>
 <translation id="4176463684765177261">מושבת</translation>
-<translation id="4269820728363426813">העתקת כתובת של קישור</translation>
 <translation id="428234092390943511">תמונה ממוזערת של הדף</translation>
 <translation id="4349714250734879769">‏התאמת גודל הפריים ב-Chrome</translation>
 <translation id="4383571725254449280">הדפסת יומני ביצועים</translation>
@@ -81,14 +79,15 @@
 <translation id="4705093842003735294">רזולוציה מלאה</translation>
 <translation id="4864143361253542638">רשימת הדפים שנסרקו</translation>
 <translation id="4890010094662541459">‎3 x 3</translation>
+<translation id="4892746741161549733">העתקת הכתובת של הקישור <ph name="URL" /></translation>
 <translation id="491895758387112773">הקלטת סרטון במולטי-סטרימינג</translation>
 <translation id="495170559598752135">פעולות</translation>
 <translation id="4984613436295737187">‏Quad HD‏ (1440p)</translation>
 <translation id="5034763830503483128">יחס הגובה-רוחב של התמונה</translation>
 <translation id="5057360777601936059">המצלמה אינה זמינה כרגע.
         יש לבדוק אם המצלמה מחוברת כראוי.</translation>
+<translation id="5157591164390831335">‏זוהתה כתובת URL.</translation>
 <translation id="5163387177077603948">מתבצעת תזוזה לימין</translation>
-<translation id="5219374179772385066">‏מצב Time Lapse זמין עכשיו.</translation>
 <translation id="5235304959032763950">16 על 9</translation>
 <translation id="5266635337630551423">הפינה הימנית העליונה במסמך</translation>
 <translation id="5317780077021120954">שמירה</translation>
@@ -114,6 +113,7 @@
 <translation id="6353688143752491039">תודה על המשוב ששלחת לגבי אפליקציית המצלמה.
 
 אם המשוב מתייחס לאיכות התמונה או הסרטון, יש לצרף תמונה או סרטון לדוגמה ולתאר מה השתבש (לדוגמה, התמונה כהה מדי או שנושא התמונה לא בפוקוס).</translation>
+<translation id="6519884562954018934">הצטרפות לרשת <ph name="WIFINAME" /></translation>
 <translation id="6527303717912515753">שיתוף</translation>
 <translation id="6617916774429601017">הצגת כל הרזולוציות</translation>
 <translation id="6631515515009660915">השיקוף כבוי</translation>
@@ -133,6 +133,7 @@
 <translation id="7450541714075000668">הטקסט הועתק</translation>
 <translation id="7488619942230388918">‏צילום סרטון בפורמט GIF</translation>
 <translation id="7557677699350329807">מעבר למצלמה הבאה</translation>
+<translation id="7562584071994185503">העתקת הטקסט "<ph name="TEXT" />"</translation>
 <translation id="7607002721634913082">ההורדה בהשהיה</translation>
 <translation id="7608223098072244877">4 על 4</translation>
 <translation id="761421184377987513">מתבצעת תזוזה לשמאל למטה</translation>
@@ -155,10 +156,12 @@
 <translation id="8346544573713510785">‏התאמת גודל הפריים במצלמה עם HAL</translation>
 <translation id="8425673304802773841">הטייה מטה</translation>
 <translation id="8428213095426709021">הגדרות</translation>
+<translation id="8609951387004618906">פתיחה של <ph name="URL" /></translation>
 <translation id="8629662593426079630">360p</translation>
 <translation id="8711011893539266636">החלפת המצב של השתקת המיקרופון. ההשתקה פועלת</translation>
 <translation id="8730621377337864115">בוצע</translation>
 <translation id="8732462232047530626">תצוגה מקדימה של מטא-נתונים</translation>
+<translation id="874854738381978209">‏זוהתה רשת Wi-Fi.</translation>
 <translation id="8815966864175525708">מעבר לצילום תמונת דיוקן</translation>
 <translation id="8828441885228359828">המשך הצילום</translation>
 <translation id="8870695351537079478">לא ניתן להתחיל בצילום סרטון</translation>

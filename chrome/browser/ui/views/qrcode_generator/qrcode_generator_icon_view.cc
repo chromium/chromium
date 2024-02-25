@@ -32,7 +32,7 @@ QRCodeGeneratorIconView::QRCodeGeneratorIconView(
   SetVisible(false);
   SetLabel(l10n_util::GetStringUTF16(IDS_OMNIBOX_QRCODE_GENERATOR_ICON_LABEL));
   SetAccessibilityProperties(
-      /*role*/ absl::nullopt,
+      /*role*/ std::nullopt,
       l10n_util::GetStringUTF16(IDS_OMNIBOX_QRCODE_GENERATOR_ICON_TOOLTIP));
 }
 
@@ -107,7 +107,7 @@ bool QRCodeGeneratorIconView::ShouldShowLabel() const {
   return false;
 }
 
-BEGIN_METADATA(QRCodeGeneratorIconView, PageActionIconView)
+BEGIN_METADATA(QRCodeGeneratorIconView)
 END_METADATA
 
 }  // namespace qrcode_generator

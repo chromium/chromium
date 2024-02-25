@@ -6,7 +6,7 @@
 // the Chromium repo. This file should be updated first, before syncing in the
 // other repos.
 
-// Next MinVersion: 21
+// Next MinVersion: 22
 
 module ash.ime.mojom;
 
@@ -541,13 +541,14 @@ enum AssistiveWindowType {
   kLongpressDiacriticsSuggestion = 6,
 };
 
-// Next ordinal: 4
+// Next ordinal: 5
 [Stable, Extensible]
 enum AutocorrectSuggestionProvider {
   [Default] kUnknown = 0,
   kUsEnglishPrebundled = 1,
   kUsEnglishDownloaded = 2,
   kUsEnglish840 = 3,
+  [MinVersion=21] kUsEnglish840V2 = 4,
 };
 
 // Next ordinal: 1

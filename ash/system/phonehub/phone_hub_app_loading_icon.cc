@@ -5,6 +5,7 @@
 #include "ash/system/phonehub/phone_hub_app_loading_icon.h"
 
 #include "ash/style/ash_color_provider.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/compositor/layer.h"
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/image/canvas_image_source.h"
@@ -53,13 +54,13 @@ AppLoadingIcon::AppLoadingIcon(int size)
 AppLoadingIcon::~AppLoadingIcon() = default;
 
 void AppLoadingIcon::StartLoadingAnimation(
-    absl::optional<base::TimeDelta> initial_delay) {
+    std::optional<base::TimeDelta> initial_delay) {
   if (initial_delay) {
     animation_initial_delay_timer_.Start(
         FROM_HERE, *initial_delay,
         base::BindOnce(&AppLoadingIcon::StartLoadingAnimation,
                        base::Unretained(this),
-                       /*initial_delay=*/absl::nullopt));
+                       /*initial_delay=*/std::nullopt));
     return;
   }
 
@@ -77,5 +78,8 @@ void AppLoadingIcon::StopLoadingAnimation() {
   animation_abort_handle_.reset();
   animation_initial_delay_timer_.Stop();
 }
+
+BEGIN_METADATA(AppLoadingIcon)
+END_METADATA
 
 }  // namespace ash

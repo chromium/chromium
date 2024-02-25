@@ -1,5 +1,0 @@
-include_rules = [
-  "+chrome/common/chrome_switches.h",
-  "+components/crx_file",
-  "+third_party/zlib/google",
-]

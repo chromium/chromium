@@ -1,7 +1,8 @@
 include_rules = [
+    "+components/viz/test/test_context_provider.h",
     "+components/viz/test/test_gles2_interface.h",
     "+components/viz/test/test_gpu_memory_buffer_manager.h",
-    "+components/viz/test/test_context_provider.h",
+    "+components/viz/test/test_raster_interface.h",
     "+gpu/command_buffer/client/gles2_interface_stub.h",
     "+gpu/command_buffer/client/raster_implementation_gles.h",
     "+gpu/command_buffer/client/webgpu_interface_stub.h",

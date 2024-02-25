@@ -4,7 +4,8 @@
 
 #include "third_party/blink/renderer/core/css/container_query.h"
 
-#include "third_party/abseil-cpp/absl/types/optional.h"
+#include <optional>
+
 #include "third_party/blink/renderer/core/animation/document_animations.h"
 #include "third_party/blink/renderer/core/animation/element_animations.h"
 #include "third_party/blink/renderer/core/css/css_container_rule.h"
@@ -63,12 +64,12 @@ class ContainerQueryTest : public PageTestBase {
     return &container->GetContainerQuery();
   }
 
-  absl::optional<MediaQueryExpNode::FeatureFlags> FeatureFlagsFrom(
+  std::optional<MediaQueryExpNode::FeatureFlags> FeatureFlagsFrom(
       String query_string) {
     ContainerQuery* query =
         ParseContainerQuery(query_string, UnknownHandling::kAllow);
     if (!query) {
-      return absl::nullopt;
+      return std::nullopt;
     }
     return GetInnerQuery(*query).CollectFeatureFlags();
   }
@@ -289,23 +290,25 @@ TEST_F(ContainerQueryTest, ImplicitContainerSelector) {
             orientation.Type(WritingMode::kVerticalRl));
 }
 
-TEST_F(ContainerQueryTest, StickyContainerSelector) {
-  ContainerSelector stuck_right = ContainerSelectorFrom("state(stuck: right)");
-  EXPECT_EQ(kContainerTypeSticky, stuck_right.Type(WritingMode::kHorizontalTb));
+TEST_F(ContainerQueryTest, ScrollStateContainerSelector) {
+  ContainerSelector stuck_right =
+      ContainerSelectorFrom("scroll-state(stuck: right)");
+  EXPECT_EQ(kContainerTypeScrollState,
+            stuck_right.Type(WritingMode::kHorizontalTb));
 
   ContainerSelector stuck_and_style =
-      ContainerSelectorFrom("state(stuck: right) and style(--foo: bar)");
-  EXPECT_EQ(kContainerTypeSticky,
+      ContainerSelectorFrom("scroll-state(stuck: right) and style(--foo: bar)");
+  EXPECT_EQ(kContainerTypeScrollState,
             stuck_and_style.Type(WritingMode::kHorizontalTb));
 
   ContainerSelector stuck_and_inline_size = ContainerSelectorFrom(
-      "state(stuck: inset-block-end) or (inline-size > 10px)");
-  EXPECT_EQ((kContainerTypeSticky | kContainerTypeInlineSize),
+      "scroll-state(stuck: inset-block-end) or (inline-size > 10px)");
+  EXPECT_EQ((kContainerTypeScrollState | kContainerTypeInlineSize),
             stuck_and_inline_size.Type(WritingMode::kHorizontalTb));
 
-  ContainerSelector stuck_and_block_size =
-      ContainerSelectorFrom("state(stuck: inset-block-end) and (height)");
-  EXPECT_EQ((kContainerTypeSticky | kContainerTypeBlockSize),
+  ContainerSelector stuck_and_block_size = ContainerSelectorFrom(
+      "scroll-state(stuck: inset-block-end) and (height)");
+  EXPECT_EQ((kContainerTypeScrollState | kContainerTypeBlockSize),
             stuck_and_block_size.Type(WritingMode::kHorizontalTb));
 }
 
@@ -1169,7 +1172,7 @@ TEST_F(ContainerQueryTest, CQDependentContentVisibilityHidden) {
   ASSERT_TRUE(locker->GetDisplayLockContext());
   EXPECT_TRUE(locker->GetDisplayLockContext()->IsLocked());
 
-  EXPECT_TRUE(locker->firstChild()->GetComputedStyle())
+  EXPECT_TRUE(locker->firstElementChild()->GetComputedStyle())
       << "The #locker element does not get content-visibility:hidden on the "
          "first pass over its children during the lifecycle update because we "
          "do not have the container laid out at that point. This is not a spec "
@@ -1179,8 +1182,6 @@ TEST_F(ContainerQueryTest, CQDependentContentVisibilityHidden) {
 }
 
 TEST_F(ContainerQueryTest, QueryViewportDependency) {
-  ScopedCSSViewportUnits4ForTest viewport_units(true);
-
   SetBodyInnerHTML(R"HTML(
     <style>
       #container {
@@ -1232,32 +1233,6 @@ TEST_F(ContainerQueryTest, QueryViewportDependency) {
   EXPECT_TRUE(target4->ComputedStyleRef().HasDynamicViewportUnits());
 }
 
-TEST_F(ContainerQueryTest, NoStyleQueryWhenDisabled) {
-  ScopedCSSStyleQueriesForTest scope(false);
-
-  SetBodyInnerHTML(R"HTML(
-    <style>
-      @container style(--foo: bar) {
-        span { display: block }
-      }
-      @container (width > 0px) and (not style(--no: match)) {
-        span { vertical-align: middle }
-      }
-    </style>
-    <div style="container-type: inline-size; --foo: bar">
-      <span id="span"></span>
-    </div>
-  )HTML");
-
-  UpdateAllLifecyclePhasesForTest();
-  const ComputedStyle& style =
-      GetDocument().getElementById(AtomicString("span"))->ComputedStyleRef();
-  EXPECT_EQ(style.Display(), EDisplay::kInline)
-      << "style() should not match when disabled";
-  EXPECT_EQ(style.VerticalAlign(), EVerticalAlign::kBaseline)
-      << "style() should be unknown when disabled";
-}
-
 TEST_F(ContainerQueryTest, TreeScopedReferenceUserOrigin) {
   StyleSheetKey user_sheet_key("user_sheet");
   auto* parsed_user_sheet = MakeGarbageCollected<StyleSheetContents>(
@@ -1275,7 +1250,7 @@ TEST_F(ContainerQueryTest, TreeScopedReferenceUserOrigin) {
   GetStyleEngine().InjectSheet(user_sheet_key, parsed_user_sheet,
                                WebCssOrigin::kUser);
 
-  GetDocument().body()->setInnerHTMLWithDeclarativeShadowDOMForTesting(R"HTML(
+  GetDocument().body()->setHTMLUnsafe(R"HTML(
     <style>
       @container user-container (width >= 0) {
         div > span {

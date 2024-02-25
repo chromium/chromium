@@ -43,9 +43,7 @@ import org.chromium.ui.widget.ChromeImageView;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeoutException;
 
-/**
- * Tests for {@link AppMenuItemViewBinder}.
- */
+/** Tests for {@link AppMenuItemViewBinder}. */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @Batch(Batch.UNIT_TESTS)
 public class AppMenuItemViewBinderTest {
@@ -212,60 +210,76 @@ public class AppMenuItemViewBinderTest {
         MockitoAnnotations.initMocks(this);
         mClickHandler = new TestClickHandler();
 
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            mActivity = sActivityTestRule.getActivity();
-            mMenuList = new ModelListAdapter.ModelList();
-            mModelListAdapter = new ModelListAdapter(mMenuList);
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    mActivity = sActivityTestRule.getActivity();
+                    mMenuList = new ModelListAdapter.ModelList();
+                    mModelListAdapter = new ModelListAdapter(mMenuList);
 
-            mModelListAdapter.registerType(AppMenuItemType.STANDARD,
-                    new LayoutViewBuilder(R.layout.menu_item_start_with_icon),
-                    AppMenuItemViewBinder::bindStandardItem);
-            mModelListAdapter.registerType(AppMenuItemType.TITLE_BUTTON,
-                    new LayoutViewBuilder(R.layout.title_button_menu_item),
-                    AppMenuItemViewBinder::bindTitleButtonItem);
-            mModelListAdapter.registerType(AppMenuItemType.THREE_BUTTON_ROW,
-                    new LayoutViewBuilder(R.layout.icon_row_menu_item),
-                    AppMenuItemViewBinder::bindIconRowItem);
-            mModelListAdapter.registerType(AppMenuItemType.FOUR_BUTTON_ROW,
-                    new LayoutViewBuilder(R.layout.icon_row_menu_item),
-                    AppMenuItemViewBinder::bindIconRowItem);
-            mModelListAdapter.registerType(AppMenuItemType.FIVE_BUTTON_ROW,
-                    new LayoutViewBuilder(R.layout.icon_row_menu_item),
-                    AppMenuItemViewBinder::bindIconRowItem);
-        });
+                    mModelListAdapter.registerType(
+                            AppMenuItemType.STANDARD,
+                            new LayoutViewBuilder(R.layout.menu_item_start_with_icon),
+                            AppMenuItemViewBinder::bindStandardItem);
+                    mModelListAdapter.registerType(
+                            AppMenuItemType.TITLE_BUTTON,
+                            new LayoutViewBuilder(R.layout.title_button_menu_item),
+                            AppMenuItemViewBinder::bindTitleButtonItem);
+                    mModelListAdapter.registerType(
+                            AppMenuItemType.THREE_BUTTON_ROW,
+                            new LayoutViewBuilder(R.layout.icon_row_menu_item),
+                            AppMenuItemViewBinder::bindIconRowItem);
+                    mModelListAdapter.registerType(
+                            AppMenuItemType.FOUR_BUTTON_ROW,
+                            new LayoutViewBuilder(R.layout.icon_row_menu_item),
+                            AppMenuItemViewBinder::bindIconRowItem);
+                    mModelListAdapter.registerType(
+                            AppMenuItemType.FIVE_BUTTON_ROW,
+                            new LayoutViewBuilder(R.layout.icon_row_menu_item),
+                            AppMenuItemViewBinder::bindIconRowItem);
+                });
     }
 
     private PropertyModel createStandardMenuItem(int menuId, String title) {
-        PropertyModel model = new PropertyModel.Builder(AppMenuItemProperties.ALL_KEYS)
-                                      .with(AppMenuItemProperties.MENU_ITEM_ID, menuId)
-                                      .with(AppMenuItemProperties.TITLE, title)
-                                      .build();
+        PropertyModel model =
+                new PropertyModel.Builder(AppMenuItemProperties.ALL_KEYS)
+                        .with(AppMenuItemProperties.MENU_ITEM_ID, menuId)
+                        .with(AppMenuItemProperties.TITLE, title)
+                        .build();
         mMenuList.add(new ModelListAdapter.ListItem(AppMenuItemType.STANDARD, model));
 
         return model;
     }
 
-    private PropertyModel createTitleMenuItem(int mainMenuId, int titleMenuId, String title,
-            @Nullable Drawable menuIcon, int buttonMenuId, String buttonTitle, boolean checkable,
+    private PropertyModel createTitleMenuItem(
+            int mainMenuId,
+            int titleMenuId,
+            String title,
+            @Nullable Drawable menuIcon,
+            int buttonMenuId,
+            String buttonTitle,
+            boolean checkable,
             boolean checked) {
-        PropertyModel model = new PropertyModel.Builder(AppMenuItemProperties.ALL_KEYS)
-                                      .with(AppMenuItemProperties.MENU_ITEM_ID, mainMenuId)
-                                      .build();
+        PropertyModel model =
+                new PropertyModel.Builder(AppMenuItemProperties.ALL_KEYS)
+                        .with(AppMenuItemProperties.MENU_ITEM_ID, mainMenuId)
+                        .build();
 
         ModelListAdapter.ModelList subList = new ModelListAdapter.ModelList();
-        PropertyModel titleModel = new PropertyModel.Builder(AppMenuItemProperties.ALL_KEYS)
-                                           .with(AppMenuItemProperties.MENU_ITEM_ID, titleMenuId)
-                                           .with(AppMenuItemProperties.TITLE, title)
-                                           .build();
+        PropertyModel titleModel =
+                new PropertyModel.Builder(AppMenuItemProperties.ALL_KEYS)
+                        .with(AppMenuItemProperties.MENU_ITEM_ID, titleMenuId)
+                        .with(AppMenuItemProperties.TITLE, title)
+                        .build();
         if (menuIcon != null) {
             titleModel.set(AppMenuItemProperties.ICON, menuIcon);
         }
-        PropertyModel buttonModel = new PropertyModel.Builder(AppMenuItemProperties.ALL_KEYS)
-                                            .with(AppMenuItemProperties.MENU_ITEM_ID, buttonMenuId)
-                                            .with(AppMenuItemProperties.TITLE, buttonTitle)
-                                            .with(AppMenuItemProperties.CHECKABLE, checkable)
-                                            .with(AppMenuItemProperties.CHECKED, checked)
-                                            .build();
+        PropertyModel buttonModel =
+                new PropertyModel.Builder(AppMenuItemProperties.ALL_KEYS)
+                        .with(AppMenuItemProperties.MENU_ITEM_ID, buttonMenuId)
+                        .with(AppMenuItemProperties.TITLE, buttonTitle)
+                        .with(AppMenuItemProperties.CHECKABLE, checkable)
+                        .with(AppMenuItemProperties.CHECKED, checked)
+                        .build();
         subList.add(new ModelListAdapter.ListItem(0, titleModel));
         subList.add(new ModelListAdapter.ListItem(0, buttonModel));
 
@@ -275,14 +289,27 @@ public class AppMenuItemViewBinderTest {
         return model;
     }
 
-    private PropertyModel createIconRowMenuItem(int menuId, int subId1, String titleCondensed1,
-            Drawable icon1, int subId2, String titleCondensed2, Drawable icon2, int subId3,
-            String titleCondensed3, Drawable icon3, int subId4, @Nullable String titleCondensed4,
-            @Nullable Drawable icon4, int subId5, @Nullable String titleCondensed5,
+    private PropertyModel createIconRowMenuItem(
+            int menuId,
+            int subId1,
+            String titleCondensed1,
+            Drawable icon1,
+            int subId2,
+            String titleCondensed2,
+            Drawable icon2,
+            int subId3,
+            String titleCondensed3,
+            Drawable icon3,
+            int subId4,
+            @Nullable String titleCondensed4,
+            @Nullable Drawable icon4,
+            int subId5,
+            @Nullable String titleCondensed5,
             @Nullable Drawable icon5) {
-        PropertyModel model = new PropertyModel.Builder(AppMenuItemProperties.ALL_KEYS)
-                                      .with(AppMenuItemProperties.MENU_ITEM_ID, menuId)
-                                      .build();
+        PropertyModel model =
+                new PropertyModel.Builder(AppMenuItemProperties.ALL_KEYS)
+                        .with(AppMenuItemProperties.MENU_ITEM_ID, menuId)
+                        .build();
 
         ModelListAdapter.ModelList subList = new ModelListAdapter.ModelList();
         int menutype = AppMenuItemType.THREE_BUTTON_ROW;
@@ -306,21 +333,24 @@ public class AppMenuItemViewBinderTest {
 
     private void createIconMenuItem(
             ModelListAdapter.ModelList list, int id, String titleCondensed, Drawable icon) {
-        PropertyModel model = new PropertyModel.Builder(AppMenuItemProperties.ALL_KEYS)
-                                      .with(AppMenuItemProperties.MENU_ITEM_ID, id)
-                                      .with(AppMenuItemProperties.TITLE_CONDENSED, titleCondensed)
-                                      .with(AppMenuItemProperties.ICON, icon)
-                                      .build();
+        PropertyModel model =
+                new PropertyModel.Builder(AppMenuItemProperties.ALL_KEYS)
+                        .with(AppMenuItemProperties.MENU_ITEM_ID, id)
+                        .with(AppMenuItemProperties.TITLE_CONDENSED, titleCondensed)
+                        .with(AppMenuItemProperties.ICON, icon)
+                        .build();
         list.add(new ModelListAdapter.ListItem(0, model));
     }
 
     private PropertyModel createCustomMenuItem(
             int menuId, int offset, CustomViewBinder customBinder) {
-        PropertyModel model = new PropertyModel.Builder(AppMenuItemProperties.ALL_KEYS)
-                                      .with(AppMenuItemProperties.MENU_ITEM_ID, menuId)
-                                      .build();
-        mMenuList.add(new ModelListAdapter.ListItem(
-                offset + customBinder.getItemViewType(menuId), model));
+        PropertyModel model =
+                new PropertyModel.Builder(AppMenuItemProperties.ALL_KEYS)
+                        .with(AppMenuItemProperties.MENU_ITEM_ID, menuId)
+                        .build();
+        mMenuList.add(
+                new ModelListAdapter.ListItem(
+                        offset + customBinder.getItemViewType(menuId), model));
 
         return model;
     }
@@ -342,7 +372,9 @@ public class AppMenuItemViewBinderTest {
         standardModel.set(AppMenuItemProperties.CLICK_HANDLER, mClickHandler);
         view.performClick();
         mClickHandler.onClickCallback.waitForCallback(0);
-        Assert.assertEquals("Incorrect clicked item id", MENU_ID1,
+        Assert.assertEquals(
+                "Incorrect clicked item id",
+                MENU_ID1,
                 mClickHandler.lastClickedModel.get(AppMenuItemProperties.MENU_ITEM_ID));
     }
 
@@ -356,8 +388,10 @@ public class AppMenuItemViewBinderTest {
         View view = mModelListAdapter.getView(0, null, parentView);
         ChromeImageView itemIcon = view.findViewById(R.id.menu_item_icon);
 
-        standardModel.set(AppMenuItemProperties.ICON,
-                AppCompatResources.getDrawable(mActivity,
+        standardModel.set(
+                AppMenuItemProperties.ICON,
+                AppCompatResources.getDrawable(
+                        mActivity,
                         org.chromium.chrome.browser.ui.appmenu.test.R.drawable
                                 .test_ic_vintage_filter));
         Assert.assertNotNull("Should have icon for item 1", itemIcon.getDrawable());
@@ -384,7 +418,9 @@ public class AppMenuItemViewBinderTest {
 
         view2.performClick();
         mClickHandler.onClickCallback.waitForCallback(0);
-        Assert.assertEquals("Incorrect clicked item id", MENU_ID2,
+        Assert.assertEquals(
+                "Incorrect clicked item id",
+                MENU_ID2,
                 mClickHandler.lastClickedModel.get(AppMenuItemProperties.MENU_ITEM_ID));
     }
 
@@ -395,7 +431,9 @@ public class AppMenuItemViewBinderTest {
         createTitleMenuItem(MENU_ID1, MENU_ID2, TITLE_2, null, MENU_ID3, TITLE_3, true, true);
         createTitleMenuItem(MENU_ID4, MENU_ID5, TITLE_5, null, MENU_ID6, TITLE_6, true, false);
 
-        Assert.assertEquals("Wrong item view type", AppMenuItemType.TITLE_BUTTON,
+        Assert.assertEquals(
+                "Wrong item view type",
+                AppMenuItemType.TITLE_BUTTON,
                 mModelListAdapter.getItemViewType(0));
 
         ViewGroup parentView = mActivity.findViewById(android.R.id.content);
@@ -417,12 +455,17 @@ public class AppMenuItemViewBinderTest {
     @UiThreadTest
     @MediumTest
     public void testConvertView_Reused_TitleMenuItem_WithMenuIcon() {
-        Drawable icon = AppCompatResources.getDrawable(mActivity,
-                org.chromium.chrome.browser.ui.appmenu.test.R.drawable.test_ic_vintage_filter);
+        Drawable icon =
+                AppCompatResources.getDrawable(
+                        mActivity,
+                        org.chromium.chrome.browser.ui.appmenu.test.R.drawable
+                                .test_ic_vintage_filter);
         createTitleMenuItem(MENU_ID1, MENU_ID2, TITLE_2, icon, MENU_ID3, TITLE_3, true, true);
         createTitleMenuItem(MENU_ID4, MENU_ID5, TITLE_5, icon, MENU_ID6, TITLE_6, true, false);
 
-        Assert.assertEquals("Wrong item view type", AppMenuItemType.TITLE_BUTTON,
+        Assert.assertEquals(
+                "Wrong item view type",
+                AppMenuItemType.TITLE_BUTTON,
                 mModelListAdapter.getItemViewType(0));
 
         ViewGroup parentView = mActivity.findViewById(android.R.id.content);
@@ -436,23 +479,60 @@ public class AppMenuItemViewBinderTest {
     @UiThreadTest
     @MediumTest
     public void testConvertView_Reused_IconRow() {
-        Drawable icon = AppCompatResources.getDrawable(mActivity,
-                org.chromium.chrome.browser.ui.appmenu.test.R.drawable.test_ic_vintage_filter);
-        createIconRowMenuItem(1, MENU_ID1, TITLE_1, icon, MENU_ID2, TITLE_2, icon, MENU_ID3,
-                TITLE_3, icon, View.NO_ID, null, null, View.NO_ID, null, null);
-        createIconRowMenuItem(1, MENU_ID4, TITLE_4, icon, MENU_ID5, TITLE_5, icon, MENU_ID6,
-                TITLE_6, icon, View.NO_ID, null, null, View.NO_ID, null, null);
+        Drawable icon =
+                AppCompatResources.getDrawable(
+                        mActivity,
+                        org.chromium.chrome.browser.ui.appmenu.test.R.drawable
+                                .test_ic_vintage_filter);
+        createIconRowMenuItem(
+                1,
+                MENU_ID1,
+                TITLE_1,
+                icon,
+                MENU_ID2,
+                TITLE_2,
+                icon,
+                MENU_ID3,
+                TITLE_3,
+                icon,
+                View.NO_ID,
+                null,
+                null,
+                View.NO_ID,
+                null,
+                null);
+        createIconRowMenuItem(
+                1,
+                MENU_ID4,
+                TITLE_4,
+                icon,
+                MENU_ID5,
+                TITLE_5,
+                icon,
+                MENU_ID6,
+                TITLE_6,
+                icon,
+                View.NO_ID,
+                null,
+                null,
+                View.NO_ID,
+                null,
+                null);
 
         ViewGroup parentView = mActivity.findViewById(android.R.id.content);
         View view1 = mModelListAdapter.getView(0, null, parentView);
         View buttonOne = view1.findViewById(R.id.button_one);
 
-        Assert.assertEquals("Incorrect content description for item 1", TITLE_1,
+        Assert.assertEquals(
+                "Incorrect content description for item 1",
+                TITLE_1,
                 buttonOne.getContentDescription());
 
         View view2 = mModelListAdapter.getView(1, view1, parentView);
         Assert.assertEquals("Convert view should have been re-used", view1, view2);
-        Assert.assertEquals("Content description should have been updated", TITLE_4,
+        Assert.assertEquals(
+                "Content description should have been updated",
+                TITLE_4,
                 buttonOne.getContentDescription());
     }
 
@@ -463,9 +543,13 @@ public class AppMenuItemViewBinderTest {
         createStandardMenuItem(MENU_ID1, TITLE_1);
         createTitleMenuItem(MENU_ID2, MENU_ID3, TITLE_3, null, MENU_ID4, TITLE_4, true, true);
 
-        Assert.assertEquals("Wrong item view type for item 1", AppMenuItemType.STANDARD,
+        Assert.assertEquals(
+                "Wrong item view type for item 1",
+                AppMenuItemType.STANDARD,
                 mModelListAdapter.getItemViewType(0));
-        Assert.assertEquals("Wrong item view type for item 2", AppMenuItemType.TITLE_BUTTON,
+        Assert.assertEquals(
+                "Wrong item view type for item 2",
+                AppMenuItemType.TITLE_BUTTON,
                 mModelListAdapter.getItemViewType(1));
 
         ViewGroup parentView = mActivity.findViewById(android.R.id.content);
@@ -487,12 +571,45 @@ public class AppMenuItemViewBinderTest {
     @UiThreadTest
     @MediumTest
     public void testConvertView_NotReused_IconRow() {
-        Drawable icon = AppCompatResources.getDrawable(mActivity,
-                org.chromium.chrome.browser.ui.appmenu.test.R.drawable.test_ic_vintage_filter);
-        createIconRowMenuItem(1, MENU_ID1, TITLE_1, icon, MENU_ID2, TITLE_2, icon, MENU_ID3,
-                TITLE_3, icon, View.NO_ID, null, null, View.NO_ID, null, null);
-        createIconRowMenuItem(2, MENU_ID4, TITLE_4, icon, MENU_ID5, TITLE_5, icon, MENU_ID6,
-                TITLE_6, icon, MENU_ID7, TITLE_7, icon, View.NO_ID, null, null);
+        Drawable icon =
+                AppCompatResources.getDrawable(
+                        mActivity,
+                        org.chromium.chrome.browser.ui.appmenu.test.R.drawable
+                                .test_ic_vintage_filter);
+        createIconRowMenuItem(
+                1,
+                MENU_ID1,
+                TITLE_1,
+                icon,
+                MENU_ID2,
+                TITLE_2,
+                icon,
+                MENU_ID3,
+                TITLE_3,
+                icon,
+                View.NO_ID,
+                null,
+                null,
+                View.NO_ID,
+                null,
+                null);
+        createIconRowMenuItem(
+                2,
+                MENU_ID4,
+                TITLE_4,
+                icon,
+                MENU_ID5,
+                TITLE_5,
+                icon,
+                MENU_ID6,
+                TITLE_6,
+                icon,
+                MENU_ID7,
+                TITLE_7,
+                icon,
+                View.NO_ID,
+                null,
+                null);
 
         ViewGroup parentView = mActivity.findViewById(android.R.id.content);
         View view1 = mModelListAdapter.getView(0, null, parentView);
@@ -506,13 +623,18 @@ public class AppMenuItemViewBinderTest {
     public void testCustomViewBinders() {
         CustomViewBinderOne customBinder1 = new CustomViewBinderOne();
         CustomViewBinderTwo customBinder2 = new CustomViewBinderTwo();
-        mModelListAdapter.registerType(AppMenuItemType.NUM_ENTRIES,
-                new LayoutViewBuilder(R.layout.menu_item_start_with_icon), customBinder1);
-        mModelListAdapter.registerType(AppMenuItemType.NUM_ENTRIES + 1,
-                new LayoutViewBuilder(R.layout.menu_item_start_with_icon), customBinder1);
+        mModelListAdapter.registerType(
+                AppMenuItemType.NUM_ENTRIES,
+                new LayoutViewBuilder(R.layout.menu_item_start_with_icon),
+                customBinder1);
+        mModelListAdapter.registerType(
+                AppMenuItemType.NUM_ENTRIES + 1,
+                new LayoutViewBuilder(R.layout.menu_item_start_with_icon),
+                customBinder1);
         mModelListAdapter.registerType(
                 AppMenuItemType.NUM_ENTRIES + customBinder1.getViewTypeCount(),
-                new LayoutViewBuilder(R.layout.menu_item_start_with_icon), customBinder2);
+                new LayoutViewBuilder(R.layout.menu_item_start_with_icon),
+                customBinder2);
 
         createStandardMenuItem(MENU_ID1, TITLE_1);
         createCustomMenuItem(
@@ -521,8 +643,10 @@ public class AppMenuItemViewBinderTest {
                 customBinder1.supportedId2, AppMenuItemType.NUM_ENTRIES, customBinder1);
         createCustomMenuItem(
                 customBinder1.supportedId3, AppMenuItemType.NUM_ENTRIES, customBinder1);
-        createCustomMenuItem(customBinder2.supportedId1,
-                AppMenuItemType.NUM_ENTRIES + customBinder1.getViewTypeCount(), customBinder2);
+        createCustomMenuItem(
+                customBinder2.supportedId1,
+                AppMenuItemType.NUM_ENTRIES + customBinder1.getViewTypeCount(),
+                customBinder2);
 
         ViewGroup parentView = mActivity.findViewById(android.R.id.content);
         View view = mModelListAdapter.getView(0, null, parentView);
@@ -590,35 +714,49 @@ public class AppMenuItemViewBinderTest {
     @UiThreadTest
     @MediumTest
     public void testIconRowViewBinders() {
-        Drawable icon = AppCompatResources.getDrawable(mActivity,
-                org.chromium.chrome.browser.ui.appmenu.test.R.drawable.test_ic_vintage_filter);
-        createIconRowMenuItem(1, MENU_ID1, TITLE_1, icon, MENU_ID2, TITLE_2, icon, MENU_ID3,
-                TITLE_3, icon, MENU_ID4, TITLE_4, icon, MENU_ID5, TITLE_5, icon);
+        Drawable icon =
+                AppCompatResources.getDrawable(
+                        mActivity,
+                        org.chromium.chrome.browser.ui.appmenu.test.R.drawable
+                                .test_ic_vintage_filter);
+        createIconRowMenuItem(
+                1, MENU_ID1, TITLE_1, icon, MENU_ID2, TITLE_2, icon, MENU_ID3, TITLE_3, icon,
+                MENU_ID4, TITLE_4, icon, MENU_ID5, TITLE_5, icon);
 
         ViewGroup parentView = mActivity.findViewById(android.R.id.content);
         View view = mModelListAdapter.getView(0, null, parentView);
         ImageButton button = view.findViewById(R.id.button_one);
-        Assert.assertEquals("Incorrect content description for icon 1", TITLE_1,
+        Assert.assertEquals(
+                "Incorrect content description for icon 1",
+                TITLE_1,
                 button.getContentDescription());
         Assert.assertNotNull("Should have an icon for icon 1", button.getDrawable());
 
         button = view.findViewById(R.id.button_two);
-        Assert.assertEquals("Incorrect content description for icon 2", TITLE_2,
+        Assert.assertEquals(
+                "Incorrect content description for icon 2",
+                TITLE_2,
                 button.getContentDescription());
         Assert.assertNotNull("Should have an icon for icon 2", button.getDrawable());
 
         button = view.findViewById(R.id.button_three);
-        Assert.assertEquals("Incorrect content description for icon 3", TITLE_3,
+        Assert.assertEquals(
+                "Incorrect content description for icon 3",
+                TITLE_3,
                 button.getContentDescription());
         Assert.assertNotNull("Should have an icon for icon 3", button.getDrawable());
 
         button = view.findViewById(R.id.button_four);
-        Assert.assertEquals("Incorrect content description for icon 4", TITLE_4,
+        Assert.assertEquals(
+                "Incorrect content description for icon 4",
+                TITLE_4,
                 button.getContentDescription());
         Assert.assertNotNull("Should have an icon for icon 4", button.getDrawable());
 
         button = view.findViewById(R.id.button_five);
-        Assert.assertEquals("Incorrect content description for icon 5", TITLE_5,
+        Assert.assertEquals(
+                "Incorrect content description for icon 5",
+                TITLE_5,
                 button.getContentDescription());
         Assert.assertNotNull("Should have an icon for icon 5", button.getDrawable());
     }

@@ -22,11 +22,11 @@
 
 #include "absl/container/node_hash_map.h"
 #include "absl/container/node_hash_set.h"
+#include "absl/log/absl_check.h"
+#include "absl/log/absl_log.h"
 #include "absl/strings/str_cat.h"
-#include "mediapipe/framework/port/integral_types.h"
 #include "mediapipe/util/tracking/measure_time.h"
 #include "mediapipe/util/tracking/parallel_invoker.h"
-#include "absl/log/absl_check.h"
 
 namespace mediapipe {
 
@@ -129,11 +129,11 @@ void ComputeRegionFlowFeatureTexturedness(
         PatchDescriptorColorStdevL1(feature->feature_descriptor());
 
     if (feature_stdev_l1 < 0.0f) {
-      LOG_IF(WARNING,
-             []() {
-               static int k = 0;
-               return k++ < 2;
-             }())
+      ABSL_LOG_IF(WARNING,
+                  []() {
+                    static int k = 0;
+                    return k++ < 2;
+                  }())
           << "Feature descriptor does not contain variance information. Was "
           << "ComputeRegionFlowFeatureDescriptors called?";
       continue;
@@ -526,7 +526,8 @@ void IntersectRegionFlowFeatureList(
     std::vector<int>* source_indices) {
   ABSL_CHECK(from != nullptr);
   ABSL_CHECK(result != nullptr);
-  ABSL_CHECK(from->long_tracks()) << "Intersection only works for long features";
+  ABSL_CHECK(from->long_tracks())
+      << "Intersection only works for long features";
   ABSL_CHECK(to.long_tracks()) << "Intersection only works for long features";
 
   // Hash features in to, based on track_id.
@@ -564,9 +565,10 @@ void LongFeatureStream::AddFeatures(const RegionFlowFeatureList& feature_list,
                                     bool check_connectivity,
                                     bool purge_non_present_features) {
   if (!feature_list.long_tracks()) {
-    LOG(ERROR) << "Feature stream should be used only used with long feature "
-               << "tracks. Ensure POLICY_LONG_FEATURE was used for "
-               << "RegionFlowComputation.";
+    ABSL_LOG(ERROR)
+        << "Feature stream should be used only used with long feature "
+        << "tracks. Ensure POLICY_LONG_FEATURE was used for "
+        << "RegionFlowComputation.";
     return;
   }
 
@@ -576,8 +578,8 @@ void LongFeatureStream::AddFeatures(const RegionFlowFeatureList& feature_list,
   }
 
   if (std::abs(feature_list.match_frame()) != 1) {
-    LOG(ERROR) << "Only matching frames one frame from current one are "
-               << "supported";
+    ABSL_LOG(ERROR) << "Only matching frames one frame from current one are "
+                    << "supported";
     return;
   }
 
@@ -585,7 +587,7 @@ void LongFeatureStream::AddFeatures(const RegionFlowFeatureList& feature_list,
   absl::node_hash_set<int> present_tracks;
   for (auto feature : feature_list.feature()) {  // Copy feature.
     if (feature.track_id() < 0) {
-      LOG_IF(WARNING, []() {
+      ABSL_LOG_IF(WARNING, []() {
         static int k = 0;
         return k++ < 2;
       }()) << "Feature does not have a valid track id assigned. Ignoring.";
@@ -609,9 +611,9 @@ void LongFeatureStream::AddFeatures(const RegionFlowFeatureList& feature_list,
       // Track is present, add to it.
       if (check_connectivity) {
         ABSL_CHECK_LT((FeatureLocation(find_pos->second.back()) -
-                  FeatureMatchLocation(feature))
-                     .Norm2(),
-                 1e-4);
+                       FeatureMatchLocation(feature))
+                          .Norm2(),
+                      1e-4);
       }
       find_pos->second.push_back(feature);
     } else {
@@ -701,7 +703,8 @@ std::vector<Vector2_f> LongFeatureStream::FlattenedTrackById(int id) const {
 
 void LongFeatureInfo::AddFeatures(const RegionFlowFeatureList& feature_list) {
   if (!feature_list.long_tracks()) {
-    LOG(ERROR) << "Passed feature list was not computed with long tracks. ";
+    ABSL_LOG(ERROR)
+        << "Passed feature list was not computed with long tracks. ";
     return;
   }
 

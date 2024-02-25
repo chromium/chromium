@@ -20,3 +20,6 @@ Local Modifications:
 - Utilizing features available via protobuf lite
 - Using static variables over ABSL_FLAG
 - Replace FALLTHROUGH macro with C++17 attribute [[fallthrough]]
+- Fix missing absl includes
+- Fix mising libc++ includes
+- Change re2::StringPiece to absl::string_view

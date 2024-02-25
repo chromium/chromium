@@ -4,13 +4,14 @@
 
 #import "ios/chrome/browser/ui/text_zoom/text_zoom_mediator.h"
 
+#import "base/memory/raw_ptr.h"
 #import "base/scoped_observation.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list_observer_bridge.h"
 #import "ios/chrome/browser/shared/public/commands/text_zoom_commands.h"
 #import "ios/chrome/browser/ui/text_zoom/text_zoom_consumer.h"
-#import "ios/chrome/browser/web/font_size/font_size_tab_helper.h"
+#import "ios/chrome/browser/web/model/font_size/font_size_tab_helper.h"
 #import "ios/web/public/web_state.h"
 #import "ios/web/public/web_state_observer_bridge.h"
 
@@ -20,12 +21,12 @@
 
 @implementation TextZoomMediator {
   // The WebStateList observed by this mediator and the observer bridge.
-  WebStateList* _webStateList;
+  raw_ptr<WebStateList> _webStateList;
   std::unique_ptr<WebStateListObserver> _webStateListObserver;
 
   // The active WebState of the WebStateList and the observer bridge. It
   // is observed to detect navigation and to close the UI when they happen.
-  web::WebState* _activeWebState;
+  raw_ptr<web::WebState> _activeWebState;
   std::unique_ptr<web::WebStateObserver> _activeWebStateObserver;
 
   // The handler for any TextZoom commands.

@@ -1,0 +1,31 @@
+caption: Enable Related Website Sets
+default: true
+desc: |-
+  This policy allows to control the Related Website Sets feature enablement.
+
+  This policy overrides the <ph name="FIRST_PARTY_SETS_ENABLED_POLICY_NAME">FirstPartySetsEnabled</ph> policy.
+
+  When this policy is unset or set to True, the Related Website Sets feature is enabled.
+
+  When this policy is set to False, the Related Website Sets feature is disabled.
+example_value: false
+features:
+  dynamic_refresh: true
+  per_profile: true
+supported_on:
+- chrome.*:120-
+- chrome_os:120-
+- android:120-
+- fuchsia:120-
+items:
+- caption: Enable Related Website Sets
+  value: true
+- caption: Disable Related Website Sets
+  value: false
+owners:
+- sandormajor@google.com
+- chrome-first-party-sets@chromium.org
+schema:
+  type: boolean
+tags: []
+type: main

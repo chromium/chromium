@@ -11,13 +11,14 @@
 
 #include "base/containers/adapters.h"
 #include "base/logging.h"
+#include "base/notimplemented.h"
 #include "base/notreached.h"
 
 namespace base {
 
 namespace internal {
 
-int ThreadTypeToNiceValue(ThreadType thread_type) {
+BASE_EXPORT int ThreadTypeToNiceValue(ThreadType thread_type) {
   for (const auto& pair : kThreadTypeToNiceValueMap) {
     if (pair.thread_type == thread_type)
       return pair.nice_value;

@@ -12,7 +12,7 @@ INLINE_CTORS_IN_A_MACRO(InlineCtorsBehindAMacroArentOKInHeader);
 INLINE_CTORS_IN_A_MACRO(InlineCtorsBehindAMacroArentOKInHeader);
 ^
 ./inline_ctor.h:25:5: note: expanded from macro 'INLINE_CTORS_IN_A_MACRO'
-    ~CLASS_NAME() {}                        \
+    ~CLASS_NAME() {}                        /
     ^
 ./inline_ctor.h:95:1: warning: [chromium-style] Complex class/struct needs an explicit out-of-line constructor.
 struct FourNonTrivialMembers {

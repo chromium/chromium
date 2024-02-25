@@ -5,6 +5,7 @@
 #include "services/device/public/cpp/geolocation/geolocation_manager.h"
 
 #include "base/check_op.h"
+#include "base/no_destructor.h"
 #include "base/sequence_checker.h"
 #include "services/device/public/cpp/geolocation/location_system_permission_status.h"
 
@@ -15,8 +16,8 @@ namespace {
 class CheckedAccessWrapper {
  public:
   static CheckedAccessWrapper& GetInstance() {
-    static CheckedAccessWrapper wrapper;
-    return wrapper;
+    static base::NoDestructor<CheckedAccessWrapper> wrapper;
+    return *wrapper;
   }
 
   void SetManager(std::unique_ptr<GeolocationManager> manager) {
@@ -102,21 +103,15 @@ SystemGeolocationSource& GeolocationManager::SystemGeolocationSourceForTest() {
 
 #endif
 
-void GeolocationManager::TrackGeolocationAttempted() {
-#if BUILDFLAG(IS_APPLE) || BUILDFLAG(OS_LEVEL_GEOLOCATION_PERMISSION_SUPPORTED)
-  system_geolocation_source_->TrackGeolocationAttempted();
-#endif
-}
-
-void GeolocationManager::TrackGeolocationRelinquished() {
-#if BUILDFLAG(IS_APPLE) || BUILDFLAG(OS_LEVEL_GEOLOCATION_PERMISSION_SUPPORTED)
-  system_geolocation_source_->TrackGeolocationRelinquished();
-#endif
-}
-
 void GeolocationManager::RequestSystemPermission() {
 #if BUILDFLAG(IS_APPLE)
   system_geolocation_source_->RequestPermission();
+#endif
+}
+
+void GeolocationManager::OpenSystemPermissionSetting() {
+#if BUILDFLAG(IS_APPLE) || BUILDFLAG(OS_LEVEL_GEOLOCATION_PERMISSION_SUPPORTED)
+  system_geolocation_source_->OpenSystemPermissionSetting();
 #endif
 }
 

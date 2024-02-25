@@ -1,6 +1,7 @@
 caption: Extend support for Chrome Apps on <ph name="MS_WIN_NAME">Microsoft® Windows®</ph>,
   <ph name="MAC_OS_NAME">macOS</ph>, and <ph name="LINUX_OS_NAME">Linux</ph>.
 default: false
+deprecated: true
 desc: |-
   Chrome Apps are deprecated on <ph name="MS_WIN_NAME">Microsoft® Windows®</ph>, <ph name="MAC_OS_NAME">macOS</ph>, and <ph name="LINUX_OS_NAME">Linux</ph>.
         If this policy is enabled, <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph> will continue to allow Chrome Apps to be run on these platforms until the final date when Chrome Apps support is removed on all platforms, June 2022.
@@ -10,8 +11,6 @@ example_value: true
 features:
   dynamic_refresh: true
   per_profile: true
-future_on:
-- fuchsia
 items:
 - caption: Chrome Apps will be allowed to run on these platforms.
   value: true

@@ -2,7 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {ModuleMetricsProxy, ModuleMetricsProxyImpl, NuxGoogleAppsInteractions} from '../shared/module_metrics_proxy.js';
+import type {ModuleMetricsProxy} from '../shared/module_metrics_proxy.js';
+import {ModuleMetricsProxyImpl, NuxGoogleAppsInteractions} from '../shared/module_metrics_proxy.js';
 
 export class GoogleAppsMetricsProxyImpl extends ModuleMetricsProxyImpl {
   constructor() {

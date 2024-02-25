@@ -1,0 +1,20 @@
+[
+  {
+    "can_be_recommended": true,
+    "os": [
+      "ios"
+    ],
+    "policy_pref_mapping_tests": [
+      {
+        "policies": {
+          "SearchSuggestEnabled": false
+        },
+        "prefs": {
+          "search.suggest_enabled": {
+            "value": false
+          }
+        }
+      }
+    ]
+  }
+]

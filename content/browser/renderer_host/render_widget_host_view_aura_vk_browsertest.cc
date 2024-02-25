@@ -421,7 +421,7 @@ class TextInputManagerStateObserver : public TextInputManagerObserverBase {
     last_updated_active_view_ = active_view;
     RenderWidgetHostImpl* widget_host =
         static_cast<RenderWidgetHostImpl*>(active_view->GetRenderWidgetHost());
-    EXPECT_EQ(widget_host->frame_tree()->type(), FrameTree::Type::kPrimary);
+    EXPECT_TRUE(widget_host->frame_tree()->is_primary());
     OnSuccess();
     if (quit_callback_)
       std::move(quit_callback_).Run();

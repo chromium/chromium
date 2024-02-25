@@ -1,0 +1,55 @@
+[
+  {
+    "os": [
+      "chromeos_ash"
+    ],
+    "policy_pref_mapping_tests": [
+      {
+        "policies": {
+          "ParentAccessCodeConfig": {
+            "current_config": {
+              "access_code_ttl": 600,
+              "clock_drift_tolerance": 300,
+              "shared_secret": "oOA9nX02LdhYdOzwMsGof+QA3wUKP4YMNlk9S/W3o+w="
+            },
+            "future_config": {
+              "access_code_ttl": 600,
+              "clock_drift_tolerance": 300,
+              "shared_secret": "KMsoIjnpvcWmiU1GHchp2blR96mNyJwS"
+            },
+            "old_configs": [
+              {
+                "access_code_ttl": 600,
+                "clock_drift_tolerance": 300,
+                "shared_secret": "sTr6jqMTJGCbLhWI5plFTQb/VsqxwX2Q"
+              }
+            ]
+          }
+        },
+        "prefs": {
+          "child_user.parent_access_code.config": {
+            "value": {
+              "current_config": {
+                "access_code_ttl": 600,
+                "clock_drift_tolerance": 300,
+                "shared_secret": "oOA9nX02LdhYdOzwMsGof+QA3wUKP4YMNlk9S/W3o+w="
+              },
+              "future_config": {
+                "access_code_ttl": 600,
+                "clock_drift_tolerance": 300,
+                "shared_secret": "KMsoIjnpvcWmiU1GHchp2blR96mNyJwS"
+              },
+              "old_configs": [
+                {
+                  "access_code_ttl": 600,
+                  "clock_drift_tolerance": 300,
+                  "shared_secret": "sTr6jqMTJGCbLhWI5plFTQb/VsqxwX2Q"
+                }
+              ]
+            }
+          }
+        }
+      }
+    ]
+  }
+]

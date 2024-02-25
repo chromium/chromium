@@ -233,9 +233,10 @@
         .then(() => {
           throw new Error('Expected to fail, but succeeded');
         }, (error) => {
-          // Note: Per spec, error should be 'IllegalModificationError'
-          // https://crbug.com/823036
-          var expectedError = 'OperationError';
+          // Per spec, error should be 'InvalidAccessError'
+          // 4.4.1.5 Set the session description 1.4.5.6
+          // https://crbug.com/1490510
+          var expectedError = 'InvalidAccessError';
           assertEquals(expectedError, error.name);
           return logSuccess();
         });

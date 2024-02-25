@@ -1,0 +1,35 @@
+// Copyright 2021 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module blink.mojom;
+
+// An enum representing the posture of device, or an no type fold state.
+// Defined https://w3c.github.io/device-posture/#posture-types
+enum DevicePostureType {
+  kContinuous,
+  kFolded,
+};
+
+// This interface is used to get the posture of the device from
+// DevicePostureService. This service is hosted in the browser process and
+// exposes the Posture and Viewport Segments to the renderer via LocalFrame.
+interface DevicePostureProvider {
+  // Associates an interface to the posture provider. The initial posture
+  // will also be returned.
+  AddListenerAndGetCurrentPosture(
+    pending_remote<DevicePostureClient> client)
+      => (DevicePostureType posture);
+
+  // This is used by DevTools to emulate a device posture.
+  OverrideDevicePostureForEmulation(DevicePostureType posture);
+  // This is used by DevTools to disable emulation of a device posture.
+  DisableDevicePostureOverrideForEmulation();
+};
+
+// Interface that client of the DevicePostureProvider interface must implement
+// to observe posture changes.
+interface DevicePostureClient {
+  // Interface used to notify posture changes.
+  OnPostureChanged(DevicePostureType posture);
+};

@@ -1,0 +1,9 @@
+{
+  "name": "Debugger Reload and Reset History",
+  "manifest_version": 2,
+  "version": "0.1",
+  "permissions": ["debugger", "tabs"],
+  "background": {
+    "scripts": ["background.js"]
+  }
+}

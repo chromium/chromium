@@ -5,6 +5,7 @@
 #ifndef BASE_TASK_SEQUENCE_MANAGER_THREAD_CONTROLLER_H_
 #define BASE_TASK_SEQUENCE_MANAGER_THREAD_CONTROLLER_H_
 
+#include <optional>
 #include <stack>
 #include <vector>
 
@@ -15,6 +16,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/message_loop/message_pump.h"
 #include "base/profiler/sample_metadata.h"
+#include "base/rand_util.h"
 #include "base/run_loop.h"
 #include "base/task/common/lazy_now.h"
 #include "base/task/sequence_manager/associated_thread_id.h"
@@ -25,7 +27,6 @@
 #include "base/trace_event/base_tracing.h"
 #include "base/tracing_buildflags.h"
 #include "build/build_config.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base {
 
@@ -102,7 +103,7 @@ class BASE_EXPORT ThreadController {
   // immediate work into account.
   // TODO(kraynov): Remove |lazy_now| parameter.
   virtual void SetNextDelayedDoWork(LazyNow* lazy_now,
-                                    absl::optional<WakeUp> wake_up) = 0;
+                                    std::optional<WakeUp> wake_up) = 0;
 
   // Sets the sequenced task source from which to take tasks after
   // a Schedule*Work() call is made.
@@ -142,8 +143,9 @@ class BASE_EXPORT ThreadController {
 #endif
 
   // Initializes the state of all the thread controller features. Must be
-  // invoked after FeatureList initialization.
-  static void InitializeFeatures();
+  // invoked after FeatureList initialization. Set `record_sample_metadata` to
+  // always enable recording sample metadata in this class.
+  static void InitializeFeatures(bool record_sample_metadata);
 
   // Enables TimeKeeper metrics. `thread_name` will be used as a suffix.
   void EnableMessagePumpTimeKeeperMetrics(const char* thread_name);
@@ -318,6 +320,8 @@ class BASE_EXPORT ThreadController {
       // for it.
       void RecordEndOfPhase(Phase phase, LazyNow& lazy_now);
 
+      const std::string& thread_name() const { return thread_name_; }
+
      private:
       enum class ShouldRecordReqs {
         // Regular should-record requirements.
@@ -340,6 +344,7 @@ class BASE_EXPORT ThreadController {
 
       static const char* PhaseToEventName(Phase phase);
 
+      std::string thread_name_;
       // Cumulative time deltas for each phase, reported and reset when >=100ms.
       std::array<TimeDelta, Phase::kLastPhase + 1> deltas_ = {};
       // Set at the start of the first work item out-of-idle. Consumed from the
@@ -359,7 +364,7 @@ class BASE_EXPORT ThreadController {
       // non-null when recording is enabled.
       raw_ptr<HistogramBase> histogram_ = nullptr;
 #if BUILDFLAG(ENABLE_BASE_TRACING)
-      absl::optional<perfetto::Track> perfetto_track_;
+      std::optional<perfetto::Track> perfetto_track_;
 
       // True if tracing was enabled during the last pass of RecordTimeInPhase.
       bool was_tracing_enabled_ = false;
@@ -386,7 +391,7 @@ class BASE_EXPORT ThreadController {
       RunLevel(RunLevel&& other);
       RunLevel& operator=(RunLevel&&) = delete;
 
-      void UpdateState(State new_state);
+      void UpdateState(State new_state, LazyNow& lazy_now);
 
       State state() const { return state_; }
 
@@ -397,10 +402,28 @@ class BASE_EXPORT ThreadController {
       }
 
      private:
+      void LogPercentageMetric(const char* name,
+                               int value,
+                               base::TimeDelta interval_duration);
+      void LogIntervalMetric(const char* name,
+                             base::TimeDelta value,
+                             base::TimeDelta interval_duration);
+      void LogOnActiveMetrics(LazyNow& lazy_now);
+      void LogOnIdleMetrics(LazyNow& lazy_now);
+
+      base::TimeTicks last_active_end_;
+      base::TimeTicks last_active_start_;
+      base::ThreadTicks last_active_threadtick_start_;
+      MetricsSubSampler metrics_sub_sampler_;
+
       State state_ = kIdle;
       bool is_nested_;
 
       bool ShouldRecordSampleMetadata();
+
+      // Get full suffix for histogram logging purposes. |duration| should equal
+      // TimeDelta() when not applicable.
+      std::string GetSuffixForHistogram(TimeDelta duration);
 
       const raw_ref<TimeKeeper> time_keeper_;
       // Must be set shortly before ~RunLevel.

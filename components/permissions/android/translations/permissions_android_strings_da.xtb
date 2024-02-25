@@ -1,7 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="da">
-<translation id="1569387923882100876">Tilsluttet enhed</translation>
+<translation id="1569387923882100876">Forbundet enhed</translation>
 <translation id="1612196535745283361">Chrome skal have lokationsadgang for at kunne scanne efter enheder. Lokationsadgang er <ph name="BEGIN_LINK" />slået fra på denne enhed<ph name="END_LINK" />.</translation>
 <translation id="1769234867324334094"><ph name="APP_NAME" /> skal have tilladelse til at bruge dit kamera på dette website.</translation>
 <translation id="1993768208584545658"><ph name="SITE" /> vil gerne parre</translation>

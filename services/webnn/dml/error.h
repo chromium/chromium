@@ -21,6 +21,16 @@ namespace webnn::dml {
     }                                                       \
   } while (0)
 
+#define RETURN_UNEXPECTED_IF_FAILED(d3d_func)               \
+  do {                                                      \
+    HRESULT hr = d3d_func;                                  \
+    if (FAILED(hr)) {                                       \
+      DLOG(ERROR) << "Failed to call " << #d3d_func << ": " \
+                  << logging::SystemErrorCodeToString(hr);  \
+      return base::unexpected(hr);                          \
+    }                                                       \
+  } while (0)
+
 #define RETURN_NULL_IF_FAILED(d3d_func)                     \
   do {                                                      \
     HRESULT hr = d3d_func;                                  \

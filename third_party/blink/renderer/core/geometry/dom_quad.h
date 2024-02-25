@@ -34,10 +34,10 @@ class CORE_EXPORT DOMQuad : public ScriptWrappable {
           const DOMPointInit* p4);
   DOMQuad(double x, double y, double width, double height);
 
-  DOMPoint* p1() const { return p1_; }
-  DOMPoint* p2() const { return p2_; }
-  DOMPoint* p3() const { return p3_; }
-  DOMPoint* p4() const { return p4_; }
+  DOMPoint* p1() const { return p1_.Get(); }
+  DOMPoint* p2() const { return p2_.Get(); }
+  DOMPoint* p3() const { return p3_.Get(); }
+  DOMPoint* p4() const { return p4_.Get(); }
 
   DOMRect* getBounds();
 

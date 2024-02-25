@@ -4,6 +4,7 @@
 
 #include "media/mojo/services/gpu_mojo_media_client.h"
 
+#include <optional>
 #include <utility>
 
 #include "base/feature_list.h"
@@ -28,7 +29,6 @@
 #include "media/gpu/ipc/service/media_gpu_channel_manager.h"
 #include "media/mojo/mojom/video_decoder.mojom.h"
 #include "media/video/video_decode_accelerator.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace media {
 
@@ -52,10 +52,14 @@ gpu::CommandBufferStub* GetCommandBufferStub(
   if (!stub)
     return nullptr;
 
+#if !BUILDFLAG(IS_ANDROID)
   // Only allow stubs that have a ContextGroup, that is, the GLES2 ones. Later
-  // code assumes the ContextGroup is valid.
-  if (!stub->decoder_context()->GetContextGroup())
+  // code assumes the ContextGroup is valid. ContextGroup is used only by the
+  // legacy VDA implementation, which is not supported on Android.
+  if (!stub->decoder_context()->GetContextGroup()) {
     return nullptr;
+  }
+#endif
 
   return stub;
 }
@@ -90,7 +94,8 @@ VideoDecoderTraits::VideoDecoderTraits(
     GetConfigCacheCB get_cached_configs_cb,
     GetCommandBufferStubCB get_command_buffer_stub_cb,
     AndroidOverlayMojoFactoryCB android_overlay_factory_cb,
-    mojo::PendingRemote<stable::mojom::StableVideoDecoder> oop_video_decoder)
+    mojo::PendingRemote<stable::mojom::StableVideoDecoder> oop_video_decoder,
+    base::WeakPtr<MediaGpuChannelManager> media_gpu_channel_manager)
     : task_runner(std::move(task_runner)),
       gpu_task_runner(std::move(gpu_task_runner)),
       media_log(std::move(media_log)),
@@ -104,7 +109,8 @@ VideoDecoderTraits::VideoDecoderTraits(
       get_cached_configs_cb(std::move(get_cached_configs_cb)),
       get_command_buffer_stub_cb(std::move(get_command_buffer_stub_cb)),
       android_overlay_factory_cb(std::move(android_overlay_factory_cb)),
-      oop_video_decoder(std::move(oop_video_decoder)) {}
+      oop_video_decoder(std::move(oop_video_decoder)),
+      media_gpu_channel_manager(media_gpu_channel_manager) {}
 
 GpuMojoMediaClient::GpuMojoMediaClient(
     const gpu::GpuPreferences& gpu_preferences,
@@ -151,9 +157,18 @@ VideoDecoderType GpuMojoMediaClient::GetDecoderImplementationType() {
 SupportedVideoDecoderConfigs
 GpuMojoMediaClient::GetSupportedVideoDecoderConfigs() {
   if (!supported_config_cache_) {
-    supported_config_cache_ = GetSupportedVideoDecoderConfigsStatic(
-        media_gpu_channel_manager_, gpu_preferences_, gpu_workarounds_,
-        gpu_info_);
+    // Only bother to query if accelerated video decoding is enabled.
+    // (RenderMediaClient does not know about GPU features before it asks.)
+    if (gpu_preferences_.disable_accelerated_video_decode ||
+        (gpu_feature_info_
+             .status_values[gpu::GPU_FEATURE_TYPE_ACCELERATED_VIDEO_DECODE] !=
+         gpu::kGpuFeatureStatusEnabled)) {
+      supported_config_cache_ = SupportedVideoDecoderConfigs();
+    } else {
+      supported_config_cache_ = GetSupportedVideoDecoderConfigsStatic(
+          media_gpu_channel_manager_, gpu_preferences_, gpu_workarounds_,
+          gpu_info_);
+    }
 
     // Once per GPU process record accelerator information. Profile support is
     // often just manufactured and not tested, so just record the base codec.
@@ -193,7 +208,7 @@ GpuMojoMediaClient::GetSupportedVideoDecoderConfigs() {
   return supported_config_cache_.value_or(SupportedVideoDecoderConfigs{});
 }
 
-absl::optional<SupportedVideoDecoderConfigs>
+std::optional<SupportedVideoDecoderConfigs>
 GpuMojoMediaClient::GetSupportedVideoDecoderConfigsStatic(
     base::WeakPtr<MediaGpuChannelManager> manager,
     const gpu::GpuPreferences& gpu_preferences,
@@ -232,6 +247,13 @@ std::unique_ptr<VideoDecoder> GpuMojoMediaClient::CreateVideoDecoder(
     RequestOverlayInfoCB request_overlay_info_cb,
     const gfx::ColorSpace& target_color_space,
     mojo::PendingRemote<stable::mojom::StableVideoDecoder> oop_video_decoder) {
+  // Always respect GPU features.
+  if (gpu_preferences_.disable_accelerated_video_decode ||
+      (gpu_feature_info_
+           .status_values[gpu::GPU_FEATURE_TYPE_ACCELERATED_VIDEO_DECODE] !=
+       gpu::kGpuFeatureStatusEnabled)) {
+    return nullptr;
+  }
   // All implementations require a command buffer.
   if (!command_buffer_id)
     return nullptr;
@@ -249,7 +271,8 @@ std::unique_ptr<VideoDecoder> GpuMojoMediaClient::CreateVideoDecoder(
       // so this bound method will not outlive |this|
       base::BindRepeating(&GpuMojoMediaClient::GetSupportedVideoDecoderConfigs,
                           base::Unretained(this)),
-      get_stub_cb, android_overlay_factory_cb_, std::move(oop_video_decoder));
+      get_stub_cb, android_overlay_factory_cb_, std::move(oop_video_decoder),
+      media_gpu_channel_manager_);
 
   return CreatePlatformVideoDecoder(traits);
 }

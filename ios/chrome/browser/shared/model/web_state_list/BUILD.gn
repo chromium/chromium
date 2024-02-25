@@ -8,6 +8,14 @@ source_set("web_state_list") {
     "active_web_state_observation_forwarder.mm",
     "all_web_state_observation_forwarder.h",
     "all_web_state_observation_forwarder.mm",
+    "order_controller.h",
+    "order_controller.mm",
+    "order_controller_source.h",
+    "order_controller_source_from_web_state_list.h",
+    "order_controller_source_from_web_state_list.mm",
+    "removing_indexes.h",
+    "removing_indexes.mm",
+    "tab_group.h",
     "web_state_list.h",
     "web_state_list.mm",
     "web_state_list_delegate.h",
@@ -20,15 +28,12 @@ source_set("web_state_list") {
   ]
   deps = [
     "//base",
-    "//ios/chrome/browser/shared/model/web_state_list/proto",
-    "//ios/chrome/browser/web_state_list",
+    "//components/tab_groups",
     "//ios/web/public",
     "//ios/web/public:web_state_observer",
     "//ios/web/public/navigation",
     "//url",
   ]
-  allow_circular_includes_from = [ "//ios/chrome/browser/web_state_list" ]
-  public_deps = [ "//third_party/abseil-cpp:absl" ]
   frameworks = [ "Foundation.framework" ]
 }
 
@@ -37,29 +42,21 @@ source_set("unit_tests") {
   sources = [
     "active_web_state_observation_forwarder_unittest.mm",
     "all_web_state_observation_forwarder_unittest.mm",
+    "order_controller_source_from_web_state_list_unittest.mm",
+    "order_controller_unittest.mm",
+    "removing_indexes_unittest.mm",
     "web_state_list_unittest.mm",
     "web_state_opener_unittest.mm",
   ]
   deps = [
     ":web_state_list",
     "//base",
-    "//base/test:test_support",
-    "//components/favicon/ios",
-    "//ios/chrome/browser/main",
-    "//ios/chrome/browser/sessions:serialisation",
-    "//ios/chrome/browser/shared/model/browser/test:test_support",
-    "//ios/chrome/browser/shared/model/browser_state",
-    "//ios/chrome/browser/shared/model/browser_state:test_support",
+    "//components/tab_groups",
     "//ios/chrome/browser/shared/model/web_state_list/test:test_support",
-    "//ios/chrome/browser/url_loading:new_tab_animation_tab_helper",
-    "//ios/chrome/browser/web",
-    "//ios/web",
-    "//ios/web/public/session",
-    "//ios/web/public/test",
+    "//ios/web/public:web_state_observer",
     "//ios/web/public/test/fakes",
-    "//net",
+    "//testing/gmock",
     "//testing/gtest",
-    "//ui/gfx",
     "//url",
   ]
 }

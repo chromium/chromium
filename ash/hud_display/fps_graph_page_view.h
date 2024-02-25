@@ -31,9 +31,9 @@ class FPSGraphPageView : public GraphPageViewBase,
                          public ui::CompositorObserver,
                          public views::WidgetObserver,
                          public aura::WindowObserver {
- public:
-  METADATA_HEADER(FPSGraphPageView);
+  METADATA_HEADER(FPSGraphPageView, GraphPageViewBase)
 
+ public:
   explicit FPSGraphPageView(const base::TimeDelta refresh_interval);
   FPSGraphPageView(const FPSGraphPageView&) = delete;
   FPSGraphPageView& operator=(const FPSGraphPageView&) = delete;
@@ -78,7 +78,7 @@ class FPSGraphPageView : public GraphPageViewBase,
   // Active display refresh rate.
   Graph refresh_rate_;
 
-  raw_ptr<ReferenceLines, ExperimentalAsh> reference_lines_;  // not owned
+  raw_ptr<ReferenceLines> reference_lines_;  // not owned
 
   float frame_rate_for_last_half_second_;
 

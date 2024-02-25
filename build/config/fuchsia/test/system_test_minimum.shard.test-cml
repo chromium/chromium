@@ -7,9 +7,9 @@
   ],
   use: [
     {
-      directory: "config-data",
+      directory: "tzdata-icu",
       rights: [ "r*" ],
-      path: "/config/data",
+      path: "/config/tzdata/icu",
     },
     {
       storage: "cache",

@@ -34,6 +34,7 @@ source_set("public") {
     "web_state.h",
     "web_state_delegate.h",
     "web_state_delegate_bridge.h",
+    "web_state_id.h",
     "web_state_observer_bridge.h",
     "web_state_user_data.h",
   ]

@@ -1,0 +1,23 @@
+// Copyright 2023 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = "proto3";
+
+option optimize_for = LITE_RUNTIME;
+
+package parcel_tracking_db;
+
+import "components/commerce/core/proto/parcel.proto";
+
+// Used for storing parcel tracking status.
+message ParcelTrackingContent {
+  // Original key for data. It is in the form of "Carrier_tracking_id".
+  string key = 1;
+
+  // Most recent status of the parcel.
+  commerce.ParcelStatus parcel_status = 2;
+
+  // Last time since windows epoch when the parcel status is updated.
+  int64 last_update_time_usec = 3;
+}

@@ -1,7 +1,3 @@
-UNKNOWN_TYPE | UserId | User ID or MP # |  | UserId_1
-UNKNOWN_TYPE | Password | Password |  | UserId_1
-UNKNOWN_TYPE | JumpToSelection | Jump To Section | https://www.alaskaair.com/www2/ssl/myalaskaair/myalaskaair.aspx | UserId_1
-UNKNOWN_TYPE | RememberMe | Remember my User ID on this computer. | true | UserId_1
 UNKNOWN_TYPE | MyWalletInformation.UseMyWalletFunds | Use My Wallet Funds | true | MyWalletInformation.UseMyWalletFunds_1
 UNKNOWN_TYPE | GiftCardsAndCertificatesInformation.UseGiftCardsOrCertificates | Use Certificates or Gift Cards (not deposited in a My Wallet account) | true | MyWalletInformation.UseMyWalletFunds_1
 UNKNOWN_TYPE | CreditCardInformation.BillingCreditCardEntry.CardTypes_Selected | Card Type* | CreditCard | MyWalletInformation.UseMyWalletFunds_1
@@ -38,3 +34,8 @@ UNKNOWN_TYPE | AncillaryCreditCardInformation.BillingAddressEntry.OtherStates_Se
 ADDRESS_HOME_ZIP | AncillaryCreditCardInformation.BillingAddressEntry.PostalCode | Zip/Postal Code |  | AncillaryCreditCardInformation.BillingAddressEntry.Countries_Selected_3
 PHONE_HOME_COUNTRY_CODE | AncillaryCreditCardInformation.BillingPhoneNumberEntry.CountryCode_Selected | Country Code | 1 | AncillaryCreditCardInformation.BillingAddressEntry.Countries_Selected_3
 PHONE_HOME_CITY_AND_NUMBER_WITHOUT_TRUNK_PREFIX | AncillaryCreditCardInformation.BillingPhoneNumberEntry.Number | Phone (with area code) |  | AncillaryCreditCardInformation.BillingAddressEntry.Countries_Selected_3
+
+UNKNOWN_TYPE | UserId | User ID or MP # |  | UserId_1
+UNKNOWN_TYPE | Password | Password |  | UserId_1
+UNKNOWN_TYPE | JumpToSelection | Jump To Section | https://www.alaskaair.com/www2/ssl/myalaskaair/myalaskaair.aspx | UserId_1
+UNKNOWN_TYPE | RememberMe | Remember my User ID on this computer. | true | UserId_1

@@ -1,6 +1,5 @@
 This is a testharness.js-based test.
-FAIL TrackEvent created with createEvent assert_throws_dom: function "function() {
-        var ev = document.createEvent('TrackEvent');
-    }" did not throw
+[FAIL] TrackEvent created with createEvent
+  assert_throws_dom: function "function() {\n        var ev = document.createEvent('TrackEvent');\n    }" did not throw
 Harness: the test ran to completion.
 

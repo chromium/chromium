@@ -20,4 +20,6 @@ interface TypeTraitsTest {
       (PasswordFormGenerationData passed);
   PassPasswordGenerationUIData(PasswordGenerationUIData s) =>
       (PasswordGenerationUIData passed);
+  PassPasswordSuggestionRequest(PasswordSuggestionRequest s) =>
+      (PasswordSuggestionRequest passed);
 };

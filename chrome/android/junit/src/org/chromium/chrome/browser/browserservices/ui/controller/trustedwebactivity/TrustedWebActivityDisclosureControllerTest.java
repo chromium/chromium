@@ -39,28 +39,20 @@ import org.chromium.chrome.browser.browserservices.ui.controller.CurrentPageVeri
 import org.chromium.chrome.browser.browserservices.ui.controller.CurrentPageVerifier.VerificationStatus;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 
-/**
- * Tests for {@link TrustedWebActivityDisclosureController}.
- */
+/** Tests for {@link TrustedWebActivityDisclosureController}. */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
 public class TrustedWebActivityDisclosureControllerTest {
     private static final String CLIENT_PACKAGE = "com.example.twaclient";
     private static final String SCOPE = "https://www.example.com";
 
-    @Mock
-    public BrowserServicesStore mStore;
-    @Mock
-    public ActivityLifecycleDispatcher mLifecycleDispatcher;
-    @Mock
-    public CurrentPageVerifier mCurrentPageVerifier;
-    @Mock
-    public TrustedWebActivityUmaRecorder mRecorder;
-    @Mock
-    public ClientPackageNameProvider mClientPackageNameProvider;
+    @Mock public BrowserServicesStore mStore;
+    @Mock public ActivityLifecycleDispatcher mLifecycleDispatcher;
+    @Mock public CurrentPageVerifier mCurrentPageVerifier;
+    @Mock public TrustedWebActivityUmaRecorder mRecorder;
+    @Mock public ClientPackageNameProvider mClientPackageNameProvider;
 
-    @Captor
-    public ArgumentCaptor<Runnable> mVerificationObserverCaptor;
+    @Captor public ArgumentCaptor<Runnable> mVerificationObserverCaptor;
 
     public TrustedWebActivityModel mModel = new TrustedWebActivityModel();
     private TrustedWebActivityDisclosureController mController;
@@ -75,8 +67,14 @@ public class TrustedWebActivityDisclosureControllerTest {
                 .addVerificationObserver(mVerificationObserverCaptor.capture());
         doReturn(false).when(mStore).hasUserAcceptedTwaDisclosureForPackage(anyString());
 
-        mController = new TrustedWebActivityDisclosureController(mStore, mModel,
-                mLifecycleDispatcher, mCurrentPageVerifier, mRecorder, mClientPackageNameProvider);
+        mController =
+                new TrustedWebActivityDisclosureController(
+                        mStore,
+                        mModel,
+                        mLifecycleDispatcher,
+                        mCurrentPageVerifier,
+                        mRecorder,
+                        mClientPackageNameProvider);
     }
 
     @Test

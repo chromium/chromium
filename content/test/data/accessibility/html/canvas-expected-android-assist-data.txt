@@ -1,0 +1,7 @@
+WebView textSize:16.0 style:0 htmlInfo:[{htmlTag="#document"}, {display=""}]
+++View textSize:16.0 style:0 htmlInfo:[{htmlTag="body"}, {display="block"}]
+++++Image textSize:16.0 style:0 htmlInfo:[{htmlTag="canvas"}, {display="inline"}, {height="100"}, {width="100"}]
+++++++TextView text:"Static fallback" textSize:0.0 style:0 fgColor:0 htmlInfo:[{htmlTag=""}, {display=""}]
+++++Image textSize:16.0 style:0 htmlInfo:[{htmlTag="canvas"}, {display="inline"}, {height="100"}, {width="100"}]
+++++++View textSize:0.0 style:0 fgColor:0 htmlInfo:[{htmlTag="a"}, {display="inline"}, {href="#"}]
+++++++++TextView text:"Interactive fallback" textSize:0.0 style:0 fgColor:0 htmlInfo:[{htmlTag=""}, {display=""}]

@@ -6,6 +6,7 @@
 
 #include "base/functional/bind.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/color/color_id.h"
 #include "ui/color/color_provider.h"
 #include "ui/compositor/layer.h"
@@ -90,7 +91,7 @@ size_t NotificationInputContainer::GetTextfieldIndex() const {
 }
 
 void NotificationInputContainer::SetPlaceholderText(
-    const absl::optional<std::u16string>& placeholder) {
+    const std::optional<std::u16string>& placeholder) {
   textfield_->SetPlaceholderText(
       placeholder->empty()
           ? l10n_util::GetStringUTF16(GetDefaultPlaceholderStringId())
@@ -148,8 +149,8 @@ void NotificationInputContainer::OnThemeChanged() {
   UpdateButtonImage();
 }
 
-void NotificationInputContainer::Layout() {
-  View::Layout();
+void NotificationInputContainer::Layout(PassKey) {
+  LayoutSuperclass<View>(this);
 
   if (!ink_drop_container_)
     return;
@@ -229,5 +230,8 @@ void NotificationInputContainer::UpdateButtonImage() {
           kNotificationInlineReplyIcon,
           GetColorProvider()->GetColor(icon_color_id), kInputReplyButtonSize));
 }
+
+BEGIN_METADATA(NotificationInputContainer)
+END_METADATA
 
 }  // namespace message_center

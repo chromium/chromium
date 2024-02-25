@@ -45,7 +45,6 @@ if (enable_java_templates) {
       "java/src/org/chromium/build/annotations/DoNotInline.java",
       "java/src/org/chromium/build/annotations/DoNotStripLogs.java",
       "java/src/org/chromium/build/annotations/IdentifierNameString.java",
-      "java/src/org/chromium/build/annotations/MainDex.java",
       "java/src/org/chromium/build/annotations/MockedInTests.java",
       "java/src/org/chromium/build/annotations/UsedByReflection.java",
     ]
@@ -149,6 +148,7 @@ python_library("test_runner_core_py") {
   data = [
     "pylib/gtest/filter/",
     "pylib/instrumentation/render_test.html.jinja",
+    "pylib/local/machine/local_machine_hostside_tradefed_config.xml",
     "test_wrapper/logdog_wrapper.py",
     "//third_party/requests/",
   ]
@@ -169,6 +169,7 @@ group("test_runner_device_support") {
   # in pylib's constants.
   data = [
     "${public_android_sdk_build_tools}/aapt",
+    "${public_android_sdk_build_tools}/aapt2",
     "${public_android_sdk_build_tools}/dexdump",
     "${public_android_sdk_build_tools}/lib64/libc++.so",
     "${public_android_sdk_build_tools}/split-select",

@@ -18,8 +18,8 @@ import org.chromium.chrome.browser.profiles.ProfileKeyedMap;
 import org.chromium.ui.base.WindowAndroid;
 
 /**
- * Maintains a list of AutocompleteControllers associated with Profiles used by this Chrome
- * window. The controllers are not shared across windows, allowing windows to operate independently.
+ * Maintains a list of AutocompleteControllers associated with Profiles used by this Chrome window.
+ * The controllers are not shared across windows, allowing windows to operate independently.
  */
 public class AutocompleteControllerProvider implements UnownedUserData {
     private static final @NonNull UnownedUserDataKey<AutocompleteControllerProvider> KEY =
@@ -30,8 +30,8 @@ public class AutocompleteControllerProvider implements UnownedUserData {
             ProfileKeyedMap.createMapOfDestroyables();
 
     /**
-     * Autocloseable wrapper around the AutocompleteController.
-     * Used when the code requesting AutocompleteController runs in headless mode.
+     * Autocloseable wrapper around the AutocompleteController. Used when the code requesting
+     * AutocompleteController runs in headless mode.
      */
     public static class CloseableAutocompleteController implements AutoCloseable {
         private final @NonNull AutocompleteController mController;
@@ -80,7 +80,7 @@ public class AutocompleteControllerProvider implements UnownedUserData {
     /**
      * Retrieve the AutocompleteController appropriate for the supplied Profile.
      *
-     * Must be called on the UI thread.
+     * <p>Must be called on the UI thread.
      *
      * @param profile The Profile to retrieve AutocompleteController for.
      * @return AutocompleteController associated with the supplied Profile.
@@ -96,7 +96,7 @@ public class AutocompleteControllerProvider implements UnownedUserData {
     /**
      * Retrieve the AutocompleteController instance that may be used in headless context.
      *
-     * Note: This call is expensive. Use only when Chrome is running in Headless mode and it is
+     * <p>Note: This call is expensive. Use only when Chrome is running in Headless mode and it is
      * impossible to pass an instance WindowAndroid appropriate to the current context.
      */
     public static @NonNull CloseableAutocompleteController createCloseableController(
@@ -106,15 +106,15 @@ public class AutocompleteControllerProvider implements UnownedUserData {
     }
 
     /**
-     * Applies the user-supplied AutocompleteController instance as the instance to be
-     * returned upon subsequent calls to AutocompleteControllerProvider#get(Profile).
+     * Applies the user-supplied AutocompleteController instance as the instance to be returned upon
+     * subsequent calls to AutocompleteControllerProvider#get(Profile).
      *
-     * This method should only be used when it is needed to plumb the AutocompleteControllerProvider
-     * deep, and it is impossible to pass a Mock or a Test instance directly to the tested class.
-     * The caller must reset this value when it is no longer needed.
+     * <p>This method should only be used when it is needed to plumb the
+     * AutocompleteControllerProvider deep, and it is impossible to pass a Mock or a Test instance
+     * directly to the tested class. The caller must reset this value when it is no longer needed.
      *
      * @param provider Testing version of the AutocompleteControllerProvider, or null to reset the
-     *         overridde.
+     *     override.
      */
     public static void setControllerForTesting(@Nullable AutocompleteController controller) {
         sControllerForTesting = controller;

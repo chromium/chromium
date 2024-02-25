@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_ASH_PRINTING_PRINTER_AUTHENTICATOR_H_
 #define CHROME_BROWSER_ASH_PRINTING_PRINTER_AUTHENTICATOR_H_
 
+#include <optional>
 #include <string>
 
 #include "base/memory/raw_ptr.h"
@@ -13,7 +14,6 @@
 #include "chromeos/printing/cups_printer_status.h"
 #include "chromeos/printing/printer_configuration.h"
 #include "chromeos/printing/uri.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
 namespace ash {
@@ -99,8 +99,8 @@ class PrinterAuthenticator {
 
   // These fields are used to avoid showing UI elements when the class is
   // tested in unit tests.
-  absl::optional<oauth2::StatusCode> is_trusted_dialog_response_for_testing_;
-  absl::optional<oauth2::StatusCode> signin_dialog_response_for_testing_;
+  std::optional<oauth2::StatusCode> is_trusted_dialog_response_for_testing_;
+  std::optional<oauth2::StatusCode> signin_dialog_response_for_testing_;
 
   base::WeakPtrFactory<PrinterAuthenticator> weak_factory_{this};
 };

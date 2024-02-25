@@ -25,22 +25,32 @@ final class RenameExtensionDialogCoordinator {
     private final Callback<Boolean> mOnClickEventCallback;
     private final Callback<Integer> mOnDismissEventCallback;
 
-    public RenameExtensionDialogCoordinator(Context context, ModalDialogManager modalDialogManager,
+    public RenameExtensionDialogCoordinator(
+            Context context,
+            ModalDialogManager modalDialogManager,
             Callback<Boolean> onClickCallback,
             Callback</*DialogDismissalCause*/ Integer> dismissCallback) {
         mModalDialogManager = modalDialogManager;
-        mRenameExtensionDialogCustomView = (ScrollView) LayoutInflater.from(context).inflate(
-                R.layout.download_rename_extension_custom_dialog, null);
+        mRenameExtensionDialogCustomView =
+                (ScrollView)
+                        LayoutInflater.from(context)
+                                .inflate(R.layout.download_rename_extension_custom_dialog, null);
         mRenameExtensionDialogModel =
                 new PropertyModel.Builder(ModalDialogProperties.ALL_KEYS)
-                        .with(ModalDialogProperties.CONTROLLER,
+                        .with(
+                                ModalDialogProperties.CONTROLLER,
                                 new RenameExtensionDialogController())
-                        .with(ModalDialogProperties.TITLE,
+                        .with(
+                                ModalDialogProperties.TITLE,
                                 context.getString(R.string.rename_extension_confirmation))
                         .with(ModalDialogProperties.CUSTOM_VIEW, mRenameExtensionDialogCustomView)
-                        .with(ModalDialogProperties.POSITIVE_BUTTON_TEXT, context.getResources(),
+                        .with(
+                                ModalDialogProperties.POSITIVE_BUTTON_TEXT,
+                                context.getResources(),
                                 R.string.confirm)
-                        .with(ModalDialogProperties.NEGATIVE_BUTTON_TEXT, context.getResources(),
+                        .with(
+                                ModalDialogProperties.NEGATIVE_BUTTON_TEXT,
+                                context.getResources(),
                                 R.string.cancel)
                         .build();
 
@@ -68,6 +78,7 @@ final class RenameExtensionDialogCoordinator {
         public void onDismiss(PropertyModel model, int dismissalCause) {
             mOnDismissEventCallback.onResult(dismissalCause);
         }
+
         @Override
         public void onClick(PropertyModel model, int buttonType) {
             switch (buttonType) {

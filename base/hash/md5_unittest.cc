@@ -2,12 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include <string.h>
-#include <memory>
-#include <string>
-
 #include "base/hash/md5.h"
 
+#include <string.h>
+
+#include <memory>
+#include <string>
+#include <string_view>
+
+#include "base/containers/span.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace base {
@@ -27,11 +30,11 @@ TEST(MD5, DigestToBase16) {
   EXPECT_EQ(expected, actual);
 }
 
-TEST(MD5, MD5SumEmtpyData) {
+TEST(MD5, MD5SumEmptyData) {
   MD5Digest digest;
   const char data[] = "";
 
-  MD5Sum(data, strlen(data), &digest);
+  MD5Sum(base::as_byte_span(std::string_view(data)), &digest);
 
   int expected[] = {0xd4, 0x1d, 0x8c, 0xd9, 0x8f, 0x00, 0xb2, 0x04,
                     0xe9, 0x80, 0x09, 0x98, 0xec, 0xf8, 0x42, 0x7e};
@@ -44,7 +47,7 @@ TEST(MD5, MD5SumOneByteData) {
   MD5Digest digest;
   const char data[] = "a";
 
-  MD5Sum(data, strlen(data), &digest);
+  MD5Sum(base::as_byte_span(std::string_view(data)), &digest);
 
   int expected[] = {0x0c, 0xc1, 0x75, 0xb9, 0xc0, 0xf1, 0xb6, 0xa8,
                     0x31, 0xc3, 0x99, 0xe2, 0x69, 0x77, 0x26, 0x61};
@@ -54,20 +57,22 @@ TEST(MD5, MD5SumOneByteData) {
 }
 
 TEST(MD5, MD5SumLongData) {
-  const int length = 10 * 1024 * 1024 + 1;
+  const size_t length = 10 * 1024 * 1024 + 1;
   std::unique_ptr<char[]> data(new char[length]);
 
-  for (int i = 0; i < length; ++i)
+  for (size_t i = 0; i < length; ++i) {
     data[i] = i & 0xFF;
+  }
 
   MD5Digest digest;
-  MD5Sum(data.get(), length, &digest);
+  MD5Sum(base::as_byte_span(base::span(data.get(), length)), &digest);
 
   int expected[] = {0x90, 0xbd, 0x6a, 0xd9, 0x0a, 0xce, 0xf5, 0xad,
                     0xaa, 0x92, 0x20, 0x3e, 0x21, 0xc7, 0xa1, 0x3e};
 
-  for (int i = 0; i < 16; ++i)
+  for (size_t i = 0; i < 16; ++i) {
     EXPECT_EQ(expected[i], digest.a[i] & 0xFF);
+  }
 }
 
 TEST(MD5, ContextWithEmptyData) {
@@ -100,8 +105,8 @@ TEST(MD5, ContextWithLongData) {
     if (len > length - total)
       len = length - total;
 
-    MD5Update(&ctx,
-              StringPiece(reinterpret_cast<char*>(data.get() + total), len));
+    MD5Update(&ctx, std::string_view(
+                        reinterpret_cast<char*>(data.get() + total), len));
     total += len;
   }
 

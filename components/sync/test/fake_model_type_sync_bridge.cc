@@ -7,7 +7,6 @@
 #include <set>
 #include <utility>
 
-#include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
@@ -185,7 +184,7 @@ FakeModelTypeSyncBridge::CreateMetadataChangeList() {
   return std::make_unique<InMemoryMetadataChangeList>();
 }
 
-absl::optional<ModelError> FakeModelTypeSyncBridge::MergeFullSyncData(
+std::optional<ModelError> FakeModelTypeSyncBridge::MergeFullSyncData(
     std::unique_ptr<MetadataChangeList> metadata_change_list,
     EntityChangeList entity_data) {
   if (error_next_) {
@@ -202,8 +201,8 @@ absl::optional<ModelError> FakeModelTypeSyncBridge::MergeFullSyncData(
     EXPECT_NE(SupportsGetStorageKey(), storage_key.empty());
     if (storage_key.empty()) {
       if (type_ == PREFERENCES &&
-          base::Contains(values_to_ignore_,
-                         change->data().specifics.preference().value())) {
+          values_to_ignore_.contains(
+              change->data().specifics.preference().value())) {
         change_processor()->UntrackEntityForClientTagHash(
             change->data().client_tag_hash);
         continue;
@@ -230,7 +229,7 @@ absl::optional<ModelError> FakeModelTypeSyncBridge::MergeFullSyncData(
   return {};
 }
 
-absl::optional<ModelError> FakeModelTypeSyncBridge::ApplyIncrementalSyncChanges(
+std::optional<ModelError> FakeModelTypeSyncBridge::ApplyIncrementalSyncChanges(
     std::unique_ptr<MetadataChangeList> metadata_changes,
     EntityChangeList entity_changes) {
   if (error_next_) {

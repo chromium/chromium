@@ -21,6 +21,7 @@
 #include "services/tracing/public/cpp/perfetto/flow_event_utils.h"
 #include "third_party/skia/include/core/SkSurface.h"
 #include "third_party/skia/include/gpu/GrDirectContext.h"
+#include "third_party/skia/include/gpu/GrTypes.h"
 #include "third_party/skia/include/gpu/graphite/Context.h"
 #include "third_party/skia/include/gpu/graphite/Recording.h"
 #include "third_party/skia/include/private/chromium/GrDeferredDisplayList.h"
@@ -119,11 +120,13 @@ SkiaOutputDevice::SkiaOutputDevice(
     GrDirectContext* gr_context,
     skgpu::graphite::Context* graphite_context,
     gpu::MemoryTracker* memory_tracker,
-    DidSwapBufferCompleteCallback did_swap_buffer_complete_callback)
+    DidSwapBufferCompleteCallback did_swap_buffer_complete_callback,
+    ReleaseOverlaysCallback release_overlays_callback)
     : gr_context_(gr_context),
       graphite_context_(graphite_context),
       did_swap_buffer_complete_callback_(
           std::move(did_swap_buffer_complete_callback)),
+      release_overlays_callback_(std::move(release_overlays_callback)),
       memory_type_tracker_(
           std::make_unique<gpu::MemoryTypeTracker>(memory_tracker)),
       latency_tracker_(std::make_unique<ui::LatencyTracker>()),
@@ -161,7 +164,7 @@ void SkiaOutputDevice::SetViewportSize(const gfx::Size& viewport_size) {}
 
 void SkiaOutputDevice::Submit(bool sync_cpu, base::OnceClosure callback) {
   if (gr_context_) {
-    gr_context_->submit(sync_cpu);
+    gr_context_->submit(sync_cpu ? GrSyncCpu::kYes : GrSyncCpu::kNo);
   } else {
     CHECK(graphite_context_);
     graphite_context_->submit(sync_cpu ? skgpu::graphite::SyncToCpu::kYes
@@ -184,16 +187,12 @@ void SkiaOutputDevice::SetEnableDCLayers(bool enable) {
   NOTREACHED();
 }
 
-void SkiaOutputDevice::SetGpuVSyncEnabled(bool enabled) {
-  NOTREACHED();
-}
-
 bool SkiaOutputDevice::IsPrimaryPlaneOverlay() const {
   return false;
 }
 
 void SkiaOutputDevice::SchedulePrimaryPlane(
-    const absl::optional<OverlayProcessorInterface::OutputSurfaceOverlayPlane>&
+    const std::optional<OverlayProcessorInterface::OutputSurfaceOverlayPlane>&
         plane) {
   if (plane)
     NOTIMPLEMENTED();
@@ -232,16 +231,27 @@ void SkiaOutputDevice::FinishSwapBuffers(
     gfx::SwapCompletionResult result,
     const gfx::Size& size,
     OutputSurfaceFrame frame,
-    const absl::optional<gfx::Rect>& damage_area,
+    const std::optional<gfx::Rect>& damage_area,
     std::vector<gpu::Mailbox> released_overlays,
     const gpu::Mailbox& primary_plane_mailbox) {
   DCHECK(!pending_swaps_.empty());
 
+  TRACE_EVENT(
+      "viz,benchmark,graphics.pipeline", "Graphics.Pipeline",
+      perfetto::Flow::Global(frame.data.swap_trace_id),
+      [swap_trace_id = frame.data.swap_trace_id](perfetto::EventContext ctx) {
+        auto* event = ctx.event<perfetto::protos::pbzero::ChromeTrackEvent>();
+        auto* data = event->set_chrome_graphics_pipeline();
+        data->set_step(perfetto::protos::pbzero::ChromeGraphicsPipeline::
+                           StepName::STEP_FINISH_BUFFER_SWAP);
+        data->set_display_trace_id(swap_trace_id);
+      });
+
   auto release_fence = std::move(result.release_fence);
   const gpu::SwapBuffersCompleteParams& params =
-      pending_swaps_.front().Complete(std::move(result), damage_area,
-                                      std::move(released_overlays),
-                                      primary_plane_mailbox);
+      pending_swaps_.front().Complete(
+          std::move(result), damage_area, std::move(released_overlays),
+          primary_plane_mailbox, frame.data.swap_trace_id);
 
   did_swap_buffer_complete_callback_.Run(params, size,
                                          std::move(release_fence));
@@ -323,9 +333,10 @@ uint64_t SkiaOutputDevice::SwapInfo::SwapId() {
 
 const gpu::SwapBuffersCompleteParams& SkiaOutputDevice::SwapInfo::Complete(
     gfx::SwapCompletionResult result,
-    const absl::optional<gfx::Rect>& damage_rect,
+    const std::optional<gfx::Rect>& damage_rect,
     std::vector<gpu::Mailbox> released_overlays,
-    const gpu::Mailbox& primary_plane_mailbox) {
+    const gpu::Mailbox& primary_plane_mailbox,
+    int64_t swap_trace_id) {
   params_.swap_response.result = result.swap_result;
   params_.swap_response.timings.swap_end = base::TimeTicks::Now();
   params_.frame_buffer_damage_area = damage_rect;
@@ -334,6 +345,8 @@ const gpu::SwapBuffersCompleteParams& SkiaOutputDevice::SwapInfo::Complete(
 
   params_.primary_plane_mailbox = primary_plane_mailbox;
   params_.released_overlays = std::move(released_overlays);
+
+  params_.swap_trace_id = swap_trace_id;
   return params_;
 }
 

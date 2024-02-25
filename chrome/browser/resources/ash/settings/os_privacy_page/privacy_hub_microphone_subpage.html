@@ -1,0 +1,140 @@
+<style include="settings-shared">
+  .list-item:not(:last-of-type) {
+    border-bottom: var(--cr-separator-line);
+  }
+
+  #onOffText[on] {
+    color: var(--cros-text-color-prominent);
+  }
+
+  .subsection {
+    padding-inline-end: var(--cr-section-padding);
+    padding-inline-start: var(--cr-section-indent-padding);
+  }
+
+  .subsection > cr-link-row {
+    padding-inline-end: 0;
+    padding-inline-start: 0;
+  }
+
+  h2 {
+    padding-inline-start: var(--cr-section-padding);
+  }
+
+  #accessStatusRow[actionable]:hover {
+    background-color: var(--cr-hover-background-color);
+  }
+</style>
+<div
+    id="accessStatusRow"
+    class="settings-box first"
+    actionable$="[[!shouldDisableMicrophoneToggle_]]"
+    on-click="onAccessStatusRowClick_">
+  <div class="start settings-box-text" aria-hidden="true">
+    <div id="onOffText" on$="[[prefs.ash.user.microphone_allowed.value]]">
+      [[computeOnOffText_(prefs.ash.user.microphone_allowed.value)]]
+    </div>
+    <div id="onOffSubtext" class="secondary">
+      [[computeOnOffSubtext_(prefs.ash.user.microphone_allowed.value)]]
+    </div>
+  </div>
+  <div id="microphoneToggleWrapper">
+    <cr-toggle
+        id="microphoneToggle"
+        checked="{{prefs.ash.user.microphone_allowed.value}}"
+        disabled="[[shouldDisableMicrophoneToggle_]]"
+        on-click="onMicrophoneToggleClick_"
+        aria-label="$i18n{microphoneToggleTitle}"
+        aria-description="[[computeOnOffSubtext_(
+          prefs.ash.user.microphone_allowed.value)]]">
+    </cr-toggle>
+  </div>
+  <paper-tooltip
+      id="microphoneToggleTooltip"
+      hidden="[[!microphoneHardwareToggleActive_]]"
+      aria-hidden="true"
+      for="microphoneToggleWrapper"
+      fit-to-visible-bounds>
+    $i18n{microphoneHwToggleTooltip}
+  </paper-tooltip>
+</div>
+<div id="microphoneListSection" class="list-frame">
+  <template is="dom-if" if="[[isMicListEmpty_]]" restamp>
+    <div id="noMicrophoneText" class="list-item">
+      $i18n{noMicrophoneConnectedText}
+    </div>
+  </template>
+  <template is="dom-if" if="[[!isMicListEmpty_]]" restamp>
+    <template id="microphoneList" is="dom-repeat"
+        items="[[connectedMicrophoneNames_]]">
+      <div class="list-item">
+        <span id="microphoneName"
+            hidden$="[[!prefs.ash.user.microphone_allowed.value]]">
+          [[item]]
+        </span>
+        <span id="microphoneNameWithBlockedSuffix"
+            hidden$="[[prefs.ash.user.microphone_allowed.value]]">
+          [[i18n('privacyHubSensorNameWithBlockedSuffix', item)]]
+        </span>
+      </div>
+    </template>
+  </template>
+</div>
+<div class="hr"></div>
+<div id="appsSection">
+  <h2 id="appsSectionTitle">$i18n{privacyHubAppsSectionTitle}</h2>
+  <template is="dom-if" if="[[prefs.ash.user.microphone_allowed.value]]"
+      restamp>
+    <div class="list-frame">
+      <template id="appList" is="dom-repeat" items="[[appList_]]" as="app"
+          sort="alphabeticalSort_">
+          <settings-privacy-hub-app-permission-row
+              class="list-item"
+              app="[[app]]"
+              permission-type="kMicrophone">
+          </settings-privacy-hub-app-permission-row>
+      </template>
+    </div>
+  </template>
+  <template is="dom-if" if="[[!prefs.ash.user.microphone_allowed.value]]"
+      restamp>
+    <div id="noAppHasAccessText" class="settings-box-text subsection">
+      $i18n{noAppCanUseMicText}
+    </div>
+  </template>
+</div>
+<div class="hr"></div>
+<div id="websitesSection">
+  <h2 id="websitesSectionTitle">$i18n{websitesSectionTitle}</h2>
+  <cr-link-row
+      id="managePermissionsInChromeRow"
+      class="subsection"
+      start-icon="os-settings:chrome"
+      label="$i18n{manageMicPermissionsInChromeText}"
+      on-click="onManagePermissionsInChromeRowClick_"
+      hidden="[[!prefs.ash.user.microphone_allowed.value]]"
+      external>
+  </cr-link-row>
+  <div id="noWebsiteHasAccessText" class="settings-box-text subsection"
+      hidden="[[prefs.ash.user.microphone_allowed.value]]">
+    $i18n{noWebsiteCanUseMicText}
+  </div>
+</div>
+<div class="hr"></div>
+<div id="systemServicesSection">
+  <h2 id="systemServicesSectionTitle">
+    $i18n{privacyHubSystemServicesSectionTitle}
+  </h2>
+  <div class="list-frame">
+    <template id="systemServiceList" is="dom-repeat" items="[[systemApps_]]"
+        as="app" sort="alphabeticalSort_">
+      <settings-privacy-hub-system-service-row
+          class="list-item"
+          name="[[app.name]]"
+          permission-state="[[getSystemServicesPermissionText_(
+            prefs.ash.user.microphone_allowed.value)]]"
+          icon-source="chrome://app-icon/[[app.id]]/64">
+      </settings-privacy-hub-system-service-row>
+    </template>
+  </div>
+</div>

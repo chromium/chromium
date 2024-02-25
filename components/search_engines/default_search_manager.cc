@@ -20,6 +20,7 @@
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
+#include "build/chromeos_buildflags.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/pref_service.h"
 #include "components/prefs/pref_value_map.h"
@@ -28,17 +29,16 @@
 #include "components/search_engines/template_url_data_util.h"
 #include "components/search_engines/template_url_prepopulate_data.h"
 
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+#include "chromeos/crosapi/mojom/prefs.mojom.h"
+#include "chromeos/lacros/lacros_service.h"
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
+
 namespace {
 
 bool g_fallback_search_engines_disabled = false;
 
 }  // namespace
-
-// A dictionary to hold all data related to the Default Search Engine.
-// Eventually, this should replace all the data stored in the
-// default_search_provider.* prefs.
-const char DefaultSearchManager::kDefaultSearchProviderDataPrefName[] =
-    "default_search_provider_data.template_url_data";
 
 const char DefaultSearchManager::kID[] = "id";
 const char DefaultSearchManager::kShortName[] = "short_name";
@@ -88,6 +88,7 @@ const char DefaultSearchManager::kCreatedByPolicy[] = "created_by_policy";
 const char DefaultSearchManager::kDisabledByPolicy[] = "disabled_by_policy";
 const char DefaultSearchManager::kCreatedFromPlayAPI[] =
     "created_from_play_api";
+const char DefaultSearchManager::kFeaturedByPolicy[] = "featured_by_policy";
 const char DefaultSearchManager::kPreconnectToSearchUrl[] =
     "preconnect_to_search_url";
 const char DefaultSearchManager::kPrefetchLikelyNavigations[] =
@@ -98,8 +99,21 @@ const char DefaultSearchManager::kEnforcedByPolicy[] = "enforced_by_policy";
 
 DefaultSearchManager::DefaultSearchManager(
     PrefService* pref_service,
-    const ObserverCallback& change_observer)
-    : pref_service_(pref_service), change_observer_(change_observer) {
+    search_engines::SearchEngineChoiceService* search_engine_choice_service,
+    const ObserverCallback& change_observer
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+    ,
+    bool for_lacros_main_profile
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
+    )
+    : pref_service_(pref_service),
+      search_engine_choice_service_(search_engine_choice_service),
+      change_observer_(change_observer)
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+      ,
+      for_lacros_main_profile_(for_lacros_main_profile)
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
+{
   if (pref_service_) {
     pref_change_registrar_.Init(pref_service_);
     pref_change_registrar_.Add(
@@ -217,6 +231,10 @@ void DefaultSearchManager::SetUserSelectedDefaultSearchEngine(
 
   pref_service_->SetDict(kDefaultSearchProviderDataPrefName,
                          TemplateURLDataToDictionary(data));
+#if BUILDFLAG(IS_ANDROID)
+  // Commit the pref immediately so it isn't lost if the app is killed.
+  pref_service_->CommitPendingWrite();
+#endif
 }
 
 void DefaultSearchManager::ClearUserSelectedDefaultSearchEngine() {
@@ -237,6 +255,26 @@ void DefaultSearchManager::OnDefaultSearchPrefChanged() {
   // both before and after the above load.
   if (!source_was_fallback || (GetDefaultSearchEngineSource() != FROM_FALLBACK))
     NotifyObserver();
+
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  if (for_lacros_main_profile_) {
+    auto* lacros_service = chromeos::LacrosService::Get();
+    if (!lacros_service ||
+        !lacros_service->IsAvailable<crosapi::mojom::Prefs>()) {
+      LOG(WARNING) << "crosapi: Prefs API not available";
+      return;
+    }
+
+    const base::Value::Dict& dict =
+        pref_service_->GetDict(kDefaultSearchProviderDataPrefName);
+    if (dict.empty()) {
+      return;
+    }
+    lacros_service->GetRemote<crosapi::mojom::Prefs>()->SetPref(
+        crosapi::mojom::PrefPath::kDefaultSearchProviderDataPrefName,
+        base::Value(dict.Clone()), base::DoNothing());
+  }
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 }
 
 void DefaultSearchManager::OnOverridesPrefChanged() {
@@ -263,8 +301,8 @@ void DefaultSearchManager::MergePrefsDataWithPrepopulated() {
     return;
 
   std::vector<std::unique_ptr<TemplateURLData>> prepopulated_urls =
-      TemplateURLPrepopulateData::GetPrepopulatedEngines(pref_service_,
-                                                         nullptr);
+      TemplateURLPrepopulateData::GetPrepopulatedEngines(
+          pref_service_, search_engine_choice_service_, nullptr);
 
   auto default_engine = base::ranges::find(
       prepopulated_urls, prefs_default_search_->prepopulate_id,
@@ -329,7 +367,8 @@ void DefaultSearchManager::LoadDefaultSearchEngineFromPrefs() {
 
 void DefaultSearchManager::LoadPrepopulatedDefaultSearch() {
   std::unique_ptr<TemplateURLData> data =
-      TemplateURLPrepopulateData::GetPrepopulatedDefaultSearch(pref_service_);
+      TemplateURLPrepopulateData::GetPrepopulatedDefaultSearch(
+          pref_service_, search_engine_choice_service_);
   fallback_default_search_ = std::move(data);
   MergePrefsDataWithPrepopulated();
 }

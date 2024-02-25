@@ -7,6 +7,7 @@
 
 #include "base/logging.h"
 #include "base/test/scoped_feature_list.h"
+#include "skia/ext/skcolorspace_trfn.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/skia/include/effects/SkRuntimeEffect.h"
 #include "ui/gfx/color_space.h"
@@ -598,7 +599,7 @@ TEST(ColorSpaceTest, ExtendedSRGBScale) {
   ColorSpace space_unscaled = ColorSpace::CreateSRGB();
   float scale = 3.14;
   skcms_TransferFunction scaled_trfn =
-      SkTransferFnScaled(*skcms_sRGB_TransferFunction(), scale);
+      skia::ScaleTransferFunction(*skcms_sRGB_TransferFunction(), scale);
   ColorSpace space_scaled(ColorSpace::PrimaryID::BT709,
                           ColorSpace::TransferID::CUSTOM_HDR,
                           ColorSpace::MatrixID::RGB, ColorSpace::RangeID::FULL,
@@ -656,7 +657,7 @@ TEST(ColorSpaceTest, ScrgbLinear80Nits) {
 
     ColorTransform::Options options;
     ColorTransform::RuntimeOptions runtime_options;
-    runtime_options.sdr_max_luminance_nits = kSdrWhite;
+    runtime_options.dst_sdr_max_luminance_nits = kSdrWhite;
 
     std::unique_ptr<ColorTransform> xform(
         ColorTransform::NewColorTransform(src_srgb, dst, options));
@@ -676,7 +677,7 @@ TEST(ColorSpaceTest, ScrgbLinear80Nits) {
     ColorTransform::Options options;
     ColorTransform::RuntimeOptions runtime_options;
     options.tone_map_pq_and_hlg_to_dst = true;
-    runtime_options.sdr_max_luminance_nits = kSdrWhite;
+    runtime_options.dst_sdr_max_luminance_nits = kSdrWhite;
     runtime_options.dst_max_luminance_relative = kDstMaxLumRel;
 
     std::unique_ptr<ColorTransform> xform(
@@ -701,7 +702,7 @@ TEST(ColorSpaceTest, ScrgbLinear80Nits) {
 
     ColorTransform::Options options;
     ColorTransform::RuntimeOptions runtime_options;
-    runtime_options.sdr_max_luminance_nits = kSdrWhite;
+    runtime_options.dst_sdr_max_luminance_nits = kSdrWhite;
 
     std::unique_ptr<ColorTransform> xform(
         ColorTransform::NewColorTransform(src_hlg, dst, options));
@@ -727,7 +728,7 @@ TEST(ColorSpaceTest, ScrgbLinear80Nits) {
     ColorTransform::Options options;
     ColorTransform::RuntimeOptions runtime_options;
     options.tone_map_pq_and_hlg_to_dst = true;
-    runtime_options.sdr_max_luminance_nits = kSdrWhite;
+    runtime_options.dst_sdr_max_luminance_nits = kSdrWhite;
     runtime_options.dst_max_luminance_relative = kDstMaxLumRel;
 
     std::unique_ptr<ColorTransform> xform(
@@ -768,7 +769,7 @@ TEST(ColorSpaceTest, HLGTonemap) {
     ColorTransform::RuntimeOptions runtime_options;
     constexpr float kSdrWhite = 100.f;
     constexpr float kDstMaxLumRel = 2.f;
-    runtime_options.sdr_max_luminance_nits = kSdrWhite;
+    runtime_options.dst_sdr_max_luminance_nits = kSdrWhite;
     runtime_options.dst_max_luminance_relative = kDstMaxLumRel;
 
     ColorTransform::TriStim val(1.f, 1.f, 1.f);
@@ -781,7 +782,7 @@ TEST(ColorSpaceTest, HLGTonemap) {
     ColorTransform::RuntimeOptions runtime_options;
     constexpr float kSdrWhite = 250.f;
     constexpr float kDstMaxLumRel = 6.f;
-    runtime_options.sdr_max_luminance_nits = kSdrWhite;
+    runtime_options.dst_sdr_max_luminance_nits = kSdrWhite;
     runtime_options.dst_max_luminance_relative = kDstMaxLumRel;
 
     ColorTransform::TriStim val(1.f, 1.f, 1.f);
@@ -807,7 +808,7 @@ TEST(ColorSpaceTest, HLGNoTonemap) {
   ColorTransform::RuntimeOptions runtime_options;
   constexpr float kSdrWhite = 100.f;
   constexpr float kDstMaxLumRel = 2.f;
-  runtime_options.sdr_max_luminance_nits = kSdrWhite;
+  runtime_options.dst_sdr_max_luminance_nits = kSdrWhite;
   runtime_options.dst_max_luminance_relative = kDstMaxLumRel;
 
   // HLG 75% will match 203 nits.
@@ -844,7 +845,7 @@ TEST(ColorSpaceTest, HLGTonemapSdrRelative) {
     ColorTransform::RuntimeOptions runtime_options;
     constexpr float kSdrWhite = 100.f;
     constexpr float kDstMaxLumRel = 2.f;
-    runtime_options.sdr_max_luminance_nits = kSdrWhite;
+    runtime_options.dst_sdr_max_luminance_nits = kSdrWhite;
     runtime_options.dst_max_luminance_relative = kDstMaxLumRel;
 
     ColorTransform::TriStim val(1.f, 1.f, 1.f);
@@ -857,7 +858,7 @@ TEST(ColorSpaceTest, HLGTonemapSdrRelative) {
     ColorTransform::RuntimeOptions runtime_options;
     constexpr float kSdrWhite = 250.f;
     constexpr float kDstMaxLumRel = 6.f;
-    runtime_options.sdr_max_luminance_nits = kSdrWhite;
+    runtime_options.dst_sdr_max_luminance_nits = kSdrWhite;
     runtime_options.dst_max_luminance_relative = kDstMaxLumRel;
 
     ColorTransform::TriStim val(1.f, 1.f, 1.f);
@@ -883,7 +884,7 @@ TEST(ColorSpaceTest, HLGNoTonemapSdrRelative) {
   ColorTransform::RuntimeOptions runtime_options;
   constexpr float kSdrWhite = 100.f;
   constexpr float kDstMaxLumRel = 2.f;
-  runtime_options.sdr_max_luminance_nits = kSdrWhite;
+  runtime_options.dst_sdr_max_luminance_nits = kSdrWhite;
   runtime_options.dst_max_luminance_relative = kDstMaxLumRel;
 
   // HLG 75% will match 203 nits.
@@ -922,7 +923,7 @@ TEST(ColorSpaceTest, PQTonemapSdrRelative) {
     ColorTransform::RuntimeOptions runtime_options;
     constexpr float kSdrWhite = 100.f;
     constexpr float kDstMaxLumRel = 2.f;
-    runtime_options.sdr_max_luminance_nits = kSdrWhite;
+    runtime_options.dst_sdr_max_luminance_nits = kSdrWhite;
     runtime_options.dst_max_luminance_relative = kDstMaxLumRel;
 
     ColorTransform::TriStim val(1.f, 1.f, 1.f);
@@ -936,7 +937,7 @@ TEST(ColorSpaceTest, PQTonemapSdrRelative) {
     ColorTransform::RuntimeOptions runtime_options;
     constexpr float kSdrWhite = 100.f;
     constexpr float kDstMaxLumRel = 2.f;
-    runtime_options.sdr_max_luminance_nits = kSdrWhite;
+    runtime_options.dst_sdr_max_luminance_nits = kSdrWhite;
     runtime_options.dst_max_luminance_relative = kDstMaxLumRel;
     runtime_options.src_hdr_metadata =
         HDRMetadata(HdrMetadataCta861_3(1000.f, 100.f));
@@ -951,7 +952,7 @@ TEST(ColorSpaceTest, PQTonemapSdrRelative) {
     ColorTransform::RuntimeOptions runtime_options;
     constexpr float kSdrWhite = 90.f;
     constexpr float kDstMaxLumRel = 51.f;
-    runtime_options.sdr_max_luminance_nits = kSdrWhite;
+    runtime_options.dst_sdr_max_luminance_nits = kSdrWhite;
     runtime_options.dst_max_luminance_relative = kDstMaxLumRel;
 
     ColorTransform::TriStim val(1.f, 1.f, 1.f);
@@ -966,7 +967,7 @@ TEST(ColorSpaceTest, PQTonemapSdrRelative) {
     ColorTransform::RuntimeOptions runtime_options;
     constexpr float kSdrWhite = 100.f;
     constexpr float kDstMaxLumRel = 6.f;
-    runtime_options.sdr_max_luminance_nits = kSdrWhite;
+    runtime_options.dst_sdr_max_luminance_nits = kSdrWhite;
     runtime_options.dst_max_luminance_relative = kDstMaxLumRel;
     runtime_options.src_hdr_metadata =
         HDRMetadata(HdrMetadataCta861_3(1000.f, 100.f));
@@ -997,7 +998,7 @@ TEST(ColorSpaceTest, PQSDRWhiteLevel) {
     const ColorSpace hdr10 = ColorSpace::CreateHDR10();
     ColorTransform::Options options;
     ColorTransform::RuntimeOptions runtime_options;
-    runtime_options.sdr_max_luminance_nits = nits[i];
+    runtime_options.dst_sdr_max_luminance_nits = nits[i];
 
     // Transform to the same color space, but with the LINEAR_HDR transfer
     // function.
@@ -1062,7 +1063,7 @@ TEST(ColorSpaceTest, HLGSDRWhiteLevel) {
     const ColorSpace hlg = ColorSpace::CreateHLG();
     ColorTransform::Options options;
     ColorTransform::RuntimeOptions runtime_options;
-    runtime_options.sdr_max_luminance_nits = nits[i];
+    runtime_options.dst_sdr_max_luminance_nits = nits[i];
 
     // Transform to the same color space, but with the LINEAR_HDR transfer
     // function.

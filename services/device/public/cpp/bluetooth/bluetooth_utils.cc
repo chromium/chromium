@@ -4,13 +4,15 @@
 
 #include "services/device/public/cpp/bluetooth/bluetooth_utils.h"
 
+#include "base/no_destructor.h"
+
 namespace device {
 
 const BluetoothUUID& GetSerialPortProfileUUID() {
   // The Serial Port Profile (SPP) UUID is 1101.
   // https://chromium-review.googlesource.com/c/chromium/src/+/2334682/17..19
-  static const BluetoothUUID kValue("1101");
-  return kValue;
+  static const base::NoDestructor<BluetoothUUID> kValue("1101");
+  return *kValue;
 }
 
 }  // namespace device

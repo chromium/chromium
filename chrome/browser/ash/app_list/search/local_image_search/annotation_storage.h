@@ -28,10 +28,13 @@ struct ImageInfo {
   base::FilePath path;
   // The image's last modified time.
   base::Time last_modified;
+  // File size.
+  int64_t file_size;
 
   ImageInfo(const std::set<std::string>& annotations,
             const base::FilePath& path,
-            const base::Time& last_modified);
+            const base::Time& last_modified,
+            int64_t file_size);
 
   ~ImageInfo();
   ImageInfo(const ImageInfo&);
@@ -44,7 +47,6 @@ struct ImageInfo {
 class AnnotationStorage {
  public:
   AnnotationStorage(const base::FilePath& path_to_db,
-                    const std::string& histogram_tag,
                     std::unique_ptr<ImageAnnotationWorker> annotation_worker);
   AnnotationStorage(const AnnotationStorage&) = delete;
   AnnotationStorage& operator=(const AnnotationStorage&) = delete;
@@ -60,7 +62,14 @@ class AnnotationStorage {
   void Remove(const base::FilePath& image_path);
 
   // Returns all the stored annotations.
-  std::vector<ImageInfo> GetAllAnnotations();
+  std::vector<ImageInfo> GetAllAnnotationsForTest();
+
+  // Returns all the stored file paths.
+  std::vector<base::FilePath> GetAllFiles();
+
+  // Find all the files in a directory.
+  std::vector<base::FilePath> SearchByDirectory(
+      const base::FilePath& directory) const;
 
   // Searches the database for a desired `image_path`.
   std::vector<ImageInfo> FindImagePath(const base::FilePath& image_path);
@@ -71,7 +80,6 @@ class AnnotationStorage {
 
  private:
   AnnotationStorage(const base::FilePath& path_to_db,
-                    const std::string& histogram_tag,
                     int current_version_number,
                     std::unique_ptr<ImageAnnotationWorker> annotation_worker);
 

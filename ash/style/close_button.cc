@@ -9,7 +9,6 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/models/image_model.h"
-#include "ui/compositor/layer.h"
 #include "ui/gfx/vector_icon_types.h"
 #include "ui/strings/grit/ui_strings.h"
 #include "ui/views/background.h"
@@ -76,9 +75,6 @@ CloseButton::CloseButton(PressedCallback callback,
                          ui::ColorId background_color_id,
                          ui::ColorId icon_color_id)
     : ImageButton(std::move(callback)), type_(type) {
-  SetPaintToLayer();
-  layer()->SetFillsBoundsOpaquely(false);
-
   SetImageHorizontalAlignment(views::ImageButton::ALIGN_CENTER);
   SetImageVerticalAlignment(views::ImageButton::ALIGN_MIDDLE);
   SetTooltipText(l10n_util::GetStringUTF16(IDS_APP_ACCNAME_CLOSE));
@@ -143,12 +139,13 @@ bool CloseButton::DoesIntersectRect(const views::View* target,
   const int button_size = GetCloseButtonSize(type_);
   // Only increase the hittest area for touch events (which have a non-empty
   // bounding box), not for mouse event.
-  if (!views::UsePointBasedTargeting(rect))
+  if (!views::UsePointBasedTargeting(rect)) {
     button_bounds.Inset(gfx::Insets::VH(-button_size / 2, -button_size / 2));
+  }
   return button_bounds.Intersects(rect);
 }
 
-BEGIN_METADATA(CloseButton, views::ImageButton)
+BEGIN_METADATA(CloseButton)
 END_METADATA
 
 }  // namespace ash

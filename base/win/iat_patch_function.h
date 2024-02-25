@@ -9,7 +9,6 @@
 
 #include "base/base_export.h"
 #include "base/memory/raw_ptr.h"
-#include "base/memory/raw_ptr_exclusion.h"
 
 namespace base {
 namespace win {
@@ -71,12 +70,8 @@ class BASE_EXPORT IATPatchFunction {
  private:
   HMODULE module_handle_ = nullptr;
   raw_ptr<void> intercept_function_ = nullptr;
-  // This field is not a raw_ptr<> because it was filtered by the rewriter for:
-  // #addr-of
-  RAW_PTR_EXCLUSION void* original_function_ = nullptr;
-  // This field is not a raw_ptr<> because it was filtered by the rewriter for:
-  // #addr-of
-  RAW_PTR_EXCLUSION IMAGE_THUNK_DATA* iat_thunk_ = nullptr;
+  raw_ptr<void> original_function_ = nullptr;
+  raw_ptr<IMAGE_THUNK_DATA> iat_thunk_ = nullptr;
 };
 
 }  // namespace win

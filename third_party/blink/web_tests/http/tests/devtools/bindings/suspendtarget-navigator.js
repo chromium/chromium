@@ -6,14 +6,15 @@ import {TestRunner} from 'test_runner';
 import {SourcesTestRunner} from 'sources_test_runner';
 import {BindingsTestRunner} from 'bindings_test_runner';
 
+import * as Sources from 'devtools/panels/sources/sources.js';
+import * as UI from 'devtools/ui/legacy/legacy.js';
 import * as SDK from 'devtools/core/sdk/sdk.js';
 
 (async function() {
   TestRunner.addResult(`Verify that navigator is rendered properly when targets are suspended and resumed.\n`);
-  await TestRunner.loadLegacyModule('sources');
 
-  var sourcesNavigator = new Sources.NetworkNavigatorView();
-  sourcesNavigator.show(UI.inspectorView.element);
+  var sourcesNavigator = new Sources.SourcesNavigator.NetworkNavigatorView();
+  sourcesNavigator.show(UI.InspectorView.InspectorView.instance().element);
 
   TestRunner.markStep('initialWorkspace');
   SourcesTestRunner.dumpNavigatorView(sourcesNavigator, false);

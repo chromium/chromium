@@ -12,11 +12,14 @@ namespace {
 class PrefetchTypeTest : public ::testing::Test {};
 
 TEST_F(PrefetchTypeTest, GetPrefetchTypeParams) {
-  PrefetchType prefetch_type1(/*use_prefetch_proxy=*/true,
+  PrefetchType prefetch_type1(PreloadingTriggerType::kSpeculationRule,
+                              /*use_prefetch_proxy=*/true,
                               blink::mojom::SpeculationEagerness::kEager);
-  PrefetchType prefetch_type2(/*use_prefetch_proxy=*/false,
+  PrefetchType prefetch_type2(PreloadingTriggerType::kSpeculationRule,
+                              /*use_prefetch_proxy=*/false,
                               blink::mojom::SpeculationEagerness::kEager);
   PrefetchType prefetch_type3(
+      PreloadingTriggerType::kSpeculationRule,
       /*use_prefetch_proxy=*/false,
       blink::mojom::SpeculationEagerness::kConservative);
 
@@ -34,13 +37,17 @@ TEST_F(PrefetchTypeTest, GetPrefetchTypeParams) {
 }
 
 TEST_F(PrefetchTypeTest, ComparePrefetchTypes) {
-  PrefetchType prefetch_type1(/*use_prefetch_proxy=*/true,
+  PrefetchType prefetch_type1(PreloadingTriggerType::kSpeculationRule,
+                              /*use_prefetch_proxy=*/true,
                               blink::mojom::SpeculationEagerness::kEager);
-  PrefetchType prefetch_type2(/*use_prefetch_proxy=*/true,
+  PrefetchType prefetch_type2(PreloadingTriggerType::kSpeculationRule,
+                              /*use_prefetch_proxy=*/true,
                               blink::mojom::SpeculationEagerness::kEager);
-  PrefetchType prefetch_type3(/*use_prefetch_proxy=*/false,
+  PrefetchType prefetch_type3(PreloadingTriggerType::kSpeculationRule,
+                              /*use_prefetch_proxy=*/false,
                               blink::mojom::SpeculationEagerness::kEager);
   PrefetchType prefetch_type4(
+      PreloadingTriggerType::kSpeculationRule,
       /*use_prefetch_proxy=*/true,
       blink::mojom::SpeculationEagerness::kConservative);
 
@@ -53,10 +60,14 @@ TEST_F(PrefetchTypeTest, ComparePrefetchTypes) {
 
 TEST_F(PrefetchTypeTest, WptProxyTest) {
   PrefetchType prefetch_types[] = {
-      {/*use_proxy*/ true, blink::mojom::SpeculationEagerness::kEager},
-      {/*use_proxy*/ true, blink::mojom::SpeculationEagerness::kEager},
-      {/*use_proxy*/ false, blink::mojom::SpeculationEagerness::kEager},
-      {/*use_proxy*/ false, blink::mojom::SpeculationEagerness::kEager},
+      {PreloadingTriggerType::kSpeculationRule, /*use_proxy*/ true,
+       blink::mojom::SpeculationEagerness::kEager},
+      {PreloadingTriggerType::kSpeculationRule, /*use_proxy*/ true,
+       blink::mojom::SpeculationEagerness::kEager},
+      {PreloadingTriggerType::kSpeculationRule, /*use_proxy*/ false,
+       blink::mojom::SpeculationEagerness::kEager},
+      {PreloadingTriggerType::kSpeculationRule, /*use_proxy*/ false,
+       blink::mojom::SpeculationEagerness::kEager},
   };
   for (auto& prefetch_type : prefetch_types) {
     EXPECT_FALSE(prefetch_type.IsProxyBypassedForTesting());

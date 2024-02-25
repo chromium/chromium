@@ -6,6 +6,7 @@
 #define MEDIA_MUXERS_MP4_MUXER_DELEGATE_H_
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -19,73 +20,94 @@
 #include "media/formats/mp4/writable_box_definitions.h"
 #include "media/muxers/mp4_muxer_context.h"
 #include "media/muxers/muxer.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace media {
 
 class AudioParameters;
+class Mp4MuxerDelegateFragment;
+
+class Mp4MuxerDelegateInterface {
+ public:
+  virtual ~Mp4MuxerDelegateInterface() = default;
+
+  virtual void AddVideoFrame(
+      const Muxer::VideoParameters& params,
+      std::string encoded_data,
+      std::optional<VideoEncoder::CodecDescription> codec_description,
+      base::TimeTicks timestamp,
+      bool is_key_frame) = 0;
+
+  virtual void AddAudioFrame(
+      const AudioParameters& params,
+      std::string encoded_data,
+      std::optional<AudioEncoder::CodecDescription> codec_description,
+      base::TimeTicks timestamp) = 0;
+
+  virtual bool Flush() = 0;
+
+  virtual bool FlushFragment() = 0;
+};
 
 // Mp4MuxerDelegate builds the MP4 boxes from the encoded stream.
 // The boxes fields will start to be populated from the first stream and
 // complete in the `Flush` API call. The created box data is a complete
 // MP4 format and internal data will be cleared at the end of `Flush`.
-class MEDIA_EXPORT Mp4MuxerDelegate {
+class MEDIA_EXPORT Mp4MuxerDelegate : public Mp4MuxerDelegateInterface {
  public:
-  Mp4MuxerDelegate(
+  explicit Mp4MuxerDelegate(
       Muxer::WriteDataCB write_callback,
-      base::TimeDelta max_audio_only_fragment_duration = base::Seconds(5));
-  ~Mp4MuxerDelegate();
+      size_t audio_sample_count_per_fragment = kAudioFragmentCount);
+  ~Mp4MuxerDelegate() override;
   Mp4MuxerDelegate(const Mp4MuxerDelegate&) = delete;
   Mp4MuxerDelegate& operator=(const Mp4MuxerDelegate&) = delete;
 
   void AddVideoFrame(
       const Muxer::VideoParameters& params,
-      base::StringPiece encoded_data,
-      absl::optional<VideoEncoder::CodecDescription> codec_description,
+      std::string encoded_data,
+      std::optional<VideoEncoder::CodecDescription> codec_description,
       base::TimeTicks timestamp,
-      bool is_key_frame);
+      bool is_key_frame) override;
 
   void AddAudioFrame(
       const AudioParameters& params,
-      base::StringPiece encoded_data,
-      absl::optional<AudioEncoder::CodecDescription> codec_description,
-      base::TimeTicks timestamp);
+      std::string encoded_data,
+      std::optional<AudioEncoder::CodecDescription> codec_description,
+      base::TimeTicks timestamp) override;
   // Write to the big endian ISO-BMFF boxes and call `write_callback`.
-  void Flush();
-
-  struct Fragment {
-    Fragment();
-    ~Fragment() = default;
-    Fragment(const Fragment&) = delete;
-    Fragment& operator=(const Fragment&) = delete;
-
-    mp4::writable_boxes::MovieFragment moof;
-    mp4::writable_boxes::MediaData mdat;
-  };
+  bool Flush() override;
+  bool FlushFragment() override;
 
  private:
   void BuildFileTypeBox(mp4::writable_boxes::FileType& mp4_file_type_box);
   void BuildMovieBox();
   void BuildVideoTrackFragmentRandomAccess(
+      base::TimeTicks start_timestamp,
       mp4::writable_boxes::TrackFragmentRandomAccess&
           fragment_random_access_box_writer,
-      Fragment& fragment,
       size_t written_offset);
 
-  void BuildVideoTrackWithKeyframe(
-      const Muxer::VideoParameters& params,
-      base::StringPiece encoded_data,
-      VideoEncoder::CodecDescription codec_description);
-  void BuildVideoFragment(base::StringPiece encoded_data, bool is_key_frame);
-  void BuildAudioTrack(const AudioParameters& params,
-                       base::StringPiece encoded_data,
-                       AudioEncoder::CodecDescription codec_description);
-  void BuildAudioFragment(base::StringPiece encoded_data);
+  void BuildMovieVideoTrack(const Muxer::VideoParameters& params,
+                            std::string encoded_data,
+                            VideoEncoder::CodecDescription codec_description);
+  void AddDataToVideoFragment(std::string encoded_data, bool is_key_frame);
+  void BuildMovieAudioTrack(const AudioParameters& params,
+                            std::string encoded_data,
+                            AudioEncoder::CodecDescription codec_description);
+  void AddDataToAudioFragment(std::string encoded_data);
 
   void AddLastSampleTimestamp(int track_index, base::TimeDelta inverse_of_rate);
   int GetNextTrackIndex();
+  void CreateFragmentIfNeeded(bool audio, bool is_key_frame);
   void EnsureInitialized();
-  void Reset();
+  void LogBoxInfo() const;
+
+  // The `MaybeFlushFileTypeBoxForStartup` function will be called to write the
+  // file type box when the first frame is added, which makes `onstart` event
+  // fired. It will return the size of the file type box.
+  size_t MaybeFlushFileTypeBoxForStartup();
+  size_t MaybeFlushMoovBox();
+  void MaybeFlushMoofAndMfraBoxes(size_t written_offset);
+  size_t GetAudioOnlyFragmentCount() const;
 
   std::unique_ptr<Mp4MuxerContext> context_;
   Muxer::WriteDataCB write_callback_;
@@ -95,12 +117,13 @@ class MEDIA_EXPORT Mp4MuxerDelegate {
 
   // Only key video frame has `SPS` and `PPS` and it will be a
   // signal of new fragment. In Windows, key frame is every 100th frame.
-  std::vector<std::unique_ptr<Fragment>> fragments_;
+  std::vector<std::unique_ptr<Mp4MuxerDelegateFragment>> fragments_;
 
   // video and audio index is a 0 based index that is an item of the container.
   // The track id would be plus one on this index value.
-  absl::optional<int> video_track_index_;
-  absl::optional<int> audio_track_index_;
+  std::optional<size_t> video_track_index_;
+  std::optional<size_t> audio_track_index_;
+
   int next_track_index_ = 0;
 
   // Duration time delta for the video track.
@@ -114,10 +137,23 @@ class MEDIA_EXPORT Mp4MuxerDelegate {
   double video_frame_rate_ = 0;
   int audio_sample_rate_ = 0;
 
-  base::TimeDelta max_audio_only_fragment_duration_;
+  // Flush for startup is only called once.
+  std::optional<size_t> written_file_type_box_size_;
+
+  std::optional<size_t> written_mov_box_size_;
+
+  bool live_mode_ = false;
+
+  uint32_t sequence_number_ = 1;
+
+  // 1000 is a count that audio samples in the same fragment
+  // when no video frame is added. In Windows, when video frames are present,
+  // the audio counts per fragment is much less than it.
+  static constexpr uint32_t kAudioFragmentCount = 1000u;
+
+  const size_t audio_sample_count_per_fragment_;
 
   Muxer::WriteDataCB write_data_callback_ GUARDED_BY_CONTEXT(sequence_checker_);
-
   SEQUENCE_CHECKER(sequence_checker_);
 };
 

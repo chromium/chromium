@@ -14,6 +14,7 @@
 #include "base/base_paths_android.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
+#include "base/hash/hash.h"
 #include "base/i18n/rtl.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/metrics/persistent_histogram_allocator.h"
@@ -29,11 +30,12 @@
 #include "components/embedder_support/android/metrics/android_metrics_log_uploader.h"
 #include "components/embedder_support/android/metrics/jni/AndroidMetricsServiceClient_jni.h"
 #include "components/metrics/android_metrics_provider.h"
-#include "components/metrics/call_stack_profile_metrics_provider.h"
+#include "components/metrics/call_stacks/call_stack_profile_metrics_provider.h"
 #include "components/metrics/content/accessibility_metrics_provider.h"
 #include "components/metrics/content/content_stability_metrics_provider.h"
 #include "components/metrics/content/extensions_helper.h"
 #include "components/metrics/content/gpu_metrics_provider.h"
+#include "components/metrics/content/metrics_services_web_contents_observer.h"
 #include "components/metrics/content/subprocess_metrics_provider.h"
 #include "components/metrics/cpu_metrics_provider.h"
 #include "components/metrics/drive_metrics_provider.h"
@@ -46,6 +48,7 @@
 #include "components/metrics/net/net_metrics_log_uploader.h"
 #include "components/metrics/net/network_metrics_provider.h"
 #include "components/metrics/persistent_histograms.h"
+#include "components/metrics/persistent_synthetic_trial_observer.h"
 #include "components/metrics/sampling_metrics_provider.h"
 #include "components/metrics/stability_metrics_helper.h"
 #include "components/metrics/ui/form_factor_metrics_provider.h"
@@ -56,8 +59,7 @@
 #include "components/ukm/ukm_service.h"
 #include "content/public/browser/histogram_fetcher.h"
 #include "content/public/browser/network_service_instance.h"
-#include "content/public/browser/notification_service.h"
-#include "content/public/browser/notification_types.h"
+#include "content/public/browser/web_contents.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 
 namespace metrics {
@@ -266,8 +268,8 @@ void AndroidMetricsServiceClient::Initialize(PrefService* pref_service) {
   init_finished_ = true;
 
   synthetic_trial_registry_ =
-      std::make_unique<variations::SyntheticTrialRegistry>(
-          IsExternalExperimentAllowlistEnabled());
+      std::make_unique<variations::SyntheticTrialRegistry>();
+  synthetic_trial_observation_.Observe(synthetic_trial_registry_.get());
 
   // Create the MetricsService immediately so that other code can make use of
   // it. Chrome always creates the MetricsService as well.
@@ -307,7 +309,6 @@ void AndroidMetricsServiceClient::MaybeStartMetrics() {
     // Register for notifications so we can detect when the user or app are
     // interacting with the embedder. We use these as signals to wake up the
     // MetricsService.
-    RegisterForNotifications();
     OnMetricsStart();
 
     if (IsReportingEnabled()) {
@@ -393,17 +394,6 @@ void AndroidMetricsServiceClient::CreateUkmService() {
       ukm::CreateFieldTrialsProviderForUkm(synthetic_trial_registry_.get()));
 
   UpdateUkmService();
-}
-
-void AndroidMetricsServiceClient::RegisterForNotifications() {
-  registrar_.Add(this, content::NOTIFICATION_LOAD_START,
-                 content::NotificationService::AllSources());
-  registrar_.Add(this, content::NOTIFICATION_LOAD_STOP,
-                 content::NotificationService::AllSources());
-  registrar_.Add(this, content::NOTIFICATION_RENDERER_PROCESS_CLOSED,
-                 content::NotificationService::AllSources());
-  registrar_.Add(this, content::NOTIFICATION_RENDER_WIDGET_HOST_HANG,
-                 content::NotificationService::AllSources());
 }
 
 void AndroidMetricsServiceClient::SetHaveMetricsConsent(bool user_consent,
@@ -612,22 +602,37 @@ bool AndroidMetricsServiceClient::ShouldStartUpFastForTesting() const {
   return fast_startup_for_testing_;
 }
 
-void AndroidMetricsServiceClient::Observe(
-    int type,
-    const content::NotificationSource& source,
-    const content::NotificationDetails& details) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
-  switch (type) {
-    case content::NOTIFICATION_LOAD_STOP:
-    case content::NOTIFICATION_LOAD_START:
-    case content::NOTIFICATION_RENDERER_PROCESS_CLOSED:
-    case content::NOTIFICATION_RENDER_WIDGET_HOST_HANG:
-      metrics_service_->OnApplicationNotIdle();
-      break;
-    default:
-      NOTREACHED();
+void AndroidMetricsServiceClient::OnRenderProcessHostCreated(
+    content::RenderProcessHost* host) {
+  if (!host_observation_.IsObservingSource(host)) {
+    host_observation_.AddObservation(host);
   }
+}
+
+void AndroidMetricsServiceClient::RenderProcessExited(
+    content::RenderProcessHost* host,
+    const content::ChildProcessTerminationInfo& info) {
+  host_observation_.RemoveObservation(host);
+
+  if (did_start_metrics_) {
+    metrics_service_->OnApplicationNotIdle();
+  }
+}
+
+void AndroidMetricsServiceClient::OnWebContentsCreated(
+    content::WebContents* web_contents) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  metrics::MetricsServicesWebContentsObserver::CreateForWebContents(
+      web_contents,
+      /*OnDidStartLoadingCb=*/
+      base::BindRepeating(&AndroidMetricsServiceClient::OnDidStartLoading,
+                          weak_ptr_factory_.GetWeakPtr()),
+      /*OnDidStopLoadingCb=*/
+      base::BindRepeating(&AndroidMetricsServiceClient::OnApplicationNotIdle,
+                          weak_ptr_factory_.GetWeakPtr()),
+      /*OnRendererUnresponsiveCb=*/
+      base::BindRepeating(&AndroidMetricsServiceClient::OnApplicationNotIdle,
+                          weak_ptr_factory_.GetWeakPtr()));
 }
 
 void AndroidMetricsServiceClient::SetCollectFinalMetricsForLogClosureForTesting(
@@ -683,7 +688,7 @@ std::string AndroidMetricsServiceClient::GetAppPackageName() {
   base::android::ScopedJavaLocalRef<jstring> j_app_name =
       Java_AndroidMetricsServiceClient_getAppPackageName(env);
   if (j_app_name)
-    return ConvertJavaStringToUTF8(env, j_app_name);
+    return base::android::ConvertJavaStringToUTF8(env, j_app_name);
   return std::string();
 }
 
@@ -694,6 +699,26 @@ bool AndroidMetricsServiceClient::IsOffTheRecordSessionActive() {
 scoped_refptr<network::SharedURLLoaderFactory>
 AndroidMetricsServiceClient::GetURLLoaderFactory() {
   return nullptr;
+}
+
+void AndroidMetricsServiceClient::OnApplicationNotIdle() {
+  auto* metrics_service = GetMetricsServiceIfStarted();
+  if (!metrics_service) {
+    return;
+  }
+
+  metrics_service->OnApplicationNotIdle();
+}
+
+void AndroidMetricsServiceClient::OnDidStartLoading() {
+  OnApplicationNotIdle();
+
+  auto* metrics_service = GetMetricsService();
+  if (!metrics_service) {
+    return;
+  }
+
+  metrics_service->OnPageLoadStarted();
 }
 
 }  // namespace metrics

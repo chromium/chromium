@@ -1,0 +1,27 @@
+# These tests are run on the main builders and don't need to also be
+# run here.
+-Accessibility*
+-All/DumpAccessibilityTreeTest.*
+-NavigationBrowserTest.SameDocumentLongURL204PopupHashNavigation
+-PortalBrowserTest.OrphanedPortalAccessibilityReset
+-SnapshotAXTree*
+-WebContentsImplBrowserTest.DumpAccessibilityTreeWithoutTreeID
+
+# These tests require that accessibility is disabled at startup, which is the
+# opposite of the situation when --force-renderer-accessibility is used.
+-AccessibilityMetricsBrowserTest.EventProcessingTime
+-ScopedAccessibilityModeTest.BrowserContext
+-ScopedAccessibilityModeTest.Filtering
+-ScopedAccessibilityModeTest.Process
+-ScopedAccessibilityModeTest.WebContents
+
+# These tests still need to be triaged and either okayed to skip or fixed.
+-BackForwardCacheWithSubframeNavigationBrowserTest.SubframeNavigationWithUrlLoaderBeforeSendingRequestShouldNotPreventCache
+-PrerenderBrowserTest.ActivatePageWithInnerContents
+-RenderThreadImplBrowserTest.NonResourceDispatchIPCTasksDontGoThroughScheduler
+-RenderThreadImplBrowserTest.RendererIsBackgrounded
+-RenderThreadImplBrowserTest.RendererIsHidden
+-RenderThreadImplBrowserTest.RendererStateTransitionBackgrounded
+-RenderThreadImplBrowserTest.RendererStateTransitionForegrounded
+-RenderThreadImplBrowserTest.RendererStateTransitionHidden
+-RenderThreadImplBrowserTest.RendererStateTransitionVisible

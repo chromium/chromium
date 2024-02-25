@@ -65,8 +65,9 @@ class DevToolsListener : public content::DevToolsAgentHostClient {
   void SendCommandMessage(content::DevToolsAgentHost* host,
                           const std::string& command);
 
-  // Awaits CDP response to command |id|.
-  void AwaitCommandResponse(int id);
+  // Awaits CDP response to command `id` and returns false if the host was
+  // closed whilst waiting, true otherwise.
+  bool AwaitCommandResponse(int id);
 
   // Receives CDP messages from host.
   void DispatchProtocolMessage(content::DevToolsAgentHost* host,

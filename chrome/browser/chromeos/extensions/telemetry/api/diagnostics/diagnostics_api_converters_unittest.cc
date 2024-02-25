@@ -161,6 +161,12 @@ TEST(TelemetryExtensionDiagnosticsApiConvertersUnitTest,
         crosapi::DiagnosticsRoutineEnum::kAudioDriver, &out));
     EXPECT_EQ(out, cx_diag::RoutineType::kAudioDriver);
   }
+  {
+    cx_diag::RoutineType out = cx_diag::RoutineType::kNone;
+    EXPECT_TRUE(
+        ConvertMojoRoutine(crosapi::DiagnosticsRoutineEnum::kFan, &out));
+    EXPECT_EQ(out, cx_diag::RoutineType::kFan);
+  }
 }
 
 TEST(TelemetryExtensionDiagnosticsApiConvertersUnitTest, ConvertRoutineStatus) {
@@ -258,6 +264,24 @@ TEST(TelemetryExtensionDiagnosticsApiConvertersUnitTest,
   input_unknown.test_type = cx_diag::NvmeSelfTestType::kNone;
   EXPECT_EQ(ConvertNvmeSelfTestRoutineType(std::move(input_unknown)),
             crosapi::DiagnosticsNvmeSelfTestTypeEnum::kUnknown);
+}
+
+TEST(TelemetryExtensionDiagnosticsApiConvertersUnitTest,
+     ConvertVolumeButtonRoutineButtonType) {
+  EXPECT_EQ(
+      ConvertVolumeButtonRoutineButtonType(cx_diag::VolumeButtonType::kNone),
+      crosapi::TelemetryDiagnosticVolumeButtonRoutineArgument::ButtonType::
+          kUnmappedEnumField);
+
+  EXPECT_EQ(ConvertVolumeButtonRoutineButtonType(
+                cx_diag::VolumeButtonType::kVolumeUp),
+            crosapi::TelemetryDiagnosticVolumeButtonRoutineArgument::
+                ButtonType::kVolumeUp);
+
+  EXPECT_EQ(ConvertVolumeButtonRoutineButtonType(
+                cx_diag::VolumeButtonType::kVolumeDown),
+            crosapi::TelemetryDiagnosticVolumeButtonRoutineArgument::
+                ButtonType::kVolumeDown);
 }
 
 }  // namespace chromeos::converters::diagnostics

@@ -4,12 +4,17 @@
 
 #include "ash/test/ash_test_util.h"
 
+#include <string>
+#include <vector>
+
+#include "ash/frame/non_client_frame_view_ash.h"
 #include "ash/public/cpp/shell_window_ids.h"
 #include "ash/root_window_controller.h"
 #include "ash/shell.h"
 #include "ash/system/status_area_widget.h"
 #include "ash/system/unified/unified_system_tray.h"
 #include "base/auto_reset.h"
+#include "base/check.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
@@ -18,13 +23,20 @@
 #include "base/scoped_observation.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
+#include "chromeos/ui/frame/multitask_menu/multitask_menu.h"
+#include "chromeos/ui/frame/multitask_menu/multitask_menu_metrics.h"
 #include "ui/aura/client/aura_constants.h"
-#include "ui/aura/window.h"
 #include "ui/aura/window_observer.h"
+#include "ui/events/test/event_generator.h"
+#include "ui/gfx/codec/png_codec.h"
+#include "ui/gfx/geometry/size.h"
 #include "ui/gfx/image/image.h"
+#include "ui/gfx/image/image_skia.h"
+#include "ui/gfx/image/image_util.h"
 #include "ui/snapshot/snapshot_aura.h"
 #include "ui/views/controls/menu/menu_item_view.h"
 #include "ui/views/view_utils.h"
+#include "ui/views/widget/any_widget_observer.h"
 #include "ui/views/widget/widget.h"
 
 namespace ash {
@@ -161,7 +173,7 @@ bool TakePrimaryDisplayScreenshotAndSave(const base::FilePath& file_path) {
 
   base::RunLoop run_loop;
   gfx::Image image;
-  ui::GrabWindowSnapshotAsyncAura(
+  ui::GrabWindowSnapshotAura(
       Shell::Get()->GetPrimaryRootWindow(),
       Shell::Get()->GetPrimaryRootWindow()->bounds(),
       base::BindOnce(&SnapshotCallback, &run_loop, &image));
@@ -194,6 +206,30 @@ gfx::ImageSkia CreateSolidColorTestImage(const gfx::Size& image_size,
   return image;
 }
 
+std::string CreateEncodedImageForTesting(const gfx::Size& size,
+                                         SkColor color,
+                                         data_decoder::mojom::ImageCodec codec,
+                                         gfx::ImageSkia* image_out) {
+  gfx::ImageSkia test_image = CreateSolidColorTestImage(size, color);
+  CHECK(!test_image.isNull());
+  if (image_out) {
+    *image_out = test_image;
+  }
+  std::vector<unsigned char> encoded_image;
+  switch (codec) {
+    case data_decoder::mojom::ImageCodec::kDefault:
+      CHECK(gfx::JPEG1xEncodedDataFromImage(gfx::Image(test_image), 100,
+                                            &encoded_image));
+      break;
+    case data_decoder::mojom::ImageCodec::kPng:
+      CHECK(gfx::PNGCodec::EncodeBGRASkBitmap(
+          *test_image.bitmap(), /*discard_transparency=*/true, &encoded_image));
+      break;
+  }
+  return std::string(reinterpret_cast<const char*>(encoded_image.data()),
+                     encoded_image.size());
+}
+
 void DecorateWindow(aura::Window* window,
                     const std::u16string& title,
                     SkColor color) {
@@ -215,6 +251,48 @@ void DecorateWindow(aura::Window* window,
 
 views::MenuItemView* WaitForMenuItemWithLabel(const std::u16string& label) {
   return MenuItemViewWithLabelWaiter(label).Wait();
+}
+
+chromeos::MultitaskMenu* ShowAndWaitMultitaskMenuForWindow(
+    absl::variant<aura::Window*, chromeos::FrameSizeButton*>
+        window_or_size_button,
+    chromeos::MultitaskMenuEntryType entry_type) {
+  // If a size button object is passed, use that. Otherwise retrieve it from the
+  // non client frame view ash.
+  chromeos::FrameSizeButton* size_button = nullptr;
+  if (absl::holds_alternative<chromeos::FrameSizeButton*>(
+          window_or_size_button)) {
+    size_button = absl::get<chromeos::FrameSizeButton*>(window_or_size_button);
+  } else {
+    aura::Window* window = absl::get<aura::Window*>(window_or_size_button);
+    CHECK(window);
+    auto* frame_view = NonClientFrameViewAsh::Get(window);
+    if (!frame_view) {
+      return nullptr;
+    }
+
+    size_button = views::AsViewClass<chromeos::FrameSizeButton>(
+        frame_view->GetHeaderView()->caption_button_container()->size_button());
+  }
+
+  views::NamedWidgetShownWaiter waiter(
+      views::test::AnyWidgetTestPasskey{},
+      std::string("MultitaskMenuBubbleWidget"));
+  size_button->ShowMultitaskMenu(entry_type);
+  views::WidgetDelegate* delegate =
+      waiter.WaitIfNeededAndGet()->widget_delegate();
+  auto* multitask_menu =
+      static_cast<chromeos::MultitaskMenu*>(delegate->AsDialogDelegate());
+  return multitask_menu;
+}
+
+void SendKey(ui::KeyboardCode key_code,
+             ui::test::EventGenerator* event_generator,
+             int flags,
+             int count) {
+  for (int i = 0; i < count; ++i) {
+    event_generator->PressAndReleaseKey(key_code, flags);
+  }
 }
 
 }  // namespace ash

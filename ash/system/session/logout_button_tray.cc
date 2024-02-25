@@ -25,6 +25,8 @@
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
 #include "ui/accessibility/ax_node_data.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/chromeos/styles/cros_tokens_color_mappings.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/views/controls/button/md_text_button.h"
@@ -42,7 +44,7 @@ LogoutButtonTray::LogoutButtonTray(Shelf* shelf)
           base::BindRepeating(&LogoutButtonTray::ButtonPressed,
                               base::Unretained(this)),
           std::u16string(), CONTEXT_LAUNCHER_BUTTON));
-  button_->SetProminent(true);
+  button_->SetStyle(ui::ButtonStyle::kProminent);
   set_use_bounce_in_animation(false);
 
   SetFocusBehavior(FocusBehavior::NEVER);
@@ -87,17 +89,13 @@ void LogoutButtonTray::OnActiveUserPrefServiceChanged(PrefService* prefs) {
   UpdateLogoutDialogDuration();
 }
 
-const char* LogoutButtonTray::GetClassName() const {
-  return "LogoutButtonTray";
-}
-
 void LogoutButtonTray::OnThemeChanged() {
   TrayBackgroundView::OnThemeChanged();
-  auto* color_provider = AshColorProvider::Get();
-  button_->SetBgColorOverride(color_provider->GetControlsLayerColor(
-      AshColorProvider::ControlsLayerType::kControlBackgroundColorAlert));
-  button_->SetEnabledTextColors(color_provider->GetContentLayerColor(
-      AshColorProvider::ContentLayerType::kButtonLabelColorPrimary));
+  const auto* color_provider = GetColorProvider();
+  button_->SetBgColorOverride(
+      color_provider->GetColor(cros_tokens::kColorAlert));
+  button_->SetEnabledTextColors(
+      color_provider->GetColor(cros_tokens::kColorPrimaryInverted));
 }
 
 void LogoutButtonTray::UpdateShowLogoutButtonInTray() {
@@ -116,9 +114,11 @@ void LogoutButtonTray::UpdateAfterLoginStatusChange() {
   UpdateButtonTextAndImage();
 }
 
-void LogoutButtonTray::ClickedOutsideBubble() {}
+void LogoutButtonTray::ClickedOutsideBubble(const ui::LocatedEvent& event) {}
 
 void LogoutButtonTray::HideBubbleWithView(const TrayBubbleView* bubble_view) {}
+
+void LogoutButtonTray::HideBubble(const TrayBubbleView* bubble_view) {}
 
 std::u16string LogoutButtonTray::GetAccessibleNameForTray() {
   return button_->GetText();
@@ -141,14 +141,14 @@ void LogoutButtonTray::UpdateButtonTextAndImage() {
       user::GetLocalizedSignOutStringForStatus(login_status, false);
   if (shelf()->IsHorizontalAlignment()) {
     button_->SetText(title);
-    button_->SetImage(views::Button::STATE_NORMAL, gfx::ImageSkia());
+    button_->SetImageModel(views::Button::STATE_NORMAL, ui::ImageModel());
     button_->SetMinSize(gfx::Size(0, kTrayItemSize));
   } else {
     button_->SetText(std::u16string());
     button_->SetAccessibleName(title);
-    button_->SetImage(
+    button_->SetImageModel(
         views::Button::STATE_NORMAL,
-        gfx::CreateVectorIcon(
+        ui::ImageModel::FromVectorIcon(
             kShelfLogoutIcon,
             AshColorProvider::Get()->GetContentLayerColor(
                 AshColorProvider::ContentLayerType::kIconColorPrimary)));
@@ -169,5 +169,8 @@ void LogoutButtonTray::ButtonPressed() {
         LogoutConfirmationController::Source::kShelfExitButton);
   }
 }
+
+BEGIN_METADATA(LogoutButtonTray)
+END_METADATA
 
 }  // namespace ash

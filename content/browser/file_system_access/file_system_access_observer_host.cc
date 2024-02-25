@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "base/ranges/algorithm.h"
 #include "content/browser/file_system_access/file_system_access_directory_handle_impl.h"
 #include "content/browser/file_system_access/file_system_access_error.h"
 #include "content/browser/file_system_access/file_system_access_file_handle_impl.h"
@@ -84,16 +85,6 @@ void FileSystemAccessObserverHost::DidResolveTransferTokenToObserve(
     return;
   }
 
-  if (resolved_token->url().mount_type() !=
-      storage::FileSystemType::kFileSystemTypeLocal) {
-    // TODO(https://crbug.com/1019297): Support non-local file systems.
-    std::move(callback).Run(
-        file_system_access_error::FromStatus(
-            blink::mojom::FileSystemAccessStatus::kNotSupportedError),
-        mojo::NullReceiver());
-    return;
-  }
-
   switch (resolved_token->type()) {
     case FileSystemAccessPermissionContext::HandleType::kDirectory:
       watcher_manager()->GetDirectoryObservation(
@@ -120,22 +111,43 @@ void FileSystemAccessObserverHost::Unobserve(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   CHECK(manager_);
 
-  // TODO(https://crbug.com/1019297): Implement this.
-  NOTIMPLEMENTED();
+  if (observations_.empty()) {
+    return;
+  }
+
+  manager_->ResolveTransferToken(
+      std::move(token),
+      base::BindOnce(
+          &FileSystemAccessObserverHost::DidResolveTransferTokenToUnobserve,
+          weak_factory_.GetWeakPtr()));
+}
+
+void FileSystemAccessObserverHost::DidResolveTransferTokenToUnobserve(
+    FileSystemAccessTransferTokenImpl* resolved_token) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  if (!resolved_token) {
+    return;
+  }
+
+  // TODO(https://crbug.com/1489057): Better handle overlapping observations.
+  base::EraseIf(observations_, [&](const auto& observation) {
+    return observation->handle_url() == resolved_token->url();
+  });
 }
 
 void FileSystemAccessObserverHost::GotObservation(
     absl::variant<std::unique_ptr<FileSystemAccessDirectoryHandleImpl>,
                   std::unique_ptr<FileSystemAccessFileHandleImpl>> handle,
     ObserveCallback callback,
-    std::unique_ptr<FileSystemAccessWatcherManager::Observation> observation) {
+    base::expected<std::unique_ptr<FileSystemAccessWatcherManager::Observation>,
+                   blink::mojom::FileSystemAccessErrorPtr>
+        observation_or_error) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  if (!observation) {
-    std::move(callback).Run(
-        file_system_access_error::FromStatus(
-            blink::mojom::FileSystemAccessStatus::kNotSupportedError),
-        mojo::NullReceiver());
+  if (!observation_or_error.has_value()) {
+    std::move(callback).Run(std::move(observation_or_error.error()),
+                            mojo::NullReceiver());
     return;
   }
 
@@ -145,8 +157,8 @@ void FileSystemAccessObserverHost::GotObservation(
 
   auto observer_observation =
       std::make_unique<FileSystemAccessObserverObservation>(
-          this, std::move(observation), std::move(observer_remote),
-          std::move(handle));
+          this, std::move(observation_or_error.value()),
+          std::move(observer_remote), std::move(handle));
   observations_.insert(std::move(observer_observation));
 
   std::move(callback).Run(file_system_access_error::Ok(),

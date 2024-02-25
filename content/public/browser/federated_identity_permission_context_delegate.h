@@ -20,8 +20,11 @@ class FederatedIdentityPermissionContextDelegate {
   // Observes IdP sign-in status changes.
   class IdpSigninStatusObserver : public base::CheckedObserver {
    public:
-    virtual void OnIdpSigninStatusChanged(const url::Origin& idp_origin,
-                                          bool idp_signin_status) = 0;
+    // Called every time we receive a signed-in status (so we can refresh
+    // the account list if a new account is now signed in) and also when
+    // the status changes from signed-in to signed-out.
+    virtual void OnIdpSigninStatusReceived(const url::Origin& idp_origin,
+                                           bool idp_signin_status) = 0;
 
    protected:
     IdpSigninStatusObserver() = default;
@@ -37,25 +40,6 @@ class FederatedIdentityPermissionContextDelegate {
   virtual void RemoveIdpSigninStatusObserver(
       IdpSigninStatusObserver* observer) = 0;
 
-  // Determine whether the `relying_party_requester` has an existing active
-  // session for the specified `account_identifier` with the
-  // `identity_provider`.
-  virtual bool HasActiveSession(const url::Origin& relying_party_requester,
-                                const url::Origin& identity_provider,
-                                const std::string& account_identifier) = 0;
-
-  // Grant active session capabilities between the `relying_party_requester` and
-  // `identity_provider` origins for the specified account.
-  virtual void GrantActiveSession(const url::Origin& relying_party_requester,
-                                  const url::Origin& identity_provider,
-                                  const std::string& account_identifier) = 0;
-
-  // Revoke a previously-provided grant from the `relying_party_requester` to
-  // the `identity_provider` for the specified account.
-  virtual void RevokeActiveSession(const url::Origin& relying_party_requester,
-                                   const url::Origin& identity_provider,
-                                   const std::string& account_identifier) = 0;
-
   // Determine whether there is an existing permission grant to share identity
   // information for the given account to the `relying_party_requester` when
   // embedded in `relying_party_embedder`. `account_id` can be omitted to
@@ -64,7 +48,7 @@ class FederatedIdentityPermissionContextDelegate {
       const url::Origin& relying_party_requester,
       const url::Origin& relying_party_embedder,
       const url::Origin& identity_provider,
-      const absl::optional<std::string>& account_id) = 0;
+      const std::optional<std::string>& account_id) = 0;
 
   // Determine whether there is an existing permission grant to share identity
   // information for any account to the `relying_party_requester`.
@@ -79,9 +63,18 @@ class FederatedIdentityPermissionContextDelegate {
       const url::Origin& identity_provider,
       const std::string& account_id) = 0;
 
+  // Revokes a previously granted sharing permission. If there is no sharing
+  // permission associated with the given `account_id`, an arbitrary sharing
+  // permission is revoked.
+  virtual void RevokeSharingPermission(
+      const url::Origin& relying_party_requester,
+      const url::Origin& relying_party_embedder,
+      const url::Origin& identity_provider,
+      const std::string& account_id) = 0;
+
   // Returns whether the user is signed in with the IDP. If unknown, return
-  // absl::nullopt.
-  virtual absl::optional<bool> GetIdpSigninStatus(
+  // std::nullopt.
+  virtual std::optional<bool> GetIdpSigninStatus(
       const url::Origin& idp_origin) = 0;
 
   // Updates the IDP sign-in status. This could be called by

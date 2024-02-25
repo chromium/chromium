@@ -4,13 +4,13 @@
 
 #include "components/reporting/metrics/fakes/fake_sampler.h"
 
+#include <optional>
 #include <utility>
 
 #include "base/check.h"
 #include "components/reporting/metrics/sampler.h"
 #include "components/reporting/proto/synced/metric_data.pb.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace reporting::test {
 
@@ -23,7 +23,7 @@ void FakeSampler::MaybeCollect(OptionalMetricCallback cb) {
   std::move(cb).Run(metric_data_);
 }
 
-void FakeSampler::SetMetricData(absl::optional<MetricData> metric_data) {
+void FakeSampler::SetMetricData(std::optional<MetricData> metric_data) {
   metric_data_ = std::move(metric_data);
 }
 

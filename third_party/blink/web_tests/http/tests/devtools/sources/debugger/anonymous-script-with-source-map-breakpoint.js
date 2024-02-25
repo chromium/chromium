@@ -8,7 +8,6 @@ import {SourcesTestRunner} from 'sources_test_runner';
 (async function() {
   TestRunner.addResult(
       `Tests breakpoint in anonymous script with source map on reload.`);
-  await TestRunner.loadLegacyModule('sources');
   await TestRunner.showPanel('sources');
   await SourcesTestRunner.startDebuggerTestPromise();
   TestRunner.navigatePromise(

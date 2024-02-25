@@ -9,10 +9,12 @@
 
 #import "base/apple/foundation_util.h"
 #import "base/feature_list.h"
+#import "base/memory/raw_ptr.h"
 #import "base/metrics/histogram_macros.h"
 #import "base/metrics/user_metrics.h"
 #import "base/metrics/user_metrics_action.h"
 #import "base/strings/sys_string_conversions.h"
+#import "base/task/sequenced_task_runner.h"
 #import "build/branding_buildflags.h"
 #import "components/autofill/core/common/autofill_prefs.h"
 #import "components/feature_engagement/public/event_constants.h"
@@ -20,7 +22,9 @@
 #import "components/feature_engagement/public/tracker.h"
 #import "components/keyed_service/core/service_access_type.h"
 #import "components/password_manager/core/browser/manage_passwords_referrer.h"
+#import "components/password_manager/core/browser/ui/password_check_referrer.h"
 #import "components/password_manager/core/common/password_manager_pref_names.h"
+#import "components/plus_addresses/features.h"
 #import "components/prefs/ios/pref_observer_bridge.h"
 #import "components/prefs/pref_member.h"
 #import "components/prefs/pref_service.h"
@@ -36,30 +40,36 @@
 #import "components/sync/service/sync_service.h"
 #import "components/sync/service/sync_user_settings.h"
 #import "ios/chrome/app/application_delegate/app_state.h"
-#import "ios/chrome/browser/commerce/push_notification/push_notification_feature.h"
-#import "ios/chrome/browser/default_browser/utils.h"
-#import "ios/chrome/browser/feature_engagement/tracker_factory.h"
-#import "ios/chrome/browser/language/language_model_manager_factory.h"
-#import "ios/chrome/browser/net/crurl.h"
-#import "ios/chrome/browser/ntp/features.h"
-#import "ios/chrome/browser/passwords/ios_chrome_password_check_manager.h"
-#import "ios/chrome/browser/passwords/ios_chrome_password_check_manager_factory.h"
-#import "ios/chrome/browser/passwords/password_check_observer_bridge.h"
-#import "ios/chrome/browser/passwords/password_checkup_utils.h"
-#import "ios/chrome/browser/search_engines/search_engine_observer_bridge.h"
-#import "ios/chrome/browser/search_engines/template_url_service_factory.h"
-#import "ios/chrome/browser/settings/sync/utils/identity_error_util.h"
-#import "ios/chrome/browser/settings/sync/utils/sync_state.h"
-#import "ios/chrome/browser/settings/sync/utils/sync_util.h"
+#import "ios/chrome/browser/commerce/model/push_notification/push_notification_feature.h"
+#import "ios/chrome/browser/default_browser/model/utils.h"
+#import "ios/chrome/browser/feature_engagement/model/tracker_factory.h"
+#import "ios/chrome/browser/language/model/language_model_manager_factory.h"
+#import "ios/chrome/browser/net/model/crurl.h"
+#import "ios/chrome/browser/ntp/model/new_tab_page_util.h"
+#import "ios/chrome/browser/passwords/model/ios_chrome_password_check_manager.h"
+#import "ios/chrome/browser/passwords/model/ios_chrome_password_check_manager_factory.h"
+#import "ios/chrome/browser/passwords/model/password_check_observer_bridge.h"
+#import "ios/chrome/browser/passwords/model/password_checkup_utils.h"
+#import "ios/chrome/browser/photos/model/photos_service.h"
+#import "ios/chrome/browser/photos/model/photos_service_factory.h"
+#import "ios/chrome/browser/push_notification/model/push_notification_settings_util.h"
+#import "ios/chrome/browser/search_engines/model/search_engine_observer_bridge.h"
+#import "ios/chrome/browser/search_engines/model/template_url_service_factory.h"
+#import "ios/chrome/browser/settings/model/sync/utils/identity_error_util.h"
+#import "ios/chrome/browser/settings/model/sync/utils/sync_state.h"
+#import "ios/chrome/browser/settings/model/sync/utils/sync_util.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
-#import "ios/chrome/browser/shared/coordinator/scene/scene_state_browser_agent.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
+#import "ios/chrome/browser/shared/model/prefs/pref_backed_boolean.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/shared/model/utils/first_run_util.h"
 #import "ios/chrome/browser/shared/public/commands/application_commands.h"
+#import "ios/chrome/browser/shared/public/commands/browser_coordinator_commands.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
+#import "ios/chrome/browser/shared/public/commands/open_new_tab_command.h"
+#import "ios/chrome/browser/shared/public/commands/show_signin_command.h"
 #import "ios/chrome/browser/shared/public/commands/snackbar_commands.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/public/features/system_flags.h"
@@ -75,25 +85,23 @@
 #import "ios/chrome/browser/shared/ui/table_view/table_view_model.h"
 #import "ios/chrome/browser/shared/ui/table_view/table_view_utils.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
-#import "ios/chrome/browser/signin/authentication_service.h"
-#import "ios/chrome/browser/signin/authentication_service_factory.h"
-#import "ios/chrome/browser/signin/chrome_account_manager_service.h"
-#import "ios/chrome/browser/signin/chrome_account_manager_service_factory.h"
-#import "ios/chrome/browser/signin/chrome_account_manager_service_observer_bridge.h"
-#import "ios/chrome/browser/signin/identity_manager_factory.h"
-#import "ios/chrome/browser/signin/system_identity.h"
-#import "ios/chrome/browser/sync/enterprise_utils.h"
-#import "ios/chrome/browser/sync/sync_observer_bridge.h"
-#import "ios/chrome/browser/sync/sync_service_factory.h"
-#import "ios/chrome/browser/tabs/inactive_tabs/features.h"
-#import "ios/chrome/browser/tabs/tab_pickup/features.h"
-#import "ios/chrome/browser/ui/authentication/cells/signin_promo_view_consumer.h"
+#import "ios/chrome/browser/signin/model/authentication_service.h"
+#import "ios/chrome/browser/signin/model/authentication_service_factory.h"
+#import "ios/chrome/browser/signin/model/chrome_account_manager_service.h"
+#import "ios/chrome/browser/signin/model/chrome_account_manager_service_factory.h"
+#import "ios/chrome/browser/signin/model/chrome_account_manager_service_observer_bridge.h"
+#import "ios/chrome/browser/signin/model/identity_manager_factory.h"
+#import "ios/chrome/browser/signin/model/system_identity.h"
+#import "ios/chrome/browser/sync/model/enterprise_utils.h"
+#import "ios/chrome/browser/sync/model/sync_observer_bridge.h"
+#import "ios/chrome/browser/sync/model/sync_service_factory.h"
+#import "ios/chrome/browser/tabs/model/inactive_tabs/features.h"
+#import "ios/chrome/browser/tabs/model/tab_pickup/features.h"
 #import "ios/chrome/browser/ui/authentication/cells/table_view_account_item.h"
-#import "ios/chrome/browser/ui/authentication/cells/table_view_signin_promo_item.h"
 #import "ios/chrome/browser/ui/authentication/signin/signin_utils.h"
 #import "ios/chrome/browser/ui/authentication/signin_presenter.h"
-#import "ios/chrome/browser/ui/authentication/signin_promo_view_mediator.h"
-#import "ios/chrome/browser/ui/content_suggestions/content_suggestions_feature.h"
+#import "ios/chrome/browser/ui/bubble/bubble_constants.h"
+#import "ios/chrome/browser/ui/bubble/bubble_view_controller_presenter.h"
 #import "ios/chrome/browser/ui/ntp/new_tab_page_feature.h"
 #import "ios/chrome/browser/ui/settings/about_chrome_table_view_controller.h"
 #import "ios/chrome/browser/ui/settings/address_bar_preference/address_bar_preference_coordinator.h"
@@ -105,16 +113,18 @@
 #import "ios/chrome/browser/ui/settings/cells/settings_image_detail_text_item.h"
 #import "ios/chrome/browser/ui/settings/content_settings/content_settings_table_view_controller.h"
 #import "ios/chrome/browser/ui/settings/default_browser/default_browser_settings_table_view_controller.h"
+#import "ios/chrome/browser/ui/settings/downloads/downloads_settings_coordinator.h"
+#import "ios/chrome/browser/ui/settings/downloads/downloads_settings_coordinator_delegate.h"
 #import "ios/chrome/browser/ui/settings/elements/enterprise_info_popover_view_controller.h"
-#import "ios/chrome/browser/ui/settings/google_services/accounts_table_view_controller.h"
 #import "ios/chrome/browser/ui/settings/google_services/google_services_settings_coordinator.h"
+#import "ios/chrome/browser/ui/settings/google_services/manage_accounts/accounts_coordinator.h"
+#import "ios/chrome/browser/ui/settings/google_services/manage_accounts/accounts_table_view_controller.h"
 #import "ios/chrome/browser/ui/settings/google_services/manage_sync_settings_constants.h"
 #import "ios/chrome/browser/ui/settings/google_services/manage_sync_settings_coordinator.h"
 #import "ios/chrome/browser/ui/settings/language/language_settings_mediator.h"
 #import "ios/chrome/browser/ui/settings/language/language_settings_table_view_controller.h"
 #import "ios/chrome/browser/ui/settings/notifications/notifications_coordinator.h"
 #import "ios/chrome/browser/ui/settings/notifications/notifications_settings_observer.h"
-#import "ios/chrome/browser/ui/settings/notifications/notifications_settings_util.h"
 #import "ios/chrome/browser/ui/settings/password/passwords_coordinator.h"
 #import "ios/chrome/browser/ui/settings/privacy/privacy_coordinator.h"
 #import "ios/chrome/browser/ui/settings/safety_check/safety_check_constants.h"
@@ -124,17 +134,16 @@
 #import "ios/chrome/browser/ui/settings/settings_table_view_controller_constants.h"
 #import "ios/chrome/browser/ui/settings/table_cell_catalog_view_controller.h"
 #import "ios/chrome/browser/ui/settings/tabs/tabs_settings_coordinator.h"
-#import "ios/chrome/browser/ui/settings/utils/pref_backed_boolean.h"
 #import "ios/chrome/browser/ui/settings/voice_search_table_view_controller.h"
-#import "ios/chrome/browser/upgrade/upgrade_utils.h"
-#import "ios/chrome/browser/voice/speech_input_locale_config.h"
-#import "ios/chrome/browser/voice/voice_search_prefs.h"
+#import "ios/chrome/browser/upgrade/model/upgrade_utils.h"
+#import "ios/chrome/browser/voice/model/speech_input_locale_config.h"
+#import "ios/chrome/browser/voice/model/voice_search_prefs.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/table_view/table_view_cells_constants.h"
-#import "ios/chrome/grit/ios_chromium_strings.h"
+#import "ios/chrome/grit/ios_branded_strings.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ios/public/provider/chrome/browser/signin/signin_resources_api.h"
-#import "net/base/mac/url_conversions.h"
+#import "net/base/apple/url_conversions.h"
 #import "ui/base/l10n/l10n_util_mac.h"
 
 namespace {
@@ -170,6 +179,7 @@ UIImage* GetBrandedGoogleServicesSymbol() {
 @interface SettingsTableViewController () <
     BooleanObserver,
     ChromeAccountManagerServiceObserver,
+    DownloadsSettingsCoordinatorDelegate,
     GoogleServicesSettingsCoordinatorDelegate,
     IdentityManagerObserverBridgeDelegate,
     ManageSyncSettingsCoordinatorDelegate,
@@ -183,13 +193,11 @@ UIImage* GetBrandedGoogleServicesSymbol() {
     SafetyCheckCoordinatorDelegate,
     SettingsControllerProtocol,
     SearchEngineObserving,
-    SigninPresenter,
-    SigninPromoViewConsumer,
     SyncObserverModelBridge> {
   // The browser where the settings are being displayed.
-  Browser* _browser;
+  raw_ptr<Browser> _browser;
   // The browser state for `_browser`. Never off the record.
-  ChromeBrowserState* _browserState;  // weak
+  raw_ptr<ChromeBrowserState> _browserState;  // weak
   // Bridge for TemplateURLServiceObserver.
   std::unique_ptr<SearchEngineObserverBridge> _searchEngineObserverBridge;
   std::unique_ptr<signin::IdentityManagerObserverBridge>
@@ -220,9 +228,6 @@ UIImage* GetBrandedGoogleServicesSymbol() {
   // The item related to the safety check.
   SettingsCheckItem* _safetyCheckItem;
 
-  // Mediator to configure the sign-in promo cell. Also used to received
-  // identity update notifications.
-  SigninPromoViewMediator* _signinPromoViewMediator;
   GoogleServicesSettingsCoordinator* _googleServicesSettingsCoordinator;
   ManageSyncSettingsCoordinator* _manageSyncSettingsCoordinator;
 
@@ -237,6 +242,14 @@ UIImage* GetBrandedGoogleServicesSymbol() {
 
   // Passwords coordinator.
   PasswordsCoordinator* _passwordsCoordinator;
+
+  // Accounts coordinator.
+  AccountsCoordinator* _accountsCoordinator;
+
+  // Feature engagement tracker for the signin IPH.
+  raw_ptr<feature_engagement::Tracker> _featureEngagementTracker;
+  // Presenter for the signin IPH.
+  BubbleViewControllerPresenter* _bubblePresenter;
 
   // Identity object and observer used for Account Item refresh.
   id<SystemIdentity> _identity;
@@ -261,6 +274,7 @@ UIImage* GetBrandedGoogleServicesSymbol() {
   TableViewDetailIconItem* _autoFillProfileDetailItem;
   TableViewDetailIconItem* _autoFillCreditCardDetailItem;
   TableViewDetailIconItem* _notificationsItem;
+  TableViewDetailIconItem* _plusAddressesItem;
   TableViewItem* _syncItem;
 
   // Whether Settings have been dismissed.
@@ -271,6 +285,9 @@ UIImage* GetBrandedGoogleServicesSymbol() {
 
   // Address bar setting coordinator.
   AddressBarPreferenceCoordinator* _addressBarPreferenceCoordinator;
+
+  // Downloads settings coordinator.
+  DownloadsSettingsCoordinator* _downloadsSettingsCoordinator;
 }
 
 // The item related to the switch for the show feed settings.
@@ -301,17 +318,12 @@ UIImage* GetBrandedGoogleServicesSymbol() {
 @end
 
 @implementation SettingsTableViewController
-@synthesize dispatcher = _dispatcher;
 @synthesize managedFeedSettingsItem = _managedFeedSettingsItem;
 @synthesize feedSettingsItem = _feedSettingsItem;
 
 #pragma mark Initialization
 
-- (instancetype)
-    initWithBrowser:(Browser*)browser
-         dispatcher:
-             (id<ApplicationCommands, BrowserCommands, BrowsingDataCommands>)
-                 dispatcher {
+- (instancetype)initWithBrowser:(Browser*)browser {
   DCHECK(browser);
   DCHECK(!browser->GetBrowserState()->IsOffTheRecord());
 
@@ -347,6 +359,8 @@ UIImage* GetBrandedGoogleServicesSymbol() {
     _accountManagerServiceObserver.reset(
         new ChromeAccountManagerServiceObserverBridge(self,
                                                       _accountManagerService));
+    _featureEngagementTracker =
+        feature_engagement::TrackerFactory::GetForBrowserState(_browserState);
 
     PrefService* prefService = _browserState->GetPrefs();
 
@@ -405,8 +419,6 @@ UIImage* GetBrandedGoogleServicesSymbol() {
         [[NotificationsSettingsObserver alloc] initWithPrefService:prefService];
     _notificationsObserver.delegate = self;
 
-    _dispatcher = dispatcher;
-
     // TODO(crbug.com/764578): -loadModel should not be called from
     // initializer. A possible fix is to move this call to -viewDidLoad.
     [self loadModel];
@@ -444,6 +456,11 @@ UIImage* GetBrandedGoogleServicesSymbol() {
     // time it's shown.
     [self updateAddressBarNewIPHBadge];
   }
+}
+
+- (void)viewDidAppear:(BOOL)animated {
+  [super viewDidAppear:animated];
+  [self maybeShowSigninIPH];
 }
 
 #pragma mark SettingsRootTableViewController
@@ -499,13 +516,21 @@ UIImage* GetBrandedGoogleServicesSymbol() {
   [model addItem:[self privacyDetailItem]
       toSectionWithIdentifier:SettingsSectionIdentifierAdvanced];
 
+  if (base::FeatureList::IsEnabled(plus_addresses::features::kFeature)) {
+    _plusAddressesItem = [self plusAddressesItem];
+    [model addItem:_plusAddressesItem
+        toSectionWithIdentifier:SettingsSectionIdentifierAdvanced];
+  }
+
   // Feed is disabled in safe mode.
-  SceneState* sceneState =
-      SceneStateBrowserAgent::FromBrowser(_browser)->GetSceneState();
+  SceneState* sceneState = _browser->GetSceneState();
   BOOL isSafeMode = [sceneState.appState resumingFromSafeMode];
+  TemplateURLService* templateURLService =
+      ios::TemplateURLServiceFactory::GetForBrowserState(_browserState);
 
   if (!IsFeedAblationEnabled() && !isSafeMode &&
-      IsContentSuggestionsForSupervisedUserEnabled(_browserState->GetPrefs())) {
+      IsContentSuggestionsForSupervisedUserEnabled(_browserState->GetPrefs()) &&
+      !ShouldHideFeedWithSearchChoice(templateURLService)) {
     if ([_contentSuggestionPolicyEnabled value]) {
       [model addItem:self.feedSettingsItem
           toSectionWithIdentifier:SettingsSectionIdentifierAdvanced];
@@ -516,6 +541,10 @@ UIImage* GetBrandedGoogleServicesSymbol() {
     }
   }
 
+  PhotosService* photosService =
+      PhotosServiceFactory::GetForBrowserState(_browserState);
+  bool shouldShowDownloadsSettings =
+      photosService && photosService->IsSupported();
   if (IsInactiveTabsAvailable() || IsTabPickupEnabled()) {
     [model addItem:[self tabsSettingsDetailItem]
         toSectionWithIdentifier:SettingsSectionIdentifierAdvanced];
@@ -526,6 +555,10 @@ UIImage* GetBrandedGoogleServicesSymbol() {
         toSectionWithIdentifier:SettingsSectionIdentifierInfo];
     [model addItem:[self contentSettingsDetailItem]
         toSectionWithIdentifier:SettingsSectionIdentifierInfo];
+    if (shouldShowDownloadsSettings) {
+      [model addItem:[self downloadsSettingsDetailItem]
+          toSectionWithIdentifier:SettingsSectionIdentifierInfo];
+    }
     [model addItem:[self bandwidthManagementDetailItem]
         toSectionWithIdentifier:SettingsSectionIdentifierInfo];
   } else {
@@ -533,6 +566,10 @@ UIImage* GetBrandedGoogleServicesSymbol() {
         toSectionWithIdentifier:SettingsSectionIdentifierAdvanced];
     [model addItem:[self contentSettingsDetailItem]
         toSectionWithIdentifier:SettingsSectionIdentifierAdvanced];
+    if (shouldShowDownloadsSettings) {
+      [model addItem:[self downloadsSettingsDetailItem]
+          toSectionWithIdentifier:SettingsSectionIdentifierAdvanced];
+    }
     [model addItem:[self bandwidthManagementDetailItem]
         toSectionWithIdentifier:SettingsSectionIdentifierAdvanced];
 
@@ -581,19 +618,6 @@ UIImage* GetBrandedGoogleServicesSymbol() {
   [self addPromoToSigninSection];
 }
 
-// Helper method to update the Discover Section cells when called.
-- (void)updateDiscoverSection {
-  // Do not use self to access _managedFeedSettingsItem, as it is lazy loaded
-  // and will create a new item and the following will always be true.
-  if (_managedFeedSettingsItem) {
-    DCHECK(!_feedSettingsItem);
-    self.managedFeedSettingsItem.text = [self feedItemTitle];
-  } else {
-    DCHECK(_feedSettingsItem);
-    self.feedSettingsItem.text = [self feedItemTitle];
-  }
-}
-
 // Adds the identity promo to promote the sign-in or sync state.
 - (void)addPromoToSigninSection {
   TableViewItem* item = nil;
@@ -616,46 +640,15 @@ UIImage* GetBrandedGoogleServicesSymbol() {
     // Note when the same flag is enabled, the normal item leads to the sign-in
     // screen, which is allowed with SyncDisabled.
     item = [self signinDisabledByPolicyTextItem];
-  } else if (self.shouldDisplaySyncPromo) {
-    // Create the sign-in promo mediator if it doesn't exist.
-    if (!_signinPromoViewMediator) {
-      _signinPromoViewMediator = [[SigninPromoViewMediator alloc]
-          initWithAccountManagerService:self.accountManagerService
-                            authService:AuthenticationServiceFactory::
-                                            GetForBrowserState(_browserState)
-                            prefService:_browserState->GetPrefs()
-                            syncService:SyncServiceFactory::GetForBrowserState(
-                                            _browserState)
-                            accessPoint:signin_metrics::AccessPoint::
-                                            ACCESS_POINT_SETTINGS
-                              presenter:self
-                     baseViewController:self];
-      _signinPromoViewMediator.consumer = self;
-    }
-    TableViewSigninPromoItem* signinPromoItem =
-        [[TableViewSigninPromoItem alloc]
-            initWithType:SettingsItemTypeSigninPromo];
-    signinPromoItem.text =
-        l10n_util::GetNSString(IDS_IOS_SIGNIN_PROMO_SETTINGS_WITH_UNITY);
-    signinPromoItem.configurator =
-        [_signinPromoViewMediator createConfigurator];
-    signinPromoItem.delegate = _signinPromoViewMediator;
-    [_signinPromoViewMediator signinPromoViewIsVisible];
-
-    item = signinPromoItem;
   } else if ((authServiceStatus ==
                   AuthenticationService::ServiceStatus::SigninForcedByPolicy ||
               authServiceStatus ==
                   AuthenticationService::ServiceStatus::SigninAllowed) &&
              !authService->HasPrimaryIdentity(signin::ConsentLevel::kSignin)) {
     item = [self accountSignInItem];
-    [_signinPromoViewMediator disconnect];
-    _signinPromoViewMediator = nil;
   } else {
     [self.tableViewModel
         removeSectionWithIdentifier:SettingsSectionIdentifierSignIn];
-    [_signinPromoViewMediator disconnect];
-    _signinPromoViewMediator = nil;
 
     if (!_hasRecordedSigninImpression) {
       // Once the Settings are open, this button impression will at most be
@@ -695,32 +688,6 @@ UIImage* GetBrandedGoogleServicesSymbol() {
   // Google Services item.
   [model addItem:[self googleServicesCellItem]
       toSectionWithIdentifier:SettingsSectionIdentifierAccount];
-}
-
-#pragma mark - Properties
-
-// Returns YES if the Sync service is available and all promos have not been
-// previously closed or seen too many times by a single user account.
-- (BOOL)shouldDisplaySyncPromo {
-  if ([self isSyncDisabledByPolicy])
-    return false;
-
-  syncer::SyncService* syncService =
-      SyncServiceFactory::GetForBrowserState(_browserState);
-  AuthenticationService* authenticationService =
-      AuthenticationServiceFactory::GetForBrowserState(_browserState);
-  const BOOL shouldDisplay =
-      [SigninPromoViewMediator
-          shouldDisplaySigninPromoViewWithAccessPoint:
-              signin_metrics::AccessPoint::ACCESS_POINT_SETTINGS
-                                authenticationService:authenticationService
-                                          prefService:_browserState
-                                                          ->GetPrefs()] &&
-      !syncService->GetUserSettings()->IsInitialSyncFeatureSetupComplete();
-  return shouldDisplay &&
-         !base::FeatureList::IsEnabled(kHideSettingsSyncPromo) &&
-         !base::FeatureList::IsEnabled(
-             syncer::kReplaceSyncPromosWithSignInPromos);
 }
 
 #pragma mark - Model Items
@@ -813,12 +780,7 @@ UIImage* GetBrandedGoogleServicesSymbol() {
   defaultBrowser.text =
       l10n_util::GetNSString(IDS_IOS_SETTINGS_SET_DEFAULT_BROWSER);
 
-  if (@available(iOS 15, *)) {
-    defaultBrowser.iconImage = DefaultSettingsRootSymbol(kDefaultBrowserSymbol);
-  } else {
-    defaultBrowser.iconImage =
-        DefaultSettingsRootSymbol(kDefaultBrowseriOS14Symbol);
-  }
+  defaultBrowser.iconImage = DefaultSettingsRootSymbol(kDefaultBrowserSymbol);
   defaultBrowser.iconBackgroundColor = [UIColor colorNamed:kPurple500Color];
   defaultBrowser.iconTintColor = UIColor.whiteColor;
   defaultBrowser.iconCornerRadius = kColorfulBackgroundSymbolCornerRadius;
@@ -911,7 +873,8 @@ UIImage* GetBrandedGoogleServicesSymbol() {
 
 - (TableViewItem*)autoFillCreditCardDetailItem {
   BOOL autofillCreditCardEnabled =
-      autofill::prefs::IsAutofillCreditCardEnabled(_browserState->GetPrefs());
+      autofill::prefs::IsAutofillPaymentMethodsEnabled(
+          _browserState->GetPrefs());
   NSString* detailText = autofillCreditCardEnabled
                              ? l10n_util::GetNSString(IDS_IOS_SETTING_ON)
                              : l10n_util::GetNSString(IDS_IOS_SETTING_OFF);
@@ -984,6 +947,7 @@ UIImage* GetBrandedGoogleServicesSymbol() {
   _safetyCheckItem.leadingIconTintColor = UIColor.whiteColor;
   _safetyCheckItem.leadingIconCornerRadius =
       kColorfulBackgroundSymbolCornerRadius;
+  _safetyCheckItem.accessibilityIdentifier = kSettingsSafetyCheckCellId;
   // Check if an issue state should be shown for updates.
   if (!IsAppUpToDate() && PreviousSafetyCheckIssueFound()) {
     [self updateSafetyCheckItemTrailingIcon];
@@ -1000,6 +964,18 @@ UIImage* GetBrandedGoogleServicesSymbol() {
                            symbol:DefaultSettingsRootSymbol(kBellSymbol)
             symbolBackgroundColor:[UIColor colorNamed:kPink500Color]
           accessibilityIdentifier:kSettingsNotificationsId];
+}
+
+- (TableViewDetailIconItem*)plusAddressesItem {
+  NSString* title = l10n_util::GetNSString(IDS_PLUS_ADDRESS_SETTINGS_LABEL);
+  // TODO(crbug.com/1467623): Add icon and finalize display as requirements
+  // solidify.
+  return [self detailItemWithType:SettingsItemTypePlusAddresses
+                             text:title
+                       detailText:nil
+                           symbol:nil
+            symbolBackgroundColor:[UIColor colorNamed:kPink500Color]
+          accessibilityIdentifier:kSettingsPlusAddressesId];
 }
 
 - (TableViewItem*)privacyDetailItem {
@@ -1065,6 +1041,16 @@ UIImage* GetBrandedGoogleServicesSymbol() {
                        symbol:DefaultSettingsRootSymbol(kSettingsFilledSymbol)
         symbolBackgroundColor:[UIColor colorNamed:kGrey400Color]
       accessibilityIdentifier:kSettingsContentSettingsCellId];
+}
+
+- (TableViewItem*)downloadsSettingsDetailItem {
+  return [self detailItemWithType:SettingsItemTypeDownloadsSettings
+                             text:l10n_util::GetNSString(
+                                      IDS_IOS_SETTINGS_DOWNLOADS_TITLE)
+                       detailText:nil
+                           symbol:DefaultSettingsRootSymbol(kDownloadSymbol)
+            symbolBackgroundColor:[UIColor colorNamed:kGrey400Color]
+          accessibilityIdentifier:kSettingsDownloadsSettingsCellId];
 }
 
 - (TableViewItem*)tabsSettingsDetailItem {
@@ -1215,13 +1201,6 @@ UIImage* GetBrandedGoogleServicesSymbol() {
     return cell;
   NSInteger itemType = [self.tableViewModel itemTypeForIndexPath:indexPath];
 
-  if ([cell isKindOfClass:[TableViewDetailIconCell class]]) {
-    TableViewDetailIconCell* detailCell =
-        base::apple::ObjCCastStrict<TableViewDetailIconCell>(cell);
-    [detailCell setUserInteractionEnabled:YES];
-    detailCell.textLabel.textColor = [UIColor colorNamed:kTextPrimaryColor];
-  }
-
   switch (itemType) {
     case SettingsItemTypeMemoryDebugging: {
       TableViewSwitchCell* switchCell =
@@ -1320,10 +1299,7 @@ UIImage* GetBrandedGoogleServicesSymbol() {
     case SettingsItemTypeSignInButton:
       signin_metrics::RecordSigninUserActionForAccessPoint(
           signin_metrics::AccessPoint::ACCESS_POINT_SETTINGS);
-      [self showSignInWithIdentity:nil
-                       promoAction:signin_metrics::PromoAction::
-                                       PROMO_ACTION_NO_SIGNIN_PROMO
-                        completion:nil];
+      [self showSignIn];
       break;
     case SettingsItemTypeAccount: {
       if ([self shouldReplaceSyncSettingsWithAccountSettings]) {
@@ -1334,12 +1310,13 @@ UIImage* GetBrandedGoogleServicesSymbol() {
         break;
       }
       base::RecordAction(base::UserMetricsAction("Settings.MyAccount"));
-      AccountsTableViewController* accountsTableViewController =
-          [[AccountsTableViewController alloc] initWithBrowser:_browser
-                                     closeSettingsOnAddAccount:NO];
-      accountsTableViewController.applicationCommandsHandler =
-          self.applicationCommandsHandler;
-      controller = accountsTableViewController;
+
+      AccountsCoordinator* accountsCoordinator = [[AccountsCoordinator alloc]
+          initWithBaseNavigationController:self.navigationController
+                                   browser:_browser
+                 closeSettingsOnAddAccount:NO];
+      _accountsCoordinator = accountsCoordinator;
+      [accountsCoordinator start];
       break;
     }
     case SettingsItemTypeGoogleServices:
@@ -1348,13 +1325,10 @@ UIImage* GetBrandedGoogleServicesSymbol() {
       break;
     case SettingsItemTypeGoogleSync: {
       base::RecordAction(base::UserMetricsAction("Settings.Sync"));
-      switch (
-          GetSyncState(SyncServiceFactory::GetForBrowserState(_browserState))) {
+      switch (GetSyncFeatureState(
+          SyncServiceFactory::GetForBrowserState(_browserState))) {
         case SyncState::kSyncConsentOff: {
-          [self showSignInWithIdentity:nil
-                           promoAction:signin_metrics::PromoAction::
-                                           PROMO_ACTION_NO_SIGNIN_PROMO
-                            completion:nil];
+          [self showSignIn];
           break;
         }
         case SyncState::kSyncOff: {
@@ -1421,7 +1395,8 @@ UIImage* GetBrandedGoogleServicesSymbol() {
           [[AutofillProfileTableViewController alloc] initWithBrowser:_browser];
       break;
     case SettingsItemTypeNotifications:
-      DCHECK(IsPriceNotificationsEnabled());
+      DCHECK(IsPriceNotificationsEnabled() ||
+             IsContentPushNotificationsEnabled());
       [self showNotifications];
       break;
     case SettingsItemTypeVoiceSearch:
@@ -1456,6 +1431,10 @@ UIImage* GetBrandedGoogleServicesSymbol() {
       controller =
           [[ContentSettingsTableViewController alloc] initWithBrowser:_browser];
       break;
+    case SettingsItemTypeDownloadsSettings:
+      base::RecordAction(base::UserMetricsAction("Settings.DownloadsSettings"));
+      [self showDownloadsSettings];
+      break;
     case SettingsItemTypeTabs:
       base::RecordAction(base::UserMetricsAction("Settings.Tabs"));
       [self showTabsSettings];
@@ -1469,10 +1448,6 @@ UIImage* GetBrandedGoogleServicesSymbol() {
       base::RecordAction(base::UserMetricsAction("AboutChrome"));
       AboutChromeTableViewController* aboutChromeTableViewController =
           [[AboutChromeTableViewController alloc] init];
-      aboutChromeTableViewController.applicationCommandsHandler =
-          self.applicationCommandsHandler;
-      aboutChromeTableViewController.snackbarCommandsHandler =
-          self.snackbarCommandsHandler;
       controller = aboutChromeTableViewController;
       break;
     }
@@ -1486,12 +1461,21 @@ UIImage* GetBrandedGoogleServicesSymbol() {
           pushViewController:[[TableCellCatalogViewController alloc] init]
                     animated:YES];
       break;
+    case SettingsItemTypePlusAddresses: {
+      OpenNewTabCommand* command = [OpenNewTabCommand
+          commandWithURLFromChrome:
+              GURL(plus_addresses::features::kPlusAddressManagementUrl.Get())];
+      id<ApplicationCommands> handler = HandlerForProtocol(
+          _browser->GetCommandDispatcher(), ApplicationCommands);
+      [handler closeSettingsUIAndOpenURL:command];
+      break;
+    }
     default:
       break;
   }
 
   if (controller) {
-    controller.dispatcher = self.dispatcher;
+    [self configureHandlersForRootViewController:controller];
     [self.navigationController pushViewController:controller animated:YES];
   }
 }
@@ -1604,8 +1588,8 @@ UIImage* GetBrandedGoogleServicesSymbol() {
 
 // Returns true if sync is disabled by policy.
 - (bool)isSyncDisabledByPolicy {
-  return GetSyncState(SyncServiceFactory::GetForBrowserState(_browserState)) ==
-         SyncState::kSyncDisabledByAdministrator;
+  return SyncServiceFactory::GetForBrowserState(_browserState)
+      ->HasDisableReason(syncer::SyncService::DISABLE_REASON_ENTERPRISE_POLICY);
 }
 
 - (void)showGoogleServices {
@@ -1633,7 +1617,7 @@ UIImage* GetBrandedGoogleServicesSymbol() {
 }
 
 - (BOOL)shouldReplaceSyncSettingsWithAccountSettings {
-  // TODO(crbug.com/1462552): Remove usage of HasSyncConsent() after kSync
+  // TODO(crbug.com/40066949): Remove usage of HasSyncConsent() after kSync
   // users migrated to kSignin in phase 3. See ConsentLevel::kSync
   // documentation for details.
   return base::FeatureList::IsEnabled(
@@ -1643,14 +1627,13 @@ UIImage* GetBrandedGoogleServicesSymbol() {
 }
 
 - (void)showGoogleSync {
-  DCHECK(!_manageSyncSettingsCoordinator);
-  // TODO(crbug.com/1462552): Remove usage of HasSyncConsent() after kSync
-  // users migrated to kSignin in phase 3. See ConsentLevel::kSync
-  // documentation for details.
+  // TODO(crbug.com/1464966): Switch back to DCHECK if the number of reports is
+  // low.
+  DUMP_WILL_BE_CHECK(!_manageSyncSettingsCoordinator);
   SyncSettingsAccountState accountState =
-      SyncServiceFactory::GetForBrowserState(_browserState)->HasSyncConsent()
-          ? SyncSettingsAccountState::kSyncing
-          : SyncSettingsAccountState::kSignedIn;
+      [self shouldReplaceSyncSettingsWithAccountSettings]
+          ? SyncSettingsAccountState::kSignedIn
+          : SyncSettingsAccountState::kSyncing;
   _manageSyncSettingsCoordinator = [[ManageSyncSettingsCoordinator alloc]
       initWithBaseNavigationController:self.navigationController
                                browser:_browser
@@ -1660,7 +1643,9 @@ UIImage* GetBrandedGoogleServicesSymbol() {
 }
 
 - (void)showPasswords {
-  DCHECK(!_passwordsCoordinator);
+  // TODO(crbug.com/1464966): Switch back to DCHECK if the number of reports is
+  // low.
+  DUMP_WILL_BE_CHECK(!_passwordsCoordinator);
   _passwordsCoordinator = [[PasswordsCoordinator alloc]
       initWithBaseNavigationController:self.navigationController
                                browser:_browser];
@@ -1668,13 +1653,17 @@ UIImage* GetBrandedGoogleServicesSymbol() {
   [_passwordsCoordinator start];
 }
 
-// Shows Safety Check Screen.
-// TODO(crbug.com/1464966): Make sure there aren't mutiple active
-// `_safetyCheckCoordinator`s at once.
+// Shows the Safety Check screen.
 - (void)showSafetyCheck {
+  // TODO(crbug.com/1464966): Switch back to DCHECK if the number of reports is
+  // low.
+  DUMP_WILL_BE_CHECK(!_safetyCheckCoordinator);
+
   _safetyCheckCoordinator = [[SafetyCheckCoordinator alloc]
       initWithBaseNavigationController:self.navigationController
-                               browser:_browser];
+                               browser:_browser
+                              referrer:password_manager::PasswordCheckReferrer::
+                                           kSafetyCheck];
   _safetyCheckCoordinator.delegate = self;
   [_safetyCheckCoordinator start];
 }
@@ -1733,7 +1722,9 @@ UIImage* GetBrandedGoogleServicesSymbol() {
 
 // Shows Privacy screen.
 - (void)showPrivacy {
-  DCHECK(!_privacyCoordinator);
+  // TODO(crbug.com/1464966): Switch back to DCHECK if the number of reports is
+  // low.
+  DUMP_WILL_BE_CHECK(!_privacyCoordinator);
   _privacyCoordinator = [[PrivacyCoordinator alloc]
       initWithBaseNavigationController:self.navigationController
                                browser:_browser];
@@ -1803,10 +1794,77 @@ UIImage* GetBrandedGoogleServicesSymbol() {
   }
 }
 
+- (void)maybeShowSigninIPH {
+  if (_settingsAreDismissed) {
+    return;
+  }
+  AuthenticationService* authService =
+      AuthenticationServiceFactory::GetForBrowserState(
+          _browser->GetBrowserState());
+  BOOL shouldShowSigninIPH =
+      authService->HasPrimaryIdentity(signin::ConsentLevel::kSignin) &&
+      [self shouldReplaceSyncSettingsWithAccountSettings];
+  if (!shouldShowSigninIPH) {
+    return;
+  }
+
+  UITableViewCell* accountCell = nil;
+  for (UITableViewCell* cell in [self.tableView visibleCells]) {
+    if ([cell isKindOfClass:[TableViewAccountCell class]]) {
+      accountCell = cell;
+      break;
+    }
+  }
+  if (!accountCell) {
+    return;
+  }
+
+  __weak __typeof(self) weakSelf = self;
+  CallbackWithIPHDismissalReasonType dismissalCallback =
+      ^(IPHDismissalReasonType dismissReason,
+        feature_engagement::Tracker::SnoozeAction snoozeAction) {
+        [weakSelf signinIPHDismissed];
+      };
+  _bubblePresenter = [[BubbleViewControllerPresenter alloc]
+           initWithText:l10n_util::GetNSString(IDS_IOS_SETTING_IPH_SIGNIN)
+                  title:nil
+                  image:nil
+         arrowDirection:BubbleArrowDirectionUp
+              alignment:BubbleAlignmentCenter
+             bubbleType:BubbleViewTypeDefault
+      dismissalCallback:dismissalCallback];
+  CGPoint anchorPointInCell = CGPointMake(CGRectGetMidX(accountCell.bounds),
+                                          CGRectGetMaxY(accountCell.bounds));
+  CGPoint anchorPointInWindow = [self.view.window convertPoint:anchorPointInCell
+                                                      fromView:accountCell];
+
+  // The IPH must be presented if
+  // `_featureEngagementTracker->ShouldTriggerHelpUI()` returns true.
+  BOOL canShowSigninIPH =
+      [_bubblePresenter canPresentInView:self.view
+                             anchorPoint:anchorPointInWindow] &&
+      _featureEngagementTracker->ShouldTriggerHelpUI(
+          feature_engagement::kIPHiOSReplaceSyncPromosWithSignInPromos);
+  if (canShowSigninIPH) {
+    [_bubblePresenter presentInViewController:self
+                                         view:self.view
+                                  anchorPoint:anchorPointInWindow];
+  } else {
+    _bubblePresenter = nil;
+  }
+}
+
+- (void)signinIPHDismissed {
+  _featureEngagementTracker->Dismissed(
+      feature_engagement::kIPHiOSReplaceSyncPromosWithSignInPromos);
+  _bubblePresenter = nil;
+}
+
 // Updates the Sync item to display the right icon and status message in the
 // cell.
 - (void)updateSyncItem:(TableViewDetailIconItem*)googleSyncItem {
-  switch (GetSyncState(SyncServiceFactory::GetForBrowserState(_browserState))) {
+  switch (GetSyncFeatureState(
+      SyncServiceFactory::GetForBrowserState(_browserState))) {
     case SyncState::kSyncConsentOff: {
       googleSyncItem.detailText = l10n_util::GetNSString(IDS_IOS_SETTING_OFF);
       googleSyncItem.iconImage = CustomSettingsRootSymbol(kSyncDisabledSymbol);
@@ -1979,14 +2037,14 @@ UIImage* GetBrandedGoogleServicesSymbol() {
       authService->GetPrimaryIdentity(signin::ConsentLevel::kSignin);
   PrefService* prefService = _browserState->GetPrefs();
   const std::string& gaiaID = base::SysNSStringToUTF8(identity.gaiaID);
-  notifications_settings::ClientPermissionState permission_state =
-      notifications_settings::GetNotificationPermissionState(gaiaID,
-                                                             prefService);
+  push_notification_settings::ClientPermissionState permission_state =
+      push_notification_settings::GetNotificationPermissionState(gaiaID,
+                                                                 prefService);
   if (permission_state ==
-      notifications_settings::ClientPermissionState::ENABLED) {
+      push_notification_settings::ClientPermissionState::ENABLED) {
     detailText = l10n_util::GetNSString(IDS_IOS_SETTING_ON);
   } else if (permission_state ==
-             notifications_settings::ClientPermissionState::DISABLED) {
+             push_notification_settings::ClientPermissionState::DISABLED) {
     detailText = l10n_util::GetNSString(IDS_IOS_SETTING_OFF);
   }
 
@@ -1994,55 +2052,66 @@ UIImage* GetBrandedGoogleServicesSymbol() {
   [self reconfigureCellsForItems:@[ _notificationsItem ]];
 }
 
-#pragma mark - SigninPresenter
-
-- (void)showSignin:(ShowSigninCommand*)command {
-  [self.applicationCommandsHandler showSignin:command baseViewController:self];
-}
-
-#pragma mark Sign in
-
-- (void)showSignInWithIdentity:(id<SystemIdentity>)identity
-                   promoAction:(signin_metrics::PromoAction)promoAction
-                    completion:(ShowSigninCommandCompletionCallback)completion {
-  DCHECK(!self.isSigninInProgress);
-  self.isSigninInProgress = YES;
-  __weak __typeof(self) weakSelf = self;
-  AuthenticationOperation operation = AuthenticationOperation::kSigninAndSync;
-  if (base::FeatureList::IsEnabled(
-          syncer::kReplaceSyncPromosWithSignInPromos)) {
-    // If there are 0 identities, kInstantSignin requires less taps.
-    operation =
-        ChromeAccountManagerServiceFactory::GetForBrowserState(_browserState)
-                ->HasIdentities()
-            ? AuthenticationOperation::kSigninOnly
-            : AuthenticationOperation::kInstantSignin;
+- (void)showDownloadsSettings {
+  if (_downloadsSettingsCoordinator) {
+    [_downloadsSettingsCoordinator stop];
+    _downloadsSettingsCoordinator = nil;
   }
 
+  _downloadsSettingsCoordinator = [[DownloadsSettingsCoordinator alloc]
+      initWithBaseNavigationController:self.navigationController
+                               browser:_browser];
+  _downloadsSettingsCoordinator.delegate = self;
+  [_downloadsSettingsCoordinator start];
+}
+
+#pragma mark - Sign in
+
+- (void)showSignIn {
+  if (self.isSigninInProgress) {
+    // According to crbug.com/1498153, it is possible for the user to tap twice
+    // on the sign-in cell from the settings to open the sign-in dialog.
+    // If this happens, the second tap should ignored.
+    return;
+  }
+  self.isSigninInProgress = YES;
+  __weak __typeof(self) weakSelf = self;
+  AuthenticationOperation operation =
+      base::FeatureList::IsEnabled(syncer::kReplaceSyncPromosWithSignInPromos)
+          ? AuthenticationOperation::kSheetSigninAndHistorySync
+          : AuthenticationOperation::kSigninAndSync;
   ShowSigninCommand* command = [[ShowSigninCommand alloc]
       initWithOperation:operation
-               identity:identity
+               identity:nil
             accessPoint:signin_metrics::AccessPoint::ACCESS_POINT_SETTINGS
-            promoAction:promoAction
+            promoAction:signin_metrics::PromoAction::
+                            PROMO_ACTION_NO_SIGNIN_PROMO
                callback:^(SigninCoordinatorResult result,
                           SigninCompletionInfo* completionInfo) {
                  BOOL success = result == SigninCoordinatorResultSuccess;
-                 if (completion)
-                   completion(result, completionInfo);
                  [weakSelf didFinishSignin:success];
                }];
-  [self.applicationCommandsHandler showSignin:command baseViewController:self];
+  [self.applicationHandler showSignin:command baseViewController:self];
 }
 
 - (void)didFinishSignin:(BOOL)signedIn {
-  if (_settingsAreDismissed)
+  if (_settingsAreDismissed) {
     return;
+  }
 
   // The sign-in is done. The sign-in promo cell or account cell can be
   // reloaded.
   DCHECK(self.isSigninInProgress);
   self.isSigninInProgress = NO;
   [self reloadData];
+
+  // Post the task to show signin IPH so that the UI has had time to refresh
+  // after `reloadData`.
+  __weak __typeof(self) weakSelf = self;
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE, base::BindOnce(^{
+        [weakSelf maybeShowSigninIPH];
+      }));
 }
 
 #pragma mark SettingsControllerProtocol
@@ -2059,11 +2128,6 @@ UIImage* GetBrandedGoogleServicesSymbol() {
 - (void)settingsWillBeDismissed {
   DCHECK(!_settingsAreDismissed);
 
-  // Disconnect the sign-in mediator.
-  DCHECK(!self.isSigninInProgress);
-  [_signinPromoViewMediator disconnect];
-  _signinPromoViewMediator = nil;
-
   // Stop children coordinators.
   [_googleServicesSettingsCoordinator stop];
   _googleServicesSettingsCoordinator.delegate = nil;
@@ -2075,6 +2139,9 @@ UIImage* GetBrandedGoogleServicesSymbol() {
   [_passwordsCoordinator stop];
   _passwordsCoordinator.delegate = nil;
   _passwordsCoordinator = nil;
+
+  [_accountsCoordinator stop];
+  _accountsCoordinator = nil;
 
   [_notificationsCoordinator stop];
   _notificationsCoordinator = nil;
@@ -2090,6 +2157,9 @@ UIImage* GetBrandedGoogleServicesSymbol() {
 
   [_addressBarPreferenceCoordinator stop];
   _addressBarPreferenceCoordinator = nil;
+
+  [_downloadsSettingsCoordinator stop];
+  _downloadsSettingsCoordinator = nil;
 
   // Stop observable prefs.
   [_showMemoryDebugToolsEnabled stop];
@@ -2143,6 +2213,10 @@ UIImage* GetBrandedGoogleServicesSymbol() {
 #pragma mark SyncObserverModelBridge
 
 - (void)onSyncStateChanged {
+  // Feed settings are subject to sign-in status and account type, ensure
+  // that these sections are updated as necessary.
+  [self booleanDidChange:_contentSuggestionPolicyEnabled];
+
   [self updateSigninSection];
   // The Identity section may be added or removed depending on sign-in is
   // allowed. Reload all sections in the model to account for the change.
@@ -2182,7 +2256,6 @@ UIImage* GetBrandedGoogleServicesSymbol() {
     [self reconfigureCellsForItems:@[ _showMemoryDebugToolsItem ]];
   } else if (observableBoolean == _allowChromeSigninPreference) {
     [self updateSigninSection];
-    [self updateDiscoverSection];
     // The Identity section may be added or removed depending on sign-in is
     // allowed. Reload all sections in the model to account for the change.
     [self.tableView reloadData];
@@ -2295,7 +2368,8 @@ UIImage* GetBrandedGoogleServicesSymbol() {
 
   if (preferenceName == autofill::prefs::kAutofillCreditCardEnabled) {
     BOOL autofillCreditCardEnabled =
-        autofill::prefs::IsAutofillCreditCardEnabled(_browserState->GetPrefs());
+        autofill::prefs::IsAutofillPaymentMethodsEnabled(
+            _browserState->GetPrefs());
     NSString* detailText = autofillCreditCardEnabled
                                ? l10n_util::GetNSString(IDS_IOS_SETTING_ON)
                                : l10n_util::GetNSString(IDS_IOS_SETTING_OFF);
@@ -2309,49 +2383,6 @@ UIImage* GetBrandedGoogleServicesSymbol() {
     // changing.
     [self reloadData];
   }
-}
-
-#pragma mark - SigninPromoViewConsumer
-
-- (void)configureSigninPromoWithConfigurator:
-            (SigninPromoViewConfigurator*)configurator
-                             identityChanged:(BOOL)identityChanged {
-  if (self.isSigninInProgress ||
-      ![self.tableViewModel
-          hasItemForItemType:SettingsItemTypeSigninPromo
-           sectionIdentifier:SettingsSectionIdentifierSignIn]) {
-    // Don't reload the sign-in promo if sign-in is in progress, to avoid having
-    // UI glitches. The table view should be reloaded once the sign-in is
-    // finished.
-    return;
-  }
-  NSIndexPath* signinPromoCellIndexPath = [self.tableViewModel
-      indexPathForItemType:SettingsItemTypeSigninPromo
-         sectionIdentifier:SettingsSectionIdentifierSignIn];
-  DCHECK(signinPromoCellIndexPath.item != NSNotFound);
-  TableViewSigninPromoItem* signinPromoItem =
-      base::apple::ObjCCast<TableViewSigninPromoItem>(
-          [self.tableViewModel itemAtIndexPath:signinPromoCellIndexPath]);
-  if (signinPromoItem) {
-    signinPromoItem.configurator = configurator;
-    signinPromoItem.delegate = _signinPromoViewMediator;
-    [self reconfigureCellsForItems:@[ signinPromoItem ]];
-  }
-}
-
-- (void)signinPromoViewMediator:(SigninPromoViewMediator*)mediator
-    shouldOpenSigninWithIdentity:(id<SystemIdentity>)identity
-                     promoAction:(signin_metrics::PromoAction)promoAction
-                      completion:
-                          (ShowSigninCommandCompletionCallback)completion {
-  [self showSignInWithIdentity:identity
-                   promoAction:promoAction
-                    completion:completion];
-}
-
-- (void)signinPromoViewMediatorCloseButtonWasTapped:
-    (SigninPromoViewMediator*)mediator {
-  [self reloadData];
 }
 
 #pragma mark - GoogleServicesSettingsCoordinatorDelegate
@@ -2373,7 +2404,7 @@ UIImage* GetBrandedGoogleServicesSymbol() {
   _safetyCheckCoordinator = nil;
 }
 
-#pragma mark - SafetyCheckCoordinatorDelegate
+#pragma mark - PasswordsCoordinatorDelegate
 
 - (void)passwordsCoordinatorDidRemove:(PasswordsCoordinator*)coordinator {
   DCHECK_EQ(_passwordsCoordinator, coordinator);
@@ -2382,7 +2413,28 @@ UIImage* GetBrandedGoogleServicesSymbol() {
   _passwordsCoordinator = nil;
 }
 
-#pragma mark - NotificationsDelegate
+#pragma mark - PasswordManagerReauthenticationDelegate
+
+- (void)dismissPasswordManagerAfterFailedReauthentication {
+  // Pop everything up to the Settings page.
+  // When there is content presented, don't animate the dismissal of the view
+  // controllers in the navigation controller to prevent revealing passwords
+  // when the presented content is the one covered by the reauthentication UI.
+
+  UINavigationController* navigationController = self.navigationController;
+  UIViewController* topViewController = navigationController.topViewController;
+  UIViewController* presentedViewController =
+      topViewController.presentedViewController;
+
+  [navigationController popToViewController:self
+                                   animated:presentedViewController == nil];
+
+  [presentedViewController.presentingViewController
+      dismissViewControllerAnimated:YES
+                         completion:nil];
+}
+
+#pragma mark - NotificationsCoordinatorDelegate
 
 - (void)notificationsCoordinatorDidRemove:
     (NotificationsCoordinator*)coordinator {
@@ -2447,25 +2499,19 @@ UIImage* GetBrandedGoogleServicesSymbol() {
   return l10n_util::GetNSString(IDS_IOS_GOOGLE_SYNC_SETTINGS_TITLE);
 }
 
-- (void)showSignOutToast {
-  syncer::SyncService* syncService =
-      SyncServiceFactory::GetForBrowserState(_browserState);
-  int message_id =
-      syncService->HasDisableReason(
-          syncer::SyncService::DISABLE_REASON_ENTERPRISE_POLICY) ||
-              HasManagedSyncDataType(syncService)
-          ? IDS_IOS_GOOGLE_ACCOUNT_SETTINGS_SIGN_OUT_SNACKBAR_MESSAGE_ENTERPRISE
-          : IDS_IOS_GOOGLE_ACCOUNT_SETTINGS_SIGN_OUT_SNACKBAR_MESSAGE;
-  MDCSnackbarMessage* message =
-      [MDCSnackbarMessage messageWithText:l10n_util::GetNSString(message_id)];
-  [self.snackbarCommandsHandler showSnackbarMessage:message bottomOffset:0];
-}
-
 #pragma mark - NotificationsSettingsObserverDelegate
 
 - (void)notificationsSettingsDidChangeForClient:
     (PushNotificationClientId)clientID {
   [self updateNotificationsDetailText];
+}
+
+#pragma mark - DownloadsSettingsCoordinatorDelegate
+
+- (void)downloadsSettingsCoordinatorWasRemoved:
+    (DownloadsSettingsCoordinator*)coordinator {
+  [_downloadsSettingsCoordinator stop];
+  _downloadsSettingsCoordinator = nil;
 }
 
 @end

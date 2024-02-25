@@ -10,7 +10,7 @@
 #import "base/metrics/user_metrics_action.h"
 #import "ios/chrome/app/application_delegate/app_state.h"
 #import "ios/chrome/app/application_delegate/startup_information.h"
-#import "ios/chrome/browser/ntp/new_tab_page_tab_helper.h"
+#import "ios/chrome/browser/ntp/model/new_tab_page_tab_helper.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_controller.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/browser/browser_provider.h"
@@ -19,10 +19,10 @@
 #import "ios/chrome/browser/shared/model/url/url_util.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
+#import "ios/chrome/browser/tab_insertion/model/tab_insertion_browser_agent.h"
 #import "ios/chrome/browser/ui/start_surface/start_surface_features.h"
 #import "ios/chrome/browser/ui/start_surface/start_surface_recent_tab_browser_agent.h"
 #import "ios/chrome/browser/ui/start_surface/start_surface_util.h"
-#import "ios/chrome/browser/web_state_list/tab_insertion_browser_agent.h"
 #import "ios/web/public/navigation/navigation_manager.h"
 #import "ios/web/public/web_state.h"
 #import "url/gurl.h"
@@ -166,12 +166,11 @@ const char kExcessNTPTabsRemoved[] = "IOS.NTP.ExcessRemovedTabCount";
   // Create a new NTP since there is no existing one.
   TabInsertionBrowserAgent* insertion_agent =
       TabInsertionBrowserAgent::FromBrowser(browser);
-  web::NavigationManager::WebLoadParams params((GURL(kChromeUINewTabURL)));
-  insertion_agent->InsertWebState(
-      params, nullptr, /*opened_by_dom=*/false,
-      TabInsertion::kPositionAutomatically, /*in_background=*/false,
-      /*inherit_opener=*/false, /*should_show_start_surface=*/true,
-      /*should_skip_new_tab_animation=*/false);
+  web::NavigationManager::WebLoadParams web_load_params(
+      (GURL(kChromeUINewTabURL)));
+  TabInsertion::Params tab_insertion_params;
+  tab_insertion_params.should_show_start_surface = true;
+  insertion_agent->InsertWebState(web_load_params, tab_insertion_params);
 }
 
 // Removes duplicate NTP tabs in `browser`'s WebStateList.
@@ -242,18 +241,19 @@ const char kExcessNTPTabsRemoved[] = "IOS.NTP.ExcessRemovedTabCount";
 
 - (void)logBackgroundDurationMetricForActivationLevel:
     (SceneActivationLevel)level {
-  NSInteger timeSinceBackgroundInMinutes =
-      GetTimeSinceMostRecentTabWasOpenForSceneState(self.sceneState) / 60;
-  BOOL isColdStart = (level > SceneActivationLevelBackground &&
-                      self.sceneState.appState.startupInformation.isColdStart);
+  const base::TimeDelta timeSinceBackground =
+      GetTimeSinceMostRecentTabWasOpenForSceneState(self.sceneState);
+  const BOOL isColdStart =
+      (level > SceneActivationLevelBackground &&
+       self.sceneState.appState.startupInformation.isColdStart);
   if (isColdStart) {
     UMA_HISTOGRAM_CUSTOM_COUNTS("IOS.BackgroundTimeBeforeColdStart",
-                                timeSinceBackgroundInMinutes, 1,
-                                60 * 12 /* 12 hours */, 24);
+                                timeSinceBackground.InMinutes(), 1,
+                                base::Hours(12).InMinutes(), 24);
   } else {
     UMA_HISTOGRAM_CUSTOM_COUNTS("IOS.BackgroundTimeBeforeWarmStart",
-                                timeSinceBackgroundInMinutes, 1,
-                                60 * 12 /* 12 hours */, 24);
+                                timeSinceBackground.InMinutes(), 1,
+                                base::Hours(12).InMinutes(), 24);
   }
 }
 

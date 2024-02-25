@@ -1,4 +1,4 @@
-(async function(testRunner) {
+(async function(/** @type {import('test_runner').TestRunner} */ testRunner) {
   const SIZE = 50;
   const {page, session, dp} = await testRunner.startHTML(`
     <style>

@@ -59,16 +59,20 @@ bool DlpFileDestination::operator>=(const DlpFileDestination& other) const {
 
 DlpFileDestination::~DlpFileDestination() = default;
 
-absl::optional<GURL> DlpFileDestination::url() const {
+std::optional<GURL> DlpFileDestination::url() const {
   return url_;
 }
 
-absl::optional<data_controls::Component> DlpFileDestination::component() const {
+std::optional<data_controls::Component> DlpFileDestination::component() const {
   return component_;
 }
 
 bool DlpFileDestination::IsFileSystem() const {
   return !url_.has_value();
+}
+
+bool DlpFileDestination::IsMyFiles() const {
+  return !url_.has_value() && !component_.has_value();
 }
 
 }  // namespace policy

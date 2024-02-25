@@ -51,13 +51,11 @@ interface VideoFrameHandler {
   OnFrameAccessHandlerReady(
       pending_remote<VideoFrameAccessHandler> frame_access_handler);
 
-  // Indicates that a new frame is ready for consumption and optionally a set of
-  // scaled down versions of that frame. The producer guarantees that the
-  // buffer(s) and their contents stay alive and unchanged until
-  // VideoFrameHandler releases the buffers using |frame_access_handler|'s
+  // Indicates that a new frame is ready for consumption. The producer
+  // guarantees that the buffer and its contents stay alive and unchanged until
+  // VideoFrameHandler releases the buffer using |frame_access_handler|'s
   // OnFinishedConsumingBuffer().
-  OnFrameReadyInBuffer(ReadyFrameInBuffer buffer,
-                       array<ReadyFrameInBuffer> scaled_buffers);
+  OnFrameReadyInBuffer(ReadyFrameInBuffer buffer);
 
   // Indicates that the producer is no longer going to use the buffer with id
   // |buffer_id| for frame delivery. This may be called even while the handler
@@ -74,19 +72,22 @@ interface VideoFrameHandler {
 
   OnFrameDropped(media.mojom.VideoCaptureFrameDropReason reason);
 
-  // Called to indicate that a new |crop_version| has been set, and that all
-  // frames which will subsequently be delivered using OnFrameCaptured(),
-  // will have a crop-version that is greater-than-or-equal-to this one.
-  // This allows the Promise which cropTo() returned to be resolved promptly,
-  // even if frames are not being produced over the track at the moment,
-  // which can happen if the track is cropped to an invisible target, or is
-  // paused, or is muted.
-  OnNewCropVersion(uint32 crop_version);
+  // Called to indicate that a new |sub_capture_target_version| has been set,
+  // and that all frames which will subsequently be delivered using
+  // OnFrameCaptured(), will have a sub-capture-target-version that is
+  // greater-than-or-equal-to this one.
+  // This allows the Promise which cropTo() or restrictTo() returned to be
+  // resolved promptly, even if frames are not being produced over the track
+  // at the moment, which can happen if the track is cropped to an invisible
+  // target, or is paused, or is muted.
+  OnNewSubCaptureTargetVersion(uint32 sub_capture_target_version);
 
   // Called when a frame is *not* delivered because Region Capture was applied,
   // but the cropped-to region consists of zero pixels. This is needed because
   // the blue border that is normally drawn around the cropped-to region should
   // be updated.
+  // Note that this is specific to Region Capture. With Element Capture,
+  // we always draw the blue border around the entire tab's viewport.
   OnFrameWithEmptyRegionCapture();
 
   OnLog(string message);

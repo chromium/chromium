@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_ASH_CHILD_ACCOUNTS_PARENT_ACCESS_CODE_PARENT_ACCESS_SERVICE_H_
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -14,7 +15,6 @@
 #include "base/observer_list_types.h"
 #include "chrome/browser/ash/child_accounts/parent_access_code/config_source.h"
 #include "components/account_id/account_id.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 class PrefRegistrySimple;
 
@@ -38,7 +38,7 @@ class ParentAccessService {
     // specifically to the account identified by the parameter.
     virtual void OnAccessCodeValidation(
         ParentCodeValidationResult result,
-        absl::optional<AccountId> account_id) = 0;
+        std::optional<AccountId> account_id) = 0;
   };
 
   // Registers preferences.

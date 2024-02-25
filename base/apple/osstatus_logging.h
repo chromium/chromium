@@ -45,8 +45,17 @@ class BASE_EXPORT OSStatusLogMessage : public logging::LogMessage {
 
   ~OSStatusLogMessage() override;
 
+ protected:
+  void AppendError();
+
  private:
   OSStatus status_;
+};
+
+class BASE_EXPORT OSStatusLogMessageFatal final : public OSStatusLogMessage {
+ public:
+  using OSStatusLogMessage::OSStatusLogMessage;
+  [[noreturn]] ~OSStatusLogMessageFatal() override;
 };
 
 }  // namespace logging

@@ -26,7 +26,11 @@ namespace views::examples {
 TabbedPaneExample::TabbedPaneExample()
     : ExampleBase(GetStringUTF8(IDS_TABBED_PANE_SELECT_LABEL).c_str()) {}
 
-TabbedPaneExample::~TabbedPaneExample() = default;
+TabbedPaneExample::~TabbedPaneExample() {
+  if (tabbed_pane_) {
+    tabbed_pane_->set_listener(nullptr);
+  }
+}
 
 void TabbedPaneExample::CreateExampleView(View* container) {
   container->SetLayoutManager(std::make_unique<views::FlexLayout>())

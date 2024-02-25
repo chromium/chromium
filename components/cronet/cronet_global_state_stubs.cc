@@ -30,7 +30,7 @@ scoped_refptr<base::SingleThreadTaskRunner> InitializeAndCreateTaskRunner() {
   std::ignore = new base::AtExitManager;
 #endif
 
-  base::FeatureList::InitializeInstance(std::string(), std::string());
+  base::FeatureList::InitInstance(std::string(), std::string());
 
   // Note that in component builds this ThreadPoolInstance will be shared with
   // the calling process, if it also depends on //base. In particular this means

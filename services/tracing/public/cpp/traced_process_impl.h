@@ -9,6 +9,7 @@
 #include <string>
 
 #include "base/component_export.h"
+#include "base/memory/raw_ptr.h"
 #include "base/no_destructor.h"
 #include "base/sequence_checker.h"
 #include "base/synchronization/lock.h"
@@ -62,7 +63,7 @@ class COMPONENT_EXPORT(TRACING_CPP) TracedProcessImpl
       ConnectToTracingServiceCallback callback) override;
 
   base::Lock agents_lock_;  // Guards access to |agents_|.
-  std::set<BaseAgent*> agents_;
+  std::set<raw_ptr<BaseAgent, SetExperimental>> agents_;
   mojo::Receiver<tracing::mojom::TracedProcess> receiver_{this};
   mojo::Remote<mojom::SystemTracingService> system_tracing_service_;
   scoped_refptr<base::SequencedTaskRunner> task_runner_;

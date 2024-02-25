@@ -37,8 +37,13 @@ class MockSpeculationHostDelegate : public SpeculationHostDelegate {
     return candidates_;
   }
 
+  base::WeakPtr<MockSpeculationHostDelegate> AsWeakPtr() {
+    return weak_ptr_factory_.GetWeakPtr();
+  }
+
  private:
   std::vector<blink::mojom::SpeculationCandidatePtr> candidates_;
+  base::WeakPtrFactory<MockSpeculationHostDelegate> weak_ptr_factory_{this};
 };
 
 class TestPrefetchService : public PrefetchService {
@@ -59,7 +64,7 @@ class TestPrefetchService : public PrefetchService {
     request->trusted_params->devtools_observer =
         devtools_observer->MakeSelfOwnedNetworkServiceDevToolsObserver();
     devtools_observer->OnStartSinglePrefetch(prefetch_container->RequestId(),
-                                             *request);
+                                             *request, std::nullopt);
 
     network::mojom::URLResponseHead response_head;
     devtools_observer->OnPrefetchResponseReceived(
@@ -91,15 +96,15 @@ class MockContentBrowserClient : public TestContentBrowserClient {
       RenderFrameHost& render_frame_host) override {
     auto delegate =
         std::make_unique<MockSpeculationHostDelegate>(render_frame_host);
-    delegate_ = delegate.get();
+    delegate_ = delegate->AsWeakPtr();
     return delegate;
   }
 
-  MockSpeculationHostDelegate* GetDelegate() { return delegate_; }
+  base::WeakPtr<MockSpeculationHostDelegate> GetDelegate() { return delegate_; }
 
  private:
-  raw_ptr<ContentBrowserClient> old_browser_client_;
-  raw_ptr<MockSpeculationHostDelegate, DanglingUntriaged> delegate_;
+  raw_ptr<ContentBrowserClient> old_browser_client_ = nullptr;
+  base::WeakPtr<MockSpeculationHostDelegate> delegate_;
 };
 
 class PrefetcherTest : public RenderViewHostTestHarness {
@@ -119,9 +124,16 @@ class PrefetcherTest : public RenderViewHostTestHarness {
         prefetch_service_.get());
   }
   void TearDown() override {
+    // The PrefetchService we created for the test contains a
+    // PrefetchOriginProber, which holds a raw pointer to the BrowserContext.
+    // When tearing down, it's important to free our PrefetchService
+    // before freeing the BrowserContext, to avoid any chance of a use after
+    // free.
+    PrefetchDocumentManager::SetPrefetchServiceForTesting(nullptr);
+    prefetch_service_.reset();
+
     web_contents_.reset();
     browser_context_.reset();
-    PrefetchDocumentManager::SetPrefetchServiceForTesting(nullptr);
     RenderViewHostTestHarness::TearDown();
   }
 
@@ -146,15 +158,11 @@ class PrefetcherTest : public RenderViewHostTestHarness {
 };
 
 TEST_F(PrefetcherTest, ProcessCandidatesForPrefetch) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeatureWithParameters(
-      features::kPrefetchUseContentRefactor,
-      {{"proxy_host", "https://testproxyhost.com"}});
-
   MockContentBrowserClient browser_client;
   auto prefetcher = Prefetcher(GetPrimaryMainFrame());
-  auto* delegate = browser_client.GetDelegate();
-  EXPECT_TRUE(delegate != nullptr);
+  base::WeakPtr<MockSpeculationHostDelegate> delegate =
+      browser_client.GetDelegate();
+  ASSERT_TRUE(delegate);
 
   // Create list of SpeculationCandidatePtrs.
   std::vector<blink::mojom::SpeculationCandidatePtr> candidates;
@@ -183,8 +191,13 @@ class MockPrefetcher : public Prefetcher {
   explicit MockPrefetcher(RenderFrameHost& render_frame_host)
       : Prefetcher(render_frame_host) {}
 
-  void OnStartSinglePrefetch(const std::string& request_id,
-                             const network::ResourceRequest& request) override {
+  void OnStartSinglePrefetch(
+      const std::string& request_id,
+      const network::ResourceRequest& request,
+      std::optional<
+          std::pair<const GURL&,
+                    const network::mojom::URLResponseHeadDevToolsInfo&>>
+          redirect_info) override {
     on_start_signle_prefetch_was_called_ = true;
     dev_tools_observer_is_valid_ =
         request.trusted_params->devtools_observer.is_valid();
@@ -221,8 +234,9 @@ TEST_F(PrefetcherTest, MockPrefetcher) {
 
   MockContentBrowserClient browser_client;
   auto prefetcher = MockPrefetcher(GetPrimaryMainFrame());
-  auto* delegate = browser_client.GetDelegate();
-  EXPECT_TRUE(delegate != nullptr);
+  base::WeakPtr<MockSpeculationHostDelegate> delegate =
+      browser_client.GetDelegate();
+  ASSERT_TRUE(delegate);
 
   // Create list of SpeculationCandidatePtrs.
   std::vector<blink::mojom::SpeculationCandidatePtr> candidates;

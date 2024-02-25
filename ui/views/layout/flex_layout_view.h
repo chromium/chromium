@@ -16,8 +16,9 @@
 namespace views {
 
 class VIEWS_EXPORT FlexLayoutView : public View {
+  METADATA_HEADER(FlexLayoutView, View)
+
  public:
-  METADATA_HEADER(FlexLayoutView);
   FlexLayoutView();
   FlexLayoutView(const FlexLayoutView&) = delete;
   FlexLayoutView operator=(const FlexLayoutView&) = delete;

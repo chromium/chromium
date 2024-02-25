@@ -55,14 +55,14 @@ void XrFrameSinkClientImpl::SurfaceDestroyed() {
   // Since this code can be run during destruction, it's theoretically possible,
   // though unlikely, that the FrameSinkManager no longer exists.
   if (frame_sink_manager)
-    frame_sink_manager->InvalidateFrameSinkId(root_frame_sink_id_);
+    frame_sink_manager->InvalidateFrameSinkId(root_frame_sink_id_, this);
 
   // Reset the initialized state and the root FrameSinkId to an invalid value.
   initialized_ = false;
   root_frame_sink_id_ = viz::FrameSinkId();
 }
 
-absl::optional<viz::SurfaceId> XrFrameSinkClientImpl::GetDOMSurface() {
+std::optional<viz::SurfaceId> XrFrameSinkClientImpl::GetDOMSurface() {
   base::AutoLock lock(dom_surface_lock_);
   return dom_surface_id_;
 }

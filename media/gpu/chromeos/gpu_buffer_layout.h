@@ -5,20 +5,20 @@
 #ifndef MEDIA_GPU_CHROMEOS_GPU_BUFFER_LAYOUT_H_
 #define MEDIA_GPU_CHROMEOS_GPU_BUFFER_LAYOUT_H_
 
+#include <optional>
 #include <ostream>
 #include <vector>
 
 #include "media/base/color_plane_layout.h"
 #include "media/gpu/chromeos/fourcc.h"
 #include "media/gpu/media_gpu_export.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/geometry/size.h"
 
 namespace media {
 
 class MEDIA_GPU_EXPORT GpuBufferLayout {
  public:
-  static absl::optional<GpuBufferLayout> Create(
+  static std::optional<GpuBufferLayout> Create(
       const Fourcc& fourcc,
       const gfx::Size& size,
       const std::vector<ColorPlaneLayout>& planes,

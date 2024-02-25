@@ -1,6 +1,0 @@
-This is a testharness.js-based test.
-FAIL getAuthorizationHeaderValue - no redirection promise_test: Unhandled rejection with value: object "ReferenceError: XMLHttpRequest is not defined"
-FAIL getAuthorizationHeaderValue - same origin redirection promise_test: Unhandled rejection with value: object "ReferenceError: XMLHttpRequest is not defined"
-FAIL getAuthorizationHeaderValue - cross origin redirection promise_test: Unhandled rejection with value: object "ReferenceError: XMLHttpRequest is not defined"
-Harness: the test ran to completion.
-

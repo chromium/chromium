@@ -5,13 +5,13 @@
 #ifndef CHROME_BROWSER_ASH_CROSAPI_ENVIRONMENT_PROVIDER_H_
 #define CHROME_BROWSER_ASH_CROSAPI_ENVIRONMENT_PROVIDER_H_
 
+#include <optional>
 #include <string>
 
 #include "chromeos/crosapi/mojom/crosapi.mojom.h"
 #include "components/account_manager_core/account.h"
 #include "components/policy/core/common/policy_namespace.h"
 #include "components/policy/core/common/values_util.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace crosapi {
 
@@ -36,23 +36,7 @@ class EnvironmentProvider {
   // a Microsoft Active Directory account.
   // Returns a `nullopt` for Guest Sessions, Managed Guest Sessions,
   // Demo Mode, and Kiosks.
-  virtual absl::optional<account_manager::Account> GetDeviceAccount();
-
-  // Getter and setter for device account policy data. Used to pass data from
-  // Ash to Lacros. The format is serialized PolicyFetchResponse object. See
-  // components/policy/proto/device_management_backend.proto for details.
-  virtual std::string GetDeviceAccountPolicy();
-  virtual void SetDeviceAccountPolicy(const std::string& policy_blob);
-
-  // Getter and updater of the component policy for given namespace. The policy
-  // blob is serialized JSON received from the server, or parsed from the file
-  // after is was validated.
-  const policy::ComponentPolicyMap& GetDeviceAccountComponentPolicy();
-
-  // Updates the component policy for given namespace. The policy value is JSON
-  // received from the server, or parsed from the file after is was validated.
-  void SetDeviceAccountComponentPolicy(
-      policy::ComponentPolicyMap component_policy);
+  virtual std::optional<account_manager::Account> GetDeviceAccount();
 
   // Getter and setter for last device policy fetch attempt timestamp.
   virtual base::Time GetLastPolicyFetchAttemptTimestamp();

@@ -57,7 +57,7 @@ class POLICY_EXPORT ProxyPolicyProvider
 
   // ConfigurationPolicyProvider:
   void Shutdown() override;
-  void RefreshPolicies() override;
+  void RefreshPolicies(PolicyFetchReason reason) override;
   bool IsFirstPolicyLoadComplete(PolicyDomain domain) const override;
 
   // ConfigurationPolicyProvider::Observer:

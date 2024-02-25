@@ -25,4 +25,12 @@ MEDIA_EXPORT BASE_DECLARE_FEATURE(kAllowIAudioClient3);
 
 }  // namespace features
 
+namespace media {
+
+// Returns true if system audio loopback capture is implemented for the current
+// OS.
+MEDIA_EXPORT bool IsSystemLoopbackCaptureSupported();
+
+}  // namespace media
+
 #endif  // MEDIA_AUDIO_AUDIO_FEATURES_H_

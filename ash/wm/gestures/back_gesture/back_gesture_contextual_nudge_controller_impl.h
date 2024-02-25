@@ -9,16 +9,20 @@
 #include "ash/public/cpp/back_gesture_contextual_nudge_controller.h"
 #include "ash/public/cpp/session/session_observer.h"
 #include "ash/public/cpp/shelf_config.h"
-#include "ash/public/cpp/tablet_mode_observer.h"
 #include "ash/wm/tablet_mode/tablet_mode_controller.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "base/timer/timer.h"
+#include "ui/display/display_observer.h"
 #include "ui/wm/public/activation_change_observer.h"
 
 namespace aura {
 class Window;
-}
+}  // namespace aura
+
+namespace display {
+enum class TabletState;
+}  // namespace display
 
 namespace ash {
 
@@ -28,7 +32,7 @@ class BackGestureContextualNudge;
 // The class to decide when to show/hide back gesture contextual nudge.
 class ASH_EXPORT BackGestureContextualNudgeControllerImpl
     : public SessionObserver,
-      public TabletModeObserver,
+      public display::DisplayObserver,
       public wm::ActivationChangeObserver,
       public BackGestureContextualNudgeController,
       public ShelfConfig::Observer {
@@ -49,10 +53,8 @@ class ASH_EXPORT BackGestureContextualNudgeControllerImpl
   void OnActiveUserSessionChanged(const AccountId& account_id) override;
   void OnSessionStateChanged(session_manager::SessionState state) override;
 
-  // TabletModeObserver:
-  void OnTabletModeStarted() override;
-  void OnTabletModeEnded() override;
-  void OnTabletControllerDestroyed() override;
+  // display::DisplayObserver:
+  void OnDisplayTabletStateChanged(display::TabletState state) override;
 
   // wm::ActivationChangeObserver:
   void OnWindowActivated(ActivationReason reason,
@@ -105,8 +107,7 @@ class ASH_EXPORT BackGestureContextualNudgeControllerImpl
   void DoCleanUp();
 
   ScopedSessionObserver session_observer_{this};
-  base::ScopedObservation<TabletModeController, TabletModeObserver>
-      tablet_mode_observation_{this};
+  display::ScopedDisplayObserver display_observer_{this};
 
   // The delegate to monitor the current active window's navigation status.
   std::unique_ptr<BackGestureContextualNudgeDelegate> nudge_delegate_;

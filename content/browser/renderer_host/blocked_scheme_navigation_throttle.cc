@@ -10,10 +10,10 @@
 #include "content/browser/renderer_host/frame_tree.h"
 #include "content/browser/renderer_host/frame_tree_node.h"
 #include "content/browser/renderer_host/navigation_request.h"
+#include "content/common/features.h"
 #include "content/common/navigation_params_utils.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/render_frame_host.h"
-#include "content/public/common/content_features.h"
 #include "storage/browser/file_system/external_mount_points.h"
 #include "storage/browser/file_system/file_system_url.h"
 #include "storage/common/file_system/file_system_util.h"
@@ -58,7 +58,7 @@ BlockedSchemeNavigationThrottle::WillStartRequest() {
       !IsExternalMountedFile(request->GetURL()) &&
       (url::Origin::Create(request->GetURL()) ==
        request->GetInitiatorOrigin()) &&
-      content::GetContentClient()->browser()->IsFileSystemURLNavigationAllowed(
+      GetContentClient()->browser()->IsFileSystemURLNavigationAllowed(
           browser_context, request->GetURL())) {
     return PROCEED;
   }
@@ -125,7 +125,7 @@ BlockedSchemeNavigationThrottle::CreateThrottleForNavigation(
           blink::features::kFileSystemUrlNavigationForChromeAppsOnly) &&
       (url::Origin::Create(request->GetURL()) ==
        request->GetInitiatorOrigin()) &&
-      content::GetContentClient()->browser()->IsFileSystemURLNavigationAllowed(
+      GetContentClient()->browser()->IsFileSystemURLNavigationAllowed(
           browser_context, request->GetURL());
   if (!is_navigation_allowed &&
       !base::FeatureList::IsEnabled(

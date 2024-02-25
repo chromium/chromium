@@ -63,6 +63,7 @@ cast_source_set("renderer") {
     "//chromecast/media",
     "//chromecast/media/base:media_codec_support",
     "//chromecast/renderer/media",
+    "//components/cdm/renderer",
     "//components/media_control/renderer",
     "//components/network_hints/renderer",
     "//components/on_load_script_injector/renderer",

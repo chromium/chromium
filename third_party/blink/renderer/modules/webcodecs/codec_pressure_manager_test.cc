@@ -15,6 +15,7 @@
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/heap/heap_test_utilities.h"
 #include "third_party/blink/renderer/platform/heap/thread_state.h"
+#include "third_party/blink/renderer/platform/testing/task_environment.h"
 
 namespace blink {
 
@@ -159,6 +160,7 @@ class CodecPressureManagerTest
   }
 
  private:
+  test::TaskEnvironment task_environment_;
   WeakPersistent<CodecPressureManager> manager_;
 };
 

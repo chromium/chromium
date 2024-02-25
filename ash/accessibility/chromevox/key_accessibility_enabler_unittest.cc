@@ -4,7 +4,7 @@
 
 #include "ash/accessibility/chromevox/key_accessibility_enabler.h"
 
-#include "ash/accessibility/accessibility_controller_impl.h"
+#include "ash/accessibility/accessibility_controller.h"
 #include "ash/accessibility/accessibility_observer.h"
 #include "ash/shell.h"
 #include "ash/test/ash_test_base.h"
@@ -53,7 +53,7 @@ class KeyAccessibilityEnablerTest : public AshTestBase,
   void OnAccessibilityStatusChanged() override { run_loop_->Quit(); }
 
   std::unique_ptr<base::RunLoop> run_loop_;
-  raw_ptr<KeyAccessibilityEnabler, DanglingUntriaged | ExperimentalAsh>
+  raw_ptr<KeyAccessibilityEnabler, DanglingUntriaged>
       key_accessibility_enabler_;
   base::SimpleTestTickClock clock_;
 };
@@ -68,7 +68,7 @@ TEST_F(KeyAccessibilityEnablerTest, TwoVolumeKeyDown) {
   ui::KeyEvent vol_up_release(ui::ET_KEY_RELEASED, ui::VKEY_VOLUME_UP,
                               ui::EF_NONE);
 
-  AccessibilityControllerImpl* controller =
+  AccessibilityController* controller =
       Shell::Get()->accessibility_controller();
 
   ASSERT_FALSE(controller->spoken_feedback().enabled());

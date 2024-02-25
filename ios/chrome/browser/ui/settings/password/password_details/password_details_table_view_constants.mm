@@ -4,12 +4,12 @@
 
 #import "ios/chrome/browser/ui/settings/password/password_details/password_details_table_view_constants.h"
 
-NSString* const kPasswordDetailsViewControllerId =
-    @"PasswordDetailsTableViewId";
+NSString* const kPasswordDetailsViewControllerID =
+    @"PasswordDetailsTableViewID";
 
-NSString* const kMovePasswordToAccountButtonId =
-    @"kMovePasswordToAccountButtonId";
+NSString* const kMovePasswordToAccountButtonID =
+    @"kMovePasswordToAccountButtonID";
 
-NSString* const kCompromisedWarningId = @"CompromisedWarningId";
+NSString* const kCompromisedWarningID = @"CompromisedWarningID";
 
-NSString* const kPasswordShareButtonId = @"PasswordShareButtonId";
+NSString* const kPasswordShareButtonID = @"PasswordShareButtonID";

@@ -17,6 +17,10 @@ namespace security_interstitials {
 struct UnsafeResource;
 }  // namespace security_interstitials
 
+namespace variations {
+class VariationsService;
+}  // namespace variations
+
 namespace web {
 class WebState;
 }  // namespace web
@@ -34,8 +38,10 @@ class SafeBrowsingClient : public KeyedService {
   // Gets the real time url look up service. Clients may return nullptr.
   virtual safe_browsing::RealTimeUrlLookupService*
   GetRealTimeUrlLookupService() = 0;
-  // Gets the hash-real-time service factory. Client may return nulltpr.
+  // Gets the hash-real-time service factory. Client may return nullptr.
   virtual safe_browsing::HashRealTimeService* GetHashRealTimeService() = 0;
+  // Gets the variations service. Clients may return nullptr.
+  virtual variations::VariationsService* GetVariationsService() = 0;
   // Returns whether or not `resource` should be blocked from loading.
   virtual bool ShouldBlockUnsafeResource(
       const security_interstitials::UnsafeResource& resource) const = 0;
@@ -44,12 +50,6 @@ class SafeBrowsingClient : public KeyedService {
   // `url` The url which was cancelled.
   virtual void OnMainFrameUrlQueryCancellationDecided(web::WebState* web_state,
                                                       const GURL& url) = 0;
-  // Called when safe browsing decided to cancel loading in a sub frame.
-  // `web_state` The associated web state.
-  // `url` The url which was cancelled.
-  // Returns whether or not a blocking page should be displayed.
-  virtual bool OnSubFrameUrlQueryCancellationDecided(web::WebState* web_state,
-                                                     const GURL& url) = 0;
 };
 
 #endif  // IOS_COMPONENTS_SECURITY_INTERSTITIALS_SAFE_BROWSING_SAFE_BROWSING_CLIENT_H_

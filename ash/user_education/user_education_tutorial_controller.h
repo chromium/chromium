@@ -5,14 +5,19 @@
 #ifndef ASH_USER_EDUCATION_USER_EDUCATION_TUTORIAL_CONTROLLER_H_
 #define ASH_USER_EDUCATION_USER_EDUCATION_TUTORIAL_CONTROLLER_H_
 
+#include <optional>
+
 #include "ash/ash_export.h"
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ui {
 class ElementContext;
 }  // namespace ui
+
+namespace user_education {
+struct TutorialDescription;
+}  // namespace user_education
 
 namespace ash {
 
@@ -35,6 +40,17 @@ class ASH_EXPORT UserEducationTutorialController {
   // NOTE: Exists if and only if user education features are enabled.
   static UserEducationTutorialController* Get();
 
+  // Returns whether a tutorial is registered for the specified `tutorial_id`.
+  // NOTE: Currently only the primary user profile is supported.
+  bool IsTutorialRegistered(TutorialId tutorial_id) const;
+
+  // Registers the tutorial with the specified `tutorial_id`.
+  // NOTE: Currently only the primary user profile is supported.
+  void RegisterTutorial(
+      UserEducationPrivateApiKey,
+      TutorialId tutorial_id,
+      user_education::TutorialDescription tutorial_description);
+
   // Starts the tutorial previously registered with the specified `tutorial_id`.
   // Any running tutorial is cancelled. One of either `completed_callback` or
   // `aborted_callback` will be run on tutorial finish.
@@ -51,7 +67,7 @@ class ASH_EXPORT UserEducationTutorialController {
   // not. Any `aborted_callback` passed in at the time of start will be called.
   // NOTE: Currently only the primary user profile is supported.
   void AbortTutorial(UserEducationPrivateApiKey,
-                     absl::optional<TutorialId> tutorial_id = absl::nullopt);
+                     std::optional<TutorialId> tutorial_id = std::nullopt);
 
  private:
   // The delegate owned by the `UserEducationController` which facilitates

@@ -10,7 +10,11 @@ package permissions;
 
 // Features that depend on the site that triggered the permission request.
 // Currently empty but added proactively for future versions.
-message SiteFeatures {}
+message SiteFeatures {
+  // This field must be an origin-only URL with a `http` or `https` scheme
+  // Example of valid value: `https://example.org`.
+  optional string origin = 1;
+}
 
 // Statistical features about client's interactions with permission prompts.
 // These features are computed on all permission actions that happened before

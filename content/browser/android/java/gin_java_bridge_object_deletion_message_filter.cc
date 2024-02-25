@@ -34,9 +34,10 @@ namespace content {
 
 GinJavaBridgeObjectDeletionMessageFilter::
     GinJavaBridgeObjectDeletionMessageFilter(
-        base::PassKey<GinJavaBridgeObjectDeletionMessageFilter> pass_key)
+        base::PassKey<GinJavaBridgeObjectDeletionMessageFilter> pass_key,
+        int render_process_id)
     : BrowserMessageFilter(GinJavaBridgeMsgStart),
-      current_routing_id_(MSG_ROUTING_NONE) {
+      render_process_id_(render_process_id) {
   DCHECK(base::FeatureList::IsEnabled(features::kMBIMode));
 }
 
@@ -121,7 +122,8 @@ GinJavaBridgeObjectDeletionMessageFilter::FromHost(RenderProcessHost* rph,
           rph, kGinJavaBridgeObjectDeletionMessageFilterKey);
   if (!filter && create_if_not_exists) {
     filter = base::MakeRefCounted<GinJavaBridgeObjectDeletionMessageFilter>(
-        base::PassKey<GinJavaBridgeObjectDeletionMessageFilter>());
+        base::PassKey<GinJavaBridgeObjectDeletionMessageFilter>(),
+        rph->GetID());
     rph->AddFilter(filter.get());
     rph->AddObserver(filter.get());
 
@@ -158,7 +160,8 @@ void GinJavaBridgeObjectDeletionMessageFilter::OnObjectWrapperDeleted(
   DCHECK(JavaBridgeThread::CurrentlyOn());
   scoped_refptr<GinJavaBridgeDispatcherHost> host = FindHost();
   if (host)
-    host->OnObjectWrapperDeleted(current_routing_id_, object_id);
+    host->OnObjectWrapperDeleted({render_process_id_, current_routing_id_},
+                                 object_id);
 }
 
 }  // namespace content

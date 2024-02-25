@@ -49,11 +49,6 @@ WaylandTestBase::WaylandTestBase(wl::ServerConfig config)
   buffer_manager_gpu_ = std::make_unique<WaylandBufferManagerGpu>();
   surface_factory_ = std::make_unique<WaylandSurfaceFactory>(
       connection_.get(), buffer_manager_gpu_.get());
-  if (config.use_ime_keep_selection_fix) {
-    enabled_features_.push_back(features::kWaylandKeepSelectionFix);
-  } else {
-    disabled_features_.push_back(features::kWaylandKeepSelectionFix);
-  }
 }
 
 WaylandTestBase::~WaylandTestBase() = default;
@@ -141,7 +136,7 @@ void WaylandTestBase::SetKeyboardFocusedWindow(WaylandWindow* window) {
 void WaylandTestBase::SendConfigureEvent(uint32_t surface_id,
                                          const gfx::Size& size,
                                          const wl::ScopedWlArray& states,
-                                         absl::optional<uint32_t> serial) {
+                                         std::optional<uint32_t> serial) {
   PostToServerAndWait([size, surface_id, states,
                        serial](wl::TestWaylandServerThread* server) {
     auto* surface = server->GetObject<wl::MockSurface>(surface_id);
@@ -171,7 +166,7 @@ void WaylandTestBase::SendConfigureEvent(uint32_t surface_id,
 }
 
 void WaylandTestBase::ActivateSurface(uint32_t surface_id,
-                                      absl::optional<uint32_t> serial) {
+                                      std::optional<uint32_t> serial) {
   wl::ScopedWlArray state({XDG_TOPLEVEL_STATE_ACTIVATED});
   SendConfigureEvent(surface_id, {0, 0}, state, serial);
 }

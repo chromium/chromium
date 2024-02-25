@@ -14,10 +14,10 @@ class Origin;
 namespace aggregation_service {
 
 constexpr char kDefaultAggregationCoordinatorAwsCloud[] =
-    "https://publickeyservice.aws.privacysandboxservices.com";
+    "https://publickeyservice.msmt.aws.privacysandboxservices.com";
 
 constexpr char kDefaultAggregationCoordinatorGcpCloud[] =
-    "https://gcp-server.example";
+    "https://publickeyservice.msmt.gcp.privacysandboxservices.com";
 
 COMPONENT_EXPORT(AGGREGATION_SERVICE)
 url::Origin GetDefaultAggregationCoordinatorOrigin();

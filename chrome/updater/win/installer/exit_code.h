@@ -10,6 +10,8 @@ namespace updater {
 // Installer process exit codes (the underlying type is uint32_t).
 enum ExitCode {
   SUCCESS_EXIT_CODE = 0,
+  TEMP_DIR_FAILED = 11,   // Unable to get Temp directory.
+  UNPACKING_FAILED = 57,  // Unpacking the uncompressed archive failed.
   GENERIC_INITIALIZATION_FAILURE = 101,
   COMMAND_STRING_OVERFLOW = 105,
   WAIT_FOR_PROCESS_FAILED = 107,

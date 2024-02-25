@@ -21,8 +21,8 @@ import java.util.List;
  * Used for gathering a variety of feedback from various components in Chrome and bundling it into
  * a set of Key - Value pairs used to submit feedback requests.
  */
-public class ChromeFeedbackCollector
-        extends FeedbackCollector<ChromeFeedbackCollector.InitParams> implements Runnable {
+public class ChromeFeedbackCollector extends FeedbackCollector<ChromeFeedbackCollector.InitParams>
+        implements Runnable {
     /** Initialization Parameters of the Chrome overload of FeedbackCollector<T>. */
     public static class InitParams {
         public Profile profile;
@@ -36,9 +36,14 @@ public class ChromeFeedbackCollector
         }
     }
 
-    public ChromeFeedbackCollector(Activity activity, @Nullable String categoryTag,
-            @Nullable String description, @Nullable ScreenshotSource screenshotSource,
-            InitParams initParams, Callback<FeedbackCollector> callback, Profile profile) {
+    public ChromeFeedbackCollector(
+            Activity activity,
+            @Nullable String categoryTag,
+            @Nullable String description,
+            @Nullable ScreenshotSource screenshotSource,
+            InitParams initParams,
+            Callback<FeedbackCollector> callback,
+            Profile profile) {
         super(categoryTag, description, callback);
         init(activity, screenshotSource, initParams, profile);
     }

@@ -7,7 +7,7 @@
 
 #include "ash/ash_export.h"
 #include "ash/capture_mode/capture_mode_types.h"
-#include "ash/system/message_center/ash_notification_view.h"
+#include "ash/system/notification_center/views/ash_notification_view.h"
 #include "base/memory/raw_ptr.h"
 
 namespace message_center {
@@ -25,9 +25,9 @@ namespace ash {
 // notification by either showing a banner on top of the notification image for
 // image captures, or a play icon on top of the video thumbnail.
 class ASH_EXPORT CaptureModeAshNotificationView : public AshNotificationView {
- public:
-  METADATA_HEADER(CaptureModeAshNotificationView);
+  METADATA_HEADER(CaptureModeAshNotificationView, AshNotificationView)
 
+ public:
   CaptureModeAshNotificationView(
       const message_center::Notification& notification,
       CaptureModeType capture_type,
@@ -55,7 +55,7 @@ class ASH_EXPORT CaptureModeAshNotificationView : public AshNotificationView {
   // AshNotificationView:
   void UpdateWithNotification(
       const message_center::Notification& notification) override;
-  void Layout() override;
+  void Layout(PassKey) override;
 
  private:
   void CreateExtraView();
@@ -68,8 +68,7 @@ class ASH_EXPORT CaptureModeAshNotificationView : public AshNotificationView {
   // image capture, or a superimposed "play" icon on top of the video thumbnail
   // image.
   // Owned by the view hierarchy.
-  raw_ptr<views::View, DanglingUntriaged | ExperimentalAsh> extra_view_ =
-      nullptr;
+  raw_ptr<views::View, DanglingUntriaged> extra_view_ = nullptr;
 };
 
 }  // namespace ash

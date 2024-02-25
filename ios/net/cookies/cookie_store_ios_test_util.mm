@@ -18,7 +18,6 @@
 #include "net/cookies/canonical_cookie.h"
 #include "net/cookies/cookie_options.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace net {
 
@@ -36,8 +35,8 @@ TestPersistentCookieStore::~TestPersistentCookieStore() = default;
 void TestPersistentCookieStore::RunLoadedCallback() {
   std::vector<std::unique_ptr<net::CanonicalCookie>> cookies;
   std::unique_ptr<net::CanonicalCookie> cookie(net::CanonicalCookie::Create(
-      kTestCookieURL, "a=b", base::Time::Now(), /*server_time=*/absl::nullopt,
-      /*cookie_partition_key=*/absl::nullopt));
+      kTestCookieURL, "a=b", base::Time::Now(), /*server_time=*/std::nullopt,
+      /*cookie_partition_key=*/std::nullopt));
   cookies.push_back(std::move(cookie));
 
   std::unique_ptr<net::CanonicalCookie> bad_canonical_cookie =
@@ -49,8 +48,7 @@ void TestPersistentCookieStore::RunLoadedCallback() {
           base::Time(),  // last updated
           false,         // secure
           false,         // httponly
-          net::CookieSameSite::NO_RESTRICTION, net::COOKIE_PRIORITY_DEFAULT,
-          false /* same_party */);
+          net::CookieSameSite::NO_RESTRICTION, net::COOKIE_PRIORITY_DEFAULT);
   cookies.push_back(std::move(bad_canonical_cookie));
   std::move(loaded_callback_).Run(std::move(cookies));
 }
@@ -133,8 +131,8 @@ void SetCookie(const std::string& cookie_line,
   net::CookieOptions options;
   options.set_include_httponly();
   auto canonical_cookie = net::CanonicalCookie::Create(
-      url, cookie_line, base::Time::Now(), /*server_time=*/absl::nullopt,
-      /*cookie_partition_key=*/absl::nullopt);
+      url, cookie_line, base::Time::Now(), /*server_time=*/std::nullopt,
+      /*cookie_partition_key=*/std::nullopt);
   ASSERT_TRUE(canonical_cookie);
   store->SetCanonicalCookieAsync(std::move(canonical_cookie), url, options,
                                  base::DoNothing());

@@ -4,6 +4,8 @@
 
 #include "chromeos/ash/components/login/auth/auth_performer.h"
 
+#include <optional>
+
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_switches.h"
 #include "base/check.h"
@@ -15,7 +17,10 @@
 #include "chromeos/ash/components/cryptohome/auth_factor.h"
 #include "chromeos/ash/components/cryptohome/auth_factor_conversions.h"
 #include "chromeos/ash/components/cryptohome/common_types.h"
+#include "chromeos/ash/components/cryptohome/constants.h"
 #include "chromeos/ash/components/cryptohome/cryptohome_util.h"
+#include "chromeos/ash/components/cryptohome/error_types.h"
+#include "chromeos/ash/components/cryptohome/error_util.h"
 #include "chromeos/ash/components/cryptohome/system_salt_getter.h"
 #include "chromeos/ash/components/cryptohome/userdataauth_util.h"
 #include "chromeos/ash/components/dbus/constants/cryptohome_key_delegate_constants.h"
@@ -32,16 +37,15 @@
 #include "chromeos/ash/components/login/auth/public/user_context.h"
 #include "components/device_event_log/device_event_log.h"
 #include "components/user_manager/user_type.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ash {
 
 namespace {
 
 bool IsKioskUserType(user_manager::UserType type) {
-  return type == user_manager::USER_TYPE_KIOSK_APP ||
-         type == user_manager::USER_TYPE_ARC_KIOSK_APP ||
-         type == user_manager::USER_TYPE_WEB_KIOSK_APP;
+  return type == user_manager::UserType::kKioskApp ||
+         type == user_manager::UserType::kArcKioskApp ||
+         type == user_manager::UserType::kWebKioskApp;
 }
 
 user_data_auth::AuthIntent SerializeIntent(AuthSessionIntent intent) {
@@ -55,7 +59,7 @@ user_data_auth::AuthIntent SerializeIntent(AuthSessionIntent intent) {
   }
 }
 
-absl::optional<AuthSessionIntent> DeserializeIntent(
+std::optional<AuthSessionIntent> DeserializeIntent(
     user_data_auth::AuthIntent intent) {
   switch (intent) {
     case user_data_auth::AUTH_INTENT_DECRYPT:
@@ -68,13 +72,16 @@ absl::optional<AuthSessionIntent> DeserializeIntent(
       NOTIMPLEMENTED() << "Other intents not implemented yet, intent: "
                        << intent;
   }
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 }  // namespace
 
-AuthPerformer::AuthPerformer(UserDataAuthClient* client) : client_(client) {
+AuthPerformer::AuthPerformer(UserDataAuthClient* client,
+                             const base::Clock* clock)
+    : client_(client), clock_(clock) {
   CHECK(client_);
+  CHECK(clock_);
 }
 
 AuthPerformer::~AuthPerformer() = default;
@@ -85,6 +92,24 @@ void AuthPerformer::InvalidateCurrentAttempts() {
 
 base::WeakPtr<AuthPerformer> AuthPerformer::AsWeakPtr() {
   return weak_factory_.GetWeakPtr();
+}
+
+// static
+void AuthPerformer::FillAuthenticationData(
+    const base::Time& reference_time,
+    const user_data_auth::AuthSessionProperties& session_properties,
+    UserContext& out_context) {
+  DCHECK(session_properties.authorized_for_size() > 0);
+  out_context.ClearAuthorizedIntents();
+  for (const auto& authorized_for : session_properties.authorized_for()) {
+    auto intent = DeserializeIntent(
+        static_cast<user_data_auth::AuthIntent>(authorized_for));
+    if (intent.has_value()) {
+      out_context.AddAuthorizedIntent(intent.value());
+    }
+  }
+  out_context.SetSessionLifetime(
+      reference_time + base::Seconds(session_properties.seconds_left()));
 }
 
 void AuthPerformer::StartAuthSession(std::unique_ptr<UserContext> context,
@@ -186,17 +211,18 @@ void AuthPerformer::AuthenticateUsingKnowledgeKey(
 
   // The login code might speculatively set the "gaia" label in the user
   // context, however at the cryptohome level the existing user key's label can
-  // be either "gaia" or "legacy-N" - which is what we need to use when talking
-  // to cryptohome. If in cryptohome, "gaia" is indeed the label, then at the
-  // end of this operation, gaia would be returned. This case applies to only
-  // "gaia" labels only because they are created at oobe.
+  // be either "gaia", "local-password" or "legacy-N" - which is what we need to
+  // use when talking to cryptohome. If in cryptohome, "gaia" is indeed the
+  // label, then at the end of this operation, gaia would be returned. This case
+  // applies to only "gaia" labels only because they are created at oobe.
   if (key->GetLabel() == kCryptohomeGaiaKeyLabel || key->GetLabel().empty()) {
-    auto* factor = auth_factors.FindOnlinePasswordFactor();
+    const auto* factor = auth_factors.FindAnyPasswordFactor();
     if (factor == nullptr) {
       LOGIN_LOG(ERROR) << "Could not find Password key";
       std::move(callback).Run(
           std::move(context),
-          AuthenticationError{user_data_auth::CRYPTOHOME_ERROR_KEY_NOT_FOUND});
+          AuthenticationError{cryptohome::ErrorWrapper::CreateFromErrorCodeOnly(
+              user_data_auth::CRYPTOHOME_ERROR_KEY_NOT_FOUND)});
       return;
     }
     key->SetLabel(factor->ref().label().value());
@@ -226,20 +252,22 @@ void AuthPerformer::AuthenticateUsingKnowledgeKey(
   client_->AuthenticateAuthFactor(
       request,
       base::BindOnce(&AuthPerformer::MaybeRecordKnowledgeFactorAuthFailure,
-                     weak_factory_.GetWeakPtr(), std::move(context),
-                     std::move(callback)));
+                     weak_factory_.GetWeakPtr(), clock_->Now(),
+                     std::move(context), std::move(callback)));
 }
 
 void AuthPerformer::MaybeRecordKnowledgeFactorAuthFailure(
+    base::Time request_start,
     std::unique_ptr<UserContext> context,
     AuthOperationCallback callback,
-    absl::optional<user_data_auth::AuthenticateAuthFactorReply> reply) {
+    std::optional<user_data_auth::AuthenticateAuthFactorReply> reply) {
   if (auto error = user_data_auth::ReplyToCryptohomeError(reply);
-      error == user_data_auth::CRYPTOHOME_ERROR_KEY_NOT_FOUND) {
-    AuthEventsRecorder::Get()->OnKnowledgeFactorAuthFailue();
+      cryptohome::ErrorMatches(
+          error, user_data_auth::CRYPTOHOME_ERROR_KEY_NOT_FOUND)) {
+    AuthEventsRecorder::Get()->OnKnowledgeFactorAuthFailure();
   }
-  OnAuthenticateAuthFactor(std::move(context), std::move(callback),
-                           std::move(reply));
+  OnAuthenticateAuthFactor(request_start, std::move(context),
+                           std::move(callback), std::move(reply));
 }
 
 void AuthPerformer::HashKeyAndAuthenticate(std::unique_ptr<UserContext> context,
@@ -275,8 +303,8 @@ void AuthPerformer::AuthenticateUsingChallengeResponseKey(
   request.set_auth_factor_label(ref.label().value());
   client_->AuthenticateAuthFactor(
       request, base::BindOnce(&AuthPerformer::OnAuthenticateAuthFactor,
-                              weak_factory_.GetWeakPtr(), std::move(context),
-                              std::move(callback)));
+                              weak_factory_.GetWeakPtr(), clock_->Now(),
+                              std::move(context), std::move(callback)));
 }
 
 void AuthPerformer::AuthenticateWithPassword(
@@ -296,7 +324,8 @@ void AuthPerformer::AuthenticateWithPassword(
                      << key_label;
     std::move(callback).Run(
         std::move(context),
-        AuthenticationError{user_data_auth::CRYPTOHOME_ERROR_KEY_NOT_FOUND});
+        AuthenticationError{cryptohome::ErrorWrapper::CreateFromErrorCodeOnly(
+            user_data_auth::CRYPTOHOME_ERROR_KEY_NOT_FOUND)});
     return;
   }
   SystemSaltGetter::Get()->GetSystemSalt(base::BindOnce(
@@ -336,7 +365,8 @@ void AuthPerformer::AuthenticateWithPin(const std::string& pin,
     LOGIN_LOG(ERROR) << "User does not have PIN as factor";
     std::move(callback).Run(
         std::move(context),
-        AuthenticationError{user_data_auth::CRYPTOHOME_ERROR_KEY_NOT_FOUND});
+        AuthenticationError{cryptohome::ErrorWrapper::CreateFromErrorCodeOnly(
+            user_data_auth::CRYPTOHOME_ERROR_KEY_NOT_FOUND)});
     return;
   }
   DCHECK_EQ(factor->ref().label().value(), kCryptohomePinLabel);
@@ -364,7 +394,8 @@ void AuthPerformer::AuthenticateAsKiosk(std::unique_ptr<UserContext> context,
     LOGIN_LOG(ERROR) << "Could not find Kiosk key";
     std::move(callback).Run(
         std::move(context),
-        AuthenticationError{user_data_auth::CRYPTOHOME_ERROR_KEY_NOT_FOUND});
+        AuthenticationError{cryptohome::ErrorWrapper::CreateFromErrorCodeOnly(
+            user_data_auth::CRYPTOHOME_ERROR_KEY_NOT_FOUND)});
     return;
   }
   cryptohome::AuthFactorInput input(cryptohome::AuthFactorInput::Kiosk{});
@@ -373,8 +404,8 @@ void AuthPerformer::AuthenticateAsKiosk(std::unique_ptr<UserContext> context,
   request.set_auth_factor_label(existing_factor->ref().label().value());
   client_->AuthenticateAuthFactor(
       request, base::BindOnce(&AuthPerformer::OnAuthenticateAuthFactor,
-                              weak_factory_.GetWeakPtr(), std::move(context),
-                              std::move(callback)));
+                              weak_factory_.GetWeakPtr(), clock_->Now(),
+                              std::move(context), std::move(callback)));
 }
 
 void AuthPerformer::GetAuthSessionStatus(std::unique_ptr<UserContext> context,
@@ -389,8 +420,28 @@ void AuthPerformer::GetAuthSessionStatus(std::unique_ptr<UserContext> context,
 
   client_->GetAuthSessionStatus(
       request, base::BindOnce(&AuthPerformer::OnGetAuthSessionStatus,
-                              weak_factory_.GetWeakPtr(), std::move(context),
-                              std::move(callback)));
+                              weak_factory_.GetWeakPtr(), clock_->Now(),
+                              std::move(context), std::move(callback)));
+}
+
+void AuthPerformer::ExtendAuthSessionLifetime(
+    std::unique_ptr<UserContext> context,
+    AuthOperationCallback callback) {
+  if (context->GetAuthSessionId().empty()) {
+    NOTREACHED() << "Auth session should exist";
+    return;
+  }
+  LOGIN_LOG(EVENT) << "Requesting authsession lifetime extension";
+  user_data_auth::ExtendAuthSessionRequest request;
+
+  request.set_auth_session_id(context->GetAuthSessionId());
+  request.set_extension_duration(
+      cryptohome::kAuthsessionExtensionPeriod.InSeconds());
+
+  client_->ExtendAuthSession(
+      request, base::BindOnce(&AuthPerformer::OnExtendAuthSession,
+                              weak_factory_.GetWeakPtr(), clock_->Now(),
+                              std::move(context), std::move(callback)));
 }
 
 void AuthPerformer::GetRecoveryRequest(
@@ -461,8 +512,8 @@ void AuthPerformer::AuthenticateWithRecovery(
 
   client_->AuthenticateAuthFactor(
       request, base::BindOnce(&AuthPerformer::OnAuthenticateAuthFactor,
-                              weak_factory_.GetWeakPtr(), std::move(context),
-                              std::move(callback)));
+                              weak_factory_.GetWeakPtr(), clock_->Now(),
+                              std::move(context), std::move(callback)));
 }
 
 /// ---- private callbacks ----
@@ -470,9 +521,9 @@ void AuthPerformer::AuthenticateWithRecovery(
 void AuthPerformer::OnStartAuthSession(
     std::unique_ptr<UserContext> context,
     StartSessionCallback callback,
-    absl::optional<user_data_auth::StartAuthSessionReply> reply) {
+    std::optional<user_data_auth::StartAuthSessionReply> reply) {
   auto error = user_data_auth::ReplyToCryptohomeError(reply);
-  if (error != user_data_auth::CRYPTOHOME_ERROR_NOT_SET) {
+  if (cryptohome::HasError(error)) {
     LOGIN_LOG(ERROR) << "Could not start authsession " << error;
     std::move(callback).Run(false, std::move(context),
                             AuthenticationError{error});
@@ -482,7 +533,8 @@ void AuthPerformer::OnStartAuthSession(
   LOGIN_LOG(EVENT) << "AuthSession started, user "
                    << (reply->user_exists() ? "exists" : "does not exist");
 
-  context->SetAuthSessionId(reply->auth_session_id());
+  context->SetAuthSessionIds(reply->auth_session_id(), reply->broadcast_id());
+
   std::vector<cryptohome::AuthFactor> next_factors;
   cryptohome::AuthFactorType fallback_type =
       cryptohome::AuthFactorType::kPassword;
@@ -508,61 +560,63 @@ void AuthPerformer::OnStartAuthSession(
   context->SetSessionAuthFactors(std::move(auth_factors_data));
 
   std::move(callback).Run(reply->user_exists(), std::move(context),
-                          absl::nullopt);
+                          std::nullopt);
 }
 
 void AuthPerformer::OnInvalidateAuthSession(
     std::unique_ptr<UserContext> context,
     AuthOperationCallback callback,
-    absl::optional<user_data_auth::InvalidateAuthSessionReply> reply) {
+    std::optional<user_data_auth::InvalidateAuthSessionReply> reply) {
   // The auth session is useless even if we failed to invalidate it.
-  context->ResetAuthSessionId();
+  context->ResetAuthSessionIds();
 
   auto error = user_data_auth::ReplyToCryptohomeError(reply);
-  if (error != user_data_auth::CRYPTOHOME_ERROR_NOT_SET &&
-      error != user_data_auth::CRYPTOHOME_INVALID_AUTH_SESSION_TOKEN) {
+  if (cryptohome::HasError(error) &&
+      !cryptohome::ErrorMatches(
+          error, user_data_auth::CRYPTOHOME_INVALID_AUTH_SESSION_TOKEN)) {
     LOGIN_LOG(ERROR) << "Could not invalidate authsession " << error;
     std::move(callback).Run(std::move(context), AuthenticationError{error});
     return;
   }
 
-  std::move(callback).Run(std::move(context), absl::nullopt);
+  std::move(callback).Run(std::move(context), std::nullopt);
 }
 
 void AuthPerformer::OnPrepareAuthFactor(
     std::unique_ptr<UserContext> context,
     AuthOperationCallback callback,
-    absl::optional<user_data_auth::PrepareAuthFactorReply> reply) {
+    std::optional<user_data_auth::PrepareAuthFactorReply> reply) {
   auto error = user_data_auth::ReplyToCryptohomeError(reply);
-  if (error != user_data_auth::CRYPTOHOME_ERROR_NOT_SET) {
+  if (cryptohome::HasError(error)) {
     LOGIN_LOG(ERROR) << "Could not prepare auth factor " << error;
     std::move(callback).Run(std::move(context), AuthenticationError{error});
     return;
   }
 
-  std::move(callback).Run(std::move(context), absl::nullopt);
+  std::move(callback).Run(std::move(context), std::nullopt);
 }
 
 void AuthPerformer::OnTerminateAuthFactor(
     std::unique_ptr<UserContext> context,
     AuthOperationCallback callback,
-    absl::optional<user_data_auth::TerminateAuthFactorReply> reply) {
+    std::optional<user_data_auth::TerminateAuthFactorReply> reply) {
   auto error = user_data_auth::ReplyToCryptohomeError(reply);
-  if (error != user_data_auth::CRYPTOHOME_ERROR_NOT_SET) {
+  if (cryptohome::HasError(error)) {
     LOGIN_LOG(ERROR) << "Could not terminate auth factor " << error;
     std::move(callback).Run(std::move(context), AuthenticationError{error});
     return;
   }
 
-  std::move(callback).Run(std::move(context), absl::nullopt);
+  std::move(callback).Run(std::move(context), std::nullopt);
 }
 
 void AuthPerformer::OnAuthenticateAuthFactor(
+    base::Time request_start,
     std::unique_ptr<UserContext> context,
     AuthOperationCallback callback,
-    absl::optional<user_data_auth::AuthenticateAuthFactorReply> reply) {
+    std::optional<user_data_auth::AuthenticateAuthFactorReply> reply) {
   auto error = user_data_auth::ReplyToCryptohomeError(reply);
-  if (error != user_data_auth::CRYPTOHOME_ERROR_NOT_SET) {
+  if (cryptohome::HasError(error)) {
     LOGIN_LOG(EVENT)
         << "Failed to authenticate session via authfactor, error code "
         << error;
@@ -570,39 +624,39 @@ void AuthPerformer::OnAuthenticateAuthFactor(
     return;
   }
   CHECK(reply.has_value());
-  DCHECK(reply->authorized_for_size() > 0);
-  for (auto& authorized_for : reply->authorized_for()) {
-    auto intent = DeserializeIntent(
-        static_cast<user_data_auth::AuthIntent>(authorized_for));
-    if (intent.has_value()) {
-      context->AddAuthorizedIntent(intent.value());
-    }
-  }
+  CHECK(reply->has_auth_properties());
+  FillAuthenticationData(request_start, reply->auth_properties(), *context);
+
   LOGIN_LOG(EVENT) << "Authenticated successfully";
-  std::move(callback).Run(std::move(context), absl::nullopt);
+  std::move(callback).Run(std::move(context), std::nullopt);
 }
 
 void AuthPerformer::OnGetAuthSessionStatus(
+    base::Time request_start,
     std::unique_ptr<UserContext> context,
     AuthSessionStatusCallback callback,
-    absl::optional<user_data_auth::GetAuthSessionStatusReply> reply) {
+    std::optional<user_data_auth::GetAuthSessionStatusReply> reply) {
   auto error = user_data_auth::ReplyToCryptohomeError(reply);
 
-  if (error == user_data_auth::CRYPTOHOME_INVALID_AUTH_SESSION_TOKEN) {
+  if (cryptohome::ErrorMatches(
+          error, user_data_auth::CRYPTOHOME_INVALID_AUTH_SESSION_TOKEN)) {
     // Do not trigger error handling
     std::move(callback).Run(AuthSessionStatus(), base::TimeDelta(),
                             std::move(context),
-                            /*cryptohome_error=*/absl::nullopt);
+                            /*cryptohome_error=*/std::nullopt);
     return;
   }
 
-  if (error != user_data_auth::CRYPTOHOME_ERROR_NOT_SET) {
+  if (cryptohome::HasError(error)) {
     LOGIN_LOG(EVENT) << "Failed to get authsession status " << error;
     std::move(callback).Run(AuthSessionStatus(), base::TimeDelta(),
                             std::move(context), AuthenticationError{error});
     return;
   }
   CHECK(reply.has_value());
+  CHECK(reply->has_auth_properties());
+  // TODO(b/301078137): As lifetime is now stored in UserContext,
+  // there is no need to pass it separately.
   base::TimeDelta lifetime;
   AuthSessionStatus status;
   switch (reply->status()) {
@@ -618,32 +672,51 @@ void AuthPerformer::OnGetAuthSessionStatus(
     case ::user_data_auth::AUTH_SESSION_STATUS_AUTHENTICATED:
       status.Put(AuthSessionLevel::kSessionIsValid);
       status.Put(AuthSessionLevel::kCryptohomeStrong);
-      lifetime = base::Seconds(reply->time_left());
+      lifetime = base::Seconds(reply->auth_properties().seconds_left());
       break;
     default:
       NOTREACHED();
   }
+  FillAuthenticationData(request_start, reply->auth_properties(), *context);
   std::move(callback).Run(status, lifetime, std::move(context),
-                          /*cryptohome_error=*/absl::nullopt);
+                          /*cryptohome_error=*/std::nullopt);
+}
+
+void AuthPerformer::OnExtendAuthSession(
+    base::Time request_start,
+    std::unique_ptr<UserContext> context,
+    AuthOperationCallback callback,
+    std::optional<user_data_auth::ExtendAuthSessionReply> reply) {
+  auto error = user_data_auth::ReplyToCryptohomeError(reply);
+  if (cryptohome::HasError(error)) {
+    LOGIN_LOG(EVENT) << "Failed to extend authsession lifetime " << error;
+    std::move(callback).Run(std::move(context), AuthenticationError{error});
+    return;
+  }
+  CHECK(reply.has_value());
+  context->SetSessionLifetime(request_start +
+                              base::Seconds(reply->seconds_left()));
+  std::move(callback).Run(std::move(context),
+                          /*cryptohome_error=*/std::nullopt);
 }
 
 void AuthPerformer::OnGetRecoveryRequest(
     RecoveryRequestCallback callback,
     std::unique_ptr<UserContext> context,
-    absl::optional<user_data_auth::GetRecoveryRequestReply> reply) {
+    std::optional<user_data_auth::GetRecoveryRequestReply> reply) {
   auto error = user_data_auth::ReplyToCryptohomeError(reply);
 
-  if (error != user_data_auth::CRYPTOHOME_ERROR_NOT_SET) {
+  if (cryptohome::HasError(error)) {
     LOGIN_LOG(EVENT) << "Failed to obtain recovery request, error code "
                      << error;
-    std::move(callback).Run(absl::nullopt, std::move(context),
+    std::move(callback).Run(std::nullopt, std::move(context),
                             AuthenticationError{error});
     return;
   }
 
   CHECK(!reply->recovery_request().empty());
   std::move(callback).Run(RecoveryRequest(reply->recovery_request()),
-                          std::move(context), absl::nullopt);
+                          std::move(context), std::nullopt);
 }
 
 }  // namespace ash

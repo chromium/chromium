@@ -34,11 +34,11 @@ class BluetoothAdvertisementServiceProviderImpl
       const dbus::ObjectPath& object_path,
       Delegate* delegate,
       AdvertisementType type,
-      absl::optional<UUIDList> service_uuids,
-      absl::optional<ManufacturerData> manufacturer_data,
-      absl::optional<UUIDList> solicit_uuids,
-      absl::optional<ServiceData> service_data,
-      absl::optional<ScanResponseData> scan_response_data)
+      std::optional<UUIDList> service_uuids,
+      std::optional<ManufacturerData> manufacturer_data,
+      std::optional<UUIDList> solicit_uuids,
+      std::optional<ServiceData> service_data,
+      std::optional<ScanResponseData> scan_response_data)
       : origin_thread_id_(base::PlatformThread::CurrentId()),
         bus_(bus),
         delegate_(delegate),
@@ -269,7 +269,7 @@ class BluetoothAdvertisementServiceProviderImpl
     dbus::MessageWriter variant_writer(NULL);
 
     writer.OpenVariant("ay", &variant_writer);
-    variant_writer.AppendArrayOfBytes(value.data(), value.size());
+    variant_writer.AppendArrayOfBytes(value);
     writer.CloseContainer(&variant_writer);
 
     std::move(response_sender).Run(std::move(response));
@@ -361,17 +361,17 @@ class BluetoothAdvertisementServiceProviderImpl
 
   void AppendManufacturerDataVariant(dbus::MessageWriter* writer) {
     DCHECK(manufacturer_data_);
-    dbus::MessageWriter array_writer(NULL);
+    dbus::MessageWriter array_writer(nullptr);
     writer->OpenArray("{qv}", &array_writer);
     for (const auto& m : *manufacturer_data_) {
-      dbus::MessageWriter entry_writer(NULL);
+      dbus::MessageWriter entry_writer(nullptr);
 
       array_writer.OpenDictEntry(&entry_writer);
 
       entry_writer.AppendUint16(m.first);
-      dbus::MessageWriter variant_writer(NULL);
+      dbus::MessageWriter variant_writer(nullptr);
       entry_writer.OpenVariant("ay", &variant_writer);
-      variant_writer.AppendArrayOfBytes(m.second.data(), m.second.size());
+      variant_writer.AppendArrayOfBytes(m.second);
       entry_writer.CloseContainer(&variant_writer);
 
       array_writer.CloseContainer(&entry_writer);
@@ -381,17 +381,17 @@ class BluetoothAdvertisementServiceProviderImpl
 
   void AppendServiceDataVariant(dbus::MessageWriter* writer) {
     DCHECK(service_data_);
-    dbus::MessageWriter array_writer(NULL);
+    dbus::MessageWriter array_writer(nullptr);
     writer->OpenArray("{sv}", &array_writer);
     for (const auto& m : *service_data_) {
-      dbus::MessageWriter entry_writer(NULL);
+      dbus::MessageWriter entry_writer(nullptr);
 
       array_writer.OpenDictEntry(&entry_writer);
 
       entry_writer.AppendString(m.first);
-      dbus::MessageWriter variant_writer(NULL);
+      dbus::MessageWriter variant_writer(nullptr);
       entry_writer.OpenVariant("ay", &variant_writer);
-      variant_writer.AppendArrayOfBytes(m.second.data(), m.second.size());
+      variant_writer.AppendArrayOfBytes(m.second);
       entry_writer.CloseContainer(&variant_writer);
 
       array_writer.CloseContainer(&entry_writer);
@@ -411,7 +411,7 @@ class BluetoothAdvertisementServiceProviderImpl
       entry_writer.AppendByte(m.first);
       dbus::MessageWriter variant_writer(nullptr);
       entry_writer.OpenVariant("ay", &variant_writer);
-      variant_writer.AppendArrayOfBytes(m.second.data(), m.second.size());
+      variant_writer.AppendArrayOfBytes(m.second);
       entry_writer.CloseContainer(&variant_writer);
 
       array_writer.CloseContainer(&entry_writer);
@@ -433,11 +433,11 @@ class BluetoothAdvertisementServiceProviderImpl
 
   // Advertisement data that needs to be provided to BlueZ when requested.
   AdvertisementType type_;
-  absl::optional<UUIDList> service_uuids_;
-  absl::optional<ManufacturerData> manufacturer_data_;
-  absl::optional<UUIDList> solicit_uuids_;
-  absl::optional<ServiceData> service_data_;
-  absl::optional<ScanResponseData> scan_response_data_;
+  std::optional<UUIDList> service_uuids_;
+  std::optional<ManufacturerData> manufacturer_data_;
+  std::optional<UUIDList> solicit_uuids_;
+  std::optional<ServiceData> service_data_;
+  std::optional<ScanResponseData> scan_response_data_;
 
   // D-Bus object we are exporting, owned by this object.
   scoped_refptr<dbus::ExportedObject> exported_object_;
@@ -463,11 +463,11 @@ BluetoothLEAdvertisementServiceProvider::Create(
     const dbus::ObjectPath& object_path,
     Delegate* delegate,
     AdvertisementType type,
-    absl::optional<UUIDList> service_uuids,
-    absl::optional<ManufacturerData> manufacturer_data,
-    absl::optional<UUIDList> solicit_uuids,
-    absl::optional<ServiceData> service_data,
-    absl::optional<ScanResponseData> scan_response_data) {
+    std::optional<UUIDList> service_uuids,
+    std::optional<ManufacturerData> manufacturer_data,
+    std::optional<UUIDList> solicit_uuids,
+    std::optional<ServiceData> service_data,
+    std::optional<ScanResponseData> scan_response_data) {
   if (!bluez::BluezDBusManager::Get()->IsUsingFakes()) {
     return std::make_unique<BluetoothAdvertisementServiceProviderImpl>(
         bus, object_path, delegate, type, std::move(service_uuids),
@@ -476,7 +476,6 @@ BluetoothLEAdvertisementServiceProvider::Create(
   }
 #if defined(USE_REAL_DBUS_CLIENTS)
   LOG(FATAL) << "Fake is unavailable if USE_REAL_DBUS_CLIENTS is defined.";
-  return nullptr;
 #else
   return std::make_unique<FakeBluetoothLEAdvertisementServiceProvider>(
       object_path, delegate);

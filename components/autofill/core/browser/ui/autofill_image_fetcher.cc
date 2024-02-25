@@ -7,7 +7,6 @@
 #include "components/autofill/core/browser/data_model/credit_card_art_image.h"
 #include "components/autofill/core/browser/metrics/autofill_metrics.h"
 #include "components/autofill/core/browser/payments/constants.h"
-#include "components/autofill/core/common/autofill_tick_clock.h"
 #include "components/image_fetcher/core/image_fetcher.h"
 #include "components/image_fetcher/core/request_metadata.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
@@ -60,7 +59,8 @@ constexpr net::NetworkTrafficAnnotationTag kCardArtImageTrafficAnnotation =
 
 void AutofillImageFetcher::FetchImagesForURLs(
     base::span<const GURL> card_art_urls,
-    base::OnceCallback<void(const CardArtImageData&)> callback) {
+    base::OnceCallback<void(
+        const std::vector<std::unique_ptr<CreditCardArtImage>>&)> callback) {
   if (!GetImageFetcher()) {
     std::move(callback).Run({});
     return;
@@ -101,13 +101,13 @@ void AutofillImageFetcher::OnCardArtImageFetched(
     base::OnceCallback<void(std::unique_ptr<CreditCardArtImage>)>
         barrier_callback,
     const GURL& card_art_url,
-    const absl::optional<base::TimeTicks>& fetch_image_request_timestamp,
+    const std::optional<base::TimeTicks>& fetch_image_request_timestamp,
     const gfx::Image& card_art_image,
     const image_fetcher::RequestMetadata& metadata) {
   CHECK(fetch_image_request_timestamp.has_value());
 
   AutofillMetrics::LogImageFetcherRequestLatency(
-      AutofillTickClock::NowTicks() - *fetch_image_request_timestamp);
+      base::TimeTicks::Now() - *fetch_image_request_timestamp);
 
   AutofillMetrics::LogImageFetchResult(/*succeeded=*/!card_art_image.IsEmpty());
 
@@ -133,7 +133,7 @@ void AutofillImageFetcher::FetchImageForURL(
       resolved_url,
       base::BindOnce(&AutofillImageFetcher::OnCardArtImageFetched, GetWeakPtr(),
                      std::move(barrier_callback), card_art_url,
-                     AutofillTickClock::NowTicks()),
+                     base::TimeTicks::Now()),
       std::move(params));
 }
 

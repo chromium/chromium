@@ -8,6 +8,7 @@
 #include <stdint.h>
 #include <utility>
 
+#include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
@@ -44,19 +45,6 @@ using perfetto::protos::pbzero::TrackEvent;
 namespace blink {
 
 namespace {
-
-int64_t GetEventLatencyMicros(base::TimeTicks event_timestamp,
-                              base::TimeTicks now) {
-  return (now - event_timestamp).InMicroseconds();
-}
-
-void LogInputEventLatencyUma(const WebInputEvent& event, base::TimeTicks now) {
-  UMA_HISTOGRAM_CUSTOM_COUNTS(
-      "Event.AggregatedLatency.Renderer2",
-      base::saturated_cast<base::HistogramBase::Sample>(
-          GetEventLatencyMicros(event.TimeStamp(), now)),
-      1, 10000000, 100);
-}
 
 void LogPassiveEventListenersUma(WebInputEventResult result,
                                  WebInputEvent::DispatchType dispatch_type) {
@@ -234,7 +222,7 @@ class WidgetBaseInputHandler::HandlingState {
     event_overscroll_ = std::move(params);
   }
 
-  absl::optional<WebTouchAction>& touch_action() { return touch_action_; }
+  std::optional<WebTouchAction>& touch_action() { return touch_action_; }
 
   Vector<WidgetBaseInputHandler::InjectScrollGestureParams>&
   injected_scroll_params() {
@@ -250,7 +238,7 @@ class WidgetBaseInputHandler::HandlingState {
   // supporting overscroll IPC notifications due to fling animation updates.
   std::unique_ptr<InputHandlerProxy::DidOverscrollParams> event_overscroll_;
 
-  absl::optional<WebTouchAction> touch_action_;
+  std::optional<WebTouchAction> touch_action_;
 
   // Used to hold a sequence of parameters corresponding to scroll gesture
   // events that should be injected once the current input event is done
@@ -261,7 +249,7 @@ class WidgetBaseInputHandler::HandlingState {
   // Whether the event we are handling is a touch start or move.
   bool touch_start_or_move_;
 
-  HandlingState* previous_state_;
+  raw_ptr<HandlingState> previous_state_;
   bool previous_was_handling_input_;
   base::WeakPtr<WidgetBaseInputHandler> input_handler_;
 };
@@ -289,8 +277,9 @@ WebInputEventResult WidgetBaseInputHandler::HandleTouchEvent(
   for (unsigned i = 0; i < touch_event.touches_length; ++i) {
     const WebTouchPoint& touch_point = touch_event.touches[i];
     if (touch_point.state != WebTouchPoint::State::kStateStationary) {
-      const WebPointerEvent& pointer_event =
-          WebPointerEvent(touch_event, touch_point);
+      WebPointerEvent pointer_event = WebPointerEvent(touch_event, touch_point);
+      // Copy queued timestamp from original WebInputEvent.
+      pointer_event.SetQueuedTimeStamp(input_event.QueuedTimeStamp());
       const WebCoalescedInputEvent& coalesced_pointer_event =
           GetCoalescedWebPointerEventForTouch(
               pointer_event, coalesced_event.GetCoalescedEventsPointers(),
@@ -318,10 +307,6 @@ void WidgetBaseInputHandler::HandleInputEvent(
   ImeEventGuard guard(widget_->GetWeakPtr());
 #endif
 
-  base::TimeTicks start_time;
-  if (base::TimeTicks::IsHighResolution())
-    start_time = base::TimeTicks::Now();
-
   TRACE_EVENT1("renderer,benchmark,rail",
                "WidgetBaseInputHandler::OnHandleInputEvent", "event",
                WebInputEvent::GetName(input_event.GetType()));
@@ -335,11 +320,6 @@ void WidgetBaseInputHandler::HandleInputEvent(
                 tracing::FillFlowEvent(ctx, TrackEvent::LegacyEvent::FLOW_INOUT,
                                        trace_id);
               });
-
-  // If we don't have a high res timer, these metrics won't be accurate enough
-  // to be worth collecting. Note that this does introduce some sampling bias.
-  if (!start_time.is_null())
-    LogInputEventLatencyUma(input_event, start_time);
 
   ui::LatencyInfo swap_latency_info(coalesced_event.latency_info());
   swap_latency_info.AddLatencyNumber(
@@ -564,8 +544,7 @@ bool WidgetBaseInputHandler::DidOverscrollFromBlink(
   return false;
 }
 
-void WidgetBaseInputHandler::InjectGestureScrollEvent(
-    WebGestureDevice device,
+void WidgetBaseInputHandler::InjectScrollbarGestureScroll(
     const gfx::Vector2dF& delta,
     ui::ScrollGranularity granularity,
     cc::ElementId scrollable_area_element_id,
@@ -583,14 +562,14 @@ void WidgetBaseInputHandler::InjectGestureScrollEvent(
   // of that would be an extra frame of latency if we're injecting a scroll
   // during the handling of a rAF aligned input event, such as mouse move.
   if (handling_input_state_) {
-    InjectScrollGestureParams params{device, delta, granularity,
+    InjectScrollGestureParams params{delta, granularity,
                                      scrollable_area_element_id, injected_type};
     handling_input_state_->injected_scroll_params().push_back(params);
   } else {
     base::TimeTicks now = base::TimeTicks::Now();
     std::unique_ptr<WebGestureEvent> gesture_event =
-        WebGestureEvent::GenerateInjectedScrollGesture(
-            injected_type, now, device, gfx::PointF(0, 0), delta, granularity);
+        WebGestureEvent::GenerateInjectedScrollbarGestureScroll(
+            injected_type, now, gfx::PointF(0, 0), delta, granularity);
     if (injected_type == WebInputEvent::Type::kGestureScrollBegin) {
       gesture_event->data.scroll_begin.scrollable_area_element_id =
           scrollable_area_element_id.GetInternalValue();
@@ -626,20 +605,15 @@ void WidgetBaseInputHandler::HandleInjectedScrollGestures(
     // allows end to end latency to be logged for the injected scroll, annotated
     // with the correct type.
     ui::LatencyInfo scrollbar_latency_info(original_latency_info);
-
-    // Currently only scrollbar is supported - if this DCHECK hits due to a
-    // new type being injected, please modify the type passed to
-    // |set_source_event_type()|.
-    DCHECK(params.device == WebGestureDevice::kScrollbar);
     scrollbar_latency_info.set_source_event_type(
         ui::SourceEventType::SCROLLBAR);
     scrollbar_latency_info.AddLatencyNumber(
         ui::LatencyComponentType::INPUT_EVENT_LATENCY_RENDERER_MAIN_COMPONENT);
 
     std::unique_ptr<WebGestureEvent> gesture_event =
-        WebGestureEvent::GenerateInjectedScrollGesture(
-            params.type, input_event.TimeStamp(), params.device, position,
-            params.scroll_delta, params.granularity);
+        WebGestureEvent::GenerateInjectedScrollbarGestureScroll(
+            params.type, input_event.TimeStamp(), position, params.scroll_delta,
+            params.granularity);
 
     std::unique_ptr<cc::EventMetrics> metrics;
     if (params.type == WebInputEvent::Type::kGestureScrollUpdate) {

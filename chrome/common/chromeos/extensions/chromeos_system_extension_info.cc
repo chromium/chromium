@@ -5,6 +5,7 @@
 #include "chrome/common/chromeos/extensions/chromeos_system_extension_info.h"
 
 #include <memory>
+#include <optional>
 #include <string>
 
 #include "base/check.h"
@@ -12,8 +13,12 @@
 #include "base/containers/fixed_flat_map.h"
 #include "base/containers/flat_set.h"
 #include "base/logging.h"
+#include "build/chromeos_buildflags.h"
 #include "components/web_package/signed_web_bundles/signed_web_bundle_id.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "ash/constants/ash_features.h"
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 namespace chromeos {
 
@@ -39,30 +44,42 @@ const char kTelemetryExtensionIwaIdOverrideForTesting[] =
 namespace {
 
 using ChromeOSSystemExtensionInfoMap =
-    base::fixed_flat_map<std::string, ChromeOSSystemExtensionInfo, 3>;
+    base::flat_map<std::string, ChromeOSSystemExtensionInfo>;
 
 ChromeOSSystemExtensionInfoMap ConstructMap() {
-  ChromeOSSystemExtensionInfoMap map =
-      base::MakeFixedFlatMap<std::string, ChromeOSSystemExtensionInfo>({
-          {/*extension_id=*/"gogonhoemckpdpadfnjnpgbjpbjnodgc",
-           {
-               /*manufacturers=*/{"HP", "ASUS"},
-               /*pwa_origin=*/"*://googlechromelabs.github.io/*",
-               /*iwa_id=*/absl::nullopt,
-           }},
-          {/*extension_id=*/"alnedpmllcfpgldkagbfbjkloonjlfjb",
-           {
-               /*manufacturers=*/{"HP"},
-               /*pwa_origin=*/"https://hpcs-appschr.hpcloud.hp.com/*",
-               /*iwa_id=*/absl::nullopt,
-           }},
-          {/*extension_id=*/"hdnhcpcfohaeangjpkcjkgmgmjanbmeo",
-           {
-               /*manufacturers=*/{"ASUS"},
-               /*pwa_origin=*/"https://dlcdnccls.asus.com/*",
-               /*iwa_id=*/absl::nullopt,
-           }},
-      });
+  ChromeOSSystemExtensionInfoMap map{
+      {/*extension_id=*/"gogonhoemckpdpadfnjnpgbjpbjnodgc",
+       {
+           /*manufacturers=*/{"HP", "ASUS"},
+           /*pwa_origin=*/"*://googlechromelabs.github.io/*",
+           /*iwa_id=*/std::nullopt,
+       }},
+      {/*extension_id=*/"alnedpmllcfpgldkagbfbjkloonjlfjb",
+       {
+           /*manufacturers=*/{"HP"},
+           /*pwa_origin=*/"https://hpcs-appschr.hpcloud.hp.com/*",
+           /*iwa_id=*/std::nullopt,
+       }},
+      {/*extension_id=*/"hdnhcpcfohaeangjpkcjkgmgmjanbmeo",
+       {
+           /*manufacturers=*/{"ASUS"},
+           /*pwa_origin=*/"https://dlcdnccls.asus.com/*",
+           /*iwa_id=*/std::nullopt,
+       }},
+  };
+
+  if (IsChromeOSSystemExtensionDevExtensionEnabled()) {
+    map.try_emplace(
+        kChromeOSSystemExtensionDevExtensionId,
+        ChromeOSSystemExtensionInfo{
+            /*manufacturers=*/{"Google", "HP", "ASUS"},
+            /*pwa_origin=*/"*://googlechromelabs.github.io/*",
+            /*iwa_id=*/
+            web_package::SignedWebBundleId::Create(
+                "pt2jysa7yu326m2cbu5mce4rrajvguagronrsqwn5dhbaris6eaaaaic")
+                .value(),
+        });
+  }
 
   base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
   if (command_line->HasSwitch(
@@ -109,10 +126,18 @@ ChromeOSSystemExtensionInfoMap*& GetMap() {
 
 }  // namespace
 
+bool IsChromeOSSystemExtensionDevExtensionEnabled() {
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  return ash::features::IsShimlessRMA3pDiagnosticsDevModeEnabled();
+#else
+  return false;
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+}
+
 ChromeOSSystemExtensionInfo::ChromeOSSystemExtensionInfo(
     const base::flat_set<std::string>& manufacturers,
-    const absl::optional<std::string>& pwa_origin,
-    const absl::optional<web_package::SignedWebBundleId>& iwa_id)
+    const std::optional<std::string>& pwa_origin,
+    const std::optional<web_package::SignedWebBundleId>& iwa_id)
     : manufacturers(manufacturers), pwa_origin(pwa_origin), iwa_id(iwa_id) {}
 
 ChromeOSSystemExtensionInfo::ChromeOSSystemExtensionInfo(
@@ -131,6 +156,15 @@ const ChromeOSSystemExtensionInfo& GetChromeOSExtensionInfoById(
 
 bool IsChromeOSSystemExtension(const std::string& id) {
   return GetMap()->find(id) != GetMap()->end();
+}
+
+bool IsChromeOSSystemExtensionProvider(const std::string& manufacturer) {
+  for (const auto& [extension_id, info] : *GetMap()) {
+    if (info.manufacturers.contains(manufacturer)) {
+      return true;
+    }
+  }
+  return false;
 }
 
 class ScopedChromeOSSystemExtensionInfoImpl

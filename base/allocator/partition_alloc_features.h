@@ -5,13 +5,15 @@
 #ifndef BASE_ALLOCATOR_PARTITION_ALLOC_FEATURES_H_
 #define BASE_ALLOCATOR_PARTITION_ALLOC_FEATURES_H_
 
-#include "base/allocator/partition_allocator/partition_alloc_buildflags.h"
-#include "base/allocator/partition_allocator/partition_root.h"
+#include "base/allocator/partition_allocator/src/partition_alloc/partition_alloc_base/time/time.h"
+#include "base/allocator/partition_allocator/src/partition_alloc/partition_alloc_buildflags.h"
+#include "base/allocator/partition_allocator/src/partition_alloc/partition_root.h"
 #include "base/base_export.h"
 #include "base/compiler_specific.h"
 #include "base/feature_list.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/strings/string_piece.h"
+#include "base/time/time.h"
 #include "build/build_config.h"
 
 namespace base {
@@ -63,8 +65,18 @@ BASE_EXPORT BASE_DECLARE_FEATURE(kPartitionAllocPCScan);
 #if BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
 BASE_EXPORT BASE_DECLARE_FEATURE(kPartitionAllocPCScanBrowserOnly);
 BASE_EXPORT BASE_DECLARE_FEATURE(kPartitionAllocPCScanRendererOnly);
+
 BASE_EXPORT BASE_DECLARE_FEATURE(kPartitionAllocLargeThreadCacheSize);
+BASE_EXPORT int GetPartitionAllocLargeThreadCacheSizeValue();
+BASE_EXPORT int GetPartitionAllocLargeThreadCacheSizeValueForLowRAMAndroid();
+
 BASE_EXPORT BASE_DECLARE_FEATURE(kPartitionAllocLargeEmptySlotSpanRing);
+BASE_EXPORT BASE_DECLARE_FEATURE(kPartitionAllocSchedulerLoopQuarantine);
+// Scheduler Loop Quarantine's capacity in bytes.
+extern const BASE_EXPORT base::FeatureParam<int>
+    kPartitionAllocSchedulerLoopQuarantineCapacity;
+
+BASE_EXPORT BASE_DECLARE_FEATURE(kPartitionAllocZappingByFreeFlags);
 #endif  // BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
 
 enum class BackupRefPtrEnabledProcesses {
@@ -85,32 +97,12 @@ enum class BackupRefPtrMode {
 
   // BRP is enabled in the main partition, as well as certain Renderer-only
   // partitions (if enabled in Renderer at all).
-  // This entails splitting the main partition.
   kEnabled,
 
-  // BRP is disabled, but the main partition is split out, as if BRP was enabled
-  // in the "previous slot" mode.
-  kDisabledButSplitPartitions2Way,
-
-  // BRP is disabled, but the main partition *and* aligned partition are split
-  // out, as if BRP was enabled in the "before allocation" mode.
-  kDisabledButSplitPartitions3Way,
-};
-
-// Decides the amount of memory uses for BRP ref-count. The actual ref-count may
-// be smaller, in which case extra padding is added.
-enum class BackupRefPtrRefCountSize {
-  // Whatever sizeof(PartitionRefCount) happens to be, which is influence by
-  // buildflags.
-  // The remaining options require sizeof(PartitionRefCount) not to exceed the
-  // desired size, which will be asserted.
-  kNatural,
-  // 4 bytes.
-  k4B,
-  // 8 bytes
-  k8B,
-  // 16 bytes.
-  k16B,
+  // As above, but "same slot" mode is used, as opposed to "previous slot".
+  // This means that ref-count is placed at the end of the same slot as the
+  // object it protects, as opposed to the end of the previous slot.
+  kEnabledInSameSlotMode,
 };
 
 enum class MemtagMode {
@@ -134,13 +126,28 @@ enum class BucketDistributionMode : uint8_t {
   kDenser,
 };
 
+// Parameter for 'kPartitionAllocMakeFreeNoOpOnShutdown' feature which
+// controls when free() becomes a no-op during Shutdown()
+enum class WhenFreeBecomesNoOp {
+  // Allocator is inserted either before, in, or after shutdown threads
+  kBeforeShutDownThreads,
+  kInShutDownThreads,
+  kAfterShutDownThreads,
+};
+
+// Inserts a no-op on 'free()' allocator shim at the front of the
+// dispatch chain if called from the appropriate callsite.
+BASE_EXPORT void MakeFreeNoOp(WhenFreeBecomesNoOp callsite);
+
+BASE_EXPORT BASE_DECLARE_FEATURE(kPartitionAllocMakeFreeNoOpOnShutdown);
+extern const BASE_EXPORT base::FeatureParam<WhenFreeBecomesNoOp>
+    kPartitionAllocMakeFreeNoOpOnShutdownParam;
+
 BASE_EXPORT BASE_DECLARE_FEATURE(kPartitionAllocBackupRefPtr);
 extern const BASE_EXPORT base::FeatureParam<BackupRefPtrEnabledProcesses>
     kBackupRefPtrEnabledProcessesParam;
 extern const BASE_EXPORT base::FeatureParam<BackupRefPtrMode>
     kBackupRefPtrModeParam;
-extern const BASE_EXPORT base::FeatureParam<BackupRefPtrRefCountSize>
-    kBackupRefPtrRefCountSizeParam;
 BASE_EXPORT BASE_DECLARE_FEATURE(kPartitionAllocMemoryTagging);
 extern const BASE_EXPORT base::FeatureParam<MemtagMode> kMemtagModeParam;
 extern const BASE_EXPORT base::FeatureParam<MemoryTaggingEnabledProcesses>
@@ -148,6 +155,7 @@ extern const BASE_EXPORT base::FeatureParam<MemoryTaggingEnabledProcesses>
 // Kill switch for memory tagging. Skips any code related to memory tagging when
 // enabled.
 BASE_EXPORT BASE_DECLARE_FEATURE(kKillPartitionAllocMemoryTagging);
+BASE_EXPORT BASE_DECLARE_FEATURE(kPartitionAllocPermissiveMte);
 extern const BASE_EXPORT base::FeatureParam<bool>
     kBackupRefPtrAsanEnableDereferenceCheckParam;
 extern const BASE_EXPORT base::FeatureParam<bool>
@@ -156,8 +164,6 @@ extern const BASE_EXPORT base::FeatureParam<bool>
     kBackupRefPtrAsanEnableInstantiationCheckParam;
 extern const BASE_EXPORT base::FeatureParam<BucketDistributionMode>
     kPartitionAllocBucketDistributionParam;
-
-BASE_EXPORT BASE_DECLARE_FEATURE(kPartitionAllocBackupRefPtrForAsh);
 
 BASE_EXPORT BASE_DECLARE_FEATURE(kLowerPAMemoryLimitForNonMainRenderers);
 BASE_EXPORT BASE_DECLARE_FEATURE(kPartitionAllocPCScanMUAwareScheduler);
@@ -182,7 +188,7 @@ BASE_EXPORT BASE_DECLARE_FEATURE(kPartitionAllocSortActiveSlotSpans);
 BASE_EXPORT BASE_DECLARE_FEATURE(kPageAllocatorRetryOnCommitFailure);
 #endif
 
-#if BUILDFLAG(IS_ANDROID)
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_CHROMEOS)
 extern const base::FeatureParam<bool>
     kPartialLowEndModeExcludePartitionAllocSupport;
 #endif
@@ -191,6 +197,31 @@ extern const base::FeatureParam<bool>
 // all processes.
 inline constexpr base::StringPiece kRendererLiveBRPSyntheticTrialName =
     "BackupRefPtrRendererLive";
+
+BASE_EXPORT BASE_DECLARE_FEATURE(kEnableConfigurableThreadCacheMultiplier);
+BASE_EXPORT double GetThreadCacheMultiplier();
+BASE_EXPORT double GetThreadCacheMultiplierForAndroid();
+
+BASE_EXPORT BASE_DECLARE_FEATURE(kEnableConfigurableThreadCachePurgeInterval);
+extern const partition_alloc::internal::base::TimeDelta
+GetThreadCacheMinPurgeInterval();
+extern const partition_alloc::internal::base::TimeDelta
+GetThreadCacheMaxPurgeInterval();
+extern const partition_alloc::internal::base::TimeDelta
+GetThreadCacheDefaultPurgeInterval();
+
+BASE_EXPORT BASE_DECLARE_FEATURE(
+    kEnableConfigurableThreadCacheMinCachedMemoryForPurging);
+BASE_EXPORT int GetThreadCacheMinCachedMemoryForPurgingBytes();
+
+BASE_EXPORT BASE_DECLARE_FEATURE(kPartitionAllocDisableBRPInBufferPartition);
+
+// This feature is additionally gated behind a buildflag because
+// pool offset freelists cannot be represented when PartitionAlloc uses
+// 32-bit pointers.
+#if BUILDFLAG(USE_FREELIST_POOL_OFFSETS)
+BASE_EXPORT BASE_DECLARE_FEATURE(kUsePoolOffsetFreelists);
+#endif
 
 }  // namespace features
 }  // namespace base

@@ -5,10 +5,10 @@
 #ifndef THIRD_PARTY_BLINK_PUBLIC_COMMON_INTEREST_GROUP_AD_AUCTION_CURRENCIES_H_
 #define THIRD_PARTY_BLINK_PUBLIC_COMMON_INTEREST_GROUP_AD_AUCTION_CURRENCIES_H_
 
+#include <optional>
 #include <string>
 
 #include "base/check.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/common_export.h"
 
 namespace blink {
@@ -35,6 +35,9 @@ class BLINK_COMMON_EXPORT AdCurrency {
   // Lets one set invalid values to cover mojo checking.
   void SetCurrencyCodeForTesting(const std::string& in) { currency_code_ = in; }
 
+  friend BLINK_COMMON_EXPORT bool operator==(const AdCurrency&,
+                                             const AdCurrency&);
+
  private:
   std::string currency_code_;
 };
@@ -42,8 +45,8 @@ class BLINK_COMMON_EXPORT AdCurrency {
 // Returns true if `actual` currency should be accepted under expectation
 // `expected; this can happen if they match or if any of them is unspecified.
 BLINK_COMMON_EXPORT bool VerifyAdCurrencyCode(
-    const absl::optional<AdCurrency>& expected,
-    const absl::optional<AdCurrency>& actual);
+    const std::optional<AdCurrency>& expected,
+    const std::optional<AdCurrency>& actual);
 
 // Magical value to denote that a party in the auction didn't specify
 // currency value or expectation.  It can't be provided directly, but it's meant
@@ -54,7 +57,7 @@ BLINK_COMMON_EXPORT extern const char* const kUnspecifiedAdCurrency;
 // or error messages --- e.g. unspecified value gets expanded out to
 // kUnspecifiedAdCurrency for readability.
 BLINK_COMMON_EXPORT std::string PrintableAdCurrency(
-    const absl::optional<AdCurrency>& currency);
+    const std::optional<AdCurrency>& currency);
 
 }  // namespace blink
 

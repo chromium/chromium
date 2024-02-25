@@ -54,7 +54,7 @@ ScopedJavaLocalRef<jobject> ToJavaDropData(const DropData& drop_data) {
     jimage_bytes = ToJavaByteArray(env, drop_data.file_contents);
     jimage_extension = ConvertUTF8ToJavaString(
         env, drop_data.file_contents_filename_extension);
-    absl::optional<base::FilePath> filename =
+    std::optional<base::FilePath> filename =
         drop_data.GetSafeFilenameForImageFileContents();
     if (filename) {
       jimage_filename =

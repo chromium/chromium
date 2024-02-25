@@ -5,7 +5,6 @@
 <translation id="1076394037877376434">Usuń stronę <ph name="PAGE_NUMBER" /></translation>
 <translation id="1113173431709655881">Tryb kamery</translation>
 <translation id="1153190633558910465">Siatka wyłączona</translation>
-<translation id="1175958423215084756">Wykryto link. <ph name="HOSTNAME" /></translation>
 <translation id="1197694886744716213">Usunięto stronę <ph name="PAGE_NUMBER" /></translation>
 <translation id="1258009455399840361">Obróć o 90 stopni w prawo</translation>
 <translation id="1417314334557041815">Edytuj stronę <ph name="INDEX" /></translation>
@@ -47,6 +46,7 @@
 <translation id="3067436040345934772">Przesuń w prawo</translation>
 <translation id="3081586908890909590">Przełącz, by nagrać film</translation>
 <translation id="313467653172006084">30 kl./s</translation>
+<translation id="3158534262962737808">Dołącz do sieci „<ph name="WIFINAME" />”</translation>
 <translation id="3227137524299004712">Mikrofon</translation>
 <translation id="3240426699337459095">Link skopiowany</translation>
 <translation id="3354465018370944241">Ustawienia zdjęć</translation>
@@ -60,14 +60,12 @@
 <translation id="3642192109456033823">Przetwarzam film…</translation>
 <translation id="3789724198583203151">Obróć o 90 stopni w lewo</translation>
 <translation id="3810838688059735925">Wideo</translation>
-<translation id="3892148308691398805">Kopiuj tekst</translation>
 <translation id="4060608699153044055">Nie możesz nagrywać, ponieważ na urządzeniu brakuje miejsca. Najpierw musisz zwolnić miejsce.</translation>
 <translation id="4061162772429051350"><ph name="MAGAPIXELS_AMOUNT" /> Mpix</translation>
 <translation id="4118525110028899586">Wstrzymaj nagrywanie</translation>
 <translation id="4121305183798804752">Wykryto dokument</translation>
 <translation id="414641094616694804">Ta kamera nie umożliwia zmiany rozdzielczości</translation>
 <translation id="4176463684765177261">Wyłączone</translation>
-<translation id="4269820728363426813">Kopiuj adres linku</translation>
 <translation id="428234092390943511">Miniatura strony</translation>
 <translation id="4349714250734879769">Skaluj ramki według Chrome</translation>
 <translation id="4383571725254449280">Drukuj dzienniki wydajności</translation>
@@ -81,14 +79,15 @@
 <translation id="4705093842003735294">Pełna rozdzielczość</translation>
 <translation id="4864143361253542638">Lista zeskanowanych stron</translation>
 <translation id="4890010094662541459">3 x 3</translation>
+<translation id="4892746741161549733">Kopiuj adres linku <ph name="URL" /></translation>
 <translation id="491895758387112773">Nagrywanie kilku strumieni wideo</translation>
 <translation id="495170559598752135">Czynności</translation>
 <translation id="4984613436295737187">Quad HD (1440p)</translation>
 <translation id="5034763830503483128">Współczynnik proporcji zdjęcia</translation>
 <translation id="5057360777601936059">Aparat jest obecnie niedostępny.
         Sprawdź, czy jest prawidłowo podłączony.</translation>
+<translation id="5157591164390831335">Wykryto URL.</translation>
 <translation id="5163387177077603948">Przesuwam w prawo</translation>
-<translation id="5219374179772385066">Teraz dostępny jest tryb poklatkowy.</translation>
 <translation id="5235304959032763950">16 na 9</translation>
 <translation id="5266635337630551423">Lewy górny róg dokumentu</translation>
 <translation id="5317780077021120954">Zapisz</translation>
@@ -114,6 +113,7 @@
 <translation id="6353688143752491039">Dziękujemy za opinię o aplikacji Aparat.
 
 Jeśli dotyczyła ona jakości zdjęć lub filmów, zamieść tutaj przykładowe zdjęcie lub film i opisz, na czym polega problem (na przykład zdjęcie jest za ciemne lub obiekt jest nieostry).</translation>
+<translation id="6519884562954018934">Dołącz do sieci <ph name="WIFINAME" /></translation>
 <translation id="6527303717912515753">Udostępnij</translation>
 <translation id="6617916774429601017">Pokaż wszystkie rozdzielczości</translation>
 <translation id="6631515515009660915">Odbicie lustrzane wyłączone</translation>
@@ -124,7 +124,7 @@ Jeśli dotyczyła ona jakości zdjęć lub filmów, zamieść tutaj przykładowe
 <translation id="6888362557094394345">Przesuwam w dół</translation>
 <translation id="695140971690006676">Zresetuj wszystko</translation>
 <translation id="6965382102122355670">OK</translation>
-<translation id="6965830616442491568">Portet</translation>
+<translation id="6965830616442491568">Portret</translation>
 <translation id="698156982839284926">3 sekundy</translation>
 <translation id="7134221860976209830">10-sekundowy samowyzwalacz</translation>
 <translation id="7191890674911603392">Typ rekordu</translation>
@@ -133,6 +133,7 @@ Jeśli dotyczyła ona jakości zdjęć lub filmów, zamieść tutaj przykładowe
 <translation id="7450541714075000668">Tekst został skopiowany</translation>
 <translation id="7488619942230388918">Nagraj film GIF</translation>
 <translation id="7557677699350329807">Przełącz na następny aparat</translation>
+<translation id="7562584071994185503">Kopiuj tekst <ph name="TEXT" /></translation>
 <translation id="7607002721634913082">Wstrzymano</translation>
 <translation id="7608223098072244877">4 na 4</translation>
 <translation id="761421184377987513">Przesuwam w kierunku lewego dolnego rogu</translation>
@@ -155,10 +156,12 @@ Jeśli dotyczyła ona jakości zdjęć lub filmów, zamieść tutaj przykładowe
 <translation id="8346544573713510785">Skaluj ramki według HAL aparatu</translation>
 <translation id="8425673304802773841">Pochyl w dół</translation>
 <translation id="8428213095426709021">Ustawienia</translation>
+<translation id="8609951387004618906">Otwórz <ph name="URL" /></translation>
 <translation id="8629662593426079630">360p</translation>
 <translation id="8711011893539266636">Przełącz przycisk wyciszenia mikrofonu. Wyciszenie jest włączone</translation>
 <translation id="8730621377337864115">Gotowe</translation>
 <translation id="8732462232047530626">Wyświetl podgląd metadanych</translation>
+<translation id="874854738381978209">Wykryto sieć Wi-Fi.</translation>
 <translation id="8815966864175525708">Przełącz, by zrobić zdjęcie portretowe</translation>
 <translation id="8828441885228359828">Wznów nagrywanie</translation>
 <translation id="8870695351537079478">Nie udało się rozpocząć nagrywania</translation>

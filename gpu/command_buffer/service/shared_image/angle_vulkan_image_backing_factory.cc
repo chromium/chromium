@@ -24,8 +24,9 @@ constexpr uint32_t kSupportedUsage =
 #if BUILDFLAG(IS_LINUX)
     SHARED_IMAGE_USAGE_SCANOUT |
 #endif
-    SHARED_IMAGE_USAGE_GLES2 | SHARED_IMAGE_USAGE_GLES2_FRAMEBUFFER_HINT |
-    SHARED_IMAGE_USAGE_RASTER | SHARED_IMAGE_USAGE_DISPLAY_READ |
+    SHARED_IMAGE_USAGE_GLES2_READ | SHARED_IMAGE_USAGE_GLES2_WRITE |
+    SHARED_IMAGE_USAGE_GLES2_FRAMEBUFFER_HINT | SHARED_IMAGE_USAGE_RASTER_READ |
+    SHARED_IMAGE_USAGE_RASTER_WRITE | SHARED_IMAGE_USAGE_DISPLAY_READ |
     SHARED_IMAGE_USAGE_DISPLAY_WRITE | SHARED_IMAGE_USAGE_OOP_RASTERIZATION |
     SHARED_IMAGE_USAGE_CPU_UPLOAD;
 
@@ -43,19 +44,6 @@ AngleVulkanImageBackingFactory::AngleVulkanImageBackingFactory(
       context_state_(context_state) {
   DCHECK(context_state_->GrContextIsVulkan());
   DCHECK(gl::GLSurfaceEGL::GetGLDisplayEGL()->ext->b_EGL_ANGLE_vulkan_image);
-
-  // If R_8 and RG_88 are supported by GL then 8 bit YUV formats should also
-  // work.
-  auto r_iter = supported_formats_.find(viz::SinglePlaneFormat::kR_8);
-  auto rg_iter = supported_formats_.find(viz::SinglePlaneFormat::kRG_88);
-  if (r_iter != supported_formats_.end() &&
-      rg_iter != supported_formats_.end()) {
-    auto& r_info = r_iter->second[0];
-    auto& rg_info = rg_iter->second[0];
-    supported_formats_[viz::MultiPlaneFormat::kNV12] = {r_info, rg_info};
-    supported_formats_[viz::MultiPlaneFormat::kYV12] = {r_info, r_info, r_info};
-    supported_formats_[viz::MultiPlaneFormat::kI420] = {r_info, r_info, r_info};
-  }
 }
 
 AngleVulkanImageBackingFactory::~AngleVulkanImageBackingFactory() = default;
@@ -74,7 +62,7 @@ AngleVulkanImageBackingFactory::CreateSharedImage(
     bool is_thread_safe) {
   auto backing = std::make_unique<AngleVulkanImageBacking>(
       context_state_, mailbox, format, size, color_space, surface_origin,
-      alpha_type, usage);
+      alpha_type, usage, std::move(debug_label));
 
   if (!backing->Initialize({}))
     return nullptr;
@@ -95,7 +83,7 @@ AngleVulkanImageBackingFactory::CreateSharedImage(
     base::span<const uint8_t> data) {
   auto backing = std::make_unique<AngleVulkanImageBacking>(
       context_state_, mailbox, format, size, color_space, surface_origin,
-      alpha_type, usage);
+      alpha_type, usage, std::move(debug_label));
 
   if (!backing->Initialize(data))
     return nullptr;
@@ -116,7 +104,7 @@ AngleVulkanImageBackingFactory::CreateSharedImage(
     gfx::GpuMemoryBufferHandle handle) {
   auto backing = std::make_unique<AngleVulkanImageBacking>(
       context_state_, mailbox, format, size, color_space, surface_origin,
-      alpha_type, usage);
+      alpha_type, usage, std::move(debug_label));
 
   if (!backing->InitializeWihGMB(std::move(handle))) {
     return nullptr;
@@ -140,7 +128,7 @@ AngleVulkanImageBackingFactory::CreateSharedImage(
   return CreateSharedImage(mailbox,
                            viz::GetSinglePlaneSharedImageFormat(buffer_format),
                            size, color_space, surface_origin, alpha_type, usage,
-                           debug_label, std::move(handle));
+                           std::move(debug_label), std::move(handle));
 }
 
 bool AngleVulkanImageBackingFactory::IsGMBSupported(
@@ -171,7 +159,7 @@ bool AngleVulkanImageBackingFactory::CanUseAngleVulkanImageBacking(
   // contain GLES2, unless it is created from GPU memory buffer.
   // TODO(penghuang): use AngleVulkan backing for non GL & Vulkan interop usage?
   if (gmb_type == gfx::EMPTY_BUFFER)
-    return usage & SHARED_IMAGE_USAGE_GLES2;
+    return HasGLES2ReadOrWriteUsage(usage);
 
   return true;
 }
@@ -199,6 +187,10 @@ bool AngleVulkanImageBackingFactory::IsSupported(
   }
 
   return CanCreateTexture(format, size, pixel_data, GL_TEXTURE_2D);
+}
+
+SharedImageBackingType AngleVulkanImageBackingFactory::GetBackingType() {
+  return SharedImageBackingType::kAngleVulkan;
 }
 
 }  // namespace gpu

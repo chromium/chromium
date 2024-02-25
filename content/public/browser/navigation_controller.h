@@ -8,6 +8,7 @@
 #include <stdint.h>
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -24,7 +25,6 @@
 #include "content/public/browser/site_instance.h"
 #include "content/public/common/referrer.h"
 #include "services/network/public/cpp/resource_request_body.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/navigation/impression.h"
 #include "third_party/blink/public/common/navigation/navigation_policy.h"
 #include "third_party/blink/public/common/tokens/tokens.h"
@@ -49,7 +49,6 @@ class BackForwardCache;
 class BrowserContext;
 class NavigationEntry;
 class RenderFrameHost;
-class WebContents;
 class NavigationHandle;
 struct OpenURLParams;
 
@@ -126,8 +125,8 @@ class NavigationController {
   CONTENT_EXPORT static std::unique_ptr<NavigationEntry> CreateNavigationEntry(
       const GURL& url,
       Referrer referrer,
-      absl::optional<url::Origin> initiator_origin,
-      absl::optional<GURL> initiator_base_url,
+      std::optional<url::Origin> initiator_origin,
+      std::optional<GURL> initiator_base_url,
       ui::PageTransition transition,
       bool is_renderer_initiated,
       const std::string& extra_headers,
@@ -158,14 +157,14 @@ class NavigationController {
     // was not associated with a frame, or if the initiating frame did not exist
     // by the time navigation started. This parameter is defined if and only if
     // |initiator_process_id| below is.
-    absl::optional<blink::LocalFrameToken> initiator_frame_token;
+    std::optional<blink::LocalFrameToken> initiator_frame_token;
 
     // ID of the renderer process of the frame host that initiated the
     // navigation. This is defined if and only if |initiator_frame_token| above
     // is, and it is only valid in conjunction with it.
     int initiator_process_id = ChildProcessHost::kInvalidUniqueID;
 
-    // The origin of the initiator of the navigation or absl::nullopt if the
+    // The origin of the initiator of the navigation or std::nullopt if the
     // navigation was initiated through trusted, non-web-influenced UI
     // (e.g. via omnibox, the bookmarks bar, local NTP, etc.).
     //
@@ -174,13 +173,13 @@ class NavigationController {
     // browser-initiated navigations may also use a non-null |initiator_origin|
     // (if these navigations can be somehow triggered or influenced by web
     // content).
-    absl::optional<url::Origin> initiator_origin;
+    std::optional<url::Origin> initiator_origin;
 
     // The base url of the initiator, to be passed to about:blank and srcdoc
     // frames. As with `initiator_origin`, some browser-initiated navigations
     // may not have an initiator, and in those cases this will be null. It will
     // also be null for non-about:blank/about:srcdoc navigations.
-    absl::optional<GURL> initiator_base_url;
+    std::optional<GURL> initiator_base_url;
 
     // SiteInstance of the frame that initiated the navigation or null if we
     // don't know it.
@@ -309,7 +308,7 @@ class NavigationController {
 
     // Impression info associated with this navigation. Should only be populated
     // for navigations originating from a link click.
-    absl::optional<blink::Impression> impression;
+    std::optional<blink::Impression> impression;
 
     // Download policy to be applied if this navigation turns into a download.
     blink::NavigationDownloadPolicy download_policy;
@@ -334,13 +333,6 @@ class NavigationController {
   CONTENT_EXPORT static void DisablePromptOnRepost();
 
   virtual ~NavigationController() {}
-
-  // Returns the web contents associated with this controller. It can never be
-  // nullptr.
-  //
-  // TODO(crbug.com/1225205): Remove this. It is a layering violation as it is
-  // implemented in renderer_host/ which cannot depend on WebContents.
-  virtual WebContents* DeprecatedGetWebContents() = 0;
 
   // Get the browser context for this controller. It can never be nullptr.
   virtual BrowserContext* GetBrowserContext() = 0;
@@ -600,13 +592,6 @@ class NavigationController {
   // calling this, or it will crash.
   virtual void DeleteNavigationEntries(
       const DeletionPredicate& deletionPredicate) = 0;
-
-  // Returns whether entry at the given index is marked to be skipped on
-  // back/forward UI. The history manipulation intervention marks entries to be
-  // skipped in order to intervene against pages that manipulate browser history
-  // such that the user is not able to use the back button to go to the previous
-  // page they interacted with.
-  virtual bool IsEntryMarkedToBeSkipped(int index) = 0;
 
   // Gets the BackForwardCache for this NavigationController.
   virtual BackForwardCache& GetBackForwardCache() = 0;

@@ -13,9 +13,11 @@
 #include "base/functional/callback.h"
 #include "base/location.h"
 #include "base/memory/raw_ptr.h"
+#include "base/scoped_observation.h"
 #include "content/public/browser/web_contents_delegate.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "ui/accessibility/ax_mode_observer.h"
+#include "ui/accessibility/platform/ax_platform.h"
 #include "ui/gfx/native_widget_types.h"
 #include "ui/views/controls/native/native_view_host.h"
 #include "ui/views/controls/webview/webview_export.h"
@@ -43,9 +45,9 @@ class WEBVIEW_EXPORT WebView : public View,
                                public content::WebContentsDelegate,
                                public content::WebContentsObserver,
                                public ui::AXModeObserver {
- public:
-  METADATA_HEADER(WebView);
+  METADATA_HEADER(WebView, View)
 
+ public:
   using WebContentsAttachedCallback = base::RepeatingCallback<void(WebView*)>;
 
   explicit WebView(content::BrowserContext* browser_context = nullptr);
@@ -54,6 +56,8 @@ class WEBVIEW_EXPORT WebView : public View,
   WebView& operator=(const WebView&) = delete;
 
   ~WebView() override;
+
+  static bool IsWebViewContents(const content::WebContents* web_contents);
 
   // This creates a WebContents if |browser_context_| has been set and there is
   // not yet a WebContents associated with this WebView, otherwise it will
@@ -113,6 +117,12 @@ class WEBVIEW_EXPORT WebView : public View,
     allow_accelerators_ = allow_accelerators;
   }
 
+  // When `lock = true` changes in web contents will not reset the override.
+  // Default is false.
+  void set_lock_child_ax_tree_id_override(bool lock) {
+    lock_child_ax_tree_id_override_ = lock;
+  }
+
   // Overridden from content::WebContentsDelegate:
   void ResizeDueToAutoResize(content::WebContents* source,
                              const gfx::Size& new_size) override;
@@ -158,6 +168,7 @@ class WEBVIEW_EXPORT WebView : public View,
   void AboutToRequestFocusFromTabTraversal(bool reverse) override;
   gfx::NativeViewAccessible GetNativeViewAccessible() override;
   void AddedToWidget() override;
+  void RemovedFromWidget() override;
 
   // Overridden from content::WebContentsObserver:
   void RenderFrameCreated(content::RenderFrameHost* render_frame_host) override;
@@ -201,6 +212,8 @@ class WEBVIEW_EXPORT WebView : public View,
 
   const raw_ptr<NativeViewHost> holder_ =
       AddChildView(std::make_unique<NativeViewHost>());
+  base::ScopedObservation<ui::AXPlatform, ui::AXModeObserver>
+      ax_mode_observation_{this};
   // Non-NULL if |web_contents()| was created and is owned by this WebView.
   std::unique_ptr<content::WebContents> wc_owner_;
   // Set to true when |holder_| is letterboxed (scaled to be smaller than this
@@ -210,6 +223,8 @@ class WEBVIEW_EXPORT WebView : public View,
   bool allow_accelerators_ = false;
   ViewTracker crashed_overlay_view_;
   bool is_primary_web_contents_for_window_ = false;
+
+  bool lock_child_ax_tree_id_override_ = false;
 
   // Minimum and maximum sizes to determine WebView bounds for auto-resizing.
   // Empty if auto resize is not enabled.

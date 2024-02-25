@@ -8,6 +8,7 @@
 #include <string>
 #include <vector>
 
+#include <optional>
 #include "base/gtest_prod_util.h"
 #include "base/memory/scoped_refptr.h"
 #include "cc/paint/frame_metadata.h"
@@ -15,7 +16,6 @@
 #include "cc/paint/paint_export.h"
 #include "cc/paint/paint_record.h"
 #include "gpu/command_buffer/common/mailbox.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/skia/include/core/SkImage.h"
 #include "third_party/skia/include/core/SkImageInfo.h"
 #include "third_party/skia/include/core/SkRefCnt.h"
@@ -85,7 +85,7 @@ struct CC_PAINT_EXPORT ImageHeaderMetadata {
   YUVSubsampling yuv_subsampling = YUVSubsampling::kUnknown;
 
   // The HDR metadata included with the image, if present.
-  absl::optional<gfx::HDRMetadata> hdr_metadata;
+  std::optional<gfx::HDRMetadata> hdr_metadata;
 
   // The visible size of the image (i.e., the area that contains meaningful
   // pixels).
@@ -95,7 +95,7 @@ struct CC_PAINT_EXPORT ImageHeaderMetadata {
   // |image_size| for a 4:2:0 JPEG is 12x31, its coded size should be 16x32
   // because the size of a minimum-coded unit for 4:2:0 is 16x16.
   // A zero-initialized |coded_size| indicates an invalid image.
-  absl::optional<gfx::Size> coded_size;
+  std::optional<gfx::Size> coded_size;
 
   // Whether the image embeds an ICC color profile.
   bool has_embedded_color_profile = false;
@@ -104,11 +104,11 @@ struct CC_PAINT_EXPORT ImageHeaderMetadata {
   bool all_data_received_prior_to_decode = false;
 
   // For JPEGs only: whether the image is progressive (as opposed to baseline).
-  absl::optional<bool> jpeg_is_progressive;
+  std::optional<bool> jpeg_is_progressive;
 
   // For WebPs only: whether this is a simple-format lossy image. See
   // https://developers.google.com/speed/webp/docs/riff_container#simple_file_format_lossy.
-  absl::optional<bool> webp_is_non_extended_lossy;
+  std::optional<bool> webp_is_non_extended_lossy;
 };
 
 // A representation of an image for the compositor.  This is the most abstract
@@ -184,8 +184,8 @@ class CC_PAINT_EXPORT PaintImage {
     }
   };
 
-  enum class AnimationType { ANIMATED, VIDEO, STATIC };
-  enum class CompletionState { DONE, PARTIALLY_DONE };
+  enum class AnimationType { kAnimated, kVideo, kStatic };
+  enum class CompletionState { kDone, kPartiallyDone };
   enum class DecodingMode {
     // No preference has been specified. The compositor may choose to use sync
     // or async decoding. See CheckerImageTracker for the default behaviour.
@@ -280,7 +280,6 @@ class CC_PAINT_EXPORT PaintImage {
   bool is_high_bit_depth() const { return is_high_bit_depth_; }
   bool may_be_lcp_candidate() const { return may_be_lcp_candidate_; }
   bool no_cache() const { return no_cache_; }
-  void set_no_cache(bool no_cache) { no_cache_ = no_cache; }
   int repetition_count() const { return repetition_count_; }
   bool ShouldAnimate() const;
   AnimationSequenceId reset_animation_sequence_id() const {
@@ -359,6 +358,13 @@ class CC_PAINT_EXPORT PaintImage {
     return gainmap_info_.value();
   }
 
+  std::optional<gfx::HDRMetadata> GetHDRMetadata() const {
+    if (const auto* image_metadata = GetImageHeaderMetadata()) {
+      return image_metadata->hdr_metadata;
+    }
+    return std::nullopt;
+  }
+
   std::string ToString() const;
 
  private:
@@ -394,20 +400,25 @@ class CC_PAINT_EXPORT PaintImage {
   const sk_sp<SkImage>& GetSkImage() const;
 
   sk_sp<SkImage> sk_image_;
-  absl::optional<PaintRecord> paint_record_;
+  std::optional<PaintRecord> paint_record_;
   gfx::Rect paint_record_rect_;
 
   ContentId content_id_ = kInvalidContentId;
 
   sk_sp<PaintImageGenerator> paint_image_generator_;
+
+  // Gainmap HDR metadata.
   sk_sp<PaintImageGenerator> gainmap_paint_image_generator_;
-  absl::optional<SkGainmapInfo> gainmap_info_;
+  std::optional<SkGainmapInfo> gainmap_info_;
+
+  // The HDR metadata for non-gainmap HDR rendering.
+  std::optional<gfx::HDRMetadata> hdr_metadata_;
 
   sk_sp<TextureBacking> texture_backing_;
 
   Id id_ = 0;
-  AnimationType animation_type_ = AnimationType::STATIC;
-  CompletionState completion_state_ = CompletionState::DONE;
+  AnimationType animation_type_ = AnimationType::kStatic;
+  CompletionState completion_state_ = CompletionState::kDone;
   int repetition_count_ = kAnimationNone;
 
   // Whether the data fetched for this image is a part of a multpart response.

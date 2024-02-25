@@ -45,4 +45,4 @@ var allTests = [
   },
 ];
 
-setUpAndRunTests(allTests, "tree_change_indirect.html");
+setUpAndRunTabsTests(allTests, "tree_change_indirect.html");

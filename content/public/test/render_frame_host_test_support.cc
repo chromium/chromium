@@ -26,4 +26,11 @@ bool IsDisableThirdPartyStoragePartitioningEnabled(RenderFrameHost* rfh) {
   return read_context.IsDisableThirdPartyStoragePartitioningEnabled();
 }
 
+void CreatePermissionService(
+    RenderFrameHost* rfh,
+    mojo::PendingReceiver<blink::mojom::PermissionService> receiver) {
+  static_cast<RenderFrameHostImpl*>(rfh)->CreatePermissionService(
+      std::move(receiver));
+}
+
 }  // namespace content

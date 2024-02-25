@@ -18,8 +18,7 @@
 #include "third_party/flatbuffers/src/include/flatbuffers/flatbuffers.h"
 #include "url/gurl.h"
 
-namespace extensions {
-namespace declarative_net_request {
+namespace extensions::declarative_net_request {
 
 RulesetSource::RulesetSource(RulesetID id,
                              size_t rule_count_limit,
@@ -105,8 +104,7 @@ ParseInfo RulesetSource::IndexRules(
   }
 
   flatbuffers::DetachedBuffer buffer = indexer.FinishAndReleaseBuffer();
-  int ruleset_checksum =
-      GetChecksum(base::make_span(buffer.data(), buffer.size()));
+  int ruleset_checksum = GetChecksum(buffer);
   return ParseInfo(rules_count, regex_rules_count, std::move(rule_warnings),
                    std::move(buffer), ruleset_checksum);
 }
@@ -130,5 +128,4 @@ LoadRulesetResult RulesetSource::CreateVerifiedMatcher(
   return LoadRulesetResult::kSuccess;
 }
 
-}  // namespace declarative_net_request
-}  // namespace extensions
+}  // namespace extensions::declarative_net_request

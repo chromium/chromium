@@ -1,4 +1,4 @@
-(async function(testRunner) {
+(async function(/** @type {import('test_runner').TestRunner} */ testRunner) {
   var {page, session, dp} = await testRunner.startHTML(`
         <div id='container' style='display:none'><div>child1</div><div>child2</div></div>
   `, 'Tests how DOM.childNodeCountUpdated event works.');

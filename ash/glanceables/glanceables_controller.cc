@@ -1,142 +1,98 @@
-// Copyright 2022 The Chromium Authors
+// Copyright 2023 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "ash/glanceables/glanceables_controller.h"
 
-#include <memory>
-
-#include "ash/ambient/ambient_controller.h"
-#include "ash/glanceables/glanceables_delegate.h"
-#include "ash/glanceables/glanceables_view.h"
-#include "ash/public/cpp/shell_window_ids.h"
-#include "ash/public/cpp/style/color_provider.h"
-#include "ash/root_window_controller.h"
-#include "ash/shell.h"
-#include "ash/wm/desks/desks_util.h"
-#include "ash/wm/tablet_mode/tablet_mode_controller.h"
-#include "third_party/skia/include/core/SkColor.h"
-#include "ui/base/ui_base_types.h"
-#include "ui/compositor/layer.h"
-#include "ui/views/background.h"
-#include "ui/views/widget/widget.h"
-#include "ui/views/widget/widget_delegate.h"
-#include "ui/wm/public/activation_client.h"
+#include "ash/api/tasks/tasks_client.h"
+#include "ash/constants/ash_pref_names.h"
+#include "ash/glanceables/classroom/glanceables_classroom_client.h"
+#include "ash/glanceables/glanceables_metrics.h"
+#include "ash/public/cpp/session/session_controller.h"
+#include "ash/system/unified/classroom_bubble_student_view.h"
+#include "ash/system/unified/tasks_combobox_model.h"
+#include "base/check.h"
+#include "base/time/time.h"
+#include "components/account_id/account_id.h"
+#include "components/prefs/pref_registry_simple.h"
 
 namespace ash {
-namespace {
-
-// Returns true if `window` appears in any desk container on any display.
-bool IsWindowOnAnyDesk(aura::Window* window) {
-  DCHECK(window);
-  for (aura::Window* root : Shell::GetAllRootWindows()) {
-    for (aura::Window* desk : desks_util::GetDesksContainers(root)) {
-      if (desk->Contains(window)) {
-        return true;
-      }
-    }
-  }
-  return false;
-}
-
-}  // namespace
 
 GlanceablesController::GlanceablesController() {
-  Shell::Get()->activation_client()->AddObserver(this);
-  Shell::Get()->tablet_mode_controller()->AddObserver(this);
+  DCHECK(SessionController::Get());
+  SessionController::Get()->AddObserver(this);
 }
 
 GlanceablesController::~GlanceablesController() {
-  Shell::Get()->tablet_mode_controller()->RemoveObserver(this);
-  Shell::Get()->activation_client()->RemoveObserver(this);
+  DCHECK(SessionController::Get());
+  SessionController::Get()->RemoveObserver(this);
 }
 
-void GlanceablesController::Init(
-    std::unique_ptr<GlanceablesDelegate> delegate) {
-  DCHECK(delegate);
-  delegate_ = std::move(delegate);
+// static
+void GlanceablesController::RegisterUserProfilePrefs(
+    PrefRegistrySimple* registry) {
+  registry->RegisterBooleanPref(prefs::kGlanceablesEnabled, true);
+  ClassroomBubbleStudentView::RegisterUserProfilePrefs(registry);
+  TasksComboboxModel::RegisterUserProfilePrefs(registry);
 }
 
-void GlanceablesController::ShowOnLogin() {
-  if (Shell::Get()->IsInTabletMode()) {
-    // TODO(crbug.com/1360528): Implement tablet mode support.
-    return;
+// static
+void GlanceablesController::ClearUserStatePrefs(PrefService* prefs) {
+  ClassroomBubbleStudentView::ClearUserStatePrefs(prefs);
+  TasksComboboxModel::ClearUserStatePrefs(prefs);
+}
+
+void GlanceablesController::OnActiveUserSessionChanged(
+    const AccountId& account_id) {
+  active_account_id_ = account_id;
+  bubble_shown_count_ = 0;
+  login_time_ = base::Time::Now();
+}
+
+bool GlanceablesController::AreGlanceablesAvailable() const {
+  return GetClassroomClient() != nullptr || GetTasksClient() != nullptr;
+}
+
+void GlanceablesController::UpdateClientsRegistration(
+    const AccountId& account_id,
+    const ClientsRegistration& registration) {
+  clients_registry_.insert_or_assign(account_id, registration);
+}
+
+GlanceablesClassroomClient* GlanceablesController::GetClassroomClient() const {
+  const auto iter = clients_registry_.find(active_account_id_);
+  return iter != clients_registry_.end() ? iter->second.classroom_client.get()
+                                         : nullptr;
+}
+
+api::TasksClient* GlanceablesController::GetTasksClient() const {
+  const auto iter = clients_registry_.find(active_account_id_);
+  return iter != clients_registry_.end() ? iter->second.tasks_client.get()
+                                         : nullptr;
+}
+
+void GlanceablesController::NotifyGlanceablesBubbleClosed() {
+  for (auto& clients : clients_registry_) {
+    if (clients.second.classroom_client) {
+      clients.second.classroom_client->OnGlanceablesBubbleClosed();
+    }
+    if (clients.second.tasks_client) {
+      clients.second.tasks_client->OnGlanceablesBubbleClosed();
+    }
   }
 
-  CreateUi();
-  FetchData();
+  RecordTotalShowTime(base::TimeTicks::Now() - last_bubble_show_time_);
 }
 
-bool GlanceablesController::IsShowing() const {
-  return !!widget_;
-}
+void GlanceablesController::RecordGlanceablesBubbleShowTime(
+    base::TimeTicks bubble_show_timestamp) {
+  last_bubble_show_time_ = base::TimeTicks::Now();
 
-void GlanceablesController::CreateUi() {
-  widget_ = std::make_unique<views::Widget>();
-  views::Widget::InitParams params;
-  params.delegate = new views::WidgetDelegate;  // Takes ownership.
-  params.delegate->SetOwnedByWidget(true);
-  // Allow maximize so the glanceable container's FillLayoutManager can fill the
-  // screen with the widget. This is required even for fullscreen widgets.
-  params.delegate->SetCanMaximize(true);
-  params.type = views::Widget::InitParams::TYPE_WINDOW_FRAMELESS;
-  params.name = "GlanceablesWidget";
-  params.show_state = ui::SHOW_STATE_FULLSCREEN;
-  // Create the glanceables widget on the primary display.
-  params.parent = Shell::GetContainer(Shell::GetPrimaryRootWindow(),
-                                      kShellWindowId_GlanceablesContainer);
-  params.ownership = views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET;
-  params.opacity = views::Widget::InitParams::WindowOpacity::kTranslucent;
-  widget_->Init(std::move(params));
+  if (bubble_shown_count_ == 0) {
+    RecordLoginToShowTime(base::Time::Now() - login_time_);
+  }
 
-  view_ = widget_->SetContentsView(std::make_unique<GlanceablesView>());
-
-  ApplyBackdrop();
-  widget_->Show();
-}
-
-void GlanceablesController::DestroyUi() {
-  widget_.reset();
-  view_ = nullptr;
-  delegate_->OnGlanceablesClosed();
-  weather_refresher_.reset();
-}
-
-void GlanceablesController::OnWindowActivated(
-    wm::ActivationChangeObserver::ActivationReason reason,
-    aura::Window* gained_focus,
-    aura::Window* lost_focus) {
-  if (!gained_focus)
-    return;
-
-  // Destroy the UI if the activated window appears on any desk. This includes
-  // browser windows, PWA windows, ARC windows, etc.
-  if (IsWindowOnAnyDesk(gained_focus) && IsShowing())
-    DestroyUi();
-}
-
-void GlanceablesController::OnTabletModeStarted() {
-  if (!IsShowing())
-    return;
-
-  // TODO(crbug.com/1360528): Implement tablet mode support.
-  DestroyUi();
-}
-
-void GlanceablesController::FetchData() {
-  // GlanceablesWeatherView observes the weather model for updates.
-  weather_refresher_ = Shell::Get()
-                           ->ambient_controller()
-                           ->ambient_weather_controller()
-                           ->CreateScopedRefresher();
-}
-
-void GlanceablesController::ApplyBackdrop() const {
-  auto* layer = widget_->GetLayer();
-  layer->SetBackgroundBlur(ColorProvider::kBackgroundBlurSigma);
-  layer->SetBackdropFilterQuality(ColorProvider::kBackgroundBlurQuality);
-  view_->SetBackground(
-      views::CreateSolidBackground(SkColorSetARGB(0x80, 0x00, 0x00, 0x00)));
+  bubble_shown_count_++;
 }
 
 }  // namespace ash

@@ -216,6 +216,14 @@ class Command(object):
   SET_RPH_REGISTRATION_MODE = (
       _Method.POST,
       '/session/:sessionId/custom-handlers/set-mode')
+  CREATE_VIRTUAL_SENSOR = (
+      _Method.POST, '/session/:sessionId/sensor')
+  UPDATE_VIRTUAL_SENSOR = (
+      _Method.POST, '/session/:sessionId/sensor/:type')
+  REMOVE_VIRTUAL_SENSOR = (
+      _Method.DELETE, '/session/:sessionId/sensor/:type')
+  GET_VIRTUAL_SENSOR_INFORMATION = (
+      _Method.GET, '/session/:sessionId/sensor/:type')
   SET_PERMISSION = (
       _Method.POST, '/session/:sessionId/permissions')
   GET_CAST_SINKS = (
@@ -227,6 +235,9 @@ class Command(object):
   SELECT_ACCOUNT = (
       _Method.POST,
       '/session/:sessionId/fedcm/selectaccount')
+  CLICK_FEDCM_DIALOG_BUTTON = (
+      _Method.POST,
+      '/session/:sessionId/fedcm/clickdialogbutton')
   GET_ACCOUNTS = (
       _Method.GET,
       '/session/:sessionId/fedcm/accountlist')
@@ -247,13 +258,15 @@ class Command(object):
   IS_LOADING = (_Method.GET, '/session/:sessionId/is_loading')
 
 class CommandExecutor(object):
-  def __init__(self, server_url):
+  def __init__(self, server_url, http_timeout=None):
     self._server_url = server_url
     parsed_url = urlparse(server_url)
     self._http_timeout = 10
     # see https://crbug.com/1045241: short timeout seems to introduce flakiness
     if util.IsMac() or util.IsWindows():
       self._http_timeout = 30
+    if http_timeout is not None:
+      self._http_timeout = http_timeout
     self._http_client = http.client.HTTPConnection(
       parsed_url.hostname, parsed_url.port, timeout=self._http_timeout)
 

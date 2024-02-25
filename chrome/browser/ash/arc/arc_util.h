@@ -59,6 +59,10 @@ enum FileSystemCompatibilityState : int32_t {
   // "compatible" state. Be careful in the case adding a new enum value.
 };
 
+// Records ARC status i.e if ARC allowed or disallowed based on
+// UnaffiliatedDeviceArcAllowed policy value.
+void RecordArcStatusBasedOnDeviceAffiliationUMA(Profile* profile);
+
 // Returns false if |profile| is not a real user profile but some internal
 // profile for service purposes, which should be ignored for ARC and metrics
 // recording. Also returns false if |profile| is null.

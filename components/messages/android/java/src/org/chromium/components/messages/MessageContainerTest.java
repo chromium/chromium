@@ -35,16 +35,12 @@ import org.chromium.ui.test.util.BlankUiTestActivity;
 import java.util.Collections;
 import java.util.Map;
 
-/**
- * Tests for {@link MessageContainer}.
- */
+/** Tests for {@link MessageContainer}. */
 @RunWith(BaseJUnit4ClassRunner.class)
 @Batch(Batch.UNIT_TESTS)
 public class MessageContainerTest {
-    @Rule
-    public MockitoRule mMockitoRule = MockitoJUnit.rule();
-    @Mock
-    private MessageContainer.MessageContainerA11yDelegate mA11yDelegate;
+    @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
+    @Mock private MessageContainer.MessageContainerA11yDelegate mA11yDelegate;
 
     @ClassRule
     public static BaseActivityTestRule<BlankUiTestActivity> sActivityTestRule =
@@ -56,9 +52,12 @@ public class MessageContainerTest {
     public static void setupSuite() {
         sActivityTestRule.launchActivity(null);
         TestThreadUtils.runOnUiThreadBlocking(
-                () -> { sActivity = sActivityTestRule.getActivity(); });
-        FeatureList.setTestFeatures(Collections.singletonMap(
-                MessageFeatureList.MESSAGES_FOR_ANDROID_STACKING_ANIMATION, false));
+                () -> {
+                    sActivity = sActivityTestRule.getActivity();
+                });
+        FeatureList.setTestFeatures(
+                Collections.singletonMap(
+                        MessageFeatureList.MESSAGES_FOR_ANDROID_STACKING_ANIMATION, false));
     }
 
     @Test

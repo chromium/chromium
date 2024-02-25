@@ -19,6 +19,7 @@
 #include "ash/wm/window_util.h"
 #include "ash/wm/wm_event.h"
 #include "base/command_line.h"
+#include "base/test/scoped_feature_list.h"
 #include "ui/aura/test/test_windows.h"
 #include "ui/display/display.h"
 #include "ui/display/display_layout.h"
@@ -30,17 +31,16 @@
 #include "ui/views/widget/widget.h"
 #include "ui/wm/core/window_util.h"
 
-namespace ash {
-
-namespace display_move_window_util {
+namespace ash::display_move_window_util {
 
 namespace {
 
-// Get the default left snapped window bounds which has snapped width ratio 0.5.
+// Get the default left snapped window bounds which has snapped width ratio
+// `chromeos::kDefaultSnapRatio`.
 gfx::Rect GetDefaultLeftSnappedBoundsInDisplay(
     const display::Display& display) {
   auto work_area = display.work_area();
-  work_area.set_width(work_area.width() / 2);
+  work_area.set_width(work_area.width() * chromeos::kDefaultSnapRatio);
   return work_area;
 }
 
@@ -67,7 +67,22 @@ void PerformMoveWindowAccel() {
 
 }  // namespace
 
-using DisplayMoveWindowUtilTest = AshTestBase;
+class DisplayMoveWindowUtilTest : public AshTestBase {
+ public:
+  DisplayMoveWindowUtilTest() {
+    scoped_feature_list_.InitWithFeatures(
+        /*enabled_features=*/{features::kFasterSplitScreenSetup,
+                              features::kOsSettingsRevampWayfinding},
+        /*disabled_features=*/{});
+  }
+  DisplayMoveWindowUtilTest(const DisplayMoveWindowUtilTest&) = delete;
+  DisplayMoveWindowUtilTest& operator=(const DisplayMoveWindowUtilTest&) =
+      delete;
+  ~DisplayMoveWindowUtilTest() override = default;
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
 
 TEST_F(DisplayMoveWindowUtilTest, SingleDisplay) {
   aura::Window* window =
@@ -130,17 +145,17 @@ TEST_F(DisplayMoveWindowUtilTest, WindowState) {
   EXPECT_EQ(display_manager()->GetDisplayAt(1).bounds(),
             window->GetBoundsInScreen());
 
-  // Set window to left snapped state.
+  // Set window to primary snapped state.
   PerformMoveWindowAccel();
-  const WindowSnapWMEvent snap_left(WM_EVENT_SNAP_PRIMARY);
-  window_state->OnWMEvent(&snap_left);
+  const WindowSnapWMEvent snap_primary(WM_EVENT_SNAP_PRIMARY);
+  window_state->OnWMEvent(&snap_primary);
   EXPECT_EQ(display_manager()->GetDisplayAt(0).id(),
             screen->GetDisplayNearestWindow(window).id());
   EXPECT_TRUE(window_state->IsSnapped());
   EXPECT_EQ(GetDefaultLeftSnappedBoundsInDisplay(
                 screen->GetDisplayNearestWindow(window)),
             window->GetBoundsInScreen());
-  EXPECT_EQ(0.5f, *window_state->snap_ratio());
+  EXPECT_EQ(chromeos::kDefaultSnapRatio, *window_state->snap_ratio());
   PerformMoveWindowAccel();
   EXPECT_EQ(display_manager()->GetDisplayAt(1).id(),
             screen->GetDisplayNearestWindow(window).id());
@@ -149,7 +164,7 @@ TEST_F(DisplayMoveWindowUtilTest, WindowState) {
   EXPECT_EQ(GetDefaultLeftSnappedBoundsInDisplay(
                 screen->GetDisplayNearestWindow(window)),
             window->GetBoundsInScreen());
-  EXPECT_EQ(0.5f, *window_state->snap_ratio());
+  EXPECT_EQ(chromeos::kDefaultSnapRatio, *window_state->snap_ratio());
 }
 
 // Tests that movement follows cycling through sorted display id list.
@@ -271,7 +286,7 @@ TEST_F(DisplayMoveWindowUtilTest, KeepWindowBoundsIfNotChangedByUser) {
   // Move window to display [p] and set that its bounds is changed by user.
   WindowState* window_state = WindowState::Get(window);
   PerformMoveWindowAccel();
-  window_state->set_bounds_changed_by_user(true);
+  window_state->SetBoundsChangedByUser(true);
   // Move window back to display [1], but its bounds has been changed by user.
   // Then window bounds should be kept the same as that in display [p].
   PerformMoveWindowAccel();
@@ -514,6 +529,4 @@ TEST_F(DisplayMoveWindowUtilTest, RestoreHistoryOnUpdatedRestoreBounds) {
   EXPECT_EQ(restore_stack[1], WindowStateType::kMaximized);
 }
 
-}  // namespace display_move_window_util
-
-}  // namespace ash
+}  // namespace ash::display_move_window_util

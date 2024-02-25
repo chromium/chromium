@@ -5,6 +5,8 @@
 #ifndef COMPONENTS_SERVICES_STORAGE_PUBLIC_MOJOM_BUCKETS_BUCKET_INFO_MOJOM_TRAITS_H_
 #define COMPONENTS_SERVICES_STORAGE_PUBLIC_MOJOM_BUCKETS_BUCKET_INFO_MOJOM_TRAITS_H_
 
+#include <string_view>
+
 #include "components/services/storage/public/cpp/buckets/bucket_info.h"
 #include "components/services/storage/public/mojom/buckets/bucket_info.mojom-shared.h"
 #include "mojo/public/cpp/bindings/struct_traits.h"
@@ -24,8 +26,8 @@ class StructTraits<storage::mojom::BucketInfoDataView, storage::BucketInfo> {
   static blink::mojom::StorageType type(const storage::BucketInfo& bucket) {
     return bucket.type;
   }
-  static base::StringPiece name(const storage::BucketInfo& bucket) {
-    return base::StringPiece(bucket.name.c_str(), bucket.name.length());
+  static std::string_view name(const storage::BucketInfo& bucket) {
+    return std::string_view(bucket.name.c_str(), bucket.name.length());
   }
   static const base::Time& expiration(const storage::BucketInfo& bucket) {
     return bucket.expiration;

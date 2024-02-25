@@ -4,7 +4,6 @@
 <translation id="1002108253973310084">An incompatible protocol version was detected. Please make sure that you have the latest version of the software installed on both computers and try again.</translation>
 <translation id="1008557486741366299">Not Now</translation>
 <translation id="1201402288615127009">Next</translation>
-<translation id="1296511125400541222">Copyright 2023 The Chromium Authors. All rights reserved.</translation>
 <translation id="1297009705180977556">Error connecting to <ph name="HOSTNAME" /></translation>
 <translation id="1450760146488584666">The requested object does not exist.</translation>
 <translation id="1480046233931937785">Credits</translation>
@@ -89,7 +88,6 @@ If '<ph name="SERVICE_SCRIPT_NAME" />' is already ticked, untick it and then tic
 <translation id="4808503597364150972">Please enter your PIN for <ph name="HOSTNAME" />.</translation>
 <translation id="4812684235631257312">Host</translation>
 <translation id="4867841927763172006">Send PrtScn</translation>
-<translation id="4960795469833295568">Copyright 2023 Google LLC. All rights reserved.</translation>
 <translation id="4974476491460646149">Connection closed for <ph name="HOSTNAME" /></translation>
 <translation id="4985296110227979402">You need to first set up your computer for remote access</translation>
 <translation id="4987330545941822761">Chrome Remote Desktop cannot determine the browser to open URLs locally. Please choose it from the list below.</translation>
@@ -154,6 +152,7 @@ If '<ph name="SERVICE_SCRIPT_NAME" />' is already ticked, untick it and then tic
 <translation id="7693372326588366043">Refresh the list of hosts</translation>
 <translation id="7714222945760997814">Report this</translation>
 <translation id="7868137160098754906">Please enter your PIN for the remote computer.</translation>
+<translation id="7881455334687220899">Copyright 2024 The Chromium Authors. All rights reserved.</translation>
 <translation id="7895403300744144251">Security policies on the remote computer do not allow connections from your account.</translation>
 <translation id="7936528439960309876">Dock Right</translation>
 <translation id="7970576581263377361">Authentication failed. Please sign in to Chromium again.</translation>
@@ -185,6 +184,7 @@ If '<ph name="SERVICE_SCRIPT_NAME" />' is already ticked, untick it and then tic
 <translation id="8747048596626351634">Session crashed or failed to start. If ~/.chrome-remote-desktop-session exists on the remote computer, make sure that it starts a long-running foreground process such as a desktop environment or window manager.</translation>
 <translation id="8804164990146287819">Privacy Policy</translation>
 <translation id="8906511416443321782">Microphone access is required to capture audio and stream it to the Chrome Remote Desktop client.</translation>
+<translation id="9042277333359847053">Copyright 2024 Google LLC. All rights reserved.</translation>
 <translation id="9111855907838866522">You are connected to your remote device. To open the menu, please tap the screen with four fingers.</translation>
 <translation id="9126115402994542723">Don't ask for a PIN again when connecting to this host from this device.</translation>
 <translation id="916856682307586697">Launch the default XSession</translation>

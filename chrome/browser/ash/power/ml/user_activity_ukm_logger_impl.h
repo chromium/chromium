@@ -31,7 +31,7 @@ class UserActivityUkmLoggerImpl : public UserActivityUkmLogger {
  private:
   friend class UserActivityUkmLoggerTest;
 
-  raw_ptr<ukm::UkmRecorder, ExperimentalAsh> ukm_recorder_;  // not owned
+  raw_ptr<ukm::UkmRecorder> ukm_recorder_;  // not owned
 
   // This ID is incremented each time a UserActivity is logged to UKM.
   // Event index starts from 1, and resets when a new session starts.

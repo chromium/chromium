@@ -16,6 +16,7 @@ blink_modules_sources("remoteplayback") {
     "remote_playback_metrics.h",
   ]
   deps = [
+    "//media",
     "//services/metrics/public/cpp:ukm_builders",
     "//third_party/blink/renderer/modules/presentation",
   ]

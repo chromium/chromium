@@ -16,8 +16,7 @@
 #include "extensions/browser/extension_event_histogram_value.h"
 #include "storage/browser/file_system/async_file_util.h"
 
-namespace ash {
-namespace file_system_provider {
+namespace ash::file_system_provider {
 
 class ProvidedFileSystemInfo;
 class RequestDispatcher;
@@ -60,7 +59,6 @@ class Operation : public RequestManager::HandlerInterface {
 };
 
 }  // namespace operations
-}  // namespace file_system_provider
-}  // namespace ash
+}  // namespace ash::file_system_provider
 
 #endif  // CHROME_BROWSER_ASH_FILE_SYSTEM_PROVIDER_OPERATIONS_OPERATION_H_

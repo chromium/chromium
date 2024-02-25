@@ -15,13 +15,13 @@ namespace quick_answers {
 
 // A bubble style view to show QuickAnswer.
 class RichAnswersUnitConversionView : public RichAnswersView {
- public:
-  METADATA_HEADER(RichAnswersUnitConversionView);
+  METADATA_HEADER(RichAnswersUnitConversionView, RichAnswersView)
 
-  explicit RichAnswersUnitConversionView(
+ public:
+  RichAnswersUnitConversionView(
       const gfx::Rect& anchor_view_bounds,
       base::WeakPtr<QuickAnswersUiController> controller,
-      const quick_answers::QuickAnswer& result);
+      const UnitConversionResult& unit_conversion_result);
 
   RichAnswersUnitConversionView(const RichAnswersUnitConversionView&) = delete;
   RichAnswersUnitConversionView& operator=(
@@ -31,6 +31,12 @@ class RichAnswersUnitConversionView : public RichAnswersView {
 
  private:
   void InitLayout();
+  void AddConversionResultText();
+  void MaybeAddFormulaInformation();
+
+  raw_ptr<views::View> content_view_ = nullptr;
+
+  UnitConversionResult unit_conversion_result_;
 
   base::WeakPtrFactory<RichAnswersUnitConversionView> weak_factory_{this};
 };

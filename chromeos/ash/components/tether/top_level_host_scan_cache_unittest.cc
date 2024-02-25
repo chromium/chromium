@@ -18,7 +18,7 @@
 #include "chromeos/ash/components/tether/fake_host_scan_cache.h"
 #include "chromeos/ash/components/tether/host_scan_test_util.h"
 #include "chromeos/ash/components/tether/persistent_host_scan_cache.h"
-#include "chromeos/ash/components/tether/timer_factory.h"
+#include "components/cross_device/timer_factory/timer_factory.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -53,7 +53,7 @@ class ExtendedMockTimer : public base::MockOneShotTimer {
   base::OnceClosure destructor_callback_;
 };
 
-class TestTimerFactory : public TimerFactory {
+class TestTimerFactory : public cross_device::TimerFactory {
  public:
   TestTimerFactory() = default;
   ~TestTimerFactory() override = default;
@@ -222,8 +222,7 @@ class TopLevelHostScanCacheTest : public testing::Test {
 
   const std::unordered_map<std::string, HostScanCacheEntry> test_entries_;
 
-  raw_ptr<TestTimerFactory, DanglingUntriaged | ExperimentalAsh>
-      test_timer_factory_;
+  raw_ptr<TestTimerFactory, DanglingUntriaged> test_timer_factory_;
   std::unique_ptr<FakeActiveHost> fake_active_host_;
   std::unique_ptr<FakeHostScanCache> fake_network_host_scan_cache_;
   std::unique_ptr<FakePersistentHostScanCache> fake_persistent_host_scan_cache_;

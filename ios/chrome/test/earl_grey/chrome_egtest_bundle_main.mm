@@ -13,6 +13,7 @@
 #import "base/at_exit.h"
 #import "base/check.h"
 #import "base/command_line.h"
+#import "base/debug/stack_trace.h"
 #import "base/i18n/icu_util.h"
 #import "base/strings/sys_string_conversions.h"
 #import "ios/chrome/test/earl_grey/chrome_egtest_plugin_client.h"
@@ -212,6 +213,9 @@ class TestMain {
         base::SysNSStringToUTF8(UIDevice.currentDevice.name);
     _testPluginClient->TestCaseDidFail(testName, deviceName);
   }
+  NSString* current_stack =
+      base::SysUTF8ToNSString(base::debug::StackTrace().ToString());
+  NSLog(@"%@", current_stack);
 }
 
 - (void)testCaseDidFinish:(XCTestCase*)testCase {

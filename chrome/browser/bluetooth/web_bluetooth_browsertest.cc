@@ -5,6 +5,8 @@
 // This file contains browsertests for Web Bluetooth that depend on behavior
 // defined in chrome/, not just in content/.
 
+#include <optional>
+
 #include "base/command_line.h"
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
@@ -60,7 +62,6 @@
 #include "net/dns/mock_host_resolver.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/bluetooth/web_bluetooth_device_id.h"
 
 namespace {
@@ -101,13 +102,13 @@ class FakeBluetoothAdapter
 
   void SimulateDeviceAdvertisementReceived(
       const std::string& device_address,
-      const absl::optional<std::string>& advertisement_name =
-          absl::nullopt) const {
+      const std::optional<std::string>& advertisement_name =
+          std::nullopt) const {
     for (auto& observer : observers_) {
       observer.DeviceAdvertisementReceived(
-          device_address, /*device_name=*/absl::nullopt, advertisement_name,
-          /*rssi=*/absl::nullopt, /*tx_power=*/absl::nullopt,
-          /*appearance=*/absl::nullopt,
+          device_address, /*device_name=*/std::nullopt, advertisement_name,
+          /*rssi=*/std::nullopt, /*tx_power=*/std::nullopt,
+          /*appearance=*/std::nullopt,
           /*advertised_uuids=*/{}, /*service_data_map=*/{},
           /*manufacturer_data_map=*/{});
     }
@@ -186,7 +187,7 @@ class FakeBluetoothGattCharacteristic
       deferred_read_callback_ = std::move(callback);
       return;
     }
-    std::move(callback).Run(/*error_code=*/absl::nullopt, value_);
+    std::move(callback).Run(/*error_code=*/std::nullopt, value_);
   }
 
   void StartNotifySession(NotifySessionCallback callback,
@@ -204,7 +205,7 @@ class FakeBluetoothGattCharacteristic
     if (deferred_read_callback_) {
       // A new value as a result of calling readValue().
       std::move(deferred_read_callback_)
-          .Run(/*error_code=*/absl::nullopt, value_);
+          .Run(/*error_code=*/std::nullopt, value_);
     }
 
     if (emit_value_change_at_notification_start_) {
@@ -284,13 +285,13 @@ class FakeBluetoothDevice
 
   void CreateGattConnection(
       device::BluetoothDevice::GattConnectionCallback callback,
-      absl::optional<device::BluetoothUUID> service_uuid =
-          absl::nullopt) override {
+      std::optional<device::BluetoothUUID> service_uuid =
+          std::nullopt) override {
     SetConnected(true);
     gatt_services_discovery_complete_ = true;
     std::move(callback).Run(
         std::make_unique<FakeBluetoothGattConnection>(adapter_, GetAddress()),
-        /*error_code=*/absl::nullopt);
+        /*error_code=*/std::nullopt);
   }
 
   bool IsGattServicesDiscoveryComplete() const override {
@@ -318,7 +319,7 @@ class FakeBluetoothDevice
 class FakeBluetoothChooser : public content::BluetoothChooser {
  public:
   FakeBluetoothChooser(content::BluetoothChooser::EventHandler event_handler,
-                       const absl::optional<std::string>& device_to_select)
+                       const std::optional<std::string>& device_to_select)
       : event_handler_(event_handler), device_to_select_(device_to_select) {}
   ~FakeBluetoothChooser() override = default;
 
@@ -349,7 +350,7 @@ class FakeBluetoothChooser : public content::BluetoothChooser {
 
  private:
   content::BluetoothChooser::EventHandler event_handler_;
-  absl::optional<std::string> device_to_select_;
+  std::optional<std::string> device_to_select_;
 };
 
 class TestBluetoothDelegate : public permissions::BluetoothDelegateImpl {
@@ -394,7 +395,7 @@ class TestBluetoothDelegate : public permissions::BluetoothDelegateImpl {
   }
 
  private:
-  absl::optional<std::string> device_to_select_;
+  std::optional<std::string> device_to_select_;
   bool use_real_chooser_ = false;
 };
 
@@ -1409,7 +1410,7 @@ class TestWebContentsObserver : public content::WebContentsObserver {
     return num_is_connected_to_bluetooth_device_changed_;
   }
 
-  const absl::optional<bool>& last_is_connected_to_bluetooth_device() {
+  const std::optional<bool>& last_is_connected_to_bluetooth_device() {
     return last_is_connected_to_bluetooth_device_;
   }
 
@@ -1428,7 +1429,7 @@ class TestWebContentsObserver : public content::WebContentsObserver {
 
  private:
   int num_is_connected_to_bluetooth_device_changed_ = 0;
-  absl::optional<bool> last_is_connected_to_bluetooth_device_;
+  std::optional<bool> last_is_connected_to_bluetooth_device_;
   int expected_updating_count_;
   base::OnceClosure quit_closure_;
 };

@@ -6,12 +6,14 @@ import {TestRunner} from 'test_runner';
 import {SourcesTestRunner} from 'sources_test_runner';
 import {BindingsTestRunner} from 'bindings_test_runner';
 
+import * as Sources from 'devtools/panels/sources/sources.js';
+import * as UI from 'devtools/ui/legacy/legacy.js';
+
 (async function () {
   TestRunner.addResult(`Verify that SourceMap bindings are generating UISourceCodes properly.\n`);
-  await TestRunner.loadLegacyModule('sources');
 
-  var contentScriptsNavigator = new Sources.ContentScriptsNavigatorView();
-  contentScriptsNavigator.show(UI.inspectorView.element);
+  var contentScriptsNavigator = new Sources.SourcesNavigator.ContentScriptsNavigatorView();
+  contentScriptsNavigator.show(UI.InspectorView.InspectorView.instance().element);
 
   TestRunner.markStep('initialWorkspace');
   SourcesTestRunner.dumpNavigatorView(contentScriptsNavigator, false);

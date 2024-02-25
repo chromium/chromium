@@ -7,11 +7,11 @@
 #include <fstream>
 #include <iostream>
 #include <string>
+#include <string_view>
 
 #include "base/check.h"
 #include "base/files/file_util.h"
 #include "base/strings/string_number_conversions.h"
-#include "base/strings/string_piece.h"
 #include "base/strings/string_split.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
@@ -84,9 +84,9 @@ bool RulesetConverter::SetInputFiles(
     const base::CommandLine::StringType& comma_separated_paths) {
 #if BUILDFLAG(IS_WIN)
   std::wstring separatorw = L",";
-  base::WStringPiece separator(separatorw);
+  std::wstring_view separator(separatorw);
 #else
-  base::StringPiece separator(",");
+  std::string_view separator(",");
 #endif
   for (const auto& piece : base::SplitStringPiece(
            comma_separated_paths, separator, base::TRIM_WHITESPACE,

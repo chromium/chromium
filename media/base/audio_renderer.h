@@ -5,12 +5,13 @@
 #ifndef MEDIA_BASE_AUDIO_RENDERER_H_
 #define MEDIA_BASE_AUDIO_RENDERER_H_
 
+#include <optional>
+
 #include "base/functional/callback.h"
 #include "base/time/time.h"
 #include "media/base/buffering_state.h"
 #include "media/base/media_export.h"
 #include "media/base/pipeline_status.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace media {
 
@@ -65,7 +66,7 @@ class MEDIA_EXPORT AudioRenderer {
   // Set a hint indicating target latency. See comment in renderer.h.
   // |latency_hint| may be nullopt to indicate the hint has been cleared
   // (restore UA default).
-  virtual void SetLatencyHint(absl::optional<base::TimeDelta> latency_hint) = 0;
+  virtual void SetLatencyHint(std::optional<base::TimeDelta> latency_hint) = 0;
 
   // Sets a flag indicating that the AudioRenderer should use or avoid pitch
   // preservation when playing back at speeds other than 1.0.

@@ -25,7 +25,6 @@ component("fuchsia") {
     "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.input.virtualkeyboard:fuchsia.input.virtualkeyboard_cpp_natural_ostream",
     "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.ui.input3:fuchsia.ui.input3_cpp",
     "//third_party/fuchsia-sdk/sdk/pkg/component_incoming_cpp",
-    "//third_party/fuchsia-sdk/sdk/pkg/scenic_cpp",
     "//third_party/fuchsia-sdk/sdk/pkg/sys_cpp",
     "//ui/base/ime",
     "//ui/events",

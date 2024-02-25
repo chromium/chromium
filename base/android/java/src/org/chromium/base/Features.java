@@ -4,9 +4,8 @@
 
 package org.chromium.base;
 
-import org.chromium.base.annotations.JNINamespace;
-import org.chromium.base.annotations.NativeMethods;
-import org.chromium.build.annotations.MainDex;
+import org.jni_zero.JNINamespace;
+import org.jni_zero.NativeMethods;
 
 /**
  * A class that serves as a bridge to native code to check the status of feature switches.
@@ -15,7 +14,6 @@ import org.chromium.build.annotations.MainDex;
  * single C++ Feature.
  */
 @JNINamespace("base::android")
-@MainDex
 public abstract class Features {
     private final String mName;
 
@@ -45,8 +43,8 @@ public abstract class Features {
      *         specified parameter does not exist or its string value is neither "true" nor "false".
      */
     public boolean getFieldTrialParamByFeatureAsBoolean(String paramName, boolean defaultValue) {
-        return FeaturesJni.get().getFieldTrialParamByFeatureAsBoolean(
-                getFeaturePointer(), paramName, defaultValue);
+        return FeaturesJni.get()
+                .getFieldTrialParamByFeatureAsBoolean(getFeaturePointer(), paramName, defaultValue);
     }
 
     /**
@@ -58,8 +56,8 @@ public abstract class Features {
      *         specified parameter does not exist.
      */
     public String getFieldTrialParamByFeatureAsString(String paramName) {
-        return FeaturesJni.get().getFieldTrialParamByFeatureAsString(
-                getFeaturePointer(), paramName);
+        return FeaturesJni.get()
+                .getFieldTrialParamByFeatureAsString(getFeaturePointer(), paramName);
     }
 
     /** Returns a pointer to the native Feature object represented by this object instance. */
@@ -68,8 +66,10 @@ public abstract class Features {
     @NativeMethods
     interface Natives {
         boolean isEnabled(long featurePointer);
+
         boolean getFieldTrialParamByFeatureAsBoolean(
                 long featurePointer, String paramName, boolean defaultValue);
+
         String getFieldTrialParamByFeatureAsString(long featurePointer, String paramName);
     }
 }

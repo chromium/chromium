@@ -78,7 +78,8 @@ bool WebInputMethodControllerImpl::SetComposition(
   if (!replacement_range.IsNull()) {
     web_frame_->SelectRange(replacement_range,
                             WebLocalFrame::kHideSelectionHandle,
-                            blink::mojom::SelectionMenuBehavior::kHide);
+                            blink::mojom::SelectionMenuBehavior::kHide,
+                            WebLocalFrame::kSelectionSetFocus);
   }
 
   // We should verify the parent node of this IME composition node are
@@ -206,6 +207,9 @@ WebRange WebInputMethodControllerImpl::CompositionRange() const {
 
   Element* editable =
       GetFrame()->Selection().RootEditableElementOrDocumentElement();
+  if (!editable) {
+    return WebRange();
+  }
 
   editable->GetDocument().UpdateStyleAndLayout(DocumentUpdateReason::kInput);
 
@@ -236,7 +240,7 @@ bool WebInputMethodControllerImpl::GetCompositionCharacterBounds(
     result[i] = rect;
   }
 
-  bounds.Swap(result);
+  bounds.swap(result);
   return true;
 }
 

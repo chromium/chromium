@@ -170,7 +170,7 @@ TEST(IPAddressSpaceTest, IPEndPointToIPAddressSpaceV4Localhost) {
             IPAddressSpace::kPublic);
 }
 
-IPAddress ParseIPAddress(base::StringPiece str) {
+IPAddress ParseIPAddress(std::string_view str) {
   IPAddress address;
   EXPECT_TRUE(address.AssignFromIPLiteral(str))
       << "Failed to parse IP address: " << str;
@@ -480,7 +480,7 @@ TEST(IPAddressSpaceTest, IsLessPublicAddressSpaceThanUnknown) {
 
 TEST(IPAddressSpaceUtilTest, CalculateClientAddressSpaceFileURL) {
   EXPECT_EQ(IPAddressSpace::kLocal,
-            CalculateClientAddressSpace(GURL("file:///foo"), absl::nullopt));
+            CalculateClientAddressSpace(GURL("file:///foo"), std::nullopt));
 }
 
 TEST(IPAddressSpaceUtilTest,
@@ -522,9 +522,8 @@ TEST(IPAddressSpaceUtilTest,
 }
 
 TEST(IPAddressSpaceUtilTest, CalculateClientAddressSpaceNullParams) {
-  EXPECT_EQ(
-      IPAddressSpace::kUnknown,
-      CalculateClientAddressSpace(GURL("http://foo.test"), absl::nullopt));
+  EXPECT_EQ(IPAddressSpace::kUnknown,
+            CalculateClientAddressSpace(GURL("http://foo.test"), std::nullopt));
 }
 
 TEST(IPAddressSpaceUtilTest, CalculateClientAddressSpaceEmptyParams) {

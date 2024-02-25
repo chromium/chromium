@@ -19,7 +19,8 @@ class FakePowerInstance : public mojom::PowerInstance {
   FakePowerInstance(const FakePowerInstance&) = delete;
   FakePowerInstance& operator=(const FakePowerInstance&) = delete;
 
-  bool interactive() const { return interactive_; }
+  bool interactive() const { return idle_state_ == mojom::IdleState::ACTIVE; }
+  mojom::IdleState idle_state() const { return idle_state_; }
   int num_suspend() const { return num_suspend_; }
   int num_resume() const { return num_resume_; }
   double screen_brightness() const { return screen_brightness_; }
@@ -37,7 +38,8 @@ class FakePowerInstance : public mojom::PowerInstance {
   // mojom::PowerInstance overrides:
   void Init(mojo::PendingRemote<mojom::PowerHost> host_remote,
             InitCallback callback) override;
-  void SetInteractive(bool enabled) override;
+  void SetInteractiveDeprecated(bool enabled) override;
+  void SetIdleState(mojom::IdleState state) override;
   void Suspend(SuspendCallback callback) override;
   void Resume() override;
   void UpdateScreenBrightnessSettings(double percent) override;
@@ -52,7 +54,7 @@ class FakePowerInstance : public mojom::PowerInstance {
   mojo::Remote<mojom::PowerHost> host_remote_;
 
   // Last state passed to SetInteractive().
-  bool interactive_ = true;
+  mojom::IdleState idle_state_ = mojom::IdleState::ACTIVE;
 
   // Number of calls to Suspend() and Resume().
   int num_suspend_ = 0;

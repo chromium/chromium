@@ -139,7 +139,7 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) NetworkMetadataStore
   // Sets the day of the month on which traffic counters are automatically
   // reset.
   void SetDayOfTrafficCountersAutoReset(const std::string& network_guid,
-                                        const absl::optional<int>& day);
+                                        const std::optional<int>& day);
 
   // Returns whether traffic counters should be automatically reset. Returns
   // nullptr if no pref exists for |network_guid|.
@@ -207,17 +207,15 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) NetworkMetadataStore
   void OnDisableHiddenError(const std::string& error_name);
 
   base::ObserverList<NetworkMetadataObserver> observers_;
-  raw_ptr<NetworkConfigurationHandler, ExperimentalAsh>
-      network_configuration_handler_;
-  raw_ptr<NetworkConnectionHandler, ExperimentalAsh>
-      network_connection_handler_;
-  raw_ptr<NetworkStateHandler, ExperimentalAsh> network_state_handler_;
-  raw_ptr<ManagedNetworkConfigurationHandler, ExperimentalAsh>
+  raw_ptr<NetworkConfigurationHandler> network_configuration_handler_;
+  raw_ptr<NetworkConnectionHandler> network_connection_handler_;
+  raw_ptr<NetworkStateHandler> network_state_handler_;
+  raw_ptr<ManagedNetworkConfigurationHandler>
       managed_network_configuration_handler_;
   base::ScopedObservation<NetworkStateHandler, NetworkStateHandlerObserver>
       network_state_handler_observer_{this};
-  raw_ptr<PrefService, ExperimentalAsh> profile_pref_service_;
-  raw_ptr<PrefService, ExperimentalAsh> device_pref_service_;
+  raw_ptr<PrefService> profile_pref_service_;
+  raw_ptr<PrefService> device_pref_service_;
   bool is_enterprise_managed_;
   bool has_profile_loaded_ = false;
   bool secure_dns_templates_with_identifiers_active_ = false;

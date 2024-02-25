@@ -10,6 +10,7 @@
 #include "chrome/browser/ui/performance_controls/battery_saver_button_controller.h"
 #include "chrome/browser/ui/performance_controls/battery_saver_button_controller_delegate.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_button.h"
+#include "components/user_education/common/feature_promo_controller.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 
 class BrowserView;
@@ -25,9 +26,9 @@ class BubbleDialogModelHost;
 class BatterySaverButton : public ToolbarButton,
                            public BatterySaverBubbleObserver,
                            public BatterySaverButtonControllerDelegate {
- public:
-  METADATA_HEADER(BatterySaverButton);
+  METADATA_HEADER(BatterySaverButton, ToolbarButton)
 
+ public:
   explicit BatterySaverButton(BrowserView* browser_view);
   ~BatterySaverButton() override;
 
@@ -55,7 +56,7 @@ class BatterySaverButton : public ToolbarButton,
   void OnClicked();
 
   void MaybeShowFeaturePromo();
-  void CloseFeaturePromo();
+  void CloseFeaturePromo(user_education::EndFeaturePromoReason close_reason);
 
  private:
   const raw_ptr<BrowserView> browser_view_;

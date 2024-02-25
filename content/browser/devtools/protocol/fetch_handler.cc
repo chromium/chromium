@@ -48,11 +48,11 @@ void FetchHandler::Wire(UberDispatcher* dispatcher) {
 DevToolsURLLoaderInterceptor::InterceptionStage RequestStageToInterceptorStage(
     const Fetch::RequestStage& stage) {
   if (stage == Fetch::RequestStageEnum::Request)
-    return DevToolsURLLoaderInterceptor::REQUEST;
+    return DevToolsURLLoaderInterceptor::kRequest;
   if (stage == Fetch::RequestStageEnum::Response)
-    return DevToolsURLLoaderInterceptor::RESPONSE;
+    return DevToolsURLLoaderInterceptor::kResponse;
   NOTREACHED();
-  return DevToolsURLLoaderInterceptor::REQUEST;
+  return DevToolsURLLoaderInterceptor::kRequest;
 }
 
 Response ToInterceptionPatterns(
@@ -61,7 +61,7 @@ Response ToInterceptionPatterns(
   result->clear();
   if (!maybe_patterns.has_value()) {
     result->emplace_back("*", base::flat_set<blink::mojom::ResourceType>(),
-                         DevToolsURLLoaderInterceptor::REQUEST);
+                         DevToolsURLLoaderInterceptor::kRequest);
     return Response::Success();
   }
   Array<Fetch::RequestPattern>& patterns = maybe_patterns.value();
@@ -192,6 +192,16 @@ void FetchHandler::FailRequest(const String& requestId,
                                            WrapCallback(std::move(callback)));
 }
 
+namespace {
+std::string GetReasonPhrase(int responseCode) {
+  if (const char* phrase = net::TryToGetHttpReasonPhrase(
+          static_cast<net::HttpStatusCode>(responseCode))) {
+    return phrase;
+  }
+  return "";
+}
+}  // namespace
+
 void FetchHandler::FulfillRequest(
     const String& requestId,
     int responseCode,
@@ -204,11 +214,9 @@ void FetchHandler::FulfillRequest(
     callback->sendFailure(Response::ServerError("Fetch domain is not enabled"));
     return;
   }
-  std::string status_phrase =
-      responsePhrase.has_value()
-          ? responsePhrase.value()
-          : net::GetHttpReasonPhrase(
-                static_cast<net::HttpStatusCode>(responseCode));
+  const std::string status_phrase = responsePhrase.has_value()
+                                        ? responsePhrase.value()
+                                        : GetReasonPhrase(responseCode);
   if (status_phrase.empty()) {
     callback->sendFailure(
         Response::InvalidParams("Invalid http status code or phrase"));

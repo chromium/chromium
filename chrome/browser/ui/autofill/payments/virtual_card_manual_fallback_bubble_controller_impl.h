@@ -107,7 +107,7 @@ class VirtualCardManualFallbackBubbleControllerImpl
 
   // The field of the most-recently-clicked button, whose value
   // has been copied to the clipboard.
-  absl::optional<VirtualCardManualFallbackBubbleField> clicked_field_;
+  std::optional<VirtualCardManualFallbackBubbleField> clicked_field_;
 
   raw_ptr<ObserverForTest> observer_for_test_ = nullptr;
 

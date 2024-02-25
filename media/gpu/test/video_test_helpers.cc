@@ -19,6 +19,7 @@
 #include "media/filters/vp9_parser.h"
 #include "media/gpu/test/raw_video.h"
 #include "media/gpu/test/video_frame_helpers.h"
+#include "media/media_buildflags.h"
 #include "media/parsers/vp8_parser.h"
 #include "mojo/public/cpp/system/buffer.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -314,22 +315,21 @@ scoped_refptr<DecoderBuffer> EncodedDataHelper::GetNextFrame() {
   return buffer;
 }
 
-absl::optional<IvfFrameHeader> EncodedDataHelper::GetNextIvfFrameHeader()
-    const {
+std::optional<IvfFrameHeader> EncodedDataHelper::GetNextIvfFrameHeader() const {
   const size_t pos = next_pos_to_decode_;
   // Read VP8/9 frame size from IVF header.
   if (pos + kIvfFrameHeaderSize > data_.size()) {
     LOG(ERROR) << "Unexpected data encountered while parsing IVF frame header";
-    return absl::nullopt;
+    return std::nullopt;
   }
   return GetIvfFrameHeader(base::span<const uint8_t>(
       reinterpret_cast<const uint8_t*>(&data_[pos]), kIvfFrameHeaderSize));
 }
 
-absl::optional<IvfFrame> EncodedDataHelper::ReadNextIvfFrame() {
+std::optional<IvfFrame> EncodedDataHelper::ReadNextIvfFrame() {
   auto frame_header = GetNextIvfFrameHeader();
   if (!frame_header)
-    return absl::nullopt;
+    return std::nullopt;
 
   // Skip IVF frame header.
   const size_t pos = next_pos_to_decode_ + kIvfFrameHeaderSize;
@@ -338,7 +338,7 @@ absl::optional<IvfFrame> EncodedDataHelper::ReadNextIvfFrame() {
   if (pos + frame_header->frame_size > data_.size()) {
     LOG(ERROR) << "Unexpected data encountered while parsing IVF frame header";
     next_pos_to_decode_ = data_.size();
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   // Update next_pos_to_decode_.
@@ -360,7 +360,6 @@ bool EncodedDataHelper::HasConfigInfo(const uint8_t* data,
 
   LOG(FATAL) << "HasConfigInfo() should be called only for H264/HEVC stream: "
              << GetProfileName(profile);
-  return false;
 }
 
 struct AlignedDataHelper::VideoFrameData {
@@ -487,7 +486,7 @@ scoped_refptr<VideoFrame> AlignedDataHelper::CreateVideoFrameFromVideoFrameData(
       return nullptr;
     }
 
-    absl::optional<gfx::BufferFormat> buffer_format =
+    std::optional<gfx::BufferFormat> buffer_format =
         VideoPixelFormatToGfxBufferFormat(layout_->format());
     if (!buffer_format) {
       LOG(ERROR) << "Unexpected format: " << layout_->format();

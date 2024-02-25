@@ -11,13 +11,13 @@ import 'chrome://resources/cr_elements/cr_shared_style.css.js';
 import 'chrome://resources/cr_elements/md_select.css.js';
 import '../shared_style.css.js';
 
-import {CrButtonElement} from 'chrome://resources/cr_elements/cr_button/cr_button.js';
-import {CrDialogElement} from 'chrome://resources/cr_elements/cr_dialog/cr_dialog.js';
-import {CrIconButtonElement} from 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.js';
-import {CrInputElement} from 'chrome://resources/cr_elements/cr_input/cr_input.js';
-import {CrTextareaElement} from 'chrome://resources/cr_elements/cr_textarea/cr_textarea.js';
+import type {CrButtonElement} from 'chrome://resources/cr_elements/cr_button/cr_button.js';
+import type {CrDialogElement} from 'chrome://resources/cr_elements/cr_dialog/cr_dialog.js';
+import type {CrIconButtonElement} from 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.js';
+import type {CrInputElement} from 'chrome://resources/cr_elements/cr_input/cr_input.js';
+import type {CrTextareaElement} from 'chrome://resources/cr_elements/cr_textarea/cr_textarea.js';
 import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
-import {assert} from 'chrome://resources/js/assert_ts.js';
+import {assert} from 'chrome://resources/js/assert.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {PasswordManagerImpl} from '../password_manager_proxy.js';
@@ -59,6 +59,27 @@ function recordAddCredentialInteraction(
       AddCredentialFromSettingsUserInteractions.COUNT);
 }
 
+/**
+ * Should be kept in sync with
+ * |password_manager::metrics_util::PasswordNoteAction|.
+ * These values are persisted to logs. Entries should not be renumbered and
+ * numeric values should never be reused.
+ */
+export enum PasswordNoteAction {
+  NOTE_ADDED_IN_ADD_DIALOG = 0,
+  NOTE_ADDED_IN_EDIT_DIALOG = 1,
+  NOTE_EDITED_IN_EDIT_DIALOG = 2,
+  NOTE_REMOVED_IN_EDIT_DIALOG = 3,
+  NOTE_NOT_CHANGED = 4,
+  // Must be last.
+  COUNT = 5,
+}
+
+export function recordPasswordNoteAction(action: PasswordNoteAction) {
+  chrome.metricsPrivate.recordEnumerationValue(
+      'PasswordManager.PasswordNoteActionInSettings2', action,
+      PasswordNoteAction.COUNT);
+}
 
 export interface AddPasswordDialogElement {
   $: {
@@ -343,6 +364,9 @@ export class AddPasswordDialogElement extends AddPasswordDialogElementBase {
       chrome.metricsPrivate.recordBoolean(
           'PasswordManager.AddCredentialFromSettings.AccountStoreUsed2',
           useAccountStore);
+    }
+    if (this.note_.trim()) {
+      recordPasswordNoteAction(PasswordNoteAction.NOTE_ADDED_IN_ADD_DIALOG);
     }
 
     PasswordManagerImpl.getInstance()

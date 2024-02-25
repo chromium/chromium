@@ -103,7 +103,7 @@ class ScriptInjector {
 
   // Notifies the script that injection has completed, with a possibly-populated
   // list of results (depending on whether or not ExpectsResults() was true).
-  virtual void OnInjectionComplete(absl::optional<base::Value> execution_result,
+  virtual void OnInjectionComplete(std::optional<base::Value> execution_result,
                                    mojom::RunLocation run_location) = 0;
 
   // Notifies the script that injection will never occur.

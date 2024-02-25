@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ash/system/automatic_reboot_manager.h"
 
+#include <optional>
 #include <string>
 
 #include "ash/constants/ash_paths.h"
@@ -41,7 +42,6 @@
 #include "content/public/browser/browser_thread.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 using ::testing::_;
 using ::testing::Invoke;
@@ -82,7 +82,7 @@ class MockUptimeProvider {
   }
 
  private:
-  raw_ptr<base::TestMockTimeTaskRunner, ExperimentalAsh> mock_time_task_runner_;
+  raw_ptr<base::TestMockTimeTaskRunner> mock_time_task_runner_;
 
   base::FilePath uptime_file_path_;
   base::TimeDelta uptime_offset_;
@@ -134,7 +134,7 @@ class MockAutomaticRebootManagerObserver
  private:
   void StopObserving();
 
-  raw_ptr<AutomaticRebootManager, ExperimentalAsh> automatic_reboot_manger_;
+  raw_ptr<AutomaticRebootManager> automatic_reboot_manger_;
 };
 
 }  // namespace
@@ -217,8 +217,8 @@ class AutomaticRebootManagerBasicTest : public testing::Test {
   std::unique_ptr<AutomaticRebootManager> automatic_reboot_manager_;
 
   base::ScopedTempDir temp_dir_;
-  absl::optional<base::ScopedPathOverride> file_uptime_override_;
-  absl::optional<base::ScopedPathOverride> file_reboot_needed_override_;
+  std::optional<base::ScopedPathOverride> file_uptime_override_;
+  std::optional<base::ScopedPathOverride> file_reboot_needed_override_;
   base::FilePath update_reboot_needed_uptime_file_;
 
   bool reboot_after_update_ = false;
@@ -231,8 +231,8 @@ class AutomaticRebootManagerBasicTest : public testing::Test {
   user_manager::ScopedUserManager user_manager_enabler_;
   session_manager::SessionManager session_manager_;
 
-  raw_ptr<FakeUpdateEngineClient, DanglingUntriaged | ExperimentalAsh>
-      update_engine_client_ = nullptr;  // Not owned.
+  raw_ptr<FakeUpdateEngineClient, DanglingUntriaged> update_engine_client_ =
+      nullptr;  // Not owned.
 };
 
 enum AutomaticRebootManagerTestScenario {

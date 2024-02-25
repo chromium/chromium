@@ -5,6 +5,7 @@
 #include "components/page_info/page_info.h"
 
 #include <memory>
+#include <optional>
 #include <set>
 #include <string>
 #include <utility>
@@ -20,6 +21,7 @@
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/content_settings/page_specific_content_settings_delegate.h"
+#include "chrome/browser/file_system_access/file_system_access_features.h"
 #include "chrome/browser/ssl/stateful_ssl_host_state_delegate_factory.h"
 #include "chrome/browser/subresource_filter/subresource_filter_profile_context_factory.h"
 #include "chrome/browser/ui/page_info/chrome_page_info_delegate.h"
@@ -35,6 +37,7 @@
 #include "components/content_settings/core/common/content_settings.h"
 #include "components/content_settings/core/common/content_settings_constraints.h"
 #include "components/content_settings/core/common/content_settings_types.h"
+#include "components/content_settings/core/common/cookie_blocking_3pcd_status.h"
 #include "components/infobars/content/content_infobar_manager.h"
 #include "components/infobars/core/infobar.h"
 #include "components/page_info/core/features.h"
@@ -48,6 +51,7 @@
 #include "components/subresource_filter/content/browser/subresource_filter_profile_context.h"
 #include "content/public/browser/ssl_host_state_delegate.h"
 #include "content/public/browser/ssl_status.h"
+#include "content/public/common/content_features.h"
 #include "content/public/common/content_switches.h"
 #include "content/public/test/web_contents_tester.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
@@ -64,7 +68,6 @@
 #include "services/device/public/mojom/usb_device.mojom.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "url/origin.h"
 
@@ -86,6 +89,7 @@ using content::SSLStatus;
 using testing::_;
 using testing::AnyNumber;
 using testing::Invoke;
+using testing::Mock;
 using testing::NiceMock;
 using testing::Return;
 using testing::SetArgPointee;
@@ -147,7 +151,13 @@ class PageInfoTest : public ChromeRenderViewHostTestHarness {
   void SetUp() override {
     // TODO(crbug.com/1344787): Fix tests and enable the feature.
     scoped_feature_list_.InitWithFeatures(
-        {permissions::features::kPermissionStorageAccessAPI}, {});
+        {
+            permissions::features::kPermissionStorageAccessAPI,
+#if !BUILDFLAG(IS_ANDROID)
+            features::kFileSystemAccessPersistentPermissions,
+#endif
+        },
+        {});
 
     ChromeRenderViewHostTestHarness::SetUp();
 
@@ -165,14 +175,7 @@ class PageInfoTest : public ChromeRenderViewHostTestHarness {
         /*is_affiliated=*/true);
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
-    infobars::ContentInfoBarManager::CreateForWebContents(web_contents());
-    content_settings::PageSpecificContentSettings::CreateForWebContents(
-        web_contents(),
-        std::make_unique<chrome::PageSpecificContentSettingsDelegate>(
-            web_contents()));
-
-    permissions::PermissionRecoverySuccessRateTracker::CreateForWebContents(
-        web_contents());
+    CreateWebContentsUserData(web_contents());
 
     // Setup mock ui.
     ResetMockUI();
@@ -182,9 +185,9 @@ class PageInfoTest : public ChromeRenderViewHostTestHarness {
     ASSERT_TRUE(page_info_ || incognito_page_info_)
         << "No PageInfo instance created.";
     incognito_web_contents_.reset();
-    ChromeRenderViewHostTestHarness::TearDown();
     page_info_.reset();
     incognito_page_info_.reset();
+    ChromeRenderViewHostTestHarness::TearDown();
   }
 
   TestingProfile::TestingFactories GetTestingFactories() const override {
@@ -202,10 +205,7 @@ class PageInfoTest : public ChromeRenderViewHostTestHarness {
 
   void ExpectInitialSetCookieInfoCall(MockPageInfoUI* mock_ui) {
 #if !BUILDFLAG(IS_ANDROID)
-    // TODO(crbug.com/1430440): SetCookiesInfo is called twice on creation, once
-    // when the observation of web_contents starts and once when PageInfoUI is
-    // initialized. Clean this up after it is fixed.
-    EXPECT_CALL(*mock_ui, SetCookieInfo(_)).Times(2);
+    EXPECT_CALL(*mock_ui, SetCookieInfo(_)).Times(1);
 #else
     EXPECT_CALL(*mock_ui, SetCookieInfo(_));
 #endif
@@ -219,8 +219,9 @@ class PageInfoTest : public ChromeRenderViewHostTestHarness {
   void SetPermissionInfo(const PermissionInfoList& permission_info_list,
                          ChosenObjectInfoList chosen_object_info_list) {
     last_chosen_object_info_.clear();
-    for (auto& chosen_object_info : chosen_object_info_list)
+    for (auto& chosen_object_info : chosen_object_info_list) {
       last_chosen_object_info_.push_back(std::move(chosen_object_info));
+    }
     last_permission_info_list_ = permission_info_list;
   }
 
@@ -231,7 +232,6 @@ class PageInfoTest : public ChromeRenderViewHostTestHarness {
     mock_ui_->set_permission_info_callback_ = base::BindRepeating(
         &PageInfoTest::SetPermissionInfo, base::Unretained(this));
   }
-
 
   void ClearPageInfo() { page_info_.reset(nullptr); }
 
@@ -282,11 +282,7 @@ class PageInfoTest : public ChromeRenderViewHostTestHarness {
           content::WebContentsTester::CreateTestWebContents(
               profile()->GetPrimaryOTRProfile(/*create_if_needed=*/true),
               nullptr);
-
-      content_settings::PageSpecificContentSettings::CreateForWebContents(
-          incognito_web_contents_.get(),
-          std::make_unique<chrome::PageSpecificContentSettingsDelegate>(
-              incognito_web_contents_.get()));
+      CreateWebContentsUserData(incognito_web_contents_.get());
 
       incognito_mock_ui_ = std::make_unique<NiceMock<MockPageInfoUI>>();
       incognito_mock_ui_->set_permission_info_callback_ = base::BindRepeating(
@@ -304,6 +300,17 @@ class PageInfoTest : public ChromeRenderViewHostTestHarness {
       run_loop.Run();
     }
     return incognito_page_info_.get();
+  }
+
+  void CreateWebContentsUserData(content::WebContents* contents) {
+    // The test WebContents don't have all the helpers attached, so add in the
+    // missing ones needed by these tests.
+    infobars::ContentInfoBarManager::CreateForWebContents(contents);
+    content_settings::PageSpecificContentSettings::CreateForWebContents(
+        contents, std::make_unique<chrome::PageSpecificContentSettingsDelegate>(
+                      contents));
+    permissions::PermissionRecoverySuccessRateTracker::CreateForWebContents(
+        contents);
   }
 
   security_state::SecurityLevel security_level_;
@@ -336,23 +343,17 @@ class PageInfoTest : public ChromeRenderViewHostTestHarness {
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-bool PermissionInfoListContainsPermission(const PermissionInfoList& permissions,
-                                          ContentSettingsType content_type) {
-  for (const auto& permission : permissions) {
-    if (permission.type == content_type)
-      return true;
-  }
-  return false;
-}
-
 void ExpectPermissionInfoList(
-    const std::set<ContentSettingsType>& expected_permissions,
-    const PermissionInfoList& permissions) {
-  EXPECT_EQ(expected_permissions.size(), permissions.size());
-  for (ContentSettingsType type : expected_permissions) {
-    EXPECT_TRUE(PermissionInfoListContainsPermission(permissions, type))
-        << "expected: " << static_cast<int>(type);
-  }
+    const std::set<ContentSettingsType>& expected_types,
+    const PermissionInfoList& permissions,
+    const base::Location& location = FROM_HERE) {
+  std::set<ContentSettingsType> actual_types;
+  base::ranges::transform(permissions,
+                          std::inserter(actual_types, actual_types.end()),
+                          [](const auto& p) { return p.type; });
+
+  EXPECT_THAT(actual_types, expected_types)
+      << "(expected at " << location.ToString() << ")";
 }
 
 }  // namespace
@@ -406,17 +407,17 @@ TEST_F(PageInfoTest, NonFactoryDefaultAndRecentlyChangedPermissionsShown) {
   // Change some default-ask settings away from the default.
   page_info()->OnSitePermissionChanged(ContentSettingsType::GEOLOCATION,
                                        CONTENT_SETTING_ALLOW,
-                                       /*requesting_origin=*/absl::nullopt,
+                                       /*requesting_origin=*/std::nullopt,
                                        /*is_one_time=*/false);
   expected_visible_permissions.insert(ContentSettingsType::GEOLOCATION);
   page_info()->OnSitePermissionChanged(ContentSettingsType::NOTIFICATIONS,
                                        CONTENT_SETTING_ALLOW,
-                                       /*requesting_origin=*/absl::nullopt,
+                                       /*requesting_origin=*/std::nullopt,
                                        /*is_one_time=*/false);
   expected_visible_permissions.insert(ContentSettingsType::NOTIFICATIONS);
   page_info()->OnSitePermissionChanged(ContentSettingsType::MEDIASTREAM_MIC,
                                        CONTENT_SETTING_ALLOW,
-                                       /*requesting_origin=*/absl::nullopt,
+                                       /*requesting_origin=*/std::nullopt,
                                        /*is_one_time=*/false);
   expected_visible_permissions.insert(ContentSettingsType::MEDIASTREAM_MIC);
   page_info()->OnSitePermissionChanged(ContentSettingsType::STORAGE_ACCESS,
@@ -424,6 +425,14 @@ TEST_F(PageInfoTest, NonFactoryDefaultAndRecentlyChangedPermissionsShown) {
                                        url::Origin::Create(kEmbedded1),
                                        /*is_one_time=*/false);
   expected_visible_permissions.insert(ContentSettingsType::STORAGE_ACCESS);
+#if !BUILDFLAG(IS_ANDROID)
+  page_info()->OnSitePermissionChanged(
+      ContentSettingsType::FILE_SYSTEM_WRITE_GUARD, CONTENT_SETTING_ALLOW,
+      url::Origin::Create(kEmbedded1),
+      /*is_one_time=*/false);
+  expected_visible_permissions.insert(
+      ContentSettingsType::FILE_SYSTEM_WRITE_GUARD);
+#endif
   ExpectPermissionInfoList(expected_visible_permissions,
                            last_permission_info_list());
 
@@ -431,7 +440,7 @@ TEST_F(PageInfoTest, NonFactoryDefaultAndRecentlyChangedPermissionsShown) {
   // Change a default-block setting to a user-preference block instead.
   page_info()->OnSitePermissionChanged(ContentSettingsType::POPUPS,
                                        CONTENT_SETTING_BLOCK,
-                                       /*requesting_origin=*/absl::nullopt,
+                                       /*requesting_origin=*/std::nullopt,
                                        /*is_one_time=*/false);
   ExpectPermissionInfoList(expected_visible_permissions,
                            last_permission_info_list());
@@ -440,7 +449,7 @@ TEST_F(PageInfoTest, NonFactoryDefaultAndRecentlyChangedPermissionsShown) {
   // Change a default-allow setting away from the default.
   page_info()->OnSitePermissionChanged(ContentSettingsType::JAVASCRIPT,
                                        CONTENT_SETTING_BLOCK,
-                                       /*requesting_origin=*/absl::nullopt,
+                                       /*requesting_origin=*/std::nullopt,
                                        /*is_one_time=*/false);
   ExpectPermissionInfoList(expected_visible_permissions,
                            last_permission_info_list());
@@ -450,7 +459,7 @@ TEST_F(PageInfoTest, NonFactoryDefaultAndRecentlyChangedPermissionsShown) {
   expected_visible_permissions.insert(ContentSettingsType::MEDIASTREAM_CAMERA);
   page_info()->OnSitePermissionChanged(ContentSettingsType::MEDIASTREAM_CAMERA,
                                        CONTENT_SETTING_DEFAULT,
-                                       /*requesting_origin=*/absl::nullopt,
+                                       /*requesting_origin=*/std::nullopt,
                                        /*is_one_time=*/false);
   ExpectPermissionInfoList(expected_visible_permissions,
                            last_permission_info_list());
@@ -458,7 +467,7 @@ TEST_F(PageInfoTest, NonFactoryDefaultAndRecentlyChangedPermissionsShown) {
   // Set the Javascript setting to default should keep it shown.
   page_info()->OnSitePermissionChanged(ContentSettingsType::JAVASCRIPT,
                                        CONTENT_SETTING_DEFAULT,
-                                       /*requesting_origin=*/absl::nullopt,
+                                       /*requesting_origin=*/std::nullopt,
                                        /*is_one_time=*/false);
   ExpectPermissionInfoList(expected_visible_permissions,
                            last_permission_info_list());
@@ -475,7 +484,7 @@ TEST_F(PageInfoTest, NonFactoryDefaultAndRecentlyChangedPermissionsShown) {
   // from the user preference (i.e. it counts as non-factory default).
   page_info()->OnSitePermissionChanged(ContentSettingsType::JAVASCRIPT,
                                        CONTENT_SETTING_ALLOW,
-                                       /*requesting_origin=*/absl::nullopt,
+                                       /*requesting_origin=*/std::nullopt,
                                        /*is_one_time=*/false);
   ExpectPermissionInfoList(expected_visible_permissions,
                            last_permission_info_list());
@@ -502,7 +511,7 @@ TEST_F(PageInfoTest, StorageAccessGrantsAreFiltered) {
   // First-party-set exceptions are hidden based on their SessionModel.
   content_settings::ContentSettingConstraints constraint;
   constraint.set_session_model(
-      content_settings::SessionModel::NonRestorableUserSession);
+      content_settings::mojom::SessionModel::NON_RESTORABLE_USER_SESSION);
   map->SetContentSettingDefaultScope(kEmbedded1, url(), type,
                                      CONTENT_SETTING_ALLOW, constraint);
   page_info()->PresentSitePermissionsForTesting();
@@ -556,6 +565,59 @@ TEST_F(PageInfoTest, StorageAccessGrantsDisplayedWhenDefaultBlocked) {
                            last_permission_info_list());
 }
 
+TEST_F(PageInfoTest, ShowAutograntedRWSPermissions) {
+  std::set<ContentSettingsType> expected_visible_permissions;
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(
+      permissions::features::kShowRelatedWebsiteSetsPermissionGrants);
+  SetURL("https://firstparty.com");
+  constexpr char kToplevelURL[] = "https://firstparty.com";
+  constexpr char kEmbeddedURL[] = "https://embedded.com";
+  auto* map = HostContentSettingsMapFactory::GetForProfile(profile());
+  content_settings::ContentSettingConstraints constraint;
+  constraint.set_session_model(
+      content_settings::mojom::SessionModel::NON_RESTORABLE_USER_SESSION);
+  map->SetContentSettingDefaultScope(GURL(kEmbeddedURL), GURL(kToplevelURL),
+                                     ContentSettingsType::STORAGE_ACCESS,
+                                     CONTENT_SETTING_BLOCK, constraint);
+  page_info()->PresentSitePermissionsForTesting();
+  expected_visible_permissions.insert(ContentSettingsType::STORAGE_ACCESS);
+#if BUILDFLAG(IS_ANDROID)
+  // Geolocation is always allowed to pass through to Android-specific logic to
+  // check for DSE settings (so expect 1 item), but isn't actually shown later
+  // on because this test isn't testing with a default search engine origin.
+  expected_visible_permissions.insert(ContentSettingsType::GEOLOCATION);
+#endif
+  ExpectPermissionInfoList(expected_visible_permissions,
+                           last_permission_info_list());
+}
+
+TEST_F(PageInfoTest, HideAutograntedRWSPermissions) {
+  std::set<ContentSettingsType> expected_visible_permissions;
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(
+      permissions::features::kShowRelatedWebsiteSetsPermissionGrants);
+  SetURL("https://firstparty.com");
+  constexpr char kToplevelURL[] = "https://firstparty.com";
+  constexpr char kEmbeddedURL[] = "https://embedded.com";
+  auto* map = HostContentSettingsMapFactory::GetForProfile(profile());
+  content_settings::ContentSettingConstraints constraint;
+  constraint.set_session_model(
+      content_settings::mojom::SessionModel::NON_RESTORABLE_USER_SESSION);
+  map->SetContentSettingDefaultScope(GURL(kEmbeddedURL), GURL(kToplevelURL),
+                                     ContentSettingsType::STORAGE_ACCESS,
+                                     CONTENT_SETTING_ALLOW, constraint);
+  page_info()->PresentSitePermissionsForTesting();
+#if BUILDFLAG(IS_ANDROID)
+  // Geolocation is always allowed to pass through to Android-specific logic to
+  // check for DSE settings (so expect 1 item), but isn't actually shown later
+  // on because this test isn't testing with a default search engine origin.
+  expected_visible_permissions.insert(ContentSettingsType::GEOLOCATION);
+#endif
+  ExpectPermissionInfoList(expected_visible_permissions,
+                           last_permission_info_list());
+}
+
 TEST_F(PageInfoTest, IncognitoPermissionsEmptyByDefault) {
   incognito_page_info()->PresentSitePermissionsForTesting();
   EXPECT_EQ(0u, last_permission_info_list().size());
@@ -576,12 +638,12 @@ TEST_F(PageInfoTest, IncognitoPermissionsDontShowAsk) {
   // Add some permissions to regular page info.
   page_info()->OnSitePermissionChanged(ContentSettingsType::GEOLOCATION,
                                        CONTENT_SETTING_ALLOW,
-                                       /*requesting_origin=*/absl::nullopt,
+                                       /*requesting_origin=*/std::nullopt,
                                        /*is_one_time=*/false);
 
   page_info()->OnSitePermissionChanged(ContentSettingsType::MEDIASTREAM_MIC,
                                        CONTENT_SETTING_BLOCK,
-                                       /*requesting_origin=*/absl::nullopt,
+                                       /*requesting_origin=*/std::nullopt,
                                        /*is_one_time=*/false);
   expected_permissions.insert(ContentSettingsType::MEDIASTREAM_MIC);
   expected_incognito_permissions.insert(ContentSettingsType::MEDIASTREAM_MIC);
@@ -598,7 +660,7 @@ TEST_F(PageInfoTest, IncognitoPermissionsDontShowAsk) {
   // Changing the permission to BLOCK should show it.
   incognito_page_info()->OnSitePermissionChanged(
       ContentSettingsType::GEOLOCATION, CONTENT_SETTING_BLOCK,
-      /*requesting_origin=*/absl::nullopt,
+      /*requesting_origin=*/std::nullopt,
       /*is_one_time=*/false);
   expected_incognito_permissions.insert(ContentSettingsType::GEOLOCATION);
   ExpectPermissionInfoList(expected_incognito_permissions,
@@ -607,7 +669,7 @@ TEST_F(PageInfoTest, IncognitoPermissionsDontShowAsk) {
   // Switching a permission back to default should not hide the permission.
   incognito_page_info()->OnSitePermissionChanged(
       ContentSettingsType::GEOLOCATION, CONTENT_SETTING_DEFAULT,
-      /*requesting_origin=*/absl::nullopt,
+      /*requesting_origin=*/std::nullopt,
       /*is_one_time=*/false);
   ExpectPermissionInfoList(expected_incognito_permissions,
                            last_permission_info_list());
@@ -637,39 +699,54 @@ TEST_F(PageInfoTest, OnPermissionsChanged) {
   setting = content_settings->GetContentSetting(
       kEmbedded, url(), ContentSettingsType::STORAGE_ACCESS);
   EXPECT_EQ(setting, CONTENT_SETTING_ASK);
+#if !BUILDFLAG(IS_ANDROID)
+  setting = content_settings->GetContentSetting(
+      kEmbedded, url(), ContentSettingsType::FILE_SYSTEM_WRITE_GUARD);
+  EXPECT_EQ(setting, CONTENT_SETTING_ASK);
+#endif
 
   EXPECT_CALL(*mock_ui(), SetIdentityInfo(_));
   ExpectInitialSetCookieInfoCall(mock_ui());
 
   // SetPermissionInfo() is called once initially, and then again every time
   // OnSitePermissionChanged() is called.
+#if !BUILDFLAG(IS_ANDROID)
+  EXPECT_CALL(*mock_ui(), SetPermissionInfoStub()).Times(8);
+#else
   EXPECT_CALL(*mock_ui(), SetPermissionInfoStub()).Times(7);
+#endif
 
   // Execute code under tests.
   page_info()->OnSitePermissionChanged(ContentSettingsType::POPUPS,
                                        CONTENT_SETTING_ALLOW,
-                                       /*requesting_origin=*/absl::nullopt,
+                                       /*requesting_origin=*/std::nullopt,
                                        /*is_one_time=*/false);
   page_info()->OnSitePermissionChanged(ContentSettingsType::GEOLOCATION,
                                        CONTENT_SETTING_ALLOW,
-                                       /*requesting_origin=*/absl::nullopt,
+                                       /*requesting_origin=*/std::nullopt,
                                        /*is_one_time=*/false);
   page_info()->OnSitePermissionChanged(ContentSettingsType::NOTIFICATIONS,
                                        CONTENT_SETTING_ALLOW,
-                                       /*requesting_origin=*/absl::nullopt,
+                                       /*requesting_origin=*/std::nullopt,
                                        /*is_one_time=*/false);
   page_info()->OnSitePermissionChanged(ContentSettingsType::MEDIASTREAM_MIC,
                                        CONTENT_SETTING_ALLOW,
-                                       /*requesting_origin=*/absl::nullopt,
+                                       /*requesting_origin=*/std::nullopt,
                                        /*is_one_time=*/false);
   page_info()->OnSitePermissionChanged(ContentSettingsType::MEDIASTREAM_CAMERA,
                                        CONTENT_SETTING_ALLOW,
-                                       /*requesting_origin=*/absl::nullopt,
+                                       /*requesting_origin=*/std::nullopt,
                                        /*is_one_time=*/false);
   page_info()->OnSitePermissionChanged(ContentSettingsType::STORAGE_ACCESS,
                                        CONTENT_SETTING_ALLOW,
                                        url::Origin::Create(kEmbedded),
                                        /*is_one_time=*/false);
+#if !BUILDFLAG(IS_ANDROID)
+  page_info()->OnSitePermissionChanged(
+      ContentSettingsType::FILE_SYSTEM_WRITE_GUARD, CONTENT_SETTING_ALLOW,
+      url::Origin::Create(kEmbedded),
+      /*is_one_time=*/false);
+#endif
 
   // Verify that the site permissions were changed correctly.
   setting = content_settings->GetContentSetting(url(), url(),
@@ -690,6 +767,11 @@ TEST_F(PageInfoTest, OnPermissionsChanged) {
   setting = content_settings->GetContentSetting(
       kEmbedded, url(), ContentSettingsType::STORAGE_ACCESS);
   EXPECT_EQ(setting, CONTENT_SETTING_ALLOW);
+#if !BUILDFLAG(IS_ANDROID)
+  setting = content_settings->GetContentSetting(
+      kEmbedded, url(), ContentSettingsType::FILE_SYSTEM_WRITE_GUARD);
+  EXPECT_EQ(setting, CONTENT_SETTING_ALLOW);
+#endif
 }
 
 TEST_F(PageInfoTest, OnChosenObjectDeleted) {
@@ -1022,8 +1104,8 @@ TEST_F(PageInfoTest, InsecureContent) {
   };
 
   for (const auto& test : kTestCases) {
-    ResetMockUI();
     ClearPageInfo();
+    ResetMockUI();
     security_level_ = test.security_level;
     visible_security_state_.url = GURL("https://scheme-is-cryptographic.test");
     visible_security_state_.certificate = cert();
@@ -1149,10 +1231,10 @@ TEST_F(PageInfoTest, HTTPSSHA1) {
 #if !BUILDFLAG(IS_ANDROID)
 TEST_F(PageInfoTest, NoInfoBar) {
   SetDefaultUIExpectations(mock_ui());
-  EXPECT_EQ(0u, infobar_manager()->infobar_count());
+  EXPECT_EQ(0u, infobar_manager()->infobars().size());
   bool unused;
   page_info()->OnUIClosing(&unused);
-  EXPECT_EQ(0u, infobar_manager()->infobar_count());
+  EXPECT_EQ(0u, infobar_manager()->infobars().size());
 }
 
 TEST_F(PageInfoTest, ShowInfoBar) {
@@ -1161,48 +1243,48 @@ TEST_F(PageInfoTest, ShowInfoBar) {
 
   EXPECT_CALL(*mock_ui(), SetPermissionInfoStub()).Times(2);
 
-  EXPECT_EQ(0u, infobar_manager()->infobar_count());
+  EXPECT_EQ(0u, infobar_manager()->infobars().size());
   page_info()->OnSitePermissionChanged(ContentSettingsType::GEOLOCATION,
                                        CONTENT_SETTING_ALLOW,
-                                       /*requesting_origin=*/absl::nullopt,
+                                       /*requesting_origin=*/std::nullopt,
                                        /*is_one_time=*/false);
   bool unused;
   page_info()->OnUIClosing(&unused);
-  ASSERT_EQ(1u, infobar_manager()->infobar_count());
+  ASSERT_EQ(1u, infobar_manager()->infobars().size());
 
-  infobar_manager()->RemoveInfoBar(infobar_manager()->infobar_at(0));
+  infobar_manager()->RemoveInfoBar(infobar_manager()->infobars()[0]);
 }
 
 TEST_F(PageInfoTest, NoInfoBarWhenSoundSettingChanged) {
-  EXPECT_EQ(0u, infobar_manager()->infobar_count());
+  EXPECT_EQ(0u, infobar_manager()->infobars().size());
   page_info()->OnSitePermissionChanged(
       ContentSettingsType::SOUND, CONTENT_SETTING_BLOCK,
-      /*requesting_origin=*/absl::nullopt, /*is_one_time=*/false);
+      /*requesting_origin=*/std::nullopt, /*is_one_time=*/false);
   bool unused;
   page_info()->OnUIClosing(&unused);
-  EXPECT_EQ(0u, infobar_manager()->infobar_count());
+  EXPECT_EQ(0u, infobar_manager()->infobars().size());
 }
 
 TEST_F(PageInfoTest, ShowInfoBarWhenSoundSettingAndAnotherSettingChanged) {
-  EXPECT_EQ(0u, infobar_manager()->infobar_count());
+  EXPECT_EQ(0u, infobar_manager()->infobars().size());
   page_info()->OnSitePermissionChanged(ContentSettingsType::JAVASCRIPT,
                                        CONTENT_SETTING_BLOCK,
-                                       /*requesting_origin=*/absl::nullopt,
+                                       /*requesting_origin=*/std::nullopt,
                                        /*is_one_time=*/false);
   page_info()->OnSitePermissionChanged(
       ContentSettingsType::SOUND, CONTENT_SETTING_BLOCK,
-      /*requesting_origin=*/absl::nullopt, /*is_one_time=*/false);
+      /*requesting_origin=*/std::nullopt, /*is_one_time=*/false);
   bool unused;
   page_info()->OnUIClosing(&unused);
-  EXPECT_EQ(1u, infobar_manager()->infobar_count());
+  EXPECT_EQ(1u, infobar_manager()->infobars().size());
 
-  infobar_manager()->RemoveInfoBar(infobar_manager()->infobar_at(0));
+  infobar_manager()->RemoveInfoBar(infobar_manager()->infobars()[0]);
 }
 
 TEST_F(PageInfoTest, ShowInfobarWhenMediaChanged) {
   base::HistogramTester histograms;
 
-  ASSERT_EQ(0u, infobar_manager()->infobar_count());
+  ASSERT_EQ(0u, infobar_manager()->infobars().size());
 
   HostContentSettingsMap* map =
       HostContentSettingsMapFactory::GetForProfile(profile());
@@ -1215,14 +1297,14 @@ TEST_F(PageInfoTest, ShowInfobarWhenMediaChanged) {
 
   page_info()->OnSitePermissionChanged(ContentSettingsType::MEDIASTREAM_CAMERA,
                                        CONTENT_SETTING_ALLOW,
-                                       /*requesting_origin=*/absl::nullopt,
+                                       /*requesting_origin=*/std::nullopt,
                                        /*is_one_time=*/false);
   page_info()->OnSitePermissionChanged(ContentSettingsType::MEDIASTREAM_MIC,
                                        CONTENT_SETTING_ALLOW,
-                                       /*requesting_origin=*/absl::nullopt,
+                                       /*requesting_origin=*/std::nullopt,
                                        /*is_one_time=*/false);
   page_info()->OnUIClosing(nullptr);
-  EXPECT_EQ(1u, infobar_manager()->infobar_count());
+  EXPECT_EQ(1u, infobar_manager()->infobars().size());
 
   histograms.ExpectUniqueSample(
       "Permissions.PageInfo.Changed.VideoCapture.ReloadInfobarShown",
@@ -1236,7 +1318,7 @@ TEST_F(PageInfoTest, ShowInfobarWhenMediaChanged) {
 TEST_F(PageInfoTest, SuppressInfobarWhenMediaChangedToBlock) {
   base::HistogramTester histograms;
 
-  ASSERT_EQ(0u, infobar_manager()->infobar_count());
+  ASSERT_EQ(0u, infobar_manager()->infobars().size());
 
   // The infobar can be suppressed only if an origin subscribed to permission
   // status change.
@@ -1252,15 +1334,15 @@ TEST_F(PageInfoTest, SuppressInfobarWhenMediaChangedToBlock) {
 
   page_info()->OnSitePermissionChanged(ContentSettingsType::MEDIASTREAM_CAMERA,
                                        CONTENT_SETTING_ALLOW,
-                                       /*requesting_origin=*/absl::nullopt,
+                                       /*requesting_origin=*/std::nullopt,
                                        /*is_one_time=*/false);
   page_info()->OnSitePermissionChanged(ContentSettingsType::MEDIASTREAM_MIC,
                                        CONTENT_SETTING_ALLOW,
-                                       /*requesting_origin=*/absl::nullopt,
+                                       /*requesting_origin=*/std::nullopt,
                                        /*is_one_time=*/false);
 
   page_info()->OnUIClosing(nullptr);
-  EXPECT_EQ(0u, infobar_manager()->infobar_count());
+  EXPECT_EQ(0u, infobar_manager()->infobars().size());
 
   histograms.ExpectUniqueSample(
       "Permissions.PageInfo.Changed.VideoCapture.ReloadInfobarNotShown",
@@ -1273,7 +1355,7 @@ TEST_F(PageInfoTest, SuppressInfobarWhenMediaChangedToBlock) {
 TEST_F(PageInfoTest, SuppressInfobarWhenMediaChangedToAllow) {
   base::HistogramTester histograms;
 
-  ASSERT_EQ(0u, infobar_manager()->infobar_count());
+  ASSERT_EQ(0u, infobar_manager()->infobars().size());
 
   // The infobar can be suppressed only if an origin subscribed to permission
   // status change.
@@ -1290,15 +1372,15 @@ TEST_F(PageInfoTest, SuppressInfobarWhenMediaChangedToAllow) {
 
   page_info()->OnSitePermissionChanged(ContentSettingsType::MEDIASTREAM_CAMERA,
                                        CONTENT_SETTING_ALLOW,
-                                       /*requesting_origin=*/absl::nullopt,
+                                       /*requesting_origin=*/std::nullopt,
                                        /*is_one_time=*/false);
   page_info()->OnSitePermissionChanged(ContentSettingsType::MEDIASTREAM_MIC,
                                        CONTENT_SETTING_ALLOW,
-                                       /*requesting_origin=*/absl::nullopt,
+                                       /*requesting_origin=*/std::nullopt,
                                        /*is_one_time=*/false);
 
   page_info()->OnUIClosing(nullptr);
-  EXPECT_EQ(0u, infobar_manager()->infobar_count());
+  EXPECT_EQ(0u, infobar_manager()->infobars().size());
 
   histograms.ExpectUniqueSample(
       "Permissions.PageInfo.Changed.VideoCapture.ReloadInfobarNotShown",
@@ -1314,7 +1396,7 @@ TEST_F(PageInfoTest, SuppressInfobarWhenMediaChangedToAllow) {
 TEST_F(PageInfoTest, SuppressInfobarWhenMediaChangedToDefault) {
   base::HistogramTester histograms;
 
-  ASSERT_EQ(0u, infobar_manager()->infobar_count());
+  ASSERT_EQ(0u, infobar_manager()->infobars().size());
 
   HostContentSettingsMap* map =
       HostContentSettingsMapFactory::GetForProfile(profile());
@@ -1331,15 +1413,15 @@ TEST_F(PageInfoTest, SuppressInfobarWhenMediaChangedToDefault) {
 
   page_info()->OnSitePermissionChanged(ContentSettingsType::MEDIASTREAM_CAMERA,
                                        CONTENT_SETTING_DEFAULT,
-                                       /*requesting_origin=*/absl::nullopt,
+                                       /*requesting_origin=*/std::nullopt,
                                        /*is_one_time=*/false);
   page_info()->OnSitePermissionChanged(ContentSettingsType::MEDIASTREAM_MIC,
                                        CONTENT_SETTING_DEFAULT,
-                                       /*requesting_origin=*/absl::nullopt,
+                                       /*requesting_origin=*/std::nullopt,
                                        /*is_one_time=*/false);
 
   page_info()->OnUIClosing(nullptr);
-  EXPECT_EQ(0u, infobar_manager()->infobar_count());
+  EXPECT_EQ(0u, infobar_manager()->infobars().size());
 
   histograms.ExpectUniqueSample(
       "Permissions.PageInfo.Changed.VideoCapture.ReloadInfobarNotShown",
@@ -1354,7 +1436,7 @@ TEST_F(PageInfoTest, SuppressInfobarWhenMediaChangedToDefault) {
 TEST_F(PageInfoTest, ShowInfobarWhenGeolocationChangedToAllow) {
   base::HistogramTester histograms;
 
-  ASSERT_EQ(0u, infobar_manager()->infobar_count());
+  ASSERT_EQ(0u, infobar_manager()->infobars().size());
   HostContentSettingsMap* map =
       HostContentSettingsMapFactory::GetForProfile(profile());
   map->SetContentSettingDefaultScope(
@@ -1366,11 +1448,11 @@ TEST_F(PageInfoTest, ShowInfobarWhenGeolocationChangedToAllow) {
 
   page_info()->OnSitePermissionChanged(ContentSettingsType::GEOLOCATION,
                                        CONTENT_SETTING_ALLOW,
-                                       /*requesting_origin=*/absl::nullopt,
+                                       /*requesting_origin=*/std::nullopt,
                                        /*is_one_time=*/false);
 
   page_info()->OnUIClosing(nullptr);
-  EXPECT_EQ(1u, infobar_manager()->infobar_count());
+  EXPECT_EQ(1u, infobar_manager()->infobars().size());
   histograms.ExpectUniqueSample(
       "Permissions.PageInfo.Changed.Geolocation.ReloadInfobarShown",
       permissions::PermissionChangeAction::REALLOWED, 0);
@@ -1381,7 +1463,7 @@ TEST_F(PageInfoTest, ShowInfobarWhenGeolocationChangedToAllow) {
 TEST_F(PageInfoTest, NotSuppressedInfobarWhenGeolocationChangedToBlock) {
   base::HistogramTester histograms;
 
-  ASSERT_EQ(0u, infobar_manager()->infobar_count());
+  ASSERT_EQ(0u, infobar_manager()->infobars().size());
 
   // The infobar can be suppressed only if an origin subscribed to permission
   // status change.
@@ -1389,11 +1471,11 @@ TEST_F(PageInfoTest, NotSuppressedInfobarWhenGeolocationChangedToBlock) {
 
   page_info()->OnSitePermissionChanged(ContentSettingsType::GEOLOCATION,
                                        CONTENT_SETTING_BLOCK,
-                                       /*requesting_origin=*/absl::nullopt,
+                                       /*requesting_origin=*/std::nullopt,
                                        /*is_one_time=*/false);
 
   page_info()->OnUIClosing(nullptr);
-  EXPECT_EQ(1u, infobar_manager()->infobar_count());
+  EXPECT_EQ(1u, infobar_manager()->infobars().size());
   histograms.ExpectUniqueSample(
       "Permissions.PageInfo.Changed.Geolocation.ReloadInfobarShown",
       permissions::PermissionChangeAction::REVOKED, 0);
@@ -1402,7 +1484,7 @@ TEST_F(PageInfoTest, NotSuppressedInfobarWhenGeolocationChangedToBlock) {
 TEST_F(PageInfoTest, ShowInfobarWhenGeolocationChangedToDefault) {
   base::HistogramTester histograms;
 
-  ASSERT_EQ(0u, infobar_manager()->infobar_count());
+  ASSERT_EQ(0u, infobar_manager()->infobars().size());
 
   // The infobar can be suppressed only if an origin subscribed to permission
   // status change.
@@ -1410,11 +1492,11 @@ TEST_F(PageInfoTest, ShowInfobarWhenGeolocationChangedToDefault) {
 
   page_info()->OnSitePermissionChanged(ContentSettingsType::GEOLOCATION,
                                        CONTENT_SETTING_DEFAULT,
-                                       /*requesting_origin=*/absl::nullopt,
+                                       /*requesting_origin=*/std::nullopt,
                                        /*is_one_time=*/false);
 
   page_info()->OnUIClosing(nullptr);
-  EXPECT_EQ(1u, infobar_manager()->infobar_count());
+  EXPECT_EQ(1u, infobar_manager()->infobars().size());
   histograms.ExpectUniqueSample(
       "Permissions.PageInfo.Changed.Geolocation.ReloadInfobarShown",
       permissions::PermissionChangeAction::RESET_FROM_ALLOWED, 0);
@@ -1424,7 +1506,7 @@ TEST_F(PageInfoTest, ShowInfobarWhenGeolocationChangedToDefault) {
 TEST_F(PageInfoTest, ShowInfobarWhenGeolocationAndMediaChangedToBlock) {
   base::HistogramTester histograms;
 
-  ASSERT_EQ(0u, infobar_manager()->infobar_count());
+  ASSERT_EQ(0u, infobar_manager()->infobars().size());
 
   HostContentSettingsMap* map =
       HostContentSettingsMapFactory::GetForProfile(profile());
@@ -1441,19 +1523,19 @@ TEST_F(PageInfoTest, ShowInfobarWhenGeolocationAndMediaChangedToBlock) {
 
   page_info()->OnSitePermissionChanged(ContentSettingsType::GEOLOCATION,
                                        CONTENT_SETTING_BLOCK,
-                                       /*requesting_origin=*/absl::nullopt,
+                                       /*requesting_origin=*/std::nullopt,
                                        /*is_one_time=*/false);
   page_info()->OnSitePermissionChanged(ContentSettingsType::MEDIASTREAM_CAMERA,
                                        CONTENT_SETTING_ALLOW,
-                                       /*requesting_origin=*/absl::nullopt,
+                                       /*requesting_origin=*/std::nullopt,
                                        /*is_one_time=*/false);
   page_info()->OnSitePermissionChanged(ContentSettingsType::MEDIASTREAM_MIC,
                                        CONTENT_SETTING_ALLOW,
-                                       /*requesting_origin=*/absl::nullopt,
+                                       /*requesting_origin=*/std::nullopt,
                                        /*is_one_time=*/false);
 
   page_info()->OnUIClosing(nullptr);
-  EXPECT_EQ(1u, infobar_manager()->infobar_count());
+  EXPECT_EQ(1u, infobar_manager()->infobars().size());
 
   histograms.ExpectUniqueSample(
       "Permissions.PageInfo.Changed.Geolocation.ReloadInfobarShown",
@@ -1470,32 +1552,52 @@ TEST_F(PageInfoTest, ShowInfoBarWhenAllowingThirdPartyCookies) {
   SetDefaultUIExpectations(mock_ui());
   NavigateAndCommit(url());
 
-  page_info()->OnStatusChanged(CookieControlsStatus::kEnabled,
-                               CookieControlsEnforcement::kNoEnforcement,
-                               base::Time());
+  // Calls to `PresentSiteDataInternal` from `PresentSiteData` are synchronous
+  // which makes calls to `SetCookieInfo` appear as they're called.
+  // This call is needed to satisfy the default expectations after navigation.
+  page_info();
+  Mock::VerifyAndClearExpectations(mock_ui());
+  // `SetCookieInfo` is called once through `OnStatusChanged` and another time
+  // through `OnThirdPartyToggleClicked` which calls `OnStatusChanged` down
+  // its call chain.
+  EXPECT_CALL(*mock_ui(), SetCookieInfo(_)).Times(2);
 
-  EXPECT_EQ(0u, infobar_manager()->infobar_count());
+  page_info()->OnStatusChanged(
+      CookieControlsStatus::kEnabled,
+      /*controls_visible=*/true, /*protections_on=*/true,
+      CookieControlsEnforcement::kNoEnforcement,
+      CookieBlocking3pcdStatus::kNotIn3pcd, base::Time());
+
+  EXPECT_EQ(0u, infobar_manager()->infobars().size());
   page_info()->OnThirdPartyToggleClicked(/*block_third_party_cookies=*/false);
   page_info()->OnUIClosing(nullptr);
-  ASSERT_EQ(1u, infobar_manager()->infobar_count());
+  ASSERT_EQ(1u, infobar_manager()->infobars().size());
 
-  infobar_manager()->RemoveInfoBar(infobar_manager()->infobar_at(0));
+  infobar_manager()->RemoveInfoBar(infobar_manager()->infobars()[0]);
 }
 
 TEST_F(PageInfoTest, ShowInfoBarWhenBlockingThirdPartyCookies) {
   SetDefaultUIExpectations(mock_ui());
   NavigateAndCommit(url());
 
-  page_info()->OnStatusChanged(CookieControlsStatus::kDisabledForSite,
-                               CookieControlsEnforcement::kNoEnforcement,
-                               base::Time());
+  // As in `ShowInfoBarWhenAllowingThirdPartyCookies` above, expectations need
+  // to be cleared.
+  page_info();
+  Mock::VerifyAndClearExpectations(mock_ui());
+  EXPECT_CALL(*mock_ui(), SetCookieInfo(_)).Times(2);
 
-  EXPECT_EQ(0u, infobar_manager()->infobar_count());
+  page_info()->OnStatusChanged(
+      CookieControlsStatus::kDisabledForSite,
+      /*controls_visible=*/true, /*protections_on=*/false,
+      CookieControlsEnforcement::kNoEnforcement,
+      CookieBlocking3pcdStatus::kNotIn3pcd, base::Time());
+
+  EXPECT_EQ(0u, infobar_manager()->infobars().size());
   page_info()->OnThirdPartyToggleClicked(/*block_third_party_cookies=*/true);
   page_info()->OnUIClosing(nullptr);
-  ASSERT_EQ(1u, infobar_manager()->infobar_count());
+  ASSERT_EQ(1u, infobar_manager()->infobars().size());
 
-  infobar_manager()->RemoveInfoBar(infobar_manager()->infobar_at(0));
+  infobar_manager()->RemoveInfoBar(infobar_manager()->infobars()[0]);
 }
 
 #endif
@@ -1596,7 +1698,7 @@ TEST_F(PageInfoTest, TimeOpenMetrics) {
     const std::string url;
     const security_state::SecurityLevel security_level;
     const std::string security_level_name;
-    const PageInfo::PageInfoAction action;
+    const page_info::PageInfoAction action;
   };
 
   const std::string kHistogramPrefix("Security.PageInfo.TimeOpen.");
@@ -1604,13 +1706,13 @@ TEST_F(PageInfoTest, TimeOpenMetrics) {
   const TestCase kTestCases[] = {
       // PAGE_INFO_OPENED used as shorthand for "take no action".
       {"https://example.test", security_state::SECURE, "SECURE",
-       PageInfo::PAGE_INFO_OPENED},
+       page_info::PAGE_INFO_OPENED},
       {"http://example.test", security_state::NONE, "NONE",
-       PageInfo::PAGE_INFO_OPENED},
+       page_info::PAGE_INFO_OPENED},
       {"https://example.test", security_state::SECURE, "SECURE",
-       PageInfo::PAGE_INFO_SITE_SETTINGS_OPENED},
+       page_info::PAGE_INFO_SITE_SETTINGS_OPENED},
       {"http://example.test", security_state::NONE, "NONE",
-       PageInfo::PAGE_INFO_SITE_SETTINGS_OPENED},
+       page_info::PAGE_INFO_SITE_SETTINGS_OPENED},
   };
 
   for (const auto& test : kTestCases) {
@@ -1628,14 +1730,14 @@ TEST_F(PageInfoTest, TimeOpenMetrics) {
         kHistogramPrefix + "NoAction." + test.security_level_name, 0);
 
     PageInfo* test_page_info = page_info();
-    if (test.action != PageInfo::PAGE_INFO_OPENED) {
+    if (test.action != page_info::PAGE_INFO_OPENED) {
       test_page_info->RecordPageInfoAction(test.action);
     }
     ClearPageInfo();
 
     histograms.ExpectTotalCount(kHistogramPrefix + test.security_level_name, 1);
 
-    if (test.action != PageInfo::PAGE_INFO_OPENED) {
+    if (test.action != page_info::PAGE_INFO_OPENED) {
       histograms.ExpectTotalCount(
           kHistogramPrefix + "Action." + test.security_level_name, 1);
     } else {
@@ -1702,19 +1804,19 @@ TEST_F(PageInfoTest, MAYBE_SafetyTipMetrics) {
     base::HistogramTester histograms;
     SetURL("https://example.test");
     visible_security_state_.safety_tip_info = test.safety_tip_info;
-    ResetMockUI();
     ClearPageInfo();
+    ResetMockUI();
     SetDefaultUIExpectations(mock_ui());
 
     histograms.ExpectTotalCount(kGenericHistogram, 0);
 
-    page_info()->RecordPageInfoAction(PageInfo::PAGE_INFO_OPENED);
+    page_info()->RecordPageInfoAction(page_info::PAGE_INFO_OPENED);
 
     // RecordPageInfoAction() is called during PageInfo
     // creation in addition to the explicit RecordPageInfoAction()
     // call, so it is called twice in total.
     histograms.ExpectTotalCount(kGenericHistogram, 2);
-    histograms.ExpectBucketCount(kGenericHistogram, PageInfo::PAGE_INFO_OPENED,
+    histograms.ExpectBucketCount(kGenericHistogram, page_info::PAGE_INFO_OPENED,
                                  2);
   }
 }
@@ -1725,7 +1827,7 @@ TEST_F(PageInfoTest, SafetyTipTimeOpenMetrics) {
   struct TestCase {
     const security_state::SafetyTipStatus safety_tip_status;
     const std::string safety_tip_status_name;
-    const PageInfo::PageInfoAction action;
+    const page_info::PageInfoAction action;
   };
 
   const std::string kHistogramPrefix("Security.PageInfo.TimeOpen.");
@@ -1733,13 +1835,13 @@ TEST_F(PageInfoTest, SafetyTipTimeOpenMetrics) {
   const TestCase kTestCases[] = {
       // PAGE_INFO_COUNT used as shorthand for "take no action".
       {security_state::SafetyTipStatus::kNone, "SafetyTip_None",
-       PageInfo::PAGE_INFO_OPENED},
+       page_info::PAGE_INFO_OPENED},
       {security_state::SafetyTipStatus::kLookalike, "SafetyTip_Lookalike",
-       PageInfo::PAGE_INFO_OPENED},
+       page_info::PAGE_INFO_OPENED},
       {security_state::SafetyTipStatus::kNone, "SafetyTip_None",
-       PageInfo::PAGE_INFO_SITE_SETTINGS_OPENED},
+       page_info::PAGE_INFO_SITE_SETTINGS_OPENED},
       {security_state::SafetyTipStatus::kLookalike, "SafetyTip_Lookalike",
-       PageInfo::PAGE_INFO_SITE_SETTINGS_OPENED},
+       page_info::PAGE_INFO_SITE_SETTINGS_OPENED},
   };
 
   for (const auto& test : kTestCases) {
@@ -1758,7 +1860,7 @@ TEST_F(PageInfoTest, SafetyTipTimeOpenMetrics) {
         kHistogramPrefix + "NoAction." + test.safety_tip_status_name, 0);
 
     PageInfo* test_page_info = page_info();
-    if (test.action != PageInfo::PAGE_INFO_OPENED) {
+    if (test.action != page_info::PAGE_INFO_OPENED) {
       test_page_info->RecordPageInfoAction(test.action);
     }
     ClearPageInfo();
@@ -1766,7 +1868,7 @@ TEST_F(PageInfoTest, SafetyTipTimeOpenMetrics) {
     histograms.ExpectTotalCount(kHistogramPrefix + test.safety_tip_status_name,
                                 1);
 
-    if (test.action != PageInfo::PAGE_INFO_OPENED) {
+    if (test.action != page_info::PAGE_INFO_OPENED) {
       histograms.ExpectTotalCount(
           kHistogramPrefix + "Action." + test.safety_tip_status_name, 1);
     } else {
@@ -1784,8 +1886,9 @@ TEST_F(PageInfoTest, SafetyTipTimeOpenMetrics) {
 // Tests that the SubresourceFilter setting is omitted correctly.
 TEST_F(PageInfoTest, SubresourceFilterSetting_MatchesActivation) {
   auto showing_setting = [](const PermissionInfoList& permissions) {
-    return PermissionInfoListContainsPermission(permissions,
-                                                ContentSettingsType::ADS);
+    return base::Contains(
+        permissions, ContentSettingsType::ADS,
+        [](const auto& permission) { return permission.type; });
   };
 
   // By default, the setting should not appear at all.
@@ -1795,8 +1898,8 @@ TEST_F(PageInfoTest, SubresourceFilterSetting_MatchesActivation) {
   EXPECT_FALSE(showing_setting(last_permission_info_list()));
 
   // Reset state.
-  ResetMockUI();
   ClearPageInfo();
+  ResetMockUI();
   SetDefaultUIExpectations(mock_ui());
 
   // Now, explicitly set site activation metadata to simulate activation on
@@ -2313,4 +2416,140 @@ TEST_F(PageInfoTest, WithoutPageSpecificContentSettings) {
   EXPECT_FALSE(content_settings::PageSpecificContentSettings::GetForPage(
       web_contents()->GetPrimaryPage()));
   page_info();
+}
+
+TEST_F(PageInfoTest, MidiGrantsAreFilteredWhenAllowkMidiAllowSysex) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(features::kBlockMidiByDefault);
+
+  std::set<ContentSettingsType> expected_visible_permissions;
+
+  auto* map = HostContentSettingsMapFactory::GetForProfile(profile());
+  page_info()->PresentSitePermissionsForTesting();
+
+#if BUILDFLAG(IS_ANDROID)
+  // Geolocation is always allowed to pass through to Android-specific logic to
+  // check for DSE settings (so expect 1 item), but isn't actually shown later
+  // on because this test isn't testing with a default search engine origin.
+  expected_visible_permissions.insert(ContentSettingsType::GEOLOCATION);
+#endif
+  ExpectPermissionInfoList(expected_visible_permissions,
+                           last_permission_info_list());
+
+  map->SetContentSettingDefaultScope(url(), url(), ContentSettingsType::MIDI,
+                                     CONTENT_SETTING_ALLOW);
+  map->SetContentSettingDefaultScope(
+      url(), url(), ContentSettingsType::MIDI_SYSEX, CONTENT_SETTING_ALLOW);
+  page_info()->PresentSitePermissionsForTesting();
+  expected_visible_permissions.insert(ContentSettingsType::MIDI_SYSEX);
+  ExpectPermissionInfoList(expected_visible_permissions,
+                           last_permission_info_list());
+}
+
+TEST_F(PageInfoTest, MidiGrantsAreFilteredWhenNotBlockMidiByDefaultAllowMidi) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(features::kBlockMidiByDefault);
+
+  std::set<ContentSettingsType> expected_visible_permissions;
+
+  auto* map = HostContentSettingsMapFactory::GetForProfile(profile());
+  page_info()->PresentSitePermissionsForTesting();
+
+#if BUILDFLAG(IS_ANDROID)
+  // Geolocation is always allowed to pass through to Android-specific logic to
+  // check for DSE settings (so expect 1 item), but isn't actually shown later
+  // on because this test isn't testing with a default search engine origin.
+  expected_visible_permissions.insert(ContentSettingsType::GEOLOCATION);
+#endif
+  ExpectPermissionInfoList(expected_visible_permissions,
+                           last_permission_info_list());
+
+  map->SetContentSettingDefaultScope(url(), url(), ContentSettingsType::MIDI,
+                                     CONTENT_SETTING_ALLOW);
+  page_info()->PresentSitePermissionsForTesting();
+  ExpectPermissionInfoList(expected_visible_permissions,
+                           last_permission_info_list());
+}
+
+TEST_F(PageInfoTest, MidiGrantsAreFilteredWhenNotBlockMidiByDefaultBlockMidi) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(features::kBlockMidiByDefault);
+
+  std::set<ContentSettingsType> expected_visible_permissions;
+
+  auto* map = HostContentSettingsMapFactory::GetForProfile(profile());
+  page_info()->PresentSitePermissionsForTesting();
+
+#if BUILDFLAG(IS_ANDROID)
+  // Geolocation is always allowed to pass through to Android-specific logic to
+  // check for DSE settings (so expect 1 item), but isn't actually shown later
+  // on because this test isn't testing with a default search engine origin.
+  expected_visible_permissions.insert(ContentSettingsType::GEOLOCATION);
+#endif
+  ExpectPermissionInfoList(expected_visible_permissions,
+                           last_permission_info_list());
+
+  map->SetContentSettingDefaultScope(url(), url(), ContentSettingsType::MIDI,
+                                     CONTENT_SETTING_BLOCK);
+  page_info()->PresentSitePermissionsForTesting();
+  ExpectPermissionInfoList(expected_visible_permissions,
+                           last_permission_info_list());
+}
+
+TEST_F(PageInfoTest,
+       MidiGrantsAreFilteredWhenNotBlockMidiByDefaultBlockMidiAllowSysex) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(features::kBlockMidiByDefault);
+
+  std::set<ContentSettingsType> expected_visible_permissions;
+
+  auto* map = HostContentSettingsMapFactory::GetForProfile(profile());
+  page_info()->PresentSitePermissionsForTesting();
+
+#if BUILDFLAG(IS_ANDROID)
+  // Geolocation is always allowed to pass through to Android-specific logic to
+  // check for DSE settings (so expect 1 item), but isn't actually shown later
+  // on because this test isn't testing with a default search engine origin.
+  expected_visible_permissions.insert(ContentSettingsType::GEOLOCATION);
+#endif
+  ExpectPermissionInfoList(expected_visible_permissions,
+                           last_permission_info_list());
+
+  map->SetContentSettingDefaultScope(url(), url(), ContentSettingsType::MIDI,
+                                     CONTENT_SETTING_ALLOW);
+  map->SetContentSettingDefaultScope(
+      url(), url(), ContentSettingsType::MIDI_SYSEX, CONTENT_SETTING_BLOCK);
+  page_info()->PresentSitePermissionsForTesting();
+  expected_visible_permissions.insert(ContentSettingsType::MIDI_SYSEX);
+  ExpectPermissionInfoList(expected_visible_permissions,
+                           last_permission_info_list());
+}
+
+TEST_F(PageInfoTest,
+       MidiGrantsAreFilteredWhenNotBlockMidiByDefaultAllowkMidiAllowSysex) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(features::kBlockMidiByDefault);
+
+  std::set<ContentSettingsType> expected_visible_permissions;
+
+  auto* map = HostContentSettingsMapFactory::GetForProfile(profile());
+  page_info()->PresentSitePermissionsForTesting();
+
+#if BUILDFLAG(IS_ANDROID)
+  // Geolocation is always allowed to pass through to Android-specific logic to
+  // check for DSE settings (so expect 1 item), but isn't actually shown later
+  // on because this test isn't testing with a default search engine origin.
+  expected_visible_permissions.insert(ContentSettingsType::GEOLOCATION);
+#endif
+  ExpectPermissionInfoList(expected_visible_permissions,
+                           last_permission_info_list());
+
+  map->SetContentSettingDefaultScope(url(), url(), ContentSettingsType::MIDI,
+                                     CONTENT_SETTING_ALLOW);
+  map->SetContentSettingDefaultScope(
+      url(), url(), ContentSettingsType::MIDI_SYSEX, CONTENT_SETTING_ALLOW);
+  page_info()->PresentSitePermissionsForTesting();
+  expected_visible_permissions.insert(ContentSettingsType::MIDI_SYSEX);
+  ExpectPermissionInfoList(expected_visible_permissions,
+                           last_permission_info_list());
 }

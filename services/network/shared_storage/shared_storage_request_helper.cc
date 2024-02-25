@@ -5,6 +5,7 @@
 #include "services/network/shared_storage/shared_storage_request_helper.h"
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <utility>
 #include <vector>
@@ -13,14 +14,12 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/notreached.h"
-#include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
 #include "net/http/structured_headers.h"
 #include "net/url_request/url_request.h"
 #include "services/network/public/mojom/optional_bool.mojom.h"
 #include "services/network/public/mojom/url_loader_network_service_observer.mojom.h"
 #include "services/network/shared_storage/shared_storage_header_utils.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace network {
 
@@ -30,20 +29,20 @@ namespace {
   return item.is_string() || item.is_token() || item.is_byte_sequence();
 }
 
-// Adds request header `kSharedStorageWritableHeader`.
+// Adds request header `kSecSharedStorageWritableHeader`.
 void AddWritableRequestHeader(net::URLRequest& request) {
-  request.SetExtraRequestHeaderByName(kSharedStorageWritableHeader,
-                                      kSharedStorageWritableValue,
+  request.SetExtraRequestHeaderByName(kSecSharedStorageWritableHeader,
+                                      kSecSharedStorageWritableValue,
                                       /*overwrite=*/true);
 }
 
-absl::optional<std::string> GetSharedStorageWriteHeader(
+std::optional<std::string> GetSharedStorageWriteHeader(
     net::URLRequest& request) {
   std::string value;
   if (!request.response_headers() ||
       !request.response_headers()->GetNormalizedHeader(
           kSharedStorageWriteHeader, &value)) {
-    return absl::nullopt;
+    return std::nullopt;
   }
   return value;
 }
@@ -69,15 +68,15 @@ mojom::SharedStorageOperationPtr MakeSharedStorageOperation(
     return nullptr;
   }
 
-  absl::optional<mojom::SharedStorageOperationType> operation_type =
+  std::optional<mojom::SharedStorageOperationType> operation_type =
       StringToSharedStorageOperationType(item.GetString());
   if (!operation_type.has_value()) {
     // Did not find a valid operation type.
     return nullptr;
   }
 
-  absl::optional<std::string> key;
-  absl::optional<std::string> value;
+  std::optional<std::string> key;
+  std::optional<std::string> value;
   mojom::OptionalBool ignore_if_present = mojom::OptionalBool::kUnset;
 
   for (const auto& [param_key, param_item] : parameterized_member.params) {
@@ -86,7 +85,7 @@ mojom::SharedStorageOperationPtr MakeSharedStorageOperation(
       continue;
     }
 
-    absl::optional<SharedStorageHeaderParamType> param_type =
+    std::optional<SharedStorageHeaderParamType> param_type =
         StringToSharedStorageHeaderParamType(param_key);
     if (!param_type.has_value()) {
       // Did not find a valid parameter key.
@@ -120,22 +119,23 @@ mojom::SharedStorageOperationPtr MakeSharedStorageOperation(
 }  // namespace
 
 SharedStorageRequestHelper::SharedStorageRequestHelper(
-    bool shared_storage_writable,
+    bool shared_storage_writable_eligible,
     mojom::URLLoaderNetworkServiceObserver* observer)
-    : shared_storage_writable_(shared_storage_writable), observer_(observer) {}
+    : shared_storage_writable_eligible_(shared_storage_writable_eligible),
+      observer_(observer) {}
 
 SharedStorageRequestHelper::~SharedStorageRequestHelper() = default;
 
 void SharedStorageRequestHelper::ProcessOutgoingRequest(
     net::URLRequest& request) {
-  if (!shared_storage_writable_ || !observer_) {
+  if (!shared_storage_writable_eligible_ || !observer_) {
     // This `request` isn't eligible for shared storage writes and/or `this` has
     // no `observer_` to forward any processed shared storage response header
     // to.
     return;
   }
 
-  // This `request` should have the `kSharedStorageWritableHeader` added.
+  // This `request` should have the `kSecSharedStorageWritableHeader` added.
   AddWritableRequestHeader(request);
 }
 
@@ -144,14 +144,14 @@ bool SharedStorageRequestHelper::ProcessIncomingResponse(
     base::OnceClosure done) {
   DCHECK(done);
 
-  absl::optional<std::string> header_value =
+  std::optional<std::string> header_value =
       GetSharedStorageWriteHeader(request);
   if (!header_value.has_value()) {
     // This response doesn't have any shared storage response headers yet.
     return false;
   }
 
-  if (!shared_storage_writable_ || !observer_) {
+  if (!shared_storage_writable_eligible_ || !observer_) {
     // This response has a shared storage header but isn't eligible to write to
     // shared storage (or there is no `observer_` to forward the processed
     // response header to); remove the header(s) to prevent a cross-site data
@@ -164,22 +164,28 @@ bool SharedStorageRequestHelper::ProcessIncomingResponse(
   return ProcessResponse(request, header_value.value(), std::move(done));
 }
 
-void SharedStorageRequestHelper::
-    RemoveEligibilityIfSharedStorageWritableRemoved(
-        const std::vector<std::string>& removed_headers) {
-  if (base::Contains(removed_headers, kSharedStorageWritableHeader)) {
-    shared_storage_writable_ = false;
+void SharedStorageRequestHelper::UpdateSharedStorageWritableEligible(
+    const std::vector<std::string>& removed_headers,
+    const net::HttpRequestHeaders& modified_headers) {
+  // Note that in `net::RedirectUtil::UpdateHttpRequest()`, `modified_headers`
+  // are set after `removed_headers` are removed, so if the
+  // `kSecSharedStorageWritableHeader` is in both of these, ``modified_headers`
+  // takes precedence.
+  if (GetSecSharedStorageWritableHeader(modified_headers)) {
+    shared_storage_writable_eligible_ = true;
+  } else if (base::Contains(removed_headers, kSecSharedStorageWritableHeader)) {
+    shared_storage_writable_eligible_ = false;
   }
 }
 
 bool SharedStorageRequestHelper::ProcessResponse(net::URLRequest& request,
-                                                 base::StringPiece value,
+                                                 std::string_view value,
                                                  base::OnceClosure done) {
   DCHECK(observer_);
   DCHECK(done);
   RemoveSharedStorageWriteHeader(request);
 
-  absl::optional<net::structured_headers::List> list =
+  std::optional<net::structured_headers::List> list =
       net::structured_headers::ParseList(value);
   if (!list.has_value()) {
     // Parsing has failed.

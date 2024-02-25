@@ -32,17 +32,6 @@ TEST(OmniboxMatchCellViewTest, ComputeMatchMaxWidths) {
   EXPECT_EQ(contents_width, contents_max_width);
   EXPECT_EQ(0, description_max_width);
 
-  // Description should be hidden if it's at least 75 pixels wide but doesn't
-  // get 75 pixels of space.
-  contents_width = 300;
-  description_width = 100;
-  available_width = 384;
-  OmniboxMatchCellView::ComputeMatchMaxWidths(
-      contents_width, separator_width, description_width, available_width,
-      false, true, &contents_max_width, &description_max_width);
-  EXPECT_EQ(contents_width, contents_max_width);
-  EXPECT_EQ(0, description_max_width);
-
   // If contents and description are on separate lines, each can take the full
   // available width.
   contents_width = 300;

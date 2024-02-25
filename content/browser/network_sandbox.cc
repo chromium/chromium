@@ -11,6 +11,7 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/notreached.h"
 #include "base/task/thread_pool.h"
+#include "base/trace_event/base_tracing.h"
 #include "build/build_config.h"
 #include "content/browser/network_sandbox_grant_result.h"
 #include "content/public/browser/browser_thread.h"
@@ -57,7 +58,7 @@ struct SandboxParameters {
 // not be deleted.
 SandboxGrantResult MaybeDeleteOldData(
     const base::FilePath& old_path,
-    const absl::optional<base::FilePath>& filename,
+    const std::optional<base::FilePath>& filename,
     bool is_sql) {
   // The path to the specific data file might not have been specified in the
   // network context params. In that case, nothing to delete.
@@ -107,7 +108,7 @@ SandboxGrantResult MaybeDeleteOldData(
 // Returns SandboxGrantResult::kFailedToCopyData if a file could not be copied.
 SandboxGrantResult MaybeCopyData(const base::FilePath& old_path,
                                  const base::FilePath& new_path,
-                                 const absl::optional<base::FilePath>& filename,
+                                 const std::optional<base::FilePath>& filename,
                                  bool is_sql) {
   // The path to the specific data file might not have been specified in the
   // network context params. In that case, no files need to be moved.
@@ -297,6 +298,7 @@ SandboxGrantResult MaybeGrantSandboxAccessToNetworkContextData(
       // later, it ensures that any new files created by the cache subsystem
       // get the inherited ACE rather than having to set them manually later.
       SCOPED_UMA_HISTOGRAM_TIMER("NetworkService.TimeToGrantCacheAccess");
+      TRACE_EVENT("startup", "NetworkSandbox.MaybeGrantAccessToDataPath");
       if (!MaybeGrantAccessToDataPath(
               sandbox_params, &*params->file_paths->http_cache_directory)) {
         PLOG(ERROR) << "Failed to grant sandbox access to cache directory "

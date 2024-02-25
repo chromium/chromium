@@ -9,16 +9,15 @@
 
 namespace blink {
 
-scoped_refptr<const ShapeResult>
-CachingWordShapeIterator::ShapeWordWithoutSpacing(const TextRun& word_run,
-                                                  const Font* font) {
+const ShapeResult* CachingWordShapeIterator::ShapeWordWithoutSpacing(
+    const TextRun& word_run,
+    const Font* font) {
   ShapeCacheEntry* cache_entry = shape_cache_->Add(word_run, ShapeCacheEntry());
   if (cache_entry && *cache_entry)
     return *cache_entry;
 
   HarfBuzzShaper shaper(word_run.NormalizedUTF16());
-  scoped_refptr<const ShapeResult> shape_result =
-      shaper.Shape(font, word_run.Direction());
+  ShapeResult* shape_result = shaper.Shape(font, word_run.Direction());
   if (!shape_result)
     return nullptr;
 
@@ -29,16 +28,13 @@ CachingWordShapeIterator::ShapeWordWithoutSpacing(const TextRun& word_run,
   return shape_result;
 }
 
-scoped_refptr<const ShapeResult> CachingWordShapeIterator::ShapeWord(
-    const TextRun& word_run,
-    const Font* font) {
-  scoped_refptr<const ShapeResult> result =
-      ShapeWordWithoutSpacing(word_run, font);
+const ShapeResult* CachingWordShapeIterator::ShapeWord(const TextRun& word_run,
+                                                       const Font* font) {
+  const ShapeResult* result = ShapeWordWithoutSpacing(word_run, font);
   if (LIKELY(!spacing_.HasSpacing()))
     return result;
 
-  scoped_refptr<const ShapeResult> spacing_result =
-      result->ApplySpacingToCopy(spacing_, word_run);
+  ShapeResult* spacing_result = result->ApplySpacingToCopy(spacing_, word_run);
   gfx::RectF ink_bounds = spacing_result->ComputeInkBounds();
   DCHECK_GE(ink_bounds.width(), 0);
 

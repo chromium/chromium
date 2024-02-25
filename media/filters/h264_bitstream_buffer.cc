@@ -73,10 +73,13 @@ void H264BitstreamBuffer::AppendU64(size_t num_bits, uint64_t val) {
     uint64_t bits_to_write =
         num_bits > bits_left_in_reg_ ? bits_left_in_reg_ : num_bits;
     uint64_t val_to_write = (val >> (num_bits - bits_to_write));
-    if (bits_to_write < 64)
+    if (bits_to_write < 64) {
       val_to_write &= ((1ull << bits_to_write) - 1);
-    reg_ <<= bits_to_write;
-    reg_ |= val_to_write;
+      reg_ <<= bits_to_write;
+      reg_ |= val_to_write;
+    } else {
+      reg_ = val_to_write;
+    }
     num_bits -= bits_to_write;
     bits_left_in_reg_ -= bits_to_write;
   }

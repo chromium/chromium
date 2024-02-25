@@ -266,7 +266,7 @@ views::View* AccessiblePaneView::GetFocusTraversableParentView() {
   return nullptr;
 }
 
-BEGIN_METADATA(AccessiblePaneView, View)
+BEGIN_METADATA(AccessiblePaneView)
 END_METADATA
 
 }  // namespace views

@@ -29,6 +29,18 @@ struct StructTraits<display::mojom::DisplayModeDataView,
     return display_mode->refresh_rate();
   }
 
+  static int htotal(const std::unique_ptr<display::DisplayMode>& display_mode) {
+    return display_mode->htotal_;
+  }
+
+  static int vtotal(const std::unique_ptr<display::DisplayMode>& display_mode) {
+    return display_mode->vtotal_;
+  }
+
+  static int clock(const std::unique_ptr<display::DisplayMode>& display_mode) {
+    return display_mode->clock_;
+  }
+
   static bool Read(display::mojom::DisplayModeDataView data,
                    std::unique_ptr<display::DisplayMode>* out);
 };

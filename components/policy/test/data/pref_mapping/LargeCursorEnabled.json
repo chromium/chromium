@@ -1,0 +1,19 @@
+[
+  {
+    "os": [
+      "chromeos_ash"
+    ],
+    "policy_pref_mapping_tests": [
+      {
+        "policies": {
+          "LargeCursorEnabled": true
+        },
+        "prefs": {
+          "settings.a11y.large_cursor_enabled": {
+            "value": true
+          }
+        }
+      }
+    ]
+  }
+]

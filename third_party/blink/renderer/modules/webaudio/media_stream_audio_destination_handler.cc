@@ -143,17 +143,14 @@ void MediaStreamAudioDestinationHandler::UpdatePullStatusIfNeeded() {
   unsigned number_of_input_connections =
       Input(0).NumberOfRenderingConnections();
   if (number_of_input_connections && !need_automatic_pull_) {
-    // When an AudioBasicInspectorNode is not connected to any downstream node
-    // while still connected from upstream node(s), add it to the context's
-    // automatic pull list.
+    // When a MediaStreamAudioDestinationHandler is not connected to any
+    // downstream node while still connected from upstream node(s), add it to
+    // the context's automatic pull list.
     Context()->GetDeferredTaskHandler().AddAutomaticPullNode(this);
     need_automatic_pull_ = true;
   } else if (!number_of_input_connections && need_automatic_pull_) {
-    // The AudioBasicInspectorNode is connected to nothing and is
-    // not an AnalyserNode, remove it from the context's automatic
-    // pull list.  AnalyserNode's need to be pulled even with no
-    // inputs so that the internal state gets updated to hold the
-    // right time and FFT data.
+    // The MediaStreamAudioDestinationHandler is connected to nothing; remove it
+    // from the context's automatic pull list.
     Context()->GetDeferredTaskHandler().RemoveAutomaticPullNode(this);
     need_automatic_pull_ = false;
   }

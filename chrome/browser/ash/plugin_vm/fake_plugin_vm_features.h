@@ -5,9 +5,10 @@
 #ifndef CHROME_BROWSER_ASH_PLUGIN_VM_FAKE_PLUGIN_VM_FEATURES_H_
 #define CHROME_BROWSER_ASH_PLUGIN_VM_FAKE_PLUGIN_VM_FEATURES_H_
 
+#include <optional>
+
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/ash/plugin_vm/plugin_vm_features.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 class Profile;
 
@@ -37,12 +38,12 @@ class FakePluginVmFeatures : public PluginVmFeatures {
  private:
   // Original global static when this instance is created. It is captured when
   // FakePluginVmFeatures is created and replaced at destruction.
-  raw_ptr<PluginVmFeatures, ExperimentalAsh> original_features_;
+  raw_ptr<PluginVmFeatures> original_features_;
 
-  absl::optional<bool> allowed_;
+  std::optional<bool> allowed_;
   std::string disallowed_reason_;
-  absl::optional<bool> configured_;
-  absl::optional<bool> enabled_;
+  std::optional<bool> configured_;
+  std::optional<bool> enabled_;
 };
 
 }  // namespace plugin_vm

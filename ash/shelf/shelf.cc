@@ -136,7 +136,7 @@ class HotseatWidgetAnimationMetricsReporter {
 
   metrics_util::ReportCallback GetReportCallback(HotseatState target_state) {
     DCHECK_NE(target_state, HotseatState::kNone);
-    return metrics_util::ForSmoothness(base::BindRepeating(
+    return metrics_util::ForSmoothnessV3(base::BindRepeating(
         &HotseatWidgetAnimationMetricsReporter::ReportSmoothness,
         weak_ptr_factory_.GetWeakPtr(), target_state));
   }
@@ -191,7 +191,7 @@ class ASH_EXPORT NavigationWidgetAnimationMetricsReporter {
   metrics_util::ReportCallback GetReportCallback(
       HotseatState target_hotseat_state) {
     DCHECK_NE(target_hotseat_state, HotseatState::kNone);
-    return metrics_util::ForSmoothness(base::BindRepeating(
+    return metrics_util::ForSmoothnessV3(base::BindRepeating(
         &NavigationWidgetAnimationMetricsReporter::ReportSmoothness,
         weak_ptr_factory_.GetWeakPtr(), target_hotseat_state));
   }
@@ -250,7 +250,7 @@ class Shelf::AutoHideEventHandler : public ui::EventHandler {
   }
 
  private:
-  raw_ptr<Shelf, ExperimentalAsh> shelf_;
+  raw_ptr<Shelf> shelf_;
 };
 
 // Shelf::AutoDimEventHandler -----------------------------------------------
@@ -324,7 +324,7 @@ class Shelf::AutoDimEventHandler : public ui::EventHandler,
 
  private:
   // Unowned pointer to the shelf that owns this event handler.
-  raw_ptr<Shelf, ExperimentalAsh> shelf_;
+  raw_ptr<Shelf> shelf_;
   // OneShotTimer that dims shelf due to inactivity.
   base::OneShotTimer dim_shelf_timer_;
   // An observer that notifies the AutoDimHandler that shelf visibility has
@@ -407,7 +407,7 @@ void Shelf::ActivateShelfItemOnDisplay(int item_index, int64_t display_id) {
 
 // static
 void Shelf::UpdateShelfVisibility() {
-  for (auto* root : Shell::Get()->GetAllRootWindows()) {
+  for (aura::Window* root : Shell::Get()->GetAllRootWindows()) {
     Shelf::ForWindow(root)->UpdateVisibilityState();
   }
 }
@@ -470,10 +470,8 @@ void Shelf::CreateShelfWidget(aura::Window* root) {
   if (ash::features::IsDeskButtonEnabled()) {
     CreateDeskButtonWidget(shelf_container);
   }
-  if (features::IsUseLoginShelfWidgetEnabled()) {
-    login_shelf_widget_ =
-        std::make_unique<LoginShelfWidget>(/*shelf=*/this, shelf_container);
-  }
+  login_shelf_widget_ =
+      std::make_unique<LoginShelfWidget>(/*shelf=*/this, shelf_container);
 
   // Must occur after |shelf_widget_| is constructed because the system tray
   // constructors call back into Shelf::shelf_widget().
@@ -584,8 +582,8 @@ void Shelf::UpdateAutoHideState() {
 }
 
 ShelfBackgroundType Shelf::GetBackgroundType() const {
-  return shelf_widget_ ? shelf_widget_->GetBackgroundType()
-                       : ShelfBackgroundType::kDefaultBg;
+  return shelf_layout_manager_ ? shelf_layout_manager_->shelf_background_type()
+                               : ShelfBackgroundType::kDefaultBg;
 }
 
 void Shelf::UpdateVisibilityState() {
@@ -789,9 +787,6 @@ void Shelf::OnAutoHideStateChanged(ShelfAutoHideState new_state) {
 
 void Shelf::OnBackgroundUpdated(ShelfBackgroundType background_type,
                                 AnimationChangeType change_type) {
-  if (background_type == GetBackgroundType())
-    return;
-
   // Shelf should undim when transitioning to show app list.
   if (auto_dim_event_handler_ && IsAppListBackground(background_type))
     UndimShelf();

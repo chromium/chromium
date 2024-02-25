@@ -46,6 +46,8 @@ component("fido") {
     "opaque_attestation_statement.h",
     "p256_public_key.cc",
     "p256_public_key.h",
+    "prf_input.cc",
+    "prf_input.h",
     "public_key.cc",
     "public_key.h",
     "public_key_credential_descriptor.cc",
@@ -82,6 +84,8 @@ component("fido") {
     "//device/bluetooth/public/cpp",
     "//services/device/public/mojom",
   ]
+
+  configs += [ "//build/config/compiler:wexit_time_destructors" ]
 
   # Android implementation of FIDO is delegated to GMSCore.
   if (!is_android) {
@@ -142,10 +146,22 @@ component("fido") {
       "ctap_make_credential_request.cc",
       "ctap_make_credential_request.h",
       "device_operation.h",
-      "device_public_key_extension.cc",
-      "device_public_key_extension.h",
       "device_response_converter.cc",
       "device_response_converter.h",
+      "enclave/constants.cc",
+      "enclave/constants.h",
+      "enclave/enclave_authenticator.cc",
+      "enclave/enclave_authenticator.h",
+      "enclave/enclave_discovery.cc",
+      "enclave/enclave_discovery.h",
+      "enclave/enclave_protocol_utils.cc",
+      "enclave/enclave_protocol_utils.h",
+      "enclave/enclave_websocket_client.cc",
+      "enclave/enclave_websocket_client.h",
+      "enclave/transact.cc",
+      "enclave/transact.h",
+      "enclave/types.cc",
+      "enclave/types.h",
       "fido_authenticator.cc",
       "fido_authenticator.h",
       "fido_device.cc",
@@ -235,8 +251,6 @@ component("fido") {
       "mac/get_assertion_operation.mm",
       "mac/icloud_keychain.mm",
       "mac/icloud_keychain_sys.mm",
-      "mac/keychain.h",
-      "mac/keychain.mm",
       "mac/make_credential_operation.h",
       "mac/make_credential_operation.mm",
       "mac/operation.h",
@@ -291,19 +305,6 @@ component("fido") {
       "//dbus",
     ]
   }
-
-  if (!is_chromeos && !is_android) {
-    sources += [
-      "enclave/enclave_authenticator.cc",
-      "enclave/enclave_authenticator.h",
-      "enclave/enclave_discovery.cc",
-      "enclave/enclave_discovery.h",
-      "enclave/enclave_http_client.cc",
-      "enclave/enclave_http_client.h",
-      "enclave/enclave_protocol_utils.cc",
-      "enclave/enclave_protocol_utils.h",
-    ]
-  }
 }
 
 static_library("cablev2_registration") {
@@ -320,6 +321,7 @@ static_library("cablev2_registration") {
     "//components/gcm_driver/instance_id",
     "//third_party/boringssl",
   ]
+  configs += [ "//build/config/compiler:wexit_time_destructors" ]
 }
 
 static_library("cablev2_authenticator") {
@@ -334,6 +336,7 @@ static_library("cablev2_authenticator") {
     "//content/public/common",  # for authenticator.mojom
     "//services/network/public/mojom",
   ]
+  configs += [ "//build/config/compiler:wexit_time_destructors" ]
 }
 
 static_library("cablev2_test_util") {
@@ -468,13 +471,12 @@ source_set("test_support") {
 
   if (is_mac) {
     sources += [
-      "mac/fake_keychain.h",
-      "mac/fake_keychain.mm",
       "mac/fake_touch_id_context.h",
       "mac/fake_touch_id_context.mm",
       "mac/scoped_touch_id_test_environment.h",
       "mac/scoped_touch_id_test_environment.mm",
     ]
+    deps += [ "//crypto:test_support" ]
   }
 }
 
@@ -493,26 +495,6 @@ if (is_mac) {
     deps = [
       "//base",
       "//device/fido",
-    ]
-  }
-}
-
-if (is_win || is_linux || is_mac) {
-  static_library("enclave_service") {
-    testonly = true
-    sources = [
-      "enclave/test/enclave_http_server.cc",
-      "enclave/test/enclave_http_server.h",
-    ]
-    deps = [
-      ":fido",
-      "//base",
-      "//components/cbor",
-      "//components/device_event_log",
-      "//components/sync/protocol:protocol",
-      "//mojo/public/cpp/bindings",
-      "//net",
-      "//net:test_support",
     ]
   }
 }

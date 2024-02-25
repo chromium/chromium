@@ -230,7 +230,8 @@ bool ServiceWorkerDevToolsAgentHost::AttachSession(DevToolsSession* session,
   session->CreateAndAddHandler<protocol::InspectorHandler>();
   session->CreateAndAddHandler<protocol::NetworkHandler>(
       GetId(), devtools_worker_token_, GetIOContext(), base::DoNothing(),
-      session->GetClient()->MayReadLocalFiles());
+      session->GetClient()->MayReadLocalFiles(),
+      session->GetClient()->IsTrusted());
 
   session->CreateAndAddHandler<protocol::FetchHandler>(
       GetIOContext(),
@@ -389,10 +390,11 @@ ServiceWorkerDevToolsAgentHost::CreateNetworkFactoryParamsForDevTools() {
       rph, origin, version->key().ToPartialNetIsolationInfo(),
       /*coep_reporter=*/mojo::NullRemote(),
       static_cast<StoragePartitionImpl*>(rph->GetStoragePartition())
-          ->CreateAuthCertObserverForServiceWorker(),
+          ->CreateAuthCertObserverForServiceWorker(rph->GetID()),
       NetworkServiceDevToolsObserver::MakeSelfOwned(GetId()),
       /*client_security_state=*/nullptr,
-      /*debug_tag=*/"SWDTAH::CreateNetworkFactoryParamsForDevTools");
+      /*debug_tag=*/"SWDTAH::CreateNetworkFactoryParamsForDevTools",
+      /*require_cross_site_request_for_cookies=*/false);
   return {url::Origin::Create(GetURL()), net::SiteForCookies::FromUrl(GetURL()),
           std::move(factory)};
 }
@@ -401,11 +403,11 @@ RenderProcessHost* ServiceWorkerDevToolsAgentHost::GetProcessHost() {
   return RenderProcessHost::FromID(worker_process_id_);
 }
 
-absl::optional<network::CrossOriginEmbedderPolicy>
+std::optional<network::CrossOriginEmbedderPolicy>
 ServiceWorkerDevToolsAgentHost::cross_origin_embedder_policy(
     const std::string&) {
   if (!client_security_state_) {
-    return absl::nullopt;
+    return std::nullopt;
   }
   return client_security_state_->cross_origin_embedder_policy;
 }

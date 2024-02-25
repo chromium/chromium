@@ -146,5 +146,5 @@ CrostiniRecoveryView::~CrostiniRecoveryView() {
   g_crostini_recovery_view = nullptr;
 }
 
-BEGIN_METADATA(CrostiniRecoveryView, views::BubbleDialogDelegateView)
+BEGIN_METADATA(CrostiniRecoveryView)
 END_METADATA

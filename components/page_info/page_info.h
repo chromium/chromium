@@ -17,6 +17,8 @@
 #include "components/content_settings/core/common/content_settings.h"
 #include "components/content_settings/core/common/content_settings_pattern.h"
 #include "components/content_settings/core/common/content_settings_types.h"
+#include "components/content_settings/core/common/cookie_blocking_3pcd_status.h"
+#include "components/page_info/core/page_info_action.h"
 #include "components/safe_browsing/buildflags.h"
 #include "components/security_state/core/security_state.h"
 #include "content/public/browser/web_contents.h"
@@ -48,8 +50,7 @@ class PageInfoUI;
 // information and allows users to change the permissions. |PageInfo|
 // objects must be created on the heap. They destroy themselves after the UI is
 // closed.
-class PageInfo : private content_settings::CookieControlsObserver,
-                 content_settings::OldCookieControlsObserver {
+class PageInfo : private content_settings::CookieControlsObserver {
  public:
   // Status of a connection to a website.
   enum SiteConnectionStatus {
@@ -124,55 +125,6 @@ class PageInfo : private content_settings::CookieControlsObserver,
     END_OF_SSL_CERTIFICATE_DECISIONS_DID_REVOKE_ENUM
   };
 
-  // UMA statistics for PageInfo. Do not reorder or remove existing
-  // fields. A Java counterpart will be generated for this enum.
-  // GENERATED_JAVA_ENUM_PACKAGE: org.chromium.components.page_info
-  // All values here should have corresponding entries in
-  // WebsiteSettingsAction area of enums.xml.
-  enum PageInfoAction {
-    PAGE_INFO_OPENED = 0,
-    // No longer used; indicated actions for the old version of Page Info that
-    // had a "Permissions" tab and a "Connection" tab.
-    // PAGE_INFO_PERMISSIONS_TAB_SELECTED = 1,
-    // PAGE_INFO_CONNECTION_TAB_SELECTED = 2,
-    // PAGE_INFO_CONNECTION_TAB_SHOWN_IMMEDIATELY = 3,
-    PAGE_INFO_COOKIES_DIALOG_OPENED = 4,
-    PAGE_INFO_CHANGED_PERMISSION = 5,
-    PAGE_INFO_CERTIFICATE_DIALOG_OPENED = 6,
-    // No longer used; indicated a UI viewer for SCTs.
-    // PAGE_INFO_TRANSPARENCY_VIEWER_OPENED = 7,
-    PAGE_INFO_CONNECTION_HELP_OPENED = 8,
-    PAGE_INFO_SITE_SETTINGS_OPENED = 9,
-    PAGE_INFO_SECURITY_DETAILS_OPENED = 10,
-    PAGE_INFO_COOKIES_ALLOWED_FOR_SITE = 11,
-    PAGE_INFO_COOKIES_BLOCKED_FOR_SITE = 12,
-    PAGE_INFO_COOKIES_CLEARED = 13,
-    PAGE_INFO_PERMISSION_DIALOG_OPENED = 14,
-    PAGE_INFO_PERMISSIONS_CLEARED = 15,
-    // No longer used; indicated permission change but was a duplicate metric.
-    // PAGE_INFO_PERMISSIONS_CHANGED = 16,
-    PAGE_INFO_FORGET_SITE_OPENED = 17,
-    PAGE_INFO_FORGET_SITE_CLEARED = 18,
-    PAGE_INFO_HISTORY_OPENED = 19,
-    PAGE_INFO_HISTORY_ENTRY_REMOVED = 20,
-    PAGE_INFO_HISTORY_ENTRY_CLICKED = 21,
-    PAGE_INFO_PASSWORD_REUSE_ALLOWED = 22,
-    PAGE_INFO_CHANGE_PASSWORD_PRESSED = 23,
-    PAGE_INFO_SAFETY_TIP_HELP_OPENED = 24,
-    PAGE_INFO_CHOOSER_OBJECT_DELETED = 25,
-    PAGE_INFO_RESET_DECISIONS_CLICKED = 26,
-    PAGE_INFO_STORE_INFO_CLICKED = 27,
-    PAGE_INFO_ABOUT_THIS_SITE_PAGE_OPENED = 28,
-    PAGE_INFO_ABOUT_THIS_SITE_SOURCE_LINK_CLICKED = 29,
-    PAGE_INFO_AD_PERSONALIZATION_PAGE_OPENED = 30,
-    PAGE_INFO_AD_PERSONALIZATION_SETTINGS_OPENED = 31,
-    PAGE_INFO_ABOUT_THIS_SITE_MORE_ABOUT_CLICKED = 32,
-    PAGE_INFO_COOKIES_PAGE_OPENED = 33,
-    PAGE_INFO_COOKIES_SETTINGS_OPENED = 34,
-    PAGE_INFO_ALL_SITES_WITH_FPS_FILTER_OPENED = 35,
-    kMaxValue = PAGE_INFO_ALL_SITES_WITH_FPS_FILTER_OPENED
-  };
-
   struct ChooserUIInfo {
     ContentSettingsType content_settings_type;
     int description_string_id;
@@ -201,7 +153,7 @@ class PageInfo : private content_settings::CookieControlsObserver,
     bool is_one_time = false;
     // Only set for settings that can have multiple permissions for different
     // embedded origins.
-    absl::optional<url::Origin> requesting_origin;
+    std::optional<url::Origin> requesting_origin;
     // When the permission was used.
     base::Time last_used;
     // Whether the permission is in use.
@@ -247,14 +199,14 @@ class PageInfo : private content_settings::CookieControlsObserver,
   // that change on to the UI to be redrawn.
   void UpdateSecurityState();
 
-  void RecordPageInfoAction(PageInfoAction action);
+  void RecordPageInfoAction(page_info::PageInfoAction action);
 
   void UpdatePermissions();
 
   // This method is called when ever a permission setting is changed.
   void OnSitePermissionChanged(ContentSettingsType type,
                                ContentSetting value,
-                               absl::optional<url::Origin> requesting_origin,
+                               std::optional<url::Origin> requesting_origin,
                                bool is_one_time);
 
   // This method is called whenever access to an object is revoked.
@@ -352,22 +304,15 @@ class PageInfo : private content_settings::CookieControlsObserver,
   FRIEND_TEST_ALL_PREFIXES(PageInfoTest,
                            ShowInfoBarWhenBlockingThirdPartyCookies);
 
-  // OldCookieControlsObserver:
-  void OnStatusChanged(CookieControlsStatus status,
-                       CookieControlsEnforcement enforcement,
-                       int allowed_cookies,
-                       int blocked_cookies) override;
-  void OnCookiesCountChanged(int allowed_cookies, int blocked_cookies) override;
-  void OnStatefulBounceCountChanged(int bounce_count) override;
-
   // CookieControlsObserver:
+  // TODO(b/317975095): Remove `status` in favor of `control_visible` and
+  // `protections_on`.
   void OnStatusChanged(CookieControlsStatus status,
+                       bool controls_visible,
+                       bool protections_on,
                        CookieControlsEnforcement enforcement,
+                       CookieBlocking3pcdStatus blocking_status,
                        base::Time expiration) override;
-  void OnSitesCountChanged(int allowed_third_party_sites_count,
-                           int blocked_third_party_sites_count) override;
-  void OnBreakageConfidenceLevelChanged(
-      CookieControlsBreakageConfidenceLevel level) override;
 
   // Populates this object's UI state with provided security context. This
   // function does not update visible UI-- that's part of Present*().
@@ -544,25 +489,17 @@ class PageInfo : private content_settings::CookieControlsObserver,
   base::ScopedObservation<content_settings::CookieControlsController,
                           content_settings::CookieControlsObserver>
       observation_{this};
-  base::ScopedObservation<content_settings::CookieControlsController,
-                          content_settings::OldCookieControlsObserver>
-      old_observation_{this};
 
-  CookieControlsStatus status_ = CookieControlsStatus::kUninitialized;
+  bool protections_on_ = true;
+  bool controls_visible_ = true;
 
   CookieControlsEnforcement enforcement_ =
       CookieControlsEnforcement::kNoEnforcement;
 
+  CookieBlocking3pcdStatus blocking_status_ =
+      CookieBlocking3pcdStatus::kNotIn3pcd;
+
   base::Time cookie_exception_expiration_;
-
-  CookieControlsBreakageConfidenceLevel cookie_controls_confidence_ =
-      CookieControlsBreakageConfidenceLevel::kUninitialized;
-
-  // The number of third-party sites blocked from accessing storage.
-  absl::optional<int> blocked_third_party_sites_count_;
-
-  // The number of third-party sites allowed to access storage.
-  absl::optional<int> allowed_third_party_sites_count_;
 
   bool is_subscribed_to_permission_change_for_testing = false;
 

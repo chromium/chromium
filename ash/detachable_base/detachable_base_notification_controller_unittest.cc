@@ -22,7 +22,7 @@ namespace ash {
 
 UserInfo CreateTestUserInfo(const std::string& user_email) {
   UserInfo user_info;
-  user_info.type = user_manager::USER_TYPE_REGULAR;
+  user_info.type = user_manager::UserType::kRegular;
   user_info.account_id = AccountId::FromUserEmail(user_email);
   user_info.display_name = "Test user";
   user_info.display_email = user_email;

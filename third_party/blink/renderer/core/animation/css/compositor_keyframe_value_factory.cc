@@ -19,17 +19,17 @@
 namespace blink {
 
 static CompositorKeyframeValue* CreateFromTransformProperties(
-    scoped_refptr<TransformOperation> transform,
+    TransformOperation* transform,
     double zoom,
-    scoped_refptr<TransformOperation> initial_transform) {
+    TransformOperation* initial_transform) {
   TransformOperations operation;
-  bool has_transform = static_cast<bool>(transform);
-  if (has_transform || initial_transform) {
-    operation.Operations().push_back(
-        std::move(has_transform ? transform : initial_transform));
+  if (transform) {
+    operation.Operations().push_back(transform);
+  } else if (initial_transform) {
+    operation.Operations().push_back(initial_transform);
   }
   return MakeGarbageCollected<CompositorKeyframeTransform>(
-      operation, has_transform ? zoom : 1);
+      operation, transform ? zoom : 1);
 }
 
 CompositorKeyframeValue* CompositorKeyframeValueFactory::Create(

@@ -19,7 +19,9 @@ import org.chromium.gms.shadows.ShadowChromiumPlayServicesAvailability;
 
 /** Unit tests for GooglePlayServicesChecker. */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(manifest = Config.NONE, shadows = {ShadowChromiumPlayServicesAvailability.class})
+@Config(
+        manifest = Config.NONE,
+        shadows = {ShadowChromiumPlayServicesAvailability.class})
 public class BackgroundSyncGooglePlayServicesCheckerTest {
     @Test
     @Feature("BackgroundSync")

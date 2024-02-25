@@ -1,4 +1,4 @@
-(async function(testRunner) {
+(async function(/** @type {import('test_runner').TestRunner} */ testRunner) {
     const {session, dp} = await testRunner.startURL(
         'https://devtools.test:8443/inspector-protocol/resources/content-security-policy-issue-trusted-types-policy.php',
         'Breakpoint on Trusted Type violations with exception');

@@ -46,6 +46,8 @@
 #include "base/notreached.h"
 #include "base/system/sys_info.h"
 #if BUILDFLAG(IS_WIN)
+#include "base/functional/callback.h"
+#include "base/task/thread_pool.h"
 #include "base/win/wmi.h"
 #endif
 #include "components/version_info/version_info.h"
@@ -64,6 +66,10 @@
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/win/windows_version.h"
+#endif
+
+#if BUILDFLAG(IS_MAC)
+#include "base/system/sys_info.h"
 #endif
 
 #if BUILDFLAG(IS_APPLE)
@@ -106,18 +112,17 @@ std::string GetMachineName() {
   if (computer_name.get())
     return base::SysCFStringRefToUTF8(computer_name.get());
 
-  // If all else fails, return to using a slightly nicer version of the
-  // hardware model.
-  char modelBuffer[256];
-  size_t length = sizeof(modelBuffer);
-  if (!sysctlbyname("hw.model", modelBuffer, &length, NULL, 0)) {
-    for (size_t i = 0; i < length; i++) {
-      if (base::IsAsciiDigit(modelBuffer[i]))
-        return std::string(modelBuffer, 0, i);
-    }
-    return std::string(modelBuffer, 0, length);
+  // If all else fails, return to using a slightly nicer version of the hardware
+  // model. Warning: This will soon return just a useless "Mac" string.
+  std::string model = base::SysInfo::HardwareModelName();
+  std::optional<base::SysInfo::HardwareModelNameSplit> split =
+      base::SysInfo::SplitHardwareModelNameDoNotUse(model);
+
+  if (!split) {
+    return model;
   }
-  return std::string();
+
+  return split.value().category;
 #elif BUILDFLAG(IS_WIN)
   wchar_t computer_name[MAX_COMPUTERNAME_LENGTH + 1] = {0};
   DWORD size = std::size(computer_name);
@@ -256,6 +261,19 @@ std::unique_ptr<em::BrowserDeviceIdentifier> GetBrowserDeviceIdentifier() {
 #endif
   return device_identifier;
 }
+
+#if BUILDFLAG(IS_WIN)
+void GetBrowserDeviceIdentifierAsync(
+    base::OnceCallback<
+        void(std::unique_ptr<enterprise_management::BrowserDeviceIdentifier>)>
+        callback) {
+  base::ThreadPool::CreateCOMSTATaskRunner(
+      {base::MayBlock(), base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN})
+      ->PostTaskAndReplyWithResult(FROM_HERE,
+                                   base::BindOnce(&GetBrowserDeviceIdentifier),
+                                   std::move(callback));
+}
+#endif  // BUILDFLAG(IS_WIN)
 
 bool IsMachineLevelUserCloudPolicyType(const std::string& type) {
   return type == GetMachineLevelUserCloudPolicyTypeForCurrentOS();

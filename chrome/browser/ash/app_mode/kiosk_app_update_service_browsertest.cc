@@ -163,11 +163,10 @@ class KioskAppUpdateServiceTest
  private:
   base::ScopedTempDir temp_dir_;
   std::unique_ptr<base::ScopedPathOverride> uptime_file_override_;
-  raw_ptr<const extensions::Extension, ExperimentalAsh> app_ =
+  raw_ptr<const extensions::Extension> app_ = nullptr;  // Not owned.
+  raw_ptr<KioskAppUpdateService, DanglingUntriaged> update_service_ =
       nullptr;  // Not owned.
-  raw_ptr<KioskAppUpdateService, DanglingUntriaged | ExperimentalAsh>
-      update_service_ = nullptr;  // Not owned.
-  raw_ptr<system::AutomaticRebootManager, DanglingUntriaged | ExperimentalAsh>
+  raw_ptr<system::AutomaticRebootManager, DanglingUntriaged>
       automatic_reboot_manager_ = nullptr;  // Not owned.
   std::unique_ptr<TestFuture<void>> test_waiter_;
 };

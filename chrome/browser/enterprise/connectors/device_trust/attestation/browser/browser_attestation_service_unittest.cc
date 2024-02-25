@@ -92,25 +92,25 @@ std::string GetSerializedSignedChallenge(bool use_dev = false) {
   return serialized_signed_challenge;
 }
 
-absl::optional<SignedData> ParseDataFromResponse(const std::string& response) {
-  absl::optional<base::Value> data = base::JSONReader::Read(
+std::optional<SignedData> ParseDataFromResponse(const std::string& response) {
+  std::optional<base::Value> data = base::JSONReader::Read(
       response, base::JSONParserOptions::JSON_ALLOW_TRAILING_COMMAS);
 
   // If json is malformed or it doesn't include the needed field return
   // an empty string.
   if (!data || !data->GetDict().FindString("challengeResponse")) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   std::string serialized_signed_challenge;
   if (!base::Base64Decode(*data->GetDict().FindString("challengeResponse"),
                           &serialized_signed_challenge)) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   SignedData signed_data;
   if (!signed_data.ParseFromString(serialized_signed_challenge)) {
-    return absl::nullopt;
+    return std::nullopt;
   }
   return signed_data;
 }

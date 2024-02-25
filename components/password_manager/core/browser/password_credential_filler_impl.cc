@@ -73,18 +73,17 @@ SubmissionReadinessState CalculateSubmissionReadiness(
     // block a form submission. Note: Don't use |check_status !=
     // kNotCheckable|, a radio button is considered a "checkable" element too,
     // but it should block a submission.
-    return field.form_control_type == "checkbox";
+    return field.form_control_type == autofill::FormControlType::kInputCheckbox;
   };
 
   for (size_t i = username_index + 1; i < password_index; ++i) {
-    if (ShouldIgnoreField(form_data.fields[i])) {
-      continue;
+    if (!ShouldIgnoreField(form_data.fields[i])) {
+      return SubmissionReadinessState::kFieldBetweenUsernameAndPassword;
     }
-    return SubmissionReadinessState::kFieldBetweenUsernameAndPassword;
   }
 
   for (size_t i = password_index + 1; i < number_of_elements; ++i) {
-    if (form_data.fields[i].IsFocusable()) {
+    if (!ShouldIgnoreField(form_data.fields[i])) {
       return SubmissionReadinessState::kFieldAfterPasswordField;
     }
   }
@@ -158,9 +157,8 @@ PasswordCredentialFillerImpl::GetSubmissionReadinessState() const {
   return submission_readiness_;
 }
 
-const GURL& PasswordCredentialFillerImpl::GetFrameUrl() const {
-  CHECK(driver_);
-  return driver_->GetLastCommittedURL();
+GURL PasswordCredentialFillerImpl::GetFrameUrl() const {
+  return driver_ ? driver_->GetLastCommittedURL() : GURL();
 }
 
 void PasswordCredentialFillerImpl::Dismiss(ToShowVirtualKeyboard should_show) {
@@ -172,6 +170,11 @@ void PasswordCredentialFillerImpl::Dismiss(ToShowVirtualKeyboard should_show) {
   }
   // TODO(crbug/1434278): Avoid using KeyboardReplacingSurfaceClosed.
   driver_->KeyboardReplacingSurfaceClosed(should_show);
+}
+
+base::WeakPtr<PasswordCredentialFiller>
+PasswordCredentialFillerImpl::AsWeakPtr() {
+  return weak_ptr_factory_.GetWeakPtr();
 }
 
 }  // namespace password_manager

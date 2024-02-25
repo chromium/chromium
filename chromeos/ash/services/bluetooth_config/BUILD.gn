@@ -75,6 +75,7 @@ static_library("bluetooth_config") {
     "//device/bluetooth",
     "//device/bluetooth/public/cpp",
     "//mojo/public/cpp/bindings",
+    "//third_party/re2",
   ]
 }
 

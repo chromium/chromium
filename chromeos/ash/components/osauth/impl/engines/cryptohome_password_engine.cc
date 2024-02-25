@@ -18,12 +18,12 @@ CryptohomePasswordEngine::CryptohomePasswordEngine(CryptohomeCore& core)
 
 CryptohomePasswordEngine::~CryptohomePasswordEngine() = default;
 
-absl::optional<cryptohome::AuthFactorRef>
-CryptohomePasswordEngine::LookUpFactor(UserContext& context) {
+std::optional<cryptohome::AuthFactorRef> CryptohomePasswordEngine::LookUpFactor(
+    UserContext& context) {
   const cryptohome::AuthFactor* password_factor =
       context.GetAuthFactorsData().FindOnlinePasswordFactor();
   if (!password_factor) {
-    return absl::nullopt;
+    return std::nullopt;
   }
   return password_factor->ref();
 }
@@ -59,7 +59,7 @@ void CryptohomePasswordEngine::PerformPasswordAttempt(
 
 void CryptohomePasswordEngine::OnAuthAttempt(
     std::unique_ptr<UserContext> context,
-    absl::optional<AuthenticationError> error) {
+    std::optional<AuthenticationError> error) {
   get_core()->ReturnContext(std::move(context));
   get_observer()->OnFactorAttemptResult(GetFactor(),
                                         /* success= */ !error.has_value());

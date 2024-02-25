@@ -15,7 +15,7 @@
 #include "ash/wallpaper/views/wallpaper_widget_controller.h"
 #include "ash/wm/lock_state_controller.h"
 #include "ash/wm/lock_state_controller_test_api.h"
-#include "ash/wm/test_session_state_animator.h"
+#include "ash/wm/test/test_session_state_animator.h"
 #include "base/memory/raw_ptr.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/time/time.h"
@@ -51,7 +51,7 @@ class PowerEventObserverTest : public AshTestBase {
  protected:
   int GetNumVisibleCompositors() {
     int result = 0;
-    for (auto* window : Shell::GetAllRootWindows()) {
+    for (aura::Window* window : Shell::GetAllRootWindows()) {
       if (window->GetHost()->compositor()->IsVisible())
         ++result;
     }
@@ -65,8 +65,7 @@ class PowerEventObserverTest : public AshTestBase {
     return Shell::Get()->session_controller()->IsScreenLocked();
   }
 
-  raw_ptr<PowerEventObserver, DanglingUntriaged | ExperimentalAsh> observer_ =
-      nullptr;
+  raw_ptr<PowerEventObserver, DanglingUntriaged> observer_ = nullptr;
 };
 
 TEST_F(PowerEventObserverTest, LockBeforeSuspend) {
@@ -698,7 +697,8 @@ TEST_F(PowerEventObserverTest, LockOnLidCloseWhenDocked) {
           .Build();
 
   auto set_docked = [&](bool docked) {
-    std::vector<display::DisplaySnapshot*> displays({internal_display.get()});
+    std::vector<raw_ptr<display::DisplaySnapshot, VectorExperimental>> displays(
+        {internal_display.get()});
     if (docked) {
       displays.push_back(external_display.get());
     }

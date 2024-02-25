@@ -20,10 +20,10 @@
 #include "content/browser/renderer_host/render_widget_host_input_event_router.h"
 #include "content/browser/renderer_host/render_widget_host_view_base.h"
 #include "content/browser/renderer_host/render_widget_host_view_child_frame.h"
+#include "content/common/features.h"
 #include "third_party/blink/public/common/frame/frame_visual_properties.h"
 #include "third_party/blink/public/common/input/web_input_event.h"
 #include "third_party/blink/public/mojom/frame/intrinsic_sizing_info.mojom.h"
-#include "third_party/blink/public/mojom/input/input_handler.mojom-forward.h"
 #include "ui/base/cursor/cursor.h"
 #include "ui/gfx/geometry/dip_util.h"
 
@@ -262,8 +262,7 @@ bool CrossProcessFrameConnector::TransformPointToCoordSpaceForView(
 
 void CrossProcessFrameConnector::ForwardAckedTouchpadZoomEvent(
     const blink::WebGestureEvent& event,
-    blink::mojom::InputEventResultState ack_result,
-    blink::mojom::ScrollResultDataPtr scroll_result_data) {
+    blink::mojom::InputEventResultState ack_result) {
   auto* root_view = GetRootRenderWidgetHostView();
   if (!root_view)
     return;
@@ -272,8 +271,7 @@ void CrossProcessFrameConnector::ForwardAckedTouchpadZoomEvent(
   const gfx::PointF root_point =
       view_->TransformPointToRootCoordSpaceF(event.PositionInWidget());
   root_event.SetPositionInWidget(root_point);
-  root_view->GestureEventAck(root_event, ack_result,
-                             std::move(scroll_result_data));
+  root_view->GestureEventAck(root_event, ack_result);
 }
 
 bool CrossProcessFrameConnector::BubbleScrollEvent(
@@ -317,26 +315,26 @@ void CrossProcessFrameConnector::FocusRootView() {
     root_view->Focus();
 }
 
-blink::mojom::PointerLockResult CrossProcessFrameConnector::LockMouse(
+blink::mojom::PointerLockResult CrossProcessFrameConnector::LockPointer(
     bool request_unadjusted_movement) {
   RenderWidgetHostViewBase* root_view = GetRootRenderWidgetHostView();
   if (root_view)
-    return root_view->LockMouse(request_unadjusted_movement);
+    return root_view->LockPointer(request_unadjusted_movement);
   return blink::mojom::PointerLockResult::kWrongDocument;
 }
 
-blink::mojom::PointerLockResult CrossProcessFrameConnector::ChangeMouseLock(
+blink::mojom::PointerLockResult CrossProcessFrameConnector::ChangePointerLock(
     bool request_unadjusted_movement) {
   RenderWidgetHostViewBase* root_view = GetRootRenderWidgetHostView();
   if (root_view)
-    return root_view->ChangeMouseLock(request_unadjusted_movement);
+    return root_view->ChangePointerLock(request_unadjusted_movement);
   return blink::mojom::PointerLockResult::kWrongDocument;
 }
 
-void CrossProcessFrameConnector::UnlockMouse() {
+void CrossProcessFrameConnector::UnlockPointer() {
   RenderWidgetHostViewBase* root_view = GetRootRenderWidgetHostView();
   if (root_view)
-    root_view->UnlockMouse();
+    root_view->UnlockPointer();
 }
 
 void CrossProcessFrameConnector::OnSynchronizeVisualProperties(
@@ -367,7 +365,7 @@ void CrossProcessFrameConnector::OnSynchronizeVisualProperties(
 
 void CrossProcessFrameConnector::UpdateViewportIntersection(
     const blink::mojom::ViewportIntersectionState& intersection_state,
-    const absl::optional<blink::FrameVisualProperties>& visual_properties) {
+    const std::optional<blink::FrameVisualProperties>& visual_properties) {
   bool intersection_changed = !intersection_state.Equals(intersection_state_);
   if (intersection_changed) {
     RenderWidgetHostImpl* host = view_ ? view_->host() : nullptr;
@@ -378,7 +376,7 @@ void CrossProcessFrameConnector::UpdateViewportIntersection(
       // will quietly fail to propagate the new intersection state for main
       // frames, including portals and fenced frames. For those cases, we need
       // to ensure that the updated VisualProperties are still propagated.
-      absl::optional<blink::VisualProperties> last_properties;
+      std::optional<blink::VisualProperties> last_properties;
       if (host && !main_frame)
         last_properties = host->LastComputedVisualProperties();
       SynchronizeVisualProperties(visual_properties.value(), main_frame);
@@ -404,7 +402,7 @@ void CrossProcessFrameConnector::UpdateViewportIntersectionInternal(
     view_->UpdateViewportIntersection(
         intersection_state_, include_visual_properties
                                  ? view_->host()->LastComputedVisualProperties()
-                                 : absl::nullopt);
+                                 : std::nullopt);
   }
 
   if (IsVisible()) {
@@ -429,6 +427,7 @@ void CrossProcessFrameConnector::OnVisibilityChanged(
 
   // TODO(https://crbug.com/1014212) Remove this CHECK when the bug is fixed.
   CHECK(current_child_frame_host());
+  current_child_frame_host()->VisibilityChanged(visibility_);
 
   // If there is an inner WebContents, it should be notified of the change in
   // the visibility. The Show/Hide methods will not be called if an inner
@@ -513,14 +512,12 @@ void CrossProcessFrameConnector::DidUpdateVisualProperties(
 
 void CrossProcessFrameConnector::DidAckGestureEvent(
     const blink::WebGestureEvent& event,
-    blink::mojom::InputEventResultState ack_result,
-    blink::mojom::ScrollResultDataPtr scroll_result_data) {
+    blink::mojom::InputEventResultState ack_result) {
   auto* root_view = GetRootRenderWidgetHostView();
   if (!root_view)
     return;
 
-  root_view->ChildDidAckGestureEvent(event, ack_result,
-                                     std::move(scroll_result_data));
+  root_view->ChildDidAckGestureEvent(event, ack_result);
 }
 
 void CrossProcessFrameConnector::SetVisibilityForChildViews(

@@ -49,9 +49,8 @@
     <message name="IDS_SYNC_ENTER_PASSPHRASE_BODY_WITH_DATE" desc="Instructions for the dialog where the user enters their Sync passphrase.">
     Your data was encrypted with your <ph name="BEGIN_LINK">&lt;a target="_blank" href="$1"&gt;</ph>sync passphrase<ph name="END_LINK">&lt;/a&gt;</ph> on <ph name="TIME">$2<ex>Sept 1, 2012</ex></ph>. Enter it to start sync.
     </message>
+    <message name="IDS_SYNC_ENTER_PASSPHRASE_BODY" formatter_data="android_java"  desc="Instructions for the dialog where the user enters the passphrase.">
+      Your data is encrypted with your sync passphrase. Enter it to start sync.
+    </message>
   </if>
-
-  <message name="IDS_SYNC_ENTER_PASSPHRASE_BODY" formatter_data="android_java"  desc="Instructions for the dialog where the user enters the passphrase.">
-    Your data is encrypted with your sync passphrase. Enter it to start sync.
-  </message>
 </grit-part>

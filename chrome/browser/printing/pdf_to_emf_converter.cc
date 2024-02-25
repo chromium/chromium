@@ -8,6 +8,7 @@
 #include <windows.h>
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <string_view>
 #include <utility>
@@ -33,7 +34,6 @@
 #include "mojo/public/cpp/bindings/remote.h"
 #include "printing/emf_win.h"
 #include "printing/pdf_render_settings.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
 using content::BrowserThread;
@@ -72,7 +72,7 @@ class PdfConverterImpl : public PdfConverter {
  public:
   PdfConverterImpl(scoped_refptr<base::RefCountedMemory> data,
                    const PdfRenderSettings& conversion_settings,
-                   const absl::optional<bool>& use_skia,
+                   const std::optional<bool>& use_skia,
                    const GURL& url,
                    StartCallback start_callback);
 
@@ -140,7 +140,7 @@ class PdfConverterImpl : public PdfConverter {
 
   const PdfRenderSettings settings_;
 
-  absl::optional<bool> use_skia_;
+  std::optional<bool> use_skia_;
 
   const GURL url_;
 
@@ -206,7 +206,7 @@ bool PostScriptMetaFile::SafePlayback(HDC hdc) const {
 
 PdfConverterImpl::PdfConverterImpl(scoped_refptr<base::RefCountedMemory> data,
                                    const PdfRenderSettings& settings,
-                                   const absl::optional<bool>& use_skia,
+                                   const std::optional<bool>& use_skia,
                                    const GURL& url,
                                    StartCallback start_callback)
     : settings_(settings),
@@ -391,7 +391,7 @@ PdfConverter::~PdfConverter() = default;
 std::unique_ptr<PdfConverter> PdfConverter::StartPdfConverter(
     scoped_refptr<base::RefCountedMemory> data,
     const PdfRenderSettings& conversion_settings,
-    const absl::optional<bool>& use_skia,
+    const std::optional<bool>& use_skia,
     const GURL& url,
     StartCallback start_callback) {
   return std::make_unique<PdfConverterImpl>(data, conversion_settings, use_skia,

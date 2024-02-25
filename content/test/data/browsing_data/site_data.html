@@ -49,8 +49,16 @@
   }
 
   function setLocalStorage() {
-    localStorage.setItem('foo', 'bar');
-    return true;
+    try{
+      localStorage.setItem('foo', 'bar');
+      return true;
+    } catch(e){
+      // Expect false for storage access denied.
+      if(e.code == DOMException.SECURITY_ERR){
+        return false;
+      }
+      throw e;
+    }
   }
   function setLocalStorageAsync() {
     // Provided for Java.
@@ -70,8 +78,16 @@
   }
 
   function setSessionStorage() {
-    sessionStorage.setItem('foo', 'bar');
-    return true;
+    try {
+      sessionStorage.setItem('foo', 'bar');
+      return true;
+    } catch (e) {
+      // Expect false for storage access denied.
+      if(e.code == DOMException.SECURITY_ERR){
+        return false;
+      }
+      throw e;
+    }
   }
 
   function hasSessionStorage() {

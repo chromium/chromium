@@ -17,6 +17,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "chromeos/ash/services/assistant/public/cpp/features.h"
 #include "chromeos/constants/chromeos_features.h"
+#include "components/feature_engagement/public/feature_constants.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/chromeos/styles/cros_styles.h"
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
@@ -79,56 +80,145 @@ TEST_F(AssistantZeroStateViewUnittest, ZeroStateViewIsNotVisibleAfterResponse) {
   ASSERT_FALSE(zero_state_view->GetVisible());
 }
 
-TEST_F(AssistantZeroStateViewUnittest, LearnMoreToastViewIsNotVisible) {
-  base::test::ScopedFeatureList feature_list_;
-  feature_list_.InitAndDisableFeature(
-      assistant::features::kEnableAssistantLearnMore);
+TEST_F(AssistantZeroStateViewUnittest, OnboardingViewIsVisible_TabletMode) {
+  base::test::ScopedFeatureList scoped_feature_list(
+      assistant::features::kEnableAssistantOnboarding);
 
+  SetTabletMode(true);
   ShowAssistantUi();
 
-  AppListToastView* learn_more_toast = static_cast<AppListToastView*>(
-      page_view()->GetViewByID(AssistantViewID::kLearnMoreToast));
-  ASSERT_TRUE(learn_more_toast);
-  ASSERT_FALSE(learn_more_toast->GetVisible());
-  ASSERT_FALSE(learn_more_toast->IsDrawn());
+  // When Launcher Search IPH is enabled, both onboarding and greeting views are
+  // not visible in tablet mode.
+  const views::View* onboarding_view =
+      page_view()->GetViewByID(AssistantViewID::kOnboardingView);
+  ASSERT_TRUE(onboarding_view);
+  EXPECT_FALSE(onboarding_view->GetVisible());
+  EXPECT_FALSE(onboarding_view->IsDrawn());
+
+  const views::View* greeting_label =
+      page_view()->GetViewByID(AssistantViewID::kGreetingLabel);
+  ASSERT_TRUE(greeting_label);
+  EXPECT_FALSE(greeting_label->GetVisible());
+  EXPECT_FALSE(greeting_label->IsDrawn());
 }
 
-TEST_F(AssistantZeroStateViewUnittest, LearnMoreToastViewIsVisible) {
-  base::test::ScopedFeatureList scoped_feature_list(
-      assistant::features::kEnableAssistantLearnMore);
+TEST_F(AssistantZeroStateViewUnittest, OnboardingViewIsNotVisible_TabletMode) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(
+      assistant::features::kEnableAssistantOnboarding);
 
+  SetTabletMode(true);
   ShowAssistantUi();
 
-  AppListToastView* learn_more_toast = static_cast<AppListToastView*>(
-      page_view()->GetViewByID(AssistantViewID::kLearnMoreToast));
-  ASSERT_TRUE(learn_more_toast);
-  ASSERT_TRUE(learn_more_toast->GetVisible());
-  ASSERT_TRUE(learn_more_toast->IsDrawn());
+  // When Launcher Search IPH is enabled, both onboarding and greeting views are
+  // not visible in tablet mode.
+  views::View* onboarding_view =
+      page_view()->GetViewByID(AssistantViewID::kOnboardingView);
+  ASSERT_TRUE(onboarding_view);
+  EXPECT_FALSE(onboarding_view->GetVisible());
+  EXPECT_FALSE(onboarding_view->IsDrawn());
+
+  const views::View* greeting_label =
+      page_view()->GetViewByID(AssistantViewID::kGreetingLabel);
+  ASSERT_TRUE(greeting_label);
+  EXPECT_FALSE(greeting_label->GetVisible());
+  EXPECT_FALSE(greeting_label->IsDrawn());
 }
 
-TEST_F(AssistantZeroStateViewUnittest,
-       LearnMoreToastViewIsNotVisibleAfterResponse) {
+TEST_F(AssistantZeroStateViewUnittest, OnboardingViewIsVisible) {
   base::test::ScopedFeatureList scoped_feature_list(
-      assistant::features::kEnableAssistantLearnMore);
+      assistant::features::kEnableAssistantOnboarding);
 
   ShowAssistantUi();
 
-  AppListToastView* learn_more_toast = static_cast<AppListToastView*>(
-      page_view()->GetViewByID(AssistantViewID::kLearnMoreToast));
-  ASSERT_TRUE(learn_more_toast);
-  ASSERT_TRUE(learn_more_toast->GetVisible());
-  ASSERT_TRUE(learn_more_toast->IsDrawn());
+  // The onboarding and greeting views are shown in a mutually exclusive way.
+  // An onboarding view should be shown instead of a greeting label.
+  const views::View* onboarding_view =
+      page_view()->GetViewByID(AssistantViewID::kOnboardingView);
+  ASSERT_TRUE(onboarding_view);
+  EXPECT_TRUE(onboarding_view->GetVisible());
+  EXPECT_TRUE(onboarding_view->IsDrawn());
+
+  const views::View* greeting_label =
+      page_view()->GetViewByID(AssistantViewID::kGreetingLabel);
+  ASSERT_TRUE(greeting_label);
+  EXPECT_FALSE(greeting_label->GetVisible());
+  EXPECT_FALSE(greeting_label->IsDrawn());
+}
+
+TEST_F(AssistantZeroStateViewUnittest, OnboardingViewIsNotVisible) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(
+      assistant::features::kEnableAssistantOnboarding);
+
+  ShowAssistantUi();
+
+  // The onboarding and greeting views are shown in a mutually exclusive way.
+  // A greeting label should be shown instead of an onboarding view.
+  views::View* onboarding_view =
+      page_view()->GetViewByID(AssistantViewID::kOnboardingView);
+  ASSERT_TRUE(onboarding_view);
+  EXPECT_FALSE(onboarding_view->GetVisible());
+  EXPECT_FALSE(onboarding_view->IsDrawn());
+
+  const views::View* greeting_label =
+      page_view()->GetViewByID(AssistantViewID::kGreetingLabel);
+  ASSERT_TRUE(greeting_label);
+  EXPECT_TRUE(greeting_label->GetVisible());
+  EXPECT_TRUE(greeting_label->IsDrawn());
+}
+
+TEST_F(AssistantZeroStateViewUnittest, IphViewIsNotVisible) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(
+      feature_engagement::kIPHLauncherSearchHelpUiFeature);
+
+  ShowAssistantUi();
+
+  LauncherSearchIphView* launcher_search_iph =
+      static_cast<LauncherSearchIphView*>(
+          page_view()->GetViewByID(AssistantViewID::kLauncherSearchIph));
+  ASSERT_TRUE(launcher_search_iph);
+  ASSERT_FALSE(launcher_search_iph->GetVisible());
+  ASSERT_FALSE(launcher_search_iph->IsDrawn());
+}
+
+TEST_F(AssistantZeroStateViewUnittest, IphViewIsVisible) {
+  base::test::ScopedFeatureList feature_list(
+      feature_engagement::kIPHLauncherSearchHelpUiFeature);
+
+  ShowAssistantUi();
+
+  LauncherSearchIphView* launcher_search_iph =
+      static_cast<LauncherSearchIphView*>(
+          page_view()->GetViewByID(AssistantViewID::kLauncherSearchIph));
+  ASSERT_TRUE(launcher_search_iph);
+  ASSERT_TRUE(launcher_search_iph->GetVisible());
+  ASSERT_TRUE(launcher_search_iph->IsDrawn());
+}
+
+TEST_F(AssistantZeroStateViewUnittest, IphViewIsNotVisibleAfterResponse) {
+  base::test::ScopedFeatureList feature_list(
+      feature_engagement::kIPHLauncherSearchHelpUiFeature);
+
+  ShowAssistantUi();
+
+  LauncherSearchIphView* launcher_search_iph =
+      static_cast<LauncherSearchIphView*>(
+          page_view()->GetViewByID(AssistantViewID::kLauncherSearchIph));
+  ASSERT_TRUE(launcher_search_iph);
+  ASSERT_TRUE(launcher_search_iph->GetVisible());
+  ASSERT_TRUE(launcher_search_iph->IsDrawn());
 
   MockTextInteraction().WithTextResponse("The response");
-  ASSERT_TRUE(learn_more_toast->GetVisible());
-  ASSERT_FALSE(learn_more_toast->IsDrawn());
+  ASSERT_TRUE(launcher_search_iph->GetVisible());
+  ASSERT_FALSE(launcher_search_iph->IsDrawn());
 }
 
-TEST_F(AssistantZeroStateViewUnittest,
-       LearnMoreToastViewIsNotVisible_TabletMode) {
+TEST_F(AssistantZeroStateViewUnittest, IphViewIsNotVisible_TabletMode) {
   base::test::ScopedFeatureList feature_list_;
   feature_list_.InitAndDisableFeature(
-      assistant::features::kEnableAssistantLearnMore);
+      feature_engagement::kIPHLauncherSearchHelpUiFeature);
 
   SetNumberOfSessionsWhereOnboardingShown(
       assistant::ui::kOnboardingMaxSessionsShown);
@@ -141,16 +231,17 @@ TEST_F(AssistantZeroStateViewUnittest,
   ASSERT_TRUE(greeting_label->GetVisible());
   ASSERT_TRUE(greeting_label->IsDrawn());
 
-  AppListToastView* learn_more_toast = static_cast<AppListToastView*>(
-      page_view()->GetViewByID(AssistantViewID::kLearnMoreToast));
-  ASSERT_TRUE(learn_more_toast);
-  ASSERT_FALSE(learn_more_toast->GetVisible());
-  ASSERT_FALSE(learn_more_toast->IsDrawn());
+  LauncherSearchIphView* launcher_search_iph =
+      static_cast<LauncherSearchIphView*>(
+          page_view()->GetViewByID(AssistantViewID::kLauncherSearchIph));
+  ASSERT_TRUE(launcher_search_iph);
+  ASSERT_FALSE(launcher_search_iph->GetVisible());
+  ASSERT_FALSE(launcher_search_iph->IsDrawn());
 }
 
-TEST_F(AssistantZeroStateViewUnittest, LearnMoreToastViewIsVisible_TabletMode) {
-  base::test::ScopedFeatureList scoped_feature_list(
-      assistant::features::kEnableAssistantLearnMore);
+TEST_F(AssistantZeroStateViewUnittest, IphViewIsVisible_TabletMode) {
+  base::test::ScopedFeatureList feature_list(
+      feature_engagement::kIPHLauncherSearchHelpUiFeature);
 
   SetNumberOfSessionsWhereOnboardingShown(
       assistant::ui::kOnboardingMaxSessionsShown);
@@ -163,17 +254,18 @@ TEST_F(AssistantZeroStateViewUnittest, LearnMoreToastViewIsVisible_TabletMode) {
   ASSERT_FALSE(greeting_label->GetVisible());
   ASSERT_FALSE(greeting_label->IsDrawn());
 
-  AppListToastView* learn_more_toast = static_cast<AppListToastView*>(
-      page_view()->GetViewByID(AssistantViewID::kLearnMoreToast));
-  ASSERT_TRUE(learn_more_toast);
-  ASSERT_TRUE(learn_more_toast->GetVisible());
-  ASSERT_TRUE(learn_more_toast->IsDrawn());
+  LauncherSearchIphView* launcher_search_iph =
+      static_cast<LauncherSearchIphView*>(
+          page_view()->GetViewByID(AssistantViewID::kLauncherSearchIph));
+  ASSERT_TRUE(launcher_search_iph);
+  ASSERT_TRUE(launcher_search_iph->GetVisible());
+  ASSERT_TRUE(launcher_search_iph->IsDrawn());
 }
 
 TEST_F(AssistantZeroStateViewUnittest,
-       LearnMoreToastViewIsNotVisibleAfterResponse_TabletMode) {
-  base::test::ScopedFeatureList scoped_feature_list(
-      assistant::features::kEnableAssistantLearnMore);
+       IphViewIsNotVisibleAfterResponse_TabletMode) {
+  base::test::ScopedFeatureList feature_list(
+      feature_engagement::kIPHLauncherSearchHelpUiFeature);
 
   SetNumberOfSessionsWhereOnboardingShown(
       assistant::ui::kOnboardingMaxSessionsShown);
@@ -188,86 +280,16 @@ TEST_F(AssistantZeroStateViewUnittest,
   ASSERT_FALSE(greeting_label->GetVisible());
   ASSERT_FALSE(greeting_label->IsDrawn());
 
-  AppListToastView* learn_more_toast = static_cast<AppListToastView*>(
-      page_view()->GetViewByID(AssistantViewID::kLearnMoreToast));
-  ASSERT_TRUE(learn_more_toast);
-  ASSERT_TRUE(learn_more_toast->GetVisible());
-  ASSERT_TRUE(learn_more_toast->IsDrawn());
+  LauncherSearchIphView* launcher_search_iph =
+      static_cast<LauncherSearchIphView*>(
+          page_view()->GetViewByID(AssistantViewID::kLauncherSearchIph));
+  ASSERT_TRUE(launcher_search_iph);
+  ASSERT_TRUE(launcher_search_iph->GetVisible());
+  ASSERT_TRUE(launcher_search_iph->IsDrawn());
 
   MockTextInteraction().WithTextResponse("The response");
-  ASSERT_TRUE(learn_more_toast->GetVisible());
-  ASSERT_FALSE(learn_more_toast->IsDrawn());
-}
-
-TEST_F(AssistantZeroStateViewUnittest, LearnMoreToastTitleLabelMaxWidth) {
-  base::test::ScopedFeatureList scoped_feature_list(
-      assistant::features::kEnableAssistantLearnMore);
-
-  ShowAssistantUi();
-
-  AppListToastView* learn_more_toast = static_cast<AppListToastView*>(
-      page_view()->GetViewByID(AssistantViewID::kLearnMoreToast));
-  ASSERT_TRUE(learn_more_toast);
-  ASSERT_TRUE(learn_more_toast->GetVisible());
-
-  learn_more_toast->SetTitle(u"Short title single line");
-  learn_more_toast->toast_button()->SetText(u"Button with long text");
-  views::Label* title_label = learn_more_toast->GetTitleLabelForTesting();
-  int max_width_with_long_button_text = title_label->GetMaximumWidth();
-
-  learn_more_toast->toast_button()->SetText(u"text");
-  learn_more_toast->SetTitleLabelMaximumWidth();
-  int max_width_with_short_button_text = title_label->GetMaximumWidth();
-  EXPECT_GT(max_width_with_short_button_text, max_width_with_long_button_text);
-}
-
-TEST_F(AssistantZeroStateViewUnittest, ThemeDarkLightModeForToast) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitWithFeatures(
-      {/*enabled_features=*/assistant::features::kEnableAssistantLearnMore},
-      /*disabled_features=*/{});
-
-  auto* dark_light_mode_controller = DarkLightModeControllerImpl::Get();
-  dark_light_mode_controller->OnActiveUserPrefServiceChanged(
-      Shell::Get()->session_controller()->GetActivePrefService());
-  const bool initial_dark_mode_status =
-      dark_light_mode_controller->IsDarkModeEnabled();
-
-  ShowAssistantUi();
-
-  AppListToastView* learn_more_toast = static_cast<AppListToastView*>(
-      page_view()->GetViewByID(AssistantViewID::kLearnMoreToast));
-  ASSERT_TRUE(learn_more_toast);
-  ASSERT_TRUE(learn_more_toast->GetVisible());
-
-  views::Label* title_label = learn_more_toast->GetTitleLabelForTesting();
-
-  const bool is_jelly_enabled = chromeos::features::IsJellyEnabled();
-  auto enabled_color =
-      is_jelly_enabled
-          ? learn_more_toast->GetColorProvider()->GetColor(
-                static_cast<ui::ColorId>(cros_tokens::kCrosSysOnSurface))
-          : cros_styles::ResolveColor(cros_styles::ColorName::kTextColorPrimary,
-                                      /*is_dark_mode=*/initial_dark_mode_status,
-                                      /*use_debug_colors=*/false);
-  EXPECT_EQ(title_label->GetEnabledColor(), enabled_color);
-  EXPECT_FALSE(title_label->background());
-
-  // Switch the color mode.
-  dark_light_mode_controller->ToggleColorMode();
-  ASSERT_NE(initial_dark_mode_status,
-            dark_light_mode_controller->IsDarkModeEnabled());
-
-  enabled_color =
-      is_jelly_enabled
-          ? learn_more_toast->GetColorProvider()->GetColor(
-                static_cast<ui::ColorId>(cros_tokens::kCrosSysOnSurface))
-          : cros_styles::ResolveColor(
-                cros_styles::ColorName::kTextColorPrimary,
-                /*is_dark_mode=*/!initial_dark_mode_status,
-                /*use_debug_colors=*/false);
-  EXPECT_EQ(title_label->GetEnabledColor(), enabled_color);
-  EXPECT_FALSE(title_label->background());
+  ASSERT_TRUE(launcher_search_iph->GetVisible());
+  ASSERT_FALSE(launcher_search_iph->IsDrawn());
 }
 
 }  // namespace

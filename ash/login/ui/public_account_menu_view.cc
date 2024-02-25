@@ -10,6 +10,7 @@
 #include "base/functional/bind.h"
 #include "base/memory/raw_ref.h"
 #include "base/strings/utf_string_conversions.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/models/combobox_model.h"
 
 namespace ash {
@@ -49,13 +50,12 @@ class PublicAccountComboboxModel : public ui::ComboboxModel {
   }
 
   // ui::ComboboxModel:
-  absl::optional<size_t> GetDefaultIndex() const override {
+  std::optional<size_t> GetDefaultIndex() const override {
     return default_index_;
   }
 
  private:
-  const raw_ref<const std::vector<PublicAccountMenuView::Item>, ExperimentalAsh>
-      items_;
+  const raw_ref<const std::vector<PublicAccountMenuView::Item>> items_;
   const size_t default_index_;
 };
 
@@ -83,5 +83,8 @@ PublicAccountMenuView::~PublicAccountMenuView() = default;
 void PublicAccountMenuView::OnSelectedIndexChanged() {
   on_select_.Run((*items_)[GetSelectedIndex().value()].value);
 }
+
+BEGIN_METADATA(PublicAccountMenuView)
+END_METADATA
 
 }  // namespace ash

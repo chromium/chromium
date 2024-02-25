@@ -97,8 +97,8 @@ void SurfaceLayer::SetOldestAcceptableFallback(
     layer_tree_host()->RemoveSurfaceRange(surface_range);
 
   surface_range = viz::SurfaceRange(
-      surface_id.is_valid() ? absl::optional<viz::SurfaceId>(surface_id)
-                            : absl::nullopt,
+      surface_id.is_valid() ? std::optional<viz::SurfaceId>(surface_id)
+                            : std::nullopt,
       surface_range.end());
 
   if (layer_tree_host() && surface_range.IsValid())

@@ -8,9 +8,9 @@
 
 #include "base/memory/raw_ptr.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "ui/gfx/x/x11_atom_cache.h"
+#include "ui/gfx/x/atom_cache.h"
+#include "ui/gfx/x/connection.h"
 #include "ui/gfx/x/xproto.h"
-#include "ui/gfx/x/xproto_util.h"
 
 namespace x11 {
 
@@ -31,7 +31,7 @@ class PropertyCacheTest : public testing::Test {
  private:
   void SetUp() override {
     connection_ = Connection::Get();
-    window_ = CreateDummyWindow("");
+    window_ = connection_->CreateDummyWindow("");
   }
 
   void TearDown() override {
@@ -46,7 +46,7 @@ class PropertyCacheTest : public testing::Test {
 
 TEST_F(PropertyCacheTest, GetSync) {
   auto atom = x11::GetAtom("DUMMY ATOM");
-  SetProperty(window(), atom, Atom::CARDINAL, 1234);
+  connection()->SetProperty(window(), atom, Atom::CARDINAL, 1234);
 
   PropertyCache cache(connection(), window(), {atom});
 
@@ -61,7 +61,7 @@ TEST_F(PropertyCacheTest, GetSync) {
 
 TEST_F(PropertyCacheTest, GetAsync) {
   auto atom = x11::GetAtom("DUMMY ATOM");
-  SetProperty(window(), atom, Atom::CARDINAL, 1234);
+  connection()->SetProperty(window(), atom, Atom::CARDINAL, 1234);
 
   PropertyCache cache(connection(), window(), {atom});
 
@@ -78,7 +78,7 @@ TEST_F(PropertyCacheTest, GetAsync) {
 
 TEST_F(PropertyCacheTest, Event) {
   auto atom = x11::GetAtom("DUMMY ATOM");
-  SetProperty(window(), atom, Atom::CARDINAL, 1234);
+  connection()->SetProperty(window(), atom, Atom::CARDINAL, 1234);
 
   PropertyCache cache(connection(), window(), {atom});
 
@@ -88,16 +88,23 @@ TEST_F(PropertyCacheTest, Event) {
 
   // Change the property and sync to ensure the PropertyNotify event is ready to
   // be dispatched.
-  SetProperty(window(), atom, Atom::CARDINAL, 5678);
-  connection()->Sync();
-  connection()->ReadResponses();
+  bool have_response = false;
+  connection()
+      ->SetProperty(window(), atom, Atom::CARDINAL, 5678)
+      .OnResponse(
+          base::BindOnce([](bool* have_response,
+                            Response<void> response) { *have_response = true; },
+                         &have_response));
 
   // Dispatch the PropertyNotify event, which will cause the PropertyCache to
   // send another GetPropertyRequest.  Calling DispatchAll() would introduce a
   // race condition where we could get the GetPropertyResponse early if the 2
-  // round trips are completed fast enough.  To avoid this, we use Dispatch(),
-  // which doesn't read or write on the socket.
-  while (connection()->Dispatch()) {
+  // round trips are completed fast enough.  To avoid this, only dispatch until
+  // the property request is finished.
+  while (!have_response) {
+    connection()->Flush();
+    connection()->ReadResponses();
+    connection()->Dispatch();
   }
 
   // We don't have the new GetPropertyResponse yet, so the old value should
@@ -118,7 +125,7 @@ TEST_F(PropertyCacheTest, Event) {
 
 TEST_F(PropertyCacheTest, GetAs) {
   auto atom = x11::GetAtom("DUMMY ATOM");
-  SetProperty(window(), atom, Atom::CARDINAL, 1234);
+  connection()->SetProperty(window(), atom, Atom::CARDINAL, 1234);
 
   PropertyCache cache(connection(), window(), {atom});
 
@@ -148,21 +155,23 @@ TEST_F(PropertyCacheTest, GetAs) {
   connection()->SynchronizeForTest(true);
 
   // GetAs() should return nullptr if the type's size is mismatched.
-  SetProperty(window(), atom, Atom::CARDINAL, static_cast<uint8_t>(123));
+  connection()->SetProperty(window(), atom, Atom::CARDINAL,
+                            static_cast<uint8_t>(123));
   connection()->DispatchAll();
   value = cache.GetAs<uint32_t>(atom, &size);
   EXPECT_EQ(size, 0u);
   EXPECT_FALSE(value);
 
   // GetAs() should return nullptr if the property has no elements.
-  SetArrayProperty(window(), atom, Atom::CARDINAL, std::vector<uint32_t>());
+  connection()->SetArrayProperty(window(), atom, Atom::CARDINAL,
+                                 std::vector<uint32_t>());
   connection()->DispatchAll();
   value = cache.GetAs<uint32_t>(atom, &size);
   EXPECT_EQ(size, 0u);
   EXPECT_FALSE(value);
 
   // GetAs() should return nullptr if the property is deleted.
-  DeleteProperty(window(), atom);
+  connection()->DeleteProperty(window(), atom);
   connection()->DispatchAll();
   value = cache.GetAs<uint32_t>(atom, &size);
   EXPECT_EQ(size, 0u);

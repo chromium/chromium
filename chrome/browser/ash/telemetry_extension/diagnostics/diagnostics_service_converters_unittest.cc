@@ -5,6 +5,7 @@
 #include "chrome/browser/ash/telemetry_extension/diagnostics/diagnostics_service_converters.h"
 
 #include <cstdint>
+#include <optional>
 #include <vector>
 
 #include "chromeos/ash/services/cros_healthd/public/mojom/cros_healthd_diagnostics.mojom.h"
@@ -13,7 +14,6 @@
 #include "chromeos/crosapi/mojom/nullable_primitives.mojom.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ash::converters::diagnostics {
 
@@ -92,9 +92,11 @@ TEST(DiagnosticsServiceConvertersTest, ConvertDiagnosticRoutineEnum) {
             crosapi::DiagnosticsRoutineEnum::kBluetoothScanning);
   EXPECT_EQ(Convert(cros_healthd::DiagnosticRoutineEnum::kBluetoothPairing),
             crosapi::DiagnosticsRoutineEnum::kBluetoothPairing);
+  EXPECT_EQ(Convert(cros_healthd::DiagnosticRoutineEnum::kFan),
+            crosapi::DiagnosticsRoutineEnum::kFan);
 
   EXPECT_EQ(Convert(cros_healthd::DiagnosticRoutineEnum::kArcHttp),
-            absl::nullopt);
+            std::nullopt);
 }
 
 // This test checks, that successful conversion of all

@@ -39,9 +39,6 @@
 
 namespace blink {
 
-class HRTFDatabaseLoader;
-class PannerHandler;
-
 // This interface represents the position and orientation of the person
 // listening to the audio scene. All PannerNode objects spatialize in relation
 // to the BaseAudioContext's listener.
@@ -58,56 +55,21 @@ class AudioListener final : public ScriptWrappable,
   AudioListenerHandler& Handler() const { return *handler_; }
 
   // https://www.w3.org/TR/webaudio/#AudioListener-attributes
-  AudioParam* positionX() const { return position_x_; }
-  AudioParam* positionY() const { return position_y_; }
-  AudioParam* positionZ() const { return position_z_; }
-  AudioParam* forwardX() const { return forward_x_; }
-  AudioParam* forwardY() const { return forward_y_; }
-  AudioParam* forwardZ() const { return forward_z_; }
-  AudioParam* upX() const { return up_x_; }
-  AudioParam* upY() const { return up_y_; }
-  AudioParam* upZ() const { return up_z_; }
+  AudioParam* positionX() const { return position_x_.Get(); }
+  AudioParam* positionY() const { return position_y_.Get(); }
+  AudioParam* positionZ() const { return position_z_.Get(); }
+  AudioParam* forwardX() const { return forward_x_.Get(); }
+  AudioParam* forwardY() const { return forward_y_.Get(); }
+  AudioParam* forwardZ() const { return forward_z_.Get(); }
+  AudioParam* upX() const { return up_x_.Get(); }
+  AudioParam* upY() const { return up_y_.Get(); }
+  AudioParam* upZ() const { return up_z_.Get(); }
 
   // https://www.w3.org/TR/webaudio/#AudioListener-methods
   void setOrientation(float x, float y, float z,
                       float up_x, float up_y, float up_z,
                       ExceptionState& exceptionState);
   void setPosition(float x, float y, float z, ExceptionState& exceptionState);
-
-  const gfx::Point3F GetPosition() const;
-  const gfx::Vector3dF GetOrientation() const;
-  const gfx::Vector3dF GetUpVector() const;
-
-  const float* GetPositionXValues(uint32_t frames_to_process);
-  const float* GetPositionYValues(uint32_t frames_to_process);
-  const float* GetPositionZValues(uint32_t frames_to_process);
-  const float* GetForwardXValues(uint32_t frames_to_process);
-  const float* GetForwardYValues(uint32_t frames_to_process);
-  const float* GetForwardZValues(uint32_t frames_to_process);
-  const float* GetUpXValues(uint32_t frames_to_process);
-  const float* GetUpYValues(uint32_t frames_to_process);
-  const float* GetUpZValues(uint32_t frames_to_process);
-
-  // True if any of AudioParams have automations.
-  bool HasSampleAccurateValues() const;
-
-  // True if any of AudioParams are set for a-rate automations (the default).
-  bool IsAudioRate() const;
-
-  // Updates the internal state of the listener, including updating the dirty
-  // state of all PannerNodes if necessary.
-  void UpdateState();
-
-  bool IsListenerDirty() const;
-
-  base::Lock& ListenerLock();
-
-  void AddPannerHandler(PannerHandler&);
-  void RemovePannerHandler(PannerHandler&);
-
-  void CreateAndLoadHRTFDatabaseLoader(float);
-  void WaitForHRTFDatabaseLoaderThreadCompletion();
-  HRTFDatabaseLoader* HrtfDatabaseLoader();
 
   // InspectorHelperMixin: Note that this object belongs to a BaseAudioContext,
   // so these methods get called by the parent context.

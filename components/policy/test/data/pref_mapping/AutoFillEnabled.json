@@ -1,0 +1,70 @@
+[
+  {
+    "can_be_recommended": true,
+    "os": [
+      "win",
+      "linux",
+      "mac",
+      "chromeos_ash",
+      "chromeos_lacros",
+      "android"
+    ],
+    "policy_pref_mapping_tests": [
+      {
+        "note": "Default value (no policies set).",
+        "prefs": {
+          "autofill.enabled": {
+            "default_value": true
+          }
+        }
+      },
+      {
+        "note": "Simple value for the deprecated policy (AutoFillEnabled) sets policy values correctly for AutoFillEnabled, AutofillAddressEnabled and AutofillCreditCardEnabled.",
+        "policies": {
+          "AutoFillEnabled": false
+        },
+        "prefs": {
+          "autofill.credit_card_enabled": {
+            "value": false
+          },
+          "autofill.enabled": {
+            "value": false
+          },
+          "autofill.profile_enabled": {
+            "value": false
+          }
+        }
+      },
+      {
+        "note": "If AutofillAddressEnabled is set, deprecated AutoFillEnabled is ignored.",
+        "policies": {
+          "AutoFillEnabled": true,
+          "AutofillAddressEnabled": false
+        },
+        "prefs": {
+          "autofill.enabled": {
+            "default_value": true
+          },
+          "autofill.profile_enabled": {
+            "value": false
+          }
+        }
+      },
+      {
+        "note": "If AutofillCreditCardEnabled is set, deprecated AutoFillEnabled is ignored.",
+        "policies": {
+          "AutoFillEnabled": true,
+          "AutofillCreditCardEnabled": false
+        },
+        "prefs": {
+          "autofill.credit_card_enabled": {
+            "value": false
+          },
+          "autofill.enabled": {
+            "default_value": true
+          }
+        }
+      }
+    ]
+  }
+]

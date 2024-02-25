@@ -5,6 +5,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_SVG_SVG_RESOURCE_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_SVG_SVG_RESOURCE_H_
 
+#include "third_party/blink/renderer/core/loader/resource/image_resource_observer.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_map.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_client.h"
@@ -16,6 +17,7 @@ namespace blink {
 class Document;
 class Element;
 class IdTargetObserver;
+class ImageResourceObserver;
 class LayoutSVGResourceContainer;
 class QualifiedName;
 class SVGFilterPrimitiveStandardAttributes;
@@ -47,9 +49,12 @@ class TreeScope;
 // SVGResources are created, and managed, either by SVGTreeScopeResources
 // (local) or CSSURIValue (external), and have SVGResourceClients as a means to
 // deliver change notifications. Clients that are interested in change
-// notifications hence need to register a SVGResourceClient with the
-// SVGResource. Most commonly this registration would take place when the
-// computed style changes.
+// notifications hence need to register a SVGResourceClient or a
+// ImageResourceObserver with the SVGResource. Most commonly this registration
+// would take place when the computed style changes. If an
+// ImageResourceObserver is registered, an SVGResourceClient is created
+// internally, which can be accessed using
+// SVGResource::GetObserverResourceClient() if needed.
 //
 // The element is bound either when the SVGResource is created (for local
 // resources) or after the referenced resource has completed loading (for
@@ -68,7 +73,7 @@ class SVGResource : public GarbageCollected<SVGResource> {
   virtual void Load(Document&) {}
   virtual void LoadWithoutCSP(Document&) {}
 
-  Element* Target() const { return target_; }
+  Element* Target() const { return target_.Get(); }
   // Returns the target's LayoutObject (if target exists and is attached to the
   // layout tree). Also perform cycle-checking, and may thus return nullptr if
   // this SVGResourceClient -> SVGResource reference would start a cycle.
@@ -82,6 +87,11 @@ class SVGResource : public GarbageCollected<SVGResource> {
 
   void AddClient(SVGResourceClient&);
   void RemoveClient(SVGResourceClient&);
+
+  void AddObserver(ImageResourceObserver&);
+  void RemoveObserver(ImageResourceObserver&);
+
+  SVGResourceClient* GetObserverResourceClient(ImageResourceObserver&);
 
   virtual void Trace(Visitor*) const;
 
@@ -104,6 +114,11 @@ class SVGResource : public GarbageCollected<SVGResource> {
     CycleState cached_cycle_check = kNeedCheck;
   };
   mutable HeapHashMap<Member<SVGResourceClient>, ClientEntry> clients_;
+
+  class ImageResourceObserverWrapper;
+  HeapHashMap<Member<ImageResourceObserver>,
+              Member<ImageResourceObserverWrapper>>
+      observer_wrappers_;
 };
 
 // Local resource reference (see SVGResource.)
@@ -128,7 +143,7 @@ class LocalSVGResource final : public SVGResource {
   Member<IdTargetObserver> id_observer_;
 };
 
-// External resource reference (see SVGResource.)
+// External resource reference (see SVGResource).
 class ExternalSVGResource final : public SVGResource, public ResourceClient {
  public:
   explicit ExternalSVGResource(const KURL&);
@@ -147,6 +162,31 @@ class ExternalSVGResource final : public SVGResource, public ResourceClient {
 
   Member<SVGResourceDocumentContent> document_content_;
   KURL url_;
+};
+
+// External resource reference (see SVGResource) with an ImageResourceContent
+// as the "data source".
+class ExternalSVGResourceImageContent final : public SVGResource,
+                                              public ImageResourceObserver {
+  USING_PRE_FINALIZER(ExternalSVGResourceImageContent, Prefinalize);
+
+ public:
+  ExternalSVGResourceImageContent(ImageResourceContent* image_content,
+                                  const AtomicString& fragment);
+
+  void Trace(Visitor*) const override;
+
+ private:
+  void Prefinalize();
+
+  Element* ResolveTarget();
+
+  // ImageResourceObserver overrides
+  void ImageNotifyFinished(ImageResourceContent*) override;
+  String DebugName() const override;
+
+  Member<ImageResourceContent> image_content_;
+  AtomicString fragment_;
 };
 
 }  // namespace blink

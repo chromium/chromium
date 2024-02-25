@@ -8,6 +8,7 @@
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
 #include "base/functional/bind.h"
+#include "base/memory/raw_ptr.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
@@ -25,7 +26,7 @@ display::DisplaySnapshot* GetSupportedDisplay() {
   const auto& cached_displays =
       Shell::Get()->display_configurator()->cached_displays();
 
-  for (auto* display : cached_displays) {
+  for (display::DisplaySnapshot* display : cached_displays) {
     if (display->type() == display::DISPLAY_CONNECTION_TYPE_INTERNAL &&
         display->privacy_screen_state() != display::kNotSupported &&
         display->current_mode()) {
@@ -140,7 +141,8 @@ void PrivacyScreenController::OnSigninScreenPrefServiceInitialized(
 }
 
 void PrivacyScreenController::OnDisplayModeChanged(
-    const std::vector<display::DisplaySnapshot*>& displays) {
+    const std::vector<raw_ptr<display::DisplaySnapshot, VectorExperimental>>&
+        displays) {
   // OnDisplayModeChanged() may fire many times during Chrome's lifetime. We
   // limit automatic user pref initialization to login screen only.
   if (!applying_login_screen_prefs_)

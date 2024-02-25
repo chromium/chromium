@@ -8,6 +8,7 @@
 #include "content/common/content_export.h"
 #include "third_party/blink/public/common/context_menu_data/untrustworthy_context_menu_params.h"
 #include "url/gurl.h"
+#include "url/origin.h"
 
 namespace content {
 
@@ -32,8 +33,17 @@ struct CONTENT_EXPORT ContextMenuParams
   // on.
   GURL page_url;
 
-  // This is the URL of the subframe that the context menu was invoked on.
+  // This is the URL of the frame that the context menu was invoked on. This may
+  // or may not be equal to `page_url`.
   GURL frame_url;
+
+  // The origin of the frame that the context menu was invoked on. This is *not*
+  // the same as Origin::Create(frame_url) for the reasons given in
+  // //docs/security/origin-vs-url.md.
+  url::Origin frame_origin;
+
+  // Whether the context menu was invoked on a subframe.
+  bool is_subframe = false;
 
   // Extra properties for the context menu.
   std::map<std::string, std::string> properties;

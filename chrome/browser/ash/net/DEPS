@@ -1,10 +1,4 @@
 specific_include_rules = {
-  "apn_migrator\.cc": [
-    "+ui/message_center/message_center.h",
-  ],
-  "apn_migrator_unittest\.cc": [
-    "+ui/message_center/message_center.h",
-  ],
   "system_proxy_manager_unittest\.cc": [
     "+services/network/network_context.h"
   ]

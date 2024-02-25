@@ -157,7 +157,7 @@ class WebSocket::WebSocketEventHandler final
                      const std::string& reason) override;
   void OnFailChannel(const std::string& message,
                      int net_error,
-                     absl::optional<int> response_code) override;
+                     std::optional<int> response_code) override;
   void OnStartOpeningHandshake(
       std::unique_ptr<net::WebSocketHandshakeRequestInfo> request) override;
   void OnSSLCertificateError(
@@ -172,7 +172,7 @@ class WebSocket::WebSocketEventHandler final
       scoped_refptr<net::HttpResponseHeaders> response_headers,
       const net::IPEndPoint& remote_endpoint,
       base::OnceCallback<void(const net::AuthCredentials*)> callback,
-      absl::optional<net::AuthCredentials>* credentials) override;
+      std::optional<net::AuthCredentials>* credentials) override;
 
  private:
   const raw_ptr<WebSocket> impl_;
@@ -306,7 +306,7 @@ void WebSocket::WebSocketEventHandler::OnDropChannel(
 void WebSocket::WebSocketEventHandler::OnFailChannel(
     const std::string& message,
     int net_error,
-    absl::optional<int> response_code) {
+    std::optional<int> response_code) {
   DVLOG(3) << "WebSocketEventHandler::OnFailChannel @"
            << reinterpret_cast<void*>(this) << " message=\"" << message << "\""
            << " error=" << net_error
@@ -382,11 +382,11 @@ int WebSocket::WebSocketEventHandler::OnAuthRequired(
     scoped_refptr<net::HttpResponseHeaders> response_headers,
     const net::IPEndPoint& remote_endpoint,
     base::OnceCallback<void(const net::AuthCredentials*)> callback,
-    absl::optional<net::AuthCredentials>* credentials) {
+    std::optional<net::AuthCredentials>* credentials) {
   DVLOG(3) << "WebSocketEventHandler::OnAuthRequired"
            << reinterpret_cast<void*>(this);
   if (!impl_->auth_handler_) {
-    *credentials = absl::nullopt;
+    *credentials = std::nullopt;
     return net::OK;
   }
 
@@ -411,6 +411,7 @@ WebSocket::WebSocket(
     const GURL& url,
     const std::vector<std::string>& requested_protocols,
     const net::SiteForCookies& site_for_cookies,
+    bool has_storage_access,
     const net::IsolationInfo& isolation_info,
     std::vector<mojom::HttpHeaderPtr> additional_headers,
     const url::Origin& origin,
@@ -422,10 +423,10 @@ WebSocket::WebSocket(
         url_loader_network_observer,
     mojo::PendingRemote<mojom::WebSocketAuthenticationHandler> auth_handler,
     mojo::PendingRemote<mojom::TrustedHeaderClient> header_client,
-    absl::optional<WebSocketThrottler::PendingConnection>
+    std::optional<WebSocketThrottler::PendingConnection>
         pending_connection_tracker,
     base::TimeDelta delay,
-    const absl::optional<base::UnguessableToken>& throttling_profile_id)
+    const std::optional<base::UnguessableToken>& throttling_profile_id)
     : factory_(factory),
       url_loader_network_observer_(std::move(url_loader_network_observer)),
       handshake_client_(std::move(handshake_client)),
@@ -469,12 +470,13 @@ WebSocket::WebSocket(
         FROM_HERE,
         base::BindOnce(&WebSocket::AddChannel, weak_ptr_factory_.GetWeakPtr(),
                        url, requested_protocols, site_for_cookies,
-                       isolation_info, std::move(additional_headers)),
+                       has_storage_access, isolation_info,
+                       std::move(additional_headers)),
         delay_);
     return;
   }
-  AddChannel(url, requested_protocols, site_for_cookies, isolation_info,
-             std::move(additional_headers));
+  AddChannel(url, requested_protocols, site_for_cookies, has_storage_access,
+             isolation_info, std::move(additional_headers));
 }
 
 WebSocket::~WebSocket() {
@@ -569,7 +571,7 @@ int WebSocket::OnHeadersReceived(
     net::CompletionOnceCallback callback,
     const net::HttpResponseHeaders* original_response_headers,
     scoped_refptr<net::HttpResponseHeaders>* override_response_headers,
-    absl::optional<GURL>* preserve_fragment_on_redirect_url) {
+    std::optional<GURL>* preserve_fragment_on_redirect_url) {
   if (header_client_) {
     header_client_->OnHeadersReceived(
         original_response_headers->raw_headers(), net::IPEndPoint(),
@@ -602,13 +604,15 @@ void WebSocket::AddChannel(
     const GURL& socket_url,
     const std::vector<std::string>& requested_protocols,
     const net::SiteForCookies& site_for_cookies,
+    bool has_storage_access,
     const net::IsolationInfo& isolation_info,
     std::vector<mojom::HttpHeaderPtr> additional_headers) {
   DVLOG(3) << "WebSocket::AddChannel @" << reinterpret_cast<void*>(this)
            << " socket_url=\"" << socket_url << "\" requested_protocols=\""
            << base::JoinString(requested_protocols, ", ") << "\" origin=\""
            << origin_ << "\" site_for_cookies=\""
-           << site_for_cookies.ToDebugString() << "\"";
+           << site_for_cookies.ToDebugString()
+           << "\" has_storage_access=" << has_storage_access;
 
   DCHECK(!channel_);
 
@@ -630,9 +634,9 @@ void WebSocket::AddChannel(
       headers_to_pass.SetHeader(header->name, header->value);
     }
   }
-  channel_->SendAddChannelRequest(socket_url, requested_protocols, origin_,
-                                  site_for_cookies, isolation_info,
-                                  headers_to_pass, traffic_annotation_);
+  channel_->SendAddChannelRequest(
+      socket_url, requested_protocols, origin_, site_for_cookies,
+      has_storage_access, isolation_info, headers_to_pass, traffic_annotation_);
 }
 
 void WebSocket::OnWritable(MojoResult result,
@@ -779,7 +783,7 @@ void WebSocket::ReadAndSendFromDataPipe(InterruptionReason resume_reason) {
 bool WebSocket::ReadAndSendFrameFromDataPipe(DataFrame* data_frame) {
   while (true) {
     if (data_frame->data_length == 0) {
-      auto data_to_pass = base::MakeRefCounted<net::IOBuffer>(0);
+      auto data_to_pass = base::MakeRefCounted<net::IOBufferWithSize>();
       if (channel_->SendFrame(true, MessageTypeToOpCode(data_frame->type),
                               std::move(data_to_pass),
                               0) == net::WebSocketChannel::CHANNEL_DELETED) {
@@ -810,7 +814,7 @@ bool WebSocket::ReadAndSendFrameFromDataPipe(DataFrame* data_frame) {
         data_frame->do_not_fragment && !message_under_reassembly_) {
       // The cast is needed to unambiguously select a constructor on 32-bit
       // platforms.
-      message_under_reassembly_ = base::MakeRefCounted<net::IOBuffer>(
+      message_under_reassembly_ = base::MakeRefCounted<net::IOBufferWithSize>(
           base::checked_cast<size_t>(data_frame->data_length));
       CHECK_EQ(bytes_reassembled_, 0u);
     }
@@ -847,7 +851,8 @@ bool WebSocket::ReadAndSendFrameFromDataPipe(DataFrame* data_frame) {
 
     const size_t size_to_send =
         std::min(static_cast<uint64_t>(readable_size), data_frame->data_length);
-    auto data_to_pass = base::MakeRefCounted<net::IOBuffer>(size_to_send);
+    auto data_to_pass =
+        base::MakeRefCounted<net::IOBufferWithSize>(size_to_send);
     const bool is_final = (size_to_send == data_frame->data_length);
     memcpy(data_to_pass->data(), buffer, size_to_send);
     blocked_on_websocket_channel_ = true;
@@ -889,7 +894,7 @@ void WebSocket::OnSSLCertificateErrorResponse(
 
 void WebSocket::OnAuthRequiredComplete(
     base::OnceCallback<void(const net::AuthCredentials*)> callback,
-    const absl::optional<net::AuthCredentials>& credentials) {
+    const std::optional<net::AuthCredentials>& credentials) {
   DCHECK(!handshake_succeeded_);
   if (!channel_) {
     // Something happened before the authentication response arrives.
@@ -902,7 +907,7 @@ void WebSocket::OnAuthRequiredComplete(
 void WebSocket::OnBeforeSendHeadersComplete(
     net::NetworkDelegate::OnBeforeStartTransactionCallback callback,
     int result,
-    const absl::optional<net::HttpRequestHeaders>& headers) {
+    const std::optional<net::HttpRequestHeaders>& headers) {
   if (!channel_) {
     // Something happened before the OnBeforeSendHeaders response arrives.
     return;
@@ -913,10 +918,10 @@ void WebSocket::OnBeforeSendHeadersComplete(
 void WebSocket::OnHeadersReceivedComplete(
     net::CompletionOnceCallback callback,
     scoped_refptr<net::HttpResponseHeaders>* out_headers,
-    absl::optional<GURL>* out_preserve_fragment_on_redirect_url,
+    std::optional<GURL>* out_preserve_fragment_on_redirect_url,
     int result,
-    const absl::optional<std::string>& headers,
-    const absl::optional<GURL>& preserve_fragment_on_redirect_url) {
+    const std::optional<std::string>& headers,
+    const std::optional<GURL>& preserve_fragment_on_redirect_url) {
   if (!channel_) {
     // Something happened before the OnHeadersReceived response arrives.
     return;

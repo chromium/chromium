@@ -78,7 +78,7 @@ class SlowHandler : public WebUIMessageHandler {
   void HandleEnable(const base::Value::List& args);
   void LoadComplete(const base::Value::List& args);
 
-  raw_ptr<Profile, ExperimentalAsh> profile_;
+  raw_ptr<Profile> profile_;
   std::unique_ptr<PrefChangeRegistrar> user_pref_registrar_;
 };
 

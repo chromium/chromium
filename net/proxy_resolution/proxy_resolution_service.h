@@ -83,7 +83,7 @@ class NET_EXPORT ProxyResolutionService {
   virtual bool MarkProxiesAsBadUntil(
       const ProxyInfo& results,
       base::TimeDelta retry_delay,
-      const std::vector<ProxyServer>& additional_bad_proxies,
+      const std::vector<ProxyChain>& additional_bad_proxies,
       const NetLogWithSource& net_log) = 0;
 
   // Clears the list of bad proxy servers that has been cached.

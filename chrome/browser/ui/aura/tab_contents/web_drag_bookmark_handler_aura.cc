@@ -66,7 +66,7 @@ void WebDragBookmarkHandlerAura::OnDrop() {
     }
 
     // Focus the target browser.
-    Browser* browser = chrome::FindBrowserWithWebContents(web_contents_);
+    Browser* browser = chrome::FindBrowserWithTab(web_contents_);
     if (browser)
       browser->window()->Show();
   }

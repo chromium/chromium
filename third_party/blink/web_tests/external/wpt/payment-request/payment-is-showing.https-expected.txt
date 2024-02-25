@@ -1,7 +1,10 @@
 This is a testharness.js-based test.
 Harness Error. harness_status.status = 1 , harness_status.message = Unhandled rejection: Failed to execute 'show' on 'PaymentRequest': Already called show() once
-FAIL The top browsing context can only show one payment sheet at a time. promise_rejects_dom: Attempting to show a second payment request must reject. function "function() { throw e }" threw object "InvalidStateError: Failed to execute 'show' on 'PaymentRequest': Already called show() once" that is not a DOMException AbortError: property "code" is equal to 11, expected 20
-FAIL If an iframe shows a payment request, the top-level browsing context can't also show one. promise_rejects_dom: iframe is already showing a payment request. function "function() { throw e }" threw object "InvalidStateError: Failed to execute 'show' on 'PaymentRequest': Already called show() once" that is not a DOMException AbortError: property "code" is equal to 11, expected 20
-FAIL Navigating an iframe as a nested browsing context sets 'payment request is showing boolean' to false. promise_test: Unhandled rejection with value: object "InvalidStateError: Failed to execute 'abort' on 'PaymentRequest': No show() or retry() in progress, so nothing to abort"
+[FAIL] The top browsing context can only show one payment sheet at a time.
+  promise_rejects_dom: Attempting to show a second payment request must reject. function "function() { throw e }" threw object "InvalidStateError: Failed to execute 'show' on 'PaymentRequest': Already called show() once" that is not a DOMException AbortError: property "code" is equal to 11, expected 20
+[FAIL] If an iframe shows a payment request, the top-level browsing context can't also show one.
+  promise_rejects_dom: iframe is already showing a payment request. function "function() { throw e }" threw object "InvalidStateError: Failed to execute 'show' on 'PaymentRequest': Already called show() once" that is not a DOMException AbortError: property "code" is equal to 11, expected 20
+[FAIL] Navigating an iframe as a nested browsing context sets 'payment request is showing boolean' to false.
+  promise_test: Unhandled rejection with value: object "InvalidStateError: Failed to execute 'abort' on 'PaymentRequest': No show() or retry() in progress, so nothing to abort"
 Harness: the test ran to completion.
 

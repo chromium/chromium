@@ -31,8 +31,9 @@ void AppWindowDesktopNativeWidgetAuraWin::Maximize() {
   // ensure the content view is also made visible. See http://crbug.com/436867.
   // TODO(jackhou): Make this behavior the same as other platforms, i.e. calling
   // Maximize() does not also show the window.
-  if (!tree_host_->IsVisible())
+  if (tree_host_ && !tree_host_->IsVisible()) {
     DesktopNativeWidgetAura::Show(ui::SHOW_STATE_NORMAL, gfx::Rect());
+  }
   DesktopNativeWidgetAura::Maximize();
 }
 
@@ -41,7 +42,13 @@ void AppWindowDesktopNativeWidgetAuraWin::Minimize() {
   // ensure the content view is also made visible. See http://crbug.com/436867.
   // TODO(jackhou): Make this behavior the same as other platforms, i.e. calling
   // Minimize() does not also show the window.
-  if (!tree_host_->IsVisible())
+  if (tree_host_ && !tree_host_->IsVisible()) {
     DesktopNativeWidgetAura::Show(ui::SHOW_STATE_NORMAL, gfx::Rect());
+  }
   DesktopNativeWidgetAura::Minimize();
+}
+
+void AppWindowDesktopNativeWidgetAuraWin::OnHostClosed() {
+  tree_host_ = nullptr;
+  views::DesktopNativeWidgetAura::OnHostClosed();
 }

@@ -123,18 +123,18 @@ MonotoneCubicSpline& MonotoneCubicSpline::operator=(
 
 MonotoneCubicSpline::~MonotoneCubicSpline() = default;
 
-absl::optional<MonotoneCubicSpline> MonotoneCubicSpline::FromString(
+std::optional<MonotoneCubicSpline> MonotoneCubicSpline::FromString(
     const std::string& data) {
   std::vector<double> xs;
   std::vector<double> ys;
 
   if (data.empty())
-    return absl::nullopt;
+    return std::nullopt;
 
   base::StringPairs key_value_pairs;
   if (!base::SplitStringIntoKeyValuePairs(data, ',', '\n', &key_value_pairs)) {
     LOG(ERROR) << "Ill-formatted spline";
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   for (base::StringPairs::iterator it = key_value_pairs.begin();
@@ -142,29 +142,29 @@ absl::optional<MonotoneCubicSpline> MonotoneCubicSpline::FromString(
     double x;
     if (!base::StringToDouble(it->first, &x)) {
       LOG(ERROR) << "Ill-formatted xs";
-      return absl::nullopt;
+      return std::nullopt;
     }
 
     double y;
     if (!base::StringToDouble(it->second, &y)) {
       LOG(ERROR) << "Ill-formatted ys";
-      return absl::nullopt;
+      return std::nullopt;
     }
     xs.push_back(x);
     ys.push_back(y);
   }
 
   if (!IsDataValid(xs, ys))
-    return absl::nullopt;
+    return std::nullopt;
 
   return MonotoneCubicSpline(xs, ys);
 }
 
-absl::optional<MonotoneCubicSpline>
+std::optional<MonotoneCubicSpline>
 MonotoneCubicSpline::CreateMonotoneCubicSpline(const std::vector<double>& xs,
                                                const std::vector<double>& ys) {
   if (!IsDataValid(xs, ys))
-    return absl::nullopt;
+    return std::nullopt;
 
   return MonotoneCubicSpline(xs, ys);
 }

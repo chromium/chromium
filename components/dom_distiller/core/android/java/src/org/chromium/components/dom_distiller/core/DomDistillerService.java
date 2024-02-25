@@ -4,14 +4,13 @@
 
 package org.chromium.components.dom_distiller.core;
 
-import org.chromium.base.ThreadUtils;
-import org.chromium.base.annotations.CalledByNative;
-import org.chromium.base.annotations.JNINamespace;
-import org.chromium.base.annotations.NativeMethods;
+import org.jni_zero.CalledByNative;
+import org.jni_zero.JNINamespace;
+import org.jni_zero.NativeMethods;
 
-/**
- * Wrapper for native dom_distiller::DomDistillerService.
- */
+import org.chromium.base.ThreadUtils;
+
+/** Wrapper for native dom_distiller::DomDistillerService. */
 @JNINamespace("dom_distiller::android")
 public final class DomDistillerService {
 
@@ -19,8 +18,9 @@ public final class DomDistillerService {
 
     private DomDistillerService(long nativeDomDistillerAndroidServicePtr) {
         mDistilledPagePrefs =
-                new DistilledPagePrefs(DomDistillerServiceJni.get().getDistilledPagePrefsPtr(
-                        nativeDomDistillerAndroidServicePtr));
+                new DistilledPagePrefs(
+                        DomDistillerServiceJni.get()
+                                .getDistilledPagePrefsPtr(nativeDomDistillerAndroidServicePtr));
     }
 
     public DistilledPagePrefs getDistilledPagePrefs() {

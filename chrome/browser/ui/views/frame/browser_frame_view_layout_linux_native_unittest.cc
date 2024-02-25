@@ -3,10 +3,10 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/ui/views/frame/browser_frame_view_layout_linux_native.h"
-#include "base/memory/raw_ptr.h"
 
 #include <memory>
 
+#include "base/memory/raw_ptr.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/ui/layout_constants.h"
@@ -79,10 +79,9 @@ class TestLayoutDelegate : public OpaqueBrowserFrameViewLayoutDelegate {
   bool EverHasVisibleBackgroundTabShapes() const override { return false; }
   void UpdateWindowControlsOverlay(
       const gfx::Rect& bounding_rect) const override {}
-  bool IsTranslucentWindowOpacitySupported() const override { return true; }
   bool ShouldDrawRestoredFrameShadow() const override { return true; }
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
-  ui::WindowTiledEdges GetTiledEdges() const override { return {}; }
+#if BUILDFLAG(IS_LINUX)
+  bool IsTiled() const override { return false; }
 #endif
   int WebAppButtonHeight() const override { return 0; }
 };
@@ -147,7 +146,7 @@ class TestFrameProvider : public ui::WindowFrameProvider {
                         const gfx::Rect& rect,
                         int top_area_height,
                         bool focused,
-                        ui::WindowTiledEdges tiled_edges) override {}
+                        const gfx::Insets& input_insets) override {}
 };
 
 }  // namespace
@@ -170,7 +169,10 @@ class BrowserFrameViewLayoutLinuxNativeTest : public ChromeViewsTestBase {
     nav_button_provider_ = std::make_unique<::TestNavButtonProvider>();
     frame_provider_ = std::make_unique<::TestFrameProvider>();
     auto layout = std::make_unique<BrowserFrameViewLayoutLinuxNative>(
-        nav_button_provider_.get(), frame_provider_.get());
+        nav_button_provider_.get(),
+        base::BindRepeating([](ui::WindowFrameProvider* frame_provider,
+                               bool tiled) { return frame_provider; },
+                            frame_provider_.get()));
     layout->set_delegate(delegate_.get());
     layout->set_forced_window_caption_spacing_for_test(0);
     widget_ = CreateTestWidget();

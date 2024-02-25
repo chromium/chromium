@@ -8,10 +8,18 @@
 
 namespace content {
 
-SessionTimer::SessionTimer() = default;
+SessionTimer::SessionTimer(size_t trace_id) : trace_id_(trace_id) {}
 
 SessionTimer::~SessionTimer() {
   StopSession();
+}
+
+size_t SessionTimer::GetTraceId() {
+  return trace_id_;
+}
+
+base::Time SessionTimer::GetStartTime() {
+  return start_time_;
 }
 
 void SessionTimer::StartSession() {
@@ -35,8 +43,8 @@ void SessionTimer::StopSession() {
                                   base::TimeDelta(), base::Hours(5), 100);
   }
 
-  // Clear out start time.
   start_time_ = base::Time();
+  trace_id_ = 0;
 }
 
 }  // namespace content

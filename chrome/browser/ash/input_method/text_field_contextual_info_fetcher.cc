@@ -17,7 +17,7 @@ namespace {
 
 void TextFieldContextualInfoWithUrl(TextFieldContextualInfoCallback cb,
                                     TextFieldContextualInfo& info,
-                                    const absl::optional<GURL>& url) {
+                                    const std::optional<GURL>& url) {
   if (url.has_value()) {
     info.tab_url = url.value();
   }
@@ -59,10 +59,10 @@ void GetTextFieldContextualInfo(TextFieldContextualInfoCallback cb) {
   TextFieldContextualInfoWithUrl(std::move(cb), info,
                                  info.app_type == ash::AppType::BROWSER
                                      ? GetUrlForTextFieldOnAshChrome()
-                                     : absl::nullopt);
+                                     : std::nullopt);
 }
 
-absl::optional<GURL> GetUrlForTextFieldOnAshChrome() {
+std::optional<GURL> GetUrlForTextFieldOnAshChrome() {
   Browser* browser = chrome::FindLastActive();
   // Ash chrome will return true for browser->window()->IsActive() if the
   // user is currently typing in an ash browser tab. IsActive() will return
@@ -75,7 +75,7 @@ absl::optional<GURL> GetUrlForTextFieldOnAshChrome() {
         ->GetLastCommittedURL();
   }
 
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 void GetUrlForTextFieldOnLacros(TextFieldTabUrlCallback cb) {
@@ -89,7 +89,7 @@ void GetUrlForTextFieldOnLacros(TextFieldTabUrlCallback cb) {
     return;
   }
 
-  std::move(cb).Run(absl::nullopt);
+  std::move(cb).Run(std::nullopt);
 }
 
 }  // namespace input_method

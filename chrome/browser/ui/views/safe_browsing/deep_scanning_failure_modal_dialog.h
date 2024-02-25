@@ -21,9 +21,9 @@ namespace safe_browsing {
 // A tab modal dialog that provides more information to the user about the
 // prompt for deep scanning.
 class DeepScanningFailureModalDialog : public views::DialogDelegateView {
- public:
-  METADATA_HEADER(DeepScanningFailureModalDialog);
+  METADATA_HEADER(DeepScanningFailureModalDialog, views::DialogDelegateView)
 
+ public:
   // Show this dialog for the given |web_contents|.
   static void ShowForWebContents(content::WebContents* web_contents,
                                  base::OnceClosure accept_callback,

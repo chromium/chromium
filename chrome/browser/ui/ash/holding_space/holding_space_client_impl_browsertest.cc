@@ -21,11 +21,15 @@
 #include "base/run_loop.h"
 #include "base/strings/strcat.h"
 #include "base/test/bind.h"
+#include "base/test/metrics/histogram_tester.h"
+#include "base/test/test_future.h"
+#include "base/threading/thread_restrictions.h"
 #include "base/unguessable_token.h"
 #include "chrome/browser/ash/file_manager/path_util.h"
 #include "chrome/browser/extensions/component_loader.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/ash/holding_space/holding_space_browsertest_base.h"
+#include "chrome/browser/ui/ash/holding_space/holding_space_test_util.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "components/drive/drive_pref_names.h"
@@ -35,8 +39,17 @@
 #include "ui/gfx/image/image_skia.h"
 
 namespace ash {
-
 namespace {
+
+// Aliases ---------------------------------------------------------------------
+
+using ::testing::AllOf;
+using ::testing::Eq;
+using ::testing::IsFalse;
+using ::testing::IsTrue;
+using ::testing::ResultOf;
+
+// Constants -------------------------------------------------------------------
 
 // File paths for test data.
 constexpr char kTestDataDir[] = "chrome/test/data/chromeos/file_manager/";
@@ -58,7 +71,8 @@ std::unique_ptr<HoldingSpaceImage> CreateTestHoldingSpaceImage(
 // downloads directory, and returns the path to the copy.
 base::FilePath TestFile(Profile* profile, const std::string& relative_path) {
   base::FilePath source_root;
-  EXPECT_TRUE(base::PathService::Get(base::DIR_SOURCE_ROOT, &source_root));
+  EXPECT_TRUE(
+      base::PathService::Get(base::DIR_SRC_TEST_DATA_ROOT, &source_root));
   const base::FilePath source_file =
       source_root.AppendASCII(kTestDataDir).AppendASCII(relative_path);
 
@@ -88,8 +102,6 @@ using HoldingSpaceClientImplTest = HoldingSpaceBrowserTestBase;
 
 // Verifies that `HoldingSpaceClient::AddItemOfType()` works as intended.
 IN_PROC_BROWSER_TEST_F(HoldingSpaceClientImplTest, AddItemOfType) {
-  using Type = HoldingSpaceItem::Type;
-
   // Verify existence of controller, `client`, and `model`.
   ASSERT_TRUE(HoldingSpaceController::Get());
   auto* client = HoldingSpaceController::Get()->client();
@@ -102,20 +114,28 @@ IN_PROC_BROWSER_TEST_F(HoldingSpaceClientImplTest, AddItemOfType) {
   EXPECT_EQ(model->items().size(), expected_count);
 
   // Verify client API works for every item type.
-  for (size_t i = 0u; i <= static_cast<int>(Type::kMaxValue); ++i) {
+  for (const auto expected_type : holding_space_util::GetAllItemTypes()) {
     // Create the item of the `expected_type` using the client API.
-    const HoldingSpaceItem::Type expected_type = static_cast<Type>(i);
     const base::FilePath expected_file_path =
         TestFile(GetProfile(), kTextFilePath);
     const std::string& expected_id =
         client->AddItemOfType(expected_type, expected_file_path);
 
-    // Insertion into the model should only fail if the item is a Camera app
-    // item and Camera app integration is disabled.
+    // Insertion into the model should only fail if the item is:
+    // (a) a Camera app item and Camera app integration is disabled, or
+    // (b) a Photoshop Web item and Photoshop Web integration is disabled.
     if (expected_id.empty()) {
       EXPECT_EQ(model->items().size(), expected_count);
-      EXPECT_TRUE(HoldingSpaceItem::IsCameraAppType(expected_type));
-      EXPECT_FALSE(features::IsHoldingSpaceCameraAppIntegrationEnabled());
+      EXPECT_THAT(
+          expected_type,
+          ::testing::AnyOf(
+              AllOf(ResultOf(&HoldingSpaceItem::IsCameraAppType, IsTrue()),
+                    And(features::IsHoldingSpaceCameraAppIntegrationEnabled(),
+                        IsFalse())),
+              AllOf(
+                  Eq(HoldingSpaceItem::Type::kPhotoshopWeb),
+                  And(features::IsHoldingSpacePhotoshopWebIntegrationEnabled(),
+                      IsFalse()))));
       continue;
     }
 
@@ -124,7 +144,7 @@ IN_PROC_BROWSER_TEST_F(HoldingSpaceClientImplTest, AddItemOfType) {
     const HoldingSpaceItem* item = model->items().back().get();
     EXPECT_EQ(item->id(), expected_id);
     EXPECT_EQ(item->type(), expected_type);
-    EXPECT_EQ(item->file_path(), expected_file_path);
+    EXPECT_EQ(item->file().file_path, expected_file_path);
   }
 }
 
@@ -147,7 +167,7 @@ IN_PROC_BROWSER_TEST_F(HoldingSpaceClientImplTest, CopyImageToClipboard) {
     // backing file for `holding_space_item` is not an image file.
     base::RunLoop run_loop;
     holding_space_client->CopyImageToClipboard(
-        *holding_space_item,
+        *holding_space_item, holding_space_metrics::EventSource::kTest,
         base::BindLambdaForTesting([&run_loop](bool success) {
           EXPECT_FALSE(success);
           run_loop.Quit();
@@ -165,7 +185,7 @@ IN_PROC_BROWSER_TEST_F(HoldingSpaceClientImplTest, CopyImageToClipboard) {
     // the backing file for `holding_space_item` is an image file.
     base::RunLoop run_loop;
     holding_space_client->CopyImageToClipboard(
-        *holding_space_item,
+        *holding_space_item, holding_space_metrics::EventSource::kTest,
         base::BindLambdaForTesting([&run_loop](bool success) {
           EXPECT_TRUE(success);
           run_loop.Quit();
@@ -233,66 +253,94 @@ IN_PROC_BROWSER_TEST_F(HoldingSpaceClientImplTest, OpenItems) {
   auto* holding_space_client = HoldingSpaceController::Get()->client();
   ASSERT_TRUE(holding_space_client);
 
-  // OpenItems() depends on the Files app. Install the Files SWA.
+  // `HoldingSpaceClient::OpenItems()` depends on Files app installation.
   WaitForTestSystemAppInstall();
 
-  // Verify no failures have yet been recorded.
+  // Alias histogram names.
+  static constexpr char kItemLaunchEmpty[] =
+      "HoldingSpace.Item.Action.Launch.Empty";
+  static constexpr char kItemLaunchEmptyExtension[] =
+      "HoldingSpace.Item.Action.Launch.Empty.Extension";
+  static constexpr char kItemLaunchFailure[] =
+      "HoldingSpace.Item.Action.Launch.Failure";
+  static constexpr char kItemLaunchFailureExtension[] =
+      "HoldingSpace.Item.Action.Launch.Failure.Extension";
+  static constexpr char kItemLaunchFailureReason[] =
+      "HoldingSpace.Item.Action.Launch.Failure.Reason";
+
+  // Verify no histograms have yet been recorded.
   base::HistogramTester histogram_tester;
-  histogram_tester.ExpectTotalCount("HoldingSpace.Item.FailureToLaunch", 0);
-  histogram_tester.ExpectTotalCount(
-      "HoldingSpace.Item.FailureToLaunch.Extension", 0);
+  histogram_tester.ExpectTotalCount(kItemLaunchEmpty, 0);
+  histogram_tester.ExpectTotalCount(kItemLaunchEmptyExtension, 0);
+  histogram_tester.ExpectTotalCount(kItemLaunchFailure, 0);
+  histogram_tester.ExpectTotalCount(kItemLaunchFailureExtension, 0);
+  histogram_tester.ExpectTotalCount(kItemLaunchFailureReason, 0);
 
   {
-    // Create a holding space item backed by a non-existing file.
-    auto holding_space_item = HoldingSpaceItem::CreateFileBackedItem(
+    // Create a holding space `item` backed by a non-existing file.
+    auto item = HoldingSpaceItem::CreateFileBackedItem(
         HoldingSpaceItem::Type::kDownload,
-        HoldingSpaceFile(HoldingSpaceFile::FileSystemType::kTest),
-        base::FilePath("foo.pdf"), GURL("filesystem:fake"),
+        HoldingSpaceFile(base::FilePath("foo.pdf"),
+                         HoldingSpaceFile::FileSystemType::kTest,
+                         GURL("filesystem:fake")),
         base::BindOnce(&CreateTestHoldingSpaceImage));
 
     // We expect `HoldingSpaceClient::OpenItems()` to fail when the backing file
-    // for `holding_space_item` does not exist.
-    base::RunLoop run_loop;
-    holding_space_client->OpenItems(
-        {holding_space_item.get()},
-        base::BindLambdaForTesting([&](bool success) {
-          EXPECT_FALSE(success);
+    // for `item` does not exist.
+    base::test::TestFuture<bool> success;
+    holding_space_client->OpenItems({item.get()},
+                                    holding_space_metrics::EventSource::kTest,
+                                    success.GetCallback());
+    EXPECT_FALSE(success.Take());
 
-          // Verify the failure has been recorded.
-          histogram_tester.ExpectBucketCount(
-              "HoldingSpace.Item.FailureToLaunch", holding_space_item->type(),
-              1);
-          histogram_tester.ExpectBucketCount(
-              "HoldingSpace.Item.FailureToLaunch.Extension",
-              holding_space_metrics::FilePathToExtension(
-                  holding_space_item->file_path()),
-              1);
-
-          run_loop.Quit();
-        }));
-    run_loop.Run();
+    // Verify the failure has been recorded.
+    histogram_tester.ExpectBucketCount(kItemLaunchFailure, item->type(), 1);
+    histogram_tester.ExpectBucketCount(
+        kItemLaunchFailureExtension,
+        holding_space_metrics::FilePathToExtension(item->file().file_path), 1);
+    histogram_tester.ExpectBucketCount(
+        kItemLaunchFailureReason,
+        holding_space_metrics::ItemLaunchFailureReason::kFileInfoError, 1);
   }
 
   {
-    // Create a holding space item backed by a newly created txt file.
-    HoldingSpaceItem* holding_space_item = AddPinnedFile();
+    // Create a holding space `item` backed by a newly created file.
+    HoldingSpaceItem* item = AddPinnedFile();
 
     // We expect `HoldingSpaceClient::OpenItems()` to succeed when the backing
-    // file for `holding_space_item` exists.
-    base::RunLoop run_loop;
-    holding_space_client->OpenItems(
-        {holding_space_item},
-        base::BindLambdaForTesting([&run_loop](bool success) {
-          EXPECT_TRUE(success);
-          run_loop.Quit();
-        }));
-    run_loop.Run();
+    // file for `item` exists and is empty.
+    base::test::TestFuture<bool> success;
+    holding_space_client->OpenItems({item},
+                                    holding_space_metrics::EventSource::kTest,
+                                    success.GetCallback());
+    EXPECT_TRUE(success.Take());
+
+    // Verify the empty launch has been recorded.
+    histogram_tester.ExpectBucketCount(kItemLaunchEmpty, item->type(), 1);
+    histogram_tester.ExpectBucketCount(
+        kItemLaunchEmptyExtension,
+        holding_space_metrics::FilePathToExtension(item->file().file_path), 1);
+
+    {
+      // Write "contents" to `item`'s backing file.
+      base::ScopedAllowBlockingForTesting allow_blocking;
+      EXPECT_TRUE(base::WriteFile(item->file().file_path, "contents"));
+    }
+
+    // We expect `HoldingSpaceClient::OpenItems()` to succeed when the backing
+    // file for `item` exists and is non-empty.
+    holding_space_client->OpenItems({item},
+                                    holding_space_metrics::EventSource::kTest,
+                                    success.GetCallback());
+    EXPECT_TRUE(success.Take());
   }
 
-  // Verify that only the expected failure was recorded.
-  histogram_tester.ExpectTotalCount("HoldingSpace.Item.FailureToLaunch", 1);
-  histogram_tester.ExpectTotalCount(
-      "HoldingSpace.Item.FailureToLaunch.Extension", 1);
+  // Verify that only the expected histograms were recorded.
+  histogram_tester.ExpectTotalCount(kItemLaunchEmpty, 1);
+  histogram_tester.ExpectTotalCount(kItemLaunchEmptyExtension, 1);
+  histogram_tester.ExpectTotalCount(kItemLaunchFailure, 1);
+  histogram_tester.ExpectTotalCount(kItemLaunchFailureExtension, 1);
+  histogram_tester.ExpectTotalCount(kItemLaunchFailureReason, 1);
 }
 
 // Verifies that `HoldingSpaceClient::ShowItemInFolder()` works as intended when
@@ -308,15 +356,16 @@ IN_PROC_BROWSER_TEST_F(HoldingSpaceClientImplTest, ShowItemInFolder) {
     // Create a holding space item backed by a non-existing file.
     auto holding_space_item = HoldingSpaceItem::CreateFileBackedItem(
         HoldingSpaceItem::Type::kDownload,
-        HoldingSpaceFile(HoldingSpaceFile::FileSystemType::kTest),
-        base::FilePath("foo"), GURL("filesystem:fake"),
+        HoldingSpaceFile(base::FilePath("foo"),
+                         HoldingSpaceFile::FileSystemType::kTest,
+                         GURL("filesystem:fake")),
         base::BindOnce(&CreateTestHoldingSpaceImage));
 
     // We expect `HoldingSpaceClient::ShowItemInFolder()` to fail when the
     // backing file for `holding_space_item` does not exist.
     base::RunLoop run_loop;
     holding_space_client->ShowItemInFolder(
-        *holding_space_item,
+        *holding_space_item, holding_space_metrics::EventSource::kTest,
         base::BindLambdaForTesting([&run_loop](bool success) {
           EXPECT_FALSE(success);
           run_loop.Quit();
@@ -332,7 +381,7 @@ IN_PROC_BROWSER_TEST_F(HoldingSpaceClientImplTest, ShowItemInFolder) {
     // backing file for `holding_space_item` exists.
     base::RunLoop run_loop;
     holding_space_client->ShowItemInFolder(
-        *holding_space_item,
+        *holding_space_item, holding_space_metrics::EventSource::kTest,
         base::BindLambdaForTesting([&run_loop](bool success) {
           EXPECT_TRUE(success);
           run_loop.Quit();
@@ -354,7 +403,8 @@ IN_PROC_BROWSER_TEST_F(HoldingSpaceClientImplTest, PinItems) {
   ASSERT_EQ(1u, holding_space_model->items().size());
 
   // Attempt to pin the download holding space item.
-  holding_space_client->PinItems({download_item});
+  holding_space_client->PinItems({download_item},
+                                 holding_space_metrics::EventSource::kTest);
   ASSERT_EQ(2u, holding_space_model->items().size());
 
   // The pinned holding space item should have type `kPinnedFile` but share the
@@ -362,7 +412,8 @@ IN_PROC_BROWSER_TEST_F(HoldingSpaceClientImplTest, PinItems) {
   HoldingSpaceItem* pinned_file_item = holding_space_model->items()[1].get();
   EXPECT_EQ(pinned_file_item->type(), HoldingSpaceItem::Type::kPinnedFile);
   EXPECT_EQ(download_item->GetText(), pinned_file_item->GetText());
-  EXPECT_EQ(download_item->file_path(), pinned_file_item->file_path());
+  EXPECT_EQ(download_item->file().file_path,
+            pinned_file_item->file().file_path);
 }
 
 // Verifies that `HoldingSpaceClient::UnpinItems()` works as intended.
@@ -378,7 +429,8 @@ IN_PROC_BROWSER_TEST_F(HoldingSpaceClientImplTest, UnpinItems) {
   ASSERT_EQ(1u, holding_space_model->items().size());
 
   // Attempt to unpin the pinned file holding space item.
-  holding_space_client->UnpinItems({pinned_file_item});
+  holding_space_client->UnpinItems({pinned_file_item},
+                                   holding_space_metrics::EventSource::kTest);
   ASSERT_EQ(0u, holding_space_model->items().size());
 }
 

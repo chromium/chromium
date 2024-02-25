@@ -63,7 +63,7 @@ class It2MeConfirmationDialogChromeOS : public It2MeConfirmationDialog {
  private:
   void ShowConfirmationNotification(const std::string& remote_user_email);
 
-  void OnConfirmationNotificationResult(absl::optional<int> button_index);
+  void OnConfirmationNotificationResult(std::optional<int> button_index);
 
   const gfx::VectorIcon& GetIcon() const {
     switch (style_) {
@@ -136,7 +136,7 @@ void It2MeConfirmationDialogChromeOS::ShowConfirmationNotification(
 }
 
 void It2MeConfirmationDialogChromeOS::OnConfirmationNotificationResult(
-    absl::optional<int> button_index) {
+    std::optional<int> button_index) {
   if (!button_index.has_value()) {
     return;  // This happens when the user clicks the notification itself.
   }

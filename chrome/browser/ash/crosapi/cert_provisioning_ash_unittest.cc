@@ -62,7 +62,7 @@ void SetupMockCertProvisioningWorker(
     const std::vector<uint8_t>* public_key,
     ash::cert_provisioning::CertProfile& cert_profile,
     base::Time last_update_time,
-    absl::optional<ash::cert_provisioning::BackendServerError>& backend_error) {
+    std::optional<ash::cert_provisioning::BackendServerError>& backend_error) {
   EXPECT_CALL(*worker, GetState).WillRepeatedly(Return(state));
   EXPECT_CALL(*worker, GetLastUpdateTime)
       .WillRepeatedly(Return(last_update_time));
@@ -254,7 +254,7 @@ TEST_F(CertProvisioningAshTest, GetStatusAliveUserWorker) {
       ash::cert_provisioning::ProtocolVersion::kStatic);
   // Any time should work. Any time in the past is a realistic value.
   base::Time last_update_time = base::Time::Now() - base::Hours(1);
-  absl::optional<ash::cert_provisioning::BackendServerError> backend_error =
+  std::optional<ash::cert_provisioning::BackendServerError> backend_error =
       ash::cert_provisioning::BackendServerError(
           policy::DM_STATUS_REQUEST_INVALID, last_update_time);
   auto user_cert_worker =
@@ -277,7 +277,7 @@ TEST_F(CertProvisioningAshTest, GetStatusAliveUserWorker) {
       mojom::CertProvisioningProcessState::kKeypairGenerated;
   expected_user_status->did_fail = false;
   expected_user_status->is_device_wide = false;
-  expected_user_status->failure_message = absl::nullopt;
+  expected_user_status->failure_message = std::nullopt;
 
   TestFuture<std::vector<mojom::CertProvisioningProcessStatusPtr>> result;
   service_.GetStatus(result.GetCallback());
@@ -295,7 +295,7 @@ TEST_F(CertProvisioningAshTest, GetStatusAliveDeviceWorker) {
       /*is_va_enabled=*/true, kCertProfileRenewalPeriod,
       ash::cert_provisioning::ProtocolVersion::kStatic);
   base::Time last_update_time = base::Time::Now() - base::Hours(2);
-  absl::optional<ash::cert_provisioning::BackendServerError> backend_error =
+  std::optional<ash::cert_provisioning::BackendServerError> backend_error =
       ash::cert_provisioning::BackendServerError(
           policy::DM_STATUS_REQUEST_FAILED, last_update_time);
   auto device_cert_worker =
@@ -318,7 +318,7 @@ TEST_F(CertProvisioningAshTest, GetStatusAliveDeviceWorker) {
       mojom::CertProvisioningProcessState::kSignCsrFinished;
   expected_device_status->did_fail = false;
   expected_device_status->is_device_wide = true;
-  expected_device_status->failure_message = absl::nullopt;
+  expected_device_status->failure_message = std::nullopt;
 
   TestFuture<std::vector<mojom::CertProvisioningProcessStatusPtr>> result;
   service_.GetStatus(result.GetCallback());

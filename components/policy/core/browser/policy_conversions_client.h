@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_POLICY_CORE_BROWSER_POLICY_CONVERSIONS_CLIENT_H_
 #define COMPONENTS_POLICY_CORE_BROWSER_POLICY_CONVERSIONS_CLIENT_H_
 
+#include <optional>
 #include <set>
 #include <string>
 
@@ -16,7 +17,6 @@
 #include "components/policy/core/browser/policy_conversions.h"
 #include "components/policy/core/common/schema.h"
 #include "components/policy/policy_export.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace policy {
 
@@ -65,7 +65,7 @@ class POLICY_EXPORT PolicyConversionsClient {
 #if BUILDFLAG(IS_WIN) && BUILDFLAG(GOOGLE_CHROME_BRANDING)
   base::Value::Dict ConvertUpdaterPolicies(
       PolicyMap updater_policies,
-      absl::optional<PolicyConversions::PolicyToSchemaMap>
+      std::optional<PolicyConversions::PolicyToSchemaMap>
           updater_policy_schemas);
 #endif  // BUILDFLAG(IS_WIN) && BUILDFLAG(GOOGLE_CHROME_BRANDING)
 
@@ -108,12 +108,21 @@ class POLICY_EXPORT PolicyConversionsClient {
   // Returns the embedder's ConfigurationPolicyHandlerList.
   virtual const ConfigurationPolicyHandlerList* GetHandlerList() const = 0;
 
+  // Returns whether this client was configured to get device local account
+  // policies on ChromeOS.
+  bool GetDeviceLocalAccountPoliciesEnabled() const;
+  // Returns whether this client was configured to get device basic information
+  // on ChromeOS.
+  bool GetDeviceInfoEnabled() const;
+  // Returns whether this client was configured to get all user scope policies.
+  bool GetUserPoliciesEnabled() const;
+
  protected:
   // Returns a copy of |value|. If necessary (which is specified by
   // |convert_values_enabled_|), converts some values to a representation that
   // i18n_template.js will display.
   base::Value CopyAndMaybeConvert(const base::Value& value,
-                                  const absl::optional<Schema>& schema) const;
+                                  const std::optional<Schema>& schema) const;
 
   // Creates a description of the policy |policy_name| using |policy| and the
   // optional errors in |errors| to determine the status of each policy.
@@ -127,7 +136,7 @@ class POLICY_EXPORT PolicyConversionsClient {
       const PoliciesSet& deprecated_policies,
       const PoliciesSet& future_policies,
       PolicyErrorMap* errors,
-      const absl::optional<PolicyConversions::PolicyToSchemaMap>&
+      const std::optional<PolicyConversions::PolicyToSchemaMap>&
           known_policy_schemas) const;
 
   // Returns a description of each policy in |map| as Value, using the
@@ -141,28 +150,19 @@ class POLICY_EXPORT PolicyConversionsClient {
       PolicyErrorMap* errors,
       const PoliciesSet& deprecated_policies,
       const PoliciesSet& future_policies,
-      const absl::optional<PolicyConversions::PolicyToSchemaMap>&
+      const std::optional<PolicyConversions::PolicyToSchemaMap>&
           known_policy_schemas) const;
 
   // Returns the Schema for |policy_name| if that policy is known. If the policy
-  // is unknown, returns |absl::nullopt|.
-  absl::optional<Schema> GetKnownPolicySchema(
-      const absl::optional<PolicyConversions::PolicyToSchemaMap>&
+  // is unknown, returns |std::nullopt|.
+  std::optional<Schema> GetKnownPolicySchema(
+      const std::optional<PolicyConversions::PolicyToSchemaMap>&
           known_policy_schemas,
       const std::string& policy_name) const;
 
-  absl::optional<PolicyConversions::PolicyToSchemaMap> GetKnownPolicies(
+  std::optional<PolicyConversions::PolicyToSchemaMap> GetKnownPolicies(
       const scoped_refptr<SchemaMap> schema_map,
       const PolicyNamespace& policy_namespace) const;
-
-  // Returns whether this client was configured to get device local account
-  // policies on ChromeOS.
-  bool GetDeviceLocalAccountPoliciesEnabled() const;
-  // Returns whether this client was configured to get device basic information
-  // on ChromeOS.
-  bool GetDeviceInfoEnabled() const;
-  // Returns whether this client was configured to get all user scope policies.
-  bool GetUserPoliciesEnabled() const;
 
  private:
   friend class PolicyConversionsClientTest;

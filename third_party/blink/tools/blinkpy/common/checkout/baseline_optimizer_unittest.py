@@ -28,6 +28,7 @@
 
 import json
 import optparse
+import textwrap
 import unittest
 
 from blinkpy.common.checkout.baseline_optimizer import BaselineOptimizer, ResultDigest
@@ -39,13 +40,13 @@ from blinkpy.web_tests.builder_list import BuilderList
 from blinkpy.web_tests.models.testharness_results import ABBREVIATED_ALL_PASS
 
 ALL_PASS_TESTHARNESS_RESULT = """This is a testharness.js-based test.
-PASS woohoo
+[PASS] woohoo
 Harness: the test ran to completion.
 """
 
 ALL_PASS_TESTHARNESS_RESULT2 = """This is a testharness.js-based test.
-PASS woohoo
-PASS yahoo
+[PASS] woohoo
+[PASS] yahoo
 Harness: the test ran to completion.
 """
 
@@ -98,6 +99,10 @@ class BaselineOptimizerTest(BaselineTest):
                 'port_name': 'win-win11',
                 'specifiers': ['Win11', 'Release']
             },
+            'Fake Test Win11-arm64': {
+                'port_name': 'win-win11-arm64',
+                'specifiers': ['Win11-arm64', 'Release']
+            },
             'Fake Test Linux': {
                 'port_name': 'linux',
                 'specifiers': ['Trusty', 'Release']
@@ -132,8 +137,14 @@ class BaselineOptimizerTest(BaselineTest):
         # assertion fails, port configurations are likely changed, and the
         # tests need to be adjusted accordingly.
         self.assertEqual(sorted(self.host.port_factory.all_port_names()), [
-            'linux', 'mac-mac10.15', 'mac-mac11', 'mac-mac12', 'mac-mac13',
-            'win-win10.20h2', 'win-win11'
+            'linux',
+            'mac-mac10.15',
+            'mac-mac11',
+            'mac-mac12',
+            'mac-mac13',
+            'win-win10.20h2',
+            'win-win11',
+            'win-win11-arm64',
         ])
 
     def _assert_optimization(self,
@@ -141,33 +152,37 @@ class BaselineOptimizerTest(BaselineTest):
                              directory_to_new_results,
                              baseline_dirname='',
                              suffix='txt',
-                             options=None):
+                             options=None,
+                             virtual_suites=None):
         test_name = 'mock-test.html'
         baseline_name = 'mock-test-expected.' + suffix
+        virtual_suites = virtual_suites or [{
+            'prefix':
+            'gpu',
+            'platforms': ['Linux', 'Mac', 'Win'],
+            'bases': [
+                'webexposed',
+                'fast/canvas',
+                'slow/canvas/mock-test.html',
+                'virtual/virtual_empty_bases/',
+            ],
+            'args': ['--foo'],
+        }, {
+            'prefix':
+            'virtual_empty_bases',
+            'platforms': ['Linux', 'Mac', 'Win'],
+            'bases': [],
+            'args': ['--foo'],
+        }, {
+            'prefix':
+            'stable',
+            'platforms': ['Linux', 'Mac', 'Win'],
+            'bases': ['webexposed'],
+            'args': ['--stable-release-mode'],
+        }]
         self.fs.write_text_file(
             self.finder.path_from_web_tests('VirtualTestSuites'),
-            json.dumps([{
-                'prefix':
-                'gpu',
-                'platforms': ['Linux', 'Mac', 'Win'],
-                'bases': [
-                    'webexposed',
-                    'fast/canvas',
-                    'slow/canvas/mock-test.html',
-                    'virtual/virtual_empty_bases/',
-                ],
-                'args': ['--foo'],
-            }, {
-                'prefix': 'virtual_empty_bases',
-                'platforms': ['Linux', 'Mac', 'Win'],
-                'bases': [],
-                'args': ['--foo'],
-            }, {
-                'prefix': 'stable',
-                'platforms': ['Linux', 'Mac', 'Win'],
-                'bases': ['webexposed'],
-                'args': ['--stable-release-mode'],
-            }]))
+            json.dumps(virtual_suites))
         self.fs.write_text_file(
             self.finder.path_from_web_tests('FlagSpecificConfig'),
             '[{"name": "highdpi", "args": ["--force-device-scale-factor=1.5"]}]'
@@ -537,6 +552,37 @@ class BaselineOptimizerTest(BaselineTest):
             },
             baseline_dirname='virtual/gpu/fast/canvas')
 
+    def test_exclusive_virtual_roots(self):
+        virtual_suites = [{
+            'prefix': 'gpu',
+            'platforms': ['Linux', 'Mac', 'Win'],
+            'bases': ['fast/canvas'],
+            'exclusive_tests': ['fast/canvas'],
+            'args': ['--foo'],
+        }, {
+            'prefix': 'not-gpu',
+            'platforms': ['Linux', 'Mac', 'Win'],
+            'bases': ['fast/canvas'],
+            'exclusive_tests': 'ALL',
+            'args': ['--bar'],
+        }]
+        self._assert_optimization(
+            {
+                'fast/canvas': '1',
+                'platform/mac/virtual/gpu/fast/canvas': '1',
+                'platform/win/virtual/gpu/fast/canvas': '1',
+                'platform/mac/virtual/not-gpu/fast/canvas': '1',
+                'platform/win/virtual/not-gpu/fast/canvas': '1',
+            }, {
+                'fast/canvas': '1',
+                'platform/mac/virtual/gpu/fast/canvas': None,
+                'platform/win/virtual/gpu/fast/canvas': None,
+                'platform/mac/virtual/not-gpu/fast/canvas': None,
+                'platform/win/virtual/not-gpu/fast/canvas': None,
+            },
+            baseline_dirname='fast/canvas',
+            virtual_suites=virtual_suites)
+
     def test_all_pass_testharness_at_root(self):
         self._assert_optimization({'': ALL_PASS_TESTHARNESS_RESULT},
                                   {'': None})
@@ -858,6 +904,31 @@ class BaselineOptimizerTest(BaselineTest):
             },
             baseline_dirname='fast/canvas')
 
+    def test_preorder_removal_more_favorable(self):
+        # Regression test for crbug.com/1512264
+        self._assert_optimization(
+            {
+                'platform/win11-arm64/slow/canvas': '3',
+                'platform/win10/slow/canvas': '2',
+                'platform/linux/slow/canvas': '1',
+                'platform/win/virtual/gpu/slow/canvas':
+                ALL_PASS_TESTHARNESS_RESULT,
+                'platform/win11-arm64/virtual/gpu/slow/canvas':
+                ALL_PASS_TESTHARNESS_RESULT,
+                'platform/win10/virtual/gpu/slow/canvas': '2',
+                'platform/linux/virtual/gpu/slow/canvas': '1',
+            }, {
+                'platform/win11-arm64/slow/canvas':
+                '3',
+                'platform/win10/slow/canvas':
+                '2',
+                'platform/linux/slow/canvas':
+                '1',
+                'platform/win11-arm64/virtual/gpu/slow/canvas':
+                ALL_PASS_TESTHARNESS_RESULT,
+            },
+            baseline_dirname='slow/canvas')
+
 
 class ResultDigestTest(unittest.TestCase):
     def setUp(self):
@@ -886,6 +957,29 @@ class ResultDigestTest(unittest.TestCase):
         self.assertFalse(
             ResultDigest.from_file(
                 self.fs, '/failures/baz-expected.txt').is_extra_result)
+
+    def test_canonicalize_testharness(self):
+        self.fs.write_text_file(
+            '/platform/x/failures/baz-expected.txt',
+            textwrap.dedent("""\
+                This is a testharness.js-based test.
+                [FAIL] failing subtest
+                Harness: the test ran to completion.
+                """))
+        self.fs.write_text_file(
+            '/failures/baz-expected.txt',
+            textwrap.dedent("""\
+
+                This is a testharness.js-based test.
+                [FAIL] failing subtest
+                Harness: the test ran to completion.
+
+
+                  """))
+        self.assertEqual(
+            ResultDigest.from_file(self.fs,
+                                   '/platform/x/failures/baz-expected.txt'),
+            ResultDigest.from_file(self.fs, '/failures/baz-expected.txt'))
 
     def test_empty_result(self):
         self.assertFalse(

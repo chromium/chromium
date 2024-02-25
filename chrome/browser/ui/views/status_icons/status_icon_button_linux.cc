@@ -133,5 +133,5 @@ void StatusIconButtonLinux::PaintButtonContents(gfx::Canvas* canvas) {
                        image.width(), image.height(), true, flags);
 }
 
-BEGIN_METADATA(StatusIconButtonLinux, views::Button)
+BEGIN_METADATA(StatusIconButtonLinux)
 END_METADATA

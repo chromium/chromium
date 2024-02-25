@@ -27,6 +27,7 @@ import {
   GaBaseEvent,
   GaMetricDimension,
   getGaHelper,
+  MemoryUsageEventDimension,
 } from './untrusted_scripts.js';
 import {WaitableEvent} from './waitable_event.js';
 
@@ -49,7 +50,7 @@ const ready = new WaitableEvent();
  * @param event The event to send.
  * @param dimensions Optional object contains dimension information.
  */
-async function sendEvent(
+function sendEvent(
     event: GaBaseEvent,
     dimensions: Map<GaMetricDimension, string> = new Map()) {
   if (event.eventValue !== undefined && !Number.isInteger(event.eventValue)) {
@@ -59,14 +60,18 @@ async function sendEvent(
     event.eventValue = Math.round(event.eventValue);
   }
 
-  await ready.wait();
+  // No caller use the returned promise since metrics sending should not block
+  // the code.
+  void (async () => {
+    await ready.wait();
 
-  if (await checkCanSendMetrics()) {
-    await Promise.all([
-      sendGaEvent(event, dimensions),
-      sendGa4Event(event, dimensions),
-    ]);
-  }
+    if (await checkCanSendMetrics()) {
+      await Promise.all([
+        sendGaEvent(event, dimensions),
+        sendGa4Event(event, dimensions),
+      ]);
+    }
+  })();
 }
 
 async function sendGaEvent(
@@ -126,6 +131,7 @@ export async function initMetrics(): Promise<void> {
     const baseDimensions = new Map([
       [GaMetricDimension.BOARD, board],
       [GaMetricDimension.IS_TEST_IMAGE, boolToIntString(isTestImage)],
+      [GaMetricDimension.OS_VERSION, loadTimeData.getOsVersion()],
     ]);
 
     const clientId = localStorage.getString(LocalStorageKey.GA_USER_ID);
@@ -146,6 +152,7 @@ export async function initMetrics(): Promise<void> {
       [Ga4MetricDimension.BOARD]: board,
       [Ga4MetricDimension.IS_TEST_IMAGE]: boolToIntString(isTestImage),
       [Ga4MetricDimension.BROWSER_VERSION]: loadTimeData.getBrowserVersion(),
+      [Ga4MetricDimension.OS_VERSION]: loadTimeData.getOsVersion(),
     };
 
     const clientId = localStorage.getString(LocalStorageKey.GA4_CLIENT_ID);
@@ -162,13 +169,38 @@ export async function initMetrics(): Promise<void> {
         Comlink.proxy(setClientId));
   }
 
+  // GA_IDs are refreshed every 90 days cycle according to GA_ID_REFRESH_TIME.
+  // If GA_ID_REFRESH_TIME does not exist or is outdated, updates
+  // GA_ID_REFRESH_TIME and removes outdated GA_USER_ID and GA4_CLIENT_ID to
+  // have the new IDs.
+  const timeNow = Date.now();
+  const dayInMs = 1000 * 60 * 60 * 24;
+  let refreshTime = localStorage.getNumber(LocalStorageKey.GA_ID_REFRESH_TIME);
+  // Assign the first |refreshTime| uniformly in today+[1,90] days.
+  // This solves an initial launch problem by avoiding that all Chromebooks do a
+  // synchronized refresh 90 days after launch.
+  if (refreshTime === 0) {
+    const randomInt = Math.floor(Math.random() * 90) + 1;
+    refreshTime = timeNow + randomInt * dayInMs;
+  } else if (refreshTime <= timeNow) {
+    localStorage.remove(LocalStorageKey.GA_USER_ID);
+    localStorage.remove(LocalStorageKey.GA4_CLIENT_ID);
+    const cycle = 90 * dayInMs;
+    const cycleCount = Math.floor((timeNow - refreshTime) / cycle) + 1;
+    refreshTime += cycle * cycleCount;
+  }
+  localStorage.set(LocalStorageKey.GA_ID_REFRESH_TIME, refreshTime);
+
   await Promise.all([initGa(), initGa4()]);
   // TODO(b/286511762): Monitor consent option to enable/disable sending
   // metrics. Since end_session event is sent when the window is unloaded, we
   // don't have time to read the value from `checkCanSendMetrics()`. Currently,
   // we check the consent option on register instead of send.
   if (await checkCanSendMetrics()) {
-    await gaHelper.registerGa4EndSessionEvent();
+    await Promise.all([
+      gaHelper.registerGa4EndSessionEvent(),
+      gaHelper.registerGa4MemoryUsageEvent(),
+    ]);
   }
   ready.signal();
 }
@@ -477,6 +509,7 @@ export function sendBarcodeEnabledEvent(): void {
 export enum BarcodeContentType {
   TEXT = 'text',
   URL = 'url',
+  WIFI = 'wifi',
 }
 
 interface BarcodeDetectedEventParam {
@@ -487,12 +520,17 @@ interface BarcodeDetectedEventParam {
  * Sends the barcode detected event.
  */
 export function sendBarcodeDetectedEvent(
-    {contentType}: BarcodeDetectedEventParam): void {
-  sendEvent({
-    eventCategory: 'barcode',
-    eventAction: 'detect',
-    eventLabel: contentType,
-  });
+    {contentType}: BarcodeDetectedEventParam,
+    wifiSecurityType: string = ''): void {
+  sendEvent(
+      {
+        eventCategory: 'barcode',
+        eventAction: 'detect',
+        eventLabel: contentType,
+      },
+      new Map([
+        [GaMetricDimension.WIFI_SECURITY_TYPE, wifiSecurityType],
+      ]));
 }
 
 /**
@@ -653,4 +691,18 @@ export function sendOpenCameraEvent(moduleId: string|null): void {
       new Map([
         [GaMetricDimension.CAMERA_MODULE_ID, newModuleId],
       ]));
+}
+
+/**
+ * Updates the memory usage and session behavior value to untrusted_ga_helpers.
+ *
+ * @param updatedValue Updated memory usage dimensions value to be updated.
+ */
+export function updateMemoryUsageEventDimensions(
+    updatedValue: MemoryUsageEventDimension): void {
+  // No caller uses the returned promise.
+  void (async () => {
+    const gaHelper = await getGaHelper();
+    await gaHelper.updateMemoryUsageEventDimensions(updatedValue);
+  })();
 }

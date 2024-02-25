@@ -62,23 +62,32 @@ public class DragReorderableRecyclerViewAdapterTest extends BlankUiTestActivityT
     public void setUpTest() throws Exception {
         super.setUpTest();
 
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            mRecyclerView = new RecyclerView(getActivity());
-            RecyclerView.LayoutParams params = new RecyclerView.LayoutParams(
-                    RecyclerView.LayoutParams.MATCH_PARENT, RecyclerView.LayoutParams.MATCH_PARENT);
-            mRecyclerView.setLayoutParams(params);
-            mRecyclerView.setLayoutManager(new LinearLayoutManager(
-                    mRecyclerView.getContext(), LinearLayoutManager.VERTICAL, false));
-            mRecyclerView.setAdapter(createAdapter());
-            getActivity().setContentView(mRecyclerView);
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    mRecyclerView = new RecyclerView(getActivity());
+                    RecyclerView.LayoutParams params =
+                            new RecyclerView.LayoutParams(
+                                    RecyclerView.LayoutParams.MATCH_PARENT,
+                                    RecyclerView.LayoutParams.MATCH_PARENT);
+                    mRecyclerView.setLayoutParams(params);
+                    mRecyclerView.setLayoutManager(
+                            new LinearLayoutManager(
+                                    mRecyclerView.getContext(),
+                                    LinearLayoutManager.VERTICAL,
+                                    false));
+                    mRecyclerView.setAdapter(createAdapter());
+                    getActivity().setContentView(mRecyclerView);
 
-            mAdapter.enableDrag();
-        });
+                    mAdapter.enableDrag();
+                });
     }
 
     @Override
     public void tearDownTest() {
-        TestThreadUtils.runOnUiThreadBlocking(() -> { mModelList.clear(); });
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    mModelList.clear();
+                });
     }
 
     private DragReorderableRecyclerViewAdapter createAdapter() {
@@ -88,30 +97,35 @@ public class DragReorderableRecyclerViewAdapterTest extends BlankUiTestActivityT
         ViewBuilder<View> viewBuilder = (parent) -> createListItemView();
         ViewBinder<PropertyModel, View, PropertyKey> viewBinder =
                 (PropertyModel model, View view, PropertyKey key) -> {
-            if (key == TITLE) {
-                TextView tv = (TextView) view;
-                tv.setText(model.get(TITLE));
-            }
-        };
+                    if (key == TITLE) {
+                        TextView tv = (TextView) view;
+                        tv.setText(model.get(TITLE));
+                    }
+                };
         DragBinder dragBinder = (vh, it) -> {};
-        DraggabilityProvider draggabilityProvider = new DraggabilityProvider() {
-            @Override
-            public boolean isActivelyDraggable(PropertyModel propertyModel) {
-                return propertyModel.get(TYPE) == Type.DRAGGABLE;
-            }
+        DraggabilityProvider draggabilityProvider =
+                new DraggabilityProvider() {
+                    @Override
+                    public boolean isActivelyDraggable(PropertyModel propertyModel) {
+                        return propertyModel.get(TYPE) == Type.DRAGGABLE;
+                    }
 
-            @Override
-            public boolean isPassivelyDraggable(PropertyModel propertyModel) {
-                return propertyModel.get(TYPE) == Type.DRAGGABLE
-                        || propertyModel.get(TYPE) == Type.PASSIVELY_DRAGGABLE;
-            }
-        };
+                    @Override
+                    public boolean isPassivelyDraggable(PropertyModel propertyModel) {
+                        return propertyModel.get(TYPE) == Type.DRAGGABLE
+                                || propertyModel.get(TYPE) == Type.PASSIVELY_DRAGGABLE;
+                    }
+                };
 
         mAdapter.registerType(Type.NORMAL, viewBuilder, viewBinder);
         mAdapter.registerDraggableType(
                 Type.DRAGGABLE, viewBuilder, viewBinder, dragBinder, draggabilityProvider);
-        mAdapter.registerDraggableType(Type.PASSIVELY_DRAGGABLE, viewBuilder, viewBinder,
-                dragBinder, draggabilityProvider);
+        mAdapter.registerDraggableType(
+                Type.PASSIVELY_DRAGGABLE,
+                viewBuilder,
+                viewBinder,
+                dragBinder,
+                draggabilityProvider);
         mAdapter.enableDrag();
         mAdapter.setLongPressDragDelegate(this::isLongPressDragEnabled);
 
@@ -120,8 +134,9 @@ public class DragReorderableRecyclerViewAdapterTest extends BlankUiTestActivityT
 
     private View createListItemView() {
         TextView tv = new TextView(getActivity());
-        tv.setLayoutParams(new ViewGroup.LayoutParams(
-                ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
+        tv.setLayoutParams(
+                new ViewGroup.LayoutParams(
+                        ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
         return tv;
     }
 
@@ -140,12 +155,16 @@ public class DragReorderableRecyclerViewAdapterTest extends BlankUiTestActivityT
     @Test
     @SmallTest
     public void testDrag_cannotDragOverNormal() {
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            mModelList.add(buildListItem("normal_1", Type.NORMAL));
-            mModelList.add(buildListItem("draggable_1", Type.DRAGGABLE));
-        });
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    mModelList.add(buildListItem("normal_1", Type.NORMAL));
+                    mModelList.add(buildListItem("draggable_1", Type.DRAGGABLE));
+                });
 
-        TestThreadUtils.runOnUiThreadBlocking(() -> { mAdapter.simulateDragForTests(1, 0); });
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    mAdapter.simulateDragForTests(1, 0);
+                });
 
         // The order should remain since you can't drag over a normal view.
         assertThat(mModelList.get(0).type, is(Type.NORMAL));
@@ -155,12 +174,16 @@ public class DragReorderableRecyclerViewAdapterTest extends BlankUiTestActivityT
     @Test
     @SmallTest
     public void testDrag_normalOverNormal() {
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            mModelList.add(buildListItem("draggable_1", Type.DRAGGABLE));
-            mModelList.add(buildListItem("draggable_2", Type.DRAGGABLE));
-        });
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    mModelList.add(buildListItem("draggable_1", Type.DRAGGABLE));
+                    mModelList.add(buildListItem("draggable_2", Type.DRAGGABLE));
+                });
 
-        TestThreadUtils.runOnUiThreadBlocking(() -> { mAdapter.simulateDragForTests(1, 0); });
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    mAdapter.simulateDragForTests(1, 0);
+                });
 
         // The order should remain since you can't drag over a normal view.
         assertThat(mModelList.get(0).model.get(TITLE), is("draggable_2"));
@@ -170,13 +193,18 @@ public class DragReorderableRecyclerViewAdapterTest extends BlankUiTestActivityT
     @Test
     @SmallTest
     public void testDrag_normalThroughPassivelyDraggable() {
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            mModelList.add(buildListItem("draggable_1", Type.DRAGGABLE));
-            mModelList.add(buildListItem("passively_draggable_1", Type.PASSIVELY_DRAGGABLE));
-            mModelList.add(buildListItem("draggable_2", Type.DRAGGABLE));
-        });
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    mModelList.add(buildListItem("draggable_1", Type.DRAGGABLE));
+                    mModelList.add(
+                            buildListItem("passively_draggable_1", Type.PASSIVELY_DRAGGABLE));
+                    mModelList.add(buildListItem("draggable_2", Type.DRAGGABLE));
+                });
 
-        TestThreadUtils.runOnUiThreadBlocking(() -> { mAdapter.simulateDragForTests(0, 1); });
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    mAdapter.simulateDragForTests(0, 1);
+                });
 
         assertThat(mModelList.get(0).model.get(TITLE), is("passively_draggable_1"));
         assertThat(mModelList.get(1).model.get(TITLE), is("draggable_1"));

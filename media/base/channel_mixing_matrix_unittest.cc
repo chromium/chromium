@@ -65,6 +65,30 @@ TEST(ChannelMixingMatrixTest, StereoToMono) {
   EXPECT_EQ(0.5f, matrix[0][1]);
 }
 
+TEST(ChannelMixingMatrixTest, StereoTo1Point1) {
+  ChannelLayout input_layout = CHANNEL_LAYOUT_STEREO;
+  ChannelLayout output_layout = CHANNEL_LAYOUT_1_1;
+  std::vector<std::vector<float>> matrix;
+  ChannelMixingMatrix matrix_builder(
+      input_layout, ChannelLayoutToChannelCount(input_layout), output_layout,
+      ChannelLayoutToChannelCount(output_layout));
+  bool remapping = matrix_builder.CreateTransformationMatrix(&matrix);
+
+  //                     Input: stereo
+  //                     LEFT   RIGHT
+  // Output: 1.1 CENTER  0.5    0.5
+  //             LFE     0      0
+  //
+  EXPECT_FALSE(remapping);
+  EXPECT_EQ(2u, matrix.size());
+  EXPECT_EQ(2u, matrix[0].size());
+  EXPECT_EQ(0.5f, matrix[0][0]);
+  EXPECT_EQ(0.5f, matrix[0][1]);
+  EXPECT_EQ(2u, matrix[1].size());
+  EXPECT_EQ(0.0f, matrix[1][0]);
+  EXPECT_EQ(0.0f, matrix[1][1]);
+}
+
 TEST(ChannelMixingMatrixTest, MonoToStereo) {
   ChannelLayout input_layout = CHANNEL_LAYOUT_MONO;
   ChannelLayout output_layout = CHANNEL_LAYOUT_STEREO;
@@ -87,7 +111,31 @@ TEST(ChannelMixingMatrixTest, MonoToStereo) {
   EXPECT_EQ(1.0f, matrix[1][0]);
 }
 
-TEST(ChannelMixingMatrixTest, MonoToSurround) {
+TEST(ChannelMixingMatrixTest, 1Point1ToStereo) {
+  ChannelLayout input_layout = CHANNEL_LAYOUT_1_1;
+  ChannelLayout output_layout = CHANNEL_LAYOUT_STEREO;
+  std::vector<std::vector<float>> matrix;
+  ChannelMixingMatrix matrix_builder(
+      input_layout, ChannelLayoutToChannelCount(input_layout), output_layout,
+      ChannelLayoutToChannelCount(output_layout));
+  bool remapping = matrix_builder.CreateTransformationMatrix(&matrix);
+
+  //                       Input: 1.1
+  //                       CENTER  LFE
+  // Output: stereo LEFT   1       0.707107
+  //                RIGHT  1       0.707107
+  //
+  EXPECT_FALSE(remapping);
+  EXPECT_EQ(2u, matrix.size());
+  EXPECT_EQ(2u, matrix[0].size());
+  EXPECT_EQ(1.0f, matrix[0][0]);
+  EXPECT_FLOAT_EQ(ChannelMixer::kHalfPower, matrix[0][1]);
+  EXPECT_EQ(2u, matrix[1].size());
+  EXPECT_EQ(1.0f, matrix[1][0]);
+  EXPECT_FLOAT_EQ(ChannelMixer::kHalfPower, matrix[1][1]);
+}
+
+TEST(ChannelMixingMatrixTest, MonoTo5Point1) {
   ChannelLayout input_layout = CHANNEL_LAYOUT_MONO;
   ChannelLayout output_layout = CHANNEL_LAYOUT_5_1;
   std::vector<std::vector<float>> matrix;
@@ -98,12 +146,12 @@ TEST(ChannelMixingMatrixTest, MonoToSurround) {
 
   //                       Input: mono
   //                       CENTER
-  // Output: surround LEFT   1
-  //                  RIGHT  1
-  //                  CENTER 0
-  //                  LFE    0
-  //                  SL     0
-  //                  SR     0
+  // Output: 5.1    LEFT   1
+  //                RIGHT  1
+  //                CENTER 0
+  //                LFE    0
+  //                SL     0
+  //                SR     0
   //
   EXPECT_FALSE(remapping);
   EXPECT_EQ(6u, matrix.size());
@@ -117,7 +165,46 @@ TEST(ChannelMixingMatrixTest, MonoToSurround) {
   }
 }
 
-TEST(ChannelMixingMatrixTest, FiveOneToMono) {
+TEST(ChannelMixingMatrixTest, 1Point1To5Point1) {
+  ChannelLayout input_layout = CHANNEL_LAYOUT_1_1;
+  ChannelLayout output_layout = CHANNEL_LAYOUT_5_1;
+  std::vector<std::vector<float>> matrix;
+  ChannelMixingMatrix matrix_builder(
+      input_layout, ChannelLayoutToChannelCount(input_layout), output_layout,
+      ChannelLayoutToChannelCount(output_layout));
+  bool remapping = matrix_builder.CreateTransformationMatrix(&matrix);
+
+  //                       Input: 1.1
+  //                       CENTER  LFE
+  // Output: 5.1    LEFT   1       0
+  //                RIGHT  1       0
+  //                CENTER 0       0
+  //                LFE    0       1
+  //                SL     0       0
+  //                SR     0       0
+  //
+  EXPECT_FALSE(remapping);
+  EXPECT_EQ(6u, matrix.size());
+  EXPECT_EQ(2u, matrix[0].size());
+  EXPECT_EQ(1.0f, matrix[0][0]);
+  EXPECT_EQ(0.0f, matrix[0][1]);
+  EXPECT_EQ(2u, matrix[1].size());
+  EXPECT_EQ(1.0f, matrix[1][0]);
+  EXPECT_EQ(0.0f, matrix[1][1]);
+  EXPECT_EQ(2u, matrix[2].size());
+  EXPECT_EQ(0.0f, matrix[2][0]);
+  EXPECT_EQ(0.0f, matrix[2][1]);
+  EXPECT_EQ(2u, matrix[2].size());
+  EXPECT_EQ(0.0f, matrix[3][0]);
+  EXPECT_EQ(1.0f, matrix[3][1]);
+  for (size_t i = 4; i < 6; i++) {
+    EXPECT_EQ(2u, matrix[i].size());
+    EXPECT_EQ(0.0f, matrix[i][0]);
+    EXPECT_EQ(0.0f, matrix[i][1]);
+  }
+}
+
+TEST(ChannelMixingMatrixTest, 5Point1ToMono) {
   ChannelLayout input_layout = CHANNEL_LAYOUT_5_1;
   ChannelLayout output_layout = CHANNEL_LAYOUT_MONO;
   std::vector<std::vector<float>> matrix;
@@ -128,9 +215,9 @@ TEST(ChannelMixingMatrixTest, FiveOneToMono) {
 
   // Note: 1/sqrt(2) is shown as 0.707.
   //
-  //                      Input: 5.1
-  //                      LEFT   RIGHT  CENTER  LFE    SIDE_LEFT  SIDE_RIGHT
-  // Output: mono CENTER  0.707  0.707  1       0.707  0.707      0.707
+  //                       Input: 5.1
+  //                       LEFT   RIGHT  CENTER  LFE    SIDE_LEFT  SIDE_RIGHT
+  // Output: mono  CENTER  0.707  0.707  1       0.707  0.707      0.707
   //
   EXPECT_FALSE(remapping);
   EXPECT_EQ(1u, matrix.size());
@@ -142,6 +229,41 @@ TEST(ChannelMixingMatrixTest, FiveOneToMono) {
   EXPECT_FLOAT_EQ(ChannelMixer::kHalfPower, matrix[0][3]);
   EXPECT_FLOAT_EQ(ChannelMixer::kHalfPower, matrix[0][4]);
   EXPECT_FLOAT_EQ(ChannelMixer::kHalfPower, matrix[0][5]);
+}
+
+TEST(ChannelMixingMatrixTest, 5Point1To1Point1) {
+  ChannelLayout input_layout = CHANNEL_LAYOUT_5_1;
+  ChannelLayout output_layout = CHANNEL_LAYOUT_1_1;
+  std::vector<std::vector<float>> matrix;
+  ChannelMixingMatrix matrix_builder(
+      input_layout, ChannelLayoutToChannelCount(input_layout), output_layout,
+      ChannelLayoutToChannelCount(output_layout));
+  bool remapping = matrix_builder.CreateTransformationMatrix(&matrix);
+
+  // Note: 1/sqrt(2) is shown as 0.707.
+  //
+  //                      Input: 5.1
+  //                      LEFT   RIGHT  CENTER  LFE    SIDE_LEFT  SIDE_RIGHT
+  // Output: 1.1  CENTER  0.707  0.707  1       0      0.707      0.707
+  //              LFE     0      0      0       1      0          0
+  //
+  EXPECT_FALSE(remapping);
+  EXPECT_EQ(2u, matrix.size());
+  EXPECT_EQ(6u, matrix[0].size());
+  EXPECT_FLOAT_EQ(ChannelMixer::kHalfPower, matrix[0][0]);
+  EXPECT_FLOAT_EQ(ChannelMixer::kHalfPower, matrix[0][1]);
+  // The center channel will be mixed at scale 1.
+  EXPECT_EQ(1.0f, matrix[0][2]);
+  EXPECT_EQ(0.0f, matrix[0][3]);
+  EXPECT_FLOAT_EQ(ChannelMixer::kHalfPower, matrix[0][4]);
+  EXPECT_FLOAT_EQ(ChannelMixer::kHalfPower, matrix[0][5]);
+  EXPECT_EQ(6u, matrix[1].size());
+  EXPECT_EQ(0.0f, matrix[1][0]);
+  EXPECT_EQ(0.0f, matrix[1][1]);
+  EXPECT_EQ(0.0f, matrix[1][2]);
+  EXPECT_EQ(1.0f, matrix[1][3]);
+  EXPECT_EQ(0.0f, matrix[1][4]);
+  EXPECT_EQ(0.0f, matrix[1][5]);
 }
 
 TEST(ChannelMixingMatrixTest, DiscreteToDiscrete) {

@@ -31,8 +31,8 @@ component("common") {
   deps = [
     "//base",
     "//build:blink_buildflags",
-    "//sql",
   ]
+  public_deps = [ "//sql" ]
 }
 
 source_set("unit_tests") {
@@ -45,9 +45,9 @@ source_set("unit_tests") {
     "//components/autofill/core/browser",
     "//components/autofill/core/common",
     "//components/password_manager/core/browser",
+    "//components/plus_addresses/webdata",
     "//components/search_engines",
     "//components/signin/public/webdata",
-    "//sql",
     "//testing/gtest",
   ]
   if (is_ios) {

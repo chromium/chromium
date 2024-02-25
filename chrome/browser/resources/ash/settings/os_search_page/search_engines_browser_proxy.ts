@@ -42,7 +42,6 @@ export interface SearchEnginesInfo {
 }
 
 export interface SearchEnginesBrowserProxy {
-  setDefaultSearchEngine(modelIndex: number): void;
   getSearchEnginesList(): Promise<SearchEnginesInfo>;
   openBrowserSearchSettings(): void;
 }
@@ -55,19 +54,15 @@ export class SearchEnginesBrowserProxyImpl implements
     return instance || (instance = new SearchEnginesBrowserProxyImpl());
   }
 
-  static setInstanceForTesting(obj: SearchEnginesBrowserProxy) {
+  static setInstanceForTesting(obj: SearchEnginesBrowserProxy): void {
     instance = obj;
   }
 
-  setDefaultSearchEngine(modelIndex: number) {
-    chrome.send('setDefaultSearchEngine', [modelIndex]);
-  }
-
-  getSearchEnginesList() {
+  getSearchEnginesList(): Promise<SearchEnginesInfo> {
     return sendWithPromise('getSearchEnginesList');
   }
 
-  openBrowserSearchSettings() {
+  openBrowserSearchSettings(): void {
     chrome.send('openBrowserSearchSettings');
   }
 }

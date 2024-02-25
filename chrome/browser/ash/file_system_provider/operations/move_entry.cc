@@ -9,9 +9,7 @@
 #include "chrome/common/extensions/api/file_system_provider.h"
 #include "chrome/common/extensions/api/file_system_provider_internal.h"
 
-namespace ash {
-namespace file_system_provider {
-namespace operations {
+namespace ash::file_system_provider::operations {
 
 MoveEntry::MoveEntry(RequestDispatcher* dispatcher,
                      const ProvidedFileSystemInfo& file_system_info,
@@ -23,8 +21,7 @@ MoveEntry::MoveEntry(RequestDispatcher* dispatcher,
       target_path_(target_path),
       callback_(std::move(callback)) {}
 
-MoveEntry::~MoveEntry() {
-}
+MoveEntry::~MoveEntry() = default;
 
 bool MoveEntry::Execute(int request_id) {
   using extensions::api::file_system_provider::MoveEntryRequestedOptions;
@@ -60,6 +57,4 @@ void MoveEntry::OnError(int /* request_id */,
   std::move(callback_).Run(error);
 }
 
-}  // namespace operations
-}  // namespace file_system_provider
-}  // namespace ash
+}  // namespace ash::file_system_provider::operations

@@ -50,19 +50,25 @@ void ReadFileToVector(const base::FilePath& path, Vector<char>* contents) {
   memcpy(&contents->front(), raw_image_data.data(), raw_image_data.size());
 }
 
-#if defined(CALCULATE_MD5_SUMS)
-void SaveMD5Sum(const base::FilePath& path, blink::ImageFrame* frame_buffer) {
-  SkBitmap bitmap = frame_buffer->Bitmap();
-
-  // Calculate MD5 sum.
+base::MD5Digest ComputeMD5Sum(const blink::ImageFrame& frame_buffer) {
+  SkBitmap bitmap = frame_buffer.Bitmap();
   base::MD5Digest digest;
-  base::MD5Sum(bitmap.getPixels(),
-               bitmap.width() * bitmap.height() * sizeof(uint32_t), &digest);
+  base::MD5Sum(base::make_span(static_cast<const uint8_t*>(bitmap.getPixels()),
+                               bitmap.computeByteSize()),
+               &digest);
+  return digest;
+}
+
+#if defined(CALCULATE_MD5_SUMS)
+void SaveMD5Sum(const base::FilePath& path,
+                const blink::ImageFrame* frame_buffer) {
+  // Calculate MD5 sum.
+  ASSERT_TRUE(frame_buffer);
+  base::MD5Digest digest = ComputeMD5Sum(*frame_buffer);
 
   // Write sum to disk.
-  ASSERT_TRUE(base::WriteFile(
-      path,
-      base::as_bytes(base::make_span(&digest, 1)));
+  ASSERT_TRUE(
+      base::WriteFile(path, base::as_bytes(base::make_span(&digest, 1u))));
 }
 #endif
 
@@ -77,16 +83,12 @@ void VerifyImage(blink::ImageDecoder& decoder,
   EXPECT_GE(decoder.FrameCount(), frame_index);
   blink::ImageFrame* const frame_buffer =
       decoder.DecodeFrameBufferAtIndex(frame_index);
-  EXPECT_TRUE(frame_buffer);
+  ASSERT_TRUE(frame_buffer);
   EXPECT_EQ(blink::ImageFrame::kFrameComplete, frame_buffer->GetStatus());
   EXPECT_FALSE(decoder.Failed());
 
   // Calculate MD5 sum.
-  base::MD5Digest actual_digest;
-  SkBitmap bitmap = frame_buffer->Bitmap();
-  base::MD5Sum(bitmap.getPixels(),
-               bitmap.width() * bitmap.height() * sizeof(uint32_t),
-               &actual_digest);
+  base::MD5Digest actual_digest = ComputeMD5Sum(*frame_buffer);
 
   // Read the MD5 sum off disk.
   std::string file_bytes;
@@ -106,17 +108,9 @@ namespace blink {
 
 void ImageDecoderBaseTest::SetUp() {
   base::FilePath data_dir;
-  ASSERT_TRUE(base::PathService::Get(base::DIR_SOURCE_ROOT, &data_dir));
+  ASSERT_TRUE(base::PathService::Get(base::DIR_SRC_TEST_DATA_ROOT, &data_dir));
   data_dir_ = data_dir.AppendASCII("webkit").AppendASCII("data").AppendASCII(
       format_.Utf8() + "_decoder");
-  if (!base::PathExists(data_dir_)) {
-    const testing::TestInfo* const test_info =
-        testing::UnitTest::GetInstance()->current_test_info();
-    VLOG(0) << test_info->name()
-            << " not running because test data wasn't found.";
-    data_dir_.clear();
-    return;
-  }
 }
 
 base::FilePath ImageDecoderBaseTest::GetMD5SumPath(const base::FilePath& path) {
@@ -126,10 +120,13 @@ base::FilePath ImageDecoderBaseTest::GetMD5SumPath(const base::FilePath& path) {
 }
 
 Vector<base::FilePath> ImageDecoderBaseTest::GetImageFiles() const {
+  Vector<base::FilePath> image_files;
+  if (!base::PathExists(data_dir_)) {
+    return image_files;
+  }
   std::string pattern = "*." + format_.Utf8();
   base::FileEnumerator enumerator(data_dir_, false,
                                   base::FileEnumerator::FILES);
-  Vector<base::FilePath> image_files;
   for (base::FilePath next_file_name = enumerator.Next();
        !next_file_name.empty(); next_file_name = enumerator.Next()) {
     base::FilePath base_name = next_file_name.BaseName();
@@ -153,14 +150,18 @@ bool ImageDecoderBaseTest::ShouldImageFail(const base::FilePath& path) const {
 void ImageDecoderBaseTest::TestDecoding(
     blink::ImageDecoderBaseTest::FileSelection file_selection,
     const int64_t threshold) {
-  if (data_dir_.empty()) {
+  const Vector<base::FilePath> image_files = GetImageFiles();
+  if (image_files.empty()) {
+    const testing::TestInfo* const test_info =
+        testing::UnitTest::GetInstance()->current_test_info();
+    VLOG(0) << "TestDecoding() in " << test_info->test_suite_name() << "."
+            << test_info->name()
+            << " not running because test data wasn't found.";
     return;
   }
-  const Vector<base::FilePath> image_files(GetImageFiles());
-  for (Vector<base::FilePath>::const_iterator i = image_files.begin();
-       i != image_files.end(); ++i) {
-    if (!ShouldSkipFile(*i, file_selection, threshold)) {
-      TestImageDecoder(*i, GetMD5SumPath(*i), kFirstFrameIndex);
+  for (const base::FilePath& file : image_files) {
+    if (!ShouldSkipFile(file, file_selection, threshold)) {
+      TestImageDecoder(file, GetMD5SumPath(file), kFirstFrameIndex);
     }
   }
 }
@@ -175,6 +176,9 @@ void ImageDecoderBaseTest::TestImageDecoder(const base::FilePath& image_path,
   }
 #endif
 
+  CHECK(base::PathExists(image_path)) << image_path;
+  CHECK(ShouldImageFail(image_path) || base::PathExists(md5_sum_path))
+      << md5_sum_path;
   Vector<char> image_contents;
   ReadFileToVector(image_path, &image_contents);
   EXPECT_TRUE(image_contents.size());

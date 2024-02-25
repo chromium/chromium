@@ -7,7 +7,6 @@
 
 #include "base/functional/callback.h"
 #include "chrome/common/extensions/api/quick_unlock_private.h"
-#include "chromeos/crosapi/mojom/authentication.mojom.h"
 #include "extensions/browser/extension_function.h"
 
 namespace extensions {
@@ -28,11 +27,6 @@ class QuickUnlockPrivateGetAuthTokenFunction : public ExtensionFunction {
 
   // ExtensionFunction overrides.
   ResponseAction Run() override;
-
- private:
-  // Handler for crosapi CreateQuickUnlockPrivateTokenInfo() call.
-  void OnCrosapiResult(
-      crosapi::mojom::CreateQuickUnlockPrivateTokenInfoResultPtr result);
 };
 
 }  // namespace extensions

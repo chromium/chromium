@@ -6,10 +6,10 @@ import("//build/config/android/config.gni")
 import("//build/config/android/rules.gni")
 import("//components/payments/content/android/payments_java_resources.gni")
 import("//mojo/public/tools/bindings/mojom.gni")
+import("//third_party/jni_zero/jni_zero.gni")
 
 static_library("android") {
   sources = [
-    "byte_buffer_helper.cc",
     "byte_buffer_helper.h",
     "can_make_payment_query_android.cc",
     "csp_checker_android.cc",
@@ -63,8 +63,7 @@ static_library("android") {
     "//components/webdata_services",
     "//content/public/browser",
     "//net",
-    "//url:gurl_android",
-    "//url:origin_android",
+    "//url",
   ]
 }
 
@@ -131,10 +130,10 @@ android_library("service_java") {
   deps = [
     ":feature_list_java",
     "//base:base_java",
-    "//base:jni_java",
     "//components/payments/mojom:mojom_java",
     "//content/public/android:content_main_dex_java",
     "//third_party/androidx:androidx_annotation_annotation_java",
+    "//third_party/jni_zero:jni_zero_java",
   ]
   srcjar_deps = [
     ":error_strings_generated_srcjar",
@@ -156,9 +155,9 @@ android_library("feature_list_java") {
   ]
   deps = [
     "//base:base_java",
-    "//base:jni_java",
     "//build/android:build_java",
     "//third_party/androidx:androidx_annotation_annotation_java",
+    "//third_party/jni_zero:jni_zero_java",
   ]
 }
 
@@ -215,7 +214,6 @@ android_library("full_java") {
     ":pre_purchase_query_enum_java",
     ":service_java",
     "//base:base_java",
-    "//base:jni_java",
     "//build/android:build_java",
     "//components/autofill/android:autofill_java",
     "//components/browser_ui/bottomsheet/android:java",
@@ -233,10 +231,10 @@ android_library("full_java") {
     "//third_party/androidx:androidx_collection_collection_java",
     "//third_party/androidx:androidx_core_core_java",
     "//third_party/blink/public/mojom:android_mojo_bindings_java",
+    "//third_party/jni_zero:jni_zero_java",
     "//ui/android:ui_no_recycler_view_java",
     "//ui/android:ui_utils_java",
     "//url:gurl_java",
-    "//url:origin_java",
     "//url/mojom:url_mojom_gurl_java",
     "//url/mojom:url_mojom_origin_java",
   ]
@@ -277,7 +275,6 @@ android_library("minimal_java") {
   deps = [
     ":service_java",
     "//base:base_java",
-    "//base:jni_java",
     "//build/android:build_java",
     "//components/autofill/android:payments_autofill_java",
     "//components/payments/mojom:mojom_java",
@@ -286,8 +283,8 @@ android_library("minimal_java") {
     "//third_party/androidx:androidx_annotation_annotation_java",
     "//third_party/androidx:androidx_collection_collection_java",
     "//third_party/blink/public/mojom:android_mojo_bindings_java",
+    "//third_party/jni_zero:jni_zero_java",
     "//url:gurl_java",
-    "//url:origin_java",
   ]
   srcjar_deps = [
     ":app_creation_failure_reason_generated_enum",
@@ -348,10 +345,17 @@ java_cpp_enum("pre_purchase_query_enum_javagen") {
   sources = [ "//components/payments/core/pre_purchase_query.h" ]
 }
 
+android_library("payments_java_test_support") {
+  testonly = true
+  sources = [
+    "junit/src/org/chromium/components/payments/test_support/FakeClock.java",
+  ]
+  deps = [ ":java" ]
+}
+
 robolectric_library("junit_test_support") {
   sources = [
     "junit/src/org/chromium/components/payments/test_support/DefaultPaymentFeatureConfig.java",
-    "junit/src/org/chromium/components/payments/test_support/FakeClock.java",
     "junit/src/org/chromium/components/payments/test_support/PaymentRequestServiceBuilder.java",
     "junit/src/org/chromium/components/payments/test_support/ShadowWebContentsStatics.java",
   ]
@@ -368,7 +372,6 @@ robolectric_library("junit_test_support") {
     "//third_party/mockito:mockito_java",
     "//url:gurl_java",
     "//url:gurl_junit_test_support",
-    "//url:origin_java",
     "//url/mojom:url_mojom_origin_java",
   ]
 }
@@ -382,10 +385,10 @@ robolectric_library("junit") {
   deps = [
     ":java",
     ":junit_test_support",
+    ":payments_java_test_support",
     "//base:base_java",
     "//base:base_java_test_support",
     "//base:base_junit_test_support",
-    "//base:jni_java",
     "//components/browser_ui/bottomsheet/android:java",
     "//components/payments/content/android:service_java",
     "//components/payments/mojom:mojom_java",
@@ -395,12 +398,12 @@ robolectric_library("junit") {
     "//third_party/android_deps:material_design_java",
     "//third_party/androidx:androidx_collection_collection_java",
     "//third_party/blink/public/mojom:android_mojo_bindings_java",
+    "//third_party/jni_zero:jni_zero_java",
     "//third_party/junit",
     "//third_party/mockito:mockito_java",
     "//ui/android:ui_no_recycler_view_java",
     "//url:gurl_java",
     "//url:gurl_junit_test_support",
-    "//url:origin_java",
     "//url/mojom:url_mojom_gurl_java",
     "//url/mojom:url_mojom_origin_java",
   ]

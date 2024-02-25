@@ -8,11 +8,11 @@
 #import <UIKit/UIKit.h>
 
 // Style to display the account picker sheet.
-enum AccountPickerSheetDisplayStyle {
+enum class AccountPickerSheetDisplayStyle {
   // Bottom sheet at the bottom of the screen (for compact size).
-  kAccountPickerSheetDisplayStyleBottom,
+  kBottom,
   // Bottom sheet centered in the middle of the screen (for regular size).
-  kAccountPickerSheetDisplayStyleCentered,
+  kCentered,
 };
 
 @protocol AccountPickerLayoutDelegate <NSObject>

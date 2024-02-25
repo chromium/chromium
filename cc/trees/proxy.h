@@ -51,6 +51,10 @@ class CC_EXPORT Proxy {
   virtual void SetTargetLocalSurfaceId(
       const viz::LocalSurfaceId& target_local_surface_id) = 0;
 
+  // Detaches the InputDelegateForCompositor (InputHandler) bound on the
+  // compositor thread.
+  virtual void DetachInputDelegateAndRenderFrameObserver() = 0;
+
   // Returns true if an animate or commit has been requested, and hasn't
   // completed yet.
   virtual bool RequestedAnimatePending() = 0;
@@ -61,6 +65,10 @@ class CC_EXPORT Proxy {
 
   // Pauses all main and impl-side rendering.
   virtual void SetPauseRendering(bool pause_rendering) = 0;
+
+  // Indicates that the next main frame will contain the result of running an
+  // event handler for an input event.
+  virtual void SetInputResponsePending() = 0;
 
   // Defers commits until at most the given |timeout| period has passed,
   // but continues to update the document lifecycle in

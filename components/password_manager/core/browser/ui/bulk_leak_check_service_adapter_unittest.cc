@@ -12,19 +12,19 @@
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/ranges/algorithm.h"
-#include "base/strings/string_piece_forward.h"
+#include "base/strings/string_piece.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/gmock_move_support.h"
 #include "base/test/task_environment.h"
-#include "components/password_manager/core/browser/affiliation/fake_affiliation_service.h"
-#include "components/password_manager/core/browser/affiliation/mock_affiliation_service.h"
-#include "components/password_manager/core/browser/bulk_leak_check_service.h"
+#include "components/affiliations/core/browser/fake_affiliation_service.h"
+#include "components/affiliations/core/browser/mock_affiliation_service.h"
 #include "components/password_manager/core/browser/leak_detection/bulk_leak_check.h"
+#include "components/password_manager/core/browser/leak_detection/bulk_leak_check_service.h"
 #include "components/password_manager/core/browser/leak_detection/leak_detection_check_factory.h"
 #include "components/password_manager/core/browser/leak_detection/leak_detection_request_utils.h"
 #include "components/password_manager/core/browser/leak_detection/mock_leak_detection_check_factory.h"
 #include "components/password_manager/core/browser/password_form.h"
-#include "components/password_manager/core/browser/test_password_store.h"
+#include "components/password_manager/core/browser/password_store/test_password_store.h"
 #include "components/password_manager/core/browser/ui/saved_passwords_presenter.h"
 #include "components/password_manager/core/common/password_manager_pref_names.h"
 #include "components/prefs/pref_registry_simple.h"
@@ -129,7 +129,7 @@ class BulkLeakCheckServiceAdapterTest : public testing::Test {
   signin::IdentityTestEnvironment identity_test_env_;
   scoped_refptr<TestPasswordStore> store_ =
       base::MakeRefCounted<TestPasswordStore>();
-  FakeAffiliationService affiliation_service_;
+  affiliations::FakeAffiliationService affiliation_service_;
   SavedPasswordsPresenter presenter_{&affiliation_service_, store_,
                                      /*account_store=*/nullptr};
   BulkLeakCheckService service_{
@@ -167,7 +167,9 @@ TEST_F(BulkLeakCheckServiceAdapterTest, StartBulkLeakCheck) {
       .WillOnce(MoveArg<1>(&credentials));
   EXPECT_CALL(factory(), TryCreateBulkLeakCheck)
       .WillOnce(Return(ByMove(std::move(leak_check))));
-  adapter().StartBulkLeakCheck();
+  adapter().StartBulkLeakCheck(
+      LeakDetectionInitiator::kBulkSyncedPasswordsCheck,
+      /*key=*/nullptr, /*data=*/nullptr);
 
   std::vector<LeakCheckCredential> expected;
   expected.push_back(MakeLeakCheckCredential(kUsername1, kPassword1));
@@ -195,7 +197,8 @@ TEST_F(BulkLeakCheckServiceAdapterTest, StartBulkLeakCheckAttachesData) {
       .WillOnce(MoveArg<1>(&credentials));
   EXPECT_CALL(factory(), TryCreateBulkLeakCheck)
       .WillOnce(Return(ByMove(std::move(leak_check))));
-  adapter().StartBulkLeakCheck(kKey, &data);
+  adapter().StartBulkLeakCheck(
+      LeakDetectionInitiator::kBulkSyncedPasswordsCheck, kKey, &data);
 
   EXPECT_NE(nullptr, credentials.at(0).GetUserData(kKey));
 }
@@ -215,13 +218,15 @@ TEST_F(BulkLeakCheckServiceAdapterTest, StartBulkLeakCheckDedupes) {
 
   auto leak_check = std::make_unique<NiceMockBulkLeakCheck>();
   std::vector<LeakCheckCredential> credentials;
-  EXPECT_CALL(
-      *leak_check,
-      CheckCredentials(LeakDetectionInitiator::kBulkSyncedPasswordsCheck, _))
+  EXPECT_CALL(*leak_check,
+              CheckCredentials(
+                  LeakDetectionInitiator::kDesktopProactivePasswordCheckup, _))
       .WillOnce(MoveArg<1>(&credentials));
   EXPECT_CALL(factory(), TryCreateBulkLeakCheck)
       .WillOnce(Return(ByMove(std::move(leak_check))));
-  adapter().StartBulkLeakCheck();
+  adapter().StartBulkLeakCheck(
+      LeakDetectionInitiator::kDesktopProactivePasswordCheckup,
+      /*key=*/nullptr, /*data=*/nullptr);
 
   std::vector<LeakCheckCredential> expected;
   expected.push_back(MakeLeakCheckCredential(u"alice", kPassword1));
@@ -239,10 +244,12 @@ TEST_F(BulkLeakCheckServiceAdapterTest, MultipleStarts) {
   EXPECT_CALL(leak_check_ref, CheckCredentials);
   EXPECT_CALL(factory(), TryCreateBulkLeakCheck)
       .WillOnce(Return(ByMove(std::move(leak_check))));
-  EXPECT_TRUE(adapter().StartBulkLeakCheck());
+  EXPECT_TRUE(adapter().StartBulkLeakCheck(
+      LeakDetectionInitiator::kDesktopProactivePasswordCheckup));
 
   EXPECT_CALL(leak_check_ref, CheckCredentials).Times(0);
-  EXPECT_FALSE(adapter().StartBulkLeakCheck());
+  EXPECT_FALSE(adapter().StartBulkLeakCheck(
+      LeakDetectionInitiator::kDesktopProactivePasswordCheckup));
 }
 
 // Checks that stopping the leak check correctly resets the state of the bulk
@@ -255,7 +262,8 @@ TEST_F(BulkLeakCheckServiceAdapterTest, StopBulkLeakCheck) {
   EXPECT_CALL(*leak_check, CheckCredentials);
   EXPECT_CALL(factory(), TryCreateBulkLeakCheck)
       .WillOnce(Return(ByMove(std::move(leak_check))));
-  adapter().StartBulkLeakCheck();
+  adapter().StartBulkLeakCheck(
+      LeakDetectionInitiator::kDesktopProactivePasswordCheckup);
   EXPECT_EQ(BulkLeakCheckService::State::kRunning,
             adapter().GetBulkLeakCheckState());
 

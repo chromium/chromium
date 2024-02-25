@@ -15,7 +15,6 @@
 #include "third_party/blink/renderer/core/frame/remote_frame.h"
 #include "third_party/blink/renderer/core/frame/remote_frame_client.h"
 #include "third_party/blink/renderer/core/html/html_frame_owner_element.h"
-#include "third_party/blink/renderer/core/intersection_observer/intersection_observer_controller.h"
 #include "third_party/blink/renderer/core/layout/layout_embedded_content.h"
 #include "third_party/blink/renderer/core/layout/layout_view.h"
 #include "third_party/blink/renderer/core/page/page.h"
@@ -48,8 +47,7 @@ LocalFrameView* RemoteFrameView::ParentFrameView() const {
     return nullptr;
 
   HTMLFrameOwnerElement* owner = remote_frame_->DeprecatedLocalOwner();
-  if (owner && (owner->OwnerType() == FrameOwnerElementType::kPortal ||
-                owner->OwnerType() == FrameOwnerElementType::kFencedframe)) {
+  if (owner && owner->OwnerType() == FrameOwnerElementType::kFencedframe) {
     return owner->GetDocument().GetFrame()->View();
   }
 
@@ -67,8 +65,7 @@ LocalFrameView* RemoteFrameView::ParentLocalRootFrameView() const {
     return nullptr;
 
   HTMLFrameOwnerElement* owner = remote_frame_->DeprecatedLocalOwner();
-  if (owner && (owner->OwnerType() == FrameOwnerElementType::kPortal ||
-                owner->OwnerType() == FrameOwnerElementType::kFencedframe)) {
+  if (owner && owner->OwnerType() == FrameOwnerElementType::kFencedframe) {
     return owner->GetDocument().GetFrame()->LocalFrameRoot().View();
   }
 
@@ -99,11 +96,11 @@ void RemoteFrameView::DetachFromLayout() {
   SetAttached(false);
 }
 
-IntersectionUpdateResult RemoteFrameView::UpdateViewportIntersectionsForSubtree(
+bool RemoteFrameView::UpdateViewportIntersectionsForSubtree(
     unsigned parent_flags,
-    absl::optional<base::TimeTicks>&) {
+    std::optional<base::TimeTicks>&) {
   UpdateViewportIntersection(parent_flags, needs_occlusion_tracking_);
-  return IntersectionUpdateResult{needs_occlusion_tracking_};
+  return needs_occlusion_tracking_;
 }
 
 void RemoteFrameView::SetViewportIntersection(
@@ -228,7 +225,7 @@ void RemoteFrameView::UpdateCompositingScaleFactor() {
   float frame_to_local_root_scale_factor = 1.0f;
   gfx::Transform local_root_transform =
       local_root_transform_state.AccumulatedTransform();
-  absl::optional<gfx::Vector2dF> scale_components =
+  std::optional<gfx::Vector2dF> scale_components =
       gfx::TryComputeTransform2dScaleComponents(local_root_transform);
   if (!scale_components) {
     frame_to_local_root_scale_factor =
@@ -282,7 +279,7 @@ void RemoteFrameView::UpdateFrozenSize() {
   auto* layout_embedded_content = GetLayoutEmbeddedContent();
   if (!layout_embedded_content)
     return;
-  absl::optional<PhysicalSize> frozen_phys_size =
+  std::optional<PhysicalSize> frozen_phys_size =
       layout_embedded_content->FrozenFrameSize();
   if (!frozen_phys_size)
     return;
@@ -439,7 +436,7 @@ uint32_t RemoteFrameView::CapturePaintPreview(const gfx::Rect& rect,
   // to this HTMLFrameOwnerElement yet (over IPC). If the token is null the
   // failure can be handled gracefully by simply ignoring the subframe in the
   // result.
-  absl::optional<base::UnguessableToken> maybe_embedding_token =
+  std::optional<base::UnguessableToken> maybe_embedding_token =
       remote_frame_->GetEmbeddingToken();
   if (!maybe_embedding_token.has_value())
     return 0;

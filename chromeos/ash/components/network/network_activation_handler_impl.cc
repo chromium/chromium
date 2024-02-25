@@ -31,7 +31,8 @@ void NetworkActivationHandlerImpl::CompleteActivation(
   ShillServiceClient::Get()->CompleteCellularActivation(
       dbus::ObjectPath(service_path),
       base::BindOnce(&NetworkActivationHandlerImpl::HandleShillSuccess,
-                     AsWeakPtr(), std::move(success_callback)),
+                     weak_ptr_factory_.GetWeakPtr(),
+                     std::move(success_callback)),
       base::BindOnce(&network_handler::ShillErrorCallbackFunction,
                      kErrorShillError, service_path,
                      std::move(error_callback)));

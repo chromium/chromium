@@ -10,7 +10,6 @@
 #include <sys/sysctl.h>
 
 #include "base/memory/ptr_util.h"
-#include "base/process/process_metrics_iocounters.h"
 
 namespace base {
 
@@ -18,10 +17,6 @@ namespace base {
 std::unique_ptr<ProcessMetrics> ProcessMetrics::CreateProcessMetrics(
     ProcessHandle process) {
   return WrapUnique(new ProcessMetrics(process));
-}
-
-bool ProcessMetrics::GetIOCounters(IoCounters* io_counters) const {
-  return false;
 }
 
 static int GetProcessCPU(pid_t pid) {

@@ -88,6 +88,8 @@ std::unique_ptr<views::Label> CreateLabel(const std::u16string& text,
 // views::LabelButton with custom line-height, color and font-list for the
 // underlying label.
 class CustomizedLabelButton : public views::MdTextButton {
+  METADATA_HEADER(CustomizedLabelButton, views::MdTextButton)
+
  public:
   CustomizedLabelButton(PressedCallback callback,
                         const std::u16string& text,
@@ -107,10 +109,10 @@ class CustomizedLabelButton : public views::MdTextButton {
   CustomizedLabelButton& operator=(const CustomizedLabelButton&) = delete;
 
   ~CustomizedLabelButton() override = default;
-
-  // views::View:
-  const char* GetClassName() const override { return "CustomizedLabelButton"; }
 };
+
+BEGIN_METADATA(CustomizedLabelButton)
+END_METADATA
 
 }  // namespace
 
@@ -339,7 +341,7 @@ void UserConsentView::InitButtonBar() {
       l10n_util::GetStringUTF16(
           IDS_QUICK_ANSWERS_USER_CONSENT_VIEW_ALLOW_BUTTON),
       ShouldUseCompactButtonLayout(anchor_view_bounds_.width()));
-  allow_button->SetProminent(true);
+  allow_button->SetStyle(ui::ButtonStyle::kProminent);
   allow_button_ = button_bar->AddChildView(std::move(allow_button));
 }
 
@@ -365,7 +367,7 @@ void UserConsentView::UpdateWidgetBounds() {
   GetWidget()->SetBounds(bounds);
 }
 
-BEGIN_METADATA(UserConsentView, views::View)
+BEGIN_METADATA(UserConsentView)
 END_METADATA
 
 }  // namespace quick_answers

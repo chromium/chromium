@@ -18,7 +18,7 @@ OperationTimingRequestHelperWrapper::~OperationTimingRequestHelperWrapper() =
 
 void OperationTimingRequestHelperWrapper::Begin(
     const GURL& url,
-    base::OnceCallback<void(absl::optional<net::HttpRequestHeaders>,
+    base::OnceCallback<void(std::optional<net::HttpRequestHeaders>,
                             mojom::TrustTokenOperationStatus)> done) {
   recorder_->BeginBegin();
   helper_->Begin(
@@ -37,9 +37,9 @@ void OperationTimingRequestHelperWrapper::Finalize(
 }
 
 void OperationTimingRequestHelperWrapper::FinishBegin(
-    base::OnceCallback<void(absl::optional<net::HttpRequestHeaders>,
+    base::OnceCallback<void(std::optional<net::HttpRequestHeaders>,
                             mojom::TrustTokenOperationStatus)> done,
-    absl::optional<net::HttpRequestHeaders> request_headers,
+    std::optional<net::HttpRequestHeaders> request_headers,
     mojom::TrustTokenOperationStatus status) {
   recorder_->FinishBegin(status);
   std::move(done).Run(std::move(request_headers), status);

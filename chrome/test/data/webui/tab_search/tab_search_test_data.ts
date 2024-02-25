@@ -2,8 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {Token} from 'chrome://resources/mojo/mojo/public/mojom/base/token.mojom-webui.js';
-import {ProfileData, RecentlyClosedTab, Tab, TabAlertState, Window} from 'chrome://tab-search.top-chrome/tab_search.js';
+import type {Token} from 'chrome://resources/mojo/mojo/public/mojom/base/token.mojom-webui.js';
+import type {ProfileData, RecentlyClosedTab, Tab, Window} from 'chrome://tab-search.top-chrome/tab_search.js';
+import {TabAlertState} from 'chrome://tab-search.top-chrome/tab_search.js';
 
 export const SAMPLE_WINDOW_HEIGHT: number = 448;
 
@@ -217,9 +218,7 @@ export function generateSampleDataFromSiteNames(siteNames: string[]):
 }
 
 export function sampleToken(high: bigint, low: bigint): Token {
-  const token = new Token();
-  token.high = high;
-  token.low = low;
+  const token: Token = {high, low};
   Object.freeze(token);
 
   return token;

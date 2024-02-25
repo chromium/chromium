@@ -68,8 +68,9 @@ class ASH_EXPORT BluetoothDetailedView {
   // when testing, where the implementation might not inherit from views::View.
   virtual views::View* GetAsView() = 0;
 
-  // Updates the detailed view to reflect a Bluetooth state of |enabled|.
-  virtual void UpdateBluetoothEnabledState(bool enabled) = 0;
+  // Updates the detailed view to reflect a Bluetooth state of |system_state|.
+  virtual void UpdateBluetoothEnabledState(
+      const bluetooth_config::mojom::BluetoothSystemState system_state) = 0;
 
   // Creates a targetable row for a single device within the device list. The
   // client is expected to configure the returned view themselves, and to use
@@ -87,7 +88,7 @@ class ASH_EXPORT BluetoothDetailedView {
 
   // Returns the main content view which contains a list of child views that
   // make up the list of connected and previously connected bluetooth devices,
-  // including their headers and any separators.
+  // including their headers.
   virtual views::View* device_list() = 0;
 
  protected:
@@ -96,7 +97,7 @@ class ASH_EXPORT BluetoothDetailedView {
   Delegate* delegate() { return delegate_; }
 
  private:
-  raw_ptr<Delegate, ExperimentalAsh> delegate_;
+  raw_ptr<Delegate> delegate_;
 };
 
 }  // namespace ash

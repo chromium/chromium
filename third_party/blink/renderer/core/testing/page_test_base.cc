@@ -8,10 +8,12 @@
 
 #include "base/functional/callback.h"
 #include "base/test/bind.h"
+#include "base/time/default_clock.h"
 #include "base/time/default_tick_clock.h"
 #include "third_party/blink/public/common/browser_interface_broker_proxy.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_font_face_descriptors.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_union_arraybuffer_arraybufferview_string.h"
+#include "third_party/blink/renderer/core/css/css_default_style_sheets.h"
 #include "third_party/blink/renderer/core/css/font_face_set_document.h"
 #include "third_party/blink/renderer/core/frame/csp/conversion_util.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
@@ -23,6 +25,7 @@
 #include "third_party/blink/renderer/core/layout/layout_object.h"
 #include "third_party/blink/renderer/core/layout/layout_text_fragment.h"
 #include "third_party/blink/renderer/core/testing/mock_policy_container_host.h"
+#include "third_party/blink/renderer/platform/loader/fetch/memory_cache.h"
 #include "third_party/blink/renderer/platform/testing/unit_test_helpers.h"
 #include "third_party/blink/renderer/platform/wtf/shared_buffer.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
@@ -53,10 +56,10 @@ void ToSimpleLayoutTree(std::ostream& ostream,
     ostream << "(anonymous)";
   if (auto* layout_text_fragment =
           DynamicTo<LayoutTextFragment>(layout_object)) {
-    ostream << " (" << layout_text_fragment->GetText() << ")";
+    ostream << " (" << layout_text_fragment->TransformedText() << ")";
   } else if (auto* layout_text = DynamicTo<LayoutText>(layout_object)) {
     if (!layout_object.GetNode())
-      ostream << " " << layout_text->GetText();
+      ostream << " " << layout_text->TransformedText();
   }
   ostream << std::endl;
   for (auto* child = layout_object.SlowFirstChild(); child;
@@ -100,7 +103,17 @@ void PageTestBase::MockClipboardHostProvider::BindClipboardHost(
 
 PageTestBase::PageTestBase() = default;
 
-PageTestBase::~PageTestBase() = default;
+PageTestBase::PageTestBase(base::test::TaskEnvironment::TimeSource time_source)
+    : task_environment_(time_source) {}
+
+PageTestBase::~PageTestBase() {
+  dummy_page_holder_.reset();
+  if (task_environment_) {
+    MemoryCache::Get()->EvictResources();
+    // Clear lazily loaded style sheets.
+    CSSDefaultStyleSheets::Instance().PrepareForLeakDetection();
+  }
+}
 
 void PageTestBase::EnableCompositing() {
   DCHECK(!dummy_page_holder_)
@@ -164,6 +177,7 @@ void PageTestBase::SetupPageWithClients(
     if (enable_compositing_)
       settings.SetAcceleratedCompositingEnabled(true);
   });
+
   dummy_page_holder_ =
       std::make_unique<DummyPageHolder>(size, chrome_client, local_frame_client,
                                         std::move(setter), GetTickClock());
@@ -181,6 +195,7 @@ void PageTestBase::SetupPageWithClients(
 
 void PageTestBase::TearDown() {
   dummy_page_holder_ = nullptr;
+  MemoryCache::Get()->EvictResources();
 }
 
 Document& PageTestBase::GetDocument() const {
@@ -316,14 +331,15 @@ FocusController& PageTestBase::GetFocusController() const {
 }
 
 void PageTestBase::EnablePlatform() {
-  DCHECK(!platform_);
-  platform_ = std::make_unique<
-      ScopedTestingPlatformSupport<TestingPlatformSupportWithMockScheduler>>();
-}
-
-const base::TickClock* PageTestBase::GetTickClock() {
-  return platform_ ? platform()->test_task_runner()->GetMockTickClock()
-                   : base::DefaultTickClock::GetInstance();
+  DCHECK(!platform_ && !platform_with_scheduler_);
+  if (task_environment_) {
+    platform_ = std::make_unique<
+        ScopedTestingPlatformSupport<TestingPlatformSupport>>();
+  } else {
+    platform_with_scheduler_ = std::make_unique<ScopedTestingPlatformSupport<
+        TestingPlatformSupportWithMockScheduler>>();
+    (*platform_with_scheduler_)->SetAutoAdvanceNowToPendingTasks(false);
+  }
 }
 
 // See also LayoutTreeAsText to dump with geometry and paint layers.
@@ -338,6 +354,40 @@ std::string PageTestBase::ToSimpleLayoutTree(
 
 void PageTestBase::SetPreferCompositingToLCDText(bool enable) {
   GetPage().GetSettings().SetPreferCompositingToLCDTextForTesting(enable);
+}
+
+const base::TickClock* PageTestBase::GetTickClock() {
+  return platform_with_scheduler_ ? platform()->GetTickClock()
+                                  : base::DefaultTickClock::GetInstance();
+}
+
+void PageTestBase::FastForwardBy(base::TimeDelta delta) {
+  if (task_environment_) {
+    return task_environment_->FastForwardBy(delta);
+  } else {
+    DCHECK(platform_with_scheduler_);
+    return (*platform_with_scheduler_)->RunForPeriod(delta);
+  }
+}
+
+void PageTestBase::FastForwardUntilNoTasksRemain() {
+  if (task_environment_) {
+    return task_environment_->FastForwardUntilNoTasksRemain();
+  } else {
+    DCHECK(platform_with_scheduler_);
+    return (*platform_with_scheduler_)
+        ->test_task_runner()
+        ->FastForwardUntilNoTasksRemain();
+  }
+}
+
+void PageTestBase::AdvanceClock(base::TimeDelta delta) {
+  if (task_environment_) {
+    return task_environment_->AdvanceClock(delta);
+  } else {
+    DCHECK(platform_with_scheduler_);
+    return (*platform_with_scheduler_)->AdvanceClock(delta);
+  }
 }
 
 }  // namespace blink

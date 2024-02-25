@@ -21,6 +21,7 @@ import "tensorflow_lite_support/cc/task/core/proto/base_options.proto";
 import "tensorflow_lite_support/cc/task/processor/proto/embedding_options.proto";
 import "tensorflow_lite_support/cc/task/processor/proto/search_options.proto";
 
+
 // Options for setting up an TextSearcher.
 // Next Id: 4.
 message TextSearcherOptions {

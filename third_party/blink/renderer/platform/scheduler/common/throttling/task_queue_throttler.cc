@@ -5,16 +5,15 @@
 #include "third_party/blink/renderer/platform/scheduler/common/throttling/task_queue_throttler.h"
 
 #include <cstdint>
-
-#include "base/debug/stack_trace.h"
+#include <optional>
 
 #include "base/check_op.h"
+#include "base/debug/stack_trace.h"
 #include "base/functional/bind.h"
 #include "base/memory/ptr_util.h"
+#include "base/message_loop/message_pump.h"
 #include "base/task/common/lazy_now.h"
-#include "base/task/task_features.h"
 #include "base/time/tick_clock.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/renderer/platform/scheduler/common/throttling/budget_pool.h"
 #include "third_party/blink/renderer/platform/wtf/hash_set.h"
 
@@ -67,10 +66,10 @@ bool TaskQueueThrottler::IsThrottled() const {
   return throttling_ref_count_ > 0;
 }
 
-absl::optional<base::sequence_manager::WakeUp>
+std::optional<base::sequence_manager::WakeUp>
 TaskQueueThrottler::GetNextAllowedWakeUpImpl(
     LazyNow* lazy_now,
-    absl::optional<base::sequence_manager::WakeUp> next_wake_up,
+    std::optional<base::sequence_manager::WakeUp> next_wake_up,
     bool has_ready_task) {
   DCHECK(IsThrottled());
   DCHECK(task_queue_->IsQueueEnabled());
@@ -82,15 +81,17 @@ TaskQueueThrottler::GetNextAllowedWakeUpImpl(
     // for delayed tasks, see below). Otherwise, schedule a delayed wake up to
     // update the fence in the future.
     if (!allowed_run_time.is_null()) {
-      // WakeUpResolution::kLow is always used for throttled tasks since those
-      // tasks can tolerate having their execution being delayed.
+      // WakeUpResolution::kLow and DelayPolicy::kFlexibleNoSooner are always
+      // used for throttled tasks since those tasks can tolerate having their
+      // execution being delayed.
       return base::sequence_manager::WakeUp{
-          allowed_run_time, base::GetTaskLeewayForCurrentThread(),
-          base::sequence_manager::WakeUpResolution::kLow};
+          allowed_run_time, base::MessagePump::GetLeewayForCurrentThread(),
+          base::sequence_manager::WakeUpResolution::kLow,
+          base::subtle::DelayPolicy::kFlexibleNoSooner};
     }
   }
   if (!next_wake_up.has_value())
-    return absl::nullopt;
+    return std::nullopt;
 
   base::TimeTicks desired_run_time =
       std::max(next_wake_up->time, lazy_now->Now());
@@ -98,10 +99,14 @@ TaskQueueThrottler::GetNextAllowedWakeUpImpl(
   if (allowed_run_time.is_null())
     allowed_run_time = desired_run_time;
 
+  // Throttled tasks can tolerate having their execution being delayed, so
+  // transform "precise" delay policy into "flexible no sooner".
   return base::sequence_manager::WakeUp{
       allowed_run_time, next_wake_up->leeway,
       base::sequence_manager::WakeUpResolution::kLow,
-      next_wake_up->delay_policy};
+      next_wake_up->delay_policy == base::subtle::DelayPolicy::kPrecise
+          ? base::subtle::DelayPolicy::kFlexibleNoSooner
+          : next_wake_up->delay_policy};
 }
 
 void TaskQueueThrottler::OnHasImmediateTask() {
@@ -118,10 +123,10 @@ void TaskQueueThrottler::OnHasImmediateTask() {
   }
 }
 
-absl::optional<base::sequence_manager::WakeUp>
+std::optional<base::sequence_manager::WakeUp>
 TaskQueueThrottler::GetNextAllowedWakeUp(
     LazyNow* lazy_now,
-    absl::optional<base::sequence_manager::WakeUp> next_desired_wake_up,
+    std::optional<base::sequence_manager::WakeUp> next_desired_wake_up,
     bool has_ready_task) {
   TRACE_EVENT0("renderer.scheduler", "TaskQueueThrottler::OnNextWakeUpChanged");
 
@@ -147,7 +152,7 @@ void TaskQueueThrottler::UpdateQueueState(base::TimeTicks now) {
     UpdateFence(now);
   } else {
     // Insert a fence of an appropriate type.
-    absl::optional<QueueBlockType> block_type = GetBlockType(now);
+    std::optional<QueueBlockType> block_type = GetBlockType(now);
     DCHECK(block_type);
     switch (block_type.value()) {
       case QueueBlockType::kAllTasks:
@@ -197,7 +202,7 @@ void TaskQueueThrottler::DisableThrottling() {
   task_queue_->ResetThrottler();
 }
 
-absl::optional<QueueBlockType> TaskQueueThrottler::GetBlockType(
+std::optional<QueueBlockType> TaskQueueThrottler::GetBlockType(
     base::TimeTicks now) const {
   bool has_new_tasks_only_block = false;
 
@@ -212,7 +217,7 @@ absl::optional<QueueBlockType> TaskQueueThrottler::GetBlockType(
 
   if (has_new_tasks_only_block)
     return QueueBlockType::kNewTasksOnly;
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 void TaskQueueThrottler::AddBudgetPool(BudgetPool* budget_pool) {

@@ -12,7 +12,8 @@ import {isChromeOS, isLacros} from 'chrome://resources/js/platform.js';
 import {webUIListenerCallback} from 'chrome://resources/js/cr.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import {CrSettingsPrefs, MetricsBrowserProxyImpl, pageVisibility, PerformanceBrowserProxyImpl, PrivacyGuideBrowserProxy, PrivacyGuideBrowserProxyImpl, PrivacyGuideInteractions, Router, routes, SettingsBasicPageElement, SettingsIdleLoadElement, SettingsPrefsElement, SettingsSectionElement, StatusAction, SyncStatus} from 'chrome://settings/settings.js';
+import type {PrivacyGuideBrowserProxy, SettingsBasicPageElement, SettingsIdleLoadElement, SettingsPrefsElement, SettingsSectionElement, SyncStatus} from 'chrome://settings/settings.js';
+import {CrSettingsPrefs, MetricsBrowserProxyImpl, pageVisibility, PerformanceBrowserProxyImpl, PrivacyGuideBrowserProxyImpl, PrivacyGuideInteractions, Router, routes, StatusAction} from 'chrome://settings/settings.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
 import {eventToPromise, isChildVisible, isVisible} from 'chrome://webui-test/test_util.js';
@@ -447,6 +448,10 @@ suite('Performance', () => {
     return page.shadowRoot!.querySelector('#batterySettingsSection');
   }
 
+  function querySpeedSettingsSection(): SettingsSectionElement|null {
+    return page.shadowRoot!.querySelector('#speedSettingsSection');
+  }
+
   async function createNewBasicPage() {
     performanceBrowserProxy = new TestPerformanceBrowserProxy();
     PerformanceBrowserProxyImpl.setInstance(performanceBrowserProxy);
@@ -461,6 +466,24 @@ suite('Performance', () => {
     assertTrue(sections.length > 1);
   }
 
+  test('performanceSectionTitlesVisible', async function() {
+    await createNewBasicPage();
+    page.pageVisibility = pageVisibility;
+    flush();
+
+    assertEquals(
+        queryPerformanceSettingsSection()!.shadowRoot!.querySelector('h2')
+            ?.innerText,
+        loadTimeData.getString('memoryPageTitle'));
+    assertEquals(
+        queryBatterySettingsSection()!.shadowRoot!.querySelector('h2')
+            ?.innerText,
+        loadTimeData.getString('batteryPageTitle'));
+    assertEquals(
+        querySpeedSettingsSection()!.shadowRoot!.querySelector('h2')?.innerText,
+        loadTimeData.getString('speedPageTitle'));
+  });
+
   test('performanceVisibilityTestFeaturesAvailable', async function() {
     await createNewBasicPage();
     // Set the visibility of the pages under test to their default value.
@@ -470,6 +493,9 @@ suite('Performance', () => {
     assertTrue(
         !!queryBatterySettingsSection(),
         'Battery section should exist with default page visibility');
+    assertTrue(
+        !!querySpeedSettingsSection(),
+        'Speed section should exist with default page visibility');
     assertTrue(
         !!queryPerformanceSettingsSection(),
         'Performance section should exist with default page visibility');
@@ -483,6 +509,9 @@ suite('Performance', () => {
     assertFalse(
         !!queryBatterySettingsSection(),
         'Battery section should not exist when visibility is false');
+    assertFalse(
+        !!querySpeedSettingsSection(),
+        'Speed section should not exist when visibility is false');
     assertFalse(
         !!queryPerformanceSettingsSection(),
         'Performance section should not exist when visibility is false');
@@ -565,5 +594,32 @@ suite('SafetyHubDisabled', () => {
     assertFalse(
         !!querySafetyHubSection(),
         'Safety Hub section should not be visible with default visibility');
+  });
+});
+
+suite('ExperimentalAdvanced', () => {
+  let page: SettingsBasicPageElement;
+
+  function createBasicPage() {
+    document.body.innerHTML = window.trustedTypes!.emptyHTML;
+    page = document.createElement('settings-basic-page');
+    document.body.appendChild(page);
+    flush();
+  }
+
+  test('sectionNotVisible', function() {
+    loadTimeData.overrideValues({showAdvancedFeaturesMainControl: false});
+    createBasicPage();
+    const sectionElement =
+        page.shadowRoot!.querySelector('settings-section[section=ai]');
+    assertFalse(!!sectionElement);
+  });
+
+  test('sectionVisible', function() {
+    loadTimeData.overrideValues({showAdvancedFeaturesMainControl: true});
+    createBasicPage();
+    const sectionElement =
+        page.shadowRoot!.querySelector('settings-section[section=ai]');
+    assertTrue(!!sectionElement);
   });
 });

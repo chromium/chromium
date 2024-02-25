@@ -37,7 +37,7 @@ class MadvFreeDiscardableMemoryAllocatorPosixTest : public ::testing::Test {
   MadvFreeDiscardableMemoryAllocatorPosixTest() {
 #if BUILDFLAG(ENABLE_BASE_TRACING)
     base::trace_event::MemoryDumpArgs dump_args = {
-        base::trace_event::MemoryDumpLevelOfDetail::DETAILED};
+        base::trace_event::MemoryDumpLevelOfDetail::kDetailed};
     pmd_ = std::make_unique<base::trace_event::ProcessMemoryDump>(dump_args);
 #endif  // BUILDFLAG(ENABLE_BASE_TRACING)
   }

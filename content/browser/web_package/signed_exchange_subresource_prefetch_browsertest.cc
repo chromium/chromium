@@ -10,12 +10,12 @@
 #include "base/format_macros.h"
 #include "base/no_destructor.h"
 #include "base/path_service.h"
-#include "base/run_loop.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/task/task_runner.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/scoped_mock_clock_override.h"
 #include "base/test/test_timeouts.h"
@@ -187,12 +187,12 @@ class NavigationHandleSXGAttributeObserver : public WebContentsObserver {
         navigation_handle->HasPrefetchedAlternativeSubresourceSignedExchange();
   }
 
-  const absl::optional<bool>& had_prefetched_alt_sxg() const {
+  const std::optional<bool>& had_prefetched_alt_sxg() const {
     return had_prefetched_alt_sxg_;
   }
 
  private:
-  absl::optional<bool> had_prefetched_alt_sxg_;
+  std::optional<bool> had_prefetched_alt_sxg_;
 };
 
 }  // namespace
@@ -922,23 +922,23 @@ class SignedExchangeSubresourcePrefetchBrowserTest
   // |mime_type| is the MIME tyepe of the inner response of the SXG subresource.
   // When |has_nosniff| is set, the inner response header of the SXG subresource
   // has "x-content-type-options: nosniff" header.
-  // |corb_allowed| is whether we expect CORB/ORB to allow this resource. We
+  // |orb_allowed| is whether we expect ORB to allow this resource. We
   // will check this based on the document title.
-  void RunCrossOriginReadBlockingTest(bool cross_origin,
-                                      const std::string& content,
-                                      const std::string& mime_type,
-                                      bool has_nosniff,
-                                      bool corb_allowed) {
+  void RunOpaqueResponseBlockingTest(bool cross_origin,
+                                     const std::string& content,
+                                     const std::string& mime_type,
+                                     bool has_nosniff,
+                                     bool orb_allowed) {
     const char* prefetch_path = "/prefetch.html";
     const char* target_sxg_path = "/target.sxg";
     const char* target_path = "/target.html";
     const char* script_sxg_path = "/script_js.sxg";
     const char* script_path = "/script.js";
 
-    // If CORB/ORB blocks the resource, it will retain its original title,
+    // If ORB blocks the resource, it will retain its original title,
     // "original title". If the resource is allowed, it will modify the title
     // to "done".
-    const char* expected_title = corb_allowed ? "done" : "original title";
+    const char* expected_title = orb_allowed ? "done" : "original title";
 
     auto script_sxg_request_counter = RequestCounter::CreateAndMonitor(
         embedded_test_server(), script_sxg_path);
@@ -1103,8 +1103,8 @@ IN_PROC_BROWSER_TEST_F(SignedExchangeSubresourcePrefetchBrowserTest,
       1 /* expected_script_fetch_count */);
 }
 
-// Flaky. See https://crbug.com/1415204.
-#if BUILDFLAG(IS_MAC)
+// Flaky. See https://crbug.com/1415204 and https://crbug.com/1494880.
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_ANDROID)
 #define MAYBE_MainResourceSXGAndScriptSXG_CrossOrigin_AsDocument \
   DISABLED_MainResourceSXGAndScriptSXG_CrossOrigin_AsDocument
 #else
@@ -2033,12 +2033,9 @@ IN_PROC_BROWSER_TEST_F(SignedExchangeSubresourcePrefetchBrowserTest,
       NavigateToURL(shell(), embedded_test_server()->GetURL(prefetch_path)));
 
   // Wait until all (main- and sub-resource) SXGs are prefetched.
-  while (GetCachedExchanges(shell()).size() < std::size(kTestCases) + 1) {
-    base::RunLoop run_loop;
-    base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
-        FROM_HERE, run_loop.QuitClosure(), TestTimeouts::tiny_timeout());
-    run_loop.Run();
-  }
+  EXPECT_TRUE(base::test::RunUntil([&]() {
+    return GetCachedExchanges(shell()).size() >= std::size(kTestCases) + 1;
+  }));
 
   NavigateToURLAndWaitTitle(target_sxg_url, "done");
 
@@ -2051,31 +2048,31 @@ IN_PROC_BROWSER_TEST_F(SignedExchangeSubresourcePrefetchBrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_F(SignedExchangeSubresourcePrefetchBrowserTest,
-                       CrossOriginReadBlocking_AllowedAfterSniffing) {
-  RunCrossOriginReadBlockingTest(
+                       OpaqueResponseBlocking_AllowedAfterSniffing) {
+  RunOpaqueResponseBlockingTest(
       true /* cross_origin */, "document.title=\"done\"", "text/javascript",
-      false /* has_nosniff */, true /* corb_allowed */);
+      false /* has_nosniff */, true /* orb_allowed */);
 }
 
 IN_PROC_BROWSER_TEST_F(SignedExchangeSubresourcePrefetchBrowserTest,
-                       CrossOriginReadBlocking_BlockedAfterSniffing) {
-  RunCrossOriginReadBlockingTest(
+                       OpaqueResponseBlocking_BlockedAfterSniffing) {
+  RunOpaqueResponseBlockingTest(
       true /* cross_origin */, "<!DOCTYPE html>hello;", "text/html",
-      false /* has_nosniff */, false /* corb_allowed */);
+      false /* has_nosniff */, false /* orb_allowed */);
 }
 
 IN_PROC_BROWSER_TEST_F(SignedExchangeSubresourcePrefetchBrowserTest,
-                       CrossOriginReadBlocking_AllowedWithoutSniffing) {
-  RunCrossOriginReadBlockingTest(
-      false /* cross_origin */, "document.title=\"done\"", "text/javascript",
-      true /* has_nosniff */, true /* corb_allowed */);
+                       OpaqueResponseBlocking_AllowedWithoutSniffing) {
+  RunOpaqueResponseBlockingTest(false /* cross_origin */,
+                                "document.title=\"done\"", "text/javascript",
+                                true /* has_nosniff */, true /* orb_allowed */);
 }
 
 IN_PROC_BROWSER_TEST_F(SignedExchangeSubresourcePrefetchBrowserTest,
-                       CrossOriginReadBlocking_BlockedWithoutSniffing) {
-  RunCrossOriginReadBlockingTest(
+                       OpaqueResponseBlocking_BlockedWithoutSniffing) {
+  RunOpaqueResponseBlockingTest(
       true /* cross_origin */, "<!DOCTYPE html>hello;", "text/html",
-      true /* has_nosniff */, false /* corb_allowed */);
+      true /* has_nosniff */, false /* orb_allowed */);
 }
 
 IN_PROC_BROWSER_TEST_F(SignedExchangeSubresourcePrefetchBrowserTest,

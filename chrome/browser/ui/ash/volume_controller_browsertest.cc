@@ -4,6 +4,7 @@
 
 #include <map>
 #include <memory>
+#include <string_view>
 
 #include "ash/constants/ash_switches.h"
 #include "ash/shell.h"
@@ -33,7 +34,7 @@ class SoundsManagerTestImpl : public audio::SoundsManager {
   ~SoundsManagerTestImpl() override {}
 
   bool Initialize(SoundKey key,
-                  const base::StringPiece& /* data */,
+                  std::string_view /* data */,
                   media::AudioCodec codec) override {
     is_sound_initialized_[key] = true;
     return true;
@@ -59,20 +60,14 @@ class SoundsManagerTestImpl : public audio::SoundsManager {
   std::map<SoundKey, int> num_play_requests_;
 };
 
-class VolumeControllerTest : public InProcessBrowserTest,
-                             public testing::WithParamInterface<bool> {
+class VolumeControllerTest : public InProcessBrowserTest {
  public:
-  VolumeControllerTest() {
-    feature_list_.InitWithFeatureState(ash::features::kQsRevamp,
-                                       IsQsRevampEnabled());
-  }
+  VolumeControllerTest() = default;
 
   VolumeControllerTest(const VolumeControllerTest&) = delete;
   VolumeControllerTest& operator=(const VolumeControllerTest&) = delete;
 
   ~VolumeControllerTest() override {}
-
-  bool IsQsRevampEnabled() const { return GetParam(); }
 
   void SetUpOnMainThread() override {
     audio_handler_ = ash::CrasAudioHandler::Get();
@@ -94,13 +89,11 @@ class VolumeControllerTest : public InProcessBrowserTest,
   }
 
  protected:
-  base::test::ScopedFeatureList feature_list_;
-  raw_ptr<ash::CrasAudioHandler, ExperimentalAsh> audio_handler_;  // Not owned.
+  raw_ptr<ash::CrasAudioHandler, DanglingUntriaged>
+      audio_handler_;  // Not owned.
 };
 
-INSTANTIATE_TEST_SUITE_P(QsRevamp, VolumeControllerTest, testing::Bool());
-
-IN_PROC_BROWSER_TEST_P(VolumeControllerTest, VolumeUpAndDown) {
+IN_PROC_BROWSER_TEST_F(VolumeControllerTest, VolumeUpAndDown) {
   // Set initial value as 50%
   const int kInitVolume = 50;
   audio_handler_->SetOutputVolumePercent(kInitVolume);
@@ -128,7 +121,7 @@ IN_PROC_BROWSER_TEST_P(VolumeControllerTest, VolumeUpAndDown) {
   EXPECT_GT(current_volume, audio_handler_->GetOutputVolumePercent());
 }
 
-IN_PROC_BROWSER_TEST_P(VolumeControllerTest, VolumeDownToZero) {
+IN_PROC_BROWSER_TEST_F(VolumeControllerTest, VolumeDownToZero) {
   // Setting to very small volume.
   audio_handler_->SetOutputVolumePercent(1);
 
@@ -140,7 +133,7 @@ IN_PROC_BROWSER_TEST_P(VolumeControllerTest, VolumeDownToZero) {
   EXPECT_LT(0, audio_handler_->GetOutputVolumePercent());
 }
 
-IN_PROC_BROWSER_TEST_P(VolumeControllerTest, VolumeUpTo100) {
+IN_PROC_BROWSER_TEST_F(VolumeControllerTest, VolumeUpTo100) {
   // Setting to almost max
   audio_handler_->SetOutputVolumePercent(99);
 
@@ -152,7 +145,7 @@ IN_PROC_BROWSER_TEST_P(VolumeControllerTest, VolumeUpTo100) {
   EXPECT_GT(100, audio_handler_->GetOutputVolumePercent());
 }
 
-IN_PROC_BROWSER_TEST_P(VolumeControllerTest, Mutes) {
+IN_PROC_BROWSER_TEST_F(VolumeControllerTest, Mutes) {
   ASSERT_FALSE(audio_handler_->IsOutputMuted());
   const int initial_volume = audio_handler_->GetOutputVolumePercent();
 
@@ -164,55 +157,32 @@ IN_PROC_BROWSER_TEST_P(VolumeControllerTest, Mutes) {
   EXPECT_TRUE(audio_handler_->IsOutputMuted());
 
   // Right after the volume up after set_mute recovers to original volume.
-  // For QsRevamp: Press volume up key will increase the volume from the
-  // original volume.
+  // Press volume up key will increase the volume from the original volume.
   VolumeUp();
   EXPECT_FALSE(audio_handler_->IsOutputMuted());
-  if (IsQsRevampEnabled()) {
     EXPECT_LT(initial_volume, audio_handler_->GetOutputVolumePercent());
-  } else {
-    EXPECT_EQ(initial_volume, audio_handler_->GetOutputVolumePercent());
-  }
 
   VolumeMute();
-  // After the volume down, the volume goes down to zero explicitly.
-  // For QsRevamp: Press volume down key will decrease the volume from the
-  // original volume thus the volume is unmuted and recovered.
+  // After the volume down, press volume down key will decrease the volume from
+  // the original volume while the volume is still muted.
   VolumeDown();
-  if (IsQsRevampEnabled()) {
-    EXPECT_FALSE(audio_handler_->IsOutputMuted());
-    EXPECT_EQ(initial_volume, audio_handler_->GetOutputVolumePercent());
-  } else {
     EXPECT_TRUE(audio_handler_->IsOutputMuted());
-    EXPECT_EQ(0, audio_handler_->GetOutputVolumePercent());
-  }
+    EXPECT_EQ(initial_volume, audio_handler_->GetOutputVolumePercent());
 
-  // Thus, further VolumeUp doesn't recover the volume, it's just slightly
-  // bigger than 0.
-  // For QsRevamp: further VolumeUp will increase the volume.
-  VolumeUp();
-  if (IsQsRevampEnabled()) {
+    // Thus, further VolumeUp will increase the volume.
+    VolumeUp();
     EXPECT_LT(initial_volume, audio_handler_->GetOutputVolumePercent());
-  } else {
-    EXPECT_LT(0, audio_handler_->GetOutputVolumePercent());
-    EXPECT_GT(initial_volume, audio_handler_->GetOutputVolumePercent());
-  }
 }
 
 class VolumeControllerSoundsTest : public VolumeControllerTest {
  public:
-  VolumeControllerSoundsTest() : sounds_manager_(nullptr) {
-    feature_list_.InitWithFeatureState(ash::features::kQsRevamp,
-                                       IsQsRevampEnabled());
-  }
+  VolumeControllerSoundsTest() : sounds_manager_(nullptr) {}
 
   VolumeControllerSoundsTest(const VolumeControllerSoundsTest&) = delete;
   VolumeControllerSoundsTest& operator=(const VolumeControllerSoundsTest&) =
       delete;
 
   ~VolumeControllerSoundsTest() override {}
-
-  bool IsQsRevampEnabled() const { return GetParam(); }
 
   void SetUpInProcessBrowserTestFixture() override {
     sounds_manager_ = new SoundsManagerTestImpl();
@@ -230,13 +200,10 @@ class VolumeControllerSoundsTest : public VolumeControllerTest {
   }
 
  private:
-  base::test::ScopedFeatureList feature_list_;
-  raw_ptr<SoundsManagerTestImpl, ExperimentalAsh> sounds_manager_;
+  raw_ptr<SoundsManagerTestImpl, DanglingUntriaged> sounds_manager_;
 };
 
-INSTANTIATE_TEST_SUITE_P(QsRevamp, VolumeControllerSoundsTest, testing::Bool());
-
-IN_PROC_BROWSER_TEST_P(VolumeControllerSoundsTest, Simple) {
+IN_PROC_BROWSER_TEST_F(VolumeControllerSoundsTest, Simple) {
   audio_handler_->SetOutputVolumePercent(50);
 
   AccessibilityManager::Get()->EnableSpokenFeedback(false);
@@ -250,7 +217,7 @@ IN_PROC_BROWSER_TEST_P(VolumeControllerSoundsTest, Simple) {
   EXPECT_EQ(2, num_play_requests());
 }
 
-IN_PROC_BROWSER_TEST_P(VolumeControllerSoundsTest, EdgeCases) {
+IN_PROC_BROWSER_TEST_F(VolumeControllerSoundsTest, EdgeCases) {
   EXPECT_TRUE(is_sound_initialized());
   AccessibilityManager::Get()->EnableSpokenFeedback(true);
 
@@ -270,34 +237,21 @@ IN_PROC_BROWSER_TEST_P(VolumeControllerSoundsTest, EdgeCases) {
   EXPECT_EQ(3, num_play_requests());
 
   // Check that sound isn't played when audio is muted.
-  // For QsRevamp: Pressing volume down key will unmute the output and the
-  // sound will be played.
   audio_handler_->SetOutputVolumePercent(50);
   VolumeMute();
   VolumeDown();
-  if (IsQsRevampEnabled()) {
-    ASSERT_FALSE(audio_handler_->IsOutputMuted());
-    EXPECT_EQ(4, num_play_requests());
-  } else {
-    ASSERT_TRUE(audio_handler_->IsOutputMuted());
-    EXPECT_EQ(3, num_play_requests());
-  }
+  ASSERT_TRUE(audio_handler_->IsOutputMuted());
+  EXPECT_EQ(3, num_play_requests());
 
   // Check that audio is unmuted and sound is played.
   VolumeUp();
   ASSERT_FALSE(audio_handler_->IsOutputMuted());
-  if (IsQsRevampEnabled()) {
-    EXPECT_EQ(5, num_play_requests());
-  } else {
-    EXPECT_EQ(4, num_play_requests());
-  }
+  EXPECT_EQ(4, num_play_requests());
 }
 
 class VolumeControllerSoundsDisabledTest : public VolumeControllerSoundsTest {
  public:
-  VolumeControllerSoundsDisabledTest() {
-    feature_list_.InitWithFeatureState(ash::features::kQsRevamp, GetParam());
-  }
+  VolumeControllerSoundsDisabledTest() = default;
 
   VolumeControllerSoundsDisabledTest(
       const VolumeControllerSoundsDisabledTest&) = delete;
@@ -310,16 +264,9 @@ class VolumeControllerSoundsDisabledTest : public VolumeControllerSoundsTest {
     VolumeControllerSoundsTest::SetUpCommandLine(command_line);
     command_line->AppendSwitch(ash::switches::kDisableVolumeAdjustSound);
   }
-
- private:
-  base::test::ScopedFeatureList feature_list_;
 };
 
-INSTANTIATE_TEST_SUITE_P(QsRevamp,
-                         VolumeControllerSoundsDisabledTest,
-                         testing::Bool());
-
-IN_PROC_BROWSER_TEST_P(VolumeControllerSoundsDisabledTest, VolumeAdjustSounds) {
+IN_PROC_BROWSER_TEST_F(VolumeControllerSoundsDisabledTest, VolumeAdjustSounds) {
   EXPECT_FALSE(is_sound_initialized());
 
   // Check that sound isn't played on volume up and volume down.

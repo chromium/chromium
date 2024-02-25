@@ -7,6 +7,8 @@
 
 #include "services/network/shared_dictionary/shared_dictionary.h"
 
+#include <string>
+
 #include "net/base/hash_value.h"
 
 namespace network {
@@ -18,7 +20,8 @@ class SharedDictionaryInMemory : public SharedDictionary {
  public:
   SharedDictionaryInMemory(scoped_refptr<net::IOBuffer> data,
                            size_t size,
-                           const net::SHA256HashValue& sha256);
+                           const net::SHA256HashValue& sha256,
+                           const std::string& id);
   ~SharedDictionaryInMemory() override;
 
   SharedDictionaryInMemory(const SharedDictionaryInMemory&) = delete;
@@ -29,11 +32,13 @@ class SharedDictionaryInMemory : public SharedDictionary {
   scoped_refptr<net::IOBuffer> data() const override;
   size_t size() const override;
   const net::SHA256HashValue& hash() const override;
+  const std::string& id() const override;
 
  private:
   const scoped_refptr<net::IOBuffer> data_;
   const size_t size_;
   const net::SHA256HashValue sha256_;
+  const std::string id_;
 #if DCHECK_IS_ON()
   bool read_all_called_ = false;
 #endif  // DCHECK_IS_ON()

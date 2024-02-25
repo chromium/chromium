@@ -1,0 +1,52 @@
+// Copyright 2024 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = "proto3";
+
+option optimize_for = LITE_RUNTIME;
+option java_package = "org.chromium.components.optimization_guide.features.proto";
+
+option java_outer_classname = "HistoryDocumentProto";
+
+package optimization_guide.proto;
+
+import "components/optimization_guide/proto/features/common_quality_data.proto";
+
+message Document {
+  // The ID of the document. Only guaranteed to be unique within this request.
+  // This is provided by the client and is opaque to the server.
+  uint64 id = 1;
+  // The URL of the document.
+  string url = 2;
+  // The passages for the document.
+  repeated string passages = 3;
+}
+
+message DocumentWithEmbeddings {
+  // The ID of the document. Corresponds to the ID used in Document.
+  uint64 id = 1;
+  repeated Embedding embeddings = 2;
+}
+
+message HistoryDocumentRequest {
+  // The documents to compute embeddings from. This is repeated to support
+  // batching and reducing the number of requests to the model execution server.
+  // The caller must ensure that no two documents have the same URL.
+  repeated Document documents = 1;
+}
+
+message HistoryDocumentResponse {
+  // The embeddings for each document. It is not guaranteed that this will
+  // contain all the documents from the request or that the ordering remains
+  // the same. Instead, matching with the request document should be done by
+  // looking at the document ID.
+  repeated DocumentWithEmbeddings embeddings = 1;
+}
+
+// HistoryDocumentLoggingData is the wrapper containing of ModelExecution
+// request and response for one history document execution run.
+message HistoryDocumentLoggingData {
+  HistoryDocumentRequest request = 1;
+  HistoryDocumentResponse response = 2;
+}

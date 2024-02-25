@@ -9,16 +9,17 @@
 
 namespace ash {
 
-AuthenticationError::AuthenticationError(
-    user_data_auth::CryptohomeErrorCode cryptohome_code)
-    : origin_(Origin::kCryptohome), cryptohome_code_(cryptohome_code) {}
+AuthenticationError::AuthenticationError(cryptohome::ErrorWrapper wrapper)
+    : origin_(Origin::kCryptohome), cryptohome_error_(wrapper) {}
 
 AuthenticationError::AuthenticationError(
     AuthFailure::FailureReason auth_failure_reason)
     : AuthenticationError(AuthFailure(auth_failure_reason)) {}
 
 AuthenticationError::AuthenticationError(AuthFailure auth_failure)
-    : origin_(Origin::kChrome), auth_failure_(std::move(auth_failure)) {}
+    : origin_(Origin::kChrome),
+      cryptohome_error_(cryptohome::ErrorWrapper::success()),
+      auth_failure_(std::move(auth_failure)) {}
 
 AuthenticationError::~AuthenticationError() = default;
 

@@ -145,7 +145,7 @@ ShellMainDelegate::ShellMainDelegate(bool is_content_browsertests)
 ShellMainDelegate::~ShellMainDelegate() {
 }
 
-absl::optional<int> ShellMainDelegate::BasicStartupComplete() {
+std::optional<int> ShellMainDelegate::BasicStartupComplete() {
   base::CommandLine& command_line = *base::CommandLine::ForCurrentProcess();
   if (command_line.HasSwitch("run-layout-test")) {
     std::cerr << std::string(79, '*') << "\n"
@@ -191,7 +191,7 @@ absl::optional<int> ShellMainDelegate::BasicStartupComplete() {
 
   RegisterShellPathProvider();
 
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 bool ShellMainDelegate::ShouldCreateFeatureList(InvokedIn invoked_in) {
@@ -248,6 +248,18 @@ absl::variant<int, MainFunctionParams> ShellMainDelegate::RunProcess(
   base::trace_event::TraceLog::GetInstance()->SetProcessSortIndex(
       kTraceEventBrowserProcessSortIndex);
 
+#if !BUILDFLAG(IS_ANDROID)
+  if (switches::IsRunWebTestsSwitchPresent()) {
+    // Web tests implement their own BrowserMain() replacement.
+    web_test_runner_->RunBrowserMain(std::move(main_function_params));
+    web_test_runner_.reset();
+    // Returning 0 to indicate that we have replaced BrowserMain() and the
+    // caller should not call BrowserMain() itself. Web tests do not ever
+    // return an error.
+    return 0;
+  }
+#endif
+
 #if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
   // On Android and iOS, we defer to the system message loop when the stack
   // unwinds. So here we only create (and leak) a BrowserMainRunner. The
@@ -267,16 +279,6 @@ absl::variant<int, MainFunctionParams> ShellMainDelegate::RunProcess(
   // to the |ui_task| for browser tests.
   return 0;
 #else
-  if (switches::IsRunWebTestsSwitchPresent()) {
-    // Web tests implement their own BrowserMain() replacement.
-    web_test_runner_->RunBrowserMain(std::move(main_function_params));
-    web_test_runner_.reset();
-    // Returning 0 to indicate that we have replaced BrowserMain() and the
-    // caller should not call BrowserMain() itself. Web tests do not ever
-    // return an error.
-    return 0;
-  }
-
   // On non-Android, we can return the |main_function_params| back and have the
   // caller run BrowserMain() normally.
   return std::move(main_function_params);
@@ -342,19 +344,18 @@ void ShellMainDelegate::InitializeResourceBundle() {
 #endif
 }
 
-absl::optional<int> ShellMainDelegate::PreBrowserMain() {
-  absl::optional<int> exit_code =
-      content::ContentMainDelegate::PreBrowserMain();
+std::optional<int> ShellMainDelegate::PreBrowserMain() {
+  std::optional<int> exit_code = content::ContentMainDelegate::PreBrowserMain();
   if (exit_code.has_value())
     return exit_code;
 
 #if BUILDFLAG(IS_MAC)
   RegisterShellCrApp();
 #endif
-  return absl::nullopt;
+  return std::nullopt;
 }
 
-absl::optional<int> ShellMainDelegate::PostEarlyInitialization(
+std::optional<int> ShellMainDelegate::PostEarlyInitialization(
     InvokedIn invoked_in) {
   if (!ShouldCreateFeatureList(invoked_in)) {
     // Apply field trial testing configuration since content did not.
@@ -386,7 +387,7 @@ absl::optional<int> ShellMainDelegate::PostEarlyInitialization(
                                process_type)
       .Initialize(memory_system_);
 
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 ContentClient* ShellMainDelegate::CreateContentClient() {

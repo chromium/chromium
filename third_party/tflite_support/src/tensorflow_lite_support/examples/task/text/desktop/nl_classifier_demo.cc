@@ -15,22 +15,18 @@ limitations under the License.
 #include <iostream>
 #include <limits>
 
-#include "absl/flags/flag.h"          // from @com_google_absl
-#include "absl/flags/parse.h"         // from @com_google_absl
-#include "absl/status/status.h"       // from @com_google_absl
+#include "absl/flags/flag.h"  // from @com_google_absl
+#include "absl/flags/parse.h"  // from @com_google_absl
+#include "absl/status/status.h"  // from @com_google_absl
 #include "absl/strings/str_format.h"  // from @com_google_absl
 #include "tensorflow_lite_support/cc/port/statusor.h"
 #include "tensorflow_lite_support/cc/task/core/category.h"
 #include "tensorflow_lite_support/cc/task/text/nlclassifier/nl_classifier.h"
 
-ABSL_FLAG(std::string,
-          model_path,
-          "",
+ABSL_FLAG(std::string, model_path, "",
           "Absolute path to the '.tflite' classification model.");
 ABSL_FLAG(std::string, text, "", "Text to classify.");
-ABSL_FLAG(bool,
-          use_coral,
-          false,
+ABSL_FLAG(bool, use_coral, false,
           "If true, inference will be delegated to a connected Coral Edge TPU "
           "device.");
 
@@ -55,7 +51,7 @@ absl::Status Classify() {
         ->set_delegate(::tflite::proto::Delegate::EDGETPU_CORAL);
   }
 
-  ASSIGN_OR_RETURN(std::unique_ptr<NLClassifier> classifier,
+  TFLITE_ASSIGN_OR_RETURN(std::unique_ptr<NLClassifier> classifier,
                    NLClassifier::CreateFromOptions(options));
 
   auto start_classify = steady_clock::now();

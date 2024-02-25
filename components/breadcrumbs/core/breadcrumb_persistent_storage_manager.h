@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_BREADCRUMBS_CORE_BREADCRUMB_PERSISTENT_STORAGE_MANAGER_H_
 #define COMPONENTS_BREADCRUMBS_CORE_BREADCRUMB_PERSISTENT_STORAGE_MANAGER_H_
 
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -18,7 +19,6 @@
 #include "components/breadcrumbs/core/breadcrumb_manager_observer.h"
 #include "components/breadcrumbs/core/breadcrumbs_status.h"
 #include "components/breadcrumbs/core/crash_reporter_breadcrumb_constants.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace breadcrumbs {
 
@@ -88,7 +88,7 @@ class BreadcrumbPersistentStorageManager : public BreadcrumbManagerObserver {
   // The current size of breadcrumbs written to |breadcrumbs_file_path_|.
   // NOTE: The optional will not have a value until the size of the existing
   // file, if any, is retrieved.
-  absl::optional<size_t> file_position_;
+  std::optional<size_t> file_position_;
 
   // Used to check whether the user has consented to metrics reporting.
   // Breadcrumbs should only be written to persistent storage if true.

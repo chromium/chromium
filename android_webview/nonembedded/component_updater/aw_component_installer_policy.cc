@@ -77,7 +77,7 @@ void AwComponentInstallerPolicy::ComponentReady(
   base::FilePath cps_component_base_path =
       GetComponentsProviderServiceDirectory();
 
-  JNIEnv* env = base::android::AttachCurrentThread();
+  JNIEnv* env = jni_zero::AttachCurrentThread();
   int highest_sequence_number =
       Java_ComponentsProviderPathUtil_getTheHighestSequenceNumber(
           env, base::android::ConvertUTF8ToJavaString(
@@ -138,7 +138,7 @@ AwComponentInstallerPolicy::GetComponentsProviderServiceDirectory() {
   GetHash(&hash);
   std::string component_id = update_client::GetCrxIdFromPublicKeyHash(hash);
 
-  JNIEnv* env = base::android::AttachCurrentThread();
+  JNIEnv* env = jni_zero::AttachCurrentThread();
   return base::FilePath(
              base::android::ConvertJavaStringToUTF8(
                  env,

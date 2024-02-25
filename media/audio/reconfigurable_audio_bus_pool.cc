@@ -11,8 +11,8 @@
 #include "base/functional/callback.h"
 #include "base/synchronization/lock.h"
 #include "base/task/bind_post_task.h"
-#include "media/audio/audio_bus_pool.h"
 #include "media/base/audio_bus.h"
+#include "media/base/audio_bus_pool.h"
 #include "media/base/audio_parameters.h"
 #include "media/base/reentrancy_checker.h"
 

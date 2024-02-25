@@ -80,11 +80,18 @@ suite('<os-settings-bluetooth-page>', () => {
     await flushTasks();
     assertNull(getPairNewDevice());
 
-    // Simulate Bluetooth enabled
+    // Simulate Bluetooth being enabled.
     bluetoothConfig.setSystemState(BluetoothSystemState.kEnabling);
     await flushTasks();
-    assertTrue(!!getPairNewDevice());
-    getPairNewDevice()!.click();
+    assertNull(getPairNewDevice());
+
+    // Simulate Bluetooth enabled.
+    bluetoothConfig.setSystemState(BluetoothSystemState.kEnabled);
+    await flushTasks();
+
+    const pairNewDeviceButton = getPairNewDevice();
+    assertTrue(!!pairNewDeviceButton);
+    pairNewDeviceButton.click();
 
     await flushTasks();
     assertTrue(!!getBluetoothPairingUi());

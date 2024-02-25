@@ -5,6 +5,7 @@
 #include "chromeos/ash/services/bluetooth_config/adapter_state_controller_impl.h"
 
 #include <memory>
+#include <optional>
 #include <vector>
 
 #include "base/containers/queue.h"
@@ -14,7 +15,6 @@
 #include "device/bluetooth/test/mock_bluetooth_adapter.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ash::bluetooth_config {
 
@@ -150,7 +150,7 @@ class AdapterStateControllerImplTest
   bool is_adapter_present_ = true;
   bool is_adapter_powered_ = true;
 
-  absl::optional<bool> pending_power_state_;
+  std::optional<bool> pending_power_state_;
   base::queue<base::OnceClosure> set_powered_success_callbacks_;
   base::queue<base::OnceClosure> set_powered_error_callbacks_;
 

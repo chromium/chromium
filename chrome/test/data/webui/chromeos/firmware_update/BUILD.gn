@@ -2,113 +2,36 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//third_party/closure_compiler/compile_js.gni")
+import("../../build_webui_tests.gni")
 
-js_type_check("closure_compile") {
-  is_polymer3 = true
-  closure_flags = default_closure_args + [
-                    "browser_resolver_prefix_replacements=\"chrome://accessory-update/=" + rebase_path(
-                            "//ash/webui/firmware_update_ui/resources/",
-                            root_build_dir) + "\"",
-                    "browser_resolver_prefix_replacements=\"chrome://webui-test/chromeos/=" + rebase_path(
-                            "//chrome/test/data/webui/chromeos/",
-                            root_build_dir) + "\"",
-                    "browser_resolver_prefix_replacements=\"chrome://webui-test/=" + "./gen/chrome/test/data/webui/tsc\"",
-                    "js_module_root=" + rebase_path("//chrome/test/data/webui/",
-                                                    root_build_dir),
-                    "js_module_root=./gen/chrome/test/data/webui/",
-                  ]
-  deps = [
-    ":fake_update_controller_test",
-    ":fake_update_provider_test",
-    ":firmware_update_dialog_test",
-    ":firmware_update_test",
-    ":firmware_update_unified_test",
-    ":peripheral_updates_list_test",
-    ":update_card_test",
+build_webui_tests("build_webui_tests") {
+  ts_path_mappings = [
+    "chrome://accessory-update/*|" +
+        rebase_path(
+            "$root_gen_dir/ash/webui/firmware_update_ui/resources/tsc/*",
+            target_gen_dir),
+    "chrome://webui-test/chromeos/*|" +
+        rebase_path("$root_gen_dir/chrome/test/data/webui/chromeos/tsc/*",
+                    target_gen_dir),
   ]
-}
 
-js_library("fake_update_controller_test") {
-  deps = [
-    "..:chai_assert",
-    "//ash/webui/firmware_update_ui/resources:fake_data",
-    "//ash/webui/firmware_update_ui/resources:fake_update_controller",
-    "//ash/webui/firmware_update_ui/resources:firmware_update_types",
+  files = [
+    "fake_update_controller_test.ts",
+    "fake_update_provider_test.ts",
+    "firmware_update_dialog_test.ts",
+    "firmware_update_test.ts",
+    "firmware_update_utils_test.ts",
+    "peripheral_updates_list_test.ts",
+    "update_card_test.ts",
   ]
-  externs_list = [ "$externs_path/mocha-2.5.js" ]
-}
 
-js_library("fake_update_provider_test") {
-  deps = [
-    "..:chai_assert",
-    "//ash/webui/firmware_update_ui/resources:fake_data",
-    "//ash/webui/firmware_update_ui/resources:fake_update_provider",
-    "//ash/webui/firmware_update_ui/resources:firmware_update_types",
+  ts_deps = [
+    "//ash/webui/common/resources:build_ts",
+    "//ash/webui/firmware_update_ui/resources:build_ts",
+    "//chrome/test/data/webui/chromeos:build_ts",
+    "//third_party/polymer/v3_0:library",
+    "//ash/webui/common/resources/cr_elements:build_ts",
+    "//ui/webui/resources/js:build_ts",
+    "//ui/webui/resources/mojo:build_ts",
   ]
-  externs_list = [ "$externs_path/mocha-2.5.js" ]
-}
-
-js_library("firmware_update_dialog_test") {
-  deps = [
-    "..:chai_assert",
-    "..:test_util",
-    "//ash/webui/common/resources:load_time_data.m",
-    "//ash/webui/firmware_update_ui/resources:fake_data",
-    "//ash/webui/firmware_update_ui/resources:firmware_update_dialog",
-    "//ash/webui/firmware_update_ui/resources:firmware_update_types",
-  ]
-  externs_list = [
-    "$externs_path/mocha-2.5.js",
-    "//ui/webui/resources/cr_elements/cr_dialog/cr_dialog_externs.js",
-  ]
-}
-
-js_library("firmware_update_test") {
-  deps = [
-    "..:chai_assert",
-    "..:test_util",
-    "//ash/webui/common/resources:load_time_data.m",
-    "//ash/webui/firmware_update_ui/resources:fake_data",
-    "//ash/webui/firmware_update_ui/resources:fake_update_controller",
-    "//ash/webui/firmware_update_ui/resources:fake_update_provider",
-    "//ash/webui/firmware_update_ui/resources:firmware_update_app",
-    "//ash/webui/firmware_update_ui/resources:firmware_update_dialog",
-    "//ash/webui/firmware_update_ui/resources:firmware_update_types",
-    "//ash/webui/firmware_update_ui/resources:mojo_interface_provider",
-    "//ash/webui/firmware_update_ui/resources:update_card",
-  ]
-  externs_list = [
-    "$externs_path/mocha-2.5.js",
-    "//ui/webui/resources/cr_elements/cr_button/cr_button_externs.js",
-    "//ui/webui/resources/cr_elements/cr_dialog/cr_dialog_externs.js",
-  ]
-}
-
-js_library("peripheral_updates_list_test") {
-  deps = [
-    "..:chai_assert",
-    "..:test_util",
-    "//ash/webui/firmware_update_ui/resources:fake_data",
-    "//ash/webui/firmware_update_ui/resources:fake_update_provider",
-    "//ash/webui/firmware_update_ui/resources:firmware_update_types",
-    "//ash/webui/firmware_update_ui/resources:mojo_interface_provider",
-    "//ash/webui/firmware_update_ui/resources:peripheral_updates_list",
-    "//ash/webui/firmware_update_ui/resources:update_card",
-  ]
-  externs_list = [ "$externs_path/mocha-2.5.js" ]
-}
-
-js_library("update_card_test") {
-  deps = [
-    "..:chai_assert",
-    "..:test_util",
-    "//ash/webui/firmware_update_ui/resources:fake_data",
-    "//ash/webui/firmware_update_ui/resources:firmware_update_types",
-    "//ash/webui/firmware_update_ui/resources:update_card",
-  ]
-  externs_list = [ "$externs_path/mocha-2.5.js" ]
-}
-
-js_library("firmware_update_unified_test") {
 }

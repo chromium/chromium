@@ -28,6 +28,7 @@
 #include "third_party/blink/public/platform/web_text_input_type.h"
 #include "ui/base/ime/ime_text_span.h"
 
+using base::android::AppendJavaStringArrayToStringVector;
 using base::android::AttachCurrentThread;
 using base::android::ConvertJavaStringToUTF16;
 using base::android::ConvertUTF16ToJavaString;
@@ -248,11 +249,8 @@ void ImeAdapterAndroid::UpdateFrameInfo(
   if (obj.is_null())
     return;
 
-  // The CursorAnchorInfo API in Android only supports zero width selection
-  // bounds.
   const jboolean has_insertion_marker =
-      selection_start.type() == gfx::SelectionBound::CENTER ||
-      selection_start.type() == gfx::SelectionBound::HIDDEN;
+      selection_start.type() != gfx::SelectionBound::EMPTY;
   const jboolean is_insertion_marker_visible = selection_start.visible();
   const jfloat insertion_marker_horizontal =
       has_insertion_marker ? selection_start.edge_start().x() : 0.0f;
@@ -393,11 +391,11 @@ void ImeAdapterAndroid::FocusedNodeChanged(
   }
 }
 
-bool ImeAdapterAndroid::RequestStartStylusWriting() {
+bool ImeAdapterAndroid::ShouldInitiateStylusWriting() {
   JNIEnv* env = AttachCurrentThread();
   ScopedJavaLocalRef<jobject> obj = java_ime_adapter_.get(env);
   if (!obj.is_null()) {
-    return Java_ImeAdapterImpl_requestStartStylusWriting(env, obj);
+    return Java_ImeAdapterImpl_shouldInitiateStylusWriting(env, obj);
   }
   return false;
 }
@@ -478,7 +476,7 @@ void ImeAdapterAndroid::SetEditableSelectionOffsets(
 void ImeAdapterAndroid::SetBounds(
     const std::vector<gfx::Rect>& character_bounds,
     const bool character_bounds_changed,
-    const absl::optional<std::vector<gfx::Rect>>& line_bounds) {
+    const std::optional<std::vector<gfx::Rect>>& line_bounds) {
   if (!character_bounds_changed && !line_bounds.has_value()) {
     return;
   }

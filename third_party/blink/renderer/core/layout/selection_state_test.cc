@@ -5,11 +5,14 @@
 #include "third_party/blink/renderer/core/layout/selection_state.h"
 
 #include <sstream>
+
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/renderer/platform/testing/task_environment.h"
 
 namespace blink {
 
 TEST(SelectionStateTest, StreamOutput) {
+  test::TaskEnvironment task_environment;
   // Just explicitly sanity check a couple of values.
   {
     std::stringstream string_stream;

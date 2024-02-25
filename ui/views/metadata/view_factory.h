@@ -8,13 +8,13 @@
 #include <functional>
 #include <map>
 #include <memory>
+#include <optional>
 #include <utility>
 #include <vector>
 
 #include "base/functional/bind.h"
 #include "base/macros/concat.h"
 #include "base/memory/raw_ptr.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/class_property.h"
 #include "ui/base/metadata/base_type_conversion.h"
 #include "ui/views/metadata/view_factory_internal.h"
@@ -37,6 +37,8 @@ class BaseViewBuilderT : public internal::ViewBuilderCore {
   BaseViewBuilderT& operator=(BaseViewBuilderT&&) = default;
   ~BaseViewBuilderT() override = default;
 
+  // Schedule `after_build_callback` to run after View and its children have
+  // been constructed. Calling this multiple times will chain the callbacks.
   Builder& AfterBuild(AfterBuildCallback after_build_callback) & {
     // Allow multiple after build callbacks by chaining them.
     if (after_build_callback_) {
@@ -68,6 +70,9 @@ class BaseViewBuilderT : public internal::ViewBuilderCore {
     return std::move(this->CopyAddressTo(view_address));
   }
 
+  // Schedule `configure_callback` to run after the View is constructed and
+  // properties have been set. Calling this multiple times will chain the
+  // callbacks.
   Builder& CustomConfigure(ConfigureCallback configure_callback) & {
     // Allow multiple configure callbacks by chaining them.
     if (configure_callback_) {
@@ -90,7 +95,7 @@ class BaseViewBuilderT : public internal::ViewBuilderCore {
 
   template <typename Child>
   Builder& AddChild(Child&& child) & {
-    children_.emplace_back(std::make_pair(child.Release(), absl::nullopt));
+    children_.emplace_back(std::make_pair(child.Release(), std::nullopt));
     return *static_cast<Builder*>(this);
   }
 
@@ -208,7 +213,7 @@ class BaseViewBuilderT : public internal::ViewBuilderCore {
   Builder& AddChildrenImpl(Args*... args) & {
     std::vector<internal::ViewBuilderCore*> children = {args...};
     for (auto* child : children)
-      children_.emplace_back(std::make_pair(child->Release(), absl::nullopt));
+      children_.emplace_back(std::make_pair(child->Release(), std::nullopt));
     return *static_cast<Builder*>(this);
   }
 

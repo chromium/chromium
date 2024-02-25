@@ -31,13 +31,10 @@ class TestChromeBase {
   void CreatedBrowserMainPartsImpl(
       content::BrowserMainParts* browser_main_parts);
 
-  // Create fake ash browser main extra parts.
-  void CreateFakeAshTestChromeBrowserMainExtraParts();
-
  private:
   content::ContentMainParams params_;
-  raw_ptr<ChromeBrowserMainParts, DanglingUntriaged | ExperimentalAsh>
-      browser_main_parts_ = nullptr;
+  raw_ptr<ChromeBrowserMainParts, DanglingUntriaged> browser_main_parts_ =
+      nullptr;
   base::WeakPtrFactory<TestChromeBase> weak_ptr_factory_{this};
 };
 

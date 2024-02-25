@@ -105,7 +105,14 @@ void ArcNotificationItemImpl::OnUpdatedFromAndroid(
         base::UTF8ToUTF16(data->accessible_name.value());
   }
 
-  if (manager_->IsOpeningSettingsSupported() && !is_setting_shown) {
+  const bool render_on_chrome =
+      features::IsRenderArcNotificationsByChromeEnabled() &&
+      data->render_on_chrome;
+
+  if (render_on_chrome) {
+    rich_data.settings_button_handler =
+        message_center::SettingsButtonHandler::INLINE;
+  } else if (manager_->IsOpeningSettingsSupported() && !is_setting_shown) {
     rich_data.settings_button_handler =
         message_center::SettingsButtonHandler::DELEGATE;
   } else {
@@ -113,11 +120,8 @@ void ArcNotificationItemImpl::OnUpdatedFromAndroid(
         message_center::SettingsButtonHandler::NONE;
   }
 
-  bool is_snooze_supported =
-      (data->flags && (data->flags->value &
-                       arc::mojom::ArcNotificationFlags::SUPPORT_SNOOZE) != 0);
-  rich_data.should_show_snooze_button =
-      is_snooze_supported && !is_setting_shown;
+  // TODO(b/313723218): Enable snooze on Chrome rendered ARC notifications.
+  rich_data.should_show_snooze_button = false;
 
   message_center::NotifierId notifier_id(
       message_center::NotifierType::ARC_APPLICATION,
@@ -128,47 +132,21 @@ void ArcNotificationItemImpl::OnUpdatedFromAndroid(
     notifier_id.group_key = data->group_key;
   }
 
-  const bool render_on_chrome =
-      features::IsRenderArcNotificationsByChromeEnabled() &&
-      data->render_on_chrome;
-
-  const auto notification_type =
+  auto notification_type =
       render_on_chrome
-          ? ((data->indeterminate_progress || data->progress_max != -1)
-                 ? message_center::NOTIFICATION_TYPE_PROGRESS
-                 : message_center::NOTIFICATION_TYPE_SIMPLE)
+          ? (data->messages
+                 ? message_center::NOTIFICATION_TYPE_CONVERSATION
+                 : ((data->indeterminate_progress || data->progress_max != -1)
+                        ? message_center::NOTIFICATION_TYPE_PROGRESS
+                        : message_center::NOTIFICATION_TYPE_SIMPLE))
           : message_center::NOTIFICATION_TYPE_CUSTOM;
-
-  rich_data.progress = std::clamp(
-      static_cast<int>(std::round(static_cast<float>(data->progress_current) /
-                                  data->progress_max * 100)),
-      -1, 100);
-
-  // Add buttons to Chrome rendered ARC notifications only, as ARC rendered
-  // notifications already have buttons.
-  if (render_on_chrome && data->buttons) {
-    const auto& buttons = *data->buttons;
-    for (size_t i = 0; i < buttons.size(); ++i) {
-      const auto& button = buttons[i];
-      const auto button_label = button->label;
-      message_center::ButtonInfo rich_data_button;
-      rich_data_button.title = base::UTF8ToUTF16(button_label);
-
-      if (i == static_cast<size_t>(data->reply_button_index)) {
-        rich_data_button.placeholder =
-            button->buttonPlaceholder.has_value()
-                ? base::UTF8ToUTF16(button->buttonPlaceholder.value())
-                : std::u16string();
-      }
-      rich_data.buttons.emplace_back(rich_data_button);
-    }
-  }
 
   auto notification = CreateNotificationFromArcNotificationData(
       notification_type, notification_id_, data.get(), notifier_id, rich_data,
       new ArcNotificationDelegate(weak_ptr_factory_.GetWeakPtr()));
 
-  notification->set_timestamp(base::Time::FromJavaTime(data->time));
+  notification->set_timestamp(
+      base::Time::FromMillisecondsSinceUnixEpoch(data->time));
 
   if (notification_type == message_center::NOTIFICATION_TYPE_CUSTOM) {
     notification->set_custom_view_type(kArcNotificationCustomViewType);

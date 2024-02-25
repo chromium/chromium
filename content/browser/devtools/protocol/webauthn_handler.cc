@@ -75,7 +75,7 @@ class GetCredentialCallbackAggregator
       const GetCredentialCallbackAggregator&) = delete;
 
   void OnLargeBlob(std::unique_ptr<WebAuthn::Credential> credential,
-                   const absl::optional<std::vector<uint8_t>>& blob) {
+                   const std::optional<std::vector<uint8_t>>& blob) {
     if (blob) {
       credential->SetLargeBlob(Binary::fromVector(*blob));
     }
@@ -101,13 +101,13 @@ device::ProtocolVersion ConvertToProtocolVersion(base::StringPiece protocol) {
   return device::ProtocolVersion::kUnknown;
 }
 
-absl::optional<device::Ctap2Version> ConvertToCtap2Version(
+std::optional<device::Ctap2Version> ConvertToCtap2Version(
     base::StringPiece version) {
   if (version == WebAuthn::Ctap2VersionEnum::Ctap2_0)
     return device::Ctap2Version::kCtap2_0;
   if (version == WebAuthn::Ctap2VersionEnum::Ctap2_1)
     return device::Ctap2Version::kCtap2_1;
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 std::vector<uint8_t> CopyBinaryToVector(const Binary& binary) {
@@ -123,6 +123,8 @@ std::unique_ptr<WebAuthn::Credential> BuildCredentialFromRegistration(
                             registration->private_key->GetPKCS8PrivateKey()))
                         .SetSignCount(registration->counter)
                         .SetIsResidentCredential(registration->is_resident)
+                        .SetBackupEligibility(registration->backup_eligible)
+                        .SetBackupState(registration->backup_state)
                         .Build();
 
   if (registration->rp)
@@ -238,6 +240,10 @@ Response WebAuthnHandler::AddVirtualAuthenticator(
       virt_auth_options->has_cred_blob = has_cred_blob;
       virt_auth_options->has_min_pin_length = has_min_pin_length;
       virt_auth_options->has_prf = has_prf;
+      virt_auth_options->default_backup_eligibility =
+          options->GetDefaultBackupEligibility(/*defaultValue=*/false);
+      virt_auth_options->default_backup_state =
+          options->GetDefaultBackupState(/*defaultValue=*/false);
       break;
     case device::ProtocolVersion::kUnknown:
       NOTREACHED();
@@ -373,6 +379,18 @@ void WebAuthnHandler::AddCredential(
     return;
   }
 
+  // VirtualFidoDevice takes care of setting BE & BS flags to the default
+  // authenticator values whenever a new credential is created. Only override
+  // the values if the client specified them.
+  if (credential->HasBackupEligibility()) {
+    authenticator->SetBackupEligibility(
+        credential_id, credential->GetBackupEligibility(/*unused*/ false));
+  }
+  if (credential->HasBackupState()) {
+    authenticator->SetBackupState(credential_id,
+                                  credential->GetBackupState(/*unused*/ false));
+  }
+
   callback->sendSuccess();
 }
 
@@ -399,7 +417,7 @@ void WebAuthnHandler::GetCredential(
       base::BindOnce(
           [](std::unique_ptr<WebAuthn::Credential> registration,
              std::unique_ptr<GetCredentialCallback> callback,
-             const absl::optional<std::vector<uint8_t>>& blob) {
+             const std::optional<std::vector<uint8_t>>& blob) {
             if (blob) {
               registration->SetLargeBlob(Binary::fromVector(*blob));
             }
@@ -475,6 +493,33 @@ Response WebAuthnHandler::SetAutomaticPresenceSimulation(
     return response;
 
   authenticator->SetUserPresence(enabled);
+  return Response::Success();
+}
+
+Response WebAuthnHandler::SetCredentialProperties(
+    const String& authenticator_id,
+    const Binary& in_credential_id,
+    Maybe<bool> backup_eligibility,
+    Maybe<bool> backup_state) {
+  VirtualAuthenticator* authenticator;
+  Response response = FindAuthenticator(authenticator_id, &authenticator);
+  if (!response.IsSuccess()) {
+    return response;
+  }
+
+  std::vector<uint8_t> credential_id = CopyBinaryToVector(in_credential_id);
+  auto registration = authenticator->registrations().find(credential_id);
+  if (registration == authenticator->registrations().end()) {
+    return Response::InvalidParams(kCredentialNotFound);
+  }
+
+  if (backup_eligibility.has_value()) {
+    authenticator->SetBackupEligibility(credential_id,
+                                        backup_eligibility.value());
+  }
+  if (backup_state.has_value()) {
+    authenticator->SetBackupState(credential_id, backup_state.value());
+  }
   return Response::Success();
 }
 

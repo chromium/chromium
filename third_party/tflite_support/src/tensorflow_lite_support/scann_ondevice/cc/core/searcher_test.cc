@@ -21,8 +21,8 @@ limitations under the License.
 #include <utility>
 
 #include <glog/logging.h>
-#include "Eigen/Core"                    // from @eigen
 #include "absl/synchronization/mutex.h"  // from @com_google_absl
+#include "Eigen/Core"  // from @eigen
 #include "tensorflow_lite_support/cc/port/gmock.h"
 #include "tensorflow_lite_support/cc/port/gtest.h"
 #include "tensorflow_lite_support/cc/port/integral_types.h"
@@ -520,10 +520,9 @@ TEST_P(SearcherTest, AsymmetricHashMiniBatchedSimdFail) {
 }
 #endif
 
-INSTANTIATE_TEST_SUITE_P(
-    SearcherTest,
-    SearcherTest,
-    Values(std::numeric_limits<size_t>::max(), 1, 2, 3, 7, 23));
+INSTANTIATE_TEST_SUITE_P(SearcherTest, SearcherTest,
+                         Values(std::numeric_limits<size_t>::max(), 1, 2, 3, 7,
+                                23));
 
 }  // namespace
 

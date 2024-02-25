@@ -4,10 +4,7 @@
 
 #include "ash/wallpaper/online_wallpaper_manager.h"
 
-#include <memory>
-
 #include "ash/public/cpp/image_util.h"
-#include "ash/public/cpp/wallpaper/online_wallpaper_params.h"
 #include "ash/public/cpp/wallpaper/online_wallpaper_variant.h"
 #include "ash/shell.h"
 #include "ash/wallpaper/wallpaper_constants.h"
@@ -19,172 +16,44 @@
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
-#include "base/location.h"
-#include "base/memory/scoped_refptr.h"
-#include "base/sequence_checker.h"
-#include "base/task/bind_post_task.h"
-#include "base/task/task_traits.h"
-#include "base/task/thread_pool.h"
 #include "components/account_id/account_id.h"
 #include "ui/gfx/image/image.h"
 #include "ui/gfx/image/image_util.h"
 
 namespace ash {
 
-namespace {
-
-// *****************************************************************************
-// File Operations
-// *****************************************************************************
-
-// Returns the file path of the wallpaper corresponding to `url` and the
-// `resolution` from `wallpaper_dir` if it exists in local file system,
-// otherwise returns an empty file path. Runs on `sequenced_task_runner_`
-// thread.
-base::FilePath GetExistingOnlineWallpaperPath(
-    const base::FilePath& wallpaper_dir,
-    const GURL& url,
-    WallpaperResolution resolution) {
-  base::FilePath wallpaper_path =
-      GetOnlineWallpaperPath(wallpaper_dir, url, resolution);
-  if (base::PathExists(wallpaper_path)) {
-    return wallpaper_path;
-  }
-
-  // Falls back to the large wallpaper if the small one doesn't exist.
-  if (resolution == WallpaperResolution::kSmall) {
-    wallpaper_path =
-        GetOnlineWallpaperPath(wallpaper_dir, url, WallpaperResolution::kLarge);
-    if (base::PathExists(wallpaper_path)) {
-      return wallpaper_path;
-    }
-  }
-  return base::FilePath();
-}
-
-// Saves the online wallpaper with both large and small sizes to local file
-// system. Runs on `sequenced_task_runner_` thread.
-void SaveToDiskBlocking(const base::FilePath& wallpaper_dir,
-                        const GURL& url,
-                        WallpaperLayout layout,
-                        const gfx::ImageSkia& image) {
-  if (!base::DirectoryExists(wallpaper_dir) &&
-      !base::CreateDirectory(wallpaper_dir)) {
-    LOG(ERROR) << "Failed to create directory for online wallpaper: "
-               << wallpaper_dir;
-    return;
-  }
-  ResizeAndSaveWallpaper(
-      image,
-      GetOnlineWallpaperPath(wallpaper_dir, url, WallpaperResolution::kLarge),
-      layout, image.width(), image.height());
-  ResizeAndSaveWallpaper(
-      image,
-      GetOnlineWallpaperPath(wallpaper_dir, url, WallpaperResolution::kSmall),
-      WALLPAPER_LAYOUT_CENTER_CROPPED, kSmallWallpaperMaxWidth,
-      kSmallWallpaperMaxHeight);
-}
-
-// Reads the image from the given `file_path`. Runs on `sequenced_task_runner_`
-// thread.
-scoped_refptr<base::RefCountedMemory> ReadFile(
-    const base::FilePath& file_path) {
-  if (file_path.empty()) {
-    return nullptr;
-  }
-
-  std::string data;
-  if (!base::ReadFileToString(file_path, &data)) {
-    return nullptr;
-  }
-  return base::MakeRefCounted<base::RefCountedString>(std::move(data));
-}
-
-}  // namespace
-
-// This method is thread safe.
-base::FilePath GetOnlineWallpaperPath(const base::FilePath& wallpaper_dir,
-                                      const GURL& url,
-                                      WallpaperResolution resolution) {
-  std::string file_name = url.ExtractFileName();
-  if (resolution == WallpaperResolution::kSmall) {
-    file_name =
-        base::FilePath(file_name)
-            .InsertBeforeExtension(wallpaper_constants::kSmallWallpaperSuffix)
-            .value();
-  }
-  DCHECK(!wallpaper_dir.empty());
-  return wallpaper_dir.Append(file_name);
-}
-
 OnlineWallpaperManager::OnlineWallpaperManager(
-    WallpaperImageDownloader* wallpaper_image_downloader)
+    WallpaperImageDownloader* wallpaper_image_downloader,
+    WallpaperFileManager* wallpaper_file_manager)
     : wallpaper_image_downloader_(wallpaper_image_downloader),
-      sequenced_task_runner_(base::ThreadPool::CreateSequencedTaskRunner(
-          {base::MayBlock(), base::TaskPriority::USER_VISIBLE,
-           base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN})) {}
+      wallpaper_file_manager_(wallpaper_file_manager) {}
 
 OnlineWallpaperManager::~OnlineWallpaperManager() = default;
 
-void OnlineWallpaperManager::LoadOnlineWallpaper(
+void OnlineWallpaperManager::GetOnlineWallpaper(
     const base::FilePath& wallpaper_dir,
-    const GURL& url,
+    const AccountId& account_id,
+    const WallpaperInfo& wallpaper_info,
     LoadOnlineWallpaperCallback callback) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  WallpaperResolution resolution = GetAppropriateResolution();
-  sequenced_task_runner_->PostTaskAndReplyWithResult(
-      FROM_HERE,
-      base::BindOnce(&GetExistingOnlineWallpaperPath, wallpaper_dir, url,
-                     resolution),
-      base::BindOnce(&OnlineWallpaperManager::LoadFromDisk,
-                     weak_factory_.GetWeakPtr(), std::move(callback)));
-}
-
-void OnlineWallpaperManager::DownloadAndSaveOnlineWallpaper(
-    const base::FilePath& wallpaper_dir,
-    const OnlineWallpaperParams& params,
-    LoadOnlineWallpaperCallback callback) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   auto on_load = base::BindOnce(
       &OnlineWallpaperManager::OnLoadExistingOnlineWallpaperComplete,
-      weak_factory_.GetWeakPtr(), wallpaper_dir, params, std::move(callback));
-  LoadOnlineWallpaper(wallpaper_dir, params.url, std::move(on_load));
-}
-
-void OnlineWallpaperManager::LoadOnlineWallpaperPreview(
-    const base::FilePath& wallpaper_dir,
-    const GURL& preview_url,
-    LoadPreviewImageCallback callback) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  base::FilePath preview_image_path = GetOnlineWallpaperPath(
-      wallpaper_dir, preview_url, GetAppropriateResolution());
-  // Uses `sequenced_task_runner_` to ensure that the wallpaper is saved
-  // successfully before one of its variants is used as the preview image.
-  sequenced_task_runner_->PostTaskAndReplyWithResult(
-      FROM_HERE, base::BindOnce(&ReadFile, preview_image_path),
+      weak_factory_.GetWeakPtr(), wallpaper_dir, account_id, wallpaper_info,
       std::move(callback));
-}
-
-void OnlineWallpaperManager::LoadFromDisk(LoadOnlineWallpaperCallback callback,
-                                          const base::FilePath& file_path) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  bool file_exists = !file_path.empty();
-  if (!file_exists) {
-    std::move(callback).Run(gfx::ImageSkia());
-    return;
-  }
-  image_util::DecodeImageFile(std::move(callback), file_path);
+  wallpaper_file_manager_->LoadWallpaper(wallpaper_info.type, wallpaper_dir,
+                                         wallpaper_info.location,
+                                         std::move(on_load));
 }
 
 void OnlineWallpaperManager::OnLoadExistingOnlineWallpaperComplete(
     const base::FilePath& wallpaper_dir,
-    const OnlineWallpaperParams& params,
+    const AccountId& account_id,
+    const WallpaperInfo& wallpaper_info,
     LoadOnlineWallpaperCallback callback,
     const gfx::ImageSkia& image) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(callback);
   if (image.isNull()) {
-    DownloadAndSaveAllVariants(wallpaper_dir, params, std::move(callback));
+    DownloadAndSaveAllVariants(wallpaper_dir, account_id, wallpaper_info,
+                               std::move(callback));
   } else {
     std::move(callback).Run(image);
   }
@@ -192,17 +61,17 @@ void OnlineWallpaperManager::OnLoadExistingOnlineWallpaperComplete(
 
 void OnlineWallpaperManager::DownloadAndSaveAllVariants(
     const base::FilePath& wallpaper_dir,
-    const OnlineWallpaperParams& params,
+    const AccountId& account_id,
+    const WallpaperInfo& wallpaper_info,
     LoadOnlineWallpaperCallback callback) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  std::vector<OnlineWallpaperVariant> variants = params.variants;
+  std::vector<OnlineWallpaperVariant> variants = wallpaper_info.variants;
   if (variants.empty()) {
     // `variants` can be empty for users who have just migrated from the old
     // wallpaper picker to the new one.
     //
     // OnlineWallpaperVariant's `asset_id` and `type` are not actually used in
     // this function, so they can have dummy values here.
-    variants.emplace_back(/*asset_id=*/0, params.url,
+    variants.emplace_back(/*asset_id=*/0, GURL(wallpaper_info.location),
                           backdrop::Image::IMAGE_TYPE_UNKNOWN);
   }
 
@@ -222,11 +91,13 @@ void OnlineWallpaperManager::DownloadAndSaveAllVariants(
                      std::move(callback)));
   for (const OnlineWallpaperVariant& variant : variants) {
     wallpaper_image_downloader_->DownloadBackdropImage(
-        variant.raw_url, params.account_id,
+        variant.raw_url, account_id,
         base::BindOnce(
             &OnlineWallpaperManager::OnVariantDownloaded,
-            weak_factory_.GetWeakPtr(), wallpaper_dir, variant.raw_url,
-            params.layout, /*is_target_variant=*/params.url == variant.raw_url,
+            weak_factory_.GetWeakPtr(), wallpaper_info.type, wallpaper_dir,
+            variant.raw_url, wallpaper_info.layout,
+            /*is_target_variant=*/wallpaper_info.location ==
+                variant.raw_url.spec(),
             // Since `downloads_result`'s lifetime matches the
             // OnAllVariantsDownloaded() callback, and OnAllVariantsDownloaded()
             // is guaranteed to be run after OnVariantDownloaded(), there's no
@@ -239,7 +110,6 @@ void OnlineWallpaperManager::DownloadAndSaveAllVariants(
 void OnlineWallpaperManager::OnAllVariantsDownloaded(
     std::unique_ptr<VariantsDownloadResult> downloads_result,
     LoadOnlineWallpaperCallback callback) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(downloads_result);
   // Due to the order of variants being downloaded, `target_variant` may have
   // been set when others fail to download. To ensure it's all or nothing, we
@@ -251,6 +121,7 @@ void OnlineWallpaperManager::OnAllVariantsDownloaded(
 }
 
 void OnlineWallpaperManager::OnVariantDownloaded(
+    WallpaperType type,
     const base::FilePath& wallpaper_dir,
     const GURL& variant_url,
     WallpaperLayout layout,
@@ -258,7 +129,6 @@ void OnlineWallpaperManager::OnVariantDownloaded(
     VariantsDownloadResult* downloads_result,
     base::RepeatingClosure on_done,
     const gfx::ImageSkia& image) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(downloads_result);
   if (image.isNull()) {
     LOG(WARNING) << "Image download failed";
@@ -267,26 +137,17 @@ void OnlineWallpaperManager::OnVariantDownloaded(
     return;
   }
 
-  gfx::ImageSkia image_to_save = image;
   if (is_target_variant) {
-    image.EnsureRepsForSupportedScales();
-    // If this is the target variant, the `image` will get passed back to the
-    // caller, who may mutate the underlying image's memory somehow.
-    // SaveToDiskBlocking() may also mutate the image before saving it, so it
-    // would be problematic if both operated on the same underlying image
-    // memory. To completely avoid this, pass a separate deep copy to
-    // SaveToDiskBlocking().
-    image_to_save = image.DeepCopy();
     downloads_result->target_variant = image;
   }
 
-  // Posts a task of saving the image to disk via `sequenced_task_runner_` to
-  // ensure the operation order is maintain. It is important this task is
-  // executed before loading the preview image to make sure the files have been
-  // saved on disk.
-  sequenced_task_runner_->PostTask(
-      FROM_HERE, base::BindOnce(&SaveToDiskBlocking, wallpaper_dir, variant_url,
-                                layout, std::move(image_to_save)));
+  // Using wallpaper_file_manager_->SaveWallpaperToDisk() to post a task of
+  // saving the image to disk via `blocking_task_runner_` to ensure the
+  // operation order is maintained. It is important this task is executed before
+  // loading the preview image to make sure the files have been saved on disk.
+  wallpaper_file_manager_->SaveWallpaperToDisk(
+      type, wallpaper_dir, variant_url.ExtractFileName(), layout, image);
+
   std::move(on_done).Run();
 }
 

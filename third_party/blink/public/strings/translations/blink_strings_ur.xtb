@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="ur">
+<translation id="1012241361789814178">ڈیبگر کو دوسرے ٹیب میں روک دیا گیا، اس ٹیب پر سوئچ کرنے کے لیے کلک کریں۔</translation>
 <translation id="1088086359088493902">سیکنڈ</translation>
 <translation id="1142001580032786438">ہفتہ منتخب کرنے والا دکھائيں</translation>
 <translation id="1171774979989969504">براہ کرم ایک ای میل پتہ درج کریں۔</translation>
@@ -16,6 +17,7 @@
 <translation id="1729654308190250600">براہ کرم ایک غیر خالی ای میل پتہ درج کریں</translation>
 <translation id="1758486001363313524">دیگر…</translation>
 <translation id="1787192514241997742">کل وقت: <ph name="REMAINING_TIME" /></translation>
+<translation id="1800494066469288780">کیمرے کی اجازت دیں</translation>
 <translation id="1822429046913737220">AM/PM</translation>
 <translation id="1832974991323546415">ریموٹ آلہ پر چلائیں</translation>
 <translation id="1921819250265091946">dd</translation>
@@ -24,10 +26,12 @@
 <translation id="1993104285338243655">مررنگ میں سوئچ ہو گیا</translation>
 <translation id="2031987842108996681">سرخ چینل</translation>
 <translation id="2060505056492490888">'<ph name="DOT" />' کا استعمال '<ph name="INVALIDDOMAIN" />' میں ایک غلط پوزیشن پر ہوا ہے۔</translation>
+<translation id="2068711044993563745">کم از کم قدر (<ph name="MINIMUM" />) زیادہ سے زیادہ قدر (<ph name="MAXIMUM" />) سے کم ہونی چاہیے۔</translation>
 <translation id="2148716181193084225">آج</translation>
 <translation id="2226276347425096477">براہ کرم اس متن کو مختصر کر کے <ph name="MAX_CHARACTERS" /> یا اس سے کم حروف تک لائیں (آپ فی الحال <ph name="CURRENT_LENGTH" /> حروف استعمال کر رہے ہیں)۔</translation>
 <translation id="2247351761944213033">ہفتہ <ph name="WEEKNUMBER" />، <ph name="YEAR" /></translation>
 <translation id="2277199496770840904"><ph name="NUMBER" /> کو ٹریک کریں</translation>
+<translation id="2353297238722298836">کیمرا اور مائیکروفون اجازت یافتہ ہے</translation>
 <translation id="2393030564806080191">رنگ کی ہیگسا ڈیسیمل قدر</translation>
 <translation id="2398813069815436052">ڈائیلاگ کھولا گیا۔</translation>
 <translation id="245932805758469625">ویڈیو کے باقی بچے سیکنڈز کی تعداد</translation>
@@ -44,11 +48,13 @@
 <translation id="2761667185364618470">اگر آپ آگے بڑھنا چاہتے ہیں تو براہ کرم یہ باکس نشان زد کریں۔</translation>
 <translation id="2908441821576996758">براہ کرم کوما سے الگ کردہ ای میل پتوں کی ایک فہرست درج کریں۔</translation>
 <translation id="3049748772180311791">‎<ph name="QUANTITY" /> MB</translation>
+<translation id="3053226512517284904">آڈیو کی تفصیلات کا مینیو دکھائیں</translation>
 <translation id="3075154866155599887">براہ کرم ایک درست قدر درج کریں۔ فیلڈ نامکمل ہے یا اس میں غلط تاریخ ہے۔</translation>
 <translation id="310520048233152454">‏براہ کرم ایک URL درج کریں۔</translation>
 <translation id="3220661731597678625">موجودہ قدم</translation>
 <translation id="3321030238473337787">پلے بیک کی رفتار</translation>
 <translation id="3329013043687509092">سیرابی</translation>
+<translation id="3377518164566272702">مائیکروفون اور کیمرے کی اجازت دیں</translation>
 <translation id="3450233048674729344">قدر <ph name="MAXIMUM" /> سے کم یا اس کے برابر ہونی چاہیے۔</translation>
 <translation id="3732799496749320381">mm</translation>
 <translation id="3754210790023674521">تصویر میں تصویر سے باہر نکلیں</translation>
@@ -56,14 +62,17 @@
 <translation id="3822383571486410024">براہ کرم اس متن کو <ph name="MIN_CHARACTERS" /> حروف یا زیادہ تک بڑھائیں (آپ فی الحال <ph name="CURRENT_LENGTH" /> حروف استعمال کر رہے ہیں)۔</translation>
 <translation id="383465348367842624">'<ph name="ATSIGN" />' کے بعد ایک حصہ میں علامت '<ph name="INVALIDCHARACTER" />' شامل نہیں ہونی چاہیے۔</translation>
 <translation id="3846214748874656680">پوری اسکرین سے باہر نکلیں</translation>
+<translation id="4031179711345676612">مائیکروفون اجازت یافتہ ہے</translation>
 <translation id="4103419683916926126">ملی سیکنڈز</translation>
 <translation id="4201051445878709314">پچھلا مہینہ دکھائیں</translation>
 <translation id="4360991593054037559">براہ کرم ایک درست قدر درج کریں۔ دو قریب ترین درست اقدار <ph name="VALID_VALUE_LOW" /> اور <ph name="VALID_VALUE_HIGHER" /> ہیں۔</translation>
 <translation id="4522570452068850558">تفصیلات</translation>
+<translation id="4663373278480897665">کیمرا اجازت یافتہ ہے</translation>
 <translation id="4664250907885839816">'<ph name="ATSIGN" />' کے بعد کے حصہ میں علامت '<ph name="INVALIDCHARACTER" />' شامل نہیں ہونی چاہیے۔</translation>
 <translation id="4718048029184481307">تصویر میں تصویر چلائی جا رہی ہے</translation>
 <translation id="4748357248530471599">ڈسپلے کٹ آؤٹ فل اسکرین ٹوگل کریں</translation>
 <translation id="4763480195061959176">ویڈیو</translation>
+<translation id="4792862212177489858">مقام کا اشتراک کریں</translation>
 <translation id="4812940957355064477">براہ کرم ایک نمبر درج کریں۔</translation>
 <translation id="4912200001568447310">موجودہ آئٹم</translation>
 <translation id="4915360478455618802">وقت منتخب کرنے والا دکھائیں</translation>
@@ -73,6 +82,7 @@
 <translation id="4975562563186953947"><ph name="SELECTED_COUNT" /> منتخب کر لیا گیا</translation>
 <translation id="4992066212339426712">آواز چلائیں</translation>
 <translation id="49969490063480558">براہ کرم '<ph name="ATSIGN" />' کے بعد ایک حصہ درج کریں۔ '<ph name="INVALIDADDRESS" />' نامکمل ہے۔</translation>
+<translation id="5037575921016181960">مضبوط پاس ورڈ</translation>
 <translation id="5090250355906949916">ویڈیو ٹائم اسکربر</translation>
 <translation id="509897012892853729">نیلا چینل</translation>
 <translation id="5117590920725113268">اگلا مہینہ دکھائیں</translation>
@@ -131,6 +141,7 @@
 <translation id="6941933287844615239">میڈیا ڈاؤن لوڈ کریں</translation>
 <translation id="698788488269350478">پھیلایا گیا۔</translation>
 <translation id="6989848892321993519">براہ کرم اس متن کو <ph name="MIN_CHARACTERS" /> حروف یا اس سے زیادہ تک بڑھائیں (آپ فی الحال 1 حرف استعمال کر رہے ہیں)۔</translation>
+<translation id="7080893216867146095">مقام کے اشتراک کی اجازت ہے</translation>
 <translation id="709897737746224366">براہ کرم مطلوبہ فارمیٹ کا مماثل بنائیں۔</translation>
 <translation id="7102274145889307184">موجودہ مقام</translation>
 <translation id="7263440858009898357">براہ کرم فہرست میں ایک آئٹم منتخب کریں۔</translation>
@@ -177,6 +188,7 @@
 <translation id="9132465097189459683">دیگر…</translation>
 <translation id="9155987714137265666"><ph name="WEEK" />، <ph name="WEEK_START_DATE" /> سے</translation>
 <translation id="916607977885256133">تصویر میں تصویر</translation>
+<translation id="918430632320614861">مائیکروفون کی اجازت دیں</translation>
 <translation id="945780513535800434">جزوی طور پر نشان زد</translation>
 <translation id="954003015749068518">'تصویر میں تصویر' میں داخل ہوں</translation>
 </translationbundle>

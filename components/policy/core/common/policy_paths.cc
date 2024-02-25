@@ -15,6 +15,8 @@ namespace policy {
 #if BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_MAC)
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
 const char kPolicyPath[] = "/etc/opt/chrome/policies";
+#elif BUILDFLAG(GOOGLE_CHROME_FOR_TESTING_BRANDING)
+const char kPolicyPath[] = "/etc/opt/chrome_for_testing/policies";
 #else
 const char kPolicyPath[] = "/etc/chromium/policies";
 #endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)

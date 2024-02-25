@@ -63,7 +63,7 @@ class MEDIA_EXPORT AudioOutputDeviceThreadCallback
   const base::TimeTicks create_time_;
 
   // If set, used to record the startup duration UMA stat.
-  absl::optional<base::TimeTicks> first_play_start_time_;
+  std::optional<base::TimeTicks> first_play_start_time_;
 
   AudioDeviceStatsReporter stats_reporter_;
 };

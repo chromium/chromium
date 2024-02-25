@@ -1,0 +1,30 @@
+[
+  {
+    "note": "TODO(http://crbug.com/106682): Flag this with can_be_recommended when bug is fixed.",
+    "os": [
+      "win",
+      "linux",
+      "mac",
+      "chromeos_ash",
+      "chromeos_lacros",
+      "android",
+      "fuchsia"
+    ],
+    "policy_pref_mapping_tests": [
+      {
+        "policies": {
+          "JavaScriptJitAllowedForSites": [
+            "[*.]google.com"
+          ]
+        },
+        "prefs": {
+          "profile.managed_javascript_jit_allowed_for_sites": {
+            "value": [
+              "[*.]google.com"
+            ]
+          }
+        }
+      }
+    ]
+  }
+]

@@ -153,7 +153,7 @@ class HammerdClientImpl : public HammerdClient {
       observer.InvalidBaseConnected();
   }
 
-  raw_ptr<dbus::ObjectProxy, ExperimentalAsh> bus_proxy_ = nullptr;
+  raw_ptr<dbus::ObjectProxy> bus_proxy_ = nullptr;
   base::ObserverList<Observer>::Unchecked observers_;
 
   base::WeakPtrFactory<HammerdClientImpl> weak_ptr_factory_{this};

@@ -1,0 +1,43 @@
+// Copyright 2023 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = "proto3";
+
+option optimize_for = LITE_RUNTIME;
+option java_package = "org.chromium.components.optimization_guide.proto";
+
+option java_outer_classname = "ModelQualityServiceProto";
+
+package optimization_guide.proto;
+
+import "components/optimization_guide/proto/model_quality_metadata.proto";
+import "components/optimization_guide/proto/features/default.proto";
+import "components/optimization_guide/proto/features/compose.proto";
+import "components/optimization_guide/proto/features/tab_organization.proto";
+import "components/optimization_guide/proto/features/wallpaper_search.proto";
+
+// A request to send AI data logs to the model quality server. Data logging for
+// an AI feature with metadata specific to the logging.
+message LogAiDataRequest {
+  // Information about a feature's AiLoggingData, such as training opt-outs.
+  LoggingMetadata logging_metadata = 1;
+
+  // Model execution data corresponding to the AiLoggingData of a feature.
+  ModelExecutionInfo model_execution_info = 2;
+
+  oneof feature {
+    // Add feature specific LoggingData here.
+    ComposeLoggingData compose = 3;
+
+    TabOrganizationLoggingData tab_organization = 4;
+
+    WallpaperSearchLoggingData wallpaper_search = 5;
+
+    DefaultLoggingData default = 1000;
+  }
+}
+
+// This is the response from the server.
+// TODO(b/301302386): Send an error message or a status code from the server.
+message LogAiDataResponse {}

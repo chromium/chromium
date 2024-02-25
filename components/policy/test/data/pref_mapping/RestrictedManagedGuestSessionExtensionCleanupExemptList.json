@@ -1,0 +1,33 @@
+[
+  {
+    "os": [
+      "chromeos_ash"
+    ],
+    "policy_pref_mapping_tests": [
+      {
+        "policies": {},
+        "prefs": {
+          "restricted_managed_guest_session_extension_cleanup_exempt_list": {
+            "default_value": []
+          }
+        }
+      },
+      {
+        "policies": {
+          "RestrictedManagedGuestSessionExtensionCleanupExemptList": [
+            "abcdefghijklmnopabcdefghijklmnop",
+            "bcdefghijklmnopabcdefghijklmnopa"
+          ]
+        },
+        "prefs": {
+          "restricted_managed_guest_session_extension_cleanup_exempt_list": {
+            "value": [
+              "abcdefghijklmnopabcdefghijklmnop",
+              "bcdefghijklmnopabcdefghijklmnopa"
+            ]
+          }
+        }
+      }
+    ]
+  }
+]

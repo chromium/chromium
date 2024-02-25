@@ -45,9 +45,7 @@ import org.chromium.ui.widget.TextViewWithLeading;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.atomic.AtomicReference;
 
-/**
- * View tests for the password accessory sheet.
- */
+/** View tests for the password accessory sheet. */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 public class AccessorySheetTabViewTest {
@@ -60,42 +58,61 @@ public class AccessorySheetTabViewTest {
     /**
      * This helper method inflates the accessory sheet and loads the given layout as minimalistic
      * Tab. The passed callback then allows access to the inflated layout.
+     *
      * @param layout The layout to be inflated.
      * @param listener Is called with the inflated layout when the Accessory Sheet initializes it.
      */
     private void openLayoutInAccessorySheet(
             @LayoutRes int layout, KeyboardAccessoryData.Tab.Listener listener) {
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            mModel = new AccessorySheetTabItemsModel();
-            AccessorySheetCoordinator accessorySheet =
-                    new AccessorySheetCoordinator(mActivityTestRule.getActivity().findViewById(
-                                                          R.id.keyboard_accessory_sheet_stub),
-                            null);
-            accessorySheet.setTabs(new KeyboardAccessoryData.Tab[] {new KeyboardAccessoryData.Tab(
-                    "Passwords", null, null, layout, AccessoryTabType.ALL, listener)});
-            accessorySheet.setHeight(
-                    mActivityTestRule.getActivity().getResources().getDimensionPixelSize(
-                            R.dimen.keyboard_accessory_sheet_height));
-            accessorySheet.show();
-        });
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    mModel = new AccessorySheetTabItemsModel();
+                    AccessorySheetCoordinator accessorySheet =
+                            new AccessorySheetCoordinator(
+                                    mActivityTestRule
+                                            .getActivity()
+                                            .findViewById(R.id.keyboard_accessory_sheet_stub),
+                                    null);
+                    accessorySheet.setTabs(
+                            new KeyboardAccessoryData.Tab[] {
+                                new KeyboardAccessoryData.Tab(
+                                        "Passwords",
+                                        null,
+                                        null,
+                                        layout,
+                                        AccessoryTabType.ALL,
+                                        listener)
+                            });
+                    accessorySheet.setHeight(
+                            mActivityTestRule
+                                    .getActivity()
+                                    .getResources()
+                                    .getDimensionPixelSize(
+                                            R.dimen.keyboard_accessory_sheet_height));
+                    accessorySheet.show();
+                });
     }
 
     @Before
     public void setUp() throws InterruptedException {
         mActivityTestRule.startMainActivityOnBlankPage();
         openLayoutInAccessorySheet(
-                R.layout.password_accessory_sheet, new KeyboardAccessoryData.Tab.Listener() {
+                R.layout.password_accessory_sheet,
+                new KeyboardAccessoryData.Tab.Listener() {
                     @Override
                     public void onTabCreated(ViewGroup view) {
                         mView.set((RecyclerView) view);
                         AccessorySheetTabViewBinder.initializeView(mView.get(), null);
                         ((RecyclerView) view)
-                                .setAdapter(new RecyclerViewAdapter<>(
-                                        new SimpleRecyclerViewMcp<>(mModel,
-                                                AccessorySheetDataPiece::getType,
-                                                AccessorySheetTabViewBinder
-                                                        .ElementViewHolder::bind),
-                                        AccessorySheetTabViewBinder::create));
+                                .setAdapter(
+                                        new RecyclerViewAdapter<>(
+                                                new SimpleRecyclerViewMcp<>(
+                                                        mModel,
+                                                        AccessorySheetDataPiece::getType,
+                                                        AccessorySheetTabViewBinder
+                                                                        .ElementViewHolder
+                                                                ::bind),
+                                                AccessorySheetTabViewBinder::create));
                     }
 
                     @Override
@@ -115,7 +132,9 @@ public class AccessorySheetTabViewTest {
         assertThat(mView.get().getChildCount(), is(0));
 
         TestThreadUtils.runOnUiThreadBlocking(
-                () -> { mModel.add(new AccessorySheetDataPiece("Passwords", Type.TITLE)); });
+                () -> {
+                    mModel.add(new AccessorySheetDataPiece("Passwords", Type.TITLE));
+                });
 
         CriteriaHelper.pollUiThread(() -> Criteria.checkThat(mView.get().getChildCount(), is(1)));
         assertThat(mView.get().getChildAt(0), instanceOf(LinearLayout.class));
@@ -133,12 +152,14 @@ public class AccessorySheetTabViewTest {
         final AtomicReference<Boolean> clicked = new AtomicReference<>(false);
         assertThat(mView.get().getChildCount(), is(0));
 
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            mModel.add(new AccessorySheetDataPiece(
-                    new KeyboardAccessoryData.FooterCommand(
-                            "Manage passwords", item -> clicked.set(true)),
-                    Type.FOOTER_COMMAND));
-        });
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    mModel.add(
+                            new AccessorySheetDataPiece(
+                                    new KeyboardAccessoryData.FooterCommand(
+                                            "Manage passwords", item -> clicked.set(true)),
+                                    Type.FOOTER_COMMAND));
+                });
 
         CriteriaHelper.pollUiThread(() -> Criteria.checkThat(mView.get().getChildCount(), is(1)));
         assertThat(mView.get().getChildAt(0), instanceOf(TextView.class));

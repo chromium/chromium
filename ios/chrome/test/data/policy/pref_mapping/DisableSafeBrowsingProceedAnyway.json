@@ -1,0 +1,19 @@
+[
+  {
+    "os": [
+      "ios"
+    ],
+    "policy_pref_mapping_tests": [
+      {
+        "policies": {
+          "DisableSafeBrowsingProceedAnyway": true
+        },
+        "prefs": {
+          "safebrowsing.proceed_anyway_disabled": {
+            "value": true
+          }
+        }
+      }
+    ]
+  }
+]

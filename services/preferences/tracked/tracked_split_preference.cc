@@ -49,11 +49,15 @@ bool TrackedSplitPreference::EnforceAndReport(
     base::Value::Dict& pref_store_contents,
     PrefHashStoreTransaction* transaction,
     PrefHashStoreTransaction* external_validation_transaction) const {
+  bool was_reset = false;
   base::Value* value = pref_store_contents.FindByDottedPath(pref_path_);
   if (value && !value->is_dict()) {
-    // There should be a dictionary or nothing at |pref_path_|.
-    NOTREACHED();
-    return false;
+    // There should be a dictionary or nothing at |pref_path_|. If we have a
+    // non-dictionary here, reset it as it's an unexpected type. Then treat it
+    // as if it was never present. See https://crbug.com/1512724.
+    CHECK(pref_store_contents.RemoveByDottedPath(pref_path_));
+    was_reset = true;
+    value = nullptr;
   }
 
   base::Value::Dict* dict_value = value ? &value->GetDict() : nullptr;
@@ -84,7 +88,6 @@ bool TrackedSplitPreference::EnforceAndReport(
       helper_.GetAction(value_state);
   helper_.ReportAction(reset_action);
 
-  bool was_reset = false;
   if (reset_action == TrackedPreferenceHelper::DO_RESET) {
     if (value_state == ValueState::CHANGED) {
       DCHECK(!invalid_keys.empty());

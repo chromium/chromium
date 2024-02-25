@@ -16,7 +16,8 @@ async_test(function(t) {
   video.setAttribute("width", "60");
   // Add captions
   var track = video.addTextTrack("captions");
-  // Pretend we have a cast device
+
+  // Pretend we have a cast device.
   internals.mediaPlayerRemoteRouteAvailabilityChanged(video, true);
 
   video.onloadeddata = t.step_func_done(function() {

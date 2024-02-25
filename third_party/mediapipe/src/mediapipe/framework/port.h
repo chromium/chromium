@@ -50,7 +50,7 @@
 // but may or may not still be able to run other OpenGL code.
 #if !defined(MEDIAPIPE_DISABLE_GL_COMPUTE) &&                                  \
     (defined(__APPLE__) || defined(__EMSCRIPTEN__) || MEDIAPIPE_DISABLE_GPU || \
-     MEDIAPIPE_USING_SWIFTSHADER)
+     MEDIAPIPE_USING_LEGACY_SWIFTSHADER)
 #define MEDIAPIPE_DISABLE_GL_COMPUTE
 #endif
 
@@ -103,5 +103,21 @@
 #define MEDIAPIPE_HAS_RTTI 1
 #endif
 #endif  // MEDIAPIPE_HAS_RTTI
+
+// AHardware buffers are only available since Android API 26.
+#if (__ANDROID_API__ >= 26)
+#define MEDIAPIPE_GPU_BUFFER_USE_AHWB 1
+#endif
+
+// Supported use cases for tensor_ahwb:
+// 1. Native code running in Android apps.
+// 2. Android vendor processes linked against nativewindow.
+#if !defined(MEDIAPIPE_NO_JNI) || defined(MEDIAPIPE_ANDROID_LINK_NATIVE_WINDOW)
+#if __ANDROID_API__ >= 26 || defined(__ANDROID_UNAVAILABLE_SYMBOLS_ARE_WEAK__)
+#define MEDIAPIPE_TENSOR_USE_AHWB 1
+#endif  // __ANDROID_API__ >= 26 ||
+        // defined(__ANDROID_UNAVAILABLE_SYMBOLS_ARE_WEAK__)
+#endif  // !defined(MEDIAPIPE_NO_JNI) ||
+        // defined(MEDIAPIPE_ANDROID_LINK_NATIVE_WINDOW)
 
 #endif  // MEDIAPIPE_FRAMEWORK_PORT_H_

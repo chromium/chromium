@@ -12,7 +12,7 @@
 namespace segmentation_platform {
 
 SelectedSegment::SelectedSegment(SegmentId segment_id,
-                                 absl::optional<float> rank)
+                                 std::optional<float> rank)
     : segment_id(segment_id), rank(rank), in_use(false) {}
 
 SelectedSegment::~SelectedSegment() = default;
@@ -22,7 +22,7 @@ SegmentationResultPrefs::SegmentationResultPrefs(PrefService* pref_service)
 
 void SegmentationResultPrefs::SaveSegmentationResultToPref(
     const std::string& result_key,
-    const absl::optional<SelectedSegment>& selected_segment) {
+    const std::optional<SelectedSegment>& selected_segment) {
   ScopedDictPrefUpdate update(prefs_, kSegmentationResultPref);
   base::Value::Dict& dictionary = update.Get();
   if (!selected_segment.has_value()) {
@@ -40,7 +40,7 @@ void SegmentationResultPrefs::SaveSegmentationResultToPref(
   dictionary.Set(result_key, std::move(segmentation_result));
 }
 
-absl::optional<SelectedSegment>
+std::optional<SelectedSegment>
 SegmentationResultPrefs::ReadSegmentationResultFromPref(
     const std::string& result_key) {
   const base::Value::Dict& dictionary =
@@ -48,14 +48,14 @@ SegmentationResultPrefs::ReadSegmentationResultFromPref(
 
   const base::Value* value = dictionary.Find(result_key);
   if (!value)
-    return absl::nullopt;
+    return std::nullopt;
 
   const base::Value::Dict& segmentation_result = value->GetDict();
 
-  absl::optional<int> segment_id = segmentation_result.FindInt("segment_id");
-  absl::optional<float> rank = segmentation_result.FindDouble("segment_rank");
-  absl::optional<bool> in_use = segmentation_result.FindBool("in_use");
-  absl::optional<base::Time> selection_time =
+  std::optional<int> segment_id = segmentation_result.FindInt("segment_id");
+  std::optional<float> rank = segmentation_result.FindDouble("segment_rank");
+  std::optional<bool> in_use = segmentation_result.FindBool("in_use");
+  std::optional<base::Time> selection_time =
       base::ValueToTime(segmentation_result.Find("selection_time"));
 
   SelectedSegment selected_segment(static_cast<SegmentId>(segment_id.value()),

@@ -161,7 +161,7 @@ class PathParser {
     return 0;
   }
 
-  raw_ptr<const PathElement> path_elements_;
+  raw_ptr<const PathElement, AllowPtrArithmetic> path_elements_;
   size_t path_size_;
   size_t command_index_ = 0;
 };

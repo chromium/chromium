@@ -42,4 +42,4 @@ class FastCheckoutTriggerValidatorImpl : public FastCheckoutTriggerValidator {
   raw_ptr<FastCheckoutPersonalDataHelper> personal_data_helper_;
 };
 
-#endif
+#endif  // CHROME_BROWSER_FAST_CHECKOUT_FAST_CHECKOUT_TRIGGER_VALIDATOR_IMPL_H_

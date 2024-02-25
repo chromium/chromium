@@ -6,7 +6,5 @@ package org.chromium.incrementalinstall;
 
 import android.app.Instrumentation;
 
-/**
- * Exists to support an app having multiple instrumentations.
- */
+/** Exists to support an app having multiple instrumentations. */
 public final class SecondInstrumentation extends Instrumentation {}

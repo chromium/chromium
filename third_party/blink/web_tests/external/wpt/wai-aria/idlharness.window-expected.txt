@@ -1,0 +1,12 @@
+This is a testharness.js-based test.
+Found 4 FAIL, 0 TIMEOUT, 0 NOTRUN.
+[FAIL] Element interface: attribute ariaColIndexText
+  assert_true: The prototype object must have a property "ariaColIndexText" expected true got false
+[FAIL] Element interface: attribute ariaRowIndexText
+  assert_true: The prototype object must have a property "ariaRowIndexText" expected true got false
+[FAIL] Element interface: element must inherit property "ariaColIndexText" with the proper type
+  assert_inherits: property "ariaColIndexText" not found in prototype chain
+[FAIL] Element interface: element must inherit property "ariaRowIndexText" with the proper type
+  assert_inherits: property "ariaRowIndexText" not found in prototype chain
+Harness: the test ran to completion.
+

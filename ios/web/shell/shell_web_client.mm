@@ -7,6 +7,7 @@
 #import <UIKit/UIKit.h>
 
 #import "base/functional/bind.h"
+#import "base/memory/raw_ptr.h"
 #import "ios/web/common/user_agent.h"
 #import "ios/web/public/web_state.h"
 #import "ios/web/shell/shell_web_main_parts.h"
@@ -33,7 +34,7 @@ class WebUsageController : public mojom::WebUsageController {
     std::move(callback).Run();
   }
 
-  WebState* web_state_;
+  raw_ptr<WebState> web_state_;
 };
 
 }  // namespace

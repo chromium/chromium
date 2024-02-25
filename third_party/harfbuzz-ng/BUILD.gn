@@ -271,11 +271,11 @@ if (use_system_harfbuzz) {
       "src/src/hb-subset-cff-common.cc",
       "src/src/hb-subset-cff-common.hh",
       "src/src/hb-subset-cff1.cc",
-      "src/src/hb-subset-cff1.hh",
       "src/src/hb-subset-cff2.cc",
-      "src/src/hb-subset-cff2.hh",
       "src/src/hb-subset-input.cc",
       "src/src/hb-subset-input.hh",
+      "src/src/hb-subset-instancer-solver.cc",
+      "src/src/hb-subset-instancer-solver.hh",
       "src/src/hb-subset-plan-member-list.hh",
       "src/src/hb-subset-plan.cc",
       "src/src/hb-subset-plan.hh",
@@ -352,6 +352,9 @@ if (use_system_harfbuzz) {
 
       # Don't ship experimental extensions.
       "HB_NO_BORING_EXPANSION",
+
+      # Don't ship AVAR2 yet.
+      "HB_NO_AVAR2",
 
       # Letting HarfBuzz enable warnings through pragmas can block compiler
       # upgrades in situations where say a ToT compiler build adds a new

@@ -23,9 +23,9 @@
 #include "chrome/browser/predictors/autocomplete_action_predictor_factory.h"
 #include "chrome/browser/predictors/predictor_database.h"
 #include "chrome/browser/predictors/predictor_database_factory.h"
-#include "chrome/browser/prefetch/prefetch_prefs.h"
 #include "chrome/browser/preloading/chrome_preloading.h"
 #include "chrome/browser/preloading/prefetch/no_state_prefetch/no_state_prefetch_manager_factory.h"
+#include "chrome/browser/preloading/preloading_prefs.h"
 #include "chrome/browser/preloading/prerender/prerender_manager.h"
 #include "chrome/browser/preloading/prerender/prerender_utils.h"
 #include "chrome/browser/profiles/profile.h"
@@ -67,15 +67,18 @@ namespace {
 // be PRERENDER or PRECONNECT. Due to the current design, the prerender one
 // should be higher than the preconnect one, otherwise preconnect will never
 // run.
-// Android uses lower thresholds determined based on an experiment. For
-// non-Android, we're now running a similar experiment with a different
-// progress. See https://crbug.com/1399401 for the current progress.
+//
+// If you update these values, please also update values in
+// chrome/browser/resources/predictors/autocomplete_action_predictor.ts that
+// will be shown on chrome://predictors.
+// TODO(crbug.com/326277753): Avoid hard-coding the values in
+// autocomplete_action_predictor.ts.
 const base::FeatureParam<double> kPrerenderDUIConfidenceCutoff{
     &features::kAutocompleteActionPredictorConfidenceCutoff,
-    "prerender_dui_confidence_cutoff", BUILDFLAG(IS_ANDROID) ? 0.5 : 0.8};
+    "prerender_dui_confidence_cutoff", 0.5};
 const base::FeatureParam<double> kPreconnectConfidenceCutoff{
     &features::kAutocompleteActionPredictorConfidenceCutoff,
-    "preconnect_dui_confidence_cutoff", BUILDFLAG(IS_ANDROID) ? 0.3 : 0.5};
+    "preconnect_dui_confidence_cutoff", 0.3};
 
 const int kMinimumNumberOfHits = 3;
 const size_t kMaximumTransitionalMatchesSize = 1024 * 1024;  // 1 MB.
@@ -83,16 +86,6 @@ const size_t kMaximumTransitionalMatchesSize = 1024 * 1024;  // 1 MB.
 // As of February 2019, 99% of users on Windows have less than 2000 entries in
 // the database.
 const size_t kMaximumCacheSize = 2000;
-
-// These values are persisted to logs. Entries should not be renumbered and
-// numeric values should never be reused.
-enum class DatabaseAction {
-  kAdd = 0,
-  kUpdate = 1,
-  kDeleteSome = 2,
-  kDeleteAll = 3,
-  kMaxValue = kDeleteAll,
-};
 
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
@@ -156,8 +149,8 @@ AutocompleteActionPredictor::AutocompleteActionPredictor(Profile* profile)
         FROM_HERE,
         base::BindOnce(&AutocompleteActionPredictorTable::GetAllRows, table_,
                        rows_ptr),
-        base::BindOnce(&AutocompleteActionPredictor::CreateCaches, AsWeakPtr(),
-                       std::move(rows)));
+        base::BindOnce(&AutocompleteActionPredictor::CreateCaches,
+                       weak_ptr_factory_.GetWeakPtr(), std::move(rows)));
   }
 }
 
@@ -237,7 +230,8 @@ void AutocompleteActionPredictor::StartPrerendering(
     content::PreloadingAttempt* preloading_attempt =
         preloading_data->AddPreloadingAttempt(
             chrome_preloading_predictor::kOmniboxDirectURLInput,
-            content::PreloadingType::kPrerender, std::move(same_url_matcher));
+            content::PreloadingType::kPrerender, std::move(same_url_matcher),
+            web_contents.GetPrimaryMainFrame()->GetPageUkmSourceId());
 
     PrerenderManager::CreateForWebContents(&web_contents);
     auto* prerender_manager = PrerenderManager::FromWebContents(&web_contents);
@@ -252,12 +246,13 @@ void AutocompleteActionPredictor::StartPrerendering(
         preloading_data->AddPreloadingAttempt(
             chrome_preloading_predictor::kOmniboxDirectURLInput,
             content::PreloadingType::kNoStatePrefetch,
-            std::move(same_url_matcher));
+            std::move(same_url_matcher),
+            web_contents.GetPrimaryMainFrame()->GetPageUkmSourceId());
 
     content::SessionStorageNamespace* session_storage_namespace =
         web_contents.GetController().GetDefaultSessionStorageNamespace();
     if (no_state_prefetch_handle_) {
-      if (no_state_prefetch_handle_->prerender_url() == url) {
+      if (no_state_prefetch_handle_->prefetch_url() == url) {
         // In case NSP is already present for the URL, NoStatPrefetch is
         // eligible but mark triggering outcome as a duplicate.
         preloading_attempt->SetEligibility(
@@ -314,12 +309,8 @@ AutocompleteActionPredictor::RecommendAction(
     const std::u16string& user_text,
     const AutocompleteMatch& match,
     content::WebContents* web_contents) const {
-  bool is_in_db = false;
-  const double confidence = CalculateConfidence(user_text, match, &is_in_db);
+  const double confidence = CalculateConfidence(user_text, match);
   DCHECK(confidence >= 0.0 && confidence <= 1.0);
-
-  base::UmaHistogramBoolean("AutocompleteActionPredictor.MatchIsInDb",
-                            is_in_db);
 
   // Map the confidence to an action.
   Action action = DecideActionByConfidence(confidence);
@@ -385,7 +376,7 @@ void AutocompleteActionPredictor::OnOmniboxOpenedUrl(const OmniboxLog& log) {
   // Abandon the current prefetch. If it is to be used, it will be used very
   // soon, so use the lower timeout.
   if (no_state_prefetch_handle_) {
-    if (no_state_prefetch_handle_->prerender_url() == opened_url) {
+    if (no_state_prefetch_handle_->prefetch_url() == opened_url) {
       if (no_state_prefetch_handle_->IsFinishedLoading()
           // If the handle doesn't have its contents anymore we don't know if it
           // complete successfully or not, but we know it's no longer active, so
@@ -490,9 +481,6 @@ void AutocompleteActionPredictor::DeleteAllRows() {
         base::BindOnce(&AutocompleteActionPredictorTable::DeleteAllRows,
                        table_));
   }
-
-  base::UmaHistogramEnumeration("AutocompleteActionPredictor.DatabaseAction",
-                                DatabaseAction::kDeleteAll);
 }
 
 void AutocompleteActionPredictor::DeleteRowsFromCaches(
@@ -529,8 +517,6 @@ void AutocompleteActionPredictor::AddAndUpdateRows(
 
     db_cache_[key] = value;
     db_id_cache_[key] = it->id;
-    base::UmaHistogramEnumeration("AutocompleteActionPredictor.DatabaseAction",
-                                  DatabaseAction::kAdd);
   }
   for (auto it = rows_to_update.begin(); it != rows_to_update.end(); ++it) {
     const DBCacheKey key = { it->user_text, it->url };
@@ -541,8 +527,6 @@ void AutocompleteActionPredictor::AddAndUpdateRows(
 
     db_it->second.number_of_hits = it->number_of_hits;
     db_it->second.number_of_misses = it->number_of_misses;
-    base::UmaHistogramEnumeration("AutocompleteActionPredictor.DatabaseAction",
-                                  DatabaseAction::kUpdate);
   }
 
   if (table_.get()) {
@@ -714,11 +698,9 @@ void AutocompleteActionPredictor::FinishInitialization() {
 
 double AutocompleteActionPredictor::CalculateConfidence(
     const std::u16string& user_text,
-    const AutocompleteMatch& match,
-    bool* is_in_db) const {
+    const AutocompleteMatch& match) const {
   const DBCacheKey key = { user_text, match.destination_url };
 
-  *is_in_db = false;
   if (user_text.length() < kMinimumUserTextLength)
     return 0.0;
 
@@ -726,7 +708,6 @@ double AutocompleteActionPredictor::CalculateConfidence(
   if (iter == db_cache_.end())
     return 0.0;
 
-  *is_in_db = true;
   return CalculateConfidenceForDbEntry(iter);
 }
 
@@ -768,9 +749,6 @@ void AutocompleteActionPredictor::OnURLsDeleted(
         FROM_HERE, base::BindOnce(&AutocompleteActionPredictorTable::DeleteRows,
                                   table_, std::move(id_list)));
   }
-
-  base::UmaHistogramEnumeration("AutocompleteActionPredictor.DatabaseAction",
-                                DatabaseAction::kDeleteSome);
 }
 
 void AutocompleteActionPredictor::OnHistoryServiceLoaded(

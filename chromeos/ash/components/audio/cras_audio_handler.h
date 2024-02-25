@@ -9,6 +9,7 @@
 #include <stdint.h>
 
 #include <cstdint>
+#include <optional>
 #include <queue>
 #include <string>
 #include <vector>
@@ -34,7 +35,6 @@
 #include "mojo/public/cpp/bindings/remote.h"
 #include "services/media_session/public/mojom/media_controller.mojom.h"
 #include "services/media_session/public/mojom/media_session.mojom.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/events/devices/microphone_mute_switch_monitor.h"
 
 namespace base {
@@ -67,10 +67,16 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_AUDIO) CrasAudioHandler
       public media::VideoCaptureObserver,
       public media_session::mojom::MediaControllerObserver {
  public:
-  typedef std::
-      priority_queue<AudioDevice, std::vector<AudioDevice>, AudioDeviceCompare>
-          AudioDevicePriorityQueue;
   typedef std::vector<uint64_t> NodeIdList;
+
+  enum class SurveyType {
+    kGeneral,
+    kBluetooth,
+  };
+
+  static constexpr char kSurveyNameKey[] = "SurveyName";
+  static constexpr char kSurveyNameGeneral[] = "GENERAL";
+  static constexpr char kSurveyNameBluetooth[] = "BLUETOOTH";
 
   // Key-value mapping type for audio survey specific data.
   // For audio satisfaction survey, it contains
@@ -79,6 +85,27 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_AUDIO) CrasAudioHandler
   //  - NodeType: Pair of the active input/output device types, e.g., USB_USB.
   // The content can be extended when other types of survey is added.
   typedef base::flat_map<std::string, std::string> AudioSurveyData;
+  class AudioSurvey {
+   public:
+    AudioSurvey();
+    ~AudioSurvey();
+    AudioSurvey(const AudioSurvey&) = delete;
+    AudioSurvey& operator=(const AudioSurvey&) = delete;
+
+    SurveyType type() const { return type_; }
+    AudioSurveyData data() const { return data_; }
+
+    void set_type(SurveyType type) { type_ = type; }
+    void clear_data() { data_.clear(); }
+    void AddData(std::string key, std::string value) {
+      data_.emplace(key, value);
+    }
+
+   private:
+    SurveyType type_;
+    AudioSurveyData data_;
+  };
+
   static constexpr int32_t kSystemAecGroupIdNotAvailable = -1;
 
   enum class InputMuteChangeMethod {
@@ -100,6 +127,8 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_AUDIO) CrasAudioHandler
 
   static constexpr base::TimeDelta kMetricsDelayTimerInterval =
       base::Seconds(2);
+  static constexpr char kForceRespectUiGainsHistogramName[] =
+      "Cras.ForceRespectUiGains";
   static constexpr char kInputGainChangedSourceHistogramName[] =
       "Cras.InputGainChangedSource";
   static constexpr char kInputGainChangedHistogramName[] =
@@ -112,6 +141,33 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_AUDIO) CrasAudioHandler
       "Cras.OutputVolumeMutedSource";
   static constexpr char kNoiseCancellationEnabledSourceHistogramName[] =
       "Cras.NoiseCancellationEnabledSource";
+
+  // A series of user action metrics to record when user switches the
+  // input/output audio device and if this switch overrides the system decision.
+  static constexpr char kUserActionSwitchInput[] =
+      "StatusArea_Audio_SwitchInputDevice";
+  static constexpr char kUserActionSwitchOutput[] =
+      "StatusArea_Audio_SwitchOutputDevice";
+  static constexpr char kUserActionSwitchInputOverridden[] =
+      "StatusArea_Audio_AutoInputSelectionOverridden";
+  static constexpr char kUserActionSwitchOutputOverridden[] =
+      "StatusArea_Audio_AutoOutputSelectionOverridden";
+
+  // A series of histogram metrics to record system selection decision after
+  // audio device has changed. And the time delta if user has overridden the
+  // system selection afterwards.
+  static constexpr char kSystemSwitchInputAudio[] =
+      "ChromeOS.AudioSelection.Input.SystemSwitchAudio";
+  static constexpr char kSystemSwitchOutputAudio[] =
+      "ChromeOS.AudioSelection.Output.SystemSwitchAudio";
+  static constexpr char kUserOverrideSystemSwitchInputAudio[] =
+      "ChromeOS.AudioSelection.Input.UserOverrideSystemSwitchTimeElapsed";
+  static constexpr char kUserOverrideSystemSwitchOutputAudio[] =
+      "ChromeOS.AudioSelection.Output.UserOverrideSystemSwitchTimeElapsed";
+  static constexpr char kUserOverrideSystemNotSwitchInputAudio[] =
+      "ChromeOS.AudioSelection.Input.UserOverrideSystemNotSwitchTimeElapsed";
+  static constexpr char kUserOverrideSystemNotSwitchOutputAudio[] =
+      "ChromeOS.AudioSelection.Output.UserOverrideSystemNotSwitchTimeElapsed";
 
   class AudioObserver {
    public:
@@ -189,15 +245,19 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_AUDIO) CrasAudioHandler
     // for >= 30 seconds is closed.
     // CRAS also has full control on what data to send to Chrome. These survey
     // specific data will be attached with each survey response for analysis.
-    // Currently this only supports one general audio satisfaction survey and
-    // should be modified and extended when other types of survey is added.
-    virtual void OnSurveyTriggered(const AudioSurveyData& survey_specific_data);
+    // Currently this supports general audio and Bluetooth audio surveys.
+    // The survey to trigger is determined by the type of the `AudioSurvey`
+    // passed in.
+    virtual void OnSurveyTriggered(const AudioSurvey& survey);
 
     // Called when a speak-on-mute is detected.
     virtual void OnSpeakOnMuteDetected();
 
     // Called when num-stream-ignore-ui-gains state is changed.
     virtual void OnNumStreamIgnoreUiGainsChanged(int32_t num);
+
+    // Called when number of ARC streams is changed.
+    virtual void OnNumberOfArcStreamsChanged(int32_t num);
 
    protected:
     AudioObserver();
@@ -249,14 +309,14 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_AUDIO) CrasAudioHandler
   void MediaSessionInfoChanged(
       media_session::mojom::MediaSessionInfoPtr session_info) override;
   void MediaSessionMetadataChanged(
-      const absl::optional<media_session::MediaMetadata>& metadata) override;
+      const std::optional<media_session::MediaMetadata>& metadata) override;
   void MediaSessionActionsChanged(
       const std::vector<media_session::mojom::MediaSessionAction>& actions)
       override {}
   void MediaSessionChanged(
-      const absl::optional<base::UnguessableToken>& request_id) override {}
+      const std::optional<base::UnguessableToken>& request_id) override {}
   void MediaSessionPositionChanged(
-      const absl::optional<media_session::MediaPosition>& position) override;
+      const std::optional<media_session::MediaPosition>& position) override;
 
   // ui::MicrophoneMuteSwitchMonitor::Observer:
   void OnMicrophoneMuteSwitchValueChanged(bool muted) override;
@@ -278,9 +338,6 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_AUDIO) CrasAudioHandler
 
   // Returns true if audio output is muted for a device.
   bool IsOutputMutedForDevice(uint64_t device_id);
-
-  // Returns true if audio output is forced muted.
-  bool IsOutputForceMuted();
 
   // Returns true if audio output is muted for the system by policy.
   bool IsOutputMutedByPolicy();
@@ -387,6 +444,9 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_AUDIO) CrasAudioHandler
 
   // Gets if hfp_mic_sr is supported by the board.
   void RequestHfpMicSrSupported(OnHfpMicSrSupportedCallback callback);
+
+  // Simulates hfp_mic_sr support in a test.
+  void SetHfpMicSrSupportedForTesting(bool supported);
 
   // Gets the pref state of hfp_mic_sr.
   bool GetHfpMicSrState() const;
@@ -585,6 +645,10 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_AUDIO) CrasAudioHandler
 
   int32_t NumberOfNonChromeOutputStreams() const;
   int32_t NumberOfChromeOutputStreams() const;
+  int32_t NumberOfArcStreams() const;
+
+  // Simulate number of ARC streams changing in a test.
+  void SetNumberOfArcStreamsForTesting(int32_t num);
 
  protected:
   CrasAudioHandler(
@@ -614,6 +678,7 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_AUDIO) CrasAudioHandler
   void SpeakOnMuteDetected() override;
   void NumberOfNonChromeOutputStreamsChanged() override;
   void NumStreamIgnoreUiGains(int32_t num) override;
+  void NumberOfArcStreamsChanged() override;
 
   // AudioPrefObserver overrides.
   void OnAudioPolicyPrefChanged() override;
@@ -653,6 +718,7 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_AUDIO) CrasAudioHandler
 
   const AudioDevice* GetDeviceFromStableDeviceId(
       uint64_t stable_device_id) const;
+
   const AudioDevice* GetKeyboardMic() const;
 
   const AudioDevice* GetHotwordDevice() const;
@@ -695,6 +761,9 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_AUDIO) CrasAudioHandler
 
   void GetNumberOfNonChromeOutputStreams();
 
+  // Calls CRAS over D-Bus to get the number of ARC streams.
+  void GetNumberOfArcStreams();
+
   // Updates the current audio nodes list and switches the active device
   // if needed.
   void UpdateDevicesAndSwitchActive(const AudioNodeList& nodes);
@@ -711,18 +780,15 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_AUDIO) CrasAudioHandler
   // removed.
   bool HasDeviceChange(const AudioNodeList& new_nodes,
                        bool is_input,
-                       AudioDevicePriorityQueue* new_discovered,
+                       AudioDeviceList* new_discovered,
                        bool* device_removed,
                        bool* active_device_removed);
 
   // Handles dbus callback for GetNodes.
-  void HandleGetNodes(absl::optional<AudioNodeList> node_list);
+  void HandleGetNodes(std::optional<AudioNodeList> node_list);
 
   void HandleGetNumActiveOutputStreams(
-      absl::optional<int> num_active_output_streams);
-
-  void HandleGetDeprioritizeBtWbsMic(
-      absl::optional<bool> deprioritize_bt_wbs_mic);
+      std::optional<int> num_active_output_streams);
 
   // Adds an active node.
   // If there is no active node, |node_id| will be switched to become the
@@ -768,33 +834,31 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_AUDIO) CrasAudioHandler
 
   // Handles either input or output device changes, specified by |is_input|.
   void HandleAudioDeviceChange(bool is_input,
-                               const AudioDevicePriorityQueue& devices_pq,
-                               const AudioDevicePriorityQueue& hotplug_nodes,
+                               const AudioDeviceList& devices,
+                               const AudioDeviceList& hotplug_nodes,
                                bool has_device_change,
                                bool has_device_removed,
                                bool active_device_removed);
 
   // Handles non-hotplug nodes change cases.
-  void HandleNonHotplugNodesChange(
-      bool is_input,
-      const AudioDevicePriorityQueue& hotplug_nodes,
-      bool has_device_change,
-      bool has_device_removed,
-      bool active_device_removed);
-
-  // Handles the regular user hotplug case.
-  void HandleHotPlugDevice(
-      const AudioDevice& hotplug_device,
-      const AudioDevicePriorityQueue& device_priority_queue);
+  void HandleNonHotplugNodesChange(bool is_input,
+                                   const AudioDeviceList& devices,
+                                   const AudioDeviceList& hotplug_nodes,
+                                   bool has_device_change,
+                                   bool has_device_removed,
+                                   bool active_device_removed);
 
   // Handles the regular user hotplug case with user priority.
   void HandleHotPlugDeviceByUserPriority(const AudioDevice& hotplug_device);
 
-  void SwitchToTopPriorityDevice(bool is_input);
+  // Switch to the top priority device in |devices|. |devices| must be a list
+  // of devices with the same direction.
+  void SwitchToTopPriorityDevice(const AudioDeviceList& devices);
 
   // Switch to previous active device if it is found, otherwise, switch
   // to the top priority device.
-  void SwitchToPreviousActiveDeviceIfAvailable(bool is_input);
+  void SwitchToPreviousActiveDeviceIfAvailable(bool is_input,
+                                               const AudioDeviceList& devices);
 
   // Activates the internal mic attached with the camera specified by
   // |camera_facing|.
@@ -816,7 +880,7 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_AUDIO) CrasAudioHandler
   void GetDefaultOutputBufferSizeInternal();
 
   // Handle dbus callback for GetDefaultOutputBufferSize.
-  void HandleGetDefaultOutputBufferSize(absl::optional<int> buffer_size);
+  void HandleGetDefaultOutputBufferSize(std::optional<int> buffer_size);
 
   // Calling dbus to get current number of input streams with permission and
   // storing the result in number_of_input_streams_with_permission_.
@@ -828,58 +892,45 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_AUDIO) CrasAudioHandler
 
   // Handle dbus callback for GetNumberOfInputStreamsWithPermission.
   void HandleGetNumberOfInputStreamsWithPermission(
-      absl::optional<base::flat_map<std::string, uint32_t>> num_input_streams);
+      std::optional<base::flat_map<std::string, uint32_t>> num_input_streams);
   void HandleGetNumberOfNonChromeOutputStreams(
-      absl::optional<int32_t> num_output_streams);
+      std::optional<int32_t> num_output_streams);
+
+  // Handle dbus callback for GetNumberOfArcStreams.
+  void HandleGetNumberOfArcStreams(std::optional<int32_t> num_arc_streams);
 
   // Calling dbus to get system AEC supported flag.
   void GetSystemAecSupported();
 
-  // Calling dbus to get system AEC supported flag on main thread.
-  void GetSystemAecSupportedOnMainThread();
-
   // Handle dbus callback for GetSystemNoiseCancellationSupported.
   void HandleGetNoiseCancellationSupported(
       OnNoiseCancellationSupportedCallback callback,
-      absl::optional<bool> system_noise_cancellation_supported);
+      std::optional<bool> system_noise_cancellation_supported);
 
   // Handle dbus callback for IsHfpMicSrSupported.
   void HandleGetHfpMicSrSupported(OnHfpMicSrSupportedCallback callback,
-                                  absl::optional<bool> hfp_mic_sr_supported);
-
-  // Handle dbus callback for GetSpeakOnMuteDetectionEnabled.
-  void HandleGetSpeakOnMuteDetectionEnabled(
-      absl::optional<bool> speak_on_mute_detection_enabled);
+                                  std::optional<bool> hfp_mic_sr_supported);
 
   // Handle dbus callback for GetSystemAecSupported.
-  void HandleGetSystemAecSupported(absl::optional<bool> system_aec_supported);
+  void HandleGetSystemAecSupported(std::optional<bool> system_aec_supported);
 
   // Calling dbus to get the system AEC group id if available.
   void GetSystemAecGroupId();
 
-  // Calling dbus to get any available system AEC group id on main thread.
-  void GetSystemAecGroupIdOnMainThread();
-
   // Handle dbus callback for GetSystemAecGroupId.
-  void HandleGetSystemAecGroupId(absl::optional<int32_t> system_aec_group_id);
+  void HandleGetSystemAecGroupId(std::optional<int32_t> system_aec_group_id);
 
   // Calling dbus to get system NS supported flag.
   void GetSystemNsSupported();
 
-  // Calling dbus to get system NS supported flag on main thread.
-  void GetSystemNsSupportedOnMainThread();
-
   // Handle dbus callback for GetSystemNsSupported.
-  void HandleGetSystemNsSupported(absl::optional<bool> system_ns_supported);
+  void HandleGetSystemNsSupported(std::optional<bool> system_ns_supported);
 
   // Calling dbus to get system AGC supported flag.
   void GetSystemAgcSupported();
 
-  // Calling dbus to get system AGC supported flag on main thread.
-  void GetSystemAgcSupportedOnMainThread();
-
   // Handle dbus callback for GetSystemAgcSupported.
-  void HandleGetSystemAgcSupported(absl::optional<bool> system_agc_supported);
+  void HandleGetSystemAgcSupported(std::optional<bool> system_agc_supported);
 
   void OnVideoCaptureStartedOnMainThread(media::VideoFacingMode facing);
   void OnVideoCaptureStoppedOnMainThread(media::VideoFacingMode facing);
@@ -894,7 +945,23 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_AUDIO) CrasAudioHandler
 
   // Handle dbus callback for GetNumStreamIgnoreUiGains.
   void HandleGetNumStreamIgnoreUiGains(
-      absl::optional<int32_t> num_stream_ignore_ui_gains);
+      std::optional<int32_t> num_stream_ignore_ui_gains);
+
+  // Record metrics when user switches audio device.
+  void RecordUserSwitchAudioDevice(bool is_input);
+
+  // Record the histogram of system decision of switching or not switching after
+  // audio device is added or removed. Only record if there are more than one
+  // available devices.
+  void MaybeRecordSystemSwitchDecision(bool is_input, bool is_switched);
+
+  // Clear the timer of system switch/not switch decision.
+  void ResetSystemSwitchTimestamp(bool is_input);
+
+  // Static helper function to abstract the |AudioSurvey| from input
+  // |survey_specific_data|.
+  static std::unique_ptr<CrasAudioHandler::AudioSurvey> AbstractAudioSurvey(
+      const base::flat_map<std::string, std::string>& survey_specific_data);
 
   mojo::Remote<media_session::mojom::MediaControllerManager>
       media_controller_manager_;
@@ -910,9 +977,6 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_AUDIO) CrasAudioHandler
 
   // Audio data and state.
   AudioDeviceMap audio_devices_;
-
-  AudioDevicePriorityQueue input_devices_pq_;
-  AudioDevicePriorityQueue output_devices_pq_;
 
   bool output_mute_on_ = false;
   bool input_mute_on_ = false;
@@ -963,11 +1027,6 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_AUDIO) CrasAudioHandler
 
   bool fetch_media_session_duration_ = false;
 
-  // On a few platforms that Bluetooth WBS is still working to be
-  // stabilized, CRAS may report to deprioritze the BT WBS mic's node
-  // priority.
-  bool deprioritize_bt_wbs_mic_ = false;
-
   // Whether the audio input is muted because the microphone mute switch is on.
   // In this case, input mute changes will be disabled.
   bool input_muted_by_microphone_mute_switch_ = false;
@@ -979,6 +1038,15 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_AUDIO) CrasAudioHandler
   // Whether the speak-on-mute detection is enabled in CRAS.
   bool speak_on_mute_detection_on_ = false;
 
+  // The timestamp for recording the metrics of user overriding system decision
+  // of switching or not switching the active audio device.
+  std::optional<base::TimeTicks> input_switched_by_system_at_ = std::nullopt;
+  std::optional<base::TimeTicks> input_not_switched_by_system_at_ =
+      std::nullopt;
+  std::optional<base::TimeTicks> output_switched_by_system_at_ = std::nullopt;
+  std::optional<base::TimeTicks> output_not_switched_by_system_at_ =
+      std::nullopt;
+
   // Task runner of browser main thread. All member variables should be accessed
   // on this thread.
   scoped_refptr<base::SingleThreadTaskRunner> main_task_runner_;
@@ -986,6 +1054,8 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_AUDIO) CrasAudioHandler
   cras::DisplayRotation display_rotation_ = cras::DisplayRotation::ROTATE_0;
 
   int num_stream_ignore_ui_gains_ = 0;
+
+  int32_t num_arc_streams_ = 0;
 
   base::WeakPtrFactory<CrasAudioHandler> weak_ptr_factory_{this};
 };

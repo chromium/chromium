@@ -17,7 +17,7 @@
 // $ autoninja -C out/ashdesktop browser_tests
 // $ out/ashdesktop/browser_tests \
 //   --gtest_filter=DemoAshRequiresLacrosTest* \
-//   --lacros-chrome-path=out/ashdesktop/lacros_clang_x64 \
+//   --lacros-chrome-path=out/ashdesktop/lacros_clang_x64/test_lacros_chrome \
 //   --enable-pixel-output-in-tests
 // You should see there are 2 browser instances, one is ash browser,
 // another one is Lacros browser and Lacros is in the front.
@@ -48,7 +48,5 @@ IN_PROC_BROWSER_TEST_F(DemoAshRequiresLacrosTest, NewTab) {
     crosapi::BrowserManager::Get()->NewTab();
     // Assert Lacros is running.
     ASSERT_TRUE(crosapi::BrowserManager::Get()->IsRunning());
-    // browser() returns an Ash browser instance.
-    ASSERT_FALSE(browser()->profile()->IsOffTheRecord());
   }
 }

@@ -6,6 +6,7 @@
 #define CHROMEOS_ASH_SERVICES_DEVICE_SYNC_PUBLIC_CPP_DEVICE_SYNC_CLIENT_H_
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -18,7 +19,6 @@
 #include "chromeos/ash/services/device_sync/proto/cryptauth_common.pb.h"
 #include "chromeos/ash/services/device_sync/public/mojom/device_sync.mojom.h"
 #include "mojo/public/cpp/bindings/remote.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base {
 class TaskRunner;
@@ -83,7 +83,7 @@ class DeviceSyncClient {
   virtual void GetGroupPrivateKeyStatus(
       mojom::DeviceSync::GetGroupPrivateKeyStatusCallback callback) = 0;
   virtual multidevice::RemoteDeviceRefList GetSyncedDevices() = 0;
-  virtual absl::optional<multidevice::RemoteDeviceRef>
+  virtual std::optional<multidevice::RemoteDeviceRef>
   GetLocalDeviceMetadata() = 0;
 
   // Note: In the special case of passing |software_feature| =

@@ -122,28 +122,27 @@ void GpuWatchdogTest::SetUp() {
   TimeOutType timeout_type = kNormal;
 
 #if BUILDFLAG(IS_MAC)
-  // Use slow timeout for Mac versions < 11.00 and for MacBookPro model <
-  // MacBookPro14,1
-  int os_version = base::mac::internal::MacOSVersion();
-
-  if (os_version <= 1100) {
+  // Use a slow timeout for Mac versions <= 11.00 and for MacBookPro model <
+  // MacBookPro14,1.
+  //
+  // As per EveryMac, laptops older than MacBookPro14,1 max out at macOS 12
+  // Monterey. When macOS 13 is the minimum required version for Chromium, this
+  // check can be removed.
+  //
+  // Reference:
+  //   https://everymac.com/systems/by_capability/mac-specs-by-machine-model-machine-id.html
+  if (base::mac::MacOSMajorVersion() <= 11) {
     // Check MacOS version.
     timeout_type = kSlow;
   } else {
     // Check Mac machine model version.
     std::string model_str = base::SysInfo::HardwareModelName();
-    size_t found_position = model_str.find("MacBookPro");
-    constexpr size_t model_version_pos = 10;
+    std::optional<base::SysInfo::HardwareModelNameSplit> split =
+        base::SysInfo::SplitHardwareModelNameDoNotUse(model_str);
 
-    // A MacBookPro is found.
-    if (found_position == 0 && model_str.size() > model_version_pos) {
-      // model_ver_str = "MacBookProXX,X", model_ver_str = "XX,X"
-      std::string model_ver_str = model_str.substr(model_version_pos);
-      int major_model_ver = std::atoi(model_ver_str.c_str());
-      // For model version < 14,1
-      if (major_model_ver < 14) {
-        timeout_type = kSlow;
-      }
+    if (split && split.value().category == "MacBookPro" &&
+        split.value().model < 14) {
+      timeout_type = kSlow;
     }
   }
 
@@ -178,7 +177,6 @@ void GpuWatchdogTest::SetUp() {
   watchdog_thread_ = gpu::GpuWatchdogThread::Create(
       /*start_backgrounded=*/false,
       /*timeout=*/timeout_,
-      /*init_factor=*/kInitFactor,
       /*restart_factor=*/kRestartFactor,
       /*test_mode=*/true, /*thread_name=*/"GpuWatchdog");
 }
@@ -252,8 +250,7 @@ TEST_F(GpuWatchdogTest, GpuInitializationComplete) {
 
 // GPU Hang In Initialization.
 TEST_F(GpuWatchdogTest, GpuInitializationHang) {
-  auto allowed_time =
-      timeout_ * (kInitFactor + 1) + full_thread_time_on_windows_;
+  auto allowed_time = timeout_ * 2 + full_thread_time_on_windows_;
 
   // GPU init takes longer than timeout.
   SimpleTask(allowed_time, /*extra_time=*/extra_gpu_job_time_);
@@ -266,8 +263,7 @@ TEST_F(GpuWatchdogTest, GpuInitializationHang) {
 
 // GPU Hang In Initialization.
 TEST_F(GpuWatchdogTest, GpuInitializationHangWithReportOnly) {
-  auto allowed_time =
-      timeout_ * (kInitFactor + 1) + full_thread_time_on_windows_;
+  auto allowed_time = timeout_ * 2 + full_thread_time_on_windows_;
 
   watchdog_thread_->EnableReportOnlyMode();
 
@@ -411,8 +407,7 @@ TEST_F(GpuWatchdogTest, GpuInitializationPause) {
   watchdog_thread_->ResumeWatchdog();
 
   // The Gpu init continues for longer than allowed init time.
-  auto allowed_time =
-      timeout_ * (kInitFactor + 1) + full_thread_time_on_windows_;
+  auto allowed_time = timeout_ * 2 + full_thread_time_on_windows_;
 
   SimpleTask(allowed_time, /*extra_time=*/extra_gpu_job_time_);
 

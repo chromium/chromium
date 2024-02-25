@@ -19,6 +19,7 @@
 #include <iterator>
 
 #include "base/apple/mach_logging.h"
+#include "base/check_op.h"
 #include "base/logging.h"
 
 namespace crashpad {

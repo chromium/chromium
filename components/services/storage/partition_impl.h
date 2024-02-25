@@ -6,6 +6,7 @@
 #define COMPONENTS_SERVICES_STORAGE_PARTITION_IMPL_H_
 
 #include <memory>
+#include <optional>
 
 #include "base/files/file_path.h"
 #include "base/memory/raw_ptr.h"
@@ -13,7 +14,6 @@
 #include "components/services/storage/public/mojom/partition.mojom.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/origin.h"
 
 namespace storage {
@@ -30,14 +30,14 @@ class PartitionImpl : public mojom::Partition {
  public:
   // |service| owns and outlives this object.
   explicit PartitionImpl(StorageServiceImpl* service,
-                         const absl::optional<base::FilePath>& path);
+                         const std::optional<base::FilePath>& path);
 
   PartitionImpl(const PartitionImpl&) = delete;
   PartitionImpl& operator=(const PartitionImpl&) = delete;
 
   ~PartitionImpl() override;
 
-  const absl::optional<base::FilePath>& path() const { return path_; }
+  const std::optional<base::FilePath>& path() const { return path_; }
 
   const mojo::ReceiverSet<mojom::Partition>& receivers() const {
     return receivers_;
@@ -67,7 +67,7 @@ class PartitionImpl : public mojom::Partition {
   void RemoveOriginContext(const url::Origin& origin);
 
   const raw_ptr<StorageServiceImpl> service_;
-  const absl::optional<base::FilePath> path_;
+  const std::optional<base::FilePath> path_;
   mojo::ReceiverSet<mojom::Partition> receivers_;
   std::map<url::Origin, std::unique_ptr<OriginContextImpl>> origin_contexts_;
 

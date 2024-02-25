@@ -28,7 +28,7 @@ class ScreenLockManagerImpl : public ScreenLockManager {
   LockStatus GetLockStatus() const override;
   void SetLockStatusInternal(LockStatus lock_status) override;
 
-  raw_ptr<PrefService, ExperimentalAsh> pref_service_;
+  raw_ptr<PrefService> pref_service_;
 };
 
 }  // namespace phonehub

@@ -25,9 +25,7 @@ import java.util.Arrays;
 public class SpanApplier {
     private static final int INVALID_INDEX = -1;
 
-    /**
-     * Associates a span with the range of text between a start and an end tag.
-     */
+    /** Associates a span with the range of text between a start and an end tag. */
     public static final class SpanInfo implements Comparable<SpanInfo> {
         final String mStartTag;
         final String mEndTag;
@@ -60,7 +58,8 @@ public class SpanApplier {
 
         @Override
         public int compareTo(SpanInfo other) {
-            return this.mStartTagIndex < other.mStartTagIndex ? -1
+            return this.mStartTagIndex < other.mStartTagIndex
+                    ? -1
                     : (this.mStartTagIndex == other.mStartTagIndex ? 0 : 1);
         }
 
@@ -109,7 +108,8 @@ public class SpanApplier {
 
         SpannableString spannableString = new SpannableString(output);
         for (SpanInfo span : spans) {
-            if (span.mStartTagIndex == INVALID_INDEX || span.mSpans == null
+            if (span.mStartTagIndex == INVALID_INDEX
+                    || span.mSpans == null
                     || span.mSpans.length == 0) {
                 continue;
             }
@@ -150,11 +150,14 @@ public class SpanApplier {
     private static void validateSpanInfo(SpanInfo span, String input, int spanIndexLimit) {
         // Fail if there is a span without a start or end tag or if there are nested
         // or overlapping spans.
-        if (span.mStartTagIndex == INVALID_INDEX || span.mEndTagIndex == INVALID_INDEX
+        if (span.mStartTagIndex == INVALID_INDEX
+                || span.mEndTagIndex == INVALID_INDEX
                 || span.mStartTagIndex < spanIndexLimit) {
             span.mStartTagIndex = -1;
-            String error = String.format(
-                    "Input string is missing tags %s%s: %s", span.mStartTag, span.mEndTag, input);
+            String error =
+                    String.format(
+                            "Input string is missing tags %s%s: %s",
+                            span.mStartTag, span.mEndTag, input);
             throw new IllegalArgumentException(error);
         }
     }

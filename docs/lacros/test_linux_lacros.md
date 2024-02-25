@@ -30,7 +30,7 @@ Note: don’t forget to run ‘gclient sync’ after you make changes.
 
 Only 2 sets of gn args are officially supported. Some small changes should
 likely work but there’s no guarantee. If you are new to this, highly recommend
-you do not change any gn args. For non-Googlers, you can ignore the use_goma arg.
+you do not change any gn args. For non-Googlers, you can ignore the use_remoteexec arg.
 
 CQ gn args:
 ```
@@ -41,7 +41,7 @@ is_component_build = false
 is_debug = false
 symbol_level = 0
 target_os = "chromeos"
-use_goma = true
+use_remoteexec = true
 ```
 
 CI gn args:
@@ -52,7 +52,7 @@ dcheck_always_on = false
 is_component_build = false
 is_debug = false
 target_os = "chromeos"
-use_goma = true
+use_remoteexec = true
 ```
 
 3.  Build your target
@@ -75,8 +75,7 @@ out_linux_lacros/Release/bin/run_browser_tests --gtest_filter=BrowserTest.Title
 ```
 
 You can use this to run Chrome tests, such as browser_tests, unit_tests,
-interactive_ui_tests, lacros_chrome_browsertests,
-lacros_chrome_browsertests_run_in_series etc.
+interactive_ui_tests, lacros_chrome_browsertests etc.
 
 Note: Some tests are disabled by filter file. e.g. This
 [file](https://source.chromium.org/chromium/chromium/src/+/main:testing/buildbot/filters/linux-lacros.browser_tests.filter)
@@ -126,16 +125,17 @@ There are two ways to run Linux based version skew testing:
 First follow the previous section to build your target. Then download ash.
 Assuming you want to test against ash 92.0.4515.130.
 ```
+version=92.0.4515.130
 cipd auth-login
-echo "chromium/testing/linux-ash-chromium/x86_64/ash.zip version:92.0.4515.130" > /tmp/ensure-file.txt
-cipd ensure -ensure-file /tmp/ensure-file.txt -root lacros_version_skew_tests_v92.0.4515.130
+echo "chromium/testing/linux-ash-chromium/x86_64/ash.zip version:$version" > /tmp/ensure-file.txt
+cipd ensure -ensure-file /tmp/ensure-file.txt -root lacros_version_skew_tests_v$version
 ```
 
 Then you can use
 ```
 ./build/lacros/test_runner.py test \
 out_linux_lacros_lacros/Release/lacros_chrome_browsertests \
---ash-chrome-path-override=lacros_version_skew_tests_v92.0.4515.130/test_ash_chrome
+--ash-chrome-path-override=lacros_version_skew_tests_v$version/test_ash_chrome
 ```
 to run the test against that version of ash.
 
@@ -163,11 +163,11 @@ is_component_build = false
 is_debug = false
 proprietary_codecs = true
 target_os = "chromeos"
-use_goma = true
+use_remoteexec = true
 ```
 Run the demo test with:
 ```
-out/ashdesktop/browser_tests --lacros-chrome-path=out/ashdesktop/lacros_clang_x64 --gtest_filter=DemoAshRequiresLacrosTest*
+out/ashdesktop/browser_tests --lacros-chrome-path=out/ashdesktop/lacros_clang_x64/test_lacros_chrome --gtest_filter=DemoAshRequiresLacrosTest*
 ```
 Demo test is at
 [demo_ash_requires_lacros_browsertest.cc](https://source.chromium.org/chromium/chromium/src/+/main:chrome/test/base/chromeos/demo_ash_requires_lacros_browsertest.cc)
@@ -180,7 +180,7 @@ Demo test is at
 Writing a browser test for Lacros is similar to that on other platforms.
 
 If you need to fake some components in ash, you can add it in
-[fake_ash_test_chrome_browser_main_extra_parts.cc](https://source.chromium.org/chromium/chromium/src/+/main:chrome/test/base/chromeos/fake_ash_test_chrome_browser_main_extra_parts.cc).
+[test_ash_chrome_browser_main_extra_parts.cc](https://source.chromium.org/chromium/chromium/src/+/main:chrome/test/base/chromeos/test_ash_chrome_browser_main_extra_parts.cc).
 
 If you need Lacros to control Ash behavior, you can modify
 [TestControllerAsh](https://source.chromium.org/chromium/chromium/src/+/main:chrome/browser/ash/crosapi/test_controller_ash.h?q=TestControllerAsh&ss=chromium%2Fchromium%2Fsrc).

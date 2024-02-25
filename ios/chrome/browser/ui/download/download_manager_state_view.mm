@@ -27,13 +27,8 @@ const CGFloat kViewSize = 28;
 - (void)setState:(DownloadManagerState)state {
   switch (state) {
     case kDownloadManagerStateNotStarted:
-      if (@available(iOS 15, *)) {
-        self.image = DefaultSymbolTemplateWithPointSize(
-            kDownloadPromptFillSymbol, kSymbolDownloadInfobarPointSize);
-      } else {
-        self.image = DefaultSymbolTemplateWithPointSize(
-            kDownloadPromptFilliOS14Symbol, kSymbolDownloadInfobarPointSize);
-      }
+      self.image = DefaultSymbolTemplateWithPointSize(
+          kDownloadPromptFillSymbol, kSymbolDownloadInfobarPointSize);
       self.tintColor = [UIColor colorNamed:kBlueColor];
       break;
     case kDownloadManagerStateInProgress:

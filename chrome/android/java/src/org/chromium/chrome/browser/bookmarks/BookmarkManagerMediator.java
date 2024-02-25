@@ -4,7 +4,7 @@
 
 package org.chromium.chrome.browser.bookmarks;
 
-import static org.chromium.components.browser_ui.widget.listmenu.BasicListMenu.buildMenuListItem;
+import static org.chromium.components.browser_ui.widget.BrowserUiListMenuUtils.buildMenuListItem;
 
 import android.content.Context;
 import android.content.res.Resources;
@@ -17,12 +17,15 @@ import androidx.recyclerview.widget.RecyclerView;
 import androidx.recyclerview.widget.RecyclerView.OnScrollListener;
 
 import org.chromium.base.Callback;
+import org.chromium.base.CallbackController;
 import org.chromium.base.ObserverList;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.supplier.ObservableSupplierImpl;
+import org.chromium.base.task.TaskTraits;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.app.bookmarks.BookmarkFolderSelectActivity;
 import org.chromium.chrome.browser.bookmarks.BookmarkListEntry.ViewType;
+import org.chromium.chrome.browser.bookmarks.BookmarkMetrics.BookmarkManagerFilter;
 import org.chromium.chrome.browser.bookmarks.BookmarkRow.Location;
 import org.chromium.chrome.browser.bookmarks.BookmarkUiPrefs.BookmarkRowDisplayPref;
 import org.chromium.chrome.browser.bookmarks.BookmarkUiPrefs.BookmarkRowSortOrder;
@@ -31,7 +34,6 @@ import org.chromium.chrome.browser.bookmarks.BookmarkUiState.BookmarkUiMode;
 import org.chromium.chrome.browser.bookmarks.ImprovedBookmarkRowProperties.ImageVisibility;
 import org.chromium.chrome.browser.commerce.ShoppingFeatures;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.partnerbookmarks.PartnerBookmarksReader;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.sync.SyncServiceFactory;
@@ -41,13 +43,11 @@ import org.chromium.chrome.browser.ui.signin.SyncPromoController.SyncPromoState;
 import org.chromium.components.bookmarks.BookmarkId;
 import org.chromium.components.bookmarks.BookmarkItem;
 import org.chromium.components.bookmarks.BookmarkType;
+import org.chromium.components.browser_ui.widget.BrowserUiListMenuUtils;
 import org.chromium.components.browser_ui.widget.dragreorder.DragReorderableRecyclerViewAdapter;
 import org.chromium.components.browser_ui.widget.dragreorder.DragReorderableRecyclerViewAdapter.DragListener;
 import org.chromium.components.browser_ui.widget.dragreorder.DragReorderableRecyclerViewAdapter.DraggabilityProvider;
 import org.chromium.components.browser_ui.widget.dragreorder.DragStateDelegate;
-import org.chromium.components.browser_ui.widget.listmenu.BasicListMenu;
-import org.chromium.components.browser_ui.widget.listmenu.ListMenu;
-import org.chromium.components.browser_ui.widget.listmenu.ListMenuItemProperties;
 import org.chromium.components.browser_ui.widget.selectable_list.SelectableListLayout;
 import org.chromium.components.browser_ui.widget.selectable_list.SelectionDelegate;
 import org.chromium.components.browser_ui.widget.selectable_list.SelectionDelegate.SelectionObserver;
@@ -58,12 +58,14 @@ import org.chromium.components.feature_engagement.EventConstants;
 import org.chromium.components.power_bookmarks.PowerBookmarkMeta;
 import org.chromium.components.power_bookmarks.PowerBookmarkType;
 import org.chromium.ui.accessibility.AccessibilityState;
+import org.chromium.ui.listmenu.ListMenu;
+import org.chromium.ui.listmenu.ListMenuItemProperties;
 import org.chromium.ui.modelutil.MVCListAdapter.ListItem;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.url.GURL;
 
-import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
 import java.util.Set;
@@ -80,9 +82,7 @@ class BookmarkManagerMediator
 
     private static boolean sPreventLoadingForTesting;
 
-    /**
-     * Keeps track of whether drag is enabled / active for bookmark lists.
-     */
+    /** Keeps track of whether drag is enabled / active for bookmark lists. */
     private class BookmarkDragStateDelegate implements DragStateDelegate {
         private BookmarkDelegate mBookmarkDelegate;
         private SelectionDelegate<BookmarkId> mSelectionDelegate;
@@ -95,12 +95,13 @@ class BookmarkManagerMediator
         // DragStateDelegate implementation
         @Override
         public boolean getDragEnabled() {
-            boolean enabled = !AccessibilityState.isPerformGesturesEnabled()
-                    && mBookmarkDelegate.getCurrentUiMode() == BookmarkUiMode.FOLDER;
+            boolean enabled =
+                    !AccessibilityState.isPerformGesturesEnabled()
+                            && mBookmarkDelegate.getCurrentUiMode() == BookmarkUiMode.FOLDER;
             if (BookmarkFeatures.isAndroidImprovedBookmarksEnabled()) {
                 return enabled
-                        && mBookmarkUiPrefs.getBookmarkRowSortOrder()
-                        == BookmarkRowSortOrder.MANUAL;
+                        && mBookmarkUiPrefs.getBookmarkRowSortOrder() == BookmarkRowSortOrder.MANUAL
+                        && mCurrentPowerFilter.isEmpty();
             }
             return enabled;
         }
@@ -111,211 +112,235 @@ class BookmarkManagerMediator
         }
     }
 
-    private final BookmarkModelObserver mBookmarkModelObserver = new BookmarkModelObserver() {
-        @Override
-        public void bookmarkNodeChildrenReordered(BookmarkItem node) {
-            if (!mIsBookmarkModelReorderingInProgress) {
-                refresh();
-            }
-            mIsBookmarkModelReorderingInProgress = false;
-        }
-
-        @Override
-        public void bookmarkNodeRemoved(BookmarkItem parent, int oldIndex, BookmarkItem node,
-                boolean isDoingExtensiveChanges) {
-            clearHighlight();
-
-            BookmarkId id = node.getId();
-            if (getCurrentUiMode() == BookmarkUiMode.FOLDER) {
-                // If the folder is removed in folder mode, show the parent folder or falls back to
-                // all bookmarks mode.
-                if (Objects.equals(id, getCurrentFolderId())) {
-                    if (mBookmarkModel.getTopLevelFolderIds(true, true).contains(id)) {
-                        openFolder(mBookmarkModel.getDefaultFolderViewLocation());
-                    } else {
-                        openFolder(parent.getId());
+    private final BookmarkModelObserver mBookmarkModelObserver =
+            new BookmarkModelObserver() {
+                @Override
+                public void bookmarkNodeChildrenReordered(BookmarkItem node) {
+                    if (!mIsBookmarkModelReorderingInProgress) {
+                        mPendingRefresh.post();
                     }
-                } else {
-                    // Needs to remove the current node, and update any transitive parents that may
-                    // be showing child counts. Just refresh() for now.
-                    // refresh();
-                    int position = getPositionForBookmark(id);
-                    // If the position couldn't be found, then do a full refresh. Otherwise be
-                    // smart and remove only the index of the removed bookmark.
-                    if (position == -1) {
-                        refresh();
-                    } else {
-                        mModelList.removeAt(position);
-                        // If the deleted node was selection, unselect it.
-                        if (mSelectionDelegate.isItemSelected(id)) {
-                            mSelectionDelegate.toggleSelectionForItem(id);
+                    mIsBookmarkModelReorderingInProgress = false;
+                }
+
+                @Override
+                public void bookmarkNodeRemoved(
+                        BookmarkItem parent,
+                        int oldIndex,
+                        BookmarkItem node,
+                        boolean isDoingExtensiveChanges) {
+                    clearHighlight();
+
+                    BookmarkId id = node.getId();
+                    if (getCurrentUiMode() == BookmarkUiMode.FOLDER) {
+                        // If the folder is removed in folder mode, show the parent folder or falls
+                        // back to all bookmarks mode.
+                        if (Objects.equals(id, getCurrentFolderId())) {
+                            if (mBookmarkModel.getTopLevelFolderIds().contains(id)) {
+                                openFolder(mBookmarkModel.getDefaultFolderViewLocation());
+                            } else {
+                                openFolder(parent.getId());
+                            }
+                        } else {
+                            int position = getPositionForBookmark(id);
+                            // If the position couldn't be found, then do a full refresh. Otherwise
+                            // be smart and remove only the index of the removed bookmark.
+                            if (position == -1) {
+                                mPendingRefresh.post();
+                            } else {
+                                mModelList.removeAt(position);
+                                updateAllLocations();
+
+                                // If the deleted node was selection, unselect it.
+                                if (mSelectionDelegate.isItemSelected(id)) {
+                                    mSelectionDelegate.toggleSelectionForItem(id);
+                                }
+                            }
                         }
+                    } else if (getCurrentUiMode() == BookmarkUiMode.SEARCHING) {
+                        // We cannot rely on removing the specific list item that corresponds to the
+                        // removed node because the node might be a parent with children also shown
+                        // in the list.
+                        mPendingRefresh.post();
                     }
                 }
-            } else if (getCurrentUiMode() == BookmarkUiMode.SEARCHING) {
-                // We cannot rely on removing the specific list item that corresponds to the
-                // removed node because the node might be a parent with children also shown
-                // in the list.
-                refresh();
-            }
-        }
 
-        @Override
-        public void bookmarkNodeChanged(BookmarkItem item) {
-            clearHighlight();
+                @Override
+                public void bookmarkNodeChanged(BookmarkItem item) {
+                    clearHighlight();
 
-            BookmarkId id = item.getId();
-            if (getPositionForBookmark(id) == -1 && mSelectionDelegate.isItemSelected(id)) {
-                mSelectionDelegate.toggleSelectionForItem(id);
-            }
+                    BookmarkId id = item.getId();
+                    if (getPositionForBookmark(id) == -1 && mSelectionDelegate.isItemSelected(id)) {
+                        mSelectionDelegate.toggleSelectionForItem(id);
+                    }
 
-            if (getCurrentUiMode() == BookmarkUiMode.FOLDER
-                    && Objects.equals(id, getCurrentFolderId())) {
-                refresh();
-            } else {
-                super.bookmarkNodeChanged(item);
-            }
-        }
-
-        @Override
-        public void bookmarkModelChanged() {
-            clearHighlight();
-
-            if (getCurrentUiMode() == BookmarkUiMode.SEARCHING
-                    && TextUtils.isEmpty(getCurrentSearchText())
-                    && getCurrentSearchPowerFilter().isEmpty()) {
-                onEndSearch();
-            } else {
-                refresh();
-            }
-        }
-    };
-
-    private final Stack<BookmarkUiState> mStateStack = new Stack<>() {
-        @Override
-        public BookmarkUiState push(BookmarkUiState item) {
-            // The back press state depends on the size of stack. So push/pop item first in order
-            // to keep the size update-to-date.
-            var state = super.push(item);
-            onBackPressStateChanged();
-            return state;
-        }
-
-        @Override
-        public synchronized BookmarkUiState pop() {
-            var state = super.pop();
-            onBackPressStateChanged();
-            return state;
-        }
-    };
-
-    private final BookmarkUiObserver mBookmarkUiObserver = new BookmarkUiObserver() {
-        @Override
-        public void onDestroy() {
-            removeUiObserver(mBookmarkUiObserver);
-            getSelectionDelegate().removeObserver(mSelectionObserver);
-            mPromoHeaderManager.destroy();
-        }
-
-        @Override
-        public void onFolderStateSet(BookmarkId folder) {
-            clearHighlight();
-
-            mDragReorderableRecyclerViewAdapter.enableDrag();
-
-            setBookmarks(mBookmarkQueryHandler.buildBookmarkListForParent(getCurrentFolderId()));
-            updateEmptyViewText();
-        }
-
-        private void updateEmptyViewText() {
-            assert getCurrentFolderId() != null;
-            if (BookmarkId.SHOPPING_FOLDER.equals(getCurrentFolderId())) {
-                getSelectableListLayout().setEmptyViewText(
-                        R.string.tracked_products_empty_list_title);
-            } else if (getCurrentFolderId().getType() == BookmarkType.READING_LIST) {
-                TrackerFactory.getTrackerForProfile(mProfile).notifyEvent(
-                        EventConstants.READ_LATER_BOOKMARK_FOLDER_OPENED);
-                if (ChromeFeatureList.isEnabled(ChromeFeatureList.EMPTY_STATES)) {
-                    getSelectableListLayout().setEmptyStateImageRes(
-                            R.drawable.reading_list_empty_state_illustration);
-                    getSelectableListLayout().setEmptyStateViewText(
-                            R.string.reading_list_manager_empty_state,
-                            R.string.reading_list_manager_save_page_to_read_later);
-                } else {
-                    getSelectableListLayout().setEmptyViewText(
-                            R.string.reading_list_empty_list_title);
+                    if (getCurrentUiMode() == BookmarkUiMode.FOLDER
+                            && Objects.equals(id, getCurrentFolderId())) {
+                        mPendingRefresh.post();
+                    } else {
+                        super.bookmarkNodeChanged(item);
+                    }
                 }
-            } else {
-                if (ChromeFeatureList.isEnabled(ChromeFeatureList.EMPTY_STATES)) {
-                    getSelectableListLayout().setEmptyStateImageRes(
-                            R.drawable.bookmark_empty_state_illustration);
-                    getSelectableListLayout().setEmptyStateViewText(
-                            R.string.bookmark_manager_empty_state,
-                            R.string.bookmark_manager_back_to_page_by_adding_bookmark);
-                } else {
-                    getSelectableListLayout().setEmptyViewText(R.string.bookmarks_folder_empty);
+
+                @Override
+                public void bookmarkModelChanged() {
+                    clearHighlight();
+                    if (!BookmarkFeatures.isAndroidImprovedBookmarksEnabled()
+                            && getCurrentUiMode() == BookmarkUiMode.SEARCHING
+                            && TextUtils.isEmpty(getCurrentSearchText())) {
+                        onEndSearch();
+                    } else {
+                        mPendingRefresh.post();
+                    }
                 }
-            }
-        }
-    };
+            };
 
-    private final SelectionObserver<BookmarkId> mSelectionObserver = new SelectionObserver<>() {
-        @Override
-        public void onSelectionStateChange(List<BookmarkId> selectedBookmarks) {
-            clearHighlight();
+    private final Stack<BookmarkUiState> mStateStack =
+            new Stack<>() {
+                @Override
+                public BookmarkUiState push(BookmarkUiState item) {
+                    // The back press state depends on the size of stack. So push/pop item first in
+                    // order to keep the size update-to-date.
+                    var state = super.push(item);
+                    onBackPressStateChanged();
+                    return state;
+                }
 
-            if (BookmarkFeatures.isAndroidImprovedBookmarksEnabled()
-                    && mIsSelectionEnabled != mSelectionDelegate.isSelectionEnabled()) {
-                changeSelectionMode(mSelectionDelegate.isSelectionEnabled());
-            }
-        }
-    };
+                @Override
+                public synchronized BookmarkUiState pop() {
+                    var state = super.pop();
+                    onBackPressStateChanged();
+                    return state;
+                }
+            };
 
-    private final DragListener mDragListener = new DragListener() {
-        @Override
-        public void onSwap() {
-            mIsBookmarkModelReorderingInProgress = true;
-            setOrder();
-        }
-    };
+    private final BookmarkUiObserver mBookmarkUiObserver =
+            new BookmarkUiObserver() {
+                @Override
+                public void onDestroy() {
+                    removeUiObserver(mBookmarkUiObserver);
+                    getSelectionDelegate().removeObserver(mSelectionObserver);
+                    mPromoHeaderManager.destroy();
+                }
 
-    private final DraggabilityProvider mDraggabilityProvider = new DraggabilityProvider() {
-        @Override
-        public boolean isActivelyDraggable(PropertyModel propertyModel) {
-            if (BookmarkFeatures.isAndroidImprovedBookmarksEnabled()) {
-                return isPassivelyDraggable(propertyModel);
-            }
+                @Override
+                public void onFolderStateSet(BookmarkId folder) {
+                    clearHighlight();
 
-            BookmarkId bookmarkId = propertyModel.get(BookmarkManagerProperties.BOOKMARK_ID);
-            return mSelectionDelegate.isItemSelected(bookmarkId)
-                    && isPassivelyDraggable(propertyModel);
-        }
+                    mDragReorderableRecyclerViewAdapter.enableDrag();
 
-        @Override
-        public boolean isPassivelyDraggable(PropertyModel propertyModel) {
-            BookmarkListEntry bookmarkListEntry =
-                    propertyModel.get(BookmarkManagerProperties.BOOKMARK_LIST_ENTRY);
-            BookmarkItem bookmarkItem = bookmarkListEntry.getBookmarkItem();
-            return bookmarkItem.isReorderable();
-        }
-    };
+                    setBookmarks(
+                            mBookmarkQueryHandler.buildBookmarkListForParent(
+                                    getCurrentFolderId(), mCurrentPowerFilter));
+                    updateEmptyViewText();
 
-    private final BookmarkUiPrefs.Observer mBookmarkUiPrefsObserver = new Observer() {
-        @Override
-        public void onBookmarkRowDisplayPrefChanged(@BookmarkRowDisplayPref int displayPref) {
-            Resources res = mContext.getResources();
-            mBookmarkImageFetcher.setupFetchProperties(
-                    BookmarkUtils.getRoundedIconGenerator(mContext, displayPref),
-                    BookmarkUtils.getImageIconSize(res, displayPref),
-                    BookmarkUtils.getFaviconDisplaySize(res, displayPref));
-            refresh();
-        }
+                    if (BookmarkFeatures.isAndroidImprovedBookmarksEnabled()) {
+                        setSearchTextAndUpdateButtonVisibility("");
+                        clearSearchBoxFocus();
+                    }
+                }
 
-        @Override
-        public void onBookmarkRowSortOrderChanged(@BookmarkRowSortOrder int sortOrder) {
-            refresh();
-        }
-    };
+                private void updateEmptyViewText() {
+                    assert getCurrentFolderId() != null;
+                    if (BookmarkId.SHOPPING_FOLDER.equals(getCurrentFolderId())) {
+                        getSelectableListLayout()
+                                .setEmptyViewText(R.string.tracked_products_empty_list_title);
+                    } else if (getCurrentFolderId().getType() == BookmarkType.READING_LIST) {
+                        TrackerFactory.getTrackerForProfile(mProfile)
+                                .notifyEvent(EventConstants.READ_LATER_BOOKMARK_FOLDER_OPENED);
+                        getSelectableListLayout()
+                                .setEmptyStateImageRes(
+                                        R.drawable.reading_list_empty_state_illustration);
+                        getSelectableListLayout()
+                                .setEmptyStateViewText(
+                                        R.string.reading_list_manager_empty_state,
+                                        R.string.reading_list_manager_save_page_to_read_later);
+                    } else {
+                        getSelectableListLayout()
+                                .setEmptyStateImageRes(
+                                        R.drawable.bookmark_empty_state_illustration);
+                        getSelectableListLayout()
+                                .setEmptyStateViewText(
+                                        R.string.bookmark_manager_empty_state,
+                                        R.string.bookmark_manager_back_to_page_by_adding_bookmark);
+                    }
+                }
+            };
+
+    private final SelectionObserver<BookmarkId> mSelectionObserver =
+            new SelectionObserver<>() {
+                @Override
+                public void onSelectionStateChange(List<BookmarkId> selectedBookmarks) {
+                    clearHighlight();
+
+                    if (BookmarkFeatures.isAndroidImprovedBookmarksEnabled()
+                            && mIsSelectionEnabled != mSelectionDelegate.isSelectionEnabled()) {
+                        changeSelectionMode(mSelectionDelegate.isSelectionEnabled());
+                    }
+                }
+            };
+
+    private final DragListener mDragListener =
+            new DragListener() {
+                @Override
+                public void onSwap() {
+                    mIsBookmarkModelReorderingInProgress = true;
+                    setOrder();
+                }
+            };
+
+    private final DraggabilityProvider mDraggabilityProvider =
+            new DraggabilityProvider() {
+                @Override
+                public boolean isActivelyDraggable(PropertyModel propertyModel) {
+                    if (BookmarkFeatures.isAndroidImprovedBookmarksEnabled()) {
+                        return isPassivelyDraggable(propertyModel);
+                    }
+
+                    BookmarkId bookmarkId =
+                            propertyModel.get(BookmarkManagerProperties.BOOKMARK_ID);
+                    return mSelectionDelegate.isItemSelected(bookmarkId)
+                            && isPassivelyDraggable(propertyModel);
+                }
+
+                @Override
+                public boolean isPassivelyDraggable(PropertyModel propertyModel) {
+                    BookmarkListEntry bookmarkListEntry =
+                            propertyModel.get(BookmarkManagerProperties.BOOKMARK_LIST_ENTRY);
+                    BookmarkItem bookmarkItem = bookmarkListEntry.getBookmarkItem();
+                    return bookmarkItem.isReorderable();
+                }
+            };
+
+    private final BookmarkUiPrefs.Observer mBookmarkUiPrefsObserver =
+            new Observer() {
+                @Override
+                public void onBookmarkRowDisplayPrefChanged(
+                        @BookmarkRowDisplayPref int displayPref) {
+                    Resources res = mContext.getResources();
+                    mBookmarkImageFetcher.setupFetchProperties(
+                            BookmarkUtils.getRoundedIconGenerator(mContext, displayPref),
+                            BookmarkUtils.getImageIconSize(res, displayPref),
+                            BookmarkUtils.getFaviconDisplaySize(res));
+                    refresh();
+
+                    if (AccessibilityState.isTouchExplorationEnabled()) {
+                        mRecyclerView.announceForAccessibility(
+                                mBookmarkUiPrefs.getViewOptionsAccessibilityAnnouncementText(
+                                        mContext, displayPref));
+                    }
+                }
+
+                @Override
+                public void onBookmarkRowSortOrderChanged(@BookmarkRowSortOrder int sortOrder) {
+                    refresh();
+
+                    if (AccessibilityState.isTouchExplorationEnabled()) {
+                        mRecyclerView.announceForAccessibility(
+                                mBookmarkUiPrefs.getSortOrderAccessibilityAnnouncementText(
+                                        mContext, sortOrder));
+                    }
+                }
+            };
 
     private final ObserverList<BookmarkUiObserver> mUiObservers = new ObserverList<>();
     private final BookmarkDragStateDelegate mDragStateDelegate = new BookmarkDragStateDelegate();
@@ -333,7 +358,6 @@ class BookmarkManagerMediator
     private final LargeIconBridge mLargeIconBridge;
     // Whether we're showing in a dialog UI which is only true for phones.
     private final boolean mIsDialogUi;
-    private final boolean mIsIncognito;
     private final ObservableSupplierImpl<Boolean> mBackPressStateSupplier;
     private final Profile mProfile;
     private final BookmarkPromoHeader mPromoHeaderManager;
@@ -346,6 +370,12 @@ class BookmarkManagerMediator
     private final ShoppingService mShoppingService;
     private final SnackbarManager mSnackbarManager;
     private final ImprovedBookmarkRowCoordinator mImprovedBookmarkRowCoordinator;
+    private final Set<PowerBookmarkType> mCurrentPowerFilter = new HashSet<>();
+    private final CallbackController mCallbackController = new CallbackController();
+    private final PendingRunnable mPendingRefresh =
+            new PendingRunnable(
+                    TaskTraits.UI_DEFAULT, mCallbackController.makeCancelable(this::refresh));
+    private final BookmarkMoveSnackbarManager mBookmarkMoveSnackbarManager;
 
     // Whether this instance has been destroyed.
     private boolean mIsDestroyed;
@@ -361,23 +391,35 @@ class BookmarkManagerMediator
     // Whether the shopping feature is available and there are price-tracked bookmarks.
     private boolean mShoppingFilterAvailable;
 
-    BookmarkManagerMediator(Context context, BookmarkModel bookmarkModel,
-            BookmarkOpener bookmarkOpener, SelectableListLayout<BookmarkId> selectableListLayout,
-            SelectionDelegate<BookmarkId> selectionDelegate, RecyclerView recyclerView,
+    BookmarkManagerMediator(
+            Context context,
+            BookmarkModel bookmarkModel,
+            BookmarkOpener bookmarkOpener,
+            SelectableListLayout<BookmarkId> selectableListLayout,
+            SelectionDelegate<BookmarkId> selectionDelegate,
+            RecyclerView recyclerView,
             DragReorderableRecyclerViewAdapter dragReorderableRecyclerViewAdapter,
-            LargeIconBridge largeIconBridge, boolean isDialogUi, boolean isIncognito,
-            ObservableSupplierImpl<Boolean> backPressStateSupplier, Profile profile,
-            BookmarkUndoController bookmarkUndoController, ModelList modelList,
-            BookmarkUiPrefs bookmarkUiPrefs, Runnable hideKeyboardRunnable,
-            BookmarkImageFetcher bookmarkImageFetcher, ShoppingService shoppingService,
-            SnackbarManager snackbarManager, Consumer<OnScrollListener> onScrollListenerConsumer) {
+            LargeIconBridge largeIconBridge,
+            boolean isDialogUi,
+            ObservableSupplierImpl<Boolean> backPressStateSupplier,
+            Profile profile,
+            BookmarkUndoController bookmarkUndoController,
+            ModelList modelList,
+            BookmarkUiPrefs bookmarkUiPrefs,
+            Runnable hideKeyboardRunnable,
+            BookmarkImageFetcher bookmarkImageFetcher,
+            ShoppingService shoppingService,
+            SnackbarManager snackbarManager,
+            Consumer<OnScrollListener> onScrollListenerConsumer,
+            BookmarkMoveSnackbarManager bookmarkMoveSnackbarManager) {
         mContext = context;
         mBookmarkModel = bookmarkModel;
         mBookmarkModel.addObserver(mBookmarkModelObserver);
         mBookmarkOpener = bookmarkOpener;
         mSelectableListLayout = selectableListLayout;
-        mSelectableListLayout.getHandleBackPressChangedSupplier().addObserver(
-                (x) -> onBackPressStateChanged());
+        mSelectableListLayout
+                .getHandleBackPressChangedSupplier()
+                .addObserver((x) -> onBackPressStateChanged());
         mSelectionDelegate = selectionDelegate;
         mRecyclerView = recyclerView;
         mDragReorderableRecyclerViewAdapter = dragReorderableRecyclerViewAdapter;
@@ -386,20 +428,8 @@ class BookmarkManagerMediator
                 () -> mDragStateDelegate.getDragActive());
         mLargeIconBridge = largeIconBridge;
         mIsDialogUi = isDialogUi;
-        mIsIncognito = isIncognito;
         mBackPressStateSupplier = backPressStateSupplier;
         mProfile = profile;
-
-        mPromoHeaderManager = new BookmarkPromoHeader(mContext, mProfile, this::updateHeader);
-        mBookmarkUndoController = bookmarkUndoController;
-        if (BookmarkFeatures.isAndroidImprovedBookmarksEnabled()) {
-            mBookmarkQueryHandler =
-                    new ImprovedBookmarkQueryHandler(mBookmarkModel, bookmarkUiPrefs);
-        } else {
-            mBookmarkQueryHandler = new LegacyBookmarkQueryHandler(
-                    mBookmarkModel, bookmarkUiPrefs, SyncServiceFactory.getForProfile(mProfile));
-        }
-
         mModelList = modelList;
         mBookmarkUiPrefs = bookmarkUiPrefs;
         mBookmarkUiPrefs.addObserver(mBookmarkUiPrefsObserver);
@@ -407,23 +437,47 @@ class BookmarkManagerMediator
         mBookmarkImageFetcher = bookmarkImageFetcher;
         mShoppingService = shoppingService;
         mSnackbarManager = snackbarManager;
+        mPromoHeaderManager =
+                new BookmarkPromoHeader(
+                        mContext, mProfile.getOriginalProfile(), this::updateHeader);
+        mBookmarkUndoController = bookmarkUndoController;
+        mBookmarkMoveSnackbarManager = bookmarkMoveSnackbarManager;
 
         if (BookmarkFeatures.isAndroidImprovedBookmarksEnabled()) {
-            onScrollListenerConsumer.accept(new OnScrollListener() {
-                @Override
-                public void onScrolled(@NonNull RecyclerView recyclerView, int dx, int dy) {
-                    if (dy > 0) {
-                        clearSearchBoxFocus();
-                    }
-                }
-            });
+            mBookmarkQueryHandler =
+                    new ImprovedBookmarkQueryHandler(
+                            mBookmarkModel, bookmarkUiPrefs, mShoppingService);
+        } else {
+            mBookmarkQueryHandler =
+                    new LegacyBookmarkQueryHandler(
+                            mBookmarkModel,
+                            bookmarkUiPrefs,
+                            SyncServiceFactory.getForProfile(mProfile.getOriginalProfile()),
+                            mShoppingService);
+        }
+
+        if (BookmarkFeatures.isAndroidImprovedBookmarksEnabled()) {
+            onScrollListenerConsumer.accept(
+                    new OnScrollListener() {
+                        @Override
+                        public void onScrolled(@NonNull RecyclerView recyclerView, int dx, int dy) {
+                            if (dy > 0) {
+                                clearSearchBoxFocus();
+                            }
+                        }
+                    });
         }
 
         // Previously we were waiting for BookmarkModel to be loaded, but it's not necessary.
         PartnerBookmarksReader.addFaviconUpdateObserver(this);
 
-        mImprovedBookmarkRowCoordinator = new ImprovedBookmarkRowCoordinator(mContext,
-                mBookmarkImageFetcher, mBookmarkModel, mBookmarkUiPrefs, mShoppingService);
+        mImprovedBookmarkRowCoordinator =
+                new ImprovedBookmarkRowCoordinator(
+                        mContext,
+                        mBookmarkImageFetcher,
+                        mBookmarkModel,
+                        mBookmarkUiPrefs,
+                        mShoppingService);
 
         initializeToLoadingState();
         if (!sPreventLoadingForTesting) {
@@ -458,8 +512,10 @@ class BookmarkManagerMediator
 
         mBookmarkUndoController.destroy();
         mBookmarkQueryHandler.destroy();
+        mCallbackController.destroy();
 
         mBookmarkUiPrefs.removeObserver(mBookmarkUiPrefsObserver);
+        mBookmarkMoveSnackbarManager.destroy();
 
         for (BookmarkUiObserver observer : mUiObservers) {
             observer.onDestroy();
@@ -475,9 +531,7 @@ class BookmarkManagerMediator
         mBookmarkUndoController.setEnabled(false);
     }
 
-    /**
-     * See BookmarkManager(Coordinator)#onBackPressed.
-     */
+    /** See BookmarkManager(Coordinator)#onBackPressed. */
     boolean onBackPressed() {
         if (mIsDestroyed) return false;
 
@@ -496,23 +550,19 @@ class BookmarkManagerMediator
         return false;
     }
 
-    /**
-     * See BookmarkManager(Coordinator)#setBasicNativePage.
-     */
+    /** See BookmarkManager(Coordinator)#setBasicNativePage. */
     void setBasicNativePage(BasicNativePage nativePage) {
         mNativePage = nativePage;
     }
 
-    /**
-     * See BookmarkManager(Coordinator)#updateForUrl
-     */
+    /** See BookmarkManager(Coordinator)#updateForUrl */
     void updateForUrl(String url) {
         // Bookmark model is null if the manager has been destroyed.
         if (mBookmarkModel == null) return;
 
         if (mBookmarkModel.isBookmarkModelLoaded()) {
             BookmarkUiState searchState = null;
-            if (!mStateStack.isEmpty() && mStateStack.peek().mUiMode == BookmarkUiMode.SEARCHING) {
+            if (getCurrentUiMode() == BookmarkUiMode.SEARCHING) {
                 searchState = mStateStack.pop();
             }
 
@@ -536,6 +586,7 @@ class BookmarkManagerMediator
 
     /**
      * Synchronously searches for the given query.
+     *
      * @param query The query text to search for.
      */
     void search(@Nullable String query) {
@@ -544,12 +595,12 @@ class BookmarkManagerMediator
 
     public void setOrder() {
         assert !topLevelFoldersShowing() : "Cannot reorder top-level folders!";
-        assert getCurrentFolderId().getType()
-                != BookmarkType.READING_LIST : "Cannot reorder reading list!";
-        assert getCurrentFolderId().getType()
-                != BookmarkType.PARTNER : "Cannot reorder partner bookmarks!";
-        assert getCurrentUiMode()
-                == BookmarkUiMode.FOLDER : "Can only reorder items from folder mode!";
+        assert getCurrentFolderId().getType() != BookmarkType.READING_LIST
+                : "Cannot reorder reading list!";
+        assert getCurrentFolderId().getType() != BookmarkType.PARTNER
+                : "Cannot reorder partner bookmarks!";
+        assert getCurrentUiMode() == BookmarkUiMode.FOLDER
+                : "Can only reorder items from folder mode!";
 
         int startIndex = getBookmarkItemStartIndex();
         int endIndex = getBookmarkItemEndIndex();
@@ -570,7 +621,12 @@ class BookmarkManagerMediator
     }
 
     public boolean isReorderable(BookmarkListEntry entry) {
-        return entry != null && entry.getBookmarkItem() != null
+        if (!mCurrentPowerFilter.isEmpty()) {
+            return false;
+        }
+
+        return entry != null
+                && entry.getBookmarkItem() != null
                 && entry.getBookmarkItem().isReorderable();
     }
 
@@ -664,7 +720,7 @@ class BookmarkManagerMediator
 
     @Override
     public void openBookmark(BookmarkId bookmark) {
-        if (!mBookmarkOpener.openBookmarkInCurrentTab(bookmark, mIsIncognito)) return;
+        if (!mBookmarkOpener.openBookmarkInCurrentTab(bookmark, mProfile.isOffTheRecord())) return;
 
         // Close bookmark UI. Keep the reading list page open.
         if (bookmark != null && bookmark.getType() != BookmarkType.READING_LIST) {
@@ -703,8 +759,7 @@ class BookmarkManagerMediator
 
     @Override
     public @BookmarkUiMode int getCurrentUiMode() {
-        if (mStateStack.isEmpty()) return BookmarkUiMode.LOADING;
-        return mStateStack.peek().mUiMode;
+        return mStateStack.isEmpty() ? BookmarkUiMode.LOADING : mStateStack.peek().mUiMode;
     }
 
     @Override
@@ -761,13 +816,9 @@ class BookmarkManagerMediator
 
     // Private methods.
 
-    private @Nullable BookmarkId getCurrentFolderId() {
-        return mStateStack.isEmpty() ? null : mStateStack.peek().mFolder;
-    }
-
     /**
-     * Puts all UI elements to loading state. This state might be overridden synchronously by
-     * {@link #updateForUrl(String)}, if the bookmark model is already loaded.
+     * Puts all UI elements to loading state. This state might be overridden synchronously by {@link
+     * #updateForUrl(String)}, if the bookmark model is already loaded.
      */
     private void initializeToLoadingState() {
         assert mStateStack.isEmpty();
@@ -780,8 +831,8 @@ class BookmarkManagerMediator
      *
      * <p>If the given state is not valid, all_bookmark state will be shown. Afterwards, this method
      * checks the current state: if currently in loading state, it pops it out and adds the new
-     * state to the back stack. It also notifies the {@link #mNativePage} (if any) that the
-     * url has changed.
+     * state to the back stack. It also notifies the {@link #mNativePage} (if any) that the url has
+     * changed.
      *
      * <p>Also note that even if we store states to {@link #mStateStack}, on tablet the back
      * navigation and back button are not controlled by the manager: the tab handles back key and
@@ -789,15 +840,18 @@ class BookmarkManagerMediator
      */
     private void setState(BookmarkUiState state) {
         if (!state.isValid(mBookmarkModel)) {
-            state = BookmarkUiState.createFolderState(
-                    mBookmarkModel.getDefaultFolderViewLocation(), mBookmarkModel);
+            state =
+                    BookmarkUiState.createFolderState(
+                            mBookmarkModel.getDefaultFolderViewLocation(), mBookmarkModel);
         }
 
-        if (!mStateStack.isEmpty() && mStateStack.peek().equals(state)) return;
+        @BookmarkUiMode int currentUiMode = getCurrentUiMode();
+        @Nullable BookmarkUiState currentState = getCurrentUiState();
+        if (Objects.equals(currentState, state)) return;
 
         // The loading state is not persisted in history stack and once we have a valid state it
         // shall be removed.
-        if (!mStateStack.isEmpty() && mStateStack.peek().mUiMode == BookmarkUiMode.LOADING) {
+        if (!mStateStack.isEmpty() && currentUiMode == BookmarkUiMode.LOADING) {
             mStateStack.pop();
         }
 
@@ -809,16 +863,22 @@ class BookmarkManagerMediator
         boolean preserveFolderBookmarksOnEmptySearch = false;
         // Don't queue multiple consecutive search states. Instead replace the previous with the new
         // one.
-        if (getCurrentUiMode() == BookmarkUiMode.SEARCHING
+        if (currentUiMode == BookmarkUiMode.SEARCHING
                 && state.mUiMode == BookmarkUiMode.SEARCHING) {
             mStateStack.pop();
-        } else if (getCurrentUiMode() == BookmarkUiMode.FOLDER
+        } else if (currentUiMode == BookmarkUiMode.FOLDER
                 && !BookmarkFeatures.isAndroidImprovedBookmarksEnabled()) {
             preserveFolderBookmarksOnEmptySearch = true;
+        } else if (BookmarkFeatures.isAndroidImprovedBookmarksEnabled()
+                && currentUiMode != BookmarkUiMode.SEARCHING
+                && state.mUiMode == BookmarkUiMode.SEARCHING) {
+            // The initial state change to search should clear selection.
+            mSelectionDelegate.clearSelection();
         }
 
         // Search states should only be the top most state. Back button should not restore them.
-        if (getCurrentUiMode() == BookmarkUiMode.SEARCHING && state.mUiMode == BookmarkUiMode.FOLDER
+        if (currentUiMode == BookmarkUiMode.SEARCHING
+                && state.mUiMode == BookmarkUiMode.FOLDER
                 && BookmarkFeatures.isAndroidImprovedBookmarksEnabled()) {
             mStateStack.pop();
         }
@@ -831,7 +891,7 @@ class BookmarkManagerMediator
         if (state.mUiMode == BookmarkUiMode.FOLDER) {
             // Loading and searching states may be pushed to the stack but should never be stored in
             // preferences.
-            BookmarkUtils.setLastUsedUrl(mContext, state.mUrl);
+            BookmarkUtils.setLastUsedUrl(state.mUrl);
             // If a loading state is replaced by another loading state, do not notify this change.
             if (mNativePage != null) {
                 mNativePage.onStateChange(state.mUrl, false);
@@ -839,8 +899,9 @@ class BookmarkManagerMediator
         } else if (state.mUiMode == BookmarkUiMode.SEARCHING) {
             String searchText = getCurrentSearchText();
             if (!preserveFolderBookmarksOnEmptySearch || !TextUtils.isEmpty(searchText)) {
-                setBookmarks(mBookmarkQueryHandler.buildBookmarkListForSearch(
-                        searchText, getCurrentSearchPowerFilter()));
+                setBookmarks(
+                        mBookmarkQueryHandler.buildBookmarkListForSearch(
+                                searchText.trim(), mCurrentPowerFilter));
             }
         }
 
@@ -855,10 +916,18 @@ class BookmarkManagerMediator
      * still be stored by {@link #mSelectionDelegate}, which causes incorrect selection counting.
      */
     private void syncAdapterAndSelectionDelegate() {
-        for (BookmarkId node : mSelectionDelegate.getSelectedItemsAsList()) {
+        List<BookmarkId> selectedItems = mSelectionDelegate.getSelectedItemsAsList();
+        Set<BookmarkId> removedIds = new HashSet<>();
+        for (BookmarkId node : selectedItems) {
             if (mSelectionDelegate.isItemSelected(node) && getPositionForBookmark(node) == -1) {
-                mSelectionDelegate.toggleSelectionForItem(node);
+                removedIds.add(node);
             }
+        }
+
+        if (!removedIds.isEmpty()) {
+            Set<BookmarkId> retainIds = new HashSet<>(selectedItems);
+            retainIds.removeAll(removedIds);
+            mSelectionDelegate.setSelectedItems(retainIds);
         }
     }
 
@@ -869,10 +938,12 @@ class BookmarkManagerMediator
         }
         mBackPressStateSupplier.set(
                 Boolean.TRUE.equals(mSelectableListLayout.getHandleBackPressChangedSupplier().get())
-                || mStateStack.size() > 1);
+                        || mStateStack.size() > 1);
     }
 
-    /** @return The position of the given bookmark in adapter. Will return -1 if not found. */
+    /**
+     * @return The position of the given bookmark in adapter. Will return -1 if not found.
+     */
     @VisibleForTesting
     int getPositionForBookmark(BookmarkId bookmark) {
         assert bookmark != null;
@@ -888,7 +959,7 @@ class BookmarkManagerMediator
 
     private void clearSearchBoxFocus() {
         assertIsAndroidImprovedBookmarksEnabled();
-        getSearchBoxPropertyModel().set(BookmarkSearchBoxRowProperties.HAS_FOCUS, false);
+        setSearchBoxFocusAndHideKeyboardIfNeeded(false);
     }
 
     private PropertyModel getSearchBoxPropertyModel() {
@@ -960,7 +1031,8 @@ class BookmarkManagerMediator
     }
 
     private boolean isBookmarkRowType(@ViewType int viewType) {
-        return viewType == ViewType.BOOKMARK || viewType == ViewType.FOLDER
+        return viewType == ViewType.BOOKMARK
+                || viewType == ViewType.FOLDER
                 || viewType == ViewType.SHOPPING_POWER_BOOKMARK
                 || viewType == ViewType.IMPROVED_BOOKMARK_COMPACT
                 || viewType == ViewType.IMPROVED_BOOKMARK_VISUAL;
@@ -976,9 +1048,11 @@ class BookmarkManagerMediator
     }
 
     private void updateAllLocations() {
-        Predicate<ListItem> locationPredicate = (listItem) -> {
-            return isBookmarkRowType(listItem.type) && isMovable(mBookmarkModel, listItem.model);
-        };
+        Predicate<ListItem> locationPredicate =
+                (listItem) -> {
+                    return isBookmarkRowType(listItem.type)
+                            && isMovable(mBookmarkModel, listItem.model);
+                };
         int startIndex = firstIndexWithPredicate(0, mModelList.size(), 1, locationPredicate);
         int lastIndex = firstIndexWithPredicate(mModelList.size() - 1, -1, -1, locationPredicate);
         if (startIndex < 0 || lastIndex < 0) {
@@ -989,8 +1063,10 @@ class BookmarkManagerMediator
             mModelList.get(startIndex).model.set(BookmarkManagerProperties.LOCATION, Location.SOLO);
         } else {
             mModelList.get(startIndex).model.set(BookmarkManagerProperties.LOCATION, Location.TOP);
-            mModelList.get(lastIndex).model.set(
-                    BookmarkManagerProperties.LOCATION, Location.BOTTOM);
+            mModelList
+                    .get(lastIndex)
+                    .model
+                    .set(BookmarkManagerProperties.LOCATION, Location.BOTTOM);
         }
 
         for (int i = startIndex + 1; i < lastIndex; i++) {
@@ -1000,8 +1076,9 @@ class BookmarkManagerMediator
 
     /** Refresh the list of bookmarks within the currently visible folder. */
     private void refresh() {
+        assert !mIsDestroyed;
         if (!mStateStack.isEmpty()) {
-            notifyUi(mStateStack.peek(), /*preserveFolderBookmarksOnEmptySearch*/ false);
+            notifyUi(mStateStack.peek(), /* preserveFolderBookmarksOnEmptySearch= */ false);
         }
     }
 
@@ -1053,12 +1130,12 @@ class BookmarkManagerMediator
     }
 
     private int getCurrentPromoHeaderIndex() {
-        return searchForFirstIndexOfType(/*endIndex=*/PROMO_MAX_INDEX, this::isPromoType);
+        return searchForFirstIndexOfType(/* endIndex= */ PROMO_MAX_INDEX, this::isPromoType);
     }
 
     private int getCurrentSearchBoxIndex() {
         return searchForFirstIndexOfType(
-                /*endIndex=*/SEARCH_BOX_MAX_INDEX, (type) -> type == ViewType.SEARCH_BOX);
+                /* endIndex= */ SEARCH_BOX_MAX_INDEX, (type) -> type == ViewType.SEARCH_BOX);
     }
 
     /** Returns the first index that matches up until endIndex, or -1 if no match is found. */
@@ -1074,7 +1151,8 @@ class BookmarkManagerMediator
 
     private boolean isPromoType(@ViewType int viewType) {
         return viewType == ViewType.PERSONALIZED_SIGNIN_PROMO
-                || viewType == ViewType.PERSONALIZED_SYNC_PROMO || viewType == ViewType.SYNC_PROMO;
+                || viewType == ViewType.PERSONALIZED_SYNC_PROMO
+                || viewType == ViewType.SYNC_PROMO;
     }
 
     /** Removes all promo and section headers from the current list. */
@@ -1088,18 +1166,28 @@ class BookmarkManagerMediator
     }
 
     private int getBookmarkItemStartIndex() {
-        return firstIndexWithPredicate(0, mModelList.size(), 1,
-                (listItem) -> { return isBookmarkRowType(listItem.type); });
+        return firstIndexWithPredicate(
+                0,
+                mModelList.size(),
+                1,
+                (listItem) -> {
+                    return isBookmarkRowType(listItem.type);
+                });
     }
 
     private int getBookmarkItemEndIndex() {
-        return firstIndexWithPredicate(mModelList.size() - 1, -1, -1,
-                (listItem) -> { return isBookmarkRowType(listItem.type); });
+        return firstIndexWithPredicate(
+                mModelList.size() - 1,
+                -1,
+                -1,
+                (listItem) -> {
+                    return isBookmarkRowType(listItem.type);
+                });
     }
 
     /**
-     * Return true iff the currently-open folder is the root folder
-     *         (which is true iff the top-level folders are showing)
+     * Return true iff the currently-open folder is the root folder (which is true iff the top-level
+     * folders are showing)
      */
     private boolean topLevelFoldersShowing() {
         return Objects.equals(getCurrentFolderId(), mBookmarkModel.getRootFolderId());
@@ -1123,7 +1211,14 @@ class BookmarkManagerMediator
     private ListItem buildPersonalizedPromoListItem(@ViewType int promoHeaderType) {
         BookmarkListEntry bookmarkListEntry =
                 BookmarkListEntry.createSyncPromoHeader(promoHeaderType);
-        PropertyModel propertyModel = new PropertyModel(BookmarkManagerProperties.ALL_KEYS);
+        PropertyModel.Builder builder =
+                new PropertyModel.Builder(BookmarkManagerProperties.ALL_KEYS);
+        if (BookmarkFeatures.isAndroidImprovedBookmarksEnabled()) {
+            builder.with(
+                    BookmarkManagerProperties.PROMO_TOP_MARGIN_RES,
+                    R.dimen.bookmark_promo_top_margin_with_search_box);
+        }
+        PropertyModel propertyModel = builder.build();
         propertyModel.set(BookmarkManagerProperties.BOOKMARK_LIST_ENTRY, bookmarkListEntry);
         propertyModel.set(BookmarkManagerProperties.BOOKMARK_PROMO_HEADER, mPromoHeaderManager);
         return new ListItem(bookmarkListEntry.getViewType(), propertyModel);
@@ -1132,17 +1227,23 @@ class BookmarkManagerMediator
     private ListItem buildSearchBoxRow() {
         PropertyModel propertyModel =
                 new PropertyModel.Builder(BookmarkSearchBoxRowProperties.ALL_KEYS)
-                        .with(BookmarkSearchBoxRowProperties.SEARCH_TEXT_CHANGE_CALLBACK,
+                        .with(
+                                BookmarkSearchBoxRowProperties.SEARCH_TEXT_CHANGE_CALLBACK,
                                 this::onSearchTextChangeCallback)
-                        .with(BookmarkSearchBoxRowProperties.CLEAR_SEARCH_TEXT_RUNNABLE,
+                        .with(
+                                BookmarkSearchBoxRowProperties.CLEAR_SEARCH_TEXT_RUNNABLE,
                                 this::onClearSearchTextRunnable)
-                        .with(BookmarkSearchBoxRowProperties.FOCUS_CHANGE_CALLBACK,
+                        .with(
+                                BookmarkSearchBoxRowProperties.FOCUS_CHANGE_CALLBACK,
                                 this::onSearchBoxFocusChange)
-                        .with(BookmarkSearchBoxRowProperties.SHOPPING_CHIP_START_ICON_RES,
+                        .with(
+                                BookmarkSearchBoxRowProperties.SHOPPING_CHIP_START_ICON_RES,
                                 R.drawable.notifications_active)
-                        .with(BookmarkSearchBoxRowProperties.SHOPPING_CHIP_TEXT_RES,
+                        .with(
+                                BookmarkSearchBoxRowProperties.SHOPPING_CHIP_TEXT_RES,
                                 R.string.price_tracking_bookmarks_filter_title)
-                        .with(BookmarkSearchBoxRowProperties.SHOPPING_CHIP_TOGGLE_CALLBACK,
+                        .with(
+                                BookmarkSearchBoxRowProperties.SHOPPING_CHIP_TOGGLE_CALLBACK,
                                 this::onShoppingFilterToggle)
                         .build();
         updateSearchBoxShoppingFilterVisibility(propertyModel);
@@ -1160,7 +1261,8 @@ class BookmarkManagerMediator
         PropertyModel propertyModel = new PropertyModel(BookmarkManagerProperties.ALL_KEYS);
         propertyModel.set(BookmarkManagerProperties.BOOKMARK_LIST_ENTRY, bookmarkListEntry);
         propertyModel.set(BookmarkManagerProperties.BOOKMARK_ID, bookmarkId);
-        propertyModel.set(BookmarkManagerProperties.IS_FROM_FILTER_VIEW,
+        propertyModel.set(
+                BookmarkManagerProperties.IS_FROM_FILTER_VIEW,
                 BookmarkId.SHOPPING_FOLDER.equals(getCurrentFolderId()));
 
         boolean isHighlighted = Objects.equals(bookmarkId, mHighlightedBookmark);
@@ -1188,19 +1290,26 @@ class BookmarkManagerMediator
         propertyModel.set(BookmarkManagerProperties.BOOKMARK_LIST_ENTRY, bookmarkListEntry);
 
         // Menu
-        propertyModel.set(ImprovedBookmarkRowProperties.END_IMAGE_VISIBILITY, ImageVisibility.MENU);
+        propertyModel.set(
+                ImprovedBookmarkRowProperties.END_IMAGE_VISIBILITY,
+                bookmarkItem.isEditable() ? ImageVisibility.MENU : ImageVisibility.NONE);
         propertyModel.set(
                 ImprovedBookmarkRowProperties.POPUP_LISTENER, this::onBookmarkItemMenuOpened);
         // TODO(crbug.com/1442044): Investigate caching ModelList for the menu.
-        propertyModel.set(ImprovedBookmarkRowProperties.LIST_MENU_BUTTON_DELEGATE,
+        propertyModel.set(
+                ImprovedBookmarkRowProperties.LIST_MENU_BUTTON_DELEGATE,
                 () -> createListMenuForBookmark(propertyModel));
         propertyModel.set(ImprovedBookmarkRowProperties.SELECTION_ACTIVE, mIsSelectionEnabled);
-        propertyModel.set(ImprovedBookmarkRowProperties.SELECTED, false);
+        propertyModel.set(
+                ImprovedBookmarkRowProperties.SELECTED,
+                mSelectionDelegate.isItemSelected(bookmarkId));
 
-        propertyModel.set(ImprovedBookmarkRowProperties.ROW_CLICK_LISTENER,
-                (v) -> { bookmarkRowClicked(bookmarkId); });
-        propertyModel.set(ImprovedBookmarkRowProperties.ROW_LONGCLICK_LISTENER,
-                (v) -> { return bookmarkRowLongClicked(bookmarkId); });
+        propertyModel.set(
+                ImprovedBookmarkRowProperties.ROW_CLICK_LISTENER,
+                () -> bookmarkRowClicked(bookmarkId));
+        propertyModel.set(
+                ImprovedBookmarkRowProperties.ROW_LONG_CLICK_LISTENER,
+                () -> bookmarkRowLongClicked(bookmarkId));
 
         return new ListItem(bookmarkListEntry.getViewType(), propertyModel);
     }
@@ -1221,10 +1330,13 @@ class BookmarkManagerMediator
 
         if (bookmarkId.getType() == BookmarkType.READING_LIST) {
             if (bookmarkItem != null) {
-                listItems.add(buildMenuListItem(bookmarkItem.isRead()
-                                ? R.string.reading_list_mark_as_unread
-                                : R.string.reading_list_mark_as_read,
-                        0, 0));
+                listItems.add(
+                        buildMenuListItem(
+                                bookmarkItem.isRead()
+                                        ? R.string.reading_list_mark_as_unread
+                                        : R.string.reading_list_mark_as_read,
+                                0,
+                                0));
             }
         }
 
@@ -1233,10 +1345,11 @@ class BookmarkManagerMediator
         listItems.add(buildMenuListItem(R.string.bookmark_item_move, 0, 0, canMove));
         listItems.add(buildMenuListItem(R.string.bookmark_item_delete, 0, 0));
 
-        boolean canReorder = bookmarkItem != null && bookmarkItem.isReorderable();
+        boolean canReorder = isReorderable(entry);
         if (getCurrentUiMode() == BookmarkUiMode.SEARCHING) {
             listItems.add(buildMenuListItem(R.string.bookmark_show_in_folder, 0, 0));
-        } else if (getCurrentUiMode() == BookmarkUiMode.FOLDER && location != Location.SOLO
+        } else if (getCurrentUiMode() == BookmarkUiMode.FOLDER
+                && location != Location.SOLO
                 && canReorder) {
             boolean manualSortActive =
                     mBookmarkUiPrefs.getBookmarkRowSortOrder() == BookmarkRowSortOrder.MANUAL;
@@ -1252,13 +1365,17 @@ class BookmarkManagerMediator
         }
 
         PowerBookmarkMeta meta = entry.getPowerBookmarkMeta();
-        if (meta != null && meta.hasShoppingSpecifics()) {
+        if (PowerBookmarkUtils.isShoppingListItem(meta)) {
             CommerceSubscription sub =
                     PowerBookmarkUtils.createCommerceSubscriptionForPowerBookmarkMeta(meta);
             boolean isSubscribed = mShoppingService.isSubscribedFromCache(sub);
-            listItems.add(buildMenuListItem(isSubscribed ? R.string.disable_price_tracking_menu_item
-                                                         : R.string.enable_price_tracking_menu_item,
-                    0, 0));
+            listItems.add(
+                    buildMenuListItem(
+                            isSubscribed
+                                    ? R.string.disable_price_tracking_menu_item
+                                    : R.string.enable_price_tracking_menu_item,
+                            0,
+                            0));
         }
 
         return listItems;
@@ -1270,81 +1387,98 @@ class BookmarkManagerMediator
         BookmarkId bookmarkId = entry.getBookmarkItem().getId();
         ModelList listItems =
                 createListMenuModelList(entry, model.get(BookmarkManagerProperties.LOCATION));
-        ListMenu.Delegate delegate = item -> {
-            int textId = item.get(ListMenuItemProperties.TITLE_ID);
-            if (textId == R.string.bookmark_item_select) {
-                mSelectionDelegate.toggleSelectionForItem(bookmarkId);
-                RecordUserAction.record("Android.BookmarkPage.SelectFromMenu");
-                if (bookmarkId.getType() == BookmarkType.READING_LIST) {
-                    RecordUserAction.record("Android.BookmarkPage.ReadingList.SelectFromMenu");
-                }
-            } else if (textId == R.string.bookmark_item_edit) {
-                BookmarkItem bookmarkItem = mBookmarkModel.getBookmarkById(bookmarkId);
-                BookmarkUtils.startEditActivity(mContext, bookmarkItem.getId());
-            } else if (textId == R.string.reading_list_mark_as_read) {
-                BookmarkItem bookmarkItem = mBookmarkModel.getBookmarkById(bookmarkId);
-                mBookmarkModel.setReadStatusForReadingList(bookmarkItem.getUrl(), /*read=*/true);
-                RecordUserAction.record("Android.BookmarkPage.ReadingList.MarkAsRead");
-            } else if (textId == R.string.reading_list_mark_as_unread) {
-                BookmarkItem bookmarkItem = mBookmarkModel.getBookmarkById(bookmarkId);
-                mBookmarkModel.setReadStatusForReadingList(bookmarkItem.getUrl(), /*read=*/false);
-                RecordUserAction.record("Android.BookmarkPage.ReadingList.MarkAsUnread");
-            } else if (textId == R.string.bookmark_item_move) {
-                if (BookmarkFeatures.isAndroidImprovedBookmarksEnabled()) {
-                    BookmarkUtils.startFolderPickerActivity(mContext, bookmarkId);
-                } else {
-                    BookmarkFolderSelectActivity.startFolderSelectActivity(mContext, bookmarkId);
-                }
-                RecordUserAction.record("MobileBookmarkManagerMoveToFolder");
-            } else if (textId == R.string.bookmark_item_delete) {
-                if (mBookmarkModel != null) {
-                    mBookmarkModel.deleteBookmarks(bookmarkId);
-                    RecordUserAction.record("Android.BookmarkPage.RemoveItem");
-                    if (bookmarkId.getType() == BookmarkType.READING_LIST) {
-                        RecordUserAction.record("Android.BookmarkPage.ReadingList.RemoveItem");
+        ListMenu.Delegate delegate =
+                item -> {
+                    int textId = item.get(ListMenuItemProperties.TITLE_ID);
+                    if (textId == R.string.bookmark_item_select) {
+                        mSelectionDelegate.toggleSelectionForItem(bookmarkId);
+                        RecordUserAction.record("Android.BookmarkPage.SelectFromMenu");
+                        if (bookmarkId.getType() == BookmarkType.READING_LIST) {
+                            RecordUserAction.record(
+                                    "Android.BookmarkPage.ReadingList.SelectFromMenu");
+                        }
+                    } else if (textId == R.string.bookmark_item_edit) {
+                        BookmarkItem bookmarkItem = mBookmarkModel.getBookmarkById(bookmarkId);
+                        BookmarkUtils.startEditActivity(mContext, bookmarkItem.getId());
+                    } else if (textId == R.string.reading_list_mark_as_read) {
+                        BookmarkItem bookmarkItem = mBookmarkModel.getBookmarkById(bookmarkId);
+                        mBookmarkModel.setReadStatusForReadingList(
+                                bookmarkItem.getId(), /* read= */ true);
+                        RecordUserAction.record("Android.BookmarkPage.ReadingList.MarkAsRead");
+                    } else if (textId == R.string.reading_list_mark_as_unread) {
+                        BookmarkItem bookmarkItem = mBookmarkModel.getBookmarkById(bookmarkId);
+                        mBookmarkModel.setReadStatusForReadingList(
+                                bookmarkItem.getId(), /* read= */ false);
+                        RecordUserAction.record("Android.BookmarkPage.ReadingList.MarkAsUnread");
+                    } else if (textId == R.string.bookmark_item_move) {
+                        if (BookmarkFeatures.isAndroidImprovedBookmarksEnabled()) {
+                            mBookmarkMoveSnackbarManager.startFolderPickerAndObserveResult(
+                                    bookmarkId);
+                        } else {
+                            BookmarkFolderSelectActivity.startFolderSelectActivity(
+                                    mContext, bookmarkId);
+                        }
+                        RecordUserAction.record("MobileBookmarkManagerMoveToFolder");
+                    } else if (textId == R.string.bookmark_item_delete) {
+                        if (mBookmarkModel != null) {
+                            mBookmarkModel.deleteBookmarks(bookmarkId);
+                            RecordUserAction.record("Android.BookmarkPage.RemoveItem");
+                            if (bookmarkId.getType() == BookmarkType.READING_LIST) {
+                                RecordUserAction.record(
+                                        "Android.BookmarkPage.ReadingList.RemoveItem");
+                            }
+                        }
+                    } else if (textId == R.string.bookmark_show_in_folder) {
+                        BookmarkItem bookmarkItem = mBookmarkModel.getBookmarkById(bookmarkId);
+                        openFolder(bookmarkItem.getParentId());
+                        highlightBookmark(bookmarkId);
+                        RecordUserAction.record("MobileBookmarkManagerShowInFolder");
+                    } else if (textId == R.string.menu_item_move_up) {
+                        moveUpOne(bookmarkId);
+                        RecordUserAction.record("MobileBookmarkManagerMoveUp");
+                    } else if (textId == R.string.menu_item_move_down) {
+                        moveDownOne(bookmarkId);
+                        RecordUserAction.record("MobileBookmarkManagerMoveDown");
+                    } else if (textId == R.string.disable_price_tracking_menu_item) {
+                        setPriceTrackingEnabled(model, false);
+                    } else if (textId == R.string.enable_price_tracking_menu_item) {
+                        setPriceTrackingEnabled(model, true);
                     }
-                }
-            } else if (textId == R.string.bookmark_show_in_folder) {
-                BookmarkItem bookmarkItem = mBookmarkModel.getBookmarkById(bookmarkId);
-                openFolder(bookmarkItem.getParentId());
-                highlightBookmark(bookmarkId);
-                RecordUserAction.record("MobileBookmarkManagerShowInFolder");
-            } else if (textId == R.string.menu_item_move_up) {
-                moveUpOne(bookmarkId);
-                RecordUserAction.record("MobileBookmarkManagerMoveUp");
-            } else if (textId == R.string.menu_item_move_down) {
-                moveDownOne(bookmarkId);
-                RecordUserAction.record("MobileBookmarkManagerMoveDown");
-            } else if (textId == R.string.disable_price_tracking_menu_item) {
-                setPriceTrackingEnabled(model, false);
-            } else if (textId == R.string.enable_price_tracking_menu_item) {
-                setPriceTrackingEnabled(model, true);
-            }
-        };
-        return new BasicListMenu(mContext, listItems, delegate);
+                };
+        return BrowserUiListMenuUtils.getBasicListMenu(mContext, listItems, delegate);
     }
 
     void setPriceTrackingEnabled(PropertyModel model, boolean enabled) {
         BookmarkListEntry entry = model.get(BookmarkManagerProperties.BOOKMARK_LIST_ENTRY);
 
-        Callback<Boolean> callback = success -> {
-            if (!success) return;
-            ShoppingAccessoryCoordinator shoppingAccessoryCoordinator =
-                    model.get(ImprovedBookmarkRowProperties.SHOPPING_ACCESSORY_COORDINATOR);
-            shoppingAccessoryCoordinator.setPriceTrackingEnabled(enabled);
-            if (BookmarkFeatures.isAndroidImprovedBookmarksEnabled()) {
-                updateShoppingFilterVisible();
-            }
-        };
+        Callback<Boolean> callback =
+                success -> {
+                    if (!success) return;
+                    ShoppingAccessoryCoordinator shoppingAccessoryCoordinator =
+                            model.get(ImprovedBookmarkRowProperties.SHOPPING_ACCESSORY_COORDINATOR);
+                    shoppingAccessoryCoordinator.setPriceTrackingEnabled(enabled);
+                    if (BookmarkFeatures.isAndroidImprovedBookmarksEnabled()) {
+                        updateShoppingFilterVisible();
+                    }
+                };
 
-        PowerBookmarkUtils.setPriceTrackingEnabledWithSnackbars(mBookmarkModel,
-                entry.getBookmarkItem().getId(), enabled, mSnackbarManager, mContext.getResources(),
-                mProfile, callback);
+        PowerBookmarkUtils.setPriceTrackingEnabledWithSnackbars(
+                mBookmarkModel,
+                entry.getBookmarkItem().getId(),
+                enabled,
+                mSnackbarManager,
+                mContext.getResources(),
+                mProfile,
+                callback);
     }
 
     void toggleSelectionForRow(BookmarkId id) {
         mSelectionDelegate.toggleSelectionForItem(id);
-        PropertyModel model = mModelList.get(getPositionForBookmark(id)).model;
+        int index = getPositionForBookmark(id);
+        if (index < 0) {
+            return;
+        }
+        PropertyModel model = mModelList.get(index).model;
         model.set(ImprovedBookmarkRowProperties.SELECTED, mSelectionDelegate.isItemSelected(id));
     }
 
@@ -1357,7 +1491,11 @@ class BookmarkManagerMediator
     }
 
     void openBookmarkId(BookmarkId id) {
-        BookmarkItem item = mBookmarkModel.getBookmarkById(id);
+        @Nullable BookmarkItem item = mBookmarkModel.getBookmarkById(id);
+        if (item == null) {
+            return;
+        }
+
         if (item.isFolder()) {
             openFolder(id);
         } else {
@@ -1375,44 +1513,61 @@ class BookmarkManagerMediator
     }
 
     private void onSearchTextChangeCallback(String searchText) {
-        searchText = searchText == null ? "" : searchText.trim();
+        searchText = searchText == null ? "" : searchText;
         if (BookmarkFeatures.isAndroidImprovedBookmarksEnabled()) {
-            getSearchBoxPropertyModel().set(BookmarkSearchBoxRowProperties.SEARCH_TEXT, searchText);
-            getSearchBoxPropertyModel().set(
-                    BookmarkSearchBoxRowProperties.CLEAR_SEARCH_TEXT_BUTTON_VISIBILITY,
-                    !TextUtils.isEmpty(searchText));
+            setSearchTextAndUpdateButtonVisibility(searchText);
         }
-        onSearchChange(searchText, getCurrentSearchPowerFilter());
+        onSearchChange(searchText);
     }
 
     private void onClearSearchTextRunnable() {
-        getSearchBoxPropertyModel().set(BookmarkSearchBoxRowProperties.SEARCH_TEXT, "");
+        onSearchTextChangeCallback("");
+    }
+
+    private void setSearchTextAndUpdateButtonVisibility(String searchText) {
+        getSearchBoxPropertyModel().set(BookmarkSearchBoxRowProperties.SEARCH_TEXT, searchText);
+        boolean isVisible = !TextUtils.isEmpty(searchText);
+        getSearchBoxPropertyModel()
+                .set(BookmarkSearchBoxRowProperties.CLEAR_SEARCH_TEXT_BUTTON_VISIBILITY, isVisible);
     }
 
     private void onSearchBoxFocusChange(Boolean hasFocus) {
+        assert hasFocus != null;
+        setSearchBoxFocusAndHideKeyboardIfNeeded(hasFocus);
+    }
+
+    private void setSearchBoxFocusAndHideKeyboardIfNeeded(boolean hasFocus) {
         getSearchBoxPropertyModel().set(BookmarkSearchBoxRowProperties.HAS_FOCUS, hasFocus);
-        if (!hasFocus) {
+        if (hasFocus) {
+            if (getCurrentUiMode() == BookmarkUiMode.FOLDER) {
+                setState(BookmarkUiState.createSearchState(""));
+            }
+        } else {
             mHideKeyboardRunnable.run();
         }
     }
 
     private void onShoppingFilterToggle(boolean isFiltering) {
-        final @NonNull Set<PowerBookmarkType> powerFilter = isFiltering
-                ? Collections.singleton(PowerBookmarkType.SHOPPING)
-                : Collections.emptySet();
-        getSearchBoxPropertyModel().set(
-                BookmarkSearchBoxRowProperties.SHOPPING_CHIP_SELECTED, isFiltering);
-        onSearchChange(getCurrentSearchText(), powerFilter);
+        if (isFiltering) {
+            mCurrentPowerFilter.add(PowerBookmarkType.SHOPPING);
+        } else {
+            mCurrentPowerFilter.remove(PowerBookmarkType.SHOPPING);
+        }
+
+        BookmarkMetrics.reportBookmarkManagerFilterUsed(BookmarkManagerFilter.SHOPPING);
+        getSearchBoxPropertyModel()
+                .set(BookmarkSearchBoxRowProperties.SHOPPING_CHIP_SELECTED, isFiltering);
+        refresh();
     }
 
-    private void onSearchChange(
-            @Nullable String searchText, @NonNull Set<PowerBookmarkType> powerFilter) {
-        if (TextUtils.isEmpty(searchText) && powerFilter.isEmpty()
+    private void onSearchChange(@Nullable String searchText) {
+        if (!BookmarkFeatures.isAndroidImprovedBookmarksEnabled()
+                && TextUtils.isEmpty(searchText)
                 && getCurrentUiMode() == BookmarkUiMode.SEARCHING) {
             onEndSearch();
         } else {
             searchText = searchText == null ? "" : searchText;
-            setState(BookmarkUiState.createSearchState(searchText, powerFilter));
+            setState(BookmarkUiState.createSearchState(searchText));
         }
     }
 
@@ -1420,14 +1575,12 @@ class BookmarkManagerMediator
         return mStateStack.isEmpty() ? "" : mStateStack.peek().mSearchText;
     }
 
-    private @NonNull Set<PowerBookmarkType> getCurrentSearchPowerFilter() {
-        return getCurrentUiMode() == BookmarkUiMode.SEARCHING
-                ? getCurrentUiState().mSearchPowerFilter
-                : Collections.emptySet();
-    }
-
     private @Nullable BookmarkUiState getCurrentUiState() {
         return mStateStack.isEmpty() ? null : mStateStack.peek();
+    }
+
+    private @Nullable BookmarkId getCurrentFolderId() {
+        return mStateStack.isEmpty() ? null : mStateStack.peek().mFolder;
     }
 
     @VisibleForTesting
@@ -1443,9 +1596,14 @@ class BookmarkManagerMediator
             // TODO(crbug.com/1473108): Consider using RecyclerView decorations for section headers.
             if (mModelList.get(i).type == ViewType.SECTION_HEADER) continue;
             PropertyModel model = mModelList.get(i).model;
+
+            BookmarkId id = model.get(BookmarkManagerProperties.BOOKMARK_ID);
+            model.set(
+                    ImprovedBookmarkRowProperties.SELECTED, mSelectionDelegate.isItemSelected(id));
             model.set(ImprovedBookmarkRowProperties.SELECTION_ACTIVE, mIsSelectionEnabled);
         }
     }
+
     @SuppressWarnings("AssertionSideEffect")
     private void assertIsAndroidImprovedBookmarksEnabled() {
         assert BookmarkFeatures.isAndroidImprovedBookmarksEnabled();
@@ -1457,14 +1615,16 @@ class BookmarkManagerMediator
     // properly.
     @VisibleForTesting
     void updateShoppingFilterVisible() {
-        boolean eligible = ShoppingFeatures.isShoppingListEligible();
+        boolean eligible = ShoppingFeatures.isShoppingListEligible(mProfile);
         if (!eligible) {
             updateFilterAvailability(false);
             return;
         }
 
         mShoppingService.getAllPriceTrackedBookmarks(
-                (bookmarks) -> { updateFilterAvailability(!bookmarks.isEmpty()); });
+                (bookmarks) -> {
+                    updateFilterAvailability(!bookmarks.isEmpty());
+                });
     }
 
     private void updateFilterAvailability(boolean shoppingFilterAvailable) {
@@ -1479,12 +1639,21 @@ class BookmarkManagerMediator
     private void updateSearchBoxShoppingFilterVisibility(PropertyModel searchBoxPropertyModel) {
         // We purposefully hide the shopping filter in reading list even though search is
         // global to avoid confusing users.
-        boolean filterVisible = mShoppingFilterAvailable
-                && !Objects.equals(mBookmarkModel.getReadingListFolder(), getCurrentFolderId());
+        // TODO(crbug.com/1501998): Add account reading list folder support here.
+        boolean filterVisible =
+                mShoppingFilterAvailable
+                        && !Objects.equals(
+                                mBookmarkModel.getLocalOrSyncableReadingListFolder(),
+                                getCurrentFolderId());
         searchBoxPropertyModel.set(
                 BookmarkSearchBoxRowProperties.SHOPPING_CHIP_VISIBILITY, filterVisible);
-        if (!filterVisible && getCurrentSearchPowerFilter().contains(PowerBookmarkType.SHOPPING)) {
+        Set<PowerBookmarkType> powerFilter = mCurrentPowerFilter;
+        if (!filterVisible && powerFilter.contains(PowerBookmarkType.SHOPPING)) {
             onShoppingFilterToggle(false);
+        }
+
+        if (filterVisible) {
+            BookmarkMetrics.reportBookmarkManagerFilterShown(BookmarkManagerFilter.SHOPPING);
         }
     }
 

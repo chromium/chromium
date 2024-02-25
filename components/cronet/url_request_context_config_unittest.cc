@@ -138,7 +138,6 @@ TEST(URLRequestContextConfigTest, TestExperimentalOptionParsing) {
   // See http://crbug.com/696569.
   options.Set("disable_ipv6_on_wifi", true);
   options.Set("spdy_go_away_on_ip_change", true);
-  options.SetByDottedPath({"QUIC.ios_network_service_type"}, 2);
   std::string options_json;
   EXPECT_TRUE(base::JSONWriter::Write(options, &options_json));
 
@@ -176,7 +175,7 @@ TEST(URLRequestContextConfigTest, TestExperimentalOptionParsing) {
           // Enable Public Key Pinning bypass for local trust anchors.
           true,
           // Optional network thread priority.
-          absl::optional<double>(42.0));
+          std::optional<double>(42.0));
 
   net::URLRequestContextBuilder builder;
   config->ConfigureURLRequestContextBuilder(&builder);
@@ -220,11 +219,8 @@ TEST(URLRequestContextConfigTest, TestExperimentalOptionParsing) {
   EXPECT_FALSE(quic_params->exponential_backoff_on_initial_delay.has_value());
   EXPECT_FALSE(quic_params->delay_main_job_with_available_spdy_session);
 
-  // Check network_service_type for iOS.
-  EXPECT_EQ(2, quic_params->ios_network_service_type);
-
 #if defined(ENABLE_BUILT_IN_DNS)
-  // Check AsyncDNS resolver is enabled (not supported on iOS).
+  // Check AsyncDNS resolver is enabled.
   EXPECT_TRUE(context->host_resolver()->GetDnsConfigAsValue());
 #endif  // defined(ENABLE_BUILT_IN_DNS)
 
@@ -296,7 +292,7 @@ TEST(URLRequestContextConfigTest, TestExperimentalOptionParsing) {
   std::unique_ptr<net::HostResolver::ResolveHostRequest> resolve_request =
       context->host_resolver()->CreateRequest(
           net::HostPortPair("abcde", 80), net::NetworkAnonymizationKey(),
-          net::NetLogWithSource(), absl::nullopt);
+          net::NetLogWithSource(), std::nullopt);
   EXPECT_EQ(net::OK, resolve_request->Start(
                          base::BindOnce([](int error) { NOTREACHED(); })));
 
@@ -326,8 +322,6 @@ TEST(URLRequestContextConfigTest, TestExperimentalOptionParsing) {
             https_svcb_options.secure_extra_time_min);
   EXPECT_EQ(base::FeatureList::IsEnabled(net::features::kUseDnsHttpsSvcbAlpn),
             params->use_dns_https_svcb_alpn);
-
-  EXPECT_TRUE(config->enable_telemetry);
 }
 
 TEST(URLRequestContextConfigTest, SetSupportedQuicVersionByAlpn) {
@@ -369,7 +363,7 @@ TEST(URLRequestContextConfigTest, SetSupportedQuicVersionByAlpn) {
           // Enable Public Key Pinning bypass for local trust anchors.
           true,
           // Optional network thread priority.
-          absl::optional<double>());
+          std::optional<double>());
 
   net::URLRequestContextBuilder builder;
   config->ConfigureURLRequestContextBuilder(&builder);
@@ -417,7 +411,7 @@ TEST(URLRequestContextConfigTest, SetUnsupportedQuicVersion) {
           // Enable Public Key Pinning bypass for local trust anchors.
           true,
           // Optional network thread priority.
-          absl::optional<double>());
+          std::optional<double>());
 
   net::URLRequestContextBuilder builder;
   config->ConfigureURLRequestContextBuilder(&builder);
@@ -470,7 +464,7 @@ TEST(URLRequestContextConfigTest, SetObsoleteQuicVersion) {
           // Enable Public Key Pinning bypass for local trust anchors.
           true,
           // Optional network thread priority.
-          absl::optional<double>());
+          std::optional<double>());
 
   net::URLRequestContextBuilder builder;
   config->ConfigureURLRequestContextBuilder(&builder);
@@ -518,7 +512,7 @@ TEST(URLRequestContextConfigTest, SetQuicServerMigrationOptions) {
           // Enable Public Key Pinning bypass for local trust anchors.
           true,
           // Optional network thread priority.
-          absl::optional<double>());
+          std::optional<double>());
 
   net::URLRequestContextBuilder builder;
   config->ConfigureURLRequestContextBuilder(&builder);
@@ -533,75 +527,10 @@ TEST(URLRequestContextConfigTest, SetQuicServerMigrationOptions) {
   EXPECT_TRUE(quic_params->allow_server_migration);
 }
 
-// Test that goaway_sessions_on_ip_change is set on by default for iOS.
-#if BUILDFLAG(IS_IOS)
-#define MAYBE_SetQuicGoAwaySessionsOnIPChangeByDefault \
-  SetQuicGoAwaySessionsOnIPChangeByDefault
-#else
-#define MAYBE_SetQuicGoAwaySessionsOnIPChangeByDefault \
-  DISABLED_SetQuicGoAwaySessionsOnIPChangeByDefault
-#endif
-TEST(URLRequestContextConfigTest,
-     MAYBE_SetQuicGoAwaySessionsOnIPChangeByDefault) {
-  base::test::TaskEnvironment task_environment_(
-      base::test::TaskEnvironment::MainThreadType::IO);
-
-  std::unique_ptr<URLRequestContextConfig> config =
-      URLRequestContextConfig::CreateURLRequestContextConfig(
-          // Enable QUIC.
-          true,
-          // Enable SPDY.
-          true,
-          // Enable Brotli.
-          false,
-          // Type of http cache.
-          URLRequestContextConfig::HttpCacheType::DISK,
-          // Max size of http cache in bytes.
-          1024000,
-          // Disable caching for HTTP responses. Other information may be stored
-          // in the cache.
-          false,
-          // Storage path for http cache and cookie storage.
-          "/data/data/org.chromium.net/app_cronet_test/test_storage",
-          // Accept-Language request header field.
-          "foreign-language",
-          // User-Agent request header field.
-          "fake agent",
-          // JSON encoded experimental options.
-          "{\"QUIC\":{}}",
-          // MockCertVerifier to use for testing purposes.
-          std::unique_ptr<net::CertVerifier>(),
-          // Enable network quality estimator.
-          false,
-          // Enable Public Key Pinning bypass for local trust anchors.
-          true,
-          // Optional network thread priority.
-          absl::optional<double>());
-
-  net::URLRequestContextBuilder builder;
-  config->ConfigureURLRequestContextBuilder(&builder);
-  // Set a ProxyConfigService to avoid DCHECK failure when building.
-  builder.set_proxy_config_service(
-      std::make_unique<net::ProxyConfigServiceFixed>(
-          net::ProxyConfigWithAnnotation::CreateDirect()));
-  std::unique_ptr<net::URLRequestContext> context(builder.Build());
-  const net::QuicParams* quic_params = context->quic_context()->params();
-
-  EXPECT_FALSE(quic_params->close_sessions_on_ip_change);
-  EXPECT_TRUE(quic_params->goaway_sessions_on_ip_change);
-}
-
 // Tests that goaway_sessions_on_ip_changes can be set on via
-// experimental options on non-iOS.
-#if !BUILDFLAG(IS_IOS)
-#define MAYBE_SetQuicGoAwaySessionsOnIPChangeViaExperimentOptions \
-  SetQuicGoAwaySessionsOnIPChangeViaExperimentOptions
-#else
-#define MAYBE_SetQuicGoAwaySessionsOnIPChangeViaExperimentOptions \
-  DISABLED_SetQuicGoAwaySessionsOnIPChangeViaExperimentOptions
-#endif
+// experimental options.
 TEST(URLRequestContextConfigTest,
-     MAYBE_SetQuicGoAwaySessionsOnIPChangeViaExperimentOptions) {
+     SetQuicGoAwaySessionsOnIPChangeViaExperimentOptions) {
   base::test::TaskEnvironment task_environment_(
       base::test::TaskEnvironment::MainThreadType::IO);
 
@@ -635,7 +564,7 @@ TEST(URLRequestContextConfigTest,
           // Enable Public Key Pinning bypass for local trust anchors.
           true,
           // Optional network thread priority.
-          absl::optional<double>());
+          std::optional<double>());
 
   net::URLRequestContextBuilder builder;
   config->ConfigureURLRequestContextBuilder(&builder);
@@ -648,65 +577,6 @@ TEST(URLRequestContextConfigTest,
 
   EXPECT_FALSE(quic_params->close_sessions_on_ip_change);
   EXPECT_TRUE(quic_params->goaway_sessions_on_ip_change);
-}
-
-// Test that goaway_sessions_on_ip_change can be set to false via
-// experimental options on iOS.
-#if BUILDFLAG(IS_IOS)
-#define MAYBE_DisableQuicGoAwaySessionsOnIPChangeViaExperimentOptions \
-  DisableQuicGoAwaySessionsOnIPChangeViaExperimentOptions
-#else
-#define MAYBE_DisableQuicGoAwaySessionsOnIPChangeViaExperimentOptions \
-  DISABLED_DisableQuicGoAwaySessionsOnIPChangeViaExperimentOptions
-#endif
-TEST(URLRequestContextConfigTest,
-     MAYBE_DisableQuicGoAwaySessionsOnIPChangeViaExperimentOptions) {
-  base::test::TaskEnvironment task_environment_(
-      base::test::TaskEnvironment::MainThreadType::IO);
-
-  std::unique_ptr<URLRequestContextConfig> config =
-      URLRequestContextConfig::CreateURLRequestContextConfig(
-          // Enable QUIC.
-          true,
-          // Enable SPDY.
-          true,
-          // Enable Brotli.
-          false,
-          // Type of http cache.
-          URLRequestContextConfig::HttpCacheType::DISK,
-          // Max size of http cache in bytes.
-          1024000,
-          // Disable caching for HTTP responses. Other information may be stored
-          // in the cache.
-          false,
-          // Storage path for http cache and cookie storage.
-          "/data/data/org.chromium.net/app_cronet_test/test_storage",
-          // Accept-Language request header field.
-          "foreign-language",
-          // User-Agent request header field.
-          "fake agent",
-          // JSON encoded experimental options.
-          "{\"QUIC\":{\"goaway_sessions_on_ip_change\":false}}",
-          // MockCertVerifier to use for testing purposes.
-          std::unique_ptr<net::CertVerifier>(),
-          // Enable network quality estimator.
-          false,
-          // Enable Public Key Pinning bypass for local trust anchors.
-          true,
-          // Optional network thread priority.
-          absl::optional<double>());
-
-  net::URLRequestContextBuilder builder;
-  config->ConfigureURLRequestContextBuilder(&builder);
-  // Set a ProxyConfigService to avoid DCHECK failure when building.
-  builder.set_proxy_config_service(
-      std::make_unique<net::ProxyConfigServiceFixed>(
-          net::ProxyConfigWithAnnotation::CreateDirect()));
-  std::unique_ptr<net::URLRequestContext> context(builder.Build());
-  const net::QuicParams* quic_params = context->quic_context()->params();
-
-  EXPECT_FALSE(quic_params->close_sessions_on_ip_change);
-  EXPECT_FALSE(quic_params->goaway_sessions_on_ip_change);
 }
 
 TEST(URLRequestContextConfigTest, SetQuicConnectionMigrationV2Options) {
@@ -735,11 +605,7 @@ TEST(URLRequestContextConfigTest, SetQuicConnectionMigrationV2Options) {
           // User-Agent request header field.
           "fake agent",
           // JSON encoded experimental options.
-          // Explicitly turn off "goaway_sessions_on_ip_change" which is default
-          // enabled on iOS but cannot be simultaneously set with migration
-          // option.
           "{\"QUIC\":{\"migrate_sessions_on_network_change_v2\":true,"
-          "\"goaway_sessions_on_ip_change\":false,"
           "\"migrate_sessions_early_v2\":true,"
           "\"retry_on_alternate_network_before_handshake\":true,"
           "\"migrate_idle_sessions\":true,"
@@ -755,7 +621,7 @@ TEST(URLRequestContextConfigTest, SetQuicConnectionMigrationV2Options) {
           // Enable Public Key Pinning bypass for local trust anchors.
           true,
           // Optional network thread priority.
-          absl::optional<double>());
+          std::optional<double>());
 
   net::URLRequestContextBuilder builder;
   config->ConfigureURLRequestContextBuilder(&builder);
@@ -815,7 +681,7 @@ TEST(URLRequestContextConfigTest, SetQuicAllowPortMigration) {
           // Enable Public Key Pinning bypass for local trust anchors.
           true,
           // Optional network thread priority.
-          absl::optional<double>());
+          std::optional<double>());
 
   net::URLRequestContextBuilder builder;
   config->ConfigureURLRequestContextBuilder(&builder);
@@ -862,7 +728,7 @@ TEST(URLRequestContextConfigTest, DisableQuicRetryWithoutAltSvcOnQuicErrors) {
           // Enable Public Key Pinning bypass for local trust anchors.
           true,
           // Optional network thread priority.
-          absl::optional<double>());
+          std::optional<double>());
 
   net::URLRequestContextBuilder builder;
   config->ConfigureURLRequestContextBuilder(&builder);
@@ -911,7 +777,7 @@ TEST(URLRequestContextConfigTest, BrokenAlternativeServiceDelayParams1) {
           // Enable Public Key Pinning bypass for local trust anchors.
           true,
           // Optional network thread priority.
-          absl::optional<double>());
+          std::optional<double>());
 
   net::URLRequestContextBuilder builder;
   config->ConfigureURLRequestContextBuilder(&builder);
@@ -965,7 +831,7 @@ TEST(URLRequestContextConfigTest, BrokenAlternativeServiceDelayParams2) {
           // Enable Public Key Pinning bypass for local trust anchors.
           true,
           // Optional network thread priority.
-          absl::optional<double>());
+          std::optional<double>());
 
   net::URLRequestContextBuilder builder;
   config->ConfigureURLRequestContextBuilder(&builder);
@@ -1017,7 +883,7 @@ TEST(URLRequestContextConfigTest, DelayMainJobWithAvailableSpdySession) {
           // Enable Public Key Pinning bypass for local trust anchors.
           true,
           // Optional network thread priority.
-          absl::optional<double>());
+          std::optional<double>());
 
   net::URLRequestContextBuilder builder;
   config->ConfigureURLRequestContextBuilder(&builder);
@@ -1064,7 +930,7 @@ TEST(URLRequestContextConfigTest, SetDisableTlsZeroRtt) {
           // Enable Public Key Pinning bypass for local trust anchors.
           true,
           // Optional network thread priority.
-          absl::optional<double>());
+          std::optional<double>());
 
   net::URLRequestContextBuilder builder;
   config->ConfigureURLRequestContextBuilder(&builder);
@@ -1112,7 +978,7 @@ TEST(URLRequestContextConfigTest, SetQuicHostWhitelist) {
           // Enable Public Key Pinning bypass for local trust anchors.
           true,
           // Optional network thread priority.
-          absl::optional<double>());
+          std::optional<double>());
 
   net::URLRequestContextBuilder builder;
   config->ConfigureURLRequestContextBuilder(&builder);
@@ -1163,7 +1029,7 @@ TEST(URLRequestContextConfigTest, SetQuicMaxTimeBeforeCryptoHandshake) {
           // Enable Public Key Pinning bypass for local trust anchors.
           true,
           // Optional network thread priority.
-          absl::optional<double>());
+          std::optional<double>());
 
   net::URLRequestContextBuilder builder;
   config->ConfigureURLRequestContextBuilder(&builder);
@@ -1213,7 +1079,7 @@ TEST(URLURLRequestContextConfigTest, SetQuicConnectionOptions) {
           // Enable Public Key Pinning bypass for local trust anchors.
           true,
           // Optional network thread priority.
-          absl::optional<double>());
+          std::optional<double>());
 
   net::URLRequestContextBuilder builder;
   config->ConfigureURLRequestContextBuilder(&builder);
@@ -1270,7 +1136,7 @@ TEST(URLURLRequestContextConfigTest, SetAcceptLanguageAndUserAgent) {
           // Enable Public Key Pinning bypass for local trust anchors.
           true,
           // Optional network thread priority.
-          absl::optional<double>());
+          std::optional<double>());
 
   net::URLRequestContextBuilder builder;
   config->ConfigureURLRequestContextBuilder(&builder);
@@ -1318,7 +1184,7 @@ TEST(URLURLRequestContextConfigTest, TurningOffQuic) {
           // Enable Public Key Pinning bypass for local trust anchors.
           true,
           // Optional network thread priority.
-          absl::optional<double>());
+          std::optional<double>());
 
   net::URLRequestContextBuilder builder;
   config->ConfigureURLRequestContextBuilder(&builder);
@@ -1384,7 +1250,7 @@ TEST(URLRequestContextConfigTest, SetSpdyGoAwayOnIPChange) {
           // Enable Public Key Pinning bypass for local trust anchors.
           true,
           // Optional network thread priority.
-          absl::optional<double>());
+          std::optional<double>());
 
   net::URLRequestContextBuilder builder;
   config->ConfigureURLRequestContextBuilder(&builder);
@@ -1432,7 +1298,7 @@ TEST(URLRequestContextConfigTest, WrongSpdyGoAwayOnIPChangeValue) {
           // Enable Public Key Pinning bypass for local trust anchors.
           true,
           // Optional network thread priority.
-          absl::optional<double>());
+          std::optional<double>());
 
   net::URLRequestContextBuilder builder;
   config->ConfigureURLRequestContextBuilder(&builder);
@@ -1474,7 +1340,7 @@ TEST(URLRequestContextConfigTest, BidiStreamDetectBrokenConnection) {
           // Enable Public Key Pinning bypass for local trust anchors.
           true,
           // Optional network thread priority.
-          absl::optional<double>());
+          std::optional<double>());
 
   net::URLRequestContextBuilder builder;
   config->ConfigureURLRequestContextBuilder(&builder);
@@ -1518,7 +1384,7 @@ TEST(URLRequestContextConfigTest, WrongBidiStreamDetectBrokenConnectionValue) {
           // Enable Public Key Pinning bypass for local trust anchors.
           true,
           // Optional network thread priority.
-          absl::optional<double>());
+          std::optional<double>());
 
   net::URLRequestContextBuilder builder;
   config->ConfigureURLRequestContextBuilder(&builder);
@@ -1568,7 +1434,7 @@ TEST(URLRequestContextConfigTest, HttpsSvcbOptions) {
           // Enable Public Key Pinning bypass for local trust anchors.
           true,
           // Optional network thread priority.
-          absl::optional<double>());
+          std::optional<double>());
   net::URLRequestContextBuilder builder;
   config->ConfigureURLRequestContextBuilder(&builder);
   // Set a ProxyConfigService to avoid DCHECK failure when building.
@@ -1592,91 +1458,6 @@ TEST(URLRequestContextConfigTest, HttpsSvcbOptions) {
   const net::HttpNetworkSessionParams* params =
       context->GetNetworkSessionParams();
   EXPECT_TRUE(params->use_dns_https_svcb_alpn);
-}
-
-TEST(URLRequestContextConfigTest, DisableTelemetry) {
-  base::test::TaskEnvironment task_environment_(
-      base::test::TaskEnvironment::MainThreadType::IO);
-
-  std::unique_ptr<URLRequestContextConfig> config =
-      URLRequestContextConfig::CreateURLRequestContextConfig(
-          // Enable QUIC.
-          true,
-          // Enable SPDY.
-          true,
-          // Enable Brotli.
-          false,
-          // Type of http cache.
-          URLRequestContextConfig::HttpCacheType::DISK,
-          // Max size of http cache in bytes.
-          1024000,
-          // Disable caching for HTTP responses. Other information may be stored
-          // in the cache.
-          false,
-          // Storage path for http cache and cookie storage.
-          "/data/data/org.chromium.net/app_cronet_test/test_storage",
-          // Accept-Language request header field.
-          "foreign-language",
-          // User-Agent request header field.
-          "fake agent",
-          // JSON encoded experimental options.
-          "{\"enable_telemetry\":false}",
-          // MockCertVerifier to use for testing purposes.
-          std::unique_ptr<net::CertVerifier>(),
-          // Enable network quality estimator.
-          false,
-          // Enable Public Key Pinning bypass for local trust anchors.
-          true,
-          // Optional network thread priority.
-          absl::optional<double>());
-  net::URLRequestContextBuilder builder;
-  config->ConfigureURLRequestContextBuilder(&builder);
-  EXPECT_TRUE(
-      config->effective_experimental_options.contains("enable_telemetry"));
-  EXPECT_FALSE(config->enable_telemetry);
-}
-
-TEST(URLRequestContextConfigTest, WrongEnableTelemetryValue) {
-  base::test::TaskEnvironment task_environment_(
-      base::test::TaskEnvironment::MainThreadType::IO);
-
-  std::unique_ptr<URLRequestContextConfig> config =
-      URLRequestContextConfig::CreateURLRequestContextConfig(
-          // Enable QUIC.
-          true,
-          // Enable SPDY.
-          true,
-          // Enable Brotli.
-          false,
-          // Type of http cache.
-          URLRequestContextConfig::HttpCacheType::DISK,
-          // Max size of http cache in bytes.
-          1024000,
-          // Disable caching for HTTP responses. Other information may be stored
-          // in the cache.
-          false,
-          // Storage path for http cache and cookie storage.
-          "/data/data/org.chromium.net/app_cronet_test/test_storage",
-          // Accept-Language request header field.
-          "foreign-language",
-          // User-Agent request header field.
-          "fake agent",
-          // JSON encoded experimental options.
-          "{\"enable_telemetry\":10}",
-          // MockCertVerifier to use for testing purposes.
-          std::unique_ptr<net::CertVerifier>(),
-          // Enable network quality estimator.
-          false,
-          // Enable Public Key Pinning bypass for local trust anchors.
-          true,
-          // Optional network thread priority.
-          absl::optional<double>());
-
-  net::URLRequestContextBuilder builder;
-  config->ConfigureURLRequestContextBuilder(&builder);
-  EXPECT_FALSE(
-      config->effective_experimental_options.contains("enable_telemetry"));
-  EXPECT_TRUE(config->enable_telemetry);
 }
 
 // See stale_host_resolver_unittest.cc for test of StaleDNS options.

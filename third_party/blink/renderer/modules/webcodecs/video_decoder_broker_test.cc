@@ -2,12 +2,16 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "third_party/blink/renderer/modules/webcodecs/video_decoder_broker.h"
+
 #include <memory>
 #include <vector>
 
 #include "base/run_loop.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/threading/thread.h"
+#include "base/time/time.h"
 #include "build/build_config.h"
 #include "gpu/command_buffer/common/mailbox_holder.h"
 #include "media/base/decoder_buffer.h"
@@ -31,11 +35,8 @@
 #include "third_party/blink/public/common/thread_safe_browser_interface_broker_proxy.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_testing.h"
+#include "third_party/blink/renderer/platform/testing/task_environment.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
-
-#include "base/task/single_thread_task_runner.h"
-#include "base/time/time.h"
-#include "third_party/blink/renderer/modules/webcodecs/video_decoder_broker.h"
 using ::testing::_;
 using ::testing::Invoke;
 using ::testing::Return;
@@ -192,13 +193,18 @@ class VideoDecoderBrokerTest : public testing::Test {
   }
 
   ~VideoDecoderBrokerTest() override {
-    if (media_thread_)
-      media_thread_->Stop();
-
     // Clean up this override, or else we we fail or DCHECK in SetupMojo().
     Platform::Current()->GetBrowserInterfaceBroker()->SetBinderForTesting(
         media::mojom::InterfaceFactory::Name_,
         base::RepeatingCallback<void(mojo::ScopedMessagePipeHandle)>());
+
+    // `decoder_broker` schedules deletion of internal data including decoders
+    // which keep pointers to `gpu_factories_`. The deletion is scheduled in
+    // `media_thread_`, wait for completion of all its tasks.
+    decoder_broker_.reset();
+    if (media_thread_) {
+      media_thread_->FlushForTesting();
+    }
   }
 
   void OnInitWithClosure(base::RepeatingClosure done_cb,
@@ -328,13 +334,16 @@ class VideoDecoderBrokerTest : public testing::Test {
 
  protected:
   media::NullMediaLog null_media_log_;
+  std::unique_ptr<base::Thread> media_thread_;
+  // `gpu_factories_` must outlive `decoder_broker_` because it's stored as a
+  // raw_ptr.
+  std::unique_ptr<media::MockGpuVideoAcceleratorFactories> gpu_factories_;
   std::unique_ptr<VideoDecoderBroker> decoder_broker_;
   std::vector<scoped_refptr<media::VideoFrame>> output_frames_;
-  std::unique_ptr<media::MockGpuVideoAcceleratorFactories> gpu_factories_;
   std::unique_ptr<FakeInterfaceFactory> interface_factory_;
-  std::unique_ptr<base::Thread> media_thread_;
 
   base::test::ScopedFeatureList feature_list_;
+  test::TaskEnvironment task_environment_;
 };
 
 TEST_F(VideoDecoderBrokerTest, Decode_Uninitialized) {
@@ -360,7 +369,7 @@ TEST_F(VideoDecoderBrokerTest, Decode_NoMojoDecoder) {
   ConstructDecoder(*v8_scope.GetExecutionContext());
   EXPECT_EQ(GetDecoderType(), media::VideoDecoderType::kBroker);
 
-  InitializeDecoder(media::TestVideoConfig::Normal());
+  InitializeDecoder(media::TestVideoConfig::Normal(media::VideoCodec::kVP8));
   EXPECT_NE(GetDecoderType(), media::VideoDecoderType::kBroker);
 
   DecodeBuffer(media::ReadTestDataFile("vp8-I-frame-320x120"));
@@ -386,7 +395,8 @@ TEST_F(VideoDecoderBrokerTest, Init_RequireAcceleration) {
 
   decoder_broker_->SetHardwarePreference(HardwarePreference::kPreferHardware);
 
-  InitializeDecoder(media::TestVideoConfig::Normal(), /*expect_success*/ false);
+  InitializeDecoder(media::TestVideoConfig::Normal(media::VideoCodec::kVP8),
+                    /*expect_success*/ false);
   EXPECT_EQ(GetDecoderType(), media::VideoDecoderType::kBroker);
 }
 
@@ -417,7 +427,7 @@ TEST_F(VideoDecoderBrokerTest, Decode_MultipleAccelerationPreferences) {
 
   // Make sure we can decode software only.
   decoder_broker_->SetHardwarePreference(HardwarePreference::kPreferSoftware);
-  InitializeDecoder(media::TestVideoConfig::Normal());
+  InitializeDecoder(media::TestVideoConfig::Normal(media::VideoCodec::kVP8));
   DecodeBuffer(media::ReadTestDataFile("vp8-I-frame-320x120"));
   DecodeBuffer(media::DecoderBuffer::CreateEOSBuffer());
   ASSERT_EQ(1U, output_frames_.size());
@@ -446,7 +456,7 @@ TEST_F(VideoDecoderBrokerTest, Decode_MultipleAccelerationPreferences) {
 
   // Use a small frame to force software decode, without changing the
   // acceleration preference.
-  InitializeDecoder(media::TestVideoConfig::Normal());
+  InitializeDecoder(media::TestVideoConfig::Normal(media::VideoCodec::kVP8));
   DecodeBuffer(media::ReadTestDataFile("vp8-I-frame-320x120"));
   DecodeBuffer(media::DecoderBuffer::CreateEOSBuffer());
   ASSERT_EQ(4U, output_frames_.size());

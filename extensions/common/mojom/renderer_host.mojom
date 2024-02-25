@@ -33,4 +33,11 @@ interface RendererHost {
                             url.mojom.Url url,
                             mojo_base.mojom.String16 url_title,
                             int32 call_type);
+
+  // Asks the browser to wake the event page of an extension.
+  WakeEventPage(string extension_id) => (bool success);
+
+  // Retrieves the message bundle for an extension from the browser.
+  [Sync]
+  GetMessageBundle(string extension_id) => (map<string, string> message_map);
 };

@@ -50,7 +50,7 @@ namespace tflite;
 // for which they were added.
 //
 // LINT.IfChange
-// Schema Semantic version: 1.4.1
+// Schema Semantic version: 1.5.0
 // LINT.ThenChange(//tensorflow_lite_support/\
 //     metadata/java/src/java/org/tensorflow/lite/support/metadata/\
 //     MetadataParser.java)
@@ -72,6 +72,7 @@ file_identifier "M001";
 // 1.3.0 - Added AudioProperties to ContentProperties.
 // 1.4.0 - Added SCANN_INDEX_FILE type to AssociatedFileType.
 // 1.4.1 - Added version to AssociatedFile.
+// 1.5.0 - Added CustomMetadata in SubGraphMetadata.
 
 // File extension of any written files.
 file_extension "tflitemeta";
@@ -612,6 +613,11 @@ table TensorMetadata {
   associated_files:[AssociatedFile];
 }
 
+table CustomMetadata {
+  name:string;
+  data:[ubyte] (force_align: 16);
+}
+
 table SubGraphMetadata {
   // Name of the subgraph.
   //
@@ -679,6 +685,9 @@ table SubGraphMetadata {
   // Added in: 1.2.0
   output_tensor_groups:[TensorGroup];
 
+  // A list of custom metadata.
+  // Added in: 1.5.0.
+  custom_metadata:[CustomMetadata];
 }
 
 table ModelMetadata {

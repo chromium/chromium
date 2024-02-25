@@ -19,9 +19,10 @@ using Topic = base::StrongAlias<class TopicTag, int>;
 
 // Explicitly typed config version.
 enum ConfigVersion {
-  kDefault = 1,
+  kInitial = 1,
+  kUsePrioritizedTopicsList = 2,
 
-  kMaxValue = kDefault,
+  kMaxValue = kUsePrioritizedTopicsList,
 };
 
 // Returns the current configuration version.

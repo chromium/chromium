@@ -10,8 +10,8 @@
 #import "base/run_loop.h"
 #import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
 #import "ios/chrome/browser/shared/model/browser_state/test_chrome_browser_state.h"
-#import "ios/chrome/browser/signin/authentication_service_factory.h"
-#import "ios/chrome/browser/signin/fake_authentication_service_delegate.h"
+#import "ios/chrome/browser/signin/model/authentication_service_factory.h"
+#import "ios/chrome/browser/signin/model/fake_authentication_service_delegate.h"
 #import "ios/chrome/browser/ui/authentication/signin/user_signin/logging/user_signin_logger.h"
 #import "ios/chrome/browser/ui/authentication/signin/user_signin/user_signin_coordinator.h"
 #import "ios/chrome/browser/ui/authentication/signin/user_signin/user_signin_view_controller.h"
@@ -67,7 +67,9 @@ class UserSigninCoordinatorTest : public PlatformTest {
                            browser:browser_.get()
                           identity:nil
                       signinIntent:UserSigninIntentUpgrade
-                            logger:logger_mock_];
+                            logger:logger_mock_
+                       accessPoint:signin_metrics::AccessPoint::
+                                       ACCESS_POINT_START_PAGE];
     coordinator_.userSigninViewControllerMock =
         user_signin_view_controller_mock_;
   }

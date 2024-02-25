@@ -5,43 +5,68 @@
 import("//build/config/chromeos/ui_mode.gni")
 import("//build/config/features.gni")
 import(
+    "//chrome/browser/resources/chromeos/accessibility/tools/generate_message_formatting_data.gni")
+import(
     "//chrome/browser/resources/chromeos/accessibility/tools/run_jsbundler.gni")
 import("//chrome/common/features.gni")
-import("//chrome/test/base/js2gtest.gni")
+import("//chrome/test/base/ash/js2gtest.gni")
 import("//testing/test.gni")
-import("//third_party/closure_compiler/compile_js.gni")
+import("//tools/typescript/ts_library.gni")
+
+group("build") {
+  deps = [
+    ":chromevox_background_script",
+    ":chromevox_panel_script",
+    ":chromevox_phonetic_dictionaries_js",
+    ":copied_files",
+    "//third_party/chromevox:chromevox_third_party_resources",
+    "//third_party/liblouis",
+  ]
+}
 
 closure_library_dir =
     "//third_party/chromevox/third_party/closure-library/closure/goog"
 
+chromevox_out_dir = "$root_out_dir/resources/chromeos/accessibility/chromevox"
+
+# Directory where typescript build will occur.
+ts_build_staging_dir = "$target_gen_dir/ts_build_staging"
+
+tsc_out_dir = "$target_gen_dir/tsc"
+
+# Location of common typescript output.
+common_tsc_dir =
+    "$root_gen_dir/chrome/browser/resources/chromeos/accessibility/common/tsc"
+
 # List of all modules that are included in one or more of the production
 # chromevox scripts.
 #
-# These files all use older Closure provide/require support for dependency management and will be transitioned to ES6 modules (see below).
-chromevox_modules = [
-  "background/braille/cursor_dots.js",
-  "background/braille/pan_strategy.js",
-  "third_party/tamachiyomi/ja_phonetic_data.js",
+# TS files to compile.
+ts_modules = [
+  "background/chromevox_state.ts",
+  "background/editing/editable_text_base.ts",
+  "background/editing/editing.ts",
+  "background/editing/rich_editable_text.ts",
+  "background/editing/text_edit_handler.ts",
+  "background/event/desktop_automation_interface.ts",
+  "background/input/background_keyboard_handler.ts",
+  "background/input/clipboard_handler.ts",
+  "background/input/smart_sticky_mode.ts",
+  "background/logging/log_manager.ts",
+  "background/event/pointer_handler.ts",
+  "chromevox_loader.ts",
+  "common/braille/braille_key_types.ts",
+  "common/msgs.ts",
+  "common/tts_types.ts",
+  "panel/i_search_ui.ts",
+  "panel/panel.ts",
+  "panel/panel_captions.ts",
+  "panel/panel_menu_item.ts",
+  "third_party/tamachiyomi/ja_phonetic_map.ts",
 ]
 
 # ES6 modules.
-chromevox_es6_modules = [
-  "../common/automation_predicate.js",
-  "../common/automation_util.js",
-  "../common/async_util.js",
-  "../common/browser_util.js",
-  "../common/constants.js",
-  "../common/cursors/cursor.js",
-  "../common/cursors/range.js",
-  "../common/cursors/recovery_strategy.js",
-  "../common/event_generator.js",
-  "../common/flags.js",
-  "../common/instance_checker.js",
-  "../common/key_code.js",
-  "../common/local_storage.js",
-  "../common/rect_util.js",
-  "../common/string_util.js",
-  "../common/tree_walker.js",
+js_modules = [
   "background/abstract_earcons.js",
   "background/abstract_tts.js",
   "background/automation_object_constructor_installer.js",
@@ -61,41 +86,34 @@ chromevox_es6_modules = [
   "background/braille/pan_strategy.js",
   "background/braille/spans.js",
   "background/chromevox_range.js",
-  "background/chromevox_state.js",
   "background/chromevox.js",
-  "background/classic_background.js",
-  "background/clipboard_handler.js",
   "background/color.js",
-  "background/command_handler.js",
-  "background/command_handler_interface.js",
   "background/composite_tts.js",
   "background/console_tts.js",
   "background/download_handler.js",
   "background/earcon_engine.js",
   "background/earcons.js",
   "background/editing/editable_line.js",
-  "background/editing/editable_text_base.js",
-  "background/editing/editing.js",
+  "background/editing/editable_text.js",
   "background/editing/intent_handler.js",
+  "background/editing/typing_echo.js",
   "background/es6_loader.js",
   "background/event/base_automation_handler.js",
   "background/event/desktop_automation_handler.js",
-  "background/event/desktop_automation_interface.js",
   "background/event/focus_automation_handler.js",
   "background/event/media_automation_handler.js",
   "background/event/page_load_sound_handler.js",
-  "background/event/pointer_handler.js",
   "background/event/range_automation_handler.js",
   "background/event_source.js",
   "background/find_handler.js",
   "background/focus_bounds.js",
-  "background/gesture_command_handler.js",
-  "background/gesture_interface.js",
   "background/injected_script_loader.js",
-  "background/keyboard_handler.js",
+  "background/input/command_handler.js",
+  "background/input/command_handler_interface.js",
+  "background/input/gesture_command_handler.js",
+  "background/input/gesture_interface.js",
   "background/live_regions.js",
   "background/logging/event_stream_logger.js",
-  "background/logging/log_manager.js",
   "background/logging/log_store.js",
   "background/logging/log_url_watcher.js",
   "background/math_handler.js",
@@ -116,18 +134,17 @@ chromevox_es6_modules = [
   "background/phonetic_data.js",
   "background/prefs.js",
   "background/primary_tts.js",
-  "background/smart_sticky_mode.js",
   "background/tts_background.js",
   "background/tts_interface.js",
-  "background/user_action_monitor.js",
+  "background/forced_action_path.js",
   "common/background_bridge.js",
   "common/braille/braille_command_data.js",
-  "common/braille/braille_key_types.js",
   "common/braille/braille_table.js",
   "common/braille/nav_braille.js",
   "common/bridge_callback_manager.js",
   "common/bridge_constants.js",
   "common/bridge_helper.js",
+  "common/command.js",
   "common/command_store.js",
   "common/custom_automation_event.js",
   "common/earcon_id.js",
@@ -140,7 +157,6 @@ chromevox_es6_modules = [
   "common/learn_mode_bridge.js",
   "common/locale_output_helper.js",
   "common/log_types.js",
-  "common/msgs.js",
   "common/panel_bridge.js",
   "common/panel_command.js",
   "common/panel_menu_data.js",
@@ -149,20 +165,14 @@ chromevox_es6_modules = [
   "common/spannable.js",
   "common/settings_manager.js",
   "common/tree_dumper.js",
-  "common/tts_types.js",
   "learn_mode/learn_mode.js",
   "log_page/log.js",
-  "options/bluetooth_braille_display_manager.js",
-  "options/bluetooth_braille_display_ui.js",
-  "options/options.js",
-  "panel/i_search_ui.js",
+  "log_page/log_loader.js",
   "panel/menu_manager.js",
-  "panel/panel.js",
   "panel/panel_interface.js",
   "panel/panel_menu.js",
-  "panel/panel_menu_item.js",
   "panel/panel_mode.js",
-  "third_party/tamachiyomi/ja_phonetic_map.js",
+  "third_party/tamachiyomi/ja_phonetic_data.js",
 ]
 
 # Closure library modules needed by chromevox.
@@ -181,33 +191,78 @@ relative_closure_library_modules = [
 closure_library_modules =
     rebase_path(relative_closure_library_modules, ".", closure_library_dir)
 
-chromevox_gen_dir =
-    "$root_gen_dir/chrome/browser/resources/chromeos/accessibility/chromevox"
+# Root dir must be the parent directory so it can reach common/.
+ts_library("ts_build") {
+  root_dir = "$ts_build_staging_dir"
+  out_dir = tsc_out_dir
 
-chromevox_out_dir = "$root_out_dir/resources/chromeos/accessibility/chromevox"
+  deps = [ "../common:ts_build" ]
 
-group("build") {
-  deps = [
-    ":chromevox_background_script",
-    ":chromevox_copied_files",
-    ":chromevox_options_script",
-    ":chromevox_panel_script",
-    ":chromevox_phonetic_dictionaries_js",
-    "//chrome/browser/resources/chromeos/accessibility/braille_ime:braille_ime_manifest",
-    "//third_party/chromevox:chromevox_third_party_resources",
-    "//third_party/liblouis",
+  extra_deps = [
+    #copied files
+    ":stage_ts_build",
   ]
+
+  definitions = [
+    "//tools/typescript/definitions/chrome_event.d.ts",
+    "//tools/typescript/definitions/context_menus.d.ts",
+    "//tools/typescript/definitions/metrics_private.d.ts",
+    "//tools/typescript/definitions/windows.d.ts",
+    "../definitions/accessibility_private_mv2.d.ts",
+    "../definitions/automation.d.ts",
+    "../definitions/chromeos_info_private.d.ts",
+    "../definitions/clipboard_mv2.d.ts",
+    "../definitions/extension_types.d.ts",
+    "../definitions/extensions.d.ts",
+    "../definitions/goog_i18n.d.ts",
+    "../definitions/i18n.d.ts",
+    "../definitions/login_state.d.ts",
+    "../definitions/runtime.d.ts",
+    "../definitions/settings_private_mv2.d.ts",
+    "../definitions/storage_mv2.d.ts",
+    "../definitions/tabs.d.ts",
+    "../definitions/tts.d.ts",
+  ]
+
+  path_mappings =
+      [ "/common/*|" + rebase_path("$common_tsc_dir/*", target_gen_dir) ]
+
+  in_files = ts_modules + js_modules
+
+  tsconfig_base = "../tsconfig.base.json"
 }
 
 chromevox_background_script_loader_file = "background/loader.js"
-chromevox_options_script_loader_file = "options/options_loader.js"
 chromevox_panel_script_loader_file = "panel/panel_loader.js"
+
+generate_message_formatting_data("i18n_data") {
+  inputs = [ "//third_party/cldr/src/common/supplemental/plurals.xml" ]
+  output_dir = "$chromevox_out_dir"
+}
 
 # Instead of setting up one copy target for each subdirectory, use a script
 # to copy all files.
-run_jsbundler("chromevox_copied_files") {
+run_jsbundler("copied_files") {
   mode = "copy"
   dest_dir = chromevox_out_dir
+  deps = [
+    ":ts_build",
+    "../common:copied_files",
+    "../common:ts_build",
+  ]
+
+  clear_dest_dirs = [
+    "background",
+    "common",
+    "earcons",
+    "images",
+    "injected",
+    "learn_mode",
+    "log_page",
+    "panel",
+    "tutorial",
+  ]
+
   sources = [
     "background/background.html",
     "earcons/chromevox_loaded.ogg",
@@ -229,20 +284,27 @@ run_jsbundler("chromevox_copied_files") {
     "learn_mode/learn_mode.html",
     "log_page/log.css",
     "log_page/log.html",
-    "options/checked.png",
-    "options/options.css",
-    "options/options.html",
-    "options/unchecked.png",
     "panel/panel.css",
     "panel/panel.html",
     "tutorial/practice_areas/jump_commands.html",
     "tutorial/practice_areas/selects.html",
   ]
-  sources += chromevox_es6_modules
+  sources += js_modules
+  sources += filter_include(get_target_outputs(":ts_build"), [ "*.js" ])
+
   rewrite_rules = [
+    rebase_path("$tsc_out_dir", root_build_dir) + ":",
     rebase_path(".", root_build_dir) + ":",
     rebase_path(closure_library_dir, root_build_dir) + ":closure",
   ]
+}
+
+# Copy all JS and TS sources to a staging folder. All generated TS/JS files
+# will also be copied into this folder, which will allow us to support a TS
+# build that uses both checked-in and generated files.
+copy("stage_ts_build") {
+  sources = js_modules + ts_modules
+  outputs = [ "$ts_build_staging_dir/{{source_target_relative}}" ]
 }
 
 template("generate_deps_js") {
@@ -255,7 +317,7 @@ template("generate_deps_js") {
     if (defined(invoker.testonly)) {
       testonly = invoker.testonly
     }
-    script = "tools/generate_deps.py"
+    script = "//chrome/browser/resources/chromeos/accessibility/tools/generate_deps.py"
     inputs = jsbundler_modules
     sources = invoker.sources
     outputs = [ invoker.output_file ]
@@ -277,7 +339,7 @@ template("generate_deps_js") {
 }
 
 action("chromevox_phonetic_dictionaries_js") {
-  script = "tools/phonetic_dictionaries.py"
+  script = "//chrome/browser/resources/chromeos/accessibility/tools/phonetic_dictionaries.py"
   src_dir = [ "$root_out_dir/resources/chromeos/accessibility/_locales" ]
   output_file = "$chromevox_out_dir/phonetic_dictionaries.js"
   outputs = [ output_file ]
@@ -294,18 +356,13 @@ template("compress_js") {
   run_jsbundler(target_name) {
     assert(defined(invoker.output_file))
     mode = "compressed_bundle"
-    modules = chromevox_modules + closure_library_modules
+    modules = closure_library_modules
     sources = invoker.sources
     output_file = invoker.output_file
   }
 }
 
 # TODO once these loaders are all empty, we will need to re-work the entry points.
-
-compress_js("chromevox_options_script") {
-  sources = [ chromevox_options_script_loader_file ]
-  output_file = "$chromevox_out_dir/chromeVoxChromeOptionsScript.js"
-}
 
 compress_js("chromevox_background_script") {
   sources = [ chromevox_background_script_loader_file ]
@@ -342,7 +399,7 @@ if (is_chromeos_ash) {
   }
 
   action("chromevox_test_messages_js") {
-    script = "tools/generate_test_messages.py"
+    script = "//chrome/browser/resources/chromeos/accessibility/tools/generate_test_messages.py"
     sources = [ "$root_out_dir/resources/chromeos/accessibility/_locales/en/messages.json.gz" ]
     output_file = "$root_out_dir/test_data/chrome/browser/resources/chromeos/accessibility/chromevox/host/testing/test_messages.js"
     outputs = [ output_file ]
@@ -358,8 +415,7 @@ if (is_chromeos_ash) {
   chromevox_test_modules = get_target_outputs(":chromevox_test_messages_js")
 
   generate_deps_js("chromevox_test_deps_js") {
-    sources =
-        closure_library_modules + chromevox_modules + chromevox_test_modules
+    sources = closure_library_modules + chromevox_test_modules
     output_file = "$target_gen_dir/test_deps.js"
     rewrite_rules = [
       rebase_path("//", root_build_dir) + ":",
@@ -368,45 +424,13 @@ if (is_chromeos_ash) {
     deps = [ ":chromevox_test_messages_js" ]
   }
 
-  # These tests can run in a pure V8 renderer (e.g. no DOM).
-  js2gtest("chromevox_unit_js_tests") {
-    test_type = "unit"
-    sources = [
-      "background/braille/expanding_braille_translator_test.js",
-      "background/braille/pan_strategy_test.js",
-      "background/editing/editable_text_base_test.js",
-      "background/phonetic_data_test.js",
-      "common/key_sequence_test.js",
-      "common/spannable_test.js",
-      "testing/mock_feedback_test.js",
-    ]
-    gen_include_files = [ "../common/testing/accessibility_test_base.js" ]
-    extra_js_files = [
-      "../common/testing/accessibility_test_base.js",
-      "../common/testing/assert_additions.js",
-      "../common/testing/callback_helper.js",
-      "../common/closure_shim.js",
-      "background/braille/expanding_braille_translator.js",
-      "background/braille/pan_strategy.js",
-      "background/braille/spans.js",
-      "background/braille/liblouis.js",
-      "background/editing/editable_text_base.js",
-      "background/phonetic_data.js",
-      "common/key_sequence.js",
-      "common/msgs.js",
-      "common/spannable.js",
-      "testing/fake_dom.js",
-      "testing/mock_feedback.js",
-      "third_party/tamachiyomi/ja_phonetic_data.js",
-    ]
-  }
-
   # These tests need a full extension renderer.
   js2gtest("chromevox_extension_js_tests") {
     test_type = "extension"
     sources = [
       "background/auto_scroll_handler_test.js",
       "background/background_test.js",
+      "background/braille/braille_captions_background_test.js",
       "background/braille/braille_display_manager_test.js",
       "background/braille/braille_input_handler_test.js",
       "background/braille/braille_test.js",
@@ -418,30 +442,39 @@ if (is_chromeos_ash) {
       "background/editing/editing_test.js",
       "background/editing/intent_handler_test.js",
       "background/event/desktop_automation_handler_test.js",
-      "background/keyboard_handler_test.js",
+      "background/forced_action_path_test.js",
+      "background/input/keyboard_handler_test.js",
+      "background/input/smart_sticky_mode_test.js",
       "background/live_regions_test.js",
       "background/logging/log_store_test.js",
       "background/output/output_test.js",
       "background/panel/i_search_test.js",
       "background/panel/panel_background_test.js",
       "background/panel/panel_node_menu_background_test.js",
-      "background/portals_test.js",
       "background/settings_test.js",
-      "background/smart_sticky_mode_test.js",
       "background/tts_background_test.js",
-      "background/user_action_monitor_test.js",
       "common/braille/braille_command_data_test.js",
       "common/braille/braille_table_test.js",
       "common/locale_output_helper_test.js",
       "common/settings_manager_test.js",
       "learn_mode/learn_mode_test.js",
-      "options/bluetooth_braille_display_manager_test.js",
-      "options/bluetooth_braille_display_ui_test.js",
-      "options/options_test.js",
+      "panel/menu_manager_test.js",
       "panel/panel_test.js",
       "panel/panel_test_base.js",
       "panel/tutorial_test.js",
     ]
+
+    # These tests need support for async/await (b/317173285).
+    sources += [
+      "background/braille/expanding_braille_translator_test.js",
+      "background/braille/pan_strategy_test.js",
+      "background/editing/editable_text_base_test.js",
+      "background/phonetic_data_test.js",
+      "common/key_sequence_test.js",
+      "common/spannable_test.js",
+      "testing/mock_feedback_test.js",
+    ]
+
     gen_include_files = [
       "../common/testing/accessibility_test_base.js",
       "../common/testing/assert_additions.js",
@@ -465,37 +498,4 @@ if (is_chromeos_ash) {
     deps += [ ":chromevox_test_deps_js" ]
     defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
   }
-}
-
-# Closure type check compilation and associated js libraries.
-js_type_check("closure_compile") {
-  deps = [
-    ":chromevox_es6_library",
-    ":chromevox_library",
-  ]
-}
-
-js_library("chromevox_library") {
-  sources = chromevox_modules
-  deps = [ "//third_party/chromevox/third_party/closure-library:library" ]
-  externs_list = [
-    "background/externs.js",
-    "$externs_path/accessibility_private.js",
-    "$externs_path/audio.js",
-    "$externs_path/automation.js",
-    "$externs_path/braille_display_private.js",
-    "$externs_path/chromeos_info_private.js",
-    "$externs_path/chrome_extensions.js",
-    "$externs_path/clipboard.js",
-    "$externs_path/command_line_private.js",
-    "$externs_path/login_state.js",
-    "$externs_path/metrics_private.js",
-    "$externs_path/settings_private.js",
-    "$externs_path/tts.js",
-    "$externs_path/virtual_keyboard_private.js",
-  ]
-}
-
-js_library("chromevox_es6_library") {
-  sources = chromevox_es6_modules
 }

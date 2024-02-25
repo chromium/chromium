@@ -53,6 +53,14 @@ struct FillSize {
   LengthSize size;
 };
 
+struct FillRepeat {
+  EFillRepeat x{EFillRepeat::kRepeatFill};
+  EFillRepeat y{EFillRepeat::kRepeatFill};
+
+  bool operator==(const FillRepeat& r) const { return x == r.x && y == r.y; }
+  bool operator!=(const FillRepeat& r) const { return !(*this == r); }
+};
+
 class FillLayerWrapper;
 
 class CORE_EXPORT FillLayer {
@@ -77,11 +85,14 @@ class CORE_EXPORT FillLayer {
   }
   EFillBox Clip() const { return static_cast<EFillBox>(clip_); }
   EFillBox Origin() const { return static_cast<EFillBox>(origin_); }
-  EFillRepeat RepeatX() const { return static_cast<EFillRepeat>(repeat_x_); }
-  EFillRepeat RepeatY() const { return static_cast<EFillRepeat>(repeat_y_); }
-  CompositeOperator Composite() const {
-    return static_cast<CompositeOperator>(composite_);
+  const FillRepeat& Repeat() const { return repeat_; }
+  EFillMaskMode MaskMode() const {
+    return static_cast<EFillMaskMode>(mask_mode_);
   }
+  enum CompositingOperator CompositingOperator() const {
+    return static_cast<enum CompositingOperator>(compositing_operator_);
+  }
+  CompositeOperator Composite() const;
   BlendMode GetBlendMode() const { return static_cast<BlendMode>(blend_mode_); }
   const LengthSize& SizeLength() const { return size_length_; }
   EFillSizeType SizeType() const {
@@ -103,9 +114,10 @@ class CORE_EXPORT FillLayer {
   bool IsAttachmentSet() const { return attachment_set_; }
   bool IsClipSet() const { return clip_set_; }
   bool IsOriginSet() const { return origin_set_; }
-  bool IsRepeatXSet() const { return repeat_x_set_; }
-  bool IsRepeatYSet() const { return repeat_y_set_; }
-  bool IsCompositeSet() const { return composite_set_; }
+  bool IsRepeatSet() const { return repeat_set_; }
+  bool IsMaskModeSet() const { return mask_mode_set_; }
+  bool IsCompositingOperatorSet() const { return compositing_operator_set_; }
+
   bool IsBlendModeSet() const { return blend_mode_set_; }
   bool IsSizeSet() const {
     return size_type_ != static_cast<unsigned>(EFillSizeType::kSizeNone);
@@ -150,17 +162,17 @@ class CORE_EXPORT FillLayer {
     origin_ = static_cast<unsigned>(b);
     origin_set_ = true;
   }
-  void SetRepeatX(EFillRepeat r) {
-    repeat_x_ = static_cast<unsigned>(r);
-    repeat_x_set_ = true;
+  void SetRepeat(const FillRepeat& r) {
+    repeat_ = r;
+    repeat_set_ = true;
   }
-  void SetRepeatY(EFillRepeat r) {
-    repeat_y_ = static_cast<unsigned>(r);
-    repeat_y_set_ = true;
+  void SetMaskMode(const EFillMaskMode& m) {
+    mask_mode_ = static_cast<unsigned>(m);
+    mask_mode_set_ = true;
   }
-  void SetComposite(CompositeOperator c) {
-    composite_ = c;
-    composite_set_ = true;
+  void SetCompositingOperator(enum CompositingOperator c) {
+    compositing_operator_ = static_cast<unsigned>(c);
+    compositing_operator_set_ = true;
   }
   void SetBlendMode(BlendMode b) {
     blend_mode_ = static_cast<unsigned>(b);
@@ -189,9 +201,9 @@ class CORE_EXPORT FillLayer {
   void ClearAttachment() { attachment_set_ = false; }
   void ClearClip() { clip_set_ = false; }
   void ClearOrigin() { origin_set_ = false; }
-  void ClearRepeatX() { repeat_x_set_ = false; }
-  void ClearRepeatY() { repeat_y_set_ = false; }
-  void ClearComposite() { composite_set_ = false; }
+  void ClearRepeat() { repeat_set_ = false; }
+  void ClearMaskMode() { mask_mode_set_ = false; }
+  void ClearCompositingOperator() { compositing_operator_set_ = false; }
   void ClearBlendMode() { blend_mode_set_ = false; }
   void ClearSize() {
     size_type_ = static_cast<unsigned>(EFillSizeType::kSizeNone);
@@ -206,7 +218,6 @@ class CORE_EXPORT FillLayer {
   bool VisuallyEqual(const FillLayer&) const;
 
   bool ImageOccludesNextLayers(const Document&, const ComputedStyle&) const;
-  bool HasRepeatXY() const;
   bool ClipOccludesNextLayers() const;
 
   EFillLayerType GetType() const { return static_cast<EFillLayerType>(type_); }
@@ -262,14 +273,15 @@ class CORE_EXPORT FillLayer {
     return type == EFillLayerType::kBackground ? EFillBox::kPadding
                                                : EFillBox::kBorder;
   }
-  static EFillRepeat InitialFillRepeatX(EFillLayerType) {
-    return EFillRepeat::kRepeatFill;
+  static FillRepeat InitialFillRepeat(EFillLayerType) {
+    return {EFillRepeat::kRepeatFill, EFillRepeat::kRepeatFill};
   }
-  static EFillRepeat InitialFillRepeatY(EFillLayerType) {
-    return EFillRepeat::kRepeatFill;
+  static EFillMaskMode InitialFillMaskMode(EFillLayerType) {
+    return EFillMaskMode::kMatchSource;
   }
-  static CompositeOperator InitialFillComposite(EFillLayerType) {
-    return kCompositeSourceOver;
+  static enum CompositingOperator InitialFillCompositingOperator(
+      EFillLayerType) {
+    return CompositingOperator::kAdd;
   }
   static BlendMode InitialFillBlendMode(EFillLayerType) {
     return BlendMode::kNormal;
@@ -298,6 +310,7 @@ class CORE_EXPORT FillLayer {
   bool ImageTilesLayer() const;
   bool LayerPropertiesEqual(const FillLayer&) const;
 
+  EFillBox EffectiveClip() const;
   void ComputeCachedPropertiesIfNeeded() const {
     if (!cached_properties_computed_) {
       ComputeCachedProperties();
@@ -312,35 +325,34 @@ class CORE_EXPORT FillLayer {
   Length position_y_;
 
   LengthSize size_length_;
+  FillRepeat repeat_;
 
-  unsigned attachment_ : 2;           // EFillAttachment
-  unsigned clip_ : 2;                 // EFillBox
-  unsigned origin_ : 2;               // EFillBox
-  unsigned repeat_x_ : 3;             // EFillRepeat
-  unsigned repeat_y_ : 3;             // EFillRepeat
-  unsigned composite_ : 4;            // CompositeOperator
-  unsigned size_type_ : 2;            // EFillSizeType
-  unsigned blend_mode_ : 5;           // BlendMode
-  unsigned background_x_origin_ : 2;  // BackgroundEdgeOrigin
-  unsigned background_y_origin_ : 2;  // BackgroundEdgeOrigin
-
+  unsigned attachment_ : 2;            // EFillAttachment
+  unsigned clip_ : 3;                  // EFillBox
+  unsigned origin_ : 3;                // EFillBox
+  unsigned compositing_operator_ : 4;  // CompositingOperator
+  unsigned size_type_ : 2;             // EFillSizeType
+  unsigned blend_mode_ : 5;            // BlendMode
+  unsigned background_x_origin_ : 2;   // BackgroundEdgeOrigin
+  unsigned background_y_origin_ : 2;   // BackgroundEdgeOrigin
+  unsigned mask_mode_ : 2;             // EFillMaskMode
   unsigned image_set_ : 1;
   unsigned attachment_set_ : 1;
   unsigned clip_set_ : 1;
   unsigned origin_set_ : 1;
-  unsigned repeat_x_set_ : 1;
-  unsigned repeat_y_set_ : 1;
+  unsigned repeat_set_ : 1;
+  unsigned mask_mode_set_ : 1;
   unsigned pos_x_set_ : 1;
   unsigned pos_y_set_ : 1;
   unsigned background_x_origin_set_ : 1;
   unsigned background_y_origin_set_ : 1;
-  unsigned composite_set_ : 1;
+  unsigned compositing_operator_set_ : 1;
   unsigned blend_mode_set_ : 1;
 
   unsigned type_ : 1;  // EFillLayerType
 
   // EFillBox, maximum clip_ value from this to bottom layer
-  mutable unsigned layers_clip_max_ : 2;
+  mutable unsigned layers_clip_max_ : 3;
   // True if any of this or subsequent layers has content-box clip or origin.
   mutable unsigned any_layer_uses_content_box_ : 1;
   // True if any of this or subsequent layers has image.

@@ -7,7 +7,6 @@
 #include <memory>
 
 #include "base/containers/flat_map.h"
-#include "base/containers/span.h"
 #include "base/strings/string_util.h"
 #include "components/autofill/core/browser/autofill_type.h"
 #include "components/autofill/core/browser/field_types.h"
@@ -22,8 +21,8 @@
 #include "components/password_manager/core/browser/password_manager_driver.h"
 #include "components/password_manager/core/browser/password_manager_util.h"
 #include "components/password_manager/core/browser/password_requirements_service.h"
+#include "components/password_manager/core/browser/password_store/password_store_interface.h"
 #include "components/password_manager/core/common/password_manager_features.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
 using autofill::AutofillType;
@@ -65,7 +64,7 @@ void PasswordGenerationFrameHelper::PrefetchSpec(const GURL& origin) {
 }
 
 void PasswordGenerationFrameHelper::ProcessPasswordRequirements(
-    base::span<const FormData* const> forms,
+    const FormData& form,
     const base::flat_map<autofill::FieldGlobalId,
                          AutofillType::ServerPrediction>& predictions) {
   // IsGenerationEnabled is called multiple times and it is sufficient to
@@ -81,19 +80,14 @@ void PasswordGenerationFrameHelper::ProcessPasswordRequirements(
     return;
 
   // Store password requirements from the autofill server.
-  for (const FormData* form : forms) {
-    absl::optional<FormSignature> form_signature;
-    for (const FormFieldData& field : form->fields) {
-      if (auto it = predictions.find(field.global_id());
-          it != predictions.end() && it->second.password_requirements) {
-        if (!form_signature) {
-          form_signature = autofill::CalculateFormSignature(*form);
-        }
-        password_requirements_service->AddSpec(
-            form->url.DeprecatedGetOriginAsURL(), *form_signature,
-            CalculateFieldSignatureForField(field),
-            *it->second.password_requirements);
-      }
+  FormSignature form_signature = autofill::CalculateFormSignature(form);
+  for (const FormFieldData& field : form.fields) {
+    if (auto it = predictions.find(field.global_id());
+        it != predictions.end() && it->second.password_requirements) {
+      password_requirements_service->AddSpec(
+          form.url.DeprecatedGetOriginAsURL(), form_signature,
+          CalculateFieldSignatureForField(field),
+          *it->second.password_requirements);
     }
   }
 }
@@ -114,6 +108,14 @@ bool PasswordGenerationFrameHelper::IsGenerationEnabled(
   if (url.DomainIs("google.com"))
     return false;
 
+  if (!password_manager_util::IsAbleToSavePasswords(client_)) {
+    if (logger) {
+      logger->LogMessage(
+          Logger::STRING_GENERATION_DISABLED_NOT_ABLE_TO_SAVE_PASSWORDS);
+    }
+    return false;
+  }
+
   if (!client_->IsSavingAndFillingEnabled(url)) {
     if (logger)
       logger->LogMessage(Logger::STRING_GENERATION_DISABLED_SAVING_DISABLED);
@@ -132,7 +134,7 @@ std::u16string PasswordGenerationFrameHelper::GeneratePassword(
     const GURL& last_committed_url,
     autofill::FormSignature form_signature,
     autofill::FieldSignature field_signature,
-    uint32_t max_length) {
+    uint64_t max_length) {
   autofill::PasswordRequirementsSpec spec;
 
   // Lookup password requirements.

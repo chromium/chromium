@@ -11,6 +11,7 @@
 #include "base/functional/callback_forward.h"
 #include "base/values.h"
 #include "chrome/test/chromedriver/command.h"
+#include "chrome/test/chromedriver/session_connection_map.h"
 #include "chrome/test/chromedriver/session_thread_map.h"
 
 struct Session;
@@ -21,12 +22,24 @@ void ExecuteGetStatus(const base::Value::Dict& params,
                       const std::string& session_id,
                       const CommandCallback& callback);
 
+// Gets session.status about ChromeDriver.
+void ExecuteBidiSessionStatus(const base::Value::Dict& params,
+                              const std::string& session_id,
+                              const CommandCallback& callback);
+
 // Creates a new session.
 void ExecuteCreateSession(SessionThreadMap* session_thread_map,
                           const Command& init_session_cmd,
                           const base::Value::Dict& params,
                           const std::string& host,
                           const CommandCallback& callback);
+
+// Creates a new BiDi session.
+void ExecuteBidiSessionNew(SessionThreadMap* session_thread_map,
+                           const Command& init_session_cmd,
+                           const base::Value::Dict& params,
+                           const std::string& resource,
+                           const CommandCallback& callback);
 
 // Gets all sessions
 void ExecuteGetSessions(const Command& session_capabilities_command,
@@ -50,6 +63,7 @@ typedef base::RepeatingCallback<Status(Session* session,
 // Executes a given session command, after acquiring access to the appropriate
 // session.
 void ExecuteSessionCommand(SessionThreadMap* session_thread_map,
+                           SessionConnectionMap* session_connection_map,
                            const char* command_name,
                            const SessionCommand& command,
                            bool w3c_standard_command,

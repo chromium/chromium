@@ -1,5 +1,5 @@
 /*
- *  Copyright (c) 2004-2015 Erik Doernenburg and contributors
+ *  Copyright (c) 2004-2021 Erik Doernenburg and contributors
  *
  *  Licensed under the Apache License, Version 2.0 (the "License"); you may
  *  not use these files except in compliance with the License. You may obtain
@@ -17,6 +17,7 @@
 #import <Foundation/Foundation.h>
 
 @class OCMLocation;
+@class OCMQuantifier;
 @class OCMInvocationStub;
 @class OCMStubRecorder;
 @class OCMInvocationMatcher;
@@ -25,12 +26,12 @@
 
 @interface OCMockObject : NSProxy
 {
-	BOOL			isNice;
-	BOOL			expectationOrderMatters;
-	NSMutableArray	*stubs;
-	NSMutableArray	*expectations;
-	NSMutableArray	*exceptions;
-    NSMutableArray  *invocations;
+    BOOL            isNice;
+    BOOL            expectationOrderMatters;
+    NSMutableArray *stubs;
+    NSMutableArray *expectations;
+    NSMutableArray *exceptions;
+    NSMutableArray *invocations;
 }
 
 + (id)mockForClass:(Class)aClass;
@@ -40,7 +41,7 @@
 + (id)niceMockForClass:(Class)aClass;
 + (id)niceMockForProtocol:(Protocol *)aProtocol;
 
-+ (id)observerMock;
++ (id)observerMock __deprecated_msg("Please use XCTNSNotificationExpectation instead.");
 
 - (instancetype)init;
 
@@ -62,6 +63,7 @@
 
 - (void)addStub:(OCMInvocationStub *)aStub;
 - (void)addExpectation:(OCMInvocationExpectation *)anExpectation;
+- (void)addInvocation:(NSInvocation *)anInvocation;
 
 - (BOOL)handleInvocation:(NSInvocation *)anInvocation;
 - (void)handleUnRecordedInvocation:(NSInvocation *)anInvocation;
@@ -69,6 +71,7 @@
 
 - (void)verifyInvocation:(OCMInvocationMatcher *)matcher;
 - (void)verifyInvocation:(OCMInvocationMatcher *)matcher atLocation:(OCMLocation *)location;
+- (void)verifyInvocation:(OCMInvocationMatcher *)matcher withQuantifier:(OCMQuantifier *)quantifier atLocation:(OCMLocation *)location;
+- (NSString *)descriptionForVerificationFailureWithMatcher:(OCMInvocationMatcher *)matcher quantifier:(OCMQuantifier *)quantifier invocationCount:(NSUInteger)count;
 
 @end
-

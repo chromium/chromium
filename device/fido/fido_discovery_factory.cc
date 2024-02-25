@@ -134,7 +134,7 @@ bool FidoDiscoveryFactory::IsTestOverride() {
 void FidoDiscoveryFactory::set_cable_data(
     FidoRequestType request_type,
     std::vector<CableDiscoveryData> cable_data,
-    const absl::optional<std::array<uint8_t, cablev2::kQRKeySize>>&
+    const std::optional<std::array<uint8_t, cablev2::kQRKeySize>>&
         qr_generator_key) {
   request_type_ = request_type;
   cable_data_ = std::move(cable_data);
@@ -173,8 +173,8 @@ FidoDiscoveryFactory::get_cable_contact_callback() {
   DCHECK(!contact_device_stream_);
 
   base::RepeatingCallback<void(std::unique_ptr<cablev2::Pairing>)> ret;
-  std::tie(ret, contact_device_stream_) = FidoDeviceDiscovery::EventStream<
-      std::unique_ptr<cablev2::Pairing>>::New();
+  std::tie(ret, contact_device_stream_) =
+      FidoDiscoveryBase::EventStream<std::unique_ptr<cablev2::Pairing>>::New();
   return ret;
 }
 
@@ -183,12 +183,17 @@ void FidoDiscoveryFactory::set_hid_ignore_list(
   hid_ignore_list_ = std::move(hid_ignore_list);
 }
 
-#if !BUILDFLAG(IS_CHROMEOS)
-void FidoDiscoveryFactory::SetEnclavePasskeys(
-    std::vector<sync_pb::WebauthnCredentialSpecifics> passkeys) {
-  enclave_passkeys_ = std::move(passkeys);
+void FidoDiscoveryFactory::set_enclave_passkey_creation_callback(
+    base::RepeatingCallback<void(sync_pb::WebauthnCredentialSpecifics)>
+        callback) {
+  enclave_passkey_creation_callback_ = callback;
 }
-#endif
+
+void FidoDiscoveryFactory::set_enclave_ui_request_stream(
+    std::unique_ptr<FidoDiscoveryBase::EventStream<
+        std::unique_ptr<enclave::CredentialRequest>>> stream) {
+  enclave_ui_request_stream_ = std::move(stream);
+}
 
 // static
 std::vector<std::unique_ptr<FidoDiscoveryBase>>
@@ -228,7 +233,7 @@ FidoDiscoveryFactory::MaybeCreatePlatformDiscovery() const {
         *mac_touch_id_config_));
   }
   if (base::FeatureList::IsEnabled(kWebAuthnICloudKeychain) &&
-      fido::icloud_keychain::IsSupported()) {
+      fido::icloud_keychain::IsSupported() && nswindow_ != 0) {
     ret.emplace_back(fido::icloud_keychain::NewDiscovery(nswindow_));
   }
   return ret;
@@ -238,15 +243,11 @@ FidoDiscoveryFactory::MaybeCreatePlatformDiscovery() const {
 #if BUILDFLAG(IS_CHROMEOS)
 std::vector<std::unique_ptr<FidoDiscoveryBase>>
 FidoDiscoveryFactory::MaybeCreatePlatformDiscovery() const {
-  if (base::FeatureList::IsEnabled(kWebAuthCrosPlatformAuthenticator)) {
-    auto discovery = std::make_unique<FidoChromeOSDiscovery>(
-        generate_request_id_callback_,
-        std::move(get_assertion_request_for_legacy_credential_check_));
-    discovery->set_require_power_button_mode(
-        require_legacy_cros_authenticator_);
-    return SingleDiscovery(std::move(discovery));
-  }
-  return {};
+  auto discovery = std::make_unique<FidoChromeOSDiscovery>(
+      generate_request_id_callback_,
+      std::move(get_assertion_request_for_legacy_credential_check_));
+  discovery->set_require_power_button_mode(require_legacy_cros_authenticator_);
+  return SingleDiscovery(std::move(discovery));
 }
 
 void FidoDiscoveryFactory::set_generate_request_id_callback(
@@ -268,12 +269,15 @@ void FidoDiscoveryFactory::
 #if !BUILDFLAG(IS_CHROMEOS)
 void FidoDiscoveryFactory::MaybeCreateEnclaveDiscovery(
     std::vector<std::unique_ptr<FidoDiscoveryBase>>& discoveries) {
-  if (!base::FeatureList::IsEnabled(kWebAuthnEnclaveAuthenticator)) {
+  if (!base::FeatureList::IsEnabled(kWebAuthnEnclaveAuthenticator) ||
+      !enclave_passkey_creation_callback_ || !enclave_ui_request_stream_ ||
+      !network_context_) {
     return;
   }
   discoveries.emplace_back(
       std::make_unique<enclave::EnclaveAuthenticatorDiscovery>(
-          std::move(enclave_passkeys_)));
+          std::move(enclave_passkey_creation_callback_),
+          std::move(enclave_ui_request_stream_), network_context_));
 }
 #endif
 

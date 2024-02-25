@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!-- Settings-specific strings (included from generated_resources.grd). -->
 <grit-part>
-  <message name="IDS_SETTINGS_EMPTY_STRING" desc="Empty string, exist only to make code generic. No translation required."></message>
+  <message name="IDS_SETTINGS_EMPTY_STRING" desc="Empty string, exist only to make code generic. No translation required." translateable="false"></message>
 
   <!-- Shared across multiple pages -->
   <message name="IDS_SETTINGS_CONTINUE" desc="Label for 'Continue' buttons.">
@@ -55,7 +55,7 @@
       Send feedback
     </message>
     <message name="IDS_SETTINGS_GET_THE_MOST_OUT_OF_CHROME" desc="Section title for the 'Get the most out of Chrome' page.">
-      Get the most ouf of Chrome
+      Get the most out of Chrome
     </message>
     <message name="IDS_SETTINGS_GET_THE_MOST_OUT_OF_CHROME_DESCRIPTION" desc="Explanatory text for the link to the 'Get the most out of Chrome' page.">
       This guide helps you understand your choices, so that Chrome works the way you want to
@@ -117,10 +117,10 @@
     Downloading text recognition files
   </message>
   <message name="IDS_SETTINGS_PDF_OCR_TITLE" desc="Description for screen reader pdf ocr feature.">
-    Convert PDF images to text
+    Extract text from PDF
   </message>
   <message name="IDS_SETTINGS_PDF_OCR_SUBTITLE" desc="Subtitle for screen reader pdf ocr feature.">
-    Scan PDF images to convert content to text for the screen reader, when available. Only supported on Chrome browser.
+    Scan PDF to extract text for the screen reader. Only supported on Chrome browser
   </message>
   <message name="IDS_SETTINGS_CAPTIONS_ENABLE_LIVE_CAPTION_TITLE" desc="Name of the setting to enable Live Caption feature.">
     Live Caption
@@ -129,7 +129,7 @@
     Live Translate
   </message>
   <message name="IDS_SETTINGS_CAPTIONS_ENABLE_LIVE_TRANSLATE_SUBTITLE" desc="Description text for Live Translate feature.">
-    Automatically translates captions
+    Sends captions to Google to automatically translate them
   </message>
   <if expr="chromeos_ash">
     <message name="IDS_SETTINGS_CAPTIONS_ENABLE_LIVE_CAPTION_SUBTITLE_BROWSER_ONLY_ENGLISH_ONLY" desc="Description text for Live Caption feature. When audio or video is playing, the user will see captions on the screen. Only works in Chrome browser initially. Currently only works for English media.">
@@ -143,7 +143,7 @@
     Automatically creates captions for English audio and video. Audio and captions never leave your device.
   </message>
   <message name="IDS_SETTINGS_CAPTIONS_ENABLE_LIVE_CAPTION_SUBTITLE" desc="Description text for Live Caption feature. When audio or video is playing, the user will see captions on the screen.">
-    Automatically creates captions for audio and video. Audio and captions never leave your device.
+    Automatically creates captions for audio and video
   </message>
   <message name="IDS_SETTINGS_CAPTIONS_LIVE_CAPTION_DOWNLOAD_PROGRESS" desc="Download progress indicator after Live Caption is enabled. The user needs to download certain files for the feature to work.">
     Downloading speech recognition files... <ph name="PERCENT">$1<ex>17</ex></ph>%
@@ -190,12 +190,12 @@
   </if>
   <if expr="is_win or is_linux">
     <message name="IDS_SETTINGS_OVERSCROLL_HISTORY_NAVIGATION_SUBTITLE" desc="Subtitle for the overscroll history navigation setting, which allows you to navigate back and forward by swiping left or right with a touch device.">
-      Navigate back and forward with swipe gesture
+      Navigate back and forward with a swipe gesture
     </message>
   </if>
   <if expr="is_macosx">
     <message name="IDS_SETTINGS_OVERSCROLL_HISTORY_NAVIGATION_SUBTITLE" desc="Subtitle for the overscroll history navigation setting, which allows you to navigate back and forward by swiping left or right with a touch device.">
-      Turn on to navigate back and forward
+      Select the More Gestures tab, then turn on Swipe between pages to navigate back and forward
     </message>
   </if>
 
@@ -259,8 +259,17 @@
   <message name="IDS_SETTINGS_SHOW_BOOKMARKS_BAR" desc="Label for the checkbox which enables or disables showing the bookmarks bar in the toolbar.">
     Show bookmarks bar
   </message>
-  <message name="IDS_SETTINGS_SHOW_HOVER_CARD_IMAGES" desc="Label for the checkbox which enables or disables showing image previews for tab hovercards.">
-    Show images on tab hover preview cards
+  <message name="IDS_SETTINGS_HOVER_CARD_TITLE" desc="Title for the section in appearance settings for configuring what gets displayed in tab hovercards." translateable="false">
+    Tab hover preview cards
+  </message>
+  <message name="IDS_SETTINGS_SHOW_HOVER_CARD_IMAGES" desc="Label for the toggle which enables or disables showing image previews for tab hovercards." translateable="false">
+    Show images
+  </message>
+  <message name="IDS_SETTINGS_SHOW_HOVER_CARD_MEMORY_USAGE" desc="Label for the toggle which enables or disables showing tabs' memory usage in tab hovercards." translateable="false">
+    Show memory usage
+  </message>
+  <message name="IDS_SETTINGS_SHOW_HOVER_CARD_MEMORY_USAGE_STANDALONE" desc="Label for the toggle which enables or disables showing tabs' memory usage in tab hovercards. This longer string is shown when then toggle is in it's own row without a title to indicate the setting is to do with tab hovercards." translateable="false">
+    Show memory usage in tab hover preview cards
   </message>
   <message name="IDS_SETTINGS_SIDE_PANEL" desc="Title for the side panel section. Allows the user to toggle which side the side panel is displayed on.">
     Side panel
@@ -407,9 +416,6 @@
   <message name="IDS_SETTINGS_AUTOFILL_ADDRESSES_EMAIL" desc="This is the label for the field that lets a user modify the email address that will be used when auto-filling forms on the web.">
     Email
   </message>
-  <message name="IDS_SETTINGS_AUTOFILL_ADDRESS_HONORIFIC_LABEL" desc="This is the label for the field that lets the user modify the title that will be used when auto-filling forms on the web. A 'Title' field in a web form could be a prefix like Ms., Mx., or Dr. or a position held, like Captain or Rabbi." meaning="Honorific">
-    Title
-  </message>
   <message name="IDS_SETTINGS_AUTOFILL_DETAIL" desc="Description of what toggling the 'Autofill' setting does. Immediately underneath IDS_SETTINGS_AUTOFILL">
     Enable Autofill to fill out forms in a single click
   </message>
@@ -458,8 +464,8 @@
   <message name="IDS_SETTINGS_ADDRESS_REMOVED_MESSAGE" desc="Hidden text that is read to screen readers to confirm that an address was removed.">
     Address deleted
   </message>
-  <message name="IDS_SETTINGS_CREDIT_CARD_CLEAR" desc="Label for a context menu item clears the locally cached credit card that is also saved on Google Payments. Clicking this will NOT remove the credit card from Google Payments.">
-    Clear copy
+  <message name="IDS_SETTINGS_CREDIT_CARD_REMOVE" desc="Label for a context menu item removes the locally cached credit card that is also saved on Google Payments. Clicking this will NOT remove the credit card from Google Payments.">
+    Remove copy
   </message>
   <message name="IDS_SETTINGS_EDIT_CREDIT_CARD_TITLE" desc="The title for the dialog that's shown when editing a card. This can be either credit, debit, or prepaid card..">
     Edit card
@@ -488,7 +494,7 @@
   <message name="IDS_SETTINGS_MULTIPLE_MIGRATABLE_CARDS_INFO" desc="Display text under the save cards to Google Pay label. This text indicates user has multiple migratable cards on this device.">
     Right now, you have some cards that can only be used on this device
   </message>
-  <message name="IDS_SETTINGS_REMOTE_CREDIT_CARD_LINK_LABEL" desc="The title and ARIA (accessibility) label for a link in chrome://settings/payments that opens the credit card settings on https://pay.google.com. Note that the ARIA role and the link icon already convey that this is a link that will be opened when you click on it. Therefore, the message does not contain a verb.">
+  <message name="IDS_SETTINGS_REMOTE_PAYMENT_METHODS_LINK_LABEL" desc="The title and ARIA (accessibility) label for a link in chrome://settings/payments that opens the payment methods settings on https://pay.google.com. Note that the ARIA role and the link icon already convey that this is a link that will be opened when you click on it. Therefore, the message does not contain a verb.">
     Your payment methods in Google Pay
   </message>
   <message name="IDS_SETTINGS_NAME_ON_CREDIT_CARD" desc="The title for the input that lets users modify the name on the credit card.">
@@ -515,6 +521,18 @@
   <message name="IDS_SETTINGS_CREDIT_CARD_NICKNAME_INVALID" desc="The error message that is shown when user uses digit numbers in credit card nickname">
     Nickname can’t include numbers
   </message>
+  <message name="IDS_SETTINGS_CREDIT_CARD_CVC_TITLE" desc="The title for the input that lets users enter the CVC/security code of the credit card.">
+    Security code
+  </message>
+  <message name="IDS_SETTINGS_CREDIT_CARD_CVC_IMAGE_TITLE" desc="The text shown in a tool-tip when the user hovers over the helper image that guides the user when entering their credit card CVC/security code.">
+    Your security code is on the back of your card
+  </message>
+  <message name="IDS_SETTINGS_CREDIT_CARD_CVC_IMAGE_TITLE_AMEX" desc="The text shown in a tool-tip when the user hovers over the helper image that guides the user when entering their credit card CVC/security code for AmEx cards.">
+    Your security code is on the front of your card
+  </message>
+  <message name="IDS_SETTINGS_CREDIT_CARD_CVC_PLACEHOLDER" desc="The placeholder text for the input that lets users enter the CVC/security code of the credit card, letting users know that this field is optional.">
+    Optional
+  </message>
   <message name="IDS_SETTINGS_ADD_PAYMENT_METHODS" desc="The (accessibility) label that appears in the drop-down button for adding either an IBAN (International Bank Account Number), or a credit/debit card.">
     Add payment methods
   </message>
@@ -533,7 +551,7 @@
   <message name="IDS_SETTINGS_AUTOFILL_MORE_ACTIONS_FOR_IBAN" desc="The (accessibility) title of a button, which brings up a menu of actions that can be taken on a stored IBAN (International Bank Account Number). The IBAN is described by its nickname.">
     More actions for <ph name="IBAN_DESCRIPTION">$1<ex>My Doctor's IBAN</ex></ph>
   </message>
-  <message name="IDS_SETTINGS_AUTOFILL_MORE_ACTIONS_FOR_IBAN_DESCRIPTION" desc="The (accessibility) IBAN (International Bank Account Number) description from the last 4 digits of the IBAN value.">
+  <message name="IDS_SETTINGS_AUTOFILL_A11Y_IBAN_DESCRIPTION" desc="The (accessibility) IBAN (International Bank Account Number) description from the last 4 digits of the IBAN value.">
    IBAN ending in <ph name="LAST_FOUR_DIGITS">$1<ex>1234</ex></ph>
   </message>
   <message name="IDS_SETTINGS_ADD_IBAN_TITLE" desc="The title for the dialog that's shown when editing an IBAN (International Bank Account Number).">
@@ -548,262 +566,14 @@
   <message name="IDS_SETTINGS_LOCAL_IBAN_REMOVE_CONFIRMATION_TITLE" desc="Local IBAN (International Bank Account Number) remove dialog confirmation title.">
     Delete IBAN
   </message>
-  <message name="IDS_SETTINGS_UPI_ID_LABEL" desc="A label which appears next to UPI IDs, when they are listed as stored payment info, but it is visually separate from the UPI ID. It lets the user know this is a UPI ID (e.g. as opposed to a credit card number). UPI is a system for payments in India. A UPI ID is an email-like string.">
-    UPI ID
-  </message>
-  <message name="IDS_SETTINGS_UPI_ID_EXPIRATION_NEVER" desc="Appears in a different column next to UPI IDs, under the column Expiration Date, when they are listed as stored payment info. It lets the user know that UPI IDs do not expire. UPI is a system for payments in India. A UPI ID is an email-like string.">
-    Never
-  </message>
   <message name="IDS_SETTINGS_PASSWORD_MANAGER" desc="Name for the Password Manager section and settings entry used for managing passwords.">
     Password Manager
   </message>
   <message name="IDS_SETTINGS_PASSWORD_MANAGER_DESCRIPTION" desc="Description for the password section and settings entry used for managing passwords.">
     Create, save, and manage your passwords so you can easily sign in to sites and apps.
   </message>
-  <message name="IDS_SETTINGS_DEVICE_PASSWORDS" desc="Name for the passwords section used for managing passwords/exceptions stored on the device.">
-    Passwords
-  </message>
-  <message name="IDS_SETTINGS_DEVICE_PASSWORDS_ON_DEVICE_ONLY_HEADING" desc="Title of a subsection in the 'device passwords' page displaying passwords/exceptions that are stored only on the device.">
-    Passwords on this device only
-  </message>
-  <message name="IDS_SETTINGS_DEVICE_PASSWORDS_ON_DEVICE_AND_ACCOUNT_HEADING" desc="Title of a subsection in the 'device passwords' page displaying passwords/exceptions that are stored both on the device and in the account.">
-    Passwords on this device and in your Google Account
-  </message>
-  <message name="IDS_SETTINGS_CHECK_PASSWORDS" desc="Name for the check passwords subsection and settings entry used to perform a password bulk check.">
-    Check passwords
-  </message>
-  <message name="IDS_SETTINGS_CHECK_PASSWORDS_CANCELED" desc="Message for when the password check was canceled by the user.">
-    Canceled
-  </message>
-  <message name="IDS_SETTINGS_CHECKED_PASSWORDS" desc="Title above amount of found insecure passwords after password bulk check.">
-    Checked passwords
-  </message>
-  <message name="IDS_SETTINGS_CHECK_PASSWORDS_DESCRIPTION" desc="Explanation of the passwords bulk check feature found within the password settings.">
-    Keep your passwords safe from data breaches and other security issues
-  </message>
-  <message name="IDS_SETTINGS_COMPROMISED_PASSWORDS_COUNT" desc="Number of compromised passwords present in the database">
-    {COUNT, plural,
-      =0 {No compromised passwords found}
-      =1 {{COUNT} compromised password}
-      other {{COUNT} compromised passwords}}
-  </message>
-  <message name="IDS_SETTINGS_COMPROMISED_PASSWORDS_COUNT_SHORT" desc="This short text shows the amount of compromised passwords that the Chrome password check found.">
-    {NUM_COMPROMISED, plural,
-      =0 {No compromised passwords}
-      =1 {1 compromised password}
-      other {{NUM_COMPROMISED} compromised passwords}}
-  </message>
-  <message name="IDS_SETTINGS_WEAK_PASSWORDS_COUNT" desc="Number of weak passwords present in the database. Displayed when the user is signed out and no compromised passwords exist">
-    {COUNT, plural,
-      =0 {No weak passwords found}
-      =1 {Found {COUNT} weak password}
-      other {Found {COUNT} weak passwords}}
-  </message>
-  <message name="IDS_SETTINGS_WEAK_PASSWORDS_COUNT_SHORT" desc="This short text shows the amount of weak passwords that the Chrome password check found.">
-    {NUM_WEAK, plural,
-      =0 {No weak passwords}
-      =1 {1 weak password}
-      other {{NUM_WEAK} weak passwords}}
-  </message>
-  <message name="IDS_SETTINGS_REUSED_PASSWORDS_COUNT_SHORT" desc="This short text shows the amount of reused passwords that the Chrome password check found.">
-    {NUM_REUSED, plural,
-      =0 {No reused passwords}
-      =1 {1 reused password}
-      other {{NUM_REUSED} reused passwords}}
-  </message>
-  <message name="IDS_SETTINGS_INSECURE_PASSWORDS_COUNT" desc="Number of insecure passwords present in the database">
-    {COUNT, plural,
-      =0 {No security issues found}
-      =1 {Found {COUNT} security issue}
-      other {Found {COUNT} security issues}}
-  </message>
-  <message name="IDS_SETTINGS_CHECK_PASSWORDS_AGAIN" desc="Button to start bulk password check manually in passwords check section.">
-    Check again
-  </message>
-  <message name="IDS_SETTINGS_CHECK_PASSWORDS_AGAIN_AFTER_ERROR" desc="Button to start bulk password check manually in passwords check section after it already failed once.">
-    Try again
-  </message>
-  <message name="IDS_SETTINGS_CHECK_PASSWORDS_PROGRESS" desc="Text for a label showing how many passwords were checked so far and how many passwords need to be checked in total.">
-    Checking passwords (<ph name="CHECKED_PASSWORDS">$1<ex>6</ex></ph> of <ph name="TOTAL_PASSWORDS">$2<ex>31</ex></ph>)…
-  </message>
-  <message name="IDS_SETTINGS_CHECK_PASSWORDS_STOP" desc="Button to manually stop an ongoing bulk password check.">
-    Cancel
-  </message>
-  <message name="IDS_SETTINGS_PASSWORDS_JUST_NOW" desc="Label shown when a compromised credential was found less than a minute ago">
-    Just now
-  </message>
-  <message name="IDS_SETTINGS_COMPROMISED_PASSWORDS" desc="Title for list of compromised credentials after passwords bulk check.">
-    Compromised passwords
-  </message>
-  <message name="IDS_SETTINGS_COMPROMISED_PASSWORDS_ADVICE" desc="Description of what user should do after compromised passwords are found.">
-    Change these passwords immediately to keep your account safe:
-  </message>
-  <message name="IDS_SETTINGS_MUTED_PASSWORDS" desc="Text for a label showing how many passwords were discarded / muted from compromised strings warnings.">
-    Dismissed warnings (<ph name="MUTED_PASSWORDS">$1<ex>2</ex></ph>)
-  </message>
-  <message name="IDS_SETTINGS_WEAK_PASSWORDS" desc="Title for list of weak credentials after passwords bulk check.">
-    Weak passwords
-  </message>
-  <message name="IDS_SETTINGS_WEAK_PASSWORDS_DESCRIPTION" desc="Information about why weak passwords are a security issue and what user should do to fix the problem. Has a link.">
-    Weak passwords are easy to guess. Make sure you're creating strong passwords. <ph name="BEGIN_LINK">&lt;a target='_blank' href='$1'&gt;</ph>See more security tips.<ph name="END_LINK">&lt;/a&gt;</ph>
-  </message>
-  <message name="IDS_SETTINGS_CHANGE_PASSWORD_BUTTON" desc="Button inside password check section which opens url for changing leaked password.">
-    Change password
-  </message>
-  <message name="IDS_SETTINGS_CHANGE_PASSWORD_IN_APP_LABEL" desc="Label which is shown only if compromised credentials can't be fixed by visiting website (e.g. password from mobile app).">
-    Open the app to change your password
-  </message>
-  <message name="IDS_SETTINGS_COMPROMISED_PASSWORD_REASON_LEAKED" desc="Password compromise reason shown when a password was found in a data breach.">
-    Found in data breach
-  </message>
-  <message name="IDS_SETTINGS_COMPROMISED_PASSWORD_REASON_PHISHED" desc="Password compromise reason shown when a password was reused on a phishing site.">
-    Entered on deceptive site
-  </message>
-  <message name="IDS_SETTINGS_COMPROMISED_PASSWORD_REASON_PHISHED_AND_LEAKED" desc="Password compromise reason shown when a password was reused on a phishing site and found in a data breach.">
-    Entered on deceptive site and found in data breach
-  </message>
-  <message name="IDS_SETTINGS_COMPROMISED_PASSWORD_SHOW" desc="Action menu item for a row which displays a compromised password. The password value, which is initialy obfuscated, will be show in plain text.">
-    Show password
-  </message>
-  <message name="IDS_SETTINGS_COMPROMISED_PASSWORD_HIDE" desc="Action menu item for a row which displays a compromised password. The password value, which is shown in plain text, will be hidden again.">
-    Hide password
-  </message>
-  <message name="IDS_SETTINGS_COMPROMISED_PASSWORD_REMOVE" desc="Action menu item for a row which displays a compromised password. It will open a confirmation dialog for deleting the password.">
-    Remove password
-  </message>
-  <message name="IDS_SETTINGS_COMPROMISED_PASSWORD_MUTE" desc="Action menu item for a row which displays a compromised password. It will mute/dismiss the compromised password warning.">
-    Dismiss warning
-  </message>
-  <message name="IDS_SETTINGS_COMPROMISED_PASSWORD_UNMUTE" desc="Action menu item for a row which displays a muted/dismissed compromised password. It will unmute/restore the compromised password and reenable the warning.">
-    Restore warning
-  </message>
-  <message name="IDS_SETTINGS_REMOVE_COMPROMISED_PASSWORD_CONFIRMATION_TITLE" desc="Compromised password remove dialog conformation title.">
-    Remove password?
-  </message>
-  <message name="IDS_SETTINGS_REMOVE_COMPROMISED_PASSWORD_CONFIRMATION_DESCRIPTION" desc="Compromised password remove dialog conformation description">
-    Removing this password will not delete your account on <ph name="DOMAIN">$1<ex>airbnb.com</ex></ph>. Change your password or delete your account on <ph name="DOMAIN_LINK">$2<ex>&lt;a href="https://airbnb.com" target="_blank"&gt;airbnb.com&lt;/a&gt;</ex></ph> to keep it safe from others.
-  </message>
-  <message name="IDS_SETTINGS_COMPROMISED_EDIT_PASSWORD_APP" desc="A label for the field, which displays the app for which the password was saved. The field is part of a dialog, which allows the user to edit the password.">
-    App
-  </message>
-  <message name="IDS_SETTINGS_COMPROMISED_ALREADY_CHANGED_PASSWORD" desc="A link which asks if user has already changed the password.">
-    Already changed this password?
-  </message>
-  <message name="IDS_SETTINGS_COMPROMISED_EDIT_DISCLAIMER_TITLE" desc="A title for the dialog which asks the user passwords was changed.">
-    Did you already change this password on <ph name="WEBSITE">$1<ex>airbnb.com</ex></ph>?
-  </message>
-  <message name="IDS_SETTINGS_PASSWORDS_SAVE_PASSWORDS_TOGGLE_LABEL" desc="Label for a toggle that allows users to be prompted if they want to save their passwords when logging into webpages.">
-    Offer to save passwords
-  </message>
-  <message name="IDS_SETTINGS_PASSWORDS_AUTOSIGNIN_CHECKBOX_LABEL" desc="Label for a checkbox that allows users to sign in automatically to websites when their credentials are already saved.">
-    Auto Sign-in
-  </message>
-  <message name="IDS_SETTINGS_PASSWORDS_AUTOSIGNIN_CHECKBOX_DESC" desc="Text that describes the 'Auto Sign-in' functionality to users.">
-    Automatically sign in to sites and apps using saved credentials. If turned off, you'll be asked for confirmation every time before signing in to a site or app.
-  </message>
-  <message name="IDS_SETTINGS_PASSWORDS_LEAK_DETECTION_LABEL" desc="Label for a checkbox that allows users to choose whether Chrome should check that credentials have been part of a leak.">
-    Warn you if passwords are exposed in a data breach
-  </message>
-  <message name="IDS_SETTINGS_PASSWORDS_LEAK_DETECTION_LABEL_UPDATED" desc="Label for a checkbox that allows users to choose whether chrome should check that credentials have been part of a leak.">
-    Warn you if a password was compromised in a data breach
-  </message>
-  <message name="IDS_SETTINGS_PASSWORDS_LEAK_DETECTION_SIGNED_OUT_ENABLED_DESC" desc="Text that describes the 'Password Leak Detection' functionality to signed-out users who have not disabled the feature. This text always follows a sentence describing the feature.">
-    When you sign in to your Google Account, this feature is turned on.
-  </message>
-  <message name="IDS_SETTINGS_PASSWORDS_SAVED_HEADING" desc="The title for a list of username/site/password items. These items are already saved by the browser and can be deleted/edited.">
-    Saved Passwords
-  </message>
-  <message name="IDS_SETTINGS_PASSWORDS_EXCEPTIONS_HEADING" desc="The title for a list of sites where passwords will not be saved. These items are already saved by the browser and can only be deleted.">
-    Never Saved
-  </message>
-  <message name="IDS_SETTINGS_PASSWORDS_DELETE_EXCEPTION" desc="The alt text for a button that deletes a site for which passwords would not be saved.">
-    Delete this item
-  </message>
-  <message name="IDS_SETTINGS_PASSWORD_REMOVE" desc="Label for a context menu item that removes the selected password." meaning="Remove selected password.">
-    Remove
-  </message>
-  <message name="IDS_SETTINGS_PASSWORD_MOVE_TO_ACCOUNT" desc="Label for a context menu item that moves the selected password from the device to the user account.">
-    Move to Google Account
-  </message>
-  <message name="IDS_SETTINGS_PASSWORD_SEARCH" desc="Placeholder/label for the text input field that allows a user to filter saved passwords.">
-    Search passwords
-  </message>
-  <message name="IDS_SETTINGS_PASSWORDS_VIEW_DETAILS_TITLE" desc="Title for the dialog that shows password details. This dialog lets a user see a saved password and copy the username.">
-    Password details
-  </message>
-  <message name="IDS_SETTINGS_PASSWORD_DETAILS" desc="Label for a context menu item that shows a dialog with details for the selected password.">
-    Details
-  </message>
-  <message name="IDS_SETTINGS_PASSWORD_EDIT_TITLE" desc="The title for a dialog, which allows a user to edit a saved password. This dialog includes other details, such as username and website.">
-    Edit password
-  </message>
-  <message name="IDS_SETTINGS_PASSWORD_EDIT" desc="Action menu item for a row which displays a saved password. It will open a modal dialog which will allow the user to edit the password and other metadata (username, website).">
-    Edit password
-  </message>
-  <message name="IDS_SETTINGS_PASSWORD_EDIT_FOOTNOTE" desc="A footnote for the dialog which allows the user to edit a saved password.">
-    Make sure the password you are saving matches your password for <ph name="WEBSITE">$1<ex>airbnb.com</ex></ph>
-  </message>
-  <message name="IDS_SETTINGS_PASSWORD_USERNAME_ALREADY_USED" desc="An error message when user tried editing the username to a value which is already used for the same site.">
-    You already saved a password with this username for <ph name="WEBSITE">$1<ex>website.com</ex></ph>
-  </message>
-  <message name="IDS_SETTINGS_PASSWORD_VIEW_EXISTING_PASSWORD" desc="A link text shown together with an error message when user tried editing the username to a value which is already used for the same site. On click shows existing password editor.">
-    View password
-  </message>
-  <message name="IDS_SETTINGS_PASSWORD_VIEW_EXISTING_PASSWORD_ARIA_DESCRIPTION" desc="An accessibility description for a link text shown together with an error message when user tried editing the username to a value which is already used for the same site. On click shows existing password editor.">
-    View password with username <ph name="USERNAME">$1<ex>username</ex></ph> for <ph name="WEBSITE">$2<ex>website.com</ex></ph>
-  </message>
-  <message name="IDS_SETTINGS_PASSWORD_MISSING_TLD" desc="An error message when user entered a URL without a top-level domain as a site for a new password. It suggests to use the same value but with common top level domain." meaning="Suggesting user to add the top-level domain in the website text.">
-    Did you mean <ph name="WEBSITE">$1<ex>twitter.com</ex></ph>?
-  </message>
-  <message name="IDS_SETTINGS_PASSWORD_ADD_TITLE" desc="The title for a dialog, which allows a user to add a new password. This dialog includes other details, such as username and website.">
-    Add password
-  </message>
-  <message name="IDS_SETTINGS_PASSWORD_ADD_FOOTNOTE" desc="A footnote for the dialog which allows the user to add a new password.">
-    Make sure you're saving your current password for this site
-  </message>
-  <message name="IDS_SETTINGS_PASSWORD_STORE_PICKER_OPTION_ACCOUNT" desc="An option of the store picker shown in the add password dialog if saving to the Google Password Manager">
-    Save to Google Password Manager (<ph name="EMAIL">$1<ex>username@gmail.com</ex></ph>)
-  </message>
-  <message name="IDS_SETTINGS_PASSWORD_COPY" desc="Label for a context menu item that allows to copy the selected password into clipboard.">
-    Copy password
-  </message>
-  <message name="IDS_SETTINGS_PASSWORD_SEND" desc="Label for a context menu item that allows to send the selected password.">
-    Send password
-  </message>
-  <message name="IDS_SETTINGS_USERNAME_COPY" desc="Label for the button when copying a username in the password edit dialog.">
-    Copy username
-  </message>
-  <message name="IDS_SETTINGS_PASSWORDS_WEBSITE" desc="Label for the website a password is for when editing a password.">
-    Site
-  </message>
-  <message name="IDS_SETTINGS_PASSWORDS_ANDROID_APP" desc="Label for the app a password is for when displaying a credential and the real app display name could not be obtained.">
-      App (<ph name="ANDROID_PACKAGE_NAME">$1<ex>com.netflix.mediaclient</ex></ph>)
-  </message>
-  <message name="IDS_SETTINGS_PASSWORDS_USERNAME" desc="Label for the saved username when editing a password.">
-    Username
-  </message>
-  <message name="IDS_SETTINGS_PASSWORDS_PASSWORD" desc="Label for the saved password when editing a password.">
-    Password
-  </message>
-  <message name="IDS_SETTINGS_PASSWORDS_NOTE" desc="Label for the password note when viewing or editing a password.">
-    Note
-  </message>
-  <message name="IDS_SETTINGS_PASSWORDS_NO_NOTE_ADDED" desc="Label for the password note when the note is empty.">
-    No note added
-  </message>
-  <message name="IDS_SETTINGS_PASSWORDS_NOTE_CHARACTER_COUNT" desc="Warning for the password note when the user exceeds or is about to exceed the character limit.">
-    <ph name="CHARACTER_COUNT">$1<ex>950</ex></ph>/<ph name="CHARACTER_LIMIT">$2<ex>1000</ex></ph>
-  </message>
-  <message name="IDS_SETTINGS_PASSWORDS_NOTE_CHARACTER_COUNT_WARNING" desc="Warning for the password note when the user exceeds or is about to exceed the character limit.">
-    Notes can save up to <ph name="CHARACTER_LIMIT">$1<ex>1000</ex></ph> characters.
-  </message>
-  <message name="IDS_SETTINGS_PASSWORDS_TIMED_OUT" desc="Title for the dialog which shows when the password manager authentication is expired.">
-    Google Password Manager timed out
-  </message>
-  <message name="IDS_SETTINGS_PASSWORDS_TIMED_OUT_DESCRIPTION" desc="Body text for the dialog which shows when the password manager authentication is expired.">
-    {NUM_MINS, plural,
-     =1 {To keep your passwords safe, Google Password Manager locks after 1 minute of inactivity}
-     other {To keep your passwords safe, Google Password Manager locks after {NUM_MINS} minutes of inactivity}}
+  <message name="IDS_SETTINGS_PAYMENT_METHODS_NONE" desc="Placeholder that is shown when there are no payment methods in the list of saved payment methods.">
+    Saved payment methods will appear here
   </message>
   <message name="IDS_SETTINGS_PASSKEYS_LENGTH_ERROR" desc="Error message in the passkey edit dialog when the user inputs an empty username.">
     Enter your username
@@ -820,275 +590,41 @@
   <message name="IDS_SETTINGS_ADDRESS_NONE" desc="Placeholder that is shown when there are no addresses in the list of saved addresses.">
     Saved addresses will appear here
   </message>
-  <message name="IDS_SETTINGS_PAYMENT_METHODS_NONE" desc="Placeholder that is shown when there are no payment methods in the list of saved payment methods.">
-    Saved payment methods will appear here
+  <message name="IDS_SETTINGS_PASSWORDS_LEAK_DETECTION_LABEL" desc="Label for a checkbox that allows users to choose whether Chrome should check that credentials have been part of a leak.">
+    Warn you if passwords are exposed in a data breach
   </message>
-  <message name="IDS_SETTINGS_PASSWORDS_NONE" desc="Placeholder that is shown when there are no passwords in the list of saved passwords.">
-    Saved passwords will appear here
+  <message name="IDS_SETTINGS_PASSWORDS_LEAK_DETECTION_LABEL_UPDATED" desc="Label for a checkbox that allows users to choose whether chrome should check that credentials have been part of a leak.">
+    Warn you if a password was compromised in a data breach
   </message>
-  <message name="IDS_SETTINGS_PASSWORDS_NONE_WITH_IMPORT" desc="Placeholder that is shown when there are no passwords in the list of saved passwords with an additional link to the import passwords flow.">
-    Saved passwords will appear here. <ph name="BEGIN_LINK">&lt;a href="#" &gt;</ph> Import passwords<ph name="END_LINK">&lt;/a&gt;</ph>
+  <message name="IDS_SETTINGS_PASSWORDS_LEAK_DETECTION_SIGNED_OUT_ENABLED_DESC" desc="Text that describes the 'Password Leak Detection' functionality to signed-out users who have not disabled the feature. This text always follows a sentence describing the feature.">
+    When you sign in to your Google Account, this feature is turned on.
   </message>
-  <message name="IDS_SETTINGS_PASSWORDS_EXCEPTIONS_NONE" desc="Placeholder text that is shown when there are no sites in the list of sites for which to never save passwords.">
-    Sites which never save passwords will appear here
+  <message name="IDS_SETTINGS_CHECK_PASSWORDS_PROGRESS" desc="Text for a label showing how many passwords were checked so far and how many passwords need to be checked in total.">
+    Checking passwords (<ph name="CHECKED_PASSWORDS">$1<ex>6</ex></ph> of <ph name="TOTAL_PASSWORDS">$2<ex>31</ex></ph>)…
   </message>
-  <message name="IDS_SETTINGS_PASSWORD_UNDO" desc="Label for a button triggering an undo of a saved password or exception deletion.">
-    Undo
-  </message>
-  <message name="IDS_SETTINGS_PASSWORD_DELETED_PASSWORD" desc="Label for an undo tooltip following a saved password deletion.">
-    Password deleted
-  </message>
-  <message name="IDS_SETTINGS_PASSWORD_STORED_ON_DEVICE" desc="Message displayed in the edit dialog for a password stored on the device.">
-    Your password is saved on this device
-  </message>
-  <message name="IDS_SETTINGS_PASSWORD_STORED_IN_ACCOUNT" desc="Message displayed in the edit dialog for a password stored in the account.">
-    Your password is saved in your Google Account
-  </message>
-  <message name="IDS_SETTINGS_PASSWORD_STORED_IN_ACCOUNT_AND_ON_DEVICE" desc="Message displayed in the edit dialog for a password stored both on the device and in the account.">
-    Your password is saved on this device and in your Google Account
-  </message>
-  <message name="IDS_SETTINGS_PASSWORD_DELETED_PASSWORD_FROM_ACCOUNT" desc="Label for an undo tooltip following deletion of a password from the account.">
-    Password deleted from your Google Account
-  </message>
-  <message name="IDS_SETTINGS_PASSWORD_DELETED_PASSWORD_FROM_DEVICE" desc="Label for an undo tooltip following deletion of a password from the device.">
-    Password deleted from this device
-  </message>
-  <message name="IDS_SETTINGS_PASSWORD_DELETED_PASSWORD_FROM_ACCOUNT_AND_DEVICE" desc="Label for an undo tooltip following deletion of a password from the account and the device.">
-    Password deleted from this device and your Google Account
-  </message>
-  <message name="IDS_SETTINGS_PASSWORD_COPIED_TO_CLIPBOARD" desc="Label for a tooltip following copying a password to the clipboard.">
-    Password copied to clipboard
-  </message>
-  <message name="IDS_SETTINGS_PASSWORD_USERNAME_COPIED_TO_CLIPBOARD" desc="Label for a tooltip following copying a username of a credential to the clipboard.">
-    Username copied to clipboard
-  </message>
-  <message name="IDS_SETTINGS_PASSWORD_MOVE_PASSWORDS_TO_ACCOUNT" desc="Message displayed in the moving multiple passwords to the user Google Account banner.">
-    To easily use them on all your devices, you can move them to your Google Account
-  </message>
-   <message name="IDS_SETTINGS_PASSWORD_MOVE_PASSWORDS_TO_ACCOUNT_COUNT" desc="Label shown in the link that open moving multiple password dialog.">
+  <message name="IDS_SETTINGS_COMPROMISED_PASSWORDS_COUNT" desc="Number of compromised passwords present in the database">
     {COUNT, plural,
-      =1 {{COUNT} password is saved on this device}
-      other {{COUNT} passwords are saved on this device}}
-  </message>
-  <message name="IDS_SETTINGS_PASSWORD_MOVE_PASSWORDS_TO_ACCOUNT_DIALOG_BODY_TEXT" desc="Text displayed in the dialog that asks the user to select which passwords to move to their Google Account.">
-    Choose which passwords to move. You can access them whenever you're signed in.
-  </message>
-  <message name="IDS_SETTINGS_PASSWORD_MOVE_PASSWORDS_TO_ACCOUNT_DIALOG_TITLE" desc="Title for the dialog that asks the user to select which passwords to move to their Google Account.">
-    Move passwords from this device to your Google Account?
-  </message>
-  <message name="IDS_SETTINGS_PASSWORD_MOVE_PASSWORDS_TO_ACCOUNT_SNACKBAR" desc="Text in the snackbar that appears after the user successfuly moved local passwords to their Google Account.">
-    Passwords moved to your Google Account
-  </message>
-  <message name="IDS_SETTINGS_PASSWORD_MOVE_MULTIPLE_PASSWORDS_TO_ACCOUNT_DIALOG_MOVE_BUTTON_TEXT" desc="Text for the button that confirms moving multiple passwords to the user Google Account.">
-    Move passwords
-  </message>
-  <message name="IDS_SETTINGS_PASSWORD_MOVE_MULTIPLE_PASSWORDS_TO_ACCOUNT_DIALOG_CANCEL_BUTTON_TEXT" desc="Text for the button that cancels the action of moving multiple passwords to the user Google Account.">
-    Don't move
-  </message>
-  <message name="IDS_SETTINGS_PASSWORD_OPEN_MOVE_MULTIPLE_PASSWORDS_TO_ACCOUNT_DIALOG_BUTTON_TEXT" desc="Text for the button that opens the dialog that moves multiple passwords to the user Google Account.">
-    Get started
-  </message>
-  <message name="IDS_SETTINGS_PASSWORD_REMOVE_DIALOG_TITLE" desc="Title for the dialog that asks the user which versions of a password to remove (device, Google Account or both).">
-    Delete password?
-  </message>
-  <message name="IDS_SETTINGS_PASSWORD_REMOVE_DIALOG_BODY" desc="Description message for the dialog that asks the user which versions of a password to remove (device, Google Account or both).">
-    Your password for <ph name="WEBSITE">&lt;b&gt;$1&lt;/b&gt;</ph> is saved on this device and to your Google Account. Which one do you want to delete?
-  </message>
-  <message name="IDS_SETTINGS_PASSWORD_REMOVE_DIALOG_REMOVE_BUTTON_TEXT" desc="Text for the button that confirms the action in the dialog that asks the user which versions of a password to remove (device, Google Account or both).">
-    Delete
-  </message>
-  <message name="IDS_SETTINGS_PASSWORD_REMOVE_DIALOG_CANCEL_BUTTON_TEXT" desc="Text for the button that cancels the action in the dialog that asks the user which versions of a password to remove (device, Google Account or both).">
-    Cancel
-  </message>
-  <message name="IDS_SETTINGS_PASSWORD_REMOVE_DIALOG_FROM_ACCOUNT_CHECKBOX_LABEL" desc="The label for the checkbox that represents whether the user wishes to remove a password from their Google Account.">
-    From your Google Account
-  </message>
-  <message name="IDS_SETTINGS_PASSWORD_REMOVE_DIALOG_FROM_DEVICE_CHECKBOX_LABEL" desc="The label for the checkbox that represents whether the user wishes to remove a password from the device.">
-    From this device
-  </message>
-  <message name="IDS_SETTINGS_DEVICE_PASSWORDS_LINK_LABEL" desc="The label for the link on settings leading to the 'device passwords' page.">
-    See and manage passwords saved on this device
-  </message>
-  <message name="IDS_SETTINGS_PASSWORDS_MANAGE_PASSWORDS_PLAINTEXT" desc="Shown in the passwords section of settings. Descriptive text to inform that passwords can be accessed online.">
-    View and manage saved passwords in your Google Account
-  </message>
-  <message name="IDS_SETTINGS_PASSWORDS_OPT_IN_ACCOUNT_STORAGE_BODY" desc="Description before a button in the passwords section of settings which triggers opt in to the account-scoped password storage.">
-    You can also show passwords from your <ph name="BEGIN_LINK">&lt;a is="action-link" href="$1" target="_blank"&gt;</ph>Google Account<ph name="END_LINK">&lt;/a&gt;</ph> here
-  </message>
-  <message name="IDS_SETTINGS_PASSWORDS_OPT_IN_ACCOUNT_STORAGE_LABEL" desc="Label for a button in the passwords section of settings which triggers opt in to the account-scoped password storage.">
-    Show
-  </message>
-  <message name="IDS_SETTINGS_PASSWORDS_OPT_OUT_ACCOUNT_STORAGE_BODY" desc="Description before a button in the passwords section of settings which triggers opt out of the account-scoped password storage.">
-    Showing passwords from your <ph name="BEGIN_LINK">&lt;a is="action-link" href="$1" target="_blank"&gt;</ph>Google Account<ph name="END_LINK">&lt;/a&gt;</ph>
-  </message>
-  <message name="IDS_SETTINGS_PASSWORDS_OPT_OUT_ACCOUNT_STORAGE_LABEL" desc="Label for a button in the passwords section of settings which triggers opt out of the account-scoped password storage.">
-    Remove from device
-  </message>
-  <message name="IDS_SETTINGS_PASSWORDS_IMPORT_MENU_ITEM" desc="A menu item in the More Actions menu above the password list in Chrome's settings. Selecting this action will open a dialog, through which the user can import passwords.">
-    Import passwords
-  </message>
-  <message name="IDS_SETTINGS_PASSWORDS_IMPORT_TITLE" desc="The title of a dialog, which offers the ability for the user to import passwords into Password Manager.">
-    Import passwords
-  </message>
-  <message name="IDS_SETTINGS_PASSWORDS_IMPORT_SUCCESS_TITLE" desc="The title of a dialog, which offers the ability for the user to import passwords into Password Manager. Shown when import has successfully finished with no errors.">
-    Import successful!
-  </message>
-  <message name="IDS_SETTINGS_PASSWORDS_IMPORT_COMPLETE_TITLE" desc="The title of a dialog, which offers the ability for the user to import passwords into Password Manager. Shown when import has successfully finished, but some errors were found in the imported file.">
-    Import complete
-  </message>
-  <message name="IDS_SETTINGS_PASSWORDS_IMPORT_ERROR_TITLE" desc="The title of a dialog, which offers the ability for the user to import passwords into Password Manager. Shown when no passwords were imported due to some error.">
-    Something went wrong
-  </message>
-  <message name="IDS_SETTINGS_PASSWORDS_IMPORT_CHOOSE_FILE" desc="A button in the dialog for importing passwords from Chrome. Passwords will be imported from the file, which the user will be asked to choose after initiating this action.">
-    Select file
-  </message>
-  <message name="IDS_SETTINGS_PASSWORDS_IMPORT_DESCRIPTION_ACCOUNT_STORE_USERS" desc="Text shown to the account store users (who has the option to store passwords localy or in Google Password manager) on the dialog for importing passwords, before the user has chosen the file to import passwords from.">
-    To import passwords, select a CSV file
-  </message>
-  <message name="IDS_SETTINGS_PASSWORDS_IMPORT_DESCRIPTION_SYNCING_USERS" desc="Text shown to the signed in user (whose passwords are synced with Google Password Manager) on the dialog for importing passwords, before the user has chosen the file to import passwords from.">
-    To import passwords to Google Password Manager for <ph name="USER_EMAIL"><ex>elisa.g.becket@gmail.com</ex>$1</ph>, select a CSV file
-  </message>
-  <message name="IDS_SETTINGS_PASSWORDS_IMPORT_DESCRIPTION_SIGNEDOUT_USERS" desc="Text shown to the user (whose passwords are store locally on their device) on the dialog for importing passwords, before the user has chosen the file to import passwords from.">
-    To import passwords to Google Password Manager on this device, select a CSV file
-  </message>
-  <message name="IDS_SETTINGS_PASSWORDS_IMPORT_SUCCESS_SUMMARY_DEVICE" desc="Text on the dialog for importing passwords that shows how many passwords have been stored on the user device, after the user has chosen the file to import passwords from.">
-    {NUM_PASSWORDS, plural,
-     =1 {1 password imported to Google Password Manager on this device}
-     other {{NUM_PASSWORDS} passwords imported to Google Password Manager on this device}}
-  </message>
-  <message name="IDS_SETTINGS_PASSWORDS_IMPORT_SUCCESS_SUMMARY_ACCOUNT" desc="Text on the dialog for importing passwords that shows how many passwords have been saved to Google Password Manager, after the user has chosen the file to import passwords from.">
-    {NUM_PASSWORDS, plural,
-     =1 {1 password imported to Google Password Manager for <ph name="USER_EMAIL"><ex>elisa.g.becket@gmail.com</ex>$1</ph>}
-     other {{NUM_PASSWORDS} passwords imported to Google Password Manager for <ph name="USER_EMAIL"><ex>elisa.g.becket@gmail.com</ex>$1</ph>}}
-  </message>
-  <message name="IDS_SETTINGS_PASSWORDS_IMPORT_STORE_PICKER_ACCESSIBLE_NAME" desc="Accessible name of destination dropdown in the passwords import dialog">
-    Select where to import your passwords
-  </message>
-  <message name="IDS_SETTINGS_PASSWORDS_IMPORT_SUCCESS_TIP" desc="Message is shown on the dialog for importing passwords, after a successful import. It is an advice for the user, that they should consider deleting the file, which they used for importing passwords from.">
-    Consider deleting <ph name="FILENAME">&lt;span class="file-name"&gt;$1&lt;/span&gt;<ex>&lt;span class="file-name"&gt;filename.csv&lt;/span&gt;</ex></ph>, so others who use this device can't see your passwords
-  </message>
-  <message name="IDS_SETTINGS_PASSWORDS_IMPORT_DELETE_FILE_OPTION" desc="Message is shown on the dialog for importing passwords, after a successful import. It offers a user to delete the file, which they used for importing passwords from, by clicking at the checkbox and 'Done' button afterwards.">
-    Delete <ph name="FILENAME">&lt;span class="file-name"&gt;$1&lt;/span&gt;<ex>&lt;span class="file-name"&gt;filename.csv&lt;/span&gt;</ex></ph>, so others who use this device can't see your passwords
-  </message>
-  <message name="IDS_SETTINGS_PASSWORDS_IMPORT_ERROR_UNKNOWN" desc="Message is shown on the dialog for importing passwords if no passwords were imported and we don't know the cause of error. Probably error in the backend or in our systems.">
-    Your passwords weren't imported
-  </message>
-  <message name="IDS_SETTINGS_PASSWORDS_IMPORT_ERROR_BAD_FORMAT" desc="Message is shown on the dialog for importing passwords if no passwords were imported because file is not formated correctly">
-    Can't import passwords. Check <ph name="FILENAME">&lt;span class="file-name"&gt;$1&lt;/span&gt;<ex>&lt;span class="file-name"&gt;filename.csv&lt;/span&gt;</ex></ph> and make sure it's formatted correctly. <ph name="BEGIN_LINK">&lt;a href="$2" target="_blank"&gt;</ph>Learn more<ph name="END_LINK">&lt;/a&gt;</ph>
-  </message>
-  <message name="IDS_SETTINGS_PASSWORDS_IMPORT_FILE_SIZE_EXCEEDED" desc="Message is shown on the dialog for importing passwords if no passwords were imported because file size exceeds 150 KB.">
-    Can't import passwords. The file size should be less than 150 KB.
-  </message>
-  <message name="IDS_SETTINGS_PASSWORDS_IMPORT_ERROR_LIMIT_EXCEEDED" desc="Message is shown on the dialog for importing passwords if no passwords were imported because user tried to import more than `NUMBER` passwords from a single file.">
-    Can't import passwords. You can only import up to <ph name="COUNT"><ex>3000</ex>$1</ph> passwords at a time.
-  </message>
-  <message name="IDS_SETTINGS_PASSWORDS_IMPORT_MISSING_PASSWORD" desc="An error message for a row that wasn't imported, because password was missing. It is shown on the dialog for importing passwords if some passwords weren't imported.">
-    A password is required
-  </message>
-  <message name="IDS_SETTINGS_PASSWORDS_IMPORT_MISSING_URL" desc="An error message for a row that wasn't imported, because URL was missing. It is shown on the dialog for importing passwords if some passwords weren't imported.">
-    A URL is required
-  </message>
-  <message name="IDS_SETTINGS_PASSWORDS_IMPORT_INVALID_URL" desc="An error message for a row that wasn't imported, because the URL is in an unacceptable format. It is shown on the dialog for importing passwords if some passwords weren't imported.">
-    URL format should be https://www.example.com
-  </message>
-  <message name="IDS_SETTINGS_PASSWORDS_IMPORT_BAD_ROWS_FORMAT" desc="An error message for which summarizes all rows that weren't imported, because we weren't able to read them completely due to incorrect formatting. It is shown on the dialog for importing passwords if some passwords weren't imported.">
-    {NUM_PASSWORDS, plural,
-     =1 {1 other password wasn't imported because it's formatted incorrectly}
-     other {{NUM_PASSWORDS} other passwords weren't imported because they're formatted incorrectly}}
-  </message>
-  <message name="IDS_SETTINGS_PASSWORDS_IMPORT_LONG_URL" desc="An error message for a row that wasn't imported, because the provided URL exceeds the length limit. It is shown on the dialog for importing passwords if some passwords weren't imported.">
-    URL is more than 2048 characters
-  </message>
-  <message name="IDS_SETTINGS_PASSWORDS_IMPORT_LONG_USERNAME" desc="An error message for a row that wasn't imported, because the provided username exceeds the length limit. It is shown on the dialog for importing passwords if some passwords weren't imported.">
-    Username is more than 1000 characters
-  </message>
-  <message name="IDS_SETTINGS_PASSWORDS_IMPORT_LONG_PASSWORD" desc="An error message for a row that wasn't imported, because the provided password exceeds the length limit. It is shown on the dialog for importing passwords if some passwords weren't imported.">
-    Password is more than 1000 characters
-  </message>
-  <message name="IDS_SETTINGS_PASSWORDS_IMPORT_LONG_NOTE" desc="An error message for a row that wasn't imported, because the provided note exceeds the length limit. It is shown on the dialog for importing passwords if some passwords weren't imported.">
-    Note is more than 1000 characters
-  </message>
-  <message name="IDS_SETTINGS_PASSWORDS_IMPORT_CONFLICT_ACCOUNT" desc="An error message for a row that wasn't imported, because the provided credential is already stored in their Google Password Manager. It is shown on the dialog for importing passwords if some passwords weren't imported.">
-    A password for this account is already saved to your Google Password Manager (<ph name="USER_EMAIL"><ex>elisa.g.becket@gmail.com</ex>$1</ph>)
-  </message>
-  <message name="IDS_SETTINGS_PASSWORDS_IMPORT_CONFLICT_DEVICE" desc="An error message for a row that wasn't imported, because the provided credential is already stored on their device. It is shown on the dialog for importing passwords if some passwords weren't imported.">
-    A password for this account is already saved on this device
-  </message>
-  <message name="IDS_SETTINGS_PASSWORDS_IMPORT_FAILURES_SUMMARY" desc="Message is shown on the dialog for importing passwords if some passwords weren't imported.">
-    {NUM_PASSWORDS, plural,
-     =1 {1 password not imported}
-     other {{NUM_PASSWORDS} passwords not imported}}
-  </message>
-  <message name="IDS_SETTINGS_PASSWORDS_IMPORT_CONFLICTS_TITLE" desc="The title of a dialog, which offers the ability for the user to import passwords into Password Manager. Shown when conflicts were found in the imported file and the user needs to resolve them.">
-    {NUM_PASSWORDS, plural,
-     =1 {1 existing password found}
-     other {{NUM_PASSWORDS} existing passwords found}}
-  </message>
-  <message name="IDS_SETTINGS_PASSWORDS_IMPORT_CONFLICTS_DESCRIPTION" desc="Text shown to the user on the dialog for import passwords, in case some conflicts were found during the import process.">
-    You already have passwords for these accounts in your <ph name="BRAND">$1<ex>Google Password Manager</ex></ph>. If you choose to import one of the passwords below, it will replace the existing one.
-  </message>
-  <message name="IDS_SETTINGS_PASSWORDS_IMPORT_CANCEL" desc="A button in the dialog for importing passwords into Password Manager. By clicking the button, the import will be canceled and the dialog will be closed.">
-    Cancel import
-  </message>
-  <message name="IDS_SETTINGS_PASSWORDS_IMPORT_SKIP" desc="A button in the dialog for importing passwords into Password Manager. By clicking the button, the import will be resumed and no passwords will be replaced.">
-    Skip
-  </message>
-  <message name="IDS_SETTINGS_PASSWORDS_IMPORT_REPLACE" desc="A button in the dialog for importing passwords into Password Manager. By clicking the button, the import will be resumed and selected passwords will be replaced.">
-    Replace
-  </message>
-  <message name="IDS_SETTINGS_PASSWORDS_IMPORT_ALREADY_ACTIVE" desc="Message is shown on the dialog for importing passwords if there is the import process is already running in another tab.">
-    You're already importing passwords in another tab
-  </message>
-  <message name="IDS_SETTINGS_PASSWORDS_EXPORT_MENU_ITEM" desc="A menu item in the More Actions menu above the password list in Chrome's settings. Selecting this action will open a dialog, through which the user can export their passwords outside of Chrome.">
-    Export passwords
-  </message>
-  <message name="IDS_SETTINGS_PASSWORDS_EXPORT_TITLE" desc="The title of a dialog, which offers to the user the ability to export passwords they've saved with Chrome.">
-    Export passwords
-  </message>
-  <message name="IDS_SETTINGS_PASSWORDS_EXPORT_DESCRIPTION" desc="Text shown to the user on the dialog for exporting passwords, before any passwords have been exported.">
-    Your passwords will be visible to anyone who can see the exported file.
-  </message>
-  <message name="IDS_SETTINGS_PASSWORDS_EXPORT" desc="A button in the dialog for exporting passwords from Chrome. A password list will be written to a destination, which the user will be asked to choose after initiating this action.">
-    Export passwords
-  </message>
-  <message name="IDS_SETTINGS_PASSWORDS_EXPORT_TRY_AGAIN" desc="A button in the dialog for exporting passwords from Chrome. The action is to attempt to export the passwords again. A password list will be written to a destination, which the user will be asked to choose after initiating this action.">
-    Try again
-  </message>
-  <message name="IDS_SETTINGS_PASSWORDS_EXPORTING_TITLE" desc="The title of a dialog for exporting passwords. This title is shown while Chrome is performing the export and the user should wait.">
-    Exporting passwords...
-  </message>
-  <message name="IDS_SETTINGS_PASSWORDS_EXPORTING_FAILURE_TITLE" desc="The title to a dialog, which is shown if exporting passwords to a folder has failed.">
-    Can't export passwords to "<ph name="FOLDER">$1<ex>Documents</ex></ph>"
-  </message>
-  <message name="IDS_SETTINGS_PASSWORDS_EXPORTING_FAILURE_TIPS" desc="Message that is shown when exporting passwords has failed. Below it is a list of things the user can try to resolve the problem.">
-    Try the following tips:
-  </message>
-  <message name="IDS_SETTINGS_PASSWORDS_EXPORTING_FAILURE_TIP_ENOUGH_SPACE" desc="Message that is shown when exporting passwords has failed. This is part of a list of things the user can try to resolve the problem. This advice implies that there isn't enough space on the disk for the new file to be written.">
-    Make sure there is enough space on your device
-  </message>
-  <message name="IDS_SETTINGS_PASSWORDS_EXPORTING_FAILURE_TIP_ANOTHER_FOLDER" desc="Message that is shown when exporting passwords has failed. This is part of a list of things the user can try to resolve the problem. This advice implies that Chrome couldn't write into the specified folder.">
-    Export your passwords to another folder
-  </message>
-  <message name="IDS_SETTINGS_PASSWORD_ROW_MORE_ACTIONS" desc="The ARIA (accessibility) message for the More Actions button, which sits in every row of the password list. It opens a menu with a list of actions, which apply to the username-password pair on this row.">
-    More actions, password for <ph name="USERNAME">$1<ex>example@gmail.com</ex></ph> on <ph name="DOMAIN">$2<ex>www.google.com</ex></ph>
-  </message>
-  <message name="IDS_SETTINGS_PASSWORD_ROW_FEDERATED_MORE_ACTIONS" desc="The ARIA (accessibility) message for the More Actions button, which sits in every row of the password list. For this row does not include a password, only information of the account. It opens a menu with a list of actions, which apply to the account presented on this row.">
-    More actions, saved account for <ph name="USERNAME">$1<ex>example@gmail.com</ex></ph> on <ph name="DOMAIN">$2<ex>www.google.com</ex></ph>
-  </message>
-  <message name="IDS_SETTINGS_PASSWORD_TABLE_ARIA_LABEL" is_accessibility_with_no_ui="true" desc="The ARIA (accessibility) message for the password table containing the list of user's persisted passwords">
-    Saved passwords table
-  </message>
-  <message name="IDS_SETTINGS_PASSWORD_ROW_PASSWORD_DETAIL_PAGE" desc="The ARIA (accessibility) message for the password subpage button, which sits in every row of the password list.">
-    Credential details for <ph name="USERNAME">$1<ex>example@gmail.com</ex></ph> on <ph name="DOMAIN">$2<ex>www.google.com</ex></ph>
-  </message>
-  <message name="IDS_SETTINGS_TRUSTED_VAULT_BANNER_LABEL" desc="Label for the on-device encryption banner in settings.">
-    On-device encryption
-  </message>
-  <message name="IDS_SETTINGS_TRUSTED_VAULT_BANNER_SUB_LABEL_OFFER_OPT_IN" desc="Sub-label for the on-device encryption banner in settings, when the user is being offered to opt in.">
-    For added safety, encrypt passwords on your device before they‘re saved to Google Password Manager
-  </message>
-  <message name="IDS_SETTINGS_TRUSTED_VAULT_BANNER_SUB_LABEL_OPTED_IN" desc="Sub-label for the on-device encryption banner in settings, when the user is already opted in.">
-    Your passwords are encrypted on your device before they‘re saved to Google Password Manager
+      =0 {No compromised passwords found}
+      =1 {{COUNT} compromised password}
+      other {{COUNT} compromised passwords}}
+  </message>
+  <message name="IDS_SETTINGS_COMPROMISED_PASSWORDS_COUNT_SHORT" desc="This short text shows the amount of compromised passwords that the Chrome password check found.">
+    {NUM_COMPROMISED, plural,
+      =0 {No compromised passwords}
+      =1 {1 compromised password}
+      other {{NUM_COMPROMISED} compromised passwords}}
+  </message>
+  <message name="IDS_SETTINGS_WEAK_PASSWORDS_COUNT_SHORT" desc="This short text shows the amount of weak passwords that the Chrome password check found.">
+    {NUM_WEAK, plural,
+      =0 {No weak passwords}
+      =1 {1 weak password}
+      other {{NUM_WEAK} weak passwords}}
+  </message>
+  <message name="IDS_SETTINGS_REUSED_PASSWORDS_COUNT_SHORT" desc="This short text shows the amount of reused passwords that the Chrome password check found.">
+    {NUM_REUSED, plural,
+      =0 {No reused passwords}
+      =1 {1 reused password}
+      other {{NUM_REUSED} reused passwords}}
   </message>
 
   <if expr="is_win or is_macosx">
@@ -1348,6 +884,9 @@
       <message name="IDS_SETTINGS_CERTIFICATE_MANAGER_PROVISIONING_REFRESH" desc="Text on the button to refresh the status of a certificate provisioning process.">
         Refresh
       </message>
+      <message name="IDS_SETTINGS_CERTIFICATE_MANAGER_PROVISIONING_RESET" desc="Text on the button to reset a certificate provisioning process.">
+        Reset
+      </message>
       <message name="IDS_SETTINGS_CERTIFICATE_MANAGER_PROVISIONING_DETAILS" desc="Text on the button to show debug details about a certificate provisioning process and title of the dialog that shows the details.">
         Details
       </message>
@@ -1439,6 +978,9 @@
   <message name="IDS_SETTINGS_CLEAR_COOKIES_AND_SITE_DATA_SUMMARY_BASIC_SUPERVISED_PROFILE" desc="A summary for the 'Cookies and site data' option in the 'Clear Browsing Data' screen, explaining that deleting cookies and site data will sign the the child user out of most websites but your Google account and Family Link settings will stay .">
     Signs you out of most sites. You'll stay signed in to your Google Account so your Family Link settings for Chrome apply.
   </message>
+  <message name="IDS_SETTINGS_CLEAR_COOKIES_AND_SITE_DATA_SUMMARY_BASIC_SIGNED_IN_PROFILE" desc="A summary for the 'Cookies and site data' option in the 'Clear Browsing Data' screen, explaining that deleting cookies and site data will sign the user out of most websites but your Google sign in will stay.">
+    Signs you out of most sites. You'll stay signed in to your Google Account.
+  </message>
   <message name="IDS_SETTINGS_CLEAR_BROWSING_HISTORY_SUMMARY" desc="A subtext for the basic tab explaining browsing history.">
     Clears history, including in the search box
   </message>
@@ -1496,6 +1038,12 @@
   </message>
   <message name="IDS_SETTINGS_CLEAR_PERIOD_EVERYTHING" desc="The option to delete browsing data from the beginning of time.">
     All time
+  </message>
+  <message name="IDS_SETTINGS_CLEAR_PERIOD_15_MINUTES" desc="The option to delete browsing data from the last 15 minutes.">
+    Last 15 minutes
+  </message>
+  <message name="IDS_SETTINGS_CLEAR_PERIOD_NOT_SELECTED" desc="This is the text that is shown in the clear browsing data time range dropdown until the user selected a time range from this dropdown.">
+    Select a time range
   </message>
   <message name="IDS_SETTINGS_NOTIFICATION_WARNING" desc="A warning that notifications will be disabled by deleting cookies for this site.">
     Notifications will be disabled
@@ -1566,22 +1114,28 @@
   <message name="IDS_SETTINGS_PERFORMANCE_PAGE_TITLE" desc="Title of the performance settings page">
     Performance
   </message>
-  <message name="IDS_SETTINGS_PERFORMANCE_HIGH_EFFICIENCY_MODE_SETTING" desc="Memory saver mode setting label. This mode allows the browser to save memory from background tabs">
+  <message name="IDS_SETTINGS_MEMORY_PAGE_TITLE" desc="Title of the memory section on the performance settings page.">
+    Memory
+  </message>
+  <message name="IDS_SETTINGS_SPEED_PAGE_TITLE" desc="Title of the speed section on the performance settings page.">
+    Speed
+  </message>
+  <message name="IDS_SETTINGS_PERFORMANCE_MEMORY_SAVER_MODE_SETTING" desc="Memory saver mode setting label. This mode allows the browser to save memory from background tabs">
     Memory Saver
   </message>
-  <message name="IDS_SETTINGS_PERFORMANCE_HIGH_EFFICIENCY_MODE_HEURISTICS_LABEL" desc="Label for the memory saver mode to discard tabs based on a set of heuristics">
+  <message name="IDS_SETTINGS_PERFORMANCE_MEMORY_SAVER_MODE_HEURISTICS_LABEL" desc="Label for the memory saver mode to discard tabs based on a set of heuristics">
     Free up memory based on usage
   </message>
-  <message name="IDS_SETTINGS_PERFORMANCE_HIGH_EFFICIENCY_MODE_RECOMMENDED_BADGE" desc="Label for the recommended badge for the heuristics based memory saver option">
+  <message name="IDS_SETTINGS_PERFORMANCE_MEMORY_SAVER_MODE_RECOMMENDED_BADGE" desc="Label for the recommended badge for the heuristics based memory saver option">
     Recommended
   </message>
-  <message name="IDS_SETTINGS_PERFORMANCE_HIGH_EFFICIENCY_MODE_ON_TIMER_LABEL" desc="Label for the memory saver mode to discard tabs on a timer">
+  <message name="IDS_SETTINGS_PERFORMANCE_MEMORY_SAVER_MODE_ON_TIMER_LABEL" desc="Label for the memory saver mode to discard tabs on a timer">
     Free up memory based on tab inactivity
   </message>
-  <message name="IDS_SETTINGS_PERFORMANCE_HIGH_EFFICIENCY_MODE_RADIO_GROUP_ARIA_LABEL" desc="Accessibility label which will be read by screen readers when focus enters the memory saver mode radio group. When memory saver mode is enabled, this radio group will be expanded and allow the user to choose between different tab discarding policies.">
+  <message name="IDS_SETTINGS_PERFORMANCE_MEMORY_SAVER_MODE_RADIO_GROUP_ARIA_LABEL" desc="Accessibility label which will be read by screen readers when focus enters the memory saver mode radio group. When memory saver mode is enabled, this radio group will be expanded and allow the user to choose between different tab discarding policies.">
     Memory saver options
   </message>
-  <message name="IDS_SETTINGS_PERFORMANCE_HIGH_EFFICIENCY_MODE_CHOOSE_DISCARD_TIME_ARIA_LABEL" desc="Accessibility label which will be read by screen readers when focus enters the dropdown menu in the second option of the memory saver radio group. The dropdown allows the user to select the time before a tab is discarded by memory saver.">
+  <message name="IDS_SETTINGS_PERFORMANCE_MEMORY_SAVER_MODE_CHOOSE_DISCARD_TIME_ARIA_LABEL" desc="Accessibility label which will be read by screen readers when focus enters the dropdown menu in the second option of the memory saver radio group. The dropdown allows the user to select the time before a tab is discarded by memory saver.">
     Choose time range
   </message>
   <message name="IDS_SETTINGS_PERFORMANCE_TAB_DISCARDING_EXCEPTIONS_ADD_BUTTON_ARIA_LABEL" desc="Accessibility label which will be read by screen readers when focusing the tab discarding exceptions list add button. Sites added to the list will not be discarded by memory saver.">
@@ -1629,6 +1183,9 @@
   <message name="IDS_SETTINGS_PERFORMANCE_BATTERY_SAVER_MODE_RADIO_GROUP_ARIA_LABEL" desc="Accessibility label which will be read by screen readers when focus enters the energy saver mode radio group. When energy saver mode is enabled, this radio group will be expanded and allow the user to choose between different triggering options.">
     Energy saver options
   </message>
+  <message name="IDS_SETTINGS_PERFORMANCE_BATTERY_SAVER_MODE_LINK_OS_SETTING_DESCRIPTION" desc="Description on the OS settings link to turn on energy saver mode">
+    Turn on Energy Saver to extend battery life
+  </message>
 
   <!-- Languages Page -->
   <message name="IDS_SETTINGS_LANGUAGES_PAGE_TITLE" desc="Name of the settings page which displays language preferences.">
@@ -1667,8 +1224,11 @@
     <message name="IDS_SETTINGS_LANGUAGES_EXPAND_ACCESSIBILITY_LABEL" desc="Label for the button that toggles showing the language options. Only visible by screen reader software.">
       Show language options
     </message>
-    <message name="IDS_SETTINGS_LANGUAGES_PREFERRED_LANGUAGES_DESC" desc="Explanatory message about the list of preferred languages.">
-      Websites will show content in your preferred languages, when possible
+    <message name="IDS_SETTINGS_LANGUAGES_PREFERRED_LANGUAGES_HEADER" desc="Header of the explanatory message about the list of preferred languages.">
+      Websites in your languages
+    </message>
+    <message name="IDS_SETTINGS_LANGUAGES_PREFERRED_LANGUAGES_DESC" desc="Description text of the explanatory message about the list of preferred languages.">
+      Let websites know the languages you speak. They'll show content in those languages, when possible.
     </message>
     <message name="IDS_SETTINGS_LANGUAGES_OFFER_TO_ENABLE_TRANSLATE" desc="The label of the check-box that enables the prompt to translate a page.">
       Use Google Translate
@@ -1789,26 +1349,14 @@
   <message name="IDS_SETTINGS_PRELOAD_PAGES_TITLE" desc="Title for a section in Settings that controls pages preloading and informs the user about the data shared by this feature.">
     Preload pages
   </message>
-  <message name="IDS_SETTINGS_PRELOAD_PAGES_SUMMARY" desc="Summary for a section in Settings that controls pages preloading and informs the user about the data shared by this feature.">
-    Choose whether to preload pages
-  </message>
-  <message name="IDS_SETTINGS_PRELOAD_PAGES_NO_PRELOADING_TITLE" desc="Name of the no preloading option for the Preload Pages settings page. This option disables preloading pages that Chrome believes the user is likely to navigate to.">
-    No preloading
-  </message>
-  <message name="IDS_SETTINGS_PRELOAD_PAGES_NO_PRELOADING_SUMMARY" desc="Short explanation of what the no preloading mode does in the Preload Pages setting.">
-    Pages load only after you open them
-  </message>
   <message name="IDS_SETTINGS_PRELOAD_PAGES_STANDARD_PRELOADING_TITLE" desc="Name of the standard preloading option for the Preload Pages settings page. This option enables preloading pages that Chrome believes the user is likely to navigate to.">
     Standard preloading
   </message>
   <message name="IDS_SETTINGS_PRELOAD_PAGES_STANDARD_PRELOADING_SUMMARY" desc="Short explanation of what the standard preloading mode does in the Preload Pages setting.">
     Some of the pages you visit are preloaded
   </message>
-  <message name="IDS_SETTINGS_PRELOAD_PAGES_STANDARD_PRELOADING_WHEN_ON_BULLET_ONE" desc="First bullet point in the standard preloading and when on column. Informs the user about what the standard preloading setting does.">
+  <message name="IDS_SETTINGS_PRELOAD_PAGES_STANDARD_PRELOADING_WHEN_ON_BULLET_ONE" desc="Bullet point in the standard preloading and when on column. Informs the user about what the standard preloading setting does.">
     Browsing and searching is faster
-  </message>
-  <message name="IDS_SETTINGS_PRELOAD_PAGES_STANDARD_PRELOADING_WHEN_ON_BULLET_TWO" desc="Second bullet point in the standard preloading and when on column. Informs the user about what the standard preloading setting does.">
-    Chrome preloads pages you're likely to visit, so that they load more quickly when you visit them
   </message>
   <message name="IDS_SETTINGS_PRELOAD_PAGES_EXTENDED_PRELOADING_TITLE" desc="Name of the extended preloading option for the Preload Pages settings page. This option enables more extensive preloading of pages that Chrome believes the user is likely to navigate to.">
     Extended preloading
@@ -1816,17 +1364,8 @@
   <message name="IDS_SETTINGS_PRELOAD_PAGES_EXTENDED_PRELOADING_SUMMARY" desc="Subtitle for Preload Pages extended preloading mode. Informs the user about which preloading setting is being described on this page.">
     More pages are preloaded. Pages may be preloaded through Google servers when requested by other sites.
   </message>
-  <message name="IDS_SETTINGS_PRELOAD_PAGES_EXTENDED_PRELOADING_WHEN_ON_BULLET_ONE" desc="First bullet point in the extended preloading and when on column. Informs the user about what the extended preloading setting does.">
-    Browsing and searching is faster than standard preloading.
-  </message>
-  <message name="IDS_SETTINGS_PRELOAD_PAGES_EXTENDED_PRELOADING_WHEN_ON_BULLET_TWO" desc="Second bullet point in the extended preloading and when on column. Informs the user about what the extended preloading setting does.">
-    Chrome preloads even more pages that you're likely to visit, so that they load more quickly when you visit them.
-  </message>
-  <message name="IDS_SETTINGS_PRELOAD_PAGES_EXTENDED_PRELOADING_THINGS_TO_CONSIDER_BULLET_TWO" desc="Second bullet point in the extended preloading and things to consider column. Informs the user about what the extended preloading setting does.">
-    When a site asks to privately preload links on their page, Chrome uses Google servers. This hides your identity from the preloaded site, but Google learns what sites get preloaded.
-  </message>
-  <message name="IDS_SETTINGS_PRELOAD_PAGES_THINGS_TO_CONSIDER_BULLET_ONE" desc="First bullet point in the things to consider column. Informs the user about what the preloading setting does.">
-    If you allow cookies, Chrome may use them when preloading.
+  <message name="IDS_SETTINGS_PRELOAD_PAGES_EXTENDED_PRELOADING_WHEN_ON_BULLET_ONE" desc="Bullet point in the extended preloading and when on column. Informs the user about what the extended preloading setting does.">
+    Browsing and searching is faster than standard preloading
   </message>
 
   <!-- Privacy Page -->
@@ -1881,130 +1420,15 @@
     This setting works without identifying you or allowing sites to see your browsing history, though sites can share a small amount of info as part of the verification
   </message>
 
-  <!-- Privacy Sandbox -->
+  <!-- Privacy Sandbox strings -->
   <message name="IDS_SETTINGS_PRIVACY_SANDBOX_TITLE" desc="The title of the Privacy Sandbox page. 'Privacy Sandbox' is a noun phrase (title case).">
     Privacy Sandbox
-  </message>
-  <message name="IDS_SETTINGS_PRIVACY_SANDBOX_PAGE_HEADING" desc="The heading displayed at the top of the Privacy Sandbox page. 'Privacy Sandbox' is a noun phrase (title case).">
-    About Privacy Sandbox
-  </message>
-  <message name="IDS_SETTINGS_PRIVACY_SANDBOX_PAGE_DETAILS" desc="Label of a button in the Privacy Sandbox page that leads the user to more details about the Privacy Sandbox.">
-    Details
-  </message>
-  <message name="IDS_SETTINGS_PRIVACY_SANDBOX_TRIALS_ENABLED" desc="A short description that informs the user that the Privacy Sandbox trial features are enabled.">
-    Trial features are on
-  </message>
-  <message name="IDS_SETTINGS_PRIVACY_SANDBOX_TRIALS_DISABLED" desc="A short description that informs the user that the Privacy Sandbox trial features are disabled.">
-    Trial features are off
   </message>
   <message name="IDS_SETTINGS_PRIVACY_SANDBOX_COOKIES_DIALOG" desc="Text of a dialog shown to users when they interacted with cookies to make them aware of the Privacy Sandbox.">
     Learn about and control new technologies that aim to replace third-party cookies
   </message>
   <message name="IDS_SETTINGS_PRIVACY_SANDBOX_COOKIES_DIALOG_MORE" desc="Label on the button in the dialog shown to users when they interacted with cookies to make them aware of the Privacy Sandbox.">
     More
-  </message>
-    <!-- Privacy Sandbox Settings 3 strings -->
-  <message name="IDS_SETTINGS_PRIVACY_SANDBOX_TRIALS_TITLE" desc="The title of the settings page on which the user can find all Privacy Sandbox trials. When launched, this page will appear at chrome://settings/privacySandbox. To get there: 1) go to Chrome settings 2) From the main menu (top left of the page) choose “Security and privacy” 3) At the bottom of the page, choose “Privacy Sandbox” There are 3 cards on this page that are presented as features. Only the first includes controls the user can manage, but we want to convey that Privacy Sandbox includes all of the things on this page.">
-    Trials
-  </message>
-  <message name="IDS_SETTINGS_PRIVACY_SANDBOX_TRIALS_SUMMARY" desc="The page description that appears beneath the page title. * “can” is important: When trials ara on, any site the user visits may or may not be using one of the trial APIs. The chances that the user is in an active trial on any given page are low. * “less cross-site tracking”:  We can’t promise the complete elimination of cross-site tracking. Privacy Sandbox is about blocking cross-site tracking as much as possible, but sites can still use fingerprinting to try and identify users from one site to the next.">
-    With Privacy Sandbox trials, sites can deliver the same browsing experience using less of your info. That means more privacy for you and less cross-site tracking. We'll add new trials as they're ready to test.
-  </message>
-  <message name="IDS_SETTINGS_PRIVACY_SANDBOX_TRIALS_SUMMARY_LEARN_MORE" desc="Part of the Trials section description that can be interacted with to open up the dialog to learn more about the Privacy Sandbox Trials.">
-    About Browser-based ad personalization
-  </message>
-  <message name="IDS_SETTINGS_PRIVACY_SANDBOX_AD_PERSONALIZATION_TITLE" desc="The title of card 1 of 3. * “Browser-based ad personalization” is the name of our setting. “Ad personalization” would be an appropriate name as well, but we didn’t want the user to confuse this new setting with the Google Account level setting of that name (see https://adssettings.google.com/authenticated).">
-    Browser-based ad personalization
-  </message>
-  <message name="IDS_SETTINGS_PRIVACY_SANDBOX_AD_PERSONALIZATION_SUMMARY" desc="The description of card 1 of 3. * “browsing history”: we define this as “a record of sites you’ve visited using Chrome on this device.” By “recent”, we mean the last 3 weeks (also defined later in the UI). * “affects the ads you see”: We think we’re stating the obvious. The ads the user sees are affected by the things they do online, like browsing the web.">
-    Your browsing history affects the ads you see
-  </message>
-  <message name="IDS_SETTINGS_PRIVACY_SANDBOX_AD_MEASUREMENT_TITLE" desc="The title of card 2 of 3. * The title of a Privacy Sandbox API used by advertisers to measure the effectiveness of ads.">
-    Ad measurement
-  </message>
-  <message name="IDS_SETTINGS_PRIVACY_SANDBOX_AD_MEASUREMENT_SUMMARY" desc="The description of card 2 of 3. * The description of a Privacy Sandbox API used by advertisers to measure the effectiveness of ads. * Advertisers can use the API to “measure when user action (such as an ad click or view) leads to a conversion, without using cross-site identifiers.” * You can learn more at https://developer.chrome.com/docs/privacy-sandbox/attribution-reporting/">
-    Advertisers can understand how ads perform
-  </message>
-  <message name="IDS_SETTINGS_PRIVACY_SANDBOX_SPAM_AND_FRAUD_TITLE" desc="The title of card 3 of 3. * “reduction”: don’t use a word that sounds more like “elimination”. We can’t promise the complete removal of spam.">
-    Spam &#38; fraud reduction
-  </message>
-  <message name="IDS_SETTINGS_PRIVACY_SANDBOX_SPAM_AND_FRAUD_SUMMARY" desc="The description of card 3 of 3. * “help”: This API is one way that sites can fight fraud. Don’t suggest that sites must use this API to fight fraud. * “distinguish bots from people”: This touches on just one aspect of fraud but we hope it helps the user understand the purpose of this API, and that is to distinguish real users from malicious players.">
-    Help sites fight fraud and distinguish bots from people
-  </message>
-  <message name="IDS_SETTINGS_PRIVACY_SANDBOX_LEARN_MORE_DIALOG_TITLE" desc="Title of a page The page is broken up into two sections because there are two APIs a website can use in order to target ads: the Topics API and the FLEDGE API. There is some friction between the page title and the name of the control. The name of the control is “Browser-based ad personalization”. (We wanted to use the simpler “Ad personalization” but we need to distinguish this Chrome setting from the Google Account setting (https://adssettings.google.com/authenticated)). The page should ideally read “About Browser-base ad personalization” but we didn’t want the title to wrap to a new line, so we shortened it. But the two sections on this page describe both ways a site can target ads to the user if the user is part of trials (which would mean that “Browser-based ad personalization” is on for them).">
-    About Browser-based ad personalization
-  </message>
-  <message name="IDS_SETTINGS_PRIVACY_SANDBOX_LEARN_MORE_DIALOG_FLEDGE_TITLE" desc="FLEDGE API A sub title that describes the second of 2 ways a site can get info from Chrome in order to target ads to the user.">
-    Sites you visit that define your interests
-  </message>
-  <message name="IDS_SETTINGS_PRIVACY_SANDBOX_LEARN_MORE_DIALOG_DATA_TYPES" desc="Title of the data types subsection of the dialog to learn more about ad personalization.">
-    What data is used:
-  </message>
-  <message name="IDS_SETTINGS_PRIVACY_SANDBOX_LEARN_MORE_DIALOG_DATA_USAGE" desc="Title of the data usage subsection of the dialog to learn more about ad personalization.">
-    How we use this data:
-  </message>
-  <message name="IDS_SETTINGS_PRIVACY_SANDBOX_LEARN_MORE_DIALOG_DATA_MANAGEMENT" desc="Title of the data management subsection of the dialog to learn more about ad personalization.">
-    How you can manage your data:
-  </message>
-  <message name="IDS_SETTINGS_PRIVACY_SANDBOX_LEARN_MORE_DIALOG_FLEDGE_DATA_MANAGEMENT" desc="FLEDGE API Bullet 3 of 3 that appear beneath the “Sites you visit that define your interests” subtitle. We break the description into the 3 pieces users most care about: 1) what data, 2) why this data, 3) what can I do about it? * “How you can manage your data:” is bold and serves as a label to help people skimming the page. * “To protect your privacy”: Today, most data is kept for long periods of time. This new Topics API doesn’t retain estimated topics for more than 3 weeks. The only reason for this feature is to protect the user’s privacy. * “auto”: isn’t strictly necessary, but it conveys that this feature is an ongoing part of the service. This isn’t describing, for example, a one-time deletion. * “older than 4 weeks”: We’re trying to convey a rolling delete. Imagine a user opens a browser for the very first time. As the user browses, sites can store info with Chrome for up to 4 weeks. So in week 1, the user visits site A. When week 5 starts, site A is removed from the list of sites. * “a site you visit…”: If a user visits site A every week for months on end, that site will remain on the user’s list of sites for months on end. * “Or you can…”: Say a user strongly dislikes www.siteB.com. But that user might visit siteB.com as part of their job, or just to see how bad it really is. The user can stop siteB from defining interests for them. This block lasts indefinitely.">
-    To protect your privacy, we auto-delete sites from the list that are older than 4 weeks. A site you visit again might appear on the list again. Or you can remove a site if you don’t want that site to ever define interests for you.
-  </message>
-  <message name="IDS_SETTINGS_PRIVACY_SANDBOX_AD_PERSONALIZATION_DIALOG_TITLE" desc="Card title and the name of a setting. This setting includes two APIs that are part of the Privacy Sandbox project: Topics API an FLEDGE API.">
-    Browser-based ad personalization
-  </message>
-  <message name="IDS_SETTINGS_PRIVACY_SANDBOX_AD_PERSONALIZATION_REMOVED_DIALOG_TITLE" desc="The title of a card that shows the user interests and sites they’ve removed from the “Browser-based ad personalization” page.">
-    Interests you removed
-  </message>
-  <message name="IDS_SETTINGS_PRIVACY_SANDBOX_AD_PERSONALIZATION_REMOVED_DIALOG_DESCRIPTION" desc="A paragraph beneath the card title. The page title explains why things appear on this page. This string explains why the user might want to “un-remove” or “re-allow” an item from the list. If a user does choose “Allow” for an item, there won’t be any immediate change in the interface because the item simply becomes eligible again. So, for example, the user previously blocked the interest “Horror movies.” Today, they “allow” “Horror movies” because they’ve decided that as about horror movies are actually OK to see. It might take another week or longer, based on the user’s browsing history, for “Horror movies” to appear in the list of interests again as an active interest within the last 3 weeks. * “Allow”: This aligns with the button label titled “allow”. It wouldn’t make much sense if the user couldn’t see the Allow button on the card.">
-    Add an interest or site if you think ads related to the item would be useful to you.
-  </message>
-  <message name="IDS_SETTINGS_PRIVACY_SANDBOX_AD_PERSONALIZATION_DIALOG_TOPICS_EMPTY" desc="Description of the empty state of the browser-based interests section of the 'ad personalization' dialog.">
-    A list of interests may appear here as you browse the web
-  </message>
-  <message name="IDS_SETTINGS_PRIVACY_SANDBOX_AD_PERSONALIZATION_DIALOG_REMOVED_TOPICS_LABEL" desc="A link that opens a card that lists the interests the user has previously removed.">
-    Interests you removed
-  </message>
-  <message name="IDS_SETTINGS_PRIVACY_SANDBOX_AD_PERSONALIZATION_DIALOG_REMOVED_TOPICS_EMPTY" desc="Description of the empty state of the removed browser-based interests section of the 'ad personalization' dialog.">
-    You haven't removed any interests
-  </message>
-  <message name="IDS_SETTINGS_PRIVACY_SANDBOX_AD_PERSONALIZATION_DIALOG_FLEDGE_TITLE" desc="Title of the website-based interests section of the 'ad personalization' dialog.">
-    Sites you visit that define your interests
-  </message>
-  <message name="IDS_SETTINGS_PRIVACY_SANDBOX_AD_PERSONALIZATION_DIALOG_FLEDGE_EMPTY" desc="Description of the empty state of the website-based interests section of the 'ad personalization' dialog.">
-    A list of sites you visit may appear here as you browse the web
-  </message>
-  <message name="IDS_SETTINGS_PRIVACY_SANDBOX_AD_PERSONALIZATION_DIALOG_REMOVED_FLEDGE_LABEL" desc="A link that opens a card that lists the sites the user has previously removed.">
-    Sites you removed
-  </message>
-  <message name="IDS_SETTINGS_PRIVACY_SANDBOX_AD_PERSONALIZATION_DIALOG_REMOVED_FLEDGE_EMPTY" desc="Description of the empty state of the removed website-based interests section of the 'ad personalization' dialog.">
-    You haven't removed any sites
-  </message>
-  <message name="IDS_SETTINGS_PRIVACY_SANDBOX_AD_PERSONALIZATION_DIALOG_FLEDGE_LEARN_MORE_2" desc="Second learn more description of the website-based interests section of the 'ad personalization' dialog.">
-    For example, if you visit a site to buy shoes for a marathon, the site might define your interest as running marathons. Later, if you visit a different site to register for a race, that site can show you an ad for running shoes based on your interests.
-  </message>
-  <message name="IDS_SETTINGS_PRIVACY_SANDBOX_AD_PERSONALIZATION_DIALOG_FLEDGE_LEARN_MORE_3" desc="Third learn more description of the website-based interests section of the 'ad personalization' dialog.">
-    To protect your privacy, we auto-delete sites from the list that are older than 4 weeks. A site you visit again might appear on the list again. Or you can remove a site if you don't want that site to ever define interests for you.
-  </message>
-  <message name="IDS_SETTINGS_PRIVACY_SANDBOX_AD_MEASUREMENT_DIALOG_TITLE" desc="Card title of the Ad measurement API section of the Privacy Sandbox settings.">
-    Ad measurement
-  </message>
-  <message name="IDS_SETTINGS_PRIVACY_SANDBOX_AD_MEASUREMENT_DIALOG_CONTROL_MEASUREMENT" desc="The second paragraph on the Ad measurement card. * “your browsing history”: points to chrome://history/ * “You can control…”: The user can “control” this data by clearing their browser data at chrome://history/">
-    When you delete your browsing history — all or for a specific site — you also delete associated measurement info. See <ph name="BEGIN_LINK">&lt;a href="$1" target="_blank"&gt;</ph>your browsing history<ph name="END_LINK">&lt;/a&gt;</ph>
-  </message>
-  <message name="IDS_SETTINGS_PRIVACY_SANDBOX_SPAM_AND_FRAUD_DIALOG_TITLE" desc="Card title of the Spam &amp; Fraud section of the Privacy Sandbox settings.">
-    Spam and fraud reduction
-  </message>
-  <message name="IDS_SETTINGS_PRIVACY_SANDBOX_SPAM_AND_FRAUD_DIALOG_DESCRIPTION_1" desc="The first of 3 paragraphs on the spam &amp; fraud card. This is a behind-the-scenes upgrade to Chrome. There aren’t any user controls or data to interact with, at least not yet. * “private state tokens”: explained in the next paragraph * “help”: This feature is one way that sites can fight fraud. Don’t suggest that sites must use this API to fight fraud. * “distinguish bots from people”: This touches on just one aspect of fraud but we hope it helps the user understand the purpose of this API, and that is to distinguish real users from malicious players.">
-    Spam &#38; fraud reduction relies on private state tokens to help sites fight fraud and distinguish bots from people.
-  </message>
-  <message name="IDS_SETTINGS_PRIVACY_SANDBOX_SPAM_AND_FRAUD_DIALOG_DESCRIPTION_1_TRIALS_OFF" desc="The first of 3 paragraphs on the spam &amp; fraud card. This is a behind-the-scenes upgrade to Chrome. There aren’t any user controls or data to interact with, at least not yet. * “private state tokens”: explained in the next paragraph * “help”: This feature is one way that sites can fight fraud. Don’t suggest that sites must use this API to fight fraud. * “distinguish bots from people”: This touches on just one aspect of fraud but we hope it helps the user understand the purpose of this API, and that is to distinguish real users from malicious players.">
-    When trials are on, Spam &#38; fraud reduction relies on private state tokens to help sites fight fraud and distinguish bots from people.
-  </message>
-  <message name="IDS_SETTINGS_PRIVACY_SANDBOX_SPAM_AND_FRAUD_DIALOG_DESCRIPTION_2" desc="The second of 3 paragraphs on the spam &amp; fraud card. * “interaction”: is broad. It’s not just viewing a site but also how you interact with it, like by signing in * “Later”:  is important to convey the passage of time. We don’t want to convey how much time (it could be tiny). What’s important is that the user understands this is essentially a two-step process. A private state token is issued. Sometime in the future, when you visit a different site, that private state token might get used.">
-    Based on your interaction with a site, like regularly signing in to an account, that site can issue a private state token to your browser. Later, if other sites you visit check for and find a valid private state token, they're more likely to treat you like a person and not a bot.
-  </message>
-  <message name="IDS_SETTINGS_PRIVACY_SANDBOX_SPAM_AND_FRAUD_DIALOG_DESCRIPTION_3" desc="The third of 3 paragraphs on the spam &amp; fraud card.">
-    Private state tokens improve privacy on the web and can't be used to find out who you are.
   </message>
 
   <!-- Privacy Sandbox Settings 4 - Privacy & Security Page -->
@@ -2073,7 +1497,9 @@
   <message name="IDS_SETTINGS_TOPICS_PAGE_FOOTER" desc="This footer helps the user understand that this setting is just one signal among others that affect whether this user sees personalized ads on a site. We define 'personalize' as 'when Google provides recommendations and other content for users based on their data'. At a high level, there are 4 things that affect whether an ad is personalized in this context: * 'this setting' refers to the 'Ad topics' setting. The user is on this page. * 'Site-suggested ads': this is a link to the other new ad setting Chrome is launching and that sites can use to personalize ads a user sees. * 'cookie settings': this is a link to the cookies control section in Chrome settings. The Privacy Sandbox project deprecates third-party cookies, but it's a process, and we're launching new functionality that will replace important functionality of cookies. Until third-party cookies are deprecated, the two systems remain active in Chrome. * 'site you're viewing personalizes ads': When a user engages with a site, Chrome has no control over whether that site shows the user personalized ads. Imagine you visit www.interesting-site.com and they know a lot about you already based on previous visits. They can personalize content and ads to you if they like. They can use an ad-serving product, like Facebook or Google Ads to deliver personalized ads. They can also use the new Privacy Sandbox APIs (if they so choose) in order to get more information about the user that could be helpful to them in order to personalize ads. Those 2 APIs (settings, from the user's perspective), are 'Ad topics' and 'Site-suggested ads'.">
     As you browse, whether an ad you see is personalized depends on this setting, <ph name="BEGIN_LINK1">&lt;a href="$1" target="_blank"&gt;</ph>Site-suggested ads<ph name="LINK_END1">&lt;/a&gt;</ph>, your <ph name="BEGIN_LINK2">&lt;a href="$2" target="_blank"&gt;</ph>cookie settings<ph name="LINK_END2">&lt;/a&gt;</ph>, and if the site you’re viewing personalizes ads
   </message>
-
+  <message name="IDS_SETTINGS_TOPICS_PAGE_FOOTER_V2" desc="This footer helps the user understand that this setting is just one signal among others that affect whether this user sees personalized ads on a site. We define 'personalize' as 'when Google provides recommendations and other content for users based on their data'. At a high level, there are 4 things that affect whether an ad is personalized in this context: * 'this setting' refers to the 'Ad topics' setting. The user is on this page. * 'Site-suggested ads': this is a link to the other new ad setting Chrome is launching and that sites can use to personalize ads a user sees. * 'cookie settings': this is a link to the cookies control section in Chrome settings. The Privacy Sandbox project deprecates third-party cookies, but it's a process, and we're launching new functionality that will replace important functionality of cookies. Until third-party cookies are deprecated, the two systems remain active in Chrome. * 'site you're viewing personalizes ads': When a user engages with a site, Chrome has no control over whether that site shows the user personalized ads. Imagine you visit www.interesting-site.com and they know a lot about you already based on previous visits. They can personalize content and ads to you if they like. They can use an ad-serving product, like Facebook or Google Ads to deliver personalized ads. They can also use the new Privacy Sandbox APIs (if they so choose) in order to get more information about the user that could be helpful to them in order to personalize ads. Those 2 APIs (settings, from the user's perspective), are 'Ad topics' and 'Site-suggested ads'.">
+    Whether an ad you see is personalized can depend on many things including this setting, <ph name="BEGIN_LINK1">&lt;a href="$1" target="_blank"&gt;</ph>site-suggested ads<ph name="LINK_END1">&lt;/a&gt;</ph>, your <ph name="BEGIN_LINK2">&lt;a href="$2" target="_blank"&gt;</ph>cookie settings<ph name="LINK_END2">&lt;/a&gt;</ph>, and if the site you're viewing personalizes ads. Learn more about <ph name="BEGIN_LINK3">&lt;a href="$3" target="_blank"&gt;</ph>managing your ad privacy<ph name="LINK_END3">&lt;/a&gt;</ph>.
+  </message>
   <!-- Privacy Sandbox Settings 4 - Fledge Page -->
   <message name="IDS_SETTINGS_FLEDGE_PAGE_TITLE" desc="A page title and the name of a new setting. **** CONTEXT PRIVACY SANDBOX **** Chrome's Privacy Sandbox initiative 1) deprecates third-party cookies in Chrome, 2) supports free and open content on the web (by finding better ways to support ads online), 3) while providing stronger privacy protections for users. You can see a high-level description of this public project at www.privacysanbox.com. **** NEW SETTINGS SECTION IN CHROME **** 3 new ad-specific settings appear on an 'Ad privacy' page in Chrome settings. For an equivalent structure, see 'Security' on chrome://settings/privacy that opens chrome://settings/security. Likewise, 'Ad privacy' on chrome://settings/privacy will open chrome://settings/AdPrivacy.">
     Site-suggested ads
@@ -2165,7 +1591,7 @@
     Things to consider
   </message>
   <message name="IDS_SETTINGS_AD_MEASUREMENT_PAGE_ENABLED_BULLET_1" desc="1 of 3 bullets in the 'When on' section that describes the Ad measurement setting. * 'Limited types of data': The Ad measurement API (for developers) and the Ad measurement control (for users) is offered by Chrome. But Chrome is a 'pass through', helping one site communicate information to another about the performance of an ad. That's where this passive construction comes from. Chrome facilitates, but shouldn't be seen as a major actor here. And we don't want to suggest anything like 'Chrome limits the types of data shared between sites,' because Chrome can't do that. Any 2 sites can have a side agreement to share as much info as they like.">
-    Limited types of data are shared between sites to measure the performance of their ads, such as the time of day an ad was shown to you
+    Limited types of data are shared between sites to measure the performance of their ads, such as whether you made a purchase after visiting a site
   </message>
   <message name="IDS_SETTINGS_AD_MEASUREMENT_PAGE_ENABLED_BULLET_2" desc="2 of 3 bullets in the 'When on' section that describes the Ad measurement setting.">
     Ad-measurement data is deleted regularly from your device
@@ -2178,9 +1604,6 @@
   </message>
   <message name="IDS_SETTINGS_AD_MEASUREMENT_PAGE_CONSIDER_BULLET_2" desc="2 of 3 bullets in the 'Things to consider' section that describes the Ad measurement setting.">
     Chrome limits the total amount of data that sites can share through the browser to measure ad performance
-  </message>
-  <message name="IDS_SETTINGS_AD_MEASUREMENT_PAGE_CONSIDER_BULLET_3" desc="3 of 3 bullets in the 'Things to consider' section that describes the Ad measurement setting.">
-    Your Android device may include a similar setting. If Ad measurement is turned on in Chrome and on your Android device, a company may be able to measure the effectiveness of an ad across web sites you visit and apps you use.
   </message>
 
   <!-- Privacy Guide -->
@@ -2236,7 +1659,7 @@
     Done
   </message>
   <message name="IDS_SETTINGS_PRIVACY_GUIDE_COMPLETION_CARD_PRIVACY_SANDBOX_LABEL" desc="Text of the Privacy Sandbox label in the completion card of the 'Privacy Guide'.">
-    Privacy Sandbox trial
+    Ad privacy
   </message>
   <message name="IDS_SETTINGS_PRIVACY_GUIDE_COMPLETION_CARD_WAA_LABEL" desc="Text of the Web and App Activity label in the completion card of the 'Privacy Guide'.">
     Web &#38; App Activity
@@ -2321,15 +1744,6 @@
       If a site tries to steal your password, or when you download a harmful file, Chrome may also send URLs, including bits of page content, to Google
     </message>
   </if>
-  <message name="IDS_SETTINGS_PRIVACY_GUIDE_SEARCH_SUGGESTIONS_CARD_HEADER" desc="Header of the 'search suggestions' card in the 'Privacy Guide'.">
-    Choose whether to get additional search suggestions
-  </message>
-  <message name="IDS_SETTINGS_PRIVACY_SEARCH_SUGGESTIONS_FEATURE_DESCRIPTION1" desc="A part of the feature description of 'search suggestions' in the 'Privacy Guide'.">
-    When you click or type in the address bar or search box, you'll see suggestions from your default search engine. This is off in Incognito.
-  </message>
-  <message name="IDS_SETTINGS_PRIVACY_SEARCH_SUGGESTIONS_PRIVACY_DESCRIPTION1" desc="A part of the privacy description of 'search suggestions' in the 'Privacy Guide'.">
-    What you type in the address bar or search box is sent to your default search engine
-  </message>
 
   <!-- Safety check -->
   <message name="IDS_SETTINGS_SAFETY_CHECK_SECTION_TITLE" desc="'Safety check' is a noun phrase (sentence case). 'Safety check' refers to an area of the Settings page where users can quickly check whether their safety-related settings are fully protecting them.">
@@ -2426,13 +1840,13 @@
   </message>
   <message name="IDS_SETTINGS_SAFETY_CHECK_UNUSED_SITE_PERMISSIONS_PRIMARY_LABEL" desc="'Unused Site Permissions' shows unused websites for which permissions have been revoked. This label is the header of the module in the site settings page. The number represents the number of unused sites.">
     {NUM_SITES, plural,
-     =1 {Permissions removed for 1 site}
-     other {Permissions removed for {NUM_SITES} sites}}
+     =1 {Permissions removed from 1 site}
+     other {Permissions removed from {NUM_SITES} sites}}
   </message>
   <message name="IDS_SETTINGS_SAFETY_CHECK_UNUSED_SITE_PERMISSIONS_SECONDARY_LABEL" desc="'Unused Site Permissions' shows unused websites for which permissions have been revoked. This label is the description of the module in the site settings page.">
     {NUM_SITES, plural,
-     =1 {To protect your data, permissions were removed from a site you haven't visited in 2 months}
-     other {To protect your data, permissions were removed from sites you haven't visited in 2 months}}
+     =1 {To protect your data, permissions were removed from a site you haven't visited recently}
+     other {To protect your data, permissions were removed from sites you haven't visited recently}}
   </message>
   <message name="IDS_SETTINGS_SAFETY_CHECK_UNUSED_SITE_PERMISSIONS_TOAST_BULK_LABEL" desc="'Unused Site Permissions' shows unused websites for which permissions have been revoked. This label is shown in a toast popup message after a user has clicked a button to acknowledge all revoked permissions.">
     {NUM_SITES, plural,
@@ -2442,13 +1856,8 @@
   <message name="IDS_SETTINGS_SAFETY_CHECK_UNUSED_SITE_PERMISSIONS_TOAST_LABEL" desc="'Unused Site Permissions' shows unused websites for which permissions have been revoked. This label is shown after a user has taken action to allow some permissions again.">
     Permissions allowed again for <ph name="WEBSITE">$1<ex>www.example.com</ex></ph>
   </message>
-  <!-- TODO(crbug/1443466): Change the string to translatable once it's final. -->
-  <message name="IDS_SETTINGS_SAFETY_CHECK_UNUSED_SITE_PERMISSIONS_SETTING_LABEL" translateable="false" desc="By default Chrome auto-revokes (disables) permissions (e.g. Camera, Location, etc.) for websites that were not visited for a while. This label is for the toggle that allows users to switch off/on this functionality.">
+  <message name="IDS_SETTINGS_SAFETY_CHECK_UNUSED_SITE_PERMISSIONS_SETTING_LABEL" desc="By default Chrome auto-revokes (disables) permissions (e.g. Camera, Location, etc.) for websites that were not visited for a while. This label is for the toggle that allows users to switch off/on this functionality.">
     Automatically remove permissions from unused sites
-  </message>
-  <!-- TODO(crbug/1443466): Change the string to translatable once it's final. -->
-  <message name="IDS_SETTINGS_SAFETY_CHECK_UNUSED_SITE_PERMISSIONS_SETTING_SUBLABEL" translateable="false" desc="By default Chrome auto-revokes (disables) permissions (e.g. Camera, Location, etc.) for websites that were not visited for a while. This sublabel is for the toggle that allows users to switch off/on this functionality.">
-    To protect your data, remove permissions from sites you haven't visited in 2 months. Doesn't stop notifications.
   </message>
   <message name="IDS_SETTINGS_SAFETY_CHECK_UPDATES_PRIMARY_LABEL" desc="'Updates' is an element in safety check that shows the update status of Chrome.">
     Updates
@@ -2515,8 +1924,8 @@
   </message>
   <message name="IDS_SETTINGS_SAFETY_CHECK_REVIEW_EXTENSIONS" desc="This text describes that potentially harmful extensions need to be reviewed by the user. The placeholder will be a numeral.">
     {NUM_EXTENSIONS, plural,
-     =1 {Review <ph name="BEGIN_BOLD">&lt;b&gt;</ph>1 extension<ph name="END_BOLD">&lt;/b&gt;</ph> that was taken down from the Chrome Web Store}
-     other {Review <ph name="BEGIN_BOLD">&lt;b&gt;</ph>{NUM_EXTENSIONS} extensions<ph name="END_BOLD">&lt;/b&gt;</ph> that were taken down from the Chrome Web Store}}
+     =1 {Review 1 extension that was taken down from the Chrome Web Store}
+     other {Review {NUM_EXTENSIONS} extensions that were taken down from the Chrome Web Store}}
   </message>
   <message name="IDS_SETTINGS_SAFETY_CHECK_REVIEW_NOTIFICATION_PERMISSIONS_PRIMARY_LABEL" desc="'Review Notification Permissions' shows the websites that send a lot of notifications. This label is the header of the module in the site settings notification page. The number represents the number of notification permissions to be reviewed.">
     {NUM_SITES, plural,
@@ -2588,9 +1997,6 @@
   <message name="IDS_SETTINGS_NETWORK_PREDICTION_ENABLED_DESC" desc="In the advanced options tab, the secondary text next to the checkbox that enables prediction of network actions.">
     Uses cookies to remember your preferences, even if you don’t visit those pages
   </message>
-  <message name="IDS_SETTINGS_NETWORK_PREDICTION_ENABLED_DESC_COOKIES_PAGE" desc="On the cookies page, the secondary text next to the checkbox that enables prediction of network actions.">
-    Preloads pages that Chrome thinks you might visit. To do this, Chrome may use cookies, if you allow cookies, and may encrypt and send pages through Google to hide your identity from sites.
-  </message>
   <message name="IDS_SETTINGS_SAFEBROWSING_ENABLEPROTECTION" desc="The section title of 'Protects you and your device from dangerous sites'">
     Safe Browsing (protects you and your device from dangerous sites)
   </message>
@@ -2615,43 +2021,43 @@
   <message name="IDS_SETTINGS_SAFEBROWSING_ENHANCED_EXPAND_ACCESSIBILITY_LABEL" desc="Label for the button that toggles showing the detailed description of safe browsing enhanced protection. Only visible by screen reader software.">
     Show enhanced protection details
   </message>
-  <message name="IDS_SETTINGS_SAFEBROWSING_ENHANCED_BULLET_ONE" desc="First bullet point under the safe browsing enhanced protection mode">
+  <message name="IDS_SETTINGS_SAFEBROWSING_ENHANCED_BULLET_ONE" desc="Bullet point under the safe browsing enhanced protection mode">
     Predicts and warns you about dangerous events before they happen
   </message>
-  <message name="IDS_SETTINGS_SAFEBROWSING_ENHANCED_BULLET_THREE" desc="Third bullet point under the safe browsing enhanced protection mode">
+  <message name="IDS_SETTINGS_SAFEBROWSING_ENHANCED_BULLET_THREE" desc="Bullet point under the safe browsing enhanced protection mode">
     Improves security for you and everyone on the web
   </message>
-  <message name="IDS_SETTINGS_SAFEBROWSING_ENHANCED_BULLET_FOUR" desc="Fourth bullet point under the safe browsing enhanced protection mode">
+  <message name="IDS_SETTINGS_SAFEBROWSING_ENHANCED_BULLET_FOUR" desc="Bullet point under the safe browsing enhanced protection mode">
     Warns you if passwords are exposed in a data breach
   </message>
-  <message name="IDS_SETTINGS_SAFEBROWSING_ENHANCED_BULLET_FIVE" desc="Fourth bullet point under the safe browsing enhanced protection mode">
+  <message name="IDS_SETTINGS_SAFEBROWSING_ENHANCED_BULLET_FIVE" desc="Bullet point under the safe browsing enhanced protection mode">
     Sends URLs to Safe Browsing to check them. Also sends a small sample of pages, downloads, extension activity, and system information to help discover new threats. Temporarily links this data to your Google Account when you're signed in, to protect you across Google apps.
   </message>
   <message name="IDS_SETTINGS_SAFEBROWSING_ENHANCED_WHEN_ON_LABEL" desc="Label of 'When on' section under the Safe Browsing enhanced protection mode">
     When on
   </message>
-  <message name="IDS_SETTINGS_SAFEBROWSING_ENHANCED_WHEN_ON_BULLET_TWO" desc="Second bullet point under the Safe Browsing enhanced protection mode section titled 'When on'">
+  <message name="IDS_SETTINGS_SAFEBROWSING_ENHANCED_WHEN_ON_BULLET_TWO" desc="Bullet point under the Safe Browsing enhanced protection mode section titled 'When on'">
     In-depth scans for suspicious downloads.
   </message>
-  <message name="IDS_SETTINGS_SAFEBROWSING_ENHANCED_WHEN_ON_BULLET_THREE" desc="Third bullet point under the Safe Browsing enhanced protection mode section titled 'When on'">
+  <message name="IDS_SETTINGS_SAFEBROWSING_ENHANCED_WHEN_ON_BULLET_THREE" desc="Bullet point under the Safe Browsing enhanced protection mode section titled 'When on'">
     When you're signed in, protects you across Google services.
   </message>
-  <message name="IDS_SETTINGS_SAFEBROWSING_ENHANCED_WHEN_ON_BULLET_FOUR" desc="Fourth bullet point under the Safe Browsing enhanced protection mode section titled 'When on'">
+  <message name="IDS_SETTINGS_SAFEBROWSING_ENHANCED_WHEN_ON_BULLET_FOUR" desc="Bullet point under the Safe Browsing enhanced protection mode section titled 'When on'">
     Improves security for you and everyone on the web.
   </message>
-  <message name="IDS_SETTINGS_SAFEBROWSING_ENHANCED_WHEN_ON_BULLET_FIVE" desc="Fifth bullet point under the Safe Browsing enhanced protection mode section titled 'When on'">
+  <message name="IDS_SETTINGS_SAFEBROWSING_ENHANCED_WHEN_ON_BULLET_FIVE" desc="Bullet point under the Safe Browsing enhanced protection mode section titled 'When on'">
     Warns you if you use a password that has been compromised in a data breach.
   </message>
   <message name="IDS_SETTINGS_SAFEBROWSING_ENHANCED_THINGS_TO_CONSIDER_LABEL" desc="Label of 'Things to consider' section under the Safe Browsing enhanced protection mode">
     Things to consider
   </message>
-  <message name="IDS_SETTINGS_SAFEBROWSING_ENHANCED_THINGS_TO_CONSIDER_BULLET_ONE" desc="First bullet point under the Safe Browsing enhanced protection mode section titled 'Things to consider'">
+  <message name="IDS_SETTINGS_SAFEBROWSING_ENHANCED_THINGS_TO_CONSIDER_BULLET_ONE" desc="Bullet point under the Safe Browsing enhanced protection mode section titled 'Things to consider'">
     Sends the URLs of sites you visit and a small sample of page content, downloads, extension activity, and system information to Google Safe Browsing to check if they're harmful.
   </message>
-  <message name="IDS_SETTINGS_SAFEBROWSING_ENHANCED_THINGS_TO_CONSIDER_BULLET_TWO" desc="Second bullet point under the Safe Browsing enhanced protection mode section titled 'Things to consider'">
+  <message name="IDS_SETTINGS_SAFEBROWSING_ENHANCED_THINGS_TO_CONSIDER_BULLET_TWO" desc="Bullet point under the Safe Browsing enhanced protection mode section titled 'Things to consider'">
     When you're signed in, this data is linked to your Google Account to protect you across Google services, for example increasing protection in Gmail after a security incident.
   </message>
-  <message name="IDS_SETTINGS_SAFEBROWSING_ENHANCED_THINGS_TO_CONSIDER_BULLET_THREE" desc="Third bullet point under the Safe Browsing enhanced protection mode section titled 'Things to consider'">
+  <message name="IDS_SETTINGS_SAFEBROWSING_ENHANCED_THINGS_TO_CONSIDER_BULLET_THREE" desc="Bullet point under the Safe Browsing enhanced protection mode section titled 'Things to consider'">
     Doesn't noticeably slow down your browser or device.
   </message>
   <message name="IDS_SETTINGS_SAFEBROWSING_STANDARD" desc="Label for safe browsing standard protection mode">
@@ -2667,14 +2073,14 @@
     <message name="IDS_SETTINGS_SAFEBROWSING_STANDARD_DESC_UPDATED_PROXY" desc="Description for safe browsing standard protection mode">
       Protects against sites, downloads, and extensions that are known to be dangerous. When you visit a site, Chrome sends an obfuscated portion of the URL to Google through a privacy server that hides your IP address. If a site does something suspicious, full URLs and bits of page content are also sent.
     </message>
-    <message name="IDS_SETTINGS_SAFEBROWSING_STANDARD_BULLET_TWO_PROXY" desc="First bullet point under the safe browsing standard protection mode">
+    <message name="IDS_SETTINGS_SAFEBROWSING_STANDARD_BULLET_TWO_PROXY" desc="Bullet point under the safe browsing standard protection mode">
       Sends an obfuscated portion of the URL to Google through a privacy server that hides your IP address. If a site tries to steal your password, or when you download a harmful file, Chrome may also send URLs, including bits of page content, to Google.
     </message>
   </if>
   <message name="IDS_SETTINGS_SAFEBROWSING_STANDARD_EXPAND_ACCESSIBILITY_LABEL" desc="Label for the button that toggles showing the detailed description of safe browsing standard protection. Only visible by screen reader software.">
     Show standard protection details
   </message>
-  <message name="IDS_SETTINGS_SAFEBROWSING_STANDARD_BULLET_ONE" desc="First bullet point under the safe browsing standard protection mode">
+  <message name="IDS_SETTINGS_SAFEBROWSING_STANDARD_BULLET_ONE" desc="Bullet point under the safe browsing standard protection mode">
     Detects and warns you about dangerous events when they happen
   </message>
   <message name="IDS_SETTINGS_SAFEBROWSING_STANDARD_HELP_IMPROVE" desc="The name of the toggle to enable reporting to help improve safe browsing">
@@ -2705,7 +2111,10 @@
     Do Not Track
   </message>
   <message name="IDS_SETTINGS_ENABLE_DO_NOT_TRACK_DIALOG_TEXT" desc="The text of a confirmation dialog that confirms that the user want to send the 'Do Not Track' header">
-    Enabling "Do Not Track" means that a request will be included with your browsing traffic. Any effect depends on whether a website responds to the request, and how the request is interpreted. For example, some websites may respond to this request by showing you ads that aren't based on other websites you've visited. Many websites will still collect and use your browsing data - for example to improve security, to provide content, services, ads and recommendations on their websites, and to generate reporting statistics. <ph name="BEGIN_LINK">&lt;a target="_blank" href="$1"&gt;</ph>Learn more<ph name="END_LINK">&lt;/a&gt;<ex>&lt;/a&gt;</ex></ph>
+    Enabling "Do Not Track" means that a request will be included with your browsing traffic. Any effect depends on whether a website responds to the request, and how the request is interpreted. For example, some websites may respond to this request by showing you ads that aren't based on other websites you've visited. Many websites will still collect and use your browsing data - for example to improve security, to provide content, services, ads and recommendations on their websites, and to generate reporting statistics.
+  </message>
+  <message name="IDS_SETTINGS_ENABLE_DO_NOT_TRACK_DIALOG_LEARN_MORE_ACCESSIBILITY_LABEL" desc="The accessibility label for a link to learn more about Do Not Track">
+    Learn more about Do Not Track
   </message>
   <message name="IDS_SETTINGS_PERMISSIONS" desc="Name of the settings page which allows users to manage permissions and site content settings">
     Permissions and content settings
@@ -2726,16 +2135,28 @@
   </message>
   <message name="IDS_SETTINGS_ADVANCED_PROTECTION_PROGRAM_DESC" desc="Description of the Google
     Advanced Protection Program">
-    Safeguards the personal Google Accounts of anyone at risk of targeted attacks
+    Provides Google’s strongest account security for people at risk of targeted attacks
   </message>
   <message name="IDS_SETTINGS_HTTPS_ONLY_MODE" desc="Text for HTTPS-Only Mode toggle in Security settings">
     Always use secure connections
   </message>
   <message name="IDS_SETTINGS_HTTPS_ONLY_MODE_DESCRIPTION" desc="Secondary, continued explanation of HTTPS-Only Mode in Security settings">
-    Upgrade navigations to HTTPS and warn you before loading sites that don't support it
+    Use HTTPS whenever possible and get warned before loading sites that don’t support it
   </message>
   <message name="IDS_SETTINGS_HTTPS_ONLY_MODE_DESCRIPTION_ADVANCED_PROTECTION" desc="Secondary, continued explanation of HTTPS-Only Mode in Security settings when the user can't change the setting">
-    Upgrade navigations to HTTPS and warn you before loading sites that don't support it. You can't change this setting because you have Advanced Protection enabled.
+    Use HTTPS whenever possible and get warned before loading sites that don’t support it. You can’t change this setting because you have Advanced Protection enabled.
+  </message>
+  <message name="IDS_SETTINGS_HTTPS_FIRST_MODE_TITLE" desc="Title for HTTPS-First Mode section in Security settings">
+    Warn before using insecure connections
+  </message>
+  <message name="IDS_SETTINGS_HTTPS_FIRST_MODE_ENABLED_FULL_LABEL" desc="Label for radio button to fully enable HTTPS-First Mode">
+    See warnings before going to insecure sites (recommended)
+  </message>
+  <message name="IDS_SETTINGS_HTTPS_FIRST_MODE_ENABLED_INCOGNITO_LABEL" desc="Label for radio button to enable HTTPS-First Mode in Incognito">
+    See warnings before going to insecure sites in Incognito mode
+  </message>
+  <message name="IDS_SETTINGS_HTTPS_FIRST_MODE_DISABLED_LABEL" desc="Label for radio button to disable HTTPS-First Mode">
+    Don't see any warnings before going to insecure sites
   </message>
   <message name="IDS_SETTINGS_MANAGE_CERTIFICATES" desc="Text for manage certificates button in Privacy options">
     Manage certificates
@@ -2743,42 +2164,34 @@
   <message name="IDS_SETTINGS_MANAGE_CERTIFICATES_DESCRIPTION" desc="Secondary, continued explanation of how to manage SSL certificates and settings in Privacy options">
     Manage HTTPS/SSL certificates and settings
   </message>
-  <if expr="chrome_root_store_supported">
-    <message name="IDS_SETTINGS_MANAGE_DEVICE_CERTIFICATES" desc="Text for manage device certificates button in Privacy options">
-      Manage device certificates
-    </message>
-    <message name="IDS_SETTINGS_MANAGE_DEVICE_CERTIFICATES_DESCRIPTION" desc="Secondary, continued explanation of how to manage SSL device certificates and settings in Privacy options">
-      Manage HTTPS/SSL certificates on your device
-    </message>
-  </if>
+
+  <!-- Chrome Root Store -->
+  <message name="IDS_SETTINGS_MANAGE_DEVICE_CERTIFICATES" desc="Text for manage device certificates button in Privacy options">
+    Manage device certificates
+  </message>
+  <message name="IDS_SETTINGS_MANAGE_DEVICE_CERTIFICATES_DESCRIPTION" desc="Secondary, continued explanation of how to manage SSL device certificates and settings in Privacy options">
+    Manage HTTPS/SSL certificates on your device
+  </message>
+
   <message name="IDS_SETTINGS_MANAGE" desc="Text displayed on a button, which when clicked opens the Extensions subpage for managing an extension">
     Manage
   </message>
   <message name="IDS_SETTINGS_SECURE_DNS" desc="Text for secure DNS toggle in Privacy options">
     Use secure DNS
   </message>
-  <message name="IDS_SETTINGS_SECURE_DNS_DESCRIPTION" desc="Secondary, continued explanation of secure DNS in Privacy options">
-    Determines how to connect to websites over a secure connection
-  </message>
   <if expr="chromeos_ash">
     <message name="IDS_SETTINGS_SECURE_DNS_WITH_IDENTIFIERS_DESCRIPTION" desc="Secondary, continued explanation of secure DNS in Privacy options">
-      Determines how to connect to websites over a secure connection. This uses a managed service provider at <ph name="DNS_SERVER_TEMPLATE_WITH_IDENTIFIER">$1<ex>https://dns.example.net/dns-query{?dns}</ex></ph>
+      Use a secure connection to look up a site’s IP address in the DNS (Domain Name System). This uses a managed service provider at <ph name="DNS_SERVER_TEMPLATE_WITH_IDENTIFIER">$1<ex>https://dns.example.net/dns-query{?dns}</ex></ph>
     </message>
   </if>
-  <message name="IDS_SETTINGS_AUTOMATIC_MODE_DESCRIPTION" desc="Text of the radio button that puts secure DNS in auto-upgrade mode">
-    With your current service provider
-  </message>
-  <message name="IDS_SETTINGS_AUTOMATIC_MODE_DESCRIPTION_SECONDARY" desc="Secondary, continued explanation of the radio button that puts secure DNS in auto-upgrade mode">
-    Secure DNS may not be available all the time
-  </message>
-  <message name="IDS_SETTINGS_SECURE_MODE_DESCRIPTION_ACCESSIBILITY_LABEL" desc="Accessibility label for the radio button that puts secure DNS in secure mode">
-    With a provider of your choice
+  <message name="IDS_SETTINGS_AUTOMATIC_MODE_DESCRIPTION" desc="Text of the select option that puts secure DNS in auto-upgrade mode">
+    OS default (when available)
   </message>
   <message name="IDS_SETTINGS_SECURE_DNS_DROPDOWN_ACCESSIBILITY_LABEL" desc="Accessibility label for the dropdown menu containing secure resolvers">
     Provider options
   </message>
-  <message name="IDS_SETTINGS_SECURE_DROPDOWN_MODE_DESCRIPTION" desc="Text of the radio button that allows a secure resolver to be selected from a dropdown menu">
-    With
+  <message name="IDS_SETTINGS_SECURE_DROPDOWN_MODE_DESCRIPTION" desc="Label for the select menu that allows a secure resolver to be selected">
+    Select DNS provider
   </message>
   <message name="IDS_SETTINGS_SECURE_DROPDOWN_MODE_PRIVACY_POLICY" desc="Text that displays a link to the privacy policy of the resolver selected from a dropdown menu">
     See this provider's <ph name="BEGIN_LINK">&lt;a target="_blank" href="$1<ex>https://google.com/</ex>"&gt;</ph>privacy policy<ph name="END_LINK">&lt;/a&gt;</ph>
@@ -2789,14 +2202,20 @@
   <message name="IDS_SETTINGS_SECURE_DNS_DISABLED_FOR_PARENTAL_CONTROL" desc="Substring of the secure DNS setting when secure DNS is disabled due to detection of OS-level parental controls">
     This setting is disabled because parental controls are on
   </message>
+  <message name="IDS_SETTINGS_SECURE_DNS_CUSTOM_DESCRIPTION" desc="Text of the select option that is used for a custom secure DNS provider">
+    Add custom DNS service provider
+  </message>
   <message name="IDS_SETTINGS_SECURE_DNS_CUSTOM_PLACEHOLDER" desc="Placeholder text for a textbox where users can enter a custom secure DNS provider">
-    Enter custom provider
+    Enter custom DNS query URL
   </message>
   <message name="IDS_SETTINGS_SECURE_DNS_CUSTOM_FORMAT_ERROR" desc="Error text for an incorrectly formatted entry for the custom secure DNS provider">
     Enter a correctly formatted URL
   </message>
   <message name="IDS_SETTINGS_SECURE_DNS_CUSTOM_CONNECTION_ERROR" desc="Error text for a custom secure DNS provider entry to which a probe connection fails">
     Please verify that this is a valid provider or try again later
+  </message>
+  <message name="IDS_SETTINGS_SECURITY_V8_LINK_TITLE" desc="Title for the link row to the V8 security settings.">
+    Manage V8 security
   </message>
   <message name="IDS_SETTINGS_CONTENT_SETTINGS" desc="Text of the button that takes a user to settings page thats allows users to modify site settings. Also the title of that settings page.">
     Content settings
@@ -2899,6 +2318,11 @@
   <message name="IDS_SETTINGS_SEARCH_EXPLANATION" desc="Explanation for the search engine dropdown setting.">
     Search engine used in the address bar.
   </message>
+  <if expr="is_chromeos">
+    <message name="IDS_SETTINGS_SEARCH_EXPLANATION_PRIMARY_PROFILE" desc="Explanation for the search engine dropdown setting in the primary profile.">
+      Search engine used in the address bar and the launcher.
+    </message>
+  </if>
   <message name="IDS_SETTINGS_SEARCH_EXPLANATION_ACCESSIBILITY_LABEL" desc="Accessibility label for a 'learn more' link which links to an article about setting a default search engine.">
     Learn more about default search engines
   </message>
@@ -2922,11 +2346,17 @@
   <message name="IDS_SETTINGS_SEARCH_ENGINES_SEARCH" desc="Label for a text input placeholder allowing the user to search/filter the displayed search engines">
     Search
   </message>
-  <message name="IDS_SETTINGS_SEARCH_ENGINES_ADD_SEARCH_ENGINE" desc="Title for a dialog that allows adding a new search engine.">
-    Add search engine
+  <message name="IDS_SETTINGS_SEARCH_ENGINES_ADD_SITE_SEARCH" desc="Title for a dialog that allows adding a new site search engine.">
+    Add site search
   </message>
   <message name="IDS_SETTINGS_SEARCH_ENGINES_EDIT_SEARCH_ENGINE" desc="Title for a dialog that allows editing an existing search engine.">
     Edit search engine
+  </message>
+  <message name="IDS_SETTINGS_SEARCH_ENGINES_EDIT_SITE_SEARCH" desc="Title for a dialog that allows editing an existing site search engine.">
+    Edit site search
+  </message>
+  <message name="IDS_SETTINGS_SEARCH_ENGINES_VIEW_SITE_SEARCH" desc="Title for a dialog that allows viewing details of an existing site search engine.">
+    Site search
   </message>
   <message name="IDS_SETTINGS_SEARCH_ENGINES_DELETE_CONFIRMATION_TITLE" desc="Title for a dialog that confirms that a user wants to delete an existing search engine.">
     Delete search engine
@@ -2964,11 +2394,8 @@
   <message name="IDS_SETTINGS_SEARCH_ENGINES_EXTENSION_ENGINES_EXPLANATION" desc="Explanation for a section that displays search engines added by extensions">
     Some extensions can add search engines to Chrome
   </message>
-  <message name="IDS_SETTINGS_SEARCH_ENGINES_SEARCH_ENGINE" desc="Label for a table column that holds the name of a search engine">
-    Search engine
-  </message>
-  <message name="IDS_SETTINGS_SEARCH_ENGINES_SITE_OR_PAGE" desc="Label for a table column that holds the name of a site or page in the 'Site search' section">
-    Site or page
+  <message name="IDS_SETTINGS_SEARCH_ENGINES_NAME" desc="Label for a table column that holds the name of a search engine or site search provider">
+    Name
   </message>
   <message name="IDS_SETTINGS_SEARCH_ENGINES_SHORTCUT" desc="Label for Shortcut column header for a search engine or site search entry">
     Shortcut
@@ -2987,6 +2414,9 @@
   </message>
   <message name="IDS_SETTINGS_SEARCH_ENGINES_DEACTIVATE" desc="Text of the button that deactivates a search engine">
     Deactivate
+  </message>
+  <message name="IDS_SETTINGS_SEARCH_ENGINES_VIEW_DETAILS" desc="Label for button that allows the user to view details of a search engine">
+    Details
   </message>
   <message name="IDS_SETTINGS_SEARCH_ENGINES_MANAGE_EXTENSION" desc="Text displayed for a button that allows the user to manage a Chrome extension">
     Manage
@@ -3041,8 +2471,11 @@
   <message name="IDS_SETTINGS_SITE_SETTINGS_ALL_SITES_SORT_METHOD_NAME" desc="A selection menu option to sort the All Sites list by the name of the site, which is derived from its URL." meaning="Name of an inanimate object">
     Name
   </message>
+  <message name="IDS_SETTINGS_SITE_SETTINGS_FILE_SYSTEM_SITE_LIST_HEADER" desc="The header name for a list of origins that the user has granted edit permissions from the File System Access API.">
+    Allowed to edit files or folders on your device
+  </message>
   <message name="IDS_SETTINGS_SITE_SETTINGS_FILE_SYSTEM_SITE_LIST_EDIT_HEADER" desc="The header name for a list of files that the user has granted edit permissions from the File System Access API.">
-    Edit
+    Can edit files or folders on your device
   </message>
   <message name="IDS_SETTINGS_SITE_SETTINGS_FILE_SYSTEM_SITE_LIST_REMOVE_GRANT_LABEL" desc="A label that represents removing a site's permission to access a file or folder, previously granted access from the File System Access API.">
     Remove grant
@@ -3051,7 +2484,7 @@
     Remove
   </message>
   <message name="IDS_SETTINGS_SITE_SETTINGS_FILE_SYSTEM_SITE_LIST_VIEW_HEADER" desc="The header name for a list of files that the user has granted view permissions from the File System Access API.">
-    View
+    Can view files or folders on your device
   </message>
   <message name="IDS_SETTINGS_SITE_SETTINGS_FILE_SYSTEM_SITE_LIST_VIEW_SITE_DETAILS" desc="A menu option that navigates to the site details page for the selected site.">
     View site details
@@ -3126,19 +2559,19 @@
     Not allowed to automatically download multiple files
   </message>
   <message name="IDS_SETTINGS_SITE_SETTINGS_AUTO_PICTURE_IN_PICTURE_DESCRIPTION" desc="Description of the auto-picture-in-picture content setting.">
-    Sites might open a picture-in-picture window when you change to a different tab
+    Sites use this setting to enter picture-in-picture automatically. This lets you continue watching a video, while freeing up your screen for other tasks.
   </message>
   <message name="IDS_SETTINGS_SITE_SETTINGS_AUTO_PICTURE_IN_PICTURE_ALLOWED" desc="Label for the enabled option of the auto-picture-in-picture content setting.">
-    Sites can open a picture-in-picture window when you change to a different tab
+    Sites can enter picture-in-picture automatically
   </message>
   <message name="IDS_SETTINGS_SITE_SETTINGS_AUTO_PICTURE_IN_PICTURE_BLOCKED" desc="Label for the disabled option of the auto-picture-in-picture content setting.">
-    Don't allow sites to open a picture-in-picture window when you change to a different tab
+    Don't allow sites to enter picture-in-picture automatically
   </message>
   <message name="IDS_SETTINGS_SITE_SETTINGS_AUTO_PICTURE_IN_PICTURE_ALLOWED_EXCEPTIONS" desc="Label for the allowed exceptions site list of the auto-picture-in-picture content setting.">
-    Allowed to open a picture-in-picture window when you change to a different tab
+    Allowed to enter picture-in-picture automatically
   </message>
   <message name="IDS_SETTINGS_SITE_SETTINGS_AUTO_PICTURE_IN_PICTURE_BLOCKED_EXCEPTIONS" desc="Label for the blocked exceptions site list of the auto-picture-in-picture content setting.">
-    Not allowed to open a picture-in-picture window when you change to a different tab
+    Not allowed to enter picture-in-picture automatically
   </message>
   <message name="IDS_SETTINGS_SITE_SETTINGS_BACKGROUND_SYNC_DESCRIPTION" desc="Description of the background sync content setting.">
     After you leave a site, it can keep syncing to finish tasks, like uploading photos or sending a chat message
@@ -3257,6 +2690,18 @@
   <message name="IDS_SETTINGS_SITE_SETTINGS_FONTS_BLOCKED_EXCEPTIONS" desc="Label for the blocked exceptions site list of the fonts content setting.">
     Not allowed to use fonts installed on your device
   </message>
+  <message name="IDS_SETTINGS_SITE_SETTINGS_AUTOMATIC_FULLSCREEN_DESCRIPTION" desc="Label explaining the automatic fullscreen content setting.">
+    Sites use this setting to offer immersive fullscreen experiences regardless of user gestures
+  </message>
+  <message name="IDS_SETTINGS_SITE_SETTINGS_AUTOMATIC_FULLSCREEN_BLOCK" desc="Label explaining that automatic fullscreen is blocked by default, meaning a user gesture is required.">
+    Entering fullscreen requires a user gesture by default
+  </message>
+  <message name="IDS_SETTINGS_SITE_SETTINGS_AUTOMATIC_FULLSCREEN_ALLOWED_EXCEPTIONS" desc="Label for the allowed exceptions site list of the automatic fullscreen content setting.">
+    Allowed to enter fullscreen automatically
+  </message>
+  <message name="IDS_SETTINGS_SITE_SETTINGS_AUTOMATIC_FULLSCREEN_BLOCKED_EXCEPTIONS" desc="Label for the blocked exceptions site list of the automatic fullscreen content setting.">
+    Not allowed to enter fullscreen automatically
+  </message>
   <message name="IDS_SETTINGS_SITE_SETTINGS_HID_DEVICES_DESCRIPTION" desc="Description of the hid devices site setting.">
     Sites usually connect to HID devices for features that use uncommon keyboards, game controllers, and other devices
   </message>
@@ -3308,16 +2753,31 @@
   <message name="IDS_SETTINGS_SITE_SETTINGS_JAVASCRIPT_BLOCKED_EXCEPTIONS" desc="Label for the blocked exceptions site list of the JavaScript content setting.">
     Not allowed to use JavaScript
   </message>
+  <message name="IDS_SETTINGS_SITE_SETTINGS_JAVASCRIPT_JIT_ALLOWED" desc="Label for the enabled option of the JavaScript optimizer content setting.">
+    Sites can use the V8 optimizer
+  </message>
+  <message name="IDS_SETTINGS_SITE_SETTINGS_JAVASCRIPT_JIT_BLOCKED" desc="Label for the disabled option of the JavaScript optimizer content setting.">
+    Don’t allow sites to use the V8 optimizer
+  </message>
+  <message name="IDS_SETTINGS_SITE_SETTINGS_JAVASCRIPT_JIT_BLOCKED_SUB_LABEL" desc="Sub-label for the disabled option of the JavaScript optimizer content setting.">
+    Reduces performance but makes V8 more resistant to attacks
+  </message>
+  <message name="IDS_SETTINGS_SITE_SETTINGS_JAVASCRIPT_JIT_ALLOWED_EXCEPTIONS" desc="Label for the allowed exceptions site list of the JavaScript optimizer content setting.">
+    Always allowed to use the V8 optimizer
+  </message>
+  <message name="IDS_SETTINGS_SITE_SETTINGS_JAVASCRIPT_JIT_BLOCKED_EXCEPTIONS" desc="Label for the blocked exceptions site list of the JavaScript optimizer content setting.">
+    Not allowed to use V8 optimizer
+  </message>
   <message name="IDS_SETTINGS_SITE_SETTINGS_LOCATION_DESCRIPTION" desc="Description of the location content setting.">
     Sites usually use your location for relevant features or info, like local news or nearby shops
   </message>
   <message name="IDS_SETTINGS_SITE_SETTINGS_LOCATION_ALLOWED" desc="Label for the enabled option of the location content setting.">
     Sites can ask for your location
   </message>
-  <message name="IDS_SETTINGS_SITE_SETTINGS_LOCATION_BLOCKED" desc="Label for the disabled option of the location content setting.">
+  <message name="IDS_SETTINGS_SITE_SETTINGS_LOCATION_BLOCKED" desc="Label for the blocked option of the location content setting.">
     Don't allow sites to see your location
   </message>
-  <message name="IDS_SETTINGS_SITE_SETTINGS_LOCATION_BLOCKED_SUB_LABEL" desc="Sub-label for the disabled option of the location content setting.">
+  <message name="IDS_SETTINGS_SITE_SETTINGS_LOCATION_BLOCKED_SUB_LABEL" desc="Sub-label for the blocked option of the location content setting.">
     Features that need your location won't work
   </message>
   <message name="IDS_SETTINGS_SITE_SETTINGS_LOCATION_ALLOWED_EXCEPTIONS" desc="Label for the allowed exceptions site list of the location content setting.">
@@ -3345,19 +2805,19 @@
     Not allowed to use your microphone
   </message>
   <message name="IDS_SETTINGS_SITE_SETTINGS_MIDI_DESCRIPTION" desc="Description of the MIDI devices content setting.">
-    Sites usually connect to MIDI devices for creating and editing music
+    Sites usually ask to control and reprogram MIDI devices to create music, edit music, or update device firmware
   </message>
   <message name="IDS_SETTINGS_SITE_SETTINGS_MIDI_ALLOWED" desc="Label for the enabled option of the MIDI devices content setting.">
-    Sites can ask to connect to MIDI devices
+    Sites can ask to control and reprogram your MIDI devices
   </message>
   <message name="IDS_SETTINGS_SITE_SETTINGS_MIDI_BLOCKED" desc="Label for the disabled option of the MIDI devices content setting.">
-    Don't allow sites to connect to MIDI devices
+    Don't allow sites to control and reprogram your MIDI devices
   </message>
   <message name="IDS_SETTINGS_SITE_SETTINGS_MIDI_ALLOWED_EXCEPTIONS" desc="Label for the allowed exceptions site list of the MIDI devices content setting.">
-    Allowed to connect to MIDI devices
+    Allowed to control and reprogram your MIDI devices
   </message>
   <message name="IDS_SETTINGS_SITE_SETTINGS_MIDI_BLOCKED_EXCEPTIONS" desc="Label for the blocked exceptions site list of the MIDI devices content setting.">
-    Not allowed to connect to MIDI devices
+    Not allowed to control and reprogram your MIDI devices
   </message>
   <message name="IDS_SETTINGS_SITE_SETTINGS_MOTION_SENSORS_DESCRIPTION" desc="Description of the motion sensors content setting.">
     Sites usually use your device's motion sensors for features like virtual reality or fitness tracking
@@ -3388,6 +2848,18 @@
   </message>
   <message name="IDS_SETTINGS_SITE_SETTINGS_NOTIFICATIONS_PARTIAL_SUB_LABEL" desc="Sub-label for the partial option of the notifications content setting.">
     Sites are blocked from interrupting you when they ask to send notifications
+  </message>
+  <message name="IDS_SETTINGS_SITE_SETTINGS_NOTIFICATIONS_ASK_STATE" desc="Label for the top level enabled option of the notifications content setting.">
+    Sites can ask to send notifications
+  </message>
+  <message name="IDS_SETTINGS_SITE_SETTINGS_PERMISSION_QUIET" desc="Label for the quiet version of the permission prompt.">
+    Collapse all requests in the address bar
+  </message>
+  <message name="IDS_SETTINGS_SITE_SETTINGS_PERMISSION_CPSS" desc="Label for the CPSS version of the permission prompt. Chrome decides to show either the loud or quiet version.">
+   Collapse unwanted requests (recommended)
+  </message>
+  <message name="IDS_SETTINGS_SITE_SETTINGS_PERMISSION_LOUD" desc="Label for the loud version of the permission prompt.">
+   Expand all requests
   </message>
   <message name="IDS_SETTINGS_SITE_SETTINGS_NOTIFICATIONS_BLOCKED" desc="Label for the blocked option of the notifications content setting.">
     Don't allow sites to send notifications
@@ -3537,6 +3009,21 @@
   <message name="IDS_SETTINGS_SITE_SETTINGS_VR_BLOCKED_EXCEPTIONS" desc="Label for the blocked exceptions site list of the virtual reality content setting.">
     Not allowed to use virtual reality devices or data
   </message>
+  <message name="IDS_SETTINGS_SITE_SETTINGS_WEB_PRINTING_DESCRIPTION" desc="Description of the web printing content setting.">
+    Sites can use advanced features from any printer accessible to your device without going through the standard Print prompt
+  </message>
+  <message name="IDS_SETTINGS_SITE_SETTINGS_WEB_PRINTING_ASK" desc="Label for the ask option of the web printing content setting.">
+    Sites can ask to look for and use printers accessible to your device
+  </message>
+  <message name="IDS_SETTINGS_SITE_SETTINGS_WEB_PRINTING_BLOCK" desc="Label for the block option of the web printing content setting.">
+    Sites can’t look for or use printers accessible to your device
+  </message>
+  <message name="IDS_SETTINGS_SITE_SETTINGS_WEB_PRINTING_ALLOWED_EXCEPTIONS" desc="Label for the allowed exceptions site list of the web printing content setting.">
+    Allowed to look for and use printers accessible to your device
+  </message>
+  <message name="IDS_SETTINGS_SITE_SETTINGS_WEB_PRINTING_BLOCKED_EXCEPTIONS" desc="Label for the blocked exceptions site list of the web printing content setting.">
+    Not allowed to look for or use printers accessible to your device
+  </message>
   <message name="IDS_SETTINGS_SITE_SETTINGS_ZOOM_LEVELS_DESCRIPTION" desc="Description of the zoom levels content setting.">
     You can set how much you zoom in or out on certain websites
   </message>
@@ -3546,14 +3033,14 @@
   <message name="IDS_SETTINGS_SITE_SETTINGS_AR_BLOCK" desc="The block label for the AR feature in site settings.">
     Do not allow sites to create a 3D map of your surroundings or track camera position
   </message>
-  <message name="IDS_SETTINGS_COOKIES_PAGE" desc="Title of the cookies settings page">
-    Cookies and other site data
-  </message>
   <message name="IDS_SETTINGS_THIRD_PARTY_COOKIES_PAGE_DESCRIPTION" desc="An explanation of what third-party cookies are that appear beneath the page title: 'Third-party cookies'. * 'embed': A site you visit uses HTML to construct the page. HTML tags include references to images, like img src='filename.jpg', that are used to show an image. 'filename.jpg' can be a local file owned by the site you visit or a site can embed an external file with something like img src='www.third-party-site.com/images/filename.jpg'. This image is embedded into the site you visit and www.third-party-site.com can set a third-party cookie onto your device.">
     A site you visit can embed content from other sites, for example, images, ads, and text. Cookies set by these other sites are called third-party cookies.
   </message>
   <message name="IDS_SETTINGS_THIRD_PARTY_COOKIES_PAGE_DEFAULT_BEHAVIOR_HEADING" desc="A label on a permissions page. For example, see the Microphone permission at chrome://settings/content/microphone.">
     Default behavior
+  </message>
+  <message name="IDS_SETTINGS_THIRD_PARTY_COOKIES_ALIGNED_PAGE_DESCRIPTION" desc="Descriptive text on the 'Third-party cookies' settings page explaining that controls on the page are for managing information sites can use for tracking.">
+    Manage the types of information sites can use to track you as you browse.
   </message>
   <message name="IDS_SETTINGS_THIRD_PARTY_COOKIES_PAGE_DEFAULT_BEHAVIOR_DESCRIPTION" desc="A description of what 'Default behavior' means. For example, see the Microphone permission at chrome://settings/content/microphone.">
     Sites automatically follow this setting when you visit them
@@ -3618,62 +3105,8 @@
   <message name="IDS_SETTINGS_THIRD_PARTY_COOKIES_PAGE_BLOCK_BULLET_2" desc="2 of 2 bullets that describe the 'Block third-party cookies' option">
     Sites can't use your cookies to see your browsing activity across different sites, for example, to personalize ads. Features on some sites may not work
   </message>
-  <message name="IDS_SETTINGS_COOKIES_CONTROLS" desc="Title of the general cookies control section.">
-    General settings
-  </message>
-  <message name="IDS_SETTINGS_COOKIES_ALLOW_ALL" desc="Label for allow all cookies radio toggle">
-    Allow all cookies
-  </message>
-  <message name="IDS_SETTINGS_COOKIES_ALLOW_ALL_EXPAND_A11Y_LABEL" desc="Label for the button that toggles showing the detailed description of allowing all cookies. Only visible by screen reader software.">
-    Show details about allowing all cookies
-  </message>
-  <message name="IDS_SETTINGS_COOKIES_ALLOW_ALL_BULLET_ONE" desc="Description for the first bullet of allow all cookies radio toggle">
-    Sites can use cookies to improve your browsing experience, for example, to keep you signed in or to remember items in your shopping cart
-  </message>
-  <message name="IDS_SETTINGS_COOKIES_ALLOW_ALL_BULLET_TWO" desc="Description for the first bullet of allow all cookies radio toggle">
-    Sites can use cookies to see your browsing activity across different sites, for example, to personalize ads
-  </message>
-  <message name="IDS_SETTINGS_COOKIES_BLOCK_THIRD_PARTY_INCOGNITO" desc="Label for block third party cookies in Incognito radio toggle">
-    Block third-party cookies in Incognito
-  </message>
-  <message name="IDS_SETTINGS_COOKIES_BLOCK_THIRD_PARTY_INCOGNITO_EXPAND_A11Y_LABEL" desc="Label for the button that toggles showing the detailed description of blocking third party cookies in Incognito. Only visible by screen reader software.">
-    Show details about blocking third-party cookies in Incognito
-  </message>
-  <message name="IDS_SETTINGS_COOKIES_BLOCK_THIRD_PARTY_INCOGNITO_BULLET_ONE" desc="Description for the first bullet of block third party cookies in Incognito radio toggle">
-    Sites can use cookies to improve your browsing experience, for example, to keep you signed in or to remember items in your shopping cart
-  </message>
-  <message name="IDS_SETTINGS_COOKIES_BLOCK_THIRD_PARTY_INCOGNITO_BULLET_TWO" desc="Description for the first bullet of block third party cookies in Incognito radio toggle">
-    While in Incognito, sites can't use your cookies to see your browsing activity across different sites, for example, to personalize ads. Features on some sites may not work.
-  </message>
   <message name="IDS_SETTINGS_COOKIES_BLOCK_THIRD_PARTY_INCOGNITO_BULLET_TWO_FPS" desc="Description for the first bullet of block third party cookies in Incognito radio toggle">
     While in Incognito, sites can't use your cookies to see your browsing activity across sites, even related sites. Your browsing activity isn't used for things like personalizing ads. Features on some sites may not work.
-  </message>
-  <message name="IDS_SETTINGS_COOKIES_BLOCK_THIRD_PARTY" desc="Label for block third party cookies radio toggle">
-    Block third-party cookies
-  </message>
-  <message name="IDS_SETTINGS_COOKIES_BLOCK_THIRD_PARTY_EXPAND_A11Y_LABEL" desc="Label for the button that toggles showing the detailed description of blocking third party cookies. Only visible by screen reader software.">
-    Show details about blocking third-party cookies
-  </message>
-  <message name="IDS_SETTINGS_COOKIES_BLOCK_THIRD_PARTY_BULLET_ONE" desc="Description for the first bullet of block third party cookies radio toggle">
-    Sites can use cookies to improve your browsing experience, for example, to keep you signed in or to remember items in your shopping cart
-  </message>
-  <message name="IDS_SETTINGS_COOKIES_BLOCK_THIRD_PARTY_BULLET_TWO" desc="Description for the first bullet of block third party cookies radio toggle">
-    Sites can't use your cookies to see your browsing activity across different sites, for example, to personalize ads. Features on some sites may not work.
-  </message>
-  <message name="IDS_SETTINGS_COOKIES_BLOCK_ALL" desc="Label for block all cookies radio toggle">
-    Block all cookies (not recommended)
-  </message>
-  <message name="IDS_SETTINGS_COOKIES_BLOCK_ALL_EXPAND_A11Y_LABEL" desc="Label for the button that toggles showing the detailed description of blocking all cookies. Only visible by screen reader software.">
-    Show details about blocking all cookies
-  </message>
-  <message name="IDS_SETTINGS_COOKIES_BLOCK_ALL_BULLET_ONE" desc="Description for the first bullet of block all cookies radio toggle">
-    Sites can't use cookies to improve your browsing experience, for example, to keep you signed in or to remember items in your shopping cart
-  </message>
-  <message name="IDS_SETTINGS_COOKIES_BLOCK_ALL_BULLET_TWO" desc="Description for the first bullet of block all cookies radio toggle">
-    Sites can't use your cookies to see your browsing activity across different sites, for example, to personalize ads
-  </message>
-  <message name="IDS_SETTINGS_COOKIES_BLOCK_ALL_BULLET_THREE" desc="Description for the third bullet of block all cookies radio toggle">
-    Features on many sites may not work
   </message>
   <message name="IDS_SETTINGS_COOKIES_FIRST_PARTY_SETS_TOGGLE_LABEL" desc="Label for the toggle that allows the user to control first-party sets enabled sharing between related sites">
     Allow related sites to see your activity in the group
@@ -3681,25 +3114,71 @@
   <message name="IDS_SETTINGS_COOKIES_FIRST_PARTY_SETS_TOGGLE_SUB_LABEL" desc="Sub-label for the toggle that allows the user to control first-party sets enabled sharing between related sites">
     A company can define a group of sites that can use cookies to share your activity in the group. This is off in Incognito.
   </message>
-  <message name="IDS_SETTINGS_COOKIES_CLEAR_ON_EXIT" desc="Label for the toggle that allows the user to automatically delete their cookies and site data when they close all browser windows.">
-    Clear cookies and site data when you close all windows
-  </message>
-  <if expr="chromeos_lacros">
-    <message name="IDS_SETTINGS_COOKIES_CLEAR_ON_EXIT_DESC" desc="Secondary text for the toggle that allows the user to automatically delete their cookies and site data when they close all browser windows. This sublabel clarifies that when the toggle is enabled the user won't be signed out of Chrome each time they close all Chrome windows.">
-      Signs you out of most sites. You won't be signed out of your Google Account.
-    </message>
-  </if>
   <message name="IDS_SETTINGS_COOKIES_ALL_SITES_LINK" desc="Label for the link row which takes the user to the page listing all sites with storage and permissions">
     See all site data and permissions
   </message>
-  <message name="IDS_SETTINGS_COOKIES_ALLOW_EXCEPTIONS" desc="Title of the list containing site exceptions always allowing them to use cookies">
-    Sites that can always use cookies
+  <message name="IDS_SETTINGS_TRACKING_PROTECTION_LINK_ROW_LABEL" desc="Label for the Tracking Protection page entry point.">
+    Tracking Protection
   </message>
-  <message name="IDS_SETTINGS_COOKIES_SESSION_ONLY_EXCEPTIONS" desc="Title of the list containing site exceptions so that cookies for those site are always cleared when closing the browser">
-    Always clear cookies when windows are closed
+  <message name="IDS_SETTINGS_TRACKING_PROTECTION_LINK_ROW_SUB_LABEL" desc="Sub-label for the Tracking Protection page entry point.">
+    Manage third-party cookies and tracking protections
   </message>
-  <message name="IDS_SETTINGS_COOKIES_BLOCK_EXCEPTIONS" desc="Title of the list containing site exceptions always blocking them from using cookies">
-    Sites that can never use cookies
+  <message name="IDS_SETTINGS_TRACKING_PROTECTION_PAGE_TITLE" desc="The title of a new settings page that allows users to manage settings related to tracking, for example third-party cookies. This settings page will replace the existing cookie settings page at chrome://settings/cookies.">
+    Tracking Protection
+  </message>
+  <message name="IDS_SETTINGS_TRACKING_PROTECTION_PAGE_DESCRIPTION" desc="Explanatory text for the Tracking Protection settings page.">
+    Chrome limits the type of information sites can use to track you as you browse. You can change your settings to choose your own level of protection.
+  </message>
+  <message name="IDS_SETTINGS_TRACKING_PROTECTION_BULLET_ONE" desc="The first bullet for Tracking Protection settings. Informs users that Chrome will limit third-party cookies.">
+    Chrome automatically limits third-party cookies
+  </message>
+  <message name="IDS_SETTINGS_TRACKING_PROTECTION_BULLET_ONE_DESCRIPTION" desc="Description of the first bullet for tracking protection settings. Explains what limiting third-party cookies means.">
+    Most sites can’t use third-party cookies to track you as you browse and sites can’t use third-party cookies in Incognito mode.
+  </message>
+  <message name="IDS_SETTINGS_TRACKING_PROTECTION_BULLET_TWO" desc="The second bullet for Tracking Protection settings. Informs users that most sites should work as expected.">
+    Most sites should work as expected
+  </message>
+  <message name="IDS_SETTINGS_TRACKING_PROTECTION_BULLET_TWO_DESCRIPTION" desc="Description of the second bullet for Tracking Protection settings. Explains that you can temporarilty allow a site to use third-party cookies if it isn't working. Contains a learn more link to a help center article.">
+    If a site isn’t working, you can try giving it temporary permission to use third-party cookies. <ph name="BEGIN_LINK">&lt;a target="_blank" href="$1" aria-label="$2" aria-description="$3"&gt;</ph>Learn more<ph name="END_LINK">&lt;/a&gt;<ex>&lt;/a&gt;</ex></ph>
+  </message>
+  <message name="IDS_SETTINGS_TRACKING_PROTECTION_BULLET_TWO_LEARN_MORE_ARIA_LABEL" desc="Screenreader text for the 'Learn more' link in the second bullet of Tracking Protection settings.">
+    Learn more about giving a site temporary permission to use third-party cookies
+  </message>
+  <message name="IDS_SETTINGS_TRACKING_PROTECTION_ADVANCED_LABEL" desc="Label for a section on the Tracking Protection settings page containing advanced options.">
+    Advanced
+  </message>
+  <message name="IDS_SETTINGS_TRACKING_PROTECTION_IP_PROTECTION_TOGGLE_LABEL" desc="Label for a toggle that lets users turn on IP protection to hide their IP address." translateable="false">
+    Hide your IP address
+  </message>
+  <message name="IDS_SETTINGS_TRACKING_PROTECTION_IP_PROTECTION_TOGGLE_SUB_LABEL" desc="Sub-label for the IP protection toggle. Explains that the feature only works for signed-in users and that some requests will be sent through privacy servers when the feature is on. Provides a link to a help center article." translateable="false">
+    When you’re signed in to Chrome, this setting can limit what suspected trackers can see as you browse. When a page loads, some requests for content get sent through privacy servers. Learn more about <ph name="LINK_BEGIN">&lt;a href="#" aria-label="$1" aria-description="$2" target="_blank"&gt;</ph>how IP protection works<ph name="LINK_END">&lt;/a&gt;</ph>
+  </message>
+  <message name="IDS_SETTINGS_TRACKING_PROTECTION_IP_PROTECTION_TOGGLE_LEARN_MORE_ARIA_LABEL" desc="Screenreader text for the help center article link in the sub-label text of the IP protection toggle." translateable="false">
+    Learn more about hiding your IP address
+  </message>
+  <message name="IDS_SETTINGS_TRACKING_PROTECTION_THIRD_PARTY_COOKIES_TOGGLE_LABEL" desc="Label for a toggle that blocks all third-party cookies when on.">
+    Block all third-party cookies
+  </message>
+  <message name="IDS_SETTINGS_TRACKING_PROTECTION_THIRD_PARTY_COOKIES_TOGGLE_SUB_LABEL" desc="Sub-label for the third-party cookie blocking toggle. Explains that features on some sites may not work when the toggle is on and third-party cookies are blocked.">
+    Features on some sites may not work.
+  </message>
+  <message name="IDS_SETTINGS_TRACKING_PROTECTION_THIRD_PARTY_COOKIES_LEARN_MORE_ARIA_LABEL" desc="Screenreader text for the 'Learn more' link in the sub-label of the third-party cookie blocking toggle.">
+    Learn more about sites that may not work when blocking third-party cookies
+  </message>
+  <message name="IDS_SETTINGS_TRACKING_PROTECTION_DO_NOT_TRACK_TOGGLE_SUB_LABEL" desc="Sub-label for the Do Not Track toggle. Explains that sites may not respond to 'do not track' requests even when this toggle is on.">
+    Sites use their discretion when responding to this request
+  </message>
+  <message name="IDS_SETTINGS_TRACKING_PROTECTION_SITES_ALLOWED_COOKIES_TITLE" desc="Title of the section on the Tracking Protection settings page that lets users manage which sites are allowed to use third-party cookies.">
+    Sites allowed to use third-party cookies
+  </message>
+  <message name="IDS_SETTINGS_TRACKING_PROTECTION_SITES_ALLOWED_COOKIES_DESCRIPTION" desc="Description of the section on the Tracking Protection settings page that lets users manage which sites are allowed to use third-party cookies. Explains how to use a wildcard to create an exception for an entire domain.">
+    Affects the sites listed here. Inserting “[*.]” before a domain name creates an exception for the entire domain. For example, adding “[*.]google.com” means that third-party cookies can also be active for mail.google.com, because it’s part of google.com.
+  </message>
+  <message name="IDS_SETTINGS_TRACKING_PROTECTION_ROLLBACK_NOTICE" desc="Notice text on the top of the 'Third-party cookies' settings page telling users that Tracking Protection is temporarily unavailable.">
+    Tracking Protection is temporarily unavailable. While Chrome is updating this feature, sites can temporarily use third-party cookies unless you block them. <ph name="BEGIN_LINK">&lt;a target="_blank" href="$1" aria-label="$2"&gt;</ph>Learn more<ph name="END_LINK">&lt;/a&gt;<ex>&lt;/a&gt;</ex></ph>
+  </message>
+  <message name="IDS_SETTINGS_TRACKING_PROTECTION_ROLLBACK_NOTICE_LEARN_MORE_ARIA_LABEL" desc="Screenreader text for the 'Learn more' link in the Tracking Protection rollback notice.">
+    Learn more about Tracking Protection availability
   </message>
   <message name="IDS_SETTINGS_SITE_SETTINGS_APP_PROTOCOL_HANDLERS" desc="Label for the app protocol handlers (e.g. mailto) in site settings.">
     Apps
@@ -3987,7 +3466,7 @@
     Delete
   </message>
   <message name="IDS_SETTINGS_SITE_SETTINGS_COOKIE_REMOVE_SITE" desc="Label for the trashcan button to delete all cookies and site data for a specific site (ex: all the cookies set on google.com).">
-    Remove <ph name="SITE">$1<ex>google.com</ex></ph>
+    Delete site data and permissions for <ph name="SITE">$1<ex>google.com</ex></ph>
   </message>
   <message name="IDS_SETTINGS_SITE_SETTINGS_SITE_RESET_ALL" desc="Text for the button that resets the site's permissions back to the defaults.">
     Reset
@@ -4064,7 +3543,7 @@
     On-device site data
   </message>
   <message name="IDS_SETTINGS_SITE_DATA_PAGE_DESCRIPTION" desc="A paragraph that appear beneath the page title: 'On-device site data'. It defines what on-device site data is. What is 'On-device site data'? When you interact with a site, that site can remember things about what you do. For example, you might place a pair of shoes in a shopping cart, close down your browser, and find those same shoes in your shopping cart when you visit the same site a week later. Sometimes that info is saved in the Cloud. Sometimes that info is saved on the user's device. There are several ways a site can save info to the user's device—for example, with cookies (text files saved to your device), small JavaScript databases, and even Chrome's new ad settings that are part of the Privacy Sandbox project (see details below). This page introduces the concept of on-device site data, allows the user to see which sites are using it, and allows the user to delete all saved data or just data from specific sites. **** CONTEXT PRIVACY SANDBOX **** Chrome's Privacy Sandbox initiative 1) deprecates third-party cookies in Chrome, 2) supports free and open content on the web (by finding better ways to support ads online), 3) while providing stronger privacy protections for users. You can see a high-level description of this public project at www.privacysanbox.com.">
-    A site you visit can save info about what you're doing so that it works as you would expect — for example, to keep you signed in to a site or to save items in your shopping cart. Often sites save this info temporarily on your device.
+    A site you visit can save info about what you're doing so that it works as expected — for example, to keep you signed in to a site or to save items in your shopping cart. Often sites save this info temporarily on your device.
   </message>
   <message name="IDS_SETTINGS_SITE_DATA_PAGE_DEFAULT_BEHAVIOR_HEADING" desc="A label on a permissions page. For example, see the Microphone permission at chrome://settings/content/microphone.">
     Default behavior
@@ -4123,15 +3602,15 @@
     Sites are blocked from asking you to use info they've saved about you
   </message>
   <message name="IDS_SETTINGS_STORAGE_ACCESS_ALLOWED_EXCEPTIONS" desc="A sub title on the Embedded content settings page. When a user grants a site permission, that site appears in this list of sites.">
-    You allowed these sites to use info they've saved about you
+    Allowed to use info they've saved about you
   </message>
   <message name="IDS_SETTINGS_STORAGE_ACCESS_BLOCKED_EXCEPTIONS" desc="A sub title on the Embedded content settings page. When a user denies a site permission, that site appears in this list of sites.">
-    You blocked these sites from using info they've saved about you
+    Not allowed to use info they've saved about you
   </message>
   <message name="IDS_SETTINGS_STORAGE_ACCESS_RESET_ALL" desc="Label for the trashcan button to reset the permission for allowing or blocking a website to access its unpartitioned cookies while embedded in all other sites.">
     Remove <ph name="SITE">$1<ex>google.com</ex></ph>
   </message>
-  <message name="IDS_SETTINGS_STORAGE_ACCESS_RESET_SITE" desc="Label for the trashcan button to reset all the permissions for allowing or blocking a website (embedded.com) to “use their info“ while on another website (top-level.com).">
+  <message name="IDS_SETTINGS_STORAGE_ACCESS_RESET_SITE" desc="Label for the trashcan button to reset the permission for allowing or blocking a website (embedded.com) to “use their info“ while on another website (top-level.com).">
     Remove <ph name="EMBEDDED_SITE">$1<ex>embedding.com</ex></ph> from <ph name="SITE">$2<ex>top-level.com</ex></ph>
   </message>
   <message name="IDS_SETTINGS_STORAGE_ACCESS_OPEN_EXPAND" desc="Label for an expand button to open a collapse row with the websites an origin website (top-level.com) is allowed or blocked to “use their info“ on">
@@ -4183,11 +3662,6 @@
   <message name="IDS_SETTINGS_ADD_SITE" desc="The label for the input box for adding a site">
     Site
   </message>
-  <if expr="chromeos_ash">
-    <message name="IDS_SETTINGS_ANDROID_SMS_NOTE" desc="Special note shown below Messages for Android entry in notification permissions to indicate use in ChromeOS Multidevice features.">
-      Allows Android Messages to relay texts from your phone to your Chromebook
-    </message>
-  </if>
 
   <!-- Cookies Window -->
   <message name="IDS_SETTINGS_SITE_SETTINGS_NUM_COOKIES" desc="A label showing the number of cookies set on a site.">
@@ -4220,10 +3694,10 @@
     Turn off sync and personalization?
   </message>
   <message name="IDS_SETTINGS_TURN_OFF_SYNC_DIALOG_MANAGED_CONFIRM" desc="The text to display on the confirm button of the dialog to turn off sync, when the profile is managed by admin.">
-    Clear and continue
+    Delete and continue
   </message>
-  <message name="IDS_SETTINGS_TURN_OFF_SYNC_DIALOG_CHECKBOX" desc="The text to display next to the checkbox of the dialog to turn off sync, asking users if they want to clear these data from the device.">
-    Clear bookmarks, history, passwords, and more from this device
+  <message name="IDS_SETTINGS_TURN_OFF_SYNC_DIALOG_CHECKBOX" desc="The text to display next to the checkbox of the dialog to turn off sync, asking users if they want to delete these data from the device.">
+    Remove bookmarks, history, passwords, and more from this device
   </message>
   <message name="IDS_SETTINGS_SYNC_SETTINGS_SAVED_TOAST_LABEL" desc="The notification shown to user after they saved sync settings, and sync is now started.">
     Settings saved. Sync started.
@@ -4278,9 +3752,6 @@
     Uses content on sites you visit, plus browser activity and interactions, for personalization
   </message>
   <message name="IDS_SETTINGS_ENCRYPT_WITH_SYNC_PASSPHRASE_LABEL" desc="Label for the radio button which, when selected, causes synced settings to be encrypted with a user-provided password.">
-    Encrypt synced data with your own <ph name="BEGIN_LINK">&lt;a href="$1" target=&quot;_blank&quot;&gt;<ex>&lt;a href="$1" target=&quot;_blank&quot;&gt;</ex></ph>sync passphrase<ph name="END_LINK">&lt;/a&gt;<ex>&lt;/a&gt;</ex></ph>. This doesn't include payment methods and addresses from Google Pay.
-  </message>
-  <message name="IDS_NEW_SETTINGS_ENCRYPT_WITH_SYNC_PASSPHRASE_LABEL" desc="Label for the radio button which, when selected, causes synced settings to be encrypted with a user-provided password.">
     Encrypt synced data with your own <ph name="BEGIN_LINK">&lt;a href="$1" target=&quot;_blank&quot;&gt;<ex>&lt;a href="$1" target=&quot;_blank&quot;&gt;</ex></ph>sync passphrase<ph name="END_LINK">&lt;/a&gt;<ex>&lt;/a&gt;</ex></ph>. Payment methods and addresses from Google Pay won’t be encrypted. Browsing history from Chrome won’t sync.
   </message>
   <message name="IDS_SETTINGS_PASSPHRASE_EXPLANATION_TEXT" desc="Message shown when explicit passphrase is selected.">
@@ -4343,6 +3814,32 @@
       No supported browser found
     </message>
   </if>
+
+  <!-- Page content -->
+  <message name="IDS_SETTINGS_PAGE_CONTENT_LINK_ROW_SUBLABEL_ON" desc="Sublabel of the entry point that leads to the setting that enables features that provide contextual help for currently opened pages. This label is shown when the setting is enabled.">
+    Contextual help is on. These features can send open pages to Google.
+  </message>
+  <message name="IDS_SETTINGS_PAGE_CONTENT_LINK_ROW_SUBLABEL_OFF" desc="Sublabel of the entry point that leads to the setting that enables features that provide contextual help for currently opened pages. This label is shown when the setting is disabled.">
+    Contextual help is off
+  </message>
+  <message name="IDS_SETTINGS_PAGE_CONTENT_PAGE_TITLE" desc="Title of the page of the setting that enables features that provide contextual help for currently opened pages.">
+    Contextual help in features
+  </message>
+  <message name="IDS_SETTINGS_PAGE_CONTENT_TOGGLE_LABEL" desc="Label of the setting that enables features that provide contextual help for currently opened pages.">
+    Get contextual help from some features
+  </message>
+  <message name="IDS_SETTINGS_PAGE_CONTENT_TOGGLE_SUBLABEL" desc="Sublabel of the setting that enables features that provide contextual help for currently opened pages.">
+    Some features can use the content of open pages and related recent pages to provide more useful information or suggestions
+  </message>
+  <message name="IDS_SETTINGS_PAGE_CONTENT_WHEN_ON_BULLET_ONE" desc="Bullet point in the 'When on' column of the description of the setting that enables features that provide contextual help for currently opened pages.">
+    You'll see more useful information or suggestions in features like the Google Search side panel
+  </message>
+  <message name="IDS_SETTINGS_PAGE_CONTENT_THINGS_TO_CONSIDER_BULLET_ONE" desc="Bullet point in the 'Things to consider' column of the description of the setting that enables features that provide contextual help for currently opened pages.">
+    When you use some features, they can send parts of open pages, related recent pages, and their URLs to Google
+  </message>
+  <message name="IDS_SETTINGS_PAGE_CONTENT_THINGS_TO_CONSIDER_BULLET_THREE" desc="Bullet point in the 'Things to consider' column of the description of the setting that enables features that provide contextual help for currently opened pages.">
+    This setting doesn't change the availability of Google Translate or Lens
+  </message>
 
   <!-- Web Content -->
   <message name="IDS_SETTINGS_PAGE_ZOOM_LABEL" desc="Label for the page zoom dropdown menu in settings.">
@@ -4407,8 +3904,8 @@
     </message>
   </if>
   <if expr="not is_chromeos">
-    <message name="IDS_SETTINGS_SYSTEM_HARDWARE_ACCELERATION_LABEL" desc="Label for the checkbox that forces Chrome to render via hardware acceleration (GPU) when available.">
-      Use hardware acceleration when available
+    <message name="IDS_SETTINGS_SYSTEM_HARDWARE_ACCELERATION_LABEL" desc="Label for the checkbox that forces Chrome to render via graphics acceleration (GPU) when available.">
+      Use graphics acceleration when available
     </message>
     <message name="IDS_SETTINGS_SYSTEM_PROXY_SETTINGS_LABEL" desc="Label for the control that opens the system network proxy settings. These settings apply to the entire computer.">
       Open your computer's proxy settings
@@ -4730,23 +4227,181 @@
   </message>
 
   <!-- Safety Hub -->
-  <!-- TODO(crbug/1443466): Change all strings to translatable once it's final. -->
   <message name="IDS_SETTINGS_SAFETY_HUB" desc="Name of a page in settings that gives users an overview over their safety status and where users can take action to improve their safety.">
-    Safety Hub
+    Safety Check
   </message>
-  <message name="IDS_SETTINGS_SAFETY_HUB_ENTRY_POINT_BUTTON" desc="This is the label of a button that takes users to the Safety Hub page in Chrome settings. This button appears in a section in privacy settings next to a text that gives more details on Safety Hub.">
-    Go to Safety Hub
+  <message name="IDS_SETTINGS_SAFETY_HUB_ENTRY_POINT_BUTTON" desc="This is the label of a button that takes users to the Safety Check page in Chrome settings. This button appears in a section in privacy settings next to a text that gives more details on Safety Check.">
+    Go to Safety Check
   </message>
   <message name="IDS_SETTINGS_SAFETY_HUB_PAGE_CARD_SECTION_HEADER" desc="The title of the first section in the Safety Hub page. The 'Safety at a glance' section gives an overview about the current state of passwords, browser version and safe browsing setting of the browser. ">
     Safety at a glance
   </message>
-  <message name="IDS_SETTINGS_SAFETY_HUB_PAGE_MODULE_SECTION_HEADER" desc="The title of the second section in the Safety Hub page. The 'Safety recommendation' section shows actionable modules about permissions and extensions based on the current state of the browser.">
-    Safety recommendation
+  <message name="IDS_SETTINGS_SAFETY_HUB_PAGE_MODULE_SECTION_HEADER" desc="The title of the second section in the Safety Check page. The 'Safety recommendations' section shows actionable modules about permissions and extensions based on the current state of the browser.">
+    Safety recommendations
   </message>
-  <message name="IDS_SETTINGS_SAFETY_HUB_PAGE_USER_EDU_SECTION_HEADER" desc="The title of the last section in the Safety Hub page. The 'Safety tips' section shows three safety related features to provide user education on how Chrome keeps the user safe.">
-    Safety tips
-  </message>
-  <message name="IDS_SETTINGS_SAFETY_HUB_EMPTY_STATE_MODULE_HEADER" translateable="false" desc="The header of the 'Empty State Module' in the Safety Hub page. The 'Empty State Module' is visible if there is no safety recommendation.">
+  <message name="IDS_SETTINGS_SAFETY_HUB_EMPTY_STATE_MODULE_HEADER" desc="The header of the 'Empty State Module' in the Safety Hub page. The 'Empty State Module' is visible if there is no safety recommendation.">
     Nothing else needs your attention right now
+  </message>
+  <message name="IDS_SETTINGS_SAFETY_HUB_PASSWORD_CHECK_SUBHEADER_RECENTLY" desc="Subtitle of the passwords card in the Safety Hub page which explains how recently passwords were checked for issues. The passwords card contains information about password issues which are detected automatically. This text is shown below a header which explains there are no issues and indicates that passwords were checked for issues very recently.">
+    Checked just now
+  </message>
+  <message name="IDS_SETTINGS_SAFETY_HUB_PASSWORD_CHECK_SUBHEADER_SOME_TIME_AGO" desc="Subtitle of the passwords card in the Safety Hub page which explains how recently passwords were checked for issues. The passwords card contains information about password issues which are detected automatically. This text is shown below a header which explains there are no issues and indicates that passwords were checked for issues some time ago.">
+    Checked <ph name="NUM_DAYS_HOURS_MINUTES">$1<ex>2 days</ex></ph> ago
+  </message>
+  <message name="IDS_SETTINGS_SAFETY_HUB_PASSWORD_CHECK_HEADER_NO_WEAK_OR_REUSED" desc="SafetyHub has checked the user's passwords for issues and has determined the passwords are not weak or reused, which is positive. However we cannot state that there are no issues with the passwords, because one of Chrome's password checks (whether a password is known to be leaked) was not performed. The string should explicitly specify weak and reused passwords. These are Chrome Password Manager terms and should be translated the same way. This text is shown as the header of the passwords card in SafetyHub which is in a neutral state. The subheader below this explains why not all of Chrome's protections were applied here and a call to action on how to do that (e.g. 'To check for compromised passwords, sign in').">
+    No weak or reused passwords
+  </message>
+  <message name="IDS_SETTINGS_SAFETY_HUB_PASSWORD_CHECK_SUBHEADER_SIGN_IN" desc="This text conveys to the user that they currently do not have the full protection for their passwords and informs the user that additional protection (in form of Chrome checking whether saved passwords are compromised) is available by signing into Chrome. Compromised passwords are concepts in Chrome Password Manager, this should be translated the same way. It is shown only to signed-out users. This text appears in the subtitle of the passwords card on the Safety Hub page, below a title that lists already known password issues. The title above this may read e.g. '2 weak passwords', or 'No weak or reused passwords').">
+    To check for compromised passwords, sign in to your Google Account
+  </message>
+  <message name="IDS_SETTINGS_SAFETY_HUB_PASSWORD_CHECK_SUBHEADER_GO_TO_PASSWORD_MANAGER" desc="This text conveys to the user that they currently do not have the full protection for their passwords and informs the user that additional protection (in form of Chrome checking whether saved passwords are compromised) is available by clicking on the card containing this text, which will redirect to Google Password Manager. Compromised passwords are a concept in Chrome password manager, this should be translated the same way. This text appears in the subtitle of the passwords card one the Safety Hub page, below the title 'No weak or reused passwords'.">
+    To check for compromised passwords, go to Google Password Manager
+  </message>
+  <message name="IDS_SETTINGS_SAFETY_HUB_PASSWORD_CHECK_HEADER_NO_PASSWORDS" desc="This text is the header of the passwords card of SafetyHub when the user has no passwords saved in Chrome. Below this text there is a subheader that give the user more details: 'Chrome can check your passwords when you save them' or 'Your organization turned off saving passwords'. The card this text is part of is in a neutral state.">
+    No saved passwords
+  </message>
+  <message name="IDS_SETTINGS_SAFETY_HUB_PASSWORD_CHECK_SUBHEADER_NO_PASSWORDS_POLICY" desc="Subtitle of the passwords card in SafetyHub when there are no saved passwords and saving of passwords is disabled through enterprise policy. This text is shown below the header 'No saved passwords'. It explains that the SafetyHub features for passwords are not available since the user's organization has a policy in place that prevents the user from saving passwords in Chrome.">
+    Your organization turned off saving passwords
+  </message>
+  <message name="IDS_SETTINGS_SAFETY_HUB_PASSWORD_NAVIGATION_ARIA_LABEL" desc="Safety Check settings page (chrome://settings/safetyCheck) gives users an overview over their safety status. Password card in this page shows if there is any insecure password stored. This string is for the accesibility label for the card to call out where to navigation will happen (chrome://password-manager/passwords) if the card is clicked.">
+    Go to Google Password Manager
+  </message>
+  <message name="IDS_SETTINGS_SAFETY_HUB_SB_ON_ENHANCED_HEADER" desc="Safety Hub settings page (chrome://settings/safetyHub) gives users an overview over their safety status. Safe browsing card in this page shows the current state of Safe browsing setting (chrome://settings/security). This string is the headline of the Safe Browsing card when the current state is Enhanced protection.">
+    Enhanced Safe Browsing is on
+  </message>
+  <message name="IDS_SETTINGS_SAFETY_HUB_SB_ON_ENHANCED_SUBHEADER" desc="Safety Hub settings page (chrome://settings/safetyHub) gives users an overview over their safety status. Safe browsing card in this page shows the current state of Safe browsing setting (chrome://settings/security). This string is the body text of the Safe Browsing card when the current state is Enhanced protection.">
+    You have Chrome's strongest security
+  </message>
+  <message name="IDS_SETTINGS_SAFETY_HUB_SB_ON_STANDARD_HEADER" desc="Safety Hub settings page (chrome://settings/safetyHub) gives users an overview over their safety status. Safe browsing card in this page shows the current state of Safe browsing setting (chrome://settings/security). This string is the headline of the Safe Browsing card when the current state is Standard protection.">
+    Safe Browsing is on
+  </message>
+  <message name="IDS_SETTINGS_SAFETY_HUB_SB_ON_STANDARD_SUBHEADER" desc="Safety Hub settings page (chrome://settings/safetyHub) gives users an overview over their safety status. Safe browsing card in this page shows the current state of Safe browsing setting (chrome://settings/security). This string is the body text of the Safe Browsing card when the current state is Standard protection.">
+    You're getting standard protection
+  </message>
+  <message name="IDS_SETTINGS_SAFETY_HUB_SB_OFF_HEADER" desc="Safety Hub settings page(chrome://settings/safetyHub) gives users an overview over their safety status. Safe browsing card in this page shows the current state of Safe browsing setting(chrome://settings/security). This string is the headline of the Safe Browsing card when the current state is No protection.">
+    Safe Browsing is off
+  </message>
+  <message name="IDS_SETTINGS_SAFETY_HUB_SB_OFF_MANAGED_SUBHEADER" desc="Safety Hub settings page (chrome://settings/safetyHub) gives users an overview over their safety status. Safe browsing card in this page shows the current state of Safe browsing setting (chrome://settings/security). This string is the body text of the Safe Browsing card when the current state is No protection because the user's organization (e.g. employer, university, etc.) has turned it off.">
+    Your organization turned off Safe Browsing
+  </message>
+  <message name="IDS_SETTINGS_SAFETY_HUB_SB_OFF_EXTENSION_SUBHEADER" desc="Safety Hub settings page (chrome://settings/safetyHub) gives users an overview over their safety status. Safe browsing card in this page shows the current state of Safe browsing setting (chrome://settings/security). This string is the body text of the Safe Browsing card when the current state is No protection because one of the extensions installed on the user's browser has turned it off.">
+    An extension turned off Safe Browsing
+  </message>
+  <message name="IDS_SETTINGS_SAFETY_HUB_SB_OFF_USER_SUBHEADER" desc="Safety Hub settings page (chrome://settings/safetyHub) gives users an overview over their safety status. Safe browsing card in this page shows the current state of Safe browsing setting (chrome://settings/security). This string is the body text of the Safe Browsing card when the current state is No protection because the user has turned it off.">
+    Turn on Safe Browsing to get protection against dangerous sites
+  </message>
+  <message name="IDS_SETTINGS_SAFETY_HUB_SB_NAVIGATION_ARIA_LABEL" desc="Safety Check settings page (chrome://settings/safetyCheck) gives users an overview over their safety status. Safe browsing card in this page shows the current state of Safe browsing setting (chrome://settings/security). This string is for the accesibility label for the card to call out where to navigation will happen (chrome://settings/security) if the card is clicked.">
+    Go to Safe Browsing settings
+  </message>
+  <message name="IDS_SETTINGS_SAFETY_HUB_GO_SITE_SETTINGS_ITEM" desc="Safety Hub settings page (chrome://settings/safetyHub) gives users an overview over their safety status. 'Unused Site Permissions' in this page shows unused websites for which permissions have been revoked. This label is for the action menu item that navigates users to the site settings page.">
+    Go to site settings
+  </message>
+  <message name="IDS_SETTINGS_SAFETY_HUB_GO_NOTIFICATION_SETTINGS_ITEM" desc="Safety Hub settings page (chrome://settings/safetyHub) gives users an overview over their safety status. 'Review Notification Permissions' in this page shows the websites that send a lot of notifications. This label is for the action menu item that navigates users to notification the settings page.">
+    Go to notification settings
+  </message>
+  <message name="IDS_SETTINGS_SAFETY_HUB_USER_EDU_INCOGNITO_SUBHEADER" desc="The subheader of the second item in the 'User Education Module' in the Safety Hub page. This item explains Incognito mode.">
+    Incognito mode keeps <ph name="BEGIN_LINK">&lt;a href="$1" target="_blank"&gt;</ph>your browsing private from others<ph name="END_LINK">&lt;/a&gt;</ph> who use your device
+  </message>
+  <message name="IDS_SETTINGS_SAFETY_HUB_USER_EDU_SAFE_BROWSING_HEADER" desc="The header of the second item in the 'User Education Module' in the Safety Hub page. This item explains Safe Browsing.">
+    Safe Browsing
+  </message>
+  <if expr="not is_chromeos">
+    <message name="IDS_SETTINGS_SAFETY_HUB_VERSION_CARD_SUBHEADER_RESTART" desc="Safety Hub settings page (chrome://settings/safetyHub) gives users an overview over their safety status. The version card, which this text is a part of, informs the user whether their Chrome is up to date. This text is shown when Chrome is not up to date but there is an update available and the user needs to restart their browser to finish the update. Shown below the title 'Chrome is out of date'.">
+      Relaunch to finish update. Your tabs will reopen.
+    </message>
+  </if>
+  <if expr="is_chromeos">
+    <message name="IDS_SETTINGS_SAFETY_HUB_VERSION_CARD_SUBHEADER_RESTART" desc="Safety Hub settings page (chrome://settings/safetyHub) gives users an overview over their safety status. The version card, which this text is a part of, informs the user whether their Chrome is up to date. This text is shown when Chrome is not up to date but there is an update available and the user needs to restart their browser to finish the update. Shown below the title 'Chrome is out of date'.">
+      Restart your device to finish updating
+    </message>
+  </if>
+  <message name="IDS_SETTINGS_SAFETY_HUB_NOTIFICATION_PERMISSIONS_PRIMARY_LABEL" desc="'Review Notification Permissions' shows the websites that send a lot of notifications. This label is the header of the module in the Safety Check page (chrome://settings/SafetyCheck). The number represents the number of notification permissions to be reviewed.">
+    {NUM_SITES, plural,
+     =1 {Review 1 site that recently sent a lot of notifications}
+     other {Review {NUM_SITES} sites that recently sent a lot of notifications}}
+  </message>
+  <message name="IDS_SETTINGS_SAFETY_HUB_NOTIFICATION_PERMISSIONS_SECONDARY_LABEL" desc="'Review Notification Permissions' shows the websites that send a lot of notifications. This label is the header of the module in the Safety Check page (chrome://settings/SafetyCheck). The number represents the number of notification permissions to be reviewed.">
+    {NUM_SITES, plural,
+     =1 {You can stop this site from sending future notifications.}
+     other {You can stop these sites from sending future notifications.}}
+  </message>
+  <message name="IDS_SETTINGS_SAFETY_HUB_UNUSED_SITE_PERMISSIONS_MENU_NOTIFICATION" desc="The unused site permissions module of Safety Hub revokes permissions of sites that the user hasn't visited in a while. This label is for the notification in Chrome's three-dot menu indicating for how many sites the permission was revoked.">
+    {NUM_SITES, plural,
+      =1 {Removed permissions for 1 unused site}
+      other {Removed permissions for {NUM_SITES} unused sites}}
+  </message>
+  <message name="IDS_SETTINGS_SAFETY_HUB_REVIEW_NOTIFICATION_PERMISSIONS_MENU_NOTIFICATION" desc="The review notification permissions module of Safety Hub marks sites that send a lot of notifications for review by the user. This label is for the notification in Chrome's three-dot menu indicating how many sites should be reviewed.">
+    {NUM_SITES, plural,
+      =1 {Found 1 site with lots of notifications}
+      other {Found {NUM_SITES} sites with lots of notifications}}
+  </message>
+  <message name="IDS_SETTINGS_SAFETY_HUB_COMPROMISED_PASSWORDS_MENU_NOTIFICATION" desc="The password check module of Safety Hub warns users if there is any insecure credential. This label is for the notification in Chrome's three-dot menu indicating how many passwords are compromised.">
+    {NUM_SITES, plural,
+      =1 {Found 1 compromised password}
+      other {Found {NUM_SITES} compromised passwords}}
+  </message>
+  <message name="IDS_SETTINGS_SAFETY_HUB_EXTENSIONS_MENU_NOTIFICATION" desc="The extension module of Safety Hub warns users if any downloaded extension is malware or policy violated. This label is for the notification in Chrome's three-dot menu indicating how many extension are marked as unsafe.">
+    {NUM_SITES, plural,
+      =1 {Turned off 1 unsafe extension}
+      other {Turned off {NUM_SITES} unsafe extensions}}
+  </message>
+  <message name="IDS_SETTINGS_SAFETY_HUB_SAFE_BROWSING_MENU_NOTIFICATION" desc="When Safe Browsing is disabled, the proactive Safety Hub feature encourages users to turn on the feature. This label is for the notification in Chrome's three-dot menu.">
+    Safe Browsing is off
+  </message>
+  <message name="IDS_SETTINGS_SAFETY_HUB_PASSWORDS_MODULE_NAME" desc="The entry point shown on the screenshot leads to Safety Check settings page (chrome://settings/safetyCheck) when at least on of the Safety Check modules have recommendations. The subheader of the entry point lists the modules with recommendations. This string is the upper case version (i.e. version that comes first in the sentence) for the name of passwords module.">
+    Passwords
+  </message>
+  <message name="IDS_SETTINGS_SAFETY_HUB_SAFE_BROWSING_MODULE_NAME" desc="The entry point shown on the screenshot leads to Safety Check settings page (chrome://settings/safetyCheck) when at least on of the Safety Check modules have recommendations. The subheader of the entry point lists the modules with recommendations. This string is the upper case version (i.e. version that comes first in the sentence) for the name of Safe Browsing module.">
+    Safe Browsing
+  </message>
+  <message name="IDS_SETTINGS_SAFETY_HUB_EXTENSIONS_MODULE_UPPERCASE_NAME" desc="The entry point shown on the screenshot leads to Safety Check settings page (chrome://settings/safetyCheck) when at least on of the Safety Check modules have recommendations. The subheader of the entry point lists the modules with recommendations. This string is the upper case version (i.e. version that comes first in the sentence) for the name of extensions module.">
+    Extensions
+  </message>
+  <message name="IDS_SETTINGS_SAFETY_HUB_EXTENSIONS_MODULE_LOWERCASE_NAME" desc="The entry point shown on the screenshot leads to Safety Check settings page (chrome://settings/safetyCheck) when at least on of the Safety Check modules have recommendations. The subheader of the entry point lists the modules with recommendations. This string is the lower case version (i.e. version that comes in the middle of the sentence) for the name of extensions module.">
+    extensions
+  </message>
+  <message name="IDS_SETTINGS_SAFETY_HUB_NOTIFICATIONS_MODULE_UPPERCASE_NAME" desc="The entry point shown on the screenshot leads to Safety Check settings page (chrome://settings/safetyCheck) when at least on of the Safety Check modules have recommendations. The subheader of the entry point lists the modules with recommendations. This string is the upper case version (i.e. version that comes first in the sentence) for the name of notifications module.">
+    Notifications
+  </message>
+  <message name="IDS_SETTINGS_SAFETY_HUB_NOTIFICATIONS_MODULE_LOWERCASE_NAME" desc="The entry point shown on the screenshot leads to Safety Check settings page (chrome://settings/safetyCheck) when at least on of the Safety Check modules have recommendations. The subheader of the entry point lists the modules with recommendations. This string is the lower case version (i.e. version that comes in the middle of the sentence) for the name of notifications module.">
+    notifications
+  </message>
+  <message name="IDS_SETTINGS_SAFETY_HUB_PERMISSIONS_MODULE_UPPERCASE_NAME" desc="The entry point shown on the screenshot leads to Safety Check settings page (chrome://settings/safetyCheck) when at least on of the Safety Check modules have recommendations. The subheader of the entry point lists the modules with recommendations. This string is the upper case version (i.e. version that comes first in the sentence) for the name of permissions module.">
+    Permissions
+  </message>
+  <message name="IDS_SETTINGS_SAFETY_HUB_PERMISSIONS_MODULE_LOWERCASE_NAME" desc="The entry point shown on the screenshot leads to Safety Check settings page (chrome://settings/safetyCheck) when at least on of the Safety Check modules have recommendations. The subheader of the entry point lists the modules with recommendations. This string is the lower case version (i.e. version that comes in the middle of the sentence) for the name of permissions module.">
+    permissions
+  </message>
+  <message name="IDS_SETTINGS_SAFETY_HUB_MODULE_NAME_SEPARATOR" desc="The entry point shown on the screenshot leads to Safety Check settings page (chrome://settings/safetyCheck) when at least on of the Safety Check modules have recommendations. The subheader of the entry point lists the modules with recommendations using a separator between them (in English it is a comma used between all items in a series). This string is the separator between the module names and is used like 'Passwords, extensions, notifications'.">
+    ,
+  </message>
+
+  <!-- Experimental settings strings -->
+  <message name="IDS_SETTINGS_AI_PAGE_TITLE" desc="Title of page holding experimental AI settings">
+    Experimental AI
+  </message>
+  <message name="IDS_SETTINGS_AI_PAGE_MAIN_LABEL" desc="Toggle primary description">
+    Try out experimental AI features
+  </message>
+  <message name="IDS_SETTINGS_AI_PAGE_MAIN_SUBLABEL" desc="Toggle secondary description">
+    These features use AI, are in early development, and won’t always get it right.
+  </message>
+  <message name="IDS_SETTINGS_AI_COMPOSE_LABEL" desc="The primary description for the 'Help me write' feature.">
+    Help me write
+  </message>
+  <message name="IDS_SETTINGS_AI_COMPOSE_SUBLABEL" desc="Secondary description explaining the 'Help me write' feature.">
+    Helps you write short-form content for things on the web, like reviews. Suggested content is based on your prompts and the content of the web page. To use this feature, right-click on a text box.
+  </message>
+  <message name="IDS_SETTINGS_EXPERIMENTAL_ADVANCED_FEATURE2_LABEL" desc="Toggle primary description">
+    Tab organizer
+  </message>
+  <message name="IDS_SETTINGS_EXPERIMENTAL_ADVANCED_FEATURE2_SUBLABEL" desc="Toggle secondary description">
+    Automatically creates tab groups based on your open tabs. To use this feature, right-click on a tab and click Organize similar tabs.
+  </message>
+  <message name="IDS_SETTINGS_EXPERIMENTAL_ADVANCED_FEATURE3_LABEL" desc="The primary description for the create themes with AI feature.">
+    Create themes with AI
+  </message>
+  <message name="IDS_SETTINGS_EXPERIMENTAL_ADVANCED_FEATURE3_SUBLABEL" desc="The secondary description for the create themes with AI feature.">
+    Creates custom themes based on the subject, mood, visual style, and color that you choose. To use this feature, open a new tab and click Customize Chrome.
   </message>
 </grit-part>

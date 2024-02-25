@@ -6,6 +6,8 @@
 #define MEDIA_MOJO_SERVICES_FUCHSIA_CDM_MANAGER_H_
 
 #include <fuchsia/media/drm/cpp/fidl.h>
+
+#include <optional>
 #include <string>
 
 #include "base/containers/flat_map.h"
@@ -17,7 +19,6 @@
 #include "base/threading/thread_checker.h"
 #include "media/base/provision_fetcher.h"
 #include "media/mojo/services/media_mojo_export.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace url {
 class Origin;
@@ -43,7 +44,7 @@ class MEDIA_MOJO_EXPORT FuchsiaCdmManager {
   FuchsiaCdmManager(
       CreateKeySystemCallbackMap create_key_system_callbacks_by_name,
       base::FilePath cdm_data_path,
-      absl::optional<uint64_t> cdm_data_quota_bytes);
+      std::optional<uint64_t> cdm_data_quota_bytes);
 
   ~FuchsiaCdmManager();
 
@@ -78,13 +79,13 @@ class MEDIA_MOJO_EXPORT FuchsiaCdmManager {
       fidl::InterfaceRequest<fuchsia::media::drm::ContentDecryptionModule>
           request,
       base::FilePath storage_path,
-      absl::optional<base::File::Error> storage_creation_error);
+      std::optional<base::File::Error> storage_creation_error);
   void OnKeySystemClientError(const std::string& key_system_name);
 
   // A map of callbacks to create KeySystem channels indexed by their EME name.
   const CreateKeySystemCallbackMap create_key_system_callbacks_by_name_;
   const base::FilePath cdm_data_path_;
-  const absl::optional<uint64_t> cdm_data_quota_bytes_;
+  const std::optional<uint64_t> cdm_data_quota_bytes_;
 
   // Used for operations on the CDM data directory.
   const scoped_refptr<base::SequencedTaskRunner> storage_task_runner_;

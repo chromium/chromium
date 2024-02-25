@@ -6,4 +6,17 @@
 
 @implementation TabGridToolbarsConfiguration
 
++ (TabGridToolbarsConfiguration*)disabledConfigurationForPage:
+    (TabGridPage)page {
+  return [[self alloc] initWithPage:page];
+}
+
+- (instancetype)initWithPage:(TabGridPage)page {
+  self = [super init];
+  if (self) {
+    _page = page;
+  }
+  return self;
+}
+
 @end

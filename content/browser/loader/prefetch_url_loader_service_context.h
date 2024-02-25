@@ -31,8 +31,7 @@ class CONTENT_EXPORT PrefetchURLLoaderServiceContext final
   PrefetchURLLoaderServiceContext(
       BrowserContext* browser_context,
       mojo::ReceiverSet<network::mojom::URLLoaderFactory,
-                        std::unique_ptr<BindContext>>&
-          loader_factory_receivers);
+                        scoped_refptr<BindContext>>& loader_factory_receivers);
   ~PrefetchURLLoaderServiceContext() override;
 
   PrefetchURLLoaderServiceContext(const PrefetchURLLoaderServiceContext&) =
@@ -83,15 +82,14 @@ class CONTENT_EXPORT PrefetchURLLoaderServiceContext final
   CreateURLLoaderThrottles(const network::ResourceRequest& request,
                            int frame_tree_node_id);
 
-  const std::unique_ptr<BindContext>& current_bind_context() const {
-    return loader_factory_receivers_->current_context();
+  BindContext* current_bind_context() const {
+    return loader_factory_receivers_->current_context().get();
   }
 
-  raw_ptr<BrowserContext, AcrossTasksDanglingUntriaged> browser_context_ =
-      nullptr;
+  raw_ptr<BrowserContext> browser_context_ = nullptr;
 
   raw_ref<mojo::ReceiverSet<network::mojom::URLLoaderFactory,
-                            std::unique_ptr<BindContext>>>
+                            scoped_refptr<BindContext>>>
       loader_factory_receivers_;
 
   mojo::ReceiverSet<network::mojom::URLLoader,

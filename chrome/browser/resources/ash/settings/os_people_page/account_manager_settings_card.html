@@ -1,0 +1,132 @@
+<style include="settings-shared">
+  .account-manager-description {
+    color: var(--cr-secondary-text-color);
+    display: block;
+    max-width: 560px;
+    padding-top: 8px;
+    padding-bottom: 8px;
+  }
+
+  .account-manager-description.full-width {
+    max-width: none;
+  }
+
+  .profile-icon {
+    --profile-icon-size: 40px;
+    background: center / cover no-repeat;
+    border-radius: 50%;
+    flex-shrink: 0;
+    height: var(--profile-icon-size);
+    width: var(--profile-icon-size);
+  }
+
+  .profile-icon.device-account-icon {
+    --profile-icon-size: 60px;
+    margin-top: 8px;
+  }
+
+  .device-account-container {
+    align-items: center;
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 16px;
+  }
+
+  .device-account-container .primary {
+    font-weight: 500;
+    margin-top: 8px;
+  }
+
+  .managed-badge {
+    --badge-offset: calc(100% - var(--badge-size)
+                         - 2 * var(--padding-size));
+    --badge-size: 10px;
+    --padding-size: 4px;
+    background: var(--cros-icon-color-prominent);
+    border-radius: 50%;
+    height: var(--badge-size);
+    left: var(--badge-offset);
+    padding: var(--padding-size);
+    position: relative;
+    top: var(--badge-offset);
+    width: var(--badge-size);
+  }
+
+  .managed-badge > iron-icon {
+    --iron-icon-fill-color: var(--cros-bg-color-elevation-1);
+    --iron-icon-height: var(--badge-size);
+    --iron-icon-width: var(--badge-size);
+    display: block;
+  }
+
+  .managed-message {
+    color: var(--cr-secondary-text-color);
+    justify-content: center;
+    margin-top: 16px;
+  }
+
+  .managed-message > iron-icon,
+  .managed-message > cr-icon-button {
+    margin-inline-end: 5px;
+  }
+
+  :host-context([dir='rtl']) .managed-badge {
+    left: auto;
+    right: var(--badge-offset);
+  }
+
+  :host-context(body.revamp-wayfinding-enabled) #managedUserIcon {
+    --iron-icon-fill-color: var(--cros-sys-secondary);
+  }
+</style>
+
+<settings-card header-text="$i18n{accountManagerPageTitle}">
+  <div class="settings-box first account-manager-description full-width">
+    <localized-link
+        localized-string="[[getAccountManagerDescription_()]]"
+        link-url="$i18nRaw{accountManagerLearnMoreUrl}">
+    </localized-link>
+  </div>
+
+   <!-- Managed account badge and message -->
+   <template is="dom-if" if="[[isDeviceAccountManaged_]]">
+    <div class="settings-box managed-message">
+      <template is="dom-if" if="[[!isChildUser_]]">
+        <iron-icon id="managedUserIcon" icon="[[managedByIcon_]]"></iron-icon>
+      </template>
+      <template is="dom-if" if="[[isChildUser_]]">
+        <cr-icon-button iron-icon="cr20:kite"
+            on-click="onManagedIconClick_">
+        </cr-icon-button>
+      </template>
+      <localized-link
+          localized-string=
+            "[[getManagementDescription_(isChildUser_, deviceAccount)]]"
+          link-url="$i18nRaw{accountManagerChromeUIManagementURL}">
+      </localized-link>
+    </div>
+  </template>
+
+  <!-- Primary account icon, name and email -->
+  <div class="device-account-container hr"
+      aria-labelledby="deviceAccountFullName"
+      aria-describedby="deviceAccountEmail">
+    <div class="profile-icon device-account-icon"
+        aria-hidden="true"
+        style="background-image: [[getIconImageSet_(deviceAccount)]]">
+      <template is="dom-if"
+          if="[[shouldShowManagedBadge_(isDeviceAccountManaged_,
+                isChildUser_)]]">
+        <div class="managed-badge">
+          <iron-icon icon="cr:work"></iron-icon>
+        </div>
+      </template>
+    </div>
+    <span id="deviceAccountFullName" class="primary" aria-hidden="true">
+      [[deviceAccount.fullName]]
+    </span>
+    <span id="deviceAccountEmail" class="secondary" aria-hidden="true">
+      [[deviceAccount.email]]
+    </span>
+  </div>
+</settings-card>

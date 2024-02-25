@@ -9,6 +9,8 @@
 #include "base/containers/fixed_flat_map.h"
 #include "base/logging.h"
 #include "base/notreached.h"
+#include "components/policy/core/common/policy_map.h"
+#include "components/policy/policy_constants.h"
 #include "components/user_manager/user.h"
 #include "google_apis/gaia/gaia_auth_util.h"
 
@@ -20,7 +22,7 @@ namespace {
 // TODO(crbug.com/1448575): Remove the side_by_side and lacros_primary values
 // from the policy.
 constexpr auto kLacrosAvailabilityMap =
-    base::MakeFixedFlatMap<base::StringPiece, LacrosAvailability>({
+    base::MakeFixedFlatMap<std::string_view, LacrosAvailability>({
         {"user_choice", LacrosAvailability::kUserChoice},
         {"lacros_disallowed", LacrosAvailability::kLacrosDisallowed},
         {"side_by_side", LacrosAvailability::kLacrosDisallowed},
@@ -34,18 +36,18 @@ BASE_FEATURE(kLacrosGooglePolicyRollout,
              "LacrosGooglePolicyRollout",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-absl::optional<LacrosAvailability> ParseLacrosAvailability(
-    base::StringPiece value) {
+std::optional<LacrosAvailability> ParseLacrosAvailability(
+    std::string_view value) {
   auto* it = kLacrosAvailabilityMap.find(value);
   if (it != kLacrosAvailabilityMap.end()) {
     return it->second;
   }
 
   LOG(ERROR) << "Unknown LacrosAvailability policy value is passed: " << value;
-  return absl::nullopt;
+  return std::nullopt;
 }
 
-base::StringPiece GetLacrosAvailabilityPolicyName(LacrosAvailability value) {
+std::string_view GetLacrosAvailabilityPolicyName(LacrosAvailability value) {
   for (const auto& entry : kLacrosAvailabilityMap) {
     if (entry.second == value) {
       return entry.first;
@@ -53,7 +55,7 @@ base::StringPiece GetLacrosAvailabilityPolicyName(LacrosAvailability value) {
   }
 
   NOTREACHED();
-  return base::StringPiece();
+  return std::string_view();
 }
 
 bool IsGoogleInternal(const user_manager::User* user) {
@@ -61,13 +63,15 @@ bool IsGoogleInternal(const user_manager::User* user) {
     return false;
   }
 
-  return gaia::IsGoogleInternalAccountEmail(
-      user->GetAccountId().GetUserEmail());
+  const std::string_view email = user->GetAccountId().GetUserEmail();
+  return gaia::IsGoogleInternalAccountEmail(email) ||
+         gaia::ExtractDomainName(gaia::SanitizeEmail(email)) ==
+             "managedchrome.com";
 }
 
 LacrosAvailability DetermineLacrosAvailabilityFromPolicyValue(
     const user_manager::User* user,
-    base::StringPiece policy_value) {
+    std::string_view policy_value) {
   // Users can set this switch in chrome://flags to disable the effect of the
   // lacros-availability policy. This should only be allowed for Googlers.
   base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
@@ -93,6 +97,14 @@ LacrosAvailability DetermineLacrosAvailabilityFromPolicyValue(
   }
 
   return result.value();
+}
+
+LacrosAvailability GetLacrosAvailability(const user_manager::User* user,
+                                         const policy::PolicyMap& policy_map) {
+  const base::Value* value = policy_map.GetValue(
+      policy::key::kLacrosAvailability, base::Value::Type::STRING);
+  return DetermineLacrosAvailabilityFromPolicyValue(
+      user, value ? value->GetString() : std::string_view());
 }
 
 }  // namespace ash::standalone_browser

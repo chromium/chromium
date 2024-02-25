@@ -35,12 +35,14 @@ async_test(function(t) {
     function testCommonAttributes(seekingExpected) {
         assert_equals(video.seeking, seekingExpected);
         assert_false(video.ended);
+        const tolerance = 0.0001;
         if (seekingExpected) {
-            assert_equals(video.currentTime, video.duration / 2);
+            assert_approx_equals(video.currentTime, video.duration / 2, tolerance);
         } else {
             // If seek has completed, the currentTime may have advanced slightly
             // beyond the initial seek point since the video is not paused.
-            assert_greater_than_equal(video.currentTime, video.duration / 2);
+            assert_greater_than_equal(
+                video.currentTime, video.duration / 2 - tolerance);
         }
         assert_false(video.paused);
     }

@@ -49,7 +49,17 @@ const char kResponseWithNoCache[] =
 
 }  // namespace
 
-IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
+// TODO(crbug.com/1491942): This fails with the field trial testing config.
+class BackForwardCacheBrowserTestNoTestingConfig
+    : public BackForwardCacheBrowserTest {
+ public:
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    BackForwardCacheBrowserTest::SetUpCommandLine(command_line);
+    command_line->AppendSwitch("disable-field-trial-config");
+  }
+};
+
+IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTestNoTestingConfig,
                        MainFrameWithNoStoreNotCached) {
   net::test_server::ControllableHttpResponse response(embedded_test_server(),
                                                       "/main_document");
@@ -72,8 +82,8 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
   delete_observer_rfh_a.WaitUntilDeleted();
 }
 
-// Disabled for being flaky. See crbug.com/1116190.
-IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest, SubframeWithNoStoreCached) {
+IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTestNoTestingConfig,
+                       SubframeWithNoStoreCached) {
   // iframe will try to load title1.html.
   net::test_server::ControllableHttpResponse response(embedded_test_server(),
                                                       "/title1.html");
@@ -109,7 +119,7 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest, SubframeWithNoStoreCached) {
 #else
 #define MAYBE_CCNSAndWebSocketBothRecorded CCNSAndWebSocketBothRecorded
 #endif
-IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
+IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTestNoTestingConfig,
                        MAYBE_CCNSAndWebSocketBothRecorded) {
   net::SpawnedTestServer ws_server(net::SpawnedTestServer::TYPE_WS,
                                    net::GetWebSocketTestDataDirectory());
@@ -775,6 +785,12 @@ class BackForwardCacheWithJsNetworkRequestReceivingCCNSResourceBrowserTest
     }
   }
 
+  // TODO(crbug.com/1491942): This fails with the field trial testing config.
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    BackForwardCacheBrowserTest::SetUpCommandLine(command_line);
+    command_line->AppendSwitch("disable-field-trial-config");
+  }
+
  protected:
   // Make a JavaScript network request using the appropriate method.
   void SendJsNetworkRequest(const ToRenderFrameHost& execution_target,
@@ -941,22 +957,22 @@ IN_PROC_BROWSER_TEST_P(
                     {}, {}, {}, FROM_HERE);
 
   auto subframe_result = MatchesNotRestoredReasons(
-      blink::mojom::BFCacheBlocked::kYes,
       /*id=*/"", /*name=*/"", /*src=*/url_a_no_store.spec(),
+      /*reasons=*/
+      {MatchesDetailedReason("cache-control-no-store",
+                             /*source=*/std::nullopt)},
       MatchesSameOriginDetails(
           /*url=*/url_a_no_store.spec(),
-          /*reasons=*/
-          {"JsNetworkRequestReceivedCacheControlNoStoreResource",
-           "MainResourceHasCacheControlNoStore"},
           /*children=*/{}));
   EXPECT_THAT(
       current_frame_host()->NotRestoredReasonsForTesting(),
       MatchesNotRestoredReasons(
-          blink::mojom::BFCacheBlocked::kYes,
-          /*id=*/absl::nullopt, /*name=*/absl::nullopt, /*src=*/absl::nullopt,
+          /*id=*/std::nullopt, /*name=*/std::nullopt, /*src=*/std::nullopt,
+          /*reasons=*/
+          {MatchesDetailedReason("cache-control-no-store",
+                                 /*source=*/std::nullopt)},
           MatchesSameOriginDetails(
               /*url=*/url_a_no_store.spec(),
-              /*reasons=*/{"MainResourceHasCacheControlNoStore"},
               /*children=*/
               {subframe_result})));
 }
@@ -1012,7 +1028,7 @@ class CookieDisabledContentBrowserClient
       content::BrowserContext& browser_context,
       const GURL& url,
       const net::SiteForCookies& site_for_cookies,
-      const absl::optional<url::Origin>& top_frame_origin,
+      const std::optional<url::Origin>& top_frame_origin,
       const net::CookieSettingOverrides overrides) override {
     return is_cookie_enabled_;
   }

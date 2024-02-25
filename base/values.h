@@ -13,6 +13,7 @@
 #include <iosfwd>
 #include <iterator>
 #include <memory>
+#include <optional>
 #include <string>
 #include <utility>
 #include <vector>
@@ -28,7 +29,6 @@
 #include "base/strings/string_piece.h"
 #include "base/trace_event/base_tracing_forward.h"
 #include "base/value_iterators.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
 
 namespace base {
@@ -72,9 +72,9 @@ namespace base {
 // returned by value. Binary blobs, `std::string`, `Value::Dict`, `Value::List`
 // are returned by reference.
 //
-// `GetIfBool()`, `GetIfInt()`, et cetera return `absl::nullopt`/`nullptr` if
+// `GetIfBool()`, `GetIfInt()`, et cetera return `std::nullopt`/`nullptr` if
 // the `Value` does not have the correct subtype; otherwise, returns the value
-// wrapped in an `absl::optional` (for `bool`, `int`, `double`) or by pointer
+// wrapped in an `std::optional` (for `bool`, `int`, `double`) or by pointer
 // (for binary blobs, `std::string`, `Value::Dict`, `Value::List`).
 //
 // Note: both `GetDouble()` and `GetIfDouble()` still return a non-null result
@@ -109,14 +109,14 @@ namespace base {
 //       is not present.
 // - `FindBool()`, `FindInt()`, ...: Similar to `Find()`, but ensures that the
 //       `Value` also has the correct subtype. Same return semantics as
-//       `GetIfBool()`, `GetIfInt()`, et cetera, returning `absl::nullopt` or
+//       `GetIfBool()`, `GetIfInt()`, et cetera, returning `std::nullopt` or
 //       `nullptr` if the key is not present or the value has the wrong subtype.
 // - `Set()`: Associate a value with a `StringPiece` key. Accepts `Value` or any
 //       of the subtypes that `Value` can hold.
 // - `Remove()`: Remove the key from this dictionary, if present.
 // - `Extract()`: If the key is present in the dictionary, removes the key from
 //       the dictionary and transfers ownership of `Value` to the caller.
-//       Otherwise, returns `absl::nullopt`.
+//       Otherwise, returns `std::nullopt`.
 //
 // Dictionaries also support an additional set of helper methods that operate on
 // "paths": `FindByDottedPath()`, `SetByDottedPath()`, `RemoveByDottedPath()`,
@@ -246,15 +246,15 @@ class BASE_EXPORT GSL_OWNER Value {
   bool is_dict() const { return type() == Type::DICT; }
   bool is_list() const { return type() == Type::LIST; }
 
-  // Returns the stored data if the type matches, or `absl::nullopt`/`nullptr`
+  // Returns the stored data if the type matches, or `std::nullopt`/`nullptr`
   // otherwise. `bool`, `int`, and `double` are returned in a wrapped
-  // `absl::optional`; blobs, `Value::Dict`, and `Value::List` are returned by
+  // `std::optional`; blobs, `Value::Dict`, and `Value::List` are returned by
   // pointer.
-  absl::optional<bool> GetIfBool() const;
-  absl::optional<int> GetIfInt() const;
+  std::optional<bool> GetIfBool() const;
+  std::optional<int> GetIfInt() const;
   // Returns a non-null value for both `Value::Type::DOUBLE` and
   // `Value::Type::INT`, converting the latter to a double.
-  absl::optional<double> GetIfDouble() const;
+  std::optional<double> GetIfDouble() const;
   const std::string* GetIfString() const;
   std::string* GetIfString();
   const BlobStorage* GetIfBlob() const;
@@ -371,15 +371,15 @@ class BASE_EXPORT GSL_OWNER Value {
     const Value* Find(StringPiece key) const;
     Value* Find(StringPiece key);
 
-    // Similar to `Find()` above, but returns `absl::nullopt`/`nullptr` if the
+    // Similar to `Find()` above, but returns `std::nullopt`/`nullptr` if the
     // type of the entry does not match. `bool`, `int`, and `double` are
-    // returned in a wrapped `absl::optional`; blobs, `Value::Dict`, and
+    // returned in a wrapped `std::optional`; blobs, `Value::Dict`, and
     // `Value::List` are returned by pointer.
-    absl::optional<bool> FindBool(StringPiece key) const;
-    absl::optional<int> FindInt(StringPiece key) const;
+    std::optional<bool> FindBool(StringPiece key) const;
+    std::optional<int> FindInt(StringPiece key) const;
     // Returns a non-null value for both `Value::Type::DOUBLE` and
     // `Value::Type::INT`, converting the latter to a double.
-    absl::optional<double> FindDouble(StringPiece key) const;
+    std::optional<double> FindDouble(StringPiece key) const;
     const std::string* FindString(StringPiece key) const;
     std::string* FindString(StringPiece key);
     const BlobStorage* FindBlob(StringPiece key) const;
@@ -400,7 +400,7 @@ class BASE_EXPORT GSL_OWNER Value {
     Value* Set(StringPiece key, Value&& value) &;
     Value* Set(StringPiece key, bool value) &;
     template <typename T>
-    Value* Set(StringPiece, const T*) = delete;
+    Value* Set(StringPiece, const T*) & = delete;
     Value* Set(StringPiece key, int value) &;
     Value* Set(StringPiece key, double value) &;
     Value* Set(StringPiece key, StringPiece value) &;
@@ -429,23 +429,38 @@ class BASE_EXPORT GSL_OWNER Value {
     //                                 .Append(true));
     //
     // Each method returns a rvalue reference to `this`, so this is as efficient
-    // as (and less mistake-prone than) stand-alone calls to `Set`.
+    // as stand-alone calls to `Set`, while also making it harder to
+    // accidentally insert items in the wrong dictionary.
     //
     // The equivalent code without using these builder-style methods:
     //
-    // Value::Dict bad_example;
-    // bad_example.Set("key-1", "first value")
-    // bad_example.Set("key-2", 2)
-    // bad_example.Set("key-3", true)
+    // Value::Dict no_builder_example;
+    // no_builder_example.Set("key-1", "first value")
+    // no_builder_example.Set("key-2", 2)
+    // no_builder_example.Set("key-3", true)
     // Value::Dict nested_dictionary;
     // nested_dictionary.Set("nested-key-1", "value");
     // nested_dictionary.Set("nested-key-2", true);
-    // bad_example.Set("nested_dictionary", std::move(nested_dictionary));
+    // no_builder_example.Set("nested_dictionary",
+    //                        std::move(nested_dictionary));
     // Value::List nested_list;
     // nested_list.Append("nested-list-value");
     // nested_list.Append(5);
     // nested_list.Append(true);
-    // bad_example.Set("nested-list", std::move(nested_list));
+    // no_builder_example.Set("nested-list", std::move(nested_list));
+    //
+    // Sometimes `git cl format` does a less than perfect job formatting these
+    // chained `Set` calls. In these cases you can use a trailing empty comment
+    // to influence the code formatting:
+    //
+    // Value::Dict result = Value::Dict().Set(
+    //     "nested",
+    //     base::Value::Dict().Set("key", "value").Set("other key", "other"));
+    //
+    // Value::Dict result = Value::Dict().Set("nested",
+    //                                        base::Value::Dict() //
+    //                                           .Set("key", "value")
+    //                                           .Set("other key", "value"));
     //
     Dict&& Set(StringPiece key, Value&& value) &&;
     Dict&& Set(StringPiece key, bool value) &&;
@@ -467,8 +482,8 @@ class BASE_EXPORT GSL_OWNER Value {
     bool Remove(StringPiece key);
 
     // Similar to `Remove()`, but returns the value corresponding to the removed
-    // entry or `absl::nullopt` otherwise.
-    absl::optional<Value> Extract(StringPiece key);
+    // entry or `std::nullopt` otherwise.
+    std::optional<Value> Extract(StringPiece key);
 
     // Equivalent to the above methods but operating on paths instead of keys.
     // A path is shorthand syntax for referring to a key nested inside
@@ -485,11 +500,11 @@ class BASE_EXPORT GSL_OWNER Value {
     const Value* FindByDottedPath(StringPiece path) const;
     Value* FindByDottedPath(StringPiece path);
 
-    absl::optional<bool> FindBoolByDottedPath(StringPiece path) const;
-    absl::optional<int> FindIntByDottedPath(StringPiece path) const;
+    std::optional<bool> FindBoolByDottedPath(StringPiece path) const;
+    std::optional<int> FindIntByDottedPath(StringPiece path) const;
     // Returns a non-null value for both `Value::Type::DOUBLE` and
     // `Value::Type::INT`, converting the latter to a double.
-    absl::optional<double> FindDoubleByDottedPath(StringPiece path) const;
+    std::optional<double> FindDoubleByDottedPath(StringPiece path) const;
     const std::string* FindStringByDottedPath(StringPiece path) const;
     std::string* FindStringByDottedPath(StringPiece path);
     const BlobStorage* FindBlobByDottedPath(StringPiece path) const;
@@ -575,7 +590,7 @@ class BASE_EXPORT GSL_OWNER Value {
 
     bool RemoveByDottedPath(StringPiece path);
 
-    absl::optional<Value> ExtractByDottedPath(StringPiece path);
+    std::optional<Value> ExtractByDottedPath(StringPiece path);
 
     // Estimates dynamic memory usage. Requires tracing support
     // (enable_base_tracing gn flag), otherwise always returns 0. See
@@ -704,7 +719,7 @@ class BASE_EXPORT GSL_OWNER Value {
     void Append(Value&& value) &;
     void Append(bool value) &;
     template <typename T>
-    void Append(const T*) = delete;
+    void Append(const T*) & = delete;
     void Append(int value) &;
     void Append(double value) &;
     void Append(StringPiece value) &;
@@ -719,20 +734,19 @@ class BASE_EXPORT GSL_OWNER Value {
     // Rvalue overrides of the `Append` methods, which allow you to construct
     // a `Value::List` builder-style:
     //
-    // Value::List result = Value::List()
-    //     .Append("first value")
-    //     .Append(2)
-    //     .Append(true);
+    // Value::List result =
+    //   Value::List().Append("first value").Append(2).Append(true);
     //
     // Each method returns a rvalue reference to `this`, so this is as efficient
-    // as (and less mistake-prone than) stand-alone calls to `Append`.
+    // as stand-alone calls to `Append`, while at the same time making it harder
+    // to accidentally append to the wrong list.
     //
     // The equivalent code without using these builder-style methods:
     //
-    // Value::List bad_example;
-    // bad_example.Append("first value");
-    // bad_example.Append(2);
-    // bad_example.Append(true);
+    // Value::List no_builder_example;
+    // no_builder_example.Append("first value");
+    // no_builder_example.Append(2);
+    // no_builder_example.Append(true);
     //
     List&& Append(Value&& value) &&;
     List&& Append(bool value) &&;

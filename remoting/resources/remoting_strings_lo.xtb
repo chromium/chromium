@@ -4,7 +4,6 @@
 <translation id="1002108253973310084">ກວດພົບລຸ້ນໂປ​ຣ​ໂຕ​ໂຄ​ລທີ່ບໍ່ເຂົ້າກັນໄດ້ແລ້ວ. ກະລຸນາເບິ່ງໃຫ້ແນ່ໃຈວ່າ ທ່ານມີ​ຊອບ​ແວຣລຸ້ນຫຼ້າສຸດຕິດ​ຕັ້ງຢູ່ໃນຄອມພິວເຕີທັງສອງແລ້ວ ແລະລອງໃໝ່ອີກ.</translation>
 <translation id="1008557486741366299">ບໍ່ແມ່ນດຽວນີ້</translation>
 <translation id="1201402288615127009">ຕໍ່ໄປ</translation>
-<translation id="1296511125400541222">ລິຂະສິດ 2023 Chromium Authors. ສະຫງວນສິດທັງໝົດ.</translation>
 <translation id="1297009705180977556">ເກີດຜິດພາດໃນການເຊື່ອມຕໍ່ກັບ <ph name="HOSTNAME" /></translation>
 <translation id="1450760146488584666">ບໍ່​ມີ​ວັດ​ຖຸ​ທີ່ຮ້ອງ​ຂໍ​ເອົາ.</translation>
 <translation id="1480046233931937785">ເຄ​ຣ​ດິດ</translation>
@@ -89,7 +88,6 @@
 <translation id="4808503597364150972">ກະ​ລຸ​ນາ​ປ້ອນ PIN ຂອງ​ທ່ານ​ສໍາ​ລັບ <ph name="HOSTNAME" /> .</translation>
 <translation id="4812684235631257312">ແມ່ຂ່າຍ</translation>
 <translation id="4867841927763172006">ສົ່ງ PrtScn</translation>
-<translation id="4960795469833295568">ລິຂະສິດ 2023 Google LLC. ສະຫງວນສິດທັງໝົດ.</translation>
 <translation id="4974476491460646149">ປິດການເຊື່ອມຕໍ່ສຳລັບ <ph name="HOSTNAME" /> ແລ້ວ</translation>
 <translation id="4985296110227979402">ທ່ານຈະເປັນຕ້ອງຕັ້ງຄ່າຄອມພິວເຕີຂອງທ່ານສຳລັບການເຂົ້າເຖິງຈາກໄລຍະໄກກ່ອນ</translation>
 <translation id="4987330545941822761">Chrome Remote Desktop ບໍ່ສາມາດກຳນົດໃຫ້ໂປຣແກຣມທ່ອງເວັບເປີດ URL ໃນເຄື່ອງໄດ້. ກະລຸນາເລືອກມັນຈາກລາຍຊື່ທາງລຸ່ມ.</translation>
@@ -155,6 +153,7 @@ Desktop</translation>
 <translation id="7693372326588366043">ຣີເຟຣຊລາຍຊື່ແມ່ຂ່າຍ</translation>
 <translation id="7714222945760997814">ລາຍງານສິ່ງນີ້</translation>
 <translation id="7868137160098754906">ກະ​ລຸ​ນາ​ໃສ່ PIN ຂອງ​ທ່ານ​ສໍາ​ລັບ​ຄອມ​ພິວ​ເຕີທາງ​ໄກ.</translation>
+<translation id="7881455334687220899">ລິຂະສິດ 2024 Chromium Authors. ສະຫງວນສິດທັງໝົດ.</translation>
 <translation id="7895403300744144251">ນະໂຍບາຍຄວາມປອດໄພໃນຄອມພິວເຕີທາງໄກບໍ່ອະນຸຍາດການເຊື່ອມຕໍ່ຈາກບັນຊີຂອງທ່ານ.</translation>
 <translation id="7936528439960309876">ຄັດຕິດໃສ່ເບື້ອງຂວາ</translation>
 <translation id="7970576581263377361">ການຮັບຮອງຄວາມຖືກຕ້ອງບໍ່ສໍາ​ເລັດ​. ກະ​ລຸ​ນາລົງຊື່ເຂົ້າ Chromium ອີກ.</translation>
@@ -186,6 +185,7 @@ Desktop</translation>
 <translation id="8747048596626351634">ເຊດຊັນຂັດຂ້ອງ ຫຼື ໂຫຼດບໍ່ສຳເລັດ. ຖ້າມີ ~/.chrome-remote-desktop-session ຢູ່ໃນຄອມພິວເຕີທາງໄກ, ກະລຸນາກວດໃຫ້ແນ່ໃຈວ່າມັນເລີ່ມຂັ້ນຕອນໃນພື້ນໜ້າທີ່ເປີດໃຊ້ຍາວນານ ເຊັ່ນວ່າ ຕົວຈັດການສະພາບແວດລ້ອມ ຫຼື ໜ້າຈໍເດັສທັອບຫຼືບໍ່.</translation>
 <translation id="8804164990146287819">ນະ​ໂຍ​ບາຍ​ວ່າດ້ວຍຄວາມ​​ເປັນ​ສ່ວນ​ຕົວ</translation>
 <translation id="8906511416443321782">ຈຳເປັນຕ້ອງເຂົ້າເຖິງໄມໂຄຣໂຟນເພື່ອບັນທຶກສຽງ ແລະ ສະຕຣີມມັນໄປຍັງລູກຂ່າຍ Chrome Remote Desktop.</translation>
+<translation id="9042277333359847053">ລິຂະສິດ 2024 Google LLC. ສະຫງວນສິດທັງໝົດ.</translation>
 <translation id="9111855907838866522">ພວກເຮົາເຊື່ອມຕໍ່ກັບອຸປະກອນທາງໄກຂອງທ່ານ. ເພື່ອເປີດເມນູ, ກະລຸນາແຕະໜ້າຈໍດ້ວຍສີ່ນິ້ວມື.</translation>
 <translation id="9126115402994542723">ຢ່າຖາມຫາ PIN ອີກ ເມື່ອເຊື່ອມຕໍ່ກັບແມ່ຂ່າຍນີ້ຈາກອຸປະກອນນີ້.</translation>
 <translation id="916856682307586697">ເປີດໃຊ້ XSession ເລີ່ມຕົ້ນ</translation>

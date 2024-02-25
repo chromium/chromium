@@ -12,6 +12,8 @@
 #include "base/functional/bind.h"
 #include "base/json/json_reader.h"
 #include "base/logging.h"
+#include "base/system/sys_info.h"
+#include "base/uuid.h"
 #include "base/values.h"
 #include "build/build_config.h"
 #include "chrome/browser/ash/login/help_app_launcher.h"
@@ -28,7 +30,7 @@
 #include "chrome/browser/browser_process_platform_part.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/webui/ash/login/cookie_waiter.h"
-#include "chrome/grit/chromium_strings.h"
+#include "chrome/grit/branded_strings.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/login/localized_values_builder.h"
 #include "components/policy/core/browser/cloud/message_util.h"
@@ -99,6 +101,8 @@ std::string GetFlowString(EnrollmentScreenView::FlowType type) {
       return "enterpriseLicense";
     case EnrollmentScreenView::FlowType::kEducationLicense:
       return "educationLicense";
+    case EnrollmentScreenView::FlowType::kDeviceEnrollment:
+      return "deviceEnrollment";
   }
 }
 
@@ -293,17 +297,21 @@ void EnrollmentScreenHandler::Shutdown() {
   shutdown_ = true;
 }
 
+base::WeakPtr<EnrollmentScreenView> EnrollmentScreenHandler::AsWeakPtr() {
+  return weak_ptr_factory_.GetWeakPtr();
+}
+
 void EnrollmentScreenHandler::ShowEnrollmentStatus(
     policy::EnrollmentStatus status) {
-  switch (status.status()) {
-    case policy::EnrollmentStatus::SUCCESS:
+  switch (status.enrollment_code()) {
+    case policy::EnrollmentStatus::Code::kSuccess:
       ShowEnrollmentSuccessScreen();
       return;
-    case policy::EnrollmentStatus::NO_STATE_KEYS:
+    case policy::EnrollmentStatus::Code::kNoStateKeys:
       ShowError(IDS_ENTERPRISE_ENROLLMENT_STATUS_NO_STATE_KEYS,
                 /*retry=*/false);
       return;
-    case policy::EnrollmentStatus::REGISTRATION_FAILED:
+    case policy::EnrollmentStatus::Code::kRegistrationFailed:
       // Some special cases for generating a nicer message that's more helpful.
       switch (status.client_status()) {
         case policy::DM_STATUS_SERVICE_MANAGEMENT_NOT_SUPPORTED:
@@ -379,41 +387,41 @@ void EnrollmentScreenHandler::ShowEnrollmentStatus(
               /*retry=*/true);
       }
       return;
-    case policy::EnrollmentStatus::ROBOT_AUTH_FETCH_FAILED:
+    case policy::EnrollmentStatus::Code::kRobotAuthFetchFailed:
       ShowError(IDS_ENTERPRISE_ENROLLMENT_ROBOT_AUTH_FETCH_FAILED,
                 /*retry=*/true);
       return;
-    case policy::EnrollmentStatus::ROBOT_REFRESH_FETCH_FAILED:
+    case policy::EnrollmentStatus::Code::kRobotRefreshFetchFailed:
       ShowError(IDS_ENTERPRISE_ENROLLMENT_ROBOT_REFRESH_FETCH_FAILED,
                 /*retry=*/true);
       return;
-    case policy::EnrollmentStatus::ROBOT_REFRESH_STORE_FAILED:
+    case policy::EnrollmentStatus::Code::kRobotRefreshStoreFailed:
       ShowError(IDS_ENTERPRISE_ENROLLMENT_ROBOT_REFRESH_STORE_FAILED,
                 /*retry=*/true);
       return;
-    case policy::EnrollmentStatus::REGISTRATION_BAD_MODE:
+    case policy::EnrollmentStatus::Code::kRegistrationBadMode:
       ShowError(IDS_ENTERPRISE_ENROLLMENT_STATUS_REGISTRATION_BAD_MODE,
                 /*retry=*/false);
       return;
-    case policy::EnrollmentStatus::REGISTRATION_CERT_FETCH_FAILED:
+    case policy::EnrollmentStatus::Code::kRegistrationCertFetchFailed:
       ShowError(IDS_ENTERPRISE_ENROLLMENT_STATUS_REGISTRATION_CERT_FETCH_FAILED,
                 /*retry=*/true);
       return;
-    case policy::EnrollmentStatus::POLICY_FETCH_FAILED:
+    case policy::EnrollmentStatus::Code::kPolicyFetchFailed:
       ShowErrorMessage(
           l10n_util::GetStringFUTF8(
               IDS_ENTERPRISE_ENROLLMENT_STATUS_POLICY_FETCH_FAILED,
               policy::FormatDeviceManagementStatus(status.client_status())),
           /*retry=*/true);
       return;
-    case policy::EnrollmentStatus::VALIDATION_FAILED:
+    case policy::EnrollmentStatus::Code::kValidationFailed:
       ShowErrorMessage(
           l10n_util::GetStringFUTF8(
               IDS_ENTERPRISE_ENROLLMENT_STATUS_VALIDATION_FAILED,
               policy::FormatValidationStatus(status.validation_status())),
           /*retry=*/true);
       return;
-    case policy::EnrollmentStatus::LOCK_ERROR:
+    case policy::EnrollmentStatus::Code::kLockError:
       switch (status.lock_status()) {
         case InstallAttributes::LOCK_SUCCESS:
         case InstallAttributes::LOCK_NOT_READY:
@@ -421,7 +429,6 @@ void EnrollmentScreenHandler::ShowEnrollmentStatus(
           // LOCK_NOT_READY is transient, if retries are given up, LOCK_TIMEOUT
           // is reported instead.  This piece of code is unreached.
           LOG(FATAL) << "Invalid lock status.";
-          return;
         case InstallAttributes::LOCK_TIMEOUT:
           ShowError(IDS_ENTERPRISE_ENROLLMENT_STATUS_LOCK_TIMEOUT,
                     /*retry=*/false);
@@ -445,7 +452,7 @@ void EnrollmentScreenHandler::ShowEnrollmentStatus(
       }
       NOTREACHED();
       return;
-    case policy::EnrollmentStatus::STORE_ERROR:
+    case policy::EnrollmentStatus::Code::kStoreError:
       ShowErrorMessage(
           l10n_util::GetStringFUTF8(
               IDS_ENTERPRISE_ENROLLMENT_STATUS_STORE_ERROR,
@@ -453,23 +460,19 @@ void EnrollmentScreenHandler::ShowEnrollmentStatus(
                                         status.validation_status())),
           /*retry=*/true);
       return;
-    case policy::EnrollmentStatus::ATTRIBUTE_UPDATE_FAILED:
+    case policy::EnrollmentStatus::Code::kAttributeUpdateFailed:
       ShowErrorForDevice(IDS_ENTERPRISE_ENROLLMENT_ATTRIBUTE_ERROR,
                          /*retry=*/false);
       return;
-    case policy::EnrollmentStatus::NO_MACHINE_IDENTIFICATION:
+    case policy::EnrollmentStatus::Code::kNoMachineIdentification:
       ShowError(IDS_ENTERPRISE_ENROLLMENT_STATUS_NO_MACHINE_IDENTIFICATION,
                 /*retry=*/false);
       return;
-    case policy::EnrollmentStatus::ACTIVE_DIRECTORY_POLICY_FETCH_FAILED:
-      ShowError(IDS_ENTERPRISE_ENROLLMENT_ERROR_ACTIVE_DIRECTORY_POLICY_FETCH,
-                /*retry=*/false);
-      return;
-    case policy::EnrollmentStatus::DM_TOKEN_STORE_FAILED:
+    case policy::EnrollmentStatus::Code::kDmTokenStoreFailed:
       ShowError(IDS_ENTERPRISE_ENROLLMENT_ERROR_SAVE_DEVICE_CONFIGURATION,
                 /*retry=*/false);
       return;
-    case policy::EnrollmentStatus::MAY_NOT_BLOCK_DEV_MODE:
+    case policy::EnrollmentStatus::Code::kMayNotBlockDevMode:
       ShowError(IDS_ENTERPRISE_ENROLLMENT_ERROR_MAY_NOT_BLOCK_DEV_MODE,
                 /*retry=*/false);
       return;
@@ -601,8 +604,9 @@ void EnrollmentScreenHandler::DeclareLocalizedValues(
 }
 
 void EnrollmentScreenHandler::DeclareJSCallbacks() {
-  AddCallback("toggleFakeEnrollment",
-              &EnrollmentScreenHandler::HandleToggleFakeEnrollment);
+  AddCallback(
+      "toggleFakeEnrollmentAndCompleteLogin",
+      &EnrollmentScreenHandler::HandleToggleFakeEnrollmentAndCompleteLogin);
   AddCallback("oauthEnrollClose", &EnrollmentScreenHandler::HandleClose);
   AddCallback("oauthEnrollCompleteLogin",
               &EnrollmentScreenHandler::HandleCompleteLogin);
@@ -615,6 +619,8 @@ void EnrollmentScreenHandler::DeclareJSCallbacks() {
               &EnrollmentScreenHandler::HandleDeviceAttributesProvided);
   AddCallback("oauthEnrollOnLearnMore",
               &EnrollmentScreenHandler::HandleOnLearnMore);
+  AddCallback("getDeviceIdForEnrollment",
+              &EnrollmentScreenHandler::HandleGetDeviceId);
 }
 
 void EnrollmentScreenHandler::GetAdditionalParameters(
@@ -641,13 +647,20 @@ void EnrollmentScreenHandler::ShowSkipConfirmationDialog() {
 }
 
 // EnrollmentScreenHandler, private -----------------------------
-void EnrollmentScreenHandler::HandleToggleFakeEnrollment() {
+void EnrollmentScreenHandler::HandleToggleFakeEnrollmentAndCompleteLogin(
+    const std::string& user,
+    int license_type) {
+  // This method should only be used on test images.
+  base::SysInfo::CrashIfChromeOSNonTestImage();
+
   // TODO(crbug.com/1271134): Logging as "WARNING" to make sure it's preserved
   // in the logs.
-  LOG(WARNING) << "HandleToggleFakeEnrollment";
+  LOG(WARNING) << "HandleToggleFakeEnrollmentAndCompleteLogin";
   policy::PolicyOAuth2TokenFetcher::UseFakeTokensForTesting();
   WizardController::SkipEnrollmentPromptsForTesting();
   use_fake_login_for_testing_ = true;
+
+  HandleCompleteLogin(user, license_type);
 }
 
 void EnrollmentScreenHandler::HandleClose(const std::string& reason) {
@@ -783,6 +796,21 @@ void EnrollmentScreenHandler::HandleOnLearnMore() {
     help_app_ = new HelpAppLauncher(
         LoginDisplayHost::default_host()->GetNativeWindow());
   help_app_->ShowHelpTopic(HelpAppLauncher::HELP_DEVICE_ATTRIBUTES);
+}
+
+void EnrollmentScreenHandler::HandleGetDeviceId(
+    const std::string& callback_id) {
+  if (!IsJavascriptAllowed()) {
+    return;
+  }
+
+  // We need to respond to "getDeviceId" message from Gaia. This is normally
+  // used for regular signin scenarios but since we need to respond with
+  // something here - we will respond with a GUID. The account used for
+  // enrollment is not actually logging into the device - and "getDeviceId" is
+  // meant for those kinds of users.
+  ResolveJavascriptCallback(base::Value(callback_id),
+                            base::Uuid::GenerateRandomV4().AsLowercaseString());
 }
 
 void EnrollmentScreenHandler::ShowStep(const std::string& step) {

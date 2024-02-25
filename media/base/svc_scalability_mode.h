@@ -6,6 +6,7 @@
 #define MEDIA_BASE_SVC_SCALABILITY_MODE_H_
 
 #include <cstddef>
+#include <vector>
 
 #include "media/base/media_export.h"
 
@@ -51,8 +52,11 @@ enum class SVCScalabilityMode : int {
   kL3T2KeyShift = 31,
   kL3T3Key = 32,
   kL3T3KeyShift = 33,
+  kL3T1h = 34,
+  kL3T2h = 35,
+  kL3T3h = 36,
 
-  kMaxValue = kL3T3KeyShift,
+  kMaxValue = kL3T3h,
 };
 
 enum class SVCInterLayerPredMode : int {
@@ -71,6 +75,10 @@ MEDIA_EXPORT SVCScalabilityMode
 GetSVCScalabilityMode(const size_t num_spatial_layers,
                       const size_t num_temporal_layers,
                       SVCInterLayerPredMode inter_layer_pred);
+
+// Gets the supported SVCScalabilityModes by hardware encoders.
+MEDIA_EXPORT std::vector<SVCScalabilityMode>
+GetSupportedScalabilityModesByHWEncoderForTesting();
 }  // namespace media
 
 #endif  // MEDIA_BASE_SVC_SCALABILITY_MODE_H_

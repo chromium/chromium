@@ -4,15 +4,19 @@
 
 // clang-format off
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import {PaymentsManagerImpl} from 'chrome://settings/lazy_load.js';
-import {CrButtonElement, loadTimeData, MetricsBrowserProxyImpl, PrivacyElementInteractions, SettingsToggleButtonElement} from 'chrome://settings/settings.js';
+import type {SettingsSimpleConfirmationDialogElement} from 'chrome://settings/lazy_load.js';
+import {GOOGLE_PAY_HELP_URL, PaymentsManagerImpl} from 'chrome://settings/lazy_load.js';
+import type {CrButtonElement, SettingsToggleButtonElement} from 'chrome://settings/settings.js';
+import {CvcDeletionUserAction, loadTimeData, MetricsBrowserProxyImpl, OpenWindowProxyImpl, PrivacyElementInteractions} from 'chrome://settings/settings.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 
-import {createCreditCardEntry, TestPaymentsManager} from './autofill_fake_data.js';
+import type {TestPaymentsManager} from './autofill_fake_data.js';
+import {createCreditCardEntry} from './autofill_fake_data.js';
 import {createPaymentsSection, getLocalAndServerCreditCardListItems, getDefaultExpectations, getCardRowShadowRoot} from './payments_section_utils.js';
 import {TestMetricsBrowserProxy} from './test_metrics_browser_proxy.js';
 
-import {isVisible} from 'chrome://webui-test/test_util.js';
+import {TestOpenWindowProxy} from 'chrome://webui-test/test_open_window_proxy.js';
+import {eventToPromise, isVisible, whenAttributeIs} from 'chrome://webui-test/test_util.js';
 
 
 // clang-format on
@@ -40,11 +44,13 @@ suite('PaymentSectionUiTest', function() {
 });
 
 suite('PaymentsSection', function() {
+  let openWindowProxy: TestOpenWindowProxy;
   setup(function() {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
+    openWindowProxy = new TestOpenWindowProxy();
+    OpenWindowProxyImpl.setInstance(openWindowProxy);
     loadTimeData.overrideValues({
       migrationEnabled: true,
-      virtualCardEnrollmentEnabled: true,
       showIbansSettings: true,
       deviceAuthAvailable: true,
       autofillEnablePaymentsMandatoryReauth: true,
@@ -59,8 +65,7 @@ suite('PaymentsSection', function() {
 
   test('verifyNoCreditCards', async function() {
     const section = await createPaymentsSection(
-        /*creditCards=*/[], /*ibans=*/[], /*upiIds=*/[],
-        {credit_card_enabled: {value: true}});
+        /*creditCards=*/[], /*ibans=*/[], {credit_card_enabled: {value: true}});
 
     const creditCardList = section.$.paymentsList;
     assertTrue(!!creditCardList);
@@ -86,7 +91,7 @@ suite('PaymentsSection', function() {
       showIbansSettings: false,
     });
     const section = await createPaymentsSection(
-        /*creditCards=*/[], /*ibans=*/[], /*upiIds=*/[],
+        /*creditCards=*/[], /*ibans=*/[],
         {credit_card_enabled: {value: false}});
 
     assertFalse(section.$.autofillCreditCardToggle.disabled);
@@ -107,8 +112,7 @@ suite('PaymentsSection', function() {
     ];
 
     const section = await createPaymentsSection(
-        creditCards, /*ibans=*/[], /*upiIds=*/[],
-        {credit_card_enabled: {value: true}});
+        creditCards, /*ibans=*/[], {credit_card_enabled: {value: true}});
     const creditCardList = section.$.paymentsList;
     assertTrue(!!creditCardList);
     assertEquals(
@@ -137,8 +141,7 @@ suite('PaymentsSection', function() {
     const creditCard = createCreditCardEntry();
     creditCard.metadata!.isMigratable = true;
     const section = await createPaymentsSection(
-        [creditCard], /*ibans=*/[], /*upiIds=*/[],
-        {credit_card_enabled: {value: true}});
+        [creditCard], /*ibans=*/[], {credit_card_enabled: {value: true}});
 
     assertTrue(section.$.migrateCreditCards.hidden);
   });
@@ -149,8 +152,7 @@ suite('PaymentsSection', function() {
     creditCard.metadata!.isMigratable = true;
     // Mock credit card save toggle is turned off by users.
     const section = await createPaymentsSection(
-        [creditCard], /*ibans=*/[], /*upiIds=*/[],
-        {credit_card_enabled: {value: false}});
+        [creditCard], /*ibans=*/[], {credit_card_enabled: {value: false}});
 
     assertTrue(section.$.migrateCreditCards.hidden);
   });
@@ -161,8 +163,7 @@ suite('PaymentsSection', function() {
     // Mock credit card is not valid.
     creditCard.metadata!.isMigratable = false;
     const section = await createPaymentsSection(
-        [creditCard], /*ibans=*/[], /*upiIds=*/[],
-        {credit_card_enabled: {value: true}});
+        [creditCard], /*ibans=*/[], {credit_card_enabled: {value: true}});
 
     assertTrue(section.$.migrateCreditCards.hidden);
   });
@@ -172,8 +173,7 @@ suite('PaymentsSection', function() {
     const creditCard = createCreditCardEntry();
     creditCard.metadata!.isMigratable = true;
     const section = await createPaymentsSection(
-        [creditCard], /*ibans=*/[], /*upiIds=*/[],
-        {credit_card_enabled: {value: true}});
+        [creditCard], /*ibans=*/[], {credit_card_enabled: {value: true}});
 
     assertFalse(section.$.migrateCreditCards.hidden);
   });
@@ -189,8 +189,7 @@ suite('PaymentsSection', function() {
     });
     addFakePlatformAuthenticator();
     const section = await createPaymentsSection(
-        /*creditCards=*/[], /*ibans=*/[], /*upiIds=*/[],
-        {credit_card_enabled: {value: true}});
+        /*creditCards=*/[], /*ibans=*/[], {credit_card_enabled: {value: true}});
 
     assertTrue(!!section.shadowRoot!.querySelector(
         '#autofillCreditCardFIDOAuthToggle'));
@@ -207,8 +206,7 @@ suite('PaymentsSection', function() {
     });
     addFakePlatformAuthenticator();
     const section = await createPaymentsSection(
-        /*creditCards=*/[], /*ibans=*/[], /*upiIds=*/[],
-        {credit_card_enabled: {value: true}});
+        /*creditCards=*/[], /*ibans=*/[], {credit_card_enabled: {value: true}});
 
     assertFalse(!!section.shadowRoot!.querySelector(
         '#autofillCreditCardFIDOAuthToggle'));
@@ -222,8 +220,7 @@ suite('PaymentsSection', function() {
     loadTimeData.overrideValues(
         {fidoAuthenticationAvailableForAutofill: false});
     const section = await createPaymentsSection(
-        /*creditCards=*/[], /*ibans=*/[], /*upiIds=*/[],
-        {credit_card_enabled: {value: true}});
+        /*creditCards=*/[], /*ibans=*/[], {credit_card_enabled: {value: true}});
     assertFalse(!!section.shadowRoot!.querySelector(
         '#autofillCreditCardFIDOAuthToggle'));
   });
@@ -235,7 +232,7 @@ suite('PaymentsSection', function() {
     });
     addFakePlatformAuthenticator();
     const section = await createPaymentsSection(
-        /*creditCards=*/[], /*ibans=*/[], /*upiIds=*/[], {
+        /*creditCards=*/[], /*ibans=*/[], {
           credit_card_enabled: {value: true},
           credit_card_fido_auth_enabled: {value: true},
         });
@@ -251,7 +248,7 @@ suite('PaymentsSection', function() {
     });
     addFakePlatformAuthenticator();
     const section = await createPaymentsSection(
-        /*creditCards=*/[], /*ibans=*/[], /*upiIds=*/[], {
+        /*creditCards=*/[], /*ibans=*/[], {
           credit_card_enabled: {value: true},
           credit_card_fido_auth_enabled: {value: false},
         });
@@ -265,7 +262,7 @@ suite('PaymentsSection', function() {
     MetricsBrowserProxyImpl.setInstance(testMetricsBrowserProxy);
 
     const section = await createPaymentsSection(
-        /*creditCards=*/[], /*ibans=*/[], /*upiIds=*/[], /*prefValues=*/ {});
+        /*creditCards=*/[], /*ibans=*/[], /*prefValues=*/ {});
 
     section.$.canMakePaymentToggle.click();
     const result =
@@ -277,7 +274,7 @@ suite('PaymentsSection', function() {
   test(
       'verifyNoAddPaymentMethodsButtonIfPaymentPrefDisabled', async function() {
         const section = await createPaymentsSection(
-            /*creditCards=*/[], /*ibans=*/[], /*upiIds=*/[],
+            /*creditCards=*/[], /*ibans=*/[],
             {credit_card_enabled: {value: false}});
 
         const addPaymentMethodsButton =
@@ -305,7 +302,7 @@ suite('PaymentsSection', function() {
         loadTimeData.overrideValues({deviceAuthAvailable: true});
 
         const section = await createPaymentsSection(
-            /*creditCards=*/[], /*ibans=*/[], /*upiIds=*/[], {
+            /*creditCards=*/[], /*ibans=*/[], {
               credit_card_enabled: {value: true},
               payment_methods_mandatory_reauth: {value: false},
             });
@@ -329,7 +326,7 @@ suite('PaymentsSection', function() {
         loadTimeData.overrideValues({deviceAuthAvailable: true});
 
         const section = await createPaymentsSection(
-            /*creditCards=*/[], /*ibans=*/[], /*upiIds=*/[], {
+            /*creditCards=*/[], /*ibans=*/[], {
               credit_card_enabled: {value: true},
               payment_methods_mandatory_reauth: {value: true},
             });
@@ -355,7 +352,7 @@ suite('PaymentsSection', function() {
         });
 
         const section = await createPaymentsSection(
-            /*creditCards=*/[], /*ibans=*/[], /*upiIds=*/[], {
+            /*creditCards=*/[], /*ibans=*/[], {
               credit_card_enabled: {value: true},
               payment_methods_mandatory_reauth: {value: true},
             });
@@ -370,7 +367,7 @@ suite('PaymentsSection', function() {
         loadTimeData.overrideValues({deviceAuthAvailable: false});
 
         const section = await createPaymentsSection(
-            /*creditCards=*/[], /*ibans=*/[], /*upiIds=*/[], {
+            /*creditCards=*/[], /*ibans=*/[], {
               credit_card_enabled: {value: true},
               payment_methods_mandatory_reauth: {value: true},
             });
@@ -395,7 +392,7 @@ suite('PaymentsSection', function() {
         loadTimeData.overrideValues({deviceAuthAvailable: false});
 
         const section = await createPaymentsSection(
-            /*creditCards=*/[], /*ibans=*/[], /*upiIds=*/[], {
+            /*creditCards=*/[], /*ibans=*/[], {
               credit_card_enabled: {value: true},
               payment_methods_mandatory_reauth: {value: false},
             });
@@ -420,7 +417,7 @@ suite('PaymentsSection', function() {
         loadTimeData.overrideValues({deviceAuthAvailable: true});
 
         const section = await createPaymentsSection(
-            /*creditCards=*/[], /*ibans=*/[], /*upiIds=*/[], {
+            /*creditCards=*/[], /*ibans=*/[], {
               credit_card_enabled: {value: false},
               payment_methods_mandatory_reauth: {value: true},
             });
@@ -444,7 +441,7 @@ suite('PaymentsSection', function() {
         loadTimeData.overrideValues({deviceAuthAvailable: true});
 
         const section = await createPaymentsSection(
-            /*creditCards=*/[], /*ibans=*/[], /*upiIds=*/[], {
+            /*creditCards=*/[], /*ibans=*/[], {
               credit_card_enabled: {value: false},
               payment_methods_mandatory_reauth: {value: false},
             });
@@ -468,7 +465,7 @@ suite('PaymentsSection', function() {
         loadTimeData.overrideValues({deviceAuthAvailable: true});
 
         const section = await createPaymentsSection(
-            /*creditCards=*/[], /*ibans=*/[], /*upiIds=*/[], {
+            /*creditCards=*/[], /*ibans=*/[], {
               credit_card_enabled: {value: true},
               payment_methods_mandatory_reauth: {value: false},
             });
@@ -495,7 +492,7 @@ suite('PaymentsSection', function() {
         loadTimeData.overrideValues({deviceAuthAvailable: true});
 
         const section = await createPaymentsSection(
-            /*creditCards=*/[], /*ibans=*/[], /*upiIds=*/[], {
+            /*creditCards=*/[], /*ibans=*/[], {
               credit_card_enabled: {value: true},
               payment_methods_mandatory_reauth: {value: false},
             });
@@ -519,8 +516,8 @@ suite('PaymentsSection', function() {
   test('verifyEditLocalCardTriggersUserAuth', async function() {
     loadTimeData.overrideValues({deviceAuthAvailable: true});
 
-    const section = await createPaymentsSection(
-        [createCreditCardEntry()], /*ibans=*/[], /*upiIds=*/[], {
+    const section =
+        await createPaymentsSection([createCreditCardEntry()], /*ibans=*/[], {
           credit_card_enabled: {value: true},
           payment_methods_mandatory_reauth: {value: true},
         });
@@ -544,19 +541,19 @@ suite('PaymentsSection', function() {
         PaymentsManagerImpl.getInstance() as TestPaymentsManager;
 
     const expectations = getDefaultExpectations();
-    expectations.authenticateUserToEditLocalCard = 1;
+    expectations.getLocalCard = 1;
     paymentsManagerProxy.assertExpectations(expectations);
   });
 
   // --------- End of Reauth Tests ---------
 
-  test('verifyCvvStorageToggleIsShown', async function() {
+  test('verifyCvcStorageToggleIsShown', async function() {
     loadTimeData.overrideValues({
       cvcStorageAvailable: true,
     });
 
     const section = await createPaymentsSection(
-        /*creditCards=*/[], /*ibans=*/[], /*upiIds=*/[], {
+        /*creditCards=*/[], /*ibans=*/[], {
           credit_card_enabled: {value: true},
         });
     const cvcStorageToggle =
@@ -565,7 +562,201 @@ suite('PaymentsSection', function() {
 
     assertTrue(!!cvcStorageToggle);
     assertEquals(
-        cvcStorageToggle.subLabelWithLink,
+        cvcStorageToggle.subLabelWithLink.toString(),
+        loadTimeData.getString('enableCvcStorageSublabel'));
+  });
+
+  test('verifyCvcStorageToggleSublabelWithDeletionIsShown', async function() {
+    loadTimeData.overrideValues({
+      cvcStorageAvailable: true,
+    });
+
+    const creditCard = createCreditCardEntry();
+    creditCard.cvc = '•••';
+    const section = await createPaymentsSection(
+        /*creditCards=*/[creditCard], /*ibans=*/[], {
+          credit_card_enabled: {value: true},
+        });
+    const cvcStorageToggle =
+        section.shadowRoot!.querySelector<SettingsToggleButtonElement>(
+            '#cvcStorageToggle');
+
+    assertTrue(!!cvcStorageToggle);
+    assertEquals(
+        cvcStorageToggle.subLabelWithLink.toString(),
         loadTimeData.getString('enableCvcStorageDeleteDataSublabel'));
+  });
+
+  test(
+      'verifyCvcStorageToggleSublabelWithoutDeletionIsShown', async function() {
+        loadTimeData.overrideValues({
+          cvcStorageAvailable: true,
+        });
+
+        const creditCard = createCreditCardEntry();
+        const section = await createPaymentsSection(
+            /*creditCards=*/[creditCard], /*ibans=*/[], {
+              credit_card_enabled: {value: true},
+            });
+        const cvcStorageToggle =
+            section.shadowRoot!.querySelector<SettingsToggleButtonElement>(
+                '#cvcStorageToggle');
+
+        assertTrue(!!cvcStorageToggle);
+        assertEquals(
+            loadTimeData.getString('enableCvcStorageSublabel'),
+            cvcStorageToggle.subLabelWithLink.toString());
+      });
+
+  // Test to verify if bulk delete is triggered or not based on how user
+  // interacts with the deletion dialog window.
+  [true, false].forEach(shouldTriggerBulkDelete => {
+    test(
+        `verifyBulkDeleteCvcIsTriggered_${shouldTriggerBulkDelete}`,
+        async function() {
+          loadTimeData.overrideValues({
+            cvcStorageAvailable: true,
+          });
+          const testMetricsBrowserProxy = new TestMetricsBrowserProxy();
+          MetricsBrowserProxyImpl.setInstance(testMetricsBrowserProxy);
+
+          const creditCard = createCreditCardEntry();
+          creditCard.cvc = '•••';
+          const section = await createPaymentsSection(
+              /*creditCards=*/[creditCard], /*ibans=*/[], {
+                credit_card_enabled: {value: true},
+              });
+
+          const cvcStorageToggle =
+              section.shadowRoot!.querySelector<SettingsToggleButtonElement>(
+                  '#cvcStorageToggle');
+          assertTrue(!!cvcStorageToggle);
+          assertEquals(
+              loadTimeData.getString('enableCvcStorageDeleteDataSublabel'),
+              cvcStorageToggle.subLabelWithLink.toString());
+
+          const cvcStorageToggleSublabelLink =
+              cvcStorageToggle.$.labelWrapper
+                  .querySelector('#sub-label-text-with-link')!.querySelector(
+                      'a');
+          assertTrue(isVisible(cvcStorageToggleSublabelLink));
+          cvcStorageToggleSublabelLink!.click();
+          flush();
+
+          const bulkDeletionDialog =
+              section.shadowRoot!
+                  .querySelector<SettingsSimpleConfirmationDialogElement>(
+                      '#bulkDeleteCvcConfirmDialog');
+          assertTrue(!!bulkDeletionDialog);
+          await whenAttributeIs(bulkDeletionDialog.$.dialog, 'open', '');
+
+          if (shouldTriggerBulkDelete) {
+            bulkDeletionDialog.$.confirm.click();
+          } else {
+            bulkDeletionDialog.$.cancel.click();
+          }
+          flush();
+
+          // Wait for the dialog close event to propagate to the PaymentManager.
+          await eventToPromise('close', bulkDeletionDialog);
+
+          const paymentsManagerProxy =
+              PaymentsManagerImpl.getInstance() as TestPaymentsManager;
+          const expectations = getDefaultExpectations();
+
+          assertEquals(2, testMetricsBrowserProxy.getCallCount('recordAction'));
+          assertEquals(
+              CvcDeletionUserAction.HYPERLINK_CLICKED,
+              testMetricsBrowserProxy.getArgs('recordAction')[0]);
+          if (shouldTriggerBulkDelete) {
+            expectations.bulkDeleteAllCvcs = 1;
+            assertEquals(
+                CvcDeletionUserAction.DIALOG_ACCEPTED,
+                testMetricsBrowserProxy.getArgs('recordAction')[1]);
+          } else {
+            assertEquals(
+                CvcDeletionUserAction.DIALOG_CANCELLED,
+                testMetricsBrowserProxy.getArgs('recordAction')[1]);
+          }
+          paymentsManagerProxy.assertExpectations(expectations);
+        });
+  });
+
+  test('verifyCardBenefitsToggleIsShown', async function() {
+    loadTimeData.overrideValues({
+      autofillCardBenefitsAvailable: true,
+    });
+
+    const section = await createPaymentsSection(
+        /*creditCards=*/[], /*ibans=*/[], {
+          credit_card_enabled: {value: true},
+        });
+    const cardBenefitsToggle =
+        section.shadowRoot!.querySelector<SettingsToggleButtonElement>(
+            '#cardBenefitsToggle');
+
+    assertTrue(!!cardBenefitsToggle);
+    assertEquals(
+        loadTimeData.getString('cardBenefitsToggleLabel'),
+        cardBenefitsToggle.label.toString());
+    assertEquals(
+        loadTimeData.getString('cardBenefitsToggleSublabel'),
+        cardBenefitsToggle.subLabelWithLink.toString());
+  });
+
+  test(
+      'verifyCardBenefitsToggleIsNotShownWhenCardBenefitsFlagIsOff',
+      async function() {
+        loadTimeData.overrideValues({
+          autofillCardBenefitsAvailable: false,
+        });
+
+        const section = await createPaymentsSection(
+            /*creditCards=*/[], /*ibans=*/[], {
+              credit_card_enabled: {value: true},
+            });
+
+        assertFalse(!!section.shadowRoot!.querySelector('#cardBenefitsToggle'));
+      });
+
+  test(
+      'verifyCardBenefitsToggleIsDisabledWhenCreditCardEnabledIsOff',
+      async function() {
+        loadTimeData.overrideValues({
+          autofillCardBenefitsAvailable: true,
+        });
+
+        const section = await createPaymentsSection(
+            /*creditCards=*/[], /*ibans=*/[], {
+              credit_card_enabled: {value: false},
+            });
+        const cardBenefitsToggle =
+            section.shadowRoot!.querySelector<SettingsToggleButtonElement>(
+                '#cardBenefitsToggle');
+
+        assertTrue(!!cardBenefitsToggle);
+        assertTrue(cardBenefitsToggle.disabled);
+      });
+
+  test('verifyCardBenefitsToggleSublabelLinkClickOpensUrl', async function() {
+    loadTimeData.overrideValues({
+      autofillCardBenefitsAvailable: true,
+    });
+
+    const section = await createPaymentsSection(
+        /*creditCards=*/[], /*ibans=*/[], {
+          credit_card_enabled: {value: true},
+        });
+    const cardBenefitsToggle =
+        section.shadowRoot!.querySelector<SettingsToggleButtonElement>(
+            '#cardBenefitsToggle');
+    assertTrue(!!cardBenefitsToggle);
+
+    const link = cardBenefitsToggle.shadowRoot!.querySelector('a');
+    assertTrue(!!link);
+    link.click();
+
+    const url = await openWindowProxy.whenCalled('openUrl');
+    assertEquals(GOOGLE_PAY_HELP_URL, url);
   });
 });

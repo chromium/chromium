@@ -77,6 +77,7 @@ python_library("variations_desktop_smoke_tests_lib") {
     "conftest.py",
     "smoke_test.py",
     "//chrome/test/data/variations/",
+    "//tools/variations/",
   ]
 
   data_deps = [

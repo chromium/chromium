@@ -132,6 +132,16 @@ int CSSNumericLiteralValue::ComputeInteger() const {
   return ClampTo<int>(num_);
 }
 
+double CSSNumericLiteralValue::ComputeNumber() const {
+  DCHECK(IsNumber());
+  return ClampTo<double>(num_);
+}
+
+double CSSNumericLiteralValue::ComputePercentage() const {
+  DCHECK(IsPercentage());
+  return ClampTo<double>(num_);
+}
+
 bool CSSNumericLiteralValue::AccumulateLengthArray(CSSLengthArray& length_array,
                                                    double multiplier) const {
   LengthUnitType length_type;
@@ -242,7 +252,7 @@ String CSSNumericLiteralValue::CustomCSSText() const {
     case UnitType::kHertz:
     case UnitType::kKilohertz:
     case UnitType::kTurns:
-    case UnitType::kFraction:
+    case UnitType::kFlex:
     case UnitType::kViewportWidth:
     case UnitType::kViewportHeight:
     case UnitType::kViewportInlineSize:
@@ -343,7 +353,7 @@ bool CSSNumericLiteralValue::Equals(const CSSNumericLiteralValue& other) const {
     case UnitType::kViewportHeight:
     case UnitType::kViewportMin:
     case UnitType::kViewportMax:
-    case UnitType::kFraction:
+    case UnitType::kFlex:
       return num_ == other.num_;
     case UnitType::kQuirkyEms:
       return false;

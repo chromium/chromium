@@ -3,19 +3,22 @@
 // found in the LICENSE file.
 
 #import "ios/chrome/browser/ui/side_swipe/side_swipe_mediator.h"
-#import "ios/chrome/browser/ui/side_swipe/side_swipe_mediator+private.h"
+#import "ios/chrome/browser/ui/side_swipe/side_swipe_mediator+Testing.h"
 
 #import <memory>
 
 #import "base/feature_list.h"
 #import "base/ios/block_types.h"
+#import "base/memory/raw_ptr.h"
 #import "base/scoped_observation.h"
+#import "components/feature_engagement/public/event_constants.h"
+#import "components/feature_engagement/public/tracker.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list_observer_bridge.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
-#import "ios/chrome/browser/snapshots/snapshot_browser_agent.h"
-#import "ios/chrome/browser/snapshots/snapshot_cache.h"
-#import "ios/chrome/browser/snapshots/snapshot_tab_helper.h"
+#import "ios/chrome/browser/snapshots/model/snapshot_browser_agent.h"
+#import "ios/chrome/browser/snapshots/model/snapshot_storage.h"
+#import "ios/chrome/browser/snapshots/model/snapshot_tab_helper.h"
 #import "ios/chrome/browser/ui/fullscreen/animated_scoped_fullscreen_disabler.h"
 #import "ios/chrome/browser/ui/fullscreen/fullscreen_controller.h"
 #import "ios/chrome/browser/ui/fullscreen/scoped_fullscreen_disabler.h"
@@ -25,8 +28,8 @@
 #import "ios/chrome/browser/ui/side_swipe/side_swipe_util.h"
 #import "ios/chrome/browser/ui/tabs/requirements/tab_strip_highlighting.h"
 #import "ios/chrome/browser/ui/toolbar/public/side_swipe_toolbar_interacting.h"
-#import "ios/chrome/browser/web/page_placeholder_tab_helper.h"
-#import "ios/chrome/browser/web/web_navigation_util.h"
+#import "ios/chrome/browser/web/model/page_placeholder_tab_helper.h"
+#import "ios/chrome/browser/web/model/web_navigation_util.h"
 #import "ios/web/public/navigation/navigation_item.h"
 #import "ios/web/public/web_state_observer_bridge.h"
 #import "ui/base/device_form_factor.h"
@@ -43,11 +46,15 @@ enum class SwipeType { NONE, CHANGE_TAB, CHANGE_PAGE };
 // Swipe starting distance from edge.
 const CGFloat kSwipeEdge = 20;
 
+// The distance between touches for a swipe between tabs to begin.
+const CGFloat kPanGestureRecognizerThreshold = 25;
+
 // Distance between sections of iPad side swipe.
 const CGFloat kIpadTabSwipeDistance = 100;
 
 // Number of tabs to keep in the grey image cache.
 const NSUInteger kIpadGreySwipeTabCount = 8;
+
 }  // namespace
 
 @interface SideSwipeMediator () <CRWWebStateObserver,
@@ -97,18 +104,25 @@ const NSUInteger kIpadGreySwipeTabCount = 8;
   std::unique_ptr<AnimatedScopedFullscreenDisabler> _animatedFullscreenDisabler;
 
   // Used to add or remove the snapshot's gray cache.
-  SnapshotBrowserAgent* _snapshotBrowserAgent;
+  raw_ptr<SnapshotBrowserAgent> _snapshotBrowserAgent;
 }
 
 // The current active WebState.
 @property(nonatomic, readonly) web::WebState* activeWebState;
+
 // The webStateList owned by the current browser.
 @property(nonatomic, readonly) WebStateList* webStateList;
+
+// Whether to allow navigating from the leading edge.
+@property(nonatomic, assign) BOOL leadingEdgeNavigationEnabled;
+
+// Whether to allow navigating from the trailing edge.
+@property(nonatomic, assign) BOOL trailingEdgeNavigationEnabled;
 
 // Load grey snapshots for the next `kIpadGreySwipeTabCount` tabs in
 // `direction`.
 - (void)createGreyCache:(UISwipeGestureRecognizerDirection)direction;
-// Tell snapshot cache to clear grey cache.
+// Tell snapshot storage to clear grey cache.
 - (void)deleteGreyCache;
 // Handle tab side swipe for iPad.  Change tabs according to swipe distance.
 - (void)handleiPadTabSwipe:(SideSwipeGestureRecognizer*)gesture;
@@ -131,7 +145,6 @@ const NSUInteger kIpadGreySwipeTabCount = 8;
 @synthesize inSwipe = _inSwipe;
 @synthesize swipeDelegate = _swipeDelegate;
 @synthesize toolbarInteractionHandler = _toolbarInteractionHandler;
-@synthesize snapshotDelegate = _snapshotDelegate;
 @synthesize tabStripDelegate = _tabStripDelegate;
 
 - (instancetype)
@@ -187,7 +200,7 @@ const NSUInteger kIpadGreySwipeTabCount = 8;
       [[SideSwipeGestureRecognizer alloc] initWithTarget:self
                                                   action:@selector(handlePan:)];
   [_panGestureRecognizer setMaximumNumberOfTouches:1];
-  [_panGestureRecognizer setSwipeThreshold:48];
+  [_panGestureRecognizer setSwipeThreshold:kPanGestureRecognizerThreshold];
   [_panGestureRecognizer setDelegate:self];
   [view addGestureRecognizer:_panGestureRecognizer];
 }
@@ -230,11 +243,11 @@ const NSUInteger kIpadGreySwipeTabCount = 8;
     }
     index = index + dx;
   }
-  [_snapshotBrowserAgent->snapshot_cache() createGreyCache:snapshotIDs];
+  [_snapshotBrowserAgent->snapshot_storage() createGreyCache:snapshotIDs];
 }
 
 - (void)deleteGreyCache {
-  [_snapshotBrowserAgent->snapshot_cache() removeGreyCache];
+  [_snapshotBrowserAgent->snapshot_storage() removeGreyCache];
 }
 
 - (void)handlePan:(SideSwipeGestureRecognizer*)gesture {
@@ -419,6 +432,9 @@ const NSUInteger kIpadGreySwipeTabCount = 8;
     } else {
       web_navigation_util::GoForward(webState);
     }
+    CHECK(self.engagementTracker);
+    self.engagementTracker->NotifyEvent(
+        feature_engagement::events::kIOSSwipeBackForwardUsed);
   }
   __weak SideSwipeMediator* weakSelf = self;
   // Checking -IsLoading() is likely incorrect, but to narrow the scope of

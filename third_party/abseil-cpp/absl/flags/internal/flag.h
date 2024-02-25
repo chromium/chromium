@@ -22,7 +22,6 @@
 #include <atomic>
 #include <cstring>
 #include <memory>
-#include <new>
 #include <string>
 #include <type_traits>
 #include <typeinfo>
@@ -54,13 +53,8 @@ template <typename T>
 class Flag;
 }  // namespace flags_internal
 
-#if defined(_MSC_VER) && !defined(__clang__)
-template <typename T>
-class Flag;
-#else
 template <typename T>
 using Flag = flags_internal::Flag<T>;
-#endif
 
 template <typename T>
 ABSL_MUST_USE_RESULT T GetFlag(const absl::Flag<T>& flag);
@@ -775,7 +769,8 @@ struct FlagRegistrarEmpty {};
 template <typename T, bool do_register>
 class FlagRegistrar {
  public:
-  explicit FlagRegistrar(Flag<T>& flag, const char* filename) : flag_(flag) {
+  constexpr explicit FlagRegistrar(Flag<T>& flag, const char* filename)
+      : flag_(flag) {
     if (do_register)
       flags_internal::RegisterCommandLineFlag(flag_.impl_, filename);
   }
@@ -788,7 +783,7 @@ class FlagRegistrar {
   // Make the registrar "die" gracefully as an empty struct on a line where
   // registration happens. Registrar objects are intended to live only as
   // temporary.
-  operator FlagRegistrarEmpty() const { return {}; }  // NOLINT
+  constexpr operator FlagRegistrarEmpty() const { return {}; }  // NOLINT
 
  private:
   Flag<T>& flag_;  // Flag being registered (not owned).

@@ -79,14 +79,16 @@ public class AutoAnimatorDrawable extends DrawableWrapperCompat {
     }
 
     private static void attachRestartListeners(@Nullable Drawable drawable) {
-        AutoAnimatorDrawable.animatedDrawableHelper(drawable, animatable -> {
-            if (animatable instanceof Animatable2Compat) {
-                ((Animatable2Compat) animatable)
-                        .registerAnimationCallback(LazyHolderCompat.INSTANCE);
-            } else if (animatable instanceof Animatable2) {
-                ((Animatable2) animatable).registerAnimationCallback(LazyHolder.INSTANCE);
-            }
-        });
+        AutoAnimatorDrawable.animatedDrawableHelper(
+                drawable,
+                animatable -> {
+                    if (animatable instanceof Animatable2Compat) {
+                        ((Animatable2Compat) animatable)
+                                .registerAnimationCallback(LazyHolderCompat.INSTANCE);
+                    } else if (animatable instanceof Animatable2) {
+                        ((Animatable2) animatable).registerAnimationCallback(LazyHolder.INSTANCE);
+                    }
+                });
     }
 
     private static void animatedDrawableHelper(
@@ -151,9 +153,10 @@ public class AutoAnimatorDrawable extends DrawableWrapperCompat {
         @Override
         public void onAnimationEnd(Drawable drawable) {
             if (!(drawable instanceof Animatable)) return;
-            mHandler.post(() -> {
-                if (drawable.isVisible()) ((Animatable) drawable).start();
-            });
+            mHandler.post(
+                    () -> {
+                        if (drawable.isVisible()) ((Animatable) drawable).start();
+                    });
         }
     }
 

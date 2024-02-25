@@ -25,7 +25,6 @@ items:
   name: DockNicMacAddress
   value: 3
 owners:
-- lamzin@google.com
 - bkersting@google.com
 - kerker@chromium.org
 - chungsheng@google.com

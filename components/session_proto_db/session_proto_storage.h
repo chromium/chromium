@@ -68,6 +68,12 @@ class SessionProtoStorage {
   virtual void DeleteOneEntry(const std::string& key,
                               OperationCallback callback) = 0;
 
+  // Updates the value of multiple entries in the database.
+  virtual void UpdateEntries(
+      std::unique_ptr<std::vector<KeyAndValue>> entries_to_update,
+      std::unique_ptr<std::vector<std::string>> keys_to_remove,
+      OperationCallback callback) = 0;
+
   // Deletes content in the database, matching all keys which have a prefix
   // that matches the key.
   virtual void DeleteContentWithPrefix(const std::string& key_prefix,

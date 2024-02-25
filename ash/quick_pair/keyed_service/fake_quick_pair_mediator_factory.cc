@@ -4,6 +4,7 @@
 
 #include "ash/quick_pair/keyed_service/fake_quick_pair_mediator_factory.h"
 
+#include "ash/quick_pair/companion_app/companion_app_broker_impl.h"
 #include "ash/quick_pair/feature_status_tracker/quick_pair_feature_status_tracker_impl.h"
 #include "ash/quick_pair/message_stream/message_stream_lookup_impl.h"
 #include "ash/quick_pair/pairing/pairer_broker_impl.h"
@@ -27,6 +28,7 @@ std::unique_ptr<Mediator> FakeQuickPairMediatorFactory::BuildInstance() {
           pairer_broker.get(), message_stream_lookup.get()),
       std::move(message_stream_lookup), std::move(pairer_broker),
       std::make_unique<UIBrokerImpl>(),
+      std::make_unique<CompanionAppBrokerImpl>(),
       std::make_unique<FakeFastPairRepository>(), std::move(process_manager));
 }
 

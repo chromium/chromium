@@ -52,11 +52,11 @@ chromecast::media::VideoPlane::Transform ConvertTransform(
       return chromecast::media::VideoPlane::FLIP_HORIZONTAL;
     case gfx::OVERLAY_TRANSFORM_FLIP_VERTICAL:
       return chromecast::media::VideoPlane::FLIP_VERTICAL;
-    case gfx::OVERLAY_TRANSFORM_ROTATE_90:
+    case gfx::OVERLAY_TRANSFORM_ROTATE_CLOCKWISE_90:
       return chromecast::media::VideoPlane::ROTATE_90;
-    case gfx::OVERLAY_TRANSFORM_ROTATE_180:
+    case gfx::OVERLAY_TRANSFORM_ROTATE_CLOCKWISE_180:
       return chromecast::media::VideoPlane::ROTATE_180;
-    case gfx::OVERLAY_TRANSFORM_ROTATE_270:
+    case gfx::OVERLAY_TRANSFORM_ROTATE_CLOCKWISE_270:
       return chromecast::media::VideoPlane::ROTATE_270;
     default:
       NOTREACHED();

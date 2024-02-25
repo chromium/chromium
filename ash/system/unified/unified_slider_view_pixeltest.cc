@@ -4,14 +4,12 @@
 
 #include <memory>
 
-#include "ash/constants/ash_features.h"
 #include "ash/system/audio/unified_volume_slider_controller.h"
 #include "ash/system/audio/unified_volume_view.h"
 #include "ash/test/ash_test_base.h"
 #include "ash/test/pixel/ash_pixel_differ.h"
 #include "ash/test/pixel/ash_pixel_test_init_params.h"
 #include "base/memory/raw_ptr.h"
-#include "base/test/scoped_feature_list.h"
 #include "chromeos/constants/chromeos_features.h"
 #include "ui/views/widget/widget.h"
 
@@ -30,10 +28,7 @@ class FakeDelegate : public UnifiedVolumeSliderController::Delegate {
 // Pixel tests for the quick settings `UnifiedSliderView`.
 class UnifiedSliderViewPixelTest : public AshTestBase {
  public:
-  UnifiedSliderViewPixelTest() {
-    feature_list_.InitWithFeatures(
-        {features::kQsRevamp, chromeos::features::kJelly}, {});
-  }
+  UnifiedSliderViewPixelTest() = default;
 
   // AshTestBase:
   void SetUp() override {
@@ -54,12 +49,11 @@ class UnifiedSliderViewPixelTest : public AshTestBase {
     AshTestBase::TearDown();
   }
 
-  absl::optional<pixel_test::InitParams> CreatePixelTestInitParams()
+  std::optional<pixel_test::InitParams> CreatePixelTestInitParams()
       const override {
     return pixel_test::InitParams();
   }
 
-  base::test::ScopedFeatureList feature_list_;
   std::unique_ptr<FakeDelegate> delegate_;
   std::unique_ptr<UnifiedVolumeSliderController>
       unified_volume_slider_controller_;
@@ -83,7 +77,8 @@ TEST_F(UnifiedSliderViewPixelTest, DefaultSlider) {
       /*revision_number=*/0, widget_.get()));
 }
 
-TEST_F(UnifiedSliderViewPixelTest, DefaultSliderMuted) {
+// TODO(crbug.com/1486954): Flaky.
+TEST_F(UnifiedSliderViewPixelTest, DISABLED_DefaultSliderMuted) {
   // Creates a `UnifiedVolumeView` that's on the main page. This slider is in
   // `QuickSettingsSlider::Style::kDefault` style.
   auto default_slider = std::make_unique<UnifiedVolumeView>(
@@ -96,7 +91,7 @@ TEST_F(UnifiedSliderViewPixelTest, DefaultSliderMuted) {
 
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
       "default_slider_muted",
-      /*revision_number=*/3, widget_.get()));
+      /*revision_number=*/4, widget_.get()));
 
   default_slider->RequestFocus();
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
@@ -121,7 +116,8 @@ TEST_F(UnifiedSliderViewPixelTest, RadioActiveSlider) {
       /*revision_number=*/0, widget_.get()));
 }
 
-TEST_F(UnifiedSliderViewPixelTest, RadioActiveSliderMuted) {
+// Flaky. See https://crbug.com/1484867
+TEST_F(UnifiedSliderViewPixelTest, DISABLED_RadioActiveSliderMuted) {
   // Creates a `UnifiedVolumeView` that's on the audio subpage. This slider is
   // in the `QuickSettingsSlider::Style::kRadioActive` style.
   auto radio_active_slider = std::make_unique<UnifiedVolumeView>(
@@ -134,7 +130,7 @@ TEST_F(UnifiedSliderViewPixelTest, RadioActiveSliderMuted) {
   // `QuickSettingsSlider::Style::kRadioActiveMuted`.
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
       "radio_active_slider_muted",
-      /*revision_number=*/3, widget_.get()));
+      /*revision_number=*/4, widget_.get()));
 
   radio_active_slider->RequestFocus();
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(

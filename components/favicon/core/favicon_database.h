@@ -5,8 +5,10 @@
 #ifndef COMPONENTS_FAVICON_CORE_FAVICON_DATABASE_H_
 #define COMPONENTS_FAVICON_CORE_FAVICON_DATABASE_H_
 
+#include <optional>
 #include <vector>
 
+#include "base/feature_list.h"
 #include "base/gtest_prod_util.h"
 #include "base/memory/ref_counted.h"
 #include "components/favicon/core/favicon_types.h"
@@ -14,7 +16,6 @@
 #include "sql/init_status.h"
 #include "sql/meta_table.h"
 #include "sql/statement.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base {
 class FilePath;
@@ -31,6 +32,8 @@ namespace favicon {
 // The minimum number of days after which last_requested field gets updated.
 // All earlier updates are ignored.
 static const int kFaviconUpdateLastRequestedAfterDays = 10;
+
+BASE_DECLARE_FEATURE(kFaviconDatabaseUseBuiltInRecoveryIfSupported);
 
 // This database interface is owned by the history backend and runs on the
 // history thread.
@@ -217,7 +220,7 @@ class FaviconDatabase {
   // |url| = http://www.google.com would match
   // |page_url| = https://www.google.com/search. The returned optional will be
   // empty if no such |page_url| exists.
-  absl::optional<GURL> FindFirstPageURLForHost(
+  std::optional<GURL> FindFirstPageURLForHost(
       const GURL& url,
       const favicon_base::IconTypeSet& required_icon_types);
 

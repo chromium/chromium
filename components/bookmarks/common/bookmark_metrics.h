@@ -74,8 +74,7 @@ void RecordTimeSinceLastScheduledSave(base::TimeDelta delta);
 
 // Records the time it takes to load the bookmark model on startup with a 10
 // second max, the time starts when BookmarkModel.Load is called.
-void RecordTimeToLoadAtStartup(base::TimeDelta delta,
-                               StorageStateForUma storage_state);
+void RecordTimeToLoadAtStartup(base::TimeDelta delta);
 
 // Records size of the bookmark file at startup.
 void RecordFileSizeAtStartup(int64_t total_bytes);

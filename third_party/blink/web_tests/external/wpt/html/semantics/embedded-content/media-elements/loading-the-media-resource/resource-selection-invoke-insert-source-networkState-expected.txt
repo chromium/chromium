@@ -1,4 +1,0 @@
-This is a testharness.js-based test.
-FAIL NOT invoking resource selection by inserting <source> when networkState is not NETWORK_EMPTY assert_equals: networkState in second script expected 2 but got 3
-Harness: the test ran to completion.
-

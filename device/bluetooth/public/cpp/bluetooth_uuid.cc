@@ -11,7 +11,6 @@
 
 #include "base/check_op.h"
 #include "base/strings/string_number_conversions.h"
-#include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
@@ -119,7 +118,7 @@ BluetoothUUID::~BluetoothUUID() = default;
 
 #if BUILDFLAG(IS_WIN)
 // static
-GUID BluetoothUUID::GetCanonicalValueAsGUID(base::StringPiece uuid) {
+GUID BluetoothUUID::GetCanonicalValueAsGUID(std::string_view uuid) {
   DCHECK_EQ(36u, uuid.size());
   std::u16string braced_uuid = u'{' + base::UTF8ToUTF16(uuid) + u'}';
   GUID guid;
@@ -136,7 +135,7 @@ std::vector<uint8_t> BluetoothUUID::GetBytes() const {
   if (!IsValid())
     return std::vector<uint8_t>();
 
-  base::StringPiece input(canonical_value());
+  std::string_view input(canonical_value());
 
   std::vector<uint8_t> bytes(16);
   base::span<uint8_t> out(bytes);

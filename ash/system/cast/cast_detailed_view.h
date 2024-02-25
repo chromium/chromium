@@ -29,9 +29,9 @@ class PillButton;
 // |CastSelectDefaultView|.
 class ASH_EXPORT CastDetailedView : public TrayDetailedView,
                                     public CastConfigController::Observer {
- public:
-  METADATA_HEADER(CastDetailedView);
+  METADATA_HEADER(CastDetailedView, TrayDetailedView)
 
+ public:
   explicit CastDetailedView(DetailedViewDelegate* delegate);
 
   CastDetailedView(const CastDetailedView&) = delete;
@@ -53,7 +53,7 @@ class ASH_EXPORT CastDetailedView : public TrayDetailedView,
 
   void UpdateReceiverListFromCachedData();
 
-  // Adds the view shown when no cast devices are available (with QsRevamp).
+  // Adds the view shown when no cast devices are available.
   void AddZeroStateView();
 
   // TrayDetailedView:
@@ -85,22 +85,21 @@ class ASH_EXPORT CastDetailedView : public TrayDetailedView,
   // associated `route`.
   std::unique_ptr<PillButton> CreateFreezeButton(const CastRoute& route);
 
-  // A mapping from the sink id to the receiver/activity data.
-  std::map<std::string, SinkAndRoute> sinks_and_routes_;
+  // A list of the receiver/activity data.
+  std::vector<SinkAndRoute> sinks_and_routes_;
 
   // A mapping from the view pointer to the associated activity sink id.
   std::map<views::View*, std::string> view_to_sink_map_;
 
   // A mapping of sink id to the associated extra views.
-  std::map<std::string, std::vector<views::View*>> sink_extra_views_map_;
+  std::map<std::string, std::vector<raw_ptr<views::View, VectorExperimental>>>
+      sink_extra_views_map_;
 
   // Special list item that, if clicked, launches the access code casting dialog
-  raw_ptr<HoverHighlightView, ExperimentalAsh> add_access_code_device_ =
-      nullptr;
+  raw_ptr<HoverHighlightView> add_access_code_device_ = nullptr;
 
-  // View shown when no cast devices are available (with QsRevamp).
-  raw_ptr<views::View, DanglingUntriaged | ExperimentalAsh> zero_state_view_ =
-      nullptr;
+  // View shown when no cast devices are available.
+  raw_ptr<views::View, DanglingUntriaged> zero_state_view_ = nullptr;
 
   base::WeakPtrFactory<CastDetailedView> weak_factory_{this};
 };

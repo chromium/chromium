@@ -83,13 +83,13 @@ jlong JNI_FontSizePrefs_Init(
 }
 
 void FontSizePrefsAndroid::OnFontScaleFactorChanged() {
-  JNIEnv* env = base::android::AttachCurrentThread();
+  JNIEnv* env = jni_zero::AttachCurrentThread();
   float factor = GetFontScaleFactor(env, java_ref_);
   Java_FontSizePrefs_onFontScaleFactorChanged(env, java_ref_, factor);
 }
 
 void FontSizePrefsAndroid::OnForceEnableZoomChanged() {
-  JNIEnv* env = base::android::AttachCurrentThread();
+  JNIEnv* env = jni_zero::AttachCurrentThread();
   bool enabled = GetForceEnableZoom(env, java_ref_);
   Java_FontSizePrefs_onForceEnableZoomChanged(env, java_ref_, enabled);
 }

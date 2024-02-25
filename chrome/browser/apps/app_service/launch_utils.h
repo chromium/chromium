@@ -13,6 +13,7 @@
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/apps/app_service/app_launch_params.h"
 #include "components/services/app_service/public/cpp/app_launch_util.h"
+#include "components/services/app_service/public/cpp/app_types.h"
 #include "components/services/app_service/public/cpp/intent.h"
 #include "extensions/common/constants.h"
 #include "ui/base/window_open_disposition.h"
@@ -39,6 +40,8 @@ class WebContents;
 }  // namespace content
 
 namespace apps {
+
+LaunchContainer ConvertWindowModeToAppLaunchContainer(WindowMode window_mode);
 
 bool IsInstalledApp(Profile* profile, const std::string& app_id);
 
@@ -118,7 +121,7 @@ struct AppIdsToLaunchForUrl {
   // Apps that can handle a given URL.
   std::vector<std::string> candidates;
   // The users preference for an app to handle a given URL.
-  absl::optional<std::string> preferred;
+  std::optional<std::string> preferred;
 };
 
 // Takes a `url` and returns a vector of app IDs and the users preferred choice

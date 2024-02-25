@@ -8,6 +8,7 @@
 #include <libevdev/libevdev.h>
 #include <linux/input.h>
 
+#include "base/containers/contains.h"
 #include "base/logging.h"
 #include "base/strings/stringprintf.h"
 #include "base/time/time.h"
@@ -24,6 +25,15 @@
 #include "ui/events/ozone/evdev/libgestures_glue/gesture_timer_provider.h"
 #include "ui/gfx/geometry/point_f.h"
 #include "ui/gfx/geometry/vector2d_f.h"
+
+// TODO(dpad): Remove this ifdef once Gestures library has been updated on ToT.
+#ifdef GESTURES_BUTTON_SIDE
+#define GESTURES_BUTTON_SIDE_ GESTURES_BUTTON_SIDE
+#define GESTURES_BUTTON_EXTRA_ GESTURES_BUTTON_EXTRA
+#else
+#define GESTURES_BUTTON_SIDE_ GESTURES_BUTTON_BACK
+#define GESTURES_BUTTON_EXTRA_ GESTURES_BUTTON_FORWARD
+#endif
 
 #ifndef REL_WHEEL_HI_RES
 #define REL_WHEEL_HI_RES 0x0b
@@ -82,6 +92,9 @@ HardwareProperties GestureHardwareProperties(
                       EvdevBitIsSet(evdev->info.rel_bitmask, REL_HWHEEL);
   hwprops.wheel_is_hi_res =
 	  EvdevBitIsSet(evdev->info.rel_bitmask, REL_WHEEL_HI_RES);
+  hwprops.reports_pressure =
+      EvdevBitIsSet(evdev->info.abs_bitmask, ABS_MT_PRESSURE) ||
+      EvdevBitIsSet(evdev->info.abs_bitmask, ABS_PRESSURE);
 
   return hwprops;
 }
@@ -103,6 +116,10 @@ const int kGestureScrollFingerCount = 2;
 
 // Number of fingers for swipe gestures.
 const int kGestureSwipeFingerCount = 3;
+
+static constexpr unsigned int kModifierEvdevCodes[] = {
+    KEY_LEFTALT,  KEY_RIGHTALT,  KEY_LEFTMETA,  KEY_RIGHTMETA,
+    KEY_LEFTCTRL, KEY_RIGHTCTRL, KEY_LEFTSHIFT, KEY_RIGHTSHIFT};
 
 }  // namespace
 
@@ -189,6 +206,11 @@ void GestureInterpreterLibevdevCros::OnLibEvdevCrosEvent(Evdev* evdev,
   hwstate.rel_wheel_hi_res = evstate->rel_wheel_hi_res;
   hwstate.rel_hwheel = evstate->rel_hwheel;
 
+  if (received_mouse_input_) {
+    received_mouse_input_.Run(evstate->rel_x);
+    received_mouse_input_.Run(evstate->rel_y);
+  }
+
   // Touch.
   FingerState fingers[Event_Get_Slot_Count(evdev)];
   memset(&fingers, 0, sizeof(fingers));
@@ -219,14 +241,14 @@ void GestureInterpreterLibevdevCros::OnLibEvdevCrosEvent(Evdev* evdev,
     hwstate.buttons_down |= GESTURES_BUTTON_MIDDLE;
   if (Event_Get_Button_Right(evdev))
     hwstate.buttons_down |= GESTURES_BUTTON_RIGHT;
-  if (Event_Get_Button(evdev, BTN_SIDE) ||
-      Event_Get_Button(evdev, BTN_BACK)) {
+  if (Event_Get_Button(evdev, BTN_BACK))
     hwstate.buttons_down |= GESTURES_BUTTON_BACK;
-  }
-  if (Event_Get_Button(evdev, BTN_EXTRA) ||
-      Event_Get_Button(evdev, BTN_FORWARD)) {
+  if (Event_Get_Button(evdev, BTN_SIDE))
+    hwstate.buttons_down |= GESTURES_BUTTON_SIDE_;
+  if (Event_Get_Button(evdev, BTN_FORWARD))
     hwstate.buttons_down |= GESTURES_BUTTON_FORWARD;
-  }
+  if (Event_Get_Button(evdev, BTN_EXTRA))
+    hwstate.buttons_down |= GESTURES_BUTTON_EXTRA_;
 
   // Check if this event has an MSC_TIMESTAMP field
   if (EvdevBitIsSet(evdev->info.msc_bitmask, MSC_TIMESTAMP)) {
@@ -533,6 +555,12 @@ void GestureInterpreterLibevdevCros::DispatchChangedMouseButtons(
     DispatchMouseButton(BTN_BACK, down, time);
   if (changed_buttons & GESTURES_BUTTON_FORWARD)
     DispatchMouseButton(BTN_FORWARD, down, time);
+#ifdef GESTURES_BUTTON_SIDE
+  if (changed_buttons & GESTURES_BUTTON_EXTRA_)
+    DispatchMouseButton(BTN_EXTRA, down, time);
+  if (changed_buttons & GESTURES_BUTTON_SIDE_)
+    DispatchMouseButton(BTN_SIDE, down, time);
+#endif
 }
 
 void GestureInterpreterLibevdevCros::DispatchMouseButton(unsigned int button,
@@ -557,10 +585,24 @@ void GestureInterpreterLibevdevCros::SetReceivedValidKeyboardInputCallback(
   received_keyboard_input_ = std::move(callback);
 }
 
+void GestureInterpreterLibevdevCros::SetReceivedValidMouseInputCallback(
+    base::RepeatingCallback<void(int)> callback) {
+  received_mouse_input_ = std::move(callback);
+}
+
 void GestureInterpreterLibevdevCros::DispatchChangedKeys(
     unsigned long* new_key_state,
     stime_t timestamp) {
   unsigned long key_state_diff[EVDEV_BITS_TO_LONGS(KEY_CNT)];
+
+  // Clear any set modifiers so they do not generate downstream events.
+  if (block_modifiers_) {
+    for (const auto key : kModifierEvdevCodes) {
+      if (EvdevBitIsSet(new_key_state, key)) {
+        EvdevClearBit(new_key_state, key);
+      }
+    }
+  }
 
   // Find changed keys.
   for (unsigned long i = 0; i < std::size(key_state_diff); ++i)
@@ -626,6 +668,26 @@ void GestureInterpreterLibevdevCros::ReleaseMouseButtons(stime_t timestamp) {
   DispatchMouseButton(BTN_RIGHT, false /* down */, timestamp);
   DispatchMouseButton(BTN_BACK, false /* down */, timestamp);
   DispatchMouseButton(BTN_FORWARD, false /* down */, timestamp);
+}
+
+void GestureInterpreterLibevdevCros::SetBlockModifiers(bool block_modifiers) {
+  // Release held modifiers if we are changing from not blocking modifiers ->
+  // blocking modifiers.
+  const bool should_release_held_modifiers =
+      block_modifiers && !block_modifiers_;
+  block_modifiers_ = block_modifiers;
+
+  // If we should release held modifiers, create just a copy of
+  // `prev_key_state_` to represent the new state. `DispatchChangedKeys` will
+  // update it in the normal code path to remove pressed modifier keys which
+  // will in turn generate the release events.
+  if (should_release_held_modifiers) {
+    unsigned long copy_key_state[EVDEV_BITS_TO_LONGS(KEY_CNT)];
+    static_assert(sizeof(copy_key_state) == sizeof(prev_key_state_));
+    memcpy(copy_key_state, prev_key_state_, sizeof(prev_key_state_));
+    DispatchChangedKeys(copy_key_state,
+                        ui::EventTimeStampToSeconds(ui::EventTimeForNow()));
+  }
 }
 
 }  // namespace ui

@@ -1,4 +1,0 @@
-This is a testharness.js-based test.
-FAIL shared worker in dedicated worker in shared worker assert_equals: expected "123" but got "Uncaught ReferenceError: Worker is not defined"
-Harness: the test ran to completion.
-

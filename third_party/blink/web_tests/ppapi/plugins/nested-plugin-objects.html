@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html>
+<script>
+
+var callbackCount = 0;
+
+function npapiCallback(x) {
+    callbackCount++;
+}
+
+function runTest()
+{
+    if (window.testRunner)
+        testRunner.dumpAsText();
+
+    var successCount = 0;
+    var plugin = document.getElementById("testPlugin");
+
+    var testObject = plugin.testObject;
+    plugin.testPassTestObject("npapiCallback", testObject);
+    var testObject2 = testObject.testObject;
+    plugin.testPassTestObject("npapiCallback", testObject2);
+    var testObject3 = testObject2.testObject;
+    plugin.testPassTestObject("npapiCallback", testObject3);
+
+    if (callbackCount == 3)
+        successCount++;
+
+    plugin.parentNode.removeChild(plugin);
+
+    try {
+        testObject.property;
+    } catch (e) {
+        if (e instanceof ReferenceError)
+            successCount++;
+    }
+
+    try {
+        testObject.property = 'hello';
+    } catch (e) {
+        if (e instanceof ReferenceError)
+            successCount++;
+    }
+
+    try {
+        testObject2.property;
+    } catch (e) {
+        if (e instanceof ReferenceError)
+            successCount++;
+    }
+
+    try {
+        testObject3.property;
+    } catch (e) {
+        if (e instanceof ReferenceError)
+            successCount++;
+    }
+
+    if (successCount == 5)
+        document.getElementById('result').innerHTML = 'SUCCESS';
+}
+
+</script>
+
+<body onload="runTest();">
+<pre>
+This tests that objects from plugin objects are properly cleaned up.
+
+Example:
+   plugin
+     ------- (Creates) ------ Object1
+                                  ------- (Creates) ------ Object2
+
+It is important that both Object1 and Object2 cleanup as a result of
+cleaning up the plugin.
+
+<div id="result">FAILURE</div>
+<embed id="testPlugin" type="application/x-blink-deprecated-test-plugin" width="200" height="200"></embed>
+</body>
+</html>

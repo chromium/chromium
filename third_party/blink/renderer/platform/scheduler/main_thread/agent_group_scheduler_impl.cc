@@ -63,7 +63,7 @@ void AgentGroupSchedulerImpl::Dispose() {
 std::unique_ptr<PageScheduler> AgentGroupSchedulerImpl::CreatePageScheduler(
     PageScheduler::Delegate* delegate) {
   auto page_scheduler = std::make_unique<PageSchedulerImpl>(delegate, *this);
-  main_thread_scheduler_.AddPageScheduler(page_scheduler.get());
+  main_thread_scheduler_->AddPageScheduler(page_scheduler.get());
   return page_scheduler;
 }
 
@@ -74,13 +74,13 @@ AgentGroupSchedulerImpl::DefaultTaskRunner() {
 
 scoped_refptr<base::SingleThreadTaskRunner>
 AgentGroupSchedulerImpl::CompositorTaskRunner() {
-  if (main_thread_scheduler_.scheduling_settings()
+  if (main_thread_scheduler_->scheduling_settings()
           .mbi_compositor_task_runner_per_agent_scheduling_group) {
     return compositor_task_runner_;
   }
   // We temporarily redirect the per-AGS compositor task runner to the main
   // thread's compositor task runner.
-  return main_thread_scheduler_.CompositorTaskRunner();
+  return main_thread_scheduler_->CompositorTaskRunner();
 }
 
 scoped_refptr<MainThreadTaskQueue>
@@ -89,7 +89,7 @@ AgentGroupSchedulerImpl::CompositorTaskQueue() {
 }
 
 WebThreadScheduler& AgentGroupSchedulerImpl::GetMainThreadScheduler() {
-  return main_thread_scheduler_;
+  return *main_thread_scheduler_;
 }
 
 void AgentGroupSchedulerImpl::BindInterfaceBroker(
@@ -106,7 +106,7 @@ AgentGroupSchedulerImpl::GetBrowserInterfaceBroker() {
 
 v8::Isolate* AgentGroupSchedulerImpl::Isolate() {
   // TODO(dtapuska): crbug.com/1051790 implement an Isolate per scheduler.
-  v8::Isolate* isolate = main_thread_scheduler_.isolate();
+  v8::Isolate* isolate = main_thread_scheduler_->isolate();
   DCHECK(isolate);
   return isolate;
 }

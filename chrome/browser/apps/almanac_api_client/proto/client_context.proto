@@ -17,7 +17,7 @@ message ClientDeviceContext {
   // The channel that this device is enrolled in.
   enum Channel {
     // Default for deserialization when an unexpected value is encountered.
-    // Indicates to the client that the server has a new platform and needs
+    // Indicates to the client that the server has a new channel and needs
     // the proto file updated.
     CHANNEL_UNKNOWN = 0;
 
@@ -32,6 +32,10 @@ message ClientDeviceContext {
 
     // Stable channel.
     CHANNEL_STABLE = 5;
+
+    // Default channel for builds that don't define a channel e.g. all builds
+    // except official signed builds.
+    CHANNEL_DEFAULT = 6;
 
     // No longer used.
     reserved "CHANNEL_INTERNAL";

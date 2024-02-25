@@ -6,6 +6,7 @@
 
 #include "base/check.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/weak_ptr.h"
 #include "base/notreached.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
@@ -14,7 +15,7 @@
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/chrome_pages.h"
 #include "chrome/browser/ui/global_error/global_error_bubble_view_base.h"
-#include "chrome/grit/chromium_strings.h"
+#include "chrome/grit/branded_strings.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/strings/grit/components_strings.h"
 #include "extensions/browser/blocklist_extension_prefs.h"
@@ -189,7 +190,13 @@ class ExtensionGlobalError : public GlobalErrorWithStandardBubble {
   }
 
   void BubbleViewCancelButtonPressed(Browser* browser) override {
-    NOTREACHED();
+    // Even though there is no cancel button, users can still cancel the dialog
+    // by pressing escape.
+    delegate_->OnAlertClosed();
+  }
+
+  base::WeakPtr<GlobalErrorWithStandardBubble> AsWeakPtr() override {
+    return weak_ptr_factory_.GetWeakPtr();
   }
 
   void BubbleViewDetailsButtonPressed(Browser* browser) override {
@@ -201,6 +208,7 @@ class ExtensionGlobalError : public GlobalErrorWithStandardBubble {
   int app_count_ = 0;
   int extension_count_ = 0;
   bool item_blocked_by_policy_exists_ = false;
+  base::WeakPtrFactory<ExtensionGlobalError> weak_ptr_factory_{this};
 
   ExtensionGlobalError(const ExtensionGlobalError&) = delete;
   ExtensionGlobalError& operator=(const ExtensionGlobalError&) = delete;

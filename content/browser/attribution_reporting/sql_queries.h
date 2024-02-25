@@ -14,9 +14,13 @@ static_assert(static_cast<int>(
                   attribution_reporting::mojom::ReportType::kEventLevel) == 0,
               "update `report_type=0` clause below");
 inline constexpr const char kMinPrioritySql[] =
-    "SELECT metadata,trigger_time,report_id FROM reports "
-    "WHERE source_id=? AND report_time=? AND report_type=0";
+    "SELECT metadata,report_id FROM reports "
+    "WHERE source_id=? AND initial_report_time=? AND report_type=0";
 
+// Rows are ordered by source_id instead of source_time because the former is
+// strictly increasing while the latter is subject to clock adjustments. This
+// property is only guaranteed because of the use of AUTOINCREMENT on the
+// source_id column, which prevents reuse upon row deletion.
 inline constexpr const char kGetMatchingSourcesSql[] =
     "SELECT I.source_id,I.num_attributions,I.aggregatable_budget_consumed "
     "FROM sources I "
@@ -25,7 +29,7 @@ inline constexpr const char kGetMatchingSourcesSql[] =
     "WHERE I.reporting_origin=? "
     "AND(I.event_level_active=1 OR I.aggregatable_active=1)"
     "AND I.expiry_time>? "
-    "ORDER BY I.priority DESC,I.source_time DESC";
+    "ORDER BY I.priority DESC,I.source_id DESC";
 
 inline constexpr const char kSelectExpiredSourcesSql[] =
     "SELECT source_id FROM sources "
@@ -54,17 +58,20 @@ inline constexpr const char kScanReportsData[] =
 inline constexpr const char kDeleteVestigialConversionSql[] =
     "DELETE FROM reports WHERE source_id=? RETURNING report_type";
 
-inline constexpr const char kCountSourcesSql[] =
+inline constexpr const char kCountActiveSourcesFromSourceOriginSql[] =
     "SELECT COUNT(*)FROM sources "
     "WHERE source_origin=? "
-    "AND(event_level_active=1 OR aggregatable_active=1)";
+    "AND(event_level_active=1 OR aggregatable_active=1)"
+    "AND expiry_time>?";
+
+inline constexpr const char kCountSourcesSql[] = "SELECT COUNT(*)FROM sources";
 
 inline constexpr const char kCountReportsSql[] =
     "SELECT COUNT(*)FROM dedup_keys "
     "WHERE source_id=? AND report_type=? AND dedup_key=?";
 
 inline constexpr const char kDedupKeySql[] =
-    "SELECT dedup_key FROM dedup_keys WHERE source_id=? AND report_type=?";
+    "SELECT dedup_key,report_type FROM dedup_keys WHERE source_id=?";
 
 inline constexpr const char kGetSourcesDataKeysSql[] =
     "SELECT reporting_origin FROM sources";

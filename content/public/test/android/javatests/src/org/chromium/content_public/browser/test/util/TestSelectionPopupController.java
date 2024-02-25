@@ -8,14 +8,15 @@ import android.content.Intent;
 import android.view.textclassifier.TextClassifier;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.content_public.browser.ActionModeCallback;
 import org.chromium.content_public.browser.ActionModeCallbackHelper;
-import org.chromium.content_public.browser.AdditionalSelectionMenuItemProvider;
 import org.chromium.content_public.browser.SelectionClient;
 import org.chromium.content_public.browser.SelectionPopupController;
+import org.chromium.content_public.browser.selection.SelectionActionMenuDelegate;
 import org.chromium.content_public.browser.selection.SelectionDropdownMenuDelegate;
 
 /**
@@ -27,10 +28,6 @@ public class TestSelectionPopupController implements SelectionPopupController {
 
     @Override
     public void setActionModeCallback(ActionModeCallback callback) {}
-
-    @Override
-    public void setNonSelectionAdditionalMenuItemProvider(
-            AdditionalSelectionMenuItemProvider provider) {}
 
     @Override
     public SelectionClient.ResultCallback getResultCallback() {
@@ -101,4 +98,7 @@ public class TestSelectionPopupController implements SelectionPopupController {
     @Override
     public void setDropdownMenuDelegate(
             @NonNull SelectionDropdownMenuDelegate dropdownMenuDelegate) {}
+
+    @Override
+    public void setSelectionActionMenuDelegate(@Nullable SelectionActionMenuDelegate delegate) {}
 }

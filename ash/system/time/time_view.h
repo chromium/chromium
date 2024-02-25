@@ -5,18 +5,15 @@
 #ifndef ASH_SYSTEM_TIME_TIME_VIEW_H_
 #define ASH_SYSTEM_TIME_TIME_VIEW_H_
 
-#include <memory>
-
 #include "ash/ash_export.h"
 #include "ash/system/model/clock_observer.h"
-#include "ash/system/tray/actionable_view.h"
 #include "base/i18n/time_formatting.h"
 #include "base/memory/raw_ptr.h"
 #include "base/timer/timer.h"
-#include "components/session_manager/session_manager_types.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/gfx/font_list.h"
 #include "ui/gfx/shadow_value.h"
+#include "ui/views/controls/button/button.h"
 #include "ui/views/view.h"
 
 namespace base {
@@ -35,6 +32,8 @@ class ClockModel;
 // The Date view, which is a date in a calendar icon, for vertical time view.
 // For horizontal time view, there's no Date Icon View and it shows a text date.
 class VerticalDateView : public views::View {
+  METADATA_HEADER(VerticalDateView, views::View)
+
  public:
   VerticalDateView();
   VerticalDateView(const VerticalDateView& other) = delete;
@@ -53,16 +52,16 @@ class VerticalDateView : public views::View {
  private:
   friend class TimeViewTest;
 
-  raw_ptr<views::ImageView, ExperimentalAsh> icon_ = nullptr;
-  raw_ptr<views::Label, ExperimentalAsh> text_label_ = nullptr;
+  raw_ptr<views::ImageView> icon_ = nullptr;
+  raw_ptr<views::Label> text_label_ = nullptr;
 };
 
 // Tray view used to display the current date or time based on the passed in
 // `Type`. Exported for tests.
-class ASH_EXPORT TimeView : public ActionableView, public ClockObserver {
- public:
-  METADATA_HEADER(TimeView);
+class ASH_EXPORT TimeView : public views::View, public ClockObserver {
+  METADATA_HEADER(TimeView, views::View)
 
+ public:
   enum class ClockLayout {
     HORIZONTAL_CLOCK,
     VERTICAL_CLOCK,
@@ -93,7 +92,7 @@ class ASH_EXPORT TimeView : public ActionableView, public ClockObserver {
   // Updates the time text shadow values.
   void SetTextShadowValues(const gfx::ShadowValues& shadows);
 
-  // For Jelly: updates `date_view_` color id if exists.
+  // For Jelly: updates `vertical_date_view_` color id if exists.
   void SetDateViewColorId(ui::ColorId color_id);
 
   // ClockObserver:
@@ -104,17 +103,16 @@ class ASH_EXPORT TimeView : public ActionableView, public ClockObserver {
 
   base::HourClockType GetHourTypeForTesting() const;
 
-  views::Label* horizontal_label_for_test() { return horizontal_label_; }
-  views::Label* horizontal_label_date_for_test() {
-    return horizontal_label_date_;
+  views::Label* horizontal_time_label_for_test() {
+    return horizontal_time_label_;
+  }
+  views::Label* horizontal_date_label_for_test() {
+    return horizontal_date_label_;
   }
 
  private:
   friend class TimeViewTest;
   friend class TimeTrayItemViewTest;
-
-  // ActionableView:
-  bool PerformAction(const ui::Event& event) override;
 
   // views::View:
   void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
@@ -138,32 +136,29 @@ class ASH_EXPORT TimeView : public ActionableView, public ClockObserver {
   // Starts |timer_| to schedule the next update.
   void SetTimer(const base::Time& now);
 
-  // Subviews used for different layouts.
-  // When either of the subviews is in use, it transfers the ownership to the
-  // views hierarchy and becomes nullptr.
-  std::unique_ptr<views::View> horizontal_view_;
-  std::unique_ptr<views::View> vertical_view_;
+  // The `TimeView` of `Type::kTime` shows a single label in horizontal shelf,
+  // or two stacked labels in vertical shelf. The container views own the
+  // associated labels for vertical/horizontal, and the container views are
+  // owned by this view by the views hierarchy.
+  raw_ptr<views::View> horizontal_time_label_container_ = nullptr;
+  raw_ptr<views::Label> horizontal_time_label_ = nullptr;
+  raw_ptr<views::View> vertical_time_label_container_ = nullptr;
+  raw_ptr<views::Label> vertical_label_hours_ = nullptr;
+  raw_ptr<views::Label> vertical_label_minutes_ = nullptr;
 
-  // Label text used for the normal horizontal shelf.
-  raw_ptr<views::Label, ExperimentalAsh> horizontal_label_ = nullptr;
-  raw_ptr<views::Label, DanglingUntriaged | ExperimentalAsh>
-      horizontal_label_date_ = nullptr;
-
-  // The horizontal and vertical date view for the `DateTray`.
-  std::unique_ptr<views::View> horizontal_date_view_;
-  std::unique_ptr<views::View> vertical_date_view_;
-
-  // The time label is split into two lines for the vertical shelf.
-  raw_ptr<views::Label, ExperimentalAsh> vertical_label_hours_ = nullptr;
-  raw_ptr<views::Label, ExperimentalAsh> vertical_label_minutes_ = nullptr;
-
-  // The vertical date in a calendar icon view for the vertical shelf.
-  raw_ptr<VerticalDateView, ExperimentalAsh> date_view_ = nullptr;
+  // The `TimeView` of `Type::kDate` shows a single date label in horizontal
+  // shelf, or a calendar image with a date number in vertical shelf.  The
+  // container views own the associated views for vertical/horizontal, and the
+  // container views are owned by this view by the views hierarchy.
+  raw_ptr<views::View> horizontal_date_label_container_ = nullptr;
+  raw_ptr<views::Label, DanglingUntriaged> horizontal_date_label_ = nullptr;
+  raw_ptr<views::View> vertical_date_view_container_ = nullptr;
+  raw_ptr<VerticalDateView> vertical_date_view_ = nullptr;
 
   // Invokes UpdateText() when the displayed time should change.
   base::OneShotTimer timer_;
 
-  const raw_ptr<ClockModel, ExperimentalAsh> model_;
+  const raw_ptr<ClockModel> model_;
 
   // The type (kDate or kTime) of this time view.
   const Type type_;

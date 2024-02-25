@@ -5,6 +5,7 @@
 #include "chromeos/ash/services/secure_channel/client_connection_parameters.h"
 
 #include "chromeos/ash/components/multidevice/logging/logging.h"
+#include "chromeos/ash/services/secure_channel/public/mojom/secure_channel.mojom-shared.h"
 
 namespace ash::secure_channel {
 
@@ -38,12 +39,32 @@ void ClientConnectionParameters::SetConnectionAttemptFailed(
 
 void ClientConnectionParameters::SetConnectionSucceeded(
     mojo::PendingRemote<mojom::Channel> channel,
-    mojo::PendingReceiver<mojom::MessageReceiver> message_receiver_receiver) {
+    mojo::PendingReceiver<mojom::MessageReceiver> message_receiver_receiver,
+    mojo::PendingReceiver<mojom::NearbyConnectionStateListener>
+        nearby_connection_state_listener_receiver) {
   static const std::string kFunctionName = "SetConnectionSucceeded";
   VerifyDelegateWaitingForResponse(kFunctionName);
   has_invoked_delegate_function_ = true;
-  PerformSetConnectionSucceeded(std::move(channel),
-                                std::move(message_receiver_receiver));
+  PerformSetConnectionSucceeded(
+      std::move(channel), std::move(message_receiver_receiver),
+      std::move(nearby_connection_state_listener_receiver));
+}
+
+void ClientConnectionParameters::SetBleDiscoveryState(
+    mojom::DiscoveryResult discovery_result,
+    std::optional<mojom::DiscoveryErrorCode> potential_error_code) {
+  UpdateBleDiscoveryState(discovery_result, potential_error_code);
+}
+
+void ClientConnectionParameters::SetNearbyConnectionState(
+    mojom::NearbyConnectionStep step,
+    mojom::NearbyConnectionStepResult result) {
+  UpdateNearbyConnectionState(step, result);
+}
+
+void ClientConnectionParameters::SetSecureChannelAuthenticationState(
+    mojom::SecureChannelState secure_channel_state) {
+  UpdateSecureChannelAuthenticationState(secure_channel_state);
 }
 
 bool ClientConnectionParameters::operator==(

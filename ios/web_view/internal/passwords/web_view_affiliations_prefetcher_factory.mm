@@ -4,11 +4,12 @@
 // found in the LICENSE file.
 
 #import "ios/web_view/internal/passwords/web_view_affiliations_prefetcher_factory.h"
+
 #import "base/no_destructor.h"
 #import "components/keyed_service/ios/browser_state_dependency_manager.h"
 #import "components/password_manager/core/browser/affiliation/affiliations_prefetcher.h"
 #import "ios/web/public/browser_state.h"
-#import "ios/web_view/internal/passwords/web_view_affiliation_service_factory.h"
+#import "ios/web_view/internal/affiliations/web_view_affiliation_service_factory.h"
 
 WebViewAffiliationsPrefetcherFactory*
 WebViewAffiliationsPrefetcherFactory::GetInstance() {
@@ -36,9 +37,7 @@ WebViewAffiliationsPrefetcherFactory::~WebViewAffiliationsPrefetcherFactory() =
 std::unique_ptr<KeyedService>
 WebViewAffiliationsPrefetcherFactory::BuildServiceInstanceFor(
     web::BrowserState* browser_state) const {
-  password_manager::AffiliationService* affiliation_service =
-      ios_web_view::WebViewAffiliationServiceFactory::GetForBrowserState(
-          browser_state);
   return std::make_unique<password_manager::AffiliationsPrefetcher>(
-      affiliation_service);
+      ios_web_view::WebViewAffiliationServiceFactory::GetForBrowserState(
+          browser_state));
 }

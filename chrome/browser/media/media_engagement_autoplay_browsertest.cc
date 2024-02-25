@@ -183,7 +183,8 @@ class MediaEngagementAutoplayBrowserTest
   void ApplyEmptyPreloadedList() {
     // Get the path relative to the source root.
     base::FilePath source_root;
-    EXPECT_TRUE(base::PathService::Get(base::DIR_SOURCE_ROOT, &source_root));
+    EXPECT_TRUE(
+        base::PathService::Get(base::DIR_SRC_TEST_DATA_ROOT, &source_root));
 
     base::ScopedAllowBlockingForTesting allow_blocking;
     EXPECT_TRUE(MediaEngagementPreloadedList::GetInstance()->LoadFromFile(

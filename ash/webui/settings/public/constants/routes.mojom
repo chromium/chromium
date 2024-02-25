@@ -116,6 +116,8 @@ enum Subpage {
   // Note: Value 705 was for deprecated kOnStartup. Do not reuse.
   kAppNotifications = 706,
   kArcVmUsbPreferences = 707,
+  kManageIsolatedWebApps = 708,
+  kAppNotificationsManager = 709,
 
   // Crostini section.
   kCrostiniDetails = 800,
@@ -140,16 +142,21 @@ enum Subpage {
   kFingerprintV2 = 1102,
   kSmartPrivacy = 1103,
   kPrivacyHub = 1104,
+  kPrivacyHubMicrophone = 1105,
+  kPrivacyHubCamera = 1106,
+  kPrivacyHubGeolocation = 1107,
+  kPrivacyHubGeolocationAdvanced = 1108,
 
   // Languages and Input section.
   // 1200 was used for kLanguagesAndInputDetails. Do not reuse.
   // 1201 was used for kManageInputMethods. Do not reuse.
-  kSmartInputs = 1202,
+  // 1202 was used for kSmartInputs. Do not reuse.
   kInputMethodOptions = 1203,
   kLanguages = 1204,
   kInput = 1205,
   kEditDictionary = 1206,
   kJapaneseManageUserDictionary = 1207,
+  kAppLanguages = 1208,
 
   // Files section.
   kNetworkFileShares = 1300,
@@ -172,6 +179,8 @@ enum Subpage {
   kAudioAndCaptions = 1509,
   kSelectToSpeak = 1510,
   kChromeVox = 1511,
+  kFaceGazeCursorSettings = 1512,
+  kFaceGazeFacialExpressionsSettings = 1513,
 
   // Note: Reset section has no subpages.
 
@@ -253,6 +262,7 @@ const string kSearchSubpagePath = "osSearch/search";
 const string kAppsSectionPath = "apps";
 const string kAppManagementSubpagePath = "app-management";
 const string kAppNotificationsSubpagePath = "app-notifications";
+const string kAppNotificationsManagerSubpagePath = "app-notifications-manager";
 const string kAppDetailsSubpagePath = "app-management/detail";
 const string kGooglePlayStoreSubpagePath = "androidAppsDetails";
 const string kPluginVmSharedPathsSubpagePath =
@@ -261,6 +271,7 @@ const string kPluginVmUsbPreferencesSubpagePath =
     "app-management/pluginVm/sharedUsbDevices";
 const string kArcVmUsbPreferencesSubpagePath =
      "androidAppsDetails/sharedUsbDevices";
+const string kManageIsolatedWebAppsSubpagePath = "manage-isolated-web-apps";
 
 // Crostini section.
 const string kCrostiniSectionPath = "crostini";
@@ -288,16 +299,23 @@ const string kSecurityAndSignInSubpagePathV2 = "osPrivacy/lockScreen";
 const string kFingerprintSubpagePathV2 = "osPrivacy/lockScreen/fingerprint";
 const string kSmartPrivacySubpagePath = "osPrivacy/smartPrivacy";
 const string kPrivacyHubSubpagePath = "osPrivacy/privacyHub";
+const string kPrivacyHubMicrophoneSubpagePath =
+     "osPrivacy/privacyHub/microphone";
+const string kPrivacyHubCameraSubpagePath = "osPrivacy/privacyHub/camera";
+const string kPrivacyHubGeolocationSubpagePath =
+      "osPrivacy/privacyHub/geolocation";
+const string kPrivacyHubGeolocationAdvancedSubpagePath =
+      "osPrivacy/privacyHub/geolocation/advanced";
 
 // Languages and Input section.
 const string kLanguagesAndInputSectionPath = "osLanguages";
-const string kSmartInputsSubpagePath = "osLanguages/smartInputs";
 const string kInputMethodOptionsSubpagePath = "osLanguages/inputMethodOptions";
 const string kLanguagesSubpagePath = "osLanguages/languages";
 const string kInputSubpagePath = "osLanguages/input";
 const string kEditDictionarySubpagePath = "osLanguages/editDictionary";
 const string kJapaneseManageUserDictionarySubpagePath =
     "osLanguages/japaneseManageUserDictionary";
+const string kAppLanguagesSubpagePath = "osLanguages/languages/appLanguages";
 
 // Files section.
 const string kFilesSectionPath = "files";
@@ -323,6 +341,10 @@ const string kAudioAndCaptionsSubpagePath = "audioAndCaptions";
 const string kTextToSpeechSubpagePath = "manageAccessibility/tts";
 const string kSwitchAccessOptionsSubpagePath =
     "manageAccessibility/switchAccess";
+const string kFaceGazeCursorSettingsSubpagePath =
+    "manageAccessibility/faceGazeCursor";
+const string kFaceGazeFacialExpressionsSettingsSubpagePath =
+    "manageAccessibility/faceGazeExpressions";
 
 // Reset section.
 const string kResetSectionPath = "osReset";

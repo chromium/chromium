@@ -123,13 +123,34 @@ __gCrWeb.common.trim = function(str) {
 /**
  * Extracts the webpage URL from the given URL by removing the query
  * and the reference (aka fragment) from the URL.
+ *
+ * IMPORTANT: Not security proof, do not assume the URL returns by this
+ * function reflects what is actually on the page as the hosted page can
+ * modify the behavior of the window.URL prototype.
+ *
  * @param {string} url Web page URL.
- * @return {string} Web page URL with query and reference removed.
+ * @return {string} Web page URL with query and reference removed. An empty
+ *   string if the window.URL prototype was changed by the hosted page.
  */
 __gCrWeb.common.removeQueryAndReferenceFromURL = function(url) {
   var parsed = new URL(url);
-  // For some protocols (eg. data:, javascript:) URL.origin is "null" so
-  // URL.protocol is used instead.
+
+  const isPropertyInvalid = (value) => typeof value !== 'string';
+
+  if (isPropertyInvalid(parsed.origin) || isPropertyInvalid(parsed.protocol) ||
+      isPropertyInvalid(parsed.pathname)) {
+    // If at least one of these properties is not of a string type, it is a sign
+    // that the window.URL prototype was changed by the hosted page in the page
+    // content world. Return an empty string in that case as URL has an
+    // undefined behavior. This doesn't cover all window.URL mutations, but it
+    // at least shields against getting non-string values from these
+    // properties. The returned URL will be malformed in the worst case but is
+    // guaranteed to be a string.
+    return '';
+  }
+
+  // For some protocols (eg. data:, javascript:) URL.origin is "null" string
+  // (not the type) so URL.protocol is used instead.
   return (parsed.origin !== 'null' ? parsed.origin : parsed.protocol) +
       parsed.pathname;
 };

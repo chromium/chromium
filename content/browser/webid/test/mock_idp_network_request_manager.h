@@ -5,9 +5,11 @@
 #ifndef CONTENT_BROWSER_WEBID_TEST_MOCK_IDP_NETWORK_REQUEST_MANAGER_H_
 #define CONTENT_BROWSER_WEBID_TEST_MOCK_IDP_NETWORK_REQUEST_MANAGER_H_
 
+#include <optional>
+
 #include "content/browser/webid/idp_network_request_manager.h"
 #include "testing/gmock/include/gmock/gmock.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
+#include "third_party/blink/public/mojom/webid/federated_auth_request.mojom.h"
 
 namespace content {
 
@@ -21,19 +23,22 @@ class MockIdpNetworkRequestManager : public IdpNetworkRequestManager {
       delete;
 
   MOCK_METHOD2(FetchWellKnown, void(const GURL&, FetchWellKnownCallback));
-  MOCK_METHOD4(FetchConfig, void(const GURL&, int, int, FetchConfigCallback));
+  MOCK_METHOD5(
+      FetchConfig,
+      void(const GURL&, blink::mojom::RpMode, int, int, FetchConfigCallback));
   MOCK_METHOD3(FetchClientMetadata,
                void(const GURL&,
                     const std::string&,
                     FetchClientMetadataCallback));
   MOCK_METHOD3(SendAccountsRequest,
                void(const GURL&, const std::string&, AccountsRequestCallback));
-  MOCK_METHOD5(SendTokenRequest,
+  MOCK_METHOD6(SendTokenRequest,
                void(const GURL&,
                     const std::string&,
                     const std::string&,
                     TokenRequestCallback,
-                    ContinueOnCallback));
+                    ContinueOnCallback,
+                    RecordErrorMetricsCallback));
   MOCK_METHOD5(SendSuccessfulTokenRequestMetrics,
                void(const GURL&,
                     base::TimeDelta,

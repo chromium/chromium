@@ -7,9 +7,7 @@ package org.chromium.chrome.browser.download;
 import org.chromium.components.offline_items_collection.ContentId;
 import org.chromium.components.offline_items_collection.PendingState;
 
-/**
- * Class for reporting the status of a download.
- */
+/** Class for reporting the status of a download. */
 public interface DownloadNotifier {
     /**
      * Add a download successful notification.
@@ -18,8 +16,11 @@ public interface DownloadNotifier {
      * @param canResolve Whether the download can be resolved to any activity.
      * @param isSupportedMimeType Whether the MIME type can be viewed inside browser.
      */
-    void notifyDownloadSuccessful(DownloadInfo downloadInfo, long systemDownloadId,
-            boolean canResolve, boolean isSupportedMimeType);
+    void notifyDownloadSuccessful(
+            DownloadInfo downloadInfo,
+            long systemDownloadId,
+            boolean canResolve,
+            boolean isSupportedMimeType);
 
     /**
      * Add a download failed notification.

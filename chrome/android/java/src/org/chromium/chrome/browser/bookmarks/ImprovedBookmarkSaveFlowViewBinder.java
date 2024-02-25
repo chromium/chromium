@@ -4,24 +4,25 @@
 
 package org.chromium.chrome.browser.bookmarks;
 
-import android.view.View;
-
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 
 /** ViewBinder for the improved bookmarks save flow. */
 class ImprovedBookmarkSaveFlowViewBinder {
-    static void bind(PropertyModel model, View view, PropertyKey propertyKey) {
-        ImprovedBookmarkSaveFlowView improvedSaveFlow = (ImprovedBookmarkSaveFlowView) view;
+    static void bind(
+            PropertyModel model,
+            ImprovedBookmarkSaveFlowView improvedSaveFlow,
+            PropertyKey propertyKey) {
         if (propertyKey == ImprovedBookmarkSaveFlowProperties.BOOKMARK_ROW_CLICK_LISTENER) {
             improvedSaveFlow.setBookmarkRowClickListener(
                     model.get(ImprovedBookmarkSaveFlowProperties.BOOKMARK_ROW_CLICK_LISTENER));
         } else if (propertyKey == ImprovedBookmarkSaveFlowProperties.BOOKMARK_ROW_ICON) {
             improvedSaveFlow.setBookmarkDrawable(
                     model.get(ImprovedBookmarkSaveFlowProperties.BOOKMARK_ROW_ICON));
-        } else if (propertyKey == ImprovedBookmarkSaveFlowProperties.FOLDER_TEXT) {
-            improvedSaveFlow.setFolderText(
-                    model.get(ImprovedBookmarkSaveFlowProperties.FOLDER_TEXT));
+        } else if (propertyKey == ImprovedBookmarkSaveFlowProperties.TITLE) {
+            improvedSaveFlow.setTitle(model.get(ImprovedBookmarkSaveFlowProperties.TITLE));
+        } else if (propertyKey == ImprovedBookmarkSaveFlowProperties.SUBTITLE) {
+            improvedSaveFlow.setSubtitle(model.get(ImprovedBookmarkSaveFlowProperties.SUBTITLE));
         } else if (propertyKey == ImprovedBookmarkSaveFlowProperties.PRICE_TRACKING_VISIBLE) {
             improvedSaveFlow.setPriceTrackingUiVisible(
                     model.get(ImprovedBookmarkSaveFlowProperties.PRICE_TRACKING_VISIBLE));

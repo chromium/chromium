@@ -17,6 +17,7 @@ build_webui("build") {
 
   non_web_component_files = [ "certificate_viewer.ts" ]
 
+  ts_composite = true
   ts_definitions = [ "//tools/typescript/definitions/chrome_send.d.ts" ]
   ts_deps = [
     "//ui/webui/resources/cr_elements:build_ts",

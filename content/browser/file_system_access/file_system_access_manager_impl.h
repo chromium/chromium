@@ -5,6 +5,8 @@
 #ifndef CONTENT_BROWSER_FILE_SYSTEM_ACCESS_FILE_SYSTEM_ACCESS_MANAGER_IMPL_H_
 #define CONTENT_BROWSER_FILE_SYSTEM_ACCESS_FILE_SYSTEM_ACCESS_MANAGER_IMPL_H_
 
+#include <optional>
+
 #include "base/containers/flat_set.h"
 #include "base/containers/unique_ptr_adapters.h"
 #include "base/files/file_path.h"
@@ -29,6 +31,7 @@
 #include "content/public/browser/file_system_access_entry_factory.h"
 #include "content/public/browser/file_system_access_permission_context.h"
 #include "content/public/browser/file_system_access_permission_grant.h"
+#include "content/public/browser/global_routing_id.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
@@ -36,7 +39,6 @@
 #include "mojo/public/cpp/bindings/unique_receiver_set.h"
 #include "storage/browser/file_system/file_system_operation_runner.h"
 #include "storage/browser/file_system/file_system_url.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/mojom/file_system_access/file_system_access_access_handle_host.mojom.h"
 #include "third_party/blink/public/mojom/file_system_access/file_system_access_capacity_allocation_host.mojom.h"
 #include "third_party/blink/public/mojom/file_system_access/file_system_access_data_transfer_token.mojom.h"
@@ -122,7 +124,7 @@ class CONTENT_EXPORT FileSystemAccessManagerImpl
   // context for this request.
   void GetSandboxedFileSystem(
       const BindingContext& binding_context,
-      const absl::optional<storage::BucketLocator>& bucket,
+      const std::optional<storage::BucketLocator>& bucket,
       GetSandboxedFileSystemCallback callback);
 
   // blink::mojom::FileSystemAccessManager:
@@ -154,6 +156,8 @@ class CONTENT_EXPORT FileSystemAccessManagerImpl
       const std::vector<uint8_t>& bits,
       mojo::PendingReceiver<blink::mojom::FileSystemAccessTransferToken> token)
       override;
+  void Clone(mojo::PendingReceiver<storage::mojom::FileSystemAccessContext>
+                 receiver) override;
 
   // FileSystemAccessEntryFactory:
   blink::mojom::FileSystemAccessEntryPtr CreateFileEntryFromPath(
@@ -169,7 +173,7 @@ class CONTENT_EXPORT FileSystemAccessManagerImpl
   void ResolveTransferToken(
       mojo::PendingRemote<blink::mojom::FileSystemAccessTransferToken>
           transfer_token,
-      base::OnceCallback<void(absl::optional<storage::FileSystemURL>)> callback)
+      base::OnceCallback<void(std::optional<storage::FileSystemURL>)> callback)
       override;
 
   // Creates a new FileSystemAccessFileHandleImpl for a given url. Assumes the
@@ -186,18 +190,47 @@ class CONTENT_EXPORT FileSystemAccessManagerImpl
                         const storage::FileSystemURL& url,
                         const SharedHandleState& handle_state);
 
-  // Attempts to take a lock of `lock_type` on `url`. Returns the lock if
-  // successful. The lock is released when the returned object is destroyed.
-  scoped_refptr<FileSystemAccessLockManager::Lock> TakeLock(
-      const storage::FileSystemURL& url,
-      FileSystemAccessLockManager::LockType lock_type);
+  // Attempts to take a lock of `lock_type` on `url`. Passes a handle of the
+  // lock to `callback` if successful. The lock is released when there are no
+  // handles to it.
+  //
+  // `binding_context` is the `BindingContext` of the frame that holds this
+  // handle.
+  //
+  // If there is an existing lock that is in contention with the `lock_type`, it
+  // will evict pages that hold the existing lock if they are all inactive (e.g.
+  // in the BFCache).
+  void TakeLock(const BindingContext& binding_context,
+                const storage::FileSystemURL& url,
+                FileSystemAccessLockManager::LockType lock_type,
+                FileSystemAccessLockManager::TakeLockCallback callback);
 
-  // Creates a new shared lock type.
-  [[nodiscard]] FileSystemAccessLockManager::LockType CreateSharedLockType()
-      const;
+  // Returns true if there is not an existing lock on `url` that is contentious
+  // with `lock_type`.
+  //
+  // This may return `false` but the same arguments would succeed for `TakeLock`
+  // since `TakeLock` may evict pages to take the lock.
+  bool IsContentious(const storage::FileSystemURL& url,
+                     FileSystemAccessLockManager::LockType lock_type);
+
+  // Creates a new shared lock type for testing.
+  [[nodiscard]] FileSystemAccessLockManager::LockType
+  CreateSharedLockTypeForTesting() const;
 
   // Gets the exclusive lock type.
   [[nodiscard]] FileSystemAccessLockManager::LockType GetExclusiveLockType()
+      const;
+
+  // Gets the shared lock type for SyncAccessHandle's `readonly` mode.
+  [[nodiscard]] FileSystemAccessLockManager::LockType GetSAHReadOnlyLockType()
+      const;
+
+  // Gets the shared lock type for SyncAccessHandle's `readwrite-unsafe` mode.
+  [[nodiscard]] FileSystemAccessLockManager::LockType
+  GetSAHReadwriteUnsafeLockType() const;
+
+  // Gets the shared lock type for WritableFileStream's default `siloed` mode.
+  [[nodiscard]] FileSystemAccessLockManager::LockType GetWFSSiloedLockType()
       const;
 
   // Gets the `ancestor_lock_type_` for testing.
@@ -207,21 +240,22 @@ class CONTENT_EXPORT FileSystemAccessManagerImpl
   // Creates a new FileSystemAccessFileWriterImpl for a given target and
   // swap file URLs. Assumes the passed in URLs are valid and represent files.
   mojo::PendingRemote<blink::mojom::FileSystemAccessFileWriter>
-  CreateFileWriter(const BindingContext& binding_context,
-                   const storage::FileSystemURL& url,
-                   const storage::FileSystemURL& swap_url,
-                   scoped_refptr<FileSystemAccessLockManager::Lock> lock,
-                   scoped_refptr<FileSystemAccessLockManager::Lock> swap_lock,
-                   const SharedHandleState& handle_state,
-                   bool auto_close);
+  CreateFileWriter(
+      const BindingContext& binding_context,
+      const storage::FileSystemURL& url,
+      const storage::FileSystemURL& swap_url,
+      scoped_refptr<FileSystemAccessLockManager::LockHandle> lock,
+      scoped_refptr<FileSystemAccessLockManager::LockHandle> swap_lock,
+      const SharedHandleState& handle_state,
+      bool auto_close);
   // Returns a weak pointer to a newly created FileSystemAccessFileWriterImpl.
   // Useful for tests
   base::WeakPtr<FileSystemAccessFileWriterImpl> CreateFileWriter(
       const BindingContext& binding_context,
       const storage::FileSystemURL& url,
       const storage::FileSystemURL& swap_url,
-      scoped_refptr<FileSystemAccessLockManager::Lock> lock,
-      scoped_refptr<FileSystemAccessLockManager::Lock> swap_lock,
+      scoped_refptr<FileSystemAccessLockManager::LockHandle> lock,
+      scoped_refptr<FileSystemAccessLockManager::LockHandle> swap_lock,
       const SharedHandleState& handle_state,
       mojo::PendingReceiver<blink::mojom::FileSystemAccessFileWriter> receiver,
       bool has_transient_user_activation,
@@ -239,7 +273,7 @@ class CONTENT_EXPORT FileSystemAccessManagerImpl
           blink::mojom::FileSystemAccessCapacityAllocationHost>
           capacity_allocation_host_receiver,
       int64_t file_size,
-      scoped_refptr<FileSystemAccessLockManager::Lock> lock,
+      scoped_refptr<FileSystemAccessLockManager::LockHandle> lock,
       base::ScopedClosureRunner on_close_callback);
 
   // Create a transfer token for a specific file or directory.
@@ -306,7 +340,7 @@ class CONTENT_EXPORT FileSystemAccessManagerImpl
   }
 
   void SetFilePickerResultForTesting(
-      absl::optional<FileSystemChooser::ResultEntry> result_entry) {
+      std::optional<FileSystemChooser::ResultEntry> result_entry) {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     auto_file_picker_result_for_test_ = result_entry;
   }
@@ -557,14 +591,16 @@ class CONTENT_EXPORT FileSystemAccessManagerImpl
       FileSystemAccessPermissionContext::HandleType type,
       const base::FilePath& root_permission_path);
 
+  void FilePickerDeactivated(GlobalRenderFrameHostId global_rfh_id);
+
   SEQUENCE_CHECKER(sequence_checker_);
 
   const scoped_refptr<storage::FileSystemContext> context_;
   const scoped_refptr<ChromeBlobStorageContext> blob_context_;
   base::SequenceBound<storage::FileSystemOperationRunner> operation_runner_
       GUARDED_BY_CONTEXT(sequence_checker_);
-  raw_ptr<FileSystemAccessPermissionContext, AcrossTasksDanglingUntriaged>
-      permission_context_ GUARDED_BY_CONTEXT(sequence_checker_);
+  raw_ptr<FileSystemAccessPermissionContext> permission_context_
+      GUARDED_BY_CONTEXT(sequence_checker_) = nullptr;
 
   // All the mojo receivers for this FileSystemAccessManager itself. Keeps
   // track of associated origin and other state as well to not have to rely on
@@ -627,8 +663,21 @@ class CONTENT_EXPORT FileSystemAccessManagerImpl
            storage::FileSystemURL::Comparator>
       directory_ids_ GUARDED_BY_CONTEXT(sequence_checker_);
 
-  absl::optional<FileSystemChooser::ResultEntry>
+  std::set<GlobalRenderFrameHostId> rfhs_with_active_file_pickers_
+      GUARDED_BY_CONTEXT(sequence_checker_);
+
+  std::optional<FileSystemChooser::ResultEntry>
       auto_file_picker_result_for_test_ GUARDED_BY_CONTEXT(sequence_checker_);
+
+  // The shared lock type for SyncAccessHandle's `readonly` mode.
+  FileSystemAccessLockManager::LockType sah_read_only_lock_type_ =
+      lock_manager_->CreateSharedLockType();
+  // The shared lock type for SyncAccessHandle's `readwrite-unsafe` mode.
+  FileSystemAccessLockManager::LockType sah_readwrite_unsafe_lock_type_ =
+      lock_manager_->CreateSharedLockType();
+  // The shared lock type for WritableFileStream's default `siloed` mode.
+  FileSystemAccessLockManager::LockType wfs_siloed_lock_type_ =
+      lock_manager_->CreateSharedLockType();
 
   base::WeakPtrFactory<FileSystemAccessManagerImpl> weak_factory_
       GUARDED_BY_CONTEXT(sequence_checker_){this};

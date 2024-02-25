@@ -28,17 +28,17 @@ AnalysisServiceSettings::AnalysisServiceSettings(
   // an existing provider.
   const std::string* service_provider_name =
       settings_dict.FindString(kKeyServiceProvider);
-  if (service_provider_name) {
-    service_provider_name_ = *service_provider_name;
-    if (service_provider_config.count(service_provider_name_)) {
-      analysis_config_ =
-          service_provider_config.at(service_provider_name_).analysis;
-    }
-    if (!analysis_config_) {
-      DLOG(ERROR) << "No analysis config for corresponding service provider";
-      return;
-    }
-  } else {
+  if (!service_provider_name) {
+    return;
+  }
+
+  service_provider_name_ = *service_provider_name;
+  if (service_provider_config.count(service_provider_name_)) {
+    analysis_config_ =
+        service_provider_config.at(service_provider_name_).analysis;
+  }
+  if (!analysis_config_) {
+    DLOG(ERROR) << "No analysis config for corresponding service provider";
     return;
   }
 
@@ -92,12 +92,18 @@ AnalysisServiceSettings::AnalysisServiceSettings(
       settings_dict.FindInt(kKeyBlockUntilVerdict).value_or(0)
           ? BlockUntilVerdict::kBlock
           : BlockUntilVerdict::kNoBlock;
+  // If fail-closed settings can't be found, the browser defaults to fail open
+  // to handle backward compatibility.
+  const std::string* default_action_ptr =
+      settings_dict.FindString(kKeyDefaultAction);
+  default_action_ = default_action_ptr && *default_action_ptr == "block"
+                        ? DefaultAction::kBlock
+                        : DefaultAction::kAllow;
+
   block_password_protected_files_ =
       settings_dict.FindBool(kKeyBlockPasswordProtected).value_or(false);
   block_large_files_ =
       settings_dict.FindBool(kKeyBlockLargeFiles).value_or(false);
-  block_unsupported_file_types_ =
-      settings_dict.FindBool(kKeyBlockUnsupportedFileTypes).value_or(false);
   minimum_data_size_ = settings_dict.FindInt(kKeyMinimumDataSize).value_or(100);
 
   const base::Value::List* custom_messages =
@@ -139,6 +145,7 @@ AnalysisServiceSettings::AnalysisServiceSettings(
     }
   }
 
+#if BUILDFLAG(ENTERPRISE_LOCAL_CONTENT_ANALYSIS)
 #if BUILDFLAG(IS_WIN)
   const char* verification_key = kKeyWindowsVerification;
 #elif BUILDFLAG(IS_MAC)
@@ -147,7 +154,6 @@ AnalysisServiceSettings::AnalysisServiceSettings(
   const char* verification_key = kKeyLinuxVerification;
 #endif
 
-#if BUILDFLAG(ENTERPRISE_LOCAL_CONTENT_ANALYSIS)
   const base::Value::Dict& dict = settings_value.GetDict();
   const base::Value::List* signatures =
       dict.FindListByDottedPath(verification_key);
@@ -161,7 +167,7 @@ AnalysisServiceSettings::AnalysisServiceSettings(
 }
 
 // static
-absl::optional<AnalysisServiceSettings::URLPatternSettings>
+std::optional<AnalysisServiceSettings::URLPatternSettings>
 AnalysisServiceSettings::GetPatternSettings(
     const PatternSettings& patterns,
     base::MatcherStringPattern::ID match) {
@@ -178,7 +184,7 @@ AnalysisServiceSettings::GetPatternSettings(
   if (next != patterns.end())
     return next->second;
 
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 AnalysisSettings AnalysisServiceSettings::GetAnalysisSettingsWithTags(
@@ -188,9 +194,9 @@ AnalysisSettings AnalysisServiceSettings::GetAnalysisSettingsWithTags(
   AnalysisSettings settings;
 
   settings.block_until_verdict = block_until_verdict_;
+  settings.default_action = default_action_;
   settings.block_password_protected_files = block_password_protected_files_;
   settings.block_large_files = block_large_files_;
-  settings.block_unsupported_file_types = block_unsupported_file_types_;
   if (is_cloud_analysis()) {
     CloudAnalysisSettings cloud_settings;
     cloud_settings.analysis_url = GURL(analysis_config_->url);
@@ -219,40 +225,40 @@ AnalysisSettings AnalysisServiceSettings::GetAnalysisSettingsWithTags(
   return settings;
 }
 
-absl::optional<AnalysisSettings> AnalysisServiceSettings::GetAnalysisSettings(
+std::optional<AnalysisSettings> AnalysisServiceSettings::GetAnalysisSettings(
     const GURL& url) const {
   if (!IsValid())
-    return absl::nullopt;
+    return std::nullopt;
 
   DCHECK(matcher_);
   auto matches = matcher_->MatchURL(url);
   if (matches.empty())
-    return absl::nullopt;
+    return std::nullopt;
 
   auto tags = GetTags(matches);
   if (tags.empty())
-    return absl::nullopt;
+    return std::nullopt;
 
   return GetAnalysisSettingsWithTags(std::move(tags));
 }
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-absl::optional<AnalysisSettings> AnalysisServiceSettings::GetAnalysisSettings(
+std::optional<AnalysisSettings> AnalysisServiceSettings::GetAnalysisSettings(
     content::BrowserContext* context,
     const storage::FileSystemURL& source_url,
     const storage::FileSystemURL& destination_url) const {
   if (!IsValid())
-    return absl::nullopt;
+    return std::nullopt;
   DCHECK(source_destination_matcher_);
 
   auto matches =
       source_destination_matcher_->Match(context, source_url, destination_url);
   if (matches.empty())
-    return absl::nullopt;
+    return std::nullopt;
 
   auto tags = GetTags(matches);
   if (tags.empty())
-    return absl::nullopt;
+    return std::nullopt;
 
   return GetAnalysisSettingsWithTags(std::move(tags));
 }
@@ -264,25 +270,32 @@ bool AnalysisServiceSettings::ShouldBlockUntilVerdict() const {
   return block_until_verdict_ == BlockUntilVerdict::kBlock;
 }
 
-absl::optional<std::u16string> AnalysisServiceSettings::GetCustomMessage(
+bool AnalysisServiceSettings::ShouldBlockByDefault() const {
+  if (!IsValid()) {
+    return false;
+  }
+  return default_action_ == DefaultAction::kBlock;
+}
+
+std::optional<std::u16string> AnalysisServiceSettings::GetCustomMessage(
     const std::string& tag) {
   const auto& element = tags_.find(tag);
 
   if (!IsValid() || element == tags_.end() ||
       element->second.custom_message.message.empty()) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   return element->second.custom_message.message;
 }
 
-absl::optional<GURL> AnalysisServiceSettings::GetLearnMoreUrl(
+std::optional<GURL> AnalysisServiceSettings::GetLearnMoreUrl(
     const std::string& tag) {
   const auto& element = tags_.find(tag);
 
   if (!IsValid() || element == tags_.end() ||
       element->second.custom_message.learn_more_url.is_empty()) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   return element->second.custom_message.learn_more_url;

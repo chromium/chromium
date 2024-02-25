@@ -19,9 +19,9 @@ namespace ash {
 // View for the Select-to-Speak reading speed (speech rate) selection list.
 class SelectToSpeakSpeedView : public views::BoxLayoutView,
                                public ViewClickListener {
- public:
-  METADATA_HEADER(SelectToSpeakSpeedView);
+  METADATA_HEADER(SelectToSpeakSpeedView, views::BoxLayoutView)
 
+ public:
   class ASH_EXPORT Delegate {
    public:
     Delegate() {}
@@ -53,7 +53,7 @@ class SelectToSpeakSpeedView : public views::BoxLayoutView,
   // ui::EventHandler:
   void OnKeyEvent(ui::KeyEvent* key_event) override;
 
-  raw_ptr<Delegate, ExperimentalAsh> delegate_ = nullptr;
+  raw_ptr<Delegate> delegate_ = nullptr;
 };
 
 BEGIN_VIEW_BUILDER(/* no export */,

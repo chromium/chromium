@@ -43,4 +43,9 @@ ChromeClientSideDetectionServiceDelegate::GetSafeBrowsingURLLoaderFactory() {
   return nullptr;
 }
 
+bool ChromeClientSideDetectionServiceDelegate::ShouldSendModelToBrowserContext(
+    content::BrowserContext* context) {
+  return context == profile_;
+}
+
 }  // namespace safe_browsing

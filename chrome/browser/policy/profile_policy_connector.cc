@@ -5,6 +5,7 @@
 #include "chrome/browser/policy/profile_policy_connector.h"
 
 #include <memory>
+#include <optional>
 #include <utility>
 
 #include "base/check.h"
@@ -13,6 +14,7 @@
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/ranges/algorithm.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
@@ -38,13 +40,13 @@
 #include "components/policy/core/common/policy_map.h"
 #include "components/policy/core/common/policy_namespace.h"
 #include "components/policy/core/common/policy_service_impl.h"
+#include "components/policy/core/common/policy_types.h"
 #include "components/policy/core/common/proxy_policy_provider.h"
 #include "components/policy/core/common/schema_registry_tracking_policy_provider.h"
 #include "components/policy/policy_constants.h"
 #include "components/strings/grit/components_strings.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/web_contents.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/l10n/l10n_util.h"
 
 #if BUILDFLAG(IS_CHROMEOS)
@@ -147,11 +149,9 @@ class ProxiedPoliciesPropagatedWatcher : PolicyService::ProviderUpdateObserver {
                       base::TimeTicks::Now() - construction_time_);
   }
 
-  const raw_ptr<PolicyService, ExperimentalAsh> device_wide_policy_service_;
-  const raw_ptr<const ProxyPolicyProvider, ExperimentalAsh>
-      proxy_policy_provider_;
-  const raw_ptr<const ConfigurationPolicyProvider, ExperimentalAsh>
-      source_policy_provider_;
+  const raw_ptr<PolicyService> device_wide_policy_service_;
+  const raw_ptr<const ProxyPolicyProvider> proxy_policy_provider_;
+  const raw_ptr<const ConfigurationPolicyProvider> source_policy_provider_;
   const base::TimeTicks construction_time_ = base::TimeTicks::Now();
   base::OnceClosure proxied_policies_propagated_callback_;
   base::OneShotTimer timeout_timer_;
@@ -235,7 +235,7 @@ class LocalTestInfoBarVisibilityManager :
       model->AddObserver(this);
     }
 #else
-    for (auto* browser : *BrowserList::GetInstance()) {
+    for (Browser* browser : *BrowserList::GetInstance()) {
       CHECK(browser);
 
       OnBrowserAdded(browser);
@@ -253,6 +253,7 @@ class LocalTestInfoBarVisibilityManager :
 
   void AddInfobarForActiveLocalTestPolicies(
       content::WebContents* web_contents) {
+    infobars::ContentInfoBarManager::CreateForWebContents(web_contents);
     CreateSimpleAlertInfoBar(
         infobars::ContentInfoBarManager::FromWebContents(web_contents),
         infobars::InfoBarDelegate::LOCAL_TEST_POLICIES_APPLIED_INFOBAR, nullptr,
@@ -273,7 +274,7 @@ class LocalTestInfoBarVisibilityManager :
       model->RemoveObserver(this);
     }
 #else
-    for (auto* browser : *BrowserList::GetInstance()) {
+    for (Browser* browser : *BrowserList::GetInstance()) {
       CHECK(browser);
 
       browser->tab_strip_model()->RemoveObserver(this);
@@ -291,15 +292,15 @@ class LocalTestInfoBarVisibilityManager :
 
   void DismissInfobarForActiveLocalTestPolicies(
       content::WebContents* web_contents) {
+    infobars::ContentInfoBarManager::CreateForWebContents(web_contents);
     auto* infobar_manager =
         infobars::ContentInfoBarManager::FromWebContents(web_contents);
-    for (size_t i = 0; i < infobar_manager->infobar_count(); i++) {
-      auto* infobar = infobar_manager->infobar_at(i);
-      if (infobar->delegate()->GetIdentifier() ==
-          infobars::InfoBarDelegate::LOCAL_TEST_POLICIES_APPLIED_INFOBAR) {
-        infobar_manager->RemoveInfoBar(infobar);
-        return;
-      }
+    const auto it = base::ranges::find(
+        infobar_manager->infobars(),
+        infobars::InfoBarDelegate::LOCAL_TEST_POLICIES_APPLIED_INFOBAR,
+        &infobars::InfoBar::GetIdentifier);
+    if (it != infobar_manager->infobars().cend()) {
+      infobar_manager->RemoveInfoBar(*it);
     }
   }
 
@@ -393,10 +394,7 @@ void ProfilePolicyConnector::Init(
     policy_providers_.push_back(connector->command_line_policy_provider());
 #endif
 
-  if (connector->local_test_policy_provider()) {
     local_test_policy_provider_ = connector->local_test_policy_provider();
-    policy_providers_.push_back(local_test_policy_provider_);
-  }
 
   if (configuration_policy_provider) {
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
@@ -666,22 +664,21 @@ std::string ProfilePolicyConnector::GetTimeToFirstPolicyLoadMetricSuffix()
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   DCHECK(user_);
   switch (user_->GetType()) {
-    case user_manager::USER_TYPE_REGULAR:
+    case user_manager::UserType::kRegular:
       if (user_manager::UserManager::Get()->IsUserCryptohomeDataEphemeral(
               user_->GetAccountId())) {
         return "Managed.Ephemeral";
       }
       return is_user_new_ ? "Managed.NewPersistent" : "Managed.Existing";
-    case user_manager::USER_TYPE_CHILD:
+    case user_manager::UserType::kChild:
       return "Child";
-    case user_manager::USER_TYPE_PUBLIC_ACCOUNT:
+    case user_manager::UserType::kPublicAccount:
       return "ManagedGuestSession";
-    case user_manager::USER_TYPE_KIOSK_APP:
-    case user_manager::USER_TYPE_ARC_KIOSK_APP:
-    case user_manager::USER_TYPE_WEB_KIOSK_APP:
+    case user_manager::UserType::kKioskApp:
+    case user_manager::UserType::kArcKioskApp:
+    case user_manager::UserType::kWebKioskApp:
       return "Kiosk";
-    case user_manager::USER_TYPE_GUEST:
-    case user_manager::NUM_USER_TYPES:
+    case user_manager::UserType::kGuest:
       // Don't report the metric in uninteresting or unreachable cases.
       return "";
   }
@@ -691,14 +688,13 @@ std::string ProfilePolicyConnector::GetTimeToFirstPolicyLoadMetricSuffix()
 }
 
 void ProfilePolicyConnector::UseLocalTestPolicyProvider() {
-  for (auto* provider : policy_providers_) {
-    provider->set_active(false);
+  if (IsManaged()) {
+    return;
   }
-
-  if (local_test_policy_provider_) {
-    local_test_policy_provider_->set_active(true);
-  }
-  policy_service()->RefreshPolicies(base::DoNothing());
+  local_test_policy_provider_->set_active(true);
+  policy_service_->UseLocalTestPolicyProvider(local_test_policy_provider_);
+  policy_service()->RefreshPolicies(base::DoNothing(),
+                                    PolicyFetchReason::kTest);
   if (!local_test_infobar_visibility_manager_->infobar_active()) {
     local_test_infobar_visibility_manager_
         ->AddInfobarsForActiveLocalTestPoliciesAllTabs();
@@ -706,14 +702,12 @@ void ProfilePolicyConnector::UseLocalTestPolicyProvider() {
 }
 
 void ProfilePolicyConnector::RevertUseLocalTestPolicyProvider() {
-  for (auto* provider : policy_providers_) {
-    provider->set_active(true);
-  }
-
   local_test_policy_provider_->set_active(false);
+  policy_service_->UseLocalTestPolicyProvider(nullptr);
   static_cast<LocalTestPolicyProvider*>(local_test_policy_provider_)
       ->ClearPolicies();
-  policy_service()->RefreshPolicies(base::DoNothing());
+  policy_service()->RefreshPolicies(base::DoNothing(),
+                                    PolicyFetchReason::kTest);
   if (local_test_infobar_visibility_manager_->infobar_active()) {
     local_test_infobar_visibility_manager_
         ->DismissInfobarsForActiveLocalTestPoliciesAllTabs();
@@ -723,7 +717,8 @@ void ProfilePolicyConnector::RevertUseLocalTestPolicyProvider() {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 std::unique_ptr<PolicyService>
 ProfilePolicyConnector::CreatePolicyServiceWithInitializationThrottled(
-    const std::vector<ConfigurationPolicyProvider*>& policy_providers,
+    const std::vector<raw_ptr<ConfigurationPolicyProvider, VectorExperimental>>&
+        policy_providers,
     std::vector<std::unique_ptr<PolicyMigrator>> migrators,
     ConfigurationPolicyProvider* user_policy_delegate) {
   DCHECK(user_policy_delegate);

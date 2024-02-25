@@ -27,22 +27,16 @@ class IndexedDBKeyRange;
 
 namespace content {
 class IndexedDBConnection;
-class IndexedDBContextImpl;
-class IndexedDBDispatcherHost;
 
 class DatabaseImpl : public blink::mojom::IDBDatabase {
  public:
   static mojo::PendingAssociatedRemote<blink::mojom::IDBDatabase> CreateAndBind(
-      std::unique_ptr<IndexedDBConnection> connection,
-      const storage::BucketInfo& bucket,
-      IndexedDBDispatcherHost* dispatcher_host);
+      std::unique_ptr<IndexedDBConnection> connection);
 
   ~DatabaseImpl() override;
 
  private:
-  explicit DatabaseImpl(std::unique_ptr<IndexedDBConnection> connection,
-                        const storage::BucketInfo& bucket,
-                        IndexedDBDispatcherHost* dispatcher_host);
+  explicit DatabaseImpl(std::unique_ptr<IndexedDBConnection> connection);
 
   DatabaseImpl(const DatabaseImpl&) = delete;
   DatabaseImpl& operator=(const DatabaseImpl&) = delete;
@@ -58,7 +52,6 @@ class DatabaseImpl : public blink::mojom::IDBDatabase {
       const std::vector<int64_t>& object_store_ids,
       blink::mojom::IDBTransactionMode mode,
       blink::mojom::IDBTransactionDurability durability) override;
-  void Close() override;
   void VersionChangeIgnored() override;
   void Get(int64_t transaction_id,
            int64_t object_store_id,
@@ -123,16 +116,12 @@ class DatabaseImpl : public blink::mojom::IDBDatabase {
   void Abort(int64_t transaction_id) override;
   void DidBecomeInactive() override;
 
-  storage::BucketLocator bucket_locator() {
-    return bucket_info_.ToBucketLocator();
-  }
+  // It is an error to call either of these after `connection_->IsConnected()`
+  // is no longer true.
+  const storage::BucketInfo& GetBucketInfo();
+  storage::BucketLocator GetBucketLocator();
 
-  // This raw pointer is safe because all DatabaseImpl instances are owned by
-  // an IndexedDBDispatcherHost.
-  raw_ptr<IndexedDBDispatcherHost> dispatcher_host_;
-  scoped_refptr<IndexedDBContextImpl> indexed_db_context_;
   std::unique_ptr<IndexedDBConnection> connection_;
-  const storage::BucketInfo bucket_info_;
 
   SEQUENCE_CHECKER(sequence_checker_);
 };

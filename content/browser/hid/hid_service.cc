@@ -4,11 +4,11 @@
 
 #include "content/browser/hid/hid_service.h"
 
+#include <map>
 #include <memory>
 #include <utility>
 
 #include "base/containers/contains.h"
-#include "base/containers/cxx20_erase.h"
 #include "base/debug/stack_trace.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
@@ -308,7 +308,8 @@ void HidService::Connect(
 
   auto* device_info = delegate->GetDeviceInfo(browser_context, device_guid);
   if (!device_info ||
-      !delegate->HasDevicePermission(browser_context, origin_, *device_info)) {
+      !delegate->HasDevicePermission(browser_context, render_frame_host_,
+                                     origin_, *device_info)) {
     std::move(callback).Run(mojo::NullRemote());
     return;
   }
@@ -339,7 +340,7 @@ void HidService::Forget(device::mojom::HidDeviceInfoPtr device_info,
 
   if (browser_context) {
     GetContentClient()->browser()->GetHidDelegate()->RevokeDevicePermission(
-        browser_context, origin_, *device_info);
+        browser_context, render_frame_host_, origin_, *device_info);
   }
   std::move(callback).Run();
 }
@@ -354,7 +355,7 @@ void HidService::OnWatcherRemoved(bool cleanup_watcher_ids,
   // yet, so the entry in |watcher_ids_| needs to be removed.
   if (cleanup_watcher_ids) {
     // Clean up any associated |watchers_ids_| entries.
-    base::EraseIf(watcher_ids_, [&](const auto& watcher_entry) {
+    std::erase_if(watcher_ids_, [&](const auto& watcher_entry) {
       return watcher_entry.second == watchers_.current_receiver();
     });
   }
@@ -396,8 +397,10 @@ void HidService::OnDeviceAdded(
     const device::mojom::HidDeviceInfo& device_info) {
   auto* browser_context = GetBrowserContext();
   auto* delegate = GetContentClient()->browser()->GetHidDelegate();
-  if (!delegate->HasDevicePermission(browser_context, origin_, device_info))
+  if (!delegate->HasDevicePermission(browser_context, render_frame_host_,
+                                     origin_, device_info)) {
     return;
+  }
 
   auto filtered_device_info = device_info.Clone();
   RemoveProtectedReports(
@@ -413,7 +416,7 @@ void HidService::OnDeviceAdded(
 void HidService::OnDeviceRemoved(
     const device::mojom::HidDeviceInfo& device_info) {
   size_t watchers_removed =
-      base::EraseIf(watcher_ids_, [&](const auto& watcher_entry) {
+      std::erase_if(watcher_ids_, [&](const auto& watcher_entry) {
         if (watcher_entry.first != device_info.guid)
           return false;
 
@@ -427,7 +430,8 @@ void HidService::OnDeviceRemoved(
 
   auto* browser_context = GetBrowserContext();
   auto* delegate = GetContentClient()->browser()->GetHidDelegate();
-  if (!delegate->HasDevicePermission(browser_context, origin_, device_info)) {
+  if (!delegate->HasDevicePermission(browser_context, render_frame_host_,
+                                     origin_, device_info)) {
     return;
   }
 
@@ -446,8 +450,8 @@ void HidService::OnDeviceChanged(
     const device::mojom::HidDeviceInfo& device_info) {
   auto* browser_context = GetBrowserContext();
   auto* delegate = GetContentClient()->browser()->GetHidDelegate();
-  const bool has_device_permission =
-      delegate->HasDevicePermission(browser_context, origin_, device_info);
+  const bool has_device_permission = delegate->HasDevicePermission(
+      browser_context, render_frame_host_, origin_, device_info);
 
   device::mojom::HidDeviceInfoPtr filtered_device_info;
   if (has_device_permission) {
@@ -460,7 +464,7 @@ void HidService::OnDeviceChanged(
   if (!has_device_permission || filtered_device_info->collections.empty()) {
     // Changing the device information has caused permissions to be revoked.
     size_t watchers_removed =
-        base::EraseIf(watcher_ids_, [&](const auto& watcher_entry) {
+        std::erase_if(watcher_ids_, [&](const auto& watcher_entry) {
           if (watcher_entry.first != device_info.guid)
             return false;
 
@@ -493,14 +497,14 @@ void HidService::OnPermissionRevoked(const url::Origin& origin) {
   HidDelegate* delegate = GetContentClient()->browser()->GetHidDelegate();
 
   size_t watchers_removed =
-      base::EraseIf(watcher_ids_, [&](const auto& watcher_entry) {
+      std::erase_if(watcher_ids_, [&](const auto& watcher_entry) {
         const auto* device_info =
             delegate->GetDeviceInfo(browser_context, watcher_entry.first);
         if (!device_info)
           return true;
 
-        if (delegate->HasDevicePermission(browser_context, origin_,
-                                          *device_info)) {
+        if (delegate->HasDevicePermission(browser_context, render_frame_host_,
+                                          origin_, *device_info)) {
           return false;
         }
 
@@ -527,8 +531,10 @@ void HidService::FinishGetDevices(
     if (device->collections.empty())
       continue;
 
-    if (delegate->HasDevicePermission(browser_context, origin_, *device))
+    if (delegate->HasDevicePermission(browser_context, render_frame_host_,
+                                      origin_, *device)) {
       result.push_back(std::move(device));
+    }
   }
 
   std::move(callback).Run(std::move(result));

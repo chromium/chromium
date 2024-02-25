@@ -21,7 +21,7 @@ MockEndpointFetcher::~MockEndpointFetcher() = default;
 void MockEndpointFetcher::SetFetchResponse(
     std::string response_string,
     int http_status_code,
-    absl::optional<FetchErrorType> error_type) {
+    std::optional<FetchErrorType> error_type) {
   ON_CALL(*this, Fetch)
       .WillByDefault([response_string, http_status_code,
                       error_type](EndpointFetcherCallback callback) {

@@ -65,7 +65,7 @@ class ASH_EXPORT ClipboardHistoryResourceManager
   // `item_id` with the page title found in the primary user profile's browsing
   // history, if any.
   void OnHistoryQueryComplete(const base::UnguessableToken& item_id,
-                              absl::optional<std::u16string> maybe_title);
+                              std::optional<std::u16string> maybe_title);
 
   // Sets `item`'s rendered HTML preview if one is cached; otherwise, ensures
   // that `item` is associated with an asynchronous `ImageModelRequest`.
@@ -90,7 +90,7 @@ class ASH_EXPORT ClipboardHistoryResourceManager
   void OnClipboardHistoryCleared() override;
 
   // Owned by `ClipboardHistoryController`.
-  const raw_ptr<ClipboardHistory, ExperimentalAsh> clipboard_history_;
+  const raw_ptr<ClipboardHistory> clipboard_history_;
 
   // Pending requests for image models to be rendered. Once a request finishes,
   // all of the clipboard history items waiting on that image model will be

@@ -23,7 +23,7 @@ namespace extensions {
 
 class BluetoothManifestPermission : public ManifestPermission {
  public:
-  typedef std::set<std::string> BluetoothUuidSet;
+  using BluetoothUuidSet = std::set<std::string>;
   BluetoothManifestPermission();
   ~BluetoothManifestPermission() override;
 

@@ -11,6 +11,7 @@
 #include "chromeos/constants/chromeos_features.h"
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/accessibility/ax_node_data.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
 #include "ui/views/animation/ink_drop.h"
 #include "ui/views/controls/highlight_path_generator.h"
@@ -50,10 +51,6 @@ void ShelfButton::OnThemeChanged() {
   }
 }
 
-const char* ShelfButton::GetClassName() const {
-  return "ash/ShelfButton";
-}
-
 gfx::Rect ShelfButton::GetAnchorBoundsInScreen() const {
   gfx::Rect bounds = Button::GetAnchorBoundsInScreen();
   // Padding used to position bubbles offset from the shelf. Note that this
@@ -89,5 +86,8 @@ void ShelfButton::NotifyClick(const ui::Event& event) {
     shelf_button_delegate_->ButtonPressed(
         /*sender=*/this, event, views::InkDrop::Get(this)->GetInkDrop());
 }
+
+BEGIN_METADATA(ShelfButton)
+END_METADATA
 
 }  // namespace ash

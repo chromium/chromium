@@ -16,7 +16,7 @@
 
 // Defines types for the fields that are used by the edit profile screens.
 struct AutofillProfileFieldDisplayInfo {
-  autofill::ServerFieldType autofillType;
+  autofill::FieldType autofillType;
   int displayStringID;
   UIReturnKeyType returnKeyType;
   UIKeyboardType keyboardType;
@@ -25,9 +25,6 @@ struct AutofillProfileFieldDisplayInfo {
 
 // Stores info for the fields that are used in the edit profile screens.
 static const AutofillProfileFieldDisplayInfo kProfileFieldsToDisplay[] = {
-    {autofill::NAME_HONORIFIC_PREFIX, IDS_IOS_AUTOFILL_HONORIFIC_PREFIX,
-     UIReturnKeyNext, UIKeyboardTypeDefault,
-     UITextAutocapitalizationTypeSentences},
     {autofill::NAME_FULL, IDS_IOS_AUTOFILL_FULLNAME, UIReturnKeyNext,
      UIKeyboardTypeDefault, UITextAutocapitalizationTypeSentences},
     {autofill::COMPANY_NAME, IDS_IOS_AUTOFILL_COMPANY_NAME, UIReturnKeyNext,
@@ -36,8 +33,14 @@ static const AutofillProfileFieldDisplayInfo kProfileFieldsToDisplay[] = {
      UIKeyboardTypeDefault, UITextAutocapitalizationTypeSentences},
     {autofill::ADDRESS_HOME_LINE2, IDS_IOS_AUTOFILL_ADDRESS2, UIReturnKeyNext,
      UIKeyboardTypeDefault, UITextAutocapitalizationTypeSentences},
+    {autofill::ADDRESS_HOME_DEPENDENT_LOCALITY,
+     IDS_IOS_AUTOFILL_DEPENDENT_LOCALITY, UIReturnKeyNext,
+     UIKeyboardTypeDefault, UITextAutocapitalizationTypeSentences},
     {autofill::ADDRESS_HOME_CITY, IDS_IOS_AUTOFILL_CITY, UIReturnKeyNext,
      UIKeyboardTypeDefault, UITextAutocapitalizationTypeSentences},
+    {autofill::ADDRESS_HOME_ADMIN_LEVEL2, IDS_IOS_AUTOFILL_ADMIN_LEVEL2,
+     UIReturnKeyNext, UIKeyboardTypeDefault,
+     UITextAutocapitalizationTypeSentences},
     {autofill::ADDRESS_HOME_STATE, IDS_IOS_AUTOFILL_STATE, UIReturnKeyNext,
      UIKeyboardTypeDefault, UITextAutocapitalizationTypeSentences},
     {autofill::ADDRESS_HOME_ZIP, IDS_IOS_AUTOFILL_ZIP, UIReturnKeyNext,
@@ -50,13 +53,17 @@ static const AutofillProfileFieldDisplayInfo kProfileFieldsToDisplay[] = {
      UIKeyboardTypeEmailAddress, UITextAutocapitalizationTypeNone}};
 
 // Returns the AutofillUIType equivalent to `type`.
-AutofillUIType AutofillUITypeFromAutofillType(autofill::ServerFieldType type);
+AutofillUIType AutofillUITypeFromAutofillType(autofill::FieldType type);
 
-// Returns the autofill::ServerFieldType equivalent to `type`.
-autofill::ServerFieldType AutofillTypeFromAutofillUIType(AutofillUIType type);
+// Returns the autofill::FieldType equivalent to `type`.
+autofill::FieldType AutofillTypeFromAutofillUIType(AutofillUIType type);
 
-// Returns the list of autofill::ServerFieldType used by the edit profile
+// Returns the list of autofill::FieldType used by the edit profile
 // screens.
-std::vector<autofill::ServerFieldType> GetAutofillTypeForProfileEdit();
+std::vector<autofill::FieldType> GetAutofillTypeForProfileEdit();
+
+// Returns whether the provided field is used in the provided country's address.
+bool FieldIsUsedInAddress(autofill::FieldType autofillType,
+                          NSString* countryCode);
 
 #endif  // IOS_CHROME_BROWSER_UI_AUTOFILL_AUTOFILL_UI_TYPE_UTIL_H_

@@ -4,7 +4,7 @@
 
 #include "ash/system/accessibility/select_to_speak/select_to_speak_tray.h"
 
-#include "ash/accessibility/accessibility_controller_impl.h"
+#include "ash/accessibility/accessibility_controller.h"
 #include "ash/constants/tray_background_view_catalog.h"
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/session/session_controller_impl.h"
@@ -85,7 +85,7 @@ std::u16string GetTooltipTextOnCurrentSelectToSpeakStatus(
 SelectToSpeakTray::SelectToSpeakTray(Shelf* shelf,
                                      TrayBackgroundViewCatalogName catalog_name)
     : TrayBackgroundView(shelf, catalog_name) {
-  SetPressedCallback(base::BindRepeating([](const ui::Event& event) {
+  SetCallback(base::BindRepeating([](const ui::Event& event) {
     Shell::Get()->accessibility_controller()->RequestSelectToSpeakStateChange();
   }));
 
@@ -179,7 +179,7 @@ void SelectToSpeakTray::UpdateIconOnColorChanges() {
   icon_->SetImage(GetImageOnCurrentSelectToSpeakStatus(select_to_speak_state));
 }
 
-BEGIN_METADATA(SelectToSpeakTray, TrayBackgroundView);
+BEGIN_METADATA(SelectToSpeakTray);
 END_METADATA
 
 }  // namespace ash

@@ -90,6 +90,12 @@ void SwitchAccessBackButtonBubbleController::BubbleViewDestroyed() {
   widget_ = nullptr;
 }
 
+void SwitchAccessBackButtonBubbleController::HideBubble(
+    const TrayBubbleView* bubble_view) {
+  // This function is currently not unused for bubbles of type
+  // `kAccessibilityBubble`, so can leave this empty.
+}
+
 // The back button should display to the right of the anchor rect provided.
 // Because the TrayBubbleView defaults to showing the right edges lining up
 // (rather than the top edges lining up) we'll add the width of the button to

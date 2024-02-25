@@ -5,7 +5,8 @@
 import("//device/vr/buildflags/buildflags.gni")
 
 if (is_android) {
-  import("//build/config/android/rules.gni")  # For generate_jni().
+  import("//build/config/android/rules.gni")
+  import("//third_party/jni_zero/jni_zero.gni")
 }
 
 config("vr_gl_mode") {
@@ -70,6 +71,7 @@ if (enable_vr) {
       "//base",
       "//mojo/public/cpp/bindings",
     ]
+    configs += [ "//build/config/compiler:wexit_time_destructors" ]
   }
 
   # Contains useful helper classes that are used by either multiple XR Devices,
@@ -103,20 +105,19 @@ if (enable_vr) {
       "//device/vr/public/mojom:isolated_xr_service",
       "//ui/gfx",
     ]
+
+    configs += [ "//build/config/compiler:wexit_time_destructors" ]
   }
 
   if (enable_openxr) {
     source_set("openxr_data") {
-      sources = [
-        "openxr/openxr_defs.h",
-        "openxr/openxr_interaction_profile_type.h",
-      ]
-
       deps = [
         "//base",
         "//device/gamepad/public/cpp:shared_with_blink",
         "//third_party/openxr:openxr_headers",
       ]
+
+      configs += [ "//build/config/compiler:wexit_time_destructors" ]
     }
   }
 
@@ -147,33 +148,30 @@ if (enable_vr) {
       "//ui/gfx/mojom",
     ]
 
-    if (enable_gvr_services) {
-      sources += [
-        "android/gvr/gvr_delegate.cc",
-        "android/gvr/gvr_delegate.h",
-        "android/gvr/gvr_delegate_provider.h",
-        "android/gvr/gvr_delegate_provider_factory.cc",
-        "android/gvr/gvr_delegate_provider_factory.h",
-        "android/gvr/gvr_device.cc",
-        "android/gvr/gvr_device.h",
-        "android/gvr/gvr_device_provider.cc",
-        "android/gvr/gvr_device_provider.h",
-        "android/gvr/gvr_utils.cc",
-        "android/gvr/gvr_utils.h",
-      ]
-
-      deps += [
-        ":jni_headers",
-        "//third_party/blink/public:blink_headers",
-        "//third_party/gvr-android-sdk:gvr_shim",
-      ]
-      ldflags = [ "-landroid" ]
-      configs += [ "//third_party/gvr-android-sdk:libgvr_config" ]
-    }
+    configs += [ "//build/config/compiler:wexit_time_destructors" ]
 
     if (enable_openxr) {
       sources += [
         "openxr/context_provider_callbacks.h",
+        "openxr/exit_xr_present_reason.h",
+        "openxr/fb/openxr_hand_tracker_fb.cc",
+        "openxr/fb/openxr_hand_tracker_fb.h",
+        "openxr/msft/openxr_anchor_manager_msft.cc",
+        "openxr/msft/openxr_anchor_manager_msft.h",
+        "openxr/msft/openxr_scene_bounds_msft.cc",
+        "openxr/msft/openxr_scene_bounds_msft.h",
+        "openxr/msft/openxr_scene_msft.cc",
+        "openxr/msft/openxr_scene_msft.h",
+        "openxr/msft/openxr_scene_object_msft.cc",
+        "openxr/msft/openxr_scene_object_msft.h",
+        "openxr/msft/openxr_scene_observer_msft.cc",
+        "openxr/msft/openxr_scene_observer_msft.h",
+        "openxr/msft/openxr_scene_plane_msft.cc",
+        "openxr/msft/openxr_scene_plane_msft.h",
+        "openxr/msft/openxr_scene_understanding_manager_msft.cc",
+        "openxr/msft/openxr_scene_understanding_manager_msft.h",
+        "openxr/msft/openxr_unbounded_space_provider_msft.cc",
+        "openxr/msft/openxr_unbounded_space_provider_msft.h",
         "openxr/openxr_anchor_manager.cc",
         "openxr/openxr_anchor_manager.h",
         "openxr/openxr_api_wrapper.cc",
@@ -185,12 +183,19 @@ if (enable_vr) {
         "openxr/openxr_device.cc",
         "openxr/openxr_device.h",
         "openxr/openxr_extension_handle.h",
+        "openxr/openxr_extension_handler_factories.cc",
+        "openxr/openxr_extension_handler_factories.h",
+        "openxr/openxr_extension_handler_factory.cc",
+        "openxr/openxr_extension_handler_factory.h",
         "openxr/openxr_extension_helper.cc",
         "openxr/openxr_extension_helper.h",
         "openxr/openxr_graphics_binding.cc",
         "openxr/openxr_graphics_binding.h",
+        "openxr/openxr_hand_tracker.cc",
+        "openxr/openxr_hand_tracker.h",
         "openxr/openxr_input_helper.cc",
         "openxr/openxr_input_helper.h",
+        "openxr/openxr_interaction_profile_paths.h",
         "openxr/openxr_interaction_profiles.cc",
         "openxr/openxr_interaction_profiles.h",
         "openxr/openxr_path_helper.cc",
@@ -200,25 +205,18 @@ if (enable_vr) {
         "openxr/openxr_platform_helper.h",
         "openxr/openxr_render_loop.cc",
         "openxr/openxr_render_loop.h",
-        "openxr/openxr_scene.cc",
-        "openxr/openxr_scene.h",
-        "openxr/openxr_scene_bounds.cc",
-        "openxr/openxr_scene_bounds.h",
-        "openxr/openxr_scene_object.cc",
-        "openxr/openxr_scene_object.h",
-        "openxr/openxr_scene_observer.cc",
-        "openxr/openxr_scene_observer.h",
-        "openxr/openxr_scene_plane.cc",
-        "openxr/openxr_scene_plane.h",
         "openxr/openxr_scene_understanding_manager.cc",
         "openxr/openxr_scene_understanding_manager.h",
+        "openxr/openxr_stage_bounds_provider.h",
+        "openxr/openxr_stage_bounds_provider_basic.cc",
+        "openxr/openxr_stage_bounds_provider_basic.h",
+        "openxr/openxr_unbounded_space_provider.cc",
+        "openxr/openxr_unbounded_space_provider.h",
         "openxr/openxr_util.cc",
         "openxr/openxr_util.h",
         "openxr/openxr_view_configuration.cc",
         "openxr/openxr_view_configuration.h",
         "test/test_hook.h",
-        "windows/compositor_base.cc",
-        "windows/compositor_base.h",
       ]
 
       if (is_win) {
@@ -246,9 +244,19 @@ if (enable_vr) {
 
       if (is_android) {
         sources += [
+          "openxr/android/openxr_anchor_manager_android.cc",
+          "openxr/android/openxr_anchor_manager_android.h",
           "openxr/android/openxr_graphics_binding_open_gles.cc",
           "openxr/android/openxr_graphics_binding_open_gles.h",
+          "openxr/android/openxr_hand_tracker_android.cc",
+          "openxr/android/openxr_hand_tracker_android.h",
           "openxr/android/openxr_platform_helper_android_statics.cc",
+          "openxr/android/openxr_scene_understanding_manager_android.cc",
+          "openxr/android/openxr_scene_understanding_manager_android.h",
+          "openxr/android/openxr_stage_bounds_provider_android.cc",
+          "openxr/android/openxr_stage_bounds_provider_android.h",
+          "openxr/android/openxr_unbounded_space_provider_android.cc",
+          "openxr/android/openxr_unbounded_space_provider_android.h",
         ]
 
         configs += [ "//third_party/khronos:khronos_headers" ]
@@ -260,6 +268,7 @@ if (enable_vr) {
         ":openxr_data",
         "//components/version_info",
         "//device/base",
+        "//device/vr/public/mojom:vr_public_typemaps",
         "//gpu/command_buffer/service:gles2",
         "//third_party/openxr",
         "//ui/gl/init",
@@ -342,8 +351,7 @@ if (enable_openxr) {
       include_dirs = [ "//third_party/openxr/src/include" ]
 
       sources = [
-        "openxr/openxr_extension_helper.cc",
-        "openxr/openxr_extension_helper.h",
+        "openxr/openxr_interaction_profile_paths.h",
         "openxr/openxr_platform.h",
         "openxr/openxr_util.cc",
         "openxr/openxr_util.h",
@@ -365,7 +373,9 @@ if (enable_openxr) {
       deps = [
         "//base",
         "//components/version_info",
+        "//device/gamepad/public/cpp:shared_with_blink",
         "//device/vr/public/mojom:test_mojom",
+        "//device/vr/public/mojom:vr_public_typemaps",
         "//third_party/openxr:openxr_headers",
       ]
 
@@ -373,27 +383,5 @@ if (enable_openxr) {
 
       data_deps = [ "//device/vr:json_mock" ]
     }
-  }
-}
-
-if (enable_gvr_services) {
-  java_sources_needing_jni =
-      [ "android/java/src/org/chromium/device/vr/NonPresentingGvrContext.java" ]
-
-  generate_jni("jni_headers") {
-    sources = java_sources_needing_jni
-    split_name = "vr"
-  }
-
-  android_library("java") {
-    srcjar_deps = [ ":jni_headers" ]
-    sources = java_sources_needing_jni
-    deps = [
-      "//base:base_java",
-      "//base:jni_java",
-      "//build/android:build_java",
-      "//third_party/gvr-android-sdk:gvr_common_java",
-      "//ui/android:ui_java",
-    ]
   }
 }

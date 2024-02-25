@@ -145,7 +145,13 @@ void SetSinkIdResolver::OnSetSinkIdComplete(media::OutputDeviceStatus status) {
   resolvers.pop_front();
 
   if (!resolvers.empty()) {
-    resolvers.front()->Start();
+    // Prevent potential stack overflow under heavy load by scheduling the next
+    // resolver start asynchronously instead of invoking it directly.
+    auto next_start_task = WTF::BindOnce(
+        &SetSinkIdResolver::Start, WrapWeakPersistent(resolvers.front().Get()));
+    audio_context_->GetExecutionContext()
+        ->GetTaskRunner(TaskType::kInternalMediaRealTime)
+        ->PostTask(FROM_HERE, std::move(next_start_task));
   }
 }
 

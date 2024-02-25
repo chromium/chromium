@@ -5,13 +5,13 @@
 #ifndef SERVICES_NETWORK_TRUST_TOKENS_TYPES_H_
 #define SERVICES_NETWORK_TRUST_TOKENS_TYPES_H_
 
+#include <optional>
 #include <string>
+#include <string_view>
 
-#include "base/strings/string_piece_forward.h"
 #include "base/time/time.h"
 #include "services/network/public/mojom/trust_tokens.mojom-shared.h"
 #include "services/network/trust_tokens/proto/public.pb.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/origin.h"
 
 namespace network {
@@ -26,7 +26,7 @@ base::Time TimestampToTime(Timestamp timestamp);
 Timestamp TimeToTimestamp(base::Time time);
 
 // Serializes a TrustTokenOperationType.
-base::StringPiece TrustTokenOperationTypeToString(
+std::string_view TrustTokenOperationTypeToString(
     mojom::TrustTokenOperationType type);
 
 // Serializes a mojom::TrustTokenProtocolVersion.

@@ -18,14 +18,16 @@ namespace {
 bool default_check_active_duration = true;
 }  // namespace
 
-// Do not fail on builds that run slow, such as SANITIZER, debug.
-#if !DCHECK_IS_ON() || defined(ADDRESS_SANITIZER) ||           \
-    defined(MEMORY_SANITIZER) || defined(THREAD_SANITIZER) ||  \
-    defined(LEAK_SANITIZER) || defined(UNDEFINED_SANITIZER) || \
-    !defined(NDEBUG)
-#define DCHECK_OR_WARNING WARNING
+// This warning should only be fatal on non-official DCHECK builds that are not
+// known to be runtime-slow. Slow builds for this purpose are debug builds
+// (!NDEBUG) and any sanitizer build.
+#if !DCHECK_IS_ON() || defined(OFFICIAL_BUILD) || !defined(NDEBUG) || \
+    defined(ADDRESS_SANITIZER) || defined(MEMORY_SANITIZER) ||        \
+    defined(THREAD_SANITIZER) || defined(LEAK_SANITIZER) ||           \
+    defined(UNDEFINED_SANITIZER)
+#define DFATAL_OR_WARNING WARNING
 #else
-#define DCHECK_OR_WARNING DCHECK
+#define DFATAL_OR_WARNING DFATAL
 #endif
 
 // Log animations that took more than 1m.  When DCHECK is enabled, it will fail
@@ -61,7 +63,7 @@ void CompositorAnimationObserver::NotifyFailure() {
     TRACE_EVENT_BEGIN("ui", "LongCompositorAnimationObserved",
                       perfetto::ThreadTrack::Current(), *start_);
     TRACE_EVENT_END("ui");
-    LOG(DCHECK_OR_WARNING)
+    LOG(DFATAL_OR_WARNING)
         << "CompositorAnimationObserver is active for too long ("
         << (base::TimeTicks::Now() - *start_).InSecondsF()
         << "s) location=" << location_.ToString();

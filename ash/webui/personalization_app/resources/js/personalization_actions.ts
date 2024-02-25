@@ -2,7 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {Action} from 'chrome://resources/js/store_ts.js';
+import {SeaPenActions} from 'chrome://resources/ash/common/sea_pen/sea_pen_actions.js';
+import {Action} from 'chrome://resources/js/store.js';
 
 import {AmbientActions} from './ambient/ambient_actions.js';
 import {KeyboardBacklightActions} from './keyboard_backlight/keyboard_backlight_actions.js';
@@ -46,5 +47,6 @@ export function setErrorAction(error: PersonalizationStateError):
   return {error, name: PersonalizationActionName.SET_ERROR};
 }
 
-export type Actions = AmbientActions|KeyboardBacklightActions|ThemeActions|
-    UserActions|WallpaperActions|DismissErrorAction|SetErrorAction;
+export type Actions =
+    AmbientActions|KeyboardBacklightActions|ThemeActions|UserActions|
+    WallpaperActions|DismissErrorAction|SetErrorAction|SeaPenActions;

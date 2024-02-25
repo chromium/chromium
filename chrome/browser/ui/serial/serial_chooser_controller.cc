@@ -152,8 +152,7 @@ std::u16string SerialChooserController::GetOption(size_t index) const {
   std::u16string display_path = port.path.BaseName().LossyDisplayName();
 
   if (!port.display_name || port.display_name->empty()) {
-    return l10n_util::GetStringFUTF16(IDS_SERIAL_PORT_CHOOSER_PATH_ONLY,
-                                      display_path);
+    return display_path;
   }
 
   if (port.type == device::mojom::SerialPortType::BLUETOOTH_CLASSIC_RFCOMM) {
@@ -166,8 +165,7 @@ std::u16string SerialChooserController::GetOption(size_t index) const {
           base::UTF8ToUTF16(*port.display_name),
           base::UTF8ToUTF16(device_uuid.canonical_value()));
     }
-    return l10n_util::GetStringFUTF16(IDS_SERIAL_PORT_CHOOSER_PATH_ONLY,
-                                      base::UTF8ToUTF16(*port.display_name));
+    return base::UTF8ToUTF16(*port.display_name);
   }
 
   return l10n_util::GetStringFUTF16(IDS_SERIAL_PORT_CHOOSER_NAME_WITH_PATH,

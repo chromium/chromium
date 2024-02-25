@@ -6,10 +6,11 @@
 #define NET_WEBSOCKETS_WEBSOCKET_STREAM_H_
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <vector>
 
-#include "base/functional/callback_forward.h"
+#include "base/functional/callback.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/time/time.h"
 #include "net/base/completion_once_callback.h"
@@ -20,12 +21,12 @@
 #include "net/websockets/websocket_event_interface.h"
 #include "net/websockets/websocket_handshake_request_info.h"
 #include "net/websockets/websocket_handshake_response_info.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 class GURL;
 
 namespace base {
 class OneShotTimer;
+class Time;
 }
 
 namespace url {
@@ -39,14 +40,19 @@ class AuthCredentials;
 class HttpRequestHeaders;
 class HttpResponseHeaders;
 class IPEndPoint;
+class IsolationInfo;
 class NetLogWithSource;
+class SSLInfo;
+class SiteForCookies;
 class URLRequest;
 class URLRequestContext;
-struct WebSocketFrame;
 class WebSocketBasicHandshakeStream;
 class WebSocketHttp2HandshakeStream;
 class WebSocketHttp3HandshakeStream;
 struct NetworkTrafficAnnotationTag;
+struct WebSocketFrame;
+struct WebSocketHandshakeRequestInfo;
+struct WebSocketHandshakeResponseInfo;
 
 // WebSocketStreamRequest is the caller's handle to the process of creation of a
 // WebSocketStream. Deleting the object before the ConnectDelegate OnSuccess or
@@ -71,7 +77,7 @@ class NET_EXPORT_PRIVATE WebSocketStreamRequestAPI
       WebSocketHttp3HandshakeStream* handshake_stream) = 0;
   virtual void OnFailure(const std::string& message,
                          int net_error,
-                         absl::optional<int> response_code) = 0;
+                         std::optional<int> response_code) = 0;
 };
 
 // WebSocketStream is a transport-agnostic interface for reading and writing
@@ -107,7 +113,7 @@ class NET_EXPORT_PRIVATE WebSocketStream {
     // |message| contains defails of the failure.
     virtual void OnFailure(const std::string& message,
                            int net_error,
-                           absl::optional<int> response_code) = 0;
+                           std::optional<int> response_code) = 0;
 
     // Called when the WebSocket Opening Handshake starts.
     virtual void OnStartOpeningHandshake(
@@ -137,7 +143,7 @@ class NET_EXPORT_PRIVATE WebSocketStream {
         scoped_refptr<HttpResponseHeaders> response_headers,
         const IPEndPoint& remote_endpoint,
         base::OnceCallback<void(const AuthCredentials*)> callback,
-        absl::optional<AuthCredentials>* credentials) = 0;
+        std::optional<AuthCredentials>* credentials) = 0;
   };
 
   // Create and connect a WebSocketStream of an appropriate type. The actual
@@ -157,6 +163,7 @@ class NET_EXPORT_PRIVATE WebSocketStream {
       const std::vector<std::string>& requested_subprotocols,
       const url::Origin& origin,
       const SiteForCookies& site_for_cookies,
+      bool has_storage_access,
       const IsolationInfo& isolation_info,
       const HttpRequestHeaders& additional_headers,
       URLRequestContext* url_request_context,
@@ -174,6 +181,7 @@ class NET_EXPORT_PRIVATE WebSocketStream {
       const std::vector<std::string>& requested_subprotocols,
       const url::Origin& origin,
       const SiteForCookies& site_for_cookies,
+      bool has_storage_access,
       const IsolationInfo& isolation_info,
       const HttpRequestHeaders& additional_headers,
       URLRequestContext* url_request_context,

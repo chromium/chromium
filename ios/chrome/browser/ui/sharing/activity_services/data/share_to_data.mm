@@ -6,7 +6,7 @@
 
 #import "base/check.h"
 #import "base/strings/sys_string_conversions.h"
-#import "net/base/mac/url_conversions.h"
+#import "net/base/apple/url_conversions.h"
 
 @interface ShareToData () {
   // URL to be shared with share extensions.

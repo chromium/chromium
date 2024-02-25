@@ -22,6 +22,24 @@ using MiniMapControllerCompletion = void (^)(NSURL*);
 - (void)presentDirectionsWithPresentingViewController:
     (UIViewController*)viewController;
 
+// Configure the footer view of the minimap controller.
+// All the fields are required.
+// If this is not called before the presentation, no footer view is presented.
+- (void)
+    configureFooterWithTitle:(NSString*)title
+          leadingButtonTitle:(NSString*)leadingButtonTitle
+         trailingButtonTitle:(NSString*)trailingButtonTitle
+         leadingButtonAction:(void (^)(UIViewController*))leadingButtonAction
+        trailingButtonAction:(void (^)(UIViewController*))trailingButtonAction;
+
+// Configure the IPH view of the minimap controller.
+// All the fields are required.
+// If this is not called before the presentation, no IPH view is presented.
+- (void)configureDisclaimerWithTitle:(NSAttributedString*)title
+                            subtitle:(NSAttributedString*)subtitle
+                       actionHandler:
+                           (void (^)(NSURL*, UIViewController*))actionHandler;
+
 @end
 
 namespace ios {

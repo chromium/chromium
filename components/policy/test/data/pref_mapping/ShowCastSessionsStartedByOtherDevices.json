@@ -1,0 +1,68 @@
+[
+  {
+    "os": [
+      "win",
+      "linux",
+      "mac",
+      "chromeos_ash",
+      "chromeos_lacros",
+      "fuchsia"
+    ],
+    "policy_pref_mapping_tests": [
+      {
+        "policies": {
+          "ShowCastSessionsStartedByOtherDevices": true
+        },
+        "prefs": {
+          "media_router.show_cast_sessions_started_by_other_devices.enabled": {
+            "value": true
+          }
+        }
+      },
+      {
+        "policies": {
+          "ShowCastSessionsStartedByOtherDevices": false
+        },
+        "prefs": {
+          "media_router.show_cast_sessions_started_by_other_devices.enabled": {
+            "value": false
+          }
+        }
+      }
+    ]
+  },
+  {
+    "os": [
+      "chromeos_ash",
+      "chromeos_lacros"
+    ],
+    "policy_pref_mapping_tests": [
+      {
+        "policies": {},
+        "prefs": {
+          "media_router.show_cast_sessions_started_by_other_devices.enabled": {
+            "value": false
+          }
+        }
+      }
+    ]
+  },
+  {
+    "os": [
+      "win",
+      "linux",
+      "mac",
+      "fuchsia"
+    ],
+    "policy_pref_mapping_tests": [
+      {
+        "policies": {},
+        "prefs": {
+          "media_router.show_cast_sessions_started_by_other_devices.enabled": {
+            "default_value": true
+          }
+        }
+      }
+    ]
+  }
+]

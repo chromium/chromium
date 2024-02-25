@@ -9,6 +9,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/platform/modules/mediastream/web_media_stream_track.h"
 #include "third_party/blink/renderer/modules/mediastream/mock_constraint_factory.h"
+#include "third_party/blink/renderer/platform/testing/task_environment.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 
 namespace blink {
@@ -128,6 +129,7 @@ class MediaStreamConstraintsUtilSetsTest : public testing::Test {
         kDefaultWidth);
   }
 
+  test::TaskEnvironment task_environment_;
   MockConstraintFactory factory_;
 };
 
@@ -1202,8 +1204,8 @@ TEST_F(MediaStreamConstraintsUtilSetsTest, NumericRangeSetDouble) {
   EXPECT_FALSE(intersection.IsEmpty());
 
   // Intersection with partially open sets.
-  set = DoubleRangeSet(absl::nullopt, kMax);
-  intersection = set.Intersection(DoubleRangeSet(kMin2, absl::nullopt));
+  set = DoubleRangeSet(std::nullopt, kMax);
+  intersection = set.Intersection(DoubleRangeSet(kMin2, std::nullopt));
   EXPECT_EQ(kMin2, *intersection.Min());
   EXPECT_EQ(kMax, *intersection.Max());
   EXPECT_FALSE(intersection.IsEmpty());

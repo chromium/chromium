@@ -21,7 +21,6 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_FONTS_FONT_FALLBACK_LIST_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_FONTS_FONT_FALLBACK_LIST_H_
 
-#include "base/memory/weak_ptr.h"
 #include "third_party/blink/renderer/platform/fonts/fallback_list_composite_key.h"
 #include "third_party/blink/renderer/platform/fonts/font_cache.h"
 #include "third_party/blink/renderer/platform/fonts/font_selector.h"
@@ -43,18 +42,15 @@ const int kCAllFamiliesScanned = -1;
 // FontFallbackList caches FontData from FontSelector and FontCache. If font
 // updates occur (e.g., @font-face rule changes, web font is loaded, etc.),
 // the cached data becomes stale and hence, invalid.
-class PLATFORM_EXPORT FontFallbackList : public RefCounted<FontFallbackList> {
-  USING_FAST_MALLOC(FontFallbackList);
-
+class PLATFORM_EXPORT FontFallbackList
+    : public GarbageCollected<FontFallbackList> {
  public:
-  static scoped_refptr<FontFallbackList> Create(
-      FontFallbackMap& font_fallback_map) {
-    return base::AdoptRef(new FontFallbackList(font_fallback_map));
-  }
+  explicit FontFallbackList(FontSelector* font_selector);
 
   FontFallbackList(const FontFallbackList&) = delete;
   FontFallbackList& operator=(const FontFallbackList&) = delete;
-  ~FontFallbackList();
+
+  void Trace(Visitor*) const;
 
   // Returns whether the cached data is valid. We can use a FontFallbackList
   // only when it's valid.
@@ -69,30 +65,25 @@ class PLATFORM_EXPORT FontFallbackList : public RefCounted<FontFallbackList> {
 
   bool ShouldSkipDrawing() const;
 
-  // Returns false only after the WeakPersistent to FontFallbackMap is turned to
-  // nullptr due to GC.
-  bool HasFontFallbackMap() const { return font_fallback_map_; }
-  FontFallbackMap& GetFontFallbackMap() const { return *font_fallback_map_; }
-
-  FontSelector* GetFontSelector() const;
+  FontSelector* GetFontSelector() const { return font_selector_.Get(); }
   uint16_t Generation() const { return generation_; }
 
   NGShapeCache& GetNGShapeCache(const FontDescription& font_description) {
     if (!ng_shape_cache_) {
-      ng_shape_cache_.emplace();
+      ng_shape_cache_ = MakeGarbageCollected<NGShapeCache>();
     }
-    return ng_shape_cache_.value();
+    return *ng_shape_cache_;
   }
 
   ShapeCache* GetShapeCache(const FontDescription& font_description) {
     if (!shape_cache_) {
       FallbackListCompositeKey key(font_description);
-      shape_cache_ = FontCache::Get().GetShapeCache(key)->GetWeakPtr();
+      shape_cache_ = FontCache::Get().GetShapeCache(key);
     }
-    DCHECK(shape_cache_);
-    if (GetFontSelector())
-      shape_cache_->ClearIfVersionChanged(GetFontSelector()->Version());
-    return shape_cache_.get();
+    if (font_selector_) {
+      shape_cache_->ClearIfVersionChanged(font_selector_->Version());
+    }
+    return shape_cache_.Get();
   }
 
   const SimpleFontData* PrimarySimpleFontData(
@@ -125,20 +116,17 @@ class PLATFORM_EXPORT FontFallbackList : public RefCounted<FontFallbackList> {
   bool HasCustomFont() const { return has_custom_font_; }
 
  private:
-  explicit FontFallbackList(FontFallbackMap& font_fallback_map);
-
-  scoped_refptr<FontData> GetFontData(const FontDescription&);
+  const FontData* GetFontData(const FontDescription&);
 
   const SimpleFontData* DeterminePrimarySimpleFontData(const FontDescription&);
   const SimpleFontData* DeterminePrimarySimpleFontDataCore(
       const FontDescription&);
 
-  void ReleaseFontData();
   bool ComputeCanShapeWordByWord(const FontDescription&);
 
-  Vector<scoped_refptr<FontData>, 1> font_list_;
-  const SimpleFontData* cached_primary_simple_font_data_ = nullptr;
-  const WeakPersistent<FontFallbackMap> font_fallback_map_;
+  HeapVector<Member<const FontData>, 1> font_list_;
+  Member<const SimpleFontData> cached_primary_simple_font_data_ = nullptr;
+  const Member<FontSelector> font_selector_;
   int family_index_ = 0;
   const uint16_t generation_;
   bool has_loading_fallback_ : 1;
@@ -148,8 +136,8 @@ class PLATFORM_EXPORT FontFallbackList : public RefCounted<FontFallbackList> {
   bool is_invalid_ : 1;
   bool nullify_primary_font_data_for_test_ : 1;
 
-  absl::optional<NGShapeCache> ng_shape_cache_;
-  base::WeakPtr<ShapeCache> shape_cache_;
+  Member<NGShapeCache> ng_shape_cache_;
+  Member<ShapeCache> shape_cache_;
 };
 
 }  // namespace blink

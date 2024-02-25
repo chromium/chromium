@@ -7,9 +7,7 @@ package org.chromium.chrome.browser.creator;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 
-/**
- * ViewBinder class for the Creator Profile section
- */
+/** ViewBinder class for the Creator Profile section */
 public class CreatorProfileViewBinder {
     public static void bind(PropertyModel model, CreatorProfileView view, PropertyKey propertyKey) {
         if (CreatorProperties.TITLE_KEY == propertyKey) {

@@ -9,13 +9,16 @@
 
 #import "components/metrics/metrics_service.h"
 #import "ios/chrome/app/application_delegate/app_state.h"
-#import "ios/chrome/browser/discover_feed/discover_feed_service.h"
-#import "ios/chrome/browser/discover_feed/discover_feed_service_factory.h"
-#import "ios/chrome/browser/discover_feed/feed_constants.h"
-#import "ios/chrome/browser/ntp/features.h"
+#import "ios/chrome/browser/discover_feed/model/discover_feed_service.h"
+#import "ios/chrome/browser/discover_feed/model/discover_feed_service_factory.h"
+#import "ios/chrome/browser/discover_feed/model/feed_constants.h"
+#import "ios/chrome/browser/push_notification/model/provisional_push_notification_util.h"
+#import "ios/chrome/browser/push_notification/model/push_notification_client_id.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
-#import "ios/chrome/browser/signin/authentication_service.h"
-#import "ios/chrome/browser/signin/authentication_service_factory.h"
+#import "ios/chrome/browser/shared/model/utils/first_run_util.h"
+#import "ios/chrome/browser/shared/public/features/features.h"
+#import "ios/chrome/browser/signin/model/authentication_service.h"
+#import "ios/chrome/browser/signin/model/authentication_service_factory.h"
 #import "ios/chrome/browser/ui/ntp/metrics/feed_metrics_constants.h"
 #import "ios/chrome/browser/ui/ntp/metrics/feed_metrics_recorder.h"
 
@@ -52,21 +55,38 @@ NSString* const kFeedLastBackgroundRefreshTimestamp =
     // case, a new value would never be saved again once we save NO, since the
     // NO codepath would not execute saving a new value.
     SaveFeedBackgroundRefreshCapabilityEnabledForNextColdStart();
-  } else if (appState.initStage == InitStageNormalUI &&
-             IsWebChannelsEnabled() && IsDiscoverFeedServiceCreatedEarly()) {
-    // Starting the DiscoverFeedService is required before users are able to
-    // interact with any tab because following a web channel (part of the
-    // Following Feed feature which depends on the DiscoverFeedService) is
-    // available on any tab, and not just the NTP where the Following Feed
-    // lives. This line is intended to crash if DiscoverFeedService is not able
-    // to be instantiated here.
-    AuthenticationService* authService =
-        AuthenticationServiceFactory::GetForBrowserState(
+  } else if (appState.initStage == InitStageNormalUI) {
+    if (IsWebChannelsEnabled() && IsDiscoverFeedServiceCreatedEarly()) {
+      // Starting the DiscoverFeedService is required before users are able to
+      // interact with any tab because following a web channel (part of the
+      // Following Feed feature which depends on the DiscoverFeedService) is
+      // available on any tab, and not just the NTP where the Following Feed
+      // lives. This line is intended to crash if DiscoverFeedService is not
+      // able to be instantiated here.
+      AuthenticationService* authService =
+          AuthenticationServiceFactory::GetForBrowserState(
+              self.appState.mainBrowserState);
+      if (authService &&
+          authService->HasPrimaryIdentity(signin::ConsentLevel::kSignin)) {
+        DiscoverFeedServiceFactory::GetForBrowserState(
             self.appState.mainBrowserState);
-    if (authService &&
-        authService->HasPrimaryIdentity(signin::ConsentLevel::kSignin)) {
-      DiscoverFeedServiceFactory::GetForBrowserState(
-          self.appState.mainBrowserState);
+      }
+    }
+    if ((!IsFirstRunRecent(base::Days(30)) &&
+         IsContentPushNotificationsProvisionalEnabled()) ||
+        IsContentPushNotificationsProvisionalBypass()) {
+      // This method does not show a UI prompt to the user. Provisional
+      // notifications are authorized without any user input if the user hasn't
+      // previously disabled notifications.
+      AuthenticationService* authService =
+          AuthenticationServiceFactory::GetForBrowserState(
+              self.appState.mainBrowserState);
+      std::vector<PushNotificationClientId> clientIds = {
+          PushNotificationClientId::kContent,
+          PushNotificationClientId::kSports};
+      [ProvisionalPushNotificationUtil
+          enrollUserToProvisionalNotificationsForClientIds:clientIds
+                                           withAuthService:authService];
     }
   }
   [super appState:appState didTransitionFromInitStage:previousInitStage];
@@ -75,14 +95,11 @@ NSString* const kFeedLastBackgroundRefreshTimestamp =
 #pragma mark - SceneObservingAppAgent
 
 - (void)appDidEnterBackground {
-  if (IsFeedBackgroundRefreshEnabled() ||
-      IsFeedAppCloseBackgroundRefreshEnabled()) {
+  if (IsFeedBackgroundRefreshEnabled()) {
     [self scheduleBackgroundRefresh];
-  } else if (IsFeedAppCloseForegroundRefreshEnabled()) {
-    if ([self feedServiceIfCreated]) {
-      [self feedServiceIfCreated]->RefreshFeed(
-          FeedRefreshTrigger::kForegroundAppClose);
-    }
+  } else if ([self feedServiceIfCreated]) {
+    [self feedServiceIfCreated]->RefreshFeed(
+        FeedRefreshTrigger::kForegroundAppClose);
   }
 }
 
@@ -148,8 +165,7 @@ NSString* const kFeedLastBackgroundRefreshTimestamp =
   // Do not DCHECK whether background refreshes were enabled at startup because
   // this is also called from the background task handler, and the value could
   // have changed during a cold start.
-  if (!IsFeedBackgroundRefreshEnabled() &&
-      !IsFeedAppCloseBackgroundRefreshEnabled()) {
+  if (!IsFeedBackgroundRefreshEnabled()) {
     return;
   }
   BGAppRefreshTaskRequest* request = [[BGAppRefreshTaskRequest alloc]
@@ -169,10 +185,6 @@ NSString* const kFeedLastBackgroundRefreshTimestamp =
   if (IsFeedOverrideDefaultsEnabled()) {
     earliestBeginDate = [NSDate
         dateWithTimeIntervalSinceNow:GetBackgroundRefreshIntervalInSeconds()];
-  } else if (IsFeedAppCloseBackgroundRefreshEnabled()) {
-    earliestBeginDate =
-        [NSDate dateWithTimeIntervalSinceNow:
-                    GetAppCloseBackgroundRefreshIntervalInSeconds()];
   } else {
     // This is expected to crash if FeedService is not available.
     earliestBeginDate =
@@ -185,8 +197,7 @@ NSString* const kFeedLastBackgroundRefreshTimestamp =
 - (void)handleBackgroundRefreshTask:(BGTask*)task {
   // Do not DCHECK whether background refreshes were enabled at startup because
   // the value could have changed during a cold start.
-  if (!IsFeedBackgroundRefreshEnabled() &&
-      !IsFeedAppCloseBackgroundRefreshEnabled()) {
+  if (!IsFeedBackgroundRefreshEnabled()) {
     return;
   }
 
@@ -206,13 +217,6 @@ NSString* const kFeedLastBackgroundRefreshTimestamp =
     });
   };
 
-  // The `engagedWithLatestRefreshedContent` criteria only applies to background
-  // app close. Early return if criteria is not met.
-  if (IsFeedAppCloseBackgroundRefreshEnabled() &&
-      ![self.feedMetricsRecorder hasEngagedWithLatestRefreshedContent]) {
-    return;
-  }
-
   // Cold starts are killed earlier in this method, so warm and cold starts
   // cannot be recorded at the same time.
   [self recordWarmStartMetrics];
@@ -226,16 +230,9 @@ NSString* const kFeedLastBackgroundRefreshTimestamp =
 
 // Records cold start histogram and kills app.
 - (void)handleColdStartAndKillApp {
-  if (IsFeedAppCloseBackgroundRefreshEnabled()) {
-    // Normally check `engagedWithLatestRefreshedContent` whenever background
-    // app close is enabled. However, it doesn't matter for cold starts. Kill
-    // the app in all cold starts.
-    [FeedMetricsRecorder recordFeedRefreshTrigger:
-                             FeedRefreshTrigger::kBackgroundColdStartAppClose];
-  } else {
-    [FeedMetricsRecorder
-        recordFeedRefreshTrigger:FeedRefreshTrigger::kBackgroundColdStart];
-  }
+  [FeedMetricsRecorder
+      recordFeedRefreshTrigger:FeedRefreshTrigger::kBackgroundColdStart];
+
   // TODO(crbug.com/1396459): Remove this workaround and enable background
   // cold starts.
   [self maybeNotifyRefreshSuccess:NO];
@@ -245,18 +242,8 @@ NSString* const kFeedLastBackgroundRefreshTimestamp =
 
 // Record refresh trigger for warm start.
 - (void)recordWarmStartMetrics {
-  CHECK(!IsFeedAppCloseBackgroundRefreshEnabled() ||
-        [self.feedMetricsRecorder hasEngagedWithLatestRefreshedContent]);
-
-  if (IsFeedAppCloseBackgroundRefreshEnabled()) {
-    // This is recorded if both app close and regular background refreshes are
-    // enabled.
-    [FeedMetricsRecorder recordFeedRefreshTrigger:
-                             FeedRefreshTrigger::kBackgroundWarmStartAppClose];
-  } else {
     [FeedMetricsRecorder
         recordFeedRefreshTrigger:FeedRefreshTrigger::kBackgroundWarmStart];
-  }
 }
 
 #pragma mark - Refresh Completion Notifications (only enabled by Experimental Settings)

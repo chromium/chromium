@@ -28,17 +28,14 @@ import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Batch;
 import org.chromium.chrome.browser.browserservices.intents.ColorProvider;
 import org.chromium.chrome.browser.customtabs.features.CustomTabNavigationBarController;
-import org.chromium.ui.util.ColorUtils;
 
 /** Tests for {@link CustomTabNavigationBarController}. */
 @RunWith(BaseRobolectricTestRunner.class)
 @Batch(Batch.UNIT_TESTS)
 @Config(manifest = Config.NONE)
 public class CustomTabNavigationBarControllerTest {
-    @Mock
-    private ColorProvider mColorProvider;
-    @Mock
-    private CustomTabIntentDataProvider mCustomTabIntentDataProvider;
+    @Mock private ColorProvider mColorProvider;
+    @Mock private CustomTabIntentDataProvider mCustomTabIntentDataProvider;
     private Window mWindow;
     private Context mContext;
 
@@ -84,22 +81,6 @@ public class CustomTabNavigationBarControllerTest {
     }
 
     @Test
-    @Config(sdk = Build.VERSION_CODES.N_MR1) // SDK 25 is used to trigger supportsDarkButtons=false.
-    public void setsCorrectBarColor() {
-        when(mColorProvider.getNavigationBarDividerColor()).thenReturn(Color.RED);
-
-        // The case when needsDarkButtons=true.
-        when(mColorProvider.getNavigationBarColor()).thenReturn(Color.WHITE);
-        CustomTabNavigationBarController.update(mWindow, mCustomTabIntentDataProvider, mContext);
-        verify(mWindow).setNavigationBarColor(ColorUtils.getDarkenedColorForStatusBar(Color.WHITE));
-
-        // The case when needsDarkButtons=false.
-        when(mColorProvider.getNavigationBarColor()).thenReturn(Color.BLACK);
-        CustomTabNavigationBarController.update(mWindow, mCustomTabIntentDataProvider, mContext);
-        verify(mWindow).setNavigationBarColor(Color.BLACK);
-    }
-
-    @Test
     @Config(sdk = Build.VERSION_CODES.O) // SDK 26 is used to trigger supportDarkButtons=true.
     public void setsCorrectBarColorWhenDarkButtonsSupported() {
         when(mColorProvider.getNavigationBarDividerColor()).thenReturn(Color.RED);
@@ -125,7 +106,8 @@ public class CustomTabNavigationBarControllerTest {
         when(mColorProvider.getNavigationBarDividerColor()).thenReturn(null);
         when(mColorProvider.getNavigationBarColor()).thenReturn(Color.WHITE);
         CustomTabNavigationBarController.update(mWindow, mCustomTabIntentDataProvider, mContext);
-        verify(mWindow).setNavigationBarDividerColor(
-                mContext.getColor(org.chromium.chrome.R.color.black_alpha_12));
+        verify(mWindow)
+                .setNavigationBarDividerColor(
+                        mContext.getColor(org.chromium.chrome.R.color.black_alpha_12));
     }
 }

@@ -70,25 +70,15 @@ class CheckForCancelledOrPausedDelegate
   // URLLoaderThrottle::Delegate:
   void CancelWithError(int error_code,
                        base::StringPiece custom_reason) override {
-    cancelled_or_paused_ = true;
+    cancelled_ = true;
   }
 
   void Resume() override {}
 
-  void PauseReadingBodyFromNet() override { cancelled_or_paused_ = true; }
-
-  void RestartWithFlags(int additional_load_flags) override {
-    cancelled_or_paused_ = true;
-  }
-
-  void RestartWithURLResetAndFlags(int additional_load_flags) override {
-    cancelled_or_paused_ = true;
-  }
-
-  bool cancelled_or_paused() const { return cancelled_or_paused_; }
+  bool cancelled() const { return cancelled_; }
 
  private:
-  bool cancelled_or_paused_ = false;
+  bool cancelled_ = false;
 };
 
 // Computes the user agent value that should set for the User-Agent header.
@@ -248,7 +238,7 @@ bool SearchPrefetchRequest::StartPrefetchRequest(Profile* profile) {
 
 #if BUILDFLAG(IS_ANDROID)
   base::TimeTicks geo_header_start_timestamp = base::TimeTicks::Now();
-  absl::optional<std::string> geo_header =
+  std::optional<std::string> geo_header =
       GetGeolocationHeaderIfAllowed(resource_request->url, profile);
   if (geo_header) {
     resource_request->headers.AddHeaderFromString(geo_header.value());
@@ -272,7 +262,8 @@ bool SearchPrefetchRequest::StartPrefetchRequest(Profile* profile) {
       content::CreateContentBrowserURLLoaderThrottles(
           *resource_request, profile, std::move(wc_getter),
           /*navigation_ui_data=*/nullptr,
-          content::RenderFrameHost::kNoFrameTreeNodeId);
+          content::RenderFrameHost::kNoFrameTreeNodeId,
+          /*navigation_id=*/std::nullopt);
 
   bool should_defer = false;
   {
@@ -302,7 +293,7 @@ bool SearchPrefetchRequest::StartPrefetchRequest(Profile* profile) {
                                              &new_canonical_search_url);
 
       if (should_defer || new_canonical_search_url != canonical_search_url_ ||
-          cancel_or_pause_delegate.cancelled_or_paused()) {
+          cancel_or_pause_delegate.cancelled()) {
         return false;
       }
     }
@@ -409,24 +400,25 @@ void SearchPrefetchRequest::ErrorEncountered() {
 void SearchPrefetchRequest::OnServableResponseCodeReceived() {
   servable_response_code_received_ = true;
 
+  if (!prerender_manager_) {
+    return;
+  }
+
   // TODO(https://crbug.com/1295170): Do not start prerendering if this request
   // is about to expire.
-  if (prerender_manager_) {
-    DCHECK(prerender_utils::SearchPrefetchUpgradeToPrerenderIsEnabled());
-    if (prerender_utils::SearchPreloadShareableCacheIsEnabled()) {
-      // Start prerender synchronously. For shareable cache cases, the request
-      // will build the data pipe by itself and we do not need to wait.
-      prerender_manager_->StartPrerenderSearchResult(
-          canonical_search_url_, prerender_url_, prerender_preloading_attempt_);
-    } else {
-      // Start prerender asynchronously, so that the request can prepare the
-      // data pipe completely
-      base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-          FROM_HERE,
-          base::BindOnce(&PrerenderManager::StartPrerenderSearchResult,
-                         prerender_manager_, canonical_search_url_,
-                         prerender_url_, prerender_preloading_attempt_));
-    }
+  if (prerender_utils::SearchPreloadShareableCacheIsEnabled()) {
+    // Start prerender synchronously. For shareable cache cases, the request
+    // will build the data pipe by itself and we do not need to wait.
+    prerender_manager_->StartPrerenderSearchResult(
+        canonical_search_url_, prerender_url_, prerender_preloading_attempt_);
+  } else {
+    // Start prerender asynchronously, so that the request can prepare the
+    // data pipe completely
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE,
+        base::BindOnce(&PrerenderManager::StartPrerenderSearchResult,
+                       prerender_manager_, canonical_search_url_,
+                       prerender_url_, prerender_preloading_attempt_));
   }
 }
 
@@ -483,8 +475,12 @@ SearchPrefetchURLLoader::RequestHandler
 SearchPrefetchRequest::CreateResponseReader() {
   DCHECK(prerender_utils::SearchPreloadShareableCacheIsEnabled());
   DCHECK(streaming_url_loader_);
-  // Make a new refptr for `streaming_url_loader_`, to keep it alive during
-  // serving.
+  if (!servable_response_code_received_) {
+    // It is not expected to reach here, as DSE prerender should only be
+    // triggered after `this` received servable response. But other triggers may
+    // unexpectedly trigger prerendering due to https://crbug.com/1484914.
+    return {};
+  }
   return StreamingSearchPrefetchURLLoader::
       GetCallbackForReadingViaResponseReader(streaming_url_loader_);
 }

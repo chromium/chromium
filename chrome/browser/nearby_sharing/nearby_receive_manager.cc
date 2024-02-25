@@ -5,7 +5,7 @@
 #include "chrome/browser/nearby_sharing/nearby_receive_manager.h"
 
 #include "base/functional/callback_helpers.h"
-#include "chrome/browser/nearby_sharing/logging/logging.h"
+#include "components/cross_device/logging/logging.h"
 
 NearbyReceiveManager::NearbyReceiveManager(
     NearbySharingService* nearby_sharing_service)
@@ -24,11 +24,10 @@ void NearbyReceiveManager::OnTransferUpdate(
     const ShareTarget& share_target,
     const TransferMetadata& transfer_metadata) {
   TransferMetadata::Status status = transfer_metadata.status();
-  NS_LOG(VERBOSE) << __func__ << ": Nearby receive manager: "
-                  << "Transfer update for share target with ID "
-                  << share_target.id << ": "
-                  << TransferMetadata::StatusToString(
-                         transfer_metadata.status());
+  CD_LOG(VERBOSE, Feature::NS)
+      << __func__ << ": Nearby receive manager: "
+      << "Transfer update for share target with ID " << share_target.id << ": "
+      << TransferMetadata::StatusToString(transfer_metadata.status());
 
   NotifyOnTransferUpdate(share_target, transfer_metadata);
   if (TransferMetadata::Status::kAwaitingLocalConfirmation == status) {
@@ -88,7 +87,8 @@ void NearbyReceiveManager::Accept(const base::UnguessableToken& share_target_id,
                                   AcceptCallback callback) {
   auto iter = share_targets_map_.find(share_target_id);
   if (iter == share_targets_map_.end()) {
-    NS_LOG(ERROR) << "Unknown share target accepted: id=" << share_target_id;
+    CD_LOG(ERROR, Feature::NS)
+        << "Unknown share target accepted: id=" << share_target_id;
     std::move(callback).Run(false);
     return;
   }
@@ -108,7 +108,8 @@ void NearbyReceiveManager::Reject(const base::UnguessableToken& share_target_id,
                                   RejectCallback callback) {
   auto iter = share_targets_map_.find(share_target_id);
   if (iter == share_targets_map_.end()) {
-    NS_LOG(ERROR) << "Unknown share target rejected: id=" << share_target_id;
+    CD_LOG(ERROR, Feature::NS)
+        << "Unknown share target rejected: id=" << share_target_id;
     std::move(callback).Run(false);
     return;
   }

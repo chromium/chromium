@@ -18,15 +18,24 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 import java.util.zip.ZipOutputStream;
 
-/**
- * Base class for scripts that perform bytecode modifications on a jar file.
- */
+/** Base class for scripts that perform bytecode modifications on a jar file. */
 public abstract class ByteCodeRewriter {
     private static final String CLASS_FILE_SUFFIX = ".class";
+
+    static String[] expandArgs(String[] args) throws IOException {
+        if (args.length == 1 && args[0].startsWith("@")) {
+            Path path = Paths.get(args[0].substring(1));
+            args = Files.readAllLines(path).toArray(new String[0]);
+        }
+        return args;
+    }
 
     public void rewrite(File inputJar, File outputJar) throws IOException {
         if (!inputJar.exists()) {
@@ -42,9 +51,7 @@ public abstract class ByteCodeRewriter {
     /** Returns true if the class at the given path in the archive should be rewritten. */
     protected abstract boolean shouldRewriteClass(String classPath);
 
-    /**
-     * Returns true if the class at the given {@link ClassReader} should be rewritten.
-     */
+    /** Returns true if the class at the given {@link ClassReader} should be rewritten. */
     protected boolean shouldRewriteClass(ClassReader classReader) {
         return true;
     }
@@ -109,8 +116,8 @@ public abstract class ByteCodeRewriter {
             byte[] classData = writer.toByteArray();
             outputStream.write(classData, 0, classData.length);
             return true;
-        } catch (IOException e) {
-            throw new RuntimeException(e);
+        } catch (Throwable e) {
+            throw new RuntimeException("Failed when processing " + entry.getName(), e);
         }
     }
 }

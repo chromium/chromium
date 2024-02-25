@@ -65,7 +65,7 @@ class ApplicationControlsImpl : public ApplicationClient::ApplicationControls,
 ApplicationClient::ApplicationControls::~ApplicationControls() = default;
 
 ApplicationClient::ApplicationClient(
-    NetworkContextGetter network_context_getter)
+    network::NetworkContextGetter network_context_getter)
     : network_context_getter_(std::move(network_context_getter)),
       weak_factory_(this) {}
 

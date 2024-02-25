@@ -49,10 +49,10 @@ void VirtualKeyboardLogSource::Fetch(SysLogsSourceCallback callback) {
         base::NumberToString(touchscreen_count);
     log_data += base::StrCat({"Touchscreen ", touchscreen_count_converted,
                               " Product ID"}) +
-                ": " + base::StringPrintf("%#06x", device.product_id) + "\n";
+                ": " + base::StringPrintf("0x%04x", device.product_id) + "\n";
     log_data += base::StrCat({"Touchscreen ", touchscreen_count_converted,
                               " Vendor ID"}) +
-                ": " + base::StringPrintf("%#06x", device.vendor_id) + "\n";
+                ": " + base::StringPrintf("0x%04x", device.vendor_id) + "\n";
     ++touchscreen_count;
   }
 
@@ -75,11 +75,11 @@ void VirtualKeyboardLogSource::Fetch(SysLogsSourceCallback callback) {
     log_data +=
         base::StrCat({"External Keyboard ", external_keyboard_count_converted,
                       " Product ID"}) +
-        ": " + base::StringPrintf("%#06x", device.product_id) + "\n";
+        ": " + base::StringPrintf("0x%04x", device.product_id) + "\n";
     log_data +=
         base::StrCat({"External Keyboard ", external_keyboard_count_converted,
                       " Vendor ID"}) +
-        ": " + base::StringPrintf("%#06x", device.vendor_id) + "\n";
+        ": " + base::StringPrintf("0x%04x", device.vendor_id) + "\n";
     ++external_keyboard_count;
   }
 

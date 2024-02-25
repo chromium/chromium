@@ -26,8 +26,8 @@ const gfx::FontList* MenuDelegate::GetLabelFontList(int id) const {
   return nullptr;
 }
 
-absl::optional<SkColor> MenuDelegate::GetLabelColor(int id) const {
-  return absl::nullopt;
+std::optional<SkColor> MenuDelegate::GetLabelColor(int id) const {
+  return std::nullopt;
 }
 
 std::u16string MenuDelegate::GetTooltipText(

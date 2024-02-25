@@ -33,7 +33,7 @@ MandatoryReauthIconView::MandatoryReauthIconView(
                          delegate,
                          "MandatoryReauth") {
   SetAccessibilityProperties(
-      /*role=*/absl::nullopt,
+      /*role=*/std::nullopt,
       l10n_util::GetStringUTF16(IDS_AUTOFILL_MANDATORY_REAUTH_ICON_TOOLTIP));
 }
 
@@ -84,7 +84,7 @@ MandatoryReauthBubbleController* MandatoryReauthIconView::GetController()
   return MandatoryReauthBubbleControllerImpl::FromWebContents(web_contents);
 }
 
-BEGIN_METADATA(MandatoryReauthIconView, PageActionIconView)
+BEGIN_METADATA(MandatoryReauthIconView)
 END_METADATA
 
 }  // namespace autofill

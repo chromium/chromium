@@ -5,7 +5,8 @@
 /**
  * @fileoverview Handles media automation events.
  */
-import {AsyncUtil} from '../../../common/async_util.js';
+import {AsyncUtil} from '/common/async_util.js';
+
 import {SettingsManager} from '../../common/settings_manager.js';
 import {ChromeVox} from '../chromevox.js';
 import {TtsCapturingEventListener} from '../tts_interface.js';

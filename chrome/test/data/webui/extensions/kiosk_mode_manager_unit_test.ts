@@ -8,7 +8,8 @@
  * chrome.developerPrivate API.
  */
 
-import {ExtensionsManagerElement, KioskBrowserProxyImpl, Service} from 'chrome://extensions/extensions.js';
+import type {ExtensionsManagerElement} from 'chrome://extensions/extensions.js';
+import {KioskBrowserProxyImpl, Service} from 'chrome://extensions/extensions.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 

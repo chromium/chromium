@@ -6,6 +6,8 @@
 
 #include "base/memory/ptr_util.h"
 #include "chromeos/ash/components/multidevice/logging/logging.h"
+#include "chromeos/ash/services/secure_channel/public/mojom/nearby_connector.mojom-shared.h"
+#include "chromeos/ash/services/secure_channel/public/mojom/secure_channel.mojom-shared.h"
 #include "chromeos/ash/services/secure_channel/public/mojom/secure_channel.mojom.h"
 #include "device/bluetooth/bluetooth_adapter.h"
 
@@ -66,6 +68,21 @@ PendingNearbyInitiatorConnectionRequest::
 PendingNearbyInitiatorConnectionRequest::
     ~PendingNearbyInitiatorConnectionRequest() {
   bluetooth_adapter_->RemoveObserver(this);
+}
+
+void PendingNearbyInitiatorConnectionRequest::HandleBleDiscoveryStateChange(
+    mojom::DiscoveryResult discovery_state,
+    std::optional<mojom::DiscoveryErrorCode> potential_error_code) {
+  UpdateBleDiscoveryState(discovery_state, potential_error_code);
+}
+void PendingNearbyInitiatorConnectionRequest::HandleNearbyConnectionChange(
+    mojom::NearbyConnectionStep step,
+    mojom::NearbyConnectionStepResult result) {
+  UpdateNearbyConnectionChange(step, result);
+}
+void PendingNearbyInitiatorConnectionRequest::HandleSecureChannelChanged(
+    mojom::SecureChannelState secure_channel_state) {
+  UpdateSecureChannelChange(secure_channel_state);
 }
 
 void PendingNearbyInitiatorConnectionRequest::HandleConnectionFailure(

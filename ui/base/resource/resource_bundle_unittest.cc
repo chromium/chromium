@@ -20,6 +20,7 @@
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/memory/ref_counted_memory.h"
+#include "base/ranges/algorithm.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
@@ -70,7 +71,7 @@ constexpr uint8_t kLottieExpected[] = {'t', 'e', 's', 't'};
 // Mock of |lottie::ParseLottieAsStillImage|. Checks that |kLottieData| is
 // properly stripped of the "LOTTIE" prefix.
 gfx::ImageSkia ParseLottieAsStillImageForTesting(std::vector<uint8_t> data) {
-  CHECK(std::ranges::equal(data, kLottieExpected));
+  CHECK(base::ranges::equal(data, kLottieExpected));
 
   constexpr int kDimension = 16;
   return gfx::ImageSkia(
@@ -558,11 +559,8 @@ TEST_F(ResourceBundleImageTest, GetImageNamed) {
 #if BUILDFLAG(IS_WIN)
   display::win::SetDefaultDeviceScaleFactor(2.0);
 #endif
-  std::vector<ResourceScaleFactor> supported_factors;
-  supported_factors.push_back(k100Percent);
-  supported_factors.push_back(k200Percent);
   test::ScopedSetSupportedResourceScaleFactors scoped_supported(
-      supported_factors);
+      {k100Percent, k200Percent});
   base::FilePath data_1x_path = dir_path().AppendASCII("sample_1x.pak");
   base::FilePath data_2x_path = dir_path().AppendASCII("sample_2x.pak");
 
@@ -615,11 +613,8 @@ TEST_F(ResourceBundleImageTest, GetImageNamed) {
 // Test that GetImageNamed() behaves properly for images which GRIT has
 // annotated as having fallen back to 1x.
 TEST_F(ResourceBundleImageTest, GetImageNamedFallback1x) {
-  std::vector<ResourceScaleFactor> supported_factors;
-  supported_factors.push_back(k100Percent);
-  supported_factors.push_back(k200Percent);
   test::ScopedSetSupportedResourceScaleFactors scoped_supported(
-      supported_factors);
+      {k100Percent, k200Percent});
   base::FilePath data_path = dir_path().AppendASCII("sample.pak");
   base::FilePath data_2x_path = dir_path().AppendASCII("sample_2x.pak");
 
@@ -650,15 +645,10 @@ TEST_F(ResourceBundleImageTest, GetImageNamedFallback1x) {
 }
 
 TEST_F(ResourceBundleImageTest, FallbackToNone) {
-  std::vector<ResourceScaleFactor> supported_factors;
-  supported_factors.push_back(k100Percent);
-  supported_factors.push_back(k200Percent);
-  supported_factors.push_back(k300Percent);
-
   // Presents a consistent set of supported scale factors for all platforms.
   // iOS does not include k100Percent, which breaks the test below.
   test::ScopedSetSupportedResourceScaleFactors scoped_supported(
-      supported_factors);
+      {k100Percent, k200Percent, k300Percent});
 
   base::FilePath data_default_path = dir_path().AppendASCII("sample.pak");
 
@@ -688,9 +678,9 @@ TEST_F(ResourceBundleImageTest, Lottie) {
   ResourceBundle* resource_bundle = CreateResourceBundleWithEmptyLocalePak();
   resource_bundle->AddDataPackFromPath(data_unscaled_path, kScaleFactorNone);
 
-  absl::optional<std::vector<uint8_t>> data = resource_bundle->GetLottieData(3);
+  std::optional<std::vector<uint8_t>> data = resource_bundle->GetLottieData(3);
   ASSERT_TRUE(data.has_value());
-  EXPECT_TRUE(std::ranges::equal(*data, kLottieExpected));
+  EXPECT_TRUE(base::ranges::equal(*data, kLottieExpected));
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   ui::ResourceBundle::SetLottieParsingFunctions(

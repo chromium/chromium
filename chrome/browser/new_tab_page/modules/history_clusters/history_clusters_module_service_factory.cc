@@ -7,11 +7,14 @@
 #include "base/feature_list.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/cart/cart_service_factory.h"
+#include "chrome/browser/history/history_service_factory.h"
 #include "chrome/browser/history_clusters/history_clusters_service_factory.h"
 #include "chrome/browser/new_tab_page/modules/history_clusters/history_clusters_module_service.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/search_engines/template_url_service_factory.h"
+#include "chrome/browser/segmentation_platform/segmentation_platform_service_factory.h"
+#include "components/keyed_service/core/service_access_type.h"
 #include "components/search/ntp_features.h"
 #include "content/public/browser/browser_context.h"
 
@@ -35,10 +38,13 @@ HistoryClustersModuleServiceFactory::HistoryClustersModuleServiceFactory()
               .WithGuest(ProfileSelection::kNone)
               .WithAshInternals(ProfileSelection::kNone)
               .Build()) {
+  DependsOn(HistoryServiceFactory::GetInstance());
   DependsOn(HistoryClustersServiceFactory::GetInstance());
   DependsOn(CartServiceFactory::GetInstance());
   DependsOn(TemplateURLServiceFactory::GetInstance());
   DependsOn(OptimizationGuideKeyedServiceFactory::GetInstance());
+  DependsOn(
+      segmentation_platform::SegmentationPlatformServiceFactory::GetInstance());
 }
 
 HistoryClustersModuleServiceFactory::~HistoryClustersModuleServiceFactory() =
@@ -54,13 +60,21 @@ HistoryClustersModuleServiceFactory::BuildServiceInstanceForBrowserContext(
     return nullptr;
   }
   auto* profile = Profile::FromBrowserContext(context);
+  auto* hs = HistoryServiceFactory::GetForProfile(
+      profile, ServiceAccessType::EXPLICIT_ACCESS);
+  if (!hs) {
+    return nullptr;
+  }
   auto* tus = TemplateURLServiceFactory::GetForProfile(profile);
   if (!tus) {
     return nullptr;
   }
+  auto* sps =
+      segmentation_platform::SegmentationPlatformServiceFactory::GetForProfile(
+          profile);
   return std::make_unique<HistoryClustersModuleService>(
-      hcs, CartServiceFactory::GetForProfile(profile), tus,
-      OptimizationGuideKeyedServiceFactory::GetForProfile(profile));
+      hcs, hs, CartServiceFactory::GetForProfile(profile), tus,
+      OptimizationGuideKeyedServiceFactory::GetForProfile(profile), sps);
 }
 
 bool HistoryClustersModuleServiceFactory::ServiceIsCreatedWithBrowserContext()

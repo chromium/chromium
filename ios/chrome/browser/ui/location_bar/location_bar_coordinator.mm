@@ -20,24 +20,24 @@
 #import "components/search_engines/util.h"
 #import "components/strings/grit/components_strings.h"
 #import "ios/chrome/browser/autocomplete/model/autocomplete_scheme_classifier_impl.h"
-#import "ios/chrome/browser/browser_state_metrics/browser_state_metrics.h"
-#import "ios/chrome/browser/default_browser/utils.h"
-#import "ios/chrome/browser/drag_and_drop/drag_item_util.h"
-#import "ios/chrome/browser/drag_and_drop/url_drag_drop_handler.h"
-#import "ios/chrome/browser/feature_engagement/tracker_factory.h"
-#import "ios/chrome/browser/infobars/infobar_metrics_recorder.h"
-#import "ios/chrome/browser/ntp/new_tab_page_tab_helper.h"
-#import "ios/chrome/browser/ntp/new_tab_page_util.h"
-#import "ios/chrome/browser/overlays/public/overlay_presenter.h"
-#import "ios/chrome/browser/search_engines/template_url_service_factory.h"
+#import "ios/chrome/browser/browser_state_metrics/model/browser_state_metrics.h"
+#import "ios/chrome/browser/default_browser/model/utils.h"
+#import "ios/chrome/browser/drag_and_drop/model/drag_item_util.h"
+#import "ios/chrome/browser/drag_and_drop/model/url_drag_drop_handler.h"
+#import "ios/chrome/browser/feature_engagement/model/tracker_factory.h"
+#import "ios/chrome/browser/infobars/model/infobar_metrics_recorder.h"
+#import "ios/chrome/browser/ntp/model/new_tab_page_tab_helper.h"
+#import "ios/chrome/browser/ntp/model/new_tab_page_util.h"
+#import "ios/chrome/browser/overlays/model/public/overlay_presenter.h"
+#import "ios/chrome/browser/search_engines/model/template_url_service_factory.h"
 #import "ios/chrome/browser/shared/coordinator/default_browser_promo/default_browser_promo_scene_agent_utils.h"
 #import "ios/chrome/browser/shared/coordinator/layout_guide/layout_guide_util.h"
-#import "ios/chrome/browser/shared/coordinator/scene/scene_state_browser_agent.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/shared/public/commands/browser_coordinator_commands.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
+#import "ios/chrome/browser/shared/public/commands/help_commands.h"
 #import "ios/chrome/browser/shared/public/commands/lens_commands.h"
 #import "ios/chrome/browser/shared/public/commands/load_query_commands.h"
 #import "ios/chrome/browser/shared/public/commands/search_image_with_lens_command.h"
@@ -63,11 +63,11 @@
 #import "ios/chrome/browser/ui/omnibox/omnibox_text_field_ios.h"
 #import "ios/chrome/browser/ui/omnibox/popup/omnibox_popup_coordinator.h"
 #import "ios/chrome/browser/ui/omnibox/web_location_bar_impl.h"
-#import "ios/chrome/browser/url_loading/image_search_param_generator.h"
-#import "ios/chrome/browser/url_loading/url_loading_browser_agent.h"
-#import "ios/chrome/browser/url_loading/url_loading_params.h"
-#import "ios/chrome/browser/url_loading/url_loading_util.h"
-#import "ios/chrome/browser/web/web_navigation_util.h"
+#import "ios/chrome/browser/url_loading/model/image_search_param_generator.h"
+#import "ios/chrome/browser/url_loading/model/url_loading_browser_agent.h"
+#import "ios/chrome/browser/url_loading/model/url_loading_params.h"
+#import "ios/chrome/browser/url_loading/model/url_loading_util.h"
+#import "ios/chrome/browser/web/model/web_navigation_util.h"
 #import "ios/public/provider/chrome/browser/lens/lens_api.h"
 #import "ios/public/provider/chrome/browser/voice_search/voice_search_api.h"
 #import "ios/web/public/navigation/navigation_manager.h"
@@ -164,9 +164,9 @@ const size_t kMaxURLDisplayChars = 32 * 1024;
 
   BOOL isIncognito = self.browserState->IsOffTheRecord();
 
-  PrefService* prefs =
-      ChromeBrowserState::FromBrowserState(self.browser->GetBrowserState())
-          ->GetPrefs();
+  PrefService* originalPrefs = self.browser->GetBrowserState()
+                                   ->GetOriginalChromeBrowserState()
+                                   ->GetPrefs();
   self.viewController = [[LocationBarViewController alloc] init];
   self.viewController.incognito = isIncognito;
   self.viewController.delegate = self;
@@ -180,7 +180,7 @@ const size_t kMaxURLDisplayChars = 32 * 1024;
       ios::provider::IsVoiceSearchEnabled();
   self.viewController.layoutGuideCenter =
       LayoutGuideCenterForBrowser(self.browser);
-  self.viewController.prefService = prefs;
+  self.viewController.originalPrefService = originalPrefs;
 
   _locationBar = std::make_unique<WebLocationBarImpl>(self, self.delegate);
   _locationBar->SetURLLoader(self);
@@ -192,6 +192,7 @@ const size_t kMaxURLDisplayChars = 32 * 1024;
   self.omniboxCoordinator =
       [[OmniboxCoordinator alloc] initWithBaseViewController:nil
                                                      browser:self.browser];
+  self.omniboxCoordinator.bubblePresenter = self.bubblePresenter;
   self.omniboxCoordinator.locationBar = _locationBar.get();
   self.omniboxCoordinator.presenterDelegate = self.popupPresenterDelegate;
   [self.omniboxCoordinator start];
@@ -200,8 +201,7 @@ const size_t kMaxURLDisplayChars = 32 * 1024;
       willMoveToParentViewController:self.viewController];
   [self.viewController
       addChildViewController:self.omniboxCoordinator.managedViewController];
-  [self.viewController
-      setEditView:self.omniboxCoordinator.managedViewController.view];
+  [self.viewController setEditView:self.omniboxCoordinator.editView];
   [self.omniboxCoordinator.managedViewController
       didMoveToParentViewController:self.viewController];
   self.viewController.offsetProvider = [self.omniboxCoordinator offsetProvider];
@@ -376,8 +376,10 @@ const size_t kMaxURLDisplayChars = 32 * 1024;
 }
 
 - (void)focusOmnibox {
+#if !defined(__IPHONE_16_0) || __IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_16_0
   // Dismiss the edit menu.
   [[UIMenuController sharedMenuController] hideMenu];
+#endif
 
   // When the NTP and fakebox are visible, make the fakebox animates into place
   // before focusing the omnibox.
@@ -419,6 +421,9 @@ const size_t kMaxURLDisplayChars = 32 * 1024;
 
 - (void)locationBarCopyTapped {
   StoreURLInPasteboard(self.webState->GetVisibleURL());
+  id<HelpCommands> helpHandler =
+      HandlerForProtocol(self.browser->GetCommandDispatcher(), HelpCommands);
+  [helpHandler presentShareButtonHelpBubbleIfEligible];
 }
 
 - (void)locationBarRequestScribbleTargetFocus {
@@ -441,8 +446,7 @@ const size_t kMaxURLDisplayChars = 32 * 1024;
     return;
   }
 
-  SceneState* sceneState =
-      SceneStateBrowserAgent::FromBrowser(self.browser)->GetSceneState();
+  SceneState* sceneState = self.browser->GetSceneState();
   NotifyDefaultBrowserPromoUserPastedInOmnibox(sceneState);
   LogToFETUserPastedURLIntoOmnibox(
       feature_engagement::TrackerFactory::GetForBrowserState(
@@ -452,7 +456,7 @@ const size_t kMaxURLDisplayChars = 32 * 1024;
 - (void)searchCopiedImage {
   __weak LocationBarCoordinator* weakSelf = self;
   ClipboardRecentContent::GetInstance()->GetRecentImageFromClipboard(
-      base::BindOnce(^(absl::optional<gfx::Image> image) {
+      base::BindOnce(^(std::optional<gfx::Image> image) {
         [weakSelf searchImage:std::move(image) usingLens:NO];
       }));
 }
@@ -460,7 +464,7 @@ const size_t kMaxURLDisplayChars = 32 * 1024;
 - (void)lensCopiedImage {
   __weak LocationBarCoordinator* weakSelf = self;
   ClipboardRecentContent::GetInstance()->GetRecentImageFromClipboard(
-      base::BindOnce(^(absl::optional<gfx::Image> image) {
+      base::BindOnce(^(std::optional<gfx::Image> image) {
         [weakSelf searchImage:std::move(image) usingLens:YES];
       }));
 }
@@ -503,6 +507,11 @@ const size_t kMaxURLDisplayChars = 32 * 1024;
 #pragma mark - URLDragDataSource
 
 - (URLInfo*)URLInfoForView:(UIView*)view {
+  // Disable drag and drop when the omnibox is focused, as it interferes with
+  // text interactions like moving the cursor (crbug.com/1502538).
+  if ([self isOmniboxFirstResponder]) {
+    return nil;
+  }
   return [[URLInfo alloc]
       initWithURL:self.webState->GetVisibleURL()
             title:base::SysUTF16ToNSString(self.webState->GetTitle())];
@@ -545,10 +554,8 @@ const size_t kMaxURLDisplayChars = 32 * 1024;
   // iPhones.
   // TODO (crbug.com/1247668): Reenable this after moving to new API and move
   // this code back to -start.
-  if (@available(iOS 15, *)) {
-    if (ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_PHONE) {
-      return;
-    }
+  if (ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_PHONE) {
+    return;
   }
   self.dragDropHandler = [[URLDragDropHandler alloc] init];
   self.dragDropHandler.origin = WindowActivityLocationBarSteadyViewOrigin;
@@ -558,7 +565,7 @@ const size_t kMaxURLDisplayChars = 32 * 1024;
                          initWithDelegate:self.dragDropHandler]];
 }
 
-- (void)searchImage:(absl::optional<gfx::Image>)optionalImage
+- (void)searchImage:(std::optional<gfx::Image>)optionalImage
           usingLens:(BOOL)usingLens {
   if (!optionalImage)
     return;

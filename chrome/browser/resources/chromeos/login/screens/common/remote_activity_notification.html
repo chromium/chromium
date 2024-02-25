@@ -1,0 +1,25 @@
+<!--
+Copyright 2023 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<style include="oobe-dialog-host-styles"></style>
+<oobe-adaptive-dialog role="dialog">
+    <iron-icon slot="icon" icon="oobe-32:enterprise"></iron-icon>
+    <h1 slot="title" aria-live="polite">
+        [[i18nDynamic(locale, 'localStateNotificationTitle')]]
+    </h1>
+    <div slot="subtitle">
+        [[i18nDynamic(locale, 'localStateNotificationDescription')]]
+    </div>
+    <div slot="content" class="flex layout vertical center center-justified">
+        <iron-icon icon="oobe-illos:update-boot-illo" class="illustration-jelly">
+        </iron-icon>
+    </div>
+    <div slot="bottom-buttons">
+        <oobe-text-button inverse on-click="onContinueUsingDevice" text-key="localStateCancelButtonLabel"
+            id="cancelButton">
+        </oobe-text-button>
+    </div>
+</oobe-adaptive-dialog>

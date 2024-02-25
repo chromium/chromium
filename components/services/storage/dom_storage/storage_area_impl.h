@@ -7,6 +7,7 @@
 
 #include <map>
 #include <memory>
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -18,7 +19,6 @@
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
 #include "mojo/public/cpp/bindings/remote_set.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/mojom/dom_storage/storage_area.mojom.h"
 
 namespace base {
@@ -47,7 +47,7 @@ class StorageAreaImpl : public blink::mojom::StorageArea {
   using ValueMap = std::map<std::vector<uint8_t>, std::vector<uint8_t>>;
   using ValueMapCallback = base::OnceCallback<void(std::unique_ptr<ValueMap>)>;
   using Change =
-      std::pair<std::vector<uint8_t>, absl::optional<std::vector<uint8_t>>>;
+      std::pair<std::vector<uint8_t>, std::optional<std::vector<uint8_t>>>;
   using KeysOnlyMap = std::map<std::vector<uint8_t>, size_t>;
 
   class Delegate {
@@ -183,11 +183,11 @@ class StorageAreaImpl : public blink::mojom::StorageArea {
       mojo::PendingRemote<blink::mojom::StorageAreaObserver> observer) override;
   void Put(const std::vector<uint8_t>& key,
            const std::vector<uint8_t>& value,
-           const absl::optional<std::vector<uint8_t>>& client_old_value,
+           const std::optional<std::vector<uint8_t>>& client_old_value,
            const std::string& source,
            PutCallback callback) override;
   void Delete(const std::vector<uint8_t>& key,
-              const absl::optional<std::vector<uint8_t>>& client_old_value,
+              const std::optional<std::vector<uint8_t>>& client_old_value,
               const std::string& source,
               DeleteCallback callback) override;
   void DeleteAll(
@@ -243,7 +243,7 @@ class StorageAreaImpl : public blink::mojom::StorageArea {
 
     bool clear_all_first = false;
     // Prefix copying is performed before applying changes.
-    absl::optional<std::vector<uint8_t>> copy_to_prefix;
+    std::optional<std::vector<uint8_t>> copy_to_prefix;
     // Used if the map_type_ is LOADED_KEYS_ONLY.
     std::map<std::vector<uint8_t>, std::vector<uint8_t>> changed_values;
     // Used if the map_type_ is LOADED_KEYS_AND_VALUES.

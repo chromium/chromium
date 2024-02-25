@@ -16,12 +16,12 @@ bool PreloadingModelExecutor::Preprocess(
       .ok();
 }
 
-absl::optional<float> PreloadingModelExecutor::Postprocess(
+std::optional<float> PreloadingModelExecutor::Postprocess(
     const std::vector<const TfLiteTensor*>& output_tensors) {
   std::vector<float> output;
   if (!tflite::task::core::PopulateVector<float>(output_tensors[0], &output)
            .ok()) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   CHECK_EQ(1u, output.size());

@@ -7,6 +7,7 @@
 
 #import <Foundation/Foundation.h>
 
+#import "base/memory/raw_ptr.h"
 #include "ios/web/public/web_state_observer.h"
 #import "ios/web/public/web_state_user_data.h"
 
@@ -53,12 +54,12 @@ class JavaScriptDialogBlockingState
 
   // The WebState this instance is observing. Will be null after
   // WebStateDestroyed has been called.
-  web::WebState* web_state_ = nullptr;
+  raw_ptr<web::WebState> web_state_ = nullptr;
 
   // Whether to show the blocking option.
   size_t dialog_count_ = 0;
   // The NavigationItem for which JavaScript dialogs were blocked.
-  web::NavigationItem* blocked_item_ = nullptr;
+  raw_ptr<web::NavigationItem> blocked_item_ = nullptr;
 
   WEB_STATE_USER_DATA_KEY_DECL();
 };

@@ -16,8 +16,8 @@
 #include "ash/public/cpp/external_arc/message_center/metrics_utils.h"
 #include "ash/public/cpp/message_center/arc_notification_constants.h"
 #include "ash/public/cpp/message_center/arc_notification_manager_delegate.h"
-#include "ash/system/message_center/message_view_factory.h"
-#include "ash/system/message_center/metrics_utils.h"
+#include "ash/system/notification_center/message_view_factory.h"
+#include "ash/system/notification_center/metrics_utils.h"
 #include "base/command_line.h"
 #include "base/containers/contains.h"
 #include "base/functional/bind.h"
@@ -76,7 +76,7 @@ class DoNotDisturbManager : public message_center::MessageCenterObserver {
   }
 
  private:
-  const raw_ptr<ArcNotificationManager, ExperimentalAsh> manager_;
+  const raw_ptr<ArcNotificationManager> manager_;
 };
 
 class VisibilityManager : public message_center::MessageCenterObserver {
@@ -103,7 +103,7 @@ class VisibilityManager : public message_center::MessageCenterObserver {
     return MessageCenterVisibility::VISIBILITY_TRANSIENT;
   }
 
-  const raw_ptr<ArcNotificationManager, ExperimentalAsh> manager_;
+  const raw_ptr<ArcNotificationManager> manager_;
 };
 
 }  // namespace
@@ -213,6 +213,17 @@ void ArcNotificationManager::OnNotificationPosted(ArcNotificationDataPtr data) {
     return;
   }
 
+  const bool render_on_chrome =
+      features::IsRenderArcNotificationsByChromeEnabled() &&
+      data->render_on_chrome;
+  if (render_on_chrome && data->children_data) {
+    const auto& children = *data->children_data;
+    for (size_t i = 0; i < children.size(); ++i) {
+      OnNotificationPosted(children[i]->Clone());
+    }
+    return;
+  }
+
   const std::string& key = data->key;
   auto it = items_.find(key);
   if (it == items_.end()) {
@@ -289,10 +300,28 @@ void ArcNotificationManager::OnNotificationUpdated(
       data->package_name
           ? ArcAppIdProvider::Get()->GetAppIdByPackageName(*data->package_name)
           : std::string();
-  it->second->OnUpdatedFromAndroid(std::move(data), app_id);
+  it->second->OnUpdatedFromAndroid(data->Clone(), app_id);
 
   for (auto& observer : observers_)
     observer.OnNotificationUpdated(it->second->GetNotificationId(), app_id);
+
+  const bool render_on_chrome =
+      features::IsRenderArcNotificationsByChromeEnabled() &&
+      data->render_on_chrome;
+  if (render_on_chrome && data->children_data) {
+    const auto& children = *data->children_data;
+    for (size_t i = 0; i < children.size(); ++i) {
+      const auto& child = children[i];
+      const std::string& child_key = child->key;
+      auto child_it = items_.find(child_key);
+      if (child_it == items_.end()) {
+        OnNotificationPosted(child->Clone());
+      } else {
+        OnNotificationUpdated(child->Clone());
+      }
+    }
+    return;
+  }
 }
 
 void ArcNotificationManager::OpenMessageCenter() {
@@ -607,10 +636,9 @@ bool ArcNotificationManager::ShouldIgnoreNotification(
     return true;
   }
 
-  // Media Notifications may be ignored if we have the native views based media
-  // session notifications enabled.
-  if (data->is_media_notification &&
-      features::IsHideArcMediaNotificationsEnabled()) {
+  // Media Notifications are ignored because we show native views-based media
+  // session notifications instead.
+  if (data->is_media_notification) {
     return true;
   }
 

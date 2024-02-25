@@ -6,9 +6,7 @@ package org.chromium.chrome.browser.tabmodel;
 
 import android.util.SparseArray;
 
-/**
- * A map associating a tab id to an {@link AsyncTabParams}.
- */
+/** A map associating a tab id to an {@link AsyncTabParams}. */
 public interface AsyncTabParamsManager {
     /**
      * Stores AsyncTabParams used when the tab with the given ID is launched via intent.

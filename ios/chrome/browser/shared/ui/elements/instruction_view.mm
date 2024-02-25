@@ -231,6 +231,7 @@ UIView* CreateIconView(UIImage* icon) {
   line.tag = index;
   line.accessibilityIdentifier =
       InstructionViewRowAccessibilityIdentifier(index);
+  line.accessibilityElements = @[ bulletPointView, instructionLabel ];
   // Don't set the accessibility traits indicating that it is tappable as we do
   // not actually expect any action, instead, we just want to measure how many
   // people believe it’s tappable.

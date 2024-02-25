@@ -13,10 +13,18 @@ import 'chrome://settings/lazy_load.js';
 import {webUIListenerCallback} from 'chrome://resources/js/cr.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import {SecureDnsInputElement, SettingsSecureDnsElement} from 'chrome://settings/lazy_load.js';
-import {PrivacyPageBrowserProxyImpl, ResolverOption, SecureDnsMode, SecureDnsUiManagementMode} from 'chrome://settings/settings.js';
+import type {SecureDnsInputElement, SettingsSecureDnsElement, SettingsToggleButtonElement} from 'chrome://settings/lazy_load.js';
+import {SecureDnsResolverType} from 'chrome://settings/lazy_load.js';
+import type {ResolverOption} from 'chrome://settings/settings.js';
+import {PrivacyPageBrowserProxyImpl, SecureDnsMode, SecureDnsUiManagementMode} from 'chrome://settings/settings.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
+import {isVisible} from 'chrome://webui-test/test_util.js';
+// <if expr="chromeos_ash">
+import type {SettingsSecureDnsDialogElement} from 'chrome://settings/lazy_load.js';
+import {waitAfterNextRender} from 'chrome://webui-test/polymer_test_util.js';
+
+// </if>
 
 import {TestPrivacyPageBrowserProxy} from './test_privacy_page_browser_proxy.js';
 
@@ -112,9 +120,10 @@ suite('SettingsSecureDnsInput', function() {
 suite('SettingsSecureDns', function() {
   let testBrowserProxy: TestPrivacyPageBrowserProxy;
   let testElement: SettingsSecureDnsElement;
+  let secureDnsToggle: SettingsToggleButtonElement;
 
   const resolverList: ResolverOption[] = [
-    {name: 'Custom', value: 'custom', policy: ''},
+    {name: 'Resolver 1', value: 'resolver', policy: ''},
   ];
 
   // Possible subtitle overrides.
@@ -125,13 +134,13 @@ suite('SettingsSecureDns', function() {
       'disabled for parental control description';
 
   /**
-   * Checks that the radio buttons are shown and the toggle is properly
-   * configured for showing the radio buttons.
+   * Checks that the select menu is shown and the toggle is properly
+   * configured for showing the configuration options.
    */
-  function assertRadioButtonsShown() {
-    assertTrue(testElement.$.secureDnsToggle.hasAttribute('checked'));
-    assertFalse(testElement.$.secureDnsToggle.$.control.disabled);
-    assertFalse(testElement.$.secureDnsRadioGroup.hidden);
+  function assertResolverSelectShown() {
+    assertTrue(secureDnsToggle.checked);
+    assertFalse(secureDnsToggle.$.control.disabled);
+    assertFalse(testElement.$.resolverSelect.hidden);
   }
 
   suiteSetup(function() {
@@ -140,6 +149,7 @@ suite('SettingsSecureDns', function() {
       secureDnsDescription: defaultDescription,
       secureDnsDisabledForManagedEnvironment: managedEnvironmentDescription,
       secureDnsDisabledForParentalControl: parentalControlDescription,
+      isRevampWayfindingEnabled: false,
     });
   });
 
@@ -157,15 +167,26 @@ suite('SettingsSecureDns', function() {
 
     await testBrowserProxy.whenCalled('getSecureDnsSetting');
     await flushTasks();
-    assertRadioButtonsShown();
+
+    secureDnsToggle =
+        testElement.shadowRoot!.querySelector('#secureDnsToggle')!;
+    assertTrue(isVisible(secureDnsToggle));
+
+    assertResolverSelectShown();
     assertEquals(
-        testBrowserProxy.secureDnsSetting.mode,
-        testElement.$.secureDnsRadioGroup.selected);
+        SecureDnsResolverType.AUTOMATIC, testElement.$.resolverSelect.value);
   });
 
   teardown(function() {
     testElement.remove();
   });
+
+  function getResolverOptions(): HTMLElement {
+    const options =
+        testElement.shadowRoot!.querySelector<HTMLElement>('#resolverOptions');
+    assertTrue(!!options);
+    return options;
+  }
 
   test('SecureDnsOff', function() {
     webUIListenerCallback('secure-dns-setting-changed', {
@@ -174,11 +195,14 @@ suite('SettingsSecureDns', function() {
       managementMode: SecureDnsUiManagementMode.NO_OVERRIDE,
     });
     flush();
-    assertFalse(testElement.$.secureDnsToggle.hasAttribute('checked'));
-    assertFalse(testElement.$.secureDnsToggle.$.control.disabled);
-    assertTrue(testElement.$.secureDnsRadioGroup.hidden);
-    assertEquals(defaultDescription, testElement.$.secureDnsToggle.subLabel);
-    assertFalse(!!testElement.$.secureDnsToggle.shadowRoot!.querySelector(
+    assertFalse(secureDnsToggle.hasAttribute('checked'));
+    assertFalse(secureDnsToggle.$.control.disabled);
+    assertTrue(getResolverOptions().hidden);
+    assertEquals(
+        'none',
+        getComputedStyle(testElement.$.secureDnsInputContainer).display);
+    assertEquals(defaultDescription, secureDnsToggle.subLabel);
+    assertFalse(!!secureDnsToggle.shadowRoot!.querySelector(
         'cr-policy-pref-indicator'));
   });
 
@@ -189,27 +213,26 @@ suite('SettingsSecureDns', function() {
       managementMode: SecureDnsUiManagementMode.NO_OVERRIDE,
     });
     flush();
-    assertRadioButtonsShown();
-    assertEquals(defaultDescription, testElement.$.secureDnsToggle.subLabel);
-    assertFalse(!!testElement.$.secureDnsToggle.shadowRoot!.querySelector(
+    assertResolverSelectShown();
+    assertEquals(defaultDescription, secureDnsToggle.subLabel);
+    assertFalse(!!secureDnsToggle.shadowRoot!.querySelector(
         'cr-policy-pref-indicator'));
     assertEquals(
-        SecureDnsMode.AUTOMATIC, testElement.$.secureDnsRadioGroup.selected);
+        SecureDnsResolverType.AUTOMATIC, testElement.$.resolverSelect.value);
   });
 
   test('SecureDnsSecure', function() {
     webUIListenerCallback('secure-dns-setting-changed', {
       mode: SecureDnsMode.SECURE,
-      config: '',
+      config: resolverList[0]!.value,
       managementMode: SecureDnsUiManagementMode.NO_OVERRIDE,
     });
     flush();
-    assertRadioButtonsShown();
-    assertEquals(defaultDescription, testElement.$.secureDnsToggle.subLabel);
-    assertFalse(!!testElement.$.secureDnsToggle.shadowRoot!.querySelector(
+    assertResolverSelectShown();
+    assertEquals(defaultDescription, secureDnsToggle.subLabel);
+    assertFalse(!!secureDnsToggle.shadowRoot!.querySelector(
         'cr-policy-pref-indicator'));
-    assertEquals(
-        SecureDnsMode.SECURE, testElement.$.secureDnsRadioGroup.selected);
+    assertEquals('0', testElement.$.resolverSelect.value);
   });
 
   test('SecureDnsManagedEnvironment', function() {
@@ -219,16 +242,15 @@ suite('SettingsSecureDns', function() {
       managementMode: SecureDnsUiManagementMode.DISABLED_MANAGED,
     });
     flush();
-    assertFalse(testElement.$.secureDnsToggle.hasAttribute('checked'));
-    assertTrue(testElement.$.secureDnsToggle.$.control.disabled);
-    assertTrue(testElement.$.secureDnsRadioGroup.hidden);
-    assertEquals(
-        managedEnvironmentDescription, testElement.$.secureDnsToggle.subLabel);
-    assertTrue(!!testElement.$.secureDnsToggle.shadowRoot!.querySelector(
+    assertFalse(secureDnsToggle.hasAttribute('checked'));
+    assertTrue(secureDnsToggle.$.control.disabled);
+    assertTrue(getResolverOptions().hidden);
+    assertEquals(managedEnvironmentDescription, secureDnsToggle.subLabel);
+    assertTrue(!!secureDnsToggle.shadowRoot!.querySelector(
         'cr-policy-pref-indicator'));
-    assertTrue(testElement.$.secureDnsToggle.shadowRoot!
-                   .querySelector('cr-policy-pref-indicator')!.shadowRoot!
-                   .querySelector('cr-tooltip-icon')!.hidden);
+    assertTrue(
+        secureDnsToggle.shadowRoot!.querySelector('cr-policy-pref-indicator')!
+            .shadowRoot!.querySelector('cr-tooltip-icon')!.hidden);
   });
 
   test('SecureDnsParentalControl', function() {
@@ -238,16 +260,15 @@ suite('SettingsSecureDns', function() {
       managementMode: SecureDnsUiManagementMode.DISABLED_PARENTAL_CONTROLS,
     });
     flush();
-    assertFalse(testElement.$.secureDnsToggle.hasAttribute('checked'));
-    assertTrue(testElement.$.secureDnsToggle.$.control.disabled);
-    assertTrue(testElement.$.secureDnsRadioGroup.hidden);
-    assertEquals(
-        parentalControlDescription, testElement.$.secureDnsToggle.subLabel);
-    assertTrue(!!testElement.$.secureDnsToggle.shadowRoot!.querySelector(
+    assertFalse(secureDnsToggle.hasAttribute('checked'));
+    assertTrue(secureDnsToggle.$.control.disabled);
+    assertTrue(getResolverOptions().hidden);
+    assertEquals(parentalControlDescription, secureDnsToggle.subLabel);
+    assertTrue(!!secureDnsToggle.shadowRoot!.querySelector(
         'cr-policy-pref-indicator'));
-    assertTrue(testElement.$.secureDnsToggle.shadowRoot!
-                   .querySelector('cr-policy-pref-indicator')!.shadowRoot!
-                   .querySelector('cr-tooltip-icon')!.hidden);
+    assertTrue(
+        secureDnsToggle.shadowRoot!.querySelector('cr-policy-pref-indicator')!
+            .shadowRoot!.querySelector('cr-tooltip-icon')!.hidden);
   });
 
   test('SecureDnsManaged', function() {
@@ -262,15 +283,15 @@ suite('SettingsSecureDns', function() {
       managementMode: SecureDnsUiManagementMode.NO_OVERRIDE,
     });
     flush();
-    assertTrue(testElement.$.secureDnsToggle.hasAttribute('checked'));
-    assertTrue(testElement.$.secureDnsToggle.$.control.disabled);
-    assertTrue(testElement.$.secureDnsRadioGroup.hidden);
-    assertEquals(defaultDescription, testElement.$.secureDnsToggle.subLabel);
-    assertTrue(!!testElement.$.secureDnsToggle.shadowRoot!.querySelector(
+    assertTrue(secureDnsToggle.hasAttribute('checked'));
+    assertTrue(secureDnsToggle.$.control.disabled);
+    assertTrue(getResolverOptions().hidden);
+    assertEquals(defaultDescription, secureDnsToggle.subLabel);
+    assertTrue(!!secureDnsToggle.shadowRoot!.querySelector(
         'cr-policy-pref-indicator'));
-    assertFalse(testElement.$.secureDnsToggle.shadowRoot!
-                    .querySelector('cr-policy-pref-indicator')!.shadowRoot!
-                    .querySelector('cr-tooltip-icon')!.hidden);
+    assertFalse(
+        secureDnsToggle.shadowRoot!.querySelector('cr-policy-pref-indicator')!
+            .shadowRoot!.querySelector('cr-tooltip-icon')!.hidden);
   });
 
   // <if expr="chromeos_ash">
@@ -294,7 +315,182 @@ suite('SettingsSecureDns', function() {
     const expectedDescription = loadTimeData.substituteString(
         loadTimeData.getString('secureDnsWithIdentifiersDescription'),
         displayConfig);
-    assertEquals(expectedDescription, testElement.$.secureDnsToggle.subLabel);
+    assertEquals(expectedDescription, secureDnsToggle.subLabel);
   });
   // </if>
 });
+
+// <if expr="chromeos_ash">
+suite('OsSettingsRevampSecureDnsDialog', () => {
+  let testBrowserProxy: TestPrivacyPageBrowserProxy;
+  let testElement: SettingsSecureDnsElement;
+  let secureDnsToggle: SettingsToggleButtonElement;
+  let secureDnsToggleDialog: SettingsSecureDnsDialogElement;
+
+  /**
+   * Checks that the select menu is shown and the toggle is properly
+   * configured for showing the configuration options.
+   */
+  function assertResolverSelectShown() {
+    assertTrue(secureDnsToggle.checked);
+    assertFalse(testElement.$.resolverSelect.hidden);
+  }
+
+  function setAndAssertSecureDnsDialog() {
+    secureDnsToggleDialog =
+        testElement.shadowRoot!.querySelector('#warningDialog')!;
+    assertTrue(!!secureDnsToggleDialog);
+    assertTrue(!!secureDnsToggleDialog.$.dialog);
+    assertTrue(isVisible(secureDnsToggleDialog.$.cancelButton));
+    assertTrue(isVisible(secureDnsToggleDialog.$.disableButton));
+  }
+
+  function getResolverOptions(): HTMLElement {
+    const options =
+        testElement.shadowRoot!.querySelector<HTMLElement>('#resolverOptions');
+    assertTrue(!!options);
+    return options;
+  }
+
+  suiteSetup(function() {
+    loadTimeData.overrideValues({
+      showSecureDnsSetting: true,
+      isRevampWayfindingEnabled: true,
+    });
+  });
+
+  setup(async function() {
+    document.body.innerHTML = window.trustedTypes!.emptyHTML;
+
+    testBrowserProxy = new TestPrivacyPageBrowserProxy();
+    PrivacyPageBrowserProxyImpl.setInstance(testBrowserProxy);
+    testElement = document.createElement('settings-secure-dns');
+    testElement.prefs = {
+      'dns_over_https': {
+        'mode': {'value': SecureDnsMode.AUTOMATIC},
+      },
+    };
+    document.body.appendChild(testElement);
+
+    await testBrowserProxy.whenCalled('getSecureDnsSetting');
+    await flushTasks();
+
+    secureDnsToggle =
+        testElement.shadowRoot!.querySelector('#secureDnsToggle')!;
+    assertTrue(isVisible(secureDnsToggle));
+
+    assertResolverSelectShown();
+    assertEquals(
+        SecureDnsResolverType.AUTOMATIC, testElement.$.resolverSelect.value);
+  });
+
+  teardown(function() {
+    testElement.remove();
+  });
+
+  test('SecureDnsDialogSanityCheck', () => {
+    // Initiate a toggle change from on to off, opens the warning dialog.
+    secureDnsToggle.click();
+    flush();
+
+    setAndAssertSecureDnsDialog();
+  });
+
+  test('SecureDnsDialogCancel', async () => {
+    // Initiate a toggle change from on to off, opens the warning dialog.
+    secureDnsToggle.click();
+    flush();
+    setAndAssertSecureDnsDialog();
+
+    secureDnsToggleDialog.$.cancelButton.click();
+    flush();
+
+    // Wait for onDisableDnsDialogClosed_ to finish.
+    await flushTasks();
+    await waitAfterNextRender(secureDnsToggle);
+
+    assertFalse(secureDnsToggleDialog.$.dialog.open);
+    assertTrue(secureDnsToggle.checked);
+    assertResolverSelectShown();
+    assertEquals(
+        SecureDnsResolverType.AUTOMATIC, testElement.$.resolverSelect.value);
+  });
+
+  test('SecureDnsDialogOnToOff', () => {
+    // Initiate a toggle change from on to off, opens the warning dialog.
+    secureDnsToggle.click();
+    flush();
+    setAndAssertSecureDnsDialog();
+
+    // Turn off the toggle
+    secureDnsToggleDialog.$.disableButton.click();
+    webUIListenerCallback('secure-dns-setting-changed', {
+      mode: SecureDnsMode.OFF,
+      config: '',
+      managementMode: SecureDnsUiManagementMode.NO_OVERRIDE,
+    });
+    flush();
+
+    assertFalse(secureDnsToggle.checked);
+    assertTrue(getResolverOptions().hidden);
+  });
+
+  test('SecureDnsDialogSecureOffToOn', () => {
+    // If the user selects Custom Secure mode with an invalid input, we will not
+    // register that the user wants to use secure mode (see the comment on
+    // secure_dns_dialog.ts), however, when toggled off and on, we will still
+    // show that the user had selected Custom before.
+
+    // Select Secure in the menu button with no input and config.
+    webUIListenerCallback('secure-dns-setting-changed', {
+      mode: SecureDnsMode.SECURE,
+      config: '',
+      managementMode: SecureDnsUiManagementMode.NO_OVERRIDE,
+    });
+    testElement.prefs = {
+      'dns_over_https':
+          {'mode': {'value': SecureDnsMode.SECURE}, 'templates': {'value': ''}},
+    };
+
+    // Simulate that the toggle is off.
+    webUIListenerCallback('secure-dns-setting-changed', {
+      mode: SecureDnsMode.OFF,
+      config: '',
+      managementMode: SecureDnsUiManagementMode.NO_OVERRIDE,
+    });
+    testElement.prefs = {
+      'dns_over_https':
+          {'mode': {'value': SecureDnsMode.OFF}, 'templates': {'value': ''}},
+    };
+
+    // Turn on the toggle
+    secureDnsToggle.click();
+    flush();
+    assertTrue(secureDnsToggle.checked);
+    assertResolverSelectShown();
+    assertEquals(
+        SecureDnsResolverType.CUSTOM, testElement.$.resolverSelect.value);
+
+    // Turn off the toggle, this will dispatch an event from the dialog since
+    // the invalid Custom secure mode was not registered to the pref. For more
+    // info, see the comment in secure_dns_dialog.ts.
+    secureDnsToggle.click();
+    flush();
+    setAndAssertSecureDnsDialog();
+
+    secureDnsToggleDialog.$.disableButton.click();
+    flush();
+    assertFalse(secureDnsToggle.checked);
+    assertTrue(getResolverOptions().hidden);
+
+    // Turn on the toggle. The selected menu option should still be secure
+    // mode.
+    secureDnsToggle.click();
+    flush();
+    assertTrue(secureDnsToggle.checked);
+    assertResolverSelectShown();
+    assertEquals(
+        SecureDnsResolverType.CUSTOM, testElement.$.resolverSelect.value);
+  });
+});
+// </if>

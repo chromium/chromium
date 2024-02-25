@@ -74,8 +74,8 @@ void MojoDataPump::ReceiveMore(MojoResult result,
 
   scoped_refptr<net::IOBuffer> io_buffer;
   if (result == MOJO_RESULT_OK) {
-    io_buffer =
-        base::MakeRefCounted<net::IOBuffer>(static_cast<size_t>(num_bytes));
+    io_buffer = base::MakeRefCounted<net::IOBufferWithSize>(
+        static_cast<size_t>(num_bytes));
     result = receive_stream_->ReadData(io_buffer->data(), &num_bytes,
                                        MOJO_READ_DATA_FLAG_NONE);
   }

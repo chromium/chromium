@@ -20,6 +20,7 @@ class EventGenerator;
 
 namespace views {
 class Button;
+class Label;
 class LabelButton;
 class View;
 class Widget;
@@ -27,10 +28,12 @@ class Widget;
 
 namespace ash {
 
+class AnchoredNudge;
 class FeatureTile;
+class GameDashboardButton;
+class GameDashboardMainMenuCursorHandler;
 class GameDashboardMainMenuView;
 class GameDashboardToolbarView;
-class GameDashboardWidget;
 class IconButton;
 class PillButton;
 class Switch;
@@ -48,10 +51,12 @@ class GameDashboardContextTestApi {
   GameDashboardContext* context() { return context_; }
   const base::RepeatingTimer& GetRecordingTimer() const;
   const std::u16string& GetRecordingDuration() const;
+  const GameDashboardMainMenuCursorHandler* GetMainMenuCursorHandler() const;
 
-  // Returns the main menu button widget and button.
-  GameDashboardWidget* GetMainMenuButtonWidget();
-  PillButton* GetMainMenuButton();
+  // Returns the Game Dashboard button widget, button, and title view.
+  views::Widget* GetGameDashboardButtonWidget() const;
+  GameDashboardButton* GetGameDashboardButton() const;
+  views::Label* GetGameDashboardButtonTitle() const;
 
   // Returns the main menu widget and all its views.
   views::Widget* GetMainMenuWidget();
@@ -63,23 +68,31 @@ class GameDashboardContextTestApi {
   views::Button* GetMainMenuScreenSizeSettingsButton();
   views::Button* GetMainMenuGameControlsDetailsButton();
   PillButton* GetMainMenuGameControlsSetupButton();
-  Switch* GetMainMenuGameControlsHintSwitch();
+  Switch* GetMainMenuGameControlsFeatureSwitch();
   views::LabelButton* GetMainMenuFeedbackButton();
   IconButton* GetMainMenuHelpButton();
   IconButton* GetMainMenuSettingsButton();
 
+  // Returns the Game Controls setup nudge.
+  AnchoredNudge* GetGameControlsSetupNudge();
+
+  // Returns the Game Dashboard welcome dialog widget.
+  views::Widget* GetWelcomeDialogWidget();
+
   // Opens the main menu.
   // Before opening the main menu, verifies that the main menu is closed.
-  // After opening the main menu, verifies it opened.
+  // After opening the main menu, verifies it opened and waits for the thread to
+  // become idle to ensure that all open `GameDashboardMainMenuView`s close.
   void OpenTheMainMenu();
 
   // Closes the main menu.
   // Before closing the main menu, verifies that the main menu is open.
-  // After closing the main menu, verifies is closed.
+  // After closing the main menu, verifies is closed and waits for the thread to
+  // become idle to ensure that all open `GameDashboardMainMenuView`s close.
   void CloseTheMainMenu();
 
   // Returns the toolbar widget and all its views.
-  GameDashboardWidget* GetToolbarWidget();
+  views::Widget* GetToolbarWidget();
   GameDashboardToolbarView* GetToolbarView();
   IconButton* GetToolbarGamepadButton();
   IconButton* GetToolbarGameControlsButton();
@@ -94,6 +107,9 @@ class GameDashboardContextTestApi {
   // is closed. After opening the toolbar, verifies it opened.
   void OpenTheToolbar();
 
+  // Places focus on the toolbar without clicking on any buttons.
+  void SetFocusOnToolbar();
+
   // Closes the toolbar.
   // Before closing the toolbar, verifies the main menu widget and toolbar
   // widget are not null. After closing the toolbar, verifies the toolbar widget
@@ -105,9 +121,8 @@ class GameDashboardContextTestApi {
   // `view_id`.
   views::View* GetMainMenuViewById(int view_id);
 
-  const raw_ptr<GameDashboardContext, DanglingUntriaged | ExperimentalAsh>
-      context_;
-  const raw_ptr<ui::test::EventGenerator, ExperimentalAsh> event_generator_;
+  const raw_ptr<GameDashboardContext, DanglingUntriaged> context_;
+  const raw_ptr<ui::test::EventGenerator> event_generator_;
 };
 
 }  // namespace ash

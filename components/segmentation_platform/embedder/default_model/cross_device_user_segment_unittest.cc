@@ -5,6 +5,7 @@
 #include "components/segmentation_platform/embedder/default_model/cross_device_user_segment.h"
 
 #include "components/segmentation_platform/embedder/default_model/default_model_test_base.h"
+#include "components/segmentation_platform/public/constants.h"
 
 namespace segmentation_platform {
 
@@ -24,50 +25,38 @@ TEST_F(CrossDeviceUserModelTest, ExecuteModelWithInput) {
   ASSERT_TRUE(fetched_metadata_);
 
   ModelProvider::Request input(4, 0);
-  std::string subsegment_key = GetSubsegmentKey(kCrossDeviceUserKey);
 
-  ExecuteWithInputAndCheckSubsegmentName<CrossDeviceUserSegment>(
-      input, subsegment_key, /*sub_segment_name=*/"NoCrossDeviceUsage");
+  ExpectClassifierResults(input, {kNoCrossDeviceUsage});
 
   input[0] = 2;
-  ExecuteWithInputAndCheckSubsegmentName<CrossDeviceUserSegment>(
-      input, subsegment_key, /*sub_segment_name=*/"CrossDeviceOther");
+  ExpectClassifierResults(input, {kCrossDeviceOther});
 
   input[1] = 2;
-  ExecuteWithInputAndCheckSubsegmentName<CrossDeviceUserSegment>(
-      input, subsegment_key, /*sub_segment_name=*/"CrossDeviceMobile");
+  ExpectClassifierResults(input, {kCrossDeviceMobile});
 
   input[1] = 0;
   input[2] = 2;
-  ExecuteWithInputAndCheckSubsegmentName<CrossDeviceUserSegment>(
-      input, subsegment_key, /*sub_segment_name=*/"CrossDeviceDesktop");
+  ExpectClassifierResults(input, {kCrossDeviceDesktop});
 
   input[2] = 0;
   input[3] = 2;
-  ExecuteWithInputAndCheckSubsegmentName<CrossDeviceUserSegment>(
-      input, subsegment_key, /*sub_segment_name=*/"CrossDeviceTablet");
+  ExpectClassifierResults(input, {kCrossDeviceTablet});
 
   input[1] = 2;
   input[2] = 2;
   input[3] = 0;
-  ExecuteWithInputAndCheckSubsegmentName<CrossDeviceUserSegment>(
-      input, subsegment_key,
-      /*sub_segment_name=*/"CrossDeviceMobileAndDesktop");
+  ExpectClassifierResults(input, {kCrossDeviceMobileAndDesktop});
 
   input[2] = 0;
   input[3] = 2;
-  ExecuteWithInputAndCheckSubsegmentName<CrossDeviceUserSegment>(
-      input, subsegment_key, /*sub_segment_name=*/"CrossDeviceMobileAndTablet");
+  ExpectClassifierResults(input, {kCrossDeviceMobileAndTablet});
 
   input[1] = 0;
   input[2] = 2;
-  ExecuteWithInputAndCheckSubsegmentName<CrossDeviceUserSegment>(
-      input, subsegment_key,
-      /*sub_segment_name=*/"CrossDeviceDesktopAndTablet");
+  ExpectClassifierResults(input, {kCrossDeviceDesktopAndTablet});
 
   input[1] = 2;
-  ExecuteWithInputAndCheckSubsegmentName<CrossDeviceUserSegment>(
-      input, subsegment_key, /*sub_segment_name=*/"CrossDeviceAllDeviceTypes");
+  ExpectClassifierResults(input, {kCrossDeviceAllDeviceTypes});
 
   EXPECT_FALSE(ExecuteWithInput(/*inputs=*/{}));
   EXPECT_FALSE(ExecuteWithInput(/*inputs=*/{1, 2}));

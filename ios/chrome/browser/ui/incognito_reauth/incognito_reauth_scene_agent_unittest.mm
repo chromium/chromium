@@ -25,6 +25,7 @@
 
 @interface StubReauthenticationModule : NSObject <ReauthenticationProtocol>
 
+@property(nonatomic, assign) BOOL canAttemptReauthWithBiometrics;
 @property(nonatomic, assign) BOOL canAttemptReauth;
 @property(nonatomic, assign) ReauthenticationResult returnedResult;
 
@@ -67,8 +68,8 @@ class IncognitoReauthSceneAgentTest : public PlatformTest {
     test_browser_ = std::make_unique<TestBrowser>(browser_state_.get());
     for (int i = 0; i < tab_count; ++i) {
       test_browser_->GetWebStateList()->InsertWebState(
-          i, std::make_unique<web::FakeWebState>(),
-          WebStateList::INSERT_FORCE_INDEX, WebStateOpener());
+          std::make_unique<web::FakeWebState>(),
+          WebStateList::InsertionParams::AtIndex(i));
     }
 
     stub_browser_interface_provider_ =
@@ -87,6 +88,7 @@ class IncognitoReauthSceneAgentTest : public PlatformTest {
 
   void SetUp() override {
     // Set up default stub reauth module behavior.
+    stub_reauth_module_.canAttemptReauthWithBiometrics = YES;
     stub_reauth_module_.canAttemptReauth = YES;
     stub_reauth_module_.returnedResult = ReauthenticationResult::kSuccess;
   }
@@ -195,8 +197,8 @@ TEST_F(IncognitoReauthSceneAgentTest,
 
   // Open another tab.
   test_browser_->GetWebStateList()->InsertWebState(
-      0, std::make_unique<web::FakeWebState>(),
-      WebStateList::INSERT_FORCE_INDEX, WebStateOpener());
+      std::make_unique<web::FakeWebState>(),
+      WebStateList::InsertionParams::AtIndex(0));
 
   EXPECT_FALSE(agent_.authenticationRequired);
 }

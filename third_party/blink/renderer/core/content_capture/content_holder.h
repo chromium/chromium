@@ -21,7 +21,7 @@ class CORE_EXPORT ContentHolder : public GarbageCollected<ContentHolder> {
   ContentHolder(Node* node, const gfx::Rect& rect);
   virtual ~ContentHolder();
 
-  Node* node() const { return node_; }
+  Node* node() const { return node_.Get(); }
   const gfx::Rect& rect() const { return rect_; }
 
   void Trace(Visitor*) const;

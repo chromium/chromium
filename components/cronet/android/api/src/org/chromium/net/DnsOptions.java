@@ -6,11 +6,13 @@ package org.chromium.net;
 
 import android.os.Build.VERSION_CODES;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
 import androidx.annotation.RequiresOptIn;
 
 import java.time.Duration;
+import java.util.Objects;
 
 /**
  * A class configuring Cronet's host resolution functionality. Note that while we refer to {@code
@@ -39,19 +41,13 @@ import java.time.Duration;
  * <p>Most configuration in this class is only applicable if the built-in DNS resolver is used.
  */
 public final class DnsOptions {
-    @Nullable
-    private final Boolean mUseBuiltInDnsResolver;
-    @Nullable
-    private final Boolean mPersistHostCache;
-    @Nullable
-    private final Boolean mEnableStaleDns;
-    @Nullable
-    private final Long mPersistHostCachePeriodMillis;
+    @Nullable private final Boolean mUseBuiltInDnsResolver;
+    @Nullable private final Boolean mPersistHostCache;
+    @Nullable private final Boolean mEnableStaleDns;
+    @Nullable private final Long mPersistHostCachePeriodMillis;
 
-    @Nullable
-    private final Boolean mPreestablishConnectionsToStaleDnsResults;
-    @Nullable
-    private final StaleDnsOptions mStaleDnsOptions;
+    @Nullable private final Boolean mPreestablishConnectionsToStaleDnsResults;
+    @Nullable private final StaleDnsOptions mStaleDnsOptions;
 
     DnsOptions(Builder builder) {
         this.mEnableStaleDns = builder.mEnableStaleDns;
@@ -139,14 +135,10 @@ public final class DnsOptions {
             return new Builder();
         }
 
-        @Nullable
-        private final Long mFreshLookupTimeoutMillis;
-        @Nullable
-        private final Long mMaxExpiredDelayMillis;
-        @Nullable
-        private final Boolean mAllowCrossNetworkUsage;
-        @Nullable
-        private final Boolean mUseStaleOnNameNotResolved;
+        @Nullable private final Long mFreshLookupTimeoutMillis;
+        @Nullable private final Long mMaxExpiredDelayMillis;
+        @Nullable private final Boolean mAllowCrossNetworkUsage;
+        @Nullable private final Boolean mUseStaleOnNameNotResolved;
 
         StaleDnsOptions(Builder builder) {
             this.mFreshLookupTimeoutMillis = builder.mFreshLookupTimeoutMillis;
@@ -155,9 +147,7 @@ public final class DnsOptions {
             this.mUseStaleOnNameNotResolved = builder.mUseStaleOnNameNotResolved;
         }
 
-        /**
-         * Builder for {@link StaleDnsOptions}.
-         */
+        /** Builder for {@link StaleDnsOptions}. */
         public static final class Builder {
             private Long mFreshLookupTimeoutMillis;
             private Long mMaxExpiredDelayMillis;
@@ -185,7 +175,8 @@ public final class DnsOptions {
              * @return the builder for chaining
              */
             @RequiresApi(VERSION_CODES.O)
-            public Builder setFreshLookupTimeout(Duration freshLookupTimeout) {
+            public Builder setFreshLookupTimeout(@NonNull Duration freshLookupTimeout) {
+                Objects.requireNonNull(freshLookupTimeout);
                 return setFreshLookupTimeoutMillis(freshLookupTimeout.toMillis());
             }
 
@@ -206,7 +197,8 @@ public final class DnsOptions {
              * @return the builder for chaining
              */
             @RequiresApi(VERSION_CODES.O)
-            public Builder setMaxExpiredDelayMillis(Duration maxExpiredDelay) {
+            public Builder setMaxExpiredDelay(@NonNull Duration maxExpiredDelay) {
+                Objects.requireNonNull(maxExpiredDelay);
                 return setMaxExpiredDelayMillis(maxExpiredDelay.toMillis());
             }
 
@@ -248,22 +240,14 @@ public final class DnsOptions {
         }
     }
 
-    /**
-     * Builder for {@link DnsOptions}.
-     */
+    /** Builder for {@link DnsOptions}. */
     public static final class Builder {
-        @Nullable
-        private Boolean mUseBuiltInDnsResolver;
-        @Nullable
-        private Boolean mEnableStaleDns;
-        @Nullable
-        private StaleDnsOptions mStaleDnsOptions;
-        @Nullable
-        private Boolean mPersistHostCache;
-        @Nullable
-        private Long mPersistHostCachePeriodMillis;
-        @Nullable
-        private Boolean mPreestablishConnectionsToStaleDnsResults;
+        @Nullable private Boolean mUseBuiltInDnsResolver;
+        @Nullable private Boolean mEnableStaleDns;
+        @Nullable private StaleDnsOptions mStaleDnsOptions;
+        @Nullable private Boolean mPersistHostCache;
+        @Nullable private Long mPersistHostCachePeriodMillis;
+        @Nullable private Boolean mPreestablishConnectionsToStaleDnsResults;
 
         Builder() {}
 
@@ -294,9 +278,7 @@ public final class DnsOptions {
             return this;
         }
 
-        /**
-         * @see #setStaleDnsOptions(StaleDnsOptions)
-         */
+        /** @see #setStaleDnsOptions(StaleDnsOptions) */
         @Experimental
         public Builder setStaleDnsOptions(StaleDnsOptions.Builder staleDnsOptionsBuilder) {
             return setStaleDnsOptions(staleDnsOptionsBuilder.build());
@@ -313,7 +295,7 @@ public final class DnsOptions {
          * <p>To use cached DNS records straight away, use {@link #enableStaleDns} and {@link
          * StaleDnsOptions} configuration options.
          *
-         * <p>This option may not be available for all networking protocols.         
+         * <p>This option may not be available for all networking protocols.
          *
          * @return the builder for chaining
          */
@@ -355,7 +337,8 @@ public final class DnsOptions {
          * @return the builder for chaining
          */
         @RequiresApi(api = VERSION_CODES.O)
-        public Builder setPersistDelay(Duration persistToDiskPeriod) {
+        public Builder setPersistDelay(@NonNull Duration persistToDiskPeriod) {
+            Objects.requireNonNull(persistToDiskPeriod);
             return setPersistHostCachePeriodMillis(persistToDiskPeriod.toMillis());
         }
 
@@ -371,17 +354,15 @@ public final class DnsOptions {
     /**
      * An annotation for APIs which are not considered stable yet.
      *
-     * <p>Applications using experimental APIs must acknowledge that they're aware of using APIs
-     * that are not considered stable. The APIs might change functionality, break or cease to exist
-     * without notice.
+     * <p>Experimental APIs are subject to change, breakage, or removal at any time and may not be
+     * production ready.
      *
-     * <p>It's highly recommended to reach out to Cronet maintainers ({@code net-dev@chromium.org})
-     * before using one of the APIs annotated as experimental outside of debugging
-     * and proof-of-concept code. Be ready to help to help polishing the API, or for a "sorry,
-     * really not production ready yet".
+     * <p>It's highly recommended to reach out to Cronet maintainers
+     * (<code>net-dev@chromium.org</code>) before using one of the APIs annotated as experimental
+     * outside of debugging and proof-of-concept code.
      *
-     * <p>If you still want to use an experimental API in production, you're doing so at your
-     * own risk. You have been warned.
+     * <p>By using an Experimental API, applications acknowledge that they are doing so at their own
+     * risk.
      */
     @RequiresOptIn
     public @interface Experimental {}

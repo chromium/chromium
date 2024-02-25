@@ -2,15 +2,16 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import 'chrome://resources/ash/common/personalization/common.css.js';
+import 'chrome://resources/ash/common/personalization/cros_button_style.css.js';
+import 'chrome://resources/ash/common/personalization/personalization_shared_icons.html.js';
+import 'chrome://resources/ash/common/cr_elements/cr_lazy_render/cr_lazy_render.js';
 import 'chrome://resources/polymer/v3_0/iron-a11y-keys/iron-a11y-keys.js';
 import 'chrome://resources/polymer/v3_0/iron-selector/iron-selector.js';
 import 'chrome://resources/polymer/v3_0/paper-ripple/paper-ripple.js';
-import 'chrome://resources/cr_elements/cr_lazy_render/cr_lazy_render.js';
 import './color_icon_element.js';
-import '../../css/common.css.js';
-import '../../css/cros_button_style.css.js';
 
-import {assert} from 'chrome://resources/js/assert_ts.js';
+import {assert} from 'chrome://resources/js/assert.js';
 import {SkColor} from 'chrome://resources/mojo/skia/public/mojom/skcolor.mojom-webui.js';
 
 import {BacklightColor, CurrentBacklightState} from '../../personalization_app.mojom-webui.js';
@@ -31,7 +32,7 @@ import {KeyboardBacklightObserver} from './keyboard_backlight_observer.js';
  * backlight colors.
  */
 
-export class KeyboardBacklight extends WithPersonalizationStore {
+export class KeyboardBacklightElement extends WithPersonalizationStore {
   static get is() {
     return 'keyboard-backlight';
   }
@@ -106,10 +107,10 @@ export class KeyboardBacklight extends WithPersonalizationStore {
   override connectedCallback() {
     super.connectedCallback();
     KeyboardBacklightObserver.initKeyboardBacklightObserverIfNeeded();
-    this.watch<KeyboardBacklight['currentBacklightState_']>(
+    this.watch<KeyboardBacklightElement['currentBacklightState_']>(
         'currentBacklightState_',
         state => state.keyboardBacklight.currentBacklightState);
-    this.watch<KeyboardBacklight['wallpaperColor_']>(
+    this.watch<KeyboardBacklightElement['wallpaperColor_']>(
         'wallpaperColor_', state => state.keyboardBacklight.wallpaperColor);
     this.updateFromStore();
   }
@@ -167,4 +168,4 @@ export class KeyboardBacklight extends WithPersonalizationStore {
   }
 }
 
-customElements.define(KeyboardBacklight.is, KeyboardBacklight);
+customElements.define(KeyboardBacklightElement.is, KeyboardBacklightElement);

@@ -111,7 +111,7 @@ void FilePathValid(Profile* profile,
       //                           be supported by holding space.
       // TODO(http://b/274011722): Investigate if we can remove time based
       //                           validation of items in holding space.
-      storage::FileSystemOperation::GET_METADATA_FIELD_LAST_MODIFIED,
+      {storage::FileSystemOperation::GetMetadataField::kLastModified},
       base::BindOnce(
           [](FilePathValidCallback callback,
              FilePathWithValidityRequirement file_path_with_requirement,
@@ -278,8 +278,8 @@ std::unique_ptr<HoldingSpaceImage> ResolveImageWithPlaceholderImageSkiaResolver(
           [](HoldingSpaceImage::PlaceholderImageSkiaResolver
                  placeholder_image_skia_resolver,
              const base::FilePath& file_path, const gfx::Size& size,
-             const absl::optional<bool>& dark_background,
-             const absl::optional<bool>& is_folder) {
+             const std::optional<bool>& dark_background,
+             const std::optional<bool>& is_folder) {
             // When the initial placeholder is being created during
             // construction, `dark_background` and `is_folder` will be absent.
             // In that case, don't show a placeholder to minimize jank.

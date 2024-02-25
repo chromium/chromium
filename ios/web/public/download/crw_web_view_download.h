@@ -12,7 +12,8 @@
 @protocol CRWWebViewDownload <NSObject>
 
 // Cancels the download with a completion block.
-- (void)cancelDownload:(ProceduralBlock)completion API_AVAILABLE(ios(14.5));
+// Local downloads (from file:// URL) cannot be cancelled.
+- (void)cancelDownload:(ProceduralBlock)completion;
 
 @end
 

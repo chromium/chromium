@@ -72,9 +72,10 @@ public class TrustedWebActivityPermissionsTest {
         LibraryLoader.getInstance().ensureInitialized();
 
         // TWAs only work with HTTPS.
-        mTestServer = EmbeddedTestServer.createAndStartHTTPSServer(
-                InstrumentationRegistry.getInstrumentation().getContext(),
-                ServerCertificate.CERT_OK);
+        mTestServer =
+                EmbeddedTestServer.createAndStartHTTPSServer(
+                        InstrumentationRegistry.getInstrumentation().getContext(),
+                        ServerCertificate.CERT_OK);
         mTestPage = mTestServer.getURL(TEST_PAGE);
         mOrigin = Origin.create(mTestPage);
         mPackage = ApplicationProvider.getApplicationContext().getPackageName();
@@ -96,24 +97,30 @@ public class TrustedWebActivityPermissionsTest {
     @Test
     @MediumTest
     public void allowNotifications() throws TimeoutException {
-        runOnUiThreadBlocking(() -> mPermissionManager.updatePermission(mOrigin, mPackage,
-                                            NOTIFICATIONS, ContentSettingValues.ALLOW));
+        runOnUiThreadBlocking(
+                () ->
+                        mPermissionManager.updatePermission(
+                                mOrigin, mPackage, NOTIFICATIONS, ContentSettingValues.ALLOW));
         assertEquals("\"granted\"", getNotificationPermission());
     }
 
     @Test
     @MediumTest
     public void blockNotifications() throws TimeoutException {
-        runOnUiThreadBlocking(() -> mPermissionManager.updatePermission(mOrigin, mPackage,
-                                            NOTIFICATIONS, ContentSettingValues.BLOCK));
+        runOnUiThreadBlocking(
+                () ->
+                        mPermissionManager.updatePermission(
+                                mOrigin, mPackage, NOTIFICATIONS, ContentSettingValues.BLOCK));
         assertEquals("\"denied\"", getNotificationPermission());
     }
 
     @Test
     @MediumTest
     public void unregisterTwa() throws TimeoutException {
-        runOnUiThreadBlocking(() -> mPermissionManager.updatePermission(mOrigin, mPackage,
-                                            NOTIFICATIONS, ContentSettingValues.ALLOW));
+        runOnUiThreadBlocking(
+                () ->
+                        mPermissionManager.updatePermission(
+                                mOrigin, mPackage, NOTIFICATIONS, ContentSettingValues.ALLOW));
         assertEquals("\"granted\"", getNotificationPermission());
 
         runOnUiThreadBlocking(() -> mPermissionManager.unregister(mOrigin));
@@ -123,8 +130,10 @@ public class TrustedWebActivityPermissionsTest {
     @Test
     @SmallTest
     public void detectTwa() {
-        runOnUiThreadBlocking(() -> mPermissionManager.updatePermission(mOrigin, mPackage,
-                                            NOTIFICATIONS, ContentSettingValues.ALLOW));
+        runOnUiThreadBlocking(
+                () ->
+                        mPermissionManager.updatePermission(
+                                mOrigin, mPackage, NOTIFICATIONS, ContentSettingValues.ALLOW));
         assertTrue(ShortcutHelper.doesOriginContainAnyInstalledTwa(mOrigin.toString()));
 
         runOnUiThreadBlocking(() -> mPermissionManager.unregister(mOrigin));
@@ -134,21 +143,29 @@ public class TrustedWebActivityPermissionsTest {
     @Test
     @SmallTest
     public void allowGeolocation() {
-        runOnUiThreadBlocking(() -> mPermissionManager.updatePermission(mOrigin, mPackage,
-                                            GEOLOCATION, ContentSettingValues.ALLOW));
-        assertEquals(Integer.valueOf(ContentSettingValues.ALLOW),
-                WebappRegistry.getInstance().getPermissionStore().getPermission(
-                        GEOLOCATION, mOrigin));
+        runOnUiThreadBlocking(
+                () ->
+                        mPermissionManager.updatePermission(
+                                mOrigin, mPackage, GEOLOCATION, ContentSettingValues.ALLOW));
+        assertEquals(
+                Integer.valueOf(ContentSettingValues.ALLOW),
+                WebappRegistry.getInstance()
+                        .getPermissionStore()
+                        .getPermission(GEOLOCATION, mOrigin));
     }
 
     @Test
     @SmallTest
     public void blockGeolocation() {
-        runOnUiThreadBlocking(() -> mPermissionManager.updatePermission(mOrigin, mPackage,
-                                            GEOLOCATION, ContentSettingValues.BLOCK));
-        assertEquals(Integer.valueOf(ContentSettingValues.BLOCK),
-                WebappRegistry.getInstance().getPermissionStore().getPermission(
-                        GEOLOCATION, mOrigin));
+        runOnUiThreadBlocking(
+                () ->
+                        mPermissionManager.updatePermission(
+                                mOrigin, mPackage, GEOLOCATION, ContentSettingValues.BLOCK));
+        assertEquals(
+                Integer.valueOf(ContentSettingValues.BLOCK),
+                WebappRegistry.getInstance()
+                        .getPermissionStore()
+                        .getPermission(GEOLOCATION, mOrigin));
     }
 
     private String getNotificationPermission() throws TimeoutException {

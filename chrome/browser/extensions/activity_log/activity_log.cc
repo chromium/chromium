@@ -46,7 +46,6 @@
 #include "extensions/browser/extensions_browser_client.h"
 #include "extensions/browser/renderer_startup_helper.h"
 #include "extensions/common/extension.h"
-#include "extensions/common/extension_messages.h"
 #include "extensions/common/features/feature.h"
 #include "extensions/common/features/feature_provider.h"
 #include "extensions/common/hashed_extension_id.h"
@@ -648,7 +647,7 @@ void ActivityLog::LogAction(scoped_refptr<Action> action) {
                        base::CompareCase::SENSITIVE) &&
       action->other()) {
     base::Value::Dict& other = action->mutable_other();
-    absl::optional<int> dom_verb = other.FindInt(constants::kActionDomVerb);
+    std::optional<int> dom_verb = other.FindInt(constants::kActionDomVerb);
     if (dom_verb == DomActionType::METHOD)
       other.Set(constants::kActionDomVerb, DomActionType::XHR);
   }
@@ -674,8 +673,8 @@ void ActivityLog::OnScriptsExecuted(content::WebContents* web_contents,
     return;
   ExtensionRegistry* registry = ExtensionRegistry::Get(profile_);
   for (const auto& extension_id : extension_ids) {
-    const Extension* extension = registry->GetExtensionById(
-        extension_id.first, ExtensionRegistry::ENABLED);
+    const Extension* extension =
+        registry->enabled_extensions().GetByID(extension_id.first);
     if (!extension || IsExtensionAllowlisted(extension->id()))
       continue;
 

@@ -19,8 +19,8 @@ MojoLearningTaskController::~MojoLearningTaskController() = default;
 void MojoLearningTaskController::BeginObservation(
     base::UnguessableToken id,
     const FeatureVector& features,
-    const absl::optional<TargetValue>& default_target,
-    const absl::optional<ukm::SourceId>& source_id) {
+    const std::optional<TargetValue>& default_target,
+    const std::optional<ukm::SourceId>& source_id) {
   // We don't need to keep track of in-flight observations, since the service
   // side handles it for us.  Also note that |source_id| is ignored; the service
   // has no reason to trust it.  It will fill it in for us.  DCHECK in case
@@ -41,7 +41,7 @@ void MojoLearningTaskController::CancelObservation(base::UnguessableToken id) {
 
 void MojoLearningTaskController::UpdateDefaultTarget(
     base::UnguessableToken id,
-    const absl::optional<TargetValue>& default_target) {
+    const std::optional<TargetValue>& default_target) {
   controller_->UpdateDefaultTarget(id, default_target);
 }
 

@@ -2,7 +2,7 @@
 <style>
 .contain { contain: style; }
 .reset { counter-reset: c;}
-.increment:before { content: counters(c, ""); }
+.increment::before { content: counters(c, "."); }
 .increment { counter-increment: c; }
 </style>
 <div class="increment"></div>

@@ -20,6 +20,8 @@
 #include "components/exo/wayland/wayland_display_observer.h"
 #include "components/exo/wayland/zcr_remote_shell.h"
 #include "components/exo/wayland/zcr_remote_shell_event_mapping.h"
+#include "ui/display/display_observer.h"
+#include "ui/display/manager/display_manager_observer.h"
 
 namespace exo {
 namespace wayland {
@@ -42,20 +44,20 @@ class WaylandRemoteOutput : public WaylandDisplayObserver {
   void OnOutputDestroyed() override;
 
  private:
-  const raw_ptr<wl_resource, ExperimentalAsh> resource_;
+  const raw_ptr<wl_resource> resource_;
 
   bool initial_config_sent_ = false;
 
   WaylandRemoteOutputEventMapping const event_mapping_;
 
-  raw_ptr<WaylandDisplayHandler, ExperimentalAsh> display_handler_;
+  raw_ptr<WaylandDisplayHandler> display_handler_;
 };
 
 // Implements remote shell interface and monitors workspace state needed
 // for the remote shell interface.
-class WaylandRemoteShell : public ash::TabletModeObserver,
-                           public display::DisplayObserver,
-                           public SeatObserver {
+class WaylandRemoteShell : public display::DisplayObserver,
+                           public SeatObserver,
+                           public display::DisplayManagerObserver {
  public:
   using OutputResourceProvider = base::RepeatingCallback<wl_resource*(int64_t)>;
 
@@ -73,8 +75,7 @@ class WaylandRemoteShell : public ash::TabletModeObserver,
 
   std::unique_ptr<ClientControlledShellSurface> CreateShellSurface(
       Surface* surface,
-      int container,
-      double default_device_scale_factor);
+      int container);
 
   std::unique_ptr<ClientControlledShellSurface::Delegate>
   CreateShellSurfaceDelegate(wl_resource* resource);
@@ -92,18 +93,16 @@ class WaylandRemoteShell : public ash::TabletModeObserver,
   void OnRemoteSurfaceDestroyed(wl_resource* resource);
 
   // Overridden from display::DisplayObserver:
-  void OnWillProcessDisplayChanges() override;
-  void OnDidProcessDisplayChanges() override;
   void OnDisplayAdded(const display::Display& new_display) override;
   void OnDisplayRemoved(const display::Display& old_display) override;
   void OnDisplayTabletStateChanged(display::TabletState state) override;
   void OnDisplayMetricsChanged(const display::Display& display,
                                uint32_t changed_metrics) override;
 
-  // Overridden from ash::TabletModeObserver:
-  void OnTabletModeStarted() override;
-  void OnTabletModeEnding() override;
-  void OnTabletModeEnded() override;
+  // display::DisplayManagerObserver:
+  void OnWillProcessDisplayChanges() override;
+  void OnDidProcessDisplayChanges(
+      const DisplayConfigurationChange& configuration_change) override;
 
   // Overridden from SeatObserver:
   void OnSurfaceFocused(Surface* gained_focus,
@@ -158,10 +157,10 @@ class WaylandRemoteShell : public ash::TabletModeObserver,
   };
 
   // The exo display instance. Not owned.
-  const raw_ptr<Display, ExperimentalAsh> display_;
+  const raw_ptr<Display> display_;
 
   // The remote shell resource associated with observer.
-  const raw_ptr<wl_resource, ExperimentalAsh> remote_shell_resource_;
+  const raw_ptr<wl_resource> remote_shell_resource_;
 
   // Callback to get the wl_output resource for a given display_id.
   OutputResourceProvider const output_provider_;
@@ -183,7 +182,11 @@ class WaylandRemoteShell : public ash::TabletModeObserver,
 
   display::ScopedDisplayObserver display_observer_{this};
 
-  const raw_ptr<Seat, ExperimentalAsh> seat_;
+  base::ScopedObservation<display::DisplayManager,
+                          display::DisplayManagerObserver>
+      display_manager_observation_{this};
+
+  const raw_ptr<Seat> seat_;
 
   base::WeakPtrFactory<WaylandRemoteShell> weak_ptr_factory_{this};
 
@@ -217,7 +220,7 @@ class WaylandRemoteSurfaceDelegate
   void OnZoomLevelChanged(ZoomChange zoom_change) override;
 
   base::WeakPtr<WaylandRemoteShell> shell_;
-  raw_ptr<wl_resource, ExperimentalAsh> resource_;
+  raw_ptr<wl_resource> resource_;
   WaylandRemoteShellEventMapping const event_mapping_;
 };
 
@@ -363,6 +366,20 @@ void remote_surface_set_scale_factor(wl_client* client,
                                      wl_resource* resource,
                                      uint mode);
 
+void remote_surface_set_window_corner_radii(wl_client* client,
+                                            wl_resource* resource,
+                                            uint32_t upper_left_radius,
+                                            uint32_t upper_right_radius,
+                                            uint32_t lower_right_radius,
+                                            uint32_t lower_left_radius);
+
+void remote_surface_set_shadow_corner_radii(wl_client* client,
+                                            wl_resource* resource,
+                                            uint32_t upper_left_radius,
+                                            uint32_t upper_right_radius,
+                                            uint32_t lower_right_radius,
+                                            uint32_t lower_left_radius);
+
 void remote_surface_set_float(wl_client* client, wl_resource* resource);
 
 void remote_surface_block_ime(wl_client* client, wl_resource* resource);
@@ -466,6 +483,10 @@ void toast_surface_set_bounds_in_output(wl_client* client,
                                         int32_t y,
                                         int32_t width,
                                         int32_t height);
+
+void toast_surface_set_scale_factor(wl_client* client,
+                                    wl_resource* resource,
+                                    uint scale_factor_as_uint);
 
 ////////////////////////////////////////////////////////////////////////////////
 // remote_shell_interface:

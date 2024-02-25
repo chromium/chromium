@@ -6,11 +6,14 @@
 
 #include <memory>
 
+#include "base/features.h"
 #include "base/functional/bind.h"
 #include "base/run_loop.h"
 #include "base/rust_buildflags.h"
 #include "base/task/thread_pool/thread_pool_instance.h"
 #include "base/test/bind.h"
+#include "base/test/metrics/histogram_tester.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/types/expected.h"
 #include "base/values.h"
@@ -151,12 +154,18 @@ TEST_F(DataDecoderTest, ParseCborAndFailed) {
 class DataDecoderMultiThreadTest : public testing::Test {
  protected:
   base::test::TaskEnvironment task_environment_;
+  base::HistogramTester histogram_tester_;
 };
 
 TEST_F(DataDecoderMultiThreadTest, JSONDecode) {
   // Test basic JSON decoding. We test only on Android or if Rust
   // is enabled, because otherwise this would result in spawning
   // a process.
+#if !BUILDFLAG(IS_ANDROID)
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(base::features::kUseRustJsonParser);
+#endif  // !BUILDFLAG(IS_ANDROID)
+
   base::RunLoop run_loop;
   DataDecoder decoder;
   DataDecoder::ValueOrError result;
@@ -170,6 +179,8 @@ TEST_F(DataDecoderMultiThreadTest, JSONDecode) {
             run_loop.Quit();
           }));
   run_loop.Run();
+  histogram_tester_.ExpectTotalCount("Security.DataDecoder.Json.DecodingTime",
+                                     1);
   ASSERT_TRUE(result.has_value());
   ASSERT_TRUE(result->is_list());
   base::Value::List& list = result->GetList();

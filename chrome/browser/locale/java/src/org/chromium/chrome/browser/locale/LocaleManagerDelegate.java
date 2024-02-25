@@ -18,8 +18,8 @@ import org.chromium.base.ContextUtils;
 import org.chromium.base.library_loader.LibraryLoader;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
-import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
-import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
+import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.chrome.browser.search_engines.DefaultSearchEngineDialogHelper;
 import org.chromium.chrome.browser.search_engines.DefaultSearchEnginePromoDialog;
 import org.chromium.chrome.browser.search_engines.SearchEnginePromoState;
@@ -57,30 +57,30 @@ public class LocaleManagerDelegate {
     // SnackbarManager is owned by ChromeActivity and is not null as long as the activity is alive.
     private WeakReference<SnackbarManager> mSnackbarManager = new WeakReference<>(null);
     private LocaleTemplateUrlLoader mLocaleTemplateUrlLoader;
-    @Nullable
-    private SettingsLauncher mSettingsLauncher;
+    @Nullable private SettingsLauncher mSettingsLauncher;
     private DefaultSearchEngineDialogHelper.Delegate mSearchEngineHelperDelegate;
 
-    private SnackbarController mSnackbarController = new SnackbarController() {
-        @Override
-        public void onDismissNoAction(Object actionData) {}
+    private SnackbarController mSnackbarController =
+            new SnackbarController() {
+                @Override
+                public void onDismissNoAction(Object actionData) {}
 
-        @Override
-        public void onAction(Object actionData) {
-            assert mSettingsLauncher != null;
-            Context context = ContextUtils.getApplicationContext();
-            mSettingsLauncher.launchSettingsActivity(context, SearchEngineSettings.class);
-        }
-    };
+                @Override
+                public void onAction(Object actionData) {
+                    assert mSettingsLauncher != null;
+                    Context context = ContextUtils.getApplicationContext();
+                    mSettingsLauncher.launchSettingsActivity(context, SearchEngineSettings.class);
+                }
+            };
 
-    /**
-     * Default constructor.
-     */
+    /** Default constructor. */
     public LocaleManagerDelegate() {
         @SearchEnginePromoState
-        int state = SharedPreferencesManager.getInstance().readInt(
-                ChromePreferenceKeys.LOCALE_MANAGER_SEARCH_ENGINE_PROMO_SHOW_STATE,
-                SearchEnginePromoState.SHOULD_CHECK);
+        int state =
+                ChromeSharedPreferences.getInstance()
+                        .readInt(
+                                ChromePreferenceKeys.LOCALE_MANAGER_SEARCH_ENGINE_PROMO_SHOW_STATE,
+                                SearchEnginePromoState.SHOULD_CHECK);
         mSearchEnginePromoCompleted = state == SearchEnginePromoState.CHECKED_AND_SHOWN;
     }
 
@@ -148,9 +148,10 @@ public class LocaleManagerDelegate {
     }
 
     protected void maybeAutoSwitchSearchEngine() {
-        SharedPreferencesManager preferences = SharedPreferencesManager.getInstance();
-        boolean wasInSpecialLocale = preferences.readBoolean(
-                ChromePreferenceKeys.LOCALE_MANAGER_WAS_IN_SPECIAL_LOCALE, false);
+        var preferences = ChromeSharedPreferences.getInstance();
+        boolean wasInSpecialLocale =
+                preferences.readBoolean(
+                        ChromePreferenceKeys.LOCALE_MANAGER_WAS_IN_SPECIAL_LOCALE, false);
         boolean isInSpecialLocale = isSpecialLocaleEnabled();
         if (wasInSpecialLocale && !isInSpecialLocale) {
             revertDefaultSearchEngineOverride();
@@ -171,32 +172,34 @@ public class LocaleManagerDelegate {
             final Activity activity, final @Nullable Callback<Boolean> onSearchEngineFinalized) {
         assert LibraryLoader.getInstance().isInitialized();
         TemplateUrlService templateUrlService =
-                TemplateUrlServiceFactory.getForProfile(Profile.getLastUsedRegularProfile());
-        templateUrlService.runWhenLoaded(() -> {
-            handleSearchEnginePromoWithTemplateUrlsLoaded(
-                    activity, templateUrlService, onSearchEngineFinalized);
-        });
+                TemplateUrlServiceFactory.getForProfile(ProfileManager.getLastUsedRegularProfile());
+        templateUrlService.runWhenLoaded(
+                () -> {
+                    handleSearchEnginePromoWithTemplateUrlsLoaded(
+                            activity, templateUrlService, onSearchEngineFinalized);
+                });
     }
 
-    private void handleSearchEnginePromoWithTemplateUrlsLoaded(final Activity activity,
+    private void handleSearchEnginePromoWithTemplateUrlsLoaded(
+            final Activity activity,
             TemplateUrlService templateUrlService,
             final @Nullable Callback<Boolean> onSearchEngineFinalized) {
         assert templateUrlService.isLoaded();
 
-        final Callback<Boolean> finalizeInternalCallback = (result) -> {
-            if (result != null && result) {
-                mSearchEnginePromoCheckedThisSession = true;
-            } else {
-                @SearchEnginePromoType
-                int promoType = getSearchEnginePromoShowType();
-                if (promoType == SearchEnginePromoType.SHOW_EXISTING
-                        || promoType == SearchEnginePromoType.SHOW_NEW
-                        || promoType == SearchEnginePromoType.SHOW_WAFFLE) {
-                    onUserLeavePromoDialogWithNoConfirmedChoice(promoType);
-                }
-            }
-            if (onSearchEngineFinalized != null) onSearchEngineFinalized.onResult(result);
-        };
+        final Callback<Boolean> finalizeInternalCallback =
+                (result) -> {
+                    if (result != null && result) {
+                        mSearchEnginePromoCheckedThisSession = true;
+                    } else {
+                        @SearchEnginePromoType int promoType = getSearchEnginePromoShowType();
+                        if (promoType == SearchEnginePromoType.SHOW_EXISTING
+                                || promoType == SearchEnginePromoType.SHOW_NEW
+                                || promoType == SearchEnginePromoType.SHOW_WAFFLE) {
+                            onUserLeavePromoDialogWithNoConfirmedChoice(promoType);
+                        }
+                    }
+                    if (onSearchEngineFinalized != null) onSearchEngineFinalized.onResult(result);
+                };
         if (templateUrlService.isDefaultSearchManaged() || ApiCompatibilityUtils.isDemoUser()) {
             finalizeInternalCallback.onResult(true);
             return;
@@ -210,24 +213,35 @@ public class LocaleManagerDelegate {
                 finalizeInternalCallback.onResult(true);
                 return;
             case SearchEnginePromoType.SHOW_SOGOU:
-                dialogPresenter = ()
-                        -> new SogouPromoDialog(activity, this::onSelectSearchEngine,
-                                finalizeInternalCallback, mSettingsLauncher)
-                                   .show();
+                dialogPresenter =
+                        () ->
+                                new SogouPromoDialog(
+                                                activity,
+                                                this::onSelectSearchEngine,
+                                                finalizeInternalCallback,
+                                                mSettingsLauncher)
+                                        .show();
                 break;
             case SearchEnginePromoType.SHOW_EXISTING:
             case SearchEnginePromoType.SHOW_NEW:
-                dialogPresenter = ()
-                        -> new DefaultSearchEnginePromoDialog(activity, mSearchEngineHelperDelegate,
-                                shouldShow, finalizeInternalCallback)
-                                   .show();
+                dialogPresenter =
+                        () ->
+                                new DefaultSearchEnginePromoDialog(
+                                                activity,
+                                                mSearchEngineHelperDelegate,
+                                                shouldShow,
+                                                finalizeInternalCallback)
+                                        .show();
                 break;
             case SearchEnginePromoType.SHOW_WAFFLE:
                 assert ChromeFeatureList.isEnabled(ChromeFeatureList.SEARCH_ENGINE_CHOICE);
-                dialogPresenter = ()
-                        -> new ChoiceDialogCoordinator(
-                                activity, mSearchEngineHelperDelegate, finalizeInternalCallback)
-                                   .show();
+                dialogPresenter =
+                        () ->
+                                new ChoiceDialogCoordinator(
+                                                activity,
+                                                mSearchEngineHelperDelegate,
+                                                finalizeInternalCallback)
+                                        .show();
                 break;
             default:
                 assert false;
@@ -259,14 +273,14 @@ public class LocaleManagerDelegate {
      * @return Whether auto switch for search engine is enabled.
      */
     private boolean isSearchEngineAutoSwitchEnabled() {
-        return SharedPreferencesManager.getInstance().readBoolean(
-                ChromePreferenceKeys.LOCALE_MANAGER_AUTO_SWITCH, false);
+        return ChromeSharedPreferences.getInstance()
+                .readBoolean(ChromePreferenceKeys.LOCALE_MANAGER_AUTO_SWITCH, false);
     }
 
     /** @see LocaleManager#setSearchEngineAutoSwitch */
     public void setSearchEngineAutoSwitch(boolean isEnabled) {
-        SharedPreferencesManager.getInstance().writeBoolean(
-                ChromePreferenceKeys.LOCALE_MANAGER_AUTO_SWITCH, isEnabled);
+        ChromeSharedPreferences.getInstance()
+                .writeBoolean(ChromePreferenceKeys.LOCALE_MANAGER_AUTO_SWITCH, isEnabled);
     }
 
     /** @see LocaleManager#setSnackbarManager */
@@ -284,8 +298,12 @@ public class LocaleManagerDelegate {
         if (manager == null) return;
 
         Context context = ContextUtils.getApplicationContext();
-        Snackbar snackbar = Snackbar.make(title, mSnackbarController, Snackbar.TYPE_NOTIFICATION,
-                Snackbar.UMA_SPECIAL_LOCALE);
+        Snackbar snackbar =
+                Snackbar.make(
+                        title,
+                        mSnackbarController,
+                        Snackbar.TYPE_NOTIFICATION,
+                        Snackbar.UMA_SPECIAL_LOCALE);
         snackbar.setDuration(SNACKBAR_DURATION_MS);
         snackbar.setAction(context.getString(R.string.settings), null);
         manager.showSnackbar(snackbar);
@@ -294,7 +312,7 @@ public class LocaleManagerDelegate {
     /** @see LocaleManager#getSearchEnginePromoShowType */
     public @SearchEnginePromoType int getSearchEnginePromoShowType() {
         if (!isSpecialLocaleEnabled()) return SearchEnginePromoType.DONT_SHOW;
-        SharedPreferencesManager preferences = SharedPreferencesManager.getInstance();
+        var preferences = ChromeSharedPreferences.getInstance();
         if (preferences.readBoolean(ChromePreferenceKeys.LOCALE_MANAGER_PROMO_SHOWN, false)) {
             return SearchEnginePromoType.DONT_SHOW;
         }
@@ -320,11 +338,12 @@ public class LocaleManagerDelegate {
     /** @see LocaleManager#onUserSearchEngineChoice */
     public void onUserSearchEngineChoiceFromPromoDialog(
             @SearchEnginePromoType int type, List<String> keywords, String keyword) {
-        TemplateUrlServiceFactory.getForProfile(Profile.getLastUsedRegularProfile())
+        TemplateUrlServiceFactory.getForProfile(ProfileManager.getLastUsedRegularProfile())
                 .setSearchEngine(keyword);
-        SharedPreferencesManager.getInstance().writeInt(
-                ChromePreferenceKeys.LOCALE_MANAGER_SEARCH_ENGINE_PROMO_SHOW_STATE,
-                SearchEnginePromoState.CHECKED_AND_SHOWN);
+        ChromeSharedPreferences.getInstance()
+                .writeInt(
+                        ChromePreferenceKeys.LOCALE_MANAGER_SEARCH_ENGINE_PROMO_SHOW_STATE,
+                        SearchEnginePromoState.CHECKED_AND_SHOWN);
         mSearchEnginePromoCompleted = true;
     }
 
@@ -357,9 +376,11 @@ public class LocaleManagerDelegate {
     /** @see LocaleManager#needToCheckForSearchEnginePromo */
     public boolean needToCheckForSearchEnginePromo() {
         @SearchEnginePromoState
-        int state = SharedPreferencesManager.getInstance().readInt(
-                ChromePreferenceKeys.LOCALE_MANAGER_SEARCH_ENGINE_PROMO_SHOW_STATE,
-                SearchEnginePromoState.SHOULD_CHECK);
+        int state =
+                ChromeSharedPreferences.getInstance()
+                        .readInt(
+                                ChromePreferenceKeys.LOCALE_MANAGER_SEARCH_ENGINE_PROMO_SHOW_STATE,
+                                SearchEnginePromoState.SHOULD_CHECK);
         return !mSearchEnginePromoCheckedThisSession
                 && state == SearchEnginePromoState.SHOULD_CHECK;
     }

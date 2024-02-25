@@ -16,7 +16,6 @@
 #import "ios/chrome/browser/ui/toolbar/buttons/toolbar_configuration.h"
 #import "ios/chrome/browser/ui/toolbar/buttons/toolbar_tab_grid_button.h"
 #import "ios/chrome/browser/ui/toolbar/public/toolbar_constants.h"
-#import "ios/chrome/common/button_configuration_util.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
 #import "ios/chrome/grit/ios_strings.h"
@@ -131,8 +130,8 @@ const CGFloat kSymbolToolbarPointSize = 24;
 - (ToolbarButton*)reloadButton {
   UIImage* reloadImage =
       CustomSymbolWithPointSize(kArrowClockWiseSymbol, kSymbolToolbarPointSize);
-  ToolbarButton* reloadButton = [[ToolbarButton alloc]
-      initWithImage:[reloadImage imageFlippedForRightToLeftLayoutDirection]];
+  ToolbarButton* reloadButton =
+      [[ToolbarButton alloc] initWithImage:reloadImage];
   [self configureButton:reloadButton width:kAdaptiveToolbarButtonWidth];
   reloadButton.accessibilityLabel =
       l10n_util::GetNSString(IDS_IOS_ACCNAME_RELOAD);
@@ -203,28 +202,18 @@ const CGFloat kSymbolToolbarPointSize = 24;
       setContentCompressionResistancePriority:UILayoutPriorityRequired
                                       forAxis:UILayoutConstraintAxisHorizontal];
 
-  if (IsUIButtonConfigurationEnabled()) {
-    UIButtonConfiguration* buttonConfiguration =
-        [UIButtonConfiguration plainButtonConfiguration];
-    buttonConfiguration.contentInsets = NSDirectionalEdgeInsetsMake(
-        0, kCancelButtonHorizontalInset, 0, kCancelButtonHorizontalInset);
-    UIFont* font = [UIFont systemFontOfSize:kLocationBarFontSize];
-    NSDictionary* attributes = @{NSFontAttributeName : font};
-    NSMutableAttributedString* attributedString =
-        [[NSMutableAttributedString alloc]
-            initWithString:l10n_util::GetNSString(IDS_CANCEL)
-                attributes:attributes];
-    buttonConfiguration.attributedTitle = attributedString;
-    cancelButton.configuration = buttonConfiguration;
-  } else {
-    cancelButton.titleLabel.font =
-        [UIFont systemFontOfSize:kLocationBarFontSize];
-    [cancelButton setTitle:l10n_util::GetNSString(IDS_CANCEL)
-                  forState:UIControlStateNormal];
-    UIEdgeInsets contentInsets = UIEdgeInsetsMake(
-        0, kCancelButtonHorizontalInset, 0, kCancelButtonHorizontalInset);
-    SetContentEdgeInsets(cancelButton, contentInsets);
-  }
+  UIButtonConfiguration* buttonConfiguration =
+      [UIButtonConfiguration plainButtonConfiguration];
+  buttonConfiguration.contentInsets = NSDirectionalEdgeInsetsMake(
+      0, kCancelButtonHorizontalInset, 0, kCancelButtonHorizontalInset);
+  UIFont* font = [UIFont systemFontOfSize:kLocationBarFontSize];
+  NSDictionary* attributes = @{NSFontAttributeName : font};
+  NSMutableAttributedString* attributedString =
+      [[NSMutableAttributedString alloc]
+          initWithString:l10n_util::GetNSString(IDS_CANCEL)
+              attributes:attributes];
+  buttonConfiguration.attributedTitle = attributedString;
+  cancelButton.configuration = buttonConfiguration;
 
   cancelButton.hidden = YES;
   [cancelButton addTarget:self.actionHandler
@@ -250,6 +239,8 @@ const CGFloat kSymbolToolbarPointSize = 24;
   button.toolbarConfiguration = self.toolbarConfiguration;
   button.exclusiveTouch = YES;
   button.pointerInteractionEnabled = YES;
+  button.layer.cornerRadius = width / 2;
+  button.clipsToBounds = YES;
   button.pointerStyleProvider =
       ^UIPointerStyle*(UIButton* uiButton, UIPointerEffect* proposedEffect,
                        UIPointerShape* proposedShape) {

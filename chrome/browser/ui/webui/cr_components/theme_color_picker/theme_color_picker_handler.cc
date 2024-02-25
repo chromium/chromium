@@ -137,9 +137,7 @@ void ThemeColorPickerHandler::SetSeedColor(
 }
 
 void ThemeColorPickerHandler::SetSeedColorFromHue(float hue) {
-  SetSeedColor(color_utils::HSLToSkColor(
-                   {std::clamp(hue / 360, 0.0f, 1.0f), 1, .5}, 255),
-               ui::mojom::BrowserColorVariant::kTonalSpot);
+  SetSeedColor(HueToSkColor(hue), ui::mojom::BrowserColorVariant::kTonalSpot);
 }
 
 void ThemeColorPickerHandler::GetChromeColors(
@@ -177,7 +175,7 @@ void ThemeColorPickerHandler::UpdateTheme() {
   auto custom_background =
       ntp_custom_background_service_
           ? ntp_custom_background_service_->GetCustomBackground()
-          : absl::nullopt;
+          : std::nullopt;
   theme->has_background_image = custom_background.has_value();
   if (custom_background.has_value() &&
       custom_background->custom_background_main_color.has_value()) {

@@ -6,8 +6,8 @@
 
 #include <array>
 #include <string>
+#include <string_view>
 
-#include "base/strings/string_piece.h"
 #include "chrome/browser/ash/policy/affiliation/affiliation_test_helper.h"
 #include "chrome/browser/ash/policy/core/device_policy_cros_browser_test.h"
 #include "chromeos/ash/components/dbus/session_manager/fake_session_manager_client.h"
@@ -26,8 +26,8 @@ namespace {
 // If running with `affiliated==false`, the test will use `kAffiliationID` as
 // device and `kAnotherAffiliationID` as user affiliation ID, which makes the
 // user non-affiliated (affiliation IDs don't overlap).
-constexpr base::StringPiece kAffiliationID = "some-affiliation-id";
-constexpr base::StringPiece kAnotherAffiliationID = "another-affiliation-id";
+constexpr std::string_view kAffiliationID = "some-affiliation-id";
+constexpr std::string_view kAnotherAffiliationID = "another-affiliation-id";
 
 constexpr char kAffiliatedUserEmail[] = "affiliateduser@example.com";
 constexpr char kAffiliatedUserGaiaId[] = "1029384756";

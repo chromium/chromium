@@ -49,11 +49,10 @@ View* ElementToView(ui::TrackedElement* element) {
 
 // A subclass of View that has metadata.
 class TypedView : public View {
- public:
-  METADATA_HEADER(TypedView);
+  METADATA_HEADER(TypedView, View)
 };
 
-BEGIN_METADATA(TypedView, View)
+BEGIN_METADATA(TypedView)
 END_METADATA
 
 // Watches events on the ElementTracker and converts the resulting values back
@@ -176,7 +175,7 @@ TEST_F(ElementTrackerViewsTest,
   auto* const view = widget_->SetContentsView(std::make_unique<View>());
   auto* const button = view->AddChildView(std::move(button_ptr));
   EXPECT_EQ(0, watcher.event_count());
-  view->RemoveChildViewT(button);
+  button_ptr = view->RemoveChildViewT(button);
   EXPECT_EQ(1, watcher.event_count());
   EXPECT_EQ(button, watcher.last_view());
 }
@@ -361,11 +360,11 @@ TEST_F(ElementTrackerViewsTest, HandlesCreateWithTheSameIDMultipleTimes) {
   auto* const button = widget_->SetContentsView(std::move(button_ptr));
   EXPECT_EQ(1, watcher.event_count());
   EXPECT_EQ(button, watcher.last_view());
-  widget_->GetRootView()->RemoveChildViewT(button);
+  button_ptr = widget_->GetRootView()->RemoveChildViewT(button);
 
-  button_ptr = std::make_unique<LabelButton>();
-  button_ptr->SetProperty(kElementIdentifierKey, kTestElementID);
-  auto* const button2 = widget_->SetContentsView(std::move(button_ptr));
+  auto button_ptr2 = std::make_unique<LabelButton>();
+  button_ptr2->SetProperty(kElementIdentifierKey, kTestElementID);
+  auto* const button2 = widget_->SetContentsView(std::move(button_ptr2));
   EXPECT_EQ(2, watcher.event_count());
   EXPECT_EQ(button2, watcher.last_view());
 }

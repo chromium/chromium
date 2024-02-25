@@ -44,13 +44,18 @@ class COMPONENT_EXPORT(MEDIA_MESSAGE_CENTER) MediaNotificationContainer {
                                SkColor foreground_disabled,
                                SkColor background) = 0;
 
-  // Called when the header row is clicked.
-  virtual void OnHeaderClicked() = 0;
+  // Called when the header row is clicked along with whether we want to
+  // activate the web contents for the original media.
+  virtual void OnHeaderClicked(bool activate_original_media = true) = 0;
 
   // Called when the start casting button is clicked on the quick settings media
   // view to request showing device list using device selector view in the quick
   // settings media detailed view.
   virtual void OnShowCastingDevicesRequested() {}
+
+  // Called when the device selector view size has changed to request UI updates
+  // for view parents.
+  virtual void OnDeviceSelectorViewSizeChanged() {}
 
   // Called when a media action button in MediaNotificationView is pressed and
   // MediaNotificationContainer needs to handle the button event.

@@ -41,6 +41,7 @@ ScriptValue EvalWithPrintingError(V8TestingScope* scope, const char* script) {
   ScriptValue r = Eval(scope, script);
   if (block.HasCaught()) {
     ADD_FAILURE() << ToCoreString(
+        scope->GetIsolate(),
         block.Exception()->ToString(scope->GetContext()).ToLocalChecked());
     block.ReThrow();
   }

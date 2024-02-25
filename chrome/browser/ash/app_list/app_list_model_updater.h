@@ -38,8 +38,7 @@ class AppListModelUpdater {
     }
 
    private:
-    const raw_ptr<AppListModelUpdater, DanglingUntriaged | ExperimentalAsh>
-        model_updater_;
+    const raw_ptr<AppListModelUpdater, DanglingUntriaged> model_updater_;
   };
 
   virtual ~AppListModelUpdater();
@@ -64,16 +63,21 @@ class AppListModelUpdater {
   // For SearchModel:
   virtual void SetSearchEngineIsGoogle(bool is_google) {}
   virtual void PublishSearchResults(
-      const std::vector<ChromeSearchResult*>& results,
+      const std::vector<raw_ptr<ChromeSearchResult, VectorExperimental>>&
+          results,
       const std::vector<ash::AppListSearchResultCategory>& categories) {}
   virtual void ClearSearchResults() {}
-  virtual std::vector<ChromeSearchResult*> GetPublishedSearchResultsForTest();
+  virtual std::vector<raw_ptr<ChromeSearchResult, VectorExperimental>>
+  GetPublishedSearchResultsForTest();
 
   // Item field setters only used by ChromeAppListItem and its derived classes.
   virtual void SetItemIconVersion(const std::string& id, int icon_version) {}
   virtual void SetItemIconAndColor(const std::string& id,
                                    const gfx::ImageSkia& icon,
-                                   const ash::IconColor& icon_color) {}
+                                   const ash::IconColor& icon_color,
+                                   bool is_placeholder_icon) {}
+  virtual void SetItemBadgeIcon(const std::string& id,
+                                const gfx::ImageSkia& badge_icon) {}
   virtual void SetItemName(const std::string& id, const std::string& name) {}
   virtual void SetAppStatus(const std::string& id, ash::AppStatus app_status) {}
   virtual void SetItemPosition(const std::string& id,
@@ -85,6 +89,8 @@ class AppListModelUpdater {
                                const std::string& folder_id) = 0;
   virtual void SetNotificationBadgeColor(const std::string& id,
                                          const SkColor color) {}
+  virtual void SetAccessibleName(const std::string& id,
+                                 const std::string& name) {}
 
   virtual void SetSearchResultMetadata(
       const std::string& id,
@@ -95,6 +101,7 @@ class AppListModelUpdater {
                                         const gfx::ImageSkia& badge_icon) {}
   virtual void ActivateChromeItem(const std::string& id, int event_flags) {}
   virtual void LoadAppIcon(const std::string& id) {}
+  virtual void UpdateProgress(const std::string& id, float progress) {}
 
   // For AppListModel:
   virtual ChromeAppListItem* FindItem(const std::string& id) = 0;
@@ -127,9 +134,6 @@ class AppListModelUpdater {
 
   // Notifies when the app list gets hidden.
   virtual void OnAppListHidden() = 0;
-
-  // Handles the request to commit the app list temporary sort order from ash.
-  virtual void CommitTemporarySortOrder() = 0;
 
   virtual void AddObserver(AppListModelUpdaterObserver* observer) = 0;
   virtual void RemoveObserver(AppListModelUpdaterObserver* observer) = 0;

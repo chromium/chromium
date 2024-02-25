@@ -43,7 +43,7 @@ class PrerenderNewTabHandle {
   // Starts prerendering in `web_contents_`. Returns the root FrameTreeNode id
   // of the prerendered page, which can be used as the id of PrerenderHost, on
   // success. Returns RenderFrameHost::kNoFrameTreeNodeId on failure.
-  int StartPrerendering();
+  int StartPrerendering(PreloadingPredictor preloading_predictor);
 
   // Cancels prerendering started in `web_contents_`.
   void CancelPrerendering(const PrerenderCancellationReason& reason);
@@ -54,11 +54,15 @@ class PrerenderNewTabHandle {
       const mojom::CreateNewWindowParams& create_new_window_params,
       const WebContents::CreateParams& web_contents_create_params);
 
-  // Returns PrerenderHost that `web_contents_` is hosting.
-  PrerenderHost* GetPrerenderHostForTesting();
+  // Returns PreloadingTriggerType.
+  PreloadingTriggerType trigger_type() const {
+    return attributes_.trigger_type;
+  }
 
-  // Returns PrerenderTriggerType.
-  PrerenderTriggerType trigger_type() const { return attributes_.trigger_type; }
+  // Returns SpeculationEagerness.
+  std::optional<blink::mojom::SpeculationEagerness> eagerness() const {
+    return attributes_.eagerness;
+  }
 
  private:
   PrerenderHostRegistry& GetPrerenderHostRegistry();

@@ -262,6 +262,7 @@ html[chrome-refresh-2023] {
   --cr-fallback-color-on-secondary-container: rgb(0, 29, 53);
 
   --cr-fallback-color-neutral-container: rgb(242, 242, 242);
+  --cr-fallback-color-neutral-outline: rgb(199, 199, 199);
 
   --cr-fallback-color-surface: rgb(255, 255, 255);
   --cr-fallback-color-on-surface-rgb: 31, 31, 31;
@@ -292,8 +293,11 @@ html[chrome-refresh-2023] {
       var(--cr-fallback-color-state-on-subtle-rgb_), .06);
   --cr-fallback-color-state-ripple-neutral-on-subtle_: rgba(
       var(--cr-fallback-color-state-on-subtle-rgb_), .08);
+  --cr-fallback-color-state-ripple-primary-rgb_: 124, 172, 248;
+  --cr-fallback-color-state-ripple-primary_: rgba(
+      var(--cr-fallback-color-state-ripple-primary-rgb_), 0.32);
 
-  --cr-fallback-color-base-container: rgba(105, 145, 214, .12);
+  --cr-fallback-color-base-container: rgb(236, 239, 247);
 
   --cr-fallback-color-disabled-background: rgba(
       var(--cr-fallback-color-on-surface-rgb), .12);
@@ -312,6 +316,9 @@ html[chrome-refresh-2023] {
 
   --cr-active-background-color: var(--color-sys-state-pressed,
       rgba(var(--cr-fallback-color-on-surface-rgb), .12));
+  --cr-active-on-primary-background-color: var(
+      --color-sys-state-ripple-primary,
+      var(--cr-fallback-color-state-ripple-primary_));
   --cr-active-neutral-on-subtle-background-color: var(
       --color-sys-state-ripple-neutral-on-subtle,
       var(--cr-fallback-color-state-ripple-neutral-on-subtle_));
@@ -324,6 +331,8 @@ html[chrome-refresh-2023] {
       var(--cr-fallback-color-on-surface));
   --cr-secondary-text-color: var(--color-secondary-foreground,
       var(--cr-fallback-color-on-surface-variant));
+  --cr-link-color: var(--color-link-foreground-default,
+      var(--cr-fallback-color-primary));
 
   /* Layout */
   --cr-button-height: 36px;
@@ -342,8 +351,9 @@ html[chrome-refresh-2023] {
     --cr-fallback-color-on-primary-container: rgb(211, 227, 253);
     --cr-fallback-color-secondary-container: rgb(0, 74, 119);
     --cr-fallback-color-on-secondary-container: rgb(194, 231, 255);
-    --cr-fallback-color-neutral-container: rgb(42, 42, 42);
-    --cr-fallback-color-surface: rgb(26, 27, 30);
+    --cr-fallback-color-neutral-container: rgb(40, 40, 40);
+    --cr-fallback-color-neutral-outline: rgb(117, 117, 117);
+    --cr-fallback-color-surface: rgb(31, 31, 31);
     --cr-fallback-color-on-surface-rgb: 227, 227, 227;
     --cr-fallback-color-surface-variant: rgb(68, 71, 70);
     --cr-fallback-color-on-surface-variant: rgb(196, 199, 197);
@@ -353,15 +363,16 @@ html[chrome-refresh-2023] {
     --cr-fallback-color-inverse-on-surface: rgb(31, 31, 31);
     --cr-fallback-color-tonal-container: rgb(0, 74, 119);
     --cr-fallback-color-on-tonal-container: rgb(194, 231, 255);
-    --cr-fallback-color-tonal-outline: rgb(0, 99, 155);
+    --cr-fallback-color-tonal-outline: rgb(4, 125, 183);
     --cr-fallback-color-error: rgb(242, 184, 181);
-    --cr-fallback-color-divider: rgb(71, 71, 71);
+    --cr-fallback-color-divider: rgb(94, 94, 94);
     --cr-fallback-color-state-hover-on-prominent_: rgba(31, 31, 31, .06);
     --cr-fallback-color-state-on-subtle-rgb_: 253, 252, 251;
     --cr-fallback-color-state-hover-on-subtle_: rgba(
         var(--cr-fallback-color-state-on-subtle-rgb_), .10);
     --cr-fallback-color-state-ripple-neutral-on-subtle_: rgba(
         var(--cr-fallback-color-state-on-subtle-rgb_), .16);
+    --cr-fallback-color-state-ripple-primary-rgb_: 76, 141, 246;
     --cr-fallback-color-base-container: rgba(40, 40, 40, 1);
   }
 }

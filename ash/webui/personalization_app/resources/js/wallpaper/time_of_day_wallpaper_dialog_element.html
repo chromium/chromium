@@ -1,0 +1,24 @@
+<style include="common cros-button-style">
+  h3,
+  p {
+    margin: 0;
+  }
+
+  cr-button + cr-button {
+    margin-inline-start: 8px;
+  }
+</style>
+<cr-dialog id="dialog" show-on-attach>
+  <h3 slot="title">$i18n{timeOfDayWallpaperDialogTitle}</h3>
+  <div slot="body">
+    <p>$i18n{timeOfDayWallpaperDialogContent}</p>
+  </div>
+  <div slot="button-container">
+    <cr-button id="close" on-click="onClickClose_">
+      <span>$i18n{timeOfDayWallpaperDialogBackButton}</span>
+    </cr-button>
+    <cr-button id="accept" on-click="onClickAccept_" class="action-button">
+      <span>$i18n{timeOfDayWallpaperDialogConfirmButton}</span>
+    </cr-button>
+  </div>
+</cr-dialog>

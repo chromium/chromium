@@ -1,4 +1,4 @@
-(async function(testRunner) {
+(async function(/** @type {import('test_runner').TestRunner} */ testRunner) {
   const {session, dp} = await testRunner.startURL(
     'https://127.0.0.1:8443/inspector-protocol/resources/empty.html',
     `Tests setting accepted encodings.`);

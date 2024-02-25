@@ -1,0 +1,28 @@
+[
+  {
+    "os": [
+      "win",
+      "mac",
+      "linux",
+      "android",
+      "chromeos_ash",
+      "chromeos_lacros"
+    ],
+    "policy_pref_mapping_tests": [
+      {
+        "policies": {
+          "ProxyMode": "fixed_servers",
+          "ProxyServer": "http://localhost:8080"
+        },
+        "prefs": {
+          "proxy": {
+            "value": {
+              "mode": "fixed_servers",
+              "server": "http://localhost:8080"
+            }
+          }
+        }
+      }
+    ]
+  }
+]

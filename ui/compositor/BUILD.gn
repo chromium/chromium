@@ -101,6 +101,7 @@ component("compositor") {
     "//services/viz/privileged/mojom/compositing",
     "//skia",
     "//ui/base",
+    "//ui/base:ozone_buildflags",
     "//ui/display",
     "//ui/events",
     "//ui/gfx",
@@ -126,6 +127,8 @@ static_library("test_support") {
   sources = [
     "test/animation_throughput_reporter_test_base.cc",
     "test/animation_throughput_reporter_test_base.h",
+    "test/begin_main_frame_waiter.cc",
+    "test/begin_main_frame_waiter.h",
     "test/direct_layer_tree_frame_sink.cc",
     "test/direct_layer_tree_frame_sink.h",
     "test/draw_waiter_for_test.cc",
@@ -224,7 +227,6 @@ test("compositor_unittests") {
   use_xvfb = use_xvfb_in_this_config
 
   sources = [
-    "animation_throughput_reporter_unittest.cc",
     "callback_layer_animation_observer_unittest.cc",
     "canvas_painter_unittest.cc",
     "compositor_lock_unittest.cc",
@@ -237,7 +239,6 @@ test("compositor_unittests") {
     "presentation_time_recorder_unittest.cc",
     "run_all_unittests.cc",
     "throughput_tracker_unittest.cc",
-    "total_animation_throughput_reporter_unittest.cc",
     "transform_animation_curve_adapter_unittest.cc",
   ]
 
@@ -265,10 +266,23 @@ test("compositor_unittests") {
     "//ui/resources",
   ]
 
-  data_deps = [ "//testing/buildbot/filters:compositor_unittests_filters" ]
+  if (is_ios) {
+    bundle_deps = [
+      "//testing/buildbot/filters:compositor_unittests_filters_bundle_data",
+    ]
+  } else {
+    data_deps = [ "//testing/buildbot/filters:compositor_unittests_filters" ]
+  }
 
   if (is_linux || is_chromeos) {
     deps += [ "//third_party/mesa_headers" ]
+  }
+
+  if (is_chromeos) {
+    sources += [
+      "animation_throughput_reporter_unittest.cc",
+      "total_animation_throughput_reporter_unittest.cc",
+    ]
   }
 
   if (is_fuchsia) {
@@ -286,6 +300,6 @@ test("compositor_unittests") {
   }
 
   if (is_ios) {
-    public_deps = [ "//ui/gfx:unit_tests_bundle_data" ]
+    public_deps = [ "//ui/gfx:compositor_tests_bundle_data" ]
   }
 }

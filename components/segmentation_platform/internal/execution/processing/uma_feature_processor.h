@@ -18,6 +18,7 @@
 
 namespace segmentation_platform::processing {
 class FeatureProcessorState;
+struct Data;
 
 // A query processor that takes a list of UMAFeatures, fetches samples from the
 // SignalDatabase and computes an input tensor to be used for ML model
@@ -35,29 +36,31 @@ class UmaFeatureProcessor : public QueryProcessor {
 
   ~UmaFeatureProcessor() override;
 
-  using FeatureListQueryProcessorCallback =
-      base::OnceCallback<void(std::unique_ptr<FeatureProcessorState>)>;
-
   // QueryProcessor implementation.
-  void Process(std::unique_ptr<FeatureProcessorState> feature_processor_state,
+  void Process(FeatureProcessorState& feature_processor_state,
                QueryProcessorCallback callback) override;
 
  private:
-  // Function for processing the next UMAFeature type of input for ML model.
-  void ProcessNextUmaFeature();
-
-  // Helper function for parsing a single uma feature.
-  void ProcessSingleUmaFeature(FeatureIndex index,
-                               const proto::UMAFeature& feature);
-
-  // Callback method for when all relevant samples for a particular feature has
-  // been loaded. Processes the samples, and inserts them into the input tensor
-  // that is later given to the ML execution.
+  void ProcessNextFeature();
   void OnGetSamplesForUmaFeature(FeatureIndex index,
                                  const proto::UMAFeature& feature,
-                                 const std::vector<int32_t>& accepted_enum_ids,
                                  const base::Time end_time,
-                                 std::vector<SignalDatabase::Sample> samples);
+                                 std::vector<SignalDatabase::DbEntry> samples);
+
+  // Function for processing the next UMAFeature type of input for ML model.
+  void ProcessOnGotAllSamples(
+      FeatureProcessorState& feature_processor_state,
+      const std::vector<SignalDatabase::DbEntry>& samples);
+
+  void GetStartAndEndTime(size_t bucket_count,
+                          base::Time& start_time,
+                          base::Time& end_time) const;
+
+  // Helper function for parsing a single uma feature.
+  void ProcessSingleUmaFeature(
+      const std::vector<SignalDatabase::DbEntry>& samples,
+      FeatureIndex index,
+      const proto::UMAFeature& feature);
 
   // List of custom inputs to process into input tensors.
   base::flat_map<FeatureIndex, Data> uma_features_;
@@ -78,11 +81,7 @@ class UmaFeatureProcessor : public QueryProcessor {
   const base::TimeDelta bucket_duration_;
   const proto::SegmentId segment_id_;
   const bool is_output_;
-
-  // Temporary storage of the processing state object.
-  // TODO(haileywang): Remove dependency to the state object once error check is
-  // no longer part of the state.
-  std::unique_ptr<FeatureProcessorState> feature_processor_state_;
+  const bool is_batch_processing_enabled_;
 
   // Callback for sending the resulting indexed tensors to the feature list
   // processor.

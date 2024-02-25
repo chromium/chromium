@@ -111,7 +111,7 @@ TEST_F(OpenTabResultTest, Basic) {
                                                      u", ")}));
   result->Open(0);
   EXPECT_EQ("http://www.website.com/", GetLastOpenedUrl().spec());
-  EXPECT_EQ(result->DriveId(), absl::nullopt);
+  EXPECT_EQ(result->DriveId(), std::nullopt);
 }
 
 TEST_F(OpenTabResultTest, ManuallyCalculateRelevance) {

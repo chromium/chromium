@@ -79,3 +79,8 @@ Multiple tests may share one resource, or URI handler.
 
 - check-origin_wsh.py : A WebSocket URL handler to echo back the origin header
      used in the opening handshake.
+
+- send-message-every-quarter-second_wsh.py : A WebSocket URL handler to send
+     a caller-specified number of messages through the port, each a quarter
+     second apart. Useful when testing sustained web socket connections without
+     continued client-side interaction. Used in ExtensionWebSocketApiTests.

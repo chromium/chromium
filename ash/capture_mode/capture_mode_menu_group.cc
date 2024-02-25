@@ -71,9 +71,9 @@ void ConfigureIconView(views::ImageView* icon_view, bool is_visible) {
 class CaptureModeMenuHeader
     : public views::View,
       public CaptureModeSessionFocusCycler::HighlightableView {
- public:
-  METADATA_HEADER(CaptureModeMenuHeader);
+  METADATA_HEADER(CaptureModeMenuHeader, views::View)
 
+ public:
   CaptureModeMenuHeader(const gfx::VectorIcon& icon,
                         std::u16string header_laber,
                         bool managed_by_policy)
@@ -125,14 +125,14 @@ class CaptureModeMenuHeader
   views::View* GetView() override { return this; }
 
  private:
-  raw_ptr<views::ImageView, ExperimentalAsh> icon_view_;
-  raw_ptr<views::Label, ExperimentalAsh> label_view_;
+  raw_ptr<views::ImageView> icon_view_;
+  raw_ptr<views::Label> label_view_;
   // `nullptr` if the menu group is not for a setting that is managed by a
   // policy.
-  raw_ptr<views::ImageView, ExperimentalAsh> managed_icon_view_;
+  raw_ptr<views::ImageView> managed_icon_view_;
 };
 
-BEGIN_METADATA(CaptureModeMenuHeader, views::View)
+BEGIN_METADATA(CaptureModeMenuHeader)
 END_METADATA
 
 // -----------------------------------------------------------------------------
@@ -143,9 +143,9 @@ END_METADATA
 class CaptureModeMenuItem
     : public views::Button,
       public CaptureModeSessionFocusCycler::HighlightableView {
- public:
-  METADATA_HEADER(CaptureModeMenuItem);
+  METADATA_HEADER(CaptureModeMenuItem, views::Button)
 
+ public:
   // If `indented` is true, the content of this menu item will have some extra
   // padding from the left so that it appears indented. This is useful when this
   // item is added to a group that has a header, and it's desired to make it
@@ -153,7 +153,7 @@ class CaptureModeMenuItem
   CaptureModeMenuItem(views::Button::PressedCallback callback,
                       std::u16string item_label,
                       bool indented)
-      : views::Button(callback),
+      : views::Button(std::move(callback)),
         label_view_(AddChildView(
             std::make_unique<views::Label>(std::move(item_label)))) {
     SetBorder(views::CreateEmptyBorder(indented ? kIndentedMenuItemPadding
@@ -173,10 +173,10 @@ class CaptureModeMenuItem
   views::View* GetView() override { return this; }
 
  private:
-  raw_ptr<views::Label, ExperimentalAsh> label_view_;
+  raw_ptr<views::Label> label_view_;
 };
 
-BEGIN_METADATA(CaptureModeMenuItem, views::Button)
+BEGIN_METADATA(CaptureModeMenuItem)
 END_METADATA
 
 // -----------------------------------------------------------------------------
@@ -189,9 +189,9 @@ END_METADATA
 class CaptureModeOption
     : public views::Button,
       public CaptureModeSessionFocusCycler::HighlightableView {
- public:
-  METADATA_HEADER(CaptureModeOption);
+  METADATA_HEADER(CaptureModeOption, views::Button)
 
+ public:
   // If `indented` is true, the content of this option will have some extra
   // padding from the left so that it appears indented. This is useful when this
   // option is added to a group that has a header, and it's desired to make it
@@ -203,7 +203,7 @@ class CaptureModeOption
                     bool checked,
                     bool enabled,
                     bool indented)
-      : views::Button(callback),
+      : views::Button(std::move(callback)),
         option_icon_(option_icon),
         option_icon_view_(
             option_icon_ ? AddChildView(std::make_unique<views::ImageView>())
@@ -333,15 +333,15 @@ class CaptureModeOption
   }
 
   // An optional icon for the option. Non-null if present.
-  raw_ptr<const gfx::VectorIcon, ExperimentalAsh> option_icon_ = nullptr;
-  raw_ptr<views::ImageView, ExperimentalAsh> option_icon_view_ = nullptr;
+  raw_ptr<const gfx::VectorIcon> option_icon_ = nullptr;
+  raw_ptr<views::ImageView> option_icon_view_ = nullptr;
 
-  raw_ptr<views::Label, ExperimentalAsh> label_view_;
-  raw_ptr<views::ImageView, ExperimentalAsh> checked_icon_view_;
+  raw_ptr<views::Label> label_view_;
+  raw_ptr<views::ImageView> checked_icon_view_;
   const int id_;
 };
 
-BEGIN_METADATA(CaptureModeOption, views::Button)
+BEGIN_METADATA(CaptureModeOption)
 END_METADATA
 
 // -----------------------------------------------------------------------------
@@ -406,7 +406,7 @@ void CaptureModeMenuGroup::AddOrUpdateExistingOption(
 }
 
 void CaptureModeMenuGroup::RefreshOptionsSelections() {
-  for (auto* option : options_) {
+  for (ash::CaptureModeOption* option : options_) {
     option->SetOptionChecked(delegate_->IsOptionChecked(option->id()));
     option->SetEnabled(delegate_->IsOptionEnabled(option->id()));
   }
@@ -423,9 +423,10 @@ void CaptureModeMenuGroup::RemoveOptionIfAny(int option_id) {
 
 void CaptureModeMenuGroup::AddMenuItem(views::Button::PressedCallback callback,
                                        std::u16string item_label) {
-  menu_items_.push_back(views::View::AddChildView(
-      std::make_unique<CaptureModeMenuItem>(callback, std::move(item_label),
-                                            /*indented=*/!!menu_header_)));
+  menu_items_.push_back(
+      views::View::AddChildView(std::make_unique<CaptureModeMenuItem>(
+          std::move(callback), std::move(item_label),
+          /*indented=*/!!menu_header_)));
 }
 
 bool CaptureModeMenuGroup::IsOptionChecked(int option_id) const {
@@ -448,12 +449,13 @@ void CaptureModeMenuGroup::AppendHighlightableItems(
 
   if (menu_header_)
     highlightable_items.push_back(menu_header_);
-  for (auto* option : options_) {
+  for (ash::CaptureModeOption* option : options_) {
     if (option->GetEnabled())
       highlightable_items.push_back(option);
   }
-  for (auto* menu_item : menu_items_)
+  for (ash::CaptureModeMenuItem* menu_item : menu_items_) {
     highlightable_items.push_back(menu_item);
+  }
 }
 
 views::View* CaptureModeMenuGroup::GetOptionForTesting(int option_id) {
@@ -503,7 +505,7 @@ void CaptureModeMenuGroup::HandleOptionClick(int option_id) {
   RefreshOptionsSelections();
 }
 
-BEGIN_METADATA(CaptureModeMenuGroup, views::View)
+BEGIN_METADATA(CaptureModeMenuGroup)
 END_METADATA
 
 }  // namespace ash

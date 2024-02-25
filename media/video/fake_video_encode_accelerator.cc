@@ -66,6 +66,8 @@ bool FakeVideoEncodeAccelerator::Initialize(
       base::BindOnce(&FakeVideoEncodeAccelerator::DoRequireBitstreamBuffers,
                      weak_this_factory_.GetWeakPtr(), kMinimumInputCount,
                      config.input_visible_size, kMinimumOutputBufferSize));
+  encoder_info_.supports_frame_size_change = true;
+  NotifyEncoderInfoChange(encoder_info_);
   return true;
 }
 
@@ -87,18 +89,36 @@ void FakeVideoEncodeAccelerator::UseOutputBitstreamBuffer(
 
 void FakeVideoEncodeAccelerator::RequestEncodingParametersChange(
     const Bitrate& bitrate,
-    uint32_t framerate) {
+    uint32_t framerate,
+    const std::optional<gfx::Size>& size) {
   // Reject bitrate mode changes.
   if (stored_bitrates_.empty() ||
       stored_bitrates_.back().mode() == bitrate.mode()) {
     stored_bitrates_.push_back(bitrate);
   }
+  if (size.has_value()) {
+    UpdateOutputFrameSize(size.value());
+  }
 }
 
 void FakeVideoEncodeAccelerator::RequestEncodingParametersChange(
     const VideoBitrateAllocation& bitrate,
-    uint32_t framerate) {
+    uint32_t framerate,
+    const std::optional<gfx::Size>& size) {
   stored_bitrate_allocations_.push_back(bitrate);
+  if (size.has_value()) {
+    UpdateOutputFrameSize(size.value());
+  }
+}
+
+void FakeVideoEncodeAccelerator::UpdateOutputFrameSize(const gfx::Size& size) {
+  if (!encoder_info_.supports_frame_size_change) {
+    client_->NotifyErrorStatus(
+        EncoderStatus::Codes::kEncoderInitializationError);
+    return;
+  }
+  DoRequireBitstreamBuffers(kMinimumInputCount, size, kMinimumOutputBufferSize);
+  stored_frame_sizes_.push_back(size);
 }
 
 void FakeVideoEncodeAccelerator::Destroy() {
@@ -113,6 +133,14 @@ void FakeVideoEncodeAccelerator::SetWillInitializationSucceed(
 void FakeVideoEncodeAccelerator::SetWillEncodingSucceed(
     bool will_encoding_succeed) {
   will_encoding_succeed_ = will_encoding_succeed;
+}
+
+void FakeVideoEncodeAccelerator::SetSupportFrameSizeChange(
+    bool support_frame_size_change) {
+  DCHECK_NE(encoder_info_.supports_frame_size_change,
+            support_frame_size_change);
+  encoder_info_.supports_frame_size_change = support_frame_size_change;
+  NotifyEncoderInfoChange(encoder_info_);
 }
 
 void FakeVideoEncodeAccelerator::NotifyEncoderInfoChange(
@@ -167,10 +195,12 @@ void FakeVideoEncodeAccelerator::DoBitstreamBufferReady(
   BitstreamBufferMetadata metadata(kMinimumOutputBufferSize,
                                    frame_to_encode.force_keyframe,
                                    frame_to_encode.frame->timestamp());
+  metadata.encoded_size = frame_to_encode.frame->coded_size();
 
-  if (!encoding_callback_.is_null())
+  if (!encoding_callback_.is_null()) {
     metadata = encoding_callback_.Run(buffer, frame_to_encode.force_keyframe,
                                       frame_to_encode.frame);
+  }
 
   client_->BitstreamBufferReady(buffer.id(), metadata);
 }

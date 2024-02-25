@@ -7,11 +7,11 @@
 
 #include <stdint.h>
 
+#include <optional>
 #include <vector>
 
 #include "base/functional/callback_forward.h"
 #include "chrome/browser/chromeos/platform_keys/platform_keys.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ash::platform_keys {
 
@@ -28,7 +28,7 @@ using AllowKeyForUsageCallback =
 // has occurred, an error |status| will be returned and |allowed| will be
 // nullopt.
 using IsKeyAllowedForUsageCallback =
-    base::OnceCallback<void(absl::optional<bool> allowed,
+    base::OnceCallback<void(std::optional<bool> allowed,
                             chromeos::platform_keys::Status status)>;
 
 // ** KeyPermissionsManager (KPM) instances **

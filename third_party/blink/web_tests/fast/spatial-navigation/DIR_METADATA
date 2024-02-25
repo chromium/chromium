@@ -1,4 +1,7 @@
-monorail {
+monorail: {
   component: "Blink>HTML>Focus"
 }
 team_email: "dom-dev@chromium.org"
+buganizer_public: {
+  component_id: 1456515
+}

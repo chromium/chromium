@@ -14,7 +14,6 @@ class WebState;
 }
 
 // Mediator for the page info permissions.
-API_AVAILABLE(ios(15.0))
 @interface PageInfoPermissionsMediator : NSObject <PermissionsDelegate>
 
 - (instancetype)init NS_UNAVAILABLE;

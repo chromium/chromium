@@ -1,3 +1,5 @@
+error: http://127.0.0.1:8000/devtools/resources/inspected-page.html
+error: http://127.0.0.1:8000/devtools/resources/inspected-page.html
 Tests that the sidebar uses the correct styling for mixed content subresources.
 
 Origin sidebar:
@@ -19,7 +21,7 @@ Origin sidebar:
         </STYLE>
         <DIV class=tree-outline-disclosure >
             <OL class=tree-outline role=tree tabindex=-1 >
-                <LI role=treeitem class=security-main-view-sidebar-tree-item selected force-white-icons title=Overview tabindex=0 aria-selected=true >
+                <LI jslog=TreeItem; track: click; parent: parentTreeItem; context: disclosureTriangle role=treeitem class=security-main-view-sidebar-tree-item selected force-white-icons title=Overview tabindex=0 aria-selected=true >
                     <DIV class=selection fill >
                     </DIV>
                     <SPAN class=tree-element-title >
@@ -32,7 +34,7 @@ Overview
                 </LI>
                 <OL class=children role=group >
                 </OL>
-                <LI title=Main origin role=treeitem class=parent always-parent expanded security-sidebar-origins aria-expanded=true >
+                <LI title=Main origin jslog=TreeItem; track: click; parent: parentTreeItem; context: disclosureTriangle role=treeitem class=parent always-parent expanded security-sidebar-origins aria-expanded=true >
                     <DIV class=selection fill >
                     </DIV>
                     <SPAN class=tree-element-title >
@@ -40,7 +42,7 @@ Main origin
                     </SPAN>
                 </LI>
                 <OL class=children expanded role=group aria-label=Main origin >
-                    <LI title=Reload to view details role=treeitem class=security-main-view-reload-message hidden >
+                    <LI title=Reload to view details jslog=TreeItem; track: click; parent: parentTreeItem; context: disclosureTriangle role=treeitem class=security-main-view-reload-message hidden >
                         <DIV class=selection fill >
                         </DIV>
                         <SPAN class=tree-element-title >
@@ -50,7 +52,7 @@ Reload to view details
                     <OL class=children hidden role=group >
                     </OL>
                 </OL>
-                <LI title=Non-secure origins role=treeitem class=parent always-parent expanded security-sidebar-origins aria-expanded=true >
+                <LI title=Non-secure origins jslog=TreeItem; track: click; parent: parentTreeItem; context: disclosureTriangle role=treeitem class=parent always-parent expanded security-sidebar-origins aria-expanded=true >
                     <DIV class=selection fill >
                     </DIV>
                     <SPAN class=tree-element-title >
@@ -58,7 +60,7 @@ Non-secure origins
                     </SPAN>
                 </LI>
                 <OL class=children expanded role=group aria-label=Non-secure origins >
-                    <LI role=treeitem class=security-sidebar-tree-item title=http://foo.test >
+                    <LI jslog=TreeItem; track: click; parent: parentTreeItem; context: disclosureTriangle role=treeitem class=security-sidebar-tree-item title=http://foo.test >
                         <DIV class=selection fill >
                         </DIV>
                         <SPAN class=tree-element-title >
@@ -79,7 +81,7 @@ foo.test
                     </LI>
                     <OL class=children role=group >
                     </OL>
-                    <LI role=treeitem class=security-sidebar-tree-item title=http://bar.test >
+                    <LI jslog=TreeItem; track: click; parent: parentTreeItem; context: disclosureTriangle role=treeitem class=security-sidebar-tree-item title=http://bar.test >
                         <DIV class=selection fill >
                         </DIV>
                         <SPAN class=tree-element-title >
@@ -101,7 +103,7 @@ bar.test
                     <OL class=children role=group >
                     </OL>
                 </OL>
-                <LI title=Secure origins role=treeitem class=parent always-parent expanded security-sidebar-origins hidden aria-expanded=true >
+                <LI title=Secure origins jslog=TreeItem; track: click; parent: parentTreeItem; context: disclosureTriangle role=treeitem class=parent always-parent expanded security-sidebar-origins hidden aria-expanded=true >
                     <DIV class=selection fill >
                     </DIV>
                     <SPAN class=tree-element-title >
@@ -110,7 +112,7 @@ Secure origins
                 </LI>
                 <OL class=children expanded hidden role=group aria-label=Secure origins >
                 </OL>
-                <LI title=Unknown / canceled role=treeitem class=parent always-parent expanded security-sidebar-origins hidden aria-expanded=true >
+                <LI title=Unknown / canceled jslog=TreeItem; track: click; parent: parentTreeItem; context: disclosureTriangle role=treeitem class=parent always-parent expanded security-sidebar-origins hidden aria-expanded=true >
                     <DIV class=selection fill >
                     </DIV>
                     <SPAN class=tree-element-title >

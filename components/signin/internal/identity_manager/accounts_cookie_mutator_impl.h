@@ -39,17 +39,6 @@ class AccountsCookieMutatorImpl : public AccountsCookieMutator {
 
   ~AccountsCookieMutatorImpl() override;
 
-  void AddAccountToCookie(
-      const CoreAccountId& account_id,
-      gaia::GaiaSource source,
-      AddAccountToCookieCompletedCallback completion_callback) override;
-
-  void AddAccountToCookieWithToken(
-      const CoreAccountId& account_id,
-      const std::string& access_token,
-      gaia::GaiaSource source,
-      AddAccountToCookieCompletedCallback completion_callback) override;
-
   void SetAccountsInCookie(
       const MultiloginParameters& parameters,
       gaia::GaiaSource source,
@@ -70,12 +59,9 @@ class AccountsCookieMutatorImpl : public AccountsCookieMutator {
 
  private:
   raw_ptr<SigninClient> signin_client_;
-  raw_ptr<ProfileOAuth2TokenService, AcrossTasksDanglingUntriaged>
-      token_service_;
-  raw_ptr<GaiaCookieManagerService, AcrossTasksDanglingUntriaged>
-      gaia_cookie_manager_service_;
-  raw_ptr<AccountTrackerService, AcrossTasksDanglingUntriaged>
-      account_tracker_service_;
+  raw_ptr<ProfileOAuth2TokenService> token_service_;
+  raw_ptr<GaiaCookieManagerService> gaia_cookie_manager_service_;
+  raw_ptr<AccountTrackerService> account_tracker_service_;
 };
 
 }  // namespace signin

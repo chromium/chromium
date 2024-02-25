@@ -38,6 +38,11 @@ bool CodecSupportsFloatOutput(AudioCodec codec) {
     return true;
   }
 #endif
+#if BUILDFLAG(ENABLE_PLATFORM_AC4_AUDIO)
+  if (codec == AudioCodec::kAC4) {
+    return true;
+  }
+#endif
   return false;
 }
 
@@ -65,10 +70,14 @@ bool CodecSupportsFormat(const AudioDecoderConfig& config,
     return true;
   }
 
+  if (config.codec() == AudioCodec::kAC4) {
+    return true;
+  }
+
   return false;
 }
 
-absl::optional<MFT_REGISTER_TYPE_INFO> GetTypeInfo(
+std::optional<MFT_REGISTER_TYPE_INFO> GetTypeInfo(
     const AudioDecoderConfig& config) {
   switch (config.codec()) {
 #if BUILDFLAG(ENABLE_PLATFORM_DTS_AUDIO)
@@ -93,8 +102,12 @@ absl::optional<MFT_REGISTER_TYPE_INFO> GetTypeInfo(
       }
       [[fallthrough]];
 #endif
+#if BUILDFLAG(ENABLE_PLATFORM_AC4_AUDIO)
+    case AudioCodec::kAC4:
+      return MFT_REGISTER_TYPE_INFO{MFMediaType_Audio, MFAudioFormat_Dolby_AC4};
+#endif  // BUILDFLAG(ENABLE_PLATFORM_AC4_AUDIO)
     default:
-      return absl::nullopt;
+      return std::nullopt;
   }
 }
 
@@ -123,6 +136,9 @@ bool PopulateInputSample(IMFSample* sample, const DecoderBuffer& input) {
   RETURN_ON_HR_FAILURE(
       sample->SetSampleTime(input.timestamp().InNanoseconds() / 100),
       "Failed to set input timestamp", false);
+  RETURN_ON_HR_FAILURE(
+      sample->SetSampleDuration(input.duration().InNanoseconds() / 100),
+      "Failed to set input duration", false);
   return true;
 }
 
@@ -207,9 +223,7 @@ void MediaFoundationAudioDecoder::Decode(scoped_refptr<DecoderBuffer> buffer,
     }
   }
 
-  if (buffer->decrypt_config() &&
-      buffer->decrypt_config()->encryption_scheme() !=
-          EncryptionScheme::kUnencrypted) {
+  if (buffer->is_encrypted()) {
     DLOG(ERROR) << "Encrypted buffer not supported";
     std::move(decode_cb_bound)
         .Run(DecoderStatus::Codes::kUnsupportedEncryptionMode);

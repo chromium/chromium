@@ -4,13 +4,16 @@
 
 #include "ash/ambient/metrics/ambient_metrics.h"
 
+#include <optional>
 #include <string>
+#include <string_view>
 #include <utility>
 
 #include "ash/ambient/ambient_ui_settings.h"
 #include "ash/public/cpp/ambient/ambient_ui_model.h"
 #include "ash/public/cpp/ambient/common/ambient_settings.h"
 #include "ash/public/cpp/ash_web_view.h"
+#include "ash/webui/personalization_app/mojom/personalization_app.mojom-shared.h"
 #include "base/check.h"
 #include "base/containers/contains.h"
 #include "base/functional/bind.h"
@@ -19,13 +22,12 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/strings/strcat.h"
-#include "base/strings/string_piece.h"
+
 #include "base/strings/stringprintf.h"
 #include "base/time/time.h"
 #include "base/values.h"
 #include "net/base/url_util.h"
 #include "services/data_decoder/public/cpp/data_decoder.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/size.h"
 #include "url/gurl.h"
@@ -47,16 +49,16 @@ constexpr int kAmbientModeElapsedTimeHistogramBuckets = 144;
 // communicate playback metrics.
 //
 // Whether or not playback started successfully.
-constexpr base::StringPiece kVideoFieldPlaybackStarted = "playback_started";
+constexpr std::string_view kVideoFieldPlaybackStarted = "playback_started";
 //
 // These reflect the VideoPlaybackQuality JS API:
 // https://developer.mozilla.org/en-US/docs/Web/API/VideoPlaybackQuality
 //
 // Total number of video frames dropped since playback started.
-constexpr base::StringPiece kVideoFieldDroppedFrames = "dropped_frames";
+constexpr std::string_view kVideoFieldDroppedFrames = "dropped_frames";
 // Total number of video frames expected since playback started (frames
 // created + frames dropped).
-constexpr base::StringPiece kVideoFieldTotalFrames = "total_frames";
+constexpr std::string_view kVideoFieldTotalFrames = "total_frames";
 
 std::string GetHistogramName(const char* prefix, bool tablet_mode) {
   std::string histogram = prefix;
@@ -130,7 +132,7 @@ void GetAmbientVideoPlaybackMetrics(
 
 AmbientVideoSessionStatus ParseAmbientVideoSessionStatus(
     const base::Value::Dict& playback_metrics) {
-  absl::optional<bool> playback_started =
+  std::optional<bool> playback_started =
       playback_metrics.FindBool(kVideoFieldPlaybackStarted);
   if (playback_started.has_value()) {
     return *playback_started ? AmbientVideoSessionStatus::kSuccess
@@ -168,18 +170,19 @@ void RecordAmbientModeVideoSessionStatusInternal(
 void RecordAmbientModeVideoSmoothnessInternal(
     const AmbientUiSettings& ui_settings,
     base::Value::Dict playback_metrics) {
-  CHECK_EQ(ui_settings.theme(), AmbientTheme::kVideo);
+  CHECK_EQ(ui_settings.theme(),
+           personalization_app::mojom::AmbientTheme::kVideo);
   if (ParseAmbientVideoSessionStatus(playback_metrics) !=
       AmbientVideoSessionStatus::kSuccess) {
     // Just to prevent error log spam below. If playback failed completely,
     // `RecordAmbientModeVideoSessionStatus()` should cover that.
     return;
   }
-  absl::optional<int> dropped_frames =
+  std::optional<int> dropped_frames =
       playback_metrics.FindInt(kVideoFieldDroppedFrames);
   // Assuming 24 fps, the ambient session would have to last ~2.83 years before
   // the int overflows. For all intensive purposes, this should not happen.
-  absl::optional<int> expected_frames =
+  std::optional<int> expected_frames =
       playback_metrics.FindInt(kVideoFieldTotalFrames);
   if (!dropped_frames || !expected_frames) {
     LOG(ERROR) << "Received invalid metrics dictionary: " << playback_metrics;
@@ -202,7 +205,8 @@ void RecordAmbientModeVideoSmoothnessInternal(
 
 AmbientModePhotoSource AmbientSettingsToPhotoSource(
     const AmbientSettings& settings) {
-  if (settings.topic_source == ash::AmbientModeTopicSource::kArtGallery) {
+  if (settings.topic_source ==
+      ash::personalization_app::mojom::TopicSource::kArtGallery) {
     return AmbientModePhotoSource::kArtGallery;
   }
 

@@ -101,4 +101,28 @@ class SigninUIError {
 #endif
 };
 
+// Different UIs that can be displayed when trying to reauth while Force Signin
+// is enabled.
+enum class ReauthUIError {
+  kNone,
+  // Reauth is not allowed for this Profile.
+  kNotAllowed,
+  // Reauth was attempted using a different account than the main one.
+  kWrongAccount,
+  // A timeout occurred while attempting to reauth.
+  kTimeout,
+};
+
+// Helper pair to get the error messages based on the `ReauthUIError`
+// error enum to be displayed on the Profile Picker error dialog.
+// - `first` for the title message.
+// - `second` for the body message.
+using ReauthUIErrorMessages = std::pair<std::u16string, std::u16string>;
+
+// Returns the error messages for the given `error`.
+// The `email` is only used when the error is `ReauthUIError::kWrongAccount` and
+// must not be empty in this case. `error` must not be `ReauthUIError::kNone`.
+ReauthUIErrorMessages GetReauthUIErrorMessages(ReauthUIError error,
+                                               const std::string& email);
+
 #endif  // CHROME_BROWSER_UI_WEBUI_SIGNIN_SIGNIN_UI_ERROR_H_

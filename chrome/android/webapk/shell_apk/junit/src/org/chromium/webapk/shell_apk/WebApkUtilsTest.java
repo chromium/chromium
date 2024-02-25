@@ -5,6 +5,7 @@
 package org.chromium.webapk.shell_apk;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotEquals;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.when;
@@ -37,10 +38,8 @@ import org.chromium.components.webapk.lib.common.WebApkMetaDataKeys;
 @RunWith(RobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
 public class WebApkUtilsTest {
-    @Mock
-    private Context mMockApplicationContext;
-    @Mock
-    private PackageManager mMockPackageManager;
+    @Mock private Context mMockApplicationContext;
+    @Mock private PackageManager mMockPackageManager;
 
     protected static final String WEBAPK_PACKAGE_NAME = "org.chromium.test";
 
@@ -73,7 +72,8 @@ public class WebApkUtilsTest {
         bundle.putString(WebApkMetaDataKeys.RUNTIME_HOST, browserPackageName);
         bundle.putString(WebApkMetaDataKeys.LOGGED_INTENT_URL_PARAM, "originalUrl");
 
-        Assert.assertEquals(expectedRewrittenStartUrl,
+        Assert.assertEquals(
+                expectedRewrittenStartUrl,
                 WebApkUtils.rewriteIntentUrlIfNecessary(intentStartUrl, bundle));
     }
 
@@ -89,7 +89,7 @@ public class WebApkUtilsTest {
         final String manifestScope = "https://www.google.com";
         final String expectedRewrittenStartUrl =
                 "https://www.google.com/maps?force=qVTs2FOxxTmHHo79-pwa&intent="
-                + "https%3A%2F%2Fwww.google.com%2Fmaps%2Fsearch%2FA";
+                        + "https%3A%2F%2Fwww.google.com%2Fmaps%2Fsearch%2FA";
         final String browserPackageName = "browser.support.webapks";
 
         Bundle bundle = new Bundle();
@@ -98,7 +98,8 @@ public class WebApkUtilsTest {
         bundle.putString(WebApkMetaDataKeys.RUNTIME_HOST, browserPackageName);
         bundle.putString(WebApkMetaDataKeys.LOGGED_INTENT_URL_PARAM, "intent");
 
-        Assert.assertEquals(expectedRewrittenStartUrl,
+        Assert.assertEquals(
+                expectedRewrittenStartUrl,
                 WebApkUtils.rewriteIntentUrlIfNecessary(intentStartUrl, bundle));
     }
 
@@ -117,9 +118,7 @@ public class WebApkUtilsTest {
         Assert.assertFalse(WebApkUtils.isInstalled(mContext.getPackageManager(), packageName));
     }
 
-    /**
-     * Test status bar is always black in Automotive devices.
-     */
+    /** Test status bar is always black in Automotive devices. */
     @Test
     public void testStatusBarBlackInAutomotive() {
         // Create an "automotive" Activity.
@@ -136,9 +135,12 @@ public class WebApkUtilsTest {
 
         // No matter what color the status bar is being set on other form factors, it should always
         // be black on automotive devices.
-        assertEquals("Status bar should always be black in automotive devices.", Color.BLACK,
+        assertEquals(
+                "Status bar should always be black in automotive devices.",
+                Color.BLACK,
                 testActivity.getWindow().getStatusBarColor());
-        assertEquals("Status bar should use dark theme icons in automotive devices.",
+        assertNotEquals(
+                "Status bar should NOT use dark icons in automotive devices.",
                 View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR,
                 rootView.getSystemUiVisibility() & View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR);
 

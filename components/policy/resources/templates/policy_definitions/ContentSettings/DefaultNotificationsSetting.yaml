@@ -1,8 +1,9 @@
 caption: Default notification setting
+default: null
 desc: |-
   Setting the policy to 1 lets websites display desktop notifications. Setting the policy to 2 denies desktop notifications.
 
-        Leaving it unset means <ph name="ASK_NOTIFICATIONS_POLICY_NAME">AskNotifications</ph> applies, but users can change this setting.
+  Leaving it unset means <ph name="ASK_NOTIFICATIONS_POLICY_NAME">AskNotifications</ph> applies, but users can change this setting.
 example_value: 2
 features:
   dynamic_refresh: true

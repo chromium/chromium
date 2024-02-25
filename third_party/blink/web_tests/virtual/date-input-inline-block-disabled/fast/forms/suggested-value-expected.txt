@@ -82,10 +82,15 @@ instead of "initial value".
 |     <shadow:root>
 |       "inserted value"
 |   <shadow:root>
-|     <div>
-|       aria-hidden="true"
-|       "initial value"
 |     <slot>
+|       id="select-button"
+|       <div>
+|         aria-hidden="true"
+|         "initial value"
+|     <slot>
+|       id="select-datalist"
+|     <slot>
+|       id="select-options"
 | "input.value: initial value"
 | "internals.suggestedValue(input): suggested value"
 | "input.selectionStart: 0"

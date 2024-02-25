@@ -15,9 +15,11 @@
 #include "chrome/browser/search_engines/template_url_service_test_util.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/search_engines/search_engines_pref_names.h"
+#include "components/search_engines/search_engines_switches.h"
 #include "components/search_engines/search_engines_test_util.h"
 #include "components/search_engines/search_terms_data.h"
 #include "components/search_engines/template_url.h"
+#include "components/search_engines/template_url_data.h"
 #include "components/search_engines/template_url_prepopulate_data.h"
 #include "components/search_engines/template_url_service.h"
 #include "components/search_engines/template_url_service_client.h"
@@ -34,6 +36,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 
 using base::Time;
+using testing::IsNull;
 using testing::NotNull;
 
 namespace {
@@ -102,7 +105,7 @@ class TestChangeProcessor : public syncer::SyncChangeProcessor {
   ~TestChangeProcessor() override;
 
   // Store a copy of all the changes passed in so we can examine them later.
-  absl::optional<syncer::ModelError> ProcessSyncChanges(
+  std::optional<syncer::ModelError> ProcessSyncChanges(
       const base::Location& from_here,
       const syncer::SyncChangeList& change_list) override;
 
@@ -131,7 +134,7 @@ TestChangeProcessor::TestChangeProcessor() : erroneous_(false) {
 TestChangeProcessor::~TestChangeProcessor() {
 }
 
-absl::optional<syncer::ModelError> TestChangeProcessor::ProcessSyncChanges(
+std::optional<syncer::ModelError> TestChangeProcessor::ProcessSyncChanges(
     const base::Location& from_here,
     const syncer::SyncChangeList& change_list) {
   if (erroneous_)
@@ -141,7 +144,7 @@ absl::optional<syncer::ModelError> TestChangeProcessor::ProcessSyncChanges(
   for (auto iter = change_list.begin(); iter != change_list.end(); ++iter)
     change_map_.emplace(GetGUID(iter->sync_data()), *iter);
 
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 class TestTemplateURLServiceClient : public TemplateURLServiceClient {
@@ -218,15 +221,15 @@ class TemplateURLServiceSyncTest : public testing::Test {
   // Executes MergeDataAndStartSyncing and ProcessSyncChanges respectively, and
   // verifies the expected number of calls were made to notify observers. These
   // will clear out previous notify call counts beforehand.
-  absl::optional<syncer::ModelError> MergeAndExpectNotify(
+  std::optional<syncer::ModelError> MergeAndExpectNotify(
       syncer::SyncDataList initial_sync_data,
       int expected_notify_count);
-  absl::optional<syncer::ModelError> MergeAndExpectNotifyAtLeast(
+  std::optional<syncer::ModelError> MergeAndExpectNotifyAtLeast(
       syncer::SyncDataList initial_sync_data);
-  absl::optional<syncer::ModelError> ProcessAndExpectNotify(
+  std::optional<syncer::ModelError> ProcessAndExpectNotify(
       syncer::SyncChangeList changes,
       int expected_notify_count);
-  absl::optional<syncer::ModelError> ProcessAndExpectNotifyAtLeast(
+  std::optional<syncer::ModelError> ProcessAndExpectNotifyAtLeast(
       syncer::SyncChangeList changes);
 
  protected:
@@ -253,7 +256,7 @@ TemplateURLServiceSyncTest::TemplateURLServiceSyncTest()
   // the feature flag is inlined."
   feature_list_.InitWithFeatures(
       /*enabled_features=*/{},
-      /*disabled_features=*/{switches::kSearchEngineChoice});
+      /*disabled_features=*/{switches::kSearchEngineChoiceTrigger});
 }
 
 void TemplateURLServiceSyncTest::SetUp() {
@@ -341,7 +344,8 @@ std::unique_ptr<TemplateURL> TemplateURLServiceSyncTest::Deserialize(
   syncer::SyncChangeList dummy;
   TestTemplateURLServiceClient client;
   return TemplateURLService::CreateTemplateURLFromTemplateURLAndSyncData(
-      &client, nullptr, SearchTermsData(), nullptr, sync_data, &dummy);
+      &client, /*prefs=*/nullptr, /*search_engine_choice_service=*/nullptr,
+      SearchTermsData(), /*existing_turl=*/nullptr, sync_data, &dummy);
 }
 
 std::unique_ptr<TemplateURL> TemplateURLServiceSyncTest::CopyTemplateURL(
@@ -356,43 +360,43 @@ std::unique_ptr<TemplateURL> TemplateURLServiceSyncTest::CopyTemplateURL(
   return std::make_unique<TemplateURL>(data);
 }
 
-absl::optional<syncer::ModelError>
+std::optional<syncer::ModelError>
 TemplateURLServiceSyncTest::MergeAndExpectNotify(
     syncer::SyncDataList initial_sync_data,
     int expected_notify_count) {
   test_util_a_->ResetObserverCount();
-  absl::optional<syncer::ModelError> error = model()->MergeDataAndStartSyncing(
+  std::optional<syncer::ModelError> error = model()->MergeDataAndStartSyncing(
       syncer::SEARCH_ENGINES, initial_sync_data, PassProcessor());
   EXPECT_EQ(expected_notify_count, test_util_a_->GetObserverCount());
   return error;
 }
 
-absl::optional<syncer::ModelError>
+std::optional<syncer::ModelError>
 TemplateURLServiceSyncTest::MergeAndExpectNotifyAtLeast(
     syncer::SyncDataList initial_sync_data) {
   test_util_a_->ResetObserverCount();
-  absl::optional<syncer::ModelError> error = model()->MergeDataAndStartSyncing(
+  std::optional<syncer::ModelError> error = model()->MergeDataAndStartSyncing(
       syncer::SEARCH_ENGINES, initial_sync_data, PassProcessor());
   EXPECT_LE(1, test_util_a_->GetObserverCount());
   return error;
 }
 
-absl::optional<syncer::ModelError>
+std::optional<syncer::ModelError>
 TemplateURLServiceSyncTest::ProcessAndExpectNotify(
     syncer::SyncChangeList changes,
     int expected_notify_count) {
   test_util_a_->ResetObserverCount();
-  absl::optional<syncer::ModelError> error =
+  std::optional<syncer::ModelError> error =
       model()->ProcessSyncChanges(FROM_HERE, changes);
   EXPECT_EQ(expected_notify_count, test_util_a_->GetObserverCount());
   return error;
 }
 
-absl::optional<syncer::ModelError>
+std::optional<syncer::ModelError>
 TemplateURLServiceSyncTest::ProcessAndExpectNotifyAtLeast(
     syncer::SyncChangeList changes) {
   test_util_a_->ResetObserverCount();
-  absl::optional<syncer::ModelError> error =
+  std::optional<syncer::ModelError> error =
       model()->ProcessSyncChanges(FROM_HERE, changes);
   EXPECT_LE(1, test_util_a_->GetObserverCount());
   return error;
@@ -488,8 +492,9 @@ TEST_F(TemplateURLServiceSyncTest, GetAllSyncDataWithSearchOverrideExtension) {
 TEST_F(TemplateURLServiceSyncTest, GetAllSyncDataNoManagedEngines) {
   model()->Add(CreateTestTemplateURL(u"key1", "http://key1.com"));
   model()->Add(CreateTestTemplateURL(u"key2", "http://key2.com"));
-  model()->Add(CreateTestTemplateURL(u"key3", "http://key3.com", std::string(),
-                                     base::Time::FromTimeT(100), false, true));
+  model()->Add(CreateTestTemplateURL(
+      u"key3", "http://key3.com", std::string(), base::Time::FromTimeT(100),
+      false, TemplateURLData::CreatedByPolicy::kDefaultSearchProvider));
   syncer::SyncDataList all_sync_data =
       model()->GetAllSyncData(syncer::SEARCH_ENGINES);
 
@@ -500,7 +505,8 @@ TEST_F(TemplateURLServiceSyncTest, GetAllSyncDataNoManagedEngines) {
     std::string guid = GetGUID(*iter);
     TemplateURL* service_turl = model()->GetTemplateURLForGUID(guid);
     std::unique_ptr<TemplateURL> deserialized(Deserialize(*iter));
-    ASSERT_FALSE(service_turl->created_by_policy());
+    ASSERT_EQ(service_turl->created_by_policy(),
+              TemplateURLData::CreatedByPolicy::kNoPolicy);
     AssertEquals(*service_turl, *deserialized);
   }
 }
@@ -684,19 +690,19 @@ TEST_F(TemplateURLServiceSyncTest, MergeAddFromNewerSyncData) {
   // from Sync are newer. Set up the local data so that one is a dupe, one has a
   // conflicting keyword, and the last has no conflicts (a clean ADD).
   // Duplicate keyword, same hostname
-  model()->Add(CreateTestTemplateURL(u"key1", "http://key1.com", "localguid1",
-                                     base::Time::FromTimeT(10), false, false,
-                                     111));
+  model()->Add(CreateTestTemplateURL(
+      u"key1", "http://key1.com", "localguid1", base::Time::FromTimeT(10),
+      false, TemplateURLData::CreatedByPolicy::kNoPolicy, 111));
 
   // Duplicate keyword, different hostname
-  model()->Add(CreateTestTemplateURL(u"key2", "http://expected.com",
-                                     "localguid2", base::Time::FromTimeT(10),
-                                     false, false, 112));
+  model()->Add(CreateTestTemplateURL(
+      u"key2", "http://expected.com", "localguid2", base::Time::FromTimeT(10),
+      false, TemplateURLData::CreatedByPolicy::kNoPolicy, 112));
 
   // Add
-  model()->Add(CreateTestTemplateURL(u"unique", "http://unique.com",
-                                     "localguid3", base::Time::FromTimeT(10),
-                                     false, false, 113));
+  model()->Add(CreateTestTemplateURL(
+      u"unique", "http://unique.com", "localguid3", base::Time::FromTimeT(10),
+      false, TemplateURLData::CreatedByPolicy::kNoPolicy, 113));
 
   ASSERT_EQ(3U, model()->GetAllSyncData(syncer::SEARCH_ENGINES).size());
   MergeAndExpectNotify(CreateInitialSyncData(), 1);
@@ -735,10 +741,11 @@ TEST_F(TemplateURLServiceSyncTest, MergeAddFromNewerSyncData) {
 
 TEST_F(TemplateURLServiceSyncTest, MergeIgnoresPolicyAndPlayAPIEngines) {
   // Add a policy-created engine.
-  model()->Add(CreateTestTemplateURL(u"key1", "http://key1.com", "localguid1",
-                                     base::Time::FromTimeT(100),
-                                     /*safe_for_autoreplace=*/false,
-                                     /*created_by_policy=*/true));
+  model()->Add(CreateTestTemplateURL(
+      u"key1", "http://key1.com", "localguid1", base::Time::FromTimeT(100),
+      /*safe_for_autoreplace=*/false,
+      /*created_by_policy=*/
+      TemplateURLData::CreatedByPolicy::kDefaultSearchProvider));
 
   {
     auto play_api_engine = CreateTestTemplateURL(
@@ -956,7 +963,8 @@ TEST_F(TemplateURLServiceSyncTest, ProcessChangesWithLocalExtensions) {
   changes.push_back(CreateTestSyncChange(
       syncer::SyncChange::ACTION_ADD,
       CreateTestTemplateURL(u"keyword1", "http://aaa.com", std::string(),
-                            base::Time::FromTimeT(100), true, false, 0)));
+                            base::Time::FromTimeT(100), true,
+                            TemplateURLData::CreatedByPolicy::kNoPolicy, 0)));
   changes.push_back(CreateTestSyncChange(
       syncer::SyncChange::ACTION_ADD,
       CreateTestTemplateURL(u"keyword2", "http://bbb.com")));
@@ -1158,7 +1166,7 @@ TEST_F(TemplateURLServiceSyncTest, MergeTwoClientsDupesAndConflicts) {
 }
 
 TEST_F(TemplateURLServiceSyncTest, StopSyncing) {
-  absl::optional<syncer::ModelError> merge_error =
+  std::optional<syncer::ModelError> merge_error =
       MergeAndExpectNotify(CreateInitialSyncData(), 1);
   ASSERT_FALSE(merge_error.has_value());
   model()->StopSyncing(syncer::SEARCH_ENGINES);
@@ -1169,7 +1177,7 @@ TEST_F(TemplateURLServiceSyncTest, StopSyncing) {
       CreateTestTemplateURL(u"newkeyword", "http://new.com", "guid2")));
   // Because the sync data is never applied locally, there should not be any
   // notification.
-  absl::optional<syncer::ModelError> process_error =
+  std::optional<syncer::ModelError> process_error =
       ProcessAndExpectNotify(changes, 0);
   EXPECT_TRUE(process_error.has_value());
 
@@ -1181,7 +1189,7 @@ TEST_F(TemplateURLServiceSyncTest, StopSyncing) {
 TEST_F(TemplateURLServiceSyncTest, SyncErrorOnInitialSync) {
   processor()->set_erroneous(true);
   // Error happens after local changes are applied, still expect a notify.
-  absl::optional<syncer::ModelError> merge_error =
+  std::optional<syncer::ModelError> merge_error =
       MergeAndExpectNotify(CreateInitialSyncData(), 1);
   EXPECT_TRUE(merge_error.has_value());
 
@@ -1193,7 +1201,7 @@ TEST_F(TemplateURLServiceSyncTest, SyncErrorOnInitialSync) {
       syncer::SyncChange::ACTION_UPDATE,
       CreateTestTemplateURL(u"newkeyword", "http://new.com", "guid2")));
   processor()->set_erroneous(false);
-  absl::optional<syncer::ModelError> process_error =
+  std::optional<syncer::ModelError> process_error =
       ProcessAndExpectNotify(changes, 0);
   EXPECT_TRUE(process_error.has_value());
 
@@ -1205,7 +1213,7 @@ TEST_F(TemplateURLServiceSyncTest, SyncErrorOnInitialSync) {
 TEST_F(TemplateURLServiceSyncTest, SyncErrorOnLaterSync) {
   // Ensure that if the SyncProcessor succeeds in the initial merge, but fails
   // in future ProcessSyncChanges, we still return an error.
-  absl::optional<syncer::ModelError> merge_error =
+  std::optional<syncer::ModelError> merge_error =
       MergeAndExpectNotify(CreateInitialSyncData(), 1);
   ASSERT_FALSE(merge_error.has_value());
 
@@ -1215,7 +1223,7 @@ TEST_F(TemplateURLServiceSyncTest, SyncErrorOnLaterSync) {
       CreateTestTemplateURL(u"newkeyword", "http://new.com", "guid2")));
   processor()->set_erroneous(true);
   // Because changes make it to local before the error, still need to notify.
-  absl::optional<syncer::ModelError> process_error =
+  std::optional<syncer::ModelError> process_error =
       ProcessAndExpectNotify(changes, 1);
   EXPECT_TRUE(process_error.has_value());
 }
@@ -1229,7 +1237,7 @@ TEST_F(TemplateURLServiceSyncTest, MergeTwiceWithSameSyncData) {
   model()->Add(CreateTestTemplateURL(u"key1", "http://key1.com", "guid1",
                                      base::Time::FromTimeT(10)));  // earlier
 
-  absl::optional<syncer::ModelError> error =
+  std::optional<syncer::ModelError> error =
       MergeAndExpectNotify(initial_data, 1);
   ASSERT_FALSE(error.has_value());
 
@@ -1331,7 +1339,7 @@ TEST_F(TemplateURLServiceSyncTest, DefaultGuidDeletedBeforeNewDSPArrives) {
   data.safe_for_autoreplace = false;
   data.date_created = Time::FromTimeT(100);
   data.last_modified = Time::FromTimeT(100);
-  data.created_by_policy = false;
+  data.created_by_policy = TemplateURLData::CreatedByPolicy::kNoPolicy;
   data.prepopulate_id = 999999;
   data.sync_guid = "guid2";
   std::unique_ptr<TemplateURL> turl2(new TemplateURL(data));
@@ -1380,13 +1388,100 @@ TEST_F(TemplateURLServiceSyncTest, DefaultGuidDeletedBeforeNewDSPArrives) {
       syncer::SyncChange::ACTION_ADD,
       CreateTestTemplateURL(u"new", "http://new.com/{searchTerms}",
                             "newdefault")));
-  // When the default changes, a second notify is triggered.
+
+  // When the default changes, a second notify is triggered and the previous
+  // default search engine has been deleted.
+  ProcessAndExpectNotifyAtLeast(changes2);
+
+  EXPECT_EQ(2U, model()->GetAllSyncData(syncer::SEARCH_ENGINES).size());
+  EXPECT_EQ("newdefault", model()->GetDefaultSearchProvider()->sync_guid());
+  EXPECT_EQ("newdefault", GetDefaultSearchProviderPrefValue(
+                              *profile_a()->GetTestingPrefService()));
+  EXPECT_THAT(model()->GetTemplateURLForGUID("guid1"), IsNull());
+}
+
+TEST_F(TemplateURLServiceSyncTest,
+       DefaultGuidDeletedAndUpdatedBeforeNewDSPArrives) {
+  syncer::SyncDataList initial_data;
+  // The default search provider should support replacement.
+  std::unique_ptr<TemplateURL> turl1 =
+      CreateTestTemplateURL(u"key1", "http://key1.com/{searchTerms}", "guid1",
+                            base::Time::FromTimeT(90));
+  // Create a second default search provider for the
+  // FindNewDefaultSearchProvider method to find.
+  TemplateURLData data;
+  data.SetShortName(u"unittest");
+  data.SetKeyword(u"key2");
+  data.SetURL("http://key2.com/{searchTerms}");
+  data.favicon_url = GURL("http://favicon.url");
+  data.safe_for_autoreplace = false;
+  data.date_created = Time::FromTimeT(100);
+  data.last_modified = Time::FromTimeT(100);
+  data.created_by_policy = TemplateURLData::CreatedByPolicy::kNoPolicy;
+  data.prepopulate_id = 999999;
+  data.sync_guid = "guid2";
+  std::unique_ptr<TemplateURL> turl2(new TemplateURL(data));
+  initial_data.push_back(
+      TemplateURLService::CreateSyncDataFromTemplateURL(*turl1));
+  initial_data.push_back(
+      TemplateURLService::CreateSyncDataFromTemplateURL(*turl2));
+  MergeAndExpectNotify(initial_data, 1);
+  model()->SetUserSelectedDefaultSearchProvider(
+      model()->GetTemplateURLForGUID("guid1"));
+  ASSERT_EQ("guid1", model()->GetDefaultSearchProvider()->sync_guid());
+
+  ASSERT_EQ(2U, model()->GetAllSyncData(syncer::SEARCH_ENGINES).size());
+  const TemplateURL* default_search = model()->GetDefaultSearchProvider();
+  ASSERT_THAT(default_search, NotNull());
+
+  // Change kSyncedDefaultSearchProviderGUID to a GUID that does not exist in
+  // the model yet. Ensure that the default has not changed in any way.
+  auto* prefs = profile_a()->GetTestingPrefService();
+  ASSERT_THAT(prefs, NotNull());
+  SetDefaultSearchProviderPrefValue(*prefs, "newdefault");
+
+  ASSERT_EQ("guid1", model()->GetDefaultSearchProvider()->sync_guid());
+  ASSERT_EQ("newdefault", GetDefaultSearchProviderPrefValue(
+                              *profile_a()->GetTestingPrefService()));
+
+  // Simulate a situation where an ACTION_DELETE on the default arrives before
+  // the new default search provider entry. This should fail to delete the
+  // target entry. The synced default GUID should not be changed so that when
+  // the expected default entry arrives, it can still be set as the default.
+  syncer::SyncChangeList changes1;
+  changes1.push_back(CreateTestSyncChange(syncer::SyncChange::ACTION_DELETE,
+                                          std::move(turl1)));
+  ProcessAndExpectNotify(changes1, 0);
+
+  ASSERT_TRUE(model()->GetTemplateURLForKeyword(u"key1"));
+  ASSERT_EQ(2U, model()->GetAllSyncData(syncer::SEARCH_ENGINES).size());
+  ASSERT_EQ("guid1", model()->GetDefaultSearchProvider()->sync_guid());
+  ASSERT_EQ("newdefault", GetDefaultSearchProviderPrefValue(
+                              *profile_a()->GetTestingPrefService()));
+
+  // Update the default search engine before a new search engine arrives.
+  TemplateURL* existing_turl = model()->GetTemplateURLForGUID("guid1");
+  ASSERT_EQ(existing_turl, default_search);
+  model()->ResetTemplateURL(existing_turl, existing_turl->short_name(),
+                            /*keyword=*/u"k", existing_turl->url());
+
+  // Finally, bring in the expected entry with the right GUID. Ensure that
+  // the default has changed to the new search engine.
+  syncer::SyncChangeList changes2;
+  changes2.push_back(CreateTestSyncChange(
+      syncer::SyncChange::ACTION_ADD,
+      CreateTestTemplateURL(u"new", "http://new.com/{searchTerms}",
+                            "newdefault")));
+
+  // When the default changes, a second notify is triggered and the previous
+  // default search engine should be kept.
   ProcessAndExpectNotifyAtLeast(changes2);
 
   EXPECT_EQ(3U, model()->GetAllSyncData(syncer::SEARCH_ENGINES).size());
   EXPECT_EQ("newdefault", model()->GetDefaultSearchProvider()->sync_guid());
   EXPECT_EQ("newdefault", GetDefaultSearchProviderPrefValue(
                               *profile_a()->GetTestingPrefService()));
+  EXPECT_THAT(model()->GetTemplateURLForGUID("guid1"), NotNull());
 }
 
 TEST_F(TemplateURLServiceSyncTest, SyncedDefaultArrivesAfterStartup) {
@@ -1800,7 +1895,8 @@ TEST_F(TemplateURLServiceSyncTest, PreSyncUpdates) {
   // Fetch the prepopulate search engines so we know what they are.
   std::vector<std::unique_ptr<TemplateURLData>> prepop_turls =
       TemplateURLPrepopulateData::GetPrepopulatedEngines(
-          profile_a()->GetTestingPrefService(), nullptr);
+          profile_a()->GetTestingPrefService(),
+          test_util_a_->search_engine_choice_service(), nullptr);
 
   std::vector<std::unique_ptr<TemplateURLData>> starter_pack_turls =
       TemplateURLStarterPackData::GetStarterPackEngines();
@@ -2028,7 +2124,9 @@ TEST_F(TemplateURLServiceSyncTest, MergeInSyncTemplateURL) {
 
 TEST_F(TemplateURLServiceSyncTest, MergePrepopulatedEngine) {
   std::unique_ptr<TemplateURLData> default_turl(
-      TemplateURLPrepopulateData::GetPrepopulatedDefaultSearch(nullptr));
+      TemplateURLPrepopulateData::GetPrepopulatedDefaultSearch(
+          /*prefs=*/nullptr,
+          /*search_engine_choice_service=*/nullptr));
 
   // Merge with an initial list containing a prepopulated engine with a wrong
   // URL.
@@ -2051,7 +2149,9 @@ TEST_F(TemplateURLServiceSyncTest, AddPrepopulatedEngine) {
                                     syncer::SyncDataList(), PassProcessor());
 
   std::unique_ptr<TemplateURLData> default_turl(
-      TemplateURLPrepopulateData::GetPrepopulatedDefaultSearch(nullptr));
+      TemplateURLPrepopulateData::GetPrepopulatedDefaultSearch(
+          /*prefs=*/nullptr,
+          /*search_engine_choice_service=*/nullptr));
   std::unique_ptr<TemplateURL> sync_turl = CopyTemplateURL(
       default_turl.get(), "http://wrong.url.com?q={searchTerms}", "default");
 
@@ -2070,7 +2170,9 @@ TEST_F(TemplateURLServiceSyncTest, AddPrepopulatedEngine) {
 
 TEST_F(TemplateURLServiceSyncTest, UpdatePrepopulatedEngine) {
   std::unique_ptr<TemplateURLData> default_turl(
-      TemplateURLPrepopulateData::GetPrepopulatedDefaultSearch(nullptr));
+      TemplateURLPrepopulateData::GetPrepopulatedDefaultSearch(
+          /*prefs=*/nullptr,
+          /*search_engine_choice_service=*/nullptr));
 
   TemplateURLData data = *default_turl;
   data.SetURL("http://old.wrong.url.com?q={searchTerms}");
@@ -2100,7 +2202,9 @@ TEST_F(TemplateURLServiceSyncTest, UpdatePrepopulatedEngine) {
 
 TEST_F(TemplateURLServiceSyncTest, MergeEditedPrepopulatedEngine) {
   std::unique_ptr<TemplateURLData> default_turl(
-      TemplateURLPrepopulateData::GetPrepopulatedDefaultSearch(nullptr));
+      TemplateURLPrepopulateData::GetPrepopulatedDefaultSearch(
+          /*prefs=*/nullptr,
+          /*search_engine_choice_service=*/nullptr));
 
   TemplateURLData data(*default_turl);
   data.safe_for_autoreplace = false;
@@ -2128,7 +2232,9 @@ TEST_F(TemplateURLServiceSyncTest, MergeEditedPrepopulatedEngine) {
 
 TEST_F(TemplateURLServiceSyncTest, MergeConflictingPrepopulatedEngine) {
   std::unique_ptr<TemplateURLData> default_turl(
-      TemplateURLPrepopulateData::GetPrepopulatedDefaultSearch(nullptr));
+      TemplateURLPrepopulateData::GetPrepopulatedDefaultSearch(
+          /*prefs=*/nullptr,
+          /*search_engine_choice_service=*/nullptr));
 
   TemplateURLData data(*default_turl);
   data.SetKeyword(u"old_kw");
@@ -2190,7 +2296,9 @@ TEST_F(TemplateURLServiceSyncTest, MergeConflictingPrepopulatedEngine) {
 
 TEST_F(TemplateURLServiceSyncTest, MergePrepopulatedEngineWithChangedKeyword) {
   const TemplateURLData default_data =
-      *TemplateURLPrepopulateData::GetPrepopulatedDefaultSearch(nullptr);
+      *TemplateURLPrepopulateData::GetPrepopulatedDefaultSearch(
+          /*prefs=*/nullptr,
+          /*search_engine_choice_service=*/nullptr);
 
   // Add a prepopulated search engine and mark it as default.
   model()->Add(std::make_unique<TemplateURL>(default_data));
@@ -2240,7 +2348,9 @@ TEST_F(TemplateURLServiceSyncTest, MergePrepopulatedEngineWithChangedKeyword) {
 
 TEST_F(TemplateURLServiceSyncTest, MergePrepopulatedEngine_Pref_Change_Add) {
   const TemplateURLData default_data =
-      *TemplateURLPrepopulateData::GetPrepopulatedDefaultSearch(nullptr);
+      *TemplateURLPrepopulateData::GetPrepopulatedDefaultSearch(
+          /*prefs=*/nullptr,
+          /*search_engine_choice_service=*/nullptr);
 
   // Add a prepopulated search engine and mark it as default.
   model()->Add(std::make_unique<TemplateURL>(default_data));
@@ -2309,7 +2419,9 @@ TEST_F(TemplateURLServiceSyncTest, MergePrepopulatedEngine_Pref_Change_Add) {
 
 TEST_F(TemplateURLServiceSyncTest, MergePrepopulatedEngine_Pref_Add_Change) {
   const TemplateURLData default_data =
-      *TemplateURLPrepopulateData::GetPrepopulatedDefaultSearch(nullptr);
+      *TemplateURLPrepopulateData::GetPrepopulatedDefaultSearch(
+          /*prefs=*/nullptr,
+          /*search_engine_choice_service=*/nullptr);
 
   // Add a prepopulated search engine and mark it as default.
   model()->Add(std::make_unique<TemplateURL>(default_data));
@@ -2378,7 +2490,9 @@ TEST_F(TemplateURLServiceSyncTest, MergePrepopulatedEngine_Pref_Add_Change) {
 
 TEST_F(TemplateURLServiceSyncTest, MergePrepopulatedEngine_Change_Add_Pref) {
   const TemplateURLData default_data =
-      *TemplateURLPrepopulateData::GetPrepopulatedDefaultSearch(nullptr);
+      *TemplateURLPrepopulateData::GetPrepopulatedDefaultSearch(
+          /*prefs=*/nullptr,
+          /*search_engine_choice_service=*/nullptr);
 
   // Add a prepopulated search engine and mark it as default.
   model()->Add(std::make_unique<TemplateURL>(default_data));
@@ -2447,7 +2561,9 @@ TEST_F(TemplateURLServiceSyncTest, MergePrepopulatedEngine_Change_Add_Pref) {
 
 TEST_F(TemplateURLServiceSyncTest, MergePrepopulatedEngine_Add_Change_Pref) {
   const TemplateURLData default_data =
-      *TemplateURLPrepopulateData::GetPrepopulatedDefaultSearch(nullptr);
+      *TemplateURLPrepopulateData::GetPrepopulatedDefaultSearch(
+          /*prefs=*/nullptr,
+          /*search_engine_choice_service=*/nullptr);
 
   // Add a prepopulated search engine and mark it as default.
   model()->Add(std::make_unique<TemplateURL>(default_data));
@@ -2516,7 +2632,9 @@ TEST_F(TemplateURLServiceSyncTest, MergePrepopulatedEngine_Add_Change_Pref) {
 
 TEST_F(TemplateURLServiceSyncTest, MergeNonEditedPrepopulatedEngine) {
   std::unique_ptr<TemplateURLData> default_turl(
-      TemplateURLPrepopulateData::GetPrepopulatedDefaultSearch(nullptr));
+      TemplateURLPrepopulateData::GetPrepopulatedDefaultSearch(
+          /*prefs=*/nullptr,
+          /*search_engine_choice_service=*/nullptr));
 
   TemplateURLData data(*default_turl);
   data.safe_for_autoreplace = true;  // Can be replaced with built-in values.
@@ -2550,13 +2668,59 @@ TEST_F(TemplateURLServiceSyncTest, MergePrepopulatedEngineIgnoresId0) {
 
   // Try to merge in a turl with preopulate_id also set to 0. This should work.
   syncer::SyncDataList initial_data;
-  std::unique_ptr<TemplateURL> turl(CreateTestTemplateURL(
-      u"what", "http://thewhat.com/{searchTerms}", "normal_guid",
-      base::Time::FromTimeT(10), true, false, 0));
+  std::unique_ptr<TemplateURL> turl(
+      CreateTestTemplateURL(u"what", "http://thewhat.com/{searchTerms}",
+                            "normal_guid", base::Time::FromTimeT(10), true,
+                            TemplateURLData::CreatedByPolicy::kNoPolicy, 0));
   initial_data.push_back(
       TemplateURLService::CreateSyncDataFromTemplateURL(*turl));
 
   MergeAndExpectNotify(initial_data, 1);
+}
+
+TEST_F(TemplateURLServiceSyncTest, MergeStarterPackEngine) {
+  // Create a starter pack engine to ensure it is merged correctly.
+  TemplateURLData data;
+  data.SetShortName(u"Bookmarks");
+  data.SetKeyword(u"@bookmarks");
+  data.SetURL("chrome://bookmarks/?q={searchTerms}");
+  data.starter_pack_id = TemplateURLStarterPackData::kBookmarks;
+  data.date_created = Time::FromTimeT(100);
+  data.last_modified = Time::FromTimeT(100);
+  data.sync_guid = "bookmarks_guid";
+
+  // Create another starter pack engine with an invalid starter pack id. This
+  // should not be merged into the model.
+  TemplateURLData invalid_data;
+  invalid_data.SetShortName(u"Invalid starter pack");
+  invalid_data.SetKeyword(u"@invalid");
+  invalid_data.SetURL("chrome://bookmarks/?q={searchTerms}");
+  invalid_data.starter_pack_id = TemplateURLStarterPackData::kMaxStarterPackID;
+  invalid_data.date_created = Time::FromTimeT(100);
+  invalid_data.last_modified = Time::FromTimeT(100);
+  invalid_data.sync_guid = "invalid_guid";
+
+  syncer::SyncDataList list{
+      TemplateURLService::CreateSyncDataFromTemplateURL(TemplateURL(data)),
+      TemplateURLService::CreateSyncDataFromTemplateURL(
+          TemplateURL(invalid_data))};
+  model()->MergeDataAndStartSyncing(syncer::SEARCH_ENGINES, list,
+                                    PassProcessor());
+
+  // Ensure that the @bookmarks engine gets merged correctly.
+  const TemplateURL* result_turl =
+      model()->GetTemplateURLForGUID("bookmarks_guid");
+  EXPECT_TRUE(result_turl);
+  EXPECT_EQ(data.keyword(), result_turl->keyword());
+  EXPECT_EQ(data.short_name(), result_turl->short_name());
+  EXPECT_EQ(data.url(), result_turl->url());
+  EXPECT_EQ(data.starter_pack_id, result_turl->starter_pack_id());
+
+  // The @invalid entry has an invalid starter pack ID, ensure that it gets
+  // thrown out when received from sync.
+  const TemplateURL* invalid_result_turl =
+      model()->GetTemplateURLForGUID("invalid_guid");
+  EXPECT_FALSE(invalid_result_turl);
 }
 
 TEST_F(TemplateURLServiceSyncTest, GUIDUpdatedOnDefaultSearchChange) {

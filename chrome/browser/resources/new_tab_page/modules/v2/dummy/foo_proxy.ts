@@ -2,7 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {FooHandler, FooHandlerRemote} from '../../../foo.mojom-webui.js';
+import type {FooHandlerRemote} from '../../../foo.mojom-webui.js';
+import {FooHandler} from '../../../foo.mojom-webui.js';
 
 /**
  * @fileoverview This file provides a class that exposes the Mojo handler

@@ -45,7 +45,7 @@ FuzzerEnvironment::FuzzerEnvironment(int argc, const char* const* argv)
       fuzzer_thread_("fuzzer_thread") {
   TestTimeouts::Initialize();
 
-  logging::SetMinLogLevel(logging::LOG_FATAL);
+  logging::SetMinLogLevel(logging::LOGGING_FATAL);
   mojo::core::Init();
   base::i18n::InitializeICU();
 
@@ -91,5 +91,14 @@ void RenderViewHostTestHarnessAdapter::SetUp() {
 void RenderViewHostTestHarnessAdapter::TearDown() {
   RenderViewHostTestHarness::TearDown();
 }
+
+BrowserTaskEnvironment* RenderViewHostTestHarnessAdapter::task_environment() {
+  return RenderViewHostTestHarness::task_environment();
+}
+
+BrowserContext* RenderViewHostTestHarnessAdapter::browser_context() {
+  return RenderViewHostTestHarness::browser_context();
+}
+
 }  // namespace mojolpm
 }  // namespace content

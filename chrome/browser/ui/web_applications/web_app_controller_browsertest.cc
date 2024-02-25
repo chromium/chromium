@@ -29,6 +29,7 @@
 #include "chrome/browser/web_applications/web_app_install_info.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_ui_manager.h"
+#include "chrome/browser/web_applications/web_app_utils.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
@@ -50,6 +51,10 @@
 #include "chromeos/ash/components/standalone_browser/feature_refs.h"
 #endif
 
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+#include "chromeos/startup/browser_params_proxy.h"
+#endif
+
 namespace web_app {
 
 WebAppControllerBrowserTest::WebAppControllerBrowserTest()
@@ -68,7 +73,6 @@ WebAppControllerBrowserTest::WebAppControllerBrowserTest(
   os_hooks_suppress_.emplace();
   std::vector<base::test::FeatureRef> all_disabled_features = disabled_features;
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  // TODO(crbug.com/1462253): Also test with Lacros flags enabled.
   base::Extend(all_disabled_features,
                ash::standalone_browser::GetFeatureRefs());
 #endif
@@ -88,7 +92,7 @@ Profile* WebAppControllerBrowserTest::profile() {
   return browser()->profile();
 }
 
-AppId WebAppControllerBrowserTest::InstallPWA(const GURL& start_url) {
+webapps::AppId WebAppControllerBrowserTest::InstallPWA(const GURL& start_url) {
   auto web_app_info = std::make_unique<WebAppInstallInfo>();
   web_app_info->start_url = start_url;
   web_app_info->scope = start_url.GetWithoutFilename();
@@ -97,27 +101,29 @@ AppId WebAppControllerBrowserTest::InstallPWA(const GURL& start_url) {
   return web_app::test::InstallWebApp(profile(), std::move(web_app_info));
 }
 
-AppId WebAppControllerBrowserTest::InstallWebApp(
+webapps::AppId WebAppControllerBrowserTest::InstallWebApp(
     std::unique_ptr<WebAppInstallInfo> web_app_info) {
   return web_app::test::InstallWebApp(profile(), std::move(web_app_info));
 }
 
-void WebAppControllerBrowserTest::UninstallWebApp(const AppId& app_id) {
+void WebAppControllerBrowserTest::UninstallWebApp(
+    const webapps::AppId& app_id) {
   web_app::test::UninstallWebApp(profile(), app_id);
 }
 
-Browser* WebAppControllerBrowserTest::LaunchWebAppBrowser(const AppId& app_id) {
+Browser* WebAppControllerBrowserTest::LaunchWebAppBrowser(
+    const webapps::AppId& app_id) {
   return web_app::LaunchWebAppBrowser(profile(), app_id);
 }
 
 Browser* WebAppControllerBrowserTest::LaunchWebAppBrowserAndWait(
-    const AppId& app_id) {
+    const webapps::AppId& app_id) {
   return web_app::LaunchWebAppBrowserAndWait(profile(), app_id);
 }
 
 Browser*
 WebAppControllerBrowserTest::LaunchWebAppBrowserAndAwaitInstallabilityCheck(
-    const AppId& app_id) {
+    const webapps::AppId& app_id) {
   Browser* browser = web_app::LaunchWebAppBrowserAndWait(profile(), app_id);
   webapps::TestAppBannerManagerDesktop::FromWebContents(
       browser->tab_strip_model()->GetActiveWebContents())
@@ -126,7 +132,7 @@ WebAppControllerBrowserTest::LaunchWebAppBrowserAndAwaitInstallabilityCheck(
 }
 
 Browser* WebAppControllerBrowserTest::LaunchBrowserForWebAppInTab(
-    const AppId& app_id) {
+    const webapps::AppId& app_id) {
   return web_app::LaunchBrowserForWebAppInTab(profile(), app_id);
 }
 
@@ -139,7 +145,7 @@ content::WebContents* WebAppControllerBrowserTest::OpenWindow(
   EXPECT_TRUE(new_contents);
   WaitForLoadStop(new_contents);
 
-  EXPECT_EQ(url, new_contents->GetLastCommittedURL());
+  EXPECT_EQ(url, contents->GetController().GetLastCommittedEntry()->GetURL());
   EXPECT_EQ(
       content::PAGE_TYPE_NORMAL,
       new_contents->GetController().GetLastCommittedEntry()->GetPageType());
@@ -165,7 +171,7 @@ bool WebAppControllerBrowserTest::NavigateAndAwaitInstallabilityCheck(
     const GURL& url) {
   auto* manager = webapps::TestAppBannerManagerDesktop::FromWebContents(
       browser->tab_strip_model()->GetActiveWebContents());
-  NavigateToURLAndWait(browser, url);
+  EXPECT_TRUE(ui_test_utils::NavigateToURL(browser, url));
   return manager->WaitForInstallableCheck();
 }
 
@@ -179,13 +185,40 @@ WebAppControllerBrowserTest::NavigateInNewWindowAndAwaitInstallabilityCheck(
   return new_browser;
 }
 
-absl::optional<AppId> WebAppControllerBrowserTest::FindAppWithUrlInScope(
-    const GURL& url) {
+std::optional<webapps::AppId>
+WebAppControllerBrowserTest::FindAppWithUrlInScope(const GURL& url) {
   return provider().registrar_unsafe().FindAppWithUrlInScope(url);
 }
 
+Browser* WebAppControllerBrowserTest::OpenPopupAndWait(
+    Browser* browser,
+    const GURL& url,
+    const gfx::Size& popup_size) {
+  content::WebContents* const web_contents =
+      browser->tab_strip_model()->GetActiveWebContents();
+
+  ui_test_utils::BrowserChangeObserver browser_change_observer(
+      nullptr, ui_test_utils::BrowserChangeObserver::ChangeType::kAdded);
+  std::string open_window_script = base::StringPrintf(
+      "window.open('%s', '_blank', 'toolbar=none,width=%i,height=%i')",
+      url.spec().c_str(), popup_size.width(), popup_size.height());
+
+  EXPECT_TRUE(content::ExecJs(web_contents, open_window_script));
+
+  // The navigation should happen in a new window.
+  Browser* popup_browser = browser_change_observer.Wait();
+  EXPECT_NE(browser, popup_browser);
+
+  content::WebContents* popup_contents =
+      popup_browser->tab_strip_model()->GetActiveWebContents();
+  EXPECT_TRUE(content::WaitForLoadStop(popup_contents));
+  EXPECT_EQ(popup_contents->GetLastCommittedURL(), url);
+
+  return popup_browser;
+}
+
 content::WebContents* WebAppControllerBrowserTest::OpenApplication(
-    const AppId& app_id) {
+    const webapps::AppId& app_id) {
   ui_test_utils::UrlLoadObserver url_observer(
       provider().registrar_unsafe().GetAppStartUrl(app_id),
       content::NotificationService::AllSources());
@@ -241,6 +274,12 @@ void WebAppControllerBrowserTest::TearDownOnMainThread() {
     base::TimeDelta log_time = base::TimeTicks::Now() - start_time_;
     test::LogDebugInfoToConsole(profile_manager->GetLoadedProfiles(), log_time);
   }
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  if (!chromeos::BrowserParamsProxy::IsCrosapiDisabledForTesting()) {
+    // Make sure all ash browser UI are closed before the test tears down.
+    CloseAllAshBrowserWindows();
+  }
+#endif
   InProcessBrowserTest::TearDownOnMainThread();
 }
 
@@ -252,6 +291,12 @@ void WebAppControllerBrowserTest::SetUpCommandLine(
 }
 
 void WebAppControllerBrowserTest::SetUpOnMainThread() {
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  if (!chromeos::BrowserParamsProxy::IsCrosapiDisabledForTesting()) {
+    CHECK(IsWebAppsCrosapiEnabled());
+  }
+#endif
+
   InProcessBrowserTest::SetUpOnMainThread();
   host_resolver()->AddRule("*", "127.0.0.1");
   ASSERT_TRUE(https_server()->Start());

@@ -8,6 +8,7 @@
 #include <cstddef>
 #include <map>
 #include <memory>
+#include <optional>
 #include <string>
 #include <tuple>
 #include <utility>
@@ -19,11 +20,11 @@
 #include "base/time/default_clock.h"
 #include "base/time/default_tick_clock.h"
 #include "base/time/time.h"
+#include "base/values.h"
 #include "net/base/net_export.h"
 #include "net/base/network_anonymization_key.h"
 #include "net/dns/public/dns_query_type.h"
 #include "net/dns/public/host_resolver_source.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace net {
 
@@ -34,14 +35,14 @@ class NET_EXPORT HostResolverCache final {
  public:
   struct StaleLookupResult {
     StaleLookupResult(const HostResolverInternalResult& result,
-                      absl::optional<base::TimeDelta> expired_by,
+                      std::optional<base::TimeDelta> expired_by,
                       bool stale_by_generation);
     ~StaleLookupResult() = default;
 
     const raw_ref<const HostResolverInternalResult> result;
 
     // Time since the result's TTL has expired. nullopt if not expired.
-    const absl::optional<base::TimeDelta> expired_by;
+    const std::optional<base::TimeDelta> expired_by;
 
     // True if result is stale due to a call to
     // HostResolverCache::MakeAllResultsStale().
@@ -65,7 +66,7 @@ class NET_EXPORT HostResolverCache final {
 
   // Lookup an active (non-stale) cached result matching the given criteria. If
   // `query_type` is `DnsQueryType::UNSPECIFIED`, `source` is
-  // `HostResolverSource::ANY`, or `secure` is `absl::nullopt`, it is a wildcard
+  // `HostResolverSource::ANY`, or `secure` is `std::nullopt`, it is a wildcard
   // that can match for any cached parameter of that type. In cases where a
   // wildcard lookup leads to multiple matching results, only one result will be
   // returned, preferring first the most secure result and then the most
@@ -80,7 +81,7 @@ class NET_EXPORT HostResolverCache final {
       const NetworkAnonymizationKey& network_anonymization_key,
       DnsQueryType query_type = DnsQueryType::UNSPECIFIED,
       HostResolverSource source = HostResolverSource::ANY,
-      absl::optional<bool> secure = absl::nullopt) const;
+      std::optional<bool> secure = std::nullopt) const;
 
   // Lookup a cached result matching the given criteria. Unlike Lookup(), may
   // return stale results. In cases where a wildcard lookup leads to multiple
@@ -95,12 +96,12 @@ class NET_EXPORT HostResolverCache final {
   //
   // Returns nullopt on cache miss (no active or stale result matches the given
   // criteria).
-  absl::optional<StaleLookupResult> LookupStale(
+  std::optional<StaleLookupResult> LookupStale(
       base::StringPiece domain_name,
       const NetworkAnonymizationKey& network_anonymization_key,
       DnsQueryType query_type = DnsQueryType::UNSPECIFIED,
       HostResolverSource source = HostResolverSource::ANY,
-      absl::optional<bool> secure = absl::nullopt) const;
+      std::optional<bool> secure = std::nullopt) const;
 
   // Sets the result into the cache, replacing any previous result entries that
   // would match the same criteria, even if a previous entry would have matched
@@ -115,6 +116,34 @@ class NET_EXPORT HostResolverCache final {
   // change to ensure cached results are only considered active for the current
   // network.
   void MakeAllResultsStale();
+
+  // Serialization to later be deserialized. Only serializes the results likely
+  // to still be of value after serialization and deserialization, that is that
+  // results with a transient anonymization key are not included.
+  //
+  // Used to implement cronet::HostCachePersistenceManager, but no assumptions
+  // are made here that this is Cronet-only functionality.
+  base::Value Serialize() const;
+
+  // Deserialize value received from Serialize(). Results already contained in
+  // the cache are preferred, thus deserialized results are ignored if any
+  // previous result entries would match the same criteria, and deserialization
+  // stops on reaching max size, rather than evicting anything. Deserialized
+  // results are also always considered stale by generation.
+  //
+  // Returns false if `value` is malformed to be deserialized.
+  //
+  // Used to implement cronet::HostCachePersistenceManager, but no assumptions
+  // are made here that this is Cronet-only functionality.
+  bool RestoreFromValue(const base::Value& value);
+
+  // Serialize for output to debug logs, e.g. netlog. Serializes all results,
+  // including those with transient anonymization keys, and also serializes
+  // cache-wide data. Incompatible with base::Values returned from Serialize(),
+  // and cannot be used in RestoreFromValue().
+  base::Value SerializeForLogging() const;
+
+  bool AtMaxSizeForTesting() const { return entries_.size() >= max_entries_; }
 
  private:
   struct Key {
@@ -187,9 +216,25 @@ class NET_EXPORT HostResolverCache final {
       const NetworkAnonymizationKey& network_anonymization_key,
       DnsQueryType query_type,
       HostResolverSource source,
-      absl::optional<bool> secure) const;
+      std::optional<bool> secure) const;
+
+  void Set(std::unique_ptr<HostResolverInternalResult> result,
+           const NetworkAnonymizationKey& network_anonymization_key,
+           HostResolverSource source,
+           bool secure,
+           bool replace_existing,
+           int staleness_generation);
 
   void EvictEntries();
+
+  // If `require_persistable_anonymization_key` is true, will not serialize
+  // any entries that do not have an anonymization key that supports
+  // serialization and restoration. If false, will serialize all entries, but
+  // the result may contain anonymization keys that are malformed for
+  // restoration.
+  base::Value SerializeEntries(
+      bool serialize_staleness_generation,
+      bool require_persistable_anonymization_key) const;
 
   EntryMap entries_;
   size_t max_entries_;

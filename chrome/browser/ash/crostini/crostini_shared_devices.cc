@@ -145,7 +145,7 @@ void CrostiniSharedDevices::OnUpdateContainerDevices(
     const guest_os::GuestId container_id,
     base::Value::Dict next_shared_devices,
     ResultCallback callback,
-    absl::optional<vm_tools::cicerone::UpdateContainerDevicesResponse>
+    std::optional<vm_tools::cicerone::UpdateContainerDevicesResponse>
         response) {
   bool success = true;
   if (!response.has_value()) {

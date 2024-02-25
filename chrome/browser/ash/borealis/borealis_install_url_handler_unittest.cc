@@ -10,6 +10,7 @@
 #include "chrome/browser/ash/borealis/borealis_service.h"
 #include "chrome/browser/ash/borealis/borealis_service_fake.h"
 #include "chrome/browser/ash/borealis/borealis_util.h"
+#include "chrome/browser/ash/borealis/borealis_window_manager.h"
 #include "chrome/browser/ash/borealis/testing/features.h"
 #include "chrome/browser/ash/guest_os/guest_os_external_protocol_handler.h"
 #include "chrome/browser/platform_util.h"
@@ -54,11 +55,14 @@ class BorealisInstallUrlHandlerTest : public testing::Test {
 
   void SetUp() override {
     test_features_ = std::make_unique<BorealisFeatures>(&profile_);
+    borealis_window_manager_ =
+        std::make_unique<BorealisWindowManager>(&profile_);
     install_url_handler_ =
         std::make_unique<BorealisInstallUrlHandler>(&profile_);
     fake_service_ = BorealisServiceFake::UseFakeForTesting(&profile_);
     fake_service_->SetFeaturesForTesting(test_features_.get());
     fake_service_->SetAppLauncherForTesting(&app_launcher_);
+    fake_service_->SetWindowManagerForTesting(borealis_window_manager_.get());
 
     scoped_allowance_ =
         std::make_unique<ScopedAllowBorealis>(&profile_, /*also_enable=*/false);
@@ -70,9 +74,10 @@ class BorealisInstallUrlHandlerTest : public testing::Test {
   content::BrowserTaskEnvironment task_environment_;
   TestingProfile profile_;
   std::unique_ptr<BorealisFeatures> test_features_;
+  std::unique_ptr<BorealisWindowManager> borealis_window_manager_;
   testing::NaggyMock<BorealisAppLauncherMock> app_launcher_;
   std::unique_ptr<BorealisInstallUrlHandler> install_url_handler_;
-  raw_ptr<BorealisServiceFake, ExperimentalAsh> fake_service_;
+  raw_ptr<BorealisServiceFake> fake_service_;
   std::unique_ptr<ScopedAllowBorealis> scoped_allowance_;
 };
 

@@ -30,8 +30,9 @@ public class WebContentsDarkModeController {
      */
     public static boolean isEnabledForUrl(BrowserContextHandle browserContextHandle, GURL url) {
         @ContentSettingValues
-        int contentSetting = WebsitePreferenceBridge.getContentSetting(
-                browserContextHandle, ContentSettingsType.AUTO_DARK_WEB_CONTENT, url, url);
+        int contentSetting =
+                WebsitePreferenceBridge.getContentSetting(
+                        browserContextHandle, ContentSettingsType.AUTO_DARK_WEB_CONTENT, url, url);
         return contentSetting != ContentSettingValues.BLOCK;
     }
 
@@ -47,15 +48,19 @@ public class WebContentsDarkModeController {
         // menu. The app menu item should only be visible (and thus clickable) if Auto Dark is
         // enabled. If it is enabled, the default content setting should be ALLOW.
         assert WebsitePreferenceBridge.getDefaultContentSetting(
-                browserContextHandle, ContentSettingsType.AUTO_DARK_WEB_CONTENT)
+                        browserContextHandle, ContentSettingsType.AUTO_DARK_WEB_CONTENT)
                 == ContentSettingValues.ALLOW;
 
         @ContentSettingValues
         int contentSettingValue =
                 enabled ? ContentSettingValues.DEFAULT : ContentSettingValues.BLOCK;
 
-        WebsitePreferenceBridge.setContentSettingDefaultScope(browserContextHandle,
-                ContentSettingsType.AUTO_DARK_WEB_CONTENT, url, url, contentSettingValue);
+        WebsitePreferenceBridge.setContentSettingDefaultScope(
+                browserContextHandle,
+                ContentSettingsType.AUTO_DARK_WEB_CONTENT,
+                url,
+                url,
+                contentSettingValue);
         AutoDarkMetrics.recordAutoDarkSettingsChangeSource(
                 AutoDarkSettingsChangeSource.APP_MENU, enabled);
     }
@@ -105,8 +110,9 @@ public class WebContentsDarkModeController {
      */
     public static void recordAutoDarkUkm(WebContents webContents, boolean enabled) {
         if (enabled) return;
-        new UkmRecorder.Bridge().recordEventWithBooleanMetric(
-                webContents, "Android.DarkTheme.AutoDarkMode", "DisabledByUser");
+        new UkmRecorder.Bridge()
+                .recordEventWithBooleanMetric(
+                        webContents, "Android.DarkTheme.AutoDarkMode", "DisabledByUser");
     }
 
     /**

@@ -66,7 +66,7 @@ FDCopier::FDCopier(scoped_refptr<storage::FileSystemContext> fs_context,
                                                     0,
                                                     INT64_MAX,
                                                     base::Time())),
-      buffer_(base::MakeRefCounted<net::IOBuffer>(kBufferLen)),
+      buffer_(base::MakeRefCounted<net::IOBufferWithSize>(kBufferLen)),
       scoped_fd_(std::move(scoped_fd)),
       callback_(std::move(callback)) {}
 

@@ -60,7 +60,7 @@ class FingerprintStorage final
 
   // feature_usage::FeatureUsageMetrics::Delegate:
   bool IsEligible() const override;
-  absl::optional<bool> IsAccessible() const override;
+  std::optional<bool> IsAccessible() const override;
   bool IsEnabled() const override;
 
   // Called after a fingerprint unlock attempt to record the result.
@@ -119,7 +119,7 @@ class FingerprintStorage final
   friend class FingerprintStorageTestApi;
   friend class QuickUnlockStorage;
 
-  const raw_ptr<Profile, ExperimentalAsh> profile_;
+  const raw_ptr<Profile> profile_;
   // Number of fingerprint unlock attempts.
   int unlock_attempt_count_ = 0;
 

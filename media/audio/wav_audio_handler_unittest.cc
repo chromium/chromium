@@ -8,8 +8,8 @@
 
 #include <memory>
 #include <string>
+#include <string_view>
 
-#include "base/strings/string_piece.h"
 #include "media/audio/test_data.h"
 #include "media/base/audio_bus.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -46,7 +46,7 @@ TEST(WavAudioHandlerTest, SampleDataTest) {
 
   ASSERT_EQ(4U, handler->data().size());
   const char kData[] = "\x01\x00\x01\x00";
-  ASSERT_EQ(base::StringPiece(kData, std::size(kData) - 1), handler->data());
+  ASSERT_EQ(std::string_view(kData, std::size(kData) - 1), handler->data());
 
   std::unique_ptr<AudioBus> bus =
       AudioBus::Create(handler->GetNumChannels(),
@@ -72,7 +72,7 @@ TEST(WavAudioHandlerTest, SampleFloatDataTest) {
 
   ASSERT_EQ(8U, handler->data().size());
   const char kData[] = "\x00\x01\x00\x00\x01\x00\x00\x00";
-  ASSERT_EQ(base::StringPiece(kData, std::size(kData) - 1), handler->data());
+  ASSERT_EQ(std::string_view(kData, std::size(kData) - 1), handler->data());
 
   std::unique_ptr<AudioBus> bus =
       AudioBus::Create(handler->GetNumChannels(),
@@ -98,7 +98,7 @@ TEST(WavAudioHandlerTest, SampleExtensibleDataTest) {
 
   ASSERT_EQ(8U, handler->data().size());
   const char kData[] = "\x01\x00\x00\x00\x01\x00\x00\x00";
-  ASSERT_EQ(base::StringPiece(kData, std::size(kData) - 1), handler->data());
+  ASSERT_EQ(std::string_view(kData, std::size(kData) - 1), handler->data());
 
   std::unique_ptr<AudioBus> bus =
       AudioBus::Create(handler->GetNumChannels(),
@@ -161,7 +161,7 @@ TEST(WavAudioHandlerTest, TestTooBigTotalSizeIsOkay) {
 
   ASSERT_EQ(4U, handler->data().size());
   const char kData[] = "\x01\x00\x01\x00";
-  ASSERT_EQ(base::StringPiece(kData, std::size(kData) - 1), handler->data());
+  ASSERT_EQ(std::string_view(kData, std::size(kData) - 1), handler->data());
 }
 
 TEST(WavAudioHandlerTest, TestTooBigDataChunkSizeIsOkay) {
@@ -184,7 +184,7 @@ TEST(WavAudioHandlerTest, TestTooBigDataChunkSizeIsOkay) {
 
   ASSERT_EQ(4U, handler->data().size());
   const char kData[] = "\x01\x00\x01\x00";
-  ASSERT_EQ(base::StringPiece(kData, std::size(kData) - 1), handler->data());
+  ASSERT_EQ(std::string_view(kData, std::size(kData) - 1), handler->data());
 }
 
 TEST(WavAudioHandlerTest, TestTooSmallFormatSizeIsNotValid) {

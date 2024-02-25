@@ -12,11 +12,11 @@
 
 namespace remoting {
 
-// A simple test that starts and stop the context. This tests the context
+// A simple test that starts and stops the context. This tests the context
 // operates properly and all threads and message loops are valid.
 TEST(ChromotingHostContextTest, StartAndStop) {
-  base::test::SingleThreadTaskEnvironment task_environment{
-      base::test::SingleThreadTaskEnvironment::MainThreadType::UI};
+  base::test::TaskEnvironment task_environment{
+      base::test::TaskEnvironment::MainThreadType::UI};
   base::RunLoop run_loop;
 
   scoped_refptr<network::TestSharedURLLoaderFactory> test_url_loader_factory;

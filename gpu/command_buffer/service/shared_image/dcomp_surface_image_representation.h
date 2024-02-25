@@ -6,6 +6,7 @@
 #define GPU_COMMAND_BUFFER_SERVICE_SHARED_IMAGE_DCOMP_SURFACE_IMAGE_REPRESENTATION_H_
 
 #include "gpu/command_buffer/service/shared_image/shared_image_representation.h"
+#include "ui/gl/buildflags.h"
 
 namespace gpu {
 
@@ -19,7 +20,7 @@ class DCompSurfaceOverlayImageRepresentation
   ~DCompSurfaceOverlayImageRepresentation() override;
 
  protected:
-  absl::optional<gl::DCLayerOverlayImage> GetDCLayerOverlayImage() override;
+  std::optional<gl::DCLayerOverlayImage> GetDCLayerOverlayImage() override;
 
  private:
   bool BeginReadAccess(gfx::GpuFenceHandle& acquire_fence) override;
@@ -62,6 +63,7 @@ class DCompSurfaceSkiaGaneshImageRepresentation
   scoped_refptr<SharedContextState> context_state_;
 };
 
+#if BUILDFLAG(USE_DAWN)
 // See DCompSurfaceImageBacking::ProduceSkiaGraphite for more information.
 class DCompSurfaceDawnImageRepresentation : public DawnImageRepresentation {
  public:
@@ -81,6 +83,7 @@ class DCompSurfaceDawnImageRepresentation : public DawnImageRepresentation {
   const wgpu::Device device_;
   wgpu::Texture texture_;
 };
+#endif  // BUILDFLAG(USE_DAWN)
 
 }  // namespace gpu
 

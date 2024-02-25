@@ -1,0 +1,38 @@
+[
+  {
+    "os": [
+      "chromeos_ash"
+    ],
+    "policy_pref_mapping_tests": [
+      {
+        "policies": {
+          "ScreenDimDelayAC": 12345
+        },
+        "prefs": {
+          "power.ac_screen_dim_delay_ms": {
+            "value": 12345
+          }
+        }
+      },
+      {
+        "note": "Should clamp to range 0..INT_MAX",
+        "policies": {
+          "ScreenDimDelayAC": -1
+        },
+        "prefs": {
+          "power.ac_screen_dim_delay_ms": {
+            "value": 0
+          }
+        }
+      },
+      {
+        "policies": {},
+        "prefs": {
+          "power.ac_screen_dim_delay_ms": {
+            "default_value": 420000
+          }
+        }
+      }
+    ]
+  }
+]

@@ -51,6 +51,22 @@ void CanvasPath::closePath() {
   if (UNLIKELY(IsEmpty())) {
     return;
   }
+  // If the current path is a zero lengthed path (ex: moveTo p1 and lineTo p1),
+  // then closePath is no op.
+  if (UNLIKELY(path_.BoundingRect().height() == 0 &&
+               path_.BoundingRect().width() == 0 &&
+               (IsLine() && line_builder_.BoundingRect().height() == 0 &&
+                line_builder_.BoundingRect().width() == 0))) {
+    if (!path_.HasCurrentPoint()) {
+      Clear();
+      return;
+    }
+    auto p = path_.CurrentPoint();
+    Clear();
+    moveTo(p.x(), p.y());
+    return;
+  }
+
   UpdatePathFromLineIfNecessaryForMutation();
   if (UNLIKELY(identifiability_study_helper_.ShouldUpdateBuilder())) {
     identifiability_study_helper_.UpdateBuilder(CanvasOps::kClosePath);
@@ -136,8 +152,9 @@ void CanvasPath::quadraticCurveTo(double double_cpx,
     cp = GetTransform().MapPoint(cp);
   }
 
-  if (UNLIKELY(!path_.HasCurrentPoint()))
+  if (UNLIKELY(!path_.HasCurrentPoint())) {
     path_.MoveTo(gfx::PointF(cpx, cpy));
+  }
 
   path_.AddQuadCurveTo(cp, p1);
 }
@@ -174,8 +191,9 @@ void CanvasPath::bezierCurveTo(double double_cp1x,
     cp1 = GetTransform().MapPoint(cp1);
     cp2 = GetTransform().MapPoint(cp2);
   }
-  if (UNLIKELY(!path_.HasCurrentPoint()))
+  if (UNLIKELY(!path_.HasCurrentPoint())) {
     path_.MoveTo(gfx::PointF(cp1x, cp1y));
+  }
 
   path_.AddBezierCurveTo(cp1, cp2, p1);
 }
@@ -216,12 +234,13 @@ void CanvasPath::arcTo(double double_x1,
     p2 = GetTransform().MapPoint(p2);
   }
 
-  if (UNLIKELY(!path_.HasCurrentPoint()))
+  if (UNLIKELY(!path_.HasCurrentPoint())) {
     path_.MoveTo(p1);
-  else if (UNLIKELY(p1 == path_.CurrentPoint() || p1 == p2 || !r))
+  } else if (UNLIKELY(p1 == path_.CurrentPoint() || p1 == p2 || !r)) {
     lineTo(x1, y1);
-  else
+  } else {
     path_.AddArcTo(p1, p2, r);
+  }
 }
 
 namespace {
@@ -513,6 +532,11 @@ void CanvasPath::rect(double double_x,
   if (UNLIKELY(!std::isfinite(x) || !std::isfinite(y) ||
                !std::isfinite(width) || !std::isfinite(height)))
     return;
+
+  if (width == 0 && height == 0) {
+    moveTo(x, y);
+    return;
+  }
   UpdatePathFromLineIfNecessaryForMutation();
   if (UNLIKELY(identifiability_study_helper_.ShouldUpdateBuilder())) {
     identifiability_study_helper_.UpdateBuilder(

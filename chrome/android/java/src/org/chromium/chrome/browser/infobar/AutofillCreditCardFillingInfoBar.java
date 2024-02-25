@@ -6,7 +6,8 @@ package org.chromium.chrome.browser.infobar;
 
 import android.graphics.Bitmap;
 
-import org.chromium.base.annotations.CalledByNative;
+import org.jni_zero.CalledByNative;
+
 import org.chromium.chrome.R;
 import org.chromium.components.autofill.payments.CardDetail;
 import org.chromium.components.infobars.ConfirmInfoBar;
@@ -16,9 +17,7 @@ import org.chromium.components.infobars.InfoBarLayout;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * An infobar for assisted credit card filling.
- */
+/** An infobar for assisted credit card filling. */
 public class AutofillCreditCardFillingInfoBar extends ConfirmInfoBar {
     private final List<CardDetail> mCardDetails = new ArrayList<>();
 
@@ -32,9 +31,20 @@ public class AutofillCreditCardFillingInfoBar extends ConfirmInfoBar {
      * @param buttonOk String to display on the OK button.
      * @param buttonCancel String to display on the Cancel button.
      */
-    private AutofillCreditCardFillingInfoBar(long nativeAutofillCreditCardFillingInfoBar,
-            int iconId, Bitmap iconBitmap, String message, String buttonOk, String buttonCancel) {
-        super(iconId, R.color.infobar_icon_drawable_color, iconBitmap, message, null, buttonOk,
+    private AutofillCreditCardFillingInfoBar(
+            long nativeAutofillCreditCardFillingInfoBar,
+            int iconId,
+            Bitmap iconBitmap,
+            String message,
+            String buttonOk,
+            String buttonCancel) {
+        super(
+                iconId,
+                R.color.infobar_icon_drawable_color,
+                iconBitmap,
+                message,
+                null,
+                buttonOk,
                 buttonCancel);
     }
 
@@ -51,10 +61,19 @@ public class AutofillCreditCardFillingInfoBar extends ConfirmInfoBar {
      */
     @CalledByNative
     private static AutofillCreditCardFillingInfoBar create(
-            long nativeAutofillCreditCardFillingInfoBar, int iconId, Bitmap iconBitmap,
-            String message, String buttonOk, String buttonCancel) {
-        return new AutofillCreditCardFillingInfoBar(nativeAutofillCreditCardFillingInfoBar, iconId,
-                iconBitmap, message, buttonOk, buttonCancel);
+            long nativeAutofillCreditCardFillingInfoBar,
+            int iconId,
+            Bitmap iconBitmap,
+            String message,
+            String buttonOk,
+            String buttonCancel) {
+        return new AutofillCreditCardFillingInfoBar(
+                nativeAutofillCreditCardFillingInfoBar,
+                iconId,
+                iconBitmap,
+                message,
+                buttonOk,
+                buttonCancel);
     }
 
     /**

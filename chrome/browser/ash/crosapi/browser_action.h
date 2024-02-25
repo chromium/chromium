@@ -5,8 +5,11 @@
 #ifndef CHROME_BROWSER_ASH_CROSAPI_BROWSER_ACTION_H_
 #define CHROME_BROWSER_ASH_CROSAPI_BROWSER_ACTION_H_
 
+#include <cstdint>
+#include <optional>
+#include <string_view>
+
 #include "base/containers/queue.h"
-#include "base/strings/string_piece_forward.h"
 #include "chrome/browser/ui/browser_navigator_params.h"
 #include "chromeos/crosapi/mojom/crosapi.mojom.h"
 #include "components/tab_groups/tab_group_info.h"
@@ -15,7 +18,7 @@
 namespace crosapi {
 
 struct VersionedBrowserService {
-  raw_ptr<mojom::BrowserService, ExperimentalAsh> service;
+  raw_ptr<mojom::BrowserService> service;
   uint32_t interface_version;
 };
 
@@ -36,12 +39,16 @@ class BrowserAction {
   static std::unique_ptr<BrowserAction> NewWindow(
       bool incognito,
       bool should_trigger_session_restore,
-      int64_t target_display_id);
-  static std::unique_ptr<BrowserAction> NewTab();
-  static std::unique_ptr<BrowserAction> Launch(int64_t target_display_id);
+      int64_t target_display_id,
+      std::optional<uint64_t> profile_id = std::nullopt);
+  static std::unique_ptr<BrowserAction> NewTab(
+      std::optional<uint64_t> profile_id = std::nullopt);
+  static std::unique_ptr<BrowserAction> Launch(
+      int64_t target_display_id,
+      std::optional<uint64_t> profile_id = std::nullopt);
   static std::unique_ptr<BrowserAction> NewWindowForDetachingTab(
-      base::StringPiece16 tab_id_str,
-      base::StringPiece16 group_id_str,
+      std::u16string_view tab_id_str,
+      std::u16string_view group_id_str,
       NewWindowForDetachingTabCallback callback);
   static std::unique_ptr<BrowserAction> NewGuestWindow(int64_t target_display);
   static std::unique_ptr<BrowserAction> NewFullscreenWindow(
@@ -66,8 +73,10 @@ class BrowserAction {
       ui::WindowShowState show_state,
       int32_t active_tab_index,
       int32_t first_non_pinned_tab_index,
-      base::StringPiece app_name,
-      int32_t restore_window_id);
+      std::string_view app_name,
+      int32_t restore_window_id,
+      uint64_t lacros_profile_id);
+  static std::unique_ptr<BrowserAction> OpenProfileManager();
 
   // Returns the initial action for the automatic start of Lacros.
   // No window will be opened in the following circumstances:

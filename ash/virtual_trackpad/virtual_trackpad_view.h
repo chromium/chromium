@@ -18,6 +18,7 @@ class Widget;
 
 namespace ash {
 
+class BlurredBackgroundShield;
 class TrackpadInternalSurfaceView;
 
 // The contents view of the widget which houses the virtual trackpad. Serves as
@@ -25,9 +26,9 @@ class TrackpadInternalSurfaceView;
 // trackpad view.
 // TODO(b/288286805): Handle 2 finger scrolls.
 class VirtualTrackpadView : public views::View {
- public:
-  METADATA_HEADER(VirtualTrackpadView);
+  METADATA_HEADER(VirtualTrackpadView, views::View)
 
+ public:
   VirtualTrackpadView();
   VirtualTrackpadView(const VirtualTrackpadView&) = delete;
   VirtualTrackpadView& operator=(const VirtualTrackpadView&) = delete;
@@ -38,7 +39,7 @@ class VirtualTrackpadView : public views::View {
   static void Toggle();
 
   // views::View:
-  void Layout() override;
+  void Layout(PassKey) override;
 
   static ASH_EXPORT views::Widget* GetWidgetForTesting();
 
@@ -55,15 +56,17 @@ class VirtualTrackpadView : public views::View {
   ASH_EXPORT views::View* GetTrackpadViewForTesting();
 
   // Owned by views hierarchy.
-  raw_ptr<views::BoxLayoutView, ExperimentalAsh> finger_buttons_panel_;
+  raw_ptr<views::BoxLayoutView> finger_buttons_panel_;
 
   // Keeps track of each `LabelButton` that is housed inside
   // `finger_buttons_panel_`. The key represents the number of fingers that the
   // `LabelButton` activates for future gestures. This map is ultimately used to
   // highlight the active button with a different color.
   base::flat_map<int, views::LabelButton*> finger_buttons_;
-  raw_ptr<TrackpadInternalSurfaceView, ExperimentalAsh> trackpad_view_ =
-      nullptr;
+  raw_ptr<TrackpadInternalSurfaceView> trackpad_view_ = nullptr;
+
+  // Creates a new layer that blurs the background underneath the view layer.
+  std::unique_ptr<BlurredBackgroundShield> blurred_background_;
 };
 
 }  // namespace ash

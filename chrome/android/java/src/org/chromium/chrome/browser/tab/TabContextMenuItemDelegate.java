@@ -11,6 +11,7 @@ import android.net.MailTo;
 import android.net.Uri;
 import android.provider.Browser;
 import android.provider.ContactsContract;
+import android.text.TextUtils;
 
 import androidx.annotation.Nullable;
 import androidx.browser.customtabs.CustomTabsIntent;
@@ -34,10 +35,10 @@ import org.chromium.chrome.browser.multiwindow.MultiWindowUtils;
 import org.chromium.chrome.browser.offlinepages.OfflinePageBridge;
 import org.chromium.chrome.browser.offlinepages.RequestCoordinatorBridge;
 import org.chromium.chrome.browser.profiles.Profile;
-import org.chromium.chrome.browser.tab.state.CriticalPersistedTabData;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
-import org.chromium.chrome.browser.tabmodel.document.TabDelegate;
+import org.chromium.chrome.browser.tabmodel.document.ChromeAsyncTabLauncher;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
+import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.embedder_support.util.UrlUtilities;
 import org.chromium.components.feature_engagement.EventConstants;
 import org.chromium.content_public.browser.AdditionalNavigationParams;
@@ -52,23 +53,30 @@ import org.chromium.url.GURL;
  * A default {@link ContextMenuItemDelegate} that supports the context menu functionality in Tab.
  */
 public class TabContextMenuItemDelegate implements ContextMenuItemDelegate {
+    private final Activity mActivity;
     private final TabImpl mTab;
     private final TabModelSelector mTabModelSelector;
     private final Supplier<EphemeralTabCoordinator> mEphemeralTabCoordinatorSupplier;
     private final Runnable mContextMenuCopyLinkObserver;
-    private final Supplier<SnackbarManager> mSnackbarManager;
+    private final Supplier<SnackbarManager> mSnackbarManagerSupplier;
+    private final Supplier<BottomSheetController> mBottomSheetControllerSupplier;
 
-    /**
-     * Builds a {@link TabContextMenuItemDelegate} instance.
-     */
-    public TabContextMenuItemDelegate(Tab tab, TabModelSelector tabModelSelector,
+    /** Builds a {@link TabContextMenuItemDelegate} instance. */
+    public TabContextMenuItemDelegate(
+            Activity activity,
+            Tab tab,
+            TabModelSelector tabModelSelector,
             Supplier<EphemeralTabCoordinator> ephemeralTabCoordinatorSupplier,
-            Runnable contextMenuCopyLinkObserver, Supplier<SnackbarManager> snackbarManager) {
+            Runnable contextMenuCopyLinkObserver,
+            Supplier<SnackbarManager> snackbarManagerSupplier,
+            Supplier<BottomSheetController> bottomSheetControllerSupplier) {
+        mActivity = activity;
         mTab = (TabImpl) tab;
         mTabModelSelector = tabModelSelector;
         mEphemeralTabCoordinatorSupplier = ephemeralTabCoordinatorSupplier;
         mContextMenuCopyLinkObserver = contextMenuCopyLinkObserver;
-        mSnackbarManager = snackbarManager;
+        mSnackbarManagerSupplier = snackbarManagerSupplier;
+        mBottomSheetControllerSupplier = bottomSheetControllerSupplier;
     }
 
     @Override
@@ -96,8 +104,8 @@ public class TabContextMenuItemDelegate implements ContextMenuItemDelegate {
 
     @Override
     public boolean isOpenInOtherWindowSupported() {
-        return MultiWindowUtils.getInstance().isOpenInOtherWindowSupported(
-                TabUtils.getActivity(mTab));
+        return MultiWindowUtils.getInstance()
+                .isOpenInOtherWindowSupported(TabUtils.getActivity(mTab));
     }
 
     @Override
@@ -182,7 +190,8 @@ public class TabContextMenuItemDelegate implements ContextMenuItemDelegate {
         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         intent.setType(ContactsContract.Contacts.CONTENT_TYPE);
         if (MailTo.isMailTo(url.getSpec())) {
-            intent.putExtra(ContactsContract.Intents.Insert.EMAIL,
+            intent.putExtra(
+                    ContactsContract.Intents.Insert.EMAIL,
                     MailTo.parse(url.getSpec()).getTo().split(",")[0]);
         } else if (UrlUtilities.isTelScheme(url)) {
             intent.putExtra(ContactsContract.Intents.Insert.PHONE, UrlUtilities.getTelNumber(url));
@@ -192,27 +201,36 @@ public class TabContextMenuItemDelegate implements ContextMenuItemDelegate {
 
     @Override
     public void onOpenInOtherWindow(GURL url, Referrer referrer) {
-        TabDelegate tabDelegate = new TabDelegate(mTab.isIncognito());
+        ChromeAsyncTabLauncher chromeAsyncTabLauncher =
+                new ChromeAsyncTabLauncher(mTab.isIncognito());
         LoadUrlParams loadUrlParams = new LoadUrlParams(url.getSpec());
         loadUrlParams.setReferrer(referrer);
         Activity activity = TabUtils.getActivity(mTab);
-        tabDelegate.createTabInOtherWindow(loadUrlParams, activity,
-                CriticalPersistedTabData.from(mTab).getParentId(),
+        chromeAsyncTabLauncher.launchTabInOtherWindow(
+                loadUrlParams,
+                activity,
+                mTab.getParentId(),
                 MultiWindowUtils.getAdjacentWindowActivity(activity));
     }
 
     @Override
-    public void onOpenInNewTab(GURL url, Referrer referrer, boolean navigateToTab,
+    public void onOpenInNewTab(
+            GURL url,
+            Referrer referrer,
+            boolean navigateToTab,
             @Nullable AdditionalNavigationParams additionalNavigationParams) {
         RecordUserAction.record("MobileNewTabOpened");
         RecordUserAction.record("LinkOpenedInNewTab");
         LoadUrlParams loadUrlParams = new LoadUrlParams(url.getSpec());
         loadUrlParams.setReferrer(referrer);
         loadUrlParams.setAdditionalNavigationParams(additionalNavigationParams);
-        mTabModelSelector.openNewTab(loadUrlParams,
-                navigateToTab ? TabLaunchType.FROM_LONGPRESS_FOREGROUND
-                              : TabLaunchType.FROM_LONGPRESS_BACKGROUND,
-                mTab, isIncognito());
+        mTabModelSelector.openNewTab(
+                loadUrlParams,
+                navigateToTab
+                        ? TabLaunchType.FROM_LONGPRESS_FOREGROUND
+                        : TabLaunchType.FROM_LONGPRESS_BACKGROUND,
+                mTab,
+                isIncognito());
     }
 
     @Override
@@ -221,15 +239,21 @@ public class TabContextMenuItemDelegate implements ContextMenuItemDelegate {
         RecordUserAction.record("LinkOpenedInNewTab");
         LoadUrlParams loadUrlParams = new LoadUrlParams(url.getSpec());
         loadUrlParams.setReferrer(referrer);
-        mTabModelSelector.openNewTab(loadUrlParams,
-                TabLaunchType.FROM_LONGPRESS_BACKGROUND_IN_GROUP, mTab, isIncognito());
+        mTabModelSelector.openNewTab(
+                loadUrlParams,
+                TabLaunchType.FROM_LONGPRESS_BACKGROUND_IN_GROUP,
+                mTab,
+                isIncognito());
     }
 
     @Override
     public void onOpenInNewIncognitoTab(GURL url) {
         RecordUserAction.record("MobileNewTabOpened");
-        mTabModelSelector.openNewTab(new LoadUrlParams(url.getSpec()),
-                TabLaunchType.FROM_LONGPRESS_FOREGROUND, mTab, true);
+        mTabModelSelector.openNewTab(
+                new LoadUrlParams(url.getSpec()),
+                TabLaunchType.FROM_LONGPRESS_FOREGROUND,
+                mTab,
+                true);
     }
 
     @Override
@@ -259,7 +283,7 @@ public class TabContextMenuItemDelegate implements ContextMenuItemDelegate {
                 || mEphemeralTabCoordinatorSupplier.get() == null) {
             return;
         }
-        mEphemeralTabCoordinatorSupplier.get().requestOpenSheet(url, title, mTab.isIncognito());
+        mEphemeralTabCoordinatorSupplier.get().requestOpenSheet(url, title, mTab.getProfile());
     }
 
     @Override
@@ -267,20 +291,29 @@ public class TabContextMenuItemDelegate implements ContextMenuItemDelegate {
         if (url == null || url.isEmpty()) return;
         assert url.isValid();
 
-        BookmarkModel bookmarkModel =
-                BookmarkModel.getForProfile(Profile.getLastUsedRegularProfile());
-        bookmarkModel.finishLoadingBookmarkModel(() -> {
-            // Add to reading list.
-            BookmarkUtils.addToReadingList(
-                    url, title, mSnackbarManager.get(), bookmarkModel, mTab.getContext());
-            TrackerFactory.getTrackerForProfile(Profile.getLastUsedRegularProfile())
-                    .notifyEvent(EventConstants.READ_LATER_CONTEXT_MENU_TAPPED);
+        Profile profile = mTab.getProfile().getOriginalProfile();
+        BookmarkModel bookmarkModel = BookmarkModel.getForProfile(profile);
+        bookmarkModel.finishLoadingBookmarkModel(
+                () -> {
+                    // Add to reading list.
+                    BookmarkUtils.addToReadingList(
+                            mActivity,
+                            bookmarkModel,
+                            title,
+                            url,
+                            mSnackbarManagerSupplier.get(),
+                            mTab.getProfile(),
+                            mBottomSheetControllerSupplier.get());
+                    TrackerFactory.getTrackerForProfile(profile)
+                            .notifyEvent(EventConstants.READ_LATER_CONTEXT_MENU_TAPPED);
 
-            // Add to offline pages.
-            RequestCoordinatorBridge.getForProfile(Profile.getLastUsedRegularProfile())
-                    .savePageLater(url.getSpec(), OfflinePageBridge.BOOKMARK_NAMESPACE,
-                            /*userRequested*/ true);
-        });
+                    // Add to offline pages.
+                    RequestCoordinatorBridge.getForProfile(profile)
+                            .savePageLater(
+                                    url.getSpec(),
+                                    OfflinePageBridge.BOOKMARK_NAMESPACE,
+                                    /* userRequested= */ true);
+                });
     }
 
     @Override
@@ -320,7 +353,8 @@ public class TabContextMenuItemDelegate implements ContextMenuItemDelegate {
         intent.setClass(ContextUtils.getApplicationContext(), ChromeLauncherActivity.class);
         if (isIncognito) {
             intent.putExtra(IntentHandler.EXTRA_OPEN_NEW_INCOGNITO_TAB, true);
-            intent.putExtra(Browser.EXTRA_APPLICATION_ID,
+            intent.putExtra(
+                    Browser.EXTRA_APPLICATION_ID,
                     ContextUtils.getApplicationContext().getPackageName());
             IntentUtils.addTrustedIntentExtras(intent);
             IntentHandler.setTabLaunchType(intent, TabLaunchType.FROM_EXTERNAL_APP);
@@ -335,6 +369,14 @@ public class TabContextMenuItemDelegate implements ContextMenuItemDelegate {
 
     @Override
     public void onOpenInDefaultBrowser(GURL url) {
+        // Most browsers (including Chrome) do not advertise support for data scheme URIs
+        // and so cannot handle data scheme view Intents. Use the browser backing the currently
+        // running CCT.
+        if (TextUtils.equals("data", url.getScheme())) {
+            onOpenInNewChromeTabFromCCT(url, false);
+            return;
+        }
+
         Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(url.getSpec()));
         CustomTabsIntent.setAlwaysUseBrowserUI(intent);
         IntentUtils.safeStartActivity(mTab.getContext(), intent);

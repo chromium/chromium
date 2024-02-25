@@ -21,13 +21,13 @@ limitations under the License.
 #include <vector>
 
 #include "absl/container/btree_map.h"  // from @com_google_absl
-#include "absl/status/status.h"        // from @com_google_absl
-#include "absl/strings/str_format.h"   // from @com_google_absl
-#include "leveldb/options.h"           // from @com_google_leveldb
-#include "leveldb/slice.h"             // from @com_google_leveldb
-#include "leveldb/status.h"            // from @com_google_leveldb
-#include "leveldb/table_builder.h"     // from @com_google_leveldb
-#include "leveldb/write_batch.h"       // from @com_google_leveldb
+#include "absl/status/status.h"  // from @com_google_absl
+#include "absl/strings/str_format.h"  // from @com_google_absl
+#include "leveldb/options.h"  // from @com_google_leveldb
+#include "leveldb/slice.h"  // from @com_google_leveldb
+#include "leveldb/status.h"  // from @com_google_leveldb
+#include "leveldb/table_builder.h"  // from @com_google_leveldb
+#include "leveldb/write_batch.h"  // from @com_google_leveldb
 #include "tensorflow_lite_support/cc/port/status_macros.h"
 #include "tensorflow_lite_support/scann_ondevice/cc/mem_writable_file.h"
 #include "tensorflow_lite_support/scann_ondevice/cc/utils.h"
@@ -56,10 +56,8 @@ template <typename T>
 absl::StatusOr<std::string> CreateIndexBufferImpl(
     absl::Span<const T> database,
     absl::optional<absl::Span<const uint32_t>> partition_assignment,
-    absl::Span<const std::string> metadata,
-    const std::string& userinfo,
-    IndexConfig index_config,
-    bool compression) {
+    absl::Span<const std::string> metadata, const std::string& userinfo,
+    IndexConfig index_config, bool compression) {
   size_t num_partitions = 1;
   if (partition_assignment) {
     if (partition_assignment->size() != metadata.size()) {
@@ -106,7 +104,7 @@ absl::StatusOr<std::string> CreateIndexBufferImpl(
   }
 
   std::string buffer;
-  ASSIGN_OR_RETURN(auto mem_writable_file, MemWritableFile::Create(&buffer));
+  TFLITE_ASSIGN_OR_RETURN(auto mem_writable_file, MemWritableFile::Create(&buffer));
 
   leveldb::Options options;
   options.compression =
@@ -147,8 +145,8 @@ absl::StatusOr<std::string> CreateIndexBufferImpl(
 
 }  // namespace
 
-absl::StatusOr<std::string> CreateIndexBuffer(const IndexedArtifacts& artifacts,
-                                              bool compression) {
+absl::StatusOr<std::string> CreateIndexBuffer(
+    const IndexedArtifacts& artifacts, bool compression) {
   if (artifacts.hashed_database.has_value() &&
       artifacts.float_database.has_value()) {
     return absl::InvalidArgumentError(

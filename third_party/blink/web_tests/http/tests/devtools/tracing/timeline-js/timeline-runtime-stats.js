@@ -5,9 +5,11 @@
 import {TestRunner} from 'test_runner';
 import {PerformanceTestRunner} from 'performance_test_runner';
 
+import * as Root from 'devtools/core/root/root.js';
+import * as TimelineModel from 'devtools/models/timeline_model/timeline_model.js';
+
 (async function() {
   TestRunner.addResult(`Check that RuntimeCallStats are present in profile.\n`);
-  await TestRunner.loadLegacyModule('timeline');
   await TestRunner.showPanel('timeline');
   await TestRunner.loadHTML(`
       <div id="foo">

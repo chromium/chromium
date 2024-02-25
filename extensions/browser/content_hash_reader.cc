@@ -39,7 +39,7 @@ std::unique_ptr<const ContentHashReader> ContentHashReader::Create(
   DCHECK_EQ(ComputedHashes::Status::SUCCESS, hashes_status);
 
   const ComputedHashes& computed_hashes = content_hash->computed_hashes();
-  absl::optional<std::string> root;
+  std::optional<std::string> root;
 
   int block_size;
   std::vector<std::string> block_hashes;

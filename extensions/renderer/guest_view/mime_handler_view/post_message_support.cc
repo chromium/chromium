@@ -15,6 +15,7 @@
 #include "gin/interceptor.h"
 #include "gin/object_template_builder.h"
 #include "gin/wrappable.h"
+#include "third_party/blink/public/platform/scheduler/web_agent_group_scheduler.h"
 #include "third_party/blink/public/web/web_frame.h"
 #include "third_party/blink/public/web/web_local_frame.h"
 
@@ -139,7 +140,8 @@ void PostMessageSupport::PostJavaScriptMessage(v8::Isolate* isolate,
 
   v8::Context::Scope context_scope(
       delegate_->GetSourceFrame()->MainWorldScriptContext());
-  v8::Local<v8::Object> target_window_proxy = target_frame->GlobalProxy();
+  v8::Local<v8::Object> target_window_proxy =
+      target_frame->GlobalProxy(isolate);
   gin::Dictionary window_object(isolate, target_window_proxy);
   v8::Local<v8::Function> post_message;
   if (!window_object.Get(std::string(kPostMessageName), &post_message))
@@ -157,7 +159,7 @@ void PostMessageSupport::PostJavaScriptMessage(v8::Isolate* isolate,
 
 void PostMessageSupport::PostMessageFromValue(const base::Value& message) {
   auto* frame = delegate_->GetSourceFrame();
-  v8::Isolate* isolate = v8::Isolate::GetCurrent();
+  v8::Isolate* isolate = frame->GetAgentGroupScheduler()->Isolate();
   v8::HandleScope handle_scope(isolate);
   v8::Context::Scope context_scope(frame->MainWorldScriptContext());
   PostJavaScriptMessage(isolate, content::V8ValueConverter::Create()->ToV8Value(
@@ -172,7 +174,7 @@ void PostMessageSupport::SetActive() {
 
   // Now that the guest has loaded, flush any unsent messages.
   auto* source = delegate_->GetSourceFrame();
-  v8::Isolate* isolate = v8::Isolate::GetCurrent();
+  v8::Isolate* isolate = source->GetAgentGroupScheduler()->Isolate();
   v8::HandleScope handle_scope(isolate);
   v8::Context::Scope context_scope(source->MainWorldScriptContext());
   for (const auto& pending_message : pending_messages_)

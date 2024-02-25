@@ -39,11 +39,21 @@
 - (void)bookmarkModel:(bookmarks::BookmarkModel*)model
        willDeleteNode:(const bookmarks::BookmarkNode*)node
            fromFolder:(const bookmarks::BookmarkNode*)folder;
+// Called after adding a bookmark node.
+- (void)bookmarkModel:(bookmarks::BookmarkModel*)model
+           didAddNode:(const bookmarks::BookmarkNode*)node
+             toFolder:(const bookmarks::BookmarkNode*)folder;
+
 // Called before removing all non-permanent nodes.
 - (void)bookmarkModelWillRemoveAllNodes:(const bookmarks::BookmarkModel*)model;
 // The node favicon changed.
 - (void)bookmarkModel:(bookmarks::BookmarkModel*)model
     didChangeFaviconForNode:(const bookmarks::BookmarkNode*)bookmarkNode;
+// Called before changing a bookmark node.
+- (void)bookmarkModel:(bookmarks::BookmarkModel*)model
+    willChangeBookmarkNode:(const bookmarks::BookmarkNode*)bookmarkNode;
+// Called when the model is being deleted.
+- (void)bookmarkModelBeingDeleted:(bookmarks::BookmarkModel*)model;
 @end
 
 // A bridge that translates BookmarkModelObserver C++ callbacks into ObjC
@@ -76,6 +86,10 @@ class BookmarkModelBridge : public bookmarks::BookmarkModelObserver {
                            size_t old_index,
                            const bookmarks::BookmarkNode* node,
                            const std::set<GURL>& removed_urls) override;
+
+  void OnWillChangeBookmarkNode(bookmarks::BookmarkModel* model,
+                                const bookmarks::BookmarkNode* node) override;
+
   void BookmarkNodeChanged(bookmarks::BookmarkModel* model,
                            const bookmarks::BookmarkNode* node) override;
   void BookmarkNodeFaviconChanged(bookmarks::BookmarkModel* model,

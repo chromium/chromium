@@ -4,6 +4,7 @@
 
 #include "net/dns/mapped_host_resolver.h"
 
+#include <optional>
 #include <string>
 #include <utility>
 
@@ -15,7 +16,6 @@
 #include "net/base/url_util.h"
 #include "net/dns/host_resolver.h"
 #include "net/log/net_log_with_source.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 #include "url/scheme_host_port.h"
 #include "url/url_canon.h"
@@ -36,20 +36,20 @@ MappedHostResolver::CreateRequest(
     url::SchemeHostPort host,
     NetworkAnonymizationKey network_anonymization_key,
     NetLogWithSource source_net_log,
-    absl::optional<ResolveHostParameters> optional_parameters) {
+    std::optional<ResolveHostParameters> optional_parameters) {
   GURL rewritten_url = host.GetURL();
   HostMappingRules::RewriteResult result = rules_.RewriteUrl(rewritten_url);
 
   switch (result) {
     case HostMappingRules::RewriteResult::kRewritten:
       DCHECK(rewritten_url.is_valid());
-      DCHECK_NE(rewritten_url.host_piece(), "~NOTFOUND");
+      DCHECK_NE(rewritten_url.host_piece(), "^NOTFOUND");
       return impl_->CreateRequest(url::SchemeHostPort(rewritten_url),
                                   std::move(network_anonymization_key),
                                   std::move(source_net_log),
                                   std::move(optional_parameters));
     case HostMappingRules::RewriteResult::kInvalidRewrite:
-      // Treat any invalid mapping as if it was "~NOTFOUND" (which should itself
+      // Treat any invalid mapping as if it was "^NOTFOUND" (which should itself
       // result in `kInvalidRewrite`).
       return CreateFailingRequest(ERR_NAME_NOT_RESOLVED);
     case HostMappingRules::RewriteResult::kNoMatchingRule:
@@ -64,12 +64,13 @@ MappedHostResolver::CreateRequest(
     const HostPortPair& host,
     const NetworkAnonymizationKey& network_anonymization_key,
     const NetLogWithSource& source_net_log,
-    const absl::optional<ResolveHostParameters>& optional_parameters) {
+    const std::optional<ResolveHostParameters>& optional_parameters) {
   HostPortPair rewritten = host;
   rules_.RewriteHost(&rewritten);
 
-  if (rewritten.host() == "~NOTFOUND")
+  if (rewritten.host() == "^NOTFOUND") {
     return CreateFailingRequest(ERR_NAME_NOT_RESOLVED);
+  }
 
   return impl_->CreateRequest(rewritten, network_anonymization_key,
                               source_net_log, optional_parameters);

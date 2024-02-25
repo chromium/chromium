@@ -15,7 +15,6 @@
 #include "chrome/browser/extensions/api/image_writer_private/image_writer_private_api.h"
 #include "chrome/browser/extensions/api/image_writer_private/operation.h"
 #include "chrome/common/extensions/api/image_writer_private.h"
-#include "content/public/browser/notification_observer.h"
 #include "extensions/browser/browser_context_keyed_api_factory.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extension_registry_observer.h"
@@ -106,7 +105,7 @@ class OperationManager : public BrowserContextKeyedAPI,
   void OnShutdown(ExtensionRegistry* registry) override;
 
   // ProcessManagerObserver:
-  void OnBackgroundHostClose(const std::string& extension_id) override;
+  void OnBackgroundHostClose(const ExtensionId& extension_id) override;
   void OnProcessManagerShutdown(ProcessManager* manager) override;
   void OnExtensionProcessTerminated(const Extension* extension) override;
 

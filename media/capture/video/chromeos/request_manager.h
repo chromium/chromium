@@ -8,6 +8,7 @@
 #include <cstring>
 #include <map>
 #include <memory>
+#include <optional>
 #include <queue>
 #include <set>
 #include <vector>
@@ -29,7 +30,6 @@
 #include "media/capture/video_capture_types.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace media {
 
@@ -267,7 +267,7 @@ class CAPTURE_EXPORT RequestManager final
 
   std::unique_ptr<StreamCaptureInterface> capture_interface_;
 
-  raw_ptr<CameraDeviceContext, ExperimentalAsh> device_context_;
+  raw_ptr<CameraDeviceContext> device_context_;
 
   bool zero_shutter_lag_supported_;
 

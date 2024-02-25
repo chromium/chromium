@@ -6,10 +6,10 @@
 #define COMPONENTS_FEED_CORE_V2_PUBLIC_PERSISTENT_KEY_VALUE_STORE_H_
 
 #include <memory>
+#include <optional>
 #include <string>
 
 #include "base/functional/callback.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace feed {
 
@@ -28,7 +28,7 @@ class PersistentKeyValueStore {
     // database error, or a missing key/value pair.
     bool success = false;
     // For `Get()` operations, the value of the key if it exists.
-    absl::optional<std::string> get_result;
+    std::optional<std::string> get_result;
   };
 
   using ResultCallback = base::OnceCallback<void(Result)>;

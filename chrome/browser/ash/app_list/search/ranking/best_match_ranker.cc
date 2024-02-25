@@ -52,6 +52,7 @@ bool ShouldIgnoreProvider(ProviderType type) {
     case ProviderType::kOpenTab:
     case ProviderType::kOsSettings:
     case ProviderType::kSystemInfo:
+    case ProviderType::kAppShortcutV2:
       return false;
   }
 }
@@ -79,7 +80,6 @@ BestMatchRanker::BestMatchRanker() = default;
 BestMatchRanker::~BestMatchRanker() = default;
 
 void BestMatchRanker::Start(const std::u16string& query,
-                            ResultsMap& results,
                             CategoriesList& categories) {
   is_pre_burnin_ = true;
   best_matches_.clear();

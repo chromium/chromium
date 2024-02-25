@@ -9,6 +9,7 @@ import {ApnDetailDialogMode} from '//resources/ash/common/network/cellular_utils
 import {ApnList} from 'chrome://resources/ash/common/network/apn_list.js';
 import {OncMojo} from 'chrome://resources/ash/common/network/onc_mojo.js';
 import {ApnProperties, ApnState, ApnType} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/cros_network_config.mojom-webui.js';
+import {PortalState} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/network_types.mojom-webui.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 
@@ -122,6 +123,9 @@ suite('ApnListTest', function() {
     await flushTasks();
     assertFalse(!!getDescriptionWithLink());
     assertTrue(!!getDescriptionWithoutLink());
+    assertEquals(
+        'assertive',
+        apnList.shadowRoot.querySelector('#apnDescription').ariaLive);
   });
 
   test('No managedCellularProperties', async function() {
@@ -142,7 +146,7 @@ suite('ApnListTest', function() {
         apnList.i18n('apnSettingsZeroStateDescription'),
         getZeroStateText().querySelector('div').innerText);
     const getErrorMessage = () =>
-        apnList.shadowRoot.querySelector('#errorMessage');
+        apnList.shadowRoot.querySelector('#errorMessageContainer');
     assertFalse(!!getErrorMessage());
 
     // Set as non-APN-related error.
@@ -157,7 +161,7 @@ suite('ApnListTest', function() {
     assertFalse(!!getZeroStateText());
     assertTrue(!!getErrorMessage());
     const getErrorMessageText = () =>
-        getErrorMessage().querySelector('localized-link').localizedString;
+        getErrorMessage().querySelector('#errorMessage').innerHTML.trim();
     assertEquals(
         apnList.i18n('apnSettingsDatabaseApnsErrorMessage'),
         getErrorMessageText());
@@ -366,6 +370,21 @@ suite('ApnListTest', function() {
     getApnDetailDialog()
         .shadowRoot.querySelector('#apnDetailCancelBtn')
         .click();
+
+    // Case: Custom APN is connected.
+    apnList.managedCellularProperties = {
+      connectedApn: customApn1,
+      customApnList: [customApn1],
+    };
+    assertTrue(!!getApnDetailDialog().apnList);
+    assertEquals(1, getApnDetailDialog().apnList.length);
+    assertTrue(OncMojo.apnMatch(getApnDetailDialog().apnList[0], customApn1));
+
+    assertTrue(
+        !!getApnDetailDialog().shadowRoot.querySelector('#apnDetailCancelBtn'));
+    getApnDetailDialog()
+        .shadowRoot.querySelector('#apnDetailCancelBtn')
+        .click();
   });
 
   test('Show disable/remove/enable warning', async function() {
@@ -416,6 +435,18 @@ suite('ApnListTest', function() {
     assertFalse(apns[2].shouldDisallowDisablingRemoving);
     assertFalse(apns[3].shouldDisallowDisablingRemoving);
     assertFalse(apns[4].shouldDisallowDisablingRemoving);
+
+    apnList.managedCellularProperties = {
+      connectedApn: Object.assign({}, customApnDefaultEnabled),
+      customApnList: [
+        Object.assign({}, customApnDefaultEnabled),
+        Object.assign({}, customApnAttachEnabled),
+      ],
+    };
+    await flushTasks();
+    apns = apnList.shadowRoot.querySelectorAll('apn-list-item');
+    assertTrue(apns[0].shouldDisallowDisablingRemoving);
+    assertFalse(apns[1].shouldDisallowDisablingRemoving);
   });
 
   test('Show enable warning', async function() {
@@ -448,5 +479,31 @@ suite('ApnListTest', function() {
     assertTrue(apns[0].shouldDisallowEnabling);
     assertFalse(apns[1].shouldDisallowEnabling);
     assertTrue(apns[2].shouldDisallowEnabling);
+
+    apnList.managedCellularProperties = {
+      connectedApn: customApnDefaultEnabled,
+      customApnList: [
+        customApnDefaultEnabled,
+        customApnAttachDisabled,
+      ],
+    };
+    await flushTasks();
+    apns = apnList.shadowRoot.querySelectorAll('apn-list-item');
+    assertFalse(apns[0].shouldDisallowEnabling);
+    assertFalse(apns[1].shouldDisallowEnabling);
+  });
+
+  test('Portal state is set', async function() {
+    apnList.managedCellularProperties = {
+      customApnList: [customApn1],
+    };
+    await flushTasks();
+    const apns = apnList.shadowRoot.querySelectorAll('apn-list-item');
+    assertEquals(apns.length, 1);
+    assertTrue(OncMojo.apnMatch(apns[0].apn, customApn1));
+    assertFalse(!!apns[0].portalState);
+
+    apnList.portalState = PortalState.kNoInternet;
+    assertEquals(PortalState.kNoInternet, apns[0].portalState);
   });
 });

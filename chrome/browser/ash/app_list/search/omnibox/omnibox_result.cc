@@ -103,8 +103,6 @@ OmniboxResult::OmniboxResult(Profile* profile,
     dedup_priority_ = kDefaultPriority;
   }
 
-  SetIsOmniboxSearch(
-      crosapi::OptionalBoolIsTrue(search_result_->is_omnibox_search));
   SetSkipUpdateAnimation(search_result_->metrics_type ==
                          CrosApiSearchResult::MetricsType::kSearchWhatYouTyped);
 

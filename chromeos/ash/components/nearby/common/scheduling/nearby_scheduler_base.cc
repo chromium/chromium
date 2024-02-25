@@ -93,7 +93,7 @@ void NearbySchedulerBase::Reschedule() {
 
   timer_.Stop();
 
-  absl::optional<base::TimeDelta> delay = GetTimeUntilNextRequest();
+  std::optional<base::TimeDelta> delay = GetTimeUntilNextRequest();
   if (!delay) {
     return;
   }
@@ -103,15 +103,15 @@ void NearbySchedulerBase::Reschedule() {
                               base::Unretained(this)));
 }
 
-absl::optional<base::Time> NearbySchedulerBase::GetLastSuccessTime() const {
+std::optional<base::Time> NearbySchedulerBase::GetLastSuccessTime() const {
   return base::ValueToTime(
       pref_service_->GetDict(pref_name_).Find(kLastSuccessTimeKeyName));
 }
 
-absl::optional<base::TimeDelta> NearbySchedulerBase::GetTimeUntilNextRequest()
+std::optional<base::TimeDelta> NearbySchedulerBase::GetTimeUntilNextRequest()
     const {
   if (!is_running() || IsWaitingForResult()) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   if (HasPendingImmediateRequest()) {
@@ -121,7 +121,7 @@ absl::optional<base::TimeDelta> NearbySchedulerBase::GetTimeUntilNextRequest()
   base::Time now = clock_->Now();
 
   // Recover from failures using exponential backoff strategy if necessary.
-  absl::optional<base::TimeDelta> time_until_retry = TimeUntilRetry(now);
+  std::optional<base::TimeDelta> time_until_retry = TimeUntilRetry(now);
   if (time_until_retry) {
     return time_until_retry;
   }
@@ -171,7 +171,7 @@ void NearbySchedulerBase::OnConnectionChanged(
   Reschedule();
 }
 
-absl::optional<base::Time> NearbySchedulerBase::GetLastAttemptTime() const {
+std::optional<base::Time> NearbySchedulerBase::GetLastAttemptTime() const {
   return base::ValueToTime(
       pref_service_->GetDict(pref_name_).Find(kLastAttemptTimeKeyName));
 }
@@ -215,15 +215,15 @@ void NearbySchedulerBase::InitializePersistedRequest() {
   }
 }
 
-absl::optional<base::TimeDelta> NearbySchedulerBase::TimeUntilRetry(
+std::optional<base::TimeDelta> NearbySchedulerBase::TimeUntilRetry(
     base::Time now) const {
   if (!retry_failures_) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   size_t num_failures = GetNumConsecutiveFailures();
   if (num_failures == 0) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   // The exponential back off is
@@ -252,9 +252,9 @@ void NearbySchedulerBase::OnTimerFired() {
 }
 
 void NearbySchedulerBase::PrintSchedulerState() const {
-  absl::optional<base::Time> last_attempt_time = GetLastAttemptTime();
-  absl::optional<base::Time> last_success_time = GetLastSuccessTime();
-  absl::optional<base::TimeDelta> time_until_next_request =
+  std::optional<base::Time> last_attempt_time = GetLastAttemptTime();
+  std::optional<base::Time> last_success_time = GetLastSuccessTime();
+  std::optional<base::TimeDelta> time_until_next_request =
       GetTimeUntilNextRequest();
 
   std::stringstream ss;

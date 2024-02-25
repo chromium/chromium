@@ -4,10 +4,9 @@
 
 #import "remoting/ios/mdc/MDCActionImageView.h"
 
-#import <MaterialComponents/MaterialAnimationTiming.h>
+#import <Foundation/Foundation.h>
 
 static const CGFloat kIconRotationRadians = 0.375f * 2 * M_PI;
-static const CGFloat kIconTransitionAnimationDuration = 0.3f;
 static const CGFloat kIconShrinkScale = 0.4f;
 
 @implementation MDCActionImageView {
@@ -69,21 +68,7 @@ static const CGFloat kIconShrinkScale = 0.4f;
 }
 
 - (void)setActive:(BOOL)active animated:(BOOL)animated {
-  if (animated) {
-    CAMediaTimingFunction* timingCurve = [CAMediaTimingFunction
-        mdc_functionWithType:MDCAnimationTimingFunctionEaseOut];
-    [UIView mdc_animateWithTimingFunction:timingCurve
-                                 duration:kIconTransitionAnimationDuration
-                                    delay:0
-                                  options:0
-                               animations:^{
-                                 self.active = active;
-                               }
-                               completion:^(BOOL finished){
-                               }];
-  } else {
-    self.active = active;
-  }
+  NSAssert(NO, @"Unimplemented");
 }
 
 @end

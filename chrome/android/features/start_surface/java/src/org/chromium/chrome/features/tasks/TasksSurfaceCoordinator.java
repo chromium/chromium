@@ -30,19 +30,14 @@ import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.multiwindow.MultiWindowModeStateDispatcher;
 import org.chromium.chrome.browser.ntp.IncognitoCookieControlsManager;
 import org.chromium.chrome.browser.omnibox.OmniboxStub;
-import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
-import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
-import org.chromium.chrome.browser.profiles.OriginalProfileSupplier;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileManager;
-import org.chromium.chrome.browser.query_tiles.QueryTileSection;
-import org.chromium.chrome.browser.query_tiles.QueryTileUtils;
 import org.chromium.chrome.browser.suggestions.tile.MostVisitedTilesCoordinator;
 import org.chromium.chrome.browser.suggestions.tile.TileGroupDelegateImpl;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabCreatorManager;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
-import org.chromium.chrome.browser.tasks.ReturnToChromeUtil;
+import org.chromium.chrome.browser.tasks.tab_management.RecyclerViewPosition;
 import org.chromium.chrome.browser.tasks.tab_management.TabManagementDelegate.TabSwitcherType;
 import org.chromium.chrome.browser.tasks.tab_management.TabManagementDelegateProvider;
 import org.chromium.chrome.browser.tasks.tab_management.TabSwitcher;
@@ -83,8 +78,6 @@ public class TasksSurfaceCoordinator implements TasksSurface {
     private MostVisitedTilesCoordinator mMostVisitedCoordinator;
     private MostVisitedSuggestionsUiDelegate mSuggestionsUiDelegate;
     private TileGroupDelegateImpl mTileGroupDelegate;
-    private OneshotSupplier<Profile> mQueryTileProfileSupplier;
-    private QueryTileSection mQueryTileSection;
 
     /**
      * This flag should be reset once {@link MostVisitedTilesCoordinator#destroyMvtiles} is called.
@@ -92,12 +85,17 @@ public class TasksSurfaceCoordinator implements TasksSurface {
     private boolean mIsMVTilesInitialized;
 
     /** {@see TabManagementDelegate#createTasksSurface} */
-    public TasksSurfaceCoordinator(@NonNull Activity activity,
-            @NonNull ScrimCoordinator scrimCoordinator, @NonNull PropertyModel propertyModel,
-            @TabSwitcherType int tabSwitcherType, @NonNull Supplier<Tab> parentTabSupplier,
-            boolean hasMVTiles, boolean hasQueryTiles, @NonNull WindowAndroid windowAndroid,
+    public TasksSurfaceCoordinator(
+            @NonNull Activity activity,
+            @NonNull ScrimCoordinator scrimCoordinator,
+            @NonNull PropertyModel propertyModel,
+            @TabSwitcherType int tabSwitcherType,
+            @NonNull Supplier<Tab> parentTabSupplier,
+            boolean hasMVTiles,
+            @NonNull WindowAndroid windowAndroid,
             @NonNull ActivityLifecycleDispatcher activityLifecycleDispatcher,
-            @NonNull TabModelSelector tabModelSelector, @NonNull SnackbarManager snackbarManager,
+            @NonNull TabModelSelector tabModelSelector,
+            @NonNull SnackbarManager snackbarManager,
             @NonNull Supplier<DynamicResourceLoader> dynamicResourceLoaderSupplier,
             @NonNull TabContentManager tabContentManager,
             @NonNull ModalDialogManager modalDialogManager,
@@ -106,17 +104,22 @@ public class TasksSurfaceCoordinator implements TasksSurface {
             @NonNull MenuOrKeyboardActionController menuOrKeyboardActionController,
             @NonNull MultiWindowModeStateDispatcher multiWindowModeStateDispatcher,
             @NonNull ViewGroup rootView,
-            @Nullable OneshotSupplier<IncognitoReauthController>
-                    incognitoReauthControllerSupplier) {
+            @Nullable
+                    OneshotSupplier<IncognitoReauthController> incognitoReauthControllerSupplier) {
         mActivity = activity;
         if (!ChromeFeatureList.sSurfacePolish.isEnabled()) {
-            mView = (TasksView) LayoutInflater.from(mActivity).inflate(
-                    R.layout.tasks_view_layout, null);
+            mView =
+                    (TasksView)
+                            LayoutInflater.from(mActivity)
+                                    .inflate(R.layout.tasks_view_layout, null);
         } else {
-            mView = (TasksView) LayoutInflater.from(mActivity).inflate(
-                    R.layout.tasks_view_layout_polish, null);
+            mView =
+                    (TasksView)
+                            LayoutInflater.from(mActivity)
+                                    .inflate(R.layout.tasks_view_layout_polish, null);
         }
-        mView.initialize(activityLifecycleDispatcher,
+        mView.initialize(
+                activityLifecycleDispatcher,
                 parentTabSupplier.hasValue() && parentTabSupplier.get().isIncognito(),
                 windowAndroid);
         mPropertyModelChangeProcessor =
@@ -128,29 +131,45 @@ public class TasksSurfaceCoordinator implements TasksSurface {
         mTabContentManager = tabContentManager;
         mModalDialogManager = modalDialogManager;
         mParentTabSupplier = parentTabSupplier;
-        if (tabSwitcherType == TabSwitcherType.CAROUSEL) {
-            mTabSwitcher = TabManagementDelegateProvider.getDelegate().createCarouselTabSwitcher(
-                    activity, activityLifecycleDispatcher, tabModelSelector, tabContentManager,
-                    browserControlsStateProvider, tabCreatorManager, menuOrKeyboardActionController,
-                    mView.getCarouselTabSwitcherContainer(), multiWindowModeStateDispatcher,
-                    scrimCoordinator, rootView, dynamicResourceLoaderSupplier, snackbarManager,
-                    modalDialogManager);
-        } else if (tabSwitcherType == TabSwitcherType.GRID) {
-            assert incognitoReauthControllerSupplier
-                    != null : "Valid Incognito re-auth controller supplier needed to create GTS.";
-            mTabSwitcher = TabManagementDelegateProvider.getDelegate().createGridTabSwitcher(
-                    activity, activityLifecycleDispatcher, tabModelSelector, tabContentManager,
-                    browserControlsStateProvider, tabCreatorManager, menuOrKeyboardActionController,
-                    mView.getBodyViewContainer(), multiWindowModeStateDispatcher, scrimCoordinator,
-                    rootView, dynamicResourceLoaderSupplier, snackbarManager, modalDialogManager,
-                    incognitoReauthControllerSupplier, /*BackPressManager*/ null,
-                    /* layoutStateProviderSupplier */ null);
+        if (tabSwitcherType == TabSwitcherType.GRID) {
+            assert incognitoReauthControllerSupplier != null
+                    : "Valid Incognito re-auth controller supplier needed to create GTS.";
+            mTabSwitcher =
+                    TabManagementDelegateProvider.getDelegate()
+                            .createGridTabSwitcher(
+                                    activity,
+                                    activityLifecycleDispatcher,
+                                    tabModelSelector,
+                                    tabContentManager,
+                                    browserControlsStateProvider,
+                                    tabCreatorManager,
+                                    menuOrKeyboardActionController,
+                                    mView.getBodyViewContainer(),
+                                    multiWindowModeStateDispatcher,
+                                    scrimCoordinator,
+                                    rootView,
+                                    dynamicResourceLoaderSupplier,
+                                    snackbarManager,
+                                    modalDialogManager,
+                                    incognitoReauthControllerSupplier,
+                                    /* backPressManager= */ null,
+                                    /* layoutStateProviderSupplier= */ null);
         } else if (tabSwitcherType == TabSwitcherType.SINGLE) {
-            mTabSwitcher = new SingleTabSwitcherCoordinator(activity,
-                    mView.getCarouselTabSwitcherContainer(), null, tabModelSelector,
-                    /* isTablet= */ false, /* isScrollableMvtEnabled */ true,
-                    /* mostRecentTab= */ null, /* singleTabCardClickedCallback */ null,
-                    /* snapshotParentViewRunnable */ null, mTabContentManager);
+            mTabSwitcher =
+                    new SingleTabSwitcherCoordinator(
+                            activity,
+                            mView.getCardTabSwitcherContainer(),
+                            null,
+                            tabModelSelector,
+                            /* isShownOnNtp= */ false,
+                            /* isTablet= */ false,
+                            /* isScrollableMvtEnabled= */ true,
+                            /* mostRecentTab= */ null,
+                            /* singleTabCardClickedCallback= */ null,
+                            /* snapshotParentViewRunnable= */ null,
+                            mTabContentManager,
+                            /* uiConfig= */ null,
+                            /* moduleDelegate= */ null);
         } else if (tabSwitcherType == TabSwitcherType.NONE) {
             mTabSwitcher = null;
         } else {
@@ -158,63 +177,44 @@ public class TasksSurfaceCoordinator implements TasksSurface {
             assert false : "Unsupported tab switcher type";
         }
 
-        View.OnClickListener incognitoLearnMoreClickListener = v -> {
-            Profile profile = Profile.getLastUsedRegularProfile().getPrimaryOTRProfile(
-                    /*createIfNeeded=*/true);
-            HelpAndFeedbackLauncherImpl.getForProfile(profile).show(
-                    activity, activity.getString(R.string.help_context_incognito_learn_more), null);
-        };
+        View.OnClickListener incognitoLearnMoreClickListener =
+                v -> {
+                    Profile profile =
+                            ProfileManager.getLastUsedRegularProfile()
+                                    .getPrimaryOTRProfile(/* createIfNeeded= */ true);
+                    HelpAndFeedbackLauncherImpl.getForProfile(profile)
+                            .show(
+                                    activity,
+                                    activity.getString(R.string.help_context_incognito_learn_more),
+                                    null);
+                };
         IncognitoCookieControlsManager incognitoCookieControlsManager =
                 new IncognitoCookieControlsManager();
-        mMediator = new TasksSurfaceMediator(propertyModel, incognitoLearnMoreClickListener,
-                incognitoCookieControlsManager, tabSwitcherType == TabSwitcherType.CAROUSEL);
+        mMediator =
+                new TasksSurfaceMediator(
+                        propertyModel,
+                        incognitoLearnMoreClickListener,
+                        incognitoCookieControlsManager);
 
         if (hasMVTiles) {
-            boolean isScrollableMVTEnabled =
-                    !ReturnToChromeUtil.shouldImproveStartWhenFeedIsDisabled(mActivity);
-            int maxRowsForGridMVT = getQueryTilesVisibility()
-                    ? QueryTileSection.getMaxRowsForMostVisitedTiles(activity)
-                    : MAX_TILE_ROWS_FOR_GRID_MVT;
             View mvTilesContainer = mView.findViewById(R.id.mv_tiles_container);
-            mMostVisitedCoordinator = new MostVisitedTilesCoordinator(activity,
-                    activityLifecycleDispatcher, mvTilesContainer, windowAndroid,
-                    TabUiFeatureUtilities.supportInstantStart(
-                            DeviceFormFactor.isNonMultiDisplayContextOnTablet(mActivity),
-                            mActivity),
-                    isScrollableMVTEnabled,
-                    isScrollableMVTEnabled ? Integer.MAX_VALUE : maxRowsForGridMVT,
-                    /*snapshotTileGridChangedRunnable=*/null,
-                    /*tileCountChangedRunnable=*/null);
-        }
-
-        if (hasQueryTiles) {
-            if (ProfileManager.isInitialized()) {
-                initializeQueryTileSection(Profile.getLastUsedRegularProfile());
-            } else {
-                mQueryTileProfileSupplier = new OriginalProfileSupplier();
-                mQueryTileProfileSupplier.onAvailable(this::initializeQueryTileSection);
-            }
-        } else {
-            storeQueryTilesVisibility(false);
+            mMostVisitedCoordinator =
+                    new MostVisitedTilesCoordinator(
+                            activity,
+                            activityLifecycleDispatcher,
+                            mvTilesContainer,
+                            windowAndroid,
+                            TabUiFeatureUtilities.supportInstantStart(
+                                    DeviceFormFactor.isNonMultiDisplayContextOnTablet(mActivity),
+                                    mActivity),
+                            /* isScrollableMVTEnabled= */ true,
+                            Integer.MAX_VALUE,
+                            /* snapshotTileGridChangedRunnable= */ null,
+                            /* tileCountChangedRunnable= */ null);
         }
     }
 
-    private void initializeQueryTileSection(Profile profile) {
-        assert profile != null;
-        if (!QueryTileUtils.isQueryTilesEnabledOnStartSurface()) {
-            storeQueryTilesVisibility(false);
-            return;
-        }
-        mQueryTileSection =
-                new QueryTileSection(mView.findViewById(R.id.query_tiles_layout), profile,
-                        query -> mMediator.performSearchQuery(query.queryText, query.searchParams));
-        storeQueryTilesVisibility(true);
-        mQueryTileProfileSupplier = null;
-    }
-
-    /**
-     * TasksSurface implementation.
-     */
+    /** TasksSurface implementation. */
     @Override
     public void initialize() {
         assert LibraryLoader.getInstance().isInitialized();
@@ -223,18 +223,25 @@ public class TasksSurfaceCoordinator implements TasksSurface {
 
     @Override
     public void initializeMVTiles() {
-        if (!LibraryLoader.getInstance().isInitialized() || mIsMVTilesInitialized
+        if (!LibraryLoader.getInstance().isInitialized()
+                || mIsMVTilesInitialized
                 || mMostVisitedCoordinator == null) {
             return;
         }
 
-        Profile profile = Profile.getLastUsedRegularProfile();
+        Profile profile = ProfileManager.getLastUsedRegularProfile();
         MostVisitedTileNavigationDelegate navigationDelegate =
                 new MostVisitedTileNavigationDelegate(mActivity, profile, mParentTabSupplier);
-        mSuggestionsUiDelegate = new MostVisitedSuggestionsUiDelegate(
-                mView, navigationDelegate, profile, mSnackbarManager);
-        mTileGroupDelegate = new TileGroupDelegateImpl(mActivity, profile, navigationDelegate,
-                mSnackbarManager, BrowserUiUtils.HostSurface.START_SURFACE);
+        mSuggestionsUiDelegate =
+                new MostVisitedSuggestionsUiDelegate(
+                        mView, navigationDelegate, profile, mSnackbarManager);
+        mTileGroupDelegate =
+                new TileGroupDelegateImpl(
+                        mActivity,
+                        profile,
+                        navigationDelegate,
+                        mSnackbarManager,
+                        BrowserUiUtils.HostSurface.START_SURFACE);
 
         mMostVisitedCoordinator.initWithNative(
                 mSuggestionsUiDelegate, mTileGroupDelegate, enabled -> {});
@@ -259,9 +266,25 @@ public class TasksSurfaceCoordinator implements TasksSurface {
     }
 
     @Override
+    public int getTabSwitcherTabListModelSize() {
+        if (mTabSwitcher != null
+                && mTabSwitcher.getController().getTabSwitcherType() == TabSwitcherType.GRID) {
+            return mTabSwitcher.getTabSwitcherTabListModelSize();
+        }
+        return 0;
+    }
+
+    @Override
+    public void setTabSwitcherRecyclerViewPosition(RecyclerViewPosition recyclerViewPosition) {
+        if (mTabSwitcher != null
+                && mTabSwitcher.getController().getTabSwitcherType() == TabSwitcherType.GRID) {
+            mTabSwitcher.setTabSwitcherRecyclerViewPosition(recyclerViewPosition);
+        }
+    }
+
+    @Override
     public Supplier<Boolean> getTabGridDialogVisibilitySupplier() {
-        if (mTabSwitcherType != TabSwitcherType.CAROUSEL
-                && mTabSwitcherType != TabSwitcherType.GRID) {
+        if (mTabSwitcherType != TabSwitcherType.GRID) {
             return null;
         }
         assert mTabSwitcher != null;
@@ -279,7 +302,9 @@ public class TasksSurfaceCoordinator implements TasksSurface {
     }
 
     @Override
-    public void onFinishNativeInitialization(Context context, OmniboxStub omniboxStub,
+    public void onFinishNativeInitialization(
+            Context context,
+            OmniboxStub omniboxStub,
             @Nullable FeedReliabilityLogger feedReliabilityLogger) {
         if (mTabSwitcher != null) mTabSwitcher.initWithNative();
 
@@ -296,13 +321,6 @@ public class TasksSurfaceCoordinator implements TasksSurface {
     public void removeHeaderOffsetChangeListener(
             AppBarLayout.OnOffsetChangedListener onOffsetChangedListener) {
         mView.removeHeaderOffsetChangeListener(onOffsetChangedListener);
-    }
-
-    @Override
-    public void updateFakeSearchBox(int height, int topMargin, int endPadding, float translationX,
-            int buttonSize, int lensButtonLeftMargin) {
-        mView.updateFakeSearchBox(
-                height, topMargin, endPadding, translationX, buttonSize, lensButtonLeftMargin);
     }
 
     @Override
@@ -346,15 +364,5 @@ public class TasksSurfaceCoordinator implements TasksSurface {
     @Override
     public @Nullable TabSwitcherCustomViewManager getTabSwitcherCustomViewManager() {
         return (mTabSwitcher != null) ? mTabSwitcher.getTabSwitcherCustomViewManager() : null;
-    }
-
-    private void storeQueryTilesVisibility(boolean isShown) {
-        SharedPreferencesManager.getInstance().writeBoolean(
-                ChromePreferenceKeys.QUERY_TILES_SHOWN_ON_START_SURFACE, isShown);
-    }
-
-    private boolean getQueryTilesVisibility() {
-        return SharedPreferencesManager.getInstance().readBoolean(
-                ChromePreferenceKeys.QUERY_TILES_SHOWN_ON_START_SURFACE, false);
     }
 }

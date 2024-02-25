@@ -22,7 +22,9 @@ promise_test(t => {
   return new Promise((resolve, reject) => {
     channel.port1.onmessage = e => {
       try {
-        assert_equals(scheduler.isAncestor(e.data), "ancestor");
+        // This is not an ancestor because task attribution doesn't get passed
+        // along when the ports get disentangled.
+        assert_equals(scheduler.isAncestor(e.data), "not ancestor");
         resolve();
       } catch(e) {
         reject(e);

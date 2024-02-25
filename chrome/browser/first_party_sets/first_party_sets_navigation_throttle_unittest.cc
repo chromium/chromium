@@ -16,6 +16,8 @@
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "content/public/common/content_features.h"
 #include "content/public/test/mock_navigation_handle.h"
+#include "net/base/features.h"
+#include "third_party/blink/public/common/features.h"
 
 namespace {
 
@@ -31,9 +33,14 @@ class FirstPartySetsNavigationThrottleTest
   FirstPartySetsNavigationThrottleTest()
       : ChromeRenderViewHostTestHarness(
             base::test::TaskEnvironment::TimeSource::MOCK_TIME) {
-    features_.InitAndEnableFeatureWithParameters(
-        features::kFirstPartySets,
-        {{features::kFirstPartySetsClearSiteDataOnChangedSets.name, "true"}});
+    features_.InitWithFeaturesAndParameters(
+        {
+            {net::features::kWaitForFirstPartySetsInit,
+             {{net::features::
+                   kWaitForFirstPartySetsInitNavigationThrottleTimeout.name,
+               "2s"}}},
+        },
+        {});
   }
 
   void SetUp() override {
@@ -68,20 +75,6 @@ class FirstPartySetsNavigationThrottleTest
   ScopedMockFirstPartySetsHandler first_party_sets_handler_;
   raw_ptr<FirstPartySetsPolicyService, DanglingUntriaged> service_;
 };
-
-TEST_F(FirstPartySetsNavigationThrottleTest,
-       MaybeCreateNavigationThrottle_ClearingFeatureDisabled) {
-  base::test::ScopedFeatureList features;
-  features.InitAndEnableFeatureWithParameters(
-      features::kFirstPartySets,
-      {{features::kFirstPartySetsClearSiteDataOnChangedSets.name, "false"}});
-
-  content::MockNavigationHandle handle(GURL(kExampleURL), main_rfh());
-  ASSERT_TRUE(handle.IsInOutermostMainFrame());
-
-  EXPECT_FALSE(
-      FirstPartySetsNavigationThrottle::MaybeCreateNavigationThrottle(&handle));
-}
 
 TEST_F(FirstPartySetsNavigationThrottleTest,
        MaybeCreateNavigationThrottle_ClearingFeatureEnabled) {
@@ -240,10 +233,11 @@ class FirstPartySetsNavigationThrottleNoDelayTest
  public:
   FirstPartySetsNavigationThrottleNoDelayTest() {
     features_.InitAndEnableFeatureWithParameters(
-        features::kFirstPartySets,
+        net::features::kWaitForFirstPartySetsInit,
         {
-            {features::kFirstPartySetsClearSiteDataOnChangedSets.name, "true"},
-            {features::kFirstPartySetsNavigationThrottleTimeout.name, "0"},
+            {net::features::kWaitForFirstPartySetsInitNavigationThrottleTimeout
+                 .name,
+             "0s"},
         });
   }
 

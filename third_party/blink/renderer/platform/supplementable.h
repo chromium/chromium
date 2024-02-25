@@ -129,7 +129,7 @@ class Supplement : public GarbageCollectedMixin {
   // Supplements are constructed lazily on first access and are destroyed with
   // their Supplementable, so GetSupplementable() should never return null (if
   // the default constructor is completely removed).
-  T* GetSupplementable() const { return supplementable_; }
+  T* GetSupplementable() const { return supplementable_.Get(); }
 
   template <typename SupplementType>
   static void ProvideTo(Supplementable<T>& supplementable,

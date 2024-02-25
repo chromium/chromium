@@ -13,15 +13,15 @@ The Tast framework provides an easy way to run the video decoder performance
 tests from a ChromeOS chroot. Test data is automatically deployed to the device
 being tested. To run all video decoder performance tests use:
 
-    tast run $HOST video.DecodeAccelPerf*
+    tast run $HOST video.ChromeStackDecoderPerf*
 
 Wildcards can be used to run specific sets of tests:
-* Run all VP8 performance tests: `tast run $HOST video.DecodeAccelPerfVP8*`
+* Run all VP8 performance tests: `tast run $HOST video.ChromeStackDecoderPerf.vp8*`
 * Run all 1080p 60fps performance tests:
-`tast run $HOST video.DecodeAccelPerf*1080P60FPS`
+`tast run $HOST video.ChromeStackDecoderPerf.*_1080p_60fps*`
 
 Check the
-[tast video folder](https://chromium.googlesource.com/chromiumos/platform/tast-tests/+/refs/heads/main/src/chromiumos/tast/local/bundles/cros/video/)
+[tast video folder](https://chromium.googlesource.com/chromiumos/platform/tast-tests/+/refs/heads/main/src/go.chromium.org/tast-tests/cros/local/bundles/cros/video/)
 for a list of all available tests.
 See the
 [Tast quickstart guide](https://chromium.googlesource.com/chromiumos/platform/tast/+/HEAD/docs/quickstart.md)
@@ -107,12 +107,6 @@ Multiple command line arguments can be given to the command:
     --ozone-platform      specify which Ozone platform to use, possible values
                           depend on build configuration but normally include
                           x11, drm, wayland, and headless
-    --disable_vaapi_lock  disable the global VA-API lock if applicable,
-                          i.e., only on devices that use the VA-API with a libva
-                          backend that's known to be thread-safe and only in
-                          portions of the Chrome stack that should be able to
-                          deal with the absence of the lock
-                          (not the VaapiVideoDecodeAccelerator).
 
     --gtest_help          display the gtest help and exit.
     --help                display this help and exit.

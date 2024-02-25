@@ -14,7 +14,6 @@
 #include "base/supports_user_data.h"
 #include "base/values.h"
 #include "content/browser/webui/url_data_manager.h"
-#include "content/public/browser/url_data_source.h"
 #include "net/http/http_response_headers.h"
 
 class GURL;
@@ -26,7 +25,6 @@ class RefCountedMemory;
 namespace content {
 
 class BrowserContext;
-class URLDataManagerBackend;
 class URLDataSourceImpl;
 
 // URLDataManagerBackend is used internally by ChromeURLDataManager on the UI

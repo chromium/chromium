@@ -328,7 +328,6 @@ DOMHighResTimeStamp PerformanceResourceTiming::requestStart() const {
 
 DOMHighResTimeStamp PerformanceResourceTiming::firstInterimResponseStart()
     const {
-  DCHECK(RuntimeEnabledFeatures::ResourceTimingInterimResponseTimesEnabled());
   if (!info_->allow_timing_details || !info_->timing) {
     return 0;
   }
@@ -346,10 +345,6 @@ DOMHighResTimeStamp PerformanceResourceTiming::firstInterimResponseStart()
 }
 
 DOMHighResTimeStamp PerformanceResourceTiming::responseStart() const {
-  if (!RuntimeEnabledFeatures::ResourceTimingInterimResponseTimesEnabled()) {
-    return GetAnyFirstResponseStart();
-  }
-
   if (!info_->allow_timing_details || !info_->timing) {
     return GetAnyFirstResponseStart();
   }
@@ -418,12 +413,8 @@ PerformanceResourceTiming::serverTiming() const {
 
 void PerformanceResourceTiming::BuildJSONValue(V8ObjectBuilder& builder) const {
   PerformanceEntry::BuildJSONValue(builder);
-  ExecutionContext* execution_context =
-      ExecutionContext::From(builder.GetScriptState());
   builder.AddString("initiatorType", initiatorType());
-  if (RuntimeEnabledFeatures::DeliveryTypeEnabled(execution_context)) {
-    builder.AddString("deliveryType", deliveryType());
-  }
+  builder.AddString("deliveryType", deliveryType());
   builder.AddString("nextHopProtocol", nextHopProtocol());
   if (RuntimeEnabledFeatures::RenderBlockingStatusEnabled()) {
     builder.AddString("renderBlockingStatus", renderBlockingStatus());
@@ -442,23 +433,17 @@ void PerformanceResourceTiming::BuildJSONValue(V8ObjectBuilder& builder) const {
   builder.AddNumber("connectEnd", connectEnd());
   builder.AddNumber("requestStart", requestStart());
   builder.AddNumber("responseStart", responseStart());
-
-  if (RuntimeEnabledFeatures::ResourceTimingInterimResponseTimesEnabled()) {
-    builder.AddNumber("firstInterimResponseStart", firstInterimResponseStart());
-  }
+  builder.AddNumber("firstInterimResponseStart", firstInterimResponseStart());
 
   builder.AddNumber("responseEnd", responseEnd());
   builder.AddNumber("transferSize", transferSize());
   builder.AddNumber("encodedBodySize", encodedBodySize());
   builder.AddNumber("decodedBodySize", decodedBodySize());
-  if (RuntimeEnabledFeatures::ResourceTimingResponseStatusEnabled()) {
-    builder.AddNumber("responseStatus", responseStatus());
-  }
+  builder.AddNumber("responseStatus", responseStatus());
 
-  builder.Add("serverTiming",
-              ToV8Traits<IDLArray<PerformanceServerTiming>>::ToV8(
-                  builder.GetScriptState(), serverTiming())
-                  .ToLocalChecked());
+  builder.AddV8Value("serverTiming",
+                     ToV8Traits<IDLArray<PerformanceServerTiming>>::ToV8(
+                         builder.GetScriptState(), serverTiming()));
 }
 
 void PerformanceResourceTiming::Trace(Visitor* visitor) const {

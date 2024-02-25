@@ -5,13 +5,14 @@
 #ifndef CHROMEOS_ASH_SERVICES_SECURE_CHANNEL_CONNECT_TO_DEVICE_OPERATION_BASE_H_
 #define CHROMEOS_ASH_SERVICES_SECURE_CHANNEL_CONNECT_TO_DEVICE_OPERATION_BASE_H_
 
+#include <optional>
+
 #include "base/functional/bind.h"
 #include "base/memory/weak_ptr.h"
 #include "base/task/single_thread_task_runner.h"
 #include "chromeos/ash/services/secure_channel/connect_to_device_operation.h"
 #include "chromeos/ash/services/secure_channel/device_id_pair.h"
 #include "chromeos/ash/services/secure_channel/public/cpp/shared/connection_priority.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ash::secure_channel {
 
@@ -108,7 +109,7 @@ class ConnectToDeviceOperationBase
  private:
   DeviceIdPair device_id_pair_;
   scoped_refptr<base::TaskRunner> task_runner_;
-  absl::optional<ConnectionPriority> pending_connection_attempt_priority_;
+  std::optional<ConnectionPriority> pending_connection_attempt_priority_;
   base::WeakPtrFactory<ConnectToDeviceOperationBase> weak_ptr_factory_{this};
 };
 

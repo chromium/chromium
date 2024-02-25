@@ -146,8 +146,7 @@ class ExternalPrefLoader::PrioritySyncReadyWaiter
  private:
   void MaybeObserveSyncStart() {
     syncer::SyncService* service = SyncServiceFactory::GetForProfile(profile_);
-    DCHECK(service);
-    if (!service->CanSyncFeatureStart()) {
+    if (!service || !service->IsSyncFeatureEnabled()) {
       Finish();
       // Note: |this| is deleted.
       return;
@@ -167,8 +166,9 @@ class ExternalPrefLoader::PrioritySyncReadyWaiter
 
   // syncer::SyncServiceObserver
   void OnStateChanged(syncer::SyncService* sync) override {
-    if (!sync->CanSyncFeatureStart())
+    if (!sync->IsSyncFeatureEnabled()) {
       Finish();
+    }
   }
 
   void OnSyncShutdown(syncer::SyncService* sync) override {
@@ -194,7 +194,7 @@ class ExternalPrefLoader::PrioritySyncReadyWaiter
 
   void Finish() { std::move(done_closure_).Run(); }
 
-  raw_ptr<Profile, ExperimentalAsh> profile_;
+  raw_ptr<Profile, LeakedDanglingUntriaged> profile_;
 
   base::OnceClosure done_closure_;
 
@@ -294,13 +294,10 @@ void ExternalPrefLoader::LoadOnFileThread() {
       LOG(WARNING) << "You are using an old-style extension deployment method "
                       "(external_extensions.json), which will soon be "
                       "deprecated. (see http://developer.chrome.com/"
-                      "extensions/external_extensions.html)";
+                      "docs/extensions/how-to/distribute/install-extensions)";
 
     ReadStandaloneExtensionPrefFiles(prefs);
   }
-
-  if (base_path_id_ == chrome::DIR_EXTERNAL_EXTENSIONS)
-    UMA_HISTOGRAM_COUNTS_100("Extensions.ExternalJsonCount", prefs.size());
 
   // If we have any records to process, then we must have
   // read at least one .json file.  If so, then we should have

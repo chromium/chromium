@@ -60,8 +60,7 @@ void SafeBrowsingQueryManager::StartQuery(const Query& query) {
 
   // Create a URL checker and perform the query on the IO thread.
   network::mojom::RequestDestination request_destination =
-      query.IsMainFrame() ? network::mojom::RequestDestination::kDocument
-                          : network::mojom::RequestDestination::kIframe;
+      network::mojom::RequestDestination::kDocument;
   SafeBrowsingService* safe_browsing_service =
       client_->GetSafeBrowsingService();
   std::unique_ptr<safe_browsing::SafeBrowsingUrlCheckerImpl> url_checker =
@@ -69,8 +68,8 @@ void SafeBrowsingQueryManager::StartQuery(const Query& query) {
                                               client_);
   base::OnceCallback<void(
       bool proceed, bool show_error_page,
-      safe_browsing::SafeBrowsingUrlCheckerImpl::PerformedCheck performed_check,
-      bool did_check_url_real_time_allowlist)>
+      safe_browsing::SafeBrowsingUrlCheckerImpl::PerformedCheck
+          performed_check)>
       callback = base::BindOnce(&SafeBrowsingQueryManager::UrlCheckFinished,
                                 weak_factory_.GetWeakPtr(), query);
   if (base::FeatureList::IsEnabled(safe_browsing::kSafeBrowsingOnUIThread)) {
@@ -87,8 +86,6 @@ void SafeBrowsingQueryManager::StartQuery(const Query& query) {
 
 void SafeBrowsingQueryManager::StoreUnsafeResource(
     const UnsafeResource& resource) {
-  bool is_main_frame = resource.request_destination ==
-                       network::mojom::RequestDestination::kDocument;
   // Responses to repeated queries can arrive in arbitrary order, not
   // necessarily in the same order as the queries are made. This means
   // that when there are repeated pending queries (e.g., when a page has
@@ -97,8 +94,7 @@ void SafeBrowsingQueryManager::StoreUnsafeResource(
   // `resource` must be stored with every corresponding query, not just the
   // first.
   for (auto& pair : results_) {
-    if (pair.first.url == resource.url &&
-        is_main_frame == pair.first.IsMainFrame() && !pair.second.resource) {
+    if (pair.first.url == resource.url && !pair.second.resource) {
       pair.second.resource = resource;
     }
   }
@@ -110,8 +106,7 @@ void SafeBrowsingQueryManager::UrlCheckFinished(
     const Query query,
     bool proceed,
     bool show_error_page,
-    safe_browsing::SafeBrowsingUrlCheckerImpl::PerformedCheck performed_check,
-    bool did_check_url_real_time_allowlist) {
+    safe_browsing::SafeBrowsingUrlCheckerImpl::PerformedCheck performed_check) {
   auto query_result_pair = results_.find(query);
   DCHECK(query_result_pair != results_.end());
 
@@ -140,12 +135,8 @@ void SafeBrowsingQueryManager::UrlCheckFinished(
 #pragma mark - SafeBrowsingQueryManager::Query
 
 SafeBrowsingQueryManager::Query::Query(const GURL& url,
-                                       const std::string& http_method,
-                                       int main_frame_item_id)
-    : url(url),
-      http_method(http_method),
-      main_frame_item_id(main_frame_item_id),
-      query_id(CreateQueryID()) {}
+                                       const std::string& http_method)
+    : url(url), http_method(http_method), query_id(CreateQueryID()) {}
 
 SafeBrowsingQueryManager::Query::Query(const Query&) = default;
 
@@ -153,10 +144,6 @@ SafeBrowsingQueryManager::Query::~Query() = default;
 
 bool SafeBrowsingQueryManager::Query::operator<(const Query& other) const {
   return query_id < other.query_id;
-}
-
-bool SafeBrowsingQueryManager::Query::IsMainFrame() const {
-  return main_frame_item_id == -1;
 }
 
 #pragma mark - SafeBrowsingQueryManager::Result
@@ -188,8 +175,7 @@ void SafeBrowsingQueryManager::UrlCheckerClient::CheckUrl(
     base::OnceCallback<void(bool proceed,
                             bool show_error_page,
                             safe_browsing::SafeBrowsingUrlCheckerImpl::
-                                PerformedCheck performed_check,
-                            bool did_check_url_real_time_allowlist)> callback) {
+                                PerformedCheck performed_check)> callback) {
   DCHECK_CURRENTLY_ON(
       base::FeatureList::IsEnabled(safe_browsing::kSafeBrowsingOnUIThread)
           ? web::WebThread::UI
@@ -208,8 +194,8 @@ void SafeBrowsingQueryManager::UrlCheckerClient::OnCheckUrlResult(
         slow_check_notifier,
     bool proceed,
     bool showed_interstitial,
-    safe_browsing::SafeBrowsingUrlCheckerImpl::PerformedCheck performed_check,
-    bool did_check_url_real_time_allowlist) {
+    bool has_post_commit_interstitial_skipped,
+    safe_browsing::SafeBrowsingUrlCheckerImpl::PerformedCheck performed_check) {
   DCHECK_CURRENTLY_ON(
       base::FeatureList::IsEnabled(safe_browsing::kSafeBrowsingOnUIThread)
           ? web::WebThread::UI
@@ -221,16 +207,16 @@ void SafeBrowsingQueryManager::UrlCheckerClient::OnCheckUrlResult(
     return;
   }
 
-  OnCheckComplete(url_checker, proceed, showed_interstitial, performed_check,
-                  did_check_url_real_time_allowlist);
+  OnCheckComplete(url_checker, proceed, showed_interstitial,
+                  has_post_commit_interstitial_skipped, performed_check);
 }
 
 void SafeBrowsingQueryManager::UrlCheckerClient::OnCheckComplete(
     safe_browsing::SafeBrowsingUrlCheckerImpl* url_checker,
     bool proceed,
     bool showed_interstitial,
-    safe_browsing::SafeBrowsingUrlCheckerImpl::PerformedCheck performed_check,
-    bool did_check_url_real_time_allowlist) {
+    bool has_post_commit_interstitial_skipped,
+    safe_browsing::SafeBrowsingUrlCheckerImpl::PerformedCheck performed_check) {
   DCHECK_CURRENTLY_ON(
       base::FeatureList::IsEnabled(safe_browsing::kSafeBrowsingOnUIThread)
           ? web::WebThread::UI
@@ -242,9 +228,8 @@ void SafeBrowsingQueryManager::UrlCheckerClient::OnCheckComplete(
   // kSafeBrowsingOnUIThread launches, if all the callers are ok with the
   // callback being run synchronously sometimes.
   web::GetUIThreadTaskRunner({})->PostTask(
-      FROM_HERE,
-      base::BindOnce(std::move(it->second), proceed, showed_interstitial,
-                     performed_check, did_check_url_real_time_allowlist));
+      FROM_HERE, base::BindOnce(std::move(it->second), proceed,
+                                showed_interstitial, performed_check));
 
   active_url_checkers_.erase(it);
 }

@@ -5,7 +5,7 @@
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 
 import {BrowserProxy} from './browser_proxy.js';
-import {PageHandlerInterface} from './downloads.mojom-webui.js';
+import type {PageHandlerInterface} from './downloads.mojom-webui.js';
 
 export class SearchService {
   private searchTerms_: string[] = [];

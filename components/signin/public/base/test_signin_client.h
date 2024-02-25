@@ -15,16 +15,23 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "build/chromeos_buildflags.h"
+#include "components/signin/public/base/signin_buildflags.h"
 #include "components/signin/public/base/signin_client.h"
 #include "components/signin/public/base/wait_for_network_callback_helper.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
 #include "services/network/public/mojom/cookie_manager.mojom.h"
+#include "services/network/test/test_network_context.h"
 #include "services/network/test/test_url_loader_factory.h"
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
+#include <optional>
+
 #include "components/account_manager_core/account.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
+#endif
+
+#if BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
+#include "components/signin/public/base/bound_session_oauth_multilogin_delegate.h"
 #endif
 
 class PrefService;
@@ -81,6 +88,8 @@ class TestSigninClient : public SigninClient {
     cookie_manager_ = std::move(cookie_manager);
   }
 
+  network::mojom::NetworkContext* GetNetworkContext() override;
+
   // Returns |test_url_loader_factory_| if it is specified. Otherwise, lazily
   // creates a default factory and returns it.
   network::TestURLLoaderFactory* GetTestURLLoaderFactory();
@@ -111,19 +120,38 @@ class TestSigninClient : public SigninClient {
       GaiaAuthConsumer* consumer,
       gaia::GaiaSource source) override;
   version_info::Channel GetClientChannel() override;
+  void OnPrimaryAccountChangedWithEventSource(
+      signin::PrimaryAccountChangeEvent event_details,
+      absl::variant<signin_metrics::AccessPoint, signin_metrics::ProfileSignout>
+          event_source) override;
+
+#if BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
+  std::unique_ptr<signin::BoundSessionOAuthMultiLoginDelegate>
+  CreateBoundSessionOAuthMultiloginDelegate() const override;
+
+  void SetBoundSessionOauthMultiloginDelegateFactory(
+      base::RepeatingCallback<
+          std::unique_ptr<signin::BoundSessionOAuthMultiLoginDelegate>()>
+          factory);
+#endif  // BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
-  absl::optional<account_manager::Account> GetInitialPrimaryAccount() override;
-  absl::optional<bool> IsInitialPrimaryAccountChild() const override;
+  std::optional<account_manager::Account> GetInitialPrimaryAccount() override;
+  std::optional<bool> IsInitialPrimaryAccountChild() const override;
 
   void SetInitialPrimaryAccountForTests(const account_manager::Account& account,
-                                        const absl::optional<bool>& is_child);
+                                        const std::optional<bool>& is_child);
   void RemoveAccount(const account_manager::AccountKey& account_key) override;
 
   void RemoveAllAccounts() override;
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 
  private:
+#if BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
+  using BoundSessionOauthMultiloginDelegateFactory = base::RepeatingCallback<
+      std::unique_ptr<signin::BoundSessionOAuthMultiLoginDelegate>()>;
+#endif  //  BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
+
   std::unique_ptr<TestWaitForNetworkCallbackHelper>
       test_wait_for_network_callback_helper_;
   std::unique_ptr<network::TestURLLoaderFactory>
@@ -132,11 +160,16 @@ class TestSigninClient : public SigninClient {
 
   raw_ptr<PrefService> pref_service_;
   std::unique_ptr<network::mojom::CookieManager> cookie_manager_;
+  std::unique_ptr<network::mojom::NetworkContext> network_context_;
   bool are_signin_cookies_allowed_;
 
+#if BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
+  BoundSessionOauthMultiloginDelegateFactory bound_session_delegate_factory_;
+#endif  //  BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
+
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
-  absl::optional<account_manager::Account> initial_primary_account_;
-  absl::optional<bool> is_initial_primary_account_child_;
+  std::optional<account_manager::Account> initial_primary_account_;
+  std::optional<bool> is_initial_primary_account_child_;
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 };
 

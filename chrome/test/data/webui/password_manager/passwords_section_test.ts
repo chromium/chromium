@@ -4,7 +4,9 @@
 
 import 'chrome://password-manager/password_manager.js';
 
-import {AddPasswordDialogElement, AuthTimedOutDialogElement, Page, PasswordListItemElement, PasswordManagerImpl, PasswordsSectionElement, PasswordViewPageInteractions, PluralStringProxyImpl, Router, SyncBrowserProxyImpl, UrlParam} from 'chrome://password-manager/password_manager.js';
+import type {AddPasswordDialogElement, AuthTimedOutDialogElement, PasswordListItemElement, PasswordsSectionElement} from 'chrome://password-manager/password_manager.js';
+import {Page, PasswordManagerImpl, PasswordViewPageInteractions, PluralStringProxyImpl, Router, SyncBrowserProxyImpl, UrlParam} from 'chrome://password-manager/password_manager.js';
+import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {assertArrayEquals, assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 import {TestPluralStringProxy} from 'chrome://webui-test/test_plural_string_proxy.js';
@@ -362,6 +364,7 @@ suite('PasswordsSectionTest', function() {
   });
 
   test('move passwords label shown', async function() {
+    loadTimeData.overrideValues({enableButterOnDesktopFollowup: false});
     passwordManager.data.isOptedInAccountStorage = true;
     passwordManager.data.groups = [createCredentialGroup({
       name: 'test.com',
@@ -389,6 +392,7 @@ suite('PasswordsSectionTest', function() {
   });
 
   test('move passwords label hidden if no passwords to move', async function() {
+    loadTimeData.overrideValues({enableButterOnDesktopFollowup: false});
     passwordManager.data.isOptedInAccountStorage = true;
     passwordManager.data.groups = [createCredentialGroup({
       name: 'test.com',
@@ -475,6 +479,7 @@ suite('PasswordsSectionTest', function() {
   });
 
   test('clicking move passwords opens move passwords dialog', async function() {
+    loadTimeData.overrideValues({enableButterOnDesktopFollowup: false});
     passwordManager.data.isOptedInAccountStorage = true;
     passwordManager.data.groups = [createCredentialGroup({
       name: 'test.com',
@@ -528,6 +533,7 @@ suite('PasswordsSectionTest', function() {
   });
 
   test('Move passwords is hidden during search', async function() {
+    loadTimeData.overrideValues({enableButterOnDesktopFollowup: false});
     passwordManager.data.isOptedInAccountStorage = true;
     passwordManager.data.groups = [createCredentialGroup({
       name: 'test.com',
@@ -630,4 +636,69 @@ suite('PasswordsSectionTest', function() {
             Page.PASSWORD_DETAILS, Router.getInstance().currentRoute.page);
         assertEquals(query, Router.getInstance().currentRoute.queryParameters);
       });
+
+  test('Should not show local credentials icon', async function() {
+    loadTimeData.overrideValues({enableButterOnDesktopFollowup: true});
+    passwordManager.data.isOptedInAccountStorage = true;
+
+    passwordManager.data.groups = [createCredentialGroup({
+      name: 'test.com',
+      credentials: [
+        createPasswordEntry({id: 0, inAccountStore: true}),
+        createPasswordEntry(
+            {id: 1, inAccountStore: true, inProfileStore: true}),
+      ],
+    })];
+
+    const section = await createPasswordsSection();
+    const listEntry =
+        section.shadowRoot!.querySelector<HTMLElement>('password-list-item');
+    assertTrue(!!listEntry);
+    assertFalse(isVisible(
+        section.shadowRoot!.querySelector<HTMLElement>('#localPasswordsIcon')));
+  });
+
+  test('Should show local credentials icon', async function() {
+    loadTimeData.overrideValues({enableButterOnDesktopFollowup: true});
+    passwordManager.data.isOptedInAccountStorage = true;
+    syncProxy.syncInfo = {
+      isEligibleForAccountStorage: true,
+      isSyncingPasswords: false,
+    };
+
+    passwordManager.data.groups = [createCredentialGroup({
+      name: 'test.com',
+      credentials: [
+        createPasswordEntry({id: 0, inProfileStore: true}),
+      ],
+    })];
+
+    const section = await createPasswordsSection();
+    const listEntry =
+        section.shadowRoot!.querySelector<HTMLElement>('password-list-item');
+    assertTrue(!!listEntry);
+    assertTrue(isVisible(listEntry.shadowRoot!.querySelector<HTMLElement>(
+        '#localPasswordsIcon')));
+  });
+
+  test('Number of local passwords tooltip text', async function() {
+    passwordManager.data.groups = [
+      createCredentialGroup({
+        name: 'bar.com',
+        credentials: [
+          createPasswordEntry({id: 0, inProfileStore: true}),
+        ],
+      }),
+    ];
+    pluralString.text = '1 password';
+
+    const section = await createPasswordsSection();
+    const listEntry =
+        section.shadowRoot!.querySelector<HTMLElement>('password-list-item');
+    assertTrue(!!listEntry);
+    assertEquals(
+        listEntry.shadowRoot!.querySelector<HTMLElement>(
+                                 'paper-tooltip')!.innerHTML,
+        '1 password');
+  });
 });

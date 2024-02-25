@@ -35,7 +35,7 @@ constexpr int kMaxRetryCount = 1 << 24;
 #define V4L2_REQUEST_CODE_AND_STRING(x) \
   { x, #x }
 
-constexpr uint32_t kMaximumDeviceNumber = 40;
+constexpr uint32_t kMaximumDeviceNumber = 150;
 
 constexpr base::StringPiece kDecoderDevicePrefix = "/dev/video";
 constexpr base::StringPiece kMediaDevicePrefix = "/dev/media";
@@ -170,53 +170,6 @@ scoped_refptr<MmappedBuffer> V4L2Queue::GetBuffer(const size_t index) const {
 
   return buffers_[index];
 }
-
-V4L2IoctlShim::V4L2IoctlShim(const uint32_t coded_fourcc) {
-  uint32_t i;
-
-  // TODO(b/278748005): Remove |cur_val_is_supported_| when all drivers
-  // fully support |V4L2_CTRL_WHICH_CUR_VAL|
-
-  // On kernel version 5.4 the MTK driver for MT8192 does not correctly support
-  // |V4L2_CTRL_WHICH_CUR_VAL|. This parameter is used when calling
-  // VIDIOC_S_EXT_CTRLS to indicate that the call should be executed
-  // immediately instead of putting it in a queue. Making sure the first
-  // buffer is processed immediately is only necessary for codecs that
-  // support 10 bit profiles. When processing a 10 bit profile the parameters
-  // need to be processed before the format can be determined. There are no
-  // chipsets that are on kernels older 5.10 and produce 10 bit output.
-  constexpr base::StringPiece kKernelVersion5dot4 = "Linux version 5.4*";
-  std::string kernel_version;
-  ReadFileToString(base::FilePath("/proc/version"), &kernel_version);
-
-  cur_val_is_supported_ =
-      !base::MatchPattern(kernel_version, kKernelVersion5dot4);
-
-  for (i = 0; i < kMaximumDeviceNumber; ++i) {
-    std::string path =
-        std::string(kDecoderDevicePrefix) + base::NumberToString(i);
-    decode_fd_ = base::File(base::FilePath(path), base::File::FLAG_OPEN |
-                                                      base::File::FLAG_READ |
-                                                      base::File::FLAG_WRITE);
-
-    // Check if the device supports the requested coded format
-    if (QueryFormat(V4L2_BUF_TYPE_VIDEO_OUTPUT_MPLANE, coded_fourcc))
-      break;
-
-    // Close file descriptor on failure
-    decode_fd_.Close();
-  }
-
-  PCHECK(decode_fd_.IsValid()) << "Failed to find available decode device.";
-
-  if (!FindMediaDevice()) {
-    LOG(FATAL) << "Failed to find available media device.";
-  }
-
-  PCHECK(media_fd_.IsValid()) << "Media device fd is not valid.";
-}
-
-V4L2IoctlShim::~V4L2IoctlShim() = default;
 
 template <typename T>
 bool V4L2IoctlShim::Ioctl(int request_code, T arg) const {
@@ -367,6 +320,66 @@ bool V4L2IoctlShim::Ioctl(int request_code,
 
   return ret == kIoctlOk;
 }
+
+V4L2IoctlShim::V4L2IoctlShim(const uint32_t coded_fourcc) {
+  // TODO(b/278748005): Remove |cur_val_is_supported_| when all drivers
+  // fully support |V4L2_CTRL_WHICH_CUR_VAL|
+
+  // On kernel version 5.4 the MTK driver for MT8192 does not correctly support
+  // |V4L2_CTRL_WHICH_CUR_VAL|. This parameter is used when calling
+  // VIDIOC_S_EXT_CTRLS to indicate that the call should be executed
+  // immediately instead of putting it in a queue. Making sure the first
+  // buffer is processed immediately is only necessary for codecs that
+  // support 10 bit profiles. When processing a 10 bit profile the parameters
+  // need to be processed before the format can be determined. There are no
+  // chipsets that are on kernels older 5.10 and produce 10 bit output.
+  constexpr base::StringPiece kKernelVersion5dot4 = "Linux version 5.4*";
+  std::string kernel_version;
+  ReadFileToString(base::FilePath("/proc/version"), &kernel_version);
+
+  cur_val_is_supported_ =
+      !base::MatchPattern(kernel_version, kKernelVersion5dot4);
+
+  for (uint32_t i = 0; i < kMaximumDeviceNumber; ++i) {
+    std::string path =
+        std::string(kDecoderDevicePrefix) + base::NumberToString(i);
+    decode_fd_ = base::File(base::FilePath(path), base::File::FLAG_OPEN |
+                                                      base::File::FLAG_READ |
+                                                      base::File::FLAG_WRITE);
+
+    // Check if the device supports the requested coded format
+    if (QueryFormat(V4L2_BUF_TYPE_VIDEO_OUTPUT_MPLANE, coded_fourcc)) {
+      break;
+    }
+
+    // Close file descriptor on failure
+    decode_fd_.Close();
+  }
+
+  PCHECK(decode_fd_.IsValid()) << "Failed to find available decode device.";
+
+  struct v4l2_capability cap;
+  memset(&cap, 0, sizeof(cap));
+
+  const bool ret = Ioctl(VIDIOC_QUERYCAP, &cap);
+  DCHECK(ret);
+
+  LOG(INFO) << "Driver=\"" << cap.driver << "\" bus_info=\"" << cap.bus_info
+            << "\" card=\"" << cap.card;
+
+  if (!(cap.capabilities & V4L2_CAP_VIDEO_M2M_MPLANE)) {
+    LOG(FATAL)
+        << "Multi planar format required, but not supported by the driver.";
+  }
+
+  if (!FindMediaDevice(&cap)) {
+    LOG(FATAL) << "Failed to find available media device.";
+  }
+
+  PCHECK(media_fd_.IsValid()) << "Media device fd is not valid.";
+}
+
+V4L2IoctlShim::~V4L2IoctlShim() = default;
 
 bool V4L2IoctlShim::QueryCtrl(const uint32_t ctrl_id) const {
   struct v4l2_queryctrl query_ctrl;
@@ -531,7 +544,6 @@ void V4L2IoctlShim::DQBuf(const std::unique_ptr<V4L2Queue>& queue,
     while ((num_tries != 0) && !Ioctl(VIDIOC_DQBUF, &v4l2_buffer)) {
       if (errno != EAGAIN) {
         LOGF(FATAL) << "VIDIOC_DQBUF failed with errno: " << errno << ".";
-        return;
       }
 
       num_tries--;
@@ -540,7 +552,6 @@ void V4L2IoctlShim::DQBuf(const std::unique_ptr<V4L2Queue>& queue,
     if (num_tries == 0) {
       LOGF(FATAL)
           << "Decoder appeared to stall. VIDIOC_DQBUF ioctl call timed out.";
-      return;
     } else {
       // Successfully dequeued a buffer. Reset the |num_tries| counter.
       num_tries = kMaxRetryCount;
@@ -655,11 +666,7 @@ void V4L2IoctlShim::MediaRequestIocReinit(
   LOGF(FATAL) << "MEDIA_REQUEST_IOC_REINIT call timed out.";
 }
 
-bool V4L2IoctlShim::FindMediaDevice() {
-  struct v4l2_capability caps;
-  bool ret = Ioctl(VIDIOC_QUERYCAP, &caps);
-  DCHECK(ret);
-
+bool V4L2IoctlShim::FindMediaDevice(struct v4l2_capability* cap) {
   for (uint32_t i = 0; i < kMaximumDeviceNumber; ++i) {
     media_fd_ = base::File(
         base::FilePath(std::string(kMediaDevicePrefix) +
@@ -671,16 +678,16 @@ bool V4L2IoctlShim::FindMediaDevice() {
     }
 
     struct media_device_info media_info;
-    ret = Ioctl(MEDIA_IOC_DEVICE_INFO, &media_info);
+    const bool ret = Ioctl(MEDIA_IOC_DEVICE_INFO, &media_info);
     DCHECK(ret);
 
     // Match the video device and the media controller by the |bus_info|
     // field. This works better than |driver| field if there are multiple
     // instances of the same decoder driver in the system. However, old MediaTek
     // drivers didn't fill in the bus_info field for the media device.
-    if (strlen(reinterpret_cast<const char*>(caps.bus_info)) > 0 &&
+    if (strlen(reinterpret_cast<const char*>(cap->bus_info)) > 0 &&
         strlen(reinterpret_cast<const char*>(media_info.bus_info)) > 0 &&
-        !strcmp(reinterpret_cast<const char*>(caps.bus_info),
+        !strcmp(reinterpret_cast<const char*>(cap->bus_info),
                 reinterpret_cast<const char*>(media_info.bus_info))) {
       LOG(INFO) << "Using \"" << media_info.bus_info
                 << "\" driver with /dev/media" << base::NumberToString(i)
@@ -692,7 +699,7 @@ bool V4L2IoctlShim::FindMediaDevice() {
     // Fall back to matching the video device and the media controller by the
     // |driver| field. This is needed because the mtk-vcodec driver does not
     // always fill the |card| and |bus_info| fields properly.
-    if (!strcmp(reinterpret_cast<const char*>(caps.driver),
+    if (!strcmp(reinterpret_cast<const char*>(cap->driver),
                 reinterpret_cast<const char*>(media_info.driver))) {
       LOG(INFO) << "Using \"" << media_info.driver
                 << "\" driver with /dev/media" << base::NumberToString(i)
@@ -721,26 +728,6 @@ bool V4L2IoctlShim::QueryFormat(enum v4l2_buf_type type,
   }
 
   return false;
-}
-
-bool V4L2IoctlShim::VerifyCapabilities(uint32_t compressed_format) const {
-  struct v4l2_capability cap;
-  memset(&cap, 0, sizeof(cap));
-
-  const bool ret = Ioctl(VIDIOC_QUERYCAP, &cap);
-  DCHECK(ret);
-
-  LOG(INFO) << "Driver=\"" << cap.driver << "\" bus_info=\"" << cap.bus_info
-            << "\" card=\"" << cap.card;
-
-  const bool is_compressed_format_supported =
-      QueryFormat(V4L2_BUF_TYPE_VIDEO_OUTPUT_MPLANE, compressed_format);
-
-  LOG_IF(ERROR, !is_compressed_format_supported)
-      << media::FourccToString(compressed_format)
-      << " is not a supported compressed OUTPUT format.";
-
-  return is_compressed_format_supported;
 }
 
 void V4L2IoctlShim::QueryAndMmapQueueBuffers(

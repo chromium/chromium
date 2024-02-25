@@ -5,21 +5,21 @@
 #ifndef COMPONENTS_EXO_WAYLAND_SURFACE_AUGMENTER_H_
 #define COMPONENTS_EXO_WAYLAND_SURFACE_AUGMENTER_H_
 
+#include <surface-augmenter-server-protocol.h>
+
 #include <stdint.h>
 
-struct wl_client;
+namespace exo::wayland {
 
-namespace exo {
-namespace wayland {
-
-constexpr uint32_t kSurfaceAugmenterVersion = 9;
+// version: 11
+constexpr uint32_t kSurfaceAugmenterVersion =
+    AUGMENTED_SURFACE_SET_FRAME_TRACE_ID_SINCE_VERSION;
 
 void bind_surface_augmenter(wl_client* client,
                             void* data,
                             uint32_t version,
                             uint32_t id);
 
-}  // namespace wayland
-}  // namespace exo
+}  // namespace exo::wayland
 
 #endif  // COMPONENTS_EXO_WAYLAND_SURFACE_AUGMENTER_H_

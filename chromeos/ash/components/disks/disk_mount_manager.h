@@ -9,11 +9,11 @@
 
 #include <memory>
 #include <set>
+#include <string_view>
 
 #include "base/component_export.h"
 #include "base/functional/callback_forward.h"
 #include "base/observer_list_types.h"
-#include "base/strings/string_piece.h"
 #include "chromeos/ash/components/dbus/cros_disks/cros_disks_client.h"
 #include "chromeos/ash/components/disks/disk.h"
 
@@ -74,9 +74,9 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_DISKS) DiskMountManager {
       return GetKey(a) < GetKey(b);
     }
 
-    static base::StringPiece GetKey(const base::StringPiece a) { return a; }
+    static std::string_view GetKey(const std::string_view a) { return a; }
 
-    static base::StringPiece GetKey(const std::unique_ptr<Disk>& disk) {
+    static std::string_view GetKey(const std::unique_ptr<Disk>& disk) {
       DCHECK(disk);
       return disk->device_path();
     }
@@ -95,9 +95,9 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_DISKS) DiskMountManager {
       return GetKey(a) < GetKey(b);
     }
 
-    static base::StringPiece GetKey(const base::StringPiece a) { return a; }
+    static std::string_view GetKey(const std::string_view a) { return a; }
 
-    static base::StringPiece GetKey(const MountPoint& mp) {
+    static std::string_view GetKey(const MountPoint& mp) {
       return mp.mount_path;
     }
   };

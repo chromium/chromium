@@ -145,6 +145,9 @@ struct NET_EXPORT QuicParams {
   // If true, connection migration v2 will be used to migrate existing
   // sessions to network when the platform indicates that the default network
   // is changing.
+  // Use the value of the flag as the default value. This is needed because unit
+  // tests does not go through network_session_configuration which causes
+  // discrepancy.
   bool migrate_sessions_on_network_change_v2 =
       base::FeatureList::IsEnabled(features::kMigrateSessionsOnNetworkChangeV2);
   // If true, connection migration v2 may be used to migrate active QUIC
@@ -162,6 +165,10 @@ struct NET_EXPORT QuicParams {
   // A session can be migrated if its idle time is within this period.
   base::TimeDelta idle_session_migration_period =
       kDefaultIdleSessionMigrationPeriod;
+  // Probing frequency for the multi-port alt path, represented in the number of
+  // seconds. When this param is 0, quiche will ignore it and use its own
+  // default.
+  int multi_port_probing_interval = 0;
   // Maximum time the session could be on the non-default network before
   // migrates back to default network. Defaults to
   // kMaxTimeOnNonDefaultNetwork.
@@ -193,14 +200,17 @@ struct NET_EXPORT QuicParams {
   // (best effort).
   int ios_network_service_type = 0;
   // Delay for the 1st time the alternative service is marked broken.
-  absl::optional<base::TimeDelta> initial_delay_for_broken_alternative_service;
+  std::optional<base::TimeDelta> initial_delay_for_broken_alternative_service;
   // If true, the delay for broke alternative service would be initial_delay *
   // (1 << broken_count). Otherwise, the delay would be initial_delay, 5min,
   // 10min and so on.
-  absl::optional<bool> exponential_backoff_on_initial_delay;
+  std::optional<bool> exponential_backoff_on_initial_delay;
   // If true, delay main job even the request can be sent immediately on an
   // available SPDY session.
   bool delay_main_job_with_available_spdy_session = false;
+
+  // If true, ALPS uses new codepoint to negotiates application settings.
+  bool use_new_alps_codepoint = false;
 };
 
 // QuicContext contains QUIC-related variables that are shared across all of the

@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "base/functional/callback_helpers.h"
+#include "base/strings/strcat.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/version.h"
 #include "build/build_config.h"
@@ -97,6 +98,10 @@ class AccessibilityAuraLinuxBrowserTest : public AccessibilityBrowserTest {
   //  Returns a pointer to the field's AtkText interface.
   AtkText* SetUpTextareaField();
 
+  // Does a few checks on the scrollable input field and returns
+  // a pointer to the field's AtkText interface.
+  AtkText* GetScrollableInputField();
+
   // Loads a page with a paragraph of sample text and returns its AtkText
   // interface.
   AtkText* SetUpSampleParagraph();
@@ -108,6 +113,8 @@ class AccessibilityAuraLinuxBrowserTest : public AccessibilityBrowserTest {
   // node with the given role and returns its AtkText interface if found,
   // otherwise returns nullptr.
   AtkText* FindNode(const AtkRole role);
+
+  void TestCharacterExtentsInScrollableInput();
 
  private:
   // Searches the accessibility tree in pre-order debth-first traversal starting
@@ -179,6 +186,41 @@ AtkText* AccessibilityAuraLinuxBrowserTest::GetSampleParagraph() {
 
   EXPECT_TRUE(ATK_IS_TEXT(paragraph));
   return ATK_TEXT(paragraph);
+}
+
+AtkText* AccessibilityAuraLinuxBrowserTest::GetScrollableInputField() {
+  AtkObject* document = GetRendererAccessible();
+  EXPECT_EQ(1, atk_object_get_n_accessible_children(document));
+
+  AtkObject* div = atk_object_ref_accessible_child(document, 0);
+  EXPECT_NE(div, nullptr);
+  int n_div_children = atk_object_get_n_accessible_children(div);
+  EXPECT_GT(n_div_children, 0);
+
+  // The input field is always the last child.
+  AtkObject* input = atk_object_ref_accessible_child(div, n_div_children - 1);
+  EXPECT_EQ(ATK_ROLE_ENTRY, atk_object_get_role(input));
+
+  // Retrieve the IAccessibleText interface for the field.
+  AtkText* atk_text_field = ATK_TEXT(input);
+
+  // Set the caret before the last character.
+  AccessibilityNotificationWaiter waiter(
+      shell()->web_contents(), ui::kAXModeComplete,
+      ui::AXEventGenerator::Event::TEXT_SELECTION_CHANGED);
+  long caret_offset = InputContentsString().size() - 1;
+  ExecuteScript(base::ASCIIToUTF16(
+      base::StrCat({"let textField = document.querySelector('input,textarea');"
+                    "textField.focus();"
+                    "textField.setSelectionRange(",
+                    base::NumberToString(caret_offset), ",",
+                    base::NumberToString(caret_offset),
+                    ");"
+                    "textField.scrollLeft = 1000;"})));
+  EXPECT_TRUE(waiter.WaitForNotification());
+
+  g_object_unref(div);
+  return atk_text_field;
 }
 
 AtkText* AccessibilityAuraLinuxBrowserTest::FindNode(const AtkRole role) {
@@ -760,6 +802,85 @@ IN_PROC_BROWSER_TEST_F(AccessibilityAuraLinuxBrowserTest,
   }
 
   g_object_unref(atk_text);
+}
+
+void AccessibilityAuraLinuxBrowserTest::
+    TestCharacterExtentsInScrollableInput() {
+  AtkText* input_text = GetScrollableInputField();
+  int contents_string_length = InputContentsString().length();
+  int visible_characters_start = 21;
+  int n_characters = atk_text_get_character_count(input_text);
+  EXPECT_EQ(contents_string_length, n_characters);
+
+  int caret_offset = atk_text_get_caret_offset(input_text);
+  EXPECT_EQ(contents_string_length - 1, caret_offset);
+
+  int x, y, width, height;
+  int previous_x, previous_y, previous_height;
+  for (int coordinate = ATK_XY_SCREEN; coordinate <= ATK_XY_WINDOW;
+       ++coordinate) {
+    auto coordinate_type = static_cast<AtkCoordType>(coordinate);
+
+    atk_text_get_character_extents(input_text, 0, &x, &y, &width, &height,
+                                   coordinate_type);
+    EXPECT_GT(0, x + width) << "at offset 0";
+    EXPECT_LT(0, y) << "at offset 0";
+    EXPECT_LT(1, width) << "at offset 0";
+    EXPECT_LT(1, height) << "at offset 0";
+
+    for (int offset = 1; offset < (visible_characters_start - 1); ++offset) {
+      previous_x = x;
+      previous_y = y;
+      previous_height = height;
+
+      atk_text_get_character_extents(input_text, offset, &x, &y, &width,
+                                     &height, coordinate_type);
+      EXPECT_LT(previous_x, x) << "at offset " << offset;
+      EXPECT_EQ(previous_y, y) << "at offset " << offset;
+      EXPECT_LT(1, width) << "at offset " << offset;
+      EXPECT_EQ(previous_height, height) << "at offset " << offset;
+    }
+
+    // Test that non offscreen characters have increasing x coordinates and a
+    // width that is greater than 1px.
+    atk_text_get_character_extents(input_text, visible_characters_start, &x, &y,
+                                   &width, &height, coordinate_type);
+    EXPECT_LT(previous_x, x) << "at offset " << visible_characters_start;
+    EXPECT_EQ(previous_y, y) << "at offset " << visible_characters_start;
+    EXPECT_LT(1, width) << "at offset " << visible_characters_start;
+    EXPECT_EQ(previous_height, height)
+        << "at offset " << visible_characters_start;
+
+    // Exclude the dot at the end of the text field, because it has a width of
+    // one anyway.
+    for (int offset = visible_characters_start + 1; offset < (n_characters - 1);
+         ++offset) {
+      previous_x = x;
+      previous_y = y;
+      previous_height = height;
+
+      atk_text_get_character_extents(input_text, offset, &x, &y, &width,
+                                     &height, coordinate_type);
+      EXPECT_LT(previous_x, x) << "at offset " << offset;
+      EXPECT_EQ(previous_y, y) << "at offset " << offset;
+      EXPECT_LT(1, width) << "at offset " << offset;
+      EXPECT_EQ(previous_height, height) << "at offset " << offset;
+    }
+  }
+
+  g_object_unref(input_text);
+}
+
+IN_PROC_BROWSER_TEST_F(AccessibilityAuraLinuxBrowserTest,
+                       TestCharacterExtentsInScrollableInputField) {
+  LoadScrollableInputField("text");
+  TestCharacterExtentsInScrollableInput();
+}
+
+IN_PROC_BROWSER_TEST_F(AccessibilityAuraLinuxBrowserTest,
+                       TestCharacterExtentsInScrollableInputTypeSearchField) {
+  LoadScrollableInputField("search");
+  TestCharacterExtentsInScrollableInput();
 }
 
 #if defined(ATK_230)

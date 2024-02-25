@@ -6,6 +6,8 @@
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_PAYMENTS_PAYMENT_MANAGER_H_
 
 #include "third_party/blink/public/mojom/payments/payment_app.mojom-blink.h"
+#include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
+#include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_payment_delegation.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
@@ -16,8 +18,6 @@ namespace blink {
 
 class ExceptionState;
 class PaymentInstruments;
-class ScriptPromiseResolver;
-class ScriptPromise;
 class ScriptState;
 class ServiceWorkerRegistration;
 
@@ -37,7 +37,7 @@ class MODULES_EXPORT PaymentManager final : public ScriptWrappable {
 
   void Trace(Visitor*) const override;
 
-  ScriptPromise enableDelegations(
+  ScriptPromiseTyped<IDLBoolean> enableDelegations(
       ScriptState*,
       const Vector<V8PaymentDelegation>& delegations,
       ExceptionState&);
@@ -52,7 +52,7 @@ class MODULES_EXPORT PaymentManager final : public ScriptWrappable {
   HeapMojoRemote<payments::mojom::blink::PaymentManager> manager_;
   Member<PaymentInstruments> instruments_;
   String user_hint_;
-  Member<ScriptPromiseResolver> enable_delegations_resolver_;
+  Member<ScriptPromiseResolverTyped<IDLBoolean>> enable_delegations_resolver_;
 };
 
 }  // namespace blink

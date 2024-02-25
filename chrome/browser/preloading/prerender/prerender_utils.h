@@ -23,15 +23,13 @@ extern const char kDefaultSearchEngineMetricSuffix[];
 extern const char kDirectUrlInputMetricSuffix[];
 extern const char kBookmarkBarMetricSuffix[];
 extern const char kNewTabPageMetricSuffix[];
+extern const char kLinkPreviewMetricsSuffix[];
 
 bool IsDirectUrlInputPrerenderEnabled();
 
 bool IsSearchSuggestionPrerenderEnabled();
 
 bool ShouldUpdateCacheEntryManually();
-
-// Whether supporting upgrading a prefetch response to prerender page.
-bool SearchPrefetchUpgradeToPrerenderIsEnabled();
 
 // Whether supporting shareable search prefetch cache. By enabling this feature,
 // prerender won't take the prefetched response away. Instead, it turns to read

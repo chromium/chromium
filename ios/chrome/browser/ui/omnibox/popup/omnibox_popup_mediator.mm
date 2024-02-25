@@ -3,9 +3,11 @@
 // found in the LICENSE file.
 
 #import "ios/chrome/browser/ui/omnibox/popup/omnibox_popup_mediator.h"
+#import "ios/chrome/browser/ui/omnibox/popup/omnibox_popup_mediator+Testing.h"
 
 #import "base/feature_list.h"
 #import "base/ios/ios_util.h"
+#import "base/memory/raw_ptr.h"
 #import "base/metrics/histogram_functions.h"
 #import "base/metrics/histogram_macros.h"
 #import "base/metrics/user_metrics.h"
@@ -18,18 +20,20 @@
 #import "components/omnibox/browser/autocomplete_controller.h"
 #import "components/omnibox/browser/autocomplete_input.h"
 #import "components/omnibox/browser/autocomplete_match.h"
+#import "components/omnibox/browser/autocomplete_match_classification.h"
 #import "components/omnibox/browser/autocomplete_result.h"
 #import "components/omnibox/browser/remote_suggestions_service.h"
 #import "components/omnibox/common/omnibox_features.h"
+#import "components/password_manager/core/browser/manage_passwords_referrer.h"
 #import "components/strings/grit/components_strings.h"
 #import "components/variations/variations_associated_data.h"
 #import "components/variations/variations_ids_provider.h"
-#import "ios/chrome/browser/default_browser/utils.h"
-#import "ios/chrome/browser/favicon/favicon_loader.h"
-#import "ios/chrome/browser/net/crurl.h"
-#import "ios/chrome/browser/ntp/new_tab_page_util.h"
+#import "ios/chrome/browser/default_browser/model/utils.h"
+#import "ios/chrome/browser/favicon/model/favicon_loader.h"
+#import "ios/chrome/browser/net/model/crurl.h"
+#import "ios/chrome/browser/ntp/model/new_tab_page_util.h"
 #import "ios/chrome/browser/shared/coordinator/default_browser_promo/default_browser_promo_scene_agent_utils.h"
-#import "ios/chrome/browser/shared/coordinator/scene/scene_state_browser_agent.h"
+#import "ios/chrome/browser/shared/model/prefs/pref_backed_boolean.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/shared/public/commands/application_commands.h"
 #import "ios/chrome/browser/shared/public/commands/open_new_tab_command.h"
@@ -40,19 +44,18 @@
 #import "ios/chrome/browser/ui/omnibox/popup/autocomplete_controller_observer_bridge.h"
 #import "ios/chrome/browser/ui/omnibox/popup/autocomplete_match_formatter.h"
 #import "ios/chrome/browser/ui/omnibox/popup/autocomplete_suggestion_group_impl.h"
-#import "ios/chrome/browser/ui/omnibox/popup/carousel_item.h"
-#import "ios/chrome/browser/ui/omnibox/popup/carousel_item_menu_provider.h"
+#import "ios/chrome/browser/ui/omnibox/popup/carousel/carousel_item.h"
+#import "ios/chrome/browser/ui/omnibox/popup/carousel/carousel_item_menu_provider.h"
 #import "ios/chrome/browser/ui/omnibox/popup/omnibox_pedal_annotator.h"
-#import "ios/chrome/browser/ui/omnibox/popup/omnibox_popup_mediator+private.h"
 #import "ios/chrome/browser/ui/omnibox/popup/omnibox_popup_presenter.h"
 #import "ios/chrome/browser/ui/omnibox/popup/pedal_section_extractor.h"
 #import "ios/chrome/browser/ui/omnibox/popup/pedal_suggestion_wrapper.h"
 #import "ios/chrome/browser/ui/omnibox/popup/popup_debug_info_consumer.h"
 #import "ios/chrome/browser/ui/omnibox/popup/popup_swift.h"
 #import "ios/chrome/browser/ui/omnibox/popup/remote_suggestions_service_observer_bridge.h"
-#import "ios/chrome/browser/ui/settings/utils/pref_backed_boolean.h"
 #import "ios/chrome/browser/ui/toolbar/public/toolbar_omnibox_consumer.h"
 #import "ios/chrome/common/ui/favicon/favicon_attributes.h"
+#import "third_party/omnibox_proto/groups.pb.h"
 #import "ui/base/l10n/l10n_util.h"
 
 namespace {
@@ -97,12 +100,15 @@ const NSUInteger kMaxSuggestTileTypePosition = 15;
   std::unique_ptr<RemoteSuggestionsServiceObserverBridge>
       _remoteSuggestionsServiceObserverBridge;
 
-  OmniboxPopupMediatorDelegate* _delegate;  // weak
+  raw_ptr<OmniboxPopupMediatorDelegate> _delegate;  // weak
 
   /// Preferred omnibox position, logged in omnibox logs.
   metrics::OmniboxEventProto::OmniboxPosition _preferredOmniboxPosition;
   /// Pref tracking if bottom omnibox is enabled.
   PrefBackedBoolean* _bottomOmniboxEnabled;
+  /// Holds cached images keyed by their URL. The cache is purged when the popup
+  /// is closed.
+  NSCache<NSString*, UIImage*>* _cachedImages;
 }
 @synthesize consumer = _consumer;
 @synthesize hasResults = _hasResults;
@@ -132,6 +138,7 @@ const NSUInteger kMaxSuggestTileTypePosition = 15;
     _autocompleteController = autocompleteController;
     _remoteSuggestionsService = remoteSuggestionsService;
     _tracker = tracker;
+    _cachedImages = [[NSCache alloc] init];
     // This is logged only when `IsBottomOmniboxSteadyStateEnabled` is enabled.
     _preferredOmniboxPosition = metrics::OmniboxEventProto::UNKNOWN_POSITION;
   }
@@ -159,6 +166,9 @@ const NSUInteger kMaxSuggestTileTypePosition = 15;
 - (void)updateWithResults:(const AutocompleteResult&)result {
   [self updateMatches:result];
   self.open = !result.empty();
+  if (!self.open) {
+    [_cachedImages removeAllObjects];
+  }
   metrics::OmniboxFocusType inputFocusType =
       self.autocompleteController->input().focus_type();
   BOOL isFocusing =
@@ -190,7 +200,7 @@ const NSUInteger kMaxSuggestTileTypePosition = 15;
   if (self.remoteSuggestionsService) {
     _remoteSuggestionsServiceObserverBridge =
         std::make_unique<RemoteSuggestionsServiceObserverBridge>(
-            debugInfoConsumer);
+            debugInfoConsumer, self.remoteSuggestionsService);
     self.remoteSuggestionsService->AddObserver(
         _remoteSuggestionsServiceObserverBridge.get());
   }
@@ -198,15 +208,19 @@ const NSUInteger kMaxSuggestTileTypePosition = 15;
   _debugInfoConsumer = debugInfoConsumer;
 }
 
-- (void)setPrefService:(PrefService*)prefService {
-  _prefService = prefService;
-  if (IsBottomOmniboxSteadyStateEnabled() && _prefService) {
+- (void)setOriginalPrefService:(PrefService*)originalPrefService {
+  _originalPrefService = originalPrefService;
+  if (IsBottomOmniboxSteadyStateEnabled() && _originalPrefService) {
     _bottomOmniboxEnabled =
-        [[PrefBackedBoolean alloc] initWithPrefService:_prefService
+        [[PrefBackedBoolean alloc] initWithPrefService:_originalPrefService
                                               prefName:prefs::kBottomOmnibox];
     [_bottomOmniboxEnabled setObserver:self];
     // Initialize to the correct value.
     [self booleanDidChange:_bottomOmniboxEnabled];
+  } else {
+    [_bottomOmniboxEnabled stop];
+    [_bottomOmniboxEnabled setObserver:nil];
+    _bottomOmniboxEnabled = nil;
   }
 }
 
@@ -255,6 +269,12 @@ const NSUInteger kMaxSuggestTileTypePosition = 15;
           "Omnibox.SuggestionUsed.Pedal",
           (OmniboxPedalId)pedalSuggestionWrapper.innerPedal.type,
           OmniboxPedalId::TOTAL_COUNT);
+      if ((OmniboxPedalId)pedalSuggestionWrapper.innerPedal.type ==
+          OmniboxPedalId::MANAGE_PASSWORDS) {
+        base::UmaHistogramEnumeration(
+            "PasswordManager.ManagePasswordsReferrer",
+            password_manager::ManagePasswordsReferrer::kOmniboxPedalSuggestion);
+      }
       pedalSuggestionWrapper.innerPedal.action();
     }
   } else if ([suggestion isKindOfClass:[AutocompleteMatchFormatter class]]) {
@@ -368,18 +388,25 @@ const NSUInteger kMaxSuggestTileTypePosition = 15;
 #pragma mark - ImageFetcher
 
 - (void)fetchImage:(GURL)imageURL completion:(void (^)(UIImage*))completion {
+  NSString* URL = base::SysUTF8ToNSString(imageURL.spec());
+  UIImage* cachedImage = [_cachedImages objectForKey:URL];
+  if (cachedImage) {
+    completion(cachedImage);
+    return;
+  }
+  __weak NSCache<NSString*, UIImage*>* weakCachedImages = _cachedImages;
   auto callback =
       base::BindOnce(^(const std::string& image_data,
                        const image_fetcher::RequestMetadata& metadata) {
         NSData* data = [NSData dataWithBytes:image_data.data()
                                       length:image_data.size()];
-        if (data) {
-          UIImage* image = [UIImage imageWithData:data
-                                            scale:[UIScreen mainScreen].scale];
-          completion(image);
-        } else {
-          completion(nil);
+
+        UIImage* image = [UIImage imageWithData:data
+                                          scale:[UIScreen mainScreen].scale];
+        if (image) {
+          [weakCachedImages setObject:image forKey:URL];
         }
+        completion(image);
       });
 
   _imageFetcher->FetchImageData(imageURL, std::move(callback),
@@ -456,13 +483,17 @@ const NSUInteger kMaxSuggestTileTypePosition = 15;
         self.autocompleteResult.match_at((NSUInteger)i);
     if (match.type == AutocompleteMatchType::TILE_NAVSUGGEST) {
       DCHECK(match.type == AutocompleteMatchType::TILE_NAVSUGGEST);
-      DCHECK(base::FeatureList::IsEnabled(omnibox::kMostVisitedTiles));
       for (const AutocompleteMatch::SuggestTile& tile : match.suggest_tiles) {
         AutocompleteMatch tileMatch = AutocompleteMatch(match);
         // TODO(crbug.com/1363546): replace with a new wrapper.
         tileMatch.destination_url = tile.url;
         tileMatch.fill_into_edit = base::UTF8ToUTF16(tile.url.spec());
         tileMatch.description = tile.title;
+        tileMatch.description_class = ClassifyTermMatches(
+            {}, tileMatch.description.length(), 0, ACMatchClassification::NONE);
+#if DCHECK_IS_ON()
+        tileMatch.Validate();
+#endif  // DCHECK_IS_ON()
         AutocompleteMatchFormatter* formatter =
             [self wrapMatch:tileMatch fromResult:autocompleteResult];
         [wrappedMatches addObject:formatter];
@@ -509,13 +540,21 @@ const NSUInteger kMaxSuggestTileTypePosition = 15;
             : nil;
     SuggestionGroupDisplayStyle displayStyle =
         SuggestionGroupDisplayStyleDefault;
-    if (base::FeatureList::IsEnabled(omnibox::kMostVisitedTiles)) {
-      if (currentSectionId &&
-          static_cast<omnibox::GroupSection>(currentSectionId.intValue) ==
-              omnibox::SECTION_MOBILE_MOST_VISITED) {
-        displayStyle = SuggestionGroupDisplayStyleCarousel;
-      }
+
+    if (base::FeatureList::IsEnabled(
+            omnibox::kMostVisitedTilesHorizontalRenderGroup)) {
+      omnibox::GroupConfig_RenderType renderType =
+          headerMap.GetRenderTypeForSuggestionGroup(
+              static_cast<omnibox::GroupId>([currentGroupId intValue]));
+      displayStyle = (renderType == omnibox::GroupConfig_RenderType_HORIZONTAL)
+                         ? SuggestionGroupDisplayStyleCarousel
+                         : SuggestionGroupDisplayStyleDefault;
+    } else if (currentSectionId &&
+               static_cast<omnibox::GroupSection>(currentSectionId.intValue) ==
+                   omnibox::SECTION_MOBILE_MOST_VISITED) {
+      displayStyle = SuggestionGroupDisplayStyleCarousel;
     }
+
     [groups addObject:[AutocompleteSuggestionGroupImpl
                           groupWithTitle:groupTitle
                              suggestions:currentGroup
@@ -601,7 +640,7 @@ const NSUInteger kMaxSuggestTileTypePosition = 15;
             strongSelf.mostVisitedActionFactory;
 
         // Record that this context menu was shown to the user.
-        RecordMenuShown(MenuScenarioHistogram::kOmniboxMostVisitedEntry);
+        RecordMenuShown(kMenuScenarioHistogramOmniboxMostVisitedEntry);
 
         NSMutableArray<UIMenuElement*>* menuElements =
             [[NSMutableArray alloc] init];
@@ -630,7 +669,8 @@ const NSUInteger kMaxSuggestTileTypePosition = 15;
           [menuElements addObject:newWindowAction];
         }
 
-        [menuElements addObject:[actionFactory actionToCopyURL:copyURL]];
+        CrURL* URL = [[CrURL alloc] initWithGURL:copyURL];
+        [menuElements addObject:[actionFactory actionToCopyURL:URL]];
 
         [menuElements addObject:[actionFactory actionToShareWithBlock:^{
                         [weakSelf.sharingDelegate

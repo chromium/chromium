@@ -23,6 +23,8 @@ source_set("webrtc") {
     "p2p_socket_client_delegate.h",
   ]
 
+  configs += [ "//build/config/compiler:wexit_time_destructors" ]
+
   deps = [
     "//components/webrtc:net_address_utils",
     "//components/webrtc:thread_wrapper",

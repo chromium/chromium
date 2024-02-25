@@ -75,7 +75,7 @@ FidoDeviceDiscovery::GetAuthenticatorsForTesting() const {
 }
 
 FidoDeviceAuthenticator* FidoDeviceDiscovery::GetAuthenticatorForTesting(
-    base::StringPiece authenticator_id) {
+    std::string_view authenticator_id) {
   auto found = authenticators_.find(authenticator_id);
   return found != authenticators_.end() ? found->second.get() : nullptr;
 }
@@ -101,7 +101,7 @@ bool FidoDeviceDiscovery::AddAuthenticator(
   return true;
 }
 
-bool FidoDeviceDiscovery::RemoveDevice(base::StringPiece device_id) {
+bool FidoDeviceDiscovery::RemoveDevice(std::string_view device_id) {
   if (state_ == State::kStopped)
     return false;
 

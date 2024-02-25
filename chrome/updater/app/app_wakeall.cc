@@ -4,6 +4,8 @@
 
 #include "chrome/updater/app/app_wakeall.h"
 
+#include <optional>
+
 #include "base/command_line.h"
 #include "base/files/file_enumerator.h"
 #include "base/files/file_path.h"
@@ -17,7 +19,6 @@
 #include "chrome/updater/app/app.h"
 #include "chrome/updater/constants.h"
 #include "chrome/updater/util/util.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace updater {
 
@@ -39,7 +40,7 @@ void AppWakeAll::FirstTaskRun() {
       FROM_HERE, {base::MayBlock(), base::WithBaseSyncPrimitives()},
       base::BindOnce(
           [](UpdaterScope scope) {
-            absl::optional<base::FilePath> base = GetInstallDirectory(scope);
+            std::optional<base::FilePath> base = GetInstallDirectory(scope);
             if (!base) {
               return kErrorNoBaseDirectory;
             }

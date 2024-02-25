@@ -27,7 +27,7 @@ class MonthComboboxModel : public ui::ComboboxModel {
   // ui::Combobox implementation:
   size_t GetItemCount() const override;
   std::u16string GetItemAt(size_t index) const override;
-  absl::optional<size_t> GetDefaultIndex() const override;
+  std::optional<size_t> GetDefaultIndex() const override;
 
  private:
   // The index of the item that is selected by default (before user
@@ -51,7 +51,7 @@ class YearComboboxModel : public ui::SimpleComboboxModel {
   void SetDefaultIndexByYear(int year);
 
   // ui::Combobox implementation:
-  absl::optional<size_t> GetDefaultIndex() const override;
+  std::optional<size_t> GetDefaultIndex() const override;
 
  private:
   // The index of the item that is selected by default (before user

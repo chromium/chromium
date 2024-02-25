@@ -59,6 +59,6 @@ public class NativeCronetProvider extends CronetProvider {
     public boolean equals(Object other) {
         return other == this
                 || (other instanceof NativeCronetProvider
-                           && this.mContext.equals(((NativeCronetProvider) other).mContext));
+                        && this.mContext.equals(((NativeCronetProvider) other).mContext));
     }
 }

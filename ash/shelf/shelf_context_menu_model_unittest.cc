@@ -99,8 +99,8 @@ class TestShelfItemDelegate : public ShelfItemDelegate {
 
 INSTANTIATE_TEST_SUITE_P(,
                          ShelfContextMenuModelTest,
-                         ::testing::Values(user_manager::USER_TYPE_REGULAR,
-                                           user_manager::USER_TYPE_CHILD));
+                         ::testing::Values(user_manager::UserType::kRegular,
+                                           user_manager::UserType::kChild));
 
 // Tests the default items in a shelf context menu.
 TEST_P(ShelfContextMenuModelTest, Basic) {
@@ -282,8 +282,8 @@ TEST_P(ShelfContextMenuModelTest, CommandIdsMatchEnumsForHistograms) {
 TEST_P(ShelfContextMenuModelTest, ShelfContextMenuOptions) {
   // Tests that there are exactly 3 shelf context menu options. If you're adding
   // a context menu option ensure that you have added the enum to
-  // tools/metrics/enums.xml and that you haven't modified the order of the
-  // existing enums.
+  // tools/metrics/histograms/enums.xml and that you haven't modified the order
+  // of the existing enums.
   ShelfContextMenuModel menu(nullptr, GetPrimaryDisplay().id(),
                              /*menu_in_shelf=*/false);
   EXPECT_EQ(3u, menu.GetItemCount());
@@ -318,8 +318,8 @@ class DeskButtonContextMenuModelTest : public ShelfContextMenuModelTest {
 
 INSTANTIATE_TEST_SUITE_P(,
                          DeskButtonContextMenuModelTest,
-                         ::testing::Values(user_manager::USER_TYPE_REGULAR,
-                                           user_manager::USER_TYPE_CHILD));
+                         ::testing::Values(user_manager::UserType::kRegular,
+                                           user_manager::UserType::kChild));
 
 // Tests that the default items are in the shelf context menu when it is created
 // outside of the shelf, and that the desk button menu item also appears when

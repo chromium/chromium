@@ -7,6 +7,7 @@
 #include <stdint.h>
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -35,7 +36,6 @@
 #include "components/policy/policy_constants.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/pref_service.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ash::platform_keys {
 
@@ -170,7 +170,7 @@ void KeyPermissionsManagerImpl::KeyPermissionsInChapsUpdater::
 void KeyPermissionsManagerImpl::KeyPermissionsInChapsUpdater::
     UpdatePermissionsForKeyWithCorporateFlag(
         std::vector<uint8_t> public_key_spki_der,
-        absl::optional<bool> corporate_usage_allowed,
+        std::optional<bool> corporate_usage_allowed,
         Status corporate_usage_retrieval_status) {
   if (corporate_usage_retrieval_status != Status::kSuccess) {
     LOG(ERROR) << "Couldn't retrieve corporate usage flag for a key.";
@@ -297,7 +297,7 @@ KeyPermissionsManagerImpl::KeyPermissionsManagerImpl(
 KeyPermissionsManagerImpl::~KeyPermissionsManagerImpl() = default;
 
 void KeyPermissionsManagerImpl::OnGotTokens(
-    std::unique_ptr<std::vector<TokenId>> token_ids,
+    const std::vector<TokenId> token_ids,
     Status status) {
   if (status != Status::kSuccess) {
     LOG(ERROR) << "Error while waiting for token to be ready: "
@@ -305,7 +305,7 @@ void KeyPermissionsManagerImpl::OnGotTokens(
     return;
   }
 
-  if (!base::Contains(*token_ids, token_id_)) {
+  if (!base::Contains(token_ids, token_id_)) {
     LOG(ERROR) << "KeyPermissionsManager doesn't have access to token: "
                << static_cast<int>(token_id_);
     return;
@@ -390,7 +390,7 @@ void KeyPermissionsManagerImpl::AllowKeyForCorporateUsage(
 void KeyPermissionsManagerImpl::IsKeyAllowedForUsageWithPermissions(
     IsKeyAllowedForUsageCallback callback,
     KeyUsage usage,
-    absl::optional<std::vector<uint8_t>> serialized_key_permissions,
+    std::optional<std::vector<uint8_t>> serialized_key_permissions,
     Status key_attribute_retrieval_status) {
   if (key_attribute_retrieval_status != Status::kSuccess) {
     LOG(ERROR) << "Error while retrieving key permissions: "

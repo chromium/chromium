@@ -34,7 +34,7 @@ information, etc.
 
 ## Redaction
 
-Beware that certain on certain platforms (e.g. Android Webview) we
+Beware that certain on certain platforms (e.g. Android WebView) we
 [sanitize the stack in the dump](https://cs.chromium.org/chromium/src/third_party/crashpad/crashpad/snapshot/sanitized/memory_snapshot_sanitized.h)
 and only crash keys on an
 [allowlist](https://cs.chromium.org/chromium/src/android_webview/common/crash_reporter/crash_keys.cc)

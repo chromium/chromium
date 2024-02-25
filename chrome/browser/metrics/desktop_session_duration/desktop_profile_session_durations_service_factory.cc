@@ -47,9 +47,9 @@ DesktopProfileSessionDurationsServiceFactory::
 DesktopProfileSessionDurationsServiceFactory::
     ~DesktopProfileSessionDurationsServiceFactory() = default;
 
-KeyedService*
-DesktopProfileSessionDurationsServiceFactory::BuildServiceInstanceFor(
-    content::BrowserContext* context) const {
+std::unique_ptr<KeyedService> DesktopProfileSessionDurationsServiceFactory::
+    BuildServiceInstanceForBrowserContext(
+        content::BrowserContext* context) const {
   Profile* profile = Profile::FromBrowserContext(context);
 
 // On Ash and Lacros IsGuestSession and IsRegularProfile() are not mutually
@@ -68,7 +68,7 @@ DesktopProfileSessionDurationsServiceFactory::BuildServiceInstanceFor(
   DesktopSessionDurationTracker* tracker = DesktopSessionDurationTracker::Get();
   signin::IdentityManager* identity_manager =
       IdentityManagerFactory::GetForProfile(profile);
-  return new DesktopProfileSessionDurationsService(
+  return std::make_unique<DesktopProfileSessionDurationsService>(
       profile->GetPrefs(), sync_service, identity_manager, tracker);
 }
 

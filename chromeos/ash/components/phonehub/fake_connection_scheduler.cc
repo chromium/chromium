@@ -10,7 +10,8 @@ namespace phonehub {
 FakeConnectionScheduler::FakeConnectionScheduler() = default;
 FakeConnectionScheduler::~FakeConnectionScheduler() = default;
 
-void FakeConnectionScheduler::ScheduleConnectionNow() {
+void FakeConnectionScheduler::ScheduleConnectionNow(
+    DiscoveryEntryPoint entry_point) {
   ++num_schedule_connection_now_calls_;
 }
 

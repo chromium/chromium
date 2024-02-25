@@ -10,6 +10,13 @@ namespace cc {
 TestPaintWorkletInput::TestPaintWorkletInput(const gfx::SizeF& size)
     : container_size_(size) {}
 
+TestPaintWorkletInput::TestPaintWorkletInput(
+    const PaintWorkletInput::PropertyKey& key,
+    const gfx::SizeF& size)
+    : container_size_(size) {
+  property_keys_.push_back(key);
+}
+
 TestPaintWorkletInput::~TestPaintWorkletInput() = default;
 
 gfx::SizeF TestPaintWorkletInput::GetSize() const {

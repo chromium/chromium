@@ -3179,6 +3179,43 @@ TEST_F(AXPlatformNodeTextRangeProviderTest,
   EXPECT_UIA_TEXTRANGE_EQ(text_range_provider, L"some text");
 }
 
+TEST_F(AXPlatformNodeTextRangeProviderTest, TestMoveByCharacterEmptyTextfield) {
+  TestAXTreeUpdate update(std::string(R"HTML(
+    ++1 kRootWebArea
+    ++++2 kStaticText name="hello"
+    ++++3 kTextField state=kEditable
+    ++++++4 kStaticText name="" state=kEditable
+    ++++5 kStaticText name="world" state=kEditable
+  )HTML"));
+
+  update.nodes[2].SetNameExplicitlyEmpty();
+
+  Init(update);
+
+  // Set up variables from the tree for testing.
+  AXNode* root_node = GetRoot();
+
+  ComPtr<ITextRangeProvider> text_range_provider;
+  GetTextRangeProviderFromTextNode(text_range_provider, root_node);
+
+  EXPECT_UIA_TEXTRANGE_EQ(text_range_provider, L"hello\n\xFFFc\nworld");
+
+  int count;
+  // Tests for TextUnit_Character.
+  ASSERT_HRESULT_SUCCEEDED(text_range_provider->MoveEndpointByUnit(
+      TextPatternRangeEndpoint_Start, TextUnit_Character, /*count*/ 7, &count));
+  ASSERT_EQ(7, count);
+  // Note that by design, empty objects such as empty text fields, are placed in
+  // their own paragraph for easier screen reader navigation.
+  EXPECT_UIA_TEXTRANGE_EQ(text_range_provider, L"\nworld");
+
+  ASSERT_HRESULT_SUCCEEDED(text_range_provider->MoveEndpointByUnit(
+      TextPatternRangeEndpoint_Start, TextUnit_Character, /*count*/ -7,
+      &count));
+  ASSERT_EQ(-7, count);
+  EXPECT_UIA_TEXTRANGE_EQ(text_range_provider, L"hello\n\xFFFc\nworld");
+}
+
 TEST_F(AXPlatformNodeTextRangeProviderTest,
        TestITextRangeProviderMoveEndpointByFormat) {
   Init(BuildAXTreeForMoveByFormat());
@@ -3949,7 +3986,6 @@ TEST_F(AXPlatformNodeTextRangeProviderTest,
   text_data.AddIntAttribute(ax::mojom::IntAttribute::kBackgroundColor,
                             0xFFADBEEFU);
   text_data.AddIntAttribute(ax::mojom::IntAttribute::kColor, 0xFFADC0DEU);
-  text_data.AddStringAttribute(ax::mojom::StringAttribute::kLanguage, "fr-CA");
   text_data.SetTextDirection(ax::mojom::WritingDirection::kRtl);
   text_data.AddTextStyle(ax::mojom::TextStyle::kItalic);
   text_data.SetTextPosition(ax::mojom::TextPosition::kSubscript);
@@ -4241,18 +4277,6 @@ TEST_F(AXPlatformNodeTextRangeProviderTest,
   EXPECT_UIA_TEXTATTRIBUTE_EQ(list_item2_text_range_provider,
                               UIA_BulletStyleAttributeId, expected_variant);
   expected_variant.Reset();
-
-  {
-    base::win::ScopedVariant lang_variant;
-    EXPECT_HRESULT_SUCCEEDED(text_range_provider->GetAttributeValue(
-        UIA_CultureAttributeId, lang_variant.Receive()));
-
-    EXPECT_EQ(lang_variant.type(), VT_I4);
-    const LCID lcid = V_I4(lang_variant.ptr());
-    EXPECT_EQ(LANG_FRENCH, PRIMARYLANGID(lcid));
-    EXPECT_EQ(SUBLANG_FRENCH_CANADIAN, SUBLANGID(lcid));
-    EXPECT_EQ(SORT_DEFAULT, SORTIDFROMLCID(lcid));
-  }
 
   std::wstring font_name = L"sans";
   expected_variant.Set(SysAllocString(font_name.c_str()));

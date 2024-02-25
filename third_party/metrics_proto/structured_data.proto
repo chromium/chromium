@@ -19,7 +19,7 @@ package metrics;
 // structured metrics were to expand to other platforms, these fields will need
 // to be revisited.
 //
-// Next tag: 9
+// Next tag: 10
 message StructuredEventProto {
   // A per-client, per-profile, per-project ID that is used only for structured
   // metrics. For projects recorded from Chrome OS's platform2 repository, this
@@ -130,11 +130,33 @@ message StructuredEventProto {
   // The project name hash is the first 8 bytes of the MD5 hash of the project
   // name that is defined in src/tools/metrics/structured/structured.xml.
   optional fixed64 project_name_hash = 5;
+  // These enum values represent the type of user segment for the primary
+  // user.
+  enum PrimaryUserSegment {
+    UNKNOWN_PRIMARY_USER_TYPE = 0;
+    // Primary profile is for an unmanaged user.
+    UNMANAGED = 1;
+    // Primary profile is for a user belonging to a K-12 EDU organization.
+    K12 = 2;
+    // Primary profile is for a user belonging to an university EDU
+    // organization.
+    UNIVERSITY = 3;
+    // Primary profile is for a user belonging to a non-profit organization.
+    NON_PROFIT = 4;
+    // Primary profile is for a user belonging to an enterprise organization.
+    ENTERPRISE_ORGANIZATION = 5;
+    // Primary profile is for a kiosk app.
+    KIOS_APP = 6;
+    // Primary profile is for a managed guest session.
+    MANAGED_GUEST_SESSION = 7;
+    // Primary profile is for a Demo Mode.
+    DEMO_MODE = 8;
+  }
 
   // Metadata associated with events for which relative order in which the
   // events occur are of interest.
   //
-  // Next tag: 4
+  // Next tag: 6
   message EventSequenceMetadata {
     // GUIDs generated on the client to uniquely identify an event. These event
     // IDs will be used to establish relationships between events on the client.
@@ -148,6 +170,12 @@ message StructuredEventProto {
     // Monotonically increasing number incremented every time a system reset is
     // detected. This value will be reset to 0 in the event of a powerwash.
     optional int64 reset_counter = 3;
+
+    // The number of weeks since the client id rotated.
+    optional uint32 client_id_rotation_weeks = 4;
+
+    // The segment policy of the user.
+    optional PrimaryUserSegment primary_user_segment = 5;
   }
 
   // Metadata associated with event type SEQUENCE. This field will be stripped
@@ -158,9 +186,24 @@ message StructuredEventProto {
 // The top-level proto for structured metrics. One StructuredDataProto is
 // uploaded per UMA upload containing structured metrics. Contains all
 // structured events for that upload, and any other metadata.
+//
+// Next tag: 4
 message StructuredDataProto {
   repeated StructuredEventProto events = 1;
 
   // Whether the device is enrolled and may be controlled by a policy.
-  optional bool is_device_enrolled = 2;
+  // Deprecated as of Chrome M119, use |device_segment| to determine if the
+  // device is enrolled.
+  optional bool is_device_enrolled = 2 [deprecated = true];
+
+  // The broader market segment the device is used.
+  enum DeviceSegment {
+    UNKNOWN = 0;
+    CONSUMER = 1;
+    EDUCATION = 2;
+    ENTERPRISE = 3;
+  }
+
+  // The segment policy of the device.
+  optional DeviceSegment device_segment = 3;
 }

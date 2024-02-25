@@ -14,8 +14,8 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) NetworkConditions {
  public:
   NetworkConditions();
 
-  NetworkConditions(const NetworkConditions&) = delete;
-  NetworkConditions& operator=(const NetworkConditions&) = delete;
+  NetworkConditions(const NetworkConditions&);
+  NetworkConditions& operator=(const NetworkConditions&);
 
   ~NetworkConditions();
 
@@ -35,10 +35,10 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) NetworkConditions {
   double upload_throughput() const { return upload_throughput_; }
 
  private:
-  const bool offline_;
-  const double latency_;
-  const double download_throughput_;
-  const double upload_throughput_;
+  bool offline_;
+  double latency_;
+  double download_throughput_;
+  double upload_throughput_;
 };
 
 }  // namespace network

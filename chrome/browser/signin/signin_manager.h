@@ -38,6 +38,11 @@ struct CoreAccountId;
 class PrefService;
 class SigninClient;
 
+
+#if BUILDFLAG(ENABLE_DICE_SUPPORT)
+BASE_DECLARE_FEATURE(kPreventSignoutIfAccountValid);
+#endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
+
 // See `SigninManager::CreateAccountSelectionInProgressHandle()`.
 class AccountSelectionInProgressHandle {
  public:

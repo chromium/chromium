@@ -14,16 +14,17 @@
 #include "components/supervised_user/core/common/buildflags.h"
 #include "extensions/buildflags/buildflags.h"
 #include "extensions/common/extension_id.h"
+#include "ui/base/interaction/element_identifier.h"
 #include "ui/base/ui_base_types.h"
 #include "ui/gfx/native_widget_types.h"
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "base/files/safe_base_name.h"
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 #if !BUILDFLAG(ENABLE_EXTENSIONS)
 #error "Extensions must be enabled"
 #endif
+
+#if BUILDFLAG(IS_CHROMEOS)
+#include "base/files/safe_base_name.h"
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 class Browser;
 class SettingsOverriddenDialogController;
@@ -93,6 +94,8 @@ enum class ExtensionInstalledBlockedByParentDialogAction {
   kEnable,  // The user attempted to enable the extension.
 };
 
+DECLARE_ELEMENT_IDENTIFIER_VALUE(kParentBlockedDialogMessage);
+
 // Displays a dialog to notify the user that the extension installation is
 // blocked by a parent
 void ShowExtensionInstallBlockedByParentDialog(
@@ -105,6 +108,27 @@ void ShowExtensionInstallBlockedByParentDialog(
 
 #if BUILDFLAG(IS_CHROMEOS)
 
+// Shows a scanner discovery confirmation dialog bubble anchored to the toolbar
+// icon for the extension.  If there's no toolbar icon or parent, it will
+// display a browser-modal dialog instead.
+void ShowDocumentScannerDiscoveryConfirmationDialog(
+    gfx::NativeWindow parent,
+    const ExtensionId& extension_id,
+    const std::u16string& extension_name,
+    const gfx::ImageSkia& extension_icon,
+    base::OnceCallback<void(bool)> callback);
+
+// Shows a start scan confirmation dialog bubble anchored to the toolbar icon
+// for the extension.  If there's no toolbar icon or parent, it will display a
+// browser-modal dialog instead.
+void ShowDocumentScannerStartScanConfirmationDialog(
+    gfx::NativeWindow parent,
+    const ExtensionId& extension_id,
+    const std::u16string& extension_name,
+    const std::u16string& scanner_name,
+    const gfx::ImageSkia& extension_icon,
+    base::OnceCallback<void(bool)> callback);
+
 // Shows a dialog requesting the user to grant the extension access to a file
 // system.
 void ShowRequestFileSystemDialog(
@@ -115,10 +139,8 @@ void ShowRequestFileSystemDialog(
     base::OnceCallback<void(ui::DialogButton)> callback);
 
 // Shows the print job confirmation dialog bubble anchored to the toolbar icon
-// for the extension.
-// If there's no toolbar icon, shows a modal dialog using
-// CreateBrowserModalDialogViews(). Note that this dialog is shown even if there
-// is no `parent` window.
+// for the extension.  If there's no toolbar icon or parent, it will display a
+// browser-modal dialog instead.
 void ShowPrintJobConfirmationDialog(gfx::NativeWindow parent,
                                     const ExtensionId& extension_id,
                                     const std::u16string& extension_name,
@@ -129,7 +151,7 @@ void ShowPrintJobConfirmationDialog(gfx::NativeWindow parent,
 
 namespace file_handlers {
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 // Show the pre-launch dialog for Web File Handlers. The choice to open or not
 // is presented if the extension doesn't already have permission (by default or
 // remembered). The dialog is not presented if "Don't open" was remembered.
@@ -141,7 +163,7 @@ void ShowWebFileHandlersFileLaunchDialog(
     const std::vector<std::u16string>& file_types,
     base::OnceCallback<void(/*should_open=*/bool, /*should_remember=*/bool)>
         callback);
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 }  // namespace file_handlers
 

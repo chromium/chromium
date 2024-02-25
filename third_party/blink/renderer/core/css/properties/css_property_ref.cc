@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/core/css/properties/css_property_ref.h"
 
+#include "third_party/blink/renderer/core/css/parser/css_property_parser.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 
 namespace blink {

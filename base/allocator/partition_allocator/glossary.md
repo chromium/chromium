@@ -75,7 +75,7 @@ each term depends mainly upon previously defined ones.
     class are logically chained into one bucket.
 
 ![A bucket, spanning multiple super pages, collects spans whose
-  slots are of a particular size class.](./dot/bucket.png)
+  slots are of a particular size class.](./src/partition_alloc/dot/bucket.png)
 
 * **Normal Bucket**: Any bucket whose size ceiling does not exceed
   `kMaxBucketed`. This is the common case in PartitionAlloc, and
@@ -110,7 +110,7 @@ each term depends mainly upon previously defined ones.
     It's primary user is [V8 CFI][v8-cfi].
 
 ![The singular AddressPoolManager mediates access to the separate pools
-  for each PartitionRoot.](./dot/address-space.png)
+  for each PartitionRoot.](./src/partition_alloc/dot/address-space.png)
 
 *** promo
 Pools are downgraded into a logical concept in 32-bit environments,
@@ -162,7 +162,7 @@ PartitionAlloc-Everywhere is the name of the project that brought PartitionAlloc
 to the entire-ish codebase (exclusions apply). This was done by intercepting
 `malloc()`, `free()`, `realloc()`, aforementioned `posix_memalign()`, etc. and
 routing them into PartitionAlloc. The shim located in
-`base/allocator/allocator_shim_default_dispatch_to_partition_alloc.h` is
+`base/allocator/partition_allocator/src/partition_alloc/shim/allocator_shim_default_dispatch_to_partition_alloc.h` is
 responsible for intercepting. For more details, see
 [base/allocator/README.md](../../../base/allocator/README.md).
 
@@ -180,7 +180,7 @@ As of 2022, PartitionAlloc-Everywhere is supported on
 * macOS
 * Fuchsia
 
-[max-bucket-comment]: https://source.chromium.org/chromium/chromium/src/+/main:base/allocator/partition_allocator/partition_alloc_constants.h;l=345;drc=667e6b001f438521e1c1a1bc3eabeead7aaa1f37
-[pa-thread-cache]: https://source.chromium.org/chromium/chromium/src/+/main:base/allocator/partition_allocator/thread_cache.h
+[max-bucket-comment]: https://source.chromium.org/chromium/chromium/src/+/main:base/allocator/partition_allocator/src/partition_alloc/partition_alloc_constants.h;l=345;drc=667e6b001f438521e1c1a1bc3eabeead7aaa1f37
+[pa-thread-cache]: https://source.chromium.org/chromium/chromium/src/+/main:base/allocator/partition_allocator/src/partition_alloc/thread_cache.h
 [v8-sandbox]: https://docs.google.com/document/d/1FM4fQmIhEqPG8uGp5o9A-mnPB5BOeScZYpkHjo0KKA8/preview#
 [v8-cfi]: https://docs.google.com/document/d/1O2jwK4dxI3nRcOJuPYkonhTkNQfbmwdvxQMyXgeaRHo/preview#

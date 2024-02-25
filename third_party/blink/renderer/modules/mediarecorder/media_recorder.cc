@@ -6,6 +6,7 @@
 
 #include <algorithm>
 #include <limits>
+
 #include "base/time/time.h"
 #include "third_party/blink/public/common/privacy_budget/identifiability_metric_builder.h"
 #include "third_party/blink/public/common/privacy_budget/identifiability_study_settings.h"
@@ -13,6 +14,7 @@
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/public/platform/task_type.h"
 #include "third_party/blink/renderer/bindings/core/v8/dictionary.h"
+#include "third_party/blink/renderer/bindings/core/v8/to_v8_traits.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_core.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_error_event_init.h"
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
@@ -38,9 +40,9 @@ namespace blink {
 namespace {
 
 struct MediaRecorderBitrates {
-  const absl::optional<uint32_t> audio_bps;
-  const absl::optional<uint32_t> video_bps;
-  const absl::optional<uint32_t> overall_bps;
+  const std::optional<uint32_t> audio_bps;
+  const std::optional<uint32_t> video_bps;
+  const std::optional<uint32_t> overall_bps;
 };
 
 // Boundaries of Opus SILK bitrate from https://www.opus-codec.org/.
@@ -148,15 +150,15 @@ MediaRecorderBitrates GetBitratesFromOptions(
   // or double, see https://github.com/w3c/mediacapture-record/issues/48.
   constexpr uint32_t kMaxIntAsUnsigned = std::numeric_limits<int>::max();
 
-  absl::optional<uint32_t> audio_bps;
+  std::optional<uint32_t> audio_bps;
   if (options->hasAudioBitsPerSecond()) {
     audio_bps = std::min(options->audioBitsPerSecond(), kMaxIntAsUnsigned);
   }
-  absl::optional<uint32_t> video_bps;
+  std::optional<uint32_t> video_bps;
   if (options->hasVideoBitsPerSecond()) {
     video_bps = std::min(options->videoBitsPerSecond(), kMaxIntAsUnsigned);
   }
-  absl::optional<uint32_t> overall_bps;
+  std::optional<uint32_t> overall_bps;
   if (options->hasBitsPerSecond()) {
     overall_bps = std::min(options->bitsPerSecond(), kMaxIntAsUnsigned);
     audio_bps = ClampAudioBitRate(context, overall_bps.value() / 10);
@@ -379,7 +381,8 @@ void MediaRecorder::requestData(ExceptionState& exception_state) {
     return;
   }
   WriteData(/*data=*/nullptr, /*length=*/0, /*last_in_slice=*/true,
-            base::Time::Now().ToDoubleT() * 1000.0, /*error_event=*/nullptr);
+            base::Time::Now().InMillisecondsFSinceUnixEpoch(),
+            /*error_event=*/nullptr);
 }
 
 bool MediaRecorder::isTypeSupported(ExecutionContext* context,
@@ -426,7 +429,7 @@ void MediaRecorder::ContextDestroyed() {
     const uint64_t blob_data_length = blob_data_->length();
     CreateBlobEvent(MakeGarbageCollected<Blob>(BlobDataHandle::Create(
                         std::move(blob_data_), blob_data_length)),
-                    base::Time::Now().ToDoubleT() * 1000.0);
+                    base::Time::Now().InMillisecondsFSinceUnixEpoch());
   }
 
   state_ = State::kInactive;
@@ -518,7 +521,7 @@ void MediaRecorder::StopRecording(ErrorEvent* error_event) {
 
   recorder_handler_->Stop();
   WriteData(/*data=*/nullptr, /*length=*/0, /*last_in_slice=*/true,
-            base::Time::Now().ToDoubleT() * 1000.0, error_event);
+            base::Time::Now().InMillisecondsFSinceUnixEpoch(), error_event);
   ScheduleDispatchEvent(Event::Create(event_type_names::kStop));
   first_write_received_ = false;
 }

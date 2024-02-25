@@ -49,10 +49,6 @@ class CacheStorageControlWrapper : public storage::mojom::CacheStorageControl {
       const storage::BucketLocator& bucket,
       storage::mojom::CacheStorageOwner owner,
       mojo::PendingReceiver<blink::mojom::CacheStorage> receiver) override;
-  void DeleteForStorageKey(const blink::StorageKey& storage_key) override;
-  void GetAllStorageKeysInfo(
-      storage::mojom::CacheStorageControl::GetAllStorageKeysInfoCallback
-          callback) override;
   void AddObserver(mojo::PendingRemote<storage::mojom::CacheStorageObserver>
                        observer) override;
   void ApplyPolicyUpdates(std::vector<storage::mojom::StoragePolicyUpdatePtr>
@@ -61,7 +57,7 @@ class CacheStorageControlWrapper : public storage::mojom::CacheStorageControl {
  private:
   SEQUENCE_CHECKER(sequence_checker_);
 
-  absl::optional<storage::StoragePolicyObserver> storage_policy_observer_;
+  std::optional<storage::StoragePolicyObserver> storage_policy_observer_;
 
   base::SequenceBound<CacheStorageContextImpl> cache_storage_context_;
   mojo::Remote<storage::mojom::CacheStorageControl> cache_storage_control_;

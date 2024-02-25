@@ -20,7 +20,7 @@ function styleOf(name, attributes) {
 }
 
 var tests = [
-    ['div', {}, 'ltr', '-webkit-isolate'],
+    ['div', {}, 'ltr', 'isolate'],
     ['div', {'dir': 'ltr'}, 'ltr', 'isolate'],
     ['div', {'dir': 'rtl'}, 'rtl', 'isolate'],
     ['div', {'dir': 'auto'}, 'ltr', 'isolate'],
@@ -30,7 +30,7 @@ var tests = [
     ['span', {'dir': 'ltr'}, 'ltr', 'isolate'],
     ['span', {'dir': 'rtl'}, 'rtl', 'isolate'],
     ['span', {'dir': 'auto'}, 'ltr', 'isolate'],
-    ['span', {'dir': ''}, 'ltr', 'isolate'],
+    ['span', {'dir': ''}, 'ltr', 'normal'],
 
     ['bdi', {}, 'ltr', 'isolate'],
     ['bdi', {'dir': 'ltr'}, 'ltr', 'isolate'],
@@ -44,19 +44,20 @@ var tests = [
     ['output', {'dir': 'auto'}, 'ltr', 'isolate'],
     ['output', {'dir': ''}, 'ltr', 'isolate'],
 
-    ['bdo', {}, 'ltr', 'bidi-override'],
-    ['bdo', {'dir': 'ltr'}, 'ltr', 'bidi-override'],
-    ['bdo', {'dir': 'rtl'}, 'rtl', 'bidi-override'],
-    ['bdo', {'dir': 'auto'}, 'ltr', 'bidi-override isolate'],
-    ['bdo', {'dir': ''}, 'ltr', 'bidi-override'],
+    // https://html.spec.whatwg.org/multipage/rendering.html#bidi-rendering
+    ['bdo', {}, 'ltr', 'isolate-override'],
+    ['bdo', {'dir': 'ltr'}, 'ltr', 'isolate-override'],
+    ['bdo', {'dir': 'rtl'}, 'rtl', 'isolate-override'],
+    ['bdo', {'dir': 'auto'}, 'ltr', 'isolate-override'],
+    ['bdo', {'dir': ''}, 'ltr', 'isolate-override'],
 
     ['textarea', {}, 'ltr', 'normal'],
     ['textarea', {'dir': 'ltr'}, 'ltr', 'isolate'],
     ['textarea', {'dir': 'rtl'}, 'rtl', 'isolate'],
     ['textarea', {'dir': 'auto'}, 'ltr', 'plaintext'],
-    ['textarea', {'dir': ''}, 'ltr', 'isolate'],
+    ['textarea', {'dir': ''}, 'ltr', 'normal'],
 
-    ['pre', {}, 'ltr', 'normal'],
+    ['pre', {}, 'ltr', 'isolate'],
     ['pre', {'dir': 'ltr'}, 'ltr', 'isolate'],
     ['pre', {'dir': 'rtl'}, 'rtl', 'isolate'],
     ['pre', {'dir': 'auto'}, 'ltr', 'plaintext'],

@@ -58,6 +58,9 @@ class CORE_EXPORT DOMURL final : public ScriptWrappable, public DOMURLUtils {
   DOMURL(PassKey, const String& url, const KURL& base, ExceptionState&);
   ~DOMURL() override;
 
+  static bool canParse(const String& url);
+  static bool canParse(const String& url, const String& base);
+
   static String CreatePublicURL(ExecutionContext*, URLRegistrable*);
 
   KURL Url() const override { return url_; }

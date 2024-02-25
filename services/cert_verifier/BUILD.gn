@@ -15,19 +15,14 @@ source_set("lib") {
     "cert_verifier_service_factory.h",
   ]
 
-  if (trial_comparison_cert_verifier_supported) {
-    sources += [
-      "trial_comparison_cert_verifier_mojo.cc",
-      "trial_comparison_cert_verifier_mojo.h",
-    ]
-  }
-
   deps = [
     "//base",
     "//build:chromeos_buildflags",
+    "//components/certificate_transparency",
     "//net",
     "//net/cert:root_store_proto_lite",
     "//services/cert_verifier/cert_net_url_loader",
+    "//services/network/public/cpp:buildflags",
     "//services/network/public/mojom",
   ]
 
@@ -47,15 +42,12 @@ source_set("tests") {
     "integration_tests/network_service_unittest.cc",
   ]
 
-  if (trial_comparison_cert_verifier_supported) {
-    sources += [ "trial_comparison_cert_verifier_mojo_unittest.cc" ]
-  }
-
   deps = [
     ":lib",
     "//base",
     "//base/test:test_support",
     "//build:chromeos_buildflags",
+    "//components/certificate_transparency",
     "//crypto:test_support",
     "//net",
     "//net:test_support",

@@ -67,7 +67,7 @@ class WaitForURLsDeletedObserver : public history::HistoryServiceObserver {
   }
 
  private:
-  raw_ptr<base::RunLoop, ExperimentalAsh> runner_;
+  raw_ptr<base::RunLoop> runner_;
 };
 
 void WaitForURLsDeletedNotification(history::HistoryService* history_service) {
@@ -266,7 +266,7 @@ TEST_F(PrintingManagerTest, DeletingBrowserHistoryDeletesAllPrintJobs) {
   // Simulate deleting all history, expect print job history to also be deleted.
   base::CancelableTaskTracker task_tracker;
   local_history_->ExpireHistoryBetween(
-      std::set<GURL>(), base::Time(), base::Time(),
+      std::set<GURL>(), history::kNoAppIdFilter, base::Time(), base::Time(),
       /*user_initiated*/ true, base::DoNothing(), &task_tracker);
   mock_time_task_runner_->RunUntilIdle();
 
@@ -292,7 +292,7 @@ TEST_F(PrintingManagerTest, PolicyPreventsDeletingBrowserHistoryDeletingJobs) {
   // Simulate deleting all history, expect print job history to not be deleted.
   base::CancelableTaskTracker task_tracker;
   local_history_->ExpireHistoryBetween(
-      std::set<GURL>(), base::Time(), base::Time(),
+      std::set<GURL>(), history::kNoAppIdFilter, base::Time(), base::Time(),
       /*user_initiated*/ true, base::DoNothing(), &task_tracker);
   mock_time_task_runner_->RunUntilIdle();
 

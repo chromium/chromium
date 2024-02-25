@@ -8,10 +8,10 @@
 #include <vector>
 
 #include "ash/ambient/ambient_managed_photo_controller.h"
+#include "ash/ambient/ambient_photo_controller.h"
 #include "ash/ambient/ambient_ui_launcher.h"
 #include "ash/ambient/ambient_view_delegate_impl.h"
 #include "ash/ambient/managed/screensaver_images_policy_handler.h"
-#include "ash/ambient/metrics/managed_screensaver_metrics.h"
 #include "ash/ambient/model/ambient_backend_model_observer.h"
 #include "ash/public/cpp/session/session_observer.h"
 #include "base/files/file_path.h"
@@ -50,18 +50,19 @@ class AmbientManagedSlideshowUiLauncher
   std::unique_ptr<views::View> CreateView() override;
   void Finalize() override;
   AmbientBackendModel* GetAmbientBackendModel() override;
-  bool IsActive() override;
+  AmbientPhotoController* GetAmbientPhotoController() override;
+  std::unique_ptr<AmbientSessionMetricsRecorder::Delegate>
+  CreateMetricsDelegate(AmbientUiSettings current_ui_settings) override;
 
  private:
   friend class AmbientAshTestBase;
 
-  // Calls update image file paths on AmbientManagedPhotoContorller. Used by
-  // the AmbientPhotoSource callback.
+  // Calls update image file paths on |AmbientManagedPhotoController|. Used by
+  // the |ScreensaverImagesPolicyHandler| callback.
   void UpdateImageFilePaths(const std::vector<base::FilePath>& path_to_images);
 
   bool ComputeReadyState();
 
-  ManagedScreensaverMetricsRecorder metrics_recorder_;
   AmbientManagedPhotoController photo_controller_;
   const raw_ptr<AmbientViewDelegateImpl> delegate_;
   InitializationCallback initialization_callback_;

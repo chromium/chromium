@@ -38,8 +38,7 @@ import java.util.concurrent.locks.ReentrantLock;
 @RunWith(BaseRobolectricTestRunner.class)
 @SuppressWarnings("DoNotMock") // Ok to mock UmaRecorder since this is testing metrics.
 public final class CachingUmaRecorderTest {
-    @Mock
-    UmaRecorder mUmaRecorder;
+    @Mock UmaRecorder mUmaRecorder;
 
     @Before
     public void initMocks() {
@@ -66,13 +65,16 @@ public final class CachingUmaRecorderTest {
         cachingUmaRecorder.recordBooleanHistogram(
                 "cachingUmaRecorderTest.recordBooleanHistogram", false);
 
-        assertEquals(3,
+        assertEquals(
+                3,
                 cachingUmaRecorder.getHistogramTotalCountForTesting(
                         "cachingUmaRecorderTest.recordBooleanHistogram"));
-        assertEquals(2,
+        assertEquals(
+                2,
                 cachingUmaRecorder.getHistogramValueCountForTesting(
                         "cachingUmaRecorderTest.recordBooleanHistogram", 1));
-        assertEquals(1,
+        assertEquals(
+                1,
                 cachingUmaRecorder.getHistogramValueCountForTesting(
                         "cachingUmaRecorderTest.recordBooleanHistogram", 0));
 
@@ -90,10 +92,12 @@ public final class CachingUmaRecorderTest {
 
         cachingUmaRecorder.recordExponentialHistogram(
                 "cachingUmaRecorderTest.recordExponentialHistogram", 72, 1, 1000, 50);
-        assertEquals(1,
+        assertEquals(
+                1,
                 cachingUmaRecorder.getHistogramTotalCountForTesting(
                         "cachingUmaRecorderTest.recordExponentialHistogram"));
-        assertEquals(1,
+        assertEquals(
+                1,
                 cachingUmaRecorder.getHistogramValueCountForTesting(
                         "cachingUmaRecorderTest.recordExponentialHistogram", 72));
         cachingUmaRecorder.setDelegate(mUmaRecorder);
@@ -109,10 +113,12 @@ public final class CachingUmaRecorderTest {
 
         cachingUmaRecorder.recordLinearHistogram(
                 "cachingUmaRecorderTest.recordLinearHistogram", 72, 1, 1000, 50);
-        assertEquals(1,
+        assertEquals(
+                1,
                 cachingUmaRecorder.getHistogramTotalCountForTesting(
                         "cachingUmaRecorderTest.recordLinearHistogram"));
-        assertEquals(1,
+        assertEquals(
+                1,
                 cachingUmaRecorder.getHistogramValueCountForTesting(
                         "cachingUmaRecorderTest.recordLinearHistogram", 72));
 
@@ -129,10 +135,12 @@ public final class CachingUmaRecorderTest {
 
         cachingUmaRecorder.recordSparseHistogram(
                 "cachingUmaRecorderTest.recordSparseHistogram", 72);
-        assertEquals(1,
+        assertEquals(
+                1,
                 cachingUmaRecorder.getHistogramTotalCountForTesting(
                         "cachingUmaRecorderTest.recordSparseHistogram"));
-        assertEquals(1,
+        assertEquals(
+                1,
                 cachingUmaRecorder.getHistogramValueCountForTesting(
                         "cachingUmaRecorderTest.recordSparseHistogram", 72));
         cachingUmaRecorder.setDelegate(mUmaRecorder);
@@ -278,14 +286,20 @@ public final class CachingUmaRecorderTest {
 
         blockingUmaRecorder.lock.lock();
         try {
-            recordingThread = new Thread(() -> {
-                cachingUmaRecorder.recordSparseHistogram(
-                        "CachingUmaRecorderTest.blockUntilRecordingDone", 16);
-            });
+            recordingThread =
+                    new Thread(
+                            () -> {
+                                cachingUmaRecorder.recordSparseHistogram(
+                                        "CachingUmaRecorderTest.blockUntilRecordingDone", 16);
+                            });
             recordingThread.start();
             awaitThreadBlocked(recordingThread, Duration.ofSeconds(1));
 
-            swappingThread = new Thread(() -> { cachingUmaRecorder.setDelegate(mUmaRecorder); });
+            swappingThread =
+                    new Thread(
+                            () -> {
+                                cachingUmaRecorder.setDelegate(mUmaRecorder);
+                            });
             swappingThread.start();
             awaitThreadBlocked(swappingThread, Duration.ofSeconds(1));
         } finally {
@@ -309,10 +323,11 @@ public final class CachingUmaRecorderTest {
                 case TIMED_WAITING:
                     return;
                 case NEW:
-                case RUNNABLE: {
-                    Thread.yield();
-                    continue;
-                }
+                case RUNNABLE:
+                    {
+                        Thread.yield();
+                        continue;
+                    }
                 case TERMINATED:
                     fail("Thread unexpectedly terminated.");
             }
@@ -420,13 +435,15 @@ public final class CachingUmaRecorderTest {
     @SuppressWarnings("ThreadPriorityCheck")
     private static Thread startHistogramRecordingThread(
             int sample, int count, UmaRecorder recorder) {
-        Thread thread = new Thread(() -> {
-            for (int i = 0; i < count; i++) {
-                recorder.recordSparseHistogram("StressTest", sample);
-                // Make it more likely this thread will be preempted.
-                Thread.yield();
-            }
-        });
+        Thread thread =
+                new Thread(
+                        () -> {
+                            for (int i = 0; i < count; i++) {
+                                recorder.recordSparseHistogram("StressTest", sample);
+                                // Make it more likely this thread will be preempted.
+                                Thread.yield();
+                            }
+                        });
         thread.start();
         return thread;
     }
@@ -532,13 +549,15 @@ public final class CachingUmaRecorderTest {
     @SuppressWarnings("ThreadPriorityCheck")
     private static Thread startUserActionRecordingThread(
             int sample, int count, UmaRecorder recorder) {
-        Thread thread = new Thread(() -> {
-            for (int i = 0; i < count; i++) {
-                recorder.recordUserAction("StressTestUserAction." + i, sample);
-                // Make it more likely this thread will be preempted.
-                Thread.yield();
-            }
-        });
+        Thread thread =
+                new Thread(
+                        () -> {
+                            for (int i = 0; i < count; i++) {
+                                recorder.recordUserAction("StressTestUserAction." + i, sample);
+                                // Make it more likely this thread will be preempted.
+                                Thread.yield();
+                            }
+                        });
         thread.start();
         return thread;
     }

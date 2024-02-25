@@ -6,6 +6,7 @@
 #define ASH_STYLE_TAB_SLIDER_H_
 
 #include <cstddef>
+#include <utility>
 
 #include "ash/ash_export.h"
 #include "base/memory/raw_ptr.h"
@@ -23,9 +24,9 @@ class TabSliderButton;
 // selected, the selector will move from the position of previously selected
 // button to the position of currently selected button.
 class ASH_EXPORT TabSlider : public views::TableLayoutView {
- public:
-  METADATA_HEADER(TabSlider);
+  METADATA_HEADER(TabSlider, views::TableLayoutView)
 
+ public:
   // The init parameters used to initialize the layout, appearance, and behavior
   // of the tab slider.
   struct InitParams {
@@ -66,8 +67,8 @@ class ASH_EXPORT TabSlider : public views::TableLayoutView {
   // Add a button with the button's ctor arguments. For example
   // AddButton<SliderButtonType>(arg1, arg2, ...).
   template <typename T, typename... Args>
-  T* AddButton(Args... args) {
-    auto button = std::make_unique<T>(args...);
+  T* AddButton(Args&&... args) {
+    auto button = std::make_unique<T>(std::forward<Args>(args)...);
     return AddButton(std::move(button));
   }
 
@@ -75,7 +76,7 @@ class ASH_EXPORT TabSlider : public views::TableLayoutView {
   void OnButtonSelected(TabSliderButton* button);
 
   // views::View:
-  void Layout() override;
+  void Layout(PassKey) override;
 
  private:
   // The view of the selector.
@@ -96,8 +97,8 @@ class ASH_EXPORT TabSlider : public views::TableLayoutView {
   const InitParams params_;
 
   // Owned by view hierarchy.
-  raw_ptr<SelectorView, ExperimentalAsh> selector_view_;
-  std::vector<TabSliderButton*> buttons_;
+  raw_ptr<SelectorView> selector_view_;
+  std::vector<raw_ptr<TabSliderButton, VectorExperimental>> buttons_;
 
   base::CallbackListSubscription enabled_changed_subscription_;
 };

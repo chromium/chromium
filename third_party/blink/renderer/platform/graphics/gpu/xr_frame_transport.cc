@@ -13,7 +13,7 @@
 #include "gpu/command_buffer/common/mailbox_holder.h"
 #include "mojo/public/cpp/system/platform_handle.h"
 #include "third_party/blink/public/platform/task_type.h"
-#include "third_party/blink/renderer/platform/graphics/gpu_memory_buffer_image_copy.h"
+#include "third_party/blink/renderer/platform/graphics/image_to_buffer_copier.h"
 #include "third_party/blink/renderer/platform/graphics/static_bitmap_image.h"
 #include "third_party/blink/renderer/platform/mojo/mojo_binding_context.h"
 #include "ui/gfx/gpu_fence.h"
@@ -118,19 +118,19 @@ void XRFrameTransport::FrameSubmit(
     if (transport_options_->wait_for_transfer_notification)
       WaitForPreviousTransfer();
     if (!frame_copier_ || !last_transfer_succeeded_) {
-      frame_copier_ = std::make_unique<GpuMemoryBufferImageCopy>(gl, sii);
+      frame_copier_ = std::make_unique<ImageToBufferCopier>(gl, sii);
     }
-    auto [gpu_memory_buffer, sync_token] =
+    auto [gpu_memory_buffer_handle, sync_token] =
         frame_copier_->CopyImage(image_ref.get());
     drawing_buffer_client->DrawingBufferClientRestoreTexture2DBinding();
     drawing_buffer_client->DrawingBufferClientRestoreFramebufferBinding();
     drawing_buffer_client->DrawingBufferClientRestoreRenderbufferBinding();
 
-    // We can fail to obtain a GpuMemoryBuffer if we don't have GPU support, or
+    // We can fail to obtain a GMB handle if we don't have GPU support, or
     // for some out-of-memory situations.
     // TODO(billorr): Consider whether we should just drop the frame or exit
     // presentation.
-    if (!gpu_memory_buffer) {
+    if (gpu_memory_buffer_handle.is_null()) {
       FrameSubmitMissing(vr_presentation_provider, gl, vr_frame_id);
       // We didn't actually submit anything, so don't set
       // the waiting_for_previous_frame_transfer_ and related state.
@@ -140,9 +140,9 @@ void XRFrameTransport::FrameSubmit(
     // We decompose the cloned handle, and use it to create a
     // mojo::PlatformHandle which will own cleanup of the handle, and will be
     // passed over IPC.
-    gfx::GpuMemoryBufferHandle gpu_handle = gpu_memory_buffer->CloneHandle();
     vr_presentation_provider->SubmitFrameWithTextureHandle(
-        vr_frame_id, mojo::PlatformHandle(std::move(gpu_handle.dxgi_handle)),
+        vr_frame_id,
+        mojo::PlatformHandle(std::move(gpu_memory_buffer_handle.dxgi_handle)),
         sync_token);
 #else
     NOTIMPLEMENTED();

@@ -136,10 +136,8 @@ class MultiDeviceSetupScreen : public BaseScreen {
   static void RecordMultiDeviceSetupOOBEUserChoiceHistogram(
       MultiDeviceSetupOOBEUserChoice value);
 
-  raw_ptr<multidevice_setup::MultiDeviceSetupClient, ExperimentalAsh>
-      setup_client_ = nullptr;
-  raw_ptr<device_sync::DeviceSyncClient, ExperimentalAsh> device_sync_client_ =
-      nullptr;
+  raw_ptr<multidevice_setup::MultiDeviceSetupClient> setup_client_ = nullptr;
+  raw_ptr<device_sync::DeviceSyncClient> device_sync_client_ = nullptr;
   bool skipped_ = false;
   bool skipped_reason_determined_ = false;
 

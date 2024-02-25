@@ -48,9 +48,8 @@ class InvalidConnectionDisconnector
   bool IsPhoneConnected() const;
   bool DoesPhoneStatusModelExist() const;
 
-  raw_ptr<secure_channel::ConnectionManager, ExperimentalAsh>
-      connection_manager_;
-  raw_ptr<PhoneModel, ExperimentalAsh> phone_model_;
+  raw_ptr<secure_channel::ConnectionManager> connection_manager_;
+  raw_ptr<PhoneModel> phone_model_;
   std::unique_ptr<base::OneShotTimer> timer_;
 };
 

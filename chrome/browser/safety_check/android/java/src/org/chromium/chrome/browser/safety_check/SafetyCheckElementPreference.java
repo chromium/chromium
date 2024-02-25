@@ -5,9 +5,11 @@
 package org.chromium.chrome.browser.safety_check;
 
 import android.content.Context;
+import android.text.TextUtils.TruncateAt;
 import android.util.AttributeSet;
 import android.view.View;
 import android.widget.ImageView;
+import android.widget.TextView;
 
 import androidx.annotation.DrawableRes;
 import androidx.preference.PreferenceViewHolder;
@@ -31,9 +33,7 @@ public class SafetyCheckElementPreference extends ChromeBasePreference {
      */
     private Callback<Void> mDelayedAction;
 
-    /**
-     * Creates a new object and sets the widget layout.
-     */
+    /** Creates a new object and sets the widget layout. */
     public SafetyCheckElementPreference(Context context, AttributeSet attrs) {
         super(context, attrs);
         setWidgetLayoutResource(R.layout.safety_check_status);
@@ -41,14 +41,18 @@ public class SafetyCheckElementPreference extends ChromeBasePreference {
         mDelayedAction = null;
     }
 
-    /**
-     * Gets triggered when the view elements are created.
-     */
+    /** Gets triggered when the view elements are created. */
     @Override
     public void onBindViewHolder(PreferenceViewHolder holder) {
         super.onBindViewHolder(holder);
         mProgressBar = holder.findViewById(R.id.progress);
         mStatusView = (ImageView) holder.findViewById(R.id.status_view);
+
+        // Title should be max 3 lines length and ellipsized if it doesn't fit into 3 lines.
+        TextView titleTextView = (TextView) holder.findViewById(android.R.id.title);
+        titleTextView.setMaxLines(3);
+        titleTextView.setEllipsize(TruncateAt.END);
+
         // If there is a delayed action - take it.
         if (mDelayedAction != null) {
             mDelayedAction.onResult(null);
@@ -57,9 +61,7 @@ public class SafetyCheckElementPreference extends ChromeBasePreference {
         mDelayedAction = null;
     }
 
-    /**
-     * Displays the progress bar.
-     */
+    /** Displays the progress bar. */
     void showProgressBar() {
         // Delay if this gets invoked before onBindViewHolder.
         if (mStatusView == null || mProgressBar == null) {
@@ -85,9 +87,7 @@ public class SafetyCheckElementPreference extends ChromeBasePreference {
         mStatusView.setVisibility(View.VISIBLE);
     }
 
-    /**
-     * Hides anything in the status area.
-     */
+    /** Hides anything in the status area. */
     void clearStatusIndicator() {
         // Delay if this gets invoked before onBindViewHolder.
         if (mStatusView == null || mProgressBar == null) {

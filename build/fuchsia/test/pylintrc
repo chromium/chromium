@@ -24,3 +24,8 @@ max-attributes=10
 [FORMAT]
 
 max-line-length=80
+
+[SIMILARITIES]
+ignore-comments=yes
+ignore-docstrings=yes
+ignore-imports=yes

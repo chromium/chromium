@@ -97,6 +97,7 @@ NearbyShareDialogUI::NearbyShareDialogUI(content::WebUI* web_ui)
       network::mojom::CSPDirectiveName::TrustedTypes,
       "trusted-types static-types "
       // Required by lottie.
+      "cros-lottie-worker-script-loader "
       "lottie-worker-script-loader webui-test-script "
       // Required by parse-html-subset.
       "parse-html-subset sanitize-inner-html "
@@ -121,7 +122,7 @@ NearbyShareDialogUI::NearbyShareDialogUI(content::WebUI* web_ui)
   auto plural_string_handler = std::make_unique<PluralStringHandler>();
   plural_string_handler->AddLocalizedString(
       "nearbyShareContactVisibilityNumUnreachable",
-      IDS_NEARBY_CONTACT_VISIBILITY_NUM_UNREACHABLE);
+      IDS_NEARBY_CONTACT_VISIBILITY_NUM_UNREACHABLE_PH);
   web_ui->AddMessageHandler(std::move(plural_string_handler));
   // Add the metrics handler to write uma stats.
   web_ui->AddMessageHandler(std::make_unique<MetricsHandler>());
@@ -241,8 +242,8 @@ void NearbyShareDialogUI::SetAttachmentFromQueryParameter(const GURL& url) {
            {"text", TextAttachment::Type::kText}}) {
     if (net::GetValueForKeyInQuery(url, text_type.first, &value)) {
       attachments.push_back(std::make_unique<TextAttachment>(
-          text_type.second, value, /*title=*/absl::nullopt,
-          /*mime_type=*/absl::nullopt));
+          text_type.second, value, /*title=*/std::nullopt,
+          /*mime_type=*/std::nullopt));
       SetAttachments(std::move(attachments));
       return;
     }

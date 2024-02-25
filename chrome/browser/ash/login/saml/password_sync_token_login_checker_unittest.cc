@@ -43,24 +43,19 @@ class PasswordSyncTokenLoginCheckerTest : public testing::Test {
 
   ScopedTestingLocalState scoped_local_state_;
   std::unique_ptr<net::BackoffEntry> sync_token_retry_backoff_;
-  raw_ptr<FakeChromeUserManager, DanglingUntriaged | ExperimentalAsh>
-      user_manager_ = nullptr;
-  std::unique_ptr<user_manager::ScopedUserManager> scoped_user_manager_;
+  user_manager::TypedScopedUserManager<ash::FakeChromeUserManager>
+      fake_user_manager_;
   std::unique_ptr<PasswordSyncTokenLoginChecker> checker_;
 };
 
 PasswordSyncTokenLoginCheckerTest::PasswordSyncTokenLoginCheckerTest()
     : scoped_local_state_(TestingBrowserProcess::GetGlobal()) {
-  auto fake_user_manager = std::make_unique<FakeChromeUserManager>();
-  scoped_user_manager_ = std::make_unique<user_manager::ScopedUserManager>(
-      std::move(fake_user_manager));
+  fake_user_manager_.Reset(std::make_unique<ash::FakeChromeUserManager>());
 
   sync_token_retry_backoff_ = std::make_unique<net::BackoffEntry>(
       &PasswordSyncTokenCheckersCollection::kFetchTokenRetryBackoffPolicy);
-  user_manager_ =
-      static_cast<FakeChromeUserManager*>(user_manager::UserManager::Get());
-  user_manager_->AddUser(saml_login_account_id_);
-  user_manager_->SwitchActiveUser(saml_login_account_id_);
+  fake_user_manager_->AddUser(saml_login_account_id_);
+  fake_user_manager_->SwitchActiveUser(saml_login_account_id_);
 }
 
 void PasswordSyncTokenLoginCheckerTest::CreatePasswordSyncTokenLoginChecker() {
@@ -81,8 +76,8 @@ TEST_F(PasswordSyncTokenLoginCheckerTest, SyncTokenValid) {
   CreatePasswordSyncTokenLoginChecker();
   checker_->CheckForPasswordNotInSync();
   OnTokenVerified(true);
-  EXPECT_FALSE(
-      user_manager_->FindUser(saml_login_account_id_)->force_online_signin());
+  EXPECT_FALSE(fake_user_manager_->FindUser(saml_login_account_id_)
+                   ->force_online_signin());
   test_environment_.FastForwardBy(kSamlTokenDelay);
   EXPECT_TRUE(checker_->IsCheckPending());
 }
@@ -91,8 +86,8 @@ TEST_F(PasswordSyncTokenLoginCheckerTest, SyncTokenInvalid) {
   CreatePasswordSyncTokenLoginChecker();
   checker_->CheckForPasswordNotInSync();
   OnTokenVerified(false);
-  EXPECT_TRUE(
-      user_manager_->FindUser(saml_login_account_id_)->force_online_signin());
+  EXPECT_TRUE(fake_user_manager_->FindUser(saml_login_account_id_)
+                  ->force_online_signin());
   test_environment_.FastForwardBy(kSamlTokenDelay);
   EXPECT_FALSE(checker_->IsCheckPending());
 }

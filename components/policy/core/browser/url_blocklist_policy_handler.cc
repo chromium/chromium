@@ -5,6 +5,7 @@
 #include "components/policy/core/browser/url_blocklist_policy_handler.h"
 
 #include <memory>
+#include <optional>
 #include <utility>
 #include <vector>
 
@@ -22,7 +23,6 @@
 #include "components/prefs/pref_value_map.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/url_matcher/url_util.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace {
 
@@ -117,7 +117,7 @@ void URLBlocklistPolicyHandler::ApplyPolicySettings(const PolicyMap& policies,
   const base::Value* url_blocklist_policy =
       policies.GetValue(policy_name(), base::Value::Type::LIST);
 
-  absl::optional<base::Value::List> merged_url_blocklist;
+  std::optional<base::Value::List> merged_url_blocklist;
 
 #if !BUILDFLAG(IS_IOS) && !BUILDFLAG(IS_ANDROID)
   const base::Value* disabled_schemes_policy =

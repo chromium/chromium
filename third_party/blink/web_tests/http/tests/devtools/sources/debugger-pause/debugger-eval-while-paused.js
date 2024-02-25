@@ -6,11 +6,11 @@ import {TestRunner} from 'test_runner';
 import {ConsoleTestRunner} from 'console_test_runner';
 import {SourcesTestRunner} from 'sources_test_runner';
 
+import * as SourcesModule from 'devtools/panels/sources/sources.js';
+
 (async function() {
   TestRunner.addResult(
       `Tests that evaluation in console works fine when script is paused. It also checks that stack and global variables are accessible from the console.\n`);
-  await TestRunner.loadLegacyModule('console');
-  await TestRunner.loadLegacyModule('sources');
   await TestRunner.showPanel('sources');
   await TestRunner.evaluateInPagePromise(`
       var globalVar = { b: 1 };
@@ -33,7 +33,7 @@ import {SourcesTestRunner} from 'sources_test_runner';
   function step1() {
     SourcesTestRunner.runTestFunctionAndWaitUntilPaused();
     TestRunner.addSniffer(
-              Sources.CallStackSidebarPane.prototype, 'updatedForTest', step2);
+              SourcesModule.CallStackSidebarPane.CallStackSidebarPane.prototype, 'updatedForTest', step2);
   }
 
   function step2(callFrames) {
@@ -42,7 +42,7 @@ import {SourcesTestRunner} from 'sources_test_runner';
 
   function step3(callFrames, result) {
     TestRunner.addResult('Evaluated script on the top frame: ' + result);
-    var pane = Sources.CallStackSidebarPane.instance();
+    var pane = SourcesModule.CallStackSidebarPane.CallStackSidebarPane.instance();
     pane.selectNextCallFrameOnStack();
     TestRunner.deprecatedRunAfterPendingDispatches(step4);
   }

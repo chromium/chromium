@@ -10,9 +10,12 @@
 #include <vector>
 
 #include "ash/ash_export.h"
+#include "ash/public/cpp/desk_profiles_delegate.h"
+#include "ash/public/cpp/session/session_observer.h"
 #include "base/containers/flat_map.h"
 #include "base/functional/callback.h"
 #include "base/memory/weak_ptr.h"
+#include "base/scoped_observation.h"
 #include "base/timer/elapsed_timer.h"
 #include "base/timer/timer.h"
 #include "base/uuid.h"
@@ -22,6 +25,7 @@ namespace ash {
 
 class AdminTemplateLaunchTracker;
 class DeskTemplate;
+class SessionController;
 
 struct AdminTemplateMetadata {
   // Uniquely identifies the template.
@@ -31,14 +35,26 @@ struct AdminTemplateMetadata {
   std::u16string name;
 };
 
+// Updates `saved_desk` so that any `lacros_profile_id` no longer occurs in
+// it. If the saved desk itself is associated with the profile, that association
+// is changed to the primary user's profile id. If there are browser windows in
+// the saved desk that are associated with the profile, then they are
+// removed. Note that this may leave the saved desk holding zero
+// windows. Returns true if any changes were made.
+ASH_EXPORT bool ScrubLacrosProfileFromSavedDesk(
+    DeskTemplate& saved_desk,
+    uint64_t lacros_profile_id,
+    uint64_t primary_user_lacros_profile_id);
+
 // The saved desk controller has functionality for listing and launching saved
 // desks. Primarily geared towards admin templates. It is owned by ash::Shell.
-class ASH_EXPORT SavedDeskController {
+class ASH_EXPORT SavedDeskController : public SessionObserver,
+                                       public DeskProfilesDelegate::Observer {
  public:
   SavedDeskController();
   SavedDeskController(const SavedDeskController&) = delete;
   SavedDeskController& operator=(const SavedDeskController&) = delete;
-  virtual ~SavedDeskController();
+  ~SavedDeskController() override;
 
   static SavedDeskController* Get();
 
@@ -60,6 +76,12 @@ class ASH_EXPORT SavedDeskController {
 
  private:
   friend class SavedDeskControllerTestApi;
+
+  // SessionObserver:
+  void OnFirstSessionStarted() override;
+
+  // DeskProfilesDelegate::Observer:
+  void OnProfileRemoved(uint64_t profile_id) override;
 
   // Represents data needed to support an admin template auto launch.
   struct AdminTemplateAutoLaunch {
@@ -110,6 +132,12 @@ class ASH_EXPORT SavedDeskController {
 
   // An optional admin template used for testing.
   std::unique_ptr<DeskTemplate> admin_template_for_testing_;
+
+  base::ScopedObservation<SessionController, SessionObserver> session_observer_{
+      this};
+
+  base::ScopedObservation<DeskProfilesDelegate, DeskProfilesDelegate::Observer>
+      desk_profiles_observer_{this};
 
   base::WeakPtrFactory<SavedDeskController> weak_ptr_factory_{this};
 };

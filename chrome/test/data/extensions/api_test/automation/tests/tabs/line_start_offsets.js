@@ -30,4 +30,4 @@ var allTests = [
   }
 ];
 
-setUpAndRunTests(allTests, 'line_start_offsets.html');
+setUpAndRunTabsTests(allTests, 'line_start_offsets.html');

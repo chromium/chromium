@@ -8,9 +8,7 @@ import org.chromium.content_public.browser.RenderFrameHost;
 import org.chromium.payments.mojom.DigitalGoodsFactory;
 import org.chromium.services.service_manager.InterfaceFactory;
 
-/**
- * A factory to produce instances of the mojo {@link DigitalGoodsFactory} interface.
- */
+/** A factory to produce instances of the mojo {@link DigitalGoodsFactory} interface. */
 public class DigitalGoodsFactoryFactory implements InterfaceFactory<DigitalGoodsFactory> {
     private final RenderFrameHost mRenderFrameHost;
 

@@ -4,18 +4,12 @@
 
 ; --- The contents of common.sb implicitly included here. ---
 
-(deny default (with partial-symbolication))
-(debug deny)
-
 ; Allow cf prefs to work.
 (allow user-preference-read)
 
 (allow-cvms-blobs)
 
 (allow ipc-posix-shm)
-
-(define helper-bundle-id "HELPER_BUNDLE_ID")
-(define disable-metal-shader-cache "DISABLE_METAL_SHADER_CACHE")
 
 ; Allow communication between the GPU process and the UI server.
 (allow mach-lookup
@@ -133,23 +127,6 @@
   (subpath (param darwin-user-temp-dir))
 )
 
-; Metal shader compilation may be offloaded to a helper process that needs
-; access to the user cache directory in order to cache its work to disk.
-; If this sandbox is applied to an executable that is not within an app bundle,
-; such as in a unit test, the helper-bundle-id parameter will not be set and
-; issuing sandbox extensions to the Metal cache directories will not be allowed.
-; crbug.com/1453813
-(if (param helper-bundle-id)
-  (let ((helper-bundle-cache-dir
-        (string-append (param darwin-user-cache-dir)
-                        "/" (param helper-bundle-id))))
-    (allow file-issue-extension
-      (require-all
-        (extension-class "com.apple.app-sandbox.read-write")
-        (require-any
-          (subpath (string-append helper-bundle-cache-dir "/com.apple.metalfe"))
-          (subpath (string-append helper-bundle-cache-dir "/com.apple.gpuarchiver")))))))
-
 (if (param-true? filter-syscalls-debug)
   (when (defined? 'syscall-unix)
     (deny syscall-unix (with send-signal SIGSYS))
@@ -163,10 +140,5 @@
       (syscall-number SYS_write_nocancel)
 )))
 
-; crbug.com/1159113
-(if (param-true? disable-metal-shader-cache)
-  (let ((metal-cache-dir (subpath (string-append (param darwin-user-cache-dir)
-                                                 "/com.apple.metal"))))
-    (deny file-read* metal-cache-dir)
-    (deny file-write* metal-cache-dir))
-)
+(if (not (maybe-disable-metal-shader-cache))
+  (maybe-allow-metal-shader-cache-access))

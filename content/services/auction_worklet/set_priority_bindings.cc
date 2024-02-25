@@ -39,7 +39,7 @@ void SetPriorityBindings::AttachToContext(v8::Local<v8::Context> context) {
 }
 
 void SetPriorityBindings::Reset() {
-  set_priority_ = absl::nullopt;
+  set_priority_ = std::nullopt;
   already_called_ = false;
 }
 

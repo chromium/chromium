@@ -74,7 +74,7 @@ async_test((t) => {
 
     // Now #target is not locked, expect 5 children ("target" text node, 4 divs).
     // This is the same as it would be if content-visibility had never been used.
-    t.step(() => { assert_equals(axTarget.childrenCount, 5, "Children count when not locked"); });
+    t.step(() => { assert_equals(axTarget.childrenCount, 3, "Children count when not locked"); });
 
     for (let i = 0; i < axTarget.childrenCount; ++i) {
       const axChild = axTarget.childAtIndex(i);

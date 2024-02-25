@@ -6,7 +6,9 @@
 #define UI_OZONE_PUBLIC_SURFACE_FACTORY_OZONE_H_
 
 #include <stdint.h>
+
 #include <memory>
+#include <optional>
 #include <vector>
 
 #include "base/component_export.h"
@@ -14,7 +16,6 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/native_library.h"
 #include "gpu/vulkan/buildflags.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/buffer_types.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/native_pixmap.h"
@@ -149,7 +150,7 @@ class COMPONENT_EXPORT(OZONE_BASE) SurfaceFactoryOzone {
       gfx::Size size,
       gfx::BufferFormat format,
       gfx::BufferUsage usage,
-      absl::optional<gfx::Size> framebuffer_size = absl::nullopt);
+      std::optional<gfx::Size> framebuffer_size = std::nullopt);
 
   virtual bool CanCreateNativePixmapForFormat(gfx::BufferFormat format);
 
@@ -218,7 +219,7 @@ class COMPONENT_EXPORT(OZONE_BASE) SurfaceFactoryOzone {
       const;
 
   // This returns a preferred format for solid color image on Wayland.
-  virtual absl::optional<gfx::BufferFormat> GetPreferredFormatForSolidColor()
+  virtual std::optional<gfx::BufferFormat> GetPreferredFormatForSolidColor()
       const;
 
  protected:

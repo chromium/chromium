@@ -195,8 +195,7 @@ class ASH_EXPORT ProjectorControllerImpl
   // from the container folder.
   std::vector<base::FilePath> GetScreencastFilePaths() const;
 
-  raw_ptr<ProjectorClient, DanglingUntriaged | ExperimentalAsh> client_ =
-      nullptr;
+  raw_ptr<ProjectorClient, DanglingUntriaged> client_ = nullptr;
   std::unique_ptr<ProjectorSessionImpl> projector_session_;
   std::unique_ptr<ProjectorUiController> ui_controller_;
   std::unique_ptr<ProjectorMetadataController> metadata_controller_;

@@ -49,7 +49,7 @@ void TestAppListController::DismissAppList() {
 }
 
 bool TestAppListController::IsVisible(
-    const absl::optional<int64_t>& display_id) {
+    const std::optional<int64_t>& display_id) {
   return visible_;
 }
 
@@ -58,7 +58,7 @@ bool TestAppListController::IsVisible() {
 }
 
 void TestAppListController::UpdateAppListWithNewTemporarySortOrder(
-    const absl::optional<ash::AppListSortOrder>& new_order,
+    const std::optional<ash::AppListSortOrder>& new_order,
     bool animate,
     base::OnceClosure update_position_closure) {
   if (!update_position_closure) {

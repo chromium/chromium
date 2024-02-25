@@ -7,6 +7,13 @@
 
 #include "content/browser/accessibility/accessibility_content_browsertest.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/gfx/geometry/point.h"
+
+namespace gfx {
+
+class Point;
+
+}  // namespace gfx
 
 namespace content {
 

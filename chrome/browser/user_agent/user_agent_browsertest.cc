@@ -17,6 +17,7 @@
 #include "components/embedder_support/user_agent_utils.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/test/browser_test.h"
+#include "content/public/test/browser_test_utils.h"
 #include "net/http/http_request_headers.h"
 #include "third_party/blink/public/common/features.h"
 
@@ -84,7 +85,7 @@ class ReduceUserAgentPlatformBrowserTest : public InProcessBrowserTest {
 
   void SetUp() override {
     std::unique_ptr<base::FeatureList> feature_list(new base::FeatureList);
-    feature_list->InitializeFromCommandLine(
+    feature_list->InitFromCommandLine(
         "ReduceUserAgentMinorVersion,ReduceUserAgentPlatformOsCpu", "");
     scoped_feature_list_.InitWithFeatureList(std::move(feature_list));
     InProcessBrowserTest::SetUp();

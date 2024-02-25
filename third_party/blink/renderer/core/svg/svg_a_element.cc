@@ -138,9 +138,15 @@ void SVGAElement::DefaultEventHandler(Event& event) {
       }
       event.SetDefaultHandled();
 
-      frame_request.SetNavigationPolicy(NavigationPolicyFromEvent(&event));
+      NavigationPolicy navigation_policy = NavigationPolicyFromEvent(&event);
+      if (navigation_policy == kNavigationPolicyLinkPreview) {
+        // TODO(b:302649777): Support LinkPreview for SVG <a> element.
+        return;
+      }
+      frame_request.SetNavigationPolicy(navigation_policy);
       frame_request.SetClientRedirectReason(
           ClientNavigationReason::kAnchorClick);
+      frame_request.SetSourceElement(this);
       frame_request.SetTriggeringEventInfo(
           event.isTrusted()
               ? mojom::blink::TriggeringEventInfo::kFromTrustedEvent
@@ -171,17 +177,18 @@ int SVGAElement::DefaultTabIndex() const {
   return 0;
 }
 
-bool SVGAElement::SupportsFocus() const {
-  if (IsEditable(*this))
-    return SVGGraphicsElement::SupportsFocus();
+bool SVGAElement::SupportsFocus(UpdateBehavior update_behavior) const {
+  if (IsEditable(*this)) {
+    return SVGGraphicsElement::SupportsFocus(update_behavior);
+  }
   // If not a link we should still be able to focus the element if it has
   // tabIndex.
-  return IsLink() || SVGGraphicsElement::SupportsFocus();
+  return IsLink() || SVGGraphicsElement::SupportsFocus(update_behavior);
 }
 
 bool SVGAElement::ShouldHaveFocusAppearance() const {
   return (GetDocument().LastFocusType() != mojom::blink::FocusType::kMouse) ||
-         SVGGraphicsElement::SupportsFocus();
+         SVGGraphicsElement::SupportsFocus(UpdateBehavior::kNoneForIsFocused);
 }
 
 bool SVGAElement::IsURLAttribute(const Attribute& attribute) const {
@@ -189,19 +196,11 @@ bool SVGAElement::IsURLAttribute(const Attribute& attribute) const {
          SVGGraphicsElement::IsURLAttribute(attribute);
 }
 
-bool SVGAElement::IsMouseFocusable() const {
-  if (IsLink())
-    return SupportsFocus();
-
-  return SVGElement::IsMouseFocusable();
-}
-
-bool SVGAElement::IsKeyboardFocusable() const {
-  if (IsBaseElementFocusable() && Element::SupportsFocus())
-    return SVGElement::IsKeyboardFocusable();
-  if (IsLink() && !GetDocument().GetPage()->GetChromeClient().TabsToLinks())
+bool SVGAElement::IsKeyboardFocusable(UpdateBehavior update_behavior) const {
+  if (IsLink() && !GetDocument().GetPage()->GetChromeClient().TabsToLinks()) {
     return false;
-  return SVGElement::IsKeyboardFocusable();
+  }
+  return SVGElement::IsKeyboardFocusable(update_behavior);
 }
 
 bool SVGAElement::CanStartSelection() const {

@@ -13,6 +13,10 @@
 #include "components/webxr/android/xr_session_coordinator.h"
 #include "device/vr/openxr/openxr_platform.h"
 
+namespace content {
+class WebContents;
+}
+
 namespace webxr {
 
 // Android specific implementation of the OpenXrPlatformHelper.
@@ -21,16 +25,31 @@ class OpenXrPlatformHelperAndroid : public device::OpenXrPlatformHelper {
   OpenXrPlatformHelperAndroid();
   ~OpenXrPlatformHelperAndroid() override;
 
+  // Queries whether or not the hardware can currently support an OpenXR session
+  // and updates a few internal values about the kinds of sessions that can be
+  // supported. Returns false if the device cannot support OpenXR.
+  bool CheckHardwareSupport(content::WebContents* web_contents);
+
   // OpenXrPlatformHelper
   std::unique_ptr<device::OpenXrGraphicsBinding> GetGraphicsBinding() override;
-  void GetPlatformCreateInfo(const device::OpenXrCreateInfo& create_info,
-                             PlatformCreateInfoReadyCallback) override;
+  void GetPlatformCreateInfo(
+      const device::OpenXrCreateInfo& create_info,
+      PlatformCreateInfoReadyCallback result_callback,
+      PlatormInitiatedShutdownCallback shutdown_callback) override;
   device::mojom::XRDeviceData GetXRDeviceData() override;
   bool Initialize() override;
 
   XrResult DestroyInstance(XrInstance& instance) override;
 
  private:
+  // Creates a temporary XrInstance that's only used for querying information
+  // about the OpenXR system, and not able to present session content.
+  XrResult CreateTemporaryInstance(XrInstance* instance,
+                                   content::WebContents* web_contents);
+
+  void OnXrActivityReady(PlatformCreateInfoReadyCallback callback,
+                         const base::android::JavaParamRef<jobject>& activity);
+
   std::unique_ptr<XrSessionCoordinator> session_coordinator_;
 
   XrInstanceCreateInfoAndroidKHR create_info_{
@@ -38,8 +57,7 @@ class OpenXrPlatformHelperAndroid : public device::OpenXrPlatformHelper {
   base::android::ScopedJavaGlobalRef<jobject> activity_;
   base::android::ScopedJavaGlobalRef<jobject> app_context_;
 
-  void OnXrActivityReady(PlatformCreateInfoReadyCallback callback,
-                         const base::android::JavaParamRef<jobject>& activity);
+  bool is_ar_blend_mode_supported_ = false;
 };
 
 }  // namespace webxr

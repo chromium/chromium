@@ -15,6 +15,7 @@
 #include "ash/public/cpp/app_list/app_list_notifier.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "base/check.h"
+#include "base/memory/raw_ptr.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/string_util.h"
 #include "base/task/single_thread_task_runner.h"
@@ -32,6 +33,7 @@
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/layout/flex_layout.h"
 #include "ui/views/layout/table_layout.h"
+#include "ui/views/view_class_properties.h"
 
 using views::BoxLayout;
 using views::FlexLayout;
@@ -124,12 +126,12 @@ ContinueTaskContainerView::ContinueTaskContainerView(
   DCHECK(!update_callback_.is_null());
 
   if (tablet_mode_) {
-    InitializeFlexLayout();
+    InitializeTabletLayout();
   } else {
     columns_ = columns;
-    InitializeTableLayout();
+    InitializeClamshellLayout();
   }
-  GetViewAccessibility().OverrideRole(ax::mojom::Role::kList);
+  GetViewAccessibility().SetRole(ax::mojom::Role::kList);
   GetViewAccessibility().OverrideName(
       l10n_util::GetStringUTF16(IDS_ASH_LAUNCHER_CONTINUE_SECTION_LABEL));
 }
@@ -295,7 +297,7 @@ void ContinueTaskContainerView::Update() {
   // Layout the container so the task bounds are set to their intended
   // positions, which will be used to configure container update animation
   // sequences when animating.
-  Layout();
+  DeprecatedLayoutImmediately();
 
   if (needs_animation) {
     ScheduleContainerUpdateAnimation(views_to_fade_out, views_to_slide_out,
@@ -378,7 +380,7 @@ void ContinueTaskContainerView::ScheduleContainerUpdateAnimation(
   animation_builder.GetCurrentSequence().At(delay).SetDuration(
       base::Milliseconds(300));
 
-  for (auto* view : suggestion_tasks_views_) {
+  for (ash::ContinueTaskView* view : suggestion_tasks_views_) {
     const std::string& result_id = view->result()->id();
     // If view remained in place, it does not need to be animated in.
     auto view_remaining_in_place_it = views_remaining_in_place.find(result_id);
@@ -403,8 +405,9 @@ void ContinueTaskContainerView::ScheduleContainerUpdateAnimation(
 }
 
 void ContinueTaskContainerView::AbortTasksUpdateAnimations() {
-  for (auto* view : suggestion_tasks_views_)
+  for (ash::ContinueTaskView* view : suggestion_tasks_views_) {
     view->layer()->GetAnimator()->StopAnimating();
+  }
   ClearAnimatingViews();
 }
 
@@ -413,10 +416,11 @@ void ContinueTaskContainerView::ClearAnimatingViews() {
   // case view removal causes an aborted view animation that calls back into
   // `ClearAnimatingViews()`. Clearing `views_to_remove_after_animation_` mid
   // iteraion over the vector would not be safe.
-  std::vector<ContinueTaskView*> views_to_remove;
+  std::vector<raw_ptr<ContinueTaskView, VectorExperimental>> views_to_remove;
   views_to_remove_after_animation_.swap(views_to_remove);
-  for (auto* view : views_to_remove)
+  for (ash::ContinueTaskView* view : views_to_remove) {
     RemoveChildViewT(view);
+  }
 
   NotifyAccessibilityEvent(ax::mojom::Event::kChildrenChanged, true);
 }
@@ -469,7 +473,7 @@ void ContinueTaskContainerView::AnimateSlideInSuggestions(
   views::AnimationBuilder animation_builder;
   animation_builder.Once().SetDuration(duration);
 
-  for (auto* view : suggestion_tasks_views_) {
+  for (ash::ContinueTaskView* view : suggestion_tasks_views_) {
     animation_builder.GetCurrentSequence()
         .SetTransform(view, gfx::Transform(), tween)
         .SetOpacity(view, 1.0f, tween);
@@ -478,11 +482,7 @@ void ContinueTaskContainerView::AnimateSlideInSuggestions(
 
 void ContinueTaskContainerView::RemoveViewFromLayout(ContinueTaskView* view) {
   view->SetEnabled(false);
-  if (table_layout_) {
-    table_layout_->SetChildViewIgnoredByLayout(view, true);
-  } else if (flex_layout_) {
-    flex_layout_->SetChildViewIgnoredByLayout(view, true);
-  }
+  view->SetProperty(views::kViewIgnoredByLayoutKey, true);
 }
 
 void ContinueTaskContainerView::ScheduleUpdate() {
@@ -495,13 +495,12 @@ void ContinueTaskContainerView::ScheduleUpdate() {
   }
 }
 
-void ContinueTaskContainerView::InitializeFlexLayout() {
+void ContinueTaskContainerView::InitializeTabletLayout() {
   DCHECK(tablet_mode_);
-  DCHECK(!table_layout_);
   DCHECK(!columns_);
 
-  flex_layout_ = SetLayoutManager(std::make_unique<FlexLayout>());
-  flex_layout_->SetOrientation(views::LayoutOrientation::kHorizontal)
+  SetLayoutManager(std::make_unique<FlexLayout>())
+      ->SetOrientation(views::LayoutOrientation::kHorizontal)
       .SetMainAxisAlignment(views::LayoutAlignment::kCenter)
       .SetDefault(views::kMarginsKey,
                   gfx::Insets::TLBR(0, kColumnSpacingTablet, 0, 0))
@@ -511,36 +510,36 @@ void ContinueTaskContainerView::InitializeFlexLayout() {
                       views::MaximumFlexSizeRule::kScaleToMaximum));
 }
 
-void ContinueTaskContainerView::InitializeTableLayout() {
+void ContinueTaskContainerView::InitializeClamshellLayout() {
   DCHECK(!tablet_mode_);
-  DCHECK(!flex_layout_);
   DCHECK_GT(columns_, 0);
 
-  table_layout_ = SetLayoutManager(std::make_unique<views::TableLayout>());
+  auto* const table_layout =
+      SetLayoutManager(std::make_unique<views::TableLayout>());
   std::vector<size_t> linked_columns;
   for (int i = 0; i < columns_; i++) {
     if (i == 0) {
-      table_layout_->AddPaddingColumn(views::TableLayout::kFixedSize,
-                                      kColumnOuterSpacingClamshell);
+      table_layout->AddPaddingColumn(views::TableLayout::kFixedSize,
+                                     kColumnOuterSpacingClamshell);
     } else {
-      table_layout_->AddPaddingColumn(views::TableLayout::kFixedSize,
-                                      kColumnInnerSpacingClamshell);
+      table_layout->AddPaddingColumn(views::TableLayout::kFixedSize,
+                                     kColumnInnerSpacingClamshell);
     }
-    table_layout_->AddColumn(
+    table_layout->AddColumn(
         views::LayoutAlignment::kStretch, views::LayoutAlignment::kCenter,
         /*horizontal_resize=*/1.0f, views::TableLayout::ColumnSize::kFixed,
         /*fixed_width=*/0, /*min_width=*/0);
     linked_columns.push_back(2 * i + 1);
   }
-  table_layout_->AddPaddingColumn(views::TableLayout::kFixedSize,
-                                  kColumnOuterSpacingClamshell);
+  table_layout->AddPaddingColumn(views::TableLayout::kFixedSize,
+                                 kColumnOuterSpacingClamshell);
 
-  table_layout_->LinkColumnSizes(linked_columns);
+  table_layout->LinkColumnSizes(linked_columns);
   // Continue section only shows if there are 3 or more suggestions, so there
   // are always 2 rows.
-  table_layout_->AddRows(1, views::TableLayout::kFixedSize);
-  table_layout_->AddPaddingRow(views::TableLayout::kFixedSize, kRowSpacing);
-  table_layout_->AddRows(1, views::TableLayout::kFixedSize);
+  table_layout->AddRows(1, views::TableLayout::kFixedSize);
+  table_layout->AddPaddingRow(views::TableLayout::kFixedSize, kRowSpacing);
+  table_layout->AddRows(1, views::TableLayout::kFixedSize);
 }
 
 void ContinueTaskContainerView::MoveFocusUp() {
@@ -589,7 +588,7 @@ int ContinueTaskContainerView::GetIndexOfFocusedTaskView() const {
   return -1;
 }
 
-BEGIN_METADATA(ContinueTaskContainerView, views::View)
+BEGIN_METADATA(ContinueTaskContainerView)
 END_METADATA
 
 }  // namespace ash

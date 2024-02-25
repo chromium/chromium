@@ -161,6 +161,10 @@ std::unique_ptr<PatternData> LayoutSVGResourcePattern::BuildPatternData(
     }
   }
 
+  if (!attributes.PatternTransform().IsInvertible()) {
+    return pattern_data;
+  }
+
   pattern_data->pattern = Pattern::CreatePaintRecordPattern(
       AsPaintRecord(tile_transform), gfx::RectF(tile_bounds.size()));
 

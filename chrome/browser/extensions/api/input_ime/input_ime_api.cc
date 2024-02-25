@@ -42,7 +42,7 @@ InputMethodEngine* GetEngineIfActive(Profile* profile,
 ui::KeyEvent ConvertKeyboardEventToUIKeyEvent(
     const input_ime::KeyboardEvent& event) {
   const ui::EventType type =
-      event.type == input_ime::KEYBOARD_EVENT_TYPE_KEYDOWN
+      event.type == input_ime::KeyboardEventType::kKeydown
           ? ui::ET_KEY_PRESSED
           : ui::ET_KEY_RELEASED;
 
@@ -115,7 +115,7 @@ void InputImeEventRouterFactory::RemoveProfile(Profile* profile) {
 }
 
 ExtensionFunction::ResponseAction InputImeKeyEventHandledFunction::Run() {
-  absl::optional<KeyEventHandled::Params> params =
+  std::optional<KeyEventHandled::Params> params =
       KeyEventHandled::Params::Create(args());
   std::string error;
   InputMethodEngine* engine = GetEngineIfActive(
@@ -134,21 +134,21 @@ ExtensionFunction::ResponseAction InputImeSetCompositionFunction::Run() {
   if (!engine)
     return RespondNow(Error(InformativeError(error, static_function_name())));
 
-  absl::optional<SetComposition::Params> parent_params =
+  std::optional<SetComposition::Params> parent_params =
       SetComposition::Params::Create(args());
   const SetComposition::Params::Parameters& params = parent_params->parameters;
   std::vector<InputMethodEngine::SegmentInfo> segments;
   if (params.segments) {
     for (const auto& segments_arg : *params.segments) {
       EXTENSION_FUNCTION_VALIDATE(segments_arg.style !=
-                                  input_ime::UNDERLINE_STYLE_NONE);
+                                  input_ime::UnderlineStyle::kNone);
       InputMethodEngine::SegmentInfo segment_info;
       segment_info.start = segments_arg.start;
       segment_info.end = segments_arg.end;
-      if (segments_arg.style == input_ime::UNDERLINE_STYLE_UNDERLINE) {
+      if (segments_arg.style == input_ime::UnderlineStyle::kUnderline) {
         segment_info.style = InputMethodEngine::SEGMENT_STYLE_UNDERLINE;
       } else if (segments_arg.style ==
-                 input_ime::UNDERLINE_STYLE_DOUBLEUNDERLINE) {
+                 input_ime::UnderlineStyle::kDoubleUnderline) {
         segment_info.style = InputMethodEngine::SEGMENT_STYLE_DOUBLE_UNDERLINE;
       } else {
         segment_info.style = InputMethodEngine::SEGMENT_STYLE_NO_UNDERLINE;
@@ -178,7 +178,7 @@ ExtensionFunction::ResponseAction InputImeCommitTextFunction::Run() {
   if (!engine)
     return RespondNow(Error(InformativeError(error, static_function_name())));
 
-  absl::optional<CommitText::Params> parent_params =
+  std::optional<CommitText::Params> parent_params =
       CommitText::Params::Create(args());
   const CommitText::Params::Parameters& params = parent_params->parameters;
   if (!engine->CommitText(params.context_id, base::UTF8ToUTF16(params.text),
@@ -198,7 +198,7 @@ ExtensionFunction::ResponseAction InputImeSendKeyEventsFunction::Run() {
   if (!engine)
     return RespondNow(Error(InformativeError(error, static_function_name())));
 
-  absl::optional<SendKeyEvents::Params> parent_params =
+  std::optional<SendKeyEvents::Params> parent_params =
       SendKeyEvents::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(parent_params);
   const SendKeyEvents::Params::Parameters& params = parent_params->parameters;

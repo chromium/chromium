@@ -11,6 +11,7 @@
 #include "ash/shell.h"
 #include "ash/style/color_palette_controller.h"
 #include "ash/style/dark_light_mode_controller_impl.h"
+#include "ash/style/mojom/color_scheme.mojom-shared.h"
 #include "ash/test/ash_test_base.h"
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
@@ -61,7 +62,8 @@ class TestThemeObserver
     color_mode_auto_schedule_enabled_ = enabled;
   }
 
-  void OnColorSchemeChanged(ash::ColorScheme color_scheme) override {
+  void OnColorSchemeChanged(
+      ash::style::mojom::ColorScheme color_scheme) override {
     color_scheme_ = color_scheme;
   }
 
@@ -70,8 +72,17 @@ class TestThemeObserver
     sample_color_schemes_ = sample_color_schemes;
   }
 
-  void OnStaticColorChanged(absl::optional<::SkColor> static_color) override {
+  void OnStaticColorChanged(std::optional<::SkColor> static_color) override {
     static_color_ = static_color;
+  }
+
+  void OnGeolocationPermissionForSystemServicesChanged(bool enabled) override {
+    geolocation_for_system_enabled_ = enabled;
+  }
+
+  void OnDaylightTimeChanged(const std::u16string& sunrise_time,
+                             const std::u16string& sunset_time) override {
+    // no-op
   }
 
   mojo::PendingRemote<ash::personalization_app::mojom::ThemeObserver>
@@ -82,9 +93,9 @@ class TestThemeObserver
     return theme_observer_receiver_.BindNewPipeAndPassRemote();
   }
 
-  absl::optional<bool> is_dark_mode_enabled() {
+  std::optional<bool> is_dark_mode_enabled() {
     if (!theme_observer_receiver_.is_bound()) {
-      return absl::nullopt;
+      return std::nullopt;
     }
 
     theme_observer_receiver_.FlushForTesting();
@@ -98,16 +109,23 @@ class TestThemeObserver
     return color_mode_auto_schedule_enabled_;
   }
 
-  ash::ColorScheme GetColorScheme() {
+  bool is_geolocation_enabled_for_system_services() {
+    if (theme_observer_receiver_.is_bound()) {
+      theme_observer_receiver_.FlushForTesting();
+    }
+    return geolocation_for_system_enabled_;
+  }
+
+  ash::style::mojom::ColorScheme GetColorScheme() {
     if (theme_observer_receiver_.is_bound()) {
       theme_observer_receiver_.FlushForTesting();
     }
     return color_scheme_;
   }
 
-  absl::optional<SkColor> GetStaticColor() {
+  std::optional<SkColor> GetStaticColor() {
     if (!theme_observer_receiver_.is_bound()) {
-      return absl::nullopt;
+      return std::nullopt;
     }
     theme_observer_receiver_.FlushForTesting();
     return static_color_;
@@ -119,8 +137,10 @@ class TestThemeObserver
 
   bool dark_mode_enabled_ = false;
   bool color_mode_auto_schedule_enabled_ = false;
-  ash::ColorScheme color_scheme_ = ash::ColorScheme::kTonalSpot;
-  absl::optional<::SkColor> static_color_ = absl::nullopt;
+  bool geolocation_for_system_enabled_ = false;
+  ash::style::mojom::ColorScheme color_scheme_ =
+      ash::style::mojom::ColorScheme::kTonalSpot;
+  std::optional<::SkColor> static_color_ = std::nullopt;
   std::vector<ash::SampleColorScheme> sample_color_schemes_;
 };
 
@@ -178,7 +198,7 @@ class PersonalizationAppThemeProviderImplTest : public ChromeAshTestBase {
         test_theme_observer_.pending_remote());
   }
 
-  absl::optional<bool> is_dark_mode_enabled() {
+  std::optional<bool> is_dark_mode_enabled() {
     if (theme_provider_remote_.is_bound()) {
       theme_provider_remote_.FlushForTesting();
     }
@@ -192,14 +212,21 @@ class PersonalizationAppThemeProviderImplTest : public ChromeAshTestBase {
     return test_theme_observer_.is_color_mode_auto_schedule_enabled();
   }
 
-  ash::ColorScheme GetColorScheme() {
+  bool is_geolocation_enabled_for_system_services() {
+    if (theme_provider_remote_.is_bound()) {
+      theme_provider_remote_.FlushForTesting();
+    }
+    return test_theme_observer_.is_geolocation_enabled_for_system_services();
+  }
+
+  ash::style::mojom::ColorScheme GetColorScheme() {
     if (theme_provider_remote_.is_bound()) {
       theme_provider_remote_.FlushForTesting();
     }
     return test_theme_observer_.GetColorScheme();
   }
 
-  absl::optional<SkColor> GetStaticColor() {
+  std::optional<SkColor> GetStaticColor() {
     if (theme_provider_remote_.is_bound()) {
       theme_provider_remote_.FlushForTesting();
     }
@@ -213,7 +240,7 @@ class PersonalizationAppThemeProviderImplTest : public ChromeAshTestBase {
   TestingProfileManager profile_manager_;
   content::TestWebUI web_ui_;
   std::unique_ptr<content::WebContents> web_contents_;
-  raw_ptr<TestingProfile, ExperimentalAsh> profile_;
+  raw_ptr<TestingProfile> profile_;
   mojo::Remote<ash::personalization_app::mojom::ThemeProvider>
       theme_provider_remote_;
   TestThemeObserver test_theme_observer_;
@@ -257,6 +284,14 @@ TEST_F(PersonalizationAppThemeProviderImplTest,
   EXPECT_TRUE(is_color_mode_auto_schedule_enabled());
   histogram_tester().ExpectBucketCount(
       kPersonalizationThemeColorModeHistogramName, ColorMode::kAuto, 1);
+}
+
+TEST_F(PersonalizationAppThemeProviderImplTest,
+       EnableGeolocationForSystemServices) {
+  SetThemeObserver();
+
+  theme_provider()->EnableGeolocationForSystemServices();
+  EXPECT_TRUE(is_geolocation_enabled_for_system_services());
 }
 
 class PersonalizationAppThemeProviderImplJellyTest
@@ -324,7 +359,7 @@ TEST_F(PersonalizationAppThemeProviderImplJellyTest,
 TEST_F(PersonalizationAppThemeProviderImplJellyTest, SetColorScheme) {
   SetThemeObserver();
   theme_provider_remote()->FlushForTesting();
-  auto color_scheme = ash::ColorScheme::kExpressive;
+  auto color_scheme = ash::style::mojom::ColorScheme::kExpressive;
   EXPECT_NE((int)color_scheme,
             GetUserPrefService()->GetInteger(prefs::kDynamicColorColorScheme));
 
@@ -338,7 +373,7 @@ TEST_F(PersonalizationAppThemeProviderImplJellyTest,
        ObserveColorSchemeChanges) {
   SetThemeObserver();
   theme_provider_remote()->FlushForTesting();
-  auto color_scheme = ash::ColorScheme::kExpressive;
+  auto color_scheme = ash::style::mojom::ColorScheme::kExpressive;
   EXPECT_NE((int)color_scheme,
             GetUserPrefService()->GetInteger(prefs::kDynamicColorColorScheme));
 
@@ -365,10 +400,14 @@ TEST_F(PersonalizationAppThemeProviderImplJellyTest,
 
   // Matcher for the vector in the callback.
   auto matcher = testing::UnorderedElementsAre(
-      testing::Field(&SampleColorScheme::scheme, ColorScheme::kTonalSpot),
-      testing::Field(&SampleColorScheme::scheme, ColorScheme::kNeutral),
-      testing::Field(&SampleColorScheme::scheme, ColorScheme::kVibrant),
-      testing::Field(&SampleColorScheme::scheme, ColorScheme::kExpressive));
+      testing::Field(&SampleColorScheme::scheme,
+                     ash::style::mojom::ColorScheme::kTonalSpot),
+      testing::Field(&SampleColorScheme::scheme,
+                     ash::style::mojom::ColorScheme::kNeutral),
+      testing::Field(&SampleColorScheme::scheme,
+                     ash::style::mojom::ColorScheme::kVibrant),
+      testing::Field(&SampleColorScheme::scheme,
+                     ash::style::mojom::ColorScheme::kExpressive));
 
   base::RunLoop run_loop;
   EXPECT_CALL(generate_sample_color_schemes_callback, Run(matcher))

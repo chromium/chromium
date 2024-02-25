@@ -9,11 +9,11 @@
 #import "base/test/ios/wait_util.h"
 #import "base/time/time.h"
 #import "components/reading_list/core/reading_list_model.h"
-#import "ios/chrome/browser/reading_list/reading_list_model_factory.h"
+#import "ios/chrome/browser/reading_list/model/reading_list_model_factory.h"
 #import "ios/chrome/test/app/chrome_test_util.h"
 #import "ios/chrome/test/app/tab_test_util.h"
 #import "ios/testing/nserror_util.h"
-#import "net/base/mac/url_conversions.h"
+#import "net/base/apple/url_conversions.h"
 #import "net/base/network_change_notifier.h"
 
 namespace {

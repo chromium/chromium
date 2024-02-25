@@ -122,6 +122,21 @@ void DecryptingVideoDecoder::Decode(scoped_refptr<DecoderBuffer> buffer,
     return;
   }
 
+  // One time set of `has_clear_lead_`.
+  if (!has_clear_lead_.has_value()) {
+    has_clear_lead_ = !buffer->end_of_stream() && !buffer->decrypt_config();
+  }
+
+  // Although the stream may switch from clear to encrypted to clear multiple
+  // times (e.g ad-insertions), we only log to the Media log the first switch
+  // from clear to encrypted.
+  if (HasClearLead() && !switched_clear_to_encrypted_ &&
+      !buffer->end_of_stream() && buffer->is_encrypted()) {
+    MEDIA_LOG(INFO, media_log_)
+        << "First switch from clear to encrypted buffers.";
+    switched_clear_to_encrypted_ = true;
+  }
+
   pending_buffer_to_decode_ = std::move(buffer);
   state_ = kPendingDecode;
   DecodePendingBuffer();
@@ -275,7 +290,7 @@ void DecryptingVideoDecoder::DeliverFrame(Decryptor::Status status,
     std::string key_id =
         scoped_pending_buffer_to_decode->decrypt_config()->key_id();
     std::string log_message =
-        "no key for key ID " + base::HexEncode(key_id.data(), key_id.size()) +
+        "no key for key ID " + base::HexEncode(key_id) +
         "; will resume decoding after new usable key is available";
     DVLOG(1) << __func__ << ": " << log_message;
     MEDIA_LOG(INFO, media_log_) << GetDecoderType() << ": " << log_message;
@@ -318,6 +333,11 @@ void DecryptingVideoDecoder::DeliverFrame(Decryptor::Status status,
     DVLOG(3) << "Setting color space using information in the config.";
     if (config_.color_space_info().IsSpecified())
       frame->set_color_space(config_.color_space_info().ToGfxColorSpace());
+  }
+
+  // Attach the HDR metadata from the `config_` if it's not set on the `frame`.
+  if (!frame->hdr_metadata() && config_.hdr_metadata()) {
+    frame->set_hdr_metadata(config_.hdr_metadata());
   }
 
   output_cb_.Run(std::move(frame));

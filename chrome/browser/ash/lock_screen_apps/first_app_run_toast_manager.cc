@@ -60,8 +60,8 @@ class FirstAppRunToastManager::AppWidgetObserver
   }
 
  private:
-  raw_ptr<FirstAppRunToastManager, ExperimentalAsh> manager_;
-  raw_ptr<views::Widget, ExperimentalAsh> widget_;
+  raw_ptr<FirstAppRunToastManager> manager_;
+  raw_ptr<views::Widget> widget_;
 };
 
 FirstAppRunToastManager::FirstAppRunToastManager(Profile* profile)

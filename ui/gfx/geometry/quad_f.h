@@ -64,15 +64,22 @@ class GEOMETRY_EXPORT QuadF {
   // restrictions.
   bool ContainsQuad(const QuadF& quad) const;
 
-  // Returns a rectangle that bounds the four points of the quad. The points of
-  // the quad may lie on the right/bottom edge of the resulting rectangle,
-  // rather than being strictly inside it.
-  RectF BoundingBox() const {
+  // Returns two points (forming an axis-aligned bounding box) that bounds the
+  // four points of the quad.
+  std::pair<PointF, PointF> Extents() const {
     float rl = std::min({p1_.x(), p2_.x(), p3_.x(), p4_.x()});
     float rr = std::max({p1_.x(), p2_.x(), p3_.x(), p4_.x()});
     float rt = std::min({p1_.y(), p2_.y(), p3_.y(), p4_.y()});
     float rb = std::max({p1_.y(), p2_.y(), p3_.y(), p4_.y()});
-    return RectF(rl, rt, rr - rl, rb - rt);
+    return std::make_pair(PointF(rl, rt), PointF(rr, rb));
+  }
+
+  // Returns a rectangle that bounds the four points of the quad. The points of
+  // the quad may lie on the right/bottom edge of the resulting rectangle,
+  // rather than being strictly inside it.
+  RectF BoundingBox() const {
+    const auto [min, max] = Extents();
+    return RectF(min.x(), min.y(), max.x() - min.x(), max.y() - min.y());
   }
 
   // Realigns the corners in the quad by rotating them n corners to the right.
@@ -105,6 +112,15 @@ class GEOMETRY_EXPORT QuadF {
   // intersecting area is empty (i.e., the intersection is a line or a point).
   bool IntersectsRect(const RectF&) const;
 
+  // Like the above, but only checks `rect` against the sides of quad ("does
+  // half of the job"). Can be used if it is known beforehand that the bounding
+  // box of the quad intersects `rect`.
+  bool IntersectsRectPartial(const RectF& rect) const;
+
+  // Tests whether any part of the quad intersects with this quad.
+  // This intersection is edge-inclusive.
+  bool IntersectsQuad(const QuadF& quad) const;
+
   // Test whether any part of the circle/ellipse intersects with this quad.
   // Note that these two functions only work for convex quads.
   // These intersections are edge-inclusive and will return true even if the
@@ -123,6 +139,10 @@ class GEOMETRY_EXPORT QuadF {
   std::string ToString() const;
 
  private:
+  bool IsToTheLeftOfOrTouchingLine(const PointF& base,
+                                   const Vector2dF& vector) const;
+  bool FullyOutsideOneEdge(const QuadF& quad) const;
+
   PointF p1_;
   PointF p2_;
   PointF p3_;

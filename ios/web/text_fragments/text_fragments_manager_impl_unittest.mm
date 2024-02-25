@@ -6,6 +6,7 @@
 
 #import <functional>
 
+#import "base/memory/raw_ptr.h"
 #import "base/strings/utf_string_conversions.h"
 #import "base/test/metrics/histogram_tester.h"
 #import "base/test/scoped_feature_list.h"
@@ -171,8 +172,8 @@ class TextFragmentsManagerImplTest : public WebTest {
 
   MockJSFeature feature_;
   web::FakeNavigationContext context_;
-  FakeWebState* web_state_;
-  FakeWebFramesManager* web_frames_manager_;
+  raw_ptr<FakeWebState> web_state_;
+  raw_ptr<FakeWebFramesManager> web_frames_manager_;
   base::test::ScopedFeatureList feature_list_;
   NavigationItemImpl last_committed_item_;
 };
@@ -184,8 +185,8 @@ TEST_F(TextFragmentsManagerImplTest, ExecuteJavaScriptSuccess) {
   SetLastURL(GURL(kValidFragmentsURL));
 
   base::Value expected = ValueForTestURL();
-  EXPECT_CALL(feature_,
-              ProcessTextFragments(web_state_, Eq(std::ref(expected)), "", ""));
+  EXPECT_CALL(feature_, ProcessTextFragments(web_state_.get(),
+                                             Eq(std::ref(expected)), "", ""));
 
   TextFragmentsManagerImpl* manager = CreateDefaultManager();
   manager->DidFinishNavigation(web_state_, &context_);
@@ -198,8 +199,8 @@ TEST_F(TextFragmentsManagerImplTest, ExecuteJavaScriptDelayedWebFrame) {
   SetLastURL(GURL(kValidFragmentsURL));
 
   base::Value expected = ValueForTestURL();
-  EXPECT_CALL(feature_,
-              ProcessTextFragments(web_state_, Eq(std::ref(expected)), "", ""));
+  EXPECT_CALL(feature_, ProcessTextFragments(web_state_.get(),
+                                             Eq(std::ref(expected)), "", ""));
 
   TextFragmentsManagerImpl* manager =
       CreateManager(/*has_opener=*/false,
@@ -219,8 +220,9 @@ TEST_F(TextFragmentsManagerImplTest, ExecuteJavaScriptWithColorChange) {
   SetLastURL(GURL(kValidFragmentsURL));
 
   base::Value expected = ValueForTestURL();
-  EXPECT_CALL(feature_, ProcessTextFragments(web_state_, Eq(std::ref(expected)),
-                                             "e9d2fd", "000000"));
+  EXPECT_CALL(feature_,
+              ProcessTextFragments(web_state_.get(), Eq(std::ref(expected)),
+                                   "e9d2fd", "000000"));
 
   TextFragmentsManagerImpl* manager =
       CreateManager(/*has_opener=*/false,

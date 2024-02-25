@@ -33,7 +33,11 @@
 
 #include <unicode/udat.h>
 #include <unicode/unum.h>
+
 #include <memory>
+#include <optional>
+
+#include "base/memory/raw_ptr.h"
 #include "third_party/blink/renderer/platform/text/date_components.h"
 #include "third_party/blink/renderer/platform/text/platform_locale.h"
 #include "third_party/blink/renderer/platform/wtf/forward.h"
@@ -82,21 +86,21 @@ class PLATFORM_EXPORT LocaleICU : public Locale {
 
   void InitializeCalendar();
 
-  std::unique_ptr<Vector<String>> CreateLabelVector(const UDateFormat*,
-                                                    UDateFormatSymbolType,
-                                                    int32_t start_index,
-                                                    int32_t size);
+  Vector<String> CreateLabelVector(const UDateFormat*,
+                                   UDateFormatSymbolType,
+                                   int32_t start_index,
+                                   int32_t size);
   void InitializeDateTimeFormat();
 
   std::string locale_;
-  UNumberFormat* number_format_;
-  UDateFormat* short_date_format_;
+  raw_ptr<UNumberFormat, DanglingUntriaged> number_format_;
+  raw_ptr<UDateFormat, DanglingUntriaged> short_date_format_;
   bool did_create_decimal_format_;
   bool did_create_short_date_format_;
 
-  std::unique_ptr<Vector<String>> week_day_short_labels_;
-  unsigned first_day_of_week_;
-  std::unique_ptr<Vector<String>> month_labels_;
+  Vector<String> week_day_short_labels_;
+  std::optional<unsigned> first_day_of_week_;
+  Vector<String> month_labels_;
   String date_format_;
   String month_format_;
   String short_month_format_;
@@ -104,8 +108,8 @@ class PLATFORM_EXPORT LocaleICU : public Locale {
   String time_format_without_seconds_;
   String date_time_format_with_seconds_;
   String date_time_format_without_seconds_;
-  UDateFormat* medium_time_format_;
-  UDateFormat* short_time_format_;
+  raw_ptr<UDateFormat, DanglingUntriaged> medium_time_format_;
+  raw_ptr<UDateFormat, DanglingUntriaged> short_time_format_;
   Vector<String> short_month_labels_;
   Vector<String> stand_alone_month_labels_;
   Vector<String> short_stand_alone_month_labels_;

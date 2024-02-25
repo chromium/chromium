@@ -16,15 +16,41 @@ import android.hardware.usb.UsbDevice;
 import android.hardware.usb.UsbInterface;
 import android.hardware.usb.UsbManager;
 
+import androidx.annotation.IntDef;
+
 import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
+import org.chromium.base.metrics.RecordHistogram;
 
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
 import java.util.Map;
 
 class AudioDeviceListener {
     private static final boolean DEBUG = false;
 
     private static final String TAG = "media";
+
+    private static final String CONNECTION_HISTOGRAM_PREFIX = "Media.AudioDeviceConnectionStatus.";
+
+    // Common enum for recording audio device connection status.
+    // These values are persisted to logs. Entries should not be renumbered and
+    // numeric values should never be reused.
+    @IntDef({
+        ConnectionStatus.DISCONNECTED,
+        ConnectionStatus.CONNECTING,
+        ConnectionStatus.CONNECTED,
+        ConnectionStatus.DISCONNECTING,
+        ConnectionStatus.MAX_VALUE
+    })
+    @Retention(RetentionPolicy.SOURCE)
+    public @interface ConnectionStatus {
+        int DISCONNECTED = 0;
+        int CONNECTING = 1;
+        int CONNECTED = 2;
+        int DISCONNECTING = 3;
+        int MAX_VALUE = DISCONNECTING + 1;
+    }
 
     // Enabled during initialization if BLUETOOTH permission is granted.
     private boolean mHasBluetoothPermission;
@@ -46,8 +72,9 @@ class AudioDeviceListener {
     private final AudioDeviceSelector.Devices mDeviceStates;
 
     public AudioDeviceListener(AudioDeviceSelector.Devices devices) {
-        mUsbManager = (UsbManager) ContextUtils.getApplicationContext().getSystemService(
-                Context.USB_SERVICE);
+        mUsbManager =
+                (UsbManager)
+                        ContextUtils.getApplicationContext().getSystemService(Context.USB_SERVICE);
         mDeviceStates = devices;
     }
 
@@ -122,8 +149,9 @@ class AudioDeviceListener {
         }
 
         BluetoothManager btManager =
-                (BluetoothManager) ContextUtils.getApplicationContext().getSystemService(
-                        Context.BLUETOOTH_SERVICE);
+                (BluetoothManager)
+                        ContextUtils.getApplicationContext()
+                                .getSystemService(Context.BLUETOOTH_SERVICE);
         BluetoothAdapter btAdapter = btManager.getAdapter();
 
         if (btAdapter == null) {
@@ -180,38 +208,51 @@ class AudioDeviceListener {
         IntentFilter filter = new IntentFilter(Intent.ACTION_HEADSET_PLUG);
 
         /** Receiver which handles changes in wired headset availability. */
-        mWiredHeadsetReceiver = new BroadcastReceiver() {
-            private static final int STATE_UNPLUGGED = 0;
-            private static final int STATE_PLUGGED = 1;
-            private static final int HAS_NO_MIC = 0;
-            private static final int HAS_MIC = 1;
+        mWiredHeadsetReceiver =
+                new BroadcastReceiver() {
+                    private static final int STATE_UNPLUGGED = 0;
+                    private static final int STATE_PLUGGED = 1;
+                    private static final int HAS_NO_MIC = 0;
+                    private static final int HAS_MIC = 1;
 
-            @Override
-            public void onReceive(Context context, Intent intent) {
-                int state = intent.getIntExtra("state", STATE_UNPLUGGED);
-                if (DEBUG) {
-                    int microphone = intent.getIntExtra("microphone", HAS_NO_MIC);
-                    String name = intent.getStringExtra("name");
-                    logd("BroadcastReceiver.onReceive: a=" + intent.getAction() + ", s=" + state
-                            + ", m=" + microphone + ", n=" + name
-                            + ", sb=" + isInitialStickyBroadcast());
-                }
-                switch (state) {
-                    case STATE_UNPLUGGED:
-                        mDeviceStates.setDeviceExistence(
-                                AudioDeviceSelector.Devices.ID_WIRED_HEADSET, false);
-                        break;
-                    case STATE_PLUGGED:
-                        mDeviceStates.setDeviceExistence(
-                                AudioDeviceSelector.Devices.ID_WIRED_HEADSET, true);
-                        break;
-                    default:
-                        break;
-                }
+                    @Override
+                    public void onReceive(Context context, Intent intent) {
+                        int state = intent.getIntExtra("state", STATE_UNPLUGGED);
+                        if (DEBUG) {
+                            int microphone = intent.getIntExtra("microphone", HAS_NO_MIC);
+                            String name = intent.getStringExtra("name");
+                            logd(
+                                    "BroadcastReceiver.onReceive: a="
+                                            + intent.getAction()
+                                            + ", s="
+                                            + state
+                                            + ", m="
+                                            + microphone
+                                            + ", n="
+                                            + name
+                                            + ", sb="
+                                            + isInitialStickyBroadcast());
+                        }
+                        @ConnectionStatus int histogramValue = ConnectionStatus.DISCONNECTED;
+                        switch (state) {
+                            case STATE_UNPLUGGED:
+                                mDeviceStates.setDeviceExistence(
+                                        AudioDeviceSelector.Devices.ID_WIRED_HEADSET, false);
+                                histogramValue = ConnectionStatus.DISCONNECTED;
+                                break;
+                            case STATE_PLUGGED:
+                                mDeviceStates.setDeviceExistence(
+                                        AudioDeviceSelector.Devices.ID_WIRED_HEADSET, true);
+                                histogramValue = ConnectionStatus.CONNECTED;
+                                break;
+                            default:
+                                break;
+                        }
 
-                mDeviceStates.onPotentialDeviceStatusChange();
-            }
-        };
+                        mDeviceStates.onPotentialDeviceStatusChange();
+                        recordConnectionHistogram("Wired", histogramValue);
+                    }
+                };
 
         // Note: the intent we register for here is sticky, so it'll tell us
         // immediately what the last action was (plugged or unplugged).
@@ -233,49 +274,65 @@ class AudioDeviceListener {
      * BLUETOOTH permission is required to receive this one.
      */
     private void registerForBluetoothHeadsetIntentBroadcast() {
-        IntentFilter filter = new IntentFilter(
-                android.bluetooth.BluetoothHeadset.ACTION_CONNECTION_STATE_CHANGED);
+        IntentFilter filter =
+                new IntentFilter(
+                        android.bluetooth.BluetoothHeadset.ACTION_CONNECTION_STATE_CHANGED);
 
         /** Receiver which handles changes in BT headset availability. */
-        mBluetoothHeadsetReceiver = new BroadcastReceiver() {
-            @Override
-            public void onReceive(Context context, Intent intent) {
-                // A change in connection state of the Headset profile has
-                // been detected, e.g. BT headset has been connected or
-                // disconnected. This broadcast is *not* sticky.
-                int profileState =
-                        intent.getIntExtra(android.bluetooth.BluetoothHeadset.EXTRA_STATE,
-                                android.bluetooth.BluetoothHeadset.STATE_DISCONNECTED);
-                if (DEBUG) {
-                    logd("BroadcastReceiver.onReceive: a=" + intent.getAction()
-                            + ", s=" + profileState + ", sb=" + isInitialStickyBroadcast());
-                }
+        mBluetoothHeadsetReceiver =
+                new BroadcastReceiver() {
+                    @Override
+                    public void onReceive(Context context, Intent intent) {
+                        // A change in connection state of the Headset profile has
+                        // been detected, e.g. BT headset has been connected or
+                        // disconnected. This broadcast is *not* sticky.
+                        int profileState =
+                                intent.getIntExtra(
+                                        android.bluetooth.BluetoothHeadset.EXTRA_STATE,
+                                        android.bluetooth.BluetoothHeadset.STATE_DISCONNECTED);
+                        if (DEBUG) {
+                            logd(
+                                    "BroadcastReceiver.onReceive: a="
+                                            + intent.getAction()
+                                            + ", s="
+                                            + profileState
+                                            + ", sb="
+                                            + isInitialStickyBroadcast());
+                        }
 
-                switch (profileState) {
-                    case android.bluetooth.BluetoothProfile.STATE_DISCONNECTED:
-                        // We do not have to explicitly call stopBluetoothSco()
-                        // since BT SCO will be disconnected automatically when
-                        // the BT headset is disabled.
-                        mDeviceStates.setDeviceExistence(
-                                AudioDeviceSelector.Devices.ID_BLUETOOTH_HEADSET, false);
-                        mDeviceStates.onPotentialDeviceStatusChange();
-                        break;
-                    case android.bluetooth.BluetoothProfile.STATE_CONNECTED:
-                        mDeviceStates.setDeviceExistence(
-                                AudioDeviceSelector.Devices.ID_BLUETOOTH_HEADSET, true);
-                        mDeviceStates.onPotentialDeviceStatusChange();
-                        break;
-                    case android.bluetooth.BluetoothProfile.STATE_CONNECTING:
-                        // Bluetooth service is switching from off to on.
-                        break;
-                    case android.bluetooth.BluetoothProfile.STATE_DISCONNECTING:
-                        // Bluetooth service is switching from on to off.
-                        break;
-                    default:
-                        break;
-                }
-            }
-        };
+                        @ConnectionStatus int histogramValue = ConnectionStatus.DISCONNECTED;
+                        switch (profileState) {
+                            case android.bluetooth.BluetoothProfile.STATE_DISCONNECTED:
+                                // We do not have to explicitly call stopBluetoothSco()
+                                // since BT SCO will be disconnected automatically when
+                                // the BT headset is disabled.
+                                mDeviceStates.setDeviceExistence(
+                                        AudioDeviceSelector.Devices.ID_BLUETOOTH_HEADSET, false);
+                                mDeviceStates.onPotentialDeviceStatusChange();
+                                histogramValue = ConnectionStatus.DISCONNECTED;
+                                break;
+                            case android.bluetooth.BluetoothProfile.STATE_CONNECTED:
+                                mDeviceStates.setDeviceExistence(
+                                        AudioDeviceSelector.Devices.ID_BLUETOOTH_HEADSET, true);
+                                mDeviceStates.onPotentialDeviceStatusChange();
+                                histogramValue = ConnectionStatus.CONNECTED;
+                                break;
+                            case android.bluetooth.BluetoothProfile.STATE_CONNECTING:
+                                // Bluetooth service is switching from off to on.
+                                histogramValue = ConnectionStatus.CONNECTING;
+                                break;
+                            case android.bluetooth.BluetoothProfile.STATE_DISCONNECTING:
+                                // Bluetooth service is switching from on to off.
+                                histogramValue = ConnectionStatus.DISCONNECTING;
+                                break;
+                            default:
+                                break;
+                        }
+
+                        // Note, disconnection may take more than 15 seconds to detect.
+                        recordConnectionHistogram("Bluetooth", histogramValue);
+                    }
+                };
 
         ContextUtils.registerProtectedBroadcastReceiver(
                 ContextUtils.getApplicationContext(), mBluetoothHeadsetReceiver, filter);
@@ -309,30 +366,40 @@ class AudioDeviceListener {
      * call may cause some unexpected result, i.e capturing error or zero capture length.
      */
     private void registerForUsbAudioIntentBroadcast() {
-        mUsbAudioReceiver = new BroadcastReceiver() {
-            @Override
-            public void onReceive(Context context, Intent intent) {
-                UsbDevice device = intent.getParcelableExtra(UsbManager.EXTRA_DEVICE);
-                if (DEBUG) {
-                    logd("UsbDeviceBroadcastReceiver.onReceive: a= " + intent.getAction()
-                            + ", Device: " + device.toString());
-                }
+        mUsbAudioReceiver =
+                new BroadcastReceiver() {
+                    @Override
+                    public void onReceive(Context context, Intent intent) {
+                        UsbDevice device = intent.getParcelableExtra(UsbManager.EXTRA_DEVICE);
+                        if (DEBUG) {
+                            logd(
+                                    "UsbDeviceBroadcastReceiver.onReceive: a= "
+                                            + intent.getAction()
+                                            + ", Device: "
+                                            + device.toString());
+                        }
 
-                // Not a USB audio device.
-                if (!hasUsbAudioCommInterface(device)) return;
+                        // Not a USB audio device.
+                        if (!hasUsbAudioCommInterface(device)) return;
 
-                if (UsbManager.ACTION_USB_DEVICE_ATTACHED.equals(intent.getAction())) {
-                    mDeviceStates.setDeviceExistence(
-                            AudioDeviceSelector.Devices.ID_USB_AUDIO, true);
-                } else if (UsbManager.ACTION_USB_DEVICE_DETACHED.equals(intent.getAction())
-                        && !hasUsbAudio()) {
-                    mDeviceStates.setDeviceExistence(
-                            AudioDeviceSelector.Devices.ID_USB_AUDIO, false);
-                }
+                        @ConnectionStatus int histogramValue = ConnectionStatus.DISCONNECTED;
+                        if (UsbManager.ACTION_USB_DEVICE_ATTACHED.equals(intent.getAction())) {
+                            mDeviceStates.setDeviceExistence(
+                                    AudioDeviceSelector.Devices.ID_USB_AUDIO, true);
+                            histogramValue = ConnectionStatus.CONNECTED;
+                        } else if (UsbManager.ACTION_USB_DEVICE_DETACHED.equals(intent.getAction())
+                                && !hasUsbAudio()) {
+                            mDeviceStates.setDeviceExistence(
+                                    AudioDeviceSelector.Devices.ID_USB_AUDIO, false);
+                            histogramValue = ConnectionStatus.DISCONNECTED;
+                        }
 
-                mDeviceStates.onPotentialDeviceStatusChange();
-            }
-        };
+                        mDeviceStates.onPotentialDeviceStatusChange();
+                        // Note, this may also be recorded for headphones plugged in with a
+                        // 3.5mm-to-USB adapter.
+                        recordConnectionHistogram("USB", histogramValue);
+                    }
+                };
 
         IntentFilter filter = new IntentFilter();
         filter.addAction(UsbManager.ACTION_USB_DEVICE_ATTACHED);
@@ -350,8 +417,14 @@ class AudioDeviceListener {
 
     /** Gets the current earpiece state. */
     private boolean hasEarpiece() {
-        return ContextUtils.getApplicationContext().getPackageManager().hasSystemFeature(
-                PackageManager.FEATURE_TELEPHONY);
+        return ContextUtils.getApplicationContext()
+                .getPackageManager()
+                .hasSystemFeature(PackageManager.FEATURE_TELEPHONY);
+    }
+
+    private static void recordConnectionHistogram(String name, @ConnectionStatus int value) {
+        RecordHistogram.recordEnumeratedHistogram(
+                CONNECTION_HISTOGRAM_PREFIX + name, value, ConnectionStatus.MAX_VALUE);
     }
 
     /** Trivial helper method for debug logging */
@@ -362,5 +435,17 @@ class AudioDeviceListener {
     /** Trivial helper method for error logging */
     private static void loge(String msg) {
         Log.e(TAG, msg);
+    }
+
+    BroadcastReceiver getWiredHeadsetReceiverForTesting() {
+        return mWiredHeadsetReceiver;
+    }
+
+    BroadcastReceiver getBluetoothHeadsetReceiverForTesting() {
+        return mBluetoothHeadsetReceiver;
+    }
+
+    BroadcastReceiver getUsbReceiverForTesting() {
+        return mUsbAudioReceiver;
     }
 }

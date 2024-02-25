@@ -11,7 +11,6 @@
 #include "base/test/task_environment.h"
 #include "gpu/command_buffer/common/command_buffer_id.h"
 #include "gpu/command_buffer/common/constants.h"
-#include "gpu/command_buffer/service/abstract_texture.h"
 #include "gpu/command_buffer/service/sequence_id.h"
 #include "media/gpu/android/mock_abstract_texture.h"
 #include "media/gpu/test/fake_command_buffer_helper.h"

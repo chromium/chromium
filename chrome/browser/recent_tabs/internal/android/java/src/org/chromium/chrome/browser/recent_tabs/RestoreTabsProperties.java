@@ -20,15 +20,15 @@ import org.chromium.ui.modelutil.PropertyModel.WritableObjectPropertyKey;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
-/**
- * State for the Restore Tabs promo UI.
- */
+/** State for the Restore Tabs promo UI. */
 public class RestoreTabsProperties {
-    /**
-     * The different screens that can be shown on the sheet.
-     */
-    @IntDef({ScreenType.UNINITIALIZED, ScreenType.HOME_SCREEN, ScreenType.DEVICE_SCREEN,
-            ScreenType.REVIEW_TABS_SCREEN})
+    /** The different screens that can be shown on the sheet. */
+    @IntDef({
+        ScreenType.UNINITIALIZED,
+        ScreenType.HOME_SCREEN,
+        ScreenType.DEVICE_SCREEN,
+        ScreenType.REVIEW_TABS_SCREEN
+    })
     @Retention(RetentionPolicy.SOURCE)
     public @interface ScreenType {
         int UNINITIALIZED = 0;
@@ -37,9 +37,7 @@ public class RestoreTabsProperties {
         int REVIEW_TABS_SCREEN = 3;
     }
 
-    /**
-     * The different item types in the RecyclerView on the detail bottom sheet.
-     */
+    /** The different item types in the RecyclerView on the detail bottom sheet. */
     @IntDef({DetailItemType.DEVICE, DetailItemType.TAB})
     @Retention(RetentionPolicy.SOURCE)
     public @interface DetailItemType {
@@ -107,8 +105,18 @@ public class RestoreTabsProperties {
     }
 
     /** All keys used for the restore tabs promo bottom sheet. */
-    public static final PropertyKey[] ALL_KEYS = new PropertyKey[] {VISIBLE, CURRENT_SCREEN,
-            SELECTED_DEVICE, DEVICE_MODEL_LIST, REVIEW_TABS_MODEL_LIST, HOME_SCREEN_DELEGATE,
-            DETAIL_SCREEN_TITLE, DETAIL_SCREEN_BACK_CLICK_HANDLER, REVIEW_TABS_SCREEN_DELEGATE,
-            DETAIL_SCREEN_MODEL_LIST, NUM_TABS_DESELECTED};
+    public static final PropertyKey[] ALL_KEYS =
+            new PropertyKey[] {
+                VISIBLE,
+                CURRENT_SCREEN,
+                SELECTED_DEVICE,
+                DEVICE_MODEL_LIST,
+                REVIEW_TABS_MODEL_LIST,
+                HOME_SCREEN_DELEGATE,
+                DETAIL_SCREEN_TITLE,
+                DETAIL_SCREEN_BACK_CLICK_HANDLER,
+                REVIEW_TABS_SCREEN_DELEGATE,
+                DETAIL_SCREEN_MODEL_LIST,
+                NUM_TABS_DESELECTED
+            };
 }

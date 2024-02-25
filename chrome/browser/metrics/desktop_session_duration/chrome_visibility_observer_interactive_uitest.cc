@@ -68,7 +68,7 @@ class ChromeVisibilityObserverInteractiveTest
 IN_PROC_BROWSER_TEST_F(ChromeVisibilityObserverInteractiveTest,
                        VisibilityTest) {
 #if BUILDFLAG(IS_MAC)
-  if (base::mac::IsAtLeastOS13()) {
+  if (base::mac::MacOSMajorVersion() >= 13) {
     GTEST_SKIP() << "Broken on macOS 13: https://crbug.com/1447844";
   }
 #endif

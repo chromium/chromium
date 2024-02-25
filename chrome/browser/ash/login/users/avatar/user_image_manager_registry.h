@@ -27,6 +27,10 @@ class UserImageManager;
 // This is effectively a singleton in production.
 class UserImageManagerRegistry : public user_manager::UserManager::Observer {
  public:
+  // Returns the global UserImageManagerRegistry instance.
+  static UserImageManagerRegistry* Get();
+
+  // Given user_manager's lifetime needs to outlive this instance.
   explicit UserImageManagerRegistry(user_manager::UserManager* user_manager);
   UserImageManagerRegistry(const UserImageManagerRegistry&) = delete;
   UserImageManagerRegistry operator=(UserImageManagerRegistry&) = delete;
@@ -47,7 +51,7 @@ class UserImageManagerRegistry : public user_manager::UserManager::Observer {
   void OnUserProfileCreated(const user_manager::User& user) override;
 
  private:
-  const raw_ptr<user_manager::UserManager, ExperimentalAsh> user_manager_;
+  const raw_ptr<user_manager::UserManager> user_manager_;
   std::map<AccountId, std::unique_ptr<UserImageManager>> map_;
 
   base::ScopedObservation<user_manager::UserManager,

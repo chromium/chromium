@@ -70,8 +70,7 @@ Status JavaScriptDialogManager::HandleDialog(bool accept,
 Status JavaScriptDialogManager::OnConnected(DevToolsClient* client) {
   unhandled_dialog_queue_.clear();
   dialog_type_queue_.clear();
-  base::Value::Dict params;
-  return client_->SendCommand("Page.enable", params);
+  return Status{kOk};
 }
 
 Status JavaScriptDialogManager::OnEvent(DevToolsClient* client,

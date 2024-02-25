@@ -34,6 +34,7 @@
 #include "third_party/blink/renderer/core/css/font_size_functions.h"
 #include "third_party/blink/renderer/core/css/resolver/scoped_style_resolver.h"
 #include "third_party/blink/renderer/core/css/resolver/style_resolver.h"
+#include "third_party/blink/renderer/core/css/style_engine.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/frame/settings.h"
@@ -46,7 +47,7 @@ namespace blink {
 namespace {
 
 scoped_refptr<FontPalette> RetrieveFontPaletteFromStyleEngine(
-    scoped_refptr<FontPalette> request_palette,
+    scoped_refptr<const FontPalette> request_palette,
     StyleEngine& style_engine,
     const AtomicString& family_name) {
   AtomicString requested_palette_values =
@@ -70,35 +71,25 @@ scoped_refptr<FontPalette> RetrieveFontPaletteFromStyleEngine(
   return nullptr;
 }
 
-scoped_refptr<FontPalette> ResolveInterpolableFontPalette(
-    scoped_refptr<FontPalette> font_palette,
+scoped_refptr<const FontPalette> ResolveInterpolableFontPalette(
+    scoped_refptr<const FontPalette> font_palette,
     StyleEngine& style_engine,
     const AtomicString& family_name) {
   if (!font_palette->IsInterpolablePalette()) {
     if (font_palette->IsCustomPalette()) {
-      scoped_refptr<FontPalette> normal_palette = FontPalette::Create();
-      normal_palette->SetMatchFamilyName(family_name);
-
       scoped_refptr<FontPalette> retrieved_palette =
           RetrieveFontPaletteFromStyleEngine(font_palette, style_engine,
                                              family_name);
-
-      return retrieved_palette ? retrieved_palette : normal_palette;
+      return retrieved_palette ? retrieved_palette : FontPalette::Create();
     } else {
-      font_palette->SetMatchFamilyName(family_name);
       return font_palette;
     }
   }
-  scoped_refptr<FontPalette> start_palette = ResolveInterpolableFontPalette(
-      font_palette->GetStart(), style_engine, family_name);
-  scoped_refptr<FontPalette> end_palette = ResolveInterpolableFontPalette(
+  scoped_refptr<const FontPalette> start_palette =
+      ResolveInterpolableFontPalette(font_palette->GetStart(), style_engine,
+                                     family_name);
+  scoped_refptr<const FontPalette> end_palette = ResolveInterpolableFontPalette(
       font_palette->GetEnd(), style_engine, family_name);
-
-  /* Since we use normal font-palette with the current family_name if we were
-   * unable to retrieve font-palette-values for current family_name, then
-   * matched font families on both endpoints should be equal. */
-  DCHECK_EQ(start_palette->GetMatchFamilyName(),
-            end_palette->GetMatchFamilyName());
 
   // If two endpoints of the interpolation are equal, we can simplify the tree
   if (*start_palette.get() == *end_palette.get()) {
@@ -112,7 +103,6 @@ scoped_refptr<FontPalette> ResolveInterpolableFontPalette(
       font_palette->GetAlphaMultiplier(),
       font_palette->GetColorInterpolationSpace(),
       font_palette->GetHueInterpolationMethod());
-  new_palette->SetMatchFamilyName(start_palette->GetMatchFamilyName());
   return new_palette;
 }
 
@@ -172,14 +162,14 @@ void CSSFontSelector::FontCacheInvalidated() {
   DispatchInvalidationCallbacks(FontInvalidationReason::kGeneralInvalidation);
 }
 
-scoped_refptr<FontData> CSSFontSelector::GetFontData(
+const FontData* CSSFontSelector::GetFontData(
     const FontDescription& font_description,
     const FontFamily& font_family) {
   const auto& family_name = font_family.FamilyName();
   Document& document = GetTreeScope()->GetDocument();
 
   FontDescription request_description(font_description);
-  FontPalette* request_palette = request_description.GetFontPalette();
+  const FontPalette* request_palette = request_description.GetFontPalette();
 
   if (request_palette && request_palette->IsCustomPalette()) {
     scoped_refptr<FontPalette> new_request_palette =
@@ -192,7 +182,7 @@ scoped_refptr<FontData> CSSFontSelector::GetFontData(
 
   if (RuntimeEnabledFeatures::FontPaletteAnimationEnabled() &&
       request_palette && request_palette->IsInterpolablePalette()) {
-    scoped_refptr<FontPalette> computed_interpolable_palette =
+    scoped_refptr<const FontPalette> computed_interpolable_palette =
         ResolveInterpolableFontPalette(request_palette,
                                        document.GetStyleEngine(), family_name);
     request_description.SetFontPalette(computed_interpolable_palette);
@@ -262,13 +252,13 @@ scoped_refptr<FontData> CSSFontSelector::GetFontData(
       family_name, request_description.GetScript(),
       request_description.GenericFamily(), settings_family_name);
 
-  scoped_refptr<SimpleFontData> font_data =
+  const SimpleFontData* font_data =
       FontCache::Get().GetFontData(request_description, settings_family_name);
   if (font_data && request_description.HasSizeAdjust()) {
     DCHECK(RuntimeEnabledFeatures::CSSFontSizeAdjustEnabled());
     if (auto adjusted_size =
             FontSizeFunctions::MetricsMultiplierAdjustedFontSize(
-                font_data.get(), request_description)) {
+                font_data, request_description)) {
       FontDescription size_adjusted_description(request_description);
       size_adjusted_description.SetAdjustedSize(adjusted_size.value());
       font_data = FontCache::Get().GetFontData(size_adjusted_description,
@@ -296,7 +286,7 @@ FontMatchingMetrics* CSSFontSelector::GetFontMatchingMetrics() const {
 }
 
 bool CSSFontSelector::IsAlive() const {
-  return tree_scope_;
+  return tree_scope_ != nullptr;
 }
 
 void CSSFontSelector::Trace(Visitor* visitor) const {

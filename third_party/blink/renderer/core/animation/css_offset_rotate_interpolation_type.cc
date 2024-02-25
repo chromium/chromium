@@ -8,6 +8,9 @@
 #include <utility>
 
 #include "base/memory/ptr_util.h"
+#include "third_party/blink/renderer/core/css/css_math_expression_node.h"
+#include "third_party/blink/renderer/core/css/css_math_function_value.h"
+#include "third_party/blink/renderer/core/css/css_numeric_literal_value.h"
 #include "third_party/blink/renderer/core/css/css_value_clamping_utils.h"
 #include "third_party/blink/renderer/core/css/resolver/style_builder_converter.h"
 #include "third_party/blink/renderer/core/style/computed_style.h"
@@ -87,7 +90,8 @@ class InheritedOffsetRotationChecker
 
 InterpolationValue ConvertOffsetRotate(const StyleOffsetRotation& rotation) {
   return InterpolationValue(
-      std::make_unique<InterpolableNumber>(rotation.angle),
+      MakeGarbageCollected<InterpolableNumber>(
+          rotation.angle, CSSPrimitiveValue::UnitType::kDegrees),
       CSSOffsetRotationNonInterpolableValue::Create(rotation.type));
 }
 
@@ -100,8 +104,9 @@ InterpolationValue CSSOffsetRotateInterpolationType::MaybeConvertNeutral(
       To<CSSOffsetRotationNonInterpolableValue>(
           *underlying.non_interpolable_value)
           .RotationType();
-  conversion_checkers.push_back(std::make_unique<UnderlyingRotationTypeChecker>(
-      underlying_rotation_type));
+  conversion_checkers.push_back(
+      MakeGarbageCollected<UnderlyingRotationTypeChecker>(
+          underlying_rotation_type));
   return ConvertOffsetRotate(StyleOffsetRotation(0, underlying_rotation_type));
 }
 
@@ -117,7 +122,7 @@ InterpolationValue CSSOffsetRotateInterpolationType::MaybeConvertInherit(
   const StyleOffsetRotation& inherited_rotation =
       state.ParentStyle()->OffsetRotate();
   conversion_checkers.push_back(
-      std::make_unique<InheritedOffsetRotationChecker>(inherited_rotation));
+      MakeGarbageCollected<InheritedOffsetRotationChecker>(inherited_rotation));
   return ConvertOffsetRotate(inherited_rotation);
 }
 
@@ -125,7 +130,53 @@ InterpolationValue CSSOffsetRotateInterpolationType::MaybeConvertValue(
     const CSSValue& value,
     const StyleResolverState*,
     ConversionCheckers&) const {
-  return ConvertOffsetRotate(StyleBuilderConverter::ConvertOffsetRotate(value));
+  if (auto* identifier = DynamicTo<CSSIdentifierValue>(value)) {
+    DCHECK_EQ(identifier->GetValueID(), CSSValueID::kAuto);
+    return ConvertOffsetRotate({0.0, OffsetRotationType::kAuto});
+  }
+
+  using CSSPrimitiveValue::UnitType::kDegrees;
+  CSSMathExpressionNode* angle =
+      CSSMathExpressionNumericLiteral::Create(0.0, kDegrees);
+  OffsetRotationType type = OffsetRotationType::kFixed;
+  const auto& list = To<CSSValueList>(value);
+  DCHECK(list.length() == 1 || list.length() == 2);
+  for (const auto& item : list) {
+    auto* identifier_value = DynamicTo<CSSIdentifierValue>(item.Get());
+    if (identifier_value &&
+        identifier_value->GetValueID() == CSSValueID::kAuto) {
+      type = OffsetRotationType::kAuto;
+    } else if (identifier_value &&
+               identifier_value->GetValueID() == CSSValueID::kReverse) {
+      type = OffsetRotationType::kAuto;
+      angle = CSSMathExpressionOperation::CreateArithmeticOperationSimplified(
+          angle, CSSMathExpressionNumericLiteral::Create(180.0, kDegrees),
+          CSSMathOperator::kAdd);
+    } else {
+      if (const auto* numeric_value =
+              DynamicTo<CSSNumericLiteralValue>(*item)) {
+        angle = CSSMathExpressionOperation::CreateArithmeticOperationSimplified(
+            angle,
+            CSSMathExpressionNumericLiteral::Create(
+                numeric_value->ComputeDegrees(), kDegrees),
+            CSSMathOperator::kAdd);
+        continue;
+      }
+      const auto& function_value = To<CSSMathFunctionValue>(*item);
+      angle = CSSMathExpressionOperation::CreateArithmeticOperation(
+          angle, function_value.ExpressionNode(), CSSMathOperator::kAdd);
+    }
+  }
+  if (const auto* numeric_literal =
+          DynamicTo<CSSMathExpressionNumericLiteral>(angle)) {
+    std::optional<double> degrees =
+        numeric_literal->ComputeValueInCanonicalUnit();
+    CHECK(degrees.has_value());
+    return ConvertOffsetRotate({static_cast<float>(degrees.value()), type});
+  }
+  return InterpolationValue(
+      MakeGarbageCollected<InterpolableNumber>(*angle),
+      CSSOffsetRotationNonInterpolableValue::Create(type));
 }
 
 PairwiseInterpolationValue CSSOffsetRotateInterpolationType::MaybeMergeSingles(
@@ -176,7 +227,8 @@ void CSSOffsetRotateInterpolationType::ApplyStandardPropertyValue(
     StyleResolverState& state) const {
   state.StyleBuilder().SetOffsetRotate(StyleOffsetRotation(
       CSSValueClampingUtils::ClampAngle(
-          To<InterpolableNumber>(interpolable_value).Value()),
+          To<InterpolableNumber>(interpolable_value)
+              .Value(state.CssToLengthConversionData())),
       To<CSSOffsetRotationNonInterpolableValue>(*non_interpolable_value)
           .RotationType()));
 }

@@ -50,6 +50,7 @@
 #if BUILDFLAG(ENABLE_LIBRARY_CDMS)
 #include "base/feature_list.h"
 #include "base/metrics/histogram_macros.h"
+#include "content/browser/media/cdm_storage_manager.h"
 #include "content/browser/media/media_license_manager.h"
 #include "media/base/key_system_names.h"
 #include "media/mojo/mojom/cdm_service.mojom.h"
@@ -169,16 +170,31 @@ class FrameInterfaceFactoryImpl : public media::mojom::FrameInterfaceFactory,
     if (cdm_type_.is_zero())
       return;
 
-    MediaLicenseManager* media_license_manager =
-        static_cast<StoragePartitionImpl*>(
-            render_frame_host_->GetStoragePartition())
-            ->GetMediaLicenseManager();
-    DCHECK(media_license_manager);
-
     auto storage_key =
         static_cast<RenderFrameHostImpl*>(render_frame_host_)->GetStorageKey();
-    media_license_manager->OpenCdmStorage(
-        CdmStorageBindingContext(storage_key, cdm_type_), std::move(receiver));
+
+    // When 'kCdmStorageDatabase' is enabled, we forgo using the Media License
+    // Manager fully in favor of the Cdm Storage Manager. We have to make sure
+    // that the 'kCdmStorageDatabaseMigration' flag is not enabled since if it
+    // is, we should proceed with opening in MediaLicenseManager.
+    if (base::FeatureList::IsEnabled(features::kCdmStorageDatabase) &&
+        !base::FeatureList::IsEnabled(features::kCdmStorageDatabaseMigration)) {
+      CdmStorageManager* cdm_storage_manager = static_cast<CdmStorageManager*>(
+          render_frame_host_->GetStoragePartition()->GetCdmStorageDataModel());
+
+      cdm_storage_manager->OpenCdmStorage(
+          CdmStorageBindingContext(storage_key, cdm_type_),
+          std::move(receiver));
+    } else {
+      MediaLicenseManager* media_license_manager =
+          static_cast<StoragePartitionImpl*>(
+              render_frame_host_->GetStoragePartition())
+              ->GetMediaLicenseManager();
+
+      media_license_manager->OpenCdmStorage(
+          CdmStorageBindingContext(storage_key, cdm_type_),
+          std::move(receiver));
+    }
 #endif
   }
 

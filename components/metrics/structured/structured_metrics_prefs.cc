@@ -6,4 +6,6 @@
 
 namespace metrics::structured::prefs {
 const char kLogStoreName[] = "sm.persistent_logs";
+
+const char kDeviceKeyDataPrefName[] = "sm.device_key_data";
 }

@@ -1,0 +1,22 @@
+[
+  {
+    "os": [
+      "linux",
+      "mac",
+      "win"
+    ],
+    "policy_pref_mapping_tests": [
+      {
+        "policies": {
+          "ChromeForTestingAllowed": true
+        },
+        "prefs": {
+          "chrome_for_testing.allowed": {
+            "location": "local_state",
+            "value": true
+          }
+        }
+      }
+    ]
+  }
+]

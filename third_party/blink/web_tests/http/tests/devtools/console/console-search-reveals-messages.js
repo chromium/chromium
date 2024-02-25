@@ -5,10 +5,12 @@
 import {TestRunner} from 'test_runner';
 import {ConsoleTestRunner} from 'console_test_runner';
 
+import * as Platform from 'devtools/core/platform/platform.js';
+import * as Console from 'devtools/panels/console/console.js';
+
 (async function() {
   TestRunner.addResult(`Tests that console viewport reveals messages on searching.\n`);
 
-  await TestRunner.loadLegacyModule('console');
   await TestRunner.showPanel('console');
   await TestRunner.evaluateInPagePromise(`
     for (var i = 0; i < 200; ++i)
@@ -16,7 +18,7 @@ import {ConsoleTestRunner} from 'console_test_runner';
     console.log("LAST MESSAGE");
   `);
 
-  var consoleView = Console.ConsoleView.instance();
+  var consoleView = Console.ConsoleView.ConsoleView.instance();
   var viewport = consoleView.viewport;
   const maximumViewportMessagesCount = 150;
   TestRunner.runTestSuite([
@@ -31,7 +33,7 @@ import {ConsoleTestRunner} from 'console_test_runner';
       var viewportMessagesCount = viewport.lastVisibleIndex - viewport.firstVisibleIndex;
       if (viewportMessagesCount > maximumViewportMessagesCount) {
         TestRunner.addResult(
-          String.sprintf(
+          Platform.StringUtilities.sprintf(
             'Test cannot be run because viewport could fit %d messages which is more than maximum of %d.',
             viewportMessagesCount,
             maximumViewportMessagesCount

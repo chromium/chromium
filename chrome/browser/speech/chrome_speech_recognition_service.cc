@@ -107,7 +107,7 @@ void ChromeSpeechRecognitionService::LaunchIfNotRunning() {
   const std::string language_name =
       prefs::GetLiveCaptionLanguageCode(profile_prefs);
 
-  absl::optional<speech::SodaLanguagePackComponentConfig> language_config =
+  std::optional<speech::SodaLanguagePackComponentConfig> language_config =
       speech::GetLanguageComponentConfig(language_name);
   CHECK(language_config);
   base::UmaHistogramEnumeration("Accessibility.LiveCaption.SodaLanguage",

@@ -14,6 +14,7 @@
 #include "extensions/buildflags/buildflags.h"
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
+#include "extensions/browser/api/declarative/rules_registry_service.h"
 #include "extensions/browser/extension_system_provider.h"
 #include "extensions/browser/extensions_browser_client.h"
 #endif
@@ -46,6 +47,9 @@ NoStatePrefetchManagerFactory::NoStatePrefetchManagerFactory()
 #if BUILDFLAG(ENABLE_EXTENSIONS)
   DependsOn(
       extensions::ExtensionsBrowserClient::Get()->GetExtensionSystemFactory());
+  // NoStatePrefetchService has an indirect dependency on the
+  // RulesRegistryService through extensions::TabHelper::WebContentsDestroyed.
+  DependsOn(extensions::RulesRegistryService::GetFactoryInstance());
 #endif
   // PrerenderLocalPredictor observers the history visit DB.
   DependsOn(HistoryServiceFactory::GetInstance());

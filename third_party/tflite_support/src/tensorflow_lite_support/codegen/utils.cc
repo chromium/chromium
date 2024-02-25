@@ -32,8 +32,7 @@ int ErrorReporter::Error(const char* format, ...) {
   return Report("[ERROR] ", format, args);
 }
 
-int ErrorReporter::Report(const char* prefix,
-                          const char* format,
+int ErrorReporter::Report(const char* prefix, const char* format,
                           va_list args) {
   char buf[1024];
   int formatted = vsnprintf(buf, sizeof(buf), format, args);
@@ -70,13 +69,9 @@ void CodeWriter::SetIndentString(const std::string& indent_str) {
   indent_str_ = indent_str;
 }
 
-void CodeWriter::Indent() {
-  indent_++;
-}
+void CodeWriter::Indent() { indent_++; }
 
-void CodeWriter::Outdent() {
-  indent_--;
-}
+void CodeWriter::Outdent() { indent_--; }
 
 std::string CodeWriter::GenerateIndent() const {
   std::string res;
@@ -87,9 +82,7 @@ std::string CodeWriter::GenerateIndent() const {
   return res;
 }
 
-void CodeWriter::Append(const std::string& text) {
-  AppendInternal(text, true);
-}
+void CodeWriter::Append(const std::string& text) { AppendInternal(text, true); }
 
 void CodeWriter::AppendNoNewLine(const std::string& text) {
   AppendInternal(text, false);
@@ -151,21 +144,15 @@ void CodeWriter::AppendInternal(const std::string& text, bool newline) {
   }
 }
 
-void CodeWriter::NewLine() {
-  Append("");
-}
+void CodeWriter::NewLine() { Append(""); }
 
 void CodeWriter::Backspace(int n) {
   buffer_.resize(buffer_.size() > n ? buffer_.size() - n : 0);
 }
 
-std::string CodeWriter::ToString() const {
-  return buffer_;
-}
+std::string CodeWriter::ToString() const { return buffer_; }
 
-bool CodeWriter::IsStreamEmpty() const {
-  return buffer_.empty();
-}
+bool CodeWriter::IsStreamEmpty() const { return buffer_.empty(); }
 
 void CodeWriter::Clear() {
   buffer_.clear();
@@ -194,14 +181,11 @@ std::string SnakeCaseToCamelCase(const std::string& s) {
 }
 
 std::string JoinPath(const std::string& a, const std::string& b) {
-  if (a.empty())
-    return b;
+  if (a.empty()) return b;
   std::string a_fixed = a;
-  if (!a_fixed.empty() && a_fixed.back() == '/')
-    a_fixed.pop_back();
+  if (!a_fixed.empty() && a_fixed.back() == '/') a_fixed.pop_back();
   std::string b_fixed = b;
-  if (!b_fixed.empty() && b_fixed.front() == '/')
-    b_fixed.erase(0, 1);
+  if (!b_fixed.empty() && b_fixed.front() == '/') b_fixed.erase(0, 1);
   return a_fixed + "/" + b_fixed;
 }
 

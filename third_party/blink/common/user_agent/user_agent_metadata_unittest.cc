@@ -4,9 +4,10 @@
 
 #include "third_party/blink/public/common/user_agent/user_agent_metadata.h"
 
+#include <optional>
+
 #include "mojo/public/cpp/test_support/test_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/user_agent/user_agent_mojom_traits.h"
 #include "third_party/blink/public/mojom/user_agent/user_agent_metadata.mojom.h"
 
@@ -28,16 +29,16 @@ blink::UserAgentMetadata MakeToEncode() {
   to_encode.mobile = false;
   to_encode.bitness = "8";
   to_encode.wow64 = true;
-  to_encode.form_factor = "tubular";
+  to_encode.form_factor = {"tubular"};
   return to_encode;
 }
 
 }  // namespace
 
 TEST(UserAgentMetaDataTest, Boundary) {
-  EXPECT_EQ(absl::nullopt, UserAgentMetadata::Marshal(absl::nullopt));
-  EXPECT_EQ(absl::nullopt, UserAgentMetadata::Demarshal(absl::nullopt));
-  EXPECT_EQ(absl::nullopt,
+  EXPECT_EQ(std::nullopt, UserAgentMetadata::Marshal(std::nullopt));
+  EXPECT_EQ(std::nullopt, UserAgentMetadata::Demarshal(std::nullopt));
+  EXPECT_EQ(std::nullopt,
             UserAgentMetadata::Demarshal(std::string("nonsense")));
 }
 
@@ -45,10 +46,40 @@ TEST(UserAgentMetaDataTest, Basic) {
   blink::UserAgentMetadata to_encode = MakeToEncode();
   EXPECT_EQ(to_encode, UserAgentMetadata::Demarshal(
                            UserAgentMetadata::Marshal(to_encode)));
+}
 
+TEST(UserAgentMetaDataTest, Mobile) {
+  blink::UserAgentMetadata to_encode = MakeToEncode();
   to_encode.mobile = true;
   EXPECT_EQ(to_encode, UserAgentMetadata::Demarshal(
                            UserAgentMetadata::Marshal(to_encode)));
+}
+
+TEST(UserAgentMetaDataTest, EmptyFormFactor) {
+  blink::UserAgentMetadata to_encode = MakeToEncode();
+  to_encode.form_factor = {};
+  EXPECT_EQ(to_encode, UserAgentMetadata::Demarshal(
+                           UserAgentMetadata::Marshal(to_encode)));
+}
+
+TEST(UserAgentMetaDataTest, MultiFormFactor) {
+  blink::UserAgentMetadata to_encode = MakeToEncode();
+  to_encode.form_factor = {"a", "b"};
+  EXPECT_EQ(to_encode, UserAgentMetadata::Demarshal(
+                           UserAgentMetadata::Marshal(to_encode)));
+}
+
+TEST(UserAgentMetaDataTest, SerializeFormFactor) {
+  UserAgentMetadata uam;
+
+  uam.form_factor = {};
+  ASSERT_EQ(uam.SerializeFormFactor(), "") << "empty";
+
+  uam.form_factor = {"Desktop"};
+  ASSERT_EQ(uam.SerializeFormFactor(), "\"Desktop\"") << "empty";
+
+  uam.form_factor = {"Desktop", "Tablet"};
+  ASSERT_EQ(uam.SerializeFormFactor(), "\"Desktop\", \"Tablet\"") << "empty";
 }
 
 TEST(UserAgentMetaDataTest, MojoTraits) {

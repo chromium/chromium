@@ -16,7 +16,7 @@ for autofill- and password-related tasks.
 
 The ManualFillingCoordinator in this package uses the `bar_component.*` to
 display a bar above an open keyboard. This bar shows suggestions and holds a
-number of fallback icons in a `tab_layout_component.*` which allows to open an
+number of fallback icons in a `button_group_component.*` which allows to open an
 accessory sheet with fallback data and options.
 The sheet is located in the `sheet_component.*` and shows one of the fallback
 sheets as defined in `sheet_tabs.*`.
@@ -105,8 +105,8 @@ Therefore, the manual filling component keeps a `ManualFillingState` for each
 known `WebContents` object inside the `ManualFillingStateCache`. Based on that
 state, the filling component only allows to forward data from providers that
 push data for the active tab (i.e. per WebContents).
-Data that is pushed to inactive tabs is either cached (V1) or might need to be
-rerequested if the tab changes (V2, see [Caching](#caching) below.).
+Data that is pushed to inactive tabs might need to be rerequested if the tab
+changes (see [Caching](#caching) below.).
 
 ## Development
 
@@ -148,50 +148,3 @@ keeping them in mind until they are fixed simplifies working with it:
   it still requires a dependency to `chrome_java`. Ideally, the entire component
   would follow the folder structure of a typical component as well. All of this
   is a WiP, see https://crbug.com/945314.
-
-## Versioning
-
-There are two versions of the accessory that share a most components:
-
-1. **V1 - Keyboard Accessory for Passwords** is the widely available version of
-   the manual filling component and supports only filling password fields and
-   password generation.
-
-1. **V2 - Keyboard Accessory with Autofill Suggestions** completely replaces
-   autofill dropdowns with chips in the keyboard accessory and adds two
-   additional fallback sheets to support filling payments and address data. It
-   applies Chrome's modern design. To enable it, set these flags:
-    - \#autofill-keyboard-accessory-view
-    - \#enable-autofill-manual-fallback
-
-### Conceptional differences
-
-For the transition period until version 2 is widely available, the code for the
-old (V1) and the modern filling component (V2) differ in a few points:
-
-1. **Names** of newer components include the term "Modern" to indicate that they
-   replace their respective V1 version. E.g. the `KeyboardAccessoryView` is the
-   view as used by V1 whereas `KeyboardAccessoryModernView` is the view that V2
-   uses. Often, V2 is an extension of V1. Alternative terms with similar usage:
-    - for V1: old, legacy, password-only
-    - for V2: new, modern, X with autofill suggestions
-
-1. **Visibility** for V1 is restricted to exactly identifiable password and
-   username fields. With V2, the accessory is visible for every non-search
-   field. Fallback icons as entry points to fallback sheets with V2 are only
-   shown if they provide additional information (e.g. the credit card icon might
-   not be visible on a credit card field if the user has no stored payment
-   data). In the rare case that no data is stored at all and no supportive
-   functionality (like password generation) is available, the accessory may be
-   suppressed altogether.
-
-1. **Caching** <a name="caching"></a>
-   In V1, the keyboard accessory loaded its data once per frame load and kept
-   it until the frame changed or a navigation occurred. To keep the loaded data
-   available, the entire sheet was stored per browser tab. That way, users can
-   switch tabs without reloading the data.
-   With V2, the memory pressure increased due to additional fallback data and
-   updates happen at every single focus event.
-   That means, the caching isn't required in V2 and needs to be reduced
-   (i.e. the manual filling component only stores which provider pushes data to
-   a given fallback sheet but doesn't cache the pushed data itself).

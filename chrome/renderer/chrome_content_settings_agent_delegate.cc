@@ -18,6 +18,7 @@
 #if BUILDFLAG(ENABLE_EXTENSIONS)
 #include "extensions/common/constants.h"
 #include "extensions/common/extension.h"
+#include "extensions/common/mojom/context_type.mojom.h"
 #include "extensions/common/permissions/api_permission.h"
 #include "extensions/common/permissions/permissions_data.h"
 #include "extensions/renderer/dispatcher.h"
@@ -74,8 +75,7 @@ bool ChromeContentSettingsAgentDelegate::IsSchemeAllowlisted(
 #endif
 }
 
-absl::optional<bool>
-ChromeContentSettingsAgentDelegate::AllowReadFromClipboard() {
+bool ChromeContentSettingsAgentDelegate::AllowReadFromClipboard() {
 #if BUILDFLAG(ENABLE_EXTENSIONS)
   extensions::ScriptContext* current_context =
       extension_dispatcher_->script_context_set().GetCurrent();
@@ -89,11 +89,10 @@ ChromeContentSettingsAgentDelegate::AllowReadFromClipboard() {
     return true;
   }
 #endif
-  return absl::nullopt;
+  return false;
 }
 
-absl::optional<bool>
-ChromeContentSettingsAgentDelegate::AllowWriteToClipboard() {
+bool ChromeContentSettingsAgentDelegate::AllowWriteToClipboard() {
 #if BUILDFLAG(ENABLE_EXTENSIONS)
   // All blessed extension pages could historically write to the clipboard, so
   // preserve that for compatibility.
@@ -101,7 +100,7 @@ ChromeContentSettingsAgentDelegate::AllowWriteToClipboard() {
       extension_dispatcher_->script_context_set().GetCurrent();
   if (current_context) {
     if (current_context->effective_context_type() ==
-            extensions::Feature::BLESSED_EXTENSION_CONTEXT &&
+            extensions::mojom::ContextType::kPrivilegedExtension &&
         !current_context->IsForServiceWorker()) {
       return true;
     }
@@ -111,13 +110,13 @@ ChromeContentSettingsAgentDelegate::AllowWriteToClipboard() {
     }
   }
 #endif
-  return absl::nullopt;
+  return false;
 }
 
-absl::optional<bool> ChromeContentSettingsAgentDelegate::AllowMutationEvents() {
+std::optional<bool> ChromeContentSettingsAgentDelegate::AllowMutationEvents() {
   if (IsPlatformApp())
     return false;
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 void ChromeContentSettingsAgentDelegate::DidCommitProvisionalLoad(

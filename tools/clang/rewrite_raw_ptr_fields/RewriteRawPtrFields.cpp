@@ -34,6 +34,7 @@
 
 #include "RawPtrHelpers.h"
 #include "RawPtrManualPathsToIgnore.h"
+#include "SeparateRepositoryPaths.h"
 #include "clang/AST/ASTContext.h"
 #include "clang/ASTMatchers/ASTMatchFinder.h"
 #include "clang/ASTMatchers/ASTMatchers.h"
@@ -538,11 +539,6 @@ class RawPtrRewriter {
         filtered_addr_of_expr_writer(output_helper, "addr-of"),
         filtered_in_out_ref_arg_writer(output_helper, "in-out-param-ref"),
         overlapping_field_decl_writer(output_helper, "overlapping"),
-        constexpr_ctor_field_initializer_writer(
-            output_helper,
-            "constexpr-ctor-field-initializer"),
-        constexpr_var_initializer_writer(output_helper,
-                                         "constexpr-var-initializer"),
         macro_field_decl_writer(output_helper, "macro"),
         global_scope_rewriter(output_helper, "global-scope"),
         union_field_decl_writer(output_helper, "union"),
@@ -730,31 +726,6 @@ class RawPtrRewriter {
     match_finder.addMatcher(overlapping_field_decl_matcher,
                             &overlapping_field_decl_writer);
 
-    // Matches fields initialized with a non-nullptr value in a constexpr
-    // constructor.  See also the testcase in tests/gen-constexpr-test.cc.
-    auto non_nullptr_expr_matcher =
-        expr(unless(ignoringImplicit(cxxNullPtrLiteralExpr())));
-    auto constexpr_ctor_field_initializer_matcher = cxxConstructorDecl(
-        allOf(isConstexpr(), unless(isImplicit()),
-              forEachConstructorInitializer(
-                  allOf(forField(field_decl_matcher),
-                        withInitializer(non_nullptr_expr_matcher)))));
-
-    match_finder.addMatcher(constexpr_ctor_field_initializer_matcher,
-                            &constexpr_ctor_field_initializer_writer);
-
-    // Matches constexpr initializer list expressions that initialize a
-    // rewritable field with a non-nullptr value.  For more details and
-    // rationale see the testcases in tests/gen-constexpr-test.cc.
-    auto constexpr_var_initializer_matcher = varDecl(
-        allOf(isConstexpr(),
-              hasInitializer(findAll(initListExpr(forEachInitExprWithFieldDecl(
-                  non_nullptr_expr_matcher,
-                  hasExplicitFieldDecl(field_decl_matcher)))))));
-
-    match_finder.addMatcher(constexpr_var_initializer_matcher,
-                            &constexpr_var_initializer_writer);
-
     // See the doc comment for the isInMacroLocation matcher
     // and the testcases in tests/gen-macros-test.cc.
     auto macro_field_decl_matcher =
@@ -769,13 +740,23 @@ class RawPtrRewriter {
 
     match_finder.addMatcher(global_scope_matcher, &global_scope_rewriter);
 
+    // This is used to exclude unions from certain files that are known to have
+    // safe usage of union (i.e. doesn't cause ref count mismatch), such as
+    // std::optional and absl::variant.
+    files_with_audited_unions =
+        std::make_unique<FilterFile>(std::vector<std::string>{
+            "third_party/libc++/src/include/optional",
+            "third_party/abseil-cpp/absl/types/internal/variant.h",
+        });
     // Matches fields in unions (both directly rewritable fields as well as
     // union fields that embed a struct that contains a rewritable field).  See
     // also the testcases in tests/gen-unions-test.cc.
     auto union_field_decl_matcher = recordDecl(allOf(
-        isUnion(), forEach(fieldDecl(anyOf(field_decl_matcher,
-                                           hasType(typeWithEmbeddedFieldDecl(
-                                               field_decl_matcher)))))));
+        isUnion(),
+        unless(isInLocationListedInFilterFile(files_with_audited_unions.get())),
+        forEach(fieldDecl(
+            anyOf(field_decl_matcher,
+                  hasType(typeWithEmbeddedFieldDecl(field_decl_matcher)))))));
 
     match_finder.addMatcher(union_field_decl_matcher, &union_field_decl_writer);
 
@@ -831,12 +812,11 @@ class RawPtrRewriter {
   FilteredExprWriter filtered_addr_of_expr_writer;
   FilteredExprWriter filtered_in_out_ref_arg_writer;
   FilteredExprWriter overlapping_field_decl_writer;
-  FilteredExprWriter constexpr_ctor_field_initializer_writer;
-  FilteredExprWriter constexpr_var_initializer_writer;
   FilteredExprWriter macro_field_decl_writer;
   FilteredExprWriter global_scope_rewriter;
   FilteredExprWriter union_field_decl_writer;
   FilteredExprWriter reinterpret_cast_struct_writer;
+  std::unique_ptr<FilterFile> files_with_audited_unions;
   const RawPtrAndRefExclusionsOptions exclusion_options_;
 };
 
@@ -859,11 +839,6 @@ class RawRefRewriter {
                                            affectedInitializerExprFct_),
         global_scope_rewriter(output_helper, "global-scope"),
         overlapping_field_decl_writer(output_helper, "overlapping"),
-        constexpr_ctor_field_initializer_writer(
-            output_helper,
-            "constexpr-ctor-field-initializer"),
-        constexpr_var_initializer_writer(output_helper,
-                                         "constexpr-var-initializer"),
         macro_field_decl_writer(output_helper, "macro"),
         exclusion_options_(exclusion_options) {}
 
@@ -1011,30 +986,6 @@ class RawRefRewriter {
     match_finder.addMatcher(overlapping_field_decl_matcher,
                             &overlapping_field_decl_writer);
 
-    // Matches fields initialized with a non-nullptr value in a constexpr
-    // constructor.  See also the testcase in tests/gen-constexpr-test.cc.
-    auto non_nullptr_expr_matcher =
-        expr(unless(ignoringImplicit(cxxNullPtrLiteralExpr())));
-    auto constexpr_ctor_field_initializer_matcher = cxxConstructorDecl(
-        allOf(isConstexpr(), forEachConstructorInitializer(allOf(
-                                 forField(field_decl_matcher),
-                                 withInitializer(non_nullptr_expr_matcher)))));
-
-    match_finder.addMatcher(constexpr_ctor_field_initializer_matcher,
-                            &constexpr_ctor_field_initializer_writer);
-
-    // Matches constexpr initializer list expressions that initialize a
-    // rewritable field with a non-nullptr value.  For more details and
-    // rationale see the testcases in tests/gen-constexpr-test.cc.
-    auto constexpr_var_initializer_matcher = varDecl(
-        allOf(isConstexpr(),
-              hasInitializer(findAll(initListExpr(forEachInitExprWithFieldDecl(
-                  non_nullptr_expr_matcher,
-                  hasExplicitFieldDecl(field_decl_matcher)))))));
-
-    match_finder.addMatcher(constexpr_var_initializer_matcher,
-                            &constexpr_var_initializer_writer);
-
     // See the doc comment for the isInMacroLocation matcher
     // and the testcases in tests/gen-macros-test.cc.
     auto macro_field_decl_matcher =
@@ -1177,8 +1128,6 @@ class RawRefRewriter {
   AffectedExprRewriter affected_initializer_expr_rewriter;
   FilteredExprWriter global_scope_rewriter;
   FilteredExprWriter overlapping_field_decl_writer;
-  FilteredExprWriter constexpr_ctor_field_initializer_writer;
-  FilteredExprWriter constexpr_var_initializer_writer;
   FilteredExprWriter macro_field_decl_writer;
   const RawPtrAndRefExclusionsOptions exclusion_options_;
 };
@@ -1213,10 +1162,6 @@ int main(int argc, const char* argv[]) {
       llvm::cl::desc("Exclude pointers/references to `STACK_ALLOCATED` objects "
                      "from the rewrite"));
 
-  llvm::cl::opt<bool> raw_ptr_fix_crbug_1449812(
-      "raw_ptr_fix_crbug_1449812", llvm::cl::init(true),
-      llvm::cl::desc("Apply a fix for crbug.com/1449812"));
-
   llvm::Expected<clang::tooling::CommonOptionsParser> options =
       clang::tooling::CommonOptionsParser::create(argc, argv, category);
   assert(static_cast<bool>(options));  // Should not return an error.
@@ -1238,6 +1183,9 @@ int main(int argc, const char* argv[]) {
     for (auto* const line : kRawPtrManualPathsToIgnore) {
       paths_to_exclude_lines.push_back(line);
     }
+    for (auto* const line : kSeparateRepositoryPaths) {
+      paths_to_exclude_lines.push_back(line);
+    }
     paths_to_exclude = std::make_unique<FilterFile>(paths_to_exclude_lines);
   } else {
     paths_to_exclude =
@@ -1248,7 +1196,7 @@ int main(int argc, const char* argv[]) {
   chrome_checker::StackAllocatedPredicate stack_allocated_checker;
   RawPtrAndRefExclusionsOptions exclusion_options{
       &fields_to_exclude, paths_to_exclude.get(), exclude_stack_allocated,
-      &stack_allocated_checker, raw_ptr_fix_crbug_1449812};
+      &stack_allocated_checker};
 
   RawPtrRewriter raw_ptr_rewriter(&output_helper, match_finder,
                                   exclusion_options);

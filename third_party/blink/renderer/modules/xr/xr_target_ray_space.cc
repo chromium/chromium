@@ -16,7 +16,7 @@ namespace blink {
 XRTargetRaySpace::XRTargetRaySpace(XRSession* session, XRInputSource* source)
     : XRSpace(session), input_source_(source) {}
 
-absl::optional<gfx::Transform> XRTargetRaySpace::MojoFromNative() const {
+std::optional<gfx::Transform> XRTargetRaySpace::MojoFromNative() const {
   auto mojo_from_viewer = session()->GetMojoFrom(
       device::mojom::blink::XRReferenceSpaceType::kViewer);
   switch (input_source_->TargetRayMode()) {
@@ -25,7 +25,7 @@ absl::optional<gfx::Transform> XRTargetRaySpace::MojoFromNative() const {
       // viewer space is the input space.
       // So our result will be mojo_from_viewer * viewer_from_pointer
       if (!(mojo_from_viewer && input_source_->InputFromPointer()))
-        return absl::nullopt;
+        return std::nullopt;
 
       return *mojo_from_viewer * *(input_source_->InputFromPointer());
     }
@@ -39,7 +39,7 @@ absl::optional<gfx::Transform> XRTargetRaySpace::MojoFromNative() const {
       // mojo_from_pointer is just: MojoFromInput*InputFromPointer;
       if (!(input_source_->MojoFromInput() &&
             input_source_->InputFromPointer()))
-        return absl::nullopt;
+        return std::nullopt;
 
       return *(input_source_->MojoFromInput()) *
              *(input_source_->InputFromPointer());

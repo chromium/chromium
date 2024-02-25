@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "ash/constants/ash_pref_names.h"
+#include "ash/constants/ash_switches.h"
 #include "ash/shell.h"
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
@@ -23,6 +24,15 @@ class DisplayPrefsBrowserTest : public InProcessBrowserTest {
 
   ~DisplayPrefsBrowserTest() override = default;
 
+  // InProcessBrowserTest:
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    std::string test_name =
+        ::testing::UnitTest::GetInstance()->current_test_info()->name();
+    // Make sure that display prefs are created in PRE_ test.
+    if (test_name.find("PRE_") != std::string::npos) {
+      command_line->AppendSwitch(ash::switches::kFirstExecAfterBoot);
+    }
+  }
   void SetUpOnMainThread() override {
     local_state_ = g_browser_process->local_state();
   }
@@ -41,14 +51,14 @@ class DisplayPrefsBrowserTest : public InProcessBrowserTest {
     const base::Value::Dict* properties = GetDisplayProperties(index);
     EXPECT_TRUE(properties);
     display::Display::Rotation result = display::Display::ROTATE_0;
-    absl::optional<int> rot_value = properties->FindInt("rotation");
+    std::optional<int> rot_value = properties->FindInt("rotation");
     EXPECT_TRUE(rot_value);
     if (rot_value)
       result = static_cast<display::Display::Rotation>(rot_value.value());
     return result;
   }
 
-  raw_ptr<PrefService, DanglingUntriaged | ExperimentalAsh> local_state_;
+  raw_ptr<PrefService, DanglingUntriaged> local_state_;
 };
 
 // Test that display prefs are registered in the browser local_state

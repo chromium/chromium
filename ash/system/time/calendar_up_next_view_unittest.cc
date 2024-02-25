@@ -4,10 +4,12 @@
 
 #include "ash/system/time/calendar_up_next_view.h"
 
+#include <utility>
+
 #include "ash/public/cpp/test/test_system_tray_client.h"
 #include "ash/shell.h"
 #include "ash/system/model/system_tray_model.h"
-#include "ash/system/time/calendar_event_list_item_view_jelly.h"
+#include "ash/system/time/calendar_event_list_item_view.h"
 #include "ash/system/time/calendar_unittest_utils.h"
 #include "ash/system/time/calendar_view_controller.h"
 #include "ash/system/tray/tray_constants.h"
@@ -90,8 +92,8 @@ class CalendarUpNextViewTest : public AshTestBase {
         google_apis::ApiErrorCode::HTTP_SUCCESS,
         calendar_test_utils::CreateMockEventList(std::move(events)).get());
 
-    auto up_next_view =
-        std::make_unique<CalendarUpNextView>(controller_.get(), callback);
+    auto up_next_view = std::make_unique<CalendarUpNextView>(
+        controller_.get(), std::move(callback));
     up_next_view_ = widget_->SetContentsView(std::move(up_next_view));
     // Set the widget to reflect the CalendarUpNextView size in reality. If we
     // don't then the view will never be scrollable.
@@ -165,7 +167,7 @@ class CalendarUpNextViewTest : public AshTestBase {
   }
 
   std::unique_ptr<views::Widget> widget_;
-  raw_ptr<CalendarUpNextView, ExperimentalAsh> up_next_view_;
+  raw_ptr<CalendarUpNextView> up_next_view_;
   std::unique_ptr<CalendarViewController> controller_;
 };
 
@@ -552,10 +554,10 @@ TEST_F(CalendarUpNextViewTest, ShouldFocusViewsInCorrectOrder_WhenPressingTab) {
 
   // First the event list item view should be focused.
   PressTab();
-  auto* first_item = GetContentsView()->children()[0];
+  auto* first_item = GetContentsView()->children()[0].get();
   ASSERT_TRUE(first_item);
   EXPECT_EQ(first_item, focus_manager->GetFocusedView());
-  EXPECT_STREQ("CalendarEventListItemViewJelly",
+  EXPECT_STREQ("CalendarEventListItemView",
                focus_manager->GetFocusedView()->GetClassName());
 
   // Next, the "Join" button should be focused.
@@ -565,10 +567,10 @@ TEST_F(CalendarUpNextViewTest, ShouldFocusViewsInCorrectOrder_WhenPressingTab) {
 
   // Next, the second event list item view should be focused.
   PressTab();
-  auto* second_item = GetContentsView()->children()[1];
+  auto* second_item = GetContentsView()->children()[1].get();
   ASSERT_TRUE(second_item);
   EXPECT_EQ(second_item, focus_manager->GetFocusedView());
-  EXPECT_STREQ("CalendarEventListItemViewJelly",
+  EXPECT_STREQ("CalendarEventListItemView",
                focus_manager->GetFocusedView()->GetClassName());
 
   // Next, the second event list item view "Join" button should be focused.
@@ -589,7 +591,7 @@ TEST_F(CalendarUpNextViewTest, ShouldFocusViewsInCorrectOrder_WhenPressingTab) {
   // Going back again, the second event list item view should be focused.
   PressShiftTab();
   EXPECT_EQ(second_item, focus_manager->GetFocusedView());
-  EXPECT_STREQ("CalendarEventListItemViewJelly",
+  EXPECT_STREQ("CalendarEventListItemView",
                focus_manager->GetFocusedView()->GetClassName());
 }
 
@@ -608,10 +610,10 @@ TEST_F(CalendarUpNextViewTest, ShouldPreserveFocusAfterRefreshEvent) {
 
   // First the event list item view should be focused.
   PressTab();
-  auto* first_item = GetContentsView()->children()[0];
+  auto* first_item = GetContentsView()->children()[0].get();
   ASSERT_TRUE(first_item);
   EXPECT_EQ(first_item, focus_manager->GetFocusedView());
-  EXPECT_STREQ("CalendarEventListItemViewJelly",
+  EXPECT_STREQ("CalendarEventListItemView",
                focus_manager->GetFocusedView()->GetClassName());
 
   up_next_view()->RefreshEvents();
@@ -619,7 +621,7 @@ TEST_F(CalendarUpNextViewTest, ShouldPreserveFocusAfterRefreshEvent) {
   // After refresh the events, the first event list item view should still be
   // focused.
   EXPECT_EQ(first_item, focus_manager->GetFocusedView());
-  EXPECT_STREQ("CalendarEventListItemViewJelly",
+  EXPECT_STREQ("CalendarEventListItemView",
                focus_manager->GetFocusedView()->GetClassName());
 }
 

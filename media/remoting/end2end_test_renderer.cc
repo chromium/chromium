@@ -388,7 +388,7 @@ void End2EndTestRenderer::OnAcquireRendererDone(int receiver_renderer_handle) {
 }
 
 void End2EndTestRenderer::SetLatencyHint(
-    absl::optional<base::TimeDelta> latency_hint) {
+    std::optional<base::TimeDelta> latency_hint) {
   courier_renderer_->SetLatencyHint(latency_hint);
 }
 

@@ -39,6 +39,7 @@ class MockFrameSinkBundle : public viz::mojom::blink::FrameSinkBundle {
   MOCK_METHOD2(InitializeCompositorFrameSinkType,
                void(uint32_t, viz::mojom::CompositorFrameSinkType));
   MOCK_METHOD2(SetNeedsBeginFrame, void(uint32_t, bool));
+  MOCK_METHOD1(SetWantsBeginFrameAcks, void(uint32_t));
   MOCK_METHOD1(Submit,
                void(WTF::Vector<viz::mojom::blink::BundledFrameSubmissionPtr>));
   MOCK_METHOD3(DidAllocateSharedBitmap,

@@ -8,9 +8,11 @@
 #include <memory>
 #include <string>
 
+#include "base/functional/callback.h"
 #include "base/memory/weak_ptr.h"
 #include "base/values.h"
 #include "chrome/browser/web_applications/commands/web_app_command.h"
+#include "chrome/browser/web_applications/locks/shared_web_contents_lock.h"
 #include "chrome/browser/web_applications/os_integration/os_integration_manager.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
 #include "chrome/browser/web_applications/web_app_install_params.h"
@@ -24,11 +26,7 @@
 
 namespace web_app {
 
-class LockDescription;
-class SharedWebContentsLock;
-class SharedWebContentsLockDescription;
 class SharedWebContentsWithAppLock;
-class SharedWebContentsWithAppLockDescription;
 class WebAppUrlLoader;
 enum class WebAppUrlLoaderResult;
 
@@ -46,7 +44,9 @@ enum class WebAppUrlLoaderResult;
 // The web app can be simultaneously installed from multiple sources. If the
 // web app already exists, the manifest contents will be ignored.
 class InstallPreloadedVerifiedAppCommand
-    : public WebAppCommandTemplate<SharedWebContentsLock> {
+    : public WebAppCommand<SharedWebContentsLock,
+                           const webapps::AppId&,
+                           webapps::InstallResultCode> {
  public:
   // Begins installation of a web app from a raw manifest string.
   //
@@ -64,16 +64,14 @@ class InstallPreloadedVerifiedAppCommand
       GURL document_url,
       GURL manifest_url,
       std::string manifest_contents,
-      AppId expected_id,
+      webapps::AppId expected_id,
       OnceInstallCallback callback);
 
   ~InstallPreloadedVerifiedAppCommand() override;
 
-  // WebAppCommandTemplate<SharedWebContentsLock>:
-  const LockDescription& lock_description() const override;
+ protected:
+  // WebAppCommand:
   void StartWithLock(std::unique_ptr<SharedWebContentsLock> lock) override;
-  void OnShutdown() override;
-  base::Value ToDebugValue() const override;
 
  private:
   void OnAboutBlankLoaded(WebAppUrlLoaderResult result);
@@ -83,7 +81,7 @@ class InstallPreloadedVerifiedAppCommand
                         DownloadedIconsHttpResults icons_http_results);
   void OnAppLockAcquired(
       std::unique_ptr<SharedWebContentsWithAppLock> app_lock);
-  void OnInstallFinalized(const AppId& app_id,
+  void OnInstallFinalized(const webapps::AppId& app_id,
                           webapps::InstallResultCode code,
                           OsHooksErrors os_hooks_errors);
 
@@ -93,23 +91,17 @@ class InstallPreloadedVerifiedAppCommand
   GURL document_url_;
   GURL manifest_url_;
   std::string manifest_contents_;
-  AppId expected_id_;
-  OnceInstallCallback install_callback_;
+  webapps::AppId expected_id_;
 
   // SharedWebContentsLock is held while parsing the manifest.
   std::unique_ptr<SharedWebContentsLock> web_contents_lock_;
-  std::unique_ptr<SharedWebContentsLockDescription>
-      web_contents_lock_description_;
 
   // SharedWebContentsWithAppLock is held while installing the app.
   std::unique_ptr<SharedWebContentsWithAppLock> app_lock_;
-  std::unique_ptr<SharedWebContentsWithAppLockDescription>
-      app_lock_description_;
 
   std::unique_ptr<WebAppUrlLoader> url_loader_;
   std::unique_ptr<WebAppDataRetriever> data_retriever_;
 
-  base::Value::Dict debug_value_;
   std::unique_ptr<WebAppInstallInfo> web_app_info_;
 
   mojo::Remote<blink::mojom::ManifestManager> manifest_manager_;

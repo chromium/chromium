@@ -7,10 +7,10 @@
  * 'crostini-subpage' is the settings subpage for managing Crostini.
  */
 
-import 'chrome://resources/cr_elements/cr_button/cr_button.js';
-import 'chrome://resources/cr_elements/cr_link_row/cr_link_row.js';
-import 'chrome://resources/cr_elements/icons.html.js';
-import '/shared/settings/controls/settings_toggle_button.js';
+import 'chrome://resources/ash/common/cr_elements/cr_button/cr_button.js';
+import 'chrome://resources/ash/common/cr_elements/cr_link_row/cr_link_row.js';
+import 'chrome://resources/ash/common/cr_elements/icons.html.js';
+import '../controls/settings_toggle_button.js';
 import '../settings_shared.css.js';
 import './crostini_confirmation_dialog.js';
 import './crostini_disk_resize_dialog.js';
@@ -18,18 +18,18 @@ import './crostini_disk_resize_confirmation_dialog.js';
 import './crostini_port_forwarding.js';
 import './crostini_extra_containers.js';
 
-import {SettingsToggleButtonElement} from '/shared/settings/controls/settings_toggle_button.js';
 import {PrefsMixin} from 'chrome://resources/cr_components/settings_prefs/prefs_mixin.js';
-import {WebUiListenerMixin} from 'chrome://resources/cr_elements/web_ui_listener_mixin.js';
+import {WebUiListenerMixin} from 'chrome://resources/ash/common/cr_elements/web_ui_listener_mixin.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {castExists} from '../assert_extras.js';
-import {DeepLinkingMixin} from '../deep_linking_mixin.js';
+import {DeepLinkingMixin} from '../common/deep_linking_mixin.js';
+import {RouteOriginMixin} from '../common/route_origin_mixin.js';
+import {SettingsToggleButtonElement} from '../controls/settings_toggle_button.js';
 import {TERMINA_VM_TYPE} from '../guest_os/guest_os_browser_proxy.js';
 import {recordSettingChange} from '../metrics_recorder.js';
 import {Setting} from '../mojom-webui/setting.mojom-webui.js';
-import {RouteOriginMixin} from '../route_origin_mixin.js';
 import {Route, Router, routes} from '../router.js';
 
 import {CrostiniBrowserProxy, CrostiniBrowserProxyImpl, CrostiniDiskInfo} from './crostini_browser_proxy.js';
@@ -46,7 +46,7 @@ enum ConfirmationState {
 const SettingsCrostiniSubpageElementBase = DeepLinkingMixin(
     RouteOriginMixin(PrefsMixin(WebUiListenerMixin(PolymerElement))));
 
-class SettingsCrostiniSubpageElement extends
+export class SettingsCrostiniSubpageElement extends
     SettingsCrostiniSubpageElementBase {
   static get is() {
     return 'settings-crostini-subpage';
@@ -222,7 +222,7 @@ class SettingsCrostiniSubpageElement extends
     this.browserProxy_ = CrostiniBrowserProxyImpl.getInstance();
   }
 
-  override connectedCallback() {
+  override connectedCallback(): void {
     super.connectedCallback();
 
     this.addWebUiListener(
@@ -244,7 +244,7 @@ class SettingsCrostiniSubpageElement extends
     this.loadDiskInfo_();
   }
 
-  override ready() {
+  override ready(): void {
     super.ready();
 
     const r = routes;
@@ -259,7 +259,7 @@ class SettingsCrostiniSubpageElement extends
         r.CROSTINI_EXTRA_CONTAINERS, '#crostiniExtraContainersRow');
   }
 
-  override currentRouteChanged(newRoute: Route, oldRoute?: Route) {
+  override currentRouteChanged(newRoute: Route, oldRoute?: Route): void {
     super.currentRouteChanged(newRoute, oldRoute);
 
     // Does not apply to this page.
@@ -270,7 +270,7 @@ class SettingsCrostiniSubpageElement extends
     this.attemptDeepLink();
   }
 
-  private onCrostiniEnabledChanged_(enabled: boolean) {
+  private onCrostiniEnabledChanged_(enabled: boolean): void {
     if (!enabled &&
         Router.getInstance().currentRoute === routes.CROSTINI_DETAILS) {
       Router.getInstance().navigateToPreviousRoute();
@@ -282,19 +282,19 @@ class SettingsCrostiniSubpageElement extends
     }
   }
 
-  private onArcEnabledChanged_(enabled: boolean) {
+  private onArcEnabledChanged_(enabled: boolean): void {
     this.isAndroidEnabled_ = enabled;
   }
 
-  private onExportImportClick_() {
+  private onExportImportClick_(): void {
     Router.getInstance().navigateTo(routes.CROSTINI_EXPORT_IMPORT);
   }
 
-  private onEnableArcAdbClick_() {
+  private onEnableArcAdbClick_(): void {
     Router.getInstance().navigateTo(routes.CROSTINI_ANDROID_ADB);
   }
 
-  private loadDiskInfo_() {
+  private loadDiskInfo_(): void {
     this.browserProxy_
         .getCrostiniDiskInfo(TERMINA_VM_TYPE, /*requestFullInfo=*/ false)
         .then(
@@ -308,7 +308,7 @@ class SettingsCrostiniSubpageElement extends
             });
   }
 
-  private setResizeLabels_(diskInfo: CrostiniDiskInfo) {
+  private setResizeLabels_(diskInfo: CrostiniDiskInfo): void {
     this.canDiskResize_ = diskInfo.canResize;
     if (!this.canDiskResize_) {
       this.diskSizeLabel_ =
@@ -334,7 +334,7 @@ class SettingsCrostiniSubpageElement extends
     }
   }
 
-  private onDiskResizeClick_() {
+  private onDiskResizeClick_(): void {
     if (!this.isDiskUserChosenSize_ &&
         this.diskResizeConfirmationState_ !== ConfirmationState.CONFIRMED) {
       this.showDiskResizeConfirmationDialog_ = true;
@@ -343,14 +343,14 @@ class SettingsCrostiniSubpageElement extends
     this.showDiskResizeDialog_ = true;
   }
 
-  private onDiskResizeDialogClose_() {
+  private onDiskResizeDialogClose_(): void {
     this.showDiskResizeDialog_ = false;
     this.diskResizeConfirmationState_ = ConfirmationState.NOT_CONFIRMED;
     // DiskInfo could have changed.
     this.loadDiskInfo_();
   }
 
-  private onDiskResizeConfirmationDialogClose_() {
+  private onDiskResizeConfirmationDialogClose_(): void {
     // The on_cancel is followed by on_close, so check cancel didn't happen
     // first.
     if (this.showDiskResizeConfirmationDialog_) {
@@ -360,38 +360,39 @@ class SettingsCrostiniSubpageElement extends
     }
   }
 
-  private onDiskResizeConfirmationDialogCancel_() {
+  private onDiskResizeConfirmationDialogCancel_(): void {
     this.showDiskResizeConfirmationDialog_ = false;
   }
 
   /**
    * Shows a confirmation dialog when removing crostini.
    */
-  private onRemoveClick_() {
+  private onRemoveClick_(): void {
     this.browserProxy_.requestRemoveCrostini();
-    recordSettingChange();
+    recordSettingChange(Setting.kUninstallCrostini);
   }
 
   /**
    * Shows the upgrade flow dialog.
    */
-  private onContainerUpgradeClick_() {
+  private onContainerUpgradeClick_(): void {
     this.browserProxy_.requestCrostiniContainerUpgradeView();
+    recordSettingChange(Setting.kCrostiniContainerUpgrade);
   }
 
-  private onSharedPathsClick_() {
+  private onSharedPathsClick_(): void {
     Router.getInstance().navigateTo(routes.CROSTINI_SHARED_PATHS);
   }
 
-  private onSharedUsbDevicesClick_() {
+  private onSharedUsbDevicesClick_(): void {
     Router.getInstance().navigateTo(routes.CROSTINI_SHARED_USB_DEVICES);
   }
 
-  private onPortForwardingClick_() {
+  private onPortForwardingClick_(): void {
     Router.getInstance().navigateTo(routes.CROSTINI_PORT_FORWARDING);
   }
 
-  private onExtraContainersClick_() {
+  private onExtraContainersClick_(): void {
     Router.getInstance().navigateTo(routes.CROSTINI_EXTRA_CONTAINERS);
   }
 
@@ -405,7 +406,7 @@ class SettingsCrostiniSubpageElement extends
    * If a change to the mic settings requires Crostini to be restarted, a
    * dialog is shown.
    */
-  private async onMicPermissionChange_() {
+  private async onMicPermissionChange_(): Promise<void> {
     if (await this.browserProxy_.checkCrostiniIsRunning()) {
       this.showCrostiniMicPermissionDialog_ = true;
     } else {
@@ -413,7 +414,7 @@ class SettingsCrostiniSubpageElement extends
     }
   }
 
-  private onCrostiniMicPermissionDialogClose_(e: CustomEvent) {
+  private onCrostiniMicPermissionDialogClose_(e: CustomEvent): void {
     const toggle = this.getMicToggle_();
     if (e.detail.accepted) {
       toggle.sendPrefChange();

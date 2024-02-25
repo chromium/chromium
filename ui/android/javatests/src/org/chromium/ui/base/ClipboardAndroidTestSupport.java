@@ -4,12 +4,10 @@
 
 package org.chromium.ui.base;
 
-import org.chromium.base.annotations.JNINamespace;
-import org.chromium.base.annotations.NativeMethods;
+import org.jni_zero.JNINamespace;
+import org.jni_zero.NativeMethods;
 
-/**
- * JNI methods for {@link ClipboardAndroidTest}.
- */
+/** JNI methods for {@link ClipboardAndroidTest}. */
 @JNINamespace("ui")
 public class ClipboardAndroidTestSupport {
     /**
@@ -31,6 +29,7 @@ public class ClipboardAndroidTestSupport {
     @NativeMethods
     interface Natives {
         boolean nativeWriteHtml(String htmlText);
+
         boolean nativeClipboardContains(String text);
     }
 }

@@ -100,7 +100,7 @@ bool HashWithMachineId(const std::string& salt, std::string* result) {
   std::string result_bytes(crypto::kSHA256Length, 0);
   hash->Finish(std::data(result_bytes), result_bytes.size());
 
-  base::Base64Encode(result_bytes, result);
+  *result = base::Base64Encode(result_bytes);
   return true;
 }
 
@@ -128,12 +128,12 @@ bool ValidateExpireDateFormat(const std::string& input) {
   return id_list;
 }
 
-[[nodiscard]] absl::optional<ExtensionIdSet> ExtensionIdSetFromList(
+[[nodiscard]] std::optional<ExtensionIdSet> ExtensionIdSetFromList(
     const base::Value::List& list) {
   ExtensionIdSet ids;
   for (const base::Value& value : list) {
     if (!value.is_string())
-      return absl::nullopt;
+      return std::nullopt;
     ids.insert(value.GetString());
   }
   return ids;
@@ -153,12 +153,8 @@ base::Value::Dict InstallSignature::ToDict() const {
   dict.Set(kIdsKey, ExtensionIdSetToList(ids));
   dict.Set(kInvalidIdsKey, ExtensionIdSetToList(invalid_ids));
   dict.Set(kExpireDateKey, expire_date);
-  std::string salt_base64;
-  std::string signature_base64;
-  base::Base64Encode(salt, &salt_base64);
-  base::Base64Encode(signature, &signature_base64);
-  dict.Set(kSaltKey, salt_base64);
-  dict.Set(kSignatureKey, signature_base64);
+  dict.Set(kSaltKey, base::Base64Encode(salt));
+  dict.Set(kSignatureKey, base::Base64Encode(signature));
   dict.Set(kTimestampKey, base::TimeToValue(timestamp));
   return dict;
 }
@@ -195,8 +191,8 @@ std::unique_ptr<InstallSignature> InstallSignature::FromDict(
   if (!ids_list || !invalid_ids_list)
     return nullptr;
 
-  absl::optional<ExtensionIdSet> ids = ExtensionIdSetFromList(*ids_list);
-  absl::optional<ExtensionIdSet> invalid_ids =
+  std::optional<ExtensionIdSet> ids = ExtensionIdSetFromList(*ids_list);
+  std::optional<ExtensionIdSet> invalid_ids =
       ExtensionIdSetFromList(*invalid_ids_list);
   if (!ids || !invalid_ids)
     return nullptr;
@@ -379,7 +375,7 @@ void InstallSigner::ParseFetchResponse(
   // where |invalid_ids| is a list of ids from the original request that
   // could not be verified to be in the webstore.
 
-  absl::optional<base::Value> parsed = base::JSONReader::Read(*response_body);
+  std::optional<base::Value> parsed = base::JSONReader::Read(*response_body);
   bool json_success = parsed && parsed->is_dict();
   if (!json_success) {
     ReportErrorViaCallback();

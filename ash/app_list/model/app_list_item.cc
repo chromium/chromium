@@ -7,6 +7,7 @@
 #include "ash/app_list/model/app_list_folder_item.h"
 #include "ash/app_list/model/app_list_item_observer.h"
 #include "ash/public/cpp/app_list/app_list_config_provider.h"
+#include "ash/public/cpp/shelf_types.h"
 #include "base/containers/contains.h"
 #include "ui/gfx/image/image_skia.h"
 #include "ui/views/widget/widget.h"
@@ -59,9 +60,11 @@ const gfx::ImageSkia& AppListItem::GetIcon(
 }
 
 void AppListItem::SetDefaultIconAndColor(const gfx::ImageSkia& icon,
-                                         const IconColor& color) {
+                                         const IconColor& color,
+                                         bool is_placeholder_icon) {
   metadata_->icon = icon;
   metadata_->icon_color = color;
+  metadata_->is_placeholder_icon = is_placeholder_icon;
 
   // If the item does not have a config specific icon, it will be represented by
   // the (possibly scaled) default icon, which means that changing the default
@@ -102,6 +105,17 @@ void AppListItem::SetIconVersion(int icon_version) {
   }
 }
 
+const gfx::ImageSkia& AppListItem::GetHostBadgeIcon() const {
+  return metadata_->badge_icon;
+}
+
+void AppListItem::SetHostBadgeIcon(const gfx::ImageSkia host_badge_icon) {
+  metadata_->badge_icon = host_badge_icon;
+  for (auto& observer : observers_) {
+    observer.ItemHostBadgeIconChanged();
+  }
+}
+
 SkColor AppListItem::GetNotificationBadgeColor() const {
   return metadata_->badge_color;
 }
@@ -138,6 +152,13 @@ size_t AppListItem::ChildItemCount() const {
   return 0;
 }
 
+void AppListItem::SetProgress(float progress) {
+  metadata_->progress = progress;
+  for (auto& observer : observers_) {
+    observer.ItemProgressUpdated();
+  }
+}
+
 bool AppListItem::IsFolderFull() const {
   return is_folder() && ChildItemCount() >= kMaxFolderChildren;
 }
@@ -150,10 +171,20 @@ std::string AppListItem::ToDebugString() const {
 // Protected methods
 
 void AppListItem::SetName(const std::string& name) {
-  if (metadata_->name == name && (short_name_.empty() || short_name_ == name))
+  if (metadata_->name == name) {
     return;
+  }
   metadata_->name = name;
-  short_name_.clear();
+  for (auto& observer : observers_) {
+    observer.ItemNameChanged();
+  }
+}
+
+void AppListItem::SetAccessibleName(const std::string& accessible_name) {
+  if (metadata_->accessible_name == accessible_name) {
+    return;
+  }
+  metadata_->accessible_name = accessible_name;
   for (auto& observer : observers_)
     observer.ItemNameChanged();
 }
@@ -177,4 +208,16 @@ void AppListItem::SetIsNewInstall(bool is_new_install) {
     observer.ItemIsNewInstallChanged();
   }
 }
+
+void AppListItem::SetAppStatus(AppStatus app_status) {
+  if (metadata_->app_status == app_status) {
+    return;
+  }
+
+  metadata_->app_status = app_status;
+  for (auto& observer : observers_) {
+    observer.ItemAppStatusUpdated();
+  }
+}
+
 }  // namespace ash

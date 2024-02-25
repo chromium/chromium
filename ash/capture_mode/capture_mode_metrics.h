@@ -96,7 +96,8 @@ enum class CaptureQuickAction {
   kBacklight,
   kFiles,
   kDelete,
-  kMaxValue = kDelete,
+  kOpenDefault,
+  kMaxValue = kOpenDefault,
 };
 
 // Enumeration of user's selection on save-to locations. Note that these values

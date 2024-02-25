@@ -9,10 +9,14 @@
 #include "base/logging.h"
 #include "components/viz/common/gpu/raster_context_provider.h"
 #include "components/viz/common/resources/shared_image_format.h"
+#include "components/viz/common/resources/shared_image_format_utils.h"
 #include "gpu/GLES2/gl2extchromium.h"
+#include "gpu/command_buffer/client/client_shared_image.h"
 #include "gpu/command_buffer/client/raster_interface.h"
 #include "gpu/command_buffer/client/shared_image_interface.h"
 #include "gpu/command_buffer/common/shared_image_usage.h"
+#include "media/base/media_switches.h"
+#include "media/base/video_util.h"
 #include "third_party/skia/include/core/SkColorSpace.h"
 #include "third_party/skia/include/core/SkImage.h"
 #include "third_party/skia/include/core/SkSurface.h"
@@ -26,6 +30,10 @@
 namespace media {
 
 namespace {
+
+BASE_FEATURE(kAddSharedImageRasterUsageWithNonOOPR,
+             "AddSharedImageRasterUsageWithNonOOPR",
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 viz::SharedImageFormat PlaneSharedImageFormat(int num_channels,
                                               bool supports_red) {
@@ -41,6 +49,25 @@ viz::SharedImageFormat PlaneSharedImageFormat(int num_channels,
       return viz::SinglePlaneFormat::kRGBA_8888;
   }
   NOTREACHED_NORETURN();
+}
+
+// Returns multiplanar format equivalent of a VideoPixelFormat.
+viz::SharedImageFormat VideoPixelFormatToSharedImageFormat(
+    VideoPixelFormat video_format) {
+  switch (video_format) {
+    case PIXEL_FORMAT_NV12:
+      return viz::MultiPlaneFormat::kNV12;
+    case PIXEL_FORMAT_P016LE:
+      return viz::MultiPlaneFormat::kP010;
+    case PIXEL_FORMAT_NV12A:
+      return viz::MultiPlaneFormat::kNV12A;
+    case PIXEL_FORMAT_I420:
+      return viz::MultiPlaneFormat::kI420;
+    case PIXEL_FORMAT_I420A:
+      return viz::MultiPlaneFormat::kI420;
+    default:
+      NOTREACHED_NORETURN();
+  }
 }
 
 GLenum PlaneGLFormat(int num_channels,
@@ -74,10 +101,11 @@ void VideoFrameYUVMailboxesHolder::ReleaseCachedData() {
 
   auto* sii = provider_->SharedImageInterface();
   DCHECK(sii);
-  for (auto& mailbox_holder : holders_) {
-    if (!mailbox_holder.mailbox.IsZero())
-      sii->DestroySharedImage(token, mailbox_holder.mailbox);
-    mailbox_holder.mailbox.SetZero();
+  for (unsigned int i = 0; i < kMaxPlanes; ++i) {
+    if (shared_images_[i]) {
+      sii->DestroySharedImage(token, std::move(shared_images_[i]));
+    }
+    holders_[i].mailbox.SetZero();
   }
 
   created_shared_images_ = false;
@@ -86,7 +114,8 @@ void VideoFrameYUVMailboxesHolder::ReleaseCachedData() {
 void VideoFrameYUVMailboxesHolder::VideoFrameToMailboxes(
     const VideoFrame* video_frame,
     viz::RasterContextProvider* raster_context_provider,
-    gpu::Mailbox mailboxes[SkYUVAInfo::kMaxPlanes]) {
+    gpu::Mailbox mailboxes[SkYUVAInfo::kMaxPlanes],
+    bool allow_multiplanar_for_upload) {
   yuva_info_ = VideoFrameGetSkYUVAInfo(video_frame);
   num_planes_ = yuva_info_.planeDimensions(plane_sizes_);
 
@@ -104,6 +133,9 @@ void VideoFrameYUVMailboxesHolder::VideoFrameToMailboxes(
   DCHECK(ri);
 
   if (video_frame->HasTextures()) {
+    // Video frames with mailboxes will have shared images per plane as new
+    // multiplanar shared image with mailbox path should not go through
+    // VideoFrameToMailboxes.
     DCHECK_EQ(num_planes_, video_frame->NumTextures());
     for (size_t plane = 0; plane < video_frame->NumTextures(); ++plane) {
       holders_[plane] = video_frame->mailbox_holder(plane);
@@ -118,30 +150,95 @@ void VideoFrameYUVMailboxesHolder::VideoFrameToMailboxes(
     return;
   }
 
-  // Create a shared image to upload the data to, if one doesn't exist already.
+  CHECK(!video_frame->HasTextures());
   constexpr SkAlphaType kPlaneAlphaType = kPremul_SkAlphaType;
-  if (!created_shared_images_) {
-    auto* sii = provider_->SharedImageInterface();
-    DCHECK(sii);
-    uint32_t mailbox_usage;
-    auto& caps = provider_->ContextCapabilities();
-    if (caps.supports_oop_raster) {
-      mailbox_usage = gpu::SHARED_IMAGE_USAGE_RASTER |
-                      gpu::SHARED_IMAGE_USAGE_OOP_RASTERIZATION;
-    } else {
-      mailbox_usage = gpu::SHARED_IMAGE_USAGE_GLES2;
+  auto* sii = provider_->SharedImageInterface();
+  DCHECK(sii);
+
+  // These SharedImages will be written to (and later read from) via the raster
+  // interface. The correct usage depends on whether raster is OOP or is going
+  // over the GLES2 interface.
+  uint32_t mailbox_usage;
+  auto& caps = provider_->ContextCapabilities();
+  if (caps.gpu_rasterization) {
+    mailbox_usage = gpu::SHARED_IMAGE_USAGE_RASTER_READ |
+                    gpu::SHARED_IMAGE_USAGE_RASTER_WRITE |
+                    gpu::SHARED_IMAGE_USAGE_OOP_RASTERIZATION;
+  } else {
+    mailbox_usage = gpu::SHARED_IMAGE_USAGE_GLES2_READ |
+                    gpu::SHARED_IMAGE_USAGE_GLES2_WRITE;
+    // RASTER_{READ, WRITE} usages should be included as these SharedImages are
+    // both read and written via raster, but historically these usages were not
+    // included. Currently in the process of adding with a killswitch.
+    // TODO(crbug.com/1524009): Remove this killswitch post-safe rollout.
+    if (base::FeatureList::IsEnabled(kAddSharedImageRasterUsageWithNonOOPR)) {
+      mailbox_usage = mailbox_usage | gpu::SHARED_IMAGE_USAGE_RASTER_READ |
+                      gpu::SHARED_IMAGE_USAGE_RASTER_WRITE;
     }
+  }
+
+  // Enabled with flags UseWritePixelsYUV and
+  // UseMultiPlaneFormatForHardwareVideo.
+  if (allow_multiplanar_for_upload) {
+    SkPixmap pixmaps[SkYUVAInfo::kMaxPlanes] = {};
+    viz::SharedImageFormat format =
+        VideoPixelFormatToSharedImageFormat(video_frame->format());
+    CHECK(format.is_multi_plane());
+
+    // Create a multiplanar shared image to upload the data to, if one doesn't
+    // exist already.
+    if (!created_shared_images_) {
+      auto client_shared_image = sii->CreateSharedImage(
+          {format, video_frame->coded_size(), video_frame->ColorSpace(),
+           kTopLeft_GrSurfaceOrigin, kPlaneAlphaType, mailbox_usage,
+           "VideoFrameYUV"},
+          gpu::kNullSurfaceHandle);
+      CHECK(client_shared_image);
+      holders_[0].mailbox = client_shared_image->mailbox();
+      holders_[0].texture_target = GL_TEXTURE_2D;
+      shared_images_[0] = std::move(client_shared_image);
+
+      // Split up shared image creation from upload so we only have to wait on
+      // one sync token.
+      ri->WaitSyncTokenCHROMIUM(sii->GenUnverifiedSyncToken().GetConstData());
+
+      cached_video_size_ = video_frame->coded_size();
+      cached_video_color_space_ = video_frame->ColorSpace();
+      created_shared_images_ = true;
+    }
+
+    for (size_t plane = 0; plane < num_planes_; ++plane) {
+      SkColorType color_type =
+          viz::ToClosestSkColorType(/*gpu_compositing=*/true, format, plane);
+      SkImageInfo info =
+          SkImageInfo::Make(plane_sizes_[plane], color_type, kPlaneAlphaType);
+      pixmaps[plane] =
+          SkPixmap(info, video_frame->data(plane), video_frame->stride(plane));
+    }
+    SkYUVAPixmaps yuv_pixmap =
+        SkYUVAPixmaps::FromExternalPixmaps(yuva_info_, pixmaps);
+    ri->WritePixelsYUV(holders_[0].mailbox, yuv_pixmap);
+    mailboxes[0] = holders_[0].mailbox;
+    return;
+  }
+
+  // Create shared images to upload the data to, if they doesn't exist already.
+  if (!created_shared_images_) {
     for (size_t plane = 0; plane < num_planes_; ++plane) {
       gfx::Size tex_size = {plane_sizes_[plane].width(),
                             plane_sizes_[plane].height()};
       int num_channels = yuva_info_.numChannelsInPlane(plane);
       viz::SharedImageFormat format =
           PlaneSharedImageFormat(num_channels, caps.texture_rg);
-      holders_[plane].mailbox = sii->CreateSharedImage(
-          format, tex_size, video_frame->ColorSpace(), kTopLeft_GrSurfaceOrigin,
-          kPlaneAlphaType, mailbox_usage, "VideoFrameYUV",
-          gpu::kNullSurfaceHandle);
+      auto client_shared_image =
+          sii->CreateSharedImage({format, tex_size, video_frame->ColorSpace(),
+                                  kTopLeft_GrSurfaceOrigin, kPlaneAlphaType,
+                                  mailbox_usage, "VideoFrameYUV"},
+                                 gpu::kNullSurfaceHandle);
+      CHECK(client_shared_image);
+      holders_[plane].mailbox = client_shared_image->mailbox();
       holders_[plane].texture_target = GL_TEXTURE_2D;
+      shared_images_[plane] = std::move(client_shared_image);
     }
 
     // Split up shared image creation from upload so we only have to wait on
@@ -176,7 +273,8 @@ GrYUVABackendTextures VideoFrameYUVMailboxesHolder::VideoFrameToSkiaTextures(
     viz::RasterContextProvider* raster_context_provider,
     bool for_surface) {
   gpu::Mailbox mailboxes[kMaxPlanes];
-  VideoFrameToMailboxes(video_frame, raster_context_provider, mailboxes);
+  VideoFrameToMailboxes(video_frame, raster_context_provider, mailboxes,
+                        /*allow_multiplanar_for_upload=*/false);
   ImportTextures(for_surface);
   GrBackendTexture backend_textures[SkYUVAInfo::kMaxPlanes];
   for (size_t plane = 0; plane < num_planes_; ++plane) {
@@ -300,28 +398,6 @@ void VideoFrameYUVMailboxesHolder::ReleaseTextures() {
   }
 
   imported_textures_ = false;
-}
-
-// static
-std::tuple<SkYUVAInfo::PlaneConfig, SkYUVAInfo::Subsampling>
-VideoFrameYUVMailboxesHolder::VideoPixelFormatToSkiaValues(
-    VideoPixelFormat video_format) {
-  // To expand support for additional VideoFormats expand this switch. Note that
-  // we do assume 8 bit formats. With that exception, anything else should work.
-  switch (video_format) {
-    case PIXEL_FORMAT_NV12:
-    case PIXEL_FORMAT_P016LE:
-      return {SkYUVAInfo::PlaneConfig::kY_UV, SkYUVAInfo::Subsampling::k420};
-    case PIXEL_FORMAT_NV12A:
-      return {SkYUVAInfo::PlaneConfig::kY_UV_A, SkYUVAInfo::Subsampling::k420};
-    case PIXEL_FORMAT_I420:
-      return {SkYUVAInfo::PlaneConfig::kY_U_V, SkYUVAInfo::Subsampling::k420};
-    case PIXEL_FORMAT_I420A:
-      return {SkYUVAInfo::PlaneConfig::kY_U_V_A, SkYUVAInfo::Subsampling::k420};
-    default:
-      return {SkYUVAInfo::PlaneConfig::kUnknown,
-              SkYUVAInfo::Subsampling::kUnknown};
-  }
 }
 
 // static

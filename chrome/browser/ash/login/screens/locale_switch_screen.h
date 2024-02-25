@@ -26,13 +26,13 @@ class LocaleSwitchScreen : public BaseScreen,
                            public signin::IdentityManager::Observer {
  public:
   enum class Result {
-    LOCALE_FETCH_FAILED,
-    LOCALE_FETCH_TIMEOUT,
-    NO_SWITCH_NEEDED,
-    SWITCH_SUCCEDED,
-    SWITCH_FAILED,
-    SWITCH_DELEGATED,
-    NOT_APPLICABLE
+    kLocaleFetchFailed,
+    kLocaleFetchTimeout,
+    kNoSwitchNeeded,
+    kSwitchSucceded,
+    kSwitchFailed,
+    kSwitchDelegated,
+    kNotApplicable
   };
 
   static std::string GetResultString(Result result);
@@ -48,6 +48,14 @@ class LocaleSwitchScreen : public BaseScreen,
       const GoogleServiceAuthError& error) override;
   void OnExtendedAccountInfoUpdated(const AccountInfo& info) override;
   void OnRefreshTokensLoaded() override;
+
+  const ScreenExitCallback& get_exit_callback_for_testing() {
+    return exit_callback_;
+  }
+
+  void set_exit_callback_for_testing(const ScreenExitCallback& callback) {
+    exit_callback_ = callback;
+  }
 
  private:
   // BaseScreen:
@@ -68,7 +76,7 @@ class LocaleSwitchScreen : public BaseScreen,
 
   std::string gaia_id_;
   ScreenExitCallback exit_callback_;
-  raw_ptr<signin::IdentityManager, ExperimentalAsh> identity_manager_ = nullptr;
+  raw_ptr<signin::IdentityManager> identity_manager_ = nullptr;
   base::ScopedObservation<signin::IdentityManager,
                           signin::IdentityManager::Observer>
       identity_manager_observer_{this};

@@ -8,7 +8,6 @@
 #include <utility>
 
 #include "base/feature_list.h"
-#include "base/strings/stringprintf.h"
 #include "base/supports_user_data.h"
 #include "components/subresource_filter/content/browser/content_subresource_filter_throttle_manager.h"
 #include "components/subresource_filter/core/browser/subresource_filter_features.h"
@@ -68,173 +67,6 @@ NAVIGATION_HANDLE_USER_DATA_KEY_IMPL(ThrottleManagerInUserDataContainer);
 
 }  // namespace
 
-// =============================================================================
-// TODO(bokan): Temporary to help debug crash in crbug.com/1264667.
-
-DebugCrashWebContentsObserver::CrashKeyData::CrashKeyData() = default;
-DebugCrashWebContentsObserver::CrashKeyData::~CrashKeyData() = default;
-DebugCrashWebContentsObserver::CrashKeyData::CrashKeyData(const CrashKeyData&) =
-    default;
-
-DebugCrashWebContentsObserver::DebugCrashWebContentsObserver(
-    content::WebContents* web_contents)
-    : content::WebContentsObserver(web_contents) {}
-
-DebugCrashWebContentsObserver::~DebugCrashWebContentsObserver() = default;
-
-void DebugCrashWebContentsObserver::RenderFrameCreated(
-    content::RenderFrameHost* render_frame_host) {
-  if (!render_frame_host->GetParent()) {
-    rfh_crash_data_.emplace(render_frame_host, CrashKeyData());
-  }
-}
-
-void DebugCrashWebContentsObserver::RenderFrameDeleted(
-    content::RenderFrameHost* render_frame_host) {
-  if (!render_frame_host->GetParent()) {
-    rfh_crash_data_.erase(render_frame_host);
-  }
-}
-
-void DebugCrashWebContentsObserver::ReadyToCommitNavigation(
-    content::NavigationHandle* handle) {
-  if (!WillCreateNewThrottleManager(*handle))
-    return;
-
-  auto* rfh = handle->GetRenderFrameHost();
-  DCHECK(rfh);
-
-  auto itr = rfh_crash_data_.find(rfh);
-  if (itr == rfh_crash_data_.end())
-    return;
-
-  CrashKeyData& data = itr->second;
-  data.num_commits++;
-  data.last_nav_had_manager =
-      ThrottleManagerInUserDataContainer::GetForNavigationHandle(*handle);
-}
-
-void DebugCrashWebContentsObserver::DidFinishNonActivatingNavigation(
-    content::NavigationHandle* handle,
-    content::Page* page) {
-  DCHECK(WillCreateNewThrottleManager(*handle));
-
-  content::RenderFrameHost* rfh = nullptr;
-  if (handle->HasCommitted()) {
-    rfh = handle->GetRenderFrameHost();
-  } else if (page) {
-    rfh = &page->GetMainDocument();
-  }
-
-  // This navigation either didn't commit or wasn't the initial_document edge
-  // case where we move the thottle manager even if we didn't commit. Outside
-  // of these two cases, the navigation isn't interesting.
-  if (!rfh)
-    return;
-
-  auto itr = rfh_crash_data_.find(rfh);
-  if (itr == rfh_crash_data_.end())
-    return;
-
-  CrashKeyData& data = itr->second;
-  data.page_at_last_nav_finish = page ? page->GetWeakPtr() : nullptr;
-  data.last_nav_manager_moved_to_page =
-      page &&
-      page->GetUserData(&ContentSubresourceFilterThrottleManager::kUserDataKey);
-}
-
-void DebugCrashWebContentsObserver::RenderFrameHostStateChanged(
-    content::RenderFrameHost* render_frame_host,
-    content::RenderFrameHost::LifecycleState old_state,
-    content::RenderFrameHost::LifecycleState new_state) {
-  if (render_frame_host->GetParent())
-    return;
-
-  if (new_state ==
-      content::RenderFrameHost::LifecycleState::kInBackForwardCache) {
-    auto itr = rfh_crash_data_.find(render_frame_host);
-    if (itr == rfh_crash_data_.end())
-      return;
-    CrashKeyData& data = itr->second;
-    data.entered_bf_cache = true;
-    data.page_at_bf_cache_entry = render_frame_host->GetPage().GetWeakPtr();
-  }
-}
-
-void DebugCrashWebContentsObserver::DidFinishPageActivatingNavigation(
-    content::NavigationHandle* handle) {
-  DCHECK(handle->HasCommitted());
-  auto* rfh = handle->GetRenderFrameHost();
-  DCHECK(rfh);
-  DCHECK(!rfh->GetParent());
-
-  auto itr = rfh_crash_data_.find(rfh);
-  if (itr == rfh_crash_data_.end())
-    return;
-
-  CrashKeyData& data = itr->second;
-  data.is_bfcache_restore = handle->IsServedFromBackForwardCache();
-  data.page_at_restore = rfh->GetPage().GetWeakPtr();
-}
-
-void DebugCrashWebContentsObserver::GetScopedCrashKeyStrings(
-    content::RenderFrameHost* rfh,
-    std::vector<std::unique_ptr<crash_reporter::ScopedCrashKeyString>>& keys) {
-  constexpr size_t kCrashKeyBufferSize = 32;
-  static crash_reporter::CrashKeyString<kCrashKeyBufferSize> crash_key_1(
-      "sf-crash-number-commits");
-  static crash_reporter::CrashKeyString<kCrashKeyBufferSize> crash_key_2(
-      "sf-crash-had-manager");
-  static crash_reporter::CrashKeyString<kCrashKeyBufferSize> crash_key_3(
-      "sf-crash-moved-to-page");
-  static crash_reporter::CrashKeyString<kCrashKeyBufferSize> crash_key_4(
-      "sf-crash-entered-bfcache");
-  static crash_reporter::CrashKeyString<kCrashKeyBufferSize> crash_key_5(
-      "sf-crash-bfcache-restore");
-  static crash_reporter::CrashKeyString<kCrashKeyBufferSize> crash_key_6(
-      "sf-crash-page-nav-finish");
-  static crash_reporter::CrashKeyString<kCrashKeyBufferSize> crash_key_7(
-      "sf-crash-page-bfcache-store");
-  static crash_reporter::CrashKeyString<kCrashKeyBufferSize> crash_key_8(
-      "sf-crash-page-bfcache-restore");
-  static crash_reporter::CrashKeyString<kCrashKeyBufferSize> crash_key_9(
-      "sf-crash-has-crash-data");
-
-  auto itr = rfh_crash_data_.find(rfh);
-  if (itr == rfh_crash_data_.end()) {
-    keys.push_back(std::make_unique<crash_reporter::ScopedCrashKeyString>(
-        &crash_key_9, "NO"));
-    return;
-  }
-
-  CrashKeyData& data = itr->second;
-
-  keys.push_back(std::make_unique<crash_reporter::ScopedCrashKeyString>(
-      &crash_key_1, base::StringPrintf("%d", data.num_commits)));
-  keys.push_back(std::make_unique<crash_reporter::ScopedCrashKeyString>(
-      &crash_key_2, base::StringPrintf("%d", data.last_nav_had_manager)));
-  keys.push_back(std::make_unique<crash_reporter::ScopedCrashKeyString>(
-      &crash_key_3,
-      base::StringPrintf("%d", data.last_nav_manager_moved_to_page)));
-  keys.push_back(std::make_unique<crash_reporter::ScopedCrashKeyString>(
-      &crash_key_4, base::StringPrintf("%d", data.entered_bf_cache)));
-  keys.push_back(std::make_unique<crash_reporter::ScopedCrashKeyString>(
-      &crash_key_5, base::StringPrintf("%d", data.is_bfcache_restore)));
-  keys.push_back(std::make_unique<crash_reporter::ScopedCrashKeyString>(
-      &crash_key_6,
-      base::StringPrintf("%p", data.page_at_last_nav_finish.get())));
-  keys.push_back(std::make_unique<crash_reporter::ScopedCrashKeyString>(
-      &crash_key_7,
-      base::StringPrintf("%p", data.page_at_bf_cache_entry.get())));
-  keys.push_back(std::make_unique<crash_reporter::ScopedCrashKeyString>(
-      &crash_key_8, base::StringPrintf("%p", data.page_at_restore.get())));
-  keys.push_back(std::make_unique<crash_reporter::ScopedCrashKeyString>(
-      &crash_key_9, "YES"));
-}
-
-// End temporary debugging for crbug.com/1264667.
-// =============================================================================
-
 WEB_CONTENTS_USER_DATA_KEY_IMPL(ContentSubresourceFilterWebContentsHelper);
 
 //  static
@@ -271,7 +103,6 @@ ContentSubresourceFilterWebContentsHelper::
     : content::WebContentsUserData<ContentSubresourceFilterWebContentsHelper>(
           *web_contents),
       content::WebContentsObserver(web_contents),
-      debug_crash_observer_(web_contents),
       profile_context_(profile_context),
       database_manager_(database_manager),
       dealer_handle_(dealer_handle) {
@@ -411,20 +242,19 @@ void ContentSubresourceFilterWebContentsHelper::DidFinishNavigation(
     DCHECK(navigation_handle->HasCommitted());
     DCHECK(navigation_handle->GetRenderFrameHost());
 
-    debug_crash_observer_.DidFinishPageActivatingNavigation(navigation_handle);
-
-    std::vector<std::unique_ptr<crash_reporter::ScopedCrashKeyString>>
-        scoped_crash_keys;
-    debug_crash_observer_.GetScopedCrashKeyStrings(
-        navigation_handle->GetRenderFrameHost(), scoped_crash_keys);
-
     ContentSubresourceFilterThrottleManager* throttle_manager =
         GetThrottleManager(navigation_handle->GetRenderFrameHost()->GetPage());
-    // This should be non-null since every fully loaded page should have a
-    // throttle manager and only fully loaded pages can be in the BFCache.
-    // TODO(bokan): Temporary to help debug crash in crbug.com/1264667.
-    CHECK(throttle_manager);
+
+    // TODO(https://crbug.com/1234233): This shouldn't be possible but, from
+    // the investigation in https://crbug.com/1264667, this is likely a symptom
+    // of navigating a detached WebContents so (very rarely) was causing
+    // crashes.
+    if (!throttle_manager) {
+      return;
+    }
+
     throttle_manager->DidBecomePrimaryPage();
+
     return;
   }
 
@@ -442,14 +272,13 @@ void ContentSubresourceFilterWebContentsHelper::DidFinishNavigation(
         ThrottleManagerInUserDataContainer::GetForNavigationHandle(
             *navigation_handle);
 
-    // It is theoretically possible to start a navigation in an unattached
-    // WebContents (so the WebContents doesn't yet have any WebContentsHelpers
-    // such as this class) but attach it before a navigation completes. If that
-    // happened we won't have a throttle manager for the navigation. Not sure
-    // this would ever happen in real usage but it does happen in some tests.
+    // TODO(https://crbug.com/1234233): It is theoretically possible to start a
+    // navigation in an unattached WebContents (so the WebContents doesn't yet
+    // have any WebContentsHelpers such as this class) but attach it before a
+    // navigation completes. If that happened we won't have a throttle manager
+    // for the navigation. Not sure this would ever happen in real usage but it
+    // does happen in some tests.
     if (!container) {
-      debug_crash_observer_.DidFinishNonActivatingNavigation(navigation_handle,
-                                                             nullptr);
       return;
     }
 
@@ -466,14 +295,14 @@ void ContentSubresourceFilterWebContentsHelper::DidFinishNavigation(
     } else if (is_initial_navigation) {
       if (auto* rfh = content::RenderFrameHost::FromID(
               navigation_handle->GetPreviousRenderFrameHostId())) {
-        // TODO(bokan): Ideally this should only happen on the first navigation
-        // in a frame, however, in some cases we actually attach this TabHelper
-        // after a navigation has occurred (possibly before it has finished).
-        // See
+        // TODO(https://crbug.com/1234233): Ideally this should only happen on
+        // the first navigation in a frame, however, in some cases we actually
+        // attach this TabHelper after a navigation has occurred (possibly
+        // before it has finished). See
         // https://groups.google.com/a/chromium.org/g/navigation-dev/c/cY5V-w-xPRM/m/uC1Nsg_KAwAJ.
         // DCHECK(rfh->GetLastCommittedURL().is_empty() ||
         //        rfh->GetLastCommittedURL().IsAboutBlank());
-        DCHECK(!GetThrottleManager(rfh->GetPage()));
+        // DCHECK(!GetThrottleManager(rfh->GetPage()));
         page = &rfh->GetPage();
       }
     }
@@ -485,9 +314,6 @@ void ContentSubresourceFilterWebContentsHelper::DidFinishNavigation(
                         std::move(throttle_manager_user_data));
       throttle_manager->OnPageCreated(*page);
     }
-
-    debug_crash_observer_.DidFinishNonActivatingNavigation(navigation_handle,
-                                                           page);
   }
 
   // Call DidFinishInFrameNavigation on the throttle manager after performing

@@ -8,7 +8,9 @@
 #import <UIKit/UIKit.h>
 
 #import "base/ios/block_types.h"
+#import "ios/chrome/browser/ui/content_suggestions/set_up_list/set_up_list_mediator.h"
 
+@protocol ContentSuggestionsViewControllerAudience;
 enum class SetUpListItemType;
 @class SetUpListItemView;
 @class SetUpListItemViewData;
@@ -20,7 +22,7 @@ enum class SetUpListItemType;
 @end
 
 // A view to display an individual item in the SetUpListView.
-@interface SetUpListItemView : UIView
+@interface SetUpListItemView : UIView <SetUpListConsumer>
 
 // Initialize a SetUpListItemView with the given `data`.
 - (instancetype)initWithData:(SetUpListItemViewData*)data;
@@ -33,6 +35,10 @@ enum class SetUpListItemType;
 
 // The object that should receive a message when this view is tapped.
 @property(nonatomic, weak) id<SetUpListItemViewTapDelegate> tapDelegate;
+
+// Command handler for this view's events.
+@property(nonatomic, weak) id<ContentSuggestionsViewControllerAudience>
+    commandHandler;
 
 // Marks this item as complete with an animation. When the animation is done,
 // `completion` will be called.

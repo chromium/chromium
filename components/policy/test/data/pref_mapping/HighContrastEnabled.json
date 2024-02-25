@@ -1,0 +1,19 @@
+[
+  {
+    "os": [
+      "chromeos_ash"
+    ],
+    "policy_pref_mapping_tests": [
+      {
+        "policies": {
+          "HighContrastEnabled": true
+        },
+        "prefs": {
+          "settings.a11y.high_contrast_enabled": {
+            "value": true
+          }
+        }
+      }
+    ]
+  }
+]

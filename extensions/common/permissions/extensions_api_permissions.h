@@ -9,13 +9,11 @@
 #include "extensions/common/alias.h"
 #include "extensions/common/permissions/api_permission.h"
 
-namespace extensions {
-namespace api_permissions {
+namespace extensions::api_permissions {
 
 base::span<const APIPermissionInfo::InitInfo> GetPermissionInfos();
 base::span<const Alias> GetPermissionAliases();
 
-}  // namespace api_permissions
-}  // namespace extensions
+}  // namespace extensions::api_permissions
 
 #endif  // EXTENSIONS_COMMON_PERMISSIONS_EXTENSIONS_API_PERMISSIONS_H_

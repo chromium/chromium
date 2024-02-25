@@ -5,6 +5,8 @@
 #ifndef CHROME_BROWSER_ENTERPRISE_CONNECTORS_CONNECTORS_MANAGER_H_
 #define CHROME_BROWSER_ENTERPRISE_CONNECTORS_CONNECTORS_MANAGER_H_
 
+#include <optional>
+
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/enterprise/connectors/analysis/analysis_service_settings.h"
 #include "chrome/browser/enterprise/connectors/common.h"
@@ -14,7 +16,6 @@
 #include "components/enterprise/buildflags/buildflags.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "components/prefs/pref_service.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
 #if BUILDFLAG(ENTERPRISE_LOCAL_CONTENT_ANALYSIS)
@@ -61,17 +62,17 @@ class ConnectorsManager {
   // Validates which settings should be applied to a reporting event
   // against cached policies. Cache the policy value the first time this is
   // called for every different connector.
-  absl::optional<ReportingSettings> GetReportingSettings(
+  std::optional<ReportingSettings> GetReportingSettings(
       ReportingConnector connector);
 
   // Validates which settings should be applied to an analysis connector event
   // against cached policies. This function will prioritize new connector
   // policies over legacy ones if they are set.
-  absl::optional<AnalysisSettings> GetAnalysisSettings(
+  std::optional<AnalysisSettings> GetAnalysisSettings(
       const GURL& url,
       AnalysisConnector connector);
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  absl::optional<AnalysisSettings> GetAnalysisSettings(
+  std::optional<AnalysisSettings> GetAnalysisSettings(
       content::BrowserContext* context,
       const storage::FileSystemURL& source_url,
       const storage::FileSystemURL& destination_url,
@@ -88,10 +89,10 @@ class ConnectorsManager {
 #endif
 
   bool DelayUntilVerdict(AnalysisConnector connector);
-  absl::optional<std::u16string> GetCustomMessage(AnalysisConnector connector,
-                                                  const std::string& tag);
-  absl::optional<GURL> GetLearnMoreUrl(AnalysisConnector connector,
-                                       const std::string& tag);
+  std::optional<std::u16string> GetCustomMessage(AnalysisConnector connector,
+                                                 const std::string& tag);
+  std::optional<GURL> GetLearnMoreUrl(AnalysisConnector connector,
+                                      const std::string& tag);
   bool GetBypassJustificationRequired(AnalysisConnector connector,
                                       const std::string& tag);
 
@@ -125,7 +126,7 @@ class ConnectorsManager {
   // Validates which settings should be applied to an analysis connector event
   // against connector policies. Cache the policy value the first time this is
   // called for every different connector.
-  absl::optional<AnalysisSettings> GetAnalysisSettingsFromConnectorPolicy(
+  std::optional<AnalysisSettings> GetAnalysisSettingsFromConnectorPolicy(
       const GURL& url,
       AnalysisConnector connector);
 
@@ -152,7 +153,7 @@ class ConnectorsManager {
   // Validates which settings should be applied to an analysis connector event
   // against connector policies. Cache the policy value the first time this is
   // called for every different connector.
-  absl::optional<ReportingSettings> GetReportingSettingsFromConnectorPolicy(
+  std::optional<ReportingSettings> GetReportingSettingsFromConnectorPolicy(
       ReportingConnector connector);
 
   PrefService* prefs() { return pref_change_registrar_.prefs(); }

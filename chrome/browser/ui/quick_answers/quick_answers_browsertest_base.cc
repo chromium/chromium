@@ -3,12 +3,15 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/ui/quick_answers/quick_answers_browsertest_base.h"
+
+#include "base/strings/strcat.h"
 #include "base/strings/stringprintf.h"
 #include "chrome/test/base/chrome_test_utils.h"
 #include "chromeos/components/quick_answers/public/cpp/quick_answers_state.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test_utils.h"
+#include "content/public/test/context_menu_interceptor.h"
 #include "third_party/blink/public/common/input/web_mouse_event.h"
 
 namespace quick_answers {
@@ -17,10 +20,6 @@ namespace {
 constexpr char kDataUrlTemplate[] =
     "data:text/html,<html><body><span style=\"position: absolute; left: %ipx; "
     "top: %ipx;\">%s</body></html>";
-
-constexpr char kDataUrlPasswordFieldTemplate[] =
-    "data:text/html,<html><body><span style=\"position: absolute; left: %ipx; "
-    "top: %ipx;\"><input type=\"password\">%s</input></body></html>";
 
 }  // namespace
 
@@ -38,10 +37,13 @@ void QuickAnswersBrowserTestBase::ShowMenu(
   content::WebContents* web_contents =
       chrome_test_utils::GetActiveWebContents(this);
 
-  std::string data_url = base::StringPrintf(
-      params.is_password_field ? kDataUrlPasswordFieldTemplate
-                               : kDataUrlTemplate,
-      params.x, params.y, params.selected_text.c_str());
+  const std::string text =
+      params.is_password_field
+          ? base::StrCat(
+                {"<input type=\"password\">", params.selected_text, "</input>"})
+          : params.selected_text;
+  const std::string data_url =
+      base::StringPrintf(kDataUrlTemplate, params.x, params.y, text.c_str());
   ASSERT_TRUE(content::NavigateToURL(web_contents, GURL(data_url)));
 
   content::RenderFrameHost* main_frame = web_contents->GetPrimaryMainFrame();

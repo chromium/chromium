@@ -4,13 +4,12 @@
 
 package org.chromium.content_public.browser;
 
-import org.chromium.base.FeatureMap;
-import org.chromium.base.annotations.JNINamespace;
-import org.chromium.base.annotations.NativeMethods;
+import org.jni_zero.JNINamespace;
+import org.jni_zero.NativeMethods;
 
-/**
- * Java accessor for base::Features listed in content/browser/android/content_feature_map.cc.
- */
+import org.chromium.base.FeatureMap;
+
+/** Java accessor for base::Features listed in content/browser/android/content_feature_map.cc. */
 @JNINamespace("content::android")
 public class ContentFeatureMap extends FeatureMap {
     private static final ContentFeatureMap sInstance = new ContentFeatureMap();
@@ -25,9 +24,7 @@ public class ContentFeatureMap extends FeatureMap {
         return sInstance;
     }
 
-    /**
-     * Convenience method to call {@link #isEnabledInNative(String)} statically.
-     */
+    /** Convenience method to call {@link #isEnabledInNative(String)} statically. */
     public static boolean isEnabled(String featureName) {
         return getInstance().isEnabledInNative(featureName);
     }

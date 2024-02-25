@@ -10,6 +10,7 @@
 #include <string>
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "content/common/content_export.h"
 #include "ppapi/host/host_message_context.h"
@@ -20,9 +21,8 @@ namespace content {
 
 class RendererPpapiHost;
 
-class CONTENT_EXPORT PepperFileChooserHost
-    : public ppapi::host::ResourceHost,
-      public base::SupportsWeakPtr<PepperFileChooserHost> {
+class CONTENT_EXPORT PepperFileChooserHost final
+    : public ppapi::host::ResourceHost {
  public:
   // Structure to store the information about chosen files.
   struct ChosenFileInfo {
@@ -61,10 +61,10 @@ class CONTENT_EXPORT PepperFileChooserHost
                               const std::vector<int>& browser_ids);
 
   // Non-owning pointer.
-  RendererPpapiHost* renderer_ppapi_host_;
+  raw_ptr<RendererPpapiHost> renderer_ppapi_host_;
 
   ppapi::host::ReplyMessageContext reply_context_;
-  CompletionHandler* handler_;
+  raw_ptr<CompletionHandler, DanglingUntriaged> handler_;
 
   base::WeakPtrFactory<PepperFileChooserHost> weak_factory_{this};
 };

@@ -21,32 +21,36 @@ class Document;
 class HTMLAnchorElement;
 class IntersectionObserver;
 class IntersectionObserverEntry;
-class AnchorElementMetrics;
 class PointerEvent;
 
 // AnchorElementMetricsSender is responsible to send anchor element metrics to
 // the browser process for a given document.
 //
+// AnchorElementMetricsSenders are created for documents in main frames. Any
+// same-origin iframes reuse the AnchorElementMetricsSender of their main frame.
+// Cross-origin iframes do not use any AnchorElementMetricsSender.
+//
 // The high level approach is:
 // 1) When HTMLAnchorElements are inserted into the DOM,
 //    AnchorElementMetricsSender::AddAnchorElement is called and a reference to
-//    the element is stored. We also add the element to the intersection
-//    observer that watches for elements entering the viewport. The first time
-//    this happens, the sender is created, which registers itself for lifecycle
-//    callbacks.
+//    the element is stored. The first time this happens, the sender is created,
+//    which registers itself for lifecycle callbacks.
 // 2) If any elements enter the viewport, the intersection observer will call
 //    AnchorElementMetricsSender::UpdateVisibleAnchors. Elements are collected
 //    in entered_viewport_messages_ and will be reported after the next layout.
 // 3) On the next layout, AnchorElementMetricsSender::DidFinishLifecycleUpdate
 //    is called, and it goes over the collected anchor elements. Elements that
-//    are visible are reported to the browser via ReportNewAnchorElements. The
-//    anchor elements collected in AnchorElementMetricsSender are all dropped.
-//    In particular, this drops elements that are not visible. They will never
-//    be reported even if they become visible later, unless the are reinserted
-//    into the DOM. This is not ideal, but simpler, keeps resource usage low,
-//    and seems to work well enough on the sites I've looked at. Also, elements
-//    that entered the viewport will be reported using
-//    ReportAnchorElementsEnteredViewport.
+//    are visible are reported to the browser via ReportNewAnchorElements. We
+//    also may add an element to the intersection observer that watches for
+//    elements entering/leaving the viewport. The anchor elements collected in
+//    AnchorElementMetricsSender are all dropped. In particular, this drops
+//    elements that are not visible. They will never be reported even if they
+//    become visible later, unless the are reinserted into the DOM. This is not
+//    ideal, but simpler, keeps resource usage low, and seems to work well
+//    enough on the sites I've looked at. Also, elements that entered the
+//    viewport will be reported using ReportAnchorElementsEnteredViewport. We
+//    stop observing lifecycle changes until the next anchor being added or
+//    entering/existing the viewport, when we again wait for the next layout.
 class CORE_EXPORT AnchorElementMetricsSender final
     : public GarbageCollected<AnchorElementMetricsSender>,
       public LocalFrameView::LifecycleNotificationObserver,
@@ -65,13 +69,14 @@ class CORE_EXPORT AnchorElementMetricsSender final
   void DidFinishLifecycleUpdate(
       const LocalFrameView& local_frame_view) override;
 
-  // Returns the anchor element metrics sender of the root document of
-  // |Document|. Constructs new one if it does not exist.
-  static AnchorElementMetricsSender* From(Document&);
+  // Returns the AnchorElementMetricsSender of the given root `document`.
+  // Constructs and returns a new one if it does not exist, or returns nullptr
+  // if the given `document` may not have a AnchorElementMetricsSender.
+  static AnchorElementMetricsSender* From(Document& document);
 
-  // Returns true if |document| should have associated
-  // AnchorElementMetricsSender.
-  static bool HasAnchorElementMetricsSender(Document& document);
+  // Returns the AnchorElementMetricsSender for `frame`'s main frame's document,
+  // according to `From`. Returns nullptr if `frame` is a cross-origin subframe.
+  static AnchorElementMetricsSender* GetForFrame(LocalFrame* frame);
 
   // Report the link click to the browser process, so long as the anchor
   // is an HTTP(S) link.
@@ -127,10 +132,14 @@ class CORE_EXPORT AnchorElementMetricsSender final
   // Sends the metrics update, immediately.
   void UpdateMetrics(TimerBase*);
 
+  void SetShouldSkipUpdateDelays(bool should_skip_for_testing);
+
   base::TimeTicks NavigationStart(const HTMLAnchorElement& element);
 
+  void RegisterForLifecycleNotifications();
+
   // Mock timestamp for navigation start used for testing.
-  absl::optional<base::TimeTicks> mock_navigation_start_for_testing_;
+  std::optional<base::TimeTicks> mock_navigation_start_for_testing_;
 
   // Use WeakMember to make sure we don't leak memory on long-lived pages.
   HeapHashSet<WeakMember<HTMLAnchorElement>> anchor_elements_to_report_;
@@ -139,8 +148,13 @@ class CORE_EXPORT AnchorElementMetricsSender final
 
   // Used to limit the rate at which update IPCs are sent by UpdateMetrics.
   HeapTaskRunnerTimer<AnchorElementMetricsSender> update_timer_;
+  // If `should_skip_update_delays_for_testing_` becomes true, the rate limiting
+  // is no longer done.
+  bool should_skip_update_delays_for_testing_ = false;
 
   WTF::Vector<mojom::blink::AnchorElementMetricsPtr> metrics_;
+
+  const int random_anchor_sampling_period_;
 
   Member<IntersectionObserver> intersection_observer_;
 
@@ -150,10 +164,10 @@ class CORE_EXPORT AnchorElementMetricsSender final
   using AnchorId = uint32_t;
   struct AnchorElementTimingStats {
     bool entered_viewport_should_be_enqueued_{true};
-    absl::optional<base::TimeTicks> viewport_entry_time_;
-    absl::optional<base::TimeTicks> pointer_over_timer_;
+    std::optional<base::TimeTicks> viewport_entry_time_;
+    std::optional<base::TimeTicks> pointer_over_timer_;
   };
-  WTF::HashMap<AnchorId, std::unique_ptr<AnchorElementTimingStats>>
+  WTF::HashMap<AnchorId, AnchorElementTimingStats>
       anchor_elements_timing_stats_;
 
   WTF::Vector<mojom::blink::AnchorElementLeftViewportPtr>
@@ -162,6 +176,8 @@ class CORE_EXPORT AnchorElementMetricsSender final
   WTF::Vector<mojom::blink::AnchorElementClickPtr> clicked_messages_;
 
   const base::TickClock* clock_;
+
+  bool is_registered_for_lifecycle_notifications_ = false;
 
   SEQUENCE_CHECKER(sequence_checker_);
 };

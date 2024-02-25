@@ -36,8 +36,7 @@ class TestObserver : public DocumentsProviderRootManager::Observer {
     added_authorities_.push_back(authority);
   }
   void OnDocumentsProviderRootRemoved(const std::string& authority,
-                                      const std::string& root_id,
-                                      const std::string& document_id) override {
+                                      const std::string& root_id) override {
     removed_authorities_.push_back(authority);
   }
 

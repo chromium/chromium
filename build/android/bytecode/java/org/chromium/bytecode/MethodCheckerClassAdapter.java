@@ -51,7 +51,12 @@ class MethodCheckerClassAdapter extends ClassVisitor {
     }
 
     @Override
-    public void visit(int version, int access, String name, String signature, String superName,
+    public void visit(
+            int version,
+            int access,
+            String name,
+            String signature,
+            String superName,
             String[] interfaces) {
         super.visit(version, access, name, signature, superName, interfaces);
 
@@ -126,7 +131,9 @@ class MethodCheckerClassAdapter extends ClassVisitor {
         }
     }
 
-    static void checkParentClass(String superClassName, ArrayList<MethodDescription> methodsToCheck,
+    static void checkParentClass(
+            String superClassName,
+            ArrayList<MethodDescription> methodsToCheck,
             ClassLoader jarClassLoader) {
         try {
             ClassReader cr = new ClassReader(getClassAsStream(jarClassLoader, superClassName));

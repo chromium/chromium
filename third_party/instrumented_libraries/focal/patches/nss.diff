@@ -1,55 +1,51 @@
-diff -rupN ./nss/lib/freebl/Makefile ../nss-3.17.1-patched/nss/lib/freebl/Makefile
---- ./nss/lib/freebl/Makefile	2014-09-23 23:09:22.000000000 +0400
-+++ ../nss-3.17.1-patched/nss/lib/freebl/Makefile	2014-09-26 20:36:05.639317008 +0400
-@@ -214,18 +214,20 @@ endif # Darwin
- 
- ifeq ($(OS_TARGET),Linux)
- ifeq ($(CPU_ARCH),x86_64)
--    ASFILES  = arcfour-amd64-gas.s mpi_amd64_gas.s
-+#   Disable inline asm in instrumented builds.
-+#    ASFILES  = arcfour-amd64-gas.s mpi_amd64_gas.s
-     ASFLAGS += -fPIC -Wa,--noexecstack
--    DEFINES += -DNSS_BEVAND_ARCFOUR -DMPI_AMD64 -DMP_ASSEMBLY_MULTIPLY
--    DEFINES += -DNSS_USE_COMBA
-+#    DEFINES += -DNSS_BEVAND_ARCFOUR -DMPI_AMD64 -DMP_ASSEMBLY_MULTIPLY
-+#    DEFINES += -DNSS_USE_COMBA
-     DEFINES += -DMP_IS_LITTLE_ENDIAN
- #   DEFINES += -DMPI_AMD64_ADD
-     # comment the next four lines to turn off Intel HW acceleration.
--    DEFINES += -DUSE_HW_AES -DINTEL_GCM
--    ASFILES += intel-aes.s intel-gcm.s
-+#    DEFINES += -DUSE_HW_AES -DINTEL_GCM
-+#    ASFILES += intel-aes.s intel-gcm.s
-+#   This is just intrinsics and should be fine.
-     EXTRA_SRCS += intel-gcm-wrap.c
-     INTEL_GCM = 1
--    MPI_SRCS += mpi_amd64.c mp_comba.c
-+#    MPI_SRCS += mpi_amd64.c mp_comba.c
- endif
- ifeq ($(CPU_ARCH),x86)
-     ASFILES  = mpi_x86.s
-es
---- ./nss/lib/sysinit/nsssysinit.c	2019-10-23 01:27:12.205366237 +0000
-+++ ../nss-3.17.1-patched/nss/lib/sysinit/nsssysinit.c	2019-10-23 01:26:49.045359974 +0000
-@@ -42,7 +42,9 @@
- static char *
- getUserDB(void)
- {
--    char *userdir = PR_GetEnvSecure("HOME");
-+    // Prevent nss from trying to pull in PR_GetEnvSecure from libnspr4, which
-+    // the latter library doesn't seem to export.
-+    char *userdir = secure_getenv("HOME");
-     char *nssdir = NULL;
- 
-     if (userdir == NULL) {
-@@ -134,7 +136,9 @@
- static PRBool
- getFIPSEnv(void)
- {
--    char *fipsEnv = PR_GetEnvSecure("NSS_FIPS");
-+    // Prevent nss from trying to pull in PR_GetEnvSecure from libnspr4, which
-+    // the latter library doesn't seem to export.
-+    char *fipsEnv = secure_getenv("NSS_FIPS");
-     if (!fipsEnv) {
-         return PR_FALSE;
+diff --git a/lib/pk11wrap/pk11load.c b/lib/pk11wrap/pk11load.c
+index 0323025..cc53636 100644
+--- a/nss/lib/pk11wrap/pk11load.c
++++ b/nss/lib/pk11wrap/pk11load.c
+@@ -353,15 +353,16 @@ SECMOD_SetRootCerts(PK11SlotInfo *slot, SECMODModule *mod)
      }
+ }
+ 
+-#ifndef NSS_STATIC_SOFTOKEN
++// Remove the build guard here since the code below requires both
++// when NSS_STATIC_SOFTOKEN is set.
+ static const char *my_shlib_name =
+     SHLIB_PREFIX "nss" SHLIB_VERSION "." SHLIB_SUFFIX;
+ static const char *softoken_shlib_name =
+     SHLIB_PREFIX "softokn" SOFTOKEN_SHLIB_VERSION "." SHLIB_SUFFIX;
+-static const PRCallOnceType pristineCallOnce;
+-static PRCallOnceType loadSoftokenOnce;
++__attribute__((unused)) static const PRCallOnceType pristineCallOnce;
++__attribute__((unused)) static PRCallOnceType loadSoftokenOnce;
+ static PRLibrary *softokenLib;
+-static PRInt32 softokenLoadCount;
++__attribute__((unused)) static PRInt32 softokenLoadCount;
+ 
+ /* This function must be run only once. */
+ /*  determine if hybrid platform, then actually load the DSO. */
+@@ -379,10 +380,8 @@ softoken_LoadDSO(void)
+     }
+     return PR_FAILURE;
+ }
+-#else
+ CK_RV NSC_GetFunctionList(CK_FUNCTION_LIST_PTR *pFunctionList);
+ char **NSC_ModuleDBFunc(unsigned long function, char *parameters, void *args);
+-#endif
+ 
+ /*
+  * load a new module into our address space and initialize it.
+diff --git a/nss.gyp b/nss.gyp
+index bf8b4d3..6f873cc 100644
+--- a/nss/nss.gyp
++++ b/nss/nss.gyp
+@@ -111,8 +111,8 @@
+           'dependencies': [
+             'cmd/certutil/certutil.gyp:certutil',
+             'cmd/modutil/modutil.gyp:modutil',
+-            'cmd/pk12util/pk12util.gyp:pk12util',
+-            'cmd/shlibsign/shlibsign.gyp:shlibsign',
++            'cmd/pk12util/pk12util.gyp:pk12util'
++            # Remove shlibsign since we don't sign the libraries.
+           ],
+           'conditions': [
+             [ 'comm_client==1', {

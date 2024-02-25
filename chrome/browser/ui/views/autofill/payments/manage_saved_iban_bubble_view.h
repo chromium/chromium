@@ -8,9 +8,7 @@
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/autofill/autofill_bubble_base.h"
 #include "chrome/browser/ui/autofill/payments/iban_bubble_controller.h"
-#include "chrome/browser/ui/views/controls/obscurable_label_with_toggle_button.h"
 #include "chrome/browser/ui/views/location_bar/location_bar_bubble_delegate_view.h"
-#include "ui/views/controls/button/image_button.h"
 
 namespace autofill {
 
@@ -55,10 +53,6 @@ class ManageSavedIbanBubbleView : public AutofillBubbleBase,
   // available. It will be non-nullptr if the user inputs a nickname when
   // saving the IBAN in the IBAN save bubble.
   raw_ptr<views::Label> nickname_label_ = nullptr;
-
-  // The view that toggles the masking/unmasking of the IBAN value displayed in
-  // the bubble.
-  raw_ptr<ObscurableLabelWithToggleButton> iban_value_and_toggle_;
 
   raw_ptr<IbanBubbleController> controller_;
 };

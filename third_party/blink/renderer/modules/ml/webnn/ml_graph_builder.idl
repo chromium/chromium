@@ -14,6 +14,28 @@ enum MLConvTranspose2dFilterOperandLayout { "iohw", "hwoi", "ohwi" };
 
 enum MLAutoPad { "explicit", "same-upper", "same-lower" };
 
+enum MLRecurrentNetworkDirection { "forward", "backward", "both" };
+
+enum MLLstmWeightLayout { "iofg", "ifgo" };
+
+dictionary MLArgMinMaxOptions {
+  sequence<[EnforceRange] unsigned long> axes;
+  boolean keepDimensions = false;
+  boolean selectLastIndex = false;
+};
+
+// A spec file was issued for WG discussion:
+// https://github.com/webmachinelearning/webnn/issues/481.
+// TODO(crbug.com/1502361): Revisit whether the scale and bias operands
+// should be required inputs based on WG's consensus.
+dictionary MLBatchNormalizationOptions {
+  MLOperand scale;
+  MLOperand bias;
+  [EnforceRange] unsigned long axis = 1;
+  float epsilon = 1e-5;
+  MLActivation activation;
+};
+
 dictionary MLConv2dOptions {
   sequence<[EnforceRange] unsigned long> padding;
   sequence<[EnforceRange] unsigned long> strides;
@@ -40,6 +62,10 @@ dictionary MLConvTranspose2dOptions {
   MLActivation activation;
 };
 
+dictionary MLGatherOptions {
+  [EnforceRange] unsigned long axis = 0;
+};
+
 dictionary MLGemmOptions {
   MLOperand c;
   float alpha = 1.0;
@@ -48,8 +74,37 @@ dictionary MLGemmOptions {
   boolean bTranspose = false;
 };
 
+dictionary MLHardSigmoidOptions {
+  float alpha = 0.2;
+  float beta = 0.5;
+};
+
+dictionary MLLayerNormalizationOptions {
+  MLOperand scale;
+  MLOperand bias;
+  sequence<[EnforceRange] unsigned long> axes;
+  float epsilon = 1e-5;
+};
+
 dictionary MLLeakyReluOptions {
   float alpha = 0.01;
+};
+
+dictionary MLLinearOptions {
+  float alpha = 1.0;
+  float beta = 0;
+};
+
+dictionary MLLstmOptions {
+  MLOperand bias;
+  MLOperand recurrentBias;
+  MLOperand peepholeWeight;
+  MLOperand initialHiddenState;
+  MLOperand initialCellState;
+  boolean returnSequence = false;
+  MLRecurrentNetworkDirection direction = "forward";
+  MLLstmWeightLayout layout = "iofg";
+  sequence<MLActivation> activations;
 };
 
 enum MLPaddingMode {
@@ -89,6 +144,13 @@ dictionary MLEluOptions {
   float alpha = 1;
 };
 
+dictionary MLInstanceNormalizationOptions {
+  MLOperand scale;
+  MLOperand bias;
+  float epsilon = 1e-5;
+  MLInputOperandLayout layout = "nchw";
+};
+
 dictionary MLReduceOptions {
   sequence<[EnforceRange] unsigned long> axes;
   boolean keepDimensions = false;
@@ -101,6 +163,10 @@ dictionary MLResample2dOptions {
   sequence<float> scales;
   sequence<[EnforceRange] unsigned long> sizes;
   sequence<[EnforceRange] unsigned long> axes;
+};
+
+dictionary MLSoftplusOptions {
+  float steepness = 1.0;
 };
 
 dictionary MLTransposeOptions {
@@ -119,7 +185,12 @@ dictionary MLSplitOptions {
 
   [RaisesException] MLOperand input(DOMString name, MLOperandDescriptor desc);
 
-  [RaisesException] MLOperand constant(MLOperandDescriptor desc, MLBufferView bufferView);
+  [RaisesException] MLOperand constant(MLOperandDescriptor desc, ArrayBufferView bufferView);
+
+  [RaisesException] MLOperand argMin(MLOperand input, optional MLArgMinMaxOptions options = {});
+  [RaisesException] MLOperand argMax(MLOperand input, optional MLArgMinMaxOptions options = {});
+
+  [RaisesException] MLOperand batchNormalization(MLOperand input, MLOperand mean, MLOperand variance, optional MLBatchNormalizationOptions options = {});
 
   [RaisesException] MLOperand clamp(MLOperand input, optional MLClampOptions options = {});
   [RaisesException] MLActivation clamp(optional MLClampOptions options = {});
@@ -136,40 +207,87 @@ dictionary MLSplitOptions {
   [RaisesException] MLOperand div(MLOperand a, MLOperand b);
   [RaisesException] MLOperand max(MLOperand a, MLOperand b);
   [RaisesException] MLOperand min(MLOperand a, MLOperand b);
+  [RaisesException] MLOperand pow(MLOperand a, MLOperand b);
+  [RaisesException] MLOperand equal(MLOperand a, MLOperand b);
+  [RaisesException] MLOperand greater(MLOperand a, MLOperand b);
+  [RaisesException] MLOperand greaterOrEqual(MLOperand a, MLOperand b);
+  [RaisesException] MLOperand lesser(MLOperand a, MLOperand b);
+  [RaisesException] MLOperand lesserOrEqual(MLOperand a, MLOperand b);
 
   // Element-wise unary operations
   [RaisesException] MLOperand abs(MLOperand x);
   [RaisesException] MLOperand ceil(MLOperand x);
+  [RaisesException] MLOperand cos(MLOperand x);
+  [RaisesException] MLOperand exp(MLOperand x);
   [RaisesException] MLOperand floor(MLOperand x);
+  [RaisesException] MLOperand log(MLOperand x);
   [RaisesException] MLOperand neg(MLOperand x);
+  [RaisesException] MLOperand sin(MLOperand x);
+  [RaisesException] MLOperand tan(MLOperand x);
+  [RaisesException] MLOperand erf(MLOperand x);
+  [RaisesException] MLOperand identity(MLOperand x);
+  [RaisesException] MLOperand logicalNot(MLOperand x);
+  [RaisesException] MLOperand reciprocal(MLOperand x);
+  [RaisesException] MLOperand sqrt(MLOperand x);
+
+  [RaisesException] MLOperand cast(MLOperand input, MLOperandDataType outputDataType);
 
   [RaisesException] MLOperand elu(MLOperand x, optional MLEluOptions options = {});
   [RaisesException] MLActivation elu(optional MLEluOptions options = {});
 
+  [RaisesException] MLOperand expand(MLOperand input, sequence<[EnforceRange] unsigned long> newShape);
+
+  [RaisesException] MLOperand gather(MLOperand input, MLOperand indices, optional MLGatherOptions options = {});
+
   [RaisesException] MLOperand gemm(MLOperand a, MLOperand b, optional MLGemmOptions options = {});
+
+  [RaisesException] MLOperand hardSigmoid(MLOperand x, optional MLHardSigmoidOptions options = {});
+  [RaisesException] MLActivation hardSigmoid(optional MLHardSigmoidOptions options = {});
 
   [RaisesException] MLOperand hardSwish(MLOperand x);
   [RaisesException] MLActivation hardSwish();
 
+  [RaisesException] MLOperand instanceNormalization(MLOperand input, optional MLInstanceNormalizationOptions options = {});
+
+  [RaisesException] MLOperand matmul(MLOperand a, MLOperand b);
+
+  [RaisesException] MLOperand layerNormalization(MLOperand input, optional MLLayerNormalizationOptions options = {});
+
   [RaisesException] MLOperand leakyRelu(MLOperand x, optional MLLeakyReluOptions options = {});
   [RaisesException] MLActivation leakyRelu(optional MLLeakyReluOptions options = {});
+
+  [RaisesException] MLOperand linear(MLOperand input, optional MLLinearOptions options = {});
+  [RaisesException] MLActivation linear(optional MLLinearOptions options = {});
+
+  [RaisesException] sequence<MLOperand> lstm(MLOperand input, MLOperand weight, MLOperand recurrentWeight,
+                                             [EnforceRange] unsigned long steps, [EnforceRange] unsigned long hiddenSize,
+                                             optional MLLstmOptions options = {});
 
   [RaisesException] MLOperand pad(MLOperand input, sequence<[EnforceRange] unsigned long> beginningPadding,
                 sequence<[EnforceRange] unsigned long> endingPadding, optional MLPadOptions options = {});
 
   // Pooling operations
   [RaisesException] MLOperand averagePool2d(MLOperand input, optional MLPool2dOptions options = {});
+  [RaisesException] MLOperand l2Pool2d(MLOperand input, optional MLPool2dOptions options = {});
   [RaisesException] MLOperand maxPool2d(MLOperand input, optional MLPool2dOptions options = {});
 
   [RaisesException] MLOperand prelu(MLOperand x, MLOperand slope);
 
-  [RaisesException] MLOperand reduceSum(MLOperand input, optional MLReduceOptions options = {});
+  [RaisesException] MLOperand reduceL1(MLOperand input, optional MLReduceOptions options = {});
+  [RaisesException] MLOperand reduceL2(MLOperand input, optional MLReduceOptions options = {});
+  [RaisesException] MLOperand reduceLogSum(MLOperand input, optional MLReduceOptions options = {});
+  [RaisesException] MLOperand reduceLogSumExp(MLOperand input, optional MLReduceOptions options = {});
+  [RaisesException] MLOperand reduceMax(MLOperand input, optional MLReduceOptions options = {});
   [RaisesException] MLOperand reduceMean(MLOperand input, optional MLReduceOptions options = {});
+  [RaisesException] MLOperand reduceMin(MLOperand input, optional MLReduceOptions options = {});
+  [RaisesException] MLOperand reduceProduct(MLOperand input, optional MLReduceOptions options = {});
+  [RaisesException] MLOperand reduceSum(MLOperand input, optional MLReduceOptions options = {});
+  [RaisesException] MLOperand reduceSumSquare(MLOperand input, optional MLReduceOptions options = {});
 
   [RaisesException] MLOperand relu(MLOperand input);
   [RaisesException] MLActivation relu();
 
-  [RaisesException] MLOperand reshape(MLOperand input, sequence<[EnforceRange] unsigned long?> newShape);
+  [RaisesException] MLOperand reshape(MLOperand input, sequence<[EnforceRange] unsigned long> newShape);
 
   [RaisesException] MLOperand resample2d(MLOperand input, optional MLResample2dOptions options = {});
 
@@ -178,9 +296,14 @@ dictionary MLSplitOptions {
 
   [RaisesException] MLOperand slice(MLOperand input, sequence<[EnforceRange] unsigned long> starts, sequence<[EnforceRange] unsigned long> sizes);
 
-  [RaisesException] MLOperand transpose(MLOperand input, optional MLTransposeOptions options = {});
-
   [RaisesException] MLOperand softmax(MLOperand input);
+  [RaisesException] MLActivation softmax();
+
+  [RaisesException] MLOperand softplus(MLOperand input, optional MLSoftplusOptions options = {});
+  [RaisesException] MLActivation softplus(optional MLSoftplusOptions options = {});
+
+  [RaisesException] MLOperand softsign(MLOperand input);
+  [RaisesException] MLActivation softsign();
 
   [RaisesException] sequence<MLOperand> split(MLOperand input, [EnforceRange] unsigned long splits, optional MLSplitOptions options = {});
   [RaisesException] sequence<MLOperand> split(MLOperand input, sequence<[EnforceRange] unsigned long> splits, optional MLSplitOptions options = {});
@@ -188,14 +311,14 @@ dictionary MLSplitOptions {
   [RaisesException] MLOperand tanh(MLOperand input);
   [RaisesException] MLActivation tanh();
 
+  [RaisesException] MLOperand transpose(
+      MLOperand input, optional MLTransposeOptions options = {});
+
+  [RaisesException] MLOperand where(MLOperand condition, MLOperand true_value, MLOperand false_value);
+
   [
     CallWith=ScriptState,
     RaisesException,
-    Exposed=Window
+    Exposed=(Window, DedicatedWorker)
   ] Promise<MLGraph> build(MLNamedOperands outputs);
-
-  [
-    RaisesException,
-    Exposed=DedicatedWorker
-  ] MLGraph buildSync(MLNamedOperands outputs);
 };

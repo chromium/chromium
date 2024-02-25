@@ -3,6 +3,8 @@
 // found in the LICENSE file.
 
 #include "base/fuchsia/mem_buffer_util.h"
+#include "base/run_loop.h"
+#include "base/strings/stringprintf.h"
 #include "content/public/test/browser_test.h"
 #include "fuchsia_web/common/test/frame_for_test.h"
 #include "fuchsia_web/common/test/frame_test_util.h"

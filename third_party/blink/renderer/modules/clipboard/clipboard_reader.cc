@@ -15,7 +15,6 @@
 #include "third_party/blink/renderer/core/imagebitmap/image_bitmap.h"
 #include "third_party/blink/renderer/modules/clipboard/clipboard.h"
 #include "third_party/blink/renderer/modules/clipboard/clipboard_promise.h"
-#include "third_party/blink/renderer/modules/clipboard/clipboard_writer.h"
 #include "third_party/blink/renderer/platform/heap/cross_thread_handle.h"
 #include "third_party/blink/renderer/platform/image-encoders/image_encoder.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
@@ -149,6 +148,9 @@ class ClipboardHtmlReader final : public ClipboardReader {
               unsigned fragment_start,
               unsigned fragment_end) {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+    DCHECK_GE(fragment_start, 0u);
+    DCHECK_LE(fragment_end, html_string.length());
+    DCHECK_LE(fragment_start, fragment_end);
 
     LocalFrame* frame = promise_->GetLocalFrame();
     if (!frame || html_string.empty()) {
@@ -156,32 +158,23 @@ class ClipboardHtmlReader final : public ClipboardReader {
       return;
     }
 
-    String serialized_html;
-    if (sanitize_html_) {
-      // Sanitize the HTML string.
-      // This must be called on the main thread because HTML DOM nodes can only
-      // be used on the main thread.
-      serialized_html = CreateSanitizedMarkupWithContext(
-          *frame->GetDocument(), html_string, fragment_start, fragment_end, url,
-          kIncludeNode, kResolveAllURLs);
-    } else {
-      // Similarly to reading sanitized HTML from the clipboard, we need to
-      // extract the fragment using the `fragment_start` and `fragment_end`
-      // calculated by the browser process. The browser process already removes
-      // the CF_HTML headers, but we have to go through this removal step in
-      // Blink because the markup isn't going through a sanitization process.
-      serialized_html =
-          html_string.Substring(fragment_start, fragment_end - fragment_start);
-    }
-    if (serialized_html.empty()) {
+    // Process the HTML string and strip out certain security sensitive tags if
+    // needed. `CreateStrictlyProcessedMarkupWithContext` must be called on the
+    // main thread because HTML DOM nodes can only be used on the main thread.
+    String final_html =
+        sanitize_html_ ? CreateStrictlyProcessedMarkupWithContext(
+                             *frame->GetDocument(), html_string, fragment_start,
+                             fragment_end, url, kIncludeNode, kResolveAllURLs)
+                       : html_string;
+    if (final_html.empty()) {
       NextRead(Vector<uint8_t>());
       return;
     }
     worker_pool::PostTask(
-        FROM_HERE, CrossThreadBindOnce(
-                       &ClipboardHtmlReader::EncodeOnBackgroundThread,
-                       std::move(serialized_html), MakeCrossThreadHandle(this),
-                       std::move(clipboard_task_runner_)));
+        FROM_HERE,
+        CrossThreadBindOnce(&ClipboardHtmlReader::EncodeOnBackgroundThread,
+                            std::move(final_html), MakeCrossThreadHandle(this),
+                            std::move(clipboard_task_runner_)));
   }
 
   static void EncodeOnBackgroundThread(
@@ -242,22 +235,23 @@ class ClipboardSvgReader final : public ClipboardReader {
       return;
     }
 
-    // Now sanitize the SVG string.
+    // Now process the SVG string and strip out certain security sensitive tags.
     KURL url;
     unsigned fragment_start = 0;
-    String sanitized_svg = CreateSanitizedMarkupWithContext(
+    String strictly_processed_svg = CreateStrictlyProcessedMarkupWithContext(
         *frame->GetDocument(), svg_string, fragment_start, svg_string.length(),
         url, kIncludeNode, kResolveAllURLs);
 
-    if (sanitized_svg.empty()) {
+    if (strictly_processed_svg.empty()) {
       NextRead(Vector<uint8_t>());
       return;
     }
     worker_pool::PostTask(
-        FROM_HERE, CrossThreadBindOnce(
-                       &ClipboardSvgReader::EncodeOnBackgroundThread,
-                       std::move(sanitized_svg), MakeCrossThreadHandle(this),
-                       std::move(clipboard_task_runner_)));
+        FROM_HERE,
+        CrossThreadBindOnce(&ClipboardSvgReader::EncodeOnBackgroundThread,
+                            std::move(strictly_processed_svg),
+                            MakeCrossThreadHandle(this),
+                            std::move(clipboard_task_runner_)));
   }
 
   static void EncodeOnBackgroundThread(
@@ -330,10 +324,9 @@ ClipboardReader* ClipboardReader::Create(SystemClipboard* system_clipboard,
                                          const String& mime_type,
                                          ClipboardPromise* promise,
                                          bool sanitize_html) {
-  DCHECK(ClipboardWriter::IsValidType(mime_type));
+  CHECK(ClipboardItem::supports(mime_type));
   // If this is a web custom format then read the unsanitized version.
-  if (RuntimeEnabledFeatures::ClipboardCustomFormatsEnabled() &&
-      !Clipboard::ParseWebCustomFormat(mime_type).IsNull()) {
+  if (!Clipboard::ParseWebCustomFormat(mime_type).empty()) {
     // We read the custom MIME type that has the "web " prefix.
     // These MIME types are found in the web custom format map written by
     // native applications.

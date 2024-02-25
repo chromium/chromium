@@ -74,9 +74,9 @@ class PLATFORM_EXPORT RenderFrameMetadataObserverImpl
   // |render_frame_metadata_observer_client_| of the frame submissions that
   // involve a root scroll offset change. See |RootScrollOffsetUpdateFrequency|
   // for details.
-  absl::optional<cc::mojom::blink::RootScrollOffsetUpdateFrequency>
+  std::optional<cc::mojom::blink::RootScrollOffsetUpdateFrequency>
       root_scroll_offset_update_frequency_;
-  absl::optional<gfx::PointF> last_root_scroll_offset_android_;
+  std::optional<gfx::PointF> last_root_scroll_offset_android_;
 #endif
 
   // When true this will notify |render_frame_metadata_observer_client_| of all
@@ -84,7 +84,7 @@ class PLATFORM_EXPORT RenderFrameMetadataObserverImpl
   bool report_all_frame_submissions_for_testing_enabled_ = false;
 
   uint32_t last_frame_token_ = 0;
-  absl::optional<cc::RenderFrameMetadata> last_render_frame_metadata_;
+  std::optional<cc::RenderFrameMetadata> last_render_frame_metadata_;
 
   // These are destroyed when BindToCurrentSequence() is called.
   mojo::PendingReceiver<cc::mojom::blink::RenderFrameMetadataObserver>

@@ -36,7 +36,7 @@ class ImplementationDerivedClass : public ImplementationInterimClass,
   virtual void SomeMethodWithExceptionSpec() throw() {}
   // Should warn with the insertion point after both the const and the throw
   // specifiers.
-  virtual void SomeConstMethodWithExceptionSpec() const throw(int) {}
+  virtual void SomeConstMethodWithExceptionSpec() const noexcept(false) {}
   // Should warn even if overridden method isn't pure.
   virtual void SomeNonPureBaseMethod() {}
   // Should warn and place correctly even when there is a comment.

@@ -16,6 +16,7 @@
 #include "components/optimization_guide/core/hint_cache.h"
 #include "components/optimization_guide/core/optimization_guide_features.h"
 #include "components/optimization_guide/core/push_notification_manager.h"
+#include "components/signin/public/identity_manager/identity_manager.h"
 #include "content/public/browser/browser_thread.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 
@@ -23,7 +24,7 @@ namespace {
 
 // Returns true if we can make a request for hints for |prediction|.
 bool IsAllowedToFetchForNavigationPrediction(
-    const absl::optional<NavigationPredictorKeyedService::Prediction>
+    const std::optional<NavigationPredictorKeyedService::Prediction>
         prediction) {
   DCHECK(prediction);
 
@@ -33,7 +34,7 @@ bool IsAllowedToFetchForNavigationPrediction(
     // We only support predictions from page anchors.
     return false;
   }
-  const absl::optional<GURL> source_document_url =
+  const std::optional<GURL> source_document_url =
       prediction->source_document_url();
   if (!source_document_url || source_document_url->is_empty())
     return false;
@@ -55,6 +56,7 @@ ChromeHintsManager::ChromeHintsManager(
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
     std::unique_ptr<optimization_guide::PushNotificationManager>
         push_notification_manager,
+    signin::IdentityManager* identity_manager,
     OptimizationGuideLogger* optimization_guide_logger)
     : HintsManager(profile->IsOffTheRecord(),
                    g_browser_process->GetApplicationLocale(),
@@ -64,6 +66,7 @@ ChromeHintsManager::ChromeHintsManager(
                    tab_url_provider,
                    url_loader_factory,
                    std::move(push_notification_manager),
+                   identity_manager,
                    optimization_guide_logger),
       profile_(profile) {
   if (!optimization_guide::features::IsSRPFetchingEnabled()) {
@@ -90,7 +93,7 @@ void ChromeHintsManager::Shutdown() {
 }
 
 void ChromeHintsManager::OnPredictionUpdated(
-    const absl::optional<NavigationPredictorKeyedService::Prediction>
+    const std::optional<NavigationPredictorKeyedService::Prediction>
         prediction) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   DCHECK(prediction);

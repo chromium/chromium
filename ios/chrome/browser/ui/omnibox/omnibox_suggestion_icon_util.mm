@@ -19,11 +19,7 @@ UIImage* GetOmniboxSuggestionIcon(OmniboxSuggestionIconType icon_type) {
       symbol_name = kEqualSymbol;
       break;
     case OmniboxSuggestionIconType::kDefaultFavicon:
-      if (@available(iOS 15, *)) {
-        symbol_name = kGlobeAmericasSymbol;
-      } else {
-        symbol_name = kGlobeSymbol;
-      }
+      symbol_name = kGlobeAmericasSymbol;
       break;
     case OmniboxSuggestionIconType::kSearch:
       symbol_name = kSearchSymbol;
@@ -53,13 +49,13 @@ UIImage* GetOmniboxSuggestionIcon(OmniboxSuggestionIconType icon_type) {
     case OmniboxSuggestionIconType::kFallbackAnswer:
       symbol_name = kSearchSymbol;
       break;
+    case OmniboxSuggestionIconType::kSearchTrend:
+      symbol_name = kUpTrendSymbol;
+      default_symbol = false;
+      break;
     case OmniboxSuggestionIconType::kCount:
       NOTREACHED();
-      if (@available(iOS 15, *)) {
-        symbol_name = kGlobeAmericasSymbol;
-      } else {
-        symbol_name = kGlobeSymbol;
-      }
+      symbol_name = kGlobeAmericasSymbol;
       break;
   }
 

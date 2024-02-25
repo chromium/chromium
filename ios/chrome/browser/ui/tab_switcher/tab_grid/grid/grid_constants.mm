@@ -7,6 +7,10 @@
 // Accessibility identifier prefix of a grid cell.
 NSString* const kGridCellIdentifierPrefix = @"GridCellIdentifierPrefix";
 
+// Accessibility identifier prefix of a grid cell.
+NSString* const kGroupGridCellIdentifierPrefix =
+    @"GroupGridCellIdentifierPrefix";
+
 // Accessibility identifier for the close button in a grid cell.
 NSString* const kGridCellCloseButtonIdentifier =
     @"GridCellCloseButtonIdentifier";
@@ -68,11 +72,15 @@ const CGSize kGridCellSizeLarge = CGSize{228.0f, 256.0f};
 const CGSize kGridCellSizeAccessibility = CGSize{288.0f, 336.0f};
 const CGFloat kGridCellCornerRadius = 16.0f;
 const CGFloat kGridCellIconCornerRadius = 3.0f;
+const CGFloat kGroupGridCellCornerRadius = 12.0f;
+const CGFloat kGroupGridBottomTrailingCellCornerRadius = 7.0f;
+const CGFloat kGroupGridFaviconViewCornerRadius = 3.0f;
+
 // The cell header contains the icon, title, and close button.
 const CGFloat kGridCellHeaderHeight = 32.0f;
 const CGFloat kGridCellHeaderAccessibilityHeight = 108.0f;
 const CGFloat kGridCellHeaderLeadingInset = 9.0f;
-const CGFloat kGridCellCloseTapTargetWidthHeight = 44.0f;
+const CGFloat kGridCellCloseTapTargetWidthHeight = 32.0f;
 const CGFloat kGridCellCloseButtonContentInset = 8.5f;
 const CGFloat kGridCellCloseButtonTopSpacing = 16.0f;
 const CGFloat kGridCellTitleLabelContentInset = 4.0f;
@@ -86,5 +94,3 @@ const CGFloat kGridCellSelectionRingTintWidth = 5.0f;
 const CGFloat kGridCellPriceDropTopSpacing = 10.0f;
 const CGFloat kGridCellPriceDropLeadingSpacing = 10.0f;
 const CGFloat kGridCellPriceDropTrailingSpacing = 10.0f;
-
-const CGFloat kGridExpectedTopContentInset = 20.0f;

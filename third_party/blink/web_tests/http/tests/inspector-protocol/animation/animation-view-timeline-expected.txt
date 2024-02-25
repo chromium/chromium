@@ -1,0 +1,9 @@
+Tests that the viewOrScrollTimeline is included for scroll driven animations
+PASS: startTime is reported correctly as percentage.
+PASS: duration is reported correctly as percentage.
+PASS: Axis of view or scroll timeline is correct.
+PASS: startOffset exists.
+PASS: endOffset exists.
+PASS: sourceNodeId exists.
+PASS: subjectNodeId exists.
+

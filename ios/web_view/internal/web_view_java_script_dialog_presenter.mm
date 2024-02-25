@@ -6,7 +6,7 @@
 
 #import "base/functional/callback_helpers.h"
 #import "ios/web_view/public/cwv_ui_delegate.h"
-#import "net/base/mac/url_conversions.h"
+#import "net/base/apple/url_conversions.h"
 
 namespace ios_web_view {
 

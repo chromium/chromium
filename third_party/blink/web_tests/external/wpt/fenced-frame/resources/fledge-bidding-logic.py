@@ -11,7 +11,7 @@ def main(request, response):
   # Set up response headers.
   headers = [
     ('Content-Type', 'Application/Javascript'),
-    ('X-Allow-FLEDGE', 'true')
+    ('Ad-Auction-Allowed', 'true')
   ]
 
   # Parse URL params.
@@ -37,15 +37,15 @@ def main(request, response):
       '''
     )
 
-  render_obj = 'ad.renderUrl'
+  render_obj = 'ad.renderURL'
   if ad_with_size is not None:
-    render_obj = '{ url: ad.renderUrl, width: "100px", height: "50px" }'
+    render_obj = '{ url: ad.renderURL, width: "100px", height: "50px" }'
 
-  component_render_obj = 'component.renderUrl'
+  component_render_obj = 'component.renderURL'
   if ad_with_size is not None:
     component_render_obj = (
       '''{
-          url: component.renderUrl,
+          url: component.renderURL,
           width: "100px",
           height: "50px"
          }
@@ -56,9 +56,12 @@ def main(request, response):
   if automatic_beacon is not None:
     register_ad_beacon = (
     '''registerAdBeacon({
-        'reserved.top_navigation':
+        'reserved.top_navigation_start':
         browserSignals.interestGroupOwner +
-        '/fenced-frame/resources/automatic-beacon-store.py'
+        '/fenced-frame/resources/automatic-beacon-store.py?type=reserved.top_navigation_start',
+        'reserved.top_navigation_commit':
+        browserSignals.interestGroupOwner +
+        '/fenced-frame/resources/automatic-beacon-store.py?type=reserved.top_navigation_commit',
       });
     '''
   )

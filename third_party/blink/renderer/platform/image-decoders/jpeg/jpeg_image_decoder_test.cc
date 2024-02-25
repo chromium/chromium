@@ -1,32 +1,6 @@
-/*
- * Copyright (C) 2013 Google Inc. All rights reserved.
- *
- * Redistribution and use in source and binary forms, with or without
- * modification, are permitted provided that the following conditions are
- * met:
- *
- *     * Redistributions of source code must retain the above copyright
- * notice, this list of conditions and the following disclaimer.
- *     * Redistributions in binary form must reproduce the above
- * copyright notice, this list of conditions and the following disclaimer
- * in the documentation and/or other materials provided with the
- * distribution.
- *     * Neither the name of Google Inc. nor the names of its
- * contributors may be used to endorse or promote products derived from
- * this software without specific prior written permission.
- *
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
- * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
- * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
- * A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
- * OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
- * SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
- * LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
- * DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
- * THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
- * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
- * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- */
+// Copyright 2013 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
 
 #include "third_party/blink/renderer/platform/image-decoders/jpeg/jpeg_image_decoder.h"
 
@@ -123,6 +97,13 @@ void ReadYUV(size_t max_decoded_bytes,
 
   EXPECT_EQ(expect_decoding_failure, decoder->Failed());
   EXPECT_TRUE(decoder->HasDisplayableYUVData());
+}
+
+void TestJpegBppHistogram(const char* image_name,
+                          const char* histogram_name = nullptr,
+                          base::HistogramBase::Sample sample = 0) {
+  TestBppHistogram(CreateJPEGDecoder, "Jpeg", image_name, histogram_name,
+                   sample);
 }
 
 }  // anonymous namespace
@@ -449,43 +430,17 @@ TEST(JPEGImageDecoderTest, SupportedScaleNumeratorBound) {
 struct ColorSpaceTestParam {
   std::string file;
   bool expected_success = false;
-  BitmapImageMetrics::JpegColorSpace expected_color_space;
   bool expect_yuv_decoding = false;
   gfx::Size expected_uv_size;
 };
 
 void PrintTo(const ColorSpaceTestParam& param, std::ostream* os) {
   *os << "{\"" << param.file << "\", " << param.expected_success << ","
-      << static_cast<int>(param.expected_color_space) << ","
       << param.expected_uv_size.ToString() << "," << param.expect_yuv_decoding
       << "}";
 }
 
 class ColorSpaceTest : public ::testing::TestWithParam<ColorSpaceTestParam> {};
-
-// Tests that the JPEG color space/subsampling is recorded correctly as a UMA
-// for a variety of images. When the decode fails, no UMA should be recorded.
-TEST_P(ColorSpaceTest, CorrectColorSpaceUMARecorded) {
-  base::HistogramTester histogram_tester;
-  scoped_refptr<SharedBuffer> data =
-      ReadFile(("/images/resources/" + GetParam().file).c_str());
-  ASSERT_TRUE(data);
-
-  std::unique_ptr<ImageDecoder> decoder = CreateJPEGDecoder();
-  decoder->SetData(data.get(), true);
-
-  ImageFrame* frame = decoder->DecodeFrameBufferAtIndex(0);
-  ASSERT_TRUE(frame);
-
-  if (GetParam().expected_success) {
-    ASSERT_FALSE(decoder->Failed());
-    histogram_tester.ExpectUniqueSample("Blink.ImageDecoders.Jpeg.ColorSpace",
-                                        GetParam().expected_color_space, 1);
-  } else {
-    ASSERT_TRUE(decoder->Failed());
-    histogram_tester.ExpectTotalCount("Blink.ImageDecoders.Jpeg.ColorSpace", 0);
-  }
-}
 
 // Tests YUV decoding path with different color encodings (and chroma
 // subsamplings if applicable).
@@ -532,50 +487,35 @@ TEST_P(ColorSpaceTest, RgbDecode) {
 }
 
 const ColorSpaceTest::ParamType kColorSpaceTestParams[] = {
-    {"cs-uma-grayscale.jpg", true,
-     BitmapImageMetrics::JpegColorSpace::kGrayscale},
-    {"cs-uma-rgb.jpg", true, BitmapImageMetrics::JpegColorSpace::kRGB},
+    {"cs-uma-grayscale.jpg", true},
+    {"cs-uma-rgb.jpg", true},
     // Each component is in a separate scan. Should not make a difference.
-    {"cs-uma-rgb-non-interleaved.jpg", true,
-     BitmapImageMetrics::JpegColorSpace::kRGB},
-    {"cs-uma-cmyk.jpg", true, BitmapImageMetrics::JpegColorSpace::kCMYK},
+    {"cs-uma-rgb-non-interleaved.jpg", true},
+    {"cs-uma-cmyk.jpg", true},
     // 4 components/no markers, so we expect libjpeg_turbo to guess CMYK.
-    {"cs-uma-cmyk-no-jfif-or-adobe-markers.jpg", true,
-     BitmapImageMetrics::JpegColorSpace::kCMYK},
+    {"cs-uma-cmyk-no-jfif-or-adobe-markers.jpg", true},
     // 4 components are not legal in JFIF, but we expect libjpeg_turbo to guess
     // CMYK.
-    {"cs-uma-cmyk-jfif-marker.jpg", true,
-     BitmapImageMetrics::JpegColorSpace::kCMYK},
-    {"cs-uma-ycck.jpg", true, BitmapImageMetrics::JpegColorSpace::kYCCK},
+    {"cs-uma-cmyk-jfif-marker.jpg", true},
+    {"cs-uma-ycck.jpg", true},
     // Contains CMYK data but uses a bad Adobe color transform, so libjpeg_turbo
     // will guess YCCK.
-    {"cs-uma-cmyk-unknown-transform.jpg", true,
-     BitmapImageMetrics::JpegColorSpace::kYCCK},
-    {"cs-uma-ycbcr-410.jpg", true,
-     BitmapImageMetrics::JpegColorSpace::kYCbCr410, false},
-    {"cs-uma-ycbcr-411.jpg", true,
-     BitmapImageMetrics::JpegColorSpace::kYCbCr411, false},
-    {"cs-uma-ycbcr-420.jpg", true,
-     BitmapImageMetrics::JpegColorSpace::kYCbCr420, true, gfx::Size(32, 32)},
+    {"cs-uma-cmyk-unknown-transform.jpg", true},
+    {"cs-uma-ycbcr-410.jpg", true, false},
+    {"cs-uma-ycbcr-411.jpg", true, false},
+    {"cs-uma-ycbcr-420.jpg", true, true, gfx::Size(32, 32)},
     // Each component is in a separate scan. Should not make a difference.
-    {"cs-uma-ycbcr-420-non-interleaved.jpg", true,
-     BitmapImageMetrics::JpegColorSpace::kYCbCr420, true, gfx::Size(32, 32)},
+    {"cs-uma-ycbcr-420-non-interleaved.jpg", true, true, gfx::Size(32, 32)},
     // 3 components/both JFIF and Adobe markers, so we expect libjpeg_turbo to
     // guess YCbCr.
-    {"cs-uma-ycbcr-420-both-jfif-adobe.jpg", true,
-     BitmapImageMetrics::JpegColorSpace::kYCbCr420, true, gfx::Size(32, 32)},
-    {"cs-uma-ycbcr-422.jpg", true,
-     BitmapImageMetrics::JpegColorSpace::kYCbCr422, true, gfx::Size(32, 64)},
-    {"cs-uma-ycbcr-440.jpg", true,
-     BitmapImageMetrics::JpegColorSpace::kYCbCr440, false},
-    {"cs-uma-ycbcr-444.jpg", true,
-     BitmapImageMetrics::JpegColorSpace::kYCbCr444, true, gfx::Size(64, 64)},
+    {"cs-uma-ycbcr-420-both-jfif-adobe.jpg", true, true, gfx::Size(32, 32)},
+    {"cs-uma-ycbcr-422.jpg", true, true, gfx::Size(32, 64)},
+    {"cs-uma-ycbcr-440.jpg", true, false},
+    {"cs-uma-ycbcr-444.jpg", true, true, gfx::Size(64, 64)},
     // Contains RGB data but uses a bad Adobe color transform, so libjpeg_turbo
     // will guess YCbCr.
-    {"cs-uma-rgb-unknown-transform.jpg", true,
-     BitmapImageMetrics::JpegColorSpace::kYCbCr444, true, gfx::Size(64, 64)},
-    {"cs-uma-ycbcr-other.jpg", true,
-     BitmapImageMetrics::JpegColorSpace::kYCbCrOther, false},
+    {"cs-uma-rgb-unknown-transform.jpg", true, true, gfx::Size(64, 64)},
+    {"cs-uma-ycbcr-other.jpg", true, false},
     // Contains only 2 components. We expect the decode to fail and not produce
     // any samples.
     {"cs-uma-two-channels-jfif-marker.jpg", false}};
@@ -662,171 +602,66 @@ TEST(JPEGImageDecoderTest, Gainmap) {
 }
 
 TEST(JPEGImageDecoderTest, BppHistogramSmall) {
-  base::HistogramTester histogram_tester;
-  std::unique_ptr<ImageDecoder> decoder = CreateJPEGDecoder();
-  decoder->SetData(ReadFile("/images/resources/flowchart.jpg"), true);
-  ASSERT_TRUE(decoder->IsSizeAvailable());
-  histogram_tester.ExpectTotalCount(
-      "Blink.DecodedImage.JpegDensity.Count.0.4MP", 0);
-  ImageFrame* frame = decoder->DecodeFrameBufferAtIndex(0);
-  ASSERT_TRUE(frame);
-  EXPECT_EQ(ImageFrame::kFrameComplete, frame->GetStatus());
-  EXPECT_FALSE(decoder->Failed());
   constexpr int kImageArea = 500 * 644;  // = 322000
   constexpr int kFileSize = 98527;
   constexpr int kSample =
       (kFileSize * 100 * 8 + kImageArea / 2) / kImageArea;  // = 245
-  histogram_tester.ExpectUniqueSample(
-      "Blink.DecodedImage.JpegDensity.Count.0.4MP", kSample, 1);
-  base::HistogramTester::CountsMap expected_counts;
-  expected_counts["Blink.DecodedImage.JpegDensity.Count.0.4MP"] = 1;
-  EXPECT_THAT(histogram_tester.GetTotalCountsForPrefix(
-                  "Blink.DecodedImage.JpegDensity.Count."),
-              testing::ContainerEq(expected_counts));
+  TestJpegBppHistogram("/images/resources/flowchart.jpg",
+                       "Blink.DecodedImage.JpegDensity.Count.0.4MP", kSample);
 }
 
 TEST(JPEGImageDecoderTest, BppHistogramSmall16x16) {
-  base::HistogramTester histogram_tester;
-  std::unique_ptr<ImageDecoder> decoder = CreateJPEGDecoder();
-  decoder->SetData(ReadFile("/images/resources/green.jpg"), true);
-  ASSERT_TRUE(decoder->IsSizeAvailable());
-  histogram_tester.ExpectTotalCount(
-      "Blink.DecodedImage.JpegDensity.Count.0.1MP", 0);
-  ImageFrame* frame = decoder->DecodeFrameBufferAtIndex(0);
-  ASSERT_TRUE(frame);
-  EXPECT_EQ(ImageFrame::kFrameComplete, frame->GetStatus());
-  EXPECT_FALSE(decoder->Failed());
   // The centi bpp = 764 * 100 * 8 / (16 * 16) ~= 2388, which is greater than
   // the histogram's max value (1000), so this sample goes into the overflow
   // bucket.
   constexpr int kSample = 1000;
-  histogram_tester.ExpectUniqueSample(
-      "Blink.DecodedImage.JpegDensity.Count.0.1MP", kSample, 1);
-  base::HistogramTester::CountsMap expected_counts;
-  expected_counts["Blink.DecodedImage.JpegDensity.Count.0.1MP"] = 1;
-  EXPECT_THAT(histogram_tester.GetTotalCountsForPrefix(
-                  "Blink.DecodedImage.JpegDensity.Count."),
-              testing::ContainerEq(expected_counts));
+  TestJpegBppHistogram("/images/resources/green.jpg",
+                       "Blink.DecodedImage.JpegDensity.Count.0.1MP", kSample);
 }
 
 TEST(JPEGImageDecoderTest, BppHistogramSmall900000) {
-  base::HistogramTester histogram_tester;
-  std::unique_ptr<ImageDecoder> decoder = CreateJPEGDecoder();
-  decoder->SetData(ReadFile("/images/resources/peach_900000.jpg"), true);
-  ASSERT_TRUE(decoder->IsSizeAvailable());
-  histogram_tester.ExpectTotalCount(
-      "Blink.DecodedImage.JpegDensity.Count.0.9MP", 0);
-  ImageFrame* frame = decoder->DecodeFrameBufferAtIndex(0);
-  ASSERT_TRUE(frame);
-  EXPECT_EQ(ImageFrame::kFrameComplete, frame->GetStatus());
-  EXPECT_FALSE(decoder->Failed());
   constexpr int kImageArea = 1200 * 750;  // = 900000
   constexpr int kFileSize = 13726;
   constexpr int kSample =
       (kFileSize * 100 * 8 + kImageArea / 2) / kImageArea;  // = 12
-  histogram_tester.ExpectUniqueSample(
-      "Blink.DecodedImage.JpegDensity.Count.0.9MP", kSample, 1);
-  base::HistogramTester::CountsMap expected_counts;
-  expected_counts["Blink.DecodedImage.JpegDensity.Count.0.9MP"] = 1;
-  EXPECT_THAT(histogram_tester.GetTotalCountsForPrefix(
-                  "Blink.DecodedImage.JpegDensity.Count."),
-              testing::ContainerEq(expected_counts));
+  TestJpegBppHistogram("/images/resources/peach_900000.jpg",
+                       "Blink.DecodedImage.JpegDensity.Count.0.9MP", kSample);
 }
 
 TEST(JPEGImageDecoderTest, BppHistogramBig) {
-  base::HistogramTester histogram_tester;
-  std::unique_ptr<ImageDecoder> decoder = CreateJPEGDecoder();
-  decoder->SetData(ReadFile("/images/resources/bee.jpg"), true);
-  ASSERT_TRUE(decoder->IsSizeAvailable());
-  histogram_tester.ExpectTotalCount("Blink.DecodedImage.JpegDensity.Count.13MP",
-                                    0);
-  ImageFrame* frame = decoder->DecodeFrameBufferAtIndex(0);
-  ASSERT_TRUE(frame);
-  EXPECT_EQ(ImageFrame::kFrameComplete, frame->GetStatus());
-  EXPECT_FALSE(decoder->Failed());
   constexpr int kImageArea = 4032 * 3024;  // = 12192768
   constexpr int kFileSize = 54423;
   constexpr int kSample =
       (kFileSize * 100 * 8 + kImageArea / 2) / kImageArea;  // = 4
-  histogram_tester.ExpectUniqueSample(
-      "Blink.DecodedImage.JpegDensity.Count.13MP", kSample, 1);
-  base::HistogramTester::CountsMap expected_counts;
-  expected_counts["Blink.DecodedImage.JpegDensity.Count.13MP"] = 1;
-  EXPECT_THAT(histogram_tester.GetTotalCountsForPrefix(
-                  "Blink.DecodedImage.JpegDensity.Count."),
-              testing::ContainerEq(expected_counts));
+  TestJpegBppHistogram("/images/resources/bee.jpg",
+                       "Blink.DecodedImage.JpegDensity.Count.13MP", kSample);
 }
 
 TEST(JPEGImageDecoderTest, BppHistogramBig13000000) {
-  base::HistogramTester histogram_tester;
-  std::unique_ptr<ImageDecoder> decoder = CreateJPEGDecoder();
-  decoder->SetData(ReadFile("/images/resources/peach_13000000.jpg"), true);
-  ASSERT_TRUE(decoder->IsSizeAvailable());
-  histogram_tester.ExpectTotalCount("Blink.DecodedImage.JpegDensity.Count.13MP",
-                                    0);
-  ImageFrame* frame = decoder->DecodeFrameBufferAtIndex(0);
-  ASSERT_TRUE(frame);
-  EXPECT_EQ(ImageFrame::kFrameComplete, frame->GetStatus());
-  EXPECT_FALSE(decoder->Failed());
   constexpr int kImageArea = 4000 * 3250;  // = 13000000
   constexpr int kFileSize = 49203;
   constexpr int kSample =
       (kFileSize * 100 * 8 + kImageArea / 2) / kImageArea;  // = 3
-  histogram_tester.ExpectUniqueSample(
-      "Blink.DecodedImage.JpegDensity.Count.13MP", kSample, 1);
-  base::HistogramTester::CountsMap expected_counts;
-  expected_counts["Blink.DecodedImage.JpegDensity.Count.13MP"] = 1;
-  EXPECT_THAT(histogram_tester.GetTotalCountsForPrefix(
-                  "Blink.DecodedImage.JpegDensity.Count."),
-              testing::ContainerEq(expected_counts));
+  TestJpegBppHistogram("/images/resources/peach_13000000.jpg",
+                       "Blink.DecodedImage.JpegDensity.Count.13MP", kSample);
 }
 
 TEST(JPEGImageDecoderTest, BppHistogramHuge) {
-  base::HistogramTester histogram_tester;
-  std::unique_ptr<ImageDecoder> decoder = CreateJPEGDecoder();
-  decoder->SetData(ReadFile("/images/resources/peach.jpg"), true);
-  ASSERT_TRUE(decoder->IsSizeAvailable());
-  histogram_tester.ExpectTotalCount(
-      "Blink.DecodedImage.JpegDensity.Count.14+MP", 0);
-  ImageFrame* frame = decoder->DecodeFrameBufferAtIndex(0);
-  ASSERT_TRUE(frame);
-  EXPECT_EQ(ImageFrame::kFrameComplete, frame->GetStatus());
-  EXPECT_FALSE(decoder->Failed());
   constexpr int kImageArea = 4624 * 3472;  // = 16054528
   constexpr int kFileSize = 60007;
   constexpr int kSample =
       (kFileSize * 100 * 8 + kImageArea / 2) / kImageArea;  // = 3
-  histogram_tester.ExpectUniqueSample(
-      "Blink.DecodedImage.JpegDensity.Count.14+MP", kSample, 1);
-  base::HistogramTester::CountsMap expected_counts;
-  expected_counts["Blink.DecodedImage.JpegDensity.Count.14+MP"] = 1;
-  EXPECT_THAT(histogram_tester.GetTotalCountsForPrefix(
-                  "Blink.DecodedImage.JpegDensity.Count."),
-              testing::ContainerEq(expected_counts));
+  TestJpegBppHistogram("/images/resources/peach.jpg",
+                       "Blink.DecodedImage.JpegDensity.Count.14+MP", kSample);
 }
 
 TEST(JPEGImageDecoderTest, BppHistogramHuge13000002) {
-  base::HistogramTester histogram_tester;
-  std::unique_ptr<ImageDecoder> decoder = CreateJPEGDecoder();
-  decoder->SetData(ReadFile("/images/resources/peach_13000002.jpg"), true);
-  ASSERT_TRUE(decoder->IsSizeAvailable());
-  histogram_tester.ExpectTotalCount(
-      "Blink.DecodedImage.JpegDensity.Count.14+MP", 0);
-  ImageFrame* frame = decoder->DecodeFrameBufferAtIndex(0);
-  ASSERT_TRUE(frame);
-  EXPECT_EQ(ImageFrame::kFrameComplete, frame->GetStatus());
-  EXPECT_FALSE(decoder->Failed());
   constexpr int kImageArea = 3961 * 3282;  // = 13000002
   constexpr int kFileSize = 49325;
   constexpr int kSample =
       (kFileSize * 100 * 8 + kImageArea / 2) / kImageArea;  // = 3
-  histogram_tester.ExpectUniqueSample(
-      "Blink.DecodedImage.JpegDensity.Count.14+MP", kSample, 1);
-  base::HistogramTester::CountsMap expected_counts;
-  expected_counts["Blink.DecodedImage.JpegDensity.Count.14+MP"] = 1;
-  EXPECT_THAT(histogram_tester.GetTotalCountsForPrefix(
-                  "Blink.DecodedImage.JpegDensity.Count."),
-              testing::ContainerEq(expected_counts));
+  TestJpegBppHistogram("/images/resources/peach_13000002.jpg",
+                       "Blink.DecodedImage.JpegDensity.Count.14+MP", kSample);
 }
 
 TEST(JPEGImageDecoderTest, BppHistogramInvalid) {
@@ -847,18 +682,7 @@ TEST(JPEGImageDecoderTest, BppHistogramInvalid) {
 }
 
 TEST(JPEGImageDecoderTest, BppHistogramGrayscale) {
-  base::HistogramTester histogram_tester;
-  std::unique_ptr<ImageDecoder> decoder = CreateJPEGDecoder();
-  decoder->SetData(ReadFile("/images/resources/cs-uma-grayscale.jpg"), true);
-  ASSERT_TRUE(decoder->IsSizeAvailable());
-  ImageFrame* frame = decoder->DecodeFrameBufferAtIndex(0);
-  ASSERT_TRUE(frame);
-  EXPECT_EQ(ImageFrame::kFrameComplete, frame->GetStatus());
-  EXPECT_FALSE(decoder->Failed());
-  const base::HistogramTester::CountsMap empty_counts;
-  EXPECT_THAT(histogram_tester.GetTotalCountsForPrefix(
-                  "Blink.DecodedImage.JpegDensity.Count."),
-              testing::ContainerEq(empty_counts));
+  TestJpegBppHistogram("/images/resources/cs-uma-grayscale.jpg");
 }
 
 }  // namespace blink

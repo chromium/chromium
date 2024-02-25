@@ -201,6 +201,27 @@ void CertProvisioningAsh::UpdateOneProcess(const std::string& cert_profile_id) {
   }
 }
 
+void CertProvisioningAsh::ResetOneProcess(const std::string& cert_profile_id) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+
+  CertProvisioningScheduler* user_scheduler = GetUserScheduler();
+  if (user_scheduler && user_scheduler->ResetOneWorker(cert_profile_id)) {
+    return;
+  }
+
+  CertProvisioningScheduler* device_scheduler = GetDeviceScheduler();
+  if (device_scheduler && device_scheduler->ResetOneWorker(cert_profile_id)) {
+    return;
+  }
+
+  if (user_scheduler || device_scheduler) {
+    LOG(ERROR) << "resetting cert_profile_id was not found. id:"
+               << cert_profile_id << " user_scheduler:" << bool(user_scheduler)
+               << " device_scheduler:" << bool(device_scheduler);
+    return;
+  }
+}
+
 void CertProvisioningAsh::InjectForTesting(
     ash::cert_provisioning::CertProvisioningScheduler* user_scheduler,
     ash::cert_provisioning::CertProvisioningScheduler* device_scheduler) {

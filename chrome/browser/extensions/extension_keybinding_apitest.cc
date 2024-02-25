@@ -24,9 +24,9 @@
 #include "chrome/test/base/interactive_test_utils.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/sessions/content/session_tab_helper.h"
-#include "content/public/browser/notification_service.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
+#include "content/public/test/browser_test_utils.h"
 #include "content/public/test/javascript_test_observer.h"
 #include "extensions/browser/extension_action.h"
 #include "extensions/browser/extension_action_manager.h"
@@ -605,8 +605,7 @@ IN_PROC_BROWSER_TEST_F(CommandsApiTest, ShortcutAddedOnUpdate) {
 
   // Install v1 of the extension without keybinding assigned.
   ASSERT_TRUE(InstallExtension(path_v1_unassigned, 1));
-  EXPECT_TRUE(registry->GetExtensionById(kId, ExtensionRegistry::ENABLED) !=
-              nullptr);
+  EXPECT_TRUE(registry->enabled_extensions().GetByID(kId) != nullptr);
 
   // Verify it is set to nothing.
   ui::Accelerator accelerator = command_service->FindCommandByName(
@@ -615,8 +614,7 @@ IN_PROC_BROWSER_TEST_F(CommandsApiTest, ShortcutAddedOnUpdate) {
 
   // Update to version 2 with keybinding.
   EXPECT_TRUE(UpdateExtension(kId, path_v2, 0));
-  EXPECT_TRUE(registry->GetExtensionById(kId, ExtensionRegistry::ENABLED) !=
-              nullptr);
+  EXPECT_TRUE(registry->enabled_extensions().GetByID(kId) != nullptr);
 
   // Verify it has a command of Alt+Shift+F.
   accelerator = command_service->FindCommandByName(
@@ -651,8 +649,7 @@ IN_PROC_BROWSER_TEST_F(CommandsApiTest, ShortcutChangedOnUpdate) {
 
   // Install v1 of the extension.
   ASSERT_TRUE(InstallExtension(path_v1, 1));
-  EXPECT_TRUE(registry->GetExtensionById(kId, ExtensionRegistry::ENABLED) !=
-              nullptr);
+  EXPECT_TRUE(registry->enabled_extensions().GetByID(kId) != nullptr);
 
   // Verify it has a command of Alt+Shift+F.
   ui::Accelerator accelerator = command_service->FindCommandByName(
@@ -664,8 +661,7 @@ IN_PROC_BROWSER_TEST_F(CommandsApiTest, ShortcutChangedOnUpdate) {
 
   // Update to version 2 with different keybinding assigned.
   EXPECT_TRUE(UpdateExtension(kId, path_v2_reassigned, 0));
-  EXPECT_TRUE(registry->GetExtensionById(kId, ExtensionRegistry::ENABLED) !=
-              nullptr);
+  EXPECT_TRUE(registry->enabled_extensions().GetByID(kId) != nullptr);
 
   // Verify it has a command of Alt+Shift+J.
   accelerator = command_service->FindCommandByName(
@@ -700,8 +696,7 @@ IN_PROC_BROWSER_TEST_F(CommandsApiTest, ShortcutRemovedOnUpdate) {
 
   // Install v1 of the extension.
   ASSERT_TRUE(InstallExtension(path_v1, 1));
-  EXPECT_TRUE(registry->GetExtensionById(kId, ExtensionRegistry::ENABLED) !=
-              nullptr);
+  EXPECT_TRUE(registry->enabled_extensions().GetByID(kId) != nullptr);
 
   // Verify it has a command of Alt+Shift+F.
   ui::Accelerator accelerator = command_service->FindCommandByName(
@@ -713,8 +708,7 @@ IN_PROC_BROWSER_TEST_F(CommandsApiTest, ShortcutRemovedOnUpdate) {
 
   // Update to version 2 without keybinding assigned.
   EXPECT_TRUE(UpdateExtension(kId, path_v2_unassigned, 0));
-  EXPECT_TRUE(registry->GetExtensionById(kId, ExtensionRegistry::ENABLED) !=
-              nullptr);
+  EXPECT_TRUE(registry->enabled_extensions().GetByID(kId) != nullptr);
 
   // Verify the keybinding gets set to nothing.
   accelerator = command_service->FindCommandByName(
@@ -747,8 +741,7 @@ IN_PROC_BROWSER_TEST_F(CommandsApiTest,
 
   // Install v1 of the extension without keybinding assigned.
   ASSERT_TRUE(InstallExtension(path_v1_unassigned, 1));
-  EXPECT_TRUE(registry->GetExtensionById(kId, ExtensionRegistry::ENABLED) !=
-              nullptr);
+  EXPECT_TRUE(registry->enabled_extensions().GetByID(kId) != nullptr);
 
   // Verify it is set to nothing.
   ui::Accelerator accelerator = command_service->FindCommandByName(
@@ -761,8 +754,7 @@ IN_PROC_BROWSER_TEST_F(CommandsApiTest,
 
   // Update to version 2 with keybinding.
   EXPECT_TRUE(UpdateExtension(kId, path_v2, 0));
-  EXPECT_TRUE(registry->GetExtensionById(kId, ExtensionRegistry::ENABLED) !=
-              nullptr);
+  EXPECT_TRUE(registry->enabled_extensions().GetByID(kId) != nullptr);
 
   // Verify the previously-set keybinding is still set.
   accelerator = command_service->FindCommandByName(
@@ -798,8 +790,7 @@ IN_PROC_BROWSER_TEST_F(CommandsApiTest,
 
   // Install v1 of the extension.
   ASSERT_TRUE(InstallExtension(path_v1, 1));
-  EXPECT_TRUE(registry->GetExtensionById(kId, ExtensionRegistry::ENABLED) !=
-              nullptr);
+  EXPECT_TRUE(registry->enabled_extensions().GetByID(kId) != nullptr);
 
   // Verify it has a command of Alt+Shift+F.
   ui::Accelerator accelerator = command_service->FindCommandByName(
@@ -815,8 +806,7 @@ IN_PROC_BROWSER_TEST_F(CommandsApiTest,
 
   // Update to version 2 with different keybinding assigned.
   EXPECT_TRUE(UpdateExtension(kId, path_v2_reassigned, 0));
-  EXPECT_TRUE(registry->GetExtensionById(kId, ExtensionRegistry::ENABLED) !=
-              nullptr);
+  EXPECT_TRUE(registry->enabled_extensions().GetByID(kId) != nullptr);
 
   // Verify it has a command of Alt+Shift+G.
   accelerator = command_service->FindCommandByName(
@@ -853,8 +843,7 @@ IN_PROC_BROWSER_TEST_F(CommandsApiTest,
 
   // Install v1 of the extension.
   ASSERT_TRUE(InstallExtension(path_v1, 1));
-  EXPECT_TRUE(registry->GetExtensionById(kId, ExtensionRegistry::ENABLED) !=
-              nullptr);
+  EXPECT_TRUE(registry->enabled_extensions().GetByID(kId) != nullptr);
 
   // Verify it has a command of MediaPlayPause.
   ui::Accelerator accelerator = command_service->FindCommandByName(
@@ -870,8 +859,7 @@ IN_PROC_BROWSER_TEST_F(CommandsApiTest,
 
   // Update to version 2 with different keybinding assigned.
   EXPECT_TRUE(UpdateExtension(kId, path_v2_reassigned, 0));
-  EXPECT_TRUE(registry->GetExtensionById(kId, ExtensionRegistry::ENABLED) !=
-              nullptr);
+  EXPECT_TRUE(registry->enabled_extensions().GetByID(kId) != nullptr);
 
   // Verify it has a command of Alt+Shift+G.
   accelerator = command_service->FindCommandByName(
@@ -907,8 +895,7 @@ IN_PROC_BROWSER_TEST_F(CommandsApiTest,
 
   // Install v1 of the extension.
   ASSERT_TRUE(InstallExtension(path_v1, 1));
-  EXPECT_TRUE(registry->GetExtensionById(kId, ExtensionRegistry::ENABLED) !=
-              nullptr);
+  EXPECT_TRUE(registry->enabled_extensions().GetByID(kId) != nullptr);
 
   // Verify it has a command of Alt+Shift+F.
   ui::Accelerator accelerator = command_service->FindCommandByName(
@@ -924,8 +911,7 @@ IN_PROC_BROWSER_TEST_F(CommandsApiTest,
 
   // Update to version 2 without keybinding assigned.
   EXPECT_TRUE(UpdateExtension(kId, path_v2_unassigned, 0));
-  EXPECT_TRUE(registry->GetExtensionById(kId, ExtensionRegistry::ENABLED) !=
-              nullptr);
+  EXPECT_TRUE(registry->enabled_extensions().GetByID(kId) != nullptr);
 
   // Verify the keybinding is still set.
   accelerator = command_service->FindCommandByName(
@@ -1034,14 +1020,8 @@ IN_PROC_BROWSER_TEST_F(CommandsApiTest, TabParameter) {
   EXPECT_TRUE(catcher.GetNextResult()) << catcher.message();
 }
 
-// Disable this test only for Lacros due to flakiness. crbug.com/1154365.
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-#define MAYBE_IncognitoMode DISABLED_IncognitoMode
-#else
-#define MAYBE_IncognitoMode IncognitoMode
-#endif
 // Test Keybinding in incognito mode.
-IN_PROC_BROWSER_TEST_P(IncognitoCommandsApiTest, MAYBE_IncognitoMode) {
+IN_PROC_BROWSER_TEST_P(IncognitoCommandsApiTest, IncognitoMode) {
   ASSERT_TRUE(embedded_test_server()->Start());
 
   bool is_incognito_enabled = GetParam();

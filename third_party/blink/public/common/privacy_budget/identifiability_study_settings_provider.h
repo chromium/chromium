@@ -14,6 +14,12 @@ class BLINK_COMMON_EXPORT IdentifiabilityStudySettingsProvider {
  public:
   virtual ~IdentifiabilityStudySettingsProvider();
 
+  // Returns true if the meta experiment of the identifiability study is active
+  // (meaning that this client is selected for collecting meta surfaces). For
+  // any specific instance of IdentifiabilityStudySettings, this answer cannot
+  // change. It will only be queried once.
+  virtual bool IsMetaExperimentActive() const = 0;
+
   // Returns true if the identifiability study is active. For any specific
   // instance of IdentifiabilityStudySettings, this answer cannot change. It
   // will only be queried once.
@@ -35,14 +41,6 @@ class BLINK_COMMON_EXPORT IdentifiabilityStudySettingsProvider {
   //
   // If IsActive() is false, this method will not be called.
   virtual bool IsTypeAllowed(IdentifiableSurface::Type type) const = 0;
-
-  // Returns true if surfaces should be actively sampled.
-  virtual bool ShouldActivelySample() const = 0;
-
-  // Returns the list of font families which should be actively sampled.
-  virtual std::vector<std::string> FontFamiliesToActivelySample() const {
-    return std::vector<std::string>();
-  }
 };
 
 }  // namespace blink

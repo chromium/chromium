@@ -7,9 +7,9 @@
 #import "base/strings/sys_string_conversions.h"
 #import "components/autofill/core/browser/payments/autofill_save_card_infobar_delegate_mobile.h"
 #import "components/autofill/core/common/autofill_payments_features.h"
-#import "ios/chrome/browser/autofill/message/save_card_message_with_links.h"
-#import "ios/chrome/browser/infobars/overlays/infobar_overlay_util.h"
-#import "ios/chrome/browser/overlays/public/default/default_infobar_overlay_request_config.h"
+#import "ios/chrome/browser/autofill/model/message/save_card_message_with_links.h"
+#import "ios/chrome/browser/infobars/model/overlays/infobar_overlay_util.h"
+#import "ios/chrome/browser/overlays/model/public/default/default_infobar_overlay_request_config.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/browser/ui/infobars/modals/infobar_save_card_modal_consumer.h"
 #import "ios/chrome/browser/ui/overlays/infobar_modal/infobar_modal_overlay_coordinator+modal_configuration.h"
@@ -120,28 +120,13 @@
 - (NSMutableArray<SaveCardMessageWithLinks*>*)legalMessages {
   autofill::AutofillSaveCardInfoBarDelegateMobile* delegate =
       self.saveCardDelegate;
-
-  NSMutableArray<SaveCardMessageWithLinks*>* legalMessages =
-      [[NSMutableArray alloc] init];
   // Only display legal Messages if the card is being uploaded and there are
   // any.
   if (delegate->is_for_upload() && !delegate->legal_message_lines().empty()) {
-    for (const auto& line : delegate->legal_message_lines()) {
-      SaveCardMessageWithLinks* message =
-          [[SaveCardMessageWithLinks alloc] init];
-      message.messageText = base::SysUTF16ToNSString(line.text());
-      NSMutableArray* linkRanges = [[NSMutableArray alloc] init];
-      std::vector<GURL> linkURLs;
-      for (const auto& link : line.links()) {
-        [linkRanges addObject:[NSValue valueWithRange:link.range.ToNSRange()]];
-        linkURLs.push_back(link.url);
-      }
-      message.linkRanges = linkRanges;
-      message.linkURLs = linkURLs;
-      [legalMessages addObject:message];
-    }
+    return
+        [SaveCardMessageWithLinks convertFrom:delegate->legal_message_lines()];
   }
-  return legalMessages;
+  return [[NSMutableArray alloc] init];
 }
 
 @end

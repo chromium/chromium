@@ -19,6 +19,7 @@
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/aura/client/focus_change_observer.h"
 #include "ui/aura/client/focus_client.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
 #include "ui/compositor/layer.h"
 #include "ui/compositor/layer_animator.h"
@@ -136,7 +137,7 @@ class LoginBubbleHandler : public ui::EventHandler {
     }
   }
 
-  raw_ptr<LoginBaseBubbleView, ExperimentalAsh> bubble_;
+  raw_ptr<LoginBaseBubbleView> bubble_;
 };
 
 LoginBaseBubbleView::LoginBaseBubbleView(base::WeakPtr<views::View> anchor_view)
@@ -161,7 +162,8 @@ LoginBaseBubbleView::LoginBaseBubbleView(base::WeakPtr<views::View> anchor_view,
   SetBackground(views::CreateThemedRoundedRectBackground(background_color_id,
                                                          kBubbleBorderRadius));
   SetBorder(std::make_unique<views::HighlightBorder>(
-      kBubbleBorderRadius, views::HighlightBorder::Type::kHighlightBorder1));
+      kBubbleBorderRadius,
+      views::HighlightBorder::Type::kHighlightBorderOnShadow));
   // Set shadow
   if (chromeos::features::IsJellyrollEnabled()) {
     shadow_ = SystemShadow::CreateShadowOnNinePatchLayerForView(
@@ -177,8 +179,9 @@ void LoginBaseBubbleView::EnsureLayer() {
   }
   // Layer rendering is needed for animation.
   SetPaintToLayer();
-  layer()->SetBackgroundBlur(ColorProvider::kBackgroundBlurSigma);
   layer()->SetFillsBoundsOpaquely(false);
+  layer()->SetBackgroundBlur(ColorProvider::kBackgroundBlurSigma);
+  layer()->SetBackdropFilterQuality(ColorProvider::kBackgroundBlurQuality);
 }
 
 LoginBaseBubbleView::~LoginBaseBubbleView() = default;
@@ -298,12 +301,12 @@ gfx::Size LoginBaseBubbleView::CalculatePreferredSize() const {
   return size;
 }
 
-void LoginBaseBubbleView::Layout() {
-  views::View::Layout();
+void LoginBaseBubbleView::Layout(PassKey) {
+  LayoutSuperclass<views::View>(this);
 
-  // If a Layout() is called while the bubble is visible (i.e. due to Show()),
-  // its bounds may change because of the parent's LayoutManager. This allows
-  // the bubbles to always determine their own size and position.
+  // If layout occurs while the bubble is visible (i.e. due to Show()), its
+  // bounds may change because of the parent's LayoutManager. This allows the
+  // bubbles to always determine their own size and position.
   if (GetVisible()) {
     SetSize(GetPreferredSize());
     SetPosition(CalculatePosition());
@@ -389,5 +392,8 @@ void LoginBaseBubbleView::ScheduleAnimation(bool visible) {
     layer()->SetOpacity(opacity_end);
   }
 }
+
+BEGIN_METADATA(LoginBaseBubbleView)
+END_METADATA
 
 }  // namespace ash

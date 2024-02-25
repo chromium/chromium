@@ -36,9 +36,10 @@ class LabelButton;
 class ContentSettingBubbleContents : public content::WebContentsObserver,
                                      public views::BubbleDialogDelegateView,
                                      public ContentSettingBubbleModel::Owner {
+  METADATA_HEADER(ContentSettingBubbleContents, views::BubbleDialogDelegateView)
+
  public:
   DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kMainElementId);
-  METADATA_HEADER(ContentSettingBubbleContents);
   ContentSettingBubbleContents(
       std::unique_ptr<ContentSettingBubbleModel> content_setting_bubble_model,
       content::WebContents* web_contents,
@@ -102,7 +103,8 @@ class ContentSettingBubbleContents : public content::WebContentsObserver,
 
   raw_ptr<ListItemContainer, DanglingUntriaged> list_item_container_ = nullptr;
 
-  typedef std::vector<views::RadioButton*> RadioGroup;
+  typedef std::vector<raw_ptr<views::RadioButton, VectorExperimental>>
+      RadioGroup;
   RadioGroup radio_group_;
   raw_ptr<views::LabelButton, DanglingUntriaged> manage_button_ = nullptr;
   raw_ptr<views::Checkbox, DanglingUntriaged> manage_checkbox_ = nullptr;

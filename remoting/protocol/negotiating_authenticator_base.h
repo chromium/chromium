@@ -11,6 +11,7 @@
 
 #include "base/gtest_prod_util.h"
 #include "remoting/protocol/authenticator.h"
+#include "remoting/protocol/host_authentication_config.h"
 
 namespace jingle_xmpp {
 struct StaticQName;
@@ -60,32 +61,6 @@ namespace remoting::protocol {
 //      mix of webapp, client plugin and host, for both Me2Me and IT2Me.
 class NegotiatingAuthenticatorBase : public Authenticator {
  public:
-  // Method represents an authentication algorithm.
-  enum class Method {
-    INVALID,
-
-    // SPAKE2 with P224 using access code in plain-text. Used for It2Me.
-    // TODO(sergeyu): Remove and use SHARED_SECRET_SPAKE2_CURVE25519 once
-    // the population of M50 hosts (which require this for IT2Me) is
-    // sufficiently low: crbug.com/607643.
-    SHARED_SECRET_PLAIN_SPAKE2_P224,
-
-    // SPAKE2 PIN or access code hashed with host_id using HMAC-SHA256.
-    SHARED_SECRET_SPAKE2_P224,
-    SHARED_SECRET_SPAKE2_CURVE25519,
-
-    // SPAKE2 using shared pairing secret. Falls back to PIN-based
-    // authentication when pairing fails.
-    PAIRED_SPAKE2_P224,
-    PAIRED_SPAKE2_CURVE25519,
-
-    // Authentication using third-party authentication server.
-    // SPAKE2 with P224 using shared pairing secret. Falls back to PIN-based
-    // authentication when it fails to authenticate using paired secret.
-    THIRD_PARTY_SPAKE2_P224,
-    THIRD_PARTY_SPAKE2_CURVE25519,
-  };
-
   NegotiatingAuthenticatorBase(const NegotiatingAuthenticatorBase&) = delete;
   NegotiatingAuthenticatorBase& operator=(const NegotiatingAuthenticatorBase&) =
       delete;
@@ -106,6 +81,8 @@ class NegotiatingAuthenticatorBase : public Authenticator {
                               base::OnceClosure resume_callback);
 
  protected:
+  using Method = HostAuthenticationConfig::Method;
+
   friend class NegotiatingAuthenticatorTest;
 
   static const jingle_xmpp::StaticQName kMethodAttributeQName;
@@ -115,16 +92,9 @@ class NegotiatingAuthenticatorBase : public Authenticator {
   static const jingle_xmpp::StaticQName kPairingInfoTag;
   static const jingle_xmpp::StaticQName kClientIdAttribute;
 
-  // Parses a string that defines an authentication method. Returns
-  // Method::INVALID if the string is invalid.
-  static Method ParseMethodString(const std::string& value);
-
-  // Returns string representation of |method|.
-  static std::string MethodToString(Method method);
-
   explicit NegotiatingAuthenticatorBase(Authenticator::State initial_state);
 
-  void AddMethod(Method method);
+  void AddMethod(HostAuthenticationConfig::Method method);
 
   // Updates |state_| to reflect the current underlying authenticator state.
   // |resume_callback| is called after the state is updated.

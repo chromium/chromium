@@ -1,0 +1,31 @@
+[
+  {
+    "os": [
+      "chromeos_ash"
+    ],
+    "policy_pref_mapping_tests": [
+      {
+        "policies": {
+          "VirtualKeyboardFeatures": {
+            "auto_complete_enabled": true,
+            "auto_correct_enabled": true,
+            "handwriting_enabled": true,
+            "spell_check_enabled": false,
+            "voice_input_enabled": false
+          }
+        },
+        "prefs": {
+          "settings.a11y.virtual_keyboard_features": {
+            "value": {
+              "auto_complete_enabled": true,
+              "auto_correct_enabled": true,
+              "handwriting_enabled": true,
+              "spell_check_enabled": false,
+              "voice_input_enabled": false
+            }
+          }
+        }
+      }
+    ]
+  }
+]

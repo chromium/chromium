@@ -6,7 +6,10 @@ import("//build/config/ui.gni")
 import("//testing/libfuzzer/fuzzer_test.gni")
 
 static_library("browser") {
-  friend = [ "//components/bookmarks/test" ]
+  friend = [
+    ":unit_tests",
+    "//components/bookmarks/test",
+  ]
 
   public = [
     "base_bookmark_model_observer.h",
@@ -20,6 +23,7 @@ static_library("browser") {
     "bookmark_undo_provider.h",
     "bookmark_utils.h",
     "bookmark_uuids.h",
+    "core_bookmark_model.h",
     "history_bookmark_model.h",
     "model_loader.h",
     "scoped_group_bookmark_actions.h",
@@ -42,6 +46,7 @@ static_library("browser") {
     "bookmark_storage.cc",
     "bookmark_utils.cc",
     "bookmark_uuids.cc",
+    "core_bookmark_model.cc",
     "model_loader.cc",
     "scoped_group_bookmark_actions.cc",
     "titled_url_index.cc",
@@ -50,6 +55,7 @@ static_library("browser") {
     "typed_count_sorter.h",
     "url_index.cc",
     "url_index.h",
+    "uuid_index.h",
   ]
 
   public_deps = [ "//components/bookmarks/common" ]
@@ -63,6 +69,7 @@ static_library("browser") {
     "//components/prefs",
     "//components/query_parser",
     "//components/strings",
+    "//components/sync/base:features",
     "//components/url_formatter",
     "//net",
     "//third_party/icu",
@@ -117,7 +124,10 @@ bundle_data("unit_tests_bundle_data") {
   testonly = true
   sources = [
     "//components/test/data/bookmarks/meta_info_as_string.json",
-    "//components/test/data/bookmarks/model_without_sync.json",
+    "//components/test/data/bookmarks/model_with_duplicate_ids.json",
+    "//components/test/data/bookmarks/model_with_sync_metadata_1.json",
+    "//components/test/data/bookmarks/model_with_sync_metadata_2.json",
+    "//components/test/data/bookmarks/model_without_mobile_bookmarks.json",
   ]
   outputs = [ "{{bundle_resources_dir}}/" +
               "{{source_root_relative_dir}}/{{source_file_part}}" ]
@@ -127,9 +137,11 @@ source_set("unit_tests") {
   testonly = true
   sources = [
     "bookmark_codec_unittest.cc",
+    "bookmark_load_details_unittest.cc",
     "bookmark_model_unittest.cc",
     "bookmark_storage_unittest.cc",
     "bookmark_utils_unittest.cc",
+    "model_loader_unittest.cc",
     "titled_url_index_unittest.cc",
     "titled_url_match_unittest.cc",
   ]
@@ -146,6 +158,7 @@ source_set("unit_tests") {
     "//components/prefs",
     "//components/prefs:test_support",
     "//components/query_parser",
+    "//components/sync/base:features",
     "//testing/gtest",
     "//ui/base",
     "//ui/base:data_exchange",

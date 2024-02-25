@@ -4,84 +4,68 @@
 
 #include "ash/components/arc/compat_mode/compat_mode_button_controller.h"
 
-#include <string>
-
 #include "ash/components/arc/compat_mode/arc_resize_lock_pref_delegate.h"
 #include "ash/components/arc/compat_mode/arc_window_property_util.h"
 #include "ash/components/arc/compat_mode/compat_mode_button.h"
-#include "ash/components/arc/compat_mode/resize_util.h"
-#include "ash/components/arc/vector_icons/vector_icons.h"
 #include "ash/frame/non_client_frame_view_ash.h"
 #include "ash/game_dashboard/game_dashboard_controller.h"
 #include "ash/public/cpp/app_types_util.h"
+#include "ash/public/cpp/arc_compat_mode_util.h"
 #include "ash/public/cpp/arc_resize_lock_type.h"
 #include "ash/public/cpp/window_properties.h"
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "base/functional/bind.h"
-#include "base/functional/callback_forward.h"
 #include "chromeos/constants/chromeos_features.h"
 #include "chromeos/ui/frame/default_frame_header.h"
 #include "components/strings/grit/components_strings.h"
 #include "ui/base/l10n/l10n_util.h"
-#include "ui/gfx/vector_icon_types.h"
 #include "ui/views/vector_icons.h"
 
 namespace arc {
 
-namespace {
+CompatModeButtonController::ButtonState::ButtonState() = default;
 
-const gfx::VectorIcon& GetIcon(const ResizeCompatMode& mode) {
-  switch (mode) {
-    case ResizeCompatMode::kPhone:
-      return chromeos::features::IsJellyEnabled()
-                 ? ash::kSystemMenuPhoneIcon
-                 : ash::kSystemMenuPhoneLegacyIcon;
-    case ResizeCompatMode::kTablet:
-      return chromeos::features::IsJellyEnabled()
-                 ? ash::kSystemMenuTabletIcon
-                 : ash::kSystemMenuTabletLegacyIcon;
-    case ResizeCompatMode::kResizable:
-      return kResizableIcon;
-  }
+CompatModeButtonController::ButtonState::ButtonState(bool enable) {
+  this->enable = enable;
 }
 
-std::u16string GetText(const ResizeCompatMode& mode) {
-  switch (mode) {
-    case ResizeCompatMode::kPhone:
-      return l10n_util::GetStringUTF16(
-          IDS_ARC_COMPAT_MODE_RESIZE_TOGGLE_MENU_PHONE);
-    case ResizeCompatMode::kTablet:
-      return l10n_util::GetStringUTF16(
-          IDS_ARC_COMPAT_MODE_RESIZE_TOGGLE_MENU_TABLET);
-    case ResizeCompatMode::kResizable:
-      return l10n_util::GetStringUTF16(
-          IDS_ARC_COMPAT_MODE_RESIZE_TOGGLE_MENU_RESIZABLE);
-  }
+CompatModeButtonController::ButtonState::ButtonState(
+    bool enable,
+    const std::u16string& tooltip_text)
+    : CompatModeButtonController::ButtonState(enable) {
+  this->tooltip_text = tooltip_text;
 }
 
-}  // namespace
+CompatModeButtonController::ButtonState::ButtonState(const ButtonState& other) =
+    default;
+CompatModeButtonController::ButtonState::~ButtonState() = default;
 
 CompatModeButtonController::CompatModeButtonController() = default;
 CompatModeButtonController::~CompatModeButtonController() = default;
 
-void CompatModeButtonController::Update(
-    ArcResizeLockPrefDelegate* pref_delegate,
-    aura::Window* window) {
+void CompatModeButtonController::Update(aura::Window* window) {
   DCHECK(ash::IsArcWindow(window));
+  DCHECK(pref_delegate_);
 
-  if (ash::GameDashboardController::IsGameWindow(window)) {
-    return;
-  }
   const auto app_id = GetAppId(window);
   if (!app_id)
     return;
   auto* const frame_header = GetFrameHeader(window);
   // TODO(b/200230343): Replace it with resize lock type.
-  const auto resize_lock_state = pref_delegate->GetResizeLockState(*app_id);
+  const auto resize_lock_state = pref_delegate_->GetResizeLockState(*app_id);
   if (resize_lock_state == mojom::ArcResizeLockState::UNDEFINED ||
       resize_lock_state == mojom::ArcResizeLockState::READY) {
     return;
   }
+
+  // Update the accelerator, for all windows.
+  UpdateAshAccelerator(window);
+
+  // Don't show the `CompatModeButton` for game windows.
+  if (ash::GameDashboardController::IsGameWindow(window)) {
+    return;
+  }
+
   auto* compat_mode_button = frame_header->GetCenterButton();
   if (!compat_mode_button) {
     // The ownership is transferred implicitly with AddChildView in HeaderView,
@@ -89,7 +73,7 @@ void CompatModeButtonController::Update(
     compat_mode_button = new CompatModeButton(
         this,
         base::BindRepeating(&CompatModeButtonController::ToggleResizeToggleMenu,
-                            GetWeakPtr(), window, pref_delegate));
+                            GetWeakPtr(), window));
     frame_header->SetCenterButton(compat_mode_button);
 
     UpdateArrowIcon(window, /*widget_visibility=*/false);
@@ -102,39 +86,56 @@ void CompatModeButtonController::Update(
       frame_view->GetHeaderView()->UpdateCaptionButtons();
   }
 
-  const auto mode = PredictCurrentMode(window);
-  const auto& icon = GetIcon(mode);
-  const auto text = GetText(mode);
+  const auto mode = ash::compat_mode_util::PredictCurrentMode(window);
+  const auto text = ash::compat_mode_util::GetText(mode);
 
   compat_mode_button->SetImage(views::CAPTION_BUTTON_ICON_CENTER,
-                               views::FrameCaptionButton::Animate::kNo, icon);
+                               views::FrameCaptionButton::Animate::kNo,
+                               ash::compat_mode_util::GetIcon(mode));
   compat_mode_button->SetText(text);
   compat_mode_button->SetAccessibleName(text);
 
-  const auto resize_lock_type = window->GetProperty(ash::kArcResizeLockTypeKey);
-  switch (resize_lock_type) {
-    case ash::ArcResizeLockType::RESIZE_DISABLED_TOGGLABLE:
-    case ash::ArcResizeLockType::RESIZE_ENABLED_TOGGLABLE:
-      compat_mode_button->SetEnabled(true);
-      break;
-    case ash::ArcResizeLockType::RESIZE_DISABLED_NONTOGGLABLE:
-      compat_mode_button->SetEnabled(false);
-      compat_mode_button->SetTooltipText(l10n_util::GetStringUTF16(
-          IDS_ASH_ARC_APP_COMPAT_DISABLED_COMPAT_MODE_BUTTON_TOOLTIP_PHONE));
-      break;
-    case ash::ArcResizeLockType::NONE:
-      // Maximizing an app with RESIZE_ENABLED_TOGGLABLE can lead to this case.
-      // Resize lock state shouldn't be updated as the pre-maximized state
-      // needs to be restored later.
-      break;
+  if (auto button_state = GetButtonState(window)) {
+    compat_mode_button->SetEnabled(button_state->enable);
+    if (button_state->tooltip_text) {
+      compat_mode_button->SetTooltipText(button_state->tooltip_text.value());
+    }
   }
-
-  UpdateAshAccelerator(pref_delegate, window);
 }
 
 void CompatModeButtonController::OnButtonPressed() {
   visible_when_button_pressed_ =
       resize_toggle_menu_ && resize_toggle_menu_->IsBubbleShown();
+}
+
+void CompatModeButtonController::ClearPrefDelegate() {
+  pref_delegate_ = nullptr;
+}
+
+void CompatModeButtonController::SetPrefDelegate(
+    ArcResizeLockPrefDelegate* pref_delegate) {
+  CHECK(!pref_delegate_);
+  pref_delegate_ = pref_delegate;
+}
+
+std::optional<CompatModeButtonController::ButtonState>
+CompatModeButtonController::GetButtonState(const aura::Window* window) const {
+  const auto resize_lock_type = window->GetProperty(ash::kArcResizeLockTypeKey);
+  switch (resize_lock_type) {
+    case ash::ArcResizeLockType::RESIZE_DISABLED_TOGGLABLE:
+    case ash::ArcResizeLockType::RESIZE_ENABLED_TOGGLABLE:
+      return ButtonState{/*enable=*/true};
+    case ash::ArcResizeLockType::RESIZE_DISABLED_NONTOGGLABLE:
+      return ButtonState{
+          /*enable=*/false,
+          l10n_util::GetStringUTF16(
+              IDS_ASH_ARC_APP_COMPAT_DISABLED_COMPAT_MODE_BUTTON_TOOLTIP_PHONE)};
+    case ash::ArcResizeLockType::NONE:
+      // Maximizing an app with RESIZE_ENABLED_TOGGLABLE can lead to this case.
+      // Resize lock state shouldn't be updated as the pre-maximized state
+      // needs to be restored later.
+      return std::nullopt;
+  }
 }
 
 void CompatModeButtonController::UpdateArrowIcon(aura::Window* window,
@@ -156,6 +157,21 @@ void CompatModeButtonController::UpdateArrowIcon(aura::Window* window,
   compat_mode_button->SchedulePaint();
 }
 
+void CompatModeButtonController::ShowResizeToggleMenu(
+    aura::Window* window,
+    base::OnceClosure on_bubble_widget_closing_callback) {
+  DCHECK(window) << "Invalid window. Unable to display resize toggle menu.";
+  DCHECK(ash::IsArcWindow(window))
+      << "Cannot display resize toggle menu on a non-ARC window.";
+
+  auto* frame_view = ash::NonClientFrameViewAsh::Get(window);
+  DCHECK(frame_view)
+      << "Invalid frame view. Unable to display resize toggle menu.";
+  resize_toggle_menu_ = std::make_unique<ResizeToggleMenu>(
+      std::move(on_bubble_widget_closing_callback), frame_view->frame(),
+      pref_delegate_);
+}
+
 base::WeakPtr<CompatModeButtonController>
 CompatModeButtonController::GetWeakPtr() {
   return weak_ptr_factory_.GetWeakPtr();
@@ -167,9 +183,7 @@ chromeos::FrameHeader* CompatModeButtonController::GetFrameHeader(
   return frame_view->GetHeaderView()->GetFrameHeader();
 }
 
-void CompatModeButtonController::UpdateAshAccelerator(
-    ArcResizeLockPrefDelegate* pref_delegate,
-    aura::Window* window) {
+void CompatModeButtonController::UpdateAshAccelerator(aura::Window* window) {
   auto* const frame_view = ash::NonClientFrameViewAsh::Get(window);
   // |frame_view| can be null in unittest.
   if (!frame_view)
@@ -184,7 +198,7 @@ void CompatModeButtonController::UpdateAshAccelerator(
     case ash::ArcResizeLockType::RESIZE_ENABLED_TOGGLABLE:
       frame_view->SetToggleResizeLockMenuCallback(base::BindRepeating(
           &CompatModeButtonController::ToggleResizeToggleMenu, GetWeakPtr(),
-          window, pref_delegate));
+          window));
       break;
     case ash::ArcResizeLockType::RESIZE_DISABLED_NONTOGGLABLE:
       frame_view->ClearToggleResizeLockMenuCallback();
@@ -192,11 +206,11 @@ void CompatModeButtonController::UpdateAshAccelerator(
   }
 }
 
-void CompatModeButtonController::ToggleResizeToggleMenu(
-    aura::Window* window,
-    ArcResizeLockPrefDelegate* pref_delegate) {
-  if (!window || !ash::IsArcWindow(window))
+void CompatModeButtonController::ToggleResizeToggleMenu(aura::Window* window) {
+  if (!window || !ash::IsArcWindow(window)) {
     return;
+  }
+  DCHECK(pref_delegate_);
 
   auto* frame_view = ash::NonClientFrameViewAsh::Get(window);
   DCHECK(frame_view);
@@ -206,12 +220,10 @@ void CompatModeButtonController::ToggleResizeToggleMenu(
     return;
   if (visible_when_button_pressed_)
     return;
-  resize_toggle_menu_.reset();
-  resize_toggle_menu_ = std::make_unique<ResizeToggleMenu>(
-      base::BindOnce(&CompatModeButtonController::UpdateArrowIcon,
-                     base::Unretained(this), window,
-                     /*widget_visibility=*/false),
-      frame_view->frame(), pref_delegate);
+  ShowResizeToggleMenu(
+      window, base::BindOnce(&CompatModeButtonController::UpdateArrowIcon,
+                             base::Unretained(this), window,
+                             /*widget_visibility=*/false));
   UpdateArrowIcon(window, /*widget_visibility=*/true);
 }
 

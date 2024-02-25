@@ -1,0 +1,164 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+Copyright 2023 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_height="wrap_content"
+    android:layout_width="match_parent"
+    android:orientation="vertical">
+
+    <!-- Drag handlebar -->
+    <ImageView
+        android:importantForAccessibility="no"
+        android:layout_gravity="center_horizontal"
+        android:layout_height="@dimen/autofill_bottom_sheet_drag_handlebar_height"
+        android:layout_marginVertical="@dimen/autofill_bottom_sheet_spacing_extra_small"
+        android:layout_width="@dimen/autofill_bottom_sheet_drag_handlebar_width"
+        android:src="@drawable/drag_handlebar"
+        app:tint="@macro/drag_handlebar_color" />
+
+    <ScrollView
+        android:id="@+id/scroll_view"
+        android:layout_height="wrap_content"
+        android:layout_width="match_parent">
+
+        <LinearLayout
+            android:layout_height="wrap_content"
+            android:layout_width="match_parent"
+            android:orientation="vertical"
+            android:paddingHorizontal="@dimen/autofill_bottom_sheet_padding_horizontal"
+            android:paddingVertical="@dimen/autofill_bottom_sheet_spacing_extra_small">
+
+            <!-- Google Pay logo -->
+            <org.chromium.ui.widget.ChromeImageView
+                android:importantForAccessibility="no"
+                android:layout_gravity="center_horizontal"
+                android:layout_height="wrap_content"
+                android:layout_width="match_parent"
+                android:minHeight="@dimen/autofill_bottom_sheet_logo_min_height"
+                android:src="@drawable/google_pay" />
+
+            <!-- Virtual card enrollment illustration image -->
+            <org.chromium.ui.widget.ChromeImageView
+                android:importantForAccessibility="no"
+                android:layout_gravity="center_horizontal"
+                android:layout_height="wrap_content"
+                android:layout_width="match_parent"
+                android:minHeight="@dimen/autofill_bottom_sheet_illustration_min_height"
+                android:layout_marginTop="@dimen/autofill_bottom_sheet_spacing_medium"
+                android:src="@drawable/virtual_card_enrollment_illustration" />
+
+            <!-- "Make it more secure with a virtual card next time?" dialog title -->
+            <androidx.appcompat.widget.DialogTitle
+                android:id="@+id/dialog_title"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/autofill_bottom_sheet_spacing_medium"
+                android:textAlignment="center"
+                android:textAppearance="@style/TextAppearance.Headline.Primary" />
+
+            <!-- "A virtual card hides your actual card to help protect..." label -->
+            <org.chromium.ui.widget.TextViewWithClickableSpans
+                android:id="@+id/virtual_card_description"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/autofill_bottom_sheet_spacing_extra_small"
+                android:textAlignment="center"
+                app:leading="@dimen/text_size_medium_leading"
+                style="@style/TextAppearance.TextMedium.Secondary" />
+
+            <!-- Card information container -->
+            <RelativeLayout
+                android:id="@+id/card_container"
+                android:background="@drawable/card_container_background"
+                android:descendantFocusability="blocksDescendants"
+                android:importantForAccessibility="yes"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/autofill_bottom_sheet_spacing_large"
+                android:layout_width="match_parent"
+                android:padding="@dimen/autofill_bottom_sheet_spacing_medium">
+
+                <!-- Card issuer icon -->
+                <org.chromium.ui.widget.ChromeImageView
+                    android:id="@+id/issuer_icon"
+                    android:importantForAccessibility="no"
+                    android:layout_alignParentStart="true"
+                    android:layout_centerVertical="true"
+                    android:layout_height="wrap_content"
+                    android:layout_width="wrap_content"
+                    android:layout_marginEnd="@dimen/autofill_bottom_sheet_spacing_medium" />
+
+                <!-- Card name label, e.g., "Amex **** 1234" -->
+                <TextView
+                    android:id="@+id/card_label"
+                    android:layout_alignParentTop="true"
+                    android:layout_toEndOf="@id/issuer_icon"
+                    android:layout_height="wrap_content"
+                    android:layout_width="wrap_content"
+                    android:textAlignment="center"
+                    style="@style/TextAppearance.TextMedium.Secondary" />
+
+                <!-- "Virtual card" label -->
+                <TextView
+                    android:id="@+id/card_description"
+                    android:layout_below="@id/card_label"
+                    android:layout_toEndOf="@id/issuer_icon"
+                    android:layout_height="wrap_content"
+                    android:layout_width="wrap_content"
+                    android:textAlignment="center"
+                    style="@style/TextAppearance.TextMedium.Secondary" />
+            </RelativeLayout>
+
+            <!-- "To provide this service, Google may share account..." label -->
+            <org.chromium.ui.widget.TextViewWithClickableSpans
+                android:id="@+id/google_legal_message"
+                android:layout_marginTop="@dimen/autofill_bottom_sheet_spacing_large"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textAlignment="center"
+                app:leading="@dimen/text_size_small_leading"
+                style="@style/TextAppearance.TextSmall.Secondary" />
+
+            <!-- "By continuing, you agree to the Issuer's Terms..." label -->
+            <org.chromium.ui.widget.TextViewWithClickableSpans
+                android:id="@+id/issuer_legal_message"
+                android:layout_marginTop="@dimen/autofill_bottom_sheet_spacing_small"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textAlignment="center"
+                app:leading="@dimen/text_size_small_leading"
+                style="@style/TextAppearance.TextSmall.Secondary" />
+
+            <!-- "Yes" button -->
+            <org.chromium.ui.widget.ButtonCompat
+                android:id="@+id/accept_button"
+                android:descendantFocusability="blocksDescendants"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/autofill_bottom_sheet_spacing_large"
+                android:minHeight="@dimen/min_touch_target_size"
+                android:minWidth="@dimen/min_touch_target_size"
+                android:gravity="center"
+                android:ellipsize="end"
+                android:singleLine="true"
+                style="@style/FilledButton.Flat" />
+
+            <!-- "Skip" button -->
+            <org.chromium.ui.widget.ButtonCompat
+                android:id="@+id/cancel_button"
+                android:descendantFocusability="blocksDescendants"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:minHeight="@dimen/min_touch_target_size"
+                android:minWidth="@dimen/min_touch_target_size"
+                android:gravity="center"
+                android:ellipsize="end"
+                android:singleLine="true"
+                style="@style/TextButton" />
+        </LinearLayout>
+    </ScrollView>
+</LinearLayout>

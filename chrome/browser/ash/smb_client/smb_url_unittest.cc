@@ -9,8 +9,7 @@
 #include "chrome/browser/ash/smb_client/smb_constants.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace ash {
-namespace smb_client {
+namespace ash::smb_client {
 
 class SmbUrlTest : public testing::Test {
  public:
@@ -208,5 +207,4 @@ TEST_F(SmbUrlTest, GetWindowsURL) {
   ExpectValidWindowsUNC("\\\\server/share", "\\\\server\\share");
 }
 
-}  // namespace smb_client
-}  // namespace ash
+}  // namespace ash::smb_client

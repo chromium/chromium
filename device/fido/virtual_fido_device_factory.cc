@@ -58,8 +58,8 @@ bool VirtualFidoDeviceFactory::IsTestOverride() {
 base::RepeatingCallback<void(std::unique_ptr<cablev2::Pairing>)>
 VirtualFidoDeviceFactory::get_cable_contact_callback() {
   base::RepeatingCallback<void(std::unique_ptr<cablev2::Pairing>)> ret;
-  std::tie(ret, contact_device_stream_) = FidoDeviceDiscovery::EventStream<
-      std::unique_ptr<cablev2::Pairing>>::New();
+  std::tie(ret, contact_device_stream_) =
+      FidoDiscoveryBase::EventStream<std::unique_ptr<cablev2::Pairing>>::New();
   return ret;
 }
 

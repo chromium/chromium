@@ -3,4 +3,4 @@ CREDIT_CARD_NUMBER | creditCardNumber | Card Number * |  | cardTypeSelect_1
 CREDIT_CARD_EXP_MONTH | expirationMonth | Expiry Date * |  | cardTypeSelect_1
 CREDIT_CARD_EXP_4_DIGIT_YEAR | expirationYear | Expiry Date * |  | cardTypeSelect_1
 CREDIT_CARD_VERIFICATION_CODE | cvNumber | security code * |  | cardTypeSelect_1
-PHONE_HOME_WHOLE_NUMBER | phoneNumber | Billing Phone Your registered number with your payment issuer is required to process your order. * |  | phoneNumber_2
+PHONE_HOME_CITY_AND_NUMBER | phoneNumber | Billing Phone Your registered number with your payment issuer is required to process your order. * |  | phoneNumber_2

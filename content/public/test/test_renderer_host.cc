@@ -172,7 +172,7 @@ NavigationController& RenderViewHostTestHarness::controller() {
   return web_contents()->GetController();
 }
 
-WebContents* RenderViewHostTestHarness::web_contents() {
+WebContents* RenderViewHostTestHarness::web_contents() const {
   return contents_.get();
 }
 
@@ -219,10 +219,18 @@ RenderViewHostTestHarness::CreateTestWebContents() {
   return TestWebContents::Create(GetBrowserContext(), std::move(instance));
 }
 void RenderViewHostTestHarness::FocusWebContentsOnMainFrame() {
+  FocusWebContentsOnFrame(web_contents()->GetPrimaryMainFrame());
+}
+
+void RenderViewHostTestHarness::FocusWebContentsOnFrame(
+    content::RenderFrameHost* rfh) {
   TestWebContents* contents = static_cast<TestWebContents*>(web_contents());
-  auto* root = contents->GetPrimaryFrameTree().root();
+  FrameTreeNode* node =
+      contents->GetPrimaryFrameTree().FindByID(rfh->GetFrameTreeNodeId());
+  CHECK(node);
+  CHECK_EQ(node->current_frame_host(), rfh);
   contents->GetPrimaryFrameTree().SetFocusedFrame(
-      root, root->current_frame_host()->GetSiteInstance()->group());
+      node, node->current_frame_host()->GetSiteInstance()->group());
 }
 
 void RenderViewHostTestHarness::NavigateAndCommit(

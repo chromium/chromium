@@ -7,7 +7,6 @@
 #include <stddef.h>
 
 #include "base/memory/raw_ptr.h"
-#include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
 #include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/sync_username_test_base.h"
@@ -16,51 +15,29 @@
 #include "components/sync/test/test_sync_service.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-using base::ASCIIToUTF16;
-
 namespace password_manager {
 namespace sync_util {
 
 using PasswordSyncUtilTest = SyncUsernameTestBase;
 
-PasswordForm SimpleGAIAChangePasswordForm() {
-  PasswordForm form;
-  form.url = GURL("https://myaccount.google.com/");
-  form.signon_realm = "https://myaccount.google.com/";
-  return form;
-}
-
-PasswordForm SimpleForm(const char* signon_realm, const char* username) {
-  PasswordForm form;
-  form.signon_realm = signon_realm;
-  form.url = GURL(signon_realm);
-  form.username_value = ASCIIToUTF16(username);
-  return form;
-}
-
-TEST_F(PasswordSyncUtilTest, GetSyncUsernameIfSyncingPasswords) {
+TEST_F(PasswordSyncUtilTest,
+       GetAccountEmailIfSyncFeatureEnabledIncludingPasswords) {
   const struct TestCase {
     enum { SYNCING_PASSWORDS, NOT_SYNCING_PASSWORDS } password_sync;
     std::string fake_sync_username;
     std::string expected_result;
     raw_ptr<const syncer::SyncService> sync_service;
-    raw_ptr<const signin::IdentityManager> identity_manager;
   } kTestCases[] = {
       {TestCase::NOT_SYNCING_PASSWORDS, "a@example.org", std::string(),
-       sync_service(), identity_manager()},
+       sync_service()},
 
       {TestCase::SYNCING_PASSWORDS, "a@example.org", "a@example.org",
-       sync_service(), identity_manager()},
+       sync_service()},
 
-      // If sync_service is not available, we assume passwords are synced, even
-      // if they are not.
-      {TestCase::NOT_SYNCING_PASSWORDS, "a@example.org", "a@example.org",
-       nullptr, identity_manager()},
+      {TestCase::NOT_SYNCING_PASSWORDS, "a@example.org", std::string(),
+       nullptr},
 
-      {TestCase::SYNCING_PASSWORDS, "a@example.org", std::string(),
-       sync_service(), nullptr},
-
-      {TestCase::SYNCING_PASSWORDS, "a@example.org", std::string(), nullptr,
+      {TestCase::NOT_SYNCING_PASSWORDS, "a@example.org", std::string(),
        nullptr},
   };
 
@@ -68,41 +45,10 @@ TEST_F(PasswordSyncUtilTest, GetSyncUsernameIfSyncingPasswords) {
     SCOPED_TRACE(testing::Message() << "i=" << i);
     SetSyncingPasswords(kTestCases[i].password_sync ==
                         TestCase::SYNCING_PASSWORDS);
-    FakeSigninAs(kTestCases[i].fake_sync_username);
+    FakeSigninAs(kTestCases[i].fake_sync_username, signin::ConsentLevel::kSync);
     EXPECT_EQ(kTestCases[i].expected_result,
-              GetSyncUsernameIfSyncingPasswords(
-                  kTestCases[i].sync_service, kTestCases[i].identity_manager));
-  }
-}
-
-TEST_F(PasswordSyncUtilTest, IsSyncAccountCredential) {
-  const struct {
-    PasswordForm form;
-    std::string fake_sync_username;
-    bool expected_result;
-  } kTestCases[] = {
-      {SimpleGaiaForm("sync_user@example.org"), "sync_user@example.org", true},
-      {SimpleGaiaForm("non_sync_user@example.org"), "sync_user@example.org",
-       false},
-      {SimpleNonGaiaForm("sync_user@example.org"), "sync_user@example.org",
-       false},
-      {SimpleGaiaForm(""), "sync_user@example.org", true},
-      {SimpleNonGaiaForm(""), "sync_user@example.org", false},
-      {SimpleGAIAChangePasswordForm(), "sync_user@example.org", true},
-      {SimpleForm("https://subdomain.google.com/", "sync_user@example.org"),
-       "sync_user@example.org", true},
-      {SimpleForm("https://subdomain.google.com/", ""), "sync_user@example.org",
-       true},
-  };
-
-  for (size_t i = 0; i < std::size(kTestCases); ++i) {
-    SCOPED_TRACE(testing::Message() << "i=" << i);
-    SetSyncingPasswords(true);
-    FakeSigninAs(kTestCases[i].fake_sync_username);
-    EXPECT_EQ(kTestCases[i].expected_result,
-              IsSyncAccountCredential(kTestCases[i].form.url,
-                                      kTestCases[i].form.username_value,
-                                      sync_service(), identity_manager()));
+              GetAccountEmailIfSyncFeatureEnabledIncludingPasswords(
+                  kTestCases[i].sync_service));
   }
 }
 
@@ -124,13 +70,15 @@ TEST_F(PasswordSyncUtilTest, IsSyncAccountEmail) {
     SCOPED_TRACE(testing::Message() << "i=" << i);
     if (kTestCases[i].fake_sync_email.empty()) {
       EXPECT_EQ(kTestCases[i].expected_result,
-                IsSyncAccountEmail(kTestCases[i].input_username, nullptr));
+                IsSyncAccountEmail(kTestCases[i].input_username, nullptr,
+                                   signin::ConsentLevel::kSignin));
       continue;
     }
-    FakeSigninAs(kTestCases[i].fake_sync_email);
+    FakeSigninAs(kTestCases[i].fake_sync_email, signin::ConsentLevel::kSync);
     EXPECT_EQ(
         kTestCases[i].expected_result,
-        IsSyncAccountEmail(kTestCases[i].input_username, identity_manager()));
+        IsSyncAccountEmail(kTestCases[i].input_username, identity_manager(),
+                           signin::ConsentLevel::kSignin));
   }
 }
 
@@ -138,9 +86,12 @@ TEST_F(PasswordSyncUtilTest, SyncDisabled) {
   syncer::TestSyncService sync_service;
   sync_service.SetTransportState(syncer::SyncService::TransportState::DISABLED);
   sync_service.SetHasSyncConsent(false);
-  EXPECT_FALSE(IsPasswordSyncEnabled(&sync_service));
-  EXPECT_FALSE(IsPasswordSyncActive(&sync_service));
-  EXPECT_EQ(absl::nullopt, GetSyncingAccount(&sync_service));
+  EXPECT_FALSE(IsSyncFeatureEnabledIncludingPasswords(&sync_service));
+  EXPECT_FALSE(IsSyncFeatureActiveIncludingPasswords(&sync_service));
+  EXPECT_EQ(
+      std::string(),
+      GetAccountEmailIfSyncFeatureEnabledIncludingPasswords(&sync_service));
+  EXPECT_EQ(SyncState::kNotActive, GetPasswordSyncState(&sync_service));
 }
 
 TEST_F(PasswordSyncUtilTest, SyncEnabledButNotForPasswords) {
@@ -149,9 +100,12 @@ TEST_F(PasswordSyncUtilTest, SyncEnabledButNotForPasswords) {
   sync_service.SetHasSyncConsent(true);
   sync_service.GetUserSettings()->SetSelectedTypes(
       /*sync_everything=*/false, {syncer::UserSelectableType::kHistory});
-  EXPECT_FALSE(IsPasswordSyncEnabled(&sync_service));
-  EXPECT_FALSE(IsPasswordSyncActive(&sync_service));
-  EXPECT_EQ(absl::nullopt, GetSyncingAccount(&sync_service));
+  EXPECT_FALSE(IsSyncFeatureEnabledIncludingPasswords(&sync_service));
+  EXPECT_FALSE(IsSyncFeatureActiveIncludingPasswords(&sync_service));
+  EXPECT_EQ(
+      std::string(),
+      GetAccountEmailIfSyncFeatureEnabledIncludingPasswords(&sync_service));
+  EXPECT_EQ(SyncState::kNotActive, GetPasswordSyncState(&sync_service));
 }
 
 TEST_F(PasswordSyncUtilTest, SyncEnabled) {
@@ -161,10 +115,13 @@ TEST_F(PasswordSyncUtilTest, SyncEnabled) {
   AccountInfo active_info;
   active_info.email = "test@email.com";
   sync_service.SetAccountInfo(active_info);
-  EXPECT_TRUE(IsPasswordSyncEnabled(&sync_service));
-  EXPECT_TRUE(IsPasswordSyncActive(&sync_service));
-  EXPECT_TRUE(GetSyncingAccount(&sync_service).has_value());
-  EXPECT_EQ(active_info.email, GetSyncingAccount(&sync_service).value());
+  EXPECT_TRUE(IsSyncFeatureEnabledIncludingPasswords(&sync_service));
+  EXPECT_TRUE(IsSyncFeatureActiveIncludingPasswords(&sync_service));
+  EXPECT_EQ(
+      active_info.email,
+      GetAccountEmailIfSyncFeatureEnabledIncludingPasswords(&sync_service));
+  EXPECT_EQ(SyncState::kActiveWithNormalEncryption,
+            GetPasswordSyncState(&sync_service));
 }
 
 TEST_F(PasswordSyncUtilTest, SyncPaused) {
@@ -173,9 +130,62 @@ TEST_F(PasswordSyncUtilTest, SyncPaused) {
   sync_service.SetPersistentAuthError();
   ASSERT_EQ(sync_service.GetTransportState(),
             syncer::SyncService::TransportState::PAUSED);
-  EXPECT_TRUE(IsPasswordSyncEnabled(&sync_service));
-  EXPECT_FALSE(IsPasswordSyncActive(&sync_service));
-  EXPECT_NE(absl::nullopt, GetSyncingAccount(&sync_service));
+  EXPECT_TRUE(IsSyncFeatureEnabledIncludingPasswords(&sync_service));
+  EXPECT_FALSE(IsSyncFeatureActiveIncludingPasswords(&sync_service));
+  EXPECT_NE(
+      std::string(),
+      GetAccountEmailIfSyncFeatureEnabledIncludingPasswords(&sync_service));
+  EXPECT_EQ(SyncState::kNotActive, GetPasswordSyncState(&sync_service));
+}
+
+TEST_F(PasswordSyncUtilTest, SyncEnabledWithCustomPassphrase) {
+  syncer::TestSyncService sync_service;
+  sync_service.SetTransportState(syncer::SyncService::TransportState::ACTIVE);
+  sync_service.SetHasSyncConsent(true);
+  AccountInfo active_info;
+  active_info.email = "test@email.com";
+  sync_service.SetAccountInfo(active_info);
+  sync_service.SetIsUsingExplicitPassphrase(true);
+  EXPECT_TRUE(IsSyncFeatureEnabledIncludingPasswords(&sync_service));
+  EXPECT_TRUE(IsSyncFeatureActiveIncludingPasswords(&sync_service));
+  EXPECT_EQ(
+      active_info.email,
+      GetAccountEmailIfSyncFeatureEnabledIncludingPasswords(&sync_service));
+  EXPECT_EQ(SyncState::kActiveWithCustomPassphrase,
+            GetPasswordSyncState(&sync_service));
+}
+
+TEST_F(PasswordSyncUtilTest, AccountPasswordsActive) {
+  syncer::TestSyncService sync_service;
+  sync_service.SetTransportState(syncer::SyncService::TransportState::ACTIVE);
+  sync_service.SetHasSyncConsent(false);
+  AccountInfo active_info;
+  active_info.email = "test@email.com";
+  sync_service.SetAccountInfo(active_info);
+  EXPECT_FALSE(IsSyncFeatureEnabledIncludingPasswords(&sync_service));
+  EXPECT_FALSE(IsSyncFeatureActiveIncludingPasswords(&sync_service));
+  EXPECT_EQ(
+      std::string(),
+      GetAccountEmailIfSyncFeatureEnabledIncludingPasswords(&sync_service));
+  EXPECT_EQ(SyncState::kActiveWithNormalEncryption,
+            GetPasswordSyncState(&sync_service));
+}
+
+TEST_F(PasswordSyncUtilTest, AccountPasswordsActiveAndCustomPassphrase) {
+  syncer::TestSyncService sync_service;
+  sync_service.SetTransportState(syncer::SyncService::TransportState::ACTIVE);
+  sync_service.SetHasSyncConsent(false);
+  AccountInfo active_info;
+  active_info.email = "test@email.com";
+  sync_service.SetAccountInfo(active_info);
+  sync_service.SetIsUsingExplicitPassphrase(true);
+  EXPECT_FALSE(IsSyncFeatureEnabledIncludingPasswords(&sync_service));
+  EXPECT_FALSE(IsSyncFeatureActiveIncludingPasswords(&sync_service));
+  EXPECT_EQ(
+      std::string(),
+      GetAccountEmailIfSyncFeatureEnabledIncludingPasswords(&sync_service));
+  EXPECT_EQ(SyncState::kActiveWithCustomPassphrase,
+            GetPasswordSyncState(&sync_service));
 }
 
 }  // namespace sync_util

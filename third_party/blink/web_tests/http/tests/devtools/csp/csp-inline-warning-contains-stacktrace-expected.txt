@@ -1,10 +1,10 @@
 This test injects an inline script from JavaScript. The resulting console error should contain a stack trace.
 
-Message[0]: csp-inline-warning-contains-stacktrace.js:21 Refused to execute inline script because it violates the following Content Security Policy directive: "script-src 'self'". Either the 'unsafe-inline' keyword, a hash ('sha256-CihokcEcBW4atb/CW/XWsvWwbTjqwQlE9nj9ii5ww5M='), or a nonce ('nonce-...') is required to enable inline execution.
+Message[0]: csp-inline-warning-contains-stacktrace.js:20 Refused to execute inline script because it violates the following Content Security Policy directive: "script-src 'self'". Either the 'unsafe-inline' keyword, a hash ('sha256-CihokcEcBW4atb/CW/XWsvWwbTjqwQlE9nj9ii5ww5M='), or a nonce ('nonce-...') is required to enable inline execution.
 
 Stack Trace:
 
   url: test://evaluations/0/csp-inline-warning-contains-stacktrace.js
   function: thisTest
-  line: 21
+  line: 20
 

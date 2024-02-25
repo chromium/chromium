@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="am">
+<translation id="1012241361789814178">አራሚ በሌላ ትር ላይ ባለበት ቆሟል፣ ወደዚያ ትር ለመቀየር ጠቅ ያድርጉ።</translation>
 <translation id="1088086359088493902">ሰኮንዶች</translation>
 <translation id="1142001580032786438">የሳምንት መራጭን አሳይ</translation>
 <translation id="1171774979989969504">እባክዎ የኢሜይል አድራሻ ያስገቡ።</translation>
@@ -16,6 +17,7 @@
 <translation id="1729654308190250600">እባክዎ ባዶ ያልሆነ የኢሜይል አድራሻ ያስገቡ።</translation>
 <translation id="1758486001363313524">ሌላ...</translation>
 <translation id="1787192514241997742">ጠቅላላ ጊዜ፦ <ph name="REMAINING_TIME" /></translation>
+<translation id="1800494066469288780">ካሜራ ፍቀድ</translation>
 <translation id="1822429046913737220">ጥዋት/ከሰዓት</translation>
 <translation id="1832974991323546415">በርቀት መሣሪያ ላይ አጫውት</translation>
 <translation id="1921819250265091946">ቀቀ</translation>
@@ -24,10 +26,12 @@
 <translation id="1993104285338243655">ወደ ማንጸባረቅ ተቀይሯል</translation>
 <translation id="2031987842108996681">ቀይ ሰርጥ</translation>
 <translation id="2060505056492490888">«<ph name="DOT" />» በ«<ph name="INVALIDDOMAIN" />» ውስጥ በተሳሳተ ቦታ ላይ ነው የገባው።</translation>
+<translation id="2068711044993563745">ትንሹ እሴት (<ph name="MINIMUM" />) ከከፍተኛው እሴት (<ph name="MAXIMUM" />) ማነስ አለበት።</translation>
 <translation id="2148716181193084225">ዛሬ</translation>
 <translation id="2226276347425096477">እባክዎ ይህ ጽሁፍ ወደ <ph name="MAX_CHARACTERS" /> ወይም ከዚያ በታች ቁምፊዎች ያሳጥሩት (በአሁኑ ጊዜ <ph name="CURRENT_LENGTH" /> ቁምፊዎችን እየተጠቀሙ ነዎት)።</translation>
 <translation id="2247351761944213033">ሳምንት <ph name="WEEKNUMBER" />፣ <ph name="YEAR" /></translation>
 <translation id="2277199496770840904">ትራክ <ph name="NUMBER" /></translation>
+<translation id="2353297238722298836">ካሜራ እና ማይክሮፎን ይፈቀዳሉ</translation>
 <translation id="2393030564806080191">ባለአስራስድስትዮሽ የቀለም እሴት</translation>
 <translation id="2398813069815436052">መገናኛ ተከፍቷል።</translation>
 <translation id="245932805758469625">የቪዲዮ ቀሪ ሰከንዶች ብዛት</translation>
@@ -44,11 +48,13 @@
 <translation id="2761667185364618470">ለመቀጠል ከፈለጉ እባክዎ ይህ ሳጥን ላይ ምልክት ያድርጉ።</translation>
 <translation id="2908441821576996758">እባክዎ በኮማ የተለዩ የኢሜይል አድራሻዎች ዝርዝር ያስገቡ።</translation>
 <translation id="3049748772180311791"><ph name="QUANTITY" /> ሜባ</translation>
+<translation id="3053226512517284904">የኦዲዮ ማብራሪያዎች ምናሌን አሳይ</translation>
 <translation id="3075154866155599887">እባክዎ የሚሰራ ዋጋ ያስገቡ። መስኩ ያልተጠናቀቀ ነው ወይም ልክ ያልሆነ ቀን አለው።</translation>
 <translation id="310520048233152454">እባክዎ አንድ ዩአርኤል ያስገቡ።</translation>
 <translation id="3220661731597678625">የአሁኑ ደረጃ</translation>
 <translation id="3321030238473337787">የመልሶ ማጫወት ፍጥነት</translation>
 <translation id="3329013043687509092">የቀለም ሙሌት</translation>
+<translation id="3377518164566272702">ማይክሮፎን እና ካሜራ ፍቀድ</translation>
 <translation id="3450233048674729344">ዋጋ ከ<ph name="MAXIMUM" /> የሚያንስ ወይም ከእሱ እኩል መሆን አለበት።</translation>
 <translation id="3732799496749320381">ሚሜ</translation>
 <translation id="3754210790023674521">ከሥዕል-ውስጥ-ሥዕል ውጣ</translation>
@@ -56,14 +62,17 @@
 <translation id="3822383571486410024">እባክዎ ይህን ጽሁፍ ወደ <ph name="MIN_CHARACTERS" /> ቁምፊዎች ወይም ከዚያ በላይ ያራዝሙት (አሁን እየተጠቀሙ ያሉት <ph name="CURRENT_LENGTH" />ቁምፊዎችን ነው)።</translation>
 <translation id="383465348367842624">ከ«<ph name="ATSIGN" />» በፊት የሚመጣ ክፍል የ«<ph name="INVALIDCHARACTER" />» ምልክት መያዝ የለበትም።</translation>
 <translation id="3846214748874656680">ከሙሉ ማያገጽ ውጣ</translation>
+<translation id="4031179711345676612">ማይክሮፎን ተፈቅዷል</translation>
 <translation id="4103419683916926126">ሚሊሰኮንዶች</translation>
 <translation id="4201051445878709314">ቀዳሚውን ወር አሳይ</translation>
 <translation id="4360991593054037559">እባክዎ የሚሰራ ዋጋ ያስገቡ። ሁለቱ የሚቀርቡ ዋጋዎች <ph name="VALID_VALUE_LOW" /> እና <ph name="VALID_VALUE_HIGHER" /> ናቸው።</translation>
 <translation id="4522570452068850558">ዝርዝሮች</translation>
+<translation id="4663373278480897665">ካሜራ ተፈቅዷል</translation>
 <translation id="4664250907885839816">ከ«<ph name="ATSIGN" />» በኋላ የሚመጣ ክፍል የ«<ph name="INVALIDCHARACTER" />» ምልክት መያዝ የለበትም።</translation>
 <translation id="4718048029184481307">በሥዕል-ውስጥ-ሥዕልን በማጫወት ላይ</translation>
 <translation id="4748357248530471599">የተቆረጠው የማሳያ ክፍል ሙሉ ማያ ገጽን ይቀያይሩ</translation>
 <translation id="4763480195061959176">ቪዲዮ</translation>
+<translation id="4792862212177489858">አካባቢ አጋራ</translation>
 <translation id="4812940957355064477">እባክዎ ቁጥር ያስገቡ።</translation>
 <translation id="4912200001568447310">የአሁን ንጥል</translation>
 <translation id="4915360478455618802">ሰዓት መራጭን አሳይ</translation>
@@ -73,6 +82,7 @@
 <translation id="4975562563186953947"><ph name="SELECTED_COUNT" /> ተመርጠዋል</translation>
 <translation id="4992066212339426712">ድምጸ-ከል አንሳ</translation>
 <translation id="49969490063480558">እባክዎ ከ«<ph name="ATSIGN" />» በኋላ አንድ ክፍል ያስገቡ። «<ph name="INVALIDADDRESS" />» ያልተሟላ ነው።</translation>
+<translation id="5037575921016181960">ጠንካራ የይለፍ ቃል</translation>
 <translation id="5090250355906949916">የቪዲዮ ጊዜ አንፏቃቂ</translation>
 <translation id="509897012892853729">ሰማያዊ ሰርጥ</translation>
 <translation id="5117590920725113268">ቀጣዩን ወር አሳይ</translation>
@@ -131,6 +141,7 @@
 <translation id="6941933287844615239">ማህደረ መረጃን አውርድ</translation>
 <translation id="698788488269350478">ተዘርግቷል።</translation>
 <translation id="6989848892321993519">እባክዎ ይህን ጽሁፍ ወደ <ph name="MIN_CHARACTERS" /> ወይም ከዚያ በላይ ቁምፊዎች ያራዝሙት (አሁን እየተጠቀሙ ያሉት 1 ቁምፊ ነው)።</translation>
+<translation id="7080893216867146095">አካባቢ ማጋራት ይቻላል</translation>
 <translation id="709897737746224366">እባክዎ የተጠየቀውን ቅርጸት ያዛምዱ።</translation>
 <translation id="7102274145889307184">የአሁኑ አካባቢ</translation>
 <translation id="7263440858009898357">እባክዎ በዝርዝሩ ውስጥ አንድ ንጥል ይምረጡ።</translation>
@@ -177,6 +188,7 @@
 <translation id="9132465097189459683">ሌላ...</translation>
 <translation id="9155987714137265666"><ph name="WEEK" />፣ የሚጀምረው በ<ph name="WEEK_START_DATE" /></translation>
 <translation id="916607977885256133">በሥዕል ላይ ሥዕል</translation>
+<translation id="918430632320614861">ማይክሮፎን ፍቀድ</translation>
 <translation id="945780513535800434">በከፊል ምልክት ተደርጎበታል</translation>
 <translation id="954003015749068518">ወደ ሥዕል-ውስጥ-ሥዕል ይግቡ</translation>
 </translationbundle>

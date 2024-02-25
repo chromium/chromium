@@ -8,6 +8,7 @@
 
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
+#include "chrome/browser/apps/app_service/app_service_test.h"
 #include "chrome/test/base/testing_profile.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -46,7 +47,7 @@ class TestPublisher : public AppPublisher {
               LaunchSource launch_source,
               WindowInfoPtr window_info) override {}
   void LaunchAppWithParams(AppLaunchParams&& params,
-                           LaunchCallback callback) override{};
+                           LaunchCallback callback) override {}
 
   // These methods are private in AppPublisher, we expose them here for unit
   // testing.
@@ -69,7 +70,8 @@ class TestPublisher : public AppPublisher {
 class AppPublisherTest : public testing::Test {
  public:
   void SetUp() override {
-    proxy_ = AppServiceProxyFactory::GetForProfile(&profile_);
+    app_service_test_.SetUp(&profile_);
+    proxy_ = app_service_test_.proxy();
     publisher_ = std::make_unique<TestPublisher>(proxy_, AppType::kArc);
 
     publisher_->Publish({}, /*should_notify_initialized=*/true);
@@ -85,6 +87,7 @@ class AppPublisherTest : public testing::Test {
 
   raw_ptr<AppServiceProxy> proxy_;
   std::unique_ptr<TestPublisher> publisher_;
+  AppServiceTest app_service_test_;
 };
 
 TEST_F(AppPublisherTest, ModifyCapabilityAccess_PublishesToCapabilityCache) {

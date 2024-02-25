@@ -30,7 +30,7 @@
 #include "base/check_op.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/layout/layout_box.h"
-#include "third_party/blink/renderer/core/layout/ng/ng_physical_box_fragment.h"
+#include "third_party/blink/renderer/core/layout/physical_box_fragment.h"
 #include "third_party/blink/renderer/core/paint/paint_flags.h"
 #include "third_party/blink/renderer/core/paint/paint_phase.h"
 #include "third_party/blink/renderer/platform/geometry/layout_rect.h"
@@ -67,6 +67,9 @@ struct CORE_EXPORT PaintInfo {
       result.phase = PaintPhase::kOutline;
     else if (phase == PaintPhase::kDescendantBlockBackgroundsOnly)
       result.phase = PaintPhase::kBlockBackground;
+
+    result.fragment_data_override_ = nullptr;
+
     return result;
   }
 
@@ -110,35 +113,12 @@ struct CORE_EXPORT PaintInfo {
     cull_rect_.ApplyTransform(transform);
   }
 
-  // Returns the fragment of the current painting object matching the current
-  // layer fragment.
-  const FragmentData* FragmentToPaint(const LayoutObject& object) const {
-    if (fragment_id_ == WTF::kNotFound)
-      return &object.FirstFragment();
-    for (const auto* fragment = &object.FirstFragment(); fragment;
-         fragment = fragment->NextFragment()) {
-      if (fragment->FragmentID() == fragment_id_)
-        return fragment;
-    }
-    // No fragment of the current painting object matches the layer fragment,
-    // which means the object should not paint in this fragment.
-    return nullptr;
+  void SetFragmentDataOverride(const FragmentData* fragment_data) {
+    fragment_data_override_ = fragment_data;
   }
-
-  // Returns the FragmentData of the specified physical fragment. If we're
-  // performing fragment traversal, it will map directly to the right
-  // FragmentData. Otherwise we'll fall back to matching against the current
-  // PaintLayerFragment.
-  const FragmentData* FragmentToPaint(
-      const NGPhysicalFragment& fragment) const {
-    if (fragment_id_ == WTF::kNotFound)
-      return fragment.GetFragmentData();
-    return FragmentToPaint(*fragment.GetLayoutObject());
+  const FragmentData* FragmentDataOverride() const {
+    return fragment_data_override_;
   }
-
-  wtf_size_t FragmentID() const { return fragment_id_; }
-  void SetFragmentID(wtf_size_t id) { fragment_id_ = id; }
-  void SetIsInFragmentTraversal() { fragment_id_ = WTF::kNotFound; }
 
   bool IsPaintingBackgroundInContentsSpace() const {
     return is_painting_background_in_contents_space;
@@ -160,13 +140,13 @@ struct CORE_EXPORT PaintInfo {
  private:
   CullRect cull_rect_;
 
-  // The ID of the fragment that we're currently painting.
-  //
-  // This is always used in legacy block fragmentation. In NG block
-  // fragmentation, it's only used when painting self-painting non-atomic
-  // inlines (because we currently have no way of mapping from
-  // NGPhysicalFragment to FragmentData in such cases).
-  wtf_size_t fragment_id_ = WTF::kNotFound;
+  // Only set when entering legacy painters. Legacy painters are only used for
+  // certain types of monolithic content, but there may still be multiple
+  // fragments in such cases, due to repeated table headers/footers or repeated
+  // fixed positioned objects when printing. The correct FragmentData is
+  // typically obtained via an PhysicalBoxFragment object, but there are no
+  // physical fragments passed to legacy painters.
+  const FragmentData* fragment_data_override_ = nullptr;
 
   const PaintFlags paint_flags_;
 

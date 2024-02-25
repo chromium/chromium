@@ -409,8 +409,9 @@ void ProfileDestroyer::GetHostsForProfile(HostSet* out,
       continue;
 
     // Ignore the spare RenderProcessHost.
-    if (render_process_host->HostHasNotBeenUsed() && !include_spare_rph)
+    if (render_process_host->IsSpare() && !include_spare_rph) {
       continue;
+    }
 
     TRACE_EVENT(
         "shutdown", "ProfileDestroyer::GetHostsForProfile",

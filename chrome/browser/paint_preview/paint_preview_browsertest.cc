@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <optional>
+
 #include "base/base64.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
@@ -25,11 +27,11 @@
 #include "content/public/browser/render_process_host.h"
 #include "content/public/common/content_switches.h"
 #include "content/public/test/browser_test.h"
+#include "content/public/test/browser_test_utils.h"
 #include "content/public/test/fenced_frame_test_util.h"
 #include "net/dns/mock_host_resolver.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_provider.h"
 #include "third_party/skia/include/core/SkPicture.h"
 #include "third_party/skia/include/core/SkStream.h"
@@ -114,8 +116,7 @@ class PaintPreviewBrowserTest
   }
 
   void LoadHtml(const base::StringPiece& html) const {
-    std::string base64_html;
-    base::Base64Encode(html, &base64_html);
+    std::string base64_html = base::Base64Encode(html);
     GURL url(std::string("data:text/html;base64,") + base64_html);
     ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
   }
@@ -167,7 +168,7 @@ class PaintPreviewBrowserTest
             .value());
     ASSERT_NE(it, recording_map->end());
 
-    absl::optional<SkpResult> result = std::move(it->second).Deserialize();
+    std::optional<SkpResult> result = std::move(it->second).Deserialize();
     ASSERT_TRUE(result.has_value());
     EXPECT_NE(result->skp, nullptr);
     EXPECT_GE(result->skp->cullRect().width(), 0);

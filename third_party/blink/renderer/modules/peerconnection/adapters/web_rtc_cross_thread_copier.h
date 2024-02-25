@@ -11,6 +11,7 @@
 #include <set>
 #include <vector>
 
+#include "base/unguessable_token.h"
 #include "third_party/blink/public/platform/web_vector.h"
 #include "third_party/blink/renderer/platform/wtf/cross_thread_copier.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
@@ -44,6 +45,13 @@ class MediaStreamVideoTrack;
 }
 
 namespace WTF {
+
+template <>
+struct CrossThreadCopier<std::optional<base::UnguessableToken>>
+    : public CrossThreadCopierPassThrough<
+          std::optional<base::UnguessableToken>> {
+  STATIC_ONLY(CrossThreadCopier);
+};
 
 template <>
 struct CrossThreadCopier<cricket::IceParameters>

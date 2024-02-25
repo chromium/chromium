@@ -1,3 +1,6 @@
-monorail {
+monorail: {
   component: "Internals>CertAnalysis"
+}
+buganizer_public: {
+  component_id: 1456734
 }

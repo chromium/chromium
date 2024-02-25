@@ -19,6 +19,7 @@
 #include "absl/base/call_once.h"
 #include "absl/base/config.h"
 #include "absl/base/internal/raw_logging.h"
+#include "absl/base/nullability.h"
 #include "absl/status/internal/statusor_internal.h"
 #include "absl/status/status.h"
 #include "absl/strings/str_cat.h"
@@ -54,7 +55,7 @@ BadStatusOrAccess& BadStatusOrAccess::operator=(BadStatusOrAccess&& other) {
 BadStatusOrAccess::BadStatusOrAccess(BadStatusOrAccess&& other)
     : status_(std::move(other.status_)) {}
 
-const char* BadStatusOrAccess::what() const noexcept {
+absl::Nonnull<const char*> BadStatusOrAccess::what() const noexcept {
   InitWhat();
   return what_.c_str();
 }
@@ -69,7 +70,7 @@ void BadStatusOrAccess::InitWhat() const {
 
 namespace internal_statusor {
 
-void Helper::HandleInvalidStatusCtorArg(absl::Status* status) {
+void Helper::HandleInvalidStatusCtorArg(absl::Nonnull<absl::Status*> status) {
   const char* kMessage =
       "An OK status is not a valid constructor argument to StatusOr<T>";
 #ifdef NDEBUG

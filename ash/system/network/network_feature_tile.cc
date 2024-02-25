@@ -22,7 +22,7 @@ void NetworkFeatureTile::OnThemeChanged() {
   delegate_->OnFeatureTileThemeChanged();
 }
 
-BEGIN_METADATA(NetworkFeatureTile, FeatureTile)
+BEGIN_METADATA(NetworkFeatureTile)
 END_METADATA
 
 }  // namespace ash

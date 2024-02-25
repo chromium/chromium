@@ -1,0 +1,17 @@
+// Copyright 2023 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+// https://github.com/WICG/observable
+
+[Exposed=(Window,Worker), RuntimeEnabled=ObservableAPI]
+interface Subscriber {
+  void next(any result);
+  [CallWith=ScriptState] void error(any error);
+  [CallWith=ScriptState] void complete();
+  void addTeardown(VoidFunction teardown);
+
+  readonly attribute boolean active;
+  readonly attribute AbortSignal signal;
+};
+

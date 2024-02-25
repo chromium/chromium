@@ -1,0 +1,3 @@
+WebView textSize:16.0 style:0 htmlInfo:[{htmlTag="#document"}, {display=""}]
+++Dialog textSize:16.0 style:0 htmlInfo:[{htmlTag="div"}, {display="block"}, {role="dialog"}]
+++++TextView text:"This is ARIA dialog." textSize:16.0 style:0 htmlInfo:[{htmlTag=""}, {display=""}]

@@ -1,0 +1,19 @@
+[
+  {
+    "os": [
+      "chromeos_ash"
+    ],
+    "policy_pref_mapping_tests": [
+      {
+        "policies": {
+          "FullscreenAlertEnabled": false
+        },
+        "prefs": {
+          "ash.fullscreen_alert_enabled": {
+            "value": false
+          }
+        }
+      }
+    ]
+  }
+]

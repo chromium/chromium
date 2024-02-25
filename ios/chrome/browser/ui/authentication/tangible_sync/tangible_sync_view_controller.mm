@@ -1,4 +1,4 @@
-// Copyright 2022 The Chromium Authors. All rights reserved.
+// Copyright 2022 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -14,7 +14,7 @@
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
 #import "ios/chrome/grit/ios_strings.h"
-#import "net/base/mac/url_conversions.h"
+#import "net/base/apple/url_conversions.h"
 #import "ui/base/l10n/l10n_util.h"
 #import "url/gurl.h"
 
@@ -106,7 +106,7 @@ UIView* IconViewWithImage(NSString* image_name, BOOL custom_symbol) {
   ];
   NSArray<UIView*>* imageViews = @[
     IconViewWithImage(kBookmarksSymbol, /*custom_symbol=*/NO),
-    IconViewWithImage(kDocPlaintext, /*custom_symbol=*/NO),
+    IconViewWithImage(kDocPlaintextSymbol, /*custom_symbol=*/NO),
     IconViewWithImage(kRecentTabsSymbol, /*custom_symbol=*/YES),
   ];
   InstructionView* instructionView =

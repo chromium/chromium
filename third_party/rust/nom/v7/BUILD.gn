@@ -1,0 +1,67 @@
+# Copyright 2023 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+# @generated from third_party/rust/chromium_crates_io/BUILD.gn.hbs by
+# tools/crates/gnrt.
+# Do not edit!
+
+import("//build/rust/cargo_crate.gni")
+
+cargo_crate("lib") {
+  crate_name = "nom"
+  epoch = "7"
+  crate_type = "rlib"
+  crate_root =
+      "//third_party/rust/chromium_crates_io/vendor/nom-7.1.3/src/lib.rs"
+  sources = [
+    "//third_party/rust/chromium_crates_io/vendor/nom-7.1.3/src/bits/complete.rs",
+    "//third_party/rust/chromium_crates_io/vendor/nom-7.1.3/src/bits/mod.rs",
+    "//third_party/rust/chromium_crates_io/vendor/nom-7.1.3/src/bits/streaming.rs",
+    "//third_party/rust/chromium_crates_io/vendor/nom-7.1.3/src/branch/mod.rs",
+    "//third_party/rust/chromium_crates_io/vendor/nom-7.1.3/src/branch/tests.rs",
+    "//third_party/rust/chromium_crates_io/vendor/nom-7.1.3/src/bytes/complete.rs",
+    "//third_party/rust/chromium_crates_io/vendor/nom-7.1.3/src/bytes/mod.rs",
+    "//third_party/rust/chromium_crates_io/vendor/nom-7.1.3/src/bytes/streaming.rs",
+    "//third_party/rust/chromium_crates_io/vendor/nom-7.1.3/src/bytes/tests.rs",
+    "//third_party/rust/chromium_crates_io/vendor/nom-7.1.3/src/character/complete.rs",
+    "//third_party/rust/chromium_crates_io/vendor/nom-7.1.3/src/character/mod.rs",
+    "//third_party/rust/chromium_crates_io/vendor/nom-7.1.3/src/character/streaming.rs",
+    "//third_party/rust/chromium_crates_io/vendor/nom-7.1.3/src/character/tests.rs",
+    "//third_party/rust/chromium_crates_io/vendor/nom-7.1.3/src/combinator/mod.rs",
+    "//third_party/rust/chromium_crates_io/vendor/nom-7.1.3/src/combinator/tests.rs",
+    "//third_party/rust/chromium_crates_io/vendor/nom-7.1.3/src/error.rs",
+    "//third_party/rust/chromium_crates_io/vendor/nom-7.1.3/src/internal.rs",
+    "//third_party/rust/chromium_crates_io/vendor/nom-7.1.3/src/lib.rs",
+    "//third_party/rust/chromium_crates_io/vendor/nom-7.1.3/src/macros.rs",
+    "//third_party/rust/chromium_crates_io/vendor/nom-7.1.3/src/multi/mod.rs",
+    "//third_party/rust/chromium_crates_io/vendor/nom-7.1.3/src/multi/tests.rs",
+    "//third_party/rust/chromium_crates_io/vendor/nom-7.1.3/src/number/complete.rs",
+    "//third_party/rust/chromium_crates_io/vendor/nom-7.1.3/src/number/mod.rs",
+    "//third_party/rust/chromium_crates_io/vendor/nom-7.1.3/src/number/streaming.rs",
+    "//third_party/rust/chromium_crates_io/vendor/nom-7.1.3/src/sequence/mod.rs",
+    "//third_party/rust/chromium_crates_io/vendor/nom-7.1.3/src/sequence/tests.rs",
+    "//third_party/rust/chromium_crates_io/vendor/nom-7.1.3/src/str.rs",
+    "//third_party/rust/chromium_crates_io/vendor/nom-7.1.3/src/traits.rs",
+  ]
+  inputs = []
+
+  build_native_rust_unit_tests = false
+  edition = "2018"
+  cargo_pkg_version = "7.1.3"
+  cargo_pkg_authors = "contact@geoffroycouprie.com"
+  cargo_pkg_name = "nom"
+  cargo_pkg_description =
+      "A byte-oriented, zero-copy, parser combinators library"
+  library_configs -= [ "//build/config/compiler:chromium_code" ]
+  library_configs += [ "//build/config/compiler:no_chromium_code" ]
+  executable_configs -= [ "//build/config/compiler:chromium_code" ]
+  executable_configs += [ "//build/config/compiler:no_chromium_code" ]
+  proc_macro_configs -= [ "//build/config/compiler:chromium_code" ]
+  proc_macro_configs += [ "//build/config/compiler:no_chromium_code" ]
+  deps = [ "//third_party/rust/memchr/v2:lib" ]
+  features = [
+    "alloc",
+    "std",
+  ]
+}

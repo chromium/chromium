@@ -284,8 +284,8 @@ void BrokenAlternativeServices::SetBrokenAndRecentlyBrokenAlternativeServices(
       broken_alternative_service_list_.erase(list_existing_entry_it);
       map_it->second = list_it;
     } else {
-      broken_alternative_service_map_.insert(
-          std::make_pair(broken_alternative_service, list_it));
+      broken_alternative_service_map_.emplace(broken_alternative_service,
+                                              list_it);
     }
 
     if (recently_broken_alternative_services_.Peek(
@@ -315,8 +315,8 @@ void BrokenAlternativeServices::SetBrokenAndRecentlyBrokenAlternativeServices(
 }
 
 void BrokenAlternativeServices::SetDelayParams(
-    absl::optional<base::TimeDelta> initial_delay,
-    absl::optional<bool> exponential_backoff_on_initial_delay) {
+    std::optional<base::TimeDelta> initial_delay,
+    std::optional<bool> exponential_backoff_on_initial_delay) {
   if (initial_delay.has_value()) {
     initial_delay_ = initial_delay.value();
   }
@@ -360,9 +360,8 @@ bool BrokenAlternativeServices::AddToBrokenListAndMap(
 
   // Insert |broken_alternative_service| into the list and the map.
   list_it = broken_alternative_service_list_.insert(
-      list_it, std::make_pair(broken_alternative_service, expiration));
-  broken_alternative_service_map_.insert(
-      std::make_pair(broken_alternative_service, list_it));
+      list_it, std::pair(broken_alternative_service, expiration));
+  broken_alternative_service_map_.emplace(broken_alternative_service, list_it);
 
   *it = list_it;
   return true;

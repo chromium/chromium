@@ -1,0 +1,308 @@
+/* Copyright 2023 The Chromium Authors
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file.
+ */
+
+/* #css_wrapper_metadata_start
+ * #type=style
+ * #import=chrome://resources/ash/common/cr_elements/cr_shared_style.css.js
+ * #import=chrome://resources/ash/common/cr_elements/md_select.css.js
+ * #import=chrome://resources/ash/common/cr_elements/cros_color_overrides.css.js
+ * #include=cr-shared-style md-select cros-color-overrides
+ * #css_wrapper_metadata_end */
+
+:host {
+  --feedback-footer-height: 92px;
+  --feedback-google-sans-font-family: "Google Sans", Roboto, sans-serif;
+  --feedback-header-height: 92px;
+  --feedback-padding-inline-end: 40px;
+  --feedback-padding-inline-start: 40px;
+  --feedback-regular-font-weight: 400;
+  --feedback-roboto-font-family: Roboto, sans-serif;
+  --feedback-medium-font-weight: 500;
+}
+
+:host-context(body.jelly-enabled) {
+  --feedback-roboto-font-family: var(--cros-body-0-font);
+  --feedback-google-sans-font-family: var(--cros-body-0-font);
+  font: var(--cros-body-2-font);
+}
+
+:host-context([dir='rtl']) .dialog-back-arrow {
+  transform: rotate(180deg);
+}
+
+:host-context(body.jelly-enabled) .dialog-toolbar {
+  font: var(--cros-headline-1-font);
+}
+
+:host-context(body.jelly-enabled) .md-select {
+  --md-select-bg-color: var(--cros-sys-app_base);
+}
+
+:host-context(body.jelly-enabled) .page-title {
+  font: var(--cros-display-6-font);
+}
+
+:host-context(body:not(jelly-enabled)) cr-button {
+  font: var(--cros-button-2-font);
+}
+
+:host-context(body:not(jelly-enabled)) cr-button.action-button {
+  font: var(--cros-body-1-font);
+}
+
+:host-context(body:not(jelly-enabled)) cr-checkbox {
+  --cr-checkbox-unchecked-box-color: var(--cros-icon-color-primary);
+}
+
+:host-context(body.jelly-enabled) cr-dialog::part(dialog) {
+  border-radius: 20px;
+  font: var(--cros-body-2-font);
+}
+
+:host-context(body.jelly-enabled) paper-tooltip::part(tooltip) {
+  font: var(--cros-annotation-2-font);
+}
+
+:host-context(body.jelly-enabled) h2 {
+  font: var(--cros-headline-1-font);
+}
+
+a {
+  color: var(--cros-link-color);
+  text-decoration: underline;
+}
+
+#container {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+#header {
+  display: flex;
+  height: 68px;
+  padding-bottom: 24px;
+  padding-inline-end: var(--feedback-padding-inline-end);
+  padding-inline-start: var(--feedback-padding-inline-start);
+}
+
+.elevation-shadow-scrolling {
+  background-color: var(--cros-bg-color-elevation-1);
+  box-shadow: var(--cros-elevation-2-shadow);
+}
+
+#shadowElevation {
+  height: 2px;
+  left: 0;
+  position: fixed;
+  right: 0;
+  top: 90px;
+}
+
+#content {
+  display: flex;
+  flex-direction: column;
+  height: calc(var(--window-height) - var(--feedback-header-height) -
+      var(--feedback-footer-height));
+  overflow: auto;
+  padding-inline-end: var(--feedback-padding-inline-end);
+  padding-inline-start: var(--feedback-padding-inline-start);
+}
+
+#separator {
+  height: 1px;
+}
+
+.separator-scrolling-end {
+  background-color: var(--cros-separator-color);
+}
+
+.page-title {
+  color: var(--cros-text-color-primary);
+  font-family: var(--feedback-google-sans-font-family);
+  font-size: 22px;
+  font-weight: var(--feedback-medium-font-weight);
+  line-height: 28px;
+  margin: auto 0 0 0;
+  margin-block-end: 0;
+}
+
+.overflow-text {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.image-preview {
+  display: block;
+  height: auto;
+  margin: auto;
+  max-height: 100%;
+  max-width: 100%;
+  position: relative;
+  width: auto;
+}
+
+cr-dialog::part(dialog) {
+  --cr-dialog-body-padding-horizontal: 0px;
+  --cr-dialog-title-slot-padding-start: 0px;
+  --cr-icon-button-margin-end: 20px;
+  width: 590px;
+}
+
+h2 {
+  color: var(--cros-text-color-secondary);
+  font-family: var(--feedback-google-sans-font-family);
+  font-size: 15px;
+  font-weight: var(--feedback-medium-font-weight);
+  line-height: 22px;
+}
+
+#navButtons {
+  display: flex;
+  justify-content: end;
+  padding-bottom: 40px;
+  padding-inline-end: var(--feedback-padding-inline-end);
+  padding-inline-start: var(--feedback-padding-inline-start);
+  padding-top: 20px;
+}
+
+.nav-buttons-scrolling {
+  box-shadow: var(--cros-elevation-2-shadow);
+}
+
+cr-button {
+  line-height: 20px;
+}
+
+cr-checkbox {
+  --cr-checkbox-label-padding-start: 10px;
+  margin-inline-end: 12px;
+}
+
+dialog {
+  background-color: transparent;
+  border: none;
+  font-size: 100%;
+  height: 100%;
+  margin: 0;
+  max-height: initial;
+  max-width: initial;
+  opacity: 0;
+  outline: none;
+  overflow: hidden;
+  padding: 0;
+  width: 100%;
+}
+
+dialog[open] {
+  opacity: 1;
+  transition: opacity 200ms;
+}
+
+.focusable:focus-visible {
+  border-radius: 4px;
+  outline: 2px solid var(--cros-focus-ring-color);
+}
+
+.dialog-toolbar {
+  align-items: center;
+  background-color: var(--cros-bg-color);
+  border-bottom: 1px solid var(--cros-separator-color);
+  color: var(--cros-text-color-primary);
+  display: flex;
+  font-family: var(--feedback-google-sans-font-family);
+  font-size: 15px;
+  font-weight: var(--feedback-medium-font-weight);
+  height: 56px;
+  line-height: 48px;
+  opacity: 1;
+  white-space: nowrap;
+  z-index: 1;
+}
+
+.dialog-main-panel {
+  background-color: transparent;
+  bottom: 0;
+  position: absolute;
+  /* The top value here should be the total height of the #toolbar including
+  the height and the border-width */
+  top: 56px;
+  width: 100%;
+}
+
+.dialog-content-panel {
+  background-color: var(--cros-app-shield-60);
+  color: var(--cros-text-color-primary);
+  display: flex;
+  flex-direction: column;
+  height: calc(100% - 16px);
+  justify-content: center;
+  outline: none;
+  padding: 8px 44px 8px 44px;
+  position: relative;
+  text-align: center;
+  width: calc(100% - 88px);
+}
+
+.close-dialog-button {
+  border: none;
+  height: 48px;
+  margin-bottom: 4px;
+  margin-inline-end: 8px;
+  margin-top: 4px;
+  min-width: 48px;
+  padding: 0;
+  width: 48px;
+}
+
+.dialog-back-arrow {
+  --iron-icon-fill-color: var(--cros-icon-color-primary);
+  height: 20px;
+  width: 20px;
+}
+
+paper-tooltip::part(tooltip) {
+  border-radius: 2px;
+  font-family: var(--feedback-roboto-font-family);
+  font-size: 12px;
+  font-weight: var(--feedback-regular-font-weight);
+  line-height: 18px;
+  margin: auto 6px 0 6px;
+  padding: 3px 8px;
+}
+
+paper-tooltip {
+  --paper-tooltip-background: var(--cros-tooltip-background-color);
+  --paper-tooltip-delay-in: 100ms;
+  --paper-tooltip-text-color: var(--cros-tooltip-label-color);
+}
+
+cr-checkbox {
+  --cr-checkbox-ripple-opacity: 0;
+  --cr-checkbox-ripple-size: 32px;
+}
+
+:host-context(.focus-outline-visible) cr-checkbox {
+  --cr-checkbox-ripple-ring: none;
+}
+
+:host-context(.focus-outline-visible) cr-checkbox:focus {
+  --cr-checkbox-ripple-ring: 2px solid var(--cros-focus-ring-color);
+}
+
+#shadowShield {
+  bottom: 92px;
+  height: 48px;
+  left: 0;
+  pointer-events: none;
+  position: absolute;
+  right: 0;
+}
+
+.scrolling-shield {
+  background: linear-gradient(to bottom,
+      rgba(var(--cros-bg-color-rgb),0), rgba(var(--cros-bg-color-rgb),1));
+}

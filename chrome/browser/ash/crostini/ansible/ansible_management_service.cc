@@ -242,7 +242,7 @@ void AnsibleManagementService::ApplyAnsiblePlaybook(
 
 void AnsibleManagementService::OnApplyAnsiblePlaybook(
     const guest_os::GuestId& container_id,
-    absl::optional<vm_tools::cicerone::ApplyAnsiblePlaybookResponse> response) {
+    std::optional<vm_tools::cicerone::ApplyAnsiblePlaybookResponse> response) {
   // Check if cancelled.
   if (IsCancelled(container_id)) {
     return;

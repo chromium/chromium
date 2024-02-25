@@ -5,6 +5,7 @@
 #include "media/gpu/test/video_encoder/bitstream_validator.h"
 
 #include <numeric>
+#include <optional>
 
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
@@ -24,7 +25,6 @@
 #include "media/gpu/macros.h"
 #include "media/gpu/test/video_encoder/decoder_buffer_validator.h"
 #include "media/gpu/test/video_frame_helpers.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace media {
 namespace test {
@@ -40,13 +40,12 @@ std::unique_ptr<VideoDecoder> CreateDecoder(
   if (codec == VideoCodec::kAV1) {
 #if BUILDFLAG(ENABLE_DAV1D_DECODER)
     *media_log = std::make_unique<NullMediaLog>();
-    decoder = std::make_unique<Dav1dVideoDecoder>(media_log->get());
+    decoder = std::make_unique<Dav1dVideoDecoder>((*media_log)->Clone());
 #endif
   }
 
   if (codec == VideoCodec::kVP8 || codec == VideoCodec::kVP9) {
 #if BUILDFLAG(ENABLE_LIBVPX)
-    LOG_ASSERT(!base::FeatureList::IsEnabled(kFFmpegDecodeOpaqueVP8));
     decoder = std::make_unique<VpxVideoDecoder>();
 #endif
   }
@@ -67,8 +66,8 @@ std::unique_ptr<BitstreamValidator> BitstreamValidator::Create(
     const VideoDecoderConfig& decoder_config,
     size_t last_frame_index,
     std::vector<std::unique_ptr<VideoFrameProcessor>> video_frame_processors,
-    absl::optional<size_t> spatial_layer_index_to_decode,
-    absl::optional<size_t> temporal_layer_index_to_decode,
+    std::optional<size_t> spatial_layer_index_to_decode,
+    std::optional<size_t> temporal_layer_index_to_decode,
     const std::vector<gfx::Size>& spatial_layer_resolutions) {
   std::unique_ptr<MediaLog> media_log;
   auto decoder = CreateDecoder(decoder_config.codec(), &media_log);
@@ -130,8 +129,8 @@ BitstreamValidator::BitstreamValidator(
     std::unique_ptr<MediaLog> media_log,
     size_t last_frame_index,
     const gfx::Rect& decoding_rect,
-    absl::optional<size_t> spatial_layer_index_to_decode,
-    absl::optional<size_t> temporal_layer_index_to_decode,
+    std::optional<size_t> spatial_layer_index_to_decode,
+    std::optional<size_t> temporal_layer_index_to_decode,
     const std::vector<gfx::Size>& spatial_layer_resolutions,
     std::vector<std::unique_ptr<VideoFrameProcessor>> video_frame_processors)
     : decoder_(std::move(decoder)),
@@ -186,6 +185,10 @@ void BitstreamValidator::ProcessBitstream(scoped_refptr<BitstreamRef> bitstream,
   LOG_ASSERT(frame_index <= last_frame_index_)
       << "frame_index is larger than last frame index, frame_index="
       << frame_index << ", last_frame_index_=" << last_frame_index_;
+  if (bitstream->metadata.dropped_frame()) {
+    // Drop frame. Do nothing.
+    return;
+  }
   base::AutoLock lock(validator_lock_);
   // If many pending buffers are accumulated in this validator class and the
   // allocated memory size becomes large, the test process is killed by the

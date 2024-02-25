@@ -17,7 +17,7 @@ source_set("account_storage_notice") {
     "//ios/chrome/browser/shared/coordinator/chrome_coordinator",
     "//ios/chrome/browser/shared/model/browser",
     "//ios/chrome/browser/shared/public/commands",
-    "//ios/chrome/browser/signin",
+    "//ios/chrome/browser/signin/model",
     "//ios/chrome/browser/ui/settings/password/password_settings",
     "//ios/chrome/common:string_util",
     "//ios/chrome/common/ui/confirmation_alert",

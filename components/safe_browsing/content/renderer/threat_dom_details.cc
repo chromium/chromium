@@ -209,7 +209,6 @@ bool ShouldHandleElement(
     return true;
   }
   // Resources with a SRC are always handled.
-  // TODO(1298672): Handle portal elements.
   if ((element.HasHTMLTagName("iframe") || element.HasHTMLTagName("frame") ||
        element.HasHTMLTagName("embed") || element.HasHTMLTagName("script")) &&
       element.HasAttribute("src")) {

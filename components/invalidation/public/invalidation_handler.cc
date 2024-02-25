@@ -6,8 +6,7 @@
 
 namespace invalidation {
 
-void InvalidationHandler::OnInvalidatorClientIdChange(
-    const std::string& client_id) {}
+InvalidationHandler::~InvalidationHandler() = default;
 
 bool InvalidationHandler::IsPublicTopic(const Topic& topic) const {
   return false;

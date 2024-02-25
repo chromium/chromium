@@ -20,28 +20,21 @@
 
 + (char **)cStringArrayFromNSArray:(NSArray<NSString *> *)strings error:(NSError **)error {
   if (strings.count <= 0) {
-    [TFLCommonUtils
-        createCustomError:error
-                 withCode:TFLSupportErrorCodeInvalidArgumentError
-              description:
-                  @"Invalid length of strings found for list type options."];
+    [TFLCommonUtils createCustomError:error
+                             withCode:TFLSupportErrorCodeInvalidArgumentError
+                          description:@"Invalid length of strings found for list type options."];
     return nil;
   }
 
-  char** cStrings = [TFLCommonUtils mallocWithSize:strings.count * sizeof(char*)
-                                             error:error];
-  if (!cStrings)
-    return NULL;
+  char **cStrings = [TFLCommonUtils mallocWithSize:strings.count * sizeof(char *) error:error];
+  if (!cStrings) return NULL;
 
   for (NSInteger i = 0; i < strings.count; i++) {
     cStrings[i] = [TFLCommonUtils
-        mallocWithSize:([strings[i]
-                            lengthOfBytesUsingEncoding:NSUTF8StringEncoding] +
-                        1) *
+        mallocWithSize:([strings[i] lengthOfBytesUsingEncoding:NSUTF8StringEncoding] + 1) *
                        sizeof(char)
                  error:error];
-    if (!cStrings[i])
-      return NULL;
+    if (!cStrings[i]) return NULL;
 
     strcpy(cStrings[i], strings[i].UTF8String);
   }
@@ -84,16 +77,14 @@
 
   if (self.displayNamesLocale) {
     if (self.displayNamesLocale.UTF8String) {
-      cClassificationOptions->display_names_local =
-          strdup(self.displayNamesLocale.UTF8String);
+      cClassificationOptions->display_names_local = strdup(self.displayNamesLocale.UTF8String);
       if (!cClassificationOptions->display_names_local) {
         exit(-1);  // Memory Allocation Failed.
       }
     } else {
-      [TFLCommonUtils
-          createCustomError:error
-                   withCode:TFLSupportErrorCodeInvalidArgumentError
-                description:@"Could not convert (NSString *) to (char *)."];
+      [TFLCommonUtils createCustomError:error
+                               withCode:TFLSupportErrorCodeInvalidArgumentError
+                            description:@"Could not convert (NSString *) to (char *)."];
       return NO;
     }
   }
@@ -102,7 +93,7 @@
 }
 
 - (void)deleteAllocatedMemoryOfClassificationOptions:
-    (TfLiteClassificationOptions*)cClassificationOptions {
+    (TfLiteClassificationOptions *)cClassificationOptions {
   if (self.labelAllowList) {
     [TFLClassificationOptions deleteCStringsArray:cClassificationOptions->label_allowlist.list
                                             count:cClassificationOptions->label_allowlist.length];

@@ -11,7 +11,7 @@ import os
 import subprocess
 import threading
 import time
-from typing import Any, Dict, Iterable, List, Optional, Tuple, Union
+from typing import Any, Collection, Dict, Iterable, List, Optional, Tuple, Union
 
 import six
 
@@ -61,8 +61,13 @@ QueryParameters = Dict[str, Dict[str, Any]]
 class BigQueryQuerier(object):
   """Class to handle all BigQuery queries for a script invocation."""
 
-  def __init__(self, suite: Optional[str], project: str, num_samples: int,
-               large_query_mode: bool, num_jobs: Optional[int]):
+  def __init__(self,
+               suite: Optional[str],
+               project: str,
+               num_samples: int,
+               large_query_mode: bool,
+               num_jobs: Optional[int],
+               use_batching: bool = True):
     """
     Args:
       suite: A string containing the name of the suite that is being queried
@@ -78,19 +83,24 @@ class BigQueryQuerier(object):
           the ORDER BY clause.
       num_jobs: An integer specifying how many jobs to run in parallel. If None,
           all jobs will be run in parallel at the same time.
+      use_batching: Whether to use batching when running queries. Batching
+          allows a much greater amount of parallelism due to avoiding usage
+          limits, but also adds a variable amount of overhead since there need
+          to be free resources.
     """
     self._suite = suite
     self._project = project
     self._num_samples = num_samples or DEFAULT_NUM_SAMPLES
     self._large_query_mode = large_query_mode
     self._num_jobs = num_jobs
+    self._use_batching = use_batching
 
     assert self._num_samples > 0
     assert (self._num_jobs is None or self._num_jobs > 0)
 
   def FillExpectationMapForBuilders(
       self, expectation_map: data_types.TestExpectationMap,
-      builders: Iterable[data_types.BuilderEntry]
+      builders: Collection[data_types.BuilderEntry]
   ) -> Dict[str, data_types.ResultListType]:
     """Fills |expectation_map| with results from |builders|.
 
@@ -111,6 +121,9 @@ class BigQueryQuerier(object):
         ],
       }
     """
+    start_time = time.time()
+    logging.debug('Starting to fill expectation map for %d builders',
+                  len(builders))
     assert isinstance(expectation_map, data_types.TestExpectationMap)
     # Ensure that all the builders are of the same type since we make some
     # assumptions about that later on.
@@ -141,7 +154,10 @@ class BigQueryQuerier(object):
     tmp_expectation_map = data_types.TestExpectationMap()
     all_unmatched_results = {}
 
-    for (unmatched_results, prefixed_builder_name, merge_map) in results:
+    # results is potentially rather large, so reduce the list as we iterate over
+    # it to avoid using excessive memory.
+    while results:
+      (unmatched_results, prefixed_builder_name, merge_map) = results.pop()
       tmp_expectation_map.Merge(merge_map, expectation_map)
       if unmatched_results:
         all_unmatched_results[prefixed_builder_name] = unmatched_results
@@ -149,6 +165,7 @@ class BigQueryQuerier(object):
     expectation_map.clear()
     expectation_map.update(tmp_expectation_map)
 
+    logging.debug('Filling expectation map took %f', time.time() - start_time)
     return all_unmatched_results
 
   def _FilterOutInactiveBuilders(self,
@@ -175,7 +192,7 @@ class BigQueryQuerier(object):
     query = self._GetActiveBuilderQuery(
         builder_type, include_internal_builders).encode('utf-8')
     cmd = GenerateBigQueryCommand(self._project, {}, batch=False)
-    with open(os.devnull, 'w') as devnull:
+    with open(os.devnull, 'w', newline='', encoding='utf-8') as devnull:
       p = subprocess.Popen(cmd,
                            stdout=subprocess.PIPE,
                            stderr=devnull,
@@ -210,14 +227,22 @@ class BigQueryQuerier(object):
     Returns:
       The output of data_types.TestExpectationMap.AddResultList().
     """
+    start_time = time.time()
     builder, expectation_map = inputs
+    logging.debug('Starting query for builder %s', builder.name)
     results, expectation_files = self.QueryBuilder(builder)
+    logging.debug('Query for builder %s took %f', builder.name,
+                  time.time() - start_time)
 
+    start_time = time.time()
     prefixed_builder_name = '%s/%s:%s' % (builder.project, builder.builder_type,
                                           builder.name)
+    logging.debug('Starting data processing for builder %s', builder.name)
     unmatched_results = expectation_map.AddResultList(prefixed_builder_name,
                                                       results,
                                                       expectation_files)
+    logging.debug('Data processing for builder %s took %f', builder.name,
+                  time.time() - start_time)
 
     return unmatched_results, prefixed_builder_name, expectation_map
 
@@ -282,7 +307,7 @@ class BigQueryQuerier(object):
       if step_name not in results_for_each_step:
         results_for_each_step[step_name] = qr
 
-    expectation_files = []
+    expectation_files = set()
     for qr in results_for_each_step.values():
       # None is a special value indicating "use all expectation files", so
       # handle that.
@@ -290,11 +315,15 @@ class BigQueryQuerier(object):
       if ef is None:
         expectation_files = None
         break
-      expectation_files.extend(ef)
+      expectation_files |= set(ef)
     if expectation_files is not None:
-      expectation_files = list(set(expectation_files))
+      expectation_files = list(expectation_files)
 
-    for r in query_results:
+    # The query result list is potentially very large, so reduce the list as we
+    # iterate over it instead of using a standard for/in so that we don't
+    # temporarily end up with a ~2x increase in memory.
+    while query_results:
+      r = query_results.pop()
       if self._ShouldSkipOverResult(r):
         continue
       results.append(self._ConvertJsonResultToResultObject(r))
@@ -386,7 +415,7 @@ class BigQueryQuerier(object):
     def run_cmd_in_thread(inputs: Tuple[List[str], str]) -> str:
       cmd, query = inputs
       query = query.encode('utf-8')
-      with open(os.devnull, 'w') as devnull:
+      with open(os.devnull, 'w', newline='', encoding='utf-8') as devnull:
         with processes_lock:
           # Starting many queries at once causes us to hit rate limits much more
           # frequently, so stagger query starts to help avoid that.
@@ -449,7 +478,9 @@ class BigQueryQuerier(object):
         cleanup()
       raise RuntimeError('Hit branch that should  be unreachable')
 
-    bq_cmd = GenerateBigQueryCommand(self._project, parameters)
+    bq_cmd = GenerateBigQueryCommand(self._project,
+                                     parameters,
+                                     batch=self._use_batching)
     stdouts = run_cmd(bq_cmd, 0)
     combined_json = []
     for result in [json.loads(s) for s in stdouts]:

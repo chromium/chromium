@@ -47,7 +47,7 @@ void CryptAuthScheduler::OnDeviceSyncSchedulingStarted() {}
 
 void CryptAuthScheduler::NotifyEnrollmentRequested(
     const cryptauthv2::ClientMetadata& client_metadata,
-    const absl::optional<cryptauthv2::PolicyReference>&
+    const std::optional<cryptauthv2::PolicyReference>&
         client_directive_policy_reference) const {
   // Do nothing if weak pointer was invalidated.
   if (!enrollment_delegate_)

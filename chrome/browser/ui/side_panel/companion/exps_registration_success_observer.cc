@@ -92,7 +92,7 @@ void ExpsRegistrationSuccessObserver::MaybeShowIPH() {
 }
 
 void ExpsRegistrationSuccessObserver::ShowIPH() {
-  Browser* const browser = chrome::FindBrowserWithWebContents(web_contents());
+  Browser* const browser = chrome::FindBrowserWithTab(web_contents());
   if (!browser || !browser->window()) {
     return;
   }
@@ -110,7 +110,7 @@ PrefService* ExpsRegistrationSuccessObserver::pref_service() {
 
 bool ExpsRegistrationSuccessObserver::IsSearchInCompanionSidePanelSupported() {
   return companion::IsSearchInCompanionSidePanelSupported(
-      chrome::FindBrowserWithWebContents(web_contents()));
+      chrome::FindBrowserWithTab(web_contents()));
 }
 
 bool ExpsRegistrationSuccessObserver::DoesUrlMatchPatternsInList(

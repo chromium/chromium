@@ -8,12 +8,11 @@
 
 #include <unordered_map>
 
-#include "base/allocator/allocator_extension.h"
 #include "base/allocator/buildflags.h"
-#include "base/allocator/partition_allocator/partition_alloc_buildflags.h"
-#include "base/allocator/partition_allocator/partition_alloc_config.h"
-#include "base/allocator/partition_allocator/partition_bucket_lookup.h"
-#include "base/allocator/partition_allocator/shim/nonscannable_allocator.h"
+#include "base/allocator/partition_allocator/src/partition_alloc/partition_alloc_buildflags.h"
+#include "base/allocator/partition_allocator/src/partition_alloc/partition_alloc_config.h"
+#include "base/allocator/partition_allocator/src/partition_alloc/partition_bucket_lookup.h"
+#include "base/allocator/partition_allocator/src/partition_alloc/shim/nonscannable_allocator.h"
 #include "base/debug/profiler.h"
 #include "base/format_macros.h"
 #include "base/metrics/histogram_functions.h"
@@ -37,11 +36,11 @@
 #endif
 
 #if BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
-#include "base/allocator/partition_allocator/shim/allocator_shim_default_dispatch_to_partition_alloc.h"
+#include "base/allocator/partition_allocator/src/partition_alloc/shim/allocator_shim_default_dispatch_to_partition_alloc.h"
 #endif
 
 #if PA_CONFIG(THREAD_CACHE_ALLOC_STATS)
-#include "base/allocator/partition_allocator/partition_alloc_constants.h"
+#include "base/allocator/partition_allocator/src/partition_alloc/partition_alloc_constants.h"
 #endif
 
 namespace base {
@@ -86,7 +85,7 @@ void ReportWinHeapStats(MemoryDumpLevelOfDetail level_of_detail,
                         size_t* allocated_objects_size,
                         size_t* allocated_objects_count) {
   // This is too expensive on Windows, crbug.com/780735.
-  if (level_of_detail == MemoryDumpLevelOfDetail::DETAILED) {
+  if (level_of_detail == MemoryDumpLevelOfDetail::kDetailed) {
     WinHeapInfo main_heap_info = {};
     WinHeapMemoryDumpImpl(&main_heap_info);
     *total_virtual_size +=
@@ -122,7 +121,7 @@ void ReportPartitionAllocStats(ProcessMemoryDump* pmd,
                                size_t* cumulative_brp_quarantined_count) {
   MemoryDumpPartitionStatsDumper partition_stats_dumper("malloc", pmd,
                                                         level_of_detail);
-  bool is_light_dump = level_of_detail == MemoryDumpLevelOfDetail::BACKGROUND;
+  bool is_light_dump = level_of_detail == MemoryDumpLevelOfDetail::kBackground;
 
   auto* allocator = allocator_shim::internal::PartitionAllocMalloc::Allocator();
   allocator->DumpStats("allocator", is_light_dump, &partition_stats_dumper);
@@ -132,12 +131,6 @@ void ReportPartitionAllocStats(ProcessMemoryDump* pmd,
   if (original_allocator) {
     original_allocator->DumpStats("original", is_light_dump,
                                   &partition_stats_dumper);
-  }
-  auto* aligned_allocator =
-      allocator_shim::internal::PartitionAllocMalloc::AlignedAllocator();
-  if (aligned_allocator != allocator) {
-    aligned_allocator->DumpStats("aligned", is_light_dump,
-                                 &partition_stats_dumper);
   }
   auto& nonscannable_allocator =
       allocator_shim::NonScannableAllocator::Instance();
@@ -461,9 +454,6 @@ void MallocDumpProvider::ReportPerMinuteStats(
 }
 
 #if BUILDFLAG(USE_PARTITION_ALLOC)
-// static
-const char* MemoryDumpPartitionStatsDumper::kPartitionsDumpName = "partitions";
-
 std::string GetPartitionDumpName(const char* root_name,
                                  const char* partition_name) {
   return base::StringPrintf("%s/%s/%s", root_name,
@@ -477,7 +467,7 @@ MemoryDumpPartitionStatsDumper::MemoryDumpPartitionStatsDumper(
     MemoryDumpLevelOfDetail level_of_detail)
     : root_name_(root_name),
       memory_dump_(memory_dump),
-      detailed_(level_of_detail != MemoryDumpLevelOfDetail::BACKGROUND) {}
+      detailed_(level_of_detail != MemoryDumpLevelOfDetail::kBackground) {}
 
 void MemoryDumpPartitionStatsDumper::PartitionDumpTotals(
     const char* partition_name,

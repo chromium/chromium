@@ -6,18 +6,16 @@ package org.chromium.chrome.browser.sync;
 
 import androidx.annotation.Nullable;
 
+import org.jni_zero.NativeMethods;
+
 import org.chromium.base.ResettersForTesting;
 import org.chromium.base.ThreadUtils;
-import org.chromium.base.annotations.NativeMethods;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.components.sync.SyncService;
 
-/**
- * Provides profile specific SyncService instances.
- */
+/** Provides profile specific SyncService instances. */
 public class SyncServiceFactory {
-    @Nullable
-    private static SyncService sSyncServiceForTest;
+    @Nullable private static SyncService sSyncServiceForTest;
 
     private SyncServiceFactory() {}
 
@@ -34,21 +32,6 @@ public class SyncServiceFactory {
         ThreadUtils.assertOnUiThread();
         if (sSyncServiceForTest != null) return sSyncServiceForTest;
         return SyncServiceFactoryJni.get().getForProfile(profile);
-    }
-
-    /**
-     * DEPRECATED. Use {@link #getForProfile(Profile)}
-     *
-     * This will return the SyncService associated with the last used regular profile, so even
-     * if the user is currently off-the-record, this will return the SyncService associated with
-     * the regular profile.
-     */
-    @Nullable
-    @Deprecated
-    public static SyncService get() {
-        ThreadUtils.assertOnUiThread();
-        if (sSyncServiceForTest != null) return sSyncServiceForTest;
-        return SyncServiceFactory.getForProfile(Profile.getLastUsedRegularProfile());
     }
 
     /**

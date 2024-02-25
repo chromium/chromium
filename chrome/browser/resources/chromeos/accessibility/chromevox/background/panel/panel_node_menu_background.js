@@ -6,17 +6,19 @@
  * @fileoverview Calculates the menu items for the node menus in the ChromeVox
  * panel.
  */
-import {AutomationPredicate} from '../../../common/automation_predicate.js';
-import {AutomationUtil} from '../../../common/automation_util.js';
-import {constants} from '../../../common/constants.js';
-import {CursorRange} from '../../../common/cursors/range.js';
-import {AutomationTreeWalker} from '../../../common/tree_walker.js';
+import {AutomationPredicate} from '/common/automation_predicate.js';
+import {AutomationUtil} from '/common/automation_util.js';
+import {constants} from '/common/constants.js';
+import {CursorRange} from '/common/cursors/range.js';
+import {TestImportManager} from '/common/testing/test_import_manager.js';
+import {AutomationTreeWalker} from '/common/tree_walker.js';
+
 import {BridgeCallbackId} from '../../common/bridge_callback_manager.js';
 import {BridgeContext} from '../../common/bridge_constants.js';
 import {Msgs} from '../../common/msgs.js';
 import {PanelBridge} from '../../common/panel_bridge.js';
 import {PanelNodeMenuData, PanelNodeMenuId, PanelNodeMenuItemData} from '../../common/panel_menu_data.js';
-import {ChromeVoxState} from '../chromevox_state.js';
+import {ChromeVoxRange} from '../chromevox_range.js';
 import {Output} from '../output/output.js';
 import {OutputCustomEvent} from '../output/output_types.js';
 
@@ -45,6 +47,15 @@ export class PanelNodeMenuBackground {
     this.nodeCount_ = 0;
     /** @private {boolean} */
     this.isEmpty_ = true;
+    /** @private {function()} */
+    this.onFinish_;
+    /** @private {!Promise} */
+    this.finishPromise_ = new Promise(resolve => this.onFinish_ = resolve);
+  }
+
+  /** @return {!Promise} */
+  waitForFinish() {
+    return this.finishPromise_;
   }
 
   /**
@@ -95,8 +106,7 @@ export class PanelNodeMenuBackground {
 
         const callbackId = new BridgeCallbackId(
             BridgeContext.BACKGROUND,
-            () => ChromeVoxState.instance.navigateToRange(
-                CursorRange.fromNode(node)));
+            () => ChromeVoxRange.navigateTo(CursorRange.fromNode(node)));
         const isActive = node === this.node_ && this.isActivated_;
         const menuId = this.menuId_;
         this.addMenuItemFromData_({title, callbackId, isActive, menuId});
@@ -128,6 +138,7 @@ export class PanelNodeMenuBackground {
         menuId: this.menuId_,
       });
     }
+    this.onFinish_();
   }
 
   /**
@@ -145,3 +156,5 @@ export class PanelNodeMenuBackground {
  * @const {number}
  */
 PanelNodeMenuBackground.MAX_NODES_BEFORE_ASYNC = 100;
+
+TestImportManager.exportForTesting(PanelNodeMenuBackground);

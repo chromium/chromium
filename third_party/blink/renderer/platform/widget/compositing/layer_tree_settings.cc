@@ -11,7 +11,6 @@
 #include "base/command_line.h"
 #include "base/logging.h"
 #include "base/metrics/field_trial_params.h"
-#include "base/metrics/histogram_functions.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/system/sys_info.h"
 #include "build/build_config.h"
@@ -28,6 +27,7 @@
 #include "third_party/blink/public/common/switches.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
+#include "third_party/blink/renderer/platform/web_test_support.h"
 #include "ui/base/ui_base_features.h"
 #include "ui/base/ui_base_switches.h"
 #include "ui/native_theme/native_theme_features.h"
@@ -63,8 +63,15 @@ void InitializeScrollbarFadeAndDelay(cc::LayerTreeSettings& settings) {
 
 #if !BUILDFLAG(IS_ANDROID)
   if (ui::IsOverlayScrollbarEnabled()) {
-    settings.scrollbar_fade_delay = ui::kOverlayScrollbarFadeDelay;
-    settings.scrollbar_fade_duration = ui::kOverlayScrollbarFadeDuration;
+    settings.idle_thickness_scale = ui::kOverlayScrollbarIdleThicknessScale;
+    if (ui::IsFluentOverlayScrollbarEnabled()) {
+      settings.scrollbar_fade_delay = ui::kFluentOverlayScrollbarFadeDelay;
+      settings.scrollbar_fade_duration =
+          ui::kFluentOverlayScrollbarFadeDuration;
+    } else {
+      settings.scrollbar_fade_delay = ui::kOverlayScrollbarFadeDelay;
+      settings.scrollbar_fade_duration = ui::kOverlayScrollbarFadeDuration;
+    }
   }
 #endif  // !BUILDFLAG(IS_ANDROID)
 
@@ -87,8 +94,17 @@ bool IsSmallScreen(const gfx::Size& size) {
 #endif
 
 std::pair<int, int> GetTilingInterestAreaSizes() {
-  int interest_area_size_in_pixels =
-      ::features::kInterestAreaSizeInPixels.Get();
+  int interest_area_size_in_pixels;
+
+  if (base::FeatureList::IsEnabled(::features::kSmallerInterestArea) &&
+      ::features::kInterestAreaSizeInPixels.Get() ==
+          ::features::kInterestAreaSizeInPixels.default_value) {
+    interest_area_size_in_pixels =
+        ::features::kDefaultInterestAreaSizeInPixelsWhenEnabled;
+  } else {
+    interest_area_size_in_pixels = ::features::kInterestAreaSizeInPixels.Get();
+  }
+
   if (interest_area_size_in_pixels ==
       ::features::kInterestAreaSizeInPixels.default_value) {
     return {
@@ -102,11 +118,7 @@ std::pair<int, int> GetTilingInterestAreaSizes() {
   return {interest_area_size_in_pixels, (2 * interest_area_size_in_pixels) / 3};
 }
 
-#if BUILDFLAG(IS_MAC)
-BASE_FEATURE(kIncreaseTileMemorySizeProportionally,
-             "IncreaseTileMemorySizeProportionally",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
+#if !BUILDFLAG(IS_ANDROID)
 // Adjusting tile memory size in case a lot more websites need more tile
 // memory than the current calculation.
 BASE_FEATURE(kAdjustTileGpuMemorySize,
@@ -165,142 +177,47 @@ cc::ManagedMemoryPolicy GetGpuMemoryPolicy(
   }
 
 #if BUILDFLAG(IS_ANDROID)
-  // We can't query available GPU memory from the system on Android.
-  // Physical memory is also mis-reported sometimes (eg. Nexus 10 reports
-  // 1262MB when it actually has 2GB, while Razr M has 1GB but only reports
-  // 128MB java heap size). First we estimate physical memory using both.
-  size_t dalvik_mb = base::SysInfo::DalvikHeapSizeMB();
-  size_t physical_mb = base::SysInfo::AmountOfPhysicalMemoryMB();
-  size_t physical_memory_mb = 0;
-  if (base::SysInfo::IsLowEndDevice()) {
-    // TODO(crbug.com/742534): The code below appears to no longer work.
-    // |dalvik_mb| no longer follows the expected heuristic pattern, causing us
-    // to over-estimate memory on low-end devices. This entire section probably
-    // needs to be re-written, but for now we can address the low-end Android
-    // issues by ignoring |dalvik_mb|.
-    physical_memory_mb = physical_mb;
-  } else if (dalvik_mb >= 256) {
-    physical_memory_mb = dalvik_mb * 4;
+  if (base::SysInfo::IsLowEndDevice() ||
+      base::SysInfo::AmountOfPhysicalMemoryMB() < 2000) {
+    actual.bytes_limit_when_visible = 96 * 1024 * 1024;
   } else {
-    physical_memory_mb = std::max(dalvik_mb * 4, (physical_mb * 4) / 3);
-  }
-
-  // Now we take a default of 1/8th of memory on high-memory devices,
-  // and gradually scale that back for low-memory devices (to be nicer
-  // to other apps so they don't get killed). Examples:
-  // Nexus 4/10(2GB)    256MB (normally 128MB)
-  // Droid Razr M(1GB)  114MB (normally 57MB)
-  // Galaxy Nexus(1GB)  100MB (normally 50MB)
-  // Xoom(1GB)          100MB (normally 50MB)
-  // Nexus S(low-end)   8MB (normally 8MB)
-  // Note that the compositor now uses only some of this memory for
-  // pre-painting and uses the rest only for 'emergencies'.
-  if (actual.bytes_limit_when_visible == 0) {
-    // NOTE: Non-low-end devices use only 50% of these limits,
-    // except during 'emergencies' where 100% can be used.
-    if (physical_memory_mb >= 1536) {
-      actual.bytes_limit_when_visible = physical_memory_mb / 8;  // >192MB
-    } else if (physical_memory_mb >= 1152) {
-      actual.bytes_limit_when_visible = physical_memory_mb / 8;  // >144MB
-    } else if (physical_memory_mb >= 768) {
-      actual.bytes_limit_when_visible = physical_memory_mb / 10;  // >76MB
-    } else if (physical_memory_mb >= 513) {
-      actual.bytes_limit_when_visible = physical_memory_mb / 12;  // <64MB
-    } else {
-      // Devices with this little RAM have very little headroom so we hardcode
-      // the limit rather than relying on the heuristics above.  (They also use
-      // 4444 textures so we can use a lower limit.)
-      actual.bytes_limit_when_visible = 8;
-    }
-
-    actual.bytes_limit_when_visible =
-        actual.bytes_limit_when_visible * 1024 * 1024;
-    // Clamp the observed value to a specific range on Android.
-    actual.bytes_limit_when_visible = std::max(
-        actual.bytes_limit_when_visible, static_cast<size_t>(8 * 1024 * 1024));
-    actual.bytes_limit_when_visible =
-        std::min(actual.bytes_limit_when_visible,
-                 static_cast<size_t>(256 * 1024 * 1024));
-  }
-  actual.priority_cutoff_when_visible =
-      gpu::MemoryAllocation::CUTOFF_ALLOW_EVERYTHING;
-
-  static size_t previous_value = [](size_t bytes_limit) {
-    base::UmaHistogramMemoryKB("Blink.Compositor.MemoryLimitKb",
-                               static_cast<int>(bytes_limit / 1024));
-
-    return bytes_limit;
-  }(actual.bytes_limit_when_visible);
-  DCHECK_EQ(actual.bytes_limit_when_visible, previous_value);
-
-#elif BUILDFLAG(IS_MAC)
-  if (base::FeatureList::IsEnabled(kIncreaseTileMemorySizeProportionally)) {
-    // This calculation will increase the tile memory size. It should apply to
-    // the other plateforms if no regression on Mac.
-    actual.priority_cutoff_when_visible =
-        gpu::MemoryAllocation::CUTOFF_ALLOW_NICE_TO_HAVE;
-
-    // For large monitors with high resolution, increase the tile memory to
-    // avoid frequent out of memory problems. With Mac M1 on
-    // https://www.334-28th.com/, it seems 512 MB works fine on 1920x1080 * 2
-    // (scale) and 1152 MB on 2056x1329 * 2 (scale). Use this ratio for the
-    // formula to increase |bytes_limit_when_visible| proportionally.
-    constexpr size_t kLargeResolution = 2056 * 1329 * 2 * 2;
-    size_t display_size =
-        std::round(initial_screen_size.width() * initial_device_scale_factor *
-                   initial_screen_size.height() * initial_device_scale_factor);
-
-    size_t large_resolution_memory_mb = GetLargeResolutionMemoryMB();
-    size_t mb_limit_when_visible =
-        large_resolution_memory_mb * (display_size * 1.0 / kLargeResolution);
-
-    // Cap the memory size to one fourth of the total system memory so it won't
-    // consume too much of the system memory. Still keep the minimum to the
-    // default of 512MB.
-    size_t default_memory_mb = GetDefaultMemoryMB();
-    size_t memory_cap_mb = base::SysInfo::AmountOfPhysicalMemoryMB() / 4;
-    if (mb_limit_when_visible > memory_cap_mb) {
-      mb_limit_when_visible = memory_cap_mb;
-    } else if (mb_limit_when_visible < default_memory_mb) {
-      mb_limit_when_visible = default_memory_mb;
-    }
-
-    actual.bytes_limit_when_visible = mb_limit_when_visible * 1024 * 1024;
-  } else {
-    // Ignore what the system said and give all clients the same maximum
-    // allocation on desktop platforms.
-    actual.bytes_limit_when_visible = 512 * 1024 * 1024;
-    actual.priority_cutoff_when_visible =
-        gpu::MemoryAllocation::CUTOFF_ALLOW_NICE_TO_HAVE;
-
-    // For large monitors (4k), double the tile memory to avoid frequent out of
-    // memory problems. 4k could mean a screen width of anywhere from 3840 to
-    // 4096 (see https://en.wikipedia.org/wiki/4K_resolution). We use 3500 as a
-    // proxy for "large enough".
-    static const int kLargeDisplayThreshold = 3500;
-    int display_width =
-        std::round(initial_screen_size.width() * initial_device_scale_factor);
-    if (display_width >= kLargeDisplayThreshold) {
-      actual.bytes_limit_when_visible *= 2;
-    }
+    actual.bytes_limit_when_visible = 256 * 1024 * 1024;
   }
 #else
-  // Ignore what the system said and give all clients the same maximum
-  // allocation on desktop platforms.
-  actual.bytes_limit_when_visible = 512 * 1024 * 1024;
+  // This calculation will increase the tile memory size. It should apply to
+  // the other plateforms if no regression on Mac.
+  //
+  // For large monitors with high resolution, increase the tile memory to
+  // avoid frequent out of memory problems. With Mac M1 on
+  // https://www.334-28th.com/, it seems 512 MB works fine on 1920x1080 * 2
+  // (scale) and 1152 MB on 2056x1329 * 2 (scale). Use this ratio for the
+  // formula to increase |bytes_limit_when_visible| proportionally.
+  // For mobile platforms with small display (roughly less than 3k x 1.6k),
+  // mb_limit will still be 512 MB.
+  constexpr size_t kLargeResolution = 2056 * 1329 * 2 * 2;
+  size_t display_size =
+      std::round(initial_screen_size.width() * initial_device_scale_factor *
+                 initial_screen_size.height() * initial_device_scale_factor);
+
+  size_t large_resolution_memory_mb = GetLargeResolutionMemoryMB();
+  size_t mb_limit_when_visible =
+      large_resolution_memory_mb * (display_size * 1.0 / kLargeResolution);
+
+  // Cap the memory size to one fourth of the total system memory so it won't
+  // consume too much of the system memory. Still keep the minimum to the
+  // default of 512MB.
+  size_t default_memory_mb = GetDefaultMemoryMB();
+  size_t memory_cap_mb = base::SysInfo::AmountOfPhysicalMemoryMB() / 4;
+  if (mb_limit_when_visible > memory_cap_mb) {
+    mb_limit_when_visible = memory_cap_mb;
+  } else if (mb_limit_when_visible < default_memory_mb) {
+    mb_limit_when_visible = default_memory_mb;
+  }
+
+  actual.bytes_limit_when_visible = mb_limit_when_visible * 1024 * 1024;
+#endif
   actual.priority_cutoff_when_visible =
       gpu::MemoryAllocation::CUTOFF_ALLOW_NICE_TO_HAVE;
-
-  // For large monitors (4k), double the tile memory to avoid frequent out of
-  // memory problems. 4k could mean a screen width of anywhere from 3840 to 4096
-  // (see https://en.wikipedia.org/wiki/4K_resolution). We use 3500 as a proxy
-  // for "large enough".
-  static const int kLargeDisplayThreshold = 3500;
-  int display_width =
-      std::round(initial_screen_size.width() * initial_device_scale_factor);
-  if (display_width >= kLargeDisplayThreshold)
-    actual.bytes_limit_when_visible *= 2;
-#endif
 
   return actual;
 }
@@ -320,9 +237,6 @@ cc::LayerTreeSettings GenerateLayerTreeSettings(
   Platform* platform = Platform::Current();
   settings.percent_based_scrolling =
       ::features::IsPercentBasedScrollingEnabled();
-
-  settings.resource_settings.use_r16_texture =
-      base::FeatureList::IsEnabled(media::kUseR16Texture);
 
   settings.commit_to_active_tree = !is_threaded;
   settings.is_for_embedded_frame = is_for_embedded_frame;
@@ -452,7 +366,7 @@ cc::LayerTreeSettings GenerateLayerTreeSettings(
   // Partial raster is not supported with RawDraw
   settings.use_partial_raster &= !::features::IsUsingRawDraw();
   settings.enable_elastic_overscroll = platform->IsElasticOverscrollEnabled();
-  settings.resource_settings.use_gpu_memory_buffer_resources =
+  settings.use_gpu_memory_buffer_resources =
       cmd.HasSwitch(switches::kEnableGpuMemoryBufferCompositorResources);
   settings.use_painted_device_scale_factor = true;
 
@@ -533,10 +447,7 @@ cc::LayerTreeSettings GenerateLayerTreeSettings(
         &settings.initial_debug_state.slow_down_raster_scale_factor);
   }
 
-  // This is default overlay scrollbar settings for Android and DevTools mobile
-  // emulator. Aura Overlay Scrollbar will override below.
   settings.scrollbar_animator = cc::LayerTreeSettings::ANDROID_OVERLAY;
-  settings.solid_color_scrollbar_color = {0.5f, 0.5f, 0.5f, 0.5f};
 
   InitializeScrollbarFadeAndDelay(settings);
 
@@ -570,7 +481,7 @@ cc::LayerTreeSettings GenerateLayerTreeSettings(
     // hide_scrollbars setting because supporting -webkit custom scrollbars is
     // still desired on sublayers.
     settings.scrollbar_animator = cc::LayerTreeSettings::NO_ANIMATOR;
-    settings.solid_color_scrollbar_color = SkColors::kTransparent;
+    // Rendering of scrollbars will be disabled in cc::SolidColorScrollbarLayer.
 
     // Early damage check works in combination with synchronous compositor.
     settings.enable_early_damage_check =
@@ -594,14 +505,27 @@ cc::LayerTreeSettings GenerateLayerTreeSettings(
 #else   // BUILDFLAG(IS_ANDROID)
   const bool using_low_memory_policy = base::SysInfo::IsLowEndDevice();
 
+  settings.enable_fluent_scrollbar = ui::IsFluentScrollbarEnabled();
+  settings.enable_fluent_overlay_scrollbar =
+      ui::IsFluentOverlayScrollbarEnabled();
+
   if (ui::IsOverlayScrollbarEnabled()) {
     settings.scrollbar_animator = cc::LayerTreeSettings::AURA_OVERLAY;
     settings.scrollbar_thinning_duration =
         ui::kOverlayScrollbarThinningDuration;
-    settings.scrollbar_flash_after_any_scroll_update = true;
+    settings.scrollbar_flash_after_any_scroll_update =
+        !settings.enable_fluent_overlay_scrollbar;
+    // Avoid animating in web tests to improve reliability.
+    if (settings.enable_fluent_overlay_scrollbar) {
+      settings.scrollbar_thinning_duration =
+          ui::kFluentOverlayScrollbarThinningDuration;
+      if (WebTestSupport::IsRunningWebTest()) {
+        settings.scrollbar_thinning_duration = base::Milliseconds(0);
+        settings.scrollbar_fade_delay = base::Milliseconds(0);
+        settings.scrollbar_fade_duration = base::Milliseconds(0);
+      }
+    }
   }
-
-  settings.enable_fluent_scrollbar = ui::IsFluentScrollbarEnabled();
 #endif  // BUILDFLAG(IS_ANDROID)
 
   settings.decoded_image_working_set_budget_bytes =
@@ -676,7 +600,7 @@ cc::LayerTreeSettings GenerateLayerTreeSettings(
       cmd.HasSwitch(::switches::kDisableFrameRateLimit);
 
   settings.enable_variable_refresh_rate =
-      ::features::IsVariableRefreshRateEnabled();
+      ::features::IsVariableRefreshRateAlwaysOn();
 
   std::tie(settings.tiling_interest_area_padding,
            settings.skewport_extrapolation_limit_in_screen_pixels) =

@@ -57,7 +57,7 @@ struct FakeEntry {
   std::unique_ptr<EntryMetadata> metadata;
   std::string contents;
   // Used when the file is open for writing.
-  absl::optional<std::string> write_buffer;
+  std::optional<std::string> write_buffer;
 };
 
 // Fake provided file system implementation. Does not communicate with target

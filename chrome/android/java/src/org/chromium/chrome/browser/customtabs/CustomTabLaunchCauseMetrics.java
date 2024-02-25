@@ -7,9 +7,7 @@ package org.chromium.chrome.browser.customtabs;
 import org.chromium.chrome.browser.app.metrics.LaunchCauseMetrics;
 import org.chromium.chrome.browser.flags.ActivityType;
 
-/**
- * LaunchCauseMetrics for CustomTabActivity.
- */
+/** LaunchCauseMetrics for CustomTabActivity. */
 public class CustomTabLaunchCauseMetrics extends LaunchCauseMetrics {
     private final CustomTabActivity mActivity;
 

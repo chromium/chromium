@@ -7,6 +7,7 @@
 
 #include <algorithm>
 #include <memory>
+#include <optional>
 
 #include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
@@ -14,7 +15,6 @@
 #include "chromeos/ash/components/string_matching/tokenized_string.h"
 #include "components/omnibox/browser/autocomplete_controller.h"
 #include "components/omnibox/browser/favicon_cache.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 class AppListControllerDelegate;
 class AutocompleteController;
@@ -27,8 +27,10 @@ namespace app_list {
 class OmniboxProvider : public SearchProvider,
                         public AutocompleteController::Observer {
  public:
+  // `provider_types` is a bitmap containing AutocompleteProvider::Type values
   explicit OmniboxProvider(Profile* profile,
-                           AppListControllerDelegate* list_controller);
+                           AppListControllerDelegate* list_controller,
+                           int provider_types);
 
   OmniboxProvider(const OmniboxProvider&) = delete;
   OmniboxProvider& operator=(const OmniboxProvider&) = delete;
@@ -54,11 +56,11 @@ class OmniboxProvider : public SearchProvider,
   void OnResultChanged(AutocompleteController* controller,
                        bool default_match_changed) override;
 
-  raw_ptr<Profile, ExperimentalAsh> profile_;
-  raw_ptr<AppListControllerDelegate, ExperimentalAsh> list_controller_;
+  raw_ptr<Profile> profile_;
+  raw_ptr<AppListControllerDelegate> list_controller_;
 
   std::u16string last_query_;
-  absl::optional<ash::string_matching::TokenizedString> last_tokenized_query_;
+  std::optional<ash::string_matching::TokenizedString> last_tokenized_query_;
   base::TimeTicks query_start_time_;
   AutocompleteInput input_;
 

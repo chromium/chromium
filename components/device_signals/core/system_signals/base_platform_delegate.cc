@@ -5,6 +5,7 @@
 #include "components/device_signals/core/system_signals/base_platform_delegate.h"
 
 #include <memory>
+#include <optional>
 
 #include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
@@ -13,7 +14,6 @@
 #include "base/process/process_iterator.h"
 #include "components/device_signals/core/common/common_types.h"
 #include "components/device_signals/core/system_signals/platform_utils.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
 #include "base/file_version_info.h"
@@ -55,7 +55,7 @@ FilePathMap<bool> BasePlatformDelegate::AreExecutablesRunning(
       break;
     }
 
-    absl::optional<base::FilePath> exe_path =
+    std::optional<base::FilePath> exe_path =
         GetProcessExePath(process_entry->pid());
     if (exe_path && running_map.contains(exe_path.value())) {
       ++counter;
@@ -68,13 +68,13 @@ FilePathMap<bool> BasePlatformDelegate::AreExecutablesRunning(
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
 
-absl::optional<PlatformDelegate::ProductMetadata>
+std::optional<PlatformDelegate::ProductMetadata>
 BasePlatformDelegate::GetProductMetadata(const base::FilePath& file_path) {
   std::unique_ptr<FileVersionInfo> version_info(
       FileVersionInfo::CreateFileVersionInfo(file_path));
 
   if (!version_info) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   std::u16string product_name;

@@ -7,6 +7,7 @@
 
 #include "ash/ash_export.h"
 #include "base/memory/raw_ptr.h"
+#include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/controls/button/button.h"
 #include "ui/views/view.h"
 #include "ui/views/view_observer.h"
@@ -25,6 +26,8 @@ namespace ash {
 
 class ASH_EXPORT MediaControlsHeaderView : public views::View,
                                            views::ViewObserver {
+  METADATA_HEADER(MediaControlsHeaderView, views::View)
+
  public:
   explicit MediaControlsHeaderView(
       views::Button::PressedCallback close_button_cb);
@@ -53,9 +56,9 @@ class ASH_EXPORT MediaControlsHeaderView : public views::View,
  private:
   void UpdateCloseButtonVisibility();
 
-  raw_ptr<views::ImageView, ExperimentalAsh> app_icon_view_;
-  raw_ptr<views::Label, ExperimentalAsh> app_name_view_;
-  raw_ptr<views::ImageButton, ExperimentalAsh> close_button_ = nullptr;
+  raw_ptr<views::ImageView> app_icon_view_;
+  raw_ptr<views::Label> app_name_view_;
+  raw_ptr<views::ImageButton> close_button_ = nullptr;
 
   bool force_close_x_visible_ = false;
 };

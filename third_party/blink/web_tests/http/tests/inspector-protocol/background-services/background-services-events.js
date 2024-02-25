@@ -37,7 +37,7 @@ async function waitForEvents(dp, numEvents) {
   });
 }
 
-(async function(testRunner) {
+(async function(/** @type {import('test_runner').TestRunner} */ testRunner) {
   var {page, session, dp} = await testRunner.startURL(
       'resources/background-services.html',
       `Tests that the expected events are received.`);

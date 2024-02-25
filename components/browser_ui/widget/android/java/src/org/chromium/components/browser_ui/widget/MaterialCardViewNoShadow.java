@@ -26,13 +26,18 @@ public class MaterialCardViewNoShadow extends FrameLayout {
     public MaterialCardViewNoShadow(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
 
-        // TODO(https://crbug.com/1410537): Cleanup baseline color experiment references.
-        final TypedArray typedArray = context.obtainStyledAttributes(attrs,
-                R.styleable.MaterialCardViewNoShadow, defStyleAttr, R.style.MaterialCardStyle);
-        final float cornerSize = typedArray.getDimensionPixelSize(
-                R.styleable.MaterialCardViewNoShadow_cornerRadius, 0);
-        final float elevation = typedArray.getDimensionPixelSize(
-                R.styleable.MaterialCardViewNoShadow_cardElevation, 0);
+        final TypedArray typedArray =
+                context.obtainStyledAttributes(
+                        attrs,
+                        R.styleable.MaterialCardViewNoShadow,
+                        defStyleAttr,
+                        R.style.MaterialCardStyle);
+        final float cornerSize =
+                typedArray.getDimensionPixelSize(
+                        R.styleable.MaterialCardViewNoShadow_cornerRadius, 0);
+        final float elevation =
+                typedArray.getDimensionPixelSize(
+                        R.styleable.MaterialCardViewNoShadow_cardElevation, 0);
         typedArray.recycle();
 
         setBackgroundResource(R.drawable.card_with_corners_background);

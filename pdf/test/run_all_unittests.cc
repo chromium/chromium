@@ -14,6 +14,7 @@
 #include "base/test/test_suite.h"
 #include "mojo/core/embedder/embedder.h"
 #include "mojo/public/cpp/bindings/binder_map.h"
+#include "pdf/test/test_helpers.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/public/platform/scheduler/test/renderer_scheduler_test_support.h"
@@ -76,13 +77,15 @@ class PdfTestSuite final : public base::TestSuite {
     platform_ = std::make_unique<BlinkPlatformForTesting>();
 
     mojo::BinderMap binders;
-    blink::Initialize(platform_.get(), &binders,
-                      platform_->GetMainThreadScheduler());
-
+    blink::InitializeWithoutIsolateForTesting(
+        platform_.get(), &binders, platform_->GetMainThreadScheduler());
+    v8::Isolate* isolate = blink::CreateMainThreadIsolate();
+    chrome_pdf::SetBlinkIsolate(isolate);
     InitializeResourceBundle();
   }
 
   void Shutdown() override {
+    chrome_pdf::SetBlinkIsolate(nullptr);
     platform_.reset();
     ui::ResourceBundle::CleanupSharedInstance();
     base::TestSuite::Shutdown();

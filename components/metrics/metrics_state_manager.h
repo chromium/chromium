@@ -21,10 +21,6 @@
 #include "components/metrics/entropy_state.h"
 #include "components/variations/entropy_provider.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "components/metrics/structured/neutrino_logging.h"  // nogncheck
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-
 class PrefService;
 class PrefRegistrySimple;
 
@@ -109,8 +105,15 @@ class MetricsStateManager final {
   // not opted in to metrics reporting.
   const std::string& client_id() const { return client_id_; }
 
-  // Returns the low entropy source for this client.
+  // Returns the low entropy sources for this client.
   int GetLowEntropySource();
+  int GetOldLowEntropySource();
+  int GetPseudoLowEntropySource();
+
+  // Gets the limited entropy randomization source. For clients that only use
+  // the low entropy source (e.g. Android Webview), this will return the empty
+  // string.
+  std::string_view GetLimitedEntropyRandomizationSource();
 
   // The CleanExitBeacon, used to determine whether the previous Chrome browser
   // session terminated gracefully.
@@ -184,7 +187,14 @@ class MetricsStateManager final {
   // this method returns an entropy provider that has a high source of entropy,
   // partially based on the client ID or provisional client ID. Otherwise, it
   // only returns an entropy provider that is based on a low entropy source.
-  std::unique_ptr<const variations::EntropyProviders> CreateEntropyProviders();
+  //
+  // When |enable_limited_entropy_mode| is true, a limited entropy
+  // randomization source value will be generated for this client. This
+  // parameter can only be false before the limited entropy synthetic trial
+  // completes (See limited_entropy_synthetic_trial.h), after which it should be
+  // removed (TODO(crbug.com/1508150)).
+  std::unique_ptr<const variations::EntropyProviders> CreateEntropyProviders(
+      bool enable_limited_entropy_mode);
 
   ClonedInstallDetector* cloned_install_detector_for_testing() {
     return &cloned_install_detector_;
@@ -226,6 +236,11 @@ class MetricsStateManager final {
       CheckProviderResetIds_PreviousIdOnlyReportInResetSession);
   FRIEND_TEST_ALL_PREFIXES(MetricsStateManagerTest, EntropySourceUsed_Low);
   FRIEND_TEST_ALL_PREFIXES(MetricsStateManagerTest, EntropySourceUsed_High);
+  FRIEND_TEST_ALL_PREFIXES(MetricsStateManagerTest,
+                           EntropySourceUsed_High_ExternalClientId);
+  FRIEND_TEST_ALL_PREFIXES(
+      MetricsStateManagerTest,
+      EntropySourceUsed_High_ExternalClientId_MetricsReportingDisabled);
   FRIEND_TEST_ALL_PREFIXES(MetricsStateManagerTest,
                            ProvisionalClientId_PromotedToClientId);
   FRIEND_TEST_ALL_PREFIXES(MetricsStateManagerTest,
@@ -301,9 +316,6 @@ class MetricsStateManager final {
   // |kMetricsProvisionalClientID| must be set before calling this.
   std::string GetHighEntropySource();
 
-  // Returns the old low entropy source for this client.
-  int GetOldLowEntropySource();
-
   // Updates |entropy_source_returned_| with |type| iff the current value is
   // ENTROPY_SOURCE_NONE and logs the new value in a histogram.
   void UpdateEntropySourceReturnedValue(EntropySourceType type);
@@ -324,12 +336,6 @@ class MetricsStateManager final {
   void ResetMetricsIDsIfNecessary();
 
   bool ShouldGenerateProvisionalClientId(bool is_first_run);
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  // Log to structured metrics when the client id is changed.
-  void LogClientIdChanged(metrics::structured::NeutrinoDevicesLocation location,
-                          std::string previous_client_id);
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
   // Whether an instance of this class exists. Used to enforce that there aren't
   // multiple instances of this class at a given time.

@@ -10,6 +10,7 @@
 
 #include <map>
 #include <memory>
+#include <optional>
 #include <utility>
 
 #include "base/containers/lru_cache.h"
@@ -32,7 +33,6 @@
 #include "media/gpu/chromeos/video_decoder_pipeline.h"
 #include "media/gpu/decode_surface_handler.h"
 #include "media/gpu/vaapi/vaapi_status.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/gpu_memory_buffer.h"
@@ -44,7 +44,7 @@ class AcceleratedVideoDecoder;
 class VaapiVideoDecoderDelegate;
 class DmabufVideoFramePool;
 class VaapiWrapper;
-class VideoFrame;
+class FrameResource;
 class VASurface;
 
 class VaapiVideoDecoder : public VideoDecoderMixin,
@@ -58,14 +58,14 @@ class VaapiVideoDecoder : public VideoDecoderMixin,
   VaapiVideoDecoder(const VaapiVideoDecoder&) = delete;
   VaapiVideoDecoder& operator=(const VaapiVideoDecoder&) = delete;
 
-  static absl::optional<SupportedVideoDecoderConfigs> GetSupportedConfigs();
+  static std::optional<SupportedVideoDecoderConfigs> GetSupportedConfigs();
 
   // VideoDecoderMixin implementation, VideoDecoder part.
   void Initialize(const VideoDecoderConfig& config,
                   bool low_delay,
                   CdmContext* cdm_context,
                   InitCB init_cb,
-                  const OutputCB& output_cb,
+                  const PipelineOutputCB& output_cb,
                   const WaitingCB& waiting_cb) override;
   void Decode(scoped_refptr<DecoderBuffer> buffer, DecodeCB decode_cb) override;
   void Reset(base::OnceClosure reset_cb) override;
@@ -137,9 +137,9 @@ class VaapiVideoDecoder : public VideoDecoderMixin,
   // decoder, or encountering an error.
   void ClearDecodeTaskQueue(DecoderStatus status);
 
-  // Releases the local reference to the VideoFrame associated with the
+  // Releases the local reference to the FrameResource associated with the
   // specified |surface_id| on the decoder thread. This is called when
-  // |decoder_| has outputted the VideoFrame and stopped using it as a
+  // |decoder_| has outputted the FrameResource and stopped using it as a
   // reference frame. Note that this doesn't mean the frame can be reused
   // immediately, as it might still be used by the client.
   void ReleaseVideoFrame(VASurfaceID surface_id);
@@ -183,9 +183,10 @@ class VaapiVideoDecoder : public VideoDecoderMixin,
       const gfx::Size& natural_size,
       bool use_protected,
       bool use_linear_buffers,
+      bool needs_detiling,
       base::TimeDelta timestamp);
 
-  // Allocates a new VideoFrame using a new VASurface directly. Since this is
+  // Allocates a new FrameResource using a new VASurface directly. Since this is
   // only used on linux, it also sets the required YCbCr information for the
   // frame it creates.
   CroStatus::Or<scoped_refptr<VideoFrame>> AllocateCustomFrame(
@@ -195,6 +196,7 @@ class VaapiVideoDecoder : public VideoDecoderMixin,
       const gfx::Size& natural_size,
       bool use_protected,
       bool use_linear_buffers,
+      bool needs_detiling,
       base::TimeDelta timestamp);
 
   // Having too many decoder instances at once may cause us to run out of FDs
@@ -211,7 +213,7 @@ class VaapiVideoDecoder : public VideoDecoderMixin,
   State state_ = State::kUninitialized;
 
   // Callback used to notify the client when a frame is available for output.
-  OutputCB output_cb_;
+  PipelineOutputCB output_cb_;
 
   // Callback used to notify the client when we have lost decode context and
   // request a reset (Used in protected decoding).
@@ -220,7 +222,7 @@ class VaapiVideoDecoder : public VideoDecoderMixin,
   // Bitstream information, written during Initialize().
   VideoCodecProfile profile_ = VIDEO_CODEC_PROFILE_UNKNOWN;
   VideoColorSpace color_space_;
-  absl::optional<gfx::HDRMetadata> hdr_metadata_;
+  std::optional<gfx::HDRMetadata> hdr_metadata_;
 
   // Aspect ratio from the config.
   VideoAspectRatio aspect_ratio_;
@@ -234,12 +236,12 @@ class VaapiVideoDecoder : public VideoDecoderMixin,
   // Queue containing all requested decode tasks.
   base::queue<DecodeTask> decode_task_queue_;
   // The decode task we're currently trying to execute.
-  absl::optional<DecodeTask> current_decode_task_;
+  std::optional<DecodeTask> current_decode_task_;
   // The next input buffer id.
   int32_t next_buffer_id_ = 0;
 
   // The list of frames currently used as output buffers or reference frames.
-  std::map<VASurfaceID, scoped_refptr<VideoFrame>> output_frames_;
+  std::map<VASurfaceID, scoped_refptr<FrameResource>> output_frames_;
 
   // VASurfaces are created via importing resources from a DmabufVideoFramePool
   // into libva in CreateSurface(). The following map keeps those VASurfaces for

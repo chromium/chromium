@@ -12,12 +12,61 @@ namespace content {
 // This is used as the delegate of WebContents created for a new tab where
 // prerendering runs. The delegate will be swapped with a proper one on
 // prerender page activation.
-//
-// This class is currently empty but necessary to bypass the "protected"
-// destructor of WebContentsDelegate. Without this indirect class, an owner of
-// WebContentsDelegate implementation in content/ cannot call the destructor.
-// See review comments on https://crrev.com/c/4680866/ for details.
-class PrerenderWebContentsDelegate : public WebContentsDelegate {};
+class CONTENT_EXPORT PrerenderWebContentsDelegate : public WebContentsDelegate {
+ public:
+  PrerenderWebContentsDelegate() = default;
+  ~PrerenderWebContentsDelegate() override = default;
+
+  // WebContentsDelegate overrides.
+  WebContents* OpenURLFromTab(WebContents* source,
+                              const OpenURLParams& params) override;
+  void AddNewContents(WebContents* source,
+                      std::unique_ptr<WebContents> new_contents,
+                      const GURL& target_url,
+                      WindowOpenDisposition disposition,
+                      const blink::mojom::WindowFeatures& window_features,
+                      bool user_gesture,
+                      bool* was_blocked) override;
+  void ActivateContents(WebContents* contents) override;
+  void LoadingStateChanged(WebContents* source,
+                           bool should_show_loading_ui) override;
+  void CloseContents(WebContents* source) override;
+  bool ShouldSuppressDialogs(WebContents* source) override;
+  bool ShouldFocusPageAfterCrash(WebContents* source) override;
+  bool TakeFocus(WebContents* source, bool reverse) override;
+  void WebContentsCreated(WebContents* source_contents,
+                          int opener_render_process_id,
+                          int opener_render_frame_id,
+                          const std::string& frame_name,
+                          const GURL& target_url,
+                          WebContents* new_contents) override;
+  bool CanEnterFullscreenModeForTab(
+      RenderFrameHost* requesting_frame,
+      const blink::mojom::FullscreenOptions& options) override;
+  void EnterFullscreenModeForTab(
+      RenderFrameHost* requesting_frame,
+      const blink::mojom::FullscreenOptions& options) override;
+  void FullscreenStateChangedForTab(
+      RenderFrameHost* requesting_frame,
+      const blink::mojom::FullscreenOptions& options) override;
+  void ExitFullscreenModeForTab(WebContents*) override;
+  bool IsFullscreenForTabOrPending(const WebContents* web_contents) override;
+  void OnDidBlockNavigation(
+      WebContents* web_contents,
+      const GURL& blocked_url,
+      const GURL& initiator_url,
+      blink::mojom::NavigationBlockedReason reason) override;
+  bool ShouldAllowRunningInsecureContent(WebContents* web_contents,
+                                         bool allowed_per_prefs,
+                                         const url::Origin& origin,
+                                         const GURL& resource_url) override;
+  PreloadingEligibility IsPrerender2Supported(
+      WebContents& web_contents) override;
+  void UpdateInspectedWebContentsIfNecessary(
+      WebContents* old_contents,
+      WebContents* new_contents,
+      base::OnceCallback<void()> callback) override;
+};
 
 }  // namespace content
 

@@ -1,0 +1,36 @@
+[
+  {
+    "os": [
+      "win",
+      "linux",
+      "mac",
+      "chromeos_ash",
+      "chromeos_lacros",
+      "fuchsia"
+    ],
+    "policy_pref_mapping_tests": [
+      {
+        "policies": {
+          "PrintingPaperSizeDefault": {
+            "custom_size": {
+              "height": 297000,
+              "width": 210000
+            },
+            "name": "custom"
+          }
+        },
+        "prefs": {
+          "printing.paper_size_default": {
+            "value": {
+              "custom_size": {
+                "height": 297000,
+                "width": 210000
+              },
+              "name": "custom"
+            }
+          }
+        }
+      }
+    ]
+  }
+]

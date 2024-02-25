@@ -1,0 +1,35 @@
+<style>
+  .buttons {
+    --cr-feedback-buttons-icon-size_: 16px;
+    display: grid;
+    grid-auto-columns: var(--cr-feedback-buttons-icon-size_);
+    grid-auto-rows: var(--cr-feedback-buttons-icon-size_);
+    grid-auto-flow: column;
+    gap: 12px;
+    align-items: center;
+    justify-items: center;
+  }
+
+  cr-icon-button {
+    --cr-icon-button-fill-color: currentColor;
+    --cr-icon-button-icon-size: var(--cr-feedback-buttons-icon-size_);
+    --cr-icon-button-size: 24px;
+    margin: 0;
+  }
+</style>
+
+<div class="buttons">
+  <cr-icon-button id="thumbsUp" iron-icon="[[getThumbsUpIcon_(selectedOption)]]"
+      aria-label="[[thumbsUpLabel_]]"
+      title="[[thumbsUpLabel_]]"
+      aria-pressed="[[getThumbsUpAriaPressed_(selectedOption)]]"
+      on-click="onThumbsUpClick_">
+  </cr-icon-button>
+  <cr-icon-button id="thumbsDown"
+      iron-icon="[[getThumbsDownIcon_(selectedOption)]]"
+      aria-label="[[thumbsDownLabel_]]"
+      title="[[thumbsDownLabel_]]"
+      aria-pressed="[[getThumbsDownAriaPressed_(selectedOption)]]"
+      on-click="onThumbsDownClick_">
+  </cr-icon-button>
+</div>

@@ -42,6 +42,7 @@ class SigninScreenExtensionsExternalLoader : public extensions::ExternalLoader,
 
   // ExternalCacheDelegate:
   void OnExtensionListsUpdated(const base::Value::Dict& prefs) override;
+  bool IsRollbackAllowed() const override;
 
  private:
   friend class base::RefCounted<SigninScreenExtensionsExternalLoader>;
@@ -56,7 +57,7 @@ class SigninScreenExtensionsExternalLoader : public extensions::ExternalLoader,
   // Starts loading the force-installed extensions specified via prefs.
   void UpdateStateFromPrefs();
 
-  const raw_ptr<Profile, ExperimentalAsh> profile_;
+  const raw_ptr<Profile> profile_;
   // Owned by ExtensionService, outlives |this|.
   ExternalCacheImpl external_cache_;
   PrefChangeRegistrar pref_change_registrar_;

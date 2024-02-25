@@ -14,6 +14,7 @@
 #include "base/location.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/notreached.h"
 #include "base/strings/strcat.h"
@@ -332,7 +333,7 @@ AuctionV8Helper::SerializedValue::SerializedValue(SerializedValue&& other) {
 }
 
 AuctionV8Helper::SerializedValue::~SerializedValue() {
-  free(buffer_);
+  free(buffer_.ExtractAsDangling());
 }
 
 AuctionV8Helper::SerializedValue& AuctionV8Helper::SerializedValue::operator=(
@@ -419,9 +420,8 @@ v8::MaybeLocal<v8::Value> AuctionV8Helper::CreateValueFromJson(
   return v8::JSON::Parse(context, v8_string);
 }
 
-bool AuctionV8Helper::AppendUtf8StringValue(
-    base::StringPiece utf8_string,
-    std::vector<v8::Local<v8::Value>>* args) {
+bool AuctionV8Helper::AppendUtf8StringValue(base::StringPiece utf8_string,
+                                            v8::LocalVector<v8::Value>* args) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   v8::Local<v8::String> value;
   if (!CreateUtf8String(utf8_string).ToLocal(&value))
@@ -432,7 +432,7 @@ bool AuctionV8Helper::AppendUtf8StringValue(
 
 bool AuctionV8Helper::AppendJsonValue(v8::Local<v8::Context> context,
                                       base::StringPiece utf8_json,
-                                      std::vector<v8::Local<v8::Value>>* args) {
+                                      v8::LocalVector<v8::Value>* args) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   v8::Local<v8::Value> value;
   if (!CreateValueFromJson(context, utf8_json).ToLocal(&value))
@@ -463,26 +463,30 @@ bool AuctionV8Helper::InsertJsonValue(v8::Local<v8::Context> context,
          InsertValue(key, v8_value, object);
 }
 
-// Attempts to convert |value| to JSON and write it to |out|. Returns false on
-// failure.
-bool AuctionV8Helper::ExtractJson(v8::Local<v8::Context> context,
-                                  v8::Local<v8::Value> value,
-                                  std::string* out) {
+// Attempts to convert |value| to JSON and write it to |out|.
+AuctionV8Helper::ExtractJsonResult AuctionV8Helper::ExtractJson(
+    v8::Local<v8::Context> context,
+    v8::Local<v8::Value> value,
+    std::string* out) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  v8::TryCatch try_catch(isolate());
   v8::MaybeLocal<v8::String> maybe_json = v8::JSON::Stringify(context, value);
+  if (try_catch.HasTerminated()) {
+    return ExtractJsonResult::kTimeout;
+  }
   v8::Local<v8::String> json;
   if (!maybe_json.ToLocal(&json))
-    return false;
+    return ExtractJsonResult::kFailure;
   bool success = gin::ConvertFromV8(isolate(), json, out);
   if (!success)
-    return false;
+    return ExtractJsonResult::kFailure;
   // Stringify can return the string "undefined" for certain inputs, which is
   // not actually JSON. Treat those as failures.
   if (*out == "undefined") {
     out->clear();
-    return false;
+    return ExtractJsonResult::kFailure;
   }
-  return true;
+  return ExtractJsonResult::kSuccess;
 }
 
 AuctionV8Helper::SerializedValue AuctionV8Helper::Serialize(
@@ -515,7 +519,7 @@ v8::MaybeLocal<v8::UnboundScript> AuctionV8Helper::Compile(
     const std::string& src,
     const GURL& src_url,
     const DebugId* debug_id,
-    absl::optional<std::string>& error_out) {
+    std::optional<std::string>& error_out) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   constexpr const char* kTraceEventCategoryGroup = "v8,devtools.timeline";
 
@@ -560,7 +564,7 @@ v8::MaybeLocal<v8::WasmModuleObject> AuctionV8Helper::CompileWasm(
     const std::string& payload,
     const GURL& src_url,
     const DebugId* debug_id,
-    absl::optional<std::string>& error_out) {
+    std::optional<std::string>& error_out) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   v8::Isolate* v8_isolate = isolate();
 
@@ -592,7 +596,7 @@ v8::MaybeLocal<v8::WasmModuleObject> AuctionV8Helper::CloneWasmModule(
 }
 
 std::unique_ptr<AuctionV8Helper::TimeLimit> AuctionV8Helper::CreateTimeLimit(
-    absl::optional<base::TimeDelta> script_timeout) {
+    std::optional<base::TimeDelta> script_timeout) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return std::make_unique<ScriptTimeoutHelper>(
       this, timer_task_runner_, script_timeout.value_or(script_timeout_));
@@ -806,7 +810,7 @@ void AuctionV8Helper::ConnectDevToolsAgent(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!devtools_agent_) {
     devtools_agent_ = std::make_unique<AuctionV8DevToolsAgent>(
-        this, debug_command_queue_.get(), std::move(mojo_sequence));
+        this, debug_command_queue_, std::move(mojo_sequence));
     v8_inspector_ =
         v8_inspector::V8Inspector::create(isolate(), devtools_agent_.get());
   }

@@ -27,12 +27,17 @@ public class PartnerBrowserCustomizationsProviderExample extends ContentProvider
     private static final int URI_MATCH_DISABLE_INCOGNITO_MODE = 1;
     private static final int URI_MATCH_DISABLE_BOOKMARKS_EDITING = 2;
     private static final UriMatcher URI_MATCHER = new UriMatcher(UriMatcher.NO_MATCH);
+
     static {
         URI_MATCHER.addURI(
                 "com.android.partnerbrowsercustomizations", "homepage", URI_MATCH_HOMEPAGE);
-        URI_MATCHER.addURI("com.android.partnerbrowsercustomizations", "disableincognitomode",
+        URI_MATCHER.addURI(
+                "com.android.partnerbrowsercustomizations",
+                "disableincognitomode",
                 URI_MATCH_DISABLE_INCOGNITO_MODE);
-        URI_MATCHER.addURI("com.android.partnerbrowsercustomizations", "disablebookmarksediting",
+        URI_MATCHER.addURI(
+                "com.android.partnerbrowsercustomizations",
+                "disablebookmarksediting",
                 URI_MATCH_DISABLE_BOOKMARKS_EDITING);
     }
 
@@ -58,24 +63,33 @@ public class PartnerBrowserCustomizationsProviderExample extends ContentProvider
     }
 
     @Override
-    public Cursor query(Uri uri, String[] projection, String selection, String[] selectionArgs,
+    public Cursor query(
+            Uri uri,
+            String[] projection,
+            String selection,
+            String[] selectionArgs,
             String sortOrder) {
         switch (URI_MATCHER.match(uri)) {
-            case URI_MATCH_HOMEPAGE: {
-                MatrixCursor cursor = new MatrixCursor(new String[] {"homepage"}, 1);
-                cursor.addRow(new Object[] {HOMEPAGE_URI});
-                return cursor;
-            }
-            case URI_MATCH_DISABLE_INCOGNITO_MODE: {
-                MatrixCursor cursor = new MatrixCursor(new String[] {"disableincognitomode"}, 1);
-                cursor.addRow(new Object[] {1});
-                return cursor;
-            }
-            case URI_MATCH_DISABLE_BOOKMARKS_EDITING: {
-                MatrixCursor cursor = new MatrixCursor(new String[] {"disablebookmarksediting"}, 1);
-                cursor.addRow(new Object[] {1});
-                return cursor;
-            }
+            case URI_MATCH_HOMEPAGE:
+                {
+                    MatrixCursor cursor = new MatrixCursor(new String[] {"homepage"}, 1);
+                    cursor.addRow(new Object[] {HOMEPAGE_URI});
+                    return cursor;
+                }
+            case URI_MATCH_DISABLE_INCOGNITO_MODE:
+                {
+                    MatrixCursor cursor =
+                            new MatrixCursor(new String[] {"disableincognitomode"}, 1);
+                    cursor.addRow(new Object[] {1});
+                    return cursor;
+                }
+            case URI_MATCH_DISABLE_BOOKMARKS_EDITING:
+                {
+                    MatrixCursor cursor =
+                            new MatrixCursor(new String[] {"disablebookmarksediting"}, 1);
+                    cursor.addRow(new Object[] {1});
+                    return cursor;
+                }
             default:
                 return null;
         }

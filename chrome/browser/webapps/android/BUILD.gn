@@ -4,21 +4,29 @@
 
 import("//build/config/android/config.gni")
 import("//build/config/android/rules.gni")
+import("//third_party/jni_zero/jni_zero.gni")
 
 android_library("java") {
   resources_package = "org.chromium.chrome.browser.webapps"
 
-  sources = [ "java/src/org/chromium/chrome/browser/webapps/AddToHomescreenIPHController.java" ]
+  sources = [
+    "java/src/org/chromium/chrome/browser/webapps/AddToHomescreenIPHController.java",
+    "java/src/org/chromium/chrome/browser/webapps/PwaRestorePromoUtils.java",
+  ]
 
   deps = [
     "//base:base_java",
+    "//base:base_shared_preferences_java",
     "//chrome/browser/feature_engagement:java",
+    "//chrome/browser/first_run/android:java",
     "//chrome/browser/flags:java",
+    "//chrome/browser/preferences:java",
     "//chrome/browser/profiles/android:java",
     "//chrome/browser/tab:java",
     "//chrome/browser/ui/android/appmenu:java",
     "//chrome/browser/ui/android/strings:ui_strings_grd",
     "//chrome/browser/user_education:java",
+    "//components/browser_ui/bottomsheet/android:java",
     "//components/browser_ui/styles/android:java_resources",
     "//components/browser_ui/util/android:java",
     "//components/embedder_support/android:util_java",
@@ -29,7 +37,16 @@ android_library("java") {
     "//content/public/android:content_java",
     "//third_party/androidx:androidx_annotation_annotation_java",
     "//third_party/androidx:androidx_vectordrawable_vectordrawable_java",
+    "//third_party/jni_zero:jni_zero_java",
     "//ui/android:ui_no_recycler_view_java",
     "//url:gurl_java",
+  ]
+
+  srcjar_deps = [ ":webapps_jni_headers" ]
+}
+
+generate_jni("webapps_jni_headers") {
+  sources = [
+    "java/src/org/chromium/chrome/browser/webapps/PwaRestorePromoUtils.java",
   ]
 }

@@ -3,8 +3,10 @@
 // found in the LICENSE file.
 
 #include "third_party/blink/renderer/core/css/properties/css_color_function_parser.h"
+#include <cmath>
 #include "third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom-shared.h"
 #include "third_party/blink/renderer/core/css/css_color.h"
+#include "third_party/blink/renderer/core/css/css_color_mix_value.h"
 #include "third_party/blink/renderer/core/css/css_identifier_value.h"
 #include "third_party/blink/renderer/core/css/css_math_function_value.h"
 #include "third_party/blink/renderer/core/css/parser/css_parser_token_range.h"
@@ -79,43 +81,59 @@ static bool ConsumeRelativeOriginColor(CSSParserTokenRange& args,
   if (!RuntimeEnabledFeatures::CSSRelativeColorEnabled()) {
     return false;
   }
-  // TODO(crbug.com/1447327): Just like with css_parsing_utils::ResolveColor(),
-  // currentcolor is not currently handled well.
   if (CSSValue* css_color = css_parsing_utils::ConsumeColor(args, context)) {
     if (auto* color_value = DynamicTo<cssvalue::CSSColor>(css_color)) {
       result = color_value->Value();
       return true;
+    } else if (auto* css_color_mix_value =
+                   DynamicTo<cssvalue::CSSColorMixValue>(css_color)) {
+      // TODO(crbug.com/41492196): Support color-mix as origin color.
+      return false;
     } else {
       CSSValueID value_id = To<CSSIdentifierValue>(css_color)->GetValueID();
-      // TODO(crbug.com/1447327): Handle color scheme.
-      result = StyleColor::ColorFromKeyword(value_id,
-                                            mojom::blink::ColorScheme::kLight);
+      // TODO(crbug.com/325309578): Just like with
+      // css_parsing_utils::ResolveColor(), currentcolor is not currently
+      // handled.
+      if (value_id == CSSValueID::kCurrentcolor) {
+        return false;
+      }
+      // TODO(crbug.com/40935612): Handle color scheme.
+      const ui::ColorProvider* color_provider =
+          context.GetDocument()
+              ? context.GetDocument()->GetColorProviderForPainting(
+                    mojom::blink::ColorScheme::kLight)
+              : nullptr;
+      result = StyleColor::ColorFromKeyword(
+          value_id, mojom::blink::ColorScheme::kLight, color_provider);
       return true;
     }
   }
   return false;
 }
 
-static absl::optional<double> ConsumeRelativeColorChannel(
+static std::optional<double> ConsumeRelativeColorChannel(
     CSSParserTokenRange& input_range,
     const CSSParserContext& context,
-    const HashMap<CSSValueID, double> color_channel_keyword_values) {
+    const HashMap<CSSValueID, double>& color_channel_keyword_values) {
   const CSSParserToken& token = input_range.Peek();
   // Relative color channels can be calc() functions with color channel
   // replacements. e.g. In "color(from magenta srgb calc(r / 2) 0 0)", the
   // "calc" should substitute "1" for "r" (magenta has a full red channel).
   if (token.GetType() == kFunctionToken) {
+    using enum CSSMathExpressionNode::Flag;
+    using Flags = CSSMathExpressionNode::Flags;
+
     // Don't consume the range if the parsing fails.
     CSSParserTokenRange calc_range = input_range;
     CSSMathFunctionValue* calc_value = CSSMathFunctionValue::Create(
         CSSMathExpressionNode::ParseMathFunction(
             token.FunctionId(), css_parsing_utils::ConsumeFunction(calc_range),
-            context, true /* is_percentage_allowed */, kCSSAnchorQueryTypesNone,
+            context, Flags({AllowPercent}), kCSSAnchorQueryTypesNone,
             color_channel_keyword_values),
         CSSPrimitiveValue::ValueRange::kAll);
     if (calc_value) {
       if (calc_value->Category() != kCalcNumber) {
-        return absl::nullopt;
+        return std::nullopt;
       }
       // Consume the range, since it has succeeded.
       input_range = calc_range;
@@ -130,7 +148,7 @@ static absl::optional<double> ConsumeRelativeColorChannel(
     return color_channel_keyword_values.at(token.Id());
   }
 
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 // Relative color syntax requires "channel keyword" substitutions for color
@@ -152,9 +170,11 @@ static HashMap<CSSValueID, double> GenerateChannelKeywordValues(
     case Color::ColorSpace::kA98RGB:
     case Color::ColorSpace::kProPhotoRGB:
     case Color::ColorSpace::kRec2020:
+      channel_names = {CSSValueID::kR, CSSValueID::kG, CSSValueID::kB};
+      break;
     case Color::ColorSpace::kXYZD50:
     case Color::ColorSpace::kXYZD65:
-      channel_names = {CSSValueID::kR, CSSValueID::kG, CSSValueID::kB};
+      channel_names = {CSSValueID::kX, CSSValueID::kY, CSSValueID::kZ};
       break;
     case Color::ColorSpace::kLab:
     case Color::ColorSpace::kOklab:
@@ -183,6 +203,18 @@ static HashMap<CSSValueID, double> GenerateChannelKeywordValues(
   };
 }
 
+// https://www.w3.org/TR/css-color-4/#color-function
+static bool IsValidColorSpaceForColorFunction(Color::ColorSpace color_space) {
+  return color_space == Color::ColorSpace::kSRGB ||
+         color_space == Color::ColorSpace::kSRGBLinear ||
+         color_space == Color::ColorSpace::kDisplayP3 ||
+         color_space == Color::ColorSpace::kA98RGB ||
+         color_space == Color::ColorSpace::kProPhotoRGB ||
+         color_space == Color::ColorSpace::kRec2020 ||
+         color_space == Color::ColorSpace::kXYZD50 ||
+         color_space == Color::ColorSpace::kXYZD65;
+}
+
 bool ColorFunctionParser::ConsumeColorSpaceAndOriginColor(
     CSSParserTokenRange& range,
     const CSSParserContext& context,
@@ -207,7 +239,7 @@ bool ColorFunctionParser::ConsumeColorSpaceAndOriginColor(
     }
     color_space_ =
         CSSValueIDToColorSpace(args.ConsumeIncludingWhitespace().Id());
-    if (!Color::IsPredefinedColorSpace(color_space_)) {
+    if (!IsValidColorSpaceForColorFunction(color_space_)) {
       return false;
     }
   }
@@ -227,19 +259,29 @@ bool ColorFunctionParser::ConsumeColorSpaceAndOriginColor(
     origin_color_.ConvertToColorSpace(color_space_);
     channel_keyword_values_ =
         GenerateChannelKeywordValues(color_space_, origin_color_);
-    if (Color::IsPredefinedColorSpace(color_space_)) {
-      // Relative colors with color() can use 'x', 'y', 'z' in the place of 'r',
-      // 'g', 'b'.
-      xyz_keyword_values_ = {
-          {CSSValueID::kX, origin_color_.Param0()},
-          {CSSValueID::kY, origin_color_.Param1()},
-          {CSSValueID::kZ, origin_color_.Param2()},
-          {CSSValueID::kAlpha, origin_color_.Alpha()},
-      };
-    }
   }
 
   return true;
+}
+
+// ConsumeHue takes an angle as input (as angle in radians or in degrees, or as
+// plain number in degrees) and returns a plain number in degrees.
+static std::optional<double> ConsumeHue(CSSParserTokenRange& range,
+                                        const CSSParserContext& context) {
+  CSSPrimitiveValue* value =
+      css_parsing_utils::ConsumeAngle(range, context, std::nullopt);
+  double angle_value;
+  if (!value) {
+    value = css_parsing_utils::ConsumeNumber(
+        range, context, CSSPrimitiveValue::ValueRange::kAll);
+    if (!value) {
+      return std::nullopt;
+    }
+    angle_value = value->GetDoubleValueWithoutClamping();
+  } else {
+    angle_value = value->ComputeDegrees();
+  }
+  return angle_value;
 }
 
 bool ColorFunctionParser::ConsumeChannel(CSSParserTokenRange& args,
@@ -264,19 +306,28 @@ bool ColorFunctionParser::ConsumeChannel(CSSParserTokenRange& args,
   }
 
   if (ColorChannelIsHue(color_space_, i)) {
-    temp = css_parsing_utils::ConsumeHue(args, context, absl::nullopt);
-    if (temp) {
-      channels_[i] = temp->GetDoubleValue();
+    if ((channels_[i] = ConsumeHue(args, context))) {
       channel_types_[i] = ChannelType::kNumber;
-      return true;
     } else if (is_relative_color_ &&
                (channels_[i] = ConsumeRelativeColorChannel(
                     args, context, channel_keyword_values_))) {
       channel_types_[i] = ChannelType::kRelative;
-      return true;
-    } else {
+    }
+
+    if (!channels_[i].has_value()) {
       return false;
     }
+
+    // Non-finite values should be clamped to the range [0, 360].
+    // Since 0 = 360 in this case, they can all simply become zero.
+    if (!isfinite(channels_[i].value())) {
+      channels_[i] = 0.0;
+    }
+
+    // Wrap hue to be in the range [0, 360].
+    channels_[i].value() =
+        fmod(fmod(channels_[i].value(), 360.0) + 360.0, 360.0);
+    return true;
   }
 
   if ((temp = css_parsing_utils::ConsumeNumber(
@@ -295,22 +346,8 @@ bool ColorFunctionParser::ConsumeChannel(CSSParserTokenRange& args,
 
   if (is_relative_color_) {
     channel_types_[i] = ChannelType::kRelative;
-    // First, check if the channel contains only the keyword "alpha", because
-    // that can be either an rgb or an xyz param.
-    if ((channels_[i] = ConsumeRelativeColorChannel(
-             args, context, {{CSSValueID::kAlpha, origin_color_.Alpha()}}))) {
-      return true;
-    }
     if ((channels_[i] = ConsumeRelativeColorChannel(args, context,
                                                     channel_keyword_values_))) {
-      uses_rgb_relative_params_ = true;
-      return true;
-    }
-
-    if (Color::IsPredefinedColorSpace(color_space_) &&
-        (channels_[i] =
-             ConsumeRelativeColorChannel(args, context, xyz_keyword_values_))) {
-      uses_xyz_relative_params_ = true;
       return true;
     }
   }
@@ -324,16 +361,13 @@ bool ColorFunctionParser::ConsumeAlpha(CSSParserTokenRange& args,
   CSSPrimitiveValue* temp;
   if ((temp = css_parsing_utils::ConsumeNumber(
            args, context, CSSPrimitiveValue::ValueRange::kAll))) {
-    alpha_ = temp->GetDoubleValueWithoutClamping();
-    if (isfinite(alpha_.value())) {
-      alpha_ = ClampTo<double>(alpha_.value(), 0.0, 1.0);
-    }
+    alpha_ = ClampTo<double>(temp->GetDoubleValue(), 0.0, 1.0);
     return true;
   }
 
   if ((temp = css_parsing_utils::ConsumePercent(
            args, context, CSSPrimitiveValue::ValueRange::kAll))) {
-    alpha_ = temp->GetDoubleValue() / 100.0;
+    alpha_ = ClampTo<double>(temp->GetDoubleValue() / 100.0, 0.0, 1.0);
     return true;
   }
 
@@ -352,14 +386,6 @@ bool ColorFunctionParser::ConsumeAlpha(CSSParserTokenRange& args,
 
   if (is_relative_color_ && (alpha_ = ConsumeRelativeColorChannel(
                                  args, context, channel_keyword_values_))) {
-    uses_rgb_relative_params_ = true;
-    return true;
-  }
-
-  if (is_relative_color_ && Color::IsPredefinedColorSpace(color_space_) &&
-      (alpha_ =
-           ConsumeRelativeColorChannel(args, context, xyz_keyword_values_))) {
-    uses_xyz_relative_params_ = true;
     return true;
   }
 
@@ -367,24 +393,35 @@ bool ColorFunctionParser::ConsumeAlpha(CSSParserTokenRange& args,
 }
 
 bool ColorFunctionParser::MakePerColorSpaceAdjustments() {
-  // Legacy rgb needs percentage consistency. Non-percentages need to be mapped
-  // from the range [0, 255] to the [0, 1] that we store internally.
+  // Legacy rgb needs percentage consistency. Percentages need to be mapped
+  // from the range [0, 1] to the [0, 255] that the color space uses.
   // Percentages and bare numbers CAN be mixed in relative colors.
   if (color_space_ == Color::ColorSpace::kSRGBLegacy) {
     bool uses_percentage = false;
     bool uses_bare_numbers = false;
     for (int i = 0; i < 3; i++) {
+      if (channel_types_[i] == ChannelType::kNone) {
+        continue;
+      }
       if (channel_types_[i] == ChannelType::kPercentage) {
-        if (uses_bare_numbers && !is_relative_color_) {
+        if (uses_bare_numbers && is_legacy_syntax_) {
           return false;
         }
         uses_percentage = true;
+        channels_[i].value() *= 255.0;
       } else if (channel_types_[i] == ChannelType::kNumber) {
-        if (uses_percentage && !is_relative_color_) {
+        if (uses_percentage && is_legacy_syntax_) {
           return false;
         }
         uses_bare_numbers = true;
-        channels_[i].value() /= 255.0;
+      }
+
+      if (!isfinite(channels_[i].value())) {
+        channels_[i].value() = channels_[i].value() > 0 ? 255.0 : 0;
+      } else if (!is_relative_color_) {
+        // Clamp to [0, 1] range, but allow out-of-gamut relative colors.
+        channels_[i].value() =
+            ClampTo<double>(channels_[i].value(), 0.0, 255.0);
       }
     }
     // TODO(crbug.com/1399566): There are many code paths that still compress
@@ -393,45 +430,42 @@ bool ColorFunctionParser::MakePerColorSpaceAdjustments() {
     // See compositing/background-color/background-color-alpha.html for example.
     // Ideally we would allow alpha to be any float value, but we have to clean
     // up all spots where this compression happens before this is possible.
-    if (alpha_.has_value() && isfinite(alpha_.value())) {
+    if (!is_relative_color_ && alpha_.has_value()) {
       alpha_ = round(alpha_.value() * 255.0) / 255.0;
     }
   }
 
-  if (color_space_ == Color::ColorSpace::kHWB) {
     // Legacy syntax is not allowed for hwb().
-    if (is_legacy_syntax_) {
-      return false;
-    }
-    // w and b must be percentages or relative color channels.
-    if (channel_types_[1] == ChannelType::kNumber ||
-        channel_types_[2] == ChannelType::kNumber) {
-      return false;
-    }
+  if (color_space_ == Color::ColorSpace::kHWB && is_legacy_syntax_) {
+    return false;
   }
 
-  if (color_space_ == Color::ColorSpace::kHSL) {
-    // 2nd and 3rd parameters of hsl() must be percentages or "none" and clamped
-    // to the range [0, 1].
+  if (color_space_ == Color::ColorSpace::kHSL ||
+      color_space_ == Color::ColorSpace::kHWB) {
     for (int i : {1, 2}) {
       if (channel_types_[i] == ChannelType::kNumber) {
-        return false;
+        // Legacy color syntax needs percentages.
+        if (is_legacy_syntax_) {
+          return false;
+        }
+        // Raw numbers are interpreted as percentages in these color spaces.
+        channels_[i] = channels_[i].value() / 100.0;
       }
-      if (channel_types_[i] == ChannelType::kPercentage) {
+      if (channels_[i].has_value() && is_legacy_syntax_) {
         channels_[i] = ClampTo<double>(channels_[i].value(), 0.0, 1.0);
       }
     }
   }
 
-  // Lightness is stored in the range [0, 100] for lab(), oklab(), lch() and
-  // oklch(). For oklab() and oklch() input for lightness is in the range [0,
-  // 1].
   if (Color::IsLightnessFirstComponent(color_space_)) {
-    if (channel_types_[0] == ChannelType::kPercentage) {
-      channels_[0].value() *= 100.0;
-    } else if ((color_space_ == Color::ColorSpace::kOklab ||
-                color_space_ == Color::ColorSpace::kOklch) &&
-               channel_types_[0] == ChannelType::kNumber) {
+    // "Lightness" (param0) for lab/lch is in the range [0, 100], with 100%
+    // corresponding to 100. "Lightness" (param0) for oklab/oklch is in the
+    // range [0, 1], with 100% corresponding to 1. This means that we can just
+    // take the numbers as input, with the exception that percentages for
+    // lab/lch must be multiplied by 100.
+    if (channel_types_[0] == ChannelType::kPercentage &&
+        (color_space_ == Color::ColorSpace::kLab ||
+         color_space_ == Color::ColorSpace::kLch)) {
       channels_[0].value() *= 100.0;
     }
 
@@ -497,10 +531,8 @@ bool ColorFunctionParser::ConsumeFunctionalSyntaxColor(
     alpha_ = channel_keyword_values_.at(CSSValueID::kAlpha);
   }
 
-  // Cannot mix the two color channel keyword types.
   // "None" is not a part of the legacy syntax.
   if (!args.AtEnd() ||
-      (uses_rgb_relative_params_ && uses_xyz_relative_params_) ||
       (is_legacy_syntax_ && has_none_)) {
     return false;
   }
@@ -509,11 +541,11 @@ bool ColorFunctionParser::ConsumeFunctionalSyntaxColor(
     return false;
   }
 
-  // TODO(crbug.com/1447327) We should return color(srgb ... ) colors for legacy
-  // color spaces, but a lot of test expectations need to change for that. See:
-  // https://github.com/w3c/csswg-drafts/issues/8444
   result = Color::FromColorSpace(color_space_, channels_[0], channels_[1],
                                  channels_[2], alpha_);
+  if (is_relative_color_ && Color::IsLegacyColorSpace(color_space_)) {
+    result.ConvertToColorSpace(Color::ColorSpace::kSRGB);
+  }
   // The parsing was successful, so we need to consume the input.
   input_range = range;
 

@@ -10,7 +10,7 @@ import '../demo.css.js';
 
 import {CrContainerShadowMixin} from '//resources/cr_elements/cr_container_shadow_mixin.js';
 import {CrScrollableMixin} from '//resources/cr_elements/cr_scrollable_mixin.js';
-import {CrSliderElement} from '//resources/cr_elements/cr_slider/cr_slider.js';
+import type {CrSliderElement} from '//resources/cr_elements/cr_slider/cr_slider.js';
 import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {getTemplate} from './scroll_view_demo.html.js';

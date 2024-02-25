@@ -13,6 +13,7 @@
 #include "ash/wm/desks/desks_util.h"
 #include "ash/wm/float/float_controller.h"
 #include "ash/wm/switchable_windows.h"
+#include "ash/wm/window_properties.h"
 #include "ash/wm/window_restore/window_restore_controller.h"
 #include "ash/wm/window_state.h"
 #include "ash/wm/window_util.h"
@@ -56,12 +57,17 @@ class ScopedWindowClosingObserver : public aura::WindowObserver {
   void OnWindowDestroyed(aura::Window* window) override { CHECK(false); }
 
  private:
-  raw_ptr<aura::Window, ExperimentalAsh> window_;
+  raw_ptr<aura::Window> window_;
 };
 
 bool IsNonSysModalWindowConsideredActivatable(aura::Window* window) {
-  if (window->GetProperty(ash::kExcludeInMruKey))
+  if (window->GetProperty(kExcludeInMruKey)) {
     return false;
+  }
+
+  if (window->GetProperty(kOverviewUiKey)) {
+    return false;
+  }
 
   ScopedWindowClosingObserver observer(window);
   AshFocusRules* focus_rules = Shell::Get()->focus_rules();
@@ -106,7 +112,7 @@ bool CanIncludeWindowInCycleWithPipList(aura::Window* window) {
           window->GetProperty(ash::kPipOriginalWindowKey));
 }
 
-// Returns a list of windows ordered by their stacking order such that the most
+// Returns a list of windows ordered by their usage recency such that the most
 // recently used window is at the front of the list.
 // If |mru_windows| is passed, these windows are moved to the front of the list.
 // If |desks_mru_type| is `kAllDesks`, then all active and inactive desk
@@ -116,7 +122,7 @@ bool CanIncludeWindowInCycleWithPipList(aura::Window* window) {
 // include a window in the returned list or not.
 template <class CanIncludeWindowPredicate>
 MruWindowTracker::WindowList BuildWindowListInternal(
-    const std::vector<aura::Window*>* mru_windows,
+    const std::vector<raw_ptr<aura::Window, VectorExperimental>>* mru_windows,
     DesksMruType desks_mru_type,
     CanIncludeWindowPredicate can_include_window_predicate) {
   MruWindowTracker::WindowList windows;
@@ -128,7 +134,7 @@ MruWindowTracker::WindowList BuildWindowListInternal(
   if (mru_windows) {
     // The |mru_windows| are sorted such that the most recent window comes last,
     // hence iterate in reverse order.
-    for (auto* window : base::Reversed(*mru_windows)) {
+    for (aura::Window* window : base::Reversed(*mru_windows)) {
       // Exclude windows in non-switchable containers and those which should
       // not be included.
       if (window->parent()) {
@@ -181,14 +187,14 @@ MruWindowTracker::WindowList BuildWindowListInternal(
   // TODO(afakhry): Check with UX, if kAllDesks is desired, should we put
   // the active desk's windows at the front?
 
-  for (auto* root : base::Reversed(roots)) {
+  for (aura::Window* root : base::Reversed(roots)) {
     // |wm::kSwitchableWindowContainerIds[]| contains a list of the container
     // IDs sorted such that the ID of the top-most container comes last. Hence,
     // we iterate in reverse order so the top-most windows are added first.
     const auto switachable_containers =
         GetSwitchableContainersForRoot(root, active_desk_only);
     for (auto* container : base::Reversed(switachable_containers)) {
-      for (auto* child : base::Reversed(container->children())) {
+      for (aura::Window* child : base::Reversed(container->children())) {
         // Only add windows that the predicate allows.
         if (!can_include_window_predicate(child))
           continue;
@@ -215,7 +221,8 @@ bool CanIncludeWindowInMruList(aura::Window* window) {
     return true;
 
   return wm::CanActivateWindow(window) &&
-         !window->GetProperty(ash::kExcludeInMruKey);
+         !window->GetProperty(kExcludeInMruKey) &&
+         !window->GetProperty(kOverviewUiKey);
 }
 
 //////////////////////////////////////////////////////////////////////////////
@@ -227,8 +234,9 @@ MruWindowTracker::MruWindowTracker() {
 
 MruWindowTracker::~MruWindowTracker() {
   Shell::Get()->activation_client()->RemoveObserver(this);
-  for (auto* window : mru_windows_)
+  for (aura::Window* window : mru_windows_) {
     window->RemoveObserver(this);
+  }
 }
 
 WindowList MruWindowTracker::BuildAppWindowList(

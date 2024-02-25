@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html dir="$i18n{textdirection}" lang="$i18n{language}"
+    $i18n{chromeRefresh2023Attribute}>
+  <head>
+    <meta charset="utf-8">
+    <title>Compose</title>
+    <link rel="stylesheet" href="//resources/css/md_colors.css">
+    <link rel="stylesheet" href="//resources/css/text_defaults_md.css">
+    <link rel="stylesheet" href="//theme/colors.css?sets=ui,chrome">
+    <style>
+      html, body {
+        cursor: default;
+        margin: 0;
+        min-width: fit-content;
+        overflow: hidden;
+      }
+
+      @media (prefers-color-scheme: dark) {
+        html {
+          background-color: var(--md-background-color);
+        }
+      }
+
+      html[chrome-refresh-2023] {
+        background: var(--color-compose-dialog-background);
+      }
+    </style>
+  </head>
+  <body>
+    <script type="module" src="app.js"></script>
+    <compose-app></compose-app>
+  </body>
+</html>

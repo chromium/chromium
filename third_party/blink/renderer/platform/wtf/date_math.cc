@@ -86,7 +86,6 @@
 #include "third_party/blink/renderer/platform/wtf/math_extras.h"
 #include "third_party/blink/renderer/platform/wtf/std_lib_extras.h"
 #include "third_party/blink/renderer/platform/wtf/text/ascii_ctype.h"
-#include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 
 #if BUILDFLAG(IS_WIN)
@@ -150,14 +149,6 @@ static inline double DaysFrom1970ToYear(int year) {
 
 static double MsToDays(double ms) {
   return floor(ms / kMsPerDay);
-}
-
-static void AppendTwoDigitNumber(StringBuilder& builder, int number) {
-  DCHECK_GE(number, 0);
-  DCHECK_LT(number, 100);
-  if (number <= 9)
-    builder.Append('0');
-  builder.AppendNumber(number);
 }
 
 int MsToYear(double ms) {
@@ -432,7 +423,7 @@ static double ParseDateFromNullTerminatedCharacters(const char* date_string,
     year = static_cast<int>(day);
     if (!ParseInt64(date_string, &new_pos_str, 10, &month))
       return std::numeric_limits<double>::quiet_NaN();
-    month -= 1;
+    --month;
     date_string = new_pos_str;
     if (*date_string++ != '/' || !*date_string)
       return std::numeric_limits<double>::quiet_NaN();
@@ -654,14 +645,14 @@ static double ParseDateFromNullTerminatedCharacters(const char* date_string,
          kMsPerSecond;
 }
 
-absl::optional<base::Time> ParseDateFromNullTerminatedCharacters(
+std::optional<base::Time> ParseDateFromNullTerminatedCharacters(
     const char* date_string) {
   bool have_tz;
   int offset;
   double ms =
       ParseDateFromNullTerminatedCharacters(date_string, have_tz, offset);
   if (std::isnan(ms))
-    return absl::nullopt;
+    return std::nullopt;
 
   // fall back to local timezone
   if (!have_tz) {
@@ -676,47 +667,12 @@ absl::optional<base::Time> ParseDateFromNullTerminatedCharacters(
     DCHECK(U_SUCCESS(status));
     offset = static_cast<int>((raw_offset + dst_offset) / kMsPerMinute);
   }
-  return base::Time::FromJsTime(ms - (offset * kMsPerMinute));
-}
-
-// See http://tools.ietf.org/html/rfc2822#section-3.3 for more information.
-absl::optional<String> MakeRFC2822DateString(const base::Time date,
-                                             int utc_offset) {
-  base::Time::Exploded time_exploded;
-  date.UTCExplode(&time_exploded);
-
-  if (!time_exploded.HasValidValues()) {
-    return absl::nullopt;
-  }
-
-  StringBuilder string_builder;
-  string_builder.Append(kWeekdayName[time_exploded.day_of_week]);
-  string_builder.Append(", ");
-  string_builder.AppendNumber(time_exploded.day_of_month);
-  string_builder.Append(' ');
-  // |month| is 1-based in Exploded
-  string_builder.Append(kMonthName[time_exploded.month - 1]);
-  string_builder.Append(' ');
-  string_builder.AppendNumber(time_exploded.year);
-  string_builder.Append(' ');
-
-  AppendTwoDigitNumber(string_builder, time_exploded.hour);
-  string_builder.Append(':');
-  AppendTwoDigitNumber(string_builder, time_exploded.minute);
-  string_builder.Append(':');
-  AppendTwoDigitNumber(string_builder, time_exploded.second);
-  string_builder.Append(' ');
-
-  string_builder.Append(utc_offset > 0 ? '+' : '-');
-  int absolute_utc_offset = abs(utc_offset);
-  AppendTwoDigitNumber(string_builder, absolute_utc_offset / 60);
-  AppendTwoDigitNumber(string_builder, absolute_utc_offset % 60);
-
-  return string_builder.ToString();
+  return base::Time::FromMillisecondsSinceUnixEpoch(ms -
+                                                    (offset * kMsPerMinute));
 }
 
 base::TimeDelta ConvertToLocalTime(base::Time time) {
-  double ms = time.ToJsTime();
+  double ms = time.InMillisecondsFSinceUnixEpoch();
   std::unique_ptr<icu::TimeZone> timezone(icu::TimeZone::createDefault());
   int32_t raw_offset, dst_offset;
   UErrorCode status = U_ZERO_ERROR;

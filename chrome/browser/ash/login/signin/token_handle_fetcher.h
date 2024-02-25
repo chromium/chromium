@@ -16,6 +16,7 @@
 #include "google_apis/gaia/gaia_oauth_client.h"
 
 class Profile;
+class PrefRegistrySimple;
 
 namespace signin {
 class IdentityManager;
@@ -24,13 +25,15 @@ class IdentityManager;
 namespace ash {
 class TokenHandleUtil;
 
-// This class is resposible for obtaining new token handle for user.
-// It can be used in two ways. When user have just used GAIA signin there is
+// This class is responsible for obtaining new token handle for user.
+// It can be used in two ways. When a user has just used Gaia signin there is
 // an OAuth2 token available. If there is profile already loaded, then
 // minting additional access token might be required.
 class TokenHandleFetcher : public gaia::GaiaOAuthClient::Delegate {
  public:
-  TokenHandleFetcher(TokenHandleUtil* util, const AccountId& account_id);
+  TokenHandleFetcher(Profile* profile,
+                     TokenHandleUtil* util,
+                     const AccountId& account_id);
 
   TokenHandleFetcher(const TokenHandleFetcher&) = delete;
   TokenHandleFetcher& operator=(const TokenHandleFetcher&) = delete;
@@ -40,13 +43,20 @@ class TokenHandleFetcher : public gaia::GaiaOAuthClient::Delegate {
   using TokenFetchingCallback =
       base::OnceCallback<void(const AccountId&, bool success)>;
 
-  // Get token handle for user who have just signed in via GAIA. This
-  // request will be performed using signin profile.
+  static void RegisterPrefs(PrefRegistrySimple* registry);
+
+  // Fetch token handle for a user who has just signed in via Gaia online auth.
   void FillForNewUser(const std::string& access_token,
+                      const std::string& refresh_token_hash,
                       TokenFetchingCallback callback);
 
-  // Get token handle for existing user.
-  void BackfillToken(Profile* profile, TokenFetchingCallback callback);
+  // Fetch token handle for an existing user.
+  void BackfillToken(TokenFetchingCallback callback);
+
+  void DiagnoseTokenHandleMapping(const AccountId& account_id,
+                                  const std::string& token);
+  void OnGetTokenHash(const std::string& token,
+                      const std::string& account_manager_stored_hash);
 
   static void EnsureFactoryBuilt();
 
@@ -60,22 +70,27 @@ class TokenHandleFetcher : public gaia::GaiaOAuthClient::Delegate {
   void OnNetworkError(int response_code) override;
   void OnGetTokenInfoResponse(const base::Value::Dict& token_info) override;
 
-  void FillForAccessToken(const std::string& access_token);
+  void FillForAccessToken(const std::string& access_token,
+                          const std::string& refresh_token_hash);
+  void StoreTokenHandleMapping(const std::string& token_handle);
 
   // This is called before profile is detroyed.
   void OnProfileDestroyed();
 
-  raw_ptr<TokenHandleUtil, ExperimentalAsh> token_handle_util_ = nullptr;
+  const raw_ptr<Profile> profile_;
+  const raw_ptr<TokenHandleUtil> token_handle_util_;
   AccountId account_id_;
-  raw_ptr<signin::IdentityManager, ExperimentalAsh> identity_manager_ = nullptr;
+  raw_ptr<signin::IdentityManager> identity_manager_ = nullptr;
 
-  raw_ptr<Profile, ExperimentalAsh> profile_ = nullptr;
   base::TimeTicks tokeninfo_response_start_time_ = base::TimeTicks();
+  std::string refresh_token_hash_;
   TokenFetchingCallback callback_;
   std::unique_ptr<gaia::GaiaOAuthClient> gaia_client_;
   std::unique_ptr<signin::PrimaryAccountAccessTokenFetcher>
       access_token_fetcher_;
   base::CallbackListSubscription profile_shutdown_subscription_;
+
+  base::WeakPtrFactory<TokenHandleFetcher> weak_factory_{this};
 };
 
 }  // namespace ash

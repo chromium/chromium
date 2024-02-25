@@ -4,98 +4,57 @@
 
 #include "chrome/browser/android/preferences/shared_preferences_migrator_android.h"
 
+#include <optional>
 #include <string>
 
-#include "base/android/jni_android.h"
-#include "base/android/jni_string.h"
-#include "base/check.h"
-#include "chrome/browser/preferences/jni_headers/SharedPreferencesManager_jni.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
+#include "base/android/shared_preferences/shared_preferences_manager.h"
+#include "chrome/browser/preferences/android/chrome_shared_preferences.h"
 
-using base::android::AttachCurrentThread;
-using base::android::ConvertUTF8ToJavaString;
-using base::android::ScopedJavaLocalRef;
+using base::android::SharedPreferencesManager;
 
 namespace android::shared_preferences {
 
 void ClearKey(const std::string& shared_preference_key) {
-  JNIEnv* env = AttachCurrentThread();
-  ScopedJavaLocalRef<jobject> jshared_prefs_manager =
-      Java_SharedPreferencesManager_getInstance(env);
-
-  DCHECK(!jshared_prefs_manager.is_null());
-
-  ScopedJavaLocalRef<jstring> jkey =
-      ConvertUTF8ToJavaString(env, shared_preference_key);
-  Java_SharedPreferencesManager_removeKey(env, jshared_prefs_manager, jkey);
+  SharedPreferencesManager shared_prefs = GetChromeSharedPreferences();
+  shared_prefs.RemoveKey(shared_preference_key);
 }
 
-absl::optional<bool> GetAndClearBoolean(
+std::optional<bool> GetAndClearBoolean(
     const std::string& shared_preference_key) {
-  JNIEnv* env = AttachCurrentThread();
-  ScopedJavaLocalRef<jobject> jshared_prefs_manager =
-      Java_SharedPreferencesManager_getInstance(env);
+  SharedPreferencesManager shared_prefs = GetChromeSharedPreferences();
 
-  DCHECK(!jshared_prefs_manager.is_null());
-
-  ScopedJavaLocalRef<jstring> jkey =
-      ConvertUTF8ToJavaString(env, shared_preference_key);
-  if (!Java_SharedPreferencesManager_contains(env, jshared_prefs_manager,
-                                              jkey)) {
-    return absl::nullopt;
+  if (!shared_prefs.ContainsKey(shared_preference_key)) {
+    return std::nullopt;
   }
 
-  bool result = Java_SharedPreferencesManager_readBoolean(
-      env, jshared_prefs_manager, jkey, /*defaultValue=*/false);
-  Java_SharedPreferencesManager_removeKey(env, jshared_prefs_manager, jkey);
+  bool result =
+      shared_prefs.ReadBoolean(shared_preference_key, /*default_value=*/false);
+  shared_prefs.RemoveKey(shared_preference_key);
   return result;
 }
 
-absl::optional<int> GetAndClearInt(const std::string& shared_preference_key) {
-  JNIEnv* env = AttachCurrentThread();
-  ScopedJavaLocalRef<jobject> jshared_prefs_manager =
-      Java_SharedPreferencesManager_getInstance(env);
-  DCHECK(!jshared_prefs_manager.is_null());
-  ScopedJavaLocalRef<jstring> jkey =
-      ConvertUTF8ToJavaString(env, shared_preference_key);
-  if (!Java_SharedPreferencesManager_contains(env, jshared_prefs_manager,
-                                              jkey)) {
-    return absl::nullopt;
+std::optional<int> GetAndClearInt(const std::string& shared_preference_key) {
+  SharedPreferencesManager shared_prefs = GetChromeSharedPreferences();
+
+  if (!shared_prefs.ContainsKey(shared_preference_key)) {
+    return std::nullopt;
   }
-  int result = Java_SharedPreferencesManager_readInt(env, jshared_prefs_manager,
-                                                     jkey, /*defaultValue=*/0);
-  Java_SharedPreferencesManager_removeKey(env, jshared_prefs_manager, jkey);
+
+  int result = shared_prefs.ReadInt(shared_preference_key, /*default_value=*/0);
+  shared_prefs.RemoveKey(shared_preference_key);
   return result;
 }
 
 std::string GetString(const std::string& shared_preference_key,
                       const std::string& default_value) {
-  JNIEnv* env = AttachCurrentThread();
-  ScopedJavaLocalRef<jobject> jshared_prefs_manager =
-      Java_SharedPreferencesManager_getInstance(env);
-
-  DCHECK(!jshared_prefs_manager.is_null());
-  ScopedJavaLocalRef<jstring> jkey =
-      ConvertUTF8ToJavaString(env, shared_preference_key);
-  ScopedJavaLocalRef<jstring> jdefault =
-      ConvertUTF8ToJavaString(env, default_value);
-  return ConvertJavaStringToUTF8(
-      env, Java_SharedPreferencesManager_readString(env, jshared_prefs_manager,
-                                                    jkey, jdefault));
+  SharedPreferencesManager shared_prefs = GetChromeSharedPreferences();
+  return shared_prefs.ReadString(shared_preference_key, default_value);
 }
 
 void SetString(const std::string& shared_preference_key,
                const std::string& value) {
-  JNIEnv* env = AttachCurrentThread();
-  ScopedJavaLocalRef<jobject> jshared_prefs_manager =
-      Java_SharedPreferencesManager_getInstance(env);
-
-  DCHECK(!jshared_prefs_manager.is_null());
-  ScopedJavaLocalRef<jstring> jkey =
-      ConvertUTF8ToJavaString(env, shared_preference_key);
-  ScopedJavaLocalRef<jstring> jvalue = ConvertUTF8ToJavaString(env, value);
-  Java_SharedPreferencesManager_writeString(env, jshared_prefs_manager, jkey,
-                                            jvalue);
+  SharedPreferencesManager shared_prefs = GetChromeSharedPreferences();
+  shared_prefs.WriteString(shared_preference_key, value);
 }
 
 }  // namespace android::shared_preferences

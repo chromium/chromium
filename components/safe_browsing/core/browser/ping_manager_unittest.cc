@@ -59,18 +59,17 @@ class PingManagerTest : public testing::Test {
   void SetUp() override;
   void TearDown() override;
   void RunReportThreatDetailsTest(
-      absl::optional<bool> attach_default_data,
       bool expect_access_token,
-      absl::optional<ChromeUserPopulation> expected_user_population,
-      absl::optional<std::string> expected_page_load_token_value,
+      std::optional<ChromeUserPopulation> expected_user_population,
+      std::optional<std::string> expected_page_load_token_value,
       bool expect_cookies_removed);
   PingManager* ping_manager();
   void SetNewPingManager(
-      absl::optional<base::RepeatingCallback<bool()>>
+      std::optional<base::RepeatingCallback<bool()>>
           get_should_fetch_access_token,
-      absl::optional<base::RepeatingCallback<ChromeUserPopulation()>>
+      std::optional<base::RepeatingCallback<ChromeUserPopulation()>>
           get_user_population_callback,
-      absl::optional<
+      std::optional<
           base::RepeatingCallback<ChromeUserPopulation::PageLoadToken(GURL)>>
           get_page_load_token_callback);
   void SetUpFeatureList(bool should_enable_remove_cookies);
@@ -94,7 +93,7 @@ void PingManagerTest::SetUp() {
     key_param_ = base::StringPrintf(
         "&key=%s", base::EscapeQueryParamValue(key, true).c_str());
   }
-  SetNewPingManager(absl::nullopt, absl::nullopt, absl::nullopt);
+  SetNewPingManager(std::nullopt, std::nullopt, std::nullopt);
 }
 
 void PingManagerTest::TearDown() {
@@ -107,11 +106,11 @@ PingManager* PingManagerTest::ping_manager() {
 }
 
 void PingManagerTest::SetNewPingManager(
-    absl::optional<base::RepeatingCallback<bool()>>
+    std::optional<base::RepeatingCallback<bool()>>
         get_should_fetch_access_token,
-    absl::optional<base::RepeatingCallback<ChromeUserPopulation()>>
+    std::optional<base::RepeatingCallback<ChromeUserPopulation()>>
         get_user_population_callback,
-    absl::optional<
+    std::optional<
         base::RepeatingCallback<ChromeUserPopulation::PageLoadToken(GURL)>>
         get_page_load_token_callback) {
   ping_manager_.reset(new PingManager(
@@ -149,10 +148,9 @@ FakeSafeBrowsingHatsDelegate* PingManagerTest::SetUpHatsDelegate() {
 }
 
 void PingManagerTest::RunReportThreatDetailsTest(
-    absl::optional<bool> attach_default_data,
     bool expect_access_token,
-    absl::optional<ChromeUserPopulation> expected_user_population,
-    absl::optional<std::string> expected_page_load_token_value,
+    std::optional<ChromeUserPopulation> expected_user_population,
+    std::optional<std::string> expected_page_load_token_value,
     bool expect_cookies_removed) {
   base::HistogramTester histogram_tester;
   TestSafeBrowsingTokenFetcher* raw_token_fetcher = SetUpTokenFetcher();
@@ -206,10 +204,7 @@ void PingManagerTest::RunReportThreatDetailsTest(
 
   EXPECT_CALL(*webui_delegate_.get(), AddToCSBRRsSent(_)).Times(1);
   PingManager::ReportThreatDetailsResult result =
-      attach_default_data.has_value()
-          ? ping_manager()->ReportThreatDetails(std::move(report),
-                                                attach_default_data.value())
-          : ping_manager()->ReportThreatDetails(std::move(report));
+      ping_manager()->ReportThreatDetails(std::move(report));
   EXPECT_EQ(result, PingManager::ReportThreatDetailsResult::SUCCESS);
   EXPECT_EQ(raw_token_fetcher->WasStartCalled(), expect_access_token);
   if (expect_access_token) {
@@ -318,43 +313,24 @@ TEST_F(PingManagerTest, TestSafeBrowsingHitUrl) {
         ping_manager()->SafeBrowsingHitUrl(&hp).spec());
   }
 
-  {
-    HitReport hp(base_hp);
-    hp.threat_type = SB_THREAT_TYPE_URL_CLIENT_SIDE_MALWARE;
-    hp.threat_source = ThreatSource::LOCAL_PVER4;
-    hp.extended_reporting_level = SBER_LEVEL_OFF;
-    hp.is_metrics_reporting_active = false;
-    hp.is_subresource = true;
-    hp.is_enhanced_protection = true;
-    EXPECT_EQ(
-        "https://safebrowsing.google.com/safebrowsing/report?client=unittest&"
-        "appver=1.0&pver=4.0" +
-            key_param_ +
-            "&ext=0&enh=1&evts=malcsdhit&"
-            "evtd=http%3A%2F%2Fmalicious.url.com%2F&"
-            "evtr=http%3A%2F%2Fpage.url.com%2F&evhr=http%3A%2F%2Freferrer."
-            "url.com%2F&evtb=1&src=l4&m=0",
-        ping_manager()->SafeBrowsingHitUrl(&hp).spec());
-  }
-
   // Same as above, but add population_id
   {
     HitReport hp(base_hp);
-    hp.threat_type = SB_THREAT_TYPE_URL_CLIENT_SIDE_MALWARE;
+    hp.threat_type = SB_THREAT_TYPE_URL_CLIENT_SIDE_PHISHING;
     hp.threat_source = ThreatSource::LOCAL_PVER4;
     hp.extended_reporting_level = SBER_LEVEL_OFF;
     hp.is_metrics_reporting_active = false;
-    hp.is_subresource = true;
+    hp.is_subresource = false;
     hp.population_id = "foo bar";
     hp.is_enhanced_protection = true;
     EXPECT_EQ(
         "https://safebrowsing.google.com/safebrowsing/report?client=unittest&"
         "appver=1.0&pver=4.0" +
             key_param_ +
-            "&ext=0&enh=1&evts=malcsdhit&"
+            "&ext=0&enh=1&evts=phishcsdhit&"
             "evtd=http%3A%2F%2Fmalicious.url.com%2F&"
             "evtr=http%3A%2F%2Fpage.url.com%2F&evhr=http%3A%2F%2Freferrer."
-            "url.com%2F&evtb=1&src=l4&m=0&up=foo+bar",
+            "url.com%2F&evtb=0&src=l4&m=0&up=foo+bar",
         ping_manager()->SafeBrowsingHitUrl(&hp).spec());
   }
 
@@ -415,6 +391,26 @@ TEST_F(PingManagerTest, TestSafeBrowsingHitUrl) {
             "evtd=http%3A%2F%2Fmalicious.url.com%2F&"
             "evtr=http%3A%2F%2Fpage.url.com%2F&evhr=http%3A%2F%2Freferrer."
             "url.com%2F&evtb=0&src=asbrt&m=0",
+        ping_manager()->SafeBrowsingHitUrl(&hp).spec());
+  }
+
+  // Threat source is Android local blocklist check.
+  {
+    HitReport hp(base_hp);
+    hp.threat_type = SB_THREAT_TYPE_URL_PHISHING;
+    hp.threat_source = ThreatSource::ANDROID_SAFEBROWSING;
+    hp.is_subresource = false;
+    hp.extended_reporting_level = SBER_LEVEL_SCOUT;
+    hp.is_metrics_reporting_active = false;
+    hp.is_enhanced_protection = false;
+    EXPECT_EQ(
+        "https://safebrowsing.google.com/safebrowsing/report?client=unittest&"
+        "appver=1.0&pver=4.0" +
+            key_param_ +
+            "&ext=2&evts=phishblhit&"
+            "evtd=http%3A%2F%2Fmalicious.url.com%2F&"
+            "evtr=http%3A%2F%2Fpage.url.com%2F&evhr=http%3A%2F%2Freferrer."
+            "url.com%2F&evtb=0&src=asb&m=0",
         ping_manager()->SafeBrowsingHitUrl(&hp).spec());
   }
 }
@@ -514,13 +510,12 @@ TEST_F(PingManagerTest, ReportThreatDetailsWithAccessToken) {
   SetNewPingManager(
       /*get_should_fetch_access_token=*/base::BindRepeating(
           []() { return true; }),
-      /*get_user_population_callback=*/absl::nullopt,
-      /*get_page_load_token_callback=*/absl::nullopt);
+      /*get_user_population_callback=*/std::nullopt,
+      /*get_page_load_token_callback=*/std::nullopt);
   SetUpFeatureList(/*should_enable_remove_cookies=*/true);
-  RunReportThreatDetailsTest(/*attach_default_data=*/absl::nullopt,
-                             /*expect_access_token=*/true,
-                             /*expected_user_population=*/absl::nullopt,
-                             /*expected_page_load_token_value=*/absl::nullopt,
+  RunReportThreatDetailsTest(/*expect_access_token=*/true,
+                             /*expected_user_population=*/std::nullopt,
+                             /*expected_page_load_token_value=*/std::nullopt,
                              /*expect_cookies_removed=*/true);
 }
 TEST_F(PingManagerTest,
@@ -528,71 +523,44 @@ TEST_F(PingManagerTest,
   SetNewPingManager(
       /*get_should_fetch_access_token=*/base::BindRepeating(
           []() { return true; }),
-      /*get_user_population_callback=*/absl::nullopt,
-      /*get_page_load_token_callback=*/absl::nullopt);
+      /*get_user_population_callback=*/std::nullopt,
+      /*get_page_load_token_callback=*/std::nullopt);
   SetUpFeatureList(/*should_enable_remove_cookies=*/false);
-  RunReportThreatDetailsTest(/*attach_default_data=*/absl::nullopt,
-                             /*expect_access_token=*/true,
-                             /*expected_user_population=*/absl::nullopt,
-                             /*expected_page_load_token_value=*/absl::nullopt,
+  RunReportThreatDetailsTest(/*expect_access_token=*/true,
+                             /*expected_user_population=*/std::nullopt,
+                             /*expected_page_load_token_value=*/std::nullopt,
                              /*expect_cookies_removed=*/false);
 }
 TEST_F(PingManagerTest, ReportThreatDetailsWithUserPopulation) {
   SetNewPingManager(
-      /*get_should_fetch_access_token=*/absl::nullopt,
+      /*get_should_fetch_access_token=*/std::nullopt,
       /*get_user_population_callback=*/base::BindRepeating([]() {
         auto population = ChromeUserPopulation();
         population.set_user_population(ChromeUserPopulation::SAFE_BROWSING);
         return population;
       }),
-      /*get_page_load_token_callback=*/absl::nullopt);
+      /*get_page_load_token_callback=*/std::nullopt);
   auto population = ChromeUserPopulation();
   population.set_user_population(ChromeUserPopulation::SAFE_BROWSING);
-  RunReportThreatDetailsTest(/*attach_default_data=*/absl::nullopt,
-                             /*expect_access_token=*/false,
+  RunReportThreatDetailsTest(/*expect_access_token=*/false,
                              /*expected_user_population=*/population,
-                             /*expected_page_load_token_value=*/absl::nullopt,
+                             /*expected_page_load_token_value=*/std::nullopt,
                              /*expect_cookies_removed=*/false);
 }
 TEST_F(PingManagerTest, ReportThreatDetailsWithPageLoadToken) {
   base::HistogramTester histogram_tester;
   SetNewPingManager(
-      /*get_should_fetch_access_token=*/absl::nullopt,
-      /*get_user_population_callback=*/absl::nullopt,
+      /*get_should_fetch_access_token=*/std::nullopt,
+      /*get_user_population_callback=*/std::nullopt,
       /*get_page_load_token_callback=*/base::BindRepeating([](GURL url) {
         ChromeUserPopulation::PageLoadToken token;
         token.set_token_value("testing_page_load_token");
         return token;
       }));
   RunReportThreatDetailsTest(
-      /*attach_default_data=*/absl::nullopt, /*expect_access_token=*/false,
-      /*expected_user_population=*/absl::nullopt,
+      /*expect_access_token=*/false,
+      /*expected_user_population=*/std::nullopt,
       /*expected_page_load_token_value=*/"testing_page_load_token",
-      /*expect_cookies_removed=*/false);
-  histogram_tester.ExpectUniqueSample(
-      "SafeBrowsing.ClientSafeBrowsingReport.IsPageLoadTokenNull",
-      /*sample=*/false,
-      /*expected_bucket_count=*/1);
-}
-TEST_F(PingManagerTest, ReportThreatDetailsDontAttachDefaultData) {
-  SetNewPingManager(
-      /*get_should_fetch_access_token=*/base::BindRepeating(
-          []() { return true; }),
-      /*get_user_population_callback=*/base::BindRepeating([]() {
-        auto population = ChromeUserPopulation();
-        population.set_user_population(ChromeUserPopulation::SAFE_BROWSING);
-        return population;
-      }),
-      /*get_page_load_token_callback=*/base::BindRepeating([](GURL url) {
-        ChromeUserPopulation::PageLoadToken token;
-        token.set_token_value("testing_page_load_token");
-        return token;
-      }));
-  SetUpFeatureList(/*should_enable_remove_cookies=*/true);
-  RunReportThreatDetailsTest(
-      /*attach_default_data=*/false, /*expect_access_token=*/false,
-      /*expected_user_population=*/absl::nullopt,
-      /*expected_page_load_token_value=*/absl::nullopt,
       /*expect_cookies_removed=*/false);
 }
 

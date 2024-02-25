@@ -6,17 +6,23 @@
 
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/feed/web_feed_tab_helper.h"
+#include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"
+#include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/tabs/existing_base_sub_menu_model.h"
+#include "chrome/browser/ui/tabs/organization/tab_organization_utils.h"
 #include "chrome/browser/ui/tabs/tab_menu_model_delegate.h"
 #include "chrome/browser/ui/tabs/test_tab_strip_model_delegate.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/test/base/browser_with_test_window_test.h"
 #include "chrome/test/base/menu_model_test.h"
 #include "components/feed/feed_feature_list.h"
+#include "components/optimization_guide/core/model_execution/model_execution_features.h"
+#include "components/optimization_guide/core/optimization_guide_features.h"
 #include "content/public/test/web_contents_tester.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/models/menu_model.h"
+#include "ui/base/ui_base_features.h"
 
 class TabMenuModelTest : public MenuModelTest,
                          public BrowserWithTestWindowTest {
@@ -36,6 +42,23 @@ TEST_F(TabMenuModelTest, Basics) {
   EXPECT_GT(item_count, 0);
   EXPECT_EQ(item_count, delegate_.execute_count_);
   EXPECT_EQ(item_count, delegate_.enable_count_);
+}
+
+TEST_F(TabMenuModelTest, OrganizeTabs) {
+  TabOrganizationUtils::GetInstance()->SetIgnoreOptGuideForTesting(true);
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      {features::kTabOrganization, features::kChromeRefresh2023,
+       features::kChromeWebuiRefresh2023},
+      {});
+
+  chrome::NewTab(browser());
+  TabMenuModel model(&delegate_, browser()->tab_menu_model_delegate(),
+                     browser()->tab_strip_model(), 0);
+
+  // Verify that CommandOrganizeTabs is in the menu.
+  EXPECT_TRUE(model.GetIndexOfCommandId(TabStripModel::CommandOrganizeTabs)
+                  .has_value());
 }
 
 TEST_F(TabMenuModelTest, MoveToNewWindow) {

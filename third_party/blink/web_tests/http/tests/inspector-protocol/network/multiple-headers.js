@@ -1,4 +1,4 @@
- (async function(testRunner) {
+ (async function(/** @type {import('test_runner').TestRunner} */ testRunner) {
   var {page, session, dp} = await testRunner.startURL(
       '../resources/test-page.html',
       `Tests that multiple HTTP headers with same name are correctly folded into one LF-separated line.`);

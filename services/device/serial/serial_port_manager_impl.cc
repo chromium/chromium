@@ -107,7 +107,7 @@ void SerialPortManagerImpl::OpenPort(
     enumerator_ = SerialDeviceEnumerator::Create(ui_task_runner_);
     observed_enumerator_.AddObservation(enumerator_.get());
   }
-  absl::optional<base::FilePath> path =
+  std::optional<base::FilePath> path =
       enumerator_->GetPathFromToken(token, use_alternate_path);
   if (path) {
     io_task_runner_->PostTask(
@@ -127,7 +127,7 @@ void SerialPortManagerImpl::OpenPort(
           std::make_unique<BluetoothSerialDeviceEnumerator>(ui_task_runner_);
       observed_enumerator_.AddObservation(bluetooth_enumerator_.get());
     }
-    absl::optional<std::string> address =
+    std::optional<std::string> address =
         bluetooth_enumerator_->GetAddressFromToken(token);
     if (address) {
       const BluetoothUUID service_class_id =

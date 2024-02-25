@@ -58,8 +58,8 @@
 
 using base::RandDouble;
 using base::UnguessableToken;
-typedef extensions::ExtensionDownloaderDelegate::Error Error;
-typedef extensions::ExtensionDownloaderDelegate::PingResult PingResult;
+using Error = extensions::ExtensionDownloaderDelegate::Error;
+using PingResult = extensions::ExtensionDownloaderDelegate::PingResult;
 
 namespace {
 
@@ -446,7 +446,7 @@ void ExtensionUpdater::CheckNow(CheckParams params) {
       // repaired.
       if (!info) {
         const Extension* extension = registry_->GetExtensionById(
-            pending_id, extensions::ExtensionRegistry::EVERYTHING);
+            pending_id, ExtensionRegistry::EVERYTHING);
 
         // It is possible that the user deletes the extension between the time
         // it was detected as corrupted and now. In that case, `extension` will
@@ -515,8 +515,8 @@ void ExtensionUpdater::CheckNow(CheckParams params) {
                     params.fetch_priority, &update_check_params);
   } else {
     for (const ExtensionId& id : params.ids) {
-      const Extension* extension = registry_->GetExtensionById(
-          id, extensions::ExtensionRegistry::EVERYTHING);
+      const Extension* extension =
+          registry_->GetExtensionById(id, ExtensionRegistry::EVERYTHING);
       if (extension) {
         if (CanUseUpdateService(id)) {
           update_check_params.update_info[id] = ExtensionUpdateData();
@@ -690,8 +690,8 @@ bool ExtensionUpdater::IsExtensionPending(const ExtensionId& id) {
 bool ExtensionUpdater::GetExtensionExistingVersion(const ExtensionId& id,
                                                    std::string* version) {
   DCHECK(alive_);
-  const Extension* extension = registry_->GetExtensionById(
-      id, extensions::ExtensionRegistry::EVERYTHING);
+  const Extension* extension =
+      registry_->GetExtensionById(id, ExtensionRegistry::EVERYTHING);
   if (!extension)
     return false;
   const Extension* update = service_->GetPendingExtensionUpdate(id);
@@ -815,7 +815,7 @@ void ExtensionUpdater::InstallCRXFile(FetchedCRXFile crx_file) {
 
 void ExtensionUpdater::OnInstallerDone(
     const UnguessableToken& token,
-    const absl::optional<CrxInstallError>& error) {
+    const std::optional<CrxInstallError>& error) {
   auto iter = running_crx_installs_.find(token);
   DCHECK(iter != running_crx_installs_.end());
   FetchedCRXFile& crx_file = iter->second;

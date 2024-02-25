@@ -9,11 +9,15 @@
 
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
+#include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/widget/widget_delegate.h"
 #include "ui/views/widget/widget_observer.h"
+#include "ui/views/window/client_view.h"
 
 namespace views {
 class ScrollView;
+class ClientView;
+class Widget;
 }  // namespace views
 
 namespace ash {
@@ -36,6 +40,8 @@ class SystemUIComponentsGridView;
 // +----------------------+---------------------------------------+
 class SystemUIComponentsStyleViewerView : public views::WidgetDelegateView,
                                           public views::WidgetObserver {
+  METADATA_HEADER(SystemUIComponentsStyleViewerView, views::WidgetDelegateView)
+
  public:
   // A view factory of `SystemUIComponentsGridView` that shows the UI component
   // instances in a m x n grids.
@@ -60,8 +66,9 @@ class SystemUIComponentsStyleViewerView : public views::WidgetDelegateView,
   void ShowComponentInstances(const std::u16string& name);
 
   // views::WidgetDelegateView:
-  void Layout() override;
+  void Layout(PassKey) override;
   std::u16string GetWindowTitle() const override;
+  views::ClientView* CreateClientView(views::Widget* widget) override;
 
   // views::WidgetObserver:
   void OnWidgetDestroyed(views::Widget* widget) override;
@@ -72,13 +79,13 @@ class SystemUIComponentsStyleViewerView : public views::WidgetDelegateView,
   class ComponentButton;
 
   // The scroll views.
-  raw_ptr<views::ScrollView, ExperimentalAsh> menu_scroll_view_;
-  raw_ptr<views::ScrollView, ExperimentalAsh> component_instances_scroll_view_;
+  raw_ptr<views::ScrollView> menu_scroll_view_;
+  raw_ptr<views::ScrollView> component_instances_scroll_view_;
   // The contents of the scroll views.
-  raw_ptr<views::View, ExperimentalAsh> menu_contents_view_;
-  raw_ptr<views::View, ExperimentalAsh> components_grid_view_;
+  raw_ptr<views::View> menu_contents_view_;
+  raw_ptr<views::View> components_grid_view_;
   // Buttons used to toggle the component instances.
-  std::vector<ComponentButton*> buttons_;
+  std::vector<raw_ptr<ComponentButton, VectorExperimental>> buttons_;
   // Factories of `SystemUIComponentsGridView` for different
   // UI components.
   std::map<std::u16string, ComponentsGridViewFactory>

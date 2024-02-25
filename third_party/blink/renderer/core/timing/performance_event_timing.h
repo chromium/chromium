@@ -51,11 +51,18 @@ class CORE_EXPORT PerformanceEventTiming final : public PerformanceEntry {
 
   uint32_t interactionId() const;
 
-  void SetInteractionId(uint32_t interaction_id);
+  uint32_t interactionOffset() const;
+
+  void SetInteractionIdAndOffset(uint32_t interaction_id,
+                                 uint32_t interaction_offset);
 
   base::TimeTicks unsafePresentationTimestamp() const;
 
   void SetUnsafePresentationTimestamp(base::TimeTicks presentation_timestamp);
+
+  base::TimeTicks unsafeQueuedTimestamp() const;
+
+  void SetUnsafeQueuedTimestamp(base::TimeTicks timestamp);
 
   void SetDuration(double duration);
 
@@ -72,12 +79,16 @@ class CORE_EXPORT PerformanceEventTiming final : public PerformanceEntry {
   bool cancelable_;
   WeakMember<Node> target_;
   uint32_t interaction_id_ = 0;
+  uint32_t interaction_offset_ = 0;
 
   // This is the exact (non-rounded) monotonic timestamp for presentation, which
   // is currently only used by eventTiming trace events to report accurate
   // ending time. It should not be exposed to performance observer API entries
   // for security and privacy reasons.
   base::TimeTicks unsafe_presentation_timestamp_ = base::TimeTicks::Min();
+  // This is the timestamp when the original WebInputEvent was queued on main
+  // thread.
+  base::TimeTicks unsafe_queued_timestamp_;
 };
 }  // namespace blink
 

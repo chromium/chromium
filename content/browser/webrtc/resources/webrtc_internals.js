@@ -3,36 +3,25 @@
 // found in the LICENSE file.
 
 import {addWebUiListener, sendWithPromise} from 'chrome://resources/js/cr.js';
-import {$} from 'chrome://resources/js/util_ts.js';
+import {$} from 'chrome://resources/js/util.js';
 
+import {createIceCandidateGrid, updateIceCandidateGrid} from './candidate_grid.js';
 import {MAX_STATS_DATA_POINT_BUFFER_SIZE} from './data_series.js';
 import {DumpCreator, peerConnectionDataStore, userMediaRequests} from './dump_creator.js';
 import {PeerConnectionUpdateTable} from './peer_connection_update_table.js';
-import {SsrcInfoManager} from './ssrc_info_manager.js';
 import {drawSingleReport, removeStatsReportGraphs} from './stats_graph_helper.js';
 import {StatsRatesCalculator, StatsReport} from './stats_rates_calculator.js';
 import {StatsTable} from './stats_table.js';
 import {TabView} from './tab_view.js';
-import {createIceCandidateGrid, updateIceCandidateGrid} from './candidate_grid.js';
-import {UserMediaTable} from './user_media.js';
-
-const OPTION_GETSTATS_STANDARD = 'Standardized (promise-based) getStats() API';
-const OPTION_GETSTATS_LEGACY =
-    'Legacy Non-Standard (callback-based) getStats() API';
-let currentGetStatsMethod = OPTION_GETSTATS_STANDARD;
+import {UserMediaTable} from './user_media_table.js';
 
 let tabView = null;
-let ssrcInfoManager = null;
 let peerConnectionUpdateTable = null;
 let statsTable = null;
 let userMediaTable = null;
 let dumpCreator = null;
 
-// Exporting these on window since they are directly accessed by tests.
-window.setCurrentGetStatsMethod = function(method) {
-  currentGetStatsMethod = method;
-};
-window.OPTION_GETSTATS_LEGACY = OPTION_GETSTATS_LEGACY;
+const searchParameters = new URLSearchParams(window.location.search);
 
 /** Maps from id (see getPeerConnectionId) to StatsRatesCalculator. */
 const statsRatesCalculatorById = new Map();
@@ -108,12 +97,9 @@ class PeerConnectionRecord {
 function initialize() {
   dumpCreator = new DumpCreator($('content-root'));
 
-  $('content-root').appendChild(createStatsSelectionOptionElements());
   tabView = new TabView($('content-root'));
-  ssrcInfoManager = new SsrcInfoManager();
-  window.ssrcInfoManager = ssrcInfoManager;
   peerConnectionUpdateTable = new PeerConnectionUpdateTable();
-  statsTable = new StatsTable(ssrcInfoManager);
+  statsTable = new StatsTable();
   userMediaTable = new UserMediaTable(tabView, userMediaRequests);
 
   // Add listeners for all the updates that get sent from webrtc_internals.cc.
@@ -122,7 +108,6 @@ function initialize() {
   addWebUiListener('update-all-peer-connections', updateAllPeerConnections);
   addWebUiListener('remove-peer-connection', removePeerConnection);
   addWebUiListener('add-standard-stats', addStandardStats);
-  addWebUiListener('add-legacy-stats', addLegacyStats);
   addWebUiListener('add-media', (data) => {
     userMediaRequests.push(data);
     userMediaTable.addMedia(data)
@@ -160,7 +145,6 @@ function initialize() {
 
   // Requests stats from all peer connections every second unless specified via
   // ?statsInterval=(milliseconds >= 100ms)
-  const searchParameters = new URLSearchParams(window.location.search);
   let statsInterval = 1000;
   if (searchParameters.has('statsInterval')) {
     statsInterval = Math.max(
@@ -174,77 +158,15 @@ function initialize() {
 }
 document.addEventListener('DOMContentLoaded', initialize);
 
-function createStatsSelectionOptionElements() {
-  const statsElement = $('stats-template').content.cloneNode(true);
-  const selectElement = statsElement.getElementById('statsSelectElement');
-  const legacyStatsElement = statsElement.getElementById(
-      'legacy-stats-warning');
-  selectElement.onchange = () => {
-    currentGetStatsMethod = selectElement.value;
-    legacyStatsElement.style.display =
-        currentGetStatsMethod === OPTION_GETSTATS_LEGACY ? 'block' : 'none';
-    Object.keys(peerConnectionDataStore).forEach(id => {
-      // Disable getElementById restriction here, since |id| is not always
-      // a valid selector.
-      // eslint-disable-next-line no-restricted-properties
-      const peerConnectionElement = document.getElementById(id);
-      statsTable.clearStatsLists(peerConnectionElement);
-      removeStatsReportGraphs(peerConnectionElement);
-      peerConnectionDataStore[id].resetStats();
-    });
-  };
-
-  [OPTION_GETSTATS_STANDARD, OPTION_GETSTATS_LEGACY].forEach(option => {
-    const optionElement = document.createElement('option');
-    optionElement.setAttribute('value', option);
-    optionElement.appendChild(document.createTextNode(option));
-    selectElement.appendChild(optionElement);
-  });
-
-  selectElement.value = currentGetStatsMethod;
-  return statsElement;
-}
-
-function requestStats() {
-  if (currentGetStatsMethod === OPTION_GETSTATS_STANDARD) {
-    requestStandardStats();
-  } else if (currentGetStatsMethod === OPTION_GETSTATS_LEGACY) {
-    requestLegacyStats();
-  }
-}
-
 /**
  * Sends a request to the browser to get peer connection statistics from the
  * standard getStats() API (promise-based).
  */
-function requestStandardStats() {
+function requestStats() {
   if (Object.keys(peerConnectionDataStore).length > 0) {
     chrome.send('getStandardStats');
   }
 }
-
-/**
- * Sends a request to the browser to get peer connection statistics from the
- * legacy getStats() API (callback-based non-standard API with goog-stats).
- */
-function requestLegacyStats() {
-  if (Object.keys(peerConnectionDataStore).length > 0) {
-    chrome.send('getLegacyStats');
-  }
-}
-
-/*
- * Change to use the legacy getStats() API instead. This is used for a
- * work-around for https://crbug.com/999136.
- * TODO(https://crbug.com/1004239): Delete this method.
- */
-function changeToLegacyGetStats() {
-  currentGetStatsMethod = OPTION_GETSTATS_LEGACY;
-  const selectElement = $('statsSelectElement');
-  selectElement.value = currentGetStatsMethod;
-  requestStats();
-}
-window.changeToLegacyGetStats = changeToLegacyGetStats;
 
 /**
  * A helper function for getting a peer connection element id.
@@ -256,20 +178,6 @@ window.changeToLegacyGetStats = changeToLegacyGetStats;
 function getPeerConnectionId(data) {
   return data.rid + '-' + data.lid;
 }
-
-
-/**
- * Extracts ssrc info from a setLocal/setRemoteDescription update.
- *
- * @param {!PeerConnectionUpdateEntry} data The peer connection update data.
- */
-function extractSsrcInfo(data) {
-  if (data.type === 'setLocalDescription' ||
-      data.type === 'setRemoteDescription') {
-    ssrcInfoManager.addSsrcStreamInfo(data.value);
-  }
-}
-
 
 /**
  * A helper function for appending a child element to |parent|.
@@ -295,7 +203,6 @@ function appendChildWithText(parent, tag, text) {
 function addPeerConnectionUpdate(peerConnectionElement, update) {
   peerConnectionUpdateTable.addPeerConnectionUpdate(
       peerConnectionElement, update);
-  extractSsrcInfo(update);
   peerConnectionDataStore[peerConnectionElement.id].addUpdate(update);
 }
 
@@ -305,6 +212,7 @@ function addPeerConnectionUpdate(peerConnectionElement, update) {
 
 /**
  * Removes all information about a peer connection.
+ * Use ?keepRemovedConnections url parameter to prevent the removal.
  *
  * @param {!Object<number>} data The object containing the rid and lid of a peer
  *     connection.
@@ -313,8 +221,9 @@ function removePeerConnection(data) {
   // Disable getElementById restriction here, since |getPeerConnectionId| does
   // not return valid selectors.
   // eslint-disable-next-line no-restricted-properties
+
   const element = document.getElementById(getPeerConnectionId(data));
-  if (element) {
+  if (element && !searchParameters.has('keepRemovedConnections')) {
     delete peerConnectionDataStore[element.id];
     tabView.removeTab(element.id);
   }
@@ -360,23 +269,6 @@ function addPeerConnection(data) {
   const deprecationNotices = document.createElement('ul');
   if (data.rtcConfiguration) {
     deprecationNotices.className = 'peerconnection-deprecations';
-  }
-  if (data.constraints) {
-    if (data.constraints.indexOf('enableDtlsSrtp:') !== -1) {
-      if (data.constraints.indexOf('enableDtlsSrtp: {exact: false}') !== -1) {
-        appendChildWithText(deprecationNotices, 'li',
-          'The constraint "DtlsSrtpKeyAgreement" will be removed. You have ' +
-          'specified a "false" value for this constraint, which is ' +
-          'interpreted as an attempt to use the deprecated "SDES" key ' +
-          'negotiation method. This functionality will be removed; use a ' +
-          'service that supports DTLS key negotiation instead.');
-      } else {
-        appendChildWithText(deprecationNotices, 'li',
-          'The constraint "DtlsSrtpKeyAgreement" will be removed. You have ' +
-          'specified a "true" value for this constraint, which has no ' +
-          'effect, but you can remove this constraint for tidiness.');
-      }
-    }
   }
   peerConnectionElement.appendChild(deprecationNotices);
 
@@ -453,10 +345,6 @@ function updateAllPeerConnections(data) {
  *     stat, and the odd index entry is the value.
  */
 function addStandardStats(data) {
-  if (currentGetStatsMethod != OPTION_GETSTATS_STANDARD) {
-    return;  // Obsolete!
-  }
-
   // Disable getElementById restriction here, since |getPeerConnectionId| does
   // not return valid selectors.
   // eslint-disable-next-line no-restricted-properties
@@ -478,7 +366,7 @@ function addStandardStats(data) {
   for (let i = 0; i < data.reports.length; ++i) {
     const report = data.reports[i];
     statsTable.addStatsReport(peerConnectionElement, report);
-    drawSingleReport(peerConnectionElement, report, false);
+    drawSingleReport(peerConnectionElement, report);
   }
   // Determine currently connected candidate pair.
   const stats = r.statsById;
@@ -504,18 +392,26 @@ function addStandardStats(data) {
     if (activeCandidatePair.localCandidateId) {
       localCandidate = stats.get(activeCandidatePair.localCandidateId);
     }
-    if (localCandidate && localCandidate.address &&
-        localCandidate.address.indexOf(':') !== -1) {
-      // Show IPv6 in []
-      candidateElement.innerText =
-          '[' + localCandidate.address + ']:' + localCandidate.port
-          + ' <=> [' + remoteCandidate.address + ']:' + remoteCandidate.port;
-    } else {
-      candidateElement.innerText =
-          localCandidate.address + ':' + localCandidate.port
-          + ' <=> ' + remoteCandidate.address + ':' + remoteCandidate.port;
-    }
+    candidateElement.innerText = '';
+    if (localCandidate && remoteCandidate) {
+      if (localCandidate.address &&
+          localCandidate.address.indexOf(':') !== -1) {
+        // Show IPv6 in []
+        candidateElement.innerText +='[' + localCandidate.address + ']';
+      } else {
+        candidateElement.innerText += localCandidate.address || '(not set)';
+      }
+      candidateElement.innerText += ':' + localCandidate.port + ' <=> ';
 
+      if (remoteCandidate.address &&
+          remoteCandidate.address.indexOf(':') !== -1) {
+        // Show IPv6 in []
+        candidateElement.innerText +='[' + remoteCandidate.address + ']';
+      } else {
+        candidateElement.innerText += remoteCandidate.address || '(not set)';
+      }
+      candidateElement.innerText += ':' + remoteCandidate.port;
+    }
     // Mark active local-candidate, remote candidate and candidate pair
     // bold in the table.
     // Disable getElementById restriction here, since |peerConnectionElement|
@@ -562,35 +458,6 @@ function addStandardStats(data) {
   }
 
   updateIceCandidateGrid(peerConnectionElement, r.statsById);
-}
-
-/**
- * Handles the report of stats originating from the legacy getStats() API.
- *
- * @param {!Object} data The object containing rid, lid, and reports, where
- *     reports is an array of stats reports. Each report contains id, type,
- *     and stats, where stats is the object containing timestamp and values,
- *     which is an array of strings, whose even index entry is the name of the
- *     stat, and the odd index entry is the value.
- */
-function addLegacyStats(data) {
-  if (currentGetStatsMethod != OPTION_GETSTATS_LEGACY) {
-    return;  // Obsolete!
-  }
-  // Disable getElementById restriction here, since |getPeerConnectionId| does
-  // not return valid selectors.
-  const peerConnectionElement =
-      // eslint-disable-next-line no-restricted-properties
-      document.getElementById(getPeerConnectionId(data));
-  if (!peerConnectionElement) {
-    return;
-  }
-
-  for (let i = 0; i < data.reports.length; ++i) {
-    const report = data.reports[i];
-    statsTable.addStatsReport(peerConnectionElement, report);
-    drawSingleReport(peerConnectionElement, report, true);
-  }
 }
 
 /**

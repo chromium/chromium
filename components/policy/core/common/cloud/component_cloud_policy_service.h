@@ -114,6 +114,10 @@ class POLICY_EXPORT ComponentCloudPolicyService
   // Returns the current policies for components.
   const PolicyBundle& policy() const { return policy_; }
 
+  const ComponentPolicyMap& component_policy_map() const {
+    return component_policy_map_;
+  }
+
   // Add/Remove observer to notify about component policy changes. AddObserver
   // triggers an OnComponentPolicyUpdated notification to be posted to the newly
   // added observer.
@@ -149,10 +153,9 @@ class POLICY_EXPORT ComponentCloudPolicyService
   void UpdateFromClient();
   void UpdateFromSchemaRegistry();
   void Disconnect();
-  void SetPolicy(std::unique_ptr<PolicyBundle> policy,
-                 const ComponentPolicyMap& component_policy);
+  void SetPolicy(std::unique_ptr<PolicyBundle> policy);
   void FilterAndInstallPolicy();
-  void NotifyComponentPolicyUpdated(const ComponentPolicyMap& component_policy);
+  void NotifyComponentPolicyUpdated();
 
   std::string policy_type_;
   raw_ptr<Delegate> delegate_;
@@ -174,6 +177,9 @@ class POLICY_EXPORT ComponentCloudPolicyService
   // Contains all the policies loaded from the store, before having been
   // filtered and validated by the |current_schema_map_|.
   std::unique_ptr<PolicyBundle> unfiltered_policy_;
+
+  // Contains the same policies as |unfiltered_policy_|, but in JSON format.
+  ComponentPolicyMap component_policy_map_;
 
   // Contains all the current policies for components, filtered and validated by
   // the |current_schema_map_|.

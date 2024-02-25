@@ -22,11 +22,13 @@ constexpr char kHistogramPrefix[] = "Net.SharedDictionaryOnDisk.";
 SharedDictionaryOnDisk::SharedDictionaryOnDisk(
     size_t size,
     const net::SHA256HashValue& hash,
+    const std::string& id,
     const base::UnguessableToken& disk_cache_key_token,
     SharedDictionaryDiskCache* disk_cahe,
     base::OnceClosure disk_cache_error_callback)
     : size_(size),
       hash_(hash),
+      id_(id),
       disk_cache_error_callback_(std::move(disk_cache_error_callback)) {
   auto split_callback = base::SplitOnceCallback(base::BindOnce(
       &SharedDictionaryOnDisk::OnEntry, weak_factory_.GetWeakPtr(),
@@ -63,6 +65,10 @@ size_t SharedDictionaryOnDisk::size() const {
 
 const net::SHA256HashValue& SharedDictionaryOnDisk::hash() const {
   return hash_;
+}
+
+const std::string& SharedDictionaryOnDisk::id() const {
+  return id_;
 }
 
 void SharedDictionaryOnDisk::OnEntry(base::Time open_start_time,

@@ -121,7 +121,7 @@ TEST_F(CastHandlerTest, SetSinkToUse) {
           }));
 
   EXPECT_CALL(*router_,
-              CreateRouteInternal(presentation_url, kSinkId1, _, _, _, _, _));
+              CreateRouteInternal(presentation_url, kSinkId1, _, _, _, _));
   media_router::PresentationServiceDelegateImpl::GetOrCreateForWebContents(
       web_contents())
       ->StartPresentation(request, base::DoNothing(), base::DoNothing());
@@ -137,7 +137,7 @@ TEST_F(CastHandlerTest, StartDesktopMirroring) {
   EXPECT_CALL(
       *router_,
       CreateRouteInternal(media_router::MediaSource::ForUnchosenDesktop().id(),
-                          kSinkId1, _, _, _, _, _))
+                          kSinkId1, _, _, _, _))
       .WillOnce(
           WithArg<4>([](media_router::MediaRouteResponseCallback& callback) {
             std::move(callback).Run(
@@ -172,7 +172,7 @@ TEST_F(CastHandlerTest, StartTabMirroring) {
                   media_router::MediaSource::ForTab(
                       sessions::SessionTabHelper::IdForTab(web_contents()).id())
                       .id(),
-                  kSinkId1, _, _, _, _, _))
+                  kSinkId1, _, _, _, _))
       .WillOnce(
           WithArg<4>([](media_router::MediaRouteResponseCallback& callback) {
             std::move(callback).Run(

@@ -9,8 +9,16 @@
 #import "base/check.h"
 
 WebStateListChangeStatusOnly::WebStateListChangeStatusOnly(
-    raw_ptr<web::WebState> selected_web_state)
-    : selected_web_state_(selected_web_state) {}
+    raw_ptr<web::WebState> web_state,
+    int index,
+    bool pinned_state_changed,
+    raw_ptr<const TabGroup> old_group,
+    raw_ptr<const TabGroup> new_group)
+    : web_state_(web_state),
+      index_(index),
+      pinned_state_changed_(pinned_state_changed),
+      old_group_(old_group),
+      new_group_(new_group) {}
 
 WebStateListChange::Type WebStateListChangeStatusOnly::type() const {
   return kType;
@@ -18,11 +26,15 @@ WebStateListChange::Type WebStateListChangeStatusOnly::type() const {
 
 WebStateListChangeDetach::WebStateListChangeDetach(
     raw_ptr<web::WebState> detached_web_state,
+    int detached_from_index,
     bool is_closing,
-    bool is_user_action)
+    bool is_user_action,
+    raw_ptr<const TabGroup> group)
     : detached_web_state_(detached_web_state),
+      detached_from_index_(detached_from_index),
       is_closing_(is_closing),
-      is_user_action_(is_user_action) {}
+      is_user_action_(is_user_action),
+      group_(group) {}
 
 WebStateListChange::Type WebStateListChangeDetach::type() const {
   return kType;
@@ -30,8 +42,17 @@ WebStateListChange::Type WebStateListChangeDetach::type() const {
 
 WebStateListChangeMove::WebStateListChangeMove(
     raw_ptr<web::WebState> moved_web_state,
-    int moved_from_index)
-    : moved_web_state_(moved_web_state), moved_from_index_(moved_from_index) {}
+    int moved_from_index,
+    int moved_to_index,
+    bool pinned_state_changed,
+    raw_ptr<const TabGroup> old_group,
+    raw_ptr<const TabGroup> new_group)
+    : moved_web_state_(moved_web_state),
+      moved_from_index_(moved_from_index),
+      moved_to_index_(moved_to_index),
+      pinned_state_changed_(pinned_state_changed),
+      old_group_(old_group),
+      new_group_(new_group) {}
 
 WebStateListChange::Type WebStateListChangeMove::type() const {
   return kType;
@@ -39,17 +60,21 @@ WebStateListChange::Type WebStateListChangeMove::type() const {
 
 WebStateListChangeReplace::WebStateListChangeReplace(
     raw_ptr<web::WebState> replaced_web_state,
-    raw_ptr<web::WebState> inserted_web_state)
+    raw_ptr<web::WebState> inserted_web_state,
+    int index)
     : replaced_web_state_(replaced_web_state),
-      inserted_web_state_(inserted_web_state) {}
+      inserted_web_state_(inserted_web_state),
+      index_(index) {}
 
 WebStateListChange::Type WebStateListChangeReplace::type() const {
   return kType;
 }
 
 WebStateListChangeInsert::WebStateListChangeInsert(
-    raw_ptr<web::WebState> inserted_web_state)
-    : inserted_web_state_(inserted_web_state) {}
+    raw_ptr<web::WebState> inserted_web_state,
+    int index,
+    raw_ptr<const TabGroup> group)
+    : inserted_web_state_(inserted_web_state), index_(index), group_(group) {}
 
 WebStateListChange::Type WebStateListChangeInsert::type() const {
   return kType;

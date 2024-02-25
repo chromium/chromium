@@ -47,7 +47,13 @@ class IsolatedWebAppDevToolsTest : public IsolatedWebAppBrowserTestHarness {
   std::unique_ptr<net::EmbeddedTestServer> server_;
 };
 
-IN_PROC_BROWSER_TEST_F(IsolatedWebAppDevToolsTest, ErrorPage) {
+// TODO (crbug.com/1522953): Resolve flakiness on linux debug builds.
+#if BUILDFLAG(IS_LINUX) && !defined(NDEBUG)
+#define MAYBE_ErrorPage DISABLED_ErrorPage
+#else
+#define MAYBE_ErrorPage ErrorPage
+#endif
+IN_PROC_BROWSER_TEST_F(IsolatedWebAppDevToolsTest, MAYBE_ErrorPage) {
   IsolatedWebAppUrlInfo url_info = InstallIsolatedWebApp();
   Browser* browser = LaunchWebAppBrowserAndWait(url_info.app_id());
   content::WebContents* web_contents =

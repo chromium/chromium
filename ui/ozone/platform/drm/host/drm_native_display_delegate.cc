@@ -82,21 +82,18 @@ void DrmNativeDisplayDelegate::SetHDCPState(
   display->SetHDCPState(state, protection_method, std::move(callback));
 }
 
-bool DrmNativeDisplayDelegate::SetColorMatrix(
+void DrmNativeDisplayDelegate::SetColorTemperatureAdjustment(
     int64_t display_id,
-    const std::vector<float>& color_matrix) {
+    const display::ColorTemperatureAdjustment& cta) {
   DrmDisplayHost* display = display_manager_->GetDisplay(display_id);
-  display->SetColorMatrix(color_matrix);
-  return true;
+  display->SetColorTemperatureAdjustment(cta);
 }
 
-bool DrmNativeDisplayDelegate::SetGammaCorrection(
+void DrmNativeDisplayDelegate::SetGammaAdjustment(
     int64_t display_id,
-    const std::vector<display::GammaRampRGBEntry>& degamma_lut,
-    const std::vector<display::GammaRampRGBEntry>& gamma_lut) {
+    const display::GammaAdjustment& adjustment) {
   DrmDisplayHost* display = display_manager_->GetDisplay(display_id);
-  display->SetGammaCorrection(degamma_lut, gamma_lut);
-  return true;
+  display->SetGammaAdjustment(adjustment);
 }
 
 void DrmNativeDisplayDelegate::SetPrivacyScreen(

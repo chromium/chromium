@@ -139,6 +139,26 @@ NamedPropertyInterceptor* PerIsolateData::GetNamedPropertyInterceptor(
     return NULL;
 }
 
+void PerIsolateData::AddDisposeObserver(DisposeObserver* observer) {
+  dispose_observers_.AddObserver(observer);
+}
+
+void PerIsolateData::RemoveDisposeObserver(DisposeObserver* observer) {
+  dispose_observers_.RemoveObserver(observer);
+}
+
+void PerIsolateData::NotifyBeforeDispose() {
+  for (auto& observer : dispose_observers_) {
+    observer.OnBeforeDispose(isolate_.get());
+  }
+}
+
+void PerIsolateData::NotifyDisposed() {
+  for (auto& observer : dispose_observers_) {
+    observer.OnDisposed();
+  }
+}
+
 void PerIsolateData::EnableIdleTasks(
     std::unique_ptr<V8IdleTaskRunner> idle_task_runner) {
   task_runner_->EnableIdleTasks(std::move(idle_task_runner));

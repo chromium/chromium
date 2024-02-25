@@ -5,6 +5,7 @@
 #include "chromeos/ash/components/dbus/shill/shill_manager_client.h"
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <utility>
 #include <vector>
@@ -20,7 +21,6 @@
 #include "dbus/object_path.h"
 #include "dbus/values_util.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/cros_system_api/dbus/service_constants.h"
 
 using testing::_;
@@ -70,7 +70,7 @@ class ShillManagerClientTest : public ShillClientUnittestBase {
   }
 
  protected:
-  raw_ptr<ShillManagerClient, DanglingUntriaged | ExperimentalAsh> client_ =
+  raw_ptr<ShillManagerClient, DanglingUntriaged> client_ =
       nullptr;  // Unowned convenience pointer.
 };
 
@@ -126,11 +126,11 @@ TEST_F(ShillManagerClientTest, GetProperties) {
                        base::BindRepeating(&ExpectNoArgument), response.get());
 
   // Prepare result callback to get the properties.
-  base::test::TestFuture<absl::optional<base::Value::Dict>>
+  base::test::TestFuture<std::optional<base::Value::Dict>>
       get_properties_result;
   // Call method.
   client_->GetProperties(get_properties_result.GetCallback());
-  absl::optional<base::Value::Dict> result = get_properties_result.Take();
+  std::optional<base::Value::Dict> result = get_properties_result.Take();
   EXPECT_TRUE(result.has_value());
   const base::Value::Dict& result_value = result.value();
   EXPECT_EQ(expected_value, result_value);
@@ -176,11 +176,11 @@ TEST_F(ShillManagerClientTest, GetNetworksForGeolocation) {
                        base::BindRepeating(&ExpectNoArgument), response.get());
 
   // Prepare result callback to get the networks dictionary.
-  base::test::TestFuture<absl::optional<base::Value::Dict>> get_networks_result;
+  base::test::TestFuture<std::optional<base::Value::Dict>> get_networks_result;
   // Call method.
   client_->GetNetworksForGeolocation(get_networks_result.GetCallback());
   // Check if result is as expected.
-  absl::optional<base::Value::Dict> result = get_networks_result.Take();
+  std::optional<base::Value::Dict> result = get_networks_result.Take();
   EXPECT_TRUE(result.has_value());
   const base::Value::Dict& result_value = result.value();
   EXPECT_EQ(type_dict, result_value);

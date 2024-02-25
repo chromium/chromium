@@ -135,7 +135,7 @@ class BluetoothGattDescriptorClientImpl
         bluetooth_gatt_descriptor::kBluetoothGattDescriptorInterface,
         bluetooth_gatt_descriptor::kWriteValue);
     dbus::MessageWriter writer(&method_call);
-    writer.AppendArrayOfBytes(value.data(), value.size());
+    writer.AppendArrayOfBytes(value);
 
     // Append empty option dict
     dbus::AppendValueData(&writer, base::Value::Dict());
@@ -224,7 +224,7 @@ class BluetoothGattDescriptorClientImpl
     if (bytes)
       value.assign(bytes, bytes + length);
 
-    std::move(callback).Run(/*error_code=*/absl::nullopt, value);
+    std::move(callback).Run(/*error_code=*/std::nullopt, value);
   }
 
   // Called when a response for a failed method call is received.

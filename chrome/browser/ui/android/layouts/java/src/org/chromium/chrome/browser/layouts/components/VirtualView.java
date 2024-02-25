@@ -25,7 +25,7 @@ public interface VirtualView {
      * @param y The y offset of the click in dp.
      * @return Whether or not that click occurred inside of the button + slop area.
      */
-    boolean checkClicked(float x, float y);
+    boolean checkClickedOrHovered(float x, float y);
 
     /**
      * Notifies the view to handle the click action.

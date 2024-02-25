@@ -19,12 +19,14 @@ import java.util.List;
  */
 public interface TabModelObserver {
     /**
-     * Called when a tab is selected.
+     * Called when a tab is selected. This may not be called in some cases if this model is not the
+     * active model. If observing the current tab in this model is desired consider using {@link
+     * TabModel#getCurrentTabSupplier()} and observing that instead.
      *
      * @param tab The newly selected tab.
      * @param type The type of selection.
      * @param lastId The ID of the last selected tab, or {@link Tab#INVALID_TAB_ID} if no tab was
-     * selected.
+     *     selected.
      */
     default void didSelectTab(Tab tab, @TabSelectionType int type, int lastId) {}
 
@@ -70,7 +72,10 @@ public interface TabModelObserver {
      * @param creationState How the tab was created.
      * @param markedForSelection Indicates whether the added tab will be selected.
      */
-    default void didAddTab(Tab tab, @TabLaunchType int type, @TabCreationState int creationState,
+    default void didAddTab(
+            Tab tab,
+            @TabLaunchType int type,
+            @TabCreationState int creationState,
             boolean markedForSelection) {}
 
     /**
@@ -133,11 +138,9 @@ public interface TabModelObserver {
      * @param allowUndo If undo is allowed on the tab closure.
      * @param tabs being closed.
      */
-    default void willCloseMultipleTabs(boolean allowUndo, List<Tab> tabs){};
+    default void willCloseMultipleTabs(boolean allowUndo, List<Tab> tabs) {}
 
-    /**
-     * Called when an "all tabs" closure has been committed and can't be undone anymore.
-     */
+    /** Called when an "all tabs" closure has been committed and can't be undone anymore. */
     default void allTabsClosureCommitted(boolean isIncognito) {}
 
     /**

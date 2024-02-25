@@ -293,6 +293,13 @@ png_push_read_chunk(png_structrp png_ptr, png_inforp info_ptr)
       PNG_PUSH_SAVE_BUFFER_IF_FULL
       png_handle_cHRM(png_ptr, info_ptr, png_ptr->push_length);
    }
+#endif
+#ifdef PNG_READ_eXIf_SUPPORTED
+   else if (png_ptr->chunk_name == png_eXIf)
+   {
+      PNG_PUSH_SAVE_BUFFER_IF_FULL
+      png_handle_eXIf(png_ptr, info_ptr, png_ptr->push_length);
+   }
 
 #endif
 #ifdef PNG_READ_sRGB_SUPPORTED

@@ -1,4 +1,4 @@
-// Copyright 2022 The Chromium Authors. All rights reserved.
+// Copyright 2022 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -139,14 +139,12 @@ class ChromeOSSystemProfileProviderTest : public testing::Test {
   }
 
  protected:
-  raw_ptr<ash::multidevice_setup::FakeMultiDeviceSetupClient,
-          DanglingUntriaged | ExperimentalAsh>
+  raw_ptr<ash::multidevice_setup::FakeMultiDeviceSetupClient, DanglingUntriaged>
       fake_multidevice_setup_client_;
   base::test::ScopedFeatureList scoped_feature_list_;
   ash::system::ScopedFakeStatisticsProvider fake_statistics_provider_;
   std::unique_ptr<TestingProfileManager> profile_manager_;
-  raw_ptr<TestingProfile, DanglingUntriaged | ExperimentalAsh>
-      testing_profile_ = nullptr;
+  raw_ptr<TestingProfile, DanglingUntriaged> testing_profile_ = nullptr;
   std::unique_ptr<FakeMultiDeviceSetupClientImplFactory>
       fake_multidevice_setup_client_impl_factory_;
 
@@ -209,9 +207,6 @@ TEST_F(ChromeOSSystemProfileProviderTest,
   fake_multidevice_setup_client_->SetFeatureState(
       ash::multidevice_setup::mojom::Feature::kSmartLock,
       ash::multidevice_setup::mojom::FeatureState::kEnabledByUser);
-  fake_multidevice_setup_client_->SetFeatureState(
-      ash::multidevice_setup::mojom::Feature::kMessages,
-      ash::multidevice_setup::mojom::FeatureState::kFurtherSetupRequired);
 
   // |scoped_enabler| takes over the lifetime of |user_manager|.
   auto* user_manager = new ash::FakeChromeUserManager();
@@ -263,6 +258,8 @@ TEST_F(ChromeOSSystemProfileProviderTest, DemoModeDimensions) {
   const std::string expected_country = "CA";
   const std::string expected_retailer_id = "ABC";
   const std::string expected_store_id = "12345";
+  const std::string app_expected_version = "0.0.0.0";
+  const std::string resources_expected_version = "0.0.0.1";
   scoped_feature_list_.InitWithFeatures(
       {chromeos::features::kCloudGamingDevice,
        ash::features::kFeatureManagementFeatureAwareDeviceDemoMode},
@@ -273,6 +270,10 @@ TEST_F(ChromeOSSystemProfileProviderTest, DemoModeDimensions) {
                                               expected_retailer_id);
   g_browser_process->local_state()->SetString("demo_mode.store_id",
                                               expected_store_id);
+  g_browser_process->local_state()->SetString("demo_mode.app_version",
+                                              app_expected_version);
+  g_browser_process->local_state()->SetString("demo_mode.resources_version",
+                                              resources_expected_version);
 
   TestChromeOSSystemProfileProvider provider;
   provider.OnDidCreateMetricsLog();
@@ -300,10 +301,15 @@ TEST_F(ChromeOSSystemProfileProviderTest, DemoModeDimensions) {
       system_profile.demo_mode_dimensions().retailer().retailer_id();
   std::string store_id =
       system_profile.demo_mode_dimensions().retailer().store_id();
+  std::string app_version = system_profile.demo_mode_dimensions().app_version();
+  std::string resources_version =
+      system_profile.demo_mode_dimensions().resources_version();
 
   EXPECT_EQ(country, expected_country);
   EXPECT_EQ(retailer_id, expected_retailer_id);
   EXPECT_EQ(store_id, expected_store_id);
+  EXPECT_EQ(app_version, app_expected_version);
+  EXPECT_EQ(resources_version, resources_expected_version);
 }
 
 TEST_F(ChromeOSSystemProfileProviderTest, TpmRwFirmwareVersion) {

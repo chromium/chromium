@@ -11,6 +11,7 @@
 #include <array>
 #include <limits>
 #include <memory>
+#include <optional>
 #include <utility>
 
 #include "base/feature_list.h"
@@ -30,7 +31,6 @@
 #include "media/webrtc/constants.h"
 #include "media/webrtc/helpers.h"
 #include "media/webrtc/webrtc_features.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/webrtc/modules/audio_processing/include/audio_processing.h"
 #include "third_party/webrtc_overrides/task_queue_factory.h"
 
@@ -347,7 +347,7 @@ void AudioProcessor::ProcessCapturedAudio(const media::AudioBus& audio_source,
   while (capture_fifo_->Consume(&process_bus, &capture_delay)) {
     // Use the process bus directly if audio processing is disabled.
     AudioProcessorCaptureBus* output_bus = process_bus;
-    absl::optional<double> new_volume;
+    std::optional<double> new_volume;
     if (webrtc_audio_processing_) {
       output_bus = output_bus_.get();
       new_volume =
@@ -383,8 +383,8 @@ void AudioProcessor::OnStartDump(base::File dump_file) {
 
   if (webrtc_audio_processing_) {
     if (!worker_queue_) {
-      worker_queue_ = std::make_unique<rtc::TaskQueue>(
-          CreateWebRtcTaskQueue(rtc::TaskQueue::Priority::LOW));
+      worker_queue_ =
+          CreateWebRtcTaskQueue(webrtc::TaskQueueFactory::Priority::LOW);
     }
     // Here tasks will be posted on the |worker_queue_|. It must be
     // kept alive until media::StopEchoCancellationDump is called or the
@@ -405,7 +405,7 @@ void AudioProcessor::OnStopDump() {
     return;
   if (webrtc_audio_processing_)
     media::StopEchoCancellationDump(webrtc_audio_processing_.get());
-  worker_queue_.reset(nullptr);
+  worker_queue_ = nullptr;
 }
 
 void AudioProcessor::OnPlayoutData(const AudioBus& audio_bus,
@@ -469,7 +469,7 @@ webrtc::AudioProcessingStats AudioProcessor::GetStats() {
   return webrtc_audio_processing_->GetStatistics();
 }
 
-absl::optional<double> AudioProcessor::ProcessData(
+std::optional<double> AudioProcessor::ProcessData(
     const float* const* process_ptrs,
     int process_frames,
     base::TimeDelta capture_delay,
@@ -569,7 +569,7 @@ absl::optional<double> AudioProcessor::ProcessData(
   const int recommended_analog_gain_level =
       ap->recommended_stream_analog_level();
   if (recommended_analog_gain_level == current_analog_gain_level) {
-    return absl::nullopt;
+    return std::nullopt;
   } else {
     return static_cast<double>(recommended_analog_gain_level) /
            media::MaxWebRtcAnalogGainLevel();
@@ -583,7 +583,7 @@ void AudioProcessor::SendLogMessage(const std::string& message) {
                                        reinterpret_cast<uintptr_t>(this)));
 }
 
-absl::optional<AudioParameters> AudioProcessor::ComputeInputFormat(
+std::optional<AudioParameters> AudioProcessor::ComputeInputFormat(
     const AudioParameters& device_format,
     const AudioProcessingSettings& audio_processing_settings) {
   const ChannelLayout channel_layout = device_format.channel_layout();
@@ -592,7 +592,7 @@ absl::optional<AudioParameters> AudioProcessor::ComputeInputFormat(
   if (channel_layout != CHANNEL_LAYOUT_MONO &&
       channel_layout != CHANNEL_LAYOUT_STEREO &&
       channel_layout != CHANNEL_LAYOUT_DISCRETE) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   AudioParameters params(

@@ -4,13 +4,13 @@
 
 #include "ui/base/ime/ash/input_method_descriptor.h"
 
+#include <optional>
 #include <sstream>
 
 #include "base/check.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/ime/ash/extension_ime_util.h"
 #include "url/gurl.h"
 
@@ -26,7 +26,7 @@ InputMethodDescriptor::InputMethodDescriptor(
     bool is_login_keyboard,
     const GURL& options_page_url,
     const GURL& input_view_url,
-    const absl::optional<std::string>& handwriting_language)
+    const std::optional<std::string>& handwriting_language)
     : id_(id),
       name_(name),
       keyboard_layout_(keyboard_layout),

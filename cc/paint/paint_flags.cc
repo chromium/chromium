@@ -42,8 +42,11 @@ PaintFlags::PaintFlags() {
   bitfields_.cap_type_ = SkPaint::kDefault_Cap;
   bitfields_.join_type_ = SkPaint::kDefault_Join;
   bitfields_.style_ = SkPaint::kFill_Style;
+  bitfields_.blend_mode_ = static_cast<int>(SkBlendMode::kSrcOver);
   bitfields_.filter_quality_ =
       static_cast<int>(PaintFlags::FilterQuality::kNone);
+  bitfields_.dynamic_range_limit_standard_mix_ = 0;
+  bitfields_.dynamic_range_limit_constrained_high_mix_ = 0;
 
   static_assert(sizeof(bitfields_) <= sizeof(bitfields_uint_),
                 "Too many bitfields");
@@ -57,7 +60,7 @@ PaintFlags::~PaintFlags() {
   // TODO(enne): non-default dtor to investigate http://crbug.com/790915
 
   // Sanity check accessing this object doesn't crash.
-  blend_mode_ = static_cast<uint32_t>(SkBlendMode::kLastMode);
+  bitfields_.blend_mode_ = static_cast<uint32_t>(SkBlendMode::kLastMode);
 
   // Free refcounted objects one by one.
   path_effect_.reset();
@@ -96,7 +99,7 @@ bool PaintFlags::nothingToDraw() const {
     case SkBlendMode::kDstOut:
     case SkBlendMode::kDstOver:
     case SkBlendMode::kPlus:
-      if (getAlpha() == 0) {
+      if (isFullyTransparent()) {
         return !color_filter_ && !image_filter_;
       }
       break;
@@ -187,6 +190,7 @@ bool PaintFlags::EqualsForTesting(const PaintFlags& other) const {
          getStrokeJoin() == other.getStrokeJoin() &&
          getStyle() == other.getStyle() &&
          getFilterQuality() == other.getFilterQuality() &&
+         getDynamicRangeLimit() == other.getDynamicRangeLimit() &&
          AreSkFlattenablesEqualForTesting(path_effect_,  // IN-TEST
                                           other.path_effect_) &&
          AreSkFlattenablesEqualForTesting(mask_filter_,  // IN-TEST

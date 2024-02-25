@@ -62,7 +62,7 @@ class SearchHandler : public shortcut_customization::mojom::SearchHandler,
   void OnFindComplete(
       SearchCallback callback,
       local_search_service::ResponseStatus response_status,
-      const absl::optional<std::vector<local_search_service::Result>>&
+      const std::optional<std::vector<local_search_service::Result>>&
           local_search_service_results);
 
   std::vector<shortcut_customization::mojom::SearchResultPtr>

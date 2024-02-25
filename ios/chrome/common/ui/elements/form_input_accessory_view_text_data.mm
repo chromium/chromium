@@ -4,16 +4,6 @@
 
 #import "ios/chrome/common/ui/elements/form_input_accessory_view_text_data.h"
 
-@interface FormInputAccessoryViewTextData ()
-
-@property(nonatomic, readwrite, copy) NSString* closeButtonTitle;
-@property(nonatomic, readwrite, copy) NSString* closeButtonAccessibilityLabel;
-@property(nonatomic, readwrite, copy) NSString* nextButtonAccessibilityLabel;
-@property(nonatomic, readwrite, copy)
-    NSString* previousButtonAccessibilityLabel;
-
-@end
-
 @implementation FormInputAccessoryViewTextData
 
 - (instancetype)initWithCloseButtonTitle:(NSString*)closeButtonTitle
@@ -21,12 +11,16 @@
                (NSString*)closeButtonAccessibilityLabel
             nextButtonAccessibilityLabel:(NSString*)nextButtonAccessibilityLabel
         previousButtonAccessibilityLabel:
-            (NSString*)previousButtonAccessibilityLabel {
+            (NSString*)previousButtonAccessibilityLabel
+      manualFillButtonAccessibilityLabel:
+          (NSString*)manualFillButtonAccessibilityLabel {
   if (self = [super init]) {
-    _closeButtonTitle = closeButtonTitle;
-    _closeButtonAccessibilityLabel = closeButtonAccessibilityLabel;
-    _nextButtonAccessibilityLabel = nextButtonAccessibilityLabel;
-    _previousButtonAccessibilityLabel = previousButtonAccessibilityLabel;
+    _closeButtonTitle = [closeButtonTitle copy];
+    _closeButtonAccessibilityLabel = [closeButtonAccessibilityLabel copy];
+    _nextButtonAccessibilityLabel = [nextButtonAccessibilityLabel copy];
+    _previousButtonAccessibilityLabel = [previousButtonAccessibilityLabel copy];
+    _manualFillButtonAccessibilityLabel =
+        [manualFillButtonAccessibilityLabel copy];
   }
   return self;
 }

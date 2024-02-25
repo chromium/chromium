@@ -6,12 +6,15 @@
 #include "ash/components/arc/session/arc_session_runner.h"
 #include "ash/components/arc/test/arc_util_test_support.h"
 #include "ash/components/arc/test/fake_arc_session.h"
+#include "ash/constants/ash_features.h"
 #include "base/memory/ptr_util.h"
+#include "base/test/scoped_feature_list.h"
 #include "chrome/browser/ash/arc/session/arc_session_manager.h"
 #include "chrome/browser/ash/policy/handlers/configuration_policy_handler_ash.h"
 #include "chrome/browser/policy/policy_test_utils.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
+#include "components/policy/core/common/policy_types.h"
 #include "components/policy/policy_constants.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/test/browser_test.h"
@@ -20,7 +23,9 @@ namespace policy {
 
 class ArcPolicyTest : public PolicyTest {
  public:
-  ArcPolicyTest() = default;
+  ArcPolicyTest() {
+    feature_list_.InitAndDisableFeature(ash::features::kCrosPrivacyHub);
+  }
   ArcPolicyTest(const ArcPolicyTest&) = delete;
   ArcPolicyTest& operator=(const ArcPolicyTest&) = delete;
   ~ArcPolicyTest() override = default;
@@ -59,6 +64,8 @@ class ArcPolicyTest : public PolicyTest {
       EXPECT_EQ(prefs->GetBoolean(arc::prefs::kArcEnabled), enabled);
     }
   }
+
+  base::test::ScopedFeatureList feature_list_;
 };
 
 // Test ArcEnabled policy.
@@ -133,6 +140,7 @@ IN_PROC_BROWSER_TEST_F(ArcPolicyTest, ArcBackupRestoreServiceEnabled) {
 // Test ArcGoogleLocationServicesEnabled policy and its interplay with the
 // DefaultGeolocationSetting policy.
 IN_PROC_BROWSER_TEST_F(ArcPolicyTest, ArcGoogleLocationServicesEnabled) {
+  ASSERT_FALSE(ash::features::IsCrosPrivacyHubLocationEnabled());
   PrefService* const pref = browser()->profile()->GetPrefs();
 
   // Values of the ArcGoogleLocationServicesEnabled policy to be tested.
@@ -207,5 +215,44 @@ IN_PROC_BROWSER_TEST_F(ArcPolicyTest, ArcGoogleLocationServicesEnabled) {
     }
   }
 }
+
+class ArcLocationPolicyWhenPhEnabledTest
+    : public ArcPolicyTest,
+      public testing::WithParamInterface<ArcServicePolicyValue> {
+ public:
+  ArcLocationPolicyWhenPhEnabledTest() {
+    feature_list_.Reset();
+    feature_list_.InitAndEnableFeature(ash::features::kCrosPrivacyHub);
+  }
+
+  void SetArcLocationPolicy(ArcServicePolicyValue value) {
+    PolicyMap policies;
+    policies.Set(key::kArcGoogleLocationServicesEnabled, POLICY_LEVEL_MANDATORY,
+                 POLICY_SCOPE_USER, POLICY_SOURCE_CLOUD,
+                 base::Value(static_cast<int>(value)), nullptr);
+    UpdateProviderPolicy(policies);
+  }
+};
+
+IN_PROC_BROWSER_TEST_P(ArcLocationPolicyWhenPhEnabledTest,
+                       SetArcLocationPolicy) {
+  ASSERT_TRUE(ash::features::IsCrosPrivacyHubLocationEnabled());
+  SetArcLocationPolicy(GetParam());
+
+  // Check that `ArcGoogleLocationServicesEnabled` policy, as it's being
+  // deprecated, no longer affects the underlying pref.
+  PrefService* prefs = browser()->profile()->GetPrefs();
+  EXPECT_TRUE(prefs->FindPreference(arc::prefs::kArcLocationServiceEnabled)
+                  ->IsDefaultValue());
+  EXPECT_FALSE(
+      prefs->IsManagedPreference(arc::prefs::kArcLocationServiceEnabled));
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    ArcLocationPolicyWhenPhEnabledTest,
+    testing::Values(ArcServicePolicyValue::kDisabled,
+                    ArcServicePolicyValue::kUnderUserControl,
+                    ArcServicePolicyValue::kEnabled));
 
 }  // namespace policy

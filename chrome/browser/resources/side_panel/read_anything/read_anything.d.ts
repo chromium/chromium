@@ -4,6 +4,11 @@
 
 /** @fileoverview Definitions for chrome.readingMode API */
 
+// Add non-standard function to element for TS to compile correctly.
+interface Element {
+  scrollIntoViewIfNeeded: () => void;
+}
+
 declare namespace chrome {
   export namespace readingMode {
     /////////////////////////////////////////////////////////////////////
@@ -26,6 +31,7 @@ declare namespace chrome {
     // Items in the ReadAnythingTheme struct, see read_anything.mojom for info.
     let fontName: string;
     let fontSize: number;
+    let linksEnabled: boolean;
     let foregroundColor: number;
     let backgroundColor: number;
     let lineSpacing: number;
@@ -33,6 +39,10 @@ declare namespace chrome {
 
     // The current color theme value.
     let colorTheme: number;
+
+    // Current audio settings values.
+    let speechRate: number;
+    let highlightGranularity: number;
 
     // Enum values for various visual theme changes.
     let standardLineSpacing: number;
@@ -46,6 +56,7 @@ declare namespace chrome {
     let darkTheme: number;
     let yellowTheme: number;
     let blueTheme: number;
+    let highlightOn: number;
 
     // Whether the WebUI toolbar feature flag is enabled.
     let isWebUIToolbarVisible: boolean;
@@ -57,11 +68,24 @@ declare namespace chrome {
     // determine which empty state to display.
     let isSelectable: boolean;
 
+    // Fonts supported by the browser's preferred language.
+    let supportedFonts: string[];
+
+    // The language code that should be used for speech synthesis voices.
+    let speechSynthesisLanguageCode: string;
+
+    // Returns the stored user voice preference for the given language.
+    function getStoredVoice(lang: string): string;
+
     // Returns a list of AXNodeIDs corresponding to the unignored children of
     // the AXNode for the provided AXNodeID. If there is a selection contained
     // in this node, only returns children which are partially or entirely
     // contained within the selection.
     function getChildren(nodeId: number): number[];
+
+    // Returns content of "data-font-css" html attribute. This is needed for
+    // rendering content from annotated canvas in Google Docs.
+    function getDataFontCss(nodeId: number): string;
 
     // Returns the HTML tag of the AXNode for the provided AXNodeID.
     function getHtmlTag(nodeId: number): string;
@@ -80,11 +104,20 @@ declare namespace chrome {
     // Returns the url of the AXNode for the provided AXNodeID.
     function getUrl(nodeId: number): string;
 
+    // Returns the alt text of the AXNode for the provided AXNodeID.
+    function getAltText(nodeId: number): string;
+
     // Returns true if the text node / element should be bolded.
     function shouldBold(nodeId: number): boolean;
 
     // Returns true if the element has overline text styling.
     function isOverline(nodeId: number): boolean;
+
+    // Returns true if the element is a leaf node.
+    function isLeafNode(nodeId: number): boolean;
+
+    // Returns true if the webpage corresponds to a Google Doc.
+    function isGoogleDocs(): boolean;
 
     // Connects to the browser process. Called by ts when the read anything
     // element is added to the document.
@@ -108,6 +141,10 @@ declare namespace chrome {
 
     // Called when a user makes a font size change via the webui toolbar.
     function onFontSizeChanged(increase: boolean): void;
+    function onFontSizeReset(): void;
+
+    // Called when a user toggles links via the webui toolbar.
+    function onLinksEnabledToggled(): void;
 
     // Called when the letter spacing is changed via the webui toolbar.
     function onStandardLetterSpacing(): void;
@@ -124,6 +161,16 @@ declare namespace chrome {
     // Called when the font is changed via the webui toolbar.
     function onFontChange(font: string): void;
 
+    // Called when the speech rate is changed via the webui toolbar.
+    function onSpeechRateChange(rate: number): void;
+
+    // Called when the voice used for speech is changed via the webui toolbar.
+    function onVoiceChange(voice: string, lang: string): void;
+
+    // Called when the highlight granularity is changed via the webui toolbar.
+    function turnedHighlightOn(): void;
+    function turnedHighlightOff(): void;
+
     // Returns the actual spacing value to use based on the given lineSpacing
     // category.
     function getLineSpacingValue(lineSpacing: number): number;
@@ -138,6 +185,9 @@ declare namespace chrome {
     function onSelectionChange(
         anchorNodeId: number, anchorOffset: number, focusNodeId: number,
         focusOffset: number): void;
+    // Called when a user collapses the selection. This is usually accomplished
+    // by clicking.
+    function onCollapseSelection(): void;
 
     // Set the content. Used by tests only.
     // SnapshotLite is a data structure which resembles an AXTreeUpdate. E.g.:
@@ -161,9 +211,16 @@ declare namespace chrome {
 
     // Set the theme. Used by tests only.
     function setThemeForTesting(
-        fontName: string, fontSize: number, foregroundColor: number,
-        backgroundColor: number, lineSpacing: number,
+        fontName: string, fontSize: number, linksEnabled: boolean,
+        foregroundColor: number, backgroundColor: number, lineSpacing: number,
         letterSpacing: number): void;
+
+    // Sets the default language. Used by tests only.
+    function setLanguageForTesting(code: string): void;
+
+    // Called when the side panel has finished loading and it's safe to call
+    // SidePanelWebUIView::ShowUI
+    function shouldShowUi(): boolean;
 
     ////////////////////////////////////////////////////////////////
     // Implemented in read_anything/app.ts and called by native c++.
@@ -179,6 +236,13 @@ declare namespace chrome {
     // and is available to consume.
     function updateContent(): void;
 
+    // Redraws links when the enabled state changes.
+    function updateLinks(): void;
+
+    // Updates an images src attribute with a data url. The data url must have
+    // been requested first.
+    function updateImage(nodeId: number): void;
+
     // Ping that the selection has been updated.
     function updateSelection(): void;
 
@@ -189,5 +253,50 @@ declare namespace chrome {
     // Ping that the theme choices of the user have been retrieved from
     // preferences and can be used to set up the page.
     function restoreSettingsFromPrefs(): void;
+
+    // Inits the AXPosition instance in ReadAnythingAppController with the
+    // starting node. Currently needed to orient the AXPosition to the correct
+    // position, but we should be able to remove this in the future.
+    function initAxPositionWithNode(startingNodeId: number): void;
+
+    // Gets the starting text index for the current Read Aloud text segment
+    // for the given node. nodeId should be a node returned by getCurrentText.
+    // Returns -1 if the node is invalid.
+    function getCurrentTextStartIndex(nodeId: number): number;
+
+    // Gets the ending text index for the current Read Aloud text segment
+    // for the given node. nodeId should be a node returned by getCurrentText or
+    // getPreviousText. Returns -1 if the node is invalid.
+    function getCurrentTextEndIndex(nodeId: number): number;
+
+    // Gets the nodes of the  next text that should be spoken and highlighted.
+    // Use getCurrentTextStartIndex and getCurrentTextEndIndex to get the bounds
+    // for text associated with these nodes.
+    function getCurrentText(): number[];
+
+    // Increments the processed_granularity_index_ in ReadAnythingAppModel,
+    // effectively updating ReadAloud's state of the current granularity to
+    // refer to the next granularity.
+    function movePositionToNextGranularity(): void;
+
+    // Decrements the processed_granularity_index_ in ReadAnythingAppModel,
+    // effectively updating ReadAloud's state of the current granularity to
+    // refer to the previous granularity.
+    function movePositionToPreviousGranularity(): void;
+
+    // Signal that the supported fonts should be updated i.e. that the brower's
+    // preferred language has changed.
+    function updateFonts(): void;
+
+    // Gets the accessible text boundary for the given string
+    function getAccessibleBoundary(text: string, maxSpeechLength: number):
+        number;
+
+    // Requests the image in the form of a data url. The result will then be
+    // stored in the AXNode which can be fetched on content update.
+    function requestImageDataUrl(nodeId: number): void;
+
+    // Gets the stored image data url from the AXNode.
+    function getImageDataUrl(nodeId: number): string;
   }
 }

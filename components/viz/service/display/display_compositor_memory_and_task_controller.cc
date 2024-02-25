@@ -30,7 +30,7 @@ DisplayCompositorMemoryAndTaskController::
   event.Wait();
 
   shared_image_interface_ =
-      std::make_unique<gpu::SharedImageInterfaceInProcess>(
+      base::MakeRefCounted<gpu::SharedImageInterfaceInProcess>(
           gpu_task_scheduler_->GetTaskSequence(), controller_on_gpu_.get());
 }
 

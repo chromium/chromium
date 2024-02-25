@@ -18,9 +18,7 @@ import org.chromium.base.test.util.Feature;
 import org.chromium.content_public.browser.SelectAroundCaretResult;
 import org.chromium.content_public.browser.SelectionClient;
 
-/**
- * Unit tests for the {@link SelectionClientManager}.
- */
+/** Unit tests for the {@link SelectionClientManager}. */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
 public class SelectionClientManagerTest {
@@ -35,9 +33,7 @@ public class SelectionClientManagerTest {
     // Counters for calls to all of the above clients.
     int mCallsToAllClients;
 
-    /**
-     * A SelectionClient for testing that tracks whether a method used by all clients was called.
-     */
+    /** A SelectionClient for testing that tracks whether a method used by all clients was called. */
     private class SelectionClientStub implements SelectionClient {
         @Override
         public void onSelectionChanged(String selection) {

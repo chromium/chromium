@@ -75,7 +75,7 @@ void Surface::PresentationHelper::DidPresent(
     base::TimeTicks draw_start_timestamp,
     const gfx::SwapTimings& swap_timings,
     const gfx::PresentationFeedback& feedback) {
-  if (surface_client_ && frame_token_) {
+  if (surface_client_ && frame_token_ != kInvalidOrLocalFrameToken) {
     surface_client_->OnSurfacePresented(frame_token_, draw_start_timestamp,
                                         swap_timings, feedback);
   }
@@ -254,7 +254,7 @@ Surface::QueueFrameResult Surface::CommitFrame(FrameData frame) {
 
   TakePendingLatencyInfo(&frame.frame.metadata.latency_info);
 
-  absl::optional<FrameData> previous_pending_frame_data =
+  std::optional<FrameData> previous_pending_frame_data =
       std::move(pending_frame_data_);
   pending_frame_data_.reset();
 
@@ -313,7 +313,7 @@ void Surface::RequestCopyOfOutput(
   if (!active_frame_data_)
     return;
 
-  for (auto& render_pass : GetActiveOrInterpolatedFrame().render_pass_list) {
+  for (auto& render_pass : GetActiveFrame().render_pass_list) {
     if (render_pass->subtree_capture_id ==
         pending_copy_output_request.subtree_capture_id) {
       RequestCopyOfOutputOnRenderPass(
@@ -331,9 +331,8 @@ void Surface::RequestCopyOfOutputOnRootRenderPass(
   if (!active_frame_data_)
     return;  // |copy_request| auto-sends empty result on out-of-scope.
 
-  RequestCopyOfOutputOnRenderPass(
-      std::move(copy_request),
-      *GetActiveOrInterpolatedFrame().render_pass_list.back());
+  RequestCopyOfOutputOnRenderPass(std::move(copy_request),
+                                  *GetActiveFrame().render_pass_list.back());
 }
 
 bool Surface::RequestCopyOfOutputOnActiveFrameRenderPassId(
@@ -346,7 +345,7 @@ bool Surface::RequestCopyOfOutputOnActiveFrameRenderPassId(
 
   // Find a render pass with a given id, and attach the copy output request on
   // it.
-  for (auto& render_pass : GetActiveOrInterpolatedFrame().render_pass_list) {
+  for (auto& render_pass : GetActiveFrame().render_pass_list) {
     if (render_pass->id == render_pass_id) {
       RequestCopyOfOutputOnRenderPass(std::move(copy_request), *render_pass);
       return true;
@@ -405,7 +404,7 @@ void Surface::ActivatePendingFrame() {
   FrameData frame_data = std::move(*pending_frame_data_);
   pending_frame_data_.reset();
 
-  absl::optional<base::TimeDelta> duration = deadline_->Cancel();
+  std::optional<base::TimeDelta> duration = deadline_->Cancel();
   if (duration.has_value()) {
     TRACE_EVENT_INSTANT2("viz", "SurfaceSynchronizationEvent",
                          TRACE_EVENT_SCOPE_THREAD, "surface_id",
@@ -462,20 +461,20 @@ void Surface::CommitFramesRecursively(const CommitPredicate& predicate) {
   }
 }
 
-absl::optional<uint64_t> Surface::GetFirstUncommitedFrameIndex() {
+std::optional<uint64_t> Surface::GetFirstUncommitedFrameIndex() {
   if (uncommitted_frames_.empty())
-    return absl::nullopt;
+    return std::nullopt;
   return uncommitted_frames_.front().frame_index;
 }
 
-absl::optional<uint64_t> Surface::GetUncommitedFrameIndexNewerThan(
+std::optional<uint64_t> Surface::GetUncommitedFrameIndexNewerThan(
     uint64_t frame_index) {
   for (auto& frame : uncommitted_frames_) {
     if (frame.frame_index > frame_index) {
       return frame.frame_index;
     }
   }
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 void Surface::UpdateReferencedAllocationGroups(
@@ -548,10 +547,6 @@ void Surface::ActivateFrame(FrameData frame_data) {
   TRACE_EVENT1("viz", "Surface::ActivateFrame", "SurfaceId",
                surface_id().ToString());
 
-  // The interpolated frame is based off of the active frame. If we're
-  // activating a new frame we need to do interpolation again (if needed).
-  interpolated_frame_.reset();
-
   // Save root pass copy requests.
   std::vector<std::unique_ptr<CopyOutputRequest>> old_copy_requests;
   if (active_frame_data_) {
@@ -563,7 +558,7 @@ void Surface::ActivateFrame(FrameData frame_data) {
 
   TakeActiveLatencyInfo(&frame_data.frame.metadata.latency_info);
 
-  absl::optional<FrameData> previous_frame_data = std::move(active_frame_data_);
+  std::optional<FrameData> previous_frame_data = std::move(active_frame_data_);
 
   active_frame_data_ = std::move(frame_data);
 
@@ -626,7 +621,7 @@ FrameDeadline Surface::ResolveFrameDeadline(
     return FrameDeadline::MakeZero();
   }
 
-  const absl::optional<uint32_t>& default_deadline =
+  const std::optional<uint32_t>& default_deadline =
       surface_manager_->activation_deadline_in_frames();
   const FrameDeadline& deadline = current_frame.metadata.deadline;
   uint32_t deadline_in_frames = deadline.deadline_in_frames();
@@ -703,8 +698,7 @@ void Surface::TakeCopyOutputRequests(Surface::CopyRequestsMap* copy_requests) {
   if (!active_frame_data_)
     return;
 
-  for (const auto& render_pass :
-       GetActiveOrInterpolatedFrame().render_pass_list) {
+  for (const auto& render_pass : GetActiveFrame().render_pass_list) {
     for (auto& request : render_pass->copy_requests) {
       copy_requests->insert(
           std::make_pair(render_pass->id, std::move(request)));
@@ -725,8 +719,7 @@ void Surface::TakeCopyOutputRequestsFromClient() {
 }
 
 bool Surface::HasCopyOutputRequests() const {
-  return active_frame_data_ &&
-         GetActiveOrInterpolatedFrame().HasCopyOutputRequests();
+  return active_frame_data_ && GetActiveFrame().HasCopyOutputRequests();
 }
 
 const CompositorFrame& Surface::GetActiveFrame() const {
@@ -734,24 +727,15 @@ const CompositorFrame& Surface::GetActiveFrame() const {
   return active_frame_data_->frame;
 }
 
-const CompositorFrame& Surface::GetActiveOrInterpolatedFrame() const {
-  DCHECK(active_frame_data_);
-  if (interpolated_frame_.has_value())
-    return *interpolated_frame_;
-  return active_frame_data_->frame;
-}
-
-bool Surface::HasInterpolatedFrame() const {
-  return interpolated_frame_.has_value();
-}
-
 const CompositorFrameMetadata& Surface::GetActiveFrameMetadata() const {
   DCHECK(active_frame_data_);
   return active_frame_data_->frame.metadata;
 }
 
-void Surface::SetInterpolatedFrame(CompositorFrame frame) {
-  interpolated_frame_.emplace(std::move(frame));
+void Surface::SetActiveFrameForViewTransition(CompositorFrame frame) {
+  CHECK(active_frame_data_.has_value());
+
+  active_frame_data_->frame = std::move(frame);
 }
 
 const CompositorFrame& Surface::GetPendingFrame() {
@@ -821,7 +805,7 @@ base::flat_set<base::PlatformThreadId> Surface::GetThreadIds() {
 }
 
 void Surface::UnrefFrameResourcesAndRunCallbacks(
-    absl::optional<FrameData> frame_data) {
+    std::optional<FrameData> frame_data) {
   if (!frame_data || !surface_client_)
     return;
 
@@ -850,8 +834,7 @@ void Surface::UnrefFrameResourcesAndRunCallbacks(
 
 void Surface::ClearCopyRequests() {
   if (active_frame_data_) {
-    for (const auto& render_pass :
-         GetActiveOrInterpolatedFrame().render_pass_list) {
+    for (const auto& render_pass : GetActiveFrame().render_pass_list) {
       // When the container is cleared, all copy requests within it will
       // auto-send an empty result as they are being destroyed.
       render_pass->copy_requests.clear();

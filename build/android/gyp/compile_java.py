@@ -14,7 +14,6 @@ import shutil
 import sys
 import time
 import zipfile
-import pathlib
 
 import javac_output_processor
 from util import build_utils
@@ -217,24 +216,14 @@ ERRORPRONE_WARNINGS_TO_ENABLE = [
 def ProcessJavacOutput(output, target_name):
   # These warnings cannot be suppressed even for third party code. Deprecation
   # warnings especially do not help since we must support older android version.
-  deprecated_re = re.compile(
-      r'(Note: .* uses? or overrides? a deprecated API.)$')
+  deprecated_re = re.compile(r'Note: .* uses? or overrides? a deprecated API')
   unchecked_re = re.compile(
       r'(Note: .* uses? unchecked or unsafe operations.)$')
   recompile_re = re.compile(r'(Note: Recompile with -Xlint:.* for details.)$')
 
-  activity_re = re.compile(r'^(?P<prefix>\s*location: )class Activity$')
-
   def ApplyFilters(line):
     return not (deprecated_re.match(line) or unchecked_re.match(line)
                 or recompile_re.match(line))
-
-  def Elaborate(line):
-    if activity_re.match(line):
-      prefix = ' ' * activity_re.match(line).end('prefix')
-      return '{}\n{}Expecting a FragmentActivity? See {}'.format(
-          line, prefix, 'docs/ui/android/bytecode_rewriting.md')
-    return line
 
   output = build_utils.FilterReflectiveAccessJavaWarnings(output)
 
@@ -250,7 +239,6 @@ def ProcessJavacOutput(output, target_name):
     output = re.sub(r'\d+ warnings\n', '', output)
 
   lines = (l for l in output.split('\n') if ApplyFilters(l))
-  lines = (Elaborate(l) for l in lines)
 
   output_processor = javac_output_processor.JavacOutputProcessor(target_name)
   lines = output_processor.Process(lines)
@@ -759,10 +747,9 @@ def main(argv):
 
   javac_args = [
       '-g',
-      # We currently target JDK 11 everywhere, since Mockito is broken by JDK17.
-      # See crbug.com/1409661 for more details.
+      # Jacoco does not currently support a higher value.
       '--release',
-      '11',
+      '17',
       # Chromium only allows UTF8 source files.  Being explicit avoids
       # javac pulling a default encoding from the user's environment.
       '-encoding',
@@ -774,6 +761,9 @@ def main(argv):
       # protobuf-generated files fail this check (javadoc has @deprecated,
       # but method missing @Deprecated annotation).
       '-Xlint:-dep-ann',
+      # Do not warn about finalize() methods. Android still intends to support
+      # them.
+      '-Xlint:-removal',
   ]
 
   if options.enable_errorprone:

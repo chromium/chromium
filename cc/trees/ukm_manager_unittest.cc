@@ -7,7 +7,6 @@
 #include <utility>
 #include <vector>
 
-#include "base/memory/raw_ptr.h"
 #include "base/ranges/algorithm.h"
 #include "base/test/simple_test_tick_clock.h"
 #include "base/time/time.h"
@@ -112,12 +111,12 @@ class UkmManagerTest : public testing::Test {
  public:
   UkmManagerTest() {
     auto recorder = std::make_unique<ukm::TestUkmRecorder>();
-    test_ukm_recorder_ = recorder.get();
+    recorder->UpdateSourceURL(kTestSourceId1, GURL(kTestUrl));
     manager_ = std::make_unique<UkmManager>(std::move(recorder));
 
     // In production, new UKM Source would have been already created, so
     // manager only needs to know the source id.
-    test_ukm_recorder_->UpdateSourceURL(kTestSourceId1, GURL(kTestUrl));
+
     manager_->SetSourceId(kTestSourceId1);
   }
 
@@ -127,6 +126,10 @@ class UkmManagerTest : public testing::Test {
   base::TimeTicks AdvanceNowByMs(int advance_ms) {
     test_tick_clock_.Advance(base::Microseconds(advance_ms));
     return test_tick_clock_.NowTicks();
+  }
+
+  ukm::TestUkmRecorder* recorder() {
+    return static_cast<ukm::TestUkmRecorder*>(manager_->recorder());
   }
 
   std::unique_ptr<EventMetrics> SetupEventMetrics(
@@ -167,7 +170,7 @@ class UkmManagerTest : public testing::Test {
     return SetupEventMetrics(ScrollUpdateEventMetrics::CreateForTesting(
         ui::ET_GESTURE_SCROLL_UPDATE, ui::ScrollInputType::kWheel, is_inertial,
         scroll_update_type, /*delta=*/10.0f, event_time,
-        arrived_in_browser_main_timestamp, &test_tick_clock_, absl::nullopt));
+        arrived_in_browser_main_timestamp, &test_tick_clock_, std::nullopt));
   }
 
   struct DispatchTimestamps {
@@ -233,8 +236,6 @@ class UkmManagerTest : public testing::Test {
     breakdown.presentation_feedback.timestamp = AdvanceNowByMs(5);
     return breakdown;
   }
-
-  raw_ptr<ukm::TestUkmRecorder, DanglingUntriaged> test_ukm_recorder_;
   std::unique_ptr<UkmManager> manager_;
   base::SimpleTestTickClock test_tick_clock_;
 };
@@ -352,126 +353,120 @@ TEST_P(UkmManagerCompositorLatencyTest, CompositorLatency) {
       report_types(), stage_history, active_trackers, processed_blink_breakdown,
       processed_viz_breakdown);
 
-  const auto& entries =
-      test_ukm_recorder_->GetEntriesByName(kCompositorLatency);
+  const auto& entries = recorder()->GetEntriesByName(kCompositorLatency);
   EXPECT_EQ(1u, entries.size());
-  const auto* entry = entries[0];
+  const auto* entry = entries[0].get();
 
   EXPECT_NE(ukm::kInvalidSourceId, entry->source_id);
-  test_ukm_recorder_->ExpectEntrySourceHasUrl(entry, GURL(kTestUrl));
+  recorder()->ExpectEntrySourceHasUrl(entry, GURL(kTestUrl));
 
   if (report_type() ==
       CompositorFrameReporter::FrameReportType::kDroppedFrame) {
-    test_ukm_recorder_->ExpectEntryMetric(entry, kMissedFrame, true);
+    recorder()->ExpectEntryMetric(entry, kMissedFrame, true);
   } else {
-    EXPECT_FALSE(test_ukm_recorder_->EntryHasMetric(entry, kMissedFrame));
+    EXPECT_FALSE(recorder()->EntryHasMetric(entry, kMissedFrame));
   }
 
-  test_ukm_recorder_->ExpectEntryMetric(
+  recorder()->ExpectEntryMetric(
       entry, kBeginImplFrameToSendBeginMainFrame,
       (begin_main_time - begin_impl_time).InMicroseconds());
-  test_ukm_recorder_->ExpectEntryMetric(
+  recorder()->ExpectEntryMetric(
       entry, kSendBeginMainFrameToCommit,
       (begin_commit_time - begin_main_time).InMicroseconds());
-  test_ukm_recorder_->ExpectEntryMetric(
+  recorder()->ExpectEntryMetric(
       entry, kBlinkBreakdownHandleInputEvents,
       blink_breakdown.handle_input_events.InMicroseconds());
-  test_ukm_recorder_->ExpectEntryMetric(
-      entry, kBlinkBreakdownAnimate, blink_breakdown.animate.InMicroseconds());
-  test_ukm_recorder_->ExpectEntryMetric(
-      entry, kBlinkBreakdownStyleUpdate,
-      blink_breakdown.style_update.InMicroseconds());
-  test_ukm_recorder_->ExpectEntryMetric(
-      entry, kBlinkBreakdownLayoutUpdate,
-      blink_breakdown.layout_update.InMicroseconds());
-  test_ukm_recorder_->ExpectEntryMetric(
-      entry, kBlinkBreakdownPrepaint,
-      blink_breakdown.prepaint.InMicroseconds());
-  test_ukm_recorder_->ExpectEntryMetric(
+  recorder()->ExpectEntryMetric(entry, kBlinkBreakdownAnimate,
+                                blink_breakdown.animate.InMicroseconds());
+  recorder()->ExpectEntryMetric(entry, kBlinkBreakdownStyleUpdate,
+                                blink_breakdown.style_update.InMicroseconds());
+  recorder()->ExpectEntryMetric(entry, kBlinkBreakdownLayoutUpdate,
+                                blink_breakdown.layout_update.InMicroseconds());
+  recorder()->ExpectEntryMetric(entry, kBlinkBreakdownPrepaint,
+                                blink_breakdown.prepaint.InMicroseconds());
+  recorder()->ExpectEntryMetric(
       entry, kBlinkBreakdownCompositingInputs,
       blink_breakdown.compositing_inputs.InMicroseconds());
-  test_ukm_recorder_->ExpectEntryMetric(entry, kBlinkBreakdownPaint,
-                                        blink_breakdown.paint.InMicroseconds());
-  test_ukm_recorder_->ExpectEntryMetric(
+  recorder()->ExpectEntryMetric(entry, kBlinkBreakdownPaint,
+                                blink_breakdown.paint.InMicroseconds());
+  recorder()->ExpectEntryMetric(
       entry, kBlinkBreakdownCompositeCommit,
       blink_breakdown.composite_commit.InMicroseconds());
-  test_ukm_recorder_->ExpectEntryMetric(
-      entry, kBlinkBreakdownUpdateLayers,
-      blink_breakdown.update_layers.InMicroseconds());
-  test_ukm_recorder_->ExpectEntryMetric(
+  recorder()->ExpectEntryMetric(entry, kBlinkBreakdownUpdateLayers,
+                                blink_breakdown.update_layers.InMicroseconds());
+  recorder()->ExpectEntryMetric(
       entry, kBlinkBreakdownBeginMainSentToStarted,
       (begin_main_start_time - begin_main_time).InMicroseconds());
-  test_ukm_recorder_->ExpectEntryMetric(
+  recorder()->ExpectEntryMetric(
       entry, kCommit, (end_commit_time - begin_commit_time).InMicroseconds());
-  test_ukm_recorder_->ExpectEntryMetric(
+  recorder()->ExpectEntryMetric(
       entry, kEndCommitToActivation,
       (begin_activate_time - end_commit_time).InMicroseconds());
-  test_ukm_recorder_->ExpectEntryMetric(
+  recorder()->ExpectEntryMetric(
       entry, kActivation,
       (end_activate_time - begin_activate_time).InMicroseconds());
-  test_ukm_recorder_->ExpectEntryMetric(
+  recorder()->ExpectEntryMetric(
       entry, kEndActivateToSubmitCompositorFrame,
       (submit_time - end_activate_time).InMicroseconds());
-  test_ukm_recorder_->ExpectEntryMetric(
+  recorder()->ExpectEntryMetric(
       entry, kSubmitCompositorFrameToPresentationCompositorFrame,
       (viz_breakdown.presentation_feedback.timestamp - submit_time)
           .InMicroseconds());
-  test_ukm_recorder_->ExpectEntryMetric(
+  recorder()->ExpectEntryMetric(
       entry, kVizBreakdownSubmitToReceiveCompositorFrame,
       (viz_breakdown.received_compositor_frame_timestamp - submit_time)
           .InMicroseconds());
-  test_ukm_recorder_->ExpectEntryMetric(
+  recorder()->ExpectEntryMetric(
       entry, kVizBreakdownReceivedCompositorFrameToStartDraw,
       (viz_breakdown.draw_start_timestamp -
        viz_breakdown.received_compositor_frame_timestamp)
           .InMicroseconds());
-  test_ukm_recorder_->ExpectEntryMetric(entry,
-                                        kVizBreakdownStartDrawToSwapStart,
-                                        (viz_breakdown.swap_timings.swap_start -
-                                         viz_breakdown.draw_start_timestamp)
-                                            .InMicroseconds());
-  test_ukm_recorder_->ExpectEntryMetric(entry, kVizBreakdownSwapStartToSwapEnd,
-                                        (viz_breakdown.swap_timings.swap_end -
-                                         viz_breakdown.swap_timings.swap_start)
-                                            .InMicroseconds());
-  test_ukm_recorder_->ExpectEntryMetric(
+  recorder()->ExpectEntryMetric(entry, kVizBreakdownStartDrawToSwapStart,
+                                (viz_breakdown.swap_timings.swap_start -
+                                 viz_breakdown.draw_start_timestamp)
+                                    .InMicroseconds());
+  recorder()->ExpectEntryMetric(entry, kVizBreakdownSwapStartToSwapEnd,
+                                (viz_breakdown.swap_timings.swap_end -
+                                 viz_breakdown.swap_timings.swap_start)
+                                    .InMicroseconds());
+  recorder()->ExpectEntryMetric(
       entry, kVizBreakdownSwapStartToBufferAvailable,
       (viz_breakdown.presentation_feedback.available_timestamp -
        viz_breakdown.swap_timings.swap_start)
           .InMicroseconds());
-  test_ukm_recorder_->ExpectEntryMetric(
+  recorder()->ExpectEntryMetric(
       entry, kVizBreakdownBufferAvailableToBufferReady,
       (viz_breakdown.presentation_feedback.ready_timestamp -
        viz_breakdown.presentation_feedback.available_timestamp)
           .InMicroseconds());
-  test_ukm_recorder_->ExpectEntryMetric(
+  recorder()->ExpectEntryMetric(
       entry, kVizBreakdownBufferReadyToLatch,
       (viz_breakdown.presentation_feedback.latch_timestamp -
        viz_breakdown.presentation_feedback.ready_timestamp)
           .InMicroseconds());
-  test_ukm_recorder_->ExpectEntryMetric(
+  recorder()->ExpectEntryMetric(
       entry, kVizBreakdownLatchToSwapEnd,
       (viz_breakdown.swap_timings.swap_end -
        viz_breakdown.presentation_feedback.latch_timestamp)
           .InMicroseconds());
-  test_ukm_recorder_->ExpectEntryMetric(
+  recorder()->ExpectEntryMetric(
       entry, kVizBreakdownSwapEndToPresentationCompositorFrame,
       (viz_breakdown.presentation_feedback.timestamp -
        viz_breakdown.swap_timings.swap_end)
           .InMicroseconds());
-  test_ukm_recorder_->ExpectEntryMetric(
+  recorder()->ExpectEntryMetric(
       entry, kTotalLatency,
       (viz_breakdown.presentation_feedback.timestamp - begin_impl_time)
           .InMicroseconds());
 
-  test_ukm_recorder_->ExpectEntryMetric(entry, kCompositorAnimation, true);
-  test_ukm_recorder_->ExpectEntryMetric(entry, kTouchScroll, true);
-  test_ukm_recorder_->ExpectEntryMetric(entry, kScrollbarScroll, true);
-  EXPECT_FALSE(test_ukm_recorder_->EntryHasMetric(entry, kMainThreadAnimation));
-  EXPECT_FALSE(test_ukm_recorder_->EntryHasMetric(entry, kPinchZoom));
-  EXPECT_FALSE(test_ukm_recorder_->EntryHasMetric(entry, kRAF));
-  EXPECT_FALSE(test_ukm_recorder_->EntryHasMetric(entry, kVideo));
-  EXPECT_FALSE(test_ukm_recorder_->EntryHasMetric(entry, kWheelScroll));
+  recorder()->ExpectEntryMetric(entry, kCompositorAnimation, true);
+  recorder()->ExpectEntryMetric(entry, kTouchScroll, true);
+  recorder()->ExpectEntryMetric(entry, kScrollbarScroll, true);
+  EXPECT_FALSE(recorder()->EntryHasMetric(entry, kMainThreadAnimation));
+  EXPECT_FALSE(recorder()->EntryHasMetric(entry, kPinchZoom));
+  EXPECT_FALSE(recorder()->EntryHasMetric(entry, kRAF));
+  EXPECT_FALSE(recorder()->EntryHasMetric(entry, kVideo));
+  EXPECT_FALSE(recorder()->EntryHasMetric(entry, kWheelScroll));
 }
 
 TEST_F(UkmManagerTest, EventLatency) {
@@ -564,189 +559,182 @@ TEST_F(UkmManagerTest, EventLatency) {
                                   processed_blink_breakdown,
                                   processed_viz_breakdown);
 
-  const auto& entries = test_ukm_recorder_->GetEntriesByName(kEventLatency);
+  const auto& entries = recorder()->GetEntriesByName(kEventLatency);
   EXPECT_EQ(4u, entries.size());
   for (size_t i = 0; i < entries.size(); i++) {
-    const auto* entry = entries[i];
+    const auto* entry = entries[i].get();
     const auto* event_metrics = events_metrics[i].get();
 
     EXPECT_NE(ukm::kInvalidSourceId, entry->source_id);
-    test_ukm_recorder_->ExpectEntrySourceHasUrl(entry, GURL(kTestUrl));
+    recorder()->ExpectEntrySourceHasUrl(entry, GURL(kTestUrl));
 
-    test_ukm_recorder_->ExpectEntryMetric(
-        entry, kEventType, static_cast<int64_t>(event_metrics->type()));
-    test_ukm_recorder_->ExpectEntryMetric(
+    recorder()->ExpectEntryMetric(entry, kEventType,
+                                  static_cast<int64_t>(event_metrics->type()));
+    recorder()->ExpectEntryMetric(
         entry, kScrollInputType,
         static_cast<int64_t>(event_metrics->AsScroll()->scroll_type()));
 
-    test_ukm_recorder_->ExpectEntryMetric(
-        entry, kGenerationToRendererCompositor,
-        (event_dispatch_times[i].arrived_in_renderer -
-         event_dispatch_times[i].generated)
-            .InMicroseconds());
-    test_ukm_recorder_->ExpectEntryMetric(
+    recorder()->ExpectEntryMetric(entry, kGenerationToRendererCompositor,
+                                  (event_dispatch_times[i].arrived_in_renderer -
+                                   event_dispatch_times[i].generated)
+                                      .InMicroseconds());
+    recorder()->ExpectEntryMetric(
         entry, kRendererCompositorQueueingDelay,
         (event_dispatch_times[i].renderer_compositor_started -
          event_dispatch_times[i].arrived_in_renderer)
             .InMicroseconds());
-    test_ukm_recorder_->ExpectEntryMetric(
+    recorder()->ExpectEntryMetric(
         entry, kRendererCompositorProcessing,
         (event_dispatch_times[i].renderer_compositor_finished -
          event_dispatch_times[i].renderer_compositor_started)
             .InMicroseconds());
-    test_ukm_recorder_->ExpectEntryMetric(
+    recorder()->ExpectEntryMetric(
         entry, kRendererCompositorToMain,
         (event_dispatch_times[i].renderer_main_started -
          event_dispatch_times[i].renderer_compositor_finished)
             .InMicroseconds());
-    test_ukm_recorder_->ExpectEntryMetric(
+    recorder()->ExpectEntryMetric(
         entry, kRendererMainProcessing,
         (event_dispatch_times[i].renderer_main_finished -
          event_dispatch_times[i].renderer_main_started)
             .InMicroseconds());
-    test_ukm_recorder_->ExpectEntryMetric(
+    recorder()->ExpectEntryMetric(
         entry, kRendererMainFinishedToBeginImplFrame,
         (begin_impl_time - event_dispatch_times[i].renderer_main_finished)
             .InMicroseconds());
-    test_ukm_recorder_->ExpectEntryMetric(
+    recorder()->ExpectEntryMetric(
         entry, kBeginImplFrameToSendBeginMainFrame,
         (begin_main_time - begin_impl_time).InMicroseconds());
-    test_ukm_recorder_->ExpectEntryMetric(
+    recorder()->ExpectEntryMetric(
         entry, kSendBeginMainFrameToCommit,
         (begin_commit_time - begin_main_time).InMicroseconds());
-    test_ukm_recorder_->ExpectEntryMetric(
+    recorder()->ExpectEntryMetric(
         entry, kBlinkBreakdownHandleInputEvents,
         blink_breakdown.handle_input_events.InMicroseconds());
-    test_ukm_recorder_->ExpectEntryMetric(
-        entry, kBlinkBreakdownAnimate,
-        blink_breakdown.animate.InMicroseconds());
-    test_ukm_recorder_->ExpectEntryMetric(
+    recorder()->ExpectEntryMetric(entry, kBlinkBreakdownAnimate,
+                                  blink_breakdown.animate.InMicroseconds());
+    recorder()->ExpectEntryMetric(
         entry, kBlinkBreakdownStyleUpdate,
         blink_breakdown.style_update.InMicroseconds());
-    test_ukm_recorder_->ExpectEntryMetric(
+    recorder()->ExpectEntryMetric(
         entry, kBlinkBreakdownLayoutUpdate,
         blink_breakdown.layout_update.InMicroseconds());
-    test_ukm_recorder_->ExpectEntryMetric(
-        entry, kBlinkBreakdownPrepaint,
-        blink_breakdown.prepaint.InMicroseconds());
-    test_ukm_recorder_->ExpectEntryMetric(
+    recorder()->ExpectEntryMetric(entry, kBlinkBreakdownPrepaint,
+                                  blink_breakdown.prepaint.InMicroseconds());
+    recorder()->ExpectEntryMetric(
         entry, kBlinkBreakdownCompositingInputs,
         blink_breakdown.compositing_inputs.InMicroseconds());
-    test_ukm_recorder_->ExpectEntryMetric(
-        entry, kBlinkBreakdownPaint, blink_breakdown.paint.InMicroseconds());
-    test_ukm_recorder_->ExpectEntryMetric(
+    recorder()->ExpectEntryMetric(entry, kBlinkBreakdownPaint,
+                                  blink_breakdown.paint.InMicroseconds());
+    recorder()->ExpectEntryMetric(
         entry, kBlinkBreakdownCompositeCommit,
         blink_breakdown.composite_commit.InMicroseconds());
-    test_ukm_recorder_->ExpectEntryMetric(
+    recorder()->ExpectEntryMetric(
         entry, kBlinkBreakdownUpdateLayers,
         blink_breakdown.update_layers.InMicroseconds());
-    test_ukm_recorder_->ExpectEntryMetric(
+    recorder()->ExpectEntryMetric(
         entry, kBlinkBreakdownBeginMainSentToStarted,
         (begin_main_start_time - begin_main_time).InMicroseconds());
-    test_ukm_recorder_->ExpectEntryMetric(
+    recorder()->ExpectEntryMetric(
         entry, kCommit, (end_commit_time - begin_commit_time).InMicroseconds());
-    test_ukm_recorder_->ExpectEntryMetric(
+    recorder()->ExpectEntryMetric(
         entry, kEndCommitToActivation,
         (begin_activate_time - end_commit_time).InMicroseconds());
-    test_ukm_recorder_->ExpectEntryMetric(
+    recorder()->ExpectEntryMetric(
         entry, kActivation,
         (end_activate_time - begin_activate_time).InMicroseconds());
-    test_ukm_recorder_->ExpectEntryMetric(
+    recorder()->ExpectEntryMetric(
         entry, kEndActivateToSubmitCompositorFrame,
         (submit_time - end_activate_time).InMicroseconds());
-    test_ukm_recorder_->ExpectEntryMetric(
+    recorder()->ExpectEntryMetric(
         entry, kSubmitCompositorFrameToPresentationCompositorFrame,
         (viz_breakdown.presentation_feedback.timestamp - submit_time)
             .InMicroseconds());
-    test_ukm_recorder_->ExpectEntryMetric(
+    recorder()->ExpectEntryMetric(
         entry, kVizBreakdownSubmitToReceiveCompositorFrame,
         (viz_breakdown.received_compositor_frame_timestamp - submit_time)
             .InMicroseconds());
-    test_ukm_recorder_->ExpectEntryMetric(
+    recorder()->ExpectEntryMetric(
         entry, kVizBreakdownReceivedCompositorFrameToStartDraw,
         (viz_breakdown.draw_start_timestamp -
          viz_breakdown.received_compositor_frame_timestamp)
             .InMicroseconds());
-    test_ukm_recorder_->ExpectEntryMetric(
-        entry, kVizBreakdownStartDrawToSwapStart,
-        (viz_breakdown.swap_timings.swap_start -
-         viz_breakdown.draw_start_timestamp)
-            .InMicroseconds());
-    test_ukm_recorder_->ExpectEntryMetric(
-        entry, kVizBreakdownSwapStartToSwapEnd,
-        (viz_breakdown.swap_timings.swap_end -
-         viz_breakdown.swap_timings.swap_start)
-            .InMicroseconds());
-    test_ukm_recorder_->ExpectEntryMetric(
+    recorder()->ExpectEntryMetric(entry, kVizBreakdownStartDrawToSwapStart,
+                                  (viz_breakdown.swap_timings.swap_start -
+                                   viz_breakdown.draw_start_timestamp)
+                                      .InMicroseconds());
+    recorder()->ExpectEntryMetric(entry, kVizBreakdownSwapStartToSwapEnd,
+                                  (viz_breakdown.swap_timings.swap_end -
+                                   viz_breakdown.swap_timings.swap_start)
+                                      .InMicroseconds());
+    recorder()->ExpectEntryMetric(
         entry, kVizBreakdownSwapStartToBufferAvailable,
         (viz_breakdown.presentation_feedback.available_timestamp -
          viz_breakdown.swap_timings.swap_start)
             .InMicroseconds());
-    test_ukm_recorder_->ExpectEntryMetric(
+    recorder()->ExpectEntryMetric(
         entry, kVizBreakdownBufferAvailableToBufferReady,
         (viz_breakdown.presentation_feedback.ready_timestamp -
          viz_breakdown.presentation_feedback.available_timestamp)
             .InMicroseconds());
-    test_ukm_recorder_->ExpectEntryMetric(
+    recorder()->ExpectEntryMetric(
         entry, kVizBreakdownBufferReadyToLatch,
         (viz_breakdown.presentation_feedback.latch_timestamp -
          viz_breakdown.presentation_feedback.ready_timestamp)
             .InMicroseconds());
-    test_ukm_recorder_->ExpectEntryMetric(
+    recorder()->ExpectEntryMetric(
         entry, kVizBreakdownLatchToSwapEnd,
         (viz_breakdown.swap_timings.swap_end -
          viz_breakdown.presentation_feedback.latch_timestamp)
             .InMicroseconds());
-    test_ukm_recorder_->ExpectEntryMetric(
+    recorder()->ExpectEntryMetric(
         entry, kVizBreakdownSwapEndToPresentationCompositorFrame,
         (viz_breakdown.presentation_feedback.timestamp -
          viz_breakdown.swap_timings.swap_end)
             .InMicroseconds());
-    test_ukm_recorder_->ExpectEntryMetric(
+    recorder()->ExpectEntryMetric(
         entry, kVizBreakdownSubmitToReceiveCompositorFrame,
         (viz_breakdown.received_compositor_frame_timestamp - submit_time)
             .InMicroseconds());
-    test_ukm_recorder_->ExpectEntryMetric(
+    recorder()->ExpectEntryMetric(
         entry, kVizBreakdownReceivedCompositorFrameToStartDraw,
         (viz_breakdown.draw_start_timestamp -
          viz_breakdown.received_compositor_frame_timestamp)
             .InMicroseconds());
-    test_ukm_recorder_->ExpectEntryMetric(
-        entry, kVizBreakdownStartDrawToSwapStart,
-        (viz_breakdown.swap_timings.swap_start -
-         viz_breakdown.draw_start_timestamp)
-            .InMicroseconds());
-    test_ukm_recorder_->ExpectEntryMetric(
-        entry, kVizBreakdownSwapStartToSwapEnd,
-        (viz_breakdown.swap_timings.swap_end -
-         viz_breakdown.swap_timings.swap_start)
-            .InMicroseconds());
-    test_ukm_recorder_->ExpectEntryMetric(
+    recorder()->ExpectEntryMetric(entry, kVizBreakdownStartDrawToSwapStart,
+                                  (viz_breakdown.swap_timings.swap_start -
+                                   viz_breakdown.draw_start_timestamp)
+                                      .InMicroseconds());
+    recorder()->ExpectEntryMetric(entry, kVizBreakdownSwapStartToSwapEnd,
+                                  (viz_breakdown.swap_timings.swap_end -
+                                   viz_breakdown.swap_timings.swap_start)
+                                      .InMicroseconds());
+    recorder()->ExpectEntryMetric(
         entry, kVizBreakdownSwapStartToBufferAvailable,
         (viz_breakdown.presentation_feedback.available_timestamp -
          viz_breakdown.swap_timings.swap_start)
             .InMicroseconds());
-    test_ukm_recorder_->ExpectEntryMetric(
+    recorder()->ExpectEntryMetric(
         entry, kVizBreakdownBufferAvailableToBufferReady,
         (viz_breakdown.presentation_feedback.ready_timestamp -
          viz_breakdown.presentation_feedback.available_timestamp)
             .InMicroseconds());
-    test_ukm_recorder_->ExpectEntryMetric(
+    recorder()->ExpectEntryMetric(
         entry, kVizBreakdownBufferReadyToLatch,
         (viz_breakdown.presentation_feedback.latch_timestamp -
          viz_breakdown.presentation_feedback.ready_timestamp)
             .InMicroseconds());
-    test_ukm_recorder_->ExpectEntryMetric(
+    recorder()->ExpectEntryMetric(
         entry, kVizBreakdownLatchToSwapEnd,
         (viz_breakdown.swap_timings.swap_end -
          viz_breakdown.presentation_feedback.latch_timestamp)
             .InMicroseconds());
-    test_ukm_recorder_->ExpectEntryMetric(
+    recorder()->ExpectEntryMetric(
         entry, kVizBreakdownSwapEndToPresentationCompositorFrame,
         (viz_breakdown.presentation_feedback.timestamp -
          viz_breakdown.swap_timings.swap_end)
             .InMicroseconds());
-    test_ukm_recorder_->ExpectEntryMetric(
+    recorder()->ExpectEntryMetric(
         entry, kTotalLatency,
         (viz_breakdown.presentation_feedback.timestamp -
          event_dispatch_times[i].generated)

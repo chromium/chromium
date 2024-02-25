@@ -2,9 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "build/build_config.h"
 #include "content/browser/devtools/render_frame_devtools_agent_host.h"
 
+#include "build/build_config.h"
 #include "content/browser/renderer_host/frame_tree_node.h"
 #include "content/browser/web_contents/web_contents_impl.h"
 #include "content/common/content_navigation_policy.h"
@@ -63,8 +63,8 @@ class StubDevToolsAgentHostClient : public content::DevToolsAgentHostClient {
 // is tracking while a cross-site navigation is canceled after having reached
 // the ReadyToCommit stage.
 // See https://crbug.com/695203.
-// TODO(crbug.com/1459385): Re-enable this test
-#if BUILDFLAG(IS_MAC)
+// TODO(crbug.com/1452098): Re-enable this test
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 #define MAYBE_CancelCrossOriginNavigationAfterReadyToCommit \
   DISABLED_CancelCrossOriginNavigationAfterReadyToCommit
 #else

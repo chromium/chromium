@@ -25,6 +25,7 @@
 #include "chrome/test/interaction/interactive_browser_test.h"
 #include "chrome/test/interaction/webcontents_interaction_test_util.h"
 #include "content/public/test/browser_test.h"
+#include "content/public/test/browser_test_utils.h"
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/base/interaction/element_tracker.h"
 #include "ui/base/interaction/expect_call_in_scope.h"
@@ -177,10 +178,6 @@ IN_PROC_BROWSER_TEST_F(WebUITabStripInteractiveTest, CanUseInImmersiveMode) {
 
   WebUITabStripContainerView* const container = browser_view->webui_tab_strip();
   ASSERT_NE(nullptr, container);
-
-  // IPH may cause a reveal. Stop it.
-  auto lock =
-      browser_view->GetFeaturePromoController()->BlockPromosForTesting();
 
   EXPECT_FALSE(immersive_mode_controller->IsRevealed());
 

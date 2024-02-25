@@ -17,7 +17,6 @@ namespace {
 // fields, except for "id", which is present only in ShippingOption.
 template <typename T>
 bool ValidateShippingOptionOrPaymentItem(const T& item,
-                                         const PaymentItem& total,
                                          std::string* error_message) {
   if (!item.amount) {
     *error_message = "Amount required";
@@ -47,17 +46,16 @@ bool ValidateShippingOptionOrPaymentItem(const T& item,
 }
 
 bool ValidateDisplayItems(const std::vector<PaymentItem>& items,
-                          const PaymentItem& total,
                           std::string* error_message) {
   for (const auto& item : items) {
-    if (!ValidateShippingOptionOrPaymentItem(item, total, error_message))
+    if (!ValidateShippingOptionOrPaymentItem(item, error_message)) {
       return false;
+    }
   }
   return true;
 }
 
 bool ValidateShippingOptions(const std::vector<PaymentShippingOption>& options,
-                             const PaymentItem& total,
                              std::string* error_message) {
   std::set<std::string> uniqueIds;
   for (const auto& option : options) {
@@ -72,15 +70,15 @@ bool ValidateShippingOptions(const std::vector<PaymentShippingOption>& options,
     }
     uniqueIds.insert(option.id);
 
-    if (!ValidateShippingOptionOrPaymentItem(option, total, error_message))
+    if (!ValidateShippingOptionOrPaymentItem(option, error_message)) {
       return false;
+    }
   }
   return true;
 }
 
 bool ValidatePaymentDetailsModifiers(
     const std::vector<PaymentDetailsModifier>& modifiers,
-    const PaymentItem& total,
     std::string* error_message) {
   if (modifiers.empty()) {
     *error_message = "Must specify at least one payment details modifier";
@@ -94,9 +92,10 @@ bool ValidatePaymentDetailsModifiers(
     }
 
     if (modifier.total) {
-      if (!ValidateShippingOptionOrPaymentItem(*modifier.total, total,
-                                               error_message))
+      if (!ValidateShippingOptionOrPaymentItem(*modifier.total,
+                                               error_message)) {
         return false;
+      }
 
       if (modifier.total->amount->value[0] == '-') {
         *error_message = "Total amount value should be non-negative";
@@ -105,7 +104,7 @@ bool ValidatePaymentDetailsModifiers(
     }
 
     if (modifier.additional_display_items.size()) {
-      if (!ValidateDisplayItems(modifier.additional_display_items, total,
+      if (!ValidateDisplayItems(modifier.additional_display_items,
                                 error_message)) {
         return false;
       }
@@ -119,8 +118,7 @@ bool ValidatePaymentDetailsModifiers(
 bool ValidatePaymentDetails(const PaymentDetails& details,
                             std::string* error_message) {
   if (details.total) {
-    if (!ValidateShippingOptionOrPaymentItem(*details.total, *details.total,
-                                             error_message)) {
+    if (!ValidateShippingOptionOrPaymentItem(*details.total, error_message)) {
       return false;
     }
 
@@ -131,21 +129,21 @@ bool ValidatePaymentDetails(const PaymentDetails& details,
   }
 
   if (details.display_items.size()) {
-    if (!ValidateDisplayItems(details.display_items, *details.total,
-                              error_message))
+    if (!ValidateDisplayItems(details.display_items, error_message)) {
       return false;
+    }
   }
 
   if (details.shipping_options.size()) {
-    if (!ValidateShippingOptions(details.shipping_options, *details.total,
-                                 error_message))
+    if (!ValidateShippingOptions(details.shipping_options, error_message)) {
       return false;
+    }
   }
 
   if (details.modifiers.size()) {
-    if (!ValidatePaymentDetailsModifiers(details.modifiers, *details.total,
-                                         error_message))
+    if (!ValidatePaymentDetailsModifiers(details.modifiers, error_message)) {
       return false;
+    }
   }
   if (!PaymentsValidators::IsValidErrorMsgFormat(details.error, error_message))
     return false;

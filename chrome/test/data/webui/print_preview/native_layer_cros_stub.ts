@@ -2,8 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {NativeLayerCros, NativeLayerCrosImpl, PrinterSetupResponse, PrinterStatus, PrinterStatusReason, PrinterStatusSeverity, PrintServersConfig} from 'chrome://print/print_preview.js';
-import {assert} from 'chrome://resources/js/assert_ts.js';
+import type {LocalDestinationInfo, NativeLayerCros, PrinterSetupResponse, PrinterStatus, PrintServersConfig} from 'chrome://print/print_preview.js';
+import {NativeLayerCrosImpl, PrinterStatusReason, PrinterStatusSeverity} from 'chrome://print/print_preview.js';
+import {assert} from 'chrome://resources/js/assert.js';
 import {PromiseResolver} from 'chrome://resources/js/promise_resolver.js';
 import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
 
@@ -36,8 +37,12 @@ export class NativeLayerCrosStub extends TestBrowserProxy implements
   private printServersConfig_: PrintServersConfig|
       null = {printServers: [], isSingleServerFetchingMode: false};
 
+  private showManagePrinters: boolean = true;
+
   /** When true, all printer status retry requests return NO_ERROR. */
   private simulateStatusRetrySuccesful_: boolean = false;
+
+  private localPrinters_: LocalDestinationInfo[] = [];
 
   constructor() {
     super([
@@ -47,6 +52,8 @@ export class NativeLayerCrosStub extends TestBrowserProxy implements
       'choosePrintServers',
       'getPrintServersConfig',
       'recordPrinterStatusRetrySuccessHistogram',
+      'getShowManagePrinters',
+      'observeLocalPrinters',
     ]);
   }
 
@@ -152,5 +159,23 @@ export class NativeLayerCrosStub extends TestBrowserProxy implements
 
   simulateStatusRetrySuccesful() {
     this.simulateStatusRetrySuccesful_ = true;
+  }
+
+  getShowManagePrinters(): Promise<boolean> {
+    this.methodCalled('getShowManagePrinters');
+    return Promise.resolve(this.showManagePrinters);
+  }
+
+  setShowManagePrinters(show: boolean): void {
+    this.showManagePrinters = show;
+  }
+
+  setLocalPrinters(printers: LocalDestinationInfo[]): void {
+    this.localPrinters_ = printers;
+  }
+
+  observeLocalPrinters(): Promise<LocalDestinationInfo[]> {
+    this.methodCalled('observeLocalPrinters');
+    return Promise.resolve(this.localPrinters_);
   }
 }

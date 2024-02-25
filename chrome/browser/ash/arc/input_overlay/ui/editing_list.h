@@ -5,37 +5,51 @@
 #ifndef CHROME_BROWSER_ASH_ARC_INPUT_OVERLAY_UI_EDITING_LIST_H_
 #define CHROME_BROWSER_ASH_ARC_INPUT_OVERLAY_UI_EDITING_LIST_H_
 
+#include "base/callback_list.h"
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/ash/arc/input_overlay/touch_injector_observer.h"
-#include "ui/events/event.h"
+#include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/view.h"
+
+namespace ash {
+class AnchoredNudge;
+}  // namespace ash
+
+namespace ui {
+class LocatedEvent;
+}  // namespace ui
+
+namespace views {
+class Label;
+class LabelButton;
+class ScrollView;
+}  // namespace views
 
 namespace arc::input_overlay {
 
 class DisplayOverlayController;
 
 // EditingList contains the list of controls.
-//    _________________________________
-//   |icon        "Editing"        icon|
-//   |   ___________________________   |
+//   +---------------------------------+
+//   ||"Controls"|       |icon||"Done"||
+//   ||"Create button"|             |+||
+//   |  +---------------------------+  |
 //   |  |                           |  |
-//   |  |    zero-state or          |  |
+//   |  |    empty or               |  |
 //   |  |    scrollable list        |  |
-//   |  |___________________________|  |
-//   |_________________________________|
-//
+//   |  |                           |  |
+//   |  +---------------------------+  |
+//   +---------------------------------+
 class EditingList : public views::View, public TouchInjectorObserver {
+  METADATA_HEADER(EditingList, views::View)
+
  public:
   explicit EditingList(DisplayOverlayController* display_overlay_controller);
   EditingList(const EditingList&) = delete;
   EditingList& operator=(const EditingList&) = delete;
   ~EditingList() override;
 
-  // views::View:
-  bool OnMousePressed(const ui::MouseEvent& event) override;
-  bool OnMouseDragged(const ui::MouseEvent& event) override;
-  void OnMouseReleased(const ui::MouseEvent& event) override;
-  void OnGestureEvent(ui::GestureEvent* event) override;
+  void UpdateWidget();
 
  private:
   friend class ButtonOptionsMenuTest;
@@ -43,51 +57,91 @@ class EditingList : public views::View, public TouchInjectorObserver {
   friend class EditLabelTest;
   friend class OverlayViewTestBase;
 
+  class AddContainerButton;
+
   void Init();
   bool HasControls() const;
 
-  // Add UI components to `container` as children.
-  void AddHeader(views::View* container);
-  // Add the zero state view when there are no actions / controls.
-  void AddZeroStateContent();
+  // Add top buttons and title.
+  void AddHeader();
   // Add the list view for the actions / controls.
   void AddControlListContent();
+
+  // These are called after adding the first new action.
+  void MaybeApplyEduDecoration();
+  void ShowKeyEditNudge();
+  void PerformPulseAnimation();
+
+  // Updates changes depending on whether `is_zero_state` is true.
+  void UpdateOnZeroState(bool is_zero_state);
+
+  // Updates the `scroll_view_` when the `scroll_content_` changes. If
+  // `scroll_to_bottom` is true, scroll `scroll_view_` to the bottom.
+  void UpdateScrollView(bool scroll_to_bottom);
+  // Called when `scroll_view_` is scrolled.
+  void OnScrollViewScrolled();
+  // Returns true if `scroll_view_` is scrolled with an offset.
+  bool HasScrollOffset();
 
   // Functions related to buttons.
   void OnAddButtonPressed();
   void OnDoneButtonPressed();
-
-  // views::View:
-  gfx::Size CalculatePreferredSize() const override;
-
-  // TouchInjectorObserver:
-  void OnActionAdded(Action& action) override;
-  void OnActionRemoved(const Action& action) override;
-  void OnActionTypeChanged(Action* action, Action* new_action) override;
-  void OnActionInputBindingUpdated(const Action& action) override;
-  void OnActionNameUpdated(const Action& action) override;
+  void OnHelpButtonPressed();
 
   // Drag operations.
   void OnDragStart(const ui::LocatedEvent& event);
   void OnDragUpdate(const ui::LocatedEvent& event);
   void OnDragEnd(const ui::LocatedEvent& event);
 
-  // Clamp position.
-  void ClampPosition(gfx::Point& position);
+  // The attached widget should be magnetic to the left or right and inside or
+  // outside of the attached sibling game window inside or outside.
+  gfx::Point GetWidgetMagneticPositionLocal();
 
-  raw_ptr<DisplayOverlayController> controller_;
+  // Clips the height of `scroll_view_` based on it is located inside or outside
+  // of the game window.
+  void ClipScrollViewHeight(bool is_outside);
+
+  // views::View:
+  gfx::Size CalculatePreferredSize() const override;
+  bool OnMousePressed(const ui::MouseEvent& event) override;
+  bool OnMouseDragged(const ui::MouseEvent& event) override;
+  void OnMouseReleased(const ui::MouseEvent& event) override;
+  void OnGestureEvent(ui::GestureEvent* event) override;
+  void VisibilityChanged(views::View* starting_from, bool is_visible) override;
+
+  // TouchInjectorObserver:
+  void OnActionAdded(Action& action) override;
+  void OnActionRemoved(const Action& action) override;
+  void OnActionTypeChanged(Action* action, Action* new_action) override;
+  void OnActionInputBindingUpdated(const Action& action) override;
+  void OnActionNewStateRemoved(const Action& action) override;
+
+  // For test.
+  bool IsKeyEditNudgeShownForTesting() const;
+  ash::AnchoredNudge* GetKeyEditNudgeForTesting() const;
+  views::LabelButton* GetAddButtonForTesting() const;
+
+  const raw_ptr<DisplayOverlayController> controller_;
+
   // It wraps ActionViewListItem.
   raw_ptr<views::View> scroll_content_;
+  // It wraps `scroll_content_` and adds scrolling feature.
+  raw_ptr<views::ScrollView> scroll_view_;
 
-  // For test. Used to tell if the zero state view shows up.
+  // Label for list header.
+  raw_ptr<views::Label> editing_header_label_;
+
+  raw_ptr<AddContainerButton> add_container_;
+
+  // Used to tell if the zero state view shows up.
   bool is_zero_state_ = false;
+  // Show education decoration once after adding the first action.
+  bool show_edu_ = false;
 
   // LocatedEvent's position when drag starts.
   gfx::Point start_drag_event_pos_;
-  // Initial position when drag starts.
-  gfx::Point start_drag_pos_;
-  // Window bounds, relative to the initial position of the editing list.
-  gfx::Rect window_bounds_;
+
+  base::CallbackListSubscription on_scroll_view_scrolled_subscription_;
 };
 
 }  // namespace arc::input_overlay

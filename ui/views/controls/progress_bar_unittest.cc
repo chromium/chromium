@@ -15,9 +15,10 @@
 #include "ui/events/test/event_generator.h"
 #include "ui/gfx/color_utils.h"
 #include "ui/native_theme/native_theme.h"
+#include "ui/views/layout/flex_layout.h"
 #include "ui/views/test/ax_event_counter.h"
 #include "ui/views/test/views_test_base.h"
-#include "ui/views/widget/widget_utils.h"
+#include "ui/views/test/views_test_utils.h"
 
 namespace views {
 
@@ -28,29 +29,34 @@ class ProgressBarTest : public ViewsTestBase {
     ViewsTestBase::SetUp();
 
     widget_ = CreateTestWidget();
-    bar_ = widget_->SetContentsView(std::make_unique<ProgressBar>());
+    container_view_ = widget_->SetContentsView(std::make_unique<View>());
+    auto* layout =
+        container_view_->SetLayoutManager(std::make_unique<FlexLayout>());
+    layout->SetOrientation(views::LayoutOrientation::kVertical);
+    bar_ = container_view_->AddChildView(std::make_unique<ProgressBar>());
+    views::test::RunScheduledLayout(container_view_);
     widget_->Show();
-
-    event_generator_ = std::make_unique<ui::test::EventGenerator>(
-        GetRootWindow(widget_.get()));
   }
 
   void TearDown() override {
+    container_view_ = nullptr;
+    bar_ = nullptr;
     widget_.reset();
     ViewsTestBase::TearDown();
   }
 
-  raw_ptr<ProgressBar, DanglingUntriaged> bar_;
-  std::unique_ptr<Widget> widget_;
+  ProgressBar* bar() { return bar_.get(); }
 
-  std::unique_ptr<ui::test::EventGenerator> event_generator_;
+  std::unique_ptr<Widget> widget_;
+  raw_ptr<views::View> container_view_;
+  raw_ptr<ProgressBar> bar_;
 };
 
 TEST_F(ProgressBarTest, AccessibleNodeData) {
-  bar_->SetValue(0.626);
+  bar()->SetValue(0.626);
 
   ui::AXNodeData node_data;
-  bar_->GetAccessibleNodeData(&node_data);
+  bar()->GetAccessibleNodeData(&node_data);
   EXPECT_EQ(ax::mojom::Role::kProgressIndicator, node_data.role);
   EXPECT_EQ(std::u16string(),
             node_data.GetString16Attribute(ax::mojom::StringAttribute::kName));
@@ -65,16 +71,16 @@ TEST_F(ProgressBarTest, AccessibilityEvents) {
   test::AXEventCounter ax_counter(views::AXEventManager::Get());
   EXPECT_EQ(0, ax_counter.GetCount(ax::mojom::Event::kValueChanged));
 
-  bar_->SetValue(0.50);
+  bar()->SetValue(0.50);
   EXPECT_EQ(1, ax_counter.GetCount(ax::mojom::Event::kValueChanged));
 
-  bar_->SetValue(0.63);
+  bar()->SetValue(0.63);
   EXPECT_EQ(2, ax_counter.GetCount(ax::mojom::Event::kValueChanged));
 
-  bar_->SetValue(0.636);
+  bar()->SetValue(0.636);
   EXPECT_EQ(2, ax_counter.GetCount(ax::mojom::Event::kValueChanged));
 
-  bar_->SetValue(0.642);
+  bar()->SetValue(0.642);
   EXPECT_EQ(3, ax_counter.GetCount(ax::mojom::Event::kValueChanged));
 
   widget_->Hide();
@@ -82,7 +88,7 @@ TEST_F(ProgressBarTest, AccessibilityEvents) {
   EXPECT_EQ(3, ax_counter.GetCount(ax::mojom::Event::kValueChanged));
 
   widget_->Hide();
-  bar_->SetValue(0.8);
+  bar()->SetValue(0.8);
   EXPECT_EQ(3, ax_counter.GetCount(ax::mojom::Event::kValueChanged));
 
   widget_->Show();
@@ -91,35 +97,71 @@ TEST_F(ProgressBarTest, AccessibilityEvents) {
 
 // Test that default colors can be overridden. Used by Chromecast.
 TEST_F(ProgressBarTest, OverrideDefaultColors) {
-  EXPECT_NE(SK_ColorRED, bar_->GetForegroundColor());
-  EXPECT_NE(SK_ColorGREEN, bar_->GetBackgroundColor());
-  EXPECT_NE(bar_->GetForegroundColor(), bar_->GetBackgroundColor());
+  EXPECT_NE(SK_ColorRED, bar()->GetForegroundColor());
+  EXPECT_NE(SK_ColorGREEN, bar()->GetBackgroundColor());
+  EXPECT_NE(bar()->GetForegroundColor(), bar()->GetBackgroundColor());
 
-  bar_->SetForegroundColor(SK_ColorRED);
-  bar_->SetBackgroundColor(SK_ColorGREEN);
-  EXPECT_EQ(SK_ColorRED, bar_->GetForegroundColor());
-  EXPECT_EQ(SK_ColorGREEN, bar_->GetBackgroundColor());
+  bar()->SetForegroundColor(SK_ColorRED);
+  bar()->SetBackgroundColor(SK_ColorGREEN);
+  EXPECT_EQ(SK_ColorRED, bar()->GetForegroundColor());
+  EXPECT_EQ(SK_ColorGREEN, bar()->GetBackgroundColor());
 
   // Override colors with color ID. It will also override the colors set with
   // SkColor.
-  bar_->SetForegroundColorId(ui::kColorSysPrimary);
-  bar_->SetBackgroundColorId(ui::kColorSysPrimaryContainer);
-  const auto* color_provider = bar_->GetColorProvider();
+  bar()->SetForegroundColorId(ui::kColorSysPrimary);
+  bar()->SetBackgroundColorId(ui::kColorSysPrimaryContainer);
+  const auto* color_provider = bar()->GetColorProvider();
   EXPECT_EQ(color_provider->GetColor(ui::kColorSysPrimary),
-            bar_->GetForegroundColor());
+            bar()->GetForegroundColor());
   EXPECT_EQ(color_provider->GetColor(ui::kColorSysPrimaryContainer),
-            bar_->GetBackgroundColor());
-  EXPECT_EQ(ui::kColorSysPrimary, bar_->GetForegroundColorId().value());
+            bar()->GetBackgroundColor());
+  EXPECT_EQ(ui::kColorSysPrimary, bar()->GetForegroundColorId().value());
   EXPECT_EQ(ui::kColorSysPrimaryContainer,
-            bar_->GetBackgroundColorId().value());
+            bar()->GetBackgroundColorId().value());
 
   // Override the colors set with color ID by SkColor.
-  bar_->SetForegroundColor(SK_ColorRED);
-  bar_->SetBackgroundColor(SK_ColorGREEN);
-  EXPECT_EQ(SK_ColorRED, bar_->GetForegroundColor());
-  EXPECT_EQ(SK_ColorGREEN, bar_->GetBackgroundColor());
-  EXPECT_EQ(absl::nullopt, bar_->GetForegroundColorId());
-  EXPECT_EQ(absl::nullopt, bar_->GetBackgroundColorId());
+  bar()->SetForegroundColor(SK_ColorRED);
+  bar()->SetBackgroundColor(SK_ColorGREEN);
+  EXPECT_EQ(SK_ColorRED, bar()->GetForegroundColor());
+  EXPECT_EQ(SK_ColorGREEN, bar()->GetBackgroundColor());
+  EXPECT_EQ(std::nullopt, bar()->GetForegroundColorId());
+  EXPECT_EQ(std::nullopt, bar()->GetBackgroundColorId());
+}
+
+// Test that if no `preferred_corner_radii` are provided the default radius is
+// 3, and a value of `std::nullopt` will not round the corners.
+TEST_F(ProgressBarTest, RoundCornerDefault) {
+  // The default bar should have a rounded corner radius of 3.
+  EXPECT_EQ(gfx::RoundedCornersF(3), bar()->GetPreferredCornerRadii());
+
+  // Setting `std::nullopt` for the corner radius should make the bar have no
+  // rounded corners.
+  bar()->SetPreferredHeight(12);
+  bar()->SetPreferredCornerRadii(std::nullopt);
+  views::test::RunScheduledLayout(container_view_);
+  EXPECT_EQ(gfx::RoundedCornersF(0), bar()->GetPreferredCornerRadii());
+  EXPECT_TRUE(bar()->GetPreferredCornerRadii().IsEmpty());
+}
+
+// Test that a value set for `preferred_corner_radii` is saved and can be
+// retrieved from `GetPreferredCornerRadii()`.
+TEST_F(ProgressBarTest, RoundCornerRetrieval) {
+  // Setting custom corners should result in them being saved.
+  bar()->SetPreferredHeight(12);
+  bar()->SetPreferredCornerRadii(gfx::RoundedCornersF(6));
+  views::test::RunScheduledLayout(container_view_);
+  EXPECT_EQ(gfx::RoundedCornersF(6), bar()->GetPreferredCornerRadii());
+}
+
+// Test that `GetPreferredCornerRadii()` will return no corner with a radius
+// greater than the height of the bar.
+TEST_F(ProgressBarTest, RoundCornerMax) {
+  // The max corner radius for a bar with a height of 12 should be 12.
+  bar()->SetPreferredHeight(12);
+  bar()->SetPreferredCornerRadii(gfx::RoundedCornersF(13, 14, 15, 16));
+  views::test::RunScheduledLayout(container_view_);
+  EXPECT_EQ(gfx::RoundedCornersF(12, 12, 12, 12),
+            bar()->GetPreferredCornerRadii());
 }
 
 }  // namespace views

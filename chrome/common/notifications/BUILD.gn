@@ -10,6 +10,8 @@ source_set("notifications") {
     "notification_operation.h",
   ]
 
+  configs += [ "//build/config/compiler:wexit_time_destructors" ]
+
   deps = [
     "//base",
     "//chrome/common:constants",

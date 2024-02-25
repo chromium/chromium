@@ -1,0 +1,33 @@
+This is a testharness.js-based test.
+[FAIL] Property text-spacing value 'normal'
+  assert_true: text-spacing doesn't seem to be supported in the computed style expected true got false
+[FAIL] Property text-spacing value 'none'
+  assert_true: text-spacing doesn't seem to be supported in the computed style expected true got false
+[FAIL] Property text-spacing value 'auto'
+  assert_true: text-spacing doesn't seem to be supported in the computed style expected true got false
+[FAIL] Property text-spacing value 'no-autospace'
+  assert_true: text-spacing doesn't seem to be supported in the computed style expected true got false
+[FAIL] Property text-spacing value 'trim-start'
+  assert_true: text-spacing doesn't seem to be supported in the computed style expected true got false
+[FAIL] Property text-spacing value 'space-all'
+  assert_true: text-spacing doesn't seem to be supported in the computed style expected true got false
+[FAIL] Property text-spacing value 'normal normal'
+  assert_true: text-spacing doesn't seem to be supported in the computed style expected true got false
+[FAIL] Property text-spacing value 'normal trim-start'
+  assert_true: text-spacing doesn't seem to be supported in the computed style expected true got false
+[FAIL] Property text-spacing value 'no-autospace normal'
+  assert_true: text-spacing doesn't seem to be supported in the computed style expected true got false
+[FAIL] Property text-spacing value 'no-autospace space-all'
+  assert_true: text-spacing doesn't seem to be supported in the computed style expected true got false
+[FAIL] Property text-spacing value 'no-autospace trim-start'
+  assert_true: text-spacing doesn't seem to be supported in the computed style expected true got false
+[FAIL] Property text-spacing value 'trim-start normal '
+  assert_true: text-spacing doesn't seem to be supported in the computed style expected true got false
+[FAIL] Property text-spacing value 'normal no-autospace'
+  assert_true: text-spacing doesn't seem to be supported in the computed style expected true got false
+[FAIL] Property text-spacing value 'space-all no-autospace'
+  assert_true: text-spacing doesn't seem to be supported in the computed style expected true got false
+[FAIL] Property text-spacing value 'trim-start no-autospace'
+  assert_true: text-spacing doesn't seem to be supported in the computed style expected true got false
+Harness: the test ran to completion.
+

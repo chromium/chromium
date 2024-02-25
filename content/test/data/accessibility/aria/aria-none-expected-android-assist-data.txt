@@ -1,0 +1,2 @@
+WebView textSize:16.0 style:0 htmlInfo:[{htmlTag="#document"}, {display=""}]
+++TextView text:"With aria-role none" textSize:32.0 style:1 htmlInfo:[{htmlTag=""}, {display=""}]

@@ -17,8 +17,6 @@ component("x") {
     "selection_requestor.h",
     "selection_utils.cc",
     "selection_utils.h",
-    "visual_picker_glx.cc",
-    "visual_picker_glx.h",
     "x11_clipboard_helper.cc",
     "x11_clipboard_helper.h",
     "x11_cursor.cc",

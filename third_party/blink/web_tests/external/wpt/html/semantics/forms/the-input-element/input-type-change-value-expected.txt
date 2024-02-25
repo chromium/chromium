@@ -1,5 +1,7 @@
 This is a testharness.js-based test.
-FAIL Without focus assert_equals: Value dirty flag should remain false expected "" but got "#000000"
-FAIL With focus assert_equals: Value dirty flag should remain false expected "" but got "#000000"
+[FAIL] Without focus
+  assert_equals: Value dirty flag should remain false expected "" but got "#000000"
+[FAIL] With focus
+  assert_equals: Value dirty flag should remain false expected "" but got "#000000"
 Harness: the test ran to completion.
 

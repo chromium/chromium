@@ -8,6 +8,7 @@
 
 import argparse
 import os
+import re
 import sys
 import zipfile
 
@@ -38,14 +39,17 @@ public class NativeLibraries {{
     public static {MAYBE_FINAL}String[] LIBRARIES = {{{LIBRARIES}}};
 
     public static {MAYBE_FINAL}int sCpuFamily = {CPU_FAMILY};
+
+    public static {MAYBE_FINAL}boolean sSupport32Bit{SUPPORT_32_BIT};
+
+    public static {MAYBE_FINAL}boolean sSupport64Bit{SUPPORT_64_BIT};
 }}
 """
 
 
 def _FormatLibraryName(library_name):
   filename = os.path.split(library_name)[1]
-  assert filename.startswith('lib')
-  assert filename.endswith('.so')
+  assert filename.startswith('lib') and filename.endswith('.so'), filename
   # Remove lib prefix and .so suffix.
   return '"%s"' % filename[3:-3]
 
@@ -69,20 +73,20 @@ def main():
                       required=True,
                       default='CPU_FAMILY_UNKNOWN',
                       help='CPU family.')
-  parser.add_argument(
-      '--main-component-library',
-      help='If used, the list of native libraries will only contain this '
-      'library. Dependencies are found in the library\'s "NEEDED" section.')
 
   parser.add_argument(
       '--output', required=True, help='Path to the generated srcjar file.')
+  parser.add_argument('--native-lib-32-bit',
+                      action='store_true',
+                      help='32-bit binaries.')
+  parser.add_argument('--native-lib-64-bit',
+                      action='store_true',
+                      help='64-bit binaries.')
 
   options = parser.parse_args(build_utils.ExpandFileArgs(sys.argv[1:]))
 
   native_libraries = []
-  if options.main_component_library:
-    native_libraries.append(options.main_component_library)
-  elif options.native_libraries_list:
+  if options.native_libraries_list:
     with open(options.native_libraries_list) as f:
       native_libraries.extend(l.strip() for l in f)
 
@@ -92,6 +96,14 @@ def main():
     sys.stderr.write('\n'.join(native_libraries))
     sys.stderr.write('\n')
     sys.exit(1)
+
+  # When building for robolectric in component buildS, OS=linux causes
+  # "libmirprotobuf.so.9" to be a dep. This script, as well as
+  # System.loadLibrary("name") require libraries to end with ".so", so just
+  # filter it out.
+  native_libraries = [
+      f for f in native_libraries if not re.search(r'\.so\.\d+$', f)
+  ]
 
   def bool_str(value):
     if value:
@@ -105,6 +117,8 @@ def main():
       'USE_LINKER': bool_str(options.enable_chromium_linker),
       'LIBRARIES': ','.join(_FormatLibraryName(n) for n in native_libraries),
       'CPU_FAMILY': options.cpu_family,
+      'SUPPORT_32_BIT': bool_str(options.native_lib_32_bit),
+      'SUPPORT_64_BIT': bool_str(options.native_lib_64_bit),
   }
   with action_helpers.atomic_output(options.output) as f:
     with zipfile.ZipFile(f.name, 'w') as srcjar_file:

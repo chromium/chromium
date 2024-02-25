@@ -31,6 +31,7 @@
 #include "content/public/browser/save_page_type.h"
 #include "content/public/browser/web_contents.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/shell_dialogs/selected_file_info.h"
 
 using content::RenderProcessHost;
 using content::SavePageType;
@@ -218,29 +219,36 @@ SavePackageFilePicker::SavePackageFilePicker(
   if (g_should_prompt_for_filename) {
     select_file_dialog_ = ui::SelectFileDialog::Create(
         this, std::make_unique<ChromeSelectFilePolicy>(web_contents));
-    if (select_file_dialog_) {
-      select_file_dialog_->SelectFile(
-          ui::SelectFileDialog::SELECT_SAVEAS_FILE, std::u16string(),
-          suggested_path_copy, &file_type_info, file_type_index,
-          default_extension_copy,
-          platform_util::GetTopLevel(web_contents->GetNativeView()), nullptr);
-      return;
-    }
+    select_file_dialog_->SelectFile(
+        ui::SelectFileDialog::SELECT_SAVEAS_FILE, std::u16string(),
+        suggested_path_copy, &file_type_info, file_type_index,
+        default_extension_copy,
+        platform_util::GetTopLevel(web_contents->GetNativeView()),
+        /*params=*/nullptr, /*caller=*/
+        web_contents
+            ? &web_contents->GetPrimaryMainFrame()->GetLastCommittedURL()
+            : nullptr);
+    return;
   }
 
   // If |g_should_prompt_for_filename| is unset or |select_file_dialog_| could
   // not be instantiated for some reason, just use 'suggested_path_copy' instead
   // of opening the dialog prompt. Go through FileSelected() for consistency.
-  FileSelected(suggested_path_copy, file_type_index, nullptr);
+  FileSelected(ui::SelectedFileInfo(suggested_path_copy), file_type_index,
+               nullptr);
 }
 
-SavePackageFilePicker::~SavePackageFilePicker() = default;
+SavePackageFilePicker::~SavePackageFilePicker() {
+  if (select_file_dialog_) {
+    select_file_dialog_->ListenerDestroyed();
+  }
+}
 
 void SavePackageFilePicker::SetShouldPromptUser(bool should_prompt) {
   g_should_prompt_for_filename = should_prompt;
 }
 
-void SavePackageFilePicker::FileSelected(const base::FilePath& path,
+void SavePackageFilePicker::FileSelected(const ui::SelectedFileInfo& file,
                                          int index,
                                          void* unused_params) {
   std::unique_ptr<SavePackageFilePicker> delete_this(this);
@@ -252,20 +260,27 @@ void SavePackageFilePicker::FileSelected(const base::FilePath& path,
   if (can_save_as_complete_) {
     DCHECK_LT(index, static_cast<int>(save_types_.size()));
     save_type = save_types_[index];
-    if (select_file_dialog_.get() &&
-        select_file_dialog_->HasMultipleFileTypeChoices())
+    if (select_file_dialog_ &&
+        select_file_dialog_->HasMultipleFileTypeChoices()) {
       download_prefs_->SetSaveFileType(save_type);
+    }
   } else {
     // Use "HTML Only" type as a dummy.
     save_type = content::SAVE_PAGE_TYPE_AS_ONLY_HTML;
   }
 
-  base::FilePath path_copy(path);
-  base::i18n::NormalizeFileNameEncoding(&path_copy);
+  base::FilePath path = file.path();
+  base::i18n::NormalizeFileNameEncoding(&path);
 
-  download_prefs_->SetSaveFilePath(path_copy.DirName());
+  download_prefs_->SetSaveFilePath(path.DirName());
 
-  std::move(callback_).Run(path_copy, save_type,
+  content::SavePackagePathPickedParams params;
+  params.file_path = path;
+  params.save_type = save_type;
+#if BUILDFLAG(IS_MAC)
+  params.file_tags = file.file_tags;
+#endif
+  std::move(callback_).Run(std::move(params),
                            base::BindOnce(&OnSavePackageDownloadCreated));
 }
 

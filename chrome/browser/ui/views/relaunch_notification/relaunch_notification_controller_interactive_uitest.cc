@@ -101,7 +101,7 @@ class RelaunchNotificationControllerUiTest : public policy::PolicyTest {
         BuildState::UpdateType::kNormalUpdate,
         base::Version({CHROME_VERSION_MAJOR, CHROME_VERSION_MINOR,
                        CHROME_VERSION_BUILD, CHROME_VERSION_PATCH + 1}),
-        absl::nullopt);
+        std::nullopt);
   }
 
   // Triggers the annoyance level `level` to be announced to observers of

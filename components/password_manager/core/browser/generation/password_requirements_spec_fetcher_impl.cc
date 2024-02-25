@@ -4,6 +4,7 @@
 
 #include "components/password_manager/core/browser/generation/password_requirements_spec_fetcher_impl.h"
 
+#include "base/containers/span.h"
 #include "base/functional/bind.h"
 #include "base/hash/md5.h"
 #include "base/logging.h"
@@ -64,7 +65,7 @@ std::string GetHashPrefix(const GURL& origin, size_t prefix_length) {
           origin, net::registry_controlled_domains::INCLUDE_PRIVATE_REGISTRIES);
 
   base::MD5Digest digest;
-  base::MD5Sum(domain_and_registry.data(), domain_and_registry.size(), &digest);
+  base::MD5Sum(base::as_byte_span(domain_and_registry), &digest);
 
   for (auto& byte : digest.a) {
     if (prefix_length >= 8) {

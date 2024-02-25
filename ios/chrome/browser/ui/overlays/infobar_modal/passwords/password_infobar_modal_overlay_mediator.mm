@@ -4,20 +4,22 @@
 
 #import "ios/chrome/browser/ui/overlays/infobar_modal/passwords/password_infobar_modal_overlay_mediator.h"
 
+#import "base/memory/raw_ptr.h"
 #import "base/metrics/histogram_macros.h"
+#import "base/metrics/user_metrics.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/strings/utf_string_conversions.h"
 #import "components/password_manager/core/browser/manage_passwords_referrer.h"
-#import "ios/chrome/browser/overlays/public/default/default_infobar_overlay_request_config.h"
-#import "ios/chrome/browser/overlays/public/overlay_callback_manager.h"
-#import "ios/chrome/browser/overlays/public/overlay_request.h"
-#import "ios/chrome/browser/overlays/public/overlay_request_support.h"
-#import "ios/chrome/browser/overlays/public/overlay_response.h"
-#import "ios/chrome/browser/passwords/ios_chrome_save_password_infobar_delegate.h"
-#import "ios/chrome/browser/shared/public/commands/application_commands.h"
+#import "ios/chrome/browser/overlays/model/public/default/default_infobar_overlay_request_config.h"
+#import "ios/chrome/browser/overlays/model/public/overlay_callback_manager.h"
+#import "ios/chrome/browser/overlays/model/public/overlay_request.h"
+#import "ios/chrome/browser/overlays/model/public/overlay_request_support.h"
+#import "ios/chrome/browser/overlays/model/public/overlay_response.h"
+#import "ios/chrome/browser/passwords/model/ios_chrome_save_password_infobar_delegate.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
+#import "ios/chrome/browser/shared/public/commands/settings_commands.h"
 #import "ios/chrome/browser/ui/overlays/overlay_request_mediator+subclassing.h"
-#import "ios/chrome/grit/ios_chromium_strings.h"
+#import "ios/chrome/grit/ios_branded_strings.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ui/base/l10n/l10n_util.h"
 
@@ -27,7 +29,7 @@
 @end
 
 @implementation PasswordInfobarModalOverlayMediator {
-  IOSChromeSavePasswordInfoBarDelegate* delegate_;
+  raw_ptr<IOSChromeSavePasswordInfoBarDelegate> delegate_;
   InfobarType infobarType_;
 }
 
@@ -59,7 +61,7 @@
                                                  withString:@"•"
                                             startingAtIndex:0]];
   [_consumer setUnmaskedPassword:password];
-  absl::optional<std::string> account_string =
+  std::optional<std::string> account_string =
       delegate_->GetAccountToStorePassword();
   NSString* details_text =
       account_string
@@ -126,15 +128,16 @@
 
   [self dismissInfobarModal:nil];
 
-  id<ApplicationSettingsCommands> settings_command_handler = HandlerForProtocol(
-      delegate_->GetDispatcher(), ApplicationSettingsCommands);
+  id<SettingsCommands> settings_command_handler =
+      HandlerForProtocol(delegate_->GetDispatcher(), SettingsCommands);
   [settings_command_handler showSavedPasswordsSettingsFromViewController:nil
-                                                        showCancelButton:YES
-                                                      startPasswordCheck:NO];
+                                                        showCancelButton:YES];
 
   UMA_HISTOGRAM_ENUMERATION(
       "PasswordManager.ManagePasswordsReferrer",
       password_manager::ManagePasswordsReferrer::kManagePasswordsBubble);
+  base::RecordAction(
+      base::UserMetricsAction("MobilePasswordInfobarModalOpenPasswordManager"));
 }
 
 @end

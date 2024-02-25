@@ -14,14 +14,10 @@ import org.chromium.ui.display.DisplayAndroid.DisplayAndroidObserver;
  * This also includes an event for {@link WindowAndroid} (not Android window).
  */
 public interface WindowEventObserver extends DisplayAndroidObserver {
-    /**
-     * This is called when the container view is attached to a window.
-     */
+    /** This is called when the container view is attached to a window. */
     default void onAttachedToWindow() {}
 
-    /**
-     * This is called when the container view is detached from a window.
-     */
+    /** This is called when the container view is detached from a window. */
     default void onDetachedFromWindow() {}
 
     /**
@@ -29,9 +25,7 @@ public interface WindowEventObserver extends DisplayAndroidObserver {
      */
     default void onWindowFocusChanged(boolean gainFocus) {}
 
-    /**
-     * Notifies observer when WindowAndroid is changed.
-     */
+    /** Notifies observer when WindowAndroid is changed. */
     default void onWindowAndroidChanged(WindowAndroid newWindowAndroid) {}
 
     /**

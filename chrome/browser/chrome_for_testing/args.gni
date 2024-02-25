@@ -1,0 +1,27 @@
+# This file contains the list of all Chrome for Testing features.
+# It is only meant for documentation purposes.
+# The build system does not use it in any way.
+
+import("//build/config/features.gni")
+import("//chrome/installer/installers.gni")
+import("//media/media_options.gni")
+import("//third_party/ffmpeg/ffmpeg_options.gni")
+
+# chrome/installer/installers.gni
+enable_linux_installer = false
+
+# build/config/features.gni
+proprietary_codecs = true
+
+# third_party/ffmpeg/ffmpeg_options.gni
+ffmpeg_branding = "Chrome"
+
+# media/media_options.gni
+enable_cdm_host_verification = false
+
+# third_party/widevine/cdm/widevine.gni
+enable_widevine = true
+bundle_widevine_cdm = true
+
+# v8/gni/v8.gni
+cppgc_enable_object_names = true

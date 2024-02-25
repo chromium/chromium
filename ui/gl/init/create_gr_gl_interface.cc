@@ -4,13 +4,12 @@
 
 #include "ui/gl/init/create_gr_gl_interface.h"
 
-#include "base/metrics/histogram_macros.h"
 #include "base/no_destructor.h"
-#include "base/time/time.h"
 #include "base/trace_event/trace_event.h"
 #include "base/traits_bag.h"
 #include "build/build_config.h"
 #include "ui/gl/gl_bindings.h"
+#include "ui/gl/gl_context.h"
 #include "ui/gl/gl_display.h"
 #include "ui/gl/gl_implementation.h"
 #include "ui/gl/gl_utils.h"
@@ -36,10 +35,19 @@ GLsync glFenceSyncEmulateEGL(GLenum condition, GLbitfield flags) {
   DCHECK(condition == GL_SYNC_GPU_COMMANDS_COMPLETE);
   DCHECK(flags == 0);
 
+  // Prefer EGL_ANGLE_global_fence_sync as it guarantees synchronization with
+  // past submissions from all contexts, rather than the current context.
+  gl::GLContext* context = gl::GLContext::GetCurrent();
+  gl::GLDisplayEGL* display = context ? context->GetGLDisplayEGL() : nullptr;
+  const EGLenum syncType =
+      display && display->ext->b_EGL_ANGLE_global_fence_sync
+          ? EGL_SYNC_GLOBAL_FENCE_ANGLE
+          : EGL_SYNC_FENCE_KHR;
+
   init::EGLFenceData* data = new EGLFenceData;
 
   data->display = eglGetCurrentDisplay();
-  data->sync = eglCreateSyncKHR(data->display, EGL_SYNC_FENCE_KHR, nullptr);
+  data->sync = eglCreateSyncKHR(data->display, syncType, nullptr);
 
   return reinterpret_cast<GLsync>(data);
 }
@@ -96,13 +104,6 @@ GLboolean glIsSyncEmulateEGL(GLsync sync) {
   return true;
 }
 
-#if BUILDFLAG(IS_APPLE)
-std::map<GLuint, base::TimeTicks>& GetProgramCreateTimesMap() {
-  static base::NoDestructor<std::map<GLuint, base::TimeTicks>> instance;
-  return *instance.get();
-}
-#endif
-
 }  // namespace
 
 namespace {
@@ -147,12 +148,12 @@ GrGLFunction<R GR_GL_FUNCTION_TYPE(Args...)> bind_impl(
           return R();
       }
 
-      absl::optional<gl::ScopedProgressReporter> scoped_reporter;
+      std::optional<gl::ScopedProgressReporter> scoped_reporter;
       // Not using constexpr if here to avoid unused progress_reporter warning.
       if (slow && progress_reporter)
         scoped_reporter.emplace(progress_reporter);
 
-      absl::optional<FlushHelper> flush_helper;
+      std::optional<FlushHelper> flush_helper;
       if constexpr (need_flush)
         flush_helper.emplace();
       return func(args...);
@@ -243,11 +244,7 @@ const char* kBlocklistExtensions[] = {
 
 sk_sp<GrGLInterface> CreateGrGLInterface(
     const gl::GLVersionInfo& version_info,
-    bool use_version_es2,
     gl::ProgressReporter* progress_reporter) {
-  // Can't fake ES with desktop GL.
-  use_version_es2 &= version_info.is_es;
-
   gl::ProcsGL* gl = &gl::g_current_gl_driver->fn;
   gl::GLApi* api = gl::g_current_gl_context;
 
@@ -261,9 +258,8 @@ sk_sp<GrGLInterface> CreateGrGLInterface(
   // handles but bindings don't.
   // TODO(piman): add bindings for missing entrypoints.
   GrGLFunction<GrGLGetStringFn> get_string;
-  const bool apply_version_override = use_version_es2 ||
-                                      version_info.IsAtLeastGL(4, 2) ||
-                                      version_info.IsAtLeastGLES(3, 1);
+  const bool apply_version_override =
+      version_info.IsAtLeastGL(4, 2) || version_info.IsAtLeastGLES(3, 1);
 
   if (apply_version_override || version_info.IsVersionSubstituted()) {
     GLVersionInfo::VersionStrings version;
@@ -271,10 +267,7 @@ sk_sp<GrGLInterface> CreateGrGLInterface(
       version = version_info.GetFakeVersionStrings(version_info.major_version,
                                                    version_info.minor_version);
     } else if (version_info.is_es) {
-      if (use_version_es2)
-        version = version_info.GetFakeVersionStrings(2, 0);
-      else
-        version = version_info.GetFakeVersionStrings(3, 0);
+      version = version_info.GetFakeVersionStrings(3, 0);
     } else {
       version = version_info.GetFakeVersionStrings(4, 1);
     }
@@ -330,28 +323,11 @@ sk_sp<GrGLInterface> CreateGrGLInterface(
   BIND(CompressedTexSubImage2D, Slow);
   BIND(CopyBufferSubData);
   BIND(CopyTexSubImage2D, Slow);
-#if BUILDFLAG(IS_APPLE)
-  functions->fCreateProgram = [func = gl->glCreateProgramFn]() {
-    auto& program_create_times = GetProgramCreateTimesMap();
-    GLuint program = func();
-    program_create_times[program] = base::TimeTicks::Now();
-    return program;
-  };
-#else
   BIND(CreateProgram);
-#endif
   BIND(CreateShader);
   BIND(CullFace);
   BIND_EXTENSION(DeleteBuffers, DeleteBuffersARB, Slow);
-#if BUILDFLAG(IS_APPLE)
-  functions->fDeleteProgram = [func = gl->glDeleteProgramFn](GLuint program) {
-    auto& program_create_times = GetProgramCreateTimesMap();
-    program_create_times.erase(program);
-    func(program);
-  };
-#else
   BIND(DeleteProgram, Slow);
-#endif
   BIND(DeleteQueries);
   BIND(DeleteSamplers);
   BIND(DeleteShader, Slow);
@@ -405,23 +381,7 @@ sk_sp<GrGLInterface> CreateGrGLInterface(
   BIND(GetQueryiv);
   BIND(GetProgramBinary);
   BIND(GetProgramInfoLog);
-#if BUILDFLAG(IS_APPLE)
-  functions->fGetProgramiv = [func = gl->glGetProgramivFn](
-                                 GLuint program, GLenum pname, GLint* params) {
-    func(program, pname, params);
-    if (pname == 0x8B82 /* GR_GL_LINK_STATUS */) {
-      auto& program_create_times = GetProgramCreateTimesMap();
-      auto found = program_create_times.find(program);
-      if (found != program_create_times.end()) {
-        base::TimeDelta elapsed = base::TimeTicks::Now() - found->second;
-        UMA_HISTOGRAM_TIMES("Gpu.GL.ProgramBuildTime", elapsed);
-        program_create_times.erase(found);
-      }
-    }
-  };
-#else
   BIND(GetProgramiv);
-#endif
   BIND(GetShaderInfoLog);
   BIND(GetShaderiv);
   functions->fGetString = get_string;
@@ -741,11 +701,6 @@ sk_sp<GrGLInterface> CreateGrGLInterface(
       functions->fDeleteSync = glDeleteSyncEmulateEGL;
     }
 #endif  // USE_EGL
-  } else if (use_version_es2) {
-    // We have gl sync, but want to Skia use ES2 that doesn't have fences.
-    // To provide Skia with ways of sync to prevent it calling glFinish we set
-    // GL_APPLE_sync support.
-    extensions.add("GL_APPLE_sync");
   }
 
   // Skia can fall back to GL_NV_fence if GLsync objects are not available.

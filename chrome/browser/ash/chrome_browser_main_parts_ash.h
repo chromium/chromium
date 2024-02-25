@@ -13,10 +13,8 @@
 #include "base/task/cancelable_task_tracker.h"
 #include "chrome/browser/ash/external_metrics.h"
 #include "chrome/browser/ash/pcie_peripheral/ash_usb_detector.h"
-#include "chrome/browser/ash/wilco_dtc_supportd/wilco_dtc_supportd_manager.h"
 #include "chrome/browser/chrome_browser_main_linux.h"
 #include "chrome/browser/memory/memory_kills_monitor.h"
-#include "chromeos/ash/components/memory/zram_writeback_controller.h"
 
 class AssistantBrowserDelegateImpl;
 class AssistantStateClient;
@@ -25,13 +23,12 @@ class ImageDownloaderImpl;
 
 namespace arc {
 class ArcServiceLauncher;
+class ContainerAppKiller;
 }  // namespace arc
 
-namespace chromeos {
-namespace default_app_order {
+namespace chromeos::default_app_order {
 class ExternalLoader;
-}
-}  // namespace chromeos
+}  // namespace chromeos::default_app_order
 
 namespace crosapi {
 class BrowserManager;
@@ -60,7 +57,6 @@ namespace ash {
 
 class AccessibilityEventRewriterDelegateImpl;
 class ApnMigrator;
-class ArcKioskAppManager;
 class AudioSurveyHandler;
 class BluetoothPrefStateObserver;
 class BulkPrintersCalculatorFactory;
@@ -75,6 +71,7 @@ class FwupdDownloadClientImpl;
 class GnubbyNotification;
 class HatsBluetoothRevampTriggerImpl;
 class IdleActionWarningObserver;
+class KioskController;
 class LoginScreenExtensionsStorageCleaner;
 class LowDiskNotification;
 class AuthEventsRecorder;
@@ -86,6 +83,7 @@ class MemoryMetrics;
 class MisconfiguredUserCleaner;
 class PowerMetricsReporter;
 class RendererFreezer;
+class ReportControllerInitializer;
 class SessionTerminationManager;
 class ShortcutMappingPrefService;
 class ShutdownPolicyForwarder;
@@ -93,23 +91,17 @@ class SigninProfileHandler;
 class SystemTokenCertDBInitializer;
 class VideoConferenceAppServiceClient;
 class VideoConferenceAshFeatureClient;
-class WebKioskAppManager;
-class KioskAppManager;
+
+namespace carrier_lock {
+class CarrierLockManager;
+}
 
 namespace cros_healthd::internal {
 class DataCollector;
 }
 
-namespace device_activity {
-class DeviceActivityController;
-}
-
 namespace internal {
 class DBusServices;
-}
-
-namespace input_method {
-class EditorMediator;
 }
 
 namespace mojo_service_manager {
@@ -135,7 +127,6 @@ class QuickPairBrowserDelegateImpl;
 }
 
 namespace system {
-class BreakpadConsentWatcher;
 class DarkResumeController;
 }  // namespace system
 
@@ -174,10 +165,6 @@ class ChromeBrowserMainPartsAsh : public ChromeBrowserMainPartsLinux {
   void PostDestroyThreads() override;
 
  private:
-  // Helper which depends on device policies being loaded before initializing
-  // the |device_activity_controller_|.
-  void StartDeviceActivityController();
-
   std::unique_ptr<chromeos::default_app_order::ExternalLoader>
       app_order_loader_;
   std::unique_ptr<NetworkPrefStateObserver> network_pref_state_observer_;
@@ -203,6 +190,8 @@ class ChromeBrowserMainPartsAsh : public ChromeBrowserMainPartsLinux {
 
   std::unique_ptr<EventRewriterDelegateImpl> event_rewriter_delegate_;
 
+  std::unique_ptr<carrier_lock::CarrierLockManager> carrier_lock_manager_;
+
   // Handles event dispatch to the accessibility component extensions.
   std::unique_ptr<AccessibilityEventRewriterDelegateImpl>
       accessibility_event_rewriter_delegate_;
@@ -220,9 +209,7 @@ class ChromeBrowserMainPartsAsh : public ChromeBrowserMainPartsLinux {
   std::unique_ptr<AssistantBrowserDelegateImpl> assistant_delegate_;
 
   std::unique_ptr<LowDiskNotification> low_disk_notification_;
-  std::unique_ptr<ArcKioskAppManager> arc_kiosk_app_manager_;
-  std::unique_ptr<WebKioskAppManager> web_kiosk_app_manager_;
-  std::unique_ptr<KioskAppManager> kiosk_app_manager_;
+  std::unique_ptr<KioskController> kiosk_controller_;
   std::unique_ptr<MultiCaptureNotifications> multi_capture_notifications_;
 
   std::unique_ptr<ShortcutMappingPrefService> shortcut_mapping_pref_service_;
@@ -254,8 +241,7 @@ class ChromeBrowserMainPartsAsh : public ChromeBrowserMainPartsLinux {
   std::unique_ptr<AshUsbDetector> ash_usb_detector_;
   std::unique_ptr<CrosUsbDetector> cros_usb_detector_;
 
-  std::unique_ptr<device_activity::DeviceActivityController>
-      device_activity_controller_;
+  std::unique_ptr<ReportControllerInitializer> report_controller_initializer_;
 
   std::unique_ptr<crostini::CrostiniUnsupportedActionNotifier>
       crostini_unsupported_action_notifier_;
@@ -279,12 +265,10 @@ class ChromeBrowserMainPartsAsh : public ChromeBrowserMainPartsLinux {
   std::unique_ptr<SigninProfileHandler> signin_profile_handler_;
 
   std::unique_ptr<policy::LockToSingleUserManager> lock_to_single_user_manager_;
-  std::unique_ptr<WilcoDtcSupportdManager> wilco_dtc_supportd_manager_;
   std::unique_ptr<LoginScreenExtensionsStorageCleaner>
       login_screen_extensions_storage_cleaner_;
 
   std::unique_ptr<GnubbyNotification> gnubby_notification_;
-  std::unique_ptr<system::BreakpadConsentWatcher> breakpad_consent_watcher_;
 
   std::unique_ptr<platform_keys::KeyPermissionsManager>
       system_token_key_permissions_manager_;
@@ -296,9 +280,9 @@ class ChromeBrowserMainPartsAsh : public ChromeBrowserMainPartsLinux {
 
   std::unique_ptr<CameraGeneralSurveyHandler> camera_general_survey_handler_;
 
-  std::unique_ptr<memory::ZramWritebackController> zram_writeback_controller_;
-
   std::unique_ptr<ApnMigrator> apn_migrator_;
+
+  std::unique_ptr<arc::ContainerAppKiller> arc_container_app_killer_;
 
   // Only temporarily owned, will be null after PostCreateMainMessageLoop().
   // The Accessor is constructed before initialization of FeatureList and should
@@ -314,8 +298,6 @@ class ChromeBrowserMainPartsAsh : public ChromeBrowserMainPartsLinux {
       video_conference_manager_client_;
 
   std::unique_ptr<MisconfiguredUserCleaner> misconfigured_user_cleaner_;
-
-  std::unique_ptr<input_method::EditorMediator> editor_mediator_;
 
   base::WeakPtrFactory<ChromeBrowserMainPartsAsh> weak_ptr_factory_{this};
 };

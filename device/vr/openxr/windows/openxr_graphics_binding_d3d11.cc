@@ -19,6 +19,7 @@
 #include "device/vr/public/cpp/features.h"
 #include "device/vr/windows/d3d11_texture_helper.h"
 #include "gpu/GLES2/gl2extchromium.h"
+#include "gpu/command_buffer/client/client_shared_image.h"
 #include "gpu/command_buffer/client/shared_image_interface.h"
 #include "gpu/command_buffer/common/shared_image_usage.h"
 #include "gpu/ipc/common/gpu_memory_buffer_impl_dxgi.h"
@@ -34,9 +35,8 @@ void OpenXrGraphicsBinding::GetRequiredExtensions(
 }
 
 OpenXrGraphicsBindingD3D11::OpenXrGraphicsBindingD3D11(
-    D3D11TextureHelper* texture_helper,
     base::WeakPtr<OpenXrPlatformHelperWindows> weak_platform_helper)
-    : texture_helper_(texture_helper),
+    : texture_helper_(std::make_unique<D3D11TextureHelper>()),
       weak_platform_helper_(weak_platform_helper) {}
 
 OpenXrGraphicsBindingD3D11::~OpenXrGraphicsBindingD3D11() = default;
@@ -116,7 +116,7 @@ XrResult OpenXrGraphicsBindingD3D11::EnumerateSwapchainImages(
   return XR_SUCCESS;
 }
 
-void OpenXrGraphicsBindingD3D11::ClearSwapChainImages() {
+void OpenXrGraphicsBindingD3D11::ClearSwapchainImages() {
   color_swapchain_images_.clear();
 }
 
@@ -181,25 +181,22 @@ void OpenXrGraphicsBindingD3D11::CreateSharedImages(
     gfx::Size buffer_size =
         gfx::Size(texture2d_desc.Width, texture2d_desc.Height);
 
-    std::unique_ptr<gpu::GpuMemoryBufferImplDXGI> gpu_memory_buffer =
-        gpu::GpuMemoryBufferImplDXGI::CreateFromHandle(
-            std::move(gpu_memory_buffer_handle), buffer_size,
-            gfx::BufferFormat::RGBA_8888, gfx::BufferUsage::GPU_READ,
-            base::DoNothing(), nullptr, nullptr);
-
+    // The SharedImages created here will eventually be transferred to other
+    // processes to have their contents written by WebGL and read via GL by
+    // OpenXR.
     const uint32_t shared_image_usage = gpu::SHARED_IMAGE_USAGE_SCANOUT |
                                         gpu::SHARED_IMAGE_USAGE_DISPLAY_READ |
-                                        gpu::SHARED_IMAGE_USAGE_GLES2;
+                                        gpu::SHARED_IMAGE_USAGE_GLES2_READ |
+                                        gpu::SHARED_IMAGE_USAGE_GLES2_WRITE;
 
-    gpu::MailboxHolder& mailbox_holder = swap_chain_info.mailbox_holder;
-    mailbox_holder.mailbox = sii->CreateSharedImage(
-        viz::SinglePlaneFormat::kRGBA_8888, buffer_size,
-        gfx::ColorSpace(gfx::ColorSpace::PrimaryID::BT709,
-                        gfx::ColorSpace::TransferID::LINEAR),
-        kTopLeft_GrSurfaceOrigin, kPremul_SkAlphaType, shared_image_usage,
-        "OpenXrSwapChain", gpu_memory_buffer->CloneHandle());
-    mailbox_holder.sync_token = sii->GenVerifiedSyncToken();
-    mailbox_holder.texture_target = GL_TEXTURE_2D;
+    swap_chain_info.shared_image = sii->CreateSharedImage(
+        {viz::SinglePlaneFormat::kRGBA_8888, buffer_size,
+         gfx::ColorSpace(gfx::ColorSpace::PrimaryID::BT709,
+                         gfx::ColorSpace::TransferID::LINEAR),
+         shared_image_usage, "OpenXrSwapChain"},
+        std::move(gpu_memory_buffer_handle));
+    CHECK(swap_chain_info.shared_image);
+    swap_chain_info.sync_token = sii->GenVerifiedSyncToken();
   }
 }
 
@@ -235,9 +232,8 @@ bool OpenXrGraphicsBindingD3D11::WaitOnFence(gfx::GpuFence& gpu_fence) {
   }
 
   Microsoft::WRL::ComPtr<ID3D11Fence> d3d11_fence;
-  hr = d3d11_device5->OpenSharedFence(
-      gpu_fence.GetGpuFenceHandle().owned_handle.Get(),
-      IID_PPV_ARGS(&d3d11_fence));
+  hr = d3d11_device5->OpenSharedFence(gpu_fence.GetGpuFenceHandle().Peek(),
+                                      IID_PPV_ARGS(&d3d11_fence));
   if (FAILED(hr)) {
     DLOG(ERROR) << "Unable to open a shared fence " << std::hex << hr;
     return false;
@@ -267,6 +263,20 @@ bool OpenXrGraphicsBindingD3D11::WaitOnFence(gfx::GpuFence& gpu_fence) {
   return true;
 }
 
+bool OpenXrGraphicsBindingD3D11::Render(
+    const scoped_refptr<viz::ContextProvider>& context_provider) {
+  return texture_helper_->UpdateBackbufferSizes() &&
+         texture_helper_->CompositeToBackBuffer(context_provider);
+}
+
+void OpenXrGraphicsBindingD3D11::CleanupWithoutSubmit() {
+  texture_helper_->CleanupNoSubmit();
+}
+
+bool OpenXrGraphicsBindingD3D11::ShouldFlipSubmittedImage() {
+  return IsUsingSharedImages();
+}
+
 void OpenXrGraphicsBindingD3D11::OnSwapchainImageSizeChanged() {
   texture_helper_->SetDefaultSize(GetSwapchainImageSize());
 }
@@ -278,6 +288,33 @@ void OpenXrGraphicsBindingD3D11::OnSwapchainImageActivated(
 
   texture_helper_->SetBackbuffer(
       color_swapchain_images_[active_swapchain_index()].d3d11_texture.get());
+}
+
+void OpenXrGraphicsBindingD3D11::SetOverlayAndWebXrVisibility(
+    bool overlay_visible,
+    bool webxr_visible) {
+  texture_helper_->SetSourceAndOverlayVisible(webxr_visible, overlay_visible);
+}
+
+void OpenXrGraphicsBindingD3D11::SetWebXrTexture(
+    mojo::PlatformHandle texture_handle,
+    const gpu::SyncToken& sync_token,
+    const gfx::RectF& left,
+    const gfx::RectF& right) {
+  base::win::ScopedHandle scoped_handle = texture_handle.is_valid()
+                                              ? texture_handle.TakeHandle()
+                                              : base::win::ScopedHandle();
+  texture_helper_->SetSourceTexture(std::move(scoped_handle), sync_token, left,
+                                    right);
+}
+
+bool OpenXrGraphicsBindingD3D11::SetOverlayTexture(
+    mojo::PlatformHandle texture_handle,
+    const gpu::SyncToken& sync_token,
+    const gfx::RectF& left,
+    const gfx::RectF& right) {
+  return texture_helper_->SetOverlayTexture(texture_handle.TakeHandle(),
+                                            sync_token, left, right);
 }
 
 }  // namespace device

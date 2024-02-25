@@ -5,15 +5,17 @@
 #ifndef CHROME_BROWSER_UI_PROFILES_PROFILE_PICKER_H_
 #define CHROME_BROWSER_UI_PROFILES_PROFILE_PICKER_H_
 
+#include <optional>
+
 #include "base/feature_list.h"
 #include "base/files/file_path.h"
+#include "base/functional/callback.h"
 #include "base/functional/callback_forward.h"
 #include "base/time/time.h"
 #include "build/buildflag.h"
 #include "build/chromeos_buildflags.h"
-#include "chrome/browser/ui/webui/signin/enterprise_profile_welcome_ui.h"
 #include "components/signin/public/base/signin_buildflags.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
+#include "third_party/abseil-cpp/absl/types/variant.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "url/gurl.h"
 
@@ -26,6 +28,7 @@ class WebView;
 }  // namespace views
 
 enum class StartupProfileModeReason;
+enum class ReauthUIError;
 
 class ProfilePicker {
  public:
@@ -210,22 +213,46 @@ class ProfilePicker {
   static void Show(Params&& params);
 
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
+  // Helper struct to allow passing different profile information for sign in:
+  // - An optional color for a new profile.
+  // - A file path for an existing profile.
+  using ProfileInfo = absl::variant<std::optional<SkColor>, base::FilePath>;
+
   // Starts the Dice sign-in flow. The layout of the window gets updated for the
-  // sign-in flow. At the same time, the new profile is created and the sign-in
-  // page is rendered using the new profile.
-  // The new profile uses a theme generated from `profile_color` if provided or
-  // the default theme.
+  // sign-in flow while the profiles are created/loaded.
+  // The sign in flow can be triggered for a new or existing profile.
+  // For new profiles, the expected color is expected to be given as the
+  // `profile_info` param. The creation of the new profile happens and then the
+  // sign-in page is rendered using the new profile. The new profile uses a
+  // theme generated from the given profile color if provided or the default
+  // theme.
+  // For an existing profile, the profile path is expected to given as the
+  // `profile_info` param. The profile is loaded then the sign-page will be
+  // rendered with the profile.
   // `switch_finished_callback` gets informed whether the creation of the new
   // profile succeeded and the sign-in page gets displayed.
   static void SwitchToDiceSignIn(
-      absl::optional<SkColor> profile_color,
+      ProfileInfo profile_info,
       base::OnceCallback<void(bool)> switch_finished_callback);
+
+  // Starts the reauth for the existing primary account in the given `profile`.
+  // The flow will remain within the profile picker. The reauth is expected to
+  // be done only on the primary account, if done on another one (the UI may
+  // allow it), the reauth will fail and the signed in account will be signed
+  // out.
+  // On successful reauth, the profile is unlocked and a browser associated with
+  // the `profile` will be opened. On unsuccessful reauth, the user will be
+  // redirected to the profile picker main page, with a popup error dialog
+  // displayed through `on_error_callback`.
+  static void SwitchToReauth(
+      Profile* profile,
+      base::OnceCallback<void(ReauthUIError)> on_error_callback);
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
   // Starts the flow to set-up a signed-in profile. `signed_in_profile` must
   // have an unconsented primary account.
-  static void SwitchToSignedInFlow(absl::optional<SkColor> profile_color,
+  static void SwitchToSignedInFlow(std::optional<SkColor> profile_color,
                                    Profile* signed_in_profile);
 #endif
 

@@ -4,8 +4,8 @@
 
 package org.chromium.base.metrics;
 
-import org.chromium.base.annotations.JNINamespace;
-import org.chromium.base.annotations.NativeMethods;
+import org.jni_zero.JNINamespace;
+import org.jni_zero.NativeMethods;
 
 /**
  * Java API which exposes the registered histograms on the native side as

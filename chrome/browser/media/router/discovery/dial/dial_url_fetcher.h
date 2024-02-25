@@ -6,13 +6,13 @@
 #define CHROME_BROWSER_MEDIA_ROUTER_DISCOVERY_DIAL_DIAL_URL_FETCHER_H_
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <vector>
 
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "services/network/public/mojom/url_response_head.mojom-forward.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
 namespace net {
@@ -39,7 +39,7 @@ class DialURLFetcher {
   // e.g. if it was unexpectedly empty.
   using ErrorCallback =
       base::OnceCallback<void(const std::string& error_message,
-                              absl::optional<int> http_response_code)>;
+                              std::optional<int> http_response_code)>;
 
   // |success_cb|: Invoked when HTTP request to |url| succeeds.
   // |error_cb|: Invoked when HTTP request to |url| fails.
@@ -57,7 +57,7 @@ class DialURLFetcher {
   void Delete(const GURL& url);
 
   // Starts a HTTP POST request.
-  void Post(const GURL& url, const absl::optional<std::string>& post_data);
+  void Post(const GURL& url, const std::optional<std::string>& post_data);
 
   // Returns the response header of an HTTP request. The response header is
   // owned by underlying |loader_| object and is reset per HTTP request. Returns
@@ -84,7 +84,7 @@ class DialURLFetcher {
   // |set_origin_header|: whether to set an Origin: header on the request.
   virtual void Start(const GURL& url,
                      const std::string& method,
-                     const absl::optional<std::string>& post_data,
+                     const std::optional<std::string>& post_data,
                      int max_retries,
                      bool set_origin_header);
 
@@ -104,7 +104,7 @@ class DialURLFetcher {
   void ReportError(const std::string& message);
 
   // Returns the HTTP code in the response header, if exists.
-  virtual absl::optional<int> GetHttpResponseCode() const;
+  virtual std::optional<int> GetHttpResponseCode() const;
 
   SuccessCallback success_cb_;
   ErrorCallback error_cb_;

@@ -4,19 +4,18 @@
 
 #include "components/attribution_reporting/os_registration.h"
 
+#include <optional>
 #include <utility>
 #include <vector>
 
 #include "base/check_op.h"
-#include "base/strings/string_piece.h"
 #include "net/http/structured_headers.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
 namespace attribution_reporting {
 
 std::vector<OsRegistrationItem> ParseOsSourceOrTriggerHeader(
-    base::StringPiece header) {
+    std::string_view header) {
   const auto list = net::structured_headers::ParseList(header);
   if (!list) {
     return {};

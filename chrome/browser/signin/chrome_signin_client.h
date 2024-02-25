@@ -14,6 +14,7 @@
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "components/signin/public/base/signin_client.h"
+#include "extensions/buildflags/buildflags.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 
 class WaitForNetworkCallbackHelper;
@@ -64,6 +65,7 @@ class ChromeSigninClient : public SigninClient {
       bool has_sync_account) override;
   scoped_refptr<network::SharedURLLoaderFactory> GetURLLoaderFactory() override;
   network::mojom::CookieManager* GetCookieManager() override;
+  network::mojom::NetworkContext* GetNetworkContext() override;
   bool AreSigninCookiesAllowed() override;
   bool AreSigninCookiesDeletedOnExit() override;
   void AddContentSettingsObserver(
@@ -76,10 +78,19 @@ class ChromeSigninClient : public SigninClient {
       GaiaAuthConsumer* consumer,
       gaia::GaiaSource source) override;
   version_info::Channel GetClientChannel() override;
+  void OnPrimaryAccountChangedWithEventSource(
+      signin::PrimaryAccountChangeEvent event_details,
+      absl::variant<signin_metrics::AccessPoint, signin_metrics::ProfileSignout>
+          event_source) override;
+
+#if BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
+  std::unique_ptr<signin::BoundSessionOAuthMultiLoginDelegate>
+  CreateBoundSessionOAuthMultiloginDelegate() const override;
+#endif
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
-  absl::optional<account_manager::Account> GetInitialPrimaryAccount() override;
-  absl::optional<bool> IsInitialPrimaryAccountChild() const override;
+  std::optional<account_manager::Account> GetInitialPrimaryAccount() override;
+  std::optional<bool> IsInitialPrimaryAccountChild() const override;
   void RemoveAccount(const account_manager::AccountKey& account_key) override;
   void RemoveAllAccounts() override;
 #endif
@@ -100,14 +111,30 @@ class ChromeSigninClient : public SigninClient {
   // restriction, otherwise the decision is made based on the profile's status.
   SigninClient::SignoutDecision GetSignoutDecision(
       bool has_sync_account,
-      const absl::optional<signin_metrics::ProfileSignout> signout_source)
-      const;
+      const std::optional<signin_metrics::ProfileSignout> signout_source) const;
   void VerifySyncToken();
   void OnCloseBrowsersSuccess(
       const signin_metrics::ProfileSignout signout_source_metric,
+      bool should_sign_out,
       bool has_sync_account,
       const base::FilePath& profile_path);
   void OnCloseBrowsersAborted(const base::FilePath& profile_path);
+
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS_ASH)
+  // Used as the `on_token_fetch_complete` callback in the
+  // `ForceSigninVerifier`.
+  void OnTokenFetchComplete(bool token_is_valid);
+#endif
+
+  // virtual for unit testing: cut down dependency on `BookmarkModel`.
+  // The following two functions will return `std::nullopt` if the
+  // `BookmarkModel` is nullptr.
+  virtual std::optional<size_t> GetAllBookmarksCount();
+  virtual std::optional<size_t> GetBookmarkBarBookmarksCount();
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+  // Returns `std::nullopt` if the `ExtensionRegistry` is nullptr.
+  virtual std::optional<size_t> GetExtensionsCount();
+#endif
 
   const std::unique_ptr<WaitForNetworkCallbackHelper>
       wait_for_network_callback_helper_;

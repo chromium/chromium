@@ -10,6 +10,7 @@
 #include "base/feature_list.h"
 #include "content/browser/devtools/devtools_throttle_handle.h"
 #include "content/browser/devtools/worker_devtools_manager.h"
+#include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/browser/storage_partition_impl.h"
 #include "content/browser/worker_host/dedicated_worker_host.h"
 #include "content/browser/worker_host/dedicated_worker_service_impl.h"
@@ -17,6 +18,7 @@
 #include "mojo/public/cpp/bindings/message.h"
 #include "services/network/public/mojom/client_security_state.mojom.h"
 #include "third_party/blink/public/common/features.h"
+#include "third_party/blink/public/common/permissions/permission_utils.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
 
 namespace content {
@@ -41,8 +43,7 @@ DedicatedWorkerServiceImpl* GetDedicatedWorkerServiceImplForRenderProcessHost(
 
 DedicatedWorkerHostFactoryImpl::DedicatedWorkerHostFactoryImpl(
     int worker_process_id,
-    absl::optional<GlobalRenderFrameHostId> creator_render_frame_host_id,
-    absl::optional<blink::DedicatedWorkerToken> creator_worker_token,
+    DedicatedWorkerCreator creator,
     GlobalRenderFrameHostId ancestor_render_frame_host_id,
     const blink::StorageKey& creator_storage_key,
     const net::IsolationInfo& isolation_info,
@@ -50,8 +51,7 @@ DedicatedWorkerHostFactoryImpl::DedicatedWorkerHostFactoryImpl(
     base::WeakPtr<CrossOriginEmbedderPolicyReporter> creator_coep_reporter,
     base::WeakPtr<CrossOriginEmbedderPolicyReporter> ancestor_coep_reporter)
     : worker_process_id_(worker_process_id),
-      creator_render_frame_host_id_(creator_render_frame_host_id),
-      creator_worker_token_(creator_worker_token),
+      creator_(creator),
       ancestor_render_frame_host_id_(ancestor_render_frame_host_id),
       creator_storage_key_(creator_storage_key),
       isolation_info_(isolation_info),
@@ -59,8 +59,6 @@ DedicatedWorkerHostFactoryImpl::DedicatedWorkerHostFactoryImpl(
       creator_coep_reporter_(std::move(creator_coep_reporter)),
       ancestor_coep_reporter_(std::move(ancestor_coep_reporter)) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  DCHECK_NE(creator_render_frame_host_id_.has_value(),
-            creator_worker_token_.has_value());
   DCHECK(creator_client_security_state_);
 }
 
@@ -111,9 +109,8 @@ void DedicatedWorkerHostFactoryImpl::CreateWorkerHost(
       creator_client_security_state_->cross_origin_embedder_policy;
 
   auto* host = new DedicatedWorkerHost(
-      service, token, worker_process_host, creator_render_frame_host_id_,
-      creator_worker_token_, ancestor_render_frame_host_id_,
-      creator_storage_key_, isolation_info_,
+      service, token, worker_process_host, creator_,
+      ancestor_render_frame_host_id_, creator_storage_key_, isolation_info_,
       std::move(creator_client_security_state_),
       std::move(creator_coep_reporter_), std::move(ancestor_coep_reporter_),
       std::move(host_receiver));
@@ -133,8 +130,8 @@ void DedicatedWorkerHostFactoryImpl::CreateWorkerHostAndStartScriptLoad(
     blink::mojom::FetchClientSettingsObjectPtr
         outside_fetch_client_settings_object,
     mojo::PendingRemote<blink::mojom::BlobURLToken> blob_url_token,
-    mojo::PendingRemote<blink::mojom::DedicatedWorkerHostFactoryClient>
-        client) {
+    mojo::PendingRemote<blink::mojom::DedicatedWorkerHostFactoryClient> client,
+    bool has_storage_access) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   if (!base::FeatureList::IsEnabled(blink::features::kPlzDedicatedWorker)) {
     mojo::ReportBadMessage("DWH_BROWSER_SCRIPT_FETCH_DISABLED");
@@ -153,14 +150,27 @@ void DedicatedWorkerHostFactoryImpl::CreateWorkerHostAndStartScriptLoad(
     return;
   }
 
+  // If the renderer claims it has storage access but the browser has no record
+  // of granting the permission then deny the request.
+  if (has_storage_access) {
+    RenderFrameHostImpl* ancestor_render_frame_host =
+        RenderFrameHostImpl::FromID(ancestor_render_frame_host_id_);
+    if (!ancestor_render_frame_host ||
+        ancestor_render_frame_host->GetPermissionStatus(
+            blink::PermissionType::STORAGE_ACCESS_GRANT) !=
+            blink::mojom::PermissionStatus::GRANTED) {
+      mojo::ReportBadMessage("DWH_STORAGE_ACCESS_NOT_GRANTED");
+      return;
+    }
+  }
+
   // TODO(https://crbug.com/1058759): Compare `creator_storage_key_.origin()` to
   // `script_url`, and report as bad message if that fails.
 
   mojo::PendingRemote<blink::mojom::DedicatedWorkerHost> pending_remote_host;
   auto* host = new DedicatedWorkerHost(
-      service, token, worker_process_host, creator_render_frame_host_id_,
-      creator_worker_token_, ancestor_render_frame_host_id_,
-      creator_storage_key_, isolation_info_,
+      service, token, worker_process_host, creator_,
+      ancestor_render_frame_host_id_, creator_storage_key_, isolation_info_,
       std::move(creator_client_security_state_),
       std::move(creator_coep_reporter_), std::move(ancestor_coep_reporter_),
       pending_remote_host.InitWithNewPipeAndPassReceiver());
@@ -176,7 +186,8 @@ void DedicatedWorkerHostFactoryImpl::CreateWorkerHostAndStartScriptLoad(
       base::MakeRefCounted<DevToolsThrottleHandle>(base::BindOnce(
           &DedicatedWorkerHost::StartScriptLoad, host->GetWeakPtr(), script_url,
           credentials_mode, std::move(outside_fetch_client_settings_object),
-          std::move(blob_url_token), std::move(remote_client)));
+          std::move(blob_url_token), std::move(remote_client),
+          has_storage_access));
 
   // We are about to start fetching from the browser process and we want
   // devtools to be able to instrument the URLLoaderFactory. This call will

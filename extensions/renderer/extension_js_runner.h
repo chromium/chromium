@@ -5,6 +5,7 @@
 #ifndef EXTENSIONS_RENDERER_EXTENSION_JS_RUNNER_H_
 #define EXTENSIONS_RENDERER_EXTENSION_JS_RUNNER_H_
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "extensions/renderer/bindings/js_runner.h"
@@ -38,11 +39,11 @@ class ExtensionJSRunner : public JSRunner {
  private:
   // Called with the result of executing the JS function.
   void OnFunctionComplete(ResultCallback,
-                          absl::optional<base::Value> value,
+                          std::optional<base::Value> value,
                           base::TimeTicks start_time);
 
   // The associated ScriptContext. Guaranteed to outlive this object.
-  ScriptContext* const script_context_;
+  const raw_ptr<ScriptContext, DanglingUntriaged> script_context_;
 
   base::WeakPtrFactory<ExtensionJSRunner> weak_factory_{this};
 };

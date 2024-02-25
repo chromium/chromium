@@ -14,8 +14,8 @@
 
 #include "mediapipe/gpu/cv_texture_cache_manager.h"
 
-#include "mediapipe/framework/port/logging.h"
 #include "absl/log/absl_check.h"
+#include "mediapipe/framework/port/logging.h"
 
 namespace mediapipe {
 
@@ -34,7 +34,7 @@ void CvTextureCacheManager::RegisterTextureCache(CVTextureCacheType cache) {
   absl::MutexLock lock(&mutex_);
 
   ABSL_CHECK(std::find(texture_caches_.begin(), texture_caches_.end(), cache) ==
-        texture_caches_.end())
+             texture_caches_.end())
       << "Attempting to register a texture cache twice";
   texture_caches_.emplace_back(cache);
 }

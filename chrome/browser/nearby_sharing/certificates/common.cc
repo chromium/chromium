@@ -56,10 +56,7 @@ std::vector<uint8_t> ComputeAuthenticationTokenHash(
 }
 
 std::vector<uint8_t> GenerateRandomBytes(size_t num_bytes) {
-  std::vector<uint8_t> bytes(num_bytes);
-  crypto::RandBytes(bytes);
-
-  return bytes;
+  return crypto::RandBytesAsVector(num_bytes);
 }
 
 std::unique_ptr<crypto::Encryptor> CreateNearbyShareCtrEncryptor(

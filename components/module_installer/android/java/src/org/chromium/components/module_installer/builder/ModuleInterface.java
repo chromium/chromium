@@ -18,6 +18,7 @@ import java.lang.annotation.Target;
 public @interface ModuleInterface {
     /** The name of the module. */
     String module();
+
     /** The fully qualified name of the module's interface implementation. */
     String impl();
 }

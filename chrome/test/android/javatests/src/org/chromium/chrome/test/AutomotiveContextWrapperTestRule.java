@@ -15,9 +15,7 @@ import org.junit.runners.model.Statement;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.test.util.PackageManagerWrapper;
 
-/**
- * JUnit test rule that takes care of setup and teardown for automotive-specific tests.
- */
+/** JUnit test rule that takes care of setup and teardown for automotive-specific tests. */
 public class AutomotiveContextWrapperTestRule implements TestRule {
     private AutomotiveTestContext mContext;
 
@@ -62,8 +60,8 @@ public class AutomotiveContextWrapperTestRule implements TestRule {
 
                 base.evaluate();
 
-                // After
-                // DisableAnimationTestRule requires an initialized context to do proper teardown.
+                // After DisableAnimationTestRule requires an initialized context to do proper
+                // teardown.
                 // This resets to the original context rather than nulling out.
                 if (contextToRestore != null) {
                     ContextUtils.initApplicationContextForTests(contextToRestore);

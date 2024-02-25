@@ -11,6 +11,12 @@
 
 namespace content {
 
+namespace {
+
+bool g_allow_showing_popup_menus_on_ios = true;
+
+}  // namespace
+
 PopupMenuHelper::PopupMenuHelper(
     Delegate* delegate,
     RenderFrameHost* render_frame_host,
@@ -39,6 +45,10 @@ void PopupMenuHelper::ShowPopupMenu(
     std::vector<blink::mojom::MenuItemPtr> items,
     bool right_aligned,
     bool allow_multiple_selection) {
+  if (!g_allow_showing_popup_menus_on_ios) {
+    return;
+  }
+
   menu_runner_ =
       [[WebMenuRunner alloc] initWithDelegate:weak_ptr_factory_.GetWeakPtr()
                                         items:items
@@ -81,6 +91,11 @@ void PopupMenuHelper::RenderWidgetHostVisibilityChanged(
 void PopupMenuHelper::RenderWidgetHostDestroyed(RenderWidgetHost* widget_host) {
   CHECK(observation_.IsObservingSource(widget_host));
   observation_.Reset();
+}
+
+// static
+void PopupMenuHelper::DontShowPopupMenuForTesting() {
+  g_allow_showing_popup_menus_on_ios = false;
 }
 
 }  // namespace content

@@ -32,7 +32,8 @@ public class MediaNotificationManager {
      * @param delegate a factory function for the delegate passed to new {@link
      *         MediaNotificatonController} instances.
      */
-    public static void show(MediaNotificationInfo notificationInfo,
+    public static void show(
+            MediaNotificationInfo notificationInfo,
             Supplier<MediaNotificationController.Delegate> delegateFactory) {
         MediaNotificationController controller = sControllers.get(notificationInfo.id);
         if (controller == null) {

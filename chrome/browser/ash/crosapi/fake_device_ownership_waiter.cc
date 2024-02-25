@@ -14,11 +14,9 @@
 
 namespace crosapi {
 
-void FakeDeviceOwnershipWaiter::WaitForOwnerhipFetched(
-    base::OnceClosure callback,
-    bool launching_at_login_screen) {
-  if (launching_at_login_screen ||
-      user_manager::UserManager::Get()->IsLoggedInAsGuest() ||
+void FakeDeviceOwnershipWaiter::WaitForOwnershipFetched(
+    base::OnceClosure callback) {
+  if (user_manager::UserManager::Get()->IsLoggedInAsGuest() ||
       profiles::IsDemoSession()) {
     std::move(callback).Run();
     return;

@@ -6,12 +6,12 @@
 #define COMPONENTS_SYNC_BASE_USER_SELECTABLE_TYPE_H_
 
 #include <iosfwd>
+#include <optional>
 #include <string>
 
 #include "base/containers/enum_set.h"
 #include "build/chromeos_buildflags.h"
 #include "components/sync/base/model_type.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace syncer {
 
@@ -37,7 +37,8 @@ enum class UserSelectableType {
   kTabs,
   kSavedTabGroups,
   kPayments,
-  kLastType = kPayments
+  kSharedTabGroupData,
+  kLastType = kSharedTabGroupData
 };
 
 using UserSelectableTypeSet = base::EnumSet<UserSelectableType,
@@ -46,7 +47,7 @@ using UserSelectableTypeSet = base::EnumSet<UserSelectableType,
 
 const char* GetUserSelectableTypeName(UserSelectableType type);
 // Returns the type if the string matches a known type.
-absl::optional<UserSelectableType> GetUserSelectableTypeFromString(
+std::optional<UserSelectableType> GetUserSelectableTypeFromString(
     const std::string& type);
 std::string UserSelectableTypeSetToString(UserSelectableTypeSet types);
 ModelTypeSet UserSelectableTypeToAllModelTypes(UserSelectableType type);
@@ -77,7 +78,7 @@ ModelTypeSet UserSelectableOsTypeToAllModelTypes(UserSelectableOsType type);
 ModelType UserSelectableOsTypeToCanonicalModelType(UserSelectableOsType type);
 
 // Returns the type if the string matches a known OS type.
-absl::optional<UserSelectableOsType> GetUserSelectableOsTypeFromString(
+std::optional<UserSelectableOsType> GetUserSelectableOsTypeFromString(
     const std::string& type);
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 

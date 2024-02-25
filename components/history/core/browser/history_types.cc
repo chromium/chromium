@@ -215,10 +215,8 @@ QueryURLResult& QueryURLResult::operator=(QueryURLResult&&) noexcept = default;
 
 MostVisitedURL::MostVisitedURL() = default;
 
-MostVisitedURL::MostVisitedURL(const GURL& url,
-                               const std::u16string& title,
-                               double score)
-    : url(url), title(title), score(score) {}
+MostVisitedURL::MostVisitedURL(const GURL& url, const std::u16string& title)
+    : url(url), title(title) {}
 
 MostVisitedURL::MostVisitedURL(const MostVisitedURL& other) = default;
 
@@ -285,7 +283,7 @@ HistoryAddPageArgs::HistoryAddPageArgs()
                          base::Time(),
                          0,
                          0,
-                         absl::nullopt,
+                         std::nullopt,
                          GURL(),
                          RedirectList(),
                          ui::PAGE_TRANSITION_LINK,
@@ -293,17 +291,19 @@ HistoryAddPageArgs::HistoryAddPageArgs()
                          SOURCE_BROWSED,
                          false,
                          true,
-                         absl::nullopt,
-                         absl::nullopt,
-                         absl::nullopt,
-                         absl::nullopt) {}
+                         std::nullopt,
+                         std::nullopt,
+                         std::nullopt,
+                         std::nullopt,
+                         std::nullopt,
+                         std::nullopt) {}
 
 HistoryAddPageArgs::HistoryAddPageArgs(
     const GURL& url,
     base::Time time,
     ContextID context_id,
     int nav_entry_id,
-    absl::optional<int64_t> local_navigation_id,
+    std::optional<int64_t> local_navigation_id,
     const GURL& referrer,
     const RedirectList& redirects,
     ui::PageTransition transition,
@@ -311,10 +311,12 @@ HistoryAddPageArgs::HistoryAddPageArgs(
     VisitSource source,
     bool did_replace_entry,
     bool consider_for_ntp_most_visited,
-    absl::optional<std::u16string> title,
-    absl::optional<Opener> opener,
-    absl::optional<base::Uuid> bookmark_id,
-    absl::optional<VisitContextAnnotations::OnVisitFields> context_annotations)
+    std::optional<std::u16string> title,
+    std::optional<GURL> top_level_url,
+    std::optional<Opener> opener,
+    std::optional<int64_t> bookmark_id,
+    std::optional<std::string> app_id,
+    std::optional<VisitContextAnnotations::OnVisitFields> context_annotations)
     : url(url),
       time(time),
       context_id(context_id),
@@ -328,8 +330,10 @@ HistoryAddPageArgs::HistoryAddPageArgs(
       did_replace_entry(did_replace_entry),
       consider_for_ntp_most_visited(consider_for_ntp_most_visited),
       title(title),
+      top_level_url(top_level_url),
       opener(opener),
       bookmark_id(bookmark_id),
+      app_id(app_id),
       context_annotations(std::move(context_annotations)) {}
 
 HistoryAddPageArgs::HistoryAddPageArgs(const HistoryAddPageArgs& other) =
@@ -384,7 +388,7 @@ bool DeletionTimeRange::IsAllTime() const {
 // static
 DeletionInfo DeletionInfo::ForAllHistory() {
   return DeletionInfo(DeletionTimeRange::AllTime(), false, {}, {},
-                      absl::nullopt);
+                      std::nullopt);
 }
 
 // static
@@ -392,14 +396,14 @@ DeletionInfo DeletionInfo::ForUrls(URLRows deleted_rows,
                                    std::set<GURL> favicon_urls) {
   return DeletionInfo(DeletionTimeRange::Invalid(), false,
                       std::move(deleted_rows), std::move(favicon_urls),
-                      absl::nullopt);
+                      std::nullopt);
 }
 
 DeletionInfo::DeletionInfo(const DeletionTimeRange& time_range,
                            bool is_from_expiration,
                            URLRows deleted_rows,
                            std::set<GURL> favicon_urls,
-                           absl::optional<std::set<GURL>> restrict_urls)
+                           std::optional<std::set<GURL>> restrict_urls)
     : DeletionInfo(time_range,
                    is_from_expiration,
                    Reason::kOther,
@@ -412,7 +416,7 @@ DeletionInfo::DeletionInfo(const DeletionTimeRange& time_range,
                            Reason deletion_reason,
                            URLRows deleted_rows,
                            std::set<GURL> favicon_urls,
-                           absl::optional<std::set<GURL>> restrict_urls)
+                           std::optional<std::set<GURL>> restrict_urls)
     : time_range_(time_range),
       is_from_expiration_(is_from_expiration),
       deletion_reason_(deletion_reason),
@@ -511,13 +515,9 @@ ClusterVisit& ClusterVisit::operator=(ClusterVisit&&) = default;
 
 ClusterKeywordData::ClusterKeywordData() = default;
 ClusterKeywordData::ClusterKeywordData(
-    const std::vector<std::string>& entity_collections)
-    : entity_collections(entity_collections) {}
-ClusterKeywordData::ClusterKeywordData(
     ClusterKeywordData::ClusterKeywordType type,
-    float score,
-    const std::vector<std::string>& entity_collections)
-    : type(type), score(score), entity_collections(entity_collections) {}
+    float score)
+    : type(type), score(score) {}
 ClusterKeywordData::ClusterKeywordData(const ClusterKeywordData&) = default;
 ClusterKeywordData::ClusterKeywordData(ClusterKeywordData&&) = default;
 ClusterKeywordData& ClusterKeywordData::operator=(const ClusterKeywordData&) =
@@ -527,13 +527,11 @@ ClusterKeywordData& ClusterKeywordData::operator=(ClusterKeywordData&&) =
 ClusterKeywordData::~ClusterKeywordData() = default;
 
 bool ClusterKeywordData::operator==(const ClusterKeywordData& data) const {
-  return type == data.type && std::fabs(score - data.score) < kScoreEpsilon &&
-         entity_collections == data.entity_collections;
+  return type == data.type && std::fabs(score - data.score) < kScoreEpsilon;
 }
 
 std::string ClusterKeywordData::ToString() const {
-  return base::StringPrintf("ClusterKeywordData{%d, %f, {%s}}", type, score,
-                            base::JoinString(entity_collections, ",").c_str());
+  return base::StringPrintf("ClusterKeywordData{%d, %f}", type, score);
 }
 
 std::ostream& operator<<(std::ostream& out, const ClusterKeywordData& data) {
@@ -569,8 +567,8 @@ Cluster::Cluster(int64_t cluster_id,
                  const base::flat_map<std::u16string, ClusterKeywordData>&
                      keyword_to_data_map,
                  bool should_show_on_prominent_ui_surfaces,
-                 absl::optional<std::u16string> label,
-                 absl::optional<std::u16string> raw_label,
+                 std::optional<std::u16string> label,
+                 std::optional<std::u16string> raw_label,
                  query_parser::Snippet::MatchPositions label_match_positions,
                  std::vector<std::string> related_searches,
                  float search_match_score)

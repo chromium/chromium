@@ -52,7 +52,7 @@ class CrostiniUpgradeAvailableNotification {
   message_center::Notification* Get() { return notification_.get(); }
 
  private:
-  raw_ptr<Profile, ExperimentalAsh> profile_;  // Not owned.
+  raw_ptr<Profile> profile_;  // Not owned.
   std::unique_ptr<message_center::Notification> notification_;
   base::WeakPtrFactory<CrostiniUpgradeAvailableNotification> weak_ptr_factory_{
       this};

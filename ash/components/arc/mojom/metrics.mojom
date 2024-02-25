@@ -1,7 +1,7 @@
 // Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
-// Next MinVersion: 30
+// Next MinVersion: 33
 module arc.mojom;
 
 import "mojo/public/mojom/base/time.mojom";
@@ -203,6 +203,8 @@ enum ArcNetworkError {
 enum AppKillType {
   LMKD_KILL = 0,
   OOM_KILL = 1,
+  [MinVersion=31] GMS_UPDATE_KILL = 2,
+  [MinVersion=31] GMS_START_KILL = 3,
 };
 
 // Describes an app kill from ARC instance.
@@ -239,29 +241,6 @@ enum ArcCorePriAbiMigEvent {
   kWebviewNoDowngrade = 5,
   kWebviewDowngradeSuccess = 6,
   kWebviewDowngradeFailure = 7,
-};
-
-// Enumerates the types of a clipboard / drag-and-drop event, including its
-// direction (ARC to Chrome or Chrome to ARC) and its content type (text or
-// an image).
-[Extensible]
-enum ArcClipboardDragDropEvent {
-  kTextClipboardFromChrome = 0,
-  kImageClipboardFromChrome = 1,
-  kTextClipboardFromArc = 2,
-  kImageClipboardFromArc = 3,
-  kTextDragDropFromChrome = 4,
-  kImageDragDropFromChrome = 5,
-  kTextDragDropFromArc = 6,
-  kImageDragDropFromArc = 7,
-};
-
-[Extensible]
-enum ArcImageCopyPasteCompatAction {
-  kPasteFromFiles = 0,
-  kDragFromFiles = 1,
-  kPasteFromBrowser = 2,
-  kDragFromBrowser = 3,
 };
 
 // These values are persisted to logs. Entries should not be renumbered and
@@ -353,22 +332,6 @@ enum MainAccountHashMigrationStatus {
   // tools/metrics/histograms/enums.xml.
 };
 
-// The list of subdirectories of Android /data that are covered in the
-// statistics on the directory size and the number of files contained.
-enum AndroidDataSubdirectory {
-    // /data/app
-    kUserInstalledAppDir = 0,
-
-    // /data/data
-    kInternalDataDir = 1,
-
-    // /data/media/0
-    kExternalDataRootUserDir = 2,
-
-    // /data/user_de/0
-    kDEStorageRootUserDir = 3,
-};
-
 // Enumerates the types of Wayland timing events where the message processing
 // completed late and could cause UI jank in ARC apps. This enum is persisted to
 // logs. Existing values should not be changed and new values should only be
@@ -388,8 +351,22 @@ enum WaylandTimingEvent {
   kZcrVsyncTimingUpdate = 10,
 };
 
-// Deprecated method IDs: 25
-// Next method ID: 33
+// Enumerates the types of select ARC KeyMint error codes.
+[Extensible]
+enum ArcKeyMintError {
+  [Default] kOther = 0,
+  kOk = 1,
+  kUnknownError = 2,
+  kInvalidKeyBlob = 3,
+  kInvalidArgument = 4,
+  kUnsupportedAlgorithm = 5,
+  kUnimplemented = 6,
+};
+
+// This interface is implemented in ash by ArcMetricsService. It is called by
+// ARC side.
+// Deprecated method IDs: 8, 18, 25, 26, 27, 28, 29
+// Next method ID: 37
 interface MetricsHost {
   // Reports boot progress events from ARC instance.
   ReportBootProgress@0(array<BootProgressEvent> events,
@@ -415,10 +392,6 @@ interface MetricsHost {
 
   // Reports boot time during ABI Migration by ARC Metrics Service.
   [MinVersion=7] ReportArcCorePriAbiMigBootTime@7(mojo_base.mojom.TimeDelta duration);
-
-  // Reports a clipboard / drag-and-drop event.
-  [MinVersion=8] ReportClipboardDragDropEvent@8(
-      ArcClipboardDragDropEvent event_type);
 
   // Reports ANR event.
   [MinVersion=9] ReportAnr@10(Anr anr);
@@ -460,16 +433,6 @@ interface MetricsHost {
   [MinVersion=14] ReportMainAccountHashMigrationMetrics@17(
       MainAccountHashMigrationStatus status);
 
-  // DEPRECATED: this method will be removed once the other end is cleaned up.
-  // Reports the operation type (copy & paste or drag & drop) and the source of
-  // the image (from browser or Files app) when image copy-paste app compat is
-  // triggered.
-  // Image copy-paste app compat is a feature that allows insertion of images to
-  // Android apps through commitContent IME API or Android intent, when the app
-  // don't support images in the clipboard.
-  [MinVersion=15] ReportImageCopyPasteCompatActionDeprecated@18(
-      ArcImageCopyPasteCompatAction action_type);
-
   // Reports occurrence of one event in the ARC networking stack.
   [MinVersion=16] ReportArcNetworkEvent@19(ArcNetworkEvent event);
 
@@ -496,41 +459,33 @@ interface MetricsHost {
   [MinVersion=26] ReportWaylandLateTimingEvent@30(
       WaylandTimingEvent event, mojo_base.mojom.TimeDelta duration);
 
-  // Reports the number of directories and non-directory files under the
-  // "Play files" folder in ChromeOS Files app except for the "Android" folder.
-  [MinVersion=25] ReportNonAndroidPlayFilesCount@26(
-      uint32 number_of_directories, uint32 number_of_non_directories);
-
-  // For each package, reports the number of directories and non-directory files
-  // and the total size of files contained in one of its package-specific
-  // directories, which can be found in /data/app, /data/data,
-  // /data/media/0/Android/{data,obb} or /data/user_de/0.
-  [MinVersion=25] ReportPerAppFileStatsOfAndroidDataDirs@27(
-      uint32 number_of_directories, uint32 number_of_non_directories,
-      uint32 size_in_kilobytes);
-
-  // Reports the number of directories and non-directory files and the total
-  // size of the files in /data/app, /data/data, /data/media/0 and
-  // /data/user_de/0 combined. Also reports the duration of the file system
-  // traversal to get the data in milliseconds.
-  [MinVersion=25] ReportTotalFileStatsOfAndroidDataDirs@28(
-      uint32 number_of_directories, uint32 number_of_non_directories,
-      uint32 size_in_kilobytes, mojo_base.mojom.TimeDelta duration);
-
-  // Reports the number of directories and non-directory files and the total
-  // size of the files in one of the selected subdirectories of /data
-  // (/data/app, /data/data, /data/media/0 and /data/user_de/0), which is
-  // specified in the first argument.
-  [MinVersion=25] ReportTotalFileStatsOfAndroidDataSubdir@29(
-      AndroidDataSubdirectory target, uint32 number_of_directories,
-      uint32 number_of_non_directories, uint32 size_in_kilobytes);
-
   // Reports first WebView started event to collect WebView usage in ARC.
   [MinVersion=27] ReportWebViewProcessStarted@31();
 
   // Reports api usage of vpn exclude route.
   [MinVersion=29] ReportVpnServiceBuilderCompatApiUsage@32
       (VpnServiceBuilderCompatApiId api_id);
+
+  // Reports count of newly opened QoS socket connections during a poll for all
+  // socket connections in ARC. Use int for uint value for the same reason as
+  // ReportQosSocketPercentage.
+  [MinVersion=30] ReportNewQosSocketCount@33(int32 count);
+
+  // Reports percentage of QoS socket connections during a poll for all socket
+  // connections in ARC. The reason for using int for uint percentage field is:
+  // Mojo uint values are byte cast when deserialized in Java, the practical
+  // and safe solution is to pick the next signed type that includes the whole
+  // unsigned range of possible values. Otherwise it forces writing error-prone
+  // conversion code at the entry or exit of mojo data.
+  // Range of perc arg will be [0, 100].
+  [MinVersion=30] ReportQosSocketPercentage@34(int32 perc);
+
+  // Reports select error codes on select KeyMint calls (on ARC T+ only).
+  [MinVersion=31] ReportArcKeyMintError@35(ArcKeyMintError error);
+
+  // Reports window drag resize latency.
+  [MinVersion=32] ReportDragResizeLatency@36(
+      array<mojo_base.mojom.TimeDelta> durations);
 };
 
 // Deprecated method IDs: 0

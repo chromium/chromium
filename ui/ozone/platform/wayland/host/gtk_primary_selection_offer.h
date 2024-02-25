@@ -35,9 +35,9 @@ class GtkPrimarySelectionOffer : public WaylandDataOfferBase {
   base::ScopedFD Receive(const std::string& mime_type) override;
 
  private:
-  // gtk_primary_selection_offer_listener callbacks.
+  // gtk_primary_selection_offer_listener callbacks:
   static void OnOffer(void* data,
-                      gtk_primary_selection_offer* data_offer,
+                      gtk_primary_selection_offer* selection_offer,
                       const char* mime_type);
 
   // The Wayland object wrapped by this instance.

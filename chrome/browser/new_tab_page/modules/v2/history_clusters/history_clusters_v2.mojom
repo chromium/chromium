@@ -5,6 +5,7 @@
 module ntp.history_clusters_v2.mojom;
 
 import "chrome/browser/new_tab_page/modules/history_clusters/cart/cart.mojom";
+import "chrome/browser/new_tab_page/modules/history_clusters/discount/discount.mojom";
 import "chrome/browser/new_tab_page/modules/history_clusters/history_clusters_layout_type.mojom";
 import "components/history_clusters/public/mojom/history_cluster_types.mojom";
 import "url/mojom/url.mojom";
@@ -18,11 +19,18 @@ interface PageHandler {
   GetCartForCluster(history_clusters.mojom.Cluster cluster)
     => (ntp.history_clusters.cart.mojom.Cart? cart);
 
+  // Get the discounts for the given `cluster`.
+  GetDiscountsForCluster(history_clusters.mojom.Cluster cluster)
+    => (map<url.mojom.Url, array<ntp.history_clusters.discount.mojom.Discount>> discounts);
+
   // Open or make visible the Journeys UI on the Side Panel.
   ShowJourneysSidePanel(string query);
 
   // Records that the cluster with `cluster_id` was clicked.
   RecordClick(int64 cluster_id);
+
+  // Records that the cluster with `cluster_id` was disabled.
+  RecordDisabled(int64 cluster_id);
 
   // Records the layout type for the cluster with `cluster_id`.
   RecordLayoutTypeShown(ntp.history_clusters.mojom.LayoutType layout_type,
@@ -31,6 +39,7 @@ interface PageHandler {
   // Dismiss or undo a dismiss of a cluster by marking its associated visits
   // with a given interaction state.
   UpdateClusterVisitsInteractionState(
+      int64 cluster_id,
       array<history_clusters.mojom.URLVisit> visits,
       history_clusters.mojom.InteractionState state);
 };

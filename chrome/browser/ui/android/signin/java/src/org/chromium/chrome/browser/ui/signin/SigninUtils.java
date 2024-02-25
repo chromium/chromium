@@ -4,7 +4,6 @@
 
 package org.chromium.chrome.browser.ui.signin;
 
-import android.accounts.Account;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
@@ -12,12 +11,20 @@ import android.os.Build;
 import android.provider.Settings;
 import android.text.TextUtils;
 
+import androidx.annotation.Nullable;
+
 import org.chromium.base.IntentUtils;
 import org.chromium.chrome.browser.signin.services.DisplayableProfileData;
+import org.chromium.chrome.browser.signin.services.SigninManager;
+import org.chromium.chrome.browser.signin.services.SigninManager.SignInCallback;
+import org.chromium.components.signin.AccountUtils;
+import org.chromium.components.signin.SigninFeatureMap;
+import org.chromium.components.signin.SigninFeatures;
+import org.chromium.components.signin.base.CoreAccountInfo;
+import org.chromium.components.signin.metrics.SigninAccessPoint;
+import org.chromium.ui.modaldialog.ModalDialogManager;
 
-/**
- * Helper functions for sign-in and accounts.
- */
+/** Helper functions for sign-in and accounts. */
 public final class SigninUtils {
     private static final String ACCOUNT_SETTINGS_ACTION = "android.settings.ACCOUNT_SYNC_SETTINGS";
     private static final String ACCOUNT_SETTINGS_ACCOUNT_KEY = "account";
@@ -27,16 +34,17 @@ public final class SigninUtils {
     /**
      * Opens a Settings page to configure settings for a single account.
      * @param activity Activity to use when starting the Activity.
-     * @param account The account for which the Settings page should be opened.
+     * @param accountEmail The account email for which the Settings page should be opened.
      * @return Whether or not Android accepted the Intent.
      */
-    public static boolean openSettingsForAccount(Activity activity, Account account) {
+    public static boolean openSettingsForAccount(Activity activity, String accountEmail) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             // ACCOUNT_SETTINGS_ACTION no longer works on Android O+, always open all accounts page.
             return openSettingsForAllAccounts(activity);
         }
         Intent intent = new Intent(ACCOUNT_SETTINGS_ACTION);
-        intent.putExtra(ACCOUNT_SETTINGS_ACCOUNT_KEY, account);
+        intent.putExtra(
+                ACCOUNT_SETTINGS_ACCOUNT_KEY, AccountUtils.createAccountFromName(accountEmail));
         return IntentUtils.safeStartActivity(activity, intent);
     }
 
@@ -73,15 +81,95 @@ public final class SigninUtils {
         return context.getString(R.string.sync_promo_continue_as, profileData.getAccountEmail());
     }
 
-    /**
-     * Returns the accessibility label for the the account picker.
-     */
+    /** Returns the accessibility label for the the account picker. */
     public static String getChooseAccountLabel(
             final Context context, DisplayableProfileData profileData) {
         if (profileData.hasDisplayableEmailAddress()) {
-            return context.getString(R.string.signin_account_picker_description_with_email,
+            return context.getString(
+                    R.string.signin_account_picker_description_with_email,
                     profileData.getAccountEmail());
         }
         return context.getString(R.string.signin_account_picker_description);
+    }
+
+    /** Performs signin after confirming account management with the user, if necessary. */
+    public static void checkAccountManagementAndSignIn(
+            CoreAccountInfo coreAccountInfo,
+            SigninManager signinManager,
+            @SigninAccessPoint int accessPoint,
+            @Nullable SignInCallback callback,
+            Context context,
+            ModalDialogManager modalDialogManager) {
+        if (!SigninFeatureMap.isEnabled(SigninFeatures.ENTERPRISE_POLICY_ON_SIGNIN)
+                || signinManager.getUserAcceptedAccountManagement()) {
+            signinManager.signin(coreAccountInfo, accessPoint, callback);
+            return;
+        }
+        signinManager.isAccountManaged(
+                coreAccountInfo,
+                (Boolean isAccountManaged) -> {
+                    onIsAccountManaged(
+                            isAccountManaged,
+                            coreAccountInfo,
+                            signinManager,
+                            accessPoint,
+                            callback,
+                            context,
+                            modalDialogManager);
+                });
+    }
+
+    private static void onIsAccountManaged(
+            Boolean isAccountManaged,
+            CoreAccountInfo coreAccountInfo,
+            SigninManager signinManager,
+            @SigninAccessPoint int accessPoint,
+            @Nullable SignInCallback callback,
+            Context context,
+            ModalDialogManager modalDialogManager) {
+        if (!isAccountManaged) {
+            signinManager.signin(coreAccountInfo, accessPoint, callback);
+            return;
+        }
+
+        SignInCallback wrappedCallback =
+                new SignInCallback() {
+                    @Override
+                    public void onSignInComplete() {
+                        if (callback != null) callback.onSignInComplete();
+                    }
+
+                    @Override
+                    public void onPrefsCommitted() {
+                        if (callback != null) callback.onPrefsCommitted();
+                    }
+
+                    @Override
+                    public void onSignInAborted() {
+                        // If signin is aborted, we need to clear the account management acceptance.
+                        signinManager.setUserAcceptedAccountManagement(false);
+                        if (callback != null) callback.onSignInAborted();
+                    }
+                };
+
+        ConfirmManagedSyncDataDialogCoordinator.Listener listener =
+                new ConfirmManagedSyncDataDialogCoordinator.Listener() {
+                    @Override
+                    public void onConfirm() {
+                        signinManager.setUserAcceptedAccountManagement(true);
+                        signinManager.signin(coreAccountInfo, accessPoint, wrappedCallback);
+                    }
+
+                    @Override
+                    public void onCancel() {
+                        if (callback != null) callback.onSignInAborted();
+                    }
+                };
+
+        new ConfirmManagedSyncDataDialogCoordinator(
+                context,
+                modalDialogManager,
+                listener,
+                signinManager.extractDomainName(coreAccountInfo.getEmail()));
     }
 }

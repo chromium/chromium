@@ -10,8 +10,10 @@
 
 #include "base/check.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/scoped_feature_list.h"
 #include "build/chromeos_buildflags.h"
 #include "media/base/container_names.h"
+#include "media/base/media_switches.h"
 #include "media/base/mock_filters.h"
 #include "media/base/test_data_util.h"
 #include "media/ffmpeg/ffmpeg_common.h"
@@ -286,53 +288,54 @@ TEST_F(FFmpegGlueDestructionTest, WithOpenWithOpenStreams) {
 
 TEST_F(FFmpegGlueContainerTest, OGG) {
   InitializeAndOpen("sfx.ogg");
-  ExpectContainer(container_names::CONTAINER_OGG);
+  ExpectContainer(container_names::MediaContainerName::kContainerOgg);
 }
 
 TEST_F(FFmpegGlueContainerTest, WEBM) {
   InitializeAndOpen("sfx-opus-441.webm");
-  ExpectContainer(container_names::CONTAINER_WEBM);
+  ExpectContainer(container_names::MediaContainerName::kContainerWEBM);
 }
 
 TEST_F(FFmpegGlueContainerTest, FLAC) {
   InitializeAndOpen("sfx.flac");
-  ExpectContainer(container_names::CONTAINER_FLAC);
+  ExpectContainer(container_names::MediaContainerName::kContainerFLAC);
 }
 
 TEST_F(FFmpegGlueContainerTest, WAV) {
   InitializeAndOpen("sfx_s16le.wav");
-  ExpectContainer(container_names::CONTAINER_WAV);
+  ExpectContainer(container_names::MediaContainerName::kContainerWAV);
 }
 
 TEST_F(FFmpegGlueContainerTest, MP3) {
   InitializeAndOpen("sfx.mp3");
-  ExpectContainer(container_names::CONTAINER_MP3);
+  ExpectContainer(container_names::MediaContainerName::kContainerMP3);
 }
 
 #if BUILDFLAG(USE_PROPRIETARY_CODECS)
 TEST_F(FFmpegGlueContainerTest, MOV) {
   InitializeAndOpen("sfx.m4a");
-  ExpectContainer(container_names::CONTAINER_MOV);
+  ExpectContainer(container_names::MediaContainerName::kContainerMOV);
 }
 
 TEST_F(FFmpegGlueContainerTest, AAC) {
   InitializeAndOpen("sfx.adts");
-  ExpectContainer(container_names::CONTAINER_AAC);
+  ExpectContainer(container_names::MediaContainerName::kContainerAAC);
 }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 TEST_F(FFmpegGlueContainerTest, AVI) {
+  base::test::ScopedFeatureList scoped_enable(kCrOSLegacyMediaFormats);
   InitializeAndOpen("bear.avi");
-  ExpectContainer(container_names::CONTAINER_AVI);
+  ExpectContainer(container_names::MediaContainerName::kContainerAVI);
 }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 #endif  // BUILDFLAG(USE_PROPRIETARY_CODECS)
 
 // Probe something unsupported to ensure we fall back to the our internal guess.
 TEST_F(FFmpegGlueContainerTest, FLV) {
   Initialize("bear.flv");
   ASSERT_FALSE(glue_->OpenContext());
-  ExpectContainer(container_names::CONTAINER_FLV);
+  ExpectContainer(container_names::MediaContainerName::kContainerFLV);
 }
 
 }  // namespace media

@@ -19,7 +19,8 @@
                 ],
                 "build_config": "Debug",
                 "config": "chromium",
-                "target_bits": 64
+                "target_bits": 64,
+                "target_platform": "linux"
               },
               "legacy_gclient_config": {
                 "config": "chromium"
@@ -42,7 +43,8 @@
                 ],
                 "build_config": "Debug",
                 "config": "chromium",
-                "target_bits": 64
+                "target_bits": 64,
+                "target_platform": "linux"
               },
               "legacy_gclient_config": {
                 "config": "chromium"
@@ -66,6 +68,10 @@
       "mirroring_builder_group_and_names": [
         {
           "builder": "linux_chromium_compile_dbg_ng",
+          "group": "tryserver.chromium.linux"
+        },
+        {
+          "builder": "linux_chromium_compile_siso_dbg_ng",
           "group": "tryserver.chromium.linux"
         },
         {

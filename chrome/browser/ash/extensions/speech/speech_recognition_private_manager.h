@@ -7,6 +7,7 @@
 
 #include <map>
 #include <memory>
+#include <optional>
 #include <string>
 
 #include "base/functional/callback_forward.h"
@@ -14,7 +15,6 @@
 #include "chrome/browser/ash/extensions/speech/speech_recognition_private_delegate.h"
 #include "chrome/browser/speech/speech_recognition_constants.h"
 #include "components/keyed_service/core/keyed_service.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 class BrowserContextKeyedServiceFactory;
 
@@ -33,9 +33,9 @@ class SpeechRecognitionPrivateManager
       public SpeechRecognitionPrivateDelegate {
   using OnStartCallback =
       base::OnceCallback<void(speech::SpeechRecognitionType type,
-                              absl::optional<std::string> error)>;
+                              std::optional<std::string> error)>;
   using OnStopCallback =
-      base::OnceCallback<void(absl::optional<std::string> error)>;
+      base::OnceCallback<void(std::optional<std::string> error)>;
 
  public:
   explicit SpeechRecognitionPrivateManager(content::BrowserContext* context);
@@ -52,11 +52,11 @@ class SpeechRecognitionPrivateManager
   // Creates a unique ID for an API client given an extension ID and an optional
   // ID, which is provided by the client.
   std::string CreateKey(const std::string& extension_id,
-                        absl::optional<int> client_id);
+                        std::optional<int> client_id);
   // Handles a call to start speech recognition.
   void HandleStart(const std::string& key,
-                   absl::optional<std::string> locale,
-                   absl::optional<bool> interim_results,
+                   std::optional<std::string> locale,
+                   std::optional<bool> interim_results,
                    OnStartCallback callback);
   // Handles a call to stop speech recognition.
   void HandleStop(const std::string& key, OnStopCallback callback);
@@ -88,7 +88,7 @@ class SpeechRecognitionPrivateManager
       recognition_data_;
 
   // The browser context associated with the keyed service.
-  raw_ptr<content::BrowserContext, ExperimentalAsh> context_;
+  raw_ptr<content::BrowserContext> context_;
 };
 
 }  // namespace extensions

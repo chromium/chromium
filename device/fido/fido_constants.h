@@ -8,7 +8,6 @@
 #include <stdint.h>
 
 #include <array>
-#include <vector>
 
 #include "base/component_export.h"
 #include "base/containers/fixed_flat_set.h"
@@ -194,6 +193,9 @@ constexpr auto kCtapResponseCodeList = base::MakeFixedFlatSet<uint8_t>({
     static_cast<uint8_t>(CtapDeviceResponseCode::kCtap2ErrVendorLast),
 });
 
+COMPONENT_EXPORT(DEVICE_FIDO)
+std::ostream& operator<<(std::ostream& os, CtapDeviceResponseCode code);
+
 // Commands supported by CTAPHID device as specified in
 // https://fidoalliance.org/specs/fido-v2.0-rd-20170927/fido-client-to-authenticator-protocol-v2.0-rd-20170927.html#ctaphid-commands
 enum class FidoHidDeviceCommand : uint8_t {
@@ -256,6 +258,9 @@ enum class CtapRequestCommand : uint8_t {
   kAuthenticatorCredentialManagement = 0x0a,
   kAuthenticatorCredentialManagementPreview = 0x41,
 };
+
+COMPONENT_EXPORT(DEVICE_FIDO)
+std::ostream& operator<<(std::ostream& os, CtapRequestCommand command);
 
 // Enumerates the keys in a COSE Key structure. See
 // https://tools.ietf.org/html/rfc8152#section-7.1
@@ -459,7 +464,6 @@ COMPONENT_EXPORT(DEVICE_FIDO) extern const char kExtensionLargeBlob[];
 COMPONENT_EXPORT(DEVICE_FIDO) extern const char kExtensionLargeBlobKey[];
 COMPONENT_EXPORT(DEVICE_FIDO) extern const char kExtensionCredBlob[];
 COMPONENT_EXPORT(DEVICE_FIDO) extern const char kExtensionMinPINLength[];
-COMPONENT_EXPORT(DEVICE_FIDO) extern const char kExtensionDevicePublicKey[];
 COMPONENT_EXPORT(DEVICE_FIDO) extern const char kExtensionPRF[];
 
 // Constants for the prf extension
@@ -484,17 +488,6 @@ extern const char kExtensionLargeBlobSupportRequired[];
 COMPONENT_EXPORT(DEVICE_FIDO) extern const char kExtensionLargeBlobSupported[];
 COMPONENT_EXPORT(DEVICE_FIDO) extern const char kExtensionLargeBlobWrite[];
 COMPONENT_EXPORT(DEVICE_FIDO) extern const char kExtensionLargeBlobWritten[];
-
-// Map keys for the device public key extension.
-COMPONENT_EXPORT(DEVICE_FIDO)
-extern const char kDevicePublicKeyAttestationKey[];
-COMPONENT_EXPORT(DEVICE_FIDO)
-extern const char kDevicePublicKeyAttestationFormatsKey[];
-COMPONENT_EXPORT(DEVICE_FIDO) extern const char kDevicePublicKeyAAGUIDKey[];
-COMPONENT_EXPORT(DEVICE_FIDO) extern const char kDevicePublicKeyDPKKey[];
-COMPONENT_EXPORT(DEVICE_FIDO) extern const char kDevicePublicKeyScopeKey[];
-COMPONENT_EXPORT(DEVICE_FIDO) extern const char kDevicePublicKeyNonceKey[];
-COMPONENT_EXPORT(DEVICE_FIDO) extern const char kDevicePublicKeyEPKey[];
 
 // Maximum number of seconds the browser waits for Bluetooth authenticator to
 // send packets that advertises that the device is in pairing mode before

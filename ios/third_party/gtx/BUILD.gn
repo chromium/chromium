@@ -228,6 +228,7 @@ ios_framework_bundle("gtx") {
   ]
   configs += [
     "//build/config/gcc:symbol_visibility_default",
+    "//build/config/compiler:no_chromium_code",
     ":disable_deprecated_declarations",
   ]
 }

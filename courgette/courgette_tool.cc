@@ -408,7 +408,7 @@ int main(int argc, const char* argv[]) {
     settings.log_file_path = FILE_PATH_LITERAL("courgette.log");
   }
   std::ignore = logging::InitLogging(settings);
-  logging::SetMinLogLevel(logging::LOG_VERBOSE);
+  logging::SetMinLogLevel(logging::LOGGING_VERBOSE);
 
   bool cmd_sup = command_line.HasSwitch("supported");
   bool cmd_dis = command_line.HasSwitch("dis");

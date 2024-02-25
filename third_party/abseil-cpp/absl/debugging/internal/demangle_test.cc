@@ -17,6 +17,7 @@
 #include <cstdlib>
 #include <string>
 
+#include "gmock/gmock.h"
 #include "gtest/gtest.h"
 #include "absl/base/config.h"
 #include "absl/debugging/internal/stack_consumption.h"
@@ -28,14 +29,187 @@ ABSL_NAMESPACE_BEGIN
 namespace debugging_internal {
 namespace {
 
-// A wrapper function for Demangle() to make the unit test simple.
-static const char *DemangleIt(const char * const mangled) {
-  static char demangled[4096];
-  if (Demangle(mangled, demangled, sizeof(demangled))) {
-    return demangled;
-  } else {
-    return mangled;
-  }
+using ::testing::ContainsRegex;
+
+TEST(Demangle, FunctionTemplate) {
+  char tmp[100];
+
+  // template <typename T>
+  // int foo(T);
+  //
+  // foo<int>(5);
+  ASSERT_TRUE(Demangle("_Z3fooIiEiT_", tmp, sizeof(tmp)));
+  EXPECT_STREQ(tmp, "foo<>()");
+}
+
+TEST(Demangle, FunctionTemplateWithNesting) {
+  char tmp[100];
+
+  // template <typename T>
+  // int foo(T);
+  //
+  // foo<Wrapper<int>>({ .value = 5 });
+  ASSERT_TRUE(Demangle("_Z3fooI7WrapperIiEEiT_", tmp, sizeof(tmp)));
+  EXPECT_STREQ(tmp, "foo<>()");
+}
+
+TEST(Demangle, FunctionTemplateWithNonTypeParamConstraint) {
+  char tmp[100];
+
+  // template <std::integral T>
+  // int foo(T);
+  //
+  // foo<int>(5);
+  ASSERT_TRUE(Demangle("_Z3fooITkSt8integraliEiT_", tmp, sizeof(tmp)));
+  EXPECT_STREQ(tmp, "foo<>()");
+}
+
+TEST(Demangle, FunctionTemplateWithFunctionRequiresClause) {
+  char tmp[100];
+
+  // template <typename T>
+  // int foo() requires std::integral<T>;
+  //
+  // foo<int>();
+  ASSERT_TRUE(Demangle("_Z3fooIiEivQsr3stdE8integralIT_E", tmp, sizeof(tmp)));
+  EXPECT_STREQ(tmp, "foo<>()");
+}
+
+TEST(Demangle, FunctionWithTemplateParamRequiresClause) {
+  char tmp[100];
+
+  // template <typename T>
+  //     requires std::integral<T>
+  // int foo();
+  //
+  // foo<int>();
+  ASSERT_TRUE(Demangle("_Z3fooIiQsr3stdE8integralIT_EEiv", tmp, sizeof(tmp)));
+  EXPECT_STREQ(tmp, "foo<>()");
+}
+
+TEST(Demangle, FunctionWithTemplateParamAndFunctionRequiresClauses) {
+  char tmp[100];
+
+  // template <typename T>
+  //     requires std::integral<T>
+  // int foo() requires std::integral<T>;
+  //
+  // foo<int>();
+  ASSERT_TRUE(Demangle("_Z3fooIiQsr3stdE8integralIT_EEivQsr3stdE8integralIS0_E",
+                       tmp, sizeof(tmp)));
+  EXPECT_STREQ(tmp, "foo<>()");
+}
+
+TEST(Demangle, FunctionTemplateBacktracksOnMalformedRequiresClause) {
+  char tmp[100];
+
+  // template <typename T>
+  // int foo(T);
+  //
+  // foo<int>(5);
+  // Except there's an extra `Q` where the mangled requires clause would be.
+  ASSERT_FALSE(Demangle("_Z3fooIiQEiT_", tmp, sizeof(tmp)));
+}
+
+TEST(Demangle, FunctionTemplateWithAutoParam) {
+  char tmp[100];
+
+  // template <auto>
+  // void foo();
+  //
+  // foo<1>();
+  ASSERT_TRUE(Demangle("_Z3fooITnDaLi1EEvv", tmp, sizeof(tmp)));
+  EXPECT_STREQ(tmp, "foo<>()");
+}
+
+TEST(Demangle, FunctionTemplateWithNonTypeParamPack) {
+  char tmp[100];
+
+  // template <int&..., typename T>
+  // void foo(T);
+  //
+  // foo(2);
+  ASSERT_TRUE(Demangle("_Z3fooITpTnRiJEiEvT0_", tmp, sizeof(tmp)));
+  EXPECT_STREQ(tmp, "foo<>()");
+}
+
+TEST(Demangle, FunctionTemplateTemplateParamWithConstrainedArg) {
+  char tmp[100];
+
+  // template <typename T>
+  // concept True = true;
+  //
+  // template <typename T> requires True<T>
+  // struct Fooer {};
+  //
+  // template <template <typename T> typename>
+  // void foo() {}
+  //
+  // foo<Fooer>();
+  ASSERT_TRUE(Demangle("_Z3fooITtTyE5FooerEvv", tmp, sizeof(tmp)));
+  EXPECT_STREQ(tmp, "foo<>()");
+}
+
+TEST(Demangle, NonTemplateBuiltinType) {
+  char tmp[100];
+
+  // void foo(__my_builtin_type t);
+  //
+  // foo({});
+  ASSERT_TRUE(Demangle("_Z3foou17__my_builtin_type", tmp, sizeof(tmp)));
+  EXPECT_STREQ(tmp, "foo()");
+}
+
+TEST(Demangle, SingleArgTemplateBuiltinType) {
+  char tmp[100];
+
+  // template <typename T>
+  // __my_builtin_type<T> foo();
+  //
+  // foo<int>();
+  ASSERT_TRUE(Demangle("_Z3fooIiEu17__my_builtin_typeIT_Ev", tmp, sizeof(tmp)));
+  EXPECT_STREQ(tmp, "foo<>()");
+}
+
+TEST(Demangle, FailsOnTwoArgTemplateBuiltinType) {
+  char tmp[100];
+
+  // template <typename T, typename U>
+  // __my_builtin_type<T, U> foo();
+  //
+  // foo<int, char>();
+  ASSERT_FALSE(
+      Demangle("_Z3fooIicEu17__my_builtin_typeIT_T0_Ev", tmp, sizeof(tmp)));
+}
+
+TEST(Demangle, TemplateTemplateParamSubstitution) {
+  char tmp[100];
+
+  // template <typename T>
+  // concept True = true;
+  //
+  // template<std::integral T, T> struct Foolable {};
+  // template<template<typename T, T> typename> void foo() {}
+  //
+  // template void foo<Foolable>();
+  ASSERT_TRUE(Demangle("_Z3fooITtTyTnTL0__E8FoolableEvv", tmp, sizeof(tmp)));
+  EXPECT_STREQ(tmp, "foo<>()");
+}
+
+TEST(Demangle, TemplateParamSubstitutionWithGenericLambda) {
+  char tmp[100];
+
+  // template <typename>
+  // struct Fooer {
+  //     template <typename>
+  //     void foo(decltype([](auto x, auto y) {})) {}
+  // };
+  //
+  // Fooer<int> f;
+  // f.foo<int>({});
+  ASSERT_TRUE(
+      Demangle("_ZN5FooerIiE3fooIiEEvNS0_UlTL0__TL0_0_E_E", tmp, sizeof(tmp)));
+  EXPECT_STREQ(tmp, "Fooer<>::foo<>()");
 }
 
 // Test corner cases of boundary conditions.
@@ -235,6 +409,25 @@ TEST(DemangleRegression, DeeplyNestedArrayType) {
     data += "A1_";
   }
   TestOnInput(data.c_str());
+}
+
+struct Base {
+  virtual ~Base() = default;
+};
+
+struct Derived : public Base {};
+
+TEST(DemangleStringTest, SupportsSymbolNameReturnedByTypeId) {
+  EXPECT_EQ(DemangleString(typeid(int).name()), "int");
+  // We want to test that `DemangleString` can demangle the symbol names
+  // returned by `typeid`, but without hard-coding the actual demangled values
+  // (because they are platform-specific).
+  EXPECT_THAT(
+      DemangleString(typeid(Base).name()),
+      ContainsRegex("absl.*debugging_internal.*anonymous namespace.*::Base"));
+  EXPECT_THAT(DemangleString(typeid(Derived).name()),
+              ContainsRegex(
+                  "absl.*debugging_internal.*anonymous namespace.*::Derived"));
 }
 
 }  // namespace

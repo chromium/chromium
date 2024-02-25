@@ -144,10 +144,6 @@ using bookmarks::BookmarkNode;
       // Set the 'Mobile Bookmarks' folder of the corresponding section to be
       // the parent folder.
       const BookmarkNode* parentNode = nullptr;
-      if (!base::FeatureList::IsEnabled(
-              syncer::kEnableBookmarksAccountStorage)) {
-        parentNode = [_dataSource selectedFolderNode];
-      }
       if (!parentNode) {
         // If `parent` (selected folder) is `nullptr`, set the root folder of
         // the corresponding section to be the parent folder.

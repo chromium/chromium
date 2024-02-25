@@ -10,7 +10,7 @@
     display: grid;
     grid-template-areas:
       '. . breadcrumb . .';
-    grid-template-columns: 1fr 16px minmax(568px, 920px) 16px 1fr;
+    grid-template-columns: 1fr 10px minmax(568px, 920px) 10px 1fr;
     grid-template-rows: var(--personalization-app-breadcrumb-height);
     position: sticky;
     top: 0;
@@ -31,6 +31,9 @@
     left: 16px;
     max-width: 380px;
     position: sticky;
+  }
+  sea-pen-router {
+    --sea-pen-router-min-height: var(--personalization-app-subpage-container-min-height);
   }
   wallpaper-fullscreen {
     bottom: 0;
@@ -54,7 +57,8 @@
       <personalization-breadcrumb path="[[path_]]"
           collection-id="[[queryParams_.id]]"
           google-photos-album-id="[[queryParams_.googlePhotosAlbumId]]"
-          topic-source="[[queryParams_.topicSource]]">
+          topic-source="[[queryParams_.topicSource]]"
+          sea-pen-template-id="[[queryParams_.seaPenTemplateId]]">
       </personalization-breadcrumb>
     </div>
   </template>
@@ -71,6 +75,13 @@
   <template is="dom-if" if="[[shouldShowWallpaperSubpage_(path_)]]" restamp>
     <wallpaper-subpage path="[[path_]]" query-params="[[queryParams_]]">
     </wallpaper-subpage>
+  </template>
+  <template is="dom-if" if="[[shouldShowSeaPen_(path_)]]" restamp>
+    <sea-pen-router base-path="[[seaPenBasePath_]]" on-sea-pen-terms-dialog-refuse="onRefuseSeaPenTermsOfService_">
+      <template is="dom-if" if="[[shouldShowWallpaperSelected_(queryParams_.seaPenTemplateId)]]" restamp>
+        <wallpaper-selected id="wallpaperSelected"></wallpaper-selected>
+      </template>
+    </sea-pen-router>
   </template>
   <personalization-toast></personalization-toast>
 </div>

@@ -4,11 +4,12 @@
 
 // TTS api test running from Lacros with Ash.
 // build/lacros/test_runner.py test
-//     {path_to_lacros_build}/lacros_chrome_browsertests_run_in_series
+//     {path_to_lacros_build}/lacros_chrome_browsertests
 //     --gtest_filter=LacrosTtsApiTest.IsSpeaking
 //     --ash-chrome-path {path_to_ash_build}/test_ash_chrome
 // and TTS api test running from Ash with Lacros.
-// browser_tests --lacros-chrome-path=out_linux_ash/Release/lacros_clang_x64
+// browser_tests
+//     --lacros-chrome-path=out_linux_ash/Release/lacros_clang_x64/test_lacros_chrome
 //     --gtest_filter=AshTtsApiTest.IsSpeaking
 
 chrome.test.runTests([

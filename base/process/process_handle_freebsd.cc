@@ -11,6 +11,11 @@
 #include <sys/user.h>
 #include <unistd.h>
 
+#include <optional>
+
+#include "base/files/file_path.h"
+#include "base/posix/sysctl.h"
+
 namespace base {
 
 ProcessId GetParentProcessId(ProcessHandle process) {
@@ -25,18 +30,10 @@ ProcessId GetParentProcessId(ProcessHandle process) {
 }
 
 FilePath GetProcessExecutablePath(ProcessHandle process) {
-  char pathname[PATH_MAX];
-  size_t length;
-  int mib[] = { CTL_KERN, KERN_PROC, KERN_PROC_PATHNAME, process };
+  std::optional<std::string> pathname =
+      base::StringSysctl({CTL_KERN, KERN_PROC, KERN_PROC_PATHNAME, process});
 
-  length = sizeof(pathname);
-
-  if (sysctl(mib, std::size(mib), pathname, &length, NULL, 0) < 0 ||
-      length == 0) {
-    return FilePath();
-  }
-
-  return FilePath(std::string(pathname));
+  return FilePath(pathname.value_or(std::string{}));
 }
 
 }  // namespace base

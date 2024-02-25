@@ -5,7 +5,7 @@
 #ifndef IOS_CHROME_BROWSER_UI_READING_LIST_READING_LIST_TABLE_VIEW_CONTROLLER_H_
 #define IOS_CHROME_BROWSER_UI_READING_LIST_READING_LIST_TABLE_VIEW_CONTROLLER_H_
 
-#import "ios/chrome/browser/shared/ui/table_view/chrome_table_view_controller.h"
+#import "ios/chrome/browser/shared/ui/table_view/legacy_chrome_table_view_controller.h"
 
 #import "ios/chrome/browser/ui/reading_list/reading_list_list_item_accessibility_delegate.h"
 
@@ -20,8 +20,8 @@ class Browser;
 
 // View controller that displays reading list items in a table view.
 @interface ReadingListTableViewController
-    : ChromeTableViewController <ReadingListListItemAccessibilityDelegate,
-                                 UIAdaptivePresentationControllerDelegate>
+    : LegacyChromeTableViewController <ReadingListListItemAccessibilityDelegate,
+                                       UIAdaptivePresentationControllerDelegate>
 
 // The delegate.
 @property(nonatomic, weak) id<ReadingListListViewControllerDelegate> delegate;
@@ -47,7 +47,8 @@ class Browser;
 // Controls the visibility state of the sign-in promo.
 - (void)promoStateChanged:(BOOL)promoEnabled
         promoConfigurator:(SigninPromoViewConfigurator*)promoConfigurator
-            promoDelegate:(id<SigninPromoViewDelegate>)promoDelegate;
+            promoDelegate:(id<SigninPromoViewDelegate>)promoDelegate
+                promoText:(NSString*)promoText;
 
 // Updates the sign-in promo view after identity updates.
 - (void)configureSigninPromoWithConfigurator:

@@ -16,8 +16,6 @@
 namespace ash {
 
 // static
-const char HotspotNotifier::kWiFiTurnedOffNotificationId[] =
-    "cros_hotspot_notifier_ids.wifi_turned_off";
 
 const char HotspotNotifier::kAdminRestrictedNotificationId[] =
     "cros_hotspot_notifier_ids.admin_restricted";
@@ -52,31 +50,7 @@ HotspotNotifier::HotspotNotifier() {
 
 HotspotNotifier::~HotspotNotifier() = default;
 
-void HotspotNotifier::OnHotspotTurnedOn(bool wifi_turned_off) {
-  if (wifi_turned_off) {
-    scoped_refptr<message_center::NotificationDelegate> delegate =
-        base::MakeRefCounted<message_center::HandleNotificationClickDelegate>(
-            base::BindRepeating(&HotspotNotifier::EnableWiFiHandler,
-                                weak_ptr_factory_.GetWeakPtr(),
-                                kWiFiTurnedOffNotificationId));
-
-    std::vector<message_center::ButtonInfo> notification_actions;
-    std::unique_ptr<message_center::Notification> notification =
-        CreateNotification(
-            l10n_util::GetStringUTF16(IDS_ASH_HOTSPOT_ON_TITLE),
-            l10n_util::GetStringUTF16(IDS_ASH_HOTSPOT_WIFI_TURNED_OFF_MESSAGE),
-            kWiFiTurnedOffNotificationId, delegate);
-    notification_actions.push_back(
-        message_center::ButtonInfo(l10n_util::GetStringUTF16(
-            IDS_ASH_HOTSPOT_NOTIFICATION_WIFI_TURN_ON_BUTTON)));
-    notification->set_buttons(notification_actions);
-    message_center::MessageCenter* message_center =
-        message_center::MessageCenter::Get();
-    message_center->RemoveNotification(kWiFiTurnedOffNotificationId,
-                                       /*by_user=*/false);
-    message_center->AddNotification(std::move(notification));
-  }
-}
+void HotspotNotifier::OnHotspotTurnedOn() {}
 
 void HotspotNotifier::OnHotspotTurnedOff(
     hotspot_config::mojom::DisableReason disable_reason) {
@@ -110,6 +84,9 @@ void HotspotNotifier::OnHotspotTurnedOff(
               IDS_ASH_HOTSPOT_NOTIFICATION_TURN_ON_BUTTON)));
       break;
     case hotspot_config::mojom::DisableReason::kInternalError:
+    case hotspot_config::mojom::DisableReason::kUpstreamNoInternet:
+    case hotspot_config::mojom::DisableReason::kDownstreamLinkDisconnect:
+    case hotspot_config::mojom::DisableReason::kDownstreamNetworkDisconnect:
       title_id = IDS_ASH_HOTSPOT_OFF_TITLE;
       message_id = IDS_ASH_HOTSPOT_INTERNAL_ERROR_MESSAGE;
       notification_id = kInternalErrorNotificationId;
@@ -156,18 +133,33 @@ void HotspotNotifier::OnGetHotspotInfo(
     return;
   }
 
+  if (hotspot_info->state == hotspot_config::mojom::HotspotState::kEnabling) {
+    message_center->RemoveNotification(
+        HotspotNotifier::kAutoDisabledNotificationId,
+        /*by_user=*/false);
+    message_center->RemoveNotification(
+        HotspotNotifier::kInternalErrorNotificationId,
+        /*by_user=*/false);
+    message_center->RemoveNotification(
+        HotspotNotifier::kWiFiTurnedOnNotificationId,
+        /*by_user=*/false);
+    message_center->RemoveNotification(
+        HotspotNotifier::kAdminRestrictedNotificationId,
+        /*by_user=*/false);
+  }
+
   if (hotspot_info->state == hotspot_config::mojom::HotspotState::kEnabled) {
     const std::u16string& title =
         l10n_util::GetStringUTF16(IDS_ASH_HOTSPOT_ON_TITLE);
     const std::u16string& message =
         (hotspot_info->client_count == 0)
             ? l10n_util::GetStringUTF16(
-                  IDS_ASH_HOTSPOT_ON_MESSAGE_NO_CONNECTED_DEVICES)
+                  IDS_ASH_HOTSPOT_ON_MESSAGE_NO_CONNECTED_DEVICES_NOTIFICATION)
         : (hotspot_info->client_count == 1)
             ? l10n_util::GetStringUTF16(
-                  IDS_ASH_HOTSPOT_ON_MESSAGE_ONE_CONNECTED_DEVICE)
+                  IDS_ASH_HOTSPOT_ON_MESSAGE_ONE_CONNECTED_DEVICE_NOTIFICATION)
             : l10n_util::GetStringFUTF16(
-                  IDS_ASH_HOTSPOT_ON_MESSAGE_MULTIPLE_CONNECTED_DEVICES,
+                  IDS_ASH_HOTSPOT_ON_MESSAGE_MULTIPLE_CONNECTED_DEVICES_NOTIFICATION,
                   base::NumberToString16(hotspot_info->client_count));
     scoped_refptr<message_center::NotificationDelegate> delegate =
         base::MakeRefCounted<message_center::HandleNotificationClickDelegate>(
@@ -187,7 +179,7 @@ void HotspotNotifier::OnGetHotspotInfo(
 }
 
 void HotspotNotifier::DisableHotspotHandler(const char* notification_id,
-                                            absl::optional<int> button_index) {
+                                            std::optional<int> button_index) {
   if (!button_index) {
     return;
   }
@@ -208,7 +200,7 @@ void HotspotNotifier::DisableHotspotHandler(const char* notification_id,
 }
 
 void HotspotNotifier::EnableHotspotHandler(const char* notification_id,
-                                           absl::optional<int> button_index) {
+                                           std::optional<int> button_index) {
   if (!button_index) {
     return;
   }
@@ -231,7 +223,7 @@ void HotspotNotifier::EnableHotspotHandler(const char* notification_id,
 }
 
 void HotspotNotifier::EnableWiFiHandler(const char* notification_id,
-                                        absl::optional<int> button_index) {
+                                        std::optional<int> button_index) {
   if (!button_index) {
     return;
   }
@@ -257,7 +249,7 @@ void HotspotNotifier::OnGetDeviceStateList(
             chromeos::network_config::mojom::DeviceStateType::kEnabled) {
       message_center::MessageCenter* message_center =
           message_center::MessageCenter::Get();
-      message_center->RemoveNotification(kWiFiTurnedOffNotificationId,
+      message_center->RemoveNotification(kHotspotTurnedOnNotificationId,
                                          /*by_user=*/false);
       return;
     }

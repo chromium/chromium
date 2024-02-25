@@ -4,6 +4,7 @@
 
 #include "extensions/renderer/bindings/api_invocation_errors.h"
 
+#include <string_view>
 #include <vector>
 
 #include "base/strings/string_util.h"
@@ -25,8 +26,7 @@ const char kTypeNull[] = "null";
 const char kTypeAny[] = "any";
 
 std::string InvalidEnumValue(const std::set<std::string>& valid_enums) {
-  std::vector<base::StringPiece> options(valid_enums.begin(),
-                                         valid_enums.end());
+  std::vector<std::string_view> options(valid_enums.begin(), valid_enums.end());
   std::string options_str = base::JoinString(options, ", ");
   return base::StringPrintf("Value must be one of %s.", options_str.c_str());
 }

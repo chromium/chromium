@@ -124,7 +124,8 @@ class LayerWithRealCompositorTest : public testing::Test {
 
   // Overridden from testing::Test:
   void SetUp() override {
-    ASSERT_TRUE(base::PathService::Get(base::DIR_SOURCE_ROOT, &test_data_dir_));
+    ASSERT_TRUE(
+        base::PathService::Get(base::DIR_SRC_TEST_DATA_ROOT, &test_data_dir_));
     test_data_dir_ = test_data_dir_.Append(FILE_PATH_LITERAL("ui"))
                          .Append(FILE_PATH_LITERAL("gfx"))
                          .Append(FILE_PATH_LITERAL("test"))
@@ -1998,8 +1999,14 @@ TEST_F(LayerWithRealCompositorTest, ModifyHierarchy) {
                              cc::AlphaDiscardingExactPixelComparator()));
 }
 
+// TODO(crbug.com/1476969): Flaky on fuchsia-arm64 builds. Re-enable this test.
+#if BUILDFLAG(IS_FUCHSIA) && defined(ARCH_CPU_ARM64)
+#define MAYBE_BackgroundBlur DISABLED_BackgroundBlur
+#else
+#define MAYBE_BackgroundBlur BackgroundBlur
+#endif
 // Checks that basic background blur is working.
-TEST_F(LayerWithRealCompositorTest, BackgroundBlur) {
+TEST_F(LayerWithRealCompositorTest, MAYBE_BackgroundBlur) {
 #if defined(THREAD_SANITIZER)
   const base::test::ScopedRunLoopTimeout increased_run_timeout(
       FROM_HERE, TestTimeouts::action_max_timeout());
@@ -2048,9 +2055,16 @@ TEST_F(LayerWithRealCompositorTest, BackgroundBlur) {
   EXPECT_TRUE(MatchesPNGFile(bitmap, ref_img2, fuzzy_comparator));
 }
 
+// TODO(crbug.com/1476969): Flaky on fuchsia-arm64 builds. Re-enable this test.
+#if BUILDFLAG(IS_FUCHSIA) && defined(ARCH_CPU_ARM64)
+#define MAYBE_BackgroundBlurChangeDeviceScale \
+  DISABLED_BackgroundBlurChangeDeviceScale
+#else
+#define MAYBE_BackgroundBlurChangeDeviceScale BackgroundBlurChangeDeviceScale
+#endif
 // Checks that background blur bounds rect gets properly updated when device
 // scale changes.
-TEST_F(LayerWithRealCompositorTest, BackgroundBlurChangeDeviceScale) {
+TEST_F(LayerWithRealCompositorTest, MAYBE_BackgroundBlurChangeDeviceScale) {
   viz::ParentLocalSurfaceIdAllocator allocator;
   allocator.GenerateId();
   GetCompositor()->SetScaleAndSize(1.0f, gfx::Size(200, 200),
@@ -2398,7 +2412,7 @@ TEST_F(LayerWithDelegateTest, ExternalContent) {
   const auto* surface = static_cast<cc::SurfaceLayer*>(after.get());
   EXPECT_TRUE(after.get());
   EXPECT_NE(before.get(), after.get());
-  EXPECT_EQ(absl::nullopt, surface->deadline_in_frames());
+  EXPECT_EQ(std::nullopt, surface->deadline_in_frames());
 
   allocator.GenerateId();
   child->SetShowSurface(

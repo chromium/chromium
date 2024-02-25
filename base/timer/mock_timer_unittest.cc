@@ -64,7 +64,7 @@ TEST(MockOneShotTimerTest, FireNow) {
   EXPECT_EQ(1, calls);
 }
 
-class HasWeakPtr : public base::SupportsWeakPtr<HasWeakPtr> {
+class HasWeakPtr {
  public:
   HasWeakPtr() = default;
 
@@ -72,6 +72,13 @@ class HasWeakPtr : public base::SupportsWeakPtr<HasWeakPtr> {
   HasWeakPtr& operator=(const HasWeakPtr&) = delete;
 
   virtual ~HasWeakPtr() = default;
+
+  base::WeakPtr<HasWeakPtr> AsWeakPtr() {
+    return weak_ptr_factory_.GetWeakPtr();
+  }
+
+ private:
+  base::WeakPtrFactory<HasWeakPtr> weak_ptr_factory_{this};
 };
 
 TEST(MockTimerTest, DoesNotRetainClosure) {

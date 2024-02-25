@@ -12,33 +12,28 @@ import android.content.res.Resources;
 
 import org.chromium.base.ContextUtils;
 
-/**
- * A wrapper around the PackageManager that may be overridden for testing.
- */
+/** A wrapper around the PackageManager that may be overridden for testing. */
 public class PackageManagerDelegate {
-    /**
-     * See {@link PackageManager#getApplicationInfo(String, int)}
-     */
+    /** See {@link PackageManager#getApplicationInfo(String, int)} */
     public ApplicationInfo getApplicationInfo(String packageName, int flags)
             throws NameNotFoundException {
-        return ContextUtils.getApplicationContext().getPackageManager().getApplicationInfo(
-                packageName, flags);
+        return ContextUtils.getApplicationContext()
+                .getPackageManager()
+                .getApplicationInfo(packageName, flags);
     }
 
-    /**
-     * See {@link PackageManager#getResourcesForApplication(ApplicationInfo)}
-     */
+    /** See {@link PackageManager#getResourcesForApplication(ApplicationInfo)} */
     public Resources getResourcesForApplication(ApplicationInfo appInfo)
             throws NameNotFoundException {
-        return ContextUtils.getApplicationContext().getPackageManager().getResourcesForApplication(
-                appInfo);
+        return ContextUtils.getApplicationContext()
+                .getPackageManager()
+                .getResourcesForApplication(appInfo);
     }
 
-    /**
-     * See {@link PackageManager#getPackageInfo(String, int)}
-     */
+    /** See {@link PackageManager#getPackageInfo(String, int)} */
     public PackageInfo getPackageInfo(String packageName, int flags) throws NameNotFoundException {
-        return ContextUtils.getApplicationContext().getPackageManager().getPackageInfo(
-                packageName, flags);
+        return ContextUtils.getApplicationContext()
+                .getPackageManager()
+                .getPackageInfo(packageName, flags);
     }
 }

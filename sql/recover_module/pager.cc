@@ -6,13 +6,14 @@
 
 #include <limits>
 
+#include "base/logging.h"
 #include "sql/recover_module/table.h"
 #include "third_party/sqlite/sqlite3.h"
 
 namespace sql {
 namespace recover {
 
-constexpr int DatabasePageReader::kInvalidPageId;
+constexpr int DatabasePageReader::kHighestInvalidPageId;
 constexpr int DatabasePageReader::kMinPageSize;
 constexpr int DatabasePageReader::kMaxPageSize;
 constexpr int DatabasePageReader::kDatabaseHeaderSize;
@@ -25,16 +26,16 @@ static_assert(DatabasePageReader::kMaxPageId <= std::numeric_limits<int>::max(),
 DatabasePageReader::DatabasePageReader(VirtualTable* table)
     : page_data_(std::make_unique<uint8_t[]>(table->page_size())),
       table_(table) {
-  DCHECK(table != nullptr);
-  DCHECK(IsValidPageSize(table->page_size()));
+  CHECK(table != nullptr);
+  CHECK(IsValidPageSize(table->page_size()));
 }
 
 DatabasePageReader::~DatabasePageReader() = default;
 
 int DatabasePageReader::ReadPage(int page_id) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK_GT(page_id, kInvalidPageId);
-  DCHECK_LE(page_id, kMaxPageId);
+  CHECK(IsValidPageId(page_id));
+  CHECK_LE(page_id, kMaxPageId);
 
   if (page_id_ == page_id)
     return SQLITE_OK;
@@ -47,8 +48,8 @@ int DatabasePageReader::ReadPage(int page_id) {
                 "The |read_size| computation above may overflow");
 
   page_size_ = read_size;
-  DCHECK_GE(page_size_, kMinUsablePageSize);
-  DCHECK_LE(page_size_, kMaxPageSize);
+  CHECK_GE(page_size_, kMinUsablePageSize);
+  CHECK_LE(page_size_, kMaxPageSize);
 
   const int64_t read_offset =
       static_cast<int64_t>(page_id - 1) * page_size + page_offset;
@@ -60,10 +61,10 @@ int DatabasePageReader::ReadPage(int page_id) {
   int sqlite_status =
       RawRead(sqlite_file, read_size, read_offset, page_data_.get());
 
-  // |page_id_| needs to be set to kInvalidPageId if the read failed.
+  // |page_id_| needs to be set to kHighestInvalidPageId if the read failed.
   // Otherwise, future ReadPage() calls with the previous |page_id_| value
   // would return SQLITE_OK, but the page data buffer might be trashed.
-  page_id_ = (sqlite_status == SQLITE_OK) ? page_id : kInvalidPageId;
+  page_id_ = (sqlite_status == SQLITE_OK) ? page_id : kHighestInvalidPageId;
   return sqlite_status;
 }
 
@@ -72,10 +73,10 @@ int DatabasePageReader::RawRead(sqlite3_file* sqlite_file,
                                 int read_size,
                                 int64_t read_offset,
                                 uint8_t* result_buffer) {
-  DCHECK(sqlite_file != nullptr);
-  DCHECK_GE(read_size, 0);
-  DCHECK_GE(read_offset, 0);
-  DCHECK(result_buffer != nullptr);
+  CHECK(sqlite_file != nullptr);
+  CHECK_GE(read_size, 0);
+  CHECK_GE(read_offset, 0);
+  CHECK(result_buffer != nullptr);
 
   // Retry the I/O operations a few times if they fail. This is especially
   // useful when recovering from database corruption.

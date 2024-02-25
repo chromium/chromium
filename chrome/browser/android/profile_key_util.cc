@@ -4,9 +4,13 @@
 
 #include "chrome/browser/android/profile_key_util.h"
 
+#include "base/android/scoped_java_ref.h"
 #include "chrome/browser/android/profile_key_startup_accessor.h"
+#include "chrome/browser/profiles/android/jni_headers/ProfileKeyUtil_jni.h"
 #include "chrome/browser/profiles/profile_key.h"
 #include "chrome/browser/profiles/profile_manager.h"
+
+using base::android::ScopedJavaLocalRef;
 
 namespace android {
 namespace {
@@ -28,3 +32,21 @@ ProfileKey* GetLastUsedRegularProfileKey() {
 }
 
 }  // namespace android
+
+// static
+ScopedJavaLocalRef<jobject> JNI_ProfileKeyUtil_GetLastUsedRegularProfileKey(
+    JNIEnv* env) {
+  ProfileKey* key = ::android::GetLastUsedRegularProfileKey();
+  if (!key) {
+    NOTREACHED() << "ProfileKey not found.";
+    return ScopedJavaLocalRef<jobject>();
+  }
+
+  ProfileKeyAndroid* profile_key_android = key->GetProfileKeyAndroid();
+  if (!profile_key_android) {
+    NOTREACHED() << "ProfileKeyAndroid not found.";
+    return ScopedJavaLocalRef<jobject>();
+  }
+
+  return profile_key_android->GetJavaObject();
+}

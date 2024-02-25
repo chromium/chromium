@@ -139,10 +139,14 @@ void EolNotification::OnEolInfo(UpdateEngineClient::EolInfo eol_info) {
   } else if (SecondWarningDate(eol_date) <= now) {
     dismiss_pref_ = prefs::kSecondEolWarningDismissed;
   } else if (FirstWarningDate(eol_date) <= now) {
+    if (base::FeatureList::IsEnabled(features::kSuppressFirstEolWarning)) {
+      dismiss_pref_ = std::nullopt;
+      return;
+    }
     dismiss_pref_ = prefs::kFirstEolWarningDismissed;
   } else {
     // |now| < FirstWarningDate() so don't show anything.
-    dismiss_pref_ = absl::nullopt;
+    dismiss_pref_ = std::nullopt;
     return;
   }
 
@@ -212,8 +216,8 @@ void EolNotification::Close(bool by_user) {
   profile_->GetPrefs()->SetBoolean(*dismiss_pref_, true);
 }
 
-void EolNotification::Click(const absl::optional<int>& button_index,
-                            const absl::optional<std::u16string>& reply) {
+void EolNotification::Click(const std::optional<int>& button_index,
+                            const std::optional<std::u16string>& reply) {
   if (!button_index) {
     return;
   }
@@ -268,9 +272,9 @@ void EolNotification::Click(const absl::optional<int>& button_index,
   } else {
     switch (*button_index) {
       case BUTTON_MORE_INFO: {
-        const GURL url = dismiss_pref_ == prefs::kEolNotificationDismissed
-                             ? GURL(chrome::kEolNotificationURL)
-                             : GURL(chrome::kAutoUpdatePolicyURL);
+        const GURL url(dismiss_pref_ == prefs::kEolNotificationDismissed
+                           ? chrome::kEolNotificationURL
+                           : chrome::kAutoUpdatePolicyURL);
         // Show eol link.
         NewWindowDelegate::GetPrimary()->OpenUrl(
             url, NewWindowDelegate::OpenUrlFrom::kUserInteraction,

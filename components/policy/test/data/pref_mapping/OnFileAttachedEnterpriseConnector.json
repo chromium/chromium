@@ -1,0 +1,173 @@
+[
+  {
+    "os": [
+      "win",
+      "linux",
+      "mac",
+      "chromeos_ash",
+      "chromeos_lacros",
+      "fuchsia"
+    ],
+    "policy_pref_mapping_tests": [
+      {
+        "policies": {
+          "OnFileAttachedEnterpriseConnector": [
+            {
+              "block_large_files": false,
+              "block_password_protected": true,
+              "block_until_verdict": 0,
+              "disable": [
+                {
+                  "tags": [
+                    "malware"
+                  ],
+                  "url_list": [
+                    "*.us.com"
+                  ]
+                }
+              ],
+              "enable": [
+                {
+                  "tags": [
+                    "malware"
+                  ],
+                  "url_list": [
+                    "*"
+                  ]
+                },
+                {
+                  "tags": [
+                    "dlp"
+                  ],
+                  "url_list": [
+                    "*.them.com",
+                    "*.others.com"
+                  ]
+                }
+              ],
+              "service_provider": "google"
+            }
+          ]
+        },
+        "prefs": {
+          "enterprise_connectors.on_file_attached": {
+            "value": [
+              {
+                "block_large_files": false,
+                "block_password_protected": true,
+                "block_until_verdict": 0,
+                "disable": [
+                  {
+                    "tags": [
+                      "malware"
+                    ],
+                    "url_list": [
+                      "*.us.com"
+                    ]
+                  }
+                ],
+                "enable": [
+                  {
+                    "tags": [
+                      "malware"
+                    ],
+                    "url_list": [
+                      "*"
+                    ]
+                  },
+                  {
+                    "tags": [
+                      "dlp"
+                    ],
+                    "url_list": [
+                      "*.them.com",
+                      "*.others.com"
+                    ]
+                  }
+                ],
+                "service_provider": "google"
+              }
+            ]
+          }
+        }
+      }
+    ]
+  },
+  {
+    "os": [
+      "win",
+      "linux",
+      "mac"
+    ],
+    "policy_pref_mapping_tests": [
+      {
+        "policies": {
+          "OnFileAttachedEnterpriseConnector": [
+            {
+              "block_large_files": false,
+              "block_password_protected": false,
+              "block_until_verdict": 1,
+              "disable": [],
+              "enable": [
+                {
+                  "tags": [
+                    "dlp"
+                  ],
+                  "url_list": [
+                    "*"
+                  ]
+                }
+              ],
+              "service_provider": "local_user_agent",
+              "verification": {
+                "linux": [
+                  "key"
+                ],
+                "mac": [
+                  "key"
+                ],
+                "windows": [
+                  "key"
+                ]
+              }
+            }
+          ]
+        },
+        "prefs": {
+          "enterprise_connectors.on_file_attached": {
+            "value": [
+              {
+                "block_large_files": false,
+                "block_password_protected": false,
+                "block_until_verdict": 1,
+                "disable": [],
+                "enable": [
+                  {
+                    "tags": [
+                      "dlp"
+                    ],
+                    "url_list": [
+                      "*"
+                    ]
+                  }
+                ],
+                "service_provider": "local_user_agent",
+                "verification": {
+                  "linux": [
+                    "key"
+                  ],
+                  "mac": [
+                    "key"
+                  ],
+                  "windows": [
+                    "key"
+                  ]
+                }
+              }
+            ]
+          }
+        }
+      }
+    ]
+  }
+]

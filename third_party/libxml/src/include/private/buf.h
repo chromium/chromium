@@ -56,15 +56,10 @@ XML_HIDDEN xmlBufPtr
 xmlBufFromBuffer(xmlBufferPtr buffer);
 XML_HIDDEN xmlBufferPtr
 xmlBufBackToBuffer(xmlBufPtr buf);
-XML_HIDDEN int
-xmlBufMergeBuffer(xmlBufPtr buf, xmlBufferPtr buffer);
 
 XML_HIDDEN int
 xmlBufResetInput(xmlBufPtr buf, xmlParserInputPtr input);
-XML_HIDDEN size_t
-xmlBufGetInputBase(xmlBufPtr buf, xmlParserInputPtr input);
 XML_HIDDEN int
-xmlBufSetInputBaseCur(xmlBufPtr buf, xmlParserInputPtr input,
-                      size_t base, size_t cur);
+xmlBufUpdateInput(xmlBufPtr buf, xmlParserInputPtr input, size_t pos);
 
 #endif /* XML_BUF_H_PRIVATE__ */

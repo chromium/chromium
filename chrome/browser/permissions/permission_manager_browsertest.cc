@@ -15,9 +15,9 @@
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/permissions/permission_manager.h"
 #include "content/public/browser/browser_context.h"
-#include "content/public/browser/notification_types.h"
 #include "content/public/common/url_constants.h"
 #include "content/public/test/browser_test.h"
+#include "content/public/test/no_renderer_crashes_assertion.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "third_party/blink/public/common/chrome_debug_urls.h"
 #include "third_party/blink/public/common/permissions/permission_utils.h"
@@ -53,7 +53,7 @@ class SubscriptionInterceptingPermissionManager
     callback_ = std::move(callback);
   }
 
-  SubscriptionId SubscribePermissionStatusChange(
+  SubscriptionId SubscribeToPermissionStatusChange(
       blink::PermissionType permission,
       content::RenderProcessHost* render_process_host,
       content::RenderFrameHost* render_frame_host,
@@ -61,7 +61,7 @@ class SubscriptionInterceptingPermissionManager
       base::RepeatingCallback<void(blink::mojom::PermissionStatus)> callback)
       override {
     SubscriptionId result =
-        permissions::PermissionManager::SubscribePermissionStatusChange(
+        permissions::PermissionManager::SubscribeToPermissionStatusChange(
             permission, render_process_host, render_frame_host,
             requesting_origin, callback);
     std::move(callback_).Run();

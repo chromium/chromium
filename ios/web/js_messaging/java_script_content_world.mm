@@ -4,8 +4,11 @@
 
 #import "ios/web/js_messaging/java_script_content_world.h"
 
+#import <optional>
+
 #import "base/check_op.h"
 #import "base/containers/contains.h"
+#import "base/debug/crash_logging.h"
 #import "base/notreached.h"
 #import "base/strings/sys_string_conversions.h"
 #import "ios/web/js_messaging/web_view_js_utils.h"
@@ -17,8 +20,7 @@
 #import "ios/web/web_state/ui/crw_web_controller.h"
 #import "ios/web/web_state/ui/wk_web_view_configuration_provider.h"
 #import "ios/web/web_state/web_state_impl.h"
-#import "net/base/mac/url_conversions.h"
-#import "third_party/abseil-cpp/absl/types/optional.h"
+#import "net/base/apple/url_conversions.h"
 
 namespace web {
 
@@ -154,6 +156,9 @@ void JavaScriptContentWorld::ScriptMessageReceived(
     JavaScriptFeature::ScriptMessageHandler handler,
     BrowserState* browser_state,
     WKScriptMessage* script_message) {
+  SCOPED_CRASH_KEY_STRING32("ScriptMessage", "name",
+                            base::SysNSStringToUTF8(script_message.name));
+
   web::WebViewWebStateMap* map =
       web::WebViewWebStateMap::FromBrowserState(browser_state);
   web::WebState* web_state = map->GetWebStateForWebView(script_message.webView);
@@ -170,7 +175,7 @@ void JavaScriptContentWorld::ScriptMessageReceived(
   }
 
   NSURL* ns_url = script_message.frameInfo.request.URL;
-  absl::optional<GURL> url;
+  std::optional<GURL> url;
   if (ns_url) {
     url = net::GURLWithNSURL(ns_url);
   }

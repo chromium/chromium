@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+Copyright 2023 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical">
+
+    <TextView
+          android:id="@+id/item_header"
+          android:layout_width="wrap_content"
+          android:layout_height="wrap_content"
+          android:paddingTop="20dp"
+          android:paddingBottom="4dp"
+          android:ellipsize="end"
+          android:maxLines="1"
+          android:textAppearance="@style/TextAppearance.TextMediumThick.Primary"/>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:paddingVertical="12dp"
+        android:background="@drawable/rounded_ripple">
+        <ImageView
+            android:id="@+id/icon"
+            android:layout_width="wrap_content"
+            android:layout_height="24dp"
+            android:layout_weight="0"
+            android:layout_gravity="center_vertical"
+            android:layout_marginEnd="16dp"
+            android:visibility="gone"
+            android:importantForAccessibility="no"/>
+        <ProgressBar
+            android:id="@+id/spinner"
+            style="?android:attr/progressBarStyleLarge"
+            android:layout_width="@dimen/preview_play_button_diameter"
+            android:layout_height="@dimen/preview_play_button_diameter"
+            android:layout_marginEnd="@dimen/preview_play_button_margin_end"
+            android:visibility="gone"
+            android:focusable="true"/>
+        <ImageView
+            android:id="@+id/play_button"
+            android:layout_width="@dimen/preview_play_button_diameter"
+            android:layout_height="@dimen/preview_play_button_diameter"
+            android:layout_gravity="center_vertical"
+            android:layout_marginEnd="@dimen/preview_play_button_margin_end"
+            android:visibility="gone"
+            android:src="@drawable/mini_play_button"
+            android:background="@drawable/rounded_ripple"
+            android:clickable="true"
+            android:focusable="true"/>
+        <LinearLayout
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:layout_gravity="center_vertical"
+            android:orientation="vertical">
+            <TextView
+                android:id="@+id/item_label"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:ellipsize="end"
+                android:maxLines="1"
+                android:textAppearance="@style/TextAppearance.TextLarge.Primary"/>
+            <TextView
+                android:id="@+id/item_sublabel"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:visibility="gone"
+                android:ellipsize="end"
+                android:maxLines="1"
+                android:textAppearance="@style/TextAppearance.TextMedium.Secondary"/>
+        </LinearLayout>
+        <!-- Menu items that have images/radio buttons/toggles should place them here. -->
+        <FrameLayout
+            android:id="@+id/end_view"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:layout_weight="0"/>
+    </LinearLayout>
+</LinearLayout>

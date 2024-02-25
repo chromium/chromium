@@ -78,6 +78,7 @@ std::unique_ptr<IPCSupport>& GetIPCSupport() {
 class GlobalStateInitializer {
  public:
   GlobalStateInitializer() = default;
+  ~GlobalStateInitializer() = delete;
 
   bool Initialize(int argc, const char* const* argv) {
     if (initialized_)
@@ -111,8 +112,8 @@ class GlobalStateInitializer {
 
     base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
     // If FieldTrialList::GetInstance() returns nullptr,
-    // FeatureList::InitializeFromCommandLine(), used by FeatureList::
-    // InitializeInstance internally, creates no field trials. This causes
+    // FeatureList::InitFromCommandLine(), used by FeatureList::
+    // InitInstance internally, creates no field trials. This causes
     // DCHECK() failure if we have an command line like
     // --enable-features=TestFeature:TestParam/TestValue.
     // We don't need to care about FieldTrialList duplication here, because
@@ -120,7 +121,7 @@ class GlobalStateInitializer {
     // libmojo_core.so and the caller of LoadAndInitializeCoreLibrary doesn't
     // share FieldTrialList::GetInstance().
     field_trial_list_ = std::make_unique<base::FieldTrialList>();
-    base::FeatureList::InitializeInstance(
+    base::FeatureList::InitInstance(
         command_line->GetSwitchValueASCII(switches::kEnableFeatures),
         command_line->GetSwitchValueASCII(switches::kDisableFeatures));
 #endif  // !defined(COMPONENT_BUILD)
@@ -158,9 +159,9 @@ MojoResult InitializeImpl(const struct MojoInitializeOptions* options) {
     argv = options->argv;
   }
 
-  static GlobalStateInitializer global_state_initializer;
+  static base::NoDestructor<GlobalStateInitializer> global_state_initializer;
   const bool was_global_state_already_initialized =
-      !global_state_initializer.Initialize(argc, argv);
+      !global_state_initializer->Initialize(argc, argv);
 
   if (!should_initialize_ipc_support) {
     if (was_global_state_already_initialized)

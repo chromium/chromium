@@ -9,7 +9,7 @@
 
 namespace errors = extensions::manifest_errors;
 
-class AboutPageManifestTest : public ChromeManifestTest {};
+using AboutPageManifestTest = ChromeManifestTest;
 
 TEST_F(AboutPageManifestTest, AboutPageInSharedModules) {
   scoped_refptr<extensions::Extension> extension;

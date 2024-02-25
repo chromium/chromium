@@ -5,11 +5,11 @@
 #include "content/browser/devtools/web_contents_devtools_agent_host.h"
 
 #include "base/unguessable_token.h"
+#include "content/browser/devtools/protocol/io_handler.h"
 #include "content/browser/devtools/protocol/target_auto_attacher.h"
 #include "content/browser/devtools/protocol/target_handler.h"
 #include "content/browser/devtools/protocol/tracing_handler.h"
 #include "content/browser/devtools/render_frame_devtools_agent_host.h"
-#include "content/browser/portal/portal.h"
 #include "content/browser/renderer_host/frame_tree_node.h"
 #include "content/browser/web_contents/web_contents_impl.h"
 
@@ -65,12 +65,6 @@ class WebContentsDevToolsAgentHost::AutoAttacher
  public:
   AutoAttacher() = default;
 
-  void PortalActivated(const Portal& portal) {
-    if (web_contents_ == portal.GetPortalHostContents())
-      web_contents_ = portal.GetPortalContents();
-    UpdateChildFrameTrees(/* update_target_info= */ true);
-  }
-
   void UpdateChildFrameTrees(bool update_target_info) {
     if (!auto_attach())
       return;
@@ -105,16 +99,6 @@ class WebContentsDevToolsAgentHost::AutoAttacher
     if (auto_attach() && web_contents_) {
       auto* rfh = static_cast<RenderFrameHostImpl*>(
           web_contents_->GetPrimaryMainFrame());
-      for (auto* portal : rfh->GetPortals()) {
-        WebContentsImpl* wc = portal->GetPortalContents();
-        // If the portal's WC is attached, we should get it through normal
-        // WC tree traversal. For this loop, we're only interested in the
-        // ones that are orphaned.
-        if (wc->GetOuterWebContents())
-          break;
-        hosts.insert(RenderFrameDevToolsAgentHost::GetOrCreateFor(
-            wc->GetPrimaryFrameTree().root()));
-      }
       web_contents_->ForEachRenderFrameHost(
           [&hosts](RenderFrameHost* rfh) { AddFrame(hosts, rfh); });
       // In case primary main frame has been filtered out but some criteria
@@ -139,9 +123,8 @@ class WebContentsDevToolsAgentHost::AutoAttacher
       return;
     if (ftn->IsFencedFrameRoot())
       return;
-    // Allow portals, but ignore other kinds of embedders (e.g. GuestViews)
-    if (!ftn->frame_tree().delegate()->IsPortal() &&
-        ftn->render_manager()->GetOuterDelegateNode()) {
+    // Ignore other kinds of embedders such as GuestViews.
+    if (ftn->render_manager()->GetOuterDelegateNode()) {
       return;
     }
 
@@ -218,21 +201,6 @@ void WebContentsDevToolsAgentHost::InnerDetach() {
   // We may or may not be destruced here, depending on embedders
   // potentially retaining references.
   Release();
-}
-
-void WebContentsDevToolsAgentHost::PortalActivated(const Portal& portal) {
-  if (web_contents() == portal.GetPortalHostContents()) {
-    WebContents* old_wc = web_contents();
-    WebContents* new_wc = portal.GetPortalContents();
-    // Assure instrumentation calls for the new WC would be routed here.
-    DCHECK(GetRootWebContentsForDevTools(new_wc) == new_wc);
-    DCHECK(g_agent_host_instances.Get()[old_wc] == this);
-
-    g_agent_host_instances.Get().erase(old_wc);
-    g_agent_host_instances.Get()[new_wc] = this;
-    Observe(portal.GetPortalContents());
-  }
-  auto_attacher_->PortalActivated(portal);
 }
 
 void WebContentsDevToolsAgentHost::WillInitiatePrerender(FrameTreeNode* ftn) {
@@ -352,18 +320,18 @@ base::TimeTicks WebContentsDevToolsAgentHost::GetLastActivityTime() {
   return base::TimeTicks();
 }
 
-absl::optional<network::CrossOriginEmbedderPolicy>
+std::optional<network::CrossOriginEmbedderPolicy>
 WebContentsDevToolsAgentHost::cross_origin_embedder_policy(
     const std::string& id) {
   NOTREACHED();
-  return absl::nullopt;
+  return std::nullopt;
 }
 
-absl::optional<network::CrossOriginOpenerPolicy>
+std::optional<network::CrossOriginOpenerPolicy>
 WebContentsDevToolsAgentHost::cross_origin_opener_policy(
     const std::string& id) {
   NOTREACHED();
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 DevToolsAgentHostImpl* WebContentsDevToolsAgentHost::GetPrimaryFrameAgent() {
@@ -378,9 +346,7 @@ scoped_refptr<DevToolsAgentHost>
 WebContentsDevToolsAgentHost::GetOrCreatePrimaryFrameAgent() {
   if (WebContents* wc = web_contents()) {
     return RenderFrameDevToolsAgentHost::GetOrCreateFor(
-        static_cast<WebContentsImpl*>(web_contents())
-            ->GetPrimaryFrameTree()
-            .root());
+        static_cast<WebContentsImpl*>(wc)->GetPrimaryFrameTree().root());
   }
   return nullptr;
 }
@@ -435,6 +401,7 @@ bool WebContentsDevToolsAgentHost::AttachSession(DevToolsSession* session,
       GetId(), auto_attacher_.get(), session);
   DevToolsSession* root_session = session->GetRootSession();
   CHECK(root_session);
+  session->CreateAndAddHandler<protocol::IOHandler>(GetIOContext());
   session->CreateAndAddHandler<protocol::TracingHandler>(this, GetIOContext(),
                                                          root_session);
   return true;

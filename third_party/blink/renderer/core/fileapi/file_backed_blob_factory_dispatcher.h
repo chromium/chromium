@@ -9,6 +9,7 @@
 #include "third_party/blink/public/mojom/blob/file_backed_blob_factory.mojom-blink.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context_lifecycle_observer.h"
+#include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/platform/mojo/heap_mojo_associated_remote.h"
 #include "third_party/blink/renderer/platform/mojo/heap_mojo_remote.h"
 #include "third_party/blink/renderer/platform/supplementable.h"
@@ -45,7 +46,9 @@ class CORE_EXPORT FileBackedBlobFactoryDispatcher
 
   mojom::blink::FileBackedBlobFactory* GetFileBackedBlobFactory();
 
-  HeapMojoAssociatedRemote<mojom::blink::FileBackedBlobFactory> remote_;
+  HeapMojoAssociatedRemote<mojom::blink::FileBackedBlobFactory> frame_remote_;
+
+  HeapMojoRemote<mojom::blink::FileBackedBlobFactory> worker_remote_;
 };
 
 }  // namespace blink

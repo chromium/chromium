@@ -12,11 +12,13 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/ptr_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/path_service.h"
 #include "base/rand_util.h"
 #include "base/run_loop.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
@@ -64,6 +66,7 @@
 #include "components/prefs/scoped_user_pref_update.h"
 #include "components/signin/public/base/consent_level.h"
 #include "components/sync/base/command_line_switches.h"
+#include "components/sync/base/features.h"
 #include "components/sync/base/model_type.h"
 #include "components/sync/engine/sync_scheduler_impl.h"
 #include "components/sync/invalidations/sync_invalidations_service_impl.h"
@@ -221,7 +224,7 @@ void SyncTest::SetUp() {
     if (cl->HasSwitch(switches::kSyncUserForTest)) {
       username_ = cl->GetSwitchValueASCII(switches::kSyncUserForTest);
     } else if (server_type_ != EXTERNAL_LIVE_SERVER) {
-      username_ = "user@gmail.com";
+      username_ = kDefaultUserEmail;
     }
     // Decide on password to use.
     password_ = cl->HasSwitch(switches::kSyncPasswordForTest)
@@ -306,8 +309,8 @@ void SyncTest::BeforeSetupClient(int index,
                                  const base::FilePath& profile_path) {}
 
 base::FilePath SyncTest::GetProfileBaseName(int index) {
-  return base::FilePath(base::StringPrintf(
-      FILE_PATH_LITERAL("SyncIntegrationTestClient%d"), index));
+  return base::FilePath::FromASCII("SyncIntegrationTestClient" +
+                                   base::NumberToString(index));
 }
 
 bool SyncTest::CreateProfile(int index) {
@@ -395,8 +398,8 @@ Profile* SyncTest::GetProfile(int index) const {
   return profile;
 }
 
-std::vector<Profile*> SyncTest::GetAllProfiles() {
-  std::vector<Profile*> profiles;
+std::vector<raw_ptr<Profile, VectorExperimental>> SyncTest::GetAllProfiles() {
+  std::vector<raw_ptr<Profile, VectorExperimental>> profiles;
   if (UseVerifier()) {
     profiles.push_back(verifier());
   }
@@ -469,8 +472,9 @@ syncer::UserSelectableTypeSet SyncTest::GetRegisteredSelectableTypes(
       ->GetRegisteredSelectableTypes();
 }
 
-std::vector<SyncServiceImpl*> SyncTest::GetSyncServices() {
-  std::vector<SyncServiceImpl*> services;
+std::vector<raw_ptr<SyncServiceImpl, VectorExperimental>>
+SyncTest::GetSyncServices() {
+  std::vector<raw_ptr<SyncServiceImpl, VectorExperimental>> services;
   for (int i = 0; i < num_clients(); ++i) {
     services.push_back(GetSyncService(i));
   }
@@ -614,7 +618,7 @@ void SyncTest::InitializeProfile(int index, Profile* profile) {
     // Make sure that an instance of GCMProfileService has been created. This is
     // required for some tests which only call SetupClients().
     gcm::GCMProfileServiceFactory::GetForProfile(profile);
-    DCHECK(base::Contains(profile_to_fake_gcm_driver_, profile));
+    DCHECK(profile_to_fake_gcm_driver_.contains(profile));
     fake_server_sync_invalidation_sender_->AddFakeGCMDriver(
         profile_to_fake_gcm_driver_[profile]);
   }
@@ -669,8 +673,12 @@ void SyncTest::SetupSyncInternal(SetupSyncMode setup_mode) {
     }
 
     // It's important to wait for each client before setting up the next one,
-    // otherwise multi-client tests get flaky.
-    // TODO(crbug.com/956043): It would be nice to figure out why.
+    // otherwise multi-client tests get flaky. This may happen in some tests
+    // which have local data before sync is enabled. In such tests it's
+    // important (and this is closer to real behavior) that the initial merge is
+    // happening sequentially in two clients, otherwise both clients can upload
+    // their data simultaneously, e.g. resulting in duplicates (most prominent
+    // for bookmarks).
     switch (setup_mode) {
       case NO_WAITING:
         break;
@@ -724,7 +732,6 @@ bool SyncTest::SetupSync(SetupSyncMode setup_mode) {
   if (setup_mode != NO_WAITING && TestUsesSelfNotifications()) {
     if (!AwaitQuiescence()) {
       LOG(FATAL) << "AwaitQuiescence() failed.";
-      return false;
     }
   }
 
@@ -824,7 +831,7 @@ void SyncTest::OnProfileWillBeDestroyed(Profile* profile) {
     CheckForDataTypeFailures(/*client_index=*/index);
 
     // |profile_to_fake_gcm_driver_| may be empty when using an external server.
-    if (base::Contains(profile_to_fake_gcm_driver_, profile)) {
+    if (profile_to_fake_gcm_driver_.contains(profile)) {
       fake_server_sync_invalidation_sender_->RemoveFakeGCMDriver(
           profile_to_fake_gcm_driver_[profile]);
       profile_to_fake_gcm_driver_.erase(profile);
@@ -935,7 +942,8 @@ void SyncTest::SetUpOnMainThread() {
       // initialized.
       base::FilePath user_data_dir;
       base::PathService::Get(chrome::DIR_USER_DATA, &user_data_dir);
-      fake_server_ = std::make_unique<fake_server::FakeServer>(user_data_dir);
+      fake_server_ = std::make_unique<fake_server::FakeServer>(
+          user_data_dir.AppendASCII("FakeServer"));
       fake_server_sync_invalidation_sender_ =
           std::make_unique<fake_server::FakeServerSyncInvalidationSender>(
               fake_server_.get());
@@ -987,9 +995,6 @@ void SyncTest::SetupMockGaiaResponses() {
   test_url_loader_factory_.AddResponse(
       GaiaUrls::GetInstance()->oauth_user_info_url().spec(),
       "{ \"id\": \"12345\" }");
-  test_url_loader_factory_.AddResponse(
-      GaiaUrls::GetInstance()->oauth1_login_url().spec(),
-      "SID=sid\nLSID=lsid\nAuth=auth_token");
   test_url_loader_factory_.AddResponse(
       GaiaUrls::GetInstance()->oauth2_revoke_url().spec(), "");
 }
@@ -1112,4 +1117,63 @@ void SyncTest::CheckForDataTypeFailures(size_t client_index) const {
 void SyncTest::ExcludeDataTypesFromCheckForDataTypeFailures(
     syncer::ModelTypeSet types) {
   excluded_types_from_check_for_data_type_failures_ = types;
+}
+
+syncer::ModelTypeSet AllowedTypesInStandaloneTransportMode() {
+  static_assert(50 == syncer::GetNumModelTypes(),
+                "Add new types below if they can run in transport mode");
+  // Only some types will run by default in transport mode (i.e. without their
+  // own separate opt-in).
+  syncer::ModelTypeSet allowed_types = {syncer::AUTOFILL_WALLET_CREDENTIAL,
+                                        syncer::AUTOFILL_WALLET_DATA,
+                                        syncer::AUTOFILL_WALLET_USAGE,
+                                        syncer::CONTACT_INFO,
+                                        syncer::DEVICE_INFO,
+                                        syncer::SECURITY_EVENTS,
+                                        syncer::SEND_TAB_TO_SELF,
+                                        syncer::SHARING_MESSAGE,
+                                        syncer::USER_CONSENTS};
+  allowed_types.PutAll(syncer::ControlTypes());
+
+  if (base::FeatureList::IsEnabled(
+          syncer::kSyncEnableWalletMetadataInTransportMode)) {
+    allowed_types.Put(syncer::AUTOFILL_WALLET_METADATA);
+  }
+  if (base::FeatureList::IsEnabled(
+          syncer::kSyncEnableWalletOfferInTransportMode)) {
+    allowed_types.Put(syncer::AUTOFILL_WALLET_OFFER);
+  }
+  if (base::FeatureList::IsEnabled(
+          syncer::kEnablePasswordsAccountStorageForNonSyncingUsers)) {
+    allowed_types.Put(syncer::PASSWORDS);
+  }
+  if (base::FeatureList::IsEnabled(syncer::kEnablePreferencesAccountStorage) &&
+      base::FeatureList::IsEnabled(
+          syncer::kReplaceSyncPromosWithSignInPromos)) {
+    allowed_types.Put(syncer::PREFERENCES);
+    allowed_types.Put(syncer::PRIORITY_PREFERENCES);
+  }
+  if (base::FeatureList::IsEnabled(
+          syncer::kReadingListEnableSyncTransportModeUponSignIn)) {
+    allowed_types.Put(syncer::READING_LIST);
+  }
+  if (base::FeatureList::IsEnabled(
+          syncer::kSyncSharedTabGroupDataInTransportMode)) {
+    allowed_types.Put(syncer::COLLABORATION_GROUP);
+    allowed_types.Put(syncer::SHARED_TAB_GROUP_DATA);
+  }
+
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  // On Lacros, Apps-related types may run in transport mode.
+  allowed_types.PutAll({syncer::APPS, syncer::APP_SETTINGS, syncer::WEB_APPS});
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  // OS sync types run in transport mode.
+  allowed_types.PutAll({syncer::APP_LIST, syncer::ARC_PACKAGE,
+                        syncer::OS_PREFERENCES, syncer::OS_PRIORITY_PREFERENCES,
+                        syncer::PRINTERS,
+                        syncer::PRINTERS_AUTHORIZATION_SERVERS,
+                        syncer::WIFI_CONFIGURATIONS, syncer::WORKSPACE_DESK});
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+  return allowed_types;
 }

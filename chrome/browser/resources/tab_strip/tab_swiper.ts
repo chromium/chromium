@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {isRTL} from 'chrome://resources/js/util_ts.js';
+import {isRTL} from 'chrome://resources/js/util.js';
 
 /**
  * The minimum amount of pixels needed for the user to swipe for the position
@@ -162,7 +162,7 @@ export class TabSwiper {
       return;
     }
 
-    const pixelsSwiped = this.animation_.currentTime!;
+    const pixelsSwiped: number = Number(this.animation_.currentTime!);
     const swipedEnoughToClose = pixelsSwiped > SWIPE_START_THRESHOLD_PX;
     const wasHighVelocity = pixelsSwiped /
             (event.timeStamp - this.currentPointerDownEvent_!.timeStamp) >

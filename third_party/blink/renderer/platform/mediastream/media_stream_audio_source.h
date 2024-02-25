@@ -118,12 +118,12 @@ class PLATFORM_EXPORT MediaStreamAudioSource
 
   // Returns the audio processing properties associated to this source if any,
   // or nullopt otherwise.
-  virtual absl::optional<blink::AudioProcessingProperties>
+  virtual std::optional<blink::AudioProcessingProperties>
   GetAudioProcessingProperties() const {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
-  absl::optional<media::AudioCapturerSource::ErrorCode> ErrorCode() {
+  std::optional<media::AudioCapturerSource::ErrorCode> ErrorCode() {
     DCHECK(GetTaskRunner()->BelongsToCurrentThread());
     return error_code_;
   }
@@ -218,7 +218,7 @@ class PLATFORM_EXPORT MediaStreamAudioSource
   MediaStreamAudioDeliverer<MediaStreamAudioTrack> deliverer_;
 
   // Code set if this source was closed due to an error.
-  absl::optional<media::AudioCapturerSource::ErrorCode> error_code_;
+  std::optional<media::AudioCapturerSource::ErrorCode> error_code_;
 
   // Provides weak pointers so that MediaStreamAudioTracks won't call
   // StopAudioDeliveryTo() if this instance dies first.

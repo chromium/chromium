@@ -6,13 +6,13 @@
 #define CHROMEOS_ASH_COMPONENTS_DBUS_SHILL_FAKE_SHILL_PROFILE_CLIENT_H_
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <vector>
 
 #include "base/component_export.h"
 #include "chromeos/ash/components/dbus/shill/shill_manager_client.h"
 #include "chromeos/ash/components/dbus/shill/shill_profile_client.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ash {
 
@@ -75,7 +75,7 @@ class COMPONENT_EXPORT(SHILL_CLIENT) FakeShillProfileClient
       std::vector<std::string>* profiles) override;
   base::Value::Dict GetProfileProperties(
       const std::string& profile_path) override;
-  absl::optional<base::Value::Dict> GetService(
+  std::optional<base::Value::Dict> GetService(
       const std::string& service_path,
       std::string* profile_path) override;
   bool HasService(const std::string& service_path) override;

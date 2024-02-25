@@ -1,0 +1,172 @@
+# Copyright 2015 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//components/variations/service/generate_ui_string_overrider.gni")
+
+source_set("model") {
+  sources = [
+    "ios_chrome_variations_service_client.h",
+    "ios_chrome_variations_service_client.mm",
+  ]
+  deps = [
+    ":store",
+    "//base",
+    "//components/variations",
+    "//components/variations/service",
+    "//components/version_info",
+    "//ios/chrome/browser/metrics/model:accessor",
+    "//ios/chrome/browser/shared/model/application_context",
+    "//ios/chrome/common",
+    "//ios/web",
+  ]
+}
+
+source_set("fetcher") {
+  sources = [
+    "ios_chrome_variations_seed_fetcher+testing.h",
+    "ios_chrome_variations_seed_fetcher.h",
+    "ios_chrome_variations_seed_fetcher.mm",
+  ]
+  deps = [
+    ":constants",
+    ":store",
+    ":store_private",
+    "//base",
+    "//build:branding_buildflags",
+    "//components/variations",
+    "//components/version_info:version_info",
+    "//ios/chrome/common",
+    "//net",
+  ]
+}
+
+source_set("store") {
+  sources = [
+    "ios_chrome_variations_seed_store+testing.h",
+    "ios_chrome_variations_seed_store.h",
+    "ios_chrome_variations_seed_store.mm",
+  ]
+  deps = [
+    ":store_private",
+    "//components/variations",
+  ]
+}
+
+source_set("store_private") {
+  visibility = [
+    ":fetcher",
+    ":store",
+    ":unit_tests",
+  ]
+  sources = [ "ios_chrome_variations_seed_store+fetcher.h" ]
+}
+
+source_set("constants") {
+  sources = [ "constants.h" ]
+}
+
+generate_ui_string_overrider("ios_chrome_ui_string_overrider_factory") {
+  inputs = [
+    "$root_gen_dir/components/strings/grit/components_branded_strings.h",
+    "$root_gen_dir/components/strings/grit/components_locale_settings.h",
+    "$root_gen_dir/components/strings/grit/components_strings.h",
+    "$root_gen_dir/ios/chrome/grit/ios_branded_strings.h",
+    "$root_gen_dir/ios/chrome/grit/ios_strings.h",
+  ]
+  deps = [
+    "//components/strings:components_branded_strings",
+    "//components/strings:components_locale_settings",
+    "//components/strings:components_strings",
+    "//ios/chrome/app/strings:ios_branded_strings",
+    "//ios/chrome/app/strings:ios_strings",
+  ]
+  namespace = ""  # Put the functions in the global namespace on iOS.
+  header_filename = "ios_ui_string_overrider_factory.h"
+  source_filename = "ios_ui_string_overrider_factory.cc"
+}
+
+source_set("eg_app_support+eg2") {
+  configs += [ "//build/config/ios:xctest_config" ]
+  testonly = true
+  sources = [
+    "variations_app_interface.h",
+    "variations_app_interface.mm",
+  ]
+  deps = [
+    "//base",
+    "//base/test:test_support",
+    "//components/metrics",
+    "//components/prefs",
+    "//components/variations",
+    "//components/variations:test_support",
+    "//ios/chrome/browser/shared/model/application_context",
+    "//ios/chrome/test/app:test_support",
+  ]
+}
+
+source_set("eg_test_support+eg2") {
+  configs += [ "//build/config/ios:xctest_config" ]
+  testonly = true
+  sources = [
+    "variations_app_interface.h",
+    "variations_app_interface_stub.mm",
+  ]
+  deps = [
+    "//base",
+    "//ios/testing/earl_grey:eg_test_support+eg2",
+  ]
+}
+
+source_set("eg2_tests") {
+  configs += [ "//build/config/ios:xctest_config" ]
+  testonly = true
+  sources = [
+    "variations_safe_mode_egtest.mm",
+    "variations_safe_mode_end_to_end_egtest.mm",
+  ]
+  deps = [
+    ":eg_test_support+eg2",
+    "//base",
+    "//base/test:test_support",
+    "//build:branding_buildflags",
+    "//components/metrics",
+    "//components/prefs",
+    "//components/variations:test_support",
+    "//components/variations:variations",
+    "//components/variations/service:service",
+    "//ios/chrome/test/earl_grey:eg_test_support+eg2",
+    "//ios/testing/earl_grey:eg_test_support+eg2",
+  ]
+  frameworks = [ "UIKit.framework" ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [
+    "ios_chrome_variations_seed_fetcher_unittest.mm",
+    "ios_chrome_variations_seed_store_unittest.mm",
+  ]
+  deps = [
+    ":constants",
+    ":fetcher",
+    ":model",
+    ":store",
+    ":store_private",
+    "//base",
+    "//base/test:test_support",
+    "//build:branding_buildflags",
+    "//components/metrics",
+    "//components/metrics:test_support",
+    "//components/variations",
+    "//components/variations:test_support",
+    "//components/variations/service",
+    "//components/version_info:version_info",
+    "//ios/chrome/browser/flags:client_side",
+    "//ios/chrome/test:test_support",
+    "//net",
+    "//services/network:test_support",
+    "//testing/gtest",
+    "//third_party/ocmock",
+  ]
+}

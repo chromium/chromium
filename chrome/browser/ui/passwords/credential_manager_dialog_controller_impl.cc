@@ -10,13 +10,13 @@
 #include "chrome/browser/ui/passwords/password_dialog_prompts.h"
 #include "chrome/browser/ui/passwords/passwords_model_delegate.h"
 #include "chrome/browser/ui/passwords/ui_utils.h"
-#include "chrome/grit/chromium_strings.h"
+#include "chrome/grit/branded_strings.h"
 #include "chrome/grit/generated_resources.h"
-#include "components/device_reauth/device_authenticator.h"
 #include "components/password_manager/core/browser/password_bubble_experiment.h"
 #include "components/password_manager/core/browser/password_feature_manager.h"
 #include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_manager_metrics_util.h"
+#include "components/password_manager/core/browser/password_sync_util.h"
 #include "components/password_manager/core/browser/password_ui_utils.h"
 #include "components/password_manager/core/common/password_manager_pref_names.h"
 #include "components/prefs/pref_service.h"
@@ -112,19 +112,18 @@ std::u16string CredentialManagerDialogControllerImpl::GetAutoSigninText()
 bool CredentialManagerDialogControllerImpl::ShouldShowFooter() const {
   const syncer::SyncService* sync_service =
       SyncServiceFactory::GetForProfile(profile_);
-  return password_bubble_experiment::HasChosenToSyncPasswords(sync_service);
+  // TODO(crbug.com/1464264): Migrate away from `ConsentLevel::kSync` on desktop
+  // platforms and remove #ifdef below.
+#if BUILDFLAG(IS_ANDROID)
+#error If this code is built on Android, please update TODO above.
+#endif  // BUILDFLAG(IS_ANDROID)
+  return password_manager::sync_util::IsSyncFeatureEnabledIncludingPasswords(
+      sync_service);
 }
 
 void CredentialManagerDialogControllerImpl::OnChooseCredentials(
     const password_manager::PasswordForm& password_form,
     password_manager::CredentialType credential_type) {
-  if (local_credentials_.size() == 1) {
-    password_manager::metrics_util::LogAccountChooserUserActionOneAccount(
-        password_manager::metrics_util::ACCOUNT_CHOOSER_CREDENTIAL_CHOSEN);
-  } else {
-    password_manager::metrics_util::LogAccountChooserUserActionManyAccounts(
-        password_manager::metrics_util::ACCOUNT_CHOOSER_CREDENTIAL_CHOSEN);
-  }
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
   if (delegate_->GetPasswordFeatureManager()
           ->IsBiometricAuthenticationBeforeFillingEnabled()) {
@@ -141,9 +140,7 @@ void CredentialManagerDialogControllerImpl::OnChooseCredentials(
 }
 
 void CredentialManagerDialogControllerImpl::OnSignInClicked() {
-  DCHECK_EQ(1u, local_credentials_.size());
-  password_manager::metrics_util::LogAccountChooserUserActionOneAccount(
-      password_manager::metrics_util::ACCOUNT_CHOOSER_SIGN_IN);
+  CHECK_EQ(1u, local_credentials_.size());
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
   if (delegate_->GetPasswordFeatureManager()
           ->IsBiometricAuthenticationBeforeFillingEnabled()) {
@@ -184,13 +181,6 @@ void CredentialManagerDialogControllerImpl::OnAutoSigninTurnOff() {
 
 void CredentialManagerDialogControllerImpl::OnCloseDialog() {
   if (account_chooser_dialog_) {
-    if (local_credentials_.size() == 1) {
-      password_manager::metrics_util::LogAccountChooserUserActionOneAccount(
-          password_manager::metrics_util::ACCOUNT_CHOOSER_DISMISSED);
-    } else {
-      password_manager::metrics_util::LogAccountChooserUserActionManyAccounts(
-          password_manager::metrics_util::ACCOUNT_CHOOSER_DISMISSED);
-    }
     account_chooser_dialog_ = nullptr;
   }
   if (autosignin_dialog_) {

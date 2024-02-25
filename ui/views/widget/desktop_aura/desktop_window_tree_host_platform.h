@@ -94,9 +94,11 @@ class VIEWS_EXPORT DesktopWindowTreeHostPlatform
   std::string GetWorkspace() const override;
   gfx::Rect GetWorkAreaBoundsInScreen() const override;
   void SetShape(std::unique_ptr<Widget::ShapeRects> native_shape) override;
+  void SetParent(gfx::AcceleratedWidget parent) override;
   void Activate() override;
   void Deactivate() override;
   bool IsActive() const override;
+  bool CanMaximize() override;
   void Maximize() override;
   void Minimize() override;
   void Restore() override;
@@ -120,6 +122,7 @@ class VIEWS_EXPORT DesktopWindowTreeHostPlatform
   bool ShouldUseNativeFrame() const override;
   bool ShouldWindowContentsBeTransparent() const override;
   void FrameTypeChanged() override;
+  bool CanFullscreen() override;
   void SetFullscreen(bool fullscreen, int64_t display_id) override;
   bool IsFullscreen() const override;
   void SetOpacity(float opacity) override;
@@ -130,7 +133,6 @@ class VIEWS_EXPORT DesktopWindowTreeHostPlatform
   void InitModalType(ui::ModalType modal_type) override;
   void FlashFrame(bool flash_frame) override;
   bool IsAnimatingClosed() const override;
-  bool IsTranslucentWindowOpacitySupported() const override;
   void SizeConstraintsChanged() override;
   bool ShouldUpdateWindowTransparency() const override;
   bool ShouldUseDesktopNativeCursorManager() const override;
@@ -155,11 +157,10 @@ class VIEWS_EXPORT DesktopWindowTreeHostPlatform
   bool OnRotateFocus(ui::PlatformWindowDelegate::RotateDirection direction,
                      bool reset) override;
   void OnActivationChanged(bool active) override;
-  absl::optional<gfx::Size> GetMinimumSizeForWindow() override;
-  absl::optional<gfx::Size> GetMaximumSizeForWindow() override;
+  std::optional<gfx::Size> GetMinimumSizeForWindow() override;
+  std::optional<gfx::Size> GetMaximumSizeForWindow() override;
   SkPath GetWindowMaskForWindowShapeInPixels() override;
-  absl::optional<ui::MenuType> GetMenuType() override;
-  absl::optional<ui::OwnedWindowAnchor> GetOwnedWindowAnchorAndRectInDIP()
+  std::optional<ui::OwnedWindowAnchor> GetOwnedWindowAnchorAndRectInDIP()
       override;
   gfx::Rect ConvertRectToPixels(const gfx::Rect& rect_in_dip) const override;
   gfx::Rect ConvertRectToDIP(const gfx::Rect& rect_in_pixels) const override;
@@ -199,14 +200,14 @@ class VIEWS_EXPORT DesktopWindowTreeHostPlatform
 
   views::corewm::TooltipController* tooltip_controller();
 
+  void ScheduleRelayout();
+
  private:
   FRIEND_TEST_ALL_PREFIXES(DesktopWindowTreeHostPlatformTest,
                            UpdateWindowShapeFromWindowMask);
   FRIEND_TEST_ALL_PREFIXES(DesktopWindowTreeHostPlatformTest,
                            MakesParentChildRelationship);
   FRIEND_TEST_ALL_PREFIXES(DesktopWindowTreeHostPlatformTest, OnRotateFocus);
-
-  void ScheduleRelayout();
 
   // Set visibility and fire OnNativeWidgetVisibilityChanged() if it changed.
   void SetVisible(bool visible);
@@ -239,7 +240,8 @@ class VIEWS_EXPORT DesktopWindowTreeHostPlatform
   // We can optionally have a parent which can order us to close, or own
   // children who we're responsible for closing when we CloseNow().
   raw_ptr<DesktopWindowTreeHostPlatform> window_parent_ = nullptr;
-  std::set<DesktopWindowTreeHostPlatform*> window_children_;
+  std::set<raw_ptr<DesktopWindowTreeHostPlatform, SetExperimental>>
+      window_children_;
 
   // Used for tab dragging in move loop requests.
   WindowMoveClientPlatform window_move_client_;

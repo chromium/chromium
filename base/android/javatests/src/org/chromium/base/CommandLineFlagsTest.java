@@ -24,13 +24,14 @@ import org.chromium.base.test.util.Feature;
 
 import java.util.List;
 
-/**
- * Test class for {@link CommandLineFlags}.
- */
+/** Test class for {@link CommandLineFlags}. */
 @RunWith(CommandLineFlagsTest.ClassRunner.class)
 @Batch(Batch.UNIT_TESTS)
-@CommandLineFlags.
-Add({CommandLineFlagsTest.FLAG_1, "flagwithvalue=foo", "enable-features=feature1,feature2"})
+@CommandLineFlags.Add({
+    CommandLineFlagsTest.FLAG_1,
+    "flagwithvalue=foo",
+    "enable-features=feature1,feature2"
+})
 public class CommandLineFlagsTest {
     public static class ClassRunner extends BaseJUnit4ClassRunner {
         public ClassRunner(final Class<?> klass) throws InitializationError {
@@ -40,23 +41,28 @@ public class CommandLineFlagsTest {
         // Verify class-level modifications are reset after class finishes.
         @Override
         protected List<ClassHook> getPostClassHooks() {
-            return addToList(ClassRunner.super.getPostClassHooks(), (targetContext, testClass) -> {
-                verifyCommandLine(false, false, false, false, false, false, false);
-                Assert.assertFalse(CommandLine.getInstance().hasSwitch("flagwithvalue"));
-                String enabledFeatures =
-                        CommandLine.getInstance().getSwitchValue("enable-features");
-                if (enabledFeatures != null) {
-                    Assert.assertFalse(enabledFeatures.contains("feature1"));
-                    Assert.assertFalse(enabledFeatures.contains("feature2"));
-                }
-            });
+            return addToList(
+                    ClassRunner.super.getPostClassHooks(),
+                    (targetContext, testClass) -> {
+                        verifyCommandLine(false, false, false, false, false, false, false);
+                        Assert.assertFalse(CommandLine.getInstance().hasSwitch("flagwithvalue"));
+                        String enabledFeatures =
+                                CommandLine.getInstance().getSwitchValue("enable-features");
+                        if (enabledFeatures != null) {
+                            Assert.assertFalse(enabledFeatures.contains("feature1"));
+                            Assert.assertFalse(enabledFeatures.contains("feature2"));
+                        }
+                    });
         }
 
         // Verify that after each test, flags are reset to class-level state.
         @Override
         protected List<TestHook> getPostTestHooks() {
-            return addToList(ClassRunner.super.getPostTestHooks(),
-                    (targetContext, testMethod) -> { verifyClassLevelStateOnly(); });
+            return addToList(
+                    ClassRunner.super.getPostTestHooks(),
+                    (targetContext, testMethod) -> {
+                        verifyClassLevelStateOnly();
+                    });
         }
     }
 
@@ -85,20 +91,24 @@ public class CommandLineFlagsTest {
         @CommandLineFlags.Add(FLAG_5)
         private static class UnusedRule extends EmptyRule {}
 
-        @Rule
-        public InnerRule mInnerRule = new InnerRule();
+        @Rule public InnerRule mInnerRule = new InnerRule();
     }
 
-    @Rule
-    public MyRule mRule = new MyRule();
+    @Rule public MyRule mRule = new MyRule();
 
     @Before
     public void setUp() {
         LibraryLoader.getInstance().ensureInitialized();
     }
 
-    private static void verifyCommandLine(boolean flag1, boolean flag2, boolean flag3,
-            boolean flag4, boolean flag5, boolean flag6, boolean flag7) {
+    private static void verifyCommandLine(
+            boolean flag1,
+            boolean flag2,
+            boolean flag3,
+            boolean flag4,
+            boolean flag5,
+            boolean flag6,
+            boolean flag7) {
         CommandLine cmdLine = CommandLine.getInstance();
         Assert.assertEquals(flag1, cmdLine.hasSwitch(FLAG_1));
         Assert.assertEquals(flag2, cmdLine.hasSwitch(FLAG_2));

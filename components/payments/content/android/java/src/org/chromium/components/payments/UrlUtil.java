@@ -4,8 +4,9 @@
 
 package org.chromium.components.payments;
 
-import org.chromium.base.annotations.JNINamespace;
-import org.chromium.base.annotations.NativeMethods;
+import org.jni_zero.JNINamespace;
+import org.jni_zero.NativeMethods;
+
 import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.url.GURL;
 
@@ -19,7 +20,9 @@ public class UrlUtil {
      * @return TRUE if given url is valid and not a relative URI.
      */
     public static boolean isURLValid(GURL url) {
-        return url != null && url.isValid() && !url.getScheme().isEmpty()
+        return url != null
+                && url.isValid()
+                && !url.getScheme().isEmpty()
                 && (UrlConstants.HTTPS_SCHEME.equals(url.getScheme())
                         || UrlConstants.HTTP_SCHEME.equals(url.getScheme()));
     }
@@ -56,7 +59,9 @@ public class UrlUtil {
     @NativeMethods
     /* package */ interface Natives {
         boolean isOriginAllowedToUseWebPaymentApis(GURL url);
+
         boolean isValidUrlBasedPaymentMethodIdentifier(GURL url);
+
         boolean isLocalDevelopmentUrl(GURL url);
     }
 }

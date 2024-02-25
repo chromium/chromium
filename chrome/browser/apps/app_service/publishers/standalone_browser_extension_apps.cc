@@ -36,8 +36,9 @@ namespace {
 // Returns true if app's launch info should be saved to full restore.
 bool ShouldSaveToFullRestore(AppServiceProxy* proxy,
                              const std::string& app_id) {
-  if (!::full_restore::features::IsFullRestoreForLacrosEnabled())
+  if (!::full_restore::features::IsFullRestoreForLacrosEnabled()) {
     return false;
+  }
 
   bool is_platform_app = true;
   proxy->AppRegistryCache().ForOneApp(
@@ -65,8 +66,6 @@ StandaloneBrowserExtensionApps::~StandaloneBrowserExtensionApps() = default;
 
 void StandaloneBrowserExtensionApps::RegisterCrosapiHost(
     mojo::PendingReceiver<crosapi::mojom::AppPublisher> receiver) {
-  RegisterPublisher(app_type_);
-
   // At the moment the app service publisher will only accept one browser client
   // publishing apps to ash chrome. Any extra clients will be ignored.
   // TODO(crbug.com/1174246): Support SxS lacros.
@@ -101,8 +100,9 @@ void StandaloneBrowserExtensionApps::Launch(const std::string& app_id,
                                             WindowInfoPtr window_info) {
   // It is possible that Lacros is briefly unavailable, for example if it shuts
   // down for an update.
-  if (!controller_.is_bound())
+  if (!controller_.is_bound()) {
     return;
+  }
 
   // The following code assumes |app_type_| must be
   // AppType::kStandaloneBrowserChromeApp. Therefore, the app must be either
@@ -132,8 +132,9 @@ void StandaloneBrowserExtensionApps::LaunchAppWithFiles(
     std::vector<base::FilePath> file_paths) {
   // It is possible that Lacros is briefly unavailable, for example if it shuts
   // down for an update.
-  if (!controller_.is_bound())
+  if (!controller_.is_bound()) {
     return;
+  }
 
   std::vector<base::FilePath> file_paths_for_restore = file_paths;
   auto launch_params = crosapi::mojom::LaunchParams::New();
@@ -164,7 +165,7 @@ void StandaloneBrowserExtensionApps::LaunchAppWithIntent(
   // It is possible that Lacros is briefly unavailable, for example if it shuts
   // down for an update.
   if (!controller_.is_bound()) {
-    std::move(callback).Run(LaunchResult(State::FAILED));
+    std::move(callback).Run(LaunchResult(State::kFailed));
     return;
   }
 
@@ -175,7 +176,7 @@ void StandaloneBrowserExtensionApps::LaunchAppWithIntent(
       intent, ProfileManager::GetPrimaryUserProfile());
   controller_->Launch(std::move(launch_params),
                       /*callback=*/base::DoNothing());
-  std::move(callback).Run(LaunchResult(State::SUCCESS));
+  std::move(callback).Run(LaunchResult(State::kSuccess));
 
   if (ShouldSaveToFullRestore(proxy(), app_id)) {
     auto launch_info = std::make_unique<app_restore::AppLaunchInfo>(
@@ -215,8 +216,9 @@ void StandaloneBrowserExtensionApps::Uninstall(const std::string& app_id,
                                                bool report_abuse) {
   // It is possible that Lacros is briefly unavailable, for example if it shuts
   // down for an update.
-  if (!controller_.is_bound())
+  if (!controller_.is_bound()) {
     return;
+  }
 
   controller_->Uninstall(app_id, uninstall_source, clear_site_data,
                          report_abuse);
@@ -273,8 +275,9 @@ void StandaloneBrowserExtensionApps::SetWindowMode(const std::string& app_id,
                                                    WindowMode window_mode) {
   // It is possible that Lacros is briefly unavailable, for example if it shuts
   // down for an update.
-  if (!controller_.is_bound())
+  if (!controller_.is_bound()) {
     return;
+  }
 
   controller_->SetWindowMode(app_id, window_mode);
 }
@@ -282,18 +285,30 @@ void StandaloneBrowserExtensionApps::SetWindowMode(const std::string& app_id,
 void StandaloneBrowserExtensionApps::StopApp(const std::string& app_id) {
   // It is possible that Lacros is briefly unavailable, for example if it shuts
   // down for an update.
-  if (!controller_.is_bound())
+  if (!controller_.is_bound()) {
     return;
+  }
 
   controller_->StopApp(app_id);
+}
+
+void StandaloneBrowserExtensionApps::UpdateAppSize(const std::string& app_id) {
+  // It is possible that Lacros is briefly unavailable, for example if it shuts
+  // down for an update.
+  if (!controller_.is_bound()) {
+    return;
+  }
+
+  controller_->UpdateAppSize(app_id);
 }
 
 void StandaloneBrowserExtensionApps::OpenNativeSettings(
     const std::string& app_id) {
   // It is possible that Lacros is briefly unavailable, for example if it shuts
   // down for an update.
-  if (!controller_.is_bound())
+  if (!controller_.is_bound()) {
     return;
+  }
 
   controller_->OpenNativeSettings(app_id);
 }
@@ -327,6 +342,8 @@ void StandaloneBrowserExtensionApps::RegisterAppController(
   controller_.set_disconnect_handler(
       base::BindOnce(&StandaloneBrowserExtensionApps::OnControllerDisconnected,
                      weak_factory_.GetWeakPtr()));
+  RegisterPublisher(app_type_);
+
   if (app_cache_.empty()) {
     // If there is no apps saved in `app_cache_`, still publish an empty app
     // list to initialize `app_type_`.

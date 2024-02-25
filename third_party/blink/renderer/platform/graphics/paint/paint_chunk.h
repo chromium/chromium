@@ -7,11 +7,11 @@
 
 #include <iosfwd>
 #include <memory>
+#include <optional>
 
 #include "base/check_op.h"
 #include "base/dcheck_is_on.h"
 #include "cc/input/hit_test_opaqueness.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/renderer/platform/graphics/color.h"
 #include "third_party/blink/renderer/platform/graphics/paint/display_item_client.h"
 #include "third_party/blink/renderer/platform/graphics/paint/drawing_display_item.h"
@@ -126,8 +126,9 @@ struct PLATFORM_EXPORT PaintChunk {
 
   // The no-argument version is for operator<< which is used in DCHECK and unit
   // tests. It doesn't output the debug name of the client.
-  String ToString() const;
-  String ToString(const PaintArtifact& paint_artifact) const;
+  String ToString(bool concise = false) const;
+  String ToString(const PaintArtifact& paint_artifact,
+                  bool concise = false) const;
 
   // Index of the first drawing in this chunk.
   wtf_size_t begin_index;

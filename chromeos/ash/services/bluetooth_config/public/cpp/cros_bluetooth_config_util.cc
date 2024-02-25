@@ -14,6 +14,10 @@ bool IsBluetoothEnabledOrEnabling(
          system_state == mojom::BluetoothSystemState::kEnabling;
 }
 
+bool IsBluetoothEnabled(const mojom::BluetoothSystemState system_state) {
+  return system_state == mojom::BluetoothSystemState::kEnabled;
+}
+
 std::u16string GetPairedDeviceName(
     const mojom::PairedBluetoothDevicePropertiesPtr& paired_device_properties) {
   if (paired_device_properties->nickname.has_value())

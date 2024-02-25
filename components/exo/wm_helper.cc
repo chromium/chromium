@@ -5,15 +5,20 @@
 #include "components/exo/wm_helper.h"
 
 #include "ash/frame_throttler/frame_throttling_controller.h"
+#include "ash/public/cpp/debug_utils.h"
 #include "ash/public/cpp/shell_window_ids.h"
 #include "ash/shell.h"
 #include "ash/wm/tablet_mode/tablet_mode_controller.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/singleton.h"
 #include "base/time/time.h"
 #include "chromeos/dbus/power/power_manager_client.h"
 #include "chromeos/dbus/power_manager/backlight.pb.h"
+#include "components/exo/shell_surface_base.h"
+#include "components/exo/shell_surface_util.h"
+#include "components/exo/surface.h"
 #include "ui/aura/client/drag_drop_client.h"
 #include "ui/aura/client/focus_client.h"
 #include "ui/base/data_transfer_policy/data_transfer_endpoint.h"
@@ -39,6 +44,127 @@ WMHelper* g_instance = nullptr;
 aura::Window* GetPrimaryRoot() {
   return ash::Shell::Get()->GetPrimaryRootWindow();
 }
+
+// Placeholder EDID for internal and virtual displays.
+// The data isn't complete but sufficient for SurfaceFlinger not to complain.
+// https://en.wikipedia.org/wiki/Extended_Display_Identification_Data
+// TODO(b/299391925) We should derive this from the display info.
+// clang-format off
+constexpr uint8_t kFablicatedFallbackEDIDData[] = {
+    // [0-7] Fixed header pattern
+    0x00, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0x00,
+    // [8-9] Manufacturer ID ("GGL"), [10-11] Manufacturer product code (0), [12-15] Serial (0)
+    0x1c, 0xec, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+    // [16-17] Manufacture year (2023), [18-19] EDID version (1.4), [20-47] Not used in Android
+    0xFF, 0x21, 0x01, 0x04, 0x00, 0x00, 0x00, 0x00,
+    0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+    0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+    0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+    // [48-53] Not used for SF, [54-55] Descriptor Header
+    0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+    // [56-58] Descriptor Header (Display name type), [59-63] display name value ("ArcFa")
+    0x00, 0xfc, 0x00, 0x45, 0x78, 0x6F, 0x46, 0x61,
+    // [64-70] display name value ("keEdid\n")
+    0x6b, 0x65, 0x45, 0x64, 0x69, 0x64, 0x0a, 0x00,
+    // [71-126] Non-mandatory fields (asciiText, serialNumber, extensions, etc)
+    0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+    0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+    0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+    0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+    0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+    0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+    // [127] checksum
+    0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0xe6,
+};
+// clang-format on
+
+class ExoDebugWindowHierarchyDelegate
+    : public ash::debug::DebugWindowHierarchyDelegate {
+ public:
+  // Exo windows have their window tree up to the root surface disconnected
+  // (see crbug.com/1405015). We want to keep them in debug output though, so
+  // special case them here.
+  std::vector<raw_ptr<aura::Window, VectorExperimental>>
+  GetAdjustedWindowChildren(aura::Window* window) const override {
+    if (ShouldUseAdjustedChildren(window)) {
+      return Surface::AsSurface(window)->GetChildWindows();
+    }
+    return window->children();
+  }
+
+  std::vector<raw_ptr<ui::Layer, VectorExperimental>> GetAdjustedLayerChildren(
+      const ui::Layer* layer) const override {
+    // For non-exo windows, just return the regular children. Note that we still
+    // need to check leaf layers with no children.
+    if (!layer->children().empty()) {
+      return layer->children();
+    }
+
+    // Attempt to map this layer to the window that owns it.
+    auto* window = MaybeGetWindowForLayer(layer);
+    // If we found a window and it should have adjusted children, grab the
+    // layers from its child windows.
+    if (window && ShouldUseAdjustedChildren(window)) {
+      std::vector<raw_ptr<ui::Layer, VectorExperimental>> children;
+      for (aura::Window* child : GetAdjustedWindowChildren(window)) {
+        children.push_back(child->layer());
+      }
+      return children;
+    }
+    return layer->children();
+  }
+
+ private:
+  // True if we should use adjusted children (e.g. the exo root surface window).
+  bool ShouldUseAdjustedChildren(aura::Window* window) const {
+    return Surface::AsSurface(window) && !window->children().size();
+  }
+
+  // We are doing a traversal of the entire window tree for each layer, which
+  // may be slow. This is only called on debug methods to print the hierarchy,
+  // so it should be fine. It is otherwise difficult to map from a layer to a
+  // window.
+  aura::Window* MaybeGetWindowForLayer(const ui::Layer* layer) const {
+    for (aura::Window* root_window : ash::Shell::Get()->GetAllRootWindows()) {
+      auto* window = MaybeGetWindowForLayerImpl(root_window, layer);
+      if (window != nullptr) {
+        return window;
+      }
+    }
+    return nullptr;
+  }
+
+  aura::Window* MaybeGetWindowForLayerImpl(aura::Window* parent,
+                                           const ui::Layer* layer) const {
+    if (parent->layer() == layer) {
+      return parent;
+    }
+    for (aura::Window* child : GetAdjustedWindowChildren(parent)) {
+      auto* window = MaybeGetWindowForLayerImpl(child, layer);
+      if (window != nullptr) {
+        return window;
+      }
+    }
+    return nullptr;
+  }
+};
+
+class ExoThottleControllerWindowDelegate
+    : public ash::ThottleControllerWindowDelegate {
+ public:
+  viz::FrameSinkId GetFrameSinkIdForWindow(
+      const aura::Window* window) const override {
+    auto* shell_surface = GetShellSurfaceBaseForWindow(window);
+    if (shell_surface) {
+      // Expect only the widget's window to map to the shell surface.
+      // This is so we don't return the same frame sink multiple times during
+      // the tree traversal.
+      DCHECK_EQ(shell_surface->GetWidget()->GetNativeWindow(), window);
+      return shell_surface->GetSurfaceId().frame_sink_id();
+    }
+    return window->GetFrameSinkId();
+  }
+};
 
 }  // namespace
 
@@ -68,6 +194,11 @@ WMHelper::WMHelper() : vsync_timing_manager_(this) {
   if (power_manager) {
     power_manager->AddObserver(this);
   }
+
+  ash::debug::SetDebugWindowHierarchyDelegate(
+      std::make_unique<ExoDebugWindowHierarchyDelegate>());
+  ash::SetThottleControllerWindowDelegate(
+      std::make_unique<ExoThottleControllerWindowDelegate>());
 }
 
 WMHelper::~WMHelper() {
@@ -150,22 +281,6 @@ void WMHelper::RemoveFocusObserver(
   aura::client::GetFocusClient(GetPrimaryRoot())->RemoveObserver(observer);
 }
 
-void WMHelper::AddDragDropObserver(DragDropObserver* observer) {
-  drag_drop_observers_.AddObserver(observer);
-}
-
-void WMHelper::RemoveDragDropObserver(DragDropObserver* observer) {
-  drag_drop_observers_.RemoveObserver(observer);
-}
-
-void WMHelper::SetDragDropDelegate(aura::Window* window) {
-  aura::client::SetDragDropDelegate(window, this);
-}
-
-void WMHelper::ResetDragDropDelegate(aura::Window* window) {
-  aura::client::SetDragDropDelegate(window, nullptr);
-}
-
 void WMHelper::AddPowerObserver(WMHelper::PowerObserver* observer) {
   power_observers_.AddObserver(observer);
 }
@@ -190,6 +305,17 @@ const std::vector<uint8_t>& WMHelper::GetDisplayIdentificationData(
 
   for (display::DisplaySnapshot* display : displays) {
     if (display->display_id() == display_id) {
+      // This condition is true on virtual displays on VMs.
+      if (display->type() == display::DISPLAY_CONNECTION_TYPE_UNKNOWN ||
+          display->edid().empty()) {
+        // b/288216766
+        // TODO(b/299391925) instead of using kPlaceholderIdentificationData we
+        // should derive it from the display info of this DisplaySnapshot..
+        static const std::vector<uint8_t> kFablicatedFallbackEDID(
+            kFablicatedFallbackEDIDData,
+            kFablicatedFallbackEDIDData + sizeof(kFablicatedFallbackEDIDData));
+        return kFablicatedFallbackEDID;
+      }
       return display->edid();
     }
   }
@@ -242,10 +368,6 @@ void WMHelper::AddPostTargetHandler(ui::EventHandler* handler) {
 
 void WMHelper::RemovePostTargetHandler(ui::EventHandler* handler) {
   ash::Shell::Get()->RemovePostTargetHandler(handler);
-}
-
-bool WMHelper::InTabletMode() const {
-  return ash::Shell::Get()->tablet_mode_controller()->InTabletMode();
 }
 
 double WMHelper::GetDeviceScaleFactorForWindow(aura::Window* window) const {
@@ -301,50 +423,6 @@ aura::client::CaptureClient* WMHelper::GetCaptureClient() {
   return wm::CaptureController::Get();
 }
 
-void WMHelper::OnDragEntered(const ui::DropTargetEvent& event) {
-  for (DragDropObserver& observer : drag_drop_observers_) {
-    observer.OnDragEntered(event);
-  }
-}
-
-aura::client::DragUpdateInfo WMHelper::OnDragUpdated(
-    const ui::DropTargetEvent& event) {
-  aura::client::DragUpdateInfo drag_info(
-      ui::DragDropTypes::DRAG_NONE,
-      ui::DataTransferEndpoint(ui::EndpointType::kUnknownVm));
-
-  for (DragDropObserver& observer : drag_drop_observers_) {
-    auto observer_drag_info = observer.OnDragUpdated(event);
-    drag_info.drag_operation =
-        drag_info.drag_operation | observer_drag_info.drag_operation;
-    if (observer_drag_info.data_endpoint.type() !=
-        drag_info.data_endpoint.type()) {
-      drag_info.data_endpoint = observer_drag_info.data_endpoint;
-    }
-  }
-  return drag_info;
-}
-
-void WMHelper::OnDragExited() {
-  for (DragDropObserver& observer : drag_drop_observers_) {
-    observer.OnDragExited();
-  }
-}
-
-aura::client::DragDropDelegate::DropCallback WMHelper::GetDropCallback(
-    const ui::DropTargetEvent& event) {
-  std::vector<WMHelper::DragDropObserver::DropCallback> drop_callbacks;
-  for (DragDropObserver& observer : drag_drop_observers_) {
-    WMHelper::DragDropObserver::DropCallback drop_cb =
-        observer.GetDropCallback();
-    if (!drop_cb.is_null()) {
-      drop_callbacks.push_back(std::move(drop_cb));
-    }
-  }
-  return base::BindOnce(&WMHelper::PerformDrop, weak_ptr_factory_.GetWeakPtr(),
-                        std::move(drop_callbacks));
-}
-
 void WMHelper::SuspendDone(base::TimeDelta sleep_duration) {
   for (PowerObserver& observer : power_observers_) {
     observer.SuspendDone();
@@ -374,20 +452,6 @@ void WMHelper::AddVSyncParameterObserver(
 
 void WMHelper::RemoveExoWindowObserver(ExoWindowObserver* observer) {
   exo_window_observers_.RemoveObserver(observer);
-}
-
-void WMHelper::PerformDrop(
-    std::vector<WMHelper::DragDropObserver::DropCallback> drop_callbacks,
-    std::unique_ptr<ui::OSExchangeData> data,
-    ui::mojom::DragOperation& output_drag_op,
-    std::unique_ptr<ui::LayerTreeOwner> drag_image_layer_owner) {
-  for (auto& drop_cb : drop_callbacks) {
-    auto operation = ui::mojom::DragOperation::kNone;
-    std::move(drop_cb).Run(operation);
-    if (operation != ui::mojom::DragOperation::kNone) {
-      output_drag_op = operation;
-    }
-  }
 }
 
 float GetDefaultDeviceScaleFactor() {

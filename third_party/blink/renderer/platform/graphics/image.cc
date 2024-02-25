@@ -45,7 +45,6 @@
 #include "third_party/blink/renderer/platform/graphics/paint/paint_image.h"
 #include "third_party/blink/renderer/platform/graphics/paint/paint_recorder.h"
 #include "third_party/blink/renderer/platform/graphics/paint/paint_shader.h"
-#include "third_party/blink/renderer/platform/graphics/scoped_interpolation_quality.h"
 #include "third_party/blink/renderer/platform/instrumentation/histogram.h"
 #include "third_party/blink/renderer/platform/instrumentation/tracing/trace_event.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
@@ -342,8 +341,8 @@ scoped_refptr<Image> Image::ImageForDefaultFrame() {
 }
 
 PaintImageBuilder Image::CreatePaintImageBuilder() {
-  auto animation_type = MaybeAnimated() ? PaintImage::AnimationType::ANIMATED
-                                        : PaintImage::AnimationType::STATIC;
+  auto animation_type = MaybeAnimated() ? PaintImage::AnimationType::kAnimated
+                                        : PaintImage::AnimationType::kStatic;
   return PaintImageBuilder::WithDefault()
       .set_id(stable_image_id_)
       .set_animation_type(animation_type)

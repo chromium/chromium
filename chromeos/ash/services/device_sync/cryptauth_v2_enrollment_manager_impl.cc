@@ -197,14 +197,14 @@ void CryptAuthV2EnrollmentManagerImpl::Start() {
     // hash has never been set.
     ForceEnrollmentNow(
         cryptauth::InvocationReason::INVOCATION_REASON_SOFTWARE_UPDATE,
-        absl::nullopt /* session_id */);
+        std::nullopt /* session_id */);
   } else if (initial_v1_and_v2_user_key_pairs_disagree_) {
     // If the v1 and v2 user key pairs initially disagreed, force a
     // re-enrollment with the v1 user key pair that replaced the v2 user key
     // pair.
     ForceEnrollmentNow(
         cryptauth::InvocationReason::INVOCATION_REASON_INITIALIZATION,
-        absl::nullopt /* session_id */);
+        std::nullopt /* session_id */);
   } else if (scheduler_->GetLastSuccessfulEnrollmentTime() &&
              (GetUserPublicKey().empty() || GetUserPrivateKey().empty())) {
     // It is possible, though unlikely, that |scheduler_| has previously
@@ -214,19 +214,19 @@ void CryptAuthV2EnrollmentManagerImpl::Start() {
     // In this case, force a re-enrollment.
     ForceEnrollmentNow(
         cryptauth::InvocationReason::INVOCATION_REASON_FAILURE_RECOVERY,
-        absl::nullopt /* session_id */);
+        std::nullopt /* session_id */);
   }
 }
 
 void CryptAuthV2EnrollmentManagerImpl::ForceEnrollmentNow(
     cryptauth::InvocationReason invocation_reason,
-    const absl::optional<std::string>& session_id) {
+    const std::optional<std::string>& session_id) {
   scheduler_->RequestEnrollment(
       ConvertInvocationReasonV1ToV2(invocation_reason), session_id);
 }
 
 bool CryptAuthV2EnrollmentManagerImpl::IsEnrollmentValid() const {
-  absl::optional<base::Time> last_successful_enrollment_time =
+  std::optional<base::Time> last_successful_enrollment_time =
       scheduler_->GetLastSuccessfulEnrollmentTime();
 
   if (!last_successful_enrollment_time)
@@ -240,7 +240,7 @@ bool CryptAuthV2EnrollmentManagerImpl::IsEnrollmentValid() const {
 }
 
 base::Time CryptAuthV2EnrollmentManagerImpl::GetLastEnrollmentTime() const {
-  absl::optional<base::Time> last_successful_enrollment_time =
+  std::optional<base::Time> last_successful_enrollment_time =
       scheduler_->GetLastSuccessfulEnrollmentTime();
 
   if (!last_successful_enrollment_time)
@@ -297,7 +297,7 @@ std::string CryptAuthV2EnrollmentManagerImpl::GetUserPrivateKey() const {
 
 void CryptAuthV2EnrollmentManagerImpl::OnEnrollmentRequested(
     const cryptauthv2::ClientMetadata& client_metadata,
-    const absl::optional<cryptauthv2::PolicyReference>&
+    const std::optional<cryptauthv2::PolicyReference>&
         client_directive_policy_reference) {
   NotifyEnrollmentStarted();
 
@@ -313,8 +313,8 @@ void CryptAuthV2EnrollmentManagerImpl::OnEnrollmentRequested(
 }
 
 void CryptAuthV2EnrollmentManagerImpl::OnReenrollMessage(
-    const absl::optional<std::string>& session_id,
-    const absl::optional<CryptAuthFeatureType>& feature_type) {
+    const std::optional<std::string>& session_id,
+    const std::optional<CryptAuthFeatureType>& feature_type) {
   ForceEnrollmentNow(cryptauth::INVOCATION_REASON_SERVER_INITIATED, session_id);
 }
 
@@ -388,7 +388,7 @@ std::string CryptAuthV2EnrollmentManagerImpl::GetClientAppMetadataHash() const {
 }
 
 std::string CryptAuthV2EnrollmentManagerImpl::GetV1UserPublicKey() const {
-  absl::optional<std::string> public_key = util::DecodeFromValueString(
+  std::optional<std::string> public_key = util::DecodeFromValueString(
       &pref_service_->GetValue(prefs::kCryptAuthEnrollmentUserPublicKey));
   if (!public_key) {
     PA_LOG(ERROR) << "Invalid public key stored in user prefs.";
@@ -399,7 +399,7 @@ std::string CryptAuthV2EnrollmentManagerImpl::GetV1UserPublicKey() const {
 }
 
 std::string CryptAuthV2EnrollmentManagerImpl::GetV1UserPrivateKey() const {
-  absl::optional<std::string> private_key = util::DecodeFromValueString(
+  std::optional<std::string> private_key = util::DecodeFromValueString(
       &pref_service_->GetValue(prefs::kCryptAuthEnrollmentUserPrivateKey));
   if (!private_key) {
     PA_LOG(ERROR) << "Invalid private key stored in user prefs.";

@@ -35,7 +35,6 @@ void MultiDeviceSetupService::RegisterProfilePrefs(
   WifiSyncNotificationController::RegisterPrefs(registry);
   HostVerifierImpl::RegisterPrefs(registry);
   GrandfatheredEasyUnlockHostDisabler::RegisterPrefs(registry);
-  AndroidSmsAppInstallingStatusObserver::RegisterPrefs(registry);
   RegisterFeaturePrefs(registry);
 }
 

@@ -1,0 +1,6 @@
+WebView textSize:16.0 style:0 htmlInfo:[{htmlTag="#document"}, {display=""}]
+++ListView textSize:16.0 style:0 htmlInfo:[{htmlTag="div"}, {display="block"}, {role="list"}]
+++++View text:"1" textSize:16.0 style:0 htmlInfo:[{htmlTag="div"}, {display="block"}, {aria-label="1"}, {role="listitem"}]
+++++++TextView text:"Item 1" textSize:16.0 style:0 htmlInfo:[{htmlTag=""}, {display=""}]
+++++View text:"2" textSize:16.0 style:0 htmlInfo:[{htmlTag="div"}, {display="block"}, {aria-label="2"}, {role="listitem"}]
+++++++TextView text:"Item 2" textSize:16.0 style:0 htmlInfo:[{htmlTag=""}, {display=""}]

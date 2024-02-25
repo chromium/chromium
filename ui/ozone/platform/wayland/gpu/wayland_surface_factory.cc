@@ -113,20 +113,23 @@ scoped_refptr<gl::GLSurface> GLOzoneEGLWayland::CreateViewGLSurface(
             display->GetAs<gl::GLDisplayEGL>(), widget, buffer_manager_));
   }
 
-  // Only EGLGLES2 is supported with surfaceless view gl.
-  if ((gl::GetGLImplementation() != gl::kGLImplementationEGLGLES2) ||
-      !connection_)
+  if ((gl::GetGLImplementation() != gl::kGLImplementationEGLGLES2 &&
+       gl::GetGLImplementation() != gl::kGLImplementationEGLANGLE) ||
+      !connection_) {
     return nullptr;
+  }
 
   WaylandWindow* window = connection_->window_manager()->GetWindow(widget);
-  if (!window)
+  if (!window) {
     return nullptr;
+  }
 
   // The wl_egl_window needs to be created before the GLSurface so it can be
   // used in the GLSurface constructor.
   auto egl_window = CreateWaylandEglWindow(window);
-  if (!egl_window)
+  if (!egl_window) {
     return nullptr;
+  }
   return gl::InitializeGLSurface(new GLSurfaceWayland(
       display->GetAs<gl::GLDisplayEGL>(), std::move(egl_window), window));
 }
@@ -139,9 +142,9 @@ scoped_refptr<gl::Presenter> GLOzoneEGLWayland::CreateSurfacelessViewGLSurface(
   } else {
 #if defined(WAYLAND_GBM)
   // If there is a gbm device available, use surfaceless gl surface.
-  if (!buffer_manager_->GetGbmDevice())
+  if (!buffer_manager_->GetGbmDevice()) {
     return nullptr;
-
+  }
   return base::MakeRefCounted<GbmSurfacelessWayland>(
       display->GetAs<gl::GLDisplayEGL>(), buffer_manager_, window);
 #else
@@ -164,9 +167,10 @@ scoped_refptr<gl::GLSurface> GLOzoneEGLWayland::CreateOffscreenGLSurface(
 }
 
 gl::EGLDisplayPlatform GLOzoneEGLWayland::GetNativeDisplay() {
-  if (connection_)
+  if (connection_) {
     return gl::EGLDisplayPlatform(
         reinterpret_cast<EGLNativeDisplayType>(connection_->display()));
+  }
   return gl::EGLDisplayPlatform(EGL_DEFAULT_DISPLAY);
 }
 
@@ -199,8 +203,10 @@ std::vector<gl::GLImplementationParts>
 WaylandSurfaceFactory::GetAllowedGLImplementations() {
   std::vector<gl::GLImplementationParts> impls;
   if (egl_implementation_) {
-    // Add only supported ANGLE implementations. Otherwise, angle-vulkan might
-    // be requested, which is not supported with this backend yet.
+    // Allow for Angle-vulkan implementation.
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+    impls.emplace_back(gl::kGLImplementationEGLANGLE);
+#endif
     impls.emplace_back(gl::ANGLEImplementation::kOpenGL);
     impls.emplace_back(gl::ANGLEImplementation::kOpenGLES);
     impls.emplace_back(gl::ANGLEImplementation::kSwiftShader);
@@ -234,7 +240,7 @@ scoped_refptr<gfx::NativePixmap> WaylandSurfaceFactory::CreateNativePixmap(
     gfx::Size size,
     gfx::BufferFormat format,
     gfx::BufferUsage usage,
-    absl::optional<gfx::Size> framebuffer_size) {
+    std::optional<gfx::Size> framebuffer_size) {
   if (framebuffer_size &&
       !gfx::Rect(size).Contains(gfx::Rect(*framebuffer_size))) {
     return nullptr;
@@ -243,8 +249,10 @@ scoped_refptr<gfx::NativePixmap> WaylandSurfaceFactory::CreateNativePixmap(
   scoped_refptr<GbmPixmapWayland> pixmap =
       base::MakeRefCounted<GbmPixmapWayland>(buffer_manager_);
 
-  if (!pixmap->InitializeBuffer(widget, size, format, usage, framebuffer_size))
+  if (!pixmap->InitializeBuffer(widget, size, format, usage,
+                                framebuffer_size)) {
     return nullptr;
+  }
   return pixmap;
 #else
   return nullptr;
@@ -275,8 +283,9 @@ WaylandSurfaceFactory::CreateNativePixmapFromHandle(
       base::MakeRefCounted<GbmPixmapWayland>(buffer_manager_);
 
   if (!pixmap->InitializeBufferFromHandle(widget, size, format,
-                                          std::move(handle)))
+                                          std::move(handle))) {
     return nullptr;
+  }
   return pixmap;
 #else
   return nullptr;
@@ -295,10 +304,11 @@ bool WaylandSurfaceFactory::SupportsNativePixmaps() const {
   return supports_native_pixmaps;
 }
 
-absl::optional<gfx::BufferFormat>
+std::optional<gfx::BufferFormat>
 WaylandSurfaceFactory::GetPreferredFormatForSolidColor() const {
-  if (!buffer_manager_->SupportsFormat(gfx::BufferFormat::RGBA_8888))
+  if (!buffer_manager_->SupportsFormat(gfx::BufferFormat::RGBA_8888)) {
     return gfx::BufferFormat::BGRA_8888;
+  }
   return gfx::BufferFormat::RGBA_8888;
 }
 

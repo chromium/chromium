@@ -1,0 +1,19 @@
+[
+  {
+    "os": [
+      "chromeos_ash"
+    ],
+    "policy_pref_mapping_tests": [
+      {
+        "policies": {
+          "UnifiedDesktopEnabledByDefault": true
+        },
+        "prefs": {
+          "settings.display.unified_desktop_enabled_by_default": {
+            "value": true
+          }
+        }
+      }
+    ]
+  }
+]

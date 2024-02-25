@@ -326,7 +326,8 @@ dead code if it's not used elsewhere.
 However, if your `DCHECK()` relies on work that is done outside of the
 `DCHECK()` macro, that work may not be eliminated in official release builds.
 Thus any code that is only present to support a `DCHECK()` should be guarded by
-`#if DCHECK_IS_ON()` to avoid including that code in official release builds.
+`if constexpr (DCHECK_IS_ON())` (see the next item) or `#if DCHECK_IS_ON()` to
+avoid including that code in official release builds.
 
 This code is fine without any guards for `DCHECK_IS_ON()`.
 ```cpp
@@ -377,3 +378,35 @@ runtime. This is done to avoid "unused variable" and "unused function" warnings
 when DCHECKs are turned off. This means that you may need to guard the
 `DCHECK()` macro if it depends on a variable or function that is also guarded
 by a check for `DCHECK_IS_ON()`.
+
+## Minimizing preprocessor conditionals
+
+Eliminate uses of `#if ...` when there are reasonable alternatives. Some common
+cases:
+
+* APIs that are conceptually reasonable for all platforms, but only actually do
+  anything on one. Instead of guarding the API and all callers in `#if`s, you
+  can define and call the API unconditionally, and guard platform-specific
+  implementation.
+* Test code that expects different values under different `#define`s:
+  ```cpp
+    // Works, but verbose, and might be more annoying/prone to bugs during
+    // future maintenance.
+  #if BUILDFLAG(COOL_FEATURE)
+    EXPECT_EQ(5, NumChildren());
+  #else
+    EXPECT_EQ(3, NumChildren());
+  #endif
+
+    // Shorter and less repetitive.
+    EXPECT_EQ(BUILDFLAG(COOLFEATURE) ? 5 : 3, NumChildren());
+  ```
+* Code guarded by `DCHECK_IS_ON()` or a similar "should always work in either
+  configuration" `#define`, which could still compile when the `#define` is
+  unset. Prefer `if constexpr (DCHECK_IS_ON())` or similar, since the compiler
+  will continue to verify the code's syntax in all cases, but it will not be
+  compiled in if the condition is false. Note that this only works inside a
+  function, and only if the code does not refer to symbols whose declarations
+  are `#ifdef`ed away. Don't unconditionally declare debug-only symbols just
+  to use this technique -- only use it when it doesn't require additional
+  tweaks to the surrounding code.

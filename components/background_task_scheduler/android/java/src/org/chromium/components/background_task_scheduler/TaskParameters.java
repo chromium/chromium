@@ -23,16 +23,12 @@ public class TaskParameters {
         mExtras = builder.mExtras == null ? new PersistableBundle() : builder.mExtras;
     }
 
-    /**
-     * @return the task ID.
-     */
+    /** @return the task ID. */
     public int getTaskId() {
         return mTaskId;
     }
 
-    /**
-     * @return the extras for this task.
-     */
+    /** @return the extras for this task. */
     @NonNull
     public PersistableBundle getExtras() {
         return mExtras;

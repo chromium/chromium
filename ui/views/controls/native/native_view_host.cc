@@ -104,14 +104,14 @@ void NativeViewHost::NativeViewDestroyed() {
 }
 
 void NativeViewHost::SetBackgroundColorWhenClipped(
-    absl::optional<SkColor> color) {
+    std::optional<SkColor> color) {
   background_color_when_clipped_ = color;
 }
 
 ////////////////////////////////////////////////////////////////////////////////
 // NativeViewHost, View overrides:
 
-void NativeViewHost::Layout() {
+void NativeViewHost::Layout(PassKey) {
   if (!native_view_ || !native_wrapper_.get())
     return;
 
@@ -179,7 +179,7 @@ void NativeViewHost::OnPaint(gfx::Canvas* canvas) {
 void NativeViewHost::VisibilityChanged(View* starting_from, bool is_visible) {
   // This does not use InvalidateLayout() to ensure the visibility state is
   // correctly set (if this View isn't visible, Layout() won't be called).
-  Layout();
+  DeprecatedLayoutImmediately();
 }
 
 bool NativeViewHost::GetNeedsNotificationWhenVisibleBoundsChange() const {
@@ -281,14 +281,14 @@ void NativeViewHost::ClearFocus() {
 
   Widget::Widgets widgets;
   Widget::GetAllChildWidgets(native_view(), &widgets);
-  for (auto* widget : widgets) {
+  for (Widget* widget : widgets) {
     focus_manager->ViewRemoved(widget->GetRootView());
     if (!focus_manager->GetFocusedView())
       return;
   }
 }
 
-BEGIN_METADATA(NativeViewHost, View)
+BEGIN_METADATA(NativeViewHost)
 END_METADATA
 
 }  // namespace views

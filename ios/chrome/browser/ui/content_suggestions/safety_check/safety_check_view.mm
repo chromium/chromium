@@ -4,8 +4,9 @@
 
 #import "ios/chrome/browser/ui/content_suggestions/safety_check/safety_check_view.h"
 
-#import "ios/chrome/browser/safety_check/ios_chrome_safety_check_manager_constants.h"
+#import "ios/chrome/browser/safety_check/model/ios_chrome_safety_check_manager_constants.h"
 #import "ios/chrome/browser/ui/content_suggestions/cells/multi_row_container_view.h"
+#import "ios/chrome/browser/ui/content_suggestions/content_suggestions_view_controller_audience.h"
 #import "ios/chrome/browser/ui/content_suggestions/safety_check/constants.h"
 #import "ios/chrome/browser/ui/content_suggestions/safety_check/safety_check_item_view.h"
 #import "ios/chrome/browser/ui/content_suggestions/safety_check/safety_check_state.h"
@@ -41,11 +42,12 @@
 #pragma mark - SafetyCheckItemViewTapDelegate
 
 - (void)didTapSafetyCheckItemView:(SafetyCheckItemView*)view {
-  [self.delegate didSelectSafetyCheckItem:view.itemType];
+  [self.commandhandler didSelectSafetyCheckItem:view.itemType];
 }
 
 #pragma mark - Private methods
 
+// Creates all views for the Safety Check (Magic Stack) module.
 - (void)createSubviews {
   // Return if the subviews have already been created and added.
   if (!(self.subviews.count == 0)) {
@@ -93,7 +95,7 @@
     return;
   }
 
-  int checkIssuesCount = CheckIssuesCount(_state);
+  int checkIssuesCount = [_state numberOfIssues];
 
   // Show the "All Safe" state if there are no check issues.
   if (checkIssuesCount == 0) {
@@ -115,7 +117,7 @@
         [[NSMutableArray alloc] init];
 
     // Update Chrome check
-    if (_state.updateChromeState != UpdateChromeSafetyCheckState::kUpToDate) {
+    if (InvalidUpdateChromeState(_state.updateChromeState)) {
       SafetyCheckItemView* updateChromeView = [[SafetyCheckItemView alloc]
           initWithItemType:SafetyCheckItemType::kUpdateChrome
                 layoutType:SafetyCheckItemLayoutType::kCompact];
@@ -126,7 +128,7 @@
     }
 
     // Password check
-    if (_state.passwordState != PasswordSafetyCheckState::kSafe) {
+    if (InvalidPasswordState(_state.passwordState)) {
       SafetyCheckItemView* passwordView = [[SafetyCheckItemView alloc]
                    initWithItemType:SafetyCheckItemType::kPassword
                          layoutType:SafetyCheckItemLayoutType::kCompact
@@ -144,7 +146,7 @@
     // NOTE: Don't add the Safe Browsing check if two items already exist in
     // `safetyCheckItems`. At most, the compact view displays two rows of items.
     if ([safetyCheckItems count] < 2 &&
-        _state.safeBrowsingState != SafeBrowsingSafetyCheckState::kSafe) {
+        InvalidSafeBrowsingState(_state.safeBrowsingState)) {
       SafetyCheckItemView* safeBrowsingView = [[SafetyCheckItemView alloc]
           initWithItemType:SafetyCheckItemType::kSafeBrowsing
                 layoutType:SafetyCheckItemLayoutType::kCompact];
@@ -169,22 +171,18 @@
   // Show hero-cell view for single check issue.
   SafetyCheckItemView* view;
 
-  if (_state.updateChromeState != UpdateChromeSafetyCheckState::kUpToDate) {
+  if (InvalidUpdateChromeState(_state.updateChromeState)) {
     view = [[SafetyCheckItemView alloc]
         initWithItemType:SafetyCheckItemType::kUpdateChrome
               layoutType:SafetyCheckItemLayoutType::kHero];
-  }
-
-  if (_state.passwordState != PasswordSafetyCheckState::kSafe) {
+  } else if (InvalidPasswordState(_state.passwordState)) {
     view = [[SafetyCheckItemView alloc]
                  initWithItemType:SafetyCheckItemType::kPassword
                        layoutType:SafetyCheckItemLayoutType::kHero
                weakPasswordsCount:_state.weakPasswordsCount
              reusedPasswordsCount:_state.reusedPasswordsCount
         compromisedPasswordsCount:_state.compromisedPasswordsCount];
-  }
-
-  if (_state.safeBrowsingState != SafeBrowsingSafetyCheckState::kSafe) {
+  } else if (InvalidSafeBrowsingState(_state.safeBrowsingState)) {
     view = [[SafetyCheckItemView alloc]
         initWithItemType:SafetyCheckItemType::kSafeBrowsing
               layoutType:SafetyCheckItemLayoutType::kHero];

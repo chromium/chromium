@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_ASH_SYSTEM_AUTOMATIC_REBOOT_MANAGER_H_
 
 #include <memory>
+#include <optional>
 
 #include "base/callback_list.h"
 #include "base/memory/raw_ptr.h"
@@ -144,8 +145,8 @@ class AutomaticRebootManager : public chromeos::PowerManagerClient::Observer,
       base::WaitableEvent::InitialState::NOT_SIGNALED};
 
   // Clocks that can be mocked in tests to fast-forward time.
-  const raw_ptr<const base::Clock, ExperimentalAsh> clock_;
-  const raw_ptr<const base::TickClock, ExperimentalAsh> tick_clock_;
+  const raw_ptr<const base::Clock> clock_;
+  const raw_ptr<const base::TickClock> tick_clock_;
 
   PrefChangeRegistrar local_state_registrar_;
 
@@ -156,11 +157,11 @@ class AutomaticRebootManager : public chromeos::PowerManagerClient::Observer,
   std::unique_ptr<base::OneShotTimer> login_screen_idle_timer_;
 
   // The time at which the device was booted, in |tick_clock_| ticks.
-  absl::optional<base::TimeTicks> boot_time_;
+  std::optional<base::TimeTicks> boot_time_;
 
   // The time at which an update was applied and a reboot became necessary to
   // complete the update process, in |tick_clock_| ticks.
-  absl::optional<base::TimeTicks> update_reboot_needed_time_;
+  std::optional<base::TimeTicks> update_reboot_needed_time_;
 
   // The reason for the reboot request. Updated whenever a reboot is scheduled.
   AutomaticRebootManagerObserver::Reason reboot_reason_ =

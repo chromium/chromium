@@ -32,7 +32,7 @@ UMAHelper::ReaderModePageType GetPageType(content::WebContents* contents) {
   if (IsDistilledPage(contents->GetLastCommittedURL())) {
     page_type = UMAHelper::ReaderModePageType::kDistilled;
   } else {
-    absl::optional<dom_distiller::DistillabilityResult> distillability =
+    std::optional<dom_distiller::DistillabilityResult> distillability =
         dom_distiller::GetLatestResult(contents);
     if (distillability && distillability.value().is_distillable)
       page_type = UMAHelper::ReaderModePageType::kDistillable;
@@ -54,7 +54,7 @@ ReaderModeIconView::ReaderModeIconView(
                          "ReaderMode"),
       pref_service_(pref_service) {
   SetAccessibilityProperties(
-      /*role*/ absl::nullopt,
+      /*role*/ std::nullopt,
       l10n_util::GetStringUTF16(GetActive() ? IDS_EXIT_DISTILLED_PAGE
                                             : IDS_DISTILL_PAGE));
 }
@@ -196,5 +196,5 @@ void ReaderModeIconView::OnResult(
   UMAHelper::StartTimerIfNeeded(web_contents, page_type);
 }
 
-BEGIN_METADATA(ReaderModeIconView, PageActionIconView)
+BEGIN_METADATA(ReaderModeIconView)
 END_METADATA

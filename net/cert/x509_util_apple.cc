@@ -32,30 +32,29 @@ bssl::UniquePtr<CRYPTO_BUFFER> CertBufferFromSecCertificate(
   if (!der_data) {
     return nullptr;
   }
-  return CreateCryptoBuffer(
-      base::make_span(CFDataGetBytePtr(der_data),
-                      base::checked_cast<size_t>(CFDataGetLength(der_data))));
+  return CreateCryptoBuffer(base::make_span(
+      CFDataGetBytePtr(der_data.get()),
+      base::checked_cast<size_t>(CFDataGetLength(der_data.get()))));
 }
 
 }  // namespace
 
 base::apple::ScopedCFTypeRef<SecCertificateRef> CreateSecCertificateFromBytes(
-    const uint8_t* data,
-    size_t length) {
-  base::apple::ScopedCFTypeRef<CFDataRef> cert_data(
-      CFDataCreate(kCFAllocatorDefault, reinterpret_cast<const UInt8*>(data),
-                   base::checked_cast<CFIndex>(length)));
-  if (!cert_data)
+    base::span<const uint8_t> data) {
+  base::apple::ScopedCFTypeRef<CFDataRef> cert_data(CFDataCreate(
+      kCFAllocatorDefault, reinterpret_cast<const UInt8*>(data.data()),
+      base::checked_cast<CFIndex>(data.size())));
+  if (!cert_data) {
     return base::apple::ScopedCFTypeRef<SecCertificateRef>();
+  }
 
   return base::apple::ScopedCFTypeRef<SecCertificateRef>(
-      SecCertificateCreateWithData(nullptr, cert_data));
+      SecCertificateCreateWithData(nullptr, cert_data.get()));
 }
 
 base::apple::ScopedCFTypeRef<SecCertificateRef>
 CreateSecCertificateFromX509Certificate(const X509Certificate* cert) {
-  return CreateSecCertificateFromBytes(CRYPTO_BUFFER_data(cert->cert_buffer()),
-                                       CRYPTO_BUFFER_len(cert->cert_buffer()));
+  return CreateSecCertificateFromBytes(CryptoBufferAsSpan(cert->cert_buffer()));
 }
 
 base::apple::ScopedCFTypeRef<CFMutableArrayRef>
@@ -74,22 +73,21 @@ CreateSecCertificateArrayForX509Certificate(
     return base::apple::ScopedCFTypeRef<CFMutableArrayRef>();
   std::string bytes;
   base::apple::ScopedCFTypeRef<SecCertificateRef> sec_cert(
-      CreateSecCertificateFromBytes(CRYPTO_BUFFER_data(cert->cert_buffer()),
-                                    CRYPTO_BUFFER_len(cert->cert_buffer())));
-  if (!sec_cert)
+      CreateSecCertificateFromBytes(CryptoBufferAsSpan(cert->cert_buffer())));
+  if (!sec_cert) {
     return base::apple::ScopedCFTypeRef<CFMutableArrayRef>();
-  CFArrayAppendValue(cert_list, sec_cert);
+  }
+  CFArrayAppendValue(cert_list.get(), sec_cert.get());
   for (const auto& intermediate : cert->intermediate_buffers()) {
     base::apple::ScopedCFTypeRef<SecCertificateRef> intermediate_cert(
-        CreateSecCertificateFromBytes(CRYPTO_BUFFER_data(intermediate.get()),
-                                      CRYPTO_BUFFER_len(intermediate.get())));
+        CreateSecCertificateFromBytes(CryptoBufferAsSpan(intermediate.get())));
     if (!intermediate_cert) {
       if (invalid_intermediate_behavior == InvalidIntermediateBehavior::kFail)
         return base::apple::ScopedCFTypeRef<CFMutableArrayRef>();
       LOG(WARNING) << "error parsing intermediate";
       continue;
     }
-    CFArrayAppendValue(cert_list, intermediate_cert);
+    CFArrayAppendValue(cert_list.get(), intermediate_cert.get());
   }
   return cert_list;
 }
@@ -107,14 +105,14 @@ scoped_refptr<X509Certificate> CreateX509CertificateFromSecCertificate(
         sec_chain,
     X509Certificate::UnsafeCreateOptions options) {
   bssl::UniquePtr<CRYPTO_BUFFER> cert_handle =
-      CertBufferFromSecCertificate(sec_cert);
+      CertBufferFromSecCertificate(sec_cert.get());
   if (!cert_handle) {
     return nullptr;
   }
   std::vector<bssl::UniquePtr<CRYPTO_BUFFER>> intermediates;
   for (const auto& sec_intermediate : sec_chain) {
     bssl::UniquePtr<CRYPTO_BUFFER> intermediate_cert_handle =
-        CertBufferFromSecCertificate(sec_intermediate);
+        CertBufferFromSecCertificate(sec_intermediate.get());
     if (!intermediate_cert_handle) {
       return nullptr;
     }
@@ -136,10 +134,10 @@ SHA256HashValue CalculateFingerprint256(SecCertificateRef cert) {
     return sha256;
   }
 
-  DCHECK(CFDataGetBytePtr(cert_data));
-  DCHECK_NE(CFDataGetLength(cert_data), 0);
+  DCHECK(CFDataGetBytePtr(cert_data.get()));
+  DCHECK_NE(CFDataGetLength(cert_data.get()), 0);
 
-  CC_SHA256(CFDataGetBytePtr(cert_data), CFDataGetLength(cert_data),
+  CC_SHA256(CFDataGetBytePtr(cert_data.get()), CFDataGetLength(cert_data.get()),
             sha256.data);
 
   return sha256;
@@ -160,9 +158,9 @@ base::apple::ScopedCFTypeRef<CFArrayRef> CertificateChainFromSecTrust(
       CFArrayCreateMutable(kCFAllocatorDefault, 0, &kCFTypeArrayCallBacks));
   const CFIndex chain_length = SecTrustGetCertificateCount(trust);
   for (CFIndex i = 0; i < chain_length; ++i) {
-    CFArrayAppendValue(chain, SecTrustGetCertificateAtIndex(trust, i));
+    CFArrayAppendValue(chain.get(), SecTrustGetCertificateAtIndex(trust, i));
   }
-  return base::apple::ScopedCFTypeRef<CFArrayRef>(chain.release());
+  return chain;
 
 #else
   // The other logic paths should be used, this is just to make the compiler

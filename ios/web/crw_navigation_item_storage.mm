@@ -4,7 +4,7 @@
 
 #import "ios/web/public/session/crw_navigation_item_storage.h"
 
-#import "base/metrics/histogram_functions.h"
+#import "base/apple/foundation_util.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/strings/utf_string_conversions.h"
 #import "ios/web/navigation/nscoder_util.h"
@@ -12,7 +12,7 @@
 #import "ios/web/public/session/proto/navigation.pb.h"
 #import "ios/web/public/session/proto/proto_util.h"
 #import "ios/web/public/web_client.h"
-#import "net/base/mac/url_conversions.h"
+#import "net/base/apple/url_conversions.h"
 
 namespace web {
 
@@ -26,19 +26,6 @@ NSString* const kNavigationItemStorageTimestampKey = @"timestamp";
 NSString* const kNavigationItemStorageTitleKey = @"title";
 NSString* const kNavigationItemStorageHTTPRequestHeadersKey = @"httpHeaders";
 NSString* const kNavigationItemStorageUserAgentTypeKey = @"userAgentType";
-
-const char kNavigationItemSerializedSizeHistogram[] =
-    "Session.WebStates.NavigationItem.SerializedSize";
-const char kNavigationItemSerializedVirtualURLSizeHistogram[] =
-    "Session.WebStates.NavigationItem.SerializedVirtualURLSize";
-const char kNavigationItemSerializedURLSizeHistogram[] =
-    "Session.WebStates.NavigationItem.SerializedURLSize";
-const char kNavigationItemSerializedReferrerURLSizeHistogram[] =
-    "Session.WebStates.NavigationItem.SerializedReferrerURLSize";
-const char kNavigationItemSerializedTitleSizeHistogram[] =
-    "Session.WebStates.NavigationItem.SerializedTitleSize";
-const char kNavigationItemSerializedRequestHeadersSizeHistogram[] =
-    "Session.WebStates.NavigationItem.SerializedRequestHeadersSize";
 
 }  // namespace web
 
@@ -64,8 +51,12 @@ const char kNavigationItemSerializedRequestHeadersSizeHistogram[] =
 }
 
 - (void)serializeToProto:(web::proto::NavigationItemStorage&)storage {
-  storage.set_url(_URL.spec());
-  storage.set_virtual_url(_virtualURL.spec());
+  if (_URL.is_valid()) {
+    storage.set_url(_URL.spec());
+  }
+  if (_virtualURL.is_valid()) {
+    storage.set_virtual_url(_virtualURL.spec());
+  }
   storage.set_title(base::UTF16ToUTF8(_title));
   web::SerializeTimeToProto(_timestamp, *storage.mutable_timestamp());
   storage.set_user_agent(web::UserAgentTypeToProto(_userAgentType));
@@ -83,6 +74,13 @@ const char kNavigationItemSerializedRequestHeadersSizeHistogram[] =
 }
 
 #pragma mark - NSObject
+
+- (BOOL)isEqual:(NSObject*)object {
+  CRWNavigationItemStorage* other =
+      base::apple::ObjCCast<CRWNavigationItemStorage>(object);
+
+  return [other cr_isEqualSameClass:self];
+}
 
 - (NSString*)description {
   NSMutableString* description =
@@ -168,70 +166,36 @@ const char kNavigationItemSerializedRequestHeadersSizeHistogram[] =
 - (void)encodeWithCoder:(NSCoder*)aCoder {
   // Desktop Chrome doesn't persist `url_` or `originalUrl_`, only
   // `virtualUrl_`. Chrome on iOS is persisting `url_`.
-  int serializedSizeInBytes = 0;
-  int serializedVirtualURLSizeInBytes = 0;
-  if (_virtualURL != _URL) {
+  if (_virtualURL != _URL && _virtualURL.is_valid()) {
     // In most cases _virtualURL is the same as URL. Not storing virtual URL
     // will save memory during unarchiving.
+    const std::string& virtualURLSpec = _virtualURL.spec();
     web::nscoder_util::EncodeString(
-        aCoder, web::kNavigationItemStorageVirtualURLKey, _virtualURL.spec());
-    serializedVirtualURLSizeInBytes = _virtualURL.spec().size();
-    serializedSizeInBytes += serializedVirtualURLSizeInBytes;
+        aCoder, web::kNavigationItemStorageVirtualURLKey, virtualURLSpec);
   }
-  base::UmaHistogramMemoryKB(
-      web::kNavigationItemSerializedVirtualURLSizeHistogram,
-      serializedVirtualURLSizeInBytes / 1024);
 
-  web::nscoder_util::EncodeString(aCoder, web::kNavigationItemStorageURLKey,
-                                  _URL.spec());
-  int serializedURLSizeInBytes = _URL.spec().size();
-  serializedSizeInBytes += serializedURLSizeInBytes;
-  base::UmaHistogramMemoryKB(web::kNavigationItemSerializedURLSizeHistogram,
-                             serializedURLSizeInBytes / 1024);
+  if (_URL.is_valid()) {
+    web::nscoder_util::EncodeString(aCoder, web::kNavigationItemStorageURLKey,
+                                    _URL.spec());
+  }
 
-  web::nscoder_util::EncodeString(
-      aCoder, web::kNavigationItemStorageReferrerURLKey, _referrer.url.spec());
-  int serializedReferrerURLSizeInBytes = _referrer.url.spec().size();
-  serializedSizeInBytes += serializedReferrerURLSizeInBytes;
-  base::UmaHistogramMemoryKB(
-      web::kNavigationItemSerializedReferrerURLSizeHistogram,
-      serializedReferrerURLSizeInBytes / 1024);
+  if (_referrer.url.is_valid()) {
+    web::nscoder_util::EncodeString(aCoder,
+                                    web::kNavigationItemStorageReferrerURLKey,
+                                    _referrer.url.spec());
+  }
 
   [aCoder encodeInt:_referrer.policy
              forKey:web::kNavigationItemStorageReferrerPolicyKey];
   [aCoder encodeInt64:_timestamp.ToInternalValue()
                forKey:web::kNavigationItemStorageTimestampKey];
-  // Size of int is negligible, do not log or count towards session size.
-
-  NSString* title = base::SysUTF16ToNSString(_title);
-  [aCoder encodeObject:title forKey:web::kNavigationItemStorageTitleKey];
-  int serializedTitleSizeInBytes =
-      [[NSKeyedArchiver archivedDataWithRootObject:title
-                             requiringSecureCoding:NO
-                                             error:nullptr] length];
-  serializedSizeInBytes += serializedTitleSizeInBytes;
-  base::UmaHistogramMemoryKB(web::kNavigationItemSerializedTitleSizeHistogram,
-                             serializedTitleSizeInBytes / 1024);
-
-  std::string userAgent = web::GetUserAgentTypeDescription(_userAgentType);
+  [aCoder encodeObject:base::SysUTF16ToNSString(_title)
+                forKey:web::kNavigationItemStorageTitleKey];
   web::nscoder_util::EncodeString(
-      aCoder, web::kNavigationItemStorageUserAgentTypeKey, userAgent);
-  serializedSizeInBytes += userAgent.size();
-  // No need to log the user agent type size, because it's a set of constants.
-
+      aCoder, web::kNavigationItemStorageUserAgentTypeKey,
+      web::GetUserAgentTypeDescription(_userAgentType));
   [aCoder encodeObject:_HTTPRequestHeaders
                 forKey:web::kNavigationItemStorageHTTPRequestHeadersKey];
-  int serializedRequestHeadersSizeInBytes =
-      [[NSKeyedArchiver archivedDataWithRootObject:_HTTPRequestHeaders
-                             requiringSecureCoding:NO
-                                             error:nullptr] length];
-  serializedSizeInBytes += serializedRequestHeadersSizeInBytes;
-  base::UmaHistogramMemoryKB(
-      web::kNavigationItemSerializedRequestHeadersSizeHistogram,
-      serializedRequestHeadersSizeInBytes / 1024);
-
-  base::UmaHistogramMemoryKB(web::kNavigationItemSerializedSizeHistogram,
-                             serializedSizeInBytes / 1024);
 }
 
 #pragma mark - Properties
@@ -261,6 +225,43 @@ const char kNavigationItemSerializedRequestHeadersSizeHistogram[] =
 
 - (void)setTitle:(const std::u16string&)title {
   _title = title;
+}
+
+#pragma mark Private
+
+- (BOOL)cr_isEqualSameClass:(CRWNavigationItemStorage*)other {
+  if (_URL != other.URL) {
+    return NO;
+  }
+
+  // -virtualURL getter is complex and does not always return `_virtualURL`,
+  // so use the property for both `self` and `other` to ensure correctness.
+  if (self.virtualURL != other.virtualURL) {
+    return NO;
+  }
+
+  if (_referrer != other.referrer) {
+    return NO;
+  }
+
+  if (_timestamp != other.timestamp) {
+    return NO;
+  }
+
+  if (_title != other.title) {
+    return NO;
+  }
+
+  if (_userAgentType != other.userAgentType) {
+    return NO;
+  }
+
+  if (_HTTPRequestHeaders != other.HTTPRequestHeaders &&
+      ![_HTTPRequestHeaders isEqual:other.HTTPRequestHeaders]) {
+    return NO;
+  }
+
+  return YES;
 }
 
 @end

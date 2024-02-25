@@ -11,7 +11,6 @@
 #include "base/functional/bind.h"
 #include "base/metrics/user_metrics.h"
 #include "base/metrics/user_metrics_action.h"
-#include "chrome/browser/chrome_notification_types.h"
 #include "chrome/browser/extensions/extension_context_menu_model.h"
 #include "chrome/browser/themes/theme_properties.h"
 #include "chrome/browser/ui/layout_constants.h"
@@ -24,7 +23,6 @@
 #include "chrome/browser/ui/views/toolbar/toolbar_ink_drop_util.h"
 #include "components/sessions/content/session_tab_helper.h"
 #include "content/public/browser/browser_context.h"
-#include "content/public/browser/notification_source.h"
 #include "extensions/common/extension_features.h"
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
@@ -82,6 +80,7 @@ ToolbarActionView::ToolbarActionView(
 }
 
 ToolbarActionView::~ToolbarActionView() {
+  set_context_menu_controller(nullptr);
   view_controller_->SetDelegate(nullptr);
 }
 
@@ -162,7 +161,8 @@ void ToolbarActionView::UpdateState() {
     SetTooltipText(view_controller_->GetTooltip(web_contents));
   }
 
-  Layout();  // We need to layout since we may have added an icon as a result.
+  DeprecatedLayoutImmediately();  // We need to layout since we may have added
+                                  // an icon as a result.
   SchedulePaint();
 }
 
@@ -249,10 +249,6 @@ void ToolbarActionView::RemovedFromWidget() {
   MenuButton::RemovedFromWidget();
 }
 
-views::View* ToolbarActionView::GetAsView() {
-  return this;
-}
-
 views::FocusManager* ToolbarActionView::GetFocusManagerForAccelerator() {
   return GetFocusManager();
 }
@@ -299,5 +295,5 @@ void ToolbarActionView::ButtonPressed() {
   }
 }
 
-BEGIN_METADATA(ToolbarActionView, views::MenuButton)
+BEGIN_METADATA(ToolbarActionView)
 END_METADATA

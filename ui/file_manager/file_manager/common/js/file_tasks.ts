@@ -2,12 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {FileData} from '../../externs/ts/state.js';
-import {TaskHistory} from '../../foreground/js/task_history.js';
+import type {FilesAppEntry} from '../../common/js/files_app_entry_types.js';
+import type {TaskHistory} from '../../foreground/js/task_history.js';
+import type {FileData} from '../../state/state.js';
 
-import {FileType} from './file_type.js';
+import {getIcon} from './file_type.js';
+import {str} from './translations.js';
 import {LEGACY_FILES_EXTENSION_ID, SWA_APP_ID, SWA_FILES_APP_URL, toFilesAppURL} from './url_constants.js';
-import {str} from './util.js';
 
 export interface AnnotatedTask extends chrome.fileManagerPrivate.FileTask {
   iconType: string;
@@ -75,7 +76,7 @@ export function getDefaultTask(
 
   // 2. Most recently executed or sole non-generic task.
   const latest = nonGenericTasks[0]!;
-  if (nonGenericTasks.length == 1 ||
+  if (nonGenericTasks.length === 1 ||
       taskHistory.getLastExecutedTime(latest.descriptor)) {
     return latest;
   }
@@ -90,7 +91,7 @@ export function getDefaultTask(
  */
 export function annotateTasks(
     tasks: chrome.fileManagerPrivate.FileTask[],
-    entries: Entry[]|FileData[]): AnnotatedTask[] {
+    entries: Array<Entry|FilesAppEntry>|FileData[]): AnnotatedTask[] {
   const result: AnnotatedTask[] = [];
   for (const task of tasks) {
     const {appId, taskType, actionId} = task.descriptor;
@@ -112,7 +113,7 @@ export function annotateTasks(
         if (entries.length > 1) {
           annotateTask.iconType = 'generic';
         } else {  // Use specific icon.
-          annotateTask.iconType = FileType.getIcon(entries[0]!);
+          annotateTask.iconType = getIcon(entries[0]!);
         }
         annotateTask.title = str('TASK_OPEN');
       } else if (parsedActionId === 'open-hosted-gdoc') {
@@ -155,6 +156,8 @@ export function annotateTasks(
       } else if (parsedActionId === 'open-encrypted') {
         annotateTask.iconType = 'generic';
         annotateTask.title = str('TASK_OPEN_GDRIVE');
+      } else if (parsedActionId === 'install-isolated-web-app') {
+        annotateTask.iconType = 'removable';
       }
     }
     if (!annotateTask.iconType && taskType === 'web-intent') {

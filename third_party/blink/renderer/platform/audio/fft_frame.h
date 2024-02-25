@@ -30,6 +30,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_AUDIO_FFT_FRAME_H_
 
 #include <memory>
+#include "base/memory/raw_ptr.h"
 #include "build/build_config.h"
 #include "third_party/blink/renderer/platform/audio/audio_array.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
@@ -37,9 +38,7 @@
 #include "third_party/blink/renderer/platform/wtf/forward.h"
 #include "third_party/blink/renderer/platform/wtf/threading.h"
 
-#if defined(WTF_USE_WEBAUDIO_FFMPEG)
-struct RDFTContext;
-#elif defined(WTF_USE_WEBAUDIO_PFFFT)
+#if defined(WTF_USE_WEBAUDIO_PFFFT)
 #include "third_party/blink/renderer/platform/wtf/hash_map.h"
 #include "third_party/pffft/src/pffft.h"
 #elif BUILDFLAG(IS_MAC)
@@ -174,12 +173,6 @@ class PLATFORM_EXPORT FFTFrame {
   static FFTSetup FftSetupForSize(unsigned fft_size);
   FFTSetup fft_setup_;
   DSPSplitComplex frame_;
-#elif defined(WTF_USE_WEBAUDIO_FFMPEG)
-  static RDFTContext* ContextForSize(unsigned fft_size, int trans);
-  RDFTContext* forward_context_;
-  RDFTContext* inverse_context_;
-  float* GetUpToDateComplexData();
-  AudioFloatArray complex_data_;
 #elif defined(WTF_USE_WEBAUDIO_PFFFT)
   // Thin wrapper around PFFFT_Setup so we can call the appropriate PFFFT
   // routines to construct or release the PFFFT_Setup objects.
@@ -190,7 +183,7 @@ class PLATFORM_EXPORT FFTFrame {
     PFFFT_Setup* GetSetup() const { return setup_; }
 
    private:
-    PFFFT_Setup* setup_;
+    raw_ptr<PFFFT_Setup> setup_;
   };
 
   // Returns the HashMap that holds all of the possible FFTSetup objects.  This

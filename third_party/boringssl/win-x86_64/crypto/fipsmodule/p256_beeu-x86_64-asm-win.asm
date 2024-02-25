@@ -336,7 +336,7 @@ $L$beeu_finish:
 
 	mov	rdi,QWORD[8+rsp]	;WIN64 epilogue
 	mov	rsi,QWORD[16+rsp]
-	DB	0F3h,0C3h		;repret
+	ret
 
 
 $L$SEH_end_beeu_mod_inverse_vartime:

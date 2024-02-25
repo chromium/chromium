@@ -52,6 +52,7 @@ class TestPageLoadMetricsEmbedder
   bool IsSidePanel(content::WebContents* web_contents) override {
     return false;
   }
+  bool IsNonTabWebUI() override { return false; }
 
   page_load_metrics::PageLoadMetricsMemoryTracker*
   GetMemoryTrackerForBrowserContext(

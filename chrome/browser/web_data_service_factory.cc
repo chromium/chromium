@@ -152,9 +152,10 @@ content::BrowserContext* WebDataServiceFactory::GetBrowserContextToUse(
   return chrome::GetBrowserContextRedirectedInIncognito(context);
 }
 
-KeyedService* WebDataServiceFactory::BuildServiceInstanceFor(
+std::unique_ptr<KeyedService>
+WebDataServiceFactory::BuildServiceInstanceForBrowserContext(
     content::BrowserContext* context) const {
-  return BuildWebDataService(context).release();
+  return BuildWebDataService(context);
 }
 
 bool WebDataServiceFactory::ServiceIsNULLWhileTesting() const {

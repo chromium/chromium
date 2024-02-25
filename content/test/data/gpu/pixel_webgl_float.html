@@ -35,7 +35,7 @@ function waitForFinish() {
 function drawQuad(gl, color) {
   let ext = gl.getExtension('EXT_color_buffer_half_float');
   if (!ext) {
-    send("FAILURE", "EXT_color_buffer_half_float not supported");
+    sendResult("FAILURE", "EXT_color_buffer_half_float not supported");
     return;
   }
 

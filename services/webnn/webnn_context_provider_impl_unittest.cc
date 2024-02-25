@@ -6,10 +6,18 @@
 
 #include "base/run_loop.h"
 #include "base/test/bind.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
+#include "base/test/test_future.h"
+#include "components/ml/webnn/features.mojom-features.h"
 #include "mojo/public/cpp/bindings/remote.h"
-#include "services/webnn/public/mojom/webnn_service.mojom.h"
+#include "services/webnn/public/mojom/webnn_context_provider.mojom.h"
+#include "services/webnn/public/mojom/webnn_error.mojom.h"
 #include "testing/gtest/include/gtest/gtest.h"
+
+#if BUILDFLAG(IS_MAC)
+#include "base/mac/mac_util.h"
+#endif  // BUILDFLAG(IS_MAC)
 
 namespace webnn {
 
@@ -20,10 +28,13 @@ class WebNNContextProviderImplTest : public testing::Test {
       delete;
 
  protected:
-  WebNNContextProviderImplTest() = default;
+  WebNNContextProviderImplTest()
+      : scoped_feature_list_(
+            webnn::mojom::features::kWebMachineLearningNeuralNetwork) {}
   ~WebNNContextProviderImplTest() override = default;
 
  private:
+  base::test::ScopedFeatureList scoped_feature_list_;
   base::test::TaskEnvironment task_environment_;
 };
 
@@ -38,27 +49,45 @@ class WebNNContextProviderImplTest : public testing::Test {
 #if !BUILDFLAG(IS_WIN)
 
 TEST_F(WebNNContextProviderImplTest, CreateWebNNContextTest) {
+#if BUILDFLAG(IS_MAC)
+  if (base::mac::MacOSVersion() >= 13'00'00) {
+    GTEST_SKIP() << "Skipping test because WebNN is supported on Mac OS "
+                 << base::mac::MacOSVersion();
+  }
+#endif  // BUILDFLAG(IS_MAC)
+
   mojo::Remote<mojom::WebNNContextProvider> provider_remote;
 
   WebNNContextProviderImpl::Create(
       provider_remote.BindNewPipeAndPassReceiver());
 
-  bool is_callback_called = false;
-  base::RunLoop run_loop_create_context;
-  auto options = mojom::CreateContextOptions::New();
-  provider_remote->CreateWebNNContext(
-      std::move(options),
-      base::BindLambdaForTesting(
-          [&](mojom::CreateContextResult result,
-              mojo::PendingRemote<mojom::WebNNContext> remote) {
-            EXPECT_EQ(result, mojom::CreateContextResult::kNotSupported);
-            is_callback_called = true;
-            run_loop_create_context.Quit();
-          }));
-  run_loop_create_context.Run();
-  EXPECT_TRUE(is_callback_called);
+  base::test::TestFuture<mojom::CreateContextResultPtr> future;
+  provider_remote->CreateWebNNContext(mojom::CreateContextOptions::New(),
+                                      future.GetCallback());
+  mojom::CreateContextResultPtr result = future.Take();
+  ASSERT_TRUE(result->is_error());
+  const mojom::ErrorPtr& create_context_error = result->get_error();
+  EXPECT_EQ(create_context_error->code, mojom::Error::Code::kNotSupportedError);
+  EXPECT_EQ(create_context_error->message,
+            "WebNN Service is not supported on this platform.");
 }
 
 #endif
+
+TEST_F(WebNNContextProviderImplTest, GPUNotSupported) {
+  mojo::Remote<mojom::WebNNContextProvider> provider_remote;
+
+  WebNNContextProviderImpl::Create(provider_remote.BindNewPipeAndPassReceiver(),
+                                   /*is_gpu_supported=*/false);
+
+  base::test::TestFuture<mojom::CreateContextResultPtr> future;
+  provider_remote->CreateWebNNContext(mojom::CreateContextOptions::New(),
+                                      future.GetCallback());
+  mojom::CreateContextResultPtr result = future.Take();
+  ASSERT_TRUE(result->is_error());
+  const mojom::ErrorPtr& create_context_error = result->get_error();
+  EXPECT_EQ(create_context_error->code, mojom::Error::Code::kNotSupportedError);
+  EXPECT_EQ(create_context_error->message, "WebNN is not compatible with GPU.");
+}
 
 }  // namespace webnn

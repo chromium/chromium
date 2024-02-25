@@ -6,15 +6,18 @@
 
 #include <limits>
 #include <memory>
+#include <optional>
 #include <vector>
 
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
 #include "ash/constants/ash_switches.h"
+#include "ash/constants/geolocation_access_level.h"
 #include "ash/public/ash_interfaces.h"
 #include "ash/public/cpp/ash_prefs.h"
 #include "ash/shell.h"
 #include "ash/system/geolocation/geolocation_controller.h"
+#include "ash/system/privacy_hub/privacy_hub_controller.h"
 #include "base/command_line.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
@@ -31,6 +34,7 @@
 #include "chrome/browser/ash/base/locale_util.h"
 #include "chrome/browser/ash/child_accounts/parent_access_code/parent_access_service.h"
 #include "chrome/browser/ash/crosapi/browser_util.h"
+#include "chrome/browser/ash/drive/drive_integration_service.h"
 #include "chrome/browser/ash/drive/file_system_util.h"
 #include "chrome/browser/ash/input_method/editor_consent_store.h"
 #include "chrome/browser/ash/input_method/input_method_persistence.h"
@@ -38,7 +42,6 @@
 #include "chrome/browser/ash/login/hid_detection_revamp_field_trial.h"
 #include "chrome/browser/ash/login/login_pref_names.h"
 #include "chrome/browser/ash/login/session/user_session_manager.h"
-#include "chrome/browser/ash/night_light/night_light_client.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/ash/settings/cros_settings.h"
 #include "chrome/browser/ash/system/input_device_settings.h"
@@ -46,7 +49,6 @@
 #include "chrome/browser/ash/system/timezone_util.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/browser_process_platform_part.h"
-#include "chrome/browser/chrome_notification_types.h"
 #include "chrome/browser/download/download_prefs.h"
 #include "chrome/browser/prefs/pref_service_syncable_util.h"
 #include "chrome/browser/ui/ash/system_tray_client_impl.h"
@@ -55,13 +57,14 @@
 #include "chromeos/ash/components/dbus/pciguard/pciguard_client.h"
 #include "chromeos/ash/components/dbus/update_engine/update_engine.pb.h"
 #include "chromeos/ash/components/dbus/update_engine/update_engine_client.h"
+#include "chromeos/ash/components/geolocation/simple_geolocation_provider.h"
 #include "chromeos/ash/components/peripheral_notification/peripheral_notification_manager.h"
 #include "chromeos/ash/components/settings/cros_settings_names.h"
 #include "chromeos/ash/components/standalone_browser/lacros_availability.h"
 #include "chromeos/ash/components/system/statistics_provider.h"
 #include "chromeos/ash/components/timezone/timezone_resolver.h"
 #include "chromeos/components/disks/disks_prefs.h"
-#include "components/drive/drive_pref_names.h"
+#include "chromeos/constants/pref_names.h"
 #include "components/feedback/content/content_tracing_manager.h"
 #include "components/language/core/browser/pref_names.h"
 #include "components/policy/proto/chrome_device_policy.pb.h"
@@ -74,13 +77,14 @@
 #include "components/user_manager/user.h"
 #include "components/user_manager/user_manager.h"
 #include "content/public/browser/browser_thread.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/mojom/speech/speech_synthesis.mojom.h"
 #include "third_party/cros_system_api/dbus/update_engine/dbus-constants.h"
 #include "third_party/icu/source/i18n/unicode/timezone.h"
 #include "ui/base/ime/ash/extension_ime_util.h"
 #include "ui/base/ime/ash/ime_keyboard.h"
 #include "ui/base/ime/ash/input_method_manager.h"
+#include "ui/events/ash/mojom/extended_fkeys_modifier.mojom-shared.h"
+#include "ui/events/ash/mojom/extended_fkeys_modifier.mojom.h"
 #include "ui/events/ash/mojom/modifier_key.mojom.h"
 #include "ui/events/ash/pref_names.h"
 #include "ui/events/event_constants.h"
@@ -162,9 +166,13 @@ void Preferences::RegisterPrefs(PrefRegistrySimple* registry) {
   registry->RegisterBooleanPref(
       prefs::kLocalStateDevicePeripheralDataAccessEnabled, false);
   registry->RegisterBooleanPref(prefs::kDeviceI18nShortcutsEnabled, true);
-  registry->RegisterBooleanPref(prefs::kChromadToCloudMigrationEnabled, false);
   registry->RegisterBooleanPref(prefs::kLoginScreenWebUILazyLoading, false);
   registry->RegisterBooleanPref(::prefs::kConsumerAutoUpdateToggle, true);
+  registry->RegisterBooleanPref(prefs::kDeviceEphemeralNetworkPoliciesEnabled,
+                                false);
+  registry->RegisterBooleanPref(prefs::kDeviceSwitchFunctionKeysBehaviorEnabled,
+                                false);
+  registry->RegisterBooleanPref(::prefs::kLocalUserFilesAllowed, true);
 
   RegisterLocalStatePrefs(registry);
   ash::hid_detection_revamp_field_trial::RegisterLocalStatePrefs(registry);
@@ -176,6 +184,7 @@ void Preferences::RegisterProfilePrefs(
   // Some classes register their own prefs.
   input_method::InputMethodSyncer::RegisterProfilePrefs(registry);
   crosapi::browser_util::RegisterProfilePrefs(registry);
+  ::drive::DriveIntegrationService::RegisterProfilePrefs(registry);
 
   std::string hardware_keyboard_id;
   // TODO(yusukes): Remove the runtime hack.
@@ -259,30 +268,6 @@ void Preferences::RegisterProfilePrefs(
   registry->RegisterBooleanPref(
       ::prefs::kUse24HourClock, base::GetHourClockType() == base::k24HourClock,
       user_prefs::PrefRegistrySyncable::SYNCABLE_OS_PREF);
-  registry->RegisterBooleanPref(
-      drive::prefs::kDisableDrive, false,
-      user_prefs::PrefRegistrySyncable::SYNCABLE_OS_PREF);
-  registry->RegisterBooleanPref(
-      drive::prefs::kDisableDriveOverCellular, true,
-      user_prefs::PrefRegistrySyncable::SYNCABLE_OS_PREF);
-  registry->RegisterBooleanPref(drive::prefs::kDriveFsWasLaunchedAtLeastOnce,
-                                false);
-  registry->RegisterStringPref(drive::prefs::kDriveFsProfileSalt, "");
-  registry->RegisterBooleanPref(drive::prefs::kDriveFsPinnedMigrated, false);
-  registry->RegisterBooleanPref(drive::prefs::kDriveFsEnableVerboseLogging,
-                                false);
-  // Do not sync drive::prefs::kDriveFsEnableMirrorSync and
-  // drive::prefs::kDriveFsMirrorSyncMachineId because we're syncing local files
-  // and users may wish to turn this off on a per device basis.
-  registry->RegisterBooleanPref(drive::prefs::kDriveFsEnableMirrorSync, false);
-  registry->RegisterStringPref(drive::prefs::kDriveFsMirrorSyncMachineRootId,
-                               "");
-  // Do not sync kDriveFsBulkPinningEnabled as this maintains files that are
-  // locally pinned to this device and should not sync the state across multiple
-  // devices.
-  registry->RegisterBooleanPref(drive::prefs::kDriveFsBulkPinningVisible, true);
-  registry->RegisterBooleanPref(drive::prefs::kDriveFsBulkPinningEnabled,
-                                false);
   // We don't sync ::prefs::kLanguageCurrentInputMethod and PreviousInputMethod
   // because they're just used to track the logout state of the device.
   registry->RegisterStringPref(::prefs::kLanguageCurrentInputMethod, "");
@@ -297,7 +282,7 @@ void Preferences::RegisterProfilePrefs(
   registry->RegisterBooleanPref(prefs::kAssistPredictiveWritingEnabled, true);
   registry->RegisterBooleanPref(prefs::kEmojiSuggestionEnabled, true);
   registry->RegisterBooleanPref(prefs::kEmojiSuggestionEnterpriseAllowed, true);
-  registry->RegisterBooleanPref(prefs::kOrcaEnabled, false);
+  registry->RegisterBooleanPref(prefs::kOrcaEnabled, true);
   registry->RegisterBooleanPref(
       prefs::kManagedPhysicalKeyboardAutocorrectAllowed, true);
   registry->RegisterBooleanPref(
@@ -386,11 +371,13 @@ void Preferences::RegisterProfilePrefs(
       ::prefs::kChromeOSReleaseNotesVersion, "0.0.0.0",
       user_prefs::PrefRegistrySyncable::SYNCABLE_OS_PREF);
 
-  disks::prefs::RegisterProfilePrefs(registry);
+  ::disks::prefs::RegisterProfilePrefs(registry);
 
   registry->RegisterStringPref(::prefs::kTermsOfServiceURL, "");
 
   registry->RegisterBooleanPref(::prefs::kTouchVirtualKeyboardEnabled, false);
+  registry->RegisterBooleanPref(::prefs::kVirtualKeyboardSmartVisibilityEnabled,
+                                true);
 
   std::string current_timezone_id;
   if (CrosSettings::IsInitialized()) {
@@ -427,7 +414,7 @@ void Preferences::RegisterProfilePrefs(
       user_prefs::PrefRegistrySyncable::SYNCABLE_OS_PREF);
 
   registry->RegisterBooleanPref(
-      ::prefs::kCaptivePortalAuthenticationIgnoresProxy, true);
+      chromeos::prefs::kCaptivePortalAuthenticationIgnoresProxy, true);
 
   registry->RegisterBooleanPref(::prefs::kLanguageImeMenuActivated, false);
 
@@ -442,14 +429,6 @@ void Preferences::RegisterProfilePrefs(
   registry->RegisterBooleanPref(::prefs::kHatsOnboardingDeviceIsSelected,
                                 false);
 
-  registry->RegisterInt64Pref(::prefs::kHatsSmartLockSurveyCycleEndTs, 0);
-
-  registry->RegisterBooleanPref(::prefs::kHatsSmartLockDeviceIsSelected, false);
-
-  registry->RegisterInt64Pref(::prefs::kHatsUnlockSurveyCycleEndTs, 0);
-
-  registry->RegisterBooleanPref(::prefs::kHatsUnlockDeviceIsSelected, false);
-
   registry->RegisterInt64Pref(::prefs::kHatsArcGamesSurveyCycleEndTs, 0);
 
   registry->RegisterBooleanPref(::prefs::kHatsArcGamesDeviceIsSelected, false);
@@ -457,6 +436,11 @@ void Preferences::RegisterProfilePrefs(
   registry->RegisterInt64Pref(::prefs::kHatsAudioSurveyCycleEndTs, 0);
 
   registry->RegisterBooleanPref(::prefs::kHatsAudioDeviceIsSelected, false);
+
+  registry->RegisterInt64Pref(::prefs::kHatsBluetoothAudioSurveyCycleEndTs, 0);
+
+  registry->RegisterBooleanPref(::prefs::kHatsBluetoothAudioDeviceIsSelected,
+                                false);
 
   registry->RegisterInt64Pref(::prefs::kHatsEntSurveyCycleEndTs, 0);
 
@@ -563,11 +547,6 @@ void Preferences::RegisterProfilePrefs(
   registry->RegisterBooleanPref(::prefs::kStartupBrowserWindowLaunchSuppressed,
                                 false);
 
-  // This pref is a per-session pref and must not be synced.
-  registry->RegisterBooleanPref(
-      ::prefs::kLoginExtensionApiCanLockManagedGuestSession, false,
-      PrefRegistry::NO_REGISTRATION_FLAGS);
-
   registry->RegisterBooleanPref(prefs::kLoginDisplayPasswordButtonEnabled,
                                 true);
 
@@ -617,6 +596,18 @@ void Preferences::RegisterProfilePrefs(
                                 false);
 
   registry->RegisterBooleanPref(::prefs::kHasEverRevokedMetricsConsent, true);
+
+  registry->RegisterBooleanPref(prefs::kShowHumanPresenceSensorScreenEnabled,
+                                true);
+  registry->RegisterListPref(prefs::kUserFeedbackWithLowLevelDebugDataAllowed);
+  registry->RegisterBooleanPref(prefs::kIsolatedWebAppsEnabled, false);
+
+  registry->RegisterDictionaryPref(prefs::kAshAppIconLightVibrantColorCache);
+  registry->RegisterDictionaryPref(prefs::kAshAppIconSortableColorGroupCache);
+  registry->RegisterDictionaryPref(prefs::kAshAppIconSortableColorHueCache);
+
+  registry->RegisterBooleanPref(::prefs::kStandaloneWindowMigrationNudgeShown,
+                                false);
 }
 
 void Preferences::InitUserPrefs(sync_preferences::PrefServiceSyncable* prefs) {
@@ -675,8 +666,9 @@ void Preferences::InitUserPrefs(sync_preferences::PrefServiceSyncable* prefs) {
                             callback);
   ime_menu_activated_.Init(::prefs::kLanguageImeMenuActivated, prefs, callback);
   // Notifies the system tray to remove the IME items.
-  if (ime_menu_activated_.GetValue())
+  if (ime_menu_activated_.GetValue()) {
     input_method::InputMethodManager::Get()->ImeMenuActivationChanged(true);
+  }
 
   long_press_diacritics_enabled_.Init(prefs::kLongPressDiacriticsEnabled, prefs,
                                       callback);
@@ -691,15 +683,17 @@ void Preferences::InitUserPrefs(sync_preferences::PrefServiceSyncable* prefs) {
   consumer_auto_update_toggle_pref_.Init(::prefs::kConsumerAutoUpdateToggle,
                                          g_browser_process->local_state(),
                                          callback);
-  // TODO(zauri): change to BooleanPrefMember
   pref_change_registrar_.Init(prefs);
-  pref_change_registrar_.Add(ash::prefs::kUserGeolocationAllowed, callback);
+  pref_change_registrar_.Add(ash::prefs::kUserGeolocationAccessLevel, callback);
+  pref_change_registrar_.Add(ash::prefs::kUserPreviousGeolocationAccessLevel,
+                             callback);
   pref_change_registrar_.Add(::prefs::kUserTimezone, callback);
   pref_change_registrar_.Add(::prefs::kResolveTimezoneByGeolocationMethod,
                              callback);
   pref_change_registrar_.Add(::prefs::kParentAccessCodeConfig, callback);
-  for (auto* copy_pref : kCopyToKnownUserPrefs)
+  for (auto* copy_pref : kCopyToKnownUserPrefs) {
     pref_change_registrar_.Add(copy_pref, callback);
+  }
 
   // Re-enable OTA update when feature flag is disabled by owner.
   auto* update_engine_client = UpdateEngineClient::Get();
@@ -765,8 +759,9 @@ void Preferences::Init(Profile* profile, const user_manager::User* user) {
   // As InputMethodManager only holds the active state for the active user,
   // SetState() is only called if the preferences belongs to the active user.
   // See https://crbug.com/841112.
-  if (user->is_active())
+  if (user->is_active()) {
     input_method_manager_->SetState(ime_state_);
+  }
 
   input_method_syncer_ =
       std::make_unique<input_method::InputMethodSyncer>(prefs, ime_state_);
@@ -776,8 +771,9 @@ void Preferences::Init(Profile* profile, const user_manager::User* user) {
   // login. For a regular user this is done in
   // UserSessionManager::InitProfilePreferences().
   if (base::CommandLine::ForCurrentProcess()->HasSwitch(
-          switches::kGuestSession))
+          switches::kGuestSession)) {
     session_manager->SetFirstLoginPrefs(profile, std::string(), std::string());
+  }
 }
 
 void Preferences::InitUserPrefsForTesting(
@@ -787,8 +783,9 @@ void Preferences::InitUserPrefsForTesting(
   user_ = user;
   ime_state_ = ime_state;
 
-  if (ime_state.get())
+  if (ime_state.get()) {
     input_method_manager_->SetState(ime_state);
+  }
 
   InitUserPrefs(prefs);
 
@@ -812,10 +809,11 @@ void Preferences::ReportBooleanPrefApplication(
     const std::string& changed_histogram_name,
     const std::string& started_histogram_name,
     bool sample) {
-  if (reason == REASON_PREF_CHANGED)
+  if (reason == REASON_PREF_CHANGED) {
     base::UmaHistogramBoolean(changed_histogram_name, sample);
-  else if (reason == REASON_INITIALIZATION)
+  } else if (reason == REASON_INITIALIZATION) {
     base::UmaHistogramBoolean(started_histogram_name, sample);
+  }
 }
 
 void Preferences::ReportSensitivityPrefApplication(
@@ -825,10 +823,11 @@ void Preferences::ReportSensitivityPrefApplication(
     int sensitivity_int) {
   system::PointerSensitivity sensitivity =
       static_cast<system::PointerSensitivity>(sensitivity_int);
-  if (reason == REASON_PREF_CHANGED)
+  if (reason == REASON_PREF_CHANGED) {
     base::UmaHistogramEnumeration(changed_histogram_name, sensitivity);
-  else if (reason == REASON_INITIALIZATION)
+  } else if (reason == REASON_INITIALIZATION) {
     base::UmaHistogramEnumeration(started_histogram_name, sensitivity);
+  }
 }
 
 void Preferences::ApplyPreferences(ApplyReason reason,
@@ -847,16 +846,18 @@ void Preferences::ApplyPreferences(ApplyReason reason,
   if (user_is_primary_ && (reason == REASON_INITIALIZATION ||
                            pref_name == ::prefs::kPerformanceTracingEnabled)) {
     const bool enabled = performance_tracing_enabled_.GetValue();
-    if (enabled)
+    if (enabled) {
       tracing_manager_ = ContentTracingManager::Create();
-    else
+    } else {
       tracing_manager_.reset();
+    }
     SystemTrayClientImpl::Get()->SetPerformanceTracingIconVisible(enabled);
   }
   if (reason != REASON_PREF_CHANGED || pref_name == prefs::kTapToClickEnabled) {
     const bool enabled = tap_to_click_enabled_.GetValue();
-    if (user_is_active)
+    if (user_is_active) {
       touchpad_settings.SetTapToClick(enabled);
+    }
     ReportBooleanPrefApplication(reason, "Touchpad.TapToClick.Changed",
                                  "Touchpad.TapToClick.Started", enabled);
 
@@ -871,8 +872,9 @@ void Preferences::ApplyPreferences(ApplyReason reason,
   if (reason != REASON_PREF_CHANGED ||
       pref_name == prefs::kEnableTouchpadThreeFingerClick) {
     const bool enabled = three_finger_click_enabled_.GetValue();
-    if (user_is_active)
+    if (user_is_active) {
       touchpad_settings.SetThreeFingerClick(enabled);
+    }
   }
   if (reason != REASON_PREF_CHANGED ||
       pref_name == ::prefs::kUnifiedDesktopEnabledByDefault) {
@@ -891,16 +893,18 @@ void Preferences::ApplyPreferences(ApplyReason reason,
 
     const bool enabled = natural_scroll_.GetValue();
     DVLOG(1) << "Natural scroll set to " << enabled;
-    if (user_is_active)
+    if (user_is_active) {
       touchpad_settings.SetNaturalScroll(enabled);
+    }
     ReportBooleanPrefApplication(reason, "Touchpad.NaturalScroll.Changed",
                                  "Touchpad.NaturalScroll.Started", enabled);
   }
   if (reason != REASON_PREF_CHANGED ||
       pref_name == prefs::kMouseReverseScroll) {
     const bool enabled = mouse_reverse_scroll_.GetValue();
-    if (user_is_active)
+    if (user_is_active) {
       mouse_settings.SetReverseScroll(enabled);
+    }
   }
 
   if (reason != REASON_PREF_CHANGED || pref_name == prefs::kMouseSensitivity) {
@@ -910,8 +914,9 @@ void Preferences::ApplyPreferences(ApplyReason reason,
 
       // With the flag off, also set scroll sensitivity (legacy fallback).
       // TODO(https://crbug.com/836258): Remove check when flag is removed.
-      if (!AreScrollSettingsAllowed())
+      if (!AreScrollSettingsAllowed()) {
         mouse_settings.SetScrollSensitivity(sensitivity_int);
+      }
     }
     ReportSensitivityPrefApplication(reason, "Mouse.PointerSensitivity.Changed",
                                      "Mouse.PointerSensitivity.Started",
@@ -924,8 +929,9 @@ void Preferences::ApplyPreferences(ApplyReason reason,
     const int sensitivity_int = AreScrollSettingsAllowed()
                                     ? mouse_scroll_sensitivity_.GetValue()
                                     : mouse_sensitivity_.GetValue();
-    if (user_is_active)
+    if (user_is_active) {
       mouse_settings.SetScrollSensitivity(sensitivity_int);
+    }
     ReportSensitivityPrefApplication(reason, "Mouse.ScrollSensitivity.Changed",
                                      "Mouse.ScrollSensitivity.Started",
                                      sensitivity_int);
@@ -945,8 +951,9 @@ void Preferences::ApplyPreferences(ApplyReason reason,
 
       // With the flag off, also set scroll sensitivity (legacy fallback).
       // TODO(https://crbug.com/836258): Remove check when flag is removed.
-      if (!AreScrollSettingsAllowed())
+      if (!AreScrollSettingsAllowed()) {
         touchpad_settings.SetScrollSensitivity(sensitivity_int);
+      }
     }
     ReportSensitivityPrefApplication(
         reason, "Touchpad.PointerSensitivity.Changed",
@@ -959,8 +966,9 @@ void Preferences::ApplyPreferences(ApplyReason reason,
     const int sensitivity_int = AreScrollSettingsAllowed()
                                     ? touchpad_scroll_sensitivity_.GetValue()
                                     : touchpad_sensitivity_.GetValue();
-    if (user_is_active)
+    if (user_is_active) {
       touchpad_settings.SetScrollSensitivity(sensitivity_int);
+    }
     ReportSensitivityPrefApplication(
         reason, "Touchpad.ScrollSensitivity.Changed",
         "Touchpad.ScrollSensitivity.Started", sensitivity_int);
@@ -968,8 +976,9 @@ void Preferences::ApplyPreferences(ApplyReason reason,
   if (reason != REASON_PREF_CHANGED ||
       pref_name == prefs::kPrimaryMouseButtonRight) {
     const bool right = primary_mouse_button_right_.GetValue();
-    if (user_is_active)
+    if (user_is_active) {
       mouse_settings.SetPrimaryButtonRight(right);
+    }
     ReportBooleanPrefApplication(reason, "Mouse.PrimaryButtonRight.Changed",
                                  "Mouse.PrimaryButtonRight.Started", right);
     // Save owner preference in local state to use on login screen.
@@ -983,8 +992,9 @@ void Preferences::ApplyPreferences(ApplyReason reason,
   if (reason != REASON_PREF_CHANGED ||
       pref_name == prefs::kPrimaryPointingStickButtonRight) {
     const bool right = primary_pointing_stick_button_right_.GetValue();
-    if (user_is_active)
+    if (user_is_active) {
       pointing_stick_settings.SetPrimaryButtonRight(right);
+    }
     // Save owner preference in local state to use on login screen.
     if (user_is_owner) {
       PrefService* prefs = g_browser_process->local_state();
@@ -996,34 +1006,39 @@ void Preferences::ApplyPreferences(ApplyReason reason,
   }
   if (reason != REASON_PREF_CHANGED || pref_name == prefs::kMouseAcceleration) {
     const bool enabled = mouse_acceleration_.GetValue();
-    if (user_is_active)
+    if (user_is_active) {
       mouse_settings.SetAcceleration(enabled);
+    }
   }
   if (reason != REASON_PREF_CHANGED ||
       pref_name == prefs::kMouseScrollAcceleration) {
     const bool enabled = mouse_scroll_acceleration_.GetValue();
-    if (user_is_active)
+    if (user_is_active) {
       mouse_settings.SetScrollAcceleration(enabled);
+    }
     ReportBooleanPrefApplication(reason, "Mouse.ScrollAcceleration.Changed",
                                  "Mouse.ScrollAcceleration.Started", enabled);
   }
   if (reason != REASON_PREF_CHANGED ||
       pref_name == prefs::kPointingStickAcceleration) {
     const bool enabled = pointing_stick_acceleration_.GetValue();
-    if (user_is_active)
+    if (user_is_active) {
       pointing_stick_settings.SetAcceleration(enabled);
+    }
   }
   if (reason != REASON_PREF_CHANGED ||
       pref_name == prefs::kTouchpadAcceleration) {
     const bool enabled = touchpad_acceleration_.GetValue();
-    if (user_is_active)
+    if (user_is_active) {
       touchpad_settings.SetAcceleration(enabled);
+    }
   }
   if (reason != REASON_PREF_CHANGED ||
       pref_name == prefs::kTouchpadScrollAcceleration) {
     const bool enabled = touchpad_scroll_acceleration_.GetValue();
-    if (user_is_active)
+    if (user_is_active) {
       touchpad_settings.SetScrollAcceleration(enabled);
+    }
     ReportBooleanPrefApplication(reason, "Touchpad.ScrollAcceleration.Changed",
                                  "Touchpad.ScrollAcceleration.Started",
                                  enabled);
@@ -1031,16 +1046,18 @@ void Preferences::ApplyPreferences(ApplyReason reason,
   if (reason != REASON_PREF_CHANGED ||
       pref_name == prefs::kTouchpadHapticFeedback) {
     const bool enabled = touchpad_haptic_feedback_.GetValue();
-    if (user_is_active)
+    if (user_is_active) {
       touchpad_settings.SetHapticFeedback(enabled);
+    }
     ReportBooleanPrefApplication(reason, "Touchpad.HapticFeedback.Changed",
                                  "Touchpad.HapticFeedback.Started", enabled);
   }
   if (reason != REASON_PREF_CHANGED ||
       pref_name == prefs::kTouchpadHapticClickSensitivity) {
     const int sensitivity_int = touchpad_haptic_click_sensitivity_.GetValue();
-    if (user_is_active)
+    if (user_is_active) {
       touchpad_settings.SetHapticClickSensitivity(sensitivity_int);
+    }
     ReportSensitivityPrefApplication(
         reason, "Touchpad.HapticClickSensitivity.Changed",
         "Touchpad.HapticClickSensitivity.Started", sensitivity_int);
@@ -1070,12 +1087,14 @@ void Preferences::ApplyPreferences(ApplyReason reason,
   if (reason != REASON_PREF_CHANGED ||
       pref_name == prefs::kXkbAutoRepeatDelay ||
       pref_name == prefs::kXkbAutoRepeatInterval) {
-    if (user_is_active)
+    if (user_is_active) {
       UpdateAutoRepeatRate();
+    }
   }
 
-  if (reason == REASON_INITIALIZATION)
+  if (reason == REASON_INITIALIZATION) {
     SetInputMethodList();
+  }
 
   if (reason != REASON_PREF_CHANGED ||
       pref_name == ::prefs::kLanguageAllowedInputMethods) {
@@ -1097,8 +1116,10 @@ void Preferences::ApplyPreferences(ApplyReason reason,
           base::JoinString(ime_state_->GetEnabledInputMethodIds(), ","));
     }
   }
-  if (reason != REASON_PREF_CHANGED || pref_name == ::prefs::kAllowedLanguages)
+  if (reason != REASON_PREF_CHANGED ||
+      pref_name == ::prefs::kAllowedLanguages) {
     locale_util::RemoveDisallowedLanguagesFromPreferred(prefs_);
+  }
 
   if (reason != REASON_PREF_CHANGED ||
       pref_name == language::prefs::kPreferredLanguages) {
@@ -1145,35 +1166,30 @@ void Preferences::ApplyPreferences(ApplyReason reason,
   // TODO(b/277061508): Move this logic inside
   // GeolocationPrivacySwitchController.
   if (reason == REASON_INITIALIZATION ||
-      (pref_name == ash::prefs::kUserGeolocationAllowed &&
+      (pref_name == ash::prefs::kUserGeolocationAccessLevel &&
        reason == REASON_PREF_CHANGED)) {
-    const bool system_geolocation_permission_enabled =
-        prefs_->GetBoolean(ash::prefs::kUserGeolocationAllowed);
+    const auto user_geolocation_access_level =
+        static_cast<GeolocationAccessLevel>(
+            prefs_->GetInteger(ash::prefs::kUserGeolocationAccessLevel));
 
-    const bool automatic_timezone_selected = prefs_->GetBoolean(
-        ::prefs::kResolveTimezoneByGeolocationMigratedToMethod);
+    // Notify `SimpleGeolocationProvider` of the user geolocation permission
+    // change.
+    SimpleGeolocationProvider::GetInstance()->SetGeolocationAccessLevel(
+        user_geolocation_access_level);
 
-    // Fall back to static timezone when system geolocation access is disabled.
-    if (!system_geolocation_permission_enabled && automatic_timezone_selected) {
-      prefs_->SetBoolean(::prefs::kResolveTimezoneByGeolocationMigratedToMethod,
-                         false);
-      prefs_->SetInteger(::prefs::kResolveTimezoneByGeolocationMethod,
-                         static_cast<int>(system::TimeZoneResolverManager::
-                                              TimeZoneResolveMethod::DISABLED));
+    // Log-in screen follows the owner's geolocation setting.
+    if (user_is_owner) {
+      GeolocationAccessLevel access_level;
+      if (SimpleGeolocationProvider::GetInstance()
+              ->IsGeolocationUsageAllowedForSystem()) {
+        access_level = GeolocationAccessLevel::kAllowed;
+      } else {
+        access_level = GeolocationAccessLevel::kDisallowed;
+      }
+      g_browser_process->local_state()->SetInteger(
+          ash::prefs::kDeviceGeolocationAllowed,
+          static_cast<int>(access_level));
     }
-
-    ash::system::TimeZoneResolverManager* timezone_resolver_manager =
-        g_browser_process->platform_part()->GetTimezoneResolverManager();
-    GeolocationController* geolocation_controller =
-        ash::Shell::Get()->geolocation_controller();
-    NightLightClient* night_light_client = ash::NightLightClient::Get();
-
-    timezone_resolver_manager->OnSystemGeolocationPermissionChanged(
-        system_geolocation_permission_enabled);
-    geolocation_controller->OnSystemGeolocationPermissionChanged(
-        system_geolocation_permission_enabled);
-    night_light_client->OnSystemGeolocationPermissionChanged(
-        system_geolocation_permission_enabled);
   }
 
   if (pref_name == ::prefs::kUserTimezone &&
@@ -1280,8 +1296,9 @@ void Preferences::SetLanguageConfigStringListAsCSV(const char* section,
   }
 
   // Transfers the xkb id to extension-xkb id.
-  if (input_method_manager_->MigrateInputMethods(&split_values))
+  if (input_method_manager_->GetMigratedInputMethodIDs(&split_values)) {
     preload_engines_.SetValue(base::JoinString(split_values, ","));
+  }
 
   if (section == std::string(language_prefs::kGeneralSectionName) &&
       name == std::string(language_prefs::kPreloadEnginesConfigName)) {
@@ -1309,12 +1326,14 @@ void Preferences::SetInputMethodList() {
   // calls are also necessary to restore the previous/current input method prefs
   // which could have been modified by the SetLanguageConfigStringListAsCSV call
   // above to the original state.
-  if (!previous_input_method_id.empty())
+  if (!previous_input_method_id.empty()) {
     ime_state_->ChangeInputMethod(previous_input_method_id,
                                   false /* show_message */);
-  if (!current_input_method_id.empty())
+  }
+  if (!current_input_method_id.empty()) {
     ime_state_->ChangeInputMethod(current_input_method_id,
                                   false /* show_message */);
+  }
 }
 
 void Preferences::UpdateAutoRepeatRate() {
@@ -1338,8 +1357,9 @@ void Preferences::UpdateAutoRepeatRate() {
 }
 
 void Preferences::ActiveUserChanged(user_manager::User* active_user) {
-  if (active_user != user_)
+  if (active_user != user_) {
     return;
+  }
   ApplyPreferences(REASON_ACTIVE_USER_CHANGED, "");
 }
 
@@ -1362,7 +1382,7 @@ void Preferences::UpdateStatusChanged(
   }
 }
 
-void Preferences::OnIsConsumerAutoUpdateEnabled(absl::optional<bool> enabled) {
+void Preferences::OnIsConsumerAutoUpdateEnabled(std::optional<bool> enabled) {
   DVLOG(1) << "OnIsConsumerAutoUpdateEnabled";
   if (!enabled.has_value()) {
     VLOG(1) << "Failed to retrieve consumer auto update feature value.";

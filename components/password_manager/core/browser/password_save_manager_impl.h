@@ -33,7 +33,10 @@ class PasswordSaveManagerImpl : public PasswordSaveManager {
   const std::u16string& GetGeneratedPassword() const override;
   FormSaver* GetProfileStoreFormSaverForTesting() const override;
 
-  // |metrics_recorder| and |votes_uploader| can both be nullptr.
+  // `client`: must be non-null and outlive this object.
+  // `form_fetcher`: must be non-null and outlive this object.
+  // `metrics_recorder`: can be null.
+  // `votes_uploader`: must be either null or outlive this object.
   void Init(PasswordManagerClient* client,
             const FormFetcher* form_fetcher,
             scoped_refptr<PasswordFormMetricsRecorder> metrics_recorder,
@@ -122,8 +125,10 @@ class PasswordSaveManagerImpl : public PasswordSaveManager {
 
   // Returns the forms in |matches| that should be taken into account for
   // conflict resolution during generation. Will be overridden in subclasses.
-  std::vector<const PasswordForm*> GetRelevantMatchesForGeneration(
-      const std::vector<const PasswordForm*>& matches);
+  std::vector<raw_ptr<const PasswordForm, VectorExperimental>>
+  GetRelevantMatchesForGeneration(
+      const std::vector<raw_ptr<const PasswordForm, VectorExperimental>>&
+          matches);
 
   // Clones the current object into |clone|. |clone| must not be null.
   void CloneInto(PasswordSaveManagerImpl* clone);

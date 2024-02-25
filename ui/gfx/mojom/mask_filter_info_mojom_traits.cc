@@ -13,7 +13,7 @@ bool StructTraits<gfx::mojom::MaskFilterInfoDataView, gfx::MaskFilterInfo>::
   if (!data.ReadRoundedCornerBounds(&bounds))
     return false;
 
-  absl::optional<gfx::LinearGradient> gradient_mask;
+  std::optional<gfx::LinearGradient> gradient_mask;
   if (!data.ReadGradientMask(&gradient_mask))
     return false;
 

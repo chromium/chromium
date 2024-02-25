@@ -5,11 +5,12 @@
 #ifndef NET_FIRST_PARTY_SETS_FIRST_PARTY_SETS_CONTEXT_CONFIG_H_
 #define NET_FIRST_PARTY_SETS_FIRST_PARTY_SETS_CONTEXT_CONFIG_H_
 
+#include <optional>
+
 #include "base/containers/flat_map.h"
 #include "base/functional/function_ref.h"
 #include "net/base/schemeful_site.h"
 #include "net/first_party_sets/first_party_set_entry_override.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace mojo {
 template <typename DataViewType, typename T>
@@ -44,7 +45,7 @@ class NET_EXPORT FirstPartySetsContextConfig {
   // - nullopt if no override was found.
   // - optional(override) if an override was found. The override may be a
   //     deletion or a modification/addition.
-  absl::optional<FirstPartySetEntryOverride> FindOverride(
+  std::optional<FirstPartySetEntryOverride> FindOverride(
       const SchemefulSite& site) const;
 
   // Returns whether an override can be found for the given site in this

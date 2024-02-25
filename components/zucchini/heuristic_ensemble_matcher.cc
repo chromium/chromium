@@ -27,9 +27,9 @@ namespace {
 /******** Helper Functions ********/
 
 // Uses |detector| to find embedded executables inside |image|, and returns the
-// result on success, or absl::nullopt on failure,  which occurs if too many (>
+// result on success, or std::nullopt on failure,  which occurs if too many (>
 // |kElementLimit|) elements are found.
-absl::optional<std::vector<Element>> FindEmbeddedElements(
+std::optional<std::vector<Element>> FindEmbeddedElements(
     ConstBufferView image,
     const std::string& name,
     ElementDetector&& detector) {
@@ -47,7 +47,7 @@ absl::optional<std::vector<Element>> FindEmbeddedElements(
   }
   if (elements.size() >= kElementLimit) {
     LOG(WARNING) << name << ": Found too many elements.";
-    return absl::nullopt;
+    return std::nullopt;
   }
   LOG(INFO) << name << ": Found " << elements.size() << " elements.";
   return elements;
@@ -245,12 +245,12 @@ bool HeuristicEnsembleMatcher::RunMatch(ConstBufferView old_image,
   LOG(INFO) << "Start matching.";
 
   // Find all elements in "old" and "new".
-  absl::optional<std::vector<Element>> old_elements =
+  std::optional<std::vector<Element>> old_elements =
       FindEmbeddedElements(old_image, "Old file",
                            base::BindRepeating(DetectElementFromDisassembler));
   if (!old_elements.has_value())
     return false;
-  absl::optional<std::vector<Element>> new_elements =
+  std::optional<std::vector<Element>> new_elements =
       FindEmbeddedElements(new_image, "New file",
                            base::BindRepeating(DetectElementFromDisassembler));
   if (!new_elements.has_value())

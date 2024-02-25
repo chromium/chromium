@@ -6,7 +6,7 @@
 
 #import "components/infobars/core/infobar_manager.h"
 #import "ios/chrome/app/main_controller.h"
-#import "ios/chrome/browser/infobars/infobar_manager_impl.h"
+#import "ios/chrome/browser/infobars/model/infobar_manager_impl.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/browser/browser_provider.h"
 #import "ios/chrome/browser/shared/model/browser/browser_provider_interface.h"
@@ -24,7 +24,7 @@
       interface.browser->GetWebStateList()->GetActiveWebState();
   infobars::InfoBarManager* manager =
       InfoBarManagerImpl::FromWebState(webState);
-  return totalInfobars == (NSInteger)manager->infobar_count();
+  return totalInfobars == (NSInteger)manager->infobars().size();
 }
 
 + (BOOL)addTestInfoBarToCurrentTabWithMessage:(NSString*)message {

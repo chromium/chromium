@@ -2,9 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-/**
- * Auxiliary test class for SuperSize.
- */
+/** Auxiliary test class for SuperSize. */
 public class AuxClass {
     private int mRepeat;
 

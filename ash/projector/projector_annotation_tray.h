@@ -11,6 +11,7 @@
 #include "ash/system/tray/view_click_listener.h"
 #include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
+#include "ui/base/metadata/metadata_header_macros.h"
 
 namespace ui {
 class GestureEvent;
@@ -37,6 +38,8 @@ constexpr SkColor kProjectorDefaultPenColor = kProjectorMagentaPenColor;
 // Projector.
 class ProjectorAnnotationTray : public TrayBackgroundView,
                                 public SessionObserver {
+  METADATA_HEADER(ProjectorAnnotationTray, TrayBackgroundView)
+
  public:
   explicit ProjectorAnnotationTray(Shelf* shelf);
   ProjectorAnnotationTray(const ProjectorAnnotationTray&) = delete;
@@ -45,7 +48,7 @@ class ProjectorAnnotationTray : public TrayBackgroundView,
 
   // TrayBackgroundView:
   void OnGestureEvent(ui::GestureEvent* event) override;
-  void ClickedOutsideBubble() override;
+  void ClickedOutsideBubble(const ui::LocatedEvent& event) override;
   void UpdateTrayItemColor(bool is_active) override;
   std::u16string GetAccessibleNameForTray() override;
   void HandleLocaleChange() override;
@@ -55,10 +58,12 @@ class ProjectorAnnotationTray : public TrayBackgroundView,
   TrayBubbleView* GetBubbleView() override;
   views::Widget* GetBubbleWidget() const override;
   void OnThemeChanged() override;
+  void HideBubble(const TrayBubbleView* bubble_view) override;
 
   // SessionObserver:
   void OnActiveUserPrefServiceChanged(PrefService* pref_service) override;
 
+  void OnTrayButtonPressed(const ui::Event& event);
   void HideAnnotationTray();
   void SetTrayEnabled(bool enabled);
   void ToggleAnnotator();
@@ -82,10 +87,13 @@ class ProjectorAnnotationTray : public TrayBackgroundView,
 
   std::u16string GetTooltip();
 
-  // Image view of the tray icon.
-  const raw_ptr<views::ImageView, ExperimentalAsh> image_view_;
+  // Sets the image with the color that corresponds to the active state.
+  void SetIconImage(bool is_active);
 
-  raw_ptr<HoverHighlightView, ExperimentalAsh> pen_view_;
+  // Image view of the tray icon.
+  const raw_ptr<views::ImageView> image_view_;
+
+  raw_ptr<HoverHighlightView> pen_view_;
 
   // The bubble that appears after clicking the annotation tools tray button.
   std::unique_ptr<TrayBubbleWrapper> bubble_;

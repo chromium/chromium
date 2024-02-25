@@ -11,8 +11,9 @@
 #include "components/performance_manager/graph/frame_node_impl.h"
 #include "components/performance_manager/graph/process_node_impl.h"
 #include "components/performance_manager/graph/worker_node_impl.h"
+#include "components/performance_manager/resource_attribution/performance_manager_aliases.h"
 
-namespace performance_manager::resource_attribution {
+namespace resource_attribution {
 
 // Splits a resource of type T between all frames and workers hosted in
 // `process_node`, by calling setter methods on the FrameNodeImpl and
@@ -45,6 +46,6 @@ void SplitResourceAmongFrameAndWorkerImpls(T resource_value,
       }));
 }
 
-}  // namespace performance_manager::resource_attribution
+}  // namespace resource_attribution
 
 #endif  // COMPONENTS_PERFORMANCE_MANAGER_RESOURCE_ATTRIBUTION_ATTRIBUTION_IMPL_HELPERS_H_

@@ -15,6 +15,8 @@
 #include "base/unguessable_token.h"
 #include "chromeos/ash/services/nearby/public/cpp/nearby_process_manager.h"
 #include "chromeos/ash/services/secure_channel/public/cpp/client/nearby_connector.h"
+#include "chromeos/ash/services/secure_channel/public/mojom/nearby_connector.mojom-shared.h"
+#include "chromeos/ash/services/secure_channel/public/mojom/nearby_connector.mojom.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
@@ -47,6 +49,8 @@ class NearbyConnectorImpl : public NearbyConnector, public KeyedService {
         const std::vector<uint8_t>& bluetooth_public_address,
         const std::vector<uint8_t>& eid,
         mojo::PendingRemote<mojom::NearbyMessageReceiver> message_receiver,
+        mojo::PendingRemote<mojom::NearbyConnectionStateListener>
+            nearby_connection_state_listener,
         NearbyConnector::ConnectCallback callback);
     ConnectionRequestMetadata(const ConnectionRequestMetadata&) = delete;
     ConnectionRequestMetadata& operator=(const ConnectionRequestMetadata&) =
@@ -56,6 +60,8 @@ class NearbyConnectorImpl : public NearbyConnector, public KeyedService {
     std::vector<uint8_t> bluetooth_public_address;
     std::vector<uint8_t> eid;
     mojo::PendingRemote<mojom::NearbyMessageReceiver> message_receiver;
+    mojo::PendingRemote<mojom::NearbyConnectionStateListener>
+        nearby_connection_state_listener;
     NearbyConnector::ConnectCallback callback;
   };
 
@@ -76,6 +82,8 @@ class NearbyConnectorImpl : public NearbyConnector, public KeyedService {
       const std::vector<uint8_t>& bluetooth_public_address,
       const std::vector<uint8_t>& eid,
       mojo::PendingRemote<mojom::NearbyMessageReceiver> message_receiver,
+      mojo::PendingRemote<mojom::NearbyConnectionStateListener>
+          nearby_connection_state_listener,
       NearbyConnector::ConnectCallback callback) override;
 
   // KeyedService:
@@ -102,8 +110,7 @@ class NearbyConnectorImpl : public NearbyConnector, public KeyedService {
       mojo::PendingRemote<mojom::NearbyFilePayloadHandler>
           file_payload_handler_remote);
 
-  raw_ptr<nearby::NearbyProcessManager, ExperimentalAsh>
-      nearby_process_manager_;
+  raw_ptr<nearby::NearbyProcessManager> nearby_process_manager_;
 
   // Reference to the Nearby utility process; null if we have not requested a
   // connection to the process (i.e., when there are no active connection
@@ -127,7 +134,7 @@ class NearbyConnectorImpl : public NearbyConnector, public KeyedService {
   // Metadata for an ongoing connection attempt. If this field is set, it means
   // that the entry in |id_to_brokers_map_| with the given ID is currently
   // attempting a connection. If null, there is no pending connection attempt.
-  absl::optional<ActiveConnectionAttempt> active_connection_attempt_;
+  std::optional<ActiveConnectionAttempt> active_connection_attempt_;
 
   base::WeakPtrFactory<NearbyConnectorImpl> weak_ptr_factory_{this};
 };

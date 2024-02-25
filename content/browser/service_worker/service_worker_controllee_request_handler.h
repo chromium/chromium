@@ -104,6 +104,10 @@ class CONTENT_EXPORT ServiceWorkerControlleeRequestHandler final {
     return loader_wrapper_ ? loader_wrapper_->get() : nullptr;
   }
 
+  void set_parent_client_uuid(std::string uuid) {
+    parent_client_uuid_ = std::move(uuid);
+  }
+
  private:
   FRIEND_TEST_ALL_PREFIXES(ServiceWorkerControlleeRequestHandlerTest,
                            ActivateWaitingVersion);
@@ -135,6 +139,8 @@ class CONTENT_EXPORT ServiceWorkerControlleeRequestHandler final {
       scoped_refptr<ServiceWorkerVersion> version);
 
   void CompleteWithoutLoader();
+  void CreateLoaderAndStartRequest(
+      base::TimeTicks find_registration_start_time);
 
   // Schedules a service worker update to occur shortly after the page and its
   // initial subresources load, if this handler was for a navigation.
@@ -162,11 +168,11 @@ class CONTENT_EXPORT ServiceWorkerControlleeRequestHandler final {
   const bool skip_service_worker_;
 
   std::unique_ptr<ServiceWorkerMainResourceLoaderWrapper> loader_wrapper_;
-  raw_ptr<BrowserContext, LeakedDanglingUntriaged> browser_context_;
   GURL stripped_url_;
   blink::StorageKey storage_key_;
   bool force_update_started_;
   const int frame_tree_node_id_;
+  std::string parent_client_uuid_;
 
   NavigationLoaderInterceptor::LoaderCallback loader_callback_;
   NavigationLoaderInterceptor::FallbackCallback fallback_callback_;

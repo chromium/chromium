@@ -9,8 +9,8 @@ import androidx.annotation.VisibleForTesting;
 
 import com.google.common.collect.ImmutableList;
 
-import org.chromium.base.annotations.CalledByNative;
-import org.chromium.base.annotations.JNINamespace;
+import org.jni_zero.CalledByNative;
+import org.jni_zero.JNINamespace;
 
 import java.util.List;
 
@@ -27,6 +27,7 @@ public class AutofillSaveCardUiInfo {
     private final ImmutableList<LegalMessageLine> mLegalMessageLines;
     private final String mCardLabel;
     private final String mCardSubLabel;
+    private final String mCardDescription;
     private final String mTitleText;
     private final String mConfirmText;
     private final String mCancelText;
@@ -52,6 +53,11 @@ public class AutofillSaveCardUiInfo {
         return new CardDetail(mIssuerIcon, mCardLabel, mCardSubLabel);
     }
 
+    /** @return an accessibility description of the card. */
+    public String getCardDescription() {
+        return mCardDescription;
+    }
+
     public String getTitleText() {
         return mTitleText;
     }
@@ -74,32 +80,47 @@ public class AutofillSaveCardUiInfo {
 
     // LINT.IfChange
     @CalledByNative
+    @VisibleForTesting
     /** Construct the delegate given all the members. */
-    private AutofillSaveCardUiInfo(boolean isForUpload, @DrawableRes int logoIcon,
-            @DrawableRes int issuerIcon, List<LegalMessageLine> legalMessageLines, String cardLabel,
-            String cardSubLabel, String titleText, String confirmText, String cancelText,
-            boolean isGooglePayBrandingEnabled, String descriptionText) {
+    /*package*/ AutofillSaveCardUiInfo(
+            boolean isForUpload,
+            @DrawableRes int logoIcon,
+            @DrawableRes int issuerIcon,
+            List<LegalMessageLine> legalMessageLines,
+            String cardLabel,
+            String cardSubLabel,
+            String cardDescription,
+            String titleText,
+            String confirmText,
+            String cancelText,
+            boolean isGooglePayBrandingEnabled,
+            String descriptionText) {
         mIsForUpload = isForUpload;
         mLogoIcon = logoIcon;
         mIssuerIcon = issuerIcon;
+        if (legalMessageLines == null) {
+            legalMessageLines = ImmutableList.of();
+        }
         mLegalMessageLines = ImmutableList.copyOf(legalMessageLines);
         mCardLabel = cardLabel;
         mCardSubLabel = cardSubLabel;
+        mCardDescription = cardDescription;
         mTitleText = titleText;
         mConfirmText = confirmText;
         mCancelText = cancelText;
         mIsGooglePayBrandingEnabled = isGooglePayBrandingEnabled;
         mDescriptionText = descriptionText;
     }
+
     // LINT.ThenChange(//chrome/browser/ui/android/autofill/autofill_save_card_bottom_sheet_bridge.cc)
 
     /** Builder for {@link AutofillSaveCardUiInfo} */
     @VisibleForTesting
     public static class Builder {
         private boolean mIsForUpload;
-        @DrawableRes
-        private int mLogoIcon;
+        @DrawableRes private int mLogoIcon;
         private CardDetail mCardDetail;
+        private String mCardDescription;
         private ImmutableList<LegalMessageLine> mLegalMessageLines = ImmutableList.of();
         private String mTitleText;
         private String mConfirmText;
@@ -119,6 +140,11 @@ public class AutofillSaveCardUiInfo {
 
         public Builder withCardDetail(CardDetail cardDetail) {
             mCardDetail = cardDetail;
+            return this;
+        }
+
+        public Builder withCardDescription(String cardDescription) {
+            mCardDescription = cardDescription;
             return this;
         }
 
@@ -152,14 +178,21 @@ public class AutofillSaveCardUiInfo {
             return this;
         }
 
-        /**
-         * Create the {@link AutofillSaveCardUiInfo} object.
-         */
+        /** Create the {@link AutofillSaveCardUiInfo} object. */
         public AutofillSaveCardUiInfo build() {
-            return new AutofillSaveCardUiInfo(mIsForUpload, mLogoIcon,
-                    mCardDetail.issuerIconDrawableId, mLegalMessageLines, mCardDetail.label,
-                    mCardDetail.subLabel, mTitleText, mConfirmText, mCancelText,
-                    mIsGooglePayBrandingEnabled, mDescriptionText);
+            return new AutofillSaveCardUiInfo(
+                    mIsForUpload,
+                    mLogoIcon,
+                    mCardDetail.issuerIconDrawableId,
+                    mLegalMessageLines,
+                    mCardDetail.label,
+                    mCardDetail.subLabel,
+                    mCardDescription,
+                    mTitleText,
+                    mConfirmText,
+                    mCancelText,
+                    mIsGooglePayBrandingEnabled,
+                    mDescriptionText);
         }
     }
 }

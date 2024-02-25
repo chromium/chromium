@@ -6,14 +6,11 @@
 #define COMPONENTS_SYNC_ENGINE_COMMIT_CONTRIBUTION_IMPL_H_
 
 #include <stddef.h>
-#include <stdint.h>
 
 #include "base/functional/callback.h"
-#include "base/memory/raw_ptr.h"
 #include "components/sync/base/passphrase_enums.h"
 #include "components/sync/engine/commit_and_get_updates_types.h"
 #include "components/sync/engine/commit_contribution.h"
-#include "components/sync/protocol/data_type_progress_marker.pb.h"
 
 namespace sync_pb {
 class ClientToServerMessage;
@@ -23,18 +20,13 @@ class ClientToServerResponse;
 
 namespace syncer {
 
-class Cryptographer;
-class ModelTypeWorker;
-
 // A sync type's contribution to an outgoing commit message.
 //
 // Helps build a commit message and process its response.  It collaborates
 // closely with the ModelTypeWorker.
 class CommitContributionImpl : public CommitContribution {
  public:
-  // If a non-null |cryptographer| is passed, it must outlive this object and
-  // will be used to encrypt the constructed commit. Otherwise, the commit won't
-  // be encrypted. Only one of |on_commit_response_callback| and
+  // Only one of |on_commit_response_callback| and
   // |on_full_commit_failure_callback| will be called.
   // TODO(rushans): there is still possible rare case when both of these
   // callbacks are never called, i.e. if get updates from the server fails.
@@ -46,9 +38,7 @@ class CommitContributionImpl : public CommitContribution {
                               const FailedCommitResponseDataList&)>
           on_commit_response_callback,
       base::OnceCallback<void(SyncCommitError)> on_full_commit_failure_callback,
-      Cryptographer* cryptographer,
-      PassphraseType passphrase_type,
-      bool only_commit_specifics);
+      PassphraseType passphrase_type);
 
   CommitContributionImpl(const CommitContributionImpl&) = delete;
   CommitContributionImpl& operator=(const CommitContributionImpl&) = delete;
@@ -87,10 +77,6 @@ class CommitContributionImpl : public CommitContribution {
   // all (i.e. there is no internet connection).
   base::OnceCallback<void(SyncCommitError)> on_full_commit_failure_callback_;
 
-  // Null if |type_| is not encrypted. Otherwise this is used to encrypt the
-  // committed entities.
-  const raw_ptr<Cryptographer> cryptographer_;
-
   const PassphraseType passphrase_type_;
 
   // The type-global context information.
@@ -102,10 +88,6 @@ class CommitContributionImpl : public CommitContribution {
   // The index in the commit message where this contribution's entities are
   // added.  Used to correlate per-item requests with per-item responses.
   size_t entries_start_index_;
-
-  // Don't send any metadata to server, only specifics. This is needed for
-  // commit only types to save bandwidth.
-  bool only_commit_specifics_;
 };
 
 }  // namespace syncer

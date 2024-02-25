@@ -6,12 +6,12 @@
 #define COMPONENTS_OPTIMIZATION_GUIDE_CORE_BASE_MODEL_EXECUTOR_HELPERS_H_
 
 #include <memory>
+#include <optional>
 #include <vector>
 
 #include "base/check.h"
 #include "base/memory/raw_ptr.h"
 #include "components/optimization_guide/core/execution_status.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/tflite_support/src/tensorflow_lite_support/cc/task/core/base_task_api.h"
 
 namespace optimization_guide {
@@ -24,8 +24,8 @@ class InferenceDelegate {
                           InputTypes... args) = 0;
 
   // Postprocesses |output_tensors| into the desired |OutputType|, returning
-  // absl::nullopt on error.
-  virtual absl::optional<OutputType> Postprocess(
+  // std::nullopt on error.
+  virtual std::optional<OutputType> Postprocess(
       const std::vector<const TfLiteTensor*>& output_tensors) = 0;
 };
 
@@ -45,16 +45,16 @@ class GenericModelExecutionTask
 
   // Executes the model using |args| and returns the output if the model was
   // executed successfully.
-  absl::optional<OutputType> Execute(ExecutionStatus* out_status,
-                                     InputTypes... args) {
+  std::optional<OutputType> Execute(ExecutionStatus* out_status,
+                                    InputTypes... args) {
     tflite::support::StatusOr<OutputType> maybe_output = this->Infer(args...);
     if (absl::IsCancelled(maybe_output.status())) {
       *out_status = ExecutionStatus::kErrorCancelled;
-      return absl::nullopt;
+      return std::nullopt;
     }
     if (!maybe_output.ok()) {
       *out_status = ExecutionStatus::kErrorUnknown;
-      return absl::nullopt;
+      return std::nullopt;
     }
     *out_status = ExecutionStatus::kSuccess;
     return maybe_output.value();
@@ -75,7 +75,7 @@ class GenericModelExecutionTask
   tflite::support::StatusOr<OutputType> Postprocess(
       const std::vector<const TfLiteTensor*>& output_tensors,
       InputTypes... api_inputs) override {
-    absl::optional<OutputType> output = delegate_->Postprocess(output_tensors);
+    std::optional<OutputType> output = delegate_->Postprocess(output_tensors);
     if (!output) {
       return absl::InternalError(
           "error during postprocessing. See stderr for more infomation if "

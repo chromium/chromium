@@ -10,17 +10,22 @@
 #include "ash/accelerators/accelerator_controller_impl.h"
 #include "ash/constants/ash_pref_names.h"
 #include "ash/constants/notifier_catalogs.h"
+#include "ash/public/cpp/new_window_delegate.h"
 #include "ash/public/cpp/notification_utils.h"
 #include "ash/public/cpp/system_tray_client.h"
+#include "ash/public/mojom/input_device_settings.mojom.h"
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
+#include "ash/system/input_device_settings/input_device_settings_pref_names.h"
 #include "ash/system/model/system_tray_model.h"
 #include "base/check_op.h"
+#include "base/containers/contains.h"
 #include "base/containers/fixed_flat_map.h"
 #include "base/notreached.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/strings/utf_string_conversions.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
@@ -35,6 +40,9 @@
 namespace ash {
 
 namespace {
+
+const char kKeyboardSettingsLearnMoreLink[] =
+    "https://support.google.com/chromebook?p=keyboard_settings";
 
 using SimulateRightClickModifier = ui::mojom::SimulateRightClickModifier;
 using SixPackShortcutModifier = ui::mojom::SixPackShortcutModifier;
@@ -75,6 +83,10 @@ constexpr auto kSixPackKeyToPrefName =
          {prefs::kSixPackKeyInsertNotificationsRemaining}},
     });
 
+// Device key of the virutal mouse often used by integration tests, avoid
+// showing notification in this case.
+const char kVirtualMouseDeviceKey[] = "0000:0000";
+
 const char kNotifierId[] = "input_device_settings_controller";
 const char kAltRightClickRewriteNotificationId[] =
     "alt_right_click_rewrite_blocked_by_setting";
@@ -94,6 +106,10 @@ const char kSixPackKeyPageUpRewriteNotificationId[] =
     "page_up_six_pack_rewrite_blocked_by_setting";
 const char kSixPackKeyPageDownRewriteNotificationId[] =
     "page_down_six_pack_rewrite_blocked_by_setting";
+const char kInputDeviceSettingsMousePrefix[] =
+    "peripheral_customization_mouse_";
+const char kInputDeviceSettingsGraphicsTabletPrefix[] =
+    "peripheral_customization_graphics_tablet_";
 const char kDelimiter[] = "_";
 
 bool IsRightClickRewriteDisabled(SimulateRightClickModifier active_modifier) {
@@ -157,6 +173,15 @@ std::string GetRightClickNotificationId(
     case SimulateRightClickModifier::kNone:
       NOTREACHED_NORETURN();
   }
+}
+
+std::string GetPeripheralCustomizationMouseNotificationID(uint32_t id) {
+  return kInputDeviceSettingsMousePrefix + base::NumberToString(id);
+}
+
+std::string GetPeripheralCustomizationGraphicsTabletNotificationID(
+    uint32_t id) {
+  return kInputDeviceSettingsGraphicsTabletPrefix + base::NumberToString(id);
 }
 
 // We only display notifications for active user sessions (signed-in/guest with
@@ -287,6 +312,21 @@ void ShowTouchpadSettings() {
   Shell::Get()->system_tray_model()->client()->ShowTouchpadSettings();
 }
 
+void ShowMouseSettings() {
+  Shell::Get()->system_tray_model()->client()->ShowMouseSettings();
+}
+
+void ShowGraphicsTabletSettings() {
+  Shell::Get()->system_tray_model()->client()->ShowGraphicsTabletSettings();
+}
+
+void OnLearnMoreClicked() {
+  NewWindowDelegate::GetPrimary()->OpenUrl(
+      GURL(kKeyboardSettingsLearnMoreLink),
+      NewWindowDelegate::OpenUrlFrom::kUserInteraction,
+      NewWindowDelegate::Disposition::kNewForegroundTab);
+}
+
 }  // namespace
 
 InputDeviceSettingsNotificationController::
@@ -321,6 +361,9 @@ void InputDeviceSettingsNotificationController::RegisterProfilePrefs(
   pref_registry->RegisterIntegerPref(
       prefs::kSixPackKeyInsertNotificationsRemaining, 3,
       user_prefs::PrefRegistrySyncable::SYNCABLE_OS_PREF);
+  pref_registry->RegisterListPref(prefs::kPeripheralNotificationMiceSeen);
+  pref_registry->RegisterListPref(
+      prefs::kPeripheralNotificationGraphicsTabletsSeen);
 }
 
 InputDeviceSettingsNotificationController::
@@ -372,11 +415,65 @@ void InputDeviceSettingsNotificationController::
   message_center_->AddNotification(std::move(notification));
 }
 
+void InputDeviceSettingsNotificationController::NotifyMouseFirstTimeConnected(
+    const mojom::Mouse& mouse) {
+  if (!IsActiveUserSession()) {
+    return;
+  }
+
+  // Avoid showing notification for the virtual mouse device.
+  if (mouse.device_key == kVirtualMouseDeviceKey) {
+    return;
+  }
+
+  PrefService* prefs =
+      Shell::Get()->session_controller()->GetActivePrefService();
+  CHECK(prefs);
+
+  if (base::Contains(prefs->GetList(prefs::kPeripheralNotificationMiceSeen),
+                     mouse.device_key)) {
+    return;
+  }
+
+  auto seen_mouse_list =
+      prefs->GetList(prefs::kPeripheralNotificationMiceSeen).Clone();
+
+  seen_mouse_list.Append(mouse.device_key);
+  prefs->SetList(prefs::kPeripheralNotificationMiceSeen,
+                 std::move(seen_mouse_list));
+  NotifyMouseIsCustomizable(mouse);
+}
+
+void InputDeviceSettingsNotificationController::
+    NotifyGraphicsTabletFirstTimeConnected(
+        const mojom::GraphicsTablet* graphics_tablet) {
+  if (!IsActiveUserSession()) {
+    return;
+  }
+
+  PrefService* prefs =
+      Shell::Get()->session_controller()->GetActivePrefService();
+  CHECK(prefs);
+
+  auto seen_graphics_tablet_list =
+      prefs->GetList(prefs::kPeripheralNotificationGraphicsTabletsSeen).Clone();
+
+  for (const auto& value : seen_graphics_tablet_list) {
+    if (value.is_string() && value.GetString() == graphics_tablet->device_key) {
+      return;
+    }
+  }
+  seen_graphics_tablet_list.Append(graphics_tablet->device_key);
+  prefs->SetList(prefs::kPeripheralNotificationGraphicsTabletsSeen,
+                 std::move(seen_graphics_tablet_list));
+  NotifyGraphicsTabletIsCustomizable(*graphics_tablet);
+}
+
 void InputDeviceSettingsNotificationController::
     HandleSixPackNotificationClicked(int device_id,
                                      const char* pref_name,
                                      const std::string& notification_id,
-                                     absl::optional<int> button_index) {
+                                     std::optional<int> button_index) {
   // Clicked on body.
   if (!button_index) {
     ShowRemapKeysSubpage(device_id);
@@ -390,7 +487,7 @@ void InputDeviceSettingsNotificationController::
       ShowRemapKeysSubpage(device_id);
       break;
     case NotificationButtonIndex::BUTTON_LEARN_MORE:
-      // TODO(b/279503977): Add link to learn more page.
+      OnLearnMoreClicked();
       break;
   }
   PreventNotificationFromShowingAgain(pref_name);
@@ -399,7 +496,7 @@ void InputDeviceSettingsNotificationController::
 
 void InputDeviceSettingsNotificationController::
     HandleRightClickNotificationClicked(const std::string& notification_id,
-                                        absl::optional<int> button_index) {
+                                        std::optional<int> button_index) {
   // Clicked on body.
   if (!button_index) {
     ShowTouchpadSettings();
@@ -414,12 +511,28 @@ void InputDeviceSettingsNotificationController::
       ShowTouchpadSettings();
       break;
     case NotificationButtonIndex::BUTTON_LEARN_MORE:
-      // TODO(b/279503977): Add link to learn more page.
+      OnLearnMoreClicked();
       break;
   }
   PreventNotificationFromShowingAgain(
       prefs::kRemapToRightClickNotificationsRemaining);
   RemoveNotification(notification_id);
+}
+
+void HandleMouseCustomizationNotificationClicked(
+    const std::string& notification_id,
+    std::optional<int> button_index) {
+  ShowMouseSettings();
+  RemoveNotification(notification_id);
+  return;
+}
+
+void HandleGraphicsTabletCustomizationNotificationClicked(
+    const std::string& notification_id,
+    std::optional<int> button_index) {
+  ShowGraphicsTabletSettings();
+  RemoveNotification(notification_id);
+  return;
 }
 
 // TODO(b/279503977): Use `blocked_modifier` and `active_modifier` to display
@@ -471,6 +584,63 @@ void InputDeviceSettingsNotificationController::
                               notification_id)),
       kNotificationKeyboardIcon,
       message_center::SystemNotificationWarningLevel::NORMAL);
+  message_center_->AddNotification(std::move(notification));
+}
+
+void InputDeviceSettingsNotificationController::NotifyMouseIsCustomizable(
+    const mojom::Mouse& mouse) {
+  const auto peripheral_name = base::UTF8ToUTF16(mouse.name);
+  const auto notification_id =
+      GetPeripheralCustomizationMouseNotificationID(mouse.id);
+  message_center::RichNotificationData rich_notification_data;
+  rich_notification_data.buttons.emplace_back(l10n_util::GetStringUTF16(
+      IDS_ASH_DEVICE_SETTINGS_NOTIFICATIONS_OPEN_SETTINGS_BUTTON));
+  auto notification = CreateSystemNotificationPtr(
+      message_center::NOTIFICATION_TYPE_SIMPLE, notification_id,
+      l10n_util::GetStringUTF16(
+          IDS_ASH_DEVICE_SETTINGS_NOTIFICATIONS_PERIPHERAL_CUSTOMIZATION_TITLE),
+      l10n_util::GetStringFUTF16(
+          IDS_ASH_DEVICE_SETTINGS_NOTIFICATIONS_MOUSE_CUSTOMIZATION,
+          peripheral_name),
+      std::u16string(), GURL(),
+      message_center::NotifierId(message_center::NotifierType::SYSTEM_COMPONENT,
+                                 kNotifierId,
+                                 NotificationCatalogName::kInputDeviceSettings),
+      rich_notification_data,
+      base::MakeRefCounted<message_center::HandleNotificationClickDelegate>(
+          base::BindRepeating(&HandleMouseCustomizationNotificationClicked,
+                              notification_id)),
+      kSettingsIcon, message_center::SystemNotificationWarningLevel::NORMAL);
+  message_center_->AddNotification(std::move(notification));
+}
+
+void InputDeviceSettingsNotificationController::
+    NotifyGraphicsTabletIsCustomizable(
+        const mojom::GraphicsTablet& graphics_tablet) {
+  const auto peripheral_name = base::UTF8ToUTF16(graphics_tablet.name);
+  const auto notification_id =
+      GetPeripheralCustomizationGraphicsTabletNotificationID(
+          graphics_tablet.id);
+  message_center::RichNotificationData rich_notification_data;
+  rich_notification_data.buttons.emplace_back(l10n_util::GetStringUTF16(
+      IDS_ASH_DEVICE_SETTINGS_NOTIFICATIONS_OPEN_SETTINGS_BUTTON));
+  auto notification = CreateSystemNotificationPtr(
+      message_center::NOTIFICATION_TYPE_SIMPLE, notification_id,
+      l10n_util::GetStringUTF16(
+          IDS_ASH_DEVICE_SETTINGS_NOTIFICATIONS_PERIPHERAL_CUSTOMIZATION_GRAPHICS_TABLET_TITLE),
+      l10n_util::GetStringFUTF16(
+          IDS_ASH_DEVICE_SETTINGS_NOTIFICATIONS_GRAPHICS_TABLET_CUSTOMIZATION,
+          peripheral_name),
+      std::u16string(), GURL(),
+      message_center::NotifierId(message_center::NotifierType::SYSTEM_COMPONENT,
+                                 kNotifierId,
+                                 NotificationCatalogName::kInputDeviceSettings),
+      rich_notification_data,
+      base::MakeRefCounted<message_center::HandleNotificationClickDelegate>(
+          base::BindRepeating(
+              &HandleGraphicsTabletCustomizationNotificationClicked,
+              notification_id)),
+      kSettingsIcon, message_center::SystemNotificationWarningLevel::NORMAL);
   message_center_->AddNotification(std::move(notification));
 }
 

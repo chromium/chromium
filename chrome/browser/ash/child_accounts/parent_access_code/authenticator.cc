@@ -30,23 +30,23 @@ constexpr char kClockDriftDictKey[] = "clock_drift_tolerance";
 }  // namespace
 
 // static
-absl::optional<AccessCodeConfig> AccessCodeConfig::FromDictionary(
+std::optional<AccessCodeConfig> AccessCodeConfig::FromDictionary(
     const base::Value::Dict& dict) {
   const std::string* secret = dict.FindString(kSharedSecretDictKey);
   if (!secret || secret->empty())
-    return absl::nullopt;
+    return std::nullopt;
 
-  absl::optional<int> validity = dict.FindInt(kCodeValidityDictKey);
+  std::optional<int> validity = dict.FindInt(kCodeValidityDictKey);
   if (!(validity.has_value() && *validity >= kMinCodeValidity.InSeconds() &&
         *validity <= kMaxCodeValidity.InSeconds())) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
-  absl::optional<int> clock_drift = dict.FindInt(kClockDriftDictKey);
+  std::optional<int> clock_drift = dict.FindInt(kClockDriftDictKey);
   if (!(clock_drift.has_value() &&
         *clock_drift >= kMinClockDriftTolerance.InSeconds() &&
         *clock_drift <= kMaxClockDriftTolerance.InSeconds())) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   return AccessCodeConfig(*secret, base::Seconds(*validity),
@@ -122,13 +122,13 @@ Authenticator::Authenticator(AccessCodeConfig config)
 
 Authenticator::~Authenticator() = default;
 
-absl::optional<AccessCode> Authenticator::Generate(base::Time timestamp) const {
+std::optional<AccessCode> Authenticator::Generate(base::Time timestamp) const {
   DCHECK_LE(base::Time::UnixEpoch(), timestamp);
 
   // We find the beginning of the interval for the given timestamp and adjust by
   // the granularity.
-  const int64_t interval =
-      timestamp.ToJavaTime() / config_.code_validity().InMilliseconds();
+  const int64_t interval = timestamp.InMillisecondsSinceUnixEpoch() /
+                           config_.code_validity().InMilliseconds();
   const int64_t interval_beginning_timestamp =
       interval * config_.code_validity().InMilliseconds();
   const int64_t adjusted_timestamp =
@@ -142,7 +142,7 @@ absl::optional<AccessCode> Authenticator::Generate(base::Time timestamp) const {
   std::vector<uint8_t> digest(hmac_.DigestLength());
   if (!hmac_.Sign(big_endian_timestamp, &digest[0], digest.size())) {
     LOG(ERROR) << "Signing HMAC data to generate Parent Access Code failed";
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   // Read 4 bytes in Big-endian order starting from |offset|.
@@ -155,13 +155,13 @@ absl::optional<AccessCode> Authenticator::Generate(base::Time timestamp) const {
   result &= 0x7fffffff;
 
   const base::Time valid_from =
-      base::Time::FromJavaTime(interval_beginning_timestamp);
+      base::Time::FromMillisecondsSinceUnixEpoch(interval_beginning_timestamp);
   return AccessCode(base::StringPrintf("%06d", result % 1000000), valid_from,
                     valid_from + config_.code_validity());
 }
 
-absl::optional<AccessCode> Authenticator::Validate(const std::string& code,
-                                                   base::Time timestamp) const {
+std::optional<AccessCode> Authenticator::Validate(const std::string& code,
+                                                  base::Time timestamp) const {
   DCHECK_LE(base::Time::UnixEpoch(), timestamp);
 
   base::Time valid_from = timestamp - config_.clock_drift_tolerance();
@@ -171,25 +171,26 @@ absl::optional<AccessCode> Authenticator::Validate(const std::string& code,
                          timestamp + config_.clock_drift_tolerance());
 }
 
-absl::optional<AccessCode> Authenticator::ValidateInRange(
+std::optional<AccessCode> Authenticator::ValidateInRange(
     const std::string& code,
     base::Time valid_from,
     base::Time valid_to) const {
   DCHECK_LE(base::Time::UnixEpoch(), valid_from);
   DCHECK_GE(valid_to, valid_from);
 
-  const int64_t start_interval =
-      valid_from.ToJavaTime() / kAccessCodeGranularity.InMilliseconds();
-  const int64_t end_interval =
-      valid_to.ToJavaTime() / kAccessCodeGranularity.InMilliseconds();
+  const int64_t start_interval = valid_from.InMillisecondsSinceUnixEpoch() /
+                                 kAccessCodeGranularity.InMilliseconds();
+  const int64_t end_interval = valid_to.InMillisecondsSinceUnixEpoch() /
+                               kAccessCodeGranularity.InMilliseconds();
   for (int i = start_interval; i <= end_interval; ++i) {
     const base::Time generation_timestamp =
-        base::Time::FromJavaTime(i * kAccessCodeGranularity.InMilliseconds());
-    absl::optional<AccessCode> pac = Generate(generation_timestamp);
+        base::Time::FromMillisecondsSinceUnixEpoch(
+            i * kAccessCodeGranularity.InMilliseconds());
+    std::optional<AccessCode> pac = Generate(generation_timestamp);
     if (pac.has_value() && pac->code() == code)
       return pac;
   }
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 }  // namespace parent_access

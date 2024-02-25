@@ -6,11 +6,12 @@
 #define UI_GL_ANDROID_SCOPED_JAVA_SURFACE_CONTROL_H_
 
 #include <jni.h>
+
 #include <cstddef>
+#include <optional>
 
 #include "base/android/scoped_java_ref.h"
 #include "base/memory/ref_counted.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/android/android_surface_control_compat.h"
 #include "ui/gl/gl_export.h"
 

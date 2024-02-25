@@ -71,7 +71,7 @@ class HibermanClientTest : public testing::Test {
   scoped_refptr<dbus::MockObjectProxy> dbus_service_proxy_;
 
   // Convenience pointer to the global instance.
-  raw_ptr<HibermanClient, ExperimentalAsh> client_ = nullptr;
+  raw_ptr<HibermanClient> client_ = nullptr;
 
  private:
   // Handles calls to |proxy_|'s `CallMethod()`.
@@ -80,21 +80,17 @@ class HibermanClientTest : public testing::Test {
                     dbus::ObjectProxy::ResponseCallback* callback) {
     std::unique_ptr<dbus::Response> response(dbus::Response::CreateEmpty());
     dbus::MessageWriter writer(response.get());
-    if (method_call->GetMember() == ::hiberman::kResumeFromHibernateMethod) {
+    if (method_call->GetMember() == ::hiberman::kResumeFromHibernateASMethod) {
       dbus::MessageReader reader(method_call);
       std::string account_id;
-      // The Resume method should have an account_id string.
-      ASSERT_TRUE(reader.PopString(&account_id));
-      // There's no reply data for this method.
-    } else if (method_call->GetMember() ==
-               ::hiberman::kResumeFromHibernateASMethod) {
-      dbus::MessageReader reader(method_call);
       const uint8_t* bytes = nullptr;
       size_t length = 0;
       // The ResumeFromHibernateAS method should have an auth_session_id byte
       // array.
       EXPECT_TRUE(reader.PopArrayOfBytes(&bytes, &length));
       EXPECT_NE(length, static_cast<size_t>(0));
+      // The ResumeFromHibernateAS method should have an account_id string.
+      ASSERT_TRUE(reader.PopString(&account_id));
     } else if (method_call->GetMember() == "NameHasOwner") {
       dbus::MessageReader reader(method_call);
       std::string name;

@@ -23,6 +23,7 @@
 #include "components/sync/service/sync_service.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
+#include "content/public/test/browser_test_utils.h"
 #include "google_apis/gaia/gaia_urls.h"
 
 namespace signin::test {

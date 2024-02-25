@@ -5,7 +5,8 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_SIDE_PANEL_READ_ANYTHING_READ_ANYTHING_MENU_MODEL_H_
 #define CHROME_BROWSER_UI_VIEWS_SIDE_PANEL_READ_ANYTHING_READ_ANYTHING_MENU_MODEL_H_
 
-#include "third_party/abseil-cpp/absl/types/optional.h"
+#include <optional>
+
 #include "ui/base/models/simple_menu_model.h"
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -27,13 +28,12 @@ class ReadAnythingMenuModel : public ui::SimpleMenuModel,
 
   virtual bool IsValidIndex(size_t index);
   void SetSelectedIndex(size_t index);
-  absl::optional<size_t> GetSelectedIndex() const { return selected_index_; }
+  std::optional<size_t> GetSelectedIndex() const { return selected_index_; }
   void SetCallback(base::RepeatingCallback<void()> callback);
 
-  absl::optional<ui::ColorId> GetForegroundColorId(size_t index) override;
-  absl::optional<ui::ColorId> GetSubmenuBackgroundColorId(
-      size_t index) override;
-  absl::optional<ui::ColorId> GetSelectedBackgroundColorId(
+  std::optional<ui::ColorId> GetForegroundColorId(size_t index) override;
+  std::optional<ui::ColorId> GetSubmenuBackgroundColorId(size_t index) override;
+  std::optional<ui::ColorId> GetSelectedBackgroundColorId(
       size_t index) override;
 
   void SetForegroundColorId(ui::ColorId foreground_color) {
@@ -49,11 +49,11 @@ class ReadAnythingMenuModel : public ui::SimpleMenuModel,
   }
 
  private:
-  absl::optional<size_t> selected_index_ = absl::nullopt;
+  std::optional<size_t> selected_index_ = std::nullopt;
   base::RepeatingClosure callback_;
-  absl::optional<ui::ColorId> foreground_color_id_;
-  absl::optional<ui::ColorId> submenu_background_color_id_;
-  absl::optional<ui::ColorId> selected_color_id_;
+  std::optional<ui::ColorId> foreground_color_id_;
+  std::optional<ui::ColorId> submenu_background_color_id_;
+  std::optional<ui::ColorId> selected_color_id_;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_SIDE_PANEL_READ_ANYTHING_READ_ANYTHING_MENU_MODEL_H_

@@ -4,14 +4,19 @@
 
 import 'chrome://customize-chrome-side-panel.top-chrome/categories.js';
 
-import {CategoriesElement, CHANGE_CHROME_THEME_CLASSIC_ELEMENT_ID, CHROME_THEME_COLLECTION_ELEMENT_ID} from 'chrome://customize-chrome-side-panel.top-chrome/categories.js';
-import {BackgroundCollection, CustomizeChromePageCallbackRouter, CustomizeChromePageHandlerRemote, CustomizeChromePageRemote} from 'chrome://customize-chrome-side-panel.top-chrome/customize_chrome.mojom-webui.js';
+import type {CategoriesElement} from 'chrome://customize-chrome-side-panel.top-chrome/categories.js';
+import {CHANGE_CHROME_THEME_CLASSIC_ELEMENT_ID, CHROME_THEME_COLLECTION_ELEMENT_ID} from 'chrome://customize-chrome-side-panel.top-chrome/categories.js';
+import {CustomizeChromeAction} from 'chrome://customize-chrome-side-panel.top-chrome/common.js';
+import type {BackgroundCollection, CustomizeChromePageRemote} from 'chrome://customize-chrome-side-panel.top-chrome/customize_chrome.mojom-webui.js';
+import {CustomizeChromePageCallbackRouter, CustomizeChromePageHandlerRemote} from 'chrome://customize-chrome-side-panel.top-chrome/customize_chrome.mojom-webui.js';
 import {CustomizeChromeApiProxy} from 'chrome://customize-chrome-side-panel.top-chrome/customize_chrome_api_proxy.js';
 import {WindowProxy} from 'chrome://customize-chrome-side-panel.top-chrome/window_proxy.js';
+import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {assertDeepEquals, assertEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
-import {fakeMetricsPrivate, MetricsTracker} from 'chrome://webui-test/metrics_test_support.js';
+import type {MetricsTracker} from 'chrome://webui-test/metrics_test_support.js';
+import {fakeMetricsPrivate} from 'chrome://webui-test/metrics_test_support.js';
 import {waitAfterNextRender} from 'chrome://webui-test/polymer_test_util.js';
-import {TestMock} from 'chrome://webui-test/test_mock.js';
+import type {TestMock} from 'chrome://webui-test/test_mock.js';
 import {eventToPromise} from 'chrome://webui-test/test_util.js';
 
 import {$$, createBackgroundImage, createTheme, installMock} from './test_support.js';
@@ -137,6 +142,7 @@ suite('CategoriesTest', () => {
     const event = await eventPromise;
     assertTrue(!!event);
     assertEquals(1, handler.getCallCount('chooseLocalCustomBackground'));
+    assertEquals(1, metrics.count('NTPRicherPicker.Backgrounds.UploadClicked'));
   });
 
   test('clicking Chrome Web Store tile opens Chrome Web Store', async () => {
@@ -287,5 +293,124 @@ suite('CategoriesTest', () => {
 
     assertTrue(
         !categoriesElement.shadowRoot!.querySelector('#chromeColorsTile'));
+  });
+
+  [true, false].forEach((flagEnabled) => {
+    suite(`WallpaperSearchEnabled_${flagEnabled}`, () => {
+      suiteSetup(() => {
+        loadTimeData.overrideValues({
+          'wallpaperSearchEnabled': flagEnabled,
+        });
+      });
+
+      test(
+          `wallpaper search does ${flagEnabled ? '' : 'not '}show`,
+          async () => {
+            await setInitialSettings(0);
+            assertEquals(
+                !!categoriesElement.shadowRoot!.querySelector(
+                    '#wallpaperSearchTile'),
+                flagEnabled);
+          });
+
+      test('check category for wallpaper search background', async () => {
+        await setInitialSettings(1);
+
+        // Set a theme with wallpaper search background.
+        const theme = createTheme();
+        const backgroundImage = createBackgroundImage('https://test.jpg');
+        backgroundImage.isUploadedImage = true;
+        backgroundImage.localBackgroundId = {low: BigInt(10), high: BigInt(20)};
+        theme.backgroundImage = backgroundImage;
+        callbackRouterRemote.setTheme(theme);
+        await callbackRouterRemote.$.flushForTesting();
+        await waitAfterNextRender(categoriesElement);
+
+        // Check that wallpaper search is selected if flag is enabled and
+        // nothing is selected if flag is disabled.
+        const checkedCategories =
+            categoriesElement.shadowRoot!.querySelectorAll('[checked]');
+        if (flagEnabled) {
+          assertEquals(1, checkedCategories.length);
+          assertEquals(
+              checkedCategories[0]!.parentElement!.id, 'wallpaperSearchTile');
+          assertEquals(
+              checkedCategories[0]!.parentElement!.getAttribute('aria-current'),
+              'true');
+        } else {
+          assertEquals(0, checkedCategories.length);
+        }
+      });
+    });
+  });
+
+  suite('Metrics', () => {
+    suiteSetup(() => {
+      loadTimeData.overrideValues({
+        'wallpaperSearchEnabled': true,
+      });
+    });
+
+    test('choosing collection sets metric', async () => {
+      await setInitialSettings(1);
+
+      const tile = categoriesElement.shadowRoot!.querySelector('.collection');
+      assertTrue(!!tile);
+      (tile! as HTMLElement).click();
+
+      assertEquals(
+          1, metrics.count('NewTabPage.CustomizeChromeSidePanelAction'));
+      assertEquals(
+          1,
+          metrics.count(
+              'NewTabPage.CustomizeChromeSidePanelAction',
+              CustomizeChromeAction
+                  .CATEGORIES_FIRST_PARTY_COLLECTION_SELECTED));
+    });
+
+    test('choosing default chrome sets metric', async () => {
+      await setInitialSettings(0);
+
+      categoriesElement.$.classicChromeTile.click();
+
+      assertEquals(
+          1, metrics.count('NewTabPage.CustomizeChromeSidePanelAction'));
+      assertEquals(
+          1,
+          metrics.count(
+              'NewTabPage.CustomizeChromeSidePanelAction',
+              CustomizeChromeAction.CATEGORIES_DEFAULT_CHROME_SELECTED));
+    });
+
+    test('choosing wallpaper search sets metric', async () => {
+      await setInitialSettings(0);
+
+      const tile =
+          categoriesElement.shadowRoot!.querySelector('#wallpaperSearchTile');
+      assertTrue(!!tile);
+      (tile! as HTMLElement).click();
+
+      assertEquals(
+          1, metrics.count('NewTabPage.CustomizeChromeSidePanelAction'));
+      assertEquals(
+          1,
+          metrics.count(
+              'NewTabPage.CustomizeChromeSidePanelAction',
+              CustomizeChromeAction.CATEGORIES_WALLPAPER_SEARCH_SELECTED));
+    });
+
+    test('choosing upload sets metric', async () => {
+      await setInitialSettings(0);
+
+      categoriesElement.$.uploadImageTile.click();
+
+      assertEquals(
+          1, metrics.count('NewTabPage.CustomizeChromeSidePanelAction'));
+      assertEquals(
+          1,
+          metrics.count(
+              'NewTabPage.CustomizeChromeSidePanelAction',
+              CustomizeChromeAction.CATEGORIES_UPLOAD_IMAGE_SELECTED));
+    });
   });
 });

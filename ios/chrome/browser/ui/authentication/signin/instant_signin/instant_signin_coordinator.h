@@ -9,6 +9,7 @@
 
 namespace signin_metrics {
 enum class AccessPoint;
+enum class PromoAction;
 }  // namespace signin_metrics
 
 // This sign-in coordinator ensures that the sign-in flow is triggered with
@@ -22,14 +23,18 @@ enum class AccessPoint;
 @interface InstantSigninCoordinator : SigninCoordinator
 
 - (instancetype)initWithBaseViewController:(UIViewController*)viewController
-                                   browser:(Browser*)browser NS_UNAVAILABLE;
-
-// Designated initializer.
-- (instancetype)initWithBaseViewController:(UIViewController*)viewController
                                    browser:(Browser*)browser
-                                  identity:(id<SystemIdentity>)identity
                                accessPoint:
                                    (signin_metrics::AccessPoint)accessPoint
+    NS_UNAVAILABLE;
+
+// Designated initializer.
+- (instancetype)
+    initWithBaseViewController:(UIViewController*)viewController
+                       browser:(Browser*)browser
+                      identity:(id<SystemIdentity>)identity
+                   accessPoint:(signin_metrics::AccessPoint)accessPoint
+                   promoAction:(signin_metrics::PromoAction)promoAction
     NS_DESIGNATED_INITIALIZER;
 
 @end

@@ -6,7 +6,6 @@
 #include "base/command_line.h"
 #include "base/functional/bind.h"
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
-#include "chrome/browser/ash/login/users/scoped_test_user_manager.h"
 #include "components/account_id/account_id.h"
 #include "components/user_manager/scoped_user_manager.h"
 #include "components/user_manager/user_manager.h"
@@ -34,32 +33,28 @@ class ScopedKioskModeLogIn {
     // due massive usage of InitFromArgv.
     base::CommandLine::ForCurrentProcess()->AppendSwitch(switches::kTestType);
 
-    user_manager_enabler_ = std::make_unique<user_manager::ScopedUserManager>(
-        std::make_unique<ash::FakeChromeUserManager>());
+    fake_user_manager_.Reset(std::make_unique<ash::FakeChromeUserManager>());
     const AccountId account_id(AccountId::FromUserEmail(kTestProfileName));
-    if (kiosk_user)
-      GetFakeUserManager()->AddArcKioskAppUser(account_id);
-    else
-      GetFakeUserManager()->AddUser(account_id);
-    GetFakeUserManager()->LoginUser(account_id);
+    if (kiosk_user) {
+      fake_user_manager_->AddArcKioskAppUser(account_id);
+    } else {
+      fake_user_manager_->AddUser(account_id);
+    }
+    fake_user_manager_->LoginUser(account_id);
   }
 
   ScopedKioskModeLogIn(const ScopedKioskModeLogIn&) = delete;
   ScopedKioskModeLogIn& operator=(const ScopedKioskModeLogIn&) = delete;
 
   ~ScopedKioskModeLogIn() {
-    GetFakeUserManager()->RemoveUserFromList(
+    fake_user_manager_->RemoveUserFromList(
         AccountId::FromUserEmail(kTestProfileName));
-    user_manager_enabler_.reset();
+    fake_user_manager_.Reset();
   }
 
  private:
-  ash::FakeChromeUserManager* GetFakeUserManager() const {
-    return static_cast<ash::FakeChromeUserManager*>(
-        user_manager::UserManager::Get());
-  }
-
-  std::unique_ptr<user_manager::ScopedUserManager> user_manager_enabler_;
+  user_manager::TypedScopedUserManager<ash::FakeChromeUserManager>
+      fake_user_manager_;
 };
 }  // namespace
 

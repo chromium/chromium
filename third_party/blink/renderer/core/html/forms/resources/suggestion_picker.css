@@ -62,18 +62,35 @@
 }
 
 @media (forced-colors: active) {
-  .suggestion-list-entry:focus {
-    background-color: Highlight !important;
-    forced-color-adjust: none;
-  }
+    .suggestion-list-entry:focus {
+        background-color: Highlight !important;
+        forced-color-adjust: none;
+    }
 
-  .suggestion-list-entry:focus .label,
-  .suggestion-list-entry:focus .title {
-    color: HighlightText !important;
-  }
+    .suggestion-list-entry:focus .label,
+    .suggestion-list-entry:focus .title {
+        color: HighlightText !important;
+    }
 
-  .suggestion-list-entry .label,
-  .suggestion-list-entry .title {
-    color: WindowText !important;
-  }
+    .suggestion-list-entry .label,
+    .suggestion-list-entry .title {
+        color: WindowText !important;
+    }
+}
+
+@media (prefers-color-scheme: dark) {
+    .suggestion-list {
+        background-color: #3B3B3B;
+        color:#ffffff;
+        border: 1px solid #858585;
+    }
+
+    .suggestion-list-entry:focus {
+        background-color: #101010 !important;
+    }
+
+    .suggestion-list-entry .label,
+    .suggestion-list-entry .title {
+        color:#ffffff !important;
+    }
 }

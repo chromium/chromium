@@ -7,6 +7,7 @@
 #include "base/base64.h"
 #include "base/hash/sha1.h"
 #include "base/notreached.h"
+#include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "components/sync/base/model_type.h"
 #include "components/sync/protocol/autofill_offer_specifics.pb.h"
@@ -26,9 +27,8 @@ std::string GenerateSyncableBookmarkHash(
   serialized_type.AppendToString(&hash_input);
   hash_input.append(originator_cache_guid + originator_client_item_id);
 
-  std::string encode_output;
-  base::Base64Encode(base::SHA1HashString(hash_input), &encode_output);
-  return encode_output;
+  return base::Base64Encode(
+      base::SHA1HashSpan(base::as_bytes(base::make_span(hash_input))));
 }
 
 std::string GetUnhashedClientTagFromAutofillWalletSpecifics(
@@ -42,6 +42,15 @@ std::string GetUnhashedClientTagFromAutofillWalletSpecifics(
       return specifics.customer_data().id();
     case sync_pb::AutofillWalletSpecifics::CREDIT_CARD_CLOUD_TOKEN_DATA:
       return specifics.cloud_token_data().instrument_token();
+    case sync_pb::AutofillWalletSpecifics::PAYMENT_INSTRUMENT:
+      // Append a string to the instrument ID, since the same ID may be used for
+      // a MASKED_CREDIT_CARD entry.
+      return base::StrCat(
+          {"payment_instrument:",
+           base::NumberToString(
+               specifics.payment_instrument().instrument_id())});
+    case sync_pb::AutofillWalletSpecifics::MASKED_IBAN:
+      return specifics.masked_iban().instrument_id();
     case sync_pb::AutofillWalletSpecifics::UNKNOWN:
       NOTREACHED();
       return std::string();

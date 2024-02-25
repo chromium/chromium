@@ -1,0 +1,6 @@
+WebView textSize:16.0 style:0 htmlInfo:[{htmlTag="#document"}, {display=""}]
+++View textSize:16.0 style:0 htmlInfo:[{htmlTag="body"}, {display="block"}]
+++++View textSize:16.0 style:0 htmlInfo:[{htmlTag="label"}, {display="inline"}]
+++++++TextView text:"Choose a pokemon " textSize:16.0 style:0 htmlInfo:[{htmlTag=""}, {display=""}]
+++++++EditText text:"Choose a pokemon" textSize:13.3 style:0 htmlInfo:[{htmlTag="input"}, {display="inline-block"}, {list="pokemon"}]
+++++++++View textSize:13.3 style:0 htmlInfo:[{htmlTag="div"}, {display="flow-root"}]

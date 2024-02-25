@@ -304,7 +304,7 @@ void SelectToSpeakMenuView::OnButtonPressed(views::Button* sender) {
   delegate_->OnActionSelected(action);
 }
 
-BEGIN_METADATA(SelectToSpeakMenuView, views::BoxLayoutView)
+BEGIN_METADATA(SelectToSpeakMenuView)
 END_METADATA
 
 }  // namespace ash

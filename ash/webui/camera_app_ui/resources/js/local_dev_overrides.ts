@@ -15,14 +15,20 @@ import * as localDev from './local_dev.js';
 import {getCameraDirectory, getObjectURL} from './models/file_system.js';
 import {ChromeHelper, getInstanceImpl} from './mojo/chrome_helper.js';
 import {
+  LidState,
   ScreenState,
   StorageMonitorStatus,
   ToteMetricFormat,
+  WifiConfig,
 } from './mojo/type.js';
 import {MimeType} from './type.js';
 import {expandPath} from './util.js';
 
 export class ChromeHelperFake extends ChromeHelper {
+  // This class contains methods that overrides ChromeHelper, and async-ness
+  // should follow the ChromeHelper class. We can manually write
+  // Promise.resolve(...) instead but it's more verbose without much gain.
+  /* eslint-disable @typescript-eslint/require-await */
   override async initTabletModeMonitor(_onChange: (isTablet: boolean) => void):
       Promise<boolean> {
     return false;
@@ -30,7 +36,7 @@ export class ChromeHelperFake extends ChromeHelper {
 
   override async initScreenStateMonitor(
       _onChange: (state: ScreenState) => void): Promise<ScreenState> {
-    return ScreenState.ON;
+    return ScreenState.kOn;
   }
 
   override async initExternalScreenMonitor(
@@ -111,14 +117,14 @@ export class ChromeHelperFake extends ChromeHelper {
     /* Do nothing. */
   }
 
-  override async getDocumentScannerReadyState():
-      Promise<{supported: boolean, ready: boolean}> {
-    return {supported: false, ready: false};
+  override async isDocumentScannerSupported(): Promise<boolean> {
+    return false;
   }
 
   override async checkDocumentModeReadiness(): Promise<boolean> {
     return false;
   }
+
 
   override async scanDocumentCorners(_blob: Blob): Promise<Point[]|null> {
     return null;
@@ -141,7 +147,7 @@ export class ChromeHelperFake extends ChromeHelper {
   override async startMonitorStorage(
       _onChange: (status: StorageMonitorStatus) => void):
       Promise<StorageMonitorStatus> {
-    return StorageMonitorStatus.NORMAL;
+    return StorageMonitorStatus.kNormal;
   }
 
   override stopMonitorStorage(): void {
@@ -151,6 +157,16 @@ export class ChromeHelperFake extends ChromeHelper {
   override openStorageManagement(): void {
     /* Do nothing. */
   }
+
+  override openWifiDialog(_config: WifiConfig): void {
+    /* Do nothing. */
+  }
+
+  override async initLidStateMonitor(_onChange: (lidStatus: LidState) => void):
+      Promise<LidState> {
+    return LidState.kNotPresent;
+  }
+  /* eslint-enable @typescript-eslint/require-await */
 }
 
 localDev.setOverride(getInstanceImpl, () => new ChromeHelperFake());

@@ -75,10 +75,9 @@ class SkiaGoldPixelDiffTest : public ::testing::Test {
  private:
   SkBitmap test_bitmap_;
 
-  absl::optional<SkiaGoldPixelDiff::ScopedSessionCacheForTesting>
-      session_cache_;
-  absl::optional<MockLaunchProcess> mock_launch_process_;
-  absl::optional<base::AutoReset<SkiaGoldPixelDiff::LaunchProcessCallback>>
+  std::optional<SkiaGoldPixelDiff::ScopedSessionCacheForTesting> session_cache_;
+  std::optional<MockLaunchProcess> mock_launch_process_;
+  std::optional<base::AutoReset<SkiaGoldPixelDiff::LaunchProcessCallback>>
       auto_reset_custom_launch_process_;
 };
 

@@ -8,7 +8,13 @@
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_context_options.h"
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
+#include "third_party/blink/renderer/modules/ml/buildflags.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
+
+#if !BUILDFLAG(IS_CHROMEOS)
+#include "third_party/blink/public/common/features.h"
+#include "third_party/blink/renderer/modules/ml/webnn/ml_context_mojo.h"
+#endif
 
 namespace blink {
 
@@ -53,8 +59,9 @@ void ML::Trace(Visitor* visitor) const {
 }
 
 ScriptPromise ML::createContext(ScriptState* script_state,
-                                MLContextOptions* option,
+                                MLContextOptions* options,
                                 ExceptionState& exception_state) {
+  ScopedMLTrace scoped_trace("ML::createContext");
   if (!script_state->ContextIsValid()) {
     exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
                                       "Invalid script state");
@@ -66,31 +73,15 @@ ScriptPromise ML::createContext(ScriptState* script_state,
 
   auto promise = resolver->Promise();
 
-  // Notice that currently, we just create the context in the renderer. In the
-  // future we may add backend query ability to check whether a context is
-  // supportable or not. At that time, this function will be truly asynced.
-  auto* ml_context = MakeGarbageCollected<MLContext>(
-      option->devicePreference(), option->powerPreference(),
-      option->modelFormat(), option->numThreads(), this);
-  resolver->Resolve(ml_context);
-
-  return promise;
-}
-
-MLContext* ML::createContextSync(ScriptState* script_state,
-                                 MLContextOptions* options,
-                                 ExceptionState& exception_state) {
-  if (!script_state->ContextIsValid()) {
-    exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
-                                      "Invalid script state");
-    return nullptr;
+#if !BUILDFLAG(IS_CHROMEOS)
+  if (options->deviceType() == V8MLDeviceType::Enum::kGpu) {
+    MLContextMojo::ValidateAndCreate(resolver, options, this);
+    return promise;
   }
+#endif
 
-  // TODO(crbug/1405354): Query browser about whether the given context is
-  // supported.
-  return MakeGarbageCollected<MLContext>(
-      options->devicePreference(), options->powerPreference(),
-      options->modelFormat(), options->numThreads(), this);
+  MLContext::ValidateAndCreate(resolver, options, this);
+  return promise;
 }
 
 void ML::EnsureModelLoaderServiceConnection(ScriptState* script_state) {

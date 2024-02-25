@@ -6,14 +6,13 @@
 #define COMPONENTS_OFFLINE_PAGES_CORE_PAGE_CRITERIA_H_
 
 #include <cstdint>
-
+#include <optional>
 #include <string>
 #include <vector>
 
 #include "base/functional/callback.h"
 #include "components/offline_pages/core/client_id.h"
 #include "components/offline_pages/core/offline_page_client_policy.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
 namespace offline_pages {
@@ -42,26 +41,26 @@ struct PageCriteria {
   // If specified, accepts pages that can be displayed in the specified tab.
   // That is, tab-bound pages are filtered out unless the tab ID matches this
   // field and non-tab-bound pages are always included.
-  absl::optional<int> pages_for_tab_id;
+  std::optional<int> pages_for_tab_id;
   // Whether to restrict pages to those in namespaces supported by the
   // downloads UI.
   bool supported_by_downloads = false;
   // If set, the page's lifetime type must match this.
-  absl::optional<LifetimeType> lifetime_type;
+  std::optional<LifetimeType> lifetime_type;
   // If set, the page's file_size must match.
-  absl::optional<int64_t> file_size;
+  std::optional<int64_t> file_size;
   // If non-empty, the page's digest must match.
   std::string digest;
   // If set, the page's namespace must match.
-  absl::optional<std::vector<std::string>> client_namespaces;
+  std::optional<std::vector<std::string>> client_namespaces;
   // If set, the page's client_id must match one of these.
-  absl::optional<std::vector<ClientId>> client_ids;
+  std::optional<std::vector<ClientId>> client_ids;
   // If non-empty, the page's client_id.id must match this.
   std::string guid;
   // If non-empty, the page's request_origin must match.
   std::string request_origin;
   // If set, the page's offline_id must match.
-  absl::optional<std::vector<int64_t>> offline_ids;
+  std::optional<std::vector<int64_t>> offline_ids;
   // If non-null, this function is executed for each matching item. If it
   // returns false, the item will not be returned. This is evaluated last, and
   // only for pages that otherwise meet all other criteria.

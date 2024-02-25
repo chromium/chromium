@@ -18,9 +18,7 @@ import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 
-/**
- * This test tests the logic for writing the restore histogram at two different levels
- */
+/** This test tests the logic for writing the restore histogram at two different levels */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 public class RestoreHistogramTest {
@@ -28,43 +26,46 @@ public class RestoreHistogramTest {
     public ChromeTabbedActivityTestRule mActivityTestRule = new ChromeTabbedActivityTestRule();
 
     /**
-     * Test that the fundamental method for writing the histogram
-     * {@link ChromeBackupAgent#recordRestoreHistogram()} works correctly
-     *
-     * @Note This can't be tested in the ChromeBackupAgent Junit test, since the histograms are
-     *       written in the C++ code, and because all the functions are static there is no easy way
-     *       of mocking them in Mockito (one can disable them, but that would spoil the point of the
-     *       test).
+     * Test that the fundamental method for writing the histogram {@link
+     * ChromeBackupAgent#recordRestoreHistogram()} works correctly @Note This can't be tested in the
+     * ChromeBackupAgent Junit test, since the histograms are written in the C++ code, and because
+     * all the functions are static there is no easy way of mocking them in Mockito (one can disable
+     * them, but that would spoil the point of the test).
      */
     @Test
     @SmallTest
     public void testHistogramWriter() {
         LibraryLoader.getInstance().ensureInitialized();
-        var histogram = HistogramWatcher.newSingleRecordWatcher(
-                ChromeBackupAgentImpl.HISTOGRAM_ANDROID_RESTORE_RESULT,
-                ChromeBackupAgentImpl.RestoreStatus.NO_RESTORE);
+        var histogram =
+                HistogramWatcher.newSingleRecordWatcher(
+                        ChromeBackupAgentImpl.HISTOGRAM_ANDROID_RESTORE_RESULT,
+                        ChromeBackupAgentImpl.RestoreStatus.NO_RESTORE);
 
         // Check behavior with no preference set
         ChromeBackupAgentImpl.recordRestoreHistogram();
         histogram.assertExpected();
-        Assert.assertEquals(ChromeBackupAgentImpl.RestoreStatus.RESTORE_STATUS_RECORDED,
+        Assert.assertEquals(
+                ChromeBackupAgentImpl.RestoreStatus.RESTORE_STATUS_RECORDED,
                 ChromeBackupAgentImpl.getRestoreStatus());
 
         // Check behavior with a restore status
-        histogram = HistogramWatcher.newSingleRecordWatcher(
-                ChromeBackupAgentImpl.HISTOGRAM_ANDROID_RESTORE_RESULT,
-                ChromeBackupAgentImpl.RestoreStatus.RESTORE_COMPLETED);
+        histogram =
+                HistogramWatcher.newSingleRecordWatcher(
+                        ChromeBackupAgentImpl.HISTOGRAM_ANDROID_RESTORE_RESULT,
+                        ChromeBackupAgentImpl.RestoreStatus.RESTORE_COMPLETED);
         ChromeBackupAgentImpl.setRestoreStatus(
                 ChromeBackupAgentImpl.RestoreStatus.RESTORE_COMPLETED);
         ChromeBackupAgentImpl.recordRestoreHistogram();
         histogram.assertExpected();
-        Assert.assertEquals(ChromeBackupAgentImpl.RestoreStatus.RESTORE_STATUS_RECORDED,
+        Assert.assertEquals(
+                ChromeBackupAgentImpl.RestoreStatus.RESTORE_STATUS_RECORDED,
                 ChromeBackupAgentImpl.getRestoreStatus());
 
         // Second call should record nothing
-        histogram = HistogramWatcher.newBuilder()
-                            .expectNoRecords(ChromeBackupAgentImpl.HISTOGRAM_ANDROID_RESTORE_RESULT)
-                            .build();
+        histogram =
+                HistogramWatcher.newBuilder()
+                        .expectNoRecords(ChromeBackupAgentImpl.HISTOGRAM_ANDROID_RESTORE_RESULT)
+                        .build();
         ChromeBackupAgentImpl.recordRestoreHistogram();
         histogram.assertExpected();
     }
@@ -78,9 +79,10 @@ public class RestoreHistogramTest {
     @SmallTest
     public void testWritingHistogramAtStartup() throws InterruptedException {
         LibraryLoader.getInstance().ensureInitialized();
-        var histogram = HistogramWatcher.newSingleRecordWatcher(
-                ChromeBackupAgentImpl.HISTOGRAM_ANDROID_RESTORE_RESULT,
-                ChromeBackupAgentImpl.RestoreStatus.NO_RESTORE);
+        var histogram =
+                HistogramWatcher.newSingleRecordWatcher(
+                        ChromeBackupAgentImpl.HISTOGRAM_ANDROID_RESTORE_RESULT,
+                        ChromeBackupAgentImpl.RestoreStatus.NO_RESTORE);
 
         // Histogram should be written the first time the activity is started.
         mActivityTestRule.startMainActivityOnBlankPage();

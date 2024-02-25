@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="lv">
+<translation id="1012241361789814178">Atkļūdotāja darbība ir pārtraukta citā cilnē. Noklikšķiniet, lai pārslēgtos uz šo cilni.</translation>
 <translation id="1088086359088493902">Sekundes</translation>
 <translation id="1142001580032786438">Rādīt nedēļas atlasītāju</translation>
 <translation id="1171774979989969504">Ievadiet e-pasta adresi.</translation>
@@ -16,6 +17,7 @@
 <translation id="1729654308190250600">Lūdzu, ievadiet e-pasta adresi.</translation>
 <translation id="1758486001363313524">Cits...</translation>
 <translation id="1787192514241997742">Kopējais laiks: <ph name="REMAINING_TIME" /></translation>
+<translation id="1800494066469288780">Atļaut piekļuvi kamerai</translation>
 <translation id="1822429046913737220">priekšpusdienā/pēcpusdienā</translation>
 <translation id="1832974991323546415">atskaņot attālinātā ierīcē</translation>
 <translation id="1921819250265091946">dd</translation>
@@ -24,10 +26,12 @@
 <translation id="1993104285338243655">Mainīts uz spoguļošanu</translation>
 <translation id="2031987842108996681">Sarkanais kanāls</translation>
 <translation id="2060505056492490888">Punkts (<ph name="DOT" />) atrodas nepareizā vietā (<ph name="INVALIDDOMAIN" />).</translation>
+<translation id="2068711044993563745">Minimālajai vērtībai (<ph name="MINIMUM" />) ir jābūt mazākai nekā maksimālajai vērtībai (<ph name="MAXIMUM" />).</translation>
 <translation id="2148716181193084225">Šodien</translation>
 <translation id="2226276347425096477">Lūdzu, saīsiniet šo tekstu līdz <ph name="MAX_CHARACTERS" /> vai mazāk zīmēm (pašreiz tas ietver <ph name="CURRENT_LENGTH" /> rakstzīmes).</translation>
 <translation id="2247351761944213033"><ph name="WEEKNUMBER" />. nedēļa, <ph name="YEAR" />. gads</translation>
 <translation id="2277199496770840904"><ph name="NUMBER" />. ieraksts</translation>
+<translation id="2353297238722298836">Kameras un mikrofona lietošana ir atļauta</translation>
 <translation id="2393030564806080191">Heksadecimāla krāsas vērtība</translation>
 <translation id="2398813069815436052">tika atvērts dialoglodziņš.</translation>
 <translation id="245932805758469625">atlikušais video laiks sekundēs</translation>
@@ -44,11 +48,13 @@
 <translation id="2761667185364618470">Lai turpinātu, atzīmējiet šo izvēles rūtiņu.</translation>
 <translation id="2908441821576996758">Lūdzu, ievadiet ar komatu atdalītu e-pasta adrešu sarakstu.</translation>
 <translation id="3049748772180311791"><ph name="QUANTITY" /> MB</translation>
+<translation id="3053226512517284904">rādīt audio aprakstu izvēlni</translation>
 <translation id="3075154866155599887">Lūdzu, ievadiet derīgu vērtību. Šis lauks nav pabeigts, vai tajā ir norādīts nederīgs datums.</translation>
 <translation id="310520048233152454">Ievadiet URL.</translation>
 <translation id="3220661731597678625">pašreizējā darbība</translation>
 <translation id="3321030238473337787">Atskaņošanas ātrums</translation>
 <translation id="3329013043687509092">Piesātinājums</translation>
+<translation id="3377518164566272702">Atļaut piekļuvi mikrofonam un kamerai</translation>
 <translation id="3450233048674729344">Vērtībai ir jābūt mazākai vai vienādai ar <ph name="MAXIMUM" />.</translation>
 <translation id="3732799496749320381">mm</translation>
 <translation id="3754210790023674521">Iziet no režīma “Attēls attēlā”</translation>
@@ -56,14 +62,17 @@
 <translation id="3822383571486410024">Lūdzu, papildiniet šo tekstu līdz vismaz <ph name="MIN_CHARACTERS" /> rakstzīmēm (pašlaik tas ietver <ph name="CURRENT_LENGTH" /> rakstzīmes).</translation>
 <translation id="383465348367842624">Daļā, kas atrodas pirms zīmes <ph name="ATSIGN" />, nedrīkst būt ietverts simbols <ph name="INVALIDCHARACTER" />.</translation>
 <translation id="3846214748874656680">Aizvērt pilnekrāna režīmu</translation>
+<translation id="4031179711345676612">Mikrofona lietošana ir atļauta</translation>
 <translation id="4103419683916926126">Milisekundes</translation>
 <translation id="4201051445878709314">Rādīt iepriekšējo mēnesi</translation>
 <translation id="4360991593054037559">Lūdzu, ievadiet derīgu vērtību. Divas tuvākās derīgās vērtības ir <ph name="VALID_VALUE_LOW" /> un <ph name="VALID_VALUE_HIGHER" />.</translation>
 <translation id="4522570452068850558">Dati</translation>
+<translation id="4663373278480897665">Kameras lietošana ir atļauta</translation>
 <translation id="4664250907885839816">Daļā, kas atrodas aiz zīmes <ph name="ATSIGN" />, nedrīkst būt ietverts simbols <ph name="INVALIDCHARACTER" />.</translation>
 <translation id="4718048029184481307">Tiek atskaņots režīmā “Attēls attēlā”</translation>
 <translation id="4748357248530471599">pārslēdz displeja izgriezuma apgabalu pilnekrāna režīmā</translation>
 <translation id="4763480195061959176">video</translation>
+<translation id="4792862212177489858">Kopīgot atrašanās vietu</translation>
 <translation id="4812940957355064477">Lūdzu, ievadiet skaitli.</translation>
 <translation id="4912200001568447310">pašreizējais vienums</translation>
 <translation id="4915360478455618802">Rādīt laika atlasītāju</translation>
@@ -73,6 +82,7 @@
 <translation id="4975562563186953947">Atlasīti <ph name="SELECTED_COUNT" /></translation>
 <translation id="4992066212339426712">Ieslēgt skaņu</translation>
 <translation id="49969490063480558">Lūdzu, ievadiet daļu, kas atrodas aiz zīmes <ph name="ATSIGN" />. “<ph name="INVALIDADDRESS" />” ir nepilna adrese.</translation>
+<translation id="5037575921016181960">Droša parole</translation>
 <translation id="5090250355906949916">video laika skalas slīdnis</translation>
 <translation id="509897012892853729">Zilais kanāls</translation>
 <translation id="5117590920725113268">Rādīt nākamo mēnesi</translation>
@@ -131,6 +141,7 @@
 <translation id="6941933287844615239">lejupielādēt multivides failus</translation>
 <translation id="698788488269350478">izvērsts.</translation>
 <translation id="6989848892321993519">Lūdzu, papildiniet šo tekstu līdz vismaz <ph name="MIN_CHARACTERS" /> rakstzīmēm (pašlaik tas ietver 1 rakstzīmi).</translation>
+<translation id="7080893216867146095">Atrašanās vietas kopīgošana ir atļauta</translation>
 <translation id="709897737746224366">Pieskaņojiet vērtību prasītajam formātam.</translation>
 <translation id="7102274145889307184">pašreizējā atrašanās vieta</translation>
 <translation id="7263440858009898357">Atlasiet vienumu sarakstā.</translation>
@@ -177,6 +188,7 @@
 <translation id="9132465097189459683">Cits...</translation>
 <translation id="9155987714137265666"><ph name="WEEK" />, sākot no: <ph name="WEEK_START_DATE" /></translation>
 <translation id="916607977885256133">Attēls attēlā</translation>
+<translation id="918430632320614861">Atļaut piekļuvi mikrofonam</translation>
 <translation id="945780513535800434">Daļēji atzīmēta</translation>
 <translation id="954003015749068518">atvērt režīmu “attēls attēlā”</translation>
 </translationbundle>

@@ -55,6 +55,7 @@ constexpr int kRefreshThumbInset = -4;
 constexpr int kRefreshThumbInsetSelected = -2;
 constexpr int kRefreshThumbPressedOutset = 1;
 constexpr int kRefreshHoverDiameter = 20;
+constexpr float kBorderStrokeWidth = 1.0f;
 
 const gfx::Size GetTrackSize() {
   return features::IsChromeRefresh2023() ? kRefreshTrackSize : kTrackSize;
@@ -67,11 +68,11 @@ int GetThumbInset(bool is_on) {
   return kThumbInset;
 }
 
-absl::optional<SkColor> GetSkColorFromVariant(
+std::optional<SkColor> GetSkColorFromVariant(
     const absl::variant<ui::ColorId, SkColor>& color_variant) {
   return absl::holds_alternative<SkColor>(color_variant)
-             ? absl::make_optional(absl::get<SkColor>(color_variant))
-             : absl::nullopt;
+             ? std::make_optional(absl::get<SkColor>(color_variant))
+             : std::nullopt;
 }
 
 SkColor ConvertVariantToSkColor(
@@ -94,8 +95,9 @@ class ToggleButton::FocusRingHighlightPathGenerator
 
 // Class representing the thumb (the circle that slides horizontally).
 class ToggleButton::ThumbView : public View {
+  METADATA_HEADER(ThumbView, View)
+
  public:
-  METADATA_HEADER(ThumbView);
   explicit ThumbView(bool has_shadow) : has_shadow_(has_shadow) {
     // Make the thumb behave as part of the parent for event handling.
     SetCanProcessEventsWithinSubtree(false);
@@ -129,7 +131,7 @@ class ToggleButton::ThumbView : public View {
     (is_on ? thumb_on_color_ : thumb_off_color_) = thumb_color;
   }
 
-  absl::optional<SkColor> GetThumbColor(bool is_on) const {
+  std::optional<SkColor> GetThumbColor(bool is_on) const {
     return GetSkColorFromVariant(is_on ? thumb_on_color_ : thumb_off_color_);
   }
 
@@ -219,7 +221,7 @@ class ToggleButton::ThumbView : public View {
 };
 
 ToggleButton::ToggleButton(PressedCallback callback)
-    : ToggleButton(callback,
+    : ToggleButton(std::move(callback),
                    /*has_thumb_shadow=*/!features::IsChromeRefresh2023()) {}
 
 ToggleButton::ToggleButton(PressedCallback callback, bool has_thumb_shadow)
@@ -329,7 +331,7 @@ void ToggleButton::SetThumbOnColor(SkColor thumb_on_color) {
   thumb_view_->SetThumbColor(true /* is_on */, thumb_on_color);
 }
 
-absl::optional<SkColor> ToggleButton::GetThumbOnColor() const {
+std::optional<SkColor> ToggleButton::GetThumbOnColor() const {
   return thumb_view_->GetThumbColor(true);
 }
 
@@ -337,7 +339,7 @@ void ToggleButton::SetThumbOffColor(SkColor thumb_off_color) {
   thumb_view_->SetThumbColor(false /* is_on */, thumb_off_color);
 }
 
-absl::optional<SkColor> ToggleButton::GetThumbOffColor() const {
+std::optional<SkColor> ToggleButton::GetThumbOffColor() const {
   return thumb_view_->GetThumbColor(false);
 }
 
@@ -345,7 +347,7 @@ void ToggleButton::SetTrackOnColor(SkColor track_on_color) {
   track_on_color_ = track_on_color;
 }
 
-absl::optional<SkColor> ToggleButton::GetTrackOnColor() const {
+std::optional<SkColor> ToggleButton::GetTrackOnColor() const {
   return GetSkColorFromVariant(track_on_color_);
 }
 
@@ -353,8 +355,20 @@ void ToggleButton::SetTrackOffColor(SkColor track_off_color) {
   track_off_color_ = track_off_color;
 }
 
-absl::optional<SkColor> ToggleButton::GetTrackOffColor() const {
+std::optional<SkColor> ToggleButton::GetTrackOffColor() const {
   return GetSkColorFromVariant(track_off_color_);
+}
+
+void ToggleButton::SetInnerBorderEnabled(bool enabled) {
+  if (inner_border_enabled_ == enabled) {
+    return;
+  }
+  inner_border_enabled_ = enabled;
+  OnPropertyChanged(&inner_border_enabled_, kPropertyEffectsPaint);
+}
+
+bool ToggleButton::GetInnerBorderEnabled() const {
+  return inner_border_enabled_;
 }
 
 void ToggleButton::SetAcceptsEvents(bool accepts_events) {
@@ -572,10 +586,11 @@ void ToggleButton::PaintButtonContents(gfx::Canvas* canvas) {
   track_flags.setColor(color_utils::AlphaBlend(
       GetTrackColor(true), GetTrackColor(false), color_ratio));
   canvas->DrawRoundRect(track_rect, radius, track_flags);
-  if (!GetIsOn() && features::IsChromeRefresh2023()) {
+  if (!GetIsOn() && inner_border_enabled_ && features::IsChromeRefresh2023()) {
+    track_rect.Inset(kBorderStrokeWidth * dsf / 2.0f);
     track_flags.setColor(
         GetColorProvider()->GetColor(ui::kColorToggleButtonShadow));
-    track_flags.setStrokeWidth(0.5f * dsf);
+    track_flags.setStrokeWidth(kBorderStrokeWidth * dsf);
     track_flags.setStyle(cc::PaintFlags::kStroke_Style);
     canvas->DrawRoundRect(track_rect, radius, track_flags);
   }
@@ -600,11 +615,12 @@ void ToggleButton::AnimationProgressed(const gfx::Animation* animation) {
   Button::AnimationProgressed(animation);
 }
 
-BEGIN_METADATA(ToggleButton, ThumbView, View)
+BEGIN_METADATA(ToggleButton, ThumbView)
 END_METADATA
 
-BEGIN_METADATA(ToggleButton, Button)
+BEGIN_METADATA(ToggleButton)
 ADD_PROPERTY_METADATA(bool, IsOn)
+ADD_PROPERTY_METADATA(bool, InnerBorderEnabled)
 ADD_PROPERTY_METADATA(bool, AcceptsEvents)
 END_METADATA
 

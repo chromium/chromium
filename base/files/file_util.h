@@ -13,6 +13,7 @@
 #include <stdio.h>
 
 #include <limits>
+#include <optional>
 #include <set>
 #include <string>
 
@@ -23,7 +24,6 @@
 #include "base/files/scoped_file.h"
 #include "base/functional/callback.h"
 #include "build/build_config.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 #if BUILDFLAG(IS_WIN)
 #include "base/win/windows_types.h"
@@ -58,9 +58,9 @@ BASE_EXPORT FilePath MakeAbsoluteFilePath(const FilePath& input);
 // This may block if `input` is a relative path, when calling
 // GetCurrentDirectory().
 //
-// This doesn't return absl::nullopt unless (1) `input` is empty, or (2)
+// This doesn't return std::nullopt unless (1) `input` is empty, or (2)
 // `input` is a relative path and GetCurrentDirectory() fails.
-[[nodiscard]] BASE_EXPORT absl::optional<FilePath>
+[[nodiscard]] BASE_EXPORT std::optional<FilePath>
 MakeAbsoluteFilePathNoResolveSymbolicLinks(const FilePath& input);
 #endif
 
@@ -225,7 +225,7 @@ BASE_EXPORT bool TextContentsEqual(const FilePath& filename1,
 // Reads the file at |path| and returns a vector of bytes on success, and
 // nullopt on error. For security reasons, a |path| containing path traversal
 // components ('..') is treated as a read error, returning nullopt.
-BASE_EXPORT absl::optional<std::vector<uint8_t>> ReadFileToBytes(
+BASE_EXPORT std::optional<std::vector<uint8_t>> ReadFileToBytes(
     const FilePath& path);
 
 // Reads the file at |path| into |contents| and returns true on success and
@@ -264,9 +264,11 @@ BASE_EXPORT bool ReadStreamToStringWithMaxSize(FILE* stream,
 
 #if BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_FUCHSIA)
 
-// Read exactly |bytes| bytes from file descriptor |fd|, storing the result
-// in |buffer|. This function is protected against EINTR and partial reads.
-// Returns true iff |bytes| bytes have been successfully read from |fd|.
+// Reads exactly as many bytes as `buffer` can hold from file descriptor `fd`
+// into `buffer`. This function is protected against EINTR and partial reads.
+// Returns true iff `buffer` was successfully filled with bytes read from `fd`.
+BASE_EXPORT bool ReadFromFD(int fd, span<char> buffer);
+// TODO(https://crbug.com/1490484): Migrate callers to the span variant.
 BASE_EXPORT bool ReadFromFD(int fd, char* buffer, size_t bytes);
 
 // Performs the same function as CreateAndOpenTemporaryStreamInDir(), but
@@ -307,7 +309,7 @@ BASE_EXPORT bool ReadSymbolicLink(const FilePath& symlink, FilePath* target);
 // Can fail if readlink() fails, or if
 // MakeAbsoluteFilePathNoResolveSymbolicLinks() fails on the resulting absolute
 // path.
-BASE_EXPORT absl::optional<FilePath> ReadSymbolicLinkAbsolute(
+BASE_EXPORT std::optional<FilePath> ReadSymbolicLinkAbsolute(
     const FilePath& symlink);
 
 // Bits and masks of the file permission.
@@ -420,6 +422,12 @@ BASE_EXPORT ScopedFILE CreateAndOpenTemporaryStreamInDir(const FilePath& dir,
 // Both paths are only accessible to admin and system processes, and are
 // therefore secure.
 BASE_EXPORT bool GetSecureSystemTemp(FilePath* temp);
+
+// Set whether or not the use of %systemroot%\SystemTemp or %programfiles% is
+// permitted for testing. This is so tests that run as admin will still continue
+// to use %TMP% so their files will be correctly cleaned up by the test
+// launcher.
+BASE_EXPORT void SetDisableSecureSystemTempForTesting(bool disabled);
 #endif  // BUILDFLAG(IS_WIN)
 
 // Do NOT USE in new code. Use ScopedTempDir instead.
@@ -521,14 +529,23 @@ BASE_EXPORT File FILEToFile(FILE* file_stream);
 // This is a cross-platform analog to Windows' SetEndOfFile() function.
 BASE_EXPORT bool TruncateFile(FILE* file);
 
-// Reads at most the given number of bytes from the file into the buffer.
-// Returns the number of read bytes, or -1 on error.
+// Reads from the file into `buffer`. This will read at most as many bytes as
+// `buffer` can hold, but may not always fill `buffer` entirely.
+// Returns the number of bytes read, or nullopt on error.
+// TODO(crbug.com/1333521): Despite the 64-bit return value, this only supports
+// reading at most INT_MAX bytes. The program will crash if a buffer is passed
+// whose length exceeds INT_MAX.
+BASE_EXPORT std::optional<uint64_t> ReadFile(const FilePath& filename,
+                                             span<char> buffer);
+// Same as above, but returns -1 on error.
+// TODO(https://crbug.com/1490484): Migrate callers to the span variant.
 BASE_EXPORT int ReadFile(const FilePath& filename, char* data, int max_size);
 
 // Writes the given buffer into the file, overwriting any data that was
 // previously there.  Returns the number of bytes written, or -1 on error.
 // If file doesn't exist, it gets created with read/write permissions for all.
 // Note that the other variants of WriteFile() below may be easier to use.
+// TODO(https://crbug.com/1490484): Migrate callers to the span variant.
 BASE_EXPORT int WriteFile(const FilePath& filename, const char* data,
                           int size);
 
@@ -640,6 +657,11 @@ BASE_EXPORT bool CreateLocalNonBlockingPipe(int fds[2]);
 // Returns true if it was able to set it in the close-on-exec mode, otherwise
 // false.
 BASE_EXPORT bool SetCloseOnExec(int fd);
+
+// Removes close-on-exec flag from the given |fd|.
+// Returns true if it was able to remove the close-on-exec flag, otherwise
+// false.
+BASE_EXPORT bool RemoveCloseOnExec(int fd);
 #endif  // BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_FUCHSIA)
 
 #if BUILDFLAG(IS_MAC)

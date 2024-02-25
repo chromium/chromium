@@ -215,7 +215,8 @@ TEST_F(AXAuraObjCacheTest, ValidTree) {
   AXAuraObjCache cache;
   ui::AXTreeID tree_id = ui::AXTreeID::CreateNewAXTreeID();
   AXTreeSourceViews tree_source(
-      cache.GetOrCreate(parent_widget->GetNativeWindow()), tree_id, &cache);
+      cache.GetOrCreate(parent_widget->GetNativeWindow())->GetUniqueId(),
+      tree_id, &cache);
   ui::AXTreeSerializer<AXAuraObjWrapper*, std::vector<AXAuraObjWrapper*>>
       serializer(&tree_source);
   ui::AXTreeUpdate serialized_tree;
@@ -247,16 +248,16 @@ TEST_F(AXAuraObjCacheTest, GetFocusIsUnignoredAncestor) {
   ASSERT_NE(nullptr, client);
   View* client_child = client->children().front();
   ASSERT_NE(nullptr, client_child);
-  client_child->GetViewAccessibility().OverrideRole(ax::mojom::Role::kDialog);
+  client_child->GetViewAccessibility().SetRole(ax::mojom::Role::kDialog);
   client_child->GetViewAccessibility().OverrideChildTreeID(
       ui::AXTreeID::CreateNewAXTreeID());
 
   auto* parent = widget->GetRootView()->AddChildView(std::make_unique<View>());
-  parent->GetViewAccessibility().OverrideRole(ax::mojom::Role::kTextField);
+  parent->GetViewAccessibility().SetRole(ax::mojom::Role::kTextField);
   parent->SetFocusBehavior(View::FocusBehavior::ALWAYS);
 
   auto* child = parent->AddChildView(std::make_unique<View>());
-  child->GetViewAccessibility().OverrideRole(ax::mojom::Role::kGroup);
+  child->GetViewAccessibility().SetRole(ax::mojom::Role::kGroup);
   child->SetFocusBehavior(View::FocusBehavior::ALWAYS);
 
   AXAuraObjWrapper* ax_widget = cache.GetOrCreate(widget.get());

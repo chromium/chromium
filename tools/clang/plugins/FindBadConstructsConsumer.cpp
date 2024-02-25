@@ -23,10 +23,12 @@ namespace {
 // any namespace qualifiers. This is similar to desugaring, except that for
 // ElaboratedTypes, desugar will unwrap too much.
 const Type* UnwrapType(const Type* type) {
-  if (const ElaboratedType* elaborated = dyn_cast<ElaboratedType>(type))
+  if (const ElaboratedType* elaborated = dyn_cast<ElaboratedType>(type)) {
     return UnwrapType(elaborated->getNamedType().getTypePtr());
-  if (const TypedefType* typedefed = dyn_cast<TypedefType>(type))
+  }
+  if (const TypedefType* typedefed = dyn_cast<TypedefType>(type)) {
     return UnwrapType(typedefed->desugar().getTypePtr());
+  }
   return type;
 }
 
@@ -82,8 +84,9 @@ bool IsPodOrTemplateType(const CXXRecordDecl& record) {
 std::set<FunctionDecl*> GetLateParsedFunctionDecls(TranslationUnitDecl* decl) {
   struct Visitor : public RecursiveASTVisitor<Visitor> {
     bool VisitFunctionDecl(FunctionDecl* function_decl) {
-      if (function_decl->isLateTemplateParsed())
+      if (function_decl->isLateTemplateParsed()) {
         late_parsed_decls.insert(function_decl);
+      }
       return true;
     }
 
@@ -93,24 +96,31 @@ std::set<FunctionDecl*> GetLateParsedFunctionDecls(TranslationUnitDecl* decl) {
   return v.late_parsed_decls;
 }
 
-std::string GetAutoReplacementTypeAsString(QualType type,
-                                           StorageClass storage_class) {
-  QualType non_reference_type = type.getNonReferenceType();
-  if (!non_reference_type->isPointerType())
+std::string GetAutoReplacementTypeAsString(QualType original_type,
+                                           StorageClass storage_class,
+                                           bool allow_typedefs) {
+  QualType non_reference_type = original_type.getNonReferenceType();
+  if (!non_reference_type->isPointerType() ||
+      (allow_typedefs && non_reference_type->getAs<clang::TypedefType>())) {
     return storage_class == SC_Static ? "static auto" : "auto";
+  }
 
   std::string result = GetAutoReplacementTypeAsString(
-      non_reference_type->getPointeeType(), storage_class);
+      non_reference_type->getPointeeType(), storage_class, allow_typedefs);
   result += "*";
-  if (non_reference_type.isConstQualified())
+  if (non_reference_type.isConstQualified()) {
     result += " const";
-  if (non_reference_type.isVolatileQualified())
+  }
+  if (non_reference_type.isVolatileQualified()) {
     result += " volatile";
-  if (type->isReferenceType() && !non_reference_type.isConstQualified()) {
-    if (type->isLValueReferenceType())
+  }
+  if (original_type->isReferenceType() &&
+      !non_reference_type.isConstQualified()) {
+    if (original_type->isLValueReferenceType()) {
       result += "&";
-    else if (type->isRValueReferenceType())
+    } else if (original_type->isRValueReferenceType()) {
       result += "&&";
+    }
   }
   return result;
 }
@@ -233,17 +243,20 @@ void FindBadConstructsConsumer::Traverse(ASTContext& context) {
     layout_visitor_->VisitLayoutObjectMethods(context);
   }
   RecursiveASTVisitor::TraverseDecl(context.getTranslationUnitDecl());
-  if (ipc_visitor_)
+  if (ipc_visitor_) {
     ipc_visitor_->set_context(nullptr);
+  }
   FindBadRawPtrPatterns(options_, context, instance());
 }
 
 bool FindBadConstructsConsumer::TraverseDecl(Decl* decl) {
-  if (ipc_visitor_)
+  if (ipc_visitor_) {
     ipc_visitor_->BeginDecl(decl);
+  }
   bool result = RecursiveASTVisitor::TraverseDecl(decl);
-  if (ipc_visitor_)
+  if (ipc_visitor_) {
     ipc_visitor_->EndDecl();
+  }
   return result;
 }
 
@@ -261,26 +274,29 @@ bool FindBadConstructsConsumer::VisitEnumDecl(clang::EnumDecl* decl) {
 }
 
 bool FindBadConstructsConsumer::VisitTagDecl(clang::TagDecl* tag_decl) {
-  if (tag_decl->isCompleteDefinition())
+  if (tag_decl->isCompleteDefinition()) {
     CheckTag(tag_decl);
+  }
   return true;
 }
 
 bool FindBadConstructsConsumer::VisitTemplateSpecializationType(
     TemplateSpecializationType* spec) {
-  if (ipc_visitor_)
+  if (ipc_visitor_) {
     ipc_visitor_->VisitTemplateSpecializationType(spec);
+  }
   return true;
 }
 
 bool FindBadConstructsConsumer::VisitCallExpr(CallExpr* call_expr) {
-  if (ipc_visitor_)
+  if (ipc_visitor_) {
     ipc_visitor_->VisitCallExpr(call_expr);
+  }
   return true;
 }
 
 bool FindBadConstructsConsumer::VisitVarDecl(clang::VarDecl* var_decl) {
-  CheckVarDecl(var_decl);
+  CheckDeducedAutoPointer(var_decl);
   return true;
 }
 
@@ -296,8 +312,9 @@ void FindBadConstructsConsumer::CheckChromeClass(LocationType location_type,
     // If this is a POD or a class template or a type dependent on a
     // templated class, assume there's no ctor/dtor/virtual method
     // optimization that we should do.
-    if (!IsPodOrTemplateType(*record))
+    if (!IsPodOrTemplateType(*record)) {
       CheckCtorDtorWeight(record_location, record);
+    }
   }
 
   bool warn_on_inline_bodies = !implementation_file;
@@ -306,15 +323,17 @@ void FindBadConstructsConsumer::CheckChromeClass(LocationType location_type,
   // does not always see the "override", so we get false positives.
   // See http://llvm.org/bugs/show_bug.cgi?id=18440 and
   //     http://llvm.org/bugs/show_bug.cgi?id=21942
-  if (!IsPodOrTemplateType(*record))
+  if (!IsPodOrTemplateType(*record)) {
     CheckVirtualMethods(record_location, record, warn_on_inline_bodies);
+  }
 
   // TODO(dcheng): This is needed because some of the diagnostics for refcounted
   // classes use DiagnosticsEngine::Report() directly, and there are existing
   // violations in Blink. This should be removed once the checks are
   // modularized.
-  if (location_type != LocationType::kBlink)
+  if (location_type != LocationType::kBlink) {
     CheckRefCountedDtors(record_location, record);
+  }
 
   if (blink_data_member_type_checker_ &&
       location_type == LocationType::kBlink) {
@@ -325,15 +344,17 @@ void FindBadConstructsConsumer::CheckChromeClass(LocationType location_type,
 }
 
 void FindBadConstructsConsumer::CheckEnumMaxValue(EnumDecl* decl) {
-  if (!decl->isScoped())
+  if (!decl->isScoped()) {
     return;
+  }
 
   clang::EnumConstantDecl* max_value = nullptr;
   std::set<clang::EnumConstantDecl*> max_enumerators;
   llvm::APSInt max_seen;
   for (clang::EnumConstantDecl* enumerator : decl->enumerators()) {
-    if (enumerator->getName() == "kMaxValue")
+    if (enumerator->getName() == "kMaxValue") {
       max_value = enumerator;
+    }
 
     llvm::APSInt current_value = enumerator->getInitVal();
     if (max_enumerators.empty()) {
@@ -344,8 +365,9 @@ void FindBadConstructsConsumer::CheckEnumMaxValue(EnumDecl* decl) {
 
     assert(max_seen.isSigned() == current_value.isSigned());
 
-    if (current_value < max_seen)
+    if (current_value < max_seen) {
       continue;
+    }
 
     if (current_value == max_seen) {
       max_enumerators.emplace(enumerator);
@@ -358,8 +380,9 @@ void FindBadConstructsConsumer::CheckEnumMaxValue(EnumDecl* decl) {
     max_seen = current_value;
   }
 
-  if (!max_value)
+  if (!max_value) {
     return;
+  }
 
   if (max_enumerators.find(max_value) == max_enumerators.end()) {
     ReportIfSpellingLocNotIgnored(max_value->getLocation(),
@@ -380,16 +403,19 @@ void FindBadConstructsConsumer::CheckCtorDtorWeight(
   // struct {
   //   ...
   // } name_;
-  if (record->getIdentifier() == NULL)
+  if (record->getIdentifier() == NULL) {
     return;
+  }
 
   // We don't handle unions.
-  if (record->isUnion())
+  if (record->isUnion()) {
     return;
+  }
 
   // Skip records that derive from ignored base classes.
-  if (HasIgnoredBases(record))
+  if (HasIgnoredBases(record)) {
     return;
+  }
 
   // Count the number of templated base classes as a feature of whether the
   // destructor can be inlined.
@@ -454,9 +480,10 @@ void FindBadConstructsConsumer::CheckCtorDtorWeight(
       // find one that tries to be inline.
       for (CXXRecordDecl::ctor_iterator it = record->ctor_begin();
            it != record->ctor_end(); ++it) {
-        // The current check is buggy. An implicit copy constructor does not
-        // have an inline body, so this check never fires for classes with a
-        // user-declared out-of-line constructor.
+        // The current check is buggy in C++20 (but was more correct in C++14).
+        // An implicit copy constructor does not have an inline body, so this
+        // check never fires for classes with a user-declared out-of-line
+        // constructor.
         if (it->hasInlineBody()) {
           if (it->isCopyConstructor() &&
               !record->hasUserDeclaredCopyConstructor()) {
@@ -469,10 +496,11 @@ void FindBadConstructsConsumer::CheckCtorDtorWeight(
             // that's the better tradeoff at this point).
             // TODO(dcheng): With the RecursiveASTVisitor, these warnings might
             // be emitted on other platforms too, reevaluate if we want to keep
-            // surpressing this then http://crbug.com/467288
-            if (!record->hasAttr<DLLExportAttr>())
+            // suppressing this then http://crbug.com/467288
+            if (!record->hasAttr<DLLExportAttr>()) {
               ReportIfSpellingLocNotIgnored(record_location,
                                             diag_no_explicit_copy_ctor_);
+            }
           } else {
             // See the comment in the previous branch about copy constructors.
             // This does the same for implicit move constructors.
@@ -480,9 +508,10 @@ void FindBadConstructsConsumer::CheckCtorDtorWeight(
                 it->isMoveConstructor() &&
                 !record->hasUserDeclaredMoveConstructor() &&
                 record->hasAttr<DLLExportAttr>();
-            if (!is_likely_compiler_generated_dllexport_move_ctor)
+            if (!is_likely_compiler_generated_dllexport_move_ctor) {
               ReportIfSpellingLocNotIgnored(it->getInnerLocStart(),
                                             diag_inline_complex_ctor_);
+            }
           }
         } else if (it->isInlined() && !it->isInlineSpecified() &&
                    !it->isDeleted() &&
@@ -560,8 +589,9 @@ void FindBadConstructsConsumer::CheckVirtualMethods(
       continue;
     } else {
       CheckVirtualSpecifiers(*it);
-      if (warn_on_inline_bodies)
+      if (warn_on_inline_bodies) {
         CheckVirtualBodies(*it);
+      }
     }
   }
 }
@@ -577,8 +607,9 @@ void FindBadConstructsConsumer::CheckVirtualSpecifiers(
   OverrideAttr* override_attr = method->getAttr<OverrideAttr>();
   FinalAttr* final_attr = method->getAttr<FinalAttr>();
 
-  if (IsMethodInTestingNamespace(method))
+  if (IsMethodInTestingNamespace(method)) {
     return;
+  }
 
   SourceManager& manager = instance().getSourceManager();
   const LangOptions& lang_opts = instance().getLangOpts();
@@ -588,16 +619,18 @@ void FindBadConstructsConsumer::CheckVirtualSpecifiers(
   bool add_override = false;
 
   // Complain if a method is annotated virtual && (override || final).
-  if (has_virtual && (override_attr || final_attr))
+  if (has_virtual && (override_attr || final_attr)) {
     remove_virtual = true;
+  }
 
   // Complain if a method is an override and is not annotated with override or
   // final.
   if (is_override && !override_attr && !final_attr) {
     add_override = true;
     // Also remove the virtual in the same fixit if currently present.
-    if (has_virtual)
+    if (has_virtual) {
       remove_virtual = true;
+    }
   }
 
   if (final_attr && override_attr) {
@@ -607,8 +640,9 @@ void FindBadConstructsConsumer::CheckVirtualSpecifiers(
         << FixItHint::CreateRemoval(override_attr->getRange());
   }
 
-  if (!remove_virtual && !add_override)
+  if (!remove_virtual && !add_override) {
     return;
+  }
 
   // Deletion of virtual and insertion of override are tricky. The AST does not
   // expose the location of `virtual` or `=`: the former is useful when trying
@@ -647,8 +681,9 @@ void FindBadConstructsConsumer::CheckVirtualSpecifiers(
       } else if (token.is(tok::raw_identifier)) {
         // TODO(dcheng): Unclear if this needs to check for nested parentheses
         // as well?
-        if (token.getRawIdentifier() == "virtual")
+        if (token.getRawIdentifier() == "virtual") {
           virtual_loc = token.getLocation();
+        }
       }
     }
   }
@@ -688,18 +723,21 @@ void FindBadConstructsConsumer::CheckVirtualBodies(
         if (loc.isMacroID()) {
           SourceManager& manager = instance().getSourceManager();
           LocationType type = ClassifyLocation(manager.getSpellingLoc(loc));
-          if (type == LocationType::kThirdParty || type == LocationType::kBlink)
+          if (type == LocationType::kThirdParty ||
+              type == LocationType::kBlink) {
             emit = false;
-          else {
+          } else {
             StringRef name = Lexer::getImmediateMacroName(
                 loc, manager, instance().getLangOpts());
             if (name == "CR_BEGIN_MSG_MAP_EX" ||
-                name == "BEGIN_SAFE_MSG_MAP_EX")
+                name == "BEGIN_SAFE_MSG_MAP_EX") {
               emit = false;
+            }
           }
         }
-        if (emit)
+        if (emit) {
           ReportIfSpellingLocNotIgnored(loc, diag_virtual_with_inline_body_);
+        }
       }
     }
   }
@@ -716,8 +754,10 @@ FindBadConstructsConsumer::ClassifyType(const Type* type) {
       // it's counted, since the translation unit will fail to build. In that
       // case, just count it as a trivial member to avoid emitting warnings that
       // might be spurious.
-      if (!record_decl->hasDefinition() || record_decl->hasTrivialDestructor())
+      if (!record_decl->hasDefinition() ||
+          record_decl->hasTrivialDestructor()) {
         return TypeClassification::kTrivial;
+      }
 
       const auto name = record_decl->getQualifiedNameAsString();
 
@@ -726,8 +766,9 @@ FindBadConstructsConsumer::ClassifyType(const Type* type) {
       // `kNonTrivialTemplate`. The `kNonTrivialExternTemplate` classification
       // exists for this purpose.
       // https://github.com/llvm-mirror/libcxx/blob/78d6a7767ed57b50122a161b91f59f19c9bd0d19/include/string#L4317
-      if (name == "std::basic_string")
+      if (name == "std::basic_string") {
         return TypeClassification::kNonTrivialExternTemplate;
+      }
 
       // `base::raw_ptr` and `base::raw_ref` are non-trivial if the
       // `use_backup_ref_ptr` flag is enabled, and trivial otherwise. Since
@@ -768,8 +809,9 @@ FindBadConstructsConsumer::ClassifyType(const Type* type) {
       // using Foo = Bar<T>;
       //
       // Given `Foo<Baz>`, we want to classify it simply as `Bar<Baz>` would be.
-      if (template_type->isTypeAlias())
+      if (template_type->isTypeAlias()) {
         return ClassifyType(template_type->getAliasedType().getTypePtr());
+      }
 
       // Otherwise, classify the type produced by the template and apply the
       // corresponding template classification. For an example:
@@ -781,10 +823,12 @@ FindBadConstructsConsumer::ClassifyType(const Type* type) {
       // for `T`;
       const auto classification =
           ClassifyType(template_type->desugar().getTypePtr());
-      if (classification == TypeClassification::kTrivial)
+      if (classification == TypeClassification::kTrivial) {
         return TypeClassification::kTrivialTemplate;
-      if (classification == TypeClassification::kNonTrivial)
+      }
+      if (classification == TypeClassification::kNonTrivial) {
         return TypeClassification::kNonTrivialTemplate;
+      }
 
       return classification;
     }
@@ -899,8 +943,9 @@ bool FindBadConstructsConsumer::HasPublicDtorCallback(
   // only ones which will result in the destructor potentially being
   // exposed. This check is largely redundant, as Chromium code should be
   // exclusively using public inheritance.
-  if (path.Access != AS_public)
+  if (path.Access != AS_public) {
     return false;
+  }
 
   CXXRecordDecl* record =
       dyn_cast<CXXRecordDecl>(base->getType()->getAs<RecordType>()->getDecl());
@@ -943,8 +988,9 @@ void FindBadConstructsConsumer::CheckRefCountedDtors(
     SourceLocation record_location,
     CXXRecordDecl* record) {
   // Skip anonymous structs.
-  if (record->getIdentifier() == NULL)
+  if (record->getIdentifier() == NULL) {
     return;
+  }
 
   // Determine if the current type is even ref-counted.
   CXXBasePaths refcounted_path;
@@ -997,8 +1043,9 @@ void FindBadConstructsConsumer::CheckRefCountedDtors(
   //       new RefCountedInterface);
   //   // Calls SomeInterface::~SomeInterface(), which is unsafe.
   //   delete static_cast<SomeInterface*>(some_class.get());
-  if (!options_.check_base_classes)
+  if (!options_.check_base_classes) {
     return;
+  }
 
   // Find all public destructors. This will record the class hierarchy
   // that leads to the public destructor in |dtor_paths|.
@@ -1049,8 +1096,9 @@ void FindBadConstructsConsumer::CheckWeakPtrFactoryMembers(
     SourceLocation record_location,
     CXXRecordDecl* record) {
   // Skip anonymous structs.
-  if (record->getIdentifier() == NULL)
+  if (record->getIdentifier() == NULL) {
     return;
+  }
 
   // Iterate through members of the class.
   RecordDecl::field_iterator iter(record->field_begin()),
@@ -1096,8 +1144,9 @@ void FindBadConstructsConsumer::CheckWeakPtrFactoryMembers(
 // Copied from BlinkGCPlugin, see crrev.com/1135333007
 void FindBadConstructsConsumer::ParseFunctionTemplates(
     TranslationUnitDecl* decl) {
-  if (!instance().getLangOpts().DelayedTemplateParsing)
+  if (!instance().getLangOpts().DelayedTemplateParsing) {
     return;  // Nothing to do.
+  }
 
   std::set<FunctionDecl*> late_parsed_decls = GetLateParsedFunctionDecls(decl);
   clang::Sema& sema = instance().getSema();
@@ -1106,8 +1155,9 @@ void FindBadConstructsConsumer::ParseFunctionTemplates(
     assert(fd->isLateTemplateParsed());
 
     if (instance().getSourceManager().isInSystemHeader(
-            instance().getSourceManager().getSpellingLoc(fd->getLocation())))
+            instance().getSourceManager().getSpellingLoc(fd->getLocation()))) {
       continue;
+    }
 
     // Parse and build AST for yet-uninstantiated template functions.
     clang::LateParsedTemplate* lpt = sema.LateParsedTemplateMap[fd].get();
@@ -1115,55 +1165,128 @@ void FindBadConstructsConsumer::ParseFunctionTemplates(
   }
 }
 
-void FindBadConstructsConsumer::CheckVarDecl(clang::VarDecl* var_decl) {
+// Check whether auto deduces to a raw pointer.
+void FindBadConstructsConsumer::CheckDeducedAutoPointer(
+    clang::VarDecl* var_decl) {
   // Lambda init-captures should be ignored.
-  if (var_decl->isInitCapture())
+  if (var_decl->isInitCapture()) {
     return;
-
-  // Check whether auto deduces to a raw pointer.
-  QualType non_reference_type = var_decl->getType().getNonReferenceType();
-  // We might have a case where the type is written as auto*, but the actual
-  // type is deduced to be an int**. For that reason, keep going down the
-  // pointee type until we get an 'auto' or a non-pointer type.
-  for (;;) {
-    const clang::AutoType* auto_type =
-        non_reference_type->getAs<clang::AutoType>();
-    if (auto_type) {
-      if (auto_type->isDeduced()) {
-        QualType deduced_type = auto_type->getDeducedType();
-        if (!deduced_type.isNull() && deduced_type->isPointerType() &&
-            !deduced_type->isFunctionPointerType()) {
-          // Check if we should even be considering this type (note that there
-          // should be fewer auto types than banned namespace/directory types,
-          // so check this last.
-          LocationType location_type =
-              ClassifyLocation(var_decl->getBeginLoc());
-          if (location_type != LocationType::kThirdParty) {
-            // The range starts from |var_decl|'s loc start, which is the
-            // beginning of the full expression defining this |var_decl|. It
-            // ends, however, where this |var_decl|'s type loc ends, since
-            // that's the end of the type of |var_decl|.
-            // Note that the beginning source location of type loc omits cv
-            // qualifiers, which is why it's not a good candidate to use for the
-            // start of the range.
-            clang::SourceRange range(
-                var_decl->getBeginLoc(),
-                var_decl->getTypeSourceInfo()->getTypeLoc().getEndLoc());
-            ReportIfSpellingLocNotIgnored(range.getBegin(),
-                                          diag_auto_deduced_to_a_pointer_type_)
-                << FixItHint::CreateReplacement(
-                       range,
-                       GetAutoReplacementTypeAsString(
-                           var_decl->getType(), var_decl->getStorageClass()));
-          }
-        }
-      }
-    } else if (non_reference_type->isPointerType()) {
-      non_reference_type = non_reference_type->getPointeeType();
-      continue;
-    }
-    break;
   }
+
+  QualType qualtype = var_decl->getType().getNonReferenceType();
+  // Dependent types in templates can not be fully deduced as they depend on
+  // what the template parameter will be. They result in a 'null' deduced_type
+  // later. To catch this would require looking at each instantiation but then
+  // we could get inconsistent errors for some instantiations and not others.
+  if (qualtype->isDependentType()) {
+    return;
+  }
+
+  // Find the `clang::AutoType` which may be inside a `PointerType`. Since
+  // `AutoType` is 'sugar', care must be taken to not skip over it.
+  const clang::AutoType* auto_type = nullptr;
+  while (!auto_type) {
+    // We need to look for AutoType before looking for PointerType, or we will
+    // skip right past it, since AutoType is 'sugar'.
+    auto_type = qualtype->getAs<clang::AutoType>();
+    // If we have a type `auto*` then the pointer needs to be pulled off before
+    // we can find the AutoType. If we're not at a pointer, then stop searching
+    // for AutoType.
+    if (auto* ptr_type = qualtype->getAs<clang::PointerType>()) {
+      qualtype = ptr_type->getPointeeType();
+    } else {
+      break;
+    }
+  }
+  if (!auto_type) {
+    return;
+  }
+
+  // If not deduced yet, we can't tell if we require `auto*`.
+  if (!auto_type->isDeduced()) {
+    return;
+  }
+  // `Concept auto x` should be allowed even if the Concept matches to a pointer
+  // type.
+  if (auto_type->isConstrained()) {
+    return;
+  }
+
+  QualType deduced_type = auto_type->getDeducedType();
+  // `AutoType` can contain further nested `AutoType`s, so we need to walk
+  // through them all.
+  while (auto* inner_auto = deduced_type->getAs<clang::AutoType>()) {
+    deduced_type = inner_auto->getDeducedType();
+  }
+  // If `auto` resolves to a function pointer, it's always allowed.
+  if (deduced_type.getCanonicalType()->isFunctionPointerType()) {
+    return;
+  }
+  // Elaborated types wrap the type that we're interested in, so we need to
+  // step through them. Inside, there may be a template param type, a pointer
+  // type, etc. For example, this function returns an ElaboratedType, which
+  // has a pointer inside. But has additional sugar around the pointer that
+  // we want to examine first.
+  // ```
+  // template <class T>
+  // AliasOfT<T> auto_function_return_elaborated_alias_with_ptr() { ... }
+  // ```
+  if (auto* elaborated = deduced_type->getAs<clang::ElaboratedType>()) {
+    deduced_type = elaborated->getNamedType();
+  }
+  // If the `auto` resolves to a type that comes from a template parameter, the
+  // input type may have been a type alias and we can't tell how the type was
+  // actually spelt, so just allow it. This handles the return type of
+  // std::find() for example.
+  if (deduced_type->getAs<clang::SubstTemplateTypeParmType>()) {
+    return;
+  }
+  // If `auto` resolves to a type alias, it's allowed, even if there's a pointer
+  // inside the alias, which would be an implementation detail of the alias
+  // type. This includes stdlib iterator aliases.
+  if (deduced_type->getAs<clang::TypedefType>()) {
+    return;
+  }
+  // It's also possible to resolve to a template specialization of a type alias,
+  // in which the same applies as for TypedefType.
+  if (auto* spec = deduced_type->getAs<clang::TemplateSpecializationType>()) {
+    if (spec->isTypeAlias()) {
+      return;
+    }
+  }
+  // Last, if it's not a pointer at all then `auto` is allowed. This comes last
+  // because `getAs()` will jump past 'sugar' in the type, so we need to look
+  // for other things before jumping past them to the PointerType.
+  if (!deduced_type->getAs<clang::PointerType>()) {
+    return;
+  }
+
+  // Check if we should even be considering this type. This is the most
+  // expensive check, so we check this last.
+  LocationType location_type = ClassifyLocation(var_decl->getBeginLoc());
+  // We don't generate errors in third-party code.
+  if (location_type == LocationType::kThirdParty) {
+    return;
+  }
+
+  // Report an error, the code should say `auto*` instead of `auto`.
+  //
+  // The range starts from |var_decl|'s loc start, which is the
+  // beginning of the full expression defining this |var_decl|. It
+  // ends, however, where this |var_decl|'s type loc ends, since
+  // that's the end of the type of |var_decl|.
+  // Note that the beginning source location of type loc omits cv
+  // qualifiers, which is why it's not a good candidate to use for the
+  // start of the range.
+  clang::SourceRange range(
+      var_decl->getBeginLoc(),
+      var_decl->getTypeSourceInfo()->getTypeLoc().getEndLoc());
+  ReportIfSpellingLocNotIgnored(range.getBegin(),
+                                diag_auto_deduced_to_a_pointer_type_)
+      << FixItHint::CreateReplacement(
+             range,
+             GetAutoReplacementTypeAsString(var_decl->getType(),
+                                            var_decl->getStorageClass(), true));
 }
 
 }  // namespace chrome_checker

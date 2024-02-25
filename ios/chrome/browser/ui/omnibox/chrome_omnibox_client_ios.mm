@@ -7,6 +7,7 @@
 #import "base/feature_list.h"
 #import "base/metrics/user_metrics.h"
 #import "base/strings/string_util.h"
+#import "base/strings/sys_string_conversions.h"
 #import "base/strings/utf_string_conversions.h"
 #import "base/task/thread_pool.h"
 #import "components/favicon/ios/web_favicon_driver.h"
@@ -15,23 +16,27 @@
 #import "components/omnibox/browser/autocomplete_match.h"
 #import "components/omnibox/browser/autocomplete_result.h"
 #import "components/omnibox/browser/omnibox_log.h"
+#import "components/omnibox/browser/shortcuts_backend.h"
 #import "components/omnibox/common/omnibox_features.h"
 #import "components/search_engines/template_url_service.h"
 #import "ios/chrome/browser/autocomplete/model/autocomplete_classifier_factory.h"
 #import "ios/chrome/browser/autocomplete/model/autocomplete_provider_client_impl.h"
+#import "ios/chrome/browser/autocomplete/model/shortcuts_backend_factory.h"
 #import "ios/chrome/browser/bookmarks/model/bookmarks_utils.h"
 #import "ios/chrome/browser/bookmarks/model/local_or_syncable_bookmark_model_factory.h"
-#import "ios/chrome/browser/default_browser/utils.h"
-#import "ios/chrome/browser/https_upgrades/https_upgrade_service_factory.h"
+#import "ios/chrome/browser/default_browser/model/utils.h"
+#import "ios/chrome/browser/https_upgrades/model/https_upgrade_service_factory.h"
 #import "ios/chrome/browser/intents/intents_donation_helper.h"
-#import "ios/chrome/browser/prerender/prerender_service.h"
-#import "ios/chrome/browser/prerender/prerender_service_factory.h"
-#import "ios/chrome/browser/search_engines/template_url_service_factory.h"
+#import "ios/chrome/browser/prerender/model/prerender_service.h"
+#import "ios/chrome/browser/prerender/model/prerender_service_factory.h"
+#import "ios/chrome/browser/search_engines/model/template_url_service_factory.h"
 #import "ios/chrome/browser/sessions/ios_chrome_session_tab_helper.h"
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/shared/model/url/chrome_url_constants.h"
+#import "ios/chrome/browser/ui/omnibox/omnibox_ui_features.h"
 #import "ios/chrome/browser/ui/omnibox/web_location_bar.h"
 #import "ios/chrome/grit/ios_strings.h"
+#import "ios/web/public/navigation/navigation_context.h"
 #import "ios/web/public/navigation/navigation_manager.h"
 #import "ios/web/public/web_state.h"
 #import "ui/base/l10n/l10n_util.h"
@@ -43,11 +48,14 @@ ChromeOmniboxClientIOS::ChromeOmniboxClientIOS(
     feature_engagement::Tracker* tracker)
     : location_bar_(location_bar),
       browser_state_(browser_state),
-      engagement_tracker_(tracker) {
+      engagement_tracker_(tracker),
+      web_state_tracker_() {
   CHECK(engagement_tracker_);
 }
 
-ChromeOmniboxClientIOS::~ChromeOmniboxClientIOS() {}
+ChromeOmniboxClientIOS::~ChromeOmniboxClientIOS() {
+  web_state_tracker_.clear();
+}
 
 std::unique_ptr<AutocompleteProviderClient>
 ChromeOmniboxClientIOS::CreateAutocompleteProviderClient() {
@@ -162,8 +170,6 @@ void ChromeOmniboxClientIOS::OnUserPastedInOmniboxResultingInValidURL() {
       HasRecentValidURLPastesAndRecordsCurrentPaste()) {
     engagement_tracker_->NotifyEvent(
         feature_engagement::events::kBlueDotPromoCriterionMet);
-    engagement_tracker_->NotifyEvent(
-        feature_engagement::events::kDefaultBrowserVideoPromoConditionsMet);
   }
 }
 
@@ -209,7 +215,7 @@ void ChromeOmniboxClientIOS::OnURLOpenedFromOmnibox(OmniboxLog* log) {
   if (!browser_state_->IsOffTheRecord() &&
       (log->input_type == metrics::OmniboxInputType::QUERY ||
        log->input_type == metrics::OmniboxInputType::UNKNOWN)) {
-    [IntentDonationHelper donateIntent:INTENT_SEARCH_IN_CHROME];
+    [IntentDonationHelper donateIntent:IntentType::kSearchInChrome];
   }
 
   engagement_tracker_->NotifyEvent(
@@ -245,6 +251,18 @@ void ChromeOmniboxClientIOS::OnAutocompleteAccept(
     const AutocompleteMatch& match,
     const AutocompleteMatch& alternative_nav_match,
     IDNA2008DeviationCharacter deviation_char_in_hostname) {
+  if (base::FeatureList::IsEnabled(
+          omnibox::kOmniboxPopulateShortcutsDatabase) &&
+      location_bar_->GetWebState()) {
+    web::WebState* web_state = location_bar_->GetWebState();
+    const int32_t web_state_id = web_state->GetUniqueIdentifier().identifier();
+    if (web_state_tracker_.find(web_state_id) == web_state_tracker_.end()) {
+      scoped_observations_.AddObservation(web_state);
+    }
+    const ShortcutElement shortcutElement{text, match};
+    web_state_tracker_.insert_or_assign(web_state_id, shortcutElement);
+  }
+
   location_bar_->OnNavigate(destination_url, post_content, disposition,
                             transition, destination_url_entered_without_scheme,
                             match);
@@ -252,4 +270,39 @@ void ChromeOmniboxClientIOS::OnAutocompleteAccept(
 
 LocationBarModel* ChromeOmniboxClientIOS::GetLocationBarModel() {
   return location_bar_->GetLocationBarModel();
+}
+
+base::WeakPtr<OmniboxClient> ChromeOmniboxClientIOS::AsWeakPtr() {
+  return weak_factory_.GetWeakPtr();
+}
+
+void ChromeOmniboxClientIOS::DidFinishNavigation(
+    web::WebState* web_state,
+    web::NavigationContext* navigation_context) {
+  CHECK(
+      base::FeatureList::IsEnabled(omnibox::kOmniboxPopulateShortcutsDatabase));
+
+  const int32_t web_state_id = web_state->GetUniqueIdentifier().identifier();
+  ShortcutElement shortcut = web_state_tracker_.extract(web_state_id).mapped();
+  scoped_observations_.RemoveObservation(web_state);
+
+  scoped_refptr<ShortcutsBackend> shortcuts_backend =
+      ios::ShortcutsBackendFactory::GetInstance()->GetForBrowserState(
+          browser_state_);
+
+  // Add the shortcut if the navigation from the omnibox was successful.
+  if (!navigation_context->GetError() && shortcuts_backend &&
+      (navigation_context->GetPageTransition() &
+       ui::PAGE_TRANSITION_FROM_ADDRESS_BAR)) {
+    shortcuts_backend->AddOrUpdateShortcut(shortcut.text, shortcut.match);
+  }
+}
+
+void ChromeOmniboxClientIOS::WebStateDestroyed(web::WebState* web_state) {
+  CHECK(
+      base::FeatureList::IsEnabled(omnibox::kOmniboxPopulateShortcutsDatabase));
+
+  const int32_t web_state_id = web_state->GetUniqueIdentifier().identifier();
+  web_state_tracker_.erase(web_state_id);
+  scoped_observations_.RemoveObservation(web_state);
 }

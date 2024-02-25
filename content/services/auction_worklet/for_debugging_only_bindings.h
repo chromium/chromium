@@ -5,11 +5,12 @@
 #ifndef CONTENT_SERVICES_AUCTION_WORKLET_FOR_DEBUGGING_ONLY_BINDINGS_H_
 #define CONTENT_SERVICES_AUCTION_WORKLET_FOR_DEBUGGING_ONLY_BINDINGS_H_
 
+#include <optional>
+
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "content/services/auction_worklet/auction_v8_helper.h"
 #include "content/services/auction_worklet/context_recycler.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 #include "v8/include/v8-forward.h"
 
@@ -31,10 +32,10 @@ class ForDebuggingOnlyBindings : public Bindings {
   void AttachToContext(v8::Local<v8::Context> context) override;
   void Reset() override;
 
-  absl::optional<GURL> TakeLossReportUrl() {
+  std::optional<GURL> TakeLossReportUrl() {
     return std::move(loss_report_url_);
   }
-  absl::optional<GURL> TakeWinReportUrl() { return std::move(win_report_url_); }
+  std::optional<GURL> TakeWinReportUrl() { return std::move(win_report_url_); }
 
  private:
   static void ReportAdAuctionLoss(
@@ -44,8 +45,8 @@ class ForDebuggingOnlyBindings : public Bindings {
 
   const raw_ptr<AuctionV8Helper> v8_helper_;
 
-  absl::optional<GURL> loss_report_url_;
-  absl::optional<GURL> win_report_url_;
+  std::optional<GURL> loss_report_url_;
+  std::optional<GURL> win_report_url_;
 };
 
 }  // namespace auction_worklet

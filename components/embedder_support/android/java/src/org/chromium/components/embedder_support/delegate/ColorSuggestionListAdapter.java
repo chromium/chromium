@@ -18,18 +18,14 @@ import android.widget.LinearLayout;
 
 import androidx.core.view.MarginLayoutParamsCompat;
 
-/**
- * The adapter used to populate ColorPickerSimple.
- */
+/** The adapter used to populate ColorPickerSimple. */
 public class ColorSuggestionListAdapter extends BaseAdapter implements View.OnClickListener {
     private Context mContext;
     private ColorSuggestion[] mSuggestions;
     private OnColorSuggestionClickListener mListener;
     private int mSelectedColor;
 
-    /**
-     * The callback used to indicate the user has clicked on a suggestion.
-     */
+    /** The callback used to indicate the user has clicked on a suggestion. */
     public interface OnColorSuggestionClickListener {
         /**
          * Called upon a click on a suggestion.
@@ -46,9 +42,7 @@ public class ColorSuggestionListAdapter extends BaseAdapter implements View.OnCl
         mSuggestions = suggestions;
     }
 
-    /**
-     * Sets the listener that will be notified upon a click on a suggestion.
-     */
+    /** Sets the listener that will be notified upon a click on a suggestion. */
     public void setOnColorSuggestionClickListener(OnColorSuggestionClickListener listener) {
         mListener = listener;
     }
@@ -87,15 +81,18 @@ public class ColorSuggestionListAdapter extends BaseAdapter implements View.OnCl
         }
         button.setContentDescription(description);
         button.setOnClickListener(this);
-        button.setAccessibilityDelegate(new View.AccessibilityDelegate() {
-            @Override
-            public void onInitializeAccessibilityNodeInfo(View host, AccessibilityNodeInfo info) {
-                super.onInitializeAccessibilityNodeInfo(host, info);
-                info.setCollectionItemInfo(
-                        AccessibilityNodeInfo.CollectionItemInfo.obtain(index, 1, 1, 1, false));
-                info.setSelected(suggestion.mColor == mSelectedColor);
-            }
-        });
+        button.setAccessibilityDelegate(
+                new View.AccessibilityDelegate() {
+                    @Override
+                    public void onInitializeAccessibilityNodeInfo(
+                            View host, AccessibilityNodeInfo info) {
+                        super.onInitializeAccessibilityNodeInfo(host, info);
+                        info.setCollectionItemInfo(
+                                AccessibilityNodeInfo.CollectionItemInfo.obtain(
+                                        index, 1, 1, 1, false));
+                        info.setSelected(suggestion.mColor == mSelectedColor);
+                    }
+                });
     }
 
     @Override
@@ -117,8 +114,10 @@ public class ColorSuggestionListAdapter extends BaseAdapter implements View.OnCl
             layout = (LinearLayout) convertView;
         } else {
             layout = new LinearLayout(mContext);
-            layout.setLayoutParams(new AbsListView.LayoutParams(
-                    AbsListView.LayoutParams.MATCH_PARENT, AbsListView.LayoutParams.WRAP_CONTENT));
+            layout.setLayoutParams(
+                    new AbsListView.LayoutParams(
+                            AbsListView.LayoutParams.MATCH_PARENT,
+                            AbsListView.LayoutParams.WRAP_CONTENT));
             layout.setOrientation(LinearLayout.HORIZONTAL);
             layout.setBackgroundColor(Color.WHITE);
             int buttonHeight =

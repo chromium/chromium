@@ -8,10 +8,11 @@
 
 #include <algorithm>
 #include <memory>
+#include <numbers>
+#include <string_view>
 
 #include "base/files/file.h"
 #include "base/logging.h"
-#include "base/numerics/math_constants.h"
 #include "base/thread_annotations.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
@@ -131,7 +132,7 @@ int SineWaveAudioSource::OnMoreData(base::TimeDelta /* delay */,
     max_frames = cap_ > 0 ? std::min(dest->frames(), cap_ - pos_samples_)
                           : dest->frames();
     for (int i = 0; i < max_frames; ++i)
-      dest->channel(0)[i] = sin(2.0 * base::kPiDouble * f_ * pos_samples_++);
+      dest->channel(0)[i] = sin(2.0 * std::numbers::pi * f_ * pos_samples_++);
     for (int i = 1; i < dest->channels(); ++i) {
       memcpy(dest->channel(i), dest->channel(0),
              max_frames * sizeof(*dest->channel(i)));
@@ -186,7 +187,7 @@ void FileSource::LoadWavFile(const base::FilePath& path_to_wav_file) {
 
   // Attempt to create a handler with this data. If the data is invalid, return.
   wav_audio_handler_ =
-      WavAudioHandler::Create(base::StringPiece(raw_wav_data_.get(), length));
+      WavAudioHandler::Create(std::string_view(raw_wav_data_.get(), length));
   if (!wav_audio_handler_) {
     LOG(ERROR) << "WAV data could be read but is not valid";
     load_failed_ = true;

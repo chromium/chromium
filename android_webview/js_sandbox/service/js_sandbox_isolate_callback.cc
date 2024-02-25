@@ -49,6 +49,11 @@ void JsSandboxIsolateCallback::ReportJsEvaluationError(
   ReportError(ErrorType::kJsEvaluationError, error);
 }
 
+void JsSandboxIsolateCallback::ReportFileDescriptorIOFailedError(
+    const std::string& error) {
+  ReportError(ErrorType::kFileDescriptorIOFailedError, error);
+}
+
 void JsSandboxIsolateCallback::ReportMemoryLimitExceededError(
     const uint64_t memory_limit,
     const uint64_t v8_heap_usage,

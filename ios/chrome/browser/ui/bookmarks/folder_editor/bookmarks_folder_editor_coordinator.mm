@@ -7,6 +7,7 @@
 #import "base/apple/foundation_util.h"
 #import "base/check.h"
 #import "base/check_op.h"
+#import "base/memory/raw_ptr.h"
 #import "base/metrics/user_metrics.h"
 #import "base/metrics/user_metrics_action.h"
 #import "components/bookmarks/browser/bookmark_node.h"
@@ -16,8 +17,8 @@
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/snackbar_commands.h"
-#import "ios/chrome/browser/signin/authentication_service_factory.h"
-#import "ios/chrome/browser/sync/sync_service_factory.h"
+#import "ios/chrome/browser/signin/model/authentication_service_factory.h"
+#import "ios/chrome/browser/sync/model/sync_service_factory.h"
 #import "ios/chrome/browser/ui/bookmarks/bookmark_navigation_controller.h"
 #import "ios/chrome/browser/ui/bookmarks/folder_chooser/bookmarks_folder_chooser_coordinator.h"
 #import "ios/chrome/browser/ui/bookmarks/folder_chooser/bookmarks_folder_chooser_coordinator_delegate.h"
@@ -35,11 +36,13 @@
   BookmarksFolderEditorViewController* _viewController;
   // Coordinator to show the folder chooser UI.
   BookmarksFolderChooserCoordinator* _folderChooserCoordinator;
+  // The parent of current folder when the view was opened.
+  const bookmarks::BookmarkNode* _originalFolder;
   // Parent folder to `_folderNode`. Should never be `nullptr`.
-  const bookmarks::BookmarkNode* _parentFolderNode;
+  raw_ptr<const bookmarks::BookmarkNode> _parentFolderNode;
   // If `_folderNode` is `nullptr`, the user is adding a new folder. Otherwise
   // the user is editing an existing folder.
-  const bookmarks::BookmarkNode* _folderNode;
+  raw_ptr<const bookmarks::BookmarkNode> _folderNode;
 }
 
 @end
@@ -60,6 +63,7 @@
   if (self) {
     _baseNavigationController = navigationController;
     _parentFolderNode = parentFolder;
+    _originalFolder = parentFolder;
   }
   return self;
 }

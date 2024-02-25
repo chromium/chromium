@@ -99,9 +99,20 @@ class EvaluateScriptWebView : public StubWebView {
     return Status(code_);
   }
 
-  void nextEvaluateScript(std::string result, StatusCode code) {
+  void SetNextEvaluateScriptResult(std::string result, StatusCode code) {
     result_ = result;
     code_ = code;
+  }
+
+  bool IsDetached() const override { return false; }
+
+  Status CallFunctionWithTimeout(
+      const std::string& frame,
+      const std::string& function,
+      const base::Value::List& args,
+      const base::TimeDelta& timeout,
+      std::unique_ptr<base::Value>* result) override {
+    return Status{kOk};
   }
 
  private:
@@ -119,7 +130,7 @@ TEST(NavigationTracker, FrameLoadStartStop) {
           false, true, std::string(), &dict);
   DevToolsClient* client_ptr = client_uptr.get();
   WebViewImpl web_view(client_ptr->GetId(), true, nullptr, &browser_info,
-                       std::move(client_uptr), absl::nullopt,
+                       std::move(client_uptr), std::nullopt,
                        PageLoadStrategy::kNormal);
   JavaScriptDialogManager dialog_manager(client_ptr);
   NavigationTracker tracker(client_ptr, &web_view, &dialog_manager);
@@ -147,7 +158,7 @@ TEST(NavigationTracker, FrameLoadStartStartStop) {
           false, true, std::string(), &dict);
   DevToolsClient* client_ptr = client_uptr.get();
   WebViewImpl web_view(client_ptr->GetId(), true, nullptr, &browser_info,
-                       std::move(client_uptr), absl::nullopt,
+                       std::move(client_uptr), std::nullopt,
                        PageLoadStrategy::kNormal);
   JavaScriptDialogManager dialog_manager(client_ptr);
   NavigationTracker tracker(client_ptr, &web_view, &dialog_manager);
@@ -176,7 +187,7 @@ TEST(NavigationTracker, MultipleFramesLoad) {
           false, true, std::string(), &dict);
   DevToolsClient* client_ptr = client_uptr.get();
   WebViewImpl web_view(client_ptr->GetId(), true, nullptr, &browser_info,
-                       std::move(client_uptr), absl::nullopt,
+                       std::move(client_uptr), std::nullopt,
                        PageLoadStrategy::kNormal);
   JavaScriptDialogManager dialog_manager(client_ptr);
   NavigationTracker tracker(client_ptr, &web_view, &dialog_manager);
@@ -229,7 +240,7 @@ TEST(NavigationTracker, NavigationScheduledForOtherFrame) {
           false, true, std::string(), &dict);
   DevToolsClient* client_ptr = client_uptr.get();
   WebViewImpl web_view(client_ptr->GetId(), true, nullptr, &browser_info,
-                       std::move(client_uptr), absl::nullopt,
+                       std::move(client_uptr), std::nullopt,
                        PageLoadStrategy::kNormal);
   JavaScriptDialogManager dialog_manager(client_ptr);
   NavigationTracker tracker(client_ptr, NavigationTracker::kNotLoading,
@@ -271,18 +282,18 @@ TEST(NavigationTracker, CurrentFrameLoading) {
 
   // loading state should respond to events from new frame after SetFrame
   tracker.SetFrame(current_frame_id);
-  web_view.nextEvaluateScript("uninitialized", kOk);
+  web_view.SetNextEvaluateScriptResult("uninitialized", kOk);
   ASSERT_NO_FATAL_FAILURE(AssertPendingState(&tracker, true));
 
   ASSERT_EQ(
       kOk,
       tracker.OnEvent(client_ptr, "Page.frameStartedLoading", params).code());
-  web_view.nextEvaluateScript("loading", kOk);
+  web_view.SetNextEvaluateScriptResult("loading", kOk);
   ASSERT_NO_FATAL_FAILURE(AssertPendingState(&tracker, true));
   ASSERT_EQ(
       kOk,
       tracker.OnEvent(client_ptr, "Page.frameStoppedLoading", params).code());
-  web_view.nextEvaluateScript("complete", kOk);
+  web_view.SetNextEvaluateScriptResult("complete", kOk);
   ASSERT_NO_FATAL_FAILURE(AssertPendingState(&tracker, false));
 
   // loading state should not respond to unknown frame events
@@ -317,22 +328,22 @@ TEST(NavigationTracker, FrameAttachDetach) {
 
   // Trigger invalid current frame
   tracker.SetFrame(current_frame_id);
-  web_view.nextEvaluateScript("SetFrame before frameAttached", kOk);
+  web_view.SetNextEvaluateScriptResult("SetFrame before frameAttached", kOk);
   ASSERT_NO_FATAL_FAILURE(AssertPendingState(&tracker, false));
 
   ASSERT_EQ(kOk,
             tracker.OnEvent(client_ptr, "Page.frameAttached", params).code());
-  web_view.nextEvaluateScript("frameAttached", kOk);
+  web_view.SetNextEvaluateScriptResult("frameAttached", kOk);
   ASSERT_NO_FATAL_FAILURE(AssertPendingState(&tracker, false));
 
   // Trigger frame switch to valid
   tracker.SetFrame(current_frame_id);
-  web_view.nextEvaluateScript("SetFrame after frameAttached", kOk);
+  web_view.SetNextEvaluateScriptResult("SetFrame after frameAttached", kOk);
   ASSERT_NO_FATAL_FAILURE(AssertPendingState(&tracker, true));
 
   ASSERT_EQ(kOk,
             tracker.OnEvent(client_ptr, "Page.frameDetached", params).code());
-  web_view.nextEvaluateScript("frameDetached", kOk);
+  web_view.SetNextEvaluateScriptResult("frameDetached", kOk);
   ASSERT_NO_FATAL_FAILURE(AssertPendingState(&tracker, false));
 }
 
@@ -348,13 +359,13 @@ TEST(NavigationTracker, SetFrameNoFrame) {
 
   base::Value::Dict params;
   std::string top_frame_id = client_ptr->GetId();
-  web_view.nextEvaluateScript("uninitialized", kOk);
+  web_view.SetNextEvaluateScriptResult("uninitialized", kOk);
   ASSERT_NO_FATAL_FAILURE(tracker.SetFrame(std::string()));
   ASSERT_NO_FATAL_FAILURE(AssertPendingState(&tracker, true));
   ASSERT_NO_FATAL_FAILURE(tracker.SetFrame("2"));
   ASSERT_NO_FATAL_FAILURE(tracker.SetFrame(std::string()));
   params.Set("frameId", top_frame_id);
-  web_view.nextEvaluateScript("complete", kOk);
+  web_view.SetNextEvaluateScriptResult("complete", kOk);
   ASSERT_EQ(
       kOk,
       tracker.OnEvent(client_ptr, "Page.frameStoppedLoading", params).code());
@@ -411,7 +422,7 @@ TEST(NavigationTracker, UnknownStateFailsToDetermineState) {
       std::make_unique<FailToEvalScriptDevToolsClient>();
   DevToolsClient* client_ptr = client_uptr.get();
   WebViewImpl web_view(client_ptr->GetId(), true, nullptr, &browser_info,
-                       std::move(client_uptr), absl::nullopt,
+                       std::move(client_uptr), std::nullopt,
                        PageLoadStrategy::kNormal);
   JavaScriptDialogManager dialog_manager(client_ptr);
   NavigationTracker tracker(client_ptr, &web_view, &dialog_manager);
@@ -429,7 +440,7 @@ TEST(NavigationTracker, UnknownStatePageNotLoadAtAll) {
           true, true, std::string(), &dict);
   DevToolsClient* client_ptr = client_uptr.get();
   WebViewImpl web_view(client_ptr->GetId(), true, nullptr, &browser_info,
-                       std::move(client_uptr), absl::nullopt,
+                       std::move(client_uptr), std::nullopt,
                        PageLoadStrategy::kNormal);
   JavaScriptDialogManager dialog_manager(client_ptr);
   NavigationTracker tracker(client_ptr, &web_view, &dialog_manager);
@@ -458,7 +469,7 @@ TEST(NavigationTracker, UnknownStateForcesStartReceivesStop) {
           false, true, std::string(), &dict);
   DevToolsClient* client_ptr = client_uptr.get();
   WebViewImpl web_view(client_ptr->GetId(), true, nullptr, &browser_info,
-                       std::move(client_uptr), absl::nullopt,
+                       std::move(client_uptr), std::nullopt,
                        PageLoadStrategy::kNormal);
   JavaScriptDialogManager dialog_manager(client_ptr);
   NavigationTracker tracker(client_ptr, &web_view, &dialog_manager);
@@ -484,10 +495,10 @@ TEST(NavigationTracker, OnSuccessfulNavigate) {
   base::Value::Dict params;
   base::Value::Dict result;
   result.Set("frameId", client_ptr->GetId());
-  web_view.nextEvaluateScript("loading", kOk);
+  web_view.SetNextEvaluateScriptResult("loading", kOk);
   tracker.OnCommandSuccess(client_ptr, "Page.navigate", &result, Timeout());
   ASSERT_NO_FATAL_FAILURE(AssertPendingState(&tracker, true));
-  web_view.nextEvaluateScript("complete", kOk);
+  web_view.SetNextEvaluateScriptResult("complete", kOk);
   tracker.OnEvent(client_ptr, "Page.loadEventFired", params);
   ASSERT_NO_FATAL_FAILURE(AssertPendingState(&tracker, false));
 }
@@ -507,7 +518,7 @@ TEST(NavigationTracker, OnNetworkErroredNavigate) {
   base::Value::Dict result;
   result.Set("frameId", client_ptr->GetId());
   result.Set("errorText", "net::ERR_PROXY_CONNECTION_FAILED");
-  web_view.nextEvaluateScript("loading", kOk);
+  web_view.SetNextEvaluateScriptResult("loading", kOk);
   ASSERT_NE(
       kOk,
       tracker.OnCommandSuccess(client_ptr, "Page.navigate", &result, Timeout())
@@ -530,10 +541,10 @@ TEST(NavigationTracker, OnNonNetworkErroredNavigate) {
   base::Value::Dict result;
   result.Set("frameId", client_ptr->GetId());
   result.Set("errorText", "net::ERR_CERT_COMMON_NAME_INVALID");
-  web_view.nextEvaluateScript("loading", kOk);
+  web_view.SetNextEvaluateScriptResult("loading", kOk);
   tracker.OnCommandSuccess(client_ptr, "Page.navigate", &result, Timeout());
   ASSERT_NO_FATAL_FAILURE(AssertPendingState(&tracker, true));
-  web_view.nextEvaluateScript("complete", kOk);
+  web_view.SetNextEvaluateScriptResult("complete", kOk);
   tracker.OnEvent(client_ptr, "Page.loadEventFired", params);
   ASSERT_NO_FATAL_FAILURE(AssertPendingState(&tracker, false));
 }
@@ -561,7 +572,7 @@ TEST(NavigationTracker, TargetClosedInIsPendingNavigation) {
       std::make_unique<TargetClosedDevToolsClient>();
   DevToolsClient* client_ptr = client_uptr.get();
   WebViewImpl web_view(client_ptr->GetId(), true, nullptr, &browser_info,
-                       std::move(client_uptr), absl::nullopt,
+                       std::move(client_uptr), std::nullopt,
                        PageLoadStrategy::kNormal);
   JavaScriptDialogManager dialog_manager(client_ptr);
   NavigationTracker tracker(client_ptr, &web_view, &dialog_manager);

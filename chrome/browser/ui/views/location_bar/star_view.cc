@@ -63,7 +63,7 @@ StarView::StarView(CommandUpdater* command_updater,
   SetID(VIEW_ID_STAR_BUTTON);
   SetProperty(views::kElementIdentifierKey, kBookmarkStarViewElementId);
   SetActive(false);
-  SetAccessibilityProperties(/*role*/ absl::nullopt,
+  SetAccessibilityProperties(/*role*/ std::nullopt,
                              l10n_util::GetStringUTF16(IDS_TOOLTIP_STAR));
 }
 
@@ -131,5 +131,5 @@ void StarView::EditBookmarksPrefUpdated() {
   Update();
 }
 
-BEGIN_METADATA(StarView, PageActionIconView)
+BEGIN_METADATA(StarView)
 END_METADATA

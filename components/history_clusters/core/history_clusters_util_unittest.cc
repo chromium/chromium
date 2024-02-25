@@ -459,7 +459,7 @@ TEST(HistoryClustersUtilTest, IsShownVisitCandidateZeroScore) {
   history::ClusterVisit cluster_visit = testing::CreateClusterVisit(
       testing::CreateDefaultAnnotatedVisit(2, GURL("https://two.com/"),
                                            base::Time::FromTimeT(10)),
-      absl::nullopt, 0.0);
+      std::nullopt, 0.0);
 
   ASSERT_FALSE(IsShownVisitCandidate(cluster_visit));
 }
@@ -468,7 +468,7 @@ TEST(HistoryClustersUtilTest, IsShownVisitCandidateHidden) {
   history::ClusterVisit cluster_visit = testing::CreateClusterVisit(
       testing::CreateDefaultAnnotatedVisit(2, GURL("https://two.com/"),
                                            base::Time::FromTimeT(10)),
-      absl::nullopt, 1.0);
+      std::nullopt, 1.0);
   cluster_visit.interaction_state =
       history::ClusterVisit::InteractionState::kHidden;
 
@@ -479,7 +479,7 @@ TEST(HistoryClustersUtilTest, IsShownVisitCandidateNoTitle) {
   history::ClusterVisit cluster_visit = testing::CreateClusterVisit(
       testing::CreateDefaultAnnotatedVisit(2, GURL("https://two.com/"),
                                            base::Time::FromTimeT(10)),
-      absl::nullopt, 0.0);
+      std::nullopt, 0.0);
   cluster_visit.annotated_visit.url_row.set_title(u"");
 
   ASSERT_FALSE(IsShownVisitCandidate(cluster_visit));
@@ -489,7 +489,7 @@ TEST(HistoryClustersUtilTest, IsShownVisitCandidate) {
   history::ClusterVisit cluster_visit = testing::CreateClusterVisit(
       testing::CreateDefaultAnnotatedVisit(2, GURL("https://two.com/"),
                                            base::Time::FromTimeT(10)),
-      absl::nullopt, 1.0);
+      std::nullopt, 1.0);
   cluster_visit.annotated_visit.url_row.set_title(u"sometitle");
 
   ASSERT_TRUE(IsShownVisitCandidate(cluster_visit));

@@ -229,11 +229,6 @@ gfx::ExtensionSet GetGLExtensionsFromCurrentContext(
 
 }  // namespace
 
-CurrentGL*& GetGlContextForCurrentThread() {
-  thread_local CurrentGL* gl_context = nullptr;
-  return gl_context;
-}
-
 #if defined(USE_EGL)
 EGLApi* g_current_egl_context;
 #endif
@@ -274,7 +269,7 @@ void SetSoftwareWebGLCommandLineSwitches(base::CommandLine* command_line) {
                                   kANGLEImplementationSwiftShaderForWebGLName);
 }
 
-absl::optional<GLImplementationParts>
+std::optional<GLImplementationParts>
 GetRequestedGLImplementationFromCommandLine(
     const base::CommandLine* command_line,
     bool* fallback_to_software_gl) {
@@ -297,7 +292,7 @@ GetRequestedGLImplementationFromCommandLine(
 
   if (!command_line->HasSwitch(switches::kUseGL) &&
       !command_line->HasSwitch(switches::kUseANGLE)) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   std::string gl_name = command_line->GetSwitchValueASCII(switches::kUseGL);
@@ -312,7 +307,7 @@ GetRequestedGLImplementationFromCommandLine(
 
   if (gl_name == "any") {
     *fallback_to_software_gl = true;
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   if ((gl_name == kGLImplementationANGLEName) &&

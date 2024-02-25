@@ -14,7 +14,7 @@
 #include "chrome/browser/ash/login/wizard_controller.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/webui/ash/login/drive_pinning_screen_handler.h"
-#include "chromeos/ash/components/drivefs/drivefs_pin_manager.h"
+#include "chromeos/ash/components/drivefs/drivefs_pinning_manager.h"
 #include "components/drive/drive_pref_names.h"
 #include "ui/base/text/bytes_formatting.h"
 
@@ -24,7 +24,7 @@ namespace {
 constexpr const char kUserActionNext[] = "driveNext";
 constexpr const char kUserActionReturn[] = "return";
 
-using drivefs::pinning::PinManager;
+using drivefs::pinning::PinningManager;
 using drivefs::pinning::Progress;
 
 bool ShouldShowChoobeReturnButton(ChoobeFlowController* controller) {
@@ -43,11 +43,12 @@ void ReportScreenCompletedToChoobe(ChoobeFlowController* controller) {
       DrivePinningScreenView::kScreenId);
 }
 
-PinManager* GetPinManager() {
+PinningManager* GetPinningManager() {
   drive::DriveIntegrationService* const service =
       drive::DriveIntegrationServiceFactory::FindForProfile(
           ProfileManager::GetActiveUserProfile());
-  return service && service->IsMounted() ? service->GetPinManager() : nullptr;
+  return service && service->IsMounted() ? service->GetPinningManager()
+                                         : nullptr;
 }
 
 void RecordOOBEScreenSkippedMetric(drivefs::pinning::Stage stage) {
@@ -106,13 +107,7 @@ DrivePinningScreen::DrivePinningScreen(
       view_(std::move(view)),
       exit_callback_(exit_callback) {}
 
-DrivePinningScreen::~DrivePinningScreen() {
-  Profile* profile = ProfileManager::GetActiveUserProfile();
-  if (drive::DriveIntegrationService* const service =
-          drive::DriveIntegrationServiceFactory::FindForProfile(profile)) {
-    service->RemoveObserver(this);
-  }
-}
+DrivePinningScreen::~DrivePinningScreen() = default;
 
 bool DrivePinningScreen::ShouldBeSkipped(const WizardContext& context) const {
   if (context.skip_post_login_screens_for_tests) {
@@ -158,20 +153,25 @@ void DrivePinningScreen::CalculateRequiredSpace() {
       drive::DriveIntegrationServiceFactory::FindForProfile(
           ProfileManager::GetActiveUserProfile());
   if (!service) {
+    LOG(ERROR) << "No Drive integration service";
     return;
   }
-  if (!service->HasObserver(this)) {
-    service->AddObserver(this);
-  }
-  if (PinManager* const pin_manager = GetPinManager()) {
-    RecordCHOOBEScreenBulkPinningInitializations(
-        bulk_pinning_initializations_ > 0 ? bulk_pinning_initializations_
-                                          : ++bulk_pinning_initializations_);
-    LOG_IF(ERROR, !pin_manager->CalculateRequiredSpace())
-        << "Failed to calculate required space";
+
+  Observe(service);
+
+  PinningManager* const pinning_manager = GetPinningManager();
+  if (!pinning_manager) {
+    VLOG(1) << "No bulk-pinning manager";
     return;
   }
-  VLOG(1) << "Calculating required space called but manager is not initialized";
+
+  if (bulk_pinning_initializations_ == 0) {
+    ++bulk_pinning_initializations_;
+  }
+
+  RecordCHOOBEScreenBulkPinningInitializations(bulk_pinning_initializations_);
+  LOG_IF(ERROR, !pinning_manager->CalculateRequiredSpace())
+      << "Cannot calculate required space";
 }
 
 void DrivePinningScreen::OnProgressForTest(
@@ -242,9 +242,7 @@ void DrivePinningScreen::OnUserAction(const base::Value::List& args) {
     ReportScreenCompletedToChoobe(
         WizardController::default_controller()->choobe_flow_controller());
     const bool drive_pinning = args[1].GetBool();
-    LoginDisplayHost::default_host()
-        ->GetWizardContext()
-        ->return_to_choobe_screen = true;
+    context()->return_to_choobe_screen = true;
     OnNext(drive_pinning);
     return;
   }

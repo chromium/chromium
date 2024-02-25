@@ -6,7 +6,6 @@
 
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
-#include "ash/shell.h"
 #include "ash/system/media/media_notification_provider.h"
 #include "base/files/file_util.h"
 #include "base/path_service.h"
@@ -42,14 +41,12 @@
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/scalable_iph/scalable_iph_factory.h"
 #include "chrome/browser/screen_ai/screen_ai_dlc_installer.h"
+#include "chrome/browser/ui/ash/birch/birch_keyed_service_factory.h"
 #include "chrome/browser/ui/ash/calendar/calendar_keyed_service_factory.h"
-#include "chrome/browser/ui/ash/clipboard_history_url_title_fetcher_impl.h"
-#include "chrome/browser/ui/ash/clipboard_image_model_factory_impl.h"
-#include "chrome/browser/ui/ash/glanceables/chrome_glanceables_delegate.h"
 #include "chrome/browser/ui/ash/glanceables/glanceables_keyed_service_factory.h"
 #include "chrome/browser/ui/ash/holding_space/holding_space_keyed_service_factory.h"
 #include "chrome/browser/ui/ash/media_client_impl.h"
-#include "chrome/browser/ui/webui/settings/ash/peripheral_data_access_handler.h"
+#include "chrome/browser/ui/webui/ash/settings/pages/privacy/peripheral_data_access_handler.h"
 #include "chrome/common/pref_names.h"
 #include "chromeos/ash/components/audio/cras_audio_handler.h"
 #include "chromeos/ash/components/dbus/pciguard/pciguard_client.h"
@@ -155,13 +152,13 @@ void UserSessionInitializer::OnUserProfileLoaded(const AccountId& account_id) {
     InitializeCerts(profile);
     InitializeCRLSetFetcher();
     InitializePrimaryProfileServices(profile, user);
-    InitializeScalableIph(profile);
 
     FamilyUserMetricsServiceFactory::GetForBrowserContext(profile);
   }
 
-  if (user->GetType() == user_manager::USER_TYPE_CHILD)
+  if (user->GetType() == user_manager::UserType::kChild) {
     InitializeChildUserServices(profile);
+  }
 }
 
 void UserSessionInitializer::InitializeChildUserServices(Profile* profile) {
@@ -233,7 +230,7 @@ void UserSessionInitializer::InitializePrimaryProfileServices(
 
   lock_screen_apps::StateController::Get()->SetPrimaryProfile(profile);
 
-  if (user->GetType() == user_manager::USER_TYPE_REGULAR) {
+  if (user->GetType() == user_manager::UserType::kRegular) {
     // App install logs for extensions and ARC++ are uploaded via the user's
     // communication channel with the management server. This channel exists for
     // regular users only. `AppInstallEventLogManagerWrapper` and
@@ -249,11 +246,6 @@ void UserSessionInitializer::InitializePrimaryProfileServices(
       crostini::CrostiniManager::GetForProfile(profile);
   if (crostini_manager)
     crostini_manager->MaybeUpdateCrostini();
-
-  clipboard_history_url_title_fetcher_impl_ =
-      std::make_unique<ClipboardHistoryUrlTitleFetcherImpl>();
-  clipboard_image_model_factory_impl_ =
-      std::make_unique<ClipboardImageModelFactoryImpl>(profile);
 
   if (captions::IsLiveCaptionFeatureSupported() &&
       features::IsSystemLiveCaptionEnabled()) {
@@ -276,6 +268,10 @@ void UserSessionInitializer::OnUserSessionStarted(bool is_primary_user) {
   // Ensure that the `HoldingSpaceKeyedService` for `profile` is created.
   HoldingSpaceKeyedServiceFactory::GetInstance()->GetService(profile);
 
+  // Ensure that the `BirchKeyedService` for `profile` is created. It is created
+  // one per user in a multiprofile session.
+  BirchKeyedServiceFactory::GetInstance()->GetService(profile);
+
   // Ensure that the `CalendarKeyedService` for `profile` is created. It is
   // created one per user in a multiprofile session.
   CalendarKeyedServiceFactory::GetInstance()->GetService(profile);
@@ -290,14 +286,14 @@ void UserSessionInitializer::OnUserSessionStarted(bool is_primary_user) {
   if (is_primary_user) {
     DCHECK_EQ(primary_profile_, profile);
 
-    if (features::AreGlanceablesEnabled()) {
-      // Must be called after CalenderKeyedServiceFactory is initialized.
-      ChromeGlanceablesDelegate::Get()->OnPrimaryUserSessionStarted(profile);
-    }
     // Ensure that PhoneHubManager and EcheAppManager are created for the
     // primary profile.
     phonehub::PhoneHubManagerFactory::GetForProfile(profile);
     eche_app::EcheAppManagerFactory::GetForProfile(profile);
+
+    // `ScalableIph` depends on `PhoneHubManager`. Initialize after
+    // `PhoneHubManager`.
+    InitializeScalableIph(profile);
 
     plugin_vm::PluginVmManager* plugin_vm_manager =
         plugin_vm::PluginVmManagerFactory::GetForProfile(primary_profile_);
@@ -319,7 +315,7 @@ void UserSessionInitializer::OnUserSessionStarted(bool is_primary_user) {
 
     CrasAudioHandler::Get()->RefreshNoiseCancellationState();
 
-    Shell::Get()->media_notification_provider()->OnPrimaryUserSessionStarted();
+    MediaNotificationProvider::Get()->OnPrimaryUserSessionStarted();
     if (base::FeatureList::IsEnabled(media::kShowForceRespectUiGainsToggle)) {
       CrasAudioHandler::Get()->RefreshForceRespectUiGainsState();
     }

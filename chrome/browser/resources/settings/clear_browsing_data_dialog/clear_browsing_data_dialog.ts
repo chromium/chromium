@@ -19,25 +19,28 @@ import '../controls/settings_checkbox.js';
 import '../icons.html.js';
 import '../settings_shared.css.js';
 
-import {PrefControlMixinInterface} from '/shared/settings/controls/pref_control_mixin.js';
-import {DropdownMenuOptionList} from '/shared/settings/controls/settings_dropdown_menu.js';
-import {StatusAction, SyncBrowserProxy, SyncBrowserProxyImpl, SyncStatus} from '/shared/settings/people_page/sync_browser_proxy.js';
+import type {SyncBrowserProxy, SyncStatus} from '/shared/settings/people_page/sync_browser_proxy.js';
+import {StatusAction, SyncBrowserProxyImpl} from '/shared/settings/people_page/sync_browser_proxy.js';
+import {PrefsMixin} from 'chrome://resources/cr_components/settings_prefs/prefs_mixin.js';
 import {getInstance as getAnnouncerInstance} from 'chrome://resources/cr_elements/cr_a11y_announcer/cr_a11y_announcer.js';
-import {CrDialogElement} from 'chrome://resources/cr_elements/cr_dialog/cr_dialog.js';
+import type {CrDialogElement} from 'chrome://resources/cr_elements/cr_dialog/cr_dialog.js';
 import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
 import {WebUiListenerMixin} from 'chrome://resources/cr_elements/web_ui_listener_mixin.js';
-import {assert} from 'chrome://resources/js/assert_ts.js';
+import {assert} from 'chrome://resources/js/assert.js';
 import {FocusOutlineManager} from 'chrome://resources/js/focus_outline_manager.js';
 import {sanitizeInnerHtml} from 'chrome://resources/js/parse_html_subset.js';
-import {IronPagesElement} from 'chrome://resources/polymer/v3_0/iron-pages/iron-pages.js';
+import type {IronPagesElement} from 'chrome://resources/polymer/v3_0/iron-pages/iron-pages.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {SettingsCheckboxElement} from '../controls/settings_checkbox.js';
+import type {SettingsCheckboxElement} from '../controls/settings_checkbox.js';
+import type {DropdownMenuOptionList, SettingsDropdownMenuElement} from '../controls/settings_dropdown_menu.js';
 import {loadTimeData} from '../i18n_setup.js';
 import {routes} from '../route.js';
-import {Route, RouteObserverMixin, Router} from '../router.js';
+import type {Route} from '../router.js';
+import {RouteObserverMixin, Router} from '../router.js';
 
-import {ClearBrowsingDataBrowserProxy, ClearBrowsingDataBrowserProxyImpl, UpdateSyncStateEvent} from './clear_browsing_data_browser_proxy.js';
+import type {ClearBrowsingDataBrowserProxy, UpdateSyncStateEvent} from './clear_browsing_data_browser_proxy.js';
+import {ClearBrowsingDataBrowserProxyImpl} from './clear_browsing_data_browser_proxy.js';
 import {getTemplate} from './clear_browsing_data_dialog.html.js';
 
 /**
@@ -58,14 +61,37 @@ function closeDialog(dialog: CrDialogElement, isLast: boolean) {
 export interface SettingsClearBrowsingDataDialogElement {
   $: {
     clearBrowsingDataConfirm: HTMLElement,
+    cookiesCheckbox: SettingsCheckboxElement,
     cookiesCheckboxBasic: SettingsCheckboxElement,
     clearBrowsingDataDialog: CrDialogElement,
     tabs: IronPagesElement,
   };
 }
 
-const SettingsClearBrowsingDataDialogElementBase =
-    RouteObserverMixin(WebUiListenerMixin(I18nMixin(PolymerElement)));
+export enum TimePeriod {
+  LAST_HOUR = 0,
+  LAST_DAY = 1,
+  LAST_WEEK = 2,
+  FOUR_WEEKS = 3,
+  ALL_TIME = 4,
+  TIME_PERIOD_LAST = ALL_TIME
+}
+
+// TODO(crbug.com/1487530): Remove this after CbdTimeframeRequired finishes.
+export enum TimePeriodExperiment {
+  NOT_SELECTED = -1,
+  LAST_HOUR = 0,
+  LAST_DAY = 1,
+  LAST_WEEK = 2,
+  FOUR_WEEKS = 3,
+  ALL_TIME = 4,
+  OLDER_THAN_30_DAYS = 5,
+  LAST_15_MINUTES = 6,
+  TIME_PERIOD_LAST = LAST_15_MINUTES
+}
+
+const SettingsClearBrowsingDataDialogElementBase = RouteObserverMixin(
+    WebUiListenerMixin(PrefsMixin(I18nMixin(PolymerElement))));
 
 export class SettingsClearBrowsingDataDialogElement extends
     SettingsClearBrowsingDataDialogElementBase {
@@ -112,11 +138,91 @@ export class SettingsClearBrowsingDataDialogElement extends
         readOnly: true,
         type: Array,
         value: [
-          {value: 0, name: loadTimeData.getString('clearPeriodHour')},
-          {value: 1, name: loadTimeData.getString('clearPeriod24Hours')},
-          {value: 2, name: loadTimeData.getString('clearPeriod7Days')},
-          {value: 3, name: loadTimeData.getString('clearPeriod4Weeks')},
-          {value: 4, name: loadTimeData.getString('clearPeriodEverything')},
+          {
+            value: TimePeriod.LAST_HOUR,
+            name: loadTimeData.getString('clearPeriodHour'),
+          },
+          {
+            value: TimePeriod.LAST_DAY,
+            name: loadTimeData.getString('clearPeriod24Hours'),
+          },
+          {
+            value: TimePeriod.LAST_WEEK,
+            name: loadTimeData.getString('clearPeriod7Days'),
+          },
+          {
+            value: TimePeriod.FOUR_WEEKS,
+            name: loadTimeData.getString('clearPeriod4Weeks'),
+          },
+          {
+            value: TimePeriod.ALL_TIME,
+            name: loadTimeData.getString('clearPeriodEverything'),
+          },
+        ],
+      },
+
+      enableCbdTimeframeRequired_: {
+        type: Boolean,
+        value() {
+          return loadTimeData.getBoolean('enableCbdTimeframeRequired');
+        },
+      },
+
+      unoDesktopEnabled_: {
+        type: Boolean,
+        value() {
+          return loadTimeData.getBoolean('unoDesktopEnabled');
+        },
+      },
+
+      /**
+       * When CBDTimeframeRequired feature/flag is on, this will be the list
+       * of options for the dropdown menu. V2 additionally contains the "Last 15
+       * minutes" and the "Select a time range" options with "Select a time
+       * range" being always hidden in the menuOptions list in which users can
+       * chose the time range.
+       */
+      clearFromOptionsV2_: {
+        readOnly: true,
+        type: Array,
+        value: [
+          // The pref is initialized to TimePeriodExperiment.NOT_SELECTED, which
+          // is shown in the dropdown as the selected option until the user
+          // selects a different value. The menuList of options should not
+          // contain the option for TimePeriodExperiment.NOT_SELECTED, as it
+          // doesn't make sense for users to choose it.
+          {
+            value: TimePeriodExperiment.NOT_SELECTED,
+            name: loadTimeData.getString('clearPeriodNotSelected'),
+            hidden: true,
+          },
+          // The value of 15min is 6 to match the value written in the backend,
+          // Also, it comes first in the list to keep the list in ascending
+          // order.
+          {
+            value: TimePeriodExperiment.LAST_15_MINUTES,
+            name: loadTimeData.getString('clearPeriod15Minutes'),
+          },
+          {
+            value: TimePeriodExperiment.LAST_HOUR,
+            name: loadTimeData.getString('clearPeriodHour'),
+          },
+          {
+            value: TimePeriodExperiment.LAST_DAY,
+            name: loadTimeData.getString('clearPeriod24Hours'),
+          },
+          {
+            value: TimePeriodExperiment.LAST_WEEK,
+            name: loadTimeData.getString('clearPeriod7Days'),
+          },
+          {
+            value: TimePeriodExperiment.FOUR_WEEKS,
+            name: loadTimeData.getString('clearPeriod4Weeks'),
+          },
+          {
+            value: TimePeriodExperiment.ALL_TIME,
+            name: loadTimeData.getString('clearPeriodEverything'),
+          },
         ],
       },
 
@@ -189,6 +295,8 @@ export class SettingsClearBrowsingDataDialogElement extends
             'computeHasOtherError_(syncStatus, isSyncPaused_, hasPassphraseError_)',
       },
 
+      selectedTabIndex_: Number,
+
       tabsNames_: {
         type: Array,
         value: () =>
@@ -211,10 +319,24 @@ export class SettingsClearBrowsingDataDialogElement extends
     };
   }
 
+  static get observers() {
+    return [
+      `onTimePeriodAdvancedPrefUpdated_(
+          prefs.browser.clear_data.time_period.value)`,
+      `onTimePeriodBasicPrefUpdated_(
+          prefs.browser.clear_data.time_period_basic.value)`,
+      `onSelectedTabIndexPrefUpdated_(
+          prefs.browser.last_clear_browsing_data_tab.value)`,
+    ];
+  }
+
   // TODO(dpapad): make |syncStatus| private.
   syncStatus: SyncStatus|undefined;
   private counters_: {[k: string]: string};
   private clearFromOptions_: DropdownMenuOptionList;
+  private clearFromOptionsV2_: DropdownMenuOptionList;
+  private enableCbdTimeframeRequired_: boolean;
+  private unoDesktopEnabled_: boolean;
   private clearingInProgress_: boolean;
   private clearingDataAlertString_: string;
   private clearButtonDisabled_: boolean;
@@ -228,6 +350,7 @@ export class SettingsClearBrowsingDataDialogElement extends
   private isSyncPaused_: boolean;
   private hasPassphraseError_: boolean;
   private hasOtherSyncError_: boolean;
+  private selectedTabIndex_: number;
   private tabsNames_: string[];
   private googleSearchHistoryString_: TrustedHTML;
   private isNonGoogleDse_: boolean;
@@ -339,30 +462,40 @@ export class SettingsClearBrowsingDataDialogElement extends
 
   /**
    * Choose a label for the cookie checkbox
+   * @param isSignedIn boolean whether the user is signed in or not.
    * @param shouldShowCookieException boolean whether the exception about not
-   *  being signed out of your Google account should be shown when user is
+   * being signed out of your Google account should be shown when user is
    * sync.
    * @param cookiesSummary string explaining that deleting cookies and site data
-   * will sign the user out of most websites
-   * @param cookiesSummarySignedIn string explaining that deleting cookies and
-   * site data will sign the user out of most websites but Google sign in will
-   * stay.
+   * will sign the user out of most websites.
+   * @param clearCookiesSummarySignedIn string explaining that deleting cookies
+   * and site data will sign the user out of most websites but Google sign in
+   * will stay.
+   * @param clearCookiesSummarySyncing string explaining that deleting cookies
+   * and site data will sign the user out of most websites but Google sign in
+   * will stay when user is syncing.
    * @param clearCookiesSummarySignedInSupervisedProfile string used for a
    * supervised user. Gives information about family link controls and that they
    * will not be signed out on clearing cookies
    */
   private cookiesCheckboxLabel_(
-      shouldShowCookieException: boolean, cookiesSummary: string,
-      cookiesSummarySignedIn: string,
+      isSignedIn: boolean, shouldShowCookieException: boolean,
+      cookiesSummary: string, clearCookiesSummarySignedIn: string,
+      clearCookiesSummarySyncing: string,
+      // @ts-ignore: error TS6133: unused on some platforms
       clearCookiesSummarySignedInSupervisedProfile: string): string {
-    if (loadTimeData.getBoolean('isChildAccount') &&
-        loadTimeData.getBoolean(
-            'clearingCookiesKeepsSupervisedUsersSignedIn')) {
+    // <if expr="is_linux or is_macosx or is_win">
+    if (loadTimeData.getBoolean('isChildAccount')) {
       return clearCookiesSummarySignedInSupervisedProfile;
+    }
+    // </if>
+
+    if (this.unoDesktopEnabled_ && isSignedIn) {
+      return clearCookiesSummarySignedIn;
     }
 
     if (shouldShowCookieException) {
-      return cookiesSummarySignedIn;
+      return clearCookiesSummarySyncing;
     }
     // <if expr="chromeos_lacros">
     if (!loadTimeData.getBoolean('isSecondaryUser')) {
@@ -406,9 +539,10 @@ export class SettingsClearBrowsingDataDialogElement extends
     this.clearingDataAlertString_ = loadTimeData.getString('clearingData');
     const tab = this.$.tabs.selectedItem as HTMLElement;
     const dataTypes = this.getSelectedDataTypes_(tab);
-    const timePeriod = (tab.querySelector('.time-range-select') as unknown as
-                        PrefControlMixinInterface)
-                           .pref!.value;
+    const dropdownMenu =
+        tab.querySelector<SettingsDropdownMenuElement>('.time-range-select');
+    assert(dropdownMenu);
+    const timePeriod = dropdownMenu.pref!.value;
 
     if (tab.id === 'basic-tab') {
       chrome.metricsPrivate.recordUserAction('ClearBrowsingData_BasicTab');
@@ -416,10 +550,18 @@ export class SettingsClearBrowsingDataDialogElement extends
       chrome.metricsPrivate.recordUserAction('ClearBrowsingData_AdvancedTab');
     }
 
+    this.setPrefValue(
+        'browser.last_clear_browsing_data_tab', this.selectedTabIndex_);
+    // Dropdown menu and checkbox selections of both tabs should be persisted
+    // independently from the tab on which the user confirmed the deletion.
     this.shadowRoot!
         .querySelectorAll<SettingsCheckboxElement>(
             'settings-checkbox[no-set-pref]')
         .forEach(checkbox => checkbox.sendPrefChange());
+    this.shadowRoot!
+        .querySelectorAll<SettingsDropdownMenuElement>(
+            'settings-dropdown-menu[no-set-pref]')
+        .forEach(dropdown => dropdown.sendPrefChange());
 
     const {showHistoryNotice, showPasswordsNotice} =
         await this.browserProxy_.clearBrowsingData(dataTypes, timePeriod);
@@ -466,6 +608,10 @@ export class SettingsClearBrowsingDataDialogElement extends
     this.showPasswordsDeletionDialog_ = false;
   }
 
+  private onSelectedTabIndexPrefUpdated_(selectedTabIndex: number) {
+    this.selectedTabIndex_ = selectedTabIndex;
+  }
+
   /**
    * Records an action when the user changes between the basic and advanced tab.
    */
@@ -484,7 +630,10 @@ export class SettingsClearBrowsingDataDialogElement extends
   private onSyncDescriptionLinkClicked_(e: Event) {
     if ((e.target as HTMLElement).tagName === 'A') {
       e.preventDefault();
-      if (!this.syncStatus!.hasError) {
+      if (this.showSigninInfo_()) {
+        chrome.metricsPrivate.recordUserAction('ClearBrowsingData_SignOut');
+        this.syncBrowserProxy_.signOut(/*delete_profile=*/ false);
+      } else if (this.showSyncInfo_()) {
         chrome.metricsPrivate.recordUserAction('ClearBrowsingData_Sync_Pause');
         this.syncBrowserProxy_.pauseSync();
       } else if (this.isSyncPaused_) {
@@ -531,9 +680,50 @@ export class SettingsClearBrowsingDataDialogElement extends
   private shouldShowFooter_(): boolean {
     let showFooter = false;
     // <if expr="not is_chromeos">
-    showFooter = !!this.syncStatus && !!this.syncStatus!.signedIn;
+    if (this.unoDesktopEnabled_) {
+      showFooter = this.isSignedIn_;
+    } else {
+      showFooter = !!this.syncStatus && !!this.syncStatus!.signedIn;
+    }
     // </if>
     return showFooter;
+  }
+
+  /**
+   * @return Whether the signed info description should be shown in the footer.
+   */
+  private showSigninInfo_(): boolean {
+    return this.unoDesktopEnabled_ && this.isSignedIn_ &&
+        (!this.syncStatus || !this.syncStatus.signedIn);
+  }
+
+  /**
+   * @return Whether the synced info description should be shown in the footer.
+   */
+  private showSyncInfo_(): boolean {
+    return !this.showSigninInfo_() && !!this.syncStatus &&
+        !this.syncStatus.hasError;
+  }
+
+  private onTimePeriodAdvancedPrefUpdated_() {
+    this.onTimePeriodPrefUpdated_(false);
+  }
+
+  private onTimePeriodBasicPrefUpdated_() {
+    this.onTimePeriodPrefUpdated_(true);
+  }
+
+
+  private onTimePeriodPrefUpdated_(basic: boolean) {
+    const timePeriodPref = basic ? 'browser.clear_data.time_period_basic' :
+                                   'browser.clear_data.time_period';
+
+    const timePeriodValue = this.getPref(timePeriodPref).value;
+
+    if (!(timePeriodValue in TimePeriod)) {
+      // If the synced time period is not supported, default to "Last hour".
+      this.setPrefValue(timePeriodPref, TimePeriod.LAST_HOUR);
+    }
   }
 }
 

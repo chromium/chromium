@@ -8,6 +8,7 @@
 #include "ash/ash_export.h"
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
+#include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/animation/ink_drop_observer.h"
 #include "ui/views/animation/ink_drop_state.h"
 #include "ui/views/widget/widget_delegate.h"
@@ -22,6 +23,8 @@ namespace ash {
 class ASH_EXPORT LockScreenActionBackgroundView
     : public views::WidgetDelegateView,
       public views::InkDropObserver {
+  METADATA_HEADER(LockScreenActionBackgroundView, views::WidgetDelegateView)
+
  public:
   LockScreenActionBackgroundView();
 
@@ -57,7 +60,7 @@ class ASH_EXPORT LockScreenActionBackgroundView
   base::OnceClosure animation_end_callback_;
   views::InkDropState animating_to_state_;
 
-  raw_ptr<NoteBackground, ExperimentalAsh> background_ = nullptr;
+  raw_ptr<NoteBackground> background_ = nullptr;
 };
 
 }  // namespace ash

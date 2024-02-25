@@ -33,7 +33,7 @@ class FakeTileService : public TileService {
   void PurgeDb() override;
   void SetServerUrl(const std::string& url) override;
   void OnTileClicked(const std::string& tile_id) override;
-  void OnQuerySelected(const absl::optional<std::string>& parent_tile_id,
+  void OnQuerySelected(const std::optional<std::string>& parent_tile_id,
                        const std::u16string& query_text) override;
   Logger* GetLogger() override;
 

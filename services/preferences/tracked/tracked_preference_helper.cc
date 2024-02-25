@@ -62,7 +62,7 @@ bool TrackedPreferenceHelper::IsPersonal() const {
 
 void TrackedPreferenceHelper::ReportValidationResult(
     ValueState value_state,
-    base::StringPiece validation_type_suffix) const {
+    std::string_view validation_type_suffix) const {
   const char* histogram_name = nullptr;
   switch (value_state) {
     case ValueState::UNCHANGED:

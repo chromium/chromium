@@ -5,6 +5,7 @@
 #include "chrome/browser/printing/print_browsertest.h"
 
 #include <memory>
+#include <optional>
 #include <utility>
 #include <vector>
 
@@ -57,7 +58,6 @@
 #include "components/printing/common/print.mojom-test-utils.h"
 #include "components/printing/common/print.mojom.h"
 #include "components/web_modal/web_contents_modal_dialog_manager.h"
-#include "content/public/browser/browser_message_filter.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/global_routing_id.h"
@@ -87,7 +87,6 @@
 #include "printing/units.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_provider.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/scheduler/web_scheduler_tracked_feature.h"
@@ -484,6 +483,8 @@ void PrintBrowserTest::SetUpOnMainThread() {
   host_resolver()->AddRule("*", "127.0.0.1");
   content::SetupCrossSiteRedirector(embedded_test_server());
   ASSERT_TRUE(embedded_test_server()->Start());
+
+  PrepareRunloop();
 }
 
 void PrintBrowserTest::TearDownOnMainThread() {
@@ -530,14 +531,20 @@ void PrintBrowserTest::SetPrinterNameForSubsequentContexts(
       printer_name);
 }
 
+void PrintBrowserTest::SetNewDocumentJobId(int job_id) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  test_printing_context_factory_.SetJobIdOnNewDocument(job_id);
+}
+
 void PrintBrowserTest::PrintAndWaitUntilPreviewIsReady() {
   PrintAndWaitUntilPreviewIsReady(PrintParams());
 }
 
-void PrintBrowserTest::PrintAndWaitUntilPreviewIsReady(
+content::WebContents* PrintBrowserTest::PrintAndWaitUntilPreviewIsReady(
     const PrintParams& params) {
-  PrintAndWaitUntilPreviewIsReadyAndMaybeLoaded(params,
-                                                /*wait_for_loaded=*/false);
+  return PrintAndWaitUntilPreviewIsReadyAndMaybeLoaded(
+      params,
+      /*wait_for_loaded=*/false);
 }
 
 content::WebContents*
@@ -599,9 +606,9 @@ void PrintBrowserTest::ResetNumReceivedMessages() {
 
 void PrintBrowserTest::WaitUntilCallbackReceived() {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  base::RunLoop run_loop;
-  quit_callback_ = run_loop.QuitClosure();
-  run_loop.Run();
+
+  ASSERT_TRUE(run_loop_);
+  run_loop_->Run();
 }
 
 void PrintBrowserTest::CheckForQuit() {
@@ -660,6 +667,14 @@ void PrintBrowserTest::OverrideBinderForTesting(
       base::BindRepeating(
           &TestPrintRenderFrame::Bind,
           base::Unretained(GetFrameContent(render_frame_host))));
+}
+
+void PrintBrowserTest::PrepareRunloop() {
+  // `run_loop_` and `quit_callback_` are initialized together to avoid having
+  // a race between the last expected `CheckForQuit()` call and
+  // `WaitUntilCallbackReceived()` being called.
+  run_loop_ = std::make_unique<base::RunLoop>();
+  quit_callback_ = run_loop_->QuitClosure();
 }
 
 void PrintBrowserTest::OnNewDocument(
@@ -1026,22 +1041,23 @@ IN_PROC_BROWSER_TEST_F(PrintBrowserTest, LazyLoadedImagesFetchedScriptedPrint) {
 
 // Before invoking print preview, page scale is changed to a different value.
 // Test that when print preview is ready, in other words when printing is
-// finished, the page scale factor gets reset to initial scale.
+// finished, the page scale factor is still the same, and that it hasn't been
+// messed up by printing.
 IN_PROC_BROWSER_TEST_F(PrintBrowserTest, ResetPageScaleAfterPrintPreview) {
   ASSERT_TRUE(embedded_test_server()->Started());
   GURL url(embedded_test_server()->GetURL("/printing/test1.html"));
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
 
   auto* contents = browser()->tab_strip_model()->GetActiveWebContents();
-  contents->SetPageScale(1.5);
+  constexpr double kScaleFactor = 1.5;
+  contents->SetPageScale(kScaleFactor);
 
   PrintAndWaitUntilPreviewIsReady();
 
   double contents_page_scale_after_print =
       content::EvalJs(contents, "window.visualViewport.scale").ExtractDouble();
 
-  constexpr double kContentsInitialScale = 1.0;
-  EXPECT_EQ(kContentsInitialScale, contents_page_scale_after_print);
+  EXPECT_EQ(kScaleFactor, contents_page_scale_after_print);
 }
 
 // Printing frame content for the main frame of a generic webpage.
@@ -1232,10 +1248,11 @@ IN_PROC_BROWSER_TEST_F(PrintBrowserTest,
   ASSERT_EQ(test_frame->GetGlobalId(), subframe_in_queue->rfh_id_);
 
   // Creates mojom::PrintCompositor.
-  client->DoCompositeDocumentToPdf(
+  client->CompositeDocument(
       kDefaultDocumentCookie, main_frame,
       *TestPrintRenderFrame::GetDefaultDidPrintContentParams(),
-      ui::AXTreeUpdate(), base::DoNothing());
+      ui::AXTreeUpdate(), PrintCompositeClient::GetDocumentType(),
+      base::DoNothing());
   ASSERT_TRUE(client->GetCompositeRequest(kDefaultDocumentCookie));
   // `requested_subframes_` should be empty.
   ASSERT_TRUE(client->requested_subframes_.empty());
@@ -1648,7 +1665,7 @@ IN_PROC_BROWSER_TEST_F(SitePerProcessPrintExtensionBrowserTest,
 // TODO(crbug.com/1371776): Fix flakiness and re-enable.
 IN_PROC_BROWSER_TEST_F(PrintBrowserTest, DISABLED_PrintNup) {
   ASSERT_TRUE(embedded_test_server()->Started());
-  GURL url(embedded_test_server()->GetURL("/printing/multipagenup.html"));
+  GURL url(embedded_test_server()->GetURL("/printing/7_pages.html"));
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
 
   content::WebContents* web_contents =
@@ -1672,7 +1689,7 @@ IN_PROC_BROWSER_TEST_F(PrintBrowserTest, DISABLED_PrintNup) {
 // TODO(crbug.com/1371776): Fix flakiness and re-enable.
 IN_PROC_BROWSER_TEST_F(SitePerProcessPrintBrowserTest, DISABLED_PrintNup) {
   ASSERT_TRUE(embedded_test_server()->Started());
-  GURL url(embedded_test_server()->GetURL("/printing/multipagenup.html"));
+  GURL url(embedded_test_server()->GetURL("/printing/7_pages.html"));
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
 
   content::WebContents* web_contents =
@@ -1694,7 +1711,7 @@ IN_PROC_BROWSER_TEST_F(SitePerProcessPrintBrowserTest, DISABLED_PrintNup) {
 
 IN_PROC_BROWSER_TEST_F(PrintBrowserTest, MultipagePrint) {
   ASSERT_TRUE(embedded_test_server()->Started());
-  GURL url(embedded_test_server()->GetURL("/printing/multipage.html"));
+  GURL url(embedded_test_server()->GetURL("/printing/3_pages.html"));
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
 
   PrintAndWaitUntilPreviewIsReadyAndLoaded();
@@ -1704,7 +1721,7 @@ IN_PROC_BROWSER_TEST_F(PrintBrowserTest, MultipagePrint) {
 
 IN_PROC_BROWSER_TEST_F(SitePerProcessPrintBrowserTest, MultipagePrint) {
   ASSERT_TRUE(embedded_test_server()->Started());
-  GURL url(embedded_test_server()->GetURL("/printing/multipage.html"));
+  GURL url(embedded_test_server()->GetURL("/printing/3_pages.html"));
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
 
   PrintAndWaitUntilPreviewIsReadyAndLoaded();
@@ -1716,7 +1733,7 @@ IN_PROC_BROWSER_TEST_F(SitePerProcessPrintBrowserTest, MultipagePrint) {
 IN_PROC_BROWSER_TEST_F(PrintBrowserTest,
                        DISABLED_PDFPluginNotKeyboardFocusable) {
   ASSERT_TRUE(embedded_test_server()->Started());
-  GURL url(embedded_test_server()->GetURL("/printing/multipage.html"));
+  GURL url(embedded_test_server()->GetURL("/printing/3_pages.html"));
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
 
   TestPrintPreviewObserver print_preview_observer(/*wait_for_loaded=*/true);
@@ -1851,7 +1868,7 @@ IN_PROC_BROWSER_TEST_F(PrintBrowserTest,
         base::PathService::CheckedGet(chrome::DIR_TEST_DATA)
             .AppendASCII("printing")
             .AppendASCII("test1.png");
-    absl::optional<std::vector<uint8_t>> image_data =
+    std::optional<std::vector<uint8_t>> image_data =
         base::ReadFileToBytes(image_path);
     ASSERT_TRUE(image_data.has_value());
     GURL data_url(base::StringPrintf(
@@ -1917,7 +1934,20 @@ IN_PROC_BROWSER_TEST_F(PrintBrowserTest, NoResizeEvent) {
   EXPECT_EQ(before, after);
 }
 
-class PrintPrerenderBrowserTest : public PrintBrowserTest {
+IN_PROC_BROWSER_TEST_F(PrintBrowserTest, SpecifiedPageSizeCrash) {
+  const GURL kUrl(
+      embedded_test_server()->GetURL("/printing/specified_page_size.html"));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), kUrl));
+
+  // Pass if no crash. A specified page size may trigger the print preview UI to
+  // restart and regenerate print layout.
+  // See PrintPreviewAppElement.StateChanged_.
+  PrintAndWaitUntilPreviewIsReadyAndLoaded();
+}
+
+class PrintPrerenderBrowserTest
+    : public PrintBrowserTest,
+      public testing::WithParamInterface<std::string> {
  public:
   PrintPrerenderBrowserTest()
       : prerender_helper_(
@@ -1943,12 +1973,21 @@ class PrintPrerenderBrowserTest : public PrintBrowserTest {
   }
 
  protected:
+  std::string GetTargetHint() { return GetParam(); }
+
   content::test::PrerenderTestHelper prerender_helper_;
 };
 
+INSTANTIATE_TEST_SUITE_P(All,
+                         PrintPrerenderBrowserTest,
+                         testing::Values("_self", "_blank"),
+                         [](const testing::TestParamInfo<std::string>& info) {
+                           return info.param;
+                         });
+
 // Test that print() is silently ignored.
 // https://wicg.github.io/nav-speculation/prerendering.html#patch-modals
-IN_PROC_BROWSER_TEST_F(PrintPrerenderBrowserTest, QuietBlockWithWindowPrint) {
+IN_PROC_BROWSER_TEST_P(PrintPrerenderBrowserTest, QuietBlockWithWindowPrint) {
   // Navigate to an initial page.
   const GURL kUrl(embedded_test_server()->GetURL("/empty.html"));
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), kUrl));
@@ -1957,10 +1996,15 @@ IN_PROC_BROWSER_TEST_F(PrintPrerenderBrowserTest, QuietBlockWithWindowPrint) {
   GURL prerender_url =
       embedded_test_server()->GetURL("/printing/prerendering.html");
 
-  content::WebContentsConsoleObserver console_observer(web_contents());
-  int prerender_id = prerender_helper_.AddPrerender(prerender_url);
+  int prerender_id = prerender_helper_.AddPrerender(
+      prerender_url, /*eagerness=*/std::nullopt, GetTargetHint());
+  auto* prerender_web_contents =
+      content::WebContents::FromFrameTreeNodeId(prerender_id);
   content::RenderFrameHost* prerender_host =
-      prerender_helper_.GetPrerenderedMainFrameHost(prerender_id);
+      content::test::PrerenderTestHelper::GetPrerenderedMainFrameHost(
+          *prerender_web_contents, prerender_id);
+
+  content::WebContentsConsoleObserver console_observer(prerender_web_contents);
   EXPECT_EQ(0u, console_observer.messages().size());
 
   // Try to print by JS during prerendering.
@@ -1975,7 +2019,7 @@ IN_PROC_BROWSER_TEST_F(PrintPrerenderBrowserTest, QuietBlockWithWindowPrint) {
 // execCommand() is not specced, but
 // https://wicg.github.io/nav-speculation/prerendering.html#patch-modals
 // indicates the intent to silently ignore print APIs.
-IN_PROC_BROWSER_TEST_F(PrintPrerenderBrowserTest,
+IN_PROC_BROWSER_TEST_P(PrintPrerenderBrowserTest,
                        QuietBlockWithDocumentExecCommand) {
   // Navigate to an initial page.
   const GURL kUrl(embedded_test_server()->GetURL("/empty.html"));
@@ -1985,10 +2029,15 @@ IN_PROC_BROWSER_TEST_F(PrintPrerenderBrowserTest,
   GURL prerender_url =
       embedded_test_server()->GetURL("/printing/prerendering.html");
 
-  content::WebContentsConsoleObserver console_observer(web_contents());
-  int prerender_id = prerender_helper_.AddPrerender(prerender_url);
+  int prerender_id = prerender_helper_.AddPrerender(
+      prerender_url, /*eagerness=*/std::nullopt, GetTargetHint());
+  auto* prerender_web_contents =
+      content::WebContents::FromFrameTreeNodeId(prerender_id);
   content::RenderFrameHost* prerender_host =
-      prerender_helper_.GetPrerenderedMainFrameHost(prerender_id);
+      content::test::PrerenderTestHelper::GetPrerenderedMainFrameHost(
+          *prerender_web_contents, prerender_id);
+
+  content::WebContentsConsoleObserver console_observer(prerender_web_contents);
   EXPECT_EQ(0u, console_observer.messages().size());
 
   // Try to print by JS during prerendering.

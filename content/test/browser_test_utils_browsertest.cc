@@ -224,8 +224,8 @@ IN_PROC_BROWSER_TEST_F(EvalJsBrowserTest, EvalJsTimeout) {
   static std::string script = "new Promise(resolve => {window.r = resolve})";
   static std::string error;
   static Shell* shell_ptr = shell();
-  EXPECT_FATAL_FAILURE(error = EvalJs(shell_ptr, script).error,
-                       "RunLoop::Run() timed out.");
+  EXPECT_NONFATAL_FAILURE(error = EvalJs(shell_ptr, script).error,
+                          "RunLoop::Run() timed out.");
 
   EXPECT_THAT(error, Eq("Timeout waiting for Javascript to execute."));
 }

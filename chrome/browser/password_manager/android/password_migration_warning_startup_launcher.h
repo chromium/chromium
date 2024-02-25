@@ -8,7 +8,7 @@
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/password_manager/core/browser/password_manager_metrics_util.h"
-#include "components/password_manager/core/browser/password_store_consumer.h"
+#include "components/password_manager/core/browser/password_store/password_store_consumer.h"
 #include "content/public/browser/web_contents.h"
 
 // Helper class used to launch the password migration warning on startup.
@@ -44,7 +44,7 @@ class PasswordMigrationWarningStartupLauncher
   // it.
   void OnGetPasswordStoreResultsOrErrorFrom(
       password_manager::PasswordStoreInterface* store,
-      FormsOrError results_or_error) override;
+      password_manager::LoginsResultOrError results_or_error) override;
 
   // Not implemented. Required override.
   void OnGetPasswordStoreResults(

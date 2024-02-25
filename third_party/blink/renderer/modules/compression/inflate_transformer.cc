@@ -8,7 +8,9 @@
 #include <cstring>
 #include <limits>
 
+#include "base/trace_event/typed_macros.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
+#include "third_party/blink/renderer/bindings/core/v8/to_v8_traits.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_core.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_typedefs.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_union_arraybuffer_arraybufferview.h"
@@ -19,7 +21,6 @@
 #include "third_party/blink/renderer/modules/compression/compression_format.h"
 #include "third_party/blink/renderer/modules/compression/zlib_partition_alloc.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
-#include "third_party/blink/renderer/platform/bindings/to_v8.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 #include "v8/include/v8.h"
@@ -71,7 +72,7 @@ ScriptPromise InflateTransformer::Transform(
   Inflate(array_piece.Bytes(),
           static_cast<wtf_size_t>(array_piece.ByteLength()), IsFinished(false),
           controller, exception_state);
-  return ScriptPromise::CastUndefined(script_state_);
+  return ScriptPromise::CastUndefined(script_state_.Get());
 }
 
 ScriptPromise InflateTransformer::Flush(
@@ -91,7 +92,7 @@ ScriptPromise InflateTransformer::Flush(
     exception_state.ThrowTypeError("Compressed input was truncated.");
   }
 
-  return ScriptPromise::CastUndefined(script_state_);
+  return ScriptPromise::CastUndefined(script_state_.Get());
 }
 
 void InflateTransformer::Inflate(const uint8_t* start,
@@ -99,6 +100,7 @@ void InflateTransformer::Inflate(const uint8_t* start,
                                  IsFinished finished,
                                  TransformStreamDefaultController* controller,
                                  ExceptionState& exception_state) {
+  TRACE_EVENT("blink,devtools.timeline", "DecompressionStream Inflate");
   if (reached_end_ && length != 0) {
     // zlib will ignore data after the end of the stream, so we have to
     // explicitly throw an error.

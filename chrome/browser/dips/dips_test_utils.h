@@ -111,7 +111,8 @@ void AccessCookieViaJSIn(content::WebContents* web_contents,
 bool NavigateToSetCookie(content::WebContents* web_contents,
                          const net::EmbeddedTestServer* server,
                          base::StringPiece host,
-                         bool is_secure_cookie_set);
+                         bool is_secure_cookie_set,
+                         bool is_ad_tagged);
 
 // Helper function for creating an image with a cookie access on the provided
 // WebContents.
@@ -124,8 +125,8 @@ inline void WaitOnStorage(DIPSService* dips_service) {
 }
 
 // Helper function to query the `url` state from DIPS storage.
-absl::optional<StateValue> GetDIPSState(DIPSService* dips_service,
-                                        const GURL& url);
+std::optional<StateValue> GetDIPSState(DIPSService* dips_service,
+                                       const GURL& url);
 
 inline DIPSService* GetDipsService(content::WebContents* web_contents) {
   return DIPSServiceFactory::GetForBrowserContext(
@@ -287,5 +288,9 @@ class OpenedWindowObserver : public content::WebContentsObserver {
   raw_ptr<content::WebContents> window_ = nullptr;
   base::RunLoop run_loop_;
 };
+
+// Simulate a mouse click and wait for the main frame to receive user
+// activation.
+void SimulateMouseClickAndWait(content::WebContents*);
 
 #endif  // CHROME_BROWSER_DIPS_DIPS_TEST_UTILS_H_

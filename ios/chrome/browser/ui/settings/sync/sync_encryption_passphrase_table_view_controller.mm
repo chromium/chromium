@@ -17,10 +17,9 @@
 #import "components/strings/grit/components_strings.h"
 #import "components/sync/service/sync_service.h"
 #import "components/sync/service/sync_user_settings.h"
-#import "ios/chrome/browser/net/crurl.h"
-#import "ios/chrome/browser/settings/sync/utils/sync_util.h"
+#import "ios/chrome/browser/net/model/crurl.h"
+#import "ios/chrome/browser/settings/model/sync/utils/sync_util.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
-#import "ios/chrome/browser/shared/coordinator/scene/scene_state_browser_agent.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
@@ -30,16 +29,17 @@
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_text_item.h"
 #import "ios/chrome/browser/shared/ui/table_view/table_view_utils.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
-#import "ios/chrome/browser/signin/authentication_service.h"
-#import "ios/chrome/browser/signin/authentication_service_factory.h"
-#import "ios/chrome/browser/signin/identity_manager_factory.h"
-#import "ios/chrome/browser/signin/system_identity.h"
-#import "ios/chrome/browser/sync/sync_service_factory.h"
+#import "ios/chrome/browser/signin/model/authentication_service.h"
+#import "ios/chrome/browser/signin/model/authentication_service_factory.h"
+#import "ios/chrome/browser/signin/model/identity_manager_factory.h"
+#import "ios/chrome/browser/signin/model/system_identity.h"
+#import "ios/chrome/browser/sync/model/sync_service_factory.h"
 #import "ios/chrome/browser/ui/scoped_ui_blocker/scoped_ui_blocker.h"
 #import "ios/chrome/browser/ui/settings/cells/byo_textfield_item.h"
 #import "ios/chrome/browser/ui/settings/cells/passphrase_error_item.h"
 #import "ios/chrome/browser/ui/settings/google_services/google_services_settings_constants.h"
 #import "ios/chrome/browser/ui/settings/settings_navigation_controller.h"
+#import "ios/chrome/grit/ios_branded_strings.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ui/base/l10n/l10n_util.h"
 #import "ui/base/l10n/l10n_util_mac.h"
@@ -159,8 +159,7 @@ const CGFloat kSpinnerButtonPadding = 18;
   [self loadModel];
   [self setRightNavBarItem];
 
-  SceneState* sceneState =
-      SceneStateBrowserAgent::FromBrowser(self.browser)->GetSceneState();
+  SceneState* sceneState = self.browser->GetSceneState();
   _uiBlocker = std::make_unique<ScopedUIBlocker>(sceneState);
 }
 
@@ -505,6 +504,10 @@ const CGFloat kSpinnerButtonPadding = 18;
     if (settingsNavigationController) {
       [settingsNavigationController
           popViewControllerOrCloseSettingsAnimated:YES];
+    } else if (self.presentModally) {
+      [self.navigationController.presentingViewController
+          dismissViewControllerAnimated:YES
+                             completion:nil];
     } else {
       [self.navigationController popViewControllerAnimated:YES];
     }
@@ -529,8 +532,10 @@ const CGFloat kSpinnerButtonPadding = 18;
           ->HasPrimaryIdentity(signin::ConsentLevel::kSignin)) {
     return;
   }
-  [base::apple::ObjCCastStrict<SettingsNavigationController>(
-      self.navigationController) popViewControllerOrCloseSettingsAnimated:NO];
+  if (!self.presentModally) {
+    [base::apple::ObjCCastStrict<SettingsNavigationController>(
+        self.navigationController) popViewControllerOrCloseSettingsAnimated:NO];
+  }
 }
 
 #pragma mark - SettingsControllerProtocol callbacks
@@ -543,11 +548,15 @@ const CGFloat kSpinnerButtonPadding = 18;
 }
 
 - (void)reportBackUserAction {
-  NOTREACHED();
+  // No-op for this view controller.
 }
 
 - (void)settingsWillBeDismissed {
-  DCHECK(!_settingsAreDismissed);
+  if (_settingsAreDismissed) {
+    // This method can be called twice when the account is removed. Related to
+    // crbug.com/1480441.
+    return;
+  }
 
   // Remove observer bridges.
   _syncObserver.reset();

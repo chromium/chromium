@@ -5,12 +5,12 @@
 #include "components/autofill/core/browser/data_model/autofill_profile_comparator.h"
 
 #include <algorithm>
+#include <optional>
 #include <vector>
 
 #include "base/i18n/char_iterator.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/string_split.h"
-#include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversion_utils.h"
 #include "base/strings/utf_string_conversions.h"
 #include "components/autofill/core/browser/autofill_data_util.h"
@@ -20,7 +20,6 @@
 #include "components/autofill/core/browser/metrics/autofill_metrics.h"
 #include "components/autofill/core/common/autofill_clock.h"
 #include "components/autofill/core/common/autofill_l10n_util.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/libphonenumber/phonenumber_api.h"
 
 using base::UTF16ToUTF8;
@@ -185,18 +184,15 @@ int32_t NormalizingIterator::GetNextChar() {
 // The values corresponding to those types are visible in the settings.
 // TODO(crbug.com/1441904): Landmark, between-street and admin-level2 are in
 // progress to be included in the settings.
-ServerFieldTypeSet GetUserVisibleTypes() {
-  static const ServerFieldTypeSet user_visible_type = {
+FieldTypeSet GetUserVisibleTypes() {
+  static const FieldTypeSet user_visible_type = {
       NAME_FULL,
-      NAME_HONORIFIC_PREFIX,
       ADDRESS_HOME_STREET_ADDRESS,
       ADDRESS_HOME_CITY,
       ADDRESS_HOME_DEPENDENT_LOCALITY,
       ADDRESS_HOME_STATE,
       ADDRESS_HOME_ZIP,
       ADDRESS_HOME_COUNTRY,
-      ADDRESS_HOME_LANDMARK,
-      ADDRESS_HOME_BETWEEN_STREETS,
       ADDRESS_HOME_ADMIN_LEVEL2,
       EMAIL_ADDRESS,
       PHONE_HOME_WHOLE_NUMBER,
@@ -204,14 +200,8 @@ ServerFieldTypeSet GetUserVisibleTypes() {
   return user_visible_type;
 }
 
-bool ProfileValueDifference::operator==(
-    const ProfileValueDifference& right) const {
-  return (type == right.type) && (first_value == right.first_value) &&
-         (second_value == right.second_value);
-}
-
 AutofillProfileComparator::AutofillProfileComparator(
-    const base::StringPiece& app_locale)
+    const std::string_view& app_locale)
     : app_locale_(app_locale.data(), app_locale.size()) {}
 
 AutofillProfileComparator::~AutofillProfileComparator() = default;
@@ -220,7 +210,7 @@ std::vector<ProfileValueDifference>
 AutofillProfileComparator::GetProfileDifference(
     const AutofillProfile& first_profile,
     const AutofillProfile& second_profile,
-    ServerFieldTypeSet types,
+    FieldTypeSet types,
     const std::string& app_locale) {
   std::vector<ProfileValueDifference> difference;
   difference.reserve(types.size());
@@ -237,14 +227,13 @@ AutofillProfileComparator::GetProfileDifference(
   return difference;
 }
 
-base::flat_map<ServerFieldType, std::pair<std::u16string, std::u16string>>
+base::flat_map<FieldType, std::pair<std::u16string, std::u16string>>
 AutofillProfileComparator::GetProfileDifferenceMap(
     const AutofillProfile& first_profile,
     const AutofillProfile& second_profile,
-    ServerFieldTypeSet types,
+    FieldTypeSet types,
     const std::string& app_locale) {
-  std::vector<
-      std::pair<ServerFieldType, std::pair<std::u16string, std::u16string>>>
+  std::vector<std::pair<FieldType, std::pair<std::u16string, std::u16string>>>
       result;
   result.reserve(types.size());
 
@@ -254,8 +243,7 @@ AutofillProfileComparator::GetProfileDifferenceMap(
         {diff.type,
          {std::move(diff.first_value), std::move(diff.second_value)}});
   }
-  return base::flat_map<ServerFieldType,
-                        std::pair<std::u16string, std::u16string>>(
+  return base::flat_map<FieldType, std::pair<std::u16string, std::u16string>>(
       std::move(result));
 }
 
@@ -268,7 +256,7 @@ AutofillProfileComparator::GetSettingsVisibleProfileDifference(
                               GetUserVisibleTypes(), app_locale);
 }
 
-base::flat_map<ServerFieldType, std::pair<std::u16string, std::u16string>>
+base::flat_map<FieldType, std::pair<std::u16string, std::u16string>>
 AutofillProfileComparator::GetSettingsVisibleProfileDifferenceMap(
     const AutofillProfile& first_profile,
     const AutofillProfile& second_profile,
@@ -284,19 +272,18 @@ bool AutofillProfileComparator::Compare(base::StringPiece16 text1,
     return true;
   }
 
-  NormalizingIterator normalizing_iter1{text1, whitespace_spec};
-  NormalizingIterator normalizing_iter2{text2, whitespace_spec};
+  // We transliterate the entire text as it's non-trivial to go character
+  // by character (eg. a "ß" is transliterated to "ss").
+  std::u16string normalized_text1 =
+      RemoveDiacriticsAndConvertToLowerCase(text1);
+  std::u16string normalized_text2 =
+      RemoveDiacriticsAndConvertToLowerCase(text2);
 
-  BorrowedTransliterator transliterator;
+  NormalizingIterator normalizing_iter1{normalized_text1, whitespace_spec};
+  NormalizingIterator normalizing_iter2{normalized_text2, whitespace_spec};
+
   while (!normalizing_iter1.End() && !normalizing_iter2.End()) {
-    icu::UnicodeString char1 =
-        icu::UnicodeString(normalizing_iter1.GetNextChar());
-    icu::UnicodeString char2 =
-        icu::UnicodeString(normalizing_iter2.GetNextChar());
-
-    transliterator.Transliterate(&char1);
-    transliterator.Transliterate(&char2);
-    if (char1 != char2) {
+    if (normalizing_iter1.GetNextChar() != normalizing_iter2.GetNextChar()) {
       return false;
     }
     normalizing_iter1.Advance();
@@ -609,7 +596,7 @@ bool AutofillProfileComparator::MergePhoneNumbers(
     const AutofillProfile& p1,
     const AutofillProfile& p2,
     PhoneNumber& phone_number) const {
-  const ServerFieldType kWholePhoneNumber = PHONE_HOME_WHOLE_NUMBER;
+  const FieldType kWholePhoneNumber = PHONE_HOME_WHOLE_NUMBER;
   const std::u16string& s1 = p1.GetRawInfo(kWholePhoneNumber);
   const std::u16string& s2 = p2.GetRawInfo(kWholePhoneNumber);
 
@@ -633,9 +620,8 @@ bool AutofillProfileComparator::MergePhoneNumbers(
   // Figure out a country code hint.
   // TODO(crbug.com/1313862) |GetNonEmptyOf()| prefers |p1| in case both are
   // non empty.
-  const AutofillType kCountryCode(HtmlFieldType::kCountryCode,
-                                  HtmlFieldMode::kNone);
-  std::string region = UTF16ToUTF8(GetNonEmptyOf(p1, p2, kCountryCode));
+  std::string region = UTF16ToUTF8(
+      GetNonEmptyOf(p1, p2, AutofillType(HtmlFieldType::kCountryCode)));
   if (region.empty())
     region = AutofillCountry::CountryCodeForLocale(app_locale_);
 
@@ -707,7 +693,7 @@ bool AutofillProfileComparator::MergePhoneNumbers(
   // include the country code prefix.
   if (merged_number.country_code() == 1 &&
       merged_number.national_number() <= 9999999 &&
-      base::StartsWith(new_number, "+1", base::CompareCase::SENSITIVE)) {
+      new_number.starts_with("+1")) {
     size_t offset = 2;  // The char just after "+1".
     while (offset < new_number.size() &&
            base::IsAsciiWhitespace(new_number[offset])) {
@@ -729,21 +715,6 @@ bool AutofillProfileComparator::MergeAddresses(const AutofillProfile& p1,
   address = p2.GetAddress();
   return address.MergeStructuredAddress(p1.GetAddress(),
                                         p2.use_date() < p1.use_date());
-}
-
-bool AutofillProfileComparator::MergeBirthdates(const AutofillProfile& p1,
-                                                const AutofillProfile& p2,
-                                                Birthdate& birthdate) const {
-  DCHECK(HaveMergeableBirthdates(p1, p2));
-
-  for (ServerFieldType component : Birthdate::GetRawComponents()) {
-    const std::u16string& component1 = p1.GetInfo(component, app_locale_);
-    const std::u16string& component2 = p2.GetInfo(component, app_locale_);
-    birthdate.SetInfo(component, component1.empty() ? component2 : component1,
-                      app_locale_);
-  }
-
-  return true;
 }
 
 bool AutofillProfileComparator::ProfilesHaveDifferentSettingsVisibleValues(
@@ -954,18 +925,6 @@ bool AutofillProfileComparator::HaveMergeableAddresses(
     const AutofillProfile& p2) const {
   // Note that p1 is the newer address. Using p2 as the base.
   return p2.GetAddress().IsStructuredAddressMergeable(p1.GetAddress());
-}
-
-bool AutofillProfileComparator::HaveMergeableBirthdates(
-    const AutofillProfile& p1,
-    const AutofillProfile& p2) const {
-  return base::ranges::all_of(
-      Birthdate::GetRawComponents(), [&](ServerFieldType component) {
-        const std::u16string& component1 = p1.GetInfo(component, app_locale_);
-        const std::u16string& component2 = p2.GetInfo(component, app_locale_);
-        return component1.empty() || component2.empty() ||
-               component1 == component2;
-      });
 }
 
 }  // namespace autofill

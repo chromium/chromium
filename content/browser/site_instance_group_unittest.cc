@@ -29,8 +29,9 @@ TEST_F(SiteInstanceGroupTest, BrowsingInstanceLifetime) {
   {
     scoped_refptr<BrowsingInstance> browsing_instance = new BrowsingInstance(
         &browser_context, WebExposedIsolationInfo::CreateNonIsolated(),
-        /*is_guest=*/false, /*is_fenced=*/false, /*coop_related_group=*/nullptr,
-        /*common_coop_origin=*/absl::nullopt);
+        /*is_guest=*/false, /*is_fenced=*/false,
+        /*is_fixed_storage_partition=*/false, /*coop_related_group=*/nullptr,
+        /*common_coop_origin=*/std::nullopt);
     group = new SiteInstanceGroup(browsing_instance.get(), process.get());
     browsing_instance_id = group->browsing_instance_id();
   }

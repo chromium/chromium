@@ -12,7 +12,6 @@
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/path_service.h"
-#include "base/strings/string_piece.h"
 #include "base/threading/thread.h"
 #include "base/time/time.h"
 #include "base/timer/lap_timer.h"

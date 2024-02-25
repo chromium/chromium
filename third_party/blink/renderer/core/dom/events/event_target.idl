@@ -20,6 +20,11 @@
 
 // https://dom.spec.whatwg.org/#interface-eventtarget
 
+dictionary ObservableEventListenerOptions {
+  boolean capture = false;
+  boolean passive;
+};
+
 [
     Exposed=(Window,Worker,AudioWorklet)
 ] interface EventTarget {
@@ -27,4 +32,5 @@
     void addEventListener(DOMString type, EventListener? listener, optional (AddEventListenerOptions or boolean) options);
     void removeEventListener(DOMString type, EventListener? listener, optional (EventListenerOptions or boolean) options);
     [ImplementedAs=dispatchEventForBindings, RaisesException, RuntimeCallStatsCounter=EventTargetDispatchEvent] boolean dispatchEvent(Event event);
+    [MeasureAs=EventTargetOnObservable, RuntimeEnabled=ObservableAPI] Observable on(DOMString type, optional ObservableEventListenerOptions options = {});
 };

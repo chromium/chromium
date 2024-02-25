@@ -281,7 +281,7 @@ TEST_F(OverviewDeskNavigationTest, ClickingMiniViewExitsOverview) {
   auto* desks_controller = DesksController::Get();
   const Desk* desk_2 = desks_controller->GetDeskAtIndex(1);
   EXPECT_EQ(0, desks_controller->GetActiveDeskIndex());
-  auto* mini_view = desks_bar_view->mini_views().back();
+  auto* mini_view = desks_bar_view->mini_views().back().get();
   EXPECT_EQ(desk_2, mini_view->desk());
   DeskSwitchAnimationWaiter waiter;
   LeftClickOn(mini_view);

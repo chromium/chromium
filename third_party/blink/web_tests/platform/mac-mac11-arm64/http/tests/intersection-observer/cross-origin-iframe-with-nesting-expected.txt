@@ -1,8 +1,0 @@
-This is a testharness.js-based test.
-PASS Intersection observer test with target in nested cross-origin subframes, potentially rendered in other processes.
-PASS First rAF
-PASS topDocument.scrollingElement.scrollTop = 200
-PASS iframeDocument.scrollingElement.scrollTop = 250
-FAIL topDocument.scrollingElement.scrollTop = 100 assert_equals: expected 1 but got 0
-Harness: the test ran to completion.
-

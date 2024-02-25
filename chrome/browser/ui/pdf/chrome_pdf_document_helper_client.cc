@@ -4,11 +4,16 @@
 
 #include "chrome/browser/ui/pdf/chrome_pdf_document_helper_client.h"
 
+#include "base/feature_list.h"
 #include "chrome/browser/download/download_stats.h"
 #include "chrome/browser/pdf/pdf_frame_util.h"
+#include "chrome/browser/pdf/pdf_viewer_stream_manager.h"
 #include "chrome/browser/ui/tab_contents/core_tab_helper.h"
 #include "chrome/common/content_restriction.h"
+#include "content/public/browser/render_frame_host.h"
+#include "content/public/browser/web_contents.h"
 #include "extensions/browser/guest_view/mime_handler_view/mime_handler_view_guest.h"
+#include "pdf/pdf_features.h"
 
 namespace {
 
@@ -69,6 +74,22 @@ void ChromePDFDocumentHelperClient::OnSaveURL(content::WebContents* contents) {
 void ChromePDFDocumentHelperClient::SetPluginCanSave(
     content::RenderFrameHost* render_frame_host,
     bool can_save) {
+  if (base::FeatureList::IsEnabled(chrome_pdf::features::kPdfOopif)) {
+    auto* pdf_viewer_stream_manager =
+        pdf::PdfViewerStreamManager::FromWebContents(
+            content::WebContents::FromRenderFrameHost(render_frame_host));
+    if (!pdf_viewer_stream_manager) {
+      return;
+    }
+
+    content::RenderFrameHost* embedder_host =
+        pdf_frame_util::GetEmbedderHost(render_frame_host);
+    CHECK(embedder_host);
+
+    pdf_viewer_stream_manager->SetPluginCanSave(embedder_host, can_save);
+    return;
+  }
+
   auto* guest_view =
       extensions::MimeHandlerViewGuest::FromRenderFrameHost(render_frame_host);
   if (guest_view) {

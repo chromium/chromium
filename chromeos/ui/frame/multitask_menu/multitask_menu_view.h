@@ -26,9 +26,9 @@ class SplitButtonView;
 class COMPONENT_EXPORT(CHROMEOS_UI_FRAME) MultitaskMenuView
     : public views::View,
       public aura::WindowObserver {
- public:
-  METADATA_HEADER(MultitaskMenuView);
+  METADATA_HEADER(MultitaskMenuView, views::View)
 
+ public:
   // Bitmask for the buttons to show on the multitask menu view.
   enum MultitaskButtons : uint8_t {
     kHalfSplit = 1 << 0,
@@ -42,6 +42,7 @@ class COMPONENT_EXPORT(CHROMEOS_UI_FRAME) MultitaskMenuView
   // when the mouse moves out of the menu or the anchor.
   MultitaskMenuView(aura::Window* window,
                     base::RepeatingClosure close_callback,
+                    base::RepeatingClosure dismiss_callback,
                     uint8_t buttons,
                     views::View* anchor_view);
 
@@ -100,17 +101,21 @@ class COMPONENT_EXPORT(CHROMEOS_UI_FRAME) MultitaskMenuView
   bool is_reversed_ = false;
 
   // The window which the buttons act on.
-  raw_ptr<aura::Window, ExperimentalAsh> window_;
+  raw_ptr<aura::Window> window_;
 
   // The view the menu is anchored to if any. This is only passed if we want to
   // close the menu when the mouse moves out of the multitask menu or its anchor
   // view.
-  const raw_ptr<views::View, DanglingUntriaged | ExperimentalAsh> anchor_view_;
+  const raw_ptr<views::View, DanglingUntriaged> anchor_view_;
 
   // Runs when the widget which contains `this` should be destroyed. For
   // example, after any of the buttons are pressed, or a press out of the menu
   // bounds.
   base::RepeatingClosure close_callback_;
+
+  // Run by the `MenuPreTargetHandler` to dismiss the menu when clicking outside
+  // the menu (or anchor) bounds, or after timeout.
+  base::RepeatingClosure dismiss_callback_;
 
   std::unique_ptr<MenuPreTargetHandler> event_handler_;
 

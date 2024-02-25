@@ -132,7 +132,7 @@ class DetachableBaseHandlerTest : public testing::Test {
     handler_->AddObserver(&detachable_base_observer_);
   }
 
-  raw_ptr<FakeHammerdClient, ExperimentalAsh> hammerd_client_ = nullptr;
+  raw_ptr<FakeHammerdClient> hammerd_client_ = nullptr;
 
   TestBaseObserver detachable_base_observer_;
 

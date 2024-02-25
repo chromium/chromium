@@ -43,6 +43,16 @@ class WorkerNodeImpl
 
   ~WorkerNodeImpl() override;
 
+  // Partial WorkerNode implementation:
+  WorkerType GetWorkerType() const override;
+  const std::string& GetBrowserContextID() const override;
+  const blink::WorkerToken& GetWorkerToken() const override;
+  resource_attribution::WorkerContext GetResourceContext() const override;
+  const GURL& GetURL() const override;
+  const PriorityAndReason& GetPriorityAndReason() const override;
+  uint64_t GetResidentSetKbEstimate() const override;
+  uint64_t GetPrivateFootprintKbEstimate() const override;
+
   // Invoked when a frame starts/stops being a client of this worker.
   void AddClientFrame(FrameNodeImpl* frame_node);
   void RemoveClientFrame(FrameNodeImpl* frame_node);
@@ -61,24 +71,15 @@ class WorkerNodeImpl
   void OnFinalResponseURLDetermined(const GURL& url);
 
   // Getters for const properties.
-  const std::string& browser_context_id() const;
-  WorkerType worker_type() const;
   ProcessNodeImpl* process_node() const;
-  const blink::WorkerToken& worker_token() const;
 
   // Getters for non-const properties. These are not thread safe.
-  const GURL& url() const;
   const base::flat_set<FrameNodeImpl*>& client_frames() const;
   const base::flat_set<WorkerNodeImpl*>& client_workers() const;
   const base::flat_set<WorkerNodeImpl*>& child_workers() const;
-  const PriorityAndReason& priority_and_reason() const;
-  uint64_t resident_set_kb_estimate() const;
-  uint64_t private_footprint_kb_estimate() const;
 
-  base::WeakPtr<WorkerNodeImpl> GetWeakPtr() {
-    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-    return weak_factory_.GetWeakPtr();
-  }
+  base::WeakPtr<WorkerNodeImpl> GetWeakPtrOnUIThread();
+  base::WeakPtr<WorkerNodeImpl> GetWeakPtr();
 
   // Implementation details below this point.
 
@@ -96,20 +97,15 @@ class WorkerNodeImpl
   void OnBeforeLeavingGraph() override;
   void RemoveNodeAttachedData() override;
 
-  // WorkerNode: These are private so that users of the
+  // Rest of WorkerNode implementation. These are private so that users of the
   // impl use the private getters rather than the public interface.
-  WorkerType GetWorkerType() const override;
-  const std::string& GetBrowserContextID() const override;
   const ProcessNode* GetProcessNode() const override;
-  const blink::WorkerToken& GetWorkerToken() const override;
-  const GURL& GetURL() const override;
   const base::flat_set<const FrameNode*> GetClientFrames() const override;
+  bool VisitClientFrames(const FrameNodeVisitor&) const override;
   const base::flat_set<const WorkerNode*> GetClientWorkers() const override;
+  bool VisitClientWorkers(const WorkerNodeVisitor&) const override;
   const base::flat_set<const WorkerNode*> GetChildWorkers() const override;
   bool VisitChildDedicatedWorkers(const WorkerNodeVisitor&) const override;
-  const PriorityAndReason& GetPriorityAndReason() const override;
-  uint64_t GetResidentSetKbEstimate() const override;
-  uint64_t GetPrivateFootprintKbEstimate() const override;
 
   // Invoked when |worker_node| becomes a child of this worker.
   void AddChildWorker(WorkerNodeImpl* worker_node);
@@ -167,6 +163,7 @@ class WorkerNodeImpl
   std::unique_ptr<NodeAttachedData> execution_context_
       GUARDED_BY_CONTEXT(sequence_checker_);
 
+  base::WeakPtr<WorkerNodeImpl> weak_this_;
   base::WeakPtrFactory<WorkerNodeImpl> weak_factory_
       GUARDED_BY_CONTEXT(sequence_checker_){this};
 };

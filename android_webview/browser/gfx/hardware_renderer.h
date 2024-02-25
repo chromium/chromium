@@ -100,6 +100,7 @@ class HardwareRenderer {
   void ReportDrawMetric(const HardwareRendererDrawParams& params);
   void DrawAndSwap(const HardwareRendererDrawParams& params,
                    const OverlaysParams& overlays_params);
+  void MarkAllowContextLoss();
 
   THREAD_CHECKER(render_thread_checker_);
 

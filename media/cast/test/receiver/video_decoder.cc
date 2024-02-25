@@ -196,7 +196,7 @@ class VideoDecoder::FakeImpl final : public VideoDecoder::ImplBase {
     // Make sure this is a JSON string.
     if (!len || data[0] != '{')
       return nullptr;
-    absl::optional<base::Value> values = base::JSONReader::Read(
+    std::optional<base::Value> values = base::JSONReader::Read(
         base::StringPiece(reinterpret_cast<char*>(data), len));
     if (!values || !values->is_dict())
       return nullptr;

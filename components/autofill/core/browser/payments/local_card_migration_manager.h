@@ -6,6 +6,7 @@
 #define COMPONENTS_AUTOFILL_CORE_BROWSER_PAYMENTS_LOCAL_CARD_MIGRATION_MANAGER_H_
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <unordered_map>
 #include <utility>
@@ -17,9 +18,8 @@
 #include "components/autofill/core/browser/metrics/autofill_metrics.h"
 #include "components/autofill/core/browser/metrics/payments/local_card_migration_metrics.h"
 #include "components/autofill/core/browser/payments/legal_message_line.h"
-#include "components/autofill/core/browser/payments/payments_client.h"
+#include "components/autofill/core/browser/payments/payments_network_interface.h"
 #include "components/autofill/core/browser/strike_databases/payments/local_card_migration_strike_database.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace autofill {
 
@@ -88,10 +88,10 @@ class LocalCardMigrationManager {
   };
 
   // The parameters should outlive the LocalCardMigrationManager.
-  LocalCardMigrationManager(AutofillClient* client,
-                            payments::PaymentsClient* payments_client,
-                            const std::string& app_locale,
-                            PersonalDataManager* personal_data_manager);
+  LocalCardMigrationManager(
+      AutofillClient* client,
+      const std::string& app_locale,
+      PersonalDataManager* personal_data_manager);
 
   LocalCardMigrationManager(const LocalCardMigrationManager&) = delete;
   LocalCardMigrationManager& operator=(const LocalCardMigrationManager&) =
@@ -106,7 +106,7 @@ class LocalCardMigrationManager {
   // the imported card is supported. `extracted_credit_card` might be
   // null if a user used server card.
   bool ShouldOfferLocalCardMigration(
-      const absl::optional<CreditCard>& extracted_credit_card,
+      const std::optional<CreditCard>& extracted_credit_card,
       int credit_card_import_type);
 
   // Called from FormDataImporter or settings page when all migration
@@ -181,10 +181,6 @@ class LocalCardMigrationManager {
 
   const raw_ptr<AutofillClient> client_;
 
-  // Handles Payments service requests.
-  // Owned by BrowserAutofillManager.
-  raw_ptr<payments::PaymentsClient> payments_client_;
-
  private:
   friend class LocalCardMigrationBrowserTest;
   FRIEND_TEST_ALL_PREFIXES(LocalCardMigrationManagerTest,
@@ -216,7 +212,7 @@ class LocalCardMigrationManager {
   // has accepted the main migration dialog.
   void OnDidGetMigrationRiskData(const std::string& risk_data);
 
-  // Finalizes the migration request and calls PaymentsClient.
+  // Finalizes the migration request and calls the PaymentsNetworkInterface.
   void SendMigrateLocalCardsRequest();
 
   // For testing.
@@ -235,13 +231,14 @@ class LocalCardMigrationManager {
   raw_ptr<PersonalDataManager> personal_data_manager_;
 
   // The imported credit card number from the form submission.
-  absl::optional<std::u16string> extracted_credit_card_number_;
+  std::optional<std::u16string> extracted_credit_card_number_;
 
   // The imported credit card record type from the form submission.
   int credit_card_import_type_;
 
   // Collected information about a pending migration request.
-  payments::PaymentsClient::MigrationRequestDetails migration_request_;
+  payments::PaymentsNetworkInterface::MigrationRequestDetails
+      migration_request_;
 
   // The local credit cards to be uploaded. Owned by LocalCardMigrationManager.
   // The order of cards should not be changed.

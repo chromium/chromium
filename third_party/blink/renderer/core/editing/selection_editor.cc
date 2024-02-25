@@ -79,7 +79,7 @@ VisibleSelection SelectionEditor::ComputeVisibleSelectionInDOMTree() const {
   UpdateCachedVisibleSelectionIfNeeded();
   if (cached_visible_selection_in_dom_tree_.IsNone())
     return cached_visible_selection_in_dom_tree_;
-  DCHECK_EQ(cached_visible_selection_in_dom_tree_.Base().GetDocument(),
+  DCHECK_EQ(cached_visible_selection_in_dom_tree_.Anchor().GetDocument(),
             GetDocument());
   return cached_visible_selection_in_dom_tree_;
 }
@@ -91,7 +91,7 @@ VisibleSelectionInFlatTree SelectionEditor::ComputeVisibleSelectionInFlatTree()
   UpdateCachedVisibleSelectionInFlatTreeIfNeeded();
   if (cached_visible_selection_in_flat_tree_.IsNone())
     return cached_visible_selection_in_flat_tree_;
-  DCHECK_EQ(cached_visible_selection_in_flat_tree_.Base().GetDocument(),
+  DCHECK_EQ(cached_visible_selection_in_flat_tree_.Anchor().GetDocument(),
             GetDocument());
   return cached_visible_selection_in_flat_tree_;
 }
@@ -146,14 +146,14 @@ void SelectionEditor::DidChangeChildren(const ContainerNode&,
   DidFinishDOMMutation();
 }
 
-void SelectionEditor::DidFinishTextChange(const Position& new_base,
-                                          const Position& new_extent) {
-  if (new_base == selection_.base_ && new_extent == selection_.extent_) {
+void SelectionEditor::DidFinishTextChange(const Position& new_anchor,
+                                          const Position& new_focus) {
+  if (new_anchor == selection_.anchor_ && new_focus == selection_.focus_) {
     DidFinishDOMMutation();
     return;
   }
-  selection_.base_ = new_base;
-  selection_.extent_ = new_extent;
+  selection_.anchor_ = new_anchor;
+  selection_.focus_ = new_focus;
   selection_.ResetDirectionCache();
   MarkCacheDirty();
   DidFinishDOMMutation();
@@ -220,16 +220,17 @@ static Position ComputePositionForChildrenRemoval(const Position& position,
 void SelectionEditor::NodeChildrenWillBeRemoved(ContainerNode& container) {
   if (selection_.IsNone())
     return;
-  const Position old_base = selection_.base_;
-  const Position old_extent = selection_.extent_;
-  const Position& new_base =
-      ComputePositionForChildrenRemoval(old_base, container);
-  const Position& new_extent =
-      ComputePositionForChildrenRemoval(old_extent, container);
-  if (new_base == old_base && new_extent == old_extent)
+  const Position old_anchor = selection_.anchor_;
+  const Position old_focus = selection_.focus_;
+  const Position& new_anchor =
+      ComputePositionForChildrenRemoval(old_anchor, container);
+  const Position& new_focus =
+      ComputePositionForChildrenRemoval(old_focus, container);
+  if (new_anchor == old_anchor && new_focus == old_focus) {
     return;
+  }
   selection_ = SelectionInDOMTree::Builder()
-                   .SetBaseAndExtent(new_base, new_extent)
+                   .SetBaseAndExtent(new_anchor, new_focus)
                    .Build();
   MarkCacheDirty();
 }
@@ -237,16 +238,17 @@ void SelectionEditor::NodeChildrenWillBeRemoved(ContainerNode& container) {
 void SelectionEditor::NodeWillBeRemoved(Node& node_to_be_removed) {
   if (selection_.IsNone())
     return;
-  const Position old_base = selection_.base_;
-  const Position old_extent = selection_.extent_;
-  const Position& new_base =
-      ComputePositionForNodeRemoval(old_base, node_to_be_removed);
-  const Position& new_extent =
-      ComputePositionForNodeRemoval(old_extent, node_to_be_removed);
-  if (new_base == old_base && new_extent == old_extent)
+  const Position old_anchor = selection_.anchor_;
+  const Position old_focus = selection_.focus_;
+  const Position& new_anchor =
+      ComputePositionForNodeRemoval(old_anchor, node_to_be_removed);
+  const Position& new_focus =
+      ComputePositionForNodeRemoval(old_focus, node_to_be_removed);
+  if (new_anchor == old_anchor && new_focus == old_focus) {
     return;
+  }
   selection_ = SelectionInDOMTree::Builder()
-                   .SetBaseAndExtent(new_base, new_extent)
+                   .SetBaseAndExtent(new_anchor, new_focus)
                    .Build();
   MarkCacheDirty();
 }
@@ -304,11 +306,11 @@ void SelectionEditor::DidUpdateCharacterData(CharacterData* node,
     DidFinishDOMMutation();
     return;
   }
-  const Position& new_base = UpdatePositionAfterAdoptingTextReplacement(
-      selection_.base_, node, offset, old_length, new_length);
-  const Position& new_extent = UpdatePositionAfterAdoptingTextReplacement(
-      selection_.extent_, node, offset, old_length, new_length);
-  DidFinishTextChange(new_base, new_extent);
+  const Position& new_anchor = UpdatePositionAfterAdoptingTextReplacement(
+      selection_.anchor_, node, offset, old_length, new_length);
+  const Position& new_focus = UpdatePositionAfterAdoptingTextReplacement(
+      selection_.focus_, node, offset, old_length, new_length);
+  DidFinishTextChange(new_anchor, new_focus);
 }
 
 static Position UpdatePostionAfterAdoptingTextNodesMerged(
@@ -354,12 +356,13 @@ void SelectionEditor::DidMergeTextNodes(
     DidFinishDOMMutation();
     return;
   }
-  const Position& new_base = UpdatePostionAfterAdoptingTextNodesMerged(
-      selection_.base_, merged_node, node_to_be_removed_with_index, old_length);
-  const Position& new_extent = UpdatePostionAfterAdoptingTextNodesMerged(
-      selection_.extent_, merged_node, node_to_be_removed_with_index,
+  const Position& new_anchor = UpdatePostionAfterAdoptingTextNodesMerged(
+      selection_.anchor_, merged_node, node_to_be_removed_with_index,
       old_length);
-  DidFinishTextChange(new_base, new_extent);
+  const Position& new_focus = UpdatePostionAfterAdoptingTextNodesMerged(
+      selection_.focus_, merged_node, node_to_be_removed_with_index,
+      old_length);
+  DidFinishTextChange(new_anchor, new_focus);
 }
 
 static Position UpdatePostionAfterAdoptingTextNodeSplit(
@@ -385,11 +388,11 @@ void SelectionEditor::DidSplitTextNode(const Text& old_node) {
     DidFinishDOMMutation();
     return;
   }
-  const Position& new_base =
-      UpdatePostionAfterAdoptingTextNodeSplit(selection_.base_, old_node);
-  const Position& new_extent =
-      UpdatePostionAfterAdoptingTextNodeSplit(selection_.extent_, old_node);
-  DidFinishTextChange(new_base, new_extent);
+  const Position& new_anchor =
+      UpdatePostionAfterAdoptingTextNodeSplit(selection_.anchor_, old_node);
+  const Position& new_focus =
+      UpdatePostionAfterAdoptingTextNodeSplit(selection_.focus_, old_node);
+  DidFinishTextChange(new_anchor, new_focus);
 }
 
 bool SelectionEditor::ShouldAlwaysUseDirectionalSelection() const {
@@ -510,8 +513,9 @@ void SelectionEditor::UpdateCachedAbsoluteBoundsIfNeeded() const {
         FirstRectForRange(EphemeralRange(selected_range.EndPosition()));
   }
 
-  if (!selection.IsBaseFirst())
+  if (!selection.IsAnchorFirst()) {
     std::swap(cached_anchor_bounds_, cached_focus_bounds_);
+  }
 
   has_selection_bounds_ = true;
 }
@@ -521,7 +525,7 @@ void SelectionEditor::CacheRangeOfDocument(Range* range) {
 }
 
 Range* SelectionEditor::DocumentCachedRange() const {
-  return cached_range_;
+  return cached_range_.Get();
 }
 
 void SelectionEditor::ClearDocumentCachedRange() {

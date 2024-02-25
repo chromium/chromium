@@ -7,6 +7,7 @@
 
 #include <stdint.h>
 
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -16,7 +17,6 @@
 #include "base/win/access_token.h"
 #include "base/win/sid.h"
 #include "base/win/windows_types.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base::win {
 
@@ -62,13 +62,13 @@ class BASE_EXPORT SecurityDescriptor {
   // Create from an existing security descriptor pointer.
   // |security_descriptor| The pointer to a self-relative or absolute security
   // descriptor. This method will copy all security descriptor data.
-  static absl::optional<SecurityDescriptor> FromPointer(
+  static std::optional<SecurityDescriptor> FromPointer(
       PSECURITY_DESCRIPTOR security_descriptor);
 
   // Create from the security descriptor of an existing file.
   // |path| the path to the file.
   // |security_info| indicates what parts to read.
-  static absl::optional<SecurityDescriptor> FromFile(
+  static std::optional<SecurityDescriptor> FromFile(
       const base::FilePath& path,
       SECURITY_INFORMATION security_info);
 
@@ -77,7 +77,7 @@ class BASE_EXPORT SecurityDescriptor {
   // GetNamedSecurityInfo API.
   // |object_type| specifies the type of object the name represents.
   // |security_info| indicates what parts to read.
-  static absl::optional<SecurityDescriptor> FromName(
+  static std::optional<SecurityDescriptor> FromName(
       const std::wstring& name,
       SecurityObjectType object_type,
       SECURITY_INFORMATION security_info);
@@ -86,14 +86,14 @@ class BASE_EXPORT SecurityDescriptor {
   // |handle| the object handle. It must have READ_CONTROL access.
   // |object_type| specifies the type of object the handle represents.
   // |security_info| indicates what parts to read.
-  static absl::optional<SecurityDescriptor> FromHandle(
+  static std::optional<SecurityDescriptor> FromHandle(
       HANDLE handle,
       SecurityObjectType object_type,
       SECURITY_INFORMATION security_info);
 
   // Create from a string representation of a security descriptor.
   // |sddl| the security descriptor in SDDL format.
-  static absl::optional<SecurityDescriptor> FromSddl(const std::wstring& sddl);
+  static std::optional<SecurityDescriptor> FromSddl(const std::wstring& sddl);
 
   SecurityDescriptor();
   SecurityDescriptor(const SecurityDescriptor&) = delete;
@@ -128,7 +128,7 @@ class BASE_EXPORT SecurityDescriptor {
 
   // Convert the SecurityDescriptor to an SDDL string.
   // |security_info| determines what parts are included in the string.
-  absl::optional<std::wstring> ToSddl(SECURITY_INFORMATION security_info) const;
+  std::optional<std::wstring> ToSddl(SECURITY_INFORMATION security_info) const;
 
   // Create an reference to the absolute security descriptor of this instance.
   // |sd| the SECURITY_DESCRIPTOR structure to populate. This is is only valid
@@ -136,7 +136,7 @@ class BASE_EXPORT SecurityDescriptor {
   void ToAbsolute(SECURITY_DESCRIPTOR& sd) const;
 
   // Create a self-relative security descriptor in a single buffer.
-  absl::optional<SelfRelative> ToSelfRelative() const;
+  std::optional<SelfRelative> ToSelfRelative() const;
 
   // Make a clone of the current security descriptor object.
   SecurityDescriptor Clone() const;
@@ -188,7 +188,7 @@ class BASE_EXPORT SecurityDescriptor {
   // |generic_mapping| the generic mapping for the access check.
   // Returns the result of the access check. If an empty result is returned the
   // call to the AccessCheck API failed.
-  absl::optional<AccessCheckResult> AccessCheck(
+  std::optional<AccessCheckResult> AccessCheck(
       const AccessToken& token,
       ACCESS_MASK desired_access,
       const GENERIC_MAPPING& generic_mapping);
@@ -203,24 +203,24 @@ class BASE_EXPORT SecurityDescriptor {
   // configured GENERIC_MAPPING.
   // Returns the result of the access check. If an empty result is returned the
   // call to the AccessCheck API failed.
-  absl::optional<AccessCheckResult> AccessCheck(const AccessToken& token,
-                                                ACCESS_MASK desired_access,
-                                                SecurityObjectType object_type);
+  std::optional<AccessCheckResult> AccessCheck(const AccessToken& token,
+                                               ACCESS_MASK desired_access,
+                                               SecurityObjectType object_type);
 
   // Get, set and clear owner member.
-  const absl::optional<Sid>& owner() const { return owner_; }
+  const std::optional<Sid>& owner() const { return owner_; }
   void set_owner(const Sid& owner) { owner_ = owner.Clone(); }
-  void clear_owner() { owner_ = absl::nullopt; }
+  void clear_owner() { owner_ = std::nullopt; }
 
   // Get, set and clear group member.
-  const absl::optional<Sid>& group() const { return group_; }
+  const std::optional<Sid>& group() const { return group_; }
   void set_group(const Sid& group) { group_ = group.Clone(); }
-  void clear_group() { group_ = absl::nullopt; }
+  void clear_group() { group_ = std::nullopt; }
 
   // Get, set and clear dacl member.
-  const absl::optional<AccessControlList>& dacl() const { return dacl_; }
+  const std::optional<AccessControlList>& dacl() const { return dacl_; }
   void set_dacl(const AccessControlList& dacl) { dacl_ = dacl.Clone(); }
-  void clear_dacl() { dacl_ = absl::nullopt; }
+  void clear_dacl() { dacl_ = std::nullopt; }
 
   // Get and set dacl_protected member.
   bool dacl_protected() const { return dacl_protected_; }
@@ -229,9 +229,9 @@ class BASE_EXPORT SecurityDescriptor {
   }
 
   // Get, set and clear sacl member.
-  const absl::optional<AccessControlList>& sacl() const { return sacl_; }
+  const std::optional<AccessControlList>& sacl() const { return sacl_; }
   void set_sacl(const AccessControlList& sacl) { sacl_ = sacl.Clone(); }
-  void clear_sacl() { sacl_ = absl::nullopt; }
+  void clear_sacl() { sacl_ = std::nullopt; }
 
   // Get and set sacl_protected member.
   bool sacl_protected() const { return sacl_protected_; }
@@ -240,18 +240,18 @@ class BASE_EXPORT SecurityDescriptor {
   }
 
  private:
-  SecurityDescriptor(absl::optional<Sid>&& owner,
-                     absl::optional<Sid>&& group,
-                     absl::optional<AccessControlList>&& dacl,
+  SecurityDescriptor(std::optional<Sid>&& owner,
+                     std::optional<Sid>&& group,
+                     std::optional<AccessControlList>&& dacl,
                      bool dacl_protected,
-                     absl::optional<AccessControlList>&& sacl,
+                     std::optional<AccessControlList>&& sacl,
                      bool sacl_protected);
 
-  absl::optional<Sid> owner_;
-  absl::optional<Sid> group_;
-  absl::optional<AccessControlList> dacl_;
+  std::optional<Sid> owner_;
+  std::optional<Sid> group_;
+  std::optional<AccessControlList> dacl_;
   bool dacl_protected_ = false;
-  absl::optional<AccessControlList> sacl_;
+  std::optional<AccessControlList> sacl_;
   bool sacl_protected_ = false;
 };
 

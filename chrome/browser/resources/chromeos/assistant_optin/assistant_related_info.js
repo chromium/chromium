@@ -10,7 +10,7 @@
  * Event 'loaded' will be fired when the page has been successfully loaded.
  */
 
-import '//resources/cr_elements/cr_lottie/cr_lottie.js';
+import '//resources/ash/common/cr_elements/cr_lottie/cr_lottie.js';
 import '//resources/polymer/v3_0/iron-icon/iron-icon.js';
 import '../components/buttons/oobe_next_button.js';
 import '../components/buttons/oobe_text_button.js';
@@ -20,12 +20,12 @@ import './assistant_common_styles.css.js';
 import './assistant_icons.html.js';
 import './setting_zippy.js';
 
-import {afterNextRender, html, mixinBehaviors, Polymer, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {afterNextRender, html, mixinBehaviors, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {OobeDialogHostBehavior} from '../components/behaviors/oobe_dialog_host_behavior.js';
-import {OobeI18nBehavior, OobeI18nBehaviorInterface} from '../components/behaviors/oobe_i18n_behavior.js';
+import {OobeI18nBehavior} from '../components/behaviors/oobe_i18n_behavior.js';
 
-import {BrowserProxyImpl} from './browser_proxy.js';
+import {BrowserProxy, BrowserProxyImpl} from './browser_proxy.js';
 import {AssistantNativeIconType, webviewStripLinksContentScript} from './utils.js';
 
 
@@ -218,7 +218,7 @@ class AssistantRelatedInfo extends AssistantRelatedInfoBase {
    * Handles event when animation webview cannot be loaded.
    */
   onWebViewErrorOccurred(details) {
-    if (details && details.error == 'net::ERR_ABORTED') {
+    if (details && details.error === 'net::ERR_ABORTED') {
       // Retry triggers net::ERR_ABORTED, so ignore it.
       // TODO(b/232592745): Replace with a state machine to handle aborts
       // gracefully and avoid duplicate reloads.
@@ -267,14 +267,14 @@ class AssistantRelatedInfo extends AssistantRelatedInfoBase {
       return;
     }
     this.headerReceived_ = true;
-    if (details.statusCode == '404') {
-      if (details.url != this.getDefaultAnimationUrl_()) {
+    if (details.statusCode === 404) {
+      if (details.url !== this.getDefaultAnimationUrl_()) {
         this.reloadWithDefaultUrl_ = true;
         return;
       } else {
         this.onWebViewErrorOccurred();
       }
-    } else if (details.statusCode != '200') {
+    } else if (details.statusCode !== 200) {
       this.onWebViewErrorOccurred();
     }
   }

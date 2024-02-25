@@ -8,7 +8,6 @@ import {ConsoleTestRunner} from 'console_test_runner';
 (async function() {
   TestRunner.addResult(
       `Tests how debugger presents special properties of closures, bound functions and object wrappers.`);
-  await TestRunner.loadLegacyModule('console');
   await TestRunner.showPanel('sources');
   await TestRunner.evaluateInPagePromise(`
       console.dir(Object(true));

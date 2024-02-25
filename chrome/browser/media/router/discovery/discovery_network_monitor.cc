@@ -40,8 +40,8 @@ std::string ComputeNetworkId(
     combined_ids = combined_ids + "!" + network_info.network_id;
   }
 
-  std::string hash = base::SHA1HashString(combined_ids);
-  return base::ToLowerASCII(base::HexEncode(hash.data(), hash.length()));
+  auto hash = base::SHA1HashSpan(base::as_bytes(base::make_span(combined_ids)));
+  return base::ToLowerASCII(base::HexEncode(hash));
 }
 
 base::LazyInstance<DiscoveryNetworkMonitor>::Leaky g_discovery_monitor =

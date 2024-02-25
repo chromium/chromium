@@ -1,0 +1,5 @@
+WebView textSize:16.0 style:0 htmlInfo:[{htmlTag="#document"}, {display=""}]
+++EditText text:"h2" textSize:13.3 style:0 htmlInfo:[{htmlTag="input"}, {display="inline-block"}, {aria-labelledby="h2"}]
+++++View textSize:13.3 style:0 htmlInfo:[{htmlTag="div"}, {display="flow-root"}]
+++View textSize:24.0 style:1 htmlInfo:[{htmlTag="h2"}, {display="block"}, {id="h2"}]
+++++TextView text:"h2" textSize:24.0 style:1 htmlInfo:[{htmlTag=""}, {display=""}]

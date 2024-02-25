@@ -7,8 +7,10 @@
 
 #include <map>
 #include <memory>
+#include <optional>
 #include <string>
 
+#include "base/functional/callback_helpers.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
 #include "chrome/browser/web_applications/web_contents/web_app_data_retriever.h"
@@ -17,7 +19,6 @@
 #include "chrome/browser/web_applications/web_contents/web_contents_manager.h"
 #include "components/webapps/browser/installable/installable_logging.h"
 #include "components/webapps/common/web_page_metadata.mojom-forward.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
 #include "third_party/blink/public/mojom/manifest/manifest.mojom.h"
 #include "url/gurl.h"
@@ -54,22 +55,22 @@ class FakeWebContentsManager : public WebContentsManager {
     FakePageState(FakePageState&&);
     FakePageState& operator=(FakePageState&&);
 
-    AppId PopulateWithBasicManifest(GURL install_url,
-                                    GURL manifest_url,
-                                    GURL start_url);
+    webapps::AppId PopulateWithBasicManifest(GURL install_url,
+                                             GURL manifest_url,
+                                             GURL start_url);
 
     // `WebAppUrlLoader::LoadUrl`:
     // If this is populated, then a redirection is always assumed. If the
     // redirection is allowed by the `LoadUrlComparison`, then `url_load_result`
     // will be given as the result. Otherwise,`kRedirectedUrlLoaded` is
     // returned.
-    absl::optional<GURL> redirection_url = absl::nullopt;
+    std::optional<GURL> redirection_url = std::nullopt;
     WebAppUrlLoaderResult url_load_result =
         WebAppUrlLoaderResult::kFailedErrorPageLoaded;
 
     // `WebAppDataRetriever::GetWebAppInstallInfo`:
     bool return_null_info = false;
-    absl::optional<std::u16string> title;
+    std::optional<std::u16string> title;
     webapps::mojom::WebPageMetadataPtr opt_metadata;
 
     // `WebAppDataRetriever::CheckInstallabilityAndRetrieveManifest`:
@@ -80,7 +81,8 @@ class FakeWebContentsManager : public WebContentsManager {
     GURL manifest_url;
     bool valid_manifest_for_web_app = false;
     blink::mojom::ManifestPtr opt_manifest;
-    webapps::InstallableStatusCode error_code;
+    webapps::InstallableStatusCode error_code =
+        webapps::InstallableStatusCode::NO_ERROR_DETECTED;
     GURL favicon_url;
     std::vector<SkBitmap> favicon;
   };
@@ -116,7 +118,7 @@ class FakeWebContentsManager : public WebContentsManager {
   // Set the behavior for calls to `LoadUrl`, `GetWebAppInstallInfo`, and
   // `CheckInstallabilityAndRetrieveManifest` from wrappers returned by this
   // fake class.
-  AppId CreateBasicInstallPageState(
+  webapps::AppId CreateBasicInstallPageState(
       const GURL& install_url,
       const GURL& manifest_url,
       const GURL& start_url,
@@ -124,6 +126,17 @@ class FakeWebContentsManager : public WebContentsManager {
   void SetPageState(const GURL& gurl, FakePageState page_state);
   FakePageState& GetOrCreatePageState(const GURL& gurl);
   void DeletePageState(const GURL& gurl);
+  bool HasPageState(const GURL& gurl);
+
+  using LoadUrlTracker = base::RepeatingCallback<void(
+      content::NavigationController::LoadURLParams& load_url_params,
+      content::WebContents* web_contents,
+      WebAppUrlLoader::UrlComparison url_comparison)>;
+
+  // Specify a `base::RepeatingCallback` that is invoked with the arguments
+  // passed to `WebAppUrlLoader::LoadUrl` whenever it is called on one of the
+  // `WebAppUrlLoader`s created by this class.
+  void TrackLoadUrlCalls(LoadUrlTracker load_url_tracker);
 
   base::WeakPtr<FakeWebContentsManager> GetWeakPtr();
 
@@ -131,6 +144,8 @@ class FakeWebContentsManager : public WebContentsManager {
   class FakeUrlLoader;
   class FakeWebAppIconDownloader;
   class FakeWebAppDataRetriever;
+
+  LoadUrlTracker load_url_tracker_ = base::DoNothing();
 
   std::map<GURL, FakeIconState> icon_state_;
   std::map<GURL, FakePageState> page_state_;

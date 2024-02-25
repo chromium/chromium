@@ -24,6 +24,7 @@
 #include "base/apple/mach_logging.h"
 #include "base/apple/scoped_mach_port.h"
 #include "base/apple/scoped_mach_vm.h"
+#include "base/check_op.h"
 #include "base/logging.h"
 #include "base/strings/stringprintf.h"
 #include "snapshot/mac/mach_o_image_reader.h"
@@ -509,26 +510,27 @@ void ProcessReaderMac::InitializeModules() {
     }
 
     if (file_type == MH_EXECUTE) {
-      // On Mac OS X 10.6, the main executable does not normally show up at
-      // index 0. This is because of how 10.6.8 dyld-132.13/src/dyld.cpp
-      // notifyGDB(), the function resposible for causing
-      // dyld_all_image_infos::infoArray to be updated, is called. It is
-      // registered to be called when all dependents of an image have been
-      // mapped (dyld_image_state_dependents_mapped), meaning that the main
-      // executable won’t be added to the list until all of the libraries it
-      // depends on are, even though dyld begins looking at the main executable
-      // first. This changed in later versions of dyld, including those present
-      // in 10.7. 10.9.4 dyld-239.4/src/dyld.cpp updateAllImages() (renamed from
-      // notifyGDB()) is registered to be called when an image itself has been
-      // mapped (dyld_image_state_mapped), regardless of the libraries that it
-      // depends on.
+      // On macOS 14, the main executable does not normally show up at
+      // index 0. In previous versions of dyld, each loaded image was
+      // appended to the all image info vector as it was loaded.
+      // (For example, see RuntimeState::notifyDebuggerLoad in dyld-1066.8).
+      // Starting from dyld-1122.1, notifyDebuggerLoad calls
+      // ExternallyViewableState::addImages for all but the main executable
+      // (which has already been added). ExternallyViewableState::addImages
+      // inserts all new image infos at the front of the vector, leaving the
+      // main executable as the last item.
       //
       // The interface requires that the main executable be first in the list,
       // so swap it into the right position.
       size_t index = modules_.size() - 1;
-      if (main_executable_count == 0) {
-        std::swap(modules_[0], modules_[index]);
-      } else {
+      if (index > 0) {
+        CHECK_EQ(index, image_info_vector.size() - 1);
+        if (main_executable_count == 0) {
+          std::rotate(
+              modules_.rbegin(), modules_.rbegin() + 1, modules_.rend());
+        }
+      }
+      if (main_executable_count > 0) {
         LOG(WARNING) << base::StringPrintf(
             "multiple MH_EXECUTE modules (%s, %s)",
             modules_[0].name.c_str(),

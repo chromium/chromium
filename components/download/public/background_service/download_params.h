@@ -6,6 +6,7 @@
 #define COMPONENTS_DOWNLOAD_PUBLIC_BACKGROUND_SERVICE_DOWNLOAD_PARAMS_H_
 
 #include <map>
+#include <optional>
 #include <string>
 
 #include "base/functional/callback.h"
@@ -15,7 +16,6 @@
 #include "net/http/http_request_headers.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "services/network/public/mojom/fetch_api.mojom-shared.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
 namespace download {
@@ -125,7 +125,7 @@ struct RequestParams {
   // The isolation info of the request, this won't be persisted to db and will
   // be invalidate during download resumption in new browser session. Not
   // supported on iOS.
-  absl::optional<net::IsolationInfo> isolation_info;
+  std::optional<net::IsolationInfo> isolation_info;
 
   // First-party URL redirect policy: During server redirects, whether the
   // first-party URL for cookies will need to be changed. Download is normally

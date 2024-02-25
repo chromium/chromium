@@ -10,9 +10,9 @@
 #include "ash/ash_export.h"
 #include "ash/public/cpp/session/session_observer.h"
 #include "ash/system/tray/tray_item_view.h"
-#include "ash/system/unified/unified_system_tray_model.h"
 #include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
+#include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/display/display_observer.h"
 #include "ui/message_center/message_center_observer.h"
 #include "ui/message_center/message_center_types.h"
@@ -27,13 +27,14 @@ class NotificationCenterTray;
 class NotificationCounterView;
 class NotificationIconsController;
 class QuietModeView;
-class SeparatorTrayItemView;
 class TrayContainer;
 class TrayItemView;
 class UnifiedSystemTray;
 
 // Tray item view for notification icon shown in the tray.
 class ASH_EXPORT NotificationIconTrayItemView : public TrayItemView {
+  METADATA_HEADER(NotificationIconTrayItemView, TrayItemView)
+
  public:
   NotificationIconTrayItemView(Shelf* shelf,
                                NotificationIconsController* controller_);
@@ -47,12 +48,11 @@ class ASH_EXPORT NotificationIconTrayItemView : public TrayItemView {
 
   // Calls `Reset()` immediately or does nothing according to the following
   // flow:
-  //   1. If the QS revamp is not enabled then `Reset()` is called immediately.
-  //   2. Otherwise, if this tray item is currently running its hide animation,
-  //      or if the `NotificationCenterTray` it belongs to is running its hide
-  //      animation, then this does nothing (because `Reset()` will be called
-  //      at the end of the relevant animation).
-  //   3. Otherwise, `Reset()` is still called immediately.
+  //   1. If this tray item is currently running its hide animation, or if the
+  //      `NotificationCenterTray` it belongs to is running its hide animation,
+  //      then this does nothing (because `Reset()` will be called at the end of
+  //      the relevant animation).
+  //   2. Otherwise, `Reset()` is still called immediately.
   void MaybeReset();
 
   // Returns a string describing the current state for accessibility.
@@ -62,7 +62,6 @@ class ASH_EXPORT NotificationIconTrayItemView : public TrayItemView {
 
   // TrayItemView:
   void HandleLocaleChange() override;
-  const char* GetClassName() const override;
   void OnThemeChanged() override;
   void UpdateLabelOrImageViewColor(bool active) override;
   void ImmediatelyUpdateVisibility() override;
@@ -82,26 +81,21 @@ class ASH_EXPORT NotificationIconTrayItemView : public TrayItemView {
   // of this tray.
   std::unique_ptr<message_center::Notification> notification_;
 
-  const raw_ptr<NotificationIconsController,
-                DanglingUntriaged | ExperimentalAsh>
-      controller_;
+  const raw_ptr<NotificationIconsController, DanglingUntriaged> controller_;
 };
 
-// Controller for notification icons in `UnifiedSystemTray` button. If the
-// QsRevamp feature is enabled, this is used in `NotificationCenterTray`
-// instead, and has the added responsibility of letting the
+// Controller for notification icons in `UnifiedSystemTray` button. This is used
+// in `NotificationCenterTray`, and has the added responsibility of letting the
 // `NotificationCenterTray` know when it may need to update its visibility. The
 // icons will be displayed in medium or large screen size and only for important
 // notifications.
 class ASH_EXPORT NotificationIconsController
-    : public UnifiedSystemTrayModel::Observer,
-      public display::DisplayObserver,
+    : public display::DisplayObserver,
       public message_center::MessageCenterObserver,
       public SessionObserver {
  public:
   explicit NotificationIconsController(
       Shelf* shelf,
-      UnifiedSystemTrayModel* model = nullptr,
       NotificationCenterTray* notification_center_tray = nullptr);
   ~NotificationIconsController() override;
   NotificationIconsController(const NotificationIconsController&) = delete;
@@ -127,10 +121,6 @@ class ASH_EXPORT NotificationIconsController
   // Update notification indicators, including counters and quiet mode view.
   void UpdateNotificationIndicators();
 
-  // UnifiedSystemTrayModel::Observer:
-  void OnSystemTrayButtonSizeChanged(
-      UnifiedSystemTrayModel::SystemTrayButtonSize system_tray_size) override;
-
   // display::DisplayObserver:
   void OnDisplayMetricsChanged(const display::Display& display,
                                uint32_t changed_metrics) override;
@@ -147,7 +137,8 @@ class ASH_EXPORT NotificationIconsController
   // SessionObserver:
   void OnSessionStateChanged(session_manager::SessionState state) override;
 
-  std::vector<NotificationIconTrayItemView*> tray_items() {
+  std::vector<raw_ptr<NotificationIconTrayItemView, VectorExperimental>>
+  tray_items() {
     return tray_items_;
   }
 
@@ -173,7 +164,8 @@ class ASH_EXPORT NotificationIconsController
 
   // Contains notification icon tray items that are added to tray container. All
   // items are owned by views hierarchy.
-  std::vector<NotificationIconTrayItemView*> tray_items_;
+  std::vector<raw_ptr<NotificationIconTrayItemView, VectorExperimental>>
+      tray_items_;
 
   // Points to the first item that is available to use among the notification
   // icons tray item. All the items in previous index are used and visible.
@@ -184,26 +176,14 @@ class ASH_EXPORT NotificationIconsController
   bool icons_view_visible_ = false;
 
   // Owned by `RootWindowController`
-  const raw_ptr<Shelf, ExperimentalAsh> shelf_;
+  const raw_ptr<Shelf> shelf_;
 
-  // Owned by `UnifiedSystemTray`
-  const raw_ptr<UnifiedSystemTrayModel, ExperimentalAsh> system_tray_model_;
+  // `NotificationCenterTray` owns this `NotificationIconsController`.
+  // `NotificationCenterTray` itself is owned by the views hierarchy.
+  raw_ptr<NotificationCenterTray> notification_center_tray_ = nullptr;
 
-  // `NotificationCenterTray` owns this `NotificationIconsController` when the
-  // QS revamp is enabled. `NotificationCenterTray` itself is owned by the views
-  // hierarchy. Note that this will always be null if the QS revamp is not
-  // enabled.
-  raw_ptr<NotificationCenterTray, ExperimentalAsh> notification_center_tray_ =
-      nullptr;
-
-  raw_ptr<NotificationCounterView, ExperimentalAsh> notification_counter_view_ =
-      nullptr;
-  raw_ptr<QuietModeView, ExperimentalAsh> quiet_mode_view_ = nullptr;
-  raw_ptr<SeparatorTrayItemView, ExperimentalAsh> separator_ = nullptr;
-
-  base::ScopedObservation<UnifiedSystemTrayModel,
-                          UnifiedSystemTrayModel::Observer>
-      system_tray_model_observation_{this};
+  raw_ptr<NotificationCounterView> notification_counter_view_ = nullptr;
+  raw_ptr<QuietModeView> quiet_mode_view_ = nullptr;
 
   display::ScopedDisplayObserver display_observer_{this};
 };

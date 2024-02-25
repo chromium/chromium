@@ -181,21 +181,21 @@ void FontFaceSet::LoadFontPromiseResolver::LoadFonts() {
   }
 }
 
-ScriptPromise FontFaceSet::load(ScriptState* script_state,
-                                const String& font_string,
-                                const String& text) {
+ScriptPromiseTyped<IDLSequence<FontFace>> FontFaceSet::load(
+    ScriptState* script_state,
+    const String& font_string,
+    const String& text) {
   if (!InActiveContext()) {
-    return ScriptPromise();
+    return ScriptPromiseTyped<IDLSequence<FontFace>>();
   }
 
   Font font;
   if (!ResolveFontStyle(font_string, font)) {
-    auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
-    ScriptPromise promise = resolver->Promise();
-    resolver->Reject(MakeGarbageCollected<DOMException>(
-        DOMExceptionCode::kSyntaxError,
-        "Could not resolve '" + font_string + "' as a font."));
-    return promise;
+    return ScriptPromiseTyped<IDLSequence<FontFace>>::RejectWithDOMException(
+        script_state,
+        MakeGarbageCollected<DOMException>(
+            DOMExceptionCode::kSyntaxError,
+            "Could not resolve '" + font_string + "' as a font."));
   }
 
   FontFaceCache* font_face_cache = GetFontSelector()->GetFontFaceCache();
@@ -214,7 +214,7 @@ ScriptPromise FontFaceSet::load(ScriptState* script_state,
 
   auto* resolver =
       MakeGarbageCollected<LoadFontPromiseResolver>(faces, script_state);
-  ScriptPromise promise = resolver->Promise();
+  auto promise = resolver->Promise();
   // After this, resolver->promise() may return null.
   resolver->LoadFonts();
   return promise;
@@ -238,32 +238,26 @@ bool FontFaceSet::check(const String& font_string,
   FontSelector* font_selector = GetFontSelector();
   FontFaceCache* font_face_cache = font_selector->GetFontFaceCache();
 
-  bool has_loaded_faces = false;
-  for (const FontFamily* f = &font.GetFontDescription().Family(); f;
-       f = f->Next()) {
-    if (f->FamilyIsGeneric()) {
-      continue;
-    }
-    CSSSegmentedFontFace* face =
-        font_face_cache->Get(font.GetFontDescription(), f->FamilyName());
-    if (face) {
-      if (!face->CheckFont(text)) {
+  unsigned index = 0;
+  while (index < text.length()) {
+    UChar32 c = text.CharacterStartingAt(index);
+    index += U16_LENGTH(c);
+
+    for (const FontFamily* f = &font.GetFontDescription().Family(); f;
+         f = f->Next()) {
+      if (f->FamilyIsGeneric() || font_selector->IsPlatformFamilyMatchAvailable(
+                                      font.GetFontDescription(), *f)) {
+        continue;
+      }
+
+      CSSSegmentedFontFace* face =
+          font_face_cache->Get(font.GetFontDescription(), f->FamilyName());
+      if (face && !face->CheckFont(c)) {
         return false;
       }
-      has_loaded_faces = true;
     }
   }
-  if (has_loaded_faces) {
-    return true;
-  }
-  for (const FontFamily* f = &font.GetFontDescription().Family(); f;
-       f = f->Next()) {
-    if (font_selector->IsPlatformFamilyMatchAvailable(font.GetFontDescription(),
-                                                      *f)) {
-      return true;
-    }
-  }
-  return false;
+  return true;
 }
 
 void FontFaceSet::FireDoneEvent() {

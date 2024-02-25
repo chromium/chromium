@@ -5,6 +5,10 @@
 #ifndef MOJO_PUBLIC_CPP_BINDINGS_ARRAY_TRAITS_H_
 #define MOJO_PUBLIC_CPP_BINDINGS_ARRAY_TRAITS_H_
 
+#include <concepts>
+
+#include "base/numerics/safe_conversions.h"
+#include "mojo/public/cpp/bindings/lib/default_construct_tag_internal.h"
 #include "mojo/public/cpp/bindings/lib/template_util.h"
 
 namespace mojo {
@@ -75,6 +79,79 @@ struct ArrayTraits {
   static_assert(internal::AlwaysFalse<T>::value,
                 "Cannot find the mojo::ArrayTraits specialization. Did you "
                 "forget to include the corresponding header file?");
+};
+
+// Generic specialization for vector-like containers.
+template <typename Container>
+  requires requires(Container& c, size_t i) {
+    typename Container::value_type;
+    { c.size() } -> std::same_as<typename Container::size_type>;
+    { c.clear() } -> std::same_as<void>;
+    { c[i] } -> std::same_as<typename Container::reference>;
+  }
+struct ArrayTraits<Container> {
+  using Element = Container::value_type;
+
+  // vector-like containers have no built-in null.
+  static bool IsNull(const Container& c) { return false; }
+  static void SetToNull(Container* c) {
+    // TODO(dcheng): Should this ever be called? It seems questionable...
+    c->clear();
+  }
+
+  static auto GetSize(const Container& c) { return c.size(); }
+
+  // Conditional since some vector implementations have specializations which do
+  // not provide direct access to an underlying array, e.g. `std::vector<bool>`.
+  static auto* GetData(Container& c)
+    requires requires {
+      { c.data() } -> std::same_as<typename Container::pointer>;
+    }
+  {
+    return c.data();
+  }
+  static const auto* GetData(const Container& c)
+    requires requires {
+      { c.data() } -> std::same_as<typename Container::const_pointer>;
+    }
+  {
+    return c.data();
+  }
+
+  // The static_casts here are safe, since out-of-range issues would be caught
+  // by `Resize()`.
+  static decltype(auto) GetAt(Container& c, size_t index) {
+    return c[static_cast<typename Container::size_type>(index)];
+  }
+  static decltype(auto) GetAt(const Container& c, size_t index) {
+    return c[static_cast<typename Container::size_type>(index)];
+  }
+
+  static bool Resize(Container& c, size_t size) {
+    if (c.size() == size) {
+      return true;
+    }
+
+    if (!base::IsValueInRangeForNumericType<typename Container::size_type>(
+            size)) {
+      return false;
+    }
+
+    if constexpr (std::constructible_from<Element,
+                                          ::mojo::DefaultConstruct::Tag>) {
+      Container temp;
+      temp.reserve(size);
+      for (size_t i = 0; i < size; ++i) {
+        temp.emplace_back(internal::DefaultConstructTag());
+      }
+      c.swap(temp);
+    } else {
+      Container temp(static_cast<typename Container::size_type>(size));
+      c.swap(temp);
+    }
+
+    return true;
+  }
 };
 
 }  // namespace mojo

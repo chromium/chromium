@@ -46,6 +46,8 @@ class FileUploadJob {
   // `session_token` and `access_parameters`.
   class Delegate {
    public:
+    using SmartPtr = std::unique_ptr<Delegate, base::OnTaskRunnerDeleter>;
+
     virtual ~Delegate();
 
     // Asynchronously initializes upload.
@@ -113,7 +115,7 @@ class FileUploadJob {
     void Register(Priority priority,
                   Record record_copy,
                   ::ash::reporting::LogUploadEvent log_upload_event,
-                  base::WeakPtr<Delegate> delegate,
+                  Delegate::SmartPtr delegate,
                   base::OnceCallback<void(StatusOr<FileUploadJob*>)> result_cb);
 
     // Accessor.
@@ -126,6 +128,10 @@ class FileUploadJob {
     // Private constructor, used only internally and in TestEnvironment.
     Manager();
 
+    // Task runner is not declared `const` for testing: to be able to reset it.
+    scoped_refptr<base::SequencedTaskRunner> sequenced_task_runner_;
+    SEQUENCE_CHECKER(manager_sequence_checker_);
+
     // Access manager instance, used only internally and in TestEnvironment.
     static std::unique_ptr<FileUploadJob::Manager>& instance_ref();
 
@@ -135,10 +141,6 @@ class FileUploadJob {
     // respective event is confirmed.
     base::flat_map<std::string, std::unique_ptr<FileUploadJob>>
         uploads_in_progress_ GUARDED_BY_CONTEXT(manager_sequence_checker_);
-
-    // Task runner is not declared `const` for testing: to be able to reset it.
-    scoped_refptr<base::SequencedTaskRunner> sequenced_task_runner_;
-    SEQUENCE_CHECKER(manager_sequence_checker_);
   };
 
   // Helper class associating the job to the event currently being processed.
@@ -186,7 +188,7 @@ class FileUploadJob {
   // event. When upload is going to be started, `tracker` is empty yet.
   FileUploadJob(const UploadSettings& settings,
                 const UploadTracker& tracker,
-                base::WeakPtr<Delegate> delegate);
+                Delegate::SmartPtr delegate);
   FileUploadJob(const FileUploadJob& other) = delete;
   FileUploadJob& operator=(const FileUploadJob& other) = delete;
   ~FileUploadJob();
@@ -247,11 +249,10 @@ class FileUploadJob {
                                  Record record_copy,
                                  base::OnceCallback<void(Status)> done_cb);
 
-  // Unowned delegate that performs actual actions (the same delegate is used by
-  // multiple jobs).
-  const base::WeakPtr<Delegate> delegate_;
-
   SEQUENCE_CHECKER(job_sequence_checker_);
+
+  // Delegate that performs actual actions.
+  const Delegate::SmartPtr delegate_;
 
   // Job parameters matching the event.
   const UploadSettings settings_;

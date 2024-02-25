@@ -10,7 +10,6 @@
 
 #include "base/task/single_thread_task_runner.h"
 #include "base/unguessable_token.h"
-#include "chromecast/external_mojo/external_service_support/external_connector.h"
 #include "media/mojo/buildflags.h"
 #include "media/mojo/services/mojo_media_client.h"
 
@@ -33,7 +32,6 @@ class CastMojoMediaClient : public ::media::MojoMediaClient {
                       const CreateCdmFactoryCB& create_cdm_factory_cb,
                       VideoModeSwitcher* video_mode_switcher,
                       VideoResolutionPolicy* video_resolution_policy,
-                      external_service_support::ExternalConnector* connector,
                       EnableBufferingCB enable_buffering_cb);
 
   CastMojoMediaClient(const CastMojoMediaClient&) = delete;
@@ -67,7 +65,6 @@ class CastMojoMediaClient : public ::media::MojoMediaClient {
   const CreateCdmFactoryCB create_cdm_factory_cb_;
   [[maybe_unused]] VideoModeSwitcher* video_mode_switcher_;
   [[maybe_unused]] VideoResolutionPolicy* video_resolution_policy_;
-  external_service_support::ExternalConnector* const connector_;
   const EnableBufferingCB enable_buffering_cb_;
 
 #if BUILDFLAG(ENABLE_CAST_RENDERER)

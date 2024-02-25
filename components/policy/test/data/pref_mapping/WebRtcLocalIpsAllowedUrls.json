@@ -1,0 +1,30 @@
+[
+  {
+    "os": [
+      "win",
+      "linux",
+      "mac",
+      "chromeos_ash",
+      "chromeos_lacros",
+      "fuchsia"
+    ],
+    "policy_pref_mapping_tests": [
+      {
+        "policies": {
+          "WebRtcLocalIpsAllowedUrls": [
+            "https://www.example.com",
+            "*example.com*"
+          ]
+        },
+        "prefs": {
+          "webrtc.local_ips_allowed_urls": {
+            "value": [
+              "https://www.example.com",
+              "*example.com*"
+            ]
+          }
+        }
+      }
+    ]
+  }
+]

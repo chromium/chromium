@@ -6,8 +6,10 @@
 // Require unsafe blocks for unsafe operations even in an unsafe fn.
 #![deny(unsafe_op_in_unsafe_fn)]
 
-/// `pub` since a macro refers to `$crate::system`.
-pub extern crate mojo_system as system;
+chromium::import! {
+    // `pub` since a macro refers to `$crate::system`.
+    pub "//mojo/public/rust:mojo_system" as system;
+}
 
 pub mod macros;
 

@@ -5,6 +5,7 @@
 #ifndef GPU_IPC_SERVICE_GPU_INIT_H_
 #define GPU_IPC_SERVICE_GPU_INIT_H_
 
+#include <optional>
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "gpu/config/device_perf_info.h"
@@ -14,7 +15,6 @@
 #include "gpu/ipc/service/gpu_ipc_service_export.h"
 #include "gpu/ipc/service/gpu_watchdog_thread.h"
 #include "gpu/vulkan/buildflags.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/gpu_extra_info.h"
 
 namespace base {
@@ -63,14 +63,14 @@ class GPU_IPC_SERVICE_EXPORT GpuInit {
   const GPUInfo& gpu_info() const { return gpu_info_; }
   const GpuFeatureInfo& gpu_feature_info() const { return gpu_feature_info_; }
   const gfx::GpuExtraInfo& gpu_extra_info() const { return gpu_extra_info_; }
-  const absl::optional<GPUInfo>& gpu_info_for_hardware_gpu() const {
+  const std::optional<GPUInfo>& gpu_info_for_hardware_gpu() const {
     return gpu_info_for_hardware_gpu_;
   }
-  const absl::optional<GpuFeatureInfo>& gpu_feature_info_for_hardware_gpu()
+  const std::optional<GpuFeatureInfo>& gpu_feature_info_for_hardware_gpu()
       const {
     return gpu_feature_info_for_hardware_gpu_;
   }
-  const absl::optional<DevicePerfInfo>& device_perf_info() const {
+  const std::optional<DevicePerfInfo>& device_perf_info() const {
     return device_perf_info_;
   }
   const GpuPreferences& gpu_preferences() const { return gpu_preferences_; }
@@ -101,13 +101,13 @@ class GPU_IPC_SERVICE_EXPORT GpuInit {
 
   // The following data are collected from hardware GPU and saved before
   // switching to SwiftShader.
-  absl::optional<GPUInfo> gpu_info_for_hardware_gpu_;
-  absl::optional<GpuFeatureInfo> gpu_feature_info_for_hardware_gpu_;
+  std::optional<GPUInfo> gpu_info_for_hardware_gpu_;
+  std::optional<GpuFeatureInfo> gpu_feature_info_for_hardware_gpu_;
 
   gfx::GpuExtraInfo gpu_extra_info_;
 
   // The following data are collected by the info collection GPU process.
-  absl::optional<DevicePerfInfo> device_perf_info_;
+  std::optional<DevicePerfInfo> device_perf_info_;
 
 #if BUILDFLAG(ENABLE_VULKAN)
   std::unique_ptr<VulkanImplementation> vulkan_implementation_;

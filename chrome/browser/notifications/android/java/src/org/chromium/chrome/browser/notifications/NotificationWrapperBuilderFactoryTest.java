@@ -28,10 +28,9 @@ import org.chromium.components.browser_ui.notifications.NotificationWrapper;
 import org.chromium.components.browser_ui.notifications.NotificationWrapperBuilder;
 
 /**
- * Tests that NotificationWrapperBuilders created using
- * {@link NotificationWrapperBuilderFactory#createNotificationWrapperBuilder(String)} can
- * be built and the notifications they build don't cause a crash when passed to
- * NotificationManager#notify.
+ * Tests that NotificationWrapperBuilders created using {@link
+ * NotificationWrapperBuilderFactory#createNotificationWrapperBuilder(String)} can be built and the
+ * notifications they build don't cause a crash when passed to NotificationManager#notify.
  */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
@@ -73,9 +72,11 @@ public class NotificationWrapperBuilderFactoryTest {
                 NotificationWrapperBuilderFactory.createNotificationWrapperBuilder(
                         ChromeChannelDefinitions.ChannelId.BROWSER);
 
-        Notification notification = notificationBuilder.setContentTitle("Title")
-                                            .setSmallIcon(R.drawable.ic_chrome)
-                                            .build();
+        Notification notification =
+                notificationBuilder
+                        .setContentTitle("Title")
+                        .setSmallIcon(R.drawable.ic_chrome)
+                        .build();
 
         mNotificationManager.notify(TEST_NOTIFICATION_ID, notification);
     }
@@ -87,12 +88,14 @@ public class NotificationWrapperBuilderFactoryTest {
                 NotificationWrapperBuilderFactory.createNotificationWrapperBuilder(
                         ChromeChannelDefinitions.ChannelId.BROWSER,
                         new NotificationMetadata(
-                                NotificationUmaTracker.SystemNotificationType.BROWSER_ACTIONS, null,
+                                NotificationUmaTracker.SystemNotificationType.BROWSER_ACTIONS,
+                                null,
                                 TEST_NOTIFICATION_ID));
 
-        NotificationWrapper notification = builder.setContentTitle("Title")
-                                                   .setSmallIcon(R.drawable.ic_chrome)
-                                                   .buildNotificationWrapper();
+        NotificationWrapper notification =
+                builder.setContentTitle("Title")
+                        .setSmallIcon(R.drawable.ic_chrome)
+                        .buildNotificationWrapper();
 
         mNotificationManager.notify(notification);
     }

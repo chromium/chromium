@@ -28,7 +28,7 @@ void SetWindowAndLayerName(aura::Window* window, const std::string& name) {
 // first) of |parent|. The format of the string is "name1 name2 name3 ...".
 std::string ChildWindowNamesAsString(const aura::Window& parent) {
   std::string names;
-  for (const auto* child : parent.children()) {
+  for (const aura::Window* child : parent.children()) {
     if (!names.empty())
       names += " ";
     names += child->GetName();
@@ -37,20 +37,13 @@ std::string ChildWindowNamesAsString(const aura::Window& parent) {
 }
 
 class WindowReordererTest : public ViewsTestBase {
- public:
-  Widget::InitParams CreateParams(Widget::InitParams::Type type) override {
-    Widget::InitParams params = ViewsTestBase::CreateParams(type);
-    params.parent = parent_;
-    return params;
-  }
-
+ protected:
   std::unique_ptr<Widget> CreateControlWidget(aura::Window* parent) {
-    parent_ = parent;
-    return CreateTestWidget(Widget::InitParams::TYPE_CONTROL);
+    Widget::InitParams params =
+        CreateParamsForTestWidget(Widget::InitParams::TYPE_CONTROL);
+    params.parent = parent;
+    return CreateTestWidget(std::move(params));
   }
-
- private:
-  raw_ptr<aura::Window, DanglingUntriaged> parent_ = nullptr;
 };
 
 // Test that views with layers and views with associated windows are reordered

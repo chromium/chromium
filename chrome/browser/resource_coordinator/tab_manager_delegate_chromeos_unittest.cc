@@ -144,6 +144,10 @@ class MockTabManagerDelegate : public TabManagerDelegate {
     return TabManagerDelegate::IsRecentlyKilledArcProcess(process_name, now);
   }
 
+  std::vector<ash::ResourcedClient::Process> GetReportedProcesses() {
+    return processes_;
+  }
+
  protected:
   bool KillArcProcess(const int nspid) override {
     killed_arc_processes_.push_back(nspid);
@@ -162,12 +166,18 @@ class MockTabManagerDelegate : public TabManagerDelegate {
     return &debugd_client_;
   }
 
+  void ReportProcesses(
+      const std::vector<ash::ResourcedClient::Process>& processes) override {
+    processes_ = processes;
+  }
+
  private:
   LifecycleUnitVector lifecycle_units_;
   ash::FakeDebugDaemonClient debugd_client_;
   std::vector<int> killed_arc_processes_;
   LifecycleUnitVector killed_tabs_;
   bool always_return_true_from_is_recently_killed_;
+  std::vector<ash::ResourcedClient::Process> processes_;
 };
 
 class MockMemoryStat : public TabManagerDelegate::MemoryStat {
@@ -175,14 +185,16 @@ class MockMemoryStat : public TabManagerDelegate::MemoryStat {
   MockMemoryStat() {}
   ~MockMemoryStat() override {}
 
-  int TargetMemoryToFreeKB() override { return target_memory_to_free_kb_; }
+  memory_pressure::ReclaimTarget TargetMemoryToFree() override {
+    return memory_pressure::ReclaimTarget(target_memory_to_free_kb_);
+  }
 
   int EstimatedMemoryFreedKB(base::ProcessHandle pid) override {
     return process_pss_[pid];
   }
 
   // unittest.
-  void SetTargetMemoryToFreeKB(const int target) {
+  void SetTargetMemoryToFreeKB(const uint64_t target) {
     target_memory_to_free_kb_ = target;
   }
 
@@ -192,7 +204,7 @@ class MockMemoryStat : public TabManagerDelegate::MemoryStat {
   }
 
  private:
-  int target_memory_to_free_kb_;
+  uint64_t target_memory_to_free_kb_;
   std::map<base::ProcessHandle, int> process_pss_;
 };
 
@@ -427,6 +439,112 @@ TEST_F(TabManagerDelegateTest, KillMultipleProcesses) {
   EXPECT_EQ(1U, processes_map.count("not-visible"));
   EXPECT_EQ(1U, processes_map.count("visible1"));
   EXPECT_EQ(1U, processes_map.count("visible2"));
+}
+
+TEST_F(TabManagerDelegateTest, TestDiscardedTabsAreSkipped) {
+  // Not owned.
+  MockMemoryStat* memory_stat = new MockMemoryStat();
+
+  // Instantiate the mock instance.
+  MockTabManagerDelegate tab_manager_delegate(memory_stat);
+
+  TestLifecycleUnit tab1(base::TimeTicks() + base::Seconds(3), 11);
+  tab_manager_delegate.AddLifecycleUnit(&tab1);
+  TestLifecycleUnit tab2(base::TimeTicks::Max(), 12);
+  tab2.SetState(LifecycleUnitState::DISCARDED,
+                LifecycleUnitStateChangeReason::USER_INITIATED);
+  tab_manager_delegate.AddLifecycleUnit(&tab2);
+
+  memory_stat->SetTargetMemoryToFreeKB(100);
+
+  tab_manager_delegate.LowMemoryKillImpl(
+      base::TimeTicks::Now(), ::mojom::LifecycleUnitDiscardReason::EXTERNAL,
+      TabManager::TabDiscardDoneCB(base::DoNothing()), {});
+
+  auto killed_tabs = tab_manager_delegate.GetKilledTabs();
+
+  // Even though tab1 was more recently viewed, it should be killed because tab2
+  // was already discarded.
+  ASSERT_EQ(1U, killed_tabs.size());
+  ASSERT_EQ(&tab1, killed_tabs[0]);
+}
+
+TEST_F(TabManagerDelegateTest, ReportProcesses) {
+  MockTabManagerDelegate tab_manager_delegate;
+
+  // Tab list:
+  // tab1    pid: 11
+  // tab2    pid: 12
+  // tab3    pid: 13
+  // tab4    pid: 14
+  // tab5    pid: 15, protected
+  // tab6    pid: 16, protected, focused
+  TestLifecycleUnit tab1(base::TimeTicks(), 11);
+  tab_manager_delegate.AddLifecycleUnit(&tab1);
+  TestLifecycleUnit tab2(base::TimeTicks(), 12);
+  tab_manager_delegate.AddLifecycleUnit(&tab2);
+  TestLifecycleUnit tab3(base::TimeTicks(), 13);
+  tab_manager_delegate.AddLifecycleUnit(&tab3);
+  TestLifecycleUnit tab4(base::TimeTicks(), 14);
+  tab_manager_delegate.AddLifecycleUnit(&tab4);
+  TestLifecycleUnit tab5(base::TimeTicks(), 15, false);
+  tab_manager_delegate.AddLifecycleUnit(&tab5);
+  TestLifecycleUnit tab6(base::TimeTicks(), 16, false);
+  tab6.SetDiscardFailureReason(DecisionFailureReason::LIVE_STATE_VISIBLE);
+  tab6.SetLastFocusedTime(base::TimeTicks::Max());
+  tab_manager_delegate.AddLifecycleUnit(&tab6);
+
+  tab_manager_delegate.ListProcesses();
+
+  auto processes = tab_manager_delegate.GetReportedProcesses();
+  EXPECT_EQ(processes[0].pid, 11);
+  EXPECT_EQ(processes[0].is_protected, false);
+  EXPECT_EQ(processes[0].is_visible, false);
+  EXPECT_EQ(processes[1].pid, 12);
+  EXPECT_EQ(processes[1].is_protected, false);
+  EXPECT_EQ(processes[1].is_visible, false);
+  EXPECT_EQ(processes[2].pid, 13);
+  EXPECT_EQ(processes[2].is_protected, false);
+  EXPECT_EQ(processes[2].is_visible, false);
+  EXPECT_EQ(processes[3].pid, 14);
+  EXPECT_EQ(processes[3].is_protected, false);
+  EXPECT_EQ(processes[3].is_visible, false);
+  EXPECT_EQ(processes[4].pid, 15);
+  EXPECT_EQ(processes[4].is_protected, true);
+  EXPECT_EQ(processes[4].is_visible, false);
+  EXPECT_EQ(processes[5].pid, 16);
+  EXPECT_EQ(processes[5].is_protected, true);
+  EXPECT_EQ(processes[5].is_visible, true);
+  EXPECT_EQ(processes[5].is_focused, true);
+}
+
+TEST_F(TabManagerDelegateTest, TestTargetMemoryToFreeIsRespected) {
+  // Not owned.
+  MockMemoryStat* memory_stat = new MockMemoryStat();
+
+  // Instantiate the mock instance.
+  MockTabManagerDelegate tab_manager_delegate(memory_stat);
+
+  TestLifecycleUnit tab1(base::TimeTicks() + base::Seconds(3), 10);
+  tab1.SetEstimatedMemoryFreedOnDiscardKB(60);
+  tab_manager_delegate.AddLifecycleUnit(&tab1);
+  TestLifecycleUnit tab2(base::TimeTicks() + base::Seconds(1), 11);
+  tab2.SetEstimatedMemoryFreedOnDiscardKB(60);
+  tab_manager_delegate.AddLifecycleUnit(&tab2);
+  TestLifecycleUnit tab3(base::TimeTicks() + base::Seconds(5), 12);
+  tab3.SetEstimatedMemoryFreedOnDiscardKB(60);
+  tab_manager_delegate.AddLifecycleUnit(&tab3);
+
+  // With target memory to free at 100, only two of the tabs should be killed.
+  memory_stat->SetTargetMemoryToFreeKB(100);
+
+  tab_manager_delegate.LowMemoryKillImpl(
+      base::TimeTicks::Now(), ::mojom::LifecycleUnitDiscardReason::EXTERNAL,
+      TabManager::TabDiscardDoneCB(base::DoNothing()), std::nullopt);
+
+  auto killed_tabs = tab_manager_delegate.GetKilledTabs();
+
+  ASSERT_EQ(2U, killed_tabs.size());
 }
 
 }  // namespace resource_coordinator

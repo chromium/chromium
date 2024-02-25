@@ -1,0 +1,24 @@
+<!doctype html>
+<head>
+  <title>CSS Functions invalidation</title>
+  <link rel="author" title="Steinar H. Gunderson" href="mailto:sesse@chromium.org" />
+  <script src="/resources/testharness.js"></script>
+  <script src="/resources/testharnessreport.js"></script>
+  <style id="sheet">
+    @function --favorite-color(): color {
+      @return red;
+    }
+  </style>
+</head>
+<body>
+  <div id="subject" style="color: --favorite-color()"></div>
+  <script>
+    test((t) => {
+      assert_equals(getComputedStyle(subject).color, "rgb(255, 0, 0)");
+      sheet.innerText = "@function --favorite-color(): color { @return green; }";
+      assert_equals(getComputedStyle(subject).color, "rgb(0, 128, 0)");
+      sheet.innerText = "";
+      assert_equals(getComputedStyle(subject).color, "rgb(0, 0, 0)");
+    });
+  </script>
+</body>

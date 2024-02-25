@@ -1,0 +1,63 @@
+// Copyright 2024 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module blink.mojom;
+
+// Implementation of the proposed Digital Identity Credential API.
+//
+// Proposal: https://wicg.github.io/digital-identities
+
+// The specification of the query to digital credentials.
+struct DigitalCredentialProvider {
+  map<string, string>? params;
+  DigitalCredentialSelector? selector;
+  string? protocol;
+  string? request;
+  string? publicKey;
+};
+
+// The requirements of the credentials that are being requested.
+struct DigitalCredentialSelector {
+  array<string> format;
+  string? doctype;
+  array<DigitalCredentialFieldRequirement> fields;
+};
+
+// The requirements that the verifier needs on specific fields.
+struct DigitalCredentialFieldRequirement {
+  // The name of the field (e.g. "org.iso.18013.5.1.family_name").
+  string name;
+
+  // Optionally, whether the field's value is equal to a specific value or not.
+  string? equals;
+};
+
+// Represents the fetch result from a digital identity request. It is
+// used to determine whether a JavaScript exception should be thrown, and what
+// the error message of such exception should say.
+enum RequestDigitalIdentityStatus {
+  kSuccess,
+  kErrorTooManyRequests,
+  kErrorCanceled,
+  kError,
+};
+
+// Create a digital identity request using the specified provider.
+// This interface is called from a renderer process and is implemented in the
+// browser process.
+interface DigitalIdentityRequest {
+  // Requests a token to be generated, given a DigitalCredentialProvider.
+  // Returns:
+  // - Status of the request.
+  // - Raw content of the token.
+  //
+  // Does not support concurrent requests. Throws an error on a new request if
+  // there is a pending request.
+  Request(DigitalCredentialProvider digital_credential_provider) =>
+      (RequestDigitalIdentityStatus status,
+      string? token);
+
+  // Aborts the pending request, if any.
+  Abort();
+};

@@ -7,10 +7,12 @@
 namespace blink {
 
 // static
-constexpr cppgc::CustomSpaceIndex HeapVectorBackingSpace::kSpaceIndex;
+constexpr cppgc::CustomSpaceIndex
+    CompactableHeapVectorBackingSpace::kSpaceIndex;
 
 // static
-constexpr cppgc::CustomSpaceIndex HeapHashTableBackingSpace::kSpaceIndex;
+constexpr cppgc::CustomSpaceIndex
+    CompactableHeapHashTableBackingSpace::kSpaceIndex;
 
 // static
 constexpr cppgc::CustomSpaceIndex NodeSpace::kSpaceIndex;
@@ -20,5 +22,17 @@ constexpr cppgc::CustomSpaceIndex CSSValueSpace::kSpaceIndex;
 
 // static
 constexpr cppgc::CustomSpaceIndex LayoutObjectSpace::kSpaceIndex;
+
+// static
+std::vector<std::unique_ptr<cppgc::CustomSpaceBase>>
+CustomSpaces::CreateCustomSpaces() {
+  std::vector<std::unique_ptr<cppgc::CustomSpaceBase>> spaces;
+  spaces.emplace_back(std::make_unique<CompactableHeapVectorBackingSpace>());
+  spaces.emplace_back(std::make_unique<CompactableHeapHashTableBackingSpace>());
+  spaces.emplace_back(std::make_unique<NodeSpace>());
+  spaces.emplace_back(std::make_unique<CSSValueSpace>());
+  spaces.emplace_back(std::make_unique<LayoutObjectSpace>());
+  return spaces;
+}
 
 }  // namespace blink

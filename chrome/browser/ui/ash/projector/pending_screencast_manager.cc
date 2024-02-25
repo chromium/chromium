@@ -5,32 +5,30 @@
 #include "chrome/browser/ui/ash/projector/pending_screencast_manager.h"
 
 #include <memory>
+#include <optional>
 #include <vector>
 
 #include "ash/constants/ash_features.h"
 #include "ash/projector/projector_metrics.h"
-#include "ash/webui/projector_app/public/cpp/projector_app_constants.h"
 #include "ash/webui/projector_app/public/mojom/projector_types.mojom-forward.h"
 #include "base/check.h"
 #include "base/files/file_enumerator.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
-#include "base/functional/callback_helpers.h"
 #include "base/json/json_reader.h"
 #include "base/json/json_writer.h"
 #include "base/strings/strcat.h"
-#include "base/task/bind_post_task.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "chrome/browser/ash/drive/drive_integration_service.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
+#include "chrome/browser/ui/ash/projector/projector_utils.h"
 #include "chromeos/ash/components/drivefs/mojom/drivefs.mojom.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "net/base/url_util.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace {
 
@@ -44,8 +42,7 @@ constexpr char kDriveRequestIndexableTextKey[] = "indexableText";
 constexpr base::TimeDelta kDriveGetMetadataDelay = base::Seconds(3);
 
 bool IsWebmOrProjectorFile(const base::FilePath& path) {
-  return path.MatchesExtension(ash::kProjectorMediaFileExtension) ||
-         path.MatchesExtension(ash::kProjectorMetadataFileExtension);
+  return IsMediaFile(path) || IsMetadataFile(path);
 }
 
 // "Absolute path" is the DriveFS absolute path of `drive_relative_path` on
@@ -61,15 +58,16 @@ base::FilePath GetLocalAbsolutePath(const base::FilePath& drivefs_mounted_point,
 
 // Returns the Drive server side id from |url| e.g.
 // https://drive.google.com/open?id=[ID].
-absl::optional<std::string> GetIdFromDriveUrl(const GURL& url) {
+std::optional<std::string> GetIdFromDriveUrl(const GURL& url) {
   const std::string& spec = url.spec();
   if (!base::StartsWith(spec, kOpenUrlBase,
                         base::CompareCase::INSENSITIVE_ASCII)) {
-    return absl::nullopt;
+    return std::nullopt;
   }
   std::string id;
-  if (!net::GetValueForKeyInQuery(url, "id", &id))
-    return absl::nullopt;
+  if (!net::GetValueForKeyInQuery(url, "id", &id)) {
+    return std::nullopt;
+  }
   return id;
 }
 
@@ -89,7 +87,7 @@ void ParseFileIdOnGetMetaData(
   } else {
     // TODO(b/221078840): Use the file id directly when it is available in
     // `metadata`.
-    absl::optional<std::string> parsed_file_id =
+    std::optional<std::string> parsed_file_id =
         GetIdFromDriveUrl(GURL(metadata->alternate_url));
     if (parsed_file_id.has_value()) {
       file_id = parsed_file_id.value();
@@ -110,8 +108,9 @@ void GetDriveFileMetadata(
   DCHECK(content::BrowserThread::CurrentlyOn(content::BrowserThread::UI));
   auto* drive_integration_service =
       ProjectorDriveFsProvider::GetActiveDriveIntegrationService();
-  if (!drive_integration_service)
+  if (!drive_integration_service) {
     return;
+  }
   const base::FilePath local_path = GetLocalAbsolutePath(
       drive_integration_service->GetMountPointPath(), drive_relative_path);
 
@@ -143,28 +142,33 @@ std::string GetIndexableText(const base::FilePath& metadata_file_local_path) {
 
   // Reads the Json content in `metadata_file_local_path` to `dict_value`:
   std::string file_content;
-  if (!base::ReadFileToString(metadata_file_local_path, &file_content))
+  if (!base::ReadFileToString(metadata_file_local_path, &file_content)) {
     return indexable_text;
+  }
 
-  absl::optional<base::Value> value(base::JSONReader::Read(file_content));
-  if (!value)
+  std::optional<base::Value> value(base::JSONReader::Read(file_content));
+  if (!value) {
     return indexable_text;
+  }
 
   const base::Value::Dict* dict_value = value.value().GetIfDict();
-  if (!dict_value)
+  if (!dict_value) {
     return indexable_text;
+  }
 
   // Concats all captions' text:
   const auto* captions = dict_value->FindList("captions");
-  if (!captions)
+  if (!captions) {
     return indexable_text;
+  }
 
   for (const auto& caption : *captions) {
     const base::Value::Dict* caption_dict = caption.GetIfDict();
-    if (!caption_dict)
+    if (!caption_dict) {
       continue;
+    }
     const std::string* text = caption_dict->FindString("text");
-    if (!text->empty()) {
+    if (text && !text->empty()) {
       base::StrAppend(&indexable_text, {" ", *text});
     }
   }
@@ -182,8 +186,9 @@ const std::string BuildRequestBody(
     const base::FilePath& metadata_file_local_path) {
   DCHECK(!content::BrowserThread::CurrentlyOn(content::BrowserThread::UI));
   const std::string indexable_text = GetIndexableText(metadata_file_local_path);
-  if (indexable_text.empty())
+  if (indexable_text.empty()) {
     return std::string();
+  }
 
   // Builds request body:
   base::Value::Dict root;
@@ -199,15 +204,16 @@ const std::string BuildRequestBody(
 
 // Returns a valid pending screencast from `container_absolute_path`.  A valid
 // screencast should have 1 media file and 1 metadata file.
-absl::optional<ash::PendingScreencastContainer> GetPendingScreencastContainer(
+std::optional<ash::PendingScreencastContainer> GetPendingScreencastContainer(
     const base::FilePath& container_dir,
     const base::FilePath& drivefs_mounted_point,
     bool upload_failed) {
   DCHECK(!content::BrowserThread::CurrentlyOn(content::BrowserThread::UI));
   const base::FilePath container_absolute_path =
       GetLocalAbsolutePath(drivefs_mounted_point, container_dir);
-  if (!base::PathExists(container_absolute_path))
-    return absl::nullopt;
+  if (!base::PathExists(container_absolute_path)) {
+    return std::nullopt;
+  }
 
   int64_t total_size_in_bytes = 0;
   int media_file_count = 0;
@@ -222,13 +228,14 @@ absl::optional<ash::PendingScreencastContainer> GetPendingScreencastContainer(
   // Calculates the size of media file and metadata file, and the created time
   // of media.
   for (base::FilePath path = files.Next(); !path.empty(); path = files.Next()) {
-    if (path.MatchesExtension(ash::kProjectorMetadataFileExtension)) {
+    if (IsMetadataFile(path)) {
       total_size_in_bytes += files.GetInfo().GetSize();
       metadata_file_count++;
-    } else if (path.MatchesExtension(ash::kProjectorMediaFileExtension)) {
+    } else if (IsMediaFile(path)) {
       base::File::Info info;
-      if (!base::GetFileInfo(path, &info))
+      if (!base::GetFileInfo(path, &info)) {
         continue;
+      }
       created_time = info.creation_time;
       total_size_in_bytes += files.GetInfo().GetSize();
       media_name = path.BaseName().RemoveExtension().value();
@@ -236,13 +243,15 @@ absl::optional<ash::PendingScreencastContainer> GetPendingScreencastContainer(
     }
 
     // Return null if the screencast is not valid.
-    if (media_file_count > 1 || metadata_file_count > 1)
-      return absl::nullopt;
+    if (media_file_count > 1 || metadata_file_count > 1) {
+      return std::nullopt;
+    }
   }
 
   // Return null if the screencast is not valid.
-  if (media_file_count != 1 || metadata_file_count != 1)
-    return absl::nullopt;
+  if (media_file_count != 1 || metadata_file_count != 1) {
+    return std::nullopt;
+  }
 
   ash::PendingScreencastContainer pending_screencast{container_dir};
   pending_screencast.SetTotalSizeInBytes(total_size_in_bytes);
@@ -283,8 +292,9 @@ ash::PendingScreencastContainerSet ProcessAndGenerateNewScreencasts(
     const base::FilePath container_dir = upload_failed_file.DirName();
     auto new_screencast = GetPendingScreencastContainer(
         container_dir, drivefs_mounted_point, /*upload_failed=*/true);
-    if (new_screencast)
+    if (new_screencast) {
       container_to_screencasts[container_dir] = new_screencast.value();
+    }
   }
 
   // Creates uploading screencasts from `pending_webm_or_projector_events`:
@@ -327,8 +337,9 @@ ash::PendingScreencastContainerSet ProcessAndGenerateNewScreencasts(
     }
   }
 
-  for (const auto& pair : container_to_screencasts)
+  for (const auto& pair : container_to_screencasts) {
     screencasts.insert(pair.second);
+  }
 
   return screencasts;
 }
@@ -370,32 +381,34 @@ void PendingScreencastManager::OnUnmounted() {
 // download event. Find a way to filter out the upload event.
 void PendingScreencastManager::OnSyncingStatusUpdate(
     const drivefs::mojom::SyncingStatus& status) {
-  if (!ProjectorDriveFsProvider::IsDriveFsMounted())
+  if (!ProjectorDriveFsProvider::IsDriveFsMounted()) {
     return;
+  }
   std::vector<drivefs::mojom::ItemEvent> pending_webm_or_projector_events;
   for (const auto& event : status.item_events) {
     const base::FilePath event_file = base::FilePath(event->path);
 
-    if (event->state == drivefs::mojom::ItemEvent::State::kCompleted)
+    if (event->state == drivefs::mojom::ItemEvent::State::kCompleted) {
       OnFileSyncedCompletely(event_file);
+    }
 
     bool pending =
         event->state == drivefs::mojom::ItemEvent::State::kQueued ||
         event->state == drivefs::mojom::ItemEvent::State::kInProgress;
     // Filters pending ".webm" or ".projector".
-    if (!pending || !IsWebmOrProjectorFile(event_file))
+    if (!pending || !IsWebmOrProjectorFile(event_file)) {
       continue;
+    }
 
     // We might have received the same event with "kCompleted" state multiple
     // times. The `syncing_metadata_files_` is used to watch the first
     // "kCompleted" state for a file so that we could only update indexable text
     // once.
     if (ash::features::IsProjectorUpdateIndexableTextEnabled() &&
-        event_file.MatchesExtension(ash::kProjectorMetadataFileExtension)) {
+        IsMetadataFile(event_file)) {
       syncing_metadata_files_.emplace(event_file);
     }
-    pending_webm_or_projector_events.push_back(
-        drivefs::mojom::ItemEvent(*event.get()));
+    pending_webm_or_projector_events.emplace_back(*event.get());
   }
 
   // If the `pending_webm_or_projector_events`, `error_syncing_files_` and
@@ -444,11 +457,6 @@ PendingScreencastManager::GetPendingScreencasts() const {
   return pending_screencast_cache_;
 }
 
-bool PendingScreencastManager::IsDriveFsObservationObservingSource(
-    drivefs::DriveFsHost* source) const {
-  return drivefs_observation_.IsObservingSource(source);
-}
-
 void PendingScreencastManager::SetOnGetFileIdCallbackForTest(
     OnGetFileIdCallback callback) {
   on_get_file_id_callback_ = std::move(callback);
@@ -465,22 +473,21 @@ void PendingScreencastManager::SetProjectorXhrSenderForTest(
 }
 
 void PendingScreencastManager::MaybeSwitchDriveFsObservation() {
-  auto* drivefs_integration =
+  drive::DriveIntegrationService* const service =
       ProjectorDriveFsProvider::GetActiveDriveIntegrationService();
-  if (!drivefs_integration)
+  if (!service) {
     return;
+  }
 
-  auto* drivefs_host = drivefs_integration->GetDriveFsHost();
-  if (!drivefs_host || drivefs_observation_.IsObservingSource(drivefs_host))
+  drivefs::DriveFsHost* const host = service->GetDriveFsHost();
+  if (!host || GetHost() == host) {
     return;
+  }
 
   pending_screencast_cache_.clear();
   error_syncing_files_.clear();
 
-  // Reset if observing DriveFsHost of other profile.
-  if (drivefs_observation_.IsObserving())
-    drivefs_observation_.Reset();
-  drivefs_observation_.Observe(drivefs_host);
+  Observe(host);
 }
 
 void PendingScreencastManager::ToggleFileSyncingNotificationForPaths(
@@ -488,8 +495,9 @@ void PendingScreencastManager::ToggleFileSyncingNotificationForPaths(
     bool suppress) {
   auto* drivefs_integration =
       ProjectorDriveFsProvider::GetActiveDriveIntegrationService();
-  if (!drivefs_integration)
+  if (!drivefs_integration) {
     return;
+  }
 
   Profile* profile = ProfileManager::GetActiveUserProfile();
   for (const auto& path : paths) {
@@ -529,8 +537,9 @@ void PendingScreencastManager::OnProcessAndGenerateNewScreencastsFinished(
   ash::RecordPendingScreencastBatchIOTaskDuration(now - task_start_tick);
 
   // Returns if pending screencasts didn't change.
-  if (screencasts == pending_screencast_cache_)
+  if (screencasts == pending_screencast_cache_) {
     return;
+  }
   pending_screencast_cache_ = screencasts;
 
   // Notifies pending screencast status changed.
@@ -581,8 +590,9 @@ void PendingScreencastManager::OnFileSyncedCompletely(
 void PendingScreencastManager::OnGetFileId(
     const base::FilePath& local_file_path,
     const std::string& file_id) {
-  if (file_id.empty())
+  if (file_id.empty()) {
     return;
+  }
 
   base::ThreadPool::PostTaskAndReplyWithResult(
       FROM_HERE, {base::MayBlock()},
@@ -597,8 +607,9 @@ void PendingScreencastManager::SendDrivePatchRequest(
     const std::string& file_id,
     const std::string& request_body) {
   DCHECK(!file_id.empty());
-  if (request_body.empty())
+  if (request_body.empty()) {
     return;
+  }
 
   if (!xhr_sender_) {
     xhr_sender_ = std::make_unique<ash::ProjectorXhrSender>(

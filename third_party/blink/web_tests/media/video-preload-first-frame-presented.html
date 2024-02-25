@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<title>Test that an "auto" preload of a media element will present at least one frame.</title>
+<script src="../resources/testharness.js"></script>
+<script src="../resources/testharnessreport.js"></script>
+<video preload="auto"></video>
+<script>
+async_test(function(t) {
+    var video = document.querySelector("video");
+    video.requestVideoFrameCallback(t.step_func_done(function() {
+        var quality = video.getVideoPlaybackQuality();
+        assert_greater_than_equal(quality.totalVideoFrames, 1, "totalVideoFrames >= 1");
+    }));
+    video.src = "content/test.ogv";
+});
+</script>

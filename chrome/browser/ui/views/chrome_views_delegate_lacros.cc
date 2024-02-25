@@ -6,9 +6,16 @@
 
 #include <memory>
 
+#include "chromeos/ui/frame/frame_utils.h"
 #include "chromeos/ui/frame/non_client_frame_view_base.h"
+#include "ui/gfx/native_widget_types.h"
 
 std::unique_ptr<views::NonClientFrameView>
 ChromeViewsDelegate::CreateDefaultNonClientFrameView(views::Widget* widget) {
   return std::make_unique<chromeos::NonClientFrameViewBase>(widget);
+}
+
+bool ChromeViewsDelegate::ShouldWindowHaveRoundedCorners(
+    gfx::NativeWindow window) const {
+  return chromeos::ShouldWindowHaveRoundedCorners(window);
 }

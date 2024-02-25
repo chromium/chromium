@@ -9,6 +9,7 @@
 
 #include <map>
 #include <memory>
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -19,6 +20,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list_threadsafe.h"
+#include "base/observer_list_types.h"
 #include "components/services/storage/public/mojom/quota_client.mojom.h"
 #include "components/services/storage/public/mojom/service_worker_storage_control.mojom.h"
 #include "content/browser/service_worker/service_worker_info.h"
@@ -30,7 +32,6 @@
 #include "content/public/browser/service_worker_context.h"
 #include "mojo/public/cpp/bindings/associated_receiver_set.h"
 #include "mojo/public/cpp/bindings/receiver.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "third_party/blink/public/mojom/service_worker/service_worker_registration.mojom-forward.h"
 
@@ -74,12 +75,12 @@ class CONTENT_EXPORT ServiceWorkerContextCore
                               int64_t registration_id)>;
   using UnregistrationCallback =
       base::OnceCallback<void(blink::ServiceWorkerStatusCode status)>;
-  using WarmUpServiceWorkerCallback = base::OnceCallback<void()>;
   using ContainerHostByClientUUIDMap =
       std::map<std::string, std::unique_ptr<ServiceWorkerContainerHost>>;
-
   using WarmUpRequest =
-      std::tuple<GURL, blink::StorageKey, WarmUpServiceWorkerCallback>;
+      std::tuple<GURL,
+                 blink::StorageKey,
+                 ServiceWorkerContext::WarmUpServiceWorkerCallback>;
 
   // Iterates over ServiceWorkerContainerHost objects in the
   // ContainerHostByClientUUIDMap.
@@ -109,6 +110,15 @@ class CONTENT_EXPORT ServiceWorkerContextCore
     ContainerHostByClientUUIDMap::iterator container_host_iterator_;
   };
 
+  class TestVersionObserver : public base::CheckedObserver {
+   public:
+    TestVersionObserver() = default;
+
+    // Called when a new `ServiceWorkerVersion` is added to this context.
+    virtual void OnServiceWorkerVersionCreated(
+        ServiceWorkerVersion* service_worker_version) {}
+  };
+
   // This is owned by ServiceWorkerContextWrapper. |observer_list| is created in
   // ServiceWorkerContextWrapper. When Notify() of |observer_list| is called in
   // ServiceWorkerContextCore, the methods of ServiceWorkerContextCoreObserver
@@ -135,6 +145,12 @@ class CONTENT_EXPORT ServiceWorkerContextCore
   void OnMainScriptResponseSet(
       int64_t version_id,
       const ServiceWorkerVersion::MainScriptResponse& response);
+
+  // Called when a Service Worker opens a window.
+  void OnWindowOpened(const GURL& script_url, const GURL& url);
+
+  // Called when a Service Worker navigates an existing tab.
+  void OnClientNavigated(const GURL& script_url, const GURL& url);
 
   // OnControlleeAdded/Removed are called asynchronously. It is possible the
   // container host identified by |client_uuid| was already destroyed when they
@@ -399,15 +415,25 @@ class CONTENT_EXPORT ServiceWorkerContextCore
   // `warm_up_requests_` queue size exceeds the limit, then the older entries
   // will be removed from the queue, and the removed entry's callbacks will be
   // triggered.
-  void AddWarmUpRequest(const GURL& document_url,
-                        const blink::StorageKey& key,
-                        WarmUpServiceWorkerCallback callback);
+  void AddWarmUpRequest(
+      const GURL& document_url,
+      const blink::StorageKey& key,
+      ServiceWorkerContext::WarmUpServiceWorkerCallback callback);
 
-  absl::optional<WarmUpRequest> PopNextWarmUpRequest();
+  std::optional<WarmUpRequest> PopNextWarmUpRequest();
+  bool IsWaitingForWarmUp(const blink::StorageKey& key) const;
 
   bool IsProcessingWarmingUp() const { return is_processing_warming_up_; }
   void BeginProcessingWarmingUp() { is_processing_warming_up_ = true; }
   void EndProcessingWarmingUp() { is_processing_warming_up_ = false; }
+
+  void AddVersionObserverForTest(TestVersionObserver* observer) {
+    test_version_observers_.AddObserver(observer);
+  }
+
+  void RemoveVersionObserverForTest(TestVersionObserver* observer) {
+    test_version_observers_.RemoveObserver(observer);
+  }
 
 #if !BUILDFLAG(IS_ANDROID)
   ServiceWorkerHidDelegateObserver* hid_delegate_observer();
@@ -560,6 +586,8 @@ class CONTENT_EXPORT ServiceWorkerContextCore
   std::unique_ptr<ServiceWorkerHidDelegateObserver> hid_delegate_observer_;
   std::unique_ptr<ServiceWorkerUsbDelegateObserver> usb_delegate_observer_;
 #endif  // !BUILDFLAG(IS_ANDROID)
+
+  base::ObserverList<TestVersionObserver> test_version_observers_;
 
   base::WeakPtrFactory<ServiceWorkerContextCore> weak_factory_{this};
 };

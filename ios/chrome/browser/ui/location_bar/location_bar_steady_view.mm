@@ -11,6 +11,7 @@
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/browser/shared/ui/util/dynamic_type_util.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
+#import "ios/chrome/browser/ui/content_suggestions/content_suggestions_collection_utils.h"
 #import "ios/chrome/browser/ui/omnibox/omnibox_constants.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
@@ -35,6 +36,8 @@ const CGFloat kVoiceSearchButtonTrailingSpacing = -7;
 const CGFloat kbadgeViewAnimationDuration = 0.2;
 // Location label vertical offset.
 const CGFloat kLocationLabelVerticalOffset = -1;
+// The margin from the leading side when not centered.
+const CGFloat kLeadingMargin = 20;
 }  // namespace
 
 @interface LocationBarSteadyView ()
@@ -91,7 +94,7 @@ const CGFloat kLocationLabelVerticalOffset = -1;
       [[LocationBarSteadyViewColorScheme alloc] init];
 
   scheme.fontColor = [UIColor colorNamed:kTextPrimaryColor];
-  scheme.placeholderColor = [UIColor colorNamed:kTextfieldPlaceholderColor];
+  scheme.placeholderColor = content_suggestions::SearchHintLabelColor();
   scheme.trailingButtonColor = [UIColor colorNamed:kGrey600Color];
 
   return scheme;
@@ -138,7 +141,12 @@ const CGFloat kLocationLabelVerticalOffset = -1;
 
 #pragma mark - LocationBarSteadyView
 
-@implementation LocationBarSteadyView
+@implementation LocationBarSteadyView {
+  NSLayoutConstraint* _xConstraint;
+
+  // The trailing view that is hidden by default, shown for highlight mode.
+  UIView* _trailingButtonSpotlightView;
+}
 
 - (instancetype)init {
   self = [super initWithFrame:CGRectZero];
@@ -164,6 +172,12 @@ const CGFloat kLocationLabelVerticalOffset = -1;
     // Make the pointer shape fit the location bar's semi-circle end shape.
     _trailingButton.pointerStyleProvider =
         CreateLiftEffectCirclePointerStyleProvider();
+
+    __weak __typeof(self) weakSelf = self;
+    CustomHighlightableButtonHighlightHandler handler = ^(BOOL highlighted) {
+      [weakSelf updateTrailingButtonWithHighlightedStatus:highlighted];
+    };
+    [_trailingButton setCustomHighlightHandler:handler];
 
     // Setup label.
     _locationLabel.lineBreakMode = NSLineBreakByTruncatingHead;
@@ -201,10 +215,20 @@ const CGFloat kLocationLabelVerticalOffset = -1;
 
     [NSLayoutConstraint activateConstraints:_showLocationImageConstraints];
 
+    _trailingButtonSpotlightView = [[UIView alloc] init];
+    _trailingButtonSpotlightView.translatesAutoresizingMaskIntoConstraints = NO;
+    _trailingButtonSpotlightView.hidden = YES;
+    _trailingButtonSpotlightView.userInteractionEnabled = NO;
+    _trailingButtonSpotlightView.backgroundColor =
+        [UIColor colorNamed:kBlueColor];
+
     _locationButton = [[LocationBarSteadyButton alloc] init];
     _locationButton.translatesAutoresizingMaskIntoConstraints = NO;
     [_locationButton addSubview:_trailingButton];
+    [_locationButton insertSubview:_trailingButtonSpotlightView
+                      belowSubview:_trailingButton];
     [_locationButton addSubview:_locationContainerView];
+    AddSameCenterConstraints(_trailingButton, _trailingButtonSpotlightView);
 
     [self addSubview:_locationButton];
 
@@ -212,9 +236,9 @@ const CGFloat kLocationLabelVerticalOffset = -1;
     AddSameConstraints(self, _locationButton);
 
     // Make the label gravitate towards the center of the view.
-    NSLayoutConstraint* centerX = [_locationContainerView.centerXAnchor
+    _xConstraint = [_locationContainerView.centerXAnchor
         constraintEqualToAnchor:self.centerXAnchor];
-    centerX.priority = UILayoutPriorityDefaultHigh;
+    _xConstraint.priority = UILayoutPriorityDefaultHigh;
 
     _locationContainerViewLeadingAnchorConstraint =
         [_locationContainerView.leadingAnchor
@@ -244,8 +268,12 @@ const CGFloat kLocationLabelVerticalOffset = -1;
       [_trailingButton.widthAnchor constraintEqualToConstant:kButtonSize],
       [_trailingButton.heightAnchor constraintEqualToConstant:kButtonSize],
       _trailingButtonTrailingAnchorConstraint,
-      centerX,
+      _xConstraint,
       _locationContainerViewLeadingAnchorConstraint,
+      [_trailingButtonSpotlightView.trailingAnchor
+          constraintEqualToAnchor:self.trailingAnchor],
+      [_trailingButtonSpotlightView.heightAnchor
+          constraintEqualToAnchor:self.heightAnchor],
     ]];
   }
 
@@ -268,6 +296,12 @@ const CGFloat kLocationLabelVerticalOffset = -1;
   [self updateAccessibility];
 
   return self;
+}
+
+- (void)layoutSubviews {
+  [super layoutSubviews];
+  _trailingButtonSpotlightView.layer.cornerRadius =
+      _trailingButtonSpotlightView.bounds.size.height / 2;
 }
 
 - (CGFloat)trailingButtonTrailingSpacing {
@@ -420,6 +454,20 @@ const CGFloat kLocationLabelVerticalOffset = -1;
   [self updateAccessibility];
 }
 
+- (void)setCentered:(BOOL)centered {
+  _xConstraint.active = NO;
+  if (centered) {
+    _xConstraint = [_locationContainerView.centerXAnchor
+        constraintEqualToAnchor:self.centerXAnchor];
+  } else {
+    _xConstraint = [_locationContainerView.leadingAnchor
+        constraintEqualToAnchor:self.leadingAnchor
+                       constant:kLeadingMargin];
+  }
+  _xConstraint.priority = UILayoutPriorityDefaultHigh;
+  _xConstraint.active = YES;
+}
+
 #pragma mark - UIResponder
 
 // This is needed for UIMenu
@@ -485,6 +533,13 @@ const CGFloat kLocationLabelVerticalOffset = -1;
 - (UIFont*)locationLabelFont {
   return LocationBarSteadyViewFont(
       self.traitCollection.preferredContentSizeCategory);
+}
+
+- (void)updateTrailingButtonWithHighlightedStatus:(BOOL)highlighted {
+  self.trailingButton.tintColor =
+      highlighted ? [UIColor colorNamed:kSolidButtonTextColor]
+                  : [UIColor colorNamed:kToolbarButtonColor];
+  _trailingButtonSpotlightView.hidden = !highlighted;
 }
 
 @end

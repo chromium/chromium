@@ -56,6 +56,7 @@ import org.chromium.base.ThreadUtils;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.supplier.OneshotSupplierImpl;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.util.Features;
 import org.chromium.base.test.util.JniMocker;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ActivityTabProvider;
@@ -91,7 +92,6 @@ import org.chromium.chrome.browser.webapps.WebappRegistry;
 import org.chromium.chrome.features.start_surface.StartSurface;
 import org.chromium.chrome.features.start_surface.StartSurfaceCoordinator;
 import org.chromium.chrome.features.start_surface.StartSurfaceState;
-import org.chromium.chrome.test.util.browser.Features;
 import org.chromium.components.bookmarks.BookmarkId;
 import org.chromium.components.browser_ui.accessibility.PageZoomCoordinator;
 import org.chromium.components.browser_ui.site_settings.WebsitePreferenceBridge;
@@ -118,74 +118,42 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-/**
- * Unit tests for {@link AppMenuPropertiesDelegateImpl}.
- */
+/** Unit tests for {@link AppMenuPropertiesDelegateImpl}. */
 @RunWith(BaseRobolectricTestRunner.class)
 @LooperMode(LooperMode.Mode.LEGACY)
 public class AppMenuPropertiesDelegateUnitTest {
-    @Rule
-    public TestRule mProcessor = new Features.JUnitProcessor();
+    @Rule public TestRule mProcessor = new Features.JUnitProcessor();
 
-    @Rule
-    public JniMocker mJniMocker = new JniMocker();
+    @Rule public JniMocker mJniMocker = new JniMocker();
 
-    @Mock
-    private ActivityTabProvider mActivityTabProvider;
-    @Mock
-    private Tab mTab;
-    @Mock
-    private WebContents mWebContents;
-    @Mock
-    private NavigationController mNavigationController;
-    @Mock
-    private MultiWindowModeStateDispatcher mMultiWindowModeStateDispatcher;
-    @Mock
-    private TabModelSelector mTabModelSelector;
-    @Mock
-    private TabModel mTabModel;
-    @Mock
-    private TabModel mIncognitoTabModel;
-    @Mock
-    private ToolbarManager mToolbarManager;
-    @Mock
-    private View mDecorView;
-    @Mock
-    private LayoutStateProvider mLayoutStateProvider;
-    @Mock
-    private StartSurfaceCoordinator mStartSurfaceCoordinator;
-    @Mock
-    private UpdateMenuItemHelper mUpdateMenuItemHelper;
-    @Mock
-    private UserPrefs.Natives mUserPrefsJniMock;
-    @Mock
-    private Profile mProfile;
-    @Mock
-    private PrefService mPrefService;
-    @Mock
-    private TabModelFilterProvider mTabModelFilterProvider;
-    @Mock
-    private TabModelFilter mTabModelFilter;
-    @Mock
-    public WebsitePreferenceBridge.Natives mWebsitePreferenceBridgeJniMock;
-    @Mock
-    public BookmarkModel mBookmarkModel;
-    @Mock
-    private IdentityManager mIdentityManagerMock;
-    @Mock
-    private IdentityServicesProvider mIdentityServicesProviderMock;
-    @Mock
-    private ManagedBrowserUtils.Natives mManagedBrowserUtilsJniMock;
-    @Mock
-    private IncognitoReauthController mIncognitoReauthControllerMock;
-    @Mock
-    private ShoppingService mShoppingService;
-    @Mock
-    private AppBannerManager.Natives mAppBannerManagerJniMock;
-    @Mock
-    private ReadAloudController mReadAloudController;
-    @Mock
-    private TranslateBridge.Natives mTranslateBridgeJniMock;
+    @Mock private ActivityTabProvider mActivityTabProvider;
+    @Mock private Tab mTab;
+    @Mock private WebContents mWebContents;
+    @Mock private NavigationController mNavigationController;
+    @Mock private MultiWindowModeStateDispatcher mMultiWindowModeStateDispatcher;
+    @Mock private TabModelSelector mTabModelSelector;
+    @Mock private TabModel mTabModel;
+    @Mock private TabModel mIncognitoTabModel;
+    @Mock private ToolbarManager mToolbarManager;
+    @Mock private View mDecorView;
+    @Mock private LayoutStateProvider mLayoutStateProvider;
+    @Mock private StartSurfaceCoordinator mStartSurfaceCoordinator;
+    @Mock private UpdateMenuItemHelper mUpdateMenuItemHelper;
+    @Mock private UserPrefs.Natives mUserPrefsJniMock;
+    @Mock private Profile mProfile;
+    @Mock private PrefService mPrefService;
+    @Mock private TabModelFilterProvider mTabModelFilterProvider;
+    @Mock private TabModelFilter mTabModelFilter;
+    @Mock public WebsitePreferenceBridge.Natives mWebsitePreferenceBridgeJniMock;
+    @Mock public BookmarkModel mBookmarkModel;
+    @Mock private IdentityManager mIdentityManagerMock;
+    @Mock private IdentityServicesProvider mIdentityServicesProviderMock;
+    @Mock private ManagedBrowserUtils.Natives mManagedBrowserUtilsJniMock;
+    @Mock private IncognitoReauthController mIncognitoReauthControllerMock;
+    @Mock private ShoppingService mShoppingService;
+    @Mock private AppBannerManager.Natives mAppBannerManagerJniMock;
+    @Mock private ReadAloudController mReadAloudController;
+    @Mock private TranslateBridge.Natives mTranslateBridgeJniMock;
 
     private OneshotSupplierImpl<IncognitoReauthController> mIncognitoReauthControllerSupplier =
             new OneshotSupplierImpl<>();
@@ -207,16 +175,19 @@ public class AppMenuPropertiesDelegateUnitTest {
         MockitoAnnotations.initMocks(this);
         setupFeatureDefaults();
 
-        Context context = new ContextThemeWrapper(
-                ContextUtils.getApplicationContext(), R.style.Theme_BrowserUI_DayNight);
+        Context context =
+                new ContextThemeWrapper(
+                        ContextUtils.getApplicationContext(), R.style.Theme_BrowserUI_DayNight);
         mShadowPackageManager = Shadows.shadowOf(context.getPackageManager());
 
         mLayoutStateProviderSupplier.set(mLayoutStateProvider);
         mIncognitoReauthControllerSupplier.set(mIncognitoReauthControllerMock);
         mReadAloudControllerSupplier.set(mReadAloudController);
         when(mTab.getWebContents()).thenReturn(mWebContents);
+        when(mTab.getProfile()).thenReturn(mProfile);
         when(mWebContents.getNavigationController()).thenReturn(mNavigationController);
         when(mNavigationController.getUseDesktopUserAgent()).thenReturn(false);
+        when(mTabModelSelector.isTabStateInitialized()).thenReturn(true);
         when(mTabModelSelector.getCurrentModel()).thenReturn(mTabModel);
         when(mTabModelSelector.getModel(false)).thenReturn((mTabModel));
         when(mTabModelSelector.getModel(true)).thenReturn((mIncognitoTabModel));
@@ -233,7 +204,6 @@ public class AppMenuPropertiesDelegateUnitTest {
 
         mJniMocker.mock(UserPrefsJni.TEST_HOOKS, mUserPrefsJniMock);
         mJniMocker.mock(WebsitePreferenceBridgeJni.TEST_HOOKS, mWebsitePreferenceBridgeJniMock);
-        Profile.setLastUsedProfileForTesting(mProfile);
         Mockito.when(mUserPrefsJniMock.get(mProfile)).thenReturn(mPrefService);
         FeatureList.setTestCanUseDefaultsForTesting();
         PowerBookmarkUtils.setPriceTrackingEligibleForTesting(false);
@@ -254,11 +224,20 @@ public class AppMenuPropertiesDelegateUnitTest {
         mBookmarkModelSupplier.set(mBookmarkModel);
         PowerBookmarkUtils.setPriceTrackingEligibleForTesting(false);
         PowerBookmarkUtils.setPowerBookmarkMetaForTesting(PowerBookmarkMeta.newBuilder().build());
-        mAppMenuPropertiesDelegate = Mockito.spy(new AppMenuPropertiesDelegateImpl(context,
-                mActivityTabProvider, mMultiWindowModeStateDispatcher, mTabModelSelector,
-                mToolbarManager, mDecorView, mLayoutStateProviderSupplier, mStartSurfaceSupplier,
-                mBookmarkModelSupplier, mIncognitoReauthControllerSupplier,
-                mReadAloudControllerSupplier));
+        mAppMenuPropertiesDelegate =
+                Mockito.spy(
+                        new AppMenuPropertiesDelegateImpl(
+                                context,
+                                mActivityTabProvider,
+                                mMultiWindowModeStateDispatcher,
+                                mTabModelSelector,
+                                mToolbarManager,
+                                mDecorView,
+                                mLayoutStateProviderSupplier,
+                                mStartSurfaceSupplier,
+                                mBookmarkModelSupplier,
+                                mIncognitoReauthControllerSupplier,
+                                mReadAloudControllerSupplier));
 
         ShoppingServiceFactory.setShoppingServiceForTesting(mShoppingService);
     }
@@ -269,22 +248,16 @@ public class AppMenuPropertiesDelegateUnitTest {
     }
 
     private void setupFeatureDefaults() {
-        setBookmarkItemRowEnabled(false);
-        setShoppingListItemRowEnabled(false);
+        setShoppingListEligible(false);
+        setShoppingListEligible(false);
+        mTestValues.addFeatureFlagOverride(ChromeFeatureList.PWA_UNIVERSAL_INSTALL_UI, false);
+        mTestValues.addFeatureFlagOverride(
+                ChromeFeatureList.SYNC_SHOW_IDENTITY_ERRORS_FOR_SIGNED_IN_USERS, false);
         FeatureList.setTestValues(mTestValues);
     }
 
-    private void setBookmarkItemRowEnabled(boolean enabled) {
+    private void setShoppingListEligible(boolean enabled) {
         ShoppingFeatures.setShoppingListEligibleForTesting(enabled);
-        mTestValues.addFeatureFlagOverride(ChromeFeatureList.BOOKMARKS_REFRESH, enabled);
-        FeatureList.setTestValues(mTestValues);
-    }
-
-    private void setShoppingListItemRowEnabled(boolean enabled) {
-        ShoppingFeatures.setShoppingListEligibleForTesting(enabled);
-        when(mPrefService.getBoolean(Pref.WEB_AND_APP_ACTIVITY_ENABLED_FOR_SHOPPING))
-                .thenReturn(true);
-        mTestValues.addFeatureFlagOverride(ChromeFeatureList.BOOKMARKS_REFRESH, enabled);
         FeatureList.setTestValues(mTestValues);
     }
 
@@ -325,11 +298,13 @@ public class AppMenuPropertiesDelegateUnitTest {
     @Config(qualifiers = "sw600dp")
     public void testShouldShowIconRow_Tablet() {
         when(mDecorView.getWidth())
-                .thenReturn((int) (600
-                        * ContextUtils.getApplicationContext()
-                                  .getResources()
-                                  .getDisplayMetrics()
-                                  .density));
+                .thenReturn(
+                        (int)
+                                (600
+                                        * ContextUtils.getApplicationContext()
+                                                .getResources()
+                                                .getDisplayMetrics()
+                                                .density));
         Assert.assertFalse(mAppMenuPropertiesDelegate.shouldShowIconRow());
     }
 
@@ -337,11 +312,13 @@ public class AppMenuPropertiesDelegateUnitTest {
     @Config(qualifiers = "sw600dp")
     public void testShouldShowIconRow_TabletNarrow() {
         when(mDecorView.getWidth())
-                .thenReturn((int) (100
-                        * ContextUtils.getApplicationContext()
-                                  .getResources()
-                                  .getDisplayMetrics()
-                                  .density));
+                .thenReturn(
+                        (int)
+                                (100
+                                        * ContextUtils.getApplicationContext()
+                                                .getResources()
+                                                .getDisplayMetrics()
+                                                .density));
         assertTrue(mAppMenuPropertiesDelegate.shouldShowIconRow());
     }
 
@@ -349,7 +326,7 @@ public class AppMenuPropertiesDelegateUnitTest {
     @Config(qualifiers = "sw320dp")
     public void testPageMenuItems_Phone_Ntp() {
         setUpMocksForPageMenu();
-        when(mTab.getUrl()).thenReturn(JUnitTestGURLs.getGURL(JUnitTestGURLs.NTP_URL));
+        when(mTab.getUrl()).thenReturn(JUnitTestGURLs.NTP_URL);
         when(mTab.isNativePage()).thenReturn(true);
         doReturn(false)
                 .when(mAppMenuPropertiesDelegate)
@@ -359,10 +336,21 @@ public class AppMenuPropertiesDelegateUnitTest {
         Menu menu = createTestMenu();
         mAppMenuPropertiesDelegate.prepareMenu(menu, null);
 
-        Integer[] expectedItems = {R.id.icon_row_menu_id, R.id.new_tab_menu_id,
-                R.id.new_incognito_tab_menu_id, R.id.divider_line_id, R.id.open_history_menu_id,
-                R.id.downloads_menu_id, R.id.all_bookmarks_menu_id, R.id.recent_tabs_menu_id,
-                R.id.divider_line_id, R.id.preferences_id, R.id.help_id};
+        Integer[] expectedItems = {
+            R.id.icon_row_menu_id,
+            R.id.new_tab_menu_id,
+            R.id.new_incognito_tab_menu_id,
+            R.id.divider_line_id,
+            R.id.open_history_menu_id,
+            R.id.quick_delete_menu_id,
+            R.id.quick_delete_divider_line_id,
+            R.id.downloads_menu_id,
+            R.id.all_bookmarks_menu_id,
+            R.id.recent_tabs_menu_id,
+            R.id.divider_line_id,
+            R.id.preferences_id,
+            R.id.help_id
+        };
         assertMenuItemsAreEqual(menu, expectedItems);
     }
 
@@ -370,29 +358,67 @@ public class AppMenuPropertiesDelegateUnitTest {
     @Config(qualifiers = "sw320dp")
     public void testPageMenuItems_Phone_RegularPage() {
         setUpMocksForPageMenu();
-        setMenuOptions(new MenuOptions()
-                               .withShowTranslate()
-                               .withShowAddToHomeScreen()
-                               .withAutoDarkEnabled());
+        setMenuOptions(
+                new MenuOptions()
+                        .withShowTranslate()
+                        .withShowAddToHomeScreen()
+                        .withAutoDarkEnabled());
 
         Assert.assertEquals(MenuGroup.PAGE_MENU, mAppMenuPropertiesDelegate.getMenuGroup());
         Menu menu = createTestMenu();
         mAppMenuPropertiesDelegate.prepareMenu(menu, null);
 
-        Integer[] expectedItems = {R.id.icon_row_menu_id, R.id.new_tab_menu_id,
-                R.id.new_incognito_tab_menu_id, R.id.divider_line_id, R.id.open_history_menu_id,
-                R.id.downloads_menu_id, R.id.all_bookmarks_menu_id, R.id.recent_tabs_menu_id,
-                R.id.divider_line_id, R.id.share_row_menu_id, R.id.find_in_page_id,
-                R.id.translate_id, R.id.add_to_homescreen_id, R.id.request_desktop_site_row_menu_id,
-                R.id.auto_dark_web_contents_row_menu_id, R.id.divider_line_id, R.id.preferences_id,
-                R.id.help_id};
-        Integer[] expectedTitles = {0, R.string.menu_new_tab, R.string.menu_new_incognito_tab, 0,
-                R.string.menu_history, R.string.menu_downloads, R.string.menu_bookmarks,
-                R.string.menu_recent_tabs, 0, 0, R.string.menu_find_in_page,
-                R.string.menu_translate, R.string.menu_add_to_homescreen, 0, 0, 0,
-                R.string.menu_settings, R.string.menu_help};
-        Integer[] expectedActionBarItems = {R.id.forward_menu_id, R.id.bookmark_this_page_id,
-                R.id.offline_page_id, R.id.info_menu_id, R.id.reload_menu_id};
+        Integer[] expectedItems = {
+            R.id.icon_row_menu_id,
+            R.id.new_tab_menu_id,
+            R.id.new_incognito_tab_menu_id,
+            R.id.divider_line_id,
+            R.id.open_history_menu_id,
+            R.id.quick_delete_menu_id,
+            R.id.quick_delete_divider_line_id,
+            R.id.downloads_menu_id,
+            R.id.all_bookmarks_menu_id,
+            R.id.recent_tabs_menu_id,
+            R.id.divider_line_id,
+            R.id.share_row_menu_id,
+            R.id.find_in_page_id,
+            R.id.translate_id,
+            R.id.add_to_homescreen_id,
+            R.id.request_desktop_site_row_menu_id,
+            R.id.auto_dark_web_contents_row_menu_id,
+            R.id.divider_line_id,
+            R.id.preferences_id,
+            R.id.help_id
+        };
+        Integer[] expectedTitles = {
+            0,
+            R.string.menu_new_tab,
+            R.string.menu_new_incognito_tab,
+            0,
+            R.string.menu_history,
+            R.string.menu_quick_delete,
+            0,
+            R.string.menu_downloads,
+            R.string.menu_bookmarks,
+            R.string.menu_recent_tabs,
+            0,
+            0,
+            R.string.menu_find_in_page,
+            R.string.menu_translate,
+            R.string.menu_add_to_homescreen,
+            0,
+            0,
+            0,
+            R.string.menu_settings,
+            R.string.menu_help
+        };
+        Integer[] expectedActionBarItems = {
+            R.id.forward_menu_id,
+            R.id.bookmark_this_page_id,
+            R.id.offline_page_id,
+            R.id.info_menu_id,
+            R.id.reload_menu_id
+        };
         assertMenuItemsAreEqual(menu, expectedItems);
         assertMenuTitlesAreEqual(menu, expectedTitles);
         assertActionBarItemsAreEqual(menu, expectedActionBarItems);
@@ -402,12 +428,14 @@ public class AppMenuPropertiesDelegateUnitTest {
     @Config(qualifiers = "sw320dp")
     public void testPageMenuItems_Phone_RegularPage_WithPwa() {
         setUpMocksForPageMenu();
-        setMenuOptions(new MenuOptions()
-                               .withShowTranslate()
-                               .withShowAddToHomeScreen()
-                               .withAutoDarkEnabled());
-        doReturn(new AppBannerManager.InstallStringPair(
-                         R.string.menu_install_webapp, R.string.app_banner_install))
+        setMenuOptions(
+                new MenuOptions()
+                        .withShowTranslate()
+                        .withShowAddToHomeScreen()
+                        .withAutoDarkEnabled());
+        doReturn(
+                        new AppBannerManager.InstallStringPair(
+                                R.string.menu_install_webapp, R.string.app_banner_install))
                 .when(mAppMenuPropertiesDelegate)
                 .getAddToHomeScreenTitle(mTab);
 
@@ -415,20 +443,57 @@ public class AppMenuPropertiesDelegateUnitTest {
         Menu menu = createTestMenu();
         mAppMenuPropertiesDelegate.prepareMenu(menu, null);
 
-        Integer[] expectedItems = {R.id.icon_row_menu_id, R.id.new_tab_menu_id,
-                R.id.new_incognito_tab_menu_id, R.id.divider_line_id, R.id.open_history_menu_id,
-                R.id.downloads_menu_id, R.id.all_bookmarks_menu_id, R.id.recent_tabs_menu_id,
-                R.id.divider_line_id, R.id.translate_id, R.id.share_row_menu_id,
-                R.id.find_in_page_id, R.id.install_webapp_id, R.id.request_desktop_site_row_menu_id,
-                R.id.auto_dark_web_contents_row_menu_id, R.id.divider_line_id, R.id.preferences_id,
-                R.id.help_id};
-        Integer[] expectedTitles = {0, R.string.menu_new_tab, R.string.menu_new_incognito_tab, 0,
-                R.string.menu_history, R.string.menu_downloads, R.string.menu_bookmarks,
-                R.string.menu_recent_tabs, 0, 0, R.string.menu_find_in_page,
-                R.string.menu_translate, R.string.menu_install_webapp, 0, 0, 0,
-                R.string.menu_settings, R.string.menu_help};
-        Integer[] expectedActionBarItems = {R.id.forward_menu_id, R.id.bookmark_this_page_id,
-                R.id.offline_page_id, R.id.info_menu_id, R.id.reload_menu_id};
+        Integer[] expectedItems = {
+            R.id.icon_row_menu_id,
+            R.id.new_tab_menu_id,
+            R.id.new_incognito_tab_menu_id,
+            R.id.divider_line_id,
+            R.id.open_history_menu_id,
+            R.id.quick_delete_menu_id,
+            R.id.quick_delete_divider_line_id,
+            R.id.downloads_menu_id,
+            R.id.all_bookmarks_menu_id,
+            R.id.recent_tabs_menu_id,
+            R.id.divider_line_id,
+            R.id.translate_id,
+            R.id.share_row_menu_id,
+            R.id.find_in_page_id,
+            R.id.install_webapp_id,
+            R.id.request_desktop_site_row_menu_id,
+            R.id.auto_dark_web_contents_row_menu_id,
+            R.id.divider_line_id,
+            R.id.preferences_id,
+            R.id.help_id
+        };
+        Integer[] expectedTitles = {
+            0,
+            R.string.menu_new_tab,
+            R.string.menu_new_incognito_tab,
+            0,
+            R.string.menu_history,
+            R.string.menu_quick_delete,
+            0,
+            R.string.menu_downloads,
+            R.string.menu_bookmarks,
+            R.string.menu_recent_tabs,
+            0,
+            0,
+            R.string.menu_find_in_page,
+            R.string.menu_translate,
+            R.string.menu_install_webapp,
+            0,
+            0,
+            0,
+            R.string.menu_settings,
+            R.string.menu_help
+        };
+        Integer[] expectedActionBarItems = {
+            R.id.forward_menu_id,
+            R.id.bookmark_this_page_id,
+            R.id.offline_page_id,
+            R.id.info_menu_id,
+            R.id.reload_menu_id
+        };
         assertMenuItemsAreEqual(menu, expectedItems);
         assertMenuTitlesAreEqual(menu, expectedTitles);
         assertActionBarItemsAreEqual(menu, expectedActionBarItems);
@@ -438,23 +503,41 @@ public class AppMenuPropertiesDelegateUnitTest {
     @Config(qualifiers = "sw320dp")
     public void testPageMenuItems_Phone_RegularPage_enterprise_user() {
         setUpMocksForPageMenu();
-        setMenuOptions(new MenuOptions()
-                               .withShowTranslate()
-                               .withShowAddToHomeScreen()
-                               .withAutoDarkEnabled());
+        setMenuOptions(
+                new MenuOptions()
+                        .withShowTranslate()
+                        .withShowAddToHomeScreen()
+                        .withAutoDarkEnabled());
         doReturn(true).when(mAppMenuPropertiesDelegate).shouldShowManagedByMenuItem(any(Tab.class));
 
         Assert.assertEquals(MenuGroup.PAGE_MENU, mAppMenuPropertiesDelegate.getMenuGroup());
         Menu menu = createTestMenu();
         mAppMenuPropertiesDelegate.prepareMenu(menu, null);
 
-        Integer[] expectedItems = {R.id.icon_row_menu_id, R.id.new_tab_menu_id,
-                R.id.new_incognito_tab_menu_id, R.id.divider_line_id, R.id.open_history_menu_id,
-                R.id.downloads_menu_id, R.id.all_bookmarks_menu_id, R.id.recent_tabs_menu_id,
-                R.id.divider_line_id, R.id.share_row_menu_id, R.id.find_in_page_id,
-                R.id.translate_id, R.id.add_to_homescreen_id, R.id.request_desktop_site_row_menu_id,
-                R.id.auto_dark_web_contents_row_menu_id, R.id.divider_line_id, R.id.preferences_id,
-                R.id.help_id, R.id.managed_by_divider_line_id, R.id.managed_by_menu_id};
+        Integer[] expectedItems = {
+            R.id.icon_row_menu_id,
+            R.id.new_tab_menu_id,
+            R.id.new_incognito_tab_menu_id,
+            R.id.divider_line_id,
+            R.id.open_history_menu_id,
+            R.id.quick_delete_menu_id,
+            R.id.quick_delete_divider_line_id,
+            R.id.downloads_menu_id,
+            R.id.all_bookmarks_menu_id,
+            R.id.recent_tabs_menu_id,
+            R.id.divider_line_id,
+            R.id.share_row_menu_id,
+            R.id.find_in_page_id,
+            R.id.translate_id,
+            R.id.add_to_homescreen_id,
+            R.id.request_desktop_site_row_menu_id,
+            R.id.auto_dark_web_contents_row_menu_id,
+            R.id.divider_line_id,
+            R.id.preferences_id,
+            R.id.help_id,
+            R.id.managed_by_divider_line_id,
+            R.id.managed_by_menu_id
+        };
         assertMenuItemsAreEqual(menu, expectedItems);
     }
 
@@ -476,22 +559,34 @@ public class AppMenuPropertiesDelegateUnitTest {
     @Config(qualifiers = "sw320dp")
     public void testPageMenuItemsIcons_Phone_RegularPage_iconsBeforeMenuItems() {
         setUpMocksForPageMenu();
-        setMenuOptions(new MenuOptions()
-                               .withAllSet()
-                               .setNativePage(false)
-                               .setShowMoveToOtherWindow(false)
-                               .setShowPaintPreview(false));
+        setMenuOptions(
+                new MenuOptions()
+                        .withAllSet()
+                        .setNativePage(false)
+                        .setShowMoveToOtherWindow(false)
+                        .setShowPaintPreview(false));
         doReturn(true).when(mAppMenuPropertiesDelegate).shouldShowIconBeforeItem();
 
         Assert.assertEquals(MenuGroup.PAGE_MENU, mAppMenuPropertiesDelegate.getMenuGroup());
         Menu menu = createTestMenu();
         mAppMenuPropertiesDelegate.prepareMenu(menu, null);
 
-        Integer[] expectedItems = {R.id.update_menu_id, R.id.new_tab_menu_id,
-                R.id.new_incognito_tab_menu_id, R.id.open_history_menu_id, R.id.downloads_menu_id,
-                R.id.all_bookmarks_menu_id, R.id.recent_tabs_menu_id, R.id.translate_id,
-                R.id.find_in_page_id, R.id.add_to_homescreen_id, R.id.reader_mode_prefs_id,
-                R.id.preferences_id, R.id.help_id};
+        Integer[] expectedItems = {
+            R.id.update_menu_id,
+            R.id.new_tab_menu_id,
+            R.id.new_incognito_tab_menu_id,
+            R.id.open_history_menu_id,
+            R.id.quick_delete_menu_id,
+            R.id.downloads_menu_id,
+            R.id.all_bookmarks_menu_id,
+            R.id.recent_tabs_menu_id,
+            R.id.translate_id,
+            R.id.find_in_page_id,
+            R.id.add_to_homescreen_id,
+            R.id.reader_mode_prefs_id,
+            R.id.preferences_id,
+            R.id.help_id
+        };
         assertMenuItemsHaveIcons(menu, expectedItems);
     }
 
@@ -505,8 +600,14 @@ public class AppMenuPropertiesDelegateUnitTest {
         Menu menu = createTestMenu();
         mAppMenuPropertiesDelegate.prepareMenu(menu, null);
 
-        Integer[] expectedItems = {R.id.new_tab_menu_id, R.id.new_incognito_tab_menu_id,
-                R.id.close_all_tabs_menu_id, tabSelectionEditorMenuItemId, R.id.preferences_id};
+        Integer[] expectedItems = {
+            R.id.new_tab_menu_id,
+            R.id.new_incognito_tab_menu_id,
+            R.id.close_all_tabs_menu_id,
+            tabSelectionEditorMenuItemId,
+            R.id.quick_delete_menu_id,
+            R.id.preferences_id
+        };
         assertMenuItemsAreEqual(menu, expectedItems);
     }
 
@@ -531,14 +632,18 @@ public class AppMenuPropertiesDelegateUnitTest {
         mAppMenuPropertiesDelegate.prepareMenu(menu, null);
 
         Integer[] expectedItems = {
-                R.id.new_tab_menu_id, R.id.new_incognito_tab_menu_id, R.id.preferences_id};
+            R.id.new_tab_menu_id,
+            R.id.new_incognito_tab_menu_id,
+            R.id.preferences_id,
+            R.id.quick_delete_menu_id
+        };
         assertMenuItemsAreEqual(menu, expectedItems);
     }
 
     @Test
     public void testMenuItems_Accessibility_ImageDescriptions() {
         setUpMocksForPageMenu();
-        when(mTab.getUrl()).thenReturn(JUnitTestGURLs.getGURL(JUnitTestGURLs.SEARCH_URL));
+        when(mTab.getUrl()).thenReturn(JUnitTestGURLs.SEARCH_URL);
         when(mTab.isNativePage()).thenReturn(false);
         doReturn(false)
                 .when(mAppMenuPropertiesDelegate)
@@ -546,8 +651,9 @@ public class AppMenuPropertiesDelegateUnitTest {
         doReturn(false)
                 .when(mAppMenuPropertiesDelegate)
                 .shouldShowTranslateMenuItem(any(Tab.class));
-        doReturn(new AppBannerManager.InstallStringPair(
-                         R.string.menu_add_to_homescreen, R.string.add))
+        doReturn(
+                        new AppBannerManager.InstallStringPair(
+                                R.string.menu_add_to_homescreen, R.string.add))
                 .when(mAppMenuPropertiesDelegate)
                 .getAddToHomeScreenTitle(mTab);
 
@@ -562,13 +668,28 @@ public class AppMenuPropertiesDelegateUnitTest {
         Menu menu = createTestMenu();
         mAppMenuPropertiesDelegate.prepareMenu(menu, null);
 
-        Integer[] expectedItems = {R.id.icon_row_menu_id, R.id.new_tab_menu_id,
-                R.id.new_incognito_tab_menu_id, R.id.divider_line_id, R.id.open_history_menu_id,
-                R.id.downloads_menu_id, R.id.all_bookmarks_menu_id, R.id.recent_tabs_menu_id,
-                R.id.divider_line_id, R.id.share_row_menu_id, R.id.get_image_descriptions_id,
-                R.id.find_in_page_id, R.id.add_to_homescreen_id,
-                R.id.request_desktop_site_row_menu_id, R.id.auto_dark_web_contents_row_menu_id,
-                R.id.divider_line_id, R.id.preferences_id, R.id.help_id};
+        Integer[] expectedItems = {
+            R.id.icon_row_menu_id,
+            R.id.new_tab_menu_id,
+            R.id.new_incognito_tab_menu_id,
+            R.id.divider_line_id,
+            R.id.open_history_menu_id,
+            R.id.quick_delete_menu_id,
+            R.id.quick_delete_divider_line_id,
+            R.id.downloads_menu_id,
+            R.id.all_bookmarks_menu_id,
+            R.id.recent_tabs_menu_id,
+            R.id.divider_line_id,
+            R.id.share_row_menu_id,
+            R.id.get_image_descriptions_id,
+            R.id.find_in_page_id,
+            R.id.add_to_homescreen_id,
+            R.id.request_desktop_site_row_menu_id,
+            R.id.auto_dark_web_contents_row_menu_id,
+            R.id.divider_line_id,
+            R.id.preferences_id,
+            R.id.help_id
+        };
 
         assertMenuItemsAreEqual(menu, expectedItems);
 
@@ -581,7 +702,8 @@ public class AppMenuPropertiesDelegateUnitTest {
                 .thenReturn(true);
 
         mAppMenuPropertiesDelegate.prepareMenu(menu, null);
-        Assert.assertEquals("Stop image descriptions",
+        Assert.assertEquals(
+                "Stop image descriptions",
                 menu.findItem(R.id.get_image_descriptions_id).getTitle());
 
         // Setup no wifi condition, and "only on wifi" user option.
@@ -602,7 +724,7 @@ public class AppMenuPropertiesDelegateUnitTest {
 
         MenuItem bookmarkMenuItemShortcut = mock(MenuItem.class);
         mAppMenuPropertiesDelegate.updateBookmarkMenuItemShortcut(
-                bookmarkMenuItemShortcut, mTab, /*fromCCT=*/false);
+                bookmarkMenuItemShortcut, mTab, /* fromCCT= */ false);
         verify(bookmarkMenuItemShortcut).setEnabled(true);
     }
 
@@ -612,7 +734,7 @@ public class AppMenuPropertiesDelegateUnitTest {
 
         MenuItem bookmarkMenuItemShortcut = mock(MenuItem.class);
         mAppMenuPropertiesDelegate.updateBookmarkMenuItemShortcut(
-                bookmarkMenuItemShortcut, mTab, /*fromCCT=*/true);
+                bookmarkMenuItemShortcut, mTab, /* fromCCT= */ true);
         verify(bookmarkMenuItemShortcut).setEnabled(true);
     }
 
@@ -620,7 +742,7 @@ public class AppMenuPropertiesDelegateUnitTest {
     public void updateBookmarkMenuItemShortcut_NullTab() {
         MenuItem bookmarkMenuItemShortcut = mock(MenuItem.class);
         mAppMenuPropertiesDelegate.updateBookmarkMenuItemShortcut(
-                bookmarkMenuItemShortcut, null, /*fromCCT=*/false);
+                bookmarkMenuItemShortcut, null, /* fromCCT= */ false);
         verify(bookmarkMenuItemShortcut).setEnabled(false);
     }
 
@@ -630,13 +752,13 @@ public class AppMenuPropertiesDelegateUnitTest {
 
         MenuItem bookmarkMenuItemShortcut = mock(MenuItem.class);
         mAppMenuPropertiesDelegate.updateBookmarkMenuItemShortcut(
-                bookmarkMenuItemShortcut, mTab, /*fromCCT=*/false);
+                bookmarkMenuItemShortcut, mTab, /* fromCCT= */ false);
         verify(bookmarkMenuItemShortcut).setEnabled(false);
     }
 
     @Test
     public void updateBookmarkMenuItemRow() {
-        setBookmarkItemRowEnabled(true);
+        setShoppingListEligible(true);
         doReturn(true).when(mBookmarkModel).isEditBookmarksEnabled();
 
         MenuItem bookmarkMenuItemAdd = mock(MenuItem.class);
@@ -649,7 +771,7 @@ public class AppMenuPropertiesDelegateUnitTest {
 
     @Test
     public void updateBookmarkMenuItemRow_NullTab() {
-        setBookmarkItemRowEnabled(true);
+        setShoppingListEligible(true);
 
         MenuItem bookmarkMenuItemAdd = mock(MenuItem.class);
         MenuItem bookmarkMenuItemEdit = mock(MenuItem.class);
@@ -661,7 +783,7 @@ public class AppMenuPropertiesDelegateUnitTest {
 
     @Test
     public void updateBookmarkMenuItemRow_NullBookmarkModel() {
-        setBookmarkItemRowEnabled(true);
+        setShoppingListEligible(true);
         mBookmarkModelSupplier.set(null);
 
         MenuItem bookmarkMenuItemAdd = mock(MenuItem.class);
@@ -674,7 +796,7 @@ public class AppMenuPropertiesDelegateUnitTest {
 
     @Test
     public void enablePriceTrackingItemRow() {
-        setShoppingListItemRowEnabled(true);
+        setShoppingListEligible(true);
         PowerBookmarkUtils.setPriceTrackingEligibleForTesting(true);
         doReturn(true).when(mBookmarkModel).isEditBookmarksEnabled();
 
@@ -697,7 +819,7 @@ public class AppMenuPropertiesDelegateUnitTest {
 
     @Test
     public void enablePriceTrackingItemRow_NullBookmarkModel() {
-        setShoppingListItemRowEnabled(true);
+        setShoppingListEligible(true);
         PowerBookmarkUtils.setPriceTrackingEligibleForTesting(true);
         mBookmarkModelSupplier.set(null);
 
@@ -711,7 +833,7 @@ public class AppMenuPropertiesDelegateUnitTest {
 
     @Test
     public void enablePriceTrackingItemRow_NullBookmarkId() {
-        setShoppingListItemRowEnabled(true);
+        setShoppingListEligible(true);
         PowerBookmarkUtils.setPriceTrackingEligibleForTesting(true);
         doReturn(true).when(mBookmarkModel).isEditBookmarksEnabled();
 
@@ -734,7 +856,7 @@ public class AppMenuPropertiesDelegateUnitTest {
 
     @Test
     public void enablePriceTrackingItemRow_PriceTrackingEnabled() {
-        setShoppingListItemRowEnabled(true);
+        setShoppingListEligible(true);
         PowerBookmarkUtils.setPriceTrackingEligibleForTesting(true);
         doReturn(true).when(mBookmarkModel).isEditBookmarksEnabled();
 
@@ -746,17 +868,26 @@ public class AppMenuPropertiesDelegateUnitTest {
                 .when(mBookmarkModel)
                 .getBookmarksOfType(eq(PowerBookmarkType.SHOPPING));
         Long clusterId = 1L;
-        doReturn(new ShoppingService.ProductInfo("", new GURL(""), Optional.of(clusterId),
-                         Optional.empty(), "", 0, "", Optional.empty()))
+        doReturn(
+                        new ShoppingService.ProductInfo(
+                                "",
+                                new GURL(""),
+                                Optional.of(clusterId),
+                                Optional.empty(),
+                                "",
+                                0,
+                                "",
+                                Optional.empty()))
                 .when(mShoppingService)
                 .getAvailableProductInfoForUrl(any());
         doReturn(true).when(mShoppingService).isSubscribedFromCache(any());
         PowerBookmarkMeta meta =
                 PowerBookmarkMeta.newBuilder()
-                        .setShoppingSpecifics(ShoppingSpecifics.newBuilder()
-                                                      .setIsPriceTracked(true)
-                                                      .setProductClusterId(clusterId)
-                                                      .build())
+                        .setShoppingSpecifics(
+                                ShoppingSpecifics.newBuilder()
+                                        .setIsPriceTracked(true)
+                                        .setProductClusterId(clusterId)
+                                        .build())
                         .build();
         PowerBookmarkUtils.setPowerBookmarkMetaForTesting(meta);
         doReturn(meta).when(mBookmarkModel).getPowerBookmarkMeta(any());
@@ -772,7 +903,7 @@ public class AppMenuPropertiesDelegateUnitTest {
 
     @Test
     public void enablePriceTrackingItemRow_PriceTrackingEnabled_NoProductInfo() {
-        setShoppingListItemRowEnabled(true);
+        setShoppingListEligible(true);
 
         PowerBookmarkUtils.setPriceTrackingEligibleForTesting(false);
         doReturn(true).when(mBookmarkModel).isEditBookmarksEnabled();
@@ -823,10 +954,11 @@ public class AppMenuPropertiesDelegateUnitTest {
     @SmallTest
     public void testNewIncognitoTabOption_WithReauthInProgress() {
         setUpMocksForPageMenu();
-        setMenuOptions(new MenuOptions()
-                               .withShowTranslate()
-                               .withShowAddToHomeScreen()
-                               .withAutoDarkEnabled());
+        setMenuOptions(
+                new MenuOptions()
+                        .withShowTranslate()
+                        .withShowAddToHomeScreen()
+                        .withAutoDarkEnabled());
 
         doReturn(true).when(mIncognitoReauthControllerMock).isReauthPageShowing();
         doReturn(mIncognitoTabModel).when(mTabModelSelector).getCurrentModel();
@@ -843,10 +975,11 @@ public class AppMenuPropertiesDelegateUnitTest {
     @SmallTest
     public void testNewIncognitoTabOption_FromRegularMode_WithReauthNotInProgress() {
         setUpMocksForPageMenu();
-        setMenuOptions(new MenuOptions()
-                               .withShowTranslate()
-                               .withShowAddToHomeScreen()
-                               .withAutoDarkEnabled());
+        setMenuOptions(
+                new MenuOptions()
+                        .withShowTranslate()
+                        .withShowAddToHomeScreen()
+                        .withAutoDarkEnabled());
 
         doReturn(mTabModel).when(mTabModelSelector).getCurrentModel();
         Menu menu = createTestMenu();
@@ -872,7 +1005,7 @@ public class AppMenuPropertiesDelegateUnitTest {
     @Test
     @SmallTest
     public void testSelectTabsOption_IsEnabled_InIncognitoMode_When_IncognitoReauthIsNotShowing() {
-        Menu menu = setUpMenuWithIncognitoReauthPage(/*isShowing=*/false);
+        Menu menu = setUpMenuWithIncognitoReauthPage(/* isShowing= */ false);
         MenuItem item = menu.findItem(R.id.menu_select_tabs);
         assertTrue(item.isEnabled());
     }
@@ -880,7 +1013,7 @@ public class AppMenuPropertiesDelegateUnitTest {
     @Test
     @SmallTest
     public void testSelectTabsOption_IsDisabled_InIncognitoMode_When_IncognitoReauthIsShowing() {
-        Menu menu = setUpMenuWithIncognitoReauthPage(/*isShowing=*/true);
+        Menu menu = setUpMenuWithIncognitoReauthPage(/* isShowing= */ true);
         MenuItem item = menu.findItem(R.id.menu_select_tabs);
         assertFalse(item.isEnabled());
     }
@@ -899,6 +1032,24 @@ public class AppMenuPropertiesDelegateUnitTest {
 
         MenuItem item = menu.findItem(R.id.menu_select_tabs);
         assertTrue(item.isEnabled());
+    }
+
+    @Test
+    @SmallTest
+    public void testSelectTabsOption_IsDisabled_InRegularMode_TabStateNotInitialized() {
+        setUpMocksForOverviewMenu(LayoutType.TAB_SWITCHER);
+        when(mTabModelSelector.getCurrentModel()).thenReturn(mTabModel);
+        prepareMocksForGroupTabsOnTabModel(mTabModel);
+
+        when(mTabModelSelector.isTabStateInitialized()).thenReturn(false);
+
+        Menu menu = createTestMenu();
+        mAppMenuPropertiesDelegate.prepareMenu(menu, null);
+        // Check group tabs enabled decision in regular mode doesn't depend on re-auth.
+        verify(mIncognitoReauthControllerMock, times(0)).isReauthPageShowing();
+
+        MenuItem item = menu.findItem(R.id.menu_select_tabs);
+        assertFalse(item.isEnabled());
     }
 
     @Test
@@ -941,8 +1092,9 @@ public class AppMenuPropertiesDelegateUnitTest {
         mStartSurfaceSupplier.set(mStartSurfaceCoordinator);
         @LayoutType
         int layoutType =
-                ChromeFeatureList.sStartSurfaceRefactor.isEnabled() ? LayoutType.START_SURFACE
-                                                                    : LayoutType.TAB_SWITCHER;
+                ChromeFeatureList.sStartSurfaceRefactor.isEnabled()
+                        ? LayoutType.START_SURFACE
+                        : LayoutType.TAB_SWITCHER;
         setUpMocksForOverviewMenu(layoutType);
         doReturn(true).when(mAppMenuPropertiesDelegate).isAutoDarkWebContentsEnabled();
 
@@ -955,199 +1107,238 @@ public class AppMenuPropertiesDelegateUnitTest {
         Menu menu = createTestMenu();
         mAppMenuPropertiesDelegate.prepareMenu(menu, null);
 
-        Integer[] expectedItems = {R.id.new_tab_menu_id, R.id.new_incognito_tab_menu_id,
-                R.id.divider_line_id, R.id.open_history_menu_id, R.id.downloads_menu_id,
-                R.id.all_bookmarks_menu_id, R.id.recent_tabs_menu_id, R.id.divider_line_id,
-                R.id.preferences_id, R.id.help_id};
+        Integer[] expectedItems = {
+            R.id.new_tab_menu_id,
+            R.id.new_incognito_tab_menu_id,
+            R.id.divider_line_id,
+            R.id.open_history_menu_id,
+            R.id.quick_delete_menu_id,
+            R.id.quick_delete_divider_line_id,
+            R.id.downloads_menu_id,
+            R.id.all_bookmarks_menu_id,
+            R.id.recent_tabs_menu_id,
+            R.id.divider_line_id,
+            R.id.preferences_id,
+            R.id.help_id
+        };
         assertMenuItemsAreEqual(menu, expectedItems);
     }
 
     @Test
     public void testShouldShowNewMenu_alreadyMaxWindows_returnsFalse() {
-        assertFalse(doTestShouldShowNewMenu(
-                /* isAutomotive */ false,
-                /* isInstanceSwitcherEnabled */ true,
-                /* currentWindowInstances */ 10,
-                /* isTabletSizeScreen */ true,
-                /* canEnterMultiWindowMode */ false,
-                /* isChromeRunningInAdjacentWindow */ false,
-                /* isInMultiWindowMode */ false,
-                /* isInMultiDisplayMode */ false,
-                /* isMultiInstanceRunning */ false));
+        assertFalse(
+                doTestShouldShowNewMenu(
+                        /* isAutomotive= */ false,
+                        /* isInstanceSwitcherEnabled= */ true,
+                        /* currentWindowInstances= */ 10,
+                        /* isTabletSizeScreen= */ true,
+                        /* canEnterMultiWindowMode= */ false,
+                        /* isChromeRunningInAdjacentWindow= */ false,
+                        /* isInMultiWindowMode= */ false,
+                        /* isInMultiDisplayMode= */ false,
+                        /* isMultiInstanceRunning= */ false));
         verify(mAppMenuPropertiesDelegate, never()).isTabletSizeScreen();
     }
 
     @Test
     public void testShouldShowNewMenu_isAutomotive_returnsFalse() {
-        assertFalse(doTestShouldShowNewMenu(
-                /* isAutomotive */ true,
-                /* isInstanceSwitcherEnabled */ true,
-                /* currentWindowInstances */ 1,
-                /* isTabletSizeScreen */ true,
-                /* canEnterMultiWindowMode */ false,
-                /* isChromeRunningInAdjacentWindow */ false,
-                /* isInMultiWindowMode */ false,
-                /* isInMultiDisplayMode */ false,
-                /* isMultiInstanceRunning */ false));
+        assertFalse(
+                doTestShouldShowNewMenu(
+                        /* isAutomotive= */ true,
+                        /* isInstanceSwitcherEnabled= */ true,
+                        /* currentWindowInstances= */ 1,
+                        /* isTabletSizeScreen= */ true,
+                        /* canEnterMultiWindowMode= */ false,
+                        /* isChromeRunningInAdjacentWindow= */ false,
+                        /* isInMultiWindowMode= */ false,
+                        /* isInMultiDisplayMode= */ false,
+                        /* isMultiInstanceRunning= */ false));
         verify(mAppMenuPropertiesDelegate, never()).isTabletSizeScreen();
     }
 
     @Test
     public void testShouldShowNewMenu_instanceSwitcherDisabled_isAutomotive_returnsFalse() {
-        assertFalse(doTestShouldShowNewMenu(
-                /* isAutomotive */ true,
-                /* isInstanceSwitcherEnabled */ false,
-                /* currentWindowInstances */ 1,
-                /* isTabletSizeScreen */ true,
-                /* canEnterMultiWindowMode */ false,
-                /* isChromeRunningInAdjacentWindow */ false,
-                /* isInMultiWindowMode */ false,
-                /* isInMultiDisplayMode */ true,
-                /* isMultiInstanceRunning */ false));
+        assertFalse(
+                doTestShouldShowNewMenu(
+                        /* isAutomotive= */ true,
+                        /* isInstanceSwitcherEnabled= */ false,
+                        /* currentWindowInstances= */ 1,
+                        /* isTabletSizeScreen= */ true,
+                        /* canEnterMultiWindowMode= */ false,
+                        /* isChromeRunningInAdjacentWindow= */ false,
+                        /* isInMultiWindowMode= */ false,
+                        /* isInMultiDisplayMode= */ true,
+                        /* isMultiInstanceRunning= */ false));
         verify(mAppMenuPropertiesDelegate, never()).isTabletSizeScreen();
     }
 
     @Test
-    public void testShouldShowMoveToOtherWindow_isAutomotive_returnsFalse() {
-        assertFalse(doTestShouldShowMoveToOtherWindowMenu(
-                /* isAutomotive */ true,
-                /* isInstanceSwitcherEnabled */ false,
-                /* currentWindowInstances */ 1,
-                /* isTabletSizeScreen */ true,
-                /* canEnterMultiWindowMode */ false,
-                /* isChromeRunningInAdjacentWindow */ false,
-                /* isInMultiWindowMode */ false,
-                /* isInMultiDisplayMode */ true,
-                /* isMultiInstanceRunning */ false));
+    public void testShouldShowMoveToOtherWindow_returnsTrue() {
+        assertTrue(
+                doTestShouldShowMoveToOtherWindowMenu(
+                        /* totalTabCount= */ 1,
+                        /* isInstanceSwitcherEnabled= */ false,
+                        /* currentWindowInstances= */ 1,
+                        /* isTabletSizeScreen= */ true,
+                        /* canEnterMultiWindowMode= */ false,
+                        /* isChromeRunningInAdjacentWindow= */ false,
+                        /* isInMultiWindowMode= */ false,
+                        /* isInMultiDisplayMode= */ false,
+                        /* isMultiInstanceRunning= */ false,
+                        /* isMoveToOtherWindowSupported= */ true));
+    }
+
+    @Test
+    public void testShouldShowMoveToOtherWindow_dispatcherReturnsFalse_returnsFalse() {
+        assertFalse(
+                doTestShouldShowMoveToOtherWindowMenu(
+                        /* totalTabCount= */ 1,
+                        /* isInstanceSwitcherEnabled= */ false,
+                        /* currentWindowInstances= */ 1,
+                        /* isTabletSizeScreen= */ true,
+                        /* canEnterMultiWindowMode= */ false,
+                        /* isChromeRunningInAdjacentWindow= */ false,
+                        /* isInMultiWindowMode= */ false,
+                        /* isInMultiDisplayMode= */ true,
+                        /* isMultiInstanceRunning= */ false,
+                        /* isMoveToOtherWindowSupported= */ false));
         verify(mAppMenuPropertiesDelegate, never()).isTabletSizeScreen();
     }
 
     @Test
     public void testShouldShowNewMenu_isTabletSizedScreen_returnsTrue() {
-        assertTrue(doTestShouldShowNewMenu(
-                /* isAutomotive */ false,
-                /* isInstanceSwitcherEnabled */ true,
-                /* currentWindowInstances */ 1,
-                /* isTabletSizeScreen */ true,
-                /* canEnterMultiWindowMode */ false,
-                /* isChromeRunningInAdjacentWindow */ false,
-                /* isInMultiWindowMode */ false,
-                /* isInMultiDisplayMode */ false,
-                /* isMultiInstanceRunning */ false));
+        assertTrue(
+                doTestShouldShowNewMenu(
+                        /* isAutomotive= */ false,
+                        /* isInstanceSwitcherEnabled= */ true,
+                        /* currentWindowInstances= */ 1,
+                        /* isTabletSizeScreen= */ true,
+                        /* canEnterMultiWindowMode= */ false,
+                        /* isChromeRunningInAdjacentWindow= */ false,
+                        /* isInMultiWindowMode= */ false,
+                        /* isInMultiDisplayMode= */ false,
+                        /* isMultiInstanceRunning= */ false));
         verify(mAppMenuPropertiesDelegate, atLeastOnce()).isTabletSizeScreen();
     }
 
     @Test
     public void testShouldShowNewMenu_chromeRunningInAdjacentWindow_returnsFalse() {
-        assertFalse(doTestShouldShowNewMenu(
-                /* isAutomotive */ false,
-                /* isInstanceSwitcherEnabled */ true,
-                /* currentWindowInstances */ 1,
-                /* isTabletSizeScreen */ false,
-                /* canEnterMultiWindowMode */ false,
-                /* isChromeRunningInAdjacentWindow */ true,
-                /* isInMultiWindowMode */ true,
-                /* isInMultiDisplayMode */ true,
-                /* isMultiInstanceRunning */ false));
+        assertFalse(
+                doTestShouldShowNewMenu(
+                        /* isAutomotive= */ false,
+                        /* isInstanceSwitcherEnabled= */ true,
+                        /* currentWindowInstances= */ 1,
+                        /* isTabletSizeScreen= */ false,
+                        /* canEnterMultiWindowMode= */ false,
+                        /* isChromeRunningInAdjacentWindow= */ true,
+                        /* isInMultiWindowMode= */ true,
+                        /* isInMultiDisplayMode= */ true,
+                        /* isMultiInstanceRunning= */ false));
         verify(mAppMenuPropertiesDelegate, atLeastOnce()).isTabletSizeScreen();
     }
 
     @Test
     public void testShouldShowNewMenu_multiWindowMode_returnsTrue() {
-        assertTrue(doTestShouldShowNewMenu(
-                /* isAutomotive */ false,
-                /* isInstanceSwitcherEnabled */ true,
-                /* currentWindowInstances */ 1,
-                /* isTabletSizeScreen */ false,
-                /* canEnterMultiWindowMode */ false,
-                /* isChromeRunningInAdjacentWindow */ false,
-                /* isInMultiWindowMode */ true,
-                /* isInMultiDisplayMode */ false,
-                /* isMultiInstanceRunning */ false));
+        assertTrue(
+                doTestShouldShowNewMenu(
+                        /* isAutomotive= */ false,
+                        /* isInstanceSwitcherEnabled= */ true,
+                        /* currentWindowInstances= */ 1,
+                        /* isTabletSizeScreen= */ false,
+                        /* canEnterMultiWindowMode= */ false,
+                        /* isChromeRunningInAdjacentWindow= */ false,
+                        /* isInMultiWindowMode= */ true,
+                        /* isInMultiDisplayMode= */ false,
+                        /* isMultiInstanceRunning= */ false));
         verify(mAppMenuPropertiesDelegate, atLeastOnce()).isTabletSizeScreen();
     }
 
     @Test
     public void testShouldShowNewMenu_multiDisplayMode_returnsTrue() {
-        assertTrue(doTestShouldShowNewMenu(
-                /* isAutomotive */ false,
-                /* isInstanceSwitcherEnabled */ true,
-                /* currentWindowInstances */ 1,
-                /* isTabletSizeScreen */ false,
-                /* canEnterMultiWindowMode */ false,
-                /* isChromeRunningInAdjacentWindow */ false,
-                /* isInMultiWindowMode */ false,
-                /* isInMultiDisplayMode */ true,
-                /* isMultiInstanceRunning */ false));
+        assertTrue(
+                doTestShouldShowNewMenu(
+                        /* isAutomotive= */ false,
+                        /* isInstanceSwitcherEnabled= */ true,
+                        /* currentWindowInstances= */ 1,
+                        /* isTabletSizeScreen= */ false,
+                        /* canEnterMultiWindowMode= */ false,
+                        /* isChromeRunningInAdjacentWindow= */ false,
+                        /* isInMultiWindowMode= */ false,
+                        /* isInMultiDisplayMode= */ true,
+                        /* isMultiInstanceRunning= */ false));
         verify(mAppMenuPropertiesDelegate, atLeastOnce()).isTabletSizeScreen();
     }
 
     @Test
     public void testShouldShowNewMenu_multiInstanceRunning_returnsFalse() {
-        assertFalse(doTestShouldShowNewMenu(
-                /* isAutomotive */ false,
-                /* isInstanceSwitcherEnabled */ false,
-                /* currentWindowInstances */ 1,
-                /* isTabletSizeScreen */ false,
-                /* canEnterMultiWindowMode */ false,
-                /* isChromeRunningInAdjacentWindow */ false,
-                /* isInMultiWindowMode */ false,
-                /* isInMultiDisplayMode */ false,
-                /* isMultiInstanceRunning */ true));
+        assertFalse(
+                doTestShouldShowNewMenu(
+                        /* isAutomotive= */ false,
+                        /* isInstanceSwitcherEnabled= */ false,
+                        /* currentWindowInstances= */ 1,
+                        /* isTabletSizeScreen= */ false,
+                        /* canEnterMultiWindowMode= */ false,
+                        /* isChromeRunningInAdjacentWindow= */ false,
+                        /* isInMultiWindowMode= */ false,
+                        /* isInMultiDisplayMode= */ false,
+                        /* isMultiInstanceRunning= */ true));
         verify(mAppMenuPropertiesDelegate, never()).isTabletSizeScreen();
         verify(mAppMenuPropertiesDelegate, never()).getInstanceCount();
     }
 
     @Test
     public void testShouldShowNewMenu_canEnterMultiWindowMode_returnsTrue() {
-        assertTrue(doTestShouldShowNewMenu(
-                /* isAutomotive */ false,
-                /* isInstanceSwitcherEnabled */ false,
-                /* currentWindowInstances */ 1,
-                /* isTabletSizeScreen */ true,
-                /* canEnterMultiWindowMode */ true,
-                /* isChromeRunningInAdjacentWindow */ false,
-                /* isInMultiWindowMode */ false,
-                /* isInMultiDisplayMode */ false,
-                /* isMultiInstanceRunning */ false));
+        assertTrue(
+                doTestShouldShowNewMenu(
+                        /* isAutomotive= */ false,
+                        /* isInstanceSwitcherEnabled= */ false,
+                        /* currentWindowInstances= */ 1,
+                        /* isTabletSizeScreen= */ true,
+                        /* canEnterMultiWindowMode= */ true,
+                        /* isChromeRunningInAdjacentWindow= */ false,
+                        /* isInMultiWindowMode= */ false,
+                        /* isInMultiDisplayMode= */ false,
+                        /* isMultiInstanceRunning= */ false));
         verify(mAppMenuPropertiesDelegate, atLeastOnce()).isTabletSizeScreen();
         verify(mAppMenuPropertiesDelegate, never()).getInstanceCount();
     }
 
     @Test
     public void testShouldShowNewMenu_instanceSwitcherDisabled_multiWindowMode_returnsTrue() {
-        assertTrue(doTestShouldShowNewMenu(
-                /* isAutomotive */ false,
-                /* isInstanceSwitcherEnabled */ false,
-                /* currentWindowInstances */ 1,
-                /* isTabletSizeScreen */ false,
-                /* canEnterMultiWindowMode */ false,
-                /* isChromeRunningInAdjacentWindow */ false,
-                /* isInMultiWindowMode */ true,
-                /* isInMultiDisplayMode */ false,
-                /* isMultiInstanceRunning */ false));
+        assertTrue(
+                doTestShouldShowNewMenu(
+                        /* isAutomotive= */ false,
+                        /* isInstanceSwitcherEnabled= */ false,
+                        /* currentWindowInstances= */ 1,
+                        /* isTabletSizeScreen= */ false,
+                        /* canEnterMultiWindowMode= */ false,
+                        /* isChromeRunningInAdjacentWindow= */ false,
+                        /* isInMultiWindowMode= */ true,
+                        /* isInMultiDisplayMode= */ false,
+                        /* isMultiInstanceRunning= */ false));
         verify(mAppMenuPropertiesDelegate, never()).getInstanceCount();
     }
 
     @Test
     public void testShouldShowNewMenu_instanceSwitcherDisabled_multiDisplayMode_returnsTrue() {
-        assertTrue(doTestShouldShowNewMenu(
-                /* isAutomotive */ false,
-                /* isInstanceSwitcherEnabled */ false,
-                /* currentWindowInstances */ 1,
-                /* isTabletSizeScreen */ false,
-                /* canEnterMultiWindowMode */ false,
-                /* isChromeRunningInAdjacentWindow */ false,
-                /* isInMultiWindowMode */ false,
-                /* isInMultiDisplayMode */ true,
-                /* isMultiInstanceRunning */ false));
+        assertTrue(
+                doTestShouldShowNewMenu(
+                        /* isAutomotive= */ false,
+                        /* isInstanceSwitcherEnabled= */ false,
+                        /* currentWindowInstances= */ 1,
+                        /* isTabletSizeScreen= */ false,
+                        /* canEnterMultiWindowMode= */ false,
+                        /* isChromeRunningInAdjacentWindow= */ false,
+                        /* isInMultiWindowMode= */ false,
+                        /* isInMultiDisplayMode= */ true,
+                        /* isMultiInstanceRunning= */ false));
         verify(mAppMenuPropertiesDelegate, never()).getInstanceCount();
     }
 
     @Test
     public void testReadAloudMenuItem_readAloudNotEnabled() {
         mReadAloudControllerSupplier.set(null);
-        when(mTab.getUrl()).thenReturn(JUnitTestGURLs.getGURL(JUnitTestGURLs.EXAMPLE_URL));
+        when(mTab.getUrl()).thenReturn(JUnitTestGURLs.EXAMPLE_URL);
         setUpMocksForPageMenu();
         Menu menu = createTestMenu();
         mAppMenuPropertiesDelegate.prepareMenu(menu, null);
@@ -1156,7 +1347,7 @@ public class AppMenuPropertiesDelegateUnitTest {
 
     @Test
     public void testReadAloudMenuItem_notReadable() {
-        when(mTab.getUrl()).thenReturn(JUnitTestGURLs.getGURL(JUnitTestGURLs.EXAMPLE_URL));
+        when(mTab.getUrl()).thenReturn(JUnitTestGURLs.EXAMPLE_URL);
         when(mReadAloudController.isReadable(any())).thenReturn(false);
         setUpMocksForPageMenu();
         Menu menu = createTestMenu();
@@ -1166,7 +1357,7 @@ public class AppMenuPropertiesDelegateUnitTest {
 
     @Test
     public void testReadAloudMenuItem_readable() {
-        when(mTab.getUrl()).thenReturn(JUnitTestGURLs.getGURL(JUnitTestGURLs.EXAMPLE_URL));
+        when(mTab.getUrl()).thenReturn(JUnitTestGURLs.EXAMPLE_URL);
         when(mReadAloudController.isReadable(any())).thenReturn(true);
         setUpMocksForPageMenu();
         Menu menu = createTestMenu();
@@ -1174,14 +1365,20 @@ public class AppMenuPropertiesDelegateUnitTest {
         assertTrue(menu.findItem(R.id.readaloud_menu_id).isVisible());
     }
 
-    private boolean doTestShouldShowNewMenu(boolean isAutomotive, boolean isInstanceSwitcherEnabled,
-            int currentWindowInstances, boolean isTabletSizeScreen, boolean canEnterMultiWindowMode,
-            boolean isChromeRunningInAdjacentWindow, boolean isInMultiWindowMode,
-            boolean isInMultiDisplayMode, boolean isMultiInstanceRunning) {
+    private boolean doTestShouldShowNewMenu(
+            boolean isAutomotive,
+            boolean isInstanceSwitcherEnabled,
+            int currentWindowInstances,
+            boolean isTabletSizeScreen,
+            boolean canEnterMultiWindowMode,
+            boolean isChromeRunningInAdjacentWindow,
+            boolean isInMultiWindowMode,
+            boolean isInMultiDisplayMode,
+            boolean isMultiInstanceRunning) {
         mShadowPackageManager.setSystemFeature(PackageManager.FEATURE_AUTOMOTIVE, isAutomotive);
         doReturn(isInstanceSwitcherEnabled)
                 .when(mAppMenuPropertiesDelegate)
-                .instanceSwitcherEnabled();
+                .instanceSwitcherWithMultiInstanceEnabled();
         doReturn(currentWindowInstances).when(mAppMenuPropertiesDelegate).getInstanceCount();
         doReturn(isTabletSizeScreen).when(mAppMenuPropertiesDelegate).isTabletSizeScreen();
         doReturn(canEnterMultiWindowMode)
@@ -1199,15 +1396,20 @@ public class AppMenuPropertiesDelegateUnitTest {
         return mAppMenuPropertiesDelegate.shouldShowNewWindow();
     }
 
-    private boolean doTestShouldShowMoveToOtherWindowMenu(boolean isAutomotive,
-            boolean isInstanceSwitcherEnabled, int currentWindowInstances,
-            boolean isTabletSizeScreen, boolean canEnterMultiWindowMode,
-            boolean isChromeRunningInAdjacentWindow, boolean isInMultiWindowMode,
-            boolean isInMultiDisplayMode, boolean isMultiInstanceRunning) {
-        mShadowPackageManager.setSystemFeature(PackageManager.FEATURE_AUTOMOTIVE, isAutomotive);
+    private boolean doTestShouldShowMoveToOtherWindowMenu(
+            int totalTabCount,
+            boolean isInstanceSwitcherEnabled,
+            int currentWindowInstances,
+            boolean isTabletSizeScreen,
+            boolean canEnterMultiWindowMode,
+            boolean isChromeRunningInAdjacentWindow,
+            boolean isInMultiWindowMode,
+            boolean isInMultiDisplayMode,
+            boolean isMultiInstanceRunning,
+            boolean isMoveToOtherWindowSupported) {
         doReturn(isInstanceSwitcherEnabled)
                 .when(mAppMenuPropertiesDelegate)
-                .instanceSwitcherEnabled();
+                .instanceSwitcherWithMultiInstanceEnabled();
         doReturn(currentWindowInstances).when(mAppMenuPropertiesDelegate).getInstanceCount();
         doReturn(isTabletSizeScreen).when(mAppMenuPropertiesDelegate).isTabletSizeScreen();
         doReturn(canEnterMultiWindowMode)
@@ -1221,6 +1423,9 @@ public class AppMenuPropertiesDelegateUnitTest {
         doReturn(isMultiInstanceRunning)
                 .when(mMultiWindowModeStateDispatcher)
                 .isMultiInstanceRunning();
+        doReturn(isMoveToOtherWindowSupported)
+                .when(mMultiWindowModeStateDispatcher)
+                .isMoveToOtherWindowSupported(any());
 
         return mAppMenuPropertiesDelegate.shouldShowMoveToOtherWindow();
     }
@@ -1265,7 +1470,9 @@ public class AppMenuPropertiesDelegateUnitTest {
             }
         }
 
-        assertThat("Populated menu items were:" + getMenuTitles(menu), actualItems,
+        assertThat(
+                "Populated menu items were:" + getMenuTitles(menu),
+                actualItems,
                 Matchers.containsInAnyOrder(expectedItems));
     }
 
@@ -1274,7 +1481,8 @@ public class AppMenuPropertiesDelegateUnitTest {
         int expectedIndex = 0;
         for (int i = 0; i < menu.size(); i++) {
             if (menu.getItem(i).isVisible()) {
-                Assert.assertEquals(expectedTitles[expectedIndex] == 0
+                Assert.assertEquals(
+                        expectedTitles[expectedIndex] == 0
                                 ? null
                                 : context.getString(expectedTitles[expectedIndex]),
                         menu.getItem(i).getTitle());
@@ -1292,7 +1500,9 @@ public class AppMenuPropertiesDelegateUnitTest {
             }
         }
 
-        assertThat("Populated action bar items were:" + getMenuTitles(actionBar), actualItems,
+        assertThat(
+                "Populated action bar items were:" + getMenuTitles(actionBar),
+                actualItems,
                 Matchers.containsInAnyOrder(expectedItems));
     }
 
@@ -1304,7 +1514,9 @@ public class AppMenuPropertiesDelegateUnitTest {
             }
         }
 
-        assertThat("menu items with icons were:" + getMenuTitles(menu), actualItems,
+        assertThat(
+                "menu items with icons were:" + getMenuTitles(menu),
+                actualItems,
                 Matchers.containsInAnyOrder(expectedItems));
     }
 
@@ -1442,10 +1654,10 @@ public class AppMenuPropertiesDelegateUnitTest {
                     .withShowPaintPreview()
                     .withAutoDarkEnabled();
         }
-    };
+    }
 
     private void setMenuOptions(MenuOptions options) {
-        when(mTab.getUrl()).thenReturn(JUnitTestGURLs.getGURL(JUnitTestGURLs.SEARCH_URL));
+        when(mTab.getUrl()).thenReturn(JUnitTestGURLs.SEARCH_URL);
         when(mTab.isNativePage()).thenReturn(options.isNativePage());
         doReturn(options.showTranslate())
                 .when(mAppMenuPropertiesDelegate)
@@ -1458,8 +1670,9 @@ public class AppMenuPropertiesDelegateUnitTest {
                 .when(mAppMenuPropertiesDelegate)
                 .shouldShowReaderModePrefs(any(Tab.class));
         if (options.showAddToHomeScreen()) {
-            doReturn(new AppBannerManager.InstallStringPair(
-                             R.string.menu_add_to_homescreen, R.string.add))
+            doReturn(
+                            new AppBannerManager.InstallStringPair(
+                                    R.string.menu_add_to_homescreen, R.string.add))
                     .when(mAppMenuPropertiesDelegate)
                     .getAddToHomeScreenTitle(mTab);
         }
@@ -1467,8 +1680,10 @@ public class AppMenuPropertiesDelegateUnitTest {
                 .when(mAppMenuPropertiesDelegate)
                 .shouldShowPaintPreview(anyBoolean(), any(Tab.class), anyBoolean());
         when(mWebsitePreferenceBridgeJniMock.getContentSetting(any(), anyInt(), any(), any()))
-                .thenReturn(options.isAutoDarkEnabled() ? ContentSettingValues.DEFAULT
-                                                        : ContentSettingValues.BLOCK);
+                .thenReturn(
+                        options.isAutoDarkEnabled()
+                                ? ContentSettingValues.DEFAULT
+                                : ContentSettingValues.BLOCK);
     }
 
     private void verifyManagedByMenuItem(boolean chromeManagementPageEnabled) {}

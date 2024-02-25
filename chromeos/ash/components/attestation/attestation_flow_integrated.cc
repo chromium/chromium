@@ -5,6 +5,7 @@
 #include "chromeos/ash/components/attestation/attestation_flow_integrated.h"
 
 #include <algorithm>
+#include <optional>
 #include <utility>
 
 #include "base/check.h"
@@ -22,7 +23,6 @@
 #include "chromeos/ash/components/dbus/constants/attestation_constants.h"
 #include "chromeos/dbus/constants/dbus_switches.h"
 #include "components/account_id/account_id.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ash {
 namespace attestation {
@@ -71,7 +71,7 @@ bool IsPreparedWith(const ::attestation::GetEnrollmentPreparationsReply& reply,
   return false;
 }
 
-absl::optional<::attestation::CertificateProfile> ProfileToAttestationProtoEnum(
+std::optional<::attestation::CertificateProfile> ProfileToAttestationProtoEnum(
     AttestationCertificateProfile p) {
   switch (p) {
     case PROFILE_ENTERPRISE_MACHINE_CERTIFICATE:
@@ -122,7 +122,7 @@ void AttestationFlowIntegrated::GetCertificate(
     bool force_new_key,
     ::attestation::KeyType key_crypto_type,
     const std::string& key_name,
-    const absl::optional<AttestationFlow::CertProfileSpecificData>&
+    const std::optional<AttestationFlow::CertProfileSpecificData>&
         profile_specific_data,
     CertificateCallback callback) {
   EnrollCallback start_certificate_request =
@@ -192,7 +192,7 @@ void AttestationFlowIntegrated::StartCertificateRequest(
     bool generate_new_key,
     ::attestation::KeyType key_crypto_type,
     const std::string& key_name,
-    const absl::optional<CertProfileSpecificData>& profile_specific_data,
+    const std::optional<CertProfileSpecificData>& profile_specific_data,
     CertificateCallback callback,
     EnrollState enroll_state) {
   switch (enroll_state) {
@@ -211,7 +211,7 @@ void AttestationFlowIntegrated::StartCertificateRequest(
 
   ::attestation::GetCertificateRequest request;
   request.set_aca_type(aca_type_);
-  absl::optional<::attestation::CertificateProfile> profile_attestation_enum =
+  std::optional<::attestation::CertificateProfile> profile_attestation_enum =
       ProfileToAttestationProtoEnum(certificate_profile);
   if (!profile_attestation_enum) {
     LOG(ERROR) << __func__ << ": Unexpected profile value: "

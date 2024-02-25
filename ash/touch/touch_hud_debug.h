@@ -69,8 +69,8 @@ class ASH_EXPORT TouchHudDebug : public TouchObserverHud {
 
   std::unique_ptr<TouchLog> touch_log_;
 
-  raw_ptr<TouchHudCanvas, ExperimentalAsh> canvas_;
-  raw_ptr<views::View, ExperimentalAsh> label_container_;
+  raw_ptr<TouchHudCanvas> canvas_;
+  raw_ptr<views::View> label_container_;
   views::Label* touch_labels_[kMaxTouchPoints];
 };
 

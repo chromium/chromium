@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "base/functional/callback_helpers.h"
+#include "base/logging.h"
 #include "base/task/bind_post_task.h"
 #include "base/task/sequenced_task_runner.h"
 #include "components/reporting/client/report_queue.h"
@@ -132,9 +133,9 @@ void ReportingPipeline::UpdateToken(std::string request_token) {
       base::BindRepeating(&ReportingPipeline::CheckPolicy,
                           base::Unretained(this)));
 
-  if (!config_result.ok()) {
+  if (!config_result.has_value()) {
     LOG(ERROR) << "Report Client Configuration failed with error message: "
-               << config_result.status().ToString();
+               << config_result.error();
     // Reset DMToken to allow future attempts at configuring the report queue.
     // TODO(b/175156039): Attempt to create a new configuration again.
     dm_token_.clear();
@@ -155,7 +156,7 @@ void ReportingPipeline::UpdateToken(std::string request_token) {
             reporting::ReportQueueProvider::CreateQueue(
                 std::move(config), std::move(queue_callback));
           },
-          std::move(config_result).ValueOrDie(), std::move(queue_callback)));
+          std::move(config_result).value(), std::move(queue_callback)));
 }
 
 ::reporting::Status ReportingPipeline::CheckPolicy() const {
@@ -178,16 +179,16 @@ void ReportingPipeline::OnReportQueueUpdated(
         report_queue_result) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  if (!report_queue_result.ok()) {
+  if (!report_queue_result.has_value()) {
     LOG(ERROR) << "Report Queue creation failed with error message: "
-               << report_queue_result.status().ToString();
+               << report_queue_result.error();
     // Reset DMToken to allow future attempts at creating a report queue.
     // TODO(b/175156039): Attempt to create a new queue again.
     dm_token_.clear();
     return;
   }
 
-  report_queue_ = std::move(report_queue_result.ValueOrDie());
+  report_queue_ = std::move(report_queue_result.value());
 
   update_status_callback_.Run(mojom::LoggerState::kReadyForRequests);
 

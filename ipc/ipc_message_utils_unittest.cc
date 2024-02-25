@@ -117,7 +117,7 @@ TEST(IPCMessageUtilsTest, MojoChannelHandle) {
 }
 
 TEST(IPCMessageUtilsTest, OptionalUnset) {
-  absl::optional<int> opt;
+  std::optional<int> opt;
   base::Pickle pickle;
   IPC::WriteParam(&pickle, opt);
 
@@ -125,14 +125,14 @@ TEST(IPCMessageUtilsTest, OptionalUnset) {
   IPC::LogParam(opt, &log);
   EXPECT_EQ("(unset)", log);
 
-  absl::optional<int> unserialized_opt;
+  std::optional<int> unserialized_opt;
   base::PickleIterator iter(pickle);
   EXPECT_TRUE(IPC::ReadParam(&pickle, &iter, &unserialized_opt));
   EXPECT_FALSE(unserialized_opt);
 }
 
 TEST(IPCMessageUtilsTest, OptionalSet) {
-  absl::optional<int> opt(10);
+  std::optional<int> opt(10);
   base::Pickle pickle;
   IPC::WriteParam(&pickle, opt);
 
@@ -140,7 +140,7 @@ TEST(IPCMessageUtilsTest, OptionalSet) {
   IPC::LogParam(opt, &log);
   EXPECT_EQ("10", log);
 
-  absl::optional<int> unserialized_opt;
+  std::optional<int> unserialized_opt;
   base::PickleIterator iter(pickle);
   EXPECT_TRUE(IPC::ReadParam(&pickle, &iter, &unserialized_opt));
   EXPECT_TRUE(unserialized_opt);

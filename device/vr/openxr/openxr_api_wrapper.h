@@ -6,21 +6,24 @@
 #define DEVICE_VR_OPENXR_OPENXR_API_WRAPPER_H_
 
 #include <stdint.h>
+
 #include <memory>
+#include <optional>
 #include <vector>
 
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
+#include "device/vr/openxr/exit_xr_present_reason.h"
 #include "device/vr/openxr/openxr_anchor_manager.h"
 #include "device/vr/openxr/openxr_graphics_binding.h"
 #include "device/vr/openxr/openxr_platform.h"
 #include "device/vr/openxr/openxr_scene_understanding_manager.h"
+#include "device/vr/openxr/openxr_stage_bounds_provider.h"
+#include "device/vr/openxr/openxr_unbounded_space_provider.h"
 #include "device/vr/openxr/openxr_view_configuration.h"
 #include "device/vr/public/mojom/vr_service.mojom.h"
 #include "device/vr/public/mojom/xr_session.mojom.h"
 #include "device/vr/vr_export.h"
-#include "device/vr/windows/compositor_base.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/openxr/src/include/openxr/openxr.h"
 
 #if BUILDFLAG(IS_WIN)
@@ -90,12 +93,11 @@ class OpenXrApiWrapper {
 
   std::vector<mojom::XRViewPtr> GetViews() const;
   mojom::VRPosePtr GetViewerPose() const;
-  std::vector<mojom::XRInputSourceStatePtr> GetInputState(
-      bool hand_input_enabled);
+  std::vector<mojom::XRInputSourceStatePtr> GetInputState();
 
   std::vector<mojom::XRViewPtr> GetDefaultViews() const;
   XrTime GetPredictedDisplayTime() const;
-  bool GetStageParameters(XrExtent2Df& stage_bounds,
+  bool GetStageParameters(std::vector<gfx::Point3F>& stage_bounds,
                           gfx::Transform& local_from_stage);
   bool StageParametersEnabled() const;
 
@@ -112,7 +114,6 @@ class OpenXrApiWrapper {
   void OnContextProviderLost();
 
   bool CanEnableAntiAliasing() const;
-  bool IsUsingSharedImages() const;
 
   static void DEVICE_VR_EXPORT SetTestHook(VRTestHook* hook);
 
@@ -141,7 +142,6 @@ class OpenXrApiWrapper {
   XrResult UpdateSecondaryViewConfigStates(
       const std::vector<XrSecondaryViewConfigurationStateMSFT>& states);
   XrResult UpdateViewConfigurations();
-  XrResult PrepareViewConfigForRender(OpenXrViewConfiguration& view_config);
   XrResult LocateViews(XrReferenceSpaceType space_type,
                        OpenXrViewConfiguration& view_config) const;
 
@@ -193,7 +193,7 @@ class OpenXrApiWrapper {
   XrInstance instance_;
   XrSystemId system_;
   XrEnvironmentBlendMode blend_mode_;
-  XrExtent2Df stage_bounds_;
+  std::vector<gfx::Point3F> stage_bounds_;
 
   // These objects are initialized when a session begins and stay constant
   // throughout the lifetime of the session.
@@ -219,7 +219,9 @@ class OpenXrApiWrapper {
       secondary_view_configs_;
 
   std::unique_ptr<OpenXrAnchorManager> anchor_manager_;
+  std::unique_ptr<OpenXrStageBoundsProvider> bounds_provider_;
   std::unique_ptr<OpenXRSceneUnderstandingManager> scene_understanding_manager_;
+  std::unique_ptr<OpenXrUnboundedSpaceProvider> unbounded_space_provider_;
 
   // The context provider is owned by the OpenXrRenderLoop, and may change when
   // there is a context lost.

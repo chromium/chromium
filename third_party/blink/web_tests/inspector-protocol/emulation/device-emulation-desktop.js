@@ -1,4 +1,4 @@
-(async function(testRunner) {
+(async function(/** @type {import('test_runner').TestRunner} */ testRunner) {
   let {page, session, dp} = await testRunner.startBlank('Tests that desktop device emulation affects media rules, viewport meta tag, body dimensions and window.screen.');
 
   await session.protocol.Emulation.setDeviceMetricsOverride({

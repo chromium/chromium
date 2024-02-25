@@ -7,7 +7,8 @@
 
 #include <hb.h>
 
-#include "third_party/abseil-cpp/absl/types/optional.h"
+#include <optional>
+
 #include "third_party/blink/renderer/platform/platform_export.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
@@ -28,9 +29,12 @@ class PLATFORM_EXPORT FontFeatures {
   wtf_size_t size() const { return features_.size(); }
   bool IsEmpty() const { return features_.empty(); }
 
+  const hb_feature_t& operator[](wtf_size_t i) const { return features_[i]; }
   const hb_feature_t* data() const { return features_.data(); }
 
-  absl::optional<unsigned> FindValueForTesting(hb_tag_t tag) const;
+  std::optional<unsigned> FindValueForTesting(hb_tag_t tag) const;
+
+  void Reserve(wtf_size_t new_capacity) { features_.reserve(new_capacity); }
 
   void Append(const hb_feature_t& feature) { features_.push_back(feature); }
   void Insert(const hb_feature_t& feature) { features_.push_front(feature); }
@@ -38,9 +42,15 @@ class PLATFORM_EXPORT FontFeatures {
   void EraseAt(wtf_size_t position, wtf_size_t length) {
     features_.EraseAt(position, length);
   }
+  void Shrink(wtf_size_t size) { features_.Shrink(size); }
+
+  using FeatureArray = Vector<hb_feature_t, 6>;
+  using const_iterator = FeatureArray::const_iterator;
+  const_iterator begin() const { return features_.begin(); }
+  const_iterator end() const { return features_.end(); }
 
  private:
-  Vector<hb_feature_t, 6> features_;
+  FeatureArray features_;
 };
 
 }  // namespace blink

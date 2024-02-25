@@ -4,6 +4,8 @@
 
 #include "chromeos/ash/services/device_sync/device_sync_impl.h"
 
+#include <optional>
+
 #include "ash/constants/ash_features.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
@@ -47,7 +49,6 @@
 #include "components/signin/public/base/consent_level.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ash {
 
@@ -458,7 +459,7 @@ void DeviceSyncImpl::ForceEnrollmentNow(ForceEnrollmentNowCallback callback) {
   }
 
   cryptauth_enrollment_manager_->ForceEnrollmentNow(
-      cryptauth::INVOCATION_REASON_MANUAL, absl::nullopt /* session_id */);
+      cryptauth::INVOCATION_REASON_MANUAL, std::nullopt /* session_id */);
   std::move(callback).Run(true /* success */);
   RecordForceEnrollmentNowResult(
       ForceCryptAuthOperationResult::kSuccess /* result */);
@@ -481,7 +482,7 @@ void DeviceSyncImpl::ForceSyncNow(ForceSyncNowCallback callback) {
 
   if (features::ShouldUseV2DeviceSync()) {
     cryptauth_v2_device_manager_->ForceDeviceSyncNow(
-        cryptauthv2::ClientMetadata::MANUAL, absl::nullopt /* session_id */);
+        cryptauthv2::ClientMetadata::MANUAL, std::nullopt /* session_id */);
   }
 
   std::move(callback).Run(true /* success */);
@@ -532,7 +533,7 @@ void DeviceSyncImpl::GetLocalDeviceMetadata(
     PA_LOG(WARNING) << "DeviceSyncImpl::GetLocalDeviceMetadata() invoked "
                     << "before initialization was complete. Cannot return "
                     << "local device metadata.";
-    std::move(callback).Run(absl::nullopt);
+    std::move(callback).Run(std::nullopt);
     return;
   }
 
@@ -545,7 +546,7 @@ void DeviceSyncImpl::GetSyncedDevices(GetSyncedDevicesCallback callback) {
   if (status_ != InitializationStatus::kReady) {
     PA_LOG(WARNING) << "DeviceSyncImpl::GetSyncedDevices() invoked before "
                     << "initialization was complete. Cannot return devices.";
-    std::move(callback).Run(absl::nullopt);
+    std::move(callback).Run(std::nullopt);
     return;
   }
 
@@ -700,7 +701,7 @@ void DeviceSyncImpl::GetDevicesActivityStatus(
         << "initialization was complete. Cannot get activity statuses.";
     std::move(callback).Run(
         mojom::NetworkRequestResult::kServiceNotYetInitialized,
-        absl::nullopt /* device_activity_statuses */);
+        std::nullopt /* device_activity_statuses */);
     return;
   }
 
@@ -994,7 +995,7 @@ void DeviceSyncImpl::OnClientAppMetadataFetchTimeout() {
 }
 
 void DeviceSyncImpl::OnClientAppMetadataFetched(
-    const absl::optional<cryptauthv2::ClientAppMetadata>& client_app_metadata) {
+    const std::optional<cryptauthv2::ClientAppMetadata>& client_app_metadata) {
   DCHECK_EQ(status_, InitializationStatus::kWaitingForClientAppMetadata);
   timer_->Stop();
 
@@ -1140,7 +1141,7 @@ void DeviceSyncImpl::CompleteInitializationAfterSuccessfulEnrollment() {
                               initialization_start_timestamp_);
 }
 
-absl::optional<multidevice::RemoteDevice>
+std::optional<multidevice::RemoteDevice>
 DeviceSyncImpl::GetSyncedDeviceWithPublicKey(
     const std::string& public_key) const {
   DCHECK_EQ(status_, InitializationStatus::kReady)
@@ -1151,7 +1152,7 @@ DeviceSyncImpl::GetSyncedDeviceWithPublicKey(
                                      &multidevice::RemoteDevice::public_key);
 
   if (it == synced_devices.end())
-    return absl::nullopt;
+    return std::nullopt;
 
   return *it;
 }
@@ -1169,7 +1170,7 @@ void DeviceSyncImpl::OnSetSoftwareFeatureStateSuccess() {
   if (features::ShouldUseV2DeviceSync()) {
     cryptauth_v2_device_manager_->ForceDeviceSyncNow(
         cryptauthv2::ClientMetadata::FEATURE_TOGGLED,
-        absl::nullopt /* session_id */);
+        std::nullopt /* session_id */);
   }
 
   RecordSetSoftwareFeatureStateResult(true /* success */);
@@ -1214,7 +1215,7 @@ void DeviceSyncImpl::OnSetFeatureStatusSuccess() {
 
   cryptauth_v2_device_manager_->ForceDeviceSyncNow(
       cryptauthv2::ClientMetadata::FEATURE_TOGGLED,
-      absl::nullopt /* session_id */);
+      std::nullopt /* session_id */);
 }
 
 void DeviceSyncImpl::OnSetFeatureStatusError(
@@ -1333,7 +1334,7 @@ void DeviceSyncImpl::OnGetDevicesActivityStatusFinished(
   DCHECK(iter != get_devices_activity_status_callbacks_.end());
   std::move(iter->second)
       .Run(mojom::NetworkRequestResult::kSuccess,
-           absl::make_optional(std::move(device_activity_status_result)));
+           std::make_optional(std::move(device_activity_status_result)));
   get_devices_activity_status_callbacks_.erase(iter);
 }
 
@@ -1345,7 +1346,7 @@ void DeviceSyncImpl::OnGetDevicesActivityStatusError(
   auto iter = get_devices_activity_status_callbacks_.find(request_id);
   DCHECK(iter != get_devices_activity_status_callbacks_.end());
   std::move(iter->second)
-      .Run(mojo::ConvertTo<mojom::NetworkRequestResult>(error), absl::nullopt);
+      .Run(mojo::ConvertTo<mojom::NetworkRequestResult>(error), std::nullopt);
   get_devices_activity_status_callbacks_.erase(iter);
 }
 

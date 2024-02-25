@@ -312,29 +312,16 @@ void CountVideoConstraintUses(ExecutionContext* context,
   }
 }
 
-void RecordSystemAudioConstraintUma(const MediaStreamConstraints* options) {
+void RecordGetDisplayMediaIncludeExcludeConstraintUma(
+    std::optional<V8DisplayMediaIncludeOrExclude::Enum> include_or_exclude,
+    const std::string& histogram_name) {
   const GetDisplayMediaIncludeExcludeConstraint value =
-      (!options->hasSystemAudio()
+      (!include_or_exclude.has_value()
            ? GetDisplayMediaIncludeExcludeConstraint::kNotSpecified
-       : options->systemAudio().AsEnum() ==
-               V8SystemAudioPreferenceEnum::Enum::kInclude
+       : include_or_exclude == V8DisplayMediaIncludeOrExclude::Enum::kInclude
            ? GetDisplayMediaIncludeExcludeConstraint::kInclude
            : GetDisplayMediaIncludeExcludeConstraint::kExclude);
-  base::UmaHistogramEnumeration("Media.GetDisplayMedia.Constraints.SystemAudio",
-                                value);
-}
-
-void RecordSelfBrowserSurfaceConstraintUma(
-    const MediaStreamConstraints* options) {
-  const GetDisplayMediaIncludeExcludeConstraint value =
-      (!options->hasSelfBrowserSurface()
-           ? GetDisplayMediaIncludeExcludeConstraint::kNotSpecified
-       : options->selfBrowserSurface().AsEnum() ==
-               V8SelfCapturePreferenceEnum::Enum::kInclude
-           ? GetDisplayMediaIncludeExcludeConstraint::kInclude
-           : GetDisplayMediaIncludeExcludeConstraint::kExclude);
-  base::UmaHistogramEnumeration(
-      "Media.GetDisplayMedia.Constraints.SelfBrowserSurface", value);
+  base::UmaHistogramEnumeration(histogram_name, value);
 }
 
 void RecordPreferredDisplaySurfaceConstraintUma(
@@ -356,21 +343,8 @@ void RecordPreferredDisplaySurfaceConstraintUma(
   NOTREACHED();
 }
 
-void RecordSurfaceSwitchingConstraintUma(
-    const MediaStreamConstraints* options) {
-  const GetDisplayMediaIncludeExcludeConstraint value =
-      (!options->hasSurfaceSwitching()
-           ? GetDisplayMediaIncludeExcludeConstraint::kNotSpecified
-       : options->surfaceSwitching().AsEnum() ==
-               V8SurfaceSwitchingPreferenceEnum::Enum::kInclude
-           ? GetDisplayMediaIncludeExcludeConstraint::kInclude
-           : GetDisplayMediaIncludeExcludeConstraint::kExclude);
-  base::UmaHistogramEnumeration(
-      "Media.GetDisplayMedia.Constraints.SurfaceSwitching", value);
-}
-
 void RecordSuppressLocalAudioPlaybackConstraintUma(
-    absl::optional<bool> suppress_local_audio_playback) {
+    std::optional<bool> suppress_local_audio_playback) {
   const GetDisplayMediaBooleanConstraint value =
       (!suppress_local_audio_playback.has_value()
            ? GetDisplayMediaBooleanConstraint::kNotSpecified
@@ -431,7 +405,7 @@ UserMediaRequest* UserMediaRequest::Create(
   }
 
   std::string display_surface_constraint;
-  absl::optional<bool> suppress_local_audio_playback;
+  std::optional<bool> suppress_local_audio_playback;
 
   if (media_type == UserMediaRequestType::kUserMedia) {
     if (audio.IsNull() && video.IsNull()) {
@@ -439,12 +413,33 @@ UserMediaRequest* UserMediaRequest::Create(
           "At least one of audio and video must be requested");
       return nullptr;
     } else if (!video.IsNull()) {
-      if (video.Basic().pan.HasMandatory() ||
-          video.Basic().tilt.HasMandatory() ||
-          video.Basic().zoom.HasMandatory()) {
-        exception_state.ThrowTypeError(
-            "Mandatory pan-tilt-zoom constraints are not supported");
-        return nullptr;
+      auto& video_basic = video.MutableBasic();
+      const BaseConstraint* constraints[] = {
+          &video_basic.pan,
+          &video_basic.tilt,
+          &video_basic.zoom,
+          &video_basic.background_blur,
+          &video_basic.eye_gaze_correction,
+          &video_basic.face_framing,
+      };
+      for (const BaseConstraint* constraint : constraints) {
+        if (constraint->HasMandatory()) {
+          exception_state.ThrowTypeError(
+              String::Format("Mandatory %s constraints are not supported",
+                             constraint->GetName()));
+          return nullptr;
+        }
+      }
+      BaseConstraint* compatibility_constraints[] = {
+          &video_basic.torch,
+      };
+      for (BaseConstraint* constraint : compatibility_constraints) {
+        if (constraint->HasMandatory()) {
+          // This should throw a TypeError, but that cannot be done due
+          // to backward compatibility.
+          // Thus instead of that, let's ignore the constraint.
+          constraint->ResetToUnconstrained();
+        }
       }
     }
   } else if (media_type == UserMediaRequestType::kDisplayMedia ||
@@ -522,15 +517,21 @@ UserMediaRequest* UserMediaRequest::Create(
   result->set_exclude_system_audio(
       options->hasSystemAudio() &&
       options->systemAudio().AsEnum() ==
-          V8SystemAudioPreferenceEnum::Enum::kExclude);
-  if (media_type == UserMediaRequestType::kDisplayMedia)
-    RecordSystemAudioConstraintUma(options);
+          V8DisplayMediaIncludeOrExclude::Enum::kExclude);
+  if (media_type == UserMediaRequestType::kDisplayMedia) {
+    std::optional<V8DisplayMediaIncludeOrExclude::Enum> include_or_exclude;
+    if (options->hasSystemAudio()) {
+      include_or_exclude = options->systemAudio().AsEnum();
+    }
+    RecordGetDisplayMediaIncludeExcludeConstraintUma(
+        include_or_exclude, "Media.GetDisplayMedia.Constraints.SystemAudio");
+  }
 
   // The default is to include.
   const bool exclude_self_browser_surface =
       options->hasSelfBrowserSurface() &&
       options->selfBrowserSurface().AsEnum() ==
-          V8SelfCapturePreferenceEnum::Enum::kExclude;
+          V8DisplayMediaIncludeOrExclude::Enum::kExclude;
   if (exclude_self_browser_surface && options->preferCurrentTab()) {
     exception_state.ThrowTypeError(
         "Self-contradictory configuration (preferCurrentTab and "
@@ -538,8 +539,15 @@ UserMediaRequest* UserMediaRequest::Create(
     return nullptr;
   }
   result->set_exclude_self_browser_surface(exclude_self_browser_surface);
-  if (media_type == UserMediaRequestType::kDisplayMedia)
-    RecordSelfBrowserSurfaceConstraintUma(options);
+  if (media_type == UserMediaRequestType::kDisplayMedia) {
+    std::optional<V8DisplayMediaIncludeOrExclude::Enum> include_or_exclude;
+    if (options->hasSelfBrowserSurface()) {
+      include_or_exclude = options->selfBrowserSurface().AsEnum();
+    }
+    RecordGetDisplayMediaIncludeExcludeConstraintUma(
+        include_or_exclude,
+        "Media.GetDisplayMedia.Constraints.SelfBrowserSurface");
+  }
 
   mojom::blink::PreferredDisplaySurface preferred_display_surface =
       mojom::blink::PreferredDisplaySurface::NO_PREFERENCE;
@@ -558,9 +566,39 @@ UserMediaRequest* UserMediaRequest::Create(
   result->set_dynamic_surface_switching_requested(
       !options->hasSurfaceSwitching() ||
       options->surfaceSwitching().AsEnum() ==
-          V8SurfaceSwitchingPreferenceEnum::Enum::kInclude);
-  if (media_type == UserMediaRequestType::kDisplayMedia)
-    RecordSurfaceSwitchingConstraintUma(options);
+          V8DisplayMediaIncludeOrExclude::Enum::kInclude);
+  if (media_type == UserMediaRequestType::kDisplayMedia) {
+    std::optional<V8DisplayMediaIncludeOrExclude::Enum> include_or_exclude;
+    if (options->hasSurfaceSwitching()) {
+      include_or_exclude = options->surfaceSwitching().AsEnum();
+    }
+    RecordGetDisplayMediaIncludeExcludeConstraintUma(
+        include_or_exclude,
+        "Media.GetDisplayMedia.Constraints.SurfaceSwitching");
+  }
+
+  // The default is to include.
+  const bool exclude_monitor_type_surfaces =
+      options->hasMonitorTypeSurfaces() &&
+      options->monitorTypeSurfaces().AsEnum() ==
+          V8DisplayMediaIncludeOrExclude::Enum::kExclude;
+  if (exclude_monitor_type_surfaces &&
+      display_surface_constraint == "monitor") {
+    exception_state.ThrowTypeError(
+        "Self-contradictory configuration (displaySurface=monitor and "
+        "monitorTypeSurfaces=exclude).");
+    return nullptr;
+  }
+  result->set_exclude_monitor_type_surfaces(exclude_monitor_type_surfaces);
+  if (media_type == UserMediaRequestType::kDisplayMedia) {
+    std::optional<V8DisplayMediaIncludeOrExclude::Enum> include_or_exclude;
+    if (options->hasMonitorTypeSurfaces()) {
+      include_or_exclude = options->monitorTypeSurfaces().AsEnum();
+    }
+    RecordGetDisplayMediaIncludeExcludeConstraintUma(
+        include_or_exclude,
+        "Media.GetDisplayMedia.Constraints.MonitorTypeSurfaces");
+  }
 
   result->set_suppress_local_audio_playback(
       suppress_local_audio_playback.value_or(false));

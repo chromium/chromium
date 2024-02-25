@@ -8,6 +8,7 @@
 #include <string>
 
 #include "content/common/content_export.h"
+#include "url/gurl.h"
 
 namespace content {
 
@@ -23,11 +24,13 @@ class CONTENT_EXPORT FederatedIdentityModalDialogViewDelegate {
   virtual ~FederatedIdentityModalDialogViewDelegate() = default;
 
   // Closes the FedCM modal dialog, if any.
-  virtual void NotifyClose() = 0;
+  virtual void OnClose() = 0;
 
   // The modal dialog has provided a token to resolve the original request.
-  // TODO(crbug.com/1429083): pass the configURL in the notification.
-  virtual bool NotifyResolve(const std::string& token) = 0;
+  // `idp_config_url` is passed by value so that it remains valid even if the
+  // implementation destructs the IdentityRegistry (e.g. by closing the
+  // associated WebContents).
+  virtual bool OnResolve(GURL idp_config_url, const std::string& token) = 0;
 };
 
 }  // namespace content

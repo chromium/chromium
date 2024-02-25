@@ -73,6 +73,7 @@ static_library("model") {
 
   public_deps = [
     "//base",
+    "//components/prefs",
     "//components/sync/base",
     "//components/sync/engine",
     "//components/sync/protocol",

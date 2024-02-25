@@ -154,6 +154,10 @@ DropData* WebContentsViewIOS::GetDropData() const {
   return nullptr;
 }
 
+void WebContentsViewIOS::TransferDragSecurityInfo(WebContentsView* view) {
+  NOTIMPLEMENTED();
+}
+
 gfx::Rect WebContentsViewIOS::GetViewBounds() const {
   return gfx::Rect();
 }
@@ -265,6 +269,11 @@ bool WebContentsViewIOS::DoBrowserControlsShrinkRendererSize() const {
 bool WebContentsViewIOS::OnlyExpandTopControlsAtPageTop() const {
   auto* delegate = web_contents_->GetDelegate();
   return delegate && delegate->OnlyExpandTopControlsAtPageTop();
+}
+
+BackForwardTransitionAnimationManager*
+WebContentsViewIOS::GetBackForwardTransitionAnimationManager() {
+  return nullptr;
 }
 
 }  // namespace content

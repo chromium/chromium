@@ -4,7 +4,9 @@
 
 #include "chrome/test/interaction/webcontents_interaction_test_util.h"
 
+#include <algorithm>
 #include <initializer_list>
+#include <optional>
 #include <set>
 #include <sstream>
 #include <string>
@@ -18,6 +20,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_auto_reset.h"
 #include "base/memory/weak_ptr.h"
+#include "base/notreached.h"
 #include "base/scoped_observation.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
@@ -40,7 +43,6 @@
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test_utils.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/base/interaction/element_tracker.h"
 #include "ui/base/interaction/framework_specific_implementation.h"
@@ -59,22 +61,121 @@ class RenderFrameHost;
 namespace {
 
 content::WebContents* GetWebContents(Browser* browser,
-                                     absl::optional<int> tab_index) {
+                                     std::optional<int> tab_index) {
   auto* const model = browser->tab_strip_model();
   return model->GetWebContentsAt(tab_index.value_or(model->active_index()));
 }
 
-// Provides a template function for "does this element exist" queries.
-// Will return on_missing_selector if 'err?.selector' is valid.
-// Will return on_found if el is valid.
-std::string GetExistsQuery(const char* on_missing_selector,
-                           const char* on_found) {
+// Provides a JavaScript skeleton for "does this element exist" queries.
+//
+// Will evaluate and return `on_not_found` if 'err?.selector' is valid.
+// Will evaluate and return `on_found` if 'el' is valid.
+std::string GetExistsQuery(const char* on_not_found, const char* on_found) {
   return base::StringPrintf(R"((el, err) => {
         if (err?.selector) return %s;
         if (err) throw err;
         return %s;
       })",
-                            on_missing_selector, on_found);
+                            on_not_found, on_found);
+}
+
+// Does `StateChange` validation, including inferring the actual type for
+// `Type::kAuto`, and returns the (potentially updated) StateChange.
+WebContentsInteractionTestUtil::StateChange ValidateAndInferStateChange(
+    const WebContentsInteractionTestUtil::StateChange& state_change) {
+  WebContentsInteractionTestUtil::StateChange configuration = state_change;
+
+  CHECK(configuration.event) << "StateChange missing event - " << configuration;
+  CHECK(configuration.timeout.has_value() || !configuration.timeout_event)
+      << "StateChange cannot specify timeout event without timeout - "
+      << configuration;
+
+  const bool has_function = !configuration.test_function.empty();
+  const bool has_where = !configuration.where.empty();
+  using Type = WebContentsInteractionTestUtil::StateChange::Type;
+  switch (configuration.type) {
+    case Type::kAuto:
+      if (has_function) {
+        configuration.type =
+            has_where ? Type::kExistsAndConditionTrue : Type::kConditionTrue;
+      } else if (has_where) {
+        configuration.type = Type::kExists;
+      } else {
+        NOTREACHED_NORETURN()
+            << "Unable to infer StateChange type - " << configuration;
+      }
+      break;
+    case Type::kExists:
+      CHECK(has_where) << "Expected where to be non-empty - " << configuration;
+      CHECK(!has_function) << "Expected test function to be empty - "
+                           << configuration;
+      break;
+    case Type::kDoesNotExist:
+      CHECK(has_where) << "Expected where to be non-empty - " << configuration;
+      CHECK(!has_function) << "Expected test function to be empty - "
+                           << configuration;
+      break;
+    case Type::kConditionTrue:
+      CHECK(!has_where) << "Expected where to be empty - " << configuration;
+      CHECK(has_function) << "Expected test function to be non-empty - "
+                          << configuration;
+      break;
+    case Type::kExistsAndConditionTrue:
+      CHECK(has_where && has_function)
+          << "Expected where and function to be non-empty - " << configuration;
+  }
+  return configuration;
+}
+
+// Detects the presence of a javascript `function` that takes (el, err) as
+// parameters, for backwards-compatibility with older tests that require this.
+//
+// Expectation is one of:
+//  ... x, y ... => ...
+//  ... x, y ... { ...
+//
+// Functions not in this format will not be recognized as taking an error param.
+bool HasErrorParameter(const std::string& function) {
+  size_t body1 = function.find("=>");
+  size_t body2 = function.find('{');
+  const size_t body =
+      (body1 == std::string::npos)
+          ? body2
+          : (body2 == std::string::npos ? body1 : std::min(body1, body2));
+  if (body == std::string::npos) {
+    return false;
+  }
+  const size_t comma = function.find(',');
+  return comma != std::string::npos && comma < body;
+}
+
+// Returns the JS query that must be sent to check a particular state change.
+std::string GetStateChangeQuery(
+    const WebContentsInteractionTestUtil::StateChange& configuration) {
+  // For `kConditionTrue`, `configuration.test_function` can be used directly
+  // directly, but for the other options it must be modified.
+  using Type = WebContentsInteractionTestUtil::StateChange::Type;
+  switch (configuration.type) {
+    case Type::kAuto:
+      NOTREACHED_NORETURN() << "Auto type should already have been inferred.";
+    case Type::kExists:
+      return GetExistsQuery(
+          /* on_not_found = */ "false",
+          /* on_found = */ "true");
+    case Type::kDoesNotExist:
+      return GetExistsQuery(
+          /* on_not_found = */ "true",
+          /* on_found = */ "false");
+    case Type::kConditionTrue:
+      return configuration.test_function;
+    case Type::kExistsAndConditionTrue:
+      if (HasErrorParameter(configuration.test_function)) {
+        return configuration.test_function;
+      }
+      const std::string on_found = "(" + configuration.test_function + ")(el)";
+      return GetExistsQuery(
+          /* on_not_found = */ "false", on_found.c_str());
+  }
 }
 
 // Common execution code for `EvalJsLocal()` and `ExecuteJsLocal()`.
@@ -106,17 +207,26 @@ content::EvalJsResult EvalJsLocal(
   std::string token =
       "EvalJsLocal-" + base::Uuid::GenerateRandomV4().AsLowercaseString();
   std::string runner_script = base::StringPrintf(
-      R"(Promise.resolve(%s)
-         .then(func => [func()])
-         .then((result) => Promise.all(result))
-         .then((result) => [result[0], ''],
-               (error) => [undefined,
-                           error && error.stack ?
-                               '\n' + error.stack :
-                               'Error: "' + error + '"'])
-         .then((reply) => window.domAutomationController.send(['%s', reply]));
-      //# sourceURL=EvalJs-runner.js)",
-      function.c_str(), token.c_str());
+      R"(
+        (() => {
+          const replyFunc =
+              (reply) => window.domAutomationController.send(['%s', reply]);
+          const errorReply =
+              (error) => [undefined,
+                        error && error.stack ?
+                            '\n' + error.stack :
+                            'Error: "' + error + '"'];
+          try {
+            Promise.resolve((%s)())
+              .then((result) => [result, ''],
+                    (error) => errorReply(error))
+              .then((result) => replyFunc(result));
+          } catch (err) {
+            replyFunc(errorReply(err));
+          }
+        })(); //# sourceURL=EvalJs-runner.js
+      )",
+      token.c_str(), function.c_str());
 
   if (!host->IsRenderFrameLive())
     return content::EvalJsResult(base::Value(), "Error: frame has crashed.");
@@ -223,6 +333,13 @@ WebContentsInteractionTestUtil::DeepQuery::operator=(
   segments_ = segments;
   return *this;
 }
+WebContentsInteractionTestUtil::DeepQuery
+WebContentsInteractionTestUtil::DeepQuery::operator+(
+    const std::string& segment) const {
+  DeepQuery result(*this);
+  result.segments_.emplace_back(segment);
+  return result;
+}
 WebContentsInteractionTestUtil::DeepQuery::~DeepQuery() = default;
 
 WebContentsInteractionTestUtil::StateChange::StateChange() = default;
@@ -273,8 +390,7 @@ class WebContentsInteractionTestUtil::NewTabWatcher
 
     auto* const web_contents =
         change.GetInsert()->contents.front().contents.get();
-    CHECK(!browser_ ||
-          browser_ == chrome::FindBrowserWithWebContents(web_contents));
+    CHECK(!browser_ || browser_ == chrome::FindBrowserWithTab(web_contents));
     owner_->StartWatchingWebContents(web_contents);
   }
 
@@ -284,24 +400,20 @@ class WebContentsInteractionTestUtil::NewTabWatcher
 
 class WebContentsInteractionTestUtil::Poller {
  public:
-  Poller(WebContentsInteractionTestUtil* const owner,
-         const std::string& function,
-         const DeepQuery& where,
-         absl::optional<base::TimeDelta> timeout,
-         base::TimeDelta interval)
-      : function_(function),
-        where_(where),
-        interval_(interval),
-        timeout_(timeout),
+  Poller(WebContentsInteractionTestUtil* const owner, StateChange state_change)
+      : state_change_(std::move(state_change)),
+        js_query_(GetStateChangeQuery(state_change_)),
         owner_(owner) {}
 
   ~Poller() = default;
 
   void StartPolling() {
     CHECK(!timer_.IsRunning());
-    timer_.Start(FROM_HERE, interval_,
+    timer_.Start(FROM_HERE, state_change_.polling_interval,
                  base::BindRepeating(&Poller::Poll, base::Unretained(this)));
   }
+
+  const StateChange& state_change() const { return state_change_; }
 
  private:
   void Poll() {
@@ -311,46 +423,42 @@ class WebContentsInteractionTestUtil::Poller {
     if (is_polling_)
       return;
 
+    // If there is no page loaded, then there is nothing to poll.
+    if (!owner_->is_page_loaded()) {
+      CHECK(state_change_.continue_across_navigation)
+          << "Page discarded waiting for StateChange event "
+          << state_change_.event;
+      return;
+    }
+
     auto weak_ptr = weak_factory_.GetWeakPtr();
     base::WeakAutoReset is_polling_auto_reset(weak_ptr, &Poller::is_polling_,
                                               true);
 
-    base::Value result;
-    if (where_.empty()) {
-      result = owner_->Evaluate(function_);
-    } else if (function_.empty()) {
-      result = base::Value(owner_->Exists(where_));
-    } else {
-      result = owner_->EvaluateAt(where_, function_);
-    }
+    const base::Value result =
+        state_change_.where.empty()
+            ? owner_->Evaluate(js_query_)
+            : owner_->EvaluateAt(state_change_.where, js_query_);
 
     // At this point, weak_ptr might be invalid since we could have been deleted
     // while we were waiting for Evaluate[At]() to complete.
     if (weak_ptr) {
       if (IsTruthy(result)) {
-        owner_->OnPollEvent(this);
-      } else if (timeout_.has_value() &&
-                 elapsed_.Elapsed() > timeout_.value()) {
-        owner_->OnPollTimeout(this);
+        owner_->OnPollEvent(this, state_change_.event);
+      } else if (state_change_.timeout.has_value() &&
+                 elapsed_.Elapsed() > state_change_.timeout.value()) {
+        owner_->OnPollEvent(this, state_change_.timeout_event);
       }
     }
   }
 
   const base::ElapsedTimer elapsed_;
-  const std::string function_;
-  const DeepQuery where_;
-  const base::TimeDelta interval_;
-  const absl::optional<base::TimeDelta> timeout_;
+  const StateChange state_change_;
+  const std::string js_query_;
   const raw_ptr<WebContentsInteractionTestUtil> owner_;
   base::RepeatingTimer timer_;
   bool is_polling_ = false;
   base::WeakPtrFactory<Poller> weak_factory_{this};
-};
-
-struct WebContentsInteractionTestUtil::PollerData {
-  std::unique_ptr<Poller> poller;
-  ui::CustomElementEventType event;
-  ui::CustomElementEventType timeout_event;
 };
 
 // Class that tracks a WebView and its WebContents in a secondary UI.
@@ -562,7 +670,7 @@ std::unique_ptr<WebContentsInteractionTestUtil>
 WebContentsInteractionTestUtil::ForExistingTabInContext(
     ui::ElementContext context,
     ui::ElementIdentifier page_identifier,
-    absl::optional<int> tab_index) {
+    std::optional<int> tab_index) {
   return ForExistingTabInBrowser(
       InteractionTestUtilBrowser::GetBrowserFromContext(context),
       page_identifier, tab_index);
@@ -573,7 +681,7 @@ std::unique_ptr<WebContentsInteractionTestUtil>
 WebContentsInteractionTestUtil::ForExistingTabInBrowser(
     Browser* browser,
     ui::ElementIdentifier page_identifier,
-    absl::optional<int> tab_index) {
+    std::optional<int> tab_index) {
   return ForTabWebContents(GetWebContents(browser, tab_index), page_identifier);
 }
 
@@ -583,7 +691,7 @@ WebContentsInteractionTestUtil::ForTabWebContents(
     content::WebContents* web_contents,
     ui::ElementIdentifier page_identifier) {
   return base::WrapUnique(new WebContentsInteractionTestUtil(
-      web_contents, page_identifier, absl::nullopt, nullptr));
+      web_contents, page_identifier, std::nullopt, nullptr));
 }
 
 // static
@@ -592,7 +700,7 @@ WebContentsInteractionTestUtil::ForNonTabWebView(
     views::WebView* web_view,
     ui::ElementIdentifier page_identifier) {
   return base::WrapUnique(new WebContentsInteractionTestUtil(
-      web_view->GetWebContents(), page_identifier, absl::nullopt, web_view));
+      web_view->GetWebContents(), page_identifier, std::nullopt, web_view));
 }
 
 // static
@@ -679,7 +787,7 @@ void WebContentsInteractionTestUtil::LoadPageInNewTab(const GURL& url,
   // a wait state.
   Browser* browser = new_tab_watcher_
                          ? new_tab_watcher_->browser()
-                         : chrome::FindBrowserWithWebContents(web_contents());
+                         : chrome::FindBrowserWithTab(web_contents());
   CHECK(browser);
   NavigateParams navigate_params(browser, url, ui::PAGE_TRANSITION_TYPED);
   navigate_params.disposition = activate_tab
@@ -690,10 +798,18 @@ void WebContentsInteractionTestUtil::LoadPageInNewTab(const GURL& url,
 }
 
 base::Value WebContentsInteractionTestUtil::Evaluate(
-    const std::string& function) {
+    const std::string& function,
+    std::string* error_message) {
   CHECK(is_page_loaded());
   auto result = EvalJsLocal(web_contents(), function);
-  CHECK(result.error.empty()) << result.error;
+  if (!result.error.empty()) {
+    if (error_message) {
+      *error_message = result.error;
+      return base::Value();
+    } else {
+      NOTREACHED_NORETURN() << "Uncaught JS exception: " << result.error;
+    }
+  }
 
   // Despite the fact that EvalJsResult::value is const, base::Value in general
   // is moveable and nothing special is done on EvalJsResult destructor, which
@@ -733,36 +849,10 @@ void WebContentsInteractionTestUtil::SendEventOnElementMinimumSize(
 void WebContentsInteractionTestUtil::SendEventOnStateChange(
     const StateChange& configuration) {
   CHECK(current_element_);
-  CHECK(!configuration.where.empty() || !configuration.test_function.empty());
-  CHECK(configuration.event);
-  CHECK(configuration.timeout.has_value() || !configuration.timeout_event)
-      << "Cannot specify timeout event without timeout.";
 
-  // Determine the actual query we should use; for kConditionTrue we can use
-  // configuration.test_function directly, but for the other options we need to
-  // modify it.
-  std::string actual_func;
-  switch (configuration.type) {
-    case StateChange::Type::kExists:
-      DCHECK(configuration.test_function.empty());
-      actual_func = GetExistsQuery("false", "true");
-      break;
-    case StateChange::Type::kConditionTrue:
-      actual_func = configuration.test_function;
-      break;
-    case StateChange::Type::kExistsAndConditionTrue:
-      const std::string on_found = "(" + configuration.test_function + ")(el)";
-      actual_func = GetExistsQuery("false", on_found.c_str());
-      break;
-  }
-
-  PollerData poller_data{
-      std::make_unique<Poller>(this, actual_func, configuration.where,
-                               configuration.timeout,
-                               configuration.polling_interval),
-      configuration.event, configuration.timeout_event};
-  auto* const poller = poller_data.poller.get();
-  pollers_.emplace(poller, std::move(poller_data));
+  auto actual_config = ValidateAndInferStateChange(configuration);
+  const auto& poller = pollers_.emplace_back(
+      std::make_unique<Poller>(this, std::move(actual_config)));
   poller->StartPolling();
 }
 
@@ -778,9 +868,10 @@ bool WebContentsInteractionTestUtil::Exists(const DeepQuery& query,
 
 base::Value WebContentsInteractionTestUtil::EvaluateAt(
     const DeepQuery& where,
-    const std::string& function) {
+    const std::string& function,
+    std::string* error_message) {
   const std::string full_query = CreateDeepQuery(where, function);
-  return Evaluate(full_query);
+  return Evaluate(full_query, error_message);
 }
 
 void WebContentsInteractionTestUtil::ExecuteAt(const DeepQuery& where,
@@ -814,7 +905,7 @@ gfx::Rect WebContentsInteractionTestUtil::GetElementBoundsInScreen(
     DCHECK(web_view_data_->visible() && web_view_data_->web_view());
     web_view = web_view_data_->web_view();
   } else {
-    Browser* const browser = chrome::FindBrowserWithWebContents(web_contents());
+    Browser* const browser = chrome::FindBrowserWithTab(web_contents());
     if (!browser ||
         web_contents() != browser->tab_strip_model()->GetActiveWebContents()) {
       return gfx::Rect();
@@ -933,7 +1024,7 @@ void WebContentsInteractionTestUtil::OnTabStripModelChanged(
 WebContentsInteractionTestUtil::WebContentsInteractionTestUtil(
     content::WebContents* web_contents,
     ui::ElementIdentifier page_identifier,
-    absl::optional<Browser*> browser,
+    std::optional<Browser*> browser,
     views::WebView* web_view)
     : WebContentsObserver(web_contents), page_identifier_(page_identifier) {
   CHECK(page_identifier);
@@ -942,7 +1033,7 @@ WebContentsInteractionTestUtil::WebContentsInteractionTestUtil(
     // This is specifically for a web view that is not a tab.
     CHECK(web_contents);
     CHECK(!browser);
-    CHECK(!chrome::FindBrowserWithWebContents(web_contents));
+    CHECK(!chrome::FindBrowserWithTab(web_contents));
     web_view_data_ = std::make_unique<WebViewData>(this, web_view);
     web_view_data_->Init();
   } else if (browser.has_value()) {
@@ -968,7 +1059,7 @@ void WebContentsInteractionTestUtil::MaybeCreateElement(bool force) {
       return;
     context = web_view_data_->context();
   } else {
-    Browser* const browser = chrome::FindBrowserWithWebContents(web_contents());
+    Browser* const browser = chrome::FindBrowserWithTab(web_contents());
     if (!browser)
       return;
     context = browser->window()->GetElementContext();
@@ -991,38 +1082,34 @@ void WebContentsInteractionTestUtil::MaybeCreateElement(bool force) {
 
 void WebContentsInteractionTestUtil::DiscardCurrentElement() {
   current_element_.reset();
-  CHECK(pollers_.empty())
-      << "Unexpectedly left page while still waiting for event "
-      << pollers_.begin()->second.event.GetName();
-  pollers_.clear();
+  for (const auto& poller : pollers_) {
+    CHECK(poller->state_change().continue_across_navigation)
+        << "Unexpectedly left page while still waiting for StateChange event "
+        << poller->state_change().event;
+  }
 }
 
-void WebContentsInteractionTestUtil::OnPollTimeout(Poller* poller) {
-  CHECK(current_element_);
-  auto it = pollers_.find(poller);
+void WebContentsInteractionTestUtil::OnPollEvent(
+    Poller* poller,
+    ui::CustomElementEventType event) {
+  CHECK(current_element_)
+      << "StateChange succeeded (or failed) while no page was loaded; "
+         "this is always an error even if continue_across_navigation is true.";
+  const auto it =
+      std::find_if(pollers_.begin(), pollers_.end(),
+                   [poller](const auto& ptr) { return ptr.get() == poller; });
   CHECK(it != pollers_.end());
-  auto event = it->second.timeout_event;
   pollers_.erase(it);
-  CHECK(event) << "SendEventOnStateChange timed out, but no timeout event was "
-                  "specified.";
-  ui::ElementTracker::GetFrameworkDelegate()->NotifyCustomEvent(
-      current_element_.get(), event);
-}
-
-void WebContentsInteractionTestUtil::OnPollEvent(Poller* poller) {
-  CHECK(current_element_);
-  auto it = pollers_.find(poller);
-  CHECK(it != pollers_.end());
-  auto event = it->second.event;
-  pollers_.erase(it);
-  ui::ElementTracker::GetFrameworkDelegate()->NotifyCustomEvent(
-      current_element_.get(), event);
+  if (event) {
+    ui::ElementTracker::GetFrameworkDelegate()->NotifyCustomEvent(
+        current_element_.get(), event);
+  }
 }
 
 void WebContentsInteractionTestUtil::StartWatchingWebContents(
     content::WebContents* web_contents) {
   DCHECK(web_contents);
-  Browser* const browser = chrome::FindBrowserWithWebContents(web_contents);
+  Browser* const browser = chrome::FindBrowserWithTab(web_contents);
   CHECK(browser);
   browser->tab_strip_model()->AddObserver(this);
   if (new_tab_watcher_) {
@@ -1041,5 +1128,42 @@ extern std::ostream& operator<<(
     std::ostream& os,
     const WebContentsInteractionTestUtil::DeepQuery& deep_query) {
   PrintTo(deep_query, &os);
+  return os;
+}
+
+void PrintTo(const WebContentsInteractionTestUtil::StateChange& state_change,
+             std::ostream* os) {
+  using Type = WebContentsInteractionTestUtil::StateChange::Type;
+  *os << "{ ";
+  switch (state_change.type) {
+    case Type::kAuto:
+      *os << "kAuto";
+      break;
+    case Type::kExists:
+      *os << "kExists";
+      break;
+    case Type::kExistsAndConditionTrue:
+      *os << "kExistsAndConditionTrue";
+      break;
+    case Type::kConditionTrue:
+      *os << "kConditionTrue";
+      break;
+    case Type::kDoesNotExist:
+      *os << "kDoesNotExist";
+      break;
+  }
+
+  *os << ", test_function: \"" << state_change.test_function << "\""
+      << ", where: " << state_change.where << ", event: " << state_change.event
+      << ", continue_across_navigation: "
+      << (state_change.continue_across_navigation ? "true" : "false")
+      << ", timeout: " << state_change.timeout.value_or(base::TimeDelta())
+      << ", timeout_event: " << state_change.timeout_event << " }";
+}
+
+extern std::ostream& operator<<(
+    std::ostream& os,
+    const WebContentsInteractionTestUtil::StateChange& state_change) {
+  PrintTo(state_change, &os);
   return os;
 }

@@ -15,7 +15,7 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
 #include "chromeos/ash/components/dbus/cryptohome/rpc.pb.h"
-#include "chromeos/ash/components/dbus/userdataauth/install_attributes_util.h"
+#include "chromeos/ash/components/dbus/device_management/install_attributes_util.h"
 #include "chromeos/dbus/constants/dbus_paths.h"
 #include "chromeos/dbus/tpm_manager/tpm_manager_client.h"
 #include "components/policy/proto/install_attributes.pb.h"
@@ -37,7 +37,6 @@ void CopyLockResult(base::RunLoop* loop,
 
 static const char kTestDomain[] = "example.com";
 static const char kTestDeviceId[] = "133750519";
-static const char kTestUserDeprecated[] = "test@example.com";
 
 class InstallAttributesTest : public testing::Test {
  protected:
@@ -219,37 +218,15 @@ TEST_F(InstallAttributesTest, ConsumerKioskDevice) {
   ASSERT_TRUE(install_attributes_->IsConsumerKioskDeviceWithAutoLaunch());
 }
 
-TEST_F(InstallAttributesTest, DeviceLockedFromOlderVersion) {
-  install_attributes_->Init(GetTempPath());
-  EXPECT_EQ(policy::DEVICE_MODE_PENDING, install_attributes_->GetMode());
-  // Lock the attributes as if it was done from older Chrome version.
-  ASSERT_TRUE(install_attributes_util::InstallAttributesSet(
-      InstallAttributes::kAttrEnterpriseOwned, "true"));
-  ASSERT_TRUE(install_attributes_util::InstallAttributesSet(
-      InstallAttributes::kAttrEnterpriseUser, kTestUserDeprecated));
-  ASSERT_TRUE(install_attributes_util::InstallAttributesFinalize());
-  base::RunLoop loop;
-  install_attributes_->ReadImmutableAttributes(loop.QuitClosure());
-  loop.Run();
-
-  ASSERT_FALSE(install_attributes_util::InstallAttributesIsFirstInstall());
-  EXPECT_EQ(policy::DEVICE_MODE_ENTERPRISE, install_attributes_->GetMode());
-  EXPECT_EQ(kTestDomain, install_attributes_->GetDomain());
-  EXPECT_EQ(std::string(), install_attributes_->GetRealm());
-  EXPECT_EQ(std::string(), install_attributes_->GetDeviceId());
-}
-
 TEST_F(InstallAttributesTest, Init) {
   cryptohome::SerializedInstallAttributes install_attrs_proto;
   SetAttribute(&install_attrs_proto, InstallAttributes::kAttrEnterpriseOwned,
                "true");
-  SetAttribute(&install_attrs_proto, InstallAttributes::kAttrEnterpriseUser,
-               kTestUserDeprecated);
   const std::string blob(install_attrs_proto.SerializeAsString());
   ASSERT_TRUE(base::WriteFile(GetTempPath(), blob));
   install_attributes_->Init(GetTempPath());
   EXPECT_EQ(policy::DEVICE_MODE_ENTERPRISE, install_attributes_->GetMode());
-  EXPECT_EQ(kTestDomain, install_attributes_->GetDomain());
+  EXPECT_EQ(std::string(), install_attributes_->GetDomain());
   EXPECT_EQ(std::string(), install_attributes_->GetRealm());
   EXPECT_EQ(std::string(), install_attributes_->GetDeviceId());
 }
@@ -280,34 +257,34 @@ TEST_F(InstallAttributesTest, VerifyFakeInstallAttributesCache) {
   // Write test values.
   ASSERT_TRUE(install_attributes_util::InstallAttributesSet(
       InstallAttributes::kAttrEnterpriseOwned, "true"));
-  ASSERT_TRUE(install_attributes_util::InstallAttributesSet(
-      InstallAttributes::kAttrEnterpriseUser, kTestUserDeprecated));
   ASSERT_TRUE(install_attributes_util::InstallAttributesFinalize());
 
   // Verify that InstallAttributes correctly decodes the stub cache file.
   install_attributes_->Init(GetTempPath());
   EXPECT_EQ(policy::DEVICE_MODE_ENTERPRISE, install_attributes_->GetMode());
-  EXPECT_EQ(kTestDomain, install_attributes_->GetDomain());
+  EXPECT_EQ(std::string(), install_attributes_->GetDomain());
   EXPECT_EQ(std::string(), install_attributes_->GetRealm());
   EXPECT_EQ(std::string(), install_attributes_->GetDeviceId());
 }
 
 TEST_F(InstallAttributesTest, CheckSetBlockDevmodeInTpm) {
-  absl::optional<::user_data_auth::SetFirmwareManagementParametersReply> reply;
+  std::optional<::device_management::SetFirmwareManagementParametersReply>
+      reply;
   install_attributes_->SetBlockDevmodeInTpm(
-      true, base::BindOnce(
-                [](absl::optional<
-                       ::user_data_auth::SetFirmwareManagementParametersReply>*
-                       reply_ptr,
-                   absl::optional<
-                       ::user_data_auth::SetFirmwareManagementParametersReply>
-                       reply) { *reply_ptr = reply; },
-                &reply));
+      true,
+      base::BindOnce(
+          [](std::optional<
+                 ::device_management::SetFirmwareManagementParametersReply>*
+                 reply_ptr,
+             std::optional<
+                 ::device_management::SetFirmwareManagementParametersReply>
+                 reply) { *reply_ptr = reply; },
+          &reply));
   base::RunLoop().RunUntilIdle();
 
   ASSERT_TRUE(reply.has_value());
-  EXPECT_EQ(reply->error(),
-            ::user_data_auth::CryptohomeErrorCode::CRYPTOHOME_ERROR_NOT_SET);
+  EXPECT_EQ(reply->error(), ::device_management::DeviceManagementErrorCode::
+                                DEVICE_MANAGEMENT_ERROR_NOT_SET);
 }
 
 TEST_F(InstallAttributesTest, ConsistencyCheckTriggeredWithTpmPassword) {

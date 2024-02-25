@@ -9,6 +9,7 @@ import("//components/feed/features.gni")
 android_resources("chrome_feed_java_resources") {
   sources = [
     "core/java/res/values-night/colors.xml",
+    "core/java/res/values-sw600dp/dimens.xml",
     "core/java/res/values/attrs.xml",
     "core/java/res/values/colors.xml",
     "core/java/res/values/dimens.xml",

@@ -16,9 +16,7 @@
 #include "content/public/browser/web_ui.h"
 #include "content/public/browser/web_ui_data_source.h"
 
-namespace ash {
-
-namespace multidevice {
+namespace ash::multidevice {
 
 ProximityAuthUI::ProximityAuthUI(
     content::WebUI* web_ui,
@@ -54,6 +52,4 @@ void ProximityAuthUI::BindInterface(
 
 WEB_UI_CONTROLLER_TYPE_IMPL(ProximityAuthUI)
 
-}  // namespace multidevice
-
-}  // namespace ash
+}  // namespace ash::multidevice

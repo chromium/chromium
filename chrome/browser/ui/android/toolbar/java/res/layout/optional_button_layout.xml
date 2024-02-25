@@ -15,12 +15,13 @@ found in the LICENSE file.
         style="@style/ToolbarButton"
         android:scaleType="fitXY"
         android:id="@+id/swappable_icon_secondary_background"
-        android:paddingStart="@dimen/toolbar_phone_optional_button_background_start_padding"
+        android:paddingStart="@dimen/toolbar_phone_optional_button_background_padding"
+        android:paddingEnd="@dimen/toolbar_phone_optional_button_background_padding"
         android:paddingVertical="@dimen/toolbar_phone_optional_button_background_vertical_padding"
         android:layout_gravity="center"
         android:visibility="gone"
         android:importantForAccessibility="no" />
-    <org.chromium.components.browser_ui.widget.listmenu.ListMenuButton
+    <org.chromium.ui.listmenu.ListMenuButton
         android:layout_width="match_parent"
         android:scaleType="fitStart"
         android:id="@+id/optional_toolbar_button"

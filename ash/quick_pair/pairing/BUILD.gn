@@ -31,6 +31,7 @@ source_set("pairing") {
     "//base",
     "//chromeos/ash/services/quick_pair",
     "//chromeos/ash/services/quick_pair/public/cpp",
+    "//components/cross_device/logging:logging",
     "//crypto:crypto",
     "//device/bluetooth",
     "//third_party/protobuf:protobuf_lite",

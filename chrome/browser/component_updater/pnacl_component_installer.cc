@@ -7,6 +7,7 @@
 #include <stdint.h>
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <utility>
 #include <vector>
@@ -31,11 +32,11 @@
 #include "chrome/common/chrome_paths.h"
 #include "components/component_updater/component_installer.h"
 #include "components/component_updater/component_updater_service.h"
+#include "components/component_updater/component_updater_utils.h"
 #include "components/nacl/common/nacl_switches.h"
 #include "components/update_client/update_query_params.h"
 #include "components/update_client/utils.h"
 #include "content/public/browser/browser_thread.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 #if BUILDFLAG(IS_WIN)
 #include "base/win/windows_version.h"
@@ -95,25 +96,28 @@ void OverrideDirPnaclComponent(const base::FilePath& base_path) {
                               GetPlatformDir(base_path));
 }
 
-absl::optional<base::Value::Dict> ReadJSONManifest(
+std::optional<base::Value::Dict> ReadJSONManifest(
     const base::FilePath& manifest_path) {
   JSONFileValueDeserializer deserializer(manifest_path);
   std::string error;
   std::unique_ptr<base::Value> root = deserializer.Deserialize(nullptr, &error);
-  if (!root.get())
-    return absl::nullopt;
-  if (!root->is_dict())
-    return absl::nullopt;
+  if (!root.get()) {
+    return std::nullopt;
+  }
+  if (!root->is_dict()) {
+    return std::nullopt;
+  }
   return std::move(*root).TakeDict();
 }
 
 // Read the PNaCl specific manifest.
-absl::optional<base::Value::Dict> ReadPnaclManifest(
+std::optional<base::Value::Dict> ReadPnaclManifest(
     const base::FilePath& unpack_path) {
   base::FilePath manifest_path =
       GetPlatformDir(unpack_path).AppendASCII("pnacl_public_pnacl_json");
-  if (!base::PathExists(manifest_path))
-    return absl::nullopt;
+  if (!base::PathExists(manifest_path)) {
+    return std::nullopt;
+  }
   return ReadJSONManifest(manifest_path);
 }
 
@@ -216,7 +220,7 @@ void PnaclComponentInstallerPolicy::OnCustomUninstall() {}
 bool PnaclComponentInstallerPolicy::VerifyInstallation(
     const base::Value::Dict& manifest,
     const base::FilePath& install_dir) const {
-  if (absl::optional<base::Value::Dict> pnacl_manifest =
+  if (std::optional<base::Value::Dict> pnacl_manifest =
           ReadPnaclManifest(install_dir)) {
     return CheckPnaclComponentManifest(manifest, *pnacl_manifest);
   } else {
@@ -259,6 +263,13 @@ void RegisterPnaclComponent(ComponentUpdateService* cus) {
   auto installer = base::MakeRefCounted<ComponentInstaller>(
       std::make_unique<PnaclComponentInstallerPolicy>());
   installer->Register(cus, base::OnceClosure());
+}
+
+void DeletePnaclComponent(const base::FilePath& user_data_dir) {
+  base::ThreadPool::PostTask(
+      FROM_HERE, {base::TaskPriority::BEST_EFFORT, base::MayBlock()},
+      base::BindOnce(base::IgnoreResult(&base::DeletePathRecursively),
+                     user_data_dir.Append(FILE_PATH_LITERAL("pnacl"))));
 }
 
 }  // namespace component_updater

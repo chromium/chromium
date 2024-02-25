@@ -24,6 +24,8 @@
 #include "chrome/browser/ui/webui/signin/signin_utils.h"
 #include "components/signin/public/base/consent_level.h"
 #include "components/signin/public/base/signin_buildflags.h"
+#include "components/signin/public/base/signin_metrics.h"
+#include "components/signin/public/base/signin_switches.h"
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "content/public/browser/navigation_entry.h"
@@ -247,7 +249,7 @@ void SigninViewController::ShowModalSyncConfirmationDialog(
       GetOnModalDialogClosedCallback());
 }
 
-void SigninViewController::ShowModalEnterpriseConfirmationDialog(
+void SigninViewController::ShowModalManagedUserNoticeDialog(
     const AccountInfo& account_info,
     bool force_new_profile,
     bool show_link_data_option,
@@ -256,12 +258,12 @@ void SigninViewController::ShowModalEnterpriseConfirmationDialog(
     BUILDFLAG(IS_CHROMEOS_LACROS)
   CloseModalSignin();
   dialog_ = std::make_unique<SigninModalDialogImpl>(
-      SigninViewControllerDelegate::CreateEnterpriseConfirmationDelegate(
+      SigninViewControllerDelegate::CreateManagedUserNoticeDelegate(
           browser_, account_info, force_new_profile, show_link_data_option,
           std::move(callback)),
       GetOnModalDialogClosedCallback());
 #else
-  NOTREACHED() << "Enterprise confirmation dialog modal not supported";
+  NOTREACHED() << "Managed user notice dialog modal not supported";
 #endif
 }
 
@@ -331,13 +333,14 @@ void SigninViewController::ShowDiceSigninTab(
   // error 400. This seems to happen in particular if the continue URL is not a
   // Google-owned domain. Chrome cannot enforce that only valid URLs are used,
   // because the set of valid URLs is not specified.
-  std::string continue_url =
+  GURL continue_url =
       (redirect_url.is_empty() || !redirect_url.SchemeIsHTTPOrHTTPS())
-          ? UIThreadSearchTermsData().GoogleBaseURLValue()
-          : redirect_url.spec();
+          ? GURL(UIThreadSearchTermsData().GoogleBaseURLValue())
+          : redirect_url;
 
   GURL signin_url =
-      signin_reason == signin_metrics::Reason::kAddSecondaryAccount
+      (signin_reason == signin_metrics::Reason::kAddSecondaryAccount ||
+       signin_reason == signin_metrics::Reason::kReauthentication)
           ? signin::GetAddAccountURLForDice(email_hint, continue_url)
           : signin::GetChromeSyncURLForDice({email_hint, continue_url});
 
@@ -386,6 +389,7 @@ void SigninViewController::ShowDiceSigninTab(
       signin_url, access_point, signin_reason, promo_action, redirect_url,
       /*record_signin_started_metrics=*/true,
       DiceTabHelper::GetEnableSyncCallbackForBrowser(),
+      DiceTabHelper::OnSigninHeaderReceived(),
       DiceTabHelper::GetShowSigninErrorCallbackForBrowser());
 }
 
@@ -398,6 +402,7 @@ void SigninViewController::ShowDiceEnableSyncTab(
   signin::IdentityManager* identity_manager =
       IdentityManagerFactory::GetForProfile(browser_->profile());
   if (identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSync)) {
+    // Avoids asking for the Sync consent as it has been already given.
     reason = signin_metrics::Reason::kReauthentication;
     email_to_use =
         identity_manager->GetPrimaryAccountInfo(signin::ConsentLevel::kSync)
@@ -411,7 +416,18 @@ void SigninViewController::ShowDiceEnableSyncTab(
 void SigninViewController::ShowDiceAddAccountTab(
     signin_metrics::AccessPoint access_point,
     const std::string& email_hint) {
-  ShowDiceSigninTab(signin_metrics::Reason::kAddSecondaryAccount, access_point,
+  signin_metrics::Reason reason = signin_metrics::Reason::kAddSecondaryAccount;
+  signin::IdentityManager* identity_manager =
+      IdentityManagerFactory::GetForProfile(browser_->profile());
+  if (!email_hint.empty() &&
+      !identity_manager->FindExtendedAccountInfoByEmailAddress(email_hint)
+           .IsEmpty()) {
+    // Use more precise `signin_metrics::Reason` if we know that it's a reauth.
+    // This only has an impact on metrics.
+    reason = signin_metrics::Reason::kReauthentication;
+  }
+
+  ShowDiceSigninTab(reason, access_point,
                     signin_metrics::PromoAction::PROMO_ACTION_NO_SIGNIN_PROMO,
                     email_hint, /*redirect_url=*/GURL());
 }
@@ -426,10 +442,17 @@ void SigninViewController::ShowGaiaLogoutTab(
     contents->Focus();
   }
 
+  // Pass a continue URL when the Web Signin Intercept bubble is shown, so that
+  // the bubble and the app picker do not overlap. If the bubble is not shown,
+  // open the app picker in case the user is lost.
+  GURL logout_url =
+      switches::IsExplicitBrowserSigninUIOnDesktopEnabled(
+          switches::ExplicitBrowserSigninPhase::kExperimental)
+          ? GaiaUrls::GetInstance()->LogOutURLWithContinueURL(GURL())
+          : GaiaUrls::GetInstance()->service_logout_url();
   // Do not use a singleton tab. A new tab should be opened even if there is
   // already a logout tab.
-  ShowTabOverwritingNTP(browser_,
-                        GaiaUrls::GetInstance()->service_logout_url());
+  ShowTabOverwritingNTP(browser_, logout_url);
 
   // Monitor the logout and fallback to local signout if it fails. The
   // LogoutTabHelper deletes itself.

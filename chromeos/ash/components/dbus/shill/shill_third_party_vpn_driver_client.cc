@@ -96,7 +96,7 @@ class ShillThirdPartyVpnDriverClientImpl
 
    private:
     ShillClientHelper helper_;
-    raw_ptr<ShillThirdPartyVpnObserver, ExperimentalAsh> observer_;
+    raw_ptr<ShillThirdPartyVpnObserver> observer_;
 
     base::WeakPtrFactory<HelperInfo> weak_ptr_factory_{this};
   };
@@ -125,7 +125,7 @@ class ShillThirdPartyVpnDriverClientImpl
   // Deletes the helper object corresponding to |object_path|.
   void DeleteHelper(const dbus::ObjectPath& object_path);
 
-  raw_ptr<dbus::Bus, ExperimentalAsh> bus_;
+  raw_ptr<dbus::Bus> bus_;
   HelperMap helpers_;
   std::set<std::string> valid_keys_;
 };
@@ -263,8 +263,7 @@ void ShillThirdPartyVpnDriverClientImpl::SendPacket(
   dbus::MessageWriter writer(&method_call);
   static_assert(sizeof(uint8_t) == sizeof(char),
                 "Can't reinterpret ip_packet if char is not 8 bit large.");
-  writer.AppendArrayOfBytes(reinterpret_cast<const uint8_t*>(ip_packet.data()),
-                            ip_packet.size());
+  writer.AppendArrayOfBytes(base::as_byte_span(ip_packet));
   GetHelper(object_path_value)
       ->CallVoidMethodWithErrorCallback(&method_call, std::move(callback),
                                         std::move(error_callback));

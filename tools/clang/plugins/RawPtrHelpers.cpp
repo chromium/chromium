@@ -28,7 +28,7 @@ bool FilterFile::ContainsSubstringOf(llvm::StringRef string_to_match) const {
     std::vector<std::string> regex_escaped_exclusion_file_lines;
     regex_escaped_inclusion_file_lines.reserve(file_lines_.size());
     for (const llvm::StringRef& file_line : file_lines_.keys()) {
-      if (file_line.startswith("!")) {
+      if (file_line.starts_with("!")) {
         regex_escaped_exclusion_file_lines.push_back(
             llvm::Regex::escape(file_line.substr(1)));
       } else {
@@ -110,54 +110,37 @@ clang::ast_matchers::internal::Matcher<clang::QualType> StackAllocatedQualType(
 // RAW_PTR_EXCLUSION
 // - located under third_party/ except under third_party/blink as Blink
 // is part of chromium git repo.
+//
+// Additionally, if |options.should_exclude_stack_allocated_records|,
+// - Pointer pointing to a STACK_ALLOCATED() object.
+// - Pointer that are a member of STACK_ALLOCATED() object.
+//    struct Foo {
+//      STACK_ALLOCATED();
+//      int*         ptr2; // isDeclaredInStackAllocated(...)
+//    }
+//    struct Bar {
+//      Foo*         ptr2; // hasDescendant(StackAllocatedQualType(...))
+//    }
 clang::ast_matchers::internal::Matcher<clang::NamedDecl> PtrAndRefExclusions(
     const RawPtrAndRefExclusionsOptions& options) {
-  if (!options.fix_crbug_1449812) {
-    // Before fix for crbug.com/1449812
-    // - File exclusion is performed based on the `SourceLocation` obtained
-    //   via `getBeginLoc()`.
-    // - System header check is based on expansion location.
-    if (!options.should_exclude_stack_allocated_records) {
-      return anyOf(
-          isExpansionInSystemHeader(), isInExternCContext(),
-          isRawPtrExclusionAnnotated(), isBeginInThirdPartyLocation(),
-          isBeginInGeneratedLocation(),
-          isBeginInLocationListedInFilterFile(options.paths_to_exclude),
-          isFieldDeclListedInFilterFile(options.fields_to_exclude),
-          ImplicitFieldDeclaration(), isObjCSynthesize());
-    } else {
-      return anyOf(
-          isExpansionInSystemHeader(), isInExternCContext(),
-          isRawPtrExclusionAnnotated(), isBeginInThirdPartyLocation(),
-          isBeginInGeneratedLocation(),
-          isBeginInLocationListedInFilterFile(options.paths_to_exclude),
-          isFieldDeclListedInFilterFile(options.fields_to_exclude),
-          ImplicitFieldDeclaration(), isObjCSynthesize(),
-          hasDescendant(
-              StackAllocatedQualType(options.stack_allocated_predicate)));
-    }
+  if (!options.should_exclude_stack_allocated_records) {
+    return anyOf(isSpellingInSystemHeader(), isInExternCContext(),
+                 isRawPtrExclusionAnnotated(), isInThirdPartyLocation(),
+                 isInGeneratedLocation(), isNotSpelledInSource(),
+                 isInLocationListedInFilterFile(options.paths_to_exclude),
+                 isFieldDeclListedInFilterFile(options.fields_to_exclude),
+                 ImplicitFieldDeclaration(), isObjCSynthesize());
   } else {
-    // After fix for crbug.com/1449812
-    // - File exclusion is performed based on the `SourceLocation` obtained
-    //   via `getLocation()`.
-    // - System header check is based on spelling location.
-    if (!options.should_exclude_stack_allocated_records) {
-      return anyOf(isSpellingInSystemHeader(), isInExternCContext(),
-                   isRawPtrExclusionAnnotated(), isInThirdPartyLocation(),
-                   isInGeneratedLocation(), isNotSpelledInSource(),
-                   isInLocationListedInFilterFile(options.paths_to_exclude),
-                   isFieldDeclListedInFilterFile(options.fields_to_exclude),
-                   ImplicitFieldDeclaration(), isObjCSynthesize());
-    } else {
-      return anyOf(isSpellingInSystemHeader(), isInExternCContext(),
-                   isRawPtrExclusionAnnotated(), isInThirdPartyLocation(),
-                   isInGeneratedLocation(), isNotSpelledInSource(),
-                   isInLocationListedInFilterFile(options.paths_to_exclude),
-                   isFieldDeclListedInFilterFile(options.fields_to_exclude),
-                   ImplicitFieldDeclaration(), isObjCSynthesize(),
-                   hasDescendant(StackAllocatedQualType(
-                       options.stack_allocated_predicate)));
-    }
+    return anyOf(
+        isSpellingInSystemHeader(), isInExternCContext(),
+        isRawPtrExclusionAnnotated(), isInThirdPartyLocation(),
+        isInGeneratedLocation(), isNotSpelledInSource(),
+        isInLocationListedInFilterFile(options.paths_to_exclude),
+        isFieldDeclListedInFilterFile(options.fields_to_exclude),
+        ImplicitFieldDeclaration(), isObjCSynthesize(),
+        hasDescendant(
+            StackAllocatedQualType(options.stack_allocated_predicate)),
+        isDeclaredInStackAllocated(*options.stack_allocated_predicate));
   }
 }
 
@@ -197,23 +180,12 @@ clang::ast_matchers::internal::Matcher<clang::Decl> AffectedRawPtrFieldDecl(
       fieldDecl(hasType(pointerType(pointee(qualType(allOf(
           isConstQualified(), hasUnqualifiedDesugaredType(anyCharType())))))));
 
-  if (!options.fix_crbug_1449812) {
-    auto field_decl_matcher =
-        fieldDecl(allOf(hasType(supported_pointer_types_matcher),
-                        unless(anyOf(const_char_pointer_matcher,
-                                     isBeginInScratchSpace(),
-                                     PtrAndRefExclusions(options)))))
-            .bind("affectedFieldDecl");
-    return field_decl_matcher;
-  } else {
-    // `isBeginInScratchSpace()` check is done inside `PtrAndRefExclusions`.
     auto field_decl_matcher =
         fieldDecl(allOf(hasType(supported_pointer_types_matcher),
                         unless(anyOf(const_char_pointer_matcher,
                                      PtrAndRefExclusions(options)))))
             .bind("affectedFieldDecl");
     return field_decl_matcher;
-  }
 }
 
 clang::ast_matchers::internal::Matcher<clang::Decl> AffectedRawRefFieldDecl(
@@ -301,6 +273,109 @@ RawPtrToStackAllocatedTypeLoc(
                               0, refersToType(pointee_type)))))))))
           .bind("stackAllocatedRawPtrTypeLoc");
   return stack_allocated_rawptr_type_loc;
+}
+
+clang::ast_matchers::internal::Matcher<clang::Stmt> BadRawPtrCastExpr(
+    const CastingUnsafePredicate& casting_unsafe_predicate,
+    const FilterFile& exclude_files,
+    const FilterFile& exclude_functions) {
+  // Matches anything contains |raw_ptr<T>| / |raw_ref<T>|.
+  auto src_type =
+      type(isCastingUnsafe(casting_unsafe_predicate)).bind("srcType");
+  auto dst_type =
+      type(isCastingUnsafe(casting_unsafe_predicate)).bind("dstType");
+  // Matches |static_cast| on pointers, all |bit_cast|
+  // and all |reinterpret_cast|.
+  auto cast_kind = castExpr(anyOf(hasCastKind(clang::CK_BitCast),
+                                  hasCastKind(clang::CK_LValueBitCast),
+                                  hasCastKind(clang::CK_LValueToRValueBitCast),
+                                  hasCastKind(clang::CK_PointerToIntegral),
+                                  hasCastKind(clang::CK_IntegralToPointer)));
+
+  // Matches implicit casts happening in invocation inside template context.
+  //   void f(int v);
+  //   void f(void* p);
+  //   template <typename T>
+  //   void call_f(T t) { f(t); }
+  //                        ^ implicit cast here if |T| = |int*|
+  // We exclude this cast from check because we cannot apply
+  // |base::unsafe_raw_ptr_*_cast<void*>(t)| here.
+  auto in_template_invocation_ctx = implicitCastExpr(
+      allOf(isInTemplateInstantiation(), hasParent(invocation())));
+
+  // Matches implicit casts happening in comparison.
+  //   int* x;
+  //   void* y;
+  //   if (x < y) f();
+  //       ^~~~~ |x| is implicit casted into |void*| here
+  // This cast is guaranteed to be safe because it cannot break ref count.
+  auto in_comparison_ctx =
+      implicitCastExpr(hasParent(binaryOperator(isComparisonOperator())));
+
+  // Matches implicit casts happening in invocation to allow-listed
+  // declarations.
+  auto in_allowlisted_invocation_ctx =
+      implicitCastExpr(hasParent(invocation(hasDeclaration(
+          namedDecl(isFieldDeclListedInFilterFile(&exclude_functions))))));
+
+  // Matches casts to const pointer types pointing to built-in types.
+  // e.g. matches |const char*| and |const void*| but neither |const int**| nor
+  // |int* const*|.
+  // They are safe as long as const qualifier is kept because const means we
+  // shouldn't be writing to the memory and won't mutate the value in a way that
+  // causes BRP's refcount inconsistency.
+  auto const_builtin_pointer_type =
+      type(hasUnqualifiedDesugaredType(pointerType(
+          pointee(qualType(allOf(isConstQualified(), builtinType()))))));
+  auto cast_expr_to_const_pointer = anyOf(
+      implicitCastExpr(hasImplicitDestinationType(const_builtin_pointer_type)),
+      explicitCastExpr(hasDestinationType(const_builtin_pointer_type)));
+
+  // Unsafe castings are allowed if:
+  // - In locations developers have no control
+  //   - In system headers
+  //   - In third party libraries
+  //   - In non-source locations (e.g. <scratch space>)
+  //   - In separate repository locations (e.g. //internal)
+  // - In locations that are likely to be safe
+  //   - In pointer comparison context
+  //   - In allowlisted function/constructor invocations
+  //   - To const-qualified void/char pointers
+  // - In cases that the cast is indispensable and developers can guarantee it
+  //   will not break BRP's refcount
+  //   - In |base::unsafe_raw_ptr_static_cast<T>(...)|
+  //   - In |base::unsafe_raw_ptr_reinterpret_cast<T>(...)|
+  //   - In |base::unsafe_raw_ptr_bit_cast<T>(...)|
+  // - In cases that the cast is indispensable but developers cannot use the
+  //   cast exclusion listed above
+  //   - Implicit casts inside template context as there can be multiple
+  //     destination types depending on how template is instantiated
+  auto exclusions =
+      anyOf(isSpellingInSystemHeader(), isInThirdPartyLocation(),
+            isNotSpelledInSource(),
+            isInLocationListedInFilterFile(&exclude_files), in_comparison_ctx,
+            in_allowlisted_invocation_ctx, cast_expr_to_const_pointer,
+            isInRawPtrCastHeader(), in_template_invocation_ctx);
+
+  // To correctly display the error location, bind enclosing castExpr if
+  // available.
+  auto enclosingCastExpr = hasEnclosingExplicitCastExpr(
+      explicitCastExpr().bind("enclosingCastExpr"));
+
+  // Implicit/explicit casting from/to |raw_ptr<T>| matches.
+  // Both casting direction is unsafe.
+  //   https://godbolt.org/z/zqKMzcKfo
+  // |__bit/bit_cast.h| header is configured to bypass exclusions to perform
+  // checking on |std::bit_cast<T>|.
+  auto cast_matcher =
+      castExpr(
+          allOf(anyOf(hasSourceExpression(hasType(src_type)),
+                      implicitCastExpr(hasImplicitDestinationType(dst_type)),
+                      explicitCastExpr(hasDestinationType(dst_type))),
+                cast_kind, optionally(enclosingCastExpr),
+                anyOf(isInStdBitCastHeader(), unless(exclusions))))
+          .bind("castExpr");
+  return cast_matcher;
 }
 
 // If |field_decl| declares a field in an implicit template specialization, then

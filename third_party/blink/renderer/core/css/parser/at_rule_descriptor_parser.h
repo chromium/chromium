@@ -32,6 +32,9 @@ class AtRuleDescriptorParser {
   static CSSValue* ParseFontFaceDescriptor(AtRuleDescriptorID,
                                            const String& value,
                                            const CSSParserContext&);
+  static CSSValue* ParseFontFaceDescriptor(AtRuleDescriptorID,
+                                           const CSSTokenizedValue&,
+                                           const CSSParserContext&);
   static CSSValue* ParseFontFaceDeclaration(CSSParserTokenRange&,
                                             const CSSParserContext&);
   static CSSValue* ParseAtPropertyDescriptor(AtRuleDescriptorID,
@@ -43,9 +46,9 @@ class AtRuleDescriptorParser {
   static CSSValue* ParseAtFontPaletteValuesDescriptor(AtRuleDescriptorID,
                                                       CSSParserTokenRange&,
                                                       const CSSParserContext&);
-  static CSSValue* ParseAtViewTransitionsDescriptor(AtRuleDescriptorID,
-                                                    CSSParserTokenRange&,
-                                                    const CSSParserContext&);
+  static CSSValue* ParseAtViewTransitionDescriptor(AtRuleDescriptorID,
+                                                   CSSParserTokenRange&,
+                                                   const CSSParserContext&);
 };
 
 }  // namespace blink

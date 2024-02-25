@@ -168,16 +168,7 @@ void NetErrorTabHelper::SetIsShowingDownloadButtonInErrorPage(
 void NetErrorTabHelper::ShowPortalSignin() {
   // TODO(b/247618374): Lacros implementation.
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  if (!ash::features::IsCaptivePortalErrorPageEnabled()) {
-    net_error_page_support_.ReportBadMessage(
-        "Captive Portal Error Page feature not enabled");
-    return;
-  }
-  if (!portal_signin_controller_) {
-    portal_signin_controller_ =
-        std::make_unique<ash::NetworkPortalSigninController>();
-  }
-  portal_signin_controller_->ShowSignin(
+  ash::NetworkPortalSigninController::Get()->ShowSignin(
       ash::NetworkPortalSigninController::SigninSource::kErrorPage);
 #endif
 }

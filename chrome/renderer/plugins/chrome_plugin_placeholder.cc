@@ -11,6 +11,7 @@
 #include "base/command_line.h"
 #include "base/feature_list.h"
 #include "base/memory/ptr_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/metrics/user_metrics_action.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
@@ -78,12 +79,14 @@ class PlaceholderSet : public base::SupportsUserData::Data {
     return set;
   }
 
-  std::set<ChromePluginPlaceholder*>& placeholders() { return placeholders_; }
+  std::set<raw_ptr<ChromePluginPlaceholder, SetExperimental>>& placeholders() {
+    return placeholders_;
+  }
 
  private:
   PlaceholderSet() = default;
 
-  std::set<ChromePluginPlaceholder*> placeholders_;
+  std::set<raw_ptr<ChromePluginPlaceholder, SetExperimental>> placeholders_;
 };
 
 }  // namespace
@@ -94,9 +97,8 @@ gin::WrapperInfo ChromePluginPlaceholder::kWrapperInfo = {
 ChromePluginPlaceholder::ChromePluginPlaceholder(
     content::RenderFrame* render_frame,
     const blink::WebPluginParams& params,
-    const std::string& html_data,
     const std::u16string& title)
-    : plugins::LoadablePluginPlaceholder(render_frame, params, html_data),
+    : plugins::LoadablePluginPlaceholder(render_frame, params),
       status_(chrome::mojom::PluginStatus::kAllowed),
       title_(title) {
   RenderThread::Get()->AddObserver(this);
@@ -136,8 +138,10 @@ ChromePluginPlaceholder* ChromePluginPlaceholder::CreateLoadableMissingPlugin(
   std::string html_data = webui::GetI18nTemplateHtml(template_html, values);
 
   // Will destroy itself when its WebViewPlugin is going away.
-  return new ChromePluginPlaceholder(render_frame, params, html_data,
-                                     params.mime_type.Utf16());
+  auto* placeholder = new ChromePluginPlaceholder(render_frame, params,
+                                                  params.mime_type.Utf16());
+  placeholder->Init(html_data);
+  return placeholder;
 }
 
 // static
@@ -170,8 +174,8 @@ ChromePluginPlaceholder* ChromePluginPlaceholder::CreateBlockedPlugin(
 
   // |blocked_plugin| will destroy itself when its WebViewPlugin is going away.
   ChromePluginPlaceholder* blocked_plugin =
-      new ChromePluginPlaceholder(render_frame, params, html_data, name);
-
+      new ChromePluginPlaceholder(render_frame, params, name);
+  blocked_plugin->Init(html_data);
   blocked_plugin->SetPluginInfo(info);
   blocked_plugin->SetIdentifier(identifier);
 
@@ -184,8 +188,9 @@ void ChromePluginPlaceholder::ForEach(
     const base::RepeatingCallback<void(ChromePluginPlaceholder*)>& callback) {
   PlaceholderSet* set = PlaceholderSet::Get(render_frame);
   if (set) {
-    for (auto* placeholder : set->placeholders())
+    for (ChromePluginPlaceholder* placeholder : set->placeholders()) {
       callback.Run(placeholder);
+    }
   }
 }
 
@@ -204,7 +209,10 @@ void ChromePluginPlaceholder::PluginListChanged() {
   chrome::mojom::PluginInfoPtr plugin_info = chrome::mojom::PluginInfo::New();
   std::string mime_type(GetPluginParams().mime_type.Utf8());
 
-  ChromeContentRendererClient::GetPluginInfoHost()->GetPluginInfo(
+  mojo::AssociatedRemote<chrome::mojom::PluginInfoHost> plugin_info_host;
+  render_frame()->GetRemoteAssociatedInterfaces()->GetInterface(
+      &plugin_info_host);
+  plugin_info_host->GetPluginInfo(
       GetPluginParams().url,
       render_frame()->GetWebFrame()->Top()->GetSecurityOrigin(), mime_type,
       &plugin_info);

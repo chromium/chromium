@@ -76,11 +76,11 @@ gfx::OverlayTransform GetOverlayTransform(const gfx::Transform& quad_transform,
   else if (x_to == AXIS_POS_X && y_to == AXIS_NEG_Y)
     return gfx::OVERLAY_TRANSFORM_FLIP_VERTICAL;
   else if (x_to == AXIS_NEG_Y && y_to == AXIS_POS_X)
-    return gfx::OVERLAY_TRANSFORM_ROTATE_270;
+    return gfx::OVERLAY_TRANSFORM_ROTATE_CLOCKWISE_270;
   else if (x_to == AXIS_NEG_X && y_to == AXIS_NEG_Y)
-    return gfx::OVERLAY_TRANSFORM_ROTATE_180;
+    return gfx::OVERLAY_TRANSFORM_ROTATE_CLOCKWISE_180;
   else if (x_to == AXIS_POS_Y && y_to == AXIS_NEG_X)
-    return gfx::OVERLAY_TRANSFORM_ROTATE_90;
+    return gfx::OVERLAY_TRANSFORM_ROTATE_CLOCKWISE_90;
   else
     return gfx::OVERLAY_TRANSFORM_INVALID;
 }
@@ -112,31 +112,11 @@ OverlayCandidate::CandidateStatus GetReasonForTransformNotAxisAligned(
 
 // Returns true if the overlay candidate bounds rect overlap with at least one
 // of the rounded corners bounding rects.
-//
-// TODO(crbug.com/1462171): This method shares some logic with
-// DirectRenderer::ShouldApplyRoundedCorner(). Try to move it
-// to a shared location.
 bool ShouldApplyRoundedCorner(OverlayCandidate& candidate,
-                              const SharedQuadState* sqs) {
-  const gfx::MaskFilterInfo& mask_filter_info = sqs->mask_filter_info;
-  if (!mask_filter_info.HasRoundedCorners()) {
-    return false;
-  }
-
-  const gfx::RRectF& rounded_corner_bounds =
-      mask_filter_info.rounded_corner_bounds();
-
-  const gfx::RectF target_rect = candidate.display_rect;
-
-  const gfx::RRectF::Corner corners[] = {
-      gfx::RRectF::Corner::kUpperLeft, gfx::RRectF::Corner::kUpperRight,
-      gfx::RRectF::Corner::kLowerRight, gfx::RRectF::Corner::kLowerLeft};
-  for (auto c : corners) {
-    if (rounded_corner_bounds.CornerBoundingRect(c).Intersects(target_rect)) {
-      return true;
-    }
-  }
-  return false;
+                              const DrawQuad* quad) {
+  const gfx::RectF target_rect =
+      OverlayCandidate::DisplayRectInTargetSpace(candidate);
+  return QuadRoundedCornersBoundsIntersects(quad, target_rect);
 }
 
 }  // namespace
@@ -168,9 +148,7 @@ OverlayCandidate::CandidateStatus OverlayCandidateFactory::FromDrawQuad(
     return CandidateStatus::kFailBlending;
   }
 
-  if (!sqs->mask_filter_info.IsEmpty() &&
-      (!context_.supports_mask_filter ||
-       sqs->mask_filter_info.HasGradientMask())) {
+  if (sqs->mask_filter_info.HasGradientMask()) {
     return CandidateStatus::kFailMaskFilterNotSupported;
   }
 
@@ -215,7 +193,11 @@ OverlayCandidate::CandidateStatus OverlayCandidateFactory::FromDrawQuad(
   // is known.
   // TODO(https://crbug.com/1462171): Consider moving this code to
   // FromDrawQuadResource() that covers all of delegated compositing.
-  if (ShouldApplyRoundedCorner(candidate, sqs)) {
+  if (context_.disable_wire_size_optimization ||
+      ShouldApplyRoundedCorner(candidate, quad)) {
+    if (!context_.supports_mask_filter) {
+      return CandidateStatus::kFailMaskFilterNotSupported;
+    }
     candidate.rounded_corners = sqs->mask_filter_info.rounded_corner_bounds();
   }
 
@@ -237,6 +219,8 @@ OverlayCandidateFactory::OverlayCandidateFactory(
       render_pass_filters_(render_pass_filters),
       context_(context) {
   DCHECK(context_.supports_clip_rect || !context_.supports_arbitrary_transform);
+  DCHECK(!context_.disable_wire_size_optimization ||
+         context_.supports_arbitrary_transform);
 
   has_custom_color_matrix_ = *output_color_matrix != SkM44();
 
@@ -346,50 +330,36 @@ OverlayCandidate::CandidateStatus OverlayCandidateFactory::FromDrawQuadResource(
     ResourceId resource_id,
     bool y_flipped,
     OverlayCandidate& candidate) const {
-  if (resource_id != kInvalidResourceId &&
-      !resource_provider_->IsOverlayCandidate(resource_id))
+  if (!context_.allow_non_overlay_resources &&
+      resource_id != kInvalidResourceId &&
+      !resource_provider_->IsOverlayCandidate(resource_id)) {
     return CandidateStatus::kFailNotOverlay;
+  }
 
   if (quad->visible_rect.IsEmpty())
     return CandidateStatus::kFailVisible;
 
   if (resource_id != kInvalidResourceId) {
     candidate.format = resource_provider_->GetBufferFormat(resource_id);
-    // TODO(b/181974042): We should probably also propagate the
-    // resource_provider_->GetSamplerColorSpace() -- while the display
-    // controller is not expected to use the GPU sampler, some hardware can do
-    // per-plane color management. We just don't have the API for it yet (at
-    // least on ChromeOS).
-    candidate.color_space =
-        resource_provider_->GetOverlayColorSpace(resource_id);
+    candidate.color_space = resource_provider_->GetColorSpace(resource_id);
+    candidate.needs_detiling =
+        resource_provider_->GetNeedsDetiling(resource_id);
     candidate.hdr_metadata = resource_provider_->GetHDRMetadata(resource_id);
 
-    if (!base::Contains(kOverlayFormats, candidate.format))
+    if (!context_.is_delegated_context &&
+        !base::Contains(kOverlayFormats, candidate.format)) {
       return CandidateStatus::kFailBufferFormat;
+    }
   }
 
   SetDisplayRect(*quad, candidate);
 
   const SharedQuadState* sqs = quad->shared_quad_state;
-  gfx::OverlayTransform overlay_transform =
-      GetOverlayTransform(sqs->quad_to_target_transform, y_flipped);
-  if (overlay_transform != gfx::OVERLAY_TRANSFORM_INVALID) {
-    candidate.transform = overlay_transform;
 
-    candidate.display_rect =
-        sqs->quad_to_target_transform.MapRect(candidate.display_rect);
-  } else if (context_.supports_arbitrary_transform &&
-             !sqs->quad_to_target_transform.HasPerspective()) {
-    gfx::Transform transform = sqs->quad_to_target_transform;
-    if (y_flipped) {
-      transform.PreConcat(gfx::OverlayTransformToTransform(
-          gfx::OVERLAY_TRANSFORM_FLIP_VERTICAL, candidate.display_rect.size()));
-    }
-    candidate.transform = transform;
-  } else {
-    return context_.is_delegated_context ? GetReasonForTransformNotAxisAligned(
-                                               sqs->quad_to_target_transform)
-                                         : CandidateStatus::kFailNotAxisAligned;
+  if (auto status =
+          ApplyTransform(sqs->quad_to_target_transform, y_flipped, candidate);
+      status != CandidateStatus::kSuccess) {
+    return status;
   }
 
   candidate.is_opaque =
@@ -415,7 +385,17 @@ OverlayCandidate::CandidateStatus OverlayCandidateFactory::FromDrawQuadResource(
       TrackingIdData track_data{
           quad->rect,
           resource_provider_->GetSurfaceId(resource_id).frame_sink_id()};
-      candidate.tracking_id = base::Hash(&track_data, sizeof(track_data));
+      // Assert that there is no padding - otherwise the bytes-based hash below
+      // may differ for otherwise equal objects.
+      static_assert(sizeof(track_data) ==
+                    sizeof(decltype(track_data.rect)) +
+                        sizeof(decltype(track_data.frame_sink_id)));
+      // Intentionally throwing away the high bits (assuming that hash entropy
+      // is uniformly spread across all the bits).
+      size_t original_hash =
+          base::FastHash(base::as_bytes(base::span_from_ref(track_data)));
+      uint32_t narrow_hash = static_cast<uint32_t>(original_hash);
+      candidate.tracking_id = narrow_hash;
     }
   }
 
@@ -429,10 +409,15 @@ OverlayCandidate::CandidateStatus OverlayCandidateFactory::FromDrawQuadResource(
     // Out of window clipping is enabled on Lacros only when it is supported.
     // TODO(crbug.com/1385509): Remove the condition on `quad_within_window`
     // when M117 becomes widely supported.
-    const bool can_delegate_clipping =
+    bool can_delegate_clipping =
         context_.supports_clip_rect &&
         (quad_within_window || context_.supports_out_of_window_clip_rect) &&
         transform_supports_clipping;
+
+    bool is_rpdq = !!quad->DynamicCast<AggregatedRenderPassDrawQuad>();
+    if (is_rpdq) {
+      can_delegate_clipping &= context_.transform_and_clip_rpdq;
+    }
 
     if (can_delegate_clipping) {
       // If we know the clip_rect won't intersect the display_rect at all, we
@@ -507,9 +492,44 @@ OverlayCandidate::CandidateStatus OverlayCandidateFactory::DoGeometricClipping(
   }
 
   OverlayCandidate::ApplyClip(candidate, clip_to_apply);
-  candidate.clip_rect = absl::nullopt;
+  candidate.clip_rect = std::nullopt;
 
   return CandidateStatus::kSuccess;
+}
+
+OverlayCandidate::CandidateStatus OverlayCandidateFactory::ApplyTransform(
+    const gfx::Transform& quad_to_target_transform,
+    const bool y_flipped,
+    OverlayCandidate& candidate) const {
+  // Try to bake |quad_to_target_transform| into |display_rect| to avoid sending
+  // a full |gfx::Transform|.
+  if (!context_.disable_wire_size_optimization) {
+    gfx::OverlayTransform overlay_transform =
+        GetOverlayTransform(quad_to_target_transform, y_flipped);
+    if (overlay_transform != gfx::OVERLAY_TRANSFORM_INVALID) {
+      candidate.transform = overlay_transform;
+      candidate.display_rect =
+          quad_to_target_transform.MapRect(candidate.display_rect);
+      return OverlayCandidate::CandidateStatus::kSuccess;
+    }
+  }
+
+  // Otherwise, try to set an arbitrary transform, if possible.
+  if (context_.supports_arbitrary_transform &&
+      (!quad_to_target_transform.HasPerspective() ||
+       quad_to_target_transform.Preserves2dAffine())) {
+    gfx::Transform transform = quad_to_target_transform;
+    if (y_flipped) {
+      transform.PreConcat(gfx::OverlayTransformToTransform(
+          gfx::OVERLAY_TRANSFORM_FLIP_VERTICAL, candidate.display_rect.size()));
+    }
+    candidate.transform = transform;
+    return OverlayCandidate::CandidateStatus::kSuccess;
+  }
+
+  return context_.is_delegated_context
+             ? GetReasonForTransformNotAxisAligned(quad_to_target_transform)
+             : CandidateStatus::kFailNotAxisAligned;
 }
 
 OverlayCandidate::CandidateStatus OverlayCandidateFactory::FromAggregateQuad(
@@ -558,7 +578,12 @@ OverlayCandidate::CandidateStatus OverlayCandidateFactory::FromVideoHoleQuad(
       !quad->ShouldDrawWithBlendingForReasonOtherThanMaskFilter();
 
   AssignDamage(quad, candidate);
-  candidate.tracking_id = base::FastHash(quad->overlay_plane_id.AsBytes());
+
+  // Intentionally throwing away the high bits (assuming that hash entropy is
+  // uniformly spread across all the bits).
+  size_t original_hash = base::FastHash(quad->overlay_plane_id.AsBytes());
+  uint32_t narrow_hash = static_cast<uint32_t>(original_hash);
+  candidate.tracking_id = narrow_hash;
 
   return CandidateStatus::kSuccess;
 }
@@ -764,19 +789,6 @@ gfx::RectF OverlayCandidateFactory::GetDamageRect(
   // Invalid index.
   if (overlay_damage_index >= surface_damage_rect_list_->size()) {
     DCHECK(false);
-    return gfx::RectF();
-  }
-
-  // Assigned damage assumes that |candidate.display_rect| is already in target
-  // space, but that isn't true for transformation matrices.
-  if (absl::holds_alternative<gfx::Transform>(candidate.transform)) {
-    return gfx::RectF();
-  }
-
-  // Ash can't overlay candidates that aren't pixel-aligned so don't bother
-  // assigning damage to them. This would also be a challenge because
-  // |OverlayCandidate.damage_rect| is only a gfx::Rect.
-  if (!candidate.display_rect.IsExpressibleAsRect()) {
     return gfx::RectF();
   }
 

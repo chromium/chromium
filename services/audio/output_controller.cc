@@ -407,7 +407,7 @@ int OutputController::OnMoreData(base::TimeDelta delay,
 
   stats_tracker_->OnMoreDataCalled();
 
-  sync_reader_->Read(dest, is_mixing);
+  const bool received_data = sync_reader_->Read(dest, is_mixing);
 
   const base::TimeTicks reference_time = delay_timestamp + delay;
 
@@ -436,7 +436,9 @@ int OutputController::OnMoreData(base::TimeDelta delay,
   const bool is_bitstream = params_.IsBitstreamFormat();
 #endif
 
-  if (will_monitor_audio_levels() && !is_bitstream) {
+  // Skip scanning `dest` when it's zero'ed to due to timeout glitches. This
+  // gives more accurate results from `power_monitor_`.
+  if (will_monitor_audio_levels() && received_data && !is_bitstream) {
     // Note: this code path should never be hit when using bitstream streams.
     // Scan doesn't expect compressed audio, so it may go out of bounds trying
     // to read |frames| frames of PCM data.

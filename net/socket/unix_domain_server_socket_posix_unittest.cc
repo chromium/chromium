@@ -114,8 +114,7 @@ TEST_F(UnixDomainServerSocketTest, AcceptWithForbiddenUser) {
 
   // Try to read from the socket.
   const int read_buffer_size = 10;
-  scoped_refptr<IOBuffer> read_buffer =
-      base::MakeRefCounted<IOBuffer>(read_buffer_size);
+  auto read_buffer = base::MakeRefCounted<IOBufferWithSize>(read_buffer_size);
   TestCompletionCallback read_callback;
   rv = read_callback.GetResult(client_socket.Read(
       read_buffer.get(), read_buffer_size, read_callback.callback()));
@@ -136,7 +135,7 @@ TEST_F(UnixDomainServerSocketTest, UnimplementedMethodsFail) {
                                        kUseAbstractNamespace);
 
   IPEndPoint ep;
-  EXPECT_THAT(server_socket.Listen(ep, 0, /*ipv6_only=*/absl::nullopt),
+  EXPECT_THAT(server_socket.Listen(ep, 0, /*ipv6_only=*/std::nullopt),
               IsError(ERR_NOT_IMPLEMENTED));
   EXPECT_EQ(ERR_NOT_IMPLEMENTED,
       server_socket.ListenWithAddressAndPort(kInvalidSocketPath,

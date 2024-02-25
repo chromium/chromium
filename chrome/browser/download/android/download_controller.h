@@ -44,7 +44,6 @@ class DownloadController : public DownloadControllerBase {
       AcquireFileAccessPermissionCallback callback) override;
   void CreateAndroidDownload(const content::WebContents::Getter& wc_getter,
                              const DownloadInfo& info) override;
-  void AboutToResumeDownload(download::DownloadItem* download_item) override;
 
   // UMA histogram enum for download storage permission requests. Keep this
   // in sync with MobileDownloadStoragePermission in histograms.xml. This should
@@ -96,21 +95,10 @@ class DownloadController : public DownloadControllerBase {
       const DownloadInfo& info,
       bool allowed);
 
-  // Check if an interrupted download item can be auto resumed.
-  bool IsInterruptedDownloadAutoResumable(
-      download::DownloadItem* download_item);
-
   // Get profile key from download item.
   ProfileKey* GetProfileKey(download::DownloadItem* download_item);
 
   std::string default_file_name_;
-
-  using StrongValidatorsMap =
-      std::map<std::string, std::pair<std::string, std::string>>;
-  // Stores the previous strong validators before a download is resumed. If the
-  // strong validators change after resumption starts, the download will restart
-  // from the beginning and all downloaded data will be lost.
-  StrongValidatorsMap strong_validators_map_;
 
   DownloadCallbackValidator validator_;
 

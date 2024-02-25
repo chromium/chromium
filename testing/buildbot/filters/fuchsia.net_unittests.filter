@@ -4,8 +4,8 @@
 -PacFileFetcherImplTest.Priority
 
 # base::MakeFileUnreadable() doesn't work. https://crbug.com/759853
--HttpNetworkTransactionTest.UploadUnreadableFile
--SpdyNetworkTransactionTest.UnreadableFilePost
+-All/HttpNetworkTransactionTest.UploadUnreadableFile/*
+-All/SpdyNetworkTransactionTest.UnreadableFilePost/*
 
 # These stress tests take a very long time on emulated ARM cores.
 -SupportedVersion/QuicConnectionTest.TooManySentPackets/*

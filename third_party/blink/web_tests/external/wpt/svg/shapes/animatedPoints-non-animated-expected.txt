@@ -1,4 +1,5 @@
 This is a testharness.js-based test.
-FAIL animatedPoints represents non-animated value assert_equals: expected 20 but got 170
+[FAIL] animatedPoints represents non-animated value
+  assert_equals: expected 20 but got 170
 Harness: the test ran to completion.
 

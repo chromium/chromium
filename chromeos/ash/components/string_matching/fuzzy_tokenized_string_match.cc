@@ -8,6 +8,7 @@
 #include <cmath>
 #include <cstdlib>
 #include <iterator>
+#include <optional>
 #include <set>
 #include <string>
 #include <vector>
@@ -19,7 +20,6 @@
 #include "chromeos/ash/components/string_matching/diacritic_utils.h"
 #include "chromeos/ash/components/string_matching/prefix_matcher.h"
 #include "chromeos/ash/components/string_matching/sequence_matcher.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ash::string_matching {
 
@@ -180,7 +180,7 @@ double FuzzyTokenizedStringMatch::WeightedRatio(const TokenizedString& query,
   std::vector<double> weighted_ratios;
   weighted_ratios.emplace_back(
       SequenceMatcher(query_normalized, text_normalized)
-          .Ratio(/*use_text_length_agnosticism=*/true));
+          .Ratio(/*text_length_agnostic=*/true));
 
   const double length_ratio =
       static_cast<double>(
@@ -260,8 +260,8 @@ double FuzzyTokenizedStringMatch::Relevance(const TokenizedString& query_input,
     return 0.0;
   }
 
-  absl::optional<TokenizedString> stripped_query;
-  absl::optional<TokenizedString> stripped_text;
+  std::optional<TokenizedString> stripped_query;
+  std::optional<TokenizedString> stripped_text;
   if (strip_diacritics) {
     stripped_query.emplace(RemoveDiacritics(query_input.text()));
     stripped_text.emplace(RemoveDiacritics(text_input.text()));
@@ -314,11 +314,11 @@ double FuzzyTokenizedStringMatch::Relevance(const TokenizedString& query_input,
   }
   hits_vector.emplace_back(sequence_hits);
 
-  relevances.emplace_back(
-      use_weighted_ratio ? WeightedRatio(query, text)
-                         : SequenceMatcher(base::i18n::ToLower(query_text),
-                                           base::i18n::ToLower(text_text))
-                               .Ratio(/*use_text_length_agnosticism=*/true));
+  relevances.emplace_back(use_weighted_ratio
+                              ? WeightedRatio(query, text)
+                              : SequenceMatcher(base::i18n::ToLower(query_text),
+                                                base::i18n::ToLower(text_text))
+                                    .Ratio(/*text_length_agnostic=*/true));
   if (use_acronym_matcher) {
     relevances.emplace_back(AcronymMatcher(query, text, hits_vector));
   }

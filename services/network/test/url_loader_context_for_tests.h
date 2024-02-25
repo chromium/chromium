@@ -6,8 +6,8 @@
 #define SERVICES_NETWORK_TEST_URL_LOADER_CONTEXT_FOR_TESTS_H_
 
 #include "base/memory/raw_ptr.h"
-#include "services/network/public/cpp/corb/corb_api.h"
 #include "services/network/public/cpp/cors/origin_access_list.h"
+#include "services/network/public/cpp/orb/orb_api.h"
 #include "services/network/public/mojom/network_context.mojom.h"
 #include "services/network/resource_scheduler/resource_scheduler_client.h"
 #include "services/network/url_loader_context.h"
@@ -21,6 +21,12 @@ class URLLoaderContextForTests : public URLLoaderContext {
 
   URLLoaderContextForTests(const URLLoaderContextForTests&) = delete;
   URLLoaderContextForTests& operator=(const URLLoaderContextForTests&) = delete;
+
+  void Detach() {
+    network_context_client_ = nullptr;
+    url_request_context_ = nullptr;
+    resource_scheduler_client_ = nullptr;
+  }
 
   // Accessors to let tests configure some aspects of `this` object.
   mojom::URLLoaderFactoryParams& mutable_factory_params() {
@@ -53,18 +59,16 @@ class URLLoaderContextForTests : public URLLoaderContext {
   net::URLRequestContext* GetUrlRequestContext() const override;
   scoped_refptr<ResourceSchedulerClient> GetResourceSchedulerClient()
       const override;
-  corb::PerFactoryState& GetMutableCorbState() override;
+  orb::PerFactoryState& GetMutableOrbState() override;
   bool DataUseUpdatesEnabled() override;
 
  private:
   mojom::URLLoaderFactoryParams factory_params_;
   cors::OriginAccessList origin_access_list_;
-  corb::PerFactoryState corb_state_;
+  orb::PerFactoryState orb_state_;
 
-  raw_ptr<mojom::NetworkContextClient, DanglingUntriaged>
-      network_context_client_ = nullptr;
-  raw_ptr<net::URLRequestContext, DanglingUntriaged> url_request_context_ =
-      nullptr;
+  raw_ptr<mojom::NetworkContextClient> network_context_client_ = nullptr;
+  raw_ptr<net::URLRequestContext> url_request_context_ = nullptr;
   scoped_refptr<ResourceSchedulerClient> resource_scheduler_client_;
 };
 

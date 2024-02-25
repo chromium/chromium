@@ -1,25 +1,46 @@
-// Copyright 2022 The Chromium Authors. All rights reserved.
+// Copyright 2022 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "third_party/blink/renderer/modules/accessibility/aria_notification.h"
 
-namespace blink {
-AriaNotification::AriaNotification(Node* node,
-                                   const String announcement,
-                                   const AriaNotificationOptions* options)
-    : node_(node), announcement_(announcement) {
-  label_ = options->label();
-  interrupt_current_ = options->interruptCurrent();
-  prevent_interrupt_ = options->preventInterrupt();
+#include "ui/accessibility/ax_enums.mojom-blink.h"
 
-  if (options->insertionMode() == "queue") {
-    insertion_mode_ = AriaNotificationInsertionMode::kQueue;
-  } else if (options->insertionMode() == "stack") {
-    insertion_mode_ = AriaNotificationInsertionMode::kStack;
-  } else if (options->insertionMode() == "clear") {
-    insertion_mode_ = AriaNotificationInsertionMode::kClear;
+namespace blink {
+
+namespace {
+
+ax::mojom::blink::AriaNotificationInterrupt ToEnum(
+    const V8AriaNotifyInterrupt& interrupt) {
+  switch (interrupt.AsEnum()) {
+    case V8AriaNotifyInterrupt::Enum::kNone:
+      return ax::mojom::blink::AriaNotificationInterrupt::kNone;
+    case V8AriaNotifyInterrupt::Enum::kAll:
+      return ax::mojom::blink::AriaNotificationInterrupt::kAll;
+    case V8AriaNotifyInterrupt::Enum::kPending:
+      return ax::mojom::blink::AriaNotificationInterrupt::kPending;
   }
+  NOTREACHED_NORETURN();
 }
+
+ax::mojom::blink::AriaNotificationPriority ToEnum(
+    const V8AriaNotifyPriority& priority) {
+  switch (priority.AsEnum()) {
+    case V8AriaNotifyPriority::Enum::kNone:
+      return ax::mojom::blink::AriaNotificationPriority::kNone;
+    case V8AriaNotifyPriority::Enum::kImportant:
+      return ax::mojom::blink::AriaNotificationPriority::kImportant;
+  }
+  NOTREACHED_NORETURN();
+}
+
+}  // namespace
+
+AriaNotification::AriaNotification(const String& announcement,
+                                   const AriaNotificationOptions* options)
+    : announcement_(announcement),
+      notification_id_(options->notificationId()),
+      interrupt_(ToEnum(options->interrupt())),
+      priority_(ToEnum(options->priority())) {}
 
 }  // namespace blink

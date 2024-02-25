@@ -5,17 +5,15 @@
 #ifndef CHROME_BROWSER_UI_AUTOFILL_DELETE_ADDRESS_PROFILE_DIALOG_CONTROLLER_IMPL_H_
 #define CHROME_BROWSER_UI_AUTOFILL_DELETE_ADDRESS_PROFILE_DIALOG_CONTROLLER_IMPL_H_
 
+#include <optional>
 #include <string>
 
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ui/autofill/delete_address_profile_dialog_controller.h"
+#include "components/autofill/core/browser/autofill_client.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_user_data.h"
-
-namespace views {
-class Widget;
-}  // namespace views
 
 namespace autofill {
 
@@ -24,19 +22,32 @@ class DeleteAddressProfileDialogControllerImpl
       public content::WebContentsUserData<
           DeleteAddressProfileDialogControllerImpl> {
  public:
+  using DeleteAddressProfileDialogViewFactory = base::RepeatingCallback<void(
+      content::WebContents*,
+      base::WeakPtr<DeleteAddressProfileDialogController>)>;
+
   DeleteAddressProfileDialogControllerImpl(
       const DeleteAddressProfileDialogControllerImpl&) = delete;
   DeleteAddressProfileDialogControllerImpl& operator=(
       const DeleteAddressProfileDialogControllerImpl&) = delete;
   ~DeleteAddressProfileDialogControllerImpl() override;
 
-  void OfferDelete();
-  // DeleteAddressProfileDialogController
-  std::u16string GetAccount() const override;
+  void OfferDelete(bool is_account_address_profile,
+                   AutofillClient::AddressProfileDeleteDialogCallback
+                       delete_dialog_callback);
+  // DeleteAddressProfileDialogController:
+  std::u16string GetTitle() const override;
+  std::u16string GetAcceptButtonText() const override;
+  std::u16string GetDeclineButtonText() const override;
+  std::u16string GetDeleteConfirmationText() const override;
+
   void OnAccepted() override;
   void OnCanceled() override;
   void OnClosed() override;
   void OnDialogDestroying() override;
+
+  void SetViewFactoryForTest(
+      DeleteAddressProfileDialogViewFactory view_factory);
 
  private:
   explicit DeleteAddressProfileDialogControllerImpl(
@@ -47,7 +58,11 @@ class DeleteAddressProfileDialogControllerImpl
   base::WeakPtr<DeleteAddressProfileDialogController> GetWeakPtr();
 
   const raw_ptr<content::WebContents> web_contents_;
-  raw_ptr<const views::Widget> widget_dialog_ = nullptr;
+  bool is_dialog_opened_ = false;
+  bool is_account_address_profile_;
+  AutofillClient::AddressProfileDeleteDialogCallback delete_dialog_callback_;
+  std::optional<bool> user_accepted_;
+  DeleteAddressProfileDialogViewFactory view_factory_for_test_;
 
   base::WeakPtrFactory<DeleteAddressProfileDialogController> weak_ptr_factory_{
       this};

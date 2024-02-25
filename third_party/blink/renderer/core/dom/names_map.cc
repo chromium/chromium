@@ -30,10 +30,10 @@ void NamesMap::Set(const AtomicString& source) {
 
 void NamesMap::Add(const AtomicString& key, const AtomicString& value) {
   // AddResult
-  auto add_result = data_.insert(key, absl::optional<SpaceSplitString>());
+  auto add_result = data_.insert(key, std::optional<SpaceSplitString>());
   if (add_result.is_new_entry) {
     add_result.stored_value->value =
-        absl::make_optional<SpaceSplitString>(SpaceSplitString());
+        std::make_optional<SpaceSplitString>(SpaceSplitString());
   }
   add_result.stored_value->value.value().Add(value);
 }
@@ -233,9 +233,9 @@ void NamesMap::Set(const AtomicString& source,
   }
 }
 
-absl::optional<SpaceSplitString> NamesMap::Get(const AtomicString& key) const {
+std::optional<SpaceSplitString> NamesMap::Get(const AtomicString& key) const {
   auto it = data_.find(key);
-  return it != data_.end() ? it->value : absl::nullopt;
+  return it != data_.end() ? it->value : std::nullopt;
 }
 
 }  // namespace blink

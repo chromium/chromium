@@ -5,12 +5,12 @@
 #ifndef CHROMEOS_ASH_SERVICES_DEVICE_SYNC_FAKE_CRYPTAUTH_GCM_MANAGER_H_
 #define CHROMEOS_ASH_SERVICES_DEVICE_SYNC_FAKE_CRYPTAUTH_GCM_MANAGER_H_
 
+#include <optional>
 #include <string>
 
 #include "base/observer_list.h"
 #include "chromeos/ash/services/device_sync/cryptauth_feature_type.h"
 #include "chromeos/ash/services/device_sync/cryptauth_gcm_manager.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ash {
 
@@ -44,13 +44,13 @@ class FakeCryptAuthGCMManager : public CryptAuthGCMManager {
 
   // Simulates receiving a re-enroll push message from GCM.
   void PushReenrollMessage(
-      const absl::optional<std::string>& session_id,
-      const absl::optional<CryptAuthFeatureType>& feature_type);
+      const std::optional<std::string>& session_id,
+      const std::optional<CryptAuthFeatureType>& feature_type);
 
   // Simulates receiving a re-sync push message from GCM.
   void PushResyncMessage(
-      const absl::optional<std::string>& session_id,
-      const absl::optional<CryptAuthFeatureType>& feature_type);
+      const std::optional<std::string>& session_id,
+      const std::optional<CryptAuthFeatureType>& feature_type);
 
   // CryptAuthGCMManager:
   void StartListening() override;

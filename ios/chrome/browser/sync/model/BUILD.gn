@@ -1,0 +1,189 @@
+# Copyright 2016 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("model") {
+  sources = [
+    "device_info_sync_service_factory.h",
+    "device_info_sync_service_factory.mm",
+    "enterprise_utils.cc",
+    "enterprise_utils.h",
+    "ios_chrome_sync_client.h",
+    "ios_chrome_sync_client.mm",
+    "ios_user_event_service_factory.cc",
+    "ios_user_event_service_factory.h",
+    "send_tab_to_self_sync_service_factory.h",
+    "send_tab_to_self_sync_service_factory.mm",
+    "session_sync_service_factory.h",
+    "session_sync_service_factory.mm",
+    "sync_invalidations_service_factory.h",
+    "sync_invalidations_service_factory.mm",
+    "sync_observer_bridge.h",
+    "sync_observer_bridge.mm",
+    "sync_service_factory.h",
+    "sync_service_factory.mm",
+    "sync_setup_service.cc",
+    "sync_setup_service.h",
+    "sync_setup_service_factory.cc",
+    "sync_setup_service_factory.h",
+  ]
+  deps = [
+    ":model_type_store_service_factory",
+    "//base",
+    "//components/autofill/core/browser",
+    "//components/browser_sync",
+    "//components/consent_auditor",
+    "//components/dom_distiller/core",
+    "//components/history/core/browser",
+    "//components/invalidation/impl",
+    "//components/keyed_service/core",
+    "//components/keyed_service/ios",
+    "//components/metrics/demographics",
+    "//components/network_time",
+    "//components/password_manager/core/browser",
+    "//components/password_manager/core/browser/sharing",
+    "//components/pref_registry",
+    "//components/prefs",
+    "//components/reading_list/core",
+    "//components/search_engines",
+    "//components/send_tab_to_self",
+    "//components/sessions",
+    "//components/signin/public/identity_manager",
+    "//components/supervised_user/core/browser",
+    "//components/supervised_user/core/common:buildflags",
+    "//components/sync",
+    "//components/sync_bookmarks",
+    "//components/sync_device_info",
+    "//components/sync_preferences",
+    "//components/sync_sessions",
+    "//components/sync_user_events",
+    "//components/trusted_vault",
+    "//components/variations/service",
+    "//components/version_info",
+    "//google_apis",
+    "//ios/chrome/browser/bookmarks/model",
+    "//ios/chrome/browser/complex_tasks/model",
+    "//ios/chrome/browser/consent_auditor/model",
+    "//ios/chrome/browser/dom_distiller/model",
+    "//ios/chrome/browser/favicon/model",
+    "//ios/chrome/browser/gcm/model",
+    "//ios/chrome/browser/gcm/model/instance_id",
+    "//ios/chrome/browser/history/model",
+    "//ios/chrome/browser/invalidation/model",
+    "//ios/chrome/browser/metrics/model:google_groups_updater",
+    "//ios/chrome/browser/passwords/model:sharing_factory",
+    "//ios/chrome/browser/passwords/model:store_factory",
+    "//ios/chrome/browser/power_bookmarks/model",
+    "//ios/chrome/browser/reading_list/model",
+    "//ios/chrome/browser/search_engines/model",
+    "//ios/chrome/browser/sessions",
+    "//ios/chrome/browser/shared/model/application_context",
+    "//ios/chrome/browser/shared/model/browser",
+    "//ios/chrome/browser/shared/model/browser_state",
+    "//ios/chrome/browser/shared/model/prefs:pref_names",
+    "//ios/chrome/browser/shared/model/url:constants",
+    "//ios/chrome/browser/signin/model",
+    "//ios/chrome/browser/supervised_user/model:sync_settings_factory",
+    "//ios/chrome/browser/sync/model/glue",
+    "//ios/chrome/browser/tabs/model",
+    "//ios/chrome/browser/tabs/model:synced_tabs",
+    "//ios/chrome/browser/trusted_vault/model",
+    "//ios/chrome/browser/webdata_services/model",
+    "//ios/chrome/common",
+    "//ios/components/webui:url_constants",
+    "//ios/web",
+    "//net",
+    "//ui/base",
+    "//url",
+  ]
+  allow_circular_includes_from = [
+    "//ios/chrome/browser/history/model",
+    "//ios/chrome/browser/passwords/model:store_factory",
+    "//ios/chrome/browser/reading_list/model",
+    "//ios/chrome/browser/signin/model",
+    "//ios/chrome/browser/sync/model/glue",
+  ]
+}
+
+source_set("model_type_store_service_factory") {
+  sources = [
+    "model_type_store_service_factory.cc",
+    "model_type_store_service_factory.h",
+  ]
+  deps = [
+    "//base",
+    "//components/keyed_service/ios",
+    "//components/sync",
+    "//ios/chrome/browser/shared/model/browser_state",
+  ]
+}
+
+source_set("sync_error_browser_agent") {
+  sources = [
+    "sync_error_browser_agent.h",
+    "sync_error_browser_agent.mm",
+  ]
+  deps = [
+    "//ios/chrome/browser/settings/model/sync/utils",
+    "//ios/chrome/browser/shared/model/browser",
+    "//ios/chrome/browser/shared/model/browser_state",
+    "//ios/chrome/browser/shared/model/web_state_list",
+    "//ios/chrome/browser/shared/ui/util",
+    "//ios/chrome/browser/ui/authentication",
+    "//ios/chrome/browser/ui/authentication:signin_presenter",
+    "//ui/base",
+  ]
+  frameworks = [ "UIKit.framework" ]
+}
+
+source_set("test_support") {
+  testonly = true
+  sources = [
+    "mock_sync_service_utils.cc",
+    "mock_sync_service_utils.h",
+    "sync_setup_service_mock.cc",
+    "sync_setup_service_mock.h",
+  ]
+  deps = [
+    ":model",
+    "//base",
+    "//components/consent_auditor:test_support",
+    "//components/keyed_service/core",
+    "//components/keyed_service/ios",
+    "//components/sync",
+    "//components/sync:test_support",
+    "//ios/chrome/browser/shared/model/browser_state",
+    "//ios/chrome/browser/signin/model",
+    "//ios/chrome/common",
+    "//ios/web",
+    "//ui/base",
+  ]
+  public_deps = [ "//testing/gmock" ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [
+    "session_sync_service_factory_unittest.cc",
+    "sync_service_factory_unittest.cc",
+  ]
+  deps = [
+    ":model",
+    "//base",
+    "//components/autofill/core/common/",
+    "//components/browser_sync",
+    "//components/data_sharing/public",
+    "//components/password_manager/core/browser/features:password_features",
+    "//components/supervised_user/core/common:buildflags",
+    "//components/sync",
+    "//ios/chrome/browser/favicon/model",
+    "//ios/chrome/browser/history/model",
+    "//ios/chrome/browser/shared/model/browser_state:test_support",
+    "//ios/chrome/browser/shared/model/url:constants",
+    "//ios/chrome/browser/webdata_services/model",
+    "//ios/chrome/test:test_support",
+    "//ios/web/public/test",
+    "//testing/gtest",
+    "//ui/base",
+  ]
+}

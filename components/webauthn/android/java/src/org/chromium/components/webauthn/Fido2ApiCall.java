@@ -4,15 +4,18 @@
 
 package org.chromium.components.webauthn;
 
-import android.util.Pair;
 import android.app.PendingIntent;
 import android.content.Context;
+import android.net.Uri;
 import android.os.Binder;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.os.IInterface;
 import android.os.Looper;
 import android.os.Parcel;
+import android.os.ResultReceiver;
+
+import androidx.annotation.Nullable;
 
 import com.google.android.gms.common.api.Api;
 import com.google.android.gms.common.api.Api.ApiOptions;
@@ -28,45 +31,78 @@ import com.google.android.gms.common.internal.GmsClient;
 import com.google.android.gms.tasks.Task;
 import com.google.android.gms.tasks.TaskCompletionSource;
 
+import org.chromium.blink.mojom.PublicKeyCredentialCreationOptions;
+import org.chromium.blink.mojom.PublicKeyCredentialRequestOptions;
+
+import java.security.NoSuchAlgorithmException;
 import java.util.List;
 
 /**
  * Fido2ApiCall handles making Binder calls to Play Services' FIDO API.
- * <p>
- * There are two FIDO APIs, one for browsers that can assert any RP ID, and one for apps where the
- * RP ID is checked against assetlinks.json from the site. This class can handle both. API calls are
- * made directly, rather than using the Play Services SDK, to save code size and to allow new
+ *
+ * <p>There are two FIDO APIs, one for browsers that can assert any RP ID, and one for apps where
+ * the RP ID is checked against assetlinks.json from the site. This class can handle both. API calls
+ * are made directly, rather than using the Play Services SDK, to save code size and to allow new
  * features to be used more easily.
- * <p>
- * API calls consist of two Binder calls each. Binder calls are synchronous and the first delivers
- * arguments to Play Services plus a Binder object to receive the result. The second Binder call is
- * from Play Services back to Chromium where the result is returned. If the call requires Play
- * Services to collect user interaction then that result will be a {@link PendingIntent} which needs
- * to be started in order to actually run the operation. The real result is then delivered to
+ *
+ * <p>API calls consist of two Binder calls each. Binder calls are synchronous and the first
+ * delivers arguments to Play Services plus a Binder object to receive the result. The second Binder
+ * call is from Play Services back to Chromium where the result is returned. If the call requires
+ * Play Services to collect user interaction then that result will be a {@link PendingIntent} which
+ * needs to be started in order to actually run the operation. The real result is then delivered to
  * Chromium via {@link Activity.onActivityResult}. This class does not handle that part of the
  * operation, only the initial Binder calls.
- * <p>
- * Calls are started by constructing an instance of this class and calling {@link start} to get a
+ *
+ * <p>Calls are started by constructing an instance of this class and calling {@link start} to get a
  * {@link Parcel} that arguments can be written to. The first argument is always the Binder object
  * that receives the result, for example an instance of {@link BooleanResult} or {@link
  * PendingIntentResult}. Following that are the inputs to the call.
- * <p>
- * Once the arguments are prepared, call {@link run} to perform the first Binder call. That returns
- * a {@link Task} that will resolve with the result when it's ready.
- * <p>
- * Here's an example:
- * <pre>
+ *
+ * <p>Once the arguments are prepared, call {@link run} to perform the first Binder call. That
+ * returns a {@link Task} that will resolve with the result when it's ready.
+ *
+ * <p>Here's an example:
+ *
+ * <pre>{@code
  * Fido2ApiCall call = new Fido2ApiCall(ContextUtils.getApplicationContext());
  * Parcel args = call.start();
  * Fido2ApiCall.PendingIntentResult result = new Fido2ApiCall.PendingIntentResult(call);
  * args.writeStrongBinder(result);
  * // Add parameter to `args`.
  *
- * Task&lt;PendingIntent&gt; task = call.run(Fido2ApiCall.METHOD_BROWSER_REGISTER,
- *               Fido2ApiCall.TRANSACTION_REGISTER, args, result);
- * </pre>
+ * Task<PendingIntent> task = call.run(
+ *      Fido2ApiCall.METHOD_BROWSER_REGISTER, Fido2ApiCall.TRANSACTION_REGISTER, args, result);
+ * }</pre>
  */
 public final class Fido2ApiCall extends GoogleApi<ApiOptions.NoOptions> {
+    public static class Fido2ApiCallParams {
+        public final Api<ApiOptions.NoOptions> mApi;
+        public final String mDescriptor;
+        public final @Nullable String mCallbackDescriptor;
+        public final int mRegisterMethodId;
+        public final int mSignMethodId;
+        public final int mIsUserVerifyingPlatformAuthenticatorAvailableMethodId;
+        public final @Nullable Fido2Api.Calls mMethodInterfaces;
+
+        Fido2ApiCallParams(
+                Api<ApiOptions.NoOptions> api,
+                String descriptor,
+                String callbackDescriptor,
+                int registerMethodId,
+                int signMethodId,
+                int isUserVerifyingPlatformAuthenticatorAvailableMethodId,
+                Fido2Api.Calls methodInterfaces) {
+            mApi = api;
+            mDescriptor = descriptor;
+            mCallbackDescriptor = callbackDescriptor;
+            mRegisterMethodId = registerMethodId;
+            mSignMethodId = signMethodId;
+            mIsUserVerifyingPlatformAuthenticatorAvailableMethodId =
+                    isUserVerifyingPlatformAuthenticatorAvailableMethodId;
+            mMethodInterfaces = methodInterfaces;
+        }
+    }
+
     public static final int METHOD_BROWSER_REGISTER = 5412;
     public static final int METHOD_BROWSER_SIGN = 5413;
     public static final int METHOD_BROWSER_ISUVPAA = 5416;
@@ -85,12 +121,74 @@ public final class Fido2ApiCall extends GoogleApi<ApiOptions.NoOptions> {
     public static final int TRANSACTION_HYBRID_SIGN = IBinder.FIRST_CALL_TRANSACTION + 4;
     public static final int TRANSACTION_GET_LINK_INFO = IBinder.FIRST_CALL_TRANSACTION + 0;
 
+    private static final String APP_DESCRIPTOR =
+            "com.google.android.gms.fido.fido2.internal.regular.IFido2AppService";
+    private static final String APP_CALLBACK_DESCRIPTOR =
+            "com.google.android.gms.fido.fido2.internal.regular.IFido2AppCallbacks";
+    private static final String APP_START_SERVICE_ACTION =
+            "com.google.android.gms.fido.fido2.regular.START";
+    private static final int APP_API_ID = 148;
+    private static final Api.ClientKey<FidoClient> APP_CLIENT_KEY = new Api.ClientKey<>();
+    private static final Fido2Api.Calls APP_INTERFACES =
+            new Fido2Api.Calls() {
+                @Override
+                public void makeCredential(
+                        PublicKeyCredentialCreationOptions options,
+                        @Nullable Uri uri,
+                        @Nullable byte[] clientDataHash,
+                        ResultReceiver resultReceiver,
+                        Parcel parcel)
+                        throws NoSuchAlgorithmException {
+                    Fido2Api.appendMakeCredentialOptionsToParcel(options, resultReceiver, parcel);
+                }
+
+                @Override
+                public void getAssertion(
+                        PublicKeyCredentialRequestOptions options,
+                        Uri uri,
+                        byte[] clientDataHash,
+                        byte[] tunnelId,
+                        ResultReceiver resultReceiver,
+                        Parcel parcel) {
+                    Fido2Api.appendGetAssertionOptionsToParcel(
+                            options, clientDataHash, resultReceiver, parcel);
+                }
+            };
+
     private static final String BROWSER_DESCRIPTOR =
             "com.google.android.gms.fido.fido2.internal.privileged.IFido2PrivilegedService";
+    private static final String BROWSER_CALLBACK_DESCRIPTOR =
+            "com.google.android.gms.fido.fido2.internal.privileged.IFido2PrivilegedCallbacks";
     private static final String BROWSER_START_SERVICE_ACTION =
             "com.google.android.gms.fido.fido2.privileged.START";
     private static final int BROWSER_API_ID = 149;
     private static final Api.ClientKey<FidoClient> BROWSER_CLIENT_KEY = new Api.ClientKey<>();
+    private static final Fido2Api.Calls BROWSER_INTERFACES =
+            new Fido2Api.Calls() {
+                @Override
+                public void makeCredential(
+                        PublicKeyCredentialCreationOptions options,
+                        Uri uri,
+                        byte[] clientDataHash,
+                        ResultReceiver resultReceiver,
+                        Parcel parcel)
+                        throws NoSuchAlgorithmException {
+                    Fido2Api.appendBrowserMakeCredentialOptionsToParcel(
+                            options, uri, clientDataHash, resultReceiver, parcel);
+                }
+
+                @Override
+                public void getAssertion(
+                        PublicKeyCredentialRequestOptions options,
+                        @Nullable Uri uri,
+                        @Nullable byte[] clientDataHash,
+                        @Nullable byte[] tunnelId,
+                        ResultReceiver resultReceiver,
+                        Parcel parcel) {
+                    Fido2Api.appendBrowserGetAssertionOptionsToParcel(
+                            options, uri, clientDataHash, tunnelId, resultReceiver, parcel);
+                }
+            };
 
     private static final String FIRSTPARTY_DESCRIPTOR =
             "com.google.android.gms.fido.fido2.internal.firstparty.IFido2FirstPartyService";
@@ -99,17 +197,51 @@ public final class Fido2ApiCall extends GoogleApi<ApiOptions.NoOptions> {
     private static final int FIRSTPARTY_API_ID = 347;
     private static final Api.ClientKey<FidoClient> FIRSTPARTY_CLIENT_KEY = new Api.ClientKey<>();
 
-    private static final Pair<Api<ApiOptions.NoOptions>, String> BROWSER_API = Pair.create(
-            new Api<>("Fido.FIDO2_PRIVILEGED_API",
-                    new FidoClient.Builder(
-                            BROWSER_DESCRIPTOR, BROWSER_START_SERVICE_ACTION, BROWSER_API_ID),
-                    BROWSER_CLIENT_KEY), BROWSER_DESCRIPTOR);
-    public static final Pair<Api<ApiOptions.NoOptions>, String> FIRST_PARTY_API =
-            Pair.create(new Api<>("Fido.FIDO2_FIRSTPARTY_API",
-                                new FidoClient.Builder(FIRSTPARTY_DESCRIPTOR,
-                                        FIRSTPARTY_START_SERVICE_ACTION, FIRSTPARTY_API_ID),
-                                FIRSTPARTY_CLIENT_KEY),
-                    FIRSTPARTY_DESCRIPTOR);
+    static final Fido2ApiCallParams APP_API =
+            new Fido2ApiCallParams(
+                    new Api<>(
+                            "Fido.FIDO2_API",
+                            new FidoClient.Builder(
+                                    APP_DESCRIPTOR, APP_START_SERVICE_ACTION, APP_API_ID),
+                            APP_CLIENT_KEY),
+                    APP_DESCRIPTOR,
+                    APP_CALLBACK_DESCRIPTOR,
+                    METHOD_APP_REGISTER,
+                    METHOD_APP_SIGN,
+                    METHOD_APP_ISUVPAA,
+                    APP_INTERFACES);
+
+    static final Fido2ApiCallParams BROWSER_API =
+            new Fido2ApiCallParams(
+                    new Api<>(
+                            "Fido.FIDO2_PRIVILEGED_API",
+                            new FidoClient.Builder(
+                                    BROWSER_DESCRIPTOR,
+                                    BROWSER_START_SERVICE_ACTION,
+                                    BROWSER_API_ID),
+                            BROWSER_CLIENT_KEY),
+                    BROWSER_DESCRIPTOR,
+                    BROWSER_CALLBACK_DESCRIPTOR,
+                    METHOD_BROWSER_REGISTER,
+                    METHOD_BROWSER_SIGN,
+                    METHOD_BROWSER_ISUVPAA,
+                    BROWSER_INTERFACES);
+
+    public static final Fido2ApiCallParams FIRST_PARTY_API =
+            new Fido2ApiCallParams(
+                    new Api<>(
+                            "Fido.FIDO2_FIRSTPARTY_API",
+                            new FidoClient.Builder(
+                                    FIRSTPARTY_DESCRIPTOR,
+                                    FIRSTPARTY_START_SERVICE_ACTION,
+                                    FIRSTPARTY_API_ID),
+                            FIRSTPARTY_CLIENT_KEY),
+                    FIRSTPARTY_DESCRIPTOR,
+                    /* callbackDescriptor */ null,
+                    /* registerMethodId */ 0,
+                    /* signMethodId */ 0,
+                    /* isUserVerifyingPlatformAuthenticatorAvailable */ 0,
+                    /* methodInterfaces */ null);
 
     private final String mDescriptor;
 
@@ -119,7 +251,7 @@ public final class Fido2ApiCall extends GoogleApi<ApiOptions.NoOptions> {
      * @param context the Android {@link Context} for the current process.
      */
     public Fido2ApiCall(Context context) {
-        this(context, BROWSER_API);
+        this(context, WebauthnModeProvider.getInstance().getFido2ApiCallParams());
     }
 
     /**
@@ -128,9 +260,9 @@ public final class Fido2ApiCall extends GoogleApi<ApiOptions.NoOptions> {
      * @param context the Android {@link Context} for the current process.
      * @param api the service to call. One of the public static Api objects from this class.
      */
-    public Fido2ApiCall(Context context, Pair<Api<ApiOptions.NoOptions>, String> api) {
-        super(context, api.first, ApiOptions.NO_OPTIONS, new ApiExceptionMapper());
-        mDescriptor = api.second;
+    public Fido2ApiCall(Context context, Fido2ApiCallParams apiParams) {
+        super(context, apiParams.mApi, ApiOptions.NO_OPTIONS, new ApiExceptionMapper());
+        mDescriptor = apiParams.mDescriptor;
     }
 
     public Parcel start() {
@@ -145,33 +277,36 @@ public final class Fido2ApiCall extends GoogleApi<ApiOptions.NoOptions> {
      * @param methodId one of the METHOD_* constants.
      * @param transactionId one of the TRANSACTION_* constants.
      * @param args a {@link Parcel}, created by {@link start}, that the callback and arguments have
-     *         been written to.
+     *     been written to.
      * @param callback the callback {@link Binder} that was added to args.
      */
     public <Result> Task<Result> run(
             int methodId, int transactionId, Parcel args, Callback<Result> callback) {
-        return doRead(TaskApiCall.<FidoClient, Result>builder()
-                              .run((impl, completionSource) -> {
-                                  callback.setCompletionSource(completionSource);
+        return doRead(
+                TaskApiCall.<FidoClient, Result>builder()
+                        .run(
+                                (impl, completionSource) -> {
+                                    callback.setCompletionSource(completionSource);
 
-                                  Parcel out = Parcel.obtain();
-                                  try {
-                                      impl.getService().asBinder().transact(
-                                              transactionId, args, out, 0);
-                                      out.readException();
-                                  } finally {
-                                      args.recycle();
-                                      out.recycle();
-                                  }
-                              })
-                              .setMethodKey(methodId)
-                              // It's possible to call `.setFeatures` here with a Feature[].
-                              // However, the version of play-services-basement used at the time of
-                              // writing crashes if a feature is missing in the target Play Services
-                              // process. Thus we'll need to check the version number explicitly.
-                              // (Which is a good idea anyway because we might not want to direct
-                              // the user to the Play Store to update Play Services.)
-                              .build());
+                                    Parcel out = Parcel.obtain();
+                                    try {
+                                        impl.getService()
+                                                .asBinder()
+                                                .transact(transactionId, args, out, 0);
+                                        out.readException();
+                                    } finally {
+                                        args.recycle();
+                                        out.recycle();
+                                    }
+                                })
+                        .setMethodKey(methodId)
+                        // It's possible to call `.setFeatures` here with a Feature[].
+                        // However, the version of play-services-basement used at the time of
+                        // writing crashes if a feature is missing in the target Play Services
+                        // process. Thus we'll need to check the version number explicitly.
+                        // (Which is a good idea anyway because we might not want to direct
+                        // the user to the Play Store to update Play Services.)
+                        .build());
     }
 
     public static final class BooleanResult extends Binder implements Callback<Boolean> {
@@ -236,12 +371,12 @@ public final class Fido2ApiCall extends GoogleApi<ApiOptions.NoOptions> {
         }
     }
 
-    public static final class WebAuthnCredentialDetailsListResult
-            extends Binder implements Callback<List<WebAuthnCredentialDetails>> {
-        private TaskCompletionSource<List<WebAuthnCredentialDetails>> mCompletionSource;
+    public static final class WebauthnCredentialDetailsListResult extends Binder
+            implements Callback<List<WebauthnCredentialDetails>> {
+        private TaskCompletionSource<List<WebauthnCredentialDetails>> mCompletionSource;
 
         @Override
-        public void setCompletionSource(TaskCompletionSource<List<WebAuthnCredentialDetails>> cs) {
+        public void setCompletionSource(TaskCompletionSource<List<WebauthnCredentialDetails>> cs) {
             mCompletionSource = cs;
         }
 
@@ -250,7 +385,6 @@ public final class Fido2ApiCall extends GoogleApi<ApiOptions.NoOptions> {
             data.enforceInterface("com.google.android.gms.fido.fido2.api.ICredentialListCallback");
             switch (code) {
                 case IBinder.FIRST_CALL_TRANSACTION + 0:
-                    List<WebAuthnCredentialDetails> credentials;
                     try {
                         mCompletionSource.setResult(Fido2Api.parseCredentialList(data));
                     } catch (IllegalArgumentException e) {
@@ -273,8 +407,8 @@ public final class Fido2ApiCall extends GoogleApi<ApiOptions.NoOptions> {
         }
     }
 
-    public static final class PendingIntentResult
-            extends Binder implements Callback<PendingIntent> {
+    public static final class PendingIntentResult extends Binder
+            implements Callback<PendingIntent> {
         private TaskCompletionSource<PendingIntent> mCompletionSource;
 
         @Override
@@ -287,7 +421,9 @@ public final class Fido2ApiCall extends GoogleApi<ApiOptions.NoOptions> {
             switch (code) {
                 case IBinder.FIRST_CALL_TRANSACTION + 0:
                     data.enforceInterface(
-                            "com.google.android.gms.fido.fido2.internal.privileged.IFido2PrivilegedCallbacks");
+                            WebauthnModeProvider.getInstance()
+                                    .getFido2ApiCallParams()
+                                    .mCallbackDescriptor);
 
                     Status status = null;
                     if (data.readInt() != 0) {
@@ -335,8 +471,14 @@ public final class Fido2ApiCall extends GoogleApi<ApiOptions.NoOptions> {
         private final String mDescriptor;
         private final String mStartServiceAction;
 
-        FidoClient(String descriptor, String startServiceAction, int apiId, Context context,
-                Looper looper, ClientSettings clientSettings, ConnectionCallbacks callbacks,
+        FidoClient(
+                String descriptor,
+                String startServiceAction,
+                int apiId,
+                Context context,
+                Looper looper,
+                ClientSettings clientSettings,
+                ConnectionCallbacks callbacks,
                 OnConnectionFailedListener failedListener) {
             super(context, looper, apiId, clientSettings, callbacks, failedListener);
             mDescriptor = descriptor;
@@ -368,7 +510,7 @@ public final class Fido2ApiCall extends GoogleApi<ApiOptions.NoOptions> {
         @Override
         public int getMinApkVersion() {
             // This minimum should be moot because it's enforced in `AuthenticatorImpl`.
-            return AuthenticatorImpl.GMSCORE_MIN_VERSION;
+            return GmsCoreUtils.GMSCORE_MIN_VERSION;
         }
 
         public static class Builder
@@ -384,11 +526,22 @@ public final class Fido2ApiCall extends GoogleApi<ApiOptions.NoOptions> {
             }
 
             @Override
-            public FidoClient buildClient(Context context, Looper looper,
-                    ClientSettings clientSettings, ApiOptions.NoOptions options,
-                    ConnectionCallbacks callbacks, OnConnectionFailedListener failedListener) {
-                return new FidoClient(mDescriptor, mStartServiceAction, mApiId, context, looper,
-                        clientSettings, callbacks, failedListener);
+            public FidoClient buildClient(
+                    Context context,
+                    Looper looper,
+                    ClientSettings clientSettings,
+                    ApiOptions.NoOptions options,
+                    ConnectionCallbacks callbacks,
+                    OnConnectionFailedListener failedListener) {
+                return new FidoClient(
+                        mDescriptor,
+                        mStartServiceAction,
+                        mApiId,
+                        context,
+                        looper,
+                        clientSettings,
+                        callbacks,
+                        failedListener);
             }
         }
     }

@@ -9,14 +9,13 @@
 
 #include <map>
 #include <memory>
+#include <optional>
 #include <string>
 #include <vector>
 
 #include "ash/components/arc/session/arc_service_manager.h"
-#include "ash/public/cpp/tablet_mode_observer.h"
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
-#include "base/time/time.h"
 #include "chrome/browser/ash/drive/drive_integration_service.h"
 #include "chrome/browser/ash/drive/file_system_util.h"
 #include "chrome/browser/ash/extensions/file_manager/device_event_router.h"
@@ -32,8 +31,6 @@
 #include "chrome/browser/ash/guest_os/public/guest_os_mount_provider.h"
 #include "chrome/browser/ash/guest_os/public/guest_os_mount_provider_registry.h"
 #include "chrome/common/extensions/api/file_manager_private.h"
-#include "chromeos/ash/components/disks/disk_mount_manager.h"
-#include "chromeos/ash/components/drivefs/sync_status_tracker.h"
 #include "chromeos/ash/components/settings/timezone_settings.h"
 #include "chromeos/dbus/dlp/dlp_client.h"
 #include "components/arc/intent_helper/arc_intent_helper_observer.h"
@@ -42,7 +39,7 @@
 #include "extensions/browser/extension_registry_observer.h"
 #include "services/network/public/cpp/network_connection_tracker.h"
 #include "storage/browser/file_system/file_system_operation.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
+#include "ui/display/display_observer.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 
@@ -52,6 +49,10 @@ class Profile;
 using OutputsType =
     extensions::api::file_manager_private::ProgressStatus::OutputsType;
 using file_manager::util::EntryDefinition;
+
+namespace display {
+enum class TabletState;
+}  // namespace display
 
 namespace ash::file_system_provider {
 
@@ -65,18 +66,18 @@ namespace file_manager {
 // affecting File Manager. Dispatches appropriate File Browser events.
 class EventRouter
     : public KeyedService,
-      public extensions::ExtensionRegistryObserver,
-      public ash::system::TimezoneSettings::Observer,
-      public VolumeManagerObserver,
-      public arc::ArcIntentHelperObserver,
-      public drive::DriveIntegrationServiceObserver,
-      public guest_os::GuestOsSharePath::Observer,
-      public ash::TabletModeObserver,
-      public file_manager::io_task::IOTaskController::Observer,
-      public guest_os::GuestOsMountProviderRegistry::Observer,
-      public chromeos::DlpClient::Observer,
-      public apps::AppRegistryCache::Observer,
-      public network::NetworkConnectionTracker::NetworkConnectionObserver {
+      extensions::ExtensionRegistryObserver,
+      ash::system::TimezoneSettings::Observer,
+      VolumeManagerObserver,
+      arc::ArcIntentHelperObserver,
+      drive::DriveIntegrationService::Observer,
+      guest_os::GuestOsSharePath::Observer,
+      display::DisplayObserver,
+      file_manager::io_task::IOTaskController::Observer,
+      guest_os::GuestOsMountProviderRegistry::Observer,
+      chromeos::DlpClient::Observer,
+      apps::AppRegistryCache::Observer,
+      network::NetworkConnectionTracker::NetworkConnectionObserver {
  public:
   using DispatchDirectoryChangeEventImplCallback =
       base::RepeatingCallback<void(const base::FilePath& virtual_path,
@@ -92,7 +93,7 @@ class EventRouter
 
   // arc::ArcIntentHelperObserver overrides.
   void OnIntentFiltersUpdated(
-      const absl::optional<std::string>& package_name) override;
+      const std::optional<std::string>& package_name) override;
 
   // KeyedService overrides.
   void Shutdown() override;
@@ -166,12 +167,12 @@ class EventRouter
   void SetDispatchDirectoryChangeEventImplForTesting(
       const DispatchDirectoryChangeEventImplCallback& callback);
 
-  // DriveIntegrationServiceObserver override.
+  // DriveIntegrationService::Observer implementation.
   void OnFileSystemMountFailed() override;
   void OnDriveConnectionStatusChanged(
-      drive::util::ConnectionStatusType status) override;
+      drive::util::ConnectionStatus status) override;
 
-  // guest_os::GuestOsSharePath::Observer overrides.
+  // GuestOsSharePath::Observer implementation.
   void OnPersistedPathRegistered(const std::string& vm_name,
                                  const base::FilePath& path) override;
   void OnUnshare(const std::string& vm_name,
@@ -179,9 +180,8 @@ class EventRouter
   void OnGuestRegistered(const guest_os::GuestId& guest) override;
   void OnGuestUnregistered(const guest_os::GuestId& guest) override;
 
-  // ash:TabletModeObserver overrides.
-  void OnTabletModeStarted() override;
-  void OnTabletModeEnded() override;
+  // display::DisplayObserver overrides.
+  void OnDisplayTabletStateChanged(display::TabletState state) override;
 
   // Notifies FilesApp that file drop to Plugin VM was not in a shared directory
   // and failed FilesApp will show the "Move to Windows files" dialog.
@@ -278,10 +278,6 @@ class EventRouter
 
   void NotifyDriveConnectionStatusChanged();
 
-  void DisplayDriveConfirmDialog(
-      const drivefs::mojom::DialogReason& reason,
-      base::OnceCallback<void(drivefs::mojom::DialogResult)> callback);
-
   // Used by `file_manager::ScopedSuppressDriveNotificationsForPath` to prevent
   // Drive notifications for a given file identified by its relative Drive path.
   void SuppressDriveNotificationsForFilePath(
@@ -329,11 +325,11 @@ class EventRouter
 
   std::map<base::FilePath, std::unique_ptr<FileWatcher>> file_watchers_;
   std::unique_ptr<PrefChangeRegistrar> pref_change_registrar_;
-  raw_ptr<Profile, ExperimentalAsh> profile_;
+  raw_ptr<Profile> profile_;
 
   std::unique_ptr<SystemNotificationManager> notification_manager_;
   std::unique_ptr<DeviceEventRouter> device_event_router_;
-  std::unique_ptr<DriveFsEventRouter> drivefs_event_router_;
+  const std::unique_ptr<DriveFsEventRouter> drivefs_event_router_;
 
   DispatchDirectoryChangeEventImplCallback
       dispatch_directory_change_event_impl_;
@@ -349,6 +345,8 @@ class EventRouter
   base::ScopedObservation<apps::AppRegistryCache,
                           apps::AppRegistryCache::Observer>
       app_registry_cache_observer_{this};
+
+  display::ScopedDisplayObserver display_observer_{this};
 
   // Note: This should remain the last member so it'll be destroyed and
   // invalidate the weak pointers before any other members are destroyed.

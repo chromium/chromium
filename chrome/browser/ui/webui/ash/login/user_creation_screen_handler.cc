@@ -7,7 +7,7 @@
 #include "base/values.h"
 #include "chrome/browser/ash/login/oobe_screen.h"
 #include "chrome/browser/ash/login/startup_utils.h"
-#include "chrome/grit/chromium_strings.h"
+#include "chrome/grit/branded_strings.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/login/localized_values_builder.h"
 #include "ui/chromeos/devicetype_utils.h"
@@ -102,12 +102,20 @@ void UserCreationScreenHandler::Show() {
   ShowInWebUI();
 }
 
+void UserCreationScreenHandler::SetDefaultStep() {
+  CallExternalAPI("setDefaultStep");
+}
+
 void UserCreationScreenHandler::SetTriageStep() {
   CallExternalAPI("setTriageStep");
 }
 
 void UserCreationScreenHandler::SetChildSetupStep() {
   CallExternalAPI("setChildSetupStep");
+}
+
+base::WeakPtr<UserCreationView> UserCreationScreenHandler::AsWeakPtr() {
+  return weak_ptr_factory_.GetWeakPtr();
 }
 
 void UserCreationScreenHandler::SetIsBackButtonVisible(bool value) {

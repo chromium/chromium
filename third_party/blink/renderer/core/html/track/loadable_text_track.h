@@ -44,7 +44,7 @@ class LoadableTextTrack final : public TextTrack {
   using TextTrack::AddListOfCues;
 
   wtf_size_t TrackElementIndex() const;
-  HTMLTrackElement* TrackElement() { return track_element_; }
+  HTMLTrackElement* TrackElement() { return track_element_.Get(); }
 
   bool IsDefault() const override;
 

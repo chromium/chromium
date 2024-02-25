@@ -7,7 +7,6 @@
 
   .subsection {
     margin-bottom: 0;
-    margin-top: 8px;
   }
 
   #description {
@@ -188,4 +187,12 @@
       pref="{{insertPref}}"
       aria-label="$i18n{sixPackKeyLabelInsert}">
   </keyboard-six-pack-key-row>
+  <template is="dom-if" if="[[shouldShowFkeys(keyboard.*)]]">
+    <fkey-row key="f11" aria-label="$i18n{f11KeyLabel}"
+        pref="{{f11KeyPref}}" keyboard="[[keyboard]]">
+    </fkey-row>
+    <fkey-row key="f12" aria-label="$i18n{f12KeyLabel}"
+        pref="{{f12KeyPref}}" keyboard="[[keyboard]]">
+    </fkey-row>
+  </template>
 </div>

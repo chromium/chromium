@@ -68,7 +68,7 @@ class SetSinkIdResolver : public ScriptPromiseResolver {
  private:
   void DoSetSinkId();
 
-  void OnSetSinkIdComplete(absl::optional<WebSetSinkIdError> error);
+  void OnSetSinkIdComplete(std::optional<WebSetSinkIdError> error);
 
   Member<HTMLMediaElement> element_;
   String sink_id_;
@@ -162,7 +162,7 @@ void SetSinkIdResolver::DoSetSinkId() {
 }
 
 void SetSinkIdResolver::OnSetSinkIdComplete(
-    absl::optional<WebSetSinkIdError> error) {
+    std::optional<WebSetSinkIdError> error) {
   if (!GetExecutionContext() || GetExecutionContext()->IsContextDestroyed())
     return;
 

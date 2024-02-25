@@ -23,7 +23,6 @@
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/text_utils.h"
 
-namespace views {
 
 namespace {
 // Padding that appears around the "Beta" label.
@@ -33,9 +32,8 @@ gfx::Outsets kInternalPadding = gfx::Outsets::VH(4, 10);
 int kCornerRadius = 10;
 
 // Colors used by the badge.
-ui::ColorId kTextColor = cros_tokens::LegacySemanticColorIds::kColorSelection;
-ui::ColorId kBackgroundColor =
-    cros_tokens::LegacySemanticColorIds::kHighlightColor;
+ui::ColorId kTextColor = cros_tokens::kCrosSysOnPrimaryContainer;
+ui::ColorId kBackgroundColor = cros_tokens::kCrosSysHighlightShape;
 
 gfx::FontList GetFont() {
   // TODO(b/284389804): Use TypographyToken::kCrosButton1
@@ -88,8 +86,6 @@ void BorealisBetaBadge::OnPaint(gfx::Canvas* canvas) {
                          badge_text_bounds);
 }
 
-BEGIN_METADATA(BorealisBetaBadge, View)
+BEGIN_METADATA(BorealisBetaBadge)
 ADD_READONLY_PROPERTY_METADATA(std::u16string, Text)
 END_METADATA
-
-}  // namespace views

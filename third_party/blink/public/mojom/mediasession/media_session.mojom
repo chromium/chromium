@@ -29,13 +29,8 @@ struct MediaSessionSeekToDetails {
   bool fast_seek;
 };
 
-struct MediaSessionPictureInPictureActionDetails {
-  bool automatic;
-};
-
 union MediaSessionActionDetails {
   MediaSessionSeekToDetails seek_to;
-  MediaSessionPictureInPictureActionDetails picture_in_picture;
 };
 
 // MediaMetadata
@@ -45,6 +40,7 @@ struct SpecMediaMetadata {
   mojo_base.mojom.String16 artist;
   mojo_base.mojom.String16 album;
   array<media_session.mojom.MediaImage> artwork;
+  array<media_session.mojom.ChapterInformation> chapterInfo;
 };
 
 interface MediaSessionService {

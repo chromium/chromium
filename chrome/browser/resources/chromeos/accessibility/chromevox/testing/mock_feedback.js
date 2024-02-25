@@ -96,21 +96,6 @@ MockFeedback = class {
     this.lastMatchedBraille_ = null;
   }
 
-  static async imports() {
-    await Promise.all([
-      // Alphabetical based on file path.
-      importModule(
-          'AbstractEarcons', '/chromevox/background/abstract_earcons.js'),
-      importModule(
-          'BrailleInterface',
-          '/chromevox/background/braille/braille_interface.js'),
-      importModule('ChromeVox', '/chromevox/background/chromevox.js'),
-      importModule('NavBraille', '/chromevox/common/braille/nav_braille.js'),
-      importModule('TtsInterface', '/chromevox/background/tts_interface.js'),
-      importModule('QueueMode', '/chromevox/common/tts_types.js'),
-    ]);
-  }
-
   /**
    * Install mock objects as |ChromeVox.tts| and |ChromeVox.braille|
    * to collect feedback.
@@ -444,44 +429,69 @@ MockFeedback = class {
     this.process_();
   }
 
-  /*** @private */
+  /** @private */
   process_() {
     if (!this.replaying_ || this.inProcess_) {
       return;
     }
     try {
       this.inProcess_ = true;
-      while (this.pendingActions_.length > 0) {
-        const action = this.pendingActions_[0];
-        if (action.perform()) {
-          this.pendingActions_.shift();
-          if (this.logTimeoutId_) {
-            clearTimeout(this.logTimeoutId_);
-            this.logTimeoutId_ = 0;
-          }
-        } else {
-          break;
-        }
-      }
-      if (this.pendingActions_.length === 0) {
-        if (this.finishedCallback_) {
-          this.finishedCallback_();
-          this.finishedCallback_ = null;
-        }
-        this.resolve_();
-      } else {
-        // If there are pending actions and no matching feedback for a few
-        // seconds, log the pending state to ease debugging.
-        if (!this.logTimeoutId_) {
-          this.logTimeoutId_ =
-              setTimeout((...args) => this.logPendingState_(...args), 2000);
-        }
-      }
+      this.performActionsUntilBlocked_();
     } catch (e) {
       this.reject_(e);
       throw e;
     } finally {
       this.inProcess_ = false;
+    }
+  }
+
+  /** @private */
+  performActionsUntilBlocked_() {
+    while (this.pendingActions_.length > 0) {
+      if (!this.performNextAction_()) {
+        break;
+      }
+    }
+    if (this.pendingActions_.length === 0) {
+      this.finished_();
+    } else {
+      this.blocked_();
+    }
+  }
+
+  /**
+   * @return {boolean}
+   * @private
+   */
+  performNextAction_() {
+    const action = this.pendingActions_[0];
+    if (action.perform()) {
+      this.pendingActions_.shift();
+      if (this.logTimeoutId_) {
+        clearTimeout(this.logTimeoutId_);
+        this.logTimeoutId_ = 0;
+      }
+      return true;
+    }
+    return false;
+  }
+
+  /** @private */
+  finished_() {
+    if (this.finishedCallback_) {
+      this.finishedCallback_();
+      this.finishedCallback_ = null;
+    }
+    this.resolve_();
+  }
+
+  /** @private */
+  blocked_() {
+    // If there are pending actions and no matching feedback for a few
+    // seconds, log the pending state to ease debugging.
+    if (!this.logTimeoutId_) {
+      this.logTimeoutId_ =
+          setTimeout((...args) => this.logPendingState_(...args), 2000);
     }
   }
 

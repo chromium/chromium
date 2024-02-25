@@ -34,7 +34,7 @@ import org.chromium.base.test.util.RequiresRestart;
 import org.chromium.chrome.browser.bookmarks.BookmarkModel;
 import org.chromium.chrome.browser.bookmarks.BookmarkModelObserver;
 import org.chromium.chrome.browser.bookmarks.BookmarkModelTest;
-import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.chrome.test.ChromeBrowserTestRule;
 import org.chromium.chrome.test.util.BookmarkTestUtil;
 import org.chromium.components.bookmarks.BookmarkId;
@@ -45,14 +45,11 @@ import org.chromium.url.GURL;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeoutException;
 
-/**
- * Tests functionality in BookmarkEditActivity.
- */
+/** Tests functionality in BookmarkEditActivity. */
 @RunWith(BaseJUnit4ClassRunner.class)
 @Batch(Batch.PER_CLASS)
 public class BookmarkEditTest {
-    @Rule
-    public final ChromeBrowserTestRule mChromeBrowserTestRule = new ChromeBrowserTestRule();
+    @Rule public final ChromeBrowserTestRule mChromeBrowserTestRule = new ChromeBrowserTestRule();
 
     private static final String TITLE_A = "a";
     private static final String TITLE_B = "b";
@@ -67,87 +64,103 @@ public class BookmarkEditTest {
     private static BookmarkEditActivity sBookmarkEditActivity;
 
     private static CallbackHelper sDestroyedCallback = new CallbackHelper();
-    private static ActivityStateListener sActivityStateListener = new ActivityStateListener() {
-        @Override
-        public void onActivityStateChange(Activity activity, int newState) {
-            if (newState == ActivityState.DESTROYED) sDestroyedCallback.notifyCalled();
-        }
-    };
+    private static ActivityStateListener sActivityStateListener =
+            new ActivityStateListener() {
+                @Override
+                public void onActivityStateChange(Activity activity, int newState) {
+                    if (newState == ActivityState.DESTROYED) sDestroyedCallback.notifyCalled();
+                }
+            };
     private CallbackHelper mModelChangedCallback = new CallbackHelper();
 
     @Before
     public void setUp() throws TimeoutException {
         if (sBookmarkEditActivity == null) {
-            TestThreadUtils.runOnUiThreadBlocking(() -> {
-                sBookmarkModel = BookmarkModel.getForProfile(Profile.getLastUsedRegularProfile());
-                sBookmarkModel.loadEmptyPartnerBookmarkShimForTesting();
-            });
+            TestThreadUtils.runOnUiThreadBlocking(
+                    () -> {
+                        sBookmarkModel =
+                                BookmarkModel.getForProfile(
+                                        ProfileManager.getLastUsedRegularProfile());
+                        sBookmarkModel.loadEmptyPartnerBookmarkShimForTesting();
+                    });
 
             BookmarkTestUtil.waitForBookmarkModelLoaded();
-            TestThreadUtils.runOnUiThreadBlocking(() -> {
-                sMobileNode = sBookmarkModel.getMobileFolderId();
-                sOtherNode = sBookmarkModel.getOtherFolderId();
-            });
-            sBookmarkId = BookmarkModelTest.addBookmark(
-                    sBookmarkModel, sMobileNode, 0, TITLE_A, new GURL(URL_A));
+            TestThreadUtils.runOnUiThreadBlocking(
+                    () -> {
+                        sMobileNode = sBookmarkModel.getMobileFolderId();
+                        sOtherNode = sBookmarkModel.getOtherFolderId();
+                    });
+            sBookmarkId =
+                    BookmarkModelTest.addBookmark(
+                            sBookmarkModel, sMobileNode, 0, TITLE_A, new GURL(URL_A));
 
-            sModelObserver = new BookmarkModelObserver() {
-                @Override
-                public void bookmarkModelChanged() {
-                    mModelChangedCallback.notifyCalled();
-                }
-            };
+            sModelObserver =
+                    new BookmarkModelObserver() {
+                        @Override
+                        public void bookmarkModelChanged() {
+                            mModelChangedCallback.notifyCalled();
+                        }
+                    };
             TestThreadUtils.runOnUiThreadBlocking(() -> sBookmarkModel.addObserver(sModelObserver));
 
             startEditActivity(sBookmarkId);
 
-            TestThreadUtils.runOnUiThreadBlocking(() -> {
-                ApplicationStatus.registerStateListenerForActivity(
-                        sActivityStateListener, sBookmarkEditActivity);
-            });
+            TestThreadUtils.runOnUiThreadBlocking(
+                    () -> {
+                        ApplicationStatus.registerStateListenerForActivity(
+                                sActivityStateListener, sBookmarkEditActivity);
+                    });
         }
     }
 
     @After
     public void resetBookmark() throws ExecutionException {
         if (getBookmarkItem(sBookmarkId) != null) {
-            TestThreadUtils.runOnUiThreadBlocking(() -> {
-                sBookmarkModel.setBookmarkTitle(sBookmarkId, TITLE_A);
-                sBookmarkModel.setBookmarkUrl(sBookmarkId, new GURL(URL_A));
-                sBookmarkModel.moveBookmark(sBookmarkId, sMobileNode, 0);
-            });
+            TestThreadUtils.runOnUiThreadBlocking(
+                    () -> {
+                        sBookmarkModel.setBookmarkTitle(sBookmarkId, TITLE_A);
+                        sBookmarkModel.setBookmarkUrl(sBookmarkId, new GURL(URL_A));
+                        sBookmarkModel.moveBookmark(sBookmarkId, sMobileNode, 0);
+                    });
         }
         if (sBookmarkEditActivity != null) {
-            TestThreadUtils.runOnUiThreadBlocking(() -> {
-                sBookmarkEditActivity.getTitleEditText().getEditText().setText(TITLE_A);
-                sBookmarkEditActivity.getUrlEditText().getEditText().setText(URL_A);
-            });
+            TestThreadUtils.runOnUiThreadBlocking(
+                    () -> {
+                        sBookmarkEditActivity.getTitleEditText().getEditText().setText(TITLE_A);
+                        sBookmarkEditActivity.getUrlEditText().getEditText().setText(URL_A);
+                    });
         }
     }
 
     @AfterClass
     public static void tearDown() {
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            sBookmarkModel.removeObserver(sModelObserver);
-            sBookmarkModel.removeAllUserBookmarks();
-            ApplicationStatus.unregisterActivityStateListener(sActivityStateListener);
-        });
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    sBookmarkModel.removeObserver(sModelObserver);
+                    sBookmarkModel.removeAllUserBookmarks();
+                    ApplicationStatus.unregisterActivityStateListener(sActivityStateListener);
+                });
     }
 
     @Test
     @MediumTest
     @Feature({"Bookmark"})
     public void testEditTitleAndUrl() throws ExecutionException, TimeoutException {
-        Assert.assertEquals("Incorrect title.", TITLE_A,
+        Assert.assertEquals(
+                "Incorrect title.",
+                TITLE_A,
                 sBookmarkEditActivity.getTitleEditText().getEditText().getText().toString());
-        Assert.assertEquals("Incorrect url.", URL_A,
+        Assert.assertEquals(
+                "Incorrect url.",
+                URL_A,
                 sBookmarkEditActivity.getUrlEditText().getEditText().getText().toString());
 
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            sBookmarkEditActivity.getTitleEditText().getEditText().setText(TITLE_B);
-            sBookmarkEditActivity.getUrlEditText().getEditText().setText(URL_B);
-            sBookmarkEditActivity.onStop();
-        });
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    sBookmarkEditActivity.getTitleEditText().getEditText().setText(TITLE_B);
+                    sBookmarkEditActivity.getUrlEditText().getEditText().setText(URL_B);
+                    sBookmarkEditActivity.onStop();
+                });
 
         BookmarkItem bookmarkItem = getBookmarkItem(sBookmarkId);
         Assert.assertEquals("Incorrect title after edit.", TITLE_B, bookmarkItem.getTitle());
@@ -158,16 +171,21 @@ public class BookmarkEditTest {
     @MediumTest
     @Feature({"Bookmark"})
     public void testEditEmptyInputRejected() throws ExecutionException, TimeoutException {
-        Assert.assertEquals("Incorrect title.", TITLE_A,
+        Assert.assertEquals(
+                "Incorrect title.",
+                TITLE_A,
                 sBookmarkEditActivity.getTitleEditText().getEditText().getText().toString());
-        Assert.assertEquals("Incorrect url.", URL_A,
+        Assert.assertEquals(
+                "Incorrect url.",
+                URL_A,
                 sBookmarkEditActivity.getUrlEditText().getEditText().getText().toString());
 
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            sBookmarkEditActivity.getTitleEditText().getEditText().setText("");
-            sBookmarkEditActivity.getUrlEditText().getEditText().setText("");
-            sBookmarkEditActivity.onStop();
-        });
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    sBookmarkEditActivity.getTitleEditText().getEditText().setText("");
+                    sBookmarkEditActivity.getUrlEditText().getEditText().setText("");
+                    sBookmarkEditActivity.onStop();
+                });
 
         BookmarkItem bookmarkItem = getBookmarkItem(sBookmarkId);
         Assert.assertEquals("Incorrect title after edit.", TITLE_A, bookmarkItem.getTitle());
@@ -178,13 +196,19 @@ public class BookmarkEditTest {
     @MediumTest
     @Feature({"Bookmark"})
     public void testInvalidUrlRejected() throws ExecutionException, TimeoutException {
-        Assert.assertEquals("Incorrect url.", URL_A,
+        Assert.assertEquals(
+                "Incorrect url.",
+                URL_A,
                 sBookmarkEditActivity.getUrlEditText().getEditText().getText().toString());
 
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            sBookmarkEditActivity.getUrlEditText().getEditText().setText("http:://?foo=bar");
-            sBookmarkEditActivity.onStop();
-        });
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    sBookmarkEditActivity
+                            .getUrlEditText()
+                            .getEditText()
+                            .setText("http:://?foo=bar");
+                    sBookmarkEditActivity.onStop();
+                });
 
         BookmarkItem bookmarkItem = getBookmarkItem(sBookmarkId);
         Assert.assertEquals("Incorrect url after edit.", URL_A, bookmarkItem.getUrl().getSpec());
@@ -195,9 +219,11 @@ public class BookmarkEditTest {
     @Feature({"Bookmark"})
     @RequiresRestart("tests destruction of BookmarkEditActivity")
     public void testEditActivityDeleteButton() throws ExecutionException, TimeoutException {
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            sBookmarkEditActivity.onOptionsItemSelected(sBookmarkEditActivity.getDeleteButton());
-        });
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    sBookmarkEditActivity.onOptionsItemSelected(
+                            sBookmarkEditActivity.getDeleteButton());
+                });
         sDestroyedCallback.waitForCallback(0);
 
         BookmarkItem bookmarkItem = getBookmarkItem(sBookmarkId);
@@ -214,7 +240,8 @@ public class BookmarkEditTest {
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> sBookmarkEditActivity.onOptionsItemSelected(item));
 
-        Assert.assertTrue("BookmarkActivity should be finishing or destroyed.",
+        Assert.assertTrue(
+                "BookmarkActivity should be finishing or destroyed.",
                 sBookmarkEditActivity.isFinishing() || sBookmarkEditActivity.isDestroyed());
     }
 
@@ -222,21 +249,29 @@ public class BookmarkEditTest {
     @MediumTest
     @Feature({"Bookmark"})
     public void testEditActivityReflectsModelChanges() throws TimeoutException, ExecutionException {
-        Assert.assertEquals("Incorrect title.", TITLE_A,
+        Assert.assertEquals(
+                "Incorrect title.",
+                TITLE_A,
                 sBookmarkEditActivity.getTitleEditText().getEditText().getText().toString());
-        Assert.assertEquals("Incorrect folder.", getBookmarkItem(sMobileNode).getTitle(),
+        Assert.assertEquals(
+                "Incorrect folder.",
+                getBookmarkItem(sMobileNode).getTitle(),
                 sBookmarkEditActivity.getFolderTextView().getText());
 
         int currentModelChangedCount = mModelChangedCallback.getCallCount();
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            sBookmarkModel.setBookmarkTitle(sBookmarkId, TITLE_B);
-            sBookmarkModel.moveBookmark(sBookmarkId, sOtherNode, 0);
-        });
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    sBookmarkModel.setBookmarkTitle(sBookmarkId, TITLE_B);
+                    sBookmarkModel.moveBookmark(sBookmarkId, sOtherNode, 0);
+                });
         mModelChangedCallback.waitForCallback(currentModelChangedCount);
 
-        Assert.assertEquals("Title shouldn't change after model update.", TITLE_A,
+        Assert.assertEquals(
+                "Title shouldn't change after model update.",
+                TITLE_A,
                 sBookmarkEditActivity.getTitleEditText().getEditText().getText().toString());
-        Assert.assertEquals("Folder should change after model update.",
+        Assert.assertEquals(
+                "Folder should change after model update.",
                 getBookmarkItem(sOtherNode).getTitle(),
                 sBookmarkEditActivity.getFolderTextView().getText());
     }
@@ -250,7 +285,8 @@ public class BookmarkEditTest {
         TestThreadUtils.runOnUiThreadBlocking(() -> sBookmarkModel.deleteBookmark(sBookmarkId));
         mModelChangedCallback.waitForCallback(currentModelChangedCount);
 
-        Assert.assertTrue("BookmarkActivity should be finishing or destroyed.",
+        Assert.assertTrue(
+                "BookmarkActivity should be finishing or destroyed.",
                 sBookmarkEditActivity.isFinishing() || sBookmarkEditActivity.isDestroyed());
     }
 
@@ -263,17 +299,20 @@ public class BookmarkEditTest {
                 () -> sBookmarkEditActivity.getFolderTextView().performClick());
         waitForMoveFolderActivity();
 
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            BookmarkFolderSelectActivity folderSelectActivity =
-                    (BookmarkFolderSelectActivity)
-                            ApplicationStatus.getLastTrackedFocusedActivity();
-            int pos = folderSelectActivity.getFolderPositionForTesting(testFolder);
-            Assert.assertNotEquals("Didn't find position for test folder.", -1, pos);
-            folderSelectActivity.performClickForTesting(pos);
-        });
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    BookmarkFolderSelectActivity folderSelectActivity =
+                            (BookmarkFolderSelectActivity)
+                                    ApplicationStatus.getLastTrackedFocusedActivity();
+                    int pos = folderSelectActivity.getFolderPositionForTesting(testFolder);
+                    Assert.assertNotEquals("Didn't find position for test folder.", -1, pos);
+                    folderSelectActivity.performClickForTesting(pos);
+                });
 
         waitForEditActivity();
-        Assert.assertEquals("Folder should change after folder activity finishes.", FOLDER_A,
+        Assert.assertEquals(
+                "Folder should change after folder activity finishes.",
+                FOLDER_A,
                 sBookmarkEditActivity.getFolderTextView().getText());
     }
 
@@ -286,18 +325,19 @@ public class BookmarkEditTest {
                 () -> sBookmarkEditActivity.getFolderTextView().performClick());
         waitForMoveFolderActivity();
 
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            Assert.assertTrue("Expected BookmarkFolderSelectActivity.",
-                    ApplicationStatus.getLastTrackedFocusedActivity()
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    Assert.assertTrue(
+                            "Expected BookmarkFolderSelectActivity.",
+                            ApplicationStatus.getLastTrackedFocusedActivity()
                                     instanceof BookmarkFolderSelectActivity);
-            sBookmarkModel.deleteBookmark(sBookmarkId);
-        });
-        // clang-format off
-        CriteriaHelper.pollUiThread(() ->
-                !(ApplicationStatus.getLastTrackedFocusedActivity()
-                      instanceof BookmarkFolderSelectActivity),
+                    sBookmarkModel.deleteBookmark(sBookmarkId);
+                });
+        CriteriaHelper.pollUiThread(
+                () ->
+                        !(ApplicationStatus.getLastTrackedFocusedActivity()
+                                instanceof BookmarkFolderSelectActivity),
                 "Timed out waiting for BookmarkFolderSelectActivity to close");
-        // clang-format on
     }
 
     private BookmarkItem getBookmarkItem(BookmarkId bookmarkId) throws ExecutionException {
@@ -310,8 +350,9 @@ public class BookmarkEditTest {
         Intent intent = new Intent(context, BookmarkEditActivity.class);
         intent.putExtra(BookmarkEditActivity.INTENT_BOOKMARK_ID, bookmarkId.toString());
         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-        sBookmarkEditActivity = (BookmarkEditActivity) InstrumentationRegistry.getInstrumentation()
-                                        .startActivitySync(intent);
+        sBookmarkEditActivity =
+                (BookmarkEditActivity)
+                        InstrumentationRegistry.getInstrumentation().startActivitySync(intent);
     }
 
     private BookmarkId addFolder(BookmarkId parent, int index, String title)
@@ -321,21 +362,20 @@ public class BookmarkEditTest {
     }
 
     private void waitForMoveFolderActivity() {
-        // clang-format off
-        CriteriaHelper.pollUiThread(()->
-                ApplicationStatus.getLastTrackedFocusedActivity()
-                    instanceof BookmarkFolderSelectActivity,
+        CriteriaHelper.pollUiThread(
+                () ->
+                        ApplicationStatus.getLastTrackedFocusedActivity()
+                                instanceof BookmarkFolderSelectActivity,
                 "Timed out waiting for BookmarkFolderSelectActivity");
-        // clang-format on
         InstrumentationRegistry.getInstrumentation().waitForIdleSync();
     }
 
     private void waitForEditActivity() {
-        // clang-format off
-        CriteriaHelper.pollUiThread(()->
-                ApplicationStatus.getLastTrackedFocusedActivity() instanceof BookmarkEditActivity,
+        CriteriaHelper.pollUiThread(
+                () ->
+                        ApplicationStatus.getLastTrackedFocusedActivity()
+                                instanceof BookmarkEditActivity,
                 "Timed out waiting for BookmarkEditActivity");
-        // clang-format on
         sBookmarkEditActivity =
                 (BookmarkEditActivity) ApplicationStatus.getLastTrackedFocusedActivity();
         InstrumentationRegistry.getInstrumentation().waitForIdleSync();

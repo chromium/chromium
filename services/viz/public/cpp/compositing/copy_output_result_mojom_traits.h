@@ -6,6 +6,7 @@
 #define SERVICES_VIZ_PUBLIC_CPP_COMPOSITING_COPY_OUTPUT_RESULT_MOJOM_TRAITS_H_
 
 #include <memory>
+#include <optional>
 
 #include "components/viz/common/frame_sinks/copy_output_result.h"
 #include "gpu/ipc/common/mailbox_mojom_traits.h"
@@ -15,7 +16,6 @@
 #include "services/viz/public/cpp/compositing/bitmap_in_shared_memory_mojom_traits.h"
 #include "services/viz/public/mojom/compositing/copy_output_result.mojom-shared.h"
 #include "services/viz/public/mojom/compositing/texture_releaser.mojom.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/geometry/mojom/geometry_mojom_traits.h"
 #include "ui/gfx/ipc/color/gfx_param_traits.h"
 #include "ui/gfx/mojom/color_space_mojom_traits.h"
@@ -54,7 +54,7 @@ struct StructTraits<viz::mojom::CopyOutputResultDataView,
   static const gfx::Rect& rect(
       const std::unique_ptr<viz::CopyOutputResult>& result);
 
-  static absl::optional<viz::CopyOutputResult::ScopedSkBitmap> bitmap(
+  static std::optional<viz::CopyOutputResult::ScopedSkBitmap> bitmap(
       const std::unique_ptr<viz::CopyOutputResult>& result);
 
   static mojo::OptionalAsPointer<const gpu::Mailbox> mailbox(

@@ -4,17 +4,16 @@
 
 package org.chromium.chrome.browser.complex_tasks;
 
-import org.chromium.base.annotations.CalledByNative;
-import org.chromium.base.annotations.JNINamespace;
-import org.chromium.base.annotations.NativeMethods;
+import org.jni_zero.CalledByNative;
+import org.jni_zero.JNINamespace;
+import org.jni_zero.NativeMethods;
+
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabAttributeKeys;
 import org.chromium.chrome.browser.tab.TabAttributes;
 import org.chromium.content_public.browser.WebContents;
 
-/**
- * Used for maintaining Task ID (see NavigationTaskId) data about a Tab
- */
+/** Used for maintaining Task ID (see NavigationTaskId) data about a Tab */
 @JNINamespace("tasks")
 public class TaskTabHelper {
     private static final long INVALID_ID = -1;
@@ -28,10 +27,14 @@ public class TaskTabHelper {
      */
     public static void createForTab(Tab tab, Tab parentTab) {
         if (parentTab == null) return;
-        TabAttributes.from(tab).set(TabAttributeKeys.PARENT_TAB_TASK_ID,
-                TaskTabHelperJni.get().getTaskId(parentTab.getWebContents()));
-        TabAttributes.from(tab).set(TabAttributeKeys.PARENT_TAB_ROOT_TASK_ID,
-                TaskTabHelperJni.get().getRootTaskId(parentTab.getWebContents()));
+        TabAttributes.from(tab)
+                .set(
+                        TabAttributeKeys.PARENT_TAB_TASK_ID,
+                        TaskTabHelperJni.get().getTaskId(parentTab.getWebContents()));
+        TabAttributes.from(tab)
+                .set(
+                        TabAttributeKeys.PARENT_TAB_ROOT_TASK_ID,
+                        TaskTabHelperJni.get().getRootTaskId(parentTab.getWebContents()));
     }
 
     @CalledByNative
@@ -50,6 +53,7 @@ public class TaskTabHelper {
     @NativeMethods
     interface Natives {
         long getTaskId(WebContents webContents);
+
         long getRootTaskId(WebContents webContents);
     }
 }

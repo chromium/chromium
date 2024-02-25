@@ -59,7 +59,7 @@ class PlaybackCommandDispatcher
       scoped_refptr<base::SequencedTaskRunner> task_runner,
       mojo::AssociatedRemote<mojom::RendererController> control_configuration,
       remoting::RendererRpcCallTranslator::FlushUntilCallback flush_until_cb,
-      absl::optional<ReceiverConfig::RemotingConstraints> remoting_constraints);
+      std::optional<ReceiverConfig::RemotingConstraints> remoting_constraints);
   ~PlaybackCommandDispatcher() override;
 
   void RegisterCommandSource(
@@ -136,8 +136,8 @@ class PlaybackCommandDispatcher
 
   // Handles for the demuxer stream data providers, to be used for dispatching
   // demuxer stream RPC commands.
-  absl::optional<StreamingInitializationInfo> streaming_init_info_;
-  absl::optional<ReceiverConfig::RemotingConstraints> remoting_constraints_;
+  std::optional<StreamingInitializationInfo> streaming_init_info_;
+  std::optional<ReceiverConfig::RemotingConstraints> remoting_constraints_;
   raw_ptr<Dispatcher> streaming_dispatcher_ = nullptr;
   raw_ptr<const openscreen::cast::ReceiverSession> receiver_session_ = nullptr;
 

@@ -90,7 +90,7 @@
 }
 
 - (void)hideOverlay {
-  if (!self.overlayView) {
+  if (!_overlayView) {
     return;
   }
   [self.overlayView removeFromSuperview];

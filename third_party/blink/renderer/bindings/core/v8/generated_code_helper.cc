@@ -199,7 +199,7 @@ void SetupIDLIteratorTemplate(
   instance_template->SetInternalFieldCount(kV8DefaultWrapperInternalFieldCount);
 }
 
-absl::optional<size_t> FindIndexInEnumStringTable(
+std::optional<size_t> FindIndexInEnumStringTable(
     v8::Isolate* isolate,
     v8::Local<v8::Value> value,
     base::span<const char* const> enum_value_table,
@@ -208,9 +208,9 @@ absl::optional<size_t> FindIndexInEnumStringTable(
   const String& str_value = NativeValueTraits<IDLString>::NativeValue(
       isolate, value, exception_state);
   if (UNLIKELY(exception_state.HadException()))
-    return absl::nullopt;
+    return std::nullopt;
 
-  absl::optional<size_t> index =
+  std::optional<size_t> index =
       FindIndexInEnumStringTable(str_value, enum_value_table);
 
   if (UNLIKELY(!index.has_value())) {
@@ -221,14 +221,14 @@ absl::optional<size_t> FindIndexInEnumStringTable(
   return index;
 }
 
-absl::optional<size_t> FindIndexInEnumStringTable(
+std::optional<size_t> FindIndexInEnumStringTable(
     const String& str_value,
     base::span<const char* const> enum_value_table) {
   for (size_t i = 0; i < enum_value_table.size(); ++i) {
     if (Equal(str_value.Impl(), enum_value_table[i]))
       return i;
   }
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 void ReportInvalidEnumSetToAttribute(v8::Isolate* isolate,
@@ -380,10 +380,10 @@ void InstallUnscopablePropertyNames(
 
 v8::Local<v8::Array> EnumerateIndexedProperties(v8::Isolate* isolate,
                                                 uint32_t length) {
-  Vector<v8::Local<v8::Value>> elements;
+  v8::LocalVector<v8::Value> elements(isolate);
   elements.reserve(length);
   for (uint32_t i = 0; i < length; ++i)
-    elements.UncheckedAppend(v8::Integer::New(isolate, i));
+    elements.push_back(v8::Integer::New(isolate, i));
   return v8::Array::New(isolate, elements.data(), elements.size());
 }
 
@@ -396,7 +396,7 @@ void PerformAttributeSetCEReactionsReflect(
     const char* interface_name,
     const char* attribute_name) {
   v8::Isolate* isolate = info.GetIsolate();
-  ExceptionState exception_state(isolate, ExceptionState::kSetterContext,
+  ExceptionState exception_state(isolate, ExceptionContextType::kAttributeSet,
                                  interface_name, attribute_name);
   if (UNLIKELY(info.Length() < 1)) {
     exception_state.ThrowTypeError(

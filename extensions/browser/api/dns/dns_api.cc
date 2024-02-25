@@ -29,7 +29,7 @@ DnsResolveFunction::~DnsResolveFunction() = default;
 
 ExtensionFunction::ResponseAction DnsResolveFunction::Run() {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  absl::optional<Resolve::Params> params = Resolve::Params::Create(args());
+  std::optional<Resolve::Params> params = Resolve::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params);
 
   // Intentionally pass host only (no scheme or non-zero port) to only get a
@@ -46,8 +46,8 @@ ExtensionFunction::ResponseAction DnsResolveFunction::Run() {
   receiver_.set_disconnect_handler(base::BindOnce(
       &DnsResolveFunction::OnComplete, base::Unretained(this),
       net::ERR_NAME_NOT_RESOLVED, net::ResolveErrorInfo(net::ERR_FAILED),
-      /*resolved_addresses=*/absl::nullopt,
-      /*endpoint_results_with_metadata=*/absl::nullopt));
+      /*resolved_addresses=*/std::nullopt,
+      /*endpoint_results_with_metadata=*/std::nullopt));
 
   // Balanced in OnComplete().
   AddRef();
@@ -57,8 +57,8 @@ ExtensionFunction::ResponseAction DnsResolveFunction::Run() {
 void DnsResolveFunction::OnComplete(
     int result,
     const net::ResolveErrorInfo& resolve_error_info,
-    const absl::optional<net::AddressList>& resolved_addresses,
-    const absl::optional<net::HostResolverEndpointResults>&
+    const std::optional<net::AddressList>& resolved_addresses,
+    const std::optional<net::HostResolverEndpointResults>&
         endpoint_results_with_metadata) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   receiver_.reset();

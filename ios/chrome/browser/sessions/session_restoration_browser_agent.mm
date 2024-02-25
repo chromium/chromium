@@ -4,32 +4,218 @@
 
 #import "ios/chrome/browser/sessions/session_restoration_browser_agent.h"
 
+#import <vector>
+
+#import "base/apple/foundation_util.h"
 #import "base/ios/ios_util.h"
 #import "base/memory/ptr_util.h"
 #import "base/metrics/histogram_functions.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/time/time.h"
-#import "components/favicon/ios/web_favicon_driver.h"
 #import "components/previous_session_info/previous_session_info.h"
-#import "ios/chrome/browser/sessions/session_ios.h"
-#import "ios/chrome/browser/sessions/session_ios_factory.h"
+#import "ios/chrome/browser/sessions/session_constants.h"
 #import "ios/chrome/browser/sessions/session_restoration_observer.h"
 #import "ios/chrome/browser/sessions/session_service_ios.h"
 #import "ios/chrome/browser/sessions/session_window_ios.h"
+#import "ios/chrome/browser/sessions/session_window_ios_factory.h"
+#import "ios/chrome/browser/sessions/web_state_list_serialization.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
-#import "ios/chrome/browser/shared/model/url/chrome_url_constants.h"
 #import "ios/chrome/browser/shared/model/web_state_list/all_web_state_observation_forwarder.h"
+#import "ios/chrome/browser/shared/model/web_state_list/order_controller.h"
+#import "ios/chrome/browser/shared/model/web_state_list/order_controller_source.h"
+#import "ios/chrome/browser/shared/model/web_state_list/removing_indexes.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
-#import "ios/chrome/browser/web/features.h"
-#import "ios/chrome/browser/web/page_placeholder_tab_helper.h"
-#import "ios/chrome/browser/web/session_state/web_session_state_tab_helper.h"
-#import "ios/chrome/browser/web_state_list/web_state_list_serialization.h"
-#import "ios/chrome/browser/web_state_list/web_usage_enabler/web_usage_enabler_browser_agent.h"
+#import "ios/chrome/browser/web/model/session_state/web_session_state_tab_helper.h"
 #import "ios/web/public/navigation/navigation_item.h"
 #import "ios/web/public/navigation/navigation_manager.h"
 #import "ios/web/public/session/crw_session_storage.h"
+#import "ios/web/public/session/crw_session_user_data.h"
 #import "ios/web/public/web_state.h"
+
+namespace {
+
+// A concrete implementation of OrderControllerSource that query data
+// from a SessionWindowIOS.
+class OrderControllerSourceFromSessionWindowIOS final
+    : public OrderControllerSource {
+ public:
+  // Constructor taking the `session_window` used to return the data.
+  explicit OrderControllerSourceFromSessionWindowIOS(
+      SessionWindowIOS* session_window);
+
+  // OrderControllerSource implementation.
+  int GetCount() const final;
+  int GetPinnedCount() const final;
+  int GetOpenerOfItemAt(int index) const final;
+  bool IsOpenerOfItemAt(int index,
+                        int opener_index,
+                        bool check_navigation_index) const final;
+
+ private:
+  SessionWindowIOS* session_window_;
+};
+
+OrderControllerSourceFromSessionWindowIOS::
+    OrderControllerSourceFromSessionWindowIOS(SessionWindowIOS* session_window)
+    : session_window_(session_window) {}
+
+int OrderControllerSourceFromSessionWindowIOS::GetCount() const {
+  return static_cast<int>(session_window_.sessions.count);
+}
+
+int OrderControllerSourceFromSessionWindowIOS::GetPinnedCount() const {
+  int pinned_count = 0;
+  for (CRWSessionStorage* session in session_window_.sessions) {
+    CRWSessionUserData* user_data = session.userData;
+    NSNumber* pinned_obj = base::apple::ObjCCast<NSNumber>(
+        [user_data objectForKey:kLegacyWebStateListOpenerIndexKey]);
+
+    // All pinned items are at the beginning of the list, so stop as
+    // soon as the first unpinned tab is found.
+    if (!pinned_obj || ![pinned_obj boolValue]) {
+      break;
+    }
+
+    ++pinned_count;
+  }
+  return pinned_count;
+}
+
+int OrderControllerSourceFromSessionWindowIOS::GetOpenerOfItemAt(
+    int index) const {
+  DCHECK_GE(index, 0);
+  DCHECK_LT(index, GetCount());
+
+  CRWSessionUserData* user_data = session_window_.sessions[index].userData;
+  NSNumber* opener_index_obj = base::apple::ObjCCast<NSNumber>(
+      [user_data objectForKey:kLegacyWebStateListOpenerIndexKey]);
+  if (!opener_index_obj) {
+    return WebStateList::kInvalidIndex;
+  }
+
+  return [opener_index_obj intValue];
+}
+
+bool OrderControllerSourceFromSessionWindowIOS::IsOpenerOfItemAt(
+    int index,
+    int opener_index,
+    bool check_navigation_index) const {
+  DCHECK_GE(index, 0);
+  DCHECK_LT(index, GetCount());
+
+  // `check_navigation_index` is only used for `DetermineInsertionIndex()`
+  // which should not be used, so we can assert that the parameter is false.
+  DCHECK(!check_navigation_index);
+
+  CRWSessionUserData* user_data = session_window_.sessions[index].userData;
+  NSNumber* opener_index_obj = base::apple::ObjCCast<NSNumber>(
+      [user_data objectForKey:kLegacyWebStateListOpenerIndexKey]);
+  if (!opener_index_obj || [opener_index_obj intValue] != opener_index) {
+    return false;
+  }
+
+  return true;
+}
+
+// Determines the new active index.
+NSUInteger GetActiveIndex(SessionWindowIOS* session_window,
+                          const RemovingIndexes& removing_indexes) {
+  int active_index = session_window.selectedIndex != NSNotFound
+                         ? static_cast<int>(session_window.selectedIndex)
+                         : WebStateList::kInvalidIndex;
+
+  const OrderControllerSourceFromSessionWindowIOS source(session_window);
+  const OrderController order_controller(source);
+
+  // Update the `active_index` using the shared logic and the knowledge
+  // of the removed items.
+  active_index = removing_indexes.IndexAfterRemoval(
+      order_controller.DetermineNewActiveIndex(active_index, removing_indexes));
+
+  return active_index != WebStateList::kInvalidIndex
+             ? static_cast<NSUInteger>(active_index)
+             : NSNotFound;
+}
+
+// Updates opener_index for `session` according to `removing_indexes`.
+void UpdateOpenerIndex(CRWSessionUserData* user_data,
+                       const RemovingIndexes& removing_indexes) {
+  NSNumber* opener_index_obj = base::apple::ObjCCast<NSNumber>(
+      [user_data objectForKey:kLegacyWebStateListOpenerIndexKey]);
+  if (!opener_index_obj) {
+    return;
+  }
+
+  const int opener_index =
+      removing_indexes.IndexAfterRemoval([opener_index_obj intValue]);
+  if (opener_index == WebStateList::kInvalidIndex) {
+    [user_data removeObjectForKey:kLegacyWebStateListOpenerIndexKey];
+    [user_data removeObjectForKey:kLegacyWebStateListOpenerNavigationIndexKey];
+  } else {
+    [user_data setObject:@(opener_index)
+                  forKey:kLegacyWebStateListOpenerIndexKey];
+  }
+}
+
+// Filters out session items that are considered invalid: either because they
+// are empty (no navigation), or duplicates.
+SessionWindowIOS* FilterInvalidTabs(SessionWindowIOS* session_window) {
+  DCHECK_LE(session_window.sessions.count, static_cast<NSUInteger>(INT_MAX));
+  const int sessions_count = static_cast<int>(session_window.sessions.count);
+
+  std::vector<int> items_to_drop;
+  std::set<web::WebStateID> seen_identifiers;
+  // Count the number of dropped tabs because they are duplicates, for
+  // reporting.
+  int duplicate_count = 0;
+  for (int index = 0; index < sessions_count; ++index) {
+    CRWSessionStorage* session = session_window.sessions[index];
+    if (session.itemStorages.count == 0) {
+      // Filter out session items that would be empty after restoration.
+      items_to_drop.push_back(index);
+    } else {
+      // Filter out session items that are duplicate (after something went bad
+      // somewhere).
+      if (seen_identifiers.contains(session.uniqueIdentifier)) {
+        items_to_drop.push_back(index);
+        duplicate_count++;
+      }
+      seen_identifiers.insert(session.uniqueIdentifier);
+    }
+  }
+  base::UmaHistogramCounts100("Tabs.DroppedDuplicatesCountOnSessionRestore",
+                              duplicate_count);
+
+  // Nothing to do.
+  if (items_to_drop.empty()) {
+    return session_window;
+  }
+
+  // Compute the new value of selectedIndex before updating the opener-opened
+  // relationship, as OrderController take into account the closed WebStates.
+  const RemovingIndexes removing_indexes(std::move(items_to_drop));
+  const NSUInteger selected_index =
+      GetActiveIndex(session_window, removing_indexes);
+
+  // Create the new list of sessions, updating the opener-opened relationship
+  // to take into account the dropped CRWSessionStorage items.
+  NSMutableArray<CRWSessionStorage*>* sessions = [[NSMutableArray alloc] init];
+  for (int index = 0; index < sessions_count; ++index) {
+    if (removing_indexes.Contains(index)) {
+      continue;
+    }
+
+    CRWSessionStorage* session = session_window.sessions[index];
+    UpdateOpenerIndex(session.userData, removing_indexes);
+    [sessions addObject:session];
+  }
+
+  return [[SessionWindowIOS alloc] initWithSessions:sessions
+                                      selectedIndex:selected_index];
+}
+
+}  // namespace
 
 BROWSER_USER_DATA_KEY_IMPL(SessionRestorationBrowserAgent)
 
@@ -38,23 +224,27 @@ SessionRestorationBrowserAgent::SessionRestorationBrowserAgent(
     SessionServiceIOS* session_service,
     bool enable_pinned_web_states)
     : session_service_(session_service),
-      web_state_list_(browser->GetWebStateList()),
-      web_enabler_(WebUsageEnablerBrowserAgent::FromBrowser(browser)),
-      browser_state_(browser->GetBrowserState()),
-      session_ios_factory_(
-          [[SessionIOSFactory alloc] initWithWebStateList:web_state_list_]),
+      browser_(browser),
+      session_window_ios_factory_([[SessionWindowIOSFactory alloc]
+          initWithWebStateList:browser_->GetWebStateList()]),
       enable_pinned_web_states_(enable_pinned_web_states),
-      all_web_state_observer_(
-          std::make_unique<AllWebStateObservationForwarder>(web_state_list_,
-                                                            this)) {
-  browser->AddObserver(this);
-  web_state_list_->AddObserver(this);
+      all_web_state_observer_(std::make_unique<AllWebStateObservationForwarder>(
+          browser_->GetWebStateList(),
+          this)) {
+  browser_->AddObserver(this);
+  browser_->GetWebStateList()->AddObserver(this);
 }
 
 SessionRestorationBrowserAgent::~SessionRestorationBrowserAgent() {
-  // Disconnect the session factory object as it's not granteed that it will be
-  // released before it's referenced by the session service.
-  [session_ios_factory_ disconnect];
+  // Disconnect the session factory object as it's not garanteed that it will
+  // be released before it's referenced by the session service.
+  [session_window_ios_factory_ disconnect];
+
+  // If the object is destroyed before the Browser, unregister it from the
+  // ObserverList explicitly.
+  if (browser_) {
+    BrowserDestroyed(browser_);
+  }
 }
 
 void SessionRestorationBrowserAgent::SetSessionID(
@@ -80,127 +270,25 @@ void SessionRestorationBrowserAgent::RemoveObserver(
 }
 
 void SessionRestorationBrowserAgent::RestoreSessionWindow(
-    SessionWindowIOS* window,
-    SessionRestorationScope scope) {
+    SessionWindowIOS* window) {
   // Start the session restoration.
   restoring_session_ = true;
 
   for (auto& observer : observers_) {
-    observer.WillStartSessionRestoration();
+    observer.WillStartSessionRestoration(browser_);
   }
 
-  const int old_count = web_state_list_->count();
-  const int old_first_non_pinned =
-      web_state_list_->GetIndexOfFirstNonPinnedWebState();
-  DCHECK_GE(old_count, 0);
-
-  web_state_list_->PerformBatchOperation(
-      base::BindOnce(^(WebStateList* web_state_list) {
-        web::WebState::CreateParams create_params(browser_state_);
-        DeserializeWebStateList(
-            web_state_list, window, scope, enable_pinned_web_states_,
-            base::BindRepeating(&web::WebState::CreateWithStorageSession,
-                                create_params));
-      }));
-
-  DCHECK_GE(web_state_list_->count(), old_count);
-  int restored_count = web_state_list_->count() - old_count;
-  int restored_pinned_count =
-      web_state_list_->GetIndexOfFirstNonPinnedWebState() -
-      old_first_non_pinned;
-
-  NSArray<CRWSessionStorage*>* restored_session_storages =
-      GetRestoredSessionStoragesForScope(scope, window.sessions,
-                                         restored_count);
-  DCHECK_EQ(restored_session_storages.count,
-            static_cast<NSUInteger>(restored_count));
-
-  std::vector<web::WebState*> restored_web_states;
-  restored_web_states.reserve(restored_count);
-
-  std::vector<web::WebState*> web_states_to_remove;
-  web_states_to_remove.reserve(restored_count);
-
-  // Find restored pinned WebStates.
-  for (int index = old_first_non_pinned;
-       index < web_state_list_->GetIndexOfFirstNonPinnedWebState(); ++index) {
-    web::WebState* web_state = web_state_list_->GetWebStateAt(index);
-
-    const int session_index = index - old_first_non_pinned;
-    DCHECK_EQ(restored_session_storages[session_index].uniqueIdentifier,
-              web_state->GetUniqueIdentifier());
-
-    if (restored_session_storages[session_index].itemStorages.count > 0) {
-      restored_web_states.push_back(web_state);
-    } else {
-      web_states_to_remove.push_back(web_state);
-    }
-  }
-
-  // Find restored non-pinned WebStates.
-  for (int index = old_count + restored_pinned_count;
-       index < web_state_list_->count(); ++index) {
-    web::WebState* web_state = web_state_list_->GetWebStateAt(index);
-
-    const int session_index = index - old_count;
-    DCHECK_EQ(restored_session_storages[session_index].uniqueIdentifier,
-              web_state->GetUniqueIdentifier());
-
-    if (restored_session_storages[session_index].itemStorages.count > 0) {
-      restored_web_states.push_back(web_state);
-    } else {
-      web_states_to_remove.push_back(web_state);
-    }
-  }
-
-  // Do not count WebState that are going to be removed.
-  restored_count -= web_states_to_remove.size();
-
-  DCHECK_EQ(restored_web_states.size(),
-            static_cast<unsigned long>(restored_count));
-
-  // Iterating backwards to avoid messing up the indexes.
-  for (int index = restored_count - 1; index >= 0; --index) {
-    web::WebState* web_state = restored_web_states[index];
-
-    const GURL& visible_url = web_state->GetVisibleURL();
-
-    if (visible_url != kChromeUINewTabURL) {
-      PagePlaceholderTabHelper::FromWebState(web_state)
-          ->AddPlaceholderForNextNavigation();
-    }
-
-    if (visible_url.is_valid()) {
-      favicon::WebFaviconDriver::FromWebState(web_state)->FetchFavicon(
-          visible_url, /*is_same_document=*/false);
-    }
-  }
-
-  for (web::WebState* web_state_to_remove : web_states_to_remove) {
-    const int index = web_state_list_->GetIndexOfWebState(web_state_to_remove);
-    DCHECK(index != WebStateList::kInvalidIndex);
-    web_state_list_->CloseWebStateAt(index, WebStateList::CLOSE_NO_FLAGS);
-  }
-
-  // If there was only one tab and it was the new tab page, clobber it.
-  if (old_count == 1) {
-    web::WebState* web_state = web_state_list_->GetWebStateAt(0);
-
-    // An "unrealized" WebState has no pending load. Checking for realization
-    // before accessing the NavigationManager prevents accidental realization
-    // of the WebState.
-    const bool has_pending_load =
-        web_state->IsRealized() &&
-        web_state->GetNavigationManager()->GetPendingItem() != nullptr;
-
-    if (!has_pending_load &&
-        (web_state->GetLastCommittedURL() == kChromeUINewTabURL)) {
-      web_state_list_->CloseWebStateAt(0, WebStateList::CLOSE_USER_ACTION);
-    }
-  }
+  // Restore the tabs (except the invalid ones).
+  const std::vector<web::WebState*> restored_web_states =
+      DeserializeWebStateList(
+          browser_->GetWebStateList(), FilterInvalidTabs(window),
+          enable_pinned_web_states_,
+          base::BindRepeating(
+              &web::WebState::CreateWithStorageSession,
+              web::WebState::CreateParams(browser_->GetBrowserState())));
 
   for (auto& observer : observers_) {
-    observer.SessionRestorationFinished(restored_web_states);
+    observer.SessionRestorationFinished(browser_, restored_web_states);
   }
 
   // Session restoration is complete.
@@ -219,18 +307,12 @@ void SessionRestorationBrowserAgent::RestoreSession() {
   base::ScopedClosureRunner scoped_restore =
       [session_info startSessionRestoration];
 
-  SessionIOS* session = [session_service_
+  SessionWindowIOS* session_window = [session_service_
       loadSessionWithSessionID:session_identifier_
-                     directory:browser_state_->GetStatePath()];
-  SessionWindowIOS* session_window = nil;
+                     directory:browser_->GetBrowserState()->GetStatePath()];
 
-  if (session) {
-    DCHECK_EQ(session.sessionWindows.count, 1u);
-    session_window = session.sessionWindows[0];
-  }
-
-  RestoreSessionWindow(session_window, SessionRestorationScope::kAll);
-  base::UmaHistogramTimes("Session.WebStates.LoadingTimeOnMainThread",
+  RestoreSessionWindow(session_window);
+  base::UmaHistogramTimes(kSessionHistogramLoadingTime,
                           base::TimeTicks::Now() - start_time);
 }
 
@@ -244,45 +326,25 @@ void SessionRestorationBrowserAgent::SaveSession(bool immediately) {
   if (!CanSaveSession())
     return;
 
-  if (web_state_list_->IsBatchInProgress()) {
+  WebStateList* const web_state_list = browser_->GetWebStateList();
+  if (web_state_list->IsBatchInProgress()) {
     save_after_batch_ = true;
     save_immediately_ = save_immediately_ || immediately;
     return;
   }
 
-  [session_service_ saveSession:session_ios_factory_
+  [session_service_ saveSession:session_window_ios_factory_
                       sessionID:session_identifier_
-                      directory:browser_state_->GetStatePath()
+                      directory:browser_->GetBrowserState()->GetStatePath()
                     immediately:immediately];
 
-  if (web::UseNativeSessionRestorationCache()) {
-    for (int i = 0; i < web_state_list_->count(); ++i) {
-      web::WebState* web_state = web_state_list_->GetWebStateAt(i);
-      WebSessionStateTabHelper::FromWebState(web_state)
-          ->SaveSessionStateIfStale();
+  for (int i = 0; i < web_state_list->count(); ++i) {
+    web::WebState* web_state = web_state_list->GetWebStateAt(i);
+    if (WebSessionStateTabHelper* tab_helper =
+            WebSessionStateTabHelper::FromWebState(web_state)) {
+      tab_helper->SaveSessionStateIfStale();
     }
   }
-}
-
-NSArray<CRWSessionStorage*>*
-SessionRestorationBrowserAgent::GetRestoredSessionStoragesForScope(
-    SessionRestorationScope scope,
-    NSArray<CRWSessionStorage*>* session_storages,
-    int restored_count) {
-  NSRange restored_sessions_range;
-
-  switch (scope) {
-    case SessionRestorationScope::kPinnedOnly:
-    case SessionRestorationScope::kAll:
-      restored_sessions_range = NSMakeRange(0, restored_count);
-      break;
-    case SessionRestorationScope::kRegularOnly:
-      restored_sessions_range =
-          NSMakeRange(session_storages.count - restored_count, restored_count);
-      break;
-  }
-
-  return [session_storages subarrayWithRange:restored_sessions_range];
 }
 
 bool SessionRestorationBrowserAgent::CanSaveSession() {
@@ -291,14 +353,15 @@ bool SessionRestorationBrowserAgent::CanSaveSession() {
     return false;
   }
 
-  // A session requires an active browser state and web state list.
-  if (!browser_state_ || !web_state_list_) {
+  // A session requires an active Browser.
+  if (!browser_) {
     return false;
   }
 
   // Sessions where there's no active tab shouldn't be saved, unless the web
   // state list is empty. This is a transitional state.
-  if (!web_state_list_->empty() && !web_state_list_->GetActiveWebState()) {
+  WebStateList* const web_state_list = browser_->GetWebStateList();
+  if (!web_state_list->empty() && !web_state_list->GetActiveWebState()) {
     return false;
   }
 
@@ -308,12 +371,14 @@ bool SessionRestorationBrowserAgent::CanSaveSession() {
 #pragma mark - BrowserObserver
 
 void SessionRestorationBrowserAgent::BrowserDestroyed(Browser* browser) {
-  DCHECK_EQ(browser->GetWebStateList(), web_state_list_);
+  DCHECK_EQ(browser, browser_);
   // Stop observing web states.
   all_web_state_observer_.reset();
+
   // Stop observing web state list.
-  browser->GetWebStateList()->RemoveObserver(this);
-  browser->RemoveObserver(this);
+  browser_->GetWebStateList()->RemoveObserver(this);
+  browser_->RemoveObserver(this);
+  browser_ = nullptr;
 }
 
 #pragma mark - WebStateListObserver
@@ -322,7 +387,8 @@ void SessionRestorationBrowserAgent::WebStateListWillChange(
     WebStateList* web_state_list,
     const WebStateListChangeDetach& detach_change,
     const WebStateListStatus& status) {
-  if (web_state_list->active_index() == status.index) {
+  DCHECK_EQ(browser_->GetWebStateList(), web_state_list);
+  if (web_state_list->active_index() == detach_change.detached_from_index()) {
     return;
   }
 
@@ -334,12 +400,13 @@ void SessionRestorationBrowserAgent::WebStateListDidChange(
     WebStateList* web_state_list,
     const WebStateListChange& change,
     const WebStateListStatus& status) {
+  DCHECK_EQ(browser_->GetWebStateList(), web_state_list);
   switch (change.type()) {
     case WebStateListChange::Type::kStatusOnly:
       // The activation is handled after this switch statement.
       break;
     case WebStateListChange::Type::kDetach: {
-      if (!web_state_list_->empty()) {
+      if (!web_state_list->empty()) {
         break;
       }
 

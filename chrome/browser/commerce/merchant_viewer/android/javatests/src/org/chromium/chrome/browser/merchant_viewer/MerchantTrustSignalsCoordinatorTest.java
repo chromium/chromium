@@ -41,6 +41,7 @@ import org.chromium.base.Callback;
 import org.chromium.base.FeatureList;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.util.Features;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.merchant_viewer.MerchantTrustMetrics.BottomSheetOpenedSource;
@@ -49,7 +50,6 @@ import org.chromium.chrome.browser.merchant_viewer.MerchantTrustSignalsCoordinat
 import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
-import org.chromium.chrome.test.util.browser.Features;
 import org.chromium.components.commerce.core.ShoppingService.MerchantInfo;
 import org.chromium.components.feature_engagement.EventConstants;
 import org.chromium.components.feature_engagement.Tracker;
@@ -63,87 +63,60 @@ import org.chromium.url.GURL;
 
 import java.util.concurrent.TimeUnit;
 
-/**
- * Tests for {@link MerchantTrustSignalsCoordinator}.
- */
+/** Tests for {@link MerchantTrustSignalsCoordinator}. */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
 @SuppressWarnings("DoNotMock") // Mocking GURL
 public class MerchantTrustSignalsCoordinatorTest {
-    @Rule
-    public TestRule mProcessor = new Features.JUnitProcessor();
+    @Rule public TestRule mProcessor = new Features.JUnitProcessor();
 
-    @Mock
-    private Context mMockContext;
+    @Mock private Context mMockContext;
 
-    @Mock
-    private Resources mMockResources;
+    @Mock private Resources mMockResources;
 
-    @Mock
-    private MerchantTrustMessageScheduler mMockMerchantMessageScheduler;
+    @Mock private MerchantTrustMessageScheduler mMockMerchantMessageScheduler;
 
-    @Mock
-    private ObservableSupplier<Tab> mMockTabProvider;
+    @Mock private ObservableSupplier<Tab> mMockTabProvider;
 
-    @Mock
-    private Tab mMockTab;
+    @Mock private Tab mMockTab;
 
-    @Mock
-    private ObservableSupplier<Profile> mMockProfileSupplier;
+    @Mock private ObservableSupplier<Profile> mMockProfileSupplier;
 
-    @Mock
-    private Profile mMockProfile;
+    @Mock private Profile mMockProfile;
 
-    @Mock
-    private MerchantTrustMetrics mMockMetrics;
+    @Mock private MerchantTrustMetrics mMockMetrics;
 
-    @Mock
-    private WebContents mMockWebContents;
+    @Mock private WebContents mMockWebContents;
 
-    @Mock
-    private GURL mMockGurl;
+    @Mock private GURL mMockGurl;
 
-    @Mock
-    private GURL mMockGurl2;
+    @Mock private GURL mMockGurl2;
 
-    @Mock
-    private MerchantTrustSignalsDataProvider mMockMerchantTrustDataProvider;
+    @Mock private MerchantTrustSignalsDataProvider mMockMerchantTrustDataProvider;
 
-    @Mock
-    private MerchantTrustSignalsEventStorage mMockMerchantTrustStorage;
+    @Mock private MerchantTrustSignalsEventStorage mMockMerchantTrustStorage;
 
-    @Mock
-    private MerchantTrustSignalsStorageFactory mMockMerchantTrustStorageFactory;
+    @Mock private MerchantTrustSignalsStorageFactory mMockMerchantTrustStorageFactory;
 
-    @Mock
-    private MerchantTrustSignalsEvent mMockMerchantTrustSignalsEvent;
+    @Mock private MerchantTrustSignalsEvent mMockMerchantTrustSignalsEvent;
 
-    @Mock
-    private MerchantTrustBottomSheetCoordinator mMockDetailsTabCoordinator;
+    @Mock private MerchantTrustBottomSheetCoordinator mMockDetailsTabCoordinator;
 
-    @Mock
-    private NavigationHandle mMockNavigationHandle;
+    @Mock private NavigationHandle mMockNavigationHandle;
 
-    @Mock
-    private NavigationHandle mMockNavigationHandle2;
+    @Mock private NavigationHandle mMockNavigationHandle2;
 
-    @Mock
-    private PrefService mMockPrefService;
+    @Mock private PrefService mMockPrefService;
 
-    @Mock
-    private WindowAndroid mMockWindowAndroid;
+    @Mock private WindowAndroid mMockWindowAndroid;
 
-    @Mock
-    private OmniboxIconController mMockIconController;
+    @Mock private OmniboxIconController mMockIconController;
 
-    @Mock
-    private Drawable mMockDrawable;
+    @Mock private Drawable mMockDrawable;
 
-    @Mock
-    private Tracker mMockTracker;
+    @Mock private Tracker mMockTracker;
 
-    @Captor
-    private ArgumentCaptor<Runnable> mOnBottomSheetDismissedCaptor;
+    @Captor private ArgumentCaptor<Runnable> mOnBottomSheetDismissedCaptor;
 
     private static final String FAKE_HOST = "fake_host";
     private static final String DIFFERENT_HOST = "different_host";
@@ -184,10 +157,12 @@ public class MerchantTrustSignalsCoordinatorTest {
         doAnswer((Answer<String>) invocation -> mSerializedTimestamps)
                 .when(mMockPrefService)
                 .getString(eq(Pref.COMMERCE_MERCHANT_VIEWER_MESSAGES_SHOWN_TIME));
-        doAnswer((Answer<Void>) invocation -> {
-            mSerializedTimestamps = (String) invocation.getArguments()[1];
-            return null;
-        })
+        doAnswer(
+                        (Answer<Void>)
+                                invocation -> {
+                                    mSerializedTimestamps = (String) invocation.getArguments()[1];
+                                    return null;
+                                })
                 .when(mMockPrefService)
                 .setString(
                         eq(Pref.COMMERCE_MERCHANT_VIEWER_MESSAGES_SHOWN_TIME), any(String.class));
@@ -196,29 +171,43 @@ public class MerchantTrustSignalsCoordinatorTest {
         setMockTrustSignalsEventData(FAKE_HOST, mMockMerchantTrustSignalsEvent);
 
         mTestValues = new FeatureList.TestValues();
-        mTestValues.addFieldTrialParamOverride(ChromeFeatureList.COMMERCE_MERCHANT_VIEWER,
-                MerchantViewerConfig.TRUST_SIGNALS_MESSAGE_WINDOW_DURATION_PARAM, "-1");
-        mTestValues.addFieldTrialParamOverride(ChromeFeatureList.COMMERCE_MERCHANT_VIEWER,
-                MerchantViewerConfig.TRUST_SIGNALS_MESSAGE_DISABLED_PARAM, "false");
-        mTestValues.addFieldTrialParamOverride(ChromeFeatureList.COMMERCE_MERCHANT_VIEWER,
-                MerchantViewerConfig.TRUST_SIGNALS_MESSAGE_RATING_THRESHOLD_PARAM, "4.0");
-        mTestValues.addFieldTrialParamOverride(ChromeFeatureList.COMMERCE_MERCHANT_VIEWER,
+        mTestValues.addFieldTrialParamOverride(
+                ChromeFeatureList.COMMERCE_MERCHANT_VIEWER,
+                MerchantViewerConfig.TRUST_SIGNALS_MESSAGE_WINDOW_DURATION_PARAM,
+                "-1");
+        mTestValues.addFieldTrialParamOverride(
+                ChromeFeatureList.COMMERCE_MERCHANT_VIEWER,
+                MerchantViewerConfig.TRUST_SIGNALS_MESSAGE_DISABLED_PARAM,
+                "false");
+        mTestValues.addFieldTrialParamOverride(
+                ChromeFeatureList.COMMERCE_MERCHANT_VIEWER,
+                MerchantViewerConfig.TRUST_SIGNALS_MESSAGE_RATING_THRESHOLD_PARAM,
+                "4.0");
+        mTestValues.addFieldTrialParamOverride(
+                ChromeFeatureList.COMMERCE_MERCHANT_VIEWER,
                 MerchantViewerConfig
                         .TRUST_SIGNALS_NON_PERSONALIZED_FAMILIARITY_SCORE_THRESHOLD_PARAM,
                 "0.8");
         FeatureList.setTestValues(mTestValues);
 
         mMessageContext = new MerchantTrustMessageContext(mMockNavigationHandle, mMockWebContents);
-        mCoordinator = spy(new MerchantTrustSignalsCoordinator(mMockContext, mMockWindowAndroid,
-                mMockMerchantMessageScheduler, mMockTabProvider, mMockMerchantTrustDataProvider,
-                mMockProfileSupplier, mMockMetrics, mMockDetailsTabCoordinator,
-                mMockMerchantTrustStorageFactory));
+        mCoordinator =
+                spy(
+                        new MerchantTrustSignalsCoordinator(
+                                mMockContext,
+                                mMockWindowAndroid,
+                                mMockMerchantMessageScheduler,
+                                mMockTabProvider,
+                                mMockMerchantTrustDataProvider,
+                                mMockProfileSupplier,
+                                mMockMetrics,
+                                mMockDetailsTabCoordinator,
+                                mMockMerchantTrustStorageFactory));
         doReturn(0.0)
                 .when(mCoordinator)
                 .getSiteEngagementScore(any(Profile.class), any(String.class));
         doReturn(mMockPrefService).when(mCoordinator).getPrefService();
         doReturn(mMockDrawable).when(mCoordinator).getStoreIconDrawable();
-        doReturn(false).when(mCoordinator).isStoreInfoFeatureEnabled();
         doReturn(true).when(mCoordinator).isOnSecureWebsite(any(WebContents.class));
     }
 
@@ -315,8 +304,10 @@ public class MerchantTrustSignalsCoordinatorTest {
     @SmallTest
     @Test
     public void testMaybeDisplayMessage_LastEventWithinTimeWindow() {
-        mTestValues.addFieldTrialParamOverride(ChromeFeatureList.COMMERCE_MERCHANT_VIEWER,
-                MerchantViewerConfig.TRUST_SIGNALS_MESSAGE_WINDOW_DURATION_PARAM, "60000");
+        mTestValues.addFieldTrialParamOverride(
+                ChromeFeatureList.COMMERCE_MERCHANT_VIEWER,
+                MerchantViewerConfig.TRUST_SIGNALS_MESSAGE_WINDOW_DURATION_PARAM,
+                "60000");
         doReturn(System.currentTimeMillis() - TimeUnit.SECONDS.toMillis(10))
                 .when(mMockMerchantTrustSignalsEvent)
                 .getTimestamp();
@@ -373,10 +364,14 @@ public class MerchantTrustSignalsCoordinatorTest {
     @SmallTest
     @Test
     public void testMaybeDisplayMessage_WithSiteEngagementAboveThreshold() {
-        mTestValues.addFieldTrialParamOverride(ChromeFeatureList.COMMERCE_MERCHANT_VIEWER,
-                MerchantViewerConfig.TRUST_SIGNALS_USE_SITE_ENGAGEMENT_PARAM, "true");
-        mTestValues.addFieldTrialParamOverride(ChromeFeatureList.COMMERCE_MERCHANT_VIEWER,
-                MerchantViewerConfig.TRUST_SIGNALS_SITE_ENGAGEMENT_THRESHOLD_PARAM, "80.0");
+        mTestValues.addFieldTrialParamOverride(
+                ChromeFeatureList.COMMERCE_MERCHANT_VIEWER,
+                MerchantViewerConfig.TRUST_SIGNALS_USE_SITE_ENGAGEMENT_PARAM,
+                "true");
+        mTestValues.addFieldTrialParamOverride(
+                ChromeFeatureList.COMMERCE_MERCHANT_VIEWER,
+                MerchantViewerConfig.TRUST_SIGNALS_SITE_ENGAGEMENT_THRESHOLD_PARAM,
+                "80.0");
         doReturn(90.0)
                 .when(mCoordinator)
                 .getSiteEngagementScore(any(Profile.class), any(String.class));
@@ -390,10 +385,14 @@ public class MerchantTrustSignalsCoordinatorTest {
     @SmallTest
     @Test
     public void testMaybeDisplayMessage_WithSiteEngagementBelowThreshold() {
-        mTestValues.addFieldTrialParamOverride(ChromeFeatureList.COMMERCE_MERCHANT_VIEWER,
-                MerchantViewerConfig.TRUST_SIGNALS_USE_SITE_ENGAGEMENT_PARAM, "true");
-        mTestValues.addFieldTrialParamOverride(ChromeFeatureList.COMMERCE_MERCHANT_VIEWER,
-                MerchantViewerConfig.TRUST_SIGNALS_SITE_ENGAGEMENT_THRESHOLD_PARAM, "80.0");
+        mTestValues.addFieldTrialParamOverride(
+                ChromeFeatureList.COMMERCE_MERCHANT_VIEWER,
+                MerchantViewerConfig.TRUST_SIGNALS_USE_SITE_ENGAGEMENT_PARAM,
+                "true");
+        mTestValues.addFieldTrialParamOverride(
+                ChromeFeatureList.COMMERCE_MERCHANT_VIEWER,
+                MerchantViewerConfig.TRUST_SIGNALS_SITE_ENGAGEMENT_THRESHOLD_PARAM,
+                "80.0");
         doReturn(70.0)
                 .when(mCoordinator)
                 .getSiteEngagementScore(any(Profile.class), any(String.class));
@@ -429,8 +428,10 @@ public class MerchantTrustSignalsCoordinatorTest {
     @SmallTest
     @Test
     public void testMaybeDisplayMessage_MessageDisabledForAllMerchants() {
-        mTestValues.addFieldTrialParamOverride(ChromeFeatureList.COMMERCE_MERCHANT_VIEWER,
-                MerchantViewerConfig.TRUST_SIGNALS_MESSAGE_DISABLED_PARAM, "true");
+        mTestValues.addFieldTrialParamOverride(
+                ChromeFeatureList.COMMERCE_MERCHANT_VIEWER,
+                MerchantViewerConfig.TRUST_SIGNALS_MESSAGE_DISABLED_PARAM,
+                "true");
 
         mCoordinator.maybeDisplayMessage(mDummyMerchantTrustSignals, mMessageContext, false);
 
@@ -536,10 +537,14 @@ public class MerchantTrustSignalsCoordinatorTest {
     @SmallTest
     @Test
     public void testOnlyAbleToShowThreeMessagesInGivenTime() {
-        mTestValues.addFieldTrialParamOverride(ChromeFeatureList.COMMERCE_MERCHANT_VIEWER,
-                MerchantViewerConfig.TRUST_SIGNALS_MAX_ALLOWED_NUMBER_IN_GIVEN_WINDOW_PARAM, "3");
-        mTestValues.addFieldTrialParamOverride(ChromeFeatureList.COMMERCE_MERCHANT_VIEWER,
-                MerchantViewerConfig.TRUST_SIGNALS_NUMBER_CHECK_WINDOW_DURATION_PARAM, "60000");
+        mTestValues.addFieldTrialParamOverride(
+                ChromeFeatureList.COMMERCE_MERCHANT_VIEWER,
+                MerchantViewerConfig.TRUST_SIGNALS_MAX_ALLOWED_NUMBER_IN_GIVEN_WINDOW_PARAM,
+                "3");
+        mTestValues.addFieldTrialParamOverride(
+                ChromeFeatureList.COMMERCE_MERCHANT_VIEWER,
+                MerchantViewerConfig.TRUST_SIGNALS_NUMBER_CHECK_WINDOW_DURATION_PARAM,
+                "60000");
 
         // We won't reach the max allowed number until we show three messages.
         Assert.assertFalse(mCoordinator.hasReachedMaxAllowedMessageNumberInGivenTime());
@@ -569,49 +574,62 @@ public class MerchantTrustSignalsCoordinatorTest {
     @SmallTest
     @Test
     public void testMaybeShowStoreIcon() {
-        doReturn(true).when(mCoordinator).isStoreInfoFeatureEnabled();
         mCoordinator.setOmniboxIconController(mMockIconController);
 
         mCoordinator.maybeShowStoreIcon(null, true);
         verify(mMockIconController, times(0))
-                .showStoreIcon(eq(mMockWindowAndroid), eq(FAKE_URL), eq(mMockDrawable), anyInt(),
+                .showStoreIcon(
+                        eq(mMockWindowAndroid),
+                        eq(FAKE_URL),
+                        eq(mMockDrawable),
+                        anyInt(),
                         anyBoolean());
 
         mCoordinator.maybeShowStoreIcon(FAKE_URL, true);
         verify(mMockIconController, times(1))
-                .showStoreIcon(eq(mMockWindowAndroid), eq(FAKE_URL), eq(mMockDrawable), anyInt(),
+                .showStoreIcon(
+                        eq(mMockWindowAndroid),
+                        eq(FAKE_URL),
+                        eq(mMockDrawable),
+                        anyInt(),
                         eq(true));
 
         mCoordinator.maybeShowStoreIcon(FAKE_URL, false);
         verify(mMockIconController, times(1))
-                .showStoreIcon(eq(mMockWindowAndroid), eq(FAKE_URL), eq(mMockDrawable), anyInt(),
+                .showStoreIcon(
+                        eq(mMockWindowAndroid),
+                        eq(FAKE_URL),
+                        eq(mMockDrawable),
+                        anyInt(),
                         eq(false));
 
         mCoordinator.setOmniboxIconController(null);
     }
 
     private void setMockTrustSignalsData(MerchantInfo merchantInfo) {
-        doAnswer(new Answer<Void>() {
-            @Override
-            public Void answer(InvocationOnMock invocation) {
-                Callback callback = (Callback) invocation.getArguments()[2];
-                callback.onResult(merchantInfo);
-                return null;
-            }
-        })
+        doAnswer(
+                        new Answer<Void>() {
+                            @Override
+                            public Void answer(InvocationOnMock invocation) {
+                                Callback callback = (Callback) invocation.getArguments()[2];
+                                callback.onResult(merchantInfo);
+                                return null;
+                            }
+                        })
                 .when(mMockMerchantTrustDataProvider)
                 .getDataForUrl(any(Profile.class), any(GURL.class), any(Callback.class));
     }
 
     private void setMockTrustSignalsEventData(String hostname, MerchantTrustSignalsEvent event) {
-        doAnswer(new Answer<Void>() {
-            @Override
-            public Void answer(InvocationOnMock invocation) {
-                Callback callback = (Callback) invocation.getArguments()[1];
-                callback.onResult(event);
-                return null;
-            }
-        })
+        doAnswer(
+                        new Answer<Void>() {
+                            @Override
+                            public Void answer(InvocationOnMock invocation) {
+                                Callback callback = (Callback) invocation.getArguments()[1];
+                                callback.onResult(event);
+                                return null;
+                            }
+                        })
                 .when(mMockMerchantTrustStorage)
                 .load(eq(hostname), any(Callback.class));
     }
@@ -619,17 +637,25 @@ public class MerchantTrustSignalsCoordinatorTest {
     private void verifySchedulingMessage(boolean messageScheduled, boolean shouldExpediteMessage) {
         if (messageScheduled) {
             verify(mMockMerchantMessageScheduler, times(1))
-                    .schedule(any(PropertyModel.class), anyDouble(),
+                    .schedule(
+                            any(PropertyModel.class),
+                            anyDouble(),
                             any(MerchantTrustMessageContext.class),
-                            eq(shouldExpediteMessage
+                            eq(
+                                    shouldExpediteMessage
                                             ? MerchantTrustMessageScheduler.MESSAGE_ENQUEUE_NO_DELAY
-                                            : (long) MerchantViewerConfig
-                                                      .getDefaultTrustSignalsMessageDelay()),
+                                            : (long)
+                                                    MerchantViewerConfig
+                                                            .getDefaultTrustSignalsMessageDelay()),
                             any(Callback.class));
         } else {
             verify(mMockMerchantMessageScheduler, times(0))
-                    .schedule(any(PropertyModel.class), anyDouble(),
-                            any(MerchantTrustMessageContext.class), anyLong(), any(Callback.class));
+                    .schedule(
+                            any(PropertyModel.class),
+                            anyDouble(),
+                            any(MerchantTrustMessageContext.class),
+                            anyLong(),
+                            any(Callback.class));
         }
     }
 }

@@ -18,6 +18,7 @@
 #include "ash/webui/settings/public/constants/routes.mojom.h"
 #include "ash/webui/settings/public/constants/setting.mojom.h"
 #include "base/command_line.h"
+#include "base/i18n/time_formatting.h"
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
@@ -26,7 +27,6 @@
 #include "base/notreached.h"
 #include "base/strings/escape.h"
 #include "base/strings/strcat.h"
-#include "base/strings/stringprintf.h"
 #include "base/trace_event/trace_event.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
@@ -79,6 +79,7 @@
 #include "components/session_manager/core/session_manager_observer.h"
 #include "components/user_manager/user_manager.h"
 #include "third_party/cros_system_api/dbus/shill/dbus-constants.h"
+#include "third_party/icu/source/i18n/unicode/timezone.h"
 #include "ui/events/event_constants.h"
 #include "url/gurl.h"
 
@@ -221,8 +222,8 @@ class SystemTrayClientImpl::EnterpriseAccountObserver
   ~EnterpriseAccountObserver() override = default;
 
  private:
-  const raw_ptr<SystemTrayClientImpl, ExperimentalAsh> owner_;
-  raw_ptr<Profile, ExperimentalAsh> profile_ = nullptr;
+  const raw_ptr<SystemTrayClientImpl> owner_;
+  raw_ptr<Profile> profile_ = nullptr;
 
   base::ScopedObservation<user_manager::UserManager,
                           user_manager::UserManager::UserSessionStateObserver>
@@ -397,7 +398,7 @@ void SystemTrayClientImpl::ShowBluetoothSettings(const std::string& device_id) {
 }
 
 void SystemTrayClientImpl::ShowBluetoothPairingDialog(
-    absl::optional<base::StringPiece> device_address) {
+    std::optional<base::StringPiece> device_address) {
   if (ash::BluetoothPairingDialog::ShowDialog(device_address)) {
     base::RecordAction(
         base::UserMetricsAction("StatusArea_Bluetooth_Connect_Unknown"));
@@ -408,7 +409,9 @@ void SystemTrayClientImpl::ShowDateSettings() {
   base::RecordAction(base::UserMetricsAction("ShowDateOptions"));
   // Everybody can change the time zone (even though it is a device setting).
   ShowSettingsSubPageForActiveUser(
-      chromeos::settings::mojom::kDateAndTimeSectionPath);
+      ash::features::IsOsSettingsRevampWayfindingEnabled()
+          ? chromeos::settings::mojom::kSystemPreferencesSectionPath
+          : chromeos::settings::mojom::kDateAndTimeSectionPath);
 }
 
 void SystemTrayClientImpl::ShowSetTimeDialog() {
@@ -647,6 +650,14 @@ void SystemTrayClientImpl::ShowSettingsSimUnlock() {
   ShowSettingsSubPageForActiveUser(page);
 }
 
+void SystemTrayClientImpl::ShowApnSubpage(const std::string& network_id) {
+  CHECK(ash::features::IsApnRevampEnabled());
+  std::string page = chromeos::settings::mojom::kApnSubpagePath +
+                     std::string("?guid=") +
+                     base::EscapeUrlEncodedData(network_id, /*use_plus=*/true);
+  ShowSettingsSubPageForActiveUser(page);
+}
+
 void SystemTrayClientImpl::ShowNetworkSettings(const std::string& network_id) {
   ShowNetworkSettingsHelper(network_id, false /* show_configure */);
 }
@@ -723,7 +734,7 @@ void SystemTrayClientImpl::ShowAccessCodeCastingDialog(
 }
 
 void SystemTrayClientImpl::ShowCalendarEvent(
-    const absl::optional<GURL>& event_url,
+    const std::optional<GURL>& event_url,
     const base::Time& date,
     bool& opened_pwa,
     GURL& final_event_url) {
@@ -743,14 +754,9 @@ void SystemTrayClientImpl::ShowCalendarEvent(
     official_url = event_url->ReplaceComponents(replacements);
   } else {
     // No event URL provided, so fall back on opening calendar with `date`.
-    std::string calendar_url_str = kOfficialCalendarUrlPrefix;
-    base::Time::Exploded date_exp;
-    date.UTCExplode(&date_exp);
-    std::string date_url =
-        base::StringPrintf("r/week/%d/%d/%d", date_exp.year, date_exp.month,
-                           date_exp.day_of_month);
-    calendar_url_str.append(date_url);
-    official_url = GURL(calendar_url_str);
+    official_url = GURL(kOfficialCalendarUrlPrefix +
+                        base::UnlocalizedTimeFormatWithPattern(
+                            date, "'r/week/'y/M/d", icu::TimeZone::getGMT()));
   }
 
   // Return the URL we actually opened.
@@ -804,6 +810,20 @@ void SystemTrayClientImpl::ShowAudioSettings() {
   base::RecordAction(base::UserMetricsAction("ShowAudioSettingsPage"));
   ShowSettingsSubPageForActiveUser(
       chromeos::settings::mojom::kAudioSubpagePath);
+}
+
+void SystemTrayClientImpl::ShowGraphicsTabletSettings() {
+  DCHECK(ash::features::IsPeripheralCustomizationEnabled());
+  base::RecordAction(base::UserMetricsAction("ShowGraphicsTabletSettingsPage"));
+  ShowSettingsSubPageForActiveUser(
+      chromeos::settings::mojom::kGraphicsTabletSubpagePath);
+}
+
+void SystemTrayClientImpl::ShowMouseSettings() {
+  DCHECK(ash::features::IsPeripheralCustomizationEnabled());
+  base::RecordAction(base::UserMetricsAction("ShowMouseSettingsPage"));
+  ShowSettingsSubPageForActiveUser(
+      chromeos::settings::mojom::kPerDeviceMouseSubpagePath);
 }
 
 void SystemTrayClientImpl::ShowTouchpadSettings() {

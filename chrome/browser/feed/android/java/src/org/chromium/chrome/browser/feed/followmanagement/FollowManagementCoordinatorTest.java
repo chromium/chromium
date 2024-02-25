@@ -22,39 +22,35 @@ import org.chromium.base.test.util.JniMocker;
 import org.chromium.chrome.browser.feed.webfeed.WebFeedBridge;
 import org.chromium.chrome.browser.feed.webfeed.WebFeedBridgeJni;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.components.favicon.LargeIconBridge;
 import org.chromium.components.favicon.LargeIconBridgeJni;
 import org.chromium.ui.base.TestActivity;
 
-/**
- * Tests {@link FollowManagementCoordinator}.
- */
+/** Tests {@link FollowManagementCoordinator}. */
 @RunWith(BaseRobolectricTestRunner.class)
 public class FollowManagementCoordinatorTest {
     private TestActivity mActivity;
     private FollowManagementCoordinator mFollowManagementCoordinator;
 
-    @Rule
-    public JniMocker mocker = new JniMocker();
+    @Rule public JniMocker mocker = new JniMocker();
+
     @Rule
     public ActivityScenarioRule<TestActivity> mActivityScenarioRule =
             new ActivityScenarioRule<>(TestActivity.class);
 
-    @Mock
-    LargeIconBridge.Natives mLargeIconBridgeJni;
+    @Mock LargeIconBridge.Natives mLargeIconBridgeJni;
 
-    @Mock
-    WebFeedBridge.Natives mWebFeedBridgeJni;
+    @Mock WebFeedBridge.Natives mWebFeedBridgeJni;
 
-    @Mock
-    private Profile mProfile;
+    @Mock private Profile mProfile;
 
     @Before
     public void setUpTest() {
         mActivityScenarioRule.getScenario().onActivity(activity -> mActivity = activity);
 
         MockitoAnnotations.initMocks(this);
-        Profile.setLastUsedProfileForTesting(mProfile);
+        ProfileManager.setLastUsedProfileForTesting(mProfile);
         mocker.mock(WebFeedBridgeJni.TEST_HOOKS, mWebFeedBridgeJni);
         mocker.mock(LargeIconBridgeJni.TEST_HOOKS, mLargeIconBridgeJni);
 

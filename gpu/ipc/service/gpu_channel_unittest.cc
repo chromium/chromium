@@ -22,11 +22,8 @@ class GpuChannelTest : public GpuChannelTestCommon {
   ~GpuChannelTest() override = default;
 };
 
-#if BUILDFLAG(IS_WIN)
-const SurfaceHandle kFakeSurfaceHandle = reinterpret_cast<SurfaceHandle>(1);
-#else
+#if BUILDFLAG(IS_ANDROID)
 const SurfaceHandle kFakeSurfaceHandle = 1;
-#endif
 
 TEST_F(GpuChannelTest, CreateViewCommandBufferAllowed) {
   // TODO(https://crbug.com/1406585): Currently it's not possible to create
@@ -40,13 +37,10 @@ TEST_F(GpuChannelTest, CreateViewCommandBufferAllowed) {
   GpuChannel* channel = CreateChannel(kClientId, is_gpu_host);
   ASSERT_TRUE(channel);
 
-  SurfaceHandle surface_handle = kFakeSurfaceHandle;
-  DCHECK_NE(surface_handle, kNullSurfaceHandle);
-
   int32_t kRouteId =
       static_cast<int32_t>(GpuChannelReservedRoutes::kMaxValue) + 1;
   auto init_params = mojom::CreateCommandBufferParams::New();
-  init_params->surface_handle = surface_handle;
+  init_params->surface_handle = kFakeSurfaceHandle;
   init_params->share_group_id = MSG_ROUTING_NONE;
   init_params->stream_id = 0;
   init_params->stream_priority = SchedulingPriority::kNormal;
@@ -54,8 +48,10 @@ TEST_F(GpuChannelTest, CreateViewCommandBufferAllowed) {
   init_params->active_url = GURL();
   gpu::ContextResult result = gpu::ContextResult::kSuccess;
   gpu::Capabilities capabilities;
+  gpu::GLCapabilities gl_capabilities;
   CreateCommandBuffer(*channel, std::move(init_params), kRouteId,
-                      GetSharedMemoryRegion(), &result, &capabilities);
+                      GetSharedMemoryRegion(), &result, &capabilities,
+                      &gl_capabilities);
   EXPECT_EQ(result, gpu::ContextResult::kSuccess);
 
   CommandBufferStub* stub = channel->LookupCommandBuffer(kRouteId);
@@ -68,13 +64,10 @@ TEST_F(GpuChannelTest, CreateViewCommandBufferDisallowed) {
   GpuChannel* channel = CreateChannel(kClientId, is_gpu_host);
   ASSERT_TRUE(channel);
 
-  SurfaceHandle surface_handle = kFakeSurfaceHandle;
-  DCHECK_NE(surface_handle, kNullSurfaceHandle);
-
   int32_t kRouteId =
       static_cast<int32_t>(GpuChannelReservedRoutes::kMaxValue) + 1;
   auto init_params = mojom::CreateCommandBufferParams::New();
-  init_params->surface_handle = surface_handle;
+  init_params->surface_handle = kFakeSurfaceHandle;
   init_params->share_group_id = MSG_ROUTING_NONE;
   init_params->stream_id = 0;
   init_params->stream_priority = SchedulingPriority::kNormal;
@@ -82,13 +75,16 @@ TEST_F(GpuChannelTest, CreateViewCommandBufferDisallowed) {
   init_params->active_url = GURL();
   gpu::ContextResult result = gpu::ContextResult::kSuccess;
   gpu::Capabilities capabilities;
+  gpu::GLCapabilities gl_capabilities;
   CreateCommandBuffer(*channel, std::move(init_params), kRouteId,
-                      GetSharedMemoryRegion(), &result, &capabilities);
+                      GetSharedMemoryRegion(), &result, &capabilities,
+                      &gl_capabilities);
   EXPECT_EQ(result, gpu::ContextResult::kFatalFailure);
 
   CommandBufferStub* stub = channel->LookupCommandBuffer(kRouteId);
   EXPECT_FALSE(stub);
 }
+#endif
 
 TEST_F(GpuChannelTest, CreateOffscreenCommandBuffer) {
   int32_t kClientId = 1;
@@ -98,7 +94,6 @@ TEST_F(GpuChannelTest, CreateOffscreenCommandBuffer) {
   int32_t kRouteId =
       static_cast<int32_t>(GpuChannelReservedRoutes::kMaxValue) + 1;
   auto init_params = mojom::CreateCommandBufferParams::New();
-  init_params->surface_handle = kNullSurfaceHandle;
   init_params->share_group_id = MSG_ROUTING_NONE;
   init_params->stream_id = 0;
   init_params->stream_priority = SchedulingPriority::kNormal;
@@ -106,8 +101,10 @@ TEST_F(GpuChannelTest, CreateOffscreenCommandBuffer) {
   init_params->active_url = GURL();
   gpu::ContextResult result = gpu::ContextResult::kSuccess;
   gpu::Capabilities capabilities;
+  gpu::GLCapabilities gl_capabilities;
   CreateCommandBuffer(*channel, std::move(init_params), kRouteId,
-                      GetSharedMemoryRegion(), &result, &capabilities);
+                      GetSharedMemoryRegion(), &result, &capabilities,
+                      &gl_capabilities);
   EXPECT_EQ(result, gpu::ContextResult::kSuccess);
 
   CommandBufferStub* stub = channel->LookupCommandBuffer(kRouteId);
@@ -124,7 +121,6 @@ TEST_F(GpuChannelTest, IncompatibleStreamIds) {
       static_cast<int32_t>(GpuChannelReservedRoutes::kMaxValue) + 1;
   int32_t kStreamId1 = 1;
   auto init_params = mojom::CreateCommandBufferParams::New();
-  init_params->surface_handle = kNullSurfaceHandle;
   init_params->share_group_id = MSG_ROUTING_NONE;
   init_params->stream_id = kStreamId1;
   init_params->stream_priority = SchedulingPriority::kNormal;
@@ -132,8 +128,10 @@ TEST_F(GpuChannelTest, IncompatibleStreamIds) {
 
   gpu::ContextResult result = gpu::ContextResult::kSuccess;
   gpu::Capabilities capabilities;
+  gpu::GLCapabilities gl_capabilities;
   CreateCommandBuffer(*channel, std::move(init_params), kRouteId1,
-                      GetSharedMemoryRegion(), &result, &capabilities);
+                      GetSharedMemoryRegion(), &result, &capabilities,
+                      &gl_capabilities);
   EXPECT_EQ(result, gpu::ContextResult::kSuccess);
 
   CommandBufferStub* stub = channel->LookupCommandBuffer(kRouteId1);
@@ -147,7 +145,8 @@ TEST_F(GpuChannelTest, IncompatibleStreamIds) {
   init_params2->stream_id = kStreamId2;
   init_params2->stream_priority = SchedulingPriority::kNormal;
   CreateCommandBuffer(*channel, std::move(init_params2), kRouteId2,
-                      GetSharedMemoryRegion(), &result, &capabilities);
+                      GetSharedMemoryRegion(), &result, &capabilities,
+                      &gl_capabilities);
   EXPECT_EQ(result, gpu::ContextResult::kFatalFailure);
 
   stub = channel->LookupCommandBuffer(kRouteId2);
@@ -165,7 +164,6 @@ TEST_F(GpuChannelTest, CreateFailsIfSharedContextIsLost) {
   {
     SCOPED_TRACE("kSharedRouteId");
     auto init_params = mojom::CreateCommandBufferParams::New();
-    init_params->surface_handle = kNullSurfaceHandle;
     init_params->share_group_id = MSG_ROUTING_NONE;
     init_params->stream_id = 0;
     init_params->stream_priority = SchedulingPriority::kNormal;
@@ -173,8 +171,10 @@ TEST_F(GpuChannelTest, CreateFailsIfSharedContextIsLost) {
     init_params->active_url = GURL();
     gpu::ContextResult result = gpu::ContextResult::kSuccess;
     gpu::Capabilities capabilities;
+    gpu::GLCapabilities gl_capabilities;
     CreateCommandBuffer(*channel, std::move(init_params), kSharedRouteId,
-                        GetSharedMemoryRegion(), &result, &capabilities);
+                        GetSharedMemoryRegion(), &result, &capabilities,
+                        &gl_capabilities);
     EXPECT_EQ(result, gpu::ContextResult::kSuccess);
   }
   EXPECT_TRUE(channel->LookupCommandBuffer(kSharedRouteId));
@@ -184,7 +184,6 @@ TEST_F(GpuChannelTest, CreateFailsIfSharedContextIsLost) {
   {
     SCOPED_TRACE("kFriendlyRouteId");
     auto init_params = mojom::CreateCommandBufferParams::New();
-    init_params->surface_handle = kNullSurfaceHandle;
     init_params->share_group_id = kSharedRouteId;
     init_params->stream_id = 0;
     init_params->stream_priority = SchedulingPriority::kNormal;
@@ -192,8 +191,10 @@ TEST_F(GpuChannelTest, CreateFailsIfSharedContextIsLost) {
     init_params->active_url = GURL();
     gpu::ContextResult result = gpu::ContextResult::kSuccess;
     gpu::Capabilities capabilities;
+    gpu::GLCapabilities gl_capabilities;
     CreateCommandBuffer(*channel, std::move(init_params), kFriendlyRouteId,
-                        GetSharedMemoryRegion(), &result, &capabilities);
+                        GetSharedMemoryRegion(), &result, &capabilities,
+                        &gl_capabilities);
     EXPECT_EQ(result, gpu::ContextResult::kSuccess);
   }
   EXPECT_TRUE(channel->LookupCommandBuffer(kFriendlyRouteId));
@@ -207,7 +208,6 @@ TEST_F(GpuChannelTest, CreateFailsIfSharedContextIsLost) {
   {
     SCOPED_TRACE("kAnotherRouteId");
     auto init_params = mojom::CreateCommandBufferParams::New();
-    init_params->surface_handle = kNullSurfaceHandle;
     init_params->share_group_id = kSharedRouteId;
     init_params->stream_id = 0;
     init_params->stream_priority = SchedulingPriority::kNormal;
@@ -215,8 +215,10 @@ TEST_F(GpuChannelTest, CreateFailsIfSharedContextIsLost) {
     init_params->active_url = GURL();
     gpu::ContextResult result = gpu::ContextResult::kSuccess;
     gpu::Capabilities capabilities;
+    gpu::GLCapabilities gl_capabilities;
     CreateCommandBuffer(*channel, std::move(init_params), kAnotherRouteId,
-                        GetSharedMemoryRegion(), &result, &capabilities);
+                        GetSharedMemoryRegion(), &result, &capabilities,
+                        &gl_capabilities);
     EXPECT_EQ(result, gpu::ContextResult::kTransientFailure);
   }
   EXPECT_FALSE(channel->LookupCommandBuffer(kAnotherRouteId));
@@ -260,7 +262,6 @@ TEST_F(GpuChannelExitForContextLostTest,
   int32_t kRouteId =
       static_cast<int32_t>(GpuChannelReservedRoutes::kMaxValue) + 1;
   auto init_params = mojom::CreateCommandBufferParams::New();
-  init_params->surface_handle = kNullSurfaceHandle;
   init_params->share_group_id = MSG_ROUTING_NONE;
   init_params->stream_id = 0;
   init_params->stream_priority = SchedulingPriority::kNormal;
@@ -268,8 +269,10 @@ TEST_F(GpuChannelExitForContextLostTest,
   init_params->active_url = GURL();
   gpu::ContextResult result = gpu::ContextResult::kSuccess;
   gpu::Capabilities capabilities;
+  gpu::GLCapabilities gl_capabilities;
   CreateCommandBuffer(*channel, std::move(init_params), kRouteId,
-                      GetSharedMemoryRegion(), &result, &capabilities);
+                      GetSharedMemoryRegion(), &result, &capabilities,
+                      &gl_capabilities);
   EXPECT_EQ(result, gpu::ContextResult::kTransientFailure);
   EXPECT_FALSE(channel->LookupCommandBuffer(kRouteId));
 }
@@ -290,7 +293,6 @@ TEST_F(GpuChannelExitForContextLostTest,
   int32_t kRouteId =
       static_cast<int32_t>(GpuChannelReservedRoutes::kMaxValue) + 1;
   auto init_params = mojom::CreateCommandBufferParams::New();
-  init_params->surface_handle = kNullSurfaceHandle;
   init_params->share_group_id = MSG_ROUTING_NONE;
   init_params->stream_id = 0;
   init_params->stream_priority = SchedulingPriority::kNormal;
@@ -298,8 +300,10 @@ TEST_F(GpuChannelExitForContextLostTest,
   init_params->active_url = GURL();
   gpu::ContextResult result = gpu::ContextResult::kSuccess;
   gpu::Capabilities capabilities;
+  gpu::GLCapabilities gl_capabilities;
   CreateCommandBuffer(*channel, std::move(init_params), kRouteId,
-                      GetSharedMemoryRegion(), &result, &capabilities);
+                      GetSharedMemoryRegion(), &result, &capabilities,
+                      &gl_capabilities);
   EXPECT_EQ(result, gpu::ContextResult::kTransientFailure);
   EXPECT_FALSE(channel->LookupCommandBuffer(kRouteId));
 }

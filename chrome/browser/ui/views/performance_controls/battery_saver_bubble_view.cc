@@ -42,12 +42,12 @@ views::BubbleDialogModelHost* BatterySaverBubbleView::CreateBubble(
                   .set_is_secondary()
                   .set_allow_character_break())
           .AddOkButton(base::DoNothing(),
-                       ui::DialogModelButton::Params().SetLabel(
+                       ui::DialogModel::Button::Params().SetLabel(
                            l10n_util::GetStringUTF16(IDS_OK)))
           .AddCancelButton(
               base::BindOnce(&BatterySaverBubbleDelegate::OnSessionOffClicked,
                              base::Unretained(bubble_delegate)),
-              ui::DialogModelButton::Params().SetLabel(
+              ui::DialogModel::Button::Params().SetLabel(
                   l10n_util::GetStringUTF16(
                       IDS_BATTERY_SAVER_SESSION_TURN_OFF)))
           .Build();

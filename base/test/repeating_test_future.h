@@ -5,6 +5,7 @@
 #ifndef BASE_TEST_REPEATING_TEST_FUTURE_H_
 #define BASE_TEST_REPEATING_TEST_FUTURE_H_
 
+#include <optional>
 #include <utility>
 
 #include "base/check.h"
@@ -14,7 +15,6 @@
 #include "base/sequence_checker.h"
 #include "base/test/test_future_internal.h"
 #include "base/thread_annotations.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base::test {
 
@@ -162,7 +162,7 @@ class RepeatingTestFuture {
   base::queue<TupleType> elements_ GUARDED_BY_CONTEXT(sequence_checker_);
 
   // Used by Wait() to know when AddValue() is called.
-  absl::optional<base::RunLoop> run_loop_ GUARDED_BY_CONTEXT(sequence_checker_);
+  std::optional<base::RunLoop> run_loop_ GUARDED_BY_CONTEXT(sequence_checker_);
 
   SEQUENCE_CHECKER(sequence_checker_);
 

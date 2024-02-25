@@ -47,7 +47,6 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
-#include "chrome/browser/ui/web_applications/web_app_ui_manager_impl.h"
 #include "chrome/browser/web_applications/test/fake_web_app_provider.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
@@ -154,7 +153,8 @@ class TestObserver : public NoteTakingHelper::Observer {
   int num_updates() const { return num_updates_; }
   void reset_num_updates() { num_updates_ = 0; }
 
-  const std::vector<Profile*> preferred_app_updates() const {
+  const std::vector<raw_ptr<Profile, VectorExperimental>>
+  preferred_app_updates() const {
     return preferred_app_updates_;
   }
   void clear_preferred_app_updates() { preferred_app_updates_.clear(); }
@@ -171,7 +171,7 @@ class TestObserver : public NoteTakingHelper::Observer {
   int num_updates_ = 0;
 
   // Profiles for which OnPreferredNoteTakingAppUpdated was called.
-  std::vector<Profile*> preferred_app_updates_;
+  std::vector<raw_ptr<Profile, VectorExperimental>> preferred_app_updates_;
 };
 
 }  // namespace
@@ -190,6 +190,7 @@ class NoteTakingHelperTest : public BrowserWithTestWindowTest {
   ~NoteTakingHelperTest() override = default;
 
   void SetUp() override {
+    ash::ProfileHelper::SetProfileToUserForTestingEnabled(true);
     SessionManagerClient::InitializeFakeInMemory();
     FakeSessionManagerClient::Get()->set_arc_available(true);
 
@@ -216,6 +217,7 @@ class NoteTakingHelperTest : public BrowserWithTestWindowTest {
     extensions::ExtensionSystem::Get(profile())->Shutdown();
     BrowserWithTestWindowTest::TearDown();
     SessionManagerClient::Shutdown();
+    ash::ProfileHelper::SetProfileToUserForTestingEnabled(false);
   }
 
  protected:
@@ -296,13 +298,13 @@ class NoteTakingHelperTest : public BrowserWithTestWindowTest {
   scoped_refptr<const extensions::Extension> CreateExtension(
       const extensions::ExtensionId& id,
       const std::string& name) {
-    return CreateExtension(id, name, absl::nullopt, absl::nullopt);
+    return CreateExtension(id, name, std::nullopt, std::nullopt);
   }
   scoped_refptr<const extensions::Extension> CreateExtension(
       const extensions::ExtensionId& id,
       const std::string& name,
-      absl::optional<base::Value::List> permissions,
-      absl::optional<base::Value::List> action_handlers) {
+      std::optional<base::Value::List> permissions,
+      std::optional<base::Value::List> action_handlers) {
     base::Value::Dict manifest =
         base::Value::Dict()
             .Set("name", name)
@@ -327,10 +329,6 @@ class NoteTakingHelperTest : public BrowserWithTestWindowTest {
   }
 
   void InitWebAppProvider(Profile* profile) {
-    web_app::FakeWebAppProvider* fake_provider =
-        web_app::FakeWebAppProvider::Get(profile);
-    fake_provider->SetWebAppUiManager(
-        std::make_unique<web_app::WebAppUiManagerImpl>(profile));
     web_app::test::AwaitStartWebAppProviderAndSubsystems(profile);
   }
 
@@ -375,7 +373,7 @@ class NoteTakingHelperTest : public BrowserWithTestWindowTest {
   CreateAndInstallLockScreenAppWithPermissions(
       const std::string& id,
       const std::string& app_name,
-      absl::optional<base::Value::List> permissions,
+      std::optional<base::Value::List> permissions,
       Profile* profile) {
     base::Value::List lock_enabled_action_handler = base::Value::List().Append(
         base::Value::Dict()
@@ -392,14 +390,29 @@ class NoteTakingHelperTest : public BrowserWithTestWindowTest {
   }
 
   // BrowserWithTestWindowTest:
-  TestingProfile* CreateProfile() override {
+  std::string GetDefaultProfileName() override { return kTestProfileName; }
+
+  // TODO(crbug.com/1494005): merge into BrowserWithTestWindowTest.
+  void LogIn(const std::string& email) override {
+    AccountId account_id = AccountId::FromUserEmail(email);
+    user_manager()->AddUser(account_id);
+    user_manager()->UserLoggedIn(
+        account_id,
+        user_manager::FakeUserManager::GetFakeUsernameHash(account_id),
+        /*browser_restart=*/false,
+        /*is_child=*/false);
+  }
+
+  TestingProfile* CreateProfile(const std::string& profile_name) override {
     auto prefs =
         std::make_unique<sync_preferences::TestingPrefServiceSyncable>();
     RegisterUserProfilePrefs(prefs->registry());
     profile_prefs_ = prefs.get();
-    return profile_manager()->CreateTestingProfile(
-        kTestProfileName, std::move(prefs), u"Test profile", 1 /*avatar_id*/,
+    auto* profile = profile_manager()->CreateTestingProfile(
+        profile_name, std::move(prefs), u"Test profile", 1 /*avatar_id*/,
         TestingProfile::TestingFactories());
+    OnUserProfileCreated(profile_name, profile);
+    return profile;
   }
 
   TestingProfile* CreateAndInitSecondaryProfile() {
@@ -407,13 +420,11 @@ class NoteTakingHelperTest : public BrowserWithTestWindowTest {
         std::make_unique<sync_preferences::TestingPrefServiceSyncable>();
     RegisterUserProfilePrefs(prefs->registry());
     const AccountId account_id(AccountId::FromUserEmail(kSecondProfileName));
-    ash::FakeChromeUserManager* fake_user_manager =
-        static_cast<ash::FakeChromeUserManager*>(
-            user_manager::UserManager::Get());
-    fake_user_manager->AddUser(account_id);
+    user_manager()->AddUser(account_id);
     TestingProfile* profile = profile_manager()->CreateTestingProfile(
         kSecondProfileName, std::move(prefs), u"second-profile-username",
         /*avatar_id=*/1, TestingProfile::TestingFactories());
+    OnUserProfileCreated(kSecondProfileName, profile);
 
     InitExtensionService(profile);
     InitWebAppProvider(profile);
@@ -473,8 +484,7 @@ class NoteTakingHelperTest : public BrowserWithTestWindowTest {
 
   // Pointer to the primary profile (returned by |profile()|) prefs - owned by
   // the profile.
-  raw_ptr<sync_preferences::TestingPrefServiceSyncable,
-          DanglingUntriaged | ExperimentalAsh>
+  raw_ptr<sync_preferences::TestingPrefServiceSyncable, DanglingUntriaged>
       profile_prefs_ = nullptr;
 
  private:
@@ -490,7 +500,7 @@ class NoteTakingHelperTest : public BrowserWithTestWindowTest {
   // Has Init() been called?
   bool initialized_ = false;
 
-  ArcAppTest arc_test_;
+  ArcAppTest arc_test_{ArcAppTest::UserManagerMode::kDoNothing};
   std::unique_ptr<arc::FakeIntentHelperHost> intent_helper_host_;
   base::test::ScopedFeatureList feature_list_;
 };
@@ -573,7 +583,7 @@ TEST_F(NoteTakingHelperTest, ListChromeAppsWithLockScreenNotesSupported) {
   // Install Keep app that does not support lock screen note taking - it should
   // be reported not to support lock screen note taking.
   scoped_refptr<const extensions::Extension> prod_extension = CreateExtension(
-      kProdKeepExtensionId, kProdKeepAppName, /*permissions=*/absl::nullopt,
+      kProdKeepExtensionId, kProdKeepAppName, /*permissions=*/std::nullopt,
       std::move(lock_disabled_action_handler));
   InstallExtension(prod_extension.get(), profile());
   EXPECT_TRUE(helper()->IsAppAvailable(profile()));
@@ -642,7 +652,7 @@ TEST_F(NoteTakingHelperTest, PreferredAppWithNoLockScreenPermission) {
   // permission listed.
   scoped_refptr<const extensions::Extension> dev_extension =
       CreateAndInstallLockScreenAppWithPermissions(
-          kDevKeepExtensionId, kDevKeepAppName, /*permissions=*/absl::nullopt,
+          kDevKeepExtensionId, kDevKeepAppName, /*permissions=*/std::nullopt,
           profile());
   helper()->SetPreferredApp(profile(), kDevKeepExtensionId);
 
@@ -671,7 +681,7 @@ TEST_F(NoteTakingHelperTest,
   const std::string kName = "Some App";
   scoped_refptr<const extensions::Extension> has_new_note =
       CreateAndInstallLockScreenAppWithPermissions(
-          kNewNoteId, kName, /*permissions=*/absl::nullopt, profile());
+          kNewNoteId, kName, /*permissions=*/std::nullopt, profile());
 
   // Verify that only Keep app is reported to support lock screen note taking.
   EXPECT_TRUE(AvailableAppsMatch(
@@ -715,13 +725,13 @@ TEST_F(NoteTakingHelperTest, CustomChromeApps) {
 
   // "action_handlers": ["new_note"]
   scoped_refptr<const extensions::Extension> has_new_note = CreateExtension(
-      kNewNoteId, kName, /*permissions=*/absl::nullopt,
+      kNewNoteId, kName, /*permissions=*/std::nullopt,
       base::Value::List().Append(
           app_runtime::ToString(app_runtime::ActionType::kNewNote)));
   InstallExtension(has_new_note.get(), profile());
   // "action_handlers": []
   scoped_refptr<const extensions::Extension> empty_array = CreateExtension(
-      kEmptyArrayId, kName, /*permissions=*/absl::nullopt, base::Value::List());
+      kEmptyArrayId, kName, /*permissions=*/std::nullopt, base::Value::List());
   InstallExtension(empty_array.get(), profile());
   // (no action handler entry)
   scoped_refptr<const extensions::Extension> none =
@@ -864,7 +874,7 @@ TEST_F(NoteTakingHelperTest, AllowlistedAndCustomAppsShowOnlyOnce) {
   Init(ENABLE_PALETTE);
 
   scoped_refptr<const extensions::Extension> extension = CreateExtension(
-      kProdKeepExtensionId, "Keep", /*permissions=*/absl::nullopt,
+      kProdKeepExtensionId, "Keep", /*permissions=*/std::nullopt,
       base::Value::List().Append(
           app_runtime::ToString(app_runtime::ActionType::kNewNote)));
   InstallExtension(extension.get(), profile());
@@ -892,75 +902,6 @@ TEST_F(NoteTakingHelperTest, LaunchChromeApp) {
   histogram_tester.ExpectUniqueSample(
       NoteTakingHelper::kDefaultLaunchResultHistogramName,
       static_cast<int>(LaunchResult::CHROME_SUCCESS), 1);
-}
-
-TEST_F(NoteTakingHelperTest, LaunchHardcodedWebApp) {
-  Init(ENABLE_PALETTE);
-  GURL app_url("https://yielding-large-chef.glitch.me/");
-  // Install a default-allowed web app corresponding to ID of
-  // |NoteTakingHelper::kNoteTakingWebAppIdTest|.
-  auto app_info = std::make_unique<web_app::WebAppInstallInfo>();
-  app_info->start_url = app_url;
-  app_info->title = u"Default Allowed Web App";
-  std::string app_id =
-      web_app::test::InstallWebApp(profile(), std::move(app_info));
-  ASSERT_EQ(app_id, NoteTakingHelper::kNoteTakingWebAppIdTest);
-
-  // Fire a "Create Note" action and check the app is launched.
-  HistogramTester histogram_tester;
-  SetNoteTakingClientProfile(profile());
-
-  ui_test_utils::AllBrowserTabAddedWaiter tab_waiter;
-  NoteTakingClient::GetInstance()->CreateNote();
-  base::RunLoop().RunUntilIdle();
-  ASSERT_TRUE(tab_waiter.Wait());
-
-  // Web app, so no launched_chrome_apps.
-  EXPECT_EQ(0u, launched_chrome_apps_.size());
-
-  histogram_tester.ExpectUniqueSample(
-      NoteTakingHelper::kPreferredLaunchResultHistogramName,
-      static_cast<int>(LaunchResult::NO_APP_SPECIFIED), 1);
-  histogram_tester.ExpectUniqueSample(
-      NoteTakingHelper::kDefaultLaunchResultHistogramName,
-      static_cast<int>(LaunchResult::WEB_APP_SUCCESS), 1);
-
-  ASSERT_TRUE(browser()->tab_strip_model()->GetActiveWebContents());
-  GURL url = browser()->tab_strip_model()->GetActiveWebContents()->GetURL();
-  ASSERT_EQ(app_url, url);
-}
-
-TEST_F(NoteTakingHelperTest, LaunchWebApp) {
-  Init(ENABLE_PALETTE);
-
-  // Install a web app with a note_taking_new_note_url.
-  GURL new_note_url("http://some.url/new-note");
-  auto app_info = std::make_unique<web_app::WebAppInstallInfo>();
-  app_info->start_url = GURL("http://some.url");
-  app_info->scope = GURL("http://some.url");
-  app_info->title = u"Web App 2";
-  app_info->note_taking_new_note_url = new_note_url;
-  std::string app_id =
-      web_app::test::InstallWebApp(profile(), std::move(app_info));
-  ASSERT_EQ(helper()->GetAvailableApps(profile()).size(), 1u);
-
-  // Fire a "Create Note" action and check the app is launched.
-  HistogramTester histogram_tester;
-  SetNoteTakingClientProfile(profile());
-  ui_test_utils::AllBrowserTabAddedWaiter tab_added_observer;
-  NoteTakingClient::GetInstance()->CreateNote();
-  base::RunLoop().RunUntilIdle();
-  ASSERT_TRUE(tab_added_observer.Wait());
-
-  histogram_tester.ExpectUniqueSample(
-      NoteTakingHelper::kPreferredLaunchResultHistogramName,
-      static_cast<int>(LaunchResult::NO_APP_SPECIFIED), 1);
-  histogram_tester.ExpectUniqueSample(
-      NoteTakingHelper::kDefaultLaunchResultHistogramName,
-      static_cast<int>(LaunchResult::WEB_APP_SUCCESS), 1);
-  ASSERT_TRUE(browser()->tab_strip_model()->GetActiveWebContents());
-  GURL url = browser()->tab_strip_model()->GetActiveWebContents()->GetURL();
-  ASSERT_EQ(new_note_url, url);
 }
 
 TEST_F(NoteTakingHelperTest, FallBackIfPreferredAppUnavailable) {
@@ -1039,7 +980,7 @@ TEST_F(NoteTakingHelperTest, PlayStoreInitiallyDisabled) {
 
   // After the callback to receive intent handlers has run, the "apps received"
   // member should be updated (even if there aren't any apps).
-  helper()->OnIntentFiltersUpdated(absl::nullopt);
+  helper()->OnIntentFiltersUpdated(std::nullopt);
   base::RunLoop().RunUntilIdle();
   EXPECT_TRUE(helper()->play_store_enabled());
   EXPECT_TRUE(helper()->android_apps_received());
@@ -1073,7 +1014,7 @@ TEST_F(NoteTakingHelperTest, AddProfileWithPlayStoreEnabled) {
 
   // Notification of updated intent filters should result in the apps being
   // refreshed.
-  helper()->OnIntentFiltersUpdated(absl::nullopt);
+  helper()->OnIntentFiltersUpdated(std::nullopt);
   base::RunLoop().RunUntilIdle();
   EXPECT_TRUE(helper()->play_store_enabled());
   EXPECT_TRUE(helper()->android_apps_received());
@@ -1197,7 +1138,7 @@ TEST_F(NoteTakingHelperTest, LaunchAndroidApp) {
   handlers.emplace_back(CreateIntentHandlerInfo("App 2", kPackage2));
   intent_helper_.SetIntentHandlers(NoteTakingHelper::kIntentAction,
                                    std::move(handlers));
-  helper()->OnIntentFiltersUpdated(absl::nullopt);
+  helper()->OnIntentFiltersUpdated(std::nullopt);
   base::RunLoop().RunUntilIdle();
   helper()->SetPreferredApp(profile(), kPackage2);
 
@@ -1258,7 +1199,7 @@ TEST_F(NoteTakingHelperTest, NotifyObserverAboutAndroidApps) {
 
   // Update intent filters and check that the observer is notified again after
   // apps are received.
-  helper()->OnIntentFiltersUpdated(absl::nullopt);
+  helper()->OnIntentFiltersUpdated(std::nullopt);
   EXPECT_EQ(3, observer.num_updates());
   base::RunLoop().RunUntilIdle();
   EXPECT_EQ(4, observer.num_updates());
@@ -1321,7 +1262,8 @@ TEST_F(NoteTakingHelperTest, NotifyObserverAboutPreferredAppChanges) {
 
   // Observers should be notified when preferred app is set.
   helper()->SetPreferredApp(profile(), prod_keep_extension->id());
-  EXPECT_EQ(std::vector<Profile*>{profile()}, observer.preferred_app_updates());
+  EXPECT_EQ(std::vector<vector_experimental_raw_ptr<Profile>>{profile()},
+            observer.preferred_app_updates());
   observer.clear_preferred_app_updates();
 
   // If the preferred app is not changed, observers should not be notified.
@@ -1330,12 +1272,14 @@ TEST_F(NoteTakingHelperTest, NotifyObserverAboutPreferredAppChanges) {
 
   // Observers should be notified when preferred app is changed.
   helper()->SetPreferredApp(profile(), dev_keep_extension->id());
-  EXPECT_EQ(std::vector<Profile*>{profile()}, observer.preferred_app_updates());
+  EXPECT_EQ(std::vector<vector_experimental_raw_ptr<Profile>>{profile()},
+            observer.preferred_app_updates());
   observer.clear_preferred_app_updates();
 
   // Observers should be notified when preferred app is cleared.
   helper()->SetPreferredApp(profile(), "");
-  EXPECT_EQ(std::vector<Profile*>{profile()}, observer.preferred_app_updates());
+  EXPECT_EQ(std::vector<vector_experimental_raw_ptr<Profile>>{profile()},
+            observer.preferred_app_updates());
   observer.clear_preferred_app_updates();
 
   // No change to preferred app.
@@ -1353,14 +1297,14 @@ TEST_F(NoteTakingHelperTest, NotifyObserverAboutPreferredAppChanges) {
   // profile preferred app changes.
   helper()->SetPreferredApp(second_profile,
                             second_profile_prod_keep_extension->id());
-  EXPECT_EQ(std::vector<Profile*>{second_profile},
+  EXPECT_EQ(std::vector<vector_experimental_raw_ptr<Profile>>{second_profile},
             observer.preferred_app_updates());
   observer.clear_preferred_app_updates();
 
   // Clearing preferred app in secondary ptofile should fire observers with the
   // secondary profile.
   helper()->SetPreferredApp(second_profile, "");
-  EXPECT_EQ(std::vector<Profile*>{second_profile},
+  EXPECT_EQ(std::vector<vector_experimental_raw_ptr<Profile>>{second_profile},
             observer.preferred_app_updates());
   observer.clear_preferred_app_updates();
 
@@ -1384,12 +1328,14 @@ TEST_F(NoteTakingHelperTest,
 
   // Set the app that supports lock screen note taking as preferred.
   helper()->SetPreferredApp(profile(), dev_extension->id());
-  EXPECT_EQ(std::vector<Profile*>{profile()}, observer.preferred_app_updates());
+  EXPECT_EQ(std::vector<vector_experimental_raw_ptr<Profile>>{profile()},
+            observer.preferred_app_updates());
   observer.clear_preferred_app_updates();
 
   // Disable the preferred app on the lock screen.
   EXPECT_TRUE(helper()->SetPreferredAppEnabledOnLockScreen(profile(), false));
-  EXPECT_EQ(std::vector<Profile*>{profile()}, observer.preferred_app_updates());
+  EXPECT_EQ(std::vector<vector_experimental_raw_ptr<Profile>>{profile()},
+            observer.preferred_app_updates());
   observer.clear_preferred_app_updates();
 
   // Disabling lock screen support for already enabled app should be no-op.
@@ -1399,7 +1345,8 @@ TEST_F(NoteTakingHelperTest,
   // Change the state of the preferred app - it should succeed, and a
   // notification should be fired.
   EXPECT_TRUE(helper()->SetPreferredAppEnabledOnLockScreen(profile(), true));
-  EXPECT_EQ(std::vector<Profile*>{profile()}, observer.preferred_app_updates());
+  EXPECT_EQ(std::vector<vector_experimental_raw_ptr<Profile>>{profile()},
+            observer.preferred_app_updates());
   observer.clear_preferred_app_updates();
 
   // No-op, because the preferred app state is not changing.
@@ -1408,7 +1355,8 @@ TEST_F(NoteTakingHelperTest,
 
   // Set an app that does not support lock screen as primary.
   helper()->SetPreferredApp(profile(), prod_extension->id());
-  EXPECT_EQ(std::vector<Profile*>{profile()}, observer.preferred_app_updates());
+  EXPECT_EQ(std::vector<vector_experimental_raw_ptr<Profile>>{profile()},
+            observer.preferred_app_updates());
   observer.clear_preferred_app_updates();
 
   // Chaning state for an app that does not support lock screen note taking
@@ -1433,7 +1381,7 @@ TEST_F(NoteTakingHelperTest, SetAppEnabledOnLockScreen) {
       crx_file::id_util::GenerateId("a");
   scoped_refptr<const extensions::Extension> unsupported_app =
       CreateAndInstallLockScreenAppWithPermissions(
-          kUnsupportedAppId, kUnsupportedAppName, /*permissions=*/absl::nullopt,
+          kUnsupportedAppId, kUnsupportedAppName, /*permissions=*/std::nullopt,
           profile());
 
   // Disabling preferred app on lock screen should fail if there is no preferred
@@ -1443,7 +1391,8 @@ TEST_F(NoteTakingHelperTest, SetAppEnabledOnLockScreen) {
   helper()->SetPreferredApp(profile(), prod_app->id());
 
   // Setting preferred app should fire observers.
-  EXPECT_EQ(std::vector<Profile*>{profile()}, observer.preferred_app_updates());
+  EXPECT_EQ(std::vector<vector_experimental_raw_ptr<Profile>>{profile()},
+            observer.preferred_app_updates());
   observer.clear_preferred_app_updates();
 
   // Verify dev and prod apps are enabled for lock screen, with prod preferred.
@@ -1475,7 +1424,8 @@ TEST_F(NoteTakingHelperTest, SetAppEnabledOnLockScreen) {
                                  base::Value::List().Append(dev_app->id()));
 
   // The preferred app status changed, so observers are expected to be notified.
-  EXPECT_EQ(std::vector<Profile*>{profile()}, observer.preferred_app_updates());
+  EXPECT_EQ(std::vector<vector_experimental_raw_ptr<Profile>>{profile()},
+            observer.preferred_app_updates());
   observer.clear_preferred_app_updates();
 
   // Preferred app is not enabled on lock screen - chaning the lock screen
@@ -1494,7 +1444,8 @@ TEST_F(NoteTakingHelperTest, SetAppEnabledOnLockScreen) {
   // Switch preferred note taking app to one that does not support lock screen.
   helper()->SetPreferredApp(profile(), unsupported_app->id());
 
-  EXPECT_EQ(std::vector<Profile*>{profile()}, observer.preferred_app_updates());
+  EXPECT_EQ(std::vector<vector_experimental_raw_ptr<Profile>>{profile()},
+            observer.preferred_app_updates());
   observer.clear_preferred_app_updates();
 
   // Policy with an empty allowlist - this should disallow all apps from the
@@ -1544,7 +1495,8 @@ TEST_F(NoteTakingHelperTest,
                                  base::Value::List());
 
   // Preferred app settings changed - observers should be notified.
-  EXPECT_EQ(std::vector<Profile*>{profile()}, observer.preferred_app_updates());
+  EXPECT_EQ(std::vector<vector_experimental_raw_ptr<Profile>>{profile()},
+            observer.preferred_app_updates());
   observer.clear_preferred_app_updates();
 
   // Verify the app is reported as not allowed by policy.
@@ -1556,7 +1508,8 @@ TEST_F(NoteTakingHelperTest,
   // lock screen again.
   profile_prefs_->RemoveManagedPref(prefs::kNoteTakingAppsLockScreenAllowlist);
 
-  EXPECT_EQ(std::vector<Profile*>{profile()}, observer.preferred_app_updates());
+  EXPECT_EQ(std::vector<vector_experimental_raw_ptr<Profile>>{profile()},
+            observer.preferred_app_updates());
   observer.clear_preferred_app_updates();
 
   EXPECT_TRUE(AvailableAppsMatch(
@@ -1581,7 +1534,8 @@ TEST_F(NoteTakingHelperTest,
 
   // Set test app as preferred note taking app.
   helper()->SetPreferredApp(profile(), app->id());
-  EXPECT_EQ(std::vector<Profile*>{profile()}, observer.preferred_app_updates());
+  EXPECT_EQ(std::vector<vector_experimental_raw_ptr<Profile>>{profile()},
+            observer.preferred_app_updates());
   observer.clear_preferred_app_updates();
 
   // Changing policy before the app's lock screen availability has been reported
@@ -1610,12 +1564,12 @@ TEST_F(NoteTakingHelperTest, LockScreenSupportInSecondaryProfile) {
       crx_file::id_util::GenerateId("a");
   scoped_refptr<const extensions::Extension> unsupported_app =
       CreateAndInstallLockScreenAppWithPermissions(
-          kUnsupportedAppId, kUnsupportedAppName, /*permissions=*/absl::nullopt,
+          kUnsupportedAppId, kUnsupportedAppName, /*permissions=*/std::nullopt,
           second_profile);
 
   // Setting preferred app should fire observers for secondary profile.
   helper()->SetPreferredApp(second_profile, prod_app->id());
-  EXPECT_EQ(std::vector<Profile*>{second_profile},
+  EXPECT_EQ(std::vector<vector_experimental_raw_ptr<Profile>>{second_profile},
             observer.preferred_app_updates());
   observer.clear_preferred_app_updates();
 

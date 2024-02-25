@@ -17,6 +17,7 @@
 #include "components/javascript_dialogs/app_modal_dialog_manager.h"
 #include "extensions/browser/extension_host.h"
 #include "extensions/browser/extension_system.h"
+#include "extensions/common/extension_id.h"
 
 namespace extensions {
 
@@ -45,7 +46,7 @@ ChromeExtensionHostDelegate::GetJavaScriptDialogManager() {
 
 void ChromeExtensionHostDelegate::CreateTab(
     std::unique_ptr<content::WebContents> web_contents,
-    const std::string& extension_id,
+    const ExtensionId& extension_id,
     WindowOpenDisposition disposition,
     const blink::mojom::WindowFeatures& window_features,
     bool user_gesture) {
@@ -70,7 +71,7 @@ void ChromeExtensionHostDelegate::ProcessMediaAccessRequest(
 
 bool ChromeExtensionHostDelegate::CheckMediaAccessPermission(
     content::RenderFrameHost* render_frame_host,
-    const GURL& security_origin,
+    const url::Origin& security_origin,
     blink::mojom::MediaStreamType type,
     const Extension* extension) {
   return MediaCaptureDevicesDispatcher::GetInstance()

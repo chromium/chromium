@@ -18,36 +18,28 @@ import java.util.List;
 import java.util.zip.GZIPInputStream;
 import java.util.zip.GZIPOutputStream;
 
-/**
- * VariationsCompressionUtils provides utility functions for variations classes.
- */
+/** VariationsCompressionUtils provides utility functions for variations classes. */
 public class VariationsCompressionUtils {
     private static final String TAG = "VariationsUtils";
 
     public static final String DELTA_COMPRESSION_HEADER = "x-bm";
     public static final String GZIP_COMPRESSION_HEADER = "gzip";
 
-    /**
-     * Exception that is raised if the IM header in the seed request contains invalid data.
-     */
+    /** Exception that is raised if the IM header in the seed request contains invalid data. */
     public static class InvalidImHeaderException extends Exception {
         public InvalidImHeaderException(String msg) {
             super(msg);
         }
     }
 
-    /**
-     * Exception this is raised if the delta compression cannot be resolved.
-     */
+    /** Exception this is raised if the delta compression cannot be resolved. */
     public static class DeltaPatchException extends Exception {
         public DeltaPatchException(String msg) {
             super(msg);
         }
     }
 
-    /**
-     * Class to save instance manipulations.
-     */
+    /** Class to save instance manipulations. */
     public static class InstanceManipulations {
         public boolean isGzipCompressed;
         public boolean isDeltaCompressed;
@@ -58,9 +50,7 @@ public class VariationsCompressionUtils {
         }
     }
 
-    /**
-     * Parses the instance manipulations header and returns the result.
-     */
+    /** Parses the instance manipulations header and returns the result. */
     public static InstanceManipulations getInstanceManipulations(String imHeader)
             throws InvalidImHeaderException {
         List<String> manipulations = new ArrayList<String>();
@@ -77,21 +67,21 @@ public class VariationsCompressionUtils {
 
         int numCompressions = (isDeltaCompressed ? 1 : 0) + (isGzipCompressed ? 1 : 0);
         if (numCompressions != manipulations.size()) {
-            throw new InvalidImHeaderException("Unrecognized instance manipulations in " + imHeader
-                    + "; only x-bm and gzip are supported");
+            throw new InvalidImHeaderException(
+                    "Unrecognized instance manipulations in "
+                            + imHeader
+                            + "; only x-bm and gzip are supported");
         }
 
         if (isDeltaCompressed && isGzipCompressed && deltaIm > gzipIm) {
             throw new InvalidImHeaderException(
                     "Unsupported instance manipulations order: expected x-bm,gzip, "
-                    + "but received gzip,x-bm");
+                            + "but received gzip,x-bm");
         }
         return new InstanceManipulations(isGzipCompressed, isDeltaCompressed);
     }
 
-    /**
-     * gzip-compresses a byte array of data.
-     */
+    /** gzip-compresses a byte array of data. */
     public static byte[] gzipCompress(byte[] uncompressedData) throws IOException {
         try (ByteArrayOutputStream byteArrayOutputStream =
                         new ByteArrayOutputStream(uncompressedData.length);
@@ -102,9 +92,7 @@ public class VariationsCompressionUtils {
         }
     }
 
-    /**
-     * gzip-uncompresses a byte array of data.
-     */
+    /** gzip-uncompresses a byte array of data. */
     public static byte[] gzipUncompress(byte[] compressedData) throws IOException {
         try (ByteArrayInputStream byteInputStream = new ByteArrayInputStream(compressedData);
                 ByteArrayOutputStream byteOutputStream = new ByteArrayOutputStream();
@@ -120,9 +108,7 @@ public class VariationsCompressionUtils {
         }
     }
 
-    /**
-     *  Applies the {@code deltaPatch} to {@code existingSeedData}.
-     */
+    /**  Applies the {@code deltaPatch} to {@code existingSeedData}. */
     public static byte[] applyDeltaPatch(byte[] existingSeedData, byte[] deltaPatch)
             throws DeltaPatchException {
         try (ByteArrayOutputStream out = new ByteArrayOutputStream()) {
@@ -142,8 +128,9 @@ public class VariationsCompressionUtils {
                     int offset = deltaReader.readUInt32();
                     int length = deltaReader.readUInt32();
                     // addExact raises ArithmeticException if the sum overflows.
-                    byte[] copy = Arrays.copyOfRange(
-                            existingSeedData, offset, Math.addExact(offset, length));
+                    byte[] copy =
+                            Arrays.copyOfRange(
+                                    existingSeedData, offset, Math.addExact(offset, length));
                     out.write(copy, 0, length);
                 }
             }

@@ -4,8 +4,8 @@
 
 #include "content/browser/renderer_host/input/mock_input_router_client.h"
 
-#include "content/browser/renderer_host/input/input_router.h"
 #include "content/browser/scheduler/browser_ui_thread_scheduler.h"
+#include "content/common/input/input_router.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 using blink::WebGestureEvent;
@@ -40,8 +40,8 @@ void MockInputRouterClient::DecrementInFlightEventCount(
   --in_flight_event_count_;
 }
 
-void MockInputRouterClient::NotifyUISchedulerOfScrollStateUpdate(
-    BrowserUIThreadScheduler::ScrollState) {}
+void MockInputRouterClient::NotifyUISchedulerOfGestureEventUpdate(
+    blink::WebInputEvent::Type gesture_event) {}
 
 void MockInputRouterClient::DidOverscroll(
     const ui::DidOverscrollParams& params) {

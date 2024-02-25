@@ -1,139 +1,190 @@
 # Security Shepherd
 
+## What is Security Shepherding?
+Security Shepherding is a rotational assignment for security bug triage
+(Primary Shepherd) and managing the flow of incoming inquiries and progressing
+security issues (Secondary Shepherd). The Shepherding rota pool is made up of
+people actively working on security in Chrome.
+
+All Security Shepherds are Googlers; therefore, some links on this page may
+not be externally accessible or even further restricted to just Chrome Security
+Googlers.
+
+There is a Primary and Secondary Shepherd scheduled each rotation, with two
+rotations each week, one Tuesday - Thursday and Friday - Monday.
+
+Security Shepherding is *not* an on-call rotation. There’s no pager duty, nor
+are you expected to perform Shepherding duties outside of your usual working
+hours, such as overnight or on holidays, weekends, or other off time.
+
+Shepherds are only responsible for triage of security bugs during your shift.
+You are not responsible for bug triage or updating partially triaged bugs past
+your shift, unless you have specifically taken ownership of an issue, such as
+due to a complicated or OS-specific reproduction, and arranged that with the
+oncoming shepherd. All shepherds should use the handoff doc to communicate items
+for handover; however, the oncoming primary shepherd should operate on the
+premise all new or _under_-triaged issues are your responsibility. Please do not
+leave any unaddressed red cells in the dashboard at the end of your shift.
+
+## TL;DR Checklist for Primary Shepherding
+(“I’m Primary Shepherd, what do I do???”)
+
+The Primary Security Shepherd is the front line of security bug triage during
+their shift. The goal is to triage incoming security issues accurately,
+thoroughly, and quickly (_as quickly as realistically possible_).
+
+Your PRIMARY DIRECTIVE as PRIMARY SHEPHERD is to tackle all the red cells on the
+security bug dashboard.
+
+For [*every new incoming security bug*](#Every-New-Incoming-Security-Bug):
+* Make sure it's [*self-contained*](#Ensure-self_contained-issue).
+* Make sure the report is [*valid and actionable*](#Confirm-Valid-and-Actionable)
+  * Ideally, you’ll be able to do this by [reproducing the bug](#Reproduce-the-bug),
+    more ideally, [with ClusterFuzz](clusterfuzz-for-shepherds.md).
+* Set [*severity*](#Set-severity).
+* Set [*oldest impacted active release channel*](#Set-oldest-impacted-active-release-channel) – AKA FoundIn.
+* Set [*impacted-operating-systems*](#Set-impacted-operating-systems).
+* [*Assign*](#Assign) to an appropriate or suitable owner or engineering team.
+
+All of the above should be completed as soon as possible during your shift,
+and at least, by the [shift-handoff](#shift-handoff).
+
+One or more of the above actions may necessary to complete the triage of an
+under-triaged bug, i.e. covering any of the open red cells in the dashboard that
+were not completed from ClusterFuzz auto-triage or previous work on the bug.
+
+All this is hard, so please remember to [ask for help](#Ask-for-help).
+[Yell if you must](https://www.youtube.com/watch?v=5y_SbnPx_cE&t=37s)!
+
+## TL;DR Checklist for Secondary Shepherding
+(“I’m Secondary Shepherd, what do I do???”)
+
+* [*Check in on triaged issues*](#Check-in-on-triaged-issues) to ensure progress
+  is being made on medium+ (S2-S0) severity security bugs.
+* [*Manage incoming security email*](#Handle-incoming-security-emails).
+
+
 [TOC]
 
-## Important Links
+## Links to Helpful Resources
 
-[Chrome Open Security Bugs dashboard,
-go/chrome-security-bugs](http://go/chrome-security-bugs).
+Here are some of the importance references and resources you need or may need
+during your shepherding shift:
 
-[Vulnerability Severity Guidelines](severity-guidelines.md).
+* [Current Shepherds](https://script.google.com/a/macros/google.com/s/AKfycbz02xD4ghSzZu_tXyNRgjC95wFURATZeD_FHq0KRMHeqA-b0b9sow4NV1lhi0P2vy1j/exec)
+* [Chrome Security Bug Dashboard](https://goto.google.com/chrome-security-bugs)
+* [Security Severity Guidelines](severity-guidelines.md)
+* [Security Labels](security-labels.md)
+* FAQs addressing commonly-raised questions about security and what is / is not
+  considered a security bug, to see if there is an existing stance:
+  * [Chrome Security FAQ](faq.md)
+  * [Extensions Security FAQ](https://chromium.googlesource.com/chromium/src/+/refs/heads/main/extensions/docs/security_faq.md)
+  * [Service Worker Security FAQ](service-worker-security-faq.md)
+* [Redshell for Security Shepherds](https://goto.google.com/redshell-for-chrome-shepherds)
+* [Shepherding Guidelines Changelog](https://goto.google.com/shepherding-changelog) for highlighting
+  any process or policy changes since your last shift.
+* [Guidance for triage of theoretical or speculative issues](https://goto.google.com/chrome-speculative-bug-triage)
+* [Reference for common questions about security bug lifecycle](life-of-a-security-issue.md)
+* [Reference for questions related to security fix merge process](https://chromium.googlesource.com/chromium/src/+/HEAD/docs/process/merge_request.md#Security-merge-triage)
+  for answering questions (you do not need to approve merges).
+* [Shepherding Handoff Log](https://goto.google.com/chrome-security-shepherd-handoff)
 
-[Security Labels](security-labels.md).
+### Every New Incoming Security Bug
 
-[Current Shepherds](http://go/whos-the-shepherd).
+Monitor the [Chrome open security bugs dashboard](http://go/chrome-security-bugs).
+Tackle all the empty red cells. New bugs populate at the top of the sheet and
+will need full triage. Partially triaged bugs, such as those triaged by
+ClusterFuzz or ones pending updates from a prior shift, may be lower in the
+sheet. Please check the sheet for any red cells and do your best to get any bugs
+to a fully triaged state.
 
-[Shepherd Handoff Log](http://go/chrome-security-shepherd-handoff).
+We aim to have every bug triaged and assigned **within two business days,
+preferably one.** This does not include weekends, but please ensure you leave a
+clear queue before the weekend or a holiday.
 
-You might also like the [HOWTO: Be A Security Shepherd
-deck](https://docs.google.com/presentation/d/1eISJXxyv7dUCGUKk_rvUI9t9s2xb98QY4d_-dZSa7Wg/edit#slide=id.p).
+### Ensure self-contained issue
 
-The [Chrome Security FAQ](faq.md), [Extensions Security
-FAQ](/extensions/docs/security_faq.md), and [Service Worker Security
-FAQ](service-worker-security-faq.md) include commonly-raised questions about
-security and what is or is not considered a security bug. When triaging new
-bugs, you may want to reference these to see if there's an established stance.
+There should be one complete, self-contained report, per root cause. To ensure
+this is the case when assigning security bugs to engineering teams, you may
+need to take some specific actions here:
+* If the report is a bug chain with several underlying causes, **open one new
+  bug per root cause** and marked the parent bug as `blocked on` each. The parent
+  bug should be set to the severity of the full chain. Each child bug may have a
+  lower severity.
+  * If taking these actions for a VRP reported issue, update the Reporter field
+    with the email address of the VRP reporter and cc: them on the parent issue
+    so they have access.
+* Get everything you need from a reporter before you try and reproduce - do not
+  feel bad about asking for a clear or minimized POC or repeatable steps before
+  attempting to reproduce.
+* If complicated user gestures are required, encourage the reporter to upload a
+  short video. This will alleviate a lot of back and forth for both them and us.
 
-## What Is A Security Shepherd?
+## Confirm Valid and Actionable
 
-A security shepherd is a member of a rotation
-that occurs in 1-week time slots, starting on Tuesdays and ending the following
-Monday. There is a primary and secondary shepherd on each rotation. All
-shepherds are Googlers and so some links on this page might not be externally
-accessible (or indeed locked down to just Chrome Security Googlers).
+We expect engineering teams to address security bugs promptly. In order to do
+that, our goal is to pass them actionable reports with little ambiguity.
 
-[Here is the rotation
-schedule](https://docs.google.com/spreadsheets/d/10sLYZbi6QfLcXrhO-j5eSc82uc7NKnBz_o1pR9y8h7U/edit#gid=0).
+*For each bug, please take the appropriate action, either:*
 
-Shepherds ensure that all incoming security issues are triaged
-quickly and correctly. We aim to have every bug triaged and assigned **within
-two business days** (preferably one). This does not include weekends, but please
-ensure you leave a clear queue before the weekend (i.e. on Friday, unless there
-is a holiday) and check first thing after the weekend (i.e. on Monday morning,
-unless there is a holiday).
+* **WontFix it as invalid** (Many recurring types of invalid reports are covered
+  by the [Security FAQ](faq.md), such as those related physically local attacks
+  or inputting JavaScript in the URL bar or running Javascript directly in
+  DevTools not being an indication of an XSS vulnerability. Mark as WontFix and
+  update the 'Issue access level' to `Default access` so the issue is
+  publicly visible.
+* **Mark as duplicate** – we want exactly one bug per root cause problem. Please
+  check for duplicate issues of a given issue from that or other reporters /
+  sources (such as ClusterFuzz).
+  * Search for similar stack traces or sharing similar keyword traits in the bug
+    tracker.
+  * If there are two open reports of the same issue, please merge as a duplicate
+    in the direction of the oldest report.
+  * Use the `Mark as Duplicate` button at the upper right of the report pane.
+    This will provide a pop-up to input the bug number of the canonical report
+    that you are merging this report into as a duplicate of.
+    * Using `Mark as Duplicate` is the best practice for merging issues as
+      duplicates.
 
+* **Convert functional bugs to Type=Bug** For example, many reports are for
+  crashes of a functional nature, rather than an exploitable security condition,
+  such as most null pointer dereferences. Convert such reports from
+  Type=Vulnerability to Type=Bug. Do NOT remove security@chromium.org from
+  collaborators first (as this will result in orphaning the bug), but update the
+  'Issue Access Level' to the appropriate visibility. You may consider adding
+  other visibility restrictions, such as `Limited visibility + Googlers` and add
+  edit-bug-access@chromium.org to CC (this is similar to
+  'Restrict-View-EditAccess' in the legacy issue tracker) if the immediate
+  disclosure could result in potential abuse (e.g. denial of service issue).
+* **Convert to a privacy bug** - privacy issues (such as issues with incognito)
+  are not considered security bugs, but functional privacy issues.
+  Convert to Type=Bug and add the Privacy component. Add yourself and any other
+  security team members who may potentially need access to the cc: line.
+  Update the 'Issue access level' to `Limited visibility + Googlers` and
+  deselect / remove security@chromium.org from the 'add collaborator groups'.
+* **Add the `Needs-Feedback` hotlist (hotlistID: 5433459) and set a Next Action
+  date of 24-48 hours for more information** if there is no response, close the
+  issue as `WontFix`.
+* **Determine issue to be theoretical** - and follow the
+  [process for such issues](http://go/chrome-speculative-bug-triage) – theoretical
+  issues are ones that appear to be potentially real bugs, but there the report
+  is lacking evidence of exploitability or reachability. These cases can be
+  shared with engineering teams with a very clear message conveying the
+  speculative nature of the issue. These reports should generally not be
+  prioritized as a Pri-1 as they do not warrant disruption to the engineering
+  teams to investigate and prioritize without more or new information to
+  demonstrate conditions of exploitability.
 
-## When Am I The Primary or Secondary Shepherd?
+None of these apply? Great – this means the bug may be valid and actionable!
+It can take multiple discussions with a reporter to understand a bug. Try really
+hard to reach a conclusion by the end of your shift. If this isn’t possible,
+please discuss outstanding cases with the next shepherd and don’t let bugs fall
+through the cracks. You are responsible for any bug reported or in an un-triaged
+state during your shift.
 
-You should get a calendar invite. Please accept it to acknowledge. If you need
-to swap shifts, ask around for a volunteer and then just update the
-[rotation sheet](https://docs.google.com/spreadsheets/d/10sLYZbi6QfLcXrhO-j5eSc82uc7NKnBz_o1pR9y8h7U/edit#gid=0)
-and wait 10 minutes for the calendar invites to be updated.
-
-## I'm The Security Primary or Secondary Shepherd. What Do I Do?
-
-Each week has a primary and secondary, and during their rotation both have
-various important responsibilities:
-
-### Primary Shepherd
-
-* Look at every incoming security bug report on the
-  [dashboard](http://go/chrome-security-bugs). Ensure each is accurately
-  triaged, and actively progressing towards getting fixed.
-* Don't forget to fully triage the low severity bugs. Once a bug is labeled with
-  `Security_Severity-Low `, it disappears from the first sheet and may slip
-  under your radar.
-* Keep the [Shepherd Handoff Log](http://go/chrome-security-shepherd-handoff) up
-  to date.
-* Shout for help if the incoming bug rate is too high ([suggested vocal
-  exercises](https://youtu.be/5y_SbnPx_cE?t=37s)). The first person to ask is
-  the secondary.
-* Make sure all **new bug reports** are triaged completely. That means no red
-  cells on the top of the dashboard. Double-check that OS flags are set
-  properly. For most of the bugs, typically more than one OS is affected, but
-  the dashboard will not highlight it in red.
-* Stay sharp, keep in shape ([hand-stand
-  pushups](https://www.youtube.com/watch?v=jZ1ZDlLImF8#t=50) are standard for
-  the primary shepherd), and remember you may be [called upon during
-  emergencies](https://www.youtube.com/watch?v=buHaKYL9Jhg).
-
-### Secondary Shepherd
-
-* Ensure that all incoming queries to the
-  [security@chromium.org](https://groups.google.com/a/chromium.org/forum/#!forum/security),
-  [security-dev@chromium.org](https://groups.google.com/a/chromium.org/forum/#!forum/security-dev),
-  and
-  [chrome-security@google.com](https://groups.google.com/a/google.com/forum/#!forum/chrome-security)
-  lists get a reply (by someone; not necessarily the secondary themselves). See
-  [go/chrome-security-emails](https://goto.google.com/chrome-security-emails)
-  for a dashboard.
-  * Note: external emails will always come in on security@chromium.org or
-    security-dev@chromium.org, as chrome-security@google.com is a Google-only
-    list, but all need to be triaged.
-  * When triaging an email to be handled off of the list, make sure to bcc: the
-    list that it arrived on, so that other people including future secondaries can
-    see that it has been handled.
-  * Some of these emails are requests for inclusion of third party code.
-    By the time you hand over to the next Secondary, please
-    ensure these are either completed or have been acknowledged by some other
-    owner. If not, you may need to do them yourself. Please see
-    [How to do Chrome Third-Party Security Reviews](https://goto.google.com/how-to-do-chrome-third-party-security-reviews)
-    for hints.
-* Look at the open security bug reports and check that progress is occurring.
-  This does not apply to the **new bug reports** (these are handled by the
-  primary shepherd). The rule of thumb is *if there is any red cell on the dashboard, it
-  needs your attention*: that especially includes the "last updated" column.
-  (Our [severity guidelines](severity-guidelines.md) contain the expected duration
-  for shipping fixes, but remember, to get a fix to all users in - say - 60
-  days may require us to land a fix in a week or two).
-  Hints:
-  * Don't just add a comment to the bug: sometimes they can disappear into spam.
-    (Although a hand-crafted, meaningful comment can be effective).
-  * Contact via chat or e-mail (ideally, also comment on the bug so other secondaries
-    can see you did so).
-  * CC more people!
-  * Think about what you can do to unblock the bug. What would _you_ do next?
-    Perhaps you can bring in different experts, suggest a different way to
-    reproduce the bug, or even write a fuzzer? Sometimes your security perspective
-    can really help engineering see a different way forward.
-  * Consider whether it's better for you to make meaningful steps forward on
-    ten bugs than to add ignorable nag messages to twenty bugs.
-  * You can't possibly hope to meaningfully move all bugs forward. As a rule of
-    thumb, perhaps expect to spend a solid ten hours progressing bugs during
-    your shift.
-  * Use the 'last updated' column to avoid duplicating the work of the previous
-    secondary.
-* Stay sharp, keep in shape ([finger
-  exercises](https://youtu.be/iV9vyacIeEY?t=47s) are standard for the secondary),
-  and remember you may be called upon during emergencies.
-
-## Life Of A Security Bug
-
-Do as much as you can for the week to triage, shepherd, and wrap up open
-security bugs. What follows are the details of what that entails, but it
-practically means turning all the red cells in the dashboard to green. **If
-you're ever stuck or in doubt, ask for help on #chrome-security! or the
-[Chrome Security Chat](http://go/chrome-security-chat).**
+The best way determine the validity of a security bug is to [*reproduce it*](#Reproduce-the-bug).
+It’s helpful to remember that reporters invested time and energy in their bug
+reports:
 
 ![alt text](apf-right-a-wrong.png "felt: a lot of Chrome vuln reports come from
 well-meaning people who clearly went out of their way to try to right a wrong.
@@ -141,110 +192,21 @@ i like that.")
 
 [link](https://twitter.com/__apf__/status/728776130564526080)
 
-### Diagnose The Issue
 
-![alt text](sheriff-life-of-an-issue.png "Life of a security issue.")
+If you have to close it, please give an explanation as to why.
 
-* **If the report is invalid**, remove the **Restrict-View-SecurityTeam** label
-  and mark it **WontFix**.
-* **If the report is a duplicate**, mark it **Duplicate**. If the issue this is
-  a duplicate of is public, remove the **Restrict-View-SecurityTeam** label.
-* **If the report is primarily a privacy issue**, send it to the privacy team:
-  * Add the **Privacy** component so that it enters their triage queue.
-  * Change **Type-Bug-Security** to **Type-Bug**.
-  * CC any security team members, including yourself, who may be interested in
-    the privacy issue.
-	* Change the **Restrict-View-SecurityTeam** label to
-  **Restrict-View-ChromePrivacy**.
-    * Note that security team members don't automatically have privacy bug
-      access, so this will probably make the issue inaccessible to you.
-* **If the report is asking about why something is or is not on the Safe
-  Browsing list:**
-  * Close the bug and request the reporter submit the URL to SafeBrowsing.
-  * See below for reporting URLs to SafeBrowsing.
-* **If the report is a potentially valid bug but is not a security
-  vulnerability:**
-  * remove the **Restrict-View-SecurityTeam** label. If necessary, add one of
-    the other **Restrict-View-?** labels:
-    * **Restrict-View-Google** if this is a crash report.
-    * **Restrict-View-EditIssue** if the bug can be abused (e.g. denial of
-      service)
-	* Change **Type-Bug-Security** label to **Type-Bug** (or whatever **Type-?**
-    is appropriate).
-  * Add appropriate component or CCs to ensure it does get triaged.
-  * Add the **Security** component or the **Team-Security-UX** label if the
-    security team should still track the issue (e.g. security features).
-  * Please do not remove the **external_security_report** label.
-* **If the report doesn't have enough information**, ask the reporter for more
-  information, add the **Needs-Feedback** label and wait for 24 hours for a
-  response.
-* The [security bug template](https://bugs.chromium.org/p/chromium/issues/entry?template=Security+Bug)
-  asks reporters to **attach files directly**, not in zip or other archives, and
-  not hosted at an external resource (e.g. Google Cloud Storage). If the report
-  mentions an online demo hosted somewhere, make sure the reporters attach the
-  source code for the demo as well.
-* **If the bug is a security bug, but is only applicable to Chrome OS**:
-	* The Chrome OS Security team now has their own sheriffing rotation. To get
-    bugs into their triage queue, just set OS to the single value of "Chrome".
-    No other steps or labels are needed.
-	* If you need to ping or ask about Chrome OS bug, [ask their current
-    sheriff](http://go/whos-the-chromeos-sheriff).
-* **If the report smells like a vulnerability, keep going.**
+### Reproduce the bug
 
-### Verify And Label The Bug
+Reproducing the bug isn’t always required, but often it’s needed and the only
+way to:
 
-#### Step 1. Reproduce legitimate-sounding issues.
+* Understand a report and validate the issue being presented.
+* Provide actionable information to the engineering team responsible for fixing
+  the bug.
+* Setting the oldest impacted release channel correctly.
 
-Ideally, primary shepherds should reproduce each bug before triaging, but being efficient
-is also important. It's fine to delegate reproducing bugs in the following
-cases:
-
-* A bug comes from an automated infrastructure (such as ClusterFuzz or Vomit).
-* A bug comes from a reporter with a solid track record of vulnerabilities (e.g.
-  prolific external researchers or Google Project Zero team).
-* A bug requires a particular device that you don't have available, or any other
-  environment which you don't have ready but a potential code owner would have.
-
-Mention explicitly in your comment that you didn't reproduce a bug before
-assigning it to someone else.
-
-A few components have their own triage processes or points of contact who can
-help.
-
-* **V8 bugs**. First, [upload benign-looking test cases to
-  ClusterFuzz](clusterfuzz-for-shepherds.md) if it isn't already
-  there (please keep an eye out for any special flags and debug vs release).
-  Hopefully, this will cause ClusterFuzz to reproduce and bisect the bug. If
-  not:
-    * Set a provisional severity of High, assuming this causes renderer memory
-      corruption.
-    * Set a provisional `FoundIn` of the current Extended Stable.
-    * Assign it to the current [V8
-      Sheriff](https://goto.google.com/current-v8-sheriff) with
-      a comment explaining that the severity and `FoundIn` are provisional.
-      Note that V8 CHECK failure crashes can have security implications, so
-      don't triage it yourself.
-    * If for any reason you need to discuss the bug with a particular V8 contact,
-      Googlers can look at
-      [the V8 security bug triage instructions](https://goto.google.com/v8-security-issue-triage-how-to)
-      for lists of component owners, but this shouldn't normally be necessary.
-* **Skia bugs** can be assigned to hcm@chromium.org. Be careful while triaging
-  these! The place where we're crashing isn't necessarily the place where the
-  bug was introduced, so blame may be misleading. Skia fuzzing bugs can be
-  assigned to kjlubick@chromium.org, as Skia is heavily fuzzed on OSS-Fuzz and
-  some issues reported in Chromium are already known or even fixed upstream.
-* **URL spoofing issues**, especially related to RTL or IDNs? See
-  [go/url-spoofs](http://go/url-spoofs) for a guide to triaging these.
-* **SQLite bugs** can be assigned to mek@. CC drhsqlite@ for upstream issues.
-
-Note that **even when you are handing off triage to another team or point of
-contact**, it is your responsibility to ensure that the `Security_Severity` and
-`FoundIn` fields are set as soon as possible (and definitely before the end of
-your shepherding shift). Work with your point of contact to set these. For
-instance, you may want to set initial/provisional values for these fields and
-ask them whether it matches their understanding.
-
-Tips for reproducing bugs:
+These things must be done correctly, so as Security Shepherd, you’ll spend a lot
+of time reproducing bugs. Here are some tips in doing so:
 
 * Assume that test cases may be malicious. You should only reproduce bugs
   on your local machine if you're completely certain that you understand
@@ -259,19 +221,12 @@ Tips for reproducing bugs:
 * [Instructions for using an Android emulator can be found
   here](/docs/android_emulator.md). If you're inside Google, we have a
   [guide for testing using Google infrastructure](https://goto.google.com/android-for-chrome-shepherds).
-* When you can't just build from a specific branch locally, check out
+* When you can't just build from a specific branch locally, see
   [https://dev.chromium.org/getting-involved/dev-channel](https://dev.chromium.org/getting-involved/dev-channel)
   or
   [https://commondatastorage.googleapis.com/chromium-browser-asan/index.html](https://commondatastorage.googleapis.com/chromium-browser-asan/index.html)
   for the latest release of a specific version.
-* There are many tools available to help you reproduce various memory issues
-  reliably. If you aren't already familiar with them, check out
-  [AddressSanitizer](https://www.chromium.org/developers/testing/addresssanitizer),
-  [MemorySanitizer](https://www.chromium.org/developers/testing/memorysanitizer),
-  [ThreadSanitizer](https://www.chromium.org/developers/testing/threadsanitizer-tsan-v2),
-  and
-  [UndefinedBehaviorSanitizer](https://www.chromium.org/developers/testing/undefinedbehaviorsanitizer).
-* The [get_asan_chrome](https://source.chromium.org/chromium/chromium/src/+/main:tools/get_asan_chrome/get_asan_chrome.py)
+* The [get_asan_chrome.py](https://source.chromium.org/chromium/chromium/src/+/main:tools/get_asan_chrome/get_asan_chrome.py)
   helper script is a handy way to download ASAN Chrome. The --help flag
   provides usage instructions, e.g. to fetch builds for various versions and
   platforms.
@@ -280,98 +235,130 @@ Tips for reproducing bugs:
   again using a different job type with a more mature tool (e.g. ASan on Linux).
   It may give more complete information.
 
-#### Step 2. Assess the severity.
+### Set severity
 
-[See the severity guidelines](severity-guidelines.md). If it's a critical
-vulnerability, act quick! We aim to get users patched in < 30 days. Remember
-that if something requires an unusual configuration or complicated user
-interaction, the severity rating should be lowered.
+Use the [Security Severity Guidelines](severity-guidelines.md).
 
-Bug chains are typically composed of several individual security bugs and
-should be split into a new bug for each potential fix required, so this allows
-each team to work on fixing their part of the chain. In cases like this, leave
-the main bug as the severity/priority of the full chain, and mark child bugs as
-being blockers of the parent bug each with their own separate severity. Each
-child bug can have its own priority. Examples of this in action are [issue
-352369](https://crbug.com/352369) and [issue 453937](https://crbug.com/453937).
+If you can, [*reproduce it using ClusterFuzz*](clusterfuzz-for-shepherds.md), as
+the severity is usually set automatically.
 
-Even after initial triage, re-assess the severity while you're looking at a
-security bug update: does it have new information in the bug that could change
-the assessment? Be especially on the lookout for Highs that are really
-Criticals, and Lows that are really Mediums (make sure to account for process
-types and sandbox boundaries).
+For V8 issues, you can tentatively set the issue as High (S1) severity – see
+[Assign,below](#Assign).
 
-For V8 issues, it can be hard to identify the correct security severity.
-Always set the severity to High unless there's strong evidence of an obvious
-mitigation. Please add the `Security_Needs_Attention-Severity` label alongside
-the regular `Security_Severity-*` label. If the bug is not exploitable, or is
-mitigated, the V8 team will reduce the security severity (to avoid unnecessary
-risk of merging the bug into stable branches).
+Please adjust severity as your understanding of the bug evolves - but please
+always add a comment explaining the change. Higher severity bugs involve
+significant disruption for multiple teams; lower severity issues may not be
+fixed and a fix released to users as quickly as may be warranted. That’s why
+it’s important to get the severity as correct as possible.
 
-If an issue is found that can't affect any users running a default configuration
-of Chrome (e.g. an issue in code guarded by a command-line flag that is off by
-default), the `Security_Severity-*` label should still be set as if the issue
-is affecting users running a default configuration of Chrome (but see the next
-section about `FoundIn` and `Security_Impact-None`).
+### Set oldest impacted active release channel
 
-#### Step 3. Set FoundIn
+We do not release severe security regressions, so we need to know the earliest
+impacted Chrome release branch.
 
-Identify the earliest affected branch (Extended Stable, Stable, Beta or Head)
-and set the corresponding `FoundIn` label (for example `FoundIn-66` if the
-extended stable milestone is 66 and you've confirmed it's reproducible on M66).
-If you reproduced the bug with ClusterFuzz, it should do this on your behalf.
+First, if an issue [doesn’t impact Chrome users by default (such as be being
+behind a disabled feature or a command line flag), add the hotlist
+**`Security_Impact-None`**](security-labels.md#when-to-use-security_impact_none-toc_security_impact_none);
+otherwise, set a **Found In** milestone in the `Found In` field as follows:
 
-If you performed a bisection or were provided one with the commit that
-introduced the problem, you can check which milestone has that commit by
-navigating to https://chromiumdash.appspot.com/commit/COMMIT_HASH_HERE.
+Check [ChromiumDash](https://chromiumdash.appspot.com/releases?platform=Windows) for the earliest relevant milestone number
+(Extended Stable or Stable – sometimes they are the same).
+* If that branch is affected, set the `Found In` field to, to the approparite
+  milestone number.
+* Otherwise, move forward through milestone numbers. Set the `Found In` field
+  to the oldest impacted branch you find.
 
-Sometimes Extended Stable is the same milestone as Stable; sometimes it
-differs. If in doubt about the currently active milestones, check
-[ChromiumDash](https://chromiumdash.appspot.com/releases?platform=Windows).
-(It's fine to just check the Windows platform, via that link - there's no need
-to look at all the different platforms). There's no need to check for
-reproducibility on milestones earlier than the current Stable milestone.
+There is no general reason to test versions older than the current Extended
+Stable milestone. If you can [*reproduce using ClusterFuzz*](clusterfuzz-for-shepherds.md)
+the `Found In` field can often be set automatically if ClusterFuzz can identify
+the culprit CL.
 
-If an issue is found that can't affect any users running a default configuration
-of Chrome (e.g. an issue in code guarded by a command-line flag that is off by
-default), then do not set the `FoundIn` label; instead, set the impact to
-`Security_Impact-None` (but see
-[here](security-labels.md#when-to-use-security_impact_none-toc_security_impact_none)
-for additional nuances around using `Security_Impact-None`).
+Otherwise, you may need to [reproduce the bug](#Reproduce-the-bug) manually to
+determine the impacted branches.
 
-#### Step 4. [Check other labels](security-labels.md).
+If you have a bisection or other convincing evidence, that’s sufficient. You can
+manually check which milestone has a given commit in
+[ChromiumDash commits check](https://chromiumdash.appspot.com/commits).
 
-Much of Chrome's development and release process depends on bugs having the
-right labels and components. Labels and components are vitally important for
-merging the fix to the right releases, and ensuring reporters are credited
-correctly. They also help with metrics and visibility.
+Please *do not* base Found In- on the Chrome version number provided in the
+original report. This is often based on the version number the individual is
+using when discovering this issue or is automatically set in the report by the
+tracker’s report wizard and is not correct in terms of coverage of all active
+release channels.
 
-Labels to **double-check** (the first two should already be there if the bug
-was filed using the Security template):
+For V8 bugs, you can set `Found In` as the current extended stable milestone
+unless you have reproduced the issue or an accurate bisection has been provided.
+(See [Assign, below](#Assign).)
 
-* **Restrict-View-SecurityTeam**
-* **Type-Bug-Security**
-* If you want to prevent the bug from becoming unrestricted after it has been
-  closed, add **Restrict-View-SecurityEmbargo**. This should be done if the
-  reporter wishes to remain anonymous, if the description or comments contain
-  PII, or if the bug contains malware samples.
-* **Security_Severity** - your responsibility as Shepherd.
-* **FoundIn** - your responsibility as Shepherd.
-* **reward_to** - if the bug was filed internally on behalf of somebody
-  external (for instance, a @chromium.org email reporting "I'm filing this on
-  behalf of" and the like). This is also very important; please check.
+### Set impacted operating systems
 
-You can expect Sheriffbot to fill in lots of other labels; for example,
-the `M-` label to indicate the target milestone. It's best to allow
-Sheriffbot to add the rest, as its rules have congealed from years of
-accumulated security wisdom. See
-[the Security Labels document](security-labels.md) for an explanation of what
-the labels mean.
+Set the `OS` field as best you can based on [these guidelines](security-labels.md#OS-Labels).
+You do not need to reproduce the bug on each platform, but it really helps if
+you set this field roughly right to ensure the bug has the attention of the
+different desktop and mobile release teams.
 
-**If you change anything, add a comment which explains any status
-changes.** Severity, milestone, and priority assignment generally require
-explanatory text.
+Some issues may be specific to a particular platform, if you need to reproduce a
+bug that is platform specific and you do not have access to a device with that
+OS, please [ask for help](#Ask-for-help), there is likely someone on the team
+that does and can help you.
 
+ChromeOS is in a separate issue tracker. VRP reports for ChromeOS should be
+[directly reported to ChromeOS](https://bughunters.google.com/report). Please
+request the reporter submit direct to ChromeOS via that reporting route to
+ensure it is received by the appropriate team.
+
+### Assign
+
+Security bugs are not automatically visible, so you must add people to get them
+fixed. For each bug, set:
+
+* The **Component Tags** – due to a limited set of auto-cc rules, this may add
+  some visibility.
+* An **assignee/owner**. Use `git blame` or look for similar past bugs in the
+  tracker.
+* Lots of **cc**s. Copy everyone who could possibly be relevant. Use the owners
+  file for a particular feature to help achieve this.
+* Add a **comment** so that recipients know what’s expected, and why you think
+  they’re the right person to take action.
+  * Be sure to convey if you have reproduced this issue and your determinations
+  about security relevance or diagnosis.
+
+It’s okay if you cannot determine or  know the exact right assignee, but please
+pass it along to / include someone who can direct it more precisely.
+
+*Some types of bugs have specific assignment needs:*
+* **V8 bugs**. First, [upload benign-looking test cases to
+  ClusterFuzz](clusterfuzz-for-shepherds.md) if it isn't already
+  there (please keep an eye out for any special flags and debug vs release).
+  Hopefully, this will cause ClusterFuzz to reproduce and bisect the bug. If
+  not:
+    * Set a provisional severity of High (S1), assuming this causes renderer
+      memory corruption.
+    * Set a provisional `Found In` of the current Extended Stable.
+    * Assign it to the current [V8
+      Sheriff](https://goto.google.com/current-v8-sheriff) with
+      a comment explaining that the severity and `Found In` are provisional.
+      Note that V8 CHECK failure crashes can have security implications, so
+      don't triage it yourself.
+    * If for any reason you need to discuss the bug with a particular V8 contact,
+      Googlers can look at
+      [the V8 security bug triage instructions](https://goto.google.com/v8-security-issue-triage-how-to)
+      for lists of component owners, but this shouldn't normally be necessary.
+* **Skia bugs** can be assigned to hcm@chromium.org. Be careful while triaging
+  these! The place where we're crashing isn't necessarily the place where the
+  bug was introduced, so blame may be misleading. Skia fuzzing bugs can be
+  assigned to kjlubick@chromium.org, as Skia is heavily fuzzed on OSS-Fuzz and
+  some issues reported in Chromium are already known or even fixed upstream.
+* **URL spoofing issues**, especially related to RTL or IDNs? See
+  [go/url-spoofs](http://go/url-spoofs) for a guide to triaging these.
+* **SQLite bugs** can be assigned to an owner from //third_party/sqlite/OWNERS.
+  CC drhsqlite@ for upstream issues.
+* **Fullscreen bugs** the Open Screen team is taking ownership of Full Screen
+  issues, including security bugs. Please assign Full Screen security issues to
+  takumif@chromium.org and cc: atadres@chromium.org, muyaoxu@google.com, and
+  mfoltz@chromium.org. They are also working on holistic solutions to improving
+  the security of fullscreen, so please remember to look for potential
+  duplicates of ongoing work.
 * Report suspected malicious URLs to SafeBrowsing:
   * Public URLs:
     * [Report malware](https://safebrowsing.google.com/safebrowsing/report_badware/?hl=en)
@@ -379,94 +366,190 @@ explanatory text.
     * [Report incorrect phishing warning](https://safebrowsing.google.com/safebrowsing/report_error/?hl=en)
   * Googlers: see instructions at [go/safebrowsing-escalation](https://goto.google.com/safebrowsing-escalation)
   * Report suspected malicious file attachments to SafeBrowsing.
-* Make sure the report is properly forwarded when the vulnerability is in an
-  upstream project, the OS, or some other dependency.
+* If the report is in an upstream package that we pull into our tree via
+  `//third_party` or elsewhere:
+    * Ask the reporter to file a bug report upstream, if there is an active
+      upstream. If they can't / don't, or the report is from a bot
+      (clusterfuzz or similar), ask the `//third_party` package owner to file
+      it.
+    * For the downstream bug (the one on the Chromium tracker):
+        * Add the downstream bug to [the Status-External_Dependency hotlist](https://issues.chromium.org/hotlists/5438152).
+        * Assign that bug to an OWNER from the `//third_party` package.
+        * Ask that owner to ensure that the upstream bug is fixed, the
+          downstream copy in Chromium is rolled, and finally the
+          downstream bug is marked Fixed.
 * For vulnerabilities in services Chrome uses (e.g. Omaha, Chrome Web Store,
   SafeBrowsing), make sure the affected team is informed and has access to the
   necessary bugs.
+* Chrome for iOS - bugs suspected to be in **WebKit**:
+    * Reproduce using an iOS device or desktop Safari.
+    * Set Severity, Found In, and set Component Tags fields.
+    * If the issue is in Webkit
+      * Add hotlist `Status_ExternalDependency` (hotlistID: [5438152](https://issues.chromium.org/hotlists/5438152))
+      * If reported by an external VRP reporter, request they report the issue
+      directly to Webkit and provide us the WebKit issue ID after they have done
+      so.
+      * If this is an internally discovered issue, file a security bug in the
+      Security product at [bugs.webkit.org](https://bugs.webkit.org) and
+      cc:chrome-ios-security-bugs@google.com. This alias is monitored by the iOS
+      Chrome team so they can be notified when the WebKit bug is fixed.
+        * Note the WebKit bug ID in the Chromium issue report.
+    * All security issues need owners, the WebKit ones can be assigned to ajuma@.
 
-##### Labeling For Chrome On iOS
+### Shift handoff
 
-* Reproduce using iOS device or desktop Safari.
-* Assign severity, impact, and component labels.
-* Label **ExternalDependency**.
-* Label **Hotlist-WebKit**. This label is monitored by Apple friends.
-* File a security bug at [bugs.webkit.org](https://bugs.webkit.org), and CC
-  chrome-ios-security-bugs@google.com. This alias is monitored by the iOS Chrome
-  team so they can be notified when the WebKit bug is fixed.
-* Note the WebKit bug ID in the crbug report.
+As you work through the queue each day, please manage your time and ensure you
+have addressed all red rows and cells in the sheet to the best of your ability.
+Make sure there are no red cells at the top of your sheet before the end of your
+shift. It’s not okay to leave a backlog for the next oncoming security shepherd.
 
-### Find An Owner To Fix The Bug
+Please fill out the [Shepherding Handoff
+Log](https://goto.google.com/chrome-security-shepherd-handoff) to communicate
+issues from your shift that may be helpful to the oncoming shift.
 
-That owner can be you! Otherwise, this is one of the more grey areas of
-shepherding. With experience, you'll figure out good goto people for certain
-areas. Until then, here are some tips.
+### Ask for help
 
-**Determine the correct component before continuing.** It's not enough on its
-own, but it's a good starting point. Many components will automatically apply
-some CCs who may be able to help you out. If it's a crash bug, see if
-ClusterFuzz is able to provide one (will appear in the same card as the culprit
-CL). You can also use `git hyper-blame` and check OWNERS files to see who might
-own the relevant code.
+Security bug triage is hard. We receive around 75 bug reports per week on
+average. **If you are ever stuck or in doubt**, please ask for help from the
+[Chrome Security Shepherds chat](https://goto.google.com/chrome-security-shepherds-chat)
+or the [Chrome Security Chat](https://goto.google.com/chrome-security-chat).
+During some shifts, there are just too many incoming bugs. It’s okay to ask for
+help, please do!
 
-**For crashes, check to see if ClusterFuzz provides a culprit CL.** Before you
-assign a bug based on this, do a quick sanity check to ensure the CL could have
-caused the bug. If the result seems wrong, apply the Test-Predator-Wrong label
-to the bug and keep going.
+You may also like the classic [HOWTO: Be a Security Shepherd deck](https://docs.google.com/presentation/d/1eISJXxyv7dUCGUKk_rvUI9t9s2xb98QY4d_-dZSa7Wg/edit#slide=id.p)
 
-If you're able to narrow this to a specific regression range, usually from
-ClusterFuzz for crash bugs, do a quick pass over the git log to see if any CLs
-stand out. If you aren't sure, don't be afraid to add CCs to the bug and ask!
+Because shepherding is fun. You like fun. Don't you? Fun is great.
 
-At this point, you'll probably need to dive in and attempt to root cause the
-bug, which is another complicated grey area that you'll figure out with
-experience. Try not to spend too much time on this for any given bug, as some
-cases will simply be too difficult without a deep understanding of certain
-portions of the codebase.
+## Secondary Shepherd
 
-* If you can narrow the bug to a specific file or block of code, or if something
-  stands out as suspicious, try to assign an owner based on `git hyper-blame` or
-  add some CCs based on OWNERS files.
-* If not, consider searching in the issue tracker for people that fixed similar
-  bugs or bugs in similar areas of the code base, such as issues with the same
-  components, recently. For example, let's say you were trying to figure out a
-  good person to assign a Content>Fonts issue. Look for `status=fixed,verified`
-  and query by when the issues were closed after (i.e. w/ in the last 30 days ==
-  `closed>today-30`).
+### Check in on triaged issues
 
-Got stuck? Ask #chrome-security or someone from
-[go/chrome-security-sheriff-mentors](https://goto.google.com/chrome-security-sheriff-mentors)
-for help! That's why we're here. Don't be afraid to do this!
+Review open security bug reports and check that progress is occurring. This does
+not apply to the new bug reports as these are handled by the primary shepherd.
+The rule of thumb is *if there is any red cell on the dashboard, it needs your
+attention*: that especially includes the `last updated` column. Our [severity
+guidelines](severity-guidelines.md) contain the expected duration for shipping
+fixes, but it’s important to remember that to get a fix to all users in 60 days
+or so, this may require us to land a fix in a week or two.
 
-Make sure that the person you assign to handle a bug is not OOO. And, generally,
-explicitly CC more than one person on the bug, if possible, and preferably
-people from more than one geographic region. (See the OWNERS file(s) that
-affect(s) the relevant area of code.)
+*Suggestions for cultivating progress on security bugs:*
+* Don’t just add a comment to the bug as these can disappear into spam (though a
+  well-crafted, meaningful, actionable comment can be effective).
+* Contact the owner via chat or email in addition to commenting on the bug (so
+  others on the bug can see an update is needed).
+* cc: more relevant people
+* Think about what you can do to unblock the bug. What would _you_ do next?
+ Perhaps you bring in a subject matter expert of some aspect of the bug that is
+ a particular sticking point or suggest a different approach to reproduce the
+ bug. Sometimes a security perspective can help shed light on a different way
+ forward.
+* Are there old, open `Security_Impact-None` bugs in unlaunched features, where
+  the response has been that there are no plans to launch that feature? Perhaps
+  inquire as to if that code can be removed rather than keeping vulnerable code
+  production code base. (Removing code that is not being used is a win!)
+* Consider if it is better for you to make meaningful steps forward on three
+  bugs versus simple pings on many bugs.
 
-**Sometimes, finding an owner isn't enough to ensure that a bug will get
-fixed.** Check the stale bug list on the security dashboard and try resolve
-some of the problems that might be blocking these issues. If you get in touch
-with a bug owner off of the issue tracker, be sure to have them update the bug
-so that future shepherds are aware of the status.
+You can’t possibly usher all bugs toward meaningful progress during your shift.
+As a general rule, expect to spend a solid two hours each day  ushering bugs
+toward progress during your shift. Use the `last updated` column to avoid
+duplicating the work of the previous secondary.
 
-> Q: Why isn’t setting the component alone good enough?
->
-> A: CCs are critical because just assigning to a component is ineffective
-> because the component’s team cannot see the issues unless they have the
-> Security View permissions.
+### Handle incoming security emails
 
-### Using The Permission API Kill Switch
+Ensure that all incoming inquiries to the [security@chromium.org](https://groups.google.com/a/chromium.org/forum/#!forum/security),
+[security-dev@chromium.org](https://groups.google.com/a/chromium.org/forum/#!forum/security-dev),
+and
+[chrome-security@google.com](https://groups.google.com/a/google.com/forum/#!forum/chrome-security)
+lists get a reply (by someone; not necessarily you). See
+[go/chrome-security-emails](https://goto.google.com/chrome-security-emails)
+for a dashboard.
 
-If you find a vulnerability in a Permission API and need to use the Global
-Permissions Kill Switch, then follow [the
-instructions](https://docs.google.com/document/d/17JeYt3c1GgghYoxy4NKJnlxrteAX8F4x-MAzTeXqP4U)
+* When triaging an email to be handled off of the list, make sure to bcc: the
+list that it arrived on, so that others (including future secondary shepherds)
+can see that it has been handled.
+* Some of these emails are requests for the inclusion of third-party code.
+By the time you do shift handoff, please ensure these are either completed or
+have been acknowledged by some other owner. If not, you may need to do them
+yourself.
+  * Please see [How to do Chrome Third-Party Security Reviews](https://goto.google.com/how-to-do-chrome-third-party-security-reviews) for tips.
 
-### Wrapping Up The Fixed Issue
+## Other Helpful Info
 
-1. Check with the developer that the issue can be closed as Fixed to allow
-   Sheriffbot to add the appropriate merge-review labels based on
-   Security_Severity and Security_Impact.
+### What do all these bug labels mean?
 
-## End Of Rotation
+[Security Labels](security-labels.md).
 
-Update the [Shepherd Handoff Log](http://go/chrome-security-shepherd-handoff).
+### An owner is asking for security input on backporting a security fix.
+What do I do here?
+
+You are not responsible for handling merges or approving a fix for backmerge.
+If the issue is resolved and there is a landed CL, please ensure the bug is
+closed as Fixed. Please also make sure the bug has a severity and FoundIn set.
+This will allow the bot (Sheriffbot) to add the appropriately update the Merge
+custom field with the appropriate request-MMM or review-MMM labels, where MMM =
+the milestones for backmerge consideration (based on rules driven by severity
+(and security_impact, derived from Found In). See
+[security merge triage](../process/merge_request.md#Security-merge-triage)
+for more information.
+
+That issue will be visible to the security merge review queue. There are
+designated members of the security team who have the hefty responsibility of
+reviewing security issues for backmerge. Merge approvals will be handled by them
+after at least the fix has had sufficient bake time on Canary.
+
+### When / how does X happen to a security bug?
+
+(e.g. how and when does a VRP bug get to the Chrome VRP Panel?)
+[See Life of a Security Issue](life-of-a-security-issue.md).
+
+### I have questions related to Chrome VRP policy and scope.
+
+[Chrome VRP policies and rewards page](https://g.co/chrome/vrp) and [Chrome VRP
+News and FAQs](vrp-faq.md). You can also reach out directly to the Chrome VRP
+TL or ask questions in the
+[Chrome Security Shepherds chat](http://go/chrome-security-shepherds-chat), all
+VRP Panel members are also members of that chat.
+
+### There is PII or other data in a report we do not want to publicly disclose.
+
+For these cases, please add the `SecurityEmbargo` hotlist (hotlistID: 5432549)
+to the report. For cases of PII that can’t be permanently deleted for the
+report, this label should remain indefinitely.
+
+For cases in which we are just delaying public disclosure (such as when a
+security issue impacts other products or vendors), please use this label and set
+a date in the `Next Action` field so that disclosure can be re-evaluated at
+that time.
+
+### Protecting researcher identities
+
+Many researchers report security issues under a pseudonym and from a specific
+email address pertaining to that pseudonym. Please do not refer to the
+researcher by the email username directly in any comments of the report.
+When reports are publicly disclosed, that becomes visible to all and we have to
+delete those comments to protect that information. To direct a comment at an
+external security researcher, please use “OP”, “reporter”, or "researcher”.
+
+### Shepherding Scheduling
+
+* [Current Shepherds](http://go/whos-the-shepherd)
+* [Rotation schedule](https://docs.google.com/spreadsheets/d/10sLYZbi6QfLcXrhO-j5eSc82uc7NKnBz_o1pR9y8h7U/edit#gid=0)
+* If you're a Shepherd, you should get a calendar invite.
+  Please accept it to acknowledge your upcoming shepherding duty.
+* If you need to swap shifts, ask around for a volunteer and then just update
+  the [rotation sheet](https://docs.google.com/spreadsheets/d/10sLYZbi6QfLcXrhO-j5eSc82uc7NKnBz_o1pR9y8h7U/edit#gid=0) and wait 10 minutes for the calendar invites to be updated.
+
+### Incident response
+
+Sometimes you’ll need to handle a security emergency, such as a critical
+severity bug or bug known or under active exploitation in the wild. In such
+cases:
+* As soon as possible, reach out the Shepherds chat for a Chrome Security
+  Incident Responder, so they can take on IR Commander responsibilities.
+* Sometimes features can be switched off using feature flags – for example
+  [in permissions](https://docs.google.com/document/d/17JeYt3c1GgghYoxy4NKJnlxrteAX8F4x-MAzTeXqP4U).  Check with the engineer if that is a possibility in the case of this issue.
+
+That's a lot of stuff! You have this resource and your peers to lean on for
+questions and expertise. Hopefully this doc helps.
+You're gonna do great!

@@ -9,7 +9,7 @@
 #include <mach/mach_vm.h>
 #include <sys/mman.h>
 
-#include "base/allocator/partition_allocator/thread_cache.h"
+#include "base/allocator/partition_allocator/src/partition_alloc/thread_cache.h"
 #include "base/check_op.h"
 #include "base/debug/proc_maps_linux.h"
 #include "base/logging.h"

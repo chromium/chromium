@@ -16,9 +16,7 @@ import org.chromium.ui.modelutil.PropertyModel;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
-/**
- * Properties defined here reflect the visible state of the AllPasswordsBottomSheet.
- */
+/** Properties defined here reflect the visible state of the AllPasswordsBottomSheet. */
 class AllPasswordsBottomSheetProperties {
     static final PropertyModel.WritableBooleanPropertyKey VISIBLE =
             new PropertyModel.WritableBooleanPropertyKey("visible");
@@ -32,9 +30,12 @@ class AllPasswordsBottomSheetProperties {
             new PropertyModel.ReadableObjectPropertyKey<>("on_query_text_change");
 
     static final PropertyKey[] ALL_KEYS = {
-            VISIBLE, DISMISS_HANDLER, SHEET_ITEMS, ORIGIN, ON_QUERY_TEXT_CHANGE};
+        VISIBLE, DISMISS_HANDLER, SHEET_ITEMS, ORIGIN, ON_QUERY_TEXT_CHANGE
+    };
 
-    static PropertyModel createDefaultModel(String origin, Callback<Integer> dismissHandler,
+    static PropertyModel createDefaultModel(
+            String origin,
+            Callback<Integer> dismissHandler,
             Callback<String> onSearchQueryChangeHandler) {
         return new PropertyModel.Builder(ALL_KEYS)
                 .with(VISIBLE, false)
@@ -48,19 +49,21 @@ class AllPasswordsBottomSheetProperties {
     static class CredentialProperties {
         static final PropertyModel.ReadableObjectPropertyKey<Credential> CREDENTIAL =
                 new PropertyModel.ReadableObjectPropertyKey<>("credential");
-        static final PropertyModel
-                .ReadableObjectPropertyKey<Callback<CredentialFillRequest>> ON_CLICK_LISTENER =
-                new PropertyModel.ReadableObjectPropertyKey<>("on_click_listener");
+        static final PropertyModel.ReadableObjectPropertyKey<Callback<CredentialFillRequest>>
+                ON_CLICK_LISTENER =
+                        new PropertyModel.ReadableObjectPropertyKey<>("on_click_listener");
         static final PropertyModel.ReadableBooleanPropertyKey IS_PASSWORD_FIELD =
                 new PropertyModel.ReadableBooleanPropertyKey("is_password_field");
         static final PropertyKey[] ALL_KEYS = {CREDENTIAL, ON_CLICK_LISTENER, IS_PASSWORD_FIELD};
 
         private CredentialProperties() {}
 
-        static PropertyModel createCredentialModel(Credential credential,
-                Callback<CredentialFillRequest> clickListener, boolean isPasswordField) {
-            return new PropertyModel
-                    .Builder(AllPasswordsBottomSheetProperties.CredentialProperties.ALL_KEYS)
+        static PropertyModel createCredentialModel(
+                Credential credential,
+                Callback<CredentialFillRequest> clickListener,
+                boolean isPasswordField) {
+            return new PropertyModel.Builder(
+                            AllPasswordsBottomSheetProperties.CredentialProperties.ALL_KEYS)
                     .with(CREDENTIAL, credential)
                     .with(ON_CLICK_LISTENER, clickListener)
                     .with(IS_PASSWORD_FIELD, isPasswordField)
@@ -71,9 +74,7 @@ class AllPasswordsBottomSheetProperties {
     @IntDef({ItemType.CREDENTIAL})
     @Retention(RetentionPolicy.SOURCE)
     @interface ItemType {
-        /**
-         * A section containing username, password and origin.
-         */
+        /** A section containing username, password and origin. */
         int CREDENTIAL = 0;
     }
 

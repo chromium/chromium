@@ -5,12 +5,12 @@
 #ifndef COMPONENTS_CDM_RENDERER_WIDEVINE_KEY_SYSTEM_INFO_H_
 #define COMPONENTS_CDM_RENDERER_WIDEVINE_KEY_SYSTEM_INFO_H_
 
+#include <optional>
 #include <string>
 
 #include "base/containers/flat_set.h"
 #include "media/base/content_decryption_module.h"
 #include "media/base/key_system_info.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace cdm {
 

@@ -72,9 +72,10 @@ class MediaKeys : public ScriptWrappable,
                                  const String& session_type_string,
                                  ExceptionState&);
 
-  ScriptPromise setServerCertificate(ScriptState*,
-                                     const DOMArrayPiece& server_certificate,
-                                     ExceptionState&);
+  ScriptPromiseTyped<IDLBoolean> setServerCertificate(
+      ScriptState*,
+      const DOMArrayPiece& server_certificate,
+      ExceptionState&);
 
   ScriptPromise getStatusForPolicy(ScriptState*,
                                    const MediaKeysPolicy*,

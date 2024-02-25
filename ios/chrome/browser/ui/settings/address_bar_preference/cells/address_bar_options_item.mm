@@ -42,12 +42,21 @@ const CGFloat kCellTrailingPadding = 31;
 
 @end
 
+@interface AddressBarOptionsCell ()
+
+// Haptic feedback generator for selection change.
+@property(nonatomic, readonly, strong)
+    UISelectionFeedbackGenerator* feedbackGenerator;
+
+@end
+
 @implementation AddressBarOptionsCell {
   // The view for the top address bar preference option.
   AddressBarOptionView* _topAddressBar;
   // The view for the bottom address bar preference option.
   AddressBarOptionView* _bottomAddressBar;
 }
+@synthesize feedbackGenerator = _feedbackGenerator;
 
 - (instancetype)initWithStyle:(UITableViewCellStyle)style
               reuseIdentifier:(NSString*)reuseIdentifier {
@@ -84,6 +93,16 @@ const CGFloat kCellTrailingPadding = 31;
   [_bottomAddressBar setSelected:_bottomAddressBarOptionSelected];
 }
 
+#pragma mark - properties
+
+- (UISelectionFeedbackGenerator*)feedbackGenerator {
+  if (_feedbackGenerator) {
+    return _feedbackGenerator;
+  }
+  _feedbackGenerator = [[UISelectionFeedbackGenerator alloc] init];
+  return _feedbackGenerator;
+}
+
 #pragma mark - Private
 
 // Returns a UI stack view that displays an UI stack view with two Address bar
@@ -107,10 +126,16 @@ const CGFloat kCellTrailingPadding = 31;
   [_topAddressBar addTarget:self
                      action:@selector(onSelectTopAddressBar)
            forControlEvents:UIControlEventTouchUpInside];
+  [_topAddressBar addTarget:self
+                     action:@selector(onTouchDownOnSetting)
+           forControlEvents:UIControlEventTouchDown];
 
   [_bottomAddressBar addTarget:self
                         action:@selector(onSelectBottomAddressBar)
               forControlEvents:UIControlEventTouchUpInside];
+  [_bottomAddressBar addTarget:self
+                        action:@selector(onTouchDownOnSetting)
+              forControlEvents:UIControlEventTouchDown];
 
   addressBarView.translatesAutoresizingMaskIntoConstraints = NO;
 
@@ -125,6 +150,8 @@ const CGFloat kCellTrailingPadding = 31;
   if (_topAddressBar.selected) {
     return;
   }
+  [self.feedbackGenerator selectionChanged];
+
   base::RecordAction(
       base::UserMetricsAction("Settings.AddressBar.TopAddressBar"));
   [_addressBarpreferenceServiceDelegate didSelectTopAddressBarPreference];
@@ -136,9 +163,15 @@ const CGFloat kCellTrailingPadding = 31;
   if (_bottomAddressBar.selected) {
     return;
   }
+  [self.feedbackGenerator selectionChanged];
+
   base::RecordAction(
       base::UserMetricsAction("Settings.AddressBar.BottomAddressBar"));
   [_addressBarpreferenceServiceDelegate didSelectBottomAddressBarPreference];
+}
+
+- (void)onTouchDownOnSetting {
+  [self.feedbackGenerator prepare];
 }
 
 @end

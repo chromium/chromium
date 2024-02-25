@@ -89,6 +89,9 @@ class POLICY_EXPORT RemoteCommandsService
       PolicyInvalidationScope scope,
       enterprise_management::RemoteCommand_Type command_type);
 
+  // Returns remote command fetch request type based on the invalidation scope.
+  static std::string GetRequestType(PolicyInvalidationScope scope);
+
   RemoteCommandsService(std::unique_ptr<RemoteCommandsFactory> factory,
                         CloudPolicyClient* client,
                         CloudPolicyStore* store,

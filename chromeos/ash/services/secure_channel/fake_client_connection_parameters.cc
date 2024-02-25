@@ -36,9 +36,13 @@ void FakeClientConnectionParameters::PerformSetConnectionAttemptFailed(
 
 void FakeClientConnectionParameters::PerformSetConnectionSucceeded(
     mojo::PendingRemote<mojom::Channel> channel,
-    mojo::PendingReceiver<mojom::MessageReceiver> message_receiver_receiver) {
+    mojo::PendingReceiver<mojom::MessageReceiver> message_receiver_receiver,
+    mojo::PendingReceiver<mojom::NearbyConnectionStateListener>
+        nearby_connection_state_listener_receiver) {
   DCHECK(message_receiver_);
   DCHECK(!message_receiver_receiver_);
+  DCHECK(nearby_connection_state_listener_);
+  DCHECK(!nearby_connection_state_listener_receiver_);
 
   channel_.Bind(std::move(channel));
   channel_.set_disconnect_with_reason_handler(
@@ -48,6 +52,27 @@ void FakeClientConnectionParameters::PerformSetConnectionSucceeded(
   message_receiver_receiver_ =
       std::make_unique<mojo::Receiver<mojom::MessageReceiver>>(
           message_receiver_.get(), std::move(message_receiver_receiver));
+  nearby_connection_state_listener_receiver_ =
+      std::make_unique<mojo::Receiver<mojom::NearbyConnectionStateListener>>(
+          nearby_connection_state_listener_.get(),
+          std::move(nearby_connection_state_listener_receiver));
+}
+
+void FakeClientConnectionParameters::UpdateBleDiscoveryState(
+    mojom::DiscoveryResult discovery_result,
+    std::optional<mojom::DiscoveryErrorCode> potential_error_code) {
+  ble_discovery_result_ = discovery_result;
+  potential_ble_discovery_error_code_ = potential_error_code;
+}
+void FakeClientConnectionParameters::UpdateNearbyConnectionState(
+    mojom::NearbyConnectionStep nearby_connection_step,
+    mojom::NearbyConnectionStepResult result) {
+  nearby_connection_step_ = nearby_connection_step;
+  nearby_connection_step_result_ = result;
+}
+void FakeClientConnectionParameters::UpdateSecureChannelAuthenticationState(
+    mojom::SecureChannelState secure_channel_state) {
+  secure_channel_state_ = secure_channel_state;
 }
 
 void FakeClientConnectionParameters::OnChannelDisconnected(

@@ -47,8 +47,8 @@
 import '../cr_shared_vars.css.js';
 import '//resources/polymer/v3_0/iron-icon/iron-icon.js';
 
-import {PaperRippleBehavior} from '//resources/polymer/v3_0/paper-behaviors/paper-ripple-behavior.js';
-import {mixinBehaviors, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {PaperRippleMixin} from '//resources/polymer/v3_0/paper-behaviors/paper-ripple-mixin.js';
+import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {getTemplate} from './cr_icon_button.html.js';
 
@@ -58,11 +58,7 @@ export interface CrIconButtonElement {
   };
 }
 
-const CrIconbuttonElementBase =
-    mixinBehaviors([PaperRippleBehavior], PolymerElement) as {
-      new (): PolymerElement & PaperRippleBehavior,
-    };
-
+const CrIconbuttonElementBase = PaperRippleMixin(PolymerElement);
 
 export class CrIconButtonElement extends CrIconbuttonElementBase {
   static get is() {

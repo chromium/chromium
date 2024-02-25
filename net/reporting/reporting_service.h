@@ -6,15 +6,16 @@
 #define NET_REPORTING_REPORTING_SERVICE_H_
 
 #include <memory>
+#include <optional>
 #include <string>
 
 #include "base/containers/flat_map.h"
 #include "base/functional/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "base/unguessable_token.h"
 #include "net/base/net_export.h"
 #include "net/reporting/reporting_cache.h"
 #include "net/reporting/reporting_cache_observer.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 class GURL;
 
@@ -72,7 +73,7 @@ class NET_EXPORT ReportingService {
   // will be copied.
   virtual void QueueReport(
       const GURL& url,
-      const absl::optional<base::UnguessableToken>& reporting_source,
+      const std::optional<base::UnguessableToken>& reporting_source,
       const NetworkAnonymizationKey& network_anonymization_key,
       const std::string& user_agent,
       const std::string& group,
@@ -127,7 +128,8 @@ class NET_EXPORT ReportingService {
 
   virtual base::Value StatusAsValue() const;
 
-  virtual std::vector<const ReportingReport*> GetReports() const = 0;
+  virtual std::vector<raw_ptr<const ReportingReport, VectorExperimental>>
+  GetReports() const = 0;
 
   virtual base::flat_map<url::Origin, std::vector<ReportingEndpoint>>
   GetV1ReportingEndpointsByOrigin() const = 0;

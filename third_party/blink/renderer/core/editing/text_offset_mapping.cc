@@ -183,7 +183,7 @@ TextOffsetMapping::InlineContents CreateInlineContentsFromBlockFlow(
   const LayoutObject* last = nullptr;
   for (layout_object = block_flow.FirstChild(); layout_object;
        layout_object = NextForInlineContents(*layout_object, block_flow)) {
-    if (auto* node = layout_object->NonPseudoNode()) {
+    if (layout_object->NonPseudoNode()) {
       last = layout_object;
       if (!first)
         first = layout_object;
@@ -218,8 +218,9 @@ TextOffsetMapping::InlineContents CreateInlineContentsFromBlockFlow(
       block_in_inline_after = layout_object;
       break;
     }
-    if (auto* node = layout_object->NonPseudoNode())
+    if (layout_object->NonPseudoNode()) {
       last = layout_object;
+    }
   }
   DCHECK(last);
   return TextOffsetMapping::InlineContents(

@@ -22,11 +22,11 @@ limitations under the License.
 #include <string>
 #include <vector>
 
-#include "absl/base/macros.h"    // from @com_google_absl
+#include "absl/base/macros.h"  // from @com_google_absl
 #include "absl/status/status.h"  // from @com_google_absl
 #include "tensorflow/lite/c/common.h"
 #include "tensorflow/lite/core/api/op_resolver.h"
-#include "tensorflow/lite/core/kernels/register.h"
+#include "tensorflow/lite/kernels/register.h"
 #include "tensorflow/lite/string_type.h"
 #include "tensorflow_lite_support/cc/task/core/category.h"
 #include "tensorflow_lite_support/cc/task/processor/bert_preprocessor.h"

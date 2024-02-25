@@ -8,9 +8,10 @@
 #import "base/strings/sys_string_conversions.h"
 #import "base/strings/utf_string_conversions.h"
 #import "components/keyed_service/ios/browser_state_keyed_service_factory.h"
-#import "ios/chrome/browser/ntp/set_up_list_item_type.h"
-#import "ios/chrome/browser/ntp/set_up_list_prefs.h"
-#import "ios/chrome/browser/search_engines/template_url_service_factory.h"
+#import "components/prefs/pref_service.h"
+#import "ios/chrome/browser/ntp/model/set_up_list_item_type.h"
+#import "ios/chrome/browser/ntp/model/set_up_list_prefs.h"
+#import "ios/chrome/browser/search_engines/model/template_url_service_factory.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/shared/public/features/system_flags.h"
@@ -20,7 +21,7 @@
 #import "ios/chrome/browser/ui/content_suggestions/set_up_list/constants.h"
 #import "ios/chrome/browser/ui/content_suggestions/set_up_list/set_up_list_item_view.h"
 #import "ios/chrome/test/app/chrome_test_util.h"
-#import "net/base/mac/url_conversions.h"
+#import "net/base/apple/url_conversions.h"
 
 using content_suggestions::SearchFieldWidth;
 using set_up_list_prefs::SetUpListItemState;
@@ -50,8 +51,13 @@ using set_up_list_prefs::SetUpListItemState;
   return ntp_home::DiscoverHeaderLabel();
 }
 
++ (void)disableSetUpList {
+  set_up_list_prefs::DisableSetUpList(GetApplicationContext()->GetLocalState());
+}
+
 + (void)resetSetUpListPrefs {
   PrefService* localState = GetApplicationContext()->GetLocalState();
+  localState->ClearPref(set_up_list_prefs::kDisabled);
   SetUpListItemState unknown = SetUpListItemState::kUnknown;
   set_up_list_prefs::SetItemState(localState, SetUpListItemType::kSignInSync,
                                   unknown);
@@ -68,15 +74,32 @@ using set_up_list_prefs::SetUpListItemState;
 }
 
 + (BOOL)setUpListItemDefaultBrowserIsComplete {
-  return ntp_home::SetUpListItemViewWithAccessibilityId(
-             set_up_list::kDefaultBrowserItemID)
-      .complete;
+  SetUpListItemView* view = ntp_home::SetUpListItemViewWithAccessibilityId(
+      set_up_list::kDefaultBrowserItemID);
+  return view.complete;
 }
 
 + (BOOL)setUpListItemAutofillIsComplete {
   return ntp_home::SetUpListItemViewWithAccessibilityId(
              set_up_list::kAutofillItemID)
       .complete;
+}
+
++ (BOOL)setUpListItemDefaultBrowserInMagicStackIsComplete {
+  SetUpListItemView* view =
+      ntp_home::SetUpListItemViewInMagicStackWithAccessibilityId(
+          set_up_list::kDefaultBrowserItemID);
+  return view.complete;
+}
+
++ (BOOL)setUpListItemAutofillInMagicStackIsComplete {
+  return ntp_home::SetUpListItemViewInMagicStackWithAccessibilityId(
+             set_up_list::kAutofillItemID)
+      .complete;
+}
+
++ (NSString*)setUpListTitle {
+  return content_suggestions::SetUpListTitleString();
 }
 
 @end

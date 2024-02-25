@@ -8,6 +8,7 @@
 #include <string>
 #include <vector>
 
+#include "ash/components/arc/arc_features.h"
 #include "ash/components/arc/mojom/power.mojom.h"
 #include "ash/components/arc/power/arc_power_bridge.h"
 #include "ash/components/arc/session/arc_bridge_service.h"
@@ -152,7 +153,9 @@ class ArcIdleManagerTest : public testing::Test {
     TestDelegateImpl(const TestDelegateImpl&) = delete;
     TestDelegateImpl& operator=(const TestDelegateImpl&) = delete;
 
-    void SetInteractiveMode(ArcBridgeService* bridge, bool enable) override {
+    void SetIdleState(ArcPowerBridge* arc_power_bridge,
+                      ArcBridgeService* bridge,
+                      bool enable) override {
       // enable means "interactive enabled", so "true" is "not idle".
       if (enable) {
         ++(test_->interactive_enabled_counter_);
@@ -161,7 +164,7 @@ class ArcIdleManagerTest : public testing::Test {
       }
     }
 
-    raw_ptr<ArcIdleManagerTest, ExperimentalAsh> test_;
+    raw_ptr<ArcIdleManagerTest> test_;
   };
 
   content::BrowserTaskEnvironment task_environment_{
@@ -172,20 +175,15 @@ class ArcIdleManagerTest : public testing::Test {
   std::unique_ptr<FakePowerInstance> power_instance_;
   std::unique_ptr<ash::ArcWindowWatcher> arc_window_watcher_;
 
-  raw_ptr<ArcIdleManager, DanglingUntriaged | ExperimentalAsh>
-      arc_idle_manager_;
+  raw_ptr<ArcIdleManager, DanglingUntriaged> arc_idle_manager_;
   size_t interactive_enabled_counter_ = 0;
   size_t interactive_disabled_counter_ = 0;
 
-  raw_ptr<ash::ThrottleObserver, DanglingUntriaged | ExperimentalAsh>
-      cpu_throttle_observer_;
-  raw_ptr<ash::ThrottleObserver, DanglingUntriaged | ExperimentalAsh>
-      on_battery_observer_;
-  raw_ptr<ash::ThrottleObserver, DanglingUntriaged | ExperimentalAsh>
-      display_power_observer_;
-  raw_ptr<ash::ThrottleObserver, DanglingUntriaged | ExperimentalAsh>
-      arc_window_observer_;
-  raw_ptr<ash::ThrottleObserver, DanglingUntriaged | ExperimentalAsh>
+  raw_ptr<ash::ThrottleObserver, DanglingUntriaged> cpu_throttle_observer_;
+  raw_ptr<ash::ThrottleObserver, DanglingUntriaged> on_battery_observer_;
+  raw_ptr<ash::ThrottleObserver, DanglingUntriaged> display_power_observer_;
+  raw_ptr<ash::ThrottleObserver, DanglingUntriaged> arc_window_observer_;
+  raw_ptr<ash::ThrottleObserver, DanglingUntriaged>
       background_service_observer_;
 };
 
@@ -206,6 +204,9 @@ TEST_F(ArcIdleManagerTest, TestThrottleInstance) {
   background_service_observer()->SetActive(false);
   arc_window_observer()->SetActive(false);
 
+  task_environment()->FastForwardBy(
+      base::Milliseconds(kEnableArcIdleManagerDelayMs.Get()));
+
   EXPECT_EQ(0U, interactive_enabled_counter());
   EXPECT_EQ(2U, interactive_disabled_counter());
 
@@ -216,6 +217,8 @@ TEST_F(ArcIdleManagerTest, TestThrottleInstance) {
 
   // Reset.
   on_battery_observer()->SetActive(false);
+  task_environment()->FastForwardBy(
+      base::Milliseconds(kEnableArcIdleManagerDelayMs.Get()));
   EXPECT_EQ(1U, interactive_enabled_counter());
   EXPECT_EQ(3U, interactive_disabled_counter());
 
@@ -226,6 +229,8 @@ TEST_F(ArcIdleManagerTest, TestThrottleInstance) {
 
   // Reset.
   display_power_observer()->SetActive(false);
+  task_environment()->FastForwardBy(
+      base::Milliseconds(kEnableArcIdleManagerDelayMs.Get()));
   EXPECT_EQ(2U, interactive_enabled_counter());
   EXPECT_EQ(4U, interactive_disabled_counter());
 
@@ -236,6 +241,8 @@ TEST_F(ArcIdleManagerTest, TestThrottleInstance) {
 
   // Reset.
   cpu_throttle_observer()->SetActive(false);
+  task_environment()->FastForwardBy(
+      base::Milliseconds(kEnableArcIdleManagerDelayMs.Get()));
   EXPECT_EQ(3U, interactive_enabled_counter());
   EXPECT_EQ(5U, interactive_disabled_counter());
 
@@ -246,6 +253,8 @@ TEST_F(ArcIdleManagerTest, TestThrottleInstance) {
 
   // Reset.
   background_service_observer()->SetActive(false);
+  task_environment()->FastForwardBy(
+      base::Milliseconds(kEnableArcIdleManagerDelayMs.Get()));
   EXPECT_EQ(4U, interactive_enabled_counter());
   EXPECT_EQ(6U, interactive_disabled_counter());
 
@@ -261,6 +270,8 @@ TEST_F(ArcIdleManagerTest, TestThrottleInstance) {
 
   // Reset.
   arc_window_observer()->SetActive(false);
+  task_environment()->FastForwardBy(
+      base::Milliseconds(kEnableArcIdleManagerDelayMs.Get()));
   EXPECT_EQ(6U, interactive_enabled_counter());
   EXPECT_EQ(7U, interactive_disabled_counter());
 
@@ -283,6 +294,9 @@ TEST_F(ArcIdleManagerTest, TestScreenOffTimerMetrics) {
   // Count time from here.
   base::ScopedMockElapsedTimersForTest mock_elapsed_timers;
   base::HistogramTester histogram_tester;
+
+  task_environment()->FastForwardBy(
+      base::Milliseconds(kEnableArcIdleManagerDelayMs.Get()));
 
   histogram_tester.ExpectUniqueTimeSample(
       "Arc.IdleManager.ScreenOffTime",

@@ -5,9 +5,13 @@
 import {TestRunner} from 'test_runner';
 import {SourcesTestRunner} from 'sources_test_runner';
 
+import * as SourceMapScopesModule from 'devtools/models/source_map_scopes/source_map_scopes.js';
+import * as SourcesModule from 'devtools/panels/sources/sources.js';
+import * as UIModule from 'devtools/ui/legacy/legacy.js';
+import * as SDK from 'devtools/core/sdk/sdk.js';
+
 (async function() {
   TestRunner.addResult(`Tests evaluation in minified scripts.\n`);
-  await TestRunner.loadLegacyModule('sources');
   await TestRunner.showPanel('sources');
   await TestRunner.addScriptTag('resources/resolve-expressions-compressed.js');
 
@@ -16,7 +20,7 @@ import {SourcesTestRunner} from 'sources_test_runner';
   function step1() {
     SourcesTestRunner.runTestFunctionAndWaitUntilPaused();
     TestRunner.addSniffer(
-              Sources.CallStackSidebarPane.prototype, 'updatedForTest', step2)
+              SourcesModule.CallStackSidebarPane.CallStackSidebarPane.prototype, 'updatedForTest', step2)
   }
 
   function step2() {
@@ -43,9 +47,9 @@ import {SourcesTestRunner} from 'sources_test_runner';
   }
 
   function testAtPosition(uiSourceCode, position) {
-    return Sources.SourceMapNamesResolver
+    return SourceMapScopesModule.NamesResolver
         .resolveExpression(
-            UI.context.flavor(SDK.DebuggerModel.CallFrame), position.originText, uiSourceCode, position.line,
+            UIModule.Context.Context.instance().flavor(SDK.DebuggerModel.CallFrame), position.originText, uiSourceCode, position.line,
             position.startColumn, position.endColumn)
         .then(SourcesTestRunner.evaluateOnCurrentCallFrame)
         .then(result => TestRunner.addResult(result.object.description));

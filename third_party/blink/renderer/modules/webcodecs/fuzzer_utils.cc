@@ -20,8 +20,10 @@
 #include "third_party/blink/renderer/bindings/modules/v8/v8_audio_decoder_config.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_encoded_audio_chunk_init.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_encoded_video_chunk_init.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_opus_encoder_config.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_plane_layout.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_union_cssimagevalue_htmlcanvaselement_htmlimageelement_htmlvideoelement_imagebitmap_offscreencanvas_svgimageelement_videoframe.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_video_color_space_init.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_video_decoder_config.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_video_decoder_init.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_video_encoder_config.h"
@@ -35,7 +37,6 @@
 #include "third_party/blink/renderer/core/typed_arrays/dom_data_view.h"
 #include "third_party/blink/renderer/core/typed_arrays/dom_shared_array_buffer.h"
 #include "third_party/blink/renderer/modules/webaudio/audio_buffer.h"
-#include "third_party/blink/renderer/modules/webcodecs/allow_shared_buffer_source_util.h"
 #include "third_party/blink/renderer/modules/webcodecs/fuzzer_inputs.pb.h"
 #include "third_party/blink/renderer/modules/webcodecs/video_frame.h"
 #include "third_party/blink/renderer/platform/audio/audio_bus.h"
@@ -57,18 +58,21 @@ constexpr uint32_t kMaxVideoFrameDimension = 1024;
 
 }  // namespace
 
-base::ScopedClosureRunner MakeScopedGarbageCollectionRequest() {
-  return base::ScopedClosureRunner(WTF::BindOnce([]() {
-    // Request a V8 GC. Oilpan will be invoked by the GC epilogue.
-    //
-    // Multiple GCs may be required to ensure everything is collected (due to
-    // a chain of persistent handles), so some objects may not be collected
-    // until a subsequent iteration. This is slow enough as is, so we compromise
-    // on one major GC, as opposed to the 5 used in V8GCController for unit
-    // tests.
-    V8PerIsolateData::MainThreadIsolate()->RequestGarbageCollectionForTesting(
-        v8::Isolate::kFullGarbageCollection);
-  }));
+base::ScopedClosureRunner MakeScopedGarbageCollectionRequest(
+    v8::Isolate* isolate) {
+  return base::ScopedClosureRunner(WTF::BindOnce(
+      [](v8::Isolate* isolate) {
+        // Request a V8 GC. Oilpan will be invoked by the GC epilogue.
+        //
+        // Multiple GCs may be required to ensure everything is collected (due
+        // to a chain of persistent handles), so some objects may not be
+        // collected until a subsequent iteration. This is slow enough as is, so
+        // we compromise on one major GC, as opposed to the 5 used in
+        // V8GCController for unit tests.
+        isolate->RequestGarbageCollectionForTesting(
+            v8::Isolate::kFullGarbageCollection);
+      },
+      WTF::Unretained(isolate)));
 }
 
 FakeFunction::FakeFunction(std::string name) : name_(std::move(name)) {}
@@ -109,8 +113,8 @@ VideoEncoderConfig* MakeVideoEncoderConfig(
   config->setCodec(proto.codec().c_str());
   config->setHardwareAcceleration(ToAccelerationType(proto.acceleration()));
   config->setFramerate(proto.framerate());
-  config->setWidth(proto.width());
-  config->setHeight(proto.height());
+  config->setWidth(std::min(proto.width(), kMaxVideoFrameDimension));
+  config->setHeight(std::min(proto.height(), kMaxVideoFrameDimension));
   config->setDisplayWidth(proto.display_width());
   config->setDisplayHeight(proto.display_height());
 
@@ -125,6 +129,10 @@ VideoEncoderConfig* MakeVideoEncoderConfig(
   }
   if (proto.has_latency_mode()) {
     config->setLatencyMode(ToLatencyMode(proto.latency_mode()));
+  }
+
+  if (proto.has_content_hint()) {
+    config->setContentHint(ToContentHint(proto.content_hint()));
   }
 
   // Bitrate is truly optional, so don't just take the proto default value.
@@ -142,11 +150,35 @@ AudioEncoderConfig* MakeAudioEncoderConfig(
   config->setNumberOfChannels(proto.number_of_channels());
   config->setSampleRate(proto.sample_rate());
 
+  if (proto.has_bitrate_mode()) {
+    config->setBitrateMode(ToBitrateMode(proto.bitrate_mode()));
+  }
+
   if (proto.has_aac()) {
     auto* aac = AacEncoderConfig::Create();
     config->setAac(aac);
     if (proto.aac().has_format()) {
       aac->setFormat(ToAacFormat(proto.aac().format()));
+    }
+  }
+
+  if (proto.has_opus()) {
+    auto* opus = OpusEncoderConfig::Create();
+    config->setOpus(opus);
+    if (proto.opus().has_frame_duration()) {
+      opus->setFrameDuration(proto.opus().frame_duration());
+    }
+    if (proto.opus().has_complexity()) {
+      opus->setComplexity(proto.opus().complexity());
+    }
+    if (proto.opus().has_packetlossperc()) {
+      opus->setPacketlossperc(proto.opus().packetlossperc());
+    }
+    if (proto.opus().has_useinbandfec()) {
+      opus->setUseinbandfec(proto.opus().useinbandfec());
+    }
+    if (proto.opus().has_usedtx()) {
+      opus->setUsedtx(proto.opus().usedtx());
     }
   }
 
@@ -198,6 +230,19 @@ String ToLatencyMode(wc_fuzzer::ConfigureVideoEncoder_LatencyMode mode) {
   }
 }
 
+String ToContentHint(wc_fuzzer::ConfigureVideoEncoder_ContentHint hint) {
+  switch (hint) {
+    case wc_fuzzer::ConfigureVideoEncoder_ContentHint_NONE:
+      return "";
+    case wc_fuzzer::ConfigureVideoEncoder_ContentHint_TEXT:
+      return "text";
+    case wc_fuzzer::ConfigureVideoEncoder_ContentHint_MOTION:
+      return "motion";
+    case wc_fuzzer::ConfigureVideoEncoder_ContentHint_DETAIL:
+      return "detail";
+  }
+}
+
 String ToAlphaOption(wc_fuzzer::ConfigureVideoEncoder_AlphaOption option) {
   switch (option) {
     case wc_fuzzer::ConfigureVideoEncoder_AlphaOption_KEEP:
@@ -213,6 +258,15 @@ String ToAacFormat(wc_fuzzer::AacFormat format) {
       return "aac";
     case wc_fuzzer::ADTS:
       return "adts";
+  }
+}
+
+String ToBitrateMode(wc_fuzzer::BitrateMode bitrate_mode) {
+  switch (bitrate_mode) {
+    case wc_fuzzer::VARIABLE:
+      return "variable";
+    case wc_fuzzer::CONSTANT:
+      return "constant";
   }
 }
 
@@ -267,6 +321,7 @@ int SampleFormatToSampleSize(V8AudioSampleFormat format) {
 }
 
 EncodedVideoChunk* MakeEncodedVideoChunk(
+    ScriptState* script_state,
     const wc_fuzzer::EncodedVideoChunk& proto) {
   auto* data = MakeGarbageCollected<AllowSharedBufferSource>(
       DOMArrayBuffer::Create(proto.data().data(), proto.data().size()));
@@ -279,10 +334,12 @@ EncodedVideoChunk* MakeEncodedVideoChunk(
   if (proto.has_duration())
     init->setDuration(proto.duration());
 
-  return EncodedVideoChunk::Create(init);
+  return EncodedVideoChunk::Create(script_state, init,
+                                   IGNORE_EXCEPTION_FOR_TESTING);
 }
 
 EncodedAudioChunk* MakeEncodedAudioChunk(
+    ScriptState* script_state,
     const wc_fuzzer::EncodedAudioChunk& proto) {
   auto* data = MakeGarbageCollected<AllowSharedBufferSource>(
       DOMArrayBuffer::Create(proto.data().data(), proto.data().size()));
@@ -295,7 +352,8 @@ EncodedAudioChunk* MakeEncodedAudioChunk(
   if (proto.has_duration())
     init->setDuration(proto.duration());
 
-  return EncodedAudioChunk::Create(init);
+  return EncodedAudioChunk::Create(script_state, init,
+                                   IGNORE_EXCEPTION_FOR_TESTING);
 }
 
 VideoEncoderEncodeOptions* MakeEncodeOptions(
@@ -321,8 +379,9 @@ VideoEncoderEncodeOptions* MakeEncodeOptions(
   return options;
 }
 
-AllowSharedBufferSource* MakeAllowSharedBufferSource(
+BufferAndSource MakeAllowSharedBufferSource(
     const wc_fuzzer::AllowSharedBufferSource& proto) {
+  BufferAndSource result = {};
   size_t length =
       std::min(static_cast<size_t>(proto.length()), kMaxBufferLength);
 
@@ -330,7 +389,11 @@ AllowSharedBufferSource* MakeAllowSharedBufferSource(
   if (proto.shared()) {
     buffer = DOMSharedArrayBuffer::Create(static_cast<unsigned>(length), 1);
   } else {
-    buffer = DOMArrayBuffer::Create(length, 1);
+    auto* array_buffer = DOMArrayBuffer::Create(length, 1);
+    buffer = array_buffer;
+    if (proto.transfer()) {
+      result.buffer = array_buffer;
+    }
   }
   DCHECK(buffer);
 
@@ -340,25 +403,28 @@ AllowSharedBufferSource* MakeAllowSharedBufferSource(
       std::min(static_cast<size_t>(proto.view_length()), length - view_offset);
   switch (proto.view_type()) {
     case wc_fuzzer::AllowSharedBufferSource_ViewType_NONE:
-      return MakeGarbageCollected<AllowSharedBufferSource>(buffer);
+      result.source = MakeGarbageCollected<AllowSharedBufferSource>(buffer);
+      break;
     case wc_fuzzer::AllowSharedBufferSource_ViewType_INT8:
-      return MakeGarbageCollected<AllowSharedBufferSource>(
+      result.source = MakeGarbageCollected<AllowSharedBufferSource>(
           MaybeShared<DOMInt8Array>(
               DOMInt8Array::Create(buffer, view_offset, view_length)));
+      break;
     case wc_fuzzer::AllowSharedBufferSource_ViewType_UINT32:
       // View must be element-aligned and is sized by element count.
       view_offset = std::min(view_offset, length / 4) * 4;
       view_length = std::min(view_length, length / 4 - view_offset / 4);
-      return MakeGarbageCollected<AllowSharedBufferSource>(
+      result.source = MakeGarbageCollected<AllowSharedBufferSource>(
           MaybeShared<DOMUint32Array>(
               DOMUint32Array::Create(buffer, view_offset, view_length)));
+      break;
     case wc_fuzzer::AllowSharedBufferSource_ViewType_DATA:
-      return MakeGarbageCollected<AllowSharedBufferSource>(
+      result.source = MakeGarbageCollected<AllowSharedBufferSource>(
           MaybeShared<DOMDataView>(
               DOMDataView::Create(buffer, view_offset, view_length)));
   }
 
-  NOTREACHED();
+  return result;
 }
 
 PlaneLayout* MakePlaneLayout(const wc_fuzzer::PlaneLayout& proto) {
@@ -377,10 +443,89 @@ DOMRectInit* MakeDOMRectInit(const wc_fuzzer::DOMRectInit& proto) {
   return init;
 }
 
+VideoColorSpaceInit* MakeVideoColorSpaceInit(
+    const wc_fuzzer::VideoColorSpaceInit& proto) {
+  VideoColorSpaceInit* init = VideoColorSpaceInit::Create();
+
+  if (proto.has_primaries()) {
+    switch (proto.primaries()) {
+      case wc_fuzzer::VideoColorSpaceInit_VideoColorPrimaries_VCP_BT709:
+        init->setPrimaries("bt709");
+        break;
+      case wc_fuzzer::VideoColorSpaceInit_VideoColorPrimaries_VCP_BT470BG:
+        init->setPrimaries("bt470bg");
+        break;
+      case wc_fuzzer::VideoColorSpaceInit_VideoColorPrimaries_VCP_SMPTE170M:
+        init->setPrimaries("smpte170m");
+        break;
+      case wc_fuzzer::VideoColorSpaceInit_VideoColorPrimaries_VCP_BT2020:
+        init->setPrimaries("bt2020");
+        break;
+      case wc_fuzzer::VideoColorSpaceInit_VideoColorPrimaries_VCP_SMPTE432:
+        init->setPrimaries("smpte432");
+        break;
+    }
+  }
+
+  if (proto.has_transfer()) {
+    switch (proto.transfer()) {
+      case wc_fuzzer::
+          VideoColorSpaceInit_VideoTransferCharacteristics_VTC_BT709:
+        init->setTransfer("bt709");
+        break;
+      case wc_fuzzer::
+          VideoColorSpaceInit_VideoTransferCharacteristics_VTC_SMPTE170M:
+        init->setTransfer("smpte170m");
+        break;
+      case wc_fuzzer::
+          VideoColorSpaceInit_VideoTransferCharacteristics_VTC_IEC61966_2_1:
+        init->setTransfer("iec61966-2-1");
+        break;
+      case wc_fuzzer::
+          VideoColorSpaceInit_VideoTransferCharacteristics_VTC_LINEAR:
+        init->setTransfer("linear");
+        break;
+      case wc_fuzzer::VideoColorSpaceInit_VideoTransferCharacteristics_VTC_PQ:
+        init->setTransfer("pq");
+        break;
+      case wc_fuzzer::VideoColorSpaceInit_VideoTransferCharacteristics_VTC_HLG:
+        init->setTransfer("hlg");
+        break;
+    }
+  }
+
+  if (proto.has_matrix()) {
+    switch (proto.matrix()) {
+      case wc_fuzzer::VideoColorSpaceInit_VideoMatrixCoefficients_VMC_RGB:
+        init->setMatrix("rgb");
+        break;
+      case wc_fuzzer::VideoColorSpaceInit_VideoMatrixCoefficients_VMC_BT709:
+        init->setMatrix("bt709");
+        break;
+      case wc_fuzzer::VideoColorSpaceInit_VideoMatrixCoefficients_VMC_BT470BG:
+        init->setMatrix("bt470bg");
+        break;
+      case wc_fuzzer::VideoColorSpaceInit_VideoMatrixCoefficients_VMC_SMPTE170M:
+        init->setMatrix("smpte170m");
+        break;
+      case wc_fuzzer::
+          VideoColorSpaceInit_VideoMatrixCoefficients_VMC_BT2020_NCL:
+        init->setMatrix("bt2020-ncl");
+        break;
+    }
+  }
+
+  if (proto.has_full_range()) {
+    init->setFullRange(proto.full_range());
+  }
+
+  return init;
+}
+
 VideoFrame* MakeVideoFrame(
     ScriptState* script_state,
     const wc_fuzzer::VideoFrameBufferInitInvocation& proto) {
-  AllowSharedBufferSource* data = MakeAllowSharedBufferSource(proto.data());
+  BufferAndSource data = MakeAllowSharedBufferSource(proto.data());
   VideoFrameBufferInit* init = VideoFrameBufferInit::Create();
 
   switch (proto.init().format()) {
@@ -434,7 +579,17 @@ VideoFrame* MakeVideoFrame(
   if (proto.init().has_display_height())
     init->setDisplayHeight(proto.init().display_height());
 
-  return VideoFrame::Create(script_state, data, init,
+  if (proto.init().has_color_space()) {
+    init->setColorSpace(MakeVideoColorSpaceInit(proto.init().color_space()));
+  }
+
+  if (data.buffer) {
+    HeapVector<Member<DOMArrayBuffer>> transfer;
+    transfer.push_back(data.buffer);
+    init->setTransfer(std::move(transfer));
+  }
+
+  return VideoFrame::Create(script_state, data.source, init,
                             IGNORE_EXCEPTION_FOR_TESTING);
 }
 
@@ -459,7 +614,7 @@ VideoFrame* MakeVideoFrame(ScriptState* script_state,
     return nullptr;
 
   ImageBitmap* image_bitmap = MakeGarbageCollected<ImageBitmap>(
-      image_data, absl::nullopt, ImageBitmapOptions::Create());
+      image_data, std::nullopt, ImageBitmapOptions::Create());
 
   VideoFrameInit* video_frame_init = VideoFrameInit::Create();
   video_frame_init->setTimestamp(proto.timestamp());
@@ -471,7 +626,8 @@ VideoFrame* MakeVideoFrame(ScriptState* script_state,
                             IGNORE_EXCEPTION_FOR_TESTING);
 }
 
-AudioData* MakeAudioData(const wc_fuzzer::AudioDataInit& proto) {
+AudioData* MakeAudioData(ScriptState* script_state,
+                         const wc_fuzzer::AudioDataInit& proto) {
   if (!proto.channels().size() ||
       proto.channels().size() > media::limits::kMaxChannels)
     return nullptr;
@@ -510,7 +666,13 @@ AudioData* MakeAudioData(const wc_fuzzer::AudioDataInit& proto) {
   init->setFormat(format);
   init->setData(MakeGarbageCollected<AllowSharedBufferSource>(buffer));
 
-  return AudioData::Create(init, IGNORE_EXCEPTION_FOR_TESTING);
+  if (proto.transfer()) {
+    HeapVector<Member<DOMArrayBuffer>> transfer;
+    transfer.push_back(buffer);
+    init->setTransfer(std::move(transfer));
+  }
+
+  return AudioData::Create(script_state, init, IGNORE_EXCEPTION_FOR_TESTING);
 }
 
 AudioDataCopyToOptions* MakeAudioDataCopyToOptions(

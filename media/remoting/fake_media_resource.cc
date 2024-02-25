@@ -7,6 +7,7 @@
 #include <vector>
 
 #include "base/functional/callback_helpers.h"
+#include "base/memory/raw_ptr.h"
 #include "media/base/decoder_buffer.h"
 #include "media/base/media_util.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -103,8 +104,9 @@ FakeMediaResource::FakeMediaResource()
 
 FakeMediaResource::~FakeMediaResource() = default;
 
-std::vector<DemuxerStream*> FakeMediaResource::GetAllStreams() {
-  std::vector<DemuxerStream*> streams;
+std::vector<raw_ptr<DemuxerStream, VectorExperimental>>
+FakeMediaResource::GetAllStreams() {
+  std::vector<raw_ptr<DemuxerStream, VectorExperimental>> streams;
   streams.push_back(audio_stream_.get());
   streams.push_back(video_stream_.get());
   return streams;

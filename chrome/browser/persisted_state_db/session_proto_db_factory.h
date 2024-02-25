@@ -9,6 +9,7 @@
 #include "build/build_config.h"
 #include "chrome/browser/profiles/profile_keyed_service_factory.h"
 #include "components/commerce/core/proto/commerce_subscription_db_content.pb.h"
+#include "components/commerce/core/proto/parcel_tracking_db_content.pb.h"
 #include "components/session_proto_db/session_proto_db.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_task_traits.h"
@@ -18,6 +19,7 @@
 #if !BUILDFLAG(IS_ANDROID)
 #include "components/commerce/core/proto/cart_db_content.pb.h"
 #include "components/commerce/core/proto/coupon_db_content.pb.h"
+#include "components/commerce/core/proto/discounts_db_content.pb.h"  // nogncheck
 #else
 #include "components/commerce/core/proto/merchant_signal_db_content.pb.h"
 #endif
@@ -28,6 +30,8 @@ const char kChromeCartDBFolder[] = "chrome_cart_db";
 const char kMerchantTrustSignalDBFolder[] = "merchant_signal_db";
 const char kCommerceSubscriptionDBFolder[] = "commerce_subscription_db";
 const char kCouponDBFolder[] = "coupon_db";
+const char kDiscountsDBFolder[] = "discounts_db";
+const char kParcelTrackingDBFolder[] = "parcel_tracking_db";
 }  // namespace
 
 SessionProtoDBFactory<persisted_state_db::PersistedStateContentProto>*
@@ -38,6 +42,8 @@ SessionProtoDBFactory<cart_db::ChromeCartContentProto>*
 GetChromeCartSessionProtoDBFactory();
 SessionProtoDBFactory<coupon_db::CouponContentProto>*
 GetCouponSessionProtoDBFactory();
+SessionProtoDBFactory<discounts_db::DiscountsContentProto>*
+GetDiscountsSessionProtoDBFactory();
 #else
 SessionProtoDBFactory<merchant_signal_db::MerchantSignalContentProto>*
 GetMerchantSignalSessionProtoDBFactory();
@@ -46,6 +52,9 @@ GetMerchantSignalSessionProtoDBFactory();
 SessionProtoDBFactory<
     commerce_subscription_db::CommerceSubscriptionContentProto>*
 GetCommerceSubscriptionSessionProtoDBFactory();
+
+SessionProtoDBFactory<parcel_tracking_db::ParcelTrackingContent>*
+GetParcelTrackingSessionProtoDBFactory();
 
 // Factory to create a ProtoDB per browsing session (BrowserContext) and per
 // proto. Incognito is currently not supported and the factory will return
@@ -125,6 +134,13 @@ KeyedService* SessionProtoDBFactory<T>::BuildServiceInstanceFor(
         context->GetPath().AppendASCII(kCommerceSubscriptionDBFolder),
         leveldb_proto::ProtoDbType::COMMERCE_SUBSCRIPTION_DATABASE,
         content::GetUIThreadTaskRunner({}));
+  } else if (std::is_base_of<parcel_tracking_db::ParcelTrackingContent,
+                             T>::value) {
+    return new SessionProtoDB<T>(
+        proto_database_provider,
+        context->GetPath().AppendASCII(kParcelTrackingDBFolder),
+        leveldb_proto::ProtoDbType::COMMERCE_PARCEL_TRACKING_DATABASE,
+        content::GetUIThreadTaskRunner({}));
 #if !BUILDFLAG(IS_ANDROID)
   } else if (std::is_base_of<cart_db::ChromeCartContentProto, T>::value) {
     return new SessionProtoDB<T>(
@@ -137,6 +153,12 @@ KeyedService* SessionProtoDBFactory<T>::BuildServiceInstanceFor(
         proto_database_provider,
         context->GetPath().AppendASCII(kCouponDBFolder),
         leveldb_proto::ProtoDbType::COUPON_DATABASE,
+        content::GetUIThreadTaskRunner({}));
+  } else if (std::is_base_of<discounts_db::DiscountsContentProto, T>::value) {
+    return new SessionProtoDB<T>(
+        proto_database_provider,
+        context->GetPath().AppendASCII(kDiscountsDBFolder),
+        leveldb_proto::ProtoDbType::DISCOUNTS_DATABASE,
         content::GetUIThreadTaskRunner({}));
 #else
   } else if (std::is_base_of<merchant_signal_db::MerchantSignalContentProto,

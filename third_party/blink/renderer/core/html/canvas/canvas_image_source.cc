@@ -40,7 +40,7 @@ std::unique_ptr<CanvasResourceProvider> CreateProvider(
 }  // anonymous namespace
 
 scoped_refptr<StaticBitmapImage> GetImageWithAlphaDisposition(
-    CanvasResourceProvider::FlushReason reason,
+    FlushReason reason,
     scoped_refptr<StaticBitmapImage>&& image,
     const AlphaDisposition alpha_disposition) {
   if (!image)
@@ -76,8 +76,8 @@ scoped_refptr<StaticBitmapImage> GetImageWithAlphaDisposition(
 
     cc::PaintFlags paint;
     paint.setBlendMode(SkBlendMode::kSrc);
-    resource_provider->Canvas()->drawImage(paint_image, 0, 0,
-                                           SkSamplingOptions(), &paint);
+    resource_provider->Canvas().drawImage(paint_image, 0, 0,
+                                          SkSamplingOptions(), &paint);
     return resource_provider->Snapshot(reason,
                                        image->CurrentFrameOrientation());
   }

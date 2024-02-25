@@ -13,11 +13,13 @@ namespace payments {
 
 // True if the profile has already successfully completed at least one payment
 // request transaction.
-extern const char kPaymentsFirstTransactionCompleted[];
+inline constexpr char kPaymentsFirstTransactionCompleted[] =
+    "payments.first_transaction_completed";
 
 // True if the user has allowed canMakePayment to return a truthful value, false
 // if canMakePayment should always return false regardless.
-extern const char kCanMakePaymentEnabled[];
+inline constexpr char kCanMakePaymentEnabled[] =
+    "payments.can_make_payment_enabled";
 
 void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry);
 

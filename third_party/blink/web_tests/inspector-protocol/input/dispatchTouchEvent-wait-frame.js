@@ -1,4 +1,4 @@
-(async function(testRunner) {
+(async function(/** @type {import('test_runner').TestRunner} */ testRunner) {
   let {session, dp} = await testRunner.startBlank(`Tests that Input.dispatchTouchEvent waits for a frame before comitting.`);
 
   function dumpError(message) {

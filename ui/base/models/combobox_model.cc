@@ -36,7 +36,7 @@ bool ComboboxModel::IsItemSeparatorAt(size_t index) const {
   return false;
 }
 
-absl::optional<size_t> ComboboxModel::GetDefaultIndex() const {
+std::optional<size_t> ComboboxModel::GetDefaultIndex() const {
   return size_t{0};
 }
 
@@ -52,19 +52,19 @@ void ComboboxModel::RemoveObserver(ComboboxModelObserver* observer) {
   observers_.RemoveObserver(observer);
 }
 
-absl::optional<ui::ColorId> ComboboxModel::GetDropdownForegroundColorIdAt(
+std::optional<ui::ColorId> ComboboxModel::GetDropdownForegroundColorIdAt(
     size_t index) const {
-  return absl::nullopt;
+  return std::nullopt;
 }
 
-absl::optional<ui::ColorId> ComboboxModel::GetDropdownBackgroundColorIdAt(
+std::optional<ui::ColorId> ComboboxModel::GetDropdownBackgroundColorIdAt(
     size_t index) const {
-  return absl::nullopt;
+  return std::nullopt;
 }
 
-absl::optional<ui::ColorId>
+std::optional<ui::ColorId>
 ComboboxModel::GetDropdownSelectedBackgroundColorIdAt(size_t index) const {
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 }  // namespace ui

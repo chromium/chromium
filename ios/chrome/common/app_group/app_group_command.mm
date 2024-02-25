@@ -114,7 +114,7 @@ void PutCommandInNSUserDefault(NSDictionary* command) {
   if (!scheme)
     return;
 
-  NSURLComponents* urlComponents = [NSURLComponents new];
+  NSURLComponents* urlComponents = [[NSURLComponents alloc] init];
   urlComponents.scheme = scheme;
   urlComponents.host = kXCallbackURLHost;
   urlComponents.path = [@"/"

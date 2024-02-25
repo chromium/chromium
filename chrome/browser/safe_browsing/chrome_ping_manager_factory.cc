@@ -54,7 +54,8 @@ ChromePingManagerFactory::ChromePingManagerFactory()
 
 ChromePingManagerFactory::~ChromePingManagerFactory() = default;
 
-KeyedService* ChromePingManagerFactory::BuildServiceInstanceFor(
+std::unique_ptr<KeyedService>
+ChromePingManagerFactory::BuildServiceInstanceForBrowserContext(
     content::BrowserContext* context) const {
   Profile* profile = Profile::FromBrowserContext(context);
   std::unique_ptr<ChromeSafeBrowsingHatsDelegate> hats_delegate = nullptr;

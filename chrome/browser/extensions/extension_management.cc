@@ -343,7 +343,7 @@ bool ExtensionManagement::IsAllowedByUnpublishedAvailabilityPolicy(
   // Current publish status may not available if the policy setting just changed
   // to |kDisableUnpublished|. The actual publish status will be retrieved
   // by CWSInfoService separately and will trigger this same policy check.
-  absl::optional<CWSInfoServiceInterface::CWSInfo> cws_info =
+  std::optional<CWSInfoServiceInterface::CWSInfo> cws_info =
       cws_info_service_->GetCWSInfo(*extension);
   if (cws_info.has_value() && cws_info->is_present &&
       cws_info->violation_type !=
@@ -447,7 +447,7 @@ bool ExtensionManagement::IsPermissionSetAllowed(
     const ExtensionId& extension_id,
     const std::string& update_url,
     const PermissionSet& perms) {
-  for (const extensions::APIPermission* blocked_api :
+  for (const APIPermission* blocked_api :
        GetBlockedAPIPermissions(extension_id, update_url)) {
     if (perms.HasAPIPermission(blocked_api->id()))
       return false;
@@ -470,6 +470,11 @@ ExtensionIdSet ExtensionManagement::GetForcePinnedList() const {
       force_pinned_list.insert(entry.first);
   }
   return force_pinned_list;
+}
+
+bool ExtensionManagement::IsFileUrlNavigationAllowed(const ExtensionId& id) {
+  auto* setting = GetSettingsForId(id);
+  return setting && setting->file_url_navigation_allowed;
 }
 
 bool ExtensionManagement::CheckMinimumVersion(const Extension* extension,
@@ -700,11 +705,6 @@ void ExtensionManagement::Refresh() {
           }
         }
       }
-    }
-    size_t force_pinned_count = GetForcePinnedList().size();
-    if (force_pinned_count > 0) {
-      base::UmaHistogramCounts100("Extensions.ForceToolbarPinnedCount2",
-                                  force_pinned_count);
     }
   }
 }

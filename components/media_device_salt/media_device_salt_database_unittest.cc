@@ -4,6 +4,7 @@
 
 #include "components/media_device_salt/media_device_salt_database.h"
 
+#include <optional>
 #include <tuple>
 #include <vector>
 
@@ -20,7 +21,6 @@
 #include "sql/statement.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
 
 namespace media_device_salt {
@@ -69,7 +69,7 @@ class MediaDeviceSaltDatabaseTest : public testing::TestWithParam<bool> {
     sql::Statement statement(db().DatabaseForTesting().GetUniqueStatement(
         "SELECT storage_key, salt FROM media_device_salts"));
     while (statement.Step()) {
-      absl::optional<blink::StorageKey> key =
+      std::optional<blink::StorageKey> key =
           blink::StorageKey::Deserialize(statement.ColumnString(0));
       CHECK(key.has_value());
       entries.emplace_back(*key, statement.ColumnString(1));
@@ -97,7 +97,7 @@ class MediaDeviceSaltDatabaseTest : public testing::TestWithParam<bool> {
   base::test::TaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   base::ScopedTempDir temp_directory_;
-  absl::optional<MediaDeviceSaltDatabase> db_;
+  std::optional<MediaDeviceSaltDatabase> db_;
 };
 
 TEST_P(MediaDeviceSaltDatabaseTest, DatabasePathExists) {
@@ -119,8 +119,8 @@ TEST_P(MediaDeviceSaltDatabaseTest, InsertExplicitSalt) {
 }
 
 TEST_P(MediaDeviceSaltDatabaseTest, InsertRandomSalts) {
-  absl::optional<std::string> salt1 = db().GetOrInsertSalt(StorageKey1());
-  absl::optional<std::string> salt2 = db().GetOrInsertSalt(StorageKey2());
+  std::optional<std::string> salt1 = db().GetOrInsertSalt(StorageKey1());
+  std::optional<std::string> salt2 = db().GetOrInsertSalt(StorageKey2());
   ASSERT_TRUE(salt1.has_value());
   ASSERT_TRUE(salt2.has_value());
   EXPECT_NE(*salt1, *salt2);

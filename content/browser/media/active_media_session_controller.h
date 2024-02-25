@@ -5,15 +5,16 @@
 #ifndef CONTENT_BROWSER_MEDIA_ACTIVE_MEDIA_SESSION_CONTROLLER_H_
 #define CONTENT_BROWSER_MEDIA_ACTIVE_MEDIA_SESSION_CONTROLLER_H_
 
+#include <optional>
 #include <utility>
 #include <vector>
 
 #include "base/containers/flat_set.h"
+#include "base/unguessable_token.h"
 #include "content/common/content_export.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "services/media_session/public/mojom/media_controller.mojom.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/accelerators/media_keys_listener.h"
 #include "ui/events/keycodes/keyboard_codes.h"
 
@@ -21,28 +22,42 @@ namespace content {
 
 // Intakes media events (such as media key presses) and controls the active
 // media session.
+// TODO(crbug.com/1502989) Consider renaming this class in the world of
+// instanced system media controls.
 class CONTENT_EXPORT ActiveMediaSessionController
     : public media_session::mojom::MediaControllerObserver,
       public ui::MediaKeysListener::Delegate {
  public:
-  ActiveMediaSessionController();
+  explicit ActiveMediaSessionController(base::UnguessableToken request_id);
   ActiveMediaSessionController(const ActiveMediaSessionController&) = delete;
   ActiveMediaSessionController& operator=(const ActiveMediaSessionController&) =
       delete;
   ~ActiveMediaSessionController() override;
 
+  // This mechanism allows this AMSC to be rebound to track a different
+  // request_id. This is used by the browser singleton active media session
+  // controller which is created to track a specific request_id but conceptually
+  // needs to follow around whatever the most recent active playing media is.
+  // This has the added benefit that things like |actions_| will persist across
+  // multiple tabs. If we simply recreate for each browser-associated media,
+  // |actions_| may not get switched off causing a previously available button
+  // to stay available when it is not available in the current media context.
+  // Currently used only by browser system media controls when
+  // kWebAppSystemMediaControlsWin is enabled.
+  void RebindMojoForNewID(base::UnguessableToken request_id);
+
   // media_session::mojom::MediaControllerObserver:
   void MediaSessionInfoChanged(
       media_session::mojom::MediaSessionInfoPtr session_info) override;
   void MediaSessionMetadataChanged(
-      const absl::optional<media_session::MediaMetadata>& metadata) override {}
+      const std::optional<media_session::MediaMetadata>& metadata) override {}
   void MediaSessionActionsChanged(
       const std::vector<media_session::mojom::MediaSessionAction>& actions)
       override;
   void MediaSessionChanged(
-      const absl::optional<base::UnguessableToken>& request_id) override {}
+      const std::optional<base::UnguessableToken>& request_id) override {}
   void MediaSessionPositionChanged(
-      const absl::optional<media_session::MediaPosition>& position) override;
+      const std::optional<media_session::MediaPosition>& position) override;
 
   // ui::MediaKeysListener::Delegate:
   void OnMediaKeysAccelerator(const ui::Accelerator& accelerator) override;
@@ -70,12 +85,15 @@ class CONTENT_EXPORT ActiveMediaSessionController
 
   // Returns nullopt if the action is not supported via hardware keys (e.g.
   // SeekBackward).
-  absl::optional<ui::KeyboardCode> MediaSessionActionToKeyCode(
+  std::optional<ui::KeyboardCode> MediaSessionActionToKeyCode(
       media_session::mojom::MediaSessionAction action) const;
 
   void MaybePerformAction(media_session::mojom::MediaSessionAction action);
   bool SupportsAction(media_session::mojom::MediaSessionAction action) const;
   void PerformAction(media_session::mojom::MediaSessionAction action);
+
+  mojo::Remote<media_session::mojom::MediaControllerManager>
+      controller_manager_remote_;
 
   // Used to control the active session.
   mojo::Remote<media_session::mojom::MediaController> media_controller_remote_;
@@ -92,7 +110,12 @@ class CONTENT_EXPORT ActiveMediaSessionController
       media_controller_observer_receiver_{this};
 
   // Stores the current playback position.
-  absl::optional<media_session::MediaPosition> position_;
+  std::optional<media_session::MediaPosition> position_;
+
+  // Stores the media session (if any specific one) this active media session
+  // controller is associated with. If this is null, this AMSC follows around
+  // the active media session automatically and will receive events for it.
+  base::UnguessableToken request_id_;
 };
 
 }  // namespace content

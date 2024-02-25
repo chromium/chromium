@@ -20,8 +20,8 @@ limitations under the License.
 #include <vector>
 
 #include <glog/logging.h>
-#include "absl/memory/memory.h"       // from @com_google_absl
-#include "absl/status/status.h"       // from @com_google_absl
+#include "absl/memory/memory.h"  // from @com_google_absl
+#include "absl/status/status.h"  // from @com_google_absl
 #include "absl/strings/str_format.h"  // from @com_google_absl
 #include "absl/strings/string_view.h"  // from @com_google_absl
 #include "tensorflow/lite/c/common.h"
@@ -141,15 +141,14 @@ StatusOr<const BoundingBoxProperties*> GetBoundingBoxProperties(
 
 StatusOr<std::vector<LabelMapItem>> GetLabelMapIfAny(
     const ModelMetadataExtractor& metadata_extractor,
-    const TensorMetadata& tensor_metadata,
-    absl::string_view locale) {
+    const TensorMetadata& tensor_metadata, absl::string_view locale) {
   const std::string labels_filename =
       ModelMetadataExtractor::FindFirstAssociatedFileName(
           tensor_metadata, tflite::AssociatedFileType_TENSOR_VALUE_LABELS);
   if (labels_filename.empty()) {
     return std::vector<LabelMapItem>();
   }
-  ASSIGN_OR_RETURN(absl::string_view labels_file,
+  TFLITE_ASSIGN_OR_RETURN(absl::string_view labels_file,
                    metadata_extractor.GetAssociatedFile(labels_filename));
   const std::string display_names_filename =
       ModelMetadataExtractor::FindFirstAssociatedFileName(
@@ -157,7 +156,7 @@ StatusOr<std::vector<LabelMapItem>> GetLabelMapIfAny(
           locale);
   absl::string_view display_names_file;
   if (!display_names_filename.empty()) {
-    ASSIGN_OR_RETURN(display_names_file, metadata_extractor.GetAssociatedFile(
+    TFLITE_ASSIGN_OR_RETURN(display_names_file, metadata_extractor.GetAssociatedFile(
                                              display_names_filename));
   }
   return BuildLabelMapFromFiles(labels_file, display_names_file);
@@ -166,7 +165,7 @@ StatusOr<std::vector<LabelMapItem>> GetLabelMapIfAny(
 StatusOr<float> GetScoreThreshold(
     const ModelMetadataExtractor& metadata_extractor,
     const TensorMetadata& tensor_metadata) {
-  ASSIGN_OR_RETURN(
+  TFLITE_ASSIGN_OR_RETURN(
       const ProcessUnit* score_thresholding_process_unit,
       metadata_extractor.FindFirstProcessUnit(
           tensor_metadata, ProcessUnitOptions_ScoreThresholdingOptions));
@@ -226,7 +225,7 @@ absl::Status SanityCheckOutputTensors(
             num_results_tensor->dims->data[0]));
   }
 
-  ASSIGN_OR_RETURN(float* num_results_data,
+  TFLITE_ASSIGN_OR_RETURN(float* num_results_data,
                    AssertAndReturnTypedTensor<float>(num_results_tensor));
   int num_results = static_cast<int>(num_results_data[0]);
 
@@ -313,20 +312,20 @@ absl::Status ObjectDetector::SanityCheckOptions(
 StatusOr<std::unique_ptr<ObjectDetector>> ObjectDetector::CreateFromOptions(
     const ObjectDetectorOptions& options,
     std::unique_ptr<tflite::OpResolver> resolver) {
-  RETURN_IF_ERROR(SanityCheckOptions(options));
+  TFLITE_RETURN_IF_ERROR(SanityCheckOptions(options));
 
   // Copy options to ensure the ExternalFile outlives the constructed object.
   auto options_copy = absl::make_unique<ObjectDetectorOptions>(options);
 
   std::unique_ptr<ObjectDetector> object_detector;
   if (options_copy->has_model_file_with_metadata()) {
-    ASSIGN_OR_RETURN(
+    TFLITE_ASSIGN_OR_RETURN(
         object_detector,
         TaskAPIFactory::CreateFromExternalFileProto<ObjectDetector>(
             &options_copy->model_file_with_metadata(), std::move(resolver),
             options_copy->num_threads(), options_copy->compute_settings()));
   } else if (options_copy->base_options().has_model_file()) {
-    ASSIGN_OR_RETURN(object_detector,
+    TFLITE_ASSIGN_OR_RETURN(object_detector,
                      TaskAPIFactory::CreateFromBaseOptions<ObjectDetector>(
                          &options_copy->base_options(), std::move(resolver)));
   } else {
@@ -338,7 +337,7 @@ StatusOr<std::unique_ptr<ObjectDetector>> ObjectDetector::CreateFromOptions(
         TfLiteSupportStatus::kInvalidArgumentError);
   }
 
-  RETURN_IF_ERROR(object_detector->Init(std::move(options_copy)));
+  TFLITE_RETURN_IF_ERROR(object_detector->Init(std::move(options_copy)));
 
   return object_detector;
 }
@@ -350,18 +349,18 @@ absl::Status ObjectDetector::Init(
 
   // Perform pre-initialization actions (by default, sets the process engine for
   // image pre-processing to kLibyuv as a sane default).
-  RETURN_IF_ERROR(PreInit());
+  TFLITE_RETURN_IF_ERROR(PreInit());
 
   // Sanity check and set inputs and outputs.
-  RETURN_IF_ERROR(CheckAndSetInputs());
-  RETURN_IF_ERROR(CheckAndSetOutputs());
+  TFLITE_RETURN_IF_ERROR(CheckAndSetInputs());
+  TFLITE_RETURN_IF_ERROR(CheckAndSetOutputs());
 
   // Initialize class whitelisting/blacklisting, if any.
-  RETURN_IF_ERROR(CheckAndSetClassIndexSet());
+  TFLITE_RETURN_IF_ERROR(CheckAndSetClassIndexSet());
 
   // Perform final initialization (by default, initialize score calibration
   // parameters, if any).
-  RETURN_IF_ERROR(PostInit());
+  TFLITE_RETURN_IF_ERROR(PostInit());
 
   return absl::OkStatus();
 }
@@ -371,9 +370,7 @@ absl::Status ObjectDetector::PreInit() {
   return absl::OkStatus();
 }
 
-absl::Status ObjectDetector::PostInit() {
-  return InitScoreCalibrations();
-}
+absl::Status ObjectDetector::PostInit() { return InitScoreCalibrations(); }
 
 StatusOr<SigmoidCalibrationParameters> BuildCalibrationParametersIfAny(
     const tflite::metadata::ModelMetadataExtractor& metadata_extractor,
@@ -389,7 +386,7 @@ StatusOr<SigmoidCalibrationParameters> BuildCalibrationParametersIfAny(
   // that does sanity checks and builds sigmoid calibration params in:
   //   https://github.com/tensorflow/tflite-support/blob/64e044408f3d3654de7fc10bca401ed900649ca3/tensorflow_lite_support/cc/task/vision/core/classification_head.cc#L75-L107
   // Consider to refactor it and reuse the same function.
-  ASSIGN_OR_RETURN(const tflite::ProcessUnit* score_calibration_process_unit,
+  TFLITE_ASSIGN_OR_RETURN(const tflite::ProcessUnit* score_calibration_process_unit,
                    ModelMetadataExtractor::FindFirstProcessUnit(
                        output_tensor_metadata,
                        tflite::ProcessUnitOptions_ScoreCalibrationOptions));
@@ -398,12 +395,12 @@ StatusOr<SigmoidCalibrationParameters> BuildCalibrationParametersIfAny(
         ModelMetadataExtractor::FindFirstAssociatedFileName(
             output_tensor_metadata,
             tflite::AssociatedFileType_TENSOR_AXIS_SCORE_CALIBRATION);
-    ASSIGN_OR_RETURN(
+    TFLITE_ASSIGN_OR_RETURN(
         absl::string_view score_calibration_file,
         metadata_extractor.GetAssociatedFile(score_calibration_filename));
 
     // Set has_score_calibration to true, only if sigmoid_params is built.
-    ASSIGN_OR_RETURN(sigmoid_params,
+    TFLITE_ASSIGN_OR_RETURN(sigmoid_params,
                      BuildSigmoidCalibrationParams(
                          *score_calibration_process_unit
                               ->options_as_ScoreCalibrationOptions(),
@@ -424,7 +421,7 @@ absl::Status ObjectDetector::InitScoreCalibrations() {
       output_tensor_metadata = metadata_extractor->GetOutputTensorMetadata();
   const tflite::TensorMetadata* output_tensor =
       output_tensor_metadata->Get(kDefaultScoresIndex);
-  ASSIGN_OR_RETURN(
+  TFLITE_ASSIGN_OR_RETURN(
       auto calibration_params,
       BuildCalibrationParametersIfAny(*metadata_extractor, *output_tensor,
                                       label_map_, &has_score_calibration));
@@ -439,7 +436,7 @@ absl::Status ObjectDetector::InitScoreCalibrations() {
     return CreateStatusWithPayload(
         StatusCode::kInternal, "Could not create score calibration object.");
   }
-  RETURN_IF_ERROR(
+  TFLITE_RETURN_IF_ERROR(
       score_calibration_->InitializeFromParameters(calibration_params));
   return absl::OkStatus();
 }
@@ -488,7 +485,7 @@ absl::Status ObjectDetector::CheckAndSetOutputs() {
 
   // Extract mandatory BoundingBoxProperties for easier access at
   // post-processing time, performing sanity checks on the fly.
-  ASSIGN_OR_RETURN(const BoundingBoxProperties* bounding_box_properties,
+  TFLITE_ASSIGN_OR_RETURN(const BoundingBoxProperties* bounding_box_properties,
                    GetBoundingBoxProperties(
                        *output_tensors_metadata->Get(output_indices_[0])));
   if (bounding_box_properties->index() == nullptr) {
@@ -504,7 +501,7 @@ absl::Status ObjectDetector::CheckAndSetOutputs() {
   }
 
   // Build label map (if available) from metadata.
-  ASSIGN_OR_RETURN(
+  TFLITE_ASSIGN_OR_RETURN(
       label_map_,
       GetLabelMapIfAny(*metadata_extractor,
                        *output_tensors_metadata->Get(output_indices_[1]),
@@ -514,7 +511,7 @@ absl::Status ObjectDetector::CheckAndSetOutputs() {
   if (options_->has_score_threshold()) {
     score_threshold_ = options_->score_threshold();
   } else {
-    ASSIGN_OR_RETURN(
+    TFLITE_ASSIGN_OR_RETURN(
         score_threshold_,
         GetScoreThreshold(*metadata_extractor,
                           *output_tensors_metadata->Get(output_indices_[2])));
@@ -602,15 +599,14 @@ StatusOr<DetectionResult> ObjectDetector::Detect(
 
 StatusOr<DetectionResult> ObjectDetector::Postprocess(
     const std::vector<const TfLiteTensor*>& output_tensors,
-    const FrameBuffer& frame_buffer,
-    const BoundingBox& /*roi*/) {
+    const FrameBuffer& frame_buffer, const BoundingBox& /*roi*/) {
   // Most of the checks here should never happen, as outputs have been validated
   // at construction time. Checking nonetheless and returning internal errors if
   // something bad happens.
-  RETURN_IF_ERROR(SanityCheckOutputTensors(output_tensors, output_indices_));
+  TFLITE_RETURN_IF_ERROR(SanityCheckOutputTensors(output_tensors, output_indices_));
 
   // Get number of available results.
-  ASSIGN_OR_RETURN(
+  TFLITE_ASSIGN_OR_RETURN(
       float* num_results_data,
       AssertAndReturnTypedTensor<float>(output_tensors[output_indices_[3]]));
   const int num_results = static_cast<int>(num_results_data[0]);
@@ -627,13 +623,13 @@ StatusOr<DetectionResult> ObjectDetector::Postprocess(
     upright_input_frame_dimensions.Swap();
   }
 
-  ASSIGN_OR_RETURN(
+  TFLITE_ASSIGN_OR_RETURN(
       const float* locations,
       AssertAndReturnTypedTensor<float>(output_tensors[output_indices_[0]]));
-  ASSIGN_OR_RETURN(
+  TFLITE_ASSIGN_OR_RETURN(
       const float* classes,
       AssertAndReturnTypedTensor<float>(output_tensors[output_indices_[1]]));
-  ASSIGN_OR_RETURN(
+  TFLITE_ASSIGN_OR_RETURN(
       const float* scores,
       AssertAndReturnTypedTensor<float>(output_tensors[output_indices_[2]]));
   DetectionResult results;
@@ -675,7 +671,7 @@ StatusOr<DetectionResult> ObjectDetector::Postprocess(
   }
 
   if (!label_map_.empty()) {
-    RETURN_IF_ERROR(FillResultsFromLabelMap(&results));
+    TFLITE_RETURN_IF_ERROR(FillResultsFromLabelMap(&results));
   }
 
   return results;

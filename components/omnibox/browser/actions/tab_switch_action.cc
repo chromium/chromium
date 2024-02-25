@@ -16,11 +16,6 @@
 #include "components/omnibox/browser/vector_icons.h"  // nogncheck
 #endif
 
-#if BUILDFLAG(IS_ANDROID)
-#include "base/android/jni_android.h"
-#include "components/omnibox/browser/actions/omnibox_action_factory_android.h"
-#endif
-
 TabSwitchAction::TabSwitchAction(GURL url)
     : OmniboxAction(LabelStrings(IDS_OMNIBOX_TAB_SUGGEST_HINT,
                                  IDS_OMNIBOX_TAB_SUGGEST_HINT,

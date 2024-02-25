@@ -5,35 +5,21 @@
 #include "third_party/blink/renderer/core/paint/text_painter_base.h"
 
 #include "third_party/blink/renderer/core/css/properties/longhands.h"
-#include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/highlight/highlight_style_utils.h"
-#include "third_party/blink/renderer/core/layout/text_decoration_offset_base.h"
-#include "third_party/blink/renderer/core/paint/applied_decoration_painter.h"
 #include "third_party/blink/renderer/core/paint/box_painter_base.h"
-#include "third_party/blink/renderer/core/paint/paint_info.h"
-#include "third_party/blink/renderer/core/paint/text_decoration_info.h"
 #include "third_party/blink/renderer/core/style/computed_style.h"
-#include "third_party/blink/renderer/core/style/shadow_list.h"
-#include "third_party/blink/renderer/platform/fonts/font.h"
-#include "third_party/blink/renderer/platform/fonts/text_run_paint_info.h"
-#include "third_party/blink/renderer/platform/geometry/length_functions.h"
 #include "third_party/blink/renderer/platform/graphics/graphics_context.h"
 #include "third_party/blink/renderer/platform/graphics/graphics_context_state_saver.h"
-#include "third_party/blink/renderer/platform/wtf/text/character_names.h"
 
 namespace blink {
 
 TextPainterBase::TextPainterBase(GraphicsContext& context,
                                  const Font& font,
-                                 const PhysicalOffset& text_origin,
-                                 const PhysicalRect& text_frame_rect,
-                                 NGInlinePaintContext* inline_context,
+                                 const LineRelativeOffset& text_origin,
                                  bool horizontal)
-    : inline_context_(inline_context),
-      graphics_context_(context),
+    : graphics_context_(context),
       font_(font),
       text_origin_(text_origin),
-      text_frame_rect_(text_frame_rect),
       horizontal_(horizontal) {}
 
 TextPainterBase::~TextPainterBase() = default;
@@ -81,6 +67,20 @@ void TextPainterBase::UpdateGraphicsContext(
       context.SetStrokeColor(text_style.stroke_color);
     if (text_style.stroke_width != context.StrokeThickness())
       context.SetStrokeThickness(text_style.stroke_width);
+  }
+
+  switch (text_style.paint_order) {
+    case kPaintOrderNormal:
+    case kPaintOrderFillStrokeMarkers:
+    case kPaintOrderFillMarkersStroke:
+    case kPaintOrderMarkersFillStroke:
+      context.SetTextPaintOrder(kFillStroke);
+      break;
+    case kPaintOrderStrokeFillMarkers:
+    case kPaintOrderStrokeMarkersFill:
+    case kPaintOrderMarkersStrokeFill:
+      context.SetTextPaintOrder(kStrokeFill);
+      break;
   }
 
   if (shadow_mode != kTextProperOnly) {
@@ -146,6 +146,7 @@ TextPaintStyle TextPainterBase::TextPaintingStyle(const Document& document,
     text_style.stroke_color = Color::kBlack;
     text_style.emphasis_mark_color = Color::kBlack;
     text_style.shadow = nullptr;
+    text_style.paint_order = kPaintOrderNormal;
   } else {
     text_style.current_color =
         style.VisitedDependentColorFast(GetCSSPropertyColor());
@@ -156,6 +157,7 @@ TextPaintStyle TextPainterBase::TextPaintingStyle(const Document& document,
     text_style.emphasis_mark_color =
         style.VisitedDependentColorFast(GetCSSPropertyTextEmphasisColor());
     text_style.shadow = style.TextShadow();
+    text_style.paint_order = style.PaintOrder();
 
     // Adjust text color when printing with a white background.
     bool force_background_to_white =
@@ -207,67 +209,6 @@ void TextPainterBase::DecorationsStripeIntercepts(
       continue;
     graphics_context_.ClipOut(clip_rect);
   }
-}
-
-void TextPainterBase::PaintDecorationsOnlyLineThrough(
-    TextDecorationInfo& decoration_info,
-    const PaintInfo& paint_info,
-    const TextPaintStyle& text_style,
-    const cc::PaintFlags* flags) {
-  // Updating the graphics context and looping through applied decorations is
-  // expensive, so avoid doing it if there are no ‘line-through’ decorations.
-  if (!decoration_info.HasAnyLine(TextDecorationLine::kLineThrough))
-    return;
-
-  GraphicsContext& context = paint_info.context;
-  GraphicsContextStateSaver state_saver(context);
-  UpdateGraphicsContext(context, text_style, state_saver);
-
-  for (wtf_size_t applied_decoration_index = 0;
-       applied_decoration_index < decoration_info.AppliedDecorationCount();
-       ++applied_decoration_index) {
-    const AppliedTextDecoration& decoration =
-        decoration_info.AppliedDecoration(applied_decoration_index);
-    TextDecorationLine lines = decoration.Lines();
-    if (EnumHasFlags(lines, TextDecorationLine::kLineThrough)) {
-      decoration_info.SetDecorationIndex(applied_decoration_index);
-
-      const float resolved_thickness = decoration_info.ResolvedThickness();
-      context.SetStrokeThickness(resolved_thickness);
-      decoration_info.SetLineThroughLineData();
-      AppliedDecorationPainter decoration_painter(context, decoration_info);
-      // No skip: ink for line-through,
-      // compare https://github.com/w3c/csswg-drafts/issues/711
-      decoration_painter.Paint(flags);
-    }
-  }
-}
-
-void TextPainterBase::PaintEmphasisMarkForCombinedText(
-    const TextPaintStyle& text_style,
-    const Font& emphasis_mark_font,
-    const AutoDarkMode& auto_dark_mode) {
-  DCHECK(emphasis_mark_font.GetFontDescription().IsVerticalBaseline());
-  DCHECK(emphasis_mark_);
-  const SimpleFontData* const font_data = font_.PrimaryFont();
-  DCHECK(font_data);
-  if (!font_data)
-    return;
-
-  if (text_style.emphasis_mark_color != text_style.fill_color) {
-    // See virtual/text-antialias/emphasis-combined-text.html
-    graphics_context_.SetFillColor(text_style.emphasis_mark_color);
-  }
-
-  const auto font_ascent = font_data->GetFontMetrics().Ascent();
-  const TextRun placeholder_text_run(&kIdeographicFullStopCharacter, 1);
-  const gfx::PointF emphasis_mark_text_origin(
-      text_frame_rect_.X().ToFloat(),
-      text_frame_rect_.Y().ToFloat() + font_ascent + emphasis_mark_offset_);
-  const TextRunPaintInfo text_run_paint_info(placeholder_text_run);
-  graphics_context_.DrawEmphasisMarks(emphasis_mark_font, text_run_paint_info,
-                                      emphasis_mark_, emphasis_mark_text_origin,
-                                      auto_dark_mode);
 }
 
 }  // namespace blink

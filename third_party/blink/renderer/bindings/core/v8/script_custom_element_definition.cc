@@ -88,8 +88,9 @@ HTMLElement* ScriptCustomElementDefinition::CreateAutonomousCustomElementSync(
   ScriptState::Scope scope(script_state_);
   v8::Isolate* isolate = script_state_->GetIsolate();
 
-  ExceptionState exception_state(isolate, ExceptionState::kConstructionContext,
-                                 "CustomElement");
+  ExceptionState exception_state(
+      isolate, ExceptionContextType::kConstructorOperationInvoke,
+      "CustomElement");
 
   // Create an element with the synchronous custom elements flag set.
   // https://dom.spec.whatwg.org/#concept-create-element
@@ -186,31 +187,31 @@ ScriptValue ScriptCustomElementDefinition::GetConstructorForScript() {
 }
 
 bool ScriptCustomElementDefinition::HasConnectedCallback() const {
-  return connected_callback_;
+  return connected_callback_ != nullptr;
 }
 
 bool ScriptCustomElementDefinition::HasDisconnectedCallback() const {
-  return disconnected_callback_;
+  return disconnected_callback_ != nullptr;
 }
 
 bool ScriptCustomElementDefinition::HasAdoptedCallback() const {
-  return adopted_callback_;
+  return adopted_callback_ != nullptr;
 }
 
 bool ScriptCustomElementDefinition::HasFormAssociatedCallback() const {
-  return form_associated_callback_;
+  return form_associated_callback_ != nullptr;
 }
 
 bool ScriptCustomElementDefinition::HasFormResetCallback() const {
-  return form_reset_callback_;
+  return form_reset_callback_ != nullptr;
 }
 
 bool ScriptCustomElementDefinition::HasFormDisabledCallback() const {
-  return form_disabled_callback_;
+  return form_disabled_callback_ != nullptr;
 }
 
 bool ScriptCustomElementDefinition::HasFormStateRestoreCallback() const {
-  return form_state_restore_callback_;
+  return form_state_restore_callback_ != nullptr;
 }
 
 void ScriptCustomElementDefinition::RunConnectedCallback(Element& element) {

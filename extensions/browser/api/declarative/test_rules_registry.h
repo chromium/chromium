@@ -7,18 +7,16 @@
 
 #include "content/public/browser/browser_thread.h"
 #include "extensions/browser/api/declarative/rules_registry.h"
+#include "extensions/common/extension_id.h"
 
 namespace extensions {
 
 // This is a trivial test RulesRegistry that can only store and retrieve rules.
 class TestRulesRegistry : public RulesRegistry {
  public:
-  TestRulesRegistry(content::BrowserThread::ID owner_thread,
-                    const std::string& event_name,
-                    int rules_registry_id);
+  TestRulesRegistry(const std::string& event_name, int rules_registry_id);
   TestRulesRegistry(content::BrowserContext* browser_context,
                     const std::string& event_name,
-                    content::BrowserThread::ID owner_thread,
                     RulesCacheDelegate* cache_delegate,
                     int rules_registry_id);
 
@@ -27,12 +25,12 @@ class TestRulesRegistry : public RulesRegistry {
 
   // RulesRegistry implementation:
   std::string AddRulesImpl(
-      const std::string& extension_id,
+      const ExtensionId& extension_id,
       const std::vector<const api::events::Rule*>& rules) override;
   std::string RemoveRulesImpl(
-      const std::string& extension_id,
+      const ExtensionId& extension_id,
       const std::vector<std::string>& rule_identifiers) override;
-  std::string RemoveAllRulesImpl(const std::string& extension_id) override;
+  std::string RemoveAllRulesImpl(const ExtensionId& extension_id) override;
 
   // Sets the result message that will be returned by the next call of
   // AddRulesImpl, RemoveRulesImpl and RemoveAllRulesImpl.

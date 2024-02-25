@@ -17,7 +17,7 @@ class WebEngineURLLoaderThrottleProvider
     : public blink::URLLoaderThrottleProvider {
  public:
   explicit WebEngineURLLoaderThrottleProvider(
-      WebEngineContentRendererClient* content_renderer_client);
+      const WebEngineContentRendererClient* const content_renderer_client);
 
   WebEngineURLLoaderThrottleProvider(
       const WebEngineURLLoaderThrottleProvider&) = delete;
@@ -29,8 +29,8 @@ class WebEngineURLLoaderThrottleProvider
   // blink::URLLoaderThrottleProvider implementation.
   std::unique_ptr<blink::URLLoaderThrottleProvider> Clone() override;
   blink::WebVector<std::unique_ptr<blink::URLLoaderThrottle>> CreateThrottles(
-      int render_frame_id,
-      const blink::WebURLRequest& request) override;
+      base::optional_ref<const blink::LocalFrameToken> local_frame_token,
+      const network::ResourceRequest& request) override;
   void SetOnline(bool is_online) override;
 
  private:

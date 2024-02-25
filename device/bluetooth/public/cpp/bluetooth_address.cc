@@ -5,13 +5,11 @@
 #include "device/bluetooth/public/cpp/bluetooth_address.h"
 
 #include "base/strings/string_number_conversions.h"
-#include "base/strings/string_piece.h"
 #include "base/strings/stringprintf.h"
 
 namespace device {
 
-bool ParseBluetoothAddress(base::StringPiece input,
-                           base::span<uint8_t> output) {
+bool ParseBluetoothAddress(std::string_view input, base::span<uint8_t> output) {
   if (output.size() != 6)
     return false;
 
@@ -40,7 +38,7 @@ bool ParseBluetoothAddress(base::StringPiece input,
   return false;
 }
 
-std::string CanonicalizeBluetoothAddress(base::StringPiece address) {
+std::string CanonicalizeBluetoothAddress(std::string_view address) {
   std::array<uint8_t, 6> bytes;
 
   if (!ParseBluetoothAddress(address, bytes))

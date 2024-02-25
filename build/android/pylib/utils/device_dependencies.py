@@ -20,6 +20,7 @@ _EXCLUSIONS = [
     re.compile(r'.*\.apk'),  # Should be installed separately.
     re.compile(r'.*\.jar'),  # Never need java intermediates.
     re.compile(r'.*\.crx'),  # Used by download_from_google_storage.
+    re.compile(r'.*\.wpr'),  # Web-page-relay files needed only on host.
     re.compile(r'.*lib.java/.*'),  # Never need java intermediates.
 
     # Test filter files:
@@ -48,7 +49,7 @@ _EXCLUSIONS = [
     re.compile(r'.*third_party/proguard/.*'),
 
     # Our tests don't need these.
-    re.compile(r'.*/devtools-frontend/src/front_end/.*'),
+    re.compile(r'.*/devtools-frontend/.*front_end/.*'),
 
     # Build artifacts:
     re.compile(r'.*\.stamp'),
@@ -133,7 +134,8 @@ def GetDataDependencies(runtime_deps_path):
     return []
 
   with open(runtime_deps_path, 'r') as runtime_deps_file:
-    rel_host_files = [l.strip() for l in runtime_deps_file if l]
+    # .runtime_deps can contain duplicates.
+    rel_host_files = sorted({l.strip() for l in runtime_deps_file if l})
 
   output_directory = constants.GetOutDirectory()
   abs_host_files = [

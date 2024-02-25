@@ -8,6 +8,8 @@
 #include "base/check.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/single_thread_task_runner.h"
+#include "base/time/time.h"
+#include "chromeos/ash/components/network/cellular_esim_profile_waiter.h"
 #include "chromeos/ash/components/network/cellular_utils.h"
 #include "chromeos/ash/components/network/hermes_metrics_util.h"
 #include "chromeos/ash/components/network/metrics/cellular_network_metrics_logger.h"
@@ -15,6 +17,11 @@
 
 namespace ash {
 namespace {
+
+// The timeout that is provided when waiting for the properties of discovered
+// pending profiles to be set before collecting profile properties for
+// RequestAvailableProfiles().
+constexpr base::TimeDelta kCellularESimProfileWaiterDelay = base::Seconds(30);
 
 // Delay before profile refresh callback is called. This ensures that eSIM
 // profiles are updated before callback returns.
@@ -201,10 +208,12 @@ void CellularESimProfileHandler::OnInhibitedForRequestAvailableProfiles(
   DCHECK(info->callback);
 
   if (!inhibit_lock) {
-    // TODO(b/278135630): Emit
-    // Network.Ash.Cellular.ESim.SMDSScan.{SMDSType}.{ResultType}.
+    DCHECK(!info->smds_activation_codes.empty());
     NET_LOG(ERROR)
         << "Failed to inhibit cellular for requesting available profiles";
+    CellularNetworkMetricsLogger::LogSmdsScanResult(
+        info->smds_activation_codes.front(),
+        /*result=*/std::nullopt);
     std::move(info->callback)
         .Run(cellular_setup::mojom::ESimOperationResult::kFailure,
              std::vector<CellularESimProfile>());
@@ -223,61 +232,108 @@ void CellularESimProfileHandler::PerformRequestAvailableProfiles(
   DCHECK(info->callback);
   DCHECK(inhibit_lock);
 
-  if (info->smds_activation_codes.empty()) {
-    // TODO(b/278135630): Emit
-    // Network.Ash.Cellular.ESim.SMDSScan.{SMDSType}.{ResultType}.
-    NET_LOG(EVENT) << "Finished requesting available profiles";
-    CellularNetworkMetricsLogger::LogSmdsScanProfileCount(
-        info->profile_list.size());
-    std::move(info->callback)
-        .Run(cellular_setup::mojom::ESimOperationResult::kSuccess,
-             std::move(info->profile_list));
+  if (!info->smds_activation_codes.empty()) {
+    NET_LOG(EVENT) << "Requesting available profiles";
+
+    // Remove one SM-DS activation code from the list and use this activation
+    // code for the next SM-DS scan. This logic is responsible for making sure
+    // we only scan each activation code once, avoiding an infinite loop.
+    const std::string smds_activation_code = info->smds_activation_codes.back();
+    info->smds_activation_codes.pop_back();
+
+    HermesEuiccClient::Get()->RefreshSmdxProfiles(
+        euicc_path, smds_activation_code,
+        /*restore_slot=*/true,
+        base::BindOnce(&CellularESimProfileHandler::OnRequestAvailableProfiles,
+                       weak_ptr_factory_.GetWeakPtr(), euicc_path,
+                       std::move(info), std::move(inhibit_lock),
+                       smds_activation_code, base::TimeTicks::Now()));
     return;
   }
 
-  NET_LOG(EVENT) << "Requesting available profiles";
+  NET_LOG(EVENT) << "Finished requesting available profiles";
 
-  // Remove one SM-DS activation code from the list and use this activation code
-  // for the next SM-DS scan. This logic is responsible for making sure we only
-  // scan each activation code once, avoiding an infinite loop.
-  const std::string smds_activation_code = info->smds_activation_codes.back();
-  info->smds_activation_codes.pop_back();
+  CellularNetworkMetricsLogger::LogSmdsScanProfileCount(
+      info->profile_paths.size());
 
-  HermesEuiccClient::Get()->RefreshSmdxProfiles(
-      euicc_path, smds_activation_code,
-      /*restore_slot=*/true,
-      base::BindOnce(&CellularESimProfileHandler::OnRequestAvailableProfiles,
-                     weak_ptr_factory_.GetWeakPtr(), euicc_path,
-                     std::move(info), std::move(inhibit_lock)));
+  std::unique_ptr<CellularESimProfileWaiter> waiter =
+      std::make_unique<CellularESimProfileWaiter>();
+  for (const auto& profile_path : info->profile_paths) {
+    waiter->RequirePendingProfile(profile_path);
+  }
+
+  auto split = base::SplitOnceCallback(std::move(info->callback));
+  info->callback = std::move(split.first);
+
+  auto on_success = base::BindOnce(base::BindOnce(
+      &CellularESimProfileHandler::CompleteRequestAvailableProfiles,
+      weak_ptr_factory_.GetWeakPtr(), euicc_path, std::move(info)));
+  auto on_shutdown = base::BindOnce(
+      [](RequestAvailableProfilesCallback callback) {
+        std::move(callback).Run(
+            cellular_setup::mojom::ESimOperationResult::kSuccess,
+            std::vector<CellularESimProfile>());
+      },
+      std::move(split.second));
+
+  waiter->Wait(std::move(on_success), std::move(on_shutdown));
+
+  if (waiter->waiting()) {
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
+        FROM_HERE,
+        base::BindOnce(
+            [](std::unique_ptr<CellularESimProfileWaiter> waiter) {
+              waiter.reset();
+            },
+            std::move(waiter)),
+        kCellularESimProfileWaiterDelay);
+  }
 }
 
 void CellularESimProfileHandler::OnRequestAvailableProfiles(
     const dbus::ObjectPath& euicc_path,
     std::unique_ptr<RequestAvailableProfilesInfo> info,
     std::unique_ptr<CellularInhibitor::InhibitLock> inhibit_lock,
+    const std::string& smds_activation_code,
+    const base::TimeTicks start_time,
     HermesResponseStatus status,
     const std::vector<dbus::ObjectPath>& profile_paths) {
   DCHECK(info);
   DCHECK(info->callback);
   DCHECK(inhibit_lock);
 
-  // TODO(b/278135481): Emit
-  // Network.Ash.Cellular.ESim.SMDSScan.{SMDSType}.Duration.
-  // TODO(b/278135630): Emit
-  // Network.Ash.Cellular.ESim.SMDSScan.{SMDSType}.{ResultType}.
-  // Each SM-DS scan will return both a result and zero or more available
-  // profiles. An error being returned indicates there was an issue when
-  // performing the scan, but since it does not invalidate the returned profiles
-  // we simply log the error, capture the error in our metrics, and continue.
-  NET_LOG(EVENT)
-      << "HermesEuiccClient::RefreshSmdxProfiles returned with result code "
-      << status;
+  CellularNetworkMetricsLogger::LogSmdsScanResult(smds_activation_code, status);
+  CellularNetworkMetricsLogger::LogSmdsScanDuration(
+      base::TimeTicks::Now() - start_time,
+      status == HermesResponseStatus::kSuccess, smds_activation_code);
+
+  for (const auto& profile_path : profile_paths) {
+    info->profile_paths.emplace_back(profile_path.value());
+  }
+
+  // This function is provided as a callback to
+  // PerformRequestAvailableProfiles() to be called when an SM-DS scan
+  // completes. Since the activation code used in this function may not have
+  // been the last needed, continue the loop. When |info.smds_activation_codes|
+  // is empty PerformRequestAvailableProfiles() will exit this loop by invoking
+  // |info.callback|.
+  PerformRequestAvailableProfiles(euicc_path, std::move(info),
+                                  std::move(inhibit_lock));
+}
+
+void CellularESimProfileHandler::CompleteRequestAvailableProfiles(
+    const dbus::ObjectPath& euicc_path,
+    std::unique_ptr<RequestAvailableProfilesInfo> info) {
+  DCHECK(info);
+  DCHECK(info->callback);
+
+  std::vector<CellularESimProfile> profile_list;
 
   HermesEuiccClient::Properties* euicc_properties =
       HermesEuiccClient::Get()->GetProperties(euicc_path);
   DCHECK(euicc_properties);
 
-  for (const auto& profile_path : profile_paths) {
+  for (const auto& profile_path : info->profile_paths) {
     HermesProfileClient::Properties* profile_properties =
         HermesProfileClient::Get()->GetProperties(profile_path);
     if (!profile_properties) {
@@ -292,10 +348,19 @@ void CellularESimProfileHandler::OnRequestAvailableProfiles(
                      << profile_properties->state().value();
       continue;
     }
+    if (profile_properties->name().value().empty()) {
+      NET_LOG(ERROR) << "Expected available profile to have a non-empty name";
+      continue;
+    }
+    if (profile_properties->activation_code().value().empty()) {
+      NET_LOG(ERROR)
+          << "Expected available profile to have a non-empty activation code";
+      continue;
+    }
 
     NET_LOG(EVENT) << "Found available profile";
 
-    info->profile_list.emplace_back(
+    profile_list.emplace_back(
         CellularESimProfile::State::kPending, profile_path,
         euicc_properties->eid().value(), profile_properties->iccid().value(),
         base::UTF8ToUTF16(profile_properties->name().value()),
@@ -304,14 +369,9 @@ void CellularESimProfileHandler::OnRequestAvailableProfiles(
         profile_properties->activation_code().value());
   }
 
-  // This function is provided as a callback to
-  // PerformRequestAvailableProfiles() to be called when an SM-DS scan
-  // completes. Since the activation code used in this function may not have
-  // been the last needed, continue the loop. When |info.smds_activation_codes|
-  // is empty PerformRequestAvailableProfiles() will exit this loop by invoking
-  // |info.callback|.
-  PerformRequestAvailableProfiles(euicc_path, std::move(info),
-                                  std::move(inhibit_lock));
+  std::move(info->callback)
+      .Run(cellular_setup::mojom::ESimOperationResult::kSuccess,
+           std::move(profile_list));
 }
 
 }  // namespace ash

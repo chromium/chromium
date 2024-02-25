@@ -32,9 +32,10 @@
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_LOADER_FETCH_FETCH_CONTEXT_H_
 
 #include <memory>
+#include <optional>
 
 #include "base/task/single_thread_task_runner.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
+#include "base/types/optional_ref.h"
 #include "third_party/blink/public/common/subresource_load_metrics.h"
 #include "third_party/blink/public/mojom/fetch/fetch_api_request.mojom-blink-forward.h"
 #include "third_party/blink/public/mojom/loader/request_context_frame_type.mojom-blink-forward.h"
@@ -57,6 +58,7 @@ enum class ResourceType : uint8_t;
 class PermissionsPolicy;
 class KURL;
 struct ResourceLoaderOptions;
+class SecurityOrigin;
 class WebScopedVirtualTimePauser;
 
 // The FetchContext is an interface for performing context specific processing
@@ -104,31 +106,31 @@ class PLATFORM_EXPORT FetchContext : public GarbageCollected<FetchContext> {
 
   virtual void AddResourceTiming(mojom::blink::ResourceTimingInfoPtr,
                                  const AtomicString& initiator_type);
-  virtual bool AllowImage(bool, const KURL&) const { return false; }
-  virtual absl::optional<ResourceRequestBlockedReason> CanRequest(
+  virtual bool AllowImage() const { return false; }
+  virtual std::optional<ResourceRequestBlockedReason> CanRequest(
       ResourceType,
       const ResourceRequest&,
       const KURL&,
       const ResourceLoaderOptions&,
       ReportingDisposition,
-      const absl::optional<ResourceRequest::RedirectInfo>& redirect_info)
+      base::optional_ref<const ResourceRequest::RedirectInfo> redirect_info)
       const {
     return ResourceRequestBlockedReason::kOther;
   }
   // In derived classes, performs *only* a SubresourceFilter check for whether
   // the request can go through or should be blocked.
-  virtual absl::optional<ResourceRequestBlockedReason>
+  virtual std::optional<ResourceRequestBlockedReason>
   CanRequestBasedOnSubresourceFilterOnly(
       ResourceType,
       const ResourceRequest&,
       const KURL&,
       const ResourceLoaderOptions&,
       ReportingDisposition,
-      const absl::optional<ResourceRequest::RedirectInfo>& redirect_info)
+      base::optional_ref<const ResourceRequest::RedirectInfo> redirect_info)
       const {
     return ResourceRequestBlockedReason::kOther;
   }
-  virtual absl::optional<ResourceRequestBlockedReason> CheckCSPForRequest(
+  virtual std::optional<ResourceRequestBlockedReason> CheckCSPForRequest(
       mojom::blink::RequestContextType,
       network::mojom::RequestDestination request_destination,
       const KURL&,
@@ -144,7 +146,7 @@ class PLATFORM_EXPORT FetchContext : public GarbageCollected<FetchContext> {
   // prepare a ResourceRequest instance at the start of resource loading.
   virtual void PopulateResourceRequest(
       ResourceType,
-      const absl::optional<float> resource_width,
+      const std::optional<float> resource_width,
       ResourceRequest&,
       const ResourceLoaderOptions&);
 
@@ -165,7 +167,7 @@ class PLATFORM_EXPORT FetchContext : public GarbageCollected<FetchContext> {
   // which case it checks the latter.
   virtual bool CalculateIfAdSubresource(
       const ResourceRequestHead& resource_request,
-      const absl::optional<KURL>& alias_url,
+      base::optional_ref<const KURL> alias_url,
       ResourceType type,
       const FetchInitiatorInfo& initiator_info) {
     return false;
@@ -186,6 +188,12 @@ class PLATFORM_EXPORT FetchContext : public GarbageCollected<FetchContext> {
 
   // Returns true iff we have LCPP hint data for the fetch context.
   virtual bool DoesLCPPHaveAnyHintData() { return false; }
+
+  // Returns the origin of the top frame in the document or the dedicated
+  // worker. This returns nullptr for Shared Workers and Service Workers.
+  virtual scoped_refptr<const SecurityOrigin> GetTopFrameOrigin() const {
+    return nullptr;
+  }
 };
 
 }  // namespace blink

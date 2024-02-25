@@ -5,6 +5,7 @@
 #include "components/signin/core/browser/consistency_cookie_manager.h"
 
 #include <memory>
+#include <optional>
 
 #include "base/memory/raw_ptr.h"
 #include "components/signin/core/browser/account_reconcilor.h"
@@ -16,7 +17,6 @@
 #include "services/network/test/test_cookie_manager.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 #if BUILDFLAG(IS_CHROMEOS)
 #include "components/account_manager_core/mock_account_manager_facade.h"
@@ -93,7 +93,7 @@ class ConsistencyCookieManagerTest : public testing::Test {
                 testing::Property(&net::CanonicalCookie::Domain,
                                   expected_domain),
                 testing::Property(&net::CanonicalCookie::Path, "/"),
-                testing::Property(&net::CanonicalCookie::IsSecure, true),
+                testing::Property(&net::CanonicalCookie::SecureAttribute, true),
                 testing::Property(&net::CanonicalCookie::IsHttpOnly, false),
                 testing::Property(&net::CanonicalCookie::SameSite,
                                   net::CookieSameSite::STRICT_MODE)),
@@ -158,7 +158,7 @@ TEST_F(ConsistencyCookieManagerTest, ReconcilorState) {
 
   struct AccountReconcilorStateTestCase {
     signin_metrics::AccountReconcilorState state;
-    absl::optional<std::string> cookie_value;
+    std::optional<std::string> cookie_value;
   };
 
   // Iterate over all reconcilor state and check that they map to the right
@@ -176,7 +176,7 @@ TEST_F(ConsistencyCookieManagerTest, ReconcilorState) {
        ConsistencyCookieManager::kCookieValueStringInconsistent},
       {signin_metrics::AccountReconcilorState::kScheduled,
        ConsistencyCookieManager::kCookieValueStringUpdating},
-      {signin_metrics::AccountReconcilorState::kInactive, absl::nullopt},
+      {signin_metrics::AccountReconcilorState::kInactive, std::nullopt},
   };
 
   for (const AccountReconcilorStateTestCase& test_case : cases) {

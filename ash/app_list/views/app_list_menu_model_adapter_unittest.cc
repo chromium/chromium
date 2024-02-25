@@ -52,9 +52,9 @@ class AppListMenuModelAdapterTest
 // Tests that NOTIFICATION_CONTAINER is enabled. This ensures that the
 // container is able to handle gesture events.
 TEST_F(AppListMenuModelAdapterTest, NotificationContainerEnabled) {
-  auto adapter =
-      CreateAdapter(AppLaunchedMetricParams(),
-                    AppListMenuModelAdapter::FULLSCREEN_APP_GRID, false);
+  auto adapter = CreateAdapter(
+      AppLaunchedMetricParams(),
+      AppListMenuModelAdapter::PRODUCTIVITY_LAUNCHER_APP_GRID, false);
   EXPECT_TRUE(adapter->IsCommandEnabled(NOTIFICATION_CONTAINER));
 }
 
@@ -64,14 +64,10 @@ TEST_P(AppListMenuModelAdapterTest, RecordsHistogramOnMenuClosed) {
     std::string base_histogram_name;
     bool has_non_tablet_clamshell_histograms;
   } test_cases[] = {
-      {AppListMenuModelAdapter::FULLSCREEN_SUGGESTED, "SuggestedAppFullscreen",
-       true},
-      {AppListMenuModelAdapter::FULLSCREEN_APP_GRID, "AppGrid", true},
       {AppListMenuModelAdapter::PRODUCTIVITY_LAUNCHER_RECENT_APP,
        "ProductivityLauncherRecentApp", false},
       {AppListMenuModelAdapter::PRODUCTIVITY_LAUNCHER_APP_GRID,
        "ProductivityLauncherAppGrid", false},
-      {AppListMenuModelAdapter::FULLSCREEN_SEARCH_RESULT, "SearchResult", true},
   };
 
   for (const auto& test_case : test_cases) {
@@ -126,7 +122,7 @@ TEST_P(AppListMenuModelAdapterTest, RecordsAppLaunched) {
     metric_params.app_list_view_state = AppListViewState::kFullscreenAllApps;
 
     const auto adapter = CreateAdapter(
-        metric_params, AppListMenuModelAdapter::FULLSCREEN_APP_GRID,
+        metric_params, AppListMenuModelAdapter::PRODUCTIVITY_LAUNCHER_APP_GRID,
         is_tablet_mode());
     adapter->Run(gfx::Rect(), views::MenuAnchorPosition::kBottomCenter, 0);
     adapter->ExecuteCommand(LAUNCH_NEW, /*mouse_event_flags=*/0);

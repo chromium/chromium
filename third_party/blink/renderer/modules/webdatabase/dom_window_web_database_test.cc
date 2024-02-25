@@ -16,6 +16,7 @@
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/modules/webdatabase/database.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
+#include "third_party/blink/renderer/platform/testing/task_environment.h"
 #include "third_party/blink/renderer/platform/testing/unit_test_helpers.h"
 #include "third_party/blink/renderer/platform/testing/url_test_helpers.h"
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"
@@ -65,6 +66,7 @@ void OpenWebDatabaseInWindow(const char* outer_origin,
 }
 
 TEST(DOMWindowWebDatabaseTest, WebSQLThirdPartyContext) {
+  test::TaskEnvironment task_environment;
   V8TestingScope scope;
   OpenWebDatabaseInIFrame("http://not-example.test:0/",
                           "first_party/nested-originA.html",
@@ -77,6 +79,7 @@ TEST(DOMWindowWebDatabaseTest, WebSQLThirdPartyContext) {
 }
 
 TEST(DOMWindowWebDatabaseTest, WebSQLNonSecureContext) {
+  test::TaskEnvironment task_environment;
   V8TestingScope scope;
   OpenWebDatabaseInWindow("http://example.test:0/", "first_party/empty.html",
                           scope.GetExceptionState());
@@ -87,7 +90,8 @@ TEST(DOMWindowWebDatabaseTest, WebSQLNonSecureContext) {
             static_cast<int>(DOMExceptionCode::kSecurityError));
 }
 
-TEST(DOMWindowWebDatabaseTest, WebSQLDefault) {
+TEST(DOMWindowWebDatabaseTest, WebSQLFirstPartyContext) {
+  test::TaskEnvironment task_environment;
   V8TestingScope scope;
   OpenWebDatabaseInWindow("https://example.test:0/", "first_party/empty.html",
                           scope.GetExceptionState());
@@ -96,69 +100,6 @@ TEST(DOMWindowWebDatabaseTest, WebSQLDefault) {
   EXPECT_TRUE(scope.GetExceptionState().HadException());
   EXPECT_EQ(scope.GetExceptionState().Code(),
             static_cast<int>(DOMExceptionCode::kInvalidStateError));
-}
-
-TEST(DOMWindowWebDatabaseTest, WebSQLSwitchOnFeatureOn) {
-  base::test::ScopedCommandLine scoped_command_line;
-  scoped_command_line.GetProcessCommandLine()->AppendSwitch(
-      blink::switches::kWebSQLAccess);
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(blink::features::kWebSQLAccess);
-  V8TestingScope scope;
-  OpenWebDatabaseInWindow("https://example.test:0/", "first_party/empty.html",
-                          scope.GetExceptionState());
-  // Insufficient state exists to actually open a database, but this error
-  // means it was tried.
-  EXPECT_TRUE(scope.GetExceptionState().HadException());
-  EXPECT_EQ(scope.GetExceptionState().Code(),
-            static_cast<int>(DOMExceptionCode::kInvalidStateError));
-}
-
-TEST(DOMWindowWebDatabaseTest, WebSQLSwitchOnFeatureOff) {
-  base::test::ScopedCommandLine scoped_command_line;
-  scoped_command_line.GetProcessCommandLine()->AppendSwitch(
-      blink::switches::kWebSQLAccess);
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndDisableFeature(blink::features::kWebSQLAccess);
-  V8TestingScope scope;
-  OpenWebDatabaseInWindow("https://example.test:0/", "first_party/empty.html",
-                          scope.GetExceptionState());
-  // Insufficient state exists to actually open a database, but this error
-  // means it was tried.
-  EXPECT_TRUE(scope.GetExceptionState().HadException());
-  EXPECT_EQ(scope.GetExceptionState().Code(),
-            static_cast<int>(DOMExceptionCode::kInvalidStateError));
-}
-
-TEST(DOMWindowWebDatabaseTest, WebSQLSwitchOffFeatureOn) {
-  base::test::ScopedCommandLine scoped_command_line;
-  scoped_command_line.GetProcessCommandLine()->RemoveSwitch(
-      blink::switches::kWebSQLAccess);
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(blink::features::kWebSQLAccess);
-  V8TestingScope scope;
-  OpenWebDatabaseInWindow("https://example.test:0/", "first_party/empty.html",
-                          scope.GetExceptionState());
-  // Insufficient state exists to actually open a database, but this error
-  // means it was tried.
-  EXPECT_TRUE(scope.GetExceptionState().HadException());
-  EXPECT_EQ(scope.GetExceptionState().Code(),
-            static_cast<int>(DOMExceptionCode::kInvalidStateError));
-}
-
-TEST(DOMWindowWebDatabaseTest, WebSQLSwitchOffFeatureOff) {
-  base::test::ScopedCommandLine scoped_command_line;
-  scoped_command_line.GetProcessCommandLine()->RemoveSwitch(
-      blink::switches::kWebSQLAccess);
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndDisableFeature(blink::features::kWebSQLAccess);
-  V8TestingScope scope;
-  OpenWebDatabaseInWindow("https://example.test:0/", "first_party/empty.html",
-                          scope.GetExceptionState());
-  // This error means the database opening was rejected.
-  EXPECT_TRUE(scope.GetExceptionState().HadException());
-  EXPECT_EQ(scope.GetExceptionState().Code(),
-            static_cast<int>(DOMExceptionCode::kSecurityError));
 }
 
 }  // namespace blink

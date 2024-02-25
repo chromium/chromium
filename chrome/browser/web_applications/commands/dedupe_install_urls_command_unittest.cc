@@ -4,7 +4,6 @@
 
 #include "chrome/browser/web_applications/commands/dedupe_install_urls_command.h"
 
-#include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/test_future.h"
 #include "chrome/browser/web_applications/externally_managed_app_manager.h"
@@ -38,8 +37,6 @@ class DedupeInstallUrlsCommandTest : public WebAppTest {
   void SetUp() override {
     WebAppTest::SetUp();
 
-    PreinstalledWebAppManager::BypassOfflineManifestRequirementForTesting();
-
     fake_web_contents_manager_ = static_cast<FakeWebContentsManager*>(
         &provider().web_contents_manager());
 
@@ -66,7 +63,7 @@ class DedupeInstallUrlsCommandTest : public WebAppTest {
     CHECK(future.Wait());
   }
 
-  void AddBuggyDefaultInstallToApp(const AppId& app_id,
+  void AddBuggyDefaultInstallToApp(const webapps::AppId& app_id,
                                    const GURL& install_url) {
     ScopedRegistryUpdate update = provider().sync_bridge_unsafe().BeginUpdate();
     WebApp& placeholder_app = *update->UpdateApp(app_id);
@@ -82,7 +79,6 @@ class DedupeInstallUrlsCommandTest : public WebAppTest {
                                    mojom::UserDisplayMode::kStandalone,
                                    ExternalInstallSource::kExternalDefault);
     options.user_type_allowlist = {"unmanaged"};
-    options.bypass_service_worker_check = true;
     scope.apps.push_back(std::move(options));
 
     base::test::TestFuture<std::map<GURL /*install_url*/,
@@ -103,9 +99,10 @@ class DedupeInstallUrlsCommandTest : public WebAppTest {
     CHECK(future.Wait());
   }
 
-  AppId ExternallyInstallWebApp(webapps::WebappInstallSource install_surface,
-                                const GURL& install_url,
-                                const GURL& start_url) {
+  webapps::AppId ExternallyInstallWebApp(
+      webapps::WebappInstallSource install_surface,
+      const GURL& install_url,
+      const GURL& start_url) {
     auto web_app_info = std::make_unique<WebAppInstallInfo>();
     web_app_info->start_url = start_url;
     web_app_info->title = u"Test app";
@@ -118,7 +115,7 @@ class DedupeInstallUrlsCommandTest : public WebAppTest {
 
  protected:
   raw_ptr<FakeWebContentsManager, DisableDanglingPtrDetection>
-      fake_web_contents_manager_;
+      fake_web_contents_manager_ = nullptr;
   base::AutoReset<bool> bypass_dependencies_;
   base::AutoReset<bool> skip_preinstalled_web_app_startup_;
   base::AutoReset<bool> bypass_offline_manifest_requirement_;
@@ -141,9 +138,9 @@ TEST_F(DedupeInstallUrlsCommandTest,
   GURL install_url("https://example.com/install_url");
   GURL manifest_url("https://example.com/manifest.json");
   GURL start_url("https://example.com/start_url");
-  AppId placeholder_app_id = GenerateAppIdFromManifestId(
+  webapps::AppId placeholder_app_id = GenerateAppIdFromManifestId(
       GenerateManifestIdFromStartUrlOnly(install_url));
-  AppId real_app_id = GenerateAppIdFromManifestId(
+  webapps::AppId real_app_id = GenerateAppIdFromManifestId(
       GenerateManifestIdFromStartUrlOnly(start_url));
 
   // Set up buggy state.
@@ -218,9 +215,9 @@ TEST_F(DedupeInstallUrlsCommandTest,
   GURL install_url("https://example.com/install_url");
   GURL manifest_url("https://example.com/manifest.json");
   GURL start_url("https://example.com/start_url");
-  AppId placeholder_app_id = GenerateAppIdFromManifestId(
+  webapps::AppId placeholder_app_id = GenerateAppIdFromManifestId(
       GenerateManifestIdFromStartUrlOnly(install_url));
-  AppId real_app_id = GenerateAppIdFromManifestId(
+  webapps::AppId real_app_id = GenerateAppIdFromManifestId(
       GenerateManifestIdFromStartUrlOnly(start_url));
 
   // Set up buggy state.
@@ -295,9 +292,9 @@ TEST_F(DedupeInstallUrlsCommandTest, SameInstallUrlForRealAndPlaceholder) {
   GURL install_url("https://example.com/install_url");
   GURL manifest_url("https://example.com/manifest.json");
   GURL start_url("https://example.com/start_url");
-  AppId placeholder_app_id = GenerateAppIdFromManifestId(
+  webapps::AppId placeholder_app_id = GenerateAppIdFromManifestId(
       GenerateManifestIdFromStartUrlOnly(install_url));
-  AppId real_app_id = GenerateAppIdFromManifestId(
+  webapps::AppId real_app_id = GenerateAppIdFromManifestId(
       GenerateManifestIdFromStartUrlOnly(start_url));
 
   // Set up buggy state.
@@ -404,9 +401,9 @@ TEST_F(DedupeInstallUrlsCommandTest, DefaultPlaceholderForceReinstalled) {
       "https://example.com/install_url?with_query_param");
   GURL manifest_url("https://example.com/manifest.json");
   GURL start_url("https://example.com/start_url");
-  AppId placeholder_app_id = GenerateAppIdFromManifestId(
+  webapps::AppId placeholder_app_id = GenerateAppIdFromManifestId(
       GenerateManifestIdFromStartUrlOnly(install_url));
-  AppId real_app_id = GenerateAppIdFromManifestId(
+  webapps::AppId real_app_id = GenerateAppIdFromManifestId(
       GenerateManifestIdFromStartUrlOnly(start_url));
 
   // Set up buggy state.
@@ -488,30 +485,30 @@ TEST_F(DedupeInstallUrlsCommandTest, MoreThanTwoDuplicates) {
 
   // Set up duplicate apps.
   GURL install_url_a("https://www.a.com/");
-  AppId app_id_a1 =
+  webapps::AppId app_id_a1 =
       ExternallyInstallWebApp(webapps::WebappInstallSource::EXTERNAL_DEFAULT,
                               install_url_a, install_url_a.Resolve("default"));
-  AppId app_id_a2 =
+  webapps::AppId app_id_a2 =
       ExternallyInstallWebApp(webapps::WebappInstallSource::KIOSK,
                               install_url_a, install_url_a.Resolve("kiosk"));
-  AppId app_id_a3 =
+  webapps::AppId app_id_a3 =
       ExternallyInstallWebApp(webapps::WebappInstallSource::EXTERNAL_POLICY,
                               install_url_a, install_url_a.Resolve("policy"));
 
   GURL install_url_b("https://www.b.com/");
-  AppId app_id_b1 =
+  webapps::AppId app_id_b1 =
       ExternallyInstallWebApp(webapps::WebappInstallSource::ARC, install_url_b,
                               install_url_b.Resolve("arc"));
-  AppId app_id_b2 =
+  webapps::AppId app_id_b2 =
       ExternallyInstallWebApp(webapps::WebappInstallSource::PRELOADED_OEM,
                               install_url_b, install_url_b.Resolve("oem"));
-  AppId app_id_b3 =
+  webapps::AppId app_id_b3 =
       ExternallyInstallWebApp(webapps::WebappInstallSource::MICROSOFT_365_SETUP,
                               install_url_b, install_url_b.Resolve("ms365"));
 
   // All app IDs must be unique.
-  ASSERT_EQ(base::flat_set<AppId>({app_id_a1, app_id_a2, app_id_a3, app_id_b1,
-                                   app_id_b2, app_id_b3})
+  ASSERT_EQ(base::flat_set<webapps::AppId>({app_id_a1, app_id_a2, app_id_a3,
+                                            app_id_b1, app_id_b2, app_id_b3})
                 .size(),
             6u);
 

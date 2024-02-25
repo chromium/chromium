@@ -4,6 +4,7 @@
 
 #include "net/dns/system_dns_config_change_notifier.h"
 
+#include <optional>
 #include <utility>
 #include <vector>
 
@@ -56,7 +57,7 @@ class SystemDnsConfigChangeNotifierTest : public TestWithTaskEnvironment {
   // expected sequence.
   class TestObserver : public SystemDnsConfigChangeNotifier::Observer {
    public:
-    void OnSystemDnsConfigChanged(absl::optional<DnsConfig> config) override {
+    void OnSystemDnsConfigChanged(std::optional<DnsConfig> config) override {
       DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
       configs_received_.push_back(std::move(config));
 
@@ -81,7 +82,7 @@ class SystemDnsConfigChangeNotifierTest : public TestWithTaskEnvironment {
       EXPECT_TRUE(configs_received_.empty());
     }
 
-    std::vector<absl::optional<DnsConfig>>& configs_received() {
+    std::vector<std::optional<DnsConfig>>& configs_received() {
       return configs_received_;
     }
 
@@ -89,7 +90,7 @@ class SystemDnsConfigChangeNotifierTest : public TestWithTaskEnvironment {
     int notifications_remaining_ = 0;
     std::unique_ptr<base::RunLoop> run_loop_ =
         std::make_unique<base::RunLoop>();
-    std::vector<absl::optional<DnsConfig>> configs_received_;
+    std::vector<std::optional<DnsConfig>> configs_received_;
     SEQUENCE_CHECKER(sequence_checker_);
   };
 
@@ -247,7 +248,7 @@ TEST_F(SystemDnsConfigChangeNotifierTest, UnloadedConfig) {
   observer.WaitForNotification();
 
   EXPECT_THAT(observer.configs_received(),
-              testing::ElementsAre(testing::Optional(kConfig), absl::nullopt));
+              testing::ElementsAre(testing::Optional(kConfig), std::nullopt));
   observer.ExpectNoMoreNotifications();
 
   notifier_->RemoveObserver(&observer);
@@ -272,7 +273,7 @@ TEST_F(SystemDnsConfigChangeNotifierTest, UnloadedConfig_Multiple) {
   observer.WaitForNotification();  // Only 1 notification expected.
 
   EXPECT_THAT(observer.configs_received(),
-              testing::ElementsAre(testing::Optional(kConfig), absl::nullopt));
+              testing::ElementsAre(testing::Optional(kConfig), std::nullopt));
   observer.ExpectNoMoreNotifications();
 
   notifier_->RemoveObserver(&observer);

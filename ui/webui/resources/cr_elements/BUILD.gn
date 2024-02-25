@@ -26,14 +26,17 @@ build_webui("build") {
       "cr_action_menu/cr_action_menu.ts",
       "cr_button/cr_button.ts",
       "cr_checkbox/cr_checkbox.ts",
+      "cr_chip/cr_chip.ts",
       "cr_dialog/cr_dialog.ts",
       "cr_drawer/cr_drawer.ts",
       "cr_expand_button/cr_expand_button.ts",
+      "cr_feedback_buttons/cr_feedback_buttons.ts",
       "cr_fingerprint/cr_fingerprint_progress_arc.ts",
       "cr_grid/cr_grid.ts",
       "cr_icon_button/cr_icon_button.ts",
       "cr_input/cr_input.ts",
       "cr_link_row/cr_link_row.ts",
+      "cr_loading_gradient/cr_loading_gradient.ts",
       "cr_lottie/cr_lottie.ts",
       "cr_textarea/cr_textarea.ts",
       "cr_profile_avatar_selector/cr_profile_avatar_selector_grid.ts",
@@ -73,11 +76,14 @@ build_webui("build") {
     non_web_component_files += [
       "cr_auto_img/cr_auto_img.ts",
       "cr_container_shadow_mixin.ts",
+      "cr_container_shadow_mixin_lit.ts",
       "cr_lazy_render/cr_lazy_render.ts",
       "cr_menu_selector/cr_menu_selector.ts",
+      "cr_paper_ripple_mixin.ts",
       "cr_radio_button/cr_radio_button_mixin.ts",
       "cr_scrollable_mixin.ts",
       "cr_search_field/cr_search_field_mixin.ts",
+      "cr_search_field/cr_search_field_mixin_lit.ts",
       "find_shortcut_mixin.ts",
       "focus_row_mixin.ts",
       "i18n_mixin.ts",
@@ -91,24 +97,35 @@ build_webui("build") {
     css_files = [
       "action_link.css",
       "cr_actionable_row_style.css",
+      "cr_actionable_row_style_lit.css",
       "cr_hidden_style.css",
+      "cr_hidden_style_lit.css",
       "cr_icons.css",
+      "cr_icons_lit.css",
       "cr_nav_menu_item_style.css",
       "cr_page_host_style.css",
       "cr_radio_button/cr_radio_button_style.css",
+      "cr_screen_reader_only.css",
       "cr_shared_style.css",
+      "cr_shared_style_lit.css",
       "cr_shared_vars.css",
       "md_select.css",
       "mwb_element_shared_style.css",
       "mwb_shared_style.css",
       "mwb_shared_vars.css",
       "search_highlight_style.css",
+      "cr_action_menu/cr_action_menu.css",
+      "cr_checkbox/cr_checkbox.css",
+      "cr_dialog/cr_dialog.css",
+      "cr_drawer/cr_drawer.css",
+      "cr_expand_button/cr_expand_button.css",
       "cr_input/cr_input_style.css",
+      "cr_toggle/cr_toggle.css",
+      "cr_toolbar/cr_toolbar.css",
+      "cr_toolbar/cr_toolbar_search_field.css",
+      "cr_toolbar/cr_toolbar_selection_overlay.css",
+      "cr_view_manager/cr_view_manager.css",
     ]
-
-    if (is_chromeos_ash) {
-      css_files += [ "chromeos/cros_color_overrides.css" ]
-    }
   }
 
   html_to_wrapper_template = "detect"
@@ -117,7 +134,10 @@ build_webui("build") {
   ts_composite = true
   ts_deps = [ "../js:build_ts" ]
   if (include_polymer) {
-    ts_deps += [ "//third_party/polymer/v3_0:library" ]
+    ts_deps += [
+      "//third_party/lit/v3_0:build_ts",
+      "//third_party/polymer/v3_0:library",
+    ]
   }
   ts_definitions = [
     "//tools/typescript/definitions/pending.d.ts",

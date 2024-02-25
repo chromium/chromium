@@ -33,8 +33,7 @@ using ::offline_pages::auto_fetch_internal::RequestInfo;
 using ::offline_pages::auto_fetch_internal::TabInfo;
 using ::testing::_;
 
-const int kDefaultTabId = 123;
-const base::Time kEpoch = base::Time::FromDoubleT(1.0e6);
+constexpr int kDefaultTabId = 123;
 
 GURL TestURL() {
   return GURL("http://www.url.com");
@@ -95,10 +94,10 @@ class StubTabFinder : public AutoFetchPageLoadWatcher::AndroidTabFinder {
     return result;
   }
 
-  absl::optional<TabInfo> FindNavigationTab(
+  std::optional<TabInfo> FindNavigationTab(
       content::WebContents* web_contents) override {
     if (!tabs_.count(current_tab_id_))
-      return absl::nullopt;
+      return std::nullopt;
     return TabInfo{current_tab_id_, tabs_[current_tab_id_]};
   }
 

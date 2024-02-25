@@ -17,7 +17,8 @@
 #include "ash/system/status_area_widget.h"
 #include "ash/system/status_area_widget_delegate.h"
 #include "ash/system/tray/system_tray_notifier.h"
-#include "ash/wm/desks/desk_button/desk_button.h"
+#include "ash/wm/desks/desk_button/desk_button_container.h"
+#include "base/i18n/rtl.h"
 
 namespace ash {
 
@@ -83,13 +84,15 @@ void ShelfFocusCycler::FocusNavigation(bool last_element) {
 
 void ShelfFocusCycler::FocusDeskButton(bool last_element) {
   DeskButtonWidget* desk_button_widget = shelf_->desk_button_widget();
-  if (features::IsDeskButtonEnabled() &&
-      desk_button_widget->ShouldBeVisible()) {
-    desk_button_widget->set_default_last_focusable_child(last_element);
-    if (!shelf_->IsHorizontalAlignment()) {
-      desk_button_widget->SetExpanded(true);
-    }
-    desk_button_widget->GetDeskButton()->SetFocused(true);
+  if (desk_button_widget && desk_button_widget->ShouldBeVisible()) {
+    // For LTR layout, last/first element means last/first element in the view
+    // hierarchy; for RTL, last/first element means first/last.
+    views::View* default_child_to_focus =
+        desk_button_widget->GetFocusManager()->GetNextFocusableView(
+            /*starting_view=*/nullptr, /*starting_widget=*/nullptr,
+            /*reverse=*/base::i18n::IsRTL() != last_element,
+            /*dont_loop=*/false);
+    desk_button_widget->SetDefaultChildToFocus(default_child_to_focus);
     Shell::Get()->focus_cycler()->FocusWidget(desk_button_widget);
   } else if (last_element) {
     FocusNavigation(last_element);
@@ -100,18 +103,9 @@ void ShelfFocusCycler::FocusDeskButton(bool last_element) {
 
 void ShelfFocusCycler::FocusShelf(bool last_element) {
   if (shelf_->shelf_widget()->GetLoginShelfView()->GetVisible()) {
-    // TODO(https://crbug.com/1343114): refactor the code below after the login
-    // shelf widget is ready.
-
-    if (features::IsUseLoginShelfWidgetEnabled()) {
-      LoginShelfWidget* login_shelf_widget = shelf_->login_shelf_widget();
-      login_shelf_widget->SetDefaultLastFocusableChild(last_element);
-      Shell::Get()->focus_cycler()->FocusWidget(login_shelf_widget);
-    } else {
-      ShelfWidget* shelf_widget = shelf_->shelf_widget();
-      shelf_widget->set_default_last_focusable_child(last_element);
-      Shell::Get()->focus_cycler()->FocusWidget(shelf_widget);
-    }
+    LoginShelfWidget* login_shelf_widget = shelf_->login_shelf_widget();
+    login_shelf_widget->SetDefaultLastFocusableChild(last_element);
+    Shell::Get()->focus_cycler()->FocusWidget(login_shelf_widget);
   } else {
     HotseatWidget* hotseat_widget = shelf_->hotseat_widget();
     hotseat_widget->scrollable_shelf_view()->set_default_last_focusable_child(

@@ -9,6 +9,7 @@
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
+#include "base/i18n/time_formatting.h"
 #include "base/rand_util.h"
 #include "base/run_loop.h"
 #include "base/strings/strcat.h"
@@ -16,7 +17,6 @@
 #include "base/test/mock_callback.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
-#include "base/time/time_to_iso8601.h"
 #include "chrome/browser/ash/file_manager/io_task.h"
 #include "chrome/browser/ash/file_manager/trash_common_util.h"
 #include "chrome/browser/ash/file_manager/trash_unittest_base.h"
@@ -119,9 +119,9 @@ class RestoreToDestinationIOTaskTest : public TrashBaseTest {
   }
 
   std::string GenerateTrashInfoContents(const std::string& restore_file) {
-    return base::StrCat(
-        {"[Trash Info]\nPath=", "/Downloads/bar/", restore_file,
-         "\nDeletionDate=", base::TimeToISO8601(base::Time::UnixEpoch())});
+    return base::StrCat({"[Trash Info]\nPath=", "/Downloads/bar/", restore_file,
+                         "\nDeletionDate=",
+                         base::TimeFormatAsIso8601(base::Time::UnixEpoch())});
   }
 
   // Maintains ownership of the in-process parsing service.
@@ -268,6 +268,7 @@ class RestoreToDestinationIOTaskWithDLPTest
   }
 
   void TearDown() override {
+    files_controller_.reset();
     io_task_controller_ = nullptr;
     mock_rules_manager_ = nullptr;
     RestoreToDestinationIOTaskTest::TearDown();
@@ -276,19 +277,20 @@ class RestoreToDestinationIOTaskWithDLPTest
  protected:
   std::unique_ptr<policy::MockDlpFilesControllerAsh> files_controller_;
   std::unique_ptr<policy::FilesPolicyNotificationManager> fpnm_;
-  raw_ptr<file_manager::io_task::IOTaskController, DanglingUntriaged>
-      io_task_controller_ = nullptr;
+  raw_ptr<file_manager::io_task::IOTaskController> io_task_controller_ =
+      nullptr;
 
  private:
   std::unique_ptr<KeyedService> SetDlpRulesManager(
       content::BrowserContext* context) {
-    auto dlp_rules_manager = std::make_unique<policy::MockDlpRulesManager>();
+    auto dlp_rules_manager = std::make_unique<policy::MockDlpRulesManager>(
+        Profile::FromBrowserContext(context));
     mock_rules_manager_ = dlp_rules_manager.get();
     EXPECT_CALL(*mock_rules_manager_, IsFilesPolicyEnabled)
         .WillRepeatedly(testing::Return(true));
 
     files_controller_ = std::make_unique<policy::MockDlpFilesControllerAsh>(
-        *mock_rules_manager_);
+        *mock_rules_manager_, Profile::FromBrowserContext(context));
     EXPECT_CALL(*mock_rules_manager_, GetDlpFilesController())
         .WillRepeatedly(::testing::Return(files_controller_.get()));
 
@@ -296,8 +298,7 @@ class RestoreToDestinationIOTaskWithDLPTest
   }
 
   base::test::ScopedFeatureList scoped_feature_list_;
-  raw_ptr<policy::MockDlpRulesManager, ExperimentalAsh> mock_rules_manager_ =
-      nullptr;
+  raw_ptr<policy::MockDlpRulesManager> mock_rules_manager_ = nullptr;
 };
 
 TEST_F(RestoreToDestinationIOTaskWithDLPTest, PauseResume) {
@@ -339,7 +340,7 @@ TEST_F(RestoreToDestinationIOTaskWithDLPTest, PauseResume) {
   // Set the DLP to warn, which pauses the task, and then resume.
   EXPECT_CALL(*files_controller_, CheckIfTransferAllowed)
       .WillOnce(
-          ([=](absl::optional<file_manager::io_task::IOTaskId> task_id,
+          ([=](std::optional<file_manager::io_task::IOTaskId> task_id,
                const std::vector<storage::FileSystemURL>& transferred_files,
                storage::FileSystemURL destination, bool is_move,
                policy::DlpFilesControllerAsh::CheckIfTransferAllowedCallback

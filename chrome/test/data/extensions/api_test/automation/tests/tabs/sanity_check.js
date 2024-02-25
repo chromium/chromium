@@ -5,7 +5,7 @@
 // Do not test orientation or hover attributes (similar to exclusions on native
 // accessibility), since they can be inconsistent depending on the environment.
 var RemoveUntestedStates = function(state) {
-  var result = JSON.parse(JSON.stringify(state));
+  var result = structuredClone(state);
   delete result[StateType.HORIZONTAL];
   delete result[StateType.HOVERED];
   delete result[StateType.VERTICAL];
@@ -80,4 +80,4 @@ var allTests = [
   }
 ];
 
-setUpAndRunTests(allTests);
+setUpAndRunTabsTests(allTests);

@@ -41,8 +41,9 @@ class ImageButton;
 }  // namespace views
 
 class OmniboxResultView : public views::View {
+  METADATA_HEADER(OmniboxResultView, views::View)
+
  public:
-  METADATA_HEADER(OmniboxResultView);
   OmniboxResultView(OmniboxPopupViewViews* popup_view, size_t model_index);
   OmniboxResultView(const OmniboxResultView&) = delete;
   OmniboxResultView& operator=(const OmniboxResultView&) = delete;
@@ -96,6 +97,8 @@ class OmniboxResultView : public views::View {
   void OnThemeChanged() override;
 
  private:
+  FRIEND_TEST_ALL_PREFIXES(OmniboxPopupViewViewsTest, DeleteSuggestion);
+
   gfx::Image GetIcon() const;
 
   // Updates the highlight state of the row, as well as conditionally shows

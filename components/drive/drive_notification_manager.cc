@@ -4,7 +4,6 @@
 
 #include "components/drive/drive_notification_manager.h"
 
-#include <memory>
 #include <utility>
 
 #include "base/functional/bind.h"
@@ -16,8 +15,9 @@
 #include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
 #include "components/drive/drive_notification_observer.h"
+#include "components/invalidation/public/invalidation.h"
 #include "components/invalidation/public/invalidation_service.h"
-#include "components/invalidation/public/topic_invalidation_map.h"
+#include "components/invalidation/public/invalidator_state.h"
 
 namespace drive {
 
@@ -45,8 +45,6 @@ DriveNotificationManager::DriveNotificationManager(
     invalidation::InvalidationService* invalidation_service,
     const base::TickClock* clock)
     : invalidation_service_(invalidation_service),
-      push_notification_registered_(false),
-      push_notification_enabled_(false),
       observers_notified_(false),
       batch_timer_(clock) {
   DCHECK(invalidation_service_);
@@ -60,56 +58,57 @@ DriveNotificationManager::~DriveNotificationManager() {
 void DriveNotificationManager::Shutdown() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   // Unregister for Drive notifications.
-  if (!invalidation_service_ || !push_notification_registered_)
+  if (!IsRegistered()) {
     return;
+  }
 
   // We unregister the handler without updating unregistering our IDs on
   // purpose.  See the class comment on the InvalidationService interface for
   // more information.
-  invalidation_service_->UnregisterInvalidationHandler(this);
+  invalidation_service_->RemoveObserver(this);
   invalidation_service_ = nullptr;
 }
 
 void DriveNotificationManager::OnInvalidatorStateChange(
     invalidation::InvalidatorState state) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  push_notification_enabled_ = (state == invalidation::INVALIDATIONS_ENABLED);
-  if (push_notification_enabled_) {
+  if (AreInvalidationsEnabled()) {
     DVLOG(1) << "XMPP Notifications enabled";
   } else {
     DVLOG(1) << "XMPP Notifications disabled (state=" << state << ")";
   }
-  for (auto& observer : observers_)
-    observer.OnPushNotificationEnabled(push_notification_enabled_);
+  for (auto& observer : observers_) {
+    observer.OnPushNotificationEnabled(AreInvalidationsEnabled());
+  }
 }
 
 void DriveNotificationManager::OnIncomingInvalidation(
-    const invalidation::TopicInvalidationMap& invalidation_map) {
+    const invalidation::Invalidation& invalidation) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DVLOG(2) << "XMPP Drive Notification Received";
 
-  for (const auto& topic : invalidation_map.GetTopics()) {
-    // Empty string indicates default change list.
-    std::string unpacked_id;
-    if (topic != GetDriveInvalidationTopic()) {
-      unpacked_id = ExtractTeamDriveId(topic);
-      DCHECK(!unpacked_id.empty()) << "Unexpected topic " << topic;
-    }
-    auto invalidations = invalidation_map.ForTopic(topic);
-    int64_t& invalidation_version =
-        invalidated_change_ids_.emplace(unpacked_id, -1).first->second;
-    for (auto& invalidation : invalidations) {
-      if (!invalidation.is_unknown_version() &&
-          invalidation.version() > invalidation_version) {
-        invalidation_version = invalidation.version();
-      }
-    }
+  const auto& topic = invalidation.topic();
+  // Empty string indicates default change list.
+  std::string unpacked_id;
+  if (topic != GetDriveInvalidationTopic()) {
+    unpacked_id = ExtractTeamDriveId(topic);
+    DCHECK(!unpacked_id.empty()) << "Unexpected topic " << topic;
+  }
+
+  // Compare the version of the incoming invalidation with the latest known id
+  // (if any) and store it if the incoming version is higher. We want the latest
+  // version.
+  auto it = invalidated_change_ids_.find(unpacked_id);
+  if (it == invalidated_change_ids_.end()) {
+    invalidated_change_ids_.emplace(unpacked_id, invalidation.version());
+  } else if (invalidation.version() > it->second) {
+    it->second = invalidation.version();
   }
 
   // This effectively disables 'local acks'.  It tells the invalidations system
   // to not bother saving invalidations across restarts for us.
   // See crbug.com/320878.
-  invalidation_map.AcknowledgeAll();
+  invalidation.Acknowledge();
 
   if (!batch_timer_.IsRunning() && !invalidated_change_ids_.empty()) {
     // Stop the polling timer as we'll be sending a batch soon.
@@ -186,11 +185,20 @@ void DriveNotificationManager::ClearTeamDriveIds() {
   }
 }
 
+bool DriveNotificationManager::IsRegistered() const {
+  return invalidation_service_ && invalidation_service_->HasObserver(this);
+}
+
+bool DriveNotificationManager::AreInvalidationsEnabled() const {
+  return IsRegistered() && invalidation_service_->GetInvalidatorState() ==
+                               invalidation::INVALIDATIONS_ENABLED;
+}
+
 void DriveNotificationManager::RestartPollingTimer() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  const int interval_secs = (push_notification_enabled_ ?
-                             kSlowPollingIntervalInSecs :
-                             kFastPollingIntervalInSecs);
+  const int interval_secs =
+      (AreInvalidationsEnabled() ? kSlowPollingIntervalInSecs
+                                 : kFastPollingIntervalInSecs);
 
   int jitter = base::RandInt(0, interval_secs);
 
@@ -222,8 +230,7 @@ void DriveNotificationManager::NotifyObserversToUpdate(
 
   if (source == NOTIFICATION_XMPP) {
     auto my_drive_invalidation = invalidations.find("");
-    if (my_drive_invalidation != invalidations.end() &&
-        my_drive_invalidation->second != -1) {
+    if (my_drive_invalidation != invalidations.end()) {
       // The invalidation version for My Drive is smaller than what's expected
       // for fetch requests by 1. Increment it unless it hasn't been set.
       ++my_drive_invalidation->second;
@@ -236,7 +243,7 @@ void DriveNotificationManager::NotifyObserversToUpdate(
   }
   if (!observers_notified_) {
     UMA_HISTOGRAM_BOOLEAN("Drive.PushNotificationInitiallyEnabled",
-                          push_notification_enabled_);
+                          AreInvalidationsEnabled());
   }
   observers_notified_ = true;
 
@@ -248,17 +255,14 @@ void DriveNotificationManager::NotifyObserversToUpdate(
 
 void DriveNotificationManager::RegisterDriveNotifications() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(!push_notification_enabled_);
+  DCHECK(!IsRegistered());
 
   if (!invalidation_service_)
     return;
 
-  invalidation_service_->RegisterInvalidationHandler(this);
+  invalidation_service_->AddObserver(this);
 
-  push_notification_registered_ = true;
-
-  UMA_HISTOGRAM_BOOLEAN("Drive.PushNotificationRegistered",
-                        push_notification_registered_);
+  UMA_HISTOGRAM_BOOLEAN("Drive.PushNotificationRegistered", true);
 }
 
 void DriveNotificationManager::UpdateRegisteredDriveNotifications() {
@@ -319,5 +323,4 @@ std::string DriveNotificationManager::ExtractTeamDriveId(
   }
   return std::string(topic_name.substr(prefix.size()));
 }
-
 }  // namespace drive

@@ -88,7 +88,7 @@ AppServiceAppWindowShelfItemController::GetAppMenuItems(
 
   // The window could be teleported from the inactive user's profile to the
   // current active user, so search all profiles.
-  for (auto* profile : controller_->GetProfileList()) {
+  for (Profile* profile : controller_->GetProfileList()) {
     extensions::AppWindowRegistry* const app_window_registry =
         extensions::AppWindowRegistry::Get(profile);
     DCHECK(app_window_registry);
@@ -147,7 +147,7 @@ void AppServiceAppWindowShelfItemController::OnWindowTitleChanged(
   //
   // The window could be teleported from the inactive user's profile to the
   // current active user, so search all profiles.
-  for (auto* profile : controller_->GetProfileList()) {
+  for (Profile* profile : controller_->GetProfileList()) {
     extensions::AppWindowRegistry* const app_window_registry =
         extensions::AppWindowRegistry::Get(profile);
     DCHECK(app_window_registry);

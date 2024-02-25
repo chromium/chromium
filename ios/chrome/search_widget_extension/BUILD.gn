@@ -13,27 +13,15 @@ assert(
 
 source_set("search_widget") {
   sources = [
-    "copied_content_view.h",
-    "copied_content_view.mm",
-    "search_action_view.h",
-    "search_action_view.mm",
-    "search_widget_constants.h",
-    "search_widget_constants.mm",
-    "search_widget_view.h",
-    "search_widget_view.mm",
     "search_widget_view_controller.h",
     "search_widget_view_controller.mm",
   ]
 
   deps = [
     "//base",
-    "//components/open_from_clipboard:open_from_clipboard_impl",
-    "//ios/chrome/common/app_group",
-    "//ios/chrome/common/app_group:command",
     "//ios/chrome/common/crash_report",
     "//ios/chrome/common/ui/elements",
     "//ios/chrome/common/ui/util",
-    "//ios/chrome/common/ui/util:image_util",
   ]
 
   frameworks = [
@@ -49,15 +37,9 @@ repack_locales("packed_resources") {
   input_locales = platform_pak_locales
   output_locales = locales_as_apple_outputs
 
-  source_patterns = [
-    "$root_gen_dir/ios/search_widget_extension/ios_search_widget_extension_strings_",
-    "$root_gen_dir/ios/search_widget_extension/ios_search_widget_extension_${branding_path_product}_strings_",
-  ]
+  source_patterns = [ "$root_gen_dir/ios/search_widget_extension/ios_search_widget_extension_${branding_path_product}_strings_" ]
 
-  deps = [
-    "//ios/chrome/search_widget_extension/strings:ios_search_widget_extension_chromium_strings",
-    "//ios/chrome/search_widget_extension/strings:ios_search_widget_extension_strings",
-  ]
+  deps = [ "//ios/chrome/search_widget_extension/strings:ios_search_widget_extension_branded_strings" ]
 }
 
 generate_localizable_strings("system_strings") {
@@ -71,7 +53,7 @@ generate_localizable_strings("system_strings") {
     "Localizable.strings",
   ]
   deps = [
-    "//ios/chrome/search_widget_extension/strings:ios_search_widget_extension_chromium_strings",
+    "//ios/chrome/search_widget_extension/strings:ios_search_widget_extension_branded_strings",
     _packed_resources_target,
   ]
 }

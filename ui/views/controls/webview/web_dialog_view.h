@@ -28,13 +28,17 @@ class BrowserContext;
 class RenderFrameHost;
 }  // namespace content
 
+namespace gfx {
+class RoundedCornersF;
+}  // namespace gfx
+
 namespace views {
 
 // A kind of webview that can notify its delegate when its content is ready.
 class ObservableWebView : public WebView {
- public:
-  METADATA_HEADER(ObservableWebView);
+  METADATA_HEADER(ObservableWebView, WebView)
 
+ public:
   ObservableWebView(content::BrowserContext* browser_context,
                     ui::WebDialogDelegate* delegate);
   ObservableWebView(const ObservableWebView&) = delete;
@@ -50,6 +54,8 @@ class ObservableWebView : public WebView {
   void ResetDelegate();
 
  private:
+  // TODO(https://crbug.com/1484794): Resolve the lifetime issues around this
+  // member, then mark this as triaged.
   raw_ptr<ui::WebDialogDelegate, DanglingUntriaged> delegate_;
 };
 
@@ -70,15 +76,16 @@ class WEBVIEW_EXPORT WebDialogView : public ClientView,
                                      public ui::WebDialogWebContentsDelegate,
                                      public ui::WebDialogDelegate,
                                      public DialogDelegate {
- public:
-  METADATA_HEADER(WebDialogView);
+  METADATA_HEADER(WebDialogView, ClientView)
 
+ public:
   // |handler| must not be nullptr.
   // |use_dialog_frame| indicates whether to use dialog frame view for non
   // client frame view.
   WebDialogView(content::BrowserContext* context,
                 ui::WebDialogDelegate* delegate,
-                std::unique_ptr<WebContentsHandler> handler);
+                std::unique_ptr<WebContentsHandler> handler,
+                content::WebContents* web_contents = nullptr);
   WebDialogView(const WebDialogView&) = delete;
   WebDialogView& operator=(const WebDialogView&) = delete;
   ~WebDialogView() override;
@@ -115,7 +122,7 @@ class WEBVIEW_EXPORT WebDialogView : public ClientView,
   std::u16string GetDialogTitle() const override;
   GURL GetDialogContentURL() const override;
   void GetWebUIMessageHandlers(
-      std::vector<content::WebUIMessageHandler*>* handlers) const override;
+      std::vector<content::WebUIMessageHandler*>* handlers) override;
   void GetDialogSize(gfx::Size* size) const override;
   void GetMinimumDialogSize(gfx::Size* size) const override;
   std::string GetDialogArgs() const override;
@@ -128,6 +135,7 @@ class WEBVIEW_EXPORT WebDialogView : public ClientView,
   bool ShouldCenterDialogTitleText() const override;
   bool HandleContextMenu(content::RenderFrameHost& render_frame_host,
                          const content::ContextMenuParams& params) override;
+  FrameKind GetWebDialogFrameKind() const override;
 
   // content::WebContentsDelegate:
   void SetContentsBounds(content::WebContents* source,
@@ -162,8 +170,10 @@ class WEBVIEW_EXPORT WebDialogView : public ClientView,
       const content::MediaStreamRequest& request,
       content::MediaResponseCallback callback) override;
   bool CheckMediaAccessPermission(content::RenderFrameHost* render_frame_host,
-                                  const GURL& security_origin,
+                                  const url::Origin& security_origin,
                                   blink::mojom::MediaStreamType type) override;
+
+  void SetWebViewCornersRadii(const gfx::RoundedCornersF& radii);
 
  private:
   friend class WebDialogViewUnitTest;

@@ -219,7 +219,7 @@
 <translation id="8867568208303837180">Sender...</translation>
 <translation id="8876215549894133151">Format:</translation>
 <translation id="8901569739625249689"><ph name="QUANTITY" /> kB</translation>
-<translation id="8927924178504495502">{HOURS,plural, =1{1 time siden}one{# time siden}other{# timer siden}}</translation>
+<translation id="8927924178504495502">{HOURS,plural, =1{for 1 time siden}one{for # time siden}other{for # timer siden}}</translation>
 <translation id="8996630695507351249">Sørg for, at <ph name="TARGET_DEVICE_NAME" /> har internetforbindelse.</translation>
 <translation id="9044832324875206639">{SECONDS,plural, =1{1 sek.}one{# sek.}other{# sek.}}</translation>
 <translation id="9059834730836941392">Skjul notifikation</translation>

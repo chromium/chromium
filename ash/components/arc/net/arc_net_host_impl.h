@@ -22,7 +22,6 @@
 #include "base/threading/thread_checker.h"
 #include "base/values.h"
 #include "chromeos/ash/components/dbus/patchpanel/patchpanel_client.h"
-#include "chromeos/ash/components/dbus/patchpanel/patchpanel_service.pb.h"
 #include "chromeos/ash/components/network/network_connection_observer.h"
 #include "chromeos/ash/components/network/network_profile_handler.h"
 #include "chromeos/ash/components/network/network_state_handler_observer.h"
@@ -103,6 +102,8 @@ class ArcNetHostImpl : public KeyedService,
   void NotifyAndroidWifiMulticastLockChange(bool is_held) override;
   void NotifySocketConnectionEvent(
       mojom::SocketConnectionEventPtr msg) override;
+  void NotifyARCVPNSocketConnectionEvent(
+      mojom::SocketConnectionEventPtr msg) override;
 
   // Overridden from ash::NetworkStateHandlerObserver.
   void ScanCompleted(const ash::DeviceState* /*unused*/) override;
@@ -123,7 +124,7 @@ class ArcNetHostImpl : public KeyedService,
 
  private:
   const ash::NetworkState* GetDefaultNetworkFromChrome();
-  void UpdateActiveNetworks(
+  void UpdateHostNetworks(
       const std::vector<patchpanel::NetworkDevice>& devices);
 
   // Due to a race in Chrome, GetNetworkStateFromGuid() might not know about
@@ -184,8 +185,8 @@ class ArcNetHostImpl : public KeyedService,
   void TranslateEapCredentialsToShillDictWithCertID(
       mojom::EapCredentialsPtr cred,
       base::OnceCallback<void(base::Value::Dict)> callback,
-      const absl::optional<std::string>& cert_id,
-      const absl::optional<int>& slot_id);
+      const std::optional<std::string>& cert_id,
+      const std::optional<int>& slot_id);
 
   // Synchronously translate EAP credentials to base::Value dictionary in ONC
   // with empty or imported certificate and slot ID. |callback| is then run
@@ -194,8 +195,8 @@ class ArcNetHostImpl : public KeyedService,
   void TranslateEapCredentialsToOncDictWithCertID(
       const mojom::EapCredentialsPtr& eap,
       base::OnceCallback<void(base::Value::Dict)> callback,
-      const absl::optional<std::string>& cert_id,
-      const absl::optional<int>& slot_id);
+      const std::optional<std::string>& cert_id,
+      const std::optional<int>& slot_id);
 
   // Translate EAP credentials to base::Value dictionary. If it is
   // necessary to import certificates this method will asynchronously
@@ -252,7 +253,7 @@ class ArcNetHostImpl : public KeyedService,
   // Callback for ash::NetworkHandler::GetShillProperties
   void ReceiveShillProperties(
       const std::string& service_path,
-      absl::optional<base::Value::Dict> shill_properties);
+      std::optional<base::Value::Dict> shill_properties);
 
   // PatchPanelClient::Observer implementation:
   void NetworkConfigurationChanged() override;
@@ -263,7 +264,7 @@ class ArcNetHostImpl : public KeyedService,
                                       CreateNetworkCallback callback,
                                       base::Value::Dict eap_dict);
 
-  const raw_ptr<ArcBridgeService, ExperimentalAsh>
+  const raw_ptr<ArcBridgeService>
       arc_bridge_service_;  // Owned by ArcServiceManager.
 
   // True if the chrome::NetworkStateHandler is currently being observed for
@@ -276,9 +277,9 @@ class ArcNetHostImpl : public KeyedService,
   std::string cached_guid_;
   std::string arc_vpn_service_path_;
   // Owned by the user profile whose context was used to initialize |this|.
-  raw_ptr<PrefService, ExperimentalAsh> pref_service_ = nullptr;
-  raw_ptr<ArcAppMetadataProvider, DanglingUntriaged | ExperimentalAsh>
-      app_metadata_provider_ = nullptr;
+  raw_ptr<PrefService> pref_service_ = nullptr;
+  raw_ptr<ArcAppMetadataProvider, DanglingUntriaged> app_metadata_provider_ =
+      nullptr;
 
   std::unique_ptr<CertManager> cert_manager_;
 

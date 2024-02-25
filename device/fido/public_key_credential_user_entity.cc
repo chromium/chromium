@@ -12,16 +12,16 @@
 namespace device {
 
 // static
-absl::optional<PublicKeyCredentialUserEntity>
+std::optional<PublicKeyCredentialUserEntity>
 PublicKeyCredentialUserEntity::CreateFromCBORValue(const cbor::Value& cbor) {
   if (!cbor.is_map())
-    return absl::nullopt;
+    return std::nullopt;
 
   const cbor::Value::MapValue& cbor_map = cbor.GetMap();
 
   auto id_it = cbor_map.find(cbor::Value(kEntityIdMapKey));
   if (id_it == cbor_map.end() || !id_it->second.is_bytestring())
-    return absl::nullopt;
+    return std::nullopt;
 
   PublicKeyCredentialUserEntity user(id_it->second.GetBytestring());
 
@@ -31,7 +31,7 @@ PublicKeyCredentialUserEntity::CreateFromCBORValue(const cbor::Value& cbor) {
   auto name_it = cbor_map.find(cbor::Value(kEntityNameMapKey));
   if (name_it != cbor_map.end()) {
     if (!name_it->second.is_string()) {
-      return absl::nullopt;
+      return std::nullopt;
     }
     user.name = name_it->second.GetString();
   }
@@ -39,7 +39,7 @@ PublicKeyCredentialUserEntity::CreateFromCBORValue(const cbor::Value& cbor) {
   auto display_name_it = cbor_map.find(cbor::Value(kDisplayNameMapKey));
   if (display_name_it != cbor_map.end()) {
     if (!display_name_it->second.is_string()) {
-      return absl::nullopt;
+      return std::nullopt;
     }
     user.display_name = display_name_it->second.GetString();
   }
@@ -55,8 +55,8 @@ PublicKeyCredentialUserEntity::PublicKeyCredentialUserEntity(
 
 PublicKeyCredentialUserEntity::PublicKeyCredentialUserEntity(
     std::vector<uint8_t> id_,
-    absl::optional<std::string> name_,
-    absl::optional<std::string> display_name_)
+    std::optional<std::string> name_,
+    std::optional<std::string> display_name_)
     : id(std::move(id_)),
       name(std::move(name_)),
       display_name(std::move(display_name_)) {}

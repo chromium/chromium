@@ -9,7 +9,6 @@
 #include <string>
 
 #include "components/security_interstitials/content/ssl_blocking_page_base.h"
-#include "components/security_interstitials/content/ssl_cert_reporter.h"
 #include "components/security_interstitials/core/mitm_software_ui.h"
 #include "components/ssl_errors/error_classification.h"
 #include "content/public/browser/certificate_request_result_type.h"
@@ -36,7 +35,6 @@ class MITMSoftwareBlockingPage : public SSLBlockingPageBase {
       content::WebContents* web_contents,
       int cert_error,
       const GURL& request_url,
-      std::unique_ptr<SSLCertReporter> ssl_cert_reporter,
       bool can_show_enhanced_protection_message,
       const net::SSLInfo& ssl_info,
       const std::string& mitm_software_name,

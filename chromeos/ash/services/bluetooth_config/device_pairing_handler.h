@@ -39,7 +39,7 @@ class DevicePairingHandler : public mojom::DevicePairingHandler,
 
   // Implementation-specific method that handles the pairing request finishing.
   virtual void PerformFinishCurrentPairingRequest(
-      absl::optional<device::ConnectionFailureReason> failure_reason,
+      std::optional<device::ConnectionFailureReason> failure_reason,
       base::TimeDelta duration) = 0;
 
   // Implementation-specific method that cancels the current pairing attempt.
@@ -62,7 +62,7 @@ class DevicePairingHandler : public mojom::DevicePairingHandler,
   // Invokes |pair_device_callback_| and resets this class' state to be ready
   // for another pairing request.
   void FinishCurrentPairingRequest(
-      absl::optional<device::ConnectionFailureReason> failure_reason);
+      std::optional<device::ConnectionFailureReason> failure_reason);
 
   const std::string& current_pairing_device_id() const {
     return current_pairing_device_id_;
@@ -95,7 +95,7 @@ class DevicePairingHandler : public mojom::DevicePairingHandler,
   mojo::Remote<mojom::DevicePairingDelegate> delegate_;
   mojo::Remote<mojom::KeyEnteredHandler> key_entered_handler_;
 
-  raw_ptr<AdapterStateController, ExperimentalAsh> adapter_state_controller_;
+  raw_ptr<AdapterStateController> adapter_state_controller_;
 
   // Client callback set in PairDevice(), to be invoked once pairing has
   // finished.

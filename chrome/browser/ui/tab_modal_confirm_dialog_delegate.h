@@ -5,12 +5,12 @@
 #ifndef CHROME_BROWSER_UI_TAB_MODAL_CONFIRM_DIALOG_DELEGATE_H_
 #define CHROME_BROWSER_UI_TAB_MODAL_CONFIRM_DIALOG_DELEGATE_H_
 
+#include <optional>
 #include <string>
 
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "content/public/browser/web_contents_observer.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/window_open_disposition.h"
 
 namespace content {
@@ -103,10 +103,10 @@ class TabModalConfirmDialogDelegate : public content::WebContentsObserver {
   virtual const char* GetCancelButtonIcon();
 
   // Allow the delegate to customize which button is default, and which is
-  // initially focused. If returning absl::nullopt, the dialog uses default
+  // initially focused. If returning std::nullopt, the dialog uses default
   // behavior.
-  virtual absl::optional<int> GetDefaultDialogButton();
-  virtual absl::optional<int> GetInitiallyFocusedButton();
+  virtual std::optional<int> GetDefaultDialogButton();
+  virtual std::optional<int> GetInitiallyFocusedButton();
 
   // content::WebContentObserver:
   void DidStartLoading() override;

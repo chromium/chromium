@@ -7,7 +7,7 @@
 #include "ash/constants/ash_features.h"
 #include "ash/public/cpp/test/test_system_tray_client.h"
 #include "ash/shell.h"
-#include "ash/system/message_center/message_center_controller.h"
+#include "ash/system/notification_center/message_center_controller.h"
 #include "ash/test/ash_test_base.h"
 #include "base/containers/flat_set.h"
 #include "base/memory/raw_ptr.h"
@@ -61,8 +61,8 @@ phonehub::Notification CreateNotification(int64_t id) {
       id,
       phonehub::Notification::AppMetadata(
           kAppName, kPackageName, /*color_icon=*/gfx::Image(),
-          /*monochrome_icon_mask=*/absl::nullopt,
-          /*icon_color=*/absl::nullopt, /*icon_is_monochrome=*/true, kUserId,
+          /*monochrome_icon_mask=*/std::nullopt,
+          /*icon_color=*/std::nullopt, /*icon_is_monochrome=*/true, kUserId,
           phonehub::proto::AppStreamabilityStatus::STREAMABLE),
       base::Time::Now(), phonehub::Notification::Importance::kDefault,
       phonehub::Notification::Category::kConversation,
@@ -77,8 +77,8 @@ phonehub::Notification CreateIncomingCallNotification(int64_t id) {
       id,
       phonehub::Notification::AppMetadata(
           kAppName, kPackageName,
-          /*color_icon=*/gfx::Image(), /*monochrome_icon_mask=*/absl::nullopt,
-          /*icon_color=*/absl::nullopt,
+          /*color_icon=*/gfx::Image(), /*monochrome_icon_mask=*/std::nullopt,
+          /*icon_color=*/std::nullopt,
           /*icon_is_monochrome=*/true, kUserId,
           phonehub::proto::AppStreamabilityStatus::STREAMABLE),
       base::Time::Now(), phonehub::Notification::Importance::kDefault,
@@ -137,15 +137,11 @@ class PhoneHubNotificationControllerTest : public AshTestBase {
  protected:
   base::test::ScopedFeatureList feature_list_;
   std::unique_ptr<views::Widget> widget_;
-  raw_ptr<message_center::MessageCenter, DanglingUntriaged | ExperimentalAsh>
-      message_center_;
+  raw_ptr<message_center::MessageCenter, DanglingUntriaged> message_center_;
   phonehub::FakePhoneHubManager phone_hub_manager_;
-  raw_ptr<phonehub::FakeNotificationManager, ExperimentalAsh>
-      notification_manager_;
-  raw_ptr<phonehub::FakeFeatureStatusProvider, ExperimentalAsh>
-      feature_status_provider_;
-  raw_ptr<PhoneHubNotificationController, DanglingUntriaged | ExperimentalAsh>
-      controller_;
+  raw_ptr<phonehub::FakeNotificationManager> notification_manager_;
+  raw_ptr<phonehub::FakeFeatureStatusProvider> feature_status_provider_;
+  raw_ptr<PhoneHubNotificationController, DanglingUntriaged> controller_;
   base::flat_set<phonehub::Notification> fake_notifications_;
 };
 
@@ -179,8 +175,8 @@ TEST_F(PhoneHubNotificationControllerTest, UpdateNotifications) {
       kPhoneHubNotificationId1,
       phonehub::Notification::AppMetadata(
           kAppName, kPackageName,
-          /*color_icon=*/gfx::Image(), /*monochrome_icon_mask=*/absl::nullopt,
-          /*icon_color=*/absl::nullopt,
+          /*color_icon=*/gfx::Image(), /*monochrome_icon_mask=*/std::nullopt,
+          /*icon_color=*/std::nullopt,
           /*icon_is_monochrome=*/true, kUserId,
           phonehub::proto::AppStreamabilityStatus::STREAMABLE),
       base::Time::Now(), phonehub::Notification::Importance::kDefault,
@@ -194,6 +190,8 @@ TEST_F(PhoneHubNotificationControllerTest, UpdateNotifications) {
   notification = FindNotification(kCrOSNotificationId1);
   EXPECT_EQ(kNewTitle, notification->title());
   EXPECT_EQ(kNewTextContent, notification->message());
+  EXPECT_TRUE(notification->rich_notification_data()
+                  .should_make_spoken_feedback_for_popup_updates);
 }
 
 TEST_F(PhoneHubNotificationControllerTest, UpdateNotificationsNewIconType) {
@@ -213,7 +211,7 @@ TEST_F(PhoneHubNotificationControllerTest, UpdateNotificationsNewIconType) {
       kPhoneHubNotificationId1,
       phonehub::Notification::AppMetadata(
           kAppName, kPackageName, /*color_icon=*/gfx::Image(),
-          /*monochrome_icon_mask=*/absl::nullopt, iconColor,
+          /*monochrome_icon_mask=*/std::nullopt, iconColor,
           /*icon_is_monochrome=*/true, kUserId,
           phonehub::proto::AppStreamabilityStatus::STREAMABLE),
       base::Time::Now(), phonehub::Notification::Importance::kDefault,
@@ -234,8 +232,8 @@ TEST_F(PhoneHubNotificationControllerTest, UpdateNotificationsNewIconType) {
       kPhoneHubNotificationId1,
       phonehub::Notification::AppMetadata(
           kAppName, kPackageName,
-          /*color_icon=*/gfx::Image(), /*monochrome_icon_mask=*/absl::nullopt,
-          /*icon_color=*/absl::nullopt,
+          /*color_icon=*/gfx::Image(), /*monochrome_icon_mask=*/std::nullopt,
+          /*icon_color=*/std::nullopt,
           /*icon_is_monochrome=*/false, kUserId,
           phonehub::proto::AppStreamabilityStatus::STREAMABLE),
       base::Time::Now(), phonehub::Notification::Importance::kDefault,
@@ -359,8 +357,8 @@ TEST_F(PhoneHubNotificationControllerTest, NotificationDataAndImages) {
       kPhoneHubNotificationId0,
       phonehub::Notification::AppMetadata(
           kAppName, kPackageName, /*color_icon=*/icon,
-          /*monochrome_icon_mask=*/absl::nullopt,
-          /*icon_color=*/absl::nullopt,
+          /*monochrome_icon_mask=*/std::nullopt,
+          /*icon_color=*/std::nullopt,
           /*icon_is_monochrome=*/true, kUserId,
           phonehub::proto::AppStreamabilityStatus::STREAMABLE),
       timestamp, phonehub::Notification::Importance::kHigh,
@@ -473,8 +471,8 @@ TEST_F(PhoneHubNotificationControllerTest, DoNotShowOldNotification) {
       kPhoneHubNotificationId0,
       phonehub::Notification::AppMetadata(
           kAppName, kPackageName,
-          /*color_icon=*/gfx::Image(), /*monochrome_icon_mask=*/absl::nullopt,
-          /*icon_color=*/absl::nullopt,
+          /*color_icon=*/gfx::Image(), /*monochrome_icon_mask=*/std::nullopt,
+          /*icon_color=*/std::nullopt,
           /*icon_is_monochrome=*/true, kUserId,
           phonehub::proto::AppStreamabilityStatus::STREAMABLE),
       old_timestamp, phonehub::Notification::Importance::kHigh,
@@ -504,8 +502,8 @@ TEST_F(PhoneHubNotificationControllerTest, DoNotShowOldNotification) {
       kPhoneHubNotificationId0,
       phonehub::Notification::AppMetadata(
           kAppName, kPackageName,
-          /*color_icon=*/gfx::Image(), /*monochrome_icon_mask=*/absl::nullopt,
-          /*icon_color=*/absl::nullopt,
+          /*color_icon=*/gfx::Image(), /*monochrome_icon_mask=*/std::nullopt,
+          /*icon_color=*/std::nullopt,
           /*icon_is_monochrome=*/true, kUserId,
           phonehub::proto::AppStreamabilityStatus::STREAMABLE),
       base::Time::Now(), phonehub::Notification::Importance::kHigh,
@@ -537,8 +535,8 @@ TEST_F(PhoneHubNotificationControllerTest, MinPriorityNotification) {
       kPhoneHubNotificationId0,
       phonehub::Notification::AppMetadata(
           kAppName, kPackageName,
-          /*color_icon=*/gfx::Image(), /*monochrome_icon_mask=*/absl::nullopt,
-          /*icon_color=*/absl::nullopt,
+          /*color_icon=*/gfx::Image(), /*monochrome_icon_mask=*/std::nullopt,
+          /*icon_color=*/std::nullopt,
           /*icon_is_monochrome=*/true, kUserId,
           phonehub::proto::AppStreamabilityStatus::STREAMABLE),
       base::Time::Now(), phonehub::Notification::Importance::kMin,

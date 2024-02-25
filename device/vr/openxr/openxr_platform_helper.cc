@@ -4,6 +4,7 @@
 #include "device/vr/openxr/openxr_platform_helper.h"
 
 #include <memory>
+#include <set>
 #include <utility>
 
 #include "base/containers/contains.h"
@@ -13,9 +14,11 @@
 #include "build/build_config.h"
 #include "components/version_info/version_info.h"
 #include "device/vr/openxr/openxr_api_wrapper.h"
-#include "device/vr/openxr/openxr_defs.h"
+#include "device/vr/openxr/openxr_extension_handler_factories.h"
+#include "device/vr/openxr/openxr_extension_handler_factory.h"
 #include "device/vr/openxr/openxr_extension_helper.h"
 #include "device/vr/openxr/openxr_graphics_binding.h"
+#include "device/vr/openxr/openxr_interaction_profiles.h"
 
 namespace device {
 
@@ -53,18 +56,21 @@ XrResult OpenXrPlatformHelper::CreateInstance(XrInstance* instance) {
 }
 
 void OpenXrPlatformHelper::CreateInstanceWithCreateInfo(
-    absl::optional<OpenXrCreateInfo> create_info,
-    CreateInstanceCallback callback) {
+    std::optional<OpenXrCreateInfo> create_info,
+    CreateInstanceCallback instance_ready_callback,
+    PlatormInitiatedShutdownCallback shutdown_callback) {
   DVLOG(1) << __func__;
   CHECK(initialized_);
 
   if (create_info.has_value()) {
-    GetPlatformCreateInfo(
-        create_info.value(),
-        base::BindOnce(&OpenXrPlatformHelper::OnPlatformCreateInfoResult,
-                       base::Unretained(this), std::move(callback)));
+    auto create_info_result_callback = base::BindOnce(
+        &OpenXrPlatformHelper::OnPlatformCreateInfoResult,
+        base::Unretained(this), std::move(instance_ready_callback));
+    GetPlatformCreateInfo(create_info.value(),
+                          std::move(create_info_result_callback),
+                          std::move(shutdown_callback));
   } else {
-    OnPlatformCreateInfoResult(std::move(callback), nullptr);
+    OnPlatformCreateInfoResult(std::move(instance_ready_callback), nullptr);
   }
 }
 
@@ -130,22 +136,25 @@ XrResult OpenXrPlatformHelper::CreateInstance(XrInstance* instance,
     }
   };
 
-  // XR_MSFT_UNBOUNDED_REFERENCE_SPACE_EXTENSION_NAME, is required for optional
-  // functionality (unbounded reference spaces) and thus only requested if it is
-  // available.
-  EnableExtensionIfSupported(XR_MSFT_UNBOUNDED_REFERENCE_SPACE_EXTENSION_NAME);
+  std::set<std::string> handled_extensions;
+  for (const auto* factory : GetExtensionHandlerFactories()) {
+    auto factory_extensions = factory->GetRequestedExtensions();
+    handled_extensions.insert(factory_extensions.begin(),
+                              factory_extensions.end());
+  }
 
-  // Input extensions. These enable interaction profiles not defined in the core
-  // spec
-  EnableExtensionIfSupported(kExtSamsungOdysseyControllerExtensionName);
-  EnableExtensionIfSupported(kExtHPMixedRealityControllerExtensionName);
-  EnableExtensionIfSupported(kMSFTHandInteractionExtensionName);
-  EnableExtensionIfSupported(
-      XR_HTC_VIVE_COSMOS_CONTROLLER_INTERACTION_EXTENSION_NAME);
+  // Enable the required extensions for any controllers that both we and the
+  // runtime support.
+  for (const auto& interaction_profile :
+       GetOpenXrControllerInteractionProfiles()) {
+    if (!interaction_profile.required_extension.empty()) {
+      handled_extensions.insert(interaction_profile.required_extension);
+    }
+  }
 
-  EnableExtensionIfSupported(XR_EXT_HAND_TRACKING_EXTENSION_NAME);
-  EnableExtensionIfSupported(XR_MSFT_SPATIAL_ANCHOR_EXTENSION_NAME);
-  EnableExtensionIfSupported(XR_MSFT_SCENE_UNDERSTANDING_EXTENSION_NAME);
+  for (const auto& extension : handled_extensions) {
+    EnableExtensionIfSupported(extension.c_str());
+  }
 
   EnableExtensionIfSupported(
       XR_MSFT_SECONDARY_VIEW_CONFIGURATION_EXTENSION_NAME);

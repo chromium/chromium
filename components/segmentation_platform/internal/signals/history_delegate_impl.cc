@@ -13,8 +13,9 @@ namespace segmentation_platform {
 
 HistoryDelegateImpl::HistoryDelegateImpl(
     history::HistoryService* history_service,
-    UrlSignalHandler* url_signal_handler)
-    : history_service_(history_service) {
+    UrlSignalHandler* url_signal_handler,
+    const std::string& profile_id)
+    : history_service_(history_service), profile_id_(profile_id) {
   ukm_db_observation_.Observe(url_signal_handler);
 }
 
@@ -51,6 +52,10 @@ void HistoryDelegateImpl::FindUrlInHistory(
       &task_tracker_);
 }
 
+const std::string& HistoryDelegateImpl::profile_id() {
+  return profile_id_;
+}
+
 void HistoryDelegateImpl::OnHistoryQueryResult(
     UrlId url_id,
     UrlSignalHandler::FindCallback callback,
@@ -59,7 +64,7 @@ void HistoryDelegateImpl::OnHistoryQueryResult(
   if (result.success) {
     cached_history_urls_.insert(url_id);
   }
-  std::move(callback).Run(result.success);
+  std::move(callback).Run(result.success, result.success ? profile_id_ : "");
 }
 
 }  // namespace segmentation_platform

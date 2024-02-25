@@ -7,6 +7,7 @@ import 'chrome://os-settings/lazy_load.js';
 import {AppManagementAppDetailsItem} from 'chrome://os-settings/lazy_load.js';
 import {AppManagementStore, updateSelectedAppId} from 'chrome://os-settings/os_settings.js';
 import {App, AppType, InstallReason, InstallSource} from 'chrome://resources/cr_components/app_management/app_management.mojom-webui.js';
+import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {assertEquals, assertNull, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 
@@ -21,6 +22,8 @@ suite('<app-management-app-details-item>', () => {
     fakeHandler = setupFakeHandler();
     replaceStore();
 
+    loadTimeData.overrideValues({appManagementDeviceName: 'Chromebook'});
+
     appDetailsItem = document.createElement('app-management-app-details-item');
 
     replaceBody(appDetailsItem);
@@ -29,6 +32,7 @@ suite('<app-management-app-details-item>', () => {
 
   teardown(() => {
     appDetailsItem.remove();
+    loadTimeData.overrideValues({appManagementDeviceName: 'Chrome device'});
   });
 
   async function addApp(appOptions: Partial<App>, appName: string = 'app') {
@@ -76,11 +80,9 @@ suite('<app-management-app-details-item>', () => {
         typeAndSourceText.textContent!.trim());
 
     const infoIconTooltip =
-        appDetailsItem.shadowRoot!.querySelector('#infoIconTooltip');
+        appDetailsItem.shadowRoot!.querySelector('cr-tooltip-icon');
     assertTrue(!!infoIconTooltip);
-    const tooltipText = infoIconTooltip.querySelector('#tooltipText');
-    assertTrue(!!tooltipText);
-    assertEquals(publisherId, tooltipText.textContent!.trim());
+    assertEquals(publisherId, infoIconTooltip.tooltipText!.trim());
   });
 
   test('Android type', async () => {
@@ -124,6 +126,22 @@ suite('<app-management-app-details-item>', () => {
     assertTrue(!!launchIcon);
   });
 
+  test('Chrome type storage', async () => {
+    await addApp({
+      type: AppType.kChromeApp,
+      installSource: InstallSource.kUnknown,
+      appSize: '17 MB',
+    });
+
+    const appSize = appDetailsItem.shadowRoot!.querySelector('#appSize');
+
+    assertTrue(!!appDetailsItem.shadowRoot!.querySelector('#storageTitle'));
+    assertTrue(!!appSize);
+    assertNull(appDetailsItem.shadowRoot!.querySelector('#dataSize'));
+
+    assertEquals('App size: 17 MB', appSize.textContent!.trim());
+  });
+
   test('Android App from play store', async () => {
     await addApp({
       type: AppType.kArc,
@@ -144,21 +162,15 @@ suite('<app-management-app-details-item>', () => {
   test('System install source', async function() {
     await addApp({
       installReason: InstallReason.kSystem,
+      installSource: InstallSource.kSystem,
     });
 
     const typeAndSourceText =
         appDetailsItem.shadowRoot!.querySelector('#typeAndSourceText');
     assertTrue(!!typeAndSourceText);
-    assertEquals('ChromeOS System App', typeAndSourceText.textContent!.trim());
-
-    const infoIconTooltip =
-        appDetailsItem.shadowRoot!.querySelector('#infoIconTooltip');
-    assertTrue(!!infoIconTooltip);
-    const tooltipText = infoIconTooltip.querySelector('#tooltipText');
-    assertTrue(!!tooltipText);
     assertEquals(
-        'This app is preinstalled on your device',
-        tooltipText.textContent!.trim());
+        'ChromeOS System App preinstalled on your Chromebook',
+        typeAndSourceText.textContent!.trim());
   });
 
   test('Chrome app version', async () => {
@@ -185,21 +197,6 @@ suite('<app-management-app-details-item>', () => {
   });
 
   test('Android type storage', async () => {
-    await addApp({
-      type: AppType.kArc,
-      installSource: InstallSource.kUnknown,
-      appSize: '17 MB',
-    });
-
-    let appSize = appDetailsItem.shadowRoot!.querySelector('#appSize');
-    let dataSize = appDetailsItem.shadowRoot!.querySelector('#dataSize');
-
-    assertTrue(!!appDetailsItem.shadowRoot!.querySelector('#storageTitle'));
-    assertTrue(!!appSize);
-    assertNull(dataSize);
-
-    assertEquals('App size: 17 MB', appSize.textContent!.trim());
-
     await addApp(
         {
           type: AppType.kArc,
@@ -209,8 +206,8 @@ suite('<app-management-app-details-item>', () => {
         },
         'app2');
 
-    appSize = appDetailsItem.shadowRoot!.querySelector('#appSize');
-    dataSize = appDetailsItem.shadowRoot!.querySelector('#dataSize');
+    const appSize = appDetailsItem.shadowRoot!.querySelector('#appSize');
+    const dataSize = appDetailsItem.shadowRoot!.querySelector('#dataSize');
 
     assertTrue(!!appDetailsItem.shadowRoot!.querySelector('#storageTitle'));
     assertTrue(!!appSize);

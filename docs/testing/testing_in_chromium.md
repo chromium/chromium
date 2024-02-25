@@ -15,9 +15,6 @@ for one platform.
 *   **[gtest]** is Google's C++ test framework,
     which helps you write better C++ tests in Chromium.
     gtest is test framework for unit tests in Chromium and browser tests are built on top of it.
-*   **[Junit]** is a unit testing framework
-    for the Java programming language, and it is used to write
-    unit tests on Android for Java code in Chromium.
 *   **Browser Tests** is built on top of gtest, and it is used to write integration tests
     and e2e tests in Chromium.
     <!-- TODO(leilei) Add link to browser tests --->
@@ -27,8 +24,9 @@ for one platform.
     in a test renderer (`content_shell`) and comparing the rendered output or
     JavaScript output against an expected output file.
     Web Tests are required to launch new W3C API support in Chromium.
-*   **[Instrumentation Tests]** is a test framework specific for Android platform,
-    it is used to write integration tests or e2e tests for Chromium on Android.
+*   **[Robolectric]** is build on top of JUnit 4. It emulates Android APIs so
+    that tests can be run on the host machine instead of on devices / emulators.
+*   **[Instrumentation Tests]** are JUnit tests that run on devices / emulators.
 *   **[EarlGrey]** is the integration testing framework used by Chromium for iOS.
 *   **[Telemetry]** is the performance testing framework used by Chromium.
     It allows you to perform arbitrary actions on a set of web pages and
@@ -42,10 +40,10 @@ The following table shows which types of test works on which platforms.
 |                             |  Linux  | Windows |   Mac   | Android |  iOS    |  CrOS   |
 |:----------------------------|:--------|:--------|:--------|:--------|:--------|:--------|
 | gtest(C++)                  | &#8730; | &#8730; | &#8730; | &#8730; | &#8730; | &#8730; |
-| Junit(Java)                 |         |         |         | &#8730; |         |         |
 | Browser Tests(C++)          | &#8730; | &#8730; | &#8730; | &#8730; |         |         |
 | Web Tests(HTML, JS)         | &#8730; | &#8730; | &#8730; |         |         |         |
 | Telemetry(Python)           | &#8730; | &#8730; | &#8730; | &#8730; |         | &#8730; |
+| Robolectric(Java)           |         |         |         | &#8730; |         |         |
 | Instrumentation Tests(Java) |         |         |         | &#8730; |         |         |
 | EarlGrey                    |         |         |         |         | &#8730; |         |
 | Fuzzer Tests(C++)           | &#8730; | &#8730; | &#8730; | &#8730; |         | &#8730; |
@@ -67,6 +65,25 @@ tracks the effort to enable them on Android.
 
 Web Tests were enabled on Android K before, but it is disabled on Android platform now,
 see [this thread](https://groups.google.com/a/chromium.org/forum/#!topic/blink-dev/338WKwWPbPI/discussion) for more context.
+***
+
+*** note
+**Tast Tests Note**
+
+Tast tests are written, maintained and gardened by ChromeOS engineers.
+
+ChromeOS tests that Chrome engineers support should be (re)written in the following priority order:
+*   unit tests
+*   linux_chromeos browser_tests
+*   linux_chromeos interactive_ui_tests
+*   [Crosier tests](http://go/crosier)
+
+When a Tast test fails:
+*   If the change is written by a ChromeOS engineer, the ChromeOS [gardener](http://go/cros-gardening) can revert it.
+*   Otherwise the ChromeOS gardener can revert the Chrome-authored change accompanied by a test from the supported frameworks above or manual repro steps that a Chrome engineer can run under [linux_chromeos](../chromeos_build_instructions.md#Chromium-OS-on-Linux-linux_chromeos) (preferable) or using Simple Chrome VM [instructions](https://chromium.googlesource.com/chromiumos/docs/+/HEAD/simple_chrome_workflow.md).
+*   If the above is not possible, the ChromeOS gardener or ChromeOS feature owner should inform the author about the failure, and the author uses their best judgment on whether to revert, fix on trunk, or let ChromeOS engineers update the test (e.g. if test needs an update or if the test is just testing internal implementation details of Chrome but doesn't break user functionality).
+
+
 ***
 
 ## General Principles
@@ -184,8 +201,8 @@ Tests are not configured to upload metrics, such as UMA, UKM or crash reports.
 
 [gtest]: https://github.com/google/googletest
 [Simple gtests]: https://github.com/google/googletest/blob/main/docs/primer.md#simple-tests
-[Junit]: https://developer.android.com/training/testing/junit-rules
-[Instrumentation Tests]: https://chromium.googlesource.com/chromium/src/+/main/testing/android/docs/instrumentation.md
+[Robolectric]: android_robolectric_tests.md
+[Instrumentation Tests]: https://chromium.googlesource.com/chromium/src/+/main/docs/testing/android_instrumentation_tests.md
 [EarlGrey]: https://github.com/google/EarlGrey
 [Telemetry]: https://chromium.googlesource.com/catapult/+/HEAD/telemetry/README.md
 [Fuzzer Tests]: https://chromium.googlesource.com/chromium/src/+/main/testing/libfuzzer/README.md

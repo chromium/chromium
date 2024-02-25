@@ -9,7 +9,7 @@
 #include "base/json/json_value_converter.h"
 #include "base/strings/string_piece.h"
 #include "base/time/time.h"
-#include "components/metrics/call_stack_profile_params.h"
+#include "components/metrics/call_stacks/call_stack_profile_params.h"
 
 namespace heap_profiling {
 

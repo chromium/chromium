@@ -274,8 +274,7 @@ TEST(ConvertToWebRtcVideoFrameBufferTest,
 
   // Should call texture conversion.
   resources->ExpectCreateFrameWithRealImplementation();
-  resources->ExpectCreateTemporaryVectorBufferWithRealImplementation();
-  resources->ExpectReleaseTemporaryVectorBufferWithRealImplementation();
+  resources->ExpectConvertAndScaleWithRealImplementation();
   EXPECT_CALL(*resources, ConstructVideoFrameFromTexture(_))
       .WillOnce(Return(memory_frame));
 

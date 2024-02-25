@@ -13,6 +13,7 @@
 
 #include "net/third_party/quiche/src/quiche/spdy/core/hpack/hpack_decoder_adapter.h"
 #include "net/third_party/quiche/src/quiche/spdy/core/hpack/hpack_encoder.h"
+#include "net/third_party/quiche/src/quiche/spdy/core/recording_headers_handler.h"
 
 namespace spdy {
 
@@ -51,7 +52,7 @@ class HpackFuzzUtil {
 
   // Returns true if the next header block was set at |out|. Returns
   // false if no input header blocks remain.
-  static bool NextHeaderBlock(Input* input, absl::string_view* out);
+  static bool NextHeaderBlock(Input* input, std::string_view* out);
 
   // Returns the serialized header block length prefix for a block of
   // |block_size| bytes.
@@ -63,8 +64,10 @@ class HpackFuzzUtil {
     FuzzerContext();
     ~FuzzerContext();
     std::unique_ptr<HpackDecoderAdapter> first_stage;
+    std::unique_ptr<RecordingHeadersHandler> first_stage_handler;
     std::unique_ptr<HpackEncoder> second_stage;
     std::unique_ptr<HpackDecoderAdapter> third_stage;
+    std::unique_ptr<RecordingHeadersHandler> third_stage_handler;
   };
 
   static void InitializeFuzzerContext(FuzzerContext* context);
@@ -73,7 +76,7 @@ class HpackFuzzUtil {
   // |second_stage| and |third_stage| as well. Returns whether all stages
   // processed the input without error.
   static bool RunHeaderBlockThroughFuzzerStages(FuzzerContext* context,
-                                                absl::string_view input_block);
+                                                std::string_view input_block);
 
   // Flips random bits within |buffer|. The total number of flips is
   // |flip_per_thousand| bits for every 1,024 bytes of |buffer_length|,

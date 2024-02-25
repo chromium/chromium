@@ -7,6 +7,7 @@
 
 #include <map>
 #include <memory>
+#include <optional>
 #include <set>
 #include <string>
 #include <vector>
@@ -19,7 +20,6 @@
 #include "components/content_settings/core/common/content_settings.h"
 #include "components/content_settings/core/common/content_settings_types.h"
 #include "components/keyed_service/core/keyed_service.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
 class HostContentSettingsMap;
@@ -67,7 +67,7 @@ class ObjectPermissionContextBase : public KeyedService {
     // context represented by |guard_content_settings_type|, if applicable, and
     // |data_content_settings_type|.
     virtual void OnObjectPermissionChanged(
-        absl::optional<ContentSettingsType> guard_content_settings_type,
+        std::optional<ContentSettingsType> guard_content_settings_type,
         ContentSettingsType data_content_settings_type);
     // Notify observer that an object permission was revoked for |origin|.
     virtual void OnPermissionRevoked(const url::Origin& origin);
@@ -86,8 +86,7 @@ class ObjectPermissionContextBase : public KeyedService {
   ~ObjectPermissionContextBase() override;
 
   // Checks whether |origin| can request permission to access objects. This is
-  // done by checking |guard_content_settings_type_| which will usually be "ask"
-  // by default but could be set by the user or group policy.
+  // done by checking |guard_content_settings_type_| is in the "ask" state.
   bool CanRequestObjectPermission(const url::Origin& origin);
 
   // Returns the object corresponding to |key| that |origin| has been granted
@@ -151,6 +150,14 @@ class ObjectPermissionContextBase : public KeyedService {
   virtual void RevokeObjectPermission(const url::Origin& origin,
                                       const base::StringPiece key);
 
+  // Revokes a given `origin`'s permissions for access to all of its
+  // corresponding objects.
+  //
+  // This method may be extended by a subclass to revoke permissions to access
+  // objects returned by `GetGrantedObjects` but not stored in the
+  // `host_content_settings_map`.
+  virtual bool RevokeObjectPermissions(const url::Origin& origin);
+
   // Returns a string which is used to uniquely identify this object.
   virtual std::string GetKeyForObject(const base::Value::Dict& object) = 0;
 
@@ -174,7 +181,7 @@ class ObjectPermissionContextBase : public KeyedService {
   void NotifyPermissionChanged();
   void NotifyPermissionRevoked(const url::Origin& origin);
 
-  const absl::optional<ContentSettingsType> guard_content_settings_type_;
+  const std::optional<ContentSettingsType> guard_content_settings_type_;
   const ContentSettingsType data_content_settings_type_;
   base::ObserverList<PermissionObserver> permission_observer_list_;
 

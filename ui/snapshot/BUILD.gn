@@ -22,10 +22,7 @@ component("snapshot") {
   }
 
   if (is_win) {
-    sources += [
-      "snapshot_win.cc",
-      "snapshot_win.h",
-    ]
+    sources += [ "snapshot_win.cc" ]
   }
 
   if (is_ios) {
@@ -76,6 +73,7 @@ component("snapshot") {
       "AppKit.framework",
       "CoreGraphics.framework",
     ]
+    weak_frameworks = [ "ScreenCaptureKit.framework" ]  # macOS 14.4
   }
 }
 

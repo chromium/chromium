@@ -28,53 +28,35 @@
 #include "ui/gfx/geometry/point.h"
 #endif  // defined(USE_AURA)
 
-#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
-namespace {
-
-gfx::Image GrabViewSnapshot(
-    base::WeakPtr<content::WebContents> web_contents_ptr) {
-  gfx::Image snapshot;
-  // Need to return an empty image if the WebContents got destroyed before
-  // taking a screenshot or it failed to take a screenshot.
-  if (!web_contents_ptr ||
-      !ui::GrabViewSnapshot(web_contents_ptr->GetContentNativeView(),
-                            gfx::Rect(web_contents_ptr->GetSize()), &snapshot))
-    snapshot = gfx::Image();
-
-  return snapshot;
-}
-
-}  // namespace
-#endif  // BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
-
 namespace screen_ai {
 
 AXScreenAIAnnotator::AXScreenAIAnnotator(
     content::BrowserContext* browser_context)
     : browser_context_(browser_context), screen_ai_service_client_(this) {
-  component_ready_observer_.Observe(ScreenAIInstallState::GetInstance());
+  // TODO(crbug.com/1443349): Add a separate initializer for Layout Extraction.
+  ScreenAIServiceRouterFactory::GetForBrowserContext(browser_context)
+      ->GetServiceStateAsync(
+          ScreenAIServiceRouter::Service::kOCR,
+          base::BindOnce(
+              &AXScreenAIAnnotator::ScreenAIServiceInitializationCallback,
+              weak_ptr_factory_.GetWeakPtr()));
 }
 
 AXScreenAIAnnotator::~AXScreenAIAnnotator() = default;
 
-void AXScreenAIAnnotator::StateChanged(ScreenAIInstallState::State state) {
-  if (state != ScreenAIInstallState::State::kReady &&
-      state != ScreenAIInstallState::State::kDownloaded) {
+void AXScreenAIAnnotator::ScreenAIServiceInitializationCallback(
+    bool successful) {
+  if (!successful) {
     return;
   }
 
-  if (!screen_ai_service_client_.is_bound()) {
-    BindToScreenAIService(browser_context_);
-  }
-}
+  CHECK(!screen_ai_service_client_.is_bound());
 
-void AXScreenAIAnnotator::BindToScreenAIService(
-    content::BrowserContext* browser_context) {
   mojo::PendingReceiver<mojom::ScreenAIAnnotator> screen_ai_receiver =
       screen_ai_annotator_.BindNewPipeAndPassReceiver();
 
   ScreenAIServiceRouter* service_router =
-      ScreenAIServiceRouterFactory::GetForBrowserContext(browser_context);
+      ScreenAIServiceRouterFactory::GetForBrowserContext(browser_context_);
 
   // Client interface should be ready to receive annotation results before a
   // request is sent to the service, therefore it should be created first.
@@ -95,23 +77,12 @@ void AXScreenAIAnnotator::AnnotateScreenshot(
     return;
 
   base::TimeTicks start_time = base::TimeTicks::Now();
-#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
-  // TODO(https://crbug.com/1443349): Need to run GrabViewSnapshot() in a
-  // thread that is not the main UI thread.
-  base::SequencedTaskRunner::GetCurrentDefault()->PostTaskAndReplyWithResult(
-      FROM_HERE, base::BindOnce(&GrabViewSnapshot, web_contents->GetWeakPtr()),
-      base::BindOnce(&AXScreenAIAnnotator::OnScreenshotReceived,
-                     weak_ptr_factory_.GetWeakPtr(),
-                     web_contents->GetPrimaryMainFrame()->GetAXTreeID(),
-                     start_time));
-#else
-  ui::GrabViewSnapshotAsync(
+  ui::GrabViewSnapshot(
       native_view, gfx::Rect(web_contents->GetSize()),
       base::BindOnce(&AXScreenAIAnnotator::OnScreenshotReceived,
                      weak_ptr_factory_.GetWeakPtr(),
                      web_contents->GetPrimaryMainFrame()->GetAXTreeID(),
                      start_time));
-#endif
 }
 
 void AXScreenAIAnnotator::OnScreenshotReceived(

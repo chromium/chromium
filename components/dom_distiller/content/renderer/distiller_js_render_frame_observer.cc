@@ -25,7 +25,7 @@ DistillerJsRenderFrameObserver::~DistillerJsRenderFrameObserver() {}
 
 void DistillerJsRenderFrameObserver::DidStartNavigation(
     const GURL& url,
-    absl::optional<blink::WebNavigationType> navigation_type) {
+    std::optional<blink::WebNavigationType> navigation_type) {
   is_distiller_page_ = url_utils::IsDistilledPage(url);
 }
 

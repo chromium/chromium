@@ -10,7 +10,6 @@ build_webui("build") {
   grd_prefix = "side_panel_bookmarks"
 
   static_files = [
-    "bookmarks.html",
     "images/bookmarks_empty_dark.svg",
     "images/bookmarks_empty.svg",
     "power_bookmarks.html",
@@ -18,18 +17,16 @@ build_webui("build") {
 
   # Files holding a Polymer element definition and have an equivalent .html file.
   web_component_files = [
-    "bookmark_folder.ts",
-    "bookmarks_list.ts",
     "commerce/shopping_list.ts",
     "power_bookmark_row.ts",
     "power_bookmarks_context_menu.ts",
     "power_bookmarks_edit_dialog.ts",
+    "power_bookmarks_labels.ts",
     "power_bookmarks_list.ts",
   ]
 
   non_web_component_files = [
     "bookmarks_api_proxy.ts",
-    "bookmarks_drag_manager.ts",
     "power_bookmarks_drag_manager.ts",
     "power_bookmarks_service.ts",
   ]
@@ -52,7 +49,9 @@ build_webui("build") {
   ts_deps = [
     "../shared:build_ts",
     "//third_party/polymer/v3_0:library",
+    "//tools/typescript/definitions:library",
     "//ui/webui/resources/cr_components/color_change_listener:build_ts",
+    "//ui/webui/resources/cr_components/commerce:build_ts",
     "//ui/webui/resources/cr_components/page_image_service:build_ts",
     "//ui/webui/resources/cr_elements:build_ts",
     "//ui/webui/resources/js:build_ts",

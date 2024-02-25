@@ -49,6 +49,7 @@
 #include "third_party/blink/public/mojom/blob/blob_url_store.mojom-blink-forward.h"
 #include "third_party/blink/public/mojom/context_menu/context_menu.mojom-blink.h"
 #include "third_party/blink/public/mojom/devtools/devtools_agent.mojom-blink-forward.h"
+#include "third_party/blink/public/mojom/devtools/inspector_issue.mojom-blink-forward.h"
 #include "third_party/blink/public/mojom/fenced_frame/fenced_frame.mojom-blink-forward.h"
 #include "third_party/blink/public/mojom/frame/find_in_page.mojom-blink-forward.h"
 #include "third_party/blink/public/mojom/frame/lifecycle.mojom-blink-forward.h"
@@ -56,7 +57,6 @@
 #include "third_party/blink/public/mojom/input/input_handler.mojom-blink-forward.h"
 #include "third_party/blink/public/mojom/lcp_critical_path_predictor/lcp_critical_path_predictor.mojom-blink.h"
 #include "third_party/blink/public/mojom/page/widget.mojom-blink.h"
-#include "third_party/blink/public/mojom/portal/portal.mojom-blink-forward.h"
 #include "third_party/blink/public/mojom/script/script_evaluation_params.mojom-blink-forward.h"
 #include "third_party/blink/public/platform/web_file_system_type.h"
 #include "third_party/blink/public/web/web_history_commit_type.h"
@@ -80,7 +80,6 @@ namespace blink {
 class ChromePrintContext;
 class FindInPage;
 class HTMLFencedFrameElement;
-class HTMLPortalElement;
 class LocalFrameClientImpl;
 class ResourceError;
 class ScrollableArea;
@@ -116,7 +115,7 @@ class CORE_EXPORT WebLocalFrameImpl final
   // WebFrame overrides:
   void Close() override;
   WebView* View() const override;
-  v8::Local<v8::Object> GlobalProxy() const override;
+  v8::Local<v8::Object> GlobalProxy(v8::Isolate* isolate) const override;
   bool IsLoading() const override;
 
   // WebLocalFrame overrides:
@@ -140,7 +139,7 @@ class CORE_EXPORT WebLocalFrameImpl final
   WebFrame* FindFrameByName(const WebString& name) override;
   void SetEmbeddingToken(
       const base::UnguessableToken& embedding_token) override;
-  const absl::optional<base::UnguessableToken>& GetEmbeddingToken()
+  const std::optional<base::UnguessableToken>& GetEmbeddingToken()
       const override;
   bool IsInFencedFrameTree() const override;
   void SendPings(const WebURL& destination_url) override;
@@ -232,7 +231,8 @@ class CORE_EXPORT WebLocalFrameImpl final
   void SelectRange(const gfx::Point& base, const gfx::Point& extent) override;
   void SelectRange(const WebRange&,
                    HandleVisibilityBehavior,
-                   blink::mojom::SelectionMenuBehavior) override;
+                   blink::mojom::SelectionMenuBehavior,
+                   SelectionSetFocusBehavior) override;
   WebString RangeAsText(const WebRange&) override;
   void MoveRangeSelection(
       const gfx::Point& base,
@@ -292,6 +292,7 @@ class CORE_EXPORT WebLocalFrameImpl final
           mojom::blink::ContextMenuClientInterfaceBase> context_menu_client)
       override;
   void UsageCountChromeLoadTimes(const WebString& metric) override;
+  void UsageCountChromeCSI(const WebString& metric) override;
   bool DispatchedPagehideAndStillHidden() const override;
   FrameScheduler* Scheduler() const override;
   scheduler::WebAgentGroupScheduler* GetAgentGroupScheduler() const override;
@@ -328,7 +329,7 @@ class CORE_EXPORT WebLocalFrameImpl final
   bool IsAdFrame() const override;
   bool IsAdScriptInStack() const override;
   void SetAdEvidence(const FrameAdEvidence& ad_evidence) override;
-  const absl::optional<blink::FrameAdEvidence>& AdEvidence() override;
+  const std::optional<blink::FrameAdEvidence>& AdEvidence() override;
   bool IsFrameCreatedByAdScript() override;
   gfx::Size SpoolSizeInPixelsForTesting(
       const WebPrintParams&,
@@ -366,9 +367,6 @@ class CORE_EXPORT WebLocalFrameImpl final
           session_storage_area) override;
   void AddHitTestOnTouchStartCallback(
       base::RepeatingCallback<void(const WebHitTestResult&)> callback) override;
-  void SetResourceCacheRemote(
-      CrossVariantMojoRemote<mojom::blink::ResourceCacheInterfaceBase> remote)
-      override;
   void BlockParserForTesting() override;
   void ResumeParserForTesting() override;
   void FlushInputForTesting(base::OnceClosure done_callback) override;
@@ -386,7 +384,7 @@ class CORE_EXPORT WebLocalFrameImpl final
       bool has_transient_user_activation,
       const WebSecurityOrigin& initiator_origin,
       bool is_browser_initiated,
-      absl::optional<scheduler::TaskAttributionId>
+      std::optional<scheduler::TaskAttributionId>
           soft_navigation_heuristics_task_id) override;
   void SetIsNotOnInitialEmptyDocument() override;
   bool IsOnInitialEmptyDocument() override;
@@ -464,11 +462,6 @@ class CORE_EXPORT WebLocalFrameImpl final
 
   LocalFrame* CreateChildFrame(const AtomicString& name,
                                HTMLFrameOwnerElement*);
-  std::pair<RemoteFrame*, PortalToken> CreatePortal(
-      HTMLPortalElement*,
-      mojo::PendingAssociatedReceiver<mojom::blink::Portal>,
-      mojo::PendingAssociatedRemote<mojom::blink::PortalClient>);
-  RemoteFrame* AdoptPortal(HTMLPortalElement*);
 
   RemoteFrame* CreateFencedFrame(
       HTMLFencedFrameElement*,
@@ -521,13 +514,13 @@ class CORE_EXPORT WebLocalFrameImpl final
 
   void SetClient(WebLocalFrameClient* client) { client_ = client; }
 
-  WebFrameWidgetImpl* FrameWidgetImpl() { return frame_widget_; }
+  WebFrameWidgetImpl* FrameWidgetImpl() { return frame_widget_.Get(); }
 
   WebTextCheckClient* GetTextCheckerClient() const {
     return text_check_client_;
   }
 
-  FindInPage* GetFindInPage() const { return find_in_page_; }
+  FindInPage* GetFindInPage() const { return find_in_page_.Get(); }
 
   TextFinder* GetTextFinder() const;
   // Returns the text finder object if it already exists.
@@ -559,7 +552,7 @@ class CORE_EXPORT WebLocalFrameImpl final
   void ShowContextMenu(
       mojo::PendingAssociatedRemote<mojom::blink::ContextMenuClient> client,
       const ContextMenuData& data,
-      const absl::optional<gfx::Point>& host_context_menu_location);
+      const std::optional<gfx::Point>& host_context_menu_location);
 
   virtual void Trace(Visitor*) const;
 

@@ -41,7 +41,7 @@ TEST_F(BoundSessionRegistrationFetcherParamTest, AllValid) {
       base::StrCat(
           {"registration=startsession; supported-alg=ES256,RS256; challenge=",
            kChallenge, ";"}));
-  absl::optional<BoundSessionRegistrationFetcherParam> maybe_params =
+  std::optional<BoundSessionRegistrationFetcherParam> maybe_params =
       BoundSessionRegistrationFetcherParam::MaybeCreateInstance(
           registration_request, response_headers.get());
   ASSERT_TRUE(maybe_params.has_value());
@@ -63,7 +63,7 @@ TEST_F(BoundSessionRegistrationFetcherParamTest, AllValidFullUrl) {
       base::StrCat({"registration=https://accounts.google.com/"
                     "startsession; supported-alg=ES256,RS256; challenge=",
                     kChallenge, ";"}));
-  absl::optional<BoundSessionRegistrationFetcherParam> maybe_params =
+  std::optional<BoundSessionRegistrationFetcherParam> maybe_params =
       BoundSessionRegistrationFetcherParam::MaybeCreateInstance(
           registration_request, response_headers.get());
   ASSERT_TRUE(maybe_params.has_value());
@@ -85,7 +85,7 @@ TEST_F(BoundSessionRegistrationFetcherParamTest, AllValidFullDifferentUrl) {
       base::StrCat({"registration=https://accounts.different.url/"
                     "startsession; supported-alg=ES256,RS256; challenge=",
                     kChallenge, ";"}));
-  absl::optional<BoundSessionRegistrationFetcherParam> maybe_params =
+  std::optional<BoundSessionRegistrationFetcherParam> maybe_params =
       BoundSessionRegistrationFetcherParam::MaybeCreateInstance(
           registration_request, response_headers.get());
   ASSERT_FALSE(maybe_params.has_value());
@@ -99,7 +99,7 @@ TEST_F(BoundSessionRegistrationFetcherParamTest, AllValidSwapAlgo) {
       base::StrCat(
           {"registration=startsession; supported-alg=RS256,ES256; challenge=",
            kChallenge, ";"}));
-  absl::optional<BoundSessionRegistrationFetcherParam> maybe_params =
+  std::optional<BoundSessionRegistrationFetcherParam> maybe_params =
       BoundSessionRegistrationFetcherParam::MaybeCreateInstance(
           registration_request, response_headers.get());
   ASSERT_TRUE(maybe_params.has_value());
@@ -121,7 +121,7 @@ TEST_F(BoundSessionRegistrationFetcherParamTest, AllValidOneAlgo) {
       base::StrCat(
           {"registration=startsession; supported-alg=RS256; challenge=",
            kChallenge, ";"}));
-  absl::optional<BoundSessionRegistrationFetcherParam> maybe_params =
+  std::optional<BoundSessionRegistrationFetcherParam> maybe_params =
       BoundSessionRegistrationFetcherParam::MaybeCreateInstance(
           registration_request, response_headers.get());
   ASSERT_TRUE(maybe_params.has_value());
@@ -136,8 +136,8 @@ TEST_F(BoundSessionRegistrationFetcherParamTest, AllValidOneAlgo) {
 TEST_F(BoundSessionRegistrationFetcherParamTest, MissingHeader) {
   GURL registration_request = GURL("https://www.google.com/registration");
   auto response_headers = base::MakeRefCounted<net::HttpResponseHeaders>("");
-  // Note: not adding the right header, causing absl::nullopt to be returned.
-  absl::optional<BoundSessionRegistrationFetcherParam> maybe_params =
+  // Note: not adding the right header, causing std::nullopt to be returned.
+  std::optional<BoundSessionRegistrationFetcherParam> maybe_params =
       BoundSessionRegistrationFetcherParam::MaybeCreateInstance(
           registration_request, response_headers.get());
   ASSERT_FALSE(maybe_params.has_value());
@@ -151,7 +151,7 @@ TEST_F(BoundSessionRegistrationFetcherParamTest, MissingUrl) {
       base::StrCat(
           {"registration=startsession; supported-alg=ES256,RS256; challenge=",
            kChallenge, ";"}));
-  absl::optional<BoundSessionRegistrationFetcherParam> maybe_params =
+  std::optional<BoundSessionRegistrationFetcherParam> maybe_params =
       BoundSessionRegistrationFetcherParam::MaybeCreateInstance(
           registration_request, response_headers.get());
   ASSERT_FALSE(maybe_params.has_value());
@@ -164,7 +164,7 @@ TEST_F(BoundSessionRegistrationFetcherParamTest, MissingAlgo) {
       "Sec-Session-Google-Registration",
       base::StrCat({"registration=startsession; supported-alg=; challenge=",
                     kChallenge, ";"}));
-  absl::optional<BoundSessionRegistrationFetcherParam> maybe_params =
+  std::optional<BoundSessionRegistrationFetcherParam> maybe_params =
       BoundSessionRegistrationFetcherParam::MaybeCreateInstance(
           registration_request, response_headers.get());
   ASSERT_FALSE(maybe_params.has_value());
@@ -176,7 +176,7 @@ TEST_F(BoundSessionRegistrationFetcherParamTest, MissingRegistration) {
   response_headers->SetHeader(
       "Sec-Session-Google-Registration",
       base::StrCat({"supported-alg=ES256,RS256; challenge=", kChallenge, ";"}));
-  absl::optional<BoundSessionRegistrationFetcherParam> maybe_params =
+  std::optional<BoundSessionRegistrationFetcherParam> maybe_params =
       BoundSessionRegistrationFetcherParam::MaybeCreateInstance(
           registration_request, response_headers.get());
   ASSERT_FALSE(maybe_params.has_value());
@@ -188,7 +188,7 @@ TEST_F(BoundSessionRegistrationFetcherParamTest, MissingChallenge) {
   response_headers->SetHeader(
       "Sec-Session-Google-Registration",
       "registration=startsession; supported-alg=ES256,RS256");
-  absl::optional<BoundSessionRegistrationFetcherParam> maybe_params =
+  std::optional<BoundSessionRegistrationFetcherParam> maybe_params =
       BoundSessionRegistrationFetcherParam::MaybeCreateInstance(
           registration_request, response_headers.get());
   ASSERT_FALSE(maybe_params.has_value());
@@ -200,7 +200,7 @@ TEST_F(BoundSessionRegistrationFetcherParamTest, EmptyChallenge) {
   response_headers->SetHeader(
       "Sec-Session-Google-Registration",
       "registration=startsession; supported-alg=ES256,RS256; challenge=;");
-  absl::optional<BoundSessionRegistrationFetcherParam> maybe_params =
+  std::optional<BoundSessionRegistrationFetcherParam> maybe_params =
       BoundSessionRegistrationFetcherParam::MaybeCreateInstance(
           registration_request, response_headers.get());
   ASSERT_FALSE(maybe_params.has_value());
@@ -213,7 +213,7 @@ TEST_F(BoundSessionRegistrationFetcherParamTest, ChallengeInvalidUtf8) {
       "Sec-Session-Google-Registration",
       "registration=startsession; supported-alg=ES256,RS256; "
       "challenge=ab\xC0\x80;");
-  absl::optional<BoundSessionRegistrationFetcherParam> maybe_params =
+  std::optional<BoundSessionRegistrationFetcherParam> maybe_params =
       BoundSessionRegistrationFetcherParam::MaybeCreateInstance(
           registration_request, response_headers.get());
   ASSERT_FALSE(maybe_params.has_value());

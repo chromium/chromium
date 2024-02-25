@@ -10,6 +10,7 @@
 
 #include "ash/ash_export.h"
 #include "ash/public/cpp/pagination/pagination_model.h"
+#include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/view.h"
 
 namespace global_media_controls {
@@ -28,6 +29,8 @@ class QuickSettingsMediaViewController;
 
 // Media view displayed in the quick settings view.
 class ASH_EXPORT QuickSettingsMediaView : public views::View {
+  METADATA_HEADER(QuickSettingsMediaView, views::View)
+
  public:
   explicit QuickSettingsMediaView(QuickSettingsMediaViewController* controller);
   QuickSettingsMediaView(const QuickSettingsMediaView&) = delete;
@@ -36,7 +39,7 @@ class ASH_EXPORT QuickSettingsMediaView : public views::View {
 
   // views::View:
   gfx::Size CalculatePreferredSize() const override;
-  void Layout() override;
+  void Layout(PassKey) override;
   void OnGestureEvent(ui::GestureEvent* event) override;
 
   // Shows the given media item in the media view.

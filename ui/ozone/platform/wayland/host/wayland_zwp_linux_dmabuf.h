@@ -5,11 +5,11 @@
 #ifndef UI_OZONE_PLATFORM_WAYLAND_HOST_WAYLAND_ZWP_LINUX_DMABUF_H_
 #define UI_OZONE_PLATFORM_WAYLAND_HOST_WAYLAND_ZWP_LINUX_DMABUF_H_
 
+#include <optional>
 #include <vector>
 
 #include "base/files/scoped_file.h"
 #include "base/memory/raw_ptr.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/ozone/platform/wayland/common/wayland_object.h"
 #include "ui/ozone/platform/wayland/common/wayland_util.h"
 
@@ -74,30 +74,29 @@ class WaylandZwpLinuxDmabuf
   // the |supported_buffer_formats_| container. Modifiers can also be passed to
   // this method to be stored as a map of the format and modifier.
   void AddSupportedFourCCFormatAndModifier(uint32_t fourcc_format,
-                                           absl::optional<uint64_t> modifier);
+                                           std::optional<uint64_t> modifier);
 
   // Finds the stored callback corresponding to the |params| created in the
   // RequestBufferAsync call, and passes the wl_buffer to the client. The
   // |new_buffer| can be null.
-  void NotifyRequestCreateBufferDone(struct zwp_linux_buffer_params_v1* params,
-                                     struct wl_buffer* new_buffer);
+  void NotifyRequestCreateBufferDone(zwp_linux_buffer_params_v1* params,
+                                     wl_buffer* new_buffer);
 
-  // zwp_linux_dmabuf_v1_listener
-  static void Modifiers(void* data,
-                        struct zwp_linux_dmabuf_v1* zwp_linux_dmabuf,
-                        uint32_t format,
-                        uint32_t modifier_hi,
-                        uint32_t modifier_lo);
-  static void Format(void* data,
-                     struct zwp_linux_dmabuf_v1* zwp_linux_dmabuf,
-                     uint32_t format);
+  // zwp_linux_dmabuf_v1_listener callbacks:
+  static void OnModifiers(void* data,
+                          zwp_linux_dmabuf_v1* linux_dmabuf,
+                          uint32_t format,
+                          uint32_t modifier_hi,
+                          uint32_t modifier_lo);
+  static void OnFormat(void* data,
+                       zwp_linux_dmabuf_v1* linux_dmabuf,
+                       uint32_t format);
 
-  // zwp_linux_buffer_params_v1_listener
-  static void CreateSucceeded(void* data,
-                              struct zwp_linux_buffer_params_v1* params,
-                              struct wl_buffer* new_buffer);
-  static void CreateFailed(void* data,
-                           struct zwp_linux_buffer_params_v1* params);
+  // zwp_linux_buffer_params_v1_listener callbacks:
+  static void OnCreated(void* data,
+                        zwp_linux_buffer_params_v1* params,
+                        wl_buffer* new_buffer);
+  static void OnFailed(void* data, zwp_linux_buffer_params_v1* params);
 
   // Holds pointer to the
   // zwp_linux_dmabuf_v1 Wayland

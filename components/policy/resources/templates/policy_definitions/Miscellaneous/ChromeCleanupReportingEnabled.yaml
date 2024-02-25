@@ -1,5 +1,6 @@
 caption: Control how Chrome Cleanup reports data to Google
 default: null
+deprecated: true
 desc: |-
   Setting the policy to Enabled means if <ph name="CHROME_CLEANUP_NAME">Chrome Cleanup</ph> detects unwanted software, it may, in line with policy set by <ph name="SAFE_BROWSING_EXTENDED_REPORTING_ENABLED_POLICY_NAME">SafeBrowsingExtendedReportingEnabled</ph>, report about the scan to Google. <ph name="CHROME_CLEANUP_NAME">Chrome Cleanup</ph> asks users if they want the cleanup. It sends results to Google.
 
@@ -24,7 +25,7 @@ owners:
 schema:
   type: boolean
 supported_on:
-- chrome.win:68-
+- chrome.win:68-118
 tags:
 - system-security
 type: main

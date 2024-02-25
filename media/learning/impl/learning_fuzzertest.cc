@@ -64,11 +64,11 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
   // Build random examples.
   while (provider.remaining_bytes() > 0) {
     base::UnguessableToken id = base::UnguessableToken::Create();
-    absl::optional<TargetValue> default_target;
+    std::optional<TargetValue> default_target;
     if (provider.ConsumeBool())
       default_target = TargetValue(ConsumeDouble(&provider));
     controller.BeginObservation(id, ConsumeFeatureVector(&provider),
-                                default_target, absl::nullopt);
+                                default_target, std::nullopt);
     controller.CompleteObservation(
         id, ObservationCompletion(TargetValue(ConsumeDouble(&provider)),
                                   ConsumeDouble(&provider)));

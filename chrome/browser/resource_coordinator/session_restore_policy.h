@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_RESOURCE_COORDINATOR_SESSION_RESTORE_POLICY_H_
 
 #include <memory>
+#include <optional>
 
 #include "base/cancelable_callback.h"
 #include "base/containers/flat_map.h"
@@ -16,7 +17,6 @@
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "chrome/browser/resource_coordinator/tab_manager_features.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace content {
 class WebContents;
@@ -157,7 +157,7 @@ class SessionRestorePolicy {
     // Indicates whether or not the tab communicates with the user even when it
     // is in the background (tab title changes, favicons, etc).
     // It is initialized to nullopt and set asynchronously to the proper value.
-    absl::optional<bool> used_in_bg;
+    std::optional<bool> used_in_bg;
 
     // Indicates whether or not the tab has been pinned by the user. Only
     // applicable on desktop platforms.
@@ -280,11 +280,6 @@ class SessionRestorePolicy {
   // This is incremented only after the full tab data is available, which
   // may happen asynchronously.
   size_t tabs_scored_ = 0;
-
-  // Counts the total number of tabs that were observed to make use of
-  // background communication mechanisms. This is used to drive some UMA stats.
-  size_t tabs_used_in_bg_ = 0;
-  size_t tabs_used_in_bg_restored_ = 0;
 
   // Used to track the state of the "all tabs scored" notification.
   enum class NotificationState : uint16_t {

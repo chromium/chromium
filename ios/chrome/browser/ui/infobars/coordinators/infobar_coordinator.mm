@@ -18,7 +18,6 @@
 #import "ios/chrome/browser/ui/fullscreen/fullscreen_controller.h"
 #import "ios/chrome/browser/ui/infobars/banners/infobar_banner_accessibility_util.h"
 #import "ios/chrome/browser/ui/infobars/banners/infobar_banner_presentation_state.h"
-#import "ios/chrome/browser/ui/infobars/coordinators/features.h"
 #import "ios/chrome/browser/ui/infobars/coordinators/infobar_coordinator_implementation.h"
 #import "ios/chrome/browser/ui/infobars/infobar_constants.h"
 #import "ios/chrome/browser/ui/infobars/modals/infobar_modal_constants.h"
@@ -143,11 +142,14 @@
 
   // Dismisses the presented banner after a certain number of seconds.
   if (!UIAccessibilityIsVoiceOverRunning() && self.shouldUseDefaultDismissal) {
+    const base::TimeDelta timeDelta =
+        self.highPriorityPresentation
+            ? kInfobarBannerLongPresentationDuration
+            : kInfobarBannerDefaultPresentationDuration;
     // Calling base::OneShotTimer::Start() will cancel any previously scheduled
     // timer, so there is no need to call base::OneShotTimer::Stop() first.
     __weak InfobarCoordinator* weakSelf = self;
-    _autoDismissBannerTimer.Start(FROM_HERE, [self infobarPresentationDuration],
-                                  base::BindOnce(^{
+    _autoDismissBannerTimer.Start(FROM_HERE, timeDelta, base::BindOnce(^{
                                     [weakSelf dismissInfobarBannerIfReady];
                                   }));
   }
@@ -383,32 +385,6 @@
   } else {
     UpdateBannerAccessibilityForDismissal(presentingViewController);
   }
-}
-
-// Determines the length for which to show the infobar based on its priority and
-// its type.
-- (base::TimeDelta)infobarPresentationDuration {
-  // Experiments with longer infobar duration for passwords, cards and
-  // addresses.
-  InfobarType type = self.infobarType;
-  if (type == InfobarType::kInfobarTypePasswordSave ||
-      type == InfobarType::kInfobarTypePasswordUpdate) {
-    if (base::FeatureList::IsEnabled(kPasswordInfobarDisplayLength)) {
-      return base::Seconds(kPasswordInfobarDisplayLengthParam.Get());
-    }
-  } else if (type == InfobarType::kInfobarTypeSaveCard) {
-    if (base::FeatureList::IsEnabled(kCreditCardInfobarDisplayLength)) {
-      return base::Seconds(kCreditCardInfobarDisplayLengthParam.Get());
-    }
-  } else if (type == InfobarType::kInfobarTypeSaveAutofillAddressProfile) {
-    if (base::FeatureList::IsEnabled(kAddressInfobarDisplayLength)) {
-      return base::Seconds(kAddressInfobarDisplayLengthParam.Get());
-    }
-  }
-
-  return self.highPriorityPresentation
-             ? kInfobarBannerLongPresentationDuration
-             : kInfobarBannerDefaultPresentationDuration;
 }
 
 #pragma mark - Dismissal Helpers

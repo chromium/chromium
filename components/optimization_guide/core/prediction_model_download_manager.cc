@@ -217,7 +217,7 @@ void PredictionModelDownloadManager::OnDownloadStarted(
 }
 
 void PredictionModelDownloadManager::OnDownloadSucceeded(
-    absl::optional<proto::OptimizationTarget> optimization_target,
+    std::optional<proto::OptimizationTarget> optimization_target,
     const std::string& guid,
     const base::FilePath& download_file_path) {
   pending_download_guids_.erase(guid);
@@ -243,7 +243,7 @@ void PredictionModelDownloadManager::OnDownloadSucceeded(
 }
 
 void PredictionModelDownloadManager::OnDownloadFailed(
-    absl::optional<proto::OptimizationTarget> optimization_target,
+    std::optional<proto::OptimizationTarget> optimization_target,
     const std::string& guid) {
   pending_download_guids_.erase(guid);
 
@@ -366,7 +366,7 @@ void PredictionModelDownloadManager::OnDownloadUnzipped(
 }
 
 // static
-absl::optional<proto::PredictionModel>
+std::optional<proto::PredictionModel>
 PredictionModelDownloadManager::ProcessUnzippedContents(
     const base::FilePath& base_model_dir) {
   // Unpack and verify model info file.
@@ -376,25 +376,25 @@ PredictionModelDownloadManager::ProcessUnzippedContents(
   if (!base::ReadFileToString(model_info_path, &binary_model_info_pb)) {
     RecordPredictionModelDownloadStatus(
         PredictionModelDownloadStatus::kFailedModelInfoFileRead);
-    return absl::nullopt;
+    return std::nullopt;
   }
   proto::ModelInfo model_info;
   if (!model_info.ParseFromString(binary_model_info_pb)) {
     RecordPredictionModelDownloadStatus(
         PredictionModelDownloadStatus::kFailedModelInfoParsing);
-    return absl::nullopt;
+    return std::nullopt;
   }
   if (!model_info.has_version() || !model_info.has_optimization_target()) {
     RecordPredictionModelDownloadStatus(
         PredictionModelDownloadStatus::kFailedModelInfoInvalid);
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   base::FilePath model_path = base_model_dir.Append(GetBaseFileNameForModels());
   if (!base::PathExists(model_path)) {
     RecordPredictionModelDownloadStatus(
         PredictionModelDownloadStatus::kFailedModelFileNotFound);
-    return absl::nullopt;
+    return std::nullopt;
   }
   proto::PredictionModel model;
   *model.mutable_model_info() = model_info;
@@ -410,27 +410,26 @@ PredictionModelDownloadManager::ProcessUnzippedContents(
     if (!base::PathExists(store_add_file_path)) {
       RecordPredictionModelDownloadStatus(
           PredictionModelDownloadStatus::kFailedInvalidAdditionalFile);
-      return absl::nullopt;
+      return std::nullopt;
     }
     model.mutable_model_info()->add_additional_files()->set_file_path(
         FilePathToString(store_add_file_path));
   }
 
-  if (features::IsInstallWideModelStoreEnabled() &&
-      !WriteModelInfoProtoToFile(model.model_info(), model_info_path)) {
+  if (!WriteModelInfoProtoToFile(model.model_info(), model_info_path)) {
     RecordPredictionModelDownloadStatus(
         PredictionModelDownloadStatus::kFailedModelInfoSaving);
-    return absl::nullopt;
+    return std::nullopt;
   }
   RecordPredictionModelDownloadStatus(PredictionModelDownloadStatus::kSuccess);
 
-  return absl::make_optional(model);
+  return std::make_optional(model);
 }
 
 void PredictionModelDownloadManager::NotifyModelReady(
     proto::OptimizationTarget optimization_target,
     const base::FilePath& base_model_dir,
-    const absl::optional<proto::PredictionModel>& model) {
+    const std::optional<proto::PredictionModel>& model) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   if (!model) {

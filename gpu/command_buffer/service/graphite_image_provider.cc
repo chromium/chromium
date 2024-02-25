@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "gpu/command_buffer/service/graphite_image_provider.h"
+#include "base/metrics/histogram_macros.h"
 #include "third_party/skia/include/gpu/graphite/Image.h"
 
 namespace gpu {
@@ -37,7 +38,11 @@ sk_sp<SkImage> GraphiteImageProvider::findOrCreate(
 
   // Check whether this image has an entry in the cache and return it if so.
   auto result = cache_.find(key);
-  if (result != cache_.end()) {
+  bool hit_in_cache = result != cache_.end();
+  UMA_HISTOGRAM_BOOLEAN("Gpu.Graphite.GraphiteImageProviderAccessHitInCache",
+                        hit_in_cache);
+
+  if (hit_in_cache) {
     return result->second;
   }
 
@@ -70,6 +75,7 @@ void GraphiteImageProvider::PurgeCacheIfNecessaryToAllowForNewImage(
   // allowed size, in which case we just empty the cache.
   if (new_bytes > preferred_max_cache_bytes_) {
     cache_.clear();
+    current_cache_bytes_ = 0;
     return;
   }
 

@@ -37,24 +37,23 @@ import org.chromium.ui.modaldialog.ModalDialogProperties;
 import org.chromium.ui.test.util.modaldialog.FakeModalDialogManager;
 import org.chromium.ui.text.NoUnderlineClickableSpan;
 
-/**
- * Unit tests for {@link AutofillVirtualCardUnenrollmentDialog}
- */
+/** Unit tests for {@link AutofillVirtualCardUnenrollmentDialog} */
 @RunWith(BaseRobolectricTestRunner.class)
 public class AutofillVirtualCardUnenrollmentDialogTest {
-    @Rule
-    public MockitoRule mMockitoRule = MockitoJUnit.rule();
+    @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
-    @Mock
-    private Callback<Boolean> mCallbackMock;
+    @Mock private Callback<Boolean> mCallbackMock;
     private FakeModalDialogManager mModalDialogManager;
     private AutofillVirtualCardUnenrollmentDialog mDialog;
 
     @Before
     public void setUp() {
         mModalDialogManager = new FakeModalDialogManager(ModalDialogType.APP);
-        mDialog = new AutofillVirtualCardUnenrollmentDialog(
-                ApplicationProvider.getApplicationContext(), mModalDialogManager, mCallbackMock);
+        mDialog =
+                new AutofillVirtualCardUnenrollmentDialog(
+                        ApplicationProvider.getApplicationContext(),
+                        mModalDialogManager,
+                        mCallbackMock);
         mDialog.show();
     }
 
@@ -93,14 +92,18 @@ public class AutofillVirtualCardUnenrollmentDialogTest {
         Activity activity = Robolectric.buildActivity(Activity.class).setup().get();
         ShadowActivity shadowActivity = Shadows.shadowOf(activity);
         // Create a new AutofillVirtualCardUnenrollmentDialog with Activity as the context instead.
-        mDialog = new AutofillVirtualCardUnenrollmentDialog(
-                activity, mModalDialogManager, mCallbackMock);
+        mDialog =
+                new AutofillVirtualCardUnenrollmentDialog(
+                        activity, mModalDialogManager, mCallbackMock);
         mDialog.show();
         // Make sure that the dialog was shown properly.
         assertThat(mModalDialogManager.getShownDialogModel()).isNotNull();
         // Get the "Learn more about virtual cards" span.
-        SpannableString str = (SpannableString) mModalDialogManager.getShownDialogModel().get(
-                ModalDialogProperties.MESSAGE_PARAGRAPH_1);
+        SpannableString str =
+                (SpannableString)
+                        mModalDialogManager
+                                .getShownDialogModel()
+                                .get(ModalDialogProperties.MESSAGE_PARAGRAPH_1);
         // Assert that the message is not empty.
         assertThat(str.length()).isGreaterThan(0);
         NoUnderlineClickableSpan[] spans =

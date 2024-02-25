@@ -73,7 +73,7 @@ void DeviceAttester::SignResponse(const std::set<DTCPolicyLevel>& levels,
 void DeviceAttester::OnPublicKeyExported(
     KeyInfo& key_info,
     base::OnceClosure done_closure,
-    absl::optional<std::string> exported_key) {
+    std::optional<std::string> exported_key) {
   if (exported_key) {
     key_info.set_browser_instance_public_key(exported_key.value());
   }
@@ -84,7 +84,7 @@ void DeviceAttester::OnPublicKeyExported(
 void DeviceAttester::OnResponseSigned(
     SignedData& signed_data,
     base::OnceClosure done_closure,
-    absl::optional<std::vector<uint8_t>> signed_response) {
+    std::optional<std::vector<uint8_t>> signed_response) {
   if (signed_response.has_value()) {
     signed_data.set_signature(signed_response->data(), signed_response->size());
   }

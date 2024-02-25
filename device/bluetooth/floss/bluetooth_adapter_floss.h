@@ -18,6 +18,7 @@
 #include "device/bluetooth/bluetooth_discovery_session.h"
 #include "device/bluetooth/bluetooth_export.h"
 #include "device/bluetooth/bluetooth_gatt_service.h"
+#include "device/bluetooth/bluetooth_local_gatt_service.h"
 #include "device/bluetooth/bluetooth_socket_thread.h"
 #include "device/bluetooth/floss/bluetooth_low_energy_scan_session_floss.h"
 #include "device/bluetooth/floss/bluetooth_socket_floss.h"
@@ -115,6 +116,10 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothAdapterFloss final
       CreateAdvertisementCallback callback,
       AdvertisementErrorCallback error_callback) override;
 
+#if BUILDFLAG(IS_CHROMEOS)
+  bool IsExtendedAdvertisementsAvailable() const override;
+#endif  // BUILDFLAG(IS_CHROMEOS)
+
   void SetAdvertisingInterval(
       const base::TimeDelta& min,
       const base::TimeDelta& max,
@@ -126,12 +131,17 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothAdapterFloss final
 
   void ConnectDevice(
       const std::string& address,
-      const absl::optional<device::BluetoothDevice::AddressType>& address_type,
+      const std::optional<device::BluetoothDevice::AddressType>& address_type,
       ConnectDeviceCallback callback,
       ConnectDeviceErrorCallback error_callback) override;
 
   device::BluetoothLocalGattService* GetGattService(
       const std::string& identifier) const override;
+
+  base::WeakPtr<device::BluetoothLocalGattService> CreateLocalGattService(
+      const device::BluetoothUUID& uuid,
+      bool is_primary,
+      device::BluetoothLocalGattService::Delegate* delegate) override;
 
   // Register a GATT service. The service must belong to this adapter.
   void RegisterGattService(BluetoothLocalGattServiceFloss* service);
@@ -178,6 +188,8 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothAdapterFloss final
       std::unique_ptr<device::BluetoothLowEnergyScanFilter> filter,
       base::WeakPtr<device::BluetoothLowEnergyScanSession::Delegate> delegate)
       override;
+
+  std::vector<BluetoothRole> GetSupportedRoles() override;
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -240,6 +252,8 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothAdapterFloss final
                        DBusResult<Void> ret);
   // Called when all device properties have been initialized
   void OnInitializeDeviceProperties(BluetoothDeviceFloss* device_ptr);
+  // Called when the UUIDs property changed and fetched.
+  void OnDeviceUuidsChanged(BluetoothDeviceFloss* device_ptr);
   void OnGetConnectionState(const FlossDeviceId& device_id,
                             DBusResult<uint32_t> ret);
   void OnGetBondState(const FlossDeviceId& device_id, DBusResult<uint32_t> ret);
@@ -258,8 +272,10 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothAdapterFloss final
   void AdapterPresent(int adapter, bool present) override;
   void AdapterEnabledChanged(int adapter, bool enabled) override;
 
-  // Complete adapter power changes after adapter clients are ready.
-  void OnAdapterClientsReady(bool enabled);
+  // Complete adapter present/enabled changes after adapter clients are ready.
+  // Invoke PresentChanged to the observers only when |is_newly_present| is
+  // true.
+  void OnAdapterClientsReady(bool enabled, bool is_newly_present);
 
   // Initialize observers for adapter dependent clients. We need to add + remove
   // these observers whenever we get a powered notification.
@@ -304,7 +320,7 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothAdapterFloss final
   // floss::FlossAdminClientObserver override.
   void DevicePolicyEffectChanged(
       const FlossDeviceId& device_id,
-      const absl::optional<PolicyEffect>& effect) override;
+      const std::optional<PolicyEffect>& effect) override;
   void ServiceAllowlistChanged(
       const std::vector<device::BluetoothUUID>& allowlist) override;
 #endif  // BUILDFLAG(IS_CHROMEOS)

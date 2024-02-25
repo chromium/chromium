@@ -61,6 +61,19 @@ void AccessibilityBrowserTest::LoadInputField() {
           </html>)HTML"));
 }
 
+void AccessibilityBrowserTest::LoadScrollableInputField(std::string type) {
+  LoadInitialAccessibilityTreeFromHtml(
+      std::string(
+          R"HTML(<!DOCTYPE html>
+          <html>
+          <body>
+            <input type=")HTML") +
+      type + std::string(R"HTML(" style="width: 150px;" value=")HTML") +
+      base::EscapeForHTML(kInputContents) + std::string(R"HTML(">
+          </body>
+          </html>)HTML"));
+}
+
 void AccessibilityBrowserTest::LoadTextareaField() {
   LoadInitialAccessibilityTreeFromHtml(std::string(R"HTML(<!DOCTYPE html>
       <html>

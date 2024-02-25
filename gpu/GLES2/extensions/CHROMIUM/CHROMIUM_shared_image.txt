@@ -113,3 +113,4 @@ Revision History
     2018-10-31   Added Begin/End calls.
     2020-06-21   Added mode SHARED_IMAGE_ACCESS_MODE_OVERLAY_CHROMIUM.
     2023-01-18   Removed mode SHARED_IMAGE_ACCESS_MODE_OVERLAY_CHROMIUM.
+    2023-09-28   Added glTexImage2DSharedImageCHROMIUM().

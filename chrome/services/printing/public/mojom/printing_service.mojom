@@ -30,9 +30,11 @@ const sandbox.mojom.Sandbox kPrintingServiceSandbox
 [ServiceSandbox=kPrintingServiceSandbox]
 interface PrintingService {
   // Binds an interface that can be used to do Nup PDF conversion.
+  [EnableIf=enable_print_preview]
   BindPdfNupConverter(pending_receiver<PdfNupConverter> receiver);
 
   // Binds an interface that can be used to do PDF to PWG Raster conversion.
+  [EnableIf=enable_print_preview]
   BindPdfToPwgRasterConverter(
       pending_receiver<PdfToPwgRasterConverter> receiver);
 

@@ -54,8 +54,14 @@ void SharedWorkerThread::ClearWorkerBackingThread() {
 
 WorkerOrWorkletGlobalScope* SharedWorkerThread::CreateWorkerGlobalScope(
     std::unique_ptr<GlobalScopeCreationParams> creation_params) {
+  // We need to pull this bool out of creation_params before we construct
+  // SharedWorkerGlobalScope as it has to move the pointer to the base class
+  // before any information in it can be accessed.
+  bool require_cross_site_request_for_cookies =
+      creation_params->require_cross_site_request_for_cookies;
   return MakeGarbageCollected<SharedWorkerGlobalScope>(
-      std::move(creation_params), this, time_origin_, token_);
+      std::move(creation_params), this, time_origin_, token_,
+      require_cross_site_request_for_cookies);
 }
 
 }  // namespace blink

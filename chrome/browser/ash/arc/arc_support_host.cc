@@ -116,6 +116,21 @@ constexpr char kEventOnSendFeedbackClicked[] = "onSendFeedbackClicked";
 // button.
 constexpr char kEventOnRunNetworkTestsClicked[] = "onRunNetworkTestsClicked";
 
+// "onTosLoadResult" is fired when terms of service page is loaded or fails to
+// load.
+constexpr char kEventOnTosLoadResult[] = "onTosLoadResult";
+
+// "onTosLoadResult" should have the following fields:
+// - success
+constexpr char kSuccess[] = "success";
+
+// "onErrorPageShown" is fired when the error page is shown.
+constexpr char kEventOnErrorPageShown[] = "onErrorPageShown";
+
+// "OnErrorPageShown" should have the following fields:
+// - networkTestsShown
+constexpr char kNetworkTestsShown[] = "networkTestsShown";
+
 // "onOpenPrivacySettingsPageClicked" is fired when a user clicks privacy
 // settings link.
 constexpr char kEventOnOpenPrivacySettingsPageClicked[] =
@@ -187,9 +202,8 @@ std::ostream& operator<<(std::ostream& os, ArcSupportHost::Error error) {
 }  // namespace
 
 ArcSupportHost::ErrorInfo::ErrorInfo(Error error)
-    : error(error), arg(absl::nullopt) {}
-ArcSupportHost::ErrorInfo::ErrorInfo(Error error,
-                                     const absl::optional<int>& arg)
+    : error(error), arg(std::nullopt) {}
+ArcSupportHost::ErrorInfo::ErrorInfo(Error error, const std::optional<int>& arg)
     : error(error), arg(arg) {}
 ArcSupportHost::ErrorInfo::ErrorInfo(const ErrorInfo&) = default;
 ArcSupportHost::ErrorInfo& ArcSupportHost::ErrorInfo::operator=(
@@ -538,6 +552,11 @@ bool ArcSupportHost::Initialize() {
       l10n_util::GetStringUTF16(
           is_child ? IDS_ARC_OPT_IN_DIALOG_METRICS_MANAGED_DISABLED_CHILD
                    : IDS_ARC_OPT_IN_DIALOG_METRICS_MANAGED_DISABLED));
+  loadtime_data.Set(
+      "textBackupRestoreLabel",
+      l10n_util::GetStringUTF16(
+          is_child ? IDS_ARC_OPT_IN_DIALOG_BACKUP_RESTORE_CHILD_LABEL
+                   : IDS_ARC_OPT_IN_DIALOG_BACKUP_RESTORE_LABEL));
   loadtime_data.Set("textBackupRestore",
                     l10n_util::GetStringUTF16(
                         is_child ? IDS_ARC_OPT_IN_DIALOG_BACKUP_RESTORE_CHILD
@@ -651,16 +670,16 @@ void ArcSupportHost::OnMessage(const base::Value::Dict& message) {
     }
   } else if (*event == kEventOnAgreed || *event == kEventOnCanceled) {
     DCHECK(tos_delegate_);
-    absl::optional<bool> tos_shown = message.FindBool(kTosShown);
-    absl::optional<bool> is_metrics_enabled =
+    std::optional<bool> tos_shown = message.FindBool(kTosShown);
+    std::optional<bool> is_metrics_enabled =
         message.FindBool(kIsMetricsEnabled);
-    absl::optional<bool> is_backup_restore_enabled =
+    std::optional<bool> is_backup_restore_enabled =
         message.FindBool(kIsBackupRestoreEnabled);
-    absl::optional<bool> is_backup_restore_managed =
+    std::optional<bool> is_backup_restore_managed =
         message.FindBool(kIsBackupRestoreManaged);
-    absl::optional<bool> is_location_service_enabled =
+    std::optional<bool> is_location_service_enabled =
         message.FindBool(kIsLocationServiceEnabled);
-    absl::optional<bool> is_location_service_managed =
+    std::optional<bool> is_location_service_managed =
         message.FindBool(kIsLocationServiceManaged);
 
     const std::string* tos_content = message.FindString(kTosContent);
@@ -770,6 +789,15 @@ void ArcSupportHost::OnMessage(const base::Value::Dict& message) {
   } else if (*event == kEventOnRunNetworkTestsClicked) {
     DCHECK(error_delegate_);
     error_delegate_->OnRunNetworkTestsClicked();
+  } else if (*event == kEventOnTosLoadResult) {
+    if (tos_delegate_) {
+      tos_delegate_->OnTermsLoadResult(
+          message.FindBool(kSuccess).value_or(false));
+    }
+  } else if (*event == kEventOnErrorPageShown) {
+    DCHECK(error_delegate_);
+    error_delegate_->OnErrorPageShown(
+        message.FindBool(kNetworkTestsShown).value_or(false));
   } else if (*event == kEventOnOpenPrivacySettingsPageClicked) {
     chrome::ShowSettingsSubPageForProfile(profile_, chrome::kPrivacySubPage);
   } else if (*event == kEventRequestWindowBounds) {

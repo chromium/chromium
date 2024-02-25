@@ -18,14 +18,16 @@
 #endif  // BUILDFLAG(IS_WIN)
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
+#include <optional>
+
 #include "components/session_manager/core/session_manager_observer.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
+#include <optional>
+
 #include "chromeos/crosapi/mojom/login_state.mojom.h"  // nogncheck
 #include "mojo/public/cpp/bindings/receiver.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 
 #if BUILDFLAG(IS_WIN)
@@ -113,7 +115,7 @@ class CONTENT_EXPORT ScreenlockMonitorDeviceSource
     void OnSessionStateChanged() override;
 
    private:
-    absl::optional<ScreenlockEvent> prev_event_;
+    std::optional<ScreenlockEvent> prev_event_;
   };
 
   ScreenLockListener screenlock_listener_;
@@ -134,7 +136,7 @@ class CONTENT_EXPORT ScreenlockMonitorDeviceSource
     void OnSessionStateChanged(crosapi::mojom::SessionState state) override;
 
    private:
-    absl::optional<ScreenlockEvent> prev_event_;
+    std::optional<ScreenlockEvent> prev_event_;
     mojo::Receiver<crosapi::mojom::SessionStateChangedEventObserver> receiver_;
   };
 

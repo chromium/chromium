@@ -140,16 +140,11 @@ void ParkableImageManager::RecordStatisticsAfter5Minutes() const {
 
   // Metrics related to parking only should be recorded if the feature is
   // enabled.
-  if (IsParkableImagesToDiskEnabled()) {
-    base::UmaHistogramBoolean("Memory.ParkableImage.DiskIsUsable.5min",
-                              data_allocator().may_write());
-    // These metrics only make sense if the disk allocator is used.
-    if (data_allocator().may_write()) {
-      base::UmaHistogramTimes("Memory.ParkableImage.TotalWriteTime.5min",
-                              total_disk_write_time_);
-      base::UmaHistogramTimes("Memory.ParkableImage.TotalReadTime.5min",
-                              total_disk_read_time_);
-    }
+  if (IsParkableImagesToDiskEnabled() && data_allocator().may_write()) {
+    base::UmaHistogramTimes("Memory.ParkableImage.TotalWriteTime.5min",
+                            total_disk_write_time_);
+    base::UmaHistogramTimes("Memory.ParkableImage.TotalReadTime.5min",
+                            total_disk_read_time_);
   }
 }
 

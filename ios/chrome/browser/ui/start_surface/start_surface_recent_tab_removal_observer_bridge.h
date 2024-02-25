@@ -16,15 +16,15 @@ class WebState;
 // Protocol that corresponds to StartSurfaceRecentTabObserver API. Allows
 // registering Objective-C objects to listen to updates to the most recent tab.
 @protocol StartSurfaceRecentTabObserving <NSObject>
-@optional
 // Notifies the receiver that the most recent tab was removed.
-- (void)mostRecentTabWasRemoved:(web::WebState*)web_state;
+- (void)mostRecentTabWasRemoved:(web::WebState*)webState;
 // Notifies the receiver that the favicon for the current page of the most
 // recent tab was updated with `image`.
-- (void)mostRecentTabFaviconUpdatedWithImage:(UIImage*)image;
+- (void)mostRecentTab:(web::WebState*)webState
+    faviconUpdatedWithImage:(UIImage*)image;
 // Notifies the receiver that the title of the current page of the most recent
 // tab was updated to `title`.
-- (void)mostRecentTabTitleWasUpdated:(NSString*)title;
+- (void)mostRecentTab:(web::WebState*)webState titleWasUpdated:(NSString*)title;
 @end
 
 // Bridge to use an id<StartSurfaceRecentTabObserving> as a
@@ -45,8 +45,10 @@ class StartSurfaceRecentTabObserverBridge
  private:
   // StartSurfaceBrowserAgentObserver.
   void MostRecentTabRemoved(web::WebState* web_state) override;
-  void MostRecentTabFaviconUpdated(UIImage* image) override;
-  void MostRecentTabTitleUpdated(const std::u16string& title) override;
+  void MostRecentTabFaviconUpdated(web::WebState* web_state,
+                                   UIImage* image) override;
+  void MostRecentTabTitleUpdated(web::WebState* web_state,
+                                 const std::u16string& title) override;
 
   __weak id<StartSurfaceRecentTabObserving> delegate_ = nil;
 };

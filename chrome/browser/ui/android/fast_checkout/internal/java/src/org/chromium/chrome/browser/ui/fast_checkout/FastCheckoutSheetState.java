@@ -6,28 +6,18 @@ package org.chromium.chrome.browser.ui.fast_checkout;
 
 import org.chromium.chrome.browser.ui.fast_checkout.FastCheckoutProperties.ScreenType;
 
-/**
- * Provides read-only information about the state of the Fast Checkout bottomsheet.
- */
+/** Provides read-only information about the state of the Fast Checkout bottomsheet. */
 public interface FastCheckoutSheetState {
-    /**
-     * Returns the current screen type of the bottomsheet.
-     */
+    /** Returns the current screen type of the bottomsheet. */
     @ScreenType
     int getCurrentScreen();
 
-    /**
-     * Returns the number of Autofill profiles that would currently be displayed to the user.
-     */
+    /** Returns the number of Autofill profiles that would currently be displayed to the user. */
     int getNumOfAutofillProfiles();
 
-    /**
-     * Returns the number of credit cards that would currently be displayed to the user.
-     */
+    /** Returns the number of credit cards that would currently be displayed to the user. */
     int getNumOfCreditCards();
 
-    /**
-     * Returns the height of the bottomsheet's container, i.e. the screen.
-     */
+    /** Returns the height of the bottomsheet's container, i.e. the screen. */
     int getContainerHeight();
 }

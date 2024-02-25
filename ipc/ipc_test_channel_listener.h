@@ -22,8 +22,8 @@ class TestChannelListener : public Listener {
   static const size_t kLongMessageStringNumBytes = 50000;
   static void SendOneMessage(Sender* sender, const char* text);
 
-  TestChannelListener() : sender_(nullptr), messages_left_(50) {}
-  ~TestChannelListener() override {}
+  TestChannelListener();
+  ~TestChannelListener() override;
 
   bool OnMessageReceived(const Message& message) override;
   void OnChannelError() override;
@@ -34,12 +34,17 @@ class TestChannelListener : public Listener {
 
   bool HasSentAll() const { return 0 == messages_left_; }
 
+  void set_quit_closure(base::OnceClosure quit_closure) {
+    quit_closure_ = std::move(quit_closure);
+  }
+
  protected:
   void SendNextMessage();
 
  private:
   raw_ptr<Sender, DanglingUntriaged> sender_;
   int messages_left_;
+  base::OnceClosure quit_closure_;
 };
 
 }

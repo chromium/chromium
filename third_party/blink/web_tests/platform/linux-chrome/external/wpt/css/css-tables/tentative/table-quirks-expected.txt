@@ -1,0 +1,4 @@
+This is a testharness.js-based test.
+[FAIL] table 3
+  assert_equals: \n<table>\n  <tbody><tr>\n    <td nowrap="" style="width:50px;font: 20px/1 Ahem" data-expected-width="580">nowrap nowrap nowrap nowrap</td>\n  </tr>\n</tbody></table>\nwidth expected 580 but got 295
+Harness: the test ran to completion.

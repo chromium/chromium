@@ -11,8 +11,11 @@
 #include "base/command_line.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
+#include "base/json/json_writer.h"
 #include "base/strings/strcat.h"
-#include "base/strings/string_piece_forward.h"
+#include "base/strings/string_piece.h"
+#include "base/test/bind.h"
+#include "base/test/test_future.h"
 #include "base/threading/thread_restrictions.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/ash/login/existing_user_controller.h"
@@ -23,19 +26,23 @@
 #include "chrome/browser/ash/policy/core/device_local_account_policy_service.h"
 #include "chrome/browser/ash/policy/core/device_policy_cros_browser_test.h"
 #include "chrome/browser/ash/policy/test_support/embedded_policy_test_server_mixin.h"
+#include "chrome/browser/browser_process_platform_part_ash.h"
 #include "chrome/browser/prefs/session_startup_pref.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
-#include "chrome/browser/ui/web_applications/test/isolated_web_app_builder.h"
 #include "chrome/browser/ui/web_applications/test/isolated_web_app_test_utils.h"
+#include "chrome/browser/web_applications/isolated_web_apps/test/policy_generator.h"
+#include "chrome/browser/web_applications/isolated_web_apps/test/test_signed_web_bundle_builder.h"
 #include "chrome/browser/web_applications/policy/web_app_policy_manager.h"
 #include "chrome/browser/web_applications/test/web_app_test_observers.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
+#include "chrome/common/pref_names.h"
 #include "chromeos/ash/components/dbus/session_manager/fake_session_manager_client.h"
 #include "components/policy/core/common/cloud/test/policy_builder.h"
 #include "components/policy/core/common/policy_namespace.h"
 #include "components/policy/policy_constants.h"
 #include "components/policy/proto/chrome_device_policy.pb.h"
+#include "content/public/browser/browsing_data_remover.h"
 #include "content/public/common/content_features.h"
 #include "content/public/test/browser_test.h"
 
@@ -43,19 +50,20 @@ namespace web_app {
 
 namespace {
 
-constexpr char kUpdateManifestFileName[] = "update_manifest.json";
-constexpr char kIwaBundleFileName[] = "iwa_bundle.swbn";
-constexpr char kUpdateManifestTemplate[] = R"(
+constexpr char kUpdateManifestFileName1[] = "update_manifest_1.json";
+constexpr char kUpdateManifestFileName2[] = "update_manifest_2.json";
+constexpr char kIwaBundleFileName1[] = "iwa_bundle_1.swbn";
+constexpr char kIwaBundleFileName2[] = "iwa_bundle_2.swbn";
+constexpr char kUpdateManifestTemplate1[] = R"(
     {"versions":[
       {"version": "1.0.0", "src": "https://example.com/not-used.swbn"},
       {"version": "7.0.6", "src": "$1"}]
     })";
-constexpr char kIsolatedWebAppPolicyTemplate[] = R"([
-      {
-        "update_manifest_url": "$1",
-        "web_bundle_id": "$2"
-      }
-    ])";
+constexpr char kUpdateManifestTemplate2[] = R"(
+    {"versions":[
+      {"version": "2.0.0", "src": "$1"}]
+    })";
+
 const char kAccountId[] = "dla@example.com";
 const char kDisplayName[] = "display name";
 
@@ -109,19 +117,41 @@ class IsolatedWebAppPolicyManagerAshBrowserTest
     policy_test_server_mixin_.UpdateDevicePolicy(proto);
   }
 
-  void AddForceInstallIsolatedWebAppsToAccountPolicy() {
-    const std::string swb_id = iwa_bundle_.id.id();
+  // This policy is active at the moment of login.
+  void AddDeviceLocalAccountIwaPolicy() {
+    PolicyGenerator policy_generator;
+    policy_generator.AddForceInstalledIwa(
+        iwa_bundle_1_.id,
+        iwa_server_.GetURL(base::StrCat({"/", kUpdateManifestFileName1})));
+
     em::StringPolicyProto* const isolated_web_apps_proto =
         device_local_account_policy_.payload()
             .mutable_isolatedwebappinstallforcelist();
+    isolated_web_apps_proto->set_value(
+        WriteJson(policy_generator.Generate()).value());
+  }
 
-    std::vector<std::string> replacements = {
-        iwa_server_.GetURL(base::StrCat({"/", kUpdateManifestFileName})).spec(),
-        swb_id};
-    const std::string policy_value = base::ReplaceStringPlaceholders(
-        kIsolatedWebAppPolicyTemplate, replacements, nullptr);
+  void SetPolicyWithOneApp() {
+    PolicyGenerator policy_generator;
+    policy_generator.AddForceInstalledIwa(
+        iwa_bundle_1_.id,
+        iwa_server_.GetURL(base::StrCat({"/", kUpdateManifestFileName1})));
 
-    isolated_web_apps_proto->set_value(policy_value);
+    GetProfileForTest()->GetPrefs()->Set(prefs::kIsolatedWebAppInstallForceList,
+                                         policy_generator.Generate());
+  }
+
+  void SetPolicyWithTwoApps() {
+    PolicyGenerator policy_generator;
+    policy_generator.AddForceInstalledIwa(
+        iwa_bundle_1_.id,
+        iwa_server_.GetURL(base::StrCat({"/", kUpdateManifestFileName1})));
+    policy_generator.AddForceInstalledIwa(
+        iwa_bundle_2_.id,
+        iwa_server_.GetURL(base::StrCat({"/", kUpdateManifestFileName2})));
+
+    GetProfileForTest()->GetPrefs()->Set(prefs::kIsolatedWebAppInstallForceList,
+                                         policy_generator.Generate());
   }
 
   // Returns a profile which can be used for testing.
@@ -147,7 +177,7 @@ class IsolatedWebAppPolicyManagerAshBrowserTest
     auto* controller = ash::ExistingUserController::current_controller();
     ASSERT_TRUE(controller);
 
-    ash::UserContext user_context(user_manager::USER_TYPE_PUBLIC_ACCOUNT,
+    ash::UserContext user_context(user_manager::UserType::kPublicAccount,
                                   account_id_);
     controller->Login(user_context, ash::SigninSpecifics());
   }
@@ -177,16 +207,29 @@ class IsolatedWebAppPolicyManagerAshBrowserTest
     ASSERT_TRUE(temp_dir_.CreateUniqueTempDir());
     iwa_server_.ServeFilesFromDirectory(temp_dir_.GetPath());
     ASSERT_TRUE(iwa_server_.Start());
+    {
+      const std::vector<std::string> replacements1 = {
+          iwa_server_.GetURL(std::string("/") + kIwaBundleFileName1).spec(),
+          iwa_bundle_1_.id.id()};
+      const std::string update_manifest_value = base::ReplaceStringPlaceholders(
+          kUpdateManifestTemplate1, replacements1, nullptr);
 
-    const std::vector<std::string> replacements = {
-        iwa_server_.GetURL(std::string("/") + kIwaBundleFileName).spec(),
-        iwa_bundle_.id.id()};
-    const std::string update_manifest_value = base::ReplaceStringPlaceholders(
-        kUpdateManifestTemplate, replacements, nullptr);
+      WriteFile(kUpdateManifestFileName1, update_manifest_value);
+      WriteFile(kIwaBundleFileName1, std::string(iwa_bundle_1_.data.begin(),
+                                                 iwa_bundle_1_.data.end()));
+    }
 
-    WriteFile(kUpdateManifestFileName, update_manifest_value);
-    WriteFile(kIwaBundleFileName,
-              std::string(iwa_bundle_.data.begin(), iwa_bundle_.data.end()));
+    {
+      const std::vector<std::string> replacements2 = {
+          iwa_server_.GetURL(std::string("/") + kIwaBundleFileName2).spec(),
+          iwa_bundle_2_.id.id()};
+      const std::string update_manifest_value_app2 =
+          base::ReplaceStringPlaceholders(kUpdateManifestTemplate2,
+                                          replacements2, nullptr);
+      WriteFile(kUpdateManifestFileName2, update_manifest_value_app2);
+      WriteFile(kIwaBundleFileName2, std::string(iwa_bundle_2_.data.begin(),
+                                                 iwa_bundle_2_.data.end()));
+    }
   }
 
   const AccountId account_id_ =
@@ -194,10 +237,16 @@ class IsolatedWebAppPolicyManagerAshBrowserTest
           kAccountId,
           policy::DeviceLocalAccount::TYPE_PUBLIC_SESSION));
   policy::UserPolicyBuilder device_local_account_policy_;
-  const web_app::TestSignedWebBundle iwa_bundle_ =
+  const web_app::TestSignedWebBundle iwa_bundle_1_ =
+      web_app::TestSignedWebBundleBuilder::BuildDefault(
+          TestSignedWebBundleBuilder::BuildOptions()
+              .SetVersion(base::Version("7.0.6"))
+              .SetKeyPair(
+                  web_package::WebBundleSigner::KeyPair::CreateRandom()));
+  const web_app::TestSignedWebBundle iwa_bundle_2_ =
       web_app::TestSignedWebBundleBuilder::BuildDefault(
           TestSignedWebBundleBuilder::BuildOptions().SetVersion(
-              base::Version("7.0.6")));
+              base::Version("2.0.0")));
 
  private:
   ash::EmbeddedPolicyTestServerMixin policy_test_server_mixin_{&mixin_host_};
@@ -207,11 +256,12 @@ class IsolatedWebAppPolicyManagerAshBrowserTest
 };
 
 IN_PROC_BROWSER_TEST_F(IsolatedWebAppPolicyManagerAshBrowserTest,
-                       InstallIsolatedWebApp) {
+                       InstallIsolatedWebAppOnLogin) {
   SetupServer();
 
   AddManagedGuestSessionToDevicePolicy();
-  AddForceInstallIsolatedWebAppsToAccountPolicy();
+  AddDeviceLocalAccountIwaPolicy();
+
   UploadAndInstallDeviceLocalAccountPolicy();
   WaitForPolicy();
 
@@ -223,12 +273,120 @@ IN_PROC_BROWSER_TEST_F(IsolatedWebAppPolicyManagerAshBrowserTest,
 
   // Wait for the IWA to be installed.
   WebAppTestInstallObserver observer(profile);
-  const AppId id = observer.BeginListeningAndWait();
-  ASSERT_EQ(id,
-            IsolatedWebAppUrlInfo::CreateFromSignedWebBundleId(iwa_bundle_.id)
+  const webapps::AppId id = observer.BeginListeningAndWait();
+  EXPECT_EQ(id,
+            IsolatedWebAppUrlInfo::CreateFromSignedWebBundleId(iwa_bundle_1_.id)
                 .app_id());
   const WebAppProvider* provider = WebAppProvider::GetForTest(profile);
-  ASSERT_TRUE(provider->registrar_unsafe().IsInstalled(id));
+  EXPECT_TRUE(provider->registrar_unsafe().IsInstalled(id));
+}
+
+IN_PROC_BROWSER_TEST_F(IsolatedWebAppPolicyManagerAshBrowserTest,
+                       PolicyUpdate) {
+  SetupServer();
+
+  AddManagedGuestSessionToDevicePolicy();
+
+  UploadAndInstallDeviceLocalAccountPolicy();
+  WaitForPolicy();
+
+  // Log in in the managed guest session.
+  // There no IWA policy set at the moment of login.
+  ASSERT_NO_FATAL_FAILURE(StartLogin());
+  WaitForSessionStart();
+
+  // Set the policy with 1 IWA and wait for the IWA to be installed.
+  WebAppTestInstallObserver observer(GetProfileForTest());
+  SetPolicyWithOneApp();
+  const webapps::AppId id = observer.BeginListeningAndWait();
+  ASSERT_EQ(id,
+            IsolatedWebAppUrlInfo::CreateFromSignedWebBundleId(iwa_bundle_1_.id)
+                .app_id());
+  const WebAppProvider* provider =
+      WebAppProvider::GetForTest(GetProfileForTest());
+  EXPECT_TRUE(provider->registrar_unsafe().IsInstalled(id));
+
+  // Set the policy with 2 IWAs and wait for the IWA to be installed.
+  WebAppTestInstallObserver observer2(GetProfileForTest());
+  SetPolicyWithTwoApps();
+  const webapps::AppId id2 = observer2.BeginListeningAndWait();
+  EXPECT_EQ(id2,
+            IsolatedWebAppUrlInfo::CreateFromSignedWebBundleId(iwa_bundle_2_.id)
+                .app_id());
+}
+
+IN_PROC_BROWSER_TEST_F(IsolatedWebAppPolicyManagerAshBrowserTest,
+                       PolicyDeleteAndReinstall) {
+  SetupServer();
+
+  AddManagedGuestSessionToDevicePolicy();
+
+  UploadAndInstallDeviceLocalAccountPolicy();
+  WaitForPolicy();
+
+  // Log in to the managed guest session. There is no IWA policy set at the
+  // moment of login.
+  ASSERT_NO_FATAL_FAILURE(StartLogin());
+  WaitForSessionStart();
+
+  const webapps::AppId id1 =
+      IsolatedWebAppUrlInfo::CreateFromSignedWebBundleId(iwa_bundle_1_.id)
+          .app_id();
+  const webapps::AppId id2 =
+      IsolatedWebAppUrlInfo::CreateFromSignedWebBundleId(iwa_bundle_2_.id)
+          .app_id();
+
+  const WebAppProvider* provider =
+      WebAppProvider::GetForTest(GetProfileForTest());
+
+  // Set the policy with 2 IWAs and wait for the IWAs to be installed.
+  {
+    WebAppTestInstallObserver install_observer(GetProfileForTest());
+    install_observer.BeginListening({id1, id2});
+
+    SetPolicyWithTwoApps();
+    install_observer.Wait();
+
+    EXPECT_TRUE(provider->registrar_unsafe().IsInstalled(id1));
+    EXPECT_TRUE(provider->registrar_unsafe().IsInstalled(id2));
+  }
+
+  // Set the policy with 1 IWA and wait for the unnecessary IWA to be
+  // uninstalled.
+  {
+    // Prepare testing environment for uninstalling.
+    base::test::TestFuture<void> uninstall_browsing_data_future;
+    auto* browsing_data_remover = GetProfileForTest()->GetBrowsingDataRemover();
+    browsing_data_remover->SetWouldCompleteCallbackForTesting(
+        base::BindLambdaForTesting([&](base::OnceClosure callback) {
+          if (browsing_data_remover->GetPendingTaskCountForTesting() == 1u) {
+            uninstall_browsing_data_future.SetValue();
+          }
+          std::move(callback).Run();
+        }));
+
+    WebAppTestUninstallObserver uninstall_observer(GetProfileForTest());
+    uninstall_observer.BeginListening({id2});
+    SetPolicyWithOneApp();
+
+    ASSERT_TRUE(uninstall_browsing_data_future.Wait());
+    ASSERT_EQ(uninstall_observer.Wait(), id2);
+
+    EXPECT_TRUE(provider->registrar_unsafe().IsInstalled(id1));
+    EXPECT_FALSE(provider->registrar_unsafe().IsInstalled(id2));
+  }
+
+  // Set the policy with 2 IWAs and wait for the second IWA to be re-installed.
+  {
+    WebAppTestInstallObserver install_observer(GetProfileForTest());
+    install_observer.BeginListening({id2});
+
+    SetPolicyWithTwoApps();
+    install_observer.Wait();
+
+    EXPECT_TRUE(provider->registrar_unsafe().IsInstalled(id1));
+    EXPECT_TRUE(provider->registrar_unsafe().IsInstalled(id2));
+  }
 }
 
 }  // namespace web_app

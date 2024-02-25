@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/platform/peerconnection/webrtc_audio_sink.h"
 
+#include "base/memory/raw_ptr.h"
 #include "media/base/fake_single_thread_task_runner.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -24,7 +25,7 @@ class MockAudioSink : public webrtc::AudioTrackSinkInterface {
                     int sample_rate,
                     size_t number_of_channels,
                     size_t number_of_samples,
-                    absl::optional<int64_t> absolute_capture_timestamp_ms));
+                    std::optional<int64_t> absolute_capture_timestamp_ms));
 };
 
 class ScopedFakeClock : public rtc::ClockInterface {
@@ -42,7 +43,7 @@ class ScopedFakeClock : public rtc::ClockInterface {
   }
 
  private:
-  ClockInterface* const prev_clock_;
+  const raw_ptr<ClockInterface> prev_clock_;
   int64_t time_ns_;
 };
 
@@ -96,11 +97,11 @@ TEST(WebRtcAudioSinkTest, CaptureTimestamp) {
     EXPECT_CALL(
         sink_1,
         OnData(_, _, kSampleRateHz, kInputChannels, kOutputFramesPerBuffer,
-               absl::make_optional<int64_t>(kStartRtcTimestampMs)));
+               std::make_optional<int64_t>(kStartRtcTimestampMs)));
     EXPECT_CALL(
         sink_2,
         OnData(_, _, kSampleRateHz, kInputChannels, kOutputFramesPerBuffer,
-               absl::make_optional<int64_t>(kStartRtcTimestampMs)));
+               std::make_optional<int64_t>(kStartRtcTimestampMs)));
 
     web_media_stream_audio_sink->OnData(*bus, capture_time);
 
@@ -113,11 +114,11 @@ TEST(WebRtcAudioSinkTest, CaptureTimestamp) {
     EXPECT_CALL(
         sink_1,
         OnData(_, _, kSampleRateHz, kInputChannels, kOutputFramesPerBuffer,
-               absl::make_optional<int64_t>(kExpectedTimestampMs)));
+               std::make_optional<int64_t>(kExpectedTimestampMs)));
     EXPECT_CALL(
         sink_2,
         OnData(_, _, kSampleRateHz, kInputChannels, kOutputFramesPerBuffer,
-               absl::make_optional<int64_t>(kExpectedTimestampMs)));
+               std::make_optional<int64_t>(kExpectedTimestampMs)));
 
     web_media_stream_audio_sink->OnData(*bus, capture_time);
   }

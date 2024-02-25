@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_VARIATIONS_CLIENT_FILTERABLE_STATE_H_
 #define COMPONENTS_VARIATIONS_CLIENT_FILTERABLE_STATE_H_
 
+#include <optional>
 #include <string>
 
 #include "base/component_export.h"
@@ -13,9 +14,6 @@
 #include "base/time/time.h"
 #include "base/version.h"
 #include "components/variations/proto/study.pb.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
-
-class PrefService;
 
 namespace variations {
 
@@ -101,35 +99,21 @@ struct COMPONENT_EXPORT(VARIATIONS) ClientFilterableState {
   // base::Version used in {min,max}_os_version filtering.
   static base::Version GetOSVersion();
 
-  // Returns the time to use when determining whether a client should
-  // participate in a study. The returned time is one of the following:
-  // (A) The server-provided timestamp of when the seed to be used was fetched.
-  // (B) The Chrome binary's build time.
-  // (C) A client-provided timestamp stored in prefs during the FRE on some
-  //     platforms (in ChromeFeatureListCreator::SetupInitialPrefs()).
-  //
-  // These are prioritized as follows:
-  // (1) The server-provided timestamp (A) is returned when it is available and
-  //     fresher than the binary build time.
-  // (2) The client-provided timestamp (C) is returned if it was written to
-  //     prefs, has not yet been overwritten by a server-provided timestamp,
-  //     and it is fresher than the binary build time.
-  // (3) Otherwise, the binary build time (B) is returned.
-  static base::Time GetTimeForStudyDateChecks(bool is_safe_seed,
-                                              PrefService* local_state);
+  // Returns the hardware class string used for hardware_class filtering.
+  static std::string GetHardwareClass();
 
  private:
   // Evaluating enterprise status negatively affects performance, so we only
   // evaluate it if needed (i.e. if a study is filtering by enterprise) and at
   // most once.
   mutable IsEnterpriseFunction is_enterprise_function_;
-  mutable absl::optional<bool> is_enterprise_;
+  mutable std::optional<bool> is_enterprise_;
 
   // Evaluating group memberships involves parsing data received from Chrome
   // Sync server.  For safe rollout we do this only for studies that require
   // inspecting group memberships (and for efficiency we do it only once.)
   mutable GoogleGroupsFunction google_groups_function_;
-  mutable absl::optional<base::flat_set<uint64_t>> google_groups_;
+  mutable std::optional<base::flat_set<uint64_t>> google_groups_;
 };
 
 }  // namespace variations

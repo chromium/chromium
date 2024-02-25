@@ -57,7 +57,7 @@ void AssistantMainView::ChildPreferredSizeChanged(views::View* child) {
   // For this reason, we need to explicitly trigger a layout pass so that the
   // children of |main_stage_| are properly updated.
   if (child == main_stage_) {
-    Layout();
+    DeprecatedLayoutImmediately();
     SchedulePaint();
   }
 }
@@ -86,8 +86,8 @@ void AssistantMainView::OnAssistantControllerDestroying() {
 void AssistantMainView::OnUiVisibilityChanged(
     AssistantVisibility new_visibility,
     AssistantVisibility old_visibility,
-    absl::optional<AssistantEntryPoint> entry_point,
-    absl::optional<AssistantExitPoint> exit_point) {
+    std::optional<AssistantEntryPoint> entry_point,
+    std::optional<AssistantExitPoint> exit_point) {
   if (!assistant::util::IsStartingSession(new_visibility, old_visibility)) {
     return;
   }
@@ -133,7 +133,7 @@ void AssistantMainView::InitLayout() {
   layout->SetFlexForView(main_stage_, 1);
 }
 
-BEGIN_METADATA(AssistantMainView, views::View)
+BEGIN_METADATA(AssistantMainView)
 END_METADATA
 
 }  // namespace ash

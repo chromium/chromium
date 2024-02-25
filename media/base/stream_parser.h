@@ -8,11 +8,11 @@
 #include <stddef.h>
 #include <stdint.h>
 
-#include <map>
 #include <memory>
 #include <vector>
 
 #include "base/containers/circular_deque.h"
+#include "base/containers/flat_map.h"
 #include "base/functional/callback_forward.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/time/time.h"
@@ -25,28 +25,18 @@ namespace media {
 class MediaLog;
 class MediaTracks;
 class StreamParserBuffer;
-class TextTrackConfig;
 
 // Abstract interface for parsing media byte streams.
 class MEDIA_EXPORT StreamParser {
  public:
   using BufferQueue = base::circular_deque<scoped_refptr<StreamParserBuffer>>;
 
-  // Range of |TrackId| is dependent upon stream parsers. It is currently
-  // the key for the buffer's text track config in the applicable
-  // TextTrackConfigMap (which is passed in StreamParser::NewConfigCB), or
-  // 0 for other media types that currently allow at most one track.
-  // WebMTracksParser uses -1 as an invalid text track number.
-  // It is also the key for BufferQueueMap structure returned by stream parsers.
-  // TODO(servolk/wolenetz): Change to size_type or unsigned after fixing track
-  // id handling in FrameProcessor.
-  typedef int TrackId;
-
-  // Map of text track ID to the track configuration.
-  typedef std::map<TrackId, TextTrackConfig> TextTrackConfigMap;
+  // Range of |TrackId| is dependent upon stream parsers.
+  // It is the key for BufferQueueMap structure returned by stream parsers.
+  using TrackId = int;
 
   // Map of track ID to decode-timestamp-ordered buffers for the track.
-  using BufferQueueMap = std::map<TrackId, BufferQueue>;
+  using BufferQueueMap = base::flat_map<TrackId, BufferQueue>;
 
   // With incremental parsing, parse can succeed yet also still indicate there
   // is more uninspected data to parse. This enum identifies the possible
@@ -87,9 +77,8 @@ class MEDIA_EXPORT StreamParser {
 
     // Counts of tracks detected by type within this stream. Not all of these
     // tracks may be selected for use by the parser.
-    int detected_audio_track_count;
-    int detected_video_track_count;
-    int detected_text_track_count;
+    int detected_audio_track_count = 0;
+    int detected_video_track_count = 0;
   };
 
   // Indicates completion of parser initialization.
@@ -100,13 +89,10 @@ class MEDIA_EXPORT StreamParser {
   // First parameter - An object containing information about media tracks as
   //                   well as audio/video decoder configs associated with each
   //                   track the parser will use from the stream.
-  // Second parameter - The new text tracks configuration.  If the map is empty,
-  //                    then no text tracks were parsed for use from the stream.
   // Return value - True if the new configurations are accepted.
   //                False if the new configurations are not supported
   //                and indicates that a parsing error should be signalled.
-  typedef base::RepeatingCallback<bool(std::unique_ptr<MediaTracks>,
-                                       const TextTrackConfigMap&)>
+  typedef base::RepeatingCallback<bool(std::unique_ptr<MediaTracks>)>
       NewConfigCB;
 
   // New stream buffers have been parsed.
@@ -141,12 +127,10 @@ class MEDIA_EXPORT StreamParser {
   // data is passed to AppendToParseBuffer() or any call to Parse() or
   // ProcessChunks(). `init_cb` will be called once enough data has been parsed
   // to determine the initial stream configurations, presentation start time,
-  // and duration. If `ignore_text_track` is true, then no text buffers should
-  // be passed later by the parser to `new_buffers_cb`.
+  // and duration.
   virtual void Init(InitCB init_cb,
                     NewConfigCB config_cb,
                     NewBuffersCB new_buffers_cb,
-                    bool ignore_text_track,
                     EncryptedMediaInitDataCB encrypted_media_init_data_cb,
                     NewMediaSegmentCB new_segment_cb,
                     EndMediaSegmentCB end_of_segment_cb,
@@ -202,7 +186,7 @@ class MEDIA_EXPORT StreamParser {
 // Any previous contents of |merged_buffers| is assumed to have lower
 // decode timestamps versus the provided buffers. All provided buffer queues
 // are assumed to already be in decode-timestamp order.
-// Returns false if any of the provided audio/video/text buffers are found
+// Returns false if any of the provided audio/video buffers are found
 // to not be in decode timestamp order, or have a decode timestamp less than
 // the last buffer, if any, in |merged_buffers|. Partial results may exist
 // in |merged_buffers| in this case. Returns true on success.

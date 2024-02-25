@@ -968,8 +968,8 @@ TEST_F(VisibleUnitsLineTest, InSameLineWithMixedEditability) {
   SelectionInDOMTree selection =
       SetSelectionTextToBody("<span contenteditable>f^oo</span>b|ar");
 
-  PositionWithAffinity position1(selection.Base());
-  PositionWithAffinity position2(selection.Extent());
+  PositionWithAffinity position1(selection.Anchor());
+  PositionWithAffinity position2(selection.Focus());
   // "Same line" is restricted by editability boundaries.
   EXPECT_FALSE(InSameLine(position1, position2));
 }
@@ -1006,8 +1006,8 @@ TEST_F(VisibleUnitsLineTest, InSameLineWithSoftLineWrap) {
   const SelectionInDOMTree& selection =
       SetSelectionTextToBody("<p contenteditable id=t>abc |xyz</p>");
   EXPECT_FALSE(InSameLine(
-      PositionWithAffinity(selection.Base(), TextAffinity::kUpstream),
-      PositionWithAffinity(selection.Base(), TextAffinity::kDownstream)));
+      PositionWithAffinity(selection.Anchor(), TextAffinity::kUpstream),
+      PositionWithAffinity(selection.Anchor(), TextAffinity::kDownstream)));
 }
 
 TEST_F(VisibleUnitsLineTest, InSameLineWithZeroWidthSpace) {
@@ -1018,13 +1018,13 @@ TEST_F(VisibleUnitsLineTest, InSameLineWithZeroWidthSpace) {
   const SelectionInDOMTree& selection =
       SetSelectionTextToBody("<p id=t>abcd^\u200B|wxyz</p>");
 
-  const Position& after_zws = selection.Extent();
+  const Position& after_zws = selection.Focus();
   const PositionWithAffinity after_zws_down =
       PositionWithAffinity(after_zws, TextAffinity::kDownstream);
   const PositionWithAffinity after_zws_up =
       PositionWithAffinity(after_zws, TextAffinity::kUpstream);
 
-  const Position& before_zws = selection.Base();
+  const Position& before_zws = selection.Anchor();
   const PositionWithAffinity before_zws_down =
       PositionWithAffinity(before_zws, TextAffinity::kDownstream);
   const PositionWithAffinity before_zws_up =

@@ -11,7 +11,9 @@ import static org.mockito.Mockito.when;
 
 import android.os.Bundle;
 
-import androidx.appcompat.widget.SwitchCompat;
+import androidx.annotation.NonNull;
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentFactory;
 import androidx.fragment.app.testing.FragmentScenario;
 
 import org.junit.After;
@@ -28,35 +30,28 @@ import org.chromium.base.test.util.JniMocker;
 import org.chromium.base.test.util.UserActionTester;
 import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.components.browser_ui.widget.MaterialSwitchWithText;
 import org.chromium.components.prefs.PrefService;
 import org.chromium.components.user_prefs.UserPrefs;
 import org.chromium.components.user_prefs.UserPrefsJni;
 
-/**
- * JUnit tests of the class {@link SearchSuggestionsFragment}.
- */
+/** JUnit tests of the class {@link SearchSuggestionsFragment}. */
 @RunWith(BaseRobolectricTestRunner.class)
 public class SearchSuggestionsFragmentTest {
-    @Rule
-    public JniMocker mocker = new JniMocker();
-    @Rule
-    public MockitoRule mMockitoRule = MockitoJUnit.rule();
+    @Rule public JniMocker mocker = new JniMocker();
+    @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
-    @Mock
-    private Profile mProfile;
-    @Mock
-    private UserPrefs.Natives mUserPrefsJniMock;
-    @Mock
-    private PrefService mPrefService;
+    @Mock private Profile mProfile;
+    @Mock private UserPrefs.Natives mUserPrefsJniMock;
+    @Mock private PrefService mPrefService;
 
     private FragmentScenario mScenario;
-    private SwitchCompat mSearchSuggestionsButton;
+    private MaterialSwitchWithText mSearchSuggestionsButton;
     private final UserActionTester mActionTester = new UserActionTester();
 
     @Before
     public void setUp() {
         mocker.mock(UserPrefsJni.TEST_HOOKS, mUserPrefsJniMock);
-        Profile.setLastUsedProfileForTesting(mProfile);
         when(mUserPrefsJniMock.get(mProfile)).thenReturn(mPrefService);
     }
 
@@ -71,11 +66,27 @@ public class SearchSuggestionsFragmentTest {
     private void initFragmentWithSearchSuggestionsState(boolean isSearchSuggestionsOn) {
         when(mPrefService.getBoolean(Pref.SEARCH_SUGGEST_ENABLED))
                 .thenReturn(isSearchSuggestionsOn);
-        mScenario = FragmentScenario.launchInContainer(
-                SearchSuggestionsFragment.class, Bundle.EMPTY, R.style.Theme_MaterialComponents);
-        mScenario.onFragment(fragment
-                -> mSearchSuggestionsButton =
-                           fragment.getView().findViewById(R.id.search_suggestions_switch));
+        mScenario =
+                FragmentScenario.launchInContainer(
+                        SearchSuggestionsFragment.class,
+                        Bundle.EMPTY,
+                        org.chromium.chrome.R.style.Theme_BrowserUI_DayNight,
+                        new FragmentFactory() {
+                            @NonNull
+                            @Override
+                            public Fragment instantiate(
+                                    @NonNull ClassLoader classLoader, @NonNull String className) {
+                                Fragment fragment = super.instantiate(classLoader, className);
+                                if (fragment instanceof SearchSuggestionsFragment) {
+                                    ((SearchSuggestionsFragment) fragment).setProfile(mProfile);
+                                }
+                                return fragment;
+                            }
+                        });
+        mScenario.onFragment(
+                fragment ->
+                        mSearchSuggestionsButton =
+                                fragment.getView().findViewById(R.id.search_suggestions_switch));
     }
 
     @Test

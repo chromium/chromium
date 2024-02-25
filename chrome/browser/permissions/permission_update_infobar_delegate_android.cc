@@ -9,7 +9,7 @@
 
 #include "base/memory/ptr_util.h"
 #include "chrome/browser/android/android_theme_resources.h"
-#include "chrome/grit/chromium_strings.h"
+#include "chrome/grit/branded_strings.h"
 #include "components/infobars/android/confirm_infobar.h"
 #include "components/infobars/content/content_infobar_manager.h"
 #include "components/infobars/core/infobar.h"

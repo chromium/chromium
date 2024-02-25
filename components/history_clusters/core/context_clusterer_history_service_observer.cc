@@ -162,7 +162,7 @@ void ContextClustererHistoryServiceObserver::OnURLVisited(
   std::u16string search_terms;
   bool is_search_normalized_url = false;
   if (template_url_service_) {
-    absl::optional<TemplateURLService::SearchMetadata> search_metadata =
+    std::optional<TemplateURLService::SearchMetadata> search_metadata =
         template_url_service_->ExtractSearchMetadata(url_row.url());
     if (search_metadata) {
       normalized_url = search_metadata->normalized_url.possibly_invalid_spec();
@@ -205,7 +205,7 @@ void ContextClustererHistoryServiceObserver::OnURLVisited(
   }
 
   // See what cluster we should add it to.
-  absl::optional<int64_t> cluster_id;
+  std::optional<int64_t> cluster_id;
 
   std::vector<history::VisitID> previous_visit_ids_to_check;
   if (new_visit.opener_visit != 0) {
@@ -239,7 +239,7 @@ void ContextClustererHistoryServiceObserver::OnURLVisited(
                                  in_progress_cluster)) {
       FinalizeCluster(*cluster_id);
 
-      cluster_id = absl::nullopt;
+      cluster_id = std::nullopt;
     }
   }
   bool is_new_cluster = !cluster_id;
@@ -328,7 +328,7 @@ void ContextClustererHistoryServiceObserver::OnURLsDeleted(
     std::string normalized_deleted_url =
         deleted_url.url().possibly_invalid_spec();
     if (template_url_service_) {
-      absl::optional<TemplateURLService::SearchMetadata> search_metadata =
+      std::optional<TemplateURLService::SearchMetadata> search_metadata =
           template_url_service_->ExtractSearchMetadata(deleted_url.url());
       if (search_metadata) {
         normalized_deleted_url =

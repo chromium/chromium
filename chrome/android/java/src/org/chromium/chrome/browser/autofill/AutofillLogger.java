@@ -4,18 +4,15 @@
 
 package org.chromium.chrome.browser.autofill;
 
-import org.chromium.base.ResettersForTesting;
-import org.chromium.base.annotations.CalledByNative;
-import org.chromium.base.annotations.JNINamespace;
+import org.jni_zero.CalledByNative;
+import org.jni_zero.JNINamespace;
 
-/**
-* JNI call glue for AutofillExternalDelagate C++ and Java objects.
-*/
+import org.chromium.base.ResettersForTesting;
+
+/** JNI call glue for AutofillExternalDelagate C++ and Java objects. */
 @JNINamespace("autofill")
 public class AutofillLogger {
-    /**
-     * An entry to be sent to Logger.
-     */
+    /** An entry to be sent to Logger. */
     public static class LogEntry {
         private final String mAutofilledValue;
         private final String mProfileFullName;

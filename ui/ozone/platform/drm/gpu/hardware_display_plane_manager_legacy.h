@@ -34,10 +34,6 @@ class HardwareDisplayPlaneManagerLegacy : public HardwareDisplayPlaneManager {
               gfx::GpuFenceHandle* release_fence) override;
   bool DisableOverlayPlanes(HardwareDisplayPlaneList* plane_list) override;
 
-  bool SetColorCorrectionOnAllCrtcPlanes(
-      uint32_t crtc_id,
-      ScopedDrmColorCtmPtr ctm_blob_data) override;
-
   bool ValidatePrimarySize(const DrmOverlayPlane& primary,
                            const drmModeModeInfo& mode) override;
 
@@ -55,8 +51,7 @@ class HardwareDisplayPlaneManagerLegacy : public HardwareDisplayPlaneManager {
   bool IsCompatible(HardwareDisplayPlane* plane,
                     const DrmOverlayPlane& overlay,
                     uint32_t crtc_id) const override;
-  bool CommitColorMatrix(const CrtcProperties& crtc_props) override;
-  bool CommitGammaCorrection(const CrtcProperties& crtc_props) override;
+  bool CommitPendingCrtcState(CrtcState* state) override;
 };
 
 }  // namespace ui

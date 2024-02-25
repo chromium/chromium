@@ -5,9 +5,10 @@
 #ifndef CHROME_BROWSER_ASH_POLICY_REPORTING_METRICS_REPORTING_METRIC_REPORTING_PREFS_H_
 #define CHROME_BROWSER_ASH_POLICY_REPORTING_METRICS_REPORTING_METRIC_REPORTING_PREFS_H_
 
+#include <optional>
 #include <string>
 
-#include "third_party/abseil-cpp/absl/types/optional.h"
+class PrefRegistrySimple;
 
 namespace user_prefs {
 class PrefRegistrySyncable;
@@ -50,10 +51,11 @@ constexpr char kAppCategoryPWA[] = "progressive_web_apps";
 constexpr char kAppCategorySystemApps[] = "system_apps";
 
 void RegisterProfilePrefs(::user_prefs::PrefRegistrySyncable* registry);
+void RegisterLocalStatePrefs(PrefRegistrySimple* registry);
 
 // Gets the corresponding app metric reporting category for the specified app
 // type.
-absl::optional<std::string> GetAppReportingCategoryForType(
+std::optional<std::string> GetAppReportingCategoryForType(
     ::apps::AppType app_type);
 
 // Retrieves the corresponding app reporting policy and returns true if the app

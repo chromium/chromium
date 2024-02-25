@@ -6,6 +6,7 @@
 #define COMPONENTS_REPORTING_METRICS_PERIODIC_COLLECTOR_H_
 
 #include <memory>
+#include <optional>
 #include <string>
 
 #include "base/memory/raw_ptr.h"
@@ -13,7 +14,6 @@
 #include "base/time/time.h"
 #include "components/reporting/metrics/collector_base.h"
 #include "components/reporting/proto/synced/metric_data.pb.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace reporting {
 
@@ -27,6 +27,10 @@ class Sampler;
 // is enabled.
 class PeriodicCollector : public CollectorBase {
  public:
+  // Metrics name for reporting missing metric data to UMA.
+  static constexpr char kNoMetricDataMetricsName[] =
+      "Browser.ERP.MetricsReporting.PeriodicCollectorNoMetricData";
+
   // Start periodic collection after `init_delay`.
   PeriodicCollector(Sampler* sampler,
                     MetricReportQueue* metric_report_queue,
@@ -56,7 +60,7 @@ class PeriodicCollector : public CollectorBase {
  protected:
   // CollectorBase:
   void OnMetricDataCollected(bool is_event_driven,
-                             absl::optional<MetricData> metric_data) override;
+                             std::optional<MetricData> metric_data) override;
   bool CanCollect() const override;
 
  private:

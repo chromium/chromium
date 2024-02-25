@@ -35,7 +35,7 @@
 
 #if !BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/media/webrtc/media_stream_focus_delegate.h"
-#include "chrome/grit/chromium_strings.h"
+#include "chrome/grit/branded_strings.h"
 #include "components/vector_icons/vector_icons.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/gfx/color_palette.h"
@@ -285,7 +285,7 @@ class MediaStreamCaptureIndicator::UIDelegate : public content::MediaStreamUI {
   }
 
   void OnRegionCaptureRectChanged(
-      const absl::optional<gfx::Rect>& region_capture_rect) override {
+      const std::optional<gfx::Rect>& region_capture_rect) override {
     DCHECK_CURRENTLY_ON(BrowserThread::UI);
     if (ui_) {
       ui_->OnRegionCaptureRectChanged(region_capture_rect);
@@ -344,9 +344,15 @@ void MediaStreamCaptureIndicator::WebContentsDeviceUsage::AddDevices(
 
   if (type == MediaType::kUserMedia) {
     user_media_stop_callbacks_[stop_callback_id] = std::move(stop_callback);
-  } else if (type == MediaType::kDisplayMedia) {
-    display_media_stop_callbacks_[stop_callback_id] = std::move(stop_callback);
   }
+
+  // TODO(crbug.com/1479984): Don't turn on this until related bugs are fixed.
+  // This may record the same stop_callback twice and lead to a crash if
+  // called later on.
+  // if (type == MediaType::kDisplayMedia) {
+  //     display_media_stop_callbacks_[stop_callback_id] =
+  //     std::move(stop_callback);
+  //   }
 
   if (web_contents()) {
     web_contents()->NotifyNavigationStateChanged(content::INVALIDATE_TYPE_TAB);
@@ -542,8 +548,9 @@ bool MediaStreamCaptureIndicator::CheckUsage(
     content::WebContents* web_contents,
     const WebContentsDeviceUsagePredicate& pred) const {
   auto it = usage_map_.find(web_contents);
-  if (it != usage_map_.end() && pred.Run(it->second.get()))
+  if (it != usage_map_.end() && pred(it->second.get())) {
     return true;
+  }
 
   for (auto* inner_contents : web_contents->GetInnerWebContents()) {
     if (CheckUsage(inner_contents, pred))
@@ -556,50 +563,39 @@ bool MediaStreamCaptureIndicator::CheckUsage(
 bool MediaStreamCaptureIndicator::IsCapturingUserMedia(
     content::WebContents* web_contents) const {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  return CheckUsage(
-      web_contents,
-      base::BindRepeating([](const WebContentsDeviceUsage* usage) {
-        return usage->IsCapturingAudio() || usage->IsCapturingVideo();
-      }));
+  return CheckUsage(web_contents, [](const WebContentsDeviceUsage* usage) {
+    return usage->IsCapturingAudio() || usage->IsCapturingVideo();
+  });
 }
 
 bool MediaStreamCaptureIndicator::IsCapturingVideo(
     content::WebContents* web_contents) const {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  return CheckUsage(
-      web_contents,
-      base::BindRepeating(&WebContentsDeviceUsage::IsCapturingVideo));
+  return CheckUsage(web_contents, &WebContentsDeviceUsage::IsCapturingVideo);
 }
 
 bool MediaStreamCaptureIndicator::IsCapturingAudio(
     content::WebContents* web_contents) const {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  return CheckUsage(
-      web_contents,
-      base::BindRepeating(&WebContentsDeviceUsage::IsCapturingAudio));
+  return CheckUsage(web_contents, &WebContentsDeviceUsage::IsCapturingAudio);
 }
 
 bool MediaStreamCaptureIndicator::IsBeingMirrored(
     content::WebContents* web_contents) const {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  return CheckUsage(web_contents,
-                    base::BindRepeating(&WebContentsDeviceUsage::IsMirroring));
+  return CheckUsage(web_contents, &WebContentsDeviceUsage::IsMirroring);
 }
 
 bool MediaStreamCaptureIndicator::IsCapturingWindow(
     content::WebContents* web_contents) const {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  return CheckUsage(
-      web_contents,
-      base::BindRepeating(&WebContentsDeviceUsage::IsCapturingWindow));
+  return CheckUsage(web_contents, &WebContentsDeviceUsage::IsCapturingWindow);
 }
 
 bool MediaStreamCaptureIndicator::IsCapturingDisplay(
     content::WebContents* web_contents) const {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  return CheckUsage(
-      web_contents,
-      base::BindRepeating(&WebContentsDeviceUsage::IsCapturingDisplay));
+  return CheckUsage(web_contents, &WebContentsDeviceUsage::IsCapturingDisplay);
 }
 
 void MediaStreamCaptureIndicator::StopMediaCapturing(

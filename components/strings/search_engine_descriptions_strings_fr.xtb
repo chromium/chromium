@@ -1,0 +1,22 @@
+
+<?xml version="1.0" ?>
+<!DOCTYPE translationbundle>
+<!-- This file is generated using
+google3/googleclient/chrome/tools/search_engine_choice/generate_marketing_snippets.py.
+Do not modify it manually. -->
+<translationbundle lang="fr">
+  <translation id="IDS_BING_SEARCH_DESCRIPTION">Microsoft Bing est un moteur de recherche IA alimenté par GPT-4</translation>
+  <translation id="IDS_BRAVE_SEARCH_DESCRIPTION">Bloquez les publicités et les traqueurs pendant que vous naviguez sur le web.</translation>
+  <translation id="IDS_ECOSIA_SEARCH_DESCRIPTION">Plantez des arbres avec vos recherches. Plus de 200 millions d'arbres plantés.</translation>
+  <translation id="IDS_GOOGLE_SEARCH_DESCRIPTION">Trouvez ce dont vous avez besoin avec le moteur de recherche le plus utilisé du monde.</translation>
+  <translation id="IDS_INFOCOM_SEARCH_DESCRIPTION">Recherche rapide et facile</translation>
+  <translation id="IDS_KARMA_SEARCH_DESCRIPTION">Ensemble protégeons les animaux et la biodiversité</translation>
+  <translation id="IDS_LILO_SEARCH_DESCRIPTION">Vos recherches internet financent gratuitement des associations</translation>
+  <translation id="IDS_MOJEEK_SEARCH_DESCRIPTION">Indépendant, moteur de recherche européen, sans suivi</translation>
+  <translation id="IDS_OCEANHERO_SEARCH_DESCRIPTION">Vos recherches nettoient nos océans et plages du plastique.</translation>
+  <translation id="IDS_PANDA_SEARCH_DESCRIPTION">Lancez des recherches avec Panda et soutenez les projets et les campagnes du WWF.</translation>
+  <translation id="IDS_PRIVACYWALL_SEARCH_DESCRIPTION">Un moteur de recherche qui protège votre vie privée.</translation>
+  <translation id="IDS_QWANT_SEARCH_DESCRIPTION">Moteur de recherche et navigateur web de confiance</translation>
+  <translation id="IDS_YANDEX_SEARCH_DESCRIPTION">Recherche rapide et sécurisée de sites web, d’images et de vidéos</translation>
+  <translation id="IDS_YEP_SEARCH_DESCRIPTION">Moteur de recherche Web qui vise à partager les revenus publicitaires avec les créateurs.</translation>
+</translationbundle>

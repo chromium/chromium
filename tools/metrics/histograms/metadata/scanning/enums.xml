@@ -1,0 +1,109 @@
+<!--
+Copyright 2023 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<!--
+
+This file describes the enumerations referenced by entries in histograms.xml for
+this directory. Some enums may instead be listed in the central enums.xml file
+at src/tools/metrics/histograms/enums.xml when multiple files use them.
+
+For best practices on writing enumerations descriptions, see
+https://chromium.googlesource.com/chromium/src.git/+/HEAD/tools/metrics/histograms/README.md#Enum-Histograms
+
+Please follow the instructions in the OWNERS file in this directory to find a
+reviewer. If no OWNERS file exists, please consider signing up at
+go/reviewing-metrics (Googlers only), as all subdirectories are expected to
+have an OWNERS file. As a last resort you can send the CL to
+chromium-metrics-reviews@google.com.
+-->
+
+<histogram-configuration>
+
+<!-- Enum types -->
+
+<enums>
+
+<enum name="ScanCompleteAction">
+  <int value="0" label="Done button clicked"/>
+  <int value="1" label="Files app opened"/>
+  <int value="2" label="Media app opened"/>
+</enum>
+
+<enum name="ScanJobSettingsColorMode">
+  <int value="0" label="Black and white"/>
+  <int value="1" label="Grayscale"/>
+  <int value="2" label="Color"/>
+</enum>
+
+<enum name="ScanJobSettingsFileType">
+  <int value="0" label="JPG"/>
+  <int value="1" label="PDF"/>
+  <int value="2" label="PNG"/>
+</enum>
+
+<enum name="ScanJobSettingsPageSize">
+  <int value="0" label="A3"/>
+  <int value="1" label="A4"/>
+  <int value="2" label="B4"/>
+  <int value="3" label="Legal"/>
+  <int value="4" label="Letter"/>
+  <int value="5" label="Tabloid"/>
+  <int value="6" label="Max"/>
+</enum>
+
+<enum name="ScanJobSettingsResolution">
+  <int value="0" label="Unexpected dpi"/>
+  <int value="1" label="75 dpi"/>
+  <int value="2" label="100 dpi"/>
+  <int value="3" label="150 dpi"/>
+  <int value="4" label="200 dpi"/>
+  <int value="5" label="300 dpi"/>
+  <int value="6" label="600 dpi"/>
+</enum>
+
+<enum name="ScanJobSettingsSource">
+  <int value="0" label="Unknown"/>
+  <int value="1" label="Flatbed"/>
+  <int value="2" label="ADF Simplex"/>
+  <int value="3" label="ADF Duplex"/>
+  <int value="4" label="Default"/>
+</enum>
+
+<enum name="ScanMultiPageToolbarAction">
+  <int value="0" label="Remove page"/>
+  <int value="1" label="Rescan page"/>
+</enum>
+
+<!--
+Values match the OperationResult enum from
+third_party/cros_system_api/dbus/lorgnette/lorgnette_service.proto
+If additional values are added there, they need to be added
+here as well.
+-->
+
+<enum name="ScannerOperationResult">
+  <int value="0" label="Unknown"/>
+  <int value="1" label="Success"/>
+  <int value="2" label="Unsupported operation"/>
+  <int value="3" label="Cancelled"/>
+  <int value="4" label="Scanner is busy"/>
+  <int value="5" label="Invalid data or argument"/>
+  <int value="6" label="Wrong value type"/>
+  <int value="7" label="End of data"/>
+  <int value="8" label="Jammed document feeder"/>
+  <int value="9" label="Empty document feeder"/>
+  <int value="10" label="Open flatbed cover"/>
+  <int value="11" label="I/O Error"/>
+  <int value="12" label="Access denied"/>
+  <int value="13" label="Out of memory"/>
+  <int value="14" label="Scanner unreachable"/>
+  <int value="15" label="Handle not found"/>
+  <int value="16" label="Internal error"/>
+</enum>
+
+</enums>
+
+</histogram-configuration>

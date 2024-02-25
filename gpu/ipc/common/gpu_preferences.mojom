@@ -38,6 +38,7 @@ enum WebGPUPowerPreference {
 
 // Corresponds to gpu::GrContextType.
 enum GrContextType {
+  kNone,
   kGL,  // Ganesh
   kVulkan,  // Ganesh
   kGraphiteDawn,
@@ -103,13 +104,14 @@ struct GpuPreferences {
   bool enable_gpu_benchmarking_extension;
   bool enable_webgpu;
   bool enable_unsafe_webgpu;
+  bool enable_webgpu_developer_features;
+  bool enable_webgpu_experimental_features;
   WebGPUAdapterName use_webgpu_adapter;
   WebGPUPowerPreference use_webgpu_power_preference;
   bool force_webgpu_compat;
   DawnBackendValidationLevel enable_dawn_backend_validation;
   array<string> enabled_dawn_features_list;
   array<string> disabled_dawn_features_list;
-  bool enable_gpu_blocked_time_metric;
   bool enable_perf_data_collection;
 
   [EnableIf=use_ozone]

@@ -11,18 +11,18 @@
 #import "components/sync_preferences/pref_service_mock_factory.h"
 #import "components/sync_preferences/pref_service_syncable.h"
 #import "components/sync_preferences/testing_pref_service_syncable.h"
-#import "ios/chrome/browser/default_browser/utils.h"
-#import "ios/chrome/browser/default_browser/utils_test_support.h"
-#import "ios/chrome/browser/feature_engagement/tracker_factory.h"
+#import "ios/chrome/browser/default_browser/model/utils.h"
+#import "ios/chrome/browser/default_browser/model/utils_test_support.h"
+#import "ios/chrome/browser/feature_engagement/model/tracker_factory.h"
 #import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
 #import "ios/chrome/browser/shared/model/browser_state/test_chrome_browser_state.h"
 #import "ios/chrome/browser/shared/model/prefs/browser_prefs.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
-#import "ios/chrome/browser/signin/authentication_service.h"
-#import "ios/chrome/browser/signin/authentication_service_factory.h"
-#import "ios/chrome/browser/signin/fake_authentication_service_delegate.h"
-#import "ios/chrome/browser/signin/fake_system_identity.h"
-#import "ios/chrome/browser/signin/fake_system_identity_manager.h"
+#import "ios/chrome/browser/signin/model/authentication_service.h"
+#import "ios/chrome/browser/signin/model/authentication_service_factory.h"
+#import "ios/chrome/browser/signin/model/fake_authentication_service_delegate.h"
+#import "ios/chrome/browser/signin/model/fake_system_identity.h"
+#import "ios/chrome/browser/signin/model/fake_system_identity_manager.h"
 #import "ios/chrome/test/testing_application_context.h"
 #import "ios/web/public/test/web_task_environment.h"
 #import "testing/gtest/include/gtest/gtest.h"
@@ -131,6 +131,7 @@ TEST_F(DefaultBrowserPromoManagerTest, ShowTailoredPromoAllTabs) {
 // Tests that the DefaultPromoTypeGeneral promo is shown when it was detected
 // that the user is likely interested in the promo.
 TEST_F(DefaultBrowserPromoManagerTest, showDefaultBrowserFullscreenPromo) {
+  feature_list_.InitWithFeatures({}, {kDefaultBrowserVideoPromo});
   TestingApplicationContext::GetGlobal()->SetLastShutdownClean(true);
   id mock = [OCMockObject mockForClass:[DefaultBrowserPromoManager class]];
   LogLikelyInterestedDefaultBrowserUserActivity(DefaultPromoTypeGeneral);
@@ -140,43 +141,13 @@ TEST_F(DefaultBrowserPromoManagerTest, showDefaultBrowserFullscreenPromo) {
   EXPECT_OCMOCK_VERIFY(mock);
 }
 
-// Tests that the DefaultPromoTypeVideo promo is shown when it was detected
-// that the user is likely interested in the promo.
-TEST_F(DefaultBrowserPromoManagerTest, showDefaultBrowserVideoPromo) {
-  std::map<std::string, std::string> parameters;
-  base::test::ScopedFeatureList feature_list;
-  parameters[kDefaultBrowserVideoPromoVariant] =
-      kVideoConditionsFullscreenPromo;
-  feature_list.InitAndEnableFeatureWithParameters(kDefaultBrowserVideoPromo,
-                                                  parameters);
-  TestingApplicationContext::GetGlobal()->SetLastShutdownClean(true);
-  feature_engagement::test::MockTracker* mock_tracker =
-      static_cast<feature_engagement::test::MockTracker*>(
-          feature_engagement::TrackerFactory::GetForBrowserState(
-              browser_state_.get()));
-  id mock = [OCMockObject mockForClass:[DefaultBrowserPromoManager class]];
-  LogLikelyInterestedDefaultBrowserUserActivity(DefaultPromoTypeVideo);
-  EXPECT_CALL(
-      *mock_tracker,
-      WouldTriggerHelpUI(testing::Ref(
-          feature_engagement::kIPHiOSDefaultBrowserVideoPromoTriggerFeature)))
-      .WillOnce(testing::Return(true));
-  EXPECT_CALL(
-      *mock_tracker,
-      ShouldTriggerHelpUI(testing::Ref(
-          feature_engagement::kIPHiOSDefaultBrowserVideoPromoTriggerFeature)))
-      .WillOnce(testing::Return(true));
-  [[mock expect] showPromoForTesting:DefaultPromoTypeVideo];
-  [default_browser_promo_manager_ start];
-  EXPECT_OCMOCK_VERIFY(mock);
-}
-
 // Tests that the DefaultPromoTypeGeneral promo is shown if the trigger criteria
 // experiment is enabled.
 TEST_F(DefaultBrowserPromoManagerTest,
        showDefaultBrowserFullscreenPromo_TriggerExpEnabled) {
-  feature_list_.InitWithFeatures({kDefaultBrowserTriggerCriteriaExperiment},
-                                 {});
+  feature_list_.InitWithFeatures(
+      {feature_engagement::kDefaultBrowserTriggerCriteriaExperiment},
+      {kDefaultBrowserVideoPromo});
   TestingApplicationContext::GetGlobal()->SetLastShutdownClean(true);
   id mock = [OCMockObject mockForClass:[DefaultBrowserPromoManager class]];
 
@@ -189,4 +160,18 @@ TEST_F(DefaultBrowserPromoManagerTest,
   [default_browser_promo_manager_ start];
   EXPECT_OCMOCK_VERIFY(mock);
 }
+
+// Tests that the DefaultPromoTypeVideo promo is shown instead of the generic
+// promo when the video promo is enabled.
+TEST_F(DefaultBrowserPromoManagerTest, showVideoPromo) {
+  feature_list_.InitWithFeatures({kDefaultBrowserVideoPromo}, {});
+  TestingApplicationContext::GetGlobal()->SetLastShutdownClean(true);
+  id mock = [OCMockObject mockForClass:[DefaultBrowserPromoManager class]];
+  LogLikelyInterestedDefaultBrowserUserActivity(DefaultPromoTypeGeneral);
+  SignIn();
+  [[mock expect] showPromoForTesting:DefaultPromoTypeVideo];
+  [default_browser_promo_manager_ start];
+  EXPECT_OCMOCK_VERIFY(mock);
+}
+
 }  // namespace

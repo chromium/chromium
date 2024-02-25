@@ -6,7 +6,7 @@
 
 #include <algorithm>
 
-#include "ash/accessibility/accessibility_controller_impl.h"
+#include "ash/accessibility/accessibility_controller.h"
 #include "ash/constants/tray_background_view_catalog.h"
 #include "ash/keyboard/ui/keyboard_ui_controller.h"
 #include "ash/metrics/user_metrics_recorder.h"
@@ -39,8 +39,8 @@ VirtualKeyboardTray::VirtualKeyboardTray(
     Shelf* shelf,
     TrayBackgroundViewCatalogName catalog_name)
     : TrayBackgroundView(shelf, catalog_name), shelf_(shelf) {
-  SetPressedCallback(base::BindRepeating(&VirtualKeyboardTray::OnButtonPressed,
-                                         base::Unretained(this)));
+  SetCallback(base::BindRepeating(&VirtualKeyboardTray::OnButtonPressed,
+                                  base::Unretained(this)));
 
   auto icon = std::make_unique<views::ImageView>();
   const ui::ImageModel image = ui::ImageModel::FromVectorIcon(
@@ -124,7 +124,7 @@ void VirtualKeyboardTray::HandleLocaleChange() {
 void VirtualKeyboardTray::HideBubbleWithView(
     const TrayBubbleView* bubble_view) {}
 
-void VirtualKeyboardTray::ClickedOutsideBubble() {}
+void VirtualKeyboardTray::ClickedOutsideBubble(const ui::LocatedEvent& event) {}
 
 void VirtualKeyboardTray::UpdateTrayItemColor(bool is_active) {
   DCHECK(chromeos::features::IsJellyEnabled());
@@ -133,6 +133,8 @@ void VirtualKeyboardTray::UpdateTrayItemColor(bool is_active) {
       is_active ? cros_tokens::kCrosSysSystemOnPrimaryContainer
                 : cros_tokens::kCrosSysOnSurface));
 }
+
+void VirtualKeyboardTray::HideBubble(const TrayBubbleView* bubble_view) {}
 
 void VirtualKeyboardTray::OnAccessibilityStatusChanged() {
   bool new_enabled =
@@ -144,7 +146,7 @@ void VirtualKeyboardTray::OnKeyboardVisibilityChanged(const bool is_visible) {
   SetIsActive(is_visible);
 }
 
-BEGIN_METADATA(VirtualKeyboardTray, TrayBackgroundView);
+BEGIN_METADATA(VirtualKeyboardTray);
 END_METADATA
 
 }  // namespace ash

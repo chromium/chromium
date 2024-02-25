@@ -4,10 +4,12 @@
 
 import 'chrome://app-settings/web_app_settings.js';
 
-import {App, AppManagementPermissionItemElement, AppManagementSupportedLinksItemElement, AppManagementSupportedLinksOverlappingAppsDialogElement, AppManagementToggleRowElement, AppType, BrowserProxy, createTriStatePermission, getPermissionValueBool, InstallReason, InstallSource, OptionalBool, PermissionType, PermissionTypeIndex, RunOnOsLoginMode, TriState, WebAppSettingsAppElement, WindowMode} from 'chrome://app-settings/web_app_settings.js';
-import {CrRadioButtonElement} from 'chrome://resources/cr_elements/cr_radio_button/cr_radio_button.js';
+import type {App, AppManagementPermissionItemElement, AppManagementSupportedLinksItemElement, AppManagementSupportedLinksOverlappingAppsDialogElement, AppManagementToggleRowElement, PermissionTypeIndex, WebAppSettingsAppElement} from 'chrome://app-settings/web_app_settings.js';
+import {AppType, BrowserProxy, createTriStatePermission, getPermissionValueBool, InstallReason, InstallSource, PermissionType, RunOnOsLoginMode, TriState, WindowMode} from 'chrome://app-settings/web_app_settings.js';
+import type {CrRadioButtonElement} from 'chrome://resources/cr_elements/cr_radio_button/cr_radio_button.js';
 import {assertEquals, assertFalse, assertNull, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {flushTasks, waitAfterNextRender} from 'chrome://webui-test/polymer_test_util.js';
+import {eventToPromise} from 'chrome://webui-test/test_util.js';
 
 import {TestAppManagementBrowserProxy} from './test_app_management_browser_proxy.js';
 
@@ -26,8 +28,6 @@ suite('AppSettingsAppTest', () => {
       description: '',
       version: '5.1',
       size: '9.0MB',
-      isPinned: OptionalBool.kFalse,
-      isPolicyPinned: OptionalBool.kFalse,
       installReason: InstallReason.kUser,
       permissions: {},
       hideMoreSettings: false,
@@ -50,6 +50,9 @@ suite('AppSettingsAppTest', () => {
       appSize: '',
       dataSize: '',
       publisherId: '',
+      formattedOrigin: '',
+      scopeExtensions: [],
+      supportedLocales: [],
     };
 
     if (optConfig) {
@@ -116,7 +119,7 @@ suite('AppSettingsAppTest', () => {
         'app-management-more-permissions-item'));
   });
 
-  test('Toggle Run on OS Login', function() {
+  test('Toggle Run on OS Login', async function() {
     const runOnOsLoginItem = appSettingsApp.shadowRoot!.querySelector(
         'app-management-run-on-os-login-item')!;
     assertTrue(!!runOnOsLoginItem);
@@ -124,18 +127,20 @@ suite('AppSettingsAppTest', () => {
         runOnOsLoginItem.app.runOnOsLogin!.loginMode, RunOnOsLoginMode.kNotRun);
 
     runOnOsLoginItem.click();
+    await eventToPromise('change', runOnOsLoginItem);
     assertEquals(
         runOnOsLoginItem.app.runOnOsLogin!.loginMode,
         RunOnOsLoginMode.kWindowed);
 
     runOnOsLoginItem.click();
+    await eventToPromise('change', runOnOsLoginItem);
     assertEquals(
         runOnOsLoginItem.app.runOnOsLogin!.loginMode, RunOnOsLoginMode.kNotRun);
   });
 
   // Serves as a basic test of the presence of the File Handling item. More
   // comprehensive tests are located in the cross platform app_management test.
-  test('Toggle File Handling', function() {
+  test('Toggle File Handling', async function() {
     const fileHandlingItem = appSettingsApp.shadowRoot!.querySelector(
         'app-management-file-handling-item')!;
     assertTrue(!!fileHandlingItem);
@@ -146,23 +151,26 @@ suite('AppSettingsAppTest', () => {
             .querySelector<AppManagementToggleRowElement>('#toggle-row')!;
     assertTrue(!!toggleRow);
     toggleRow.click();
+    await eventToPromise('change', toggleRow);
     assertEquals(fileHandlingItem.app.fileHandlingState!.enabled, true);
 
     toggleRow.click();
+    await eventToPromise('change', toggleRow);
     assertEquals(fileHandlingItem.app.fileHandlingState!.enabled, false);
   });
 
-  test('Toggle window mode', function() {
+  test('Toggle window mode', async function() {
     const windowModeItem =
         appSettingsApp.shadowRoot!.querySelector('app-management-window-mode-item')!;
     assertTrue(!!windowModeItem);
     assertEquals(windowModeItem.app.windowMode, WindowMode.kWindow);
 
     windowModeItem.click();
+    await eventToPromise('change', windowModeItem);
     assertEquals(windowModeItem.app.windowMode, WindowMode.kBrowser);
   });
 
-  test('Toggle permissions', function() {
+  test('Toggle permissions', async function() {
     const permsisionTypes: PermissionTypeIndex[] =
         ['kNotifications', 'kLocation', 'kCamera', 'kMicrophone'];
     for (const permissionType of permsisionTypes) {
@@ -173,9 +181,11 @@ suite('AppSettingsAppTest', () => {
       assertFalse(getPermissionValueBool(permissionItem.app, permissionType));
 
       permissionItem.click();
+      await eventToPromise('change', permissionItem);
       assertTrue(getPermissionValueBool(permissionItem.app, permissionType));
 
       permissionItem.click();
+      await eventToPromise('change', permissionItem);
       assertFalse(getPermissionValueBool(permissionItem.app, permissionType));
     }
   });
@@ -360,5 +370,93 @@ suite('AppSettingsAppTest', () => {
 
     assertTrue(!!getSupportedLinksElement()!.shadowRoot!.querySelector(
         '#overlapWarning'));
+  });
+
+  test('Origin URL is present in Permissions header', async () => {
+    const appOptions = {
+      type: AppType.kWeb,
+      formattedOrigin: 'abc.com',
+    };
+
+    // Add PWA app, and make it the currently selected app.
+    await fakeHandler().setApp(createApp('app1', appOptions));
+    await fakeHandler().flushPipesForTesting();
+    await reloadPage();
+
+    assertEquals(
+        appSettingsApp.shadowRoot!.querySelector(
+                                      '.header-text')!.textContent!.trim(),
+        'Permissions (abc.com)');
+  });
+
+  // Check that the app content element is not hidden when there are
+  // scope_extensions entries.
+  test('App Content element is present', async () => {
+    const appOptions = {
+      type: AppType.kWeb,
+      scopeExtensions: ['*.abc.com', 'def.com', 'ghi.com'],
+    };
+
+    // Add PWA app, and make it the currently selected app.
+    await fakeHandler().setApp(createApp('app1', appOptions));
+    await fakeHandler().flushPipesForTesting();
+    await reloadPage();
+
+    const appContentItem = appSettingsApp.shadowRoot!.querySelector(
+        'app-management-app-content-item')!;
+    assertTrue(!!appContentItem);
+
+    assertFalse(!!appContentItem.hidden);
+  });
+
+  // Check that the app content element is hidden when there are no
+  // scope_extensions entries.
+  test('App Content element is not present', async () => {
+    const appOptions = {
+      type: AppType.kWeb,
+      scopeExtensions: [],
+    };
+
+    // Add PWA app, and make it the currently selected app.
+    await fakeHandler().setApp(createApp('app1', appOptions));
+    await fakeHandler().flushPipesForTesting();
+    await reloadPage();
+
+    const appContentItem = appSettingsApp.shadowRoot!.querySelector(
+        'app-management-app-content-item')!;
+    assertTrue(!!appContentItem);
+
+    assertTrue(appContentItem.hidden);
+  });
+
+  test('App Content dialog is shown', async () => {
+    const appOptions = {
+      type: AppType.kWeb,
+      scopeExtensions: ['*.abc.com', 'def.com', 'ghi.com'],
+    };
+
+    // Add PWA app, and make it the currently selected app.
+    await fakeHandler().setApp(createApp('app1', appOptions));
+    await fakeHandler().flushPipesForTesting();
+    await reloadPage();
+
+    const appContentItem = appSettingsApp.shadowRoot!.querySelector(
+        'app-management-app-content-item')!;
+    assertTrue(!!appContentItem);
+
+    // Check that the dialog is not shown initially.
+    assertFalse(appContentItem.showAppContentDialog);
+    assertFalse(!!appContentItem.shadowRoot!.querySelector(
+        'app-management-app-content-dialog'));
+
+    const clickableAppContentElement =
+        appContentItem.shadowRoot!.querySelector<HTMLElement>('#appContent')!;
+
+    await clickableAppContentElement.click();
+
+    // Check that the dialog is shown after clicking on the app content row.
+    assertTrue(appContentItem.showAppContentDialog);
+    assertTrue(!!appContentItem.shadowRoot!.querySelector(
+        'app-management-app-content-dialog'));
   });
 });

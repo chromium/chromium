@@ -163,6 +163,7 @@ def _create_pkgbuild_scripts(paths, dist_config):
 
     def do_substitutions(script):
         substitutions = {
+            '@SHEBANG_GUARD@': '',
             '@APP_DIR@': dist_config.app_dir,
             '@APP_PRODUCT@': dist_config.app_product,
             '@BRAND_CODE@': dist_config.distribution.branding_code or '',

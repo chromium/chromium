@@ -13,7 +13,7 @@
 #include "base/time/time.h"
 #include "third_party/blink/public/platform/web_data.h"
 #include "third_party/blink/renderer/platform/disk_data_metadata.h"
-#include "third_party/blink/renderer/platform/graphics/rw_buffer.h"
+#include "third_party/blink/renderer/platform/image-decoders/rw_buffer.h"
 #include "third_party/blink/renderer/platform/image-decoders/segment_reader.h"
 #include "third_party/blink/renderer/platform/wtf/shared_buffer.h"
 #include "third_party/blink/renderer/platform/wtf/threading_primitives.h"
@@ -22,6 +22,8 @@ namespace blink {
 
 class SegmentReader;
 class ParkableImageManager;
+class ParkableImage;
+class ParkableImageSegmentReader;
 
 PLATFORM_EXPORT BASE_DECLARE_FEATURE(kDelayParkingImages);
 
@@ -185,6 +187,8 @@ class PLATFORM_EXPORT ParkableImage final
   // be called even if the image is currently parked, and will not unpark it.
   size_t size() const;
 
+  scoped_refptr<SegmentReader> CreateSegmentReader();
+
  private:
   friend class ThreadSafeRefCounted<ParkableImage>;
   template <typename T, typename... Args>
@@ -192,6 +196,7 @@ class PLATFORM_EXPORT ParkableImage final
   friend class ParkableImageManager;
   friend class ParkableImageBaseTest;
   friend class ParkableImageSegmentReader;
+  friend class ThreadSafeRefCounted<ParkableImageImpl>;
 
   explicit ParkableImage(size_t initial_capacity = 0);
   ~ParkableImage();

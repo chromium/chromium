@@ -1,4 +1,7 @@
-monorail {
+monorail: {
   component: "Services>CloudMessaging"
 }
 team_email: "platform-capabilities@chromium.org"
+buganizer_public: {
+  component_id: 1456167
+}

@@ -7,19 +7,22 @@
 
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/views/frame/browser_frame_view_linux.h"
+#include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/linux/nav_button_provider.h"
 #include "ui/linux/window_frame_provider.h"
+
+class BrowserFrameViewLayoutLinuxNative;
 
 // A specialization of BrowserFrameViewLinux that is also able to
 // render frame buttons using the native toolkit.
 class BrowserFrameViewLinuxNative : public BrowserFrameViewLinux {
+  METADATA_HEADER(BrowserFrameViewLinuxNative, BrowserFrameViewLinux)
  public:
   BrowserFrameViewLinuxNative(
       BrowserFrame* frame,
       BrowserView* browser_view,
-      BrowserFrameViewLayoutLinux* layout,
-      std::unique_ptr<ui::NavButtonProvider> nav_button_provider,
-      ui::WindowFrameProvider* window_frame_provider);
+      BrowserFrameViewLayoutLinuxNative* layout,
+      std::unique_ptr<ui::NavButtonProvider> nav_button_provider);
 
   BrowserFrameViewLinuxNative(const BrowserFrameViewLinuxNative&) = delete;
   BrowserFrameViewLinuxNative& operator=(const BrowserFrameViewLinuxNative&) =
@@ -27,16 +30,14 @@ class BrowserFrameViewLinuxNative : public BrowserFrameViewLinux {
 
   ~BrowserFrameViewLinuxNative() override;
 
+  // BrowserFrameViewLinux:
+  void Layout(PassKey) override;
+  FrameButtonStyle GetFrameButtonStyle() const override;
+  int GetTranslucentTopAreaHeight() const override;
+
  protected:
   // BrowserFrameViewLinux:
   float GetRestoredCornerRadiusDip() const override;
-  int GetTranslucentTopAreaHeight() const override;
-
-  // OpaqueBrowserFrameView:
-  void Layout() override;
-  FrameButtonStyle GetFrameButtonStyle() const override;
-
-  // views::View:
   void PaintRestoredFrameBorder(gfx::Canvas* canvas) const override;
 
  private:
@@ -59,7 +60,7 @@ class BrowserFrameViewLinuxNative : public BrowserFrameViewLinux {
 
   std::unique_ptr<ui::NavButtonProvider> nav_button_provider_;
 
-  const raw_ptr<ui::WindowFrameProvider> window_frame_provider_;
+  const raw_ptr<BrowserFrameViewLayoutLinuxNative> layout_;
 
   DrawFrameButtonParams cache_{0, false, false};
 };

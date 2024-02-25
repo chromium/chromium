@@ -3,6 +3,9 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/ui/views/tabs/tab_strip_control_button.h"
+
+#include <utility>
+
 #include "chrome/browser/ui/views/frame/browser_non_client_frame_view.h"
 #include "chrome/browser/ui/views/tabs/tab_strip.h"
 #include "chrome/browser/ui/views/tabs/tab_strip_controller.h"
@@ -10,6 +13,7 @@
 #include "third_party/skia/include/core/SkPath.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/ui_base_features.h"
+#include "ui/gfx/geometry/rounded_corners_f.h"
 #include "ui/gfx/geometry/skia_conversions.h"
 #include "ui/gfx/vector_icon_types.h"
 #include "ui/views/animation/flood_fill_ink_drop_ripple.h"
@@ -33,9 +37,15 @@ class ControlButtonHighlightPathGenerator
     gfx::Rect rect(view->GetContentsBounds());
 
     SkPath path;
-    path.addRoundRect(gfx::RectToSkRect(rect),
-                      control_button_->GetCornerRadius(),
-                      control_button_->GetCornerRadius());
+    const int corner_radius = control_button_->GetCornerRadius();
+    const SkScalar left_radius =
+        control_button_->GetScaledCornerRadius(corner_radius, Edge::kLeft);
+    const SkScalar right_radius =
+        control_button_->GetScaledCornerRadius(corner_radius, Edge::kRight);
+    const SkScalar radii[8] = {left_radius,  left_radius,  right_radius,
+                               right_radius, right_radius, right_radius,
+                               left_radius,  left_radius};
+    path.addRoundRect(gfx::RectToSkRect(rect), radii);
     return path;
   }
 
@@ -46,17 +56,47 @@ class ControlButtonHighlightPathGenerator
 
 const int TabStripControlButton::kIconSize = 16;
 const gfx::Size TabStripControlButton::kButtonSize{28, 28};
+const gfx::VectorIcon kEmptyIcon;
 
-TabStripControlButton::TabStripControlButton(TabStrip* tab_strip,
-                                             PressedCallback callback,
-                                             const gfx::VectorIcon& icon)
-    : views::LabelButton(std::move(callback)),
+TabStripControlButton::TabStripControlButton(
+    TabStripController* tab_strip_controller,
+    PressedCallback callback,
+    const gfx::VectorIcon& icon,
+    Edge flat_edge)
+    : TabStripControlButton(tab_strip_controller,
+                            std::move(callback),
+                            icon,
+                            std::u16string(),
+                            flat_edge) {}
+
+TabStripControlButton::TabStripControlButton(
+    TabStripController* tab_strip_controller,
+    PressedCallback callback,
+    const std::u16string& text,
+    Edge flat_edge)
+    : TabStripControlButton(tab_strip_controller,
+                            std::move(callback),
+                            kEmptyIcon,
+                            text,
+                            flat_edge) {}
+
+TabStripControlButton::TabStripControlButton(
+    TabStripController* tab_strip_controller,
+    PressedCallback callback,
+    const gfx::VectorIcon& icon,
+    const std::u16string& text,
+    Edge flat_edge)
+    : views::LabelButton(std::move(callback), text),
       icon_(icon),
-      tab_strip_(tab_strip) {
+      flat_edge_(flat_edge),
+      tab_strip_controller_(tab_strip_controller) {
   SetImageCentered(true);
   SetEventTargeter(std::make_unique<views::ViewTargeter>(this));
 
-  paint_transparent_for_custom_image_theme_ = true;
+  // By default control buttons in the tab strip should be non-transparent for
+  // the updated Chrome refresh UX.
+  paint_transparent_for_custom_image_theme_ = !features::IsChromeRefresh2023();
+
   foreground_frame_active_color_id_ = kColorTabForegroundInactiveFrameActive;
   foreground_frame_inactive_color_id_ =
       kColorNewTabButtonCRForegroundFrameInactive;
@@ -78,6 +118,41 @@ TabStripControlButton::TabStripControlButton(TabStrip* tab_strip,
       this, std::make_unique<ControlButtonHighlightPathGenerator>(this));
   UpdateInkDrop();
   views::FocusRing::Get(this)->SetColorId(kColorNewTabButtonFocusRing);
+
+  if (text.size() > 0) {
+    SetEnabledTextColorIds(foreground_frame_active_color_id_);
+    // Required for text to be visible on hover
+    label()->SetPaintToLayer();
+    label()->SetSkipSubpixelRenderingOpacityCheck(true);
+    label()->layer()->SetFillsBoundsOpaquely(false);
+    label()->SetSubpixelRenderingEnabled(false);
+  }
+}
+
+void TabStripControlButton::SetForegroundFrameActiveColorId(
+    ui::ColorId new_color_id) {
+  foreground_frame_active_color_id_ = new_color_id;
+  UpdateColors();
+}
+void TabStripControlButton::SetForegroundFrameInactiveColorId(
+    ui::ColorId new_color_id) {
+  foreground_frame_inactive_color_id_ = new_color_id;
+  UpdateColors();
+}
+void TabStripControlButton::SetBackgroundFrameActiveColorId(
+    ui::ColorId new_color_id) {
+  background_frame_active_color_id_ = new_color_id;
+  UpdateColors();
+}
+void TabStripControlButton::SetBackgroundFrameInactiveColorId(
+    ui::ColorId new_color_id) {
+  background_frame_inactive_color_id_ = new_color_id;
+  UpdateColors();
+}
+
+void TabStripControlButton::SetVectorIcon(const gfx::VectorIcon& icon) {
+  icon_ = icon;
+  UpdateIcon();
 }
 
 ui::ColorId TabStripControlButton::GetBackgroundColor() {
@@ -93,6 +168,10 @@ ui::ColorId TabStripControlButton::GetForegroundColor() {
 }
 
 void TabStripControlButton::UpdateIcon() {
+  if (icon_->is_empty()) {
+    return;
+  }
+
   const ui::ImageModel icon_image_model = ui::ImageModel::FromVectorIcon(
       icon_.get(), GetForegroundColor(), kIconSize);
 
@@ -132,6 +211,7 @@ void TabStripControlButton::UpdateColors() {
     return;
   }
 
+  SetEnabledTextColorIds(foreground_frame_active_color_id_);
   UpdateBackground();
   UpdateInkDrop();
   UpdateIcon();
@@ -145,22 +225,41 @@ void TabStripControlButton::UpdateBackground() {
     return;
   }
 
-  const absl::optional<int> bg_id =
-      tab_strip_->GetCustomBackgroundId(BrowserFrameActiveState::kUseCurrent);
+  const std::optional<int> bg_id = tab_strip_controller_->GetCustomBackgroundId(
+      BrowserFrameActiveState::kUseCurrent);
 
   // Paint the background as transparent for image based themes.
   if (bg_id.has_value() && paint_transparent_for_custom_image_theme_) {
     SetBackground(views::CreateSolidBackground(SK_ColorTRANSPARENT));
   } else {
+    const float right_corner_radius =
+        GetScaledCornerRadius(GetCornerRadius(), Edge::kRight);
+    const float left_corner_radius =
+        GetScaledCornerRadius(GetCornerRadius(), Edge::kLeft);
     SetBackground(views::CreateBackgroundFromPainter(
-        views::Painter::CreateSolidRoundRectPainter(
-            color_provider->GetColor(GetBackgroundColor()), GetCornerRadius(),
+        views::Painter::CreateSolidRoundRectPainterWithVariableRadius(
+            color_provider->GetColor(GetBackgroundColor()),
+            gfx::RoundedCornersF(left_corner_radius, right_corner_radius,
+                                 right_corner_radius, left_corner_radius),
             GetInsets())));
   }
 }
 
 int TabStripControlButton::GetCornerRadius() const {
-  return width() / 2;
+  return TabStripControlButton::kButtonSize.width() / 2;
+}
+
+int TabStripControlButton::GetFlatCornerRadius() const {
+  return 0;
+}
+
+float TabStripControlButton::GetScaledCornerRadius(float initial_radius,
+                                                   Edge edge) const {
+  const int flat_corner_radius = GetFlatCornerRadius();
+  return flat_edge_ == edge
+             ? ((initial_radius - flat_corner_radius) * flat_edge_factor_) +
+                   flat_corner_radius
+             : initial_radius;
 }
 
 void TabStripControlButton::AddedToWidget() {
@@ -180,17 +279,26 @@ void TabStripControlButton::OnThemeChanged() {
 }
 
 bool TabStripControlButton::GetHitTestMask(SkPath* mask) const {
-  const bool extend_to_top = tab_strip_->controller()->IsFrameCondensed();
+  const bool extend_to_top = tab_strip_controller_->IsFrameCondensed();
 
   const SkScalar bottom_radius = GetCornerRadius();
   const SkScalar top_radius = extend_to_top ? 0.0f : bottom_radius;
-  const SkScalar radii[8] = {top_radius,    top_radius,    top_radius,
-                             top_radius,    bottom_radius, bottom_radius,
-                             bottom_radius, bottom_radius};
+  const SkScalar bottom_left_radius =
+      GetScaledCornerRadius(bottom_radius, Edge::kLeft);
+  const SkScalar bottom_right_radius =
+      GetScaledCornerRadius(bottom_radius, Edge::kRight);
+  const SkScalar top_left_radius =
+      GetScaledCornerRadius(top_radius, Edge::kLeft);
+  const SkScalar top_right_radius =
+      GetScaledCornerRadius(top_radius, Edge::kRight);
+  const SkScalar radii[8] = {top_left_radius,     top_left_radius,
+                             top_right_radius,    top_right_radius,
+                             bottom_right_radius, bottom_right_radius,
+                             bottom_left_radius,  bottom_left_radius};
 
   gfx::Rect rect = GetContentsBounds();
   if (extend_to_top) {
-    rect.set_y(0);
+    rect.SetVerticalBounds(0, rect.bottom());
   }
 
   mask->addRoundRect(gfx::RectToSkRect(rect), radii);
@@ -211,10 +319,15 @@ void TabStripControlButton::NotifyClick(const ui::Event& event) {
       views::InkDropState::ACTION_TRIGGERED);
 }
 
+void TabStripControlButton::SetFlatEdgeFactor(float factor) {
+  flat_edge_factor_ = factor;
+  UpdateBackground();
+}
+
 void TabStripControlButton::AnimateToStateForTesting(
     views::InkDropState state) {
   views::InkDrop::Get(this)->GetInkDrop()->AnimateToState(state);
 }
 
-BEGIN_METADATA(TabStripControlButton, views::LabelButton)
+BEGIN_METADATA(TabStripControlButton)
 END_METADATA

@@ -12,14 +12,13 @@ import android.os.BatteryManager;
 import android.os.Build;
 import android.os.PowerManager;
 
-import org.chromium.base.annotations.CalledByNative;
-import org.chromium.base.annotations.JNINamespace;
-import org.chromium.base.annotations.NativeMethods;
+import org.jni_zero.CalledByNative;
+import org.jni_zero.JNINamespace;
+import org.jni_zero.NativeMethods;
+
 import org.chromium.base.compat.ApiHelperForQ;
 
-/**
- * Integrates native PowerMonitor with the java side.
- */
+/** Integrates native PowerMonitor with the java side. */
 @JNINamespace("base::android")
 public class PowerMonitor {
     private static PowerMonitor sInstance;
@@ -33,9 +32,7 @@ public class PowerMonitor {
         sInstance = new PowerMonitor();
     }
 
-    /**
-     * Create a PowerMonitor instance if none exists.
-     */
+    /** Create a PowerMonitor instance if none exists. */
     public static void create() {
         ThreadUtils.assertOnUiThread();
 
@@ -57,13 +54,16 @@ public class PowerMonitor {
         IntentFilter powerConnectedFilter = new IntentFilter();
         powerConnectedFilter.addAction(Intent.ACTION_POWER_CONNECTED);
         powerConnectedFilter.addAction(Intent.ACTION_POWER_DISCONNECTED);
-        ContextUtils.registerProtectedBroadcastReceiver(context, new BroadcastReceiver() {
-            @Override
-            public void onReceive(Context context, Intent intent) {
-                PowerMonitor.onBatteryChargingChanged(
-                        intent.getAction().equals(Intent.ACTION_POWER_DISCONNECTED));
-            }
-        }, powerConnectedFilter);
+        ContextUtils.registerProtectedBroadcastReceiver(
+                context,
+                new BroadcastReceiver() {
+                    @Override
+                    public void onReceive(Context context, Intent intent) {
+                        PowerMonitor.onBatteryChargingChanged(
+                                intent.getAction().equals(Intent.ACTION_POWER_DISCONNECTED));
+                    }
+                },
+                powerConnectedFilter);
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
             PowerManager powerManager =
@@ -74,8 +74,7 @@ public class PowerMonitor {
         }
     }
 
-    private PowerMonitor() {
-    }
+    private PowerMonitor() {}
 
     private static void onBatteryChargingChanged(boolean isBatteryPower) {
         assert sInstance != null;
@@ -95,9 +94,6 @@ public class PowerMonitor {
 
     @CalledByNative
     private static int getRemainingBatteryCapacity() {
-        // BatteryManager's property for charge level is only supported since Lollipop.
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP) return 0;
-
         // Creation of the PowerMonitor can be deferred based on the browser startup path.  If the
         // battery power is requested prior to the browser triggering the creation, force it to be
         // created now.
@@ -107,8 +103,9 @@ public class PowerMonitor {
     }
 
     private static int getRemainingBatteryCapacityImpl() {
-        return ((BatteryManager) ContextUtils.getApplicationContext().getSystemService(
-                        Context.BATTERY_SERVICE))
+        return ((BatteryManager)
+                        ContextUtils.getApplicationContext()
+                                .getSystemService(Context.BATTERY_SERVICE))
                 .getIntProperty(BatteryManager.BATTERY_PROPERTY_CHARGE_COUNTER);
     }
 
@@ -123,8 +120,9 @@ public class PowerMonitor {
         if (sInstance == null) create();
 
         PowerManager powerManager =
-                (PowerManager) ContextUtils.getApplicationContext().getSystemService(
-                        Context.POWER_SERVICE);
+                (PowerManager)
+                        ContextUtils.getApplicationContext()
+                                .getSystemService(Context.POWER_SERVICE);
         if (powerManager == null) return -1;
         return ApiHelperForQ.getCurrentThermalStatus(powerManager);
     }
@@ -132,6 +130,7 @@ public class PowerMonitor {
     @NativeMethods
     interface Natives {
         void onBatteryChargingChanged();
+
         void onThermalStatusChanged(int thermalStatus);
     }
 }

@@ -22,14 +22,17 @@ instead of "initial value".
 |   <shadow:root>
 |     <div>
 |       pseudo="-internal-datetime-container"
+|       style="unicode-bidi: normal;"
 |       shadow:pseudoId="-internal-datetime-container"
 |       <div>
 |         datetimeformat="MMMM yyyy"
 |         id="date-time-edit"
 |         pseudo="-webkit-datetime-edit"
+|         style="unicode-bidi: normal;"
 |         shadow:pseudoId="-webkit-datetime-edit"
 |         <div>
 |           pseudo="-webkit-datetime-edit-fields-wrapper"
+|           style="unicode-bidi: normal;"
 |           shadow:pseudoId="-webkit-datetime-edit-fields-wrapper"
 |           <span>
 |             aria-label="Month"
@@ -44,6 +47,7 @@ instead of "initial value".
 |             "January"
 |           <div>
 |             pseudo="-webkit-datetime-edit-text"
+|             style="unicode-bidi: normal;"
 |             shadow:pseudoId="-webkit-datetime-edit-text"
 |             " "
 |           <span>
@@ -85,10 +89,15 @@ instead of "initial value".
 |     <shadow:root>
 |       "inserted value"
 |   <shadow:root>
-|     <div>
-|       aria-hidden="true"
-|       "initial value"
 |     <slot>
+|       id="select-button"
+|       <div>
+|         aria-hidden="true"
+|         "initial value"
+|     <slot>
+|       id="select-datalist"
+|     <slot>
+|       id="select-options"
 | "input.value: initial value"
 | "internals.suggestedValue(input): suggested value"
 | "input.selectionStart: 0"

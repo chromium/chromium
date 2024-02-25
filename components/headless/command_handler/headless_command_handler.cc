@@ -6,6 +6,7 @@
 
 #include <cstdint>
 #include <iostream>
+#include <optional>
 #include <string>
 #include <utility>
 
@@ -37,7 +38,6 @@
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_ui_data_source.h"
 #include "content/public/common/content_switches.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/resource/resource_bundle.h"
 
 namespace headless {
@@ -133,18 +133,16 @@ bool GetCommandDictAndOutputPaths(base::Value::Dict* commands,
     *pdf_file_path = path;
 
     base::Value::Dict params;
-    if (command_line->HasSwitch(switches::kNoPDFHeaderFooter) ||
-        command_line->HasSwitch(switches::kPrintToPDFNoHeaderDeprecated)) {
+    if (command_line->HasSwitch(switches::kNoPDFHeaderFooter)) {
       params.Set("noHeaderFooter", true);
-    }
-
-    if (command_line->HasSwitch(switches::kPrintToPDFNoHeaderDeprecated)) {
-      LOG(WARNING) << "--" << switches::kPrintToPDFNoHeaderDeprecated
-                   << " is deprecated, use --" << switches::kNoPDFHeaderFooter;
     }
 
     if (command_line->HasSwitch(switches::kDisablePDFTagging)) {
       params.Set("disablePDFTagging", true);
+    }
+
+    if (command_line->HasSwitch(switches::kGeneratePDFDocumentOutline)) {
+      params.Set("generateDocumentOutline", true);
     }
 
     commands->Set("printToPDF", std::move(params));
@@ -163,8 +161,7 @@ bool GetCommandDictAndOutputPaths(base::Value::Dict* commands,
         base::ToLowerASCII(path.FinalExtension());
 
     static constexpr auto kImageFileTypes =
-        base::MakeFixedFlatMapSorted<base::FilePath::StringPieceType,
-                                     const char*>({
+        base::MakeFixedFlatMap<base::FilePath::StringPieceType, const char*>({
             {FILE_PATH_LITERAL(".jpeg"), "jpeg"},
             {FILE_PATH_LITERAL(".jpg"), "jpeg"},
             {FILE_PATH_LITERAL(".png"), "png"},
@@ -283,7 +280,6 @@ bool HeadlessCommandHandler::HasHeadlessCommandSwitches(
       switches::kDefaultBackgroundColor,
       switches::kDumpDom,
       switches::kPrintToPDF,
-      switches::kPrintToPDFNoHeaderDeprecated,
       switches::kNoPDFHeaderFooter,
       switches::kScreenshot,
       switches::kTimeout,
@@ -365,8 +361,8 @@ void HeadlessCommandHandler::OnTargetCrashed(const base::Value::Dict&) {
 }
 
 void HeadlessCommandHandler::OnCommandsResult(base::Value::Dict result) {
-  if (absl::optional<bool> timeout =
-          result.FindBoolByDottedPath("result.result.value.pageLoadTimedOut")) {
+  if (result.FindBoolByDottedPath("result.result.value.pageLoadTimedOut")
+          .value_or(false)) {
     result_ = Result::kPageLoadTimeout;
     LOG(ERROR) << "Page load timed out.";
   }

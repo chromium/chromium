@@ -54,6 +54,8 @@ message WebApk {
     SPLASH_ICON_HASH_DIFFERS = 17;
     DARK_BACKGROUND_COLOR_DIFFERS = 18;
     DARK_THEME_COLOR_DIFFERS = 19;
+    PRIMARY_ICON_CHANGE_BELOW_THRESHOLD = 20;
+    PRIMARY_ICON_CHANGE_SHELL_UPDATE = 21;
 
     reserved 4;
   }
@@ -114,6 +116,7 @@ message WebAppManifest {
   optional string id = 19;
   optional string dark_theme_color = 20;
   optional string dark_background_color = 21;
+  optional bool has_custom_name = 22;
 
   reserved 3, 7, 8, 13 to 16;
 }

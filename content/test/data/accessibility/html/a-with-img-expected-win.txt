@@ -4,9 +4,9 @@ ROLE_SYSTEM_DOCUMENT READONLY FOCUSABLE
 ++++++ROLE_SYSTEM_GRAPHIC name='Link' READONLY
 ++++++ROLE_SYSTEM_STATICTEXT name=' with image at start.'
 ++++ROLE_SYSTEM_STATICTEXT name=' '
-++++ROLE_SYSTEM_LINK name='Link with image in the middle.' FOCUSABLE
+++++ROLE_SYSTEM_LINK name='Link with bullet image in the middle.' FOCUSABLE
 ++++++ROLE_SYSTEM_STATICTEXT name='Link with '
-++++++ROLE_SYSTEM_GRAPHIC name='image. To get missing image descriptions, open the context menu.' READONLY
+++++++ROLE_SYSTEM_GRAPHIC name='bullet image' READONLY
 ++++++ROLE_SYSTEM_STATICTEXT name=' in the middle.'
 ++++ROLE_SYSTEM_STATICTEXT name=' '
 ++++ROLE_SYSTEM_LINK name='Link with broken in the middle.' FOCUSABLE
@@ -14,6 +14,6 @@ ROLE_SYSTEM_DOCUMENT READONLY FOCUSABLE
 ++++++ROLE_SYSTEM_GRAPHIC name='broken' READONLY
 ++++++ROLE_SYSTEM_STATICTEXT name=' in the middle.'
 ++++ROLE_SYSTEM_STATICTEXT name=' '
-++++ROLE_SYSTEM_LINK name='Link with image at the end' FOCUSABLE
+++++ROLE_SYSTEM_LINK name='Link with image at the end, it's a bullet' FOCUSABLE
 ++++++ROLE_SYSTEM_STATICTEXT name='Link with image at the '
-++++++ROLE_SYSTEM_GRAPHIC name='end' READONLY
+++++++ROLE_SYSTEM_GRAPHIC name='end, it's a bullet' READONLY

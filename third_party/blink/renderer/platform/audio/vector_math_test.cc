@@ -9,6 +9,7 @@
 #include <numeric>
 #include <random>
 
+#include "base/memory/raw_ptr.h"
 #include "base/ranges/algorithm.h"
 #include "build/build_config.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -130,7 +131,7 @@ class TestVector {
                    primary_vector.memory_layout(),
                    primary_vector.size()) {}
 
-  Iterator begin() const { return Iterator(p_, stride()); }
+  Iterator begin() const { return Iterator(p_.get(), stride()); }
   Iterator end() const { return Iterator(p_ + size() * stride(), stride()); }
   ReverseIterator rbegin() const { return ReverseIterator(end()); }
   ReverseIterator rend() const { return ReverseIterator(begin()); }
@@ -159,8 +160,8 @@ class TestVector {
     return reinterpret_cast<size_t>(p) % kMaxByteAlignment;
   }
 
-  T* p_;
-  const MemoryLayout* memory_layout_;
+  raw_ptr<T, AllowPtrArithmetic> p_;
+  raw_ptr<const MemoryLayout> memory_layout_;
   size_t size_;
 };
 
@@ -235,7 +236,7 @@ class VectorMathTest : public testing::Test {
     return sources_[i];
   }
 
-  static void SetUpTestCase() {
+  static void SetUpTestSuite() {
     std::minstd_rand generator(3141592653u);
     // Fill in source buffers with finite random floats.
     std::uniform_real_distribution<float> float_distribution(-10.0f, 10.0f);

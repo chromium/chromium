@@ -1,0 +1,28 @@
+# Copyright 2023 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+assert(is_chromeos)
+
+component("cpp") {
+  defines = [ "IS_MAHI_PUBLIC_CPP_IMPL" ]
+
+  sources = [
+    "fake_mahi_manager.cc",
+    "fake_mahi_manager.h",
+    "mahi_manager.cc",
+    "mahi_manager.h",
+    "views/experiment_badge.cc",
+    "views/experiment_badge.h",
+  ]
+
+  deps = [
+    "//base",
+    "//chromeos/crosapi/mojom",
+    "//chromeos/strings:strings_grit",
+    "//ui/base",
+    "//ui/chromeos/styles:cros_tokens_color_mappings",
+    "//ui/gfx",
+    "//ui/views",
+  ]
+}

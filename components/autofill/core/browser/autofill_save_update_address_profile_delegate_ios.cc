@@ -23,7 +23,7 @@ AutofillSaveUpdateAddressProfileDelegateIOS::
     AutofillSaveUpdateAddressProfileDelegateIOS(
         const AutofillProfile& profile,
         const AutofillProfile* original_profile,
-        absl::optional<std::u16string> user_email,
+        std::optional<std::u16string> user_email,
         const std::string& locale,
         AutofillClient::SaveAddressProfilePromptOptions options,
         AutofillClient::AddressProfileSavePromptCallback callback)
@@ -129,7 +129,7 @@ AutofillSaveUpdateAddressProfileDelegateIOS::GetOriginalProfile() const {
 }
 
 std::u16string AutofillSaveUpdateAddressProfileDelegateIOS::GetProfileInfo(
-    ServerFieldType type) const {
+    FieldType type) const {
   return profile_.GetInfo(type, locale_);
 }
 
@@ -179,11 +179,15 @@ bool AutofillSaveUpdateAddressProfileDelegateIOS::Never() {
 }
 
 void AutofillSaveUpdateAddressProfileDelegateIOS::SetProfileInfo(
-    const ServerFieldType& type,
+    const FieldType& type,
     const std::u16string& value) {
-  // Since the country field is a text field, we should use SetInfo() to make
-  // sure they get converted to country codes.
-  if (type == ADDRESS_HOME_COUNTRY) {
+  // Since the countries combobox contains the country names, not the country
+  // codes, and hence we should use `SetInfo()` to make sure they get converted
+  // to country codes. Also use `SetInfo()` for `NAME_FULL` so that its
+  // dependent nodes (NAME_FIRST, NAME_LAST, etc) are also updated. This does
+  // not need to be done for addresses because it is handled internally inside
+  // `SetRawInfo()`.
+  if (type == ADDRESS_HOME_COUNTRY || type == NAME_FULL) {
     profile_.SetInfoWithVerificationStatus(type, value, locale_,
                                            VerificationStatus::kUserVerified);
     return;
@@ -249,7 +253,12 @@ bool AutofillSaveUpdateAddressProfileDelegateIOS::ShouldExpire(
 void AutofillSaveUpdateAddressProfileDelegateIOS::
     RunSaveAddressProfilePromptCallback() {
   std::move(address_profile_save_prompt_callback_)
-      .Run(user_decision_, profile_);
+      .Run(user_decision_,
+           user_decision_ ==
+                   AutofillClient::SaveAddressProfileOfferUserDecision::
+                       kEditAccepted
+               ? base::optional_ref(profile_)
+               : std::nullopt);
 }
 
 void AutofillSaveUpdateAddressProfileDelegateIOS::SetUserDecision(

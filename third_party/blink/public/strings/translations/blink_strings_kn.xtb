@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="kn">
+<translation id="1012241361789814178">ಡೀಬಗರ್ ಅನ್ನು ಮತ್ತೊಂದು ಟ್ಯಾಬ್‌ನಲ್ಲಿ ವಿರಾಮಗೊಳಿಸಿದರೆ, ಆ ಟ್ಯಾಬ್‌ಗೆ ಬದಲಾಯಿಸಲು ಕ್ಲಿಕ್ ಮಾಡಿ.</translation>
 <translation id="1088086359088493902">ಸೆಕೆಂಡುಗಳು</translation>
 <translation id="1142001580032786438">ವಾರದ ಪಿಕರ್ ಅನ್ನು ತೋರಿಸಿ</translation>
 <translation id="1171774979989969504">ದಯವಿಟ್ಟು ಇಮೇಲ್ ವಿಳಾಸವನ್ನು ನಮೂದಿಸಿ.</translation>
@@ -16,6 +17,7 @@
 <translation id="1729654308190250600">ಖಾಲಿ-ಅಲ್ಲದ ಇಮೇಲ್ ವಿಳಾಸವನ್ನು ನಮೂದಿಸಿ.</translation>
 <translation id="1758486001363313524">ಇತರೆ...</translation>
 <translation id="1787192514241997742">ಒಟ್ಟು ಸಮಯ: <ph name="REMAINING_TIME" /></translation>
+<translation id="1800494066469288780">ಕ್ಯಾಮರಾವನ್ನು ಅನುಮತಿಸಿ</translation>
 <translation id="1822429046913737220">AM/PM</translation>
 <translation id="1832974991323546415">ರಿಮೋಟ್ ಸಾಧನದಲ್ಲಿ ಪ್ಲೇ ಮಾಡಿ</translation>
 <translation id="1921819250265091946">ದಿದಿ</translation>
@@ -24,10 +26,12 @@
 <translation id="1993104285338243655">ಪ್ರತಿಬಿಂಬಿಸುವಿಕೆಗೆ ಬದಲಾಯಿಸಲಾಗಿದೆ</translation>
 <translation id="2031987842108996681">ಕೆಂಪು ಚಾನಲ್</translation>
 <translation id="2060505056492490888">'<ph name="DOT" />' ಅನ್ನು '<ph name="INVALIDDOMAIN" />' ನಲ್ಲಿ ತಪ್ಪಾದ ಸ್ಥಾನದಲ್ಲಿ ಬಳಸಲಾಗಿದೆ.</translation>
+<translation id="2068711044993563745">ಕನಿಷ್ಠ ಮೌಲ್ಯವು (<ph name="MINIMUM" />) ಗರಿಷ್ಠ ಮೌಲ್ಯಕ್ಕಿಂತ (<ph name="MAXIMUM" />) ಕಡಿಮೆಯಿರಬೇಕು.</translation>
 <translation id="2148716181193084225">ಇಂದು</translation>
 <translation id="2226276347425096477">ದಯವಿಟ್ಟು ಈ ಪಠ್ಯವನ್ನು <ph name="MAX_CHARACTERS" /> ಅಕ್ಷರಗಳಿಗೆ ಅಥವಾ ಅದಕ್ಕಿಂತಲೂ ಕಡಿಮೆಗೆ ಸೀಮಿತಗೊಳಿಸಿ (ನೀವು ಪ್ರಸ್ತುತ <ph name="CURRENT_LENGTH" /> ಅಕ್ಷರಗಳನ್ನು ಬಳಸುತ್ತಿರುವಿರಿ).</translation>
 <translation id="2247351761944213033">ವಾರ <ph name="WEEKNUMBER" />, <ph name="YEAR" /></translation>
 <translation id="2277199496770840904">ಟ್ರ್ಯಾಕ್ <ph name="NUMBER" /></translation>
+<translation id="2353297238722298836">ಕ್ಯಾಮೆರಾ ಮತ್ತು ಮೈಕ್ರೊಫೋನ್ ಗಳನ್ನು ಅನುಮತಿಸಲಾಗಿದೆ</translation>
 <translation id="2393030564806080191">ಹೆಕ್ಸಾಡೆಸಿಮಲ್‌‌ ಬಣ್ಣದ ಮೌಲ್ಯ</translation>
 <translation id="2398813069815436052">ಡೈಲಾಗ್ ತೆರೆಯಲಾಗಿದೆ.</translation>
 <translation id="245932805758469625">ಇಷ್ಟು ಸೆಕೆಂಡಿನ ವೀಡಿಯೊ ಬಾಕಿ ಉಳಿದಿದೆ</translation>
@@ -44,11 +48,13 @@
 <translation id="2761667185364618470">ನೀವು ಮುಂದುವರೆಯಬೇಕಾದರೆ ದಯವಿಟ್ಟು ಈ ಬಾಕ್ಸ್ ಅನ್ನು ಪರೀಕ್ಷಿಸಿ.</translation>
 <translation id="2908441821576996758">ದಯವಿಟ್ಟು ಅಲ್ಪ ವಿರಾಮದಿಂದ ಬೇರ್ಪಡಿಸಿದ ಇಮೇಲ್ ವಿಳಾಸಗಳ ಪಟ್ಟಿಯನ್ನು ನಮೂದಿಸಿ.</translation>
 <translation id="3049748772180311791"><ph name="QUANTITY" /> MB</translation>
+<translation id="3053226512517284904">ಆಡಿಯೋ ವಿವರಣೆಗಳ ಮೆನುವನ್ನು ತೋರಿಸಿ</translation>
 <translation id="3075154866155599887">ದಯವಿಟ್ಟು ಮಾನ್ಯ ಮೌಲ್ಯವನ್ನು ನಮೂದಿಸಿ. ಕ್ಷೇತ್ರವು ಅಪೂರ್ಣವಾಗಿದೆ ಅಥವಾ ಅಮಾನ್ಯ ದಿನಾಂಕವನ್ನು ಹೊಂದಿದೆ.</translation>
 <translation id="310520048233152454">ದಯವಿಟ್ಟು URL ಅನ್ನು ನಮೂದಿಸಿ.</translation>
 <translation id="3220661731597678625">ಪ್ರಸ್ತುತ ಹಂತ</translation>
 <translation id="3321030238473337787">ಪ್ಲೇಬ್ಯಾಕ್ ವೇಗ</translation>
 <translation id="3329013043687509092">ಸ್ಯಾಚುರೇಶನ್</translation>
+<translation id="3377518164566272702">ಮೈಕ್ರೊಫೋನ್ ಹಾಗೂ ಕ್ಯಾಮರಾವನ್ನು ಅನುಮತಿಸಿ</translation>
 <translation id="3450233048674729344">ಮೌಲ್ಯವು <ph name="MAXIMUM" /> ಕ್ಕೆ ಸಮನಾಗಿರಬಹುದು ಅಥವಾ ಅದಕ್ಕಿಂತಲೂ ಕಡಿಮೆ ಆಗಿರಬಹುದು.</translation>
 <translation id="3732799496749320381">ಮಿಮೀ</translation>
 <translation id="3754210790023674521">ಚಿತ್ರದಲ್ಲಿ ಚಿತ್ರ ಮೋಡ್‌ನಿಂದ ನಿರ್ಗಮಿಸಿ</translation>
@@ -56,14 +62,17 @@
 <translation id="3822383571486410024">ಈ ಪಠ್ಯವನ್ನು <ph name="MIN_CHARACTERS" /> ಅಕ್ಷರಗಳಿಗೆ ಅಥವಾ ಅದಕ್ಕಿಂತಲೂ ಹೆಚ್ಚಿಗೆ ಸೀಮಿತಗೊಳಿಸಿ (ನೀವು ಪ್ರಸ್ತುತವಾಗಿ <ph name="CURRENT_LENGTH" /> ಅಕ್ಷರಗಳನ್ನು ಬಳಸುತ್ತಿರುವಿರಿ).</translation>
 <translation id="383465348367842624">'<ph name="ATSIGN" />' ನಂತರದ ಭಾಗವು '<ph name="INVALIDCHARACTER" />' ಚಿಹ್ನೆಯನ್ನು ಒಳಗೊಂಡಿರಬಾರದು.</translation>
 <translation id="3846214748874656680">ಪೂರ್ಣಪರದೆಯಿಂದ ನಿರ್ಗಮಿಸಿ</translation>
+<translation id="4031179711345676612">ಮೈಕ್ರೊಫೋನ್ ಅನುಮತಿಸಲಾಗಿದೆ</translation>
 <translation id="4103419683916926126">ಮಿಲಿಸೆಕೆಂಡುಗಳು</translation>
 <translation id="4201051445878709314">ಹಿಂದಿನ ತಿಂಗಳು ತೋರಿಸು</translation>
 <translation id="4360991593054037559">ಮಾನ್ಯವಾದ ಮೌಲ್ಯವನ್ನು ನಮೂದಿಸಿ. <ph name="VALID_VALUE_LOW" /> ಮತ್ತು <ph name="VALID_VALUE_HIGHER" /> ಎರಡು ಹತ್ತಿರದ ಮಾನ್ಯ ಮೌಲ್ಯಗಳಾಗಿವೆ.</translation>
 <translation id="4522570452068850558">ವಿವರಗಳು</translation>
+<translation id="4663373278480897665">ಕ್ಯಾಮೆರಾಗೆ ಅನುಮತಿಸಲಾಗಿದೆ</translation>
 <translation id="4664250907885839816">'<ph name="ATSIGN" />' ನಂತರದ ಭಾಗವು '<ph name="INVALIDCHARACTER" />' ಚಿಹ್ನೆಯನ್ನು ಒಳಗೊಂಡಿರಬಾರದು.</translation>
 <translation id="4718048029184481307">ಚಿತ್ರದಲ್ಲಿ ಚಿತ್ರ ಮೋಡ್‌ನಲ್ಲಿ ಪ್ಲೇ ಮಾಡಲಾಗುತ್ತಿದೆ</translation>
 <translation id="4748357248530471599">ಡಿಸ್‌ಪ್ಲೇ ಕಟ್‌ಔಟ್ ಪೂರ್ಣ ಸ್ಕ್ರೀನ್ ಟಾಗಲ್ ಮಾಡಿ</translation>
 <translation id="4763480195061959176">ವೀಡಿಯೊ</translation>
+<translation id="4792862212177489858">ಸ್ಥಳವನ್ನು ಹಂಚಿಕೊಳ್ಳಿ</translation>
 <translation id="4812940957355064477">ದಯವಿಟ್ಟು ಸಂಖ್ಯೆಯನ್ನು ನಮೂದಿಸಿ.</translation>
 <translation id="4912200001568447310">ಪ್ರಸ್ತುತ ಐಟಂ</translation>
 <translation id="4915360478455618802">ಸಮಯದ ಪಿಕರ್ ಅನ್ನು ತೋರಿಸಿ</translation>
@@ -73,6 +82,7 @@
 <translation id="4975562563186953947"><ph name="SELECTED_COUNT" /> ಆಯ್ಕೆ ಮಾಡಲಾಗಿದೆ</translation>
 <translation id="4992066212339426712">ಅನ್‌ಮ್ಯೂಟ್</translation>
 <translation id="49969490063480558">'<ph name="ATSIGN" />' ನಂತರದ ಒಂದು ಭಾಗವನ್ನು ನಮೂದಿಸಿ. '<ph name="INVALIDADDRESS" />' ಅಪೂರ್ಣವಾಗಿದೆ.</translation>
+<translation id="5037575921016181960">ಬಲಿಷ್ಠವಾದ ಪಾಸ್‌ವರ್ಡ್</translation>
 <translation id="5090250355906949916">ವೀಡಿಯೊ ಸಮಯದ ಸ್ಕ್ರಬ್ಬರ್</translation>
 <translation id="509897012892853729">ನೀಲಿ ಚಾನಲ್</translation>
 <translation id="5117590920725113268">ಮುಂದಿನ ತಿಂಗಳು ತೋರಿಸಿ</translation>
@@ -131,6 +141,7 @@
 <translation id="6941933287844615239">ಮಾಧ್ಯಮ ಡೌನ್‌ಲೋಡ್</translation>
 <translation id="698788488269350478">ವಿಸ್ತರಿಸಲಾಗಿದೆ.</translation>
 <translation id="6989848892321993519">ಈ ಪಠ್ಯವನ್ನು <ph name="MIN_CHARACTERS" /> ಅಥವಾ ಇದಕ್ಕಿಂತಲೂ ಹೆಚ್ಚಿನ ಅಕ್ಷರಗಳಿಗೆ ಉದ್ದಗೊಳಿಸಿ (ನೀವು ಪ್ರಸ್ತುತ 1 ಅಕ್ಷರಗಳನ್ನು ಬಳಸುತ್ತಿರುವಿರಿ).</translation>
+<translation id="7080893216867146095">ಸ್ಥಳ ಹಂಚಿಕೊಳ್ಳುವಿಕೆಯನ್ನು ಅನುಮತಿಸಲಾಗಿದೆ</translation>
 <translation id="709897737746224366">ದಯವಿಟ್ಟು ವಿನಂತಿಸಿದ ಸ್ವರೂಪವನ್ನು ಹೊಂದಿಸಿ.</translation>
 <translation id="7102274145889307184">ಪ್ರಸ್ತುತ ಸ್ಥಳ</translation>
 <translation id="7263440858009898357">ಪಟ್ಟಿಯಲ್ಲಿನ ಐಟಂ ಅನ್ನು ದಯವಿಟ್ಟು ಆಯ್ಕೆ ಮಾಡಿ.</translation>
@@ -177,6 +188,7 @@
 <translation id="9132465097189459683">ಇತರೆ...</translation>
 <translation id="9155987714137265666"><ph name="WEEK" />, <ph name="WEEK_START_DATE" /> ರಂದು ಪ್ರಾರಂಭವಾಗುತ್ತದೆ</translation>
 <translation id="916607977885256133">ಚಿತ್ರದಲ್ಲಿ ಚಿತ್ರ</translation>
+<translation id="918430632320614861">ಮೈಕ್ರೊಫೋನ್ ಅನ್ನು ಅನುಮತಿಸಿ</translation>
 <translation id="945780513535800434">ಭಾಗಶಃ ಗುರುತಿಸಲಾಗಿದೆ</translation>
 <translation id="954003015749068518">ಚಿತ್ರದಲ್ಲಿನ ಚಿತ್ರವನ್ನು ಪ್ರವೇಶಿಸಿ</translation>
 </translationbundle>

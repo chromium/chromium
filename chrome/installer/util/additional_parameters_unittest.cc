@@ -4,7 +4,9 @@
 
 #include "chrome/installer/util/additional_parameters.h"
 
-#include "base/strings/string_piece.h"
+#include <optional>
+#include <string_view>
+
 #include "base/test/test_reg_util_win.h"
 #include "base/win/registry.h"
 #include "build/build_config.h"
@@ -12,7 +14,6 @@
 #include "components/version_info/channel.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace installer {
 
@@ -36,7 +37,7 @@ class AdditionalParametersTest : public ::testing::Test {
               ERROR_SUCCESS);
   }
 
-  static absl::optional<std::wstring> GetAp() {
+  static std::optional<std::wstring> GetAp() {
     std::wstring value;
     if (base::win::RegKey(HKEY_CURRENT_USER,
                           install_static::GetClientStateKeyPath().c_str(),
@@ -44,7 +45,7 @@ class AdditionalParametersTest : public ::testing::Test {
             .ReadValue(L"ap", &value) == ERROR_SUCCESS) {
       return std::move(value);
     }
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   // ::testing::Test:
@@ -96,14 +97,14 @@ TEST_F(AdditionalParametersTest, SetFullSuffixNoKey) {
   {
     AdditionalParameters ap;
     EXPECT_FALSE(ap.SetFullSuffix(false));
-    EXPECT_EQ(GetAp(), absl::nullopt);
+    EXPECT_EQ(GetAp(), std::nullopt);
   }
 
   {
     AdditionalParameters ap;
     EXPECT_TRUE(ap.SetFullSuffix(true));
     ASSERT_TRUE(ap.Commit());
-    EXPECT_EQ(GetAp(), absl::optional<std::wstring>(L"-full"));
+    EXPECT_EQ(GetAp(), std::optional<std::wstring>(L"-full"));
   }
 }
 
@@ -112,14 +113,14 @@ TEST_F(AdditionalParametersTest, SetFullSuffixNoValue) {
   {
     AdditionalParameters ap;
     EXPECT_FALSE(ap.SetFullSuffix(false));
-    EXPECT_EQ(GetAp(), absl::nullopt);
+    EXPECT_EQ(GetAp(), std::nullopt);
   }
 
   {
     AdditionalParameters ap;
     EXPECT_TRUE(ap.SetFullSuffix(true));
     ASSERT_TRUE(ap.Commit());
-    EXPECT_EQ(GetAp(), absl::optional<std::wstring>(L"-full"));
+    EXPECT_EQ(GetAp(), std::optional<std::wstring>(L"-full"));
   }
 }
 
@@ -143,15 +144,15 @@ TEST_F(AdditionalParametersTest, SetFullSuffix) {
     // Add -full.
     EXPECT_TRUE(ap.SetFullSuffix(true));
     ASSERT_TRUE(ap.Commit());
-    EXPECT_EQ(GetAp(), absl::optional<std::wstring>(expectation.with));
+    EXPECT_EQ(GetAp(), std::optional<std::wstring>(expectation.with));
 
     // Remove -full.
     EXPECT_TRUE(ap.SetFullSuffix(false));
     ASSERT_TRUE(ap.Commit());
     if (!*expectation.without) {
-      EXPECT_EQ(GetAp(), absl::nullopt);
+      EXPECT_EQ(GetAp(), std::nullopt);
     } else {
-      EXPECT_EQ(GetAp(), absl::optional<std::wstring>(expectation.without));
+      EXPECT_EQ(GetAp(), std::optional<std::wstring>(expectation.without));
     }
   }
 }
@@ -232,7 +233,7 @@ TEST_F(AdditionalParametersTest, SetChannel) {
     static constexpr struct {
       version_info::Channel channel;
       bool is_extended_stable_channel;
-      base::WStringPiece prefix;
+      std::wstring_view prefix;
     } kChannels[] = {
         {version_info::Channel::DEV, /*is_extended_stable_channel=*/false,
          L"2.0-dev"},

@@ -5,7 +5,8 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_WORKERS_THREADED_MESSAGING_PROXY_BASE_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_WORKERS_THREADED_MESSAGING_PROXY_BASE_H_
 
-#include "third_party/abseil-cpp/absl/types/optional.h"
+#include <optional>
+
 #include "third_party/blink/public/common/tokens/tokens.h"
 #include "third_party/blink/public/mojom/devtools/console_message.mojom-blink-forward.h"
 #include "third_party/blink/renderer/core/core_export.h"
@@ -84,8 +85,8 @@ class CORE_EXPORT ThreadedMessagingProxyBase
   // function, and this param will be used directly to start the worklet thread.
   void InitializeWorkerThread(
       std::unique_ptr<GlobalScopeCreationParams>,
-      const absl::optional<WorkerBackingThreadStartupData>&,
-      const absl::optional<const blink::DedicatedWorkerToken>&,
+      const std::optional<WorkerBackingThreadStartupData>&,
+      const std::optional<const blink::DedicatedWorkerToken>&,
       std::unique_ptr<WorkerDevToolsParams> client_provided_devtools_params =
           nullptr);
 
@@ -123,9 +124,6 @@ class CORE_EXPORT ThreadedMessagingProxyBase
   // Used to terminate the synchronous resource loading (XMLHttpRequest) on the
   // worker thread from the main thread.
   base::WaitableEvent terminate_sync_load_event_;
-
-  FrameOrWorkerScheduler::SchedulingAffectingFeatureHandle
-      feature_handle_for_scheduler_;
 
   // Used to keep this alive until the worker thread gets terminated. This is
   // necessary because the co-owner (i.e., Worker or Worklet object) can be

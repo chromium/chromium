@@ -126,7 +126,7 @@ GURL& SCTReportingService::GetHashdanceLookupQueryURLInstance() {
 
 // static
 void SCTReportingService::ReconfigureAfterNetworkRestart() {
-  network::mojom::SCTAuditingConfigurationPtr configuration(absl::in_place);
+  network::mojom::SCTAuditingConfigurationPtr configuration(std::in_place);
   configuration->sampling_rate = features::kSCTAuditingSamplingRate.Get();
   configuration->log_expected_ingestion_delay =
       features::kSCTLogExpectedIngestionDelay.Get();
@@ -202,14 +202,6 @@ SCTReportingService::SCTReportingService(
 
 SCTReportingService::~SCTReportingService() = default;
 
-namespace {
-void SetSCTAuditingEnabledForStoragePartition(
-    network::mojom::SCTAuditingMode mode,
-    content::StoragePartition* storage_partition) {
-  storage_partition->GetNetworkContext()->SetSCTAuditingMode(mode);
-}
-}  // namespace
-
 network::mojom::SCTAuditingMode SCTReportingService::GetReportingMode() {
   if (profile_->IsOffTheRecord() ||
       !base::FeatureList::IsEnabled(features::kSCTAuditing)) {
@@ -232,7 +224,9 @@ void SCTReportingService::OnPreferenceChanged() {
   // Iterate over StoragePartitions for this Profile, and for each get the
   // NetworkContext and set the SCT auditing mode.
   profile_->ForEachLoadedStoragePartition(
-      base::BindRepeating(&SetSCTAuditingEnabledForStoragePartition, mode));
+      [mode](content::StoragePartition* partition) {
+        partition->GetNetworkContext()->SetSCTAuditingMode(mode);
+      });
 
   if (mode == network::mojom::SCTAuditingMode::kDisabled)
     content::GetNetworkService()->ClearSCTAuditingCache();

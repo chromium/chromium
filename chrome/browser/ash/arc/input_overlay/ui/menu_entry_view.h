@@ -9,6 +9,7 @@
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/ash/arc/input_overlay/ui/reposition_controller.h"
+#include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/events/event.h"
 #include "ui/views/controls/button/image_button.h"
 
@@ -18,9 +19,11 @@ class DisplayOverlayController;
 
 // MenuEntryView is for GIO menu entry button.
 class MenuEntryView : public views::ImageButton {
+  METADATA_HEADER(MenuEntryView, views::ImageButton)
+
  public:
   using OnPositionChangedCallback =
-      base::RepeatingCallback<void(bool, absl::optional<gfx::Point>)>;
+      base::RepeatingCallback<void(bool, std::optional<gfx::Point>)>;
 
   static MenuEntryView* Show(
       PressedCallback pressed_callback,

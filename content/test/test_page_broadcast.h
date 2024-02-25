@@ -17,6 +17,8 @@ class TestPageBroadcast : public blink::mojom::PageBroadcast {
       mojo::PendingAssociatedReceiver<blink::mojom::PageBroadcast> receiver);
   ~TestPageBroadcast() override;
 
+  void FlushForTesting();
+
  private:
   void SetPageLifecycleState(
       blink::mojom::PageLifecycleStatePtr state,
@@ -26,17 +28,16 @@ class TestPageBroadcast : public blink::mojom::PageBroadcast {
   void ActivatePrerenderedPage(blink::mojom::PrerenderPageActivationParamsPtr
                                    prerender_page_activation_params,
                                ActivatePrerenderedPageCallback) override;
-  void SetInsidePortal(bool is_inside_portal) override;
   void UpdateWebPreferences(
       const blink::web_pref::WebPreferences& preferences) override;
   void UpdateRendererPreferences(
       const blink::RendererPreferences& preferences) override;
   void SetHistoryOffsetAndLength(int32_t history_offset,
                                  int32_t history_length) override;
-  void SetPageBaseBackgroundColor(absl::optional<SkColor> color) override;
+  void SetPageBaseBackgroundColor(std::optional<SkColor> color) override;
   void CreateRemoteMainFrame(
       const blink::RemoteFrameToken& token,
-      const absl::optional<blink::FrameToken>& opener_frame_token,
+      const std::optional<blink::FrameToken>& opener_frame_token,
       blink::mojom::FrameReplicationStatePtr replication_state,
       bool is_loading,
       const base::UnguessableToken& devtools_frame_token,
@@ -45,6 +46,10 @@ class TestPageBroadcast : public blink::mojom::PageBroadcast {
       override;
   void UpdatePageBrowsingContextGroup(const blink::BrowsingContextGroupInfo&
                                           browsing_context_group_info) override;
+  void SetPageAttributionSupport(
+      network::mojom::AttributionSupport support) override;
+  void UpdateColorProviders(
+      const blink::ColorProviderColorMaps& color_provider_colors) override;
 
   mojo::AssociatedReceiver<blink::mojom::PageBroadcast> receiver_;
 };

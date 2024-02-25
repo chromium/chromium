@@ -1,0 +1,10 @@
+Tests the browser does not crash when an invalid interception stage is requested (crbug.com/1500377)
+{
+    error : {
+        code : -32602
+        message : Unsupported interception stage 'FOO'
+    }
+    id : <number>
+    sessionId : <string>
+}
+

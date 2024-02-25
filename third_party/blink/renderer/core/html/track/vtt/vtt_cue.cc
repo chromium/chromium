@@ -426,7 +426,7 @@ static CSSValueID DetermineTextDirection(DocumentFragment* vtt_root) {
     DCHECK(node->IsDescendantOf(vtt_root));
 
     if (node->IsTextNode()) {
-      if (const absl::optional<TextDirection> node_direction =
+      if (const std::optional<TextDirection> node_direction =
               BidiParagraph::BaseDirectionForString(node->nodeValue())) {
         text_direction = *node_direction;
         break;
@@ -650,9 +650,9 @@ void VTTCue::UpdatePastAndFutureNodes(double movie_time) {
   }
 }
 
-absl::optional<double> VTTCue::GetNextIntraCueTime(double movie_time) const {
+std::optional<double> VTTCue::GetNextIntraCueTime(double movie_time) const {
   if (!display_tree_) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   // Iterate through children once, since in a well-formed VTTCue
@@ -669,13 +669,13 @@ absl::optional<double> VTTCue::GetNextIntraCueTime(double movie_time) const {
           return timestamp;
         } else {
           // Timestamps should never be greater than the end time of the VTTCue.
-          return absl::nullopt;
+          return std::nullopt;
         }
       }
     }
   }
 
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 VTTCueBox* VTTCue::GetDisplayTree() {
@@ -689,7 +689,7 @@ VTTCueBox* VTTCue::GetDisplayTree() {
   DCHECK_EQ(display_tree_->firstChild(), cue_background_box_);
 
   if (!display_tree_should_change_)
-    return display_tree_;
+    return display_tree_.Get();
 
   CreateVTTNodeTree();
 
@@ -707,7 +707,7 @@ VTTCueBox* VTTCue::GetDisplayTree() {
 
   display_tree_should_change_ = false;
 
-  return display_tree_;
+  return display_tree_.Get();
 }
 
 void VTTCue::RemoveDisplayTree(RemovalNotification removal_notification) {

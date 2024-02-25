@@ -30,7 +30,7 @@
 #include "absl/base/config.h"
 #include "absl/base/internal/exception_testing.h"
 #include "absl/base/options.h"
-#include "absl/container/internal/counting_allocator.h"
+#include "absl/container/internal/test_allocator.h"
 #include "absl/hash/hash_testing.h"
 #include "absl/memory/memory.h"
 

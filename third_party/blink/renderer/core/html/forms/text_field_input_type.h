@@ -53,6 +53,7 @@ class TextFieldInputType : public InputType,
   bool CanSetSuggestedValue() override;
   void HandleKeydownEvent(KeyboardEvent&) override;
 
+  bool IsInnerEditorValueEmpty() const final;
   void CreateShadowSubtree() override;
   void DestroyShadowSubtree() override;
   void ValueAttributeChanged() override;
@@ -87,8 +88,7 @@ class TextFieldInputType : public InputType,
   bool ShouldSubmitImplicitly(const Event&) final;
   bool ShouldRespectListAttribute() override;
   void ListAttributeTargetChanged() override;
-  void UpdatePlaceholderText(bool is_suggested_value) final;
-  void AppendToFormData(FormData&) const override;
+  HTMLElement* UpdatePlaceholderText(bool is_suggested_value) final;
   void SubtreeHasChanged() final;
   void OpenPopupView() override;
 

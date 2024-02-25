@@ -7,7 +7,6 @@
 
 #include "base/feature_list.h"
 #include "base/metrics/field_trial_params.h"
-#include "build/build_config.h"
 
 namespace switches {
 
@@ -37,6 +36,14 @@ BASE_DECLARE_FEATURE(kSyncFilterOutInactiveDevicesForSingleClient);
 inline constexpr base::FeatureParam<base::TimeDelta> kSyncActiveDeviceMargin{
     &kSyncFilterOutInactiveDevicesForSingleClient, "SyncActiveDeviceMargin",
     base::Days(7)};
+
+// If enabled, eligible users (i.e. those for which Sync-the-feature is active)
+// are migrated, at browser startup, to the signed-in non-syncing state.
+BASE_DECLARE_FEATURE(kMigrateSyncingUserToSignedIn);
+
+// If enabled, users who were migrated from syncing to signed-in via the above
+// flag are migrated back into the syncing state.
+BASE_DECLARE_FEATURE(kUndoMigrationOfSyncingUserToSignedIn);
 
 }  // namespace switches
 

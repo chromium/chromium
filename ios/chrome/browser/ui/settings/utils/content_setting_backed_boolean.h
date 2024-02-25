@@ -8,7 +8,7 @@
 #import <Foundation/Foundation.h>
 
 #include "components/content_settings/core/common/content_settings_types.h"
-#import "ios/chrome/browser/ui/settings/utils/observable_boolean.h"
+#import "ios/chrome/browser/shared/model/utils/observable_boolean.h"
 
 class HostContentSettingsMap;
 

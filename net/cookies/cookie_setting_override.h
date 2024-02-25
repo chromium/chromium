@@ -21,12 +21,24 @@ enum class CookieSettingOverride {
   // a matching grant exists) to access third-party cookies. Otherwise, Storage
   // Access API grants do not apply.
   kStorageAccessGrantEligible = 1,
-  // When present, 3PCD support settings (ContentSettingsType::TPCD_SUPPORT)
-  // will be respected.
-  k3pcdSupport = 2,
-  // When present, 3PCD metadata grants content settings will be respected.
-  k3pcdMetadataGrantEligible = 3,
-  kMaxValue = k3pcdMetadataGrantEligible,
+  // Allows TPCD mitigations to be skipped when checking if third party cookies
+  // are allowed, meaning cookies will be blocked despite the presence of any of
+  // these grants/heuristics.
+  kSkipTPCDHeuristicsGrant = 2,
+  kSkipTPCDMetadataGrant = 3,
+  // Corresponds to skipping checks on the TPCD_TRIAL content setting, which
+  // backs 3PC accesses granted via 3PC deprecation trial.
+  kSkipTPCDTrial = 4,
+  // Corresponds to skipping checks on the TOP_LEVEL_TPCD_TRIAL content setting,
+  // which backs 3PC accesses granted via top-level 3PC deprecation trial.
+  kSkipTopLevelTPCDTrial = 5,
+  // Corresponds to checks that may grant 3PCs when a request opts into
+  // credentials and CORS protection.
+  // One example are subresource requests that are same-site with the top-level
+  // site but originate from a cross-site embed.
+  kCrossSiteCredentialedWithCORS = 6,
+
+  kMaxValue = kCrossSiteCredentialedWithCORS,
 };
 
 using CookieSettingOverrides = base::EnumSet<CookieSettingOverride,

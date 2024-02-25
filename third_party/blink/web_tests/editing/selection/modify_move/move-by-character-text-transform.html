@@ -1,0 +1,43 @@
+<!doctype html>
+<title>crbug.com/1433232</title>
+<script src="../../../resources/testharness.js"></script>
+<script src="../../../resources/testharnessreport.js"></script>
+<script src="../../assert_selection.js"></script>
+<script>
+
+selection_test(
+  '<div contenteditable style="text-transform:uppercase">|\u00DFbar</div>',
+  selection => selection.modify('move', 'right', 'character'),
+  '<div contenteditable style="text-transform:uppercase">\u00DF|bar</div>',
+  'Move-right should assume SS as a single character');
+
+selection_test(
+  '<div contenteditable style="text-transform:uppercase">\u00DF|bar</div>',
+  selection => selection.modify('move', 'left', 'character'),
+  '<div contenteditable style="text-transform:uppercase">|\u00DFbar</div>',
+  'Move-left should assume SS as a single character');
+
+selection_test(
+  '<div contenteditable lang="lt" style="text-transform:uppercase">|i\u0307bar</div>',
+  selection => selection.modify('move', 'right', 'character'),
+  '<div contenteditable lang="lt" style="text-transform:uppercase">i\u0307|bar</div>',
+  'Move-right should assume i\u0307 as a single character');
+
+selection_test(
+  '<div contenteditable lang="lt" style="text-transform:uppercase">|i\u0307bar</div>',
+  selection => {
+    selection.modify('move', 'right', 'character');
+    selection.modify('move', 'right', 'character');
+    selection.modify('move', 'right', 'character');
+    selection.modify('move', 'right', 'character');
+  },
+  '<div contenteditable lang="lt" style="text-transform:uppercase">i\u0307bar|</div>',
+  'Move-right four times should reach to the end of the string');
+
+selection_test(
+  '<div contenteditable lang="lt" style="text-transform:uppercase">i\u0307|bar</div>',
+  selection => selection.modify('move', 'left', 'character'),
+  '<div contenteditable lang="lt" style="text-transform:uppercase">|i\u0307bar</div>',
+  'Move-left should assume i\u0307 as a single character');
+</script>
+

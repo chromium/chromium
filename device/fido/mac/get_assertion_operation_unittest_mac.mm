@@ -36,7 +36,7 @@ CtapGetAssertionRequest MakeTestRequest() {
 
 bool MakeCredential() {
   TestCallbackReceiver<CtapDeviceResponseCode,
-                       absl::optional<AuthenticatorMakeCredentialResponse>>
+                       std::optional<AuthenticatorMakeCredentialResponse>>
       callback_receiver;
   auto request = CtapMakeCredentialRequest(
       test_data::kClientDataJson, PublicKeyCredentialRpEntity(kRpId),

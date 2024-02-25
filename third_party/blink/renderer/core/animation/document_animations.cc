@@ -153,8 +153,7 @@ void DocumentAnimations::MarkPendingIfCompositorPropertyAnimationChanges(
 size_t DocumentAnimations::GetAnimationsCount() {
   wtf_size_t total_animations_count = 0;
   if (document_->View()) {
-    if (cc::AnimationHost* host =
-            document_->View()->GetCompositorAnimationHost()) {
+    if (document_->View()->GetCompositorAnimationHost()) {
       for (auto& timeline : timelines_) {
         if (timeline->HasAnimations())
           total_animations_count += timeline->AnimationsNeedingUpdateCount();

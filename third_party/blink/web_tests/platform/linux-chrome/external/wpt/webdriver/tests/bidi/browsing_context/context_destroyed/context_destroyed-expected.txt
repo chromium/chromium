@@ -1,0 +1,6 @@
+This is a wdspec test.
+[FAIL] test_delete_nested_iframes
+  AssertionError: assert 2 == 1
+[FAIL] test_iframe_destroy_parent
+  AssertionError: assert 3 == 1
+Harness: the test ran to completion.

@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<script src="../../resources/testharness.js"></script>
+<script src="../../resources/testharnessreport.js"></script>
+
+<body>
+<script>
+
+const kHTMLDetailsElementNameAttribute = 4677;
+
+test(() => {
+  assert_false(internals.isUseCounted(document, kHTMLDetailsElementNameAttribute),
+               "shouldn't be counted before the test.");
+
+  const e1 = document.createElement('details');
+  document.body.appendChild(e1);
+
+  const e2 = document.createElement('details');
+  e2.setAttribute("name", "");
+  document.body.appendChild(e2);
+
+  assert_false(internals.isUseCounted(document, kHTMLDetailsElementNameAttribute),
+               "shouldn't be counted without non-empty name attribute");
+
+  const e3 = document.createElement('details');
+  e3.setAttribute("name", "groupname");
+  document.body.appendChild(e3);
+
+  assert_true(internals.isUseCounted(document, kHTMLDetailsElementNameAttribute),
+              "should be counted with non-empty name attribute");
+}, 'Behavior of kHTMLDetailsElementNameAttribute use counter');
+
+</script>

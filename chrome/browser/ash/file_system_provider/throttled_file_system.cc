@@ -14,8 +14,7 @@
 #include "base/functional/bind.h"
 #include "chrome/browser/ash/file_system_provider/queue.h"
 
-namespace ash {
-namespace file_system_provider {
+namespace ash::file_system_provider {
 
 ThrottledFileSystem::ThrottledFileSystem(
     std::unique_ptr<ProvidedFileSystemInterface> file_system)
@@ -27,8 +26,7 @@ ThrottledFileSystem::ThrottledFileSystem(
                         : new Queue(std::numeric_limits<size_t>::max()));
 }
 
-ThrottledFileSystem::~ThrottledFileSystem() {
-}
+ThrottledFileSystem::~ThrottledFileSystem() = default;
 
 AbortCallback ThrottledFileSystem::RequestUnmount(
     storage::AsyncFileUtil::StatusCallback callback) {
@@ -259,5 +257,4 @@ void ThrottledFileSystem::OnCloseFileCompleted(
   std::move(callback).Run(result);
 }
 
-}  // namespace file_system_provider
-}  // namespace ash
+}  // namespace ash::file_system_provider

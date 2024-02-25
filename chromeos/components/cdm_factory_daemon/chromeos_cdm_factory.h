@@ -68,6 +68,14 @@ class COMPONENT_EXPORT(CDM_FACTORY_DAEMON) ChromeOsCdmFactory
       uint32_t size,
       ChromeOsCdmContext::AllocateSecureBufferCB callback);
 
+  // Parses H264 slice header data referenced in TrustZone memory by
+  // |secure_handle|.
+  static void ParseEncryptedSliceHeader(
+      uint64_t secure_handle,
+      uint32_t offset,
+      const std::vector<uint8_t>& stream_data,
+      ChromeOsCdmContext::ParseEncryptedSliceHeaderCB callback);
+
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   // Invoked in the OOP Video Decoder utility process to set the Mojo connection
   // back to the browser process. Normally the GPU process has a Mojo connection

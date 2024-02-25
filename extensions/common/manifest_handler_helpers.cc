@@ -6,6 +6,8 @@
 
 #include <stddef.h>
 
+#include <string_view>
+
 #include "base/check.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
@@ -23,7 +25,7 @@ namespace errors = manifest_errors;
 
 namespace manifest_handler_helpers {
 
-std::vector<base::StringPiece> TokenizeDictionaryPath(base::StringPiece path) {
+std::vector<std::string_view> TokenizeDictionaryPath(std::string_view path) {
   return base::SplitStringPiece(path, ".", base::TRIM_WHITESPACE,
                                 base::SPLIT_WANT_ALL);
 }

@@ -93,7 +93,7 @@ void LoadingBarView::AnimationProgressed(const gfx::Animation* animation) {
   SchedulePaint();
 }
 
-BEGIN_METADATA(LoadingBarView, views::View)
+BEGIN_METADATA(LoadingBarView)
 END_METADATA
 
 TopContainerLoadingBar::TopContainerLoadingBar(Browser* browser)
@@ -169,6 +169,6 @@ void TopContainerLoadingBar::LoadProgressChanged(double progress) {
   UpdateLoadingProgress();
 }
 
-BEGIN_METADATA(TopContainerLoadingBar, LoadingBarView)
+BEGIN_METADATA(TopContainerLoadingBar)
 ADD_READONLY_PROPERTY_METADATA(double, LoadingProgress)
 END_METADATA

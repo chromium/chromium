@@ -1,0 +1,12 @@
+This is a testharness.js-based test.
+Found 4 FAIL, 0 TIMEOUT, 0 NOTRUN.
+[FAIL] UA stylesheet rule for unicode-bidi, for <input type=search>
+  assert_equals: with dir=auto expected "plaintext" but got "isolate"
+[FAIL] UA stylesheet rule for unicode-bidi, for <input type=tel>
+  assert_equals: with dir=auto expected "plaintext" but got "isolate"
+[FAIL] UA stylesheet rule for unicode-bidi, for <input type=url>
+  assert_equals: with dir=auto expected "plaintext" but got "isolate"
+[FAIL] UA stylesheet rule for unicode-bidi, for <input type=email>
+  assert_equals: with dir=auto expected "plaintext" but got "isolate"
+Harness: the test ran to completion.
+

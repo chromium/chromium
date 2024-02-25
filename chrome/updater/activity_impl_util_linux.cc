@@ -2,8 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/updater/activity_impl_util_posix.h"
-
 #include <string>
 #include <vector>
 
@@ -11,6 +9,7 @@
 #include "base/files/file_util.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/string_split.h"
+#include "chrome/updater/activity_impl_util_posix.h"
 #include "chrome/updater/updater_branding.h"
 #include "chrome/updater/updater_scope.h"
 

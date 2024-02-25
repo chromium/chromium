@@ -5,15 +5,17 @@
 import {TestRunner} from 'test_runner';
 import {SecurityTestRunner} from 'security_test_runner';
 
+import * as Security from 'devtools/panels/security/security.js';
+
 (async function() {
   TestRunner.addResult(`Tests that origin group names in the Security panel are distinct.\n`);
   await TestRunner.showPanel('security');
 
-  var originGroupNameSize = Object.keys(Security.SecurityPanelSidebarTree.OriginGroup).length;
+  var originGroupNameSize = Object.keys(Security.SecurityPanel.OriginGroup).length;
 
   var deduplicatedNames = new Set();
-  for (var key in Security.SecurityPanelSidebarTree.OriginGroup) {
-    var name = Security.SecurityPanelSidebarTree.OriginGroup[key];
+  for (var key in Security.SecurityPanel.OriginGroup) {
+    var name = Security.SecurityPanel.OriginGroup[key];
     deduplicatedNames.add(name);
   }
 

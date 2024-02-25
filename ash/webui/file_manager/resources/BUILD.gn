@@ -4,7 +4,6 @@
 
 import("//build/config/chromeos/ui_mode.gni")
 import("//chrome/common/features.gni")
-import("//third_party/closure_compiler/compile_js.gni")
 import("//tools/grit/grit_rule.gni")
 import("//tools/grit/preprocess_if_expr.gni")
 import("//tools/typescript/ts_library.gni")
@@ -13,99 +12,6 @@ import("//ui/webui/resources/tools/optimize_webui.gni")
 import("//ui/webui/webui_features.gni")
 
 assert(is_chromeos_ash)
-
-preprocess_folder = "$target_gen_dir/preprocessed"
-mojom_webui_folder = "$root_gen_dir/mojom-webui/ash/webui/file_manager/mojom"
-
-js_library("init_globals") {
-}
-
-js_library("runtime_loaded_test_util_swa") {
-}
-
-js_library("script_loader") {
-}
-
-js_library("test_util_swa") {
-}
-
-js_library("main") {
-}
-
-js_library("main_js") {
-  sources = [
-    "main.js",
-    "script_loader.js",
-  ]
-  deps = [
-    "//ash/webui/file_manager/mojom:mojom_webui_js",
-    "//ui/file_manager/file_manager/common/js:glitch",
-  ]
-
-  externs_list = [ "$externs_path/chrome_extensions.js" ]
-}
-
-files_app_path = rebase_path("$root_gen_dir/ui/file_manager/tsc/file_manager",
-                             root_build_dir)
-
-js_type_check("closure_compile") {
-  deps = [
-    ":main_js",
-    "//ash/webui/common/resources:load_time_data.m",
-  ]
-  closure_flags =
-      default_closure_args + mojom_js_args + [
-        "js_module_root=" + rebase_path(".", root_build_dir),
-        "js_module_root=" + rebase_path(mojom_webui_folder, root_build_dir),
-        "browser_resolver_prefix_replacements=\"chrome://file-manager/=" +
-            rebase_path("//ui/file_manager/file_manager/", root_build_dir) +
-            "\"",
-      ]
-}
-
-action("gen_main_html") {
-  inputs = [ "//ui/file_manager/file_manager/main.html" ]
-
-  script = "//ash/webui/file_manager/resources/gen_main_html.py"
-
-  args = [
-    "--source",
-    rebase_path("//ui/file_manager/file_manager/main.html", root_build_dir),
-    "--target",
-    rebase_path("$target_gen_dir/main.html", root_build_dir),
-  ]
-
-  outputs = [
-    "$target_gen_dir/main.html",
-    "$target_gen_dir/main.html.stamp",
-  ]
-}
-
-preprocess_if_expr("preprocess") {
-  in_folder = "./"  #target_gen_dir
-  out_folder = preprocess_folder
-  out_manifest = "$target_gen_dir/manifest_preprocess.json"
-
-  in_files = [
-    "main.js",
-    "runtime_loaded_test_util_swa.js",
-    "script_loader.js",
-    "test_util_swa.js",
-  ]
-
-  deps = [
-    ":main",
-    ":script_loader",
-  ]
-}
-
-preprocess_if_expr("preprocess_mojo") {
-  in_folder = mojom_webui_folder
-  in_files = [ "file_manager.mojom-webui.js" ]
-  out_folder = preprocess_folder
-  out_manifest = "$target_gen_dir/manifest_preprocess_mojo.json"
-  deps = [ "//ash/webui/file_manager/mojom:mojom_webui_js" ]
-}
 
 # Only build Labs for debug (non-optimize-webui).
 if (!optimize_webui) {
@@ -128,33 +34,6 @@ if (!optimize_webui) {
   }
 }
 
-optimize_webui("build") {
-  host = "file-manager"
-  input = rebase_path(preprocess_folder, root_build_dir)
-
-  js_module_in_files = [
-    "main.js",
-    "runtime_loaded_test_util_swa.js",
-  ]
-
-  excludes = [
-    "chrome://resources/ash/common/load_time_data.m.js",
-    "chrome://resources/mojo/mojo/public/js/bindings.js",
-  ]
-
-  external_paths = [ "chrome://file-manager|$files_app_path" ]
-
-  deps = [
-    ":preprocess",
-    ":preprocess_mojo",
-  ]
-  if (enable_webui_inline_sourcemaps) {
-    deps += [ "//ui/file_manager:merge_source_maps" ]
-  } else {
-    deps += [ "//ui/file_manager:build_ts" ]
-  }
-}
-
 generated_static_grdp = "$target_gen_dir/static_resources.grdp"
 
 generate_grd("build_static_grdp") {
@@ -163,10 +42,7 @@ generate_grd("build_static_grdp") {
 
   input_files_base_dir = rebase_path(".", "//")
 
-  input_files = [
-    "images/icon192.png",
-    "init_globals.js",
-  ]
+  input_files = [ "images/icon192.png" ]
 }
 
 grd_prefix = "file_manager_swa"
@@ -177,32 +53,12 @@ generate_grd("build_grd") {
 
   grdp_files = [ generated_static_grdp ]
 
-  deps = [
-    ":build",
-    ":build_static_grdp",
-    ":gen_main_html",
-    ":preprocess",
-    ":preprocess_mojo",
-  ]
+  deps = [ ":build_static_grdp" ]
   input_files_base_dir = rebase_path(target_gen_dir, root_build_dir)
-  input_files = [ "main.html" ]
-  manifest_files = [ "$target_gen_dir/manifest_preprocess_mojo.json" ]
+  input_files = []
+  manifest_files = []
 
-  if (optimize_webui) {
-    input_files_base_dir = rebase_path(target_gen_dir, root_build_dir)
-    input_files += [
-      "main.rollup.js",
-      "shared.rollup.js",
-      "runtime_loaded_test_util_swa.rollup.js",
-    ]
-
-    resource_path_rewrites = [
-      "main.rollup.js|main.js",
-      "runtime_loaded_test_util_swa.rollup.js|runtime_loaded_test_util_swa.js",
-    ]
-  } else {
-    manifest_files += [ "$target_gen_dir/manifest_preprocess.json" ]
-
+  if (!optimize_webui) {
     # Labs:
     manifest_files += filter_include(get_target_outputs(":labs_build_ts"),
                                      [ "*_manifest.json" ])

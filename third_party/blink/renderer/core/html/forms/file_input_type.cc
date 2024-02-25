@@ -39,7 +39,7 @@
 #include "third_party/blink/renderer/core/input_type_names.h"
 #include "third_party/blink/renderer/core/inspector/console_message.h"
 #include "third_party/blink/renderer/core/keywords.h"
-#include "third_party/blink/renderer/core/layout/ng/layout_ng_block_flow.h"
+#include "third_party/blink/renderer/core/layout/layout_ng_block_flow.h"
 #include "third_party/blink/renderer/core/page/chrome_client.h"
 #include "third_party/blink/renderer/core/page/drag_data.h"
 #include "third_party/blink/renderer/core/probe/core_probes.h"
@@ -118,10 +118,6 @@ Vector<String> FileInputType::FilesFromFormControlState(
                                                  &File::PathFromControlState);
 }
 
-const AtomicString& FileInputType::FormControlType() const {
-  return input_type_names::kFile;
-}
-
 FormControlState FileInputType::SaveFormControlState() const {
   if (file_list_->IsEmpty() ||
       GetElement().GetDocument().GetFormController().DropReferencedFilePaths())
@@ -187,14 +183,6 @@ void FileInputType::HandleDOMActivateEvent(Event& event) {
     return;
   }
 
-  bool intercepted = false;
-  probe::FileChooserOpened(document.GetFrame(), &input, input.Multiple(),
-                           &intercepted);
-  if (intercepted) {
-    event.SetDefaultHandled();
-    return;
-  }
-
   OpenPopupView();
   event.SetDefaultHandled();
 }
@@ -202,6 +190,13 @@ void FileInputType::HandleDOMActivateEvent(Event& event) {
 void FileInputType::OpenPopupView() {
   HTMLInputElement& input = GetElement();
   Document& document = input.GetDocument();
+
+  bool intercepted = false;
+  probe::FileChooserOpened(document.GetFrame(), &input, input.Multiple(),
+                           &intercepted);
+  if (intercepted) {
+    return;
+  }
 
   if (ChromeClient* chrome_client = GetChromeClient()) {
     FileChooserParams params;
@@ -385,7 +380,8 @@ Node* FileInputType::FileStatusElement() const {
 }
 
 void FileInputType::DisabledAttributeChanged() {
-  DCHECK(IsShadowHost(GetElement()));
+  DCHECK(RuntimeEnabledFeatures::CreateInputShadowTreeDuringLayoutEnabled() ||
+         IsShadowHost(GetElement()));
   if (Element* button = UploadButton()) {
     button->SetBooleanAttribute(html_names::kDisabledAttr,
                                 GetElement().IsDisabledFormControl());
@@ -393,7 +389,8 @@ void FileInputType::DisabledAttributeChanged() {
 }
 
 void FileInputType::MultipleAttributeChanged() {
-  DCHECK(IsShadowHost(GetElement()));
+  DCHECK(RuntimeEnabledFeatures::CreateInputShadowTreeDuringLayoutEnabled() ||
+         IsShadowHost(GetElement()));
   if (Element* button = UploadButton()) {
     button->setAttribute(
         html_names::kValueAttr,

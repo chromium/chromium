@@ -7,14 +7,14 @@
  */
 
 // Polymer BrowserTest fixture.
-GEN_INCLUDE(['//chrome/test/data/webui/polymer_browser_test_base.js']);
+GEN_INCLUDE(['//chrome/test/data/webui/chromeos/polymer_browser_test_base.js']);
 
 GEN('#include "content/public/test/browser_test.h"');
 
 var ArcAccountPickerTest = class extends PolymerTest {
   /** @override */
   get browsePreload() {
-    return 'chrome://chrome-signin/test_loader.html?module=chromeos/arc_account_picker/arc_account_picker_test.js&host=test';
+    return 'chrome://chrome-signin/test_loader.html?module=chromeos/arc_account_picker/arc_account_picker_test.js';
   }
 
   get suiteName() {

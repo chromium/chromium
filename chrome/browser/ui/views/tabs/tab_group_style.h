@@ -33,7 +33,7 @@ class TabGroupStyle {
   virtual gfx::Rect GetEmptyTitleChipBounds(const TabGroupHeader* header) const;
 
   // Returns the starting y coordinate of the title chip from the `tabstrip`.
-  virtual gfx::Point GetTitleChipOffset(absl::optional<int> text_height) const;
+  virtual gfx::Point GetTitleChipOffset(std::optional<int> text_height) const;
 
   // Returns the background of a title chip without any text.
   virtual std::unique_ptr<views::Background> GetEmptyTitleChipBackground(
@@ -45,7 +45,7 @@ class TabGroupStyle {
       const views::View* title) const;
 
   // Returns the insets for a header chip that has text.
-  virtual gfx::Insets GetInsetsForHeaderChip() const;
+  virtual gfx::Insets GetInsetsForHeaderChip(bool should_show_sync_icon) const;
 
   // While calculating desired width of a tab group an adjustment value is added
   // for the distance between the tab group header and the right tab.
@@ -90,11 +90,11 @@ class ChromeRefresh2023TabGroupStyle : public TabGroupStyle {
       SkColor color) const override;
   int GetHighlightPathGeneratorCornerRadius(
       const views::View* title) const override;
-  gfx::Insets GetInsetsForHeaderChip() const override;
+  gfx::Insets GetInsetsForHeaderChip(bool should_show_sync_icon) const override;
   int GetTitleAdjustmentToTabGroupHeaderDesiredWidth(
       std::u16string title) const override;
   float GetEmptyChipSize() const override;
-  gfx::Point GetTitleChipOffset(absl::optional<int> text_height) const override;
+  gfx::Point GetTitleChipOffset(std::optional<int> text_height) const override;
   float GetSyncIconWidth() const override;
   int GetChipCornerRadius() const override;
   int GetTabGroupViewOverlap() const override;

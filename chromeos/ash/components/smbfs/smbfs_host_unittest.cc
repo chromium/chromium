@@ -126,8 +126,7 @@ TEST_F(SmbFsHostTest, RequestCredentials_ProvideCredentials) {
         base::ScopedFD fd =
             mojo::UnwrapPlatformHandle(std::move(credentials->password->fd))
                 .TakeFD();
-        EXPECT_TRUE(base::ReadFromFD(fd.get(), &(password_buf.front()),
-                                     credentials->password->length));
+        EXPECT_TRUE(base::ReadFromFD(fd.get(), password_buf));
         EXPECT_EQ(password_buf, kPassword);
         run_loop.Quit();
       }));

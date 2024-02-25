@@ -8,6 +8,7 @@
 
 #include <memory>
 #include <string>
+#include <string_view>
 
 #include "ash/constants/ash_switches.h"
 #include "base/command_line.h"
@@ -97,7 +98,7 @@ void AffiliationTestHelper::CheckPreconditions() {
 
 void AffiliationTestHelper::SetDeviceAffiliationIDs(
     DevicePolicyCrosTestHelper* test_helper,
-    const base::span<const base::StringPiece>& device_affiliation_ids) {
+    const base::span<const std::string_view>& device_affiliation_ids) {
   ASSERT_NO_FATAL_FAILURE(CheckPreconditions());
 
   DevicePolicyBuilder* device_policy = test_helper->device_policy();
@@ -116,7 +117,7 @@ void AffiliationTestHelper::SetDeviceAffiliationIDs(
 void AffiliationTestHelper::SetUserAffiliationIDs(
     UserPolicyBuilder* user_policy,
     const AccountId& user_account_id,
-    const base::span<const base::StringPiece>& user_affiliation_ids) {
+    const base::span<const std::string_view>& user_affiliation_ids) {
   ASSERT_NO_FATAL_FAILURE(CheckPreconditions());
 
   user_policy->policy_data().set_username(user_account_id.GetUserEmail());
@@ -154,8 +155,7 @@ void AffiliationTestHelper::LoginUser(const AccountId& account_id) {
   session_manager_test_api.SetShouldObtainTokenHandleInTests(false);
 
   CHECK(account_id.GetAccountType() != AccountType::ACTIVE_DIRECTORY);
-  ash::UserContext user_context(user_manager::UserType::USER_TYPE_REGULAR,
-                                account_id);
+  ash::UserContext user_context(user_manager::UserType::kRegular, account_id);
   user_context.SetKey(ash::Key("password"));
   if (account_id.GetUserEmail() == kEnterpriseUserEmail) {
     user_context.SetRefreshToken(kFakeRefreshToken);

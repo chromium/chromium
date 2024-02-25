@@ -9,6 +9,7 @@
 
 #import <map>
 
+#import "base/memory/raw_ptr.h"
 #import "base/observer_list.h"
 
 namespace web {
@@ -40,7 +41,7 @@ class FakeWebFramesManager : public WebFramesManager {
   // List of pointers to all web frames associated with WebState.
   std::map<std::string, std::unique_ptr<WebFrame>> web_frames_;
   // Reference to the current main web frame.
-  WebFrame* main_web_frame_ = nullptr;
+  raw_ptr<WebFrame> main_web_frame_ = nullptr;
   base::ObserverList<Observer, /*check_empty=*/false> observers_;
 };
 

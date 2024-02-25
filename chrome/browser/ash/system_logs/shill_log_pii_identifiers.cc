@@ -4,12 +4,14 @@
 
 #include "chrome/browser/ash/system_logs/shill_log_pii_identifiers.h"
 
+#include <string_view>
+
 #include "third_party/cros_system_api/dbus/service_constants.h"
 
 namespace system_logs {
 
 const auto kShillPIIMaskedMap =
-    base::MakeFixedFlatMap<base::StringPiece, redaction::PIIType>({
+    base::MakeFixedFlatMap<std::string_view, redaction::PIIType>({
         // Masked for devices only in ScrubAndExpandProperties:
         // shill::kAddress,
         {shill::kCellularPPPUsernameProperty,

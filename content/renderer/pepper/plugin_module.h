@@ -7,12 +7,13 @@
 
 #include <map>
 #include <memory>
+#include <optional>
 #include <set>
 #include <string>
 
 #include "base/files/file_path.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
-#include "base/memory/weak_ptr.h"
 #include "base/native_library.h"
 #include "base/process/process.h"
 #include "base/task/single_thread_task_runner.h"
@@ -23,7 +24,6 @@
 #include "ppapi/c/ppb_core.h"
 #include "ppapi/c/private/ppb_instance_private.h"
 #include "ppapi/shared_impl/ppapi_permissions.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/origin.h"
 
 typedef void* NPIdentifier;
@@ -58,10 +58,10 @@ struct WebPluginInfo;
 //
 // Note: to get from a PP_Instance to a PepperPluginInstance*, use the
 // ResourceTracker.
-class CONTENT_EXPORT PluginModule : public base::RefCounted<PluginModule>,
-                                    public base::SupportsWeakPtr<PluginModule> {
+class CONTENT_EXPORT PluginModule : public base::RefCounted<PluginModule> {
  public:
-  typedef std::set<PepperPluginInstanceImpl*> PluginInstanceSet;
+  typedef std::set<raw_ptr<PepperPluginInstanceImpl, SetExperimental>>
+      PluginInstanceSet;
 
   // You must call one of the Init functions after the constructor to create a
   // module of the type you desire.
@@ -214,7 +214,7 @@ class CONTENT_EXPORT PluginModule : public base::RefCounted<PluginModule>,
   static scoped_refptr<PluginModule> Create(
       RenderFrameImpl* render_frame,
       const WebPluginInfo& webplugin_info,
-      const absl::optional<url::Origin>& origin_lock,
+      const std::optional<url::Origin>& origin_lock,
       bool* pepper_plugin_was_registered,
       scoped_refptr<base::SingleThreadTaskRunner> task_runner);
 

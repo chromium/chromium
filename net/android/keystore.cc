@@ -67,8 +67,7 @@ bool SignWithPrivateKey(const JavaRef<jobject>& private_key_ref,
   DCHECK(!algorithm_ref.is_null());
 
   // Convert message to byte[] array.
-  ScopedJavaLocalRef<jbyteArray> input_ref =
-      ToJavaByteArray(env, input.data(), input.size());
+  ScopedJavaLocalRef<jbyteArray> input_ref = ToJavaByteArray(env, input);
   DCHECK(!input_ref.is_null());
 
   // Invoke platform API
@@ -94,8 +93,7 @@ bool EncryptWithPrivateKey(const JavaRef<jobject>& private_key_ref,
   DCHECK(!algorithm_ref.is_null());
 
   // Convert message to byte[] array.
-  ScopedJavaLocalRef<jbyteArray> input_ref =
-      ToJavaByteArray(env, input.data(), input.size());
+  ScopedJavaLocalRef<jbyteArray> input_ref = ToJavaByteArray(env, input);
   DCHECK(!input_ref.is_null());
 
   // Invoke platform API

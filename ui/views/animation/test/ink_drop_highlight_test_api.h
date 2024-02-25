@@ -7,7 +7,7 @@
 
 #include <vector>
 
-#include "base/memory/raw_ptr.h"
+#include "base/memory/raw_ref.h"
 #include "ui/compositor/test/multi_layer_animator_test_controller.h"
 #include "ui/compositor/test/multi_layer_animator_test_controller_delegate.h"
 #include "ui/gfx/geometry/transform.h"
@@ -40,17 +40,9 @@ class InkDropHighlightTestApi
 
   gfx::Transform CalculateTransform();
 
- protected:
-  InkDropHighlight* ink_drop_highlight() {
-    return static_cast<const InkDropHighlightTestApi*>(this)
-        ->ink_drop_highlight();
-  }
-
-  InkDropHighlight* ink_drop_highlight() const { return ink_drop_highlight_; }
-
  private:
   // The InkDropHighlight to provide internal access to.
-  raw_ptr<InkDropHighlight, DanglingUntriaged> ink_drop_highlight_;
+  const raw_ref<InkDropHighlight> ink_drop_highlight_;
 };
 
 }  // namespace test

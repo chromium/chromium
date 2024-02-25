@@ -6,13 +6,13 @@
 #define COMPONENTS_METRICS_STRUCTURED_MOJOM_EVENT_MOJOM_TRAITS_H_
 
 #include <memory>
+#include <optional>
 
 #include "base/strings/string_number_conversions.h"
 #include "components/metrics/structured/event.h"
 #include "components/metrics/structured/mojom/event.mojom.h"
 #include "mojo/public/cpp/bindings/struct_traits.h"
 #include "mojo/public/cpp/bindings/union_traits.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace mojo {
 
@@ -80,7 +80,7 @@ class StructTraits<metrics::structured::mojom::EventDataView,
     return event.metric_values();
   }
 
-  static absl::optional<base::TimeDelta> system_uptime(
+  static std::optional<base::TimeDelta> system_uptime(
       const metrics::structured::Event& event);
 
   static bool is_event_sequence(const metrics::structured::Event& event) {

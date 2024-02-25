@@ -4,5 +4,6 @@
 
 import 'chrome://resources/foo_resource.js';
 import 'some-fake-scheme://foo/foo.js';
+import 'some-fake-scheme://foo/baz.js';
 
 alert('Hello from src/foo.js');

@@ -26,6 +26,7 @@
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/mojom/mediastream/media_stream.mojom-blink.h"
 #include "third_party/blink/public/platform/platform.h"
+#include "third_party/blink/renderer/core/dom/dom_exception.h"
 #include "third_party/blink/renderer/modules/mediastream/media_stream_constraints_util_video_device.h"
 #include "third_party/blink/renderer/modules/mediastream/media_stream_video_track.h"
 #include "third_party/blink/renderer/modules/mediastream/video_track_adapter.h"
@@ -62,7 +63,8 @@ void MediaStreamVideoSource::AddTrack(
     const VideoCaptureDeliverFrameCB& frame_callback,
     const VideoCaptureNotifyFrameDroppedCB& notify_frame_dropped_callback,
     const EncodedVideoFrameCB& encoded_frame_callback,
-    const VideoCaptureCropVersionCB& crop_version_callback,
+    const VideoCaptureSubCaptureTargetVersionCB&
+        sub_capture_target_version_callback,
     const VideoTrackSettingsCallback& settings_callback,
     const VideoTrackFormatCallback& format_callback,
     ConstraintsOnceCallback callback) {
@@ -73,8 +75,8 @@ void MediaStreamVideoSource::AddTrack(
 
   pending_tracks_.push_back(PendingTrackInfo{
       track, frame_callback, notify_frame_dropped_callback,
-      encoded_frame_callback, crop_version_callback, settings_callback,
-      format_callback,
+      encoded_frame_callback, sub_capture_target_version_callback,
+      settings_callback, format_callback,
       std::make_unique<VideoTrackAdapterSettings>(track_adapter_settings),
       std::move(callback)});
 
@@ -89,9 +91,13 @@ void MediaStreamVideoSource::AddTrack(
           ConvertToBaseRepeatingCallback(CrossThreadBindRepeating(
               &VideoTrackAdapter::DeliverEncodedVideoFrameOnVideoTaskRunner,
               GetTrackAdapter()));
-      auto new_crop_version_on_video_callback =
+      auto new_sub_capture_target_version_on_video_callback =
           ConvertToBaseRepeatingCallback(CrossThreadBindRepeating(
-              &VideoTrackAdapter::NewCropVersionOnVideoTaskRunner,
+              &VideoTrackAdapter::NewSubCaptureTargetVersionOnVideoTaskRunner,
+              GetTrackAdapter()));
+      VideoCaptureNotifyFrameDroppedCB frame_dropped_callback =
+          ConvertToBaseRepeatingCallback(CrossThreadBindRepeating(
+              &VideoTrackAdapter::OnFrameDroppedOnVideoTaskRunner,
               GetTrackAdapter()));
       // Callbacks are invoked from the IO thread. With
       // UseThreadPoolForMediaStreamVideoTaskRunner disabled, the video task
@@ -105,12 +111,17 @@ void MediaStreamVideoSource::AddTrack(
             base::BindPostTask(
                 video_task_runner(),
                 std::move(deliver_encoded_frame_on_video_callback)),
+            base::BindPostTask(
+                video_task_runner(),
+                std::move(new_sub_capture_target_version_on_video_callback)),
             base::BindPostTask(video_task_runner(),
-                               std::move(new_crop_version_on_video_callback)));
+                               std::move(frame_dropped_callback)));
       } else {
-        StartSourceImpl(std::move(deliver_frame_on_video_callback),
-                        std::move(deliver_encoded_frame_on_video_callback),
-                        std::move(new_crop_version_on_video_callback));
+        StartSourceImpl(
+            std::move(deliver_frame_on_video_callback),
+            std::move(deliver_encoded_frame_on_video_callback),
+            std::move(new_sub_capture_target_version_on_video_callback),
+            std::move(frame_dropped_callback));
       }
       break;
     }
@@ -255,7 +266,7 @@ void MediaStreamVideoSource::StopForRestart(RestartCallback callback,
   restart_callback_ = std::move(callback);
 
   if (send_black_frame) {
-    const absl::optional<gfx::Size> source_size =
+    const std::optional<gfx::Size> source_size =
         GetTrackAdapter()->source_frame_size();
     scoped_refptr<media::VideoFrame> black_frame =
         media::VideoFrame::CreateBlackFrame(
@@ -265,7 +276,6 @@ void MediaStreamVideoSource::StopForRestart(RestartCallback callback,
         *video_task_runner(), FROM_HERE,
         CrossThreadBindOnce(&VideoTrackAdapter::DeliverFrameOnVideoTaskRunner,
                             GetTrackAdapter(), black_frame,
-                            std::vector<scoped_refptr<media::VideoFrame>>(),
                             base::TimeTicks::Now()));
   }
 
@@ -395,10 +405,10 @@ base::SequencedTaskRunner* MediaStreamVideoSource::video_task_runner() const {
   return Platform::Current()->GetMediaStreamVideoSourceVideoTaskRunner().get();
 }
 
-absl::optional<media::VideoCaptureFormat>
+std::optional<media::VideoCaptureFormat>
 MediaStreamVideoSource::GetCurrentFormat() const {
   DCHECK(GetTaskRunner()->BelongsToCurrentThread());
-  return absl::optional<media::VideoCaptureFormat>();
+  return std::optional<media::VideoCaptureFormat>();
 }
 
 size_t MediaStreamVideoSource::CountEncodedSinks() const {
@@ -485,7 +495,8 @@ void MediaStreamVideoSource::FinalizeAddPendingTracks(
       GetTrackAdapter()->AddTrack(
           track_info.track, track_info.frame_callback,
           track_info.notify_frame_dropped_callback,
-          track_info.encoded_frame_callback, track_info.crop_version_callback,
+          track_info.encoded_frame_callback,
+          track_info.sub_capture_target_version_callback,
           track_info.settings_callback, track_info.format_callback,
           *track_info.adapter_settings);
       UpdateTrackSettings(track_info.track, *track_info.adapter_settings);
@@ -506,7 +517,7 @@ void MediaStreamVideoSource::FinalizeAddPendingTracks(
 
 void MediaStreamVideoSource::StartFrameMonitoring() {
   DCHECK(GetTaskRunner()->BelongsToCurrentThread());
-  absl::optional<media::VideoCaptureFormat> current_format = GetCurrentFormat();
+  std::optional<media::VideoCaptureFormat> current_format = GetCurrentFormat();
   double frame_rate = current_format ? current_format->frame_rate : 0.0;
   if (current_format && enable_device_rotation_detection_) {
     GetTrackAdapter()->SetSourceFrameSize(current_format->frame_size);
@@ -559,19 +570,40 @@ bool MediaStreamVideoSource::SupportsEncodedOutput() const {
 }
 
 #if !BUILDFLAG(IS_ANDROID)
-void MediaStreamVideoSource::Crop(
-    const base::Token& crop_id,
-    uint32_t crop_version,
-    base::OnceCallback<void(media::mojom::CropRequestResult)> callback) {
-  std::move(callback).Run(media::mojom::CropRequestResult::kErrorGeneric);
+void MediaStreamVideoSource::SendWheel(
+    double relative_x,
+    double relative_y,
+    int wheel_delta_x,
+    int wheel_delta_y,
+    base::OnceCallback<void(DOMException*)> callback) {
+  std::move(callback).Run(MakeGarbageCollected<DOMException>(
+      DOMExceptionCode::kNotSupportedError, "Unsupported."));
 }
 
-absl::optional<uint32_t> MediaStreamVideoSource::GetNextCropVersion() {
-  return absl::nullopt;
+void MediaStreamVideoSource::SetZoomLevel(
+    int zoom_level,
+    base::OnceCallback<void(DOMException*)> callback) {
+  std::move(callback).Run(MakeGarbageCollected<DOMException>(
+      DOMExceptionCode::kNotSupportedError, "Unsupported."));
+}
+
+void MediaStreamVideoSource::ApplySubCaptureTarget(
+    media::mojom::blink::SubCaptureTargetType type,
+    const base::Token& sub_capture_target,
+    uint32_t sub_capture_target_version,
+    base::OnceCallback<void(media::mojom::ApplySubCaptureTargetResult)>
+        callback) {
+  std::move(callback).Run(
+      media::mojom::ApplySubCaptureTargetResult::kErrorGeneric);
+}
+
+std::optional<uint32_t>
+MediaStreamVideoSource::GetNextSubCaptureTargetVersion() {
+  return std::nullopt;
 }
 #endif
 
-uint32_t MediaStreamVideoSource::GetCropVersion() const {
+uint32_t MediaStreamVideoSource::GetSubCaptureTargetVersion() const {
   return 0;
 }
 
@@ -599,24 +631,6 @@ void MediaStreamVideoSource::UpdateCanDiscardAlpha() {
     }
   }
   OnSourceCanDiscardAlpha(!using_alpha);
-}
-
-void MediaStreamVideoSource::OnFrameDropped(
-    media::VideoCaptureFrameDropReason reason) {
-  DCHECK(GetTaskRunner()->BelongsToCurrentThread());
-  OnFrameDroppedInternal(reason);
-  if (reason ==
-      media::VideoCaptureFrameDropReason::
-          kVideoTrackFrameDelivererNotEnabledReplacingWithBlackFrame) {
-    // Black frame events only happen when the track is disabled, ignore.
-    return;
-  }
-  if (reason == media::VideoCaptureFrameDropReason::
-                    kResolutionAdapterFrameRateIsHigherThanRequested) {
-    ++discarded_frames_;
-  } else {
-    ++dropped_frames_;
-  }
 }
 
 }  // namespace blink

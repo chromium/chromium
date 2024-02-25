@@ -422,6 +422,18 @@ TEST_F(StyleEnvironmentVariablesTest, RecordUseCounter_SafeAreaInsetBottom) {
       WebFeature::kCSSEnvironmentVariable_SafeAreaInsetBottom));
 }
 
+// TODO(https://crbug.com/1430288) remove after data collected (end of '23)
+TEST_F(StyleEnvironmentVariablesTest,
+       RecordUseCounter_ViewportFitCoverOrSafeAreaInsetBottom) {
+  InitializeWithHTML(GetFrame(), "");
+  EXPECT_FALSE(GetDocument().IsUseCounted(
+      WebFeature::kViewportFitCoverOrSafeAreaInsetBottom));
+  InitializeTestPageWithVariableNamed(GetFrame(),
+                                      UADefinedVariable::kSafeAreaInsetBottom);
+  EXPECT_TRUE(GetDocument().IsUseCounted(
+      WebFeature::kViewportFitCoverOrSafeAreaInsetBottom));
+}
+
 TEST_F(StyleEnvironmentVariablesTest, RecordUseCounter_SafeAreaInsetLeft) {
   InitializeTestPageWithVariableNamed(GetFrame(),
                                       UADefinedVariable::kSafeAreaInsetLeft);
@@ -687,10 +699,8 @@ TEST_F(StyleEnvironmentVariablesTest, TwoDimensionalVariables_Removal) {
 #if !BUILDFLAG(IS_ANDROID)
 TEST_F(StyleEnvironmentVariablesTest, TitlebarArea_AfterLoad) {
   // This test asserts that the titlebar area environment variables should be
-  // loaded when UpdateWindowControlsOverlay is invoked in LocalFrame when the
-  // WindowControlsOverlay runtime flag is set for PWAs with display_override
-  // "window-controls-overlay".
-  ScopedWebAppWindowControlsOverlayForTest scoped_feature(true);
+  // loaded when UpdateWindowControlsOverlay is invoked in LocalFrame for PWAs
+  // with display_override "window-controls-overlay".
 
   // Simulate browser sending the titlebar area bounds.
   GetFrame().UpdateWindowControlsOverlay(gfx::Rect(0, 0, 100, 10));
@@ -730,9 +740,8 @@ TEST_F(StyleEnvironmentVariablesTest, TitlebarArea_AfterLoad) {
 
 TEST_F(StyleEnvironmentVariablesTest, TitlebarArea_AfterNavigation) {
   // This test asserts that the titlebar area environment variables should be
-  // set after a navigation when the WindowControlsOverlay runtime flag is set
-  // for PWAs with display_override "window-controls-overlay".
-  ScopedWebAppWindowControlsOverlayForTest scoped_feature(true);
+  // set after a navigation for PWAs with display_override
+  // "window-controls-overlay".
 
   // Simulate browser sending the titlebar area bounds.
   GetFrame().UpdateWindowControlsOverlay(gfx::Rect(0, 0, 100, 10));

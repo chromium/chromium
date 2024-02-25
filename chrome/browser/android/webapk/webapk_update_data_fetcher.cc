@@ -5,6 +5,7 @@
 #include "chrome/browser/android/webapk/webapk_update_data_fetcher.h"
 
 #include <jni.h>
+#include <optional>
 #include <set>
 #include <string>
 #include <vector>
@@ -26,7 +27,6 @@
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/storage_partition.h"
 #include "content/public/browser/web_contents.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/manifest/manifest_util.h"
 #include "third_party/blink/public/mojom/manifest/manifest.mojom.h"
 #include "third_party/smhasher/src/MurmurHash2.h"
@@ -46,19 +46,6 @@ bool IsInScope(const GURL& url, const GURL& scope) {
   return base::StartsWith(url.spec(), scope.spec(),
                           base::CompareCase::SENSITIVE);
 }
-
-constexpr char kGotUpdateManifestHistogramName[] =
-    "WebApk.Update.DidGetInstallableData";
-
-// These values are logged to UMA. Entries should not be renumbered and
-// numeric values should never be reused. Please keep in sync with
-// "WebApkUpdateManifestResult" in src/tools/metrics/histograms/enums.xml.
-enum class ManifestResult {
-  kDifferent = 0,
-  kDifferentLegacyId = 1,
-  kFound = 2,
-  kMaxValue = kFound,
-};
 
 }  // anonymous namespace
 
@@ -141,7 +128,8 @@ void WebApkUpdateDataFetcher::FetchInstallableData() {
     return;
 
   webapps::InstallableParams params;
-  params.valid_manifest = true;
+  params.installable_criteria =
+      webapps::InstallableCriteria::kValidManifestWithIcons;
   params.prefer_maskable_icon =
       webapps::WebappsIconUtils::DoesAndroidSupportMaskableIcons();
   params.has_worker = false;
@@ -176,30 +164,23 @@ void WebApkUpdateDataFetcher::OnDidGetInstallableData(
     return;
   }
 
-    GURL new_manifest_id(blink::GetIdFromManifest(*data.manifest));
-    if (web_manifest_id_.is_empty()) {
-      // Don't have an existing manifest ID, check if either manifest URL or
-      // start URL are the same. If neither of them are the same, we treat the
-      // manifest as one of another WebAPK.
-      if (web_manifest_url_ != *data.manifest_url &&
-          start_url_ != data.manifest->start_url) {
-        UMA_HISTOGRAM_ENUMERATION(kGotUpdateManifestHistogramName,
-                                  ManifestResult::kDifferentLegacyId,
-                                  ManifestResult::kMaxValue);
-        return;
-      }
-    } else if (web_manifest_id_ != new_manifest_id) {
-      // If the fetched manifest id is different from the current one,
-      // continue observing as the id is the identity for the application. We
-      // will treat the manifest with different id as the one of another WebAPK.
-      UMA_HISTOGRAM_ENUMERATION(kGotUpdateManifestHistogramName,
-                                ManifestResult::kDifferent,
-                                ManifestResult::kMaxValue);
-      return;
-    }
+  CHECK(!data.manifest->id.is_empty());
 
-  UMA_HISTOGRAM_ENUMERATION(kGotUpdateManifestHistogramName,
-                            ManifestResult::kFound, ManifestResult::kMaxValue);
+  // If there isn't an existing manifest ID, check if either manifest URL or
+  // start URL are the same. If neither of them are the same, we treat the
+  // manifest as one of another WebAPK.
+  if (web_manifest_id_.is_empty() && web_manifest_url_ != *data.manifest_url &&
+      start_url_ != data.manifest->start_url) {
+    return;
+  }
+
+  // If there is an existing manifest ID, but the fetched manifest id is
+  // different from the current one, continue observing as the id is the
+  // identity for the application. We will treat the manifest with different id
+  // as the one of another WebAPK.
+  if (!web_manifest_id_.is_empty() && web_manifest_id_ != data.manifest->id) {
+    return;
+  }
 
   info_.UpdateFromManifest(*data.manifest);
   info_.manifest_url = *data.manifest_url;
@@ -224,7 +205,7 @@ void WebApkUpdateDataFetcher::OnDidGetInstallableData(
 }
 
 void WebApkUpdateDataFetcher::OnGotIconMurmur2Hashes(
-    absl::optional<std::map<std::string, webapps::WebApkIconHasher::Icon>>
+    std::optional<std::map<std::string, webapps::WebApkIconHasher::Icon>>
         hashes) {
   if (!hashes)
     return;

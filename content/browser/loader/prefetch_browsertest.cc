@@ -115,15 +115,10 @@ class PrefetchBrowserTestPrivacyChanges
   base::test::ScopedFeatureList feature_list_;
 };
 
-#if BUILDFLAG(IS_FUCHSIA) || BUILDFLAG(IS_WIN)
-// Test flakes on Fuchsia & Windows.
+// Test flakes.
 // TODO(crbug.com/1395163): Resolve flake and reenable.
-#define MAYBE_RedirectNotFollowed DISABLED_RedirectNotFollowed
-#else
-#define MAYBE_RedirectNotFollowed RedirectNotFollowed
-#endif
 IN_PROC_BROWSER_TEST_P(PrefetchBrowserTestPrivacyChanges,
-                       MAYBE_RedirectNotFollowed) {
+                       DISABLED_RedirectNotFollowed) {
   const char* prefetch_path = "/prefetch.html";
   const char* redirect_path = "/redirect.html";
   const char* destination_path = "/destination.html";
@@ -202,7 +197,7 @@ IN_PROC_BROWSER_TEST_P(PrefetchBrowserTest,
   EXPECT_EQ(1, GetPrefetchURLLoaderCallCount());
 
   monitor.WaitForUrls();
-  absl::optional<network::ResourceRequest> request =
+  std::optional<network::ResourceRequest> request =
       monitor.GetRequestInfo(cross_origin_target_url);
   ASSERT_TRUE(request);
   ASSERT_TRUE(request->site_for_cookies.IsNull());
@@ -721,7 +716,7 @@ IN_PROC_BROWSER_TEST_P(PrefetchBrowserTest,
   WaitUntilLoaded(cross_origin_preload_url);
 
   monitor.WaitForUrls();
-  absl::optional<network::ResourceRequest> request =
+  std::optional<network::ResourceRequest> request =
       monitor.GetRequestInfo(cross_origin_target_url);
   ASSERT_TRUE(request);
   ASSERT_TRUE(request->site_for_cookies.IsNull());
@@ -1081,9 +1076,11 @@ IN_PROC_BROWSER_TEST_P(PrefetchBrowserTest,
 
 IN_PROC_BROWSER_TEST_P(PrefetchBrowserTest, FileToHttp) {
   const char* target_path = "/target.html";
-  RegisterResponse(
-      target_path,
-      ResponseEntry("<head><title>Prefetch Target</title></head>"));
+  RegisterResponse(target_path,
+                   ResponseEntry("<head><title>Prefetch Target</title></head>",
+                                 // The empty content type prevents this
+                                 // response from being blocked by ORB.
+                                 /*content_types=*/""));
 
   base::RunLoop prefetch_waiter;
   auto request_counter = RequestCounter::CreateAndMonitor(

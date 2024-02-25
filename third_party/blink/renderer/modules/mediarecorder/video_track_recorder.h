@@ -7,6 +7,7 @@
 
 #include <atomic>
 #include <memory>
+#include <optional>
 #include <utility>
 
 #include "base/memory/scoped_refptr.h"
@@ -16,7 +17,9 @@
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "media/base/video_encoder.h"
+#include "media/base/video_frame_converter.h"
 #include "media/base/video_frame_pool.h"
+#include "media/media_buildflags.h"
 #include "media/muxers/webm_muxer.h"
 #include "media/renderers/paint_canvas_video_renderer.h"
 #include "media/video/video_encode_accelerator.h"
@@ -24,7 +27,6 @@
 #include "third_party/blink/public/platform/web_graphics_context_3d_provider.h"
 #include "third_party/blink/public/web/modules/mediastream/encoded_video_frame.h"
 #include "third_party/blink/public/web/modules/mediastream/media_stream_video_sink.h"
-#include "third_party/blink/renderer/modules/mediarecorder/buildflags.h"
 #include "third_party/blink/renderer/modules/mediarecorder/key_frame_request_processor.h"
 #include "third_party/blink/renderer/modules/mediarecorder/track_recorder.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
@@ -93,7 +95,7 @@ class VideoTrackRecorder : public TrackRecorder<MediaStreamVideoSink> {
         const media::Muxer::VideoParameters& params,
         std::string encoded_data,
         std::string encoded_alpha,
-        absl::optional<media::VideoEncoder::CodecDescription> codec_description,
+        std::optional<media::VideoEncoder::CodecDescription> codec_description,
         base::TimeTicks timestamp,
         bool is_key_frame) = 0;
 
@@ -110,23 +112,23 @@ class VideoTrackRecorder : public TrackRecorder<MediaStreamVideoSink> {
   // Video codec and its encoding profile/level.
   struct MODULES_EXPORT CodecProfile {
     CodecId codec_id;
-    absl::optional<media::VideoCodecProfile> profile;
-    absl::optional<uint8_t> level;
+    std::optional<media::VideoCodecProfile> profile;
+    std::optional<media::VideoCodecLevel> level;
 
     explicit CodecProfile(CodecId codec_id);
     CodecProfile(CodecId codec_id,
-                 absl::optional<media::VideoCodecProfile> opt_profile,
-                 absl::optional<uint8_t> opt_level);
+                 std::optional<media::VideoCodecProfile> opt_profile,
+                 std::optional<media::VideoCodecLevel> opt_level);
     CodecProfile(CodecId codec_id,
                  media::VideoCodecProfile profile,
-                 uint8_t level);
+                 media::VideoCodecLevel level);
   };
 
   using OnEncodedVideoCB = base::RepeatingCallback<void(
       const media::Muxer::VideoParameters& params,
       std::string encoded_data,
       std::string encoded_alpha,
-      absl::optional<media::VideoEncoder::CodecDescription> codec_description,
+      std::optional<media::VideoEncoder::CodecDescription> codec_description,
       base::TimeTicks capture_timestamp,
       bool is_key_frame)>;
   using OnErrorCB = base::RepeatingClosure;
@@ -178,14 +180,12 @@ class VideoTrackRecorder : public TrackRecorder<MediaStreamVideoSink> {
     void StartFrameEncode(
         WTF::CrossThreadRepeatingFunction<base::TimeTicks()> time_now_callback,
         scoped_refptr<media::VideoFrame> video_frame,
-        std::vector<scoped_refptr<media::VideoFrame>> scaled_video_frames,
         base::TimeTicks capture_timestamp);
 
     // Like StartFrameEncode but using base::TimeTicks::Now in
     // `time_now_callback`.
     void StartFrameEncodeWithTimeTicksNow(
         scoped_refptr<media::VideoFrame> video_frame,
-        std::vector<scoped_refptr<media::VideoFrame>> scaled_video_frames,
         base::TimeTicks capture_timestamp);
 
     using OnEncodedVideoInternalCB = WTF::CrossThreadFunction<void(
@@ -197,10 +197,11 @@ class VideoTrackRecorder : public TrackRecorder<MediaStreamVideoSink> {
 
     void SetPaused(bool paused);
     virtual bool CanEncodeAlphaChannel() const;
+    virtual bool IsScreenContentEncodingForTesting() const { return false; }
+    virtual base::WeakPtr<Encoder> GetWeakPtr() = 0;
     void ForceKeyFrameForNextFrameForTesting() {
       request_key_frame_for_testing_ = true;
     }
-
    protected:
     friend class VideoTrackRecorderTest;
 
@@ -248,11 +249,12 @@ class VideoTrackRecorder : public TrackRecorder<MediaStreamVideoSink> {
     std::unique_ptr<WebGraphicsContext3DProvider> encoder_thread_context_;
     KeyFrameRequestProcessor key_frame_processor_;
     bool awaiting_first_frame_ = true;
-    std::vector<uint8_t> resize_buffer_
-        ALLOW_DISCOURAGED_TYPE("Avoids conversion when passed to media:: code");
     std::unique_ptr<media::VideoEncoderMetricsProvider> metrics_provider_;
 
     media::VideoFramePool frame_pool_;
+
+    // Handle frame format conversions.
+    media::VideoFrameConverter frame_converter_;
   };
 
   // Class to encapsulate the enumeration of CodecIds/VideoCodecProfiles
@@ -271,7 +273,7 @@ class VideoTrackRecorder : public TrackRecorder<MediaStreamVideoSink> {
 
     // Returns the first CodecId that has an associated VEA VideoCodecProfile,
     // or VP8 if none available.
-    CodecId GetPreferredCodecId() const;
+    CodecId GetPreferredCodecId(MediaTrackContainerType type) const;
 
     // Returns supported VEA VideoCodecProfile which matches |codec| and
     // |profile| and whether VEA supports VBR encoding for the profile.
@@ -304,7 +306,8 @@ class VideoTrackRecorder : public TrackRecorder<MediaStreamVideoSink> {
   virtual void Pause() = 0;
   virtual void Resume() = 0;
   virtual void OnVideoFrameForTesting(scoped_refptr<media::VideoFrame> frame,
-                                      base::TimeTicks capture_time) {}
+                                      base::TimeTicks capture_time,
+                                      bool allow_vea_encoder) {}
   virtual void OnEncodedVideoFrameForTesting(
       base::TimeTicks now,
       scoped_refptr<EncodedVideoFrame> frame,
@@ -327,13 +330,16 @@ class VideoTrackRecorder : public TrackRecorder<MediaStreamVideoSink> {
 // Encoder with its own threading subtleties, see the implementation file.
 class MODULES_EXPORT VideoTrackRecorderImpl : public VideoTrackRecorder {
  public:
-  static CodecId GetPreferredCodecId();
+  static CodecId GetPreferredCodecId(MediaTrackContainerType type);
 
   // Returns true if the device has a hardware accelerated encoder which can
   // encode video of the given |width|x|height| and |framerate| to specific
-  // |codec|.
-  // Note: default framerate value means no restriction.
-  static bool CanUseAcceleratedEncoder(CodecId codec,
+  // |codec_profile.codec_id|. If |codec_profile.profile| is set, then this
+  // returns false if and only if the hardware encoder can encode in the
+  // profile. If |codec_profile.profile| is not set, this sets
+  // |codec_profile.profile| to the first profile supported by the hardware
+  // encoder. Note: default framerate value means no restriction.
+  static bool CanUseAcceleratedEncoder(CodecProfile& codec_profile,
                                        size_t width,
                                        size_t height,
                                        double framerate = 0.0);
@@ -354,7 +360,8 @@ class MODULES_EXPORT VideoTrackRecorderImpl : public VideoTrackRecorder {
   void Pause() override;
   void Resume() override;
   void OnVideoFrameForTesting(scoped_refptr<media::VideoFrame> frame,
-                              base::TimeTicks capture_time) override;
+                              base::TimeTicks capture_time,
+                              bool allow_vea_encoder) override;
   void ForceKeyFrameForNextFrameForTesting();
 
  private:
@@ -366,7 +373,6 @@ class MODULES_EXPORT VideoTrackRecorderImpl : public VideoTrackRecorder {
       uint32_t bits_per_second,
       bool allow_vea_encoder,
       scoped_refptr<media::VideoFrame> video_frame,
-      std::vector<scoped_refptr<media::VideoFrame>> scaled_video_frames,
       base::TimeTicks capture_time);
   void InitializeEncoderOnEncoderSupportKnown(
       CodecProfile codec_profile,
@@ -375,6 +381,27 @@ class MODULES_EXPORT VideoTrackRecorderImpl : public VideoTrackRecorder {
       bool allow_vea_encoder,
       scoped_refptr<media::VideoFrame> frame,
       base::TimeTicks capture_time);
+  std::unique_ptr<Encoder> CreateSoftwareVideoEncoder(
+      scoped_refptr<base::SequencedTaskRunner> encoding_task_runner,
+      CodecProfile codec_profile,
+      uint32_t bits_per_second,
+      bool is_screencast,
+      const OnEncodedVideoCB& on_encoded_video_cb);
+  std::unique_ptr<Encoder> CreateHardwareVideoEncoder(
+      scoped_refptr<base::SequencedTaskRunner> encoding_task_runner,
+      CodecProfile codec_profile,
+      const gfx::Size& input_size,
+      uint32_t bits_per_second,
+      const OnEncodedVideoCB& on_encoded_video_cb,
+      bool use_import_mode,
+      bool is_screencast);
+  std::unique_ptr<Encoder> CreateMediaVideoEncoder(
+      scoped_refptr<base::SequencedTaskRunner> encoding_task_runner,
+      CodecProfile codec_profile,
+      uint32_t bits_per_second,
+      bool is_screencast,
+      const OnEncodedVideoCB& on_encoded_video_cb,
+      bool create_vea_encoder);
   void OnHardwareEncoderError();
 
   void ConnectToTrack(const VideoCaptureDeliverFrameCB& callback);
@@ -392,7 +419,6 @@ class MODULES_EXPORT VideoTrackRecorderImpl : public VideoTrackRecorder {
   base::RepeatingCallback<void(
       bool allow_vea_encoder,
       scoped_refptr<media::VideoFrame> video_frame,
-      std::vector<scoped_refptr<media::VideoFrame>> scaled_video_frames,
       base::TimeTicks capture_time)>
       initialize_encoder_cb_;
 

@@ -8,11 +8,11 @@
 #include <stddef.h>
 
 #include <memory>
+#include <optional>
 #include <vector>
 
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/profiles/avatar_menu.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 class ProfileAttributesStorage;
 
@@ -39,7 +39,7 @@ class ProfileListDesktop {
   // Returns the menu index of the profile with `path`, or nullopt if there is
   // no menu entry corresponding to this path (e.g. if the profile is omitted,
   // or if it's guest).
-  absl::optional<size_t> MenuIndexFromProfilePath(
+  std::optional<size_t> MenuIndexFromProfilePath(
       const base::FilePath& path) const;
 
   // Updates the path of the active browser's profile.

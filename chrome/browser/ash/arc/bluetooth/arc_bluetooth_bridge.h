@@ -9,6 +9,7 @@
 
 #include <map>
 #include <memory>
+#include <optional>
 #include <set>
 #include <string>
 #include <unordered_map>
@@ -39,7 +40,6 @@
 #include "device/bluetooth/bluetooth_remote_gatt_service.h"
 #include "device/bluetooth/bluez/bluetooth_adapter_bluez.h"
 #include "mojo/public/cpp/bindings/remote.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace content {
 class BrowserContext;
@@ -235,7 +235,7 @@ class ArcBluetoothBridge
 
   void OnSessionStarted(
       device::BluetoothLowEnergyScanSession* scan_session,
-      absl::optional<device::BluetoothLowEnergyScanSession::ErrorCode>
+      std::optional<device::BluetoothLowEnergyScanSession::ErrorCode>
           error_code) override;
 
   void OnSessionInvalidated(
@@ -369,6 +369,8 @@ class ArcBluetoothBridge
   static void EnsureFactoryBuilt();
 
  protected:
+  friend class ArcBluetoothBridgeTest;
+
   virtual void HandlePoweredOn() = 0;
 
   void ReserveAdvertisementHandleImpl(
@@ -391,6 +393,7 @@ class ArcBluetoothBridge
   void StopLEScanImpl();
 
   virtual void ResetLEScanSession();
+  virtual bool IsDiscoveringOrScanning();
   void StartLEScanOffTimer();
 
   // The callback function triggered by le_scan_off_timer_.
@@ -431,7 +434,7 @@ class ArcBluetoothBridge
   void OnGattConnect(
       mojom::BluetoothAddressPtr addr,
       std::unique_ptr<device::BluetoothGattConnection> connection,
-      absl::optional<device::BluetoothDevice::ConnectErrorCode> error_code);
+      std::optional<device::BluetoothDevice::ConnectErrorCode> error_code);
   void OnGattDisconnected(mojom::BluetoothAddressPtr addr);
 
   void OnGattNotifyStartDone(
@@ -627,7 +630,7 @@ class ArcBluetoothBridge
   void OnBluetoothConnectingSocketReady(
       ArcBluetoothBridge::BluetoothConnectingSocket* socket);
 
-  const raw_ptr<ArcBridgeService, ExperimentalAsh>
+  const raw_ptr<ArcBridgeService>
       arc_bridge_service_;  // Owned by ArcServiceManager.
 
   scoped_refptr<device::BluetoothAdapter> bluetooth_adapter_;
@@ -637,12 +640,10 @@ class ArcBluetoothBridge
   // Discovery session created by StartLEScan().
   std::unique_ptr<device::BluetoothDiscoverySession> le_scan_session_;
   // Discovered devices in the current discovery session started by
-  // StartDiscovery(). We don't need to keep track of this for StartLEScan()
-  // since Android don't have a callback for new found devices in LE scan. When
-  // a new advertisement of an LE device comes, DeviceAdertismentReceived() will
-  // be called and we pass the result to Android via OnLEDeviceFound(), and then
-  // it will notify the LE scanner in Android.
+  // StartDiscovery().
   std::set<std::string> discovered_devices_;
+  // Scanned devices in the current scan session started by StartLEScan().
+  std::set<std::string> scanned_devices_;
   std::unordered_map<std::string,
                      std::unique_ptr<device::BluetoothGattNotifySession>>
       notification_session_;
@@ -707,7 +708,7 @@ class ArcBluetoothBridge
   // Timer to turn adapter discoverable off.
   base::OneShotTimer discoverable_off_timer_;
   // Adapter discoverable timeout value.
-  absl::optional<uint32_t> discoverable_off_timeout_ = absl::nullopt;
+  std::optional<uint32_t> discoverable_off_timeout_ = std::nullopt;
 
   // Queue to track the powered state changes initiated by Android.
   base::queue<AdapterPowerState> remote_power_changes_;
@@ -753,7 +754,7 @@ class ArcBluetoothBridge
     void OnConnectionClosed() override;
 
    private:
-    raw_ptr<ArcBluetoothBridge, ExperimentalAsh> arc_bluetooth_bridge_;
+    raw_ptr<ArcBluetoothBridge> arc_bluetooth_bridge_;
   };
   BluetoothArcConnectionObserver bluetooth_arc_connection_observer_;
 

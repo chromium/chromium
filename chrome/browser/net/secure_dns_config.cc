@@ -20,7 +20,7 @@ SecureDnsConfig& SecureDnsConfig::operator=(SecureDnsConfig&& other) = default;
 SecureDnsConfig::~SecureDnsConfig() = default;
 
 // static
-absl::optional<net::SecureDnsMode> SecureDnsConfig::ParseMode(
+std::optional<net::SecureDnsMode> SecureDnsConfig::ParseMode(
     base::StringPiece name) {
   if (name == kModeSecure) {
     return net::SecureDnsMode::kSecure;
@@ -29,7 +29,7 @@ absl::optional<net::SecureDnsMode> SecureDnsConfig::ParseMode(
   } else if (name == kModeOff) {
     return net::SecureDnsMode::kOff;
   }
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 // static

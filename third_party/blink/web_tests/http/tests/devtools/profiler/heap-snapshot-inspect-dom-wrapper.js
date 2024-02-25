@@ -5,17 +5,19 @@
 import {TestRunner} from 'test_runner';
 import {HeapProfilerTestRunner} from 'heap_profiler_test_runner';
 
+import * as Profiler from 'devtools/panels/profiler/profiler.js';
+
 (async function() {
   TestRunner.addResult(
       `Test that resolving heap snapshot object to a JS object will not crash on DOM wrapper boilerplate. Test passes if it doesn't crash.\n`);
-  await TestRunner.showPanel('heap_profiler');
+  await TestRunner.showPanel('heap-profiler');
   await TestRunner.evaluateInPagePromise(`
       // Make sure there is a body wrapper.
       document.body.fieldOnDomWrapper = 2012;
   `);
 
   var heapProfileType = Profiler.ProfileTypeRegistry.instance.heapSnapshotProfileType;
-  heapProfileType.addEventListener(Profiler.HeapSnapshotProfileType.SnapshotReceived, finishHeapSnapshot);
+  heapProfileType.addEventListener(Profiler.HeapSnapshotView.HeapSnapshotProfileType.SnapshotReceived, finishHeapSnapshot);
   TestRunner.addSniffer(heapProfileType, 'snapshotReceived', snapshotReceived);
   heapProfileType.takeHeapSnapshot();
 
@@ -30,7 +32,7 @@ import {HeapProfilerTestRunner} from 'heap_profiler_test_runner';
       return clear('FAILED: wrong number of recorded profiles was found. profiles.length = ' + profiles.length);
 
     var profile = profiles[profiles.length - 1];
-    UI.panels.heap_profiler.showProfile(profile);
+    Profiler.HeapProfilerPanel.HeapProfilerPanel.instance().showProfile(profile);
   }
 
   async function snapshotReceived(profile) {
@@ -65,7 +67,7 @@ import {HeapProfilerTestRunner} from 'heap_profiler_test_runner';
     if (errorMessage)
       TestRunner.addResult(errorMessage);
     setTimeout(done, 0);
-    UI.panels.heap_profiler.reset();
+    Profiler.HeapProfilerPanel.HeapProfilerPanel.instance().reset();
     return !errorMessage;
   }
 

@@ -69,18 +69,6 @@ def _get_log_ids_array(log_ids, array_name):
   return log_id_code
 
 
-def _get_log_ids_for_operator(logs_by_operator, operator_name):
-  """Returns a list of Log IDs of logs operated by operator_name."""
-  for operator in logs_by_operator:
-    if operator["name"] == operator_name:
-      return [
-          base64.b64decode(log["log_id"])
-          for log in operator["logs"]
-          if _is_log_once_or_currently_qualified(log)
-      ]
-  return []
-
-
 def _is_log_disqualified(log):
   # Disqualified logs are denoted with state="retired"
   assert (len(log.get("state")) == 1)
@@ -242,10 +230,6 @@ def generate_cpp_file(input_file, f):
   _write_previous_operator_info(f, qualifying_logs, sorted_disqualified_logs)
   # Write the list of currently-qualifying logs.
   _write_qualifying_logs_loginfo(f, qualifying_logs)
-
-  # Write the IDs of all CT Logs operated by Google
-  google_log_ids = _get_log_ids_for_operator(logs_by_operator, "Google")
-  f.writelines(_get_log_ids_array(google_log_ids, "kGoogleLogIDs"))
 
   # Write the list of all disqualified logs.
   _write_disqualified_log_info_struct_definition(f)

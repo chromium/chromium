@@ -27,7 +27,7 @@ namespace web_app {
 class AbstractWebAppDatabaseFactory;
 class ExternallyManagedAppManager;
 class FileUtilsWrapper;
-class IsolatedWebAppCommandLineInstallManager;
+class IsolatedWebAppInstallationManager;
 class IsolatedWebAppUpdateManager;
 class OsIntegrationManager;
 class PreinstalledWebAppManager;
@@ -97,13 +97,10 @@ class FakeWebAppProvider : public WebAppProvider {
   explicit FakeWebAppProvider(Profile* profile);
   ~FakeWebAppProvider() override;
 
-  // |run_subsystem_startup_tasks| is true by default as browser test clients
-  // will generally want to construct their FakeWebAppProvider to behave as it
-  // would in a production browser.
-  //
-  // |run_subsystem_startup_tasks| is false by default for FakeWebAppProvider
-  // if it's a part of TestingProfile (see BuildDefault() method above).
-  void SetRunSubsystemStartupTasks(bool run_subsystem_startup_tasks);
+  // |run_system_on_start| is false by default, and must be set to true here
+  // BEFORE WebAppProvider::Start is called to allow the system to start
+  // normally. Otherwise, StartWithSubsystems must be called.
+  void SetStartSystemOnStart(bool run_system_on_start);
 
   // The PreinstalledWebAppManager waits for some dependencies (extensions and
   // device initialization) on startup, and then processes the preinstalled apps
@@ -111,7 +108,6 @@ class FakeWebAppProvider : public WebAppProvider {
   // by default for unit tests, and can be enabled by setting this flag to true.
   void SetSynchronizePreinstalledAppsOnStartup(bool synchronize_on_startup);
 
-#if BUILDFLAG(IS_CHROMEOS)
   enum class AutomaticIwaUpdateStrategy {
     kDefault,
     kForceDisabled,
@@ -125,7 +121,6 @@ class FakeWebAppProvider : public WebAppProvider {
   // will retain the default behavior of the `IsolatedWebAppUpdateManager`.
   void SetEnableAutomaticIwaUpdates(
       AutomaticIwaUpdateStrategy automatic_iwa_update_strategy);
-#endif
 
   // NB: If you replace the Registrar, you also have to replace the SyncBridge
   // accordingly.
@@ -148,12 +143,12 @@ class FakeWebAppProvider : public WebAppProvider {
   void SetWebAppUiManager(std::unique_ptr<WebAppUiManager> ui_manager);
   void SetWebAppPolicyManager(
       std::unique_ptr<WebAppPolicyManager> web_app_policy_manager);
-  void SetIsolatedWebAppCommandLineInstallManager(
-      std::unique_ptr<IsolatedWebAppCommandLineInstallManager>
-          iwa_command_line_install_manager);
-#if BUILDFLAG(IS_CHROMEOS)
+  void SetIsolatedWebAppInstallationManager(
+      std::unique_ptr<IsolatedWebAppInstallationManager>
+          isolated_web_app_installation_manager);
   void SetIsolatedWebAppUpdateManager(
       std::unique_ptr<IsolatedWebAppUpdateManager> iwa_update_manager);
+#if BUILDFLAG(IS_CHROMEOS)
   void SetWebAppRunOnOsLoginManager(std::unique_ptr<WebAppRunOnOsLoginManager>
                                         web_app_run_on_os_login_manager);
 #endif
@@ -197,13 +192,15 @@ class FakeWebAppProvider : public WebAppProvider {
   // FakeWebAppProvider::Shutdown() as part of test teardown.
   void Shutdown() override;
 
+  FakeWebAppProvider* AsFakeWebAppProviderForTesting() override;
+
   syncer::MockModelTypeChangeProcessor& processor() { return mock_processor_; }
 
  private:
   // CHECK that `Start()` has not been called on this provider, and also
   // disconnect so that clients are forced to call `Start()` before accessing
   // any subsystems.
-  void CheckNotStartedAndDisconnect();
+  void CheckNotStartedAndDisconnect(std::string optional_message = "");
 
   // WebAppProvider:
   void StartImpl() override;
@@ -211,11 +208,10 @@ class FakeWebAppProvider : public WebAppProvider {
   // If true, when Start()ed the FakeWebAppProvider will call
   // WebAppProvider::StartImpl() and fire startup tasks like a real
   // WebAppProvider.
-  bool run_subsystem_startup_tasks_ = true;
+  bool run_system_on_start_ = false;
   // If true, preinstalled apps will be processed & installed (or uninstalled)
   // after the system starts.
   bool synchronize_preinstalled_app_on_startup_ = false;
-#if BUILDFLAG(IS_CHROMEOS)
   // If `kForceEnabled`, the `IsolatedWebAppUpdateManager` will automatically
   // search for updates of installed Isolated Web Apps on startup and in regular
   // time intervals. If `kForceDisabled`, then it will not automatically search
@@ -223,7 +219,6 @@ class FakeWebAppProvider : public WebAppProvider {
   // determine whether to search for updates (e.g., based feature flags).
   AutomaticIwaUpdateStrategy automatic_iwa_update_strategy_ =
       AutomaticIwaUpdateStrategy::kForceDisabled;
-#endif
 
   testing::NiceMock<syncer::MockModelTypeChangeProcessor> mock_processor_;
 };
@@ -236,6 +231,9 @@ class FakeWebAppProviderCreator {
   using CreateWebAppProviderCallback =
       base::RepeatingCallback<std::unique_ptr<KeyedService>(Profile* profile)>;
 
+  // Uses FakeWebAppProvider::BuildDefault to build the FakeWebAppProvider.
+  FakeWebAppProviderCreator();
+  // Uses the given callback to create the FakeWebAppProvider.
   explicit FakeWebAppProviderCreator(CreateWebAppProviderCallback callback);
   ~FakeWebAppProviderCreator();
 

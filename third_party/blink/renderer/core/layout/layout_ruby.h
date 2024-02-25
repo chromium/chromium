@@ -35,14 +35,15 @@
 
 namespace blink {
 
-class LayoutNGRubyRun;
+class LayoutRubyColumn;
+class RubyContainer;
 
 // Following the HTML 5 spec, the box object model for a <ruby> element allows
 // several runs of ruby
 // bases with their respective ruby texts looks as follows:
 //
 // 1 LayoutRuby object, corresponding to the whole <ruby> HTML element
-//      1+ LayoutRubyRun (anonymous)
+//      1+ LayoutRubyColumn (anonymous)
 //          0 or 1 LayoutRubyText - shuffled to the front in order to re-use
 //                                  existing block layouting
 //              0-n inline object(s)
@@ -56,10 +57,11 @@ class LayoutNGRubyRun;
 // Generated :before/:after content is shunted into anonymous inline blocks
 
 // <ruby> when used as 'display:inline'
-class LayoutRubyAsInline final : public LayoutInline {
+class LayoutRuby final : public LayoutInline {
  public:
-  LayoutRubyAsInline(Element*);
-  ~LayoutRubyAsInline() override;
+  LayoutRuby(Element*);
+  ~LayoutRuby() override;
+  void Trace(Visitor* visitor) const override;
 
   void AddChild(LayoutObject* child,
                 LayoutObject* before_child = nullptr) override;
@@ -70,20 +72,27 @@ class LayoutRubyAsInline final : public LayoutInline {
     return "LayoutRuby (inline)";
   }
 
-  static LayoutNGRubyRun* LastRubyRun(const LayoutObject& ruby);
-  static LayoutNGRubyRun* FindRubyRunParent(LayoutObject* child);
+  void DidRemoveChildFromColumn(LayoutObject& child);
+
+  static LayoutRubyColumn* LastRubyColumn(const LayoutObject& ruby);
+  static LayoutRubyColumn* FindRubyColumnParent(LayoutObject* child);
 
  protected:
   void StyleDidChange(StyleDifference, const ComputedStyle* old_style) override;
 
  private:
-  bool IsOfType(LayoutObjectType type) const override {
-    NOT_DESTROYED();
-    return type == kLayoutObjectRuby || LayoutInline::IsOfType(type);
-  }
-  bool CreatesAnonymousWrapper() const override {
+  bool IsRuby() const final {
     NOT_DESTROYED();
     return true;
+  }
+
+  Member<RubyContainer> ruby_container_;
+};
+
+template <>
+struct DowncastTraits<LayoutRuby> {
+  static bool AllowFrom(const LayoutObject& object) {
+    return object.IsRuby() && object.IsLayoutInline();
   }
 };
 

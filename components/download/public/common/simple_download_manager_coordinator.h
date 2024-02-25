@@ -73,7 +73,8 @@ class COMPONENTS_DOWNLOAD_EXPORT SimpleDownloadManagerCoordinator
   // Gets all the downloads. Caller needs to call has_all_history_downloads() to
   // check if all downloads are initialized. If only active downloads are
   // initialized, this method will only return all active downloads.
-  void GetAllDownloads(std::vector<DownloadItem*>* downloads);
+  void GetAllDownloads(
+      std::vector<raw_ptr<DownloadItem, VectorExperimental>>* downloads);
 
   // Get the download item for |guid|.
   DownloadItem* GetDownloadByGuid(const std::string& guid);

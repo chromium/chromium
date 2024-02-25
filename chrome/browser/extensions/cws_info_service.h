@@ -5,6 +5,8 @@
 #ifndef CHROME_BROWSER_EXTENSIONS_CWS_INFO_SERVICE_H_
 #define CHROME_BROWSER_EXTENSIONS_CWS_INFO_SERVICE_H_
 
+#include <optional>
+
 #include "base/feature_list.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
@@ -12,7 +14,6 @@
 #include "base/timer/timer.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "extensions/common/extension_id.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 class PrefService;
 class Profile;
@@ -40,8 +41,7 @@ class CWSInfoServiceInterface {
   // Synchronously checks if the extension is currently live in CWS.
   // If the information is not available immediately (i.e., not stored in local
   // cache), does not return a value.
-  virtual absl::optional<bool> IsLiveInCWS(
-      const Extension& extension) const = 0;
+  virtual std::optional<bool> IsLiveInCWS(const Extension& extension) const = 0;
 
   enum class CWSViolationType {
     kNone = 0,
@@ -69,7 +69,7 @@ class CWSInfoServiceInterface {
     // CWS.
     bool no_privacy_practice = false;
   };
-  virtual absl::optional<CWSInfo> GetCWSInfo(
+  virtual std::optional<CWSInfo> GetCWSInfo(
       const Extension& extension) const = 0;
 
   // Initiates a fetch from CWS if:
@@ -108,8 +108,8 @@ class CWSInfoService : public CWSInfoServiceInterface, public KeyedService {
   ~CWSInfoService() override;
 
   // CWSInfoServiceInterface:
-  absl::optional<bool> IsLiveInCWS(const Extension& extension) const override;
-  absl::optional<CWSInfo> GetCWSInfo(const Extension& extension) const override;
+  std::optional<bool> IsLiveInCWS(const Extension& extension) const override;
+  std::optional<CWSInfo> GetCWSInfo(const Extension& extension) const override;
   void CheckAndMaybeFetchInfo() override;
   void AddObserver(Observer* observer) override;
   void RemoveObserver(Observer* observer) override;
@@ -127,14 +127,13 @@ class CWSInfoService : public CWSInfoServiceInterface, public KeyedService {
   int GetCheckIntervalForTesting() const;
   int GetFetchIntervalForTesting() const;
   base::Time GetCWSInfoTimestampForTesting() const;
+  base::Time GetCWSInfoFetchErrorTimestampForTesting() const;
   void SetMaxExtensionIdsPerRequestForTesting(int max);
+  static void SetSkipApiCheckForTesting(bool skip_api_key_check);
 
  protected:
   // Only used for testing to create a fake derived class.
   CWSInfoService();
-
-  // Returns true if the service can perform fetch operations, false otherwise.
-  bool CanFetchInfo() const;
 
   // This method schedules an info check after specified |seconds|.
   void ScheduleCheck(int seconds);
@@ -183,9 +182,13 @@ class CWSInfoService : public CWSInfoServiceInterface, public KeyedService {
   // Counts the number of times the downloaded metadata was different from that
   // currently saved.
   uint32_t info_changes_ = 0;
-
   // A timer used to periodically check if CWS information needs to be fetched.
   base::OneShotTimer info_check_timer_;
+  // Time from startup to first check of CWS information.
+  int startup_delay_secs_ = 0;
+  // Time interval between fetches from CWS info server. The interval value
+  // varies +/-25% from default of 24 hours for every fetch.
+  int current_fetch_interval_secs_ = 0;
 
   // List of observers that are notified whenever new CWS information is saved.
   base::ObserverList<Observer> observers_;

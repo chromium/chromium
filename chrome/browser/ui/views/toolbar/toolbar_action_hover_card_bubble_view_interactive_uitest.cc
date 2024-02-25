@@ -179,8 +179,7 @@ class ToolbarActionHoverCardBubbleViewUITest : public ExtensionsToolbarUITest {
   base::test::ScopedFeatureList scoped_feature_list_;
 
  private:
-  std::unique_ptr<base::AutoReset<gfx::Animation::RichAnimationRenderMode>>
-      animation_mode_reset_;
+  gfx::AnimationTestApi::RenderModeResetter animation_mode_reset_;
 
   testing::NiceMock<policy::MockConfigurationPolicyProvider> policy_provider_;
 };

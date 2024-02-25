@@ -26,7 +26,7 @@ struct ManifestURL : public Extension::ManifestData {
   // this returns the Google Gallery URL. For third-party extensions,
   // this returns a blank GURL.
   // See also: GetManifestHomePageURL(), SpecifiedHomepageURL()
-  static const GURL GetHomepageURL(const Extension* extension);
+  static GURL GetHomepageURL(const Extension* extension);
 
   // Returns true if the extension specified a valid home page url in the
   // manifest.
@@ -35,12 +35,12 @@ struct ManifestURL : public Extension::ManifestData {
   // Returns the homepage specified by the extension in its manifest, if it
   // specifies a homepage. Otherwise, returns an empty url.
   // See also: GetHomepageURL()
-  static const GURL GetManifestHomePageURL(const Extension* extension);
+  static const GURL& GetManifestHomePageURL(const Extension* extension);
 
   // Returns the Chrome Web Store URL for this extension if it is hosted in the
   // webstore; otherwise returns an empty url.
   // See also: GetHomepageURL()
-  static const GURL GetWebStoreURL(const Extension* extension);
+  static GURL GetWebStoreURL(const Extension* extension);
 
   // Returns the Update URL for this extension.
   static const GURL& GetUpdateURL(const Extension* extension);
@@ -52,7 +52,7 @@ struct ManifestURL : public Extension::ManifestData {
   static const GURL& GetAboutPage(const Extension* extension);
 
   // Returns the webstore page URL for this extension.
-  static const GURL GetDetailsURL(const Extension* extension);
+  static GURL GetDetailsURL(const Extension* extension);
 };
 
 // Parses the "homepage_url" manifest key.

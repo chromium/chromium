@@ -5,6 +5,7 @@
 #include "chrome/browser/chromeos/extensions/telemetry/api/common/base_telemetry_extension_browser_test.h"
 
 #include <memory>
+#include <optional>
 #include <string>
 
 #include "base/files/file_path.h"
@@ -22,7 +23,6 @@
 #include "net/test/cert_test_util.h"
 #include "net/test/test_data_directory.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace chromeos {
 
@@ -37,7 +37,7 @@ void BaseTelemetryExtensionBrowserTest::SetUpOnMainThread() {
   // Make sure ApiGuardDelegate::CanAccessApi() returns optional error message
   // without a value.
   api_guard_delegate_factory_ = std::make_unique<FakeApiGuardDelegate::Factory>(
-      /*error_message=*/absl::nullopt);
+      /*error_message=*/std::nullopt);
   ApiGuardDelegate::Factory::SetForTesting(api_guard_delegate_factory_.get());
 }
 
@@ -90,6 +90,7 @@ std::string BaseTelemetryExtensionBrowserTest::GetManifestFile(
           "os.bluetooth_peripherals_info",
           "os.diagnostics",
           "os.events",
+          "os.management.audio",
           "os.telemetry",
           "os.telemetry.serial_number",
           "os.telemetry.network_info"

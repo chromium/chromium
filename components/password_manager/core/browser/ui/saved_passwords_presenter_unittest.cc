@@ -18,23 +18,18 @@
 #include "base/test/gmock_move_support.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/mock_callback.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_mock_time_task_runner.h"
 #include "base/time/time.h"
-#include "components/password_manager/core/browser/affiliation/fake_affiliation_service.h"
-#include "components/password_manager/core/browser/affiliation/mock_affiliation_service.h"
-#include "components/password_manager/core/browser/fake_password_store_backend.h"
-#include "components/password_manager/core/browser/mock_password_store_interface.h"
+#include "components/affiliations/core/browser/fake_affiliation_service.h"
+#include "components/affiliations/core/browser/mock_affiliation_service.h"
 #include "components/password_manager/core/browser/passkey_credential.h"
 #include "components/password_manager/core/browser/password_form.h"
-#include "components/password_manager/core/browser/password_manager_metrics_util.h"
-#include "components/password_manager/core/browser/password_store.h"
-#include "components/password_manager/core/browser/password_ui_utils.h"
-#include "components/password_manager/core/browser/test_password_store.h"
+#include "components/password_manager/core/browser/password_store/fake_password_store_backend.h"
+#include "components/password_manager/core/browser/password_store/mock_password_store_interface.h"
+#include "components/password_manager/core/browser/password_store/password_store_interface.h"
+#include "components/password_manager/core/browser/password_store/test_password_store.h"
 #include "components/password_manager/core/browser/ui/credential_ui_entry.h"
-#include "components/password_manager/core/common/password_manager_features.h"
-#include "components/sync/base/features.h"
 #include "components/sync/protocol/webauthn_credential_specifics.pb.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -50,6 +45,9 @@ namespace password_manager {
 
 namespace {
 
+using affiliations::Facet;
+using affiliations::FacetURI;
+using affiliations::FakeAffiliationService;
 using ::testing::_;
 using ::testing::Contains;
 using ::testing::ElementsAre;
@@ -128,7 +126,6 @@ class SavedPasswordsPresenterTest : public testing::Test {
   }
 
  private:
-  base::test::ScopedFeatureList feature_list_;
   base::test::SingleThreadTaskEnvironment task_env_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   scoped_refptr<TestPasswordStore> store_ =
@@ -217,7 +214,7 @@ TEST_F(SavedPasswordsPresenterTest, AddPasswordFailWhenInvalidUrl) {
 
   PasswordForm form =
       CreateTestPasswordForm(PasswordForm::Store::kProfileStore);
-  form.url = GURL("https://;/invalid");
+  form.url = GURL("https://^/invalid");
 
   EXPECT_CALL(observer, OnSavedPasswordsChanged).Times(0);
   EXPECT_FALSE(presenter().AddCredential(CredentialUIEntry(form)));
@@ -485,8 +482,6 @@ TEST_F(SavedPasswordsPresenterTest, EditOnlyPassword) {
 }
 
 TEST_F(SavedPasswordsPresenterTest, EditOnlyNoteFirstTime) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(syncer::kPasswordNotesWithBackup);
   PasswordForm form =
       CreateTestPasswordForm(PasswordForm::Store::kProfileStore);
   form.notes.emplace_back(u"display name", u"note with non-empty display name",
@@ -518,8 +513,6 @@ TEST_F(SavedPasswordsPresenterTest, EditOnlyNoteFirstTime) {
 }
 
 TEST_F(SavedPasswordsPresenterTest, EditingNotesShouldNotResetPasswordIssues) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(syncer::kPasswordNotesWithBackup);
   PasswordForm form =
       CreateTestPasswordForm(PasswordForm::Store::kProfileStore);
 
@@ -550,8 +543,6 @@ TEST_F(SavedPasswordsPresenterTest, EditingNotesShouldNotResetPasswordIssues) {
 }
 
 TEST_F(SavedPasswordsPresenterTest, EditOnlyNoteSecondTime) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(syncer::kPasswordNotesWithBackup);
   PasswordNote kExistingNote =
       PasswordNote(u"existing note", base::Time::Now());
   PasswordForm form =
@@ -581,8 +572,6 @@ TEST_F(SavedPasswordsPresenterTest, EditOnlyNoteSecondTime) {
 }
 
 TEST_F(SavedPasswordsPresenterTest, EditNoteAsEmpty) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(syncer::kPasswordNotesWithBackup);
   PasswordForm form =
       CreateTestPasswordForm(PasswordForm::Store::kProfileStore);
   form.notes = {PasswordNote(u"existing note", base::Time::Now())};
@@ -894,7 +883,7 @@ TEST_F(SavedPasswordsPresenterTest, GetAffiliatedGroupsWithPasskeys) {
     return;
   }
 
-  MockAffiliationService mock_affiliation_service;
+  affiliations::MockAffiliationService mock_affiliation_service;
   SavedPasswordsPresenter presenter{&mock_affiliation_service, &store(),
                                     nullptr, &passkey_store()};
   presenter.Init();
@@ -914,7 +903,7 @@ TEST_F(SavedPasswordsPresenterTest, GetAffiliatedGroupsWithPasskeys) {
   store().AddLogin(form2);
   store().AddLogin(form3);
 
-  std::vector<password_manager::GroupedFacets> grouped_facets(2);
+  std::vector<affiliations::GroupedFacets> grouped_facets(2);
   grouped_facets[0].facets = {
       Facet(FacetURI::FromPotentiallyInvalidSpec(form1.signon_realm)),
       Facet(FacetURI::FromPotentiallyInvalidSpec(form2.signon_realm)),
@@ -928,7 +917,7 @@ TEST_F(SavedPasswordsPresenterTest, GetAffiliatedGroupsWithPasskeys) {
   grouped_facets[1].branding_info.icon_url =
       GURL("https://test3.com/favicon.ico");
   EXPECT_CALL(mock_affiliation_service, GetGroupingInfo)
-      .WillRepeatedly(base::test::RunOnceCallback<1>(grouped_facets));
+      .WillRepeatedly(base::test::RunOnceCallbackRepeatedly<1>(grouped_facets));
   RunUntilIdle();
 
   CredentialUIEntry credential1(form1), credential2(form2), credential3(form3);
@@ -1116,7 +1105,6 @@ class SavedPasswordsPresenterWithTwoStoresTest : public testing::Test {
   }
 
  private:
-  base::test::ScopedFeatureList feature_list_;
   base::test::SingleThreadTaskEnvironment task_env_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   scoped_refptr<TestPasswordStore> profile_store_ =
@@ -1698,7 +1686,7 @@ TEST_F(SavedPasswordsPresenterTest, GetAffiliatedGroups) {
   }
 
   base::HistogramTester histogram_tester;
-  MockAffiliationService mock_affiliation_service;
+  affiliations::MockAffiliationService mock_affiliation_service;
   SavedPasswordsPresenter presenter{&mock_affiliation_service, &store(),
                                     nullptr, /*passkey_store=*/nullptr};
   presenter.Init();
@@ -1718,7 +1706,7 @@ TEST_F(SavedPasswordsPresenterTest, GetAffiliatedGroups) {
 
   store().AddLogins({form1, form2, form3, blocked_form});
 
-  std::vector<password_manager::GroupedFacets> grouped_facets(2);
+  std::vector<affiliations::GroupedFacets> grouped_facets(2);
   grouped_facets[0].facets = {
       Facet(FacetURI::FromPotentiallyInvalidSpec(form1.signon_realm)),
       Facet(FacetURI::FromPotentiallyInvalidSpec(form2.signon_realm))};
@@ -1731,7 +1719,7 @@ TEST_F(SavedPasswordsPresenterTest, GetAffiliatedGroups) {
   grouped_facets[1].branding_info.icon_url =
       GURL("https://test3.com/favicon.ico");
 
-  AffiliationService::GroupsCallback callback;
+  affiliations::AffiliationService::GroupsCallback callback;
   EXPECT_CALL(mock_affiliation_service, GetGroupingInfo)
       .WillOnce(MoveArg<1>(&callback));
   RunUntilIdle();
@@ -2000,7 +1988,6 @@ class SavedPasswordsPresenterMoveToAccountTest : public testing::Test {
   void RunUntilIdle() { task_env_.RunUntilIdle(); }
 
  private:
-  base::test::ScopedFeatureList feature_list_;
   base::test::SingleThreadTaskEnvironment task_env_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   scoped_refptr<MockPasswordStoreInterface> profile_store_ =
@@ -2024,9 +2011,9 @@ TEST_F(SavedPasswordsPresenterMoveToAccountTest, MovesToAccount) {
   credentials.emplace_back(form_1);
   credentials.emplace_back(form_2);
 
-  std::vector<std::unique_ptr<PasswordForm>> forms;
-  forms.push_back(std::make_unique<PasswordForm>(form_1));
-  forms.push_back(std::make_unique<PasswordForm>(form_2));
+  std::vector<PasswordForm> forms;
+  forms.push_back(form_1);
+  forms.push_back(form_2);
 
   presenter().Init();
   static_cast<PasswordStoreConsumer*>(&presenter())
@@ -2056,11 +2043,11 @@ TEST_F(SavedPasswordsPresenterMoveToAccountTest,
   credentials.emplace_back(
       std::vector<PasswordForm>{form_profile, form_account});
 
-  std::vector<std::unique_ptr<PasswordForm>> forms_from_profile;
-  forms_from_profile.push_back(std::make_unique<PasswordForm>(form_profile));
+  std::vector<PasswordForm> forms_from_profile;
+  forms_from_profile.push_back(form_profile);
 
-  std::vector<std::unique_ptr<PasswordForm>> forms_from_account;
-  forms_from_account.push_back(std::make_unique<PasswordForm>(form_account));
+  std::vector<PasswordForm> forms_from_account;
+  forms_from_account.push_back(form_account);
 
   presenter().Init();
   static_cast<PasswordStoreConsumer*>(&presenter())

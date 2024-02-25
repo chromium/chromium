@@ -9,7 +9,6 @@
 #import <Cocoa/Cocoa.h>
 
 #include "chrome/app/chrome_command_ids.h"
-#include "chrome/browser/chrome_notification_types.h"
 #include "chrome/browser/lifetime/application_lifetime_desktop.h"
 #include "chrome/browser/ui/browser_command_controller.h"
 #include "chrome/test/base/in_process_browser_test.h"
@@ -110,7 +109,7 @@ class BrowserWindowMacA11yTest : public BrowserWindowMacTest {
 IN_PROC_BROWSER_TEST_F(BrowserWindowMacA11yTest, A11yTreeIsWellFormed) {
   NSWindow* window = browser()->window()->GetNativeWindow().GetNativeNSWindow();
   size_t nodes_visited = 0;
-  absl::optional<ui::NSAXTreeProblemDetails> details =
+  std::optional<ui::NSAXTreeProblemDetails> details =
       ui::ValidateNSAXTree(window, &nodes_visited);
   EXPECT_FALSE(details.has_value()) << details->ToString();
 

@@ -28,10 +28,18 @@ FloatControllerLacros::~FloatControllerLacros() = default;
 void FloatControllerLacros::SetFloat(
     aura::Window* window,
     chromeos::FloatStartLocation float_start_location) {
-  // TODO(b/289082657): Implement `float_start_location` for lacros.
-  GetWaylandExtension(window)->SetFloat(true);
+  switch (float_start_location) {
+    case chromeos::FloatStartLocation::kBottomRight:
+      GetWaylandExtension(window)->SetFloatToLocation(
+          ui::WaylandFloatStartLocation::kBottomRight);
+      break;
+    case chromeos::FloatStartLocation::kBottomLeft:
+      GetWaylandExtension(window)->SetFloatToLocation(
+          ui::WaylandFloatStartLocation::kBottomLeft);
+      break;
+  }
 }
 
 void FloatControllerLacros::UnsetFloat(aura::Window* window) {
-  GetWaylandExtension(window)->SetFloat(false);
+  GetWaylandExtension(window)->UnSetFloat();
 }

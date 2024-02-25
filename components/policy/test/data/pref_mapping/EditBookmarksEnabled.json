@@ -1,0 +1,34 @@
+[
+  {
+    "os": [
+      "win",
+      "linux",
+      "mac",
+      "chromeos_ash",
+      "chromeos_lacros",
+      "android",
+      "fuchsia"
+    ],
+    "policy_pref_mapping_tests": [
+      {
+        "note": "Default value (no policies set).",
+        "prefs": {
+          "bookmarks.editing_enabled": {
+            "default_value": true
+          }
+        }
+      },
+      {
+        "note": "Simple value.",
+        "policies": {
+          "EditBookmarksEnabled": false
+        },
+        "prefs": {
+          "bookmarks.editing_enabled": {
+            "value": false
+          }
+        }
+      }
+    ]
+  }
+]

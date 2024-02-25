@@ -33,15 +33,9 @@ const GURL& GetActiveUrl(Browser* browser) {
 
 using ExtensionTabUtilBrowserTest = ExtensionBrowserTest;
 
-// Times out on Win debug. https://crbug.com/811471
-#if BUILDFLAG(IS_WIN) && !defined(NDEBUG)
-#define MAYBE_OpenExtensionsOptionsPage DISABLED_OpenExtensionsOptionsPage
-#else
-#define MAYBE_OpenExtensionsOptionsPage OpenExtensionsOptionsPage
-#endif
-
+// TODO(https://crbug.com/811471): Fix and re-enable.
 IN_PROC_BROWSER_TEST_F(ExtensionTabUtilBrowserTest,
-                       MAYBE_OpenExtensionsOptionsPage) {
+                       DISABLED_OpenExtensionsOptionsPage) {
   // Load an extension with an options page that opens in a tab and one that
   // opens in the chrome://extensions page in a view.
   const Extension* options_in_tab =

@@ -17,6 +17,12 @@
 // users to do SSA-style usage of TemplateURL: construct a TemplateURLData with
 // whatever fields are desired, then create an immutable TemplateURL from it.
 struct TemplateURLData {
+  enum class CreatedByPolicy {
+    kNoPolicy = 0,
+    kDefaultSearchProvider = 1,
+    kSiteSearch = 2,
+  };
+
   TemplateURLData();
   TemplateURLData(const TemplateURLData& other);
   TemplateURLData& operator=(const TemplateURLData& other);
@@ -27,8 +33,8 @@ struct TemplateURLData {
   // value, instead of current time.
   // StringPiece in arguments is used to pass const char* pointer members
   // of PrepopulatedEngine structure which can be nullptr.
-  TemplateURLData(const std::u16string& name,
-                  const std::u16string& keyword,
+  TemplateURLData(std::u16string_view name,
+                  std::u16string_view keyword,
                   base::StringPiece search_url,
                   base::StringPiece suggest_url,
                   base::StringPiece image_url,
@@ -58,11 +64,11 @@ struct TemplateURLData {
   // A short description of the template. This is the name we show to the user
   // in various places that use TemplateURLs. For example, the location bar
   // shows this when the user selects a substituting match.
-  void SetShortName(const std::u16string& short_name);
+  void SetShortName(std::u16string_view short_name);
   const std::u16string& short_name() const { return short_name_; }
 
   // The shortcut for this TemplateURL.  |keyword| must be non-empty.
-  void SetKeyword(const std::u16string& keyword);
+  void SetKeyword(std::u16string_view keyword);
   const std::u16string& keyword() const { return keyword_; }
 
   // The raw URL for the TemplateURL, which may not be valid as-is (e.g. because
@@ -163,7 +169,7 @@ struct TemplateURLData {
 
   // True if this TemplateURL was automatically created by the administrator via
   // group policy.
-  bool created_by_policy;
+  CreatedByPolicy created_by_policy;
 
   // True if this TemplateURL is forced to be the default search engine via
   // policy. This prevents the user from setting another search engine as
@@ -174,6 +180,10 @@ struct TemplateURLData {
 
   // True if this TemplateURL was created from metadata received from Play API.
   bool created_from_play_api;
+
+  // True if this TemplateURL should be promoted in the Omnibox along with the
+  // starter pack.
+  bool featured_by_policy = false;
 
   // Number of times this TemplateURL has been explicitly used to load a URL.
   // We don't increment this for uses as the "default search engine" since

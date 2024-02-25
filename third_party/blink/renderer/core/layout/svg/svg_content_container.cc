@@ -4,12 +4,12 @@
 
 #include "third_party/blink/renderer/core/layout/svg/svg_content_container.h"
 
-#include "third_party/blink/renderer/core/layout/ng/svg/layout_ng_svg_foreign_object.h"
-#include "third_party/blink/renderer/core/layout/ng/svg/layout_ng_svg_text.h"
 #include "third_party/blink/renderer/core/layout/svg/layout_svg_container.h"
+#include "third_party/blink/renderer/core/layout/svg/layout_svg_foreign_object.h"
 #include "third_party/blink/renderer/core/layout/svg/layout_svg_image.h"
 #include "third_party/blink/renderer/core/layout/svg/layout_svg_resource_marker.h"
 #include "third_party/blink/renderer/core/layout/svg/layout_svg_shape.h"
+#include "third_party/blink/renderer/core/layout/svg/layout_svg_text.h"
 #include "third_party/blink/renderer/core/layout/svg/layout_svg_transformable_container.h"
 #include "third_party/blink/renderer/core/layout/svg/svg_layout_support.h"
 #include "third_party/blink/renderer/core/layout/svg/svg_resources.h"
@@ -51,14 +51,14 @@ bool HasValidBoundingBoxForContainer(const LayoutObject& object) {
   if (auto* svg_shape = DynamicTo<LayoutSVGShape>(object)) {
     return !svg_shape->IsShapeEmpty();
   }
-  if (auto* ng_text = DynamicTo<LayoutNGSVGText>(object)) {
+  if (auto* ng_text = DynamicTo<LayoutSVGText>(object)) {
     return ng_text->IsObjectBoundingBoxValid();
   }
   if (auto* svg_container = DynamicTo<LayoutSVGContainer>(object)) {
     return svg_container->IsObjectBoundingBoxValid() &&
            !svg_container->IsSVGHiddenContainer();
   }
-  if (auto* foreign_object = DynamicTo<LayoutNGSVGForeignObject>(object)) {
+  if (auto* foreign_object = DynamicTo<LayoutSVGForeignObject>(object)) {
     return foreign_object->IsObjectBoundingBoxValid();
   }
   if (auto* svg_image = DynamicTo<LayoutSVGImage>(object)) {
@@ -103,7 +103,7 @@ void SVGContentContainer::Layout(const SVGContainerLayoutInfo& layout_info) {
     if (layout_info.scale_factor_changed) {
       // If the screen scaling factor changed we need to update the text
       // metrics (note: this also happens for layoutSizeChanged=true).
-      if (auto* ng_text = DynamicTo<LayoutNGSVGText>(child)) {
+      if (auto* ng_text = DynamicTo<LayoutSVGText>(child)) {
         ng_text->SetNeedsTextMetricsUpdate();
       }
       force_child_layout = true;
@@ -119,7 +119,7 @@ void SVGContentContainer::Layout(const SVGContainerLayoutInfo& layout_info) {
           // the LayoutSVGShape to update its shape object
           if (auto* shape = DynamicTo<LayoutSVGShape>(*child)) {
             shape->SetNeedsShapeUpdate();
-          } else if (auto* ng_text = DynamicTo<LayoutNGSVGText>(*child)) {
+          } else if (auto* ng_text = DynamicTo<LayoutSVGText>(*child)) {
             ng_text->SetNeedsTextMetricsUpdate();
           } else if (auto* container =
                          DynamicTo<LayoutSVGTransformableContainer>(*child)) {
@@ -165,7 +165,7 @@ bool SVGContentContainer::HitTest(HitTestResult& result,
   PhysicalOffset accumulated_offset;
   for (LayoutObject* child = children_.LastChild(); child;
        child = child->PreviousSibling()) {
-    if (auto* foreign_object = DynamicTo<LayoutNGSVGForeignObject>(child)) {
+    if (auto* foreign_object = DynamicTo<LayoutSVGForeignObject>(child)) {
       if (foreign_object->NodeAtPointFromSVG(result, location,
                                              accumulated_offset, phase)) {
         return true;
@@ -224,7 +224,8 @@ gfx::RectF SVGContentContainer::ComputeStrokeBoundingBox() const {
     if (!HasValidBoundingBoxForContainer(*child)) {
       continue;
     }
-    stroke_bbox.Union(child->StrokeBoundingBox());
+    const AffineTransform& transform = child->LocalToSVGParentTransform();
+    stroke_bbox.Union(transform.MapRect(child->StrokeBoundingBox()));
   }
   return stroke_bbox;
 }

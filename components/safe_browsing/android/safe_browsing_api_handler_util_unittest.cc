@@ -118,7 +118,7 @@ TEST_F(SafeBrowsingApiHandlerUtilTest, SubresourceFilterSubTypes) {
   };
 
   for (const auto& test_case : test_cases) {
-    std::string json = R"({
+    static constexpr char kJson[] = R"({
         "matches" : [{
           "threat_type":"13"
           %s
@@ -131,9 +131,9 @@ TEST_F(SafeBrowsingApiHandlerUtilTest, SubresourceFilterSubTypes) {
       }
       return base::StringPrintf(",\"%s\":\"%s\"", k, v);
     };
-    json = base::StringPrintf(json.c_str(),
-                              put_kv("sf_absv", test_case.abusive_type).c_str(),
-                              put_kv("sf_bas", test_case.bas_type).c_str());
+    std::string json = base::StringPrintf(
+        kJson, put_kv("sf_absv", test_case.abusive_type).c_str(),
+        put_kv("sf_bas", test_case.bas_type).c_str());
     SCOPED_TRACE(testing::Message() << json);
 
     ASSERT_EQ(UmaRemoteCallResult::MATCH, ResetAndParseJson(json));
@@ -142,6 +142,43 @@ TEST_F(SafeBrowsingApiHandlerUtilTest, SubresourceFilterSubTypes) {
     ThreatMetadata expected;
     expected.subresource_filter_match = test_case.expected_match;
     EXPECT_EQ(expected, meta_);
+  }
+}
+
+TEST_F(SafeBrowsingApiHandlerUtilTest, GetThreatMetadataFromSafeBrowsingApi) {
+  typedef SubresourceFilterLevel Level;
+  typedef SubresourceFilterType Type;
+  const struct {
+    SafeBrowsingJavaThreatType threat_type;
+    std::vector<int> threat_attributes;
+    SubresourceFilterMatch expected_match;
+  } test_cases[] = {
+      {SafeBrowsingJavaThreatType::SOCIAL_ENGINEERING, {}, {}},
+      {SafeBrowsingJavaThreatType::ABUSIVE_EXPERIENCE_VIOLATION,
+       {},
+       {{Type::ABUSIVE, Level::ENFORCE}}},
+      {SafeBrowsingJavaThreatType::ABUSIVE_EXPERIENCE_VIOLATION,
+       {static_cast<int>(SafeBrowsingJavaThreatAttribute::CANARY)},
+       {{Type::ABUSIVE, Level::WARN}}},
+      {SafeBrowsingJavaThreatType::ABUSIVE_EXPERIENCE_VIOLATION,
+       {static_cast<int>(SafeBrowsingJavaThreatAttribute::FRAME_ONLY)},
+       {{Type::ABUSIVE, Level::ENFORCE}}},
+      {SafeBrowsingJavaThreatType::BETTER_ADS_VIOLATION,
+       {},
+       {{Type::BETTER_ADS, Level::ENFORCE}}},
+      {SafeBrowsingJavaThreatType::BETTER_ADS_VIOLATION,
+       {static_cast<int>(SafeBrowsingJavaThreatAttribute::CANARY)},
+       {{Type::BETTER_ADS, Level::WARN}}},
+      {SafeBrowsingJavaThreatType::BETTER_ADS_VIOLATION,
+       {static_cast<int>(SafeBrowsingJavaThreatAttribute::FRAME_ONLY)},
+       {{Type::BETTER_ADS, Level::ENFORCE}}}};
+
+  for (const auto& test_case : test_cases) {
+    ThreatMetadata metadata = GetThreatMetadataFromSafeBrowsingApi(
+        test_case.threat_type, test_case.threat_attributes);
+    ThreatMetadata expected;
+    expected.subresource_filter_match = test_case.expected_match;
+    EXPECT_EQ(expected, metadata);
   }
 }
 

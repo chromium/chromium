@@ -5,8 +5,6 @@
 import("../build_webui_tests.gni")
 
 build_webui_tests("build") {
-  resource_path_prefix = "downloads"
-
   files = [
     "item_test.ts",
     "manager_test.ts",

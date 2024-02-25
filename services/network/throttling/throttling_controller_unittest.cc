@@ -61,7 +61,7 @@ class ThrottlingControllerTestHelper {
       : completion_callback_(base::BindRepeating(&TestCallback::Run,
                                                  base::Unretained(&callback_))),
         mock_transaction_(mock_transaction),
-        buffer_(base::MakeRefCounted<net::IOBuffer>(64)),
+        buffer_(base::MakeRefCounted<net::IOBufferWithSize>(64)),
         net_log_with_source_(
             net::NetLogWithSource::Make(net::NetLog::Get(),
                                         net::NetLogSourceType::URL_REQUEST)),
@@ -154,9 +154,9 @@ class ThrottlingControllerTestHelper {
   TestCallback callback_;
   net::CompletionRepeatingCallback completion_callback_;
   MockTransaction mock_transaction_;
+  std::unique_ptr<net::ChunkedUploadDataStream> upload_data_stream_;
   std::unique_ptr<ThrottlingNetworkTransaction> transaction_;
   scoped_refptr<net::IOBuffer> buffer_;
-  std::unique_ptr<net::ChunkedUploadDataStream> upload_data_stream_;
   std::unique_ptr<MockHttpRequest> request_;
   std::unique_ptr<network::ScopedThrottlingToken> throttling_token_;
   const net::NetLogWithSource net_log_with_source_;
@@ -349,7 +349,8 @@ TEST(ThrottlingControllerTest, DownloadBufferSizeIsNotModifiedIfNotThrottled) {
   int rv = helper.Start(false);
   EXPECT_EQ(rv, net::OK);
 
-  auto large_data_buffer = base::MakeRefCounted<net::IOBuffer>(kLargeDataSize);
+  auto large_data_buffer =
+      base::MakeRefCounted<net::IOBufferWithSize>(kLargeDataSize);
   rv = helper.Read(large_data_buffer.get(), kLargeDataSize);
   EXPECT_EQ(rv, net::ERR_IO_PENDING);
   helper.FastForwardUntilNoTasksRemain();
@@ -372,7 +373,8 @@ TEST(ThrottlingControllerTest, DownloadIsStreamed) {
   EXPECT_EQ(callback->run_count(), 1);
   EXPECT_GE(callback->value(), net::OK);
 
-  auto large_data_buffer = base::MakeRefCounted<net::IOBuffer>(kLargeDataSize);
+  auto large_data_buffer =
+      base::MakeRefCounted<net::IOBufferWithSize>(kLargeDataSize);
   helper.Read(large_data_buffer.get(), kLargeDataSize);
   EXPECT_EQ(rv, net::ERR_IO_PENDING);
   EXPECT_EQ(callback->run_count(), 1);

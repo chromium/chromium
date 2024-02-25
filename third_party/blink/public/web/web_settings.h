@@ -75,14 +75,6 @@ class WebSettings {
     kSubtitles
   };
 
-  // Defines the default for 'passive' field used in the AddEventListenerOptions
-  // interface when javascript calls addEventListener.
-  enum class PassiveEventListenerDefault {
-    kFalse,        // Default of false.
-    kTrue,         // Default of true.
-    kForceAllTrue  // Force all values to be true even when specified.
-  };
-
   // Sets value of a setting by its string identifier from Settings.in and
   // string representation of value. An enum's string representation is the
   // string representation of the integer value of the enum.
@@ -110,6 +102,7 @@ class WebSettings {
   virtual void SetAllowRunningOfInsecureContent(bool) = 0;
   virtual void SetAllowScriptsToCloseWindows(bool) = 0;
   virtual void SetAllowUniversalAccessFromFileURLs(bool) = 0;
+  virtual void SetAccessibilityFontWeightAdjustment(int) = 0;
   virtual void SetAlwaysShowContextMenuOnTouch(bool) = 0;
   virtual void SetAntialiased2dCanvasEnabled(bool) = 0;
   virtual void SetAntialiasedClips2dCanvasEnabled(bool) = 0;
@@ -117,6 +110,7 @@ class WebSettings {
   virtual void SetRequireTransientActivationForGetDisplayMedia(bool) = 0;
   virtual void SetRequireTransientActivationForShowFileOrDirectoryPicker(
       bool) = 0;
+  virtual void SetRequireTransientActivationForHtmlFullscreen(bool) = 0;
   virtual void SetAutoZoomFocusedEditableToLegibleScale(bool) = 0;
   virtual void SetCaretBrowsingEnabled(bool) = 0;
   virtual void SetClobberUserAgentInitialScaleQuirk(bool) = 0;
@@ -159,7 +153,6 @@ class WebSettings {
   virtual void SetIgnoreMainFrameOverflowHiddenQuirk(bool) = 0;
   virtual void SetImageAnimationPolicy(mojom::ImageAnimationPolicy) = 0;
   virtual void SetImagesEnabled(bool) = 0;
-  virtual void SetInlineTextBoxAccessibilityEnabled(bool) = 0;
   virtual void SetJavaScriptCanAccessClipboard(bool) = 0;
   virtual void SetJavaScriptEnabled(bool) = 0;
   virtual void SetLoadsImagesAutomatically(bool) = 0;
@@ -177,6 +170,7 @@ class WebSettings {
   virtual void SetMinimumFontSize(int) = 0;
   virtual void SetMinimumLogicalFontSize(int) = 0;
   virtual void SetHideScrollbars(bool) = 0;
+  virtual void SetPrefersDefaultScrollbarStyles(bool) = 0;
   virtual void SetPasswordEchoDurationInSeconds(double) = 0;
   virtual void SetPasswordEchoEnabled(bool) = 0;
   virtual void SetPluginsEnabled(bool) = 0;
@@ -229,6 +223,7 @@ class WebSettings {
   virtual void SetTextAreasAreResizable(bool) = 0;
   virtual void SetTextAutosizingEnabled(bool) = 0;
   virtual void SetAccessibilityFontScaleFactor(float) = 0;
+  virtual void SetAccessibilityTextSizeContrastFactor(int) = 0;
   virtual void SetAccessibilityAlwaysShowFocus(bool) = 0;
   virtual void SetTextTrackKindUserPreference(TextTrackKindUserPreference) = 0;
   virtual void SetTextTrackBackgroundColor(const WebString&) = 0;
@@ -244,7 +239,6 @@ class WebSettings {
   virtual void SetTouchDragDropEnabled(bool) = 0;
   virtual void SetTouchDragEndContextMenu(bool) = 0;
   virtual void SetBarrelButtonForDragEnabled(bool) = 0;
-  virtual void SetUseLegacyBackgroundSizeShorthandBehavior(bool) = 0;
   virtual void SetViewportStyle(mojom::ViewportStyle) = 0;
   virtual void SetUseWideViewport(bool) = 0;
   virtual void SetV8CacheOptions(mojom::V8CacheOptions) = 0;
@@ -261,18 +255,18 @@ class WebSettings {
   virtual void SetDoNotUpdateSelectionOnMutatingSelectionRange(bool) = 0;
   virtual void SetLowPriorityIframesThreshold(WebEffectiveConnectionType) = 0;
   virtual void SetLazyLoadEnabled(bool) = 0;
-  virtual void SetLazyFrameLoadingDistanceThresholdPxUnknown(int) = 0;
-  virtual void SetLazyFrameLoadingDistanceThresholdPxOffline(int) = 0;
-  virtual void SetLazyFrameLoadingDistanceThresholdPxSlow2G(int) = 0;
-  virtual void SetLazyFrameLoadingDistanceThresholdPx2G(int) = 0;
-  virtual void SetLazyFrameLoadingDistanceThresholdPx3G(int) = 0;
-  virtual void SetLazyFrameLoadingDistanceThresholdPx4G(int) = 0;
-  virtual void SetLazyImageLoadingDistanceThresholdPxUnknown(int) = 0;
-  virtual void SetLazyImageLoadingDistanceThresholdPxOffline(int) = 0;
-  virtual void SetLazyImageLoadingDistanceThresholdPxSlow2G(int) = 0;
-  virtual void SetLazyImageLoadingDistanceThresholdPx2G(int) = 0;
-  virtual void SetLazyImageLoadingDistanceThresholdPx3G(int) = 0;
-  virtual void SetLazyImageLoadingDistanceThresholdPx4G(int) = 0;
+  virtual void SetLazyLoadingFrameMarginPxUnknown(int) = 0;
+  virtual void SetLazyLoadingFrameMarginPxOffline(int) = 0;
+  virtual void SetLazyLoadingFrameMarginPxSlow2G(int) = 0;
+  virtual void SetLazyLoadingFrameMarginPx2G(int) = 0;
+  virtual void SetLazyLoadingFrameMarginPx3G(int) = 0;
+  virtual void SetLazyLoadingFrameMarginPx4G(int) = 0;
+  virtual void SetLazyLoadingImageMarginPxUnknown(int) = 0;
+  virtual void SetLazyLoadingImageMarginPxOffline(int) = 0;
+  virtual void SetLazyLoadingImageMarginPxSlow2G(int) = 0;
+  virtual void SetLazyLoadingImageMarginPx2G(int) = 0;
+  virtual void SetLazyLoadingImageMarginPx3G(int) = 0;
+  virtual void SetLazyLoadingImageMarginPx4G(int) = 0;
   virtual void SetForceDarkModeEnabled(bool) = 0;
   virtual void SetPreferredColorScheme(blink::mojom::PreferredColorScheme) = 0;
   virtual void SetPreferredContrast(mojom::PreferredContrast) = 0;
@@ -283,6 +277,8 @@ class WebSettings {
   virtual void SetAccessibilityIncludeSvgGElement(bool) = 0;
   virtual void SetWebXRImmersiveArAllowed(bool) = 0;
   virtual void SetModalContextMenu(bool) = 0;
+  virtual void SetRequireTransientActivationAndAuthorizationForSubAppsAPIs(
+      bool) = 0;
 
  protected:
   ~WebSettings() = default;

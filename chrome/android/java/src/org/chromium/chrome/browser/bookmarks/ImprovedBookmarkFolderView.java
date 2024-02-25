@@ -9,6 +9,7 @@ import android.content.res.ColorStateList;
 import android.content.res.Resources;
 import android.graphics.drawable.Drawable;
 import android.util.AttributeSet;
+import android.util.Pair;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
@@ -138,6 +139,10 @@ public class ImprovedBookmarkFolderView extends FrameLayout {
 
     void setStartAreaBackgroundColor(@ColorInt int color) {
         mNoImagePlaceholder.setBackgroundColor(color);
+    }
+
+    void setStartImageDrawablePair(Pair<Drawable, Drawable> drawablePair) {
+        setStartImageDrawables(drawablePair.first, drawablePair.second);
     }
 
     void setStartImageDrawables(

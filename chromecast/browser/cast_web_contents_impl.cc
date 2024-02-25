@@ -4,6 +4,8 @@
 
 #include "chromecast/browser/cast_web_contents_impl.h"
 
+#include <optional>
+#include <string_view>
 #include <utility>
 
 #include "base/functional/bind.h"
@@ -41,7 +43,6 @@
 #include "mojo/public/cpp/bindings/associated_remote.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "net/base/net_errors.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_provider.h"
 #include "third_party/blink/public/common/renderer_preferences/renderer_preferences.h"
 #include "third_party/blink/public/mojom/autoplay/autoplay.mojom.h"
@@ -189,11 +190,6 @@ CastWebContentsImpl::CastWebContentsImpl(content::WebContents* web_contents,
   if (GetSwitchValueBoolean(switches::kDisableMojoRenderer, false) &&
       params_->renderer_type == mojom::RendererType::MOJO_RENDERER) {
     params_->renderer_type = mojom::RendererType::DEFAULT_RENDERER;
-  }
-
-  if (params_->webrtc_allow_legacy_tls_protocols) {
-    web_contents_->GetMutableRendererPrefs()
-        ->webrtc_allow_legacy_tls_protocols = true;
   }
 
   web_contents_->SetPageBaseBackgroundColor(chromecast::GetSwitchValueColor(
@@ -388,7 +384,7 @@ void CastWebContentsImpl::SetGroupInfo(const std::string& session_id,
 }
 
 void CastWebContentsImpl::AddBeforeLoadJavaScript(uint64_t id,
-                                                  base::StringPiece script) {
+                                                  std::string_view script) {
   script_injector_.AddScriptForAllOrigins(id, std::string(script));
 }
 
@@ -402,7 +398,7 @@ void CastWebContentsImpl::PostMessageToMainFrame(
   data_utf16 = base::UTF8ToUTF16(data);
 
   // If origin is set as wildcard, no origin scoping would be applied.
-  absl::optional<std::u16string> target_origin_utf16;
+  std::optional<std::u16string> target_origin_utf16;
   constexpr char kWildcardOrigin[] = "*";
   if (target_origin != kWildcardOrigin) {
     target_origin_utf16 = base::UTF8ToUTF16(target_origin);
@@ -622,7 +618,7 @@ void CastWebContentsImpl::OnBindingsReceived(
 }
 
 bool CastWebContentsImpl::OnPortConnected(
-    base::StringPiece port_name,
+    std::string_view port_name,
     std::unique_ptr<cast_api_bindings::MessagePort> port) {
   DCHECK(api_bindings_);
 

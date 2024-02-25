@@ -106,7 +106,7 @@ std::string FixupProxyHostScheme(ProxyServer::Scheme scheme,
 }
 
 ProxyConfigWithAnnotation GetConfigOrDirect(
-    const absl::optional<ProxyConfigWithAnnotation>& optional_config) {
+    const std::optional<ProxyConfigWithAnnotation>& optional_config) {
   if (optional_config)
     return optional_config.value();
 
@@ -121,7 +121,7 @@ ProxyConfigServiceLinux::Delegate::~Delegate() = default;
 bool ProxyConfigServiceLinux::Delegate::GetProxyFromEnvVarForScheme(
     base::StringPiece variable,
     ProxyServer::Scheme scheme,
-    ProxyServer* result_server) {
+    ProxyChain* result_chain) {
   std::string env_value;
   if (!env_var_getter_->GetVar(variable, &env_value))
     return false;
@@ -130,10 +130,11 @@ bool ProxyConfigServiceLinux::Delegate::GetProxyFromEnvVarForScheme(
     return false;
 
   env_value = FixupProxyHostScheme(scheme, env_value);
-  ProxyServer proxy_server =
-      ProxyUriToProxyServer(env_value, ProxyServer::SCHEME_HTTP);
-  if (proxy_server.is_valid() && !proxy_server.is_direct()) {
-    *result_server = proxy_server;
+  ProxyChain proxy_chain =
+      ProxyUriToProxyChain(env_value, ProxyServer::SCHEME_HTTP);
+  if (proxy_chain.IsValid() &&
+      (proxy_chain.is_direct() || proxy_chain.is_single_proxy())) {
+    *result_chain = proxy_chain;
     return true;
   }
   LOG(ERROR) << "Failed to parse environment variable " << variable;
@@ -142,12 +143,12 @@ bool ProxyConfigServiceLinux::Delegate::GetProxyFromEnvVarForScheme(
 
 bool ProxyConfigServiceLinux::Delegate::GetProxyFromEnvVar(
     base::StringPiece variable,
-    ProxyServer* result_server) {
+    ProxyChain* result_chain) {
   return GetProxyFromEnvVarForScheme(variable, ProxyServer::SCHEME_HTTP,
-                                     result_server);
+                                     result_chain);
 }
 
-absl::optional<ProxyConfigWithAnnotation>
+std::optional<ProxyConfigWithAnnotation>
 ProxyConfigServiceLinux::Delegate::GetConfigFromEnv() {
   ProxyConfig config;
 
@@ -168,25 +169,25 @@ ProxyConfigServiceLinux::Delegate::GetConfigFromEnv() {
         config, NetworkTrafficAnnotationTag(traffic_annotation_));
   }
   // "all_proxy" is a shortcut to avoid defining {http,https,ftp}_proxy.
-  ProxyServer proxy_server;
-  if (GetProxyFromEnvVar("all_proxy", &proxy_server)) {
+  ProxyChain proxy_chain;
+  if (GetProxyFromEnvVar("all_proxy", &proxy_chain)) {
     config.proxy_rules().type = ProxyConfig::ProxyRules::Type::PROXY_LIST;
-    config.proxy_rules().single_proxies.SetSingleProxyServer(proxy_server);
+    config.proxy_rules().single_proxies.SetSingleProxyChain(proxy_chain);
   } else {
-    bool have_http = GetProxyFromEnvVar("http_proxy", &proxy_server);
+    bool have_http = GetProxyFromEnvVar("http_proxy", &proxy_chain);
     if (have_http)
-      config.proxy_rules().proxies_for_http.SetSingleProxyServer(proxy_server);
+      config.proxy_rules().proxies_for_http.SetSingleProxyChain(proxy_chain);
     // It would be tempting to let http_proxy apply for all protocols
     // if https_proxy and ftp_proxy are not defined. Googling turns up
     // several documents that mention only http_proxy. But then the
     // user really might not want to proxy https. And it doesn't seem
     // like other apps do this. So we will refrain.
-    bool have_https = GetProxyFromEnvVar("https_proxy", &proxy_server);
+    bool have_https = GetProxyFromEnvVar("https_proxy", &proxy_chain);
     if (have_https)
-      config.proxy_rules().proxies_for_https.SetSingleProxyServer(proxy_server);
-    bool have_ftp = GetProxyFromEnvVar("ftp_proxy", &proxy_server);
+      config.proxy_rules().proxies_for_https.SetSingleProxyChain(proxy_chain);
+    bool have_ftp = GetProxyFromEnvVar("ftp_proxy", &proxy_chain);
     if (have_ftp)
-      config.proxy_rules().proxies_for_ftp.SetSingleProxyServer(proxy_server);
+      config.proxy_rules().proxies_for_ftp.SetSingleProxyChain(proxy_chain);
     if (have_http || have_https || have_ftp) {
       // mustn't change type unless some rules are actually set.
       config.proxy_rules().type =
@@ -202,9 +203,9 @@ ProxyConfigServiceLinux::Delegate::GetConfigFromEnv() {
     if (env_var_getter_->GetVar("SOCKS_VERSION", &env_version)
         && env_version == "4")
       scheme = ProxyServer::SCHEME_SOCKS4;
-    if (GetProxyFromEnvVarForScheme("SOCKS_SERVER", scheme, &proxy_server)) {
+    if (GetProxyFromEnvVarForScheme("SOCKS_SERVER", scheme, &proxy_chain)) {
       config.proxy_rules().type = ProxyConfig::ProxyRules::Type::PROXY_LIST;
-      config.proxy_rules().single_proxies.SetSingleProxyServer(proxy_server);
+      config.proxy_rules().single_proxies.SetSingleProxyChain(proxy_chain);
     }
   }
   // Look for the proxy bypass list.
@@ -218,7 +219,7 @@ ProxyConfigServiceLinux::Delegate::GetConfigFromEnv() {
     return !no_proxy.empty()
                ? ProxyConfigWithAnnotation(
                      config, NetworkTrafficAnnotationTag(traffic_annotation_))
-               : absl::optional<ProxyConfigWithAnnotation>();
+               : std::optional<ProxyConfigWithAnnotation>();
   }
   // Note that this uses "suffix" matching. So a bypass of "google.com"
   // is understood to mean a bypass of "*google.com".
@@ -1056,8 +1057,9 @@ bool ProxyConfigServiceLinux::Delegate::GetProxyFromSettings(
   // gsettings settings do not appear to distinguish between SOCKS version. We
   // default to version 5. For more information on this policy decision, see:
   // http://code.google.com/p/chromium/issues/detail?id=55912#c2
-  ProxyServer::Scheme scheme = (host_key == SettingGetter::PROXY_SOCKS_HOST) ?
-      ProxyServer::SCHEME_SOCKS5 : ProxyServer::SCHEME_HTTP;
+  ProxyServer::Scheme scheme = host_key == SettingGetter::PROXY_SOCKS_HOST
+                                   ? ProxyServer::SCHEME_SOCKS5
+                                   : ProxyServer::SCHEME_HTTP;
   host = FixupProxyHostScheme(scheme, host);
   ProxyServer proxy_server =
       ProxyUriToProxyServer(host, ProxyServer::SCHEME_HTTP);
@@ -1068,7 +1070,7 @@ bool ProxyConfigServiceLinux::Delegate::GetProxyFromSettings(
   return false;
 }
 
-absl::optional<ProxyConfigWithAnnotation>
+std::optional<ProxyConfigWithAnnotation>
 ProxyConfigServiceLinux::Delegate::GetConfigFromSettings() {
   ProxyConfig config;
   config.set_from_system(true);
@@ -1077,7 +1079,7 @@ ProxyConfigServiceLinux::Delegate::GetConfigFromSettings() {
   if (!setting_getter_->GetString(SettingGetter::PROXY_MODE, &mode)) {
     // We expect this to always be set, so if we don't see it then we probably
     // have a gsettings problem, and so we don't have a valid proxy config.
-    return absl::nullopt;
+    return std::nullopt;
   }
   if (mode == "none") {
     // Specifically specifies no proxy.
@@ -1096,7 +1098,7 @@ ProxyConfigServiceLinux::Delegate::GetConfigFromSettings() {
           pac_url_str = "file://" + pac_url_str;
         GURL pac_url(pac_url_str);
         if (!pac_url.is_valid())
-          return absl::nullopt;
+          return std::nullopt;
         config.set_pac_url(pac_url);
         return ProxyConfigWithAnnotation(
             config, NetworkTrafficAnnotationTag(traffic_annotation_));
@@ -1109,7 +1111,7 @@ ProxyConfigServiceLinux::Delegate::GetConfigFromSettings() {
 
   if (mode != "manual") {
     // Mode is unrecognized.
-    return absl::nullopt;
+    return std::nullopt;
   }
   bool use_http_proxy;
   if (setting_getter_->GetBool(SettingGetter::PROXY_USE_HTTP_PROXY,
@@ -1173,7 +1175,7 @@ ProxyConfigServiceLinux::Delegate::GetConfigFromSettings() {
 
   if (config.proxy_rules().empty()) {
     // Manual mode but we couldn't parse any rules.
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   // Check for authentication, just so we can warn.
@@ -1214,8 +1216,8 @@ ProxyConfigServiceLinux::Delegate::GetConfigFromSettings() {
 
 ProxyConfigServiceLinux::Delegate::Delegate(
     std::unique_ptr<base::Environment> env_var_getter,
-    absl::optional<std::unique_ptr<SettingGetter>> setting_getter,
-    absl::optional<NetworkTrafficAnnotationTag> traffic_annotation)
+    std::optional<std::unique_ptr<SettingGetter>> setting_getter,
+    std::optional<NetworkTrafficAnnotationTag> traffic_annotation)
     : env_var_getter_(std::move(env_var_getter)) {
   if (traffic_annotation) {
     traffic_annotation_ =
@@ -1289,7 +1291,7 @@ void ProxyConfigServiceLinux::Delegate::SetUpAndFetchInitialConfig(
   // does so even if the proxy mode is set to auto, which would
   // mislead us.
 
-  cached_config_ = absl::nullopt;
+  cached_config_ = std::nullopt;
   if (setting_getter_ && setting_getter_->Init(glib_task_runner)) {
     cached_config_ = GetConfigFromSettings();
   }
@@ -1385,8 +1387,7 @@ void ProxyConfigServiceLinux::Delegate::OnCheckProxyConfigSettings() {
   scoped_refptr<base::SequencedTaskRunner> required_loop =
       setting_getter_->GetNotificationTaskRunner();
   DCHECK(!required_loop.get() || required_loop->RunsTasksInCurrentSequence());
-  absl::optional<ProxyConfigWithAnnotation> new_config =
-      GetConfigFromSettings();
+  std::optional<ProxyConfigWithAnnotation> new_config = GetConfigFromSettings();
 
   // See if it is different from what we had before.
   if (new_config.has_value() != reference_config_.has_value() ||
@@ -1406,7 +1407,7 @@ void ProxyConfigServiceLinux::Delegate::OnCheckProxyConfigSettings() {
 }
 
 void ProxyConfigServiceLinux::Delegate::SetNewProxyConfig(
-    const absl::optional<ProxyConfigWithAnnotation>& new_config) {
+    const std::optional<ProxyConfigWithAnnotation>& new_config) {
   DCHECK(main_task_runner_->RunsTasksInCurrentSequence());
   VLOG(1) << "Proxy configuration changed";
   cached_config_ = new_config;
@@ -1443,8 +1444,8 @@ void ProxyConfigServiceLinux::Delegate::OnDestroy() {
 
 ProxyConfigServiceLinux::ProxyConfigServiceLinux()
     : delegate_(base::MakeRefCounted<Delegate>(base::Environment::Create(),
-                                               absl::nullopt,
-                                               absl::nullopt)) {}
+                                               std::nullopt,
+                                               std::nullopt)) {}
 
 ProxyConfigServiceLinux::~ProxyConfigServiceLinux() {
   delegate_->PostDestroyTask();
@@ -1454,7 +1455,7 @@ ProxyConfigServiceLinux::ProxyConfigServiceLinux(
     std::unique_ptr<base::Environment> env_var_getter,
     const NetworkTrafficAnnotationTag& traffic_annotation)
     : delegate_(base::MakeRefCounted<Delegate>(std::move(env_var_getter),
-                                               absl::nullopt,
+                                               std::nullopt,
                                                traffic_annotation)) {}
 
 ProxyConfigServiceLinux::ProxyConfigServiceLinux(

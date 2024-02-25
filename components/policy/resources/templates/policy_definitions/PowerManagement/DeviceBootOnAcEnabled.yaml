@@ -16,7 +16,6 @@ items:
 - caption: Disable boot on AC
   value: false
 owners:
-- lamzin@google.com
 - bkersting@google.com
 - kerker@chromium.org
 - chungsheng@google.com

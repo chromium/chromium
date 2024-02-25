@@ -1,0 +1,5 @@
+WebView textSize:16.0 style:0 htmlInfo:[{htmlTag="#document"}, {display=""}]
+++View text:"ScrollBar1" textSize:16.0 style:0 htmlInfo:[{htmlTag="div"}, {display="block"}, {aria-valuenow="55"}, {role="scrollbar"}, {tabindex="0"}]
+++++TextView text:"ScrollBar1" textSize:16.0 style:0 htmlInfo:[{htmlTag=""}, {display=""}]
+++View text:"ScrollBar2" textSize:16.0 style:0 htmlInfo:[{htmlTag="div"}, {display="block"}, {aria-orientation="horizontal"}, {aria-valuenow="55"}, {role="scrollbar"}, {tabindex="0"}, {class="test"}]
+++++TextView text:"ScrollBar2" textSize:16.0 style:0 htmlInfo:[{htmlTag=""}, {display=""}]

@@ -5,11 +5,12 @@
 #ifndef UI_COMPOSITOR_TOTAL_ANIMATION_THROUGHPUT_REPORTER_H_
 #define UI_COMPOSITOR_TOTAL_ANIMATION_THROUGHPUT_REPORTER_H_
 
+#include <optional>
+
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "cc/metrics/frame_sequence_metrics.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/compositor/compositor_export.h"
 #include "ui/compositor/compositor_observer.h"
 #include "ui/compositor/throughput_tracker.h"
@@ -116,7 +117,7 @@ class COMPOSITOR_EXPORT TotalAnimationThroughputReporter
   ReportRepeatingCallback report_repeating_callback_;
   ReportOnceCallback report_once_callback_;
   bool should_delete_ = false;
-  absl::optional<ThroughputTracker> throughput_tracker_;
+  std::optional<ThroughputTracker> throughput_tracker_;
 
   // Number of active ScopedThroughputReporterBlocker objects.
   int scoped_blocker_count_ = 0;

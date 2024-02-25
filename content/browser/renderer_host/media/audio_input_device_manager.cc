@@ -121,7 +121,7 @@ base::UnguessableToken AudioInputDeviceManager::Open(
     audio_system_->GetAssociatedOutputDeviceID(
         device.id, base::BindOnce(&AudioInputDeviceManager::OpenedOnIOThread,
                                   base::Unretained(this), session_id, device,
-                                  absl::optional<media::AudioParameters>()));
+                                  std::optional<media::AudioParameters>()));
   } else {
     // TODO(tommi): As is, we hit this code path when device.type is
     // MEDIA_GUM_TAB_AUDIO_CAPTURE and the device id is not a device that
@@ -161,8 +161,8 @@ void AudioInputDeviceManager::Close(const base::UnguessableToken& session_id) {
 void AudioInputDeviceManager::OpenedOnIOThread(
     const base::UnguessableToken& session_id,
     const blink::MediaStreamDevice& device,
-    const absl::optional<media::AudioParameters>& input_params,
-    const absl::optional<std::string>& matched_output_device_id) {
+    const std::optional<media::AudioParameters>& input_params,
+    const std::optional<std::string>& matched_output_device_id) {
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
   DCHECK(GetDevice(session_id) == devices_.end());
   DCHECK(!input_params || input_params->IsValid());

@@ -4,9 +4,6 @@
 
 #include "extensions/common/features/json_feature_provider_source.h"
 
-#include <memory>
-#include <utility>
-
 #include "base/json/json_reader.h"
 #include "base/logging.h"
 #include "ui/base/resource/resource_bundle.h"
@@ -21,9 +18,9 @@ JSONFeatureProviderSource::~JSONFeatureProviderSource() {
 }
 
 void JSONFeatureProviderSource::LoadJSON(int resource_id) {
-  const base::StringPiece features_file =
-      ui::ResourceBundle::GetSharedInstance().GetRawDataResource(resource_id);
-  auto result = base::JSONReader::ReadAndReturnValueWithError(features_file);
+  auto result = base::JSONReader::ReadAndReturnValueWithError(
+      ui::ResourceBundle::GetSharedInstance().LoadDataResourceString(
+          resource_id));
   CHECK(result.has_value())
       << "Could not load features: " << name_ << " " << result.error().message;
 

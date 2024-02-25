@@ -2,13 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {AsyncUtil} from '../common/async_util.js';
-import {AutomationUtil} from '../common/automation_util.js';
-import {EventGenerator} from '../common/event_generator.js';
-import {EventHandler} from '../common/event_handler.js';
-import {RectUtil} from '../common/rect_util.js';
-import {RepeatedEventHandler} from '../common/repeated_event_handler.js';
-import {RepeatedTreeChangeHandler} from '../common/repeated_tree_change_handler.js';
+import {AsyncUtil} from '/common/async_util.js';
+import {AutomationUtil} from '/common/automation_util.js';
+import {EventGenerator} from '/common/event_generator.js';
+import {EventHandler} from '/common/event_handler.js';
+import {RectUtil} from '/common/rect_util.js';
+import {RepeatedEventHandler} from '/common/repeated_event_handler.js';
+import {RepeatedTreeChangeHandler} from '/common/repeated_tree_change_handler.js';
+import {TestImportManager} from '/common/testing/test_import_manager.js';
 
 import {ActionManager} from './action_manager.js';
 import {AutoScanManager} from './auto_scan_manager.js';
@@ -570,3 +571,5 @@ export class ItemScanManager extends ItemNavigatorInterface {
     AutoScanManager.restartIfRunning();
   }
 }
+
+TestImportManager.exportForTesting(ItemScanManager);

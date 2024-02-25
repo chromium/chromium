@@ -4,12 +4,12 @@
 
 #include "chrome/browser/ash/policy/reporting/metrics_reporting/cros_healthd_sampler_handlers/cros_healthd_memory_sampler_handler.h"
 
+#include <optional>
 #include <utility>
 
 #include "base/logging.h"
 #include "components/reporting/metrics/sampler.h"
 #include "components/reporting/proto/synced/metric_data.pb.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace reporting {
 
@@ -54,7 +54,7 @@ CrosHealthdMemorySamplerHandler::~CrosHealthdMemorySamplerHandler() = default;
 void CrosHealthdMemorySamplerHandler::HandleResult(
     OptionalMetricCallback callback,
     cros_healthd::TelemetryInfoPtr result) const {
-  absl::optional<MetricData> metric_data;
+  std::optional<MetricData> metric_data;
   const auto& memory_result = result->memory_result;
 
   if (!memory_result.is_null()) {
@@ -73,7 +73,7 @@ void CrosHealthdMemorySamplerHandler::HandleResult(
         }
 
         // Gather memory info.
-        metric_data = absl::make_optional<MetricData>();
+        metric_data = std::make_optional<MetricData>();
         auto* const memory_encryption_info_out =
             metric_data->mutable_info_data()
                 ->mutable_memory_info()

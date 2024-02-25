@@ -15,6 +15,10 @@ struct TabGroupInfo;
 
 namespace chrome_desks_util {
 
+// Name for app not available toast.
+constexpr char kAppNotAvailableTemplateToastName[] =
+    "AppNotAvailableTemplateToast";
+
 // Given a TabGroupModel that contains at least a single TabGroup this method
 // returns a vector that contains tab_groups::TabGroupInfo representations of
 // the TabGroups contained within the model.
@@ -32,4 +36,4 @@ void SetBrowserPinnedTabs(int32_t first_non_pinned_tab_index, Browser* browser);
 
 }  // namespace chrome_desks_util
 
-#endif
+#endif  // CHROME_BROWSER_UI_ASH_DESKS_CHROME_DESKS_UTIL_H_

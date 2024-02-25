@@ -203,7 +203,7 @@ void CrossOriginOpenerPolicyStatus::RenderProcessHostDestroyed(
   previous_document_rph_observation_.Reset();
 }
 
-absl::optional<network::mojom::BlockedByResponseReason>
+std::optional<network::mojom::BlockedByResponseReason>
 CrossOriginOpenerPolicyStatus::SanitizeResponse(
     network::mojom::URLResponseHead* response) {
   const GURL& response_url = navigation_request_->common_params().url;
@@ -240,7 +240,7 @@ CrossOriginOpenerPolicyStatus::SanitizeResponse(
         kCoopSandboxedIFrameCannotNavigateToCoopPage;
   }
 
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 void CrossOriginOpenerPolicyStatus::EnforceCOOP(

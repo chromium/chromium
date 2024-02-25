@@ -111,7 +111,7 @@ gfx::ImageSkia MaybeRotateImage(const gfx::ImageSkia& image,
         rotation_amount = SkBitmapOperations::RotationAmount::ROTATION_90_CW;
         break;
       default:
-        NOTREACHED();
+        // No action.
         break;
     }
     if (should_rotate) {
@@ -316,7 +316,7 @@ bool AmbientBackgroundImageView::HasPairedImages() const {
   return !image_unscaled_.isNull() && !related_image_unscaled_.isNull();
 }
 
-BEGIN_METADATA(AmbientBackgroundImageView, views::View)
+BEGIN_METADATA(AmbientBackgroundImageView)
 END_METADATA
 
 }  // namespace ash

@@ -5,11 +5,12 @@
 #ifndef COMPONENTS_CAST_RECEIVER_BROWSER_PUBLIC_STREAMING_CONFIG_MANAGER_H_
 #define COMPONENTS_CAST_RECEIVER_BROWSER_PUBLIC_STREAMING_CONFIG_MANAGER_H_
 
+#include <optional>
+
 #include "base/check.h"
 #include "base/observer_list.h"
 #include "base/observer_list_types.h"
 #include "components/cast_streaming/browser/public/receiver_config.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace cast_receiver {
 
@@ -48,7 +49,7 @@ class StreamingConfigManager {
   void OnStreamingConfigSet(cast_streaming::ReceiverConfig config);
 
  private:
-  absl::optional<cast_streaming::ReceiverConfig> config_ = absl::nullopt;
+  std::optional<cast_streaming::ReceiverConfig> config_ = std::nullopt;
 
   base::ObserverList<ConfigObserver> observers_;
 };

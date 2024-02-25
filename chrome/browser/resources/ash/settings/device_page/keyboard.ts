@@ -7,21 +7,23 @@
  * 'settings-keyboard' is the settings subpage for keyboard settings.
  */
 
-import 'chrome://resources/cr_elements/cr_link_row/cr_link_row.js';
+import 'chrome://resources/ash/common/cr_elements/cr_link_row/cr_link_row.js';
 import 'chrome://resources/polymer/v3_0/iron-collapse/iron-collapse.js';
-import '/shared/settings/controls/settings_slider.js';
-import '/shared/settings/controls/settings_toggle_button.js';
+import '../controls/settings_slider.js';
+import '../controls/settings_toggle_button.js';
 import '../settings_shared.css.js';
-import '/shared/settings/controls/settings_dropdown_menu.js';
+import '../controls/settings_dropdown_menu.js';
 
-import {DropdownMenuOptionList} from '/shared/settings/controls/settings_dropdown_menu.js';
-import {WebUiListenerMixin} from 'chrome://resources/cr_elements/web_ui_listener_mixin.js';
+import {WebUiListenerMixin} from 'chrome://resources/ash/common/cr_elements/web_ui_listener_mixin.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {DeepLinkingMixin} from '../deep_linking_mixin.js';
+import {DeepLinkingMixin} from '../common/deep_linking_mixin.js';
+import {isInputDeviceSettingsSplitEnabled} from '../common/load_time_booleans.js';
+import {RouteOriginMixin} from '../common/route_origin_mixin.js';
+import {PrefsState} from '../common/types.js';
+import {DropdownMenuOptionList} from '../controls/settings_dropdown_menu.js';
 import {Setting} from '../mojom-webui/setting.mojom-webui.js';
-import {RouteOriginMixin} from '../route_origin_mixin.js';
 import {Route, Router, routes} from '../router.js';
 
 import {DevicePageBrowserProxy, DevicePageBrowserProxyImpl} from './device_page_browser_proxy.js';
@@ -45,7 +47,7 @@ enum ModifierKey {
 const SettingsKeyboardElementBase =
     DeepLinkingMixin(RouteOriginMixin(WebUiListenerMixin(PolymerElement)));
 
-class SettingsKeyboardElement extends SettingsKeyboardElementBase {
+export class SettingsKeyboardElement extends SettingsKeyboardElementBase {
   static get is() {
     return 'settings-keyboard' as const;
   }
@@ -136,13 +138,14 @@ class SettingsKeyboardElement extends SettingsKeyboardElementBase {
       isDeviceSettingsSplitEnabled_: {
         type: Boolean,
         value() {
-          return loadTimeData.getBoolean('enableInputDeviceSettingsSplit');
+          return isInputDeviceSettingsSplitEnabled();
         },
         readOnly: true,
       },
     };
   }
 
+  prefs: PrefsState;
   private browserProxy_: DevicePageBrowserProxy;
   private hasAssistantKey_: boolean;
   private hasLauncherKey_: boolean;
@@ -163,7 +166,7 @@ class SettingsKeyboardElement extends SettingsKeyboardElementBase {
     this.browserProxy_ = DevicePageBrowserProxyImpl.getInstance();
   }
 
-  override ready() {
+  override ready(): void {
     super.ready();
 
     this.addWebUiListener(
@@ -171,10 +174,10 @@ class SettingsKeyboardElement extends SettingsKeyboardElementBase {
     this.browserProxy_.initializeKeyboard();
     this.setUpKeyMapTargets_();
 
-    this.addFocusConfig(routes.OS_LANGUAGES_INPUT, '#showLanguagesInput');
+    this.addFocusConfig(routes.OS_LANGUAGES_INPUT, '#inputRow');
   }
 
-  override currentRouteChanged(newRoute: Route, oldRoute?: Route) {
+  override currentRouteChanged(newRoute: Route, oldRoute?: Route): void {
     super.currentRouteChanged(newRoute, oldRoute);
 
     // Does not apply to this page.
@@ -197,7 +200,7 @@ class SettingsKeyboardElement extends SettingsKeyboardElementBase {
   /**
    * Initializes the dropdown menu options for remapping keys.
    */
-  private setUpKeyMapTargets_() {
+  private setUpKeyMapTargets_(): void {
     // Ordering is according to UX, but values match ModifierKey.
     this.keyMapTargets_ = [
       {
@@ -238,7 +241,7 @@ class SettingsKeyboardElement extends SettingsKeyboardElementBase {
   /**
    * Handler for updating which keys to show.
    */
-  private onShowKeysChange_(keyboardParams: {[key: string]: boolean}) {
+  private onShowKeysChange_(keyboardParams: {[key: string]: boolean}): void {
     this.hasLauncherKey_ = keyboardParams['hasLauncherKey'];
     this.hasAssistantKey_ = keyboardParams['hasAssistantKey'];
     this.showCapsLock_ = keyboardParams['showCapsLock'];
@@ -246,11 +249,11 @@ class SettingsKeyboardElement extends SettingsKeyboardElementBase {
     this.showAppleCommandKey_ = keyboardParams['showAppleCommandKey'];
   }
 
-  private onShowKeyboardShortcutViewerClick_() {
+  private onShowKeyboardShortcutViewerClick_(): void {
     this.browserProxy_.showKeyboardShortcutViewer();
   }
 
-  private onShowInputSettingsClick_() {
+  private onShowInputSettingsClick_(): void {
     Router.getInstance().navigateTo(
         routes.OS_LANGUAGES_INPUT,
         /*dynamicParams=*/ undefined, /*removeSearch=*/ true);

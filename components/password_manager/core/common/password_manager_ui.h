@@ -19,7 +19,10 @@ enum State {
 
   // A password has been saved and we wish to display UI confirming the save
   // to the user.
-  CONFIRMATION_STATE,
+  SAVE_CONFIRMATION_STATE,
+
+  // Password was successfully silently updated using Credential Manager.
+  UPDATE_CONFIRMATION_STATE,
 
   // A password has been autofilled, or has just been saved. The icon needs
   // to be visible, in the management state.
@@ -42,7 +45,7 @@ enum State {
 
   // The user used a profile credential to log in successfully and should see a
   // prompt that allows them to move the credential to their account store.
-  CAN_MOVE_PASSWORD_TO_ACCOUNT_STATE,
+  MOVE_CREDENTIAL_AFTER_LOG_IN_STATE,
 
   // Last compromised password was updated and the user is safe.
   PASSWORD_UPDATED_SAFE_STATE,
@@ -58,12 +61,27 @@ enum State {
   // promo dialog and successfully authenticated.
   BIOMETRIC_AUTHENTICATION_CONFIRMATION_STATE,
 
+  // A form that contained generated password and was missing username, was
+  // successfully submited. Only used when there were no credentials saved for
+  // current domain.
+  GENERATED_PASSWORD_CONFIRMATION_STATE,
+
+  // Saved credentials cannot be filled because of a Keychain error.
+  KEYCHAIN_ERROR_STATE,
+
   // For the current sign-in form, one of the stored credentials is shared by
   // another user. The user is notified about the existence of that credential
   // using a native bubble. The bubble keeps showing every time the user visits
   // the sign-in form until the user explicitly interacts with the notification
   // bubble.
   NOTIFY_RECEIVED_SHARED_CREDENTIALS,
+
+  // Move credential bubble opened from the footer in manage bubble.
+  MOVE_CREDENTIAL_FROM_MANAGE_BUBBLE_STATE,
+
+  // DefaultStoreChanged bubble opened before showing save/update bubble, since
+  // the password store was changed without user interaction.
+  PASSWORD_STORE_CHANGED_BUBBLE_STATE,
 };
 
 }  // namespace ui

@@ -338,12 +338,12 @@ TEST_F(SelectionSampleTest, TraverseShadowContent) {
       Position(
           shadow_root->getElementById(AtomicString("shadow1"))->firstChild(),
           0),
-      selection.Base());
+      selection.Anchor());
   EXPECT_EQ(
       Position(
           shadow_root->getElementById(AtomicString("shadow2"))->firstChild(),
           13),
-      selection.Extent());
+      selection.Focus());
 }
 
 TEST_F(SelectionSampleTest, TraverseShadowContentWithSlot) {
@@ -373,11 +373,11 @@ TEST_F(SelectionSampleTest, TraverseShadowContentWithSlot) {
   EXPECT_EQ(
       Position(GetDocument().getElementById(AtomicString("host"))->firstChild(),
                0),
-      selection.Base());
+      selection.Anchor());
   EXPECT_EQ(Position(shadow_root->QuerySelector(AtomicString("[name=slot1]"))
                          ->firstChild(),
                      4),
-            selection.Extent());
+            selection.Focus());
 }
 
 TEST_F(SelectionSampleTest, TraverseMultipleShadowContents) {
@@ -418,12 +418,12 @@ TEST_F(SelectionSampleTest, TraverseMultipleShadowContents) {
       Position(
           shadow_root1->getElementById(AtomicString("shadow1"))->firstChild(),
           0),
-      selection.Base());
+      selection.Anchor());
   EXPECT_EQ(
       Position(
           shadow_root2->getElementById(AtomicString("shadow4"))->firstChild(),
           12),
-      selection.Extent());
+      selection.Focus());
 }
 
 }  // namespace blink

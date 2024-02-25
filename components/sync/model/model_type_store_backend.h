@@ -6,7 +6,10 @@
 #define COMPONENTS_SYNC_MODEL_MODEL_TYPE_STORE_BACKEND_H_
 
 #include <memory>
+#include <optional>
 #include <string>
+#include <utility>
+#include <vector>
 
 #include "base/files/file_path.h"
 #include "base/memory/ref_counted.h"
@@ -14,7 +17,6 @@
 #include "base/sequence_checker.h"
 #include "base/task/sequenced_task_runner.h"
 #include "components/sync/model/model_type_store.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/leveldatabase/src/include/leveldb/status.h"
 
 namespace leveldb {
@@ -36,18 +38,24 @@ class ModelTypeStoreBackend
  public:
   static scoped_refptr<ModelTypeStoreBackend> CreateInMemoryForTest();
 
-  // Create a new and uninitialized instance of ModelTypeStoreBackend. Init()
+  // Creates a new and uninitialized instance of ModelTypeStoreBackend. Init()
   // must be called afterwards, which binds the instance to a certain sequence.
   static scoped_refptr<ModelTypeStoreBackend> CreateUninitialized();
 
   ModelTypeStoreBackend(const ModelTypeStoreBackend&) = delete;
   ModelTypeStoreBackend& operator=(const ModelTypeStoreBackend&) = delete;
 
-  // Init opens database at |path|. If database doesn't exist it creates one.
-  // It can be called from a sequence that is different to the constructing one,
-  // but from this point on the backend is bound to the current sequence, and
-  // must be used on it. May be destructed on any sequence.
-  absl::optional<ModelError> Init(const base::FilePath& path);
+  // Opens the database at `path`, creating it if it doesn't exist yet. May be
+  // called from a sequence that is different to the constructing one, but from
+  // this point on the backend is bound to the current sequence, and must be
+  // used on it. It may be destructed on any sequence though.
+  // `prefixes_to_update` contains (from->to) pairs of record key prefixes that
+  // should be updated, e.g. ("old-" -> "new-") would result in a record
+  // [old-key, value] to be moved to [new-key, value].
+  std::optional<ModelError> Init(
+      const base::FilePath& path,
+      const std::vector<std::pair<std::string, std::string>>&
+          prefixes_to_update);
 
   // Can be called from any sequence.
   bool IsInitialized() const;
@@ -57,7 +65,7 @@ class ModelTypeStoreBackend
   // appended to record_list. If record is not found its id is appended to
   // |missing_id_list|. It is not an error that records for ids are not found so
   // function will still return success in this case.
-  absl::optional<ModelError> ReadRecordsWithPrefix(
+  std::optional<ModelError> ReadRecordsWithPrefix(
       const std::string& prefix,
       const ModelTypeStore::IdList& id_list,
       ModelTypeStore::RecordList* record_list,
@@ -65,20 +73,20 @@ class ModelTypeStoreBackend
 
   // Reads all records with keys starting with |prefix|. Prefix is removed from
   // key before it is added to |record_list|.
-  absl::optional<ModelError> ReadAllRecordsWithPrefix(
+  std::optional<ModelError> ReadAllRecordsWithPrefix(
       const std::string& prefix,
       ModelTypeStore::RecordList* record_list);
 
   // Writes modifications accumulated in |write_batch| to database.
-  absl::optional<ModelError> WriteModifications(
+  std::optional<ModelError> WriteModifications(
       std::unique_ptr<leveldb::WriteBatch> write_batch);
 
-  absl::optional<ModelError> DeleteDataAndMetadataForPrefix(
+  std::optional<ModelError> DeleteDataAndMetadataForPrefix(
       const std::string& prefix);
 
   // Migrate the db schema from |current_version| to |desired_version|.
-  absl::optional<ModelError> MigrateForTest(int64_t current_version,
-                                            int64_t desired_version);
+  std::optional<ModelError> MigrateForTest(int64_t current_version,
+                                           int64_t desired_version);
 
   // Attempts to read and return the database's version.
   int64_t GetStoreVersionForTest();
@@ -141,12 +149,18 @@ class ModelTypeStoreBackend
 
   // Migrate the db schema from |current_version| to |desired_version|,
   // returning nullopt on success.
-  absl::optional<ModelError> Migrate(int64_t current_version,
-                                     int64_t desired_version);
+  std::optional<ModelError> Migrate(int64_t current_version,
+                                    int64_t desired_version);
 
   // Migrates from no version record at all (version 0) to version 1 of
   // the schema, returning true on success.
   bool Migrate0To1();
+
+  // For all records whose keys start with `old_prefix`, updates their keys to
+  // start with `new_prefix` instead. Can be used to move data between
+  // StorageType::kUnspecified and StorageType::kAccount.
+  std::optional<ModelError> UpdateDataPrefix(const std::string& old_prefix,
+                                             const std::string& new_prefix);
 
   // In some scenarios ModelTypeStoreBackend holds ownership of env. Typical
   // example is when test creates in memory environment with CreateInMemoryEnv

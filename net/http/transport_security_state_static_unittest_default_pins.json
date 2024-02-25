@@ -24,18 +24,11 @@
       "bad_static_spki_hashes": [
         "TestSPKI1"
       ]
-    }, {
-      "name": "withReportUri",
-      "static_spki_hashes": [
-        "GoodPin1"
-      ],
-      "report_uri": "http://report-uri.preloaded.test/pkp"
     }
   ],
 
   "entries": [
     { "name": "no-rejected-pins-pkp.preloaded.test", "pins": "withoutRejectedPins" },
-    { "name": "with-report-uri-pkp.preloaded.test", "pins": "withReportUri" },
 
     { "name": "hsts-hpkp-preloaded.test", "pins": "withoutRejectedPins" },
 

@@ -9,7 +9,9 @@
 
 #include <map>
 #include <memory>
+#include <optional>
 #include <string>
+#include <utility>
 #include <vector>
 
 #include "base/check.h"
@@ -27,6 +29,8 @@
 #include "chromeos/crosapi/mojom/crosapi.mojom.h"
 #include "chromeos/crosapi/mojom/device_attributes.mojom.h"
 #include "chromeos/crosapi/mojom/multi_capture_service.mojom.h"
+#include "chromeos/crosapi/mojom/nonclosable_app_toast_service.mojom.h"
+#include "chromeos/crosapi/mojom/one_drive_notification_service.mojom.h"
 #include "chromeos/crosapi/mojom/structured_metrics_service.mojom.h"
 #include "chromeos/crosapi/mojom/video_capture.mojom.h"
 #include "chromeos/crosapi/mojom/volume_manager.mojom.h"
@@ -34,9 +38,10 @@
 #include "chromeos/services/machine_learning/public/mojom/machine_learning_service.mojom.h"
 #include "mojo/public/cpp/bindings/generic_pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
+#include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
+#include "mojo/public/cpp/system/message_pipe.h"
 
 namespace media {
 namespace stable::mojom {
@@ -135,33 +140,6 @@ class COMPONENT_EXPORT(CHROMEOS_LACROS) LacrosService {
     return GetInterfaceVersion<CrosapiInterface>() >= 0;
   }
 
-  // TODO(crbug.com/1434530): remove these specializations in M116 or later
-  // These specialization are needed because of crbug.com/1434530.
-  // Older ash-chrome with this bug won't provide version information about
-  // AutomationFactory, SelectFile, and VolumeManager. Thus, without these
-  // specializations, there will possibly be problems under a version skew
-  // environment (i.e. using older ash with newer lacros).
-  template <>
-  bool IsSupported<crosapi::mojom::AutomationFactory>() const {
-    absl::optional<uint32_t> version = CrosapiVersion();
-    return version &&
-           version.value() >=
-               Crosapi::MethodMinVersions::kBindAutomationFactoryMinVersion;
-  }
-  template <>
-  bool IsSupported<crosapi::mojom::SelectFile>() const {
-    absl::optional<uint32_t> version = CrosapiVersion();
-    return version && version.value() >=
-                          Crosapi::MethodMinVersions::kBindSelectFileMinVersion;
-  }
-  template <>
-  bool IsSupported<crosapi::mojom::VolumeManager>() const {
-    absl::optional<uint32_t> version = CrosapiVersion();
-    return version &&
-           version.value() >=
-               Crosapi::MethodMinVersions::kBindVolumeManagerMinVersion;
-  }
-
   // Returns whether this interface uses the automatic registration system to be
   // available for immediate use at startup. Any crosapi interface can be
   // registered by using ConstructRemote.
@@ -233,6 +211,10 @@ class COMPONENT_EXPORT(CHROMEOS_LACROS) LacrosService {
   void BindMachineLearningService(
       mojo::PendingReceiver<
           chromeos::machine_learning::mojom::MachineLearningService> receiver);
+
+  // Binds the mahi browser delegate to the mahi browser client.
+  void BindMahiBrowserDelegate(
+      mojo::PendingReceiver<crosapi::mojom::MahiBrowserDelegate> receiver);
 
   // This may be called on any thread.
   void BindMediaControllerManager(
@@ -365,6 +347,8 @@ class COMPONENT_EXPORT(CHROMEOS_LACROS) LacrosService {
   // this class.
   friend class LacrosServiceNeverBlockingState;
 
+  FRIEND_TEST_ALL_PREFIXES(LacrosServiceTest, CheckCrosapiRemoteVersion);
+
   // Forward declare inner class to give it access to private members.
   template <typename CrosapiInterface,
             void (Crosapi::*bind_func)(mojo::PendingReceiver<CrosapiInterface>),
@@ -374,7 +358,7 @@ class COMPONENT_EXPORT(CHROMEOS_LACROS) LacrosService {
   // Returns ash's version of the Crosapi mojo interface version. This
   // determines which interface methods are available. This is safe to call from
   // any sequence. This can only be called after BindReceiver().
-  absl::optional<uint32_t> CrosapiVersion() const;
+  std::optional<uint32_t> CrosapiVersion() const;
 
   // Requests ash-chrome to send idle info updates.
   void StartSystemIdleCache();
@@ -382,13 +366,29 @@ class COMPONENT_EXPORT(CHROMEOS_LACROS) LacrosService {
   // Requests ash-chrome to send native theme info updates.
   void StartNativeThemeCache();
 
-  // This function initializes a remote for a given CrosapiInterface.
-  // It performs the following operations:
-  //   1) Calls BindNewPipeAndPassReceiver() on the remote.
-  //   2) Calls BindPendingReceiverOrRemote() on the PendingReceiver.
+  // This function initializes a remote for a given CrosapiInterface. Returns
+  // true if remote initialization succeeds; otherwise, returns false.
   template <typename CrosapiInterface,
             void (Crosapi::*bind_func)(mojo::PendingReceiver<CrosapiInterface>)>
-  void InitializeAndBindRemote(mojo::Remote<CrosapiInterface>* remote);
+  bool MaybeInitializeAndBindRemote(mojo::Remote<CrosapiInterface>* remote) {
+    const int version = GetInterfaceVersion<CrosapiInterface>();
+    if (version < 0) {
+      return false;
+    }
+
+    // Implement the same functionality as
+    // `mojo::Remote::BindNewPipeAndPassReceiver()`, but explicitly set the
+    // remote version.
+    mojo::MessagePipe pipe;
+    remote->Bind(
+        mojo::PendingRemote<CrosapiInterface>(std::move(pipe.handle0), version),
+        /*task_runner=*/nullptr);
+
+    BindPendingReceiverOrRemote<mojo::PendingReceiver<CrosapiInterface>,
+                                bind_func>(
+        mojo::PendingReceiver<CrosapiInterface>(std::move(pipe.handle1)));
+    return true;
+  }
 
   // This function constructs a new remote for a crosapi interface and stashes
   // it in |interfaces_|. This remote will later be bound during BindReceiver().
@@ -399,11 +399,6 @@ class COMPONENT_EXPORT(CHROMEOS_LACROS) LacrosService {
 
   // Similar to GetInterfaceVersion(), but taking UUID
   int GetInterfaceVersionImpl(base::Token interface_uuid) const;
-
-  // BrowserService implementation injected by chrome/. Must only be used on the
-  // affine sequence.
-  // TODO(hidehiko): Remove this.
-  std::unique_ptr<crosapi::mojom::BrowserService> browser_service_;
 
   // Receiver and cache of system idle info updates.
   std::unique_ptr<SystemIdleCache> system_idle_cache_;

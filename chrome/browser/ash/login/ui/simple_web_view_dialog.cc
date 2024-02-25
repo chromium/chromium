@@ -58,8 +58,9 @@ const int kExternalMargin = 60;
 const int kInnerMargin = 2;
 
 class ToolbarRowView : public views::View {
+  METADATA_HEADER(ToolbarRowView, views::View)
+
  public:
-  METADATA_HEADER(ToolbarRowView);
   ToolbarRowView() {
     SetBackground(
         views::CreateThemedSolidBackground(ui::kColorDialogBackground));
@@ -89,7 +90,7 @@ class ToolbarRowView : public views::View {
   }
 };
 
-BEGIN_METADATA(ToolbarRowView, views::View)
+BEGIN_METADATA(ToolbarRowView)
 END_METADATA
 
 }  // namespace
@@ -148,6 +149,7 @@ void SimpleWebViewDialog::StartLoad(const GURL& url) {
   DCHECK(web_contents);
 
   // Create the password manager that is needed for the proxy.
+  autofill::ChromeAutofillClient::CreateForWebContents(web_contents);
   ChromePasswordManagerClient::CreateForWebContents(web_contents);
 
   // Create the password reuse detection manager for simple web view dialog.
@@ -316,22 +318,22 @@ SimpleWebViewDialog::MakeWidgetDelegate() {
 void SimpleWebViewDialog::LoadImages() {
   const ui::ThemeProvider* tp = GetThemeProvider();
 
-  back_->SetImage(views::Button::STATE_NORMAL, tp->GetImageSkiaNamed(IDR_BACK));
-  back_->SetImage(views::Button::STATE_HOVERED,
-                  tp->GetImageSkiaNamed(IDR_BACK_H));
-  back_->SetImage(views::Button::STATE_PRESSED,
-                  tp->GetImageSkiaNamed(IDR_BACK_P));
-  back_->SetImage(views::Button::STATE_DISABLED,
-                  tp->GetImageSkiaNamed(IDR_BACK_D));
+  auto set_image_model = [=](views::ImageButton* button,
+                            views::Button::ButtonState state, int idr) {
+    gfx::ImageSkia* image = tp->GetImageSkiaNamed(idr);
+    button->SetImageModel(state, image ? ui::ImageModel::FromImageSkia(*image)
+                                       : ui::ImageModel());
+  };
 
-  forward_->SetImage(views::Button::STATE_NORMAL,
-                     tp->GetImageSkiaNamed(IDR_FORWARD));
-  forward_->SetImage(views::Button::STATE_HOVERED,
-                     tp->GetImageSkiaNamed(IDR_FORWARD_H));
-  forward_->SetImage(views::Button::STATE_PRESSED,
-                     tp->GetImageSkiaNamed(IDR_FORWARD_P));
-  forward_->SetImage(views::Button::STATE_DISABLED,
-                     tp->GetImageSkiaNamed(IDR_FORWARD_D));
+  set_image_model(back_, views::Button::STATE_NORMAL, IDR_BACK);
+  set_image_model(back_, views::Button::STATE_HOVERED, IDR_BACK_H);
+  set_image_model(back_, views::Button::STATE_PRESSED, IDR_BACK_P);
+  set_image_model(back_, views::Button::STATE_DISABLED, IDR_BACK_D);
+
+  set_image_model(forward_, views::Button::STATE_NORMAL, IDR_FORWARD);
+  set_image_model(forward_, views::Button::STATE_HOVERED, IDR_FORWARD_H);
+  set_image_model(forward_, views::Button::STATE_PRESSED, IDR_FORWARD_P);
+  set_image_model(forward_, views::Button::STATE_DISABLED, IDR_FORWARD_D);
 }
 
 void SimpleWebViewDialog::UpdateButtons() {
@@ -378,7 +380,7 @@ void SimpleWebViewDialog::RemoveObserver(
   observers_.RemoveObserver(observer);
 }
 
-BEGIN_METADATA(SimpleWebViewDialog, views::View)
+BEGIN_METADATA(SimpleWebViewDialog)
 END_METADATA
 
 }  // namespace ash

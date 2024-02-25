@@ -1,6 +1,6 @@
 bẩbẩbẩbẩbẩbẩbẩ
 #should_be_half_tinos_half_serif:
-"Times" : 7,
-"Tinos" : 7
+"Tinos" : 7,
+"Times" : 7
 
 

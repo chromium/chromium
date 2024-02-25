@@ -6,7 +6,7 @@
 
 #import "base/feature_list.h"
 #import "components/sync/base/features.h"
-#import "ios/chrome/grit/ios_chromium_strings.h"
+#import "ios/chrome/grit/ios_branded_strings.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ui/base/l10n/l10n_util_mac.h"
 
@@ -54,13 +54,11 @@
       break;
   }
 
-  if (@available(iOS 15, *)) {
-    self.titleTextStyle = UIFontTextStyleTitle2;
-    // Icon already contains some spacing for the shadow.
-    self.customSpacingBeforeImageIfNoNavigationBar = 24;
-    self.customSpacingAfterImage = 1;
-    self.topAlignedLayout = YES;
-  }
+  self.titleTextStyle = UIFontTextStyleTitle2;
+  // Icon already contains some spacing for the shadow.
+  self.customSpacingBeforeImageIfNoNavigationBar = 24;
+  self.customSpacingAfterImage = 1;
+  self.topAlignedLayout = YES;
 
   [super loadView];
 }

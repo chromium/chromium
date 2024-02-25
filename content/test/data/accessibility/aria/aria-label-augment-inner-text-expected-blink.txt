@@ -1,0 +1,17 @@
+rootWebArea
+++genericContainer ignored
+++++genericContainer
+++++++link name='Link'
+++++++++staticText name='Link'
+++++++++++inlineTextBox name='Link'
+++++++staticText name=' '
+++++++++inlineTextBox name=' '
+++++++link name='AriaLabel'
+++++++++staticText name='Link'
+++++++++++inlineTextBox name='Link'
+++++++button name='Button'
+++++++++staticText name='Button'
+++++++++++inlineTextBox name='Button'
+++++++button name='AriaLabel'
+++++++++staticText name='Button'
+++++++++++inlineTextBox name='Button'

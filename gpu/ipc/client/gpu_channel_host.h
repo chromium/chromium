@@ -15,11 +15,13 @@
 #include "base/atomic_sequence_num.h"
 #include "base/functional/callback.h"
 #include "base/memory/ref_counted.h"
+#include "base/observer_list.h"
 #include "base/synchronization/lock.h"
 #include "base/task/single_thread_task_runner.h"
 #include "gpu/config/gpu_feature_info.h"
 #include "gpu/config/gpu_info.h"
 #include "gpu/gpu_export.h"
+#include "gpu/ipc/client/gpu_channel_observer.h"
 #include "gpu/ipc/client/image_decode_accelerator_proxy.h"
 #include "gpu/ipc/client/shared_image_interface_proxy.h"
 #include "gpu/ipc/common/gpu_channel.mojom.h"
@@ -60,6 +62,7 @@ class GPU_EXPORT GpuChannelHost
       int channel_id,
       const gpu::GPUInfo& gpu_info,
       const gpu::GpuFeatureInfo& gpu_feature_info,
+      const gpu::SharedImageCapabilities& shared_image_capabilities,
       mojo::ScopedMessagePipeHandle handle,
       scoped_refptr<base::SingleThreadTaskRunner> io_task_runner = nullptr);
   GpuChannelHost(const GpuChannelHost&) = delete;
@@ -116,6 +119,13 @@ class GPU_EXPORT GpuChannelHost
   // Generate a route ID guaranteed to be unique for this channel.
   int32_t GenerateRouteID();
 
+  // Creates a GpuMemoryBufferHandle in service side on the IO thread. This is a
+  // blocking call and will block the calling client.
+  void CreateGpuMemoryBuffer(const gfx::Size& size,
+                             const viz::SharedImageFormat& format,
+                             gfx::BufferUsage buffer_usage,
+                             gfx::GpuMemoryBufferHandle* handle);
+
   void GetGpuMemoryBufferHandleInfo(const Mailbox& mailbox,
                                     gfx::GpuMemoryBufferHandle* handle,
                                     viz::SharedImageFormat* format,
@@ -133,12 +143,18 @@ class GPU_EXPORT GpuChannelHost
   void TerminateGpuProcessForTesting();
 
   // Virtual for testing.
-  virtual std::unique_ptr<ClientSharedImageInterface>
+  virtual scoped_refptr<ClientSharedImageInterface>
   CreateClientSharedImageInterface();
 
   ImageDecodeAcceleratorProxy* image_decode_accelerator_proxy() {
     return &image_decode_accelerator_proxy_;
   }
+
+  // Calls ConnectionTracker::AddObserver() directly.
+  void AddObserver(GpuChannelLostObserver* obs);
+
+  // Calls ConnectionTracker::RemoveObserver() directly.
+  void RemoveObserver(GpuChannelLostObserver* obs);
 
  protected:
   friend class base::RefCountedThreadSafe<GpuChannelHost>;
@@ -157,11 +173,26 @@ class GPU_EXPORT GpuChannelHost
 
     void OnDisconnectedFromGpuProcess();
 
+    // With |channel_obs_lock_|, it can becalled on any thread.
+    void AddObserver(GpuChannelLostObserver* obs);
+
+    // With |channel_obs_lock_|, it can be called on any thread.
+    // Cannot be called during NotifyGpuChannelLost(). This creates a deadlock.
+    void RemoveObserver(GpuChannelLostObserver* obs);
+
+    // Running on the IOThread.
+    void NotifyGpuChannelLost();
+
    private:
     friend class base::RefCountedThreadSafe<ConnectionTracker>;
     ~ConnectionTracker();
 
     std::atomic_bool is_connected_{true};
+
+    // The GpuChannelLost Monitor for LayerTreeFrameSink.
+    base::Lock channel_obs_lock_;
+    base::ObserverList<GpuChannelLostObserver>::Unchecked GUARDED_BY(
+        channel_obs_lock_) observer_list_;
   };
 
   // A filter used internally to route incoming messages from the IO thread
@@ -249,7 +280,7 @@ class GPU_EXPORT GpuChannelHost
   mutable base::Lock context_lock_;
   std::vector<mojom::DeferredRequestPtr> deferred_messages_
       GUARDED_BY(context_lock_);
-  absl::optional<OrderingBarrierInfo> pending_ordering_barrier_
+  std::optional<OrderingBarrierInfo> pending_ordering_barrier_
       GUARDED_BY(context_lock_);
   uint32_t next_deferred_message_id_ GUARDED_BY(context_lock_) = 1;
   // Highest deferred message id in |deferred_messages_|.

@@ -305,8 +305,7 @@ HRESULT RegisterWithGoogleDeviceManagement(
     return false;
   }
 
-  std::string data_encoded;
-  base::Base64Encode(registration_data_str, &data_encoded);
+  std::string data_encoded = base::Base64Encode(registration_data_str);
 
   // This register call is blocking.  It won't return until the machine is
   // properly registered with the MDM server.

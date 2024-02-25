@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "base/memory/raw_ptr.h"
+#include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/view.h"
 
 namespace ash {
@@ -38,6 +39,8 @@ namespace arc::input_overlay {
 class DisplayOverlayController;
 
 class InputMenuView : public views::View {
+  METADATA_HEADER(InputMenuView, views::View)
+
  public:
   static std::unique_ptr<InputMenuView> BuildMenuView(
       DisplayOverlayController* display_overlay_controller,

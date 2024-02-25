@@ -5,13 +5,13 @@
 #ifndef CHROME_BROWSER_UI_ASH_TEST_SESSION_CONTROLLER_H_
 #define CHROME_BROWSER_UI_ASH_TEST_SESSION_CONTROLLER_H_
 
+#include <optional>
 #include <string>
 #include <vector>
 
 #include "ash/public/cpp/session/session_controller.h"
 #include "base/observer_list.h"
 #include "base/time/time.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 // Test implementation of ash's SessionController interface.
 class TestSessionController : public ash::SessionController {
@@ -23,7 +23,7 @@ class TestSessionController : public ash::SessionController {
 
   ~TestSessionController() override;
 
-  const absl::optional<ash::SessionInfo>& last_session_info() const {
+  const std::optional<ash::SessionInfo>& last_session_info() const {
     return last_session_info_;
   }
 
@@ -35,7 +35,7 @@ class TestSessionController : public ash::SessionController {
     return last_session_start_time_;
   }
 
-  const absl::optional<ash::UserSession>& last_user_session() const {
+  const std::optional<ash::UserSession>& last_user_session() const {
     return last_user_session_;
   }
 
@@ -89,11 +89,11 @@ class TestSessionController : public ash::SessionController {
   void RemoveObserver(ash::SessionObserver* observer) override;
   bool IsScreenLocked() const override;
   bool IsEnterpriseManaged() const override;
-  absl::optional<int> GetExistingUsersCount() const override;
+  std::optional<int> GetExistingUsersCount() const override;
 
  private:
-  absl::optional<ash::SessionInfo> last_session_info_;
-  absl::optional<ash::UserSession> last_user_session_;
+  std::optional<ash::SessionInfo> last_session_info_;
+  std::optional<ash::UserSession> last_user_session_;
   base::TimeDelta last_session_length_limit_;
   base::Time last_session_start_time_;
   int update_user_session_count_ = 0;

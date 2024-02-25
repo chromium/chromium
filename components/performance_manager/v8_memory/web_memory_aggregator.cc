@@ -301,7 +301,7 @@ void AggregationPointVisitor::OnFrameEntered(const FrameNode* frame_node) {
       // Since this node is NOT same-origin to the start node, the start node
       // CANNOT view its current url.
       aggregation_point = WebMemoryAggregator::CreateBreakdownEntry(
-          AttributionScope::kCrossOriginAggregated, absl::nullopt,
+          AttributionScope::kCrossOriginAggregated, std::nullopt,
           aggregation_result_.get());
       // This is cross-origin but not being aggregated into another
       // aggregation point, so its parent or opener must be same-origin to the
@@ -552,7 +552,7 @@ bool WebMemoryAggregator::VisitWorker(AggregationPointVisitor* ap_visitor,
 // static
 mojom::WebMemoryBreakdownEntry* WebMemoryAggregator::CreateBreakdownEntry(
     AttributionScope scope,
-    absl::optional<std::string> url,
+    std::optional<std::string> url,
     mojom::WebMemoryMeasurement* measurement) {
   auto breakdown = mojom::WebMemoryBreakdownEntry::New();
   auto attribution = mojom::WebMemoryAttribution::New();

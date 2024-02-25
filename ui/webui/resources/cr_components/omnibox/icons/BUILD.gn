@@ -10,12 +10,19 @@ generate_grd("build_grdp") {
   resource_path_prefix = "cr_components/omnibox/icons"
   out_grd = "$target_gen_dir/resources.grdp"
   input_files = [
+    "bookmark_cr23.svg",
+    "calculator_cr23.svg",
     "calculator.svg",
     "calendar.svg",
+    "chrome_product_cr23.svg",
     "chrome_product.svg",
+    "clock_cr23.svg",
+    "currency_cr23.svg",
     "currency.svg",
     "default.svg",
+    "definition_cr23.svg",
     "definition.svg",
+    "dino_cr23.svg",
     "dino.svg",
     "drive_docs.svg",
     "drive_folder.svg",
@@ -27,19 +34,33 @@ generate_grd("build_grdp") {
     "drive_slides.svg",
     "drive_video.svg",
     "extension_app.svg",
+    "finance_cr23.svg",
     "finance.svg",
+    "history_cr23.svg",
+    "incognito_cr23.svg",
     "incognito.svg",
+    "journeys_cr23.svg",
     "journeys.svg",
+    "mac_share_cr23.svg",
     "mac_share.svg",
     "note.svg",
+    "page_cr23.svg",
     "page.svg",
+    "search_cr23.svg",
+    "share_cr23.svg",
     "share.svg",
     "sites.svg",
+    "sunrise_cr23.svg",
     "sunrise.svg",
+    "tab_cr23.svg",
     "tab.svg",
+    "translation_cr23.svg",
     "translation.svg",
+    "trending_up_cr23.svg",
     "trending_up.svg",
+    "when_is_cr23.svg",
     "when_is.svg",
+    "win_share_cr23.svg",
     "win_share.svg",
   ]
   input_files_base_dir = rebase_path(".", "//")
@@ -50,7 +71,10 @@ if (is_chrome_branded) {
     grd_prefix = "omnibox_icons"
     resource_path_prefix = "cr_components/omnibox/icons"
     out_grd = "$target_gen_dir/chrome_branded_resources.grdp"
-    input_files = [ "google_g.svg" ]
+    input_files = [
+      "google_g.svg",
+      "google_g_cr23.svg",
+    ]
     input_files_base_dir =
         rebase_path("//chrome/app/theme/google_chrome/realbox", "//")
   }

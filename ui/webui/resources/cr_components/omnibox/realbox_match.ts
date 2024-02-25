@@ -13,11 +13,12 @@ import {loadTimeData} from '//resources/js/load_time_data.js';
 import {sanitizeInnerHtml} from '//resources/js/parse_html_subset.js';
 import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {ACMatchClassification, Action, AutocompleteMatch, NavigationPredictor, OmniboxPopupSelection, PageHandlerInterface, SelectionLineState, SideType} from './omnibox.mojom-webui.js';
+import type {ACMatchClassification, Action, AutocompleteMatch, OmniboxPopupSelection, PageHandlerInterface} from './omnibox.mojom-webui.js';
+import {NavigationPredictor, SelectionLineState, SideType} from './omnibox.mojom-webui.js';
 import {RealboxBrowserProxy} from './realbox_browser_proxy.js';
-import {RealboxIconElement} from './realbox_icon.js';
+import type {RealboxIconElement} from './realbox_icon.js';
 import {getTemplate} from './realbox_match.html.js';
-import {decodeString16, mojoTimeTicks, sideTypeToClass} from './utils.js';
+import {decodeString16, mojoTimeTicks} from './utils.js';
 
 
 // clang-format off
@@ -76,6 +77,24 @@ export class RealboxMatchElement extends PolymerElement {
         reflectToAttribute: true,
       },
 
+      expandedStateIconsChromeRefresh: {
+        type: Boolean,
+        value: () => loadTimeData.getBoolean('realboxCr23ExpandedStateLayout'),
+      },
+
+      hasAction: {
+        type: Boolean,
+        computed: `computeHasAction_(match.actions)`,
+        reflectToAttribute: true,
+      },
+
+      /** Whether action chip will have an outset focus ring. */
+      hasOutsetActionFocusRing: {
+        type: Boolean,
+        computed: `computeHasOutsetActionFocusRing_(hasAction)`,
+        reflectToAttribute: true,
+      },
+
       /**
        * Whether the match features an image (as opposed to an icon or favicon).
        */
@@ -115,14 +134,18 @@ export class RealboxMatchElement extends PolymerElement {
         value: -1,
       },
 
-      sideType: Number,
-
-      /** String representation of `sideType` to use in CSS. */
-      sideTypeClass_: {
-        type: String,
-        computed: 'computeSideTypeClass_(sideType)',
+      realboxConsistentRowHeight: {
+        type: Boolean,
+        value: () => loadTimeData.getBoolean('realboxCr23ConsistentRowHeight'),
         reflectToAttribute: true,
       },
+
+      renderType: {
+        type: String,
+        reflectToAttribute: true,
+      },
+
+      sideType: Number,
 
       //========================================================================
       // Private properties
@@ -166,9 +189,13 @@ export class RealboxMatchElement extends PolymerElement {
   }
 
   override ariaLabel: string;
+  expandedStateIconsChromeRefresh: boolean;
+  hasAction: boolean;
+  hasOutsetActionFocusRing: boolean;
   hasImage: boolean;
   match: AutocompleteMatch;
   matchIndex: number;
+  realboxConsistentRowHeight: boolean;
   sideType: SideType;
   private actionIsVisible_: boolean;
   private contentsHtml_: TrustedHTML;
@@ -176,7 +203,6 @@ export class RealboxMatchElement extends PolymerElement {
   private removeButtonAriaLabel_: string;
   private removeButtonTitle_: string;
   private separatorText_: string;
-  private sideTypeClass_: string;
   private tailSuggestPrefix_: string;
 
   private pageHandler_: PageHandlerInterface;
@@ -216,14 +242,13 @@ export class RealboxMatchElement extends PolymerElement {
       return;
     }
 
-    this.dispatchEvent(new CustomEvent('match-click', {
-      bubbles: true,
-      composed: true,
-      detail: {index: this.matchIndex, event: e},
-    }));
-
     e.preventDefault();   // Prevents default browser action (navigation).
     e.stopPropagation();  // Prevents <iron-selector> from selecting the match.
+
+    this.pageHandler_.openAutocompleteMatch(
+        this.matchIndex, this.match.destinationUrl,
+        /* are_matches_showing */ true, e.button || 0, e.altKey, e.ctrlKey,
+        e.metaKey, e.shiftKey);
   }
 
   private onMatchFocusin_() {
@@ -245,14 +270,12 @@ export class RealboxMatchElement extends PolymerElement {
       // Only handle main (generally left) button presses.
       return;
     }
-    this.dispatchEvent(new CustomEvent('match-remove', {
-      bubbles: true,
-      composed: true,
-      detail: this.matchIndex,
-    }));
 
     e.preventDefault();   // Prevents default browser action (navigation).
     e.stopPropagation();  // Prevents <iron-selector> from selecting the match.
+
+    this.pageHandler_.deleteAutocompleteMatch(
+        this.matchIndex, this.match.destinationUrl);
   }
 
   private onRemoveButtonMouseDown_(e: Event) {
@@ -325,6 +348,14 @@ export class RealboxMatchElement extends PolymerElement {
                 .innerHTML);
   }
 
+  private computeHasAction_() {
+    return this.match?.actions?.length > 0;
+  }
+
+  private computeHasOutsetActionFocusRing_() {
+    return this.expandedStateIconsChromeRefresh && this.hasAction;
+  }
+
   private computeTailSuggestPrefix_(): string {
     if (!this.match || !this.match.tailSuggestCommonPrefix) {
       return '';
@@ -363,8 +394,10 @@ export class RealboxMatchElement extends PolymerElement {
         '';
   }
 
-  private computeSideTypeClass_(): string {
-    return sideTypeToClass(this.sideType);
+  private showActionsInlined_(): boolean {
+    // Always show inlined div when feature is enabled, so that it will
+    // grow and push other elements like remove button to the right.
+    return this.sideType === SideType.kDefaultPrimary;
   }
 
   /**
@@ -417,18 +450,24 @@ export class RealboxMatchElement extends PolymerElement {
   }
 
   updateSelection(selection: OmniboxPopupSelection) {
+    this.$['focus-indicator'].classList.toggle(
+        'selected-within',
+        selection.state !== SelectionLineState.kNormal &&
+            selection.line === this.matchIndex);
+
     this.$.remove.classList.toggle(
         'selected',
-        selection.state === SelectionLineState.kFocusedButtonRemoveSuggestion);
+        selection.state === SelectionLineState.kFocusedButtonRemoveSuggestion &&
+            selection.line === this.matchIndex);
 
-    const actions =
-        Array.from(this.shadowRoot!.querySelectorAll('cr-realbox-action'));
-    actions.forEach((action, index) => {
-      action.classList.toggle(
-          'selected',
-          selection.state === SelectionLineState.kFocusedButtonAction &&
-              selection.actionIndex === index);
-    });
+    [...this.shadowRoot!.querySelectorAll('cr-realbox-action')].forEach(
+        (action, index) => {
+          action.classList.toggle(
+              'selected',
+              selection.state === SelectionLineState.kFocusedButtonAction &&
+                  selection.actionIndex === index &&
+                  selection.line === this.matchIndex);
+        });
   }
 }
 

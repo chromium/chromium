@@ -4,7 +4,7 @@
 
 package org.chromium.chrome.browser.customtabs;
 
-import android.app.Activity;
+import android.view.Window;
 
 import androidx.annotation.NonNull;
 
@@ -17,13 +17,13 @@ import org.chromium.chrome.browser.incognito.IncognitoSnapshotController;
  */
 public class IncognitoCustomTabSnapshotController extends IncognitoSnapshotController {
     /**
-     * @param activity The {@link Activity} on which the snapshot capability needs to be controlled.
+     * @param window The {@link Window} on which the snapshot capability needs to be controlled.
      * @param isShowingIncognitoSupplier {@link Supplier<Boolean>} which indicates whether we are
-     *         showing Incognito or not currently.
+     *     showing Incognito or not currently.
      */
     IncognitoCustomTabSnapshotController(
-            @NonNull Activity activity, @NonNull Supplier<Boolean> isShowingIncognitoSupplier) {
-        super(activity, isShowingIncognitoSupplier);
+            @NonNull Window window, @NonNull Supplier<Boolean> isShowingIncognitoSupplier) {
+        super(window, isShowingIncognitoSupplier);
         updateIncognitoTabSnapshotState();
     }
 }

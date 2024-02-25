@@ -1,4 +1,18 @@
 include_rules = [
+  "-content",
+
+  "+content/common/content_export.h",
+  "+content/browser/indexed_db",
+
   "+third_party/leveldatabase",
   "+v8/include/v8-value-serializer-version.h",
 ]
+
+specific_include_rules = {
+  '.*test.cc': [
+    "+content",
+  ],
+  '.*internals_ui\..*': [
+    "+content",
+  ],
+}

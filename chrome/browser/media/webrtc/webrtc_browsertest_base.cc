@@ -304,10 +304,6 @@ std::string WebRtcTestBase::ExecuteJavascript(
   return content::EvalJs(tab_contents, javascript).ExtractString();
 }
 
-void WebRtcTestBase::ChangeToLegacyGetStats(content::WebContents* tab) const {
-  content::ExecuteScriptAsync(tab, "changeToLegacyGetStats()");
-}
-
 void WebRtcTestBase::SetupPeerconnectionWithLocalStream(
     content::WebContents* tab,
     const std::string& certificate_keygen_algorithm) const {
@@ -505,7 +501,7 @@ scoped_refptr<content::TestStatsReportDictionary>
 WebRtcTestBase::GetStatsReportDictionary(content::WebContents* tab) const {
   std::string result = ExecuteJavascript("getStatsReportDictionary()", tab);
   EXPECT_TRUE(base::StartsWith(result, "ok-", base::CompareCase::SENSITIVE));
-  absl::optional<base::Value> parsed_json =
+  std::optional<base::Value> parsed_json =
       base::JSONReader::Read(result.substr(3));
   CHECK(parsed_json);
   base::Value::Dict* dictionary = parsed_json->GetIfDict();
@@ -560,8 +556,8 @@ std::string WebRtcTestBase::GetDesktopMediaStream(content::WebContents* tab) {
   return ExecuteJavascript("openDesktopMediaStream()", tab);
 }
 
-absl::optional<std::string> WebRtcTestBase::LoadDesktopCaptureExtension() {
-  absl::optional<std::string> extension_id;
+std::optional<std::string> WebRtcTestBase::LoadDesktopCaptureExtension() {
+  std::optional<std::string> extension_id;
   if (!desktop_capture_extension_.get()) {
     extensions::ChromeTestExtensionLoader loader(browser()->profile());
     base::FilePath extension_path;

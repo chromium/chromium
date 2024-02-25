@@ -1,0 +1,32 @@
+# Copyright 2023 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//ui/webui/resources/tools/build_webui.gni")
+
+assert(!is_android)
+
+build_webui("build") {
+  grd_prefix = "on_device_internals"
+
+  mojo_files_deps = [
+    "//chrome/browser/ui/webui/on_device_internals:mojom_ts__generator",
+    "//services/on_device_model/public/mojom:mojom_ts__generator",
+  ]
+  mojo_files = [
+    "$root_gen_dir/chrome/browser/ui/webui/on_device_internals/on_device_internals_page.mojom-webui.ts",
+    "$root_gen_dir/services/on_device_model/public/mojom/on_device_model.mojom-webui.ts",
+  ]
+
+  static_files = [ "on_device_internals.html" ]
+
+  web_component_files = [ "app.ts" ]
+
+  non_web_component_files = [ "browser_proxy.ts" ]
+
+  ts_deps = [
+    "//third_party/polymer/v3_0:library",
+    "//ui/webui/resources/cr_elements:build_ts",
+    "//ui/webui/resources/mojo:build_ts",
+  ]
+}

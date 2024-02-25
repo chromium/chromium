@@ -11,8 +11,8 @@ found in the LICENSE file.
 </head>
 <script>
   function test() {
-    // This file runs after fill_up_5k puts this origin over quota.
-    request = indexedDB.open("fill_up_5k.html");
+    // This file runs after fill_quota puts this origin over quota.
+    request = indexedDB.open("fill_quota.html");
     request.onblocked = unexpectedBlockedCallback;
     request.onupgradeneeded = unexpectedUpgradeNeededCallback;
     request.onsuccess = onOpen;
@@ -23,7 +23,7 @@ found in the LICENSE file.
     db = event.target.result;
     shouldBe("db.objectStoreNames.length", "1");
     trans = db.transaction(db.objectStoreNames, "readwrite");
-    trans.objectStore(db.objectStoreNames[0]).put("dogs", "cats");
+    trans.objectStore(db.objectStoreNames[0]).put("dogs", generateRandomString(1));
     trans.oncomplete = unexpectedCompleteCallback;
     trans.onabort = function() {
       shouldBeEqualToString("trans.error.name", "QuotaExceededError");

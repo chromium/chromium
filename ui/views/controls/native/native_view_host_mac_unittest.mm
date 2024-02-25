@@ -133,8 +133,9 @@ TEST_F(NativeViewHostMacTest, Attach) {
   EXPECT_TRUE([native_view_ superview]);
   EXPECT_TRUE([native_view_ window]);
 
-  // Layout() is normally async, call it now to ensure bounds have been applied.
-  host()->Layout();
+  // Layout is normally async, trigger it now to ensure bounds have been
+  // applied.
+  host()->DeprecatedLayoutImmediately();
   // Expect the top-left to be 10 pixels below the titlebar.
   int bottom = toplevel()->GetClientAreaBoundsInScreen().height() - 10 - 60;
   EXPECT_NSEQ(NSMakeRect(10, bottom, 80, 60), [native_view_ frame]);
@@ -165,7 +166,7 @@ TEST_F(NativeViewHostMacTest, CheckNativeViewReferenceOnAttach) {
 
   // On Ventura, the attach rips Widget A's contentView from its window.
   // NativeViewHostMac::AttachNativeView() should have stored a reference.
-  if (base::mac::IsAtLeastOS13()) {
+  if (base::mac::MacOSMajorVersion() >= 13) {
     EXPECT_EQ([native_window contentView], nullptr);
     EXPECT_EQ(GetMovedContentViewForWidget(second_widget), view);
   } else {
@@ -184,7 +185,7 @@ TEST_F(NativeViewHostMacTest, CheckNativeViewReferenceOnAttach) {
 // On macOS13, if Widget A has been attached to Widget B, ensure Widget A's
 // reference to its native view disappears when the native view is freed.
 TEST_F(NativeViewHostMacTest, CheckNoNativeViewReferenceOnDestruct) {
-  if (!base::mac::IsAtLeastOS13()) {
+  if (base::mac::MacOSMajorVersion() < 13) {
     return;
   }
 
@@ -243,7 +244,7 @@ TEST_F(NativeViewHostMacTest, ContentViewPositionAndSize) {
   // The new visual style on macOS 11 (and presumably later) has slightly taller
   // titlebars, which means the window rect has to leave a bit of extra space
   // for the titlebar.
-  int titlebar_extra = base::mac::IsAtLeastOS11() ? 6 : 0;
+  int titlebar_extra = base::mac::MacOSMajorVersion() >= 11 ? 6 : 0;
 
   native_host()->ShowWidget(5, 10, 100, 100, 200, 200);
   EXPECT_NSEQ(NSMakeRect(5, -32 - titlebar_extra, 100, 100),
@@ -282,9 +283,9 @@ TEST_F(NativeViewHostMacTest, NativeViewHidden) {
   host()->SetVisible(true);
   EXPECT_TRUE([native_view_ isHidden]);  // Stays hidden.
   host()->Attach(native_view_);
-  // Layout() updates visibility, and is normally async, call it now to ensure
+  // Layout updates visibility, and is normally async, trigger it now to ensure
   // visibility updated.
-  host()->Layout();
+  host()->DeprecatedLayoutImmediately();
   EXPECT_FALSE([native_view_ isHidden]);  // Made visible when attached.
 
   EXPECT_TRUE([native_view_ superview]);

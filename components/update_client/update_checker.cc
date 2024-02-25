@@ -8,6 +8,7 @@
 
 #include <functional>
 #include <memory>
+#include <optional>
 #include <string>
 #include <utility>
 #include <vector>
@@ -37,21 +38,17 @@
 #include "components/update_client/update_client.h"
 #include "components/update_client/update_engine.h"
 #include "components/update_client/utils.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
 namespace update_client {
-
 namespace {
 
 class UpdateCheckerImpl : public UpdateChecker {
  public:
   UpdateCheckerImpl(scoped_refptr<Configurator> config,
                     PersistedData* metadata);
-
   UpdateCheckerImpl(const UpdateCheckerImpl&) = delete;
   UpdateCheckerImpl& operator=(const UpdateCheckerImpl&) = delete;
-
   ~UpdateCheckerImpl() override;
 
   // Overrides for UpdateChecker.
@@ -61,27 +58,32 @@ class UpdateCheckerImpl : public UpdateChecker {
       UpdateCheckCallback update_check_callback) override;
 
  private:
-  UpdaterStateAttributes ReadUpdaterStateAttributes() const;
+  static UpdaterStateAttributes ReadUpdaterStateAttributes(
+      UpdaterStateProvider update_state_provider,
+      bool is_machine);
+
   void CheckForUpdatesHelper(
       scoped_refptr<UpdateContext> context,
       const std::vector<GURL>& urls,
       const base::flat_map<std::string, std::string>& additional_attributes,
       const UpdaterStateAttributes& updater_state_attributes,
       const std::set<std::string>& active_ids);
+
   void OnRequestSenderComplete(scoped_refptr<UpdateContext> context,
-                               absl::optional<base::OnceClosure> fallback,
+                               std::optional<base::OnceClosure> fallback,
                                int error,
                                const std::string& response,
                                int retry_after_sec);
+
   void UpdateCheckSucceeded(scoped_refptr<UpdateContext> context,
                             const ProtocolParser::Results& results,
                             int retry_after_sec);
+
   void UpdateCheckFailed(ErrorCategory error_category,
                          int error,
                          int retry_after_sec);
 
   SEQUENCE_CHECKER(sequence_checker_);
-
   const scoped_refptr<Configurator> config_;
   raw_ptr<PersistedData> metadata_ = nullptr;
   UpdateCheckCallback update_check_callback_;
@@ -111,7 +113,8 @@ void UpdateCheckerImpl::CheckForUpdates(
   base::ThreadPool::PostTaskAndReplyWithResult(
       FROM_HERE, kTaskTraits,
       base::BindOnce(&UpdateCheckerImpl::ReadUpdaterStateAttributes,
-                     base::Unretained(this)),
+                     config_->GetUpdaterStateProvider(),
+                     !config_->IsPerUserInstall()),
       base::BindOnce(
           [](base::OnceCallback<void(const UpdaterStateAttributes&,
                                      const std::set<std::string>&)>
@@ -127,12 +130,14 @@ void UpdateCheckerImpl::CheckForUpdates(
 }
 
 // This function runs on the blocking pool task runner.
-UpdaterStateAttributes UpdateCheckerImpl::ReadUpdaterStateAttributes() const {
+UpdaterStateAttributes UpdateCheckerImpl::ReadUpdaterStateAttributes(
+    UpdaterStateProvider update_state_provider,
+    bool is_machine) {
 #if BUILDFLAG(IS_WIN)
   // On Windows, the Chrome and the updater install modes are matched by design.
-  return config_->GetUpdaterStateProvider().Run(!config_->IsPerUserInstall());
+  return update_state_provider.Run(is_machine);
 #elif BUILDFLAG(IS_MAC)
-  return config_->GetUpdaterStateProvider().Run(false);
+  return update_state_provider.Run(false);
 #else
   return {};
 #endif  // BUILDFLAG(IS_WIN)
@@ -183,10 +188,11 @@ void UpdateCheckerImpl::CheckForUpdatesHelper(
     sent_ids.push_back(app_id);
 
     std::string install_source;
-    if (!crx_component->install_source.empty())
+    if (!crx_component->install_source.empty()) {
       install_source = crx_component->install_source;
-    else if (component->is_foreground())
+    } else if (component->is_foreground()) {
       install_source = "ondemand";
+    }
 
     apps.push_back(MakeProtocolApp(
         app_id, crx_component->version, crx_component->ap, crx_component->brand,
@@ -195,20 +201,24 @@ void UpdateCheckerImpl::CheckForUpdatesHelper(
         crx_component->installer_attributes, metadata_->GetCohort(app_id),
         metadata_->GetCohortHint(app_id), metadata_->GetCohortName(app_id),
         crx_component->channel, crx_component->disabled_reasons,
-        MakeProtocolUpdateCheck(!crx_component->updates_enabled,
-                                crx_component->target_version_prefix,
-                                crx_component->rollback_allowed,
-                                crx_component->same_version_update_allowed),
+        MakeProtocolUpdateCheck(
+            !crx_component->updates_enabled ||
+                (!crx_component->allow_updates_on_metered_connection &&
+                 config_->IsConnectionMetered()),
+            crx_component->target_version_prefix,
+            crx_component->rollback_allowed,
+            crx_component->same_version_update_allowed),
         [](const std::string& install_data_index)
             -> std::vector<protocol_request::Data> {
-          if (install_data_index.empty())
+          if (install_data_index.empty()) {
             return {};
-          else
+          } else {
             return {{"install", install_data_index, ""}};
+          }
         }(crx_component->install_data_index),
         MakeProtocolPing(app_id, metadata_,
                          active_ids.find(app_id) != active_ids.end()),
-        absl::nullopt));
+        std::nullopt));
   }
 
   if (sent_ids.empty()) {
@@ -237,18 +247,18 @@ void UpdateCheckerImpl::CheckForUpdatesHelper(
       base::BindOnce(&UpdateCheckerImpl::OnRequestSenderComplete,
                      base::Unretained(this), context,
                      urls.size() > 1
-                         ? absl::optional<base::OnceClosure>(base::BindOnce(
+                         ? std::optional<base::OnceClosure>(base::BindOnce(
                                &UpdateCheckerImpl::CheckForUpdatesHelper,
                                base::Unretained(this), context,
                                std::vector<GURL>(urls.begin() + 1, urls.end()),
                                additional_attributes, updater_state_attributes,
                                active_ids))
-                         : absl::nullopt));
+                         : std::nullopt));
 }
 
 void UpdateCheckerImpl::OnRequestSenderComplete(
     scoped_refptr<UpdateContext> context,
-    absl::optional<base::OnceClosure> fallback,
+    std::optional<base::OnceClosure> fallback,
     int error,
     const std::string& response,
     int retry_after_sec) {
@@ -286,19 +296,22 @@ void UpdateCheckerImpl::UpdateCheckSucceeded(
   const int daynum = results.daystart_elapsed_days;
   for (const auto& result : results.list) {
     auto entry = result.cohort_attrs.find(ProtocolParser::Result::kCohort);
-    if (entry != result.cohort_attrs.end())
+    if (entry != result.cohort_attrs.end()) {
       metadata_->SetCohort(result.extension_id, entry->second);
+    }
     entry = result.cohort_attrs.find(ProtocolParser::Result::kCohortName);
-    if (entry != result.cohort_attrs.end())
+    if (entry != result.cohort_attrs.end()) {
       metadata_->SetCohortName(result.extension_id, entry->second);
+    }
     entry = result.cohort_attrs.find(ProtocolParser::Result::kCohortHint);
-    if (entry != result.cohort_attrs.end())
+    if (entry != result.cohort_attrs.end()) {
       metadata_->SetCohortHint(result.extension_id, entry->second);
+    }
   }
 
   base::OnceClosure reply =
       base::BindOnce(std::move(update_check_callback_),
-                     absl::make_optional<ProtocolParser::Results>(results),
+                     std::make_optional<ProtocolParser::Results>(results),
                      ErrorCategory::kNone, 0, retry_after_sec);
 
   if (daynum != ProtocolParser::kNoDaystart) {
@@ -318,9 +331,8 @@ void UpdateCheckerImpl::UpdateCheckFailed(ErrorCategory error_category,
   CHECK_NE(0, error);
 
   base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-      FROM_HERE,
-      base::BindOnce(std::move(update_check_callback_), absl::nullopt,
-                     error_category, error, retry_after_sec));
+      FROM_HERE, base::BindOnce(std::move(update_check_callback_), std::nullopt,
+                                error_category, error, retry_after_sec));
 }
 
 }  // namespace

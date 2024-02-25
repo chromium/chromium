@@ -362,7 +362,7 @@ static inline void RecordFormStructure(const HTMLFormElement& form,
 }
 
 String FormSignature(const HTMLFormElement& form) {
-  KURL action_url = form.GetURLAttribute(html_names::kActionAttr);
+  KURL action_url = form.GetURLAttributeAsKURL(html_names::kActionAttr);
   // Remove the query part because it might contain volatile parameters such
   // as a session key.
   if (!action_url.IsEmpty())

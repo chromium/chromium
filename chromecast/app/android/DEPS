@@ -2,5 +2,6 @@ include_rules = [
   "+chromecast/android",
   "+chromecast/browser/android",
   "+jni",
+  "+third_party/jni_zero",
   "+components/prefs",
 ]

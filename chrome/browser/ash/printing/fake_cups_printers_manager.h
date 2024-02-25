@@ -9,6 +9,7 @@
 
 #include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
+#include "base/observer_list.h"
 #include "chrome/browser/ash/printing/cups_printers_manager.h"
 #include "chrome/browser/ash/printing/printer_configurer.h"
 #include "chrome/browser/ash/printing/printers_map.h"
@@ -30,14 +31,15 @@ class FakeCupsPrintersManager : public CupsPrintersManager {
 
   void AddObserver(Observer* observer) override {}
   void RemoveObserver(Observer* observer) override {}
+  void AddLocalPrintersObserver(LocalPrintersObserver* observer) override;
+  void RemoveLocalPrintersObserver(LocalPrintersObserver* observer) override;
 
   bool IsPrinterInstalled(const chromeos::Printer& printer) const override;
-  void PrinterIsNotAutoconfigurable(const chromeos::Printer& printer) override;
   void SetUpPrinter(const chromeos::Printer& printer,
                     bool is_automatic_installation,
                     PrinterSetupCallback callback) override;
   void UninstallPrinter(const std::string& printer_id) override;
-  absl::optional<chromeos::Printer> GetPrinter(
+  std::optional<chromeos::Printer> GetPrinter(
       const std::string& id) const override;
 
   void RecordSetupAbandoned(const chromeos::Printer& printer) override {}
@@ -57,10 +59,11 @@ class FakeCupsPrintersManager : public CupsPrintersManager {
   void MarkInstalled(const std::string& printer_id);
   void SetPrinterSetupResult(const std::string& printer_id,
                              PrinterSetupResult result);
-  bool IsMarkedAsNotAutoconfigurable(const chromeos::Printer& printer);
+  void MarkPrinterAsNotAutoconfigurable(const std::string& printer_id);
   void QueryPrinterForAutoConf(
       const chromeos::Printer& printer,
       base::OnceCallback<void(bool)> callback) override;
+  void TriggerLocalPrintersObserver();
 
  private:
   // Map printer id to CupsPrinterStatus object.
@@ -70,6 +73,7 @@ class FakeCupsPrintersManager : public CupsPrintersManager {
 
   base::flat_set<std::string> printers_marked_as_not_autoconf_;
   base::flat_map<std::string, PrinterSetupResult> assigned_results_;
+  base::ObserverList<LocalPrintersObserver> local_printers_observer_list_;
 };
 
 }  // namespace ash

@@ -12,20 +12,14 @@
 </svg>
 <script>
 async_test(function(t) {
-  var svg = document.getElementById("svg");
-
+  const svg = document.getElementById("svg");
   svg.pauseAnimations();
   svg.unpauseAnimations();
 
-  var endStep = t.step_func_done(function() {
-    var rect = document.getElementById("rect");
+  const rect = document.getElementById("rect");
+  const setAnimation = rect.firstElementChild;
+  setAnimation.onbegin = t.step_func_done(function() {
     assert_equals(rect.x.animVal.value, 0, "<set> is applied");
   });
-
-  window.onload = function() {
-    requestAnimationFrame(function() {
-      setTimeout(endStep, 50);
-    });
-  };
 }, "Pausing and unpausing an animation before it starts should have no effect");
 </script>

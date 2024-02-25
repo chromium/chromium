@@ -17,12 +17,12 @@ limitations under the License.
 
 #include <glog/logging.h>
 #include "absl/container/node_hash_map.h"  // from @com_google_absl
-#include "absl/memory/memory.h"            // from @com_google_absl
-#include "absl/strings/match.h"            // from @com_google_absl
-#include "absl/strings/numbers.h"          // from @com_google_absl
+#include "absl/memory/memory.h"  // from @com_google_absl
+#include "absl/strings/match.h"  // from @com_google_absl
+#include "absl/strings/numbers.h"  // from @com_google_absl
+#include "tflite/public/edgetpu_c.h"
 #include "tensorflow/lite/acceleration/configuration/configuration_generated.h"
 #include "tensorflow/lite/acceleration/configuration/delegate_registry.h"
-#include "tflite/public/edgetpu_c.h"
 
 namespace tflite {
 namespace delegates {
@@ -50,16 +50,12 @@ inline std::string ConvertBool(bool from_bool) {
   return from_bool ? "True" : "False";
 }
 
-bool MatchDevice(const std::string& device,
-                 const std::string& type,
+bool MatchDevice(const std::string& device, const std::string& type,
                  int* index) {
   const auto prefix(type + ":");
-  if (!absl::StartsWith(device, prefix))
-    return false;
-  if (!absl::SimpleAtoi(device.substr(prefix.size()), index))
-    return false;
-  if (*index < 0)
-    return false;
+  if (!absl::StartsWith(device, prefix)) return false;
+  if (!absl::SimpleAtoi(device.substr(prefix.size()), index)) return false;
+  if (*index < 0) return false;
   return true;
 }
 

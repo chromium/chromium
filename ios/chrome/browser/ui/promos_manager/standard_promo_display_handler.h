@@ -7,8 +7,8 @@
 
 #import <Foundation/Foundation.h>
 
-#import "ios/chrome/browser/promos_manager/constants.h"
-#import "ios/chrome/browser/promos_manager/impression_limit.h"
+#import "ios/chrome/browser/promos_manager/model/constants.h"
+#import "ios/chrome/browser/promos_manager/model/impression_limit.h"
 #import "ios/chrome/browser/ui/promos_manager/promo_protocol.h"
 
 // StandardPromoDisplayHandler enables feature teams to completely handle
@@ -16,6 +16,10 @@
 //
 // When the Promos Manager determines it's time to display the promo
 // `identifier`, it will call `handleDisplay`.
+// If this method is used to display promos, the promo must alert the Promos
+// Manager when it is dismissed by calling the `PromosManagerCoordinator`'s
+// `promoWasDismissed` method. the `PromosManagerUIHandler` protocol can be used
+// for this purpose.
 @protocol StandardPromoDisplayHandler <PromoProtocol>
 
 @required

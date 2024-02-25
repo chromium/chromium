@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<script src="../../resources/js-test.js"></script>
+</head>
+<body>
+<p>Test for <a href="https://bugs.webkit.org/show_bug.cgi?id=32292">bug 32292</a>:
+"Unable to focus on embedded plugins such as Flash via javascript focus()"</p>
+<p>This tests focusing Embeds and Objects. See LayoutTests/java for Applet elements.</p>
+<div id=embedOwner>
+<embed class="actualPlugin" id="embedElem" type="application/x-blink-test-plugin" width=100 height=100 shouldFocus=true></embed>
+<object class="actualPlugin" id="objectElem" type="application/x-blink-test-plugin" windowedPlugin="false" width=100 height=100 shouldFocus=true></object>
+
+<embed class="actualPlugin" id="embedElemWithFallbackContents" type="application/x-blink-test-plugin" width=100 height=100 shouldFocus=true>Fallback contents.</embed>
+<object class="actualPlugin" id="objectElemWithFallbackContents" type="application/x-blink-test-plugin" windowedPlugin="false" width=100 height=100 shouldFocus=true>Fallback contents.</object>
+
+<embed id="noPluginEmbedElem" type="application/x-no-such-plugin" windowedPlugin="false" width=100 height=100 shouldFocus=false></embed>
+<object id="noPluginObjectElem" type="application/x-no-such-plugin" windowedPlugin="false" width=100 height=100 shouldFocus=false></object>
+
+<embed id="noPluginEmbedElemWithFallbackContents" type="application/x-no-such-plugin" windowedPlugin="false" width=100 height=100 shouldFocus=false>Fallback contents.</embed>
+<object id="noPluginObjectElemWithFallbackContents" type="application/x-no-such-plugin" windowedPlugin="false" width=100 height=100 shouldFocus=false>Fallback contents.</object>
+
+<embed id="noPluginEmbedElemWithTabindex" type="application/x-no-such-plugin" windowedPlugin="false" width=100 height=100 tabindex=-1 shouldFocus=true></embed>
+<object id="noPluginObjectElemWithTabindex" type="application/x-no-such-plugin" windowedPlugin="false" width=100 height=100 tabindex=-1 shouldFocus=true></object>
+
+<embed id="noPluginEmbedElemWithContenteditable" type="application/x-no-such-plugin" windowedPlugin="false" width=100 height=100 contenteditable=true shouldFocus=true></embed>
+<object id="noPluginObjectElemWithContenteditable" type="application/x-no-such-plugin" windowedPlugin="false" width=100 height=100 contenteditable=true shouldFocus=true></object>
+</div>
+<script>
+description("Test for Embed and Object for bug 32292: Unable to focus on embedded plugins such as Flash via javascript focus().");
+testRunner.setDumpConsoleMessages(false);
+
+var jsTestIsAsync = true;
+var actualPlugins = document.querySelectorAll('.actualPlugin');
+for (var i = 0; i < actualPlugins.length; ++i) {
+    actualPlugins.item(i).addEventListener('message', maybeStartTest);
+}
+
+var pluginsLoaded = 0;
+function maybeStartTest() {
+    if (++pluginsLoaded < 4)
+        return;
+    var owner = document.getElementById("embedOwner");
+    for (var i = 0; i < owner.childNodes.length; ++i) {
+        pluginElement = owner.childNodes[i];
+        if (pluginElement.id) {
+            pluginElement.focus();
+            shouldBe('"' + pluginElement.id + '"; document.activeElement === pluginElement',
+                pluginElement.getAttribute("shouldFocus").toString());
+            pluginElement.blur();
+        }
+    }
+    finishJSTest();
+}
+</script>
+</body>
+</html>

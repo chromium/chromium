@@ -6,6 +6,7 @@
 #define CHROMEOS_ASH_SERVICES_SECURE_CHANNEL_PENDING_CONNECTION_REQUEST_BASE_H_
 
 #include <memory>
+#include <optional>
 
 #include "base/logging.h"
 #include "base/memory/weak_ptr.h"
@@ -13,6 +14,8 @@
 #include "chromeos/ash/services/secure_channel/client_connection_parameters.h"
 #include "chromeos/ash/services/secure_channel/pending_connection_request.h"
 #include "chromeos/ash/services/secure_channel/public/cpp/shared/connection_priority.h"
+#include "chromeos/ash/services/secure_channel/public/mojom/nearby_connector.mojom-shared.h"
+#include "chromeos/ash/services/secure_channel/public/mojom/secure_channel.mojom-shared.h"
 #include "chromeos/ash/services/secure_channel/public/mojom/secure_channel.mojom.h"
 
 namespace ash::secure_channel {
@@ -74,6 +77,24 @@ class PendingConnectionRequestBase
 
     OnFinishedWithoutConnection(PendingConnectionRequestDelegate::
                                     FailedConnectionReason::kRequestFailed);
+  }
+
+  void UpdateBleDiscoveryState(
+      mojom::DiscoveryResult discovery_result,
+      std::optional<mojom::DiscoveryErrorCode> potential_error_code) {
+    client_connection_parameters_->SetBleDiscoveryState(discovery_result,
+                                                        potential_error_code);
+  }
+
+  void UpdateNearbyConnectionChange(mojom::NearbyConnectionStep step,
+                                    mojom::NearbyConnectionStepResult result) {
+    client_connection_parameters_->SetNearbyConnectionState(step, result);
+  }
+
+  void UpdateSecureChannelChange(
+      mojom::SecureChannelState secure_channel_state) {
+    client_connection_parameters_->SetSecureChannelAuthenticationState(
+        secure_channel_state);
   }
 
  private:

@@ -357,7 +357,7 @@ void IntentGenerator::MaybeGenerateTranslationIntent(
 
 void IntentGenerator::LanguageDetectorCallback(
     const QuickAnswersRequest& request,
-    absl::optional<std::string> detected_locale) {
+    std::optional<std::string> detected_locale) {
   language_detector_.reset();
 
   auto device_language =

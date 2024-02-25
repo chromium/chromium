@@ -13,8 +13,8 @@ namespace cc {
 namespace {
 
 std::string ReplaceNamesInAnimation(
-    base::StringPiece animation_json,
-    const base::flat_map<base::StringPiece, base::StringPiece>& replacements) {
+    std::string_view animation_json,
+    const base::flat_map<std::string_view, std::string_view>& replacements) {
   std::string output(animation_json);
   for (auto [from, to] : replacements) {
     CHECK(!from.empty());
@@ -27,8 +27,8 @@ std::string ReplaceNamesInAnimation(
 }  // namespace
 
 std::string CreateCustomLottieDataWith2ColorNodes(
-    base::StringPiece color_node_1,
-    base::StringPiece color_node_2) {
+    std::string_view color_node_1,
+    std::string_view color_node_2) {
   return ReplaceNamesInAnimation(
       kLottieDataWithoutAssets1,
       {{kLottieDataWithoutAssets1Color1Node, color_node_1},
@@ -36,16 +36,16 @@ std::string CreateCustomLottieDataWith2ColorNodes(
 }
 
 std::string CreateCustomLottieDataWith2Assets(
-    base::StringPiece custom_asset_id_0,
-    base::StringPiece custom_asset_id_1) {
+    std::string_view custom_asset_id_0,
+    std::string_view custom_asset_id_1) {
   return ReplaceNamesInAnimation(
       kLottieDataWith2Assets,
       {{"image_0", custom_asset_id_0}, {"image_1", custom_asset_id_1}});
 }
 
 std::string CreateCustomLottieDataWith2TextNodes(
-    base::StringPiece custom_text_node_name_0,
-    base::StringPiece custom_text_node_name_1) {
+    std::string_view custom_text_node_name_0,
+    std::string_view custom_text_node_name_1) {
   return ReplaceNamesInAnimation(
       LoadSkottieFileFromTestData(kLottieDataWith2TextFileName),
       {{kLottieDataWith2TextNode1, custom_text_node_name_0},

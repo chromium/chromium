@@ -35,22 +35,18 @@ syncer::UserSelectableTypeSet GetSyncTypesForBrowsingDataLifetime(
 syncer::UserSelectableTypeSet GetSyncTypesForClearBrowsingData(
     const base::Value& policy_value);
 
-// Disables all the sync types in `types_set` by disabling their preferences and
-// adds a log for the chrome://policy/logs page.
-void DisableSyncTypes(const syncer::UserSelectableTypeSet& types_set,
-                      PrefValueMap* prefs,
-                      const std::string& policy_name,
-                      std::string& log_message);
+// Disables all the sync types in `types_set` by disabling their preferences.
+// Returns a message with the disabled sync types. The message is suitable for
+// logging to chrome://policy/logs.
+std::string DisableSyncTypes(const syncer::UserSelectableTypeSet& types_set,
+                             PrefValueMap* prefs,
+                             const std::string& policy_name);
 
 // Converts the browsing data type string to its integer value.
 // The conversion is used to ensure that the number of policy data types that
 // can be managed at any point in time is known and mapped to sync types that
 // need to be disabled if it is managed by policy.
-absl::optional<PolicyDataType> NameToPolicyDataType(const std::string& type);
-
-// Checks if data retention policies dependency on sync types is enabled by
-// feature.
-bool IsPolicyDependencyEnabled();
+std::optional<PolicyDataType> NameToPolicyDataType(const std::string& type);
 
 }  // namespace browsing_data
 #endif  // COMPONENTS_BROWSING_DATA_CORE_BROWSING_DATA_POLICIES_UTILS_H_

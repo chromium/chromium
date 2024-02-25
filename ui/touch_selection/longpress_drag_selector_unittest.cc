@@ -14,8 +14,6 @@ namespace {
 
 const double kSlop = 10.;
 
-}  // namespace
-
 class LongPressDragSelectorTest : public testing::Test,
                                   public LongPressDragSelectorClient {
  public:
@@ -441,4 +439,5 @@ TEST_F(LongPressDragSelectorTest, ScrollAfterLongPress) {
   selector.WillHandleTouchEvent(event.ReleasePoint());
 }
 
+}  // namespace
 }  // namespace ui

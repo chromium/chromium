@@ -36,6 +36,7 @@ export enum State {
   HIDE_FLOATING_UI_FOR_TESTING = 'hide-floating-ui-for-testing',
   INTENT = 'intent',
   KEYBOARD_NAVIGATION = 'keyboard-navigation',
+  LID_CLOSED = 'lid_closed',
   MAX_WND = 'max-wnd',
   MIC = 'mic',
   MIRROR = 'mirror',
@@ -111,6 +112,24 @@ export function addObserver(state: StateUnion, observer: StateObserver): void {
     allObservers.set(state, observers);
   }
   observers.add(observer);
+}
+
+/**
+ * Adds observer function to be called when the state value is changed to true.
+ * Returns the wrapped observer in case it needs to be removed later.
+ *
+ * @param state State to be observed.
+ * @param observer Observer function called with newly changed value.
+ */
+export function addEnabledStateObserver(
+    state: StateUnion, observer: StateObserver): StateObserver {
+  const wrappedObserver: StateObserver = (val, perfInfo) => {
+    if (val) {
+      observer(val, perfInfo);
+    }
+  };
+  addObserver(state, wrappedObserver);
+  return wrappedObserver;
 }
 
 /**

@@ -11,8 +11,8 @@
 #include <string>
 #include <vector>
 
-#include "base/allocator/partition_allocator/partition_alloc_buildflags.h"
-#include "base/allocator/partition_allocator/tagging.h"
+#include "base/allocator/partition_allocator/src/partition_alloc/partition_alloc_buildflags.h"
+#include "base/allocator/partition_allocator/src/partition_alloc/tagging.h"
 #include "base/at_exit.h"
 #include "base/base_paths.h"
 #include "base/base_switches.h"
@@ -30,6 +30,7 @@
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
+#include "base/metrics/statistics_recorder.h"
 #include "base/no_destructor.h"
 #include "base/path_service.h"
 #include "base/process/launch.h"
@@ -94,6 +95,10 @@
 #include "base/allocator/partition_alloc_support.h"
 #endif  // BUILDFLAG(USE_PARTITION_ALLOC)
 
+#if GTEST_HAS_DEATH_TEST
+#include "base/gtest_prod_util.h"
+#endif
+
 namespace base {
 
 namespace {
@@ -117,7 +122,14 @@ class DisableMaybeTests : public testing::EmptyTestEventListener {
 
 class ResetCommandLineBetweenTests : public testing::EmptyTestEventListener {
  public:
-  ResetCommandLineBetweenTests() : old_command_line_(CommandLine::NO_PROGRAM) {}
+  ResetCommandLineBetweenTests() : old_command_line_(CommandLine::NO_PROGRAM) {
+    // TODO(crbug.com/1123627): Remove this after A/B test is done.
+    // Workaround a test-specific race conditon with StatisticsRecorder lock
+    // initialization checking CommandLine by ensuring it's created here (when
+    // we start the test process), rather than in some arbitrary test. This
+    // prevents a race with OnTestEnd().
+    StatisticsRecorder::FindHistogram("Dummy");
+  }
 
   ResetCommandLineBetweenTests(const ResetCommandLineBetweenTests&) = delete;
   ResetCommandLineBetweenTests& operator=(const ResetCommandLineBetweenTests&) =
@@ -211,33 +223,33 @@ class CheckForLeakedGlobals : public testing::EmptyTestEventListener {
   }
   void OnTestEnd(const testing::TestInfo& test) override {
     DCHECK_EQ(feature_list_set_before_test_, FeatureList::GetInstance())
-        << " in test " << test.test_case_name() << "." << test.name();
+        << " in test " << test.test_suite_name() << "." << test.name();
     DCHECK_EQ(thread_pool_set_before_test_, ThreadPoolInstance::Get())
-        << " in test " << test.test_case_name() << "." << test.name();
+        << " in test " << test.test_suite_name() << "." << test.name();
     feature_list_set_before_test_ = nullptr;
     thread_pool_set_before_test_ = nullptr;
   }
 
-  // Check for leaks in test cases (consisting of one or more tests).
-  void OnTestCaseStart(const testing::TestCase& test_case) override {
-    feature_list_set_before_case_ = FeatureList::GetInstance();
-    thread_pool_set_before_case_ = ThreadPoolInstance::Get();
+  // Check for leaks in test suites (consisting of one or more tests).
+  void OnTestSuiteStart(const testing::TestSuite& test_suite) override {
+    feature_list_set_before_suite_ = FeatureList::GetInstance();
+    thread_pool_set_before_suite_ = ThreadPoolInstance::Get();
   }
-  void OnTestCaseEnd(const testing::TestCase& test_case) override {
-    DCHECK_EQ(feature_list_set_before_case_, FeatureList::GetInstance())
-        << " in case " << test_case.name();
-    DCHECK_EQ(thread_pool_set_before_case_, ThreadPoolInstance::Get())
-        << " in case " << test_case.name();
-    feature_list_set_before_case_ = nullptr;
-    thread_pool_set_before_case_ = nullptr;
+  void OnTestSuiteEnd(const testing::TestSuite& test_suite) override {
+    DCHECK_EQ(feature_list_set_before_suite_, FeatureList::GetInstance())
+        << " in suite " << test_suite.name();
+    DCHECK_EQ(thread_pool_set_before_suite_, ThreadPoolInstance::Get())
+        << " in suite " << test_suite.name();
+    feature_list_set_before_suite_ = nullptr;
+    thread_pool_set_before_suite_ = nullptr;
   }
 
  private:
   raw_ptr<FeatureList, DanglingUntriaged> feature_list_set_before_test_ =
       nullptr;
-  raw_ptr<FeatureList> feature_list_set_before_case_ = nullptr;
+  raw_ptr<FeatureList> feature_list_set_before_suite_ = nullptr;
   raw_ptr<ThreadPoolInstance> thread_pool_set_before_test_ = nullptr;
-  raw_ptr<ThreadPoolInstance> thread_pool_set_before_case_ = nullptr;
+  raw_ptr<ThreadPoolInstance> thread_pool_set_before_suite_ = nullptr;
 };
 
 // iOS: base::Process is not available.
@@ -439,7 +451,7 @@ void TestSuite::UnitTestAssertHandler(const char* file,
   const ::testing::TestInfo* const test_info =
       ::testing::UnitTest::GetInstance()->current_test_info();
   if (test_info) {
-    LOG(ERROR) << "Currently running: " << test_info->test_case_name() << "."
+    LOG(ERROR) << "Currently running: " << test_info->test_suite_name() << "."
                << test_info->name();
     fflush(stderr);
   }
@@ -527,7 +539,7 @@ void TestSuite::Initialize() {
   // FeatureList::SetInstance() when/if OnTestStart() TestEventListeners
   // are fixed to be invoked in the child process as expected.
   if (command_line->HasSwitch("gtest_internal_run_death_test"))
-    logging::LOGGING_DCHECK = logging::LOG_FATAL;
+    logging::LOGGING_DCHECK = logging::LOGGING_FATAL;
 #endif  // BUILDFLAG(DCHECK_IS_CONFIGURABLE)
 
 #if BUILDFLAG(IS_IOS)
@@ -600,6 +612,10 @@ void TestSuite::Initialize() {
 }
 
 void TestSuite::InitializeFromCommandLine(int* argc, char** argv) {
+#if GTEST_HAS_DEATH_TEST
+  internal::SetInDeathTestChildFn(&::testing::internal::InDeathTestChild);
+#endif
+
   // CommandLine::Init() is called earlier from PreInitialize().
   testing::InitGoogleTest(argc, argv);
   testing::InitGoogleMock(argc, argv);
@@ -637,11 +653,11 @@ void TestSuite::PreInitialize() {
   // TODO(danakj): Determine if all death tests should be skipped on Android
   // (many already are, such as for DCHECK-death tests).
 #if !BUILDFLAG(IS_ANDROID)
-  testing::GTEST_FLAG(death_test_style) = "threadsafe";
+  GTEST_FLAG_SET(death_test_style, "threadsafe");
 #endif
 
 #if BUILDFLAG(IS_WIN)
-  testing::GTEST_FLAG(catch_exceptions) = false;
+  GTEST_FLAG_SET(catch_exceptions, false);
 #endif
   EnableTerminationOnHeapCorruption();
 #if (BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)) && defined(USE_AURA)

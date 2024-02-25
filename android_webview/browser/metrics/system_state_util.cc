@@ -12,7 +12,7 @@ MultipleUserProfilesState GetMultipleUserProfilesState() {
   static MultipleUserProfilesState multiple_user_profiles_state =
       static_cast<MultipleUserProfilesState>(
           Java_SystemStateUtil_getMultipleUserProfilesState(
-              base::android::AttachCurrentThread()));
+              jni_zero::AttachCurrentThread()));
   return multiple_user_profiles_state;
 }
 
@@ -20,7 +20,7 @@ PrimaryCpuAbiBitness GetPrimaryCpuAbiBitness() {
   static PrimaryCpuAbiBitness primary_cpu_abi_bitness =
       static_cast<PrimaryCpuAbiBitness>(
           Java_SystemStateUtil_getPrimaryCpuAbiBitness(
-              base::android::AttachCurrentThread()));
+              jni_zero::AttachCurrentThread()));
   return primary_cpu_abi_bitness;
 }
 

@@ -14,10 +14,11 @@ void FakeCompatibilityModeInstance::SetResizeLockState(
     const std::string& package_name,
     mojom::ArcResizeLockState state) {}
 
-void FakeCompatibilityModeInstance::IsGioApplicable(
+void FakeCompatibilityModeInstance::IsOptimizedForCrosApp(
     const std::string& package_name,
-    IsGioApplicableCallback callback) {
-  std::move(callback).Run(is_gio_applicable_);
+    IsOptimizedForCrosAppCallback callback) {
+  const bool is_o4c = o4c_pkgs_.find(package_name) != o4c_pkgs_.end();
+  std::move(callback).Run(is_o4c);
 }
 
 }  // namespace arc

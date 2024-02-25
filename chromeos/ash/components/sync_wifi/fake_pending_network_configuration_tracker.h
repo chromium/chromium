@@ -6,10 +6,10 @@
 #define CHROMEOS_ASH_COMPONENTS_SYNC_WIFI_FAKE_PENDING_NETWORK_CONFIGURATION_TRACKER_H_
 
 #include <map>
+#include <optional>
 
 #include "chromeos/ash/components/sync_wifi/network_identifier.h"
 #include "chromeos/ash/components/sync_wifi/pending_network_configuration_tracker.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ash::sync_wifi {
 
@@ -28,14 +28,14 @@ class FakePendingNetworkConfigurationTracker
   // sync_wifi::PendingNetworkConfigurationtracker::
   std::string TrackPendingUpdate(
       const NetworkIdentifier& id,
-      const absl::optional<sync_pb::WifiConfigurationSpecifics>& specifics)
+      const std::optional<sync_pb::WifiConfigurationSpecifics>& specifics)
       override;
   void MarkComplete(const std::string& change_guid,
                     const NetworkIdentifier& id) override;
   void IncrementCompletedAttempts(const std::string& change_id,
                                   const NetworkIdentifier& id) override;
   std::vector<PendingNetworkConfigurationUpdate> GetPendingUpdates() override;
-  absl::optional<PendingNetworkConfigurationUpdate> GetPendingUpdate(
+  std::optional<PendingNetworkConfigurationUpdate> GetPendingUpdate(
       const std::string& change_guid,
       const NetworkIdentifier& id) override;
 

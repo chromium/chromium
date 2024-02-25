@@ -46,6 +46,8 @@ class Size;
 namespace gpu {
 class ScopedAllowScheduleGpuTask;
 struct SwapBuffersCompleteParams;
+class SharedImageManager;
+class SyncPointManager;
 }
 
 namespace viz {
@@ -85,6 +87,8 @@ class VIZ_SERVICE_EXPORT Display : public DisplaySchedulerClient,
   // subclasses are replaced by SkiaRenderer.
   Display(
       SharedBitmapManager* bitmap_manager,
+      gpu::SharedImageManager* shared_image_manager,
+      gpu::SyncPointManager* sync_point_manager,
       const RendererSettings& settings,
       const DebugRendererSettings* debug_settings,
       const FrameSinkId& frame_sink_id,
@@ -187,6 +191,8 @@ class VIZ_SERVICE_EXPORT Display : public DisplaySchedulerClient,
       mojom::CompositorFrameSinkType* type) override;
 
   bool has_scheduler() const { return !!scheduler_; }
+  bool visible() const { return visible_; }
+  const RendererSettings& settings() const { return settings_; }
   DirectRenderer* renderer_for_testing() const { return renderer_.get(); }
 
   bool resize_based_on_root_surface() const {
@@ -268,6 +274,8 @@ class VIZ_SERVICE_EXPORT Display : public DisplaySchedulerClient,
   void OnContextLost() override;
 
   const raw_ptr<SharedBitmapManager> bitmap_manager_;
+  const raw_ptr<gpu::SharedImageManager> shared_image_manager_;
+  const raw_ptr<gpu::SyncPointManager> sync_point_manager_;
   const RendererSettings settings_;
 
   // Points to the viz-global singleton.

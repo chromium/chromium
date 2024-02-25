@@ -5,17 +5,18 @@
 #ifndef NET_CERT_INTERNAL_REVOCATION_CHECKER_H_
 #define NET_CERT_INTERNAL_REVOCATION_CHECKER_H_
 
-#include "base/strings/string_piece_forward.h"
+#include <string_view>
+
 #include "base/time/time.h"
 #include "net/base/net_export.h"
 #include "net/cert/crl_set.h"
-#include "net/cert/pki/parsed_certificate.h"
+#include "third_party/boringssl/src/pki/cert_errors.h"
+#include "third_party/boringssl/src/pki/ocsp.h"
+#include "third_party/boringssl/src/pki/parsed_certificate.h"
 
 namespace net {
 
-class CertPathErrors;
 class CertNetFetcher;
-struct OCSPVerifyResult;
 
 // Baseline Requirements 1.6.5, section 4.9.7:
 //     For the status of Subscriber Certificates: If the CA publishes a CRL,
@@ -111,13 +112,13 @@ struct NET_EXPORT_PRIVATE RevocationPolicy {
 // |stapled_ocsp_verify_result|, if non-null, will be filled with the result of
 // checking the leaf certificate against |stapled_leaf_ocsp_response|.
 NET_EXPORT_PRIVATE void CheckValidatedChainRevocation(
-    const ParsedCertificateList& certs,
+    const bssl::ParsedCertificateList& certs,
     const RevocationPolicy& policy,
     base::TimeTicks deadline,
-    base::StringPiece stapled_leaf_ocsp_response,
+    std::string_view stapled_leaf_ocsp_response,
     CertNetFetcher* net_fetcher,
-    CertPathErrors* errors,
-    OCSPVerifyResult* stapled_ocsp_verify_result);
+    bssl::CertPathErrors* errors,
+    bssl::OCSPVerifyResult* stapled_ocsp_verify_result);
 
 // Checks the revocation status of a certificate chain using the CRLSet and adds
 // revocation errors to |errors|.
@@ -134,8 +135,8 @@ NET_EXPORT_PRIVATE void CheckValidatedChainRevocation(
 //   the revocation status of leaf certificate was UNKNOWN by the CRLSet.
 NET_EXPORT_PRIVATE CRLSet::Result CheckChainRevocationUsingCRLSet(
     const CRLSet* crl_set,
-    const ParsedCertificateList& certs,
-    CertPathErrors* errors);
+    const bssl::ParsedCertificateList& certs,
+    bssl::CertPathErrors* errors);
 
 }  // namespace net
 

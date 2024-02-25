@@ -10,6 +10,7 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/common/chrome_paths.h"
 #include "chrome/test/base/in_process_browser_test.h"
+#include "content/public/browser/storage_partition.h"
 #include "content/public/test/browser_test.h"
 #include "extensions/browser/api/socket/socket_api.h"
 #include "extensions/browser/api/sockets_udp/test_udp_echo_server.h"
@@ -38,7 +39,9 @@ class SocketApiTest : public extensions::ExtensionApiTest {
 IN_PROC_BROWSER_TEST_F(SocketApiTest, SocketUDPExtension) {
   extensions::TestUdpEchoServer udp_echo_server;
   net::HostPortPair host_port_pair;
-  ASSERT_TRUE(udp_echo_server.Start(&host_port_pair));
+  ASSERT_TRUE(udp_echo_server.Start(
+      profile()->GetDefaultStoragePartition()->GetNetworkContext(),
+      &host_port_pair));
 
   int port = host_port_pair.port();
   ASSERT_GT(port, 0);

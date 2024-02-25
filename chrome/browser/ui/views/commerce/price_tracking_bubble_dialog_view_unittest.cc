@@ -125,11 +125,11 @@ class PriceTrackingBubbleDialogViewLayoutUnitTest
     }
   }
 
-  const std::u16string& GetFolderName() {
+  std::u16string GetFolderName() {
     if (BookmarkWasCreated()) {
       return bookmark_folder_name_;
     } else {
-      return GetDefaultFolderName();
+      return u"";
     }
   }
 
@@ -150,13 +150,6 @@ class PriceTrackingBubbleDialogViewLayoutUnitTest
   }
 
  private:
-  const std::u16string& GetDefaultFolderName() {
-    bookmarks::BookmarkModel* const model =
-        BookmarkModelFactory::GetForBrowserContext(profile());
-    const bookmarks::BookmarkNode* node = model->other_node();
-    return node->GetTitle();
-  }
-
   std::u16string bookmark_folder_name_;
 };
 
@@ -186,6 +179,11 @@ TEST_P(PriceTrackingBubbleDialogViewLayoutUnitTest, FUEBubble) {
 }
 
 TEST_P(PriceTrackingBubbleDialogViewLayoutUnitTest, NormalBubble) {
+  // Price tracking can't happen if the bookmark wasn't created.
+  if (!BookmarkWasCreated()) {
+    return;
+  }
+
   CreateBubbleViewAndShow(PriceTrackingBubbleDialogView::Type::TYPE_NORMAL);
 
   auto* bubble = BubbleCoordinator()->GetBubble();
@@ -195,10 +193,14 @@ TEST_P(PriceTrackingBubbleDialogViewLayoutUnitTest, NormalBubble) {
             l10n_util::GetStringUTF16(IDS_OMNIBOX_TRACKING_PRICE_DIALOG_TITLE));
 
   EXPECT_TRUE(bubble->GetBodyLabelForTesting());
-  EXPECT_EQ(
-      bubble->GetBodyLabelForTesting()->GetText(),
-      l10n_util::GetStringFUTF16(IDS_OMNIBOX_TRACKING_PRICE_DIALOG_DESCRIPTION,
-                                 GetFolderName()));
+  std::u16string expected_label =
+      l10n_util::GetStringUTF16(IDS_PRICE_TRACKING_SAVE_DESCRIPTION);
+  std::u16string expected_save_label = l10n_util::GetStringFUTF16(
+      IDS_PRICE_TRACKING_SAVE_LOCATION, GetFolderName());
+  EXPECT_TRUE(bubble->GetBodyLabelForTesting()->GetText().find(
+                  expected_label) != std::u16string::npos);
+  EXPECT_TRUE(bubble->GetBodyLabelForTesting()->GetText().find(
+                  expected_save_label) != std::u16string::npos);
   EXPECT_TRUE(bubble->GetBodyLabelForTesting()->GetFirstLinkForTesting());
 
   EXPECT_EQ(bubble->GetDialogButtonLabel(ui::DIALOG_BUTTON_OK),

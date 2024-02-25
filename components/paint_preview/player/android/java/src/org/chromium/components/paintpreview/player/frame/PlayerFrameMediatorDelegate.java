@@ -9,23 +9,15 @@ import android.graphics.Matrix;
 import android.graphics.Rect;
 import android.util.Size;
 
-/**
- * API of the PlayerFrameMediator to helper classes.
- */
+/** API of the PlayerFrameMediator to helper classes. */
 public interface PlayerFrameMediatorDelegate {
-    /**
-     * Gets the visual viewport of the player.
-     */
+    /** Gets the visual viewport of the player. */
     public PlayerFrameViewport getViewport();
 
-    /**
-     * Gets the size of the content shown in the mediator.
-     */
+    /** Gets the size of the content shown in the mediator. */
     public Size getContentSize();
 
-    /**
-     * Gets the min scale factor at the last computed viewport width.
-     */
+    /** Gets the min scale factor at the last computed viewport width. */
     public float getMinScaleFactor();
 
     /**
@@ -64,19 +56,13 @@ public interface PlayerFrameMediatorDelegate {
      */
     void forceRedrawVisibleSubframes();
 
-    /**
-     * Updates the bitmap matrix in the model.
-     */
+    /** Updates the bitmap matrix in the model. */
     void updateBitmapMatrix(Bitmap[][] bitmapMatrix);
 
-    /**
-     * Update the model when the bitmap state is swapped.
-     */
+    /** Update the model when the bitmap state is swapped. */
     void onSwapState();
 
-    /**
-     * To be called when scaling is started to prevent double-buffering from swapping mid-scale.
-     */
+    /** To be called when scaling is started to prevent double-buffering from swapping mid-scale. */
     void onStartScaling();
 
     /**

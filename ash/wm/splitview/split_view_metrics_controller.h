@@ -9,13 +9,14 @@
 #include <set>
 #include <vector>
 
-#include "ash/public/cpp/tablet_mode_observer.h"
+#include "ash/constants/ash_pref_names.h"
 #include "ash/wm/desks/desks_controller.h"
 #include "ash/wm/splitview/split_view_observer.h"
 #include "ash/wm/window_state_observer.h"
 #include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
 #include "base/time/time.h"
+#include "chromeos/ui/base/window_state_type.h"
 #include "ui/aura/env_observer.h"
 #include "ui/aura/window_observer.h"
 #include "ui/display/display_observer.h"
@@ -25,8 +26,22 @@ namespace aura {
 class Window;
 }  //  namespace aura
 
+namespace display {
+enum class TabletState;
+}  // namespace display
+
 namespace ash {
 class SplitViewController;
+
+// Public so it can be used by unit tests.
+constexpr char kSnapTwoWindowsDurationHistogramName[] =
+    "Ash.Snap.SnapTwoWindowsDuration";
+constexpr char kMinimizeTwoWindowsDurationHistogramName[] =
+    "Ash.Snap.MinimizeTwoWindowsDuration";
+constexpr char kCloseTwoWindowsDurationHistogramName[] =
+    "Ash.Snap.CloseTwoWindowsDuration";
+constexpr base::TimeDelta kSequentialSnapActionMinTime = base::Seconds(1);
+constexpr base::TimeDelta kSequentialSnapActionMaxTime = base::Hours(50);
 
 // SplitViewMetricsController:
 // Manages split view related metrics. Tablet mode split view and clamshell
@@ -47,8 +62,7 @@ class SplitViewController;
 //        the UMA).
 // End: When no two windows are snapped on both sides or tablet model split view
 //        starts, the clamshell split view ends.
-class SplitViewMetricsController : public TabletModeObserver,
-                                   public SplitViewObserver,
+class SplitViewMetricsController : public SplitViewObserver,
                                    public display::DisplayObserver,
                                    public aura::WindowObserver,
                                    public WindowStateObserver,
@@ -86,13 +100,7 @@ class SplitViewMetricsController : public TabletModeObserver,
   SplitViewMetricsController(const SplitViewMetricsController&) = delete;
   SplitViewMetricsController& operator=(const SplitViewMetricsController&) =
       delete;
-
   ~SplitViewMetricsController() override;
-
-  // TabletModeObserver:
-  void OnTabletModeStarted() override;
-  void OnTabletModeEnded() override;
-  void OnTabletControllerDestroyed() override;
 
   // SplitViewObserver:
   void OnSplitViewStateChanged(SplitViewController::State previous_state,
@@ -103,6 +111,8 @@ class SplitViewMetricsController : public TabletModeObserver,
   // display::DisplayObserver:
   void OnDisplayMetricsChanged(const display::Display& display,
                                uint32_t changed_metrics) override;
+  void OnDisplayTabletStateChanged(display::TabletState state) override;
+
   // aura::WindowObserver:
   void OnWindowParentChanged(aura::Window* window,
                              aura::Window* parent) override;
@@ -158,13 +168,52 @@ class SplitViewMetricsController : public TabletModeObserver,
   // If there are top windows snapped on both sides, start to record split
   // view metrics. Otherwise, stop recording split view metrics.
   void MaybeStartOrEndRecordBothSnappedClamshellSplitView();
+
   // Pauses recording of engagement time when a window hides the windows
   // snapped on both sides. Return true, if the recording is paused. Otherwise,
   // return false.
   bool MaybePauseRecordBothSnappedClamshellSplitView();
 
+  // Records and resets the duration between two windows getting snapped.
+  void RecordSnapTwoWindowsDuration(const base::TimeDelta& elapsed_time);
+
+  // Records and resets the duration between two snapped windows getting
+  // minimized.
+  void RecordMinimizeTwoWindowsDuration(const base::TimeDelta& elapsed_time);
+
+  // Records and resets the duration between two snapped windows getting
+  // closed.
+  void RecordCloseTwoWindowsDuration(const base::TimeDelta& elapsed_time);
+
+  // Starts recording the time if `window_state` was the first snapped window.
+  // Ends recording if either:
+  // 1. A second window is snapped;
+  // 2. The first window is unsnapped;
+  // 3. The first window is destroyed.
+  void MaybeStartOrEndRecordSnapTwoWindowsDuration(WindowState* window_state);
+
+  // Starts recording the time if `window_state` changed from snapped to
+  // minimized. Ends recording if either:
+  // 1. A second window state changes from snapped to minimized;
+  // 2. The first window is no longer snapped or minimized;
+  // 3. The first window is destroyed.
+  void MaybeStartOrEndRecordMinimizeTwoWindowsDuration(
+      WindowState* window_state,
+      chromeos::WindowStateType old_type);
+
+  // Starts recording the time if `window` was snapped and gets closed, i.e.
+  // destroyed. Ends recording if either:
+  // 1. A second snapped window is closed;
+  // 2. A second snapped window is unsnapped.
+  void MaybeStartOrEndRecordCloseTwoWindowsDuration(aura::Window* window);
+
   // Resets the variables related to time and counter metrics.
   void ResetTimeAndCounter();
+
+  // Called from `OnDisplayTabletStateChanged` when the display tablet state
+  // transition is completed.
+  void OnTabletModeStarted();
+  void OnTabletModeEnded();
 
   // Checks if we are recording clamshell/tablet mode metrics.
   bool IsRecordingClamshellMetrics() const;
@@ -199,7 +248,7 @@ class SplitViewMetricsController : public TabletModeObserver,
   // We need to save an ptr of the observed `SplitViewController`. Because the
   // `RootWindowController` will be deconstructed in advance. Then, we cannot
   // use it to get observed `SplitViewController`.
-  const raw_ptr<SplitViewController, ExperimentalAsh> split_view_controller_;
+  const raw_ptr<SplitViewController> split_view_controller_;
 
   // Indicates whether it is recording split view metrics.
   bool in_split_view_recording_ = false;
@@ -208,16 +257,16 @@ class SplitViewMetricsController : public TabletModeObserver,
   DeviceOrientation orientation_ = DeviceOrientation::kLandscape;
 
   // Current observed desk.
-  raw_ptr<const Desk, ExperimentalAsh> current_desk_ = nullptr;
+  raw_ptr<const Desk> current_desk_ = nullptr;
 
   // Observed windows on the active desk.
-  std::vector<aura::Window*> observed_windows_;
+  std::vector<raw_ptr<aura::Window, VectorExperimental>> observed_windows_;
 
   // Windows that recovered by window restore have no parents at the initialize
   // stage, so their window states cannot be observed when are inserted into
   // `observed_windows_` list. This set contains the windows recovered by window
   // restored whose window states have not been observed yet.
-  std::set<aura::Window*> no_state_observed_windows_;
+  std::set<raw_ptr<aura::Window, SetExperimental>> no_state_observed_windows_;
 
   // Start time of clamshell and tablet split view. When stop recording, the
   // start time will be set to `base::TimeTicks::Max()`. This is also used as an
@@ -235,13 +284,29 @@ class SplitViewMetricsController : public TabletModeObserver,
   int tablet_resize_count_ = 0;
   int clamshell_resize_count_ = 0;
 
-  // `TabletModeController` is destroyed before `SplitViewMetricsController`.
-  // Sets a `ScopedObservation` to help remove observer.
-  base::ScopedObservation<TabletModeController, TabletModeObserver>
-      tablet_mode_controller_observation_{this};
-
   // Counter of swapping windows in split view.
   int swap_count_ = 0;
+
+  // The first window that gets snapped and the time it's snapped at. Used by
+  // `Ash.Snap.SnapTwoWindowsDuration` in
+  // tools/metrics/histograms/metadata/ash/histograms.xml.
+  raw_ptr<aura::Window> first_snapped_window_ = nullptr;
+  base::TimeTicks first_snapped_time_;
+
+  // The first snapped window that gets minimized and the time it's minimized.
+  // Used by `Ash.Snap.MinimizeTwoWindowsDuration` in
+  // tools/metrics/histograms/metadata/ash/histograms.xml.
+  raw_ptr<WindowState> first_minimized_window_state_ = nullptr;
+  base::TimeTicks first_minimized_time_;
+
+  // The first snapped window that gets closed and the time it's closed.
+  // Used by `Ash.Snap.CloseTwoWindowsDuration` in
+  // tools/metrics/histograms/metadata/ash/histograms.xml.
+  chromeos::WindowStateType first_closed_state_type_ =
+      chromeos::WindowStateType::kDefault;
+  base::TimeTicks first_closed_time_;
+
+  display::ScopedDisplayObserver display_observer_{this};
 };
 
 }  // namespace ash

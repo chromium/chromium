@@ -44,7 +44,8 @@ FloatingWorkspaceServiceFactory::FloatingWorkspaceServiceFactory()
 
 FloatingWorkspaceServiceFactory::~FloatingWorkspaceServiceFactory() = default;
 
-KeyedService* FloatingWorkspaceServiceFactory::BuildServiceInstanceFor(
+std::unique_ptr<KeyedService>
+FloatingWorkspaceServiceFactory::BuildServiceInstanceForBrowserContext(
     content::BrowserContext* context) const {
   Profile* profile = Profile::FromBrowserContext(context);
   floating_workspace_util::FloatingWorkspaceVersion version =
@@ -56,8 +57,8 @@ KeyedService* FloatingWorkspaceServiceFactory::BuildServiceInstanceFor(
     version = floating_workspace_util::FloatingWorkspaceVersion::
         kFloatingWorkspaceV2Enabled;
   }
-  FloatingWorkspaceService* service =
-      new FloatingWorkspaceService(profile, version);
+  std::unique_ptr<FloatingWorkspaceService> service =
+      std::make_unique<FloatingWorkspaceService>(profile, version);
   service->Init(SyncServiceFactory::GetForProfile(profile),
                 DeskSyncServiceFactory::GetForProfile(profile));
   return service;

@@ -31,6 +31,7 @@
 #include "components/sync/model/client_tag_based_model_type_processor.h"
 #include "components/sync/protocol/sync_enums.pb.h"
 #include "components/sync_device_info/device_info.h"
+#include "components/sync_device_info/device_info_sync_service.h"
 #include "content/public/test/browser_test_utils.h"
 #include "net/dns/mock_host_resolver.h"
 #include "third_party/blink/public/mojom/context_menu/context_menu.mojom.h"
@@ -109,7 +110,7 @@ void SharingBrowserTest::SetUpDevices(
   syncer::DeviceInfoTracker* original_device_info_tracker =
       DeviceInfoSyncServiceFactory::GetForProfile(GetProfile(0))
           ->GetDeviceInfoTracker();
-  std::vector<std::unique_ptr<syncer::DeviceInfo>> original_devices =
+  std::vector<const syncer::DeviceInfo*> original_devices =
       original_device_info_tracker->GetAllDeviceInfo();
   ASSERT_EQ(2u, original_devices.size());
 
@@ -191,8 +192,12 @@ std::unique_ptr<TestRenderViewContextMenu> SharingBrowserTest::InitContextMenu(
 }
 
 void SharingBrowserTest::CheckLastReceiver(
-    const syncer::DeviceInfo& device) const {
-  auto fcm_configuration = GetFCMChannel(device);
+    const SharingTargetDeviceInfo& device) const {
+  const syncer::DeviceInfo* device_info =
+      fake_device_info_tracker_.GetDeviceInfo(device.guid());
+  ASSERT_TRUE(device_info);
+
+  auto fcm_configuration = GetFCMChannel(*device_info);
   ASSERT_TRUE(fcm_configuration);
 
   EXPECT_EQ(fcm_configuration->sender_id_fcm_token(),

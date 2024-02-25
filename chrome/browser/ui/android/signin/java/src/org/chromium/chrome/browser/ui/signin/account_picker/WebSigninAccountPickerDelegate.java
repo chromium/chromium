@@ -12,14 +12,16 @@ import org.chromium.base.ThreadUtils;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.signin.services.SigninManager;
+import org.chromium.chrome.browser.signin.services.SigninMetricsUtils;
 import org.chromium.chrome.browser.signin.services.WebSigninBridge;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.ui.signin.account_picker.AccountPickerBottomSheetCoordinator.EntryPoint;
-import org.chromium.components.signin.AccountUtils;
+import org.chromium.components.signin.base.CoreAccountInfo;
 import org.chromium.components.signin.base.GoogleServiceAuthError;
-import org.chromium.components.signin.identitymanager.AccountInfoServiceProvider;
+import org.chromium.components.signin.base.GoogleServiceAuthError.State;
 import org.chromium.components.signin.identitymanager.ConsentLevel;
 import org.chromium.components.signin.identitymanager.IdentityManager;
+import org.chromium.components.signin.metrics.AccountConsistencyPromoAction;
 import org.chromium.components.signin.metrics.SigninAccessPoint;
 import org.chromium.components.signin.metrics.SignoutReason;
 import org.chromium.content_public.browser.LoadUrlParams;
@@ -27,6 +29,7 @@ import org.chromium.content_public.browser.LoadUrlParams;
 /** Implementation of {@link AccountPickerDelegate} for the web-signin flow. */
 public class WebSigninAccountPickerDelegate implements AccountPickerDelegate {
     private final Tab mCurrentTab;
+    private final Profile mProfile;
     private final WebSigninBridge.Factory mWebSigninBridgeFactory;
     private final String mContinueUrl;
     private final SigninManager mSigninManager;
@@ -42,22 +45,20 @@ public class WebSigninAccountPickerDelegate implements AccountPickerDelegate {
     public WebSigninAccountPickerDelegate(
             Tab currentTab, WebSigninBridge.Factory webSigninBridgeFactory, String continueUrl) {
         mCurrentTab = currentTab;
+        mProfile = currentTab.getProfile();
         mWebSigninBridgeFactory = webSigninBridgeFactory;
         mContinueUrl = continueUrl;
-        mSigninManager = IdentityServicesProvider.get().getSigninManager(
-                Profile.getLastUsedRegularProfile());
-        mIdentityManager = IdentityServicesProvider.get().getIdentityManager(
-                Profile.getLastUsedRegularProfile());
+        mSigninManager = IdentityServicesProvider.get().getSigninManager(mProfile);
+        mIdentityManager = IdentityServicesProvider.get().getIdentityManager(mProfile);
     }
 
     @Override
-    public void destroy() {
+    public void onAccountPickerDestroy() {
         destroyWebSigninBridge();
     }
 
     @Override
-    public void signIn(
-            String accountEmail, Callback<GoogleServiceAuthError> onSignInErrorCallback) {
+    public void signIn(CoreAccountInfo accountInfo, AccountPickerBottomSheetMediator mediator) {
         if (mIdentityManager.hasPrimaryAccount(ConsentLevel.SIGNIN)) {
             // In case an error is fired because cookies are taking longer to generate than usual,
             // if user retries the sign-in from the error screen, we need to sign out the user
@@ -65,25 +66,41 @@ public class WebSigninAccountPickerDelegate implements AccountPickerDelegate {
             destroyWebSigninBridge();
             mSigninManager.signOut(SignoutReason.SIGNIN_RETRIGGERED_FROM_WEB_SIGNIN);
         }
-        AccountInfoServiceProvider.get().getAccountInfoByEmail(accountEmail).then(accountInfo -> {
-            mWebSigninBridge =
-                    mWebSigninBridgeFactory.create(Profile.getLastUsedRegularProfile(), accountInfo,
-                            createWebSigninBridgeListener(
-                                    mCurrentTab, mContinueUrl, onSignInErrorCallback));
-            mSigninManager.signin(AccountUtils.createAccountFromName(accountEmail),
-                    SigninAccessPoint.WEB_SIGNIN, new SigninManager.SignInCallback() {
-                        @Override
-                        public void onSignInComplete() {
-                            // After the sign-in is finished in Chrome, we still need to wait for
-                            // WebSigninBridge to be called to redirect to the continue url.
-                        }
+        mWebSigninBridge =
+                mWebSigninBridgeFactory.create(
+                        mProfile,
+                        accountInfo,
+                        createWebSigninBridgeListener(mCurrentTab, mContinueUrl, mediator));
+        mSigninManager.signin(
+                accountInfo,
+                SigninAccessPoint.WEB_SIGNIN,
+                new SigninManager.SignInCallback() {
+                    @Override
+                    public void onSignInComplete() {
+                        // After the sign-in is finished in Chrome, we still need to wait for
+                        // WebSigninBridge to be called to redirect to the continue url.
+                    }
 
-                        @Override
-                        public void onSignInAborted() {
-                            WebSigninAccountPickerDelegate.this.destroyWebSigninBridge();
-                        }
-                    });
-        });
+                    @Override
+                    public void onSignInAborted() {
+                        mediator.switchToTryAgainView();
+                    }
+                });
+    }
+
+    @Override
+    public void isAccountManaged(CoreAccountInfo accountInfo, Callback<Boolean> callback) {
+        mSigninManager.isAccountManaged(accountInfo, callback);
+    }
+
+    @Override
+    public void setUserAcceptedAccountManagement(boolean confirmed) {
+        mSigninManager.setUserAcceptedAccountManagement(confirmed);
+    }
+
+    @Override
+    public String extractDomainName(String accountEmail) {
+        return mSigninManager.extractDomainName(accountEmail);
     }
 
     @Override
@@ -91,14 +108,23 @@ public class WebSigninAccountPickerDelegate implements AccountPickerDelegate {
         return EntryPoint.WEB_SIGNIN;
     }
 
-    private static WebSigninBridge.Listener createWebSigninBridgeListener(
-            Tab tab, String continueUrl, Callback<GoogleServiceAuthError> onSignInErrorCallback) {
+    private WebSigninBridge.Listener createWebSigninBridgeListener(
+            Tab tab, String continueUrl, AccountPickerBottomSheetMediator mediator) {
         return new WebSigninBridge.Listener() {
             @MainThread
             @Override
             public void onSigninFailed(GoogleServiceAuthError error) {
                 ThreadUtils.assertOnUiThread();
-                onSignInErrorCallback.onResult(error);
+                @AccountConsistencyPromoAction int promoAction;
+                if (error.getState() == State.INVALID_GAIA_CREDENTIALS) {
+                    promoAction = AccountConsistencyPromoAction.AUTH_ERROR_SHOWN;
+                    mediator.switchToAuthErrorView();
+                } else {
+                    promoAction = AccountConsistencyPromoAction.GENERIC_ERROR_SHOWN;
+                    mediator.switchToTryAgainView();
+                }
+                SigninMetricsUtils.logAccountConsistencyPromoAction(
+                        promoAction, SigninAccessPoint.WEB_SIGNIN);
             }
 
             @MainThread

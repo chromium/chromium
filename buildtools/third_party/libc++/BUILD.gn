@@ -7,6 +7,7 @@ import("//build/config/sanitizers/sanitizers.gni")
 import("//build/toolchain/toolchain.gni")
 
 # Used by libc++ and libc++abi.
+# See //build/config/c++:runtime_library for the config used by users of libc++.
 config("config") {
   cflags = [ "-fstrict-aliasing" ]
   if (is_win) {
@@ -68,7 +69,10 @@ target(_libcxx_target_type, "libc++") {
     libs = [ "atomic" ]
   }
 
-  inputs = [ "__config_site" ]
+  inputs = [
+    "__assertion_handler",
+    "__config_site",
+  ]
 
   # TODO(crbug.com/1458042): Move this build file to third_party/libc++/BUILD.gn once submodule migration is done
   sources = [
@@ -77,10 +81,12 @@ target(_libcxx_target_type, "libc++") {
     "//third_party/libc++/src/src/atomic.cpp",
     "//third_party/libc++/src/src/barrier.cpp",
     "//third_party/libc++/src/src/bind.cpp",
+    "//third_party/libc++/src/src/call_once.cpp",
     "//third_party/libc++/src/src/charconv.cpp",
     "//third_party/libc++/src/src/chrono.cpp",
     "//third_party/libc++/src/src/condition_variable.cpp",
     "//third_party/libc++/src/src/condition_variable_destructor.cpp",
+    "//third_party/libc++/src/src/error_category.cpp",
     "//third_party/libc++/src/src/exception.cpp",
     "//third_party/libc++/src/src/filesystem/directory_iterator.cpp",
     "//third_party/libc++/src/src/filesystem/filesystem_error.cpp",
@@ -137,13 +143,6 @@ target(_libcxx_target_type, "libc++") {
     ]
   }
 
-  if (enable_iterator_debugging) {
-    sources += [
-      "//third_party/libc++/src/src/debug.cpp",
-      "//third_party/libc++/src/src/legacy_debug_handler.cpp",
-    ]
-  }
-
   include_dirs = [ "//third_party/libc++/src/src" ]
   if (is_win) {
     sources += [
@@ -197,7 +196,7 @@ target(_libcxx_target_type, "libc++") {
       # specified in the C++ spec 3.7.4p2, which makes them always have default
       # visibility.  This option is needed to force hidden visibility since
       # -fvisibility=hidden doesn't have the desired effect.
-      cflags = [ "-fvisibility-global-new-delete-hidden" ]
+      cflags = [ "-fvisibility-global-new-delete=force-hidden" ]
     } else {
       defines += [
         # This resets the visibility to default only for the various

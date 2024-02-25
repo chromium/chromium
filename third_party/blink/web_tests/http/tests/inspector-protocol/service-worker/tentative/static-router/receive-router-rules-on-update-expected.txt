@@ -1,0 +1,3 @@
+Tests receiving static router rules from the service worker.
+[{"condition":{"request":{"method":"POST"}},"id":1,"source":["network"]},{"condition":{"urlPattern":{"hash":"*","hostname":"127.0.0.1","password":"*","pathname":"/**/*.txt","port":"8000","protocol":"http","search":"*","username":"*"}},"id":2,"source":["fetch-event"]}]
+

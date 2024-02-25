@@ -10,10 +10,12 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "build/chromeos_buildflags.h"
-#include "components/password_manager/core/browser/features/password_features.h"
+#include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_value_map.h"
 #include "components/prefs/testing_pref_service.h"
 #include "components/signin/public/base/gaia_id_hash.h"
+#include "components/signin/public/base/signin_pref_names.h"
+#include "components/signin/public/base/signin_switches.h"
 #include "components/sync/base/features.h"
 #include "components/sync/base/pref_names.h"
 #include "components/sync/base/user_selectable_type.h"
@@ -24,6 +26,8 @@ namespace syncer {
 
 namespace {
 
+using ::testing::_;
+using ::testing::AtMost;
 using ::testing::InSequence;
 using ::testing::StrictMock;
 
@@ -35,6 +39,9 @@ class SyncPrefsTest : public testing::Test {
  protected:
   SyncPrefsTest() {
     SyncPrefs::RegisterProfilePrefs(pref_service_.registry());
+    // Pref is registered in signin internal `PrimaryAccountManager`.
+    pref_service_.registry()->RegisterBooleanPref(
+        ::prefs::kExplicitBrowserSignin, false);
     sync_prefs_ = std::make_unique<SyncPrefs>(&pref_service_);
     gaia_id_hash_ = signin::GaiaIdHash::FromGaiaId("account_gaia");
   }
@@ -45,12 +52,65 @@ class SyncPrefsTest : public testing::Test {
   signin::GaiaIdHash gaia_id_hash_;
 };
 
-TEST_F(SyncPrefsTest, EncryptionBootstrapToken) {
-  EXPECT_TRUE(sync_prefs_->GetEncryptionBootstrapToken().empty());
+TEST_F(SyncPrefsTest, EncryptionBootstrapTokenForSyncingUser) {
+  ASSERT_TRUE(sync_prefs_->GetEncryptionBootstrapToken().empty());
   sync_prefs_->SetEncryptionBootstrapToken("token");
   EXPECT_EQ("token", sync_prefs_->GetEncryptionBootstrapToken());
-  sync_prefs_->ClearEncryptionBootstrapToken();
+  sync_prefs_->ClearAllEncryptionBootstrapTokens();
   EXPECT_TRUE(sync_prefs_->GetEncryptionBootstrapToken().empty());
+}
+
+TEST_F(SyncPrefsTest, EncryptionBootstrapTokenPerAccountSignedOut) {
+  base::test::ScopedFeatureList enable_keep_account_passphrase(
+      kSyncRememberCustomPassphraseAfterSignout);
+  auto gaia_id_hash_empty = signin::GaiaIdHash::FromGaiaId("");
+  EXPECT_TRUE(
+      sync_prefs_->GetEncryptionBootstrapTokenForAccount(gaia_id_hash_empty)
+          .empty());
+}
+
+TEST_F(SyncPrefsTest, EncryptionBootstrapTokenPerAccount) {
+  base::test::ScopedFeatureList enable_keep_account_passphrase(
+      kSyncRememberCustomPassphraseAfterSignout);
+  ASSERT_TRUE(sync_prefs_->GetEncryptionBootstrapTokenForAccount(gaia_id_hash_)
+                  .empty());
+  sync_prefs_->SetEncryptionBootstrapTokenForAccount("token", gaia_id_hash_);
+  EXPECT_EQ("token",
+            sync_prefs_->GetEncryptionBootstrapTokenForAccount(gaia_id_hash_));
+  auto gaia_id_hash_2 = signin::GaiaIdHash::FromGaiaId("account_gaia_2");
+  EXPECT_TRUE(sync_prefs_->GetEncryptionBootstrapTokenForAccount(gaia_id_hash_2)
+                  .empty());
+  sync_prefs_->SetEncryptionBootstrapTokenForAccount("token2", gaia_id_hash_2);
+  EXPECT_EQ("token",
+            sync_prefs_->GetEncryptionBootstrapTokenForAccount(gaia_id_hash_));
+  EXPECT_EQ("token2",
+            sync_prefs_->GetEncryptionBootstrapTokenForAccount(gaia_id_hash_2));
+}
+
+TEST_F(SyncPrefsTest, ClearEncryptionBootstrapTokenPerAccount) {
+  base::test::ScopedFeatureList enable_keep_account_passphrase(
+      kSyncRememberCustomPassphraseAfterSignout);
+  ASSERT_TRUE(sync_prefs_->GetEncryptionBootstrapTokenForAccount(gaia_id_hash_)
+                  .empty());
+  sync_prefs_->SetEncryptionBootstrapTokenForAccount("token", gaia_id_hash_);
+  EXPECT_EQ("token",
+            sync_prefs_->GetEncryptionBootstrapTokenForAccount(gaia_id_hash_));
+  auto gaia_id_hash_2 = signin::GaiaIdHash::FromGaiaId("account_gaia_2");
+  EXPECT_TRUE(sync_prefs_->GetEncryptionBootstrapTokenForAccount(gaia_id_hash_2)
+                  .empty());
+  sync_prefs_->SetEncryptionBootstrapTokenForAccount("token2", gaia_id_hash_2);
+  EXPECT_EQ("token",
+            sync_prefs_->GetEncryptionBootstrapTokenForAccount(gaia_id_hash_));
+  EXPECT_EQ("token2",
+            sync_prefs_->GetEncryptionBootstrapTokenForAccount(gaia_id_hash_2));
+  // Remove account 2 from device by setting the available_gaia_ids to have the
+  // gaia id of account 1 only.
+  sync_prefs_->KeepAccountSettingsPrefsOnlyForUsers(
+      /*available_gaia_ids=*/{gaia_id_hash_});
+  EXPECT_EQ("token",
+            sync_prefs_->GetEncryptionBootstrapTokenForAccount(gaia_id_hash_));
+  EXPECT_TRUE(sync_prefs_->GetEncryptionBootstrapTokenForAccount(gaia_id_hash_2)
+                  .empty());
 }
 
 TEST_F(SyncPrefsTest, CachedPassphraseType) {
@@ -71,8 +131,10 @@ TEST_F(SyncPrefsTest, CachedPassphraseType) {
 class MockSyncPrefObserver : public SyncPrefObserver {
  public:
   MOCK_METHOD(void, OnSyncManagedPrefChange, (bool), (override));
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
   MOCK_METHOD(void, OnFirstSetupCompletePrefChange, (bool), (override));
-  MOCK_METHOD(void, OnPreferredDataTypesPrefChange, (bool), (override));
+#endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
+  MOCK_METHOD(void, OnSelectedTypesPrefChange, (bool), (override));
 };
 
 TEST_F(SyncPrefsTest, ObservedPrefs) {
@@ -80,12 +142,8 @@ TEST_F(SyncPrefsTest, ObservedPrefs) {
   InSequence dummy;
   EXPECT_CALL(mock_sync_pref_observer, OnSyncManagedPrefChange(true));
   EXPECT_CALL(mock_sync_pref_observer, OnSyncManagedPrefChange(false));
-  EXPECT_CALL(mock_sync_pref_observer, OnFirstSetupCompletePrefChange(true));
-  EXPECT_CALL(mock_sync_pref_observer, OnFirstSetupCompletePrefChange(false));
 
   ASSERT_FALSE(sync_prefs_->IsSyncClientDisabledByPolicy());
-  ASSERT_FALSE(sync_prefs_->IsInitialSyncFeatureSetupComplete());
-  ASSERT_FALSE(sync_prefs_->IsSyncRequested());
 
   sync_prefs_->AddObserver(&mock_sync_pref_observer);
 
@@ -94,24 +152,45 @@ TEST_F(SyncPrefsTest, ObservedPrefs) {
   pref_service_.SetBoolean(prefs::internal::kSyncManaged, false);
   EXPECT_FALSE(sync_prefs_->IsSyncClientDisabledByPolicy());
 
+  sync_prefs_->RemoveObserver(&mock_sync_pref_observer);
+}
+
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
+TEST_F(SyncPrefsTest, FirstSetupCompletePrefChange) {
+  StrictMock<MockSyncPrefObserver> mock_sync_pref_observer;
+  InSequence dummy;
+
+  EXPECT_CALL(mock_sync_pref_observer, OnFirstSetupCompletePrefChange(true));
+  EXPECT_CALL(mock_sync_pref_observer, OnFirstSetupCompletePrefChange(false));
+
+  ASSERT_FALSE(sync_prefs_->IsInitialSyncFeatureSetupComplete());
+
+  sync_prefs_->AddObserver(&mock_sync_pref_observer);
+
   sync_prefs_->SetInitialSyncFeatureSetupComplete();
   EXPECT_TRUE(sync_prefs_->IsInitialSyncFeatureSetupComplete());
   sync_prefs_->ClearInitialSyncFeatureSetupComplete();
   EXPECT_FALSE(sync_prefs_->IsInitialSyncFeatureSetupComplete());
 
-  sync_prefs_->SetSyncRequested(true);
-  EXPECT_TRUE(sync_prefs_->IsSyncRequested());
-  sync_prefs_->SetSyncRequested(false);
-  EXPECT_FALSE(sync_prefs_->IsSyncRequested());
-
   sync_prefs_->RemoveObserver(&mock_sync_pref_observer);
 }
+#endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
+TEST_F(SyncPrefsTest, SyncFeatureDisabledViaDashboard) {
+  EXPECT_FALSE(sync_prefs_->IsSyncFeatureDisabledViaDashboard());
+
+  sync_prefs_->SetSyncFeatureDisabledViaDashboard();
+  EXPECT_TRUE(sync_prefs_->IsSyncFeatureDisabledViaDashboard());
+
+  sync_prefs_->ClearSyncFeatureDisabledViaDashboard();
+  EXPECT_FALSE(sync_prefs_->IsSyncFeatureDisabledViaDashboard());
+}
+
 TEST_F(SyncPrefsTest, SetSelectedOsTypesTriggersPreferredDataTypesPrefChange) {
   StrictMock<MockSyncPrefObserver> mock_sync_pref_observer;
   EXPECT_CALL(mock_sync_pref_observer,
-              OnPreferredDataTypesPrefChange(
+              OnSelectedTypesPrefChange(
                   /*payments_integration_enabled_changed=*/false));
 
   sync_prefs_->AddObserver(&mock_sync_pref_observer);
@@ -123,23 +202,20 @@ TEST_F(SyncPrefsTest, SetSelectedOsTypesTriggersPreferredDataTypesPrefChange) {
 #endif
 
 TEST_F(SyncPrefsTest, Basic) {
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
   EXPECT_FALSE(sync_prefs_->IsInitialSyncFeatureSetupComplete());
   sync_prefs_->SetInitialSyncFeatureSetupComplete();
+#endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
+
   EXPECT_TRUE(sync_prefs_->IsInitialSyncFeatureSetupComplete());
 
-  EXPECT_FALSE(sync_prefs_->IsSyncRequested());
-  sync_prefs_->SetSyncRequested(true);
-  EXPECT_TRUE(sync_prefs_->IsSyncRequested());
-  sync_prefs_->SetSyncRequested(false);
-  EXPECT_FALSE(sync_prefs_->IsSyncRequested());
-
   EXPECT_TRUE(sync_prefs_->HasKeepEverythingSynced());
-  sync_prefs_->SetSelectedTypes(
+  sync_prefs_->SetSelectedTypesForSyncingUser(
       /*keep_everything_synced=*/false,
       /*registered_types=*/UserSelectableTypeSet::All(),
       /*selected_types=*/UserSelectableTypeSet::All());
   EXPECT_FALSE(sync_prefs_->HasKeepEverythingSynced());
-  sync_prefs_->SetSelectedTypes(
+  sync_prefs_->SetSelectedTypesForSyncingUser(
       /*keep_everything_synced=*/true,
       /*registered_types=*/UserSelectableTypeSet::All(),
       /*selected_types=*/UserSelectableTypeSet());
@@ -149,84 +225,105 @@ TEST_F(SyncPrefsTest, Basic) {
 TEST_F(SyncPrefsTest, SelectedTypesKeepEverythingSynced) {
   ASSERT_TRUE(sync_prefs_->HasKeepEverythingSynced());
 
-  EXPECT_EQ(
-      UserSelectableTypeSet::All(),
-      sync_prefs_->GetSelectedTypes(SyncPrefs::SyncAccountState::kSyncing));
+  EXPECT_EQ(UserSelectableTypeSet::All(),
+            sync_prefs_->GetSelectedTypesForSyncingUser());
   for (UserSelectableType type : UserSelectableTypeSet::All()) {
-    sync_prefs_->SetSelectedTypes(
+    StrictMock<MockSyncPrefObserver> mock_sync_pref_observer;
+    sync_prefs_->AddObserver(&mock_sync_pref_observer);
+
+    // SetSelectedTypesForSyncingUser() should result in at most one observer
+    // notification: Never more than one, and in this case, since nothing
+    // actually changes, zero calls would also be okay.
+    EXPECT_CALL(mock_sync_pref_observer, OnSelectedTypesPrefChange(_))
+        .Times(AtMost(1));
+
+    sync_prefs_->SetSelectedTypesForSyncingUser(
         /*keep_everything_synced=*/true,
         /*registered_types=*/UserSelectableTypeSet::All(),
         /*selected_types=*/{type});
-    EXPECT_EQ(
-        UserSelectableTypeSet::All(),
-        sync_prefs_->GetSelectedTypes(SyncPrefs::SyncAccountState::kSyncing));
+    EXPECT_EQ(UserSelectableTypeSet::All(),
+              sync_prefs_->GetSelectedTypesForSyncingUser());
+
+    sync_prefs_->RemoveObserver(&mock_sync_pref_observer);
   }
 }
 
 TEST_F(SyncPrefsTest, SelectedTypesKeepEverythingSyncedButPolicyRestricted) {
   ASSERT_TRUE(sync_prefs_->HasKeepEverythingSynced());
+
+  StrictMock<MockSyncPrefObserver> mock_sync_pref_observer;
+  sync_prefs_->AddObserver(&mock_sync_pref_observer);
+
+  // Setting a managed pref value should trigger an
+  // OnSelectedTypesPrefChange() notification.
+  EXPECT_CALL(mock_sync_pref_observer, OnSelectedTypesPrefChange(_));
   pref_service_.SetManagedPref(prefs::internal::kSyncPreferences,
                                base::Value(false));
 
+  sync_prefs_->RemoveObserver(&mock_sync_pref_observer);
+
   UserSelectableTypeSet expected_type_set = UserSelectableTypeSet::All();
   expected_type_set.Remove(UserSelectableType::kPreferences);
-  EXPECT_EQ(expected_type_set, sync_prefs_->GetSelectedTypes(
-                                   SyncPrefs::SyncAccountState::kSyncing));
+  EXPECT_EQ(expected_type_set, sync_prefs_->GetSelectedTypesForSyncingUser());
 }
 
 TEST_F(SyncPrefsTest, SelectedTypesNotKeepEverythingSynced) {
-  sync_prefs_->SetSelectedTypes(
+  sync_prefs_->SetSelectedTypesForSyncingUser(
       /*keep_everything_synced=*/false,
       /*registered_types=*/UserSelectableTypeSet::All(),
       /*selected_types=*/UserSelectableTypeSet());
 
-  ASSERT_NE(
-      UserSelectableTypeSet::All(),
-      sync_prefs_->GetSelectedTypes(SyncPrefs::SyncAccountState::kSyncing));
+  ASSERT_NE(UserSelectableTypeSet::All(),
+            sync_prefs_->GetSelectedTypesForSyncingUser());
   for (UserSelectableType type : UserSelectableTypeSet::All()) {
-    sync_prefs_->SetSelectedTypes(
+    StrictMock<MockSyncPrefObserver> mock_sync_pref_observer;
+    sync_prefs_->AddObserver(&mock_sync_pref_observer);
+
+    // SetSelectedTypesForSyncingUser() should result in exactly one call to
+    // OnSelectedTypesPrefChange(), even when multiple data types change
+    // state (here, usually one gets enabled and one gets disabled).
+    EXPECT_CALL(mock_sync_pref_observer, OnSelectedTypesPrefChange(_));
+
+    sync_prefs_->SetSelectedTypesForSyncingUser(
         /*keep_everything_synced=*/false,
         /*registered_types=*/UserSelectableTypeSet::All(),
         /*selected_types=*/{type});
-    EXPECT_EQ(
-        UserSelectableTypeSet({type}),
-        sync_prefs_->GetSelectedTypes(SyncPrefs::SyncAccountState::kSyncing));
+    EXPECT_EQ(UserSelectableTypeSet({type}),
+              sync_prefs_->GetSelectedTypesForSyncingUser());
+
+    sync_prefs_->RemoveObserver(&mock_sync_pref_observer);
   }
 }
 
 TEST_F(SyncPrefsTest, SelectedTypesNotKeepEverythingSyncedAndPolicyRestricted) {
   pref_service_.SetManagedPref(prefs::internal::kSyncPreferences,
                                base::Value(false));
-  sync_prefs_->SetSelectedTypes(
+  sync_prefs_->SetSelectedTypesForSyncingUser(
       /*keep_everything_synced=*/false,
       /*registered_types=*/UserSelectableTypeSet::All(),
       /*selected_types=*/UserSelectableTypeSet());
 
-  ASSERT_FALSE(
-      sync_prefs_->GetSelectedTypes(SyncPrefs::SyncAccountState::kSyncing)
-          .Has(UserSelectableType::kPreferences));
+  ASSERT_FALSE(sync_prefs_->GetSelectedTypesForSyncingUser().Has(
+      UserSelectableType::kPreferences));
   for (UserSelectableType type : UserSelectableTypeSet::All()) {
-    sync_prefs_->SetSelectedTypes(
+    sync_prefs_->SetSelectedTypesForSyncingUser(
         /*keep_everything_synced=*/false,
         /*registered_types=*/UserSelectableTypeSet::All(),
         /*selected_types=*/{type});
     UserSelectableTypeSet expected_type_set = {type};
     expected_type_set.Remove(UserSelectableType::kPreferences);
-    EXPECT_EQ(expected_type_set, sync_prefs_->GetSelectedTypes(
-                                     SyncPrefs::SyncAccountState::kSyncing));
+    EXPECT_EQ(expected_type_set, sync_prefs_->GetSelectedTypesForSyncingUser());
   }
 }
 
 TEST_F(SyncPrefsTest, SetTypeDisabledByPolicy) {
   // By default, data types are enabled, and not policy-controlled.
-  ASSERT_TRUE(
-      sync_prefs_->GetSelectedTypes(SyncPrefs::SyncAccountState::kSyncing)
-          .Has(UserSelectableType::kBookmarks));
+  ASSERT_TRUE(sync_prefs_->GetSelectedTypesForSyncingUser().Has(
+      UserSelectableType::kBookmarks));
   ASSERT_FALSE(
       sync_prefs_->IsTypeManagedByPolicy(UserSelectableType::kBookmarks));
-  ASSERT_TRUE(
-      sync_prefs_->GetSelectedTypes(SyncPrefs::SyncAccountState::kSyncing)
-          .Has(UserSelectableType::kAutofill));
+  ASSERT_TRUE(sync_prefs_->GetSelectedTypesForSyncingUser().Has(
+      UserSelectableType::kAutofill));
   ASSERT_FALSE(
       sync_prefs_->IsTypeManagedByPolicy(UserSelectableType::kAutofill));
 
@@ -240,31 +337,27 @@ TEST_F(SyncPrefsTest, SetTypeDisabledByPolicy) {
   }
 
   // The policy should take effect and disable bookmarks.
-  EXPECT_FALSE(
-      sync_prefs_->GetSelectedTypes(SyncPrefs::SyncAccountState::kSyncing)
-          .Has(UserSelectableType::kBookmarks));
+  EXPECT_FALSE(sync_prefs_->GetSelectedTypesForSyncingUser().Has(
+      UserSelectableType::kBookmarks));
   EXPECT_TRUE(
       sync_prefs_->IsTypeManagedByPolicy(UserSelectableType::kBookmarks));
   EXPECT_FALSE(
       sync_prefs_->IsTypeManagedByCustodian(UserSelectableType::kBookmarks));
   // Other types should be unaffected.
-  EXPECT_TRUE(
-      sync_prefs_->GetSelectedTypes(SyncPrefs::SyncAccountState::kSyncing)
-          .Has(UserSelectableType::kAutofill));
+  EXPECT_TRUE(sync_prefs_->GetSelectedTypesForSyncingUser().Has(
+      UserSelectableType::kAutofill));
   EXPECT_FALSE(
       sync_prefs_->IsTypeManagedByPolicy(UserSelectableType::kAutofill));
 }
 
 TEST_F(SyncPrefsTest, SetTypeDisabledByCustodian) {
   // By default, data types are enabled, and not custodian-controlled.
-  ASSERT_TRUE(
-      sync_prefs_->GetSelectedTypes(SyncPrefs::SyncAccountState::kSyncing)
-          .Has(UserSelectableType::kBookmarks));
+  ASSERT_TRUE(sync_prefs_->GetSelectedTypesForSyncingUser().Has(
+      UserSelectableType::kBookmarks));
   ASSERT_FALSE(
       sync_prefs_->IsTypeManagedByCustodian(UserSelectableType::kBookmarks));
-  ASSERT_TRUE(
-      sync_prefs_->GetSelectedTypes(SyncPrefs::SyncAccountState::kSyncing)
-          .Has(UserSelectableType::kAutofill));
+  ASSERT_TRUE(sync_prefs_->GetSelectedTypesForSyncingUser().Has(
+      UserSelectableType::kAutofill));
   ASSERT_FALSE(
       sync_prefs_->IsTypeManagedByCustodian(UserSelectableType::kAutofill));
 
@@ -279,67 +372,71 @@ TEST_F(SyncPrefsTest, SetTypeDisabledByCustodian) {
   }
 
   // The restriction should take effect and disable bookmarks.
-  EXPECT_FALSE(
-      sync_prefs_->GetSelectedTypes(SyncPrefs::SyncAccountState::kSyncing)
-          .Has(UserSelectableType::kBookmarks));
+  EXPECT_FALSE(sync_prefs_->GetSelectedTypesForSyncingUser().Has(
+      UserSelectableType::kBookmarks));
   EXPECT_TRUE(
       sync_prefs_->IsTypeManagedByCustodian(UserSelectableType::kBookmarks));
   EXPECT_FALSE(
       sync_prefs_->IsTypeManagedByPolicy(UserSelectableType::kBookmarks));
   // Other types should be unaffected.
-  EXPECT_TRUE(
-      sync_prefs_->GetSelectedTypes(SyncPrefs::SyncAccountState::kSyncing)
-          .Has(UserSelectableType::kAutofill));
+  EXPECT_TRUE(sync_prefs_->GetSelectedTypesForSyncingUser().Has(
+      UserSelectableType::kAutofill));
   EXPECT_FALSE(
       sync_prefs_->IsTypeManagedByCustodian(UserSelectableType::kAutofill));
 }
 
-TEST_F(SyncPrefsTest, DefaultSelectedTypesInTransportMode) {
+TEST_F(SyncPrefsTest,
+       DefaultSelectedTypesForAccountInTransportMode_SyncToSigninDisabled) {
   base::test::ScopedFeatureList features;
   features.InitWithFeatures(
-      /*enabled_features=*/{kEnableBookmarksAccountStorage,
-                            kReadingListEnableDualReadingListModel,
+      /*enabled_features=*/{kEnableBookmarkFoldersForAccountStorage,
+#if !BUILDFLAG(IS_IOS)
                             kReadingListEnableSyncTransportModeUponSignIn,
-                            password_manager::features::
-                                kEnablePasswordsAccountStorage,
+#endif  // !BUILDFLAG(IS_IOS)
+                            kEnablePasswordsAccountStorageForNonSyncingUsers,
                             kSyncEnableContactInfoDataTypeInTransportMode,
                             kEnablePreferencesAccountStorage},
       /*disabled_features=*/{kReplaceSyncPromosWithSignInPromos});
 
-  // Based on the feature flags set above, Bookmarks, ReadingList, Passwords,
-  // Autofill and Payments are supported and enabled by default.
-  // Preferences, History, and Tabs are not supported without
-  // kReplaceSyncPromosWithSignInPromos.
-  UserSelectableTypeSet expected_types{
-      UserSelectableType::kBookmarks, UserSelectableType::kReadingList,
-      UserSelectableType::kPasswords, UserSelectableType::kAutofill,
-      UserSelectableType::kPayments};
+  // Based on the feature flags set above, Passwords, Autofill and Payments
+  // are supported and enabled by default. Bookmarks and ReadingList are
+  // supported, but not enabled by default. Preferences, History, and Tabs are
+  // not supported without kReplaceSyncPromosWithSignInPromos.
+  UserSelectableTypeSet expected_types{UserSelectableType::kPasswords,
+                                       UserSelectableType::kAutofill,
+                                       UserSelectableType::kPayments};
+
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+  // On Desktop, kPasswords is disabled by default.
+  expected_types.Remove(UserSelectableType::kPasswords);
+#endif
 
 #if BUILDFLAG(IS_IOS)
   // On iOS, Bookmarks and Reading list require a dedicated opt-in.
   EXPECT_EQ(
-      sync_prefs_->GetSelectedTypes(
-          SyncPrefs::SyncAccountState::kSignedInNotSyncing),
+      sync_prefs_->GetSelectedTypesForAccount(gaia_id_hash_),
       base::Difference(expected_types, {UserSelectableType::kBookmarks,
                                         UserSelectableType::kReadingList}));
 
   sync_prefs_->SetBookmarksAndReadingListAccountStorageOptIn(true);
+  expected_types.PutAll(
+      {UserSelectableType::kBookmarks, UserSelectableType::kReadingList});
 #endif
 
-  EXPECT_EQ(sync_prefs_->GetSelectedTypes(
-                SyncPrefs::SyncAccountState::kSignedInNotSyncing),
+  EXPECT_EQ(sync_prefs_->GetSelectedTypesForAccount(gaia_id_hash_),
             expected_types);
 }
 
-TEST_F(SyncPrefsTest, DefaultSelectedTypesForAccountInTransportMode) {
+TEST_F(SyncPrefsTest,
+       DefaultSelectedTypesForAccountInTransportMode_SyncToSigninEnabled) {
   base::test::ScopedFeatureList features;
   features.InitWithFeatures(
-      /*enabled_features=*/{kReplaceSyncPromosWithSignInPromos,
-                            kEnableBookmarksAccountStorage,
-                            kReadingListEnableDualReadingListModel,
+      /*enabled_features=*/{kEnableBookmarkFoldersForAccountStorage,
+                            kReplaceSyncPromosWithSignInPromos,
+#if !BUILDFLAG(IS_IOS)
                             kReadingListEnableSyncTransportModeUponSignIn,
-                            password_manager::features::
-                                kEnablePasswordsAccountStorage,
+#endif  // !BUILDFLAG(IS_IOS)
+                            kEnablePasswordsAccountStorageForNonSyncingUsers,
                             kSyncEnableContactInfoDataTypeInTransportMode,
                             kEnablePreferencesAccountStorage},
       /*disabled_features=*/{});
@@ -351,121 +448,78 @@ TEST_F(SyncPrefsTest, DefaultSelectedTypesForAccountInTransportMode) {
       UserSelectableType::kBookmarks, UserSelectableType::kReadingList,
       UserSelectableType::kPasswords, UserSelectableType::kAutofill,
       UserSelectableType::kPayments,  UserSelectableType::kPreferences};
+
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+  // On Desktop, kPasswords is disabled by default.
+  expected_types.Remove(UserSelectableType::kPasswords);
+#endif
+
   EXPECT_EQ(sync_prefs_->GetSelectedTypesForAccount(gaia_id_hash_),
             expected_types);
 }
 
-TEST_F(SyncPrefsTest, SetSelectedTypesInTransportMode) {
-  base::test::ScopedFeatureList features;
-  features.InitWithFeatures(
-      /*enabled_features=*/{kEnableBookmarksAccountStorage,
-                            kReadingListEnableDualReadingListModel,
-                            kReadingListEnableSyncTransportModeUponSignIn,
-                            password_manager::features::
-                                kEnablePasswordsAccountStorage,
-                            kSyncEnableContactInfoDataTypeInTransportMode},
-      /*disabled_features=*/{kReplaceSyncPromosWithSignInPromos});
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+TEST_F(SyncPrefsTest, PasswordsDefaultWithExplicitBrowserSignin) {
+  base::test::ScopedFeatureList scoped_feature_list{switches::kUnoDesktop};
 
-#if BUILDFLAG(IS_IOS)
-  // On iOS, Bookmarks and Reading list require a dedicated opt-in.
-  sync_prefs_->SetBookmarksAndReadingListAccountStorageOptIn(true);
+  // If no explicit browser sign in occurred, then passwords are still disabled
+  // by default.
+  ASSERT_FALSE(pref_service_.GetBoolean(::prefs::kExplicitBrowserSignin));
+  EXPECT_FALSE(sync_prefs_->GetSelectedTypesForAccount(gaia_id_hash_)
+                   .Has(UserSelectableType::kPasswords));
+
+  // Set an explicit browser signin.
+  pref_service_.SetBoolean(::prefs::kExplicitBrowserSignin, true);
+
+  // With an explicit sign in, passwords are enabled by default.
+  EXPECT_TRUE(sync_prefs_->GetSelectedTypesForAccount(gaia_id_hash_)
+                  .Has(UserSelectableType::kPasswords));
+}
 #endif
 
-  const UserSelectableTypeSet new_types = {UserSelectableType::kAutofill,
-                                           UserSelectableType::kPasswords};
-  ASSERT_NE(sync_prefs_->GetSelectedTypes(
-                SyncPrefs::SyncAccountState::kSignedInNotSyncing),
-            new_types);
-
-  sync_prefs_->SetSelectedTypes(
-      /*keep_everything_synced=*/false,
-      /*registered_types=*/UserSelectableTypeSet::All(),
-      /*selected_types=*/new_types);
-
-  EXPECT_EQ(sync_prefs_->GetSelectedTypes(
-                SyncPrefs::SyncAccountState::kSignedInNotSyncing),
-            new_types);
-
-  // Pass keep_everything_synced true to verify that it has no effect in
-  // transport-mode.
-  sync_prefs_->SetSelectedTypes(
-      /*keep_everything_synced=*/true,
-      /*registered_types=*/UserSelectableTypeSet::All(),
-      /*selected_types=*/new_types);
-
-  EXPECT_EQ(sync_prefs_->GetSelectedTypes(
-                SyncPrefs::SyncAccountState::kSignedInNotSyncing),
-            new_types);
-}
-
 TEST_F(SyncPrefsTest, SetSelectedTypesForAccountInTransportMode) {
-  base::test::ScopedFeatureList features;
-  features.InitWithFeatures(
-      /*enabled_features=*/{kReplaceSyncPromosWithSignInPromos,
-                            password_manager::features::
-                                kEnablePasswordsAccountStorage},
-      /*disabled_features=*/{});
-
   const UserSelectableTypeSet default_selected_types =
       sync_prefs_->GetSelectedTypesForAccount(gaia_id_hash_);
-  ASSERT_TRUE(default_selected_types.Has(UserSelectableType::kPasswords));
+  ASSERT_TRUE(default_selected_types.Has(UserSelectableType::kPayments));
 
-  // Change one of the default values for example kPasswords.
-  sync_prefs_->SetSelectedTypeForAccount(UserSelectableType::kPasswords, false,
+  StrictMock<MockSyncPrefObserver> mock_sync_pref_observer;
+  sync_prefs_->AddObserver(&mock_sync_pref_observer);
+
+  // Change one of the default values, for example kPayments. This should
+  // result in an observer notification.
+  EXPECT_CALL(mock_sync_pref_observer,
+              OnSelectedTypesPrefChange(
+                  /*payments_integration_enabled_changed=*/true));
+  sync_prefs_->SetSelectedTypeForAccount(UserSelectableType::kPayments, false,
                                          gaia_id_hash_);
 
-  // kPasswords should be disabled, other default values should be unaffected.
+  sync_prefs_->RemoveObserver(&mock_sync_pref_observer);
+
+  // kPayments should be disabled, other default values should be unaffected.
   EXPECT_EQ(
       sync_prefs_->GetSelectedTypesForAccount(gaia_id_hash_),
-      Difference(default_selected_types, {UserSelectableType::kPasswords}));
+      Difference(default_selected_types, {UserSelectableType::kPayments}));
   // Other accounts should be unnafected.
   EXPECT_EQ(sync_prefs_->GetSelectedTypesForAccount(
                 signin::GaiaIdHash::FromGaiaId("account_gaia_2")),
             default_selected_types);
 }
 
-TEST_F(SyncPrefsTest, SetSelectedTypesInTransportModeWithPolicyRestrictedType) {
-  base::test::ScopedFeatureList features;
-  features.InitWithFeatures(
-      /*enabled_features=*/{password_manager::features::
-                                kEnablePasswordsAccountStorage},
-      /*disabled_features=*/{kReplaceSyncPromosWithSignInPromos});
-
-  // Passwords is disabled by policy.
-  pref_service_.SetManagedPref(prefs::internal::kSyncPasswords,
-                               base::Value(false));
-
-  // kPasswords should be disabled.
-  UserSelectableTypeSet selected_types = sync_prefs_->GetSelectedTypes(
-      SyncPrefs::SyncAccountState::kSignedInNotSyncing);
-  ASSERT_FALSE(selected_types.Empty());
-  EXPECT_FALSE(selected_types.Has(UserSelectableType::kPasswords));
-
-  // User tries to enable kPasswords.
-  sync_prefs_->SetSelectedTypes(
-      /*keep_everything_synced=*/false,
-      /*registered_types=*/UserSelectableTypeSet::All(),
-      /*selected_types=*/{UserSelectableType::kPasswords});
-
-  // kPasswords should still be disabled.
-  EXPECT_FALSE(
-      sync_prefs_
-          ->GetSelectedTypes(SyncPrefs::SyncAccountState::kSignedInNotSyncing)
-          .Has(UserSelectableType::kPasswords));
-}
-
 TEST_F(SyncPrefsTest,
        SetSelectedTypesForAccountInTransportModeWithPolicyRestrictedType) {
-  base::test::ScopedFeatureList features;
-  features.InitWithFeatures(
-      /*enabled_features=*/{kReplaceSyncPromosWithSignInPromos,
-                            password_manager::features::
-                                kEnablePasswordsAccountStorage},
-      /*disabled_features=*/{});
+  base::test::ScopedFeatureList features(
+      kEnablePasswordsAccountStorageForNonSyncingUsers);
 
-  // Passwords is disabled by policy.
+  StrictMock<MockSyncPrefObserver> mock_sync_pref_observer;
+  sync_prefs_->AddObserver(&mock_sync_pref_observer);
+
+  // Passwords gets disabled by policy. This should result in an observer
+  // notification.
+  EXPECT_CALL(mock_sync_pref_observer, OnSelectedTypesPrefChange(_));
   pref_service_.SetManagedPref(prefs::internal::kSyncPasswords,
                                base::Value(false));
+
+  sync_prefs_->RemoveObserver(&mock_sync_pref_observer);
 
   // kPasswords should be disabled.
   UserSelectableTypeSet selected_types =
@@ -483,9 +537,6 @@ TEST_F(SyncPrefsTest,
 }
 
 TEST_F(SyncPrefsTest, KeepAccountSettingsPrefsOnlyForUsers) {
-  base::test::ScopedFeatureList enable_sync_to_signin(
-      kReplaceSyncPromosWithSignInPromos);
-
   const UserSelectableTypeSet default_selected_types =
       sync_prefs_->GetSelectedTypesForAccount(gaia_id_hash_);
 
@@ -552,7 +603,7 @@ TEST_F(SyncPrefsTest, GetSelectedOsTypesWithAllOsTypesEnabled) {
 
 TEST_F(SyncPrefsTest, GetSelectedOsTypesNotAllOsTypesSelected) {
   const UserSelectableTypeSet browser_types =
-      sync_prefs_->GetSelectedTypes(SyncPrefs::SyncAccountState::kSyncing);
+      sync_prefs_->GetSelectedTypesForSyncingUser();
 
   sync_prefs_->SetSelectedOsTypes(
       /*sync_all_os_types=*/false,
@@ -560,8 +611,7 @@ TEST_F(SyncPrefsTest, GetSelectedOsTypesNotAllOsTypesSelected) {
       /*selected_types=*/UserSelectableOsTypeSet());
   EXPECT_EQ(UserSelectableOsTypeSet(), sync_prefs_->GetSelectedOsTypes());
   // Browser types are not changed.
-  EXPECT_EQ(browser_types, sync_prefs_->GetSelectedTypes(
-                               SyncPrefs::SyncAccountState::kSyncing));
+  EXPECT_EQ(browser_types, sync_prefs_->GetSelectedTypesForSyncingUser());
 
   for (UserSelectableOsType type : UserSelectableOsTypeSet::All()) {
     sync_prefs_->SetSelectedOsTypes(
@@ -571,8 +621,7 @@ TEST_F(SyncPrefsTest, GetSelectedOsTypesNotAllOsTypesSelected) {
     EXPECT_EQ(UserSelectableOsTypeSet({type}),
               sync_prefs_->GetSelectedOsTypes());
     // Browser types are not changed.
-    EXPECT_EQ(browser_types, sync_prefs_->GetSelectedTypes(
-                                 SyncPrefs::SyncAccountState::kSyncing));
+    EXPECT_EQ(browser_types, sync_prefs_->GetSelectedTypesForSyncingUser());
   }
 }
 
@@ -651,14 +700,14 @@ TEST_F(SyncPrefsTest, ShouldChangeAppsSyncEnabledByOsAndNotifyObservers) {
   sync_prefs_->AddObserver(&mock_sync_pref_observer);
 
   EXPECT_CALL(mock_sync_pref_observer,
-              OnPreferredDataTypesPrefChange(
+              OnSelectedTypesPrefChange(
                   /*payments_integration_enabled_changed=*/false));
   sync_prefs_->SetAppsSyncEnabledByOs(/*apps_sync_enabled=*/true);
   EXPECT_TRUE(sync_prefs_->IsAppsSyncEnabledByOs());
 
   testing::Mock::VerifyAndClearExpectations(&mock_sync_pref_observer);
   EXPECT_CALL(mock_sync_pref_observer,
-              OnPreferredDataTypesPrefChange(
+              OnSelectedTypesPrefChange(
                   /*payments_integration_enabled_changed=*/false));
   sync_prefs_->SetAppsSyncEnabledByOs(/*apps_sync_enabled=*/false);
   EXPECT_FALSE(sync_prefs_->IsAppsSyncEnabledByOs());
@@ -700,6 +749,32 @@ TEST_F(SyncPrefsTest, SetBookmarksAndReadingListAccountStorageOptInPrefChange) {
 }
 #endif  // BUILDFLAG(IS_IOS)
 
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+TEST_F(SyncPrefsTest, GetNumberOfAccountsWithPasswordsSelected) {
+  EXPECT_EQ(sync_prefs_->GetNumberOfAccountsWithPasswordsSelected(), 0);
+
+  sync_prefs_->SetSelectedTypeForAccount(UserSelectableType::kPasswords, true,
+                                         gaia_id_hash_);
+
+  EXPECT_EQ(sync_prefs_->GetNumberOfAccountsWithPasswordsSelected(), 1);
+
+  const auto other_gaia_id_hash = signin::GaiaIdHash::FromGaiaId("other");
+  sync_prefs_->SetSelectedTypeForAccount(UserSelectableType::kPasswords, true,
+                                         other_gaia_id_hash);
+
+  EXPECT_EQ(sync_prefs_->GetNumberOfAccountsWithPasswordsSelected(), 2);
+
+  sync_prefs_->SetSelectedTypeForAccount(UserSelectableType::kPasswords, false,
+                                         gaia_id_hash_);
+
+  EXPECT_EQ(sync_prefs_->GetNumberOfAccountsWithPasswordsSelected(), 1);
+
+  sync_prefs_->KeepAccountSettingsPrefsOnlyForUsers({});
+
+  EXPECT_EQ(sync_prefs_->GetNumberOfAccountsWithPasswordsSelected(), 0);
+}
+#endif
+
 enum BooleanPrefState { PREF_FALSE, PREF_TRUE, PREF_UNSET };
 
 // Similar to SyncPrefsTest, but does not create a SyncPrefs instance. This lets
@@ -711,11 +786,11 @@ class SyncPrefsMigrationTest : public testing::Test {
     // Enable various features that are required for data types to be supported
     // in transport mode.
     feature_list_.InitWithFeatures(
-        /*enabled_features=*/{kEnableBookmarksAccountStorage,
-                              kReadingListEnableDualReadingListModel,
+        /*enabled_features=*/{kEnableBookmarkFoldersForAccountStorage,
+#if !BUILDFLAG(IS_IOS)
                               kReadingListEnableSyncTransportModeUponSignIn,
-                              password_manager::features::
-                                  kEnablePasswordsAccountStorage,
+#endif  // !BUILDFLAG(IS_IOS)
+                              kEnablePasswordsAccountStorageForNonSyncingUsers,
                               kSyncEnableContactInfoDataTypeInTransportMode,
                               kEnablePreferencesAccountStorage},
         /*disabled_features=*/{});
@@ -746,30 +821,18 @@ class SyncPrefsMigrationTest : public testing::Test {
     return pref_value->GetBool() ? PREF_TRUE : PREF_FALSE;
   }
 
-  bool BooleanUserPrefMatches(const char* pref_name,
-                              BooleanPrefState state) const {
-    const base::Value* pref_value = pref_service_.GetUserPrefValue(pref_name);
-    switch (state) {
-      case PREF_FALSE:
-        return pref_value && !pref_value->GetBool();
-      case PREF_TRUE:
-        return pref_value && pref_value->GetBool();
-      case PREF_UNSET:
-        return !pref_value;
-    }
-  }
-
-  const char* kBookmarksPref =
+  // Global prefs for syncing users, affecting all accounts.
+  const char* kGlobalBookmarksPref =
       SyncPrefs::GetPrefNameForTypeForTesting(UserSelectableType::kBookmarks);
-  const char* kReadingListPref =
+  const char* kGlobalReadingListPref =
       SyncPrefs::GetPrefNameForTypeForTesting(UserSelectableType::kReadingList);
-  const char* kPasswordsPref =
+  const char* kGlobalPasswordsPref =
       SyncPrefs::GetPrefNameForTypeForTesting(UserSelectableType::kPasswords);
-  const char* kAutofillPref =
+  const char* kGlobalAutofillPref =
       SyncPrefs::GetPrefNameForTypeForTesting(UserSelectableType::kAutofill);
-  const char* kPaymentsPref =
+  const char* kGlobalPaymentsPref =
       SyncPrefs::GetPrefNameForTypeForTesting(UserSelectableType::kPayments);
-  const char* kPreferencesPref =
+  const char* kGlobalPreferencesPref =
       SyncPrefs::GetPrefNameForTypeForTesting(UserSelectableType::kPreferences);
 
   base::test::ScopedFeatureList feature_list_;
@@ -827,121 +890,231 @@ TEST_F(SyncPrefsMigrationTest,
       SyncPrefs::GetPrefNameForTypeForTesting(UserSelectableType::kPayments)));
 }
 
-TEST_F(SyncPrefsMigrationTest, SyncToSignin_NoMigrationForSignedOutUser) {
+#if BUILDFLAG(IS_IOS)
+TEST_F(SyncPrefsMigrationTest, DisablesPasswordsIfUserDisabledGlobalPref) {
+  // One day, before per-account prefs were used, the user disabled the
+  // temporary passwords toggle, writing to the global pref.
+  SetBooleanUserPrefValue(kGlobalPasswordsPref, BooleanPrefState::PREF_FALSE);
+
+  // Without the migration, the per-account passwords pref would be enabled.
+  SyncPrefs prefs(&pref_service_);
+  ASSERT_TRUE(prefs.GetSelectedTypesForAccount(gaia_id_hash_)
+                  .Has(UserSelectableType::kPasswords));
+
+  prefs.MaybeMigratePasswordsToPerAccountPref(
+      SyncPrefs::SyncAccountState::kSignedInNotSyncing, gaia_id_hash_);
+
+  // After the migration, passwords is disabled.
+  EXPECT_FALSE(prefs.GetSelectedTypesForAccount(gaia_id_hash_)
+                   .Has(UserSelectableType::kPasswords));
+}
+
+TEST_F(SyncPrefsMigrationTest, LeavesPasswordsAloneIfDisabledByPolicy) {
+  // One day, before per-account prefs were used, passwords were disabled by a
+  // policy.
+  pref_service_.SetManagedPref(kGlobalPasswordsPref, base::Value(false));
+
+  // Passwords is disabled by the policy, even before the migration.
+  SyncPrefs prefs(&pref_service_);
+  ASSERT_FALSE(prefs.GetSelectedTypesForAccount(gaia_id_hash_)
+                   .Has(UserSelectableType::kPasswords));
+
+  prefs.MaybeMigratePasswordsToPerAccountPref(
+      SyncPrefs::SyncAccountState::kSignedInNotSyncing, gaia_id_hash_);
+
+  // The policy is still in place, so passwords is still disabled for the
+  // moment.
+  ASSERT_FALSE(prefs.GetSelectedTypesForAccount(gaia_id_hash_)
+                   .Has(UserSelectableType::kPasswords));
+
+  // The policy is lifted.
+  pref_service_.RemoveManagedPref(kGlobalPasswordsPref);
+
+  // Passwords should now be enabled.
+  EXPECT_TRUE(prefs.GetSelectedTypesForAccount(gaia_id_hash_)
+                  .Has(UserSelectableType::kPasswords));
+}
+#endif  // BUILDFLAG(IS_IOS)
+
+TEST_F(SyncPrefsMigrationTest, NoPassphraseMigrationForSignoutUsers) {
+  base::test::ScopedFeatureList enable_account_passphrase(
+      kSyncRememberCustomPassphraseAfterSignout);
+
+  SyncPrefs prefs(&pref_service_);
+  // Passphrase is not set.
+  ASSERT_TRUE(prefs.GetEncryptionBootstrapToken().empty());
+
+  auto gaia_id_hash_empty = signin::GaiaIdHash::FromGaiaId("");
+  prefs.MaybeMigrateCustomPassphrasePref(gaia_id_hash_empty);
+  EXPECT_TRUE(prefs.GetEncryptionBootstrapToken().empty());
+  EXPECT_TRUE(
+      prefs.GetEncryptionBootstrapTokenForAccount(gaia_id_hash_empty).empty());
+}
+
+TEST_F(SyncPrefsMigrationTest, PassphraseMigrationFeatureDisabled) {
+  base::test::ScopedFeatureList disable_account_passphrase;
+  disable_account_passphrase.InitAndDisableFeature(
+      kSyncRememberCustomPassphraseAfterSignout);
+
+  SyncPrefs prefs(&pref_service_);
+  prefs.SetEncryptionBootstrapToken("token");
+  prefs.MaybeMigrateCustomPassphrasePref(gaia_id_hash_);
+  EXPECT_EQ(prefs.GetEncryptionBootstrapToken(), "token");
+  EXPECT_TRUE(
+      prefs.GetEncryptionBootstrapTokenForAccount(gaia_id_hash_).empty());
+}
+
+TEST_F(SyncPrefsMigrationTest, PassphraseMigrationDone) {
+  base::test::ScopedFeatureList enable_account_passphrase(
+      kSyncRememberCustomPassphraseAfterSignout);
+
+  SyncPrefs prefs(&pref_service_);
+  prefs.SetEncryptionBootstrapToken("token");
+  prefs.MaybeMigrateCustomPassphrasePref(gaia_id_hash_);
+  EXPECT_EQ(prefs.GetEncryptionBootstrapToken(), "token");
+  EXPECT_EQ(prefs.GetEncryptionBootstrapTokenForAccount(gaia_id_hash_),
+            "token");
+  signin::GaiaIdHash gaia_id_hash_2 =
+      signin::GaiaIdHash::FromGaiaId("account_gaia_2");
+  EXPECT_TRUE(
+      prefs.GetEncryptionBootstrapTokenForAccount(gaia_id_hash_2).empty());
+}
+
+TEST_F(SyncPrefsMigrationTest, PassphraseMigrationOnlyOnce) {
+  base::test::ScopedFeatureList enable_account_passphrase(
+      kSyncRememberCustomPassphraseAfterSignout);
+
+  SyncPrefs prefs(&pref_service_);
+  prefs.SetEncryptionBootstrapToken("token");
+  prefs.MaybeMigrateCustomPassphrasePref(gaia_id_hash_);
+  EXPECT_EQ(prefs.GetEncryptionBootstrapToken(), "token");
+  EXPECT_EQ(prefs.GetEncryptionBootstrapTokenForAccount(gaia_id_hash_),
+            "token");
+
+  // Force old pref to change for testing purposes.
+  prefs.SetEncryptionBootstrapToken("token2");
+  prefs.MaybeMigrateCustomPassphrasePref(gaia_id_hash_);
+  // The migration should not run again.
+  EXPECT_EQ(prefs.GetEncryptionBootstrapToken(), "token2");
+  EXPECT_EQ(prefs.GetEncryptionBootstrapTokenForAccount(gaia_id_hash_),
+            "token");
+}
+
+TEST_F(SyncPrefsMigrationTest, PassphraseMigrationOnlyOnceWithBrowserRestart) {
+  base::test::ScopedFeatureList enable_account_passphrase(
+      kSyncRememberCustomPassphraseAfterSignout);
+
+  {
+    SyncPrefs prefs(&pref_service_);
+    prefs.SetEncryptionBootstrapToken("token");
+    prefs.MaybeMigrateCustomPassphrasePref(gaia_id_hash_);
+    EXPECT_EQ(prefs.GetEncryptionBootstrapToken(), "token");
+    EXPECT_EQ(prefs.GetEncryptionBootstrapTokenForAccount(gaia_id_hash_),
+              "token");
+    // Force old pref to change for testing purposes.
+    prefs.SetEncryptionBootstrapToken("token2");
+  }
+
+  // The browser is restarted.
+  {
+    SyncPrefs prefs(&pref_service_);
+    prefs.MaybeMigrateCustomPassphrasePref(gaia_id_hash_);
+    // No migration should run.
+    EXPECT_EQ(prefs.GetEncryptionBootstrapToken(), "token2");
+    EXPECT_EQ(prefs.GetEncryptionBootstrapTokenForAccount(gaia_id_hash_),
+              "token");
+  }
+}
+
+class SyncPrefsSyncToSigninMigrationTest : public SyncPrefsMigrationTest {
+ public:
+  SyncPrefsSyncToSigninMigrationTest() {
+#if BUILDFLAG(IS_IOS)
+    // MaybeMigratePrefsForSyncToSigninPart1() CHECKs this migration was already
+    // done. The state passed here doesn't matter and can be different from the
+    // one in the tests.
+    SyncPrefs(&pref_service_)
+        .MaybeMigratePasswordsToPerAccountPref(
+            SyncPrefs::SyncAccountState::kNotSignedIn, signin::GaiaIdHash());
+#endif
+  }
+};
+
+TEST_F(SyncPrefsSyncToSigninMigrationTest, NoMigrationForSignedOutUser) {
   base::test::ScopedFeatureList enable_sync_to_signin(
       kReplaceSyncPromosWithSignInPromos);
 
-  // Even though the user is signed out, some prefs are set (e.g. because the
-  // user was previously syncing).
-  SetBooleanUserPrefValue(kBookmarksPref, PREF_TRUE);
-  SetBooleanUserPrefValue(kReadingListPref, PREF_FALSE);
-
-  // The migration runs for a signed-out user. This should do nothing.
-  SyncPrefs(&pref_service_)
-      .MaybeMigratePrefsForSyncToSigninPart1(
-          SyncPrefs::SyncAccountState::kNotSignedIn, signin::GaiaIdHash());
-
-  // Everything should be unchanged: The global settings should be untouched,
-  // and nothing should've been written to the account-scoped settings.
-  EXPECT_TRUE(
-      pref_service_.GetDict(prefs::internal::kSelectedTypesPerAccount).empty());
-  EXPECT_TRUE(BooleanUserPrefMatches(kBookmarksPref, PREF_TRUE));
-  EXPECT_TRUE(BooleanUserPrefMatches(kReadingListPref, PREF_FALSE));
-  EXPECT_TRUE(BooleanUserPrefMatches(kPreferencesPref, PREF_UNSET));
+  EXPECT_FALSE(
+      SyncPrefs(&pref_service_)
+          .MaybeMigratePrefsForSyncToSigninPart1(
+              SyncPrefs::SyncAccountState::kNotSignedIn, signin::GaiaIdHash()));
+  // Part 2 isn't called because the engine isn't initialized.
 }
 
-TEST_F(SyncPrefsMigrationTest, SyncToSignin_NoMigrationForSyncingUser) {
-  base::test::ScopedFeatureList enable_sync_to_signin(
-      kReplaceSyncPromosWithSignInPromos);
-
-  // Some data type prefs are set.
-  SetBooleanUserPrefValue(kBookmarksPref, PREF_TRUE);
-  SetBooleanUserPrefValue(kReadingListPref, PREF_FALSE);
-
-  // The migration runs for a syncing user. This should do nothing.
-  SyncPrefs(&pref_service_)
-      .MaybeMigratePrefsForSyncToSigninPart1(
-          SyncPrefs::SyncAccountState::kSyncing, gaia_id_hash_);
-
-  // Everything should be unchanged: The global settings should be untouched,
-  // and nothing should've been written to the account-scoped settings.
-  EXPECT_TRUE(
-      pref_service_.GetDict(prefs::internal::kSelectedTypesPerAccount).empty());
-  EXPECT_TRUE(BooleanUserPrefMatches(kBookmarksPref, PREF_TRUE));
-  EXPECT_TRUE(BooleanUserPrefMatches(kReadingListPref, PREF_FALSE));
-  EXPECT_TRUE(BooleanUserPrefMatches(kPreferencesPref, PREF_UNSET));
-}
-
-TEST_F(SyncPrefsMigrationTest, SyncToSignin_RunsOnlyOnce) {
+TEST_F(SyncPrefsSyncToSigninMigrationTest, NoMigrationForSyncingUser) {
   base::test::ScopedFeatureList enable_sync_to_signin(
       kReplaceSyncPromosWithSignInPromos);
 
   SyncPrefs prefs(&pref_service_);
-
-  // The migration initially runs for a new user (not signed in yet). This does
-  // not change any actual prefs, but marks the migration as "done".
-  prefs.MaybeMigratePrefsForSyncToSigninPart1(
-      SyncPrefs::SyncAccountState::kNotSignedIn, signin::GaiaIdHash());
-  prefs.MaybeMigratePrefsForSyncToSigninPart2(
-      signin::GaiaIdHash(),
-      /*is_using_explicit_passphrase=*/false);
-  ASSERT_TRUE(
-      pref_service_.GetDict(prefs::internal::kSelectedTypesPerAccount).empty());
-  ASSERT_TRUE(BooleanUserPrefMatches(kPreferencesPref, PREF_UNSET));
-  ASSERT_TRUE(BooleanUserPrefMatches(kAutofillPref, PREF_UNSET));
-
-  // Later, the user signs in. When the migration functions get triggered again
-  // (typically at the next browser startup), it should *not* migrate anything.
-  prefs.MaybeMigratePrefsForSyncToSigninPart1(
-      SyncPrefs::SyncAccountState::kSignedInNotSyncing, gaia_id_hash_);
-  prefs.MaybeMigratePrefsForSyncToSigninPart2(
+  EXPECT_FALSE(prefs.MaybeMigratePrefsForSyncToSigninPart1(
+      SyncPrefs::SyncAccountState::kSyncing, gaia_id_hash_));
+  EXPECT_FALSE(prefs.MaybeMigratePrefsForSyncToSigninPart2(
       gaia_id_hash_,
-      /*is_using_explicit_passphrase=*/true);
-
-  // Nothing happened - account-scoped settings are still empty.
-  EXPECT_TRUE(
-      pref_service_.GetDict(prefs::internal::kSelectedTypesPerAccount).empty());
-  // And global settings are untouched, as always.
-  ASSERT_TRUE(BooleanUserPrefMatches(kPreferencesPref, PREF_UNSET));
-  ASSERT_TRUE(BooleanUserPrefMatches(kAutofillPref, PREF_UNSET));
+      /*is_using_explicit_passphrase=*/true));
 }
 
-TEST_F(SyncPrefsMigrationTest, SyncToSignin_RunsAgainAfterFeatureReenabled) {
-  // Initial state: Preferences and Autofill are enabled (in the global
-  // settings).
-  SetBooleanUserPrefValue(kPreferencesPref, PREF_TRUE);
-  SetBooleanUserPrefValue(kAutofillPref, PREF_TRUE);
+TEST_F(SyncPrefsSyncToSigninMigrationTest, RunsOnlyOnce) {
+  base::test::ScopedFeatureList enable_sync_to_signin(
+      kReplaceSyncPromosWithSignInPromos);
 
-  // The feature gets enabled for the first time, and the migration runs.
+  {
+    SyncPrefs prefs(&pref_service_);
+
+    // The user is signed-out, so the migration should not run and it should be
+    // be marked as done. MaybeMigratePrefsForSyncToSigninPart2() isn't called
+    // yet, because the sync engine wasn't initialized.
+    ASSERT_FALSE(prefs.MaybeMigratePrefsForSyncToSigninPart1(
+        SyncPrefs::SyncAccountState::kNotSignedIn, signin::GaiaIdHash()));
+
+    // The user signs in, causing the engine to initialize and the call to part
+    // 2. The migration should not run, because this wasn't an *existing*
+    // signed-in user.
+    EXPECT_FALSE(prefs.MaybeMigratePrefsForSyncToSigninPart2(
+        gaia_id_hash_,
+        /*is_using_explicit_passphrase=*/true));
+  }
+
+  // The browser is restarted.
+  {
+    SyncPrefs prefs(&pref_service_);
+
+    // Both methods are called. No migration should run.
+    EXPECT_FALSE(prefs.MaybeMigratePrefsForSyncToSigninPart1(
+        SyncPrefs::SyncAccountState::kSignedInNotSyncing, gaia_id_hash_));
+    EXPECT_FALSE(prefs.MaybeMigratePrefsForSyncToSigninPart2(
+        gaia_id_hash_,
+        /*is_using_explicit_passphrase=*/true));
+  }
+}
+
+TEST_F(SyncPrefsSyncToSigninMigrationTest, RunsAgainAfterFeatureReenabled) {
+  // The feature gets enabled for the first time.
   {
     base::test::ScopedFeatureList enable_sync_to_signin(
         kReplaceSyncPromosWithSignInPromos);
 
     SyncPrefs prefs(&pref_service_);
-    prefs.MaybeMigratePrefsForSyncToSigninPart1(
-        SyncPrefs::SyncAccountState::kSignedInNotSyncing, gaia_id_hash_);
-    prefs.MaybeMigratePrefsForSyncToSigninPart2(
+
+    // The user is signed-in non-syncing, so part 1 runs. The user also has an
+    // explicit passphrase, so part 2 runs too.
+    EXPECT_TRUE(prefs.MaybeMigratePrefsForSyncToSigninPart1(
+        SyncPrefs::SyncAccountState::kSignedInNotSyncing, gaia_id_hash_));
+    EXPECT_TRUE(prefs.MaybeMigratePrefsForSyncToSigninPart2(
         gaia_id_hash_,
-        /*is_using_explicit_passphrase=*/true);
-
-    // Preferences got migrated to false.
-    ASSERT_FALSE(prefs.GetSelectedTypesForAccount(gaia_id_hash_)
-                     .Has(UserSelectableType::kPreferences));
-    // Autofill got migrated to false because this is a custom passphrase user.
-    ASSERT_FALSE(prefs.GetSelectedTypesForAccount(gaia_id_hash_)
-                     .Has(UserSelectableType::kAutofill));
-
-    // The global settings are unaffected.
-    ASSERT_TRUE(BooleanUserPrefMatches(kPreferencesPref, PREF_TRUE));
-    ASSERT_TRUE(BooleanUserPrefMatches(kAutofillPref, PREF_TRUE));
+        /*is_using_explicit_passphrase=*/true));
   }
 
-  // Reset the account-scoped settings so we can check whether the migration
-  // happened again.
-  pref_service_.ClearPref(prefs::internal::kSelectedTypesPerAccount);
-
-  // The feature gets disabled, and the migration logic gets triggered again on
-  // the next browser startup.
+  // On the next startup, the feature is disabled.
   {
     base::test::ScopedFeatureList disable_sync_to_signin;
     disable_sync_to_signin.InitAndDisableFeature(
@@ -949,57 +1122,58 @@ TEST_F(SyncPrefsMigrationTest, SyncToSignin_RunsAgainAfterFeatureReenabled) {
 
     SyncPrefs prefs(&pref_service_);
 
-    prefs.MaybeMigratePrefsForSyncToSigninPart1(
-        SyncPrefs::SyncAccountState::kSignedInNotSyncing, gaia_id_hash_);
-    prefs.MaybeMigratePrefsForSyncToSigninPart2(
+    // Since the feature is disabled now, no migration runs.
+    EXPECT_FALSE(prefs.MaybeMigratePrefsForSyncToSigninPart1(
+        SyncPrefs::SyncAccountState::kSignedInNotSyncing, gaia_id_hash_));
+    EXPECT_FALSE(prefs.MaybeMigratePrefsForSyncToSigninPart2(
         gaia_id_hash_,
-        /*is_using_explicit_passphrase=*/true);
-
-    // Since the feature is disabled now, this didn't do anything - the
-    // account-scoped settings are still empty.
-    ASSERT_TRUE(pref_service_.GetDict(prefs::internal::kSelectedTypesPerAccount)
-                    .empty());
-
-    // The global settings are unaffected as always.
-    ASSERT_TRUE(BooleanUserPrefMatches(kPreferencesPref, PREF_TRUE));
-    ASSERT_TRUE(BooleanUserPrefMatches(kAutofillPref, PREF_TRUE));
+        /*is_using_explicit_passphrase=*/true));
   }
 
-  // The feature gets enabled for the second time, and the migration runs.
-  // Since it was disabled in between, the migration should run again.
+  // On the next startup, the feature is enabled again.
   {
     base::test::ScopedFeatureList enable_sync_to_signin(
         kReplaceSyncPromosWithSignInPromos);
 
     SyncPrefs prefs(&pref_service_);
 
-    ASSERT_TRUE(prefs.GetSelectedTypesForAccount(gaia_id_hash_)
-                    .Has(UserSelectableType::kPreferences));
-    ASSERT_TRUE(prefs.GetSelectedTypesForAccount(gaia_id_hash_)
-                    .Has(UserSelectableType::kAutofill));
-
-    prefs.MaybeMigratePrefsForSyncToSigninPart1(
-        SyncPrefs::SyncAccountState::kSignedInNotSyncing, gaia_id_hash_);
-    prefs.MaybeMigratePrefsForSyncToSigninPart2(
+    // Since it was disabled in between, the migration should run again.
+    EXPECT_TRUE(prefs.MaybeMigratePrefsForSyncToSigninPart1(
+        SyncPrefs::SyncAccountState::kSignedInNotSyncing, gaia_id_hash_));
+    EXPECT_TRUE(prefs.MaybeMigratePrefsForSyncToSigninPart2(
         gaia_id_hash_,
-        /*is_using_explicit_passphrase=*/true);
-
-    EXPECT_FALSE(prefs.GetSelectedTypesForAccount(gaia_id_hash_)
-                     .Has(UserSelectableType::kPreferences));
-    EXPECT_FALSE(prefs.GetSelectedTypesForAccount(gaia_id_hash_)
-                     .Has(UserSelectableType::kAutofill));
-
-    // The global settings are unaffected as always.
-    ASSERT_TRUE(BooleanUserPrefMatches(kPreferencesPref, PREF_TRUE));
-    ASSERT_TRUE(BooleanUserPrefMatches(kAutofillPref, PREF_TRUE));
+        /*is_using_explicit_passphrase=*/true));
   }
 }
 
-TEST_F(SyncPrefsMigrationTest, SyncToSignin_TurnsPreferencesOff) {
+TEST_F(SyncPrefsSyncToSigninMigrationTest, GlobalPrefsAreUnchanged) {
   base::test::ScopedFeatureList enable_sync_to_signin(
       kReplaceSyncPromosWithSignInPromos);
 
-  ASSERT_TRUE(BooleanUserPrefMatches(kPreferencesPref, PREF_UNSET));
+  for (UserSelectableType type : UserSelectableTypeSet::All()) {
+    ASSERT_EQ(
+        GetBooleanUserPrefValue(SyncPrefs::GetPrefNameForTypeForTesting(type)),
+        BooleanPrefState::PREF_UNSET);
+  }
+
+  SyncPrefs prefs(&pref_service_);
+
+  ASSERT_TRUE(prefs.MaybeMigratePrefsForSyncToSigninPart1(
+      SyncPrefs::SyncAccountState::kSignedInNotSyncing, gaia_id_hash_));
+  ASSERT_TRUE(prefs.MaybeMigratePrefsForSyncToSigninPart2(
+      gaia_id_hash_,
+      /*is_using_explicit_passphrase=*/true));
+
+  for (UserSelectableType type : UserSelectableTypeSet::All()) {
+    EXPECT_EQ(
+        GetBooleanUserPrefValue(SyncPrefs::GetPrefNameForTypeForTesting(type)),
+        BooleanPrefState::PREF_UNSET);
+  }
+}
+
+TEST_F(SyncPrefsSyncToSigninMigrationTest, TurnsPreferencesOff) {
+  base::test::ScopedFeatureList enable_sync_to_signin(
+      kReplaceSyncPromosWithSignInPromos);
 
   SyncPrefs prefs(&pref_service_);
 
@@ -1014,31 +1188,31 @@ TEST_F(SyncPrefsMigrationTest, SyncToSignin_TurnsPreferencesOff) {
   // Preferences should've been turned off in the account-scoped settings.
   EXPECT_FALSE(prefs.GetSelectedTypesForAccount(gaia_id_hash_)
                    .Has(UserSelectableType::kPreferences));
-  // The global setting is unaffected.
-  ASSERT_TRUE(BooleanUserPrefMatches(kPreferencesPref, PREF_UNSET));
 }
 
-TEST_F(SyncPrefsMigrationTest, SyncToSignin_MigratesBookmarksOptedIn) {
+TEST_F(SyncPrefsSyncToSigninMigrationTest, MigratesBookmarksOptedIn) {
   {
     // The SyncToSignin feature starts disabled.
     base::test::ScopedFeatureList disable_sync_to_signin;
     disable_sync_to_signin.InitAndDisableFeature(
         kReplaceSyncPromosWithSignInPromos);
 
-    // Bookmarks and ReadingList are enabled (by default - the actual prefs are
-    // not set explicitly). On iOS, an additional opt-in pref is required.
-    ASSERT_TRUE(BooleanUserPrefMatches(kBookmarksPref, PREF_UNSET));
-    ASSERT_TRUE(BooleanUserPrefMatches(kReadingListPref, PREF_UNSET));
+    // The user enables Bookmarks and ReadingList. On iOS, this involves a
+    // special opt-in pref.
+    SyncPrefs prefs(&pref_service_);
 #if BUILDFLAG(IS_IOS)
-    SetBooleanUserPrefValue(
-        prefs::internal::kBookmarksAndReadingListAccountStorageOptIn,
-        PREF_TRUE);
+    prefs.SetBookmarksAndReadingListAccountStorageOptIn(true);
+#else
+    prefs.SetSelectedTypeForAccount(UserSelectableType::kBookmarks, true,
+                                    gaia_id_hash_);
+    prefs.SetSelectedTypeForAccount(UserSelectableType::kReadingList, true,
+                                    gaia_id_hash_);
 #endif  // BUILDFLAG(IS_IOS)
-    ASSERT_TRUE(
-        SyncPrefs(&pref_service_)
-            .GetSelectedTypes(SyncPrefs::SyncAccountState::kSignedInNotSyncing)
-            .HasAll({UserSelectableType::kBookmarks,
-                     UserSelectableType::kReadingList}));
+
+    ASSERT_TRUE(prefs.GetSelectedTypesForAccount(gaia_id_hash_)
+                    .Has(UserSelectableType::kBookmarks));
+    ASSERT_TRUE(prefs.GetSelectedTypesForAccount(gaia_id_hash_)
+                    .Has(UserSelectableType::kReadingList));
   }
 
   {
@@ -1050,42 +1224,36 @@ TEST_F(SyncPrefsMigrationTest, SyncToSignin_MigratesBookmarksOptedIn) {
     SyncPrefs prefs(&pref_service_);
 
     ASSERT_TRUE(prefs.GetSelectedTypesForAccount(gaia_id_hash_)
-                    .HasAll({UserSelectableType::kBookmarks,
-                             UserSelectableType::kReadingList}));
+                    .Has(UserSelectableType::kBookmarks));
+    ASSERT_TRUE(prefs.GetSelectedTypesForAccount(gaia_id_hash_)
+                    .Has(UserSelectableType::kReadingList));
 
     prefs.MaybeMigratePrefsForSyncToSigninPart1(
         SyncPrefs::SyncAccountState::kSignedInNotSyncing, gaia_id_hash_);
 
     // Bookmarks and ReadingList should still be enabled.
     EXPECT_TRUE(prefs.GetSelectedTypesForAccount(gaia_id_hash_)
-                    .HasAll({UserSelectableType::kBookmarks,
-                             UserSelectableType::kReadingList}));
-    // The global settings are unaffected, as always.
-    ASSERT_TRUE(BooleanUserPrefMatches(kBookmarksPref, PREF_UNSET));
-    ASSERT_TRUE(BooleanUserPrefMatches(kReadingListPref, PREF_UNSET));
+                    .Has(UserSelectableType::kBookmarks));
+    EXPECT_TRUE(prefs.GetSelectedTypesForAccount(gaia_id_hash_)
+                    .Has(UserSelectableType::kReadingList));
   }
 }
 
 #if BUILDFLAG(IS_IOS)
-TEST_F(SyncPrefsMigrationTest, SyncToSignin_MigratesBookmarksNotOptedIn) {
+TEST_F(SyncPrefsSyncToSigninMigrationTest, MigratesBookmarksNotOptedIn) {
   {
     // The SyncToSignin feature starts disabled.
     base::test::ScopedFeatureList disable_sync_to_signin;
     disable_sync_to_signin.InitAndDisableFeature(
         kReplaceSyncPromosWithSignInPromos);
 
-    // The regular Bookmarks and ReadingList prefs are enabled, but the
-    // additional opt-in pref is not.
-    SetBooleanUserPrefValue(kBookmarksPref, PREF_TRUE);
-    SetBooleanUserPrefValue(kReadingListPref, PREF_TRUE);
-    ASSERT_EQ(GetBooleanUserPrefValue(
-                  prefs::internal::kBookmarksAndReadingListAccountStorageOptIn),
-              PREF_UNSET);
-    ASSERT_FALSE(
-        SyncPrefs(&pref_service_)
-            .GetSelectedTypes(SyncPrefs::SyncAccountState::kSignedInNotSyncing)
-            .HasAny({UserSelectableType::kBookmarks,
-                     UserSelectableType::kReadingList}));
+    // The regular Bookmarks and ReadingList prefs are enabled (by default), but
+    // the additional opt-in pref is not.
+    SyncPrefs prefs(&pref_service_);
+    ASSERT_FALSE(prefs.GetSelectedTypesForAccount(gaia_id_hash_)
+                     .Has(UserSelectableType::kBookmarks));
+    ASSERT_FALSE(prefs.GetSelectedTypesForAccount(gaia_id_hash_)
+                     .Has(UserSelectableType::kReadingList));
   }
 
   {
@@ -1094,53 +1262,49 @@ TEST_F(SyncPrefsMigrationTest, SyncToSignin_MigratesBookmarksNotOptedIn) {
     base::test::ScopedFeatureList enable_sync_to_signin(
         kReplaceSyncPromosWithSignInPromos);
 
+    SyncPrefs prefs(&pref_service_);
+
     // Sanity check: Without the migration, Bookmarks and ReadingList would now
     // be considered enabled.
-    ASSERT_TRUE(SyncPrefs(&pref_service_)
-                    .GetSelectedTypesForAccount(gaia_id_hash_)
-                    .HasAll({UserSelectableType::kBookmarks,
-                             UserSelectableType::kReadingList}));
+    ASSERT_TRUE(prefs.GetSelectedTypesForAccount(gaia_id_hash_)
+                    .Has(UserSelectableType::kBookmarks));
+    ASSERT_TRUE(prefs.GetSelectedTypesForAccount(gaia_id_hash_)
+                    .Has(UserSelectableType::kReadingList));
 
     // Run the migration!
-    SyncPrefs(&pref_service_)
-        .MaybeMigratePrefsForSyncToSigninPart1(
-            SyncPrefs::SyncAccountState::kSignedInNotSyncing, gaia_id_hash_);
+    prefs.MaybeMigratePrefsForSyncToSigninPart1(
+        SyncPrefs::SyncAccountState::kSignedInNotSyncing, gaia_id_hash_);
 
-    // After the migration, bookmarks should be disabled.
-    EXPECT_FALSE(SyncPrefs(&pref_service_)
-                     .GetSelectedTypesForAccount(gaia_id_hash_)
-                     .HasAny({UserSelectableType::kBookmarks,
-                              UserSelectableType::kReadingList}));
-
-    // The global settings are unaffected, as always.
-    ASSERT_TRUE(BooleanUserPrefMatches(kBookmarksPref, PREF_TRUE));
-    ASSERT_TRUE(BooleanUserPrefMatches(kReadingListPref, PREF_TRUE));
+    // After the migration, the types should be disabled.
+    EXPECT_FALSE(prefs.GetSelectedTypesForAccount(gaia_id_hash_)
+                     .Has(UserSelectableType::kBookmarks));
+    EXPECT_FALSE(prefs.GetSelectedTypesForAccount(gaia_id_hash_)
+                     .Has(UserSelectableType::kReadingList));
   }
 }
 #endif  // BUILDFLAG(IS_IOS)
 
-TEST_F(SyncPrefsMigrationTest,
-       SyncToSignin_TurnsAutofillAndPaymentsOffForCustomPassphraseUser) {
+TEST_F(SyncPrefsSyncToSigninMigrationTest,
+       TurnsAutofillAndPaymentsOffForCustomPassphraseUser) {
   base::test::ScopedFeatureList enable_sync_to_signin(
       kReplaceSyncPromosWithSignInPromos);
 
   SyncPrefs prefs(&pref_service_);
 
-  // Autofill is enabled (by default; not set explicitly).
-  ASSERT_TRUE(BooleanUserPrefMatches(kAutofillPref, PREF_UNSET));
-  // Payments is enabled (by default; not set explicitly).
-  ASSERT_TRUE(BooleanUserPrefMatches(kPaymentsPref, PREF_UNSET));
+  // Autofill and payments are enabled (by default).
+  ASSERT_TRUE(prefs.GetSelectedTypesForAccount(gaia_id_hash_)
+                  .Has(UserSelectableType::kAutofill));
+  ASSERT_TRUE(prefs.GetSelectedTypesForAccount(gaia_id_hash_)
+                  .Has(UserSelectableType::kPayments));
 
   // Run the first phase of the migration.
   prefs.MaybeMigratePrefsForSyncToSigninPart1(
       SyncPrefs::SyncAccountState::kSignedInNotSyncing, gaia_id_hash_);
 
-  // Autofill should still be unaffected for now, since the passphrase state
-  // wasn't known yet.
+  // Autofill and payments should still be unaffected for now, since the
+  // passphrase state wasn't known yet.
   ASSERT_TRUE(prefs.GetSelectedTypesForAccount(gaia_id_hash_)
                   .Has(UserSelectableType::kAutofill));
-  // Payments should still be unaffected for now, since Autofill is not affected
-  // yet.
   ASSERT_TRUE(prefs.GetSelectedTypesForAccount(gaia_id_hash_)
                   .Has(UserSelectableType::kPayments));
 
@@ -1150,116 +1314,286 @@ TEST_F(SyncPrefsMigrationTest,
       gaia_id_hash_,
       /*is_using_explicit_passphrase=*/true);
 
-  // Now Autofill should've been turned off in the account-scoped settings.
+  // Now Autofill and Payments should've been turned off in the account-scoped
+  // settings.
   EXPECT_FALSE(prefs.GetSelectedTypesForAccount(gaia_id_hash_)
                    .Has(UserSelectableType::kAutofill));
-  // Payments should've been also turned off in the account-scoped settings.
   EXPECT_FALSE(prefs.GetSelectedTypesForAccount(gaia_id_hash_)
                    .Has(UserSelectableType::kPayments));
-  // The global setting is unaffected.
-  ASSERT_TRUE(BooleanUserPrefMatches(kAutofillPref, PREF_UNSET));
-  ASSERT_TRUE(BooleanUserPrefMatches(kPaymentsPref, PREF_UNSET));
 }
 
-TEST_F(SyncPrefsMigrationTest,
-       SyncToSignin_LeavesAutofillAloneForUserWithoutExplicitPassphrase) {
+TEST_F(SyncPrefsSyncToSigninMigrationTest,
+       LeavesAutofillAloneForUserWithoutExplicitPassphrase) {
   base::test::ScopedFeatureList enable_sync_to_signin(
       kReplaceSyncPromosWithSignInPromos);
-
-  // Autofill is enabled (by default; not set explicitly).
-  ASSERT_TRUE(BooleanUserPrefMatches(kAutofillPref, PREF_UNSET));
-
-  // Run the first phase of the migration.
-  SyncPrefs(&pref_service_)
-      .MaybeMigratePrefsForSyncToSigninPart1(
-          SyncPrefs::SyncAccountState::kSignedInNotSyncing, gaia_id_hash_);
-
-  // Autofill should still be unaffected for now, since the passphrase state
-  // wasn't known yet.
-  ASSERT_TRUE(BooleanUserPrefMatches(kAutofillPref, PREF_UNSET));
-
-  // Now run the second phase, once the passphrase state is known (and it's a
-  // regular keystore passphrase, i.e. no custom passphrase).
-  SyncPrefs(&pref_service_)
-      .MaybeMigratePrefsForSyncToSigninPart2(
-          gaia_id_hash_,
-          /*is_using_explicit_passphrase=*/false);
-
-  // Since this is not a custom passphrase user, Autofill should still be
-  // unaffected.
-  EXPECT_TRUE(BooleanUserPrefMatches(kAutofillPref, PREF_UNSET));
-}
-
-TEST_F(SyncPrefsMigrationTest, SyncToSignin_Part2RunsOnSecondAttempt) {
-  base::test::ScopedFeatureList enable_sync_to_signin(
-      kReplaceSyncPromosWithSignInPromos);
-
-  // Autofill is enabled (by default; not set explicitly), but in the global and
-  // the account-scoped settings.
-  ASSERT_TRUE(BooleanUserPrefMatches(kAutofillPref, PREF_UNSET));
-  ASSERT_TRUE(SyncPrefs(&pref_service_)
-                  .GetSelectedTypesForAccount(gaia_id_hash_)
-                  .Has(UserSelectableType::kAutofill));
 
   SyncPrefs prefs(&pref_service_);
 
+  // Autofill and payments are enabled (by default).
+  ASSERT_TRUE(prefs.GetSelectedTypesForAccount(gaia_id_hash_)
+                  .Has(UserSelectableType::kAutofill));
+  ASSERT_TRUE(prefs.GetSelectedTypesForAccount(gaia_id_hash_)
+                  .Has(UserSelectableType::kPayments));
+
   // Run the first phase of the migration.
   prefs.MaybeMigratePrefsForSyncToSigninPart1(
       SyncPrefs::SyncAccountState::kSignedInNotSyncing, gaia_id_hash_);
 
-  // The account-scoped settings should still be unaffected for now, since the
-  // passphrase state wasn't known yet.
+  // The types should still be unaffected for now, since the passphrase state
+  // wasn't known yet.
   ASSERT_TRUE(prefs.GetSelectedTypesForAccount(gaia_id_hash_)
                   .Has(UserSelectableType::kAutofill));
-
-  // Before the second phase runs, Chrome gets restarted, so the first phase
-  // runs again. This should effectively do nothing.
-  prefs.MaybeMigratePrefsForSyncToSigninPart1(
-      SyncPrefs::SyncAccountState::kSignedInNotSyncing, gaia_id_hash_);
-  ASSERT_TRUE(BooleanUserPrefMatches(kAutofillPref, PREF_UNSET));
   ASSERT_TRUE(prefs.GetSelectedTypesForAccount(gaia_id_hash_)
-                  .Has(UserSelectableType::kAutofill));
+                  .Has(UserSelectableType::kPayments));
 
-  // Now run the second phase.
+  // Now run the second phase, once the passphrase state is known (and it's a
+  // regular keystore passphrase, i.e. no custom passphrase).
   prefs.MaybeMigratePrefsForSyncToSigninPart2(
       gaia_id_hash_,
-      /*is_using_explicit_passphrase=*/true);
+      /*is_using_explicit_passphrase=*/false);
 
-  // Now Autofill should've been turned off in the account-scoped settings.
-  EXPECT_FALSE(prefs.GetSelectedTypesForAccount(gaia_id_hash_)
-                   .Has(UserSelectableType::kAutofill));
-  // The global settings are unaffected.
-  ASSERT_TRUE(BooleanUserPrefMatches(kAutofillPref, PREF_UNSET));
+  // Since this is not a custom passphrase user, the types should still be
+  // unaffected.
+  EXPECT_TRUE(prefs.GetSelectedTypesForAccount(gaia_id_hash_)
+                  .Has(UserSelectableType::kAutofill));
+  EXPECT_TRUE(prefs.GetSelectedTypesForAccount(gaia_id_hash_)
+                  .Has(UserSelectableType::kPayments));
 }
 
-TEST_F(SyncPrefsMigrationTest, SyncToSignin_Part2DoesNotRunOnSignin) {
+TEST_F(SyncPrefsSyncToSigninMigrationTest, Part2RunsOnSecondAttempt) {
   base::test::ScopedFeatureList enable_sync_to_signin(
       kReplaceSyncPromosWithSignInPromos);
 
-  ASSERT_TRUE(BooleanUserPrefMatches(kPreferencesPref, PREF_UNSET));
-  ASSERT_TRUE(BooleanUserPrefMatches(kAutofillPref, PREF_UNSET));
+  {
+    SyncPrefs prefs(&pref_service_);
 
-  // The migration initially runs for a new user (not signed in yet). This does
-  // not change any actual prefs, but marks the migration as "done".
-  SyncPrefs(&pref_service_)
-      .MaybeMigratePrefsForSyncToSigninPart1(
-          SyncPrefs::SyncAccountState::kNotSignedIn, signin::GaiaIdHash());
-  // Note that part 2 doesn't get triggered here, since that only happens once
-  // the sync engine got initialized.
-  ASSERT_TRUE(BooleanUserPrefMatches(kPreferencesPref, PREF_UNSET));
-  ASSERT_TRUE(BooleanUserPrefMatches(kAutofillPref, PREF_UNSET));
+    // Autofill and payments are enabled (by default).
+    ASSERT_TRUE(prefs.GetSelectedTypesForAccount(gaia_id_hash_)
+                    .Has(UserSelectableType::kAutofill));
+    ASSERT_TRUE(prefs.GetSelectedTypesForAccount(gaia_id_hash_)
+                    .Has(UserSelectableType::kPayments));
 
-  // Later, the user signs in. This triggers sync engine initialization, and
-  // thus part 2 of the migration.
-  SyncPrefs(&pref_service_)
-      .MaybeMigratePrefsForSyncToSigninPart2(
-          gaia_id_hash_,
-          /*is_using_explicit_passphrase=*/true);
+    // Run the first phase of the migration.
+    prefs.MaybeMigratePrefsForSyncToSigninPart1(
+        SyncPrefs::SyncAccountState::kSignedInNotSyncing, gaia_id_hash_);
 
-  // Since this was *not* a pre-existing signed-in user, the migration should
-  // have done nothing.
-  ASSERT_TRUE(BooleanUserPrefMatches(kPreferencesPref, PREF_UNSET));
-  EXPECT_TRUE(BooleanUserPrefMatches(kAutofillPref, PREF_UNSET));
+    // The account-scoped settings should still be unaffected for now, since the
+    // passphrase state wasn't known yet.
+    ASSERT_TRUE(prefs.GetSelectedTypesForAccount(gaia_id_hash_)
+                    .Has(UserSelectableType::kAutofill));
+    ASSERT_TRUE(prefs.GetSelectedTypesForAccount(gaia_id_hash_)
+                    .Has(UserSelectableType::kPayments));
+  }
+
+  // Before the second phase runs, Chrome gets restarted.
+  {
+    SyncPrefs prefs(&pref_service_);
+
+    // The first phase runs again. This should effectively do nothing.
+    prefs.MaybeMigratePrefsForSyncToSigninPart1(
+        SyncPrefs::SyncAccountState::kSignedInNotSyncing, gaia_id_hash_);
+
+    ASSERT_TRUE(prefs.GetSelectedTypesForAccount(gaia_id_hash_)
+                    .Has(UserSelectableType::kAutofill));
+    ASSERT_TRUE(prefs.GetSelectedTypesForAccount(gaia_id_hash_)
+                    .Has(UserSelectableType::kPayments));
+
+    // Now run the second phase.
+    prefs.MaybeMigratePrefsForSyncToSigninPart2(
+        gaia_id_hash_,
+        /*is_using_explicit_passphrase=*/true);
+
+    // Now the types should've been turned off in the account-scoped settings.
+    EXPECT_FALSE(prefs.GetSelectedTypesForAccount(gaia_id_hash_)
+                     .Has(UserSelectableType::kAutofill));
+    EXPECT_FALSE(prefs.GetSelectedTypesForAccount(gaia_id_hash_)
+                     .Has(UserSelectableType::kPayments));
+  }
+}
+
+TEST_F(SyncPrefsMigrationTest, GlobalToAccount_DefaultState) {
+  base::test::ScopedFeatureList enable_sync_to_signin(
+      kReplaceSyncPromosWithSignInPromos);
+
+  // Everything is in the default state. Notably, "Sync Everything" is true.
+
+  // Pre-migration (without any explicit per-account settings), most supported
+  // types are considered selected by default - except for kHistory and kTabs,
+  // and kPasswords on desktop.
+  // Note that this is not exhaustive - depending on feature flags, additional
+  // types may be supported and default-enabled.
+  const UserSelectableTypeSet default_enabled_types{
+      UserSelectableType::kAutofill, UserSelectableType::kBookmarks,
+      UserSelectableType::kPayments, UserSelectableType::kPreferences,
+      UserSelectableType::kReadingList};
+  ASSERT_TRUE(SyncPrefs(&pref_service_)
+                  .GetSelectedTypesForAccount(gaia_id_hash_)
+                  .HasAll(default_enabled_types));
+  ASSERT_FALSE(
+      SyncPrefs(&pref_service_)
+          .GetSelectedTypesForAccount(gaia_id_hash_)
+          .HasAny({UserSelectableType::kHistory, UserSelectableType::kTabs}));
+
+  SyncPrefs::MigrateGlobalDataTypePrefsToAccount(&pref_service_, gaia_id_hash_);
+
+  // All supported types should be considered selected for this account now,
+  // including kHistory and kTabs.
+  SyncPrefs prefs(&pref_service_);
+  UserSelectableTypeSet selected_types =
+      prefs.GetSelectedTypesForAccount(gaia_id_hash_);
+  EXPECT_TRUE(selected_types.HasAll(default_enabled_types));
+  EXPECT_TRUE(selected_types.Has(UserSelectableType::kHistory));
+  EXPECT_TRUE(selected_types.Has(UserSelectableType::kTabs));
+  // Also kPasswords which (depending on the platform) may or may not be
+  // considered enabled by default, should be selected now.
+  EXPECT_TRUE(selected_types.Has(UserSelectableType::kPasswords));
+}
+
+TEST_F(SyncPrefsMigrationTest, GlobalToAccount_CustomState) {
+  base::test::ScopedFeatureList enable_sync_to_signin(
+      kReplaceSyncPromosWithSignInPromos);
+
+  // The user has chosen specific data types to sync. In this example, Bookmarks
+  // and Preferences are disabled.
+  const UserSelectableTypeSet old_selected_types{
+      UserSelectableType::kAutofill,    UserSelectableType::kHistory,
+      UserSelectableType::kPasswords,   UserSelectableType::kPayments,
+      UserSelectableType::kReadingList, UserSelectableType::kTabs};
+  {
+    SyncPrefs old_prefs(&pref_service_);
+    old_prefs.SetSelectedTypesForSyncingUser(
+        /*keep_everything_synced=*/false,
+        /*registered_types=*/UserSelectableTypeSet::All(), old_selected_types);
+  }
+
+  // Pre-migration (without any explicit per-account settings), most supported
+  // types are considered selected by default, including Bookmarks and
+  // Preferences - but not History or Tabs (or, on desktop, Passwords).
+  // Note that this is not exhaustive - depending on feature flags, additional
+  // types may be supported and default-enabled.
+  ASSERT_TRUE(SyncPrefs(&pref_service_)
+                  .GetSelectedTypesForAccount(gaia_id_hash_)
+                  .HasAll({UserSelectableType::kAutofill,
+                           UserSelectableType::kBookmarks,
+                           UserSelectableType::kPayments,
+                           UserSelectableType::kPreferences,
+                           UserSelectableType::kReadingList}));
+  ASSERT_FALSE(
+      SyncPrefs(&pref_service_)
+          .GetSelectedTypesForAccount(gaia_id_hash_)
+          .HasAny({UserSelectableType::kHistory, UserSelectableType::kTabs}));
+
+  SyncPrefs::MigrateGlobalDataTypePrefsToAccount(&pref_service_, gaia_id_hash_);
+
+  // After the migration, exactly the same types should be selected as before.
+  SyncPrefs prefs(&pref_service_);
+  EXPECT_EQ(prefs.GetSelectedTypesForAccount(gaia_id_hash_),
+            old_selected_types);
+}
+
+TEST_F(SyncPrefsMigrationTest, GlobalToAccount_HistoryDisabled) {
+  base::test::ScopedFeatureList enable_sync_to_signin(
+      kReplaceSyncPromosWithSignInPromos);
+
+  // All types except for kHistory are selected in the global prefs.
+  {
+    SyncPrefs old_prefs(&pref_service_);
+    UserSelectableTypeSet selected_types = UserSelectableTypeSet::All();
+    selected_types.Remove(UserSelectableType::kHistory);
+    old_prefs.SetSelectedTypesForSyncingUser(
+        /*keep_everything_synced=*/false,
+        /*registered_types=*/UserSelectableTypeSet::All(), selected_types);
+  }
+
+  SyncPrefs::MigrateGlobalDataTypePrefsToAccount(&pref_service_, gaia_id_hash_);
+
+  // After the migration, both kHistory and kTabs should be disabled, since
+  // there is only a single toggle for both of them.
+  SyncPrefs prefs(&pref_service_);
+  UserSelectableTypeSet selected_types =
+      prefs.GetSelectedTypesForAccount(gaia_id_hash_);
+  EXPECT_FALSE(selected_types.Has(UserSelectableType::kHistory));
+  EXPECT_FALSE(selected_types.Has(UserSelectableType::kTabs));
+}
+
+TEST_F(SyncPrefsMigrationTest, GlobalToAccount_TabsDisabled) {
+  base::test::ScopedFeatureList enable_sync_to_signin(
+      kReplaceSyncPromosWithSignInPromos);
+
+  // All types except for kTabs are selected in the global prefs.
+  {
+    SyncPrefs old_prefs(&pref_service_);
+    UserSelectableTypeSet selected_types = UserSelectableTypeSet::All();
+    selected_types.Remove(UserSelectableType::kTabs);
+    old_prefs.SetSelectedTypesForSyncingUser(
+        /*keep_everything_synced=*/false,
+        /*registered_types=*/UserSelectableTypeSet::All(), selected_types);
+  }
+
+  SyncPrefs::MigrateGlobalDataTypePrefsToAccount(&pref_service_, gaia_id_hash_);
+
+  // After the migration, both kHistory and kTabs should be disabled, since
+  // there is only a single toggle for both of them.
+  SyncPrefs prefs(&pref_service_);
+  UserSelectableTypeSet selected_types =
+      prefs.GetSelectedTypesForAccount(gaia_id_hash_);
+  EXPECT_FALSE(selected_types.Has(UserSelectableType::kHistory));
+  EXPECT_FALSE(selected_types.Has(UserSelectableType::kTabs));
+}
+
+TEST_F(SyncPrefsMigrationTest, GlobalToAccount_CustomPassphrase) {
+  base::test::ScopedFeatureList enable_sync_to_signin(
+      kReplaceSyncPromosWithSignInPromos);
+
+  // All types are enabled ("Sync Everything" is true), but the user has a
+  // custom passphrase.
+  {
+    SyncPrefs old_prefs(&pref_service_);
+    old_prefs.SetCachedPassphraseType(PassphraseType::kCustomPassphrase);
+  }
+
+  // Pre-migration (without any explicit per-account settings), most supported
+  // types are considered selected by default - except for kHistory and kTabs,
+  // and kPasswords on desktop.
+  // Note that this is not exhaustive - depending on feature flags, additional
+  // types may be supported and default-enabled.
+  const UserSelectableTypeSet default_enabled_types{
+      UserSelectableType::kAutofill, UserSelectableType::kBookmarks,
+      UserSelectableType::kPayments, UserSelectableType::kPreferences,
+      UserSelectableType::kReadingList};
+  ASSERT_TRUE(SyncPrefs(&pref_service_)
+                  .GetSelectedTypesForAccount(gaia_id_hash_)
+                  .HasAll(default_enabled_types));
+
+  SyncPrefs::MigrateGlobalDataTypePrefsToAccount(&pref_service_, gaia_id_hash_);
+
+  // All supported types should be considered selected for this account now,
+  // except for kAutofill ("Addresses and more") which should've been disabled
+  // for custom passphrase users.
+  const UserSelectableTypeSet expected_types =
+      base::Difference(default_enabled_types, {UserSelectableType::kAutofill});
+  SyncPrefs prefs(&pref_service_);
+  UserSelectableTypeSet selected_types =
+      prefs.GetSelectedTypesForAccount(gaia_id_hash_);
+  EXPECT_TRUE(selected_types.HasAll(expected_types));
+}
+
+TEST_F(SyncPrefsMigrationTest,
+       GlobalToAccount_SuppressesSyncToSigninMigration) {
+  base::test::ScopedFeatureList enable_sync_to_signin(
+      kReplaceSyncPromosWithSignInPromos);
+
+  SyncPrefs::MigrateGlobalDataTypePrefsToAccount(&pref_service_, gaia_id_hash_);
+
+  // After the GlobalToAccount migration has run, the SyncToSignin migration
+  // should not have any effect anymore.
+  SyncPrefs prefs(&pref_service_);
+#if BUILDFLAG(IS_IOS)
+  prefs.MaybeMigratePasswordsToPerAccountPref(
+      SyncPrefs::SyncAccountState::kSignedInNotSyncing, gaia_id_hash_);
+#endif  // BUILDFLAG(IS_IOS)
+  EXPECT_FALSE(prefs.MaybeMigratePrefsForSyncToSigninPart1(
+      SyncPrefs::SyncAccountState::kSignedInNotSyncing, gaia_id_hash_));
 }
 
 }  // namespace

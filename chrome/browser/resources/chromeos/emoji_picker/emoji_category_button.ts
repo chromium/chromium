@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 import './icons.html.js';
-import 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.js';
+import 'chrome://resources/ash/common/cr_elements/cr_icon_button/cr_icon_button.js';
 
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
@@ -48,8 +48,9 @@ export class EmojiCategoryButton extends PolymerElement {
   }
 
   private calculateClassName(active: boolean, searchActive: boolean): string {
+    // Show un-selected category button if user is searching.
     if (searchActive) {
-      return 'category-button-primary';
+      return '';
     }
     return active ? 'category-button-active' : '';
   }

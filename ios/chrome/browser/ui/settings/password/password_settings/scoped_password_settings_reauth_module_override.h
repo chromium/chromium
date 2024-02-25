@@ -5,7 +5,7 @@
 #ifndef IOS_CHROME_BROWSER_UI_SETTINGS_PASSWORD_PASSWORD_SETTINGS_SCOPED_PASSWORD_SETTINGS_REAUTH_MODULE_OVERRIDE_H_
 #define IOS_CHROME_BROWSER_UI_SETTINGS_PASSWORD_PASSWORD_SETTINGS_SCOPED_PASSWORD_SETTINGS_REAUTH_MODULE_OVERRIDE_H_
 
-#import "base/memory/raw_ptr.h"
+#import <memory>
 
 @protocol ReauthenticationProtocol;
 
@@ -15,6 +15,9 @@ class ScopedPasswordSettingsReauthModuleOverride {
  public:
   ~ScopedPasswordSettingsReauthModuleOverride();
 
+  // Returns the override module, if one exists.
+  static id<ReauthenticationProtocol> Get();
+
   // Creates a scoped override so that the provided fake/mock/disarmed/etc
   // reauthentication module will be used in place of the production
   // implementation.
@@ -23,9 +26,6 @@ class ScopedPasswordSettingsReauthModuleOverride {
   // override is active will hold a strong ref to `module`.
   static std::unique_ptr<ScopedPasswordSettingsReauthModuleOverride>
   MakeAndArmForTesting(id<ReauthenticationProtocol> module);
-
-  // Singleton instance of this class.
-  static raw_ptr<ScopedPasswordSettingsReauthModuleOverride> instance;
 
   // The module to be used.
   id<ReauthenticationProtocol> module;

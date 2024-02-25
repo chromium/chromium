@@ -33,7 +33,7 @@ FocusableBorder::FocusableBorder(bool should_scale)
 
 FocusableBorder::~FocusableBorder() = default;
 
-void FocusableBorder::SetColorId(const absl::optional<ui::ColorId>& color_id) {
+void FocusableBorder::SetColorId(const std::optional<ui::ColorId>& color_id) {
   override_color_id_ = color_id;
 }
 

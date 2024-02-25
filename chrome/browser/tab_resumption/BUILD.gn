@@ -1,0 +1,104 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/android/rules.gni")
+
+android_library("java") {
+  sources = [
+    "java/src/org/chromium/chrome/browser/tab_resumption/ForeignSessionTabResumptionDataProvider.java",
+    "java/src/org/chromium/chrome/browser/tab_resumption/SuggestionBundle.java",
+    "java/src/org/chromium/chrome/browser/tab_resumption/SuggestionEntry.java",
+    "java/src/org/chromium/chrome/browser/tab_resumption/TabResumptionDataProvider.java",
+    "java/src/org/chromium/chrome/browser/tab_resumption/TabResumptionModuleBuilder.java",
+    "java/src/org/chromium/chrome/browser/tab_resumption/TabResumptionModuleCoordinator.java",
+    "java/src/org/chromium/chrome/browser/tab_resumption/TabResumptionModuleMediator.java",
+    "java/src/org/chromium/chrome/browser/tab_resumption/TabResumptionModuleProperties.java",
+    "java/src/org/chromium/chrome/browser/tab_resumption/TabResumptionModuleUtils.java",
+    "java/src/org/chromium/chrome/browser/tab_resumption/TabResumptionModuleView.java",
+    "java/src/org/chromium/chrome/browser/tab_resumption/TabResumptionModuleViewBinder.java",
+    "java/src/org/chromium/chrome/browser/tab_resumption/TabResumptionTileContainerView.java",
+    "java/src/org/chromium/chrome/browser/tab_resumption/TabResumptionTileView.java",
+    "java/src/org/chromium/chrome/browser/tab_resumption/UrlImageProvider.java",
+  ]
+  deps = [
+    ":java_resources",
+    "//base:base_java",
+    "//build/android:build_java",
+    "//chrome/browser/flags:java",
+    "//chrome/browser/magic_stack/android:java",
+    "//chrome/browser/profiles/android:java",
+    "//chrome/browser/recent_tabs:java",
+    "//chrome/browser/signin/services/android:java",
+    "//chrome/browser/sync/android:java",
+    "//chrome/browser/ui/android/favicon:java",
+    "//components/browser_ui/widget/android:java",
+    "//components/embedder_support/android:util_java",
+    "//components/favicon/android:java",
+    "//components/sync/android:sync_java",
+    "//content/public/android:content_full_java",
+    "//third_party/androidx:androidx_annotation_annotation_java",
+    "//ui/android:ui_java_resources",
+    "//ui/android:ui_no_recycler_view_java",
+    "//url:gurl_java",
+  ]
+  resources_package = "org.chromium.chrome.browser.tab_resumption"
+}
+
+android_resources("java_resources") {
+  sources = [
+    "java/res/drawable/tab_resumption_module_icon_background.xml",
+    "java/res/drawable/tab_resumption_module_ripple.xml",
+    "java/res/layout/tab_resumption_module_divider.xml",
+    "java/res/layout/tab_resumption_module_layout.xml",
+    "java/res/layout/tab_resumption_module_multi_tile_layout.xml",
+    "java/res/layout/tab_resumption_module_single_tile_layout.xml",
+    "java/res/values/dimens.xml",
+  ]
+  deps = [
+    "//chrome/browser/ui/android/strings:ui_strings_grd",
+    "//components/browser_ui/strings/android:browser_ui_strings_grd",
+    "//components/browser_ui/styles/android:java_resources",
+  ]
+}
+
+robolectric_library("junit") {
+  testonly = true
+  resources_package = "org.chromium.chrome.browser.tab_resumption"
+
+  sources = [
+    "junit/src/org/chromium/chrome/browser/tab_resumption/ForeignSessionTabResumptionDataProviderTest.java",
+    "junit/src/org/chromium/chrome/browser/tab_resumption/TabResumptionModuleMediatorUnitTest.java",
+    "junit/src/org/chromium/chrome/browser/tab_resumption/TabResumptionModuleSuggestionsUnitTest.java",
+    "junit/src/org/chromium/chrome/browser/tab_resumption/TabResumptionModuleUtilsUnitTest.java",
+    "junit/src/org/chromium/chrome/browser/tab_resumption/TabResumptionModuleViewUnitTest.java",
+    "junit/src/org/chromium/chrome/browser/tab_resumption/TestSupport.java",
+  ]
+
+  deps = [
+    ":java",
+    ":java_resources",
+    "//base:base_java",
+    "//base:base_java_test_support",
+    "//base:base_junit_test_support",
+    "//chrome/browser/flags:java",
+    "//chrome/browser/magic_stack/android:java",
+    "//chrome/browser/profiles/android:java",
+    "//chrome/browser/recent_tabs:java",
+    "//chrome/browser/signin/services/android:java",
+    "//chrome/browser/sync/android:java",
+    "//components/browser_ui/theme/android:java_resources",
+    "//components/browser_ui/widget/android:java",
+    "//components/favicon/android:java",
+    "//components/sync/android:sync_java",
+    "//components/sync_device_info:sync_device_info_java",
+    "//third_party/androidx:androidx_annotation_annotation_java",
+    "//third_party/androidx:androidx_test_core_java",
+    "//third_party/androidx:androidx_test_runner_java",
+    "//third_party/junit:junit",
+    "//third_party/mockito:mockito_java",
+    "//ui/android:ui_java",
+    "//url:gurl_java",
+    "//url:gurl_junit_test_support",
+  ]
+}

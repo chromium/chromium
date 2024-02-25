@@ -18,35 +18,16 @@
 WebEnginePermissionDelegate::WebEnginePermissionDelegate() = default;
 WebEnginePermissionDelegate::~WebEnginePermissionDelegate() = default;
 
-void WebEnginePermissionDelegate::RequestPermission(
-    blink::PermissionType permission,
-    content::RenderFrameHost* render_frame_host,
-    const GURL& origin,
-    bool user_gesture,
-    base::OnceCallback<void(blink::mojom::PermissionStatus)> callback) {
-  std::vector<blink::PermissionType> permissions{permission};
-  RequestPermissions(
-      permissions, render_frame_host, origin, user_gesture,
-      base::BindOnce(
-          [](base::OnceCallback<void(blink::mojom::PermissionStatus)> callback,
-             const std::vector<blink::mojom::PermissionStatus>& state) {
-            DCHECK_EQ(state.size(), 1U);
-            std::move(callback).Run(state[0]);
-          },
-          std::move(callback)));
-}
-
 void WebEnginePermissionDelegate::RequestPermissions(
-    const std::vector<blink::PermissionType>& permissions,
     content::RenderFrameHost* render_frame_host,
-    const GURL& requesting_origin,
-    bool user_gesture,
+    const content::PermissionRequestDescription& request_description,
     base::OnceCallback<void(const std::vector<blink::mojom::PermissionStatus>&)>
         callback) {
   FrameImpl* frame = FrameImpl::FromRenderFrameHost(render_frame_host);
   DCHECK(frame);
   frame->permission_controller()->RequestPermissions(
-      permissions, url::Origin::Create(requesting_origin), user_gesture,
+      request_description.permissions,
+      url::Origin::Create(request_description.requesting_origin),
       std::move(callback));
 }
 
@@ -60,15 +41,15 @@ void WebEnginePermissionDelegate::ResetPermission(
 }
 
 void WebEnginePermissionDelegate::RequestPermissionsFromCurrentDocument(
-    const std::vector<blink::PermissionType>& permissions,
     content::RenderFrameHost* render_frame_host,
-    bool user_gesture,
+    const content::PermissionRequestDescription& request_description,
     base::OnceCallback<void(const std::vector<blink::mojom::PermissionStatus>&)>
         callback) {
   FrameImpl* frame = FrameImpl::FromRenderFrameHost(render_frame_host);
   DCHECK(frame);
   frame->permission_controller()->RequestPermissions(
-      permissions, render_frame_host->GetLastCommittedOrigin(), user_gesture,
+      request_description.permissions,
+      render_frame_host->GetLastCommittedOrigin(),
       std::move(callback));
 }
 
@@ -128,7 +109,7 @@ WebEnginePermissionDelegate::GetPermissionStatusForEmbeddedRequester(
 }
 
 WebEnginePermissionDelegate::SubscriptionId
-WebEnginePermissionDelegate::SubscribePermissionStatusChange(
+WebEnginePermissionDelegate::SubscribeToPermissionStatusChange(
     blink::PermissionType permission,
     content::RenderProcessHost* render_process_host,
     content::RenderFrameHost* render_frame_host,
@@ -140,7 +121,7 @@ WebEnginePermissionDelegate::SubscribePermissionStatusChange(
   return SubscriptionId();
 }
 
-void WebEnginePermissionDelegate::UnsubscribePermissionStatusChange(
+void WebEnginePermissionDelegate::UnsubscribeFromPermissionStatusChange(
     SubscriptionId subscription_id) {
   // TODO(crbug.com/1063094): Implement permission status subscription. It's
   // used in blink to emit PermissionStatus.onchange notifications.

@@ -4,6 +4,7 @@
 
 #include "components/component_updater/component_updater_utils.h"
 
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -14,52 +15,28 @@
 #include "base/logging.h"
 #include "base/version.h"
 #include "components/component_updater/component_updater_service.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace component_updater {
 
-absl::optional<ComponentRegistration> GetComponent(
+std::optional<ComponentRegistration> GetComponent(
     const base::flat_map<std::string, ComponentRegistration>& components,
     const std::string& id) {
   const auto it = components.find(id);
-  if (it != components.end())
+  if (it != components.end()) {
     return it->second;
-  return absl::nullopt;
+  }
+  return std::nullopt;
 }
 
-std::vector<absl::optional<ComponentRegistration>> GetCrxComponents(
+std::vector<std::optional<ComponentRegistration>> GetCrxComponents(
     const base::flat_map<std::string, ComponentRegistration>&
         registered_components,
     const std::vector<std::string>& ids) {
-  std::vector<absl::optional<ComponentRegistration>> components;
-  for (const auto& id : ids)
+  std::vector<std::optional<ComponentRegistration>> components;
+  for (const auto& id : ids) {
     components.push_back(GetComponent(registered_components, id));
+  }
   return components;
-}
-
-void DeleteFilesAndParentDirectory(const base::FilePath& file_path) {
-  const base::FilePath base_dir = file_path.DirName();
-  base::FileEnumerator file_enumerator(base_dir, false,
-                                       base::FileEnumerator::DIRECTORIES);
-  for (base::FilePath path = file_enumerator.Next(); !path.value().empty();
-       path = file_enumerator.Next()) {
-    base::Version version(path.BaseName().MaybeAsASCII());
-
-    // Ignore folders that don't have valid version names. These folders are
-    // not managed by the component installer, so don't try to remove them.
-    if (!version.IsValid())
-      continue;
-
-    if (!base::DeletePathRecursively(path)) {
-      DLOG(ERROR) << "Couldn't delete " << path.value();
-    }
-  }
-
-  if (base::IsDirectoryEmpty(base_dir)) {
-    if (!base::DeleteFile(base_dir)) {
-      DLOG(ERROR) << "Couldn't delete " << base_dir.value();
-    }
-  }
 }
 
 }  // namespace component_updater

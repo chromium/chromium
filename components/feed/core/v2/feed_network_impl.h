@@ -17,7 +17,6 @@
 #include "components/feed/core/v2/feed_network.h"
 #include "components/feed/core/v2/types.h"
 #include "components/version_info/channel.h"
-#include "net/http/http_request_headers.h"
 #include "url/gurl.h"
 
 class PrefService;
@@ -27,6 +26,9 @@ class IdentityManager;
 namespace network {
 class SharedURLLoaderFactory;
 }  // namespace network
+namespace supervised_user {
+class GetDiscoverFeedRequest;
+}  // namespace supervised_user
 
 namespace feed {
 constexpr base::TimeDelta kAccessTokenFetchTimeout = base::Seconds(10);
@@ -65,13 +67,27 @@ class FeedNetworkImpl : public FeedNetwork {
       const AccountInfo& account_info,
       base::OnceCallback<void(QueryRequestResult)> callback) override;
 
+  void SendKidFriendlyApiRequest(
+      const supervised_user::GetDiscoverFeedRequest& request,
+      const AccountInfo& account_info,
+      base::OnceCallback<void(KidFriendlyQueryRequestResult)> callback)
+      override;
+
   void SendDiscoverApiRequest(
       NetworkRequestType request_type,
       base::StringPiece api_path,
       base::StringPiece method,
       std::string request_bytes,
       const AccountInfo& account_info,
-      absl::optional<RequestMetadata> request_metadata,
+      std::optional<RequestMetadata> request_metadata,
+      base::OnceCallback<void(RawResponse)> callback) override;
+
+  void SendAsyncDataRequest(
+      const GURL& url,
+      base::StringPiece request_method,
+      net::HttpRequestHeaders request_headers,
+      std::string request_body,
+      const AccountInfo& account_info,
       base::OnceCallback<void(RawResponse)> callback) override;
 
   // Cancels all pending requests immediately. This could be used, for example,
@@ -95,6 +111,9 @@ class FeedNetworkImpl : public FeedNetwork {
   void SendComplete(NetworkFetch* fetch,
                     base::OnceCallback<void(RawResponse)> callback,
                     RawResponse raw_response);
+
+  // Override url if requested.
+  GURL GetOverriddenUrl(const GURL& url) const;
 
   raw_ptr<Delegate> delegate_;
   raw_ptr<signin::IdentityManager> identity_manager_;

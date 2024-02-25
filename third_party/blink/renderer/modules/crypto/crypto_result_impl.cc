@@ -34,6 +34,7 @@
 #include "third_party/blink/public/platform/web_crypto_algorithm.h"
 #include "third_party/blink/renderer/bindings/core/v8/dictionary.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
+#include "third_party/blink/renderer/bindings/core/v8/to_v8_traits.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_core.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_object_builder.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_throw_dom_exception.h"
@@ -129,6 +130,16 @@ void CryptoResultImpl::ClearResolver() {
   resolver_ = nullptr;
 }
 
+ExecutionContext* CryptoResultImpl::GetExecutionContext() {
+  // Duplicate some of the checks done by ScriptPromiseResolver.
+  if (!resolver_ || !resolver_->GetExecutionContext() ||
+      resolver_->GetExecutionContext()->IsContextDestroyed()) {
+    return nullptr;
+  }
+
+  return resolver_->GetExecutionContext();
+}
+
 void CryptoResultImpl::CompleteWithError(WebCryptoErrorType error_type,
                                          const WebString& error_details) {
   if (!resolver_)
@@ -202,7 +213,8 @@ void CryptoResultImpl::CompleteWithBoolean(bool b) {
   if (!resolver_)
     return;
 
-  resolver_->Resolve(b);
+  resolver_->Resolve(
+      v8::Boolean::New(resolver_->GetScriptState()->GetIsolate(), b));
   ClearResolver();
 }
 
@@ -224,12 +236,8 @@ void CryptoResultImpl::CompleteWithKeyPair(const WebCryptoKey& public_key,
 
   V8ObjectBuilder key_pair(script_state);
 
-  key_pair.Add("publicKey",
-               ScriptValue::From(script_state,
-                                 MakeGarbageCollected<CryptoKey>(public_key)));
-  key_pair.Add("privateKey",
-               ScriptValue::From(script_state,
-                                 MakeGarbageCollected<CryptoKey>(private_key)));
+  key_pair.Add("publicKey", MakeGarbageCollected<CryptoKey>(public_key));
+  key_pair.Add("privateKey", MakeGarbageCollected<CryptoKey>(private_key));
 
   resolver_->Resolve(key_pair.V8Value());
   ClearResolver();

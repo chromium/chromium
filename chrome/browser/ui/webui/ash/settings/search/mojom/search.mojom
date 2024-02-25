@@ -1,0 +1,135 @@
+// Copyright 2020 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module ash.settings.mojom;
+
+import "ash/webui/settings/public/constants/routes.mojom";
+import "ash/webui/settings/public/constants/setting.mojom";
+import "chrome/browser/ui/webui/ash/settings/search/mojom/search_result_icon.mojom";
+import "mojo/public/mojom/base/string16.mojom";
+
+// Describes the type of settings result.
+enum SearchResultType {
+  // Result corresponding to a Section (top-level item in Settings navigation).
+  kSection,
+
+  // Result corresponding to a Subpage (nested full page).
+  kSubpage,
+
+  // Result corresponding to an individual setting.
+  kSetting,
+};
+
+// Default ranking, which is used to break ties when searching for results.
+// Manually set by the settings team to ensure that certain results can be
+// displayed more prominently.
+enum SearchResultDefaultRank {
+  kHigh,
+  kMedium,
+  kLow,
+};
+
+// Behavior used when determining whether to return parent results for a query.
+// Results are returned based on whether text for those results matches the
+// user's query, but we also support returning a result for the parent of the
+// original result. In this context, a "parent" refers to a section or subpage
+// which contains a child subpage or setting. For example,
+// Subpage::kWifiNetworks is a subpage whose parent is Section::kNetwork, and
+// Setting::kWifiOnOff is a setting whose parent is Subpage::kWifiNetworks.
+enum ParentResultBehavior {
+  // Returns parent results as long as the number of maximum results is not
+  // exceeded.
+  kAllowParentResults,
+
+  // Does not return parent results.
+  kDoNotIncludeParentResults,
+};
+
+// Identifier for the result; each result describes one section, subpage, or
+// setting.
+union SearchResultIdentifier {
+  chromeos.settings.mojom.Section section;
+  chromeos.settings.mojom.Subpage subpage;
+  chromeos.settings.mojom.Setting setting;
+};
+
+// Search result metadata.
+struct SearchResult {
+  // String to be displayed as a result in the UI. Meant to be displayed
+  // directly (i.e., not an ID but rather the actual text).
+  mojo_base.mojom.String16 text;
+
+  // String for the "canonical" version of this result. Some search results use
+  // alternate text (e.g., "Monitor" instead of "Display"). Note that it is
+  // often the case that |text| and |canonical_text| are the same
+  // string.
+  mojo_base.mojom.String16 canonical_text;
+
+  // The URL path containing the relevant setting, which may or may not contain
+  // URL parameters. For example, the Wi-Fi list settings page is
+  // chrome://os-settings/networks?type=WiFi, so the field would be
+  // "networks?type=WiFi" for this page.
+  string url_path_with_parameters;
+
+  // Icon to display for the search result.
+  SearchResultIcon icon;
+
+  // Relevance score, in the range [0, 1]. A score of 1 indicates a perfect
+  // string match.
+  double relevance_score;
+
+  // List of names of the ancestor sections/subpages for this result. The list
+  // contains the Settings app name and, if applicable, the ancestor section and
+  // subpage names. Names are all localized String16s which can be displayed in
+  // the UI (e.g., as breadcrumbs).
+  //
+  // Example 1 - Wi-Fi subpage: ["Settings", "Network"]
+  // Example 2 - External storage: ["Settings", "Device", "Storage management"]
+  array<mojo_base.mojom.String16> settings_page_hierarchy;
+
+  // Default ranking, which is used to break ties when searching for results.
+  SearchResultDefaultRank default_rank;
+
+  // True if this result was generated due to a text match; this field can be
+  // false if it was constructed due to a ParentResultBehavior.
+  bool was_generated_from_text_match;
+
+  // The type and identifier for this search result. The value of the |type|
+  // field indicates the union member used by |id|.
+  SearchResultType type;
+  SearchResultIdentifier id;
+};
+
+// Used to observe changes to search results.
+interface SearchResultsObserver {
+  // Called when the availability of one or more search results has changed. In
+  // this context, "availability" refers to whether a search result can be
+  // returned based on the user's current state. E.g., "Cellular" results are
+  // only shown if the device has an attached modem, so this function would be
+  // called whenever the user plugs in or unplugs a USB modem. Clients can use
+  // this function to ensure that they do not show "stale" results which are no
+  // longer actionable by the user.
+  OnSearchResultsChanged();
+};
+
+// Provides settings search results. Implemented in the browser process;
+// intended to be called from settings JS and Launcher C++.
+interface SearchHandler {
+  // Searches settings for the given query and returns a list of results, sorted
+  // from most relevant to least relevant. An empty array indicates no relevant
+  // results.
+  //
+  // This function returns an array with a maximum size of |max_num_results|,
+  // but the array may contain fewer elements if there are fewer results.
+  // Clients should never pass a value of 0 for |max_num_results|, since that
+  // would return an empty result array.
+  Search(mojo_base.mojom.String16 query,
+         uint32 max_num_results,
+         ParentResultBehavior parent_result_behavior) =>
+             (array<SearchResult> results);
+
+  // Adds an observer of search results. Disconnected observers are discarded;
+  // to stop observing, close the connection.
+  Observe(pending_remote<SearchResultsObserver> observer);
+};

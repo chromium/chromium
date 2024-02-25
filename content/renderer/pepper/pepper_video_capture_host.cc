@@ -147,7 +147,7 @@ void PepperVideoCaptureHost::OnFrameReady(
         // TODO(ihf): handle size mismatches gracefully here.
         return;
       }
-      uint8_t* dst = reinterpret_cast<uint8_t*>(buffers_[i].data);
+      uint8_t* dst = reinterpret_cast<uint8_t*>(buffers_[i].data.get());
       static_assert(media::VideoFrame::kYPlane == 0, "y plane should be 0");
       static_assert(media::VideoFrame::kUPlane == 1, "u plane should be 1");
       static_assert(media::VideoFrame::kVPlane == 2, "v plane should be 2");
@@ -167,12 +167,11 @@ void PepperVideoCaptureHost::OnFrameReady(
                 media::PIXEL_FORMAT_I420, frame->natural_size(),
                 gfx::Rect(frame->natural_size()), frame->natural_size(), dst,
                 buffers_[i].buffer->size(), frame->timestamp());
-        int uv_size = mapped_frame->coded_size().GetArea() / 2;
-        std::vector<uint8_t> temp_uv_buffer(uv_size);
-        media::EncoderStatus status = media::ConvertAndScaleFrame(
-            *mapped_frame, *dst_frame, temp_uv_buffer);
-        if (!status.is_ok())
+        media::EncoderStatus status =
+            frame_converter_.ConvertAndScale(*mapped_frame, *dst_frame);
+        if (!status.is_ok()) {
           return;
+        }
       } else {
         DCHECK_EQ(frame->format(), media::PIXEL_FORMAT_I420);
         size_t num_planes = media::VideoFrame::NumPlanes(frame->format());

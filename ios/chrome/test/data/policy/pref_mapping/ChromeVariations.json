@@ -1,0 +1,30 @@
+[
+  {
+    "os": [
+      "ios"
+    ],
+    "policy_pref_mapping_tests": [
+      {
+        "note": "Default value (no policies set).",
+        "prefs": {
+          "variations_restrictions_by_policy": {
+            "default_value": 0,
+            "location": "local_state"
+          }
+        }
+      },
+      {
+        "note": "Simple value.",
+        "policies": {
+          "ChromeVariations": 1
+        },
+        "prefs": {
+          "variations_restrictions_by_policy": {
+            "location": "local_state",
+            "value": 1
+          }
+        }
+      }
+    ]
+  }
+]

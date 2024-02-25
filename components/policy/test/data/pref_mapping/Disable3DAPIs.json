@@ -1,0 +1,42 @@
+[
+  {
+    "os": [
+      "win",
+      "linux",
+      "mac",
+      "chromeos_ash",
+      "chromeos_lacros",
+      "fuchsia"
+    ],
+    "policy_pref_mapping_tests": [
+      {
+        "policies": {},
+        "prefs": {
+          "disable_3d_apis": {
+            "default_value": false
+          }
+        }
+      },
+      {
+        "policies": {
+          "Disable3DAPIs": false
+        },
+        "prefs": {
+          "disable_3d_apis": {
+            "value": false
+          }
+        }
+      },
+      {
+        "policies": {
+          "Disable3DAPIs": true
+        },
+        "prefs": {
+          "disable_3d_apis": {
+            "value": true
+          }
+        }
+      }
+    ]
+  }
+]

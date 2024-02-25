@@ -4,6 +4,7 @@
 
 #include "components/history/core/browser/sync/history_sync_bridge.h"
 
+#include <optional>
 #include <vector>
 
 #include "base/auto_reset.h"
@@ -28,7 +29,6 @@
 #include "components/sync/model/mutable_data_batch.h"
 #include "components/sync/model/sync_metadata_store_change_list.h"
 #include "components/sync/protocol/history_specifics.pb.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/page_transition_types.h"
 
 namespace history {
@@ -243,12 +243,12 @@ VisitRow MakeVisitRow(const sync_pb::HistorySpecifics& specifics,
   return row;
 }
 
-absl::optional<VisitContextAnnotations> MakeContextAnnotations(
+std::optional<VisitContextAnnotations> MakeContextAnnotations(
     const sync_pb::HistorySpecifics& specifics,
     int redirect_index) {
   // Context annotations are only attached to the last visit in a chain.
   if (redirect_index != specifics.redirect_entries_size() - 1) {
-    return absl::nullopt;
+    return std::nullopt;
   }
   VisitContextAnnotations annotations;
   if (specifics.has_browser_type()) {
@@ -266,12 +266,12 @@ absl::optional<VisitContextAnnotations> MakeContextAnnotations(
   return annotations;
 }
 
-absl::optional<VisitContentAnnotations> MakeContentAnnotations(
+std::optional<VisitContentAnnotations> MakeContentAnnotations(
     const sync_pb::HistorySpecifics& specifics,
     int redirect_index) {
   // Content annotations are only attached to the last visit in a chain.
   if (redirect_index != specifics.redirect_entries_size() - 1) {
-    return absl::nullopt;
+    return std::nullopt;
   }
   VisitContentAnnotations annotations;
   annotations.page_language = specifics.page_language();
@@ -481,7 +481,7 @@ enum class SpecificsError {
 
 // Checks the given `specifics` for validity, i.e. whether it passes some basic
 // validation checks, and returns the appropriate error if it doesn't.
-absl::optional<SpecificsError> GetSpecificsError(
+std::optional<SpecificsError> GetSpecificsError(
     const sync_pb::HistorySpecifics& specifics,
     const HistoryBackendForSync* history_backend) {
   // Check for required fields: visit_time and originator_cache_guid must not be
@@ -546,7 +546,7 @@ HistorySyncBridge::CreateMetadataChangeList() {
                           change_processor()->GetWeakPtr()));
 }
 
-absl::optional<syncer::ModelError> HistorySyncBridge::MergeFullSyncData(
+std::optional<syncer::ModelError> HistorySyncBridge::MergeFullSyncData(
     std::unique_ptr<syncer::MetadataChangeList> metadata_change_list,
     syncer::EntityChangeList entity_data) {
   // Since HISTORY is in ApplyUpdatesImmediatelyTypes(), MergeFullSyncData()
@@ -555,7 +555,7 @@ absl::optional<syncer::ModelError> HistorySyncBridge::MergeFullSyncData(
   return {};
 }
 
-absl::optional<syncer::ModelError>
+std::optional<syncer::ModelError>
 HistorySyncBridge::ApplyIncrementalSyncChanges(
     std::unique_ptr<syncer::MetadataChangeList> metadata_change_list,
     syncer::EntityChangeList entity_changes) {
@@ -574,7 +574,7 @@ HistorySyncBridge::ApplyIncrementalSyncChanges(
         entity_change->data().specifics.history();
 
     // Check validity requirements.
-    absl::optional<SpecificsError> specifics_error =
+    std::optional<SpecificsError> specifics_error =
         GetSpecificsError(specifics, history_backend_);
     if (specifics_error.has_value()) {
       DVLOG(1) << "Skipping invalid visit, reason "
@@ -633,7 +633,7 @@ HistorySyncBridge::ApplyIncrementalSyncChanges(
 
   id_remapper.RemapIDs();
 
-  absl::optional<syncer::ModelError> metadata_error =
+  std::optional<syncer::ModelError> metadata_error =
       change_processor()->GetError();
   if (metadata_error) {
     RecordDatabaseError(
@@ -808,10 +808,6 @@ void HistorySyncBridge::OnURLsDeleted(HistoryBackend* history_backend,
                                       const std::set<GURL>& favicon_urls) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  if (!ShouldCommitRightNow()) {
-    return;
-  }
-
   // If individual URLs get deleted, we're notified about their removed visits
   // via OnVisitDeleted(), so there's nothing to be done here. But if all
   // history is cleared, there are no individual notifications, so handle that
@@ -857,32 +853,21 @@ void HistorySyncBridge::OnVisitUpdated(const VisitRow& visit_row,
 void HistorySyncBridge::OnVisitDeleted(const VisitRow& visit_row) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  if (!ShouldCommitRightNow()) {
-    return;
-  }
-
   // No need to send an actual deletion: Either this was an expiry, in which
   // no deletion should be sent, or if it's an actual deletion, then a
   // HistoryDeleteDirective will take care of that. Just untrack the entity and
   // delete its metadata (just in case this entity was waiting to be committed -
   // otherwise no metadata exists anyway).
   std::string storage_key = GetStorageKeyFromVisitRow(visit_row);
-  sync_metadata_database_->ClearEntityMetadata(syncer::HISTORY, storage_key);
+  if (sync_metadata_database_) {
+    sync_metadata_database_->ClearEntityMetadata(syncer::HISTORY, storage_key);
+  }
   change_processor()->UntrackEntityForStorageKey(storage_key);
 }
 
 void HistorySyncBridge::SetSyncTransportState(
     syncer::SyncService::TransportState state) {
   sync_transport_state_ = state;
-
-  // TODO(crbug.com/897628): Currently ApplyDisableSyncChanges() doesn't always
-  // get called when Sync is turned off. This is a workaround to still clear
-  // foreign history in that case. Remove once that bug is fixed.
-  if (sync_transport_state_ == syncer::SyncService::TransportState::DISABLED) {
-    // This is cheap if there is no foreign history in the DB, so it's okay to
-    // call this somewhat too often.
-    history_backend_->DeleteAllForeignVisitsAndResetIsKnownToSync();
-  }
 }
 
 void HistorySyncBridge::OnDatabaseError() {
@@ -1045,7 +1030,7 @@ HistorySyncBridge::QueryRedirectChainAndMakeEntityData(
 
     // Query the URL and annotation info for the current subchain.
     std::vector<AnnotatedVisit> annotated_visits =
-        history_backend_->ToAnnotatedVisits(
+        history_backend_->ToAnnotatedVisitsFromRows(
             subchain_visits,
             /*compute_redirect_chain_start_properties=*/false);
     if (annotated_visits.empty()) {
@@ -1120,9 +1105,9 @@ bool HistorySyncBridge::AddEntityInBackend(
     if (i > 0) {
       visit_row.referring_visit = referring_visit_id;
     }
-    absl::optional<VisitContextAnnotations> context_annotations =
+    std::optional<VisitContextAnnotations> context_annotations =
         MakeContextAnnotations(specifics, i);
-    absl::optional<VisitContentAnnotations> content_annotations =
+    std::optional<VisitContentAnnotations> content_annotations =
         MakeContentAnnotations(specifics, i);
     VisitID added_visit_id = history_backend_->AddSyncedVisit(
         GURL(specifics.redirect_entries(i).url()),
@@ -1172,9 +1157,9 @@ bool HistorySyncBridge::UpdateEntityInBackend(
   // is indeed sufficient.
   int index = specifics.redirect_entries_size() - 1;
   VisitRow final_visit_row = MakeVisitRow(specifics, index);
-  absl::optional<VisitContextAnnotations> context_annotations =
+  std::optional<VisitContextAnnotations> context_annotations =
       MakeContextAnnotations(specifics, index);
-  absl::optional<VisitContentAnnotations> content_annotations =
+  std::optional<VisitContentAnnotations> content_annotations =
       MakeContentAnnotations(specifics, index);
   // Note: UpdateSyncedVisit() keeps any existing local referrer/opener IDs in
   // place, and the originator IDs are never updated in practice, so there's no
@@ -1192,8 +1177,9 @@ bool HistorySyncBridge::UpdateEntityInBackend(
 }
 
 void HistorySyncBridge::UntrackAndClearMetadataForAllEntities() {
-  DCHECK(sync_metadata_database_);
-  sync_metadata_database_->ClearAllEntityMetadata();
+  if (sync_metadata_database_) {
+    sync_metadata_database_->ClearAllEntityMetadata();
+  }
   for (const std::string& storage_key :
        change_processor()->GetAllTrackedStorageKeys()) {
     change_processor()->UntrackEntityForStorageKey(storage_key);

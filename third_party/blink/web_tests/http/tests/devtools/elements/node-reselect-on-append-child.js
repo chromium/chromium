@@ -5,10 +5,11 @@
 import {TestRunner} from 'test_runner';
 import {ElementsTestRunner} from 'elements_test_runner';
 
+import * as ElementsModule from 'devtools/panels/elements/elements.js';
+
 (async function() {
   TestRunner.addResult(
       `The test verifies that SelectedNodeChanged event is not fired whenever a child gets added to the node.\n`);
-  await TestRunner.loadLegacyModule('elements');
   await TestRunner.showPanel('elements');
   await TestRunner.loadHTML(`
       <div>
@@ -28,8 +29,8 @@ import {ElementsTestRunner} from 'elements_test_runner';
 
   function onNodeSelected() {
     ElementsTestRunner.firstElementsTreeOutline().addEventListener(
-        Elements.ElementsTreeOutline.Events.SelectedNodeChanged, onSelectionChangedEvent);
-    TestRunner.addSniffer(Elements.ElementsTreeOutline.prototype, 'updateChildren', onNodeAppended);
+        ElementsModule.ElementsTreeOutline.ElementsTreeOutline.Events.SelectedNodeChanged, onSelectionChangedEvent);
+    TestRunner.addSniffer(ElementsModule.ElementsTreeOutline.ElementsTreeOutline.prototype, 'updateChildren', onNodeAppended);
     TestRunner.evaluateInPage('appendNewNode()');
   }
 

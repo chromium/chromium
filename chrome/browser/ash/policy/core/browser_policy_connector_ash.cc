@@ -9,7 +9,9 @@
 #include <utility>
 
 #include "ash/constants/ash_paths.h"
+#include "ash/shell.h"
 #include "base/check.h"
+#include "base/check_deref.h"
 #include "base/command_line.h"
 #include "base/feature_list.h"
 #include "base/files/file_path.h"
@@ -34,9 +36,9 @@
 #include "chrome/browser/ash/policy/external_data/handlers/device_print_servers_external_data_handler.h"
 #include "chrome/browser/ash/policy/external_data/handlers/device_printers_external_data_handler.h"
 #include "chrome/browser/ash/policy/external_data/handlers/device_wallpaper_image_external_data_handler.h"
-#include "chrome/browser/ash/policy/external_data/handlers/device_wilco_dtc_configuration_external_data_handler.h"
 #include "chrome/browser/ash/policy/handlers/adb_sideloading_allowance_mode_policy_handler.h"
 #include "chrome/browser/ash/policy/handlers/bluetooth_policy_handler.h"
+#include "chrome/browser/ash/policy/handlers/device_dlc_predownload_list_policy_handler.h"
 #include "chrome/browser/ash/policy/handlers/device_dock_mac_address_source_handler.h"
 #include "chrome/browser/ash/policy/handlers/device_name_policy_handler_impl.h"
 #include "chrome/browser/ash/policy/handlers/device_wifi_allowed_handler.h"
@@ -48,7 +50,7 @@
 #include "chrome/browser/ash/policy/invalidation/affiliated_invalidation_service_provider.h"
 #include "chrome/browser/ash/policy/invalidation/affiliated_invalidation_service_provider_impl.h"
 #include "chrome/browser/ash/policy/remote_commands/affiliated_remote_commands_invalidator.h"
-#include "chrome/browser/ash/policy/remote_commands/crd_admin_session_controller.h"
+#include "chrome/browser/ash/policy/remote_commands/crd/crd_admin_session_controller.h"
 #include "chrome/browser/ash/policy/scheduled_task_handler/device_scheduled_reboot_handler.h"
 #include "chrome/browser/ash/policy/scheduled_task_handler/device_scheduled_update_checker.h"
 #include "chrome/browser/ash/policy/scheduled_task_handler/reboot_notifications_scheduler.h"
@@ -119,6 +121,8 @@ BrowserPolicyConnectorAsh::CreateBackgroundTaskRunner() {
 BrowserPolicyConnectorAsh::BrowserPolicyConnectorAsh() {
   DCHECK(ash::InstallAttributes::IsInitialized());
 
+  crd_admin_session_controller_ = std::make_unique<CrdAdminSessionController>();
+
   // DBusThreadManager or DeviceSettingsService may be
   // uninitialized on unit tests.
   if (ash::DBusThreadManager::IsInitialized() &&
@@ -139,9 +143,6 @@ BrowserPolicyConnectorAsh::BrowserPolicyConnectorAsh() {
             base::BindRepeating(&GetChromePolicyDetails),
             CreateBackgroundTaskRunner(), device_policy_external_data_path,
             device_cloud_policy_store.get());
-
-    crd_admin_session_controller_ =
-        std::make_unique<CrdAdminSessionController>();
 
     device_cloud_policy_manager_ = new DeviceCloudPolicyManagerAsh(
         std::move(device_cloud_policy_store), std::move(external_data_manager),
@@ -263,11 +264,6 @@ void BrowserPolicyConnectorAsh::Init(
   device_cloud_external_data_policy_handlers_.push_back(
       std::make_unique<DeviceWallpaperImageExternalDataHandler>(
           local_state, GetPolicyService()));
-  if (base::FeatureList::IsEnabled(::features::kWilcoDtc)) {
-    device_cloud_external_data_policy_handlers_.push_back(
-        std::make_unique<DeviceWilcoDtcConfigurationExternalDataHandler>(
-            GetPolicyService()));
-  }
   system_proxy_handler_ =
       std::make_unique<SystemProxyHandler>(ash::CrosSettings::Get());
 
@@ -287,17 +283,35 @@ void BrowserPolicyConnectorAsh::Init(
               DeviceScheduledRebootHandler::kRebootTimerTag),
           reboot_notifications_scheduler_.get());
 
-  crd_admin_session_controller_->Init();
+  device_dlc_predownload_list_policy_handler_ =
+      DeviceDlcPredownloadListPolicyHandler::Create();
+}
+
+void BrowserPolicyConnectorAsh::OnBrowserStarted() {
+  ChromeBrowserPolicyConnector::OnBrowserStarted();
+
+  // `ash::Shell` is not available when `BrowserPolicyConnectorAsh::Init` is
+  // invoked, so we must delay this initialization until now.
+  crd_admin_session_controller_->Init(
+      local_state_,
+      CHECK_DEREF(ash::Shell::Get()).security_curtain_controller());
 }
 
 void BrowserPolicyConnectorAsh::PreShutdown() {
   // Let the |affiliated_invalidation_service_provider_| unregister itself as an
   // observer of per-Profile InvalidationServices and the device-global
-  // invalidation::TiclInvalidationService it may have created as an observer of
+  // invalidation::InvalidationService it may have created as an observer of
   // the DeviceOAuth2TokenService that is destroyed before Shutdown() is called.
+  //
+  // TODO(b/308427142) The comment above is hard to grok, as is the code it
+  // describes. We should clean this up.
   if (affiliated_invalidation_service_provider_) {
     affiliated_invalidation_service_provider_->Shutdown();
   }
+
+  // This controller depends on the `SecurityCurtainController` which will be
+  // destroyed before `BrowserPolicyConnectorAsh::Shutdown` is invoked.
+  crd_admin_session_controller_->Shutdown();
 }
 
 void BrowserPolicyConnectorAsh::Shutdown() {
@@ -325,6 +339,8 @@ void BrowserPolicyConnectorAsh::Shutdown() {
   device_scheduled_update_checker_.reset();
 
   device_scheduled_reboot_handler_.reset();
+
+  device_dlc_predownload_list_policy_handler_.reset();
 
   reboot_notifications_scheduler_.reset();
 

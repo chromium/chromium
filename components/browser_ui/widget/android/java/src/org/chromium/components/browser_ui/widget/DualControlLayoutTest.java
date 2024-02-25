@@ -24,12 +24,11 @@ import org.junit.runner.RunWith;
 import org.chromium.base.test.BaseJUnit4ClassRunner;
 import org.chromium.base.test.UiThreadTest;
 import org.chromium.base.test.util.Batch;
+import org.chromium.components.browser_ui.widget.DualControlLayout.ButtonType;
 import org.chromium.components.browser_ui.widget.DualControlLayout.DualControlLayoutAlignment;
 import org.chromium.components.browser_ui.widget.test.R;
 
-/**
- * Tests for DualControlLayout.
- */
+/** Tests for DualControlLayout. */
 @RunWith(BaseJUnit4ClassRunner.class)
 @Batch(Batch.UNIT_TESTS)
 public class DualControlLayoutTest {
@@ -261,9 +260,8 @@ public class DualControlLayoutTest {
     }
 
     /**
-     * Runs a test against an inflated DualControlLayout that sets all of its values.
-     * Re-uses the AutofillEditor's buttons XML layout because we have no support for test-only
-     * layout files.
+     * Runs a test against an inflated DualControlLayout that sets all of its values. Re-uses the
+     * AutofillEditor's buttons XML layout because we have no support for test-only layout files.
      */
     @Test
     @SmallTest
@@ -280,19 +278,57 @@ public class DualControlLayoutTest {
         // Inflate a DualControlLayout that has all of the attributes set and confirm they're used
         // correctly.
         FrameLayout containerView = new FrameLayout(mContext);
-        LayoutInflater.from(mContext).inflate(
-                R.layout.dual_control_test_layout, containerView, true);
+        LayoutInflater.from(mContext)
+                .inflate(R.layout.dual_control_test_layout, containerView, true);
         DualControlLayout inflatedLayout = containerView.findViewById(R.id.button_bar);
         Assert.assertEquals(DualControlLayoutAlignment.END, inflatedLayout.getAlignment());
-        Assert.assertEquals("Incorrect stacked margin. Should be 24dp", 24 * dpToPx,
-                inflatedLayout.getStackedMargin(), 0.f);
+        Assert.assertEquals(
+                "Incorrect stacked margin. Should be 24dp",
+                24 * dpToPx,
+                inflatedLayout.getStackedMargin(),
+                0.f);
 
         Button primaryButton = inflatedLayout.findViewById(R.id.button_primary);
         Assert.assertNotNull(primaryButton);
         Assert.assertEquals("Done", primaryButton.getText());
 
-        Button secondaryButton = (Button) inflatedLayout.findViewById(R.id.button_secondary);
+        Button secondaryButton = inflatedLayout.findViewById(R.id.button_secondary);
         Assert.assertNotNull(secondaryButton);
         Assert.assertEquals("Cancel", secondaryButton.getText());
+    }
+
+    /** Runs a test that checks whether the primary and secondary buttons can be replaced. */
+    @Test
+    @SmallTest
+    @UiThreadTest
+    public void testReplaceButtons() {
+        // Inflate a DualControlLayout that has all of the attributes set and confirm they're used
+        // correctly.
+        FrameLayout containerView = new FrameLayout(mContext);
+        LayoutInflater.from(mContext)
+                .inflate(R.layout.dual_control_test_layout, containerView, true);
+        DualControlLayout inflatedLayout = containerView.findViewById(R.id.button_bar);
+
+        inflatedLayout.removeAllViews();
+
+        Button primaryButton = inflatedLayout.findViewById(R.id.button_primary);
+        Assert.assertNull(primaryButton);
+        Button secondaryButton = inflatedLayout.findViewById(R.id.button_secondary);
+        Assert.assertNull(secondaryButton);
+
+        inflatedLayout.addView(
+                DualControlLayout.createButtonForLayout(
+                        mContext, ButtonType.PRIMARY_FILLED, "Done", null));
+        inflatedLayout.addView(
+                DualControlLayout.createButtonForLayout(
+                        mContext, ButtonType.SECONDARY, "Cancel", null));
+
+        Button newPrimaryButton = inflatedLayout.findViewById(R.id.button_primary);
+        Assert.assertNotNull(newPrimaryButton);
+        Assert.assertEquals("Done", newPrimaryButton.getText());
+
+        Button newSecondaryButton = inflatedLayout.findViewById(R.id.button_secondary);
+        Assert.assertNotNull(newSecondaryButton);
+        Assert.assertEquals("Cancel", newSecondaryButton.getText());
     }
 }

@@ -1,0 +1,100 @@
+[
+  {
+    "os": [
+      "android",
+      "win",
+      "mac",
+      "linux"
+    ],
+    "policy_pref_mapping_tests": [
+      {
+        "note": "Default value (no policies set).",
+        "prefs": {
+          "certificates.ca_certificates_with_constraints": {
+            "default_value": []
+          }
+        }
+      },
+      {
+        "note": "One cert.",
+        "policies": {
+          "CACertificatesWithConstraints": [
+            {
+              "certificate": "cert1",
+              "constraints": {
+                "permitted_dns_names": [ "dns1" ],
+                "permitted_cidrs": [ "cidr1" ]
+              }
+            }
+          ]
+        },
+        "prefs": {
+          "certificates.ca_certificates_with_constraints": {
+            "location": "user_profile",
+            "value": [
+                    {
+                      "certificate": "cert1",
+                      "constraints": {
+                        "permitted_dns_names": [ "dns1" ],
+                        "permitted_cidrs": [ "cidr1" ]
+                      }
+                    }
+            ]
+          }
+        }
+      },
+      {
+        "note": "Multiple cert.",
+        "policies": {
+          "CACertificatesWithConstraints": [
+            {
+              "certificate": "cert1",
+              "constraints": {
+                "permitted_dns_names": [ "dns1" ],
+                "permitted_cidrs": [ "cidr1" ]
+              }
+            },
+            {
+              "certificate": "cert2",
+              "constraints": {
+                "permitted_cidrs": [ "cidr2", "cidr34", "cidr545" ]
+              }
+            },
+            {
+              "certificate": "cert3",
+              "constraints": {
+                "permitted_dns_names": [ "dns4", "dns8" ]
+              }
+            }
+          ]
+        },
+        "prefs": {
+          "certificates.ca_certificates_with_constraints": {
+            "location": "user_profile",
+            "value": [
+              {
+                "certificate": "cert1",
+                "constraints": {
+                  "permitted_dns_names": [ "dns1" ],
+                  "permitted_cidrs": [ "cidr1" ]
+                }
+              },
+              {
+                "certificate": "cert2",
+                "constraints": {
+                  "permitted_cidrs": [ "cidr2", "cidr34", "cidr545" ]
+                }
+              },
+              {
+                "certificate": "cert3",
+                "constraints": {
+                  "permitted_dns_names": [ "dns4", "dns8" ]
+                }
+              }
+            ]
+          }
+        }
+      }
+    ]
+  }
+]

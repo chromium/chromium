@@ -3,8 +3,8 @@
 # found in the LICENSE file.
 
 import("//build/config/c++/c++.gni")
+import("//build/config/cast.gni")
 import("//build/config/chrome_build.gni")
-import("//build/config/chromecast_build.gni")
 import("//build/config/chromeos/args.gni")
 import("//build/config/chromeos/ui_mode.gni")
 import("//build/config/compiler/pgo/pgo.gni")
@@ -39,8 +39,7 @@ declare_args() {
 
   # If true, optimize for size.
   # Default to favoring speed over size for platforms not listed below.
-  optimize_for_size =
-      !is_high_end_android && (is_android || is_ios || is_castos)
+  optimize_for_size = !is_high_end_android && (is_android || is_castos)
 }
 
 declare_args() {
@@ -138,7 +137,8 @@ declare_args() {
   # Set to true to enable using the ML inliner in LLVM. This currently only
   # enables the ML inliner when targeting Android.
   # Currently the ML inliner is only supported on linux hosts
-  use_ml_inliner = host_os == "linux" && is_android
+  use_ml_inliner = host_os == "linux" && is_android &&
+                   !llvm_android_mainline  # https://crbug.com/1468680
 
   # Set to true to use the android unwinder V2 implementation.
   use_android_unwinder_v2 = true
@@ -324,15 +324,18 @@ if (symbol_level == -1) {
 use_debug_fission = use_debug_fission && symbol_level == 2
 
 # Non-component debug builds with symbol_level = 2 are an undesirable (very slow
-# build times) and unsupported (some test binaries will fail with > 4 GB PDBs)
-# combination. This is only checked when current_toolchain == default_toolchain
-# because the is_component_build flag is set to false in various components of
-# the build (like nacl) and we don't want to assert on those.
+# build times, almost two-minute link times) combination. This is only checked
+# when current_toolchain == default_toolchain because the is_component_build
+# flag is set to false in various components of the build (like nacl) and we
+# don't want to assert on those.
 # iOS does not support component builds so add an exception for this platform.
+# Windows supports huge PDBs so this combination is allowed for those who don't
+# mind long build times.
 if (forbid_non_component_debug_builds) {
   assert(
       symbol_level != 2 || current_toolchain != default_toolchain ||
-          is_component_build || !is_debug || is_ios || use_debug_fission,
+          is_component_build || !is_debug || is_ios || use_debug_fission ||
+          host_os == "win",
       "Can't do non-component debug builds at symbol_level=2 without use_debug_fission=true")
 }
 

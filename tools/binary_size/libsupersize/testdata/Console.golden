@@ -1,12 +1,12 @@
 ********************************************************************************
 Entering interactive Python shell. Quick reference:
 
-SizeInfo: ContainerForName, build_config, containers, is_sparse, metadata_legacy, native_symbols, pak_symbols, raw_symbols, section_sizes, size_path, symbols
+SizeInfo: ContainerForName, MakeSparse, build_config, containers, is_sparse, metadata_legacy, native_symbols, pak_symbols, raw_symbols, section_sizes, size_path, symbols
 Symbol: FlagsString, IsArsc, IsBss, IsDelta, IsDex, IsGeneratedByToolchain, IsGroup, IsNameUnique, IsNative, IsOther, IsOverhead, IsPak, IsStringLiteral, IterLeafSymbols, SetName, address, aliases, component, container, container_name, container_short_name, disassembly, end_address, flags, full_name, generated_source, is_anonymous, name, num_aliases, object_path, padding, padding_pss, pss, pss_without_padding, section, section_name, size, size_without_padding, source_path, template_name
 
 SymbolGroup (extends Symbol): CountUniqueSymbols, Filter, GroupedBy, GroupedByAliases, GroupedByComponent, GroupedByContainer, GroupedByContainerAndSectionName, GroupedByFullName, GroupedByName, GroupedByPath, GroupedBySectionName, Inverted, IterUniqueSymbols, Sorted, SortedByAddress, SortedByCount, SortedByName, WhereAddressInRange, WhereComponentMatches, WhereFullNameMatches, WhereGeneratedByToolchain, WhereHasAnyAttribution, WhereHasComponent, WhereHasFlag, WhereHasPath, WhereInContainer, WhereInSection, WhereIsDex, WhereIsGroup, WhereIsNative, WhereIsOnDemand, WhereIsPak, WhereIsPlaceholder, WhereIsTemplate, WhereMatches, WhereNameMatches, WhereObjectPathMatches, WherePathMatches, WherePssBiggerThan, WhereSizeBiggerThan, WhereSourceIsGenerated, WhereSourcePathMatches, WhereTemplateNameMatches, index, is_default_sorted
 
-DeltaSizeInfo: ContainerForName, added_sources, after, before, build_config, containers, is_sparse, native_symbols, pak_symbols, raw_symbols, removed_sources, section_sizes, symbols
+DeltaSizeInfo: ContainerForName, MakeSparse, MergeDeltaSizeInfo, added_sources, after, before, containers, is_sparse, native_symbols, pak_symbols, raw_symbols, removed_sources, section_sizes, symbols
 DeltaSymbol (extends Symbol): after_symbol, before_symbol, diff_status
 DeltaSymbolGroup (extends SymbolGroup): CountsByDiffStatus, GetEntireAddOrRemoveSources, WhereDiffStatusIs, diff_status
 
@@ -51,7 +51,8 @@ Print(Diff(size_info1, size_info2), to_file="output.txt")
 
 # Save a .size containing only the filtered symbols
 filtered_symbols = size_info.raw_symbols.Filter(lambda l: l.IsPak())
-SaveSizeInfo(filtered_symbols, size_info, to_file="oneoff_paks.size")
+size_info.MakeSparse(filtered_symbols)
+SaveSizeInfo(size_info, to_file="oneoff_paks.size")
 
 # View per-component breakdowns, then drill into the last entry.
 c = canned_queries.CategorizeByChromeComponent()

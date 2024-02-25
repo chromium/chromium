@@ -6,11 +6,12 @@
 
 #include <array>
 #include <cstdint>
+#include <optional>
 #include <utility>
 #include <vector>
 
 #include "base/check_op.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
+#include "base/logging.h"
 #include "third_party/boringssl/src/include/openssl/hpke.h"
 
 namespace syncer {
@@ -32,11 +33,11 @@ CrossUserSharingPublicPrivateKeyPair::GenerateNewKeyPair() {
 }
 
 // static
-absl::optional<CrossUserSharingPublicPrivateKeyPair>
+std::optional<CrossUserSharingPublicPrivateKeyPair>
 CrossUserSharingPublicPrivateKeyPair::CreateByImport(
     base::span<const uint8_t> private_key) {
   if (private_key.size() != X25519_PRIVATE_KEY_LEN) {
-    return absl::nullopt;
+    return std::nullopt;
   }
   return CrossUserSharingPublicPrivateKeyPair(std::move(private_key));
 }
@@ -72,7 +73,7 @@ CrossUserSharingPublicPrivateKeyPair::GetRawPublicKey() const {
   return raw_public_key;
 }
 
-absl::optional<std::vector<uint8_t>>
+std::optional<std::vector<uint8_t>>
 CrossUserSharingPublicPrivateKeyPair::HpkeAuthEncrypt(
     base::span<const uint8_t> plaintext,
     base::span<const uint8_t> recipient_public_key,
@@ -95,7 +96,7 @@ CrossUserSharingPublicPrivateKeyPair::HpkeAuthEncrypt(
           /*peer_public_key_len=*/recipient_public_key.size(),
           /*info=*/authenticated_info.data(),
           /*info_len=*/authenticated_info.size())) {
-    return absl::nullopt;
+    return std::nullopt;
   }
   encrypted_data.resize(encapsulated_shared_secret_len + plaintext.size() +
                         EVP_HPKE_CTX_max_overhead(sender_context.get()));
@@ -111,14 +112,14 @@ CrossUserSharingPublicPrivateKeyPair::HpkeAuthEncrypt(
           /*in_len*/ plaintext.size(),
           /*ad=*/nullptr,
           /*ad_len=*/0)) {
-    return absl::nullopt;
+    return std::nullopt;
   }
   encrypted_data.resize(encapsulated_shared_secret_len + ciphertext_len);
 
   return encrypted_data;
 }
 
-absl::optional<std::vector<uint8_t>>
+std::optional<std::vector<uint8_t>>
 CrossUserSharingPublicPrivateKeyPair::HpkeAuthDecrypt(
     base::span<const uint8_t> encrypted_data,
     base::span<const uint8_t> sender_public_key,
@@ -126,11 +127,12 @@ CrossUserSharingPublicPrivateKeyPair::HpkeAuthDecrypt(
   bssl::ScopedEVP_HPKE_CTX sender_context;
 
   if (encrypted_data.size() < X25519_PUBLIC_VALUE_LEN) {
-    return absl::nullopt;
+    VLOG(1) << "Invalid size of encrypted data";
+    return std::nullopt;
   }
 
   base::span<const uint8_t> enc =
-      encrypted_data.subspan(0, X25519_PUBLIC_VALUE_LEN);
+      encrypted_data.first<X25519_PUBLIC_VALUE_LEN>();
 
   bssl::ScopedEVP_HPKE_CTX recipient_context;
   if (!EVP_HPKE_CTX_setup_auth_recipient(
@@ -142,7 +144,8 @@ CrossUserSharingPublicPrivateKeyPair::HpkeAuthDecrypt(
           /*info_len=*/authenticated_info.size(),
           /*peer_public_key=*/sender_public_key.data(),
           /*peer_public_key_len=*/sender_public_key.size())) {
-    return absl::nullopt;
+    VLOG(1) << "Cross-user sharing decryption: setup auth recipient failed";
+    return std::nullopt;
   }
 
   base::span<const uint8_t> ciphertext =
@@ -156,7 +159,8 @@ CrossUserSharingPublicPrivateKeyPair::HpkeAuthDecrypt(
           /*in=*/ciphertext.data(), /*in_len=*/ciphertext.size(),
           /*ad=*/nullptr,
           /*ad_len=*/0)) {
-    return absl::nullopt;
+    VLOG(1) << "Cross-user sharing decryption: HPKE decryption failed";
+    return std::nullopt;
   }
 
   plaintext.resize(plaintext_len);

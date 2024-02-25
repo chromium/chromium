@@ -9,12 +9,12 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
 #include "build/build_config.h"
-#include "content/browser/renderer_host/input/synthetic_gesture_controller.h"
-#include "content/browser/renderer_host/input/synthetic_gesture_target.h"
-#include "content/browser/renderer_host/input/synthetic_pointer_driver.h"
 #include "content/browser/renderer_host/render_widget_host_impl.h"
 #include "content/browser/renderer_host/render_widget_host_view_base.h"
 #include "content/browser/web_contents/web_contents_impl.h"
+#include "content/common/input/synthetic_gesture_controller.h"
+#include "content/common/input/synthetic_gesture_target.h"
+#include "content/common/input/synthetic_pointer_driver.h"
 #include "content/public/browser/render_view_host.h"
 #include "content/public/browser/render_widget_host_view.h"
 #include "content/public/common/content_switches.h"
@@ -253,7 +253,13 @@ IN_PROC_BROWSER_TEST_F(InputEventBrowserTest, KeyDownEventTimeStamp) {
   EXPECT_NEAR(event_time_ms, monotonic_time, 1);
 }
 
-IN_PROC_BROWSER_TEST_F(InputEventBrowserTest, TouchStartEventTimeStamp) {
+// TODO(crbug.com/1516021): Flaky on LaCros.
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+#define MAYBE_TouchStartEventTimeStamp DISABLED_TouchStartEventTimeStamp
+#else
+#define MAYBE_TouchStartEventTimeStamp TouchStartEventTimeStamp
+#endif
+IN_PROC_BROWSER_TEST_F(InputEventBrowserTest, MAYBE_TouchStartEventTimeStamp) {
   LoadURL(kEventListenerDataURL);
 
   MainThreadFrameObserver frame_observer(GetWidgetHost());

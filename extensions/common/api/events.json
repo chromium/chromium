@@ -123,22 +123,22 @@
                 "type": "array",
                 "items": {"$ref": "Rule"},
                 "description": "Rules to be registered. These do not replace previously registered rules."
-              },
-              {
-                "name": "callback",
-                "optional": true,
-                "type": "function",
-                "parameters": [
-                  {
-                    "name": "rules",
-                    "type": "array",
-                    "items": {"$ref": "Rule"},
-                    "description": "Rules that were registered, the optional parameters are filled with values."
-                  }
-                ],
-                "description": "Called with registered rules."
               }
-            ]
+            ],
+            "returns_async": {
+              "name": "callback",
+              "optional": true,
+              "parameters": [
+                {
+                  "name": "rules",
+                  "type": "array",
+                  "items": {"$ref": "Rule"},
+                  "description": "Rules that were registered, the optional parameters are filled with values."
+                }
+              ],
+              "description": "Called with registered rules.",
+              "does_not_support_promises": "Related custom hooks do not handle promises crbug.com/1520656"
+            }
           },
           {
             "name": "getRules",
@@ -163,21 +163,21 @@
                 "type": "array",
                 "items": {"type": "string"},
                 "description": "If an array is passed, only rules with identifiers contained in this array are returned."
-              },
-              {
-                "name": "callback",
-                "type": "function",
-                "parameters": [
-                  {
-                    "name": "rules",
-                    "type": "array",
-                    "items": {"$ref": "Rule"},
-                    "description": "Rules that were registered, the optional parameters are filled with values."
-                  }
-                ],
-                "description": "Called with registered rules."
               }
-            ]
+            ],
+            "returns_async": {
+              "name": "callback",
+              "parameters": [
+                {
+                  "name": "rules",
+                  "type": "array",
+                  "items": {"$ref": "Rule"},
+                  "description": "Rules that were registered, the optional parameters are filled with values."
+                }
+              ],
+              "description": "Called with registered rules.",
+              "does_not_support_promises": "Related custom hooks do not handle promises crbug.com/1520656"
+            }
           },
           {
             "name": "removeRules",
@@ -202,15 +202,15 @@
                 "type": "array",
                 "items": {"type": "string"},
                 "description": "If an array is passed, only rules with identifiers contained in this array are unregistered."
-              },
-              {
-                "name": "callback",
-                "optional": true,
-                "type": "function",
-                "parameters": [],
-                "description": "Called when rules were unregistered."
               }
-            ]
+            ],
+            "returns_async": {
+              "name": "callback",
+              "optional": true,
+              "parameters": [],
+              "description": "Called when rules were unregistered.",
+              "does_not_support_promises": "Related custom hooks do not handle promises crbug.com/1520656"
+            }
           }
         ]
       },
@@ -326,6 +326,12 @@
                 {"type": "array", "items": {"type": "integer"}, "description": "A pair of integers identiying the start and end (both inclusive) of a port range."}
               ]
             }
+          },
+          "cidrBlocks": {
+            "type": "array",
+            "items": { "type": "string" },
+            "description": "Matches if the host part of the URL is an IP address and is contained in any of the CIDR blocks specified in the array.",
+            "optional": true
           }
         }
       }

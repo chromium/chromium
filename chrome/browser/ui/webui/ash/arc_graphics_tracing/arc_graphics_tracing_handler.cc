@@ -5,33 +5,33 @@
 #include "chrome/browser/ui/webui/ash/arc_graphics_tracing/arc_graphics_tracing_handler.h"
 
 #include <map>
+#include <optional>
+#include <vector>
 
 #include "ash/components/arc/arc_features.h"
-#include "ash/components/arc/arc_prefs.h"
 #include "ash/components/arc/arc_util.h"
-#include "ash/public/cpp/shell_window_ids.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
-#include "base/json/json_reader.h"
+#include "base/i18n/time_formatting.h"
 #include "base/json/json_writer.h"
 #include "base/linux_util.h"
-#include "base/memory/ref_counted_memory.h"
 #include "base/process/process_iterator.h"
-#include "base/strings/string_piece.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_tokenizer.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/thread_pool.h"
+#include "base/timer/timer.h"
+#include "base/trace_event/trace_config.h"
 #include "base/trace_event/trace_event.h"
 #include "base/values.h"
-#include "chrome/browser/ash/arc/tracing/arc_graphics_jank_detector.h"
 #include "chrome/browser/ash/arc/tracing/arc_system_model.h"
 #include "chrome/browser/ash/arc/tracing/arc_system_stat_collector.h"
 #include "chrome/browser/ash/arc/tracing/arc_tracing_graphics_model.h"
 #include "chrome/browser/ash/arc/tracing/arc_tracing_model.h"
+#include "chrome/browser/ash/arc/tracing/present_frames_tracer.h"
 #include "chrome/browser/ash/file_manager/path_util.h"
 #include "chrome/browser/platform_util.h"
 #include "chrome/browser/profiles/profile.h"
@@ -43,12 +43,36 @@
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_ui.h"
 #include "ui/aura/client/aura_constants.h"
-#include "ui/base/ui_base_features.h"
 #include "ui/events/event.h"
+#include "ui/events/event_constants.h"
 #include "ui/gfx/codec/png_codec.h"
 #include "ui/gfx/image/image_skia_rep.h"
+#include "ui/gfx/presentation_feedback.h"
 
 namespace ash {
+
+struct ArcGraphicsTracingHandler::ActiveTrace {
+  arc::ArcTracingGraphicsModel model;
+
+  // Time filter for tracing, since ARC++ window was activated last until
+  // tracing is stopped.
+  base::TimeTicks time_min;
+  base::TimeTicks time_max;
+
+  // Collects system stat runtime.
+  arc::ArcSystemStatCollector system_stat_collector;
+
+  // Information about active task, title and icon.
+  std::string task_title;
+  std::vector<unsigned char> task_icon_png;
+  base::Time timestamp;
+
+  // This must be destructed on the UI thread, so make it manually-destructable
+  // with std::optional.
+  std::optional<base::OneShotTimer> stop_timer;
+
+  arc::PresentFramesTracer present_frames;
+};
 
 namespace {
 
@@ -123,14 +147,9 @@ void UpdateThreads(arc::ArcSystemModel::ThreadMap* threads) {
 
 std::pair<base::Value, std::string> BuildGraphicsModel(
     const std::string& data,
-    const std::string& title,
-    const std::vector<unsigned char>& icon_png,
-    base::Time timestamp,
-    std::unique_ptr<arc::ArcSystemStatCollector> system_stat_collector,
-    const base::TimeTicks& time_min,
-    const base::TimeTicks& time_max,
+    std::unique_ptr<ArcGraphicsTracingHandler::ActiveTrace> trace,
     const base::FilePath& model_path) {
-  DCHECK(system_stat_collector);
+  DCHECK(trace);
 
   if (base::FeatureList::IsEnabled(arc::kSaveRawFilesOnTracing)) {
     const base::FilePath raw_path =
@@ -140,7 +159,8 @@ std::pair<base::Value, std::string> BuildGraphicsModel(
     if (!base::WriteFile(base::FilePath(raw_path), data)) {
       LOG(ERROR) << "Failed to save raw trace model to " << raw_path.value();
     }
-    const std::string system_raw = system_stat_collector->SerializeToJson();
+    const std::string system_raw =
+        trace->system_stat_collector.SerializeToJson();
     if (!base::WriteFile(base::FilePath(system_path), system_raw)) {
       LOG(ERROR) << "Failed to save system model to " << system_path.value();
     }
@@ -148,30 +168,30 @@ std::pair<base::Value, std::string> BuildGraphicsModel(
 
   arc::ArcTracingModel common_model;
   const base::TimeTicks time_min_clamped =
-      std::max(time_min, time_max - system_stat_collector->max_interval());
+      std::max(trace->time_min,
+               trace->time_max - trace->system_stat_collector.max_interval());
   common_model.SetMinMaxTime(
       (time_min_clamped - base::TimeTicks()).InMicroseconds(),
-      (time_max - base::TimeTicks()).InMicroseconds());
+      (trace->time_max - base::TimeTicks()).InMicroseconds());
 
   if (!common_model.Build(data)) {
     return std::make_pair(base::Value(), "Failed to process tracing data");
   }
 
-  system_stat_collector->Flush(time_min, time_max,
-                               &common_model.system_model());
+  trace->system_stat_collector.Flush(trace->time_min, trace->time_max,
+                                     &common_model.system_model());
 
-  arc::ArcTracingGraphicsModel graphics_model;
-  graphics_model.set_skip_structure_validation();
-  if (!graphics_model.Build(common_model)) {
+  trace->model.set_skip_structure_validation();
+  if (!trace->model.Build(common_model, trace->present_frames)) {
     return std::make_pair(base::Value(), "Failed to build tracing model");
   }
 
-  UpdateThreads(&graphics_model.system_model().thread_map());
-  graphics_model.set_app_title(title);
-  graphics_model.set_app_icon_png(icon_png);
-  graphics_model.set_platform(base::GetLinuxDistro());
-  graphics_model.set_timestamp(timestamp);
-  base::Value::Dict model = graphics_model.Serialize();
+  UpdateThreads(&trace->model.system_model().thread_map());
+  trace->model.set_app_title(trace->task_title);
+  trace->model.set_app_icon_png(trace->task_icon_png);
+  trace->model.set_platform(base::GetLinuxDistro());
+  trace->model.set_timestamp(trace->timestamp);
+  base::Value::Dict model = trace->model.Serialize();
 
   std::string json_content;
   base::JSONWriter::WriteWithOptions(
@@ -202,8 +222,9 @@ std::pair<base::Value, std::string> LoadGraphicsModel(
 constexpr char kJavascriptDomain[] = "cr.ArcOverviewTracing.";
 
 base::trace_event::TraceConfig GetTracingConfig() {
-  base::trace_event::TraceConfig config("-*,exo,viz,toplevel,gpu",
-                                        base::trace_event::RECORD_CONTINUOUSLY);
+  base::trace_event::TraceConfig config(
+      "-*," TRACE_DISABLED_BY_DEFAULT("display.framedisplayed"),
+      base::trace_event::RECORD_CONTINUOUSLY);
   config.EnableSystrace();
   config.EnableSystraceEvent("i915:intel_gpu_freq_change");
   config.EnableSystraceEvent("drm_msm_gpu:msm_gpu_freq_change");
@@ -213,7 +234,8 @@ base::trace_event::TraceConfig GetTracingConfig() {
 }  // namespace
 
 base::FilePath ArcGraphicsTracingHandler::GetModelPathFromTitle(
-    std::string_view title) {
+    std::string_view title,
+    base::Time timestamp) {
   constexpr size_t kMaxNameSize = 32;
   char normalized_name[kMaxNameSize];
   size_t index = 0;
@@ -229,9 +251,11 @@ base::FilePath ArcGraphicsTracingHandler::GetModelPathFromTitle(
       normalized_name[index++] = c;
   }
   normalized_name[index] = 0;
-  return GetDownloadsFolder().AppendASCII(
-      base::StringPrintf("overview_tracing_%s_%" PRId64 ".json",
-                         normalized_name, Now().since_origin().InSeconds()));
+
+  const std::string time =
+      base::UnlocalizedTimeFormatWithPattern(timestamp, "yyyy-MM-dd_HH-mm-ss");
+  return GetDownloadsFolder().AppendASCII(base::StringPrintf(
+      "overview_tracing_%s_%s.json", normalized_name, time.c_str()));
 }
 
 ArcGraphicsTracingHandler::ArcGraphicsTracingHandler()
@@ -250,9 +274,6 @@ ArcGraphicsTracingHandler::ArcGraphicsTracingHandler()
 ArcGraphicsTracingHandler::~ArcGraphicsTracingHandler() {
   wm_helper_->RemoveActivationObserver(this);
   DiscardActiveArcWindow();
-
-  if (tracing_active_)
-    StopTracing();
 }
 
 void ArcGraphicsTracingHandler::RegisterMessages() {
@@ -269,25 +290,38 @@ void ArcGraphicsTracingHandler::RegisterMessages() {
 void ArcGraphicsTracingHandler::OnWindowActivated(ActivationReason reason,
                                                   aura::Window* gained_active,
                                                   aura::Window* lost_active) {
-  // Handle ARC current active window if any.
+  // Handle ARC current active window if any. This stops any ongoing trace.
   DiscardActiveArcWindow();
 
   if (!gained_active)
     return;
 
-  active_task_id_ =
-      arc::GetWindowTaskId(gained_active).value_or(arc::kNoTaskId);
-  if (active_task_id_ <= 0)
+  if (!arc::GetWindowTaskId(gained_active).has_value()) {
     return;
+  }
 
   arc_active_window_ = gained_active;
   arc_active_window_->AddObserver(this);
   arc_active_window_->AddPreTargetHandler(this);
 
-  // Limit tracing by newly activated window.
-  if (tracing_active_) {
-    tracing_time_min_ = SystemTicksNow();
-  }
+  exo::Surface* const surface = exo::GetShellRootSurface(arc_active_window_);
+  CHECK(surface);
+
+  // We observe the _root_ window surface rather than the layer that receives
+  // the buffer attachment. This is because it makes locating the surface
+  // much easier. We will not have a noticeable delay in monitoring this
+  // higher-level window since the wl_surface_commit calls by the client
+  // percolate up a single thread's call stack. The root surface's commit is
+  // at [0], and the ApplyPending...Changes calls there are committing
+  // subsurfaces.
+  // [0]
+  // https://source.corp.google.com/h/googleplex-android/platform/superproject/base/+/rvc-arc:vendor/google_arc/libs/wayland_service/wayland_layer_container_window.cpp;l=73-79;drc=7bf4887dc1838167c63ae6c0fc514aaab9551e2a
+  //
+  // We do not need to observe the Attach event since that immediately precedes
+  // the commit, and we don't care about the buffer ID.
+
+  // TODO(matvore): can the root surface change after the window is created?
+  surface->AddSurfaceObserver(this);
 }
 
 void ArcGraphicsTracingHandler::OnWindowPropertyChanged(aura::Window* window,
@@ -297,7 +331,9 @@ void ArcGraphicsTracingHandler::OnWindowPropertyChanged(aura::Window* window,
   if (key != aura::client::kAppIconKey)
     return;
 
-  UpdateActiveArcWindowInfo();
+  if (active_trace_) {
+    UpdateActiveArcWindowInfo();
+  }
 }
 
 void ArcGraphicsTracingHandler::OnWindowDestroying(aura::Window* window) {
@@ -307,14 +343,23 @@ void ArcGraphicsTracingHandler::OnWindowDestroying(aura::Window* window) {
 
 void ArcGraphicsTracingHandler::OnKeyEvent(ui::KeyEvent* event) {
   DCHECK(arc_active_window_);
-  if (event->type() != ui::ET_KEY_RELEASED || event->key_code() != ui::VKEY_G ||
-      !event->IsControlDown() || !event->IsShiftDown()) {
+
+  // Only two flags (decorators) must be on.
+  constexpr int kFlags = ui::EF_CONTROL_DOWN | ui::EF_SHIFT_DOWN;
+  // Four flags must be off (avoids future conflict, and prevents long
+  // press from double-activating).
+  constexpr int kMask = kFlags | ui::EF_COMMAND_DOWN | ui::EF_ALTGR_DOWN |
+                        ui::EF_ALT_DOWN | ui::EF_IS_REPEAT;
+
+  if (event->type() != ui::ET_KEY_PRESSED || event->key_code() != ui::VKEY_G ||
+      (event->flags() & kMask) != kFlags) {
     return;
   }
-  if (tracing_active_)
+  if (active_trace_) {
     StopTracingAndActivate();
-  else
+  } else {
     StartTracing();
+  }
 }
 
 void ArcGraphicsTracingHandler::OnSurfaceDestroying(exo::Surface* surface) {
@@ -323,27 +368,35 @@ void ArcGraphicsTracingHandler::OnSurfaceDestroying(exo::Surface* surface) {
 
 void ArcGraphicsTracingHandler::OnCommit(exo::Surface* surface) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  jank_detector_->OnSample();
+  if (!active_trace_) {
+    return;
+  }
+
+  active_trace_->present_frames.AddCommit(SystemTicksNow());
+  active_trace_->present_frames.ListenForPresent(surface);
 }
 
 void ArcGraphicsTracingHandler::UpdateActiveArcWindowInfo() {
   DCHECK(arc_active_window_);
+  DCHECK(active_trace_);
 
-  active_task_title_ = base::UTF16ToASCII(arc_active_window_->GetTitle());
-  active_task_icon_png_.clear();
+  active_trace_->task_title =
+      base::UTF16ToASCII(arc_active_window_->GetTitle());
+  active_trace_->task_icon_png.clear();
 
   const gfx::ImageSkia* app_icon =
       arc_active_window_->GetProperty(aura::client::kAppIconKey);
   if (app_icon) {
     gfx::PNGCodec::EncodeBGRASkBitmap(
         app_icon->GetRepresentation(1.0f).GetBitmap(),
-        false /* discard_transparency */, &active_task_icon_png_);
+        false /* discard_transparency */, &active_trace_->task_icon_png);
   }
 }
 
 void ArcGraphicsTracingHandler::DiscardActiveArcWindow() {
-  if (tracing_active_)
+  if (active_trace_) {
     StopTracingAndActivate();
+  }
 
   if (!arc_active_window_)
     return;
@@ -354,12 +407,15 @@ void ArcGraphicsTracingHandler::DiscardActiveArcWindow() {
 
   arc_active_window_->RemovePreTargetHandler(this);
   arc_active_window_->RemoveObserver(this);
-  jank_detector_.reset();
   arc_active_window_ = nullptr;
 }
 
 base::Time ArcGraphicsTracingHandler::Now() {
   return base::Time::Now();
+}
+
+aura::Window* ArcGraphicsTracingHandler::GetWebUIWindow() {
+  return web_ui()->GetWebContents()->GetTopLevelNativeWindow();
 }
 
 void ArcGraphicsTracingHandler::StartTracingOnController(
@@ -388,8 +444,8 @@ base::FilePath ArcGraphicsTracingHandler::GetDownloadsFolder() {
 }
 
 void ArcGraphicsTracingHandler::ActivateWebUIWindow() {
-  aura::Window* const window =
-      web_ui()->GetWebContents()->GetTopLevelNativeWindow();
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  auto* const window = GetWebUIWindow();
   if (!window) {
     LOG(ERROR) << "Failed to activate, no top level window.";
     return;
@@ -401,16 +457,12 @@ void ArcGraphicsTracingHandler::ActivateWebUIWindow() {
 void ArcGraphicsTracingHandler::StartTracing() {
   SetStatus("Collecting samples...");
 
-  tracing_active_ = true;
-  if (jank_detector_)
-    jank_detector_->Reset();
-  system_stat_collector_ = std::make_unique<arc::ArcSystemStatCollector>();
-  system_stat_collector_->Start(max_tracing_time_);
+  active_trace_ = std::make_unique<ActiveTrace>();
 
-  // Timestamp and app information would be updated when |OnTracingStarted| is
-  // called.
-  timestamp_ = Now();
+  active_trace_->system_stat_collector.Start(max_tracing_time_);
+  active_trace_->timestamp = Now();
   UpdateActiveArcWindowInfo();
+  active_trace_->time_min = SystemTicksNow();
 
   StartTracingOnController(
       GetTracingConfig(),
@@ -421,22 +473,31 @@ void ArcGraphicsTracingHandler::StartTracing() {
 void ArcGraphicsTracingHandler::StopTracing() {
   SetStatus("Building model...");
 
-  tracing_active_ = false;
-  stop_tracing_timer_.Stop();
+  // |stop_timer| will already be nullopt in the case that the window was or
+  // deactivated before OnTracingStarted was invoked.
+  if (!active_trace_->stop_timer) {
+    active_trace_.reset();
+    return;
+  }
+  active_trace_->stop_timer.reset();
 
-  tracing_time_max_ = SystemTicksNow();
-
-  if (system_stat_collector_)
-    system_stat_collector_->Stop();
+  active_trace_->time_max = SystemTicksNow();
+  active_trace_->system_stat_collector.Stop();
 
   StopTracingOnController(
       base::BindOnce(&ArcGraphicsTracingHandler::OnTracingStopped,
-                     weak_ptr_factory_.GetWeakPtr()));
+                     weak_ptr_factory_.GetWeakPtr(), std::move(active_trace_)));
 }
 
 void ArcGraphicsTracingHandler::StopTracingAndActivate() {
   StopTracing();
-  ActivateWebUIWindow();
+  // If we are running in response to a window activation from within an
+  // observer, activating the web UI immediately will cause a DCHECK failure.
+  // Post as a UI task so we activate the web UI after the observer has
+  // returned.
+  content::GetUIThreadTaskRunner({})->PostTask(
+      FROM_HERE, base::BindOnce(&ArcGraphicsTracingHandler::ActivateWebUIWindow,
+                                weak_ptr_factory_.GetWeakPtr()));
 }
 
 void ArcGraphicsTracingHandler::SetStatus(const std::string& status) {
@@ -452,32 +513,30 @@ base::TimeTicks ArcGraphicsTracingHandler::SystemTicksNow() {
 void ArcGraphicsTracingHandler::OnTracingStarted() {
   // This is an asynchronous call and it may arrive after tracing is actually
   // stopped.
-  if (!tracing_active_)
+  if (!active_trace_) {
     return;
+  }
 
-  timestamp_ = Now();
-  UpdateActiveArcWindowInfo();
-
-  tracing_time_min_ = SystemTicksNow();
-  stop_tracing_timer_.Start(
-      FROM_HERE, system_stat_collector_->max_interval(),
+  active_trace_->stop_timer.emplace();
+  active_trace_->stop_timer->Start(
+      FROM_HERE, active_trace_->system_stat_collector.max_interval(),
       base::BindOnce(&ArcGraphicsTracingHandler::StopTracingAndActivate,
                      base::Unretained(this)));
 }
 
 void ArcGraphicsTracingHandler::OnTracingStopped(
+    std::unique_ptr<ActiveTrace> trace,
     std::unique_ptr<std::string> trace_data) {
   std::string string_data;
   string_data.swap(*trace_data);
 
-  const base::FilePath model_path = GetModelPathFromTitle(active_task_title_);
+  const base::FilePath model_path =
+      GetModelPathFromTitle(trace->task_title, trace->timestamp);
 
   base::ThreadPool::PostTaskAndReplyWithResult(
       FROM_HERE, {base::MayBlock(), base::TaskPriority::BEST_EFFORT},
       base::BindOnce(&BuildGraphicsModel, std::move(string_data),
-                     active_task_title_, active_task_icon_png_, timestamp_,
-                     std::move(system_stat_collector_), tracing_time_min_,
-                     tracing_time_max_, model_path),
+                     std::move(trace), model_path),
       base::BindOnce(&ArcGraphicsTracingHandler::OnGraphicsModelReady,
                      weak_ptr_factory_.GetWeakPtr()));
 }

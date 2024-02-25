@@ -36,6 +36,7 @@
 #include "third_party/blink/renderer/core/html/html_frame_element_base.h"
 #include "third_party/blink/renderer/core/html/html_plugin_element.h"
 #include "third_party/blink/renderer/core/layout/geometry/physical_offset.h"
+#include "third_party/blink/renderer/core/layout/hit_test_location.h"
 #include "third_party/blink/renderer/core/layout/hit_test_result.h"
 #include "third_party/blink/renderer/core/layout/layout_replaced.h"
 #include "third_party/blink/renderer/core/layout/layout_view.h"
@@ -55,9 +56,6 @@ LayoutEmbeddedContent::LayoutEmbeddedContent(HTMLFrameOwnerElement* element)
 
 void LayoutEmbeddedContent::WillBeDestroyed() {
   NOT_DESTROYED();
-  if (AXObjectCache* cache = GetDocument().ExistingAXObjectCache())
-    cache->Remove(this);
-
   if (auto* frame_owner = GetFrameOwnerElement())
     frame_owner->SetEmbeddedContentView(nullptr);
 
@@ -95,13 +93,13 @@ EmbeddedContentView* LayoutEmbeddedContent::GetEmbeddedContentView() const {
   return nullptr;
 }
 
-const absl::optional<PhysicalSize> LayoutEmbeddedContent::FrozenFrameSize()
+const std::optional<PhysicalSize> LayoutEmbeddedContent::FrozenFrameSize()
     const {
   // The `<fencedframe>` element can freeze the child frame size when navigated.
   if (const auto* fenced_frame = DynamicTo<HTMLFencedFrameElement>(GetNode()))
     return fenced_frame->FrozenFrameSize();
 
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 AffineTransform LayoutEmbeddedContent::EmbeddedContentTransform() const {
@@ -354,7 +352,7 @@ PhysicalRect LayoutEmbeddedContent::ReplacedContentRectFrom(
     content_rect.size = View()->ViewRect().size;
   }
 
-  if (const absl::optional<PhysicalSize> frozen_size = FrozenFrameSize()) {
+  if (const std::optional<PhysicalSize> frozen_size = FrozenFrameSize()) {
     // TODO(kojii): Setting the `offset` to non-zero values breaks
     // hit-testing/inputs. Even different size is suspicious, as the input
     // system forwards mouse events to the child frame even when the mouse is

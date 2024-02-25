@@ -14,16 +14,19 @@
 #include "base/location.h"
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/metrics/user_metrics.h"
 #include "base/metrics/user_metrics_action.h"
 #include "base/no_destructor.h"
 #include "base/supports_user_data.h"
 #include "base/task/sequenced_task_runner.h"
+#include "base/timer/elapsed_timer.h"
 #include "chrome/browser/enterprise/browser_management/management_service_factory.h"
 #include "chrome/browser/enterprise/util/managed_browser_utils.h"
 #include "chrome/browser/policy/cloud/user_policy_signin_service.h"
 #include "chrome/browser/policy/cloud/user_policy_signin_service_factory.h"
 #include "chrome/browser/profiles/profile_metrics.h"
+#include "chrome/browser/signin/account_reconcilor_factory.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/signin/signin_features.h"
 #include "chrome/browser/signin/signin_manager_factory.h"
@@ -42,8 +45,11 @@
 #include "components/keyed_service/core/keyed_service_shutdown_notifier.h"
 #include "components/policy/core/common/management/management_service.h"
 #include "components/prefs/pref_service.h"
+#include "components/search_engines/search_engine_choice_utils.h"
+#include "components/signin/core/browser/account_reconcilor.h"
 #include "components/signin/public/base/signin_metrics.h"
 #include "components/signin/public/base/signin_pref_names.h"
+#include "components/signin/public/base/signin_switches.h"
 #include "components/signin/public/identity_manager/account_managed_status_finder.h"
 #include "components/signin/public/identity_manager/accounts_mutator.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
@@ -181,7 +187,6 @@ TurnSyncOnHelper::TurnSyncOnHelper(
     Profile* profile,
     signin_metrics::AccessPoint signin_access_point,
     signin_metrics::PromoAction signin_promo_action,
-    signin_metrics::Reason signin_reason,
     const CoreAccountId& account_id,
     SigninAbortedMode signin_aborted_mode,
     std::unique_ptr<Delegate> delegate,
@@ -191,15 +196,12 @@ TurnSyncOnHelper::TurnSyncOnHelper(
       identity_manager_(IdentityManagerFactory::GetForProfile(profile)),
       signin_access_point_(signin_access_point),
       signin_promo_action_(signin_promo_action),
-      signin_reason_(signin_reason),
       signin_aborted_mode_(signin_aborted_mode),
       account_info_(
           identity_manager_->FindExtendedAccountInfoByAccountId(account_id)),
       scoped_callback_runner_(std::move(callback)),
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
       initial_primary_account_(identity_manager_->GetPrimaryAccountId(
           signin::ConsentLevel::kSignin)),
-#endif
       shutdown_subscription_(
           TurnSyncOnHelperShutdownNotifierFactory::GetInstance()
               ->Get(profile)
@@ -226,13 +228,11 @@ TurnSyncOnHelper::TurnSyncOnHelper(
     Browser* browser,
     signin_metrics::AccessPoint signin_access_point,
     signin_metrics::PromoAction signin_promo_action,
-    signin_metrics::Reason signin_reason,
     const CoreAccountId& account_id,
     SigninAbortedMode signin_aborted_mode)
     : TurnSyncOnHelper(profile,
                        signin_access_point,
                        signin_promo_action,
-                       signin_reason,
                        account_id,
                        signin_aborted_mode,
                        std::make_unique<TurnSyncOnHelperDelegateImpl>(browser),
@@ -253,6 +253,9 @@ void TurnSyncOnHelper::TurnSyncOnInternal() {
   DCHECK(!account_info_.gaia.empty());
   DCHECK(!account_info_.email.empty());
 
+  DCHECK(!user_input_complete_timer_);
+  user_input_complete_timer_ = base::ElapsedTimer();
+
   if (HasCanOfferSigninError()) {
     AbortAndDelete();
     return;
@@ -267,8 +270,8 @@ void TurnSyncOnHelper::TurnSyncOnInternal() {
   // last authenticated account of the current profile, then Chrome will show a
   // confirmation dialog before starting sync.
   // TODO(skym): Warn for high risk upgrade scenario (https://crbug.com/572754).
-  std::string last_email =
-      profile_->GetPrefs()->GetString(prefs::kGoogleServicesLastUsername);
+  std::string last_email = profile_->GetPrefs()->GetString(
+      prefs::kGoogleServicesLastSyncingUsername);
   delegate_->ShowMergeSyncDataConfirmation(
       last_email, account_info_.email,
       base::BindOnce(&TurnSyncOnHelper::OnMergeAccountConfirmation,
@@ -288,6 +291,8 @@ bool TurnSyncOnHelper::HasCanOfferSigninError() {
 }
 
 void TurnSyncOnHelper::OnMergeAccountConfirmation(signin::SigninChoice choice) {
+  user_input_complete_timer_ = base::ElapsedTimer();
+
   switch (choice) {
     case signin::SIGNIN_CHOICE_NEW_PROFILE:
       base::RecordAction(
@@ -313,6 +318,8 @@ void TurnSyncOnHelper::OnMergeAccountConfirmation(signin::SigninChoice choice) {
 
 void TurnSyncOnHelper::OnEnterpriseAccountConfirmation(
     signin::SigninChoice choice) {
+  user_input_complete_timer_ = base::ElapsedTimer();
+
   enterprise_account_confirmed_ = choice == signin::SIGNIN_CHOICE_CONTINUE ||
                                   choice == signin::SIGNIN_CHOICE_NEW_PROFILE;
   signin_util::RecordEnterpriseProfileCreationUserChoice(
@@ -395,25 +402,33 @@ void TurnSyncOnHelper::LoadPolicyWithCachedCredentials() {
 }
 
 void TurnSyncOnHelper::CreateNewSignedInProfile() {
+  // Use the same the default search engine in the new profile.
+  search_engines::ChoiceData search_engine_choice_data;
+  if (search_engines::IsChoiceScreenFlagEnabled(
+          search_engines::ChoicePromo::kAny)) {
+    search_engine_choice_data =
+        SearchEngineChoiceDialogService::GetChoiceDataFromProfile(*profile_);
+  }
+
+  base::OnceCallback<void(Profile*)> profile_created_callback = base::BindOnce(
+      &TurnSyncOnHelper::OnNewSignedInProfileCreated, base::Unretained(this),
+      std::move(search_engine_choice_data));
+
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
   DCHECK(!dice_signed_in_profile_creator_);
   // Unretained is fine because the profile creator is owned by this.
   dice_signed_in_profile_creator_ =
       std::make_unique<DiceSignedInProfileCreator>(
           profile_, account_info_.account_id,
-          /*local_profile_name=*/std::u16string(), /*icon_index=*/absl::nullopt,
-          /*use_guest=*/false,
-          base::BindOnce(&TurnSyncOnHelper::OnNewSignedInProfileCreated,
-                         base::Unretained(this)));
+          /*local_profile_name=*/std::u16string(),
+          /*icon_index=*/std::nullopt, std::move(profile_created_callback));
 #else
   DCHECK(!profile_->IsMainProfile());
   lacros_sign_in_provider_ =
       std::make_unique<ProfilePickerLacrosSignInProvider>(
           /*hidden_profile=*/false);
   lacros_sign_in_provider_->CreateSignedInProfileWithExistingAccount(
-      account_info_.gaia,
-      base::BindOnce(&TurnSyncOnHelper::OnNewSignedInProfileCreated,
-                     base::Unretained(this)));
+      account_info_.gaia, std::move(profile_created_callback));
 #endif
 }
 
@@ -423,7 +438,9 @@ syncer::SyncService* TurnSyncOnHelper::GetSyncService() {
              : nullptr;
 }
 
-void TurnSyncOnHelper::OnNewSignedInProfileCreated(Profile* new_profile) {
+void TurnSyncOnHelper::OnNewSignedInProfileCreated(
+    search_engines::ChoiceData search_engine_choice_data,
+    Profile* new_profile) {
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
   DCHECK(dice_signed_in_profile_creator_);
   dice_signed_in_profile_creator_.reset();
@@ -456,6 +473,14 @@ void TurnSyncOnHelper::OnNewSignedInProfileCreated(Profile* new_profile) {
   SwitchToProfile(new_profile);
   DCHECK_EQ(profile_, new_profile);
 
+  // The new profile inherits the default search provider and the search
+  // engine choice timestamp from the previous profile.
+  if (search_engines::IsChoiceScreenFlagEnabled(
+          search_engines::ChoicePromo::kAny)) {
+    SearchEngineChoiceDialogService::UpdateProfileFromChoiceData(
+        *new_profile, search_engine_choice_data);
+  }
+
   if (policy_fetch_tracker_) {
     // Load policy for the just-created profile - once policy has finished
     // loading the signin process will complete.
@@ -483,10 +508,8 @@ void TurnSyncOnHelper::SigninAndShowSyncConfirmationUI() {
                                              signin_access_point_);
   // If the account is already signed in, `SetPrimaryAccount()` above is a no-op
   // and the logs below are inaccurate.
-  // TODO(crbug.com/1402935): Review and rebuild the SigninReason logging.
   signin_metrics::LogSigninAccessPointCompleted(signin_access_point_,
                                                 signin_promo_action_);
-  signin_metrics::LogSigninReason(signin_reason_);
   base::RecordAction(base::UserMetricsAction("Signin_Signin_Succeed"));
 
   bool user_accepted_management =
@@ -577,6 +600,12 @@ bool TurnSyncOnHelper::HasCurrentTurnSyncOnHelperForTesting(Profile* profile) {
 }
 
 void TurnSyncOnHelper::ShowSyncConfirmationUI() {
+  // We have now gathered all the required async information to show either the
+  // sync confirmation UI, or another screen.
+  DCHECK(user_input_complete_timer_);
+  base::UmaHistogramMediumTimes("Signin.SyncOptIn.PreSyncConfirmationLatency",
+                                user_input_complete_timer_->Elapsed());
+
   if (g_show_sync_enabled_ui_for_testing_ || GetSyncService()) {
     signin_metrics::LogSyncOptInStarted(signin_access_point_);
     delegate_->ShowSyncConfirmation(
@@ -651,6 +680,18 @@ void TurnSyncOnHelper::FinishSyncSetupAndDelete(
       return;
 
     case LoginUIService::UI_CLOSED:
+      // When force sign in is enabled and the user did not accept enterprise
+      // management, or did not enable sync; make sure to clear the primary
+      // account. This is mainly useful not to remember information on the
+      // Default Profile that already exists (when creating a new profile the
+      // flow will simply stop).
+      if (signin_util::IsForceSigninEnabled() &&
+          !chrome::enterprise_util::UserAcceptedAccountManagement(profile_)) {
+        primary_account_mutator->ClearPrimaryAccount(
+            signin_metrics::ProfileSignout::kAbortSignin,
+            signin_metrics::SignoutDelete::kIgnoreMetric);
+      }
+
       // No explicit action when the ui gets closed. No final callback is sent.
       scoped_callback_runner_.ReplaceClosure(base::OnceClosure());
       break;
@@ -669,9 +710,7 @@ void TurnSyncOnHelper::SwitchToProfile(Profile* new_profile) {
       ->ShutdownCloudPolicyManager();
   SetCurrentTurnSyncOnHelper(profile_, nullptr);  // Detach from old profile
   profile_ = new_profile;
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
   initial_primary_account_ = CoreAccountId();
-#endif
   AttachToProfile();
 
   identity_manager_ = IdentityManagerFactory::GetForProfile(profile_);
@@ -705,35 +744,64 @@ void TurnSyncOnHelper::AttachToProfile() {
 }
 
 void TurnSyncOnHelper::AbortAndDelete() {
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  // If the initial primary account is still valid, reset it. This is only
-  // on Lacros because the `SigninManager` does it automatically with DICE.
+  // If the initial primary account is still valid, reset it.
+  // Otherwise, `RemoveAccount()` will assume the primary account is being
+  // removed and will call `ClearPrimaryAccount()` that will signout the profile
+  // completely.
   if (!initial_primary_account_.empty() &&
       identity_manager_->HasAccountWithRefreshToken(initial_primary_account_)) {
     identity_manager_->GetPrimaryAccountMutator()->SetPrimaryAccount(
         initial_primary_account_, signin::ConsentLevel::kSignin);
   }
-#endif
 
-  if (signin_aborted_mode_ == SigninAbortedMode::REMOVE_ACCOUNT) {
-    policy::UserPolicySigninServiceFactory::GetForProfile(profile_)
-        ->ShutdownCloudPolicyManager();
+  switch (signin_aborted_mode_) {
+    case SigninAbortedMode::REMOVE_ACCOUNT:
+    case SigninAbortedMode::KEEP_ACCOUNT_ON_WEB_ONLY:
+      RemoveAccount();
+      break;
 
-    // The account being removed may be the current primary account. Unblock the
-    // `SigninManager` so that it can handle the state where there is a primary
-    // account with no token. See https://crbug.com/1404961
-    account_change_blocker_.reset();
-
-    // Revoke the token, and the `AccountReconcilor` and/or the Gaia server will
-    // take care of invalidating the cookies.
-    auto* accounts_mutator = identity_manager_->GetAccountsMutator();
-    accounts_mutator->RemoveAccount(
-        account_info_.account_id,
-        signin_metrics::SourceForRefreshTokenOperation::
-            kTurnOnSyncHelper_Abort);
+    case SigninAbortedMode::KEEP_ACCOUNT:
+      // Do nothing.
+      break;
   }
 
   delete this;
+}
+
+void TurnSyncOnHelper::RemoveAccount() {
+  CHECK(signin_aborted_mode_ == SigninAbortedMode::REMOVE_ACCOUNT ||
+        signin_aborted_mode_ == SigninAbortedMode::KEEP_ACCOUNT_ON_WEB_ONLY);
+  bool is_primary_account =
+      account_info_.account_id ==
+      identity_manager_->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin)
+          .account_id;
+  if (is_primary_account) {
+    policy::UserPolicySigninServiceFactory::GetForProfile(profile_)
+        ->ShutdownCloudPolicyManager();
+    auto* primary_account_mutator =
+        identity_manager_->GetPrimaryAccountMutator();
+    if (signin_aborted_mode_ == SigninAbortedMode::KEEP_ACCOUNT_ON_WEB_ONLY) {
+      primary_account_mutator->RemovePrimaryAccountButKeepTokens(
+          signin_metrics::ProfileSignout::
+              kCancelSyncConfirmationOnWebOnlySignedIn,
+          signin_metrics::SignoutDelete::kIgnoreMetric);
+    } else {
+      primary_account_mutator->ClearPrimaryAccount(
+          signin_metrics::ProfileSignout::kCancelSyncConfirmationRemoveAccount,
+          signin_metrics::SignoutDelete::kIgnoreMetric);
+    }
+    return;
+  }
+
+  if (signin_aborted_mode_ == SigninAbortedMode::KEEP_ACCOUNT_ON_WEB_ONLY) {
+    return;
+  }
+  // Revoke the token, and the `AccountReconcilor` and/or the Gaia server
+  // will take care of invalidating the cookies.
+  auto* accounts_mutator = identity_manager_->GetAccountsMutator();
+  accounts_mutator->RemoveAccount(
+      account_info_.account_id,
+      signin_metrics::SourceForRefreshTokenOperation::kTurnOnSyncHelper_Abort);
 }
 
 // static

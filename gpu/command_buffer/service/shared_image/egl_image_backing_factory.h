@@ -86,6 +86,7 @@ class GPU_GLES2_EXPORT EGLImageBackingFactory
                    gfx::GpuMemoryBufferType gmb_type,
                    GrContextType gr_context_type,
                    base::span<const uint8_t> pixel_data) override;
+  SharedImageBackingType GetBackingType() override;
 
  private:
   std::unique_ptr<SharedImageBacking> MakeEglImageBacking(
@@ -96,6 +97,7 @@ class GPU_GLES2_EXPORT EGLImageBackingFactory
       GrSurfaceOrigin surface_origin,
       SkAlphaType alpha_type,
       uint32_t usage,
+      std::string debug_label,
       base::span<const uint8_t> pixel_data);
 };
 

@@ -121,6 +121,9 @@ class DataTypeController : public base::SupportsWeakPtr<DataTypeController> {
   // histograms. May do nothing if state() is NOT_RUNNING or FAILED.
   virtual void RecordMemoryUsageAndCountsHistograms() = 0;
 
+  // Reports model type error to simulate the error reported by the bridge.
+  virtual void ReportBridgeErrorForTest() = 0;
+
  protected:
   explicit DataTypeController(ModelType type);
 

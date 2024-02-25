@@ -1,4 +1,4 @@
-// Copyright 2022 The Chromium Authors. All rights reserved.
+// Copyright 2022 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -25,27 +25,27 @@ TEST_F(PowerUserModelTest, ExecuteModelWithInput) {
 
   std::string subsegment_key = GetSubsegmentKey(kPowerUserKey);
   ModelProvider::Request input(27, 0);
-  ExecuteWithInputAndCheckSubsegmentName<PowerUserSegment>(
-      input, subsegment_key, /*sub_segment_name=*/"None");
+  ExpectExecutionWithInput(input, /*expected_error=*/false, {1});
+  ExpectClassifierResults(input, {"None"});
 
   input[1] = 3;    // download
   input[8] = 4;    // share
   input[10] = 4;   // bookmarks
   input[11] = 20;  // voice
-  ExecuteWithInputAndCheckSubsegmentName<PowerUserSegment>(
-      input, subsegment_key, /*sub_segment_name=*/"Low");
+  ExpectExecutionWithInput(input, /*expected_error=*/false, {2});
+  ExpectClassifierResults(input, {"Low"});
 
   input[12] = 2;  // cast
   input[15] = 5;  // autofill
   input[22] = 6;  // media picker
-  ExecuteWithInputAndCheckSubsegmentName<PowerUserSegment>(
-      input, subsegment_key, /*sub_segment_name=*/"Medium");
+  ExpectExecutionWithInput(input, /*expected_error=*/false, {3});
+  ExpectClassifierResults(input, {"Medium"});
 
   input[26] = 20 * 60 * 1000;  // 20 min session
   input[17] = 60000;           // 60 sec audio output
   input[23] = 50000;           // 50KB upload
-  ExecuteWithInputAndCheckSubsegmentName<PowerUserSegment>(
-      input, subsegment_key, /*sub_segment_name=*/"High");
+  ExpectExecutionWithInput(input, /*expected_error=*/false, {4});
+  ExpectClassifierResults(input, {"High"});
 
   EXPECT_FALSE(ExecuteWithInput(/*inputs=*/{}));
   EXPECT_FALSE(ExecuteWithInput(/*inputs=*/{1, 2}));

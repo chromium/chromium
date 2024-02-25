@@ -11,11 +11,15 @@
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_testing.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/platform/heap/heap_test_utilities.h"
+#include "third_party/blink/renderer/platform/testing/task_environment.h"
 #include "v8/include/v8.h"
 
 namespace blink {
 
-class MessageEventTest : public testing::Test {};
+class MessageEventTest : public testing::Test {
+ private:
+  test::TaskEnvironment task_environment_;
+};
 
 TEST_F(MessageEventTest, AccountForStringMemory) {
   constexpr int64_t string_size = 10000;

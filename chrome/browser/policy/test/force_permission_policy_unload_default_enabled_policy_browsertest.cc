@@ -7,6 +7,7 @@
 #include "components/policy/policy_constants.h"
 #include "content/public/test/back_forward_cache_util.h"
 #include "content/public/test/browser_test.h"
+#include "content/public/test/browser_test_utils.h"
 #include "content/public/test/test_utils.h"
 #include "third_party/blink/public/common/features.h"
 
@@ -108,10 +109,13 @@ IN_PROC_BROWSER_TEST_P(
 
   // The unload handler should have run if an only if the policy has disabled
   // the deprecation.
-  if (GetParam() == Policy::kFalse) {
-    ASSERT_EQ(result, "true");
-  } else {
-    ASSERT_EQ(result, "false");
+  switch (GetParam()) {
+    case Policy::kTrue:
+      ASSERT_EQ(result, "true");
+      break;
+    case Policy::kFalse:
+    case Policy::kDefault:
+      ASSERT_EQ(result, "false");
   }
 }
 

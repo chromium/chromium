@@ -6,6 +6,7 @@
 #define COMPONENTS_TRANSLATE_CORE_BROWSER_TRANSLATE_MODEL_SERVICE_H_
 
 #include <memory>
+#include <optional>
 #include <vector>
 
 #include "base/files/file.h"
@@ -17,7 +18,6 @@
 #include "base/task/sequenced_task_runner.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/optimization_guide/core/optimization_target_model_observer.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace optimization_guide {
 class OptimizationGuideModelProvider;
@@ -85,7 +85,7 @@ class TranslateModelService
   // The file that contains the language detection model. Available when the
   // file path has been provided by the Optimization Guide and has been
   // successfully loaded.
-  absl::optional<base::File> language_detection_model_file_;
+  std::optional<base::File> language_detection_model_file_;
 
   // The set of callbacks associated with requests for the language detection
   // model. The callback notifies requesters than the model file is now

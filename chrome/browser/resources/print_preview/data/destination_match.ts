@@ -2,7 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {Destination, PrinterType} from './destination.js';
+import type {Destination} from './destination.js';
+import {PrinterType} from './destination.js';
 
 export class DestinationMatch {
   private idRegExp_: RegExp|null;

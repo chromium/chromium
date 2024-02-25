@@ -5,8 +5,17 @@
 #ifndef UI_DISPLAY_TEST_DISPLAY_TEST_UTIL_H_
 #define UI_DISPLAY_TEST_DISPLAY_TEST_UTIL_H_
 
+#include <stdint.h>
+
+#include <string>
+#include <vector>
+
 #include "ui/display/display.h"
 #include "ui/display/util/display_util.h"
+
+#if BUILDFLAG(IS_CHROMEOS)
+#include "ui/display/manager/managed_display_info.h"
+#endif
 
 namespace display {
 
@@ -30,6 +39,15 @@ inline void PrintTo(const Display& display, ::std::ostream* os) {
   *os << display.ToString();
 }
 
+#if BUILDFLAG(IS_CHROMEOS)
+// Create a list of ManagedDisplayInfo from the string specs.
+// If a list of existing displays are present, the function will
+// reuse the display ID.
+DISPLAY_EXPORT std::vector<ManagedDisplayInfo> CreateDisplayInfoListFromSpecs(
+    const std::string& display_specs,
+    const std::vector<Display>& existing_displays,
+    bool generate_new_ids);
+#endif
 }  // namespace display
 
 #endif  // UI_DISPLAY_TEST_DISPLAY_TEST_UTIL_H_

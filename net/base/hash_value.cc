@@ -21,7 +21,7 @@ namespace net {
 
 namespace {
 
-constexpr base::StringPiece kSha256Slash = "sha256/";
+constexpr std::string_view kSha256Slash = "sha256/";
 
 // LessThan comparator for use with std::binary_search() in determining
 // whether a SHA-256 HashValue appears within a sorted array of
@@ -46,12 +46,12 @@ HashValue::HashValue(const SHA256HashValue& hash)
   fingerprint.sha256 = hash;
 }
 
-bool HashValue::FromString(base::StringPiece value) {
-  if (!base::StartsWith(value, kSha256Slash)) {
+bool HashValue::FromString(std::string_view value) {
+  if (!value.starts_with(kSha256Slash)) {
     return false;
   }
 
-  base::StringPiece base64_str = value.substr(kSha256Slash.size());
+  std::string_view base64_str = value.substr(kSha256Slash.size());
 
   auto decoded = base::Base64Decode(base64_str);
   if (!decoded || decoded->size() != size()) {

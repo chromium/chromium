@@ -10,8 +10,8 @@
 #import "base/functional/bind.h"
 #import "base/functional/callback.h"
 #import "base/memory/ptr_util.h"
-#import "ios/chrome/browser/overlays/public/overlay_presentation_context_observer.h"
-#import "ios/chrome/browser/overlays/public/overlay_presenter.h"
+#import "ios/chrome/browser/overlays/model/public/overlay_presentation_context_observer.h"
+#import "ios/chrome/browser/overlays/model/public/overlay_presenter.h"
 #import "ios/chrome/browser/ui/overlays/overlay_coordinator_factory.h"
 #import "ios/chrome/browser/ui/overlays/overlay_presentation_context_coordinator.h"
 #import "ios/chrome/browser/ui/overlays/overlay_presentation_context_impl_delegate.h"
@@ -142,6 +142,10 @@ void OverlayPresentationContextImpl::SetUIDisabled(bool disabled) {
       observer.OverlayPresentationContextDidEnableUI(this);
     }
   }
+}
+
+bool OverlayPresentationContextImpl::IsUIDisabled() {
+  return ui_disabled_;
 }
 
 #pragma mark OverlayPresentationContext

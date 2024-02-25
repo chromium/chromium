@@ -5,7 +5,9 @@
 #include "components/offline_pages/core/model/add_page_task.h"
 
 #include <stdint.h>
+
 #include <memory>
+#include <optional>
 #include <string>
 
 #include "base/files/file_path.h"
@@ -17,7 +19,6 @@
 #include "components/offline_pages/core/offline_page_types.h"
 #include "components/offline_pages/core/offline_store_types.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
 namespace offline_pages {
@@ -47,12 +48,13 @@ class AddPageTaskTest : public ModelTaskTestBase {
   void AddPage(const OfflinePageItem& page);
   bool CheckPageStored(const OfflinePageItem& page);
 
-  const absl::optional<AddPageResult>& last_add_page_result() {
+  const std::optional<AddPageResult>& last_add_page_result() {
     return last_add_page_result_;
   }
 
  private:
-  absl::optional<AddPageResult> last_add_page_result_;
+  std::optional<AddPageResult> last_add_page_result_;
+  base::WeakPtrFactory<AddPageTaskTest> weak_ptr_factory_{this};
 };
 
 void AddPageTaskTest::ResetResults() {
@@ -64,7 +66,8 @@ void AddPageTaskTest::OnAddPageDone(AddPageResult result) {
 }
 
 AddPageTask::AddPageTaskCallback AddPageTaskTest::add_page_callback() {
-  return base::BindOnce(&AddPageTaskTest::OnAddPageDone, base::AsWeakPtr(this));
+  return base::BindOnce(&AddPageTaskTest::OnAddPageDone,
+                        weak_ptr_factory_.GetWeakPtr());
 }
 
 void AddPageTaskTest::AddPage(const OfflinePageItem& page) {

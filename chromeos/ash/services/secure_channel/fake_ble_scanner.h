@@ -31,6 +31,7 @@ class FakeBleScanner : public BleScanner {
       const std::string& remote_device_id);
 
   // Public for testing.
+  using BleScanner::NotifyBleDiscoverySessionFailed;
   using BleScanner::NotifyReceivedAdvertisementFromDevice;
   using BleScanner::scan_requests;
 
@@ -51,8 +52,7 @@ class FakeBleScannerObserver : public BleScanner::Observer {
     ~Result();
 
     multidevice::RemoteDeviceRef remote_device;
-    raw_ptr<device::BluetoothDevice, DanglingUntriaged | ExperimentalAsh>
-        bluetooth_device;
+    raw_ptr<device::BluetoothDevice, DanglingUntriaged> bluetooth_device;
     ConnectionMedium connection_medium;
     ConnectionRole connection_role;
   };

@@ -27,6 +27,7 @@ class GPUShaderModule : public DawnObject<WGPUShaderModule> {
 
   GPUShaderModule(const GPUShaderModule&) = delete;
   GPUShaderModule& operator=(const GPUShaderModule&) = delete;
+  ~GPUShaderModule() override = default;
 
   ScriptPromise getCompilationInfo(ScriptState* script_state);
 
@@ -39,6 +40,9 @@ class GPUShaderModule : public DawnObject<WGPUShaderModule> {
     std::string utf8_label = value.Utf8();
     GetProcs().shaderModuleSetLabel(GetHandle(), utf8_label.c_str());
   }
+
+  // Holds an estimate of the memory used by Tint for this shader module.
+  ExternalMemoryTracker tint_memory_estimate_;
 };
 
 }  // namespace blink

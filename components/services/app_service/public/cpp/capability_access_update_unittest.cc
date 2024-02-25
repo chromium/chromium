@@ -4,9 +4,10 @@
 
 #include "components/services/app_service/public/cpp/capability_access_update.h"
 
+#include <optional>
+
 #include "components/services/app_service/public/cpp/capability_access.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace {
 const char app_id[] = "abcdefgh";
@@ -14,10 +15,10 @@ const char app_id[] = "abcdefgh";
 
 class CapabilityAccessUpdateTest : public testing::Test {
  protected:
-  absl::optional<bool> expect_camera_;
+  std::optional<bool> expect_camera_;
   bool expect_camera_changed_;
 
-  absl::optional<bool> expect_microphone_;
+  std::optional<bool> expect_microphone_;
   bool expect_microphone_changed_;
 
   AccountId account_id_ = AccountId::FromUserEmail("test@gmail.com");

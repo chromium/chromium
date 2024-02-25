@@ -2,9 +2,9 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//build/config/android/jni.gni")
 import("//build/config/android/rules.gni")
 import("//chrome/android/modules/buildflags.gni")
+import("//third_party/jni_zero/jni_zero.gni")
 
 android_library("java") {
   sources = [ "java/src/org/chromium/chrome/modules/cablev2_authenticator/ModuleImpl.java" ]
@@ -30,6 +30,7 @@ component_with_jni("cablev2_authenticator") {
   deps = [
     "//base",
     "//chrome/android/features/cablev2_authenticator:native",
+    "//third_party/jni_zero",
   ]
 
   # caBLE v2 authenticator native entrypoints belong in the partition.

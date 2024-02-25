@@ -28,9 +28,9 @@ enum class CloseRequestResult;
 //  details on View hierarchy).
 class VIEWS_EXPORT NonClientFrameView : public View,
                                         public ViewTargeterDelegate {
- public:
-  METADATA_HEADER(NonClientFrameView);
+  METADATA_HEADER(NonClientFrameView, View)
 
+ public:
   enum {
     // Various edges of the frame border have a 1 px shadow along their edges;
     // in a few cases we shift elements based on this amount for visual appeal.
@@ -101,7 +101,7 @@ class VIEWS_EXPORT NonClientFrameView : public View,
   // View:
   void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
   void OnThemeChanged() override;
-  void Layout() override;
+  void Layout(PassKey) override;
   Views GetChildrenInZOrder() override;
 
   // Inserts the passed client view into this NonClientFrameView. Subclasses can
@@ -150,9 +150,9 @@ class VIEWS_EXPORT NonClientFrameView : public View,
 //  +----------------------------------------------------+
 //
 class VIEWS_EXPORT NonClientView : public View, public ViewTargeterDelegate {
- public:
-  METADATA_HEADER(NonClientView);
+  METADATA_HEADER(NonClientView, View)
 
+ public:
   explicit NonClientView(ClientView* client_view);
   NonClientView(const NonClientView&) = delete;
   NonClientView& operator=(const NonClientView&) = delete;
@@ -214,7 +214,7 @@ class VIEWS_EXPORT NonClientView : public View, public ViewTargeterDelegate {
   gfx::Size CalculatePreferredSize() const override;
   gfx::Size GetMinimumSize() const override;
   gfx::Size GetMaximumSize() const override;
-  void Layout() override;
+  void Layout(PassKey) override;
   void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
   views::View* GetTooltipHandlerForPoint(const gfx::Point& point) override;
 
@@ -239,7 +239,7 @@ class VIEWS_EXPORT NonClientView : public View, public ViewTargeterDelegate {
 
   // The overlay view, when non-NULL and visible, takes up the entire widget and
   // is placed on top of the ClientView and NonClientFrameView.
-  raw_ptr<View, DanglingUntriaged> overlay_view_ = nullptr;
+  raw_ptr<View> overlay_view_ = nullptr;
 };
 
 BEGIN_VIEW_BUILDER(VIEWS_EXPORT, NonClientFrameView, View)

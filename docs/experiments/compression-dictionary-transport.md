@@ -152,6 +152,22 @@ Chrome 117.0.5857.0 introduced support for Shared Brotli, and Chrome
 Shared Zstandard can be enabled/disabled from
 [chrome://flags/#enable-shared-zstd][shared-zstd-flag].
 
+## Supported HTTP protocol
+
+From Chrome 121, Chrome may not use stored shared dictionares when the
+connection is using HTTP/1 for non-localhost requests. Also Chrome may not use
+shared dictionares when the HTTPS connection's certificate is not rooted by a
+well known root CA (eg: using a user installed root certificate). This is for
+an investigation for an issue that some network appliances are interfering with
+HTTPS traffic by inspecting encrypted responses but failing to properly decode
+the shared dictionary encoded content.
+
+If you want to use shared dictionaries with HTTP/1, please enable
+[chrome://flags/#enable-compression-dictionary-transport-over-http1][over-http1-flag].
+Also if you want to use shared dictionaries over the HTTPS connection which
+certificate is not rooted by a well known root CA, please disable
+[chrome://flags/#enable-compression-dictionary-transport-require-known-root-cert][require-known-root-ca-flag].
+
 ## Debugging
 
 ### Managing registered dictionaries
@@ -171,6 +187,27 @@ Developers can check the related HTTP request and response headers
   `transferSize` property of `PerformanceResourceTiming` for shared dictionary
   compressed response are wrong. Currently it returns as if the response is not
   compressed.
+- [crbug.com/1479465](crbug.com/1479465): Can't store large (>40 MB)
+  dictionaries. Fixed in M118, by setting a [100 MB size limit](100mb-limit-line)
+  if there is enough disk space.
+- [cbrbug.com/1479809](crbug.com/1479809): Can't use large (>8MB) dictionaries
+  for Shared Zstd. Fixed in M118.
+
+## Changes in M123
+
+The following changes have been made to Chrome since M123 to keep up with the
+changes in specifications.
+
+- Changed Content-Encoding name "br-d" "zstd-d"
+- Changed match to use URLPattern
+- Added support for a server-provided dictionary id
+- Stop using "expires" value of "Use-As-Dictionary" header, and use the cache
+  expiration time calculated from the response's freshness instead.
+- Removed support for hash negotiation and force use of sha-256
+- Added the dictionary hash to the compressed response
+- Dictionary hashes changed to sf-binary
+- Use "Available-Dictionary" header instead of "Sec-Available-Dictionary"
+- Added support for match-dest option
 
 ## Demo sites
 
@@ -185,6 +222,8 @@ There are a few demo sites that you can use to test the feature:
 [flag]: chrome://flags/#enable-compression-dictionary-transport
 [backend-flag]: chrome://flags/#enable-compression-dictionary-transport-backend
 [shared-zstd-flag]: chrome://flags/#enable-shared-zstd
+[over-http1-flag]: chrome://flags/#enable-compression-dictionary-transport-over-http1
+[require-known-root-ca-flag]: chrome://flags/#enable-compression-dictionary-transport-require-known-root-cert
 [shared_dictionary_readme]: ../../services/network/shared_dictionary/README.md#flags
 [ot-blog]: https://developer.chrome.com/blog/origin-trials/
 [ot-console]: https://developer.chrome.com/origintrials/#/trials/active
@@ -192,3 +231,4 @@ There are a few demo sites that you can use to test the feature:
 [httpbis-draft]: https://datatracker.ietf.org/doc/draft-meenan-httpbis-compression-dictionary/
 [net-internals-sd]: chrome://net-internals/#sharedDictionary
 [type-option-cl]: https://chromiumdash.appspot.com/commit/169031f4af2cbdc529f48160f1df20b4ca8b6cc1
+[100mb-limit-line]: https://source.chromium.org/chromium/chromium/src/+/main:services/network/shared_dictionary/shared_dictionary_constants.cc;l=14;drc=eef4762779d05708d5dfc7d5fe4ea16288069a35

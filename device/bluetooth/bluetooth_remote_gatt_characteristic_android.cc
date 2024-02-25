@@ -20,6 +20,7 @@
 #include "device/bluetooth/jni_headers/ChromeBluetoothRemoteGattCharacteristic_jni.h"
 
 using base::android::AttachCurrentThread;
+using base::android::ConvertJavaStringToUTF8;
 using base::android::JavaParamRef;
 using base::android::JavaRef;
 
@@ -237,7 +238,7 @@ void BluetoothRemoteGattCharacteristicAndroid::OnRead(
 
   if (status == 0) {  // android.bluetooth.BluetoothGatt.GATT_SUCCESS
     base::android::JavaByteArrayToByteVector(env, value, &value_);
-    std::move(read_callback).Run(/*error_code=*/absl::nullopt, value_);
+    std::move(read_callback).Run(/*error_code=*/std::nullopt, value_);
   } else {
     std::move(read_callback)
         .Run(BluetoothRemoteGattServiceAndroid::GetGattErrorCode(status),
@@ -272,8 +273,7 @@ void BluetoothRemoteGattCharacteristicAndroid::CreateGattRemoteDescriptor(
     bluetooth_gatt_descriptor_wrapper,
     const JavaParamRef<jobject>& /* ChromeBluetoothDevice */
     chrome_bluetooth_device) {
-  std::string instanceIdString =
-      base::android::ConvertJavaStringToUTF8(env, instanceId);
+  std::string instanceIdString = ConvertJavaStringToUTF8(env, instanceId);
 
   DCHECK(!base::Contains(descriptors_, instanceIdString));
   AddDescriptor(BluetoothRemoteGattDescriptorAndroid::Create(

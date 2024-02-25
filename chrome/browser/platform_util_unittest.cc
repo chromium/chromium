@@ -136,9 +136,8 @@ class PlatformUtilTestBase : public BrowserWithTestWindowTest {
     app->intent_filters =
         apps_util::CreateIntentFiltersForChromeApp(extension.get());
     apps.push_back(std::move(app));
-    app_service_proxy_->AppRegistryCache().OnApps(
-        std::move(apps), apps::AppType::kChromeApp,
-        /*should_notify_initialized=*/false);
+    app_service_proxy_->OnApps(std::move(apps), apps::AppType::kChromeApp,
+                               /*should_notify_initialized=*/false);
   }
 
   void SetUp() override {
@@ -159,11 +158,10 @@ class PlatformUtilTestBase : public BrowserWithTestWindowTest {
 
  private:
   std::unique_ptr<content::ContentBrowserClient> content_browser_client_;
-  raw_ptr<content::ContentBrowserClient, ExperimentalAsh>
-      old_content_browser_client_ = nullptr;
+  raw_ptr<content::ContentBrowserClient> old_content_browser_client_ = nullptr;
   apps::AppServiceTest app_service_test_;
-  raw_ptr<apps::AppServiceProxy, DanglingUntriaged | ExperimentalAsh>
-      app_service_proxy_ = nullptr;
+  raw_ptr<apps::AppServiceProxy, DanglingUntriaged> app_service_proxy_ =
+      nullptr;
 };
 
 #else

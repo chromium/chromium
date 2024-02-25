@@ -16,5 +16,4 @@ found in the LICENSE file.
     <dimen name="page_zoom_view_padding">12dp</dimen>
     <dimen name="page_zoom_view_max_width">400dp</dimen>
     <dimen name="page_zoom_view_tablet_mode_min_width">420dp</dimen>
-    <dimen name="page_zoom_reset_button_width">80dp</dimen>
 </resources>

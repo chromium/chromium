@@ -15,7 +15,7 @@
 #include "chrome/browser/metrics/usage_scenario/usage_scenario_data_store.h"
 #include "chrome/browser/performance_manager/public/user_tuning/battery_saver_mode_manager.h"
 #include "chrome/browser/performance_manager/test_support/fake_frame_throttling_delegate.h"
-#include "chrome/browser/performance_manager/test_support/fake_high_efficiency_mode_delegate.h"
+#include "chrome/browser/performance_manager/test_support/fake_render_tuning_delegate.h"
 #include "components/performance_manager/public/user_tuning/prefs.h"
 #include "components/prefs/testing_pref_service.h"
 #include "content/public/test/browser_task_environment.h"
@@ -38,7 +38,7 @@ constexpr base::TimeDelta kTolerableDrift = base::Seconds(1);
 constexpr int kFullBatteryChargeLevel = 10000;
 constexpr int kHalfBatteryChargeLevel = 5000;
 
-absl::optional<base::BatteryLevelProvider::BatteryState> MakeBatteryState(
+std::optional<base::BatteryLevelProvider::BatteryState> MakeBatteryState(
     int current_capacity) {
   return base::BatteryLevelProvider::BatteryState{
       .battery_count = 1,
@@ -85,7 +85,7 @@ class NoopBatteryLevelProvider : public base::BatteryLevelProvider {
   ~NoopBatteryLevelProvider() override = default;
 
   void GetBatteryState(
-      base::OnceCallback<void(const absl::optional<BatteryState>&)> callback)
+      base::OnceCallback<void(const std::optional<BatteryState>&)> callback)
       override {}
 };
 
@@ -127,16 +127,18 @@ class BatteryDischargeReporterTest : public testing::Test {
         new performance_manager::user_tuning::BatterySaverModeManager(
             &testing_local_state_,
             std::make_unique<performance_manager::FakeFrameThrottlingDelegate>(
-                &throttling_enabled_)));
+                &throttling_enabled_),
+            std::make_unique<performance_manager::FakeRenderTuningDelegate>(
+                &render_tuning_enabled_)));
     test_battery_saver_mode_manager_->Start();
   }
 
   // Tests that the right BatteryDischargeMode histogram sample is emitted given
   // the battery states before and after an interval.
   void TestBatteryDischargeMode(
-      const absl::optional<base::BatteryLevelProvider::BatteryState>&
+      const std::optional<base::BatteryLevelProvider::BatteryState>&
           previous_battery_state,
-      const absl::optional<base::BatteryLevelProvider::BatteryState>&
+      const std::optional<base::BatteryLevelProvider::BatteryState>&
           new_battery_state,
       BatteryDischargeMode expected_mode) {
     TestUsageScenarioDataStoreImpl usage_scenario_data_store;
@@ -167,6 +169,7 @@ class BatteryDischargeReporterTest : public testing::Test {
 
   TestingPrefServiceSimple testing_local_state_;
   bool throttling_enabled_ = false;
+  bool render_tuning_enabled_ = false;
   std::unique_ptr<performance_manager::user_tuning::BatterySaverModeManager>
       test_battery_saver_mode_manager_;
 };
@@ -395,7 +398,7 @@ TEST_F(BatteryDischargeReporterTest, FullChargedCapacityIncreased) {
 }
 
 TEST_F(BatteryDischargeReporterTest, RetrievalError) {
-  TestBatteryDischargeMode(absl::nullopt, absl::nullopt,
+  TestBatteryDischargeMode(std::nullopt, std::nullopt,
                            BatteryDischargeMode::kRetrievalError);
 }
 

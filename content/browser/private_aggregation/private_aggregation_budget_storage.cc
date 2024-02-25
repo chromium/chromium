@@ -5,6 +5,7 @@
 #include "content/browser/private_aggregation/private_aggregation_budget_storage.h"
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <utility>
 #include <vector>
@@ -20,12 +21,12 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/task/sequenced_task_runner.h"
+#include "base/timer/elapsed_timer.h"
 #include "components/sqlite_proto/key_value_data.h"
 #include "components/sqlite_proto/key_value_table.h"
 #include "components/sqlite_proto/proto_table_manager.h"
 #include "content/browser/private_aggregation/proto/private_aggregation_budgets.pb.h"
 #include "sql/database.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace content {
 
@@ -79,7 +80,7 @@ base::OnceClosure PrivateAggregationBudgetStorage::CreateAsync(
       base::BindOnce(
           &PrivateAggregationBudgetStorage::FinishInitializationOnMainSequence,
           base::Unretained(raw_storage), std::move(storage),
-          std::move(on_done_initializing)));
+          std::move(on_done_initializing), base::ElapsedTimer()));
 
   return base::BindOnce(&PrivateAggregationBudgetStorage::Shutdown,
                         raw_storage->weak_factory_.GetWeakPtr());
@@ -95,13 +96,11 @@ PrivateAggregationBudgetStorage::PrivateAggregationBudgetStorage(
               kBudgetsTableName)),
       budgets_data_(table_manager_,
                     budgets_table_.get(),
-                    /*max_num_entries=*/absl::nullopt,
+                    /*max_num_entries=*/std::nullopt,
                     kFlushDelay),
       db_task_runner_(std::move(db_task_runner)),
       db_(std::make_unique<sql::Database>(
-          sql::DatabaseOptions{.exclusive_locking = true,
-                               .page_size = 4096,
-                               .cache_size = 32})) {}
+          sql::DatabaseOptions{.page_size = 4096, .cache_size = 32})) {}
 
 PrivateAggregationBudgetStorage::~PrivateAggregationBudgetStorage() {
   Shutdown();
@@ -184,6 +183,7 @@ void PrivateAggregationBudgetStorage::FinishInitializationOnMainSequence(
     std::unique_ptr<PrivateAggregationBudgetStorage> owned_this,
     base::OnceCallback<void(std::unique_ptr<PrivateAggregationBudgetStorage>)>
         on_done_initializing,
+    base::ElapsedTimer elapsed_timer,
     bool was_successful) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(owned_this);
@@ -192,6 +192,9 @@ void PrivateAggregationBudgetStorage::FinishInitializationOnMainSequence(
       "PrivacySandbox.PrivateAggregation.BudgetStorage."
       "ShutdownBeforeFinishingInitialization",
       !db_);
+  base::UmaHistogramTimes(
+      "PrivacySandbox.PrivateAggregation.BudgetStorage.InitTime",
+      elapsed_timer.Elapsed());
 
   // If the initialization failed, `this` will be destroyed after its unique_ptr
   // passes out of scope here.

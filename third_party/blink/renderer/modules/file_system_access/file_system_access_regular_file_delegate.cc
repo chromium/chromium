@@ -89,7 +89,7 @@ base::FileErrorOr<int> FileSystemAccessRegularFileDelegate::Write(
   // is not needed here since `result` is guaranteed to be no more than
   // `write_size`.
   int64_t new_file_size = std::max(file_size_before, offset + result);
-  capacity_tracker_->CommitFileSizeChange(new_file_size);
+  capacity_tracker_->OnFileContentsModified(new_file_size);
 
   // Only return an error if no bytes were written. Partial writes should return
   // the number of bytes written.
@@ -113,7 +113,7 @@ base::FileErrorOr<bool> FileSystemAccessRegularFileDelegate::SetLength(
     return base::unexpected(base::File::FILE_ERROR_NO_SPACE);
 
   if (backing_file_.SetLength(new_length)) {
-    capacity_tracker_->CommitFileSizeChange(new_length);
+    capacity_tracker_->OnFileContentsModified(new_length);
     return true;
   }
   return base::unexpected(base::File::GetLastFileError());

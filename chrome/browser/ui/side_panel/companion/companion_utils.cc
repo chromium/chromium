@@ -4,13 +4,17 @@
 
 #include "chrome/browser/ui/side_panel/companion/companion_utils.h"
 
+#include "base/feature_list.h"
 #include "base/metrics/histogram_functions.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/companion/core/constants.h"
 #include "chrome/browser/companion/core/features.h"
 #include "chrome/browser/companion/core/utils.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/search/search.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/toolbar/pinned_toolbar/pinned_toolbar_actions_model.h"
+#include "chrome/browser/ui/toolbar/pinned_toolbar/pinned_toolbar_actions_model_factory.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/common/webui_url_constants.h"
@@ -21,6 +25,14 @@
 namespace companion {
 
 bool IsCompanionFeatureEnabled() {
+#if BUILDFLAG(IS_CHROMEOS)
+  if (!base::FeatureList::IsEnabled(
+          features::internal::kSidePanelCompanionChromeOS)) {
+    return false;
+  }
+#endif  // BUILDFLAG(IS_CHROMEOS)
+
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
   if (!base::FeatureList::IsEnabled(lens::features::kLensStandalone)) {
     return false;
   }
@@ -30,6 +42,9 @@ bool IsCompanionFeatureEnabled() {
              features::internal::kSidePanelCompanion2) ||
          base::FeatureList::IsEnabled(
              features::internal::kCompanionEnabledByObservingExpsNavigations);
+#else
+  return false;
+#endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
 }
 
 bool IsCompanionAvailableForCurrentActiveTab(const Browser* browser) {
@@ -111,26 +126,22 @@ bool IsSearchImageInCompanionSidePanelSupported(const Browser* browser) {
          ShouldEnableOpenCompanionForImageSearch();
 }
 
-bool IsNewBadgeEnabledForSearchWebMenuItem(const Browser* browser) {
+bool IsNewBadgeEnabledForSearchMenuItem(const Browser* browser) {
   if (!browser) {
     return false;
   }
-  return IsSearchWebInCompanionSidePanelSupported(browser) &&
-         base::FeatureList::IsEnabled(
-             features::kCompanionEnableNewBadgesInContextMenu);
+  return base::FeatureList::IsEnabled(
+      features::kCompanionEnableNewBadgesInContextMenu);
 }
 
-bool IsNewBadgeEnabledForSearchImageMenuItem(const Browser* browser) {
-  if (!browser) {
-    return false;
-  }
-  return IsSearchImageInCompanionSidePanelSupported(browser) &&
-         base::FeatureList::IsEnabled(
-             features::kCompanionEnableNewBadgesInContextMenu);
-}
+void UpdateCompanionDefaultPinnedToToolbarState(Profile* profile) {
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+  CHECK(profile);
 
-void UpdateCompanionDefaultPinnedToToolbarState(PrefService* pref_service) {
-  absl::optional<bool> should_force_pin =
+  PrefService* const pref_service = profile->GetPrefs();
+  CHECK(pref_service);
+
+  std::optional<bool> should_force_pin =
       switches::ShouldForceOverrideCompanionPinState();
   if (should_force_pin) {
     pref_service->SetBoolean(prefs::kSidePanelCompanionEntryPinnedToToolbar,
@@ -148,9 +159,31 @@ void UpdateCompanionDefaultPinnedToToolbarState(PrefService* pref_service) {
           ::features::kSidePanelCompanionDefaultPinned) ||
       pref_service->GetBoolean(companion::kExpsOptInStatusGrantedPref) ||
       observed_exps_nav;
+
   pref_service->SetDefaultPrefValue(
       prefs::kSidePanelCompanionEntryPinnedToToolbar,
       base::Value(companion_should_be_default_pinned));
+
+  if (::features::IsSidePanelPinningEnabled()) {
+    PinnedToolbarActionsModel* const model =
+        PinnedToolbarActionsModelFactory::GetForProfile(profile);
+    CHECK(model);
+    model->MaybeUpdateSearchCompanionPinnedState(
+        companion_should_be_default_pinned);
+  }
+#endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
+}
+
+bool ShouldUseContextualLensPanelForImageSearch(const Browser* browser) {
+  if (!browser) {
+    return false;
+  }
+  // Contextual Lens panel should only be enabled when image search is disabled
+  // for the companion AND the feature param for contextual Lens panel is
+  // enabled.
+  return IsSearchInCompanionSidePanelSupported(browser) &&
+         !IsSearchImageInCompanionSidePanelSupported(browser) &&
+         ShouldOpenContextualLensPanel();
 }
 
 }  // namespace companion

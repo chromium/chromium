@@ -46,8 +46,19 @@ public class BottomSheetToolbarProperties {
     public static final WritableBooleanPropertyKey OPEN_IN_NEW_TAB_VISIBLE =
             new WritableBooleanPropertyKey();
 
-    public static final PropertyKey[] ALL_KEYS = new PropertyKey[] {URL, TITLE, LOAD_PROGRESS,
-            PROGRESS_VISIBLE, SECURITY_ICON, SECURITY_ICON_CONTENT_DESCRIPTION,
-            SECURITY_ICON_ON_CLICK_CALLBACK, CLOSE_BUTTON_ON_CLICK_CALLBACK, FAVICON_ICON,
-            FAVICON_ICON_DRAWABLE, FAVICON_ICON_VISIBLE, OPEN_IN_NEW_TAB_VISIBLE};
+    public static final PropertyKey[] ALL_KEYS =
+            new PropertyKey[] {
+                URL,
+                TITLE,
+                LOAD_PROGRESS,
+                PROGRESS_VISIBLE,
+                SECURITY_ICON,
+                SECURITY_ICON_CONTENT_DESCRIPTION,
+                SECURITY_ICON_ON_CLICK_CALLBACK,
+                CLOSE_BUTTON_ON_CLICK_CALLBACK,
+                FAVICON_ICON,
+                FAVICON_ICON_DRAWABLE,
+                FAVICON_ICON_VISIBLE,
+                OPEN_IN_NEW_TAB_VISIBLE
+            };
 }

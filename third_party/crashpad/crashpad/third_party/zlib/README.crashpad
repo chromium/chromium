@@ -5,6 +5,8 @@ Revision: See zlib/README.chromium
 License: zlib
 License File: zlib/LICENSE
 Security Critical: yes
+Shipped: yes
+CPEPrefix: cpe:/a:zlib:zlib
 
 Description:
 “A massively spiffy yet delicately unobtrusive compression library.”

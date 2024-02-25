@@ -15,7 +15,6 @@ mojom("mojo_bindings") {
     "//ui/gfx/geometry/mojom",
   ]
 
-  use_typescript_sources = true
   webui_module_path = "chrome://resources/cr_components/help_bubble/"
 }
 

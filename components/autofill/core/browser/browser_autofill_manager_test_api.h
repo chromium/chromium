@@ -9,6 +9,8 @@
 #include "base/time/time.h"
 #include "components/autofill/core/browser/autofill_manager_test_api.h"
 #include "components/autofill/core/browser/browser_autofill_manager.h"
+#include "components/autofill/core/browser/filling_product.h"
+#include "components/autofill/core/browser/payments/credit_card_access_manager.h"
 #include "components/autofill/core/browser/single_field_form_fill_router.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -17,18 +19,6 @@ namespace autofill {
 // Exposes some testing operations for BrowserAutofillManager.
 class BrowserAutofillManagerTestApi : public AutofillManagerTestApi {
  public:
-  static void DeterminePossibleFieldTypesForUpload(
-      const std::vector<AutofillProfile>& profiles,
-      const std::vector<CreditCard>& credit_cards,
-      const std::u16string& last_unlocked_credit_card_cvc,
-      const std::string& app_locale,
-      FormStructure* form) {
-    // For tests, the observed_submission is hardcoded to true.
-    BrowserAutofillManager::DeterminePossibleFieldTypesForUpload(
-        profiles, credit_cards, last_unlocked_credit_card_cvc, app_locale,
-        /*observed_submission=*/true, form);
-  }
-
   explicit BrowserAutofillManagerTestApi(BrowserAutofillManager* manager)
       : AutofillManagerTestApi(manager), manager_(*manager) {}
 
@@ -37,10 +27,6 @@ class BrowserAutofillManagerTestApi : public AutofillManagerTestApi {
   // has not been initialized yet.
   [[nodiscard]] testing::AssertionResult FlushPendingVotes(
       base::TimeDelta timeout = base::Seconds(10));
-
-  const std::vector<autofill::AutofillProfile>& test_addresses() {
-    return manager_->test_addresses_;
-  }
 
   void SetExternalDelegate(
       std::unique_ptr<AutofillExternalDelegate> external_delegate) {
@@ -51,13 +37,21 @@ class BrowserAutofillManagerTestApi : public AutofillManagerTestApi {
     return manager_->external_delegate_.get();
   }
 
-  bool ShouldTriggerRefill(const FormStructure& form_structure) {
-    return manager_->ShouldTriggerRefill(form_structure);
+  void set_limit_before_refill(base::TimeDelta limit) {
+    manager_->form_filler_->limit_before_refill_ = limit;
   }
 
+  // TODO(crbug.com/1517894): Remove.
+  bool ShouldTriggerRefill(const FormStructure& form_structure,
+                           RefillTriggerReason refill_trigger_reason) {
+    return manager_->form_filler_->ShouldTriggerRefill(form_structure,
+                                                       refill_trigger_reason);
+  }
+
+  // TODO(crbug.com/1517894): Remove.
   void TriggerRefill(const FormData& form,
                      const AutofillTriggerDetails& trigger_details) {
-    manager_->TriggerRefill(form, trigger_details);
+    manager_->form_filler_->TriggerRefill(form, trigger_details);
   }
 
   void PreProcessStateMatchingTypes(
@@ -75,8 +69,12 @@ class BrowserAutofillManagerTestApi : public AutofillManagerTestApi {
         ->form_interactions_flow_id_for_test();
   }
 
-  SingleFieldFormFillRouter* single_field_form_fill_router() {
-    return manager_->single_field_form_fill_router_.get();
+  SingleFieldFormFillRouter& single_field_form_fill_router() {
+    return *manager_->single_field_form_fill_router_;
+  }
+
+  autofill_metrics::CreditCardFormEventLogger* credit_card_form_event_logger() {
+    return manager_->credit_card_form_event_logger_.get();
   }
 
   void set_single_field_form_fill_router(
@@ -90,27 +88,22 @@ class BrowserAutofillManagerTestApi : public AutofillManagerTestApi {
   }
 
   void OnCreditCardFetched(CreditCardFetchResult result,
-                           const CreditCard* credit_card = nullptr,
-                           const std::u16string& cvc = std::u16string()) {
-    manager_->OnCreditCardFetched(result, credit_card, cvc);
+                           const CreditCard* credit_card = nullptr) {
+    manager_->OnCreditCardFetched(result, credit_card);
   }
 
-  bool WillFillCreditCardNumber(const FormData& form,
-                                const FormFieldData& field) {
-    return manager_->WillFillCreditCardNumber(form, field);
-  }
-
+  // TODO(crbug.com/1517894): Remove.
   void FillOrPreviewDataModelForm(
-      mojom::AutofillActionPersistence action_persistence,
+      mojom::ActionPersistence action_persistence,
       const FormData& form,
       const FormFieldData& field,
       absl::variant<const AutofillProfile*, const CreditCard*>
           profile_or_credit_card,
-      const std::u16string* optional_cvc,
+      base::optional_ref<const std::u16string> cvc,
       FormStructure* form_structure,
       AutofillField* autofill_field) {
-    return manager_->FillOrPreviewDataModelForm(
-        action_persistence, form, field, profile_or_credit_card, optional_cvc,
+    return manager_->form_filler_->FillOrPreviewForm(
+        action_persistence, form, field, profile_or_credit_card, cvc,
         form_structure, autofill_field,
         {.trigger_source = AutofillTriggerSource::kPopup});
   }
@@ -130,6 +123,26 @@ class BrowserAutofillManagerTestApi : public AutofillManagerTestApi {
   void SetFourDigitCombinationsInDOM(
       const std::vector<std::string>& combinations) {
     manager_->four_digit_combinations_in_dom_ = combinations;
+  }
+
+  void SetConsiderFormAsSecureForTesting(
+      std::optional<bool> consider_form_as_secure_for_testing) {
+    manager_->consider_form_as_secure_for_testing_ =
+        consider_form_as_secure_for_testing;
+  }
+
+  // TODO(crbug.com/1517894): Remove.
+  void AddFormFillEntry(
+      base::span<const FormFieldData* const> filled_fields,
+      base::span<const AutofillField* const> filled_autofill_fields,
+      FillingProduct filling_product,
+      bool is_refill) {
+    manager_->form_filler_->form_autofill_history_.AddFormFillEntry(
+        filled_fields, filled_autofill_fields, filling_product, is_refill);
+  }
+
+  void set_form_filler(std::unique_ptr<FormFiller> form_filler) {
+    manager_->form_filler_ = std::move(form_filler);
   }
 
  private:

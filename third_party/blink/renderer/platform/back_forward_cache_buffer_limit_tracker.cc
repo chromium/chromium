@@ -55,4 +55,9 @@ bool BackForwardCacheBufferLimitTracker::IsUnderPerProcessBufferLimit() {
   return total_bytes_buffered_ <= max_buffered_bytes_per_process_;
 }
 
+size_t BackForwardCacheBufferLimitTracker::total_bytes_buffered_for_testing() {
+  base::AutoLock lock(lock_);
+  return total_bytes_buffered_;
+}
+
 }  // namespace blink

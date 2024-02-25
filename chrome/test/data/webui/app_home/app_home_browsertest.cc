@@ -11,10 +11,6 @@
 class AppHomeTest : public WebUIMochaBrowserTest {
  protected:
   AppHomeTest() { set_test_loader_host(chrome::kChromeUIAppLauncherPageHost); }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_{
-      features::kDesktopPWAsAppHomePage};
 };
 
 IN_PROC_BROWSER_TEST_F(AppHomeTest, AppList) {

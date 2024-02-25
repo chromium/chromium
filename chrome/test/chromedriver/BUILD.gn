@@ -2,6 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//build/buildflag_header.gni")
 import("//build/config/python.gni")
 import("//build/config/ui.gni")
 if (is_linux) {
@@ -10,6 +11,15 @@ if (is_linux) {
 import("//build/util/lastchange.gni")
 import("//testing/test.gni")
 import("//third_party/ffmpeg/ffmpeg_options.gni")
+import("//ui/webui/resources/tools/minify_js.gni")
+
+declare_args() {
+  # Make macOS request permissions for the chrome binary instead of its parent
+  # process (usually the Terminmal.app).
+  # This is required for running chrome tests on Google's CI machines, but for
+  # some vendor builds like Microsoft Teams they need to turn this off.
+  chromedriver_disclaim_responsibility = true
+}
 
 action("embed_js_in_cpp") {
   script = "embed_js_in_cpp.py"
@@ -59,12 +69,20 @@ action("embed_mobile_devices_in_cpp") {
   args += rebase_path(ts_files, root_build_dir)
 }
 
+minify_js("minify_bidimapper") {
+  deps = [ "//third_party/bidimapper:bidimapper" ]
+  input_dir =
+      get_label_info("//third_party/bidimapper:bidimapper", "target_gen_dir")
+  in_folder = "$input_dir"
+  in_files = [ "mapper.js" ]
+  out_folder = "$target_gen_dir/bidimapper/minified"
+}
+
 action("embed_bidimapper_in_cpp") {
   script = "embed_bidimapper_in_cpp.py"
 
-  input_dir =
-      get_label_info("//third_party/bidimapper:bidimapper", "target_gen_dir")
-  js_files = [ "$input_dir/mapper.js" ]
+  input_dir = get_label_info(":minify_bidimapper", "target_gen_dir")
+  js_files = [ "$input_dir/bidimapper/minified/mapper.js" ]
 
   inputs = [ "cpp_source.py" ] + js_files
 
@@ -78,7 +96,7 @@ action("embed_bidimapper_in_cpp") {
   ]
   args += rebase_path(js_files, root_build_dir)
 
-  deps = [ "//third_party/bidimapper:bidimapper" ]
+  deps = [ ":minify_bidimapper" ]
 }
 
 action("embed_user_data_dir_in_cpp") {
@@ -351,6 +369,7 @@ source_set("lib") {
     "//net",
     "//net/server:http_server",
     "//net/traffic_annotation:test_support",
+    "//services/device/public/cpp/generic_sensor",
     "//services/network:network_service",
     "//services/network/public/cpp",
     "//services/network/public/mojom",
@@ -358,6 +377,7 @@ source_set("lib") {
     "//third_party/zlib",
     "//third_party/zlib/google:zip",
     "//ui/base",
+    "//ui/base:ozone_buildflags",
     "//ui/events:dom_keycode_converter",
     "//ui/events:events_base",
     "//ui/gfx",
@@ -366,10 +386,7 @@ source_set("lib") {
 
   if (use_ozone) {
     sources += [ "keycode_text_conversion_ozone.cc" ]
-    deps += [
-      "//ui/events/ozone/layout",
-      "//ui/ozone:buildflags",
-    ]
+    deps += [ "//ui/events/ozone/layout" ]
 
     # TODO(1239521): clean up usages of ozone_platform_x11.
     # Ozone/X11 implementation provides a stub KeyboardLayoutEngine. Thus,
@@ -385,6 +402,7 @@ source_set("lib") {
   }
 
   if (is_mac) {
+    deps += [ ":buildflags" ]
     frameworks = [ "Carbon.framework" ]
   }
 }
@@ -437,6 +455,13 @@ if (is_linux) {
   }
 }
 
+if (is_mac) {
+  buildflag_header("buildflags") {
+    header = "buildflags.h"
+    flags = [ "CHROMEDRIVER_DISCLAIM_RESPONSIBILITY=$chromedriver_disclaim_responsibility" ]
+  }
+}
+
 python_library("chromedriver_py_tests") {
   testonly = true
   deps = [
@@ -463,6 +488,27 @@ python_library("chromedriver_py_tests") {
     # On Windows, the following target produces the final chrome.exe
     data_deps += [ "//chrome:reorder_imports" ]
   }
+}
+
+python_library("chromedriver_py_tests_headless_shell") {
+  testonly = true
+  deps = [
+    ":chromedriver_server",
+    "//chrome:chrome",
+  ]
+
+  pydeps_file = "test/run_py_tests.pydeps"
+  data = [
+    "//chrome/test/data/chromedriver/",
+    "//chrome/test/chromedriver/js/",
+    "//testing/scripts/run_chromedriver_tests.py",
+  ]
+
+  data_deps = [
+    "//chrome/test/chromedriver:chromedriver_server",
+    "//headless:headless_shell",
+    "//testing:test_scripts_shared",
+  ]
 }
 
 python_library("chromedriver_replay_unittests") {

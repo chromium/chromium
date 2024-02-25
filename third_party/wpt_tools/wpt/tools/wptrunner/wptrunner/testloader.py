@@ -1,4 +1,4 @@
-# mypy: allow-untyped-defs
+# mypy: allow-untyped-calls, allow-untyped-defs
 from __future__ import annotations
 
 import abc
@@ -6,22 +6,25 @@ import hashlib
 import itertools
 import json
 import os
+import queue
 from urllib.parse import urlsplit
 from abc import ABCMeta, abstractmethod
-from queue import Empty
 from collections import defaultdict, deque, namedtuple
-from typing import cast, Any, Dict, List, Optional, Set
+from typing import (cast, Any, Callable, Dict, Deque, List, Mapping, MutableMapping, Optional, Set,
+                    Tuple, Type)
 
 from . import manifestinclude
 from . import manifestexpected
 from . import manifestupdate
-from . import mpcontext
 from . import wpttest
 from mozlog import structured
 
 manifest = None
 manifest_update = None
 download_from_github = None
+
+# Mapping from (subsuite, test_type) to [Test]
+TestsByType = Mapping[Tuple[str, str], List[wpttest.Test]]
 
 
 def do_delayed_imports():
@@ -30,6 +33,35 @@ def do_delayed_imports():
     from manifest import manifest  # type: ignore
     from manifest import update as manifest_update
     from manifest.download import download_from_github  # type: ignore
+
+
+class WriteQueue:
+    def __init__(self, queue_cls: Callable[[], Any] = queue.SimpleQueue):
+        """Queue wrapper that is only used for writing items to a queue.
+
+        Once all items are enqueued, call to_read() to get a reader for the queue.
+        This will also prevent further writes using this writer."""
+        self._raw_queue = queue_cls()
+
+    def put(self, item: Any) -> None:
+        if self._raw_queue is None:
+            raise ValueError("Tried to write to closed queue")
+        self._raw_queue.put(item)
+
+    def to_read(self) -> ReadQueue:
+        reader = ReadQueue(self._raw_queue)
+        self._raw_queue = None
+        return reader
+
+
+class ReadQueue:
+    def __init__(self, raw_queue: Any):
+        self._raw_queue = raw_queue
+
+    def get(self) -> Any:
+        """Queue wrapper that is only used for reading items from a queue."""
+        return self._raw_queue.get(False)
+
 
 
 class TestGroups:
@@ -149,15 +181,17 @@ def read_include_from_file(file):
 
 
 def update_include_for_groups(test_groups, include):
+    new_include = []
     if include is None:
         # We're just running everything
-        return
-    new_include = []
-    for item in include:
-        if item in test_groups.tests_by_group:
-            new_include.extend(test_groups.tests_by_group[item])
-        else:
-            new_include.append(item)
+        for tests in test_groups.tests_by_group.values():
+            new_include.extend(tests)
+    else:
+        for item in include:
+            if item in test_groups.tests_by_group:
+                new_include.extend(test_groups.tests_by_group[item])
+            else:
+                new_include.append(item)
     return new_include
 
 
@@ -292,19 +326,20 @@ class ManifestLoader:
 
     def load(self):
         rv = {}
-        for url_base, paths in self.test_paths.items():
-            manifest_file = self.load_manifest(url_base=url_base,
-                                               **paths)
-            path_data = {"url_base": url_base}
-            path_data.update(paths)
+        for url_base, test_root in self.test_paths.items():
+            manifest_file = self.load_manifest(url_base, test_root)
+            path_data = {"url_base": url_base,
+                         "tests_path": test_root.tests_path,
+                         "metadata_path": test_root.metadata_path,
+                         "manifest_path": test_root.manifest_path}
             rv[manifest_file] = path_data
         return rv
 
-    def load_manifest(self, tests_path, manifest_path, metadata_path, url_base="/", **kwargs):
-        cache_root = os.path.join(metadata_path, ".cache")
+    def load_manifest(self, url_base, test_root):
+        cache_root = os.path.join(test_root.metadata_path, ".cache")
         if self.manifest_download:
-            download_from_github(manifest_path, tests_path)
-        return manifest.load_and_update(tests_path, manifest_path, url_base,
+            download_from_github(test_root.manifest_path, test_root.tests_path)
+        return manifest.load_and_update(test_root.tests_path, test_root.manifest_path, url_base,
                                         cache_root=cache_root, update=self.force_manifest_update,
                                         types=self.types)
 
@@ -331,6 +366,7 @@ class TestLoader:
                  include_h2=True,
                  include_webtransport_h3=False,
                  skip_timeout=False,
+                 skip_crash=False,
                  skip_implementation_status=None,
                  chunker_kwargs=None):
 
@@ -348,6 +384,7 @@ class TestLoader:
         self.include_h2 = include_h2
         self.include_webtransport_h3 = include_webtransport_h3
         self.skip_timeout = skip_timeout
+        self.skip_crash = skip_crash
         self.skip_implementation_status = skip_implementation_status
 
         self.chunk_type = chunk_type
@@ -448,8 +485,12 @@ class TestLoader:
                     enabled = False
                 if self.skip_timeout and test.expected() == "TIMEOUT":
                     enabled = False
-                if self.skip_implementation_status and test.implementation_status() in self.skip_implementation_status:
+                if self.skip_crash and test.expected() == "CRASH":
                     enabled = False
+                if self.skip_implementation_status and test.implementation_status() in self.skip_implementation_status:
+                    # for backlog, we want to run timeout/crash:
+                    if not (test.implementation_status() == "implementing" and test.expected() in ["TIMEOUT", "CRASH"]):
+                        enabled = False
                 target = tests_enabled if enabled else tests_disabled
                 target[subsuite_name][test_type].append(test)
 
@@ -467,45 +508,48 @@ class TestLoader:
         return groups
 
 
-TestSourceData = namedtuple("TestSourceData", ["cls", "kwargs"])
 
-
-def get_test_src(**kwargs):
-    test_source_kwargs = {"processes": kwargs["processes"],
-                          "logger": kwargs["logger"]}
+def get_test_queue_builder(**kwargs: Any) -> Tuple[TestQueueBuilder, Mapping[str, Any]]:
+    builder_kwargs = {"processes": kwargs["processes"],
+                      "logger": kwargs["logger"]}
     chunker_kwargs = {}
-    if kwargs["run_by_dir"] is not False:
+    builder_cls: Type[TestQueueBuilder]
+    if kwargs["fully_parallel"]:
+        builder_cls = FullyParallelGroupedSource
+    elif kwargs["run_by_dir"] is not False:
         # A value of None indicates infinite depth
-        test_source_cls = PathGroupedSource
-        test_source_kwargs["depth"] = kwargs["run_by_dir"]
+        builder_cls = PathGroupedSource
+        builder_kwargs["depth"] = kwargs["run_by_dir"]
         chunker_kwargs["depth"] = kwargs["run_by_dir"]
     elif kwargs["test_groups"]:
-        test_source_cls = GroupFileTestSource
-        test_source_kwargs["test_groups"] = kwargs["test_groups"]
+        builder_cls = GroupFileTestSource
+        builder_kwargs["test_groups"] = kwargs["test_groups"]
     else:
-        test_source_cls = SingleTestSource
-    return TestSourceData(test_source_cls, test_source_kwargs), chunker_kwargs
+        builder_cls = SingleTestSource
+    return builder_cls(**builder_kwargs), chunker_kwargs
 
 
 TestGroup = namedtuple("TestGroup", ["group", "subsuite", "test_type", "metadata"])
 
 
-class TestSource:
+class TestQueueBuilder:
     __metaclass__ = ABCMeta
 
-    def __init__(self, test_queue):
-        self.test_queue = test_queue
-        self.current_group = TestGroup(None, None, None, None)
-        self.logger = structured.get_default_logger()
-        if self.logger is None:
-            self.logger = structured.structuredlog.StructuredLogger("TestSource")
+    def __init__(self, **kwargs: Any):
+        """Class for building a queue of groups of tests to run.
 
-    @classmethod
-    def make_queue(cls, tests_by_type, **kwargs):
-        mp = mpcontext.get_context()
-        test_queue = mp.Queue()
-        groups = cls.make_groups(tests_by_type, **kwargs)
-        processes = cls.process_count(kwargs["processes"], len(groups))
+        Each item in the queue is a TestGroup, which consists of an iterable of
+        tests to run, the name of the subsuite, the name of the test type, and
+        a dictionary containing group-specific metadata.
+
+        Tests in the same group are run in the same TestRunner in the
+        provided order."""
+        self.kwargs = kwargs
+
+    def make_queue(self, tests_by_type: TestsByType) -> Tuple[ReadQueue, int]:
+        test_queue = WriteQueue()
+        groups = self.make_groups(tests_by_type)
+        processes = self.process_count(self.kwargs["processes"], len(groups))
         if processes > 1:
             groups.sort(key=lambda group: (
                 # Place groups of the same test type together to minimize
@@ -517,54 +561,35 @@ class TestSource:
             ))
         for item in groups:
             test_queue.put(item)
-        cls.add_sentinal(test_queue, processes)
-        return test_queue, processes
 
-    @classmethod
+        return test_queue.to_read(), processes
+
     @abstractmethod
-    def make_groups(cls, tests_by_type, **kwargs):  # noqa: N805
+    def make_groups(self, tests_by_type: TestsByType) -> List[TestGroup]:
+        """Divide a given set of tests into groups that will be run together."""
         pass
 
-    @classmethod
     @abstractmethod
-    def tests_by_group(cls, tests_by_type, **kwargs):  # noqa: N805
+    def tests_by_group(self, tests_by_type: TestsByType) -> Mapping[str, List[str]]:
         pass
 
-    @classmethod
-    def group_metadata(cls, state):
+    def group_metadata(self, state: Mapping[str, Any]) -> Mapping[str, Any]:
         return {"scope": "/"}
 
-    def group(self):
-        if not self.current_group.group or len(self.current_group.group) == 0:
-            try:
-                self.current_group = self.test_queue.get(block=True, timeout=5)
-            except Empty:
-                self.logger.warning("Timed out getting test group from queue")
-                return TestGroup(None, None, None, None)
-        return self.current_group
-
-    @classmethod
-    def add_sentinal(cls, test_queue, num_of_workers):
-        # add one sentinal for each worker
-        for _ in range(num_of_workers):
-            test_queue.put(TestGroup(None, None, None, None))
-
-    @classmethod
-    def process_count(cls, requested_processes, num_test_groups):
+    def process_count(self, requested_processes: int, num_test_groups: int) -> int:
         """Get the number of processes to use.
 
         This must always be at least one, but otherwise not more than the number of test groups"""
         return max(1, min(requested_processes, num_test_groups))
 
 
-class SingleTestSource(TestSource):
-    @classmethod
-    def make_groups(cls, tests_by_type, **kwargs):
+class SingleTestSource(TestQueueBuilder):
+    def make_groups(self, tests_by_type: TestsByType) -> List[TestGroup]:
         groups = []
         for (subsuite, test_type), tests in tests_by_type.items():
-            processes = kwargs["processes"]
-            queues = [deque([]) for _ in range(processes)]
-            metadatas = [cls.group_metadata(None) for _ in range(processes)]
+            processes = self.kwargs["processes"]
+            queues: List[Deque[TestGroup]] = [deque([]) for _ in range(processes)]
+            metadatas = [self.group_metadata({}) for _ in range(processes)]
             for test in tests:
                 idx = hash(test.id) % processes
                 group = queues[idx]
@@ -580,19 +605,21 @@ class SingleTestSource(TestSource):
                     groups.append(TestGroup(*item))
         return groups
 
-    @classmethod
-    def tests_by_group(cls, tests_by_type, **kwargs):
-        rv = {}
+    def tests_by_group(self, tests_by_type: TestsByType) -> Mapping[str, List[str]]:
+        groups: MutableMapping[str, List[str]] = defaultdict(list)
         for (subsuite, test_type), tests in tests_by_type.items():
-            group_name = f"{subsuite}:{cls.group_metadata(None)['scope']}"
-            rv[group_name] = [t.id for t in tests]
-        return rv
+            group_name = f"{subsuite}:{self.group_metadata({})['scope']}"
+            groups[group_name].extend(test.id for test in tests)
+        return groups
 
 
-class PathGroupedSource(TestSource):
-    @classmethod
-    def new_group(cls, state, subsuite, test_type, test, **kwargs):
-        depth = kwargs.get("depth")
+class PathGroupedSource(TestQueueBuilder):
+    def new_group(self,
+                  state: MutableMapping[str, Any],
+                  subsuite: str,
+                  test_type: str,
+                  test: wpttest.Test) -> bool:
+        depth = self.kwargs.get("depth")
         if depth is True or depth == 0:
             depth = None
         path = urlsplit(test.url).path.split("/")[1:-1][:depth]
@@ -600,50 +627,60 @@ class PathGroupedSource(TestSource):
         state["prev_group_key"] = (subsuite, test_type, path)
         return rv
 
-    @classmethod
-    def make_groups(cls, tests_by_type, **kwargs):
-        groups, state = [], {}
+    def make_groups(self, tests_by_type: TestsByType) -> List[TestGroup]:
+        groups = []
+        state: MutableMapping[str, Any] = {}
         for (subsuite, test_type), tests in tests_by_type.items():
             for test in tests:
-                if cls.new_group(state, subsuite, test_type, test, **kwargs):
-                    group_metadata = cls.group_metadata(state)
+                if self.new_group(state, subsuite, test_type, test):
+                    group_metadata = self.group_metadata(state)
                     groups.append(TestGroup(deque(), subsuite, test_type, group_metadata))
                 group, _, _, metadata = groups[-1]
                 group.append(test)
                 test.update_metadata(metadata)
         return groups
 
-    @classmethod
-    def tests_by_group(cls, tests_by_type, **kwargs):
+    def tests_by_group(self, tests_by_type: TestsByType) -> Mapping[str, List[str]]:
         groups = defaultdict(list)
-        state = {}
+        state: MutableMapping[str, Any] = {}
         for (subsuite, test_type), tests in tests_by_type.items():
             for test in tests:
-                if cls.new_group(state, subsuite, test_type, test, **kwargs):
-                    group = cls.group_metadata(state)['scope']
-                if subsuite is not None:
+                if self.new_group(state, subsuite, test_type, test):
+                    group = self.group_metadata(state)['scope']
+                if subsuite:
                     group_name = f"{subsuite}:{group}"
                 else:
                     group_name = group
                 groups[group_name].append(test.id)
         return groups
 
-    @classmethod
-    def group_metadata(cls, state):
+    def group_metadata(self, state: Mapping[str, Any]) -> Mapping[str, Any]:
         return {"scope": "/%s" % "/".join(state["prev_group_key"][2])}
 
 
-class GroupFileTestSource(TestSource):
-    @classmethod
-    def make_groups(cls, tests_by_type, **kwargs):
+class FullyParallelGroupedSource(PathGroupedSource):
+    # Chuck every test into a different group, so that they can run
+    # fully parallel with each other. Useful to run a lot of tests
+    # clustered in a few directories.
+    def new_group(self,
+                  state: MutableMapping[str, Any],
+                  subsuite: str,
+                  test_type: str,
+                  test: wpttest.Test) -> bool:
+        path = urlsplit(test.url).path.split("/")[1:-1]
+        state["prev_group_key"] = (subsuite, test_type, path)
+        return True
+
+
+class GroupFileTestSource(TestQueueBuilder):
+    def make_groups(self, tests_by_type: TestsByType) -> List[TestGroup]:
         groups = []
         for (subsuite, test_type), tests in tests_by_type.items():
-            tests_by_group = cls.tests_by_group({(subsuite, test_type): tests},
-                                                **kwargs)
+            tests_by_group = self.tests_by_group({(subsuite, test_type): tests})
             ids_to_tests = {test.id: test for test in tests}
             for group_name, test_ids in tests_by_group.items():
                 group_metadata = {"scope": group_name}
-                group = deque()
+                group: Deque[wpttest.Test] = deque()
                 for test_id in test_ids:
                     test = ids_to_tests[test_id]
                     group.append(test)
@@ -651,10 +688,8 @@ class GroupFileTestSource(TestSource):
                 groups.append(TestGroup(group, subsuite, test_type, group_metadata))
         return groups
 
-    @classmethod
-    def tests_by_group(cls, tests_by_type, **kwargs):
-        logger = kwargs["logger"]
-        test_groups = kwargs["test_groups"]
+    def tests_by_group(self, tests_by_type: TestsByType) -> Mapping[str, List[str]]:
+        test_groups = self.kwargs["test_groups"]
 
         tests_by_group = defaultdict(list)
         for (subsuite, test_type), tests in tests_by_type.items():
@@ -662,7 +697,7 @@ class GroupFileTestSource(TestSource):
                 try:
                     group = test_groups.group_by_test[(subsuite, test.id)]
                 except KeyError:
-                    logger.error("%s is missing from test groups file" % test.id)
+                    print(f"{test.id} is missing from test groups file")
                     raise
                 if subsuite:
                     group_name = f"{subsuite}:{group}"

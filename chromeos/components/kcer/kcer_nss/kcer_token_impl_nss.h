@@ -14,8 +14,11 @@
 #include "base/component_export.h"
 #include "base/memory/weak_ptr.h"
 #include "base/types/strong_alias.h"
+#include "chromeos/components/kcer/chaps/high_level_chaps_client.h"
+#include "chromeos/components/kcer/helpers/pkcs12_reader.h"
 #include "chromeos/components/kcer/kcer_nss/cert_cache_nss.h"
 #include "chromeos/components/kcer/kcer_token.h"
+#include "chromeos/components/kcer/kcer_token_utils.h"
 #include "crypto/scoped_nss_types.h"
 #include "net/cert/cert_database.h"
 #include "net/cert/scoped_nss_types.h"
@@ -48,7 +51,7 @@ class COMPONENT_EXPORT(KCER) KcerTokenImplNss
     kInitializationFailed,
   };
 
-  explicit KcerTokenImplNss(Token token);
+  explicit KcerTokenImplNss(Token token, HighLevelChapsClient* chaps_client);
   ~KcerTokenImplNss() override;
 
   KcerTokenImplNss(const KcerTokenImplNss&) = delete;
@@ -58,18 +61,18 @@ class COMPONENT_EXPORT(KCER) KcerTokenImplNss
 
   // Returns a weak pointer for the token. The pointer can be used to post tasks
   // for the token.
-  base::WeakPtr<KcerTokenImplNss> GetWeakPtr();
+  base::WeakPtr<KcerToken> GetWeakPtr() override;
 
   // Initializes the token with the provided NSS slot. If `nss_slot` is nullptr,
   // the initialization is considered failed and the token will return an error
   // for all queued and future requests.
-  void Initialize(crypto::ScopedPK11Slot nss_slot);
+  void InitializeForNss(crypto::ScopedPK11Slot nss_slot) override;
 
   // Implements net::CertDatabase::Observer.
   void OnClientCertStoreChanged() override;
 
   // Implements KcerToken.
-  void GenerateRsaKey(uint32_t modulus_length_bits,
+  void GenerateRsaKey(RsaModulusLength modulus_length_bits,
                       bool hardware_backed,
                       Kcer::GenerateKeyCallback callback) override;
   void GenerateEcKey(EllipticCurve curve,
@@ -82,6 +85,7 @@ class COMPONENT_EXPORT(KCER) KcerTokenImplNss
   void ImportPkcs12Cert(Pkcs12Blob pkcs12_blob,
                         std::string password,
                         bool hardware_backed,
+                        bool mark_as_migrated,
                         Kcer::StatusCallback callback) override;
   void ExportPkcs12Cert(scoped_refptr<const Cert> cert,
                         Kcer::ExportPkcs12Callback callback) override;
@@ -103,6 +107,11 @@ class COMPONENT_EXPORT(KCER) KcerTokenImplNss
   void GetTokenInfo(Kcer::GetTokenInfoCallback callback) override;
   void GetKeyInfo(PrivateKeyHandle key,
                   Kcer::GetKeyInfoCallback callback) override;
+  void GetKeyPermissions(PrivateKeyHandle key,
+                         Kcer::GetKeyPermissionsCallback callback) override;
+  void GetCertProvisioningProfileId(
+      PrivateKeyHandle key,
+      Kcer::GetCertProvisioningProfileIdCallback callback) override;
   void SetKeyNickname(PrivateKeyHandle key,
                       std::string nickname,
                       Kcer::StatusCallback callback) override;
@@ -146,9 +155,51 @@ class COMPONENT_EXPORT(KCER) KcerTokenImplNss
                        base::expected<void, Error> result);
 
   // These methods return PKCS#11 attribute IDs that should be passed to NSS,
-  // respecting SetAttribtueTranslationForTesting.
+  // respecting SetAttributeTranslationForTesting.
   KeyPermissionsAttributeId GetKeyPermissionsAttributeId() const;
   CertProvisioningIdAttributeId GetCertProvisioningIdAttributeId() const;
+
+  struct ImportPkcs12CertTask {
+    ImportPkcs12CertTask(
+        Pkcs12Blob in_pkcs12_blob,
+        std::string in_password,
+        bool in_hardware_backed,
+        bool in_mark_as_migrated,
+        base::OnceCallback<void(bool /*did_modify*/,
+                                base::expected<void, Error> /*result*/)>
+            callback);
+    ImportPkcs12CertTask(ImportPkcs12CertTask&& other);
+    ~ImportPkcs12CertTask();
+
+    const Pkcs12Blob pkcs12_blob;
+    const std::string password;
+    const bool hardware_backed;
+    const bool mark_as_migrated;
+    base::OnceCallback<void(bool /*did_modify*/,
+                            base::expected<void, Error> /*result*/)>
+        callback;
+    int attemps_left = 5;
+  };
+  void ImportPkcs12CertImpl(ImportPkcs12CertTask task);
+  void ImportPkcs12ImportKey(ImportPkcs12CertTask task,
+                             KeyData key_data,
+                             std::vector<CertData> certs_data);
+  void ImportPkcs12DidImportKey(ImportPkcs12CertTask task,
+                                std::vector<CertData> certs_data,
+                                Pkcs11Id pkcs11_id,
+                                base::expected<PublicKey, Error> imported_key);
+  void ImportPkcs12ImportAllCerts(ImportPkcs12CertTask task,
+                                  std::vector<CertData> certs_data,
+                                  Pkcs11Id pkcs11_id,
+                                  int imports_failed);
+  void ImportPkcs12DidImportOneCert(
+      ImportPkcs12CertTask task,
+      std::vector<CertData> certs_data,
+      Pkcs11Id pkcs11_id,
+      int imports_failed,
+      std::optional<Error> kcer_error,
+      SessionChapsClient::ObjectHandle cert_handle,
+      uint32_t result_code);
 
   // Indicates whether fake attribute ids should be used (for testing).
   bool translate_attributes_for_testing_ = false;
@@ -162,10 +213,15 @@ class COMPONENT_EXPORT(KCER) KcerTokenImplNss
   // The underlying storage for KcerTokenNss. In this context the words "token"
   // and "slot" are synonyms.
   crypto::ScopedPK11Slot slot_;
-  // Queue for the tasks that were received while the tast queue was blocked.
-  std::queue<base::OnceClosure> task_queue_;
+  // Queue for the tasks that were received while the task queue was blocked.
+  std::deque<base::OnceClosure> task_queue_;
   // Cache for certificates.
   CertCacheNss cert_cache_;
+
+  // Created and initialized on the same thread with KcerTokenImplNss, then only
+  // accessed on the UI thread. It's safe to post tasks for it, the destruction
+  // task is posted from the destructor of this class.
+  std::unique_ptr<KcerTokenUtils> kcer_utils_;
 
   base::WeakPtrFactory<KcerTokenImplNss> weak_factory_{this};
 };

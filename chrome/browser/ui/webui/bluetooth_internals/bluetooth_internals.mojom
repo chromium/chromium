@@ -46,4 +46,10 @@ interface BluetoothInternalsHandler {
   // can turn it on.
   // On all other platforms, this is a no-op.
   RequestLocationServices() => ();
+
+  // Restarts Bluetooth system.
+  // If Bluetooth system is already off turns it back on.
+  // If Bluetooth is unavailable this is no-op.
+  [EnableIf=is_chromeos_ash]
+  RestartSystemBluetooth() => ();
 };

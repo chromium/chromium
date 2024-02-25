@@ -51,13 +51,15 @@ class MediaTiming : public GarbageCollectedMixin {
   virtual base::TimeTicks GetFirstVideoFrameTime() const = 0;
 
   // Returns the loading priority used for the image.
-  virtual absl::optional<WebURLRequest::Priority> RequestPriority() const = 0;
+  virtual std::optional<WebURLRequest::Priority> RequestPriority() const = 0;
 
   virtual bool IsDataUrl() const = 0;
 
   // Returns the type. For images it would be the specific types like jpg etc.
   // For video, it would be video.
   virtual AtomicString MediaType() const = 0;
+
+  virtual bool IsBroken() const = 0;
 
   virtual base::TimeTicks DiscoveryTime() const = 0;
 

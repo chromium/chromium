@@ -41,8 +41,9 @@ public abstract class CheckableSelectableItemView<E> extends SelectableItemViewB
         super(context, attrs);
         mIconSelectedColorList =
                 ColorStateList.valueOf(SemanticColorUtils.getDefaultIconColorInverse(context));
-        mCheckDrawable = AnimatedVectorDrawableCompat.create(
-                getContext(), R.drawable.ic_check_googblue_24dp_animated);
+        mCheckDrawable =
+                AnimatedVectorDrawableCompat.create(
+                        getContext(), R.drawable.ic_check_googblue_24dp_animated);
     }
 
     // Abstract methods.

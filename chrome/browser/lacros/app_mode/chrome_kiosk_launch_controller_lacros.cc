@@ -32,7 +32,7 @@ void ChromeKioskLaunchControllerLacros::InstallKioskApp(
     AppInstallParamsPtr params,
     InstallKioskAppCallback callback) {
   installer_ =
-      std::make_unique<chromeos::ChromeKioskAppInstaller>(&profile_, *params);
+      std::make_unique<chromeos::ChromeKioskAppInstaller>(&*profile_, *params);
   installer_->BeginInstall(std::move(callback));
 }
 
@@ -41,6 +41,6 @@ void ChromeKioskLaunchControllerLacros::LaunchKioskApp(
     bool is_network_ready,
     LaunchKioskAppCallback callback) {
   launcher_ = std::make_unique<chromeos::ChromeKioskAppLauncher>(
-      &profile_, app_id, is_network_ready);
+      &*profile_, app_id, is_network_ready);
   launcher_->LaunchApp(std::move(callback));
 }

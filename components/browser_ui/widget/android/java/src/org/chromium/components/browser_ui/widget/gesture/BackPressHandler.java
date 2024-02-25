@@ -23,40 +23,59 @@ import java.lang.annotation.RetentionPolicy;
 public interface BackPressHandler {
     // The smaller the value is, the higher the priority is.
     // When adding a new identifier, make corresponding changes in the
-    // - tools/metrics/histograms/enums.xml: <enum name="BackPressConsumer">
+    // - tools/metrics/histograms/metadata/android/enums.xml: <enum name="BackPressConsumer">
     // - chrome/browser/back_press/android/.../BackPressManager.java: sMetricsMap
-    @IntDef({Type.TEXT_BUBBLE, Type.VR_DELEGATE, Type.XR_DELEGATE, Type.SCENE_OVERLAY,
-            Type.START_SURFACE, Type.SELECTION_POPUP, Type.MANUAL_FILLING, Type.TAB_MODAL_HANDLER,
-            Type.FULLSCREEN, Type.TAB_SWITCHER, Type.CLOSE_WATCHER, Type.FIND_TOOLBAR,
-            Type.LOCATION_BAR, Type.TAB_HISTORY, Type.TAB_RETURN_TO_CHROME_START_SURFACE,
-            Type.BOTTOM_SHEET, Type.SHOW_READING_LIST, Type.MINIMIZE_APP_AND_CLOSE_TAB})
+    @IntDef({
+        Type.TEXT_BUBBLE,
+        Type.XR_DELEGATE,
+        Type.SCENE_OVERLAY,
+        Type.START_SURFACE,
+        Type.SELECTION_POPUP,
+        Type.MANUAL_FILLING,
+        Type.TAB_MODAL_HANDLER,
+        Type.FULLSCREEN,
+        Type.HUB,
+        Type.TAB_SWITCHER,
+        Type.CLOSE_WATCHER,
+        Type.FIND_TOOLBAR,
+        Type.LOCATION_BAR,
+        Type.BOTTOM_CONTROLS,
+        Type.TAB_HISTORY,
+        Type.TAB_RETURN_TO_CHROME_START_SURFACE,
+        Type.BOTTOM_SHEET,
+        Type.PAGE_INSIGHTS_BOTTOM_SHEET,
+        Type.SHOW_READING_LIST,
+        Type.MINIMIZE_APP_AND_CLOSE_TAB
+    })
     @Retention(RetentionPolicy.SOURCE)
     @interface Type {
         int TEXT_BUBBLE = 0;
-        int VR_DELEGATE = 1;
-        int XR_DELEGATE = 2;
-        int SCENE_OVERLAY = 3;
-        int BOTTOM_SHEET = 4;
+        int XR_DELEGATE = 1;
+        int SCENE_OVERLAY = 2;
+        int BOTTOM_SHEET = 3;
+        // TODO(b/307046796): Remove this once we have found better way to integrate with back
+        // handling logic.
+        int PAGE_INSIGHTS_BOTTOM_SHEET = 4;
         int START_SURFACE = 5;
-        int TAB_SWITCHER = 6;
+        int HUB = 6;
+        int TAB_SWITCHER = 7;
         // Fullscreen must be before selection popup. crbug.com/1454817.
-        int FULLSCREEN = 7;
-        int SELECTION_POPUP = 8;
-        int MANUAL_FILLING = 9;
-        int LOCATION_BAR = 10;
-        int TAB_MODAL_HANDLER = 11;
-        int CLOSE_WATCHER = 12;
-        int FIND_TOOLBAR = 13;
-        int TAB_HISTORY = 14;
-        int TAB_RETURN_TO_CHROME_START_SURFACE = 15;
-        int SHOW_READING_LIST = 16;
-        int MINIMIZE_APP_AND_CLOSE_TAB = 17;
+        int FULLSCREEN = 8;
+        int SELECTION_POPUP = 9;
+        int MANUAL_FILLING = 10;
+        int LOCATION_BAR = 11;
+        int TAB_MODAL_HANDLER = 12;
+        int CLOSE_WATCHER = 13;
+        int FIND_TOOLBAR = 14;
+        int BOTTOM_CONTROLS = 15;
+        int TAB_HISTORY = 16;
+        int TAB_RETURN_TO_CHROME_START_SURFACE = 17;
+        int SHOW_READING_LIST = 18;
+        int MINIMIZE_APP_AND_CLOSE_TAB = 19;
         int NUM_TYPES = MINIMIZE_APP_AND_CLOSE_TAB + 1;
     }
 
-    /**
-     * Result of back press handling.
-     */
+    /** Result of back press handling. */
     @IntDef({BackPressResult.SUCCESS, BackPressResult.FAILURE, BackPressResult.UNKNOWN})
     @Retention(RetentionPolicy.SOURCE)
     @interface BackPressResult {
@@ -115,8 +134,6 @@ public interface BackPressHandler {
      */
     default void handleOnBackProgressed(@NonNull BackEventCompat backEvent) {}
 
-    /**
-     * API 34+ only. Triggered when a back press event is initialized.
-     */
+    /** API 34+ only. Triggered when a back press event is initialized. */
     default void handleOnBackStarted(@NonNull BackEventCompat backEvent) {}
 }

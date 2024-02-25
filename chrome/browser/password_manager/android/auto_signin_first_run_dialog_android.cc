@@ -11,7 +11,7 @@
 #include "chrome/browser/password_manager/password_manager_settings_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/passwords/ui_utils.h"
-#include "chrome/grit/chromium_strings.h"
+#include "chrome/grit/branded_strings.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/password_manager/core/browser/password_bubble_experiment.h"
 #include "components/password_manager/core/browser/password_manager_constants.h"
@@ -20,7 +20,7 @@
 #include "components/strings/grit/components_strings.h"
 #include "ui/android/window_android.h"
 #include "ui/base/l10n/l10n_util.h"
-#include "ui/gfx/range/range.h"
+#include "ui/gfx/native_widget_types.h"
 
 using base::android::AttachCurrentThread;
 using base::android::ConvertUTF16ToJavaString;
@@ -68,7 +68,7 @@ void AutoSigninFirstRunDialogAndroid::ShowDialog() {
     dialog_jobject_.Reset(Java_AutoSigninFirstRunDialog_createAndShowDialog(
         env, java_dialog, reinterpret_cast<intptr_t>(this),
         base::android::ConvertUTF16ToJavaString(env, message),
-        base::android::ConvertUTF16ToJavaString(env, explanation), 0, 0,
+        base::android::ConvertUTF16ToJavaString(env, explanation),
         base::android::ConvertUTF16ToJavaString(env, ok_button_text),
         base::android::ConvertUTF16ToJavaString(env, turn_off_button_text)));
   }

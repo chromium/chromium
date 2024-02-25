@@ -46,7 +46,6 @@ source_set("ui") {
     "//ios/web/security",
     "//ios/web/session",
     "//ios/web/text_fragments",
-    "//ios/web/web_state:page_viewport_state",
     "//ios/web/web_state:user_interaction",
     "//ios/web/web_state:web_state_impl_header",
     "//ios/web/web_state:web_view_internal_creation_util",
@@ -60,7 +59,8 @@ source_set("ui") {
   ]
 
   sources = [
-    "crw_context_menu_item.mm",
+    "crw_media_capture_permission_request.h",
+    "crw_media_capture_permission_request.mm",
     "crw_touch_tracking_recognizer.mm",
     "crw_web_controller.mm",
     "crw_web_controller_container_view.h",
@@ -112,7 +112,6 @@ source_set("crw_context_menu_controller") {
     ":wk_web_view_configuration_provider",
     "//base",
     "//ios/web/common",
-    "//ios/web/common:features",
     "//ios/web/js_features/context_menu",
     "//ios/web/js_messaging",
     "//ios/web/public",

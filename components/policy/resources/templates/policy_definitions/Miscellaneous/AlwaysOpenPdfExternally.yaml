@@ -1,10 +1,11 @@
 caption: Always Open PDF files externally
+default: null
 desc: |-
   Setting the policy to Enabled turns the internal PDF viewer off in <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph>, treats PDF files as a download, and lets users open PDFs with the default application.
 
-        Setting the policy to Disabled means that unless users turns off the PDF plugin, it will open PDF files.
+  Setting the policy to Disabled means that unless users turns off the PDF plugin, it will open PDF files.
 
-        If you set the policy, users can't change it in <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph>. If not set, users can choose whether to open PDF externally or not.
+  If you set the policy, users can't change it in <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph>. If not set, users can choose whether to open PDF externally or not.
 example_value: true
 features:
   can_be_recommended: true
@@ -17,6 +18,8 @@ items:
   value: true
 - caption: Always open PDF files using the internal PDF viewer
   value: false
+- caption: Allow the user to decide
+  value: null
 owners:
 - file://components/policy/OWNERS
 - pastarmovj@chromium.org

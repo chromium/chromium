@@ -43,9 +43,9 @@ class LayoutBR : public LayoutText {
   // to return a rect that includes space to illustrate a newline.
   using LayoutText::LocalSelectionVisualRect;
 
-  bool IsOfType(LayoutObjectType type) const override {
+  bool IsBR() const final {
     NOT_DESTROYED();
-    return type == kLayoutObjectBr || LayoutText::IsOfType(type);
+    return true;
   }
 
   int CaretMinOffset() const override;
@@ -54,7 +54,10 @@ class LayoutBR : public LayoutText {
   PositionWithAffinity PositionForPoint(const PhysicalOffset&) const final;
 
   Position PositionForCaretOffset(unsigned) const final;
-  absl::optional<unsigned> CaretOffsetForPosition(const Position&) const final;
+  std::optional<unsigned> CaretOffsetForPosition(const Position&) const final;
+
+ private:
+  unsigned NonCollapsedCaretMaxOffset() const override;
 };
 
 template <>

@@ -18,7 +18,6 @@
 #include "components/profile_metrics/browser_profile_type.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
-#include "content/public/browser/resource_context.h"
 #include "content/public/browser/storage_partition.h"
 #include "content/public/common/content_switches.h"
 
@@ -29,19 +28,7 @@ namespace {
 const void* const kDownloadManagerDelegateKey = &kDownloadManagerDelegateKey;
 }  // namespace
 
-class CastBrowserContext::CastResourceContext
-    : public content::ResourceContext {
- public:
-  CastResourceContext() {}
-
-  CastResourceContext(const CastResourceContext&) = delete;
-  CastResourceContext& operator=(const CastResourceContext&) = delete;
-
-  ~CastResourceContext() override {}
-};
-
-CastBrowserContext::CastBrowserContext()
-    : resource_context_(new CastResourceContext) {
+CastBrowserContext::CastBrowserContext() {
   profile_metrics::SetBrowserProfileType(
       this, profile_metrics::BrowserProfileType::kRegular);
   InitWhileIOAllowed();
@@ -54,8 +41,6 @@ CastBrowserContext::~CastBrowserContext() {
   SimpleKeyMap::GetInstance()->Dissociate(this);
   NotifyWillBeDestroyed();
   ShutdownStoragePartitions();
-  content::GetIOThreadTaskRunner({})->DeleteSoon(FROM_HERE,
-                                                 resource_context_.release());
 }
 
 void CastBrowserContext::InitWhileIOAllowed() {
@@ -86,10 +71,6 @@ base::FilePath CastBrowserContext::GetPath() {
 
 bool CastBrowserContext::IsOffTheRecord() {
   return false;
-}
-
-content::ResourceContext* CastBrowserContext::GetResourceContext() {
-  return resource_context_.get();
 }
 
 content::DownloadManagerDelegate*

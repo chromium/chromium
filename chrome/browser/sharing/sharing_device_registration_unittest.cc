@@ -214,7 +214,20 @@ class SharingDeviceRegistrationTest : public testing::Test {
     if (sharing_device_registration_.IsSmsFetcherSupported())
       features.insert(sync_pb::SharingSpecificFields::SMS_FETCHER);
 
+    if (supports_opt_guide()) {
+      features.insert(
+          sync_pb::SharingSpecificFields::OPTIMIZATION_GUIDE_PUSH_NOTIFICATION);
+    }
+
     return features;
+  }
+
+  bool supports_opt_guide() const {
+#if BUILDFLAG(IS_ANDROID)
+    return true;
+#else
+    return false;
+#endif
   }
 
  protected:
@@ -234,8 +247,8 @@ class SharingDeviceRegistrationTest : public testing::Test {
   SharingDeviceRegistration sharing_device_registration_;
 
   // callback results
-  absl::optional<syncer::DeviceInfo::SharingInfo> local_sharing_info_;
-  absl::optional<SharingSyncPreference::FCMRegistration> fcm_registration_;
+  std::optional<syncer::DeviceInfo::SharingInfo> local_sharing_info_;
+  std::optional<SharingSyncPreference::FCMRegistration> fcm_registration_;
   SharingDeviceRegistrationResult result_;
 };
 

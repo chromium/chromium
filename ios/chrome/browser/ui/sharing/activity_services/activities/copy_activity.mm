@@ -68,7 +68,7 @@ NSString* const kCopyActivityType = @"com.google.chrome.copyActivity";
     StoreInPasteboard(self.dataItems.firstObject.additionalText,
                       self.dataItems.firstObject.shareURL);
   } else {
-    std::vector<const GURL> urls;
+    std::vector<GURL> urls;
     for (ShareToData* shareToData in self.dataItems) {
       urls.push_back(shareToData.shareURL);
     }

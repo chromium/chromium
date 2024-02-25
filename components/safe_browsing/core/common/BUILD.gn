@@ -45,7 +45,6 @@ source_set("safe_browsing_policy_handler") {
 source_set("unit_tests") {
   testonly = true
   sources = [
-    "features_unittest.cc",
     "safe_browsing_policy_handler_unittest.cc",
     "safe_browsing_prefs_unittest.cc",
     "utils_unittest.cc",
@@ -63,6 +62,9 @@ source_set("unit_tests") {
     "//testing/gtest",
     "//url:url",
   ]
+  if (is_ios) {
+    deps += [ "//components/test:safe_browsing_test_bundle_data" ]
+  }
 }
 
 source_set("common") {

@@ -7,11 +7,13 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/renderer/platform/graphics/color.h"
+#include "third_party/blink/renderer/platform/testing/task_environment.h"
 #include "third_party/blink/renderer/platform/wtf/text/atomic_string.h"
 
 namespace blink {
 
 TEST(CanvasColorCacheTest, Histograms) {
+  test::TaskEnvironment task_environment;
   base::HistogramTester histogram_tester;
   CanvasColorCache cache(8);
   const Color red = Color(255, 0, 0);

@@ -10,15 +10,16 @@
 #include <list>
 #include <map>
 #include <memory>
+#include <optional>
 #include <string>
 
+#include "base/feature_list.h"
 #include "base/files/file_path.h"
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/sequence_checker.h"
 #include "base/task/sequenced_task_runner.h"
 #include "chrome/browser/media/webrtc/webrtc_log_buffer.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
 namespace network {
@@ -45,6 +46,19 @@ struct WebRtcLogUploadFailureReason {
     kNetworkError = 2,
   };
 };
+
+// Changes the crash product under which text and event logs are uploaded
+// to have a "_webrtc" suffix, and removes the "-webrtc" suffix from the
+// crash version field.
+// eg, when enabled: product: "Chrome_Mac_webrtc", version: "121.0.6151.0"
+// when disabled: product: "Chrome_Mac", version: "121.0.6151.0-webrtc"
+BASE_DECLARE_FEATURE(kWebRTCLogUploadSuffix);
+
+// Returns the product string to use for crash log uploads.
+std::string GetLogUploadProduct();
+
+// Returns the version string to use for crash log uploads.
+std::string GetLogUploadVersion();
 
 // WebRtcLogUploader uploads WebRTC logs, keeps count of how many logs have
 // been started and denies further logs if a limit is reached. It also adds
@@ -76,6 +90,7 @@ class WebRtcLogUploader {
     int web_app_id;
   };
 
+  static WebRtcLogUploader* GetInstance();
   WebRtcLogUploader();
 
   WebRtcLogUploader(const WebRtcLogUploader&) = delete;
@@ -205,7 +220,7 @@ class WebRtcLogUploader {
   // |response_code| not having a value means that no response code could be
   // retrieved, in which case |network_error_code| should be something other
   // than net::OK.
-  void NotifyUploadDoneAndLogStats(absl::optional<int> response_code,
+  void NotifyUploadDoneAndLogStats(std::optional<int> response_code,
                                    int network_error_code,
                                    const std::string& report_id,
                                    UploadDoneData upload_done_data);

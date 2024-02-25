@@ -10,9 +10,7 @@ import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.test.util.browser.TabLoadObserver;
 import org.chromium.net.test.EmbeddedTestServer;
 
-/**
- * Computes URL of webapp test pages with the passed in Web Manifest URL.
- */
+/** Computes URL of webapp test pages with the passed in Web Manifest URL. */
 public class WebappTestPage {
     public static final String PAGE_TITLE = "Web app banner test page";
 
@@ -22,27 +20,21 @@ public class WebappTestPage {
     private static final String NO_SERVICE_WORKER_PAGE_PATH =
             "/chrome/test/data/banners/manifest_no_service_worker.html";
 
-    /**
-     * Returns the URL of a page with a service worker and an installable Web App Manifest.
-     */
+    /** Returns the URL of a page with a service worker and an installable Web App Manifest. */
     public static String getServiceWorkerUrl(EmbeddedTestServer testServer) {
         String url = testServer.getURL(SERVICE_WORKER_PAGE_PATH);
         Uri.Builder builder = Uri.parse(url).buildUpon();
         return builder.build().toString();
     }
 
-    /**
-     * Returns the URL of a page with no service worker and a Web App Manifest.
-     */
+    /** Returns the URL of a page with no service worker and a Web App Manifest. */
     public static String getNonServiceWorkerUrl(EmbeddedTestServer testServer) {
         String url = testServer.getURL(NO_SERVICE_WORKER_PAGE_PATH);
         Uri.Builder builder = Uri.parse(url).buildUpon();
         return builder.build().toString();
     }
 
-    /**
-     * Returns the URL of a page with no service worker and the specified Web App Manifest URL.
-     */
+    /** Returns the URL of a page with no service worker and the specified Web App Manifest URL. */
     public static String getNonServiceWorkerUrlWithManifest(
             EmbeddedTestServer testServer, String manifestUrl) {
         String url = testServer.getURL(NO_SERVICE_WORKER_PAGE_PATH);
@@ -76,9 +68,7 @@ public class WebappTestPage {
         return builder.build().toString();
     }
 
-    /**
-     * Returns the URL of a page with a service worker and the specified Web App Manifest URL.
-     */
+    /** Returns the URL of a page with a service worker and the specified Web App Manifest URL. */
     public static String getServiceWorkerUrlWithManifest(
             EmbeddedTestServer testServer, String manifestUrl) {
         String url = testServer.getURL(SERVICE_WORKER_PAGE_PATH);
@@ -112,9 +102,7 @@ public class WebappTestPage {
         return builder.build().toString();
     }
 
-    /**
-     * Navigates to a page with a service worker and the specified Web App Manifest URL.
-     */
+    /** Navigates to a page with a service worker and the specified Web App Manifest URL. */
     public static void navigateToServiceWorkerPageWithManifest(
             EmbeddedTestServer testServer, Tab tab, String manifestUrl) throws Exception {
         TabLoadObserver observer = new TabLoadObserver(tab, PAGE_TITLE, null);

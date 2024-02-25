@@ -134,7 +134,7 @@ class TaskRunnerContext {
   friend void Start(Args&&... args);
 
   // Hook for execution start. Should be overridden to do non-trivial work.
-  virtual void OnStart() { Response(ResponseType()); }
+  virtual void OnStart() = 0;
 
   // Finalization action before responding and deleting the context.
   // May be overridden, if necessary.

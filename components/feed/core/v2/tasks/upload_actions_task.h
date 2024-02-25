@@ -6,7 +6,9 @@
 #define COMPONENTS_FEED_CORE_V2_TASKS_UPLOAD_ACTIONS_TASK_H_
 
 #include <memory>
+#include <optional>
 #include <vector>
+
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/raw_ref.h"
@@ -22,7 +24,6 @@
 #include "components/feed/core/v2/public/logging_parameters.h"
 #include "components/feed/core/v2/types.h"
 #include "components/offline_pages/task/task.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace feed {
 class FeedStream;
@@ -72,7 +73,7 @@ class UploadActionsTask : public offline_pages::Task {
     // staleness.
     size_t stale_count;
     // Information about the last network request, if one was attempted.
-    absl::optional<NetworkResponseInfo> last_network_response_info;
+    std::optional<NetworkResponseInfo> last_network_response_info;
   };
 
   // For all constructors:
@@ -130,7 +131,7 @@ class UploadActionsTask : public offline_pages::Task {
   const raw_ref<FeedStream> stream_;
 
   // Pending action to be stored.
-  absl::optional<WireAction> wire_action_;
+  std::optional<WireAction> wire_action_;
 
   // Pending actions to be uploaded. If empty, they will be read from the store
   // and set here. Ignored when `wire_action_` is present.
@@ -148,7 +149,7 @@ class UploadActionsTask : public offline_pages::Task {
   size_t upload_attempt_count_ = 0;
   // Number of stale actions.
   size_t stale_count_ = 0;
-  absl::optional<NetworkResponseInfo> last_network_response_info_;
+  std::optional<NetworkResponseInfo> last_network_response_info_;
   AccountInfo account_info_;
   NetworkRequestId last_network_request_id_;
 

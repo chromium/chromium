@@ -15,6 +15,7 @@
 #include <sstream>
 
 #include "base/compiler_specific.h"
+#include "base/version_info/channel.h"
 #include "build/branding_buildflags.h"
 #include "chrome/chrome_elf/nt_registry/nt_registry.h"
 #include "chrome/install_static/buildflags.h"
@@ -23,7 +24,6 @@
 #include "chrome/install_static/policy_path_parser.h"
 #include "chrome/install_static/user_data_dir.h"
 #include "components/nacl/common/buildflags.h"
-#include "components/version_info/channel.h"
 
 namespace install_static {
 
@@ -32,7 +32,6 @@ enum class ProcessType {
   OTHER_PROCESS,
   BROWSER_PROCESS,
 #if BUILDFLAG(ENABLE_NACL)
-  NACL_BROKER_PROCESS,
   NACL_LOADER_PROCESS,
 #endif
   CRASHPAD_HANDLER_PROCESS,
@@ -81,7 +80,6 @@ constexpr wchar_t kRegValueUsageStats[] = L"usagestats";
 constexpr wchar_t kMetricsReportingEnabled[] = L"MetricsReportingEnabled";
 
 #if BUILDFLAG(ENABLE_NACL)
-constexpr wchar_t kNaClBrokerProcess[] = L"nacl-broker";
 constexpr wchar_t kNaClLoaderProcess[] = L"nacl-loader";
 #endif
 
@@ -261,8 +259,6 @@ ProcessType GetProcessType(const std::wstring& process_type) {
   if (process_type.empty())
     return ProcessType::BROWSER_PROCESS;
 #if BUILDFLAG(ENABLE_NACL)
-  if (process_type == kNaClBrokerProcess)
-    return ProcessType::NACL_BROKER_PROCESS;
   if (process_type == kNaClLoaderProcess)
     return ProcessType::NACL_LOADER_PROCESS;
 #endif
@@ -279,7 +275,6 @@ bool ProcessNeedsProfileDir(ProcessType process_type) {
   switch (process_type) {
     case ProcessType::BROWSER_PROCESS:
 #if BUILDFLAG(ENABLE_NACL)
-    case ProcessType::NACL_BROKER_PROCESS:
     case ProcessType::NACL_LOADER_PROCESS:
 #endif
       return true;
@@ -400,10 +395,6 @@ std::wstring GetLegacyCommandExecuteImplClsid() {
 
 bool SupportsSetAsDefaultBrowser() {
   return InstallDetails::Get().mode().supports_set_as_default_browser;
-}
-
-bool SupportsRetentionExperiments() {
-  return InstallDetails::Get().mode().supports_retention_experiments;
 }
 
 int GetAppIconResourceIndex() {

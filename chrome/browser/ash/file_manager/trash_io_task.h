@@ -7,6 +7,7 @@
 
 #include <functional>
 #include <memory>
+#include <optional>
 #include <vector>
 
 #include "base/files/file_error_or.h"
@@ -20,7 +21,6 @@
 #include "storage/browser/file_system/file_system_context.h"
 #include "storage/browser/file_system/file_system_operation_runner.h"
 #include "storage/browser/file_system/file_system_url.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 class Profile;
 
@@ -192,7 +192,7 @@ class TrashIOTask : public IOTask {
 
   // Stores the id of the operations currently behind undertaken by Trash,
   // including directory creation. Enables cancelling an inflight operation.
-  absl::optional<storage::FileSystemOperationRunner::OperationID> operation_id_;
+  std::optional<storage::FileSystemOperationRunner::OperationID> operation_id_;
 
   ProgressCallback progress_callback_;
   CompleteCallback complete_callback_;

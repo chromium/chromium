@@ -112,8 +112,8 @@ TEST_F(RunUntilTest, ShouldReturnFalseIfTimeoutHappens) {
   // EXPECT_FATAL_FAILURE only works on static objects.
   static bool success;
 
-  EXPECT_FATAL_FAILURE({ success = RunUntil([]() { return false; }); },
-                       "timed out");
+  EXPECT_NONFATAL_FAILURE({ success = RunUntil([]() { return false; }); },
+                          "timed out");
 
   EXPECT_FALSE(success);
 }

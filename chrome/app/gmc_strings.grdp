@@ -34,9 +34,6 @@
   <message name="IDS_GLOBAL_MEDIA_CONTROLS_CAPTION_SETTINGS" desc="Label for the link to the caption settings page.">
    Caption settings
   </message>
-  <message name="IDS_GLOBAL_MEDIA_CONTROLS_LIVE_TRANSLATE_SUBTITLE" desc="Subtitle for the live translate toggle control.">
-   Automatically translates captions
-  </message>
   <message name="IDS_GLOBAL_MEDIA_CONTROLS_LIVE_TRANSLATE_TARGET_LANGUAGE_ACCNAME" desc="Accessible name for the target language selection combobox.">
    Choose the language to translate the captions to
   </message>
@@ -51,6 +48,12 @@
   </message>
   <message name="IDS_GLOBAL_MEDIA_CONTROLS_CONTROL_CAST_SESSIONS_PROMO" desc="Text shown on promotional UI appearing next to the global media controls button to promote controlling cast sessions.">
    Control the media you're casting
+  </message>
+  <message name="IDS_GMC_LOCAL_MEDIA_CAST_SESSIONS_PROMO" desc="Text shown on promotional UI appearing next to the global media controls button to promote starting cast sessions for local media.">
+   Cast video files on your device to another screen
+  </message>
+  <message name="IDS_GMC_LOCAL_MEDIA_CAST_START_PROMO" desc="Text used by the screenreader when accessing the IPH for starting a cast session for local media">
+   Initiate casting of video files from your device to another screen
   </message>
   <message name="IDS_MEDIA_TOOLBAR_CONTEXT_REPORT_CAST_ISSUE" desc="Title of the toolbar button's context menu item, which, on click, opens a page to report an issue with Cast.">
    Report an issue with Google Cast

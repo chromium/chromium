@@ -49,6 +49,13 @@ enum class AuthenticationOperation {
   // a dialog to choose an identity is presented and the user is signed in as
   // soon as the identity is selected.
   kInstantSignin,
+  // Operation to trigger sign-in and then history sync.
+  // If there is at least one identity on the device, the user is presented with
+  // the sign-in bottom sheet to sign-in.
+  // If there is no identity on the device, the user is presented the SSO add
+  // account dialog to sign-in.
+  // Once signed in, the history sync opt-in is displayed.
+  kSheetSigninAndHistorySync,
 };
 
 // A command to perform a sign in operation.
@@ -76,8 +83,13 @@ enum class AuthenticationOperation {
 - (instancetype)initWithOperation:(AuthenticationOperation)operation
                       accessPoint:(signin_metrics::AccessPoint)accessPoint;
 
+// If YES, the sign-in command will not be presented and ignored if there is
+// any dialog already presented on the NTP.
+// Default value: NO.
+@property(nonatomic, assign) BOOL skipIfUINotAvaible;
+
 // The callback to be invoked after the operation is complete.
-@property(copy, nonatomic, readonly)
+@property(nonatomic, copy, readonly)
     ShowSigninCommandCompletionCallback callback;
 
 // The operation to perform during the sign-in flow.

@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <script src="../../resources/testharness.js"></script>
+    <script src="../../resources/testharnessreport.js"></script>
+    <script src="../../resources/gesture-util.js"></script>
+    <script src="../../resources/testdriver.js"></script>
+    <script src="../../resources/testdriver-actions.js"></script>
+    <script src="../../resources/testdriver-vendor.js"></script>
+    <script>
+      function runTest() {
+        if (!window.internals) {
+          return;
+        }
+
+        const scale = .50;
+        internals.setDeviceEmulationScale(scale);
+
+        promise_test(async (t) => {
+          await waitForCompositorCommit();
+
+          const bottombox = document.getElementById("bottombox");
+          const topbox = document.getElementById("topbox");
+
+          const scrollend_promise = new Promise((resolve) => {
+            bottombox.addEventListener("scrollend", resolve);
+          });
+          const cursor_x = bottombox.offsetLeft + bottombox.offsetWidth / 2;
+          const cursor_y = bottombox.offsetTop + bottombox.offsetHeight / 2;
+          await new test_driver.Actions()
+          .scroll(cursor_x * scale,  cursor_y * scale, 0, 100)
+          .send();
+
+          await scrollend_promise;
+          assert_equals(bottombox.scrollTop, 100, "bottom box scrolled.");
+          assert_equals(topbox.scrollTop, 0, "top box did not scroll.");
+        }, "composited scroll hit test accounts for device emulation scale " +
+        "factor");
+      }
+    </script>
+  </head>
+  <body onload="runTest()">
+    <style>
+      .space {
+        height: 1000px;
+        width: 1000px;
+      }
+      .scroller {
+        height:500px;
+        width: 500px;
+        position: relative;
+        overflow-y: scroll;
+        overflow-x: hidden;
+      }
+      #topbox {
+        border: solid 1px blue;
+      }
+      #bottombox {
+        border:solid 1px black;
+        position: absolute;
+        top: 500px;
+      }
+      #overlay {
+        pointer-events: none;
+        position: absolute;
+        height: 1100px;
+        width: 500px;
+        top: 0px;
+        background: rgba(0, 0, 0, 0.5);
+      }
+    </style>
+    <div id="topbox" class="scroller"><div class="space"></div></div>
+    <div id="bottombox" class="scroller"><div class="space"></div></div>
+    <div id="overlay"></div>
+  </body>
+</html>

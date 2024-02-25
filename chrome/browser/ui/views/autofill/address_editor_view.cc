@@ -9,7 +9,6 @@
 
 #include "base/functional/bind.h"
 #include "base/task/single_thread_task_runner.h"
-#include "chrome/browser/ui/autofill/address_editor_controller.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "components/autofill/core/browser/geo/autofill_country.h"
 #include "components/autofill/core/browser/ui/country_combobox_model.h"
@@ -31,7 +30,7 @@ namespace autofill {
 
 namespace {
 // Returns the View ID that can be used to lookup the input field for |type|.
-int GetInputFieldViewId(autofill::ServerFieldType type) {
+int GetInputFieldViewId(autofill::FieldType type) {
   return static_cast<int>(type);
 }
 
@@ -56,22 +55,16 @@ const autofill::AutofillProfile& AddressEditorView::GetAddressProfile() {
   return controller_->GetAddressProfile();
 }
 
-void AddressEditorView::SetCountryCodeForTesting(const std::string& code) {
-  views::Combobox* combobox = static_cast<views::Combobox*>(
+void AddressEditorView::SelectCountryForTesting(const std::u16string& country) {
+  auto* combobox = static_cast<views::Combobox*>(
       GetViewByID(GetInputFieldViewId(autofill::ADDRESS_HOME_COUNTRY)));
-  auto* model = static_cast<CountryComboboxModel*>(combobox->GetModel());
-  for (const auto& country : model->countries()) {
-    if (country && country->country_code() == code) {
-      combobox->SelectValue(country->name());
-      OnPerformAction(combobox);
-      UpdateEditorView();
-      return;
-    }
-  }
+  CHECK(combobox->SelectValue(country));
+  OnSelectedCountryChanged(combobox);
+  UpdateEditorView();
 }
 
 void AddressEditorView::SetTextInputFieldValueForTesting(
-    autofill::ServerFieldType type,
+    autofill::FieldType type,
     const std::u16string& value) {
   views::Textfield* text_field =
       static_cast<views::Textfield*>(GetViewByID(GetInputFieldViewId(type)));
@@ -98,7 +91,7 @@ void AddressEditorView::CreateEditorView() {
     CreateInputField(field);
   }
 
-  if (controller_->get_is_validatable()) {
+  if (controller_->is_validatable()) {
     validation_error_ =
         AddChildView(views::Builder<views::Label>()
                          .SetMultiLine(true)
@@ -150,8 +143,9 @@ views::View* AddressEditorView::CreateInputField(const EditorField& field) {
       text_field->SetText(initial_value);
       text_field->SetAccessibleName(field.label);
 
-      if (field.control_type == EditorField::ControlType::TEXTFIELD_NUMBER)
+      if (field.control_type == EditorField::ControlType::TEXTFIELD_NUMBER) {
         text_field->SetTextInputType(ui::TextInputType::TEXT_INPUT_TYPE_NUMBER);
+      }
 
       // Using autofill field type as a view ID (for testing).
       text_field->SetID(GetInputFieldViewId(field.type));
@@ -184,21 +178,25 @@ views::View* AddressEditorView::CreateInputField(const EditorField& field) {
 
 std::unique_ptr<views::Combobox> AddressEditorView::CreateCountryCombobox(
     const std::u16string& label) {
-  auto combobox =
-      std::make_unique<views::Combobox>(controller_->GetCountryComboboxModel());
+  auto& combobox_model = controller_->GetCountryComboboxModel();
+  auto combobox = std::make_unique<views::Combobox>(&combobox_model);
   combobox->SetAccessibleName(label);
 
   std::u16string initial_value =
       controller_->GetProfileInfo(autofill::ADDRESS_HOME_COUNTRY);
 
-  if (!initial_value.empty())
-    combobox->SelectValue(initial_value);
+  // TODO(crbug.com/1470459): check if it's possible that address country is not
+  // in the combobox value list.
+  if (!combobox->SelectValue(initial_value)) {
+    combobox->SelectValue(
+        combobox_model.GetItemAt(combobox_model.GetDefaultIndex().value()));
+  }
 
   // Using autofill field type as a view ID.
   combobox->SetID(GetInputFieldViewId(autofill::ADDRESS_HOME_COUNTRY));
-  combobox->SetCallback(base::BindRepeating(&AddressEditorView::OnPerformAction,
-                                            base::Unretained(this),
-                                            combobox.get()));
+  field_change_callbacks_.push_back(combobox->AddSelectedIndexChangedCallback(
+      base::BindRepeating(&AddressEditorView::OnSelectedCountryChanged,
+                          base::Unretained(this), combobox.get())));
   return combobox;
 }
 
@@ -208,18 +206,6 @@ void AddressEditorView::UpdateEditorView() {
   CreateEditorView();
   PreferredSizeChanged();
   Validate();
-
-  if (controller_->chosen_country_index() > 0UL &&
-      controller_->chosen_country_index() < controller_->GetCountriesSize()) {
-    views::Combobox* country_combo_box = static_cast<views::Combobox*>(
-        GetViewByID(GetInputFieldViewId(autofill::ADDRESS_HOME_COUNTRY)));
-    DCHECK(country_combo_box);
-    country_combo_box->SetSelectedIndex(controller_->chosen_country_index());
-  } else if (controller_->GetCountriesSize() > 0UL) {
-    controller_->set_chosen_country_index(0UL);
-  } else {
-    controller_->set_chosen_country_index(kInvalidCountryIndex);
-  }
 }
 
 void AddressEditorView::SaveFieldsToProfile() {
@@ -240,26 +226,22 @@ void AddressEditorView::SaveFieldsToProfile() {
   }
 }
 
-void AddressEditorView::OnPerformAction(views::Combobox* combobox) {
-  if (combobox->GetID() != GetInputFieldViewId(autofill::ADDRESS_HOME_COUNTRY))
-    return;
-  DCHECK(combobox->GetSelectedIndex().has_value());
-  if (controller_->chosen_country_index() != combobox->GetSelectedIndex()) {
-    controller_->set_chosen_country_index(combobox->GetSelectedIndex().value());
-    OnDataChanged();
-  }
-}
-
-void AddressEditorView::OnDataChanged() {
+void AddressEditorView::OnSelectedCountryChanged(views::Combobox* combobox) {
+  CHECK(combobox->GetSelectedIndex().has_value());
   SaveFieldsToProfile();
-  controller_->UpdateEditorFields();
+  size_t selected_index = combobox->GetSelectedIndex().value();
+  CHECK(!controller_->GetCountryComboboxModel().IsItemSeparatorAt(
+      selected_index));
+  controller_->UpdateEditorFields(controller_->GetCountryComboboxModel()
+                                      .countries()[selected_index]
+                                      ->country_code());
   base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindOnce(&AddressEditorView::UpdateEditorView,
                                 weak_ptr_factory_.GetWeakPtr()));
 }
 
 void AddressEditorView::Validate() {
-  if (!controller_->get_is_validatable()) {
+  if (!controller_->is_validatable()) {
     return;
   }
 
@@ -284,7 +266,7 @@ void AddressEditorView::Validate() {
   validation_error_->SetText(validation_error);
 }
 
-BEGIN_METADATA(AddressEditorView, views::View)
+BEGIN_METADATA(AddressEditorView)
 END_METADATA
 
 }  // namespace autofill

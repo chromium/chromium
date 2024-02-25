@@ -6,6 +6,7 @@
  * @fileoverview Defines a Braille interface.
  * All Braille engines in ChromeVox conform to this interface.
  */
+import {TestImportManager} from '/common/testing/test_import_manager.js';
 
 import {BrailleDisplayState} from '../../common/braille/braille_key_types.js';
 import {NavBraille} from '../../common/braille/nav_braille.js';
@@ -67,3 +68,5 @@ export class BrailleInterface {
    */
   async backTranslate(cells) {}
 }
+
+TestImportManager.exportForTesting(BrailleInterface);

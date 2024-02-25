@@ -5,11 +5,12 @@
 #ifndef ASH_PUBLIC_CPP_AMBIENT_AMBIENT_UI_MODEL_H_
 #define ASH_PUBLIC_CPP_AMBIENT_AMBIENT_UI_MODEL_H_
 
+#include <optional>
+
 #include "ash/public/cpp/ash_public_export.h"
 #include "base/observer_list.h"
 #include "base/observer_list_types.h"
 #include "base/time/time.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ash {
 
@@ -59,9 +60,6 @@ constexpr base::TimeDelta kLockScreenBackgroundTimeout = base::Seconds(5);
 
 // The default interval to refresh photos.
 constexpr base::TimeDelta kPhotoRefreshInterval = base::Seconds(60);
-
-// The default time to run screen saver before put the device into sleep.
-constexpr base::TimeDelta kDefaultScreenSaverDuration = base::Minutes(10);
 
 // The default animation playback speed. Not used in slideshow mode.
 constexpr float kAnimationPlaybackSpeed = 1.f;
@@ -167,7 +165,7 @@ class ASH_PUBLIC_EXPORT AmbientUiModel {
   // Animation playback speed. Not used in slideshow mode.
   float animation_playback_speed_ = kAnimationPlaybackSpeed;
 
-  absl::optional<AmbientJitterConfig> jitter_config_for_testing_;
+  std::optional<AmbientJitterConfig> jitter_config_for_testing_;
 
   base::ObserverList<AmbientUiModelObserver> observers_;
 };

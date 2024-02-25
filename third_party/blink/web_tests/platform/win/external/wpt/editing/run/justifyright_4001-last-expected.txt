@@ -1,0 +1,308 @@
+This is a testharness.js-based test.
+Found 152 FAIL, 0 TIMEOUT, 0 NOTRUN.
+[FAIL] [["stylewithcss","false"],["defaultparagraphseparator","div"],["justifyright",""]] "<p>[foo]<p align=right>bar<p>extra" queryCommandValue("justifyright") before
+  assert_equals: Wrong result returned expected "left" but got "false"
+[FAIL] [["stylewithcss","false"],["defaultparagraphseparator","div"],["justifyright",""]] "<p>[foo]<p align=right>bar<p>extra" queryCommandState("justifyright") after
+  assert_equals: Wrong result returned expected true but got false
+[FAIL] [["stylewithcss","false"],["defaultparagraphseparator","div"],["justifyright",""]] "<p>[foo]<p align=right>bar<p>extra" queryCommandValue("justifyright") after
+  assert_equals: Wrong result returned expected "right" but got "false"
+[FAIL] [["stylewithcss","true"],["defaultparagraphseparator","p"],["justifyright",""]] "<p>[foo]<p align=right>bar<p>extra" compare innerHTML
+  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<div style=\\"text-align:right\\"><p>foo</p></div><p align=\\"right\\">bar</p><p>extra</p>" but got "<p style=\\"text-align:right\\">foo</p><p align=\\"right\\">bar</p><p>extra</p>"
+[FAIL] [["stylewithcss","true"],["defaultparagraphseparator","p"],["justifyright",""]] "<p>[foo]<p align=right>bar<p>extra" queryCommandState("stylewithcss") before
+  assert_equals: Wrong result returned expected false but got true
+[FAIL] [["stylewithcss","true"],["defaultparagraphseparator","p"],["justifyright",""]] "<p>[foo]<p align=right>bar<p>extra" queryCommandValue("justifyright") before
+  assert_equals: Wrong result returned expected "left" but got "false"
+[FAIL] [["stylewithcss","true"],["defaultparagraphseparator","p"],["justifyright",""]] "<p>[foo]<p align=right>bar<p>extra" queryCommandValue("justifyright") after
+  assert_equals: Wrong result returned expected "right" but got "true"
+[FAIL] [["stylewithcss","false"],["defaultparagraphseparator","p"],["justifyright",""]] "<p>[foo]<p align=right>bar<p>extra" compare innerHTML
+  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<div style=\\"text-align:right\\"><p>foo</p></div><p align=\\"right\\">bar</p><p>extra</p>" but got "<p style=\\"text-align:right\\">foo</p><p align=\\"right\\">bar</p><p>extra</p>"
+[FAIL] [["stylewithcss","false"],["defaultparagraphseparator","p"],["justifyright",""]] "<p>[foo]<p align=right>bar<p>extra" queryCommandValue("justifyright") before
+  assert_equals: Wrong result returned expected "left" but got "false"
+[FAIL] [["stylewithcss","false"],["defaultparagraphseparator","p"],["justifyright",""]] "<p>[foo]<p align=right>bar<p>extra" queryCommandValue("justifyright") after
+  assert_equals: Wrong result returned expected "right" but got "true"
+[FAIL] [["stylewithcss","true"],["defaultparagraphseparator","div"],["justifyright",""]] "<p align=right>foo<p>[bar]<p align=right>baz<p>extra" compare innerHTML
+  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<p align=\\"right\\">foo</p><div style=\\"text-align:right\\"><p>bar</p></div><p align=\\"right\\">baz</p><p>extra</p>" but got "<p align=\\"right\\">foo</p><p style=\\"text-align:right\\">bar</p><p align=\\"right\\">baz</p><p>extra</p>"
+[FAIL] [["stylewithcss","true"],["defaultparagraphseparator","div"],["justifyright",""]] "<p align=right>foo<p>[bar]<p align=right>baz<p>extra" queryCommandValue("justifyright") before
+  assert_equals: Wrong result returned expected "left" but got "false"
+[FAIL] [["stylewithcss","true"],["defaultparagraphseparator","div"],["justifyright",""]] "<p align=right>foo<p>[bar]<p align=right>baz<p>extra" queryCommandValue("justifyright") after
+  assert_equals: Wrong result returned expected "right" but got "true"
+[FAIL] [["stylewithcss","false"],["defaultparagraphseparator","div"],["justifyright",""]] "<p align=right>foo<p>[bar]<p align=right>baz<p>extra" compare innerHTML
+  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<p align=\\"right\\">foo</p><div style=\\"text-align:right\\"><p>bar</p></div><p align=\\"right\\">baz</p><p>extra</p>" but got "<p align=\\"right\\">foo</p><p style=\\"text-align:right\\">bar</p><p align=\\"right\\">baz</p><p>extra</p>"
+[FAIL] [["stylewithcss","false"],["defaultparagraphseparator","div"],["justifyright",""]] "<p align=right>foo<p>[bar]<p align=right>baz<p>extra" queryCommandValue("justifyright") before
+  assert_equals: Wrong result returned expected "left" but got "false"
+[FAIL] [["stylewithcss","false"],["defaultparagraphseparator","div"],["justifyright",""]] "<p align=right>foo<p>[bar]<p align=right>baz<p>extra" queryCommandValue("justifyright") after
+  assert_equals: Wrong result returned expected "right" but got "true"
+[FAIL] [["stylewithcss","true"],["defaultparagraphseparator","p"],["justifyright",""]] "<p align=right>foo<p>[bar]<p align=right>baz<p>extra" compare innerHTML
+  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<p align=\\"right\\">foo</p><div style=\\"text-align:right\\"><p>bar</p></div><p align=\\"right\\">baz</p><p>extra</p>" but got "<p align=\\"right\\">foo</p><p style=\\"text-align:right\\">bar</p><p align=\\"right\\">baz</p><p>extra</p>"
+[FAIL] [["stylewithcss","true"],["defaultparagraphseparator","p"],["justifyright",""]] "<p align=right>foo<p>[bar]<p align=right>baz<p>extra" queryCommandValue("justifyright") before
+  assert_equals: Wrong result returned expected "left" but got "false"
+[FAIL] [["stylewithcss","true"],["defaultparagraphseparator","p"],["justifyright",""]] "<p align=right>foo<p>[bar]<p align=right>baz<p>extra" queryCommandValue("justifyright") after
+  assert_equals: Wrong result returned expected "right" but got "true"
+[FAIL] [["stylewithcss","false"],["defaultparagraphseparator","p"],["justifyright",""]] "<p align=right>foo<p>[bar]<p align=right>baz<p>extra" compare innerHTML
+  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<p align=\\"right\\">foo</p><div style=\\"text-align:right\\"><p>bar</p></div><p align=\\"right\\">baz</p><p>extra</p>" but got "<p align=\\"right\\">foo</p><p style=\\"text-align:right\\">bar</p><p align=\\"right\\">baz</p><p>extra</p>"
+[FAIL] [["stylewithcss","false"],["defaultparagraphseparator","p"],["justifyright",""]] "<p align=right>foo<p>[bar]<p align=right>baz<p>extra" queryCommandValue("justifyright") before
+  assert_equals: Wrong result returned expected "left" but got "false"
+[FAIL] [["stylewithcss","false"],["defaultparagraphseparator","p"],["justifyright",""]] "<p align=right>foo<p>[bar]<p align=right>baz<p>extra" queryCommandValue("justifyright") after
+  assert_equals: Wrong result returned expected "right" but got "true"
+[FAIL] [["stylewithcss","true"],["justifyright",""]] "<div align=right>[foo</div>bar]<p>extra" compare innerHTML
+  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<div style=\\"text-align:right\\">foo<br>bar</div><p>extra</p>" but got "<div align=\\"right\\">foo</div><p style=\\"text-align:right\\">bar</p><p>extra</p>"
+[FAIL] [["stylewithcss","true"],["justifyright",""]] "<div align=right>[foo</div>bar]<p>extra" queryCommandValue("justifyright") before
+  assert_equals: Wrong result returned expected "right" but got "false"
+[FAIL] [["stylewithcss","true"],["justifyright",""]] "<div align=right>[foo</div>bar]<p>extra" queryCommandValue("justifyright") after
+  assert_equals: Wrong result returned expected "right" but got "true"
+[FAIL] [["stylewithcss","false"],["justifyright",""]] "<div align=right>[foo</div>bar]<p>extra" compare innerHTML
+  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<div style=\\"text-align:right\\">foo<br>bar</div><p>extra</p>" but got "<div align=\\"right\\">foo</div><p style=\\"text-align:right\\">bar</p><p>extra</p>"
+[FAIL] [["stylewithcss","false"],["justifyright",""]] "<div align=right>[foo</div>bar]<p>extra" queryCommandValue("justifyright") before
+  assert_equals: Wrong result returned expected "right" but got "false"
+[FAIL] [["stylewithcss","false"],["justifyright",""]] "<div align=right>[foo</div>bar]<p>extra" queryCommandValue("justifyright") after
+  assert_equals: Wrong result returned expected "right" but got "true"
+[FAIL] [["stylewithcss","true"],["justifyright",""]] "<div align=right>fo[o</div>b]ar<p>extra" compare innerHTML
+  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<div style=\\"text-align:right\\">foo<br>bar</div><p>extra</p>" but got "<div align=\\"right\\">foo</div><p style=\\"text-align:right\\">bar</p><p>extra</p>"
+[FAIL] [["stylewithcss","true"],["justifyright",""]] "<div align=right>fo[o</div>b]ar<p>extra" queryCommandValue("justifyright") before
+  assert_equals: Wrong result returned expected "right" but got "false"
+[FAIL] [["stylewithcss","true"],["justifyright",""]] "<div align=right>fo[o</div>b]ar<p>extra" queryCommandValue("justifyright") after
+  assert_equals: Wrong result returned expected "right" but got "true"
+[FAIL] [["stylewithcss","false"],["justifyright",""]] "<div align=right>fo[o</div>b]ar<p>extra" compare innerHTML
+  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<div style=\\"text-align:right\\">foo<br>bar</div><p>extra</p>" but got "<div align=\\"right\\">foo</div><p style=\\"text-align:right\\">bar</p><p>extra</p>"
+[FAIL] [["stylewithcss","false"],["justifyright",""]] "<div align=right>fo[o</div>b]ar<p>extra" queryCommandValue("justifyright") before
+  assert_equals: Wrong result returned expected "right" but got "false"
+[FAIL] [["stylewithcss","false"],["justifyright",""]] "<div align=right>fo[o</div>b]ar<p>extra" queryCommandValue("justifyright") after
+  assert_equals: Wrong result returned expected "right" but got "true"
+[FAIL] [["justifyright",""]] "<div style=text-align:right>[foo</div>bar]<p>extra" compare innerHTML
+  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<div style=\\"text-align:right\\">foo<br>bar</div><p>extra</p>" but got "<div style=\\"text-align:right\\">foo</div><p style=\\"text-align:right\\">bar</p><p>extra</p>"
+[FAIL] [["justifyright",""]] "<div style=text-align:right>[foo</div>bar]<p>extra" queryCommandValue("justifyright") before
+  assert_equals: Wrong result returned expected "right" but got "false"
+[FAIL] [["justifyright",""]] "<div style=text-align:right>[foo</div>bar]<p>extra" queryCommandValue("justifyright") after
+  assert_equals: Wrong result returned expected "right" but got "true"
+[FAIL] [["justifyright",""]] "<div style=text-align:right>fo[o</div>b]ar<p>extra" compare innerHTML
+  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<div style=\\"text-align:right\\">foo<br>bar</div><p>extra</p>" but got "<div style=\\"text-align:right\\">foo</div><p style=\\"text-align:right\\">bar</p><p>extra</p>"
+[FAIL] [["justifyright",""]] "<div style=text-align:right>fo[o</div>b]ar<p>extra" queryCommandValue("justifyright") before
+  assert_equals: Wrong result returned expected "right" but got "false"
+[FAIL] [["justifyright",""]] "<div style=text-align:right>fo[o</div>b]ar<p>extra" queryCommandValue("justifyright") after
+  assert_equals: Wrong result returned expected "right" but got "true"
+[FAIL] [["defaultparagraphseparator","div"],["justifyright",""]] "<span style=text-align:right>[foo]</span><p>extra" compare innerHTML
+  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<div style=\\"text-align:right\\">foo</div><p>extra</p>" but got "<span style=\\"text-align:right\\">foo</span><p>extra</p>"
+[FAIL] [["defaultparagraphseparator","div"],["justifyright",""]] "<span style=text-align:right>[foo]</span><p>extra" queryCommandState("justifyright") before
+  assert_equals: Wrong result returned expected false but got true
+[FAIL] [["defaultparagraphseparator","div"],["justifyright",""]] "<span style=text-align:right>[foo]</span><p>extra" queryCommandValue("justifyright") before
+  assert_equals: Wrong result returned expected "left" but got "true"
+[FAIL] [["defaultparagraphseparator","div"],["justifyright",""]] "<span style=text-align:right>[foo]</span><p>extra" queryCommandValue("justifyright") after
+  assert_equals: Wrong result returned expected "right" but got "true"
+[FAIL] [["defaultparagraphseparator","p"],["justifyright",""]] "<span style=text-align:right>[foo]</span><p>extra" compare innerHTML
+  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<div style=\\"text-align:right\\">foo</div><p>extra</p>" but got "<span style=\\"text-align:right\\">foo</span><p>extra</p>"
+[FAIL] [["defaultparagraphseparator","p"],["justifyright",""]] "<span style=text-align:right>[foo]</span><p>extra" queryCommandState("justifyright") before
+  assert_equals: Wrong result returned expected false but got true
+[FAIL] [["defaultparagraphseparator","p"],["justifyright",""]] "<span style=text-align:right>[foo]</span><p>extra" queryCommandValue("justifyright") before
+  assert_equals: Wrong result returned expected "left" but got "true"
+[FAIL] [["defaultparagraphseparator","p"],["justifyright",""]] "<span style=text-align:right>[foo]</span><p>extra" queryCommandValue("justifyright") after
+  assert_equals: Wrong result returned expected "right" but got "true"
+[FAIL] [["defaultparagraphseparator","div"],["justifyright",""]] "<span style=text-align:right>f[o]o</span><p>extra" compare innerHTML
+  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<div style=\\"text-align:right\\">foo</div><p>extra</p>" but got "<span style=\\"text-align:right\\">foo</span><p>extra</p>"
+[FAIL] [["defaultparagraphseparator","div"],["justifyright",""]] "<span style=text-align:right>f[o]o</span><p>extra" queryCommandState("justifyright") before
+  assert_equals: Wrong result returned expected false but got true
+[FAIL] [["defaultparagraphseparator","div"],["justifyright",""]] "<span style=text-align:right>f[o]o</span><p>extra" queryCommandValue("justifyright") before
+  assert_equals: Wrong result returned expected "left" but got "true"
+[FAIL] [["defaultparagraphseparator","div"],["justifyright",""]] "<span style=text-align:right>f[o]o</span><p>extra" queryCommandValue("justifyright") after
+  assert_equals: Wrong result returned expected "right" but got "true"
+[FAIL] [["defaultparagraphseparator","p"],["justifyright",""]] "<span style=text-align:right>f[o]o</span><p>extra" compare innerHTML
+  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<div style=\\"text-align:right\\">foo</div><p>extra</p>" but got "<span style=\\"text-align:right\\">foo</span><p>extra</p>"
+[FAIL] [["defaultparagraphseparator","p"],["justifyright",""]] "<span style=text-align:right>f[o]o</span><p>extra" queryCommandState("justifyright") before
+  assert_equals: Wrong result returned expected false but got true
+[FAIL] [["defaultparagraphseparator","p"],["justifyright",""]] "<span style=text-align:right>f[o]o</span><p>extra" queryCommandValue("justifyright") before
+  assert_equals: Wrong result returned expected "left" but got "true"
+[FAIL] [["defaultparagraphseparator","p"],["justifyright",""]] "<span style=text-align:right>f[o]o</span><p>extra" queryCommandValue("justifyright") after
+  assert_equals: Wrong result returned expected "right" but got "true"
+[FAIL] [["stylewithcss","true"],["defaultparagraphseparator","div"],["justifyright",""]] "<div style=text-align:right>[foo<div style=text-align:left contenteditable=false>bar</div>baz]</div><p>extra" compare innerHTML
+  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<div style=\\"text-align:right\\">foo</div><div style=\\"text-align:left\\" contenteditable=\\"false\\">bar</div><div style=\\"text-align:right\\">baz</div><p>extra</p>" but got "<div style=\\"text-align:right\\">foo<div style=\\"text-align:right\\" contenteditable=\\"false\\">bar</div>baz</div><p>extra</p>"
+[FAIL] [["stylewithcss","true"],["defaultparagraphseparator","div"],["justifyright",""]] "<div style=text-align:right>[foo<div style=text-align:left contenteditable=false>bar</div>baz]</div><p>extra" queryCommandValue("justifyright") before
+  assert_equals: Wrong result returned expected "right" but got "true"
+[FAIL] [["stylewithcss","true"],["defaultparagraphseparator","div"],["justifyright",""]] "<div style=text-align:right>[foo<div style=text-align:left contenteditable=false>bar</div>baz]</div><p>extra" queryCommandValue("justifyright") after
+  assert_equals: Wrong result returned expected "right" but got "true"
+[FAIL] [["stylewithcss","false"],["defaultparagraphseparator","div"],["justifyright",""]] "<div style=text-align:right>[foo<div style=text-align:left contenteditable=false>bar</div>baz]</div><p>extra" compare innerHTML
+  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<div style=\\"text-align:right\\">foo</div><div style=\\"text-align:left\\" contenteditable=\\"false\\">bar</div><div style=\\"text-align:right\\">baz</div><p>extra</p>" but got "<div style=\\"text-align:right\\">foo<div style=\\"text-align:right\\" contenteditable=\\"false\\">bar</div>baz</div><p>extra</p>"
+[FAIL] [["stylewithcss","false"],["defaultparagraphseparator","div"],["justifyright",""]] "<div style=text-align:right>[foo<div style=text-align:left contenteditable=false>bar</div>baz]</div><p>extra" queryCommandValue("justifyright") before
+  assert_equals: Wrong result returned expected "right" but got "true"
+[FAIL] [["stylewithcss","false"],["defaultparagraphseparator","div"],["justifyright",""]] "<div style=text-align:right>[foo<div style=text-align:left contenteditable=false>bar</div>baz]</div><p>extra" queryCommandValue("justifyright") after
+  assert_equals: Wrong result returned expected "right" but got "true"
+[FAIL] [["stylewithcss","true"],["defaultparagraphseparator","p"],["justifyright",""]] "<div style=text-align:right>[foo<div style=text-align:left contenteditable=false>bar</div>baz]</div><p>extra" compare innerHTML
+  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<div style=\\"text-align:right\\">foo</div><div style=\\"text-align:left\\" contenteditable=\\"false\\">bar</div><div style=\\"text-align:right\\">baz</div><p>extra</p>" but got "<div style=\\"text-align:right\\">foo<div style=\\"text-align:right\\" contenteditable=\\"false\\">bar</div>baz</div><p>extra</p>"
+[FAIL] [["stylewithcss","true"],["defaultparagraphseparator","p"],["justifyright",""]] "<div style=text-align:right>[foo<div style=text-align:left contenteditable=false>bar</div>baz]</div><p>extra" queryCommandValue("justifyright") before
+  assert_equals: Wrong result returned expected "right" but got "true"
+[FAIL] [["stylewithcss","true"],["defaultparagraphseparator","p"],["justifyright",""]] "<div style=text-align:right>[foo<div style=text-align:left contenteditable=false>bar</div>baz]</div><p>extra" queryCommandValue("justifyright") after
+  assert_equals: Wrong result returned expected "right" but got "true"
+[FAIL] [["stylewithcss","false"],["defaultparagraphseparator","p"],["justifyright",""]] "<div style=text-align:right>[foo<div style=text-align:left contenteditable=false>bar</div>baz]</div><p>extra" compare innerHTML
+  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<div style=\\"text-align:right\\">foo</div><div style=\\"text-align:left\\" contenteditable=\\"false\\">bar</div><div style=\\"text-align:right\\">baz</div><p>extra</p>" but got "<div style=\\"text-align:right\\">foo<div style=\\"text-align:right\\" contenteditable=\\"false\\">bar</div>baz</div><p>extra</p>"
+[FAIL] [["stylewithcss","false"],["defaultparagraphseparator","p"],["justifyright",""]] "<div style=text-align:right>[foo<div style=text-align:left contenteditable=false>bar</div>baz]</div><p>extra" queryCommandValue("justifyright") before
+  assert_equals: Wrong result returned expected "right" but got "true"
+[FAIL] [["stylewithcss","false"],["defaultparagraphseparator","p"],["justifyright",""]] "<div style=text-align:right>[foo<div style=text-align:left contenteditable=false>bar</div>baz]</div><p>extra" queryCommandValue("justifyright") after
+  assert_equals: Wrong result returned expected "right" but got "true"
+[FAIL] [["stylewithcss","true"],["justifyright",""]] "<div align=nonsense><p>[foo]</div><p>extra" compare innerHTML
+  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<div style=\\"text-align:right\\"><p>foo</p></div><p>extra</p>" but got "<div align=\\"nonsense\\"><p style=\\"text-align:right\\">foo</p></div><p>extra</p>"
+[FAIL] [["stylewithcss","true"],["justifyright",""]] "<div align=nonsense><p>[foo]</div><p>extra" queryCommandValue("justifyright") before
+  assert_equals: Wrong result returned expected "left" but got "false"
+[FAIL] [["stylewithcss","true"],["justifyright",""]] "<div align=nonsense><p>[foo]</div><p>extra" queryCommandValue("justifyright") after
+  assert_equals: Wrong result returned expected "right" but got "true"
+[FAIL] [["stylewithcss","false"],["justifyright",""]] "<div align=nonsense><p>[foo]</div><p>extra" compare innerHTML
+  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<div style=\\"text-align:right\\"><p>foo</p></div><p>extra</p>" but got "<div align=\\"nonsense\\"><p style=\\"text-align:right\\">foo</p></div><p>extra</p>"
+[FAIL] [["stylewithcss","false"],["justifyright",""]] "<div align=nonsense><p>[foo]</div><p>extra" queryCommandValue("justifyright") before
+  assert_equals: Wrong result returned expected "left" but got "false"
+[FAIL] [["stylewithcss","false"],["justifyright",""]] "<div align=nonsense><p>[foo]</div><p>extra" queryCommandValue("justifyright") after
+  assert_equals: Wrong result returned expected "right" but got "true"
+[FAIL] [["justifyright",""]] "<div style=text-align:inherit><p>[foo]</div><p>extra" compare innerHTML
+  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<div style=\\"text-align:right\\"><p>foo</p></div><p>extra</p>" but got "<div style=\\"text-align:inherit\\"><p style=\\"text-align:right\\">foo</p></div><p>extra</p>"
+[FAIL] [["justifyright",""]] "<div style=text-align:inherit><p>[foo]</div><p>extra" queryCommandValue("justifyright") before
+  assert_equals: Wrong result returned expected "left" but got "false"
+[FAIL] [["justifyright",""]] "<div style=text-align:inherit><p>[foo]</div><p>extra" queryCommandValue("justifyright") after
+  assert_equals: Wrong result returned expected "right" but got "true"
+[FAIL] [["stylewithcss","true"],["defaultparagraphseparator","div"],["justifyright",""]] "<quasit align=center><p>[foo]</p></quasit><p>extra" compare innerHTML
+  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<div style=\\"text-align:right\\"><quasit><p>foo</p></quasit></div><p>extra</p>" but got "<quasit align=\\"center\\"><p style=\\"text-align:right\\">foo</p></quasit><p>extra</p>"
+[FAIL] [["stylewithcss","true"],["defaultparagraphseparator","div"],["justifyright",""]] "<quasit align=center><p>[foo]</p></quasit><p>extra" queryCommandValue("justifyright") before
+  assert_equals: Wrong result returned expected "left" but got "false"
+[FAIL] [["stylewithcss","true"],["defaultparagraphseparator","div"],["justifyright",""]] "<quasit align=center><p>[foo]</p></quasit><p>extra" queryCommandValue("justifyright") after
+  assert_equals: Wrong result returned expected "right" but got "true"
+[FAIL] [["stylewithcss","false"],["defaultparagraphseparator","div"],["justifyright",""]] "<quasit align=center><p>[foo]</p></quasit><p>extra" compare innerHTML
+  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<div style=\\"text-align:right\\"><quasit><p>foo</p></quasit></div><p>extra</p>" but got "<quasit align=\\"center\\"><p style=\\"text-align:right\\">foo</p></quasit><p>extra</p>"
+[FAIL] [["stylewithcss","false"],["defaultparagraphseparator","div"],["justifyright",""]] "<quasit align=center><p>[foo]</p></quasit><p>extra" queryCommandValue("justifyright") before
+  assert_equals: Wrong result returned expected "left" but got "false"
+[FAIL] [["stylewithcss","false"],["defaultparagraphseparator","div"],["justifyright",""]] "<quasit align=center><p>[foo]</p></quasit><p>extra" queryCommandValue("justifyright") after
+  assert_equals: Wrong result returned expected "right" but got "true"
+[FAIL] [["stylewithcss","true"],["defaultparagraphseparator","p"],["justifyright",""]] "<quasit align=center><p>[foo]</p></quasit><p>extra" compare innerHTML
+  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<div style=\\"text-align:right\\"><quasit><p>foo</p></quasit></div><p>extra</p>" but got "<quasit align=\\"center\\"><p style=\\"text-align:right\\">foo</p></quasit><p>extra</p>"
+[FAIL] [["stylewithcss","true"],["defaultparagraphseparator","p"],["justifyright",""]] "<quasit align=center><p>[foo]</p></quasit><p>extra" queryCommandValue("justifyright") before
+  assert_equals: Wrong result returned expected "left" but got "false"
+[FAIL] [["stylewithcss","true"],["defaultparagraphseparator","p"],["justifyright",""]] "<quasit align=center><p>[foo]</p></quasit><p>extra" queryCommandValue("justifyright") after
+  assert_equals: Wrong result returned expected "right" but got "true"
+[FAIL] [["stylewithcss","false"],["defaultparagraphseparator","p"],["justifyright",""]] "<quasit align=center><p>[foo]</p></quasit><p>extra" compare innerHTML
+  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<div style=\\"text-align:right\\"><quasit><p>foo</p></quasit></div><p>extra</p>" but got "<quasit align=\\"center\\"><p style=\\"text-align:right\\">foo</p></quasit><p>extra</p>"
+[FAIL] [["stylewithcss","false"],["defaultparagraphseparator","p"],["justifyright",""]] "<quasit align=center><p>[foo]</p></quasit><p>extra" queryCommandValue("justifyright") before
+  assert_equals: Wrong result returned expected "left" but got "false"
+[FAIL] [["stylewithcss","false"],["defaultparagraphseparator","p"],["justifyright",""]] "<quasit align=center><p>[foo]</p></quasit><p>extra" queryCommandValue("justifyright") after
+  assert_equals: Wrong result returned expected "right" but got "true"
+[FAIL] [["justifyright",""]] "<div style=text-align:start>[foo]</div><p>extra" queryCommandValue("justifyright") before
+  assert_equals: Wrong result returned expected "left" but got "false"
+[FAIL] [["justifyright",""]] "<div style=text-align:start>[foo]</div><p>extra" queryCommandValue("justifyright") after
+  assert_equals: Wrong result returned expected "right" but got "true"
+[FAIL] [["justifyright",""]] "<div style=text-align:end>[foo]</div><p>extra" compare innerHTML
+  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<div style=\\"text-align:right\\">foo</div><p>extra</p>" but got "<div style=\\"text-align:end\\">foo</div><p>extra</p>"
+[FAIL] [["justifyright",""]] "<div style=text-align:end>[foo]</div><p>extra" queryCommandValue("justifyright") before
+  assert_equals: Wrong result returned expected "right" but got "true"
+[FAIL] [["justifyright",""]] "<div style=text-align:end>[foo]</div><p>extra" queryCommandValue("justifyright") after
+  assert_equals: Wrong result returned expected "right" but got "true"
+[FAIL] [["stylewithcss","true"],["justifyright",""]] "<div dir=rtl style=text-align:start>[foo]</div><p>extra" compare innerHTML
+  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<div dir=\\"rtl\\">foo</div><p>extra</p>" but got "<div dir=\\"rtl\\" style=\\"text-align:start\\">foo</div><p>extra</p>"
+[FAIL] [["stylewithcss","true"],["justifyright",""]] "<div dir=rtl style=text-align:start>[foo]</div><p>extra" queryCommandValue("justifyright") before
+  assert_equals: Wrong result returned expected "right" but got "true"
+[FAIL] [["stylewithcss","true"],["justifyright",""]] "<div dir=rtl style=text-align:start>[foo]</div><p>extra" queryCommandValue("justifyright") after
+  assert_equals: Wrong result returned expected "right" but got "true"
+[FAIL] [["stylewithcss","false"],["justifyright",""]] "<div dir=rtl style=text-align:start>[foo]</div><p>extra" compare innerHTML
+  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<div dir=\\"rtl\\">foo</div><p>extra</p>" but got "<div dir=\\"rtl\\" style=\\"text-align:start\\">foo</div><p>extra</p>"
+[FAIL] [["stylewithcss","false"],["justifyright",""]] "<div dir=rtl style=text-align:start>[foo]</div><p>extra" queryCommandValue("justifyright") before
+  assert_equals: Wrong result returned expected "right" but got "true"
+[FAIL] [["stylewithcss","false"],["justifyright",""]] "<div dir=rtl style=text-align:start>[foo]</div><p>extra" queryCommandValue("justifyright") after
+  assert_equals: Wrong result returned expected "right" but got "true"
+[FAIL] [["stylewithcss","true"],["justifyright",""]] "<div dir=rtl style=text-align:end>[foo]</div><p>extra" compare innerHTML
+  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<div dir=\\"rtl\\">foo</div><p>extra</p>" but got "<div dir=\\"rtl\\" style=\\"text-align:right\\">foo</div><p>extra</p>"
+[FAIL] [["stylewithcss","true"],["justifyright",""]] "<div dir=rtl style=text-align:end>[foo]</div><p>extra" queryCommandValue("justifyright") before
+  assert_equals: Wrong result returned expected "left" but got "false"
+[FAIL] [["stylewithcss","true"],["justifyright",""]] "<div dir=rtl style=text-align:end>[foo]</div><p>extra" queryCommandValue("justifyright") after
+  assert_equals: Wrong result returned expected "right" but got "true"
+[FAIL] [["stylewithcss","false"],["justifyright",""]] "<div dir=rtl style=text-align:end>[foo]</div><p>extra" compare innerHTML
+  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<div dir=\\"rtl\\">foo</div><p>extra</p>" but got "<div dir=\\"rtl\\" style=\\"text-align:right\\">foo</div><p>extra</p>"
+[FAIL] [["stylewithcss","false"],["justifyright",""]] "<div dir=rtl style=text-align:end>[foo]</div><p>extra" queryCommandValue("justifyright") before
+  assert_equals: Wrong result returned expected "left" but got "false"
+[FAIL] [["stylewithcss","false"],["justifyright",""]] "<div dir=rtl style=text-align:end>[foo]</div><p>extra" queryCommandValue("justifyright") after
+  assert_equals: Wrong result returned expected "right" but got "true"
+[FAIL] [["justifyright",""]] "<div style=text-align:right><p>foo</div> <p>[bar]" compare innerHTML
+  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<div style=\\"text-align:right\\"><p>foo</p> <p>bar</p></div>" but got "<div style=\\"text-align:right\\"><p>foo</p></div> <p style=\\"text-align:right\\">bar</p>"
+[FAIL] [["justifyright",""]] "<div style=text-align:right><p>foo</div> <p>[bar]" queryCommandValue("justifyright") before
+  assert_equals: Wrong result returned expected "left" but got "false"
+[FAIL] [["justifyright",""]] "<div style=text-align:right><p>foo</div> <p>[bar]" queryCommandValue("justifyright") after
+  assert_equals: Wrong result returned expected "right" but got "true"
+[FAIL] [["justifyright",""]] "<div align=right><p>foo</div> <p>[bar]" compare innerHTML
+  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<div align=\\"right\\"><p>foo</p> <p>bar</p></div>" but got "<div align=\\"right\\"><p>foo</p></div> <p style=\\"text-align:right\\">bar</p>"
+[FAIL] [["justifyright",""]] "<div align=right><p>foo</div> <p>[bar]" queryCommandValue("justifyright") before
+  assert_equals: Wrong result returned expected "left" but got "false"
+[FAIL] [["justifyright",""]] "<div align=right><p>foo</div> <p>[bar]" queryCommandValue("justifyright") after
+  assert_equals: Wrong result returned expected "right" but got "true"
+[FAIL] [["justifyright",""]] "<p>[foo]</p> <div style=text-align:right><p>bar</div>" compare innerHTML
+  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<div style=\\"text-align:right\\"><p>foo</p> <p>bar</p></div>" but got "<p style=\\"text-align:right\\">foo</p> <div style=\\"text-align:right\\"><p>bar</p></div>"
+[FAIL] [["justifyright",""]] "<p>[foo]</p> <div style=text-align:right><p>bar</div>" queryCommandValue("justifyright") before
+  assert_equals: Wrong result returned expected "left" but got "false"
+[FAIL] [["justifyright",""]] "<p>[foo]</p> <div style=text-align:right><p>bar</div>" queryCommandValue("justifyright") after
+  assert_equals: Wrong result returned expected "right" but got "true"
+[FAIL] [["justifyright",""]] "<p>[foo]</p> <div align=right><p>bar</div>" compare innerHTML
+  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<div align=\\"right\\"><p>foo</p> <p>bar</p></div>" but got "<p style=\\"text-align:right\\">foo</p> <div align=\\"right\\"><p>bar</p></div>"
+[FAIL] [["justifyright",""]] "<p>[foo]</p> <div align=right><p>bar</div>" queryCommandValue("justifyright") before
+  assert_equals: Wrong result returned expected "left" but got "false"
+[FAIL] [["justifyright",""]] "<p>[foo]</p> <div align=right><p>bar</div>" queryCommandValue("justifyright") after
+  assert_equals: Wrong result returned expected "right" but got "true"
+[FAIL] [["stylewithcss","true"],["defaultparagraphseparator","div"],["justifyright",""]] "<div style=text-align:right><p>foo</div> <p>[bar]</p> <div style=text-align:right><p>baz</div>" compare innerHTML
+  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<div style=\\"text-align:right\\"><p>foo</p> <p>bar</p> <p>baz</p></div>" but got "<div style=\\"text-align:right\\"><p>foo</p></div> <p style=\\"text-align:right\\">bar</p> <div style=\\"text-align:right\\"><p>baz</p></div>"
+[FAIL] [["stylewithcss","true"],["defaultparagraphseparator","div"],["justifyright",""]] "<div style=text-align:right><p>foo</div> <p>[bar]</p> <div style=text-align:right><p>baz</div>" queryCommandValue("justifyright") before
+  assert_equals: Wrong result returned expected "left" but got "false"
+[FAIL] [["stylewithcss","true"],["defaultparagraphseparator","div"],["justifyright",""]] "<div style=text-align:right><p>foo</div> <p>[bar]</p> <div style=text-align:right><p>baz</div>" queryCommandValue("justifyright") after
+  assert_equals: Wrong result returned expected "right" but got "true"
+[FAIL] [["stylewithcss","false"],["defaultparagraphseparator","div"],["justifyright",""]] "<div style=text-align:right><p>foo</div> <p>[bar]</p> <div style=text-align:right><p>baz</div>" compare innerHTML
+  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<div style=\\"text-align:right\\"><p>foo</p> <p>bar</p> <p>baz</p></div>" but got "<div style=\\"text-align:right\\"><p>foo</p></div> <p style=\\"text-align:right\\">bar</p> <div style=\\"text-align:right\\"><p>baz</p></div>"
+[FAIL] [["stylewithcss","false"],["defaultparagraphseparator","div"],["justifyright",""]] "<div style=text-align:right><p>foo</div> <p>[bar]</p> <div style=text-align:right><p>baz</div>" queryCommandValue("justifyright") before
+  assert_equals: Wrong result returned expected "left" but got "false"
+[FAIL] [["stylewithcss","false"],["defaultparagraphseparator","div"],["justifyright",""]] "<div style=text-align:right><p>foo</div> <p>[bar]</p> <div style=text-align:right><p>baz</div>" queryCommandValue("justifyright") after
+  assert_equals: Wrong result returned expected "right" but got "true"
+[FAIL] [["stylewithcss","true"],["defaultparagraphseparator","p"],["justifyright",""]] "<div style=text-align:right><p>foo</div> <p>[bar]</p> <div style=text-align:right><p>baz</div>" compare innerHTML
+  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<div style=\\"text-align:right\\"><p>foo</p> <p>bar</p> <p>baz</p></div>" but got "<div style=\\"text-align:right\\"><p>foo</p></div> <p style=\\"text-align:right\\">bar</p> <div style=\\"text-align:right\\"><p>baz</p></div>"
+[FAIL] [["stylewithcss","true"],["defaultparagraphseparator","p"],["justifyright",""]] "<div style=text-align:right><p>foo</div> <p>[bar]</p> <div style=text-align:right><p>baz</div>" queryCommandValue("justifyright") before
+  assert_equals: Wrong result returned expected "left" but got "false"
+[FAIL] [["stylewithcss","true"],["defaultparagraphseparator","p"],["justifyright",""]] "<div style=text-align:right><p>foo</div> <p>[bar]</p> <div style=text-align:right><p>baz</div>" queryCommandValue("justifyright") after
+  assert_equals: Wrong result returned expected "right" but got "true"
+[FAIL] [["stylewithcss","false"],["defaultparagraphseparator","p"],["justifyright",""]] "<div style=text-align:right><p>foo</div> <p>[bar]</p> <div style=text-align:right><p>baz</div>" compare innerHTML
+  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<div style=\\"text-align:right\\"><p>foo</p> <p>bar</p> <p>baz</p></div>" but got "<div style=\\"text-align:right\\"><p>foo</p></div> <p style=\\"text-align:right\\">bar</p> <div style=\\"text-align:right\\"><p>baz</p></div>"
+[FAIL] [["stylewithcss","false"],["defaultparagraphseparator","p"],["justifyright",""]] "<div style=text-align:right><p>foo</div> <p>[bar]</p> <div style=text-align:right><p>baz</div>" queryCommandValue("justifyright") before
+  assert_equals: Wrong result returned expected "left" but got "false"
+[FAIL] [["stylewithcss","false"],["defaultparagraphseparator","p"],["justifyright",""]] "<div style=text-align:right><p>foo</div> <p>[bar]</p> <div style=text-align:right><p>baz</div>" queryCommandValue("justifyright") after
+  assert_equals: Wrong result returned expected "right" but got "true"
+[FAIL] [["defaultparagraphseparator","div"],["justifyright",""]] "<div align=right><p>foo</div> <p>[bar]</p> <div align=right><p>baz</div>" compare innerHTML
+  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<div align=\\"right\\"><p>foo</p> <p>bar</p> <p>baz</p></div>" but got "<div align=\\"right\\"><p>foo</p></div> <p style=\\"text-align:right\\">bar</p> <div align=\\"right\\"><p>baz</p></div>"
+[FAIL] [["defaultparagraphseparator","div"],["justifyright",""]] "<div align=right><p>foo</div> <p>[bar]</p> <div align=right><p>baz</div>" queryCommandValue("justifyright") before
+  assert_equals: Wrong result returned expected "left" but got "false"
+[FAIL] [["defaultparagraphseparator","div"],["justifyright",""]] "<div align=right><p>foo</div> <p>[bar]</p> <div align=right><p>baz</div>" queryCommandValue("justifyright") after
+  assert_equals: Wrong result returned expected "right" but got "true"
+[FAIL] [["defaultparagraphseparator","p"],["justifyright",""]] "<div align=right><p>foo</div> <p>[bar]</p> <div align=right><p>baz</div>" compare innerHTML
+  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<div align=\\"right\\"><p>foo</p> <p>bar</p> <p>baz</p></div>" but got "<div align=\\"right\\"><p>foo</p></div> <p style=\\"text-align:right\\">bar</p> <div align=\\"right\\"><p>baz</p></div>"
+[FAIL] [["defaultparagraphseparator","p"],["justifyright",""]] "<div align=right><p>foo</div> <p>[bar]</p> <div align=right><p>baz</div>" queryCommandValue("justifyright") before
+  assert_equals: Wrong result returned expected "left" but got "false"
+[FAIL] [["defaultparagraphseparator","p"],["justifyright",""]] "<div align=right><p>foo</div> <p>[bar]</p> <div align=right><p>baz</div>" queryCommandValue("justifyright") after
+  assert_equals: Wrong result returned expected "right" but got "true"
+[FAIL] [] "<div contenteditable=false align=right><p contenteditable>f[]oo</p></div>" queryCommandValue("justifyleft") before
+  assert_equals: Wrong result returned expected "right" but got "false"
+[FAIL] [] "<div contenteditable=false align=right><p contenteditable>f[]oo</p></div>" queryCommandValue("justifyleft") after
+  assert_equals: Wrong result returned expected "right" but got "false"
+[FAIL] [] "<div contenteditable=false align=right><p contenteditable>f[]oo</p></div>" queryCommandValue("justifycenter") before
+  assert_equals: Wrong result returned expected "right" but got "false"
+[FAIL] [] "<div contenteditable=false align=right><p contenteditable>f[]oo</p></div>" queryCommandValue("justifycenter") after
+  assert_equals: Wrong result returned expected "right" but got "false"
+[FAIL] [] "<div contenteditable=false align=right><p contenteditable>f[]oo</p></div>" queryCommandValue("justifyfull") before
+  assert_equals: Wrong result returned expected "right" but got "false"
+[FAIL] [] "<div contenteditable=false align=right><p contenteditable>f[]oo</p></div>" queryCommandValue("justifyfull") after
+  assert_equals: Wrong result returned expected "right" but got "false"
+[FAIL] [] "<div contenteditable=false align=right><p contenteditable>f[]oo</p></div>" queryCommandValue("justifyright") before
+  assert_equals: Wrong result returned expected "right" but got "true"
+[FAIL] [] "<div contenteditable=false align=right><p contenteditable>f[]oo</p></div>" queryCommandValue("justifyright") after
+  assert_equals: Wrong result returned expected "right" but got "true"
+[FAIL] [] "<div contenteditable=false style=text-align:right><p contenteditable>f[]oo</p></div>" queryCommandValue("justifyleft") before
+  assert_equals: Wrong result returned expected "right" but got "false"
+[FAIL] [] "<div contenteditable=false style=text-align:right><p contenteditable>f[]oo</p></div>" queryCommandValue("justifyleft") after
+  assert_equals: Wrong result returned expected "right" but got "false"
+[FAIL] [] "<div contenteditable=false style=text-align:right><p contenteditable>f[]oo</p></div>" queryCommandValue("justifycenter") before
+  assert_equals: Wrong result returned expected "right" but got "false"
+[FAIL] [] "<div contenteditable=false style=text-align:right><p contenteditable>f[]oo</p></div>" queryCommandValue("justifycenter") after
+  assert_equals: Wrong result returned expected "right" but got "false"
+[FAIL] [] "<div contenteditable=false style=text-align:right><p contenteditable>f[]oo</p></div>" queryCommandValue("justifyfull") before
+  assert_equals: Wrong result returned expected "right" but got "false"
+[FAIL] [] "<div contenteditable=false style=text-align:right><p contenteditable>f[]oo</p></div>" queryCommandValue("justifyfull") after
+  assert_equals: Wrong result returned expected "right" but got "false"
+[FAIL] [] "<div contenteditable=false style=text-align:right><p contenteditable>f[]oo</p></div>" queryCommandValue("justifyright") before
+  assert_equals: Wrong result returned expected "right" but got "true"
+[FAIL] [] "<div contenteditable=false style=text-align:right><p contenteditable>f[]oo</p></div>" queryCommandValue("justifyright") after
+  assert_equals: Wrong result returned expected "right" but got "true"
+Harness: the test ran to completion.
+

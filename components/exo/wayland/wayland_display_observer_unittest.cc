@@ -56,7 +56,7 @@ class WaylandDisplayObserverTest : public test::ExoTestBase {
         wl_resource_create(client_, &wl_output_interface, 2, 0);
     xdg_output_resource_ =
         wl_resource_create(client_, &zxdg_output_v1_interface, 2, 0);
-    output_ = std::make_unique<WaylandDisplayOutput>(GetPrimaryDisplay().id());
+    output_ = std::make_unique<WaylandDisplayOutput>(GetPrimaryDisplay());
     handler_ = std::make_unique<::testing::NiceMock<MockWaylandDisplayHandler>>(
         output_.get(), wl_output_resource_);
     handler_->OnXdgOutputCreated(xdg_output_resource_);
@@ -92,15 +92,12 @@ class WaylandDisplayObserverTest : public test::ExoTestBase {
   }
 
   int fds_[2] = {0, 0};
-  raw_ptr<wl_display, DanglingUntriaged | ExperimentalAsh> wayland_display_ =
+  raw_ptr<wl_display, DanglingUntriaged> wayland_display_ = nullptr;
+  raw_ptr<wl_client, DanglingUntriaged> client_ = nullptr;
+  raw_ptr<wl_resource, DanglingUntriaged> aura_output_manager_resource_ =
       nullptr;
-  raw_ptr<wl_client, DanglingUntriaged | ExperimentalAsh> client_ = nullptr;
-  raw_ptr<wl_resource, DanglingUntriaged | ExperimentalAsh>
-      aura_output_manager_resource_ = nullptr;
-  raw_ptr<wl_resource, DanglingUntriaged | ExperimentalAsh>
-      wl_output_resource_ = nullptr;
-  raw_ptr<wl_resource, DanglingUntriaged | ExperimentalAsh>
-      xdg_output_resource_ = nullptr;
+  raw_ptr<wl_resource, DanglingUntriaged> wl_output_resource_ = nullptr;
+  raw_ptr<wl_resource, DanglingUntriaged> xdg_output_resource_ = nullptr;
   std::unique_ptr<WaylandDisplayOutput> output_;
   std::unique_ptr<MockWaylandDisplayHandler> handler_;
 };
@@ -117,25 +114,7 @@ TEST_F(WaylandDisplayObserverTest, SendLogicalPositionAndSize) {
   EXPECT_CALL(*handler_, XdgOutputSendLogicalPosition(kExpectedOrigin))
       .Times(1);
   EXPECT_CALL(*handler_, XdgOutputSendLogicalSize(kExpectedSize)).Times(1);
-  handler_->OnDisplayMetricsChanged(display, kAllChanges);
-}
-
-// Regression test for crbug.com/1433187. Ensures that the AuraOutputManager is
-// not accessible after client destruction (the client and its resources may be
-// destroyed before the handler).
-TEST_F(WaylandDisplayObserverTest,
-       AuraOutputManagerInaccessibleAfterClientDestruction) {
-  // Prior to client destruction the AuraOutputManager should be accessible.
-  EXPECT_FALSE(handler_->IsClientDestroyedForTesting());
-  EXPECT_TRUE(handler_->GetAuraOutputManagerForTesting());
-
-  // Destroys the client, which also destroys all associated resources.
-  DestroyClient();
-
-  // After client destruction has occurred assert the handler has been notified
-  // and the AuraOutputManager is no longer accessible.
-  EXPECT_TRUE(handler_->IsClientDestroyedForTesting());
-  EXPECT_FALSE(handler_->GetAuraOutputManagerForTesting());
+  handler_->SendDisplayMetricsChanges(display, kAllChanges);
 }
 
 }  // namespace

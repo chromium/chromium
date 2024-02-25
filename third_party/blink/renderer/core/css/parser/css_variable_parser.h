@@ -9,12 +9,13 @@
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/css/parser/css_parser_token_range.h"
 #include "third_party/blink/renderer/platform/wtf/text/atomic_string.h"
+#include "third_party/blink/renderer/platform/wtf/text/string_view.h"
 
 namespace blink {
 
-class CSSCustomPropertyDeclaration;
+class CSSUnparsedDeclarationValue;
 class CSSParserContext;
-class CSSVariableReferenceValue;
+class CSSUnparsedDeclarationValue;
 struct CSSTokenizedValue;
 
 class CORE_EXPORT CSSVariableParser {
@@ -24,17 +25,21 @@ class CORE_EXPORT CSSVariableParser {
   static CSSValue* ParseDeclarationIncludingCSSWide(const CSSTokenizedValue&,
                                                     bool is_animation_tainted,
                                                     const CSSParserContext&);
-  static CSSCustomPropertyDeclaration* ParseDeclarationValue(
+  static CSSUnparsedDeclarationValue* ParseDeclarationValue(
       const CSSTokenizedValue&,
       bool is_animation_tainted,
       const CSSParserContext&);
-  static CSSVariableReferenceValue* ParseVariableReferenceValue(
+  // Custom properties registered with universal syntax [1] are parsed with
+  // this function.
+  //
+  // https://drafts.css-houdini.org/css-properties-values-api-1/#universal-syntax-definition
+  static CSSUnparsedDeclarationValue* ParseUniversalSyntaxValue(
       CSSTokenizedValue,
       const CSSParserContext&,
       bool is_animation_tainted);
 
   static bool IsValidVariableName(const CSSParserToken&);
-  static bool IsValidVariableName(const String&);
+  static bool IsValidVariableName(StringView);
 
   // NOTE: We have to strip both leading and trailing whitespace (and comments)
   // from values as per spec, but we assume the tokenizer has already done the

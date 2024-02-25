@@ -7,7 +7,8 @@
 #include "base/features.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
-#include "base/test/scoped_feature_list.h"
+#include "base/memory/raw_ref.h"
+#include "base/test/gtest_util.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace base {
@@ -32,22 +33,9 @@ struct UsesItself : public SupportsUserData::Data {
   raw_ptr<const void> key_;
 };
 
-class SupportsUserDataTest : public ::testing::TestWithParam<bool> {
- public:
-  SupportsUserDataTest() {
-    if (GetParam()) {
-      scoped_features_.InitWithFeatures(
-          {features::kSupportsUserDataFlatHashMap}, {});
-    } else {
-      scoped_features_.InitWithFeatures(
-          {}, {features::kSupportsUserDataFlatHashMap});
-    }
-  }
+using SupportsUserDataTest = ::testing::Test;
 
-  base::test::ScopedFeatureList scoped_features_;
-};
-
-TEST_P(SupportsUserDataTest, ClearWorksRecursively) {
+TEST_F(SupportsUserDataTest, ClearWorksRecursively) {
   char key = 0;  // Must outlive `supports_user_data`.
   TestSupportsUserData supports_user_data;
   supports_user_data.SetUserData(
@@ -57,7 +45,7 @@ TEST_P(SupportsUserDataTest, ClearWorksRecursively) {
 
 struct TestData : public SupportsUserData::Data {};
 
-TEST_P(SupportsUserDataTest, Movable) {
+TEST_F(SupportsUserDataTest, Movable) {
   TestSupportsUserData supports_user_data_1;
   char key1 = 0;
   supports_user_data_1.SetUserData(&key1, std::make_unique<TestData>());
@@ -73,7 +61,7 @@ TEST_P(SupportsUserDataTest, Movable) {
   EXPECT_EQ(nullptr, supports_user_data_2.GetUserData(&key2));
 }
 
-TEST_P(SupportsUserDataTest, ClearAllUserData) {
+TEST_F(SupportsUserDataTest, ClearAllUserData) {
   TestSupportsUserData supports_user_data;
   char key1 = 0;
   supports_user_data.SetUserData(&key1, std::make_unique<TestData>());
@@ -89,7 +77,7 @@ TEST_P(SupportsUserDataTest, ClearAllUserData) {
   EXPECT_FALSE(supports_user_data.GetUserData(&key2));
 }
 
-TEST_P(SupportsUserDataTest, TakeUserData) {
+TEST_F(SupportsUserDataTest, TakeUserData) {
   TestSupportsUserData supports_user_data;
   char key1 = 0;
   supports_user_data.SetUserData(&key1, std::make_unique<TestData>());
@@ -120,16 +108,47 @@ class DataOwnsSupportsUserData : public SupportsUserData::Data {
 
 // Tests that removing a `SupportsUserData::Data` that owns a `SupportsUserData`
 // does not crash.
-TEST_P(SupportsUserDataTest, ReentrantRemoveUserData) {
+TEST_F(SupportsUserDataTest, ReentrantRemoveUserData) {
   DataOwnsSupportsUserData* data = new DataOwnsSupportsUserData;
   char key = 0;
   data->supports_user_data()->SetUserData(&key, WrapUnique(data));
   data->supports_user_data()->RemoveUserData(&key);
 }
 
-INSTANTIATE_TEST_SUITE_P(All,
-                         SupportsUserDataTest,
-                         testing::Values(false, true));
+TEST_F(SupportsUserDataTest, ReentrantSetUserDataDuringRemoval) {
+  static const char kKey = 0;
+
+  class ProblematicSet : public SupportsUserData::Data {
+   public:
+    explicit ProblematicSet(const void* const key,
+                            TestSupportsUserData& supports_user_data)
+        : key_(key), supports_user_data_(supports_user_data) {}
+
+    ~ProblematicSet() override {
+      supports_user_data_->SetUserData(
+          key_, std::make_unique<ProblematicSet>(key_, *supports_user_data_));
+    }
+
+   private:
+    const raw_ptr<const void> key_;
+    raw_ref<TestSupportsUserData> supports_user_data_;
+  };
+  {
+    std::optional<TestSupportsUserData> supports_user_data;
+    supports_user_data.emplace();
+    // This awkward construction is required since death tests are typically
+    // implemented using `fork()`, so calling `SetUserData()` outside the
+    // `EXPECT_CHECK_DEATH()` macro will also crash the process that's trying to
+    // observe the crash.
+    EXPECT_CHECK_DEATH([&] {
+      supports_user_data->SetUserData(
+          &kKey, std::make_unique<ProblematicSet>(&kKey, *supports_user_data));
+      // Triggers the reentrant attempt to call `SetUserData()` during
+      // destruction.
+      supports_user_data.reset();
+    }());
+  }
+}
 
 }  // namespace
 }  // namespace base

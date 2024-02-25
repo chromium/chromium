@@ -6,11 +6,11 @@
 #define COMPONENTS_SYNC_MODEL_BLOCKING_MODEL_TYPE_STORE_H_
 
 #include <memory>
+#include <optional>
 
 #include "components/sync/base/model_type.h"
 #include "components/sync/model/model_error.h"
 #include "components/sync/model/model_type_store_base.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace syncer {
 
@@ -20,17 +20,17 @@ class MetadataBatch;
 // persistence layer, with support for metadata.
 class BlockingModelTypeStore : public ModelTypeStoreBase {
  public:
-  virtual absl::optional<ModelError> ReadData(const IdList& id_list,
-                                              RecordList* data_records,
-                                              IdList* missing_id_list) = 0;
-  virtual absl::optional<ModelError> ReadAllData(RecordList* data_records) = 0;
-  virtual absl::optional<ModelError> ReadAllMetadata(
+  virtual std::optional<ModelError> ReadData(const IdList& id_list,
+                                             RecordList* data_records,
+                                             IdList* missing_id_list) = 0;
+  virtual std::optional<ModelError> ReadAllData(RecordList* data_records) = 0;
+  virtual std::optional<ModelError> ReadAllMetadata(
       MetadataBatch* metadata_batch) = 0;
 
   virtual std::unique_ptr<WriteBatch> CreateWriteBatch() = 0;
-  virtual absl::optional<ModelError> CommitWriteBatch(
+  virtual std::optional<ModelError> CommitWriteBatch(
       std::unique_ptr<WriteBatch> write_batch) = 0;
-  virtual absl::optional<ModelError> DeleteAllDataAndMetadata() = 0;
+  virtual std::optional<ModelError> DeleteAllDataAndMetadata() = 0;
 };
 
 }  // namespace syncer

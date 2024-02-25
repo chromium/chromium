@@ -21,7 +21,7 @@ class PageVisibilityModelHandlerTest : public testing::Test {
     model_provider_ = std::make_unique<TestOptimizationGuideModelProvider>();
     model_handler_ = std::make_unique<PageVisibilityModelHandler>(
         model_provider_.get(), task_environment_.GetMainThreadTaskRunner(),
-        /*model_metadata=*/absl::nullopt);
+        /*model_metadata=*/std::nullopt);
   }
 
   void TearDown() override {
@@ -45,7 +45,7 @@ class PageVisibilityModelHandlerTest : public testing::Test {
 TEST_F(PageVisibilityModelHandlerTest, NotSensitiveNotFound) {
   PageVisibilityModelHandler* executor = model_handler();
 
-  absl::optional<double> visibility_score =
+  std::optional<double> visibility_score =
       executor->ExtractContentVisibilityFromModelOutput(
           std::vector<tflite::task::core::Category>{
               {"BLAH-BLAH-BLAH", 0.3},
@@ -58,7 +58,7 @@ TEST_F(PageVisibilityModelHandlerTest, NotSensitiveNotFound) {
 TEST_F(PageVisibilityModelHandlerTest, HasScore) {
   PageVisibilityModelHandler* executor = model_handler();
 
-  absl::optional<double> visibility_score =
+  std::optional<double> visibility_score =
       executor->ExtractContentVisibilityFromModelOutput(
           std::vector<tflite::task::core::Category>{
               {"NOT-SENSITIVE", 0.9},

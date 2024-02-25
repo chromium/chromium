@@ -103,7 +103,7 @@ void SigninDialog::DidRedirectNavigation(
   }
 }
 
-BEGIN_METADATA(SigninDialog, views::DialogDelegateView)
+BEGIN_METADATA(SigninDialog)
 END_METADATA
 
 }  // namespace ash::printing::oauth2

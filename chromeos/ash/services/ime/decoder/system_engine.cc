@@ -15,7 +15,7 @@ namespace ime {
 
 SystemEngine::SystemEngine(
     ImeCrosPlatform* platform,
-    absl::optional<ImeSharedLibraryWrapper::EntryPoints> entry_points) {
+    std::optional<ImeSharedLibraryWrapper::EntryPoints> entry_points) {
   if (!entry_points) {
     LOG(WARNING) << "SystemEngine INIT INCOMPLETE.";
     return;
@@ -38,13 +38,13 @@ bool SystemEngine::BindConnectionFactory(
   if (!decoder_entry_points_)
     return false;
   auto receiver_pipe_handle = receiver.PassPipe().release().value();
-  return decoder_entry_points_->initialize_connection_factory(
+  return decoder_entry_points_->mojo_mode_initialize_connection_factory(
       receiver_pipe_handle);
 }
 
 bool SystemEngine::IsConnected() {
   return decoder_entry_points_ &&
-         decoder_entry_points_->is_input_method_connected();
+         decoder_entry_points_->mojo_mode_is_input_method_connected();
 }
 
 }  // namespace ime

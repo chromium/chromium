@@ -4,9 +4,11 @@
 
 package org.chromium.chrome.browser.tabmodel;
 
+import androidx.annotation.NonNull;
+
+import org.chromium.base.Callback;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabSelectionType;
-import org.chromium.chrome.browser.tab.state.CriticalPersistedTabData;
 import org.chromium.content_public.browser.WebContents;
 
 import java.util.ArrayList;
@@ -147,6 +149,27 @@ public class TabModelUtils {
     }
 
     /**
+     * Selects a tab by its ID in the tab model selector.
+     *
+     * @param selector The {@link TabModelSelector} to act on.
+     * @param tabId The tab ID to select.
+     * @param type {@link TabSelectionType} how the tab selection was initiated.
+     * @param skipLoadingTab Whether to skip loading the Tab.
+     */
+    public static void selectTabById(
+            @NonNull TabModelSelector selector,
+            int tabId,
+            @TabSelectionType int tabSelectionType,
+            boolean skipLoadingTab) {
+        if (tabId == Tab.INVALID_TAB_ID) return;
+
+        TabModel model = selector.getModelForTabId(tabId);
+        if (model == null) return;
+
+        model.setIndex(getTabIndexById(model, tabId), tabSelectionType, skipLoadingTab);
+    }
+
+    /**
      * A helper method that automatically passes {@link TabSelectionType#FROM_USER} as the selection
      * type to {@link TabModel#setIndex(int, TabSelectionType)}.
      * @param model The {@link TabModel} to act on.
@@ -179,7 +202,7 @@ public class TabModelUtils {
     public static List<Tab> getChildTabs(TabList model, int tabId) {
         ArrayList<Tab> childTabs = new ArrayList<Tab>();
         for (int i = 0; i < model.getCount(); i++) {
-            if (CriticalPersistedTabData.from(model.getTabAt(i)).getParentId() == tabId) {
+            if (model.getTabAt(i).getParentId() == tabId) {
                 childTabs.add(model.getTabAt(i));
             }
         }
@@ -212,13 +235,41 @@ public class TabModelUtils {
             final Tab currentTab = model.getTabAt(i);
             if (currentTab.getId() == tabId || currentTab.isClosing()) continue;
 
-            final long currentTime = CriticalPersistedTabData.from(currentTab).getTimestampMillis();
-            if (currentTime != CriticalPersistedTabData.INVALID_TIMESTAMP
-                    && mostRecentTabTime < currentTime) {
+            final long currentTime = currentTab.getTimestampMillis();
+            // TODO(b/301642179) Consider using Optional on Tab interface for getTimestampMillis()
+            // to signal that the timestamp is unknown.
+            if (currentTime != Tab.INVALID_TIMESTAMP && mostRecentTabTime < currentTime) {
                 mostRecentTabTime = currentTime;
                 mostRecentTab = currentTab;
             }
         }
         return mostRecentTab;
+    }
+
+    /**
+     * Executes an {@link Callback} when {@link TabModelSelector#isTabStateInitialized()} becomes
+     * true. This will happen immediately and synchronously if the tab state is already initialized.
+     *
+     * @param tabModelSelector The {@link TabModelSelector} to act on.
+     * @param callback The callback to be run once tab state is initialized, receiving a
+     *     tabModelSelector.
+     */
+    public static void runOnTabStateInitialized(
+            @NonNull TabModelSelector tabModelSelector,
+            @NonNull Callback<TabModelSelector> callback) {
+        if (tabModelSelector.isTabStateInitialized()) {
+            callback.onResult(tabModelSelector);
+        } else {
+            TabModelSelectorObserver observer =
+                    new TabModelSelectorObserver() {
+                        @Override
+                        public void onTabStateInitialized() {
+                            tabModelSelector.removeObserver(this);
+                            callback.onResult(tabModelSelector);
+                        }
+                    };
+
+            tabModelSelector.addObserver(observer);
+        }
     }
 }

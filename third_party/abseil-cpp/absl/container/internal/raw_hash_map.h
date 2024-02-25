@@ -19,6 +19,8 @@
 #include <type_traits>
 #include <utility>
 
+#include "absl/base/attributes.h"
+#include "absl/base/config.h"
 #include "absl/base/internal/throw_delegate.h"
 #include "absl/container/internal/container_memory.h"
 #include "absl/container/internal/raw_hash_set.h"  // IWYU pragma: export
@@ -175,13 +177,20 @@ class raw_hash_map : public raw_hash_set<Policy, Hash, Eq, Alloc> {
   template <class K = key_type, class P = Policy, K* = nullptr>
   MappedReference<P> operator[](key_arg<K>&& key)
       ABSL_ATTRIBUTE_LIFETIME_BOUND {
-    return Policy::value(&*try_emplace(std::forward<K>(key)).first);
+    // It is safe to use unchecked_deref here because try_emplace
+    // will always return an iterator pointing to a valid item in the table,
+    // since it inserts if nothing is found for the given key.
+    return Policy::value(
+        &this->unchecked_deref(try_emplace(std::forward<K>(key)).first));
   }
 
   template <class K = key_type, class P = Policy>
   MappedReference<P> operator[](const key_arg<K>& key)
       ABSL_ATTRIBUTE_LIFETIME_BOUND {
-    return Policy::value(&*try_emplace(key).first);
+    // It is safe to use unchecked_deref here because try_emplace
+    // will always return an iterator pointing to a valid item in the table,
+    // since it inserts if nothing is found for the given key.
+    return Policy::value(&this->unchecked_deref(try_emplace(key).first));
   }
 
  private:

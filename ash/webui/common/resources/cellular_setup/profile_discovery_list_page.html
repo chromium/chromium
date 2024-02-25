@@ -1,11 +1,7 @@
 <style include="cr-shared-style iron-flex">
     [slot='page-body'] {
-      height: 300px;
+      height: 282px;
       margin-top: -20px;
-    }
-
-    profile-discovery-list-item {
-      height: 64px;
     }
 
     #container {
@@ -15,18 +11,23 @@
       overflow-y: auto;
     }
 
-    iron-list > *:not(:first-of-type) {
-      border-top: var(--cr-separator-line);
+    /* Override the styling used for the focused item */
+    [scrollable] iron-list > :not(.no-outline):focus {
+      background-color: transparent !important;
     }
   </style>
   <base-page>
     <div slot="page-body">
-      <div>[[i18n('profileListPageMessage')]]</div>
+      <localized-link
+        id="profileListMessage"
+        localized-string="[[i18nAdvanced('profileListPageMessageWithLink')]]"
+        on-link-clicked="enterManuallyClicked_">
+      </localized-link>
       <div id="container" class="layout vertical flex" scrollable>
         <iron-list id="profileList" items="[[pendingProfileProperties]]"
             scroll-target="container"
-            selection-enabled="[[!showBusy]]"
             preserve-focus
+            selection-enabled
             selected-item="{{selectedProfileProperties}}"
             role="listbox">
           <template>
@@ -34,8 +35,7 @@
                 selected="[[isProfilePropertiesSelected_(item, selectedProfileProperties)]]"
                 tabindex="0"
                 role="option"
-                aria-selected="[[isProfilePropertiesSelected_(item, selectedProfileProperties)]]"
-                show-loading-indicator="[[showBusy]]">
+                aria-selected="[[isProfilePropertiesSelected_(item, selectedProfileProperties)]]">
             </profile-discovery-list-item>
           </template>
         </iron-list>

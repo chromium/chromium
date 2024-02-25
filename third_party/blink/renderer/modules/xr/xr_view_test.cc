@@ -4,15 +4,15 @@
 
 #include "third_party/blink/renderer/modules/xr/xr_view.h"
 
-#include "third_party/blink/renderer/modules/xr/xr_test_utils.h"
-
 #include "device/vr/public/mojom/vr_service.mojom-blink.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_value.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_core.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_testing.h"
+#include "third_party/blink/renderer/modules/xr/xr_test_utils.h"
 #include "third_party/blink/renderer/platform/bindings/script_state.h"
+#include "third_party/blink/renderer/platform/testing/task_environment.h"
 #include "ui/gfx/geometry/vector2d_f.h"
 #include "ui/gfx/geometry/vector3d_f.h"
 
@@ -27,6 +27,7 @@ void AssertMatrixEquals(const Vector<double>& actual,
 }
 
 TEST(XRViewTest, ViewMatrices) {
+  test::TaskEnvironment task_environment;
   const double kDepthNear = 0.1;
   const double kDepthFar = 1000.0;
   const float kFov = 52.0f;

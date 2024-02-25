@@ -40,7 +40,7 @@ function validateInterestGroup(interestGroup) {
   if (!interestGroup)
     throw 'No interest group';
 
-  if (Object.keys(interestGroup).length !== 15) {
+  if (Object.keys(interestGroup).length !== 18) {
     throw 'Wrong number of interestGroupFields ' +
         JSON.stringify(interestGroup);
   }
@@ -50,9 +50,15 @@ function validateInterestGroup(interestGroup) {
   if (!interestGroup.owner.startsWith('https://a.test'))
     throw 'Missing a.test in owner ' + interestGroup.owner;
 
+  // Note that this field is deprecated.
   if (interestGroup.useBiddingSignalsPrioritization !== false) {
     throw 'Incorrect useBiddingSignalsPrioritization ' +
         interestGroup.useBiddingSignalsPrioritization;
+  }
+
+  if (interestGroup.enableBiddingSignalsPrioritization !== false) {
+    throw 'Incorrect enableBiddingSignalsPrioritization ' +
+        interestGroup.enableBiddingSignalsPrioritization;
   }
 
   if (Object.keys(interestGroup.priorityVector).length !== 1 ||
@@ -89,6 +95,9 @@ function validateInterestGroup(interestGroup) {
     throw 'Incorrect dailyUpdateUrl ' + interestGroup.dailyUpdateUrl;
   }
 
+  if (interestGroup.executionMode !== 'compatibility')
+    throw 'Incorrect executionMode ' + interestGroup.executionMode;
+
   if (!interestGroup.trustedBiddingSignalsURL.startsWith('https://a.test') ||
       !interestGroup.trustedBiddingSignalsURL.includes(
           'trusted_bidding_signals.json')) {
@@ -108,6 +117,11 @@ function validateInterestGroup(interestGroup) {
   if (trustedBiddingSignalsKeysJson !== "[\"key1\"]") {
     throw 'Incorrect trustedBiddingSignalsKeys ' +
         trustedBiddingSignalsKeysJson;
+  }
+
+  if (interestGroup.trustedBiddingSignalsSlotSizeMode != 'none') {
+    throw 'Incorrect trustedBiddingSignalsSlotSizeMode ' +
+        interestGroup.trustedBiddingSignalsSlotSizeMode;
   }
 
   // TODO(crbug.com/1186444): Consider validating URL fields like
@@ -180,7 +194,7 @@ function validateBrowserSignals(browserSignals, isGenerateBid) {
     throw 'Wrong topLevelSeller ' + browserSignals.topLevelSeller;
 
   if (isGenerateBid) {
-    if (Object.keys(browserSignals).length !== 8) {
+    if (Object.keys(browserSignals).length !== 10) {
       throw 'Wrong number of browser signals fields ' +
           JSON.stringify(browserSignals);
     }
@@ -192,8 +206,19 @@ function validateBrowserSignals(browserSignals, isGenerateBid) {
       throw 'Wrong prevWins ' + JSON.stringify(browserSignals.prevWins);
     if (browserSignals.prevWinsMs.length !== 0)
       throw 'Wrong prevWinsMs ' + JSON.stringify(browserSignals.prevWinsMs);
+    if (browserSignals.adComponentsLimit !== 40)
+      throw 'Wrong adComponentsLimit ' + browserSignals.adComponentsLimit;
+    if (browserSignals.forDebuggingOnlyInCooldownOrLockout)
+      throw 'Wrong forDebuggingOnlyInCooldownOrLockout ' +
+          browserSignals.forDebuggingOnlyInCooldownOrLockout;
   } else {
-    if (Object.keys(browserSignals).length !== 15) {
+    // FledgePassKAnonStatusToReportWin feature adds a new parameter
+    // KAnonStatus to reportWin(), which is under a Finch trial for some enabled
+    // tests.
+    // TODO(xtlsheep): Check length only equals to 16 after
+    // FledgePassKAnonStatusToReportWin is completely turned on.
+    if (Object.keys(browserSignals).length !== 15 &&
+        Object.keys(browserSignals).length !== 16) {
       throw 'Wrong number of browser signals fields ' +
           JSON.stringify(browserSignals);
     }

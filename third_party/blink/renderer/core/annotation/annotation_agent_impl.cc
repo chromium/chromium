@@ -26,11 +26,13 @@
 #include "third_party/blink/renderer/core/layout/geometry/physical_rect.h"
 #include "third_party/blink/renderer/core/layout/layout_object.h"
 #include "third_party/blink/renderer/core/layout/layout_text.h"
+#include "third_party/blink/renderer/core/layout/layout_view.h"
 #include "third_party/blink/renderer/core/scroll/scroll_alignment.h"
 #include "third_party/blink/renderer/core/scroll/scroll_into_view_util.h"
 #include "third_party/blink/renderer/core/scroll/scrollable_area.h"
 #include "third_party/blink/renderer/platform/heap/persistent.h"
 #include "third_party/blink/renderer/platform/heap/visitor.h"
+#include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
 
 namespace blink {
 
@@ -43,15 +45,13 @@ bool IsValidRange(const RangeInFlatTree* range) {
          !range->ToEphemeralRange().IsCollapsed();
 }
 
-// It's common for collapsible sections to be implemented by hiding collapsed
-// text within a `height:0; overflow: hidden` box. However, FindBuffer does
-// find this text (as typically overflow: hidden can still be programmatically
-// scrolled). The TextFinder use case wants to prevent offering scrolls to
-// these sections as its confusing (in fact, document Markers will avoid
-// creating a highlight for these, despite the fact we can scroll to it). We
-// probably want to do this for general SharedHighlights as well but that will
-// require some more thought and spec changes but we can experiment with this
-// for TextFinder to see how it works.
+// There are several cases where text isn't visible/presented to the user but
+// does appear findable to FindBuffer. The TextFinder use case wants to prevent
+// offering scrolls to these sections as its confusing (in fact, document
+// Markers will avoid creating a highlight for these, despite the fact we can
+// scroll to it). We probably want to do this for general SharedHighlights as
+// well but that will require some more thought and spec changes but we can
+// experiment with this for TextFinder to see how it works.
 bool IsValidRangeForTextFinder(const RangeInFlatTree* range) {
   if (!IsValidRange(range)) {
     return false;
@@ -69,18 +69,42 @@ bool IsValidRangeForTextFinder(const RangeInFlatTree* range) {
 
   for (; !object->IsLayoutView(); object = object->Parent()) {
     LayoutBox* box = DynamicTo<LayoutBox>(object);
-    if (!box || !box->HasNonVisibleOverflow()) {
+    if (!box) {
       continue;
     }
 
-    if (box->StyleRef().OverflowX() != EOverflow::kVisible &&
-        box->Size().width.RawValue() <= 0) {
+    // It's common for collapsible sections to be implemented by hiding
+    // collapsed text within a `height:0; overflow: hidden` box. However,
+    // FindBuffer does find this text (as typically overflow: hidden can still
+    // be programmatically scrolled).
+    if (box->HasNonVisibleOverflow()) {
+      if (box->StyleRef().OverflowX() != EOverflow::kVisible &&
+          box->Size().width.RawValue() <= 0) {
+        return false;
+      }
+
+      if (box->StyleRef().OverflowY() != EOverflow::kVisible &&
+          box->Size().height.RawValue() <= 0) {
+        return false;
+      }
+    }
+
+    // If an ancestor is set to opacity 0, consider the target invisible.
+    if (box->StyleRef().Opacity() == 0) {
       return false;
     }
 
-    if (box->StyleRef().OverflowY() != EOverflow::kVisible &&
-        box->Size().height.RawValue() <= 0) {
-      return false;
+    // If the range is in a fixed subtree, scrolling the view won't change its
+    // viewport-relative location so report the range as unfindable if its
+    // currently offscreen.
+    if (box->StyleRef().GetPosition() == EPosition::kFixed) {
+      PhysicalRect view_rect =
+          PhysicalRect::EnclosingRect(box->View()->AbsoluteBoundingBoxRectF());
+      if (!view_rect.Intersects(
+              common_node->GetLayoutObject()
+                  ->AbsoluteBoundingBoxRectForScrollIntoView())) {
+        return false;
+      }
     }
   }
 
@@ -155,7 +179,7 @@ bool AnnotationAgentImpl::IsAttached() const {
 bool AnnotationAgentImpl::IsAttachmentPending() const {
   // This can be an invalid range but still returns true because the attachment
   // is still in progress until the DomMutation task runs in the next rAF.
-  return pending_range_;
+  return pending_range_ != nullptr;
 }
 
 bool AnnotationAgentImpl::IsBoundForTesting() const {
@@ -179,7 +203,6 @@ void AnnotationAgentImpl::Remove() {
       frame->GetDocument()->UpdateStyleAndLayout(
           DocumentUpdateReason::kFindInPage);
 
-      // TODO(bokan): Base marker type on `type_`.
       document->Markers().RemoveMarkersInRange(
           dom_range, DocumentMarker::MarkerTypes::TextFragment());
     }
@@ -307,10 +330,7 @@ void AnnotationAgentImpl::PerformPreAttachDOMMutation() {
 
     // If the active match is hidden inside a hidden=until-found element, then
     // we should reveal it so we can scroll to it.
-    if (RuntimeEnabledFeatures::BeforeMatchEventEnabled(
-            first_node.GetExecutionContext())) {
-      DisplayLockUtilities::RevealHiddenUntilFoundAncestors(first_node);
-    }
+    DisplayLockUtilities::RevealHiddenUntilFoundAncestors(first_node);
 
     // Ensure we leave clean layout since we'll be applying markers after this.
     first_node.GetDocument().UpdateStyleAndLayout(
@@ -340,25 +360,20 @@ void AnnotationAgentImpl::ProcessAttachmentFinished() {
     Document* document = attached_range_->StartPosition().GetDocument();
     DCHECK(document);
 
-    // TODO(bokan): DocumentMarkers don't support overlapping markers. We could
-    // be smarter about how we construct markers so they don't overlap - or we
-    // could make DocumentMarkerController allow overlaps.
-    // https://crbug.com/1327370.
-    bool will_overlap_existing_marker =
-        !document->Markers()
-             .MarkersIntersectingRange(
-                 attached_range_->ToEphemeralRange(),
-                 DocumentMarker::MarkerTypes::TextFragment())
-             .empty();
-
     // TextFinder type is used only to determine whether a given text can be
     // found in the page, it should have no side-effects.
-    if (!will_overlap_existing_marker &&
-        type_ != mojom::blink::AnnotationType::kTextFinder) {
-      // TODO(bokan): Add new marker types based on `type_`.
+    if (type_ != mojom::blink::AnnotationType::kTextFinder) {
       document->Markers().AddTextFragmentMarker(dom_range);
-    } else {
-      TRACE_EVENT_INSTANT("blink", "Markers Intersect!");
+      document->Markers().MergeOverlappingMarkers(
+          DocumentMarker::kTextFragment);
+    }
+
+    if (type_ != mojom::blink::AnnotationType::kUserNote) {
+      Node* anchor_node = attached_range_->StartPosition().AnchorNode();
+      CHECK(anchor_node);
+      if (anchor_node->IsInShadowTree()) {
+        UseCounter::Count(document, WebFeature::kTextDirectiveInShadowDOM);
+      }
     }
   } else {
     TRACE_EVENT_INSTANT("blink", "NotAttached");

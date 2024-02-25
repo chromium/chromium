@@ -7,6 +7,7 @@
 #include <stddef.h>
 
 #include <map>
+#include <optional>
 #include <vector>
 
 #include "base/command_line.h"
@@ -22,7 +23,6 @@
 #include "components/variations/study_filtering.h"
 #include "components/variations/variations_associated_data.h"
 #include "components/variations/variations_layers.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace variations {
 
@@ -47,19 +47,19 @@ void RegisterExperimentParams(const Study& study,
 // Returns the IDCollectionKey with which |experiment| should be associated.
 // Returns nullopt when |experiment| doesn't have a Google web or Google web
 // trigger experiment ID.
-absl::optional<IDCollectionKey> GetKeyForWebExperiment(
+std::optional<IDCollectionKey> GetKeyForWebExperiment(
     const Study::Experiment& experiment) {
+  if (!VariationsSeedProcessor::HasGoogleWebExperimentId(experiment)) {
+    return std::nullopt;
+  }
   bool has_web_experiment_id = experiment.has_google_web_experiment_id();
   bool has_web_trigger_experiment_id =
       experiment.has_google_web_trigger_experiment_id();
 
-  if (!has_web_experiment_id && !has_web_trigger_experiment_id)
-    return absl::nullopt;
-
   // An experiment cannot have both |google_web_experiment_id| and
   // |google_trigger_web_experiment_id|. This is enforced by the variations
   // server before generating a variations seed.
-  DCHECK(!(has_web_experiment_id && has_web_trigger_experiment_id));
+  CHECK(!(has_web_experiment_id && has_web_trigger_experiment_id));
 
   Study::GoogleWebVisibility visibility = experiment.google_web_visibility();
   if (visibility == Study::FIRST_PARTY) {
@@ -83,10 +83,11 @@ void RegisterVariationIds(const Study::Experiment& experiment,
                                     variation_id);
   }
 
-  absl::optional<IDCollectionKey> key = GetKeyForWebExperiment(experiment);
+  std::optional<IDCollectionKey> key = GetKeyForWebExperiment(experiment);
   if (!key.has_value())
     return;
 
+  CHECK(VariationsSeedProcessor::HasGoogleWebExperimentId(experiment));
   // An experiment cannot have both |google_web_experiment_id| and
   // |google_trigger_web_experiment_id|. See GetKeyForWebExperiment() for more
   // details.
@@ -104,8 +105,6 @@ void RegisterVariationIds(const Study::Experiment& experiment,
 void ApplyUIStringOverrides(
     const Study::Experiment& experiment,
     const VariationsSeedProcessor::UIStringOverrideCallback& callback) {
-  UMA_HISTOGRAM_COUNTS_100("Variations.StringsOverridden",
-                           experiment.override_ui_string_size());
   for (int i = 0; i < experiment.override_ui_string_size(); ++i) {
     const Study::Experiment::OverrideUIString& override =
         experiment.override_ui_string(i);
@@ -242,6 +241,13 @@ void CreateTrialWithFeatureConflictGroup(const Study& study) {
 
 }  // namespace
 
+// static
+bool VariationsSeedProcessor::HasGoogleWebExperimentId(
+    const Study::Experiment& experiment) {
+  return experiment.has_google_web_experiment_id() ||
+         experiment.has_google_web_trigger_experiment_id();
+}
+
 VariationsSeedProcessor::VariationsSeedProcessor() = default;
 
 VariationsSeedProcessor::~VariationsSeedProcessor() = default;
@@ -251,10 +257,10 @@ void VariationsSeedProcessor::CreateTrialsFromSeed(
     const ClientFilterableState& client_state,
     const UIStringOverrideCallback& override_callback,
     const EntropyProviders& entropy_providers,
+    const VariationsLayers& layers,
     base::FeatureList* feature_list) {
   base::UmaHistogramCounts1000("Variations.AppliedSeed.StudyCount",
                                seed.study().size());
-  VariationsLayers layers(seed, entropy_providers);
   std::vector<ProcessedStudy> filtered_studies =
       FilterAndValidateStudies(seed, client_state, layers);
   SetSeedVersion(seed.version());

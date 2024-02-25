@@ -163,7 +163,7 @@ void NamedMojoServerEndpointConnectorWin::OnReady() {
     OnError();
     return;
   }
-  absl::optional<base::win::ScopedHandle> impersonation_token;
+  std::optional<base::win::ScopedHandle> impersonation_token;
   if (ImpersonateNamedPipeClient(pending_named_pipe_handle_.Get())) {
     HANDLE token = nullptr;
     if (OpenThreadToken(GetCurrentThread(), TOKEN_ALL_ACCESS, TRUE, &token)) {

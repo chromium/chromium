@@ -99,6 +99,11 @@ const char kReleaseLtsTag[] = "cros.system.releaseLtsTag";
 const char kDeviceChannelDowngradeBehavior[] =
     "cros.system.channelDowngradeBehavior";
 
+// A boolean pref that allows a device owner to opt in eligible devices to
+// Extended Automatic Updates.
+const char kDeviceExtendedAutoUpdateEnabled[] =
+    "cros.system.device_extended_auto_update_enabled";
+
 // This setting is used to enforce usage of system audio echo cancellation.
 const char kDeviceSystemAecEnabled[] = "cros.audio.device_system_aec_enabled";
 
@@ -311,11 +316,6 @@ const char kFeatureFlags[] = "cros.feature_flags";
 // when pinging the Variations server.
 const char kVariationsRestrictParameter[] =
     "cros.variations_restrict_parameter";
-
-// TODO(b/285556135): Remove this pref together with AttestationEnabledForDevice
-// A boolean pref that indicates whether enterprise attestation is enabled for
-// the device.
-const char kDeviceAttestationEnabled[] = "cros.device.attestation_enabled";
 
 // A boolean pref that indicates whether attestation for content protection is
 // enabled for the device.
@@ -614,5 +614,10 @@ const char kDevicePrintingClientNameTemplate[] =
 // is available.
 const char kDeviceHindiInscriptLayoutEnabled[] =
     "cros.device.hindi_inscript_layout_enabled";
+
+// A list of strings representing DLC identifiers to be pre downloaded on the
+// device.
+const char kDeviceDlcPredownloadList[] =
+    "cros.device.device_dlc_predownload_list";
 
 }  // namespace ash

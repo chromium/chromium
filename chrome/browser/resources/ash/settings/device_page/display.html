@@ -49,21 +49,22 @@
 <!-- Night Light Settings -->
 <template is="dom-if"
     if="[[isRevampWayfindingEnabled_]]" restamp>
-  <settings-display-night-light prefs="{{prefs}}">
+  <settings-display-night-light prefs="{{prefs}}"
+    is-internal-display="[[selectedDisplay.isInternal]]">
   </settings-display-night-light>
   <div class="hr"></div>
 </template>
 
 <!-- Arrangement section -->
 <template is="dom-if"
-    if="[[shouldShowArrangementSection_(displays)]]" restamp>
+    if="[[shouldShowArrangementSection(displays)]]" restamp>
   <div class="settings-box first layout vertical self-stretch underbar"
       id="arrangement-section">
     <h2 class="layout self-start">
       $i18n{displayArrangementTitle}
     </h2>
     <div class="secondary layout self-start"
-        hidden="[[isMirrored_(displays)]]">
+        hidden="[[isMirrored(displays)]]">
       $i18n{displayArrangementText}
     </div>
     <display-layout id="displayLayout"
@@ -73,16 +74,15 @@
     </display-layout>
 
     <template is="dom-if"
-        if="[[showMirror_(unifiedDesktopMode_, displays)]]" restamp>
+        if="[[showMirror(unifiedDesktopMode_, displays)]]" restamp>
       <!-- Mirror display toggle button -->
-      <template is="dom-if"
-          if="[[isRevampWayfindingEnabled_]]" restamp>
+      <template is="dom-if" if="[[isRevampWayfindingEnabled_]]">
         <div id="mirrorDisplayToggleButton" class="text-area">
           <div id="mirrorDisplayToggleLabel" class="start">
             [[getDisplayMirrorText_(displays)]]
           </div>
           <cr-toggle id="mirrorDisplayToggle"
-              checked="[[isMirrored_(displays)]]"
+              checked="[[isMirrored(displays)]]"
               on-click="onMirroredClick_"
               aria-label="[[getDisplayMirrorText_(displays)]]"
               deep-link-focus-id$="[[Setting.kDisplayMirroring]]">
@@ -91,11 +91,10 @@
       </template>
 
       <!-- Mirror display checkbox -->
-      <template is="dom-if"
-          if="[[!isRevampWayfindingEnabled_]]" restamp>
+      <template is="dom-if" if="[[!isRevampWayfindingEnabled_]]">
         <div class="secondary self-start">
           <cr-checkbox id="displayMirrorCheckbox"
-              checked="[[isMirrored_(displays)]]"
+              checked="[[isMirrored(displays)]]"
               on-click="onMirroredClick_"
               aria-label="[[getDisplayMirrorText_(displays)]]"
               deep-link-focus-id$="[[Setting.kDisplayMirroring]]">
@@ -118,8 +117,8 @@
 
 <div id="controlsDiv" class="settings-box layout vertical first">
   <h2>[[selectedDisplay.name]]</h2>
-  <template is="dom-if" if="[[showUnifiedDesktop_(unifiedDesktopAvailable_,
-      unifiedDesktopMode_, displays)]]" restamp>
+  <template is="dom-if" if="[[showUnifiedDesktop(unifiedDesktopAvailable_,
+      unifiedDesktopMode_, displays, isTabletMode_)]]" restamp>
     <div class="settings-box indented two-line">
       <div class="start">
         <div id="displayUnifiedDesktopCheckboxLabel">
@@ -129,7 +128,8 @@
           [[getUnifiedDesktopText_(unifiedDesktopMode_)]]
         </div>
       </div>
-      <cr-toggle checked="[[unifiedDesktopMode_]]"
+      <cr-toggle id="displayUnifiedDesktopToggle"
+          checked="[[unifiedDesktopMode_]]"
           on-click="onUnifiedDesktopClick_"
           aria-labelledby="displayUnifiedDesktopCheckboxLabel"
           deep-link-focus-id$="[[Setting.kAllowWindowsToSpanDisplays]]">
@@ -156,7 +156,7 @@
   </template>
 
   <!-- Display zoom selection slider -->
-  <div class="settings-box indented two-line first">
+  <div class="settings-box indented two-line">
     <div class="start text-area layout vertical">
       <div id="displayZoomLabel" aria-hidden="true">
         $i18n{displayZoomLabel}
@@ -281,7 +281,7 @@
     </div>
   </template>
 
-  <template is="dom-if" if="[[showAmbientColorSetting_(
+  <template is="dom-if" if="[[showAmbientColorSetting(
       ambientColorAvailable_, selectedDisplay)]]">
     <settings-toggle-button id="ambientColor"
         class="indented hr"
@@ -318,6 +318,7 @@
 <template is="dom-if"
     if="[[!isRevampWayfindingEnabled_]]" restamp>
   <div class="hr"></div>
-  <settings-display-night-light prefs="{{prefs}}">
+  <settings-display-night-light prefs="{{prefs}}"
+    is-internal-display="[[selectedDisplay.isInternal]]">
   </settings-display-night-light>
 </template>

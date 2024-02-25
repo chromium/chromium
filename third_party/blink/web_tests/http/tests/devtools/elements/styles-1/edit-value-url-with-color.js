@@ -7,7 +7,6 @@ import {ElementsTestRunner} from 'elements_test_runner';
 
 (async function() {
   TestRunner.addResult(`Tests that colors are not re-formatted inside url(...) when editing property values.\n`);
-  await TestRunner.loadLegacyModule('elements');
   await TestRunner.showPanel('elements');
   await TestRunner.loadHTML(`
       <div id="inspected1" style="background: white">&quot;white&quot; background</div>
@@ -34,7 +33,7 @@ import {ElementsTestRunner} from 'elements_test_runner';
 
   function editCallback() {
     var treeElement = ElementsTestRunner.getMatchedStylePropertyTreeItem('background');
-    treeElement.startEditing(treeElement.valueElement);
+    treeElement.startEditingValue();
     TestRunner.addResult(treeElement.valueElement.textContent);
     if (idIndex <= maxIndex)
       selectDivAndEditValue();

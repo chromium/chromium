@@ -5,8 +5,9 @@
 #ifndef COMPONENTS_SERVICES_APP_SERVICE_PUBLIC_CPP_ICON_INFO_H_
 #define COMPONENTS_SERVICES_APP_SERVICE_PUBLIC_CPP_ICON_INFO_H_
 
+#include <optional>
+
 #include "base/values.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
 namespace apps {
@@ -42,7 +43,7 @@ struct IconInfo {
 
   // The nominal size of the icon. Depending on context, this might have come
   // from the manifest or be a record of the size icon that was served at `url`.
-  absl::optional<SquareSizePx> square_size_px;
+  std::optional<SquareSizePx> square_size_px;
 
   // The purpose of this icon.
   Purpose purpose = Purpose::kAny;

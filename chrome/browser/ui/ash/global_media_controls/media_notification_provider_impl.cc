@@ -24,6 +24,7 @@
 #include "components/global_media_controls/public/media_item_manager.h"
 #include "components/global_media_controls/public/media_session_item_producer.h"
 #include "components/global_media_controls/public/mojom/device_service.mojom.h"
+#include "components/global_media_controls/public/views/media_item_ui_detailed_view.h"
 #include "components/global_media_controls/public/views/media_item_ui_list_view.h"
 #include "components/global_media_controls/public/views/media_item_ui_view.h"
 #include "mojo/public/cpp/bindings/remote.h"
@@ -59,7 +60,7 @@ MediaNotificationProviderImpl::MediaNotificationProviderImpl(
   media_session_item_producer_ =
       std::make_unique<global_media_controls::MediaSessionItemProducer>(
           std::move(audio_focus_remote), std::move(controller_manager_remote),
-          item_manager_.get(), /*source_id=*/absl::nullopt);
+          item_manager_.get(), /*source_id=*/std::nullopt);
   item_manager_->AddItemProducer(media_session_item_producer_.get());
 
   if (base::FeatureList::IsEnabled(media::kGlobalMediaControlsCrOSUpdatedUI)) {
@@ -110,7 +111,7 @@ std::unique_ptr<views::View>
 MediaNotificationProviderImpl::GetMediaNotificationListView(
     int separator_thickness,
     bool should_clip_height,
-    const std::string& item_id,
+    global_media_controls::GlobalMediaControlsEntryPoint entry_point,
     const std::string& show_devices_for_item_id) {
   CHECK(item_manager_);
   CHECK(color_theme_);
@@ -120,16 +121,9 @@ MediaNotificationProviderImpl::GetMediaNotificationListView(
               color_theme_->separator_color, separator_thickness),
           should_clip_height);
   media_item_ui_list_view_ = media_item_ui_list_view->GetWeakPtr();
+  entry_point_ = entry_point;
   show_devices_for_item_id_ = show_devices_for_item_id;
-  if (item_id.empty()) {
-    entry_point_ =
-        global_media_controls::GlobalMediaControlsEntryPoint::kSystemTray;
-    item_manager_->SetDialogDelegate(this);
-  } else {
-    entry_point_ =
-        global_media_controls::GlobalMediaControlsEntryPoint::kPresentation;
-    item_manager_->SetDialogDelegateForId(this, item_id);
-  }
+  item_manager_->SetDialogDelegate(this);
   base::UmaHistogramEnumeration("Media.GlobalMediaControls.EntryPoint",
                                 entry_point_);
   return media_item_ui_list_view;
@@ -150,19 +144,18 @@ MediaNotificationProviderImpl::GetMediaItemManager() {
 }
 
 void MediaNotificationProviderImpl::OnPrimaryUserSessionStarted() {
-  if (!media_router::GlobalMediaControlsCastStartStopEnabled(GetProfile()) ||
-      !crosapi::CrosapiManager::IsInitialized()) {
-    return;
-  }
-
-  // Since user profile is now active, we can create a
-  // CastMediaNotificationProducer for the MediaItemManager to access media
-  // items being casted.
+  // Since the user profile is now active, we can create a
+  // CastMediaNotificationProducer for the MediaItemManager to access Cast media
+  // items.
   cast_service_ =
       CastMediaNotificationProducerKeyedServiceFactory::GetForProfile(
           GetProfile());
   AddMediaItemManagerToCastService(item_manager_.get());
 
+  if (!media_router::GlobalMediaControlsCastStartStopEnabled(GetProfile()) ||
+      !crosapi::CrosapiManager::IsInitialized()) {
+    return;
+  }
   supplemental_device_picker_producer_ =
       std::make_unique<SupplementalDevicePickerProducer>(item_manager_.get());
   item_manager_->AddItemProducer(supplemental_device_picker_producer_.get());
@@ -205,9 +198,8 @@ MediaNotificationProviderImpl::BuildDeviceSelectorView(
 std::unique_ptr<global_media_controls::MediaItemUIFooter>
 MediaNotificationProviderImpl::BuildFooterView(
     const std::string& id,
-    base::WeakPtr<media_message_center::MediaNotificationItem> item,
-    global_media_controls::GlobalMediaControlsEntryPoint entry_point) {
-  return BuildFooter(id, item, GetProfile(), entry_point, media_color_theme_);
+    base::WeakPtr<media_message_center::MediaNotificationItem> item) {
+  return BuildFooter(id, item, GetProfile(), media_color_theme_);
 }
 
 global_media_controls::MediaItemUI*
@@ -220,11 +212,15 @@ MediaNotificationProviderImpl::ShowMediaItem(
 
   bool show_devices =
       (!show_devices_for_item_id_.empty() && (id == show_devices_for_item_id_));
+  auto media_display_page =
+      (MediaTray::IsPinnedToShelf() ? global_media_controls::MediaDisplayPage::
+                                          kSystemShelfMediaDetailedView
+                                    : global_media_controls::MediaDisplayPage::
+                                          kQuickSettingsMediaDetailedView);
   auto item_ui = std::make_unique<global_media_controls::MediaItemUIView>(
-      id, item, BuildFooterView(id, item, entry_point_),
+      id, item, BuildFooterView(id, item),
       BuildDeviceSelectorView(id, item, entry_point_, show_devices),
-      color_theme_, media_color_theme_,
-      global_media_controls::MediaDisplayPage::kQuickSettingsMediaDetailedView);
+      color_theme_, media_color_theme_, media_display_page);
   auto* item_ui_ptr = item_ui.get();
   item_ui_observer_set_.Observe(id, item_ui_ptr);
 
@@ -255,7 +251,7 @@ void MediaNotificationProviderImpl::RefreshMediaItem(
   bool show_devices =
       (!show_devices_for_item_id_.empty() && (id == show_devices_for_item_id_));
   auto* media_item_ui = media_item_ui_list_view_->GetItem(id);
-  media_item_ui->UpdateFooterView(BuildFooterView(id, item, entry_point_));
+  media_item_ui->UpdateFooterView(BuildFooterView(id, item));
   media_item_ui->UpdateDeviceSelector(
       BuildDeviceSelectorView(id, item, entry_point_, show_devices));
 

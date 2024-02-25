@@ -16,10 +16,8 @@ rootWebArea
 ++++++++staticText offscreen name='normal text 1'
 ++++++++++inlineTextBox offscreen name='normal text 1'
 ++++++++genericContainer offscreen
-++++++++++staticText ignored invisible offscreen name='<newline>    nested non-viewport-activatable locked element will not be in AX tree<newline>  '
 ++++++++staticText offscreen name='normal text 2'
 ++++++++++inlineTextBox offscreen name='normal text 2'
 ++++++++genericContainer offscreen
-++++++++++staticText ignored invisible offscreen name='<newline>    nested non-activatable locked element will not be in AX tree<newline>  '
 ++++++++staticText offscreen name='normal text 3'
 ++++++++++inlineTextBox offscreen name='normal text 3'

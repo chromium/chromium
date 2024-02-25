@@ -1,5 +1,6 @@
 agrieve@chromium.org
 bsazonov@chromium.org
+ckitagawa@chromium.org
 dtrainor@chromium.org
 mthiesse@chromium.org
 nyquist@chromium.org
@@ -14,9 +15,7 @@ per-file chrome_java_sources.gni=*
 per-file chrome_java_resources.gni=*
 per-file chrome_test_java_sources.gni=*
 per-file chrome_junit_test_java_sources.gni=*
-
-# For VR Javatest changes.
-per-file BUILD.gn=bsheedy@chromium.org
+per-file BUILD.gn=*
 
 # Build-related files.
 per-file *.gn*=file://build/android/OWNERS

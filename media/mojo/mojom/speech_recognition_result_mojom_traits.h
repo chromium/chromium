@@ -5,13 +5,13 @@
 #ifndef MEDIA_MOJO_MOJOM_SPEECH_RECOGNITION_RESULT_MOJOM_TRAITS_H_
 #define MEDIA_MOJO_MOJOM_SPEECH_RECOGNITION_RESULT_MOJOM_TRAITS_H_
 
+#include <optional>
 #include <string>
 #include <vector>
 
 #include "base/time/time.h"
 #include "media/mojo/mojom/speech_recognition.mojom.h"
 #include "media/mojo/mojom/speech_recognition_result.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace mojo {
 
@@ -44,7 +44,7 @@ class StructTraits<media::mojom::TimingInformationDataView,
     return r.audio_end_time;
   }
 
-  static const ::absl::optional<std::vector<media::HypothesisParts>>&
+  static const ::std::optional<std::vector<media::HypothesisParts>>&
   hypothesis_parts(const media::TimingInformation& r) {
     return r.hypothesis_parts;
   }
@@ -66,7 +66,7 @@ class StructTraits<media::mojom::SpeechRecognitionResultDataView,
     return r.is_final;
   }
 
-  static const ::absl::optional<media::TimingInformation>& timing_information(
+  static const ::std::optional<media::TimingInformation>& timing_information(
       const media::SpeechRecognitionResult& r) {
     return r.timing_information;
   }

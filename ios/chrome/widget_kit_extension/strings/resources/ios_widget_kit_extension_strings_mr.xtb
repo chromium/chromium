@@ -1,10 +1,10 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="mr">
+<translation id="1324575488877808473">तुमच्या सर्वाधिक भेट दिलेल्या साइट येथे पाहण्यासाठी Chrome उघडा.</translation>
 <translation id="2513892053093488070">व्हॉइस शोध</translation>
 <translation id="2535710892645968259">तुमच्या लॉक स्‍क्रीनवरून थेट Chrome Dino गेमवर जा.</translation>
 <translation id="2542770169955243077">Chrome Dino गेम</translation>
-<translation id="2803429804752388720">पासवर्ड शोधा</translation>
 <translation id="2922313168575194078">तुमचे Google Password Manager वर सेव्ह केलेले पासवर्ड सुरक्षितपणे शोधा</translation>
 <translation id="302608144225178783">तुमच्या होम स्क्रीनवरून थेट Chrome Dino गेमवर जा.</translation>
 <translation id="3296938369177810197">व्हॉइस शोध</translation>
@@ -29,6 +29,7 @@
 <translation id="6691821786147477657">तुमच्या iPad च्या होमपेजवरून नवीन शोध सुरू करा किंवा तुमच्या सर्वाधिक भेट दिलेल्या साइट उघडा.</translation>
 <translation id="6721566127904256183">सर्वाधिक भेट दिलेल्या साइट येथे दिसतील.</translation>
 <translation id="6855322554930231468">शोध</translation>
+<translation id="6973491011026415905">Google Password Manager वर पासवर्ड शोधा</translation>
 <translation id="7010831364920321713">गुप्त शोध</translation>
 <translation id="7048549665319929185">URL शोधा किंवा
 टाइप करा</translation>

@@ -117,9 +117,6 @@ interface DevToolsAgent {
   // on start waiting for debugger to connect.
   // See ChildTargetCreated in DevToolsAgentHost for details.
   ReportChildTargets(bool report, bool wait_for_debugger) => ();
-
-  // Resolves DOMNodeId to a unique form control ID used by Autofill.
-  GetUniqueFormControlId(int32 nodeId) => (uint64 id);
 };
 
 // This interface is implemented in the browser and is notified by
@@ -139,6 +136,21 @@ interface DevToolsAgentHost {
       mojo_base.mojom.UnguessableToken devtools_worker_token,
       bool waiting_for_debugger,
       DevToolsExecutionContextType context_type);
+
+  // Informs the host that the main thread debugger is paused. Must be used only
+  // for recording histograms.
+  // TODO(https://crbug.com/1449114): Remove this method once we collect enough
+  // data.
+  MainThreadDebuggerPaused();
+
+  // Informs the host that the main thread debugger is resumed. Must be used
+  // only for recording histograms.
+  // TODO(https://crbug.com/1449114): Remove this method once we collect enough
+  // data.
+  MainThreadDebuggerResumed();
+
+  // Bring the associated frame to the foreground if possible.
+  BringToForeground();
 };
 
 // Represents an attached session which exposes remote debugging protocol.

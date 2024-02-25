@@ -9,6 +9,7 @@ import android.content.res.Resources;
 import android.graphics.drawable.Drawable;
 
 import androidx.annotation.DrawableRes;
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
 import androidx.appcompat.content.res.AppCompatResources;
@@ -26,9 +27,7 @@ import java.util.Map;
  * Generic property model that aims to provide an extensible and efficient model for ease of use.
  */
 public class PropertyModel extends PropertyObservable<PropertyKey> {
-    /**
-     * A PropertyKey implementation that associates a name with the property for easy debugging.
-     */
+    /** A PropertyKey implementation that associates a name with the property for easy debugging. */
     private static class NamedPropertyKey implements PropertyKey {
         private final String mPropertyName;
 
@@ -45,9 +44,7 @@ public class PropertyModel extends PropertyObservable<PropertyKey> {
 
     /** The key type for read-ony boolean model properties. */
     public static class ReadableBooleanPropertyKey extends NamedPropertyKey {
-        /**
-         * Constructs a new unnamed read-only boolean property key.
-         */
+        /** Constructs a new unnamed read-only boolean property key. */
         public ReadableBooleanPropertyKey() {
             this(null);
         }
@@ -63,9 +60,7 @@ public class PropertyModel extends PropertyObservable<PropertyKey> {
 
     /** The key type for mutable boolean model properties. */
     public static final class WritableBooleanPropertyKey extends ReadableBooleanPropertyKey {
-        /**
-         * Constructs a new unnamed writable boolean property key.
-         */
+        /** Constructs a new unnamed writable boolean property key. */
         public WritableBooleanPropertyKey() {
             this(null);
         }
@@ -81,9 +76,7 @@ public class PropertyModel extends PropertyObservable<PropertyKey> {
 
     /** The key type for read-only float model properties. */
     public static class ReadableFloatPropertyKey extends NamedPropertyKey {
-        /**
-         * Constructs a new unnamed read-only float property key.
-         */
+        /** Constructs a new unnamed read-only float property key. */
         public ReadableFloatPropertyKey() {
             this(null);
         }
@@ -99,9 +92,7 @@ public class PropertyModel extends PropertyObservable<PropertyKey> {
 
     /** The key type for mutable float model properties. */
     public static final class WritableFloatPropertyKey extends ReadableFloatPropertyKey {
-        /**
-         * Constructs a new unnamed writable float property key.
-         */
+        /** Constructs a new unnamed writable float property key. */
         public WritableFloatPropertyKey() {
             this(null);
         }
@@ -117,9 +108,7 @@ public class PropertyModel extends PropertyObservable<PropertyKey> {
 
     /** The key type for read-only int model properties. */
     public static class ReadableIntPropertyKey extends NamedPropertyKey {
-        /**
-         * Constructs a new unnamed read-only integer property key.
-         */
+        /** Constructs a new unnamed read-only integer property key. */
         public ReadableIntPropertyKey() {
             this(null);
         }
@@ -135,9 +124,7 @@ public class PropertyModel extends PropertyObservable<PropertyKey> {
 
     /** The key type for mutable int model properties. */
     public static final class WritableIntPropertyKey extends ReadableIntPropertyKey {
-        /**
-         * Constructs a new unnamed writable integer property key.
-         */
+        /** Constructs a new unnamed writable integer property key. */
         public WritableIntPropertyKey() {
             this(null);
         }
@@ -153,9 +140,7 @@ public class PropertyModel extends PropertyObservable<PropertyKey> {
 
     /** The key type for read-only long model properties. */
     public static class ReadableLongPropertyKey extends NamedPropertyKey {
-        /**
-         * Constructs a new unnamed read-only long property key.
-         */
+        /** Constructs a new unnamed read-only long property key. */
         public ReadableLongPropertyKey() {
             this(null);
         }
@@ -171,9 +156,7 @@ public class PropertyModel extends PropertyObservable<PropertyKey> {
 
     /** The key type for mutable int model properties. */
     public static final class WritableLongPropertyKey extends ReadableLongPropertyKey {
-        /**
-         * Constructs a new unnamed writable long property key.
-         */
+        /** Constructs a new unnamed writable long property key. */
         public WritableLongPropertyKey() {
             this(null);
         }
@@ -193,9 +176,7 @@ public class PropertyModel extends PropertyObservable<PropertyKey> {
      * @param <T> The type of the Object being tracked by the key.
      */
     public static class ReadableObjectPropertyKey<T> extends NamedPropertyKey {
-        /**
-         * Constructs a new unnamed read-only object property key.
-         */
+        /** Constructs a new unnamed read-only object property key. */
         public ReadableObjectPropertyKey() {
             this(null);
         }
@@ -284,18 +265,14 @@ public class PropertyModel extends PropertyObservable<PropertyKey> {
         }
     }
 
-    /**
-     * Get the current value from the float based key.
-     */
+    /** Get the current value from the float based key. */
     public float get(ReadableFloatPropertyKey key) {
         validateKey(key);
         FloatContainer container = (FloatContainer) mData.get(key);
         return container == null ? 0f : container.value;
     }
 
-    /**
-     * Set the value for the float based key.
-     */
+    /** Set the value for the float based key. */
     public void set(WritableFloatPropertyKey key, float value) {
         validateKey(key);
         FloatContainer container = (FloatContainer) mData.get(key);
@@ -310,18 +287,14 @@ public class PropertyModel extends PropertyObservable<PropertyKey> {
         notifyPropertyChanged(key);
     }
 
-    /**
-     * Get the current value from the int based key.
-     */
+    /** Get the current value from the int based key. */
     public int get(ReadableIntPropertyKey key) {
         validateKey(key);
         IntContainer container = (IntContainer) mData.get(key);
         return container == null ? 0 : container.value;
     }
 
-    /**
-     * Set the value for the int based key.
-     */
+    /** Set the value for the int based key. */
     public void set(WritableIntPropertyKey key, int value) {
         validateKey(key);
         IntContainer container = (IntContainer) mData.get(key);
@@ -336,18 +309,14 @@ public class PropertyModel extends PropertyObservable<PropertyKey> {
         notifyPropertyChanged(key);
     }
 
-    /**
-     * Get the current value from the long based key.
-     */
+    /** Get the current value from the long based key. */
     public long get(ReadableLongPropertyKey key) {
         validateKey(key);
         LongContainer container = (LongContainer) mData.get(key);
         return container == null ? 0 : container.value;
     }
 
-    /**
-     * Set the value for the long based key.
-     */
+    /** Set the value for the long based key. */
     public void set(WritableLongPropertyKey key, long value) {
         validateKey(key);
         LongContainer container = (LongContainer) mData.get(key);
@@ -362,18 +331,14 @@ public class PropertyModel extends PropertyObservable<PropertyKey> {
         notifyPropertyChanged(key);
     }
 
-    /**
-     * Get the current value from the boolean based key.
-     */
+    /** Get the current value from the boolean based key. */
     public boolean get(ReadableBooleanPropertyKey key) {
         validateKey(key);
         BooleanContainer container = (BooleanContainer) mData.get(key);
         return container == null ? false : container.value;
     }
 
-    /**
-     * Set the value for the boolean based key.
-     */
+    /** Set the value for the boolean based key. */
     public void set(WritableBooleanPropertyKey key, boolean value) {
         validateKey(key);
         BooleanContainer container = (BooleanContainer) mData.get(key);
@@ -388,9 +353,7 @@ public class PropertyModel extends PropertyObservable<PropertyKey> {
         notifyPropertyChanged(key);
     }
 
-    /**
-     * Get the current value from the object based key.
-     */
+    /** Get the current value from the object based key. */
     @SuppressWarnings("unchecked")
     public <T> T get(ReadableObjectPropertyKey<T> key) {
         validateKey(key);
@@ -398,9 +361,7 @@ public class PropertyModel extends PropertyObservable<PropertyKey> {
         return container == null ? null : container.value;
     }
 
-    /**
-     * Set the value for the Object based key.
-     */
+    /** Set the value for the Object based key. */
     @SuppressWarnings("unchecked")
     public <T> void set(WritableObjectPropertyKey<T> key, T value) {
         validateKey(key);
@@ -455,8 +416,49 @@ public class PropertyModel extends PropertyObservable<PropertyKey> {
     }
 
     /**
-     * Allows constructing a new {@link PropertyModel} with read-only properties.
+     * Returns the int value from the item model based on the key. Otherwise returns the passed in
+     * default value.
+     *
+     * @param model The model for the list menu item.
+     * @param key The key of the property to retrieve.
+     * @param defaultValue The default value if the the property is not found.
+     * @return The value from the model or the default if the value is not found.
      */
+    public static int getFromModelOrDefault(
+            @NonNull PropertyModel model,
+            @NonNull PropertyModel.ReadableIntPropertyKey key,
+            int defaultValue) {
+        // We need to check first because PropertyModel#get throws an exception if a key
+        // is not present in the Map.
+        if (model.containsKey(key)) {
+            return model.get(key);
+        }
+        return defaultValue;
+    }
+
+    /**
+     * Returns the value from the item model based on the key. Otherwise returns the passed in
+     * default value.
+     *
+     * @param model The model for the list menu item.
+     * @param key The key of the property to retrieve.
+     * @param defaultValue The default value if the the property is not found.
+     * @return The value from the model or the default if the value is not found.
+     */
+    @Nullable
+    public static <T> T getFromModelOrDefault(
+            @NonNull PropertyModel model,
+            @NonNull PropertyModel.ReadableObjectPropertyKey<T> key,
+            @Nullable T defaultValue) {
+        // We need to check first because PropertyModel#get throws an exception if a key
+        // is not present in the Map.
+        if (model.containsKey(key)) {
+            return model.get(key);
+        }
+        return defaultValue;
+    }
+
+    /** Allows constructing a new {@link PropertyModel} with read-only properties. */
     public static class Builder {
         private final Map<PropertyKey, ValueContainer> mData;
 
@@ -568,6 +570,7 @@ public class PropertyModel extends PropertyObservable<PropertyKey> {
     }
 
     private static class ValueContainer {}
+
     private static class FloatContainer extends ValueContainer {
         public float value;
 
@@ -578,7 +581,8 @@ public class PropertyModel extends PropertyObservable<PropertyKey> {
 
         @Override
         public boolean equals(Object other) {
-            return other != null && other instanceof FloatContainer
+            return other != null
+                    && other instanceof FloatContainer
                     && ((FloatContainer) other).value == value;
         }
     }
@@ -593,7 +597,8 @@ public class PropertyModel extends PropertyObservable<PropertyKey> {
 
         @Override
         public boolean equals(Object other) {
-            return other != null && other instanceof IntContainer
+            return other != null
+                    && other instanceof IntContainer
                     && ((IntContainer) other).value == value;
         }
     }
@@ -608,7 +613,8 @@ public class PropertyModel extends PropertyObservable<PropertyKey> {
 
         @Override
         public boolean equals(Object other) {
-            return other != null && other instanceof LongContainer
+            return other != null
+                    && other instanceof LongContainer
                     && ((LongContainer) other).value == value;
         }
     }
@@ -623,7 +629,8 @@ public class PropertyModel extends PropertyObservable<PropertyKey> {
 
         @Override
         public boolean equals(Object other) {
-            return other != null && other instanceof BooleanContainer
+            return other != null
+                    && other instanceof BooleanContainer
                     && ((BooleanContainer) other).value == value;
         }
     }
@@ -638,7 +645,8 @@ public class PropertyModel extends PropertyObservable<PropertyKey> {
 
         @Override
         public boolean equals(Object other) {
-            return other != null && other instanceof ObjectContainer
+            return other != null
+                    && other instanceof ObjectContainer
                     && ObjectsCompat.equals(((ObjectContainer) other).value, value);
         }
     }

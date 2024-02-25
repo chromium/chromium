@@ -17,10 +17,12 @@
 #include "third_party/blink/renderer/core/execution_context/security_context.h"
 #include "third_party/blink/renderer/platform/bindings/v8_binding.h"
 #include "third_party/blink/renderer/platform/testing/runtime_enabled_features_test_helpers.h"
+#include "third_party/blink/renderer/platform/testing/task_environment.h"
 
 namespace blink {
 
 TEST(CSSStyleDeclarationTest, getPropertyShorthand) {
+  test::TaskEnvironment task_environment;
   css_test_helpers::TestStyleSheet sheet;
 
   sheet.AddCSSRules("div { padding: var(--p); }");
@@ -34,6 +36,7 @@ TEST(CSSStyleDeclarationTest, getPropertyShorthand) {
 }
 
 TEST(CSSStyleDeclarationTest, ParsingRevertWithFeatureEnabled) {
+  test::TaskEnvironment task_environment;
   css_test_helpers::TestStyleSheet sheet;
   sheet.AddCSSRules("div { top: revert; --x: revert; }");
   ASSERT_TRUE(sheet.CssRules());
@@ -65,6 +68,7 @@ TEST(CSSStyleDeclarationTest, ParsingRevertWithFeatureEnabled) {
 //
 // See CssPropertyInfo in css_style_declaration.cc.
 TEST(CSSStyleDeclarationTest, ExposureCacheLeak) {
+  test::TaskEnvironment task_environment;
   V8TestingScope v8_testing_scope;
 
   auto* property_value_set = MakeGarbageCollected<MutableCSSPropertyValueSet>(

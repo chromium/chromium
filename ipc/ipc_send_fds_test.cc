@@ -74,10 +74,8 @@ class MyChannelDescriptorListener : public MyChannelDescriptorListenerBase {
   unsigned num_fds_received() const {
     return num_fds_received_;
   }
-
-  void OnChannelError() override {
-    base::RunLoop::QuitCurrentWhenIdleDeprecated();
-  }
+  void Run() { loop_.Run(); }
+  void OnChannelError() override { loop_.QuitWhenIdle(); }
 
  protected:
   void HandleFD(int fd) override {
@@ -98,13 +96,15 @@ class MyChannelDescriptorListener : public MyChannelDescriptorListenerBase {
     ASSERT_EQ(expected_inode_num_, st.st_ino);
 
     ++num_fds_received_;
-    if (num_fds_received_ == kNumFDsToSend * kNumMessages)
-      base::RunLoop::QuitCurrentWhenIdleDeprecated();
+    if (num_fds_received_ == kNumFDsToSend * kNumMessages) {
+      loop_.QuitWhenIdle();
+    }
   }
 
  private:
   ino_t expected_inode_num_;
   unsigned num_fds_received_;
+  base::RunLoop loop_;
 };
 
 class IPCSendFdsTest : public IPCChannelMojoTestBase {
@@ -134,7 +134,7 @@ class IPCSendFdsTest : public IPCChannelMojoTestBase {
     }
 
     // Run message loop.
-    base::RunLoop().Run();
+    listener.Run();
 
     // Close the channel so the client's OnChannelError() gets fired.
     channel()->Close();
@@ -170,7 +170,7 @@ class SendFdsTestClientFixture : public IpcChannelMojoTestClient {
     Connect(&listener);
 
     // Run message loop.
-    base::RunLoop().Run();
+    listener.Run();
 
     // Verify that the message loop was exited due to getting the correct number
     // of descriptors, and not because of the channel closing unexpectedly.

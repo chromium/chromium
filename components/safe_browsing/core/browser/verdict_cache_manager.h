@@ -22,7 +22,7 @@
 #include "components/safe_browsing/core/browser/safe_browsing_sync_observer.h"
 #include "components/safe_browsing/core/common/proto/csd.pb.h"
 #include "components/safe_browsing/core/common/proto/realtimeapi.pb.h"
-#include "components/safe_browsing/core/common/proto/safebrowsingv5_alpha1.pb.h"
+#include "components/safe_browsing/core/common/proto/safebrowsingv5.pb.h"
 #include "url/gurl.h"
 
 class HostContentSettingsMap;
@@ -86,14 +86,10 @@ class VerdictCacheManager : public history::HistoryServiceObserver,
   // Looks up |content_settings_| to find the cached verdict response. If
   // verdict is not available or is expired, return VERDICT_TYPE_UNSPECIFIED.
   // Otherwise, the most matching theat info will be copied to out_threat_info.
-  // |out_is_verdict_from_past_initialization| represents whether the verdict
-  // was set before the current VerdictCacheManager instance was initialized,
-  // and is used only for logging. The parameter is only set if the unexpired
-  // cache entry was found. Can be called on any thread.
+  // Can be called on any thread.
   RTLookupResponse::ThreatInfo::VerdictType GetCachedRealTimeUrlVerdict(
       const GURL& url,
-      RTLookupResponse::ThreatInfo* out_threat_info,
-      absl::optional<bool>* out_is_verdict_from_past_initialization);
+      RTLookupResponse::ThreatInfo* out_threat_info);
 
   safe_browsing::ClientSideDetectionType
   GetCachedRealTimeUrlClientSideDetectionType(const GURL& url);
@@ -113,14 +109,10 @@ class VerdictCacheManager : public history::HistoryServiceObserver,
       const V5::Duration& cache_duration);
 
   // Searches the hash-prefix real-time cache object for the requested
-  // |hash_prefixes|. |skip_logging| specifies whether metric logging should be
-  // skipped when this function is called.
-  // TODO(crbug.com/1432308): [Also TODO(thefrog)] Remove |skip_logging|
-  // parameter after investigation is complete.
+  // |hash_prefixes|.
   std::unordered_map<std::string, std::vector<V5::FullHash>>
   GetCachedHashPrefixRealTimeLookupResults(
-      const std::set<std::string>& hash_prefixes,
-      bool skip_logging);
+      const std::set<std::string>& hash_prefixes);
 
   // Overridden from history::HistoryServiceObserver.
   void OnURLsDeleted(history::HistoryService* history_service,
@@ -142,6 +134,7 @@ class VerdictCacheManager : public history::HistoryServiceObserver,
 
  private:
   friend class ::SafeBrowsingServiceTest;
+  friend class SafeBrowsingBlockingPageAsyncChecksTest;
   friend class SafeBrowsingBlockingPageRealTimeUrlCheckTest;
   friend class SafeBrowsingBlockingPageHashRealTimeCheckTest;
   friend class VerdictCacheManagerTest;
@@ -207,6 +200,12 @@ class VerdictCacheManager : public history::HistoryServiceObserver,
   void CacheArtificialUnsafeRealTimeUrlVerdictFromSwitch();
 
   // This adds a cached verdict for a URL that has artificially been marked as
+  // safe or unsafe (depending on |is_unsafe|). This applies to URL real-time
+  // lookups.
+  void CacheArtificialRealTimeUrlVerdict(const std::string& url_string,
+                                         bool is_unsafe);
+
+  // This adds a cached verdict for a URL that has artificially been marked as
   // unsafe using the command line flag "mark_as_phish_guard_phishing". This
   // applies to Phishguard pings.
   void CacheArtificialUnsafePhishGuardVerdictFromSwitch();
@@ -230,14 +229,14 @@ class VerdictCacheManager : public history::HistoryServiceObserver,
   static void ResetHasArtificialCachedUrlForTesting();
 
   // Number of verdict stored for this profile for password on focus pings.
-  absl::optional<size_t> stored_verdict_count_password_on_focus_;
+  std::optional<size_t> stored_verdict_count_password_on_focus_;
 
   // Number of verdict stored for this profile for protected password entry
   // pings.
-  absl::optional<size_t> stored_verdict_count_password_entry_;
+  std::optional<size_t> stored_verdict_count_password_entry_;
 
   // Number of verdict stored for this profile for real time url check pings.
-  absl::optional<size_t> stored_verdict_count_real_time_url_check_;
+  std::optional<size_t> stored_verdict_count_real_time_url_check_;
 
   // A map of page load tokens, keyed by the hostname.
   base::flat_map<std::string, ChromeUserPopulation::PageLoadToken>
@@ -261,9 +260,6 @@ class VerdictCacheManager : public history::HistoryServiceObserver,
       std::make_unique<HashRealTimeCache>();
 
   bool is_shut_down_ = false;
-
-  // Represents the time the VerdictCacheManager object was constructed.
-  base::Time time_initialized_;
 
   base::WeakPtrFactory<VerdictCacheManager> weak_factory_{this};
 

@@ -12,6 +12,7 @@
 #include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
 #include "base/test/mock_callback.h"
+#include "components/user_education/common/events.h"
 #include "components/user_education/common/feature_promo_specification.h"
 #include "components/user_education/common/help_bubble.h"
 #include "components/user_education/common/help_bubble_params.h"
@@ -77,8 +78,8 @@ class HelpBubbleViewTest : public views::ViewsTestBase {
 
   HelpBubbleView* CreateHelpBubbleView(
       HelpBubbleParams params,
-      absl::optional<gfx::Rect> bounds = absl::nullopt,
-      absl::optional<views::View*> view = absl::nullopt) {
+      std::optional<gfx::Rect> bounds = std::nullopt,
+      std::optional<views::View*> view = std::nullopt) {
     internal::HelpBubbleAnchorParams anchor_params;
     anchor_params.view = view.value_or(view_);
     anchor_params.rect = bounds;
@@ -259,8 +260,7 @@ TEST_F(HelpBubbleViewTest, ScrollAnchorViewToVisible) {
   HelpBubbleParams params;
   params.body_text = u"To X, do Y";
   params.arrow = HelpBubbleArrow::kTopRight;
-  CreateHelpBubbleView(std::move(params), /*bounds=*/absl::nullopt,
-                       anchor_view);
+  CreateHelpBubbleView(std::move(params), /*bounds=*/std::nullopt, anchor_view);
 
   // Expect that `anchor_view` is now visible.
   EXPECT_TRUE(scroll_view->GetBoundsInScreen().Contains(

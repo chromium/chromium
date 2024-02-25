@@ -32,7 +32,7 @@ class LockScreenBaseTest : public LoginManagerTest {
 
   void SetUpOnMainThread() override {
     LoginManagerTest::SetUpOnMainThread();
-    input_method::InputMethodManager::Get()->MigrateInputMethods(
+    input_method::InputMethodManager::Get()->GetMigratedInputMethodIDs(
         &user_input_methods_);
   }
 
@@ -44,27 +44,19 @@ class LockScreenBaseTest : public LoginManagerTest {
 class LockScreenInputsTest : public LockScreenBaseTest {
  public:
   LockScreenInputsTest() {
-    // TODO(b/241259026): This test currently relies on StubAuthenticator,
-    // which doesn't work well with UseAuthFactors. We should instead use
-    // FakeUserDataAuth, which is a mock at a lower level.
-    scoped_feature_list_.InitWithFeatures(
-        /*enabled_features=*/{},
-        /*disabled_features=*/{features::kUseAuthFactors});
-
     login_manager_.AppendRegularUsers(2);
     user_input_methods_.push_back("xkb:fr::fra");
     user_input_methods_.push_back("xkb:de::ger");
   }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 IN_PROC_BROWSER_TEST_F(LockScreenInputsTest, CheckIMESwitches) {
   const auto& users = login_manager_.users();
-  SetExpectedCredentialsWithDbusClient(users[0].account_id, "password");
-  SetExpectedCredentialsWithDbusClient(users[1].account_id, "password");
-  LoginUserWithDbusClient(users[0].account_id, "password");
+  SetExpectedCredentialsWithDbusClient(users[0].account_id,
+                                       LoginManagerTest::kPassword);
+  SetExpectedCredentialsWithDbusClient(users[1].account_id,
+                                       LoginManagerTest::kPassword);
+  LoginUserWithDbusClient(users[0].account_id, LoginManagerTest::kPassword);
   scoped_refptr<input_method::InputMethodManager::State> ime_states[2] = {
       nullptr, nullptr};
   input_method::InputMethodManager* input_manager =
@@ -76,7 +68,7 @@ IN_PROC_BROWSER_TEST_F(LockScreenInputsTest, CheckIMESwitches) {
             user_input_methods_[0]);
 
   UserAddingScreen::Get()->Start();
-  AddUserWithDbusClient(users[1].account_id, "password");
+  AddUserWithDbusClient(users[1].account_id, LoginManagerTest::kPassword);
   EXPECT_EQ(users[1].account_id,
             user_manager::UserManager::Get()->GetActiveUser()->GetAccountId());
   ime_states[1] = input_manager->GetActiveIMEState();
@@ -97,7 +89,8 @@ IN_PROC_BROWSER_TEST_F(LockScreenInputsTest, CheckIMESwitches) {
   EXPECT_EQ(users[0].account_id, LoginScreenTestApi::GetFocusedUser());
   EXPECT_EQ(input_manager->GetActiveIMEState()->GetCurrentInputMethod().id(),
             user_input_methods_[0]);
-  locker_tester.UnlockWithPassword(users[0].account_id, "password");
+  locker_tester.UnlockWithPassword(users[0].account_id,
+                                   LoginManagerTest::kPassword);
   locker_tester.WaitForUnlock();
   EXPECT_EQ(users[0].account_id,
             user_manager::UserManager::Get()->GetActiveUser()->GetAccountId());
@@ -117,7 +110,8 @@ IN_PROC_BROWSER_TEST_F(LockScreenInputsTest, CheckIMESwitches) {
   EXPECT_TRUE(LoginScreenTestApi::FocusUser(users[1].account_id));
   EXPECT_EQ(input_manager->GetActiveIMEState()->GetCurrentInputMethod().id(),
             user_input_methods_[1]);
-  locker_tester.UnlockWithPassword(users[1].account_id, "password");
+  locker_tester.UnlockWithPassword(users[1].account_id,
+                                   LoginManagerTest::kPassword);
   EXPECT_EQ(users[1].account_id,
             user_manager::UserManager::Get()->GetActiveUser()->GetAccountId());
   EXPECT_EQ(ime_states[1], input_manager->GetActiveIMEState());
@@ -176,7 +170,8 @@ IN_PROC_BROWSER_TEST_F(LockScreenFilterInputTest, Basic) {
                               not_valid_lock_screen_method_));
 
   // Check that input methods are restored in the session.
-  locker_tester.UnlockWithPassword(test_account_id, "password");
+  locker_tester.UnlockWithPassword(test_account_id,
+                                   LoginManagerTest::kPassword);
   locker_tester.WaitForUnlock();
   EXPECT_EQ(input_manager->GetActiveIMEState(), user_ime_state);
 
@@ -209,7 +204,7 @@ class LockScreenDevicePolicyInputsTest : public LockScreenBaseTest {
     policy_helper_.RefreshPolicyAndWaitUntilDeviceSettingsUpdated(
         {kDeviceLoginScreenInputMethods});
 
-    input_method::InputMethodManager::Get()->MigrateInputMethods(
+    input_method::InputMethodManager::Get()->GetMigratedInputMethodIDs(
         &allowed_input_method);
   }
 
@@ -246,6 +241,43 @@ IN_PROC_BROWSER_TEST_F(LockScreenDevicePolicyInputsTest, PolicyNotHonored) {
   EXPECT_EQ(
       input_manager->GetActiveIMEState()->GetAllowedInputMethodIds().size(),
       0u);
+}
+
+class LockScreenLocalPasswordTest : public LockScreenBaseTest {
+ public:
+  LockScreenLocalPasswordTest() {
+    login_manager_.AppendRegularUsers(1);
+    user_input_methods_.push_back("xkb:de::ger");
+  }
+};
+
+IN_PROC_BROWSER_TEST_F(LockScreenLocalPasswordTest, UnlockWithCorrectPassword) {
+  const AccountId test_account_id = login_manager_.users().front().account_id;
+  LoginUserWithLocalPassword(test_account_id);
+
+  ScreenLockerTester locker_tester;
+  locker_tester.Lock();
+
+  // Unlock with Local password, the same as was used for login.
+  locker_tester.UnlockWithPassword(test_account_id,
+                                   LoginManagerTest::kLocalPassword);
+  locker_tester.WaitForUnlock();
+  EXPECT_EQ(test_account_id,
+            user_manager::UserManager::Get()->GetActiveUser()->GetAccountId());
+}
+
+IN_PROC_BROWSER_TEST_F(LockScreenLocalPasswordTest, UnlockWithWrongPassword) {
+  const AccountId test_account_id = login_manager_.users().front().account_id;
+  LoginUserWithLocalPassword(test_account_id);
+
+  ScreenLockerTester locker_tester;
+  locker_tester.Lock();
+
+  // Unlock with a bad password.
+  locker_tester.UnlockWithPassword(test_account_id,
+                                   LoginManagerTest::kPassword);
+  base::RunLoop().RunUntilIdle();
+  EXPECT_TRUE(locker_tester.IsLocked());
 }
 
 }  // namespace

@@ -22,7 +22,7 @@
 
 namespace ui {
 class DisplayCALayerTree;
-enum class DomCode;
+enum class DomCode : uint32_t;
 }  // namespace ui
 
 namespace content {
@@ -74,9 +74,9 @@ class CONTENT_EXPORT RenderWidgetHostViewIOS
   void Hide() override;
   bool IsShowing() override;
   gfx::Rect GetViewBounds() override;
-  blink::mojom::PointerLockResult LockMouse(bool) override;
-  blink::mojom::PointerLockResult ChangeMouseLock(bool) override;
-  void UnlockMouse() override;
+  blink::mojom::PointerLockResult LockPointer(bool) override;
+  blink::mojom::PointerLockResult ChangePointerLock(bool) override;
+  void UnlockPointer() override;
   void EnsureSurfaceSynchronizedForWebTest() override;
   uint32_t GetCaptureSequenceNumber() const override;
   void TakeFallbackContentFrom(RenderWidgetHostView* view) override;
@@ -86,6 +86,7 @@ class CONTENT_EXPORT RenderWidgetHostViewIOS
   void ClearFallbackSurfaceForCommitPending() override;
   void ResetFallbackToFirstNavigationSurface() override;
   viz::FrameSinkId GetRootFrameSinkId() override;
+  void UpdateFrameSinkIdRegistration() override;
   const viz::FrameSinkId& GetFrameSinkId() const override;
   const viz::LocalSurfaceId& GetLocalSurfaceId() const override;
   viz::SurfaceId GetCurrentSurfaceId() const override;
@@ -98,10 +99,11 @@ class CONTENT_EXPORT RenderWidgetHostViewIOS
   void ShowWithVisibility(PageVisibilityState page_visibility) override;
   gfx::Rect GetBoundsInRootWindow() override;
   gfx::Size GetRequestedRendererSize() override;
-  absl::optional<DisplayFeature> GetDisplayFeature() override;
+  std::optional<DisplayFeature> GetDisplayFeature() override;
   void SetDisplayFeatureForTesting(
       const DisplayFeature* display_feature) override;
   void UpdateBackgroundColor() override;
+  bool HasFallbackSurface() const override;
   void NotifyHostAndDelegateOnWasShown(
       blink::mojom::RecordContentToVisibleTimeRequestPtr visible_time_request)
       override;
@@ -111,7 +113,8 @@ class CONTENT_EXPORT RenderWidgetHostViewIOS
   void CancelSuccessfulPresentationTimeRequestForHostAndDelegate() override;
   viz::ScopedSurfaceIdAllocator DidUpdateVisualProperties(
       const cc::RenderFrameMetadata& metadata) override;
-  void DidNavigateMainFramePreCommit() override;
+  void OnOldViewDidNavigatePreCommit() override;
+  void OnNewViewDidNavigatePostCommit() override;
   void DidEnterBackForwardCache() override;
   void DidNavigate() override;
   bool RequestRepaintForTesting() override;
@@ -122,14 +125,11 @@ class CONTENT_EXPORT RenderWidgetHostViewIOS
       const gfx::Size& dst_size,
       base::OnceCallback<void(const SkBitmap&)> callback) override;
   ui::Compositor* GetCompositor() override;
-  void GestureEventAck(
-      const blink::WebGestureEvent& event,
-      blink::mojom::InputEventResultState ack_result,
-      blink::mojom::ScrollResultDataPtr scroll_result_data) override;
+  void GestureEventAck(const blink::WebGestureEvent& event,
+                       blink::mojom::InputEventResultState ack_result) override;
   void ChildDidAckGestureEvent(
       const blink::WebGestureEvent& event,
-      blink::mojom::InputEventResultState ack_result,
-      blink::mojom::ScrollResultDataPtr scroll_result_data) override;
+      blink::mojom::InputEventResultState ack_result) override;
   void OnSynchronizedDisplayPropertiesChanged(bool rotation) override;
   gfx::Size GetCompositorViewportPixelSize() override;
 
@@ -234,18 +234,18 @@ class CONTENT_EXPORT RenderWidgetHostViewIOS
   // mouse position just as mouse lock was entered; the movement they report
   // indicates what the change in position of the mouse would be had it not been
   // locked.
-  bool mouse_locked_ = false;
+  bool pointer_locked_ = false;
 
   // Tracks whether unaccelerated mouse motion events are sent while the mouse
   // is locked.
-  bool mouse_lock_unadjusted_movement_ = false;
+  bool pointer_lock_unadjusted_movement_ = false;
 
   // Latest capture sequence number which is incremented when the caller
   // requests surfaces be synchronized via
   // EnsureSurfaceSynchronizedForWebTest().
   uint32_t latest_capture_sequence_number_ = 0u;
 
-  absl::optional<gfx::PointF> last_root_scroll_offset_;
+  std::optional<gfx::PointF> last_root_scroll_offset_;
   bool is_scrolling_ = false;
 
   // This stores the underlying view bounds. The UIView might change size but

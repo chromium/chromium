@@ -26,6 +26,7 @@ class RenderFrameHost;
 namespace captions {
 
 class CaptionBubbleContextBrowser;
+class GreedyTextStabilizer;
 class LiveCaptionController;
 class LiveTranslateController;
 
@@ -94,6 +95,9 @@ class LiveCaptionSpeechRecognitionHost
   // does not exist. Lifetime is tied to the BrowserContext.
   LiveTranslateController* GetLiveTranslateController();
 
+  // Processes and returns the text to be dispatched.
+  std::string GetTextForDispatch(const std::string& text, bool is_final);
+
   std::unique_ptr<CaptionBubbleContextBrowser> context_;
 
   // A flag used by the Live Translate feature indicating whether transcriptions
@@ -116,6 +120,21 @@ class LiveCaptionSpeechRecognitionHost
 
   // The number of characters sent to the translation service.
   int characters_translated_ = 0;
+
+  // The number of characters omitted from the translation by the text
+  // stabilization policy. Used by metrics only.
+  int translation_characters_erased_ = 0;
+
+  // The number of requests to the translation service. Used by metrics only.
+  int partial_result_count_ = 0;
+
+  // The automatically detected language of the audio stream.
+  std::string auto_detected_language_;
+
+  // The number of consecutive highly confident language identification events.
+  int language_identification_event_count_ = 0;
+
+  std::unique_ptr<captions::GreedyTextStabilizer> greedy_text_stabilizer_;
 
   base::WeakPtrFactory<LiveCaptionSpeechRecognitionHost> weak_factory_{this};
 };

@@ -155,7 +155,9 @@ void ScreenshotDataCollector::CollectDataAndDetectPII(
   DesktopMediaPickerController::DoneCallback callback =
       base::BindOnce(&ScreenshotDataCollector::OnSourceSelected,
                      weak_ptr_factory_.GetWeakPtr());
-  DesktopMediaPickerController::Params picker_params;
+  DesktopMediaPickerController::Params picker_params(
+      DesktopMediaPickerController::Params::RequestSource::
+          kScreenshotDataCollector);
   picker_params.web_contents = web_contents;
   picker_params.context = parent_window;
   picker_params.parent = parent_window;
@@ -206,7 +208,7 @@ void ScreenshotDataCollector::OnSourceSelected(const std::string& err,
     }
   }
   const gfx::Rect bounds(window->bounds().width(), window->bounds().height());
-  ui::GrabWindowSnapshotAsyncJPEG(
+  ui::GrabWindowSnapshotAsJPEG(
       std::move(window), std::move(bounds),
       base::BindOnce(&ScreenshotDataCollector::OnScreenshotTaken,
                      weak_ptr_factory_.GetWeakPtr()));
@@ -262,10 +264,9 @@ void ScreenshotDataCollector::OnScreenshotTaken(
     scoped_refptr<base::RefCountedMemory> data) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (data && data.get()) {
-    screenshot_base64_ = base::StrCat(
-        {kBase64Header,
-         base::Base64Encode(base::make_span(data->data(), data->size()))});
-    std::move(data_collector_done_callback_).Run(/*error=*/absl::nullopt);
+    screenshot_base64_ =
+        base::StrCat({kBase64Header, base::Base64Encode(*data)});
+    std::move(data_collector_done_callback_).Run(/*error=*/std::nullopt);
     return;
   }
   SupportToolError error = {
@@ -287,7 +288,7 @@ void ScreenshotDataCollector::OnTabCaptured(const SkBitmap& bitmap) {
   }
   screenshot_base64_ = base::StrCat(
       {kBase64Header, base::Base64Encode(std::move(jpeg_encoded_data))});
-  std::move(data_collector_done_callback_).Run(/*error=*/absl::nullopt);
+  std::move(data_collector_done_callback_).Run(/*error=*/std::nullopt);
 }
 #endif  // !BUILDFLAG(IS_CHROMEOS)
 
@@ -304,7 +305,7 @@ void ScreenshotDataCollector::OnCaptureResult(
   }
 
   ConvertDesktopFrameToBase64JPEG(std::move(frame), screenshot_base64_);
-  std::move(data_collector_done_callback_).Run(/*error=*/absl::nullopt);
+  std::move(data_collector_done_callback_).Run(/*error=*/std::nullopt);
 }
 
 void ScreenshotDataCollector::ExportCollectedDataWithPII(
@@ -333,5 +334,5 @@ void ScreenshotDataCollector::OnScreenshotExported(bool success) {
     std::move(data_collector_done_callback_).Run(error);
     return;
   }
-  std::move(data_collector_done_callback_).Run(/*error=*/absl::nullopt);
+  std::move(data_collector_done_callback_).Run(/*error=*/std::nullopt);
 }

@@ -62,6 +62,16 @@ const DARK_MODE_OVERRIDES_CSS = window ? `
 const UNTYPED_CSS = window ? `` : '';
 
 const TYPOGRAPHY_CSS = window ? `
+  /* font faces */
+  @font-face {
+    font-family: "GSR";
+    src: local("Google Sans Regular");
+  }
+  @font-face {
+    font-family: "GSTM";
+    src: local("Google Sans Text Medium");
+  }
+
   /* font families */
   --cros-font-family-test: 'Google Sans', 'Noto Sans', sans-serif;
   --cros-font-family-other: Roboto, 'Noto Sans', sans-serif;
@@ -209,8 +219,8 @@ export const BG_COLOR_ELEVATION_1 = css`var(--cros-bg-color-elevation-1)`;
 export const DISABLED_OPACITY = css`var(--cros-disabled-opacity)`;
 export const REFERENCE_OPACITY = css`var(--cros-reference-opacity)`;
 
-export const FONT_FAMILY_TEST = css`var(--cros-font-family-test-font)`;
-export const FONT_FAMILY_OTHER = css`var(--cros-font-family-other-font)`;
+export const FONT_FAMILY_TEST = css`var(--cros-font-family-test)`;
+export const FONT_FAMILY_OTHER = css`var(--cros-font-family-other)`;
 export const HEADLINE_1_FONT = css`var(--cros-headline-1-font)`;
 export const HEADLINE_1_FONT_FAMILY = css`var(--cros-headline-1-font-family)`;
 export const HEADLINE_1_FONT_SIZE = css`var(--cros-headline-1-font-size)`;

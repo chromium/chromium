@@ -29,7 +29,7 @@ class DownloadNativeTaskImpl final : public DownloadTaskImpl {
       const std::string& mime_type,
       NSString* identifier,
       const scoped_refptr<base::SequencedTaskRunner>& task_runner,
-      DownloadNativeTaskBridge* download) API_AVAILABLE(ios(15));
+      DownloadNativeTaskBridge* download);
 
   DownloadNativeTaskImpl(const DownloadNativeTaskImpl&) = delete;
   DownloadNativeTaskImpl& operator=(const DownloadNativeTaskImpl&) = delete;
@@ -50,7 +50,7 @@ class DownloadNativeTaskImpl final : public DownloadTaskImpl {
   // Invoked when the NSURLResponse of WKDownload is received.
   void OnResponseReceived(int http_error_code, NSString* mime_type);
 
-  DownloadNativeTaskBridge* download_bridge_ API_AVAILABLE(ios(15)) = nil;
+  DownloadNativeTaskBridge* download_bridge_ = nil;
 
   base::WeakPtrFactory<DownloadNativeTaskImpl> weak_factory_{this};
 };

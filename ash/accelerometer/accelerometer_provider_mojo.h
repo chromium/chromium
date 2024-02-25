@@ -9,17 +9,17 @@
 
 #include <map>
 #include <memory>
+#include <optional>
 #include <string>
 #include <vector>
 
-#include "ash/accelerometer/accelerometer_reader.h"
 #include "ash/accelerometer/accel_gyro_samples_observer.h"
+#include "ash/accelerometer/accelerometer_reader.h"
 #include "ash/ash_export.h"
 #include "base/sequence_checker.h"
 #include "chromeos/components/sensors/mojom/cros_sensor_service.mojom.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ash {
 
@@ -85,9 +85,9 @@ class ASH_EXPORT AccelerometerProviderMojo
     // location information. It'll be passed to |samples_observer| as an
     // argument after all information is collected.
     mojo::Remote<chromeos::sensors::mojom::SensorDevice> remote;
-    absl::optional<AccelerometerSource> location;
-    absl::optional<float> scale;
-    std::unique_ptr<AccelGryoSamplesObserver> samples_observer;
+    std::optional<AccelerometerSource> location;
+    std::optional<float> scale;
+    std::unique_ptr<AccelGyroSamplesObserver> samples_observer;
   };
 
   ~AccelerometerProviderMojo() override;
@@ -154,19 +154,19 @@ class ASH_EXPORT AccelerometerProviderMojo
 
   // Creates the Mojo channel for the accelerometer, and requests the
   // accelerometer's required attributes before creating the
-  // AccelGryoSamplesObserver of it.
+  // AccelGyroSamplesObserver of it.
   void RegisterAccelerometerWithId(int32_t id);
   void OnAccelerometerRemoteDisconnect(int32_t id,
                                        uint32_t custom_reason_code,
                                        const std::string& description);
   void GetAttributesCallback(
       int32_t id,
-      const std::vector<absl::optional<std::string>>& values);
+      const std::vector<std::optional<std::string>>& values);
 
   // Ignores the accelerometer as the attributes are not expected.
   void IgnoreAccelerometer(int32_t id);
 
-  // Creates the AccelGryoSamplesObserver for the accelerometer with |id|.
+  // Creates the AccelGyroSamplesObserver for the accelerometer with |id|.
   void CreateAccelerometerSamplesObserver(int32_t id);
 
   // Controls accelerometer reading.

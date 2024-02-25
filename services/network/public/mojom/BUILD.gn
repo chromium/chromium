@@ -23,7 +23,14 @@ mojom("mojom_ip_address") {
     "ip_endpoint.mojom",
   ]
 
-  webui_module_path = "chrome://resources/mojo/services/network/public/mojom"
+  # WebUI bindings are only needed on ChromeOS Ash.
+  if (is_chromeos_ash) {
+    webui_module_path = "chrome://resources/mojo/services/network/public/mojom"
+
+    # Used by ash/webui/resources/common/network_health, which is still using
+    # Closure Compiler, so generate WebUI bindings in JavaScript.
+    generate_webui_js_bindings = true
+  }
 
   public_deps = [ "//url/mojom:url_mojom_gurl" ]
 
@@ -46,7 +53,7 @@ mojom("mojom_ip_address") {
       types = [
         {
           mojom = "network.mojom.ConnectionInfo"
-          cpp = "::net::HttpResponseInfo::ConnectionInfo"
+          cpp = "::net::HttpConnectionInfo"
         },
       ]
       traits_headers = [
@@ -314,7 +321,10 @@ mojom("mojom_proxy_config") {
     "proxy_config_with_annotation.mojom",
   ]
 
-  public_deps = [ "//mojo/public/mojom/base" ]
+  public_deps = [
+    ":mojom_network_param",
+    "//mojo/public/mojom/base",
+  ]
 
   shared_cpp_typemaps = [
     {
@@ -401,9 +411,6 @@ mojom("mojom_attribution") {
 
   webui_module_path = "/"
 
-  # Generate TypeScript rather than JavaScript WebUI bindings.
-  use_typescript_sources = true
-
   # This is a dependency of url_loader_base below, which is used from Blink.
   # Blink requires legacy JS bindings.
   generate_legacy_js_bindings = true
@@ -453,7 +460,6 @@ mojom("url_loader_base") {
     "chunked_data_pipe_getter.mojom",
     "client_security_state.mojom",
     "content_security_policy.mojom",
-    "cookie_setting_overrides.mojom",
     "cors.mojom",
     "cross_origin_embedder_policy.mojom",
     "cross_origin_opener_policy.mojom",
@@ -477,6 +483,7 @@ mojom("url_loader_base") {
     "parsed_headers.mojom",
     "referrer_policy.mojom",
     "request_priority.mojom",
+    "service_worker_router_info.mojom",
     "shared_dictionary_access_observer.mojom",
     "source_location.mojom",
     "supports_loading_mode.mojom",
@@ -768,18 +775,6 @@ mojom("url_loader_base") {
           [ "//services/network/public/cpp/load_timing_info_mojom_traits.h" ]
       traits_public_deps = [ "//net" ]
     },
-    {
-      types = [
-        {
-          mojom = "network.mojom.CookieSettingOverrides"
-          cpp = "::net::CookieSettingOverrides"
-        },
-      ]
-      traits_headers = [
-        "//services/network/public/cpp/cookie_setting_overrides_mojom_traits.h",
-      ]
-      traits_public_deps = [ "//net" ]
-    },
   ]
 
   if (is_linux) {
@@ -859,9 +854,6 @@ mojom("mojom_schemeful_site") {
 
   webui_module_path = "/"
 
-  # Generate TypeScript rather than JavaScript WebUI bindings.
-  use_typescript_sources = true
-
   # Blink requires the 3 legacy JS bindings types.
   generate_legacy_js_bindings = true
 }
@@ -896,6 +888,10 @@ mojom("mojom_network_param") {
         {
           mojom = "network.mojom.NetLogSource"
           cpp = "::net::NetLogSource"
+        },
+        {
+          mojom = "network.mojom.ProxyChain"
+          cpp = "::net::ProxyChain"
         },
       ]
       traits_headers =
@@ -1106,6 +1102,7 @@ mojom("cookies_mojom") {
     "cookie_access_observer.mojom",
     "cookie_manager.mojom",
     "cookie_partition_key.mojom",
+    "cookie_setting_overrides.mojom",
     "restricted_cookie_manager.mojom",
     "site_for_cookies.mojom",
   ]
@@ -1113,6 +1110,8 @@ mojom("cookies_mojom") {
   public_deps = [
     ":mojom_first_party_sets",
     ":mojom_schemeful_site",
+    "//components/content_settings/core/common:content_settings_enums",
+    "//components/content_settings/core/common:content_settings_types",
     "//components/content_settings/core/common:mojo_bindings",
     "//mojo/public/mojom/base",
     "//sandbox/policy/mojom",
@@ -1242,6 +1241,18 @@ mojom("cookies_mojom") {
           [ "//services/network/public/cpp/cookie_manager_mojom_traits.cc" ]
       traits_public_deps = [ "//net" ]
     },
+    {
+      types = [
+        {
+          mojom = "network.mojom.CookieSettingOverrides"
+          cpp = "::net::CookieSettingOverrides"
+        },
+      ]
+      traits_headers = [
+        "//services/network/public/cpp/cookie_setting_overrides_mojom_traits.h",
+      ]
+      traits_public_deps = [ "//net" ]
+    },
   ]
   cpp_typemaps += shared_cpp_typemaps
 
@@ -1340,7 +1351,9 @@ mojom("mojom") {
   generate_java = true
   sources = [
     "cert_verifier_service.mojom",
+    "cert_verifier_service_updater.mojom",
     "clear_data_filter.mojom",
+    "cookie_encryption_provider.mojom",
     "cors_origin_pattern.mojom",
     "default_credentials.mojom",
     "dhcp_wpad_url_client.mojom",
@@ -1351,7 +1364,9 @@ mojom("mojom") {
     "key_pinning.mojom",
     "mdns_responder.mojom",
     "net_log.mojom",
+    "network_annotation_monitor.mojom",
     "network_context.mojom",
+    "network_context_client.mojom",
     "network_quality_estimator_manager.mojom",
     "network_service.mojom",
     "network_service_test.mojom",
@@ -1386,6 +1401,7 @@ mojom("mojom") {
     ":mojom_structured_headers",
     ":url_loader_base",
     ":websocket_mojom",
+    "//components/os_crypt/async/common:common_mojom",
     "//mojo/public/mojom/base",
     "//sandbox/policy/mojom",
     "//services/proxy_resolver/public/mojom",
@@ -1396,10 +1412,6 @@ mojom("mojom") {
 
   if (is_win) {
     public_deps += [ "//services/proxy_resolver_win/public/mojom" ]
-  }
-
-  if (is_android) {
-    sources += [ "system_dns_config_observer.mojom" ]
   }
 
   enabled_features = []
@@ -1577,25 +1589,6 @@ mojom("mojom") {
       traits_public_deps = [ "//net" ]
     },
   ]
-
-  if (is_android) {
-    cpp_typemaps += [
-      {
-        types = [
-          {
-            mojom = "network.mojom.DnsConfig"
-            cpp = "::net::DnsConfig"
-          },
-        ]
-        traits_headers = [ "//services/network/public/cpp/system_dns_config_observer_mojom_traits.h" ]
-        traits_sources = [ "//services/network/public/cpp/system_dns_config_observer_mojom_traits.cc" ]
-        traits_public_deps = [
-          "//net",
-          "//services/network/public/cpp:cpp_base",
-        ]
-      },
-    ]
-  }
 
   if (enable_reporting) {
     cpp_typemaps += [

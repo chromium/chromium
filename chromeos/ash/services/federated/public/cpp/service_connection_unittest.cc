@@ -13,11 +13,11 @@
 #include "chromeos/ash/services/federated/public/cpp/fake_service_connection.h"
 #include "chromeos/ash/services/federated/public/cpp/federated_example_util.h"
 #include "chromeos/ash/services/federated/public/mojom/example.mojom.h"
+#include "chromeos/ash/services/federated/public/mojom/tables.mojom.h"
 #include "mojo/core/embedder/scoped_ipc_support.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace ash {
-namespace federated {
+namespace ash::federated {
 namespace {
 
 using chromeos::federated::mojom::Example;
@@ -57,14 +57,14 @@ class FederatedServiceConnectionTest : public testing::Test {
 };
 
 // Tests that BindReceiver runs OK (no crash) in a basic Mojo environment.
-TEST_F(FederatedServiceConnectionTest, ReportExample) {
+TEST_F(FederatedServiceConnectionTest, BindReceiver) {
   mojo::Remote<chromeos::federated::mojom::FederatedService> federated_service;
   ServiceConnection::GetInstance()->BindReceiver(
       federated_service.BindNewPipeAndPassReceiver());
 }
 
 // Tests that FakeServiceConnection can handle BindReceiver and the bound
-// receiver can call ReportExample successfully.
+// receiver can call ReportExampleToTable successfully.
 TEST_F(FederatedServiceConnectionTest, FakeServiceConnection) {
   FakeServiceConnectionImpl fake_service_connection;
   ScopedFakeServiceConnectionForTest scoped_fake_for_test(
@@ -76,10 +76,11 @@ TEST_F(FederatedServiceConnectionTest, FakeServiceConnection) {
   EXPECT_TRUE(federated_service.is_bound());
   EXPECT_TRUE(federated_service.is_connected());
 
-  federated_service->ReportExample("test_client", CreateExample());
+  federated_service->ReportExampleToTable(
+      chromeos::federated::mojom::FederatedExampleTableId::UNKNOWN,
+      CreateExample());
   base::RunLoop().RunUntilIdle();
 }
 
 }  // namespace
-}  // namespace federated
-}  // namespace ash
+}  // namespace ash::federated

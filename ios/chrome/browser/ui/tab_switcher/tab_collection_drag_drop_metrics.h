@@ -5,13 +5,23 @@
 #ifndef IOS_CHROME_BROWSER_UI_TAB_SWITCHER_TAB_COLLECTION_DRAG_DROP_METRICS_H_
 #define IOS_CHROME_BROWSER_UI_TAB_SWITCHER_TAB_COLLECTION_DRAG_DROP_METRICS_H_
 
+#import <Foundation/Foundation.h>
+
+// LINT.IfChange
+
 // Key of UMA DragDrop histograms.
+extern NSString* const kUmaTabStripViewDragDropTabs;
 extern const char kUmaGridViewDragDropTabs[];
 extern const char kUmaPinnedViewDragDropTabs[];
 
 // Key of UMA DragOrigin histograms.
+extern const char kUmaTabStripViewDragOrigin[];
 extern const char kUmaGridViewDragOrigin[];
 extern const char kUmaPinnedViewDragOrigin[];
+
+#ifdef __cplusplus
+
+#pragma mark - C++ Declarations
 
 // Values of UMA DragDrop histograms. These values are persisted to logs.
 // Entries should not be renumbered and numeric values should never be reused.
@@ -36,5 +46,25 @@ enum class DragItemOrigin {
   kOther = 3,
   kMaxValue = kOther
 };
+
+#else
+
+#pragma mark - Swift Declarations
+
+// Swift implementation of `DragItemOrigin`.
+typedef NS_ENUM(NSInteger, DragDropTabs) {
+  // A tab is dragged.
+  DragDropTabsDragBegin = 0,
+  // A tab is dropped at the same index position.
+  DragDropTabsDragEndAtSameIndex = 1,
+  // A tab is dropped at a new index position.
+  DragDropTabsDragEndAtNewIndex = 2,
+  // A tab is dropped outside of its collection view.
+  DragDropTabsDragEndInOtherCollection = 3,
+  DragDropTabsMaxValue = DragDropTabsDragEndInOtherCollection
+};
+
+#endif
+// LINT.ThenChange(/tools/metrics/histograms/metadata/ios/histograms.xml)
 
 #endif  // IOS_CHROME_BROWSER_UI_TAB_SWITCHER_TAB_COLLECTION_DRAG_DROP_METRICS_H_

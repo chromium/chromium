@@ -215,7 +215,7 @@ class AdapterTest : public testing::Test {
   void Init(AlsReader::AlsInitStatus als_reader_status,
             BrightnessMonitor::Status brightness_monitor_status,
             const Model& model,
-            const absl::optional<ModelConfig>& model_config,
+            const std::optional<ModelConfig>& model_config,
             const std::map<std::string, std::string>& params,
             bool brightness_set_by_policy = false) {
     fake_light_provider_->set_als_init_status(als_reader_status);
@@ -287,8 +287,8 @@ class AdapterTest : public testing::Test {
 
   std::unique_ptr<TestingProfile> profile_;
 
-  absl::optional<MonotoneCubicSpline> global_curve_;
-  absl::optional<MonotoneCubicSpline> personal_curve_;
+  std::optional<MonotoneCubicSpline> global_curve_;
+  std::optional<MonotoneCubicSpline> personal_curve_;
 
   std::unique_ptr<FakeLightProvider> fake_light_provider_;
   std::unique_ptr<AlsReader> als_reader_;
@@ -317,7 +317,7 @@ class AdapterTest : public testing::Test {
 // AlsReader is |kDisabled| when Adapter is created.
 TEST_F(AdapterTest, AlsReaderDisabledOnInit) {
   Init(AlsReader::AlsInitStatus::kDisabled, BrightnessMonitor::Status::kSuccess,
-       Model(global_curve_, absl::nullopt, 0), GetTestModelConfig(),
+       Model(global_curve_, std::nullopt, 0), GetTestModelConfig(),
        default_params_);
 
   EXPECT_EQ(adapter_->GetStatusForTesting(), Adapter::Status::kDisabled);
@@ -326,7 +326,7 @@ TEST_F(AdapterTest, AlsReaderDisabledOnInit) {
 // BrightnessMonitor is |kDisabled| when Adapter is created.
 TEST_F(AdapterTest, BrightnessMonitorDisabledOnInit) {
   Init(AlsReader::AlsInitStatus::kSuccess, BrightnessMonitor::Status::kDisabled,
-       Model(global_curve_, absl::nullopt, 0), GetTestModelConfig(),
+       Model(global_curve_, std::nullopt, 0), GetTestModelConfig(),
        default_params_);
 
   EXPECT_EQ(adapter_->GetStatusForTesting(), Adapter::Status::kDisabled);
@@ -343,7 +343,7 @@ TEST_F(AdapterTest, ModellerDisabledOnInit) {
 // ModelConfigLoader has an invalid config, hence Modeller is disabled.
 TEST_F(AdapterTest, ModelConfigLoaderDisabledOnInit) {
   Init(AlsReader::AlsInitStatus::kSuccess, BrightnessMonitor::Status::kSuccess,
-       Model(global_curve_, absl::nullopt, 0), ModelConfig(), default_params_);
+       Model(global_curve_, std::nullopt, 0), ModelConfig(), default_params_);
 
   EXPECT_EQ(adapter_->GetStatusForTesting(), Adapter::Status::kDisabled);
 }
@@ -352,7 +352,7 @@ TEST_F(AdapterTest, ModelConfigLoaderDisabledOnInit) {
 TEST_F(AdapterTest, AlsReaderDisabledOnNotification) {
   Init(AlsReader::AlsInitStatus::kInProgress,
        BrightnessMonitor::Status::kSuccess,
-       Model(global_curve_, absl::nullopt, 0), GetTestModelConfig(),
+       Model(global_curve_, std::nullopt, 0), GetTestModelConfig(),
        default_params_);
 
   EXPECT_EQ(adapter_->GetStatusForTesting(), Adapter::Status::kInitializing);
@@ -367,7 +367,7 @@ TEST_F(AdapterTest, AlsReaderDisabledOnNotification) {
 TEST_F(AdapterTest, AlsReaderEnabledOnNotification) {
   Init(AlsReader::AlsInitStatus::kInProgress,
        BrightnessMonitor::Status::kSuccess,
-       Model(global_curve_, absl::nullopt, 0), GetTestModelConfig(),
+       Model(global_curve_, std::nullopt, 0), GetTestModelConfig(),
        default_params_);
 
   EXPECT_EQ(adapter_->GetStatusForTesting(), Adapter::Status::kInitializing);
@@ -386,7 +386,7 @@ TEST_F(AdapterTest, AlsReaderEnabledOnNotification) {
 TEST_F(AdapterTest, BrightnessMonitorDisabledOnNotification) {
   Init(AlsReader::AlsInitStatus::kSuccess,
        BrightnessMonitor::Status::kInitializing,
-       Model(global_curve_, absl::nullopt, 0), GetTestModelConfig(),
+       Model(global_curve_, std::nullopt, 0), GetTestModelConfig(),
        default_params_);
 
   EXPECT_EQ(adapter_->GetStatusForTesting(), Adapter::Status::kInitializing);
@@ -400,7 +400,7 @@ TEST_F(AdapterTest, BrightnessMonitorDisabledOnNotification) {
 TEST_F(AdapterTest, BrightnessMonitorEnabledOnNotification) {
   Init(AlsReader::AlsInitStatus::kSuccess,
        BrightnessMonitor::Status::kInitializing,
-       Model(global_curve_, absl::nullopt, 0), GetTestModelConfig(),
+       Model(global_curve_, std::nullopt, 0), GetTestModelConfig(),
        default_params_);
 
   EXPECT_EQ(adapter_->GetStatusForTesting(), Adapter::Status::kInitializing);
@@ -452,7 +452,7 @@ TEST_F(AdapterTest, ModellerEnabledOnNotification) {
 // ModelConfigLoader reports an invalid config on later notification.
 TEST_F(AdapterTest, InvalidModelConfigOnNotification) {
   Init(AlsReader::AlsInitStatus::kSuccess, BrightnessMonitor::Status::kSuccess,
-       Model(global_curve_, absl::nullopt, 0), absl::nullopt, default_params_);
+       Model(global_curve_, std::nullopt, 0), std::nullopt, default_params_);
 
   EXPECT_EQ(adapter_->GetStatusForTesting(), Adapter::Status::kInitializing);
 
@@ -468,7 +468,7 @@ TEST_F(AdapterTest, InvalidModelConfigOnNotification) {
 // ModelConfigLoader reports a valid config on later notification.
 TEST_F(AdapterTest, ValidModelConfigOnNotification) {
   Init(AlsReader::AlsInitStatus::kSuccess, BrightnessMonitor::Status::kSuccess,
-       Model(global_curve_, absl::nullopt, 0), absl::nullopt, default_params_);
+       Model(global_curve_, std::nullopt, 0), std::nullopt, default_params_);
 
   EXPECT_EQ(adapter_->GetStatusForTesting(), Adapter::Status::kInitializing);
 
@@ -581,7 +581,7 @@ TEST_F(AdapterTest, SequenceOfBrightnessUpdatesWithDefaultParams) {
 
   EXPECT_EQ(adapter_->GetAverageAmbientWithStdDevForTesting(
                 task_environment_.NowTicks()),
-            absl::nullopt);
+            std::nullopt);
 
   // A new ALS value triggers a brightness change.
   ForwardTimeAndReportAls({100});
@@ -698,7 +698,7 @@ TEST_F(AdapterTest, UserBrightnessChangeAlsReadingAbsent) {
 
   histogram_tester_.ExpectUniqueSample(
       "AutoScreenBrightness.MissingAlsWhenBrightnessChanged", true, 1);
-  EXPECT_EQ(adapter_->GetCurrentAvgLogAlsForTesting(), absl::nullopt);
+  EXPECT_EQ(adapter_->GetCurrentAvgLogAlsForTesting(), std::nullopt);
   EXPECT_EQ(adapter_->GetStatusForTesting(), Adapter::Status::kSuccess);
   EXPECT_FALSE(adapter_->IsAppliedForTesting());
   EXPECT_FALSE(adapter_->GetCurrentAvgLogAlsForTesting());
@@ -736,7 +736,7 @@ TEST_F(AdapterTest, UserBrightnessChangeAlsReadingAbsentContinue) {
 
   histogram_tester_.ExpectUniqueSample(
       "AutoScreenBrightness.MissingAlsWhenBrightnessChanged", true, 1);
-  EXPECT_EQ(adapter_->GetCurrentAvgLogAlsForTesting(), absl::nullopt);
+  EXPECT_EQ(adapter_->GetCurrentAvgLogAlsForTesting(), std::nullopt);
   EXPECT_EQ(adapter_->GetStatusForTesting(), Adapter::Status::kSuccess);
   EXPECT_TRUE(adapter_->IsAppliedForTesting());
   EXPECT_FALSE(adapter_->GetCurrentAvgLogAlsForTesting());
@@ -903,7 +903,7 @@ TEST_F(AdapterTest, AlsHorizon) {
 
 TEST_F(AdapterTest, UseLatestCurve) {
   Init(AlsReader::AlsInitStatus::kSuccess, BrightnessMonitor::Status::kSuccess,
-       Model(global_curve_, absl::nullopt, 0), GetTestModelConfig(),
+       Model(global_curve_, std::nullopt, 0), GetTestModelConfig(),
        default_params_);
 
   EXPECT_EQ(adapter_->GetStatusForTesting(), Adapter::Status::kSuccess);
@@ -941,7 +941,7 @@ TEST_F(AdapterTest, BrightnessSetByPolicy) {
 
   ForwardTimeAndReportAls({1, 2, 3, 4, 5, 6, 7, 8});
   EXPECT_EQ(test_observer_.num_changes(), 0);
-  EXPECT_EQ(adapter_->GetCurrentAvgLogAlsForTesting(), absl::nullopt);
+  EXPECT_EQ(adapter_->GetCurrentAvgLogAlsForTesting(), std::nullopt);
 }
 
 TEST_F(AdapterTest, FeatureDisabled) {
@@ -962,7 +962,7 @@ TEST_F(AdapterTest, FeatureDisabled) {
   // No brightness is changed.
   ForwardTimeAndReportAls({1, 2, 3, 4, 5, 6, 7, 8});
   EXPECT_EQ(test_observer_.num_changes(), 0);
-  EXPECT_EQ(adapter_->GetCurrentAvgLogAlsForTesting(), absl::nullopt);
+  EXPECT_EQ(adapter_->GetCurrentAvgLogAlsForTesting(), std::nullopt);
 }
 
 TEST_F(AdapterTest, FeatureEnabledConfigDisabled) {
@@ -982,7 +982,7 @@ TEST_F(AdapterTest, FeatureEnabledConfigDisabled) {
   // No brightness is changed.
   ForwardTimeAndReportAls({1, 2, 3, 4, 5, 6, 7, 8});
   EXPECT_EQ(test_observer_.num_changes(), 0);
-  EXPECT_EQ(adapter_->GetCurrentAvgLogAlsForTesting(), absl::nullopt);
+  EXPECT_EQ(adapter_->GetCurrentAvgLogAlsForTesting(), std::nullopt);
 }
 
 TEST_F(AdapterTest, ValidParameters) {

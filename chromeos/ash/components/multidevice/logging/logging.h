@@ -20,9 +20,9 @@ namespace ash::multidevice {
 // Examples:
 //   PA_LOG(INFO) << "Waiting for " << x << " pending requests.";
 //   PA_LOG(ERROR) << "Request failed: " << error_string;
-#define PA_LOG(severity)                                      \
-  ash::multidevice::ScopedLogMessage(__FILE__, __LINE__,      \
-                                     logging::LOG_##severity) \
+#define PA_LOG(severity)                                          \
+  ash::multidevice::ScopedLogMessage(__FILE__, __LINE__,          \
+                                     logging::LOGGING_##severity) \
       .stream()
 
 // Disables all logging while in scope. Intended to be called only from test

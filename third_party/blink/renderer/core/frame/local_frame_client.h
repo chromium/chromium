@@ -32,6 +32,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_FRAME_LOCAL_FRAME_CLIENT_H_
 
 #include <memory>
+#include <optional>
 
 #include "base/time/time.h"
 #include "mojo/public/cpp/bindings/pending_associated_receiver.h"
@@ -39,7 +40,6 @@
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "services/network/public/mojom/content_security_policy.mojom-blink-forward.h"
 #include "services/network/public/mojom/web_sandbox_flags.mojom-blink-forward.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/loader/loading_behavior_flag.h"
 #include "third_party/blink/public/common/loader/url_loader_factory_bundle.h"
 #include "third_party/blink/public/common/performance/performance_timeline_constants.h"
@@ -50,11 +50,13 @@
 #include "third_party/blink/public/common/tokens/tokens.h"
 #include "third_party/blink/public/common/use_counter/use_counter_feature.h"
 #include "third_party/blink/public/common/user_agent/user_agent_metadata.h"
+#include "third_party/blink/public/mojom/blob/blob_url_store.mojom-blink-forward.h"
 #include "third_party/blink/public/mojom/devtools/devtools_agent.mojom-blink-forward.h"
 #include "third_party/blink/public/mojom/fenced_frame/fenced_frame.mojom-blink-forward.h"
 #include "third_party/blink/public/mojom/frame/triggering_event_info.mojom-blink-forward.h"
-#include "third_party/blink/public/mojom/portal/portal.mojom-blink-forward.h"
+#include "third_party/blink/public/platform/child_url_loader_factory_bundle.h"
 #include "third_party/blink/public/platform/scheduler/web_scoped_virtual_time_pauser.h"
+#include "third_party/blink/public/platform/web_background_resource_fetch_assets.h"
 #include "third_party/blink/public/platform/web_content_settings_client.h"
 #include "third_party/blink/public/platform/web_effective_connection_type.h"
 #include "third_party/blink/public/platform/web_worker_fetch_context.h"
@@ -68,7 +70,6 @@
 #include "third_party/blink/renderer/core/frame/frame_types.h"
 #include "third_party/blink/renderer/core/html/link_resource.h"
 #include "third_party/blink/renderer/core/loader/document_loader.h"
-#include "third_party/blink/renderer/core/loader/frame_load_request.h"
 #include "third_party/blink/renderer/core/loader/frame_loader_types.h"
 #include "third_party/blink/renderer/core/loader/navigation_policy.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_load_priority.h"
@@ -92,7 +93,6 @@ class HTMLFencedFrameElement;
 class HTMLFormElement;
 class HTMLFrameOwnerElement;
 class HTMLMediaElement;
-class HTMLPortalElement;
 class HTMLPlugInElement;
 class HistoryItem;
 class KURL;
@@ -119,7 +119,6 @@ class ResourceLoadInfoNotifierWrapper;
 enum class SyncCondition;
 struct Impression;
 struct JavaScriptFrameworkDetectionResult;
-struct MobileFriendliness;
 
 namespace scheduler {
 class TaskAttributionId;
@@ -187,7 +186,7 @@ class CORE_EXPORT LocalFrameClient : public FrameClient {
       mojo::PendingRemote<mojom::blink::BlobURLToken>,
       base::TimeTicks input_start_time,
       const String& href_translate,
-      const absl::optional<Impression>& impression,
+      const std::optional<Impression>& impression,
       const LocalFrameToken* initiator_frame_token,
       std::unique_ptr<SourceLocation> source_location,
       mojo::PendingRemote<mojom::blink::PolicyContainerHostKeepAliveHandle>
@@ -202,21 +201,21 @@ class CORE_EXPORT LocalFrameClient : public FrameClient {
 
   virtual bool NavigateBackForward(
       int offset,
-      absl::optional<scheduler::TaskAttributionId>
+      std::optional<scheduler::TaskAttributionId>
           soft_navigation_heuristics_task_id) const = 0;
 
   virtual void DidDispatchPingLoader(const KURL&) = 0;
 
   // Will be called when |PerformanceTiming| events are updated
   virtual void DidChangePerformanceTiming() {}
-  // Will be called when an |InputEvent| is observed.
-  virtual void DidObserveInputDelay(base::TimeDelta input_delay) {}
 
   // Will be called when a user interaction is observed.
-  virtual void DidObserveUserInteraction(base::TimeTicks max_event_start,
-                                         base::TimeTicks max_event_end,
-                                         UserInteractionType interaction_type) {
-  }
+  virtual void DidObserveUserInteraction(
+      base::TimeTicks max_event_start,
+      base::TimeTicks max_event_end,
+      base::TimeTicks max_event_queued_main_thread,
+      UserInteractionType interaction_type,
+      uint64_t interaction_offset) {}
 
   // Will be called when |CpuTiming| events are updated
   virtual void DidChangeCpuTiming(base::TimeDelta time) {}
@@ -259,7 +258,7 @@ class CORE_EXPORT LocalFrameClient : public FrameClient {
 
   virtual String UserAgentOverride() = 0;
   virtual String UserAgent() = 0;
-  virtual absl::optional<blink::UserAgentMetadata> UserAgentMetadata() = 0;
+  virtual std::optional<blink::UserAgentMetadata> UserAgentMetadata() = 0;
 
   virtual String DoNotTrackValue() = 0;
 
@@ -267,22 +266,6 @@ class CORE_EXPORT LocalFrameClient : public FrameClient {
 
   virtual LocalFrame* CreateFrame(const AtomicString& name,
                                   HTMLFrameOwnerElement*) = 0;
-
-  // Creates a portal for the |HTMLPortalElement| and binds the other end of the
-  // |mojo::PendingAssociatedReceiver<mojom::blink::Portal>|. Returns a pair of
-  // a RemoteFrame and a token that identifies the portal. If the returned
-  // RemoteFrame is nullptr, then the PortalToken is meaningless.
-  virtual std::pair<RemoteFrame*, PortalToken> CreatePortal(
-      HTMLPortalElement*,
-      mojo::PendingAssociatedReceiver<mojom::blink::Portal>,
-      mojo::PendingAssociatedRemote<mojom::blink::PortalClient>) = 0;
-
-  // Adopts the predecessor |portal|. The HTMLPortalElement must have been
-  // created by adopting the predecessor in the PortalActivateEvent, and have a
-  // valid portal token. Returns a RemoteFrame for the portal.
-  // Adopting the predecessor allows a page to keep it alive and embed it as a
-  // portal, allowing instantaneous back and forward activations.
-  virtual RemoteFrame* AdoptPortal(HTMLPortalElement* portal) = 0;
 
   // Creates a remote fenced frame hosted by an MPArch frame tree for the
   // |HTMLFencedFrameElement|.
@@ -373,6 +356,10 @@ class CORE_EXPORT LocalFrameClient : public FrameClient {
   virtual scoped_refptr<network::SharedURLLoaderFactory>
   GetURLLoaderFactory() = 0;
   virtual std::unique_ptr<URLLoader> CreateURLLoaderForTesting() = 0;
+  virtual blink::ChildURLLoaderFactoryBundle* GetLoaderFactoryBundle() = 0;
+
+  virtual scoped_refptr<WebBackgroundResourceFetchAssets>
+  MaybeGetBackgroundResourceFetchAssets() = 0;
 
   virtual void AnnotatedRegionsChanged() = 0;
 
@@ -438,6 +425,8 @@ class CORE_EXPORT LocalFrameClient : public FrameClient {
 
   virtual void SetMouseCapture(bool) {}
 
+  virtual void NotifyAutoscrollForSelectionInMainFrame(bool) {}
+
   // Returns whether we are associated with a print context who suggests to use
   // printing layout.
   virtual bool UsePrintingLayout() const { return false; }
@@ -451,12 +440,6 @@ class CORE_EXPORT LocalFrameClient : public FrameClient {
   virtual void BindDevToolsAgent(
       mojo::PendingAssociatedRemote<mojom::blink::DevToolsAgentHost> host,
       mojo::PendingAssociatedReceiver<mojom::blink::DevToolsAgent> receiver) {}
-
-  // AppCache ------------------------------------------------------------
-  virtual void UpdateSubresourceFactory(
-      std::unique_ptr<blink::PendingURLLoaderFactoryBundle> pending_factory) {}
-
-  virtual void DidChangeMobileFriendliness(const MobileFriendliness&) {}
 };
 
 }  // namespace blink

@@ -5,7 +5,9 @@
 #include "base/task/sequence_manager/work_queue.h"
 
 #include <stddef.h>
+
 #include <memory>
+#include <optional>
 
 #include "base/functional/bind.h"
 #include "base/task/common/lazy_now.h"
@@ -17,7 +19,6 @@
 #include "base/task/sequence_manager/work_queue_sets.h"
 #include "base/time/time.h"
 #include "testing/gmock/include/gmock/gmock.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base {
 namespace sequence_manager {
@@ -150,7 +151,7 @@ TEST_F(WorkQueueTest, GetFrontTaskOrder) {
   work_queue_->Push(FakeTaskWithEnqueueOrder(3));
   work_queue_->Push(FakeTaskWithEnqueueOrder(4));
 
-  absl::optional<TaskOrder> task_order = work_queue_->GetFrontTaskOrder();
+  std::optional<TaskOrder> task_order = work_queue_->GetFrontTaskOrder();
   EXPECT_TRUE(task_order);
   EXPECT_EQ(2ull, task_order->enqueue_order());
 }
@@ -392,7 +393,7 @@ TEST_F(WorkQueueTest, InsertNewFence) {
   EXPECT_FALSE(work_queue_->BlockedByFence());
 
   // Note until TakeTaskFromWorkQueue() is called we don't hit the fence.
-  absl::optional<TaskOrder> task_order = work_queue_->GetFrontTaskOrder();
+  std::optional<TaskOrder> task_order = work_queue_->GetFrontTaskOrder();
   EXPECT_TRUE(task_order);
   EXPECT_EQ(2ull, task_order->enqueue_order());
 
@@ -527,7 +528,7 @@ TEST_F(WorkQueueTest, RemoveAllCanceledTasksFromFront) {
   }
   EXPECT_TRUE(work_queue_->RemoveAllCanceledTasksFromFront());
 
-  absl::optional<TaskOrder> task_order = work_queue_->GetFrontTaskOrder();
+  std::optional<TaskOrder> task_order = work_queue_->GetFrontTaskOrder();
   EXPECT_TRUE(task_order);
   EXPECT_EQ(5ull, task_order->enqueue_order());
 }
@@ -544,7 +545,7 @@ TEST_F(WorkQueueTest, RemoveAllCanceledTasksFromFrontTasksNotCanceled) {
     work_queue_->Push(FakeTaskWithEnqueueOrder(5));
     EXPECT_FALSE(work_queue_->RemoveAllCanceledTasksFromFront());
 
-    absl::optional<TaskOrder> task_order = work_queue_->GetFrontTaskOrder();
+    std::optional<TaskOrder> task_order = work_queue_->GetFrontTaskOrder();
     EXPECT_TRUE(task_order);
     EXPECT_EQ(2ull, task_order->enqueue_order());
   }

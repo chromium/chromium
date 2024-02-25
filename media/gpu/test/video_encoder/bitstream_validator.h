@@ -6,6 +6,7 @@
 #define MEDIA_GPU_TEST_VIDEO_ENCODER_BITSTREAM_VALIDATOR_H_
 
 #include <memory>
+#include <optional>
 #include <utility>
 #include <vector>
 
@@ -22,7 +23,6 @@
 #include "media/gpu/test/bitstream_helpers.h"
 #include "media/gpu/test/video_frame_helpers.h"
 #include "media/video/video_encode_accelerator.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/buffer_types.h"
 #include "ui/gfx/geometry/size.h"
 
@@ -46,8 +46,8 @@ class BitstreamValidator : public BitstreamProcessor {
       size_t last_frame_index,
       std::vector<std::unique_ptr<VideoFrameProcessor>> video_frame_processors =
           {},
-      absl::optional<size_t> spatial_layer_index_to_decode_ = absl::nullopt,
-      absl::optional<size_t> temporal_layer_index_to_decode = absl::nullopt,
+      std::optional<size_t> spatial_layer_index_to_decode_ = std::nullopt,
+      std::optional<size_t> temporal_layer_index_to_decode = std::nullopt,
       const std::vector<gfx::Size>& spatial_layer_resolutions = {});
 
   ~BitstreamValidator() override;
@@ -63,8 +63,8 @@ class BitstreamValidator : public BitstreamProcessor {
       std::unique_ptr<MediaLog> media_log,
       size_t last_frame_index,
       const gfx::Rect& decoding_rect,
-      absl::optional<size_t> spatial_layer_index_to_decode_,
-      absl::optional<size_t> temporal_layer_index_to_decode,
+      std::optional<size_t> spatial_layer_index_to_decode_,
+      std::optional<size_t> temporal_layer_index_to_decode,
       const std::vector<gfx::Size>& spatial_layer_resolutions,
       std::vector<std::unique_ptr<VideoFrameProcessor>> video_frame_processors);
   BitstreamValidator(const BitstreamValidator&) = delete;
@@ -91,8 +91,8 @@ class BitstreamValidator : public BitstreamProcessor {
   const std::unique_ptr<MediaLog> media_log_;
   const size_t last_frame_index_;
   const gfx::Rect desired_decoding_rect_;
-  const absl::optional<size_t> spatial_layer_index_to_decode_;
-  const absl::optional<size_t> temporal_layer_index_to_decode_;
+  const std::optional<size_t> spatial_layer_index_to_decode_;
+  const std::optional<size_t> temporal_layer_index_to_decode_;
   const std::vector<gfx::Size> spatial_layer_resolutions_;
   const std::vector<std::unique_ptr<VideoFrameProcessor>>
       video_frame_processors_;

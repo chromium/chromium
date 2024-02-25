@@ -16,12 +16,12 @@ build_webui("build") {
     "database_tab.ts",
     "discards_main.ts",
     "discards_tab.ts",
-    "graph_tab_template.ts",
+    "graph_tab.ts",
   ]
 
   non_web_component_files = [
     "discards.ts",
-    "graph_doc.ts",
+    "graph.ts",
     "sorted_table_mixin.ts",
   ]
 
@@ -43,38 +43,4 @@ build_webui("build") {
     "//ui/webui/resources/js:build_ts",
     "//ui/webui/resources/mojo:build_ts",
   ]
-
-  extra_grdp_files = [ "$target_gen_dir/discards_graph_tab.grdp" ]
-  extra_grdp_deps = [ ":build_graph_tab_grdp" ]
-}
-
-# This action merges the graph tab script into the graph_doc HTML template.
-# It then base64 encodes the combination, and merges into the graph_tab HTML
-# template to complete the data: URL for the webview therein.
-action("generate_graph_tab") {
-  script = "generate_graph_tab.py"
-  sources = [
-    "graph_doc.ts",
-    "graph_doc_template.html",
-    "graph_tab_template.html",
-  ]
-  outputs = [ "$target_gen_dir/graph_tab/graph_tab_template.html.js" ]
-
-  args = rebase_path(outputs, root_build_dir) +
-         rebase_path([ "graph_doc_template.html" ], root_build_dir) +
-         rebase_path([
-                       "$target_gen_dir/tsc/graph_doc.js",
-                       "$target_gen_dir/tsc/graph_tab_template.html.js",
-                     ],
-                     root_build_dir)
-  deps = [ ":build_ts" ]
-}
-
-generate_grd("build_graph_tab_grdp") {
-  input_files = [ "graph_tab_template.html.js" ]
-  input_files_base_dir =
-      rebase_path("$target_gen_dir/graph_tab", root_build_dir)
-  deps = [ ":generate_graph_tab" ]
-  grd_prefix = "discards_graph_tab"
-  out_grd = "$target_gen_dir/discards_graph_tab.grdp"
 }

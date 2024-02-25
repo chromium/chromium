@@ -90,12 +90,13 @@ TEST_F(EmfPrintingTest, Enumerate) {
   settings->set_device_name(u"UnitTest Printer");
 
   // Initialize it.
-  PrintingContextWin context(this);
+  PrintingContextWin context(this,
+                             PrintingContext::ProcessBehavior::kOopDisabled);
   EXPECT_EQ(mojom::ResultCode::kSuccess,
             context.InitWithSettingsForTest(std::move(settings)));
 
   base::FilePath emf_file;
-  EXPECT_TRUE(base::PathService::Get(base::DIR_SOURCE_ROOT, &emf_file));
+  EXPECT_TRUE(base::PathService::Get(base::DIR_SRC_TEST_DATA_ROOT, &emf_file));
   emf_file = emf_file.Append(FILE_PATH_LITERAL("printing"))
                  .Append(FILE_PATH_LITERAL("test"))
                  .Append(FILE_PATH_LITERAL("data"))

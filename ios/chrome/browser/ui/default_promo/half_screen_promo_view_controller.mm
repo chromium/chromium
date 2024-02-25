@@ -6,7 +6,7 @@
 
 #import "base/values.h"
 #import "ios/chrome/common/ui/confirmation_alert/confirmation_alert_view_controller.h"
-#import "ios/chrome/grit/ios_chromium_strings.h"
+#import "ios/chrome/grit/ios_branded_strings.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ios/public/provider/chrome/browser/branded_images/branded_images_api.h"
 #import "ui/base/l10n/l10n_util.h"

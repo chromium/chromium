@@ -555,4 +555,24 @@ TEST_F(HTMLViewSourceDocumentTest, Linebreak) {
       "</td></tr></tbody></table></body></html>");
 }
 
+TEST_F(HTMLViewSourceDocumentTest, DOMParts) {
+  LoadMainResource(
+      R"HTML(<div parseparts>{{#}}foo{{/}}<span {{}}>bar</span></div>)HTML");
+  EXPECT_EQ(
+      GetDocument().documentElement()->outerHTML(),
+      "<html><head><meta name=\"color-scheme\" content=\"light "
+      "dark\"></head><body><div class=\"line-gutter-backdrop\"></div><form "
+      "autocomplete=\"off\"><label class=\"line-wrap-control\"><input "
+      "type=\"checkbox\"></label></form><table><tbody><tr><td "
+      "class=\"line-number\" value=\"1\"></td><td class=\"line-content\"><span "
+      "class=\"html-tag\">&lt;div <span "
+      "class=\"html-attribute-name\">parseparts</span>&gt;</span>{{#}}foo{{/"
+      "}}<span class=\"html-tag\">&lt;span <span "
+      "class=\"html-attribute-name\">{{}}</span>&gt;</span>bar<span "
+      "class=\"html-tag\">&lt;/span&gt;</span><span "
+      "class=\"html-tag\">&lt;/div&gt;</span><span "
+      "class=\"html-end-of-file\"></span></td></tr></tbody></table></body></"
+      "html>");
+}
+
 }  // namespace blink

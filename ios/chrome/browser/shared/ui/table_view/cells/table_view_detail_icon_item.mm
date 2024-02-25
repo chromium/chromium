@@ -6,8 +6,8 @@
 
 #import "base/check.h"
 #import "base/notreached.h"
-#import "ios/chrome/browser/shared/ui/symbols/symbols.h"
-#import "ios/chrome/browser/shared/ui/table_view/chrome_table_view_styler.h"
+#import "ios/chrome/browser/shared/ui/elements/new_feature_badge_view.h"
+#import "ios/chrome/browser/shared/ui/table_view/legacy_chrome_table_view_styler.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/browser/ui/settings/cells/settings_cells_constants.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
@@ -41,8 +41,13 @@ constexpr CGFloat kNewIPHBadgeFontSize = 10.0;
 // labels when no dot is present.
 constexpr CGFloat kDefaultTextLabelSpacing = 4;
 
-// kBlueDotColor is the specific blue used for the blue dot notification badge.
-constexpr NSString* kBlueDotColor = @"blue_600_color";
+// By default, the maximum number of lines to be displayed for the detail text
+// should be one.
+const NSInteger kDefaultDetailTextNumberOfLines = 1;
+
+// The extra vertical spacing of the icon when it's top aligned with the text
+// labels.
+constexpr CGFloat kIconTopAlignmentVerticalSpacing = 2.0;
 
 // Returns the notification dot view for `TableViewDetailIconCell`.
 UIView* NotificationDotView() {
@@ -52,7 +57,7 @@ UIView* NotificationDotView() {
   UIView* dotUIView = [[UIView alloc] init];
   dotUIView.translatesAutoresizingMaskIntoConstraints = NO;
   dotUIView.layer.cornerRadius = kDotSize / 2;
-  dotUIView.backgroundColor = [UIColor colorNamed:kBlueDotColor];
+  dotUIView.backgroundColor = [UIColor colorNamed:kBlue600Color];
   [notificationDotUIView addSubview:dotUIView];
 
   [NSLayoutConstraint activateConstraints:@[
@@ -69,42 +74,11 @@ UIView* NotificationDotView() {
 }
 
 // Returns the "new" ("N") IPH badge view for `TableViewDetailIconCell`.
-UIView* NewIPHBadgeView() {
-  UIView* newIPHBadgeView = [[UIView alloc] init];
+NewFeatureBadgeView* NewIPHBadgeView() {
+  NewFeatureBadgeView* newIPHBadgeView =
+      [[NewFeatureBadgeView alloc] initWithBadgeSize:kNewIPHBadgeSize
+                                            fontSize:kNewIPHBadgeFontSize];
   newIPHBadgeView.translatesAutoresizingMaskIntoConstraints = NO;
-
-  UIImageView* newBadgeBackground = [[UIImageView alloc]
-      initWithImage:DefaultSymbolWithPointSize(kSealFillSymbol,
-                                               kNewIPHBadgeSize)];
-  newBadgeBackground.translatesAutoresizingMaskIntoConstraints = NO;
-  newBadgeBackground.tintColor = [UIColor colorNamed:kBlue600Color];
-  [newIPHBadgeView addSubview:newBadgeBackground];
-
-  UILabel* newLabel = [[UILabel alloc] init];
-  newLabel.translatesAutoresizingMaskIntoConstraints = NO;
-  newLabel.text =
-      l10n_util::GetNSStringWithFixup(IDS_IOS_NEW_LABEL_FEATURE_BADGE);
-  newLabel.textColor = [UIColor colorNamed:kPrimaryBackgroundColor];
-  UIFont* font = [UIFont systemFontOfSize:kNewIPHBadgeFontSize
-                                   weight:UIFontWeightBold];
-  UIFontDescriptor* descriptor = [font.fontDescriptor
-      fontDescriptorWithDesign:UIFontDescriptorSystemDesignRounded];
-  font = [UIFont fontWithDescriptor:descriptor size:kNewIPHBadgeFontSize];
-  newLabel.font = font;
-  [newIPHBadgeView addSubview:newLabel];
-  AddSameCenterConstraints(newLabel, newBadgeBackground);
-
-  [NSLayoutConstraint activateConstraints:@[
-    [newIPHBadgeView.widthAnchor
-        constraintGreaterThanOrEqualToConstant:kNewIPHBadgeSize],
-    [newBadgeBackground.widthAnchor constraintEqualToConstant:kNewIPHBadgeSize],
-    [newBadgeBackground.heightAnchor
-        constraintEqualToConstant:kNewIPHBadgeSize],
-    [newBadgeBackground.centerYAnchor
-        constraintEqualToAnchor:newIPHBadgeView.centerYAnchor],
-    [newBadgeBackground.leadingAnchor
-        constraintEqualToAnchor:newIPHBadgeView.leadingAnchor],
-  ]];
   return newIPHBadgeView;
 }
 
@@ -117,6 +91,8 @@ UIView* NewIPHBadgeView() {
   if (self) {
     self.cellClass = [TableViewDetailIconCell class];
     self.badgeType = BadgeType::kNone;
+    _detailTextNumberOfLines = kDefaultDetailTextNumberOfLines;
+    _iconCenteredVertically = YES;
   }
   return self;
 }
@@ -135,6 +111,9 @@ UIView* NewIPHBadgeView() {
          cornerRadius:self.iconCornerRadius];
   [cell setTextLayoutConstraintAxis:self.textLayoutConstraintAxis];
   [cell setBadgeType:self.badgeType];
+
+  [cell setDetailTextNumberOfLines:self.detailTextNumberOfLines];
+  [cell setIconCenteredVertically:self.iconCenteredVertically];
 }
 
 @end
@@ -162,6 +141,8 @@ UIView* NewIPHBadgeView() {
   UIImageView* _iconImageView;
   NSLayoutConstraint* _iconHiddenConstraint;
   NSLayoutConstraint* _iconVisibleConstraint;
+  NSLayoutConstraint* _iconCenterAlignment;
+  NSLayoutConstraint* _iconTopAlignment;
 
   // View representing the current badge view.
   UIView* _badgeView;
@@ -176,6 +157,9 @@ UIView* NewIPHBadgeView() {
               reuseIdentifier:(NSString*)reuseIdentifier {
   self = [super initWithStyle:style reuseIdentifier:reuseIdentifier];
   if (self) {
+    _detailTextNumberOfLines = kDefaultDetailTextNumberOfLines;
+    _iconCenteredVertically = YES;
+
     self.isAccessibilityElement = YES;
     UIView* contentView = self.contentView;
 
@@ -223,6 +207,15 @@ UIView* NewIPHBadgeView() {
     _minimumCellHeightConstraint.priority = UILayoutPriorityDefaultHigh - 1;
     _minimumCellHeightConstraint.active = YES;
 
+    // Set up the constrains for the icon's vertical alignment. One of these
+    // will be active at the time, defaulting to center alignment.
+    _iconCenterAlignment = [_iconBackground.centerYAnchor
+        constraintEqualToAnchor:contentView.centerYAnchor];
+    _iconTopAlignment = [_iconBackground.topAnchor
+        constraintEqualToAnchor:_textStackView.topAnchor
+                       constant:kIconTopAlignmentVerticalSpacing];
+    [self updateIconAlignment];
+
     [NSLayoutConstraint activateConstraints:@[
       // Icon.
       [_iconBackground.leadingAnchor
@@ -232,8 +225,6 @@ UIView* NewIPHBadgeView() {
           constraintEqualToConstant:kTableViewIconImageSize],
       [_iconBackground.heightAnchor
           constraintEqualToAnchor:_iconBackground.widthAnchor],
-      [_iconBackground.centerYAnchor
-          constraintEqualToAnchor:contentView.centerYAnchor],
 
       // Text labels.
       [_textStackView.trailingAnchor
@@ -287,6 +278,19 @@ UIView* NewIPHBadgeView() {
 }
 
 #pragma mark - Properties
+
+- (void)setIconCenteredVertically:(BOOL)iconCenteredVertically {
+  _iconCenteredVertically = iconCenteredVertically;
+  [self updateIconAlignment];
+}
+
+- (void)setDetailTextNumberOfLines:(NSInteger)detailTextNumberOfLines {
+  _detailTextNumberOfLines = detailTextNumberOfLines;
+
+  [self updateCellForAccessibilityContentSizeCategory:
+            UIContentSizeCategoryIsAccessibilityCategory(
+                self.traitCollection.preferredContentSizeCategory)];
+}
 
 - (void)setTextLayoutConstraintAxis:
     (UILayoutConstraintAxis)textLayoutConstraintAxis {
@@ -367,6 +371,16 @@ UIView* NewIPHBadgeView() {
 }
 
 #pragma mark - Private
+
+- (void)updateIconAlignment {
+  if (_iconCenteredVertically) {
+    _iconTopAlignment.active = NO;
+    _iconCenterAlignment.active = YES;
+  } else {
+    _iconCenterAlignment.active = NO;
+    _iconTopAlignment.active = YES;
+  }
+}
 
 - (void)createDetailTextLabel {
   if (self.detailTextLabel) {
@@ -488,10 +502,11 @@ UIView* NewIPHBadgeView() {
                   UIUserInterfaceLayoutDirectionLeftToRight
               ? NSTextAlignmentRight
               : NSTextAlignmentLeft;
+      _detailTextLabel.numberOfLines = kDefaultDetailTextNumberOfLines;
     } else {
       _detailTextLabel.textAlignment = NSTextAlignmentNatural;
+      _detailTextLabel.numberOfLines = _detailTextNumberOfLines;
     }
-    _detailTextLabel.numberOfLines = 1;
     _textLabel.numberOfLines = 2;
   }
   UIFontTextStyle preferredFont =
@@ -506,9 +521,21 @@ UIView* NewIPHBadgeView() {
     return self.customAccessibilityLabel;
   }
   if (_badgeView) {
-    return [NSString stringWithFormat:@"%@, %@", self.textLabel.text,
-                                      l10n_util::GetNSString(
-                                          IDS_IOS_NEW_ITEM_ACCESSIBILITY_HINT)];
+    switch (_badgeType) {
+      case BadgeType::kNotificationDot:
+        return [NSString
+            stringWithFormat:@"%@, %@", self.textLabel.text,
+                             l10n_util::GetNSString(
+                                 IDS_IOS_NEW_ITEM_ACCESSIBILITY_HINT)];
+      case BadgeType::kNew:
+        return [NSString
+            stringWithFormat:@"%@, %@", self.textLabel.text,
+                             l10n_util::GetNSString(
+                                 IDS_IOS_NEW_FEATURE_ACCESSIBILITY_HINT)];
+      case BadgeType::kNone:
+        NOTREACHED();
+        break;
+    }
   }
   return self.textLabel.text;
 }
@@ -525,10 +552,21 @@ UIView* NewIPHBadgeView() {
 
 - (NSArray<NSString*>*)accessibilityUserInputLabels {
   if (_badgeView) {
-    return @[ [NSString
-        stringWithFormat:@"%@, %@", self.textLabel.text,
-                         l10n_util::GetNSString(
-                             IDS_IOS_NEW_ITEM_ACCESSIBILITY_HINT)] ];
+    switch (_badgeType) {
+      case BadgeType::kNotificationDot:
+        return @[ [NSString
+            stringWithFormat:@"%@, %@", self.textLabel.text,
+                             l10n_util::GetNSString(
+                                 IDS_IOS_NEW_ITEM_ACCESSIBILITY_HINT)] ];
+      case BadgeType::kNew:
+        return @[ [NSString
+            stringWithFormat:@"%@, %@", self.textLabel.text,
+                             l10n_util::GetNSString(
+                                 IDS_IOS_NEW_FEATURE_ACCESSIBILITY_HINT)] ];
+      case BadgeType::kNone:
+        NOTREACHED();
+        break;
+    }
   }
   return @[ self.textLabel.text ];
 }

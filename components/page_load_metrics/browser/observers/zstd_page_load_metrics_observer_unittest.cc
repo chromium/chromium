@@ -38,7 +38,7 @@ class ZstdPageLoadMetricsObserverTest
   void SimulateTimingWithoutPaint() {
     page_load_metrics::mojom::PageLoadTiming timing;
     page_load_metrics::InitPageLoadTimingForTest(&timing);
-    timing.navigation_start = base::Time::FromDoubleT(1);
+    timing.navigation_start = base::Time::FromSecondsSinceUnixEpoch(1);
     tester()->SimulateTimingUpdate(timing);
   }
 
@@ -46,7 +46,7 @@ class ZstdPageLoadMetricsObserverTest
     page_load_metrics::mojom::PageLoadTiming timing;
     page_load_metrics::InitPageLoadTimingForTest(&timing);
     timing.parse_timing->parse_start = base::Milliseconds(0);
-    timing.navigation_start = base::Time::FromDoubleT(1);
+    timing.navigation_start = base::Time::FromSecondsSinceUnixEpoch(1);
     timing.paint_timing->first_paint = base::Milliseconds(0);
     PopulateRequiredTimingFields(&timing);
     tester()->SimulateTimingUpdate(timing);
@@ -59,7 +59,7 @@ class ZstdPageLoadMetricsObserverTest
 TEST_F(ZstdPageLoadMetricsObserverTest, Facebook) {
   page_load_metrics::mojom::PageLoadTiming timing;
   page_load_metrics::InitPageLoadTimingForTest(&timing);
-  timing.navigation_start = base::Time::FromDoubleT(1);
+  timing.navigation_start = base::Time::FromSecondsSinceUnixEpoch(1);
   timing.parse_timing->parse_start = base::Milliseconds(1);
   timing.paint_timing->first_contentful_paint = base::Milliseconds(10);
   timing.paint_timing->largest_contentful_paint->largest_text_paint =
@@ -89,7 +89,7 @@ TEST_F(ZstdPageLoadMetricsObserverTest, Facebook) {
 TEST_F(ZstdPageLoadMetricsObserverTest, NonZstd) {
   page_load_metrics::mojom::PageLoadTiming timing;
   page_load_metrics::InitPageLoadTimingForTest(&timing);
-  timing.navigation_start = base::Time::FromDoubleT(1);
+  timing.navigation_start = base::Time::FromSecondsSinceUnixEpoch(1);
   timing.parse_timing->parse_start = base::Milliseconds(1);
   timing.paint_timing->first_contentful_paint = base::Milliseconds(10);
   timing.paint_timing->largest_contentful_paint->largest_text_paint =

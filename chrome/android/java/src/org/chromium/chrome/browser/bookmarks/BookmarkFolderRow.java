@@ -18,12 +18,11 @@ import org.chromium.components.bookmarks.BookmarkType;
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 import org.chromium.components.browser_ui.widget.TintedDrawable;
 
-/**
- * A row view that shows folder info in the bookmarks UI.
- */
+/** A row view that shows folder info in the bookmarks UI. */
 public class BookmarkFolderRow extends BookmarkRow {
     /**
      * Factory constructor for building the view programmatically.
+     *
      * @param context The calling context, usually the parent view.
      * @param isVisualRefreshEnabled Whether to show the visual or compact bookmark row.
      */
@@ -36,9 +35,6 @@ public class BookmarkFolderRow extends BookmarkRow {
     /** Constructor for inflating from XML. */
     public BookmarkFolderRow(Context context, AttributeSet attrs) {
         super(context, attrs);
-
-        setIconDrawable(BookmarkUtils.getFolderIcon(
-                getContext(), BookmarkType.NORMAL, BookmarkRowDisplayPref.COMPACT));
     }
 
     // BookmarkRow implementation.
@@ -53,11 +49,16 @@ public class BookmarkFolderRow extends BookmarkRow {
             BookmarkId bookmarkId, @Location int location, boolean fromFilterView) {
         BookmarkItem item = super.setBookmarkId(bookmarkId, location, fromFilterView);
         mTitleView.setText(item.getTitle());
-        mDescriptionView.setText(BookmarkUtils.getFolderDescriptionText(
-                bookmarkId, mDelegate.getModel(), getContext().getResources()));
+        mDescriptionView.setText(
+                BookmarkUtils.getFolderDescriptionText(
+                        bookmarkId, mDelegate.getModel(), getContext().getResources()));
 
-        setIconDrawable(BookmarkUtils.getFolderIcon(
-                getContext(), item.getId().getType(), BookmarkRowDisplayPref.COMPACT));
+        setIconDrawable(
+                BookmarkUtils.getFolderIcon(
+                        getContext(),
+                        item.getId(),
+                        mDelegate.getModel(),
+                        BookmarkRowDisplayPref.COMPACT));
         return item;
     }
 
@@ -73,24 +74,32 @@ public class BookmarkFolderRow extends BookmarkRow {
     /**
      * Sets the icon for the image view: the default icon if unselected, the check mark if selected.
      *
-     * @param imageView     The image view in which the icon will be presented.
-     * @param defaultIcon   The default icon that will be displayed if not selected.
-     * @param isSelected    Whether the item is selected or not.
+     * @param imageView The image view in which the icon will be presented.
+     * @param defaultIcon The default icon that will be displayed if not selected.
+     * @param isSelected Whether the item is selected or not.
      */
     public static void applyModernIconStyle(
             ImageView imageView, Drawable defaultIcon, boolean isSelected) {
         imageView.setBackgroundResource(R.drawable.list_item_icon_modern_bg);
         Drawable drawable;
         if (isSelected) {
-            drawable = TintedDrawable.constructTintedDrawable(
-                    imageView.getContext(), R.drawable.ic_check_googblue_24dp);
+            drawable =
+                    TintedDrawable.constructTintedDrawable(
+                            imageView.getContext(), R.drawable.ic_check_googblue_24dp);
             drawable.setTint(SemanticColorUtils.getDefaultIconColorInverse(imageView.getContext()));
         } else {
             drawable = defaultIcon;
         }
         imageView.setImageDrawable(drawable);
-        imageView.getBackground().setLevel(isSelected
-                        ? imageView.getResources().getInteger(R.integer.list_item_level_selected)
-                        : imageView.getResources().getInteger(R.integer.list_item_level_default));
+        imageView
+                .getBackground()
+                .setLevel(
+                        isSelected
+                                ? imageView
+                                        .getResources()
+                                        .getInteger(R.integer.list_item_level_selected)
+                                : imageView
+                                        .getResources()
+                                        .getInteger(R.integer.list_item_level_default));
     }
 }

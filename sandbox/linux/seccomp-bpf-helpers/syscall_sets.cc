@@ -1096,9 +1096,6 @@ bool SyscallSets::IsExtendedAttributes(int sysno) {
 // TODO(jln): classify this better.
 bool SyscallSets::IsMisc(int sysno) {
   switch (sysno) {
-#if !defined(__mips__)
-    case __NR_getrandom:
-#endif
     case __NR_name_to_handle_at:
     case __NR_open_by_handle_at:
     case __NR_perf_event_open:

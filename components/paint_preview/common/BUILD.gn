@@ -88,6 +88,9 @@ source_set("unit_tests") {
     "//third_party:freetype_harfbuzz",
     "//ui/gfx/geometry",
   ]
+  if (is_ios) {
+    deps += [ "//components/test:paint_preview_test_bundle_data" ]
+  }
 }
 
 test("paint_preview_common_unit_tests") {

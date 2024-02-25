@@ -18,7 +18,6 @@
 #include "mediapipe/framework/formats/landmark.pb.h"
 #include "mediapipe/framework/formats/tensor.h"
 #include "mediapipe/framework/port/ret_check.h"
-#include "absl/log/absl_check.h"
 
 namespace mediapipe {
 namespace api2 {
@@ -125,7 +124,7 @@ absl::Status TensorsToLandmarksCalculator::Open(CalculatorContext* cc) {
        kFlipVertically(cc).IsConnected())) {
     RET_CHECK(options_.has_input_image_height() &&
               options_.has_input_image_width())
-        << "Must provide input width/height for using flipping when outputing "
+        << "Must provide input width/height for using flipping when outputting "
            "landmarks in absolute coordinates.";
   }
   return absl::OkStatus();

@@ -11,6 +11,7 @@
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/bind.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/threading/thread_restrictions.h"
 #include "components/network_session_configurator/common/network_switches.h"
@@ -150,8 +151,11 @@ class PreconnectListener
 class NavigationEarlyHintsTest : public ContentBrowserTest {
  public:
   NavigationEarlyHintsTest() {
-    feature_list_.InitAndEnableFeature(
-        net::features::kSplitCacheByNetworkIsolationKey);
+    feature_list_.InitWithFeatures(
+        std::vector<base::test::FeatureRef>{
+            net::features::kSplitCacheByNetworkIsolationKey},
+        std::vector<base::test::FeatureRef>{
+            net::features::kMigrateSessionsOnNetworkChangeV2});
   }
   ~NavigationEarlyHintsTest() override = default;
 
@@ -411,6 +415,8 @@ class NavigationEarlyHintsTest : public ContentBrowserTest {
 };
 
 IN_PROC_BROWSER_TEST_F(NavigationEarlyHintsTest, Basic) {
+  base::HistogramTester histograms;
+
   ResponseEntry entry = CreatePageEntryWithHintedScript(net::HTTP_OK);
   RegisterResponse(entry);
 
@@ -426,6 +432,11 @@ IN_PROC_BROWSER_TEST_F(NavigationEarlyHintsTest, Basic) {
   ASSERT_FALSE(it->second.was_canceled);
   ASSERT_TRUE(it->second.error_code.has_value());
   EXPECT_EQ(it->second.error_code.value(), net::OK);
+
+  histograms.ExpectTotalCount(
+      "Navigation.EarlyHints.WillStartRequestToEarlyHintsTime", 1);
+  histograms.ExpectTotalCount(
+      "Navigation.EarlyHints.EarlyHintsToResponseStartTime", 1);
 }
 
 IN_PROC_BROWSER_TEST_F(NavigationEarlyHintsTest, CorsAttribute) {
@@ -702,7 +713,7 @@ IN_PROC_BROWSER_TEST_F(NavigationEarlyHintsTest, NetworkAnonymizationKey) {
   ResponseEntry entry = CreateEmptyPageEntryWithHintedScript();
   RegisterResponse(entry);
 
-  absl::optional<bool> is_cached;
+  std::optional<bool> is_cached;
   URLLoaderInterceptor interceptor(
       base::BindLambdaForTesting(
           [&](URLLoaderInterceptor::RequestParams* params) { return false; }),
@@ -726,7 +737,7 @@ IN_PROC_BROWSER_TEST_F(NavigationEarlyHintsTest, NetworkAnonymizationKey) {
   ASSERT_EQ(it->second.error_code.value(), net::OK);
 
   ASSERT_FALSE(is_cached.value());
-  is_cached = absl::nullopt;
+  is_cached = std::nullopt;
 
   // Fetch the hinted resource from the main frame. It should come from the
   // cache.
@@ -734,7 +745,7 @@ IN_PROC_BROWSER_TEST_F(NavigationEarlyHintsTest, NetworkAnonymizationKey) {
   ASSERT_TRUE(is_cached.value());
 
   // Reset `is_cached` to make sure it is set true or false.
-  is_cached = absl::nullopt;
+  is_cached = std::nullopt;
 
   // Create an iframe with a different origin and fetch the hinted resource from
   // the iframe. It should not come from the cache.
@@ -827,7 +838,8 @@ IN_PROC_BROWSER_TEST_F(NavigationEarlyHintsAddressSpaceTest,
   ASSERT_TRUE(it != preloads.end());
   ASSERT_FALSE(it->second.was_canceled);
   ASSERT_TRUE(it->second.error_code.has_value());
-  EXPECT_EQ(it->second.error_code.value(), net::ERR_FAILED);
+  EXPECT_EQ(it->second.error_code.value(),
+            net::ERR_BLOCKED_BY_PRIVATE_NETWORK_ACCESS_CHECKS);
   EXPECT_EQ(it->second.cors_error_status->cors_error,
             network::mojom::CorsError::kInsecurePrivateNetwork);
 }
@@ -913,54 +925,6 @@ IN_PROC_BROWSER_TEST_F(NavigationEarlyHintsFencedFrameTest,
           net::QuicSimpleTestServer::GetFileURL(kPageWithHintedScriptPath)));
   EXPECT_NE(fenced_frame_host, nullptr);
   EXPECT_EQ(fenced_frame_host->early_hints_manager(), nullptr);
-}
-
-class NavigationEarlyHintsPortalTest : public NavigationEarlyHintsTest {
- public:
-  NavigationEarlyHintsPortalTest() {
-    scoped_feature_list_.InitWithFeatures(
-        /*enabled_features=*/{blink::features::kPortals,
-                              blink::features::kPortalsCrossOrigin},
-        /*disabled_features=*/{});
-  }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
-};
-
-IN_PROC_BROWSER_TEST_F(NavigationEarlyHintsPortalTest,
-                       DisallowPreloadInPortal) {
-  EXPECT_TRUE(NavigateToURL(
-      shell(), net::QuicSimpleTestServer::GetFileURL("/title1.html")));
-
-  ResponseEntry entry = CreatePageEntryWithHintedScript(net::HTTP_OK);
-  RegisterResponse(entry);
-
-  GURL portal_url(
-      net::QuicSimpleTestServer::GetFileURL(kPageWithHintedScriptPath));
-  WebContentsAddedObserver contents_observer;
-  TestNavigationObserver portal_nav_observer(portal_url);
-  portal_nav_observer.StartWatchingNewWebContents();
-
-  // Create a portal.
-  EXPECT_TRUE(
-      ExecJs(shell()->web_contents()->GetPrimaryMainFrame(),
-             JsReplace("{"
-                       "  let portal = document.createElement('portal');"
-                       "  portal.src = $1;"
-                       "  document.body.appendChild(portal);"
-                       "}",
-                       portal_url),
-             EXECUTE_SCRIPT_NO_USER_GESTURE));
-
-  WebContents* portal_web_contents = contents_observer.GetWebContents();
-  EXPECT_NE(portal_web_contents, nullptr);
-  portal_nav_observer.WaitForNavigationFinished();
-
-  EXPECT_EQ(static_cast<RenderFrameHostImpl*>(
-                portal_web_contents->GetPrimaryMainFrame())
-                ->early_hints_manager(),
-            nullptr);
 }
 
 namespace {

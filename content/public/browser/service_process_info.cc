@@ -9,7 +9,7 @@
 namespace content {
 
 ServiceProcessInfo::ServiceProcessInfo(const std::string& name,
-                                       const absl::optional<GURL>& site,
+                                       const std::optional<GURL>& site,
                                        const ServiceProcessId& id,
                                        base::Process process)
     : service_interface_name_(name),

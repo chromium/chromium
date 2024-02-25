@@ -58,7 +58,7 @@
     },
     "APNList": [ {
         "AccessPointName": "test-apn0",
-        "ApnTypes": ["Default"],
+        "ApnTypes": ["Tether"],
         "IpType": "IPv4",
         "Password": "test-password0",
         "Username": "test-username0"

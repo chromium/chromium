@@ -1,0 +1,76 @@
+[
+  {
+    "os": [
+      "win",
+      "linux",
+      "mac",
+      "chromeos_ash",
+      "chromeos_lacros",
+      "fuchsia"
+    ],
+    "policy_pref_mapping_tests": [
+      {
+        "policies": {},
+        "prefs": {
+          "devtools.availability": {
+            "default_value": 0
+          }
+        }
+      },
+      {
+        "policies": {
+          "DeveloperToolsAvailability": 0
+        },
+        "prefs": {
+          "devtools.availability": {
+            "value": 0
+          }
+        }
+      },
+      {
+        "policies": {
+          "DeveloperToolsAvailability": 1
+        },
+        "prefs": {
+          "devtools.availability": {
+            "value": 1
+          }
+        }
+      },
+      {
+        "policies": {
+          "DeveloperToolsAvailability": 2
+        },
+        "prefs": {
+          "devtools.availability": {
+            "value": 2
+          }
+        }
+      },
+      {
+        "note": "DeveloperToolsAvailability (2) overwrites DeveloperToolsDisabled (false->1) if both are set",
+        "policies": {
+          "DeveloperToolsAvailability": 2,
+          "DeveloperToolsDisabled": false
+        },
+        "prefs": {
+          "devtools.availability": {
+            "value": 2
+          }
+        }
+      },
+      {
+        "note": "DeveloperToolsAvailability (1) overwrites DeveloperToolsDisabled (true->2) both are set",
+        "policies": {
+          "DeveloperToolsAvailability": 1,
+          "DeveloperToolsDisabled": true
+        },
+        "prefs": {
+          "devtools.availability": {
+            "value": 1
+          }
+        }
+      }
+    ]
+  }
+]

@@ -37,9 +37,7 @@ public class WebBackForwardListChromium extends WebBackForwardList {
         }
     }
 
-    /**
-     * See {@link android.webkit.WebBackForwardList#getCurrentItem}.
-     */
+    /** See {@link android.webkit.WebBackForwardList#getCurrentItem}. */
     @Override
     public synchronized WebHistoryItem getCurrentItem() {
         if (getSize() == 0) {
@@ -49,17 +47,13 @@ public class WebBackForwardListChromium extends WebBackForwardList {
         }
     }
 
-    /**
-     * See {@link android.webkit.WebBackForwardList#getCurrentIndex}.
-     */
+    /** See {@link android.webkit.WebBackForwardList#getCurrentIndex}. */
     @Override
     public synchronized int getCurrentIndex() {
         return mCurrentIndex;
     }
 
-    /**
-     * See {@link android.webkit.WebBackForwardList#getItemAtIndex}.
-     */
+    /** See {@link android.webkit.WebBackForwardList#getItemAtIndex}. */
     @Override
     public synchronized WebHistoryItem getItemAtIndex(int index) {
         if (index < 0 || index >= getSize()) {
@@ -69,9 +63,7 @@ public class WebBackForwardListChromium extends WebBackForwardList {
         }
     }
 
-    /**
-     * See {@link android.webkit.WebBackForwardList#getSize}.
-     */
+    /** See {@link android.webkit.WebBackForwardList#getSize}. */
     @Override
     public synchronized int getSize() {
         return mHistoryItemList.size();
@@ -83,9 +75,7 @@ public class WebBackForwardListChromium extends WebBackForwardList {
         mCurrentIndex = currentIndex;
     }
 
-    /**
-     * See {@link android.webkit.WebBackForwardList#clone}.
-     */
+    /** See {@link android.webkit.WebBackForwardList#clone}. */
     @Override
     protected synchronized WebBackForwardListChromium clone() {
         List<WebHistoryItemChromium> list = new ArrayList<WebHistoryItemChromium>(getSize());

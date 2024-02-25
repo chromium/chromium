@@ -8,7 +8,7 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/observer_list.h"
-#include "chrome/browser/ui/toolbar/media_router_action_controller.h"
+#include "chrome/browser/ui/toolbar/media_router/media_router_action_controller.h"
 #include "components/keyed_service/core/keyed_service.h"
 
 class PrefChangeRegistrar;

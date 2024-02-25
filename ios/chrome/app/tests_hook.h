@@ -6,17 +6,25 @@
 #define IOS_CHROME_APP_TESTS_HOOK_H_
 
 #include <memory>
+#import <optional>
 
 class PrefService;
 class ProfileOAuth2TokenServiceDelegate;
 class ProfileOAuth2TokenService;
 class SystemIdentityManager;
+namespace drive {
+class DriveService;
+}
 namespace policy {
 class ConfigurationPolicyProvider;
 }
 namespace password_manager {
 class BulkLeakCheckServiceInterface;
 class RecipientsFetcher;
+}
+
+namespace base {
+class TimeDelta;
 }
 
 namespace tests_hook {
@@ -39,9 +47,11 @@ bool DisableContentSuggestions();
 // without it.
 bool DisableDiscoverFeed();
 
-// Returns true if the first_run path should be disabled to allow other tests to
-// run unimpeded.
-bool DisableFirstRun();
+// Returns true if the first run UI, which would interfere with many tests,
+// should by default be skipped. Note that even in a target where this function
+// returns `false`, that's just a default, and individual tests may still enable
+// the first run UI.
+bool DisableDefaultFirstRun();
 
 // Returns true if the geolocation should be disabled to avoid the user location
 // prompt displaying for the omnibox.
@@ -50,6 +60,12 @@ bool DisableGeolocation();
 // Returns true if the Promo Manager should avoid displaying full-screen promos
 // on app startup to allow tests to run unimpeded.
 bool DisablePromoManagerFullScreenPromos();
+
+// Returns true if the search engine choice view, which would interfere with
+// many tests, should by default be skipped. Note that even in a target where
+// this function returns `false`, that's just a default, and individual tests
+// may still enable this view.
+bool DisableDefaultSearchEngineChoice();
 
 // Returns a token service that can be installed as a fake identity management
 // service that bridges iOS SSO library and Chrome account info when testing.
@@ -99,6 +115,26 @@ void SetUpTestsIfPresent();
 // Runs the integration tests.  This is not used by EarlGrey-based integration
 // tests.
 void RunTestsIfPresent();
+
+// Signal that the app has successfully launched. Only used by performance
+// tests.
+void SignalAppLaunched();
+
+// Minimum duration of password checks. The password check UI displays checks as
+// in progress for at least this duration in order to avoid updating the UI too
+// fast and making it flicker. Test targets do not have an artificial minimum
+// duration as it can make test flaky.
+base::TimeDelta PasswordCheckMinimumDuration();
+
+// Returns a Drive service instance that should be used in EG tests. The real
+// instance will be used if this hook returns a nullptr.
+std::unique_ptr<drive::DriveService> GetOverriddenDriveService();
+
+// Override the Feature Engagement Tracker used in tests with a demo version.
+// Returning std::nullopt will not do any override. Returning any string will
+// override with a demo tracker that only enables that feature (use empty string
+// for a demo tracker that enables all features).
+std::optional<std::string> FETDemoModeOverride();
 
 }  // namespace tests_hook
 

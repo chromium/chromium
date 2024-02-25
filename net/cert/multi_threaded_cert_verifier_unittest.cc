@@ -51,9 +51,9 @@ class MockCertVerifyProc : public CertVerifyProc {
                    const std::string&,
                    const std::string&,
                    int,
-                   const CertificateList&,
                    CertVerifyResult*,
-                   const NetLogWithSource&));
+                   const NetLogWithSource&,
+                   std::optional<base::Time> time_now));
   MOCK_CONST_METHOD0(SupportsAdditionalTrustAnchors, bool());
 
  private:
@@ -62,7 +62,7 @@ class MockCertVerifyProc : public CertVerifyProc {
 
 ACTION(SetCertVerifyResult) {
   X509Certificate* cert = arg0;
-  CertVerifyResult* result = arg6;
+  CertVerifyResult* result = arg5;
   result->Reset();
   result->verified_cert = cert;
   result->cert_status = CERT_STATUS_COMMON_NAME_INVALID;
@@ -70,7 +70,7 @@ ACTION(SetCertVerifyResult) {
 
 ACTION(SetCertVerifyRevokedResult) {
   X509Certificate* cert = arg0;
-  CertVerifyResult* result = arg6;
+  CertVerifyResult* result = arg5;
   result->Reset();
   result->verified_cert = cert;
   result->cert_status = CERT_STATUS_REVOKED;
@@ -83,7 +83,8 @@ class SwapWithNewProcFactory : public CertVerifyProcFactory {
 
   scoped_refptr<net::CertVerifyProc> CreateCertVerifyProc(
       scoped_refptr<CertNetFetcher> cert_net_fetcher,
-      const ImplParams& impl_params) override {
+      const CertVerifyProc::ImplParams& impl_params,
+      const CertVerifyProc::InstanceParams& instance_params) override {
     return mock_verify_proc_;
   }
 
@@ -343,7 +344,7 @@ TEST_F(MultiThreadedCertVerifierTest, VerifyProcChangeChromeRootStore) {
   EXPECT_CALL(*mock_new_verify_proc_, VerifyInternal(_, _, _, _, _, _, _, _))
       .WillRepeatedly(
           DoAll(SetCertVerifyRevokedResult(), Return(ERR_CERT_REVOKED)));
-  verifier_->UpdateVerifyProcData(nullptr, {});
+  verifier_->UpdateVerifyProcData(nullptr, {}, {});
 
   EXPECT_EQ(observer_counter.change_count(), 1u);
 
@@ -383,7 +384,7 @@ TEST_F(MultiThreadedCertVerifierTest, VerifyProcChangeRequest) {
       &verify_result, callback.callback(), &request, NetLogWithSource());
   ASSERT_THAT(error, IsError(ERR_IO_PENDING));
   EXPECT_TRUE(request);
-  verifier_->UpdateVerifyProcData(nullptr, {});
+  verifier_->UpdateVerifyProcData(nullptr, {}, {});
   error = callback.WaitForResult();
   EXPECT_TRUE(IsCertificateError(error));
   EXPECT_THAT(error, IsError(ERR_CERT_COMMON_NAME_INVALID));

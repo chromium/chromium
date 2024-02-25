@@ -11,6 +11,7 @@
 #include <vector>
 
 #include "base/check.h"
+#include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
@@ -23,19 +24,19 @@
 #include "content/browser/devtools/protocol/native_input_event_builder.h"
 #include "content/browser/devtools/protocol/protocol.h"
 #include "content/browser/renderer_host/data_transfer_util.h"
-#include "content/browser/renderer_host/input/synthetic_pinch_gesture.h"
-#include "content/browser/renderer_host/input/synthetic_pointer_action.h"
-#include "content/browser/renderer_host/input/synthetic_pointer_driver.h"
-#include "content/browser/renderer_host/input/synthetic_smooth_scroll_gesture.h"
-#include "content/browser/renderer_host/input/synthetic_tap_gesture.h"
 #include "content/browser/renderer_host/input/touch_emulator.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/browser/renderer_host/render_widget_host_impl.h"
 #include "content/browser/renderer_host/render_widget_host_input_event_router.h"
 #include "content/browser/renderer_host/render_widget_host_view_base.h"
 #include "content/browser/web_contents/web_contents_impl.h"
+#include "content/common/input/synthetic_pinch_gesture.h"
 #include "content/common/input/synthetic_pinch_gesture_params.h"
+#include "content/common/input/synthetic_pointer_action.h"
+#include "content/common/input/synthetic_pointer_driver.h"
+#include "content/common/input/synthetic_smooth_scroll_gesture.h"
 #include "content/common/input/synthetic_smooth_scroll_gesture_params.h"
+#include "content/common/input/synthetic_tap_gesture.h"
 #include "content/common/input/synthetic_tap_gesture_params.h"
 #include "content/public/common/content_features.h"
 #include "third_party/blink/public/common/input/web_input_event.h"
@@ -246,7 +247,7 @@ bool GenerateTouchPoints(
                                   ? blink::WebTouchPoint::State::kStateCancelled
                                   : blink::WebTouchPoint::State::kStateReleased;
     event->SetType(type);
-  } else if (points.find(changing.id) == points.end()) {
+  } else if (!base::Contains(points, changing.id)) {
     event->touches[0].state = blink::WebTouchPoint::State::kStatePressed;
     event->SetType(blink::WebInputEvent::Type::kTouchStart);
   } else {
@@ -258,19 +259,23 @@ bool GenerateTouchPoints(
 
 std::string ValidatePointerEventProperties(double force,
                                            double tangential_pressure,
-                                           int tilt_x,
-                                           int tilt_y,
+                                           double tilt_x,
+                                           double tilt_y,
                                            int twist) {
-  if (force < 0 || force > 1)
-    return "'force' should be in the range of  [0,1]";
-  if (tangential_pressure < -1 || tangential_pressure > 1)
-    return "'tangential_pressure' should be in the range of  [-1,1]";
-  if (tilt_x < -90 || tilt_x > 90)
-    return "'tilt_x' should be in the range of  [-90,90]";
-  if (tilt_y < -90 || tilt_y > 90)
-    return "'tilt_y' should be in the range of  [-90,90]";
+  if (force < 0.0f || force > 1.0f) {
+    return "'force' should be in the range of [0,1]";
+  }
+  if (tangential_pressure < -1.0f || tangential_pressure > 1.0f) {
+    return "'tangential_pressure' should be in the range of [-1,1]";
+  }
+  if (tilt_x < -90.0f || tilt_x > 90.0f) {
+    return "'tilt_x' should be in the range of [-90,90]";
+  }
+  if (tilt_y < -90.0f || tilt_y > 90.0f) {
+    return "'tilt_y' should be in the range of [-90,90]";
+  }
   if (twist < 0 || twist > 359)
-    return "'twist' should be in the range of  [0,359]";
+    return "'twist' should be in the range of [0,359]";
   return "";
 }
 
@@ -354,9 +359,9 @@ DropData ProtocolDragDataToDropData(std::unique_ptr<Input::DragData> data) {
     items.push_back(blink::mojom::DragItem::NewString(std::move(mojo_item)));
   }
 
-  blink::mojom::DragDataPtr mojo_data =
-      blink::mojom::DragData::New(std::move(items), absl::nullopt,
-                                  network::mojom::ReferrerPolicy::kDefault);
+  blink::mojom::DragDataPtr mojo_data = blink::mojom::DragData::New(
+      std::move(items), std::nullopt,
+      /*force_default_action=*/false, network::mojom::ReferrerPolicy::kDefault);
   DropData drop_data = DragDataToDropData(*mojo_data);
 
   protocol::Array<protocol::String> default_value;
@@ -380,8 +385,8 @@ CreateWebMouseEvent(const std::string& event_type,
                     Maybe<int> click_count,
                     Maybe<double> force,
                     Maybe<double> tangential_pressure,
-                    Maybe<int> tilt_x,
-                    Maybe<int> tilt_y,
+                    Maybe<double> tilt_x,
+                    Maybe<double> tilt_y,
                     Maybe<int> twist,
                     Maybe<double> delta_x,
                     Maybe<double> delta_y,
@@ -498,16 +503,16 @@ CreateWebTouchEvents(
       with_id++;
     }
     std::string message = ValidatePointerEventProperties(
-        point->GetForce(1.0), point->GetTangentialPressure(0),
-        point->GetTiltX(0), point->GetTiltY(0), point->GetTwist(0));
+        point->GetForce(1.0f), point->GetTangentialPressure(0.0f),
+        point->GetTiltX(0.0f), point->GetTiltY(0.0f), point->GetTwist(0));
     if (!message.empty()) {
       return base::unexpected(Response::InvalidParams(message));
     }
     points[id].id = id;
-    points[id].radius_x = point->GetRadiusX(1.0);
-    points[id].radius_y = point->GetRadiusY(1.0);
-    points[id].rotation_angle = point->GetRotationAngle(0.0);
-    points[id].force = point->GetForce(1.0);
+    points[id].radius_x = point->GetRadiusX(1.0f);
+    points[id].radius_y = point->GetRadiusY(1.0f);
+    points[id].rotation_angle = point->GetRotationAngle(0.0f);
+    points[id].force = point->GetForce(1.0f);
     points[id].pointer_type = blink::WebPointerProperties::PointerType::kTouch;
     points[id].SetPositionInWidget(
         CssPixelsToPointF(point->GetX(), point->GetY(), scale_factor));
@@ -525,7 +530,7 @@ CreateWebTouchEvents(
   std::vector<blink::WebTouchEvent> events;
   bool ok = true;
   for (auto& id_point : points) {
-    if (touched_points.find(id_point.first) != touched_points.end() &&
+    if (base::Contains(touched_points, id_point.first) &&
         type == blink::WebInputEvent::Type::kTouchMove &&
         touched_points[id_point.first].PositionInWidget() ==
             id_point.second.PositionInWidget()) {
@@ -805,10 +810,14 @@ struct InputHandler::DragController::DragState {
   blink::DragOperationsMask mask;
   base::WeakPtr<RenderWidgetHostImpl> host;
   gfx::PointF pos;
-  ui::mojom::DragOperation operation;
   // Acts as a counting semaphore for concurrent updates.
   size_t updating;
   base::OnceClosure updated_callback;
+};
+
+struct InputHandler::DragController::InitialState {
+  std::unique_ptr<blink::WebMouseEvent> event;
+  base::WeakPtr<RenderWidgetHostImpl> host;
 };
 
 InputHandler::DragController::DragController(InputHandler& handler)
@@ -821,9 +830,27 @@ bool InputHandler::DragController::HandleMouseEvent(
     const blink::WebMouseEvent& event,
     std::unique_ptr<DispatchMouseEventCallback>& callback) {
   if (!drag_state_) {
-    if (event.GetType() == blink::mojom::EventType::kMouseMove) {
-      last_mouse_move_ = std::make_unique<blink::WebMouseEvent>(event);
-      last_widget_host_ = host.GetWeakPtr();
+    switch (event.GetType()) {
+      case blink::mojom::EventType::kMouseMove:
+        // Check if the user started a mouse down through CDP.
+        if (initial_state_) {
+          // Set the move event in case dragging starts from this event.
+          initial_state_->event = std::make_unique<blink::WebMouseEvent>(event);
+          initial_state_->host = host.GetWeakPtr();
+        }
+        break;
+      case blink::mojom::EventType::kMouseDown:
+        // If the user performs a mouse down using CDP, then set the initial
+        // state. OS dragging is not possible beyond this point.
+        initial_state_ = std::make_unique<InitialState>();
+        break;
+      case blink::mojom::EventType::kMouseUp:
+        // If the user performs a mouse up using CDP, then reset the initial
+        // state. OS dragging is possible beyond this point.
+        initial_state_ = nullptr;
+        break;
+      default:
+        break;
     }
     return false;
   }
@@ -846,9 +873,10 @@ bool InputHandler::DragController::HandleMouseEvent(
       //
       // Note that in general, the mouse movement will be acked before the
       // dragging starts, so this should happen rarely.
-      if (last_mouse_move_) {
-        auto timestamp = last_mouse_move_->TimeStamp();
-        last_mouse_move_ = nullptr;
+      if (initial_state_) {
+        CHECK(initial_state_->event);
+        auto timestamp = initial_state_->event->TimeStamp();
+        initial_state_ = nullptr;
         if (timestamp == event.TimeStamp()) {
           return false;
         }
@@ -889,17 +917,18 @@ void InputHandler::DragController::EnsureDraggingEntered(
 void InputHandler::DragController::StartDragging(
     const content::DropData& drop_data,
     blink::DragOperationsMask drag_operations_mask) {
-  if (!last_widget_host_ || !last_mouse_move_) {
+  if (!initial_state_->host || !initial_state_->event) {
     CancelDragging(base::DoNothing());
     return;
   }
 
-  drag_state_ =
-      std::make_unique<DragController::DragState>(DragController::DragState{
-          drop_data, drag_operations_mask, nullptr, gfx::PointF(),
-          ui::mojom::DragOperation::kNone, 0, base::DoNothing()});
-  UpdateDragging(*last_widget_host_,
-                 std::make_unique<blink::WebMouseEvent>(*last_mouse_move_),
+  drag_state_ = std::make_unique<DragState>(
+      DragState{drop_data, drag_operations_mask, nullptr, gfx::PointF(), 0,
+                base::DoNothing()});
+  UpdateDragging(*initial_state_->host,
+                 // Note we don't move it here. See
+                 // InputHandler::DragController::HandleMouseEvent.
+                 std::make_unique<blink::WebMouseEvent>(*initial_state_->event),
                  nullptr);
 }
 
@@ -938,14 +967,16 @@ void InputHandler::DragController::UpdateDragging(
 void InputHandler::DragController::DragUpdated(
     std::unique_ptr<blink::WebMouseEvent> event,
     std::unique_ptr<FailSafe<DispatchMouseEventCallback>> callback,
-    ui::mojom::DragOperation operation) {
+    ui::mojom::DragOperation operation,
+    bool document_is_handling_drag) {
   if (!drag_state_) {
     // Dragging ended, perhaps due to a previous mouse up or a drag
     // cancellation.
     handler_.HandleMouseEvent(std::move(event), callback->release());
     return;
   }
-  drag_state_->operation = operation;
+  drag_state_->data.operation = operation;
+  drag_state_->data.document_is_handling_drag = document_is_handling_drag;
 
   --drag_state_->updating;
   if (callback) {
@@ -961,13 +992,19 @@ void InputHandler::DragController::EndDragging(
     RenderWidgetHostImpl* host_hint,
     std::unique_ptr<blink::WebMouseEvent> event,
     std::unique_ptr<FailSafe<DispatchMouseEventCallback>> callback) {
+  if (!drag_state_) {
+    // Dragging already ended.
+    return;
+  }
   if (drag_state_->updating > 0) {
+    auto update_callback = base::BindOnce(
+        &InputHandler::DragController::EndDragging, weak_factory_.GetWeakPtr(),
+        nullptr, std::move(event), std::move(callback));
     // Chaining callbacks to ensure none get replaced.
     drag_state_->updated_callback =
-        std::move(drag_state_->updated_callback)
-            .Then(base::BindOnce(&InputHandler::DragController::EndDragging,
-                                 weak_factory_.GetWeakPtr(), nullptr,
-                                 std::move(event), std::move(callback)));
+        drag_state_->updated_callback ? std::move(drag_state_->updated_callback)
+                                            .Then(std::move(update_callback))
+                                      : std::move(update_callback);
     return;
   }
   if (host_hint) {
@@ -990,7 +1027,7 @@ void InputHandler::DragController::EndDraggingWithRenderWidgetHostAtPoint(
     std::unique_ptr<blink::WebMouseEvent> event,
     std::unique_ptr<FailSafe<DispatchMouseEventCallback>> callback,
     base::WeakPtr<RenderWidgetHostViewBase> view,
-    absl::optional<gfx::PointF> maybe_point) {
+    std::optional<gfx::PointF> maybe_point) {
   if (!view || !maybe_point) {
     CancelDragging(
         base::BindOnce(&FailSafe<DispatchMouseEventCallback>::sendFailure,
@@ -1010,7 +1047,7 @@ void InputHandler::DragController::EndDraggingWithRenderWidgetHostAtPoint(
   host->DragTargetDrop(drag_state_->data, point, point, event->GetModifiers(),
                        base::DoNothing());
   host->DragSourceEndedAt(
-      point, point, drag_state_->operation,
+      point, point, drag_state_->data.operation,
       base::BindOnce(&FailSafe<DispatchMouseEventCallback>::sendSuccess,
                      std::move(callback)));
 }
@@ -1041,10 +1078,11 @@ void InputHandler::SetRenderer(int process_host_id,
   web_contents_ = WebContentsImpl::FromRenderFrameHostImpl(host_);
 
   if (ignore_input_events_ && old_web_contents != web_contents_) {
-    if (old_web_contents)
-      old_web_contents->SetIgnoreInputEvents(false);
-    if (web_contents_)
-      web_contents_->SetIgnoreInputEvents(true);
+    if (web_contents_) {
+      scoped_ignore_input_events_ = web_contents_->IgnoreInputEvents();
+    } else {
+      scoped_ignore_input_events_.reset();
+    }
   }
 }
 
@@ -1055,8 +1093,7 @@ void InputHandler::Wire(UberDispatcher* dispatcher) {
 
 Response InputHandler::Disable() {
   ClearInputState();
-  if (web_contents_ && ignore_input_events_)
-    web_contents_->SetIgnoreInputEvents(false);
+  scoped_ignore_input_events_.reset();
   ignore_input_events_ = false;
   pointer_ids_.clear();
   touch_points_.clear();
@@ -1254,8 +1291,8 @@ void InputHandler::DispatchMouseEvent(
     Maybe<int> click_count,
     Maybe<double> force,
     Maybe<double> tangential_pressure,
-    Maybe<int> tilt_x,
-    Maybe<int> tilt_y,
+    Maybe<double> tilt_x,
+    Maybe<double> tilt_y,
     Maybe<int> twist,
     Maybe<double> delta_x,
     Maybe<double> delta_y,
@@ -1359,7 +1396,7 @@ void InputHandler::OnWidgetForDispatchDragEvent(
     Maybe<int> modifiers,
     std::unique_ptr<DispatchDragEventCallback> callback,
     base::WeakPtr<RenderWidgetHostViewBase> target,
-    absl::optional<gfx::PointF> maybe_point) {
+    std::optional<gfx::PointF> maybe_point) {
   if (!target || !maybe_point.has_value()) {
     callback->sendFailure(Response::InternalError());
     return;
@@ -1380,18 +1417,16 @@ void InputHandler::OnWidgetForDispatchDragEvent(
         *drop_data, point, point, mask, event_modifiers,
         base::BindOnce(
             [](std::unique_ptr<DispatchDragEventCallback> callback,
-               ::ui::mojom::DragOperation operation) {
-              callback->sendSuccess();
-            },
+               ::ui::mojom::DragOperation operation,
+               bool document_is_handling_drag) { callback->sendSuccess(); },
             std::move(callback)));
   } else if (event_type == Input::DispatchDragEvent::TypeEnum::DragOver) {
     widget_host->DragTargetDragOver(
         point, point, mask, event_modifiers,
         base::BindOnce(
             [](std::unique_ptr<DispatchDragEventCallback> callback,
-               ::ui::mojom::DragOperation operation) {
-              callback->sendSuccess();
-            },
+               ::ui::mojom::DragOperation operation,
+               bool document_is_handling_drag) { callback->sendSuccess(); },
             std::move(callback)));
   } else if (event_type == Input::DispatchDragEvent::TypeEnum::Drop) {
     widget_host->DragTargetDragOver(
@@ -1400,11 +1435,14 @@ void InputHandler::OnWidgetForDispatchDragEvent(
             [](std::unique_ptr<DropData> drop_data, int event_modifiers,
                std::unique_ptr<DispatchDragEventCallback> callback,
                base::WeakPtr<RenderWidgetHostViewBase> target,
-               gfx::PointF point, ui::mojom::DragOperation current_op) {
+               gfx::PointF point, ui::mojom::DragOperation current_op,
+               bool document_is_handling_drag) {
               if (!target) {
                 callback->sendFailure(Response::InternalError());
                 return;
               }
+              drop_data->operation = current_op;
+              drop_data->document_is_handling_drag = document_is_handling_drag;
               RenderWidgetHostImpl* widget_host =
                   RenderWidgetHostImpl::From(target->GetRenderWidgetHost());
               widget_host->DragTargetDrop(*drop_data, point, point,
@@ -1451,7 +1489,7 @@ void InputHandler::StartDragging(const content::DropData& drop_data,
   if (!intercept_drags_) {
     // If `last_mouse_move_` exists, then CDP is the currently handling mouse
     // movement, so intercept dragging.
-    if (drag_controller_.last_mouse_move_) {
+    if (drag_controller_.initial_state_) {
       drag_controller_.StartDragging(drop_data, drag_operations_mask);
       *intercepted = true;
     }
@@ -1487,8 +1525,8 @@ void InputHandler::StartDragging(const content::DropData& drop_data,
 }
 
 void InputHandler::DragEnded() {
-  drag_controller_.drag_state_.reset();
-  drag_controller_.last_mouse_move_.reset();
+  drag_controller_.drag_state_ = nullptr;
+  drag_controller_.initial_state_ = nullptr;
 }
 
 Response InputHandler::SetInterceptDrags(bool enabled) {
@@ -1500,7 +1538,7 @@ void InputHandler::OnWidgetForDispatchMouseEvent(
     std::unique_ptr<DispatchMouseEventCallback> callback,
     std::unique_ptr<blink::WebMouseEvent> event,
     base::WeakPtr<RenderWidgetHostViewBase> target,
-    absl::optional<gfx::PointF> point) {
+    std::optional<gfx::PointF> point) {
   if (!target || !point.has_value()) {
     callback->sendFailure(Response::InternalError());
     return;
@@ -1605,7 +1643,7 @@ void InputHandler::OnWidgetForDispatchWebTouchEvent(
     std::unique_ptr<DispatchTouchEventCallback> callback,
     std::vector<blink::WebTouchEvent> events,
     base::WeakPtr<RenderWidgetHostViewBase> target,
-    absl::optional<gfx::PointF> transformed) {
+    std::optional<gfx::PointF> transformed) {
   if (!target || !transformed.has_value()) {
     callback->sendFailure(Response::InternalError());
     return;
@@ -1720,15 +1758,15 @@ void InputHandler::DispatchSyntheticPointerActionTouch(
 
     SyntheticPointerActionParams::PointerActionType action_type =
         SyntheticPointerActionParams::PointerActionType::MOVE;
-    if (pointer_ids_.find(id) == pointer_ids_.end()) {
+    if (!base::Contains(pointer_ids_, id)) {
       pointer_ids_.insert(id);
       action_type = SyntheticPointerActionParams::PointerActionType::PRESS;
     }
     SyntheticPointerActionParams action_params =
         PrepareSyntheticPointerActionParams(
             action_type, id, point->GetX(), point->GetY(), event_modifiers,
-            point->GetRadiusX(1.0), point->GetRadiusY(1.0),
-            point->GetRotationAngle(0.0), point->GetForce(1.0));
+            point->GetRadiusX(1.0f), point->GetRadiusY(1.0f),
+            point->GetRotationAngle(0.0f), point->GetForce(1.0f));
     param_list.push_back(action_params);
     original = gfx::PointF(point->GetX(), point->GetY());
     current_pointer_ids.insert(id);
@@ -1743,7 +1781,7 @@ void InputHandler::DispatchSyntheticPointerActionTouch(
           SyntheticPointerActionParams::PointerActionType::MOVE &&
       current_pointer_ids.size() < pointer_ids_.size()) {
     for (auto it = pointer_ids_.begin(); it != pointer_ids_.end();) {
-      if (current_pointer_ids.find(*it) != current_pointer_ids.end()) {
+      if (base::Contains(current_pointer_ids, *it)) {
         it++;
         continue;
       }
@@ -1936,8 +1974,11 @@ Response InputHandler::EmulateTouchFromMouseEvent(const std::string& type,
 
 Response InputHandler::SetIgnoreInputEvents(bool ignore) {
   ignore_input_events_ = ignore;
-  if (web_contents_)
-    web_contents_->SetIgnoreInputEvents(ignore);
+  if (!ignore) {
+    scoped_ignore_input_events_.reset();
+  } else if (web_contents_) {
+    scoped_ignore_input_events_ = web_contents_->IgnoreInputEvents();
+  }
   return Response::Success();
 }
 

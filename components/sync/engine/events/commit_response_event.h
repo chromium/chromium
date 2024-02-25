@@ -11,8 +11,8 @@
 
 #include "base/time/time.h"
 #include "base/values.h"
-#include "components/sync/base/syncer_error.h"
 #include "components/sync/engine/events/protocol_event.h"
+#include "components/sync/engine/syncer_error.h"
 #include "components/sync/protocol/sync.pb.h"
 
 namespace syncer {

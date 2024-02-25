@@ -6,7 +6,6 @@
 
 #include <utility>
 
-#include "ash/public/cpp/tablet_mode.h"
 #include "base/notreached.h"
 #include "base/trace_event/trace_event.h"
 #include "build/chromeos_buildflags.h"
@@ -20,6 +19,7 @@
 #include "chrome/browser/ui/ash/app_icon_color_cache.h"
 #include "extensions/browser/app_sorting.h"
 #include "extensions/browser/extension_system.h"
+#include "ui/display/screen.h"
 #include "ui/gfx/color_utils.h"
 #include "ui/gfx/image/image_skia_operations.h"
 
@@ -122,6 +122,10 @@ bool ChromeAppListItem::IsBadged() const {
   return false;
 }
 
+std::string ChromeAppListItem::GetPromisedItemId() const {
+  return std::string();
+}
+
 app_list::AppContextMenu* ChromeAppListItem::GetAppContextMenu() {
   return nullptr;
 }
@@ -129,7 +133,7 @@ app_list::AppContextMenu* ChromeAppListItem::GetAppContextMenu() {
 void ChromeAppListItem::MaybeDismissAppList() {
   // Launching apps can take some time. It looks nicer to dismiss the app list.
   // Do not close app list for home launcher.
-  if (!ash::TabletMode::Get() || !ash::TabletMode::Get()->InTabletMode()) {
+  if (!display::Screen::GetScreen()->InTabletMode()) {
     GetController()->DismissView();
   }
 }
@@ -163,6 +167,10 @@ void ChromeAppListItem::LoadIcon() {
 void ChromeAppListItem::IncrementIconVersion() {
   ++metadata_->icon_version;
 
+  // The icon is going to update. Therefore, we remove the currently cached
+  // color.
+  ash::AppIconColorCache::GetInstance(profile()).RemoveColorDataForApp(id());
+
   AppListModelUpdater* updater = model_updater();
   if (updater)
     updater->SetItemIconVersion(id(), metadata_->icon_version);
@@ -174,12 +182,13 @@ void ChromeAppListItem::SetIcon(const gfx::ImageSkia& icon,
   metadata_->icon = icon;
   metadata_->icon.EnsureRepsForSupportedScales();
   metadata_->badge_color =
-      ash::AppIconColorCache::GetInstance().GetLightVibrantColorForApp(id(),
-                                                                       icon);
+      ash::AppIconColorCache::GetInstance(profile()).GetLightVibrantColorForApp(
+          id(), icon);
   metadata_->icon_color =
       is_place_holder_icon
           ? ash::IconColor()
-          : app_list::reorder::GetSortableIconColorForApp(id(), icon);
+          : ash::AppIconColorCache::GetInstance(profile()).GetIconColorForApp(
+                id(), icon);
 
   AppListModelUpdater* updater = model_updater();
   if (updater) {
@@ -189,8 +198,26 @@ void ChromeAppListItem::SetIcon(const gfx::ImageSkia& icon,
     const SkColor badge_color_copy = metadata_->badge_color;
 
     updater->SetItemIconAndColor(id_copy, metadata_->icon,
-                                 metadata_->icon_color);
+                                 metadata_->icon_color, is_place_holder_icon);
     updater->SetNotificationBadgeColor(id_copy, badge_color_copy);
+  }
+}
+
+void ChromeAppListItem::SetAccessibleName(const std::string& label) {
+  metadata_->accessible_name = label;
+  AppListModelUpdater* updater = model_updater();
+  if (updater) {
+    updater->SetAccessibleName(id(), label);
+  }
+}
+
+void ChromeAppListItem::SetBadgeIcon(const gfx::ImageSkia& badge_icon) {
+  TRACE_EVENT0("ui", "ChromeAppListItem::SetBadgeIcon");
+  metadata_->badge_icon = badge_icon;
+
+  AppListModelUpdater* updater = model_updater();
+  if (updater) {
+    updater->SetItemBadgeIcon(id(), metadata_->badge_icon);
   }
 }
 
@@ -219,6 +246,11 @@ void ChromeAppListItem::SetPromisePackageId(
 
 void ChromeAppListItem::SetProgress(float progress) {
   metadata_->progress = progress;
+
+  AppListModelUpdater* updater = model_updater();
+  if (updater) {
+    updater->UpdateProgress(id(), progress);
+  }
 }
 
 void ChromeAppListItem::SetPosition(const syncer::StringOrdinal& position) {

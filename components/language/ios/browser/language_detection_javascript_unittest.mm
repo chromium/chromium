@@ -179,7 +179,6 @@ TEST_F(LanguageDetectionJavascriptTest,
   NSDictionary* body = handler().lastReceivedMessage.body;
   ASSERT_TRUE(body);
   ASSERT_TRUE([body isKindOfClass:[NSDictionary class]]);
-  EXPECT_TRUE(body[@"captureTextTime"]);
   EXPECT_TRUE(body[@"frameId"]);
   EXPECT_TRUE(body[@"hasNoTranslate"]);
   EXPECT_TRUE(body[@"htmlLang"]);

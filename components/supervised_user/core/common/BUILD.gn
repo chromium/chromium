@@ -2,6 +2,10 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+if (is_android) {
+  import("//build/config/android/rules.gni")
+}
+
 import("//build/buildflag_header.gni")
 import("//components/supervised_user/buildflags.gni")
 
@@ -15,8 +19,6 @@ static_library("common") {
     "pref_names.h",
     "supervised_user_constants.cc",
     "supervised_user_constants.h",
-    "supervised_user_utils.cc",
-    "supervised_user_utils.h",
     "supervised_users.h",
   ]
 
@@ -43,6 +45,23 @@ source_set("features") {
   deps = [
     "//base",
     "//build:branding_buildflags",
+    "//extensions/buildflags",
+  ]
+}
+
+source_set("test_utils") {
+  testonly = true
+
+  sources = [
+    "features_testutils.cc",
+    "features_testutils.h",
+  ]
+
+  deps = [
+    "//base",
+    "//base/test:test_support",
+    "//components/supervised_user/core/common:features",
+    "//testing/gtest",
   ]
 }
 

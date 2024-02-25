@@ -1,0 +1,47 @@
+PASS history.back == "LEFTOVER" is false
+PASS history.forward == "LEFTOVER" is false
+PASS history.go == "LEFTOVER" is false
+PASS history.length == "LEFTOVER" is false
+PASS history.pushState == "LEFTOVER" is false
+PASS history.replaceState == "LEFTOVER" is false
+PASS history.scrollRestoration == "LEFTOVER" is false
+PASS history.state == "LEFTOVER" is false
+PASS location.ancestorOrigins == "LEFTOVER" is false
+PASS location.assign == "LEFTOVER" is false
+PASS location.hash == "LEFTOVER" is false
+PASS location.host == "LEFTOVER" is false
+PASS location.hostname == "LEFTOVER" is false
+PASS location.href == "LEFTOVER" is false
+PASS location.origin == "LEFTOVER" is false
+PASS location.pathname == "LEFTOVER" is false
+PASS location.port == "LEFTOVER" is false
+PASS location.protocol == "LEFTOVER" is false
+PASS location.reload == "LEFTOVER" is false
+PASS location.replace == "LEFTOVER" is false
+PASS location.search == "LEFTOVER" is false
+PASS location.toString == "LEFTOVER" is false
+PASS locationbar.visible == "LEFTOVER" is false
+PASS menubar.visible == "LEFTOVER" is false
+PASS personalbar.visible == "LEFTOVER" is false
+PASS screen.addEventListener == "LEFTOVER" is false
+PASS screen.availHeight == "LEFTOVER" is false
+PASS screen.availLeft == "LEFTOVER" is false
+PASS screen.availTop == "LEFTOVER" is false
+PASS screen.availWidth == "LEFTOVER" is false
+PASS screen.colorDepth == "LEFTOVER" is false
+PASS screen.dispatchEvent == "LEFTOVER" is false
+PASS screen.height == "LEFTOVER" is false
+PASS screen.isExtended == "LEFTOVER" is false
+PASS screen.onchange == "LEFTOVER" is false
+PASS screen.orientation == "LEFTOVER" is false
+PASS screen.pixelDepth == "LEFTOVER" is false
+PASS screen.removeEventListener == "LEFTOVER" is false
+PASS screen.width == "LEFTOVER" is false
+PASS scrollbars.visible == "LEFTOVER" is false
+PASS statusbar.visible == "LEFTOVER" is false
+PASS toolbar.visible == "LEFTOVER" is false
+PASS window.event is undefined.
+PASS successfullyParsed is true
+
+TEST COMPLETE
+

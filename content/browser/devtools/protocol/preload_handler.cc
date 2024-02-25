@@ -4,21 +4,23 @@
 
 #include "content/browser/devtools/protocol/preload_handler.h"
 
-#include <algorithm>
+#include <memory>
 #include <utility>
 
 #include "content/browser/devtools/devtools_agent_host_impl.h"
+#include "content/browser/devtools/protocol/preload.h"
 #include "content/browser/preloading/prefetch/prefetch_service.h"
 #include "content/browser/preloading/preloading.h"
 #include "content/browser/preloading/preloading_config.h"
 #include "content/browser/preloading/prerender/prerender_final_status.h"
-#include "content/browser/renderer_host/frame_tree.h"
-#include "content/browser/renderer_host/navigation_request.h"
+#include "content/browser/preloading/prerender/prerender_metrics.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/browser/web_contents/web_contents_impl.h"
 #include "content/public/browser/prefetch_service_delegate.h"
 
 namespace content::protocol {
+
+namespace {
 
 Preload::PrerenderFinalStatus PrerenderFinalStatusToProtocol(
     PrerenderFinalStatus feature) {
@@ -39,10 +41,6 @@ Preload::PrerenderFinalStatus PrerenderFinalStatusToProtocol(
       return Preload::PrerenderFinalStatusEnum::DidFailLoad;
     case PrerenderFinalStatus::kDownload:
       return Preload::PrerenderFinalStatusEnum::Download;
-    case PrerenderFinalStatus::kFailToGetMemoryUsage:
-      return Preload::PrerenderFinalStatusEnum::FailToGetMemoryUsage;
-    case PrerenderFinalStatus::kInProgressNavigation:
-      return Preload::PrerenderFinalStatusEnum::InProgressNavigation;
     case PrerenderFinalStatus::kInvalidSchemeNavigation:
       return Preload::PrerenderFinalStatusEnum::InvalidSchemeNavigation;
     case PrerenderFinalStatus::kInvalidSchemeRedirect:
@@ -53,9 +51,6 @@ Preload::PrerenderFinalStatus PrerenderFinalStatusToProtocol(
       return Preload::PrerenderFinalStatusEnum::LowEndDevice;
     case PrerenderFinalStatus::kMainFrameNavigation:
       return Preload::PrerenderFinalStatusEnum::MainFrameNavigation;
-    case PrerenderFinalStatus::kMaxNumOfRunningPrerendersExceeded:
-      return Preload::PrerenderFinalStatusEnum::
-          MaxNumOfRunningPrerendersExceeded;
     case PrerenderFinalStatus::kMemoryLimitExceeded:
       return Preload::PrerenderFinalStatusEnum::MemoryLimitExceeded;
     case PrerenderFinalStatus::kMixedContent:
@@ -84,8 +79,8 @@ Preload::PrerenderFinalStatus PrerenderFinalStatusToProtocol(
       return Preload::PrerenderFinalStatusEnum::TriggerDestroyed;
     case PrerenderFinalStatus::kUaChangeRequiresReload:
       return Preload::PrerenderFinalStatusEnum::UaChangeRequiresReload;
-    case PrerenderFinalStatus::kHasEffectiveUrl:
-      return Preload::PrerenderFinalStatusEnum::HasEffectiveUrl;
+    case PrerenderFinalStatus::kTriggerUrlHasEffectiveUrl:
+      return Preload::PrerenderFinalStatusEnum::TriggerUrlHasEffectiveUrl;
     case PrerenderFinalStatus::kActivatedBeforeStarted:
       return Preload::PrerenderFinalStatusEnum::ActivatedBeforeStarted;
     case PrerenderFinalStatus::kInactivePageRestriction:
@@ -161,13 +156,27 @@ Preload::PrerenderFinalStatus PrerenderFinalStatusToProtocol(
       return Preload::PrerenderFinalStatusEnum::MemoryPressureAfterTriggered;
     case PrerenderFinalStatus::kPrerenderingDisabledByDevTools:
       return Preload::PrerenderFinalStatusEnum::PrerenderingDisabledByDevTools;
-    case PrerenderFinalStatus::kResourceLoadBlockedByClient:
-      return Preload::PrerenderFinalStatusEnum::ResourceLoadBlockedByClient;
     case PrerenderFinalStatus::kSpeculationRuleRemoved:
       return Preload::PrerenderFinalStatusEnum::SpeculationRuleRemoved;
     case PrerenderFinalStatus::kActivatedWithAuxiliaryBrowsingContexts:
       return Preload::PrerenderFinalStatusEnum::
           ActivatedWithAuxiliaryBrowsingContexts;
+    case PrerenderFinalStatus::kMaxNumOfRunningEagerPrerendersExceeded:
+      return Preload::PrerenderFinalStatusEnum::
+          MaxNumOfRunningEagerPrerendersExceeded;
+    case PrerenderFinalStatus::kMaxNumOfRunningNonEagerPrerendersExceeded:
+      return Preload::PrerenderFinalStatusEnum::
+          MaxNumOfRunningNonEagerPrerendersExceeded;
+    case PrerenderFinalStatus::kMaxNumOfRunningEmbedderPrerendersExceeded:
+      return Preload::PrerenderFinalStatusEnum::
+          MaxNumOfRunningEmbedderPrerendersExceeded;
+    case PrerenderFinalStatus::kPrerenderingUrlHasEffectiveUrl:
+      return Preload::PrerenderFinalStatusEnum::PrerenderingUrlHasEffectiveUrl;
+    case PrerenderFinalStatus::kRedirectedPrerenderingUrlHasEffectiveUrl:
+      return Preload::PrerenderFinalStatusEnum::
+          RedirectedPrerenderingUrlHasEffectiveUrl;
+    case PrerenderFinalStatus::kActivationUrlHasEffectiveUrl:
+      return Preload::PrerenderFinalStatusEnum::ActivationUrlHasEffectiveUrl;
   }
 }
 
@@ -199,14 +208,14 @@ Preload::PrefetchStatus PrefetchStatusToProtocol(PrefetchStatus status) {
       return Preload::PrefetchStatusEnum::PrefetchNotUsedProbeFailed;
     case PrefetchStatus::kPrefetchNotStarted:
       return Preload::PrefetchStatusEnum::PrefetchNotStarted;
-    case PrefetchStatus::kPrefetchNotEligibleUserHasCookies:
+    case PrefetchStatus::kPrefetchIneligibleUserHasCookies:
       return Preload::PrefetchStatusEnum::PrefetchNotEligibleUserHasCookies;
-    case PrefetchStatus::kPrefetchNotEligibleUserHasServiceWorker:
+    case PrefetchStatus::kPrefetchIneligibleUserHasServiceWorker:
       return Preload::PrefetchStatusEnum::
           PrefetchNotEligibleUserHasServiceWorker;
-    case PrefetchStatus::kPrefetchNotEligibleSchemeIsNotHttps:
+    case PrefetchStatus::kPrefetchIneligibleSchemeIsNotHttps:
       return Preload::PrefetchStatusEnum::PrefetchNotEligibleSchemeIsNotHttps;
-    case PrefetchStatus::kPrefetchNotEligibleNonDefaultStoragePartition:
+    case PrefetchStatus::kPrefetchIneligibleNonDefaultStoragePartition:
       return Preload::PrefetchStatusEnum::
           PrefetchNotEligibleNonDefaultStoragePartition;
     case PrefetchStatus::kPrefetchNotFinishedInTime:
@@ -221,7 +230,7 @@ Preload::PrefetchStatus PrefetchStatusToProtocol(PrefetchStatus status) {
       return Preload::PrefetchStatusEnum::PrefetchSuccessfulButNotUsed;
     case PrefetchStatus::kPrefetchIneligibleRetryAfter:
       return Preload::PrefetchStatusEnum::PrefetchIneligibleRetryAfter;
-    case PrefetchStatus::kPrefetchProxyNotAvailable:
+    case PrefetchStatus::kPrefetchIneligiblePrefetchProxyNotAvailable:
       return Preload::PrefetchStatusEnum::PrefetchProxyNotAvailable;
     case PrefetchStatus::kPrefetchIsPrivacyDecoy:
       return Preload::PrefetchStatusEnum::PrefetchIsPrivacyDecoy;
@@ -229,18 +238,18 @@ Preload::PrefetchStatus PrefetchStatusToProtocol(PrefetchStatus status) {
       return Preload::PrefetchStatusEnum::PrefetchIsStale;
     case PrefetchStatus::kPrefetchNotUsedCookiesChanged:
       return Preload::PrefetchStatusEnum::PrefetchNotUsedCookiesChanged;
-    case PrefetchStatus::kPrefetchNotEligibleHostIsNonUnique:
+    case PrefetchStatus::kPrefetchIneligibleHostIsNonUnique:
       return Preload::PrefetchStatusEnum::PrefetchNotEligibleHostIsNonUnique;
-    case PrefetchStatus::kPrefetchNotEligibleDataSaverEnabled:
+    case PrefetchStatus::kPrefetchIneligibleDataSaverEnabled:
       return Preload::PrefetchStatusEnum::PrefetchNotEligibleDataSaverEnabled;
-    case PrefetchStatus::kPrefetchNotEligibleExistingProxy:
+    case PrefetchStatus::kPrefetchIneligibleExistingProxy:
       return Preload::PrefetchStatusEnum::PrefetchNotEligibleExistingProxy;
-    case PrefetchStatus::kPrefetchNotEligibleBrowserContextOffTheRecord:
+    case PrefetchStatus::kPrefetchIneligibleBrowserContextOffTheRecord:
       return Preload::PrefetchStatusEnum::
           PrefetchNotEligibleBrowserContextOffTheRecord;
-    case PrefetchStatus::kPrefetchNotEligiblePreloadingDisabled:
+    case PrefetchStatus::kPrefetchIneligiblePreloadingDisabled:
       return Preload::PrefetchStatusEnum::PrefetchNotEligiblePreloadingDisabled;
-    case PrefetchStatus::kPrefetchNotEligibleBatterySaverEnabled:
+    case PrefetchStatus::kPrefetchIneligibleBatterySaverEnabled:
       return Preload::PrefetchStatusEnum::
           PrefetchNotEligibleBatterySaverEnabled;
     case PrefetchStatus::kPrefetchHeldback:
@@ -256,11 +265,13 @@ Preload::PrefetchStatus PrefetchStatusToProtocol(PrefetchStatus status) {
     case PrefetchStatus::kPrefetchFailedPerPageLimitExceeded:
       return Preload::PrefetchStatusEnum::PrefetchFailedPerPageLimitExceeded;
     case PrefetchStatus::
-        kPrefetchNotEligibleSameSiteCrossOriginPrefetchRequiredProxy:
+        kPrefetchIneligibleSameSiteCrossOriginPrefetchRequiredProxy:
       return Preload::PrefetchStatusEnum::
           PrefetchNotEligibleSameSiteCrossOriginPrefetchRequiredProxy;
-    case PrefetchStatus::kPrefetchEvicted:
-      return Preload::PrefetchStatusEnum::PrefetchEvicted;
+    case PrefetchStatus::kPrefetchEvictedAfterCandidateRemoved:
+      return Preload::PrefetchStatusEnum::PrefetchEvictedAfterCandidateRemoved;
+    case PrefetchStatus::kPrefetchEvictedForNewerPrefetch:
+      return Preload::PrefetchStatusEnum::PrefetchEvictedForNewerPrefetch;
   }
 }
 
@@ -306,6 +317,24 @@ bool PreloadingTriggeringOutcomeSupportedByPrerender(
   }
 }
 
+std::optional<protocol::Preload::SpeculationTargetHint>
+GetProtocolSpeculationTargetHint(
+    std::optional<blink::mojom::SpeculationTargetHint> target_hint) {
+  if (!target_hint.has_value()) {
+    return std::nullopt;
+  }
+  switch (target_hint.value()) {
+    case blink::mojom::SpeculationTargetHint::kNoHint:
+      return std::nullopt;
+    case blink::mojom::SpeculationTargetHint::kBlank:
+      return protocol::Preload::SpeculationTargetHintEnum::Blank;
+    case blink::mojom::SpeculationTargetHint::kSelf:
+      return protocol::Preload::SpeculationTargetHintEnum::Self;
+  }
+}
+
+}  // namespace
+
 PreloadHandler::PreloadHandler()
     : DevToolsDomainHandler(Preload::Metainfo::domainName) {}
 
@@ -315,54 +344,6 @@ PreloadHandler::~PreloadHandler() = default;
 std::vector<PreloadHandler*> PreloadHandler::ForAgentHost(
     DevToolsAgentHostImpl* host) {
   return host->HandlersByName<PreloadHandler>(Preload::Metainfo::domainName);
-}
-
-void PreloadHandler::DidActivatePrerender(
-    const base::UnguessableToken& initiator_devtools_navigation_token,
-    const NavigationRequest& nav_request) {
-  if (!enabled_) {
-    return;
-  }
-  FrameTreeNode* ftn = nav_request.frame_tree_node();
-  std::string initiating_frame_id =
-      ftn->current_frame_host()->devtools_frame_token().ToString();
-  const GURL& prerendering_url = nav_request.common_params().url;
-  // TODO(crbug/1384419): Handle target_hint.
-  auto preloading_attempt_key =
-      protocol::Preload::PreloadingAttemptKey::Create()
-          .SetLoaderId(initiator_devtools_navigation_token.ToString())
-          .SetAction(Preload::SpeculationActionEnum::Prerender)
-          .SetUrl(prerendering_url.spec())
-          .Build();
-  frontend_->PrerenderAttemptCompleted(
-      std::move(preloading_attempt_key), initiating_frame_id,
-      prerendering_url.spec(), Preload::PrerenderFinalStatusEnum::Activated);
-}
-
-void PreloadHandler::DidCancelPrerender(
-    const GURL& prerendering_url,
-    const base::UnguessableToken& initiator_devtools_navigation_token,
-    const std::string& initiating_frame_id,
-    PrerenderFinalStatus status,
-    const std::string& disallowed_api_method) {
-  if (!enabled_) {
-    return;
-  }
-  DCHECK_NE(status, PrerenderFinalStatus::kActivated);
-  Maybe<std::string> opt_disallowed_api_method =
-      disallowed_api_method.empty() ? Maybe<std::string>()
-                                    : Maybe<std::string>(disallowed_api_method);
-  // TODO(crbug/1384419): Handle target_hint.
-  auto preloading_attempt_key =
-      protocol::Preload::PreloadingAttemptKey::Create()
-          .SetLoaderId(initiator_devtools_navigation_token.ToString())
-          .SetAction(Preload::SpeculationActionEnum::Prerender)
-          .SetUrl(prerendering_url.spec())
-          .Build();
-  frontend_->PrerenderAttemptCompleted(
-      std::move(preloading_attempt_key), initiating_frame_id,
-      prerendering_url.spec(), PrerenderFinalStatusToProtocol(status),
-      std::move(opt_disallowed_api_method));
 }
 
 void PreloadHandler::DidUpdatePrefetchStatus(
@@ -375,7 +356,7 @@ void PreloadHandler::DidUpdatePrefetchStatus(
   if (!enabled_) {
     return;
   }
-  // TODO(crbug/1384419): Handle target_hint.
+
   auto preloading_attempt_key =
       protocol::Preload::PreloadingAttemptKey::Create()
           .SetLoaderId(initiator_devtools_navigation_token.ToString())
@@ -393,19 +374,26 @@ void PreloadHandler::DidUpdatePrefetchStatus(
 void PreloadHandler::DidUpdatePrerenderStatus(
     const base::UnguessableToken& initiator_devtools_navigation_token,
     const GURL& prerender_url,
+    std::optional<blink::mojom::SpeculationTargetHint> target_hint,
     PreloadingTriggeringOutcome status,
-    absl::optional<PrerenderFinalStatus> prerender_status,
-    absl::optional<std::string> disallowed_mojo_interface) {
+    std::optional<PrerenderFinalStatus> prerender_status,
+    std::optional<std::string> disallowed_mojo_interface,
+    const std::vector<PrerenderMismatchedHeaders>* mismatched_headers) {
   if (!enabled_) {
     return;
   }
-  // TODO(crbug/1384419): Handle target_hint.
+
   auto preloading_attempt_key =
       protocol::Preload::PreloadingAttemptKey::Create()
           .SetLoaderId(initiator_devtools_navigation_token.ToString())
           .SetAction(Preload::SpeculationActionEnum::Prerender)
           .SetUrl(prerender_url.spec())
           .Build();
+  std::optional<protocol::Preload::SpeculationTargetHint> protocol_target_hint =
+      GetProtocolSpeculationTargetHint(target_hint);
+  if (protocol_target_hint.has_value()) {
+    preloading_attempt_key->SetTargetHint(protocol_target_hint.value());
+  }
   Maybe<Preload::PrerenderFinalStatus> protocol_prerender_status =
       prerender_status.has_value()
           ? PrerenderFinalStatusToProtocol(prerender_status.value())
@@ -414,12 +402,38 @@ void PreloadHandler::DidUpdatePrerenderStatus(
       disallowed_mojo_interface.has_value()
           ? Maybe<std::string>(disallowed_mojo_interface.value())
           : Maybe<std::string>();
+  Maybe<protocol::Array<protocol::Preload::PrerenderMismatchedHeaders>>
+      maybe_mismatched_headers;
+  if (mismatched_headers) {
+    auto mismatched_headers_internal = std::make_unique<
+        protocol::Array<protocol::Preload::PrerenderMismatchedHeaders>>();
+
+    for (const auto& mismatched_headers_it : *mismatched_headers) {
+      auto protocol_mismatched_headers =
+          protocol::Preload::PrerenderMismatchedHeaders::Create()
+              .SetHeaderName(mismatched_headers_it.header_name)
+              .Build();
+      if (mismatched_headers_it.initial_value) {
+        protocol_mismatched_headers->SetInitialValue(
+            mismatched_headers_it.initial_value.value());
+      }
+      if (mismatched_headers_it.activation_value) {
+        protocol_mismatched_headers->SetActivationValue(
+            mismatched_headers_it.activation_value.value());
+      }
+      mismatched_headers_internal->push_back(
+          std::move(protocol_mismatched_headers));
+    }
+    maybe_mismatched_headers = std::move(mismatched_headers_internal);
+  }
+
   if (PreloadingTriggeringOutcomeSupportedByPrerender(status)) {
     frontend_->PrerenderStatusUpdated(
         std::move(preloading_attempt_key),
         PreloadingTriggeringOutcomeToProtocol(status),
         std::move(protocol_prerender_status),
-        std::move(protocol_disallowed_mojo_interface));
+        std::move(protocol_disallowed_mojo_interface),
+        std::move(maybe_mismatched_headers));
   }
 }
 

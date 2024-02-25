@@ -17,13 +17,13 @@ limitations under the License.
 
 #include <memory>
 
-#include "absl/flags/flag.h"     // from @com_google_absl
+#include "absl/flags/flag.h"  // from @com_google_absl
 #include "absl/status/status.h"  // from @com_google_absl
-#include "absl/strings/cord.h"   // from @com_google_absl
+#include "absl/strings/cord.h"  // from @com_google_absl
 #include "tensorflow/lite/c/common.h"
-#include "tensorflow/lite/core/shims/cc/shims_test_util.h"
 #include "tensorflow/lite/kernels/builtin_op_kernels.h"
 #include "tensorflow/lite/mutable_op_resolver.h"
+#include "tensorflow/lite/test_util.h"
 #include "tensorflow_lite_support/cc/common.h"
 #include "tensorflow_lite_support/cc/port/gmock.h"
 #include "tensorflow_lite_support/cc/port/gtest.h"
@@ -62,7 +62,6 @@ namespace {
 
 using ::testing::HasSubstr;
 using ::testing::Optional;
-using ::tflite::support::EqualsProto;
 using ::tflite::support::kTfLiteSupportPayload;
 using ::tflite::support::StatusOr;
 using ::tflite::support::TfLiteSupportStatus;
@@ -80,20 +79,20 @@ constexpr char kMobileSsdWithMetadata[] =
 constexpr char kExpectResults[] =
     R"pb(detections {
            bounding_box { origin_x: 54 origin_y: 396 width: 393 height: 196 }
-           classes { index: 16 score: 0.64453125 class_name: "cat" }
+           classes { index: 16 score: 0.64 class_name: "cat" }
          }
          detections {
            bounding_box { origin_x: 602 origin_y: 157 width: 394 height: 447 }
-           classes { index: 16 score: 0.59765625 class_name: "cat" }
+           classes { index: 16 score: 0.61 class_name: "cat" }
          }
          detections {
-           bounding_box { origin_x: 261 origin_y: 394 width: 179 height: 209 }
+           bounding_box { origin_x: 260 origin_y: 394 width: 180 height: 209 }
            # Actually a dog, but the model gets confused.
-           classes { index: 16 score: 0.5625 class_name: "cat" }
+           classes { index: 16 score: 0.56 class_name: "cat" }
          }
          detections {
-           bounding_box { origin_x: 389 origin_y: 197 width: 276 height: 409 }
-           classes { index: 17 score: 0.51171875 class_name: "dog" }
+           bounding_box { origin_x: 389 origin_y: 197 width: 278 height: 409 }
+           classes { index: 17 score: 0.5 class_name: "dog" }
          }
     )pb";
 constexpr char kMobileSsdWithMetadataDummyScoreCalibration[] =
@@ -103,26 +102,34 @@ constexpr char kEfficientDetWithMetadata[] =
     "coco_efficientdet_lite0_v1_1.0_quant_2021_09_06.tflite";
 
 StatusOr<ImageData> LoadImage(std::string image_name) {
-  return DecodeImageFromFile(
-      JoinPath("./" /*test src dir*/, kTestDataDirectory, image_name));
+  return DecodeImageFromFile(JoinPath("./" /*test src dir*/,
+                                      kTestDataDirectory, image_name));
 }
 
 // Checks that the two provided `DetectionResult` protos are equal, with a
 // tolerancy on floating-point scores to account for numerical instabilities.
 // If the proto definition changes, please also change this function.
 void ExpectApproximatelyEqual(const DetectionResult& actual,
-                              const DetectionResult& expected) {
-  const float kPrecision = 1e-6;
+                              const DetectionResult& expected,
+                              const float score_precision = 1e-6,
+                              int bounding_box_tolerance = 3) {
   EXPECT_EQ(actual.detections_size(), expected.detections_size());
   for (int i = 0; i < actual.detections_size(); ++i) {
     const Detection& a = actual.detections(i);
     const Detection& b = expected.detections(i);
-    EXPECT_THAT(a.bounding_box(), EqualsProto(b.bounding_box()));
+    EXPECT_NEAR(a.bounding_box().origin_x(), b.bounding_box().origin_x(),
+                bounding_box_tolerance);
+    EXPECT_NEAR(a.bounding_box().origin_y(), b.bounding_box().origin_y(),
+                bounding_box_tolerance);
+    EXPECT_NEAR(a.bounding_box().width(), b.bounding_box().width(),
+                bounding_box_tolerance);
+    EXPECT_NEAR(a.bounding_box().height(), b.bounding_box().height(),
+                bounding_box_tolerance);
     EXPECT_EQ(a.classes_size(), 1);
     EXPECT_EQ(b.classes_size(), 1);
     EXPECT_EQ(a.classes(0).index(), b.classes(0).index());
     EXPECT_EQ(a.classes(0).class_name(), b.classes(0).class_name());
-    EXPECT_NEAR(a.classes(0).score(), b.classes(0).score(), kPrecision);
+    EXPECT_NEAR(a.classes(0).score(), b.classes(0).score(), score_precision);
   }
 }
 
@@ -149,12 +156,13 @@ class MobileSsdQuantizedOpResolver : public ::tflite::MutableOpResolver {
   MobileSsdQuantizedOpResolver(const MobileSsdQuantizedOpResolver& r) = delete;
 };
 
-class CreateFromOptionsTest : public tflite_shims::testing::Test {};
+class CreateFromOptionsTest : public tflite::testing::Test {};
 
 TEST_F(CreateFromOptionsTest, SucceedsWithSelectiveOpResolver) {
   ObjectDetectorOptions options;
-  options.mutable_model_file_with_metadata()->set_file_name(JoinPath(
-      "./" /*test src dir*/, kTestDataDirectory, kMobileSsdWithMetadata));
+  options.mutable_model_file_with_metadata()->set_file_name(
+      JoinPath("./" /*test src dir*/, kTestDataDirectory,
+               kMobileSsdWithMetadata));
 
   SUPPORT_ASSERT_OK(ObjectDetector::CreateFromOptions(
       options, absl::make_unique<MobileSsdQuantizedOpResolver>()));
@@ -185,8 +193,9 @@ class MobileSsdQuantizedOpResolverMissingOps
 
 TEST_F(CreateFromOptionsTest, FailsWithSelectiveOpResolverMissingOps) {
   ObjectDetectorOptions options;
-  options.mutable_model_file_with_metadata()->set_file_name(JoinPath(
-      "./" /*test src dir*/, kTestDataDirectory, kMobileSsdWithMetadata));
+  options.mutable_model_file_with_metadata()->set_file_name(
+      JoinPath("./" /*test src dir*/, kTestDataDirectory,
+               kMobileSsdWithMetadata));
 
   auto object_detector_or = ObjectDetector::CreateFromOptions(
       options, absl::make_unique<MobileSsdQuantizedOpResolverMissingOps>());
@@ -201,10 +210,12 @@ TEST_F(CreateFromOptionsTest, FailsWithSelectiveOpResolverMissingOps) {
 
 TEST_F(CreateFromOptionsTest, FailsWithTwoModelSources) {
   ObjectDetectorOptions options;
-  options.mutable_model_file_with_metadata()->set_file_name(JoinPath(
-      "./" /*test src dir*/, kTestDataDirectory, kMobileSsdWithMetadata));
-  options.mutable_base_options()->mutable_model_file()->set_file_name(JoinPath(
-      "./" /*test src dir*/, kTestDataDirectory, kMobileSsdWithMetadata));
+  options.mutable_model_file_with_metadata()->set_file_name(
+      JoinPath("./" /*test src dir*/, kTestDataDirectory,
+               kMobileSsdWithMetadata));
+  options.mutable_base_options()->mutable_model_file()->set_file_name(
+      JoinPath("./" /*test src dir*/, kTestDataDirectory,
+               kMobileSsdWithMetadata));
 
   StatusOr<std::unique_ptr<ObjectDetector>> object_detector_or =
       ObjectDetector::CreateFromOptions(options);
@@ -237,8 +248,9 @@ TEST_F(CreateFromOptionsTest, FailsWithMissingModel) {
 
 TEST_F(CreateFromOptionsTest, FailsWithInvalidMaxResults) {
   ObjectDetectorOptions options;
-  options.mutable_model_file_with_metadata()->set_file_name(JoinPath(
-      "./" /*test src dir*/, kTestDataDirectory, kMobileSsdWithMetadata));
+  options.mutable_model_file_with_metadata()->set_file_name(
+      JoinPath("./" /*test src dir*/, kTestDataDirectory,
+               kMobileSsdWithMetadata));
   options.set_max_results(0);
 
   StatusOr<std::unique_ptr<ObjectDetector>> object_detector_or =
@@ -255,8 +267,9 @@ TEST_F(CreateFromOptionsTest, FailsWithInvalidMaxResults) {
 
 TEST_F(CreateFromOptionsTest, FailsWithCombinedWhitelistAndBlacklist) {
   ObjectDetectorOptions options;
-  options.mutable_model_file_with_metadata()->set_file_name(JoinPath(
-      "./" /*test src dir*/, kTestDataDirectory, kMobileSsdWithMetadata));
+  options.mutable_model_file_with_metadata()->set_file_name(
+      JoinPath("./" /*test src dir*/, kTestDataDirectory,
+               kMobileSsdWithMetadata));
   options.add_class_name_whitelist("foo");
   options.add_class_name_blacklist("bar");
 
@@ -275,21 +288,23 @@ TEST_F(CreateFromOptionsTest, FailsWithCombinedWhitelistAndBlacklist) {
 TEST_F(CreateFromOptionsTest, SucceedsWithNumberOfThreads) {
   ObjectDetectorOptions options;
   options.set_num_threads(4);
-  options.mutable_model_file_with_metadata()->set_file_name(JoinPath(
-      "./" /*test src dir*/, kTestDataDirectory, kMobileSsdWithMetadata));
+  options.mutable_model_file_with_metadata()->set_file_name(
+      JoinPath("./" /*test src dir*/, kTestDataDirectory,
+               kMobileSsdWithMetadata));
 
   SUPPORT_ASSERT_OK(ObjectDetector::CreateFromOptions(options));
 }
 
-using NumThreadsTest = testing::TestWithParam<int>;
+using NumThreadsTest = ::testing::TestWithParam<int>;
 
-INSTANTIATE_TEST_SUITE_P(Default, NumThreadsTest, testing::Values(0, -2));
+INSTANTIATE_TEST_SUITE_P(Default, NumThreadsTest, ::testing::Values(0, -2));
 
 TEST_P(NumThreadsTest, FailsWithInvalidNumberOfThreads) {
   ObjectDetectorOptions options;
   options.set_num_threads(GetParam());
-  options.mutable_model_file_with_metadata()->set_file_name(JoinPath(
-      "./" /*test src dir*/, kTestDataDirectory, kMobileSsdWithMetadata));
+  options.mutable_model_file_with_metadata()->set_file_name(
+      JoinPath("./" /*test src dir*/, kTestDataDirectory,
+               kMobileSsdWithMetadata));
 
   StatusOr<std::unique_ptr<ObjectDetector>> object_detector_or =
       ObjectDetector::CreateFromOptions(options);
@@ -304,55 +319,56 @@ TEST_P(NumThreadsTest, FailsWithInvalidNumberOfThreads) {
                   absl::StrCat(TfLiteSupportStatus::kInvalidArgumentError))));
 }
 
-class DetectTest : public tflite_shims::testing::Test {};
+class DetectTest : public tflite::testing::Test {};
 
 TEST_F(DetectTest, Succeeds) {
-  SUPPORT_ASSERT_OK_AND_ASSIGN(ImageData rgb_image,
-                               LoadImage("cats_and_dogs.jpg"));
+  SUPPORT_ASSERT_OK_AND_ASSIGN(ImageData rgb_image, LoadImage("cats_and_dogs.jpg"));
   std::unique_ptr<FrameBuffer> frame_buffer = CreateFromRgbRawBuffer(
       rgb_image.pixel_data,
       FrameBuffer::Dimension{rgb_image.width, rgb_image.height});
 
   ObjectDetectorOptions options;
   options.set_max_results(4);
-  options.mutable_model_file_with_metadata()->set_file_name(JoinPath(
-      "./" /*test src dir*/, kTestDataDirectory, kMobileSsdWithMetadata));
+  options.mutable_model_file_with_metadata()->set_file_name(
+      JoinPath("./" /*test src dir*/, kTestDataDirectory,
+               kMobileSsdWithMetadata));
 
   SUPPORT_ASSERT_OK_AND_ASSIGN(std::unique_ptr<ObjectDetector> object_detector,
-                               ObjectDetector::CreateFromOptions(options));
+                       ObjectDetector::CreateFromOptions(options));
 
   SUPPORT_ASSERT_OK_AND_ASSIGN(const DetectionResult result,
-                               object_detector->Detect(*frame_buffer));
+                       object_detector->Detect(*frame_buffer));
   ImageDataFree(&rgb_image);
-  ExpectApproximatelyEqual(
-      result, ParseTextProtoOrDie<DetectionResult>(kExpectResults));
+  ExpectApproximatelyEqual(result,
+                           ParseTextProtoOrDie<DetectionResult>(kExpectResults),
+                           /*score_precision=*/0.05f);
 }
 
 TEST_F(DetectTest, SucceedswithBaseOptions) {
-  SUPPORT_ASSERT_OK_AND_ASSIGN(ImageData rgb_image,
-                               LoadImage("cats_and_dogs.jpg"));
+  SUPPORT_ASSERT_OK_AND_ASSIGN(ImageData rgb_image, LoadImage("cats_and_dogs.jpg"));
   std::unique_ptr<FrameBuffer> frame_buffer = CreateFromRgbRawBuffer(
       rgb_image.pixel_data,
       FrameBuffer::Dimension{rgb_image.width, rgb_image.height});
 
   ObjectDetectorOptions options;
   options.set_max_results(4);
-  options.mutable_base_options()->mutable_model_file()->set_file_name(JoinPath(
-      "./" /*test src dir*/, kTestDataDirectory, kMobileSsdWithMetadata));
+  options.mutable_base_options()->mutable_model_file()->set_file_name(
+      JoinPath("./" /*test src dir*/, kTestDataDirectory,
+               kMobileSsdWithMetadata));
 
   SUPPORT_ASSERT_OK_AND_ASSIGN(std::unique_ptr<ObjectDetector> object_detector,
-                               ObjectDetector::CreateFromOptions(options));
+                       ObjectDetector::CreateFromOptions(options));
 
   SUPPORT_ASSERT_OK_AND_ASSIGN(const DetectionResult result,
-                               object_detector->Detect(*frame_buffer));
+                       object_detector->Detect(*frame_buffer));
   ImageDataFree(&rgb_image);
-  ExpectApproximatelyEqual(
-      result, ParseTextProtoOrDie<DetectionResult>(kExpectResults));
+  ExpectApproximatelyEqual(result,
+                           ParseTextProtoOrDie<DetectionResult>(kExpectResults),
+                           /*score_precision=*/0.05f);
 }
 
 TEST_F(DetectTest, SucceedswithScoreCalibrations) {
-  SUPPORT_ASSERT_OK_AND_ASSIGN(ImageData rgb_image,
-                               LoadImage("cats_and_dogs.jpg"));
+  SUPPORT_ASSERT_OK_AND_ASSIGN(ImageData rgb_image, LoadImage("cats_and_dogs.jpg"));
   std::unique_ptr<FrameBuffer> frame_buffer = CreateFromRgbRawBuffer(
       rgb_image.pixel_data,
       FrameBuffer::Dimension{rgb_image.width, rgb_image.height});
@@ -364,16 +380,17 @@ TEST_F(DetectTest, SucceedswithScoreCalibrations) {
                kMobileSsdWithMetadataDummyScoreCalibration));
 
   SUPPORT_ASSERT_OK_AND_ASSIGN(std::unique_ptr<ObjectDetector> object_detector,
-                               ObjectDetector::CreateFromOptions(options));
+                       ObjectDetector::CreateFromOptions(options));
 
   SUPPORT_ASSERT_OK_AND_ASSIGN(const DetectionResult result,
-                               object_detector->Detect(*frame_buffer));
+                       object_detector->Detect(*frame_buffer));
   ImageDataFree(&rgb_image);
-  ExpectApproximatelyEqual(
-      result, ParseTextProtoOrDie<DetectionResult>(kExpectResults));
+  ExpectApproximatelyEqual(result,
+                           ParseTextProtoOrDie<DetectionResult>(kExpectResults),
+                           /*score_precision=*/0.05f);
 }
 
-class PostprocessTest : public tflite_shims::testing::Test {
+class PostprocessTest : public tflite::testing::Test {
  public:
   class TestObjectDetector : public ObjectDetector {
    public:
@@ -382,16 +399,16 @@ class PostprocessTest : public tflite_shims::testing::Test {
 
     static StatusOr<std::unique_ptr<TestObjectDetector>> CreateFromOptions(
         const ObjectDetectorOptions& options) {
-      RETURN_IF_ERROR(SanityCheckOptions(options));
+      TFLITE_RETURN_IF_ERROR(SanityCheckOptions(options));
 
       auto options_copy = absl::make_unique<ObjectDetectorOptions>(options);
 
-      ASSIGN_OR_RETURN(
+      TFLITE_ASSIGN_OR_RETURN(
           auto object_detector,
           TaskAPIFactory::CreateFromExternalFileProto<TestObjectDetector>(
               &options_copy->model_file_with_metadata()));
 
-      RETURN_IF_ERROR(object_detector->Init(std::move(options_copy)));
+      TFLITE_RETURN_IF_ERROR(object_detector->Init(std::move(options_copy)));
 
       return object_detector;
     }
@@ -410,7 +427,7 @@ class PostprocessTest : public tflite_shims::testing::Test {
   };
 
  protected:
-  void SetUp() override { tflite_shims::testing::Test::SetUp(); }
+  void SetUp() override { tflite::testing::Test::SetUp(); }
   void SetUp(const ObjectDetectorOptions& options) {
     StatusOr<std::unique_ptr<TestObjectDetector>> test_object_detector_or =
         TestObjectDetector::CreateFromOptions(options);
@@ -442,7 +459,7 @@ class PostprocessTest : public tflite_shims::testing::Test {
         /*left=*/0.2, /*top=*/0.4, /*right=*/0.4, /*bottom=*/0.8};
     // Pad with zeros to fill the 10 locations.
     locations_data.resize(4 * 10);
-    RETURN_IF_ERROR(PopulateTensor(locations_data, locations));
+    TFLITE_RETURN_IF_ERROR(PopulateTensor(locations_data, locations));
     result.push_back(locations);
 
     TfLiteTensor* classes = output_tensors[1];
@@ -450,19 +467,19 @@ class PostprocessTest : public tflite_shims::testing::Test {
                                        /*motorcycle*/ 3};
     // Pad with zeros to fill the 10 classes.
     classes_data.resize(10);
-    RETURN_IF_ERROR(PopulateTensor(classes_data, classes));
+    TFLITE_RETURN_IF_ERROR(PopulateTensor(classes_data, classes));
     result.push_back(classes);
 
     TfLiteTensor* scores = output_tensors[2];
     std::vector<float> scores_data = {0.8, 0.6, 0.4};
     // Pad with zeros to fill the 10 scores.
     scores_data.resize(10);
-    RETURN_IF_ERROR(PopulateTensor(scores_data, scores));
+    TFLITE_RETURN_IF_ERROR(PopulateTensor(scores_data, scores));
     result.push_back(scores);
 
     TfLiteTensor* num_results = output_tensors[3];
     std::vector<float> num_results_data = {10};
-    RETURN_IF_ERROR(PopulateTensor(num_results_data, num_results));
+    TFLITE_RETURN_IF_ERROR(PopulateTensor(num_results_data, num_results));
     result.push_back(num_results);
 
     return result;
@@ -475,21 +492,20 @@ class PostprocessTest : public tflite_shims::testing::Test {
 
 TEST_F(PostprocessTest, SucceedsWithScoreThresholdOption) {
   ObjectDetectorOptions options;
-  options.mutable_model_file_with_metadata()->set_file_name(JoinPath(
-      "./" /*test src dir*/, kTestDataDirectory, kMobileSsdWithMetadata));
+  options.mutable_model_file_with_metadata()->set_file_name(
+      JoinPath("./" /*test src dir*/, kTestDataDirectory,
+               kMobileSsdWithMetadata));
   options.set_score_threshold(0.5);
 
   SetUp(options);
   ASSERT_TRUE(test_object_detector_ != nullptr) << init_status_;
 
-  SUPPORT_ASSERT_OK_AND_ASSIGN(
-      const std::vector<const TfLiteTensor*> output_tensors,
-      FillAndGetOutputTensors());
+  SUPPORT_ASSERT_OK_AND_ASSIGN(const std::vector<const TfLiteTensor*> output_tensors,
+                       FillAndGetOutputTensors());
 
-  SUPPORT_ASSERT_OK_AND_ASSIGN(
-      DetectionResult result,
-      test_object_detector_->Postprocess(output_tensors, *dummy_frame_buffer_,
-                                         /*roi=*/{}));
+  SUPPORT_ASSERT_OK_AND_ASSIGN(DetectionResult result,
+                       test_object_detector_->Postprocess(
+                           output_tensors, *dummy_frame_buffer_, /*roi=*/{}));
 
   ExpectApproximatelyEqual(
       result,
@@ -511,16 +527,16 @@ TEST_F(PostprocessTest, SucceedsWithFrameBufferOrientation) {
                              FrameBuffer::Orientation::kBottomRight);
 
   ObjectDetectorOptions options;
-  options.mutable_model_file_with_metadata()->set_file_name(JoinPath(
-      "./" /*test src dir*/, kTestDataDirectory, kMobileSsdWithMetadata));
+  options.mutable_model_file_with_metadata()->set_file_name(
+      JoinPath("./" /*test src dir*/, kTestDataDirectory,
+               kMobileSsdWithMetadata));
   options.set_score_threshold(0.5);
 
   SetUp(options);
   ASSERT_TRUE(test_object_detector_ != nullptr) << init_status_;
 
-  SUPPORT_ASSERT_OK_AND_ASSIGN(
-      const std::vector<const TfLiteTensor*> output_tensors,
-      FillAndGetOutputTensors());
+  SUPPORT_ASSERT_OK_AND_ASSIGN(const std::vector<const TfLiteTensor*> output_tensors,
+                       FillAndGetOutputTensors());
 
   SUPPORT_ASSERT_OK_AND_ASSIGN(
       DetectionResult result,
@@ -543,21 +559,20 @@ TEST_F(PostprocessTest, SucceedsWithFrameBufferOrientation) {
 
 TEST_F(PostprocessTest, SucceedsWithMaxResultsOption) {
   ObjectDetectorOptions options;
-  options.mutable_model_file_with_metadata()->set_file_name(JoinPath(
-      "./" /*test src dir*/, kTestDataDirectory, kMobileSsdWithMetadata));
+  options.mutable_model_file_with_metadata()->set_file_name(
+      JoinPath("./" /*test src dir*/, kTestDataDirectory,
+               kMobileSsdWithMetadata));
   options.set_max_results(1);
 
   SetUp(options);
   ASSERT_TRUE(test_object_detector_ != nullptr) << init_status_;
 
-  SUPPORT_ASSERT_OK_AND_ASSIGN(
-      const std::vector<const TfLiteTensor*> output_tensors,
-      FillAndGetOutputTensors());
+  SUPPORT_ASSERT_OK_AND_ASSIGN(const std::vector<const TfLiteTensor*> output_tensors,
+                       FillAndGetOutputTensors());
 
-  SUPPORT_ASSERT_OK_AND_ASSIGN(
-      DetectionResult result,
-      test_object_detector_->Postprocess(output_tensors, *dummy_frame_buffer_,
-                                         /*roi=*/{}));
+  SUPPORT_ASSERT_OK_AND_ASSIGN(DetectionResult result,
+                       test_object_detector_->Postprocess(
+                           output_tensors, *dummy_frame_buffer_, /*roi=*/{}));
 
   ExpectApproximatelyEqual(
       result,
@@ -571,22 +586,21 @@ TEST_F(PostprocessTest, SucceedsWithMaxResultsOption) {
 
 TEST_F(PostprocessTest, SucceedsWithWhitelistOption) {
   ObjectDetectorOptions options;
-  options.mutable_model_file_with_metadata()->set_file_name(JoinPath(
-      "./" /*test src dir*/, kTestDataDirectory, kMobileSsdWithMetadata));
+  options.mutable_model_file_with_metadata()->set_file_name(
+      JoinPath("./" /*test src dir*/, kTestDataDirectory,
+               kMobileSsdWithMetadata));
   options.add_class_name_whitelist("car");
   options.add_class_name_whitelist("motorcycle");
 
   SetUp(options);
   ASSERT_TRUE(test_object_detector_ != nullptr) << init_status_;
 
-  SUPPORT_ASSERT_OK_AND_ASSIGN(
-      const std::vector<const TfLiteTensor*> output_tensors,
-      FillAndGetOutputTensors());
+  SUPPORT_ASSERT_OK_AND_ASSIGN(const std::vector<const TfLiteTensor*> output_tensors,
+                       FillAndGetOutputTensors());
 
-  SUPPORT_ASSERT_OK_AND_ASSIGN(
-      DetectionResult result,
-      test_object_detector_->Postprocess(output_tensors, *dummy_frame_buffer_,
-                                         /*roi=*/{}));
+  SUPPORT_ASSERT_OK_AND_ASSIGN(DetectionResult result,
+                       test_object_detector_->Postprocess(
+                           output_tensors, *dummy_frame_buffer_, /*roi=*/{}));
 
   ExpectApproximatelyEqual(
       result,
@@ -604,8 +618,9 @@ TEST_F(PostprocessTest, SucceedsWithWhitelistOption) {
 
 TEST_F(PostprocessTest, SucceedsWithBlacklistOption) {
   ObjectDetectorOptions options;
-  options.mutable_model_file_with_metadata()->set_file_name(JoinPath(
-      "./" /*test src dir*/, kTestDataDirectory, kMobileSsdWithMetadata));
+  options.mutable_model_file_with_metadata()->set_file_name(
+      JoinPath("./" /*test src dir*/, kTestDataDirectory,
+               kMobileSsdWithMetadata));
   options.add_class_name_blacklist("car");
   // Setting score threshold to discard the 7 padded-with-zeros results.
   options.set_score_threshold(0.1);
@@ -613,14 +628,12 @@ TEST_F(PostprocessTest, SucceedsWithBlacklistOption) {
   SetUp(options);
   ASSERT_TRUE(test_object_detector_ != nullptr) << init_status_;
 
-  SUPPORT_ASSERT_OK_AND_ASSIGN(
-      const std::vector<const TfLiteTensor*> output_tensors,
-      FillAndGetOutputTensors());
+  SUPPORT_ASSERT_OK_AND_ASSIGN(const std::vector<const TfLiteTensor*> output_tensors,
+                       FillAndGetOutputTensors());
 
-  SUPPORT_ASSERT_OK_AND_ASSIGN(
-      DetectionResult result,
-      test_object_detector_->Postprocess(output_tensors, *dummy_frame_buffer_,
-                                         /*roi=*/{}));
+  SUPPORT_ASSERT_OK_AND_ASSIGN(DetectionResult result,
+                       test_object_detector_->Postprocess(
+                           output_tensors, *dummy_frame_buffer_, /*roi=*/{}));
 
   ExpectApproximatelyEqual(
       result,

@@ -11,6 +11,7 @@
 #include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
+#include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
 #include "ui/compositor/layer.h"
@@ -39,6 +40,8 @@ constexpr base::TimeDelta kSelectorAnimationDuration = base::Milliseconds(150);
 // selected, it moves from the previously selected button to the currently
 // selected button.
 class TabSlider::SelectorView : public views::View {
+  METADATA_HEADER(SelectorView, views::View)
+
  public:
   explicit SelectorView(bool has_animation) : has_animation_(has_animation) {
     SetPaintToLayer();
@@ -88,8 +91,11 @@ class TabSlider::SelectorView : public views::View {
   // Indicates if there is a movement animation.
   const bool has_animation_;
   // Now owned.
-  raw_ptr<TabSliderButton, ExperimentalAsh> button_ = nullptr;
+  raw_ptr<TabSliderButton> button_ = nullptr;
 };
+
+BEGIN_METADATA(TabSlider, SelectorView)
+END_METADATA
 
 //------------------------------------------------------------------------------
 // TabSlider:
@@ -109,10 +115,7 @@ TabSlider::TabSlider(size_t max_tab_num, const InitParams& params)
 
   Init();
 
-  // Explicitly mark this view as ignored because
-  // `views::kViewIgnoredByLayoutKey` is not supported by `views::TableLayout`.
-  static_cast<views::TableLayout*>(GetLayoutManager())
-      ->SetChildViewIgnoredByLayout(selector_view_, /*ignored=*/true);
+  selector_view_->SetProperty(views::kViewIgnoredByLayoutKey, true);
 
   enabled_changed_subscription_ = AddEnabledChangedCallback(base::BindRepeating(
       &TabSlider::OnEnabledStateChanged, base::Unretained(this)));
@@ -135,7 +138,7 @@ void TabSlider::OnButtonSelected(TabSliderButton* button) {
   DCHECK(button->selected());
 
   // Deselect all the other buttons.
-  for (auto* b : buttons_) {
+  for (ash::TabSliderButton* b : buttons_) {
     b->SetSelected(b == button);
   }
 
@@ -143,8 +146,8 @@ void TabSlider::OnButtonSelected(TabSliderButton* button) {
   selector_view_->MoveToSelectedButton(button);
 }
 
-void TabSlider::Layout() {
-  views::View::Layout();
+void TabSlider::Layout(PassKey) {
+  LayoutSuperclass<views::View>(this);
 
   // Synchronize the selector bounds with selected button's bounds.
   auto it =
@@ -207,7 +210,7 @@ void TabSlider::OnEnabledStateChanged() {
   // Propagate the enabled state to all slider buttons and the selector view.
   const bool enabled = GetEnabled();
 
-  for (auto* b : buttons_) {
+  for (ash::TabSliderButton* b : buttons_) {
     b->SetEnabled(enabled);
   }
 
@@ -215,7 +218,7 @@ void TabSlider::OnEnabledStateChanged() {
   SchedulePaint();
 }
 
-BEGIN_METADATA(TabSlider, views::View)
+BEGIN_METADATA(TabSlider)
 END_METADATA
 
 }  // namespace ash

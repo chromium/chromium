@@ -8,6 +8,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/test/task_environment.h"
 #include "chromeos/ash/components/network/network_handler_test_helper.h"
@@ -31,7 +32,8 @@ class FakeOtaActivatorFactory : public OtaActivatorImpl::Factory {
 
   ~FakeOtaActivatorFactory() override = default;
 
-  std::vector<FakeOtaActivator*>& created_instances() {
+  std::vector<raw_ptr<FakeOtaActivator, VectorExperimental>>&
+  created_instances() {
     return created_instances_;
   }
 
@@ -57,7 +59,7 @@ class FakeOtaActivatorFactory : public OtaActivatorImpl::Factory {
     return fake_ota_activator;
   }
 
-  std::vector<FakeOtaActivator*> created_instances_;
+  std::vector<raw_ptr<FakeOtaActivator, VectorExperimental>> created_instances_;
 };
 
 }  // namespace

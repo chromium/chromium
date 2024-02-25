@@ -128,7 +128,7 @@ CryptAuthDeviceSyncerImpl::CryptAuthDeviceSyncerImpl(
 CryptAuthDeviceSyncerImpl::~CryptAuthDeviceSyncerImpl() = default;
 
 // static
-absl::optional<base::TimeDelta> CryptAuthDeviceSyncerImpl::GetTimeoutForState(
+std::optional<base::TimeDelta> CryptAuthDeviceSyncerImpl::GetTimeoutForState(
     State state) {
   switch (state) {
     case State::kWaitingForEncryptedGroupPrivateKeyProcessing:
@@ -142,12 +142,12 @@ absl::optional<base::TimeDelta> CryptAuthDeviceSyncerImpl::GetTimeoutForState(
       // the callbacks passed to their public methods are always invoke; in
       // other words, these implementations handle their relevant timeouts
       // internally.
-      return absl::nullopt;
+      return std::nullopt;
   }
 }
 
 // static
-absl::optional<CryptAuthDeviceSyncResult::ResultCode>
+std::optional<CryptAuthDeviceSyncResult::ResultCode>
 CryptAuthDeviceSyncerImpl::ResultCodeErrorFromTimeoutDuringState(State state) {
   switch (state) {
     case State::kWaitingForEncryptedGroupPrivateKeyProcessing:
@@ -157,7 +157,7 @@ CryptAuthDeviceSyncerImpl::ResultCodeErrorFromTimeoutDuringState(State state) {
       return CryptAuthDeviceSyncResult::ResultCode::
           kErrorTimeoutWaitingForDeviceMetadataDecryption;
     default:
-      return absl::nullopt;
+      return std::nullopt;
   }
 }
 
@@ -195,7 +195,7 @@ void CryptAuthDeviceSyncerImpl::SetState(State state) {
   state_ = state;
   last_state_change_timestamp_ = base::TimeTicks::Now();
 
-  absl::optional<base::TimeDelta> timeout_for_state = GetTimeoutForState(state);
+  std::optional<base::TimeDelta> timeout_for_state = GetTimeoutForState(state);
   if (!timeout_for_state)
     return;
 
@@ -206,7 +206,7 @@ void CryptAuthDeviceSyncerImpl::SetState(State state) {
 
 void CryptAuthDeviceSyncerImpl::OnTimeout() {
   // If there's a timeout specified, there should be a corresponding error code.
-  absl::optional<CryptAuthDeviceSyncResult::ResultCode> error_code =
+  std::optional<CryptAuthDeviceSyncResult::ResultCode> error_code =
       ResultCodeErrorFromTimeoutDuringState(state_);
   DCHECK(error_code);
 
@@ -330,9 +330,9 @@ void CryptAuthDeviceSyncerImpl::OnSyncMetadataFinished(
     const CryptAuthMetadataSyncer::IdToDeviceMetadataPacketMap&
         id_to_device_metadata_packet_map,
     std::unique_ptr<CryptAuthKey> new_group_key,
-    const absl::optional<cryptauthv2::EncryptedGroupPrivateKey>&
+    const std::optional<cryptauthv2::EncryptedGroupPrivateKey>&
         encrypted_group_private_key,
-    const absl::optional<cryptauthv2::ClientDirective>& new_client_directive,
+    const std::optional<cryptauthv2::ClientDirective>& new_client_directive,
     CryptAuthDeviceSyncResult::ResultCode device_sync_result_code) {
   DCHECK_EQ(State::kWaitingForMetadataSync, state_);
 
@@ -466,7 +466,7 @@ void CryptAuthDeviceSyncerImpl::BuildNewDeviceRegistry(
 
     // Add BetterTogetherDeviceMetadata for the local device and all devices
     // with BetterTogetherDeviceMetadata in the existing device registry.
-    absl::optional<cryptauthv2::BetterTogetherDeviceMetadata> beto_metadata;
+    std::optional<cryptauthv2::BetterTogetherDeviceMetadata> beto_metadata;
     if (id == request_context_.device_id()) {
       beto_metadata = local_better_together_device_metadata_;
     } else {
@@ -527,7 +527,7 @@ void CryptAuthDeviceSyncerImpl::ProcessEncryptedGroupPrivateKey() {
 }
 
 void CryptAuthDeviceSyncerImpl::OnGroupPrivateKeyDecrypted(
-    const absl::optional<std::string>& group_private_key_from_cryptauth) {
+    const std::optional<std::string>& group_private_key_from_cryptauth) {
   DCHECK_EQ(State::kWaitingForEncryptedGroupPrivateKeyProcessing, state_);
 
   bool success = group_private_key_from_cryptauth.has_value();

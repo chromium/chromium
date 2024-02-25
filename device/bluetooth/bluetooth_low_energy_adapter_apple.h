@@ -8,6 +8,7 @@
 #include <map>
 #include <memory>
 #include <string>
+#include <string_view>
 #include <unordered_map>
 #include <vector>
 
@@ -101,7 +102,7 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothLowEnergyAdapterApple
   // `low_energy_devices_info_`. If the framework supports the paired status, it
   // calls GetDevicePairedStatusCallback to check the status of the device.
   bool IsBluetoothLowEnergyDeviceSystemPaired(
-      base::StringPiece device_identifier) const;
+      std::string_view device_identifier) const;
 
  protected:
   BluetoothLowEnergyAdapterApple();

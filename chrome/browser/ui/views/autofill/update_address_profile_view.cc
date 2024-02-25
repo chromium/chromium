@@ -36,9 +36,9 @@ namespace {
 constexpr int kIconSize = 16;
 constexpr int kValuesLabelWidth = 190;
 
-const gfx::VectorIcon& GetVectorIconForType(ServerFieldType type) {
+const gfx::VectorIcon& GetVectorIconForType(FieldType type) {
   switch (type) {
-    case NAME_FULL_WITH_HONORIFIC_PREFIX:
+    case NAME_FULL:
       return kAccountCircleIcon;
     case ADDRESS_HOME_ADDRESS:
       return vector_icons::kLocationOnIcon;
@@ -176,11 +176,13 @@ UpdateAddressProfileView::UpdateAddressProfileView(
   SetAcceptCallback(base::BindOnce(
       &SaveUpdateAddressProfileBubbleController::OnUserDecision,
       base::Unretained(controller_),
-      AutofillClient::SaveAddressProfileOfferUserDecision::kAccepted));
+      AutofillClient::SaveAddressProfileOfferUserDecision::kAccepted,
+      std::nullopt));
   SetCancelCallback(base::BindOnce(
       &SaveUpdateAddressProfileBubbleController::OnUserDecision,
       base::Unretained(controller_),
-      AutofillClient::SaveAddressProfileOfferUserDecision::kDeclined));
+      AutofillClient::SaveAddressProfileOfferUserDecision::kDeclined,
+      std::nullopt));
 
   SetProperty(views::kElementIdentifierKey, kTopViewId);
   SetTitle(controller_->GetWindowTitle());
@@ -271,14 +273,17 @@ UpdateAddressProfileView::UpdateAddressProfileView(
     SetFootnoteView(
         views::Builder<views::Label>()
             .SetText(footer_message)
+            .SetTextContext(views::style::CONTEXT_BUBBLE_FOOTER)
+            .SetTextStyle(views::style::STYLE_SECONDARY)
             .SetHorizontalAlignment(gfx::HorizontalAlignment::ALIGN_LEFT)
             .SetMultiLine(true)
             .Build());
   }
 
-  set_fixed_width(std::max(main_content_view->GetPreferredSize().width(),
-                           layout_provider->GetDistanceMetric(
-                               views::DISTANCE_BUBBLE_PREFERRED_WIDTH)));
+  set_fixed_width(std::max(
+      main_content_view->GetPreferredSize().width() + margins().width(),
+      layout_provider->GetDistanceMetric(
+          views::DISTANCE_BUBBLE_PREFERRED_WIDTH)));
 }
 
 bool UpdateAddressProfileView::ShouldShowCloseButton() const {

@@ -5,6 +5,8 @@
 #ifndef CHROME_BROWSER_ASH_SYSTEM_WEB_APPS_APPS_MEDIA_APP_CHROME_MEDIA_APP_UI_DELEGATE_H_
 #define CHROME_BROWSER_ASH_SYSTEM_WEB_APPS_APPS_MEDIA_APP_CHROME_MEDIA_APP_UI_DELEGATE_H_
 
+#include <optional>
+
 #include "ash/webui/media_app_ui/media_app_ui_delegate.h"
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
@@ -12,7 +14,6 @@
 #include "base/memory/weak_ptr.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "storage/browser/file_system/file_system_url.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/mojom/file_system_access/file_system_access_transfer_token.mojom.h"
 
 namespace ash {
@@ -36,7 +37,7 @@ class ChromeMediaAppUIDelegate : public ash::MediaAppUIDelegate {
   ~ChromeMediaAppUIDelegate() override;
 
   // MediaAppUIDelegate:
-  absl::optional<std::string> OpenFeedbackDialog() override;
+  std::optional<std::string> OpenFeedbackDialog() override;
   void ToggleBrowserFullscreenMode() override;
   void MaybeTriggerPdfHats() override;
   void IsFileArcWritable(
@@ -50,12 +51,12 @@ class ChromeMediaAppUIDelegate : public ash::MediaAppUIDelegate {
  private:
   void IsFileArcWritableImpl(
       base::OnceCallback<void(bool)> is_file_arc_writable_callback,
-      absl::optional<storage::FileSystemURL> url);
+      std::optional<storage::FileSystemURL> url);
   void EditInPhotosImpl(const std::string& mime_type,
                         base::OnceCallback<void()> edit_in_photos_callback,
-                        absl::optional<storage::FileSystemURL> url);
+                        std::optional<storage::FileSystemURL> url);
 
-  raw_ptr<content::WebUI, ExperimentalAsh> web_ui_;  // Owns |this|.
+  raw_ptr<content::WebUI> web_ui_;  // Owns |this|.
 
   scoped_refptr<ash::HatsNotificationController> hats_notification_controller_;
 

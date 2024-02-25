@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="da">
+<translation id="1012241361789814178">Debuggeren er sat på pause på en anden fane. Klik for at skifte til den pågældende fane.</translation>
 <translation id="1088086359088493902">Sekunder</translation>
 <translation id="1142001580032786438">Vis ugevælger</translation>
 <translation id="1171774979989969504">Angiv en mailadresse.</translation>
@@ -16,6 +17,7 @@
 <translation id="1729654308190250600">Angiv en mailadresse, der ikke er tom.</translation>
 <translation id="1758486001363313524">Andet...</translation>
 <translation id="1787192514241997742">tid i alt: <ph name="REMAINING_TIME" /></translation>
+<translation id="1800494066469288780">Tillad kamera</translation>
 <translation id="1822429046913737220">f.m./e.m.</translation>
 <translation id="1832974991323546415">afspil på en enhed via fjernadgang</translation>
 <translation id="1921819250265091946">dd</translation>
@@ -24,10 +26,12 @@
 <translation id="1993104285338243655">Ændret til spejling</translation>
 <translation id="2031987842108996681">Rød kanal</translation>
 <translation id="2060505056492490888">"<ph name="DOT" />" er placeret forkert i "<ph name="INVALIDDOMAIN" />".</translation>
+<translation id="2068711044993563745">Minimumværdien (<ph name="MINIMUM" />) skal være mindre end maksimumværdien (<ph name="MAXIMUM" />).</translation>
 <translation id="2148716181193084225">I dag</translation>
 <translation id="2226276347425096477">Forkort denne tekst til <ph name="MAX_CHARACTERS" /> tegn eller færre (du bruger i øjeblikket <ph name="CURRENT_LENGTH" /> tegn).</translation>
 <translation id="2247351761944213033">Uge <ph name="WEEKNUMBER" />, <ph name="YEAR" /></translation>
 <translation id="2277199496770840904">Spor <ph name="NUMBER" /></translation>
+<translation id="2353297238722298836">Der er givet adgang til kameraet og mikrofonen</translation>
 <translation id="2393030564806080191">Hexadecimal farveværdi</translation>
 <translation id="2398813069815436052">dialogboksen er åbnet.</translation>
 <translation id="245932805758469625">antal sekunder tilbage af videoen</translation>
@@ -44,11 +48,13 @@
 <translation id="2761667185364618470">Markér dette felt, hvis du vil fortsætte.</translation>
 <translation id="2908441821576996758">Angiv en kommasepareret liste over mailadresser.</translation>
 <translation id="3049748772180311791"><ph name="QUANTITY" /> MB</translation>
+<translation id="3053226512517284904">vis menuen for synstolkning</translation>
 <translation id="3075154866155599887">Angiv en gyldig værdi. Feltet er ufuldstændigt eller har en ugyldig dato.</translation>
 <translation id="310520048233152454">Angiv en webadresse.</translation>
 <translation id="3220661731597678625">aktuelt trin</translation>
 <translation id="3321030238473337787">Afspilningshastighed</translation>
 <translation id="3329013043687509092">Mætning</translation>
+<translation id="3377518164566272702">Tillad mikrofon og kamera</translation>
 <translation id="3450233048674729344">Værdien skal være mindre end eller lig med <ph name="MAXIMUM" />.</translation>
 <translation id="3732799496749320381">mm</translation>
 <translation id="3754210790023674521">Afslut integreret billede</translation>
@@ -56,14 +62,17 @@
 <translation id="3822383571486410024">Forlæng denne tekst til <ph name="MIN_CHARACTERS" /> eller flere tegn (du bruger i øjeblikket <ph name="CURRENT_LENGTH" /> tegn).</translation>
 <translation id="383465348367842624">Den del, der kommer før "<ph name="ATSIGN" />", må ikke indeholde "<ph name="INVALIDCHARACTER" />".</translation>
 <translation id="3846214748874656680">Afslut fuld skærm</translation>
+<translation id="4031179711345676612">Der er givet adgang til mikrofonen</translation>
 <translation id="4103419683916926126">Millisekunder</translation>
 <translation id="4201051445878709314">Vis den foregående måned</translation>
 <translation id="4360991593054037559">Angiv en gyldig værdi. De to nærmeste gyldige værdier er <ph name="VALID_VALUE_LOW" /> og <ph name="VALID_VALUE_HIGHER" />.</translation>
 <translation id="4522570452068850558">Detaljer</translation>
+<translation id="4663373278480897665">Der er givet adgang til kameraet</translation>
 <translation id="4664250907885839816">Den del, der kommer efter "<ph name="ATSIGN" />", må ikke indeholde symbolet "<ph name="INVALIDCHARACTER" />".</translation>
 <translation id="4718048029184481307">Afspiller i integreret billede</translation>
 <translation id="4748357248530471599">skift fra skærmhak til fuld skærm</translation>
 <translation id="4763480195061959176">video</translation>
+<translation id="4792862212177489858">Del lokation</translation>
 <translation id="4812940957355064477">Angiv et nummer.</translation>
 <translation id="4912200001568447310">aktuelt element</translation>
 <translation id="4915360478455618802">Vis tidsvælger</translation>
@@ -73,6 +82,7 @@
 <translation id="4975562563186953947"><ph name="SELECTED_COUNT" /> er valgt</translation>
 <translation id="4992066212339426712">Slå lyden til</translation>
 <translation id="49969490063480558">Angiv den del, der kommer efter "<ph name="ATSIGN" />". "<ph name="INVALIDADDRESS" />" er ufuldstændig.</translation>
+<translation id="5037575921016181960">Stærk adgangskode</translation>
 <translation id="5090250355906949916">afspilningsbjælke for video</translation>
 <translation id="509897012892853729">Blå kanal</translation>
 <translation id="5117590920725113268">Vis næste måned</translation>
@@ -131,6 +141,7 @@
 <translation id="6941933287844615239">download medier</translation>
 <translation id="698788488269350478">udvidet.</translation>
 <translation id="6989848892321993519">Forlæng denne tekst til <ph name="MIN_CHARACTERS" /> eller flere tegn (du bruger i øjeblikket ét tegn).</translation>
+<translation id="7080893216867146095">Deling af lokation er tilladt</translation>
 <translation id="709897737746224366">Find et match til det anmodede format.</translation>
 <translation id="7102274145889307184">aktuel lokation</translation>
 <translation id="7263440858009898357">Vælg et punkt på listen.</translation>
@@ -177,6 +188,7 @@
 <translation id="9132465097189459683">Andet...</translation>
 <translation id="9155987714137265666"><ph name="WEEK" />, med start <ph name="WEEK_START_DATE" /></translation>
 <translation id="916607977885256133">Integreret billede</translation>
+<translation id="918430632320614861">Tillad mikrofon</translation>
 <translation id="945780513535800434">Delvis markering</translation>
 <translation id="954003015749068518">start integreret billede</translation>
 </translationbundle>

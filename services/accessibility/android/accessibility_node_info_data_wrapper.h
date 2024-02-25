@@ -47,7 +47,8 @@ class AccessibilityNodeInfoDataWrapper : public AccessibilityInfoDataWrapper {
   void Serialize(ui::AXNodeData* out_data) const override;
   std::string ComputeAXName(bool do_recursive) const override;
   void GetChildren(
-      std::vector<AccessibilityInfoDataWrapper*>* children) const override;
+      std::vector<raw_ptr<AccessibilityInfoDataWrapper, VectorExperimental>>*
+          children) const override;
   int32_t GetWindowId() const override;
 
   mojom::AccessibilityNodeInfoData* node() { return node_ptr_; }
@@ -87,8 +88,8 @@ class AccessibilityNodeInfoDataWrapper : public AccessibilityInfoDataWrapper {
 
   ax::mojom::Role GetChromeRole() const;
 
-  raw_ptr<mojom::AccessibilityNodeInfoData, DanglingUntriaged | ExperimentalAsh>
-      node_ptr_ = nullptr;
+  raw_ptr<mojom::AccessibilityNodeInfoData, DanglingUntriaged> node_ptr_ =
+      nullptr;
 
   // Properties which should be checked for recursive text computation.
   // It's not clear whether labeled by should be taken into account here.
@@ -99,8 +100,8 @@ class AccessibilityNodeInfoDataWrapper : public AccessibilityInfoDataWrapper {
 
   // These properties are a cached value so that we can avoid same computation.
   // mutable because once the value is computed it won't change.
-  mutable absl::optional<bool> has_important_property_cache_;
-  mutable absl::optional<bool> is_web_node_;
+  mutable std::optional<bool> has_important_property_cache_;
+  mutable std::optional<bool> is_web_node_;
 };
 
 }  // namespace ax::android

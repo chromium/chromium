@@ -13,9 +13,9 @@ TEST(EventLoggerTest, BasicLogging) {
   logger.SetHistorySize(3);  // At most 3 events are kept.
   EXPECT_EQ(0U, logger.GetHistory().size());
 
-  logger.Log(logging::LOG_INFO, "first");
-  logger.Log(logging::LOG_INFO, "%dnd", 2);
-  logger.Log(logging::LOG_INFO, "third");
+  logger.Log(logging::LOGGING_INFO, "first");
+  logger.Log(logging::LOGGING_INFO, "%dnd", 2);
+  logger.Log(logging::LOGGING_INFO, "third");
 
   // Events are recorded in the chronological order with sequential IDs.
   std::vector<EventLogger::Event> history = logger.GetHistory();
@@ -27,7 +27,7 @@ TEST(EventLoggerTest, BasicLogging) {
   EXPECT_EQ(2, history[2].id);
   EXPECT_EQ("third", history[2].what);
 
-  logger.Log(logging::LOG_INFO, "fourth");
+  logger.Log(logging::LOGGING_INFO, "fourth");
   // It does not log events beyond the specified.
   history = logger.GetHistory();
   ASSERT_EQ(3U, history.size());

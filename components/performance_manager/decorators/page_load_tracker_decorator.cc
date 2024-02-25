@@ -357,7 +357,7 @@ void PageLoadTrackerDecorator::TransitionToLoadedAndIdle(
 // static
 bool PageLoadTrackerDecorator::IsIdling(const PageNodeImpl* page_node) {
   // Get the frame node for the main frame associated with this page.
-  const FrameNodeImpl* main_frame_node = page_node->GetMainFrameNodeImpl();
+  const FrameNodeImpl* main_frame_node = page_node->main_frame_node();
   if (!main_frame_node)
     return false;
 
@@ -372,8 +372,8 @@ bool PageLoadTrackerDecorator::IsIdling(const PageNodeImpl* page_node) {
   // associated with this page's main frame actually being low. In the case
   // of session restore this is mitigated by having a timeout while waiting for
   // this signal.
-  return main_frame_node->network_almost_idle() &&
-         process_node->main_thread_task_load_is_low();
+  return main_frame_node->GetNetworkAlmostIdle() &&
+         process_node->GetMainThreadTaskLoadIsLow();
 }
 
 // static

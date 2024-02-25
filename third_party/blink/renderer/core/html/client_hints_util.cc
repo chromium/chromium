@@ -29,8 +29,7 @@ void UpdateWindowPermissionsPolicyWithDelegationSupportForClientHints(
   // If it's not http-equiv="accept-ch" and it's not a preload-or-sync-parser
   // visible meta tag, then we need to warn the dev that js injected the tag.
   if (type != network::MetaCHType::HttpEquivAcceptCH && !is_doc_preloader &&
-      !is_sync_parser && local_dom_window &&
-      RuntimeEnabledFeatures::ClientHintThirdPartyDelegationEnabled()) {
+      !is_sync_parser && local_dom_window) {
     AuditsIssue::ReportClientHintIssue(
         local_dom_window, ClientHintIssueReason::kMetaTagModifiedHTML);
   }
@@ -41,8 +40,7 @@ void UpdateWindowPermissionsPolicyWithDelegationSupportForClientHints(
   if (!client_hints_preferences.UpdateFromMetaCH(
           header_value, url, context, type, is_doc_preloader, is_sync_parser) ||
       type == network::MetaCHType::HttpEquivAcceptCH ||
-      !(is_doc_preloader || is_sync_parser) || !local_dom_window ||
-      !RuntimeEnabledFeatures::ClientHintThirdPartyDelegationEnabled()) {
+      !(is_doc_preloader || is_sync_parser) || !local_dom_window) {
     return;
   }
 
@@ -96,8 +94,7 @@ void UpdateWindowPermissionsPolicyWithDelegationSupportForClientHints(
 void UpdateIFrameContainerPolicyWithDelegationSupportForClientHints(
     ParsedPermissionsPolicy& container_policy,
     LocalDOMWindow* local_dom_window) {
-  if (!RuntimeEnabledFeatures::ClientHintThirdPartyDelegationEnabled() ||
-      !local_dom_window ||
+  if (!local_dom_window ||
       !local_dom_window->GetSecurityContext().GetPermissionsPolicy()) {
     return;
   }

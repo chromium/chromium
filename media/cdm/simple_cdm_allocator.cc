@@ -42,6 +42,9 @@ class SimpleCdmVideoFrame final : public VideoFrameImpl {
             buffer->Data() + PlaneOffset(cdm::kVPlane),
             base::Microseconds(Timestamp()));
 
+    frame->metadata().power_efficient = false;
+
+    // TODO(b/183748013): Set HDRMetadata once supported by the CDM interface.
     frame->set_color_space(MediaColorSpace().ToGfxColorSpace());
 
     // The FrameBuffer needs to remain around until |frame| is destroyed.

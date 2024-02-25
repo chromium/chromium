@@ -11,6 +11,9 @@
 // The recent tab tile has been tapped.
 - (void)recentTabTileOpened;
 
+// A distant tab resumption tile has been tapped.
+- (void)distantTabResumptionOpened;
+
 // A feed article has been tapped.
 - (void)feedArticleOpened;
 
@@ -22,6 +25,12 @@
 
 // A Set Up List item has been tapped.
 - (void)setUpListItemOpened;
+
+// The Safety Check module was tapped.
+- (void)safetyCheckOpened;
+
+// The Parcel Tracking module was tapped.
+- (void)parcelTrackingOpened;
 
 @end
 

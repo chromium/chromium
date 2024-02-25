@@ -1,0 +1,204 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!--
+This file contains definition of resources that will be translated for each
+locale.  The variables is_win, is_macosx, is_linux, is_ios and is_posix are
+available for making strings OS specific.  Other platform defines such as
+use_titlecase are declared in build/common.gypi.
+
+The strings in this file are specific to iOS, thus is_ios will be true and
+all other OS specific variables will be false.
+-->
+
+<grit base_dir="." latest_public_release="0" current_release="1"
+      output_all_resource_defines="false" source_lang_id="en" enc_check="möl">
+  <outputs>
+    <output filename="grit/ios_open_extension_branded_strings.h" type="rc_header">
+      <emit emit_type="prepend"></emit>
+    </output>
+    <output filename="ios_open_extension_chromium_strings_af.pak" type="data_package" lang="af" />
+    <output filename="ios_open_extension_chromium_strings_am.pak" type="data_package" lang="am" />
+    <output filename="ios_open_extension_chromium_strings_ar.pak" type="data_package" lang="ar" />
+    <output filename="ios_open_extension_chromium_strings_as.pak" type="data_package" lang="as" />
+    <output filename="ios_open_extension_chromium_strings_az.pak" type="data_package" lang="az" />
+    <output filename="ios_open_extension_chromium_strings_be.pak" type="data_package" lang="be" />
+    <output filename="ios_open_extension_chromium_strings_bg.pak" type="data_package" lang="bg" />
+    <output filename="ios_open_extension_chromium_strings_bn.pak" type="data_package" lang="bn" />
+    <output filename="ios_open_extension_chromium_strings_bs.pak" type="data_package" lang="bs" />
+    <output filename="ios_open_extension_chromium_strings_ca.pak" type="data_package" lang="ca" />
+    <output filename="ios_open_extension_chromium_strings_cs.pak" type="data_package" lang="cs" />
+    <output filename="ios_open_extension_chromium_strings_cy.pak" type="data_package" lang="cy" />
+    <output filename="ios_open_extension_chromium_strings_da.pak" type="data_package" lang="da" />
+    <output filename="ios_open_extension_chromium_strings_de.pak" type="data_package" lang="de" />
+    <output filename="ios_open_extension_chromium_strings_el.pak" type="data_package" lang="el" />
+    <output filename="ios_open_extension_chromium_strings_en-GB.pak" type="data_package" lang="en-GB" />
+    <output filename="ios_open_extension_chromium_strings_en-US.pak" type="data_package" lang="en" />
+    <output filename="ios_open_extension_chromium_strings_es.pak" type="data_package" lang="es" />
+    <output filename="ios_open_extension_chromium_strings_es-MX.pak" type="data_package" lang="es-419" />
+    <output filename="ios_open_extension_chromium_strings_et.pak" type="data_package" lang="et" />
+    <output filename="ios_open_extension_chromium_strings_eu.pak" type="data_package" lang="eu" />
+    <output filename="ios_open_extension_chromium_strings_fa.pak" type="data_package" lang="fa" />
+    <output filename="ios_open_extension_chromium_strings_fi.pak" type="data_package" lang="fi" />
+    <output filename="ios_open_extension_chromium_strings_fil.pak" type="data_package" lang="fil" />
+    <output filename="ios_open_extension_chromium_strings_fr-CA.pak" type="data_package" lang="fr-CA" />
+    <output filename="ios_open_extension_chromium_strings_fr.pak" type="data_package" lang="fr" />
+    <output filename="ios_open_extension_chromium_strings_gl.pak" type="data_package" lang="gl" />
+    <output filename="ios_open_extension_chromium_strings_gu.pak" type="data_package" lang="gu" />
+    <output filename="ios_open_extension_chromium_strings_he.pak" type="data_package" lang="he" />
+    <output filename="ios_open_extension_chromium_strings_hi.pak" type="data_package" lang="hi" />
+    <output filename="ios_open_extension_chromium_strings_hr.pak" type="data_package" lang="hr" />
+    <output filename="ios_open_extension_chromium_strings_hu.pak" type="data_package" lang="hu" />
+    <output filename="ios_open_extension_chromium_strings_hy.pak" type="data_package" lang="hy" />
+    <output filename="ios_open_extension_chromium_strings_id.pak" type="data_package" lang="id" />
+    <output filename="ios_open_extension_chromium_strings_is.pak" type="data_package" lang="is" />
+    <output filename="ios_open_extension_chromium_strings_it.pak" type="data_package" lang="it" />
+    <output filename="ios_open_extension_chromium_strings_ja.pak" type="data_package" lang="ja" />
+    <output filename="ios_open_extension_chromium_strings_ka.pak" type="data_package" lang="ka" />
+    <output filename="ios_open_extension_chromium_strings_kk.pak" type="data_package" lang="kk" />
+    <output filename="ios_open_extension_chromium_strings_km.pak" type="data_package" lang="km" />
+    <output filename="ios_open_extension_chromium_strings_kn.pak" type="data_package" lang="kn" />
+    <output filename="ios_open_extension_chromium_strings_ko.pak" type="data_package" lang="ko" />
+    <output filename="ios_open_extension_chromium_strings_ky.pak" type="data_package" lang="ky" />
+    <output filename="ios_open_extension_chromium_strings_lo.pak" type="data_package" lang="lo" />
+    <output filename="ios_open_extension_chromium_strings_lt.pak" type="data_package" lang="lt" />
+    <output filename="ios_open_extension_chromium_strings_lv.pak" type="data_package" lang="lv" />
+    <output filename="ios_open_extension_chromium_strings_mk.pak" type="data_package" lang="mk" />
+    <output filename="ios_open_extension_chromium_strings_ml.pak" type="data_package" lang="ml" />
+    <output filename="ios_open_extension_chromium_strings_mn.pak" type="data_package" lang="mn" />
+    <output filename="ios_open_extension_chromium_strings_mr.pak" type="data_package" lang="mr" />
+    <output filename="ios_open_extension_chromium_strings_ms.pak" type="data_package" lang="ms" />
+    <output filename="ios_open_extension_chromium_strings_my.pak" type="data_package" lang="my" />
+    <output filename="ios_open_extension_chromium_strings_ne.pak" type="data_package" lang="ne" />
+    <output filename="ios_open_extension_chromium_strings_nl.pak" type="data_package" lang="nl" />
+    <!-- The translation console uses 'no' for Norwegian Bokmål. It should
+         be 'nb'. -->
+    <output filename="ios_open_extension_chromium_strings_nb.pak" type="data_package" lang="no" />
+    <output filename="ios_open_extension_chromium_strings_pa.pak" type="data_package" lang="pa" />
+    <output filename="ios_open_extension_chromium_strings_pl.pak" type="data_package" lang="pl" />
+    <output filename="ios_open_extension_chromium_strings_pt.pak" type="data_package" lang="pt-BR" />
+    <output filename="ios_open_extension_chromium_strings_pt-PT.pak" type="data_package" lang="pt-PT" />
+    <output filename="ios_open_extension_chromium_strings_or.pak" type="data_package" lang="or" />
+    <output filename="ios_open_extension_chromium_strings_ro.pak" type="data_package" lang="ro" />
+    <output filename="ios_open_extension_chromium_strings_ru.pak" type="data_package" lang="ru" />
+    <output filename="ios_open_extension_chromium_strings_si.pak" type="data_package" lang="si" />
+    <output filename="ios_open_extension_chromium_strings_sk.pak" type="data_package" lang="sk" />
+    <output filename="ios_open_extension_chromium_strings_sl.pak" type="data_package" lang="sl" />
+    <output filename="ios_open_extension_chromium_strings_sq.pak" type="data_package" lang="sq" />
+    <output filename="ios_open_extension_chromium_strings_sr-Latn.pak" type="data_package" lang="sr-Latn" />
+    <output filename="ios_open_extension_chromium_strings_sr.pak" type="data_package" lang="sr" />
+    <output filename="ios_open_extension_chromium_strings_sv.pak" type="data_package" lang="sv" />
+    <output filename="ios_open_extension_chromium_strings_sw.pak" type="data_package" lang="sw" />
+    <output filename="ios_open_extension_chromium_strings_ta.pak" type="data_package" lang="ta" />
+    <output filename="ios_open_extension_chromium_strings_te.pak" type="data_package" lang="te" />
+    <output filename="ios_open_extension_chromium_strings_th.pak" type="data_package" lang="th" />
+    <output filename="ios_open_extension_chromium_strings_tr.pak" type="data_package" lang="tr" />
+    <output filename="ios_open_extension_chromium_strings_uk.pak" type="data_package" lang="uk" />
+    <output filename="ios_open_extension_chromium_strings_ur.pak" type="data_package" lang="ur" />
+    <output filename="ios_open_extension_chromium_strings_uz.pak" type="data_package" lang="uz" />
+    <output filename="ios_open_extension_chromium_strings_vi.pak" type="data_package" lang="vi" />
+    <output filename="ios_open_extension_chromium_strings_zh-CN.pak" type="data_package" lang="zh-CN" />
+    <output filename="ios_open_extension_chromium_strings_zh-HK.pak" type="data_package" lang="zh-HK" />
+    <output filename="ios_open_extension_chromium_strings_zh-TW.pak" type="data_package" lang="zh-TW" />
+    <output filename="ios_open_extension_chromium_strings_zu.pak" type="data_package" lang="zu" />
+    <!-- Pseudolocales -->
+    <output filename="ios_open_extension_chromium_strings_ar-XB.pak" type="data_package" lang="ar-XB" />
+    <output filename="ios_open_extension_chromium_strings_en-XA.pak" type="data_package" lang="en-XA" />
+  </outputs>
+  <translations>
+    <file path="resources/ios_open_extension_chromium_strings_af.xtb" lang="af" />
+    <file path="resources/ios_open_extension_chromium_strings_am.xtb" lang="am" />
+    <file path="resources/ios_open_extension_chromium_strings_ar.xtb" lang="ar" />
+    <file path="resources/ios_open_extension_chromium_strings_as.xtb" lang="as" />
+    <file path="resources/ios_open_extension_chromium_strings_az.xtb" lang="az" />
+    <file path="resources/ios_open_extension_chromium_strings_be.xtb" lang="be" />
+    <file path="resources/ios_open_extension_chromium_strings_bg.xtb" lang="bg" />
+    <file path="resources/ios_open_extension_chromium_strings_bn.xtb" lang="bn" />
+    <file path="resources/ios_open_extension_chromium_strings_bs.xtb" lang="bs" />
+    <file path="resources/ios_open_extension_chromium_strings_ca.xtb" lang="ca" />
+    <file path="resources/ios_open_extension_chromium_strings_cs.xtb" lang="cs" />
+    <file path="resources/ios_open_extension_chromium_strings_cy.xtb" lang="cy" />
+    <file path="resources/ios_open_extension_chromium_strings_da.xtb" lang="da" />
+    <file path="resources/ios_open_extension_chromium_strings_de.xtb" lang="de" />
+    <file path="resources/ios_open_extension_chromium_strings_el.xtb" lang="el" />
+    <file path="resources/ios_open_extension_chromium_strings_en-GB.xtb" lang="en-GB" />
+    <file path="resources/ios_open_extension_chromium_strings_es.xtb" lang="es" />
+    <file path="resources/ios_open_extension_chromium_strings_es-419.xtb" lang="es-419" />
+    <file path="resources/ios_open_extension_chromium_strings_et.xtb" lang="et" />
+    <file path="resources/ios_open_extension_chromium_strings_eu.xtb" lang="eu" />
+    <file path="resources/ios_open_extension_chromium_strings_fa.xtb" lang="fa" />
+    <file path="resources/ios_open_extension_chromium_strings_fi.xtb" lang="fi" />
+    <file path="resources/ios_open_extension_chromium_strings_fil.xtb" lang="fil" />
+    <file path="resources/ios_open_extension_chromium_strings_fr.xtb" lang="fr" />
+    <file path="resources/ios_open_extension_chromium_strings_fr-CA.xtb" lang="fr-CA" />
+    <file path="resources/ios_open_extension_chromium_strings_gl.xtb" lang="gl" />
+    <file path="resources/ios_open_extension_chromium_strings_gu.xtb" lang="gu" />
+    <file path="resources/ios_open_extension_chromium_strings_hi.xtb" lang="hi" />
+    <file path="resources/ios_open_extension_chromium_strings_hr.xtb" lang="hr" />
+    <file path="resources/ios_open_extension_chromium_strings_hu.xtb" lang="hu" />
+    <file path="resources/ios_open_extension_chromium_strings_hy.xtb" lang="hy" />
+    <file path="resources/ios_open_extension_chromium_strings_id.xtb" lang="id" />
+    <file path="resources/ios_open_extension_chromium_strings_is.xtb" lang="is" />
+    <file path="resources/ios_open_extension_chromium_strings_it.xtb" lang="it" />
+    <!-- The translation console uses 'iw' for Hebrew, but we use 'he'. -->
+    <file path="resources/ios_open_extension_chromium_strings_iw.xtb" lang="he" />
+    <file path="resources/ios_open_extension_chromium_strings_ja.xtb" lang="ja" />
+    <file path="resources/ios_open_extension_chromium_strings_ka.xtb" lang="ka" />
+    <file path="resources/ios_open_extension_chromium_strings_kk.xtb" lang="kk" />
+    <file path="resources/ios_open_extension_chromium_strings_km.xtb" lang="km" />
+    <file path="resources/ios_open_extension_chromium_strings_kn.xtb" lang="kn" />
+    <file path="resources/ios_open_extension_chromium_strings_ko.xtb" lang="ko" />
+    <file path="resources/ios_open_extension_chromium_strings_ky.xtb" lang="ky" />
+    <file path="resources/ios_open_extension_chromium_strings_lo.xtb" lang="lo" />
+    <file path="resources/ios_open_extension_chromium_strings_lt.xtb" lang="lt" />
+    <file path="resources/ios_open_extension_chromium_strings_lv.xtb" lang="lv" />
+    <file path="resources/ios_open_extension_chromium_strings_mk.xtb" lang="mk" />
+    <file path="resources/ios_open_extension_chromium_strings_ml.xtb" lang="ml" />
+    <file path="resources/ios_open_extension_chromium_strings_mn.xtb" lang="mn" />
+    <file path="resources/ios_open_extension_chromium_strings_mr.xtb" lang="mr" />
+    <file path="resources/ios_open_extension_chromium_strings_ms.xtb" lang="ms" />
+    <file path="resources/ios_open_extension_chromium_strings_my.xtb" lang="my" />
+    <file path="resources/ios_open_extension_chromium_strings_ne.xtb" lang="ne" />
+    <file path="resources/ios_open_extension_chromium_strings_nl.xtb" lang="nl" />
+    <file path="resources/ios_open_extension_chromium_strings_no.xtb" lang="no" />
+    <file path="resources/ios_open_extension_chromium_strings_or.xtb" lang="or" />
+    <file path="resources/ios_open_extension_chromium_strings_pa.xtb" lang="pa" />
+    <file path="resources/ios_open_extension_chromium_strings_pl.xtb" lang="pl" />
+    <file path="resources/ios_open_extension_chromium_strings_pt-BR.xtb" lang="pt-BR" />
+    <file path="resources/ios_open_extension_chromium_strings_pt-PT.xtb" lang="pt-PT" />
+    <file path="resources/ios_open_extension_chromium_strings_ro.xtb" lang="ro" />
+    <file path="resources/ios_open_extension_chromium_strings_ru.xtb" lang="ru" />
+    <file path="resources/ios_open_extension_chromium_strings_si.xtb" lang="si" />
+    <file path="resources/ios_open_extension_chromium_strings_sk.xtb" lang="sk" />
+    <file path="resources/ios_open_extension_chromium_strings_sl.xtb" lang="sl" />
+    <file path="resources/ios_open_extension_chromium_strings_sq.xtb" lang="sq" />
+    <file path="resources/ios_open_extension_chromium_strings_sr.xtb" lang="sr" />
+    <file path="resources/ios_open_extension_chromium_strings_sr-Latn.xtb" lang="sr-Latn" />
+    <file path="resources/ios_open_extension_chromium_strings_sv.xtb" lang="sv" />
+    <file path="resources/ios_open_extension_chromium_strings_sw.xtb" lang="sw" />
+    <file path="resources/ios_open_extension_chromium_strings_ta.xtb" lang="ta" />
+    <file path="resources/ios_open_extension_chromium_strings_te.xtb" lang="te" />
+    <file path="resources/ios_open_extension_chromium_strings_th.xtb" lang="th" />
+    <file path="resources/ios_open_extension_chromium_strings_tr.xtb" lang="tr" />
+    <file path="resources/ios_open_extension_chromium_strings_uk.xtb" lang="uk" />
+    <file path="resources/ios_open_extension_chromium_strings_ur.xtb" lang="ur" />
+    <file path="resources/ios_open_extension_chromium_strings_uz.xtb" lang="uz" />
+    <file path="resources/ios_open_extension_chromium_strings_vi.xtb" lang="vi" />
+    <file path="resources/ios_open_extension_chromium_strings_zh-CN.xtb" lang="zh-CN" />
+    <file path="resources/ios_open_extension_chromium_strings_zh-HK.xtb" lang="zh-HK" />
+    <file path="resources/ios_open_extension_chromium_strings_zh-TW.xtb" lang="zh-TW" />
+    <file path="resources/ios_open_extension_chromium_strings_zu.xtb" lang="zu" />
+  </translations>
+  <release seq="1">
+    <messages fallback_to_english="true">
+      <message name="IDS_IOS_OPEN_IN_CHROME_OPEN_EXTENSION" desc="Open extension button to open link in Chromium [Length: 30em]" meaning="Button title [Length: 30em]">
+        Open in Chromium
+      </message>
+     <message name="IDS_IOS_ERROR_MESSAGE_OPEN_IN_EXTENSION" desc="Open in Chromium extension message to tell the user the URL cannot be processed.">
+        Chromium cannot handle this link.
+      </message>
+      <message name="IDS_IOS_OK_BUTTON_OPEN_IN_EXTENSION" desc="Label for the OK button in the Open in Chromium extension.">
+        OK
+      </message>
+    </messages>
+  </release>
+</grit>

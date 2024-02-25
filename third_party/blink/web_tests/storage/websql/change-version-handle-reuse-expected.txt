@@ -1,6 +1,0 @@
-This tests that a database can be accessed after changing its version. You should see an error about FooBar table below, not about mismatching versions.
-changeVersion: transaction callback
-changeVersion: success callback
-transaction: statement error callback: could not prepare statement (1 no such table: FooBar)
-TEST COMPLETE.
-

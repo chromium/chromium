@@ -14,6 +14,7 @@
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/frame/web_frame_widget_impl.h"
 #include "third_party/blink/renderer/core/frame/web_local_frame_impl.h"
+#include "third_party/blink/renderer/platform/testing/task_environment.h"
 #include "third_party/blink/renderer/platform/testing/unit_test_helpers.h"
 #include "third_party/blink/renderer/platform/testing/url_test_helpers.h"
 
@@ -37,6 +38,8 @@ class SubStringUtilTest : public testing::Test {
         .GetString()
         .Utf8();
   }
+
+  test::TaskEnvironment task_environment_;
 
   std::string base_url_;
   frame_test_helpers::WebViewHelper web_view_helper_;
@@ -140,12 +143,12 @@ TEST_F(SubStringUtilTest, SubstringUtilIframe) {
   base::apple::ScopedCFTypeRef<CFAttributedStringRef> result =
       SubstringUtil::AttributedSubstringInRange(child_frame->GetFrame(), 11, 7,
                                                 baseline_point);
-  ASSERT_NE(result, nullptr);
+  ASSERT_TRUE(result);
 
   gfx::Point point(baseline_point);
   result.reset(SubstringUtil::AttributedWordAtPoint(
       main_frame->FrameWidgetImpl(), point, baseline_point));
-  ASSERT_NE(result, nullptr);
+  ASSERT_TRUE(result);
 
   int y_before_change = baseline_point.y();
 
@@ -156,7 +159,7 @@ TEST_F(SubStringUtilTest, SubstringUtilIframe) {
   point = gfx::Point(point.x(), point.y() + 100);
   result.reset(SubstringUtil::AttributedWordAtPoint(
       main_frame->FrameWidgetImpl(), point, baseline_point));
-  ASSERT_NE(result, nullptr);
+  ASSERT_TRUE(result);
 
   EXPECT_EQ(y_before_change, baseline_point.y() - 100);
 }

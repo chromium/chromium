@@ -2,10 +2,6 @@ Document::nodesFromRect : Rect-based hit-testing on SVG elements - bug 89990
 
 On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
 
-
-Some of following tests will likely FAIL and will need to be updated once rect-based
-hit tests are supported inside SVG elements:
-
 Check area hits fully inside SVG element
 PASS All correct nodes found for rect
 PASS All correct nodes found for rect

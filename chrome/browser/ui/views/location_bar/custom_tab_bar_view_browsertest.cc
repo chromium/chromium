@@ -45,7 +45,7 @@ class TestTitleObserver : public TabStripModelObserver {
   // |target_title|.
   TestTitleObserver(content::WebContents* contents, std::u16string target_title)
       : contents_(contents), target_title_(target_title) {
-    browser_ = chrome::FindBrowserWithWebContents(contents_);
+    browser_ = chrome::FindBrowserWithTab(contents_);
     browser_->tab_strip_model()->AddObserver(this);
   }
 
@@ -236,7 +236,7 @@ class CustomTabBarViewBrowserTest
  private:
   void Install(std::unique_ptr<web_app::WebAppInstallInfo> web_app_info) {
     const GURL start_url = web_app_info->start_url;
-    web_app::AppId app_id = InstallWebApp(std::move(web_app_info));
+    webapps::AppId app_id = InstallWebApp(std::move(web_app_info));
 
     ui_test_utils::UrlLoadObserver url_observer(
         start_url, content::NotificationService::AllSources());

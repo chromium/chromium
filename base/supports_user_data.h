@@ -12,7 +12,6 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/sequence_checker.h"
 #include "third_party/abseil-cpp/absl/container/flat_hash_map.h"
-#include "third_party/abseil-cpp/absl/types/variant.h"
 
 namespace base {
 
@@ -65,13 +64,9 @@ class BASE_EXPORT SupportsUserData {
   void ClearAllUserData();
 
  private:
-  // Currently a variant for A/B testing purposes.
-  using DataMap = std::map<const void*, std::unique_ptr<Data>>;
-  using FlatDataMap = absl::flat_hash_map<const void*, std::unique_ptr<Data>>;
-  using MapVariants = absl::variant<DataMap, FlatDataMap>;
-
   // Externally-defined data accessible by key.
-  MapVariants user_data_;
+  absl::flat_hash_map<const void*, std::unique_ptr<Data>> user_data_;
+  bool in_destructor_ = false;
   // Guards usage of |user_data_|
   SEQUENCE_CHECKER(sequence_checker_);
 };

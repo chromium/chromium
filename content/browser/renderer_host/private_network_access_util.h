@@ -19,7 +19,7 @@ struct PolicyContainerPolicies;
 enum class PrivateNetworkRequestContext {
   kSubresource,  // Subresource fetches initiated by documents.
   kWorker,  // Worker script fetches/updates or fetches within worker scripts.
-  kIframe,  // Navigation fetches for iframe documents.
+  kNavigation,  // Navigation fetches
 };
 
 // Returns the policy to use for private network requests fetched by a client
@@ -62,6 +62,9 @@ network::mojom::IPAddressSpace CalculateIPAddressSpace(
     const GURL& url,
     network::mojom::URLResponseHead* response_head,
     ContentBrowserClient* client);
+
+network::mojom::PrivateNetworkRequestPolicy OverrideBlockWithWarn(
+    network::mojom::PrivateNetworkRequestPolicy);
 
 }  // namespace content
 

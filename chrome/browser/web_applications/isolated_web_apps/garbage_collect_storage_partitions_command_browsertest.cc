@@ -4,11 +4,14 @@
 
 #include "chrome/browser/web_applications/isolated_web_apps/garbage_collect_storage_partitions_command.h"
 
+#include <optional>
 #include <string>
 
 #include "base/files/file_enumerator.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
+#include "base/location.h"
+#include "base/run_loop.h"
 #include "base/strings/string_piece.h"
 #include "base/test/test_future.h"
 #include "base/threading/thread_restrictions.h"
@@ -17,16 +20,17 @@
 #include "chrome/browser/ui/web_applications/test/isolated_web_app_test_utils.h"
 #include "chrome/browser/web_applications/commands/web_app_uninstall_command.h"
 #include "chrome/browser/web_applications/isolated_web_apps/get_controlled_frame_partition_command.h"
+#include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_installation_manager.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_url_info.h"
 #include "chrome/browser/web_applications/jobs/uninstall/remove_web_app_job.h"
 #include "chrome/browser/web_applications/web_app_command_manager.h"
-#include "chrome/browser/web_applications/web_app_id.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/common/pref_names.h"
 #include "components/prefs/pref_service.h"
 #include "components/prefs/pref_test_utils.h"
 #include "components/webapps/browser/installable/installable_metrics.h"
 #include "components/webapps/browser/uninstall_result_code.h"
+#include "components/webapps/common/web_app_id.h"
 #include "content/public/browser/storage_partition.h"
 #include "content/public/browser/storage_partition_config.h"
 #include "content/public/test/browser_test.h"
@@ -105,7 +109,7 @@ class GarbageCollectStoragePartitionsCommandBrowserTest
 
     WebAppProvider::GetForWebApps(profile())->scheduler().InstallIsolatedWebApp(
         url_info.value(), DevModeProxy{.proxy_url = proxy_origin},
-        /*expected_version=*/absl::nullopt,
+        /*expected_version=*/std::nullopt,
         /*optional_keep_alive=*/nullptr,
         /*optional_profile_keep_alive=*/nullptr, future.GetCallback());
 
@@ -115,15 +119,16 @@ class GarbageCollectStoragePartitionsCommandBrowserTest
 
   content::StoragePartitionConfig AddPersistentStoragePartitonToIwa(
       const IsolatedWebAppUrlInfo& url_info,
-      const std::string& partition_name) {
-    base::test::TestFuture<absl::optional<content::StoragePartitionConfig>>
+      const std::string& partition_name,
+      const base::Location location = FROM_HERE) {
+    base::test::TestFuture<std::optional<content::StoragePartitionConfig>>
         future;
-    provider().scheduler().ScheduleCallbackWithLock(
-        "GetControlledFramePartition",
-        std::make_unique<AppLockDescription>(url_info.app_id()),
+    provider().scheduler().ScheduleCallbackWithResult(
+        "GetControlledFramePartition", AppLockDescription(url_info.app_id()),
         base::BindOnce(&GetControlledFramePartitionWithLock, profile(),
-                       url_info, partition_name, false, future.GetCallback()),
-        FROM_HERE);
+                       url_info, partition_name, /*in_memory=*/false),
+        future.GetCallback(), /*arg_for_shutdown=*/
+        std::optional<content::StoragePartitionConfig>(std::nullopt), location);
     return future.Get().value();
   }
 };
@@ -174,12 +179,9 @@ IN_PROC_BROWSER_TEST_F(GarbageCollectStoragePartitionsCommandBrowserTest,
 
   // Uninstall one of the IWAs.
   base::test::TestFuture<webapps::UninstallResultCode> future;
-  auto job = std::make_unique<RemoveWebAppJob>(
-      webapps::WebappUninstallSource::kAppsPage, *profile(),
-      url_info_2.app_id());
-  provider().command_manager().ScheduleCommand(
-      std::make_unique<WebAppUninstallCommand>(std::move(job),
-                                               future.GetCallback()));
+  provider().scheduler().RemoveUserUninstallableManagements(
+      url_info_2.app_id(), webapps::WebappUninstallSource::kAppsPage,
+      future.GetCallback());
   auto code = future.Get();
   ASSERT_TRUE(code == webapps::UninstallResultCode::kSuccess);
 
@@ -199,9 +201,12 @@ IN_PROC_BROWSER_TEST_F(GarbageCollectStoragePartitionsCommandBrowserTest,
                        UninstalledAppsHaveStoragePartitionsCleanedUp) {
   base::ScopedAllowBlockingForTesting blocking_allow;
 
-  WaitForPrefValue(profile()->GetPrefs(),
-                   prefs::kShouldGarbageCollectStoragePartitions,
-                   base::Value(false));
+  base::RunLoop run_loop;
+  provider()
+      .isolated_web_app_installation_manager()
+      .on_garbage_collect_storage_partitions_done_for_testing()
+      .Post(FROM_HERE, run_loop.QuitClosure());
+  run_loop.Run();
 
   const GURL kIwa1Url(kIwa1UrlString);
   const GURL kIwa2Url(kIwa2UrlString);

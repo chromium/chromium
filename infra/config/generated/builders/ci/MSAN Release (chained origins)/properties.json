@@ -1,6 +1,9 @@
 {
   "$build/chromium_tests_builder_config": {
     "builder_config": {
+      "additional_exclusions": [
+        "infra/config/generated/builders/ci/MSAN Release (chained origins)/gn-args.json"
+      ],
       "builder_db": {
         "entries": [
           {
@@ -25,7 +28,8 @@
                 ],
                 "build_config": "Release",
                 "config": "chromium_clang",
-                "target_bits": 64
+                "target_bits": 64,
+                "target_platform": "linux"
               },
               "legacy_gclient_config": {
                 "config": "chromium"
@@ -39,6 +43,12 @@
           "bucket": "ci",
           "builder": "MSAN Release (chained origins)",
           "project": "chromium"
+        }
+      ],
+      "mirroring_builder_group_and_names": [
+        {
+          "builder": "linux-msan-chained-origins-rel",
+          "group": "tryserver.chromium.fuzz"
         }
       ]
     }

@@ -8,6 +8,7 @@
 #include "ash/shelf/shelf_layout_manager.h"
 #include "ash/shell.h"
 #include "ash/wm/window_resizer.h"
+#include "base/bit_cast.h"
 #include "base/command_line.h"
 #include "base/task/single_thread_task_runner.h"
 #include "chromeos/ui/base/window_pin_type.h"
@@ -455,11 +456,10 @@ WaylandRemoteShell::WaylandRemoteShell(
       use_default_scale_cancellation_(use_default_scale_cancellation_default),
       seat_(display->seat()) {
   WMHelper* helper = WMHelper::GetInstance();
-  helper->AddTabletModeObserver(this);
   helper->AddFrameThrottlingObserver();
   helper->SetDefaultScaleCancellation(use_default_scale_cancellation_);
 
-  layout_mode_ = helper->InTabletMode()
+  layout_mode_ = display::Screen::GetScreen()->InTabletMode()
                      ? ZCR_REMOTE_SHELL_V1_LAYOUT_MODE_TABLET
                      : ZCR_REMOTE_SHELL_V1_LAYOUT_MODE_WINDOWED;
 
@@ -476,6 +476,8 @@ WaylandRemoteShell::WaylandRemoteShell(
                                                     fixed_scale);
   }
 
+  display_manager_observation_.Observe(ash::Shell::Get()->display_manager());
+
   SendDisplayMetrics();
 
   // The activation event has been moved to aura_shell, but the
@@ -486,16 +488,13 @@ WaylandRemoteShell::WaylandRemoteShell(
 
 WaylandRemoteShell::~WaylandRemoteShell() {
   WMHelper* helper = WMHelper::GetInstance();
-  helper->RemoveTabletModeObserver(this);
   helper->RemoveFrameThrottlingObserver();
   if (seat_)
     seat_->RemoveObserver(this);
 }
 
 std::unique_ptr<ClientControlledShellSurface>
-WaylandRemoteShell::CreateShellSurface(Surface* surface,
-                                       int container,
-                                       double default_device_scale_factor) {
+WaylandRemoteShell::CreateShellSurface(Surface* surface, int container) {
   return display_->CreateOrGetClientControlledShellSurface(
       surface, container, use_default_scale_cancellation_,
       /*supports_floated_state=*/event_mapping_.has_bounds_change_reason_float);
@@ -539,15 +538,6 @@ void WaylandRemoteShell::OnRemoteSurfaceDestroyed(wl_resource* resource) {
   pending_bounds_changes_.erase(resource);
 }
 
-// Overridden from display::DisplayObserver:
-void WaylandRemoteShell::OnWillProcessDisplayChanges() {
-  in_display_update_ = true;
-}
-
-void WaylandRemoteShell::OnDidProcessDisplayChanges() {
-  in_display_update_ = false;
-}
-
 void WaylandRemoteShell::OnDisplayAdded(const display::Display& new_display) {
   ScheduleSendDisplayMetrics(0);
 }
@@ -558,11 +548,19 @@ void WaylandRemoteShell::OnDisplayRemoved(const display::Display& old_display) {
 
 void WaylandRemoteShell::OnDisplayTabletStateChanged(
     display::TabletState state) {
-  const bool layout_change_started =
-      state == display::TabletState::kEnteringTabletMode ||
-      state == display::TabletState::kExitingTabletMode;
-  if (layout_change_started)
+  if (wl_resource_get_version(remote_shell_resource_) >=
+      event_mapping_.layout_mode_since_version) {
+    if (state == display::TabletState::kInTabletMode) {
+      layout_mode_ = ZCR_REMOTE_SHELL_V1_LAYOUT_MODE_TABLET;
+    } else if (state == display::TabletState::kExitingTabletMode) {
+      layout_mode_ = ZCR_REMOTE_SHELL_V1_LAYOUT_MODE_WINDOWED;
+    }
+    event_mapping_.send_layout_mode(remote_shell_resource_, layout_mode_);
+  }
+
+  if (display::IsTabletStateChanging(state)) {
     ScheduleSendDisplayMetrics(kConfigureDelayAfterLayoutSwitchMs);
+  }
 }
 
 void WaylandRemoteShell::OnDisplayMetricsChanged(
@@ -578,20 +576,14 @@ void WaylandRemoteShell::OnDisplayMetricsChanged(
   }
 }
 
-// Overridden from ash::TabletModeObserver:
-void WaylandRemoteShell::OnTabletModeStarted() {
-  layout_mode_ = ZCR_REMOTE_SHELL_V1_LAYOUT_MODE_TABLET;
-  if (wl_resource_get_version(remote_shell_resource_) >=
-      event_mapping_.layout_mode_since_version)
-    event_mapping_.send_layout_mode(remote_shell_resource_, layout_mode_);
+void WaylandRemoteShell::OnWillProcessDisplayChanges() {
+  in_display_update_ = true;
 }
-void WaylandRemoteShell::OnTabletModeEnding() {
-  layout_mode_ = ZCR_REMOTE_SHELL_V1_LAYOUT_MODE_WINDOWED;
-  if (wl_resource_get_version(remote_shell_resource_) >=
-      event_mapping_.layout_mode_since_version)
-    event_mapping_.send_layout_mode(remote_shell_resource_, layout_mode_);
+
+void WaylandRemoteShell::OnDidProcessDisplayChanges(
+    const DisplayConfigurationChange& configuration_change) {
+  in_display_update_ = false;
 }
-void WaylandRemoteShell::OnTabletModeEnded() {}
 
 void WaylandRemoteShell::ScheduleSendDisplayMetrics(int delay_ms) {
   needs_send_display_metrics_ = true;
@@ -1042,6 +1034,8 @@ SurfaceFrameType RemoteShellSurfaceFrameType(uint32_t frame_type) {
       return SurfaceFrameType::AUTOHIDE;
     case ZCR_REMOTE_SURFACE_V1_FRAME_TYPE_OVERLAY:
       return SurfaceFrameType::OVERLAY;
+    case ZCR_REMOTE_SURFACE_V2_FRAME_TYPE_OVERLAP:
+      return SurfaceFrameType::OVERLAP;
     default:
       VLOG(2) << "Unknown remote-shell frame type: " << frame_type;
       return SurfaceFrameType::NONE;
@@ -1130,11 +1124,13 @@ void remote_surface_restore(wl_client* client, wl_resource* resource) {
 }
 
 void remote_surface_fullscreen(wl_client* client, wl_resource* resource) {
-  GetUserDataAs<ClientControlledShellSurface>(resource)->SetFullscreen(true);
+  GetUserDataAs<ClientControlledShellSurface>(resource)->SetFullscreen(
+      true, display::kInvalidDisplayId);
 }
 
 void remote_surface_unfullscreen(wl_client* client, wl_resource* resource) {
-  GetUserDataAs<ClientControlledShellSurface>(resource)->SetFullscreen(false);
+  GetUserDataAs<ClientControlledShellSurface>(resource)->SetFullscreen(
+      false, display::kInvalidDisplayId);
 }
 
 void remote_surface_pin(wl_client* client,
@@ -1471,7 +1467,8 @@ void remote_surface_set_resize_lock_type(wl_client* client,
 }
 
 void remote_surface_set_float(wl_client* client, wl_resource* resource) {
-  GetUserDataAs<ClientControlledShellSurface>(resource)->SetFloat();
+  GetUserDataAs<ClientControlledShellSurface>(resource)->SetFloatToLocation(
+      chromeos::FloatStartLocation::kBottomRight);
 }
 
 void remote_surface_set_scale_factor(wl_client* client,
@@ -1479,10 +1476,33 @@ void remote_surface_set_scale_factor(wl_client* client,
                                      uint scale_factor_as_uint) {
   static_assert(sizeof(uint32_t) == sizeof(float),
                 "Sizes much match for reinterpret cast to be meaningful");
-  float scale_factor = *reinterpret_cast<float*>(&scale_factor_as_uint);
+  float scale_factor = base::bit_cast<float>(scale_factor_as_uint);
   GetUserDataAs<ClientControlledShellSurface>(resource)->SetScaleFactor(
       scale_factor);
 }
+
+void remote_surface_set_window_corner_radii(wl_client* client,
+                                            wl_resource* resource,
+                                            uint32_t upper_left_radius,
+                                            uint32_t upper_right_radius,
+                                            uint32_t lower_right_radius,
+                                            uint32_t lower_left_radius) {
+  GetUserDataAs<ClientControlledShellSurface>(resource)->SetWindowCornersRadii(
+      gfx::RoundedCornersF(upper_left_radius, upper_right_radius,
+                           lower_right_radius, lower_left_radius));
+}
+
+void remote_surface_set_shadow_corner_radii(wl_client* client,
+                                            wl_resource* resource,
+                                            uint32_t upper_left_radius,
+                                            uint32_t upper_right_radius,
+                                            uint32_t lower_right_radius,
+                                            uint32_t lower_left_radius) {
+  GetUserDataAs<ClientControlledShellSurface>(resource)->SetShadowCornersRadii(
+      gfx::RoundedCornersF(upper_left_radius, upper_right_radius,
+                           lower_right_radius, lower_left_radius));
+}
+
 
 ////////////////////////////////////////////////////////////////////////////////
 // notification_surface_interface:
@@ -1556,6 +1576,15 @@ void toast_surface_set_bounds_in_output(wl_client* client,
       GetUserDataAs<WaylandDisplayHandler>(output_resource);
   GetUserDataAs<ToastSurface>(resource)->SetBounds(
       display_handler->id(), gfx::Rect(x, y, width, height));
+}
+
+void toast_surface_set_scale_factor(wl_client* client,
+                                    wl_resource* resource,
+                                    uint scale_factor_as_uint) {
+  static_assert(sizeof(uint32_t) == sizeof(float),
+                "Sizes must match for reinterpret cast to be meaningful");
+  float scale_factor = base::bit_cast<float>(scale_factor_as_uint);
+  GetUserDataAs<ToastSurface>(resource)->SetScaleFactor(scale_factor);
 }
 
 ////////////////////////////////////////////////////////////////////////////////

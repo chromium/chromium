@@ -46,14 +46,13 @@ class TestLayoutDelegate : public OpaqueBrowserFrameViewLayoutDelegate {
   bool EverHasVisibleBackgroundTabShapes() const override { return false; }
   void UpdateWindowControlsOverlay(
       const gfx::Rect& bounding_rect) const override {}
-  bool IsTranslucentWindowOpacitySupported() const override { return true; }
   bool ShouldDrawRestoredFrameShadow() const override { return true; }
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
-  ui::WindowTiledEdges GetTiledEdges() const override { return tiled_edges_; }
+#if BUILDFLAG(IS_LINUX)
+  bool IsTiled() const override { return tiled_; }
 #endif
   int WebAppButtonHeight() const override { return 0; }
 
-  ui::WindowTiledEdges tiled_edges_;
+  bool tiled_;
 };
 
 }  // namespace
@@ -65,35 +64,21 @@ TEST_F(BrowserFrameViewLayoutLinuxTest, FrameInsets) {
   BrowserFrameViewLayoutLinux layout;
   TestLayoutDelegate delegate;
   layout.set_delegate(&delegate);
+  auto input_insets = layout.GetInputInsets();
 
-  for (const bool left : {false, true}) {
-    for (const bool right : {false, true}) {
-      for (const bool top : {false, true}) {
-        for (const bool bottom : {false, true}) {
-          delegate.tiled_edges_ = {
-              .left = left, .right = right, .top = top, .bottom = bottom};
-          const auto normal_insets = layout.MirroredFrameBorderInsets();
-          if (left)
-            EXPECT_EQ(normal_insets.left(), 0);
-          else
-            EXPECT_GT(normal_insets.left(), 0);
-          if (right)
-            EXPECT_EQ(normal_insets.right(), 0);
-          else
-            EXPECT_GT(normal_insets.right(), 0);
-          if (top) {
-            EXPECT_EQ(normal_insets.top(), 0);
-            EXPECT_EQ(layout.FrameTopBorderThickness(true), 0);
-          } else {
-            EXPECT_GT(normal_insets.top(), 0);
-            EXPECT_GT(layout.FrameTopBorderThickness(true), 0);
-          }
-          if (bottom)
-            EXPECT_EQ(normal_insets.bottom(), 0);
-          else
-            EXPECT_GT(normal_insets.bottom(), 0);
-        }
-      }
+  for (const bool tiled : {false, true}) {
+    delegate.tiled_ = tiled;
+    const auto normal_insets = layout.MirroredFrameBorderInsets();
+    if (tiled) {
+      EXPECT_EQ(normal_insets.left(), input_insets.left());
+      EXPECT_EQ(normal_insets.right(), input_insets.right());
+      EXPECT_EQ(normal_insets.top(), input_insets.top());
+      EXPECT_EQ(normal_insets.bottom(), input_insets.bottom());
+    } else {
+      EXPECT_GE(normal_insets.left(), input_insets.left());
+      EXPECT_GE(normal_insets.right(), input_insets.right());
+      EXPECT_GE(normal_insets.top(), input_insets.top());
+      EXPECT_GE(normal_insets.bottom(), input_insets.bottom());
     }
   }
 }

@@ -8,10 +8,10 @@
 
 #import "base/strings/sys_string_conversions.h"
 #import "base/strings/utf_string_conversions.h"
-#import "ios/chrome/browser/download/download_manager_tab_helper.h"
+#import "ios/chrome/browser/download/model/download_manager_tab_helper.h"
 #import "ios/chrome/browser/shared/model/browser_state/test_chrome_browser_state.h"
-#import "ios/chrome/browser/snapshots/fake_snapshot_generator_delegate.h"
-#import "ios/chrome/browser/snapshots/snapshot_tab_helper.h"
+#import "ios/chrome/browser/snapshots/model/fake_snapshot_generator_delegate.h"
+#import "ios/chrome/browser/snapshots/model/snapshot_tab_helper.h"
 #import "ios/chrome/browser/ui/sharing/activity_services/data/share_to_data.h"
 #import "ios/testing/ocmock_complex_type_helper.h"
 #import "ios/web/public/test/fakes/fake_navigation_manager.h"
@@ -88,18 +88,6 @@ TEST_F(ShareToDataBuilderTest, TestSharePageCommandHandlingWithShareUrl) {
   EXPECT_NSEQ(base::SysUTF16ToNSString(kExpectedTitle), actual_data.title);
   EXPECT_TRUE(actual_data.isOriginalTitle);
   EXPECT_FALSE(actual_data.isPagePrintable);
-
-  // TODO(crbug.com/1249831): The binary representation of the thumbnail appears
-  // to have changed in iOS 15, such that UIImagesAreEqual() no longer returns
-  // true.
-  if (@available(iOS 15, *)) {
-  } else {
-    const CGSize size = CGSizeMake(40, 40);
-    EXPECT_TRUE(UIImagesAreEqual(
-        [actual_data.thumbnailGenerator thumbnailWithSize:size],
-        UIImageWithSizeAndSolidColorAndScale(size, [UIColor blueColor],
-                                             /* scale=*/0)));
-  }
 }
 
 // Verifies that ShareToData is constructed properly for a given Tab when the
@@ -114,18 +102,6 @@ TEST_F(ShareToDataBuilderTest, TestSharePageCommandHandlingNoShareUrl) {
   EXPECT_NSEQ(base::SysUTF16ToNSString(kExpectedTitle), actual_data.title);
   EXPECT_TRUE(actual_data.isOriginalTitle);
   EXPECT_FALSE(actual_data.isPagePrintable);
-
-  // TODO(crbug.com/1249831): The binary representation of the thumbnail appears
-  // to have changed in iOS 15, such that UIImagesAreEqual() no longer returns
-  // true.
-  if (@available(iOS 15, *)) {
-  } else {
-    const CGSize size = CGSizeMake(40, 40);
-    EXPECT_TRUE(UIImagesAreEqual(
-        [actual_data.thumbnailGenerator thumbnailWithSize:size],
-        UIImageWithSizeAndSolidColorAndScale(size, [UIColor blueColor],
-                                             /* scale=*/0)));
-  }
 }
 
 // Tests that the ShareToDataForURL function creates a ShareToData instance with

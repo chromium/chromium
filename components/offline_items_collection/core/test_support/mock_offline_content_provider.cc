@@ -36,7 +36,7 @@ void MockOfflineContentProvider::NotifyOnItemRemoved(const ContentId& id) {
 
 void MockOfflineContentProvider::NotifyOnItemUpdated(
     const OfflineItem& item,
-    const absl::optional<UpdateDelta>& update_delta) {
+    const std::optional<UpdateDelta>& update_delta) {
   NotifyItemUpdated(item, update_delta);
 }
 
@@ -63,7 +63,7 @@ void MockOfflineContentProvider::GetAllItems(MultipleItemCallback callback) {
 
 void MockOfflineContentProvider::GetItemById(const ContentId& id,
                                              SingleItemCallback callback) {
-  absl::optional<OfflineItem> result;
+  std::optional<OfflineItem> result;
   for (auto item : items_) {
     if (item.id == id) {
       result = item;

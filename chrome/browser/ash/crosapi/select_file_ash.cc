@@ -109,32 +109,20 @@ class SelectFileDialogHolder : public ui::SelectFileDialog::Listener {
 
   SelectFileDialogHolder(const SelectFileDialogHolder&) = delete;
   SelectFileDialogHolder& operator=(const SelectFileDialogHolder&) = delete;
-  ~SelectFileDialogHolder() override = default;
+  ~SelectFileDialogHolder() override {
+    select_file_dialog_->ListenerDestroyed();
+  }
 
  private:
   // ui::SelectFileDialog::Listener:
-  void FileSelected(const base::FilePath& path,
+  void FileSelected(const ui::SelectedFileInfo& file,
                     int file_type_index,
                     void* params) override {
-    FileSelectedWithExtraInfo(ui::SelectedFileInfo(path, path), file_type_index,
-                              params);
-  }
-
-  void FileSelectedWithExtraInfo(const ui::SelectedFileInfo& file,
-                                 int file_type_index,
-                                 void* params) override {
     OnSelected({file}, file_type_index);
   }
 
-  void MultiFilesSelected(const std::vector<base::FilePath>& files,
+  void MultiFilesSelected(const std::vector<ui::SelectedFileInfo>& files,
                           void* params) override {
-    MultiFilesSelectedWithExtraInfo(
-        ui::FilePathListToSelectedFileInfoList(files), params);
-  }
-
-  void MultiFilesSelectedWithExtraInfo(
-      const std::vector<ui::SelectedFileInfo>& files,
-      void* params) override {
     OnSelected(files, /*file_type_index=*/0);
   }
 

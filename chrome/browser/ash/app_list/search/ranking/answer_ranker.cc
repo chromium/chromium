@@ -93,7 +93,6 @@ AnswerRanker::AnswerRanker() = default;
 AnswerRanker::~AnswerRanker() = default;
 
 void AnswerRanker::Start(const std::u16string& query,
-                         ResultsMap& results,
                          CategoriesList& categories) {
   burn_in_elapsed_ = false;
   chosen_answer_ = nullptr;
@@ -169,7 +168,7 @@ void AnswerRanker::PromoteChosenAnswer() {
   }
 
   // Filter out unsuccessful Omnibox candidates.
-  for (auto* result : omnibox_candidates_) {
+  for (ChromeSearchResult* result : omnibox_candidates_) {
     if (result && result->id() != chosen_answer_->id()) {
       result->scoring().set_filtered(true);
     }

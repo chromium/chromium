@@ -28,8 +28,10 @@ class DiceAccountReconcilorDelegate : public AccountReconcilorDelegate {
 
   // AccountReconcilorDelegate:
   bool IsReconcileEnabled() const override;
+  bool IsUpdateCookieAllowed() const override;
   gaia::GaiaSource GetGaiaApiSource() const override;
-  void RevokeSecondaryTokensBeforeReconcileIfNeeded() override;
+  void RevokeSecondaryTokensForReconcileIfNeeded(
+      const std::vector<gaia::ListedAccount>& gaia_accounts) override;
   void OnReconcileFinished(const CoreAccountId& first_account) override;
   void OnAccountsCookieDeletedByUserAction(
       bool synced_data_deletion_in_progress) override;
@@ -56,6 +58,12 @@ class DiceAccountReconcilorDelegate : public AccountReconcilorDelegate {
     kSyncCookieNotFirst = 7,
     kMaxValue = kSyncCookieNotFirst
   };
+
+  // Used when update cookies to match refresh tokens is not allowed, see
+  // `IsUpdateCookieAllowed()`. In this mode, refresh tokens are updated to
+  // match accounts in the Gaia cookies to maintain consistency.
+  void MatchTokensWithAccountsInCookie(
+      const std::vector<gaia::ListedAccount>& gaia_accounts);
 
   // Computes inconsistency reason between tokens and gaia cookies.
   InconsistencyReason GetInconsistencyReason(

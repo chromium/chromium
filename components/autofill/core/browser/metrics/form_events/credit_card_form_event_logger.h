@@ -18,7 +18,6 @@
 #include "components/autofill/core/browser/metrics/form_events/form_events.h"
 #include "components/autofill/core/browser/metrics/payments/card_metadata_metrics.h"
 #include "components/autofill/core/browser/personal_data_manager.h"
-#include "components/autofill/core/common/autofill_tick_clock.h"
 #include "components/autofill/core/common/signatures.h"
 
 namespace autofill {
@@ -47,21 +46,49 @@ class CreditCardFormEventLogger : public FormEventLoggerBase {
 
   ~CreditCardFormEventLogger() override;
 
-  // Invoked when `suggestions` are successfully fetched. `with_offer` indicates
-  // whether an offer is attached to any of the suggestion in the list.
+  void set_server_record_type_count(size_t server_record_type_count) {
+    server_record_type_count_ = server_record_type_count;
+  }
+
+  void set_local_record_type_count(size_t local_record_type_count) {
+    local_record_type_count_ = local_record_type_count;
+  }
+
+  // Invoked when `suggestions` are successfully fetched.
+  // `with_offer` indicates whether an offer is attached to any of the
+  // suggestion in the list.
+  // `with_cvc` indicates whether CVC is saved in any of the suggestion in
+  // the list.
+  // `is_virtual_card_standalone_cvc_field` indicates whether the `suggestions`
+  // are fetched for a virtual card standalone CVC field.
   // `metadata_logging_context` contains information about whether any card has
   // a non-empty product description or art image, and whether they are shown.
   void OnDidFetchSuggestion(const std::vector<Suggestion>& suggestions,
                             bool with_offer,
+                            bool with_cvc,
+                            bool is_virtual_card_standalone_cvc_field,
                             const autofill_metrics::CardMetadataLoggingContext&
                                 metadata_logging_context);
 
+  // TODO(crbug.com/1495879): Remove redundant parameters.
+  // form_parsed_timestamp and off_the_record value can be removed, as their
+  // values can be retrieved from 'form' or 'client_'.
   void OnDidShowSuggestions(
       const FormStructure& form,
       const AutofillField& field,
       const base::TimeTicks& form_parsed_timestamp,
       AutofillMetrics::PaymentsSigninState signin_state_for_metrics,
       bool off_the_record) override;
+
+  // Logs the original "Masked server card suggestion selected" form event
+  // metrics. These metrics were replaced in M123 due to crbug/1513307, but this
+  // call exists in order to compare the new and old metrics, providing
+  // information on the fix's impact. Once this information is gathered, this
+  // call and its associated logging can be removed.
+  void LogDeprecatedCreditCardSelectedMetric(
+      const CreditCard& credit_card,
+      const FormStructure& form,
+      AutofillMetrics::PaymentsSigninState signin_state_for_metrics);
 
   void OnDidSelectCardSuggestion(
       const CreditCard& credit_card,
@@ -83,7 +110,7 @@ class CreditCardFormEventLogger : public FormEventLoggerBase {
   //
   // Therefore, the intersection of `newly_filled_fields` and `safe_fields`
   // contains the actually filled fields.
-  void OnDidFillSuggestion(
+  void OnDidFillFormFillingSuggestion(
       const CreditCard& credit_card,
       const FormStructure& form,
       const AutofillField& field,
@@ -91,6 +118,10 @@ class CreditCardFormEventLogger : public FormEventLoggerBase {
       const base::flat_set<FieldGlobalId>& safe_fields,
       AutofillMetrics::PaymentsSigninState signin_state_for_metrics,
       const AutofillTriggerSource trigger_source);
+
+  void OnDidUndoAutofill();
+
+  void Log(FormEvent event, const FormStructure& form) override;
 
   // Logging what type of authentication flow was prompted.
   void LogCardUnmaskAuthenticationPromptShown(UnmaskAuthFlowType flow);
@@ -121,6 +152,7 @@ class CreditCardFormEventLogger : public FormEventLoggerBase {
   void OnLog(const std::string& name,
              FormEvent event,
              const FormStructure& form) const override;
+  bool HasLoggedDataToFillAvailable() const override;
 
   // Bringing base class' Log function into scope to allow overloading.
   using FormEventLoggerBase::Log;
@@ -133,11 +165,20 @@ class CreditCardFormEventLogger : public FormEventLoggerBase {
   // Returns whether the shown suggestions included a virtual credit card.
   bool DoSuggestionsIncludeVirtualCard();
 
+  size_t server_record_type_count_ = 0;
+  size_t local_record_type_count_ = 0;
   UnmaskAuthFlowType current_authentication_flow_;
   bool has_logged_suggestion_with_metadata_shown_ = false;
   bool has_logged_suggestion_with_metadata_selected_ = false;
+  bool has_logged_legacy_masked_server_card_suggestion_selected_ = false;
   bool has_logged_masked_server_card_suggestion_selected_ = false;
   bool has_logged_virtual_card_suggestion_selected_ = false;
+  bool has_logged_suggestion_for_virtual_card_standalone_cvc_shown_ = false;
+  bool has_logged_suggestion_for_virtual_card_standalone_cvc_selected_ = false;
+  bool has_logged_suggestion_for_virtual_card_standalone_cvc_filled_ = false;
+  bool has_logged_suggestion_for_card_with_cvc_shown_ = false;
+  bool has_logged_suggestion_for_card_with_cvc_selected_ = false;
+  bool has_logged_suggestion_for_card_with_cvc_filled_ = false;
   bool logged_suggestion_filled_was_masked_server_card_ = false;
   bool logged_suggestion_filled_was_virtual_card_ = false;
   // If true, the most recent card to be selected as an Autofill suggestion was
@@ -149,6 +190,12 @@ class CreditCardFormEventLogger : public FormEventLoggerBase {
   // If true, the selected server card was filled and it had an equivalent local
   // version on file.
   bool server_card_with_local_duplicate_filled_ = false;
+  // If true, the form contains a standalone CVC field that is associated with a
+  // virtual card.
+  bool is_virtual_card_standalone_cvc_field_ = false;
+  // If true, one of the cards in the suggestions fetched has cvc info saved.
+  bool suggestion_contains_card_with_cvc_ = false;
+
   autofill_metrics::CardMetadataLoggingContext metadata_logging_context_;
 
   // Set when a list of suggestion is shown.

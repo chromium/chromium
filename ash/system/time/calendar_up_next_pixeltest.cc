@@ -15,7 +15,6 @@
 #include "base/memory/raw_ptr.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
-#include "chromeos/constants/chromeos_features.h"
 #include "google_apis/calendar/calendar_api_response_types.h"
 
 namespace ash {
@@ -38,15 +37,18 @@ std::unique_ptr<google_apis::calendar::CalendarEvent> CreateEvent(
 
 }  // namespace
 
-class CalendarUpNextViewPixelTest : public AshTestBase {
+class CalendarUpNextViewPixelTest
+    : public AshTestBase,
+      public testing::WithParamInterface</*glanceables_v2_enabled=*/bool> {
  public:
-  CalendarUpNextViewPixelTest() = default;
+  CalendarUpNextViewPixelTest() {
+    scoped_feature_list_.InitWithFeatureStates(
+        {{features::kGlanceablesV2, AreGlanceablesV2Enabled()},
+         {features::kGlanceablesV2CalendarView, AreGlanceablesV2Enabled()}});
+  }
 
   // AshTestBase:
   void SetUp() override {
-    scoped_feature_list_ = std::make_unique<base::test::ScopedFeatureList>();
-    scoped_feature_list_->InitWithFeatures(
-        {chromeos::features::kJelly, features::kCalendarJelly}, {});
     AshTestBase::SetUp();
 
     controller_ = std::make_unique<CalendarViewController>();
@@ -60,8 +62,10 @@ class CalendarUpNextViewPixelTest : public AshTestBase {
     AshTestBase::TearDown();
   }
 
+  bool AreGlanceablesV2Enabled() { return GetParam(); }
+
   // AshTestBase:
-  absl::optional<pixel_test::InitParams> CreatePixelTestInitParams()
+  std::optional<pixel_test::InitParams> CreatePixelTestInitParams()
       const override {
     return pixel_test::InitParams();
   }
@@ -110,14 +114,17 @@ class CalendarUpNextViewPixelTest : public AshTestBase {
     EndScrollingAnimation();
   }
 
+  base::test::ScopedFeatureList scoped_feature_list_;
   std::unique_ptr<views::Widget> widget_;
-  raw_ptr<CalendarUpNextView, DanglingUntriaged | ExperimentalAsh>
-      up_next_view_ = nullptr;
+  raw_ptr<CalendarUpNextView, DanglingUntriaged> up_next_view_ = nullptr;
   std::unique_ptr<CalendarViewController> controller_;
-  std::unique_ptr<base::test::ScopedFeatureList> scoped_feature_list_;
 };
 
-TEST_F(CalendarUpNextViewPixelTest,
+INSTANTIATE_TEST_SUITE_P(GlanceablesV2,
+                         CalendarUpNextViewPixelTest,
+                         testing::Bool());
+
+TEST_P(CalendarUpNextViewPixelTest,
        ShouldShowSingleEventTakingUpFullWidthOfParentView) {
   // Set time override.
   base::subtle::ScopedTimeClockOverrides time_override(
@@ -136,10 +143,10 @@ TEST_F(CalendarUpNextViewPixelTest,
 
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
       "calendar_up_next_single_upcoming_event",
-      /*revision_number=*/5, Widget()));
+      /*revision_number=*/7, Widget()));
 }
 
-TEST_F(CalendarUpNextViewPixelTest,
+TEST_P(CalendarUpNextViewPixelTest,
        ShouldShowMultipleEventsInHorizontalScrollView) {
   // Set time override.
   base::subtle::ScopedTimeClockOverrides time_override(
@@ -160,10 +167,10 @@ TEST_F(CalendarUpNextViewPixelTest,
 
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
       "calendar_up_next_multiple_upcoming_events",
-      /*revision_number=*/5, Widget()));
+      /*revision_number=*/7, Widget()));
 }
 
-TEST_F(
+TEST_P(
     CalendarUpNextViewPixelTest,
     ShouldMakeSecondEventFullyVisibleAndLeftAligned_WhenScrollRightButtonIsPressed) {
   // Set time override.
@@ -188,10 +195,10 @@ TEST_F(
 
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
       "calendar_up_next_multiple_upcoming_events_press_scroll_right_button",
-      /*revision_number=*/4, Widget()));
+      /*revision_number=*/6, Widget()));
 }
 
-TEST_F(CalendarUpNextViewPixelTest, ShouldShowJoinMeetingButton) {
+TEST_P(CalendarUpNextViewPixelTest, ShouldShowJoinMeetingButton) {
   // Set time override.
   base::subtle::ScopedTimeClockOverrides time_override(
       []() { return base::subtle::TimeNowIgnoringOverride().LocalMidnight(); },
@@ -210,7 +217,7 @@ TEST_F(CalendarUpNextViewPixelTest, ShouldShowJoinMeetingButton) {
 
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
       "calendar_up_next_join_button",
-      /*revision_number=*/4, Widget()));
+      /*revision_number=*/6, Widget()));
 }
 
 }  // namespace ash

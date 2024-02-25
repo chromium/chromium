@@ -53,11 +53,11 @@
 #include "components/feature_engagement/public/event_constants.h"
 #include "components/feature_engagement/public/feature_constants.h"
 #include "components/feature_engagement/public/tracker.h"
+#include "content/public/browser/browser_accessibility_state.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/web_ui.h"
 #include "ui/accessibility/ax_mode.h"
-#include "ui/accessibility/platform/ax_platform_node.h"
 #include "ui/aura/window.h"
 #include "ui/base/clipboard/clipboard_format_type.h"
 #include "ui/base/clipboard/custom_data_helper.h"
@@ -167,13 +167,13 @@ WebUITabStripDragDirection DragDirectionFromDelta(float delta) {
 
 // Converts a swipe gesture to a drag direction, or none if the swipe is neither
 // up nor down.
-absl::optional<WebUITabStripDragDirection> DragDirectionFromSwipe(
+std::optional<WebUITabStripDragDirection> DragDirectionFromSwipe(
     const ui::GestureEvent* event) {
   if (event->details().swipe_down())
     return WebUITabStripDragDirection::kDown;
   if (event->details().swipe_up())
     return WebUITabStripDragDirection::kUp;
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 bool EventTypeCanCloseTabStrip(const ui::EventType& type) {
@@ -469,7 +469,6 @@ WebUITabStripContainerView::~WebUITabStripContainerView() {
   DeinitializeWebView();
   // The TabCounter button uses |this| as a listener. We need to make
   // sure we outlive it.
-  delete new_tab_button_;
   delete tab_counter_;
 }
 
@@ -485,8 +484,9 @@ bool WebUITabStripContainerView::UseTouchableTabStrip(const Browser* browser) {
   // TODO(crbug.com/1136185, crbug.com/1136236): We currently do not switch to
   // touchable tabstrip in Screen Reader mode due to the touchable tabstrip
   // being less accessible than the traditional tabstrip.
-  if (ui::AXPlatformNode::GetAccessibilityMode().has_mode(
-          ui::AXMode::kScreenReader)) {
+  if (content::BrowserAccessibilityState::GetInstance()
+          ->GetAccessibilityMode()
+          .has_mode(ui::AXMode::kScreenReader)) {
     return false;
   }
 
@@ -513,16 +513,17 @@ bool WebUITabStripContainerView::IsDraggedTab(const ui::OSExchangeData& data) {
   base::Pickle pickle;
   if (data.GetPickledData(ui::ClipboardFormatType::WebCustomDataType(),
                           &pickle)) {
-    std::u16string result;
-    ui::ReadCustomDataForType(pickle.data(), pickle.size(),
-                              base::ASCIIToUTF16(kWebUITabIdDataType), &result);
-    if (result.size())
+    if (std::optional<std::u16string> result =
+            ui::ReadCustomDataForType(pickle, kWebUITabIdDataType);
+        result && !result->empty()) {
       return true;
-    ui::ReadCustomDataForType(pickle.data(), pickle.size(),
-                              base::ASCIIToUTF16(kWebUITabGroupIdDataType),
-                              &result);
-    if (result.size())
+    }
+
+    if (std::optional<std::u16string> result =
+            ui::ReadCustomDataForType(pickle, kWebUITabGroupIdDataType);
+        result && !result->empty()) {
       return true;
+    }
   }
 
   return false;
@@ -538,24 +539,6 @@ void WebUITabStripContainerView::OpenForTabDrag() {
 
 views::NativeViewHost* WebUITabStripContainerView::GetNativeViewHost() {
   return web_view_->holder();
-}
-
-std::unique_ptr<views::View> WebUITabStripContainerView::CreateNewTabButton() {
-  DCHECK_EQ(nullptr, new_tab_button_);
-  auto new_tab_button = std::make_unique<ToolbarButton>(
-      base::BindRepeating(&WebUITabStripContainerView::NewTabButtonPressed,
-                          base::Unretained(this)));
-
-  new_tab_button->SetTooltipText(
-      l10n_util::GetStringUTF16(IDS_TOOLTIP_NEW_TAB));
-  const int button_height = GetLayoutConstant(TOOLBAR_BUTTON_HEIGHT);
-  new_tab_button->SetPreferredSize(gfx::Size(button_height, button_height));
-  new_tab_button->SetHorizontalAlignment(gfx::ALIGN_CENTER);
-  new_tab_button->SetVectorIcon(kNewTabToolbarButtonIcon);
-
-  new_tab_button_ = new_tab_button.get();
-  view_observations_.AddObservation(new_tab_button_.get());
-  return new_tab_button;
 }
 
 std::unique_ptr<views::View> WebUITabStripContainerView::CreateTabCounter() {
@@ -624,12 +607,12 @@ void WebUITabStripContainerView::UpdateHeightForDragToOpen(float height_delta) {
 }
 
 void WebUITabStripContainerView::EndDragToOpen(
-    absl::optional<WebUITabStripDragDirection> fling_direction) {
+    std::optional<WebUITabStripDragDirection> fling_direction) {
   if (!current_drag_height_)
     return;
 
   const int final_drag_height = *current_drag_height_;
-  current_drag_height_ = absl::nullopt;
+  current_drag_height_ = std::nullopt;
 
   // If this wasn't a fling, determine whether to open or close based on
   // final height.
@@ -656,13 +639,6 @@ void WebUITabStripContainerView::EndDragToOpen(
       opening, fling_direction.has_value()
                    ? WebUITabStripOpenCloseReason::kFling
                    : WebUITabStripOpenCloseReason::kDragRelease);
-}
-
-void WebUITabStripContainerView::NewTabButtonPressed(const ui::Event& event) {
-  chrome::ExecuteCommand(browser_view_->browser(), IDC_NEW_TAB);
-  UMA_HISTOGRAM_ENUMERATION("Tab.NewTab",
-                            NewTabTypes::NEW_TAB_BUTTON_IN_TOOLBAR_FOR_TOUCH,
-                            NewTabTypes::NEW_TAB_ENUM_COUNT);
 }
 
 void WebUITabStripContainerView::TabCounterPressed(const ui::Event& event) {
@@ -718,12 +694,13 @@ void WebUITabStripContainerView::SetContainerTargetVisibility(
     time_at_open_ = base::TimeTicks::Now();
 
     browser_view_->CloseFeaturePromo(
-        feature_engagement::kIPHWebUITabStripFeature);
+        feature_engagement::kIPHWebUITabStripFeature,
+        user_education::EndFeaturePromoReason::kFeatureEngaged);
   } else {
     if (time_at_open_) {
       RecordTabStripUIOpenDurationHistogram(base::TimeTicks::Now() -
                                             time_at_open_.value());
-      time_at_open_ = absl::nullopt;
+      time_at_open_ = std::nullopt;
     }
 
     const double current_value = animation_.GetCurrentValue();
@@ -892,12 +869,11 @@ void WebUITabStripContainerView::OnViewBoundsChanged(View* observed_view) {
 void WebUITabStripContainerView::OnViewIsDeleting(View* observed_view) {
   view_observations_.RemoveObservation(observed_view);
 
-  if (observed_view == new_tab_button_)
-    new_tab_button_ = nullptr;
-  else if (observed_view == tab_counter_)
+  if (observed_view == tab_counter_) {
     tab_counter_ = nullptr;
-  else if (observed_view == tab_contents_container_)
+  } else if (observed_view == tab_contents_container_) {
     tab_contents_container_ = nullptr;
+  }
 }
 
 void WebUITabStripContainerView::OnWidgetDestroying(views::Widget* widget) {
@@ -950,3 +926,6 @@ void WebUITabStripContainerView::DeinitializeWebView() {
     tab_strip_ui->Deinitialize();
   }
 }
+
+BEGIN_METADATA(WebUITabStripContainerView)
+END_METADATA

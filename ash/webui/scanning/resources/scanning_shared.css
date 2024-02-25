@@ -1,0 +1,170 @@
+/* Copyright 2022 The Chromium Authors
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file.
+ */
+
+ /* #css_wrapper_metadata_start
+ * #type=style
+ * #import=chrome://resources/ash/common/cr_elements/cr_shared_style.css.js
+ * #import=chrome://resources/ash/common/cr_elements/cr_shared_vars.css.js
+ * #import=chrome://resources/ash/common/cr_elements/md_select.css.js
+ * #import=chrome://resources/ash/common/cr_elements/cros_color_overrides.css.js
+ * #include=cr-shared-style md-select scanning-fonts cros-color-overrides
+ * #css_wrapper_metadata_end */
+
+:host {
+  --scanning-progress-bar: var(--google-blue-600);
+  --scanning-progress-bar-track: rgba(
+      var(--google-blue-600-rgb),
+      var(--cros-second-tone-opacity));
+  --scanning-scrollbar-rgb: var(--google-grey-600-rgb);
+  --scanning-scrollbar: rgba(var(--scanning-scrollbar-rgb), 0.38);
+  --scanning-scrollbar-thumb: rgb(var(--scanning-scrollbar-rgb))
+}
+
+:host-context(body.jelly-enabled) {
+  --scanning-progress-bar: var(--cros-sys-primary);
+  --scanning-progress-bar-track:  var(--cros-sys-highlight_shape);
+  --scanning-scrollbar-rgb: var(--google-grey-600-rgb);
+  --scanning-scrollbar: var(--cros-sys-scrollbar);
+  --scanning-scrollbar-thumb: var(--cros-sys-on_secondary);
+}
+
+:host-context(body.jelly-enabled) select.md-select {
+  --md-select-bg-color: var(--cros-sys-app_base_shaded);
+  --md-select-focus-shadow-color: var(--cros-sys-focus_ring);
+  --md-select-option-bg-color: var(--cros-sys-app_base_shaded);
+  font: var(--cros-button-2-font);
+}
+
+:host-context(body.jelly-enabled) cr-dialog::part(dialog) {
+  font: var(--cros-body-1-font);
+}
+
+:host-context(body.jelly-enabled) cr-dialog [slot=title] {
+  font: var(--cros-display-7-font);
+}
+
+paper-progress {
+  --paper-progress-active-color: var(--scanning-progress-bar);
+  --paper-progress-container-color: var(--scanning-progress-bar-track);
+}
+
+select {
+  height: 32px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+select.md-select {
+  --md-select-bg-color: var(--cros-bg-color-dropped-elevation-2);
+  --md-select-focus-shadow-color: var(--cros-focus-ring-color);
+  --md-select-option-bg-color: var(--cros-bg-color-elevation-2);
+  background-position-x: calc(100% - 12px);
+  color: var(--scanning-scan-setting-text-color);
+  font-family: var(--scanning-scan-setting-font-family);
+  font-size: var(--scanning-scan-setting-font-size);
+  font-weight: var(--scanning-regular-font-weight);
+  line-height: var(--scanning-scan-setting-line-height);
+  padding-inline-end: 32px;
+  padding-inline-start: 16px;
+}
+
+:host-context([dir='rtl']) select.md-select {
+  background-position-x: 12px;
+}
+
+::-webkit-scrollbar {
+  background-color: var(--scanning-scrollbar);
+  border-radius: 4px;
+  width: 4px;
+}
+
+::-webkit-scrollbar-thumb {
+  background-color: var(--scanning-scrollbar-thumb);
+  border-radius: 4px;
+}
+
+cr-dialog::part(dialog) {
+  width: 340px;
+}
+
+cr-dialog [slot=title] {
+  font-weight: 500;
+  padding-bottom: 12px;
+}
+
+:host {
+  --action-toolbar-height: 40px;
+  --action-toolbar-width: 176px;
+}
+
+@media (min-width: 600px) {
+  :host {
+    --container-width: 600px;
+    --helper-text-margin-bottom: 0;
+    --left-panel-margin-inline-end: 10px;
+    --left-panel-margin-inline-start: 10px;
+    --left-panel-width: 200px;
+    --panel-container-margin-top: 20px;
+    --ready-to-scan-image-margin-top: 0;
+    --right-panel-margin-inline-end: 10px;
+    --right-panel-margin-inline-start: 0;
+    --right-panel-padding-inline-end: 8px;
+    --right-panel-padding-inline-start: 8px;
+  }
+}
+
+@media (min-width: 768px) {
+  :host {
+    --container-width: 768px;
+    --helper-text-margin-bottom: 56px;
+    --left-panel-margin-inline-end: 32px;
+    --left-panel-margin-inline-start: 32px;
+    --left-panel-width: 288px;
+    --panel-container-margin-top: 20px;
+    --ready-to-scan-image-margin-top: 32px;
+    --right-panel-margin-inline-end: 32px;
+    --right-panel-margin-inline-start: 0;
+    --right-panel-padding-inline-end: 16px;
+    --right-panel-padding-inline-start: 16px;
+  }
+}
+
+@media (min-width: 960px) {
+  :host {
+    --container-width: 960px;
+    --left-panel-margin-inline-end: 48px;
+    --left-panel-margin-inline-start: 48px;
+    --left-panel-width: 384px;
+    --panel-container-margin-top: 20px;
+    --right-panel-margin-inline-end: 48px;
+    --right-panel-margin-inline-start: 48px;
+    --right-panel-padding-inline-end: 16px;
+    --right-panel-padding-inline-start: 16px;
+  }
+}
+
+@media (min-width: 1280px) {
+  :host {
+    --container-width: 1280px;
+    --left-panel-margin-inline-end: 60px;
+    --left-panel-margin-inline-start: 164px;
+    --left-panel-width: 416px;
+    --panel-container-margin-top: 64px;
+    --right-panel-margin-inline-end: 164px;
+    --right-panel-margin-inline-start: 60px;
+    --right-panel-padding-inline-end: 32px;
+    --right-panel-padding-inline-start: 32px;
+  }
+}
+
+@media (prefers-color-scheme: dark) {
+  :host-context(body:not(.jelly-enabled)) {
+    --scanning-progress-bar: var(--google-blue-300);
+    --scanning-progress-bar-track: rgba(
+        var(--google-blue-300-rgb),
+        var(--cros-second-tone-opacity));
+    --scanning-scrollbar-rgb: var(--google-grey-400-rgb);
+  }
+}

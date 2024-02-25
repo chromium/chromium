@@ -5,12 +5,12 @@
 #ifndef CHROMEOS_ASH_COMPONENTS_NEARBY_COMMON_SCHEDULING_NEARBY_EXPIRATION_SCHEDULER_H_
 #define CHROMEOS_ASH_COMPONENTS_NEARBY_COMMON_SCHEDULING_NEARBY_EXPIRATION_SCHEDULER_H_
 
+#include <optional>
 #include <string>
 
 #include "base/functional/callback.h"
 #include "base/time/time.h"
 #include "chromeos/ash/components/nearby/common/scheduling/nearby_scheduler_base.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ash::nearby {
 
@@ -19,7 +19,7 @@ namespace ash::nearby {
 class NearbyExpirationScheduler : public NearbySchedulerBase {
  public:
   using ExpirationTimeFunctor =
-      base::RepeatingCallback<absl::optional<base::Time>()>;
+      base::RepeatingCallback<std::optional<base::Time>()>;
 
   // |expiration_time_functor|: A function provided by the owner that returns
   //     the next expiration time.
@@ -35,7 +35,7 @@ class NearbyExpirationScheduler : public NearbySchedulerBase {
   ~NearbyExpirationScheduler() override;
 
  protected:
-  absl::optional<base::TimeDelta> TimeUntilRecurringRequest(
+  std::optional<base::TimeDelta> TimeUntilRecurringRequest(
       base::Time now) const override;
 
   ExpirationTimeFunctor expiration_time_functor_;

@@ -20,9 +20,8 @@ class QuadF;
 
 namespace viz {
 
-VIZ_COMMON_EXPORT bool PreferRGB565ResourcesForDisplay();
-
 #if BUILDFLAG(IS_ANDROID)
+VIZ_COMMON_EXPORT bool PreferRGB565ResourcesForDisplay();
 VIZ_COMMON_EXPORT bool AlwaysUseWideColorGamut();
 #endif
 
@@ -65,6 +64,12 @@ VIZ_COMMON_EXPORT gfx::Rect GetExpandedRectWithPixelMovingForegroundFilter(
 VIZ_COMMON_EXPORT gfx::Transform GetViewTransitionTransform(
     gfx::Rect shared_element_quad,
     gfx::Rect view_transition_content_output);
+
+// Returns true if the quad's visible rect bounds overlaps with at least one
+// of the rounded corners bounding rects.
+VIZ_COMMON_EXPORT bool QuadRoundedCornersBoundsIntersects(
+    const DrawQuad* quad,
+    const gfx::RectF& target_quad);
 
 }  // namespace viz
 

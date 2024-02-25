@@ -14,60 +14,6 @@
 
 namespace viz {
 
-namespace {
-
-#if BUILDFLAG(ENABLE_VULKAN)
-VkFormat ToVkFormatInternal(SharedImageFormat format) {
-  CHECK(format.is_single_plane());
-  if (format == SinglePlaneFormat::kRGBA_8888) {
-    return VK_FORMAT_R8G8B8A8_UNORM;  // or VK_FORMAT_R8G8B8A8_SRGB
-  } else if (format == SinglePlaneFormat::kRGBA_4444) {
-    return VK_FORMAT_R4G4B4A4_UNORM_PACK16;
-  } else if (format == SinglePlaneFormat::kBGRA_8888) {
-    return VK_FORMAT_B8G8R8A8_UNORM;
-  } else if (format == SinglePlaneFormat::kR_8) {
-    return VK_FORMAT_R8_UNORM;
-  } else if (format == SinglePlaneFormat::kRGB_565) {
-    return VK_FORMAT_R5G6B5_UNORM_PACK16;
-  } else if (format == SinglePlaneFormat::kBGR_565) {
-    return VK_FORMAT_B5G6R5_UNORM_PACK16;
-  } else if (format == SinglePlaneFormat::kRG_88) {
-    return VK_FORMAT_R8G8_UNORM;
-  } else if (format == SinglePlaneFormat::kRGBA_F16) {
-    return VK_FORMAT_R16G16B16A16_SFLOAT;
-  } else if (format == SinglePlaneFormat::kR_16) {
-    return VK_FORMAT_R16_UNORM;
-  } else if (format == SinglePlaneFormat::kRG_1616) {
-    return VK_FORMAT_R16G16_UNORM;
-  } else if (format == SinglePlaneFormat::kRGBX_8888) {
-    return VK_FORMAT_R8G8B8A8_UNORM;
-  } else if (format == SinglePlaneFormat::kBGRX_8888) {
-    return VK_FORMAT_B8G8R8A8_UNORM;
-  } else if (format == SinglePlaneFormat::kRGBA_1010102) {
-    return VK_FORMAT_A2B10G10R10_UNORM_PACK32;
-  } else if (format == SinglePlaneFormat::kBGRA_1010102) {
-    return VK_FORMAT_A2R10G10B10_UNORM_PACK32;
-  } else if (format == SinglePlaneFormat::kALPHA_8) {
-    return VK_FORMAT_R8_UNORM;
-  } else if (format == SinglePlaneFormat::kLUMINANCE_8) {
-    return VK_FORMAT_R8_UNORM;
-  } else if (format == LegacyMultiPlaneFormat::kYV12) {
-    return VK_FORMAT_G8_B8_R8_3PLANE_420_UNORM;
-  } else if (format == LegacyMultiPlaneFormat::kNV12) {
-    return VK_FORMAT_G8_B8R8_2PLANE_420_UNORM;
-  } else if (format == SinglePlaneFormat::kETC1) {
-    return VK_FORMAT_ETC2_R8G8B8_UNORM_BLOCK;
-  } else if (format == SinglePlaneFormat::kLUMINANCE_F16) {
-    return VK_FORMAT_R16_SFLOAT;
-  } else if (format == LegacyMultiPlaneFormat::kP010) {
-    return VK_FORMAT_G10X6_B10X6R10X6_2PLANE_420_UNORM_3PACK16;
-  }
-  return VK_FORMAT_UNDEFINED;
-}
-#endif
-
-}  // namespace
-
 SkColorType ToClosestSkColorType(bool gpu_compositing,
                                  SharedImageFormat format) {
   CHECK(format.is_single_plane());
@@ -128,9 +74,9 @@ SkColorType ToClosestSkColorType(bool gpu_compositing,
     return kA16_unorm_SkColorType;
   } else if (format == SinglePlaneFormat::kRG_1616) {
     return kR16G16_unorm_SkColorType;
-    // Use kN32_SkColorType if there is no corresponding SkColorType.
-  } else if (format == SinglePlaneFormat::kLUMINANCE_F16) {
-    return kN32_SkColorType;
+  } else if (format == SinglePlaneFormat::kLUMINANCE_F16 ||
+             format == SinglePlaneFormat::kR_F16) {
+    return kA16_float_SkColorType;
   } else if (format == SinglePlaneFormat::kRG_88) {
     return kR8G8_unorm_SkColorType;
   } else if (format == SinglePlaneFormat::kRGBA_F16) {
@@ -227,12 +173,14 @@ bool CanCreateGpuMemoryBufferForSinglePlaneSharedImageFormat(
           // plumbed and known by clients requesting shared images as overlay
           // candidate.
           format == SinglePlaneFormat::kR_8 ||
+          format == SinglePlaneFormat::kRG_88 ||
 #endif
 #if BUILDFLAG(IS_APPLE)
           format == SinglePlaneFormat::kBGRX_8888 ||
           format == SinglePlaneFormat::kRGBX_8888 ||
-#endif
           format == SinglePlaneFormat::kR_16 ||
+          format == SinglePlaneFormat::kRG_1616 ||
+#endif
           format == SinglePlaneFormat::kRGBA_4444 ||
           format == SinglePlaneFormat::kRGBA_8888 ||
           format == SinglePlaneFormat::kRGBA_1010102 ||
@@ -372,7 +320,8 @@ unsigned int SharedImageFormatRestrictedSinglePlaneUtils::ToGLDataFormat(
              format == SinglePlaneFormat::kBGRX_8888) {
     return GL_RGB;
   } else if (format == SinglePlaneFormat::kR_8 ||
-             format == SinglePlaneFormat::kR_16) {
+             format == SinglePlaneFormat::kR_16 ||
+             format == SinglePlaneFormat::kR_F16) {
     return GL_RED_EXT;
   } else if (format == SinglePlaneFormat::kRG_88 ||
              format == SinglePlaneFormat::kRG_1616) {
@@ -402,6 +351,7 @@ unsigned int SharedImageFormatRestrictedSinglePlaneUtils::ToGLDataType(
              format == SinglePlaneFormat::kRGB_565) {
     return GL_UNSIGNED_SHORT_5_6_5;
   } else if (format == SinglePlaneFormat::kLUMINANCE_F16 ||
+             format == SinglePlaneFormat::kR_F16 ||
              format == SinglePlaneFormat::kRGBA_F16) {
     return GL_HALF_FLOAT_OES;
   } else if (format == SinglePlaneFormat::kR_16 ||
@@ -442,6 +392,8 @@ SharedImageFormatRestrictedSinglePlaneUtils::ToGLTextureStorageFormat(
     return GL_RG8_EXT;
   } else if (format == SinglePlaneFormat::kLUMINANCE_F16) {
     return GL_LUMINANCE16F_EXT;
+  } else if (format == SinglePlaneFormat::kR_F16) {
+    return GL_R16F_EXT;
   } else if (format == SinglePlaneFormat::kR_16) {
     return GL_R16_EXT;
   } else if (format == SinglePlaneFormat::kRG_1616) {
@@ -474,23 +426,5 @@ SharedImageFormatRestrictedSinglePlaneUtils::ToGLTextureStorageFormat(
   NOTREACHED();
   return GL_RGBA8_OES;
 }
-
-#if BUILDFLAG(ENABLE_VULKAN)
-// static
-bool SharedImageFormatRestrictedSinglePlaneUtils::HasVkFormat(
-    SharedImageFormat format) {
-  CHECK(format.is_single_plane());
-  return ToVkFormatInternal(format) != VK_FORMAT_UNDEFINED;
-}
-// static
-VkFormat SharedImageFormatRestrictedSinglePlaneUtils::ToVkFormat(
-    SharedImageFormat format) {
-  CHECK(format.is_single_plane());
-  auto result = ToVkFormatInternal(format);
-  DCHECK_NE(result, VK_FORMAT_UNDEFINED)
-      << "Unsupported format " << format.ToString();
-  return result;
-}
-#endif
 
 }  // namespace viz

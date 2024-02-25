@@ -1,38 +1,110 @@
-// Copyright 2022 The Chromium Authors. All rights reserved.
+// Copyright 2022 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <optional>
+
+#include "ash/accessibility/accessibility_controller.h"
+#include "ash/accessibility/ui/accessibility_confirmation_dialog.h"
 #include "ash/accessibility/ui/accessibility_focus_ring_controller_impl.h"
+#include "ash/accessibility/ui/accessibility_highlight_layer.h"
+#include "ash/keyboard/keyboard_controller_impl.h"
+#include "ash/keyboard/ui/keyboard_util.h"
 #include "ash/public/cpp/accessibility_focus_ring_info.h"
+#include "ash/public/cpp/window_tree_host_lookup.h"
 #include "ash/shell.h"
 #include "base/command_line.h"
+#include "base/files/file.h"
+#include "base/files/file_path.h"
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
+#include "base/run_loop.h"
+#include "base/task/thread_pool.h"
 #include "base/test/bind.h"
 #include "chrome/browser/accessibility/service/accessibility_service_router_factory.h"
 #include "chrome/browser/ash/accessibility/accessibility_manager.h"
 #include "chrome/browser/ash/accessibility/service/accessibility_service_client.h"
 #include "chrome/browser/ash/accessibility/service/automation_client_impl.h"
 #include "chrome/browser/ash/accessibility/service/fake_accessibility_service.h"
+#include "chrome/browser/ash/accessibility/service/speech_recognition_impl.h"
 #include "chrome/browser/ash/accessibility/speech_monitor.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/speech/speech_recognition_test_helper.h"
+#include "chrome/browser/ui/ash/keyboard/chrome_keyboard_controller_client.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/common/extensions/extension_constants.h"
 #include "chrome/test/base/in_process_browser_test.h"
+#include "chromeos/dbus/power/fake_power_manager_client.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "content/public/browser/tts_utterance.h"
 #include "content/public/test/browser_test.h"
+#include "content/public/test/fake_speech_recognition_manager.h"
 #include "services/accessibility/public/mojom/accessibility_service.mojom.h"
+#include "services/accessibility/public/mojom/speech_recognition.mojom.h"
 #include "services/accessibility/public/mojom/tts.mojom.h"
 #include "services/accessibility/public/mojom/user_interface.mojom.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/accessibility/accessibility_features.h"
+#include "ui/aura/window_event_dispatcher.h"
+#include "ui/aura/window_tree_host.h"
 #include "ui/compositor/layer.h"
+#include "ui/events/event_constants.h"
+#include "ui/events/keycodes/dom/dom_code.h"
 
 using ax::mojom::AssistiveTechnologyType;
 
+class KeyboardVisibleWaiter : public ChromeKeyboardControllerClient::Observer {
+ public:
+  explicit KeyboardVisibleWaiter(bool visible) : visible_(visible) {
+    ChromeKeyboardControllerClient::Get()->AddObserver(this);
+  }
+
+  KeyboardVisibleWaiter(const KeyboardVisibleWaiter&) = delete;
+  KeyboardVisibleWaiter& operator=(const KeyboardVisibleWaiter&) = delete;
+
+  ~KeyboardVisibleWaiter() override {
+    ChromeKeyboardControllerClient::Get()->RemoveObserver(this);
+  }
+
+  void Wait() { run_loop_.Run(); }
+
+  // ChromeKeyboardControllerClient::Observer
+  void OnKeyboardVisibilityChanged(bool visible) override {
+    if (visible == visible_) {
+      run_loop_.QuitWhenIdle();
+    }
+  }
+
+ private:
+  base::RunLoop run_loop_;
+  const bool visible_;
+};  // namespace
+
 namespace ash {
+
+class DialogShownWaiter {
+ public:
+  DialogShownWaiter() {
+    ash::Shell::Get()
+        ->accessibility_controller()
+        ->AddShowConfirmationDialogCallbackForTesting(base::BindRepeating(
+            &DialogShownWaiter::OnDialogShown, weak_factory_.GetWeakPtr()));
+  }
+
+  DialogShownWaiter(const DialogShownWaiter&) = delete;
+  DialogShownWaiter& operator=(const DialogShownWaiter&) = delete;
+
+  ~DialogShownWaiter() = default;
+
+  void Wait() { run_loop_.Run(); }
+
+  void OnDialogShown() { run_loop_.QuitWhenIdle(); }
+
+ private:
+  base::RunLoop run_loop_;
+  base::WeakPtrFactory<DialogShownWaiter> weak_factory_{this};
+};  // namespace
 
 namespace {
 // Matches max utterance from the TTS extension API.
@@ -205,6 +277,34 @@ class MockTtsPlatformImpl : public content::TtsPlatform {
   std::string next_utterance_error_ = "";
 };
 
+class TestEventHandler : public ui::EventHandler {
+ public:
+  explicit TestEventHandler(base::RepeatingClosure callback)
+      : callback_(callback) {
+    Shell::Get()->AddPreTargetHandler(this);
+  }
+  ~TestEventHandler() override { Shell::Get()->RemovePreTargetHandler(this); }
+
+  // ui::EventHandler:
+  void OnKeyEvent(ui::KeyEvent* event) override {
+    // Make a copy of the event, so it's valid outside this function context.
+    key_events.push_back(std::make_unique<ui::KeyEvent>(event));
+    callback_.Run();
+  }
+
+  void OnMouseEvent(ui::MouseEvent* event) override {
+    // Make a copy of the event, so it's valid outside this function context.
+    mouse_events.push_back(std::make_unique<ui::MouseEvent>(event));
+    callback_.Run();
+  }
+
+  std::vector<std::unique_ptr<ui::KeyEvent>> key_events;
+  std::vector<std::unique_ptr<ui::MouseEvent>> mouse_events;
+
+ private:
+  base::RepeatingClosure callback_;
+};
+
 }  // namespace
 
 // Tests for the AccessibilityServiceClientTest using a fake service
@@ -237,13 +337,26 @@ class AccessibilityServiceClientTest : public InProcessBrowserTest {
             base::BindRepeating(
                 &AccessibilityServiceClientTest::CreateTestAccessibilityService,
                 base::Unretained(this)));
+    sr_test_helper_ = std::make_unique<SpeechRecognitionTestHelper>(
+        speech::SpeechRecognitionType::kNetwork);
+    sr_test_helper_->SetUp(browser()->profile());
   }
 
   void TearDownOnMainThread() override {
+    content::SpeechRecognitionManager::SetManagerForTesting(nullptr);
     InProcessBrowserTest::TearDownOnMainThread();
   }
 
  protected:
+  AccessibilityServiceClient* Client() {
+    AccessibilityManager* accessibility_manager = AccessibilityManager::Get();
+    return accessibility_manager->accessibility_service_client_.get();
+  }
+
+  UserInputImpl* UserInputClient() {
+    return Client()->user_input_client_.get();
+  }
+
   bool ServiceHasATEnabled(AssistiveTechnologyType type) {
     std::set<AssistiveTechnologyType> enabled_ATs =
         fake_service_->GetEnabledATs();
@@ -260,40 +373,39 @@ class AccessibilityServiceClientTest : public InProcessBrowserTest {
       client->automation_client_->Disable();
   }
 
-  std::unique_ptr<AccessibilityServiceClient> TurnOnAccessibilityService(
-      AssistiveTechnologyType type) {
-    auto client = std::make_unique<AccessibilityServiceClient>();
-    client->SetProfile(browser()->profile());
+  // TODO(crbug.com/1493545): Toggle features on AccessibilityManager for client
+  // test.
+  void TurnOnAccessibilityService(AssistiveTechnologyType type) {
     switch (type) {
       case ax::mojom::AssistiveTechnologyType::kUnknown:
         NOTREACHED() << "Unknown AT type";
         break;
       case ax::mojom::AssistiveTechnologyType::kChromeVox:
-        client->SetChromeVoxEnabled(true);
+        Client()->SetChromeVoxEnabled(true);
         break;
       case ax::mojom::AssistiveTechnologyType::kSelectToSpeak:
-        client->SetSelectToSpeakEnabled(true);
+        Client()->SetSelectToSpeakEnabled(true);
         break;
       case ax::mojom::AssistiveTechnologyType::kSwitchAccess:
-        client->SetSwitchAccessEnabled(true);
+        Client()->SetSwitchAccessEnabled(true);
         break;
       case ax::mojom::AssistiveTechnologyType::kAutoClick:
-        client->SetAutoclickEnabled(true);
+        Client()->SetAutoclickEnabled(true);
         break;
       case ax::mojom::AssistiveTechnologyType::kMagnifier:
-        client->SetMagnifierEnabled(true);
+        Client()->SetMagnifierEnabled(true);
         break;
       case ax::mojom::AssistiveTechnologyType::kDictation:
-        client->SetDictationEnabled(true);
+        Client()->SetDictationEnabled(true);
         break;
     }
     EXPECT_TRUE(ServiceHasATEnabled(type));
-    return client;
   }
 
   // Unowned.
-  raw_ptr<FakeAccessibilityService, DanglingUntriaged | ExperimentalAsh>
-      fake_service_ = nullptr;
+  raw_ptr<FakeAccessibilityService, DanglingUntriaged> fake_service_ = nullptr;
+
+  std::unique_ptr<SpeechRecognitionTestHelper> sr_test_helper_;
 
  private:
   std::unique_ptr<KeyedService> CreateTestAccessibilityService(
@@ -313,11 +425,9 @@ class AccessibilityServiceClientTest : public InProcessBrowserTest {
 // there is a profile.
 IN_PROC_BROWSER_TEST_F(AccessibilityServiceClientTest,
                        DoesNotCrashWithNoProfile) {
-  AccessibilityServiceClient client;
-  client.SetChromeVoxEnabled(true);
-
-  client.SetProfile(nullptr);
-  client.SetSelectToSpeakEnabled(true);
+  Client()->SetProfile(nullptr);
+  Client()->SetChromeVoxEnabled(true);
+  Client()->SetSelectToSpeakEnabled(true);
 
   EXPECT_FALSE(ServiceIsBound());
 }
@@ -326,16 +436,12 @@ IN_PROC_BROWSER_TEST_F(AccessibilityServiceClientTest,
 // when features are all disabled.
 IN_PROC_BROWSER_TEST_F(AccessibilityServiceClientTest,
                        DoesNotCreateServiceForDisabledFeatures) {
-  AccessibilityServiceClient client;
   EXPECT_FALSE(ServiceIsBound());
 
-  client.SetProfile(browser()->profile());
+  Client()->SetChromeVoxEnabled(false);
   EXPECT_FALSE(ServiceIsBound());
 
-  client.SetChromeVoxEnabled(false);
-  EXPECT_FALSE(ServiceIsBound());
-
-  client.SetDictationEnabled(false);
+  Client()->SetDictationEnabled(false);
   EXPECT_FALSE(ServiceIsBound());
 }
 
@@ -343,16 +449,16 @@ IN_PROC_BROWSER_TEST_F(AccessibilityServiceClientTest,
 // the profile changes.
 IN_PROC_BROWSER_TEST_F(AccessibilityServiceClientTest,
                        CopiesFeaturesWhenProfileChanges) {
-  AccessibilityServiceClient client;
-  client.SetChromeVoxEnabled(true);
-  client.SetSwitchAccessEnabled(true);
-  client.SetAutoclickEnabled(true);
-  client.SetAutoclickEnabled(false);
+  Client()->SetProfile(nullptr);
+  Client()->SetChromeVoxEnabled(true);
+  Client()->SetSwitchAccessEnabled(true);
+  Client()->SetAutoclickEnabled(true);
+  Client()->SetAutoclickEnabled(false);
 
-  // Service isn't constructed yet.
+  // Service isn't constructed yet because there is no profile.
   EXPECT_FALSE(ServiceIsBound());
 
-  client.SetProfile(browser()->profile());
+  Client()->SetProfile(browser()->profile());
 
   ASSERT_TRUE(ServiceIsBound());
   EXPECT_TRUE(ServiceHasATEnabled(AssistiveTechnologyType::kChromeVox));
@@ -364,8 +470,6 @@ IN_PROC_BROWSER_TEST_F(AccessibilityServiceClientTest,
 // using the mojom interface.
 IN_PROC_BROWSER_TEST_F(AccessibilityServiceClientTest,
                        TogglesAccessibilityFeatures) {
-  AccessibilityServiceClient client;
-  client.SetProfile(browser()->profile());
   EXPECT_FALSE(ServiceHasATEnabled(AssistiveTechnologyType::kChromeVox));
   EXPECT_FALSE(ServiceHasATEnabled(AssistiveTechnologyType::kSelectToSpeak));
   EXPECT_FALSE(ServiceHasATEnabled(AssistiveTechnologyType::kSwitchAccess));
@@ -375,40 +479,41 @@ IN_PROC_BROWSER_TEST_F(AccessibilityServiceClientTest,
 
   // The first time we enable/disable an AT, the AT controller should be bound
   // with the enabled AT type.
-  client.SetChromeVoxEnabled(true);
+  Client()->SetChromeVoxEnabled(true);
+  fake_service_->WaitForATChangeCount(1);
   EXPECT_TRUE(ServiceHasATEnabled(AssistiveTechnologyType::kChromeVox));
-  client.SetSelectToSpeakEnabled(true);
-  fake_service_->WaitForATChanged();
+  Client()->SetSelectToSpeakEnabled(true);
+  fake_service_->WaitForATChangeCount(2);
   EXPECT_TRUE(ServiceHasATEnabled(AssistiveTechnologyType::kSelectToSpeak));
-  client.SetSwitchAccessEnabled(true);
-  fake_service_->WaitForATChanged();
+  Client()->SetSwitchAccessEnabled(true);
+  fake_service_->WaitForATChangeCount(3);
   EXPECT_TRUE(ServiceHasATEnabled(AssistiveTechnologyType::kSwitchAccess));
-  client.SetAutoclickEnabled(true);
-  fake_service_->WaitForATChanged();
+  Client()->SetAutoclickEnabled(true);
+  fake_service_->WaitForATChangeCount(4);
   EXPECT_TRUE(ServiceHasATEnabled(AssistiveTechnologyType::kAutoClick));
-  client.SetDictationEnabled(true);
-  fake_service_->WaitForATChanged();
+  Client()->SetDictationEnabled(true);
+  fake_service_->WaitForATChangeCount(5);
   EXPECT_TRUE(ServiceHasATEnabled(AssistiveTechnologyType::kDictation));
-  client.SetMagnifierEnabled(true);
-  fake_service_->WaitForATChanged();
+  Client()->SetMagnifierEnabled(true);
+  fake_service_->WaitForATChangeCount(6);
   EXPECT_TRUE(ServiceHasATEnabled(AssistiveTechnologyType::kMagnifier));
-  client.SetChromeVoxEnabled(false);
-  fake_service_->WaitForATChanged();
+  Client()->SetChromeVoxEnabled(false);
+  fake_service_->WaitForATChangeCount(7);
   EXPECT_FALSE(ServiceHasATEnabled(AssistiveTechnologyType::kChromeVox));
-  client.SetSelectToSpeakEnabled(false);
-  fake_service_->WaitForATChanged();
+  Client()->SetSelectToSpeakEnabled(false);
+  fake_service_->WaitForATChangeCount(8);
   EXPECT_FALSE(ServiceHasATEnabled(AssistiveTechnologyType::kSelectToSpeak));
-  client.SetSwitchAccessEnabled(false);
-  fake_service_->WaitForATChanged();
+  Client()->SetSwitchAccessEnabled(false);
+  fake_service_->WaitForATChangeCount(9);
   EXPECT_FALSE(ServiceHasATEnabled(AssistiveTechnologyType::kSwitchAccess));
-  client.SetAutoclickEnabled(false);
-  fake_service_->WaitForATChanged();
+  Client()->SetAutoclickEnabled(false);
+  fake_service_->WaitForATChangeCount(10);
   EXPECT_FALSE(ServiceHasATEnabled(AssistiveTechnologyType::kAutoClick));
-  client.SetDictationEnabled(false);
-  fake_service_->WaitForATChanged();
+  Client()->SetDictationEnabled(false);
+  fake_service_->WaitForATChangeCount(11);
   EXPECT_FALSE(ServiceHasATEnabled(AssistiveTechnologyType::kDictation));
-  client.SetMagnifierEnabled(false);
-  fake_service_->WaitForATChanged();
+  Client()->SetMagnifierEnabled(false);
+  fake_service_->WaitForATChangeCount(12);
   EXPECT_FALSE(ServiceHasATEnabled(AssistiveTechnologyType::kMagnifier));
 }
 
@@ -416,7 +521,7 @@ IN_PROC_BROWSER_TEST_F(AccessibilityServiceClientTest,
                        SendsAutomationToTheService) {
   // Enable an assistive technology. The service will not be started until
   // some AT needs it.
-  auto client = TurnOnAccessibilityService(AssistiveTechnologyType::kChromeVox);
+  TurnOnAccessibilityService(AssistiveTechnologyType::kChromeVox);
 
   // The service may bind multiple Automations to the AutomationClient.
   for (int i = 0; i < 3; i++) {
@@ -424,7 +529,7 @@ IN_PROC_BROWSER_TEST_F(AccessibilityServiceClientTest,
   }
 
   // TODO(crbug.com/1355633): Replace once mojom to Enable lands.
-  ToggleAutomationEnabled(client.get(), true);
+  ToggleAutomationEnabled(Client(), true);
   // Enable can be called multiple times (once for each bound Automation)
   // with no bad effects.
   // fake_service_->AutomationClientEnable(true);
@@ -433,7 +538,7 @@ IN_PROC_BROWSER_TEST_F(AccessibilityServiceClientTest,
   fake_service_->WaitForAutomationEvents();
 
   // TODO(crbug.com/1355633): Replace once mojom to Disable lands.
-  ToggleAutomationEnabled(client.get(), false);
+  ToggleAutomationEnabled(Client(), false);
   // Disabling multiple times has no bad effect.
   // fake_service_->AutomationClientEnable(false);
 }
@@ -442,28 +547,27 @@ IN_PROC_BROWSER_TEST_F(AccessibilityServiceClientTest,
                        DevToolsAgentHostCreated) {
   // Enable an assistive technology. The service will not be started until
   // some AT needs it.
-  auto client = TurnOnAccessibilityService(AssistiveTechnologyType::kChromeVox);
-  client->SetChromeVoxEnabled(true);
+  TurnOnAccessibilityService(AssistiveTechnologyType::kChromeVox);
+
   // A single agent host should have been created for chromevox.
   auto count = fake_service_->GetDevtoolsConnectionCount(
       AssistiveTechnologyType::kChromeVox);
   EXPECT_EQ(count, 1);
   // Disable and re-enable
-  client->SetChromeVoxEnabled(false);
-  client->SetChromeVoxEnabled(true);
+  Client()->SetChromeVoxEnabled(false);
+  Client()->SetChromeVoxEnabled(true);
   count = fake_service_->GetDevtoolsConnectionCount(
       AssistiveTechnologyType::kChromeVox);
   EXPECT_EQ(count, 2);
   // Different AT
-  client->SetSelectToSpeakEnabled(true);
+  Client()->SetSelectToSpeakEnabled(true);
   count = fake_service_->GetDevtoolsConnectionCount(
       AssistiveTechnologyType::kSelectToSpeak);
   EXPECT_EQ(count, 1);
 }
 
 IN_PROC_BROWSER_TEST_F(AccessibilityServiceClientTest, TtsGetVoices) {
-  auto client =
-      TurnOnAccessibilityService(AssistiveTechnologyType::kSelectToSpeak);
+  TurnOnAccessibilityService(AssistiveTechnologyType::kSelectToSpeak);
   MockTtsPlatformImpl tts_platform;
 
   fake_service_->BindAnotherTts();
@@ -493,8 +597,7 @@ IN_PROC_BROWSER_TEST_F(AccessibilityServiceClientTest, TtsGetVoices) {
 }
 
 IN_PROC_BROWSER_TEST_F(AccessibilityServiceClientTest, TtsSpeakSimple) {
-  auto client =
-      TurnOnAccessibilityService(AssistiveTechnologyType::kSelectToSpeak);
+  TurnOnAccessibilityService(AssistiveTechnologyType::kSelectToSpeak);
   test::SpeechMonitor sm;
 
   fake_service_->BindAnotherTts();
@@ -505,7 +608,7 @@ IN_PROC_BROWSER_TEST_F(AccessibilityServiceClientTest, TtsSpeakSimple) {
 
 IN_PROC_BROWSER_TEST_F(AccessibilityServiceClientTest, TtsSendsStartEndEvents) {
   test::SpeechMonitor sm;
-  auto client = TurnOnAccessibilityService(AssistiveTechnologyType::kChromeVox);
+  TurnOnAccessibilityService(AssistiveTechnologyType::kChromeVox);
   fake_service_->BindAnotherTts();
 
   base::RunLoop waiter;
@@ -546,8 +649,7 @@ IN_PROC_BROWSER_TEST_F(AccessibilityServiceClientTest, TtsSendsStartEndEvents) {
 
 IN_PROC_BROWSER_TEST_F(AccessibilityServiceClientTest, TtsPauseResume) {
   MockTtsPlatformImpl tts_platform;
-  auto client =
-      TurnOnAccessibilityService(AssistiveTechnologyType::kSelectToSpeak);
+  TurnOnAccessibilityService(AssistiveTechnologyType::kSelectToSpeak);
   fake_service_->BindAnotherTts();
 
   base::RunLoop waiter;
@@ -602,7 +704,7 @@ IN_PROC_BROWSER_TEST_F(AccessibilityServiceClientTest, TtsPauseResume) {
 
 IN_PROC_BROWSER_TEST_F(AccessibilityServiceClientTest, TtsIsSpeaking) {
   MockTtsPlatformImpl tts_platform;
-  auto client = TurnOnAccessibilityService(AssistiveTechnologyType::kChromeVox);
+  TurnOnAccessibilityService(AssistiveTechnologyType::kChromeVox);
   fake_service_->BindAnotherTts();
 
   base::RunLoop waiter;
@@ -623,8 +725,7 @@ IN_PROC_BROWSER_TEST_F(AccessibilityServiceClientTest, TtsIsSpeaking) {
 
 IN_PROC_BROWSER_TEST_F(AccessibilityServiceClientTest, TtsIsNotSpeaking) {
   MockTtsPlatformImpl tts_platform;
-  auto client =
-      TurnOnAccessibilityService(AssistiveTechnologyType::kSelectToSpeak);
+  TurnOnAccessibilityService(AssistiveTechnologyType::kSelectToSpeak);
   fake_service_->BindAnotherTts();
 
   base::RunLoop waiter;
@@ -638,8 +739,7 @@ IN_PROC_BROWSER_TEST_F(AccessibilityServiceClientTest, TtsIsNotSpeaking) {
 }
 
 IN_PROC_BROWSER_TEST_F(AccessibilityServiceClientTest, TtsMaxUtteranceError) {
-  auto client =
-      TurnOnAccessibilityService(AssistiveTechnologyType::kSelectToSpeak);
+  TurnOnAccessibilityService(AssistiveTechnologyType::kSelectToSpeak);
   fake_service_->BindAnotherTts();
   base::RunLoop waiter;
 
@@ -657,7 +757,7 @@ IN_PROC_BROWSER_TEST_F(AccessibilityServiceClientTest, TtsMaxUtteranceError) {
 IN_PROC_BROWSER_TEST_F(AccessibilityServiceClientTest, TtsUtteranceError) {
   MockTtsPlatformImpl tts_platform;
   tts_platform.SetNextUtteranceError("One does not simply walk into Mordor");
-  auto client = TurnOnAccessibilityService(AssistiveTechnologyType::kChromeVox);
+  TurnOnAccessibilityService(AssistiveTechnologyType::kChromeVox);
   fake_service_->BindAnotherTts();
 
   base::RunLoop waiter;
@@ -686,7 +786,7 @@ IN_PROC_BROWSER_TEST_F(AccessibilityServiceClientTest, TtsUtteranceError) {
 
 IN_PROC_BROWSER_TEST_F(AccessibilityServiceClientTest, TtsOptions) {
   MockTtsPlatformImpl tts_platform;
-  auto client = TurnOnAccessibilityService(AssistiveTechnologyType::kChromeVox);
+  TurnOnAccessibilityService(AssistiveTechnologyType::kChromeVox);
   fake_service_->BindAnotherTts();
   base::RunLoop waiter;
 
@@ -717,7 +817,7 @@ IN_PROC_BROWSER_TEST_F(AccessibilityServiceClientTest, TtsOptions) {
 }
 
 IN_PROC_BROWSER_TEST_F(AccessibilityServiceClientTest, TtsOptionsPitchError) {
-  auto client = TurnOnAccessibilityService(AssistiveTechnologyType::kChromeVox);
+  TurnOnAccessibilityService(AssistiveTechnologyType::kChromeVox);
   fake_service_->BindAnotherTts();
   base::RunLoop waiter;
   auto options = ax::mojom::TtsOptions::New();
@@ -735,7 +835,7 @@ IN_PROC_BROWSER_TEST_F(AccessibilityServiceClientTest, TtsOptionsPitchError) {
 }
 
 IN_PROC_BROWSER_TEST_F(AccessibilityServiceClientTest, TtsOptionsRateError) {
-  auto client = TurnOnAccessibilityService(AssistiveTechnologyType::kChromeVox);
+  TurnOnAccessibilityService(AssistiveTechnologyType::kChromeVox);
   fake_service_->BindAnotherTts();
   base::RunLoop waiter;
   auto options = ax::mojom::TtsOptions::New();
@@ -752,7 +852,7 @@ IN_PROC_BROWSER_TEST_F(AccessibilityServiceClientTest, TtsOptionsRateError) {
 }
 
 IN_PROC_BROWSER_TEST_F(AccessibilityServiceClientTest, TtsOptionsVolumeError) {
-  auto client = TurnOnAccessibilityService(AssistiveTechnologyType::kChromeVox);
+  TurnOnAccessibilityService(AssistiveTechnologyType::kChromeVox);
   fake_service_->BindAnotherTts();
   base::RunLoop waiter;
   auto options = ax::mojom::TtsOptions::New();
@@ -772,8 +872,7 @@ IN_PROC_BROWSER_TEST_F(AccessibilityServiceClientTest, TtsOptionsVolumeError) {
 // is in progress. With the option to enqueue, they should not interrupt.
 IN_PROC_BROWSER_TEST_F(AccessibilityServiceClientTest, TtsEnqueue) {
   MockTtsPlatformImpl tts_platform;
-  auto client =
-      TurnOnAccessibilityService(AssistiveTechnologyType::kSelectToSpeak);
+  TurnOnAccessibilityService(AssistiveTechnologyType::kSelectToSpeak);
   fake_service_->BindAnotherTts();
   base::RunLoop waiter;
 
@@ -813,8 +912,7 @@ IN_PROC_BROWSER_TEST_F(AccessibilityServiceClientTest, TtsEnqueue) {
 // the first.
 IN_PROC_BROWSER_TEST_F(AccessibilityServiceClientTest, TtsInterrupt) {
   MockTtsPlatformImpl tts_platform;
-  auto client =
-      TurnOnAccessibilityService(AssistiveTechnologyType::kSelectToSpeak);
+  TurnOnAccessibilityService(AssistiveTechnologyType::kSelectToSpeak);
   fake_service_->BindAnotherTts();
   base::RunLoop waiter;
   int start_count = 0;
@@ -866,9 +964,256 @@ IN_PROC_BROWSER_TEST_F(AccessibilityServiceClientTest, TtsInterrupt) {
   waiter.Run();
 }
 
+IN_PROC_BROWSER_TEST_F(AccessibilityServiceClientTest, DarkenScreen) {
+  TurnOnAccessibilityService(AssistiveTechnologyType::kChromeVox);
+  fake_service_->BindAnotherUserInterface();
+
+  base::RunLoop waiter;
+  AccessibilityManager::Get()->SetScreenDarkenObserverForTest(
+      base::BindLambdaForTesting([&waiter] {
+        waiter.Quit();
+
+        EXPECT_TRUE(
+            chromeos::FakePowerManagerClient::Get()->backlights_forced_off());
+      }));
+
+  fake_service_->RequestDarkenScreen(true);
+
+  waiter.Run();
+}
+
+IN_PROC_BROWSER_TEST_F(AccessibilityServiceClientTest, OpenSettingsSubpage) {
+  TurnOnAccessibilityService(AssistiveTechnologyType::kChromeVox);
+  fake_service_->BindAnotherUserInterface();
+
+  base::RunLoop waiter;
+  AccessibilityManager::Get()->SetOpenSettingsSubpageObserverForTest(
+      base::BindLambdaForTesting([&waiter]() { waiter.Quit(); }));
+
+  fake_service_->RequestOpenSettingsSubpage("manageAccessibility/tts");
+
+  waiter.Run();
+}
+
+IN_PROC_BROWSER_TEST_F(AccessibilityServiceClientTest,
+                       AcceptConfirmationDialog) {
+  // Initialize ATP.
+  TurnOnAccessibilityService(AssistiveTechnologyType::kChromeVox);
+  fake_service_->BindAnotherUserInterface();
+
+  // Request confirmation dialog.
+  base::RunLoop waiter;
+  fake_service_->RequestShowConfirmationDialog(
+      "Order Confirmation", "Ok to purchase 10,000 lbs of canned corn?",
+      "No, thank you", base::BindLambdaForTesting([&waiter](bool confirmed) {
+        waiter.Quit();
+        EXPECT_TRUE(confirmed);
+      }));
+
+  // Wait for dialog shown.
+  DialogShownWaiter().Wait();
+
+  // Verify dialog was created.
+  AccessibilityConfirmationDialog* dialog =
+      Shell::Get()->accessibility_controller()->GetConfirmationDialogForTest();
+  ASSERT_NE(dialog, nullptr);
+
+  // Verify title.
+  EXPECT_EQ(dialog->GetWindowTitle(), u"Order Confirmation");
+
+  // Accept dialog.
+  dialog->AcceptDialog();
+
+  // Wait for dialog callback and closing.
+  waiter.Run();
+}
+
+IN_PROC_BROWSER_TEST_F(AccessibilityServiceClientTest,
+                       CancelConfirmationDialog) {
+  // Initialize ATP.
+  TurnOnAccessibilityService(AssistiveTechnologyType::kChromeVox);
+  fake_service_->BindAnotherUserInterface();
+
+  // Request confirmation dialog.
+  base::RunLoop waiter;
+  fake_service_->RequestShowConfirmationDialog(
+      "Order Confirmation", "Ok to purchase 10,000 lbs of canned corn?",
+      "No, thank you", base::BindLambdaForTesting([&waiter](bool confirmed) {
+        waiter.Quit();
+        EXPECT_FALSE(confirmed);
+      }));
+
+  // Wait for dialog shown.
+  DialogShownWaiter().Wait();
+
+  // Verify dialog was created.
+  AccessibilityConfirmationDialog* dialog =
+      Shell::Get()->accessibility_controller()->GetConfirmationDialogForTest();
+  ASSERT_NE(dialog, nullptr);
+
+  // Verify title.
+  EXPECT_EQ(dialog->GetWindowTitle(), u"Order Confirmation");
+
+  // Cancel dialog.
+  dialog->CancelDialog();
+
+  // Wait for dialog callback and closing.
+  waiter.Run();
+}
+
+IN_PROC_BROWSER_TEST_F(AccessibilityServiceClientTest,
+                       CloseConfirmationDialog) {
+  // Initialize ATP.
+  TurnOnAccessibilityService(AssistiveTechnologyType::kChromeVox);
+  fake_service_->BindAnotherUserInterface();
+
+  // Request confirmation dialog.
+  base::RunLoop waiter;
+  fake_service_->RequestShowConfirmationDialog(
+      "Order Confirmation", "Ok to purchase 10,000 lbs of canned corn?",
+      "No, thank you", base::BindLambdaForTesting([&waiter](bool confirmed) {
+        waiter.Quit();
+        EXPECT_FALSE(confirmed);
+      }));
+
+  // Wait for dialog shown.
+  DialogShownWaiter().Wait();
+
+  // Verify dialog was created.
+  AccessibilityConfirmationDialog* dialog =
+      Shell::Get()->accessibility_controller()->GetConfirmationDialogForTest();
+  ASSERT_NE(dialog, nullptr);
+
+  // Verify title.
+  EXPECT_EQ(dialog->GetWindowTitle(), u"Order Confirmation");
+
+  // Close dialog.
+  dialog->GetWidget()->CloseWithReason(
+      views::Widget::ClosedReason::kCloseButtonClicked);
+
+  // Wait for callback and closing.
+  waiter.Run();
+}
+
+IN_PROC_BROWSER_TEST_F(AccessibilityServiceClientTest,
+                       AutoCloseSecondConfirmationDialog) {
+  // If a dialog is already being shown, we do not show a new one.
+  // Instead, we return false through the callback on the new dialog
+  // to indicate it was closed without the user taking any action.
+  // (See the implementation in user_interface_impl.cc and
+  // accessibility_controller_impl.cc)
+
+  // Initialize ATP.
+  TurnOnAccessibilityService(AssistiveTechnologyType::kChromeVox);
+  fake_service_->BindAnotherUserInterface();
+
+  // Request first confirmation dialog.
+  base::RunLoop waiter1;
+  fake_service_->RequestShowConfirmationDialog(
+      "Order Confirmation", "Ok to purchase 10,000 lbs of canned corn?",
+      "No, thank you", base::BindLambdaForTesting([&waiter1](bool confirmed) {
+        waiter1.Quit();
+        EXPECT_TRUE(confirmed);
+      }));
+
+  // Wait for dialog shown.
+  DialogShownWaiter().Wait();
+
+  // Verify dialog was created.
+  AccessibilityConfirmationDialog* dialog =
+      Shell::Get()->accessibility_controller()->GetConfirmationDialogForTest();
+  ASSERT_NE(dialog, nullptr);
+
+  // Verify title.
+  EXPECT_EQ(dialog->GetWindowTitle(), u"Order Confirmation");
+
+  // Request second confirmation dialog.
+  base::RunLoop waiter2;
+  fake_service_->RequestShowConfirmationDialog(
+      "Are we there yet?",
+      "Do you confirm that the journey to the destination is completed?", "No",
+      base::BindLambdaForTesting([&waiter2](bool confirmed) {
+        waiter2.Quit();
+        EXPECT_FALSE(confirmed);
+      }));
+
+  // Wait for second dialog to get automatically closed.
+  waiter2.Run();
+
+  // Verify current dialog is first dialog.
+  dialog =
+      Shell::Get()->accessibility_controller()->GetConfirmationDialogForTest();
+  EXPECT_EQ(dialog->GetWindowTitle(), u"Order Confirmation");
+
+  // Accept first dialog.
+  dialog->AcceptDialog();
+
+  // Wait for first dialog callback and closing.
+  waiter1.Run();
+}
+
+IN_PROC_BROWSER_TEST_F(AccessibilityServiceClientTest,
+                       OpenSecondConfirmationDialogAfterClosingFirst) {
+  // Initialize ATP.
+  TurnOnAccessibilityService(AssistiveTechnologyType::kChromeVox);
+  fake_service_->BindAnotherUserInterface();
+
+  // Request first confirmation dialog.
+  base::RunLoop waiter1;
+  fake_service_->RequestShowConfirmationDialog(
+      "Order Confirmation", "Ok to purchase 10,000 lbs of canned corn?",
+      "No, thank you", base::BindLambdaForTesting([&waiter1](bool confirmed) {
+        waiter1.Quit();
+        EXPECT_TRUE(confirmed);
+      }));
+
+  // Wait for dialog shown.
+  DialogShownWaiter().Wait();
+
+  // Verify dialog was created.
+  AccessibilityConfirmationDialog* dialog =
+      Shell::Get()->accessibility_controller()->GetConfirmationDialogForTest();
+  ASSERT_NE(dialog, nullptr);
+
+  // Verify first dialog title.
+  EXPECT_EQ(dialog->GetWindowTitle(), u"Order Confirmation");
+
+  // Accept first dialog.
+  dialog->AcceptDialog();
+
+  // Wait for first dialog callback and closing.
+  waiter1.Run();
+
+  // Request second confirmation dialog.
+  base::RunLoop waiter2;
+  fake_service_->RequestShowConfirmationDialog(
+      "Are we there yet?",
+      "Do you confirm that the journey to the destination is completed?", "No",
+      base::BindLambdaForTesting([&waiter2](bool confirmed) {
+        waiter2.Quit();
+        EXPECT_TRUE(confirmed);
+      }));
+
+  // Wait for second dialog shown.
+  DialogShownWaiter().Wait();
+
+  // Verify second dialog was created.
+  dialog =
+      Shell::Get()->accessibility_controller()->GetConfirmationDialogForTest();
+  ASSERT_NE(dialog, nullptr);
+
+  // Verify second dialog title.
+  EXPECT_EQ(dialog->GetWindowTitle(), u"Are we there yet?");
+
+  // Accept second dialog.
+  dialog->AcceptDialog();
+
+  // Wait for second dialog callback and closing.
+  waiter2.Run();
+}
+
 IN_PROC_BROWSER_TEST_F(AccessibilityServiceClientTest, SetFocusRings) {
-  auto client =
-      TurnOnAccessibilityService(AssistiveTechnologyType::kSwitchAccess);
+  TurnOnAccessibilityService(AssistiveTechnologyType::kSwitchAccess);
   fake_service_->BindAnotherUserInterface();
 
   AccessibilityFocusRingControllerImpl* controller =
@@ -956,6 +1301,419 @@ IN_PROC_BROWSER_TEST_F(AccessibilityServiceClientTest, SetFocusRings) {
       std::move(focus_rings),
       ax::mojom::AssistiveTechnologyType::kSwitchAccess);
 
+  waiter.Run();
+}
+
+IN_PROC_BROWSER_TEST_F(AccessibilityServiceClientTest, SetHighlights) {
+      TurnOnAccessibilityService(AssistiveTechnologyType::kSwitchAccess);
+  fake_service_->BindAnotherUserInterface();
+
+  std::vector<gfx::Rect> rects;
+  rects.emplace_back(gfx::Rect(0, 1, 22, 1973));
+
+  base::RunLoop waiter;
+  AccessibilityManager::Get()->SetHighlightsObserverForTest(
+      base::BindLambdaForTesting([&waiter, &rects] {
+        waiter.Quit();
+        AccessibilityFocusRingControllerImpl* controller =
+            Shell::Get()->accessibility_focus_ring_controller();
+        AccessibilityHighlightLayer* highlight_layer =
+            controller->highlight_layer_for_testing();
+        EXPECT_TRUE(highlight_layer);
+        ASSERT_EQ(1u, highlight_layer->rects_for_test().size());
+        EXPECT_EQ(rects[0], highlight_layer->rects_for_test()[0]);
+        EXPECT_EQ(SK_ColorMAGENTA, highlight_layer->color_for_test());
+      }));
+
+  fake_service_->RequestSetHighlights(rects, SK_ColorMAGENTA);
+
+  waiter.Run();
+}
+
+IN_PROC_BROWSER_TEST_F(AccessibilityServiceClientTest,
+                       RequestSetVirtualKeyboardVisible) {
+  // Initialize ATP.
+  TurnOnAccessibilityService(AssistiveTechnologyType::kChromeVox);
+  fake_service_->BindAnotherUserInterface();
+
+  // Enable virtual keyboard.
+  keyboard::SetAccessibilityKeyboardEnabled(true);
+
+  // Verify keyboard is hidden.
+  KeyboardControllerImpl* keyboard_controller_ =
+      Shell::Get()->keyboard_controller();
+  EXPECT_FALSE(keyboard_controller_->IsKeyboardVisible());
+
+  // Show keyboard, and verify visible.
+  fake_service_->RequestSetVirtualKeyboardVisible(true);
+  KeyboardVisibleWaiter(true).Wait();
+  EXPECT_TRUE(keyboard_controller_->IsKeyboardVisible());
+
+  // Hide keyboard, and verify invisible.
+  fake_service_->RequestSetVirtualKeyboardVisible(false);
+  KeyboardVisibleWaiter(false).Wait();
+  EXPECT_FALSE(keyboard_controller_->IsKeyboardVisible());
+}
+
+// Verifies that speech recognition can be started and stopped using the
+// AccessibilityServiceClient.
+IN_PROC_BROWSER_TEST_F(AccessibilityServiceClientTest,
+                       SpeechRecognitionStartAndStop) {
+  TurnOnAccessibilityService(AssistiveTechnologyType::kDictation);
+  fake_service_->BindAnotherSpeechRecognition();
+
+  auto start_options = ax::mojom::StartOptions::New();
+  start_options->type = ax::mojom::AssistiveTechnologyType::kDictation;
+  fake_service_->RequestSpeechRecognitionStart(std::move(start_options),
+                                               base::DoNothing());
+  sr_test_helper_->WaitForRecognitionStarted();
+
+  auto stop_options = ax::mojom::StopOptions::New();
+  stop_options->type = ax::mojom::AssistiveTechnologyType::kDictation;
+  fake_service_->RequestSpeechRecognitionStop(std::move(stop_options),
+                                              base::DoNothing());
+  sr_test_helper_->WaitForRecognitionStopped();
+}
+
+IN_PROC_BROWSER_TEST_F(AccessibilityServiceClientTest,
+                       SpeechRecognitionStartAndStopCallbacks) {
+  TurnOnAccessibilityService(AssistiveTechnologyType::kDictation);
+  fake_service_->BindAnotherSpeechRecognition();
+
+  base::RunLoop start_waiter;
+  auto start_options = ax::mojom::StartOptions::New();
+  start_options->type = ax::mojom::AssistiveTechnologyType::kDictation;
+  fake_service_->RequestSpeechRecognitionStart(
+      std::move(start_options),
+      base::BindLambdaForTesting(
+          [&start_waiter](ax::mojom::SpeechRecognitionStartInfoPtr info) {
+            EXPECT_EQ(ax::mojom::SpeechRecognitionType::kNetwork, info->type);
+            ASSERT_FALSE(info->observer_or_error->is_error());
+            start_waiter.Quit();
+          }));
+  start_waiter.Run();
+
+  base::RunLoop stop_waiter;
+  auto stop_options = ax::mojom::StopOptions::New();
+  stop_options->type = ax::mojom::AssistiveTechnologyType::kDictation;
+  fake_service_->RequestSpeechRecognitionStop(
+      std::move(stop_options),
+      base::BindLambdaForTesting(
+          [&stop_waiter](const std::optional<std::string>& error) {
+            ASSERT_FALSE(error.has_value());
+            stop_waiter.Quit();
+          }));
+  stop_waiter.Run();
+}
+
+IN_PROC_BROWSER_TEST_F(AccessibilityServiceClientTest,
+                       AccessibilityServiceAsksClientToLoadAFile) {
+  TurnOnAccessibilityService(AssistiveTechnologyType::kChromeVox);
+  base::RunLoop loop;
+  fake_service_->RequestLoadFile(
+      base::FilePath("chromevox/chromeVoxChromeBackgroundScript.js"),
+      base::BindLambdaForTesting([&loop](base::File file) mutable {
+        // Note: we post a task to the thread pool here because dealing with the
+        // file causes blocking operations. Since this is a single process
+        // browser test setup, this would run in the main UI thread, which can't
+        // block. The destructor of the base::File here must be invoked in a
+        // sequence that allows blocking (here, in the task itself). So we
+        // return its value of is_valid() to be checked in the main thread, and
+        // finally stop the loop.
+        base::ThreadPool::PostTaskAndReplyWithResult(
+            FROM_HERE, {base::MayBlock()},
+            /*task=*/base::BindLambdaForTesting([file = std::move(file)]() {
+              return file.IsValid();
+            }),
+            /*reply=*/
+            base::BindLambdaForTesting(
+                [quit_closure = loop.QuitClosure()](bool result) {
+                  ASSERT_TRUE(result);
+                  std::move(quit_closure).Run();
+                }));
+      }));
+  loop.Run();
+}
+
+IN_PROC_BROWSER_TEST_F(AccessibilityServiceClientTest,
+                       SendSyntheticKeyEventForShortcutOrNavigation) {
+  TurnOnAccessibilityService(AssistiveTechnologyType::kSwitchAccess);
+  fake_service_->BindAnotherUserInput();
+
+  auto key_press_event = ax::mojom::SyntheticKeyEvent::New();
+  key_press_event->type = ui::mojom::EventType::KEY_PRESSED;
+  key_press_event->key_data = ui::mojom::KeyData::New();
+  key_press_event->key_data->key_code = ui::VKEY_P;
+  // TODO(b/307553499): Populate dom_code and dom_key for synthetic key events.
+  key_press_event->key_data->dom_code = 0;
+  key_press_event->key_data->dom_key = 0;
+  key_press_event->key_data->is_char = false;
+
+  auto key_release_event = ax::mojom::SyntheticKeyEvent::New();
+  key_release_event->type = ui::mojom::EventType::KEY_RELEASED;
+  key_release_event->key_data = ui::mojom::KeyData::New();
+  key_release_event->key_data->key_code = ui::VKEY_P;
+  // TODO(b/307553499): Populate dom_code and dom_key for synthetic key
+  // events.
+  key_release_event->key_data->dom_code = 0;
+  key_release_event->key_data->dom_key = 0;
+  key_release_event->key_data->is_char = false;
+
+  base::RunLoop waiter;
+
+  TestEventHandler test_event_handler(
+      base::BindLambdaForTesting([&test_event_handler, &waiter]() {
+        if (test_event_handler.key_events.size() != 2) {
+          return;
+        }
+
+        ui::KeyEvent* press_event = test_event_handler.key_events[0].get();
+        EXPECT_EQ(press_event->type(), ui::ET_KEY_PRESSED);
+        EXPECT_EQ(press_event->code(), ui::DomCode::US_P);
+        EXPECT_FALSE(press_event->IsAltDown());
+        EXPECT_FALSE(press_event->IsCommandDown());
+        EXPECT_FALSE(press_event->IsControlDown());
+        EXPECT_FALSE(press_event->IsShiftDown());
+
+        ui::KeyEvent* release_event = test_event_handler.key_events[1].get();
+        EXPECT_EQ(release_event->type(), ui::ET_KEY_RELEASED);
+        EXPECT_EQ(release_event->code(), ui::DomCode::US_P);
+        EXPECT_FALSE(release_event->IsAltDown());
+        EXPECT_FALSE(release_event->IsCommandDown());
+        EXPECT_FALSE(release_event->IsControlDown());
+        EXPECT_FALSE(release_event->IsShiftDown());
+
+        waiter.Quit();
+      }));
+
+  // Send a press.
+  fake_service_->RequestSendSyntheticKeyEventForShortcutOrNavigation(
+      std::move(key_press_event));
+  // Send a release.
+  fake_service_->RequestSendSyntheticKeyEventForShortcutOrNavigation(
+      std::move(key_release_event));
+  waiter.Run();
+}
+
+IN_PROC_BROWSER_TEST_F(
+    AccessibilityServiceClientTest,
+    SendSyntheticKeyEventForShortcutOrNavigationWithModifiers) {
+  TurnOnAccessibilityService(AssistiveTechnologyType::kSwitchAccess);
+  fake_service_->BindAnotherUserInput();
+
+  auto key_press_event = ax::mojom::SyntheticKeyEvent::New();
+  key_press_event->type = ui::mojom::EventType::KEY_PRESSED;
+  key_press_event->key_data = ui::mojom::KeyData::New();
+  key_press_event->key_data->key_code = ui::VKEY_S;
+  // TODO(b/307553499): Populate dom_code and dom_key for synthetic key events.
+  key_press_event->key_data->dom_code = 0;
+  key_press_event->key_data->dom_key = 0;
+  key_press_event->key_data->is_char = false;
+  key_press_event->flags =
+      ui::mojom::kEventFlagAltDown | ui::mojom::kEventFlagControlDown |
+      ui::mojom::kEventFlagCommandDown | ui::mojom::kEventFlagShiftDown;
+
+  auto key_release_event = ax::mojom::SyntheticKeyEvent::New();
+  key_release_event->type = ui::mojom::EventType::KEY_RELEASED;
+  key_release_event->key_data = ui::mojom::KeyData::New();
+  key_release_event->key_data->key_code = ui::VKEY_S;
+  // TODO(b/307553499): Populate dom_code and dom_key for synthetic key
+  // events.
+  key_release_event->key_data->dom_code = 0;
+  key_release_event->key_data->dom_key = 0;
+  key_release_event->key_data->is_char = false;
+  key_release_event->flags =
+      ui::mojom::kEventFlagAltDown | ui::mojom::kEventFlagControlDown |
+      ui::mojom::kEventFlagCommandDown | ui::mojom::kEventFlagShiftDown;
+
+  base::RunLoop waiter;
+
+  TestEventHandler test_event_handler(
+      base::BindLambdaForTesting([&test_event_handler, &waiter]() {
+        if (test_event_handler.key_events.size() != 2) {
+          return;
+        }
+
+        ui::KeyEvent* press_event = test_event_handler.key_events[0].get();
+        EXPECT_EQ(press_event->type(), ui::ET_KEY_PRESSED);
+        EXPECT_EQ(press_event->code(), ui::DomCode::US_S);
+        EXPECT_TRUE(press_event->IsAltDown());
+        EXPECT_TRUE(press_event->IsCommandDown());
+        EXPECT_TRUE(press_event->IsControlDown());
+        EXPECT_TRUE(press_event->IsShiftDown());
+
+        ui::KeyEvent* release_event = test_event_handler.key_events[1].get();
+        EXPECT_EQ(release_event->type(), ui::ET_KEY_RELEASED);
+        EXPECT_EQ(release_event->code(), ui::DomCode::US_S);
+        EXPECT_TRUE(release_event->IsAltDown());
+        EXPECT_TRUE(release_event->IsCommandDown());
+        EXPECT_TRUE(release_event->IsControlDown());
+        EXPECT_TRUE(release_event->IsShiftDown());
+
+        waiter.Quit();
+      }));
+
+  // Send a press.
+  fake_service_->RequestSendSyntheticKeyEventForShortcutOrNavigation(
+      std::move(key_press_event));
+  // Send a release.
+  fake_service_->RequestSendSyntheticKeyEventForShortcutOrNavigation(
+      std::move(key_release_event));
+  waiter.Run();
+}
+
+IN_PROC_BROWSER_TEST_F(AccessibilityServiceClientTest,
+                       SendSyntheticMouseEventPress) {
+  TurnOnAccessibilityService(AssistiveTechnologyType::kSwitchAccess);
+  fake_service_->BindAnotherUserInput();
+
+  auto mouse_event = ax::mojom::SyntheticMouseEvent::New();
+  mouse_event->type = ui::mojom::EventType::MOUSE_PRESSED_EVENT;
+  mouse_event->point = gfx::Point(0, 0);
+
+  base::RunLoop waiter;
+
+  TestEventHandler test_event_handler(base::BindLambdaForTesting([&]() {
+    ASSERT_NE(0u, test_event_handler.mouse_events.size());
+    ui::MouseEvent* mouse_event = test_event_handler.mouse_events.back().get();
+    EXPECT_EQ(mouse_event->type(), ui::ET_MOUSE_PRESSED);
+    EXPECT_FALSE(mouse_event->flags() & ui::EF_TOUCH_ACCESSIBILITY);
+    EXPECT_TRUE(mouse_event->IsOnlyLeftMouseButton());
+    waiter.Quit();
+  }));
+
+  fake_service_->RequestSendSyntheticMouseEvent(std::move(mouse_event));
+  waiter.Run();
+}
+
+IN_PROC_BROWSER_TEST_F(AccessibilityServiceClientTest,
+                       SendSyntheticMouseEventRelease) {
+  TurnOnAccessibilityService(AssistiveTechnologyType::kSwitchAccess);
+  fake_service_->BindAnotherUserInput();
+
+  auto mouse_event = ax::mojom::SyntheticMouseEvent::New();
+  mouse_event->type = ui::mojom::EventType::MOUSE_RELEASED_EVENT;
+  mouse_event->point = gfx::Point(0, 0);
+  mouse_event->mouse_button = ax::mojom::SyntheticMouseEventButton::kMiddle;
+  mouse_event->touch_accessibility = false;
+
+  base::RunLoop waiter;
+
+  TestEventHandler test_event_handler(base::BindLambdaForTesting([&]() {
+    ASSERT_NE(0u, test_event_handler.mouse_events.size());
+    ui::MouseEvent* mouse_event = test_event_handler.mouse_events.back().get();
+    EXPECT_EQ(mouse_event->type(), ui::ET_MOUSE_RELEASED);
+    EXPECT_FALSE(mouse_event->flags() & ui::EF_TOUCH_ACCESSIBILITY);
+    EXPECT_EQ(mouse_event->button_flags(), ui::EF_MIDDLE_MOUSE_BUTTON);
+    waiter.Quit();
+  }));
+
+  fake_service_->RequestSendSyntheticMouseEvent(std::move(mouse_event));
+  waiter.Run();
+}
+
+IN_PROC_BROWSER_TEST_F(AccessibilityServiceClientTest,
+                       SendSyntheticMouseEventDrag) {
+  TurnOnAccessibilityService(AssistiveTechnologyType::kSwitchAccess);
+  fake_service_->BindAnotherUserInput();
+
+  auto mouse_event = ax::mojom::SyntheticMouseEvent::New();
+  mouse_event->type = ui::mojom::EventType::MOUSE_DRAGGED_EVENT;
+  mouse_event->point = gfx::Point(0, 0);
+  mouse_event->mouse_button = ax::mojom::SyntheticMouseEventButton::kRight;
+  mouse_event->touch_accessibility = true;
+
+  base::RunLoop waiter;
+
+  TestEventHandler test_event_handler(base::BindLambdaForTesting([&]() {
+    ASSERT_NE(0u, test_event_handler.mouse_events.size());
+    ui::MouseEvent* mouse_event = test_event_handler.mouse_events.back().get();
+    EXPECT_EQ(mouse_event->type(), ui::ET_MOUSE_DRAGGED);
+    EXPECT_TRUE(mouse_event->flags() & ui::EF_TOUCH_ACCESSIBILITY);
+    EXPECT_EQ(mouse_event->button_flags(), ui::EF_RIGHT_MOUSE_BUTTON);
+    waiter.Quit();
+  }));
+
+  fake_service_->RequestSendSyntheticMouseEvent(std::move(mouse_event));
+  waiter.Run();
+}
+
+IN_PROC_BROWSER_TEST_F(AccessibilityServiceClientTest,
+                       SendSyntheticMouseEventMove) {
+  TurnOnAccessibilityService(AssistiveTechnologyType::kSwitchAccess);
+  fake_service_->BindAnotherUserInput();
+
+  auto mouse_event = ax::mojom::SyntheticMouseEvent::New();
+  mouse_event->type = ui::mojom::EventType::MOUSE_MOVED_EVENT;
+  mouse_event->point = gfx::Point(0, 0);
+
+  base::RunLoop waiter;
+
+  TestEventHandler test_event_handler(base::BindLambdaForTesting([&]() {
+    ASSERT_NE(0u, test_event_handler.mouse_events.size());
+    ui::MouseEvent* mouse_event = test_event_handler.mouse_events.back().get();
+    // We may see an enter event fired before the actual move event.
+    if (mouse_event->type() == ui::ET_MOUSE_ENTERED) {
+      return;
+    }
+
+    EXPECT_EQ(mouse_event->type(), ui::ET_MOUSE_MOVED);
+    EXPECT_FALSE(mouse_event->flags() & ui::EF_TOUCH_ACCESSIBILITY);
+    EXPECT_EQ(mouse_event->button_flags(), 0);
+    waiter.Quit();
+  }));
+
+  fake_service_->RequestSendSyntheticMouseEvent(std::move(mouse_event));
+  waiter.Run();
+}
+
+IN_PROC_BROWSER_TEST_F(AccessibilityServiceClientTest,
+                       SendSyntheticMouseEventEnter) {
+  TurnOnAccessibilityService(AssistiveTechnologyType::kSwitchAccess);
+  fake_service_->BindAnotherUserInput();
+
+  auto mouse_event = ax::mojom::SyntheticMouseEvent::New();
+  mouse_event->type = ui::mojom::EventType::MOUSE_ENTERED_EVENT;
+  mouse_event->point = gfx::Point(0, 0);
+  mouse_event->mouse_button = ax::mojom::SyntheticMouseEventButton::kBack;
+
+  base::RunLoop waiter;
+
+  TestEventHandler test_event_handler(base::BindLambdaForTesting([&]() {
+    ASSERT_NE(0u, test_event_handler.mouse_events.size());
+    ui::MouseEvent* mouse_event = test_event_handler.mouse_events.back().get();
+    EXPECT_EQ(mouse_event->type(), ui::ET_MOUSE_ENTERED);
+    EXPECT_FALSE(mouse_event->flags() & ui::EF_TOUCH_ACCESSIBILITY);
+    EXPECT_EQ(mouse_event->button_flags(), ui::EF_BACK_MOUSE_BUTTON);
+    waiter.Quit();
+  }));
+
+  fake_service_->RequestSendSyntheticMouseEvent(std::move(mouse_event));
+  waiter.Run();
+}
+
+IN_PROC_BROWSER_TEST_F(AccessibilityServiceClientTest,
+                       SendSyntheticMouseEventExit) {
+  TurnOnAccessibilityService(AssistiveTechnologyType::kSwitchAccess);
+  fake_service_->BindAnotherUserInput();
+
+  auto mouse_event = ax::mojom::SyntheticMouseEvent::New();
+  mouse_event->type = ui::mojom::EventType::MOUSE_EXITED_EVENT;
+  mouse_event->point = gfx::Point(0, 0);
+  mouse_event->mouse_button = ax::mojom::SyntheticMouseEventButton::kForward;
+
+  base::RunLoop waiter;
+
+  TestEventHandler test_event_handler(base::BindLambdaForTesting([&]() {
+    ASSERT_NE(0u, test_event_handler.mouse_events.size());
+    ui::MouseEvent* mouse_event = test_event_handler.mouse_events.back().get();
+    EXPECT_EQ(mouse_event->type(), ui::ET_MOUSE_EXITED);
+    EXPECT_FALSE(mouse_event->flags() & ui::EF_TOUCH_ACCESSIBILITY);
+    EXPECT_EQ(mouse_event->button_flags(), ui::EF_FORWARD_MOUSE_BUTTON);
+    waiter.Quit();
+  }));
+
+  fake_service_->RequestSendSyntheticMouseEvent(std::move(mouse_event));
   waiter.Run();
 }
 

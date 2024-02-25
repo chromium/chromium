@@ -18,6 +18,4 @@ void FakeModelTypeConnector::ConnectDataType(
 
 void FakeModelTypeConnector::DisconnectDataType(ModelType type) {}
 
-void FakeModelTypeConnector::SetProxyTabsDatatypeEnabled(bool enabled) {}
-
 }  // namespace syncer

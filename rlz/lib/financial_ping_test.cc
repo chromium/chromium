@@ -39,6 +39,7 @@
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "base/i18n/time_formatting.h"
 #include "chromeos/ash/components/system/factory_ping_embargo_check.h"
 #include "rlz/chromeos/lib/rlz_value_store_chromeos.h"
 #endif
@@ -52,20 +53,8 @@ void RemoveMachineIdFromUrl(std::string* url) {
   url->resize(id_offset);
 }
 
-// Utility function to convert a |base::Time::Exploded| to "yyyy-mm-dd" format.
-std::string ConvertExplodedToRlzEmbargoDate(
-    const base::Time::Exploded& exploded) {
-  std::string rlz_embargo_date = std::to_string(exploded.year);
-  rlz_embargo_date += '-';
-  if (exploded.month < 10)
-    rlz_embargo_date += '0';
-  rlz_embargo_date += std::to_string(exploded.month);
-  rlz_embargo_date += '-';
-  if (exploded.day_of_month < 10)
-    rlz_embargo_date += '0';
-  rlz_embargo_date += std::to_string(exploded.day_of_month);
-
-  return rlz_embargo_date;
+std::string ConvertTimeToRlzEmbargoDate(const base::Time& time) {
+  return base::UnlocalizedTimeFormatWithPattern(time, "yyyy-mm-dd");
 }
 #endif
 
@@ -336,14 +325,10 @@ TEST_F(FinancialPingTest, RlzEmbargoEndDate) {
 
   // Simulate writing a past embargo date to VPD, verify that |IsPingTime|
   // returns true when the embargo date has already passed.
-  base::Time::Exploded exploded;
-  base::Time past_rlz_embargo_date =
-      base::Time::NowFromSystemTime() - base::Days(1);
-  past_rlz_embargo_date.LocalExplode(&exploded);
-  std::string past_rlz_embargo_date_value =
-      ConvertExplodedToRlzEmbargoDate(exploded);
-  statistics_provider_->SetMachineStatistic(ash::system::kRlzEmbargoEndDateKey,
-                                            past_rlz_embargo_date_value);
+  statistics_provider_->SetMachineStatistic(
+      ash::system::kRlzEmbargoEndDateKey,
+      ConvertTimeToRlzEmbargoDate(base::Time::NowFromSystemTime() -
+                                  base::Days(1)));
 
   EXPECT_TRUE(
       rlz_lib::FinancialPing::IsPingTime(rlz_lib::TOOLBAR_NOTIFIER, false));
@@ -351,14 +336,11 @@ TEST_F(FinancialPingTest, RlzEmbargoEndDate) {
   // Simulate writing a future embargo date (less than
   // |kEmbargoEndDateGarbageDateThresholdDays|) to VPD, verify that
   // |IsPingTime| is false.
-  base::Time future_rlz_embargo_date =
-      base::Time::NowFromSystemTime() +
-      ash::system::kEmbargoEndDateGarbageDateThreshold - base::Days(1);
-  future_rlz_embargo_date.LocalExplode(&exploded);
-  std::string future_rlz_embargo_date_value =
-      ConvertExplodedToRlzEmbargoDate(exploded);
-  statistics_provider_->SetMachineStatistic(ash::system::kRlzEmbargoEndDateKey,
-                                            future_rlz_embargo_date_value);
+  statistics_provider_->SetMachineStatistic(
+      ash::system::kRlzEmbargoEndDateKey,
+      ConvertTimeToRlzEmbargoDate(
+          base::Time::NowFromSystemTime() +
+          ash::system::kEmbargoEndDateGarbageDateThreshold - base::Days(1)));
 
   EXPECT_FALSE(
       rlz_lib::FinancialPing::IsPingTime(rlz_lib::TOOLBAR_NOTIFIER, false));
@@ -366,13 +348,11 @@ TEST_F(FinancialPingTest, RlzEmbargoEndDate) {
   // Simulate writing a future embargo date (more than
   // |kEmbargoEndDateGarbageDateThresholdDays|) to VPD, verify that
   // |IsPingTime| is true.
-  future_rlz_embargo_date = base::Time::NowFromSystemTime() +
-                            ash::system::kEmbargoEndDateGarbageDateThreshold +
-                            base::Days(1);
-  future_rlz_embargo_date.LocalExplode(&exploded);
-  future_rlz_embargo_date_value = ConvertExplodedToRlzEmbargoDate(exploded);
-  statistics_provider_->SetMachineStatistic(ash::system::kRlzEmbargoEndDateKey,
-                                            future_rlz_embargo_date_value);
+  statistics_provider_->SetMachineStatistic(
+      ash::system::kRlzEmbargoEndDateKey,
+      ConvertTimeToRlzEmbargoDate(
+          base::Time::NowFromSystemTime() +
+          ash::system::kEmbargoEndDateGarbageDateThreshold + base::Days(1)));
 
   EXPECT_TRUE(
       rlz_lib::FinancialPing::IsPingTime(rlz_lib::TOOLBAR_NOTIFIER, false));

@@ -41,10 +41,8 @@ ShelfLayoutManager* GetShelfLayoutManager() {
 class DragHandleContextualNudgeTest : public ShelfLayoutManagerTestBase {
  public:
   DragHandleContextualNudgeTest() {
-    scoped_feature_list_.InitWithFeatures(
-        {ash::features::kContextualNudges,
-         ash::features::kHideShelfControlsInTabletMode},
-        {});
+    scoped_feature_list_.InitAndEnableFeature(
+        features::kHideShelfControlsInTabletMode);
   }
   ~DragHandleContextualNudgeTest() override = default;
 
@@ -86,7 +84,8 @@ TEST_F(DragHandleContextualNudgeTest, ShowDragHandleNudgeWithTimer) {
   views::Widget* widget = CreateTestWidget();
   widget->Maximize();
   TabletModeControllerTestApi().EnterTabletMode();
-  EXPECT_EQ(ShelfBackgroundType::kInApp, GetShelfWidget()->GetBackgroundType());
+  EXPECT_EQ(ShelfBackgroundType::kInApp,
+            GetShelfLayoutManager()->shelf_background_type());
 
   // The drag handle should be showing but the nudge should not. A timer to show
   // the nudge should be initialized.
@@ -107,7 +106,8 @@ TEST_F(DragHandleContextualNudgeTest, HideDragHandleNudgeHiddenOnMinimize) {
   views::Widget* widget = CreateTestWidget();
   widget->Maximize();
   TabletModeControllerTestApi().EnterTabletMode();
-  EXPECT_EQ(ShelfBackgroundType::kInApp, GetShelfWidget()->GetBackgroundType());
+  EXPECT_EQ(ShelfBackgroundType::kInApp,
+            GetShelfLayoutManager()->shelf_background_type());
 
   // The drag handle and nudge should be showing after the timer fires.
   GetShelfWidget()->GetDragHandle()->fire_show_drag_handle_timer_for_testing();
@@ -129,7 +129,8 @@ TEST_F(DragHandleContextualNudgeTest, DragHandleNudgeHiddenOnClose) {
   views::Widget* widget = CreateTestWidget();
   widget->Maximize();
   TabletModeControllerTestApi().EnterTabletMode();
-  EXPECT_EQ(ShelfBackgroundType::kInApp, GetShelfWidget()->GetBackgroundType());
+  EXPECT_EQ(ShelfBackgroundType::kInApp,
+            GetShelfLayoutManager()->shelf_background_type());
 
   DragHandle* const drag_handle = GetShelfWidget()->GetDragHandle();
 
@@ -152,7 +153,8 @@ TEST_F(DragHandleContextualNudgeTest,
   views::Widget* widget = CreateTestWidget();
   widget->Maximize();
   TabletModeControllerTestApi().EnterTabletMode();
-  EXPECT_EQ(ShelfBackgroundType::kInApp, GetShelfWidget()->GetBackgroundType());
+  EXPECT_EQ(ShelfBackgroundType::kInApp,
+            GetShelfLayoutManager()->shelf_background_type());
 
   ui::ScopedAnimationDurationScaleMode normal_animation_duration(
       ui::ScopedAnimationDurationScaleMode::SLOW_DURATION);
@@ -187,7 +189,8 @@ TEST_F(DragHandleContextualNudgeTest, DoNotShowNudgeWithoutDragHandle) {
   views::Widget* widget = CreateTestWidget();
   widget->Maximize();
   TabletModeControllerTestApi().EnterTabletMode();
-  EXPECT_EQ(ShelfBackgroundType::kInApp, GetShelfWidget()->GetBackgroundType());
+  EXPECT_EQ(ShelfBackgroundType::kInApp,
+            GetShelfLayoutManager()->shelf_background_type());
 
   // Minimizing the widget should hide the drag handle and nudge.
   widget->Minimize();
@@ -203,7 +206,8 @@ TEST_F(DragHandleContextualNudgeTest,
   widget->Maximize();
 
   TabletModeControllerTestApi().EnterTabletMode();
-  EXPECT_EQ(ShelfBackgroundType::kInApp, GetShelfWidget()->GetBackgroundType());
+  EXPECT_EQ(ShelfBackgroundType::kInApp,
+            GetShelfLayoutManager()->shelf_background_type());
   GetShelfWidget()->GetDragHandle()->fire_show_drag_handle_timer_for_testing();
   EXPECT_TRUE(GetShelfWidget()->GetDragHandle()->GetVisible());
   EXPECT_TRUE(
@@ -234,7 +238,8 @@ TEST_F(DragHandleContextualNudgeTest, DragHandleNudgeShownInAppShelf) {
   // maximized window will show the drag nudge immedietly. The drag handle nudge
   // should not be visible yet and the timer to show it should be set.
   TabletModeControllerTestApi().EnterTabletMode();
-  EXPECT_EQ(ShelfBackgroundType::kInApp, GetShelfWidget()->GetBackgroundType());
+  EXPECT_EQ(ShelfBackgroundType::kInApp,
+            GetShelfLayoutManager()->shelf_background_type());
   EXPECT_TRUE(GetShelfWidget()->GetDragHandle()->GetVisible());
   EXPECT_FALSE(
       GetShelfWidget()->GetDragHandle()->gesture_nudge_target_visibility());
@@ -299,7 +304,8 @@ TEST_F(DragHandleContextualNudgeTest, DragHandleNudgeShownOnTap) {
   views::Widget* widget = CreateTestWidget();
   widget->Maximize();
   TabletModeControllerTestApi().EnterTabletMode();
-  EXPECT_EQ(ShelfBackgroundType::kInApp, GetShelfWidget()->GetBackgroundType());
+  EXPECT_EQ(ShelfBackgroundType::kInApp,
+            GetShelfLayoutManager()->shelf_background_type());
   EXPECT_TRUE(GetShelfWidget()->GetDragHandle()->GetVisible());
   EXPECT_FALSE(
       GetShelfWidget()->GetDragHandle()->gesture_nudge_target_visibility());
@@ -828,8 +834,7 @@ TEST_F(DragHandleContextualNudgeTest,
   EnterOverview();
   SplitViewController* split_view_controller =
       SplitViewController::Get(shelf_widget->GetNativeWindow());
-  split_view_controller->SnapWindow(
-      window.get(), SplitViewController::SnapPosition::kPrimary);
+  split_view_controller->SnapWindow(window.get(), SnapPosition::kPrimary);
   EXPECT_TRUE(split_view_controller->InSplitViewMode());
 
   // Tapping the drag handle will not show the drag handle.
@@ -859,8 +864,7 @@ TEST_F(DragHandleContextualNudgeTest, DragHandleNudgeHiddenOnSplitScreen) {
   EnterOverview();
   SplitViewController* split_view_controller =
       SplitViewController::Get(shelf_widget->GetNativeWindow());
-  split_view_controller->SnapWindow(
-      window.get(), SplitViewController::SnapPosition::kPrimary);
+  split_view_controller->SnapWindow(window.get(), SnapPosition::kPrimary);
   EXPECT_TRUE(split_view_controller->InSplitViewMode());
 
   // The drag handle nudge should no longer be visible.
@@ -873,7 +877,8 @@ TEST_P(DragHandleContextualNudgeTestA11yPrefs, HideNudgesForShelfControls) {
   views::Widget* widget = CreateTestWidget();
   widget->Maximize();
   TabletModeControllerTestApi().EnterTabletMode();
-  EXPECT_EQ(ShelfBackgroundType::kInApp, GetShelfWidget()->GetBackgroundType());
+  EXPECT_EQ(ShelfBackgroundType::kInApp,
+            GetShelfLayoutManager()->shelf_background_type());
 
   // The drag handle should be showing but the nudge should not. A timer to show
   // the nudge should be initialized.
@@ -909,7 +914,8 @@ TEST_P(DragHandleContextualNudgeTestA11yPrefs, DisableNudgesForShelfControls) {
   views::Widget* widget = CreateTestWidget();
   widget->Maximize();
   TabletModeControllerTestApi().EnterTabletMode();
-  EXPECT_EQ(ShelfBackgroundType::kInApp, GetShelfWidget()->GetBackgroundType());
+  EXPECT_EQ(ShelfBackgroundType::kInApp,
+            GetShelfLayoutManager()->shelf_background_type());
   // The drag handle should be showing but the nudge should not. A timer to show
   // the nudge should not be initialized because shelf controls are on.
   EXPECT_TRUE(GetShelfWidget()->GetDragHandle()->GetVisible());

@@ -20,7 +20,6 @@
 #include "build/build_config.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/usb/usb_blocklist.h"
 #include "chrome/browser/usb/web_usb_histograms.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/content_settings/core/common/content_settings.h"
@@ -496,8 +495,8 @@ std::u16string UsbChooserContext::GetObjectDisplayName(
   if (!name->empty())
     return base::UTF8ToUTF16(*name);
 
-  absl::optional<int> vendor_id = object.FindInt(kVendorIdKey);
-  absl::optional<int> product_id = object.FindInt(kProductIdKey);
+  std::optional<int> vendor_id = object.FindInt(kVendorIdKey);
+  std::optional<int> product_id = object.FindInt(kProductIdKey);
   DCHECK(vendor_id && product_id);
   return GetDeviceNameFromIds(*vendor_id, *product_id);
 }
@@ -516,8 +515,6 @@ void UsbChooserContext::GrantDevicePermission(
 bool UsbChooserContext::HasDevicePermission(
     const url::Origin& origin,
     const device::mojom::UsbDeviceInfo& device_info) {
-  if (UsbBlocklist::Get().IsExcluded(device_info))
-    return false;
 
   if (usb_policy_allowed_devices_->IsDeviceAllowed(origin, device_info)) {
     return true;

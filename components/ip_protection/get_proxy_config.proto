@@ -1,0 +1,37 @@
+// Copyright 2023 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+// Keep in sync with corresponding messages in :
+// http://google3/privacy/net/common/proto/get_proxy_config.proto
+
+syntax = "proto3";
+
+option optimize_for = LITE_RUNTIME;
+
+package ip_protection;
+
+message GetProxyConfigRequest {
+  // Descriptor of which service is calling this endpoint, eg. chromeipblinding.
+  string service_type = 1;
+}
+
+message GetProxyConfigResponse {
+  reserved 1;
+  reserved 2;
+
+  // Chain of proxies.
+  message ProxyChain {
+    string proxy_a = 1;
+    string proxy_b = 2;
+    // A `chain_id` greater than zero identifies a specific chain, as defined
+    // on the server. A `chain_id` of zero indicates an unidentified chain.
+    // Values less than zero are not allowed. Note that `chain_id` is not
+    // unique: chains with different `proxy_a` or `proxy_b` values may have the
+    // same `chain_id`.
+    int32 chain_id = 3;
+  }
+
+  // Proxy chain each request should be routed through.
+  repeated ProxyChain proxy_chain = 3;
+}

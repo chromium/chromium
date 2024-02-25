@@ -84,8 +84,9 @@ TEST_F(RegistryKeyBackupTest, Swap) {
                                    WorkItem::kWow64Default));
 
   // Now make sure the one we started with is truly empty.
-  EXPECT_EQ(ERROR_SUCCESS, RegKey(test_data_.root_key(), L"", KEY_QUERY_VALUE)
-                               .DeleteKey(destination_path_.c_str()));
+  EXPECT_EQ(ERROR_SUCCESS, RegKey(test_data_.root_key(),
+                                  destination_path_.c_str(), KEY_QUERY_VALUE)
+                               .DeleteKey(L""));
   EXPECT_TRUE(backup.WriteTo(test_data_.root_key(), destination_path_.c_str(),
                              WorkItem::kWow64Default));
   EXPECT_FALSE(

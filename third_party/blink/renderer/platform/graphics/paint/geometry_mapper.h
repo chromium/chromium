@@ -5,18 +5,17 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_GRAPHICS_PAINT_GEOMETRY_MAPPER_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_GRAPHICS_PAINT_GEOMETRY_MAPPER_H_
 
-#include "third_party/abseil-cpp/absl/types/optional.h"
+#include <optional>
+
 #include "third_party/blink/renderer/platform/graphics/overlay_scrollbar_clip_behavior.h"
 #include "third_party/blink/renderer/platform/graphics/paint/float_clip_rect.h"
 #include "third_party/blink/renderer/platform/graphics/paint/property_tree_state.h"
+#include "third_party/blink/renderer/platform/graphics/visual_rect_flags.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "ui/gfx/geometry/rect_f.h"
 #include "ui/gfx/geometry/transform.h"
 
 namespace blink {
-
-// Clips can use gfx::RectF::Intersect or gfx::RectF::InclusiveIntersect.
-enum InclusiveIntersectOrNot { kNonInclusiveIntersect, kInclusiveIntersect };
 
 // GeometryMapper is a helper class for fast computations of transformed and
 // visual rects in different PropertyTreeStates. The design document has a
@@ -142,17 +141,17 @@ class PLATFORM_EXPORT GeometryMapper {
       const PropertyTreeStateOrAlias& ancestor_state,
       FloatClipRect& mapping_rect,
       OverlayScrollbarClipBehavior clip = kIgnoreOverlayScrollbarSize,
-      InclusiveIntersectOrNot intersect = kNonInclusiveIntersect) {
+      VisualRectFlags flags = kDefaultVisualRectFlags) {
     return LocalToAncestorVisualRect(local_state.Unalias(),
                                      ancestor_state.Unalias(), mapping_rect,
-                                     clip, intersect);
+                                     clip, flags);
   }
   static bool LocalToAncestorVisualRect(
       const PropertyTreeState& local_state,
       const PropertyTreeState& ancestor_state,
       FloatClipRect& mapping_rect,
       OverlayScrollbarClipBehavior = kIgnoreOverlayScrollbarSize,
-      InclusiveIntersectOrNot = kNonInclusiveIntersect);
+      VisualRectFlags flags = kDefaultVisualRectFlags);
 
   static bool MightOverlapForCompositing(const gfx::RectF& rect1,
                                          const PropertyTreeState& state1,
@@ -173,7 +172,7 @@ class PLATFORM_EXPORT GeometryMapper {
   //
   // TODO(wangxianzhu): Investigate if this can be integrated into
   // LocalToAncestorVisualRect().
-  static absl::optional<gfx::RectF> VisibilityLimit(
+  static std::optional<gfx::RectF> VisibilityLimit(
       const PropertyTreeState& state);
 
   static void ClearCache();
@@ -199,7 +198,7 @@ class PLATFORM_EXPORT GeometryMapper {
       const ClipPaintPropertyNode& ancestor_clip,
       const TransformPaintPropertyNode& ancestor_transform,
       OverlayScrollbarClipBehavior,
-      InclusiveIntersectOrNot);
+      VisualRectFlags flags = kDefaultVisualRectFlags);
 
   // The return value has the same meaning as that for
   // LocalToAncestorVisualRect.
@@ -208,8 +207,8 @@ class PLATFORM_EXPORT GeometryMapper {
       const PropertyTreeState& local_state,
       const PropertyTreeState& ancestor_state,
       FloatClipRect& mapping_rect,
-      OverlayScrollbarClipBehavior,
-      InclusiveIntersectOrNot);
+      OverlayScrollbarClipBehavior = kIgnoreOverlayScrollbarSize,
+      VisualRectFlags flags = kDefaultVisualRectFlags);
 
   template <ForCompositingOverlap>
   static bool SlowLocalToAncestorVisualRectWithPixelMovingFilters(
@@ -217,7 +216,7 @@ class PLATFORM_EXPORT GeometryMapper {
       const PropertyTreeState& ancestor_state,
       FloatClipRect& mapping_rect,
       OverlayScrollbarClipBehavior,
-      InclusiveIntersectOrNot);
+      VisualRectFlags flags);
 
   static bool MightOverlapForCompositingInternal(
       const PropertyTreeState& common_ancestor,

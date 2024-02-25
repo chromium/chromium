@@ -7,23 +7,28 @@
 
 #include <string>
 
+#include "base/memory/raw_ptr.h"
+#include "base/memory/safe_ref.h"
 #include "extensions/common/extension_id.h"
+#include "extensions/common/mojom/message_port.mojom.h"
 #include "extensions/renderer/api/messaging/gin_port.h"
 #include "extensions/renderer/api/messaging/one_time_message_handler.h"
 #include "extensions/renderer/bindings/api_binding_types.h"
 #include "gin/handle.h"
+#include "mojo/public/cpp/bindings/associated_receiver_set.h"
 #include "v8/include/v8-forward.h"
-
-struct ExtensionMsg_ExternalConnectionInfo;
-struct ExtensionMsg_TabConnectionInfo;
 
 namespace content {
 class RenderFrame;
 }
 
 namespace extensions {
+
+namespace mojom {
 enum class ChannelType;
 enum class SerializationFormat;
+}  // namespace mojom
+
 class NativeExtensionBindingsSystem;
 class ScriptContextSetIterable;
 struct Message;
@@ -78,22 +83,24 @@ class NativeRendererMessagingService : public GinPort::Delegate {
 
   ~NativeRendererMessagingService() override;
 
-  // Checks whether the port exists in the given frame. If it does not, a reply
-  // is sent back to the browser.
-  void ValidateMessagePort(ScriptContextSetIterable* context_set,
-                           const PortId& port_id,
-                           content::RenderFrame* render_frame);
-
+  using ConnectCallback = base::OnceCallback<void(bool success)>;
+  using TabConnectionInfo = mojom::TabConnectionInfo;
+  using ExternalConnectionInfo = mojom::ExternalConnectionInfo;
   // Dispatches the onConnect content script messaging event to some contexts
   // in |context_set|. If |restrict_to_render_frame| is specified, only contexts
   // in that render frame will receive the message.
-  void DispatchOnConnect(ScriptContextSetIterable* context_set,
-                         const PortId& target_port_id,
-                         ChannelType channel_type,
-                         const std::string& channel_name,
-                         const ExtensionMsg_TabConnectionInfo& source,
-                         const ExtensionMsg_ExternalConnectionInfo& info,
-                         content::RenderFrame* restrict_to_render_frame);
+  void DispatchOnConnect(
+      ScriptContextSetIterable* context_set,
+      const PortId& target_port_id,
+      mojom::ChannelType channel_type,
+      const std::string& channel_name,
+      const TabConnectionInfo& tab_info,
+      const ExternalConnectionInfo& external_info,
+      mojo::PendingAssociatedReceiver<extensions::mojom::MessagePort> port,
+      mojo::PendingAssociatedRemote<extensions::mojom::MessagePortHost>
+          port_host,
+      content::RenderFrame* restrict_to_render_frame,
+      ConnectCallback);
 
   // Delivers a message sent using content script messaging to some of the
   // contexts in |bindings_context_set|. If |restrict_to_render_frame| is
@@ -113,7 +120,7 @@ class NativeRendererMessagingService : public GinPort::Delegate {
   gin::Handle<GinPort> Connect(ScriptContext* script_context,
                                const MessageTarget& target,
                                const std::string& name,
-                               SerializationFormat format);
+                               mojom::SerializationFormat format);
 
   // Sends a one-time message, as is used by runtime.sendMessage. Returns a
   // Promise if used in a promise based API call, otherwise returns an empty
@@ -121,7 +128,7 @@ class NativeRendererMessagingService : public GinPort::Delegate {
   v8::Local<v8::Promise> SendOneTimeMessage(
       ScriptContext* script_context,
       const MessageTarget& target,
-      ChannelType channel_type,
+      mojom::ChannelType channel_type,
       const Message& message,
       binding::AsyncResponseType async_type,
       v8::Local<v8::Function> response_callback);
@@ -129,33 +136,55 @@ class NativeRendererMessagingService : public GinPort::Delegate {
   // GinPort::Delegate:
   void PostMessageToPort(v8::Local<v8::Context> context,
                          const PortId& port_id,
-                         int routing_id,
                          std::unique_ptr<Message> message) override;
   void ClosePort(v8::Local<v8::Context> context,
-                 const PortId& port_id,
-                 int routing_id) override;
+                 const PortId& port_id) override;
 
-  gin::Handle<GinPort> CreatePortForTesting(ScriptContext* script_context,
-                                            const std::string& channel_name,
-                                            const PortId& port_id);
+  gin::Handle<GinPort> CreatePortForTesting(
+      ScriptContext* script_context,
+      const std::string& channel_name,
+      const PortId& port_id,
+      mojo::PendingAssociatedRemote<mojom::MessagePort>& message_port_remote,
+      mojo::PendingAssociatedReceiver<mojom::MessagePortHost>&
+          message_port_host_receiver);
   gin::Handle<GinPort> GetPortForTesting(ScriptContext* script_context,
                                          const PortId& port_id);
   bool HasPortForTesting(ScriptContext* script_context, const PortId& port_id);
 
+  void BindPortForTesting(
+      ScriptContext* script_context,
+      const PortId& port_id,
+      mojo::PendingAssociatedRemote<mojom::MessagePort>& message_port_remote,
+      mojo::PendingAssociatedReceiver<mojom::MessagePortHost>&
+          message_port_host_receiver);
+
+  void CloseMessagePort(ScriptContext* script_context,
+                        const PortId& port_id,
+                        bool close_channel);
+  // Returns the associated MessagePortHost. This method asserts that it
+  // exists.
+  mojom::MessagePortHost* GetMessagePortHost(ScriptContext* script_context,
+                                             const PortId& port_id);
+  // Similar to `GetMessagePortHost` but will return null if the port
+  // no longer exists.
+  mojom::MessagePortHost* GetMessagePortHostIfExists(
+      ScriptContext* script_context,
+      const PortId& port_id);
+
  private:
+  class MessagePortScope;
+  class RenderFrameMessagePorts;
+  friend class OneTimeMessageHandlerTest;
+
   // Helpers for the public methods to perform the action in a single
   // ScriptContext.
-  void ValidateMessagePortInContext(const PortId& port_id,
-                                    bool* has_port,
-                                    ScriptContext* script_context);
-  void DispatchOnConnectToScriptContext(
-      const PortId& target_port_id,
-      ChannelType channel_type,
-      const std::string& channel_name,
-      const ExtensionMsg_TabConnectionInfo* source,
-      const ExtensionMsg_ExternalConnectionInfo& info,
-      bool* port_created,
-      ScriptContext* script_context);
+  void DispatchOnConnectToScriptContext(const PortId& target_port_id,
+                                        mojom::ChannelType channel_type,
+                                        const std::string& channel_name,
+                                        const TabConnectionInfo& source,
+                                        const ExternalConnectionInfo& info,
+                                        bool* port_created,
+                                        ScriptContext* script_context);
   void DeliverMessageToScriptContext(const Message& message,
                                      const PortId& target_port_id,
                                      ScriptContext* script_context);
@@ -175,15 +204,14 @@ class NativeRendererMessagingService : public GinPort::Delegate {
                              const PortId& port_id);
 
   // Dispatches the onConnect event to listeners in the given |script_context|.
-  void DispatchOnConnectToListeners(
-      ScriptContext* script_context,
-      const PortId& target_port_id,
-      const ExtensionId& target_extension_id,
-      ChannelType channel_type,
-      const std::string& channel_name,
-      const ExtensionMsg_TabConnectionInfo* source,
-      const ExtensionMsg_ExternalConnectionInfo& info,
-      const std::string& event_name);
+  void DispatchOnConnectToListeners(ScriptContext* script_context,
+                                    const PortId& target_port_id,
+                                    const ExtensionId& target_extension_id,
+                                    mojom::ChannelType channel_type,
+                                    const std::string& channel_name,
+                                    const TabConnectionInfo& source,
+                                    const ExternalConnectionInfo& info,
+                                    const std::string& event_name);
 
   // Dispatches the onMessage event to listeners in the given |script_context|.
   // This will only be called if the context has a port with the given id.
@@ -209,10 +237,15 @@ class NativeRendererMessagingService : public GinPort::Delegate {
   gin::Handle<GinPort> GetPort(ScriptContext* script_context,
                                const PortId& port_id);
 
+  MessagePortScope* GetMessagePortScope(content::RenderFrame* render_frame);
+  base::SafeRef<NativeRendererMessagingService> AsSafeRef();
+
   // The associated bindings system; guaranteed to outlive this object.
-  NativeExtensionBindingsSystem* const bindings_system_;
+  const raw_ptr<NativeExtensionBindingsSystem> bindings_system_;
 
   OneTimeMessageHandler one_time_message_handler_;
+  std::unique_ptr<MessagePortScope> default_scope_;
+  base::WeakPtrFactory<NativeRendererMessagingService> weak_ptr_factory_{this};
 };
 
 }  // namespace extensions

@@ -15,10 +15,10 @@
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/gfx_jni_headers/BitmapHelper_jni.h"
 
-using base::android::AttachCurrentThread;
 using base::android::ConvertUTF8ToJavaString;
-using base::android::ScopedJavaLocalRef;
 using base::android::JavaRef;
+using base::android::ScopedJavaLocalRef;
+using jni_zero::AttachCurrentThread;
 
 namespace gfx {
 namespace {

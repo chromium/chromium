@@ -65,7 +65,7 @@ class PngDecoderState {
   PNGCodec::ColorFormat output_format;
   int output_channels;
 
-  // An incoming SkBitmap to write to. If NULL, we write to output instead.
+  // An incoming SkBitmap to write to. If nullptr, we write to output instead.
   raw_ptr<SkBitmap> bitmap;
 
   // Used during the reading of an SkBitmap. Defaults to true until we see a
@@ -95,7 +95,7 @@ void ConvertRGBARowToSkia(png_structp png_ptr,
 
   PngDecoderState* state =
       static_cast<PngDecoderState*>(png_get_user_transform_ptr(png_ptr));
-  DCHECK(state) << "LibPNG user transform pointer is NULL";
+  DCHECK(state) << "LibPNG user transform pointer is nullptr";
 
   unsigned char* const end = data + row_info->rowbytes;
   for (unsigned char* p = data; p < end; p += channels) {
@@ -113,8 +113,8 @@ void ConvertRGBARowToSkia(png_structp png_ptr,
 // Called when the png header has been read. This code is based on the WebKit
 // PNGImageDecoder
 void DecodeInfoCallback(png_struct* png_ptr, png_info* info_ptr) {
-  PngDecoderState* state = static_cast<PngDecoderState*>(
-      png_get_progressive_ptr(png_ptr));
+  PngDecoderState* state =
+      static_cast<PngDecoderState*>(png_get_progressive_ptr(png_ptr));
 
   int bit_depth, color_type, interlace_type, compression_type;
   int filter_type;
@@ -227,25 +227,27 @@ void DecodeInfoCallback(png_struct* png_ptr, png_info* info_ptr) {
       return;
     }
   } else if (state->output) {
-    state->output->resize(
-        state->width * state->output_channels * state->height);
+    state->output->resize(state->width * state->output_channels *
+                          state->height);
   }
 }
 
-void DecodeRowCallback(png_struct* png_ptr, png_byte* new_row,
-                       png_uint_32 row_num, int pass) {
+void DecodeRowCallback(png_struct* png_ptr,
+                       png_byte* new_row,
+                       png_uint_32 row_num,
+                       int pass) {
   if (!new_row)
     return;  // Interlaced image; row didn't change this pass.
 
-  PngDecoderState* state = static_cast<PngDecoderState*>(
-      png_get_progressive_ptr(png_ptr));
+  PngDecoderState* state =
+      static_cast<PngDecoderState*>(png_get_progressive_ptr(png_ptr));
 
   if (static_cast<int>(row_num) > state->height) {
     NOTREACHED() << "Invalid row";
     return;
   }
 
-  unsigned char* base = NULL;
+  unsigned char* base = nullptr;
   if (state->bitmap)
     base = reinterpret_cast<unsigned char*>(state->bitmap->getAddr32(0, 0));
   else if (state->output)
@@ -256,8 +258,8 @@ void DecodeRowCallback(png_struct* png_ptr, png_byte* new_row,
 }
 
 void DecodeEndCallback(png_struct* png_ptr, png_info* info) {
-  PngDecoderState* state = static_cast<PngDecoderState*>(
-      png_get_progressive_ptr(png_ptr));
+  PngDecoderState* state =
+      static_cast<PngDecoderState*>(png_get_progressive_ptr(png_ptr));
 
   // Mark the image as complete, this will tell the Decode function that we
   // have successfully found the end of the data.
@@ -267,14 +269,13 @@ void DecodeEndCallback(png_struct* png_ptr, png_info* info) {
 // Holds png struct and info ensuring the proper destruction.
 class PngReadStructInfo {
  public:
-  PngReadStructInfo(): png_ptr_(nullptr), info_ptr_(nullptr) {
-  }
+  PngReadStructInfo() : png_ptr_(nullptr), info_ptr_(nullptr) {}
 
   PngReadStructInfo(const PngReadStructInfo&) = delete;
   PngReadStructInfo& operator=(const PngReadStructInfo&) = delete;
 
   ~PngReadStructInfo() {
-    png_destroy_read_struct(&png_ptr_, &info_ptr_, NULL);
+    png_destroy_read_struct(&png_ptr_, &info_ptr_, nullptr);
   }
 
   bool Build(const unsigned char* input, size_t input_size) {
@@ -285,8 +286,8 @@ class PngReadStructInfo {
     if (png_sig_cmp(const_cast<unsigned char*>(input), 0, 8) != 0)
       return false;
 
-    png_ptr_ = png_create_read_struct(
-        PNG_LIBPNG_VER_STRING, NULL, NULL, NULL);
+    png_ptr_ = png_create_read_struct(PNG_LIBPNG_VER_STRING, nullptr, nullptr,
+                                      nullptr);
     if (!png_ptr_)
       return false;
 
@@ -295,27 +296,6 @@ class PngReadStructInfo {
       return false;
     }
     return true;
-  }
-
-  // This field is not a raw_ptr<> because it was filtered by the rewriter for:
-  // #addr-of
-  RAW_PTR_EXCLUSION png_struct* png_ptr_;
-  // This field is not a raw_ptr<> because it was filtered by the rewriter for:
-  // #addr-of
-  RAW_PTR_EXCLUSION png_info* info_ptr_;
-};
-
-// Holds png struct and info ensuring the proper destruction.
-class PngWriteStructInfo {
- public:
-  PngWriteStructInfo() : png_ptr_(nullptr), info_ptr_(nullptr) {
-  }
-
-  PngWriteStructInfo(const PngWriteStructInfo&) = delete;
-  PngWriteStructInfo& operator=(const PngWriteStructInfo&) = delete;
-
-  ~PngWriteStructInfo() {
-    png_destroy_write_struct(&png_ptr_, &info_ptr_);
   }
 
   // This field is not a raw_ptr<> because it was filtered by the rewriter for:
@@ -341,9 +321,12 @@ void LogLibPNGDecodeWarning(png_structp png_ptr, png_const_charp warning_msg) {
 }  // namespace
 
 // static
-bool PNGCodec::Decode(const unsigned char* input, size_t input_size,
-                      ColorFormat format, std::vector<unsigned char>* output,
-                      int* w, int* h) {
+bool PNGCodec::Decode(const unsigned char* input,
+                      size_t input_size,
+                      ColorFormat format,
+                      std::vector<unsigned char>* output,
+                      int* w,
+                      int* h) {
   SCOPED_UMA_HISTOGRAM_TIMER_MICROS("ImageDecoder.Png.UiGfxIntoVector");
 
   PngReadStructInfo si;
@@ -359,13 +342,11 @@ bool PNGCodec::Decode(const unsigned char* input, size_t input_size,
 
   PngDecoderState state(format, output);
 
-  png_set_error_fn(si.png_ptr_, NULL,
-                   LogLibPNGDecodeError, LogLibPNGDecodeWarning);
+  png_set_error_fn(si.png_ptr_, nullptr, LogLibPNGDecodeError,
+                   LogLibPNGDecodeWarning);
   png_set_progressive_read_fn(si.png_ptr_, &state, &DecodeInfoCallback,
                               &DecodeRowCallback, &DecodeEndCallback);
-  png_process_data(si.png_ptr_,
-                   si.info_ptr_,
-                   const_cast<unsigned char*>(input),
+  png_process_data(si.png_ptr_, si.info_ptr_, const_cast<unsigned char*>(input),
                    input_size);
 
   if (!state.done) {
@@ -381,7 +362,8 @@ bool PNGCodec::Decode(const unsigned char* input, size_t input_size,
 }
 
 // static
-bool PNGCodec::Decode(const unsigned char* input, size_t input_size,
+bool PNGCodec::Decode(const unsigned char* input,
+                      size_t input_size,
                       SkBitmap* bitmap) {
   DCHECK(bitmap);
   SCOPED_UMA_HISTOGRAM_TIMER_MICROS("ImageDecoder.Png.UiGfxIntoSkBitmap");
@@ -401,9 +383,7 @@ bool PNGCodec::Decode(const unsigned char* input, size_t input_size,
 
   png_set_progressive_read_fn(si.png_ptr_, &state, &DecodeInfoCallback,
                               &DecodeRowCallback, &DecodeEndCallback);
-  png_process_data(si.png_ptr_,
-                   si.info_ptr_,
-                   const_cast<unsigned char*>(input),
+  png_process_data(si.png_ptr_, si.info_ptr_, const_cast<unsigned char*>(input),
                    input_size);
 
   if (!state.done) {
@@ -411,8 +391,8 @@ bool PNGCodec::Decode(const unsigned char* input, size_t input_size,
   }
 
   // Set the bitmap's opaqueness based on what we saw.
-  bitmap->setAlphaType(state.is_opaque ?
-                       kOpaque_SkAlphaType : kPremul_SkAlphaType);
+  bitmap->setAlphaType(state.is_opaque ? kOpaque_SkAlphaType
+                                       : kPremul_SkAlphaType);
 
   return true;
 }
@@ -555,10 +535,8 @@ bool PNGCodec::FastEncodeBGRASkBitmap(const SkBitmap& input,
 }
 
 PNGCodec::Comment::Comment(const std::string& k, const std::string& t)
-    : key(k), text(t) {
-}
+    : key(k), text(t) {}
 
-PNGCodec::Comment::~Comment() {
-}
+PNGCodec::Comment::~Comment() = default;
 
 }  // namespace gfx

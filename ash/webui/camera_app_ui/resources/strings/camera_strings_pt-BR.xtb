@@ -5,14 +5,13 @@
 <translation id="1076394037877376434">Excluir página <ph name="PAGE_NUMBER" /></translation>
 <translation id="1113173431709655881">Modo da câmera</translation>
 <translation id="1153190633558910465">Grade desativada</translation>
-<translation id="1175958423215084756">Link detectado. <ph name="HOSTNAME" /></translation>
 <translation id="1197694886744716213">Página <ph name="PAGE_NUMBER" /> excluída</translation>
 <translation id="1258009455399840361">Girar 90 graus no sentido horário</translation>
 <translation id="1417314334557041815">Editar página <ph name="INDEX" /></translation>
 <translation id="1467231725790366244">A <ph name="CAMERA" /> foi desconectada.</translation>
 <translation id="1473110567575736769">Timer de 3 segundos</translation>
 <translation id="148783771699678004">Movendo para o canto direito de cima</translation>
-<translation id="1545749641540134597">Ler código QR</translation>
+<translation id="1545749641540134597">Ler QR code</translation>
 <translation id="1560052704389894104">GIF</translation>
 <translation id="1588438908519853928">Normal</translation>
 <translation id="1620510694547887537">Câmera</translation>
@@ -30,7 +29,7 @@
 <translation id="2064538373111010176"><ph name="CAMERA" /> ativa</translation>
 <translation id="2134029355740465625">Configurações de vídeo</translation>
 <translation id="2144806332417375165">Parâmetros de vídeo personalizados</translation>
-<translation id="2175927920773552910">Código QR</translation>
+<translation id="2175927920773552910">QR code</translation>
 <translation id="2244252133441425811">Ativar o seletor de QPS de vídeo</translation>
 <translation id="2271433936731426666">Ativar a síntese do desempenho do vídeo no tamanho original</translation>
 <translation id="2320741269052147773">Movimentar para a esquerda</translation>
@@ -47,6 +46,7 @@
 <translation id="3067436040345934772">Movimentar para a direita</translation>
 <translation id="3081586908890909590">Mudar para gravar vídeo</translation>
 <translation id="313467653172006084">30 QPS</translation>
+<translation id="3158534262962737808">Conectar-se a "<ph name="WIFINAME" />"</translation>
 <translation id="3227137524299004712">Microfone</translation>
 <translation id="3240426699337459095">Link copiado</translation>
 <translation id="3354465018370944241">Configurações de fotos</translation>
@@ -60,14 +60,12 @@
 <translation id="3642192109456033823">Processando vídeo…</translation>
 <translation id="3789724198583203151">Girar 90 graus no sentido anti-horário</translation>
 <translation id="3810838688059735925">Vídeo</translation>
-<translation id="3892148308691398805">Copiar texto</translation>
 <translation id="4060608699153044055">Não é possível gravar porque há pouco espaço de armazenamento no dispositivo. Libere espaço para começar a gravar.</translation>
 <translation id="4061162772429051350"><ph name="MAGAPIXELS_AMOUNT" /> MP</translation>
 <translation id="4118525110028899586">Pausar gravação</translation>
 <translation id="4121305183798804752">Documento detectado</translation>
 <translation id="414641094616694804">Esta câmera não pode mudar de resolução</translation>
 <translation id="4176463684765177261">Desativado</translation>
-<translation id="4269820728363426813">Copiar endereço do link</translation>
 <translation id="428234092390943511">Miniatura da página</translation>
 <translation id="4349714250734879769">Dimensionar frames pelo Chrome</translation>
 <translation id="4383571725254449280">Registros de desempenho de impressão</translation>
@@ -81,14 +79,15 @@
 <translation id="4705093842003735294">Resolução máxima</translation>
 <translation id="4864143361253542638">Lista de páginas digitalizadas</translation>
 <translation id="4890010094662541459">3 x 3</translation>
+<translation id="4892746741161549733">Copiar endereço do link <ph name="URL" /></translation>
 <translation id="491895758387112773">Fazer multistreaming da gravação de vídeo</translation>
 <translation id="495170559598752135">Ações</translation>
 <translation id="4984613436295737187">Quad HD (1440p)</translation>
 <translation id="5034763830503483128">Proporção da foto</translation>
 <translation id="5057360777601936059">Sua câmera está indisponível no momento.
         Verifique se ela está conectada corretamente.</translation>
+<translation id="5157591164390831335">URL detectado.</translation>
 <translation id="5163387177077603948">Movendo para a direita</translation>
-<translation id="5219374179772385066">O modo Time Lapse já está disponível!</translation>
 <translation id="5235304959032763950">16 por 9</translation>
 <translation id="5266635337630551423">Canto superior esquerdo do documento</translation>
 <translation id="5317780077021120954">Salvar</translation>
@@ -114,6 +113,7 @@
 <translation id="6353688143752491039">Agradecemos o feedback sobre o app Câmera.
 
 Caso seu feedback seja sobre a qualidade da imagem ou do vídeo, adicione uma foto ou um vídeo de amostra e descreva o problema. Por exemplo, a foto está escura demais ou não está focando.</translation>
+<translation id="6519884562954018934">Participar do <ph name="WIFINAME" /></translation>
 <translation id="6527303717912515753">Compartilhar</translation>
 <translation id="6617916774429601017">Mostrar todas as resoluções</translation>
 <translation id="6631515515009660915">Espelhamento desativado</translation>
@@ -133,6 +133,7 @@ Caso seu feedback seja sobre a qualidade da imagem ou do vídeo, adicione uma fo
 <translation id="7450541714075000668">Texto copiado</translation>
 <translation id="7488619942230388918">Gravar um GIF</translation>
 <translation id="7557677699350329807">Mudar para a próxima câmera</translation>
+<translation id="7562584071994185503">Copiar texto "<ph name="TEXT" />"</translation>
 <translation id="7607002721634913082">Pausado</translation>
 <translation id="7608223098072244877">4 por 4</translation>
 <translation id="761421184377987513">Movendo para o canto esquerdo de baixo</translation>
@@ -155,10 +156,12 @@ Caso seu feedback seja sobre a qualidade da imagem ou do vídeo, adicione uma fo
 <translation id="8346544573713510785">Dimensionar frames pela HAL da câmera</translation>
 <translation id="8425673304802773841">Inclinar para baixo</translation>
 <translation id="8428213095426709021">Configurações</translation>
+<translation id="8609951387004618906">Abrir <ph name="URL" /></translation>
 <translation id="8629662593426079630">360 p</translation>
 <translation id="8711011893539266636">Alterne o status do microfone. O microfone está desativado</translation>
-<translation id="8730621377337864115">Concluído</translation>
+<translation id="8730621377337864115">Concluir</translation>
 <translation id="8732462232047530626">Visualizar metadados</translation>
+<translation id="874854738381978209">Rede Wi-Fi detectada.</translation>
 <translation id="8815966864175525708">Mudar para fotografar no modo retrato</translation>
 <translation id="8828441885228359828">Retomar gravação</translation>
 <translation id="8870695351537079478">Não foi possível começar a gravação</translation>

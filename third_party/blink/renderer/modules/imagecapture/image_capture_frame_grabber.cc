@@ -4,8 +4,11 @@
 
 #include "third_party/blink/renderer/modules/imagecapture/image_capture_frame_grabber.h"
 
+#include "base/synchronization/lock.h"
 #include "base/task/bind_post_task.h"
 #include "base/task/single_thread_task_runner.h"
+#include "base/thread_annotations.h"
+#include "base/time/time.h"
 #include "cc/paint/skia_paint_canvas.h"
 #include "media/base/video_frame.h"
 #include "media/base/video_types.h"
@@ -17,8 +20,10 @@
 #include "third_party/blink/renderer/platform/graphics/video_frame_image_util.h"
 #include "third_party/blink/renderer/platform/mediastream/media_stream_component.h"
 #include "third_party/blink/renderer/platform/mediastream/media_stream_source.h"
+#include "third_party/blink/renderer/platform/scheduler/public/post_cancellable_task.h"
 #include "third_party/blink/renderer/platform/scheduler/public/post_cross_thread_task.h"
 #include "third_party/blink/renderer/platform/wtf/cross_thread_copier_base.h"
+#include "third_party/blink/renderer/platform/wtf/cross_thread_copier_std.h"
 #include "third_party/blink/renderer/platform/wtf/cross_thread_functional.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
 #include "third_party/blink/renderer/platform/wtf/thread_safe_ref_counted.h"
@@ -62,20 +67,23 @@ class ImageCaptureFrameGrabber::SingleShotFrameHandler
  public:
   using SkImageDeliverCB = WTF::CrossThreadOnceFunction<void(sk_sp<SkImage>)>;
 
-  explicit SingleShotFrameHandler(SkImageDeliverCB deliver_cb)
-      : deliver_cb_(std::move(deliver_cb)) {
+  explicit SingleShotFrameHandler(
+      SkImageDeliverCB deliver_cb,
+      scoped_refptr<base::SingleThreadTaskRunner> task_runner)
+      : deliver_cb_(std::move(deliver_cb)),
+        task_runner_(std::move(task_runner)) {
     DCHECK(deliver_cb_);
   }
 
   SingleShotFrameHandler(const SingleShotFrameHandler&) = delete;
   SingleShotFrameHandler& operator=(const SingleShotFrameHandler&) = delete;
 
+  ~SingleShotFrameHandler();
+
   // Receives a |frame| and converts its pixels into a SkImage via an internal
   // PaintSurface and SkPixmap. Alpha channel, if any, is copied.
   void OnVideoFrameOnIOThread(
-      scoped_refptr<base::SingleThreadTaskRunner> task_runner,
       scoped_refptr<media::VideoFrame> frame,
-      std::vector<scoped_refptr<media::VideoFrame>> scaled_frames,
       base::TimeTicks current_time);
 
  private:
@@ -85,21 +93,32 @@ class ImageCaptureFrameGrabber::SingleShotFrameHandler
   void ConvertAndDeliverFrame(SkImageDeliverCB callback,
                               scoped_refptr<media::VideoFrame> frame);
 
+  base::Lock lock_;
   // Null once the initial frame has been queued for delivery.
-  SkImageDeliverCB deliver_cb_;
+  SkImageDeliverCB deliver_cb_ GUARDED_BY(lock_);
+  scoped_refptr<base::SingleThreadTaskRunner> task_runner_;
 };
 
+ImageCaptureFrameGrabber::SingleShotFrameHandler::~SingleShotFrameHandler() {
+  base::AutoLock locker(lock_);
+  if (deliver_cb_) {
+    // Reject the promise if no frame was received.
+    // Post to `task_runner_` to ensure the promise is always rejected on the
+    // main thread.
+    PostCrossThreadTask(*task_runner_, FROM_HERE,
+                        CrossThreadBindOnce(std::move(deliver_cb_), nullptr));
+  }
+}
+
 void ImageCaptureFrameGrabber::SingleShotFrameHandler::OnVideoFrameOnIOThread(
-    scoped_refptr<base::SingleThreadTaskRunner> task_runner,
     scoped_refptr<media::VideoFrame> frame,
-    std::vector<scoped_refptr<media::VideoFrame>> /*scaled_frames*/,
     base::TimeTicks /*current_time*/) {
+  base::AutoLock locker(lock_);
   if (!deliver_cb_)
     return;
 
-  // Scaled video frames are not used by ImageCaptureFrameGrabber.
   PostCrossThreadTask(
-      *task_runner, FROM_HERE,
+      *task_runner_, FROM_HERE,
       CrossThreadBindOnce(&SingleShotFrameHandler::ConvertAndDeliverFrame,
                           base::WrapRefCounted(this), std::move(deliver_cb_),
                           std::move(frame)));
@@ -287,9 +306,6 @@ void ImageCaptureFrameGrabber::SingleShotFrameHandler::ConvertAndDeliverFrame(
   std::move(callback).Run(surface->makeImageSnapshot());
 }
 
-ImageCaptureFrameGrabber::ImageCaptureFrameGrabber()
-    : frame_grab_in_progress_(false) {}
-
 ImageCaptureFrameGrabber::~ImageCaptureFrameGrabber() {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
 }
@@ -297,7 +313,8 @@ ImageCaptureFrameGrabber::~ImageCaptureFrameGrabber() {
 void ImageCaptureFrameGrabber::GrabFrame(
     MediaStreamComponent* component,
     std::unique_ptr<ImageCaptureGrabFrameCallbacks> callbacks,
-    scoped_refptr<base::SingleThreadTaskRunner> task_runner) {
+    scoped_refptr<base::SingleThreadTaskRunner> task_runner,
+    base::TimeDelta timeout) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   DCHECK(!!callbacks);
 
@@ -320,14 +337,24 @@ void ImageCaptureFrameGrabber::GrabFrame(
   // is being processed, which might be further held up if UI is busy, see
   // https://crbug.com/623042.
   frame_grab_in_progress_ = true;
+
+  // Fail the grabFrame request if no frame is received for some time to prevent
+  // the promise from hanging indefinitely if no frame is ever produced.
+  timeout_task_handle_ = PostDelayedCancellableTask(
+      *task_runner, FROM_HERE,
+      WTF::BindOnce(&ImageCaptureFrameGrabber::OnTimeout,
+                    weak_factory_.GetWeakPtr()),
+      timeout);
+
   MediaStreamVideoSink::ConnectToTrack(
       WebMediaStreamTrack(component),
       ConvertToBaseRepeatingCallback(CrossThreadBindRepeating(
           &SingleShotFrameHandler::OnVideoFrameOnIOThread,
-          base::MakeRefCounted<SingleShotFrameHandler>(CrossThreadBindOnce(
-              &ImageCaptureFrameGrabber::OnSkImage, weak_factory_.GetWeakPtr(),
-              std::move(scoped_callbacks))),
-          std::move(task_runner))),
+          base::MakeRefCounted<SingleShotFrameHandler>(
+              CrossThreadBindOnce(&ImageCaptureFrameGrabber::OnSkImage,
+                                  weak_factory_.GetWeakPtr(),
+                                  std::move(scoped_callbacks)),
+              std::move(task_runner)))),
       MediaStreamVideoSink::IsSecure::kNo,
       MediaStreamVideoSink::UsesAlpha::kDefault);
 }
@@ -337,12 +364,22 @@ void ImageCaptureFrameGrabber::OnSkImage(
     sk_sp<SkImage> image) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
 
+  timeout_task_handle_.Cancel();
   MediaStreamVideoSink::DisconnectFromTrack();
   frame_grab_in_progress_ = false;
   if (image)
     callbacks.PassCallbacks()->OnSuccess(image);
   else
     callbacks.PassCallbacks()->OnError();
+}
+
+void ImageCaptureFrameGrabber::OnTimeout() {
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+
+  if (frame_grab_in_progress_) {
+    MediaStreamVideoSink::DisconnectFromTrack();
+    frame_grab_in_progress_ = false;
+  }
 }
 
 }  // namespace blink

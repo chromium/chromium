@@ -377,6 +377,12 @@ To run on a single platform, replace the wildcard, e.g.:
   --gtest_filter="All/DumpAccessibilityTreeTest.AccessibilityAriaAtomic/linux"
 ```
 
+To rebaseline all OSes at once, use:
+
+```
+tools/accessibility/rebase_dump_accessibility_tree_test.py
+```
+
 For more information, see the detailed help with:
 ```
   out/Debug/content_browsertests --gtest_help

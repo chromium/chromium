@@ -56,7 +56,12 @@
 
 #if BUILDFLAG(IS_WIN)
 #include "ui/gl/direct_composition_support.h"
-#endif
+
+#if !BUILDFLAG(IS_CHROMEOS)
+#include "services/webnn/public/mojom/webnn_context_provider.mojom.h"
+#endif  // !BUILDFLAG(IS_CHROMEOS)
+
+#endif  // BUILDFLAG(IS_WIN)
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 namespace arc {
@@ -111,8 +116,8 @@ class VIZ_SERVICE_EXPORT GpuServiceImpl
                  scoped_refptr<base::SingleThreadTaskRunner> io_runner,
                  const gpu::GpuFeatureInfo& gpu_feature_info,
                  const gpu::GpuPreferences& gpu_preferences,
-                 const absl::optional<gpu::GPUInfo>& gpu_info_for_hardware_gpu,
-                 const absl::optional<gpu::GpuFeatureInfo>&
+                 const std::optional<gpu::GPUInfo>& gpu_info_for_hardware_gpu,
+                 const std::optional<gpu::GpuFeatureInfo>&
                      gpu_feature_info_for_hardware_gpu,
                  const gfx::GpuExtraInfo& gpu_extra_info,
                  gpu::VulkanImplementation* vulkan_implementation,
@@ -197,6 +202,13 @@ class VIZ_SERVICE_EXPORT GpuServiceImpl
       mojo::PendingReceiver<media::mojom::VideoEncodeAcceleratorProvider>
           vea_provider_receiver) override;
 
+#if !BUILDFLAG(IS_CHROMEOS)
+  void BindWebNNContextProvider(
+      mojo::PendingReceiver<webnn::mojom::WebNNContextProvider>
+          pending_receiver,
+      int client_id) override;
+#endif  // !BUILDFLAG(IS_CHROMEOS)
+
   void BindClientGmbInterface(
       mojo::PendingReceiver<gpu::mojom::ClientGmbInterface> pending_receiver,
       int client_id) override;
@@ -256,8 +268,7 @@ class VIZ_SERVICE_EXPORT GpuServiceImpl
   void DidDestroyChannel(int client_id) override;
   void DidDestroyAllChannels() override;
   void DidDestroyOffscreenContext(const GURL& active_url) override;
-  void DidLoseContext(bool offscreen,
-                      gpu::error::ContextLostReason reason,
+  void DidLoseContext(gpu::error::ContextLostReason reason,
                       const GURL& active_url) override;
   void GetDawnInfo(bool collect_metrics, GetDawnInfoCallback callback) override;
 
@@ -506,6 +517,8 @@ class VIZ_SERVICE_EXPORT GpuServiceImpl
 
   void RemoveGmbClient(int client_id);
 
+  std::string GetShaderPrefixKey();
+
   gpu::webgpu::DawnCachingInterfaceFactory* dawn_caching_interface_factory() {
 #if BUILDFLAG(USE_DAWN) || BUILDFLAG(SKIA_USE_DAWN)
     return dawn_caching_interface_factory_.get();
@@ -543,8 +556,8 @@ class VIZ_SERVICE_EXPORT GpuServiceImpl
 
   // What we would have gotten if we haven't fallen back to SwiftShader or
   // pure software (in the viz case).
-  absl::optional<gpu::GPUInfo> gpu_info_for_hardware_gpu_;
-  absl::optional<gpu::GpuFeatureInfo> gpu_feature_info_for_hardware_gpu_;
+  std::optional<gpu::GPUInfo> gpu_info_for_hardware_gpu_;
+  std::optional<gpu::GpuFeatureInfo> gpu_feature_info_for_hardware_gpu_;
 
   // Information about the GPU process populated on creation.
   gfx::GpuExtraInfo gpu_extra_info_;
@@ -620,6 +633,8 @@ class VIZ_SERVICE_EXPORT GpuServiceImpl
   base::ProcessId host_process_id_ = base::kNullProcessId;
 
   base::RepeatingClosure wake_up_closure_;
+
+  std::string shader_prefix_key_;
 
   base::WeakPtr<GpuServiceImpl> weak_ptr_;
   base::WeakPtrFactory<GpuServiceImpl> weak_ptr_factory_{this};

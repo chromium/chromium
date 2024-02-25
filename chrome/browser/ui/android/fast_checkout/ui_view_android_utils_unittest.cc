@@ -26,11 +26,10 @@ TEST(FastCheckoutUIViewAndroidUtils, CreateFastCheckoutAutofillProfile) {
   EXPECT_EQ(profile.guid(), parsed_profile->guid());
   EXPECT_EQ(profile.language_code(), parsed_profile->language_code());
 
-  const autofill::ServerFieldType types[] = {
+  const autofill::FieldType types[] = {
       autofill::NAME_FULL,
       autofill::NAME_FIRST,
       autofill::NAME_MIDDLE,
-      autofill::NAME_HONORIFIC_PREFIX,
       autofill::NAME_LAST,
       autofill::NAME_LAST_FIRST,
       autofill::NAME_LAST_SECOND,
@@ -47,7 +46,7 @@ TEST(FastCheckoutUIViewAndroidUtils, CreateFastCheckoutAutofillProfile) {
       autofill::PHONE_HOME_WHOLE_NUMBER,
   };
 
-  for (autofill::ServerFieldType type : types) {
+  for (autofill::FieldType type : types) {
     EXPECT_EQ(profile.GetRawInfo(type), parsed_profile->GetRawInfo(type));
   }
 }

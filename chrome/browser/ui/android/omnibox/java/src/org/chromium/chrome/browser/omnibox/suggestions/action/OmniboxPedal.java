@@ -22,12 +22,20 @@ import org.chromium.components.omnibox.action.OmniboxPedalId;
 public class OmniboxPedal extends OmniboxAction {
     @VisibleForTesting
     static final ChipIcon DINO_GAME_ICON = new ChipIcon(R.drawable.action_dino_game, true);
+
     /** The type of the underlying pedal. */
     public final @OmniboxPedalId int pedalId;
 
-    public OmniboxPedal(long nativeInstance, @NonNull String hint,
-            @NonNull String accessibilityHint, @OmniboxPedalId int pedalId) {
-        super(OmniboxActionId.PEDAL, nativeInstance, hint, accessibilityHint,
+    public OmniboxPedal(
+            long nativeInstance,
+            @NonNull String hint,
+            @NonNull String accessibilityHint,
+            @OmniboxPedalId int pedalId) {
+        super(
+                OmniboxActionId.PEDAL,
+                nativeInstance,
+                hint,
+                accessibilityHint,
                 pedalId == OmniboxPedalId.PLAY_CHROME_DINO_GAME ? DINO_GAME_ICON : null);
         this.pedalId = pedalId;
     }
@@ -69,9 +77,8 @@ public class OmniboxPedal extends OmniboxAction {
     }
 
     /**
-     * Cast supplied OmniboxAction to OmniboxPedal.
-     * Requires the supplied input to be a valid instance of an OmniboxPedal whose
-     * actionId is the PEDAL.
+     * Cast supplied OmniboxAction to OmniboxPedal. Requires the supplied input to be a valid
+     * instance of an OmniboxPedal whose actionId is the PEDAL.
      */
     public static @NonNull OmniboxPedal from(@NonNull OmniboxAction action) {
         assert action != null;

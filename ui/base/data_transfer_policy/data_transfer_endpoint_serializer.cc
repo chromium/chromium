@@ -4,6 +4,7 @@
 
 #include "ui/base/data_transfer_policy/data_transfer_endpoint_serializer.h"
 
+#include <optional>
 #include <string>
 
 #include "base/containers/fixed_flat_map.h"
@@ -11,7 +12,6 @@
 #include "base/json/json_writer.h"
 #include "base/values.h"
 #include "build/build_config.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/data_transfer_policy/data_transfer_endpoint.h"
 #include "url/gurl.h"
 
@@ -22,6 +22,7 @@ namespace {
 // JSON Keys
 constexpr char kEndpointTypeKey[] = "endpoint_type";
 constexpr char kUrlKey[] = "url";
+constexpr char kOffTheRecord[] = "off_the_record";
 
 // Endpoint Type Strings
 constexpr char kDefaultString[] = "default";
@@ -63,7 +64,7 @@ std::string EndpointTypeToString(EndpointType type) {
   }
 }
 
-absl::optional<EndpointType> EndpointStringToType(
+std::optional<EndpointType> EndpointStringToType(
     const std::string& endpoint_string) {
   static constexpr auto kEndpointStringToTypeMap =
       base::MakeFixedFlatMap<base::StringPiece, ui::EndpointType>({
@@ -96,8 +97,10 @@ std::string ConvertDataTransferEndpointToJson(const DataTransferEndpoint& dte) {
 
   const GURL* url = dte.GetURL();
 
-  if (url && url->is_valid())
+  if (url && url->is_valid()) {
     encoded_dte.Set(kUrlKey, url->spec());
+    encoded_dte.Set(kOffTheRecord, dte.off_the_record());
+  }
 
   std::string json;
   base::JSONWriter::Write(encoded_dte, &json);
@@ -106,7 +109,7 @@ std::string ConvertDataTransferEndpointToJson(const DataTransferEndpoint& dte) {
 
 std::unique_ptr<DataTransferEndpoint> ConvertJsonToDataTransferEndpoint(
     std::string json) {
-  absl::optional<base::Value> dte_dictionary = base::JSONReader::Read(json);
+  std::optional<base::Value> dte_dictionary = base::JSONReader::Read(json);
 
   if (!dte_dictionary)
     return nullptr;
@@ -118,7 +121,8 @@ std::unique_ptr<DataTransferEndpoint> ConvertJsonToDataTransferEndpoint(
   if (url_string) {
     GURL url = GURL(*url_string);
 
-    return std::make_unique<DataTransferEndpoint>(url);
+    return std::make_unique<DataTransferEndpoint>(
+        url, dte_dictionary->GetDict().FindBool(kOffTheRecord).value_or(false));
   }
 
   if (endpoint_type && *endpoint_type != kUrlString) {

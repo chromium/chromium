@@ -13,13 +13,14 @@
 #include "base/apple/scoped_cftyperef.h"
 #include "base/strings/sys_string_conversions.h"
 #include "base/test/task_environment.h"
+#include "crypto/apple_keychain_v2.h"
+#include "crypto/fake_apple_keychain_v2.h"
 #include "device/base/features.h"
 #include "device/fido/ctap_make_credential_request.h"
 #include "device/fido/fido_constants.h"
 #include "device/fido/fido_test_data.h"
 #include "device/fido/mac/authenticator.h"
 #include "device/fido/mac/authenticator_config.h"
-#include "device/fido/mac/keychain.h"
 #include "device/fido/test_callback_receiver.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -57,13 +58,14 @@ base::apple::ScopedCFTypeRef<CFMutableDictionaryRef> BaseQuery() {
       CFDictionaryCreateMutable(kCFAllocatorDefault, 0,
                                 &kCFTypeDictionaryKeyCallBacks,
                                 &kCFTypeDictionaryValueCallBacks));
-  CFDictionarySetValue(query, kSecClass, kSecClassKey);
+  CFDictionarySetValue(query.get(), kSecClass, kSecClassKey);
   base::apple::ScopedCFTypeRef<CFStringRef> access_group_ref(
       base::SysUTF8ToCFStringRef(kKeychainAccessGroup));
-  CFDictionarySetValue(query, kSecAttrAccessGroup, access_group_ref);
-  CFDictionarySetValue(query, kSecAttrNoLegacy, kCFBooleanTrue);
-  CFDictionarySetValue(query, kSecReturnAttributes, kCFBooleanTrue);
-  CFDictionarySetValue(query, kSecMatchLimit, kSecMatchLimitAll);
+  CFDictionarySetValue(query.get(), kSecAttrAccessGroup,
+                       access_group_ref.get());
+  CFDictionarySetValue(query.get(), kSecAttrNoLegacy, kCFBooleanTrue);
+  CFDictionarySetValue(query.get(), kSecReturnAttributes, kCFBooleanTrue);
+  CFDictionarySetValue(query.get(), kSecMatchLimit, kSecMatchLimitAll);
   return query;
 }
 
@@ -72,8 +74,8 @@ base::apple::ScopedCFTypeRef<CFMutableDictionaryRef> BaseQuery() {
 // occurred.
 base::apple::ScopedCFTypeRef<CFArrayRef> QueryAllCredentials() {
   base::apple::ScopedCFTypeRef<CFArrayRef> items;
-  OSStatus status = Keychain::GetInstance().ItemCopyMatching(
-      BaseQuery(), reinterpret_cast<CFTypeRef*>(items.InitializeInto()));
+  OSStatus status = crypto::AppleKeychainV2::GetInstance().ItemCopyMatching(
+      BaseQuery().get(), reinterpret_cast<CFTypeRef*>(items.InitializeInto()));
   if (status == errSecItemNotFound) {
     // The API returns null, but we should return an empty array instead to
     // distinguish from real errors.
@@ -89,11 +91,12 @@ base::apple::ScopedCFTypeRef<CFArrayRef> QueryAllCredentials() {
 // profiles), or -1 if an error occurs.
 ssize_t KeychainItemCount() {
   base::apple::ScopedCFTypeRef<CFArrayRef> items = QueryAllCredentials();
-  return items ? CFArrayGetCount(items) : -1;
+  return items ? CFArrayGetCount(items.get()) : -1;
 }
 
 bool ResetKeychain() {
-  OSStatus status = Keychain::GetInstance().ItemDelete(BaseQuery());
+  OSStatus status =
+      crypto::AppleKeychainV2::GetInstance().ItemDelete(BaseQuery().get());
   if (status != errSecSuccess && status != errSecItemNotFound) {
     OSSTATUS_DLOG(ERROR, status);
     return false;
@@ -131,7 +134,7 @@ class BrowsingDataDeletionTest : public testing::Test {
 
   bool MakeCredential(TouchIdAuthenticator* authenticator) {
     TestCallbackReceiver<CtapDeviceResponseCode,
-                         absl::optional<AuthenticatorMakeCredentialResponse>>
+                         std::optional<AuthenticatorMakeCredentialResponse>>
         callback_receiver;
     authenticator->MakeCredential(MakeRequest(), MakeCredentialOptions(),
                                   callback_receiver.callback());

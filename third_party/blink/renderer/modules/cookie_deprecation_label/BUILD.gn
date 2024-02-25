@@ -1,0 +1,14 @@
+# Copyright 2023 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//third_party/blink/renderer/modules/modules.gni")
+
+blink_modules_sources("cookie_deprecation_label") {
+  sources = [
+    "cookie_deprecation_label.cc",
+    "cookie_deprecation_label.h",
+  ]
+
+  public_deps = [ "//third_party/blink/public/mojom:mojom_modules_blink" ]
+}

@@ -18,12 +18,14 @@
 #include "base/path_service.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
+#include "base/time/time.h"
 #include "base/values.h"
 #include "base/version.h"
 #include "chrome/common/chrome_paths.h"
 #include "components/component_updater/component_installer.h"
 #include "components/privacy_sandbox/privacy_sandbox_attestations/privacy_sandbox_attestations.h"
 #include "components/privacy_sandbox/privacy_sandbox_features.h"
+#include "components/startup_metric_utils/browser/startup_metric_utils.h"
 #include "components/update_client/update_client.h"
 
 namespace {
@@ -45,22 +47,26 @@ constexpr uint8_t kPrivacySandboxAttestationsPublicKeySHA256[32] = {
 const char kPrivacySandboxAttestationsManifestName[] =
     "Privacy Sandbox Attestations";
 
-// The task priority used to register the component. These two priorities have
+// The task priority used to register the component. Different priorities have
 // different behaviors when the component file exists on disk from previous
 // runs.
 //
-// USER_VISIBLE: The registration happens almost immediately after starting the
-// browser. Since registration checks component installation, the attestations
-// file will be detected at the same time.
-// BEST_EFFORT: The registration does not happen until after a few minutes after
-// starting the browser. The existing attestations file will not be detected
-// until then.
-// See crbug.com/1466862.
+// USER_VISIBLE or USER_BLOCKING: The registration happens almost immediately
+// after starting the browser. Since registration checks component installation,
+// the attestations file will be detected at the same time. BEST_EFFORT: The
+// registration does not happen until after a few minutes after starting the
+// browser. The existing attestations file will not be detected until then. See
+// crbug.com/1466862.
 //
 // By comparing the metrics on how many Privacy Sandbox APIs are rejected
 // because of the attestations map not being ready, we can determine whether it
 // is worth using a higher priority, which will regress the startup time.
 base::TaskPriority GetRegistrationPriority() {
+  if (base::FeatureList::IsEnabled(
+          privacy_sandbox::kPrivacySandboxAttestationsUserBlockingPriority)) {
+    return base::TaskPriority::USER_BLOCKING;
+  }
+
   return base::FeatureList::IsEnabled(
              privacy_sandbox::
                  kPrivacySandboxAttestationsHigherComponentRegistrationPriority)
@@ -124,6 +130,10 @@ void PrivacySandboxAttestationsComponentInstallerPolicy::ComponentReady(
   if (install_dir.empty() || !version.IsValid()) {
     return;
   }
+
+  // Record the time taken for the downloaded attestations file to be detected.
+  startup_metric_utils::GetBrowser().RecordPrivacySandboxAttestationsFirstReady(
+      base::TimeTicks::Now());
 
   VLOG(1) << "Privacy Sandbox Attestations Component ready, version "
           << version.GetString() << " in " << install_dir.value();
@@ -206,8 +216,9 @@ void RegisterPrivacySandboxAttestationsComponent(ComponentUpdateService* cus) {
                                        std::move(install_dir));
               }));
 
-  base::MakeRefCounted<ComponentInstaller>(std::move(policy))
-      ->Register(cus, base::OnceClosure(), GetRegistrationPriority());
+  base::MakeRefCounted<ComponentInstaller>(
+      std::move(policy), /*action_handler=*/nullptr, GetRegistrationPriority())
+      ->Register(cus, base::OnceClosure());
 }
 
 }  // namespace component_updater

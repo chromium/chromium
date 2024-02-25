@@ -28,10 +28,6 @@ class Image;
 
 namespace message_center {
 
-namespace test {
-class NotificationListTest;
-}
-
 class Notification;
 class NotificationDelegate;
 struct NotifierId;
@@ -70,7 +66,8 @@ class MESSAGE_CENTER_EXPORT NotificationList {
 
   // Auto-sorted set. Matches the order in which Notifications are shown in
   // Notification Center.
-  using Notifications = std::set<Notification*, ComparePriorityTimestampSerial>;
+  using Notifications = std::set<raw_ptr<Notification, SetExperimental>,
+                                 ComparePriorityTimestampSerial>;
   using OwnedNotifications =
       std::map<std::unique_ptr<Notification>,
                NotificationState,

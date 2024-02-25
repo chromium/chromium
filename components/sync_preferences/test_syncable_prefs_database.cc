@@ -14,14 +14,14 @@ TestSyncablePrefsDatabase::TestSyncablePrefsDatabase(
 
 TestSyncablePrefsDatabase::~TestSyncablePrefsDatabase() = default;
 
-absl::optional<sync_preferences::SyncablePrefMetadata>
+std::optional<sync_preferences::SyncablePrefMetadata>
 TestSyncablePrefsDatabase::GetSyncablePrefMetadata(
     const std::string& pref_name) const {
   if (auto it = syncable_prefs_map_.find(pref_name);
       it != syncable_prefs_map_.end()) {
     return it->second;
   }
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 }  // namespace sync_preferences

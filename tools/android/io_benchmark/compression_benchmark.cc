@@ -141,7 +141,6 @@ int main(int argc, char** argv) {
   if (argc != 2) {
     LOG(FATAL) << "Usage: " << argv[0] << " <filename>\n\n"
                << "Where the file contains data to compress";
-    return 1;
   }
 
   LOG(INFO) << "Reading the input file";

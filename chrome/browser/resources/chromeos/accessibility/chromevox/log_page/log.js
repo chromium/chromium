@@ -8,10 +8,6 @@
 import {BackgroundBridge} from '../common/background_bridge.js';
 import {LogType, SerializableLog} from '../common/log_types.js';
 
-const FILTER_CLASS = 'log-filter';
-const FILTER_CONTAINER_ID = 'logFilters';
-const LOG_LIST_ID = 'logList';
-
 /** Class to manage the log page. */
 export class LogPage {
   constructor() {
@@ -19,6 +15,9 @@ export class LogPage {
   }
 
   static async init() {
+    if (LogPage.instance) {
+      throw new Error('LogPage can only be initiated once.');
+    }
     LogPage.instance = new LogPage();
     await LogPage.instance.update();
   }
@@ -28,29 +27,29 @@ export class LogPage {
    * @private
    */
   addLogToPage_(log) {
-    const div = document.getElementById(LOG_LIST_ID);
-    const p = document.createElement('p');
+    const div = document.getElementById(IdName.LIST);
+    const p = document.createElement(ElementName.PARAGRAPH);
 
-    const typeName = document.createElement('span');
+    const typeName = document.createElement(ElementName.SPAN);
     typeName.textContent = log.logType;
-    typeName.className = 'log-type-tag';
+    typeName.className = ClassName.TYPE;
     p.appendChild(typeName);
 
-    const timeStamp = document.createElement('span');
+    const timeStamp = document.createElement(ElementName.SPAN);
     timeStamp.textContent = this.formatTimeStamp_(log.date);
-    timeStamp.className = 'log-time-tag';
+    timeStamp.className = ClassName.TIME;
     p.appendChild(timeStamp);
 
     /** Add hide tree button when logType is tree. */
     if (log.logType === LogType.TREE) {
-      const toggle = document.createElement('label');
-      const toggleCheckbox = document.createElement('input');
-      toggleCheckbox.type = 'checkbox';
+      const toggle = document.createElement(ElementName.LABEL);
+      const toggleCheckbox = document.createElement(ElementName.INPUT);
+      toggleCheckbox.type = InputType.CHECKBOX;
       toggleCheckbox.checked = true;
       toggleCheckbox.onclick = event => textWrapper.hidden =
           !event.target.checked;
 
-      const toggleText = document.createElement('span');
+      const toggleText = document.createElement(ElementName.SPAN);
       toggleText.textContent = 'show tree';
       toggle.appendChild(toggleCheckbox);
       toggle.appendChild(toggleText);
@@ -58,9 +57,9 @@ export class LogPage {
     }
 
     /** textWrapper should be in block scope, not function scope. */
-    const textWrapper = document.createElement('pre');
+    const textWrapper = document.createElement(ElementName.PRE);
     textWrapper.textContent = log.value;
-    textWrapper.className = 'log-text';
+    textWrapper.className = ClassName.TEXT;
     p.appendChild(textWrapper);
 
     div.appendChild(p);
@@ -81,20 +80,20 @@ export class LogPage {
    * @private
    */
   createFilterCheckbox_(type, checked) {
-    const label = document.createElement('label');
-    const input = document.createElement('input');
+    const label = document.createElement(ElementName.LABEL);
+    const input = document.createElement(ElementName.INPUT);
     input.id = this.checkboxId_(type);
-    input.type = 'checkbox';
-    input.classList.add(FILTER_CLASS);
+    input.type = InputType.CHECKBOX;
+    input.classList.add(ClassName.FILTER);
     input.checked = checked;
-    input.addEventListener('click', () => this.updateUrlParams_());
+    input.addEventListener(EventType.CLICK, () => this.updateUrlParams_());
     label.appendChild(input);
 
-    const span = document.createElement('span');
+    const span = document.createElement(ElementName.SPAN);
     span.textContent = type;
     label.appendChild(span);
 
-    document.getElementById(FILTER_CONTAINER_ID).appendChild(label);
+    document.getElementById(IdName.FILTER).appendChild(label);
   }
 
   /** @private */
@@ -120,10 +119,10 @@ export class LogPage {
       this.createFilterCheckbox_(type, enabled);
     }
 
-    const clearLogButton = document.getElementById('clearLog');
+    const clearLogButton = document.getElementById(IdName.CLEAR);
     clearLogButton.onclick = () => this.onClear_();
 
-    const saveLogButton = document.getElementById('saveLog');
+    const saveLogButton = document.getElementById(IdName.SAVE);
     saveLogButton.onclick = event => this.onSave_(event);
   }
 
@@ -141,9 +140,9 @@ export class LogPage {
    */
   logToString_(log) {
     const logText = [];
-    logText.push(log.querySelector('.log-type-tag').textContent);
-    logText.push(log.querySelector('.log-time-tag').textContent);
-    logText.push(log.querySelector('.log-text').textContent);
+    logText.push(log.querySelector(`.${ClassName.TYPE}`).textContent);
+    logText.push(log.querySelector(`.${ClassName.TIME}`).textContent);
+    logText.push(log.querySelector(`.${ClassName.TEXT}`).textContent);
     return logText.join(' ');
   }
 
@@ -161,12 +160,13 @@ export class LogPage {
    */
   onSave_(event) {
     let outputText = '';
-    const logs = document.querySelectorAll('#logList p');
+    const logs =
+        document.querySelectorAll(`#${IdName.LIST} ${ElementName.PARAGRAPH}`);
     for (const log of logs) {
       outputText += this.logToString_(log) + '\n';
     }
 
-    const a = document.createElement('a');
+    const a = document.createElement(ElementName.ANCHOR);
     a.download = this.getDownloadFileName_();
     a.href = 'data:text/plain; charset=utf-8,' + encodeURI(outputText);
     a.click();
@@ -219,29 +219,43 @@ export class LogPage {
   }
 }
 
-/**
- * @param {!LogType} type
- * @return {string}
- */
-function checkboxId(type) {
-  return type + 'Filter';
-}
-/**
- * @param {string} id
- * @return {!LogType}
- */
-function logTypeFromId(id) {
-  const type = id.slice(0, -6);
-  if (!Object.values(LogType).includes(type)) {
-    throw new Error('Log page checkbox IDs must be a LogType + "Filter"');
-  }
-  return /** @type {!LogType} */ (type);
-}
-
-
-document.addEventListener('DOMContentLoaded', async function() {
-  await LogPage.init();
-}, false);
-
 /** @type {LogPage} */
 LogPage.instance;
+
+// Local to module.
+
+/** @enum {string} */
+const ClassName = {
+  FILTER: 'log-filter',
+  TEXT: 'log-text',
+  TIME: 'log-time-tag',
+  TYPE: 'log-type-tag',
+};
+
+/** @enum {string} */
+const ElementName = {
+  ANCHOR: 'a',
+  INPUT: 'input',
+  LABEL: 'label',
+  PARAGRAPH: 'p',
+  PRE: 'pre',
+  SPAN: 'span',
+};
+
+/** @enum {string} */
+const EventType = {
+  CLICK: 'click',
+};
+
+/** @enum {string} */
+const IdName = {
+  CLEAR: 'clearLog',
+  FILTER: 'logFilters',
+  LIST: 'logList',
+  SAVE: 'saveLog',
+};
+
+/** @enum {string} */
+const InputType = {
+  CHECKBOX: 'checkbox',
+};

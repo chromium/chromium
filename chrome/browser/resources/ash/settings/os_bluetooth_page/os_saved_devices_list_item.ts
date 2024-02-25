@@ -10,14 +10,14 @@
 
 import '../settings_shared.css.js';
 import '../os_settings_icons.html.js';
-import 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.js';
-import 'chrome://resources/cr_elements/cr_action_menu/cr_action_menu.js';
+import 'chrome://resources/ash/common/cr_elements/cr_icon_button/cr_icon_button.js';
+import 'chrome://resources/ash/common/cr_elements/cr_action_menu/cr_action_menu.js';
 
 import {FastPairSavedDevicesUiEvent, recordSavedDevicesUiEventMetrics} from 'chrome://resources/ash/common/bluetooth/bluetooth_metrics_utils.js';
-import {CrActionMenuElement} from 'chrome://resources/cr_elements/cr_action_menu/cr_action_menu.js';
-import {FocusRowMixin} from 'chrome://resources/cr_elements/focus_row_mixin.js';
-import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
-import {WebUiListenerMixin} from 'chrome://resources/cr_elements/web_ui_listener_mixin.js';
+import {CrActionMenuElement} from 'chrome://resources/ash/common/cr_elements/cr_action_menu/cr_action_menu.js';
+import {FocusRowMixin} from 'chrome://resources/ash/common/cr_elements/focus_row_mixin.js';
+import {WebUiListenerMixin} from 'chrome://resources/ash/common/cr_elements/web_ui_listener_mixin.js';
+import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {getTemplate} from './os_saved_devices_list_item.html.js';
@@ -30,7 +30,7 @@ interface SettingsSavedDevicesListItemElement {
 }
 
 const SettingsSavedDevicesListItemElementBase =
-    FocusRowMixin(WebUiListenerMixin(I18nMixin(PolymerElement)));
+    FocusRowMixin(WebUiListenerMixin(PolymerElement));
 
 class SettingsSavedDevicesListItemElement extends
     SettingsSavedDevicesListItemElementBase {
@@ -69,7 +69,7 @@ class SettingsSavedDevicesListItemElement extends
   listSize: number;
   private shouldShowRemoveSavedDeviceDialog_: boolean;
 
-  private getDeviceName_(device: FastPairSavedDevice): string {
+  private getDeviceNameUnsafe_(device: FastPairSavedDevice): string {
     return device.name;
   }
 
@@ -95,15 +95,16 @@ class SettingsSavedDevicesListItemElement extends
   }
 
   private getAriaLabel_(device: FastPairSavedDevice): string {
-    const deviceName = this.getDeviceName_(device);
-    return this.i18n(
+    const deviceName = this.getDeviceNameUnsafe_(device);
+    return loadTimeData.getStringF(
         'savedDeviceItemA11yLabel', this.itemIndex + 1, this.listSize,
         deviceName);
   }
 
   private getSubpageButtonA11yLabel_(device: FastPairSavedDevice): string {
-    const deviceName = this.getDeviceName_(device);
-    return this.i18n('savedDeviceItemButtonA11yLabel', deviceName);
+    const deviceName = this.getDeviceNameUnsafe_(device);
+    return loadTimeData.getStringF(
+        'savedDeviceItemButtonA11yLabel', deviceName);
   }
 }
 

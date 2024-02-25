@@ -12,6 +12,7 @@
 #include "content/browser/file_system_access/file_system_access_watcher_manager.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/remote.h"
+#include "storage/browser/file_system/file_system_url.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
 #include "third_party/blink/public/mojom/file_system_access/file_system_access_observer.mojom.h"
 
@@ -42,6 +43,8 @@ class FileSystemAccessObserverObservation {
   FileSystemAccessObserverObservation& operator=(
       FileSystemAccessObserverObservation const&) = delete;
 
+  const storage::FileSystemURL& handle_url() const;
+
  private:
   void OnReceiverDisconnect();
 
@@ -53,7 +56,7 @@ class FileSystemAccessObserverObservation {
   SEQUENCE_CHECKER(sequence_checker_);
 
   // The host which owns this instance.
-  const raw_ptr<FileSystemAccessObserverHost> host_;
+  const raw_ptr<FileSystemAccessObserverHost> host_ = nullptr;
 
   // The `FileSystemHandle` being observed.
   const absl::variant<std::unique_ptr<FileSystemAccessDirectoryHandleImpl>,

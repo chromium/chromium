@@ -10,6 +10,7 @@ source_set("web_state") {
     ":web_state_impl_header",
     "//base",
     "//build:blink_buildflags",
+    "//components/security_state/core",
     "//ios/third_party/webkit",
     "//ios/web/common",
     "//ios/web/js_messaging",
@@ -48,6 +49,7 @@ source_set("web_state") {
     "web_state_delegate.mm",
     "web_state_delegate_bridge.mm",
     "web_state_factory.mm",
+    "web_state_id.cc",
     "web_state_impl.mm",
     "web_state_impl_realized_web_state.h",
     "web_state_impl_realized_web_state.mm",
@@ -70,18 +72,6 @@ source_set("web_state_impl_header") {
   ]
 
   sources = [ "web_state_impl.h" ]
-}
-
-source_set("page_viewport_state") {
-  deps = [
-    "//base",
-    "//net",
-  ]
-
-  sources = [
-    "page_viewport_state.h",
-    "page_viewport_state.mm",
-  ]
 }
 
 source_set("web_view_internal_creation_util") {

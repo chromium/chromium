@@ -844,7 +844,6 @@ void PropertyTreeBuilderContext::BuildPropertyTrees() {
 
   DataForRecursion data_for_recursion;
   data_for_recursion.transform_tree_parent = kInvalidPropertyNodeId;
-  data_for_recursion.clip_tree_parent = kRootPropertyNodeId;
   data_for_recursion.effect_tree_parent = kInvalidPropertyNodeId;
   data_for_recursion.scroll_tree_parent = kRootPropertyNodeId;
   data_for_recursion.closest_ancestor_with_cached_render_surface =

@@ -194,14 +194,20 @@ std::unique_ptr<Background> CreateRoundedRectBackground(
     SkColor color,
     float radius,
     int for_border_thickness) {
-  return std::make_unique<RoundedRectBackground>(
-      color, gfx::RoundedCornersF{radius}, for_border_thickness);
+  return CreateRoundedRectBackground(color, gfx::RoundedCornersF{radius},
+                                     for_border_thickness);
 }
 
 std::unique_ptr<Background> CreateRoundedRectBackground(
     SkColor color,
     const gfx::RoundedCornersF& radii,
     int for_border_thickness) {
+  // If the radii is not set, fallback to SolidBackground since it results in
+  // more efficient tiling by cc. See crbug.com/1464128.
+  if (radii.IsEmpty() && for_border_thickness == 0) {
+    return CreateSolidBackground(color);
+  }
+
   return std::make_unique<RoundedRectBackground>(color, radii,
                                                  for_border_thickness);
 }
@@ -210,7 +216,7 @@ std::unique_ptr<Background> CreateThemedRoundedRectBackground(
     ui::ColorId color_id,
     float radius,
     int for_border_thickness) {
-  return std::make_unique<ThemedRoundedRectBackground>(
+  return CreateThemedRoundedRectBackground(
       color_id, gfx::RoundedCornersF{radius}, for_border_thickness);
 }
 
@@ -219,7 +225,7 @@ std::unique_ptr<Background> CreateThemedRoundedRectBackground(
     float top_radius,
     float bottom_radius,
     int for_border_thickness) {
-  return std::make_unique<ThemedRoundedRectBackground>(
+  return CreateThemedRoundedRectBackground(
       color_id,
       gfx::RoundedCornersF{top_radius, top_radius, bottom_radius,
                            bottom_radius},
@@ -230,6 +236,12 @@ std::unique_ptr<Background> CreateThemedRoundedRectBackground(
     ui::ColorId color_id,
     const gfx::RoundedCornersF& radii,
     int for_border_thickness) {
+  // If the radii is not set, fallback to SolidBackground since it results in
+  // more efficient tiling by cc. See crbug.com/1464128.
+  if (radii.IsEmpty() && for_border_thickness == 0) {
+    return CreateThemedSolidBackground(color_id);
+  }
+
   return std::make_unique<ThemedRoundedRectBackground>(color_id, radii,
                                                        for_border_thickness);
 }

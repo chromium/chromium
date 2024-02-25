@@ -243,26 +243,22 @@ bool HostDrmDevice::GpuSetHDCPState(
   return true;
 }
 
-bool HostDrmDevice::GpuSetColorMatrix(int64_t display_id,
-                                      const std::vector<float>& color_matrix) {
-  DCHECK_CALLED_ON_VALID_THREAD(on_ui_thread_);
-  if (!IsConnected())
-    return false;
-
-  drm_device_->SetColorMatrix(display_id, color_matrix);
-  return true;
+void HostDrmDevice::GpuSetColorTemperatureAdjustment(
+    int64_t display_id,
+    const display::ColorTemperatureAdjustment& cta) {
+  if (!IsConnected()) {
+    return;
+  }
+  drm_device_->SetColorTemperatureAdjustment(display_id, cta);
 }
 
-bool HostDrmDevice::GpuSetGammaCorrection(
+void HostDrmDevice::GpuSetGammaAdjustment(
     int64_t display_id,
-    const std::vector<display::GammaRampRGBEntry>& degamma_lut,
-    const std::vector<display::GammaRampRGBEntry>& gamma_lut) {
-  DCHECK_CALLED_ON_VALID_THREAD(on_ui_thread_);
-  if (!IsConnected())
-    return false;
-
-  drm_device_->SetGammaCorrection(display_id, degamma_lut, gamma_lut);
-  return true;
+    const display::GammaAdjustment& adjustment) {
+  if (!IsConnected()) {
+    return;
+  }
+  drm_device_->SetGammaAdjustment(display_id, adjustment);
 }
 
 void HostDrmDevice::GpuSetPrivacyScreen(

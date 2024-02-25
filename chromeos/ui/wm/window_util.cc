@@ -6,11 +6,9 @@
 
 #include "ash/constants/app_types.h"
 #include "chromeos/ui/base/display_util.h"
-#include "chromeos/ui/base/tablet_state.h"
 #include "chromeos/ui/base/window_properties.h"
 #include "chromeos/ui/base/window_state_type.h"
 #include "chromeos/ui/wm/constants.h"
-#include "chromeos/ui/wm/features.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/aura/window.h"
 #include "ui/aura/window_delegate.h"
@@ -38,7 +36,6 @@ gfx::Size GetPreferredFloatedWindowTabletSize(const gfx::Rect& work_area,
 
 bool CanFloatWindowInClamshell(aura::Window* window) {
   CHECK(window);
-  CHECK(features::IsWindowLayoutMenuEnabled());
 
   const gfx::Rect work_area =
       display::Screen::GetScreen()->GetDisplayNearestWindow(window).work_area();
@@ -67,7 +64,6 @@ bool IsLandscapeOrientationForWindow(aura::Window* window) {
 
 gfx::Size GetFloatedWindowTabletSize(aura::Window* window) {
   CHECK(window);
-  CHECK(features::IsWindowLayoutMenuEnabled());
 
   if ((window->GetProperty(aura::client::kResizeBehaviorKey) &
        aura::client::kResizeBehaviorCanResize) == 0) {
@@ -152,8 +148,9 @@ bool CanFloatWindow(aura::Window* window) {
     return false;
   }
 
-  return TabletState::Get()->InTabletMode() ? CanFloatWindowInTablet(window)
-                                            : CanFloatWindowInClamshell(window);
+  return display::Screen::GetScreen()->InTabletMode()
+             ? CanFloatWindowInTablet(window)
+             : CanFloatWindowInClamshell(window);
 }
 
 }  // namespace chromeos::wm

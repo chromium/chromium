@@ -1,0 +1,49 @@
+<!doctype html>
+<html>
+
+<head>
+  <script src="/resources/testharness.js"></script>
+  <script src="/resources/testharnessreport.js"></script>
+  <script>
+    if (window.testRunner) {
+      testRunner.waitUntilDone();
+    }
+  </script>
+</head>
+
+<body />
+<!-- inert script is loaded but does not contribute to LCP -->
+<script src="/lcp-script-observer/resources/inert.js"></script>
+<script src="/lcp-script-observer/resources/async-level2.js"></script>
+<script src="/lcp-script-observer/resources/async-level1.js" async></script>
+<script>
+  assert_implements(window.LargestContentfulPaint, "LargestContentfulPaint is not implemented");
+
+  promise_test(() => {
+    return new Promise((resolve, reject) => {
+      const observer = new PerformanceObserver(list => {
+        const entries = list.getEntries();
+
+        // wait until IMG becomes LCP to remove flakiness.
+        const lcp = entries.find(entry => entry.element.nodeName === 'IMG');
+        if (lcp) resolve(lcp);
+      });
+      observer.observe({type: "largest-contentful-paint", buffered: true});
+
+    }).then(lcp => {
+      // ensure LCP is an image.
+      assert_equals(lcp.element.nodeName, 'IMG');
+
+      // assert LCP image knows its creator scripts.
+      const creators = internals.getCreatorScripts(lcp.element)
+        .map(url => new URL(url).pathname);
+      assert_array_equals(creators, [
+        '/lcp-script-observer/resources/async-level1.js',
+        '/lcp-script-observer/resources/async-level2.js',
+      ]);
+    });
+  }, 'LCP element knows its dependencies, including nested async scripts');
+
+</script>
+
+</html>

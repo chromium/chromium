@@ -9,35 +9,36 @@
 <script src="/resources/testdriver.js"></script>
 <script src="/resources/testdriver-actions.js"></script>
 <script src="/resources/testdriver-vendor.js"></script>
+<script src="/common/get-host-info.sub.js"></script>
+<script src="resources/automatic-beacon-helper.js"></script>
 
 <body>
 <script>
 promise_test(async(t) => {
   const actions = new test_driver.Actions();
   const fencedframe = await attachFencedFrameContext(
-      {generator_api: 'sharedstorage'});
-  const new_url = new URL("resources/dummy.html", location.href);
-  const beacon_data = "This is the beacon data!";
+      {generator_api: 'sharedstorage',
+       origin: get_host_info().HTTPS_REMOTE_ORIGIN});
 
-  await fencedframe.execute((new_url, beacon_data) => {
-    addEventListener("click", (event) => {
-      let beacon_event = {
-        eventType: "reserved.top_navigation",
-        eventData: beacon_data,
-        destination: ["shared-storage-select-url"],
-      }
-      window.fence.setReportEventDataForAutomaticBeacons(beacon_event);
-      window.open(new_url, "_blank");
-    });
-  }, [new_url, beacon_data]);
+  let start_event = {
+    eventType: "reserved.top_navigation_start",
+    eventData: "This is the start beacon data!",
+    destination: ["shared-storage-select-url"],
+  }
+  let commit_event = {
+    eventType: "reserved.top_navigation_commit",
+    eventData: "This is the commit beacon data!",
+    destination: ["shared-storage-select-url"],
+  }
+  await setupAutomaticBeacon(fencedframe, [start_event, commit_event]);
 
   await actions.pointerMove(0, 0, {origin: fencedframe.element})
                .pointerDown()
                .pointerUp()
                .send();
 
-  const received_beacon_data = await nextAutomaticBeacon();
-  assert_equals(received_beacon_data, beacon_data);
+  await verifyBeaconData(start_event.eventType, start_event.eventData);
+  await verifyBeaconData(commit_event.eventType, commit_event.eventData);
 }, 'Set and trigger an automatic beacon in a click handler for SharedStorage');
 
 </script>

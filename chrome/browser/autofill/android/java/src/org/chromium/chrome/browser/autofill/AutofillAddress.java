@@ -15,52 +15,53 @@ import androidx.annotation.Nullable;
 import org.chromium.base.StrictModeContext;
 import org.chromium.components.autofill.AutofillProfile;
 import org.chromium.components.autofill.EditableOption;
-import org.chromium.components.autofill.ServerFieldType;
+import org.chromium.components.autofill.FieldType;
 import org.chromium.payments.mojom.PaymentAddress;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.util.List;
-import java.util.Locale;
 import java.util.regex.Pattern;
 
-/**
- * The locally stored autofill address.
- */
+/** The locally stored autofill address. */
 public class AutofillAddress extends EditableOption {
     /** The pattern for a valid region code. */
     private static final String REGION_CODE_PATTERN = "^[A-Z]{2}$";
 
     // Bit field values are identical to ProfileFields in payments_profile_comparator.h.
-    @IntDef({CompletionStatus.COMPLETE, CompletionStatus.INVALID_RECIPIENT,
-            CompletionStatus.INVALID_PHONE_NUMBER, CompletionStatus.INVALID_ADDRESS})
+    @IntDef({
+        CompletionStatus.COMPLETE,
+        CompletionStatus.INVALID_RECIPIENT,
+        CompletionStatus.INVALID_PHONE_NUMBER,
+        CompletionStatus.INVALID_ADDRESS
+    })
     @Retention(RetentionPolicy.SOURCE)
     public @interface CompletionStatus {
         /** Can be sent to the merchant as-is without editing first. */
         int COMPLETE = 0;
+
         /** The recipient is missing. */
         int INVALID_RECIPIENT = 1 << 0;
+
         /** The phone number is invalid or missing. */
         int INVALID_PHONE_NUMBER = 1 << 1;
+
         /**
          * The address is invalid. For example, missing state or city name. To have consistent bit
          * field values between Android and Desktop 1 << 2 is reserved for email address.
          */
         int INVALID_ADDRESS = 1 << 3;
+
         int MAX_VALUE = 1 << 4;
     }
 
-    @Nullable
-    private static Pattern sRegionCodePattern;
+    @Nullable private static Pattern sRegionCodePattern;
 
     private final Context mContext;
     private AutofillProfile mProfile;
-    @Nullable
-    private String mShippingLabelWithCountry;
-    @Nullable
-    private String mShippingLabelWithoutCountry;
-    @Nullable
-    private String mBillingLabel;
+    @Nullable private String mShippingLabelWithCountry;
+    @Nullable private String mShippingLabelWithoutCountry;
+    @Nullable private String mBillingLabel;
 
     /**
      * Builds the autofill address.
@@ -69,8 +70,12 @@ public class AutofillAddress extends EditableOption {
      * @param profile The autofill profile containing the address information.
      */
     public AutofillAddress(Context context, AutofillProfile profile) {
-        super(profile.getGUID(), profile.getFullName(), profile.getLabel(),
-                profile.getPhoneNumber(), null);
+        super(
+                profile.getGUID(),
+                profile.getFullName(),
+                profile.getLabel(),
+                profile.getPhoneNumber(),
+                null);
         mContext = context;
         mProfile = profile;
         mIsEditable = true;
@@ -109,7 +114,10 @@ public class AutofillAddress extends EditableOption {
         mBillingLabel = null;
 
         mProfile = profile;
-        updateIdentifierAndLabels(mProfile.getGUID(), mProfile.getFullName(), mProfile.getLabel(),
+        updateIdentifierAndLabels(
+                mProfile.getGUID(),
+                mProfile.getFullName(),
+                mProfile.getLabel(),
                 mProfile.getPhoneNumber());
         checkAndUpdateAddressCompleteness();
     }
@@ -148,23 +156,6 @@ public class AutofillAddress extends EditableOption {
         updateSublabel(mProfile.getLabel());
     }
 
-    /*
-     * Gets the billing address label for the profile associated with this address and sets it as
-     * sublabel for this EditableOption.
-     */
-    public void setBillingAddressLabel() {
-        assert mProfile != null;
-
-        if (mBillingLabel == null) {
-            mBillingLabel =
-                    PersonalDataManager.getInstance().getBillingAddressLabelForPaymentRequest(
-                            mProfile);
-        }
-
-        mProfile.setLabel(mBillingLabel);
-        updateSublabel(mProfile.getLabel());
-    }
-
     /**
      * Checks whether this address is complete and updates edit message, edit title and complete
      * status.
@@ -173,12 +164,14 @@ public class AutofillAddress extends EditableOption {
         Pair<Integer, Integer> messageResIds =
                 getEditMessageAndTitleResIds(checkAddressCompletionStatus(mProfile));
 
-        mEditMessage = messageResIds.first.intValue() == 0
-                ? null
-                : mContext.getString(messageResIds.first);
-        mEditTitle = messageResIds.second.intValue() == 0
-                ? null
-                : mContext.getString(messageResIds.second);
+        mEditMessage =
+                messageResIds.first.intValue() == 0
+                        ? null
+                        : mContext.getString(messageResIds.first);
+        mEditTitle =
+                messageResIds.second.intValue() == 0
+                        ? null
+                        : mContext.getString(messageResIds.second);
         mIsComplete = mEditMessage == null;
         mCompletenessScore = calculateCompletenessScore();
     }
@@ -233,8 +226,7 @@ public class AutofillAddress extends EditableOption {
      * @return int      The completion status.
      */
     public static @CompletionStatus int checkAddressCompletionStatus(AutofillProfile profile) {
-        @CompletionStatus
-        int completionStatus = CompletionStatus.COMPLETE;
+        @CompletionStatus int completionStatus = CompletionStatus.COMPLETE;
 
         if (TextUtils.isEmpty(profile.getFullName())) {
             completionStatus |= CompletionStatus.INVALID_RECIPIENT;
@@ -244,16 +236,16 @@ public class AutofillAddress extends EditableOption {
         //                         devices/configurations.
         try (StrictModeContext ignored = StrictModeContext.allowDiskReads()) {
             if (!PhoneNumberUtils.isGlobalPhoneNumber(
-                        PhoneNumberUtils.stripSeparators(profile.getPhoneNumber().toString()))) {
+                    PhoneNumberUtils.stripSeparators(profile.getPhoneNumber().toString()))) {
                 completionStatus |= CompletionStatus.INVALID_PHONE_NUMBER;
             }
         }
 
-        List<Integer> requiredFields = AutofillProfileBridge.getRequiredAddressFields(
-                AutofillAddress.getCountryCode(profile));
+        List<Integer> requiredFields =
+                AutofillProfileBridge.getRequiredAddressFields(
+                        AutofillAddress.getCountryCode(profile));
         for (int fieldId : requiredFields) {
-            if (fieldId == ServerFieldType.NAME_FULL
-                    || fieldId == ServerFieldType.ADDRESS_HOME_COUNTRY) {
+            if (fieldId == FieldType.NAME_FULL || fieldId == FieldType.ADDRESS_HOME_COUNTRY) {
                 continue;
             }
             if (!TextUtils.isEmpty(profile.getInfo(fieldId))) continue;
@@ -270,11 +262,11 @@ public class AutofillAddress extends EditableOption {
             sRegionCodePattern = Pattern.compile(REGION_CODE_PATTERN);
         }
         if (profile == null) {
-            return Locale.getDefault().getCountry();
+            return PersonalDataManager.getInstance().getDefaultCountryCodeForNewAddress();
         }
-        final String countryCode = profile.getInfo(ServerFieldType.ADDRESS_HOME_COUNTRY);
+        final String countryCode = profile.getInfo(FieldType.ADDRESS_HOME_COUNTRY);
         return TextUtils.isEmpty(countryCode) || !sRegionCodePattern.matcher(countryCode).matches()
-                ? Locale.getDefault().getCountry()
+                ? PersonalDataManager.getInstance().getDefaultCountryCodeForNewAddress()
                 : countryCode;
     }
 

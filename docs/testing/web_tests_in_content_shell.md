@@ -150,7 +150,7 @@ vpython3 third_party/blink/tools/run_blink_wptserve.py
 Then start Content Shell with some additional flags:
 
 ```bash
-out/Default/content_shell --enable-experimental-web-platform-features --ignore-certificate-errors --host-resolver-rules="MAP nonexistent.*.test ~NOTFOUND, MAP *.test. 127.0.0.1, MAP *.test 127.0.0.1"
+out/Default/content_shell --enable-experimental-web-platform-features --ignore-certificate-errors --host-resolver-rules="MAP nonexistent.*.test ^NOTFOUND, MAP *.test. 127.0.0.1, MAP *.test 127.0.0.1"
 ```
 
 You are also able to debug the inside of Chromium with a debugger for

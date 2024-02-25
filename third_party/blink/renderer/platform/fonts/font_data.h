@@ -27,23 +27,24 @@
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_FONTS_FONT_DATA_H_
 
 #include "base/memory/scoped_refptr.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/forward.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_uchar.h"
-#include "third_party/blink/renderer/platform/wtf/thread_safe_ref_counted.h"
 
 namespace blink {
 
 class SimpleFontData;
 
-class PLATFORM_EXPORT FontData : public RefCounted<FontData> {
+class PLATFORM_EXPORT FontData : public GarbageCollected<FontData> {
  public:
   FontData() = default;
   FontData(const FontData&) = delete;
   FontData& operator=(const FontData&) = delete;
+  virtual ~FontData() = default;
 
-  virtual ~FontData();
+  virtual void Trace(Visitor*) const {}
 
   virtual const SimpleFontData* FontDataForCharacter(UChar32) const = 0;
   virtual bool IsCustomFont() const = 0;

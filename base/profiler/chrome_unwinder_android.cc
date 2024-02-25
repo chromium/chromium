@@ -96,7 +96,7 @@ UnwindResult ChromeUnwinderAndroid::TryUnwind(RegisterContext* thread_context,
     const uintptr_t instruction_byte_offset_from_text_section_start =
         pc - text_section_start_address_;
 
-    const absl::optional<FunctionOffsetTableIndex> function_offset_table_index =
+    const std::optional<FunctionOffsetTableIndex> function_offset_table_index =
         GetFunctionTableIndexFromInstructionOffset(
             unwind_info_.page_table, unwind_info_.function_table,
             instruction_byte_offset_from_text_section_start);
@@ -299,7 +299,7 @@ uintptr_t GetFirstUnwindInstructionIndexFromFunctionOffsetTableEntry(
   return 0;
 }
 
-const absl::optional<FunctionOffsetTableIndex>
+const std::optional<FunctionOffsetTableIndex>
 GetFunctionTableIndexFromInstructionOffset(
     span<const uint32_t> page_start_instructions,
     span<const FunctionTableEntry> function_offset_table_indices,
@@ -320,7 +320,7 @@ GetFunctionTableIndexFromInstructionOffset(
   // Invalid instruction_byte_offset_from_text_section_start:
   // instruction_byte_offset_from_text_section_start falls after the last page.
   if (page_number >= page_start_instructions.size()) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   const span<const FunctionTableEntry>::iterator function_table_entry_start =

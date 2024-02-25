@@ -5,20 +5,26 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_TIMING_RESPONSIVENESS_METRICS_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_TIMING_RESPONSIVENESS_METRICS_H_
 
+#include <optional>
+
 #include "base/time/time.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
+#include "base/trace_event/typed_macros.h"
+#include "base/tracing/protos/chrome_track_event.pbzero.h"
 #include "third_party/blink/public/common/responsiveness_metrics/user_interaction_latency.h"
 #include "third_party/blink/renderer/core/dom/dom_high_res_time_stamp.h"
 #include "third_party/blink/renderer/core/events/pointer_event.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_map.h"
+#include "third_party/blink/renderer/platform/wtf/vector_traits.h"
+#include "third_party/perfetto/include/perfetto/tracing/event_context.h"
 
 namespace blink {
 
 class PerformanceEventTiming;
 class WindowPerformance;
 
-class ResponsivenessMetrics : public GarbageCollected<ResponsivenessMetrics> {
+class CORE_EXPORT ResponsivenessMetrics
+    : public GarbageCollected<ResponsivenessMetrics> {
  public:
   // Timestamps for input events.
   struct EventTimestamps {
@@ -30,6 +36,48 @@ class ResponsivenessMetrics : public GarbageCollected<ResponsivenessMetrics> {
     // The time when the first display update caused by the input event was
     // performed.
     base::TimeTicks end_time;
+    // The time when the original WebInputEvent was queued on main thread.
+    base::TimeTicks main_thread_queued_time;
+  };
+
+  // Wrapper class to store interactionId, interaction offset, and timestamps
+  // of an entry on a HashMap. It is optimized and used only in the experimental
+  // SetKeyIdAndRecordLatency function. (SetKeyIdAndRecordLatencyExperimental)
+  class InteractionInfo {
+   public:
+    InteractionInfo(uint32_t interaction_id,
+                    uint32_t interaction_offset,
+                    EventTimestamps timestamps)
+        : interaction_id_(interaction_id),
+          interaction_offset_(interaction_offset),
+          timestamps_({timestamps}) {}
+
+    InteractionInfo() = default;
+    ~InteractionInfo() = default;
+    uint32_t GetInteractionId() const { return interaction_id_; }
+    uint32_t GetInteractionOffset() const { return interaction_offset_; }
+    void SetInteractionIdAndOffset(uint32_t interaction_id,
+                                   uint32_t interaction_offset) {
+      interaction_id_ = interaction_id;
+      interaction_offset_ = interaction_offset;
+    }
+    Vector<EventTimestamps> const& GetTimeStamps() { return timestamps_; }
+    bool Empty() { return timestamps_.empty(); }
+    void AddTimestamps(EventTimestamps timestamp) {
+      timestamps_.push_back(timestamp);
+    }
+    void Clear() {
+      interaction_id_ = 0;
+      interaction_offset_ = 0;
+      timestamps_.clear();
+    }
+
+   private:
+    // InteractionId associated with the entry.
+    uint32_t interaction_id_ = 0;
+    uint32_t interaction_offset_ = 0;
+    // Timestamps associated with the entries of the same interaction.
+    Vector<EventTimestamps> timestamps_;
   };
 
   // Wrapper class to store PerformanceEventTiming and timestamps
@@ -48,7 +96,7 @@ class ResponsivenessMetrics : public GarbageCollected<ResponsivenessMetrics> {
     }
     ~KeyboardEntryAndTimestamps() = default;
     void Trace(Visitor*) const;
-    PerformanceEventTiming* GetEntry() const { return entry_; }
+    PerformanceEventTiming* GetEntry() const { return entry_.Get(); }
     EventTimestamps GetTimeStamps() { return timestamps_; }
 
    private:
@@ -75,7 +123,7 @@ class ResponsivenessMetrics : public GarbageCollected<ResponsivenessMetrics> {
     }
     ~PointerEntryAndInfo() = default;
     void Trace(Visitor*) const;
-    PerformanceEventTiming* GetEntry() const { return entry_; }
+    PerformanceEventTiming* GetEntry() const { return entry_.Get(); }
     Vector<EventTimestamps>& GetTimeStamps() { return timestamps_; }
     void SetIsDrag() { is_drag_ = true; }
     bool IsDrag() const { return is_drag_; }
@@ -97,6 +145,9 @@ class ResponsivenessMetrics : public GarbageCollected<ResponsivenessMetrics> {
   explicit ResponsivenessMetrics(WindowPerformance*);
   ~ResponsivenessMetrics();
 
+  // Flush UKM timestamps of composition events for testing.
+  void FlushAllEventsForTesting();
+
   // Stop UKM sampling for testing.
   void StopUkmSamplingForTesting() { sampling_ = false; }
 
@@ -113,32 +164,53 @@ class ResponsivenessMetrics : public GarbageCollected<ResponsivenessMetrics> {
 
   // Assigns interactionId and records interaction latency for keyboard events.
   // We care about input, compositionstart, and compositionend events, so
-  // |key_code| will be absl::nullopt in those cases. Returns true if the entry
+  // |key_code| will be std::nullopt in those cases. Returns true if the entry
   // would be ready to be surfaced in PerformanceObservers and the Performance
   // Timeline.
   bool SetKeyIdAndRecordLatency(PerformanceEventTiming* entry,
-                                absl::optional<int> key_code,
+                                std::optional<int> key_code,
                                 EventTimestamps event_timestamps);
 
-  // Clears some entries in |key_codes_to_remove| if we have stored them for a
-  // while.
-  void MaybeFlushKeyboardEntries(DOMHighResTimeStamp current_time);
+  // Experimental function that in addition to SetKeyIdAndRecordLatency()
+  // exposes interactionId for keypress and keyup/keydown under composition.
+  bool SetKeyIdAndRecordLatencyExperimental(PerformanceEventTiming* entry,
+                                            std::optional<int> key_code,
+                                            EventTimestamps event_timestamps);
 
-  uint64_t GetInteractionCount() const;
+  // Clear keydowns in |key_codes_to_remove| if we have stored them for a while.
+  void FlushExpiredKeydown(DOMHighResTimeStamp end_time);
+  // Clears all keydowns in |key_codes_to_remove| no matter how long we have
+  // stored them.
+  void FlushKeydown();
+
+  uint32_t GetInteractionCount() const;
 
   void Trace(Visitor*) const;
+
+  perfetto::protos::pbzero::WebContentInteraction::Type
+  UserInteractionTypeToProto(UserInteractionType interaction_type) const;
+
+  void EmitInteractionToNextPaintTraceEvent(
+      const ResponsivenessMetrics::EventTimestamps& event,
+      UserInteractionType interaction_type,
+      base::TimeDelta total_event_duration);
+
+  void SetCurrentInteractionEventQueuedTimestamp(base::TimeTicks queued_time);
+  base::TimeTicks CurrentInteractionEventQueuedTimestamp() const;
 
  private:
   // Record UKM for user interaction latencies.
   void RecordUserInteractionUKM(
       LocalDOMWindow* window,
       UserInteractionType interaction_type,
-      const WTF::Vector<ResponsivenessMetrics::EventTimestamps>& timestamps);
+      const WTF::Vector<ResponsivenessMetrics::EventTimestamps>& timestamps,
+      uint32_t interaction_offset);
 
   void RecordDragTapOrClickUKM(LocalDOMWindow*, PointerEntryAndInfo&);
 
   void RecordKeyboardUKM(LocalDOMWindow* window,
-                         const WTF::Vector<EventTimestamps>& event_timestamps);
+                         const WTF::Vector<EventTimestamps>& event_timestamps,
+                         uint32_t interaction_offset);
 
   // Updates the interactionId counter which is used by Event Timing.
   void UpdateInteractionId();
@@ -150,25 +222,67 @@ class ResponsivenessMetrics : public GarbageCollected<ResponsivenessMetrics> {
   // a click.
   void FlushPointerTimerFired(TimerBase*);
 
+  // Method called when |contextmenu_flush_timer_| fires. Ensures that the last
+  // pointerdown or keydown is reported, even if it does not receive a pointerup
+  // nor keyup.
+  void ContextmenuFlushTimerFired(TimerBase*);
+
   // Used to flush any entries in |pointer_id_entry_map_| which already have
   // pointerup. We either know there is no click happening or waited long enough
   // for a click to occur.
-  void FlushPointerMap();
-  void StopTimerAndFlush();
+  void FlushPointerup();
+
+  // Used to flush all entries in |pointer_id_entry_map_|.
+  void FlushPointerdownAndPointerup();
+
+  // Method called when |composition_end_| fires. Ensures that the last
+  // interaction of compositoin events is reported, even if
+  // there is no following keydown.
+  void FlushCompositionEndTimerFired(TimerBase*);
+
+  // Used to flush any entries in |keyboard_sequence_based_timestamps_to_UKM_|
+  void FlushSequenceBasedKeyboardEvents();
 
   void NotifyPointerdown(PerformanceEventTiming* entry) const;
 
+  // Indicates if a key is being held for a sustained period of time
+  bool IsHoldingKey(std::optional<int> key_code);
+
   Member<WindowPerformance> window_performance_;
+
+  // Map from keyCodes to interaction info (ID, offset, and timestamps).
+  HashMap<int, InteractionInfo, IntWithZeroKeyHashTraits<int>>
+      key_code_to_interaction_info_map_;
 
   // Map from keyCodes to keydown entries and keydown timestamps.
   HeapHashMap<int,
               Member<KeyboardEntryAndTimestamps>,
               IntWithZeroKeyHashTraits<int>>
       key_code_entry_map_;
+
   // Whether we are composing or not. When we are not composing, we set
   // interactionId for keydown and keyup events. When we are composing, we set
   // interactionId for input events.
   bool composition_started_ = false;
+
+  enum CompositionState {
+    kNonComposition,
+    kCompositionContinueOngoingInteraction,
+    kCompositionStartNewInteractionOnKeydown,
+    kCompositionStartNewInteractionOnInput,
+    kEndCompositionOnKeydown
+  };
+
+  CompositionState composition_state_ = kNonComposition;
+
+  std::optional<int> last_keydown_keycode_;
+
+  // InteractionInfo storing interactionId, interaction offset, and timestamps
+  // of entries for reporting them to UKM in 3 main cases:
+  //  1) Pressing a key under composition.
+  //  2) Holding a key under composition.
+  //  3) Holding a key under no composition.
+  InteractionInfo sequence_based_keyboard_interaction_info_;
 
   // Map from pointerId to the first pointer event entry seen for the user
   // interaction, and other information.
@@ -177,15 +291,20 @@ class ResponsivenessMetrics : public GarbageCollected<ResponsivenessMetrics> {
               IntWithZeroKeyHashTraits<PointerId>>
       pointer_id_entry_map_;
   HeapTaskRunnerTimer<ResponsivenessMetrics> pointer_flush_timer_;
+  HeapTaskRunnerTimer<ResponsivenessMetrics> contextmenu_flush_timer_;
+  HeapTaskRunnerTimer<ResponsivenessMetrics> composition_end_flush_timer_;
   // The PointerId of the last pointerdown or pointerup event processed. Used to
   // know which interactionId to use for click events. If pointecancel or
   // keyboard events are seen, the value is reset. TODO(crbug.com/1264930):
   // remove this attribute once PointerId for clicks correctly points to the
   // same value as its corresponding pointerdown and pointerup.
-  absl::optional<PointerId> last_pointer_id_;
+  std::optional<PointerId> last_pointer_id_;
+
+  // Queued timestamp of current event being dispatched.
+  base::TimeTicks current_interaction_event_queued_timestamp_;
 
   uint32_t current_interaction_id_for_event_timing_;
-  uint64_t interaction_count_ = 0;
+  uint32_t interaction_count_ = 0;
 
   // Whether to perform UKM sampling.
   bool sampling_ = true;

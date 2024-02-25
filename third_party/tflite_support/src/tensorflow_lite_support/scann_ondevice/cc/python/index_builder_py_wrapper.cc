@@ -15,14 +15,14 @@ limitations under the License.
 
 #include <string>
 
+#include "tensorflow_lite_support/scann_ondevice/cc/core/serialized_searcher.pb.h"
 #include "absl/types/optional.h"  // from @com_google_absl
-#include "absl/types/span.h"      // from @com_google_absl
+#include "absl/types/span.h"  // from @com_google_absl
 #include "pybind11/cast.h"
 #include "pybind11/pybind11.h"
 #include "pybind11/pytypes.h"
-#include "pybind11_abseil/absl_casters.h"    // from @pybind11_abseil
+#include "pybind11_abseil/absl_casters.h"  // from @pybind11_abseil
 #include "pybind11_abseil/status_casters.h"  // from @pybind11_abseil
-#include "tensorflow_lite_support/scann_ondevice/cc/core/serialized_searcher.pb.h"
 #include "tensorflow_lite_support/scann_ondevice/cc/index_builder.h"
 
 namespace pybind11 {

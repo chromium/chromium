@@ -18,21 +18,11 @@ class CORE_EXPORT CompositingReasonFinder {
   STATIC_ONLY(CompositingReasonFinder);
 
  public:
-  // Composited scrolling reason is not included because
-  // PaintLayerScrollableArea needs the result of this function to determine
-  // composited scrolling status.
-  static CompositingReasons DirectReasonsForPaintPropertiesExceptScrolling(
+  static CompositingReasons DirectReasonsForPaintProperties(
       const LayoutObject&,
       const LayoutObject* container_for_fixed_position = nullptr);
 
   static bool ShouldForcePreferCompositingToLCDText(
-      const LayoutObject&,
-      CompositingReasons reasons_except_scrolling);
-
-  // This must be called after
-  // |DirectReasonsForPaintPropertiesExceptForScrolling()| and
-  // |PaintLayerScrollableArea::UpdateNeedsCompositedScrolling()|.
-  static CompositingReasons DirectReasonsForPaintProperties(
       const LayoutObject&,
       CompositingReasons reasons_except_scrolling);
 

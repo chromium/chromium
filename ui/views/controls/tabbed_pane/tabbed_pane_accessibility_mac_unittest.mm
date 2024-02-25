@@ -43,12 +43,7 @@ id GetLegacyA11yAttributeValue(id obj, NSString* attribute) {
 
 class TabbedPaneAccessibilityMacTest : public WidgetTest {
  public:
-  TabbedPaneAccessibilityMacTest() : widget_(nullptr), tabbed_pane_(nullptr) {}
-
-  TabbedPaneAccessibilityMacTest(const TabbedPaneAccessibilityMacTest&) =
-      delete;
-  TabbedPaneAccessibilityMacTest& operator=(
-      const TabbedPaneAccessibilityMacTest&) = delete;
+  static constexpr int kTabbedPaneID = 123;
 
   // WidgetTest:
   void SetUp() override {
@@ -61,21 +56,26 @@ class TabbedPaneAccessibilityMacTest : public WidgetTest {
     // Create two tabs and position/size them.
     tabbed_pane->AddTab(u"Tab 1", std::make_unique<View>());
     tabbed_pane->AddTab(u"Tab 2", std::make_unique<View>());
-    tabbed_pane->Layout();
+    tabbed_pane->DeprecatedLayoutImmediately();
+    tabbed_pane->SetID(kTabbedPaneID);
 
-    tabbed_pane_ =
-        widget_->GetContentsView()->AddChildView(std::move(tabbed_pane));
+    widget_->GetContentsView()->AddChildView(std::move(tabbed_pane));
     widget_->Show();
   }
 
   void TearDown() override {
-    widget_->CloseNow();
+    widget_.ExtractAsDangling()->CloseNow();
     WidgetTest::TearDown();
+  }
+
+  TabbedPane* tabbed_pane() {
+    return static_cast<TabbedPane*>(
+        widget_->GetContentsView()->GetViewByID(kTabbedPaneID));
   }
 
   TabbedPaneTab* GetTabAt(size_t index) {
     return static_cast<TabbedPaneTab*>(
-        tabbed_pane_->tab_strip_->children()[index]);
+        tabbed_pane()->tab_strip_->children()[index]);
   }
 
   id<NSAccessibility> A11yElementAtPoint(const gfx::Point& point) {
@@ -90,8 +90,7 @@ class TabbedPaneAccessibilityMacTest : public WidgetTest {
   }
 
  protected:
-  raw_ptr<Widget, DanglingUntriaged> widget_ = nullptr;
-  raw_ptr<TabbedPane, DanglingUntriaged> tabbed_pane_ = nullptr;
+  raw_ptr<Widget> widget_ = nullptr;
 };
 
 // Test the Tab's a11y information compared to a Cocoa NSTabViewItem.
@@ -118,7 +117,7 @@ TEST_F(TabbedPaneAccessibilityMacTest, AttributesMatchAppKit) {
   // versions of Cocoa by exposing the role description of "tab" even in older
   // versions of macOS. Doing so causes a mismatch between native Cocoa and our
   // tabs.
-  if (base::mac::IsAtLeastOS12()) {
+  if (base::mac::MacOSMajorVersion() >= 12) {
     EXPECT_NSEQ(
         GetLegacyA11yAttributeValue(cocoa_tabs[0],
                                     NSAccessibilityRoleDescriptionAttribute),

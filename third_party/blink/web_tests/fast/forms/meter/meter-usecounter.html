@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<link rel=author href="mailto:dizhangg@chromium.org">
+<script src="../../../resources/testharness.js"></script>
+<script src="../../../resources/testharnessreport.js"></script>
+
+<script>
+window.meterElementHorizontalLtrId = 4849;
+window.meterElementHorizontalRtlId = 4850;
+window.meterElementVerticalLtrId = 4851;
+window.meterElementVerticalRtlId = 4852;
+</script>
+
+<meter></meter>
+<meter style="direction: rtl"></meter>
+<meter style="writing-mode: vertical-lr"></meter>
+<meter style="direction: rtl; writing-mode: vertical-lr"></meter>
+
+<script>
+async function waitForRender() {
+  return new Promise(resolve => requestAnimationFrame(resolve));
+}
+function assertCount(counterId) {
+  assert_true(internals.isUseCounted(document, counterId), `web feature ${counterId} counted`);
+  internals.clearUseCounter(document, counterId);
+}
+promise_test(async () => {
+  await waitForRender();
+  await waitForRender();
+
+  assertCount(meterElementHorizontalLtrId);
+  assertCount(meterElementHorizontalRtlId);
+  assertCount(meterElementVerticalLtrId);
+  assertCount(meterElementVerticalRtlId);
+}, 'Usecounters for meter element are counting per writing-mode and direction');
+</script>

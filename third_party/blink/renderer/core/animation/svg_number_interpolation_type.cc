@@ -24,15 +24,16 @@ SVGPropertyBase* SVGNumberInterpolationType::AppliedSVGValueForTesting(
 InterpolationValue SVGNumberInterpolationType::MaybeConvertNeutral(
     const InterpolationValue&,
     ConversionCheckers&) const {
-  return InterpolationValue(std::make_unique<InterpolableNumber>(0));
+  return InterpolationValue(MakeGarbageCollected<InterpolableNumber>(0));
 }
 
 InterpolationValue SVGNumberInterpolationType::MaybeConvertSVGValue(
     const SVGPropertyBase& svg_value) const {
-  if (svg_value.GetType() != kAnimatedNumber)
+  if (svg_value.GetType() != kAnimatedNumber) {
     return nullptr;
-  return InterpolationValue(
-      std::make_unique<InterpolableNumber>(To<SVGNumber>(svg_value).Value()));
+  }
+  return InterpolationValue(MakeGarbageCollected<InterpolableNumber>(
+      To<SVGNumber>(svg_value).Value()));
 }
 
 SVGPropertyBase* SVGNumberInterpolationType::AppliedSVGValue(

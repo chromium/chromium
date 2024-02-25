@@ -18,6 +18,7 @@
 #include <set>
 #include <utility>
 
+#include "absl/log/absl_check.h"
 #include "absl/memory/memory.h"
 #include "mediapipe/calculators/util/landmarks_refinement_calculator.pb.h"
 #include "mediapipe/framework/api2/node.h"
@@ -25,7 +26,6 @@
 #include "mediapipe/framework/calculator_framework.h"
 #include "mediapipe/framework/port/proto_ns.h"
 #include "mediapipe/framework/port/ret_check.h"
-#include "absl/log/absl_check.h"
 
 namespace mediapipe {
 
@@ -103,7 +103,8 @@ void RefineZ(
           ->set_z(z_average);
     }
   } else {
-    ABSL_CHECK(false) << "Z refinement is either not specified or not supported";
+    ABSL_CHECK(false)
+        << "Z refinement is either not specified or not supported";
   }
 }
 
@@ -136,8 +137,8 @@ class LandmarksRefinementCalculatorImpl
     }
 
     // Validate indexes mapping and get total number of refined landmarks.
-    ASSIGN_OR_RETURN(n_refined_landmarks_,
-                     GetNumberOfRefinedLandmarks(options_.refinement()));
+    MP_ASSIGN_OR_RETURN(n_refined_landmarks_,
+                        GetNumberOfRefinedLandmarks(options_.refinement()));
 
     // Validate that number of refinements and landmark streams is the same.
     RET_CHECK_EQ(kLandmarks(cc).Count(), options_.refinement_size())

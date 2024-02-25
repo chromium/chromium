@@ -8,7 +8,7 @@
 #include "base/check_op.h"
 #include "ui/base/ui_base_jni_headers/TouchDevice_jni.h"
 
-using base::android::AttachCurrentThread;
+using jni_zero::AttachCurrentThread;
 
 namespace ui {
 

@@ -155,7 +155,8 @@ class WebAuthnBrowserTest : public CertVerifierBrowserTest {
   scoped_refptr<device::MockBluetoothAdapter> mock_bluetooth_adapter_ = nullptr;
   device::FidoRequestHandlerBase::ScopedAlwaysAllowBLECalls always_allow_ble_;
   net::EmbeddedTestServer https_server_{net::EmbeddedTestServer::TYPE_HTTPS};
-  base::test::ScopedFeatureList scoped_feature_list_;
+  const base::test::ScopedFeatureList scoped_feature_list{
+      device::kWebAuthnRelatedOrigin};
 };
 
 static constexpr char kGetAssertionCredID1234[] = R"((() => {
@@ -227,9 +228,11 @@ IN_PROC_BROWSER_TEST_F(WebAuthnBrowserTest, ChromeExtensions) {
   WriteFile(temp_dir.GetPath().AppendASCII(kPageFile), kContents,
             sizeof(kContents) - 1);
 
+  static constexpr char kExtensionSite[] = "https://extension-site.com/";
   extensions::ExtensionBuilder builder("test");
   builder.SetPath(temp_dir.GetPath())
       .SetVersion("1.0")
+      .AddPermission(kExtensionSite)
       .SetLocation(extensions::mojom::ManifestLocation::kExternalPolicyDownload)
       .SetManifestKey("web_accessible_resources", std::move(resources));
 
@@ -254,6 +257,46 @@ IN_PROC_BROWSER_TEST_F(WebAuthnBrowserTest, ChromeExtensions) {
       "webauthn: OK",
       content::EvalJs(browser()->tab_strip_model()->GetActiveWebContents(),
                       kGetAssertionCredID1234));
+
+  static constexpr char kMakeCredentialCrossDomainWithHostPerms[] = R"((() => {
+  return navigator.credentials.create({ publicKey: {
+    rp: { id: "extension-site.com", name: "" },
+    user: { id: new Uint8Array([0]), name: "foo", displayName: "" },
+    pubKeyCredParams: [{type: "public-key", alg: -7}],
+    challenge: new Uint8Array([0]),
+    timeout: 10000,
+    userVerification: 'discouraged',
+  }}).then(c => 'webauthn: OK',
+           e => 'error ' + e);
+})())";
+
+  // This should work as the extension has host permissions over the site.
+  EXPECT_EQ(
+      content::EvalJs(browser()->tab_strip_model()->GetActiveWebContents(),
+                      kMakeCredentialCrossDomainWithHostPerms)
+          .ExtractString(),
+      "webauthn: OK");
+
+  static constexpr char kMakeCredentialCrossDomainNoHostPerms[] = R"((() => {
+  return navigator.credentials.create({ publicKey: {
+    rp: { id: "example.com", name: "" },
+    user: { id: new Uint8Array([0]), name: "foo", displayName: "" },
+    pubKeyCredParams: [{type: "public-key", alg: -7}],
+    challenge: new Uint8Array([0]),
+    timeout: 10000,
+    userVerification: 'discouraged',
+  }}).then(c => 'webauthn: OK',
+           e => 'error ' + e);
+})())";
+
+  // This should fail with INVALID_PROTOCOL and never one of the errors from
+  // related-origin processing because extensions don't participate in that
+  // system.
+  EXPECT_THAT(
+      content::EvalJs(browser()->tab_strip_model()->GetActiveWebContents(),
+                      kMakeCredentialCrossDomainNoHostPerms)
+          .ExtractString(),
+      testing::HasSubstr("Public-key credentials are only available to"));
 }
 
 #if BUILDFLAG(IS_WIN)
@@ -336,7 +379,7 @@ class WebAuthnGpmPasskeyTest : public WebAuthnBrowserTest {
    public:
     virtual ~Observer() = default;
 
-    absl::optional<device::FidoRequestHandlerBase::TransportAvailabilityInfo>
+    std::optional<device::FidoRequestHandlerBase::TransportAvailabilityInfo>
     transport_availability_info() {
       return transport_availability_info_;
     }
@@ -373,14 +416,13 @@ class WebAuthnGpmPasskeyTest : public WebAuthnBrowserTest {
         override {}
 
    private:
-    absl::optional<device::FidoRequestHandlerBase::TransportAvailabilityInfo>
+    std::optional<device::FidoRequestHandlerBase::TransportAvailabilityInfo>
         transport_availability_info_;
   };
 
   WebAuthnGpmPasskeyTest() {
     scoped_feature_list_.InitWithFeatures(
-        {device::kWebAuthnListSyncedPasskeys, syncer::kSyncWebauthnCredentials,
-         device::kWebAuthnNewPasskeyUI},
+        {syncer::kSyncWebauthnCredentials, device::kWebAuthnNewPasskeyUI},
         /*disabled_features=*/{});
   }
 
@@ -749,7 +791,7 @@ class WebAuthnCableSecondFactor : public WebAuthnBrowserTest {
     void set_cable_data(
         device::FidoRequestType request_type,
         std::vector<device::CableDiscoveryData> cable_data,
-        const absl::optional<std::array<uint8_t, device::cablev2::kQRKeySize>>&
+        const std::optional<std::array<uint8_t, device::cablev2::kQRKeySize>>&
             qr_generator_key) override {
       parent_->trace() << "SET_CABLE_DATA" << std::endl;
     }
@@ -828,22 +870,22 @@ class WebAuthnCableSecondFactor : public WebAuthnBrowserTest {
    private:
     // PendingDiscovery yields a single virtual authenticator when requested to
     // do so by calling the result of |GetAddAuthenticatorCallback|.
-    class PendingDiscovery : public device::FidoDeviceDiscovery,
-                             public base::SupportsWeakPtr<PendingDiscovery> {
+    class PendingDiscovery final : public device::FidoDeviceDiscovery {
      public:
       explicit PendingDiscovery(device::FidoTransportProtocol transport)
           : FidoDeviceDiscovery(transport) {}
 
       base::RepeatingClosure GetAddAuthenticatorCallback() {
         return base::BindRepeating(&PendingDiscovery::AddAuthenticator,
-                                   AsWeakPtr());
+                                   weak_ptr_factory_.GetWeakPtr());
       }
 
      protected:
       void StartInternal() override {
         base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
             FROM_HERE, base::BindOnce(&PendingDiscovery::NotifyDiscoveryStarted,
-                                      AsWeakPtr(), /*success=*/true));
+                                      weak_ptr_factory_.GetWeakPtr(),
+                                      /*success=*/true));
       }
 
      private:
@@ -859,6 +901,8 @@ class WebAuthnCableSecondFactor : public WebAuthnBrowserTest {
 
         AddDevice(std::make_unique<device::VirtualCtap2Device>(state, config));
       }
+
+      base::WeakPtrFactory<PendingDiscovery> weak_ptr_factory_{this};
     };
 
     const raw_ptr<WebAuthnCableSecondFactor> parent_;

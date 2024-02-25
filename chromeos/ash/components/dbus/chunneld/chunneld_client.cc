@@ -59,14 +59,14 @@ class ChunneldClientImpl : public ChunneldClient {
   void OnDBusProtoResponse(chromeos::DBusMethodCallback<ResponseProto> callback,
                            dbus::Response* dbus_response) {
     if (!dbus_response) {
-      std::move(callback).Run(absl::nullopt);
+      std::move(callback).Run(std::nullopt);
       return;
     }
     ResponseProto reponse_proto;
     dbus::MessageReader reader(dbus_response);
     if (!reader.PopArrayOfBytesAsProto(&reponse_proto)) {
       LOG(ERROR) << "Failed to parse proto from " << dbus_response->GetMember();
-      std::move(callback).Run(absl::nullopt);
+      std::move(callback).Run(std::nullopt);
       return;
     }
     std::move(callback).Run(std::move(reponse_proto));
@@ -88,7 +88,7 @@ class ChunneldClientImpl : public ChunneldClient {
 
   base::ObserverList<Observer> observer_list_;
 
-  raw_ptr<dbus::ObjectProxy, ExperimentalAsh> chunneld_proxy_ = nullptr;
+  raw_ptr<dbus::ObjectProxy> chunneld_proxy_ = nullptr;
 
   // Note: This should remain the last member so it'll be destroyed and
   // invalidate its weak pointers before any other members are destroyed.

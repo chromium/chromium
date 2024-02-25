@@ -87,7 +87,7 @@ class TetherHostResponseRecorder {
   std::vector<std::string> GetDeviceIdsForPref(
       const std::string& pref_name) const;
 
-  raw_ptr<PrefService, ExperimentalAsh> pref_service_;
+  raw_ptr<PrefService> pref_service_;
   base::ObserverList<Observer>::Unchecked observer_list_;
 };
 

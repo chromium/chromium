@@ -10,15 +10,9 @@
 
 namespace blink {
 
-void URLLoaderThrottle::Delegate::SetPriority(net::RequestPriority priority) {}
-void URLLoaderThrottle::Delegate::UpdateDeferredRequestHeaders(
-    const net::HttpRequestHeaders& modified_request_headers,
-    const net::HttpRequestHeaders& modified_cors_exempt_request_headers) {}
 void URLLoaderThrottle::Delegate::UpdateDeferredResponseHead(
     network::mojom::URLResponseHeadPtr new_response_head,
     mojo::ScopedDataPipeConsumerHandle body) {}
-void URLLoaderThrottle::Delegate::PauseReadingBodyFromNet() {}
-void URLLoaderThrottle::Delegate::ResumeReadingBodyFromNet() {}
 
 void URLLoaderThrottle::Delegate::InterceptResponse(
     mojo::PendingRemote<network::mojom::URLLoader> new_loader,
@@ -27,15 +21,6 @@ void URLLoaderThrottle::Delegate::InterceptResponse(
     mojo::PendingReceiver<network::mojom::URLLoaderClient>*
         original_client_receiver,
     mojo::ScopedDataPipeConsumerHandle* body) {
-  NOTIMPLEMENTED();
-}
-
-void URLLoaderThrottle::Delegate::RestartWithFlags(int additional_load_flags) {
-  NOTIMPLEMENTED();
-}
-
-void URLLoaderThrottle::Delegate::RestartWithURLResetAndFlags(
-    int additional_load_flags) {
   NOTIMPLEMENTED();
 }
 
@@ -74,23 +59,18 @@ const char* URLLoaderThrottle::NameForLoggingWillProcessResponse() {
 void URLLoaderThrottle::BeforeWillProcessResponse(
     const GURL& response_url,
     const network::mojom::URLResponseHead& response_head,
-    bool* defer) {}
+    RestartWithURLReset* restart_with_url_reset) {}
 
 void URLLoaderThrottle::BeforeWillRedirectRequest(
     net::RedirectInfo* redirect_info,
     const network::mojom::URLResponseHead& response_head,
-    bool* defer,
+    RestartWithURLReset* restart_with_url_reset,
     std::vector<std::string>* to_be_removed_request_headers,
     net::HttpRequestHeaders* modified_request_headers,
     net::HttpRequestHeaders* modified_cors_exempt_request_headers) {}
 
 void URLLoaderThrottle::WillOnCompleteWithError(
-    const network::URLLoaderCompletionStatus& status,
-    bool* defer) {}
-
-bool URLLoaderThrottle::makes_unsafe_redirect() {
-  return false;
-}
+    const network::URLLoaderCompletionStatus& status) {}
 
 URLLoaderThrottle::URLLoaderThrottle() {}
 

@@ -702,16 +702,15 @@ CounterStyle::CounterStyle(const StyleRuleCounterStyle& rule)
 
   if (HasSymbols(system_)) {
     if (system_ == CounterStyleSystem::kAdditive) {
-      for (const CSSValue* symbol :
-           To<CSSValueList>(*rule.GetAdditiveSymbols())) {
-        const auto& pair = To<CSSValuePair>(*symbol);
+      for (const auto& symbol : To<CSSValueList>(*rule.GetAdditiveSymbols())) {
+        const auto& pair = To<CSSValuePair>(*symbol.Get());
         additive_weights_.push_back(
             To<CSSPrimitiveValue>(pair.First()).GetIntValue());
         symbols_.push_back(SymbolToString(pair.Second()));
       }
     } else {
-      for (const CSSValue* symbol : To<CSSValueList>(*rule.GetSymbols())) {
-        symbols_.push_back(SymbolToString(*symbol));
+      for (const auto& symbol : To<CSSValueList>(*rule.GetSymbols())) {
+        symbols_.push_back(SymbolToString(*symbol.Get()));
       }
     }
   }

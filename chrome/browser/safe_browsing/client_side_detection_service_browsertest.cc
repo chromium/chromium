@@ -2,25 +2,28 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "build/build_config.h"
-#include "chrome/browser/safe_browsing/chrome_client_side_detection_service_delegate.h"
+#include "components/safe_browsing/content/browser/client_side_detection_service.h"
 
 #include "base/path_service.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
+#include "build/build_config.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/safe_browsing/chrome_client_side_detection_service_delegate.h"
 #include "chrome/browser/safe_browsing/client_side_detection_service_factory.h"
 #include "chrome/common/chrome_paths.h"
 #include "chrome/test/base/chrome_test_utils.h"
 #include "components/prefs/pref_service.h"
-#include "components/safe_browsing/content/browser/client_side_detection_service.h"
 #include "components/safe_browsing/content/browser/client_side_phishing_model.h"
 #include "components/safe_browsing/content/common/safe_browsing.mojom.h"
 #include "components/safe_browsing/core/common/features.h"
 #include "components/safe_browsing/core/common/proto/client_model.pb.h"
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
+#include "content/public/browser/render_process_host.h"
 #include "content/public/test/browser_test.h"
+#include "content/public/test/browser_test_utils.h"
+#include "ipc/ipc_channel_proxy.h"
 #include "services/service_manager/public/cpp/interface_provider.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_provider.h"
@@ -111,7 +114,7 @@ class ClientSideDetectionServiceBrowserTest : public PlatformBrowserTest {
 IN_PROC_BROWSER_TEST_F(ClientSideDetectionServiceBrowserTest,
                        MAYBE_ModelUpdatesPropagated) {
 #if BUILDFLAG(IS_MAC)
-  if (base::mac::IsAtLeastOS13()) {
+  if (base::mac::MacOSMajorVersion() >= 13) {
     GTEST_SKIP() << "Flaky on macOS 13: https://crbug.com/1433315";
   }
 #endif
@@ -196,7 +199,7 @@ IN_PROC_BROWSER_TEST_F(ClientSideDetectionServiceBrowserTest,
 IN_PROC_BROWSER_TEST_F(ClientSideDetectionServiceBrowserTest,
                        MAYBE_TfLiteClassification) {
 #if BUILDFLAG(IS_MAC)
-  if (base::mac::IsAtLeastOS13()) {
+  if (base::mac::MacOSMajorVersion() >= 13) {
     GTEST_SKIP() << "Flaky on macOS 13: https://crbug.com/1433315";
   }
 #endif
@@ -296,7 +299,7 @@ IN_PROC_BROWSER_TEST_F(ClientSideDetectionServiceBrowserTest,
 IN_PROC_BROWSER_TEST_F(ClientSideDetectionServiceBrowserTest,
                        MAYBE_TfLiteClassificationAfterTwoModelUploads) {
 #if BUILDFLAG(IS_MAC)
-  if (base::mac::IsAtLeastOS13()) {
+  if (base::mac::MacOSMajorVersion() >= 13) {
     GTEST_SKIP() << "Flaky on macOS 13: https://crbug.com/1433315";
   }
 #endif

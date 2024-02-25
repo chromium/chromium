@@ -62,7 +62,13 @@ class ZygoteForkDelegate {
     // A descriptor for a read-only shared memory region that can be mapped and
     // used to initialize a base::FieldTrialList.
     kFieldTrialFDIndex,
-    kNumPassedFDs  // Number of FDs in the vector passed to Fork().
+    // A descriptor for the read-write shared memory region that is passed from
+    // the parent process for use by the child for allocating histograms. This
+    // is then accessed by the parent process for metrics reporting.
+    kHistogramFDIndex,
+
+    // Number of FDs in the vector passed to Fork().
+    kNumPassedFDs
   };
 
   // Delegate forks, returning a -1 on failure. Outside the

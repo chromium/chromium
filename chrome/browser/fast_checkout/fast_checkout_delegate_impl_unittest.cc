@@ -87,7 +87,7 @@ TEST_F(FastCheckoutDelegateImplTest, IntendsToShowFastCheckout) {
   autofill::FormData form = CreateTestAddressFormData();
   autofill::FormFieldData& field = form.fields[0];
   autofill::FormFieldData non_seen_field = autofill::test::CreateTestFormField(
-      "First Name", "firstname", "", "text");
+      "First Name", "firstname", "", autofill::FormControlType::kInputText);
   autofill_manager()->OnFormsSeen(
       /*updated_forms=*/{form},
       /*removed_forms=*/{});
@@ -95,12 +95,12 @@ TEST_F(FastCheckoutDelegateImplTest, IntendsToShowFastCheckout) {
   EXPECT_CALL(fast_checkout_client_, CanRun)
       .WillOnce(testing::Return(FastCheckoutTriggerOutcome::kSuccess));
   EXPECT_TRUE(fast_checkout_delegate_->IntendsToShowFastCheckout(
-      *autofill_manager(), form.global_id(), field.global_id()));
+      *autofill_manager(), form.global_id(), field.global_id(), form));
   histogram_tester_.ExpectUniqueSample(kUmaKeyFastCheckoutTriggerOutcome,
                                        FastCheckoutTriggerOutcome::kSuccess,
                                        1u);
   EXPECT_FALSE(fast_checkout_delegate_->IntendsToShowFastCheckout(
-      *autofill_manager(), form.global_id(), non_seen_field.global_id()));
+      *autofill_manager(), form.global_id(), non_seen_field.global_id(), form));
 }
 
 TEST_F(FastCheckoutDelegateImplTest,
@@ -115,7 +115,7 @@ TEST_F(FastCheckoutDelegateImplTest,
       .WillOnce(testing::Return(
           FastCheckoutTriggerOutcome::kFailureNoValidAutofillProfile));
   EXPECT_FALSE(fast_checkout_delegate_->IntendsToShowFastCheckout(
-      *autofill_manager(), form.global_id(), field.global_id()));
+      *autofill_manager(), form.global_id(), field.global_id(), form));
   histogram_tester_.ExpectUniqueSample(
       kUmaKeyFastCheckoutTriggerOutcome,
       FastCheckoutTriggerOutcome::kFailureNoValidAutofillProfile, 1u);
@@ -124,7 +124,7 @@ TEST_F(FastCheckoutDelegateImplTest,
       .WillOnce(
           testing::Return(FastCheckoutTriggerOutcome::kFailureFieldNotEmpty));
   EXPECT_FALSE(fast_checkout_delegate_->IntendsToShowFastCheckout(
-      *autofill_manager(), form.global_id(), field.global_id()));
+      *autofill_manager(), form.global_id(), field.global_id(), form));
   histogram_tester_.ExpectBucketCount(
       kUmaKeyFastCheckoutTriggerOutcome,
       FastCheckoutTriggerOutcome::kFailureFieldNotEmpty, 1u);

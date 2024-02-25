@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_UI_ASH_AUTH_CRYPTOHOME_PIN_ENGINE_H_
 
 #include <memory>
+#include <optional>
 #include <string>
 
 #include "base/functional/callback_forward.h"
@@ -13,7 +14,6 @@
 #include "chromeos/ash/components/cryptohome/common_types.h"
 #include "chromeos/ash/components/login/auth/auth_factor_editor.h"
 #include "chromeos/ash/components/login/auth/auth_performer.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ash {
 
@@ -39,7 +39,7 @@ class CryptohomePinEngine {
 
   // Checks if pin is disabled by policy for the given `account_id` and
   // `purpose`.
-  absl::optional<bool> IsCryptohomePinDisabledByPolicy(
+  std::optional<bool> IsCryptohomePinDisabledByPolicy(
       const AccountId& account_id,
       CryptohomePinEngine::Purpose purpose) const;
 
@@ -62,7 +62,7 @@ class CryptohomePinEngine {
 
   void OnGetAuthFactorsConfiguration(IsPinAuthAvailableCallback callback,
                                      std::unique_ptr<UserContext> user_context,
-                                     absl::optional<AuthenticationError> error);
+                                     std::optional<AuthenticationError> error);
 
   // Non owning pointer
   const raw_ptr<ash::AuthPerformer> auth_performer_;

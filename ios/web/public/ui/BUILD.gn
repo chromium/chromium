@@ -11,7 +11,6 @@ source_set("ui") {
 
   sources = [
     "context_menu_params.h",
-    "crw_context_menu_item.h",
     "crw_web_view_proxy.h",
     "crw_web_view_scroll_view_proxy.h",
     "java_script_dialog_presenter.h",

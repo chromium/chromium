@@ -55,6 +55,7 @@
 #include "content/web_test/browser/web_test_fedcm_manager.h"
 #include "content/web_test/browser/web_test_origin_trial_throttle.h"
 #include "content/web_test/browser/web_test_permission_manager.h"
+#include "content/web_test/browser/web_test_sensor_provider_manager.h"
 #include "content/web_test/browser/web_test_storage_access_manager.h"
 #include "content/web_test/browser/web_test_tts_platform.h"
 #include "content/web_test/common/web_test_bluetooth_fake_adapter_setter.mojom.h"
@@ -86,6 +87,7 @@
 #include "third_party/blink/public/common/web_preferences/web_preferences.h"
 #include "ui/base/ui_base_switches.h"
 #include "url/origin.h"
+#include "url/url_constants.h"
 
 #if BUILDFLAG(IS_WIN)
 #include "base/strings/utf_string_conversions.h"
@@ -299,11 +301,6 @@ void WebTestContentBrowserClient::ResetMockClipboardHosts() {
     mock_clipboard_host_->Reset();
 }
 
-void WebTestContentBrowserClient::SetScreenOrientationChanged(
-    bool screen_orientation_changed) {
-  screen_orientation_changed_ = screen_orientation_changed;
-}
-
 std::unique_ptr<FakeBluetoothChooser>
 WebTestContentBrowserClient::GetNextFakeBluetoothChooser() {
   if (!fake_bluetooth_chooser_factory_)
@@ -362,16 +359,21 @@ void WebTestContentBrowserClient::ExposeInterfacesToRenderer(
           base::Unretained(this)),
       ui_task_runner);
 
-  associated_registry->AddInterface<mojom::WebTestControlHost>(
-      base::BindRepeating(&WebTestContentBrowserClient::BindWebTestControlHost,
-                          base::Unretained(this),
-                          render_process_host->GetID()));
-
   registry->AddInterface(
       base::BindRepeating(
           &WebTestContentBrowserClient::BindNonAssociatedWebTestControlHost,
           base::Unretained(this)),
       ui_task_runner);
+}
+
+void WebTestContentBrowserClient::
+    RegisterAssociatedInterfaceBindersForRenderFrameHost(
+        RenderFrameHost& render_frame_host,
+        blink::AssociatedInterfaceRegistry& associated_registry) {
+  associated_registry.AddInterface<mojom::WebTestControlHost>(
+      base::BindRepeating(&WebTestContentBrowserClient::BindWebTestControlHost,
+                          base::Unretained(this),
+                          render_frame_host.GetProcess()->GetID()));
 }
 
 void WebTestContentBrowserClient::BindPermissionAutomation(
@@ -476,18 +478,17 @@ WebTestContentBrowserClient::GetOriginsRequiringDedicatedProcess() {
 
     // The list of schemes below is based on
     // //third_party/blink/web_tests/external/wpt/config.json
-    const char* kOriginTemplates[] = {
-        "http://%s/",
-        "https://%s/",
+    const char* kSchemes[] = {
+        url::kHttpScheme,
+        url::kHttpsScheme,
     };
 
     origins_to_isolate.reserve(origins_to_isolate.size() +
-                               std::size(kWptHostnames) *
-                                   std::size(kOriginTemplates));
-    for (const char* kWptHostname : kWptHostnames) {
-      for (const char* kOriginTemplate : kOriginTemplates) {
-        std::string origin = base::StringPrintf(kOriginTemplate, kWptHostname);
-        origins_to_isolate.push_back(origin);
+                               std::size(kWptHostnames) * std::size(kSchemes));
+    for (const char* hostname : kWptHostnames) {
+      for (const char* scheme : kSchemes) {
+        origins_to_isolate.push_back(
+            base::StringPrintf("%s://%s/", scheme, hostname));
       }
     }
   }
@@ -547,6 +548,9 @@ void WebTestContentBrowserClient::RegisterBrowserInterfaceBindersForFrame(
   map->Add<blink::test::mojom::FederatedAuthRequestAutomation>(
       base::BindRepeating(&WebTestContentBrowserClient::BindFedCmAutomation,
                           base::Unretained(this)));
+  map->Add<blink::test::mojom::WebSensorProviderAutomation>(base::BindRepeating(
+      &WebTestContentBrowserClient::BindWebSensorProviderAutomation,
+      base::Unretained(this)));
 }
 
 bool WebTestContentBrowserClient::CanAcceptUntrustedExchangesIfNeeded() {
@@ -565,10 +569,6 @@ void WebTestContentBrowserClient::ResetFakeBluetoothDelegate() {
 
 content::TtsPlatform* WebTestContentBrowserClient::GetTtsPlatform() {
   return WebTestTtsPlatform::GetInstance();
-}
-
-bool WebTestContentBrowserClient::CanEnterFullscreenWithoutUserActivation() {
-  return screen_orientation_changed_;
 }
 
 void WebTestContentBrowserClient::BindClipboardHost(
@@ -607,9 +607,25 @@ void WebTestContentBrowserClient::BindFedCmAutomation(
                       std::move(receiver));
 }
 
+void WebTestContentBrowserClient::BindWebSensorProviderAutomation(
+    RenderFrameHost* render_frame_host,
+    mojo::PendingReceiver<blink::test::mojom::WebSensorProviderAutomation>
+        receiver) {
+  if (!sensor_provider_manager_) {
+    sensor_provider_manager_ = std::make_unique<WebTestSensorProviderManager>(
+        WebContents::FromRenderFrameHost(render_frame_host));
+  }
+  sensor_provider_manager_->Bind(std::move(receiver));
+}
+
+void WebTestContentBrowserClient::ResetWebSensorProviderAutomation() {
+  sensor_provider_manager_.reset();
+}
+
 std::unique_ptr<LoginDelegate> WebTestContentBrowserClient::CreateLoginDelegate(
     const net::AuthChallengeInfo& auth_info,
     content::WebContents* web_contents,
+    content::BrowserContext* browser_context,
     const content::GlobalRequestID& request_id,
     bool is_request_for_primary_main_frame,
     const GURL& url,
@@ -696,7 +712,8 @@ bool WebTestContentBrowserClient::IsInterestGroupAPIAllowed(
 bool WebTestContentBrowserClient::IsPrivacySandboxReportingDestinationAttested(
     content::BrowserContext* browser_context,
     const url::Origin& destination_origin,
-    content::PrivacySandboxInvokingAPI invoking_api) {
+    content::PrivacySandboxInvokingAPI invoking_api,
+    bool post_impression_reporting) {
   return true;
 }
 
@@ -711,6 +728,19 @@ void WebTestContentBrowserClient::GetHyphenationDictionary(
     std::move(callback).Run(dir);
   }
   // No need to callback if there were no dictionaries.
+}
+
+void WebTestContentBrowserClient::
+    RegisterMojoBinderPoliciesForSameOriginPrerendering(
+        MojoBinderPolicyMap& policy_map) {
+  policy_map.SetAssociatedPolicy<mojom::WebTestControlHost>(
+      content::MojoBinderAssociatedPolicy::kGrant);
+}
+
+void WebTestContentBrowserClient::RegisterMojoBinderPoliciesForPreview(
+    MojoBinderPolicyMap& policy_map) {
+  policy_map.SetAssociatedPolicy<mojom::WebTestControlHost>(
+      content::MojoBinderAssociatedPolicy::kGrant);
 }
 
 }  // namespace content

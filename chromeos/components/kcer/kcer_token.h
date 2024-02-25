@@ -9,8 +9,11 @@
 #include <vector>
 
 #include "base/functional/callback.h"
+#include "chromeos/components/kcer/chaps/high_level_chaps_client.h"
+#include "chromeos/components/kcer/chaps/session_chaps_client.h"
 #include "chromeos/components/kcer/kcer.h"
 #include "chromeos/components/kcer/key_permissions.pb.h"
+#include "crypto/scoped_nss_types.h"
 
 namespace kcer::internal {
 
@@ -28,6 +31,14 @@ class COMPONENT_EXPORT(KCER) KcerToken {
   using TokenListCertsCallback = base::OnceCallback<void(
       base::expected<std::vector<scoped_refptr<const Cert>>, Error>)>;
 
+  // Methods to create each of the specializations of KcerToken.
+  static std::unique_ptr<KcerToken> CreateWithoutNss(
+      Token token,
+      HighLevelChapsClient* chaps_client);
+  static std::unique_ptr<KcerToken> CreateForNss(
+      Token token,
+      HighLevelChapsClient* chaps_client);
+
   KcerToken() = default;
   KcerToken(const KcerToken&) = delete;
   KcerToken& operator=(const KcerToken&) = delete;
@@ -35,9 +46,22 @@ class COMPONENT_EXPORT(KCER) KcerToken {
   KcerToken& operator=(Token&&) = delete;
   virtual ~KcerToken() = default;
 
+  // Returns a weak pointer for the token. The pointer can be used to post tasks
+  // for the token.
+  virtual base::WeakPtr<KcerToken> GetWeakPtr() = 0;
+
+  // Initialization methods for different specializations of KcerToken. They
+  // should be used by the factory that creates instances of Kcer and knows
+  // which tokens are used at the moment even when it has only a generic
+  // pointer to them. Each KcerToken specialization only needs to implement the
+  // single correct relevant method.
+  virtual void InitializeWithoutNss(SessionChapsClient::SlotId pkcs11_slot_id) {
+  }
+  virtual void InitializeForNss(crypto::ScopedPK11Slot nss_slot) {}
+
   // These methods mirror the methods from the Kcer class, except they are
   // specialized for a single token.
-  virtual void GenerateRsaKey(uint32_t modulus_length_bits,
+  virtual void GenerateRsaKey(RsaModulusLength modulus_length_bits,
                               bool hardware_backed,
                               Kcer::GenerateKeyCallback callback) = 0;
   virtual void GenerateEcKey(EllipticCurve curve,
@@ -50,6 +74,7 @@ class COMPONENT_EXPORT(KCER) KcerToken {
   virtual void ImportPkcs12Cert(Pkcs12Blob pkcs12_blob,
                                 std::string password,
                                 bool hardware_backed,
+                                bool mark_as_migrated,
                                 Kcer::StatusCallback callback) = 0;
   virtual void ExportPkcs12Cert(scoped_refptr<const Cert> cert,
                                 Kcer::ExportPkcs12Callback callback) = 0;
@@ -71,6 +96,11 @@ class COMPONENT_EXPORT(KCER) KcerToken {
   virtual void GetTokenInfo(Kcer::GetTokenInfoCallback callback) = 0;
   virtual void GetKeyInfo(PrivateKeyHandle key,
                           Kcer::GetKeyInfoCallback callback) = 0;
+  virtual void GetKeyPermissions(PrivateKeyHandle key,
+                                 Kcer::GetKeyPermissionsCallback callback) = 0;
+  virtual void GetCertProvisioningProfileId(
+      PrivateKeyHandle key,
+      Kcer::GetCertProvisioningProfileIdCallback callback) = 0;
   virtual void SetKeyNickname(PrivateKeyHandle key,
                               std::string nickname,
                               Kcer::StatusCallback callback) = 0;

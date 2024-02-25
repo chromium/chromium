@@ -13,6 +13,7 @@ group("locally_built") {
     ":brltty",
     ":dee",
     ":freetype",
+    ":guest-oslogin",
     ":harfbuzz",
     ":libappindicator3-1",
     ":libasound2",
@@ -160,6 +161,18 @@ template("instrumented_library") {
     if (defined(invoker.extra_configure_flags)) {
       args += [ "--extra-configure-flags=${invoker.extra_configure_flags}" ]
     }
+
+    if (defined(invoker.git_url)) {
+      args += [ "--git-url=${invoker.git_url}" ]
+    }
+
+    if (defined(invoker.git_revision)) {
+      args += [ "--git-revision=${invoker.git_revision}" ]
+    }
+
+    if (defined(invoker.make_targets)) {
+      args += [ "--make-targets=${invoker.make_targets}" ]
+    }
   }
 }
 
@@ -201,6 +214,14 @@ instrumented_library("dee") {
 
 instrumented_library("freetype") {
   extra_configure_flags = [ "--disable-static" ]
+}
+
+instrumented_library("guest-oslogin") {
+  git_url = "https://github.com/GoogleCloudPlatform/guest-oslogin.git"
+  git_revision = "f59b7f38c21b4794282ddf12fd4a6083cd99e1e4"
+
+  # Work around an issue where header files are passed to the linker.
+  patches = [ "patches/guest-oslogin.diff" ]
 }
 
 instrumented_library("harfbuzz") {
@@ -429,7 +450,7 @@ instrumented_library("libgdk-pixbuf2.0-0") {
     # Do not use loadable modules. Same as with Pango, there's no easy way
     # to make gdk-pixbuf pick instrumented versions over system-installed
     # ones.
-    "-Dbuiltin_loaders='all'",
+    "-Dbuiltin_loaders=all",
   ]
   pre_build = "scripts/pre-build/libgdk-pixbuf2.0-0.sh"
 
@@ -786,11 +807,11 @@ instrumented_library("libxtst6") {
 }
 
 instrumented_library("nss") {
-  # TODO(eugenis): get rid of this dependency
-  deps = [ ":libnspr4" ]
   patches = [
     "patches/nss.diff",
     "patches/nss.2.diff",
+    "patches/nss.3.diff",
+    "patches/nss.4.diff",
   ]
   build_method = "custom_nss"
 }
@@ -834,4 +855,5 @@ instrumented_library("libudev1") {
 }
 
 instrumented_library("zlib1g") {
+  make_targets = [ "libz.so.1.2.11" ]
 }

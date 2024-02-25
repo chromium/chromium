@@ -4,7 +4,6 @@
 
 #include "ash/public/cpp/notification_utils.h"
 
-#include "chromeos/constants/chromeos_features.h"
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
 #include "ui/gfx/vector_icon_types.h"
 #include "ui/message_center/public/cpp/notification.h"
@@ -36,35 +35,19 @@ message_center::Notification CreateSystemNotification(
                                             notifier_id,
                                             optional_fields,
                                             delegate};
-  if (chromeos::features::IsJellyEnabled()) {
-    ui::ColorId color_id = cros_tokens::kCrosSysPrimary;
-    switch (warning_level) {
-      case message_center::SystemNotificationWarningLevel::NORMAL:
-        color_id = cros_tokens::kCrosSysPrimary;
-        break;
-      case message_center::SystemNotificationWarningLevel::WARNING:
-        color_id = cros_tokens::kCrosSysWarning;
-        break;
-      case message_center::SystemNotificationWarningLevel::CRITICAL_WARNING:
-        color_id = cros_tokens::kCrosSysError;
-        break;
-    }
-    notification.set_accent_color_id(color_id);
-  } else {
-    SkColor color = kSystemNotificationColorNormal;
-    switch (warning_level) {
-      case message_center::SystemNotificationWarningLevel::NORMAL:
-        color = kSystemNotificationColorNormal;
-        break;
-      case message_center::SystemNotificationWarningLevel::WARNING:
-        color = kSystemNotificationColorWarning;
-        break;
-      case message_center::SystemNotificationWarningLevel::CRITICAL_WARNING:
-        color = kSystemNotificationColorCriticalWarning;
-        break;
-    }
-    notification.set_accent_color(color);
+  ui::ColorId color_id = cros_tokens::kCrosSysPrimary;
+  switch (warning_level) {
+    case message_center::SystemNotificationWarningLevel::NORMAL:
+      color_id = cros_tokens::kCrosSysPrimary;
+      break;
+    case message_center::SystemNotificationWarningLevel::WARNING:
+      color_id = cros_tokens::kCrosSysWarning;
+      break;
+    case message_center::SystemNotificationWarningLevel::CRITICAL_WARNING:
+      color_id = cros_tokens::kCrosSysError;
+      break;
   }
+  notification.set_accent_color_id(color_id);
 
   notification.set_system_notification_warning_level(warning_level);
   if (!small_image.is_empty())

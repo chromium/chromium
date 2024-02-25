@@ -1,0 +1,19 @@
+[
+  {
+    "os": [
+      "chromeos_ash"
+    ],
+    "policy_pref_mapping_tests": [
+      {
+        "policies": {
+          "PrimaryMouseButtonSwitch": true
+        },
+        "prefs": {
+          "settings.mouse.primary_right": {
+            "value": true
+          }
+        }
+      }
+    ]
+  }
+]

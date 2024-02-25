@@ -15,7 +15,7 @@ namespace ash::local_search_service {
 
 namespace {
 
-void OnBindIndexDone(const absl::optional<std::string>& error) {
+void OnBindIndexDone(const std::optional<std::string>& error) {
   base::UmaHistogramBoolean("LocalSearchService.BindIndexHasError",
                             error.has_value());
   if (error)
@@ -70,7 +70,6 @@ mojom::LocalSearchService* LocalSearchServiceProxy::GetService() {
     } else {
       LOG(FATAL) << "LocalSearchServiceProvider::Set() must be called "
                  << "before any instances of LocalSearchService can be used.";
-      return nullptr;
     }
     service_.reset_on_disconnect();
   }

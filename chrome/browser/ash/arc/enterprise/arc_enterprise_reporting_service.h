@@ -50,7 +50,7 @@ class ArcEnterpriseReportingService
  private:
   THREAD_CHECKER(thread_checker_);
 
-  const raw_ptr<ArcBridgeService, ExperimentalAsh>
+  const raw_ptr<ArcBridgeService>
       arc_bridge_service_;  // Owned by ArcServiceManager.
 
   base::WeakPtrFactory<ArcEnterpriseReportingService> weak_ptr_factory_{this};

@@ -8,6 +8,7 @@
 #include "base/command_line.h"
 #include "base/containers/cxx20_erase.h"
 #include "base/functional/callback_helpers.h"
+#include "base/memory/raw_ptr.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/profiles/profile.h"
@@ -128,7 +129,9 @@ class WorkerTaskProviderBrowserTest : public InProcessBrowserTest,
       StopWaiting();
   }
 
-  const std::vector<Task*>& tasks() const { return tasks_; }
+  const std::vector<raw_ptr<Task, VectorExperimental>>& tasks() const {
+    return tasks_;
+  }
   TaskProvider* task_provider() const { return task_provider_.get(); }
 
  protected:
@@ -148,7 +151,7 @@ class WorkerTaskProviderBrowserTest : public InProcessBrowserTest,
   std::unique_ptr<WorkerTaskProvider> task_provider_;
 
   // Tasks created by |task_provider_|.
-  std::vector<Task*> tasks_;
+  std::vector<raw_ptr<Task, VectorExperimental>> tasks_;
 
   base::OnceClosure quit_closure_for_waiting_;
 

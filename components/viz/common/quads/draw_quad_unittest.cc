@@ -47,44 +47,55 @@ ResourceId NextId(ResourceId id) {
 }
 
 TEST(DrawQuadTest, CopySharedQuadState) {
-  gfx::Transform quad_transform =
+  constexpr gfx::Transform quad_transform =
       gfx::Transform::Affine(1.0, 0.5, 0.0, 1.0, 0.5, 0.0);
-  gfx::Rect layer_rect(26, 28);
-  gfx::Rect visible_layer_rect(10, 12, 14, 16);
-  gfx::Rect clip_rect(19, 21, 23, 25);
-  bool are_contents_opaque = true;
-  float opacity = 0.25f;
-  SkBlendMode blend_mode = SkBlendMode::kMultiply;
-  int sorting_context_id = 65536;
+  constexpr gfx::Rect layer_rect(26, 28);
+  const gfx::MaskFilterInfo mask_filter_rounded_corners(
+      gfx::RectF(5, 5), gfx::RoundedCornersF(2.5), gfx::LinearGradient());
+  constexpr gfx::Rect visible_layer_rect(10, 12, 14, 16);
+  constexpr gfx::Rect clip_rect(19, 21, 23, 25);
+  constexpr bool are_contents_opaque = true;
+  constexpr float opacity = 0.25f;
+  constexpr SkBlendMode blend_mode = SkBlendMode::kMultiply;
+  constexpr int sorting_context_id = 65536;
+  constexpr uint32_t layer_id = 0u;
+  constexpr bool is_fast_rounded_corner = true;
 
   auto state = std::make_unique<SharedQuadState>();
   state->SetAll(quad_transform, layer_rect, visible_layer_rect,
-                gfx::MaskFilterInfo(), clip_rect, are_contents_opaque, opacity,
-                blend_mode, sorting_context_id);
+                mask_filter_rounded_corners, clip_rect, are_contents_opaque,
+                opacity, blend_mode, sorting_context_id, layer_id,
+                is_fast_rounded_corner);
 
   auto copy = std::make_unique<SharedQuadState>(*state);
   EXPECT_EQ(quad_transform, copy->quad_to_target_transform);
   EXPECT_EQ(visible_layer_rect, copy->visible_quad_layer_rect);
+  EXPECT_EQ(mask_filter_rounded_corners, copy->mask_filter_info);
   EXPECT_EQ(opacity, copy->opacity);
   EXPECT_EQ(clip_rect, copy->clip_rect);
   EXPECT_EQ(are_contents_opaque, copy->are_contents_opaque);
   EXPECT_EQ(blend_mode, copy->blend_mode);
+  EXPECT_EQ(layer_id, copy->layer_id);
+  EXPECT_EQ(is_fast_rounded_corner, copy->is_fast_rounded_corner);
 }
 
 SharedQuadState* CreateSharedQuadState(CompositorRenderPass* render_pass) {
-  gfx::Transform quad_transform =
+  constexpr gfx::Transform quad_transform =
       gfx::Transform::Affine(1.0, 0.5, 0.0, 1.0, 0.5, 0.0);
-  gfx::Rect layer_rect(26, 28);
-  gfx::Rect visible_layer_rect(10, 12, 14, 16);
-  bool are_contents_opaque = true;
-  float opacity = 1.f;
-  int sorting_context_id = 65536;
-  SkBlendMode blend_mode = SkBlendMode::kSrcOver;
+  constexpr gfx::Rect layer_rect(26, 28);
+  constexpr gfx::Rect visible_layer_rect(10, 12, 14, 16);
+  constexpr bool are_contents_opaque = true;
+  constexpr float opacity = 1.f;
+  constexpr int sorting_context_id = 65536;
+  constexpr SkBlendMode blend_mode = SkBlendMode::kSrcOver;
+  constexpr bool is_fast_rounded_corner = false;
+  constexpr uint32_t layer_id = 0u;
 
   SharedQuadState* state = render_pass->CreateAndAppendSharedQuadState();
   state->SetAll(quad_transform, layer_rect, visible_layer_rect,
-                gfx::MaskFilterInfo(), absl::nullopt, are_contents_opaque,
-                opacity, blend_mode, sorting_context_id);
+                gfx::MaskFilterInfo(), std::nullopt, are_contents_opaque,
+                opacity, blend_mode, sorting_context_id, layer_id,
+                is_fast_rounded_corner);
   return state;
 }
 
@@ -99,6 +110,9 @@ void CompareSharedQuadState(const SharedQuadState* source_sqs,
   EXPECT_EQ(source_sqs->opacity, copy_sqs->opacity);
   EXPECT_EQ(source_sqs->blend_mode, copy_sqs->blend_mode);
   EXPECT_EQ(source_sqs->sorting_context_id, copy_sqs->sorting_context_id);
+  EXPECT_EQ(source_sqs->mask_filter_info, copy_sqs->mask_filter_info);
+  EXPECT_EQ(source_sqs->is_fast_rounded_corner,
+            copy_sqs->is_fast_rounded_corner);
 }
 
 void CompareDrawQuad(DrawQuad* quad, DrawQuad* copy) {
@@ -283,7 +297,6 @@ TEST(DrawQuadTest, CopyTextureDrawQuad) {
   bool premultiplied_alpha = true;
   gfx::PointF uv_top_left(0.5f, 224.f);
   gfx::PointF uv_bottom_right(51.5f, 260.f);
-  const float vertex_opacity[] = {1.0f, 1.0f, 1.0f, 1.0f};
   bool y_flipped = true;
   bool nearest_neighbor = true;
   bool secure_output_only = true;
@@ -293,8 +306,9 @@ TEST(DrawQuadTest, CopyTextureDrawQuad) {
 
   CREATE_QUAD_NEW(TextureDrawQuad, visible_rect, blending, resource_id,
                   premultiplied_alpha, uv_top_left, uv_bottom_right,
-                  SkColors::kTransparent, vertex_opacity, y_flipped,
-                  nearest_neighbor, secure_output_only, protected_video_type);
+                  SkColors::kTransparent, y_flipped, nearest_neighbor,
+                  secure_output_only, protected_video_type);
+  const float vertex_opacity[] = {1.0f, 1.0f, 1.0f, 1.0f};
   EXPECT_EQ(DrawQuad::Material::kTextureContent, copy_quad->material);
   EXPECT_EQ(visible_rect, copy_quad->visible_rect);
   EXPECT_EQ(blending, copy_quad->needs_blending);
@@ -311,8 +325,8 @@ TEST(DrawQuadTest, CopyTextureDrawQuad) {
 
   CREATE_QUAD_ALL(TextureDrawQuad, resource_id, resource_size_in_pixels,
                   premultiplied_alpha, uv_top_left, uv_bottom_right,
-                  SkColors::kTransparent, vertex_opacity, y_flipped,
-                  nearest_neighbor, secure_output_only, protected_video_type);
+                  SkColors::kTransparent, y_flipped, nearest_neighbor,
+                  secure_output_only, protected_video_type);
   EXPECT_EQ(DrawQuad::Material::kTextureContent, copy_quad->material);
   EXPECT_EQ(resource_id, copy_quad->resource_id());
   EXPECT_EQ(resource_size_in_pixels, copy_quad->resource_size_in_pixels());
@@ -545,7 +559,7 @@ TEST_F(DrawQuadIteratorTest, SurfaceDrawQuad) {
 
   CREATE_SHARED_STATE();
   CREATE_QUAD_NEW(SurfaceDrawQuad, visible_rect,
-                  SurfaceRange(absl::nullopt, surface_id), SkColors::kWhite,
+                  SurfaceRange(std::nullopt, surface_id), SkColors::kWhite,
                   /*stretch_content_to_fill_bounds=*/false);
   EXPECT_EQ(0, IterateAndCount(quad_new));
 }
@@ -556,7 +570,6 @@ TEST_F(DrawQuadIteratorTest, TextureDrawQuad) {
   bool premultiplied_alpha = true;
   gfx::PointF uv_top_left(0.5f, 224.f);
   gfx::PointF uv_bottom_right(51.5f, 260.f);
-  const float vertex_opacity[] = {1.0f, 1.0f, 1.0f, 1.0f};
   bool y_flipped = true;
   bool nearest_neighbor = true;
   bool secure_output_only = true;
@@ -566,8 +579,8 @@ TEST_F(DrawQuadIteratorTest, TextureDrawQuad) {
   CREATE_SHARED_STATE();
   CREATE_QUAD_NEW(TextureDrawQuad, visible_rect, needs_blending, resource_id,
                   premultiplied_alpha, uv_top_left, uv_bottom_right,
-                  SkColors::kTransparent, vertex_opacity, y_flipped,
-                  nearest_neighbor, secure_output_only, protected_video_type);
+                  SkColors::kTransparent, y_flipped, nearest_neighbor,
+                  secure_output_only, protected_video_type);
   EXPECT_EQ(resource_id, quad_new->resource_id());
   EXPECT_EQ(1, IterateAndCount(quad_new));
   EXPECT_EQ(NextId(resource_id), quad_new->resource_id());
@@ -616,7 +629,7 @@ TEST_F(DrawQuadIteratorTest, YUVVideoDrawQuad) {
                   video_frame_visible_rect, uv_sample_size, y_plane_resource_id,
                   u_plane_resource_id, v_plane_resource_id, a_plane_resource_id,
                   video_color_space, 0.0, 1.0, 5,
-                  gfx::ProtectedVideoType::kClear, absl::nullopt);
+                  gfx::ProtectedVideoType::kClear, std::nullopt);
   EXPECT_EQ(DrawQuad::Material::kYuvVideoContent, copy_quad->material);
   EXPECT_EQ(y_plane_resource_id, quad_new->y_plane_resource_id());
   EXPECT_EQ(u_plane_resource_id, quad_new->u_plane_resource_id());

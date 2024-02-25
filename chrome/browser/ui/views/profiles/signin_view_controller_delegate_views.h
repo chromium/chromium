@@ -12,7 +12,7 @@
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/ui/chrome_web_modal_dialog_manager_delegate.h"
 #include "chrome/browser/ui/signin/signin_view_controller_delegate.h"
-#include "chrome/browser/ui/webui/signin/enterprise_profile_welcome_ui.h"
+#include "chrome/browser/ui/webui/signin/managed_user_profile_notice_ui.h"
 #include "chrome/browser/ui/webui/signin/signin_utils.h"
 #include "components/signin/public/base/signin_buildflags.h"
 #include "content/public/browser/web_contents_delegate.h"
@@ -46,9 +46,9 @@ class SigninViewControllerDelegateViews
       public SigninViewControllerDelegate,
       public content::WebContentsDelegate,
       public ChromeWebModalDialogManagerDelegate {
- public:
-  METADATA_HEADER(SigninViewControllerDelegateViews);
+  METADATA_HEADER(SigninViewControllerDelegateViews, views::DialogDelegateView)
 
+ public:
   SigninViewControllerDelegateViews(const SigninViewControllerDelegateViews&) =
       delete;
   SigninViewControllerDelegateViews& operator=(
@@ -74,7 +74,8 @@ class SigninViewControllerDelegateViews
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
     BUILDFLAG(IS_CHROMEOS_LACROS)
-  static std::unique_ptr<views::WebView> CreateEnterpriseConfirmationWebView(
+  static std::unique_ptr<views::WebView>
+  CreateManagedUserNoticeConfirmationWebView(
       Browser* browser,
       const AccountInfo& account_info,
       bool profile_creation_required_by_policy,
@@ -124,7 +125,8 @@ class SigninViewControllerDelegateViews
       Browser* browser,
       ui::ModalType dialog_modal_type,
       bool wait_for_size,
-      bool should_show_close_button);
+      bool should_show_close_button,
+      bool delete_profile_on_cancel = false);
   ~SigninViewControllerDelegateViews() override;
 
   // Creates a WebView for a dialog with the specified URL.
@@ -132,8 +134,15 @@ class SigninViewControllerDelegateViews
       Browser* browser,
       const GURL& url,
       int dialog_height,
-      absl::optional<int> dialog_width,
+      std::optional<int> dialog_width,
       InitializeSigninWebDialogUI initialize_signin_web_dialog_ui);
+
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
+    BUILDFLAG(IS_CHROMEOS_LACROS)
+  // Deletes the ephemeral profile when cancelling the local profile creation
+  // dialog.
+  void DeleteProfileOnCancel();
+#endif
 
   // Displays the modal dialog.
   void DisplayModal();

@@ -18,12 +18,13 @@
 #include "base/syslog_logging.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
+#include "chrome/browser/ash/policy/remote_commands/crd/device_command_start_crd_session_job.h"
+#include "chrome/browser/ash/policy/remote_commands/crd/fake_start_crd_session_job_delegate.h"
 #include "chrome/browser/ash/policy/remote_commands/device_command_get_routine_update_job.h"
+#include "chrome/browser/ash/policy/remote_commands/device_command_reboot_job.h"
 #include "chrome/browser/ash/policy/remote_commands/device_command_run_routine_job.h"
 #include "chrome/browser/ash/policy/remote_commands/device_command_screenshot_job.h"
 #include "chrome/browser/ash/policy/remote_commands/device_command_set_volume_job.h"
-#include "chrome/browser/ash/policy/remote_commands/device_command_start_crd_session_job.h"
-#include "chrome/browser/ash/policy/remote_commands/fake_start_crd_session_job_delegate.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "components/policy/proto/device_management_backend.pb.h"
 
@@ -68,7 +69,7 @@ class StubDeviceCommandScreenshotJobDelegate
   bool IsScreenshotAllowed() override { return false; }
   void TakeSnapshot(gfx::NativeWindow,
                     const gfx::Rect&,
-                    ui::GrabWindowSnapshotAsyncPNGCallback) override {}
+                    ui::GrabSnapshotDataCallback) override {}
   std::unique_ptr<UploadJob> CreateUploadJob(const GURL&,
                                              UploadJob::Delegate*) override {
     return nullptr;
@@ -91,9 +92,10 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
       start_crd_session_job_delegate);
   DeviceCommandRunRoutineJob run_routine_job;
   DeviceCommandGetRoutineUpdateJob get_routine_update_job;
+  DeviceCommandRebootJob reboot_job;
   std::initializer_list<RemoteCommandJob* const> jobs = {
       &screenshot_job,  &set_volume_job,         &start_crd_session_job,
-      &run_routine_job, &get_routine_update_job,
+      &run_routine_job, &get_routine_update_job, &reboot_job,
   };
 
   // Select a random job.

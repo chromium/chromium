@@ -7,7 +7,7 @@
  * for testing.
  */
 
-import {SettingsPrefsElement} from 'chrome://settings/settings.js';
+import type {SettingsPrefsElement} from 'chrome://settings/settings.js';
 import {FakeChromeEvent} from 'chrome://webui-test/fake_chrome_event.js';
 import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
 
@@ -202,7 +202,7 @@ export class FakeLanguageSettingsPrivate extends TestBrowserProxy {
    * Gets languages available for translate, spell checking, input and locale.
    */
   getLanguageList() {
-    return Promise.resolve(JSON.parse(JSON.stringify(this.languages)));
+    return Promise.resolve(structuredClone(this.languages));
   }
 
   /**

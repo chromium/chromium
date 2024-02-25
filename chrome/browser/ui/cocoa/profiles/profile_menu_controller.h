@@ -8,13 +8,15 @@
 #import <Cocoa/Cocoa.h>
 
 class Browser;
+class ProfileAttributesStorage;
 
 // This controller manages the title and submenu of the Profiles item in the
 // system menu bar. It updates the contents of the menu and the menu's title
 // whenever the active browser changes.
 @interface ProfileMenuController<NSMenuItemValidation> : NSObject
 
-// Designated initializer.
+// Designated initializer. This may be called before the message loop is
+// started; it will do the remainder of the work asynchronously.
 - (instancetype)initWithMainMenuItem:(NSMenuItem*)item;
 
 // Actions for the menu items.
@@ -33,10 +35,22 @@ class Browser;
 @end
 
 @interface ProfileMenuController (PrivateExposedForTesting)
-- (NSMenu*)menu;
-- (void)rebuildMenu;
+
+@property(readonly) NSMenu* menu;
+
+- (instancetype)initSynchronouslyForTestingWithMainMenuItem:(NSMenuItem*)item
+                                   profileAttributesStorage:
+                                       (ProfileAttributesStorage*)storage;
+
+// Clears various internal observers. Not needed for non-test code, where there
+// is effectively a singleton ProfileMenuController to run the profile menu, but
+// needed for test code.
+- (void)deinitialize;
+
 - (NSMenuItem*)createItemWithTitle:(NSString*)title action:(SEL)sel;
+
 - (void)activeBrowserChangedTo:(Browser*)browser;
+
 @end
 
 #endif  // CHROME_BROWSER_UI_COCOA_PROFILES_PROFILE_MENU_CONTROLLER_H_

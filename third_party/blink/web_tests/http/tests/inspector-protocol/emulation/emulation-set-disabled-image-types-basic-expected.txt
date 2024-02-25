@@ -1,0 +1,4 @@
+Tests that Emulation.setDisabledImageTypes method does not crash the renderer.
+Reloading
+Success
+

@@ -4,6 +4,7 @@
 
 #include <cstdint>
 #include <map>
+#include <optional>
 #include <ostream>
 #include <sstream>
 #include <vector>
@@ -29,9 +30,9 @@
 #include "components/user_education/common/feature_promo_registry.h"
 #include "components/user_education/common/feature_promo_specification.h"
 #include "components/user_education/common/tutorial_identifier.h"
+#include "components/user_education/common/user_education_features.h"
 #include "content/public/test/browser_test.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/base/interaction/interaction_sequence.h"
@@ -43,13 +44,15 @@ enum class IPHFailureReason {
   kNotConfigured,
   kWrongSessionRate,
   kWrongSessionImpact,
+  kWrongSessionImpactPerApp,
+  kWrongSessionImpactLegalNotice,
   kLegacyPromoNoScreenReader,
 };
 
 struct IPHException {
   IPHException() = default;
   IPHException(const base::Feature* feature_,
-               absl::optional<IPHFailureReason> reason_,
+               std::optional<IPHFailureReason> reason_,
                const char* description_)
       : feature(feature_), reason(reason_), description(description_) {}
   IPHException(const IPHException& other) = default;
@@ -57,7 +60,7 @@ struct IPHException {
   ~IPHException() = default;
 
   raw_ptr<const base::Feature> feature = nullptr;
-  absl::optional<IPHFailureReason> reason;
+  std::optional<IPHFailureReason> reason;
   const char* description = nullptr;
 };
 
@@ -144,6 +147,22 @@ std::ostream& operator<<(std::ostream& os, const IPHFailure& failure) {
          << ". An IPH which runs once per session should also prevent other "
             "similar IPH from running (session rate impact ALL); an IPH which "
             "is not limited should not (session rate impact NONE).";
+      break;
+    case IPHFailureReason::kWrongSessionImpactPerApp:
+      os << " has unexpected per-app session rate impact: "
+         << failure.config->session_rate_impact.type
+         << ". A heavyweight IPH which runs per-app should prevent other IPH "
+            "from running (session rate impact ALL); it may or may not be "
+            "limited by other IPH.";
+      break;
+    case IPHFailureReason::kWrongSessionImpactLegalNotice:
+      os << " has unexpected per-app session rate and/or session rate impact: "
+         << failure.config->session_rate.type << ", "
+         << failure.config->session_rate.value << ", "
+         << failure.config->session_rate_impact.type
+         << ". A heavyweight legal notice should never be prevented from "
+            "running (session rate ANY) but should prevent other IPH from "
+            "running (session rate impact ALL).";
       break;
     case IPHFailureReason::kLegacyPromoNoScreenReader:
       os << " is a legacy promo with inadequate screen reader support. Use a "
@@ -241,15 +260,11 @@ IN_PROC_BROWSER_TEST_F(BrowserUserEducationServiceBrowserTest,
        IPHFailureReason::kWrongSessionRate, "crbug.com/1443063"},
       {&feature_engagement::kIPHDesktopCustomizeChromeRefreshFeature,
        IPHFailureReason::kWrongSessionImpact, "crbug.com/1443063"},
-      {&feature_engagement::kIPHDesktopTabGroupsNewGroupFeature,
-       IPHFailureReason::kWrongSessionRate, "crbug.com/1443063"},
       {&feature_engagement::kIPHSideSearchFeature,
        IPHFailureReason::kWrongSessionRate, "crbug.com/1443063"},
-      {&feature_engagement::kIPHHighEfficiencyModeFeature,
+      {&feature_engagement::kIPHMemorySaverModeFeature,
        IPHFailureReason::kWrongSessionRate, "crbug.com/1443063"},
-      {&feature_engagement::kIPHPriceTrackingChipFeature, absl::nullopt,
-       "crbug.com/1443063"},
-      {&feature_engagement::kIPHPriceTrackingInSidePanelFeature, absl::nullopt,
+      {&feature_engagement::kIPHPriceTrackingInSidePanelFeature, std::nullopt,
        "crbug.com/1443063"},
       {&feature_engagement::kIPHPowerBookmarksSidePanelFeature,
        IPHFailureReason::kWrongSessionRate,
@@ -264,11 +279,11 @@ IN_PROC_BROWSER_TEST_F(BrowserUserEducationServiceBrowserTest,
        IPHFailureReason::kNotConfigured, "crbug.com/1443020"},
       {&feature_engagement::kIPHDesktopSharedHighlightingFeature,
        IPHFailureReason::kNotConfigured, "crbug.com/1443071"},
-      {&feature_engagement::kIPHReadingListInSidePanelFeature, absl::nullopt,
+      {&feature_engagement::kIPHReadingListInSidePanelFeature, std::nullopt,
        "crbug.com/1443078"},
-      {&feature_engagement::kIPHTabSearchFeature, absl::nullopt,
+      {&feature_engagement::kIPHTabSearchFeature, std::nullopt,
        "crbug.com/1443079"},
-      {&feature_engagement::kIPHWebUITabStripFeature, absl::nullopt,
+      {&feature_engagement::kIPHWebUITabStripFeature, std::nullopt,
        "crbug.com/1443082"},
 
       // Needs configuration.
@@ -313,7 +328,7 @@ IN_PROC_BROWSER_TEST_F(BrowserUserEducationServiceBrowserTest,
         &configuration->GetFeatureConfig(*feature);
 
     // Fetch the configuration for the given feature.
-    absl::optional<feature_engagement::FeatureConfig> client_config;
+    std::optional<feature_engagement::FeatureConfig> client_config;
     if (!feature_config->valid) {
       // Disabled features don't read from feature_configurations.cc by default;
       // we have to do it manually to ensure that if Finch enables the feature
@@ -336,6 +351,7 @@ IN_PROC_BROWSER_TEST_F(BrowserUserEducationServiceBrowserTest,
         feature_engagement::SessionRateImpact::Type::ALL;
     const bool is_session_limited =
         IsComparatorLimited(feature_config->session_rate, 1);
+    const bool is_v2 = user_education::features::IsUserEducationV2();
 
     switch (spec.promo_type()) {
       case user_education::FeaturePromoSpecification::PromoType::kToast:
@@ -350,15 +366,48 @@ IN_PROC_BROWSER_TEST_F(BrowserUserEducationServiceBrowserTest,
       case user_education::FeaturePromoSpecification::PromoType::kTutorial:
       case user_education::FeaturePromoSpecification::PromoType::kCustomAction:
       case user_education::FeaturePromoSpecification::PromoType::kSnooze:
-        // Standard promos should be session-limited and should limit other IPH.
-        if (!is_session_limited) {
-          MaybeAddFailure(failures, exceptions, feature,
-                          IPHFailureReason::kWrongSessionRate, feature_config);
-        }
-        if (!limits_other_iph) {
-          MaybeAddFailure(failures, exceptions, feature,
-                          IPHFailureReason::kWrongSessionImpact,
-                          feature_config);
+        switch (spec.promo_subtype()) {
+          case user_education::FeaturePromoSpecification::PromoSubtype::kNormal:
+            // Standard promos should be session-limited and should limit other
+            // IPH.
+            if (is_v2 == is_session_limited) {
+              MaybeAddFailure(failures, exceptions, feature,
+                              IPHFailureReason::kWrongSessionRate,
+                              feature_config);
+            }
+            if (!limits_other_iph) {
+              MaybeAddFailure(failures, exceptions, feature,
+                              IPHFailureReason::kWrongSessionImpact,
+                              feature_config);
+            }
+            break;
+          case user_education::FeaturePromoSpecification::PromoSubtype::kPerApp:
+            // These can be session limited or not, but they should preclude
+            // other IPH.
+            if (!limits_other_iph) {
+              MaybeAddFailure(failures, exceptions, feature,
+                              IPHFailureReason::kWrongSessionImpactPerApp,
+                              feature_config);
+            }
+            break;
+          case user_education::FeaturePromoSpecification::PromoSubtype::
+              kLegalNotice:
+            // These should not be session limited, and should limit other IPH.
+            if (is_session_limited || !limits_other_iph) {
+              MaybeAddFailure(failures, exceptions, feature,
+                              IPHFailureReason::kWrongSessionImpactPerApp,
+                              feature_config);
+            }
+            break;
+          case user_education::FeaturePromoSpecification::PromoSubtype::
+              kActionableAlert:
+            // These should not be session limited, and should limit other IPH.
+            if (is_session_limited || !limits_other_iph) {
+              MaybeAddFailure(failures, exceptions, feature,
+                              IPHFailureReason::kWrongSessionImpactPerApp,
+                              feature_config);
+            }
+            break;
         }
         break;
       case user_education::FeaturePromoSpecification::PromoType::kLegacy:
@@ -491,15 +540,19 @@ IN_PROC_BROWSER_TEST_F(BrowserUserEducationServiceBrowserTest, AutoConfigure) {
                 feature_engagement::kMaxStoragePeriod,
                 feature_engagement::kMaxStoragePeriod),
             config.used);
-  EXPECT_EQ(
-      feature_engagement::EventConfig(
-          "WebUiHelpBubbleTest_trigger",
-          feature_engagement::Comparator(feature_engagement::LESS_THAN, 3),
-          feature_engagement::kMaxStoragePeriod,
-          feature_engagement::kMaxStoragePeriod),
-      config.trigger);
+  EXPECT_EQ(feature_engagement::EventConfig(
+                "WebUiHelpBubbleTest_trigger",
+                user_education::features::IsUserEducationV2()
+                    ? feature_engagement::Comparator(feature_engagement::ANY, 0)
+                    : feature_engagement::Comparator(
+                          feature_engagement::LESS_THAN, 5),
+                feature_engagement::kMaxStoragePeriod,
+                feature_engagement::kMaxStoragePeriod),
+            config.trigger);
   EXPECT_TRUE(config.event_configs.empty());
-  EXPECT_EQ(feature_engagement::Comparator(feature_engagement::EQUAL, 0),
+  EXPECT_EQ(user_education::features::IsUserEducationV2()
+                ? feature_engagement::Comparator(feature_engagement::ANY, 0)
+                : feature_engagement::Comparator(feature_engagement::EQUAL, 0),
             config.session_rate);
   EXPECT_EQ(feature_engagement::SessionRateImpact::Type::ALL,
             config.session_rate_impact.type);

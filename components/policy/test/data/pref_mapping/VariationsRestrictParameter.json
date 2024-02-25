@@ -1,0 +1,29 @@
+[
+  {
+    "os": [
+      "win",
+      "linux",
+      "mac",
+      "fuchsia"
+    ],
+    "policy_pref_mapping_tests": [
+      {
+        "policies": {
+          "VariationsRestrictParameter": "restricted"
+        },
+        "prefs": {
+          "variations_restrict_parameter": {
+            "location": "local_state",
+            "value": "restricted"
+          }
+        }
+      }
+    ]
+  },
+  {
+    "os": [
+      "android"
+    ],
+    "reason_for_missing_test": "TODO(http://crbug.com/1141521): enable this policy test on Android"
+  }
+]

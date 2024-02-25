@@ -103,8 +103,8 @@ class DeviceLocalAccountPolicyStore : public UserCloudPolicyStoreBase {
       ash::DeviceSettingsService::OwnershipStatus ownership_status);
 
   const std::string account_id_;
-  raw_ptr<ash::SessionManagerClient, ExperimentalAsh> session_manager_client_;
-  raw_ptr<ash::DeviceSettingsService, ExperimentalAsh> device_settings_service_;
+  raw_ptr<ash::SessionManagerClient> session_manager_client_;
+  raw_ptr<ash::DeviceSettingsService> device_settings_service_;
 
   base::WeakPtrFactory<DeviceLocalAccountPolicyStore> weak_factory_{this};
 };

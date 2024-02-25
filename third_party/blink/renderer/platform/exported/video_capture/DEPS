@@ -2,16 +2,11 @@ specific_include_rules = {
     "web_video_capture_impl_manager.cc": [
         # TODO(crbug.com/1198375): Remove this temporary exception after
         # migration.
-        "+base/task/bind_post_task.h",
-        "+base/task/sequenced_task_runner.h",
-        "+base/token.h",
         "+media/capture/mojom/video_capture_types.mojom-blink.h",
     ],
     "web_video_capture_impl_manager_test.cc": [
         # TODO(crbug.com/1198375): Remove this temporary exception after
         # migration.
-        "+base/task/bind_post_task.h",
-        "+base/token.h",
         "+media/capture/mojom/video_capture.mojom-blink.h",
     ],
 }

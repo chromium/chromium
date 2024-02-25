@@ -28,8 +28,6 @@
 #include "chrome/browser/enterprise/connectors/device_trust/attestation/browser/browser_attestation_service.h"
 #include "chrome/browser/enterprise/connectors/device_trust/attestation/browser/device_attester.h"
 #include "chrome/browser/enterprise/connectors/device_trust/attestation/browser/profile_attester.h"
-#include "chrome/browser/enterprise/connectors/device_trust/attestation/desktop/desktop_attestation_service.h"
-#include "chrome/browser/enterprise/connectors/device_trust/device_trust_features.h"
 #include "chrome/browser/enterprise/identifiers/profile_id_service_factory.h"
 #include "chrome/browser/enterprise/signals/signals_aggregator_factory.h"
 #include "chrome/browser/policy/chrome_browser_policy_connector.h"
@@ -173,26 +171,16 @@ DeviceTrustServiceFactory::BuildServiceInstanceForBrowserContext(
     return nullptr;
   }
 
-  std::unique_ptr<AttestationService> attestation_service;
-  if (IsUserInlineFlowFeatureEnabled()) {
-    // TODO(b/281838243): Update the DTS browser test to account for the browser
-    // attestation service once the new policies are created and supported on DM
-    // Server.
-    std::vector<std::unique_ptr<Attester>> attesters;
-    attesters.push_back(std::make_unique<DeviceAttester>(
-        key_manager, policy::BrowserDMTokenStorage::Get(),
-        browser_cloud_policy_store));
-    attesters.push_back(std::make_unique<ProfileAttester>(
-        enterprise::ProfileIdServiceFactory::GetForProfile(profile),
-        GetUserCloudPolicyStore(profile)));
+  std::vector<std::unique_ptr<Attester>> attesters;
+  attesters.push_back(std::make_unique<DeviceAttester>(
+      key_manager, policy::BrowserDMTokenStorage::Get(),
+      browser_cloud_policy_store));
+  attesters.push_back(std::make_unique<ProfileAttester>(
+      enterprise::ProfileIdServiceFactory::GetForProfile(profile),
+      GetUserCloudPolicyStore(profile)));
 
-    attestation_service =
-        std::make_unique<BrowserAttestationService>(std::move(attesters));
-  } else {
-    attestation_service = std::make_unique<DesktopAttestationService>(
-        policy::BrowserDMTokenStorage::Get(), key_manager,
-        browser_cloud_policy_store);
-  }
+  auto attestation_service =
+      std::make_unique<BrowserAttestationService>(std::move(attesters));
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
   auto signals_service = CreateSignalsService(profile);

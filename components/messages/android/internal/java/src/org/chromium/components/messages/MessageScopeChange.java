@@ -32,7 +32,9 @@ public class MessageScopeChange {
      * @param scopeInstanceKey An identical object as a key of Scope Instance.
      * @param changeType The {@link ChangeType} indicating the type of change.
      */
-    public MessageScopeChange(@MessageScopeType int scopeTypeId, ScopeKey scopeInstanceKey,
+    public MessageScopeChange(
+            @MessageScopeType int scopeTypeId,
+            ScopeKey scopeInstanceKey,
             @ChangeType int changeType) {
         this.scopeTypeId = scopeTypeId;
         this.scopeInstanceKey = scopeInstanceKey;

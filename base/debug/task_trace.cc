@@ -4,22 +4,20 @@
 
 #include "base/debug/task_trace.h"
 
+#include <algorithm>
+#include <iostream>
+#include <sstream>
+
+#include "base/pending_task.h"
 #include "base/ranges/algorithm.h"
+#include "base/task/common/task_annotator.h"
 #include "build/build_config.h"
 
 #if BUILDFLAG(IS_ANDROID)
 #include <android/log.h>
-#endif  // BUILDFLAG(IS_ANDROID)
 
-#include <iostream>
-#include <sstream>
-
-#if BUILDFLAG(IS_ANDROID)
 #include "base/no_destructor.h"
-#endif
-
-#include "base/pending_task.h"
-#include "base/task/common/task_annotator.h"
+#endif  // BUILDFLAG(IS_ANDROID)
 
 namespace base {
 namespace debug {
@@ -98,11 +96,11 @@ size_t TaskTrace::GetAddresses(span<const void*> addresses) const {
   if (empty()) {
     return count;
   }
-  const void* const* current_addresses = stack_trace_->Addresses(&count);
-  for (size_t i = 0; i < count && i < addresses.size(); ++i) {
-    addresses[i] = current_addresses[i];
-  }
-  return count;
+  span<const void* const> current_addresses = stack_trace_->addresses();
+  ranges::copy_n(current_addresses.begin(),
+                 std::min(current_addresses.size(), addresses.size()),
+                 addresses.begin());
+  return current_addresses.size();
 }
 
 std::ostream& operator<<(std::ostream& os, const TaskTrace& task_trace) {

@@ -6,20 +6,22 @@
 
 #import "base/test/bind.h"
 #import "base/test/ios/wait_util.h"
+#import "base/test/metrics/histogram_tester.h"
 #import "base/test/scoped_feature_list.h"
-#import "components/password_manager/core/browser/affiliation/fake_affiliation_service.h"
+#import "components/affiliations/core/browser/fake_affiliation_service.h"
 #import "components/password_manager/core/browser/password_manager_test_utils.h"
-#import "components/password_manager/core/browser/test_password_store.h"
+#import "components/password_manager/core/browser/password_store/test_password_store.h"
 #import "components/password_manager/core/browser/ui/password_check_referrer.h"
-#import "ios/chrome/browser/passwords/ios_chrome_affiliation_service_factory.h"
-#import "ios/chrome/browser/passwords/ios_chrome_password_store_factory.h"
+#import "ios/chrome/browser/affiliations/model/ios_chrome_affiliation_service_factory.h"
+#import "ios/chrome/browser/passwords/model/ios_chrome_profile_password_store_factory.h"
+#import "ios/chrome/browser/passwords/model/metrics/ios_password_manager_metrics.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
-#import "ios/chrome/browser/shared/coordinator/scene/scene_state_browser_agent.h"
 #import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/shared/model/browser_state/test_chrome_browser_state.h"
 #import "ios/chrome/browser/shared/public/commands/application_commands.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
+#import "ios/chrome/browser/shared/public/commands/settings_commands.h"
 #import "ios/chrome/browser/ui/settings/password/password_checkup/password_checkup_coordinator.h"
 #import "ios/chrome/browser/ui/settings/password/password_checkup/password_checkup_view_controller.h"
 #import "ios/chrome/browser/ui/settings/password/password_manager_ui_features.h"
@@ -50,7 +52,7 @@ class PasswordCheckupCoordinatorTest
     TestChromeBrowserState::Builder builder;
     // Add test password store and affiliation service. Used by the mediator.
     builder.AddTestingFactory(
-        IOSChromePasswordStoreFactory::GetInstance(),
+        IOSChromeProfilePasswordStoreFactory::GetInstance(),
         base::BindRepeating(
             &password_manager::BuildPasswordStore<
                 web::BrowserState, password_manager::TestPasswordStore>));
@@ -58,24 +60,29 @@ class PasswordCheckupCoordinatorTest
         IOSChromeAffiliationServiceFactory::GetInstance(),
         base::BindRepeating(base::BindLambdaForTesting([](web::BrowserState*) {
           return std::unique_ptr<KeyedService>(
-              std::make_unique<password_manager::FakeAffiliationService>());
+              std::make_unique<affiliations::FakeAffiliationService>());
         })));
 
+    // Create scene state for reauthentication coordinator.
+    scene_state_ = [[SceneState alloc] initWithAppState:nil];
+    scene_state_.activationLevel = SceneActivationLevelForegroundActive;
+
     browser_state_ = builder.Build();
-    browser_ = std::make_unique<TestBrowser>(browser_state_.get());
+    browser_ =
+        std::make_unique<TestBrowser>(browser_state_.get(), scene_state_);
 
     // Mock ApplicationCommands. Since ApplicationCommands conforms to
-    // ApplicationSettingsCommands, it must be mocked as well.
+    // SettingsCommands, it must be mocked as well.
     mocked_application_commands_handler_ =
         OCMStrictProtocolMock(@protocol(ApplicationCommands));
     [browser_->GetCommandDispatcher()
         startDispatchingToTarget:mocked_application_commands_handler_
                      forProtocol:@protocol(ApplicationCommands)];
     id mocked_application_settings_command_handler =
-        OCMProtocolMock(@protocol(ApplicationSettingsCommands));
+        OCMProtocolMock(@protocol(SettingsCommands));
     [browser_->GetCommandDispatcher()
         startDispatchingToTarget:mocked_application_settings_command_handler
-                     forProtocol:@protocol(ApplicationSettingsCommands)];
+                     forProtocol:@protocol(SettingsCommands)];
 
     // Init navigation controller with a root vc.
     base_navigation_controller_ = [[UINavigationController alloc]
@@ -91,11 +98,6 @@ class PasswordCheckupCoordinatorTest
                                  browser:browser_.get()
                             reauthModule:mock_reauth_module_
                                 referrer:GetParam()];
-
-    // Create scene state for reauthentication coordinator.
-    scene_state_ = [[SceneState alloc] initWithAppState:nil];
-    scene_state_.activationLevel = SceneActivationLevelForegroundActive;
-    SceneStateBrowserAgent::CreateForBrowser(browser_.get(), scene_state_);
 
     scoped_window_.Get().rootViewController = base_navigation_controller_;
 
@@ -125,6 +127,14 @@ class PasswordCheckupCoordinatorTest
         isKindOfClass:[PasswordCheckupViewController class]]);
   }
 
+  // Verifies that a given number of password checkup visits have been recorded.
+  void CheckPasswordCheckupVisitMetricsCount(int count) {
+    histogram_tester_.ExpectUniqueSample(
+        /*name=*/password_manager::kPasswordManagerSurfaceVisitHistogramName,
+        /*sample=*/password_manager::PasswordManagerSurface::kPasswordCheckup,
+        /*count=*/count);
+  }
+
   web::WebTaskEnvironment task_environment_;
   SceneState* scene_state_;
   std::unique_ptr<ChromeBrowserState> browser_state_;
@@ -134,6 +144,7 @@ class PasswordCheckupCoordinatorTest
   MockReauthenticationModule* mock_reauth_module_ = nil;
   base::test::ScopedFeatureList scoped_feature_list_;
   id mocked_application_commands_handler_;
+  base::HistogramTester histogram_tester_;
   PasswordCheckupCoordinator* coordinator_ = nil;
 };
 
@@ -150,6 +161,9 @@ class PasswordCheckupCoordinatorWithReauthenticationTest
 TEST_P(PasswordCheckupCoordinatorWithoutReauthenticationTest,
        PasswordCheckupPresentedWithoutAuth) {
   CheckPasswordCheckupIsPresented();
+
+  // One visit should have been recorded.
+  CheckPasswordCheckupVisitMetricsCount(1);
 }
 
 // Tests that Password Check is presented only after passing authentication
@@ -158,10 +172,41 @@ TEST_P(PasswordCheckupCoordinatorWithReauthenticationTest,
   // Checkup should be covered until auth is passed.
   CheckPasswordCheckupIsNotPresented();
 
-  [mock_reauth_module_ returnMockedReathenticationResult];
+  // No visits recorded until successful auth.
+  CheckPasswordCheckupVisitMetricsCount(0);
+
+  [mock_reauth_module_ returnMockedReauthenticationResult];
 
   // Successful auth should leave Checkup visible.
   CheckPasswordCheckupIsPresented();
+
+  // One visit should have been recorded.
+  CheckPasswordCheckupVisitMetricsCount(1);
+}
+
+// Verifies that Password Checkup visits are logged only once after the first
+// successful authentication.
+TEST_P(PasswordCheckupCoordinatorWithReauthenticationTest,
+       PasswordCheckupVisitRecordedOnlyOnce) {
+  CheckPasswordCheckupVisitMetricsCount(0);
+
+  [mock_reauth_module_ returnMockedReauthenticationResult];
+
+  // Successful auth should record a visit
+  CheckPasswordCheckupVisitMetricsCount(1);
+
+  // Simulate scene transitioning to the background and back to foreground. This
+  // should trigger an auth request.
+  scene_state_.activationLevel = SceneActivationLevelForegroundInactive;
+  scene_state_.activationLevel = SceneActivationLevelBackground;
+  scene_state_.activationLevel = SceneActivationLevelForegroundInactive;
+  scene_state_.activationLevel = SceneActivationLevelForegroundActive;
+
+  // Simulate successful auth.
+  [mock_reauth_module_ returnMockedReauthenticationResult];
+
+  // Validate no new visits were logged.
+  CheckPasswordCheckupVisitMetricsCount(1);
 }
 
 // Test Password Checkup entry points that do not require authentication.

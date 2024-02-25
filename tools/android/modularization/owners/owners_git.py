@@ -44,7 +44,19 @@ def _run_ls_files_command(subdirectory: Optional[str],
   command = _build_ls_files_command(subdirectory)
   filepath_str = run_command(command, cwd=git_src)
   result = []
-  for relative_filepath in filepath_str.split('\n'):
+  for l in filepath_str.split('\n'):
+    # git ls-files -s produces output in the format:
+    #
+    # [mode bits] [hash]            [merge stage] [file path]
+    # 100644      0123456789abcdef  0             chrome/browser/Foo.java
+    #
+    # The first three octal numbers of |mode bits| are '100' for files, and
+    # checking that allows skipping gitlinks ('160') and symlinks ('120').
+    if not l.startswith('100'):
+      # ls-files returns all git files, such as files and gitlinks. Return only
+      # files, which start with 100.
+      continue
+    relative_filepath = l.split(maxsplit=3)[-1]
     if relative_filepath:
       absolute_filepath = os.path.join(git_src, relative_filepath)
       result.append(absolute_filepath)
@@ -53,9 +65,9 @@ def _run_ls_files_command(subdirectory: Optional[str],
 
 def _build_ls_files_command(subdirectory: Optional[str]) -> List[str]:
   if subdirectory:
-    return ['git', 'ls-files', '--', subdirectory]
+    return ['git', 'ls-files', '-s', '--', subdirectory]
   else:
-    return ['git', 'ls-files']
+    return ['git', 'ls-files', '-s']
 
 
 def _get_last_commit_in_dir(git_src: str, subdirectory: str,

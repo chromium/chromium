@@ -39,8 +39,9 @@ void AnimatedPaintWorkletTracker::OnCustomPropertyMutated(
   // in |input_properties_|.
   // TODO(xidachen): Only create composited custom property animations if they
   // affect paint worklet.
-  if (iter == input_properties_.end())
+  if (iter == input_properties_.end()) {
     return;
+  }
   iter->second.animation_value = std::move(property_value);
   // Keep track of which input properties have been changed so that the
   // associated PaintWorklets can be invalidated before activating the pending
@@ -53,10 +54,15 @@ bool AnimatedPaintWorkletTracker::InvalidatePaintWorkletsOnPendingTree() {
     auto it = input_properties_.find(prop_key);
     // Since the invalidations happen on a newly created pending tree,
     // previously animated input properties may not exist on this tree.
-    if (it == input_properties_.end())
+    if (it == input_properties_.end()) {
       continue;
-    for (auto* layer : it->second.associated_layers)
-      layer->InvalidatePaintWorklets(prop_key);
+    }
+    for (auto* layer : it->second.associated_layers) {
+      layer->InvalidatePaintWorklets(
+          prop_key, input_properties_.find(prop_key)->second.animation_value,
+          input_properties_.find(prop_key)->second.last_animation_value);
+    }
+    it->second.last_animation_value = it->second.animation_value;
   }
   bool return_value = !input_properties_animated_on_impl_.empty();
   input_properties_animated_on_impl_.clear();

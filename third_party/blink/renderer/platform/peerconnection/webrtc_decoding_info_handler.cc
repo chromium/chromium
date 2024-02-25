@@ -52,8 +52,8 @@ WebrtcDecodingInfoHandler::WebrtcDecodingInfoHandler(
 WebrtcDecodingInfoHandler::~WebrtcDecodingInfoHandler() = default;
 
 void WebrtcDecodingInfoHandler::DecodingInfo(
-    const absl::optional<webrtc::SdpAudioFormat> sdp_audio_format,
-    const absl::optional<webrtc::SdpVideoFormat> sdp_video_format,
+    const std::optional<webrtc::SdpAudioFormat> sdp_audio_format,
+    const std::optional<webrtc::SdpVideoFormat> sdp_video_format,
     const bool video_spatial_scalability,
     OnMediaCapabilitiesDecodingInfoCallback callback) const {
   DCHECK(sdp_audio_format || sdp_video_format);

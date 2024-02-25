@@ -40,6 +40,7 @@ class BluetoothPolicyHandler;
 class CrdAdminSessionController;
 class DeviceCloudExternalDataPolicyHandler;
 class DeviceCloudPolicyInitializer;
+class DeviceDlcPredownloadListPolicyHandler;
 class DeviceDockMacAddressHandler;
 class DeviceLocalAccountPolicyService;
 class DeviceNamePolicyHandler;
@@ -75,6 +76,8 @@ class BrowserPolicyConnectorAsh : public ChromeBrowserPolicyConnector,
   void Init(PrefService* local_state,
             scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory)
       override;
+
+  void OnBrowserStarted() override;
 
   // Checks whether this devices is under any kind of enterprise management.
   bool IsDeviceEnterpriseManaged() const override;
@@ -240,10 +243,8 @@ class BrowserPolicyConnectorAsh : public ChromeBrowserPolicyConnector,
   std::unique_ptr<CrdAdminSessionController> crd_admin_session_controller_;
   std::unique_ptr<AffiliatedInvalidationServiceProvider>
       affiliated_invalidation_service_provider_;
-  raw_ptr<DeviceCloudPolicyManagerAsh, ExperimentalAsh>
-      device_cloud_policy_manager_ = nullptr;
-  raw_ptr<PrefService, DanglingUntriaged | ExperimentalAsh> local_state_ =
-      nullptr;
+  raw_ptr<DeviceCloudPolicyManagerAsh> device_cloud_policy_manager_ = nullptr;
+  raw_ptr<PrefService, DanglingUntriaged> local_state_ = nullptr;
   std::unique_ptr<DeviceCloudPolicyInitializer>
       device_cloud_policy_initializer_;
   std::unique_ptr<DeviceLocalAccountPolicyService>
@@ -273,6 +274,8 @@ class BrowserPolicyConnectorAsh : public ChromeBrowserPolicyConnector,
   std::unique_ptr<RebootNotificationsScheduler> reboot_notifications_scheduler_;
   std::unique_ptr<DeviceScheduledRebootHandler>
       device_scheduled_reboot_handler_;
+  std::unique_ptr<DeviceDlcPredownloadListPolicyHandler>
+      device_dlc_predownload_list_policy_handler_;
 
   // This policy provider is used on Chrome OS to feed user policy into the
   // global PolicyService instance. This works by installing the cloud policy
@@ -280,7 +283,7 @@ class BrowserPolicyConnectorAsh : public ChromeBrowserPolicyConnector,
   // after login.
   // The provider is owned by the base class; this field is just a typed weak
   // pointer to get to the ProxyPolicyProvider at SetUserPolicyDelegate().
-  raw_ptr<ProxyPolicyProvider, DanglingUntriaged | ExperimentalAsh>
+  raw_ptr<ProxyPolicyProvider, DanglingUntriaged>
       global_user_cloud_policy_provider_ = nullptr;
 
   std::unique_ptr<DeviceNetworkConfigurationUpdaterAsh>

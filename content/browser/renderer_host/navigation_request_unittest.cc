@@ -4,6 +4,7 @@
 
 #include "content/browser/renderer_host/navigation_request.h"
 
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -29,10 +30,8 @@
 #include "net/ssl/ssl_connection_status_flags.h"
 #include "services/network/public/cpp/content_security_policy/content_security_policy.h"
 #include "testing/gmock/include/gmock/gmock.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/navigation/navigation_params.h"
-#include "third_party/blink/public/common/origin_trials/origin_trial_feature.h"
 #include "third_party/blink/public/common/origin_trials/scoped_test_origin_trial_policy.h"
 #include "third_party/blink/public/common/runtime_feature_state/runtime_feature_state_context.h"
 #include "third_party/blink/public/mojom/fetch/fetch_api_request.mojom.h"
@@ -96,7 +95,7 @@ class NavigationRequestTest : public RenderViewHostImplTestHarness {
   // throttle checks when they are finished.
   void SimulateWillFailRequest(
       net::Error net_error_code,
-      const absl::optional<net::SSLInfo> ssl_info = absl::nullopt) {
+      const std::optional<net::SSLInfo> ssl_info = std::nullopt) {
     was_callback_called_ = false;
     callback_result_ = NavigationThrottle::DEFER;
     GetNavigationRequest()->set_net_error(net_error_code);
@@ -197,7 +196,7 @@ class NavigationRequestTest : public RenderViewHostImplTestHarness {
         std::move(commit_params), false /* was_opener_suppressed */,
         std::string() /* extra_headers */, nullptr /* frame_entry */,
         nullptr /* entry */, false /* is_form_submission */,
-        nullptr /* navigation_ui_data */, absl::nullopt /* impression */,
+        nullptr /* navigation_ui_data */, std::nullopt /* impression */,
         false /* is_pdf */);
     main_test_rfh()->frame_tree_node()->TakeNavigationRequest(
         std::move(request));
@@ -254,25 +253,23 @@ TEST_F(NavigationRequestTest, SimpleDataChecksRedirectAndProcess) {
   EXPECT_EQ(blink::mojom::RequestContextType::LOCATION,
             NavigationRequest::From(navigation->GetNavigationHandle())
                 ->request_context_type());
-  EXPECT_EQ(net::HttpResponseInfo::CONNECTION_INFO_UNKNOWN,
+  EXPECT_EQ(net::HttpConnectionInfo::kUNKNOWN,
             navigation->GetNavigationHandle()->GetConnectionInfo());
 
-  navigation->set_http_connection_info(
-      net::HttpResponseInfo::CONNECTION_INFO_HTTP1_1);
+  navigation->set_http_connection_info(net::HttpConnectionInfo::kHTTP1_1);
   navigation->Redirect(kUrl2);
   EXPECT_EQ(blink::mojom::RequestContextType::LOCATION,
             NavigationRequest::From(navigation->GetNavigationHandle())
                 ->request_context_type());
-  EXPECT_EQ(net::HttpResponseInfo::CONNECTION_INFO_HTTP1_1,
+  EXPECT_EQ(net::HttpConnectionInfo::kHTTP1_1,
             navigation->GetNavigationHandle()->GetConnectionInfo());
 
-  navigation->set_http_connection_info(
-      net::HttpResponseInfo::CONNECTION_INFO_QUIC_35);
+  navigation->set_http_connection_info(net::HttpConnectionInfo::kQUIC_35);
   navigation->ReadyToCommit();
   EXPECT_EQ(blink::mojom::RequestContextType::LOCATION,
             NavigationRequest::From(navigation->GetNavigationHandle())
                 ->request_context_type());
-  EXPECT_EQ(net::HttpResponseInfo::CONNECTION_INFO_QUIC_35,
+  EXPECT_EQ(net::HttpConnectionInfo::kQUIC_35,
             navigation->GetNavigationHandle()->GetConnectionInfo());
 }
 
@@ -281,13 +278,12 @@ TEST_F(NavigationRequestTest, SimpleDataCheckNoRedirect) {
   auto navigation =
       NavigationSimulatorImpl::CreateRendererInitiated(kUrl, main_rfh());
   navigation->Start();
-  EXPECT_EQ(net::HttpResponseInfo::CONNECTION_INFO_UNKNOWN,
+  EXPECT_EQ(net::HttpConnectionInfo::kUNKNOWN,
             navigation->GetNavigationHandle()->GetConnectionInfo());
 
-  navigation->set_http_connection_info(
-      net::HttpResponseInfo::CONNECTION_INFO_QUIC_35);
+  navigation->set_http_connection_info(net::HttpConnectionInfo::kQUIC_35);
   navigation->ReadyToCommit();
-  EXPECT_EQ(net::HttpResponseInfo::CONNECTION_INFO_QUIC_35,
+  EXPECT_EQ(net::HttpConnectionInfo::kQUIC_35,
             navigation->GetNavigationHandle()->GetConnectionInfo());
 }
 
@@ -299,7 +295,7 @@ TEST_F(NavigationRequestTest, SimpleDataChecksFailure) {
   EXPECT_EQ(blink::mojom::RequestContextType::LOCATION,
             NavigationRequest::From(navigation->GetNavigationHandle())
                 ->request_context_type());
-  EXPECT_EQ(net::HttpResponseInfo::CONNECTION_INFO_UNKNOWN,
+  EXPECT_EQ(net::HttpConnectionInfo::kUNKNOWN,
             navigation->GetNavigationHandle()->GetConnectionInfo());
 
   navigation->Fail(net::ERR_CERT_DATE_INVALID);
@@ -498,8 +494,8 @@ TEST_F(NavigationRequestTest, SharedStorageWritable) {
   // Verify that the main frame's `NavigationRequest` will not be
   // SharedStorageWritable.
   ASSERT_TRUE(main_navigation->GetNavigationHandle());
-  EXPECT_FALSE(
-      main_navigation->GetNavigationHandle()->shared_storage_writable());
+  EXPECT_FALSE(main_navigation->GetNavigationHandle()
+                   ->shared_storage_writable_eligible());
 
   // Commit the navigation.
   main_navigation->Commit();
@@ -510,7 +506,7 @@ TEST_F(NavigationRequestTest, SharedStorageWritable) {
       content::RenderFrameHostTester::For(main_rfh())->AppendChild("child"));
   blink::mojom::IframeAttributesPtr child_attributes =
       blink::mojom::IframeAttributes::New();
-  child_attributes->shared_storage_writable = true;
+  child_attributes->shared_storage_writable_opted_in = true;
   child_frame->frame_tree_node()->SetAttributes(std::move(child_attributes));
 
   // Create and start a simulated `NavigationRequest` for the child frame.
@@ -521,8 +517,8 @@ TEST_F(NavigationRequestTest, SharedStorageWritable) {
 
   // Verify that the `NavigationRequest` will be SharedStorageWritable.
   ASSERT_TRUE(child_navigation->GetNavigationHandle());
-  EXPECT_TRUE(
-      child_navigation->GetNavigationHandle()->shared_storage_writable());
+  EXPECT_TRUE(child_navigation->GetNavigationHandle()
+                  ->shared_storage_writable_eligible());
 
   // Commit the navigation.
   child_navigation->Commit();
@@ -532,10 +528,10 @@ TEST_F(NavigationRequestTest, SharedStorageWritable) {
       content::RenderFrameHostTester::For(main_rfh())->AppendFencedFrame());
   FrameTreeNode* fenced_frame_node =
       static_cast<RenderFrameHostImpl*>(fenced_frame_root)->frame_tree_node();
-  absl::optional<FencedFrameProperties> new_props =
-      fenced_frame_node->GetFencedFrameProperties();
-  new_props->effective_enabled_permissions.push_back(
+  FencedFrameConfig new_config = FencedFrameConfig(GURL("about:blank"));
+  new_config.AddEffectiveEnabledPermissionForTesting(
       blink::mojom::PermissionsPolicyFeature::kSharedStorage);
+  FencedFrameProperties new_props = FencedFrameProperties(new_config);
   fenced_frame_node->set_fenced_frame_properties(new_props);
   fenced_frame_root->ResetPermissionsPolicy();
 
@@ -546,7 +542,7 @@ TEST_F(NavigationRequestTest, SharedStorageWritable) {
           fenced_frame_root->AppendChild("child_of_fenced"));
   blink::mojom::IframeAttributesPtr child_of_fenced_frame_attributes =
       blink::mojom::IframeAttributes::New();
-  child_of_fenced_frame_attributes->shared_storage_writable = true;
+  child_of_fenced_frame_attributes->shared_storage_writable_opted_in = true;
   child_of_fenced_frame->frame_tree_node()->SetAttributes(
       std::move(child_of_fenced_frame_attributes));
 
@@ -560,7 +556,7 @@ TEST_F(NavigationRequestTest, SharedStorageWritable) {
   // Verify that the `NavigationRequest` will be SharedStorageWritable.
   ASSERT_TRUE(child_of_fenced_frame_navigation->GetNavigationHandle());
   EXPECT_TRUE(child_of_fenced_frame_navigation->GetNavigationHandle()
-                  ->shared_storage_writable());
+                  ->shared_storage_writable_eligible());
 
   // Commit the navigation.
   child_of_fenced_frame_navigation->Commit();
@@ -694,14 +690,13 @@ TEST_F(NavigationRequestTest, DnsAliasesCanBeAccessed) {
 
   // Start the navigation.
   navigation->Start();
-  EXPECT_EQ(net::HttpResponseInfo::CONNECTION_INFO_UNKNOWN,
+  EXPECT_EQ(net::HttpConnectionInfo::kUNKNOWN,
             navigation->GetNavigationHandle()->GetConnectionInfo());
 
   // Commit the navigation.
-  navigation->set_http_connection_info(
-      net::HttpResponseInfo::CONNECTION_INFO_QUIC_35);
+  navigation->set_http_connection_info(net::HttpConnectionInfo::kQUIC_35);
   navigation->ReadyToCommit();
-  EXPECT_EQ(net::HttpResponseInfo::CONNECTION_INFO_QUIC_35,
+  EXPECT_EQ(net::HttpConnectionInfo::kQUIC_35,
             navigation->GetNavigationHandle()->GetConnectionInfo());
 
   // Verify that the aliases are accessible from the NavigationRequest.
@@ -720,14 +715,13 @@ TEST_F(NavigationRequestTest, NoDnsAliases) {
 
   // Start the navigation.
   navigation->Start();
-  EXPECT_EQ(net::HttpResponseInfo::CONNECTION_INFO_UNKNOWN,
+  EXPECT_EQ(net::HttpConnectionInfo::kUNKNOWN,
             navigation->GetNavigationHandle()->GetConnectionInfo());
 
   // Commit the navigation.
-  navigation->set_http_connection_info(
-      net::HttpResponseInfo::CONNECTION_INFO_QUIC_35);
+  navigation->set_http_connection_info(net::HttpConnectionInfo::kQUIC_35);
   navigation->ReadyToCommit();
-  EXPECT_EQ(net::HttpResponseInfo::CONNECTION_INFO_QUIC_35,
+  EXPECT_EQ(net::HttpConnectionInfo::kQUIC_35,
             navigation->GetNavigationHandle()->GetConnectionInfo());
 
   // Verify that there are no aliases in the NavigationRequest.
@@ -748,7 +742,7 @@ TEST_F(NavigationRequestTest, StorageKeyToCommit) {
   NavigationRequest* request =
       NavigationRequest::From(navigation->GetNavigationHandle());
   EXPECT_TRUE(request->commit_params().storage_key.nonce().has_value());
-  EXPECT_EQ(child_document->GetMainFrame()->credentialless_iframes_nonce(),
+  EXPECT_EQ(child_document->GetPage().credentialless_iframes_nonce(),
             request->commit_params().storage_key.nonce().value());
 
   navigation->Commit();
@@ -757,7 +751,7 @@ TEST_F(NavigationRequestTest, StorageKeyToCommit) {
   EXPECT_TRUE(child_document->IsCredentialless());
   EXPECT_EQ(blink::StorageKey::CreateWithNonce(
                 url::Origin::Create(kUrl),
-                child_document->GetMainFrame()->credentialless_iframes_nonce()),
+                child_document->GetPage().credentialless_iframes_nonce()),
             child_document->GetStorageKey());
 }
 
@@ -908,12 +902,12 @@ TEST_F(NavigationRequestTest,
           GURL("https://example.com/navigation.html"), child_frame);
   navigation->ReadyToCommit();
 
-  EXPECT_EQ(main_test_rfh()->credentialless_iframes_nonce(),
+  EXPECT_EQ(main_test_rfh()->GetPage().credentialless_iframes_nonce(),
             static_cast<NavigationRequest*>(navigation->GetNavigationHandle())
                 ->isolation_info_for_subresources()
                 .network_isolation_key()
                 .GetNonce());
-  EXPECT_EQ(main_test_rfh()->credentialless_iframes_nonce(),
+  EXPECT_EQ(main_test_rfh()->GetPage().credentialless_iframes_nonce(),
             static_cast<NavigationRequest*>(navigation->GetNavigationHandle())
                 ->GetIsolationInfo()
                 .network_isolation_key()
@@ -966,7 +960,8 @@ TEST_F(NavigationRequestTest, IsolatedAppPolicyInjection) {
   EXPECT_EQ("'self'", csp->raw_directives[Directive::DefaultSrc]);
   EXPECT_EQ("'self' https: blob: data:",
             csp->raw_directives[Directive::FrameSrc]);
-  EXPECT_EQ("'self' https: wss:", csp->raw_directives[Directive::ConnectSrc]);
+  EXPECT_EQ("'self' https: wss: blob: data:",
+            csp->raw_directives[Directive::ConnectSrc]);
   EXPECT_EQ("'self' 'wasm-unsafe-eval'",
             csp->raw_directives[Directive::ScriptSrc]);
   EXPECT_EQ("'self' https: blob: data:",
@@ -976,6 +971,19 @@ TEST_F(NavigationRequestTest, IsolatedAppPolicyInjection) {
   EXPECT_EQ("'self' blob: data:", csp->raw_directives[Directive::FontSrc]);
   EXPECT_EQ("'self' 'unsafe-inline'", csp->raw_directives[Directive::StyleSrc]);
   EXPECT_EQ("'script'", csp->raw_directives[Directive::RequireTrustedTypesFor]);
+}
+
+TEST_F(NavigationRequestTest, UpdatePrivateNetworkRequestPolicy) {
+  std::unique_ptr<NavigationSimulator> navigation =
+      NavigationSimulator::CreateRendererInitiated(GURL("https://example.com/"),
+                                                   main_test_rfh());
+  navigation->SetSocketAddress(net::IPEndPoint());
+
+  navigation->ReadyToCommit();
+  NavigationRequest* request =
+      NavigationRequest::From(navigation->GetNavigationHandle());
+  EXPECT_FALSE(request->GetSocketAddress().address().IsValid());
+  navigation->Commit();
 }
 
 // Test that the required CSP of every frame is computed/inherited correctly and
@@ -1213,7 +1221,7 @@ class OriginTrialsControllerDelegateMock
   }
   bool IsFeaturePersistedForOrigin(const url::Origin& origin,
                                    const url::Origin& partition_origin,
-                                   blink::OriginTrialFeature feature,
+                                   blink::mojom::OriginTrialFeature feature,
                                    const base::Time current_time) override {
     DCHECK(false) << "Method not implemented for test.";
     return false;

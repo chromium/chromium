@@ -4,7 +4,7 @@
 
 #include "ash/system/accessibility/unified_accessibility_detailed_view_controller.h"
 
-#include "ash/accessibility/accessibility_controller_impl.h"
+#include "ash/accessibility/accessibility_controller.h"
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/system/accessibility/accessibility_detailed_view.h"

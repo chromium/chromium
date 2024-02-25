@@ -2,20 +2,18 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// TODO(b/296792757)
-import '../state/store.js';
-
 import {loadTimeData} from 'chrome://resources/ash/common/load_time_data.m.js';
 import {assertEquals, assertFalse} from 'chrome://webui-test/chai_assert.js';
 
 import {waitUntil} from '../common/js/test_error_reporting.js';
-import {updatePreferences} from '../state/ducks/preferences.js';
 import {updateBulkPinProgress} from '../state/ducks/bulk_pinning.js';
+import {updateDriveConnectionStatus} from '../state/ducks/drive.js';
+import {updatePreferences} from '../state/ducks/preferences.js';
 import {waitDeepEquals} from '../state/for_tests.js';
 import {getEmptyState, getStore} from '../state/store.js';
 import {XfCloudPanel} from '../widgets/xf_cloud_panel.js';
 
-import {BulkPinProgress, BulkPinStage, CloudPanelContainer} from './cloud_panel_container.js';
+import {type BulkPinProgress, BulkPinStage, CloudPanelContainer} from './cloud_panel_container.js';
 
 /**
  * An instance of the cloud panel container.
@@ -33,7 +31,7 @@ let panel: XfCloudPanel|null = null;
  */
 const PREFERENCES = {
   driveEnabled: false,
-  cellularDisabled: false,
+  driveSyncEnabledOnMeteredNetwork: true,
   searchSuggestEnabled: false,
   use24hourClock: false,
   timezone: 'GMT+10',
@@ -43,7 +41,9 @@ const PREFERENCES = {
   trashEnabled: false,
   officeFileMovedOneDrive: 0,
   officeFileMovedGoogleDrive: 0,
+  driveFsBulkPinningAvailable: true,
   driveFsBulkPinningEnabled: true,
+  localUserFilesAllowed: true,
 };
 
 export function setUp() {
@@ -79,6 +79,7 @@ export async function testProgressAndItemsArePassedToElement() {
     pinnedBytes: 150,
     filesToPin: 24,
     remainingSeconds: 0,
+    shouldPin: true,
     emptiedQueue: false,
     listedFiles: 24,
   };
@@ -112,6 +113,7 @@ export async function testOutOfBoundsValuesDoNotUpdateProgress() {
     pinnedBytes: 1000,  // Greater than `bytesToPin`.
     filesToPin: -10,    // Negative number of files to pin.
     remainingSeconds: 0,
+    shouldPin: true,
     emptiedQueue: false,
     listedFiles: 24,
   };
@@ -141,6 +143,7 @@ export async function testOtherStoreUpdatesDontCauseThisContainerToUpdate() {
     pinnedBytes: 150,
     filesToPin: 24,
     remainingSeconds: 0,
+    shouldPin: true,
     emptiedQueue: false,
     listedFiles: 24,
   };
@@ -198,6 +201,7 @@ export async function testZeroBytesToPinShouldShowAllFilesSynced() {
     pinnedBytes: 0,
     filesToPin: 0,
     remainingSeconds: 0,
+    shouldPin: true,
     emptiedQueue: false,
     listedFiles: 0,
   };
@@ -260,6 +264,7 @@ testInProgressStateDoesNotUpdateThePanelWhenPrefDisabled() {
     pinnedBytes: 100,
     filesToPin: 10,
     remainingSeconds: 0,
+    shouldPin: true,
     emptiedQueue: false,
     listedFiles: 10,
   };
@@ -302,6 +307,7 @@ testPausedStateAddsTypeAttributeAndSyncingRemovesAttribute() {
     pinnedBytes: 100,
     filesToPin: 10,
     remainingSeconds: 0,
+    shouldPin: true,
     emptiedQueue: false,
     listedFiles: 10,
   };
@@ -367,6 +373,7 @@ testNotEnoughSpaceStateAddsTypeAttributeAndSyncingRemovesAttribute() {
     pinnedBytes: 100,
     filesToPin: 10,
     remainingSeconds: 0,
+    shouldPin: true,
     emptiedQueue: false,
     listedFiles: 10,
   };
@@ -422,6 +429,7 @@ export async function testExistingPropertiesAreRemovedOnSubsequentSyncds() {
     pinnedBytes: 100,
     filesToPin: 10,
     remainingSeconds: 0,
+    shouldPin: true,
     emptiedQueue: false,
     listedFiles: 10,
   };
@@ -467,6 +475,7 @@ export async function testNoBytesToPinButHasFilesAddsPercentage() {
     pinnedBytes: 0,
     filesToPin: 1,
     remainingSeconds: 0,
+    shouldPin: true,
     emptiedQueue: false,
     listedFiles: 1,
   };
@@ -478,4 +487,48 @@ export async function testNoBytesToPinButHasFilesAddsPercentage() {
   assertEquals(panel!.getAttribute('items'), '1');
   assertEquals(panel!.getAttribute('seconds'), '0');
   assertEquals(panel!.getAttribute('percentage'), '100');
+}
+
+/**
+ * Tests that a metered network update to the store passes the state down to the
+ * cloud panel.
+ */
+export async function testMeteredNetworkState() {
+  // Initialize the store with bulk pinning enabled.
+  const store = getStore();
+  store.init({...getEmptyState(), preferences: PREFERENCES});
+
+  // Setup a syncing state that should be 10% done with 10 items.
+  const bulkPinning: BulkPinProgress = {
+    stage: BulkPinStage.SYNCING,
+    freeSpaceBytes: 0,
+    requiredSpaceBytes: 0,
+    bytesToPin: 0,
+    pinnedBytes: 0,
+    filesToPin: 1,
+    remainingSeconds: 0,
+    shouldPin: true,
+    emptiedQueue: false,
+    listedFiles: 1,
+  };
+
+  store.dispatch(updateBulkPinProgress(bulkPinning));
+  assertEquals(
+      container!.updates, 1,
+      'Bulk pin state change should increment updates to 1');
+  assertEquals(panel!.getAttribute('items'), '1');
+  assertEquals(panel!.getAttribute('seconds'), '0');
+  assertEquals(panel!.getAttribute('percentage'), '100');
+
+  // Entering into a not enough space state ensures the type is updated and the
+  // items and percentage attributes are removed.
+  store.dispatch(updateDriveConnectionStatus({
+    type: chrome.fileManagerPrivate.DriveConnectionStateType.METERED,
+  }));
+  assertEquals(
+      container!.updates, 2,
+      'Bulk pin state stage should increment updates to 2');
+  assertEquals(panel!.getAttribute('type'), 'metered_network');
+  assertFalse(panel!.hasAttribute('items'));
+  assertFalse(panel!.hasAttribute('percentage'));
 }

@@ -46,23 +46,6 @@ SurfaceId FromJavaSurfaceId(jint surface_id) {
   return feed::SurfaceId::FromUnsafeValue(surface_id);
 }
 
-ScopedJavaLocalRef<jobject> ToJava(JNIEnv* env,
-                                   const NetworkResponse& response) {
-  return Java_NetworkResponse_Constructor(
-      env, response.status_code == 200, response.status_code,
-      base::android::ToJavaArrayOfStrings(
-          env, response.response_header_names_and_values),
-      base::android::ToJavaByteArray(
-          env, reinterpret_cast<const uint8_t*>(response.response_bytes.data()),
-          response.response_bytes.size()));
-}
-
-void OnFetchResourceFinished(JNIEnv* env,
-                             const JavaRef<jobject>& callback,
-                             NetworkResponse response) {
-  base::android::RunObjectCallbackAndroid(callback, ToJava(env, response));
-}
-
 }  // namespace
 
 static jlong JNI_FeedSurfaceRendererBridge_Init(
@@ -139,11 +122,9 @@ void FeedSurfaceRendererBridge::StreamUpdate(
   JNIEnv* env = base::android::AttachCurrentThread();
   int32_t data_size = stream_update.ByteSize();
 
-  std::vector<uint8_t> data;
-  data.resize(data_size);
+  std::vector<uint8_t> data(data_size);
   stream_update.SerializeToArray(data.data(), data_size);
-  ScopedJavaLocalRef<jbyteArray> j_data =
-      ToJavaByteArray(env, data.data(), data_size);
+  ScopedJavaLocalRef<jbyteArray> j_data = ToJavaByteArray(env, data);
   Java_FeedSurfaceRendererBridge_onStreamUpdated(env, java_ref_, j_data);
 }
 
@@ -152,8 +133,7 @@ void FeedSurfaceRendererBridge::ReplaceDataStoreEntry(base::StringPiece key,
   JNIEnv* env = base::android::AttachCurrentThread();
   Java_FeedSurfaceRendererBridge_replaceDataStoreEntry(
       env, java_ref_, base::android::ConvertUTF8ToJavaString(env, key),
-      base::android::ToJavaByteArray(
-          env, reinterpret_cast<const uint8_t*>(data.data()), data.size()));
+      base::android::ToJavaByteArray(env, base::as_byte_span(data)));
 }
 
 void FeedSurfaceRendererBridge::RemoveDataStoreEntry(base::StringPiece key) {
@@ -182,30 +162,6 @@ void FeedSurfaceRendererBridge::ManualRefresh(
   feed_stream_api_->ManualRefresh(
       surface_id_, base::BindOnce(&base::android::RunBooleanCallbackAndroid,
                                   ScopedJavaGlobalRef<jobject>(callback_obj)));
-}
-
-void FeedSurfaceRendererBridge::FetchResource(
-    JNIEnv* env,
-    const JavaParamRef<jobject>& j_url,
-    const JavaParamRef<jstring>& j_method,
-    const JavaParamRef<jobjectArray>& j_header_name_and_values,
-    const JavaParamRef<jbyteArray>& j_post_data,
-    const base::android::JavaParamRef<jobject>& callback_obj) {
-  if (!feed_stream_api_) {
-    return;
-  }
-  std::unique_ptr<GURL> url = url::GURLAndroid::ToNativeGURL(env, j_url);
-  std::vector<std::string> header_name_and_values;
-  AppendJavaStringArrayToStringVector(env, j_header_name_and_values,
-                                      &header_name_and_values);
-  std::string post_data;
-  base::android::JavaByteArrayToString(env, j_post_data, &post_data);
-  feed_stream_api_->FetchResource(
-      url ? *url : GURL(),
-      base::android::ConvertJavaStringToUTF8(env, j_method),
-      header_name_and_values, post_data,
-      base::BindOnce(&OnFetchResourceFinished, env,
-                     ScopedJavaGlobalRef<jobject>(callback_obj)));
 }
 
 static void JNI_FeedSurfaceRendererBridge_ProcessThereAndBackAgain(
@@ -395,8 +351,8 @@ static jlong JNI_FeedSurfaceRendererBridge_GetLastFetchTimeMs(JNIEnv* env,
   if (!feed_api) {
     return 0;
   }
-  return feed_api->GetLastFetchTime(FromJavaSurfaceId(surface_id)).ToDoubleT() *
-         1000;
+  return feed_api->GetLastFetchTime(FromJavaSurfaceId(surface_id))
+      .InMillisecondsFSinceUnixEpoch();
 }
 
 static void JNI_FeedSurfaceRendererBridge_ReportInfoCardTrackViewStarted(

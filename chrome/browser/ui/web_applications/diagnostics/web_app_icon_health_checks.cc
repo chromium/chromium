@@ -1,4 +1,4 @@
-// Copyright 2022 The Chromium Authors. All rights reserved.
+// Copyright 2022 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,7 +11,9 @@
 #include "base/ranges/algorithm.h"
 #include "base/run_loop.h"
 #include "chrome/browser/web_applications/app_service/web_app_publisher_helper.h"
+#include "chrome/browser/web_applications/commands/web_app_icon_diagnostic_command.h"
 #include "chrome/browser/web_applications/web_app.h"
+#include "chrome/browser/web_applications/web_app_command_scheduler.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
 
@@ -35,9 +37,11 @@ base::WeakPtr<WebAppIconHealthChecks> WebAppIconHealthChecks::GetWeakPtr() {
   return weak_ptr_factory_.GetWeakPtr();
 }
 
-void WebAppIconHealthChecks::OnWebAppWillBeUninstalled(const AppId& app_id) {
-  if (running_diagnostics_.erase(app_id) > 0)
+void WebAppIconHealthChecks::OnWebAppWillBeUninstalled(
+    const webapps::AppId& app_id) {
+  if (apps_running_icon_diagnostics_.erase(app_id) > 0) {
     run_complete_callback_.Run();
+  }
 }
 
 void WebAppIconHealthChecks::OnWebAppInstallManagerDestroyed() {}
@@ -48,27 +52,25 @@ void WebAppIconHealthChecks::RunDiagnostics() {
 
   install_manager_observation_.Observe(&provider->install_manager());
 
-  std::vector<AppId> app_ids = provider->registrar_unsafe().GetAppIds();
+  std::vector<webapps::AppId> app_ids =
+      provider->registrar_unsafe().GetAppIds();
   run_complete_callback_ = base::BarrierClosure(
       app_ids.size(),
       base::BindOnce(&WebAppIconHealthChecks::RecordDiagnosticResults,
                      GetWeakPtr()));
 
-  for (const AppId& app_id : app_ids) {
-    WebAppIconDiagnostic* diagnostic =
-        running_diagnostics_
-            .insert_or_assign(app_id, std::make_unique<WebAppIconDiagnostic>(
-                                          profile_.get(), app_id))
-            .first->second.get();
-    diagnostic->Run(base::BindOnce(
-        &WebAppIconHealthChecks::SaveDiagnosticForApp, GetWeakPtr(), app_id));
+  for (const webapps::AppId& app_id : app_ids) {
+    apps_running_icon_diagnostics_.emplace(app_id);
+    provider->scheduler().RunIconDiagnosticsForApp(
+        app_id, base::BindOnce(&WebAppIconHealthChecks::SaveDiagnosticForApp,
+                               GetWeakPtr(), app_id));
   }
 }
 
 void WebAppIconHealthChecks::SaveDiagnosticForApp(
-    AppId app_id,
-    absl::optional<WebAppIconDiagnostic::Result> result) {
-  running_diagnostics_.erase(app_id);
+    webapps::AppId app_id,
+    std::optional<WebAppIconDiagnosticResult> result) {
+  apps_running_icon_diagnostics_.erase(app_id);
   if (result)
     results_.push_back(*std::move(result));
   run_complete_callback_.Run();
@@ -77,7 +79,7 @@ void WebAppIconHealthChecks::SaveDiagnosticForApp(
 void WebAppIconHealthChecks::RecordDiagnosticResults() {
   install_manager_observation_.Reset();
 
-  using Result = WebAppIconDiagnostic::Result;
+  using Result = WebAppIconDiagnosticResult;
   auto count = [&](auto member) {
     return base::ranges::count(results_, true, member);
   };

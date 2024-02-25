@@ -84,8 +84,9 @@ void WebApkHandlerDelegate::OnWebApkInfoRetrieved(
       ui::JavaColorToOptionalSkColor(jbackground_color),
       ui::JavaColorToOptionalSkColor(jdark_theme_color),
       ui::JavaColorToOptionalSkColor(jdark_background_color),
-      base::Time::FromJavaTime(jlast_update_check_time_ms),
-      base::Time::FromJavaTime(jlast_update_completion_time_ms),
+      base::Time::FromMillisecondsSinceUnixEpoch(jlast_update_check_time_ms),
+      base::Time::FromMillisecondsSinceUnixEpoch(
+          jlast_update_completion_time_ms),
       static_cast<bool>(jrelax_updates), backing_browser_package_name,
       static_cast<bool>(jis_backing_browser),
       base::android::ConvertJavaStringToUTF8(env, jupdate_status)));

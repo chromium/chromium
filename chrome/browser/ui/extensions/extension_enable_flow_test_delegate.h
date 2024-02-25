@@ -5,9 +5,10 @@
 #ifndef CHROME_BROWSER_UI_EXTENSIONS_EXTENSION_ENABLE_FLOW_TEST_DELEGATE_H_
 #define CHROME_BROWSER_UI_EXTENSIONS_EXTENSION_ENABLE_FLOW_TEST_DELEGATE_H_
 
+#include <optional>
+
 #include "base/run_loop.h"
 #include "chrome/browser/ui/extensions/extension_enable_flow_delegate.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 class ExtensionEnableFlowTestDelegate : public ExtensionEnableFlowDelegate {
  public:
@@ -30,10 +31,10 @@ class ExtensionEnableFlowTestDelegate : public ExtensionEnableFlowDelegate {
   // Wait for the extension enable flow to complete.
   void Wait();
 
-  const absl::optional<Result>& result() const { return result_; }
+  const std::optional<Result>& result() const { return result_; }
 
  private:
-  absl::optional<Result> result_;
+  std::optional<Result> result_;
   base::RunLoop run_loop_;
 };
 

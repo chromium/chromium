@@ -11,6 +11,8 @@
 #include "ash/fast_ink/fast_ink_pointer_controller.h"
 #include "base/observer_list.h"
 #include "base/observer_list_types.h"
+#include "base/scoped_observation.h"
+#include "ui/aura/window_observer.h"
 #include "ui/views/widget/unique_widget_ptr.h"
 
 namespace ash {
@@ -26,7 +28,8 @@ class ASH_EXPORT LaserPointerObserver : public base::CheckedObserver {
 
 // Controller for the laser pointer functionality. Enables/disables laser
 // pointer as well as receives points and passes them off to be rendered.
-class ASH_EXPORT LaserPointerController : public FastInkPointerController {
+class ASH_EXPORT LaserPointerController : public FastInkPointerController,
+                                          public aura::WindowObserver {
  public:
   LaserPointerController();
 
@@ -38,6 +41,13 @@ class ASH_EXPORT LaserPointerController : public FastInkPointerController {
   // Adds/removes the specified |observer|.
   void AddObserver(LaserPointerObserver* observer);
   void RemoveObserver(LaserPointerObserver* observer);
+
+  // aura::WindowObserver:
+  void OnWindowBoundsChanged(aura::Window* window,
+                             const gfx::Rect& old_bounds,
+                             const gfx::Rect& new_bounds,
+                             ui::PropertyChangeReason reason) override;
+  void OnWindowDestroyed(aura::Window* window) override;
 
   // fast_ink::FastInkPointerController:
   void SetEnabled(bool enabled) override;
@@ -68,6 +78,9 @@ class ASH_EXPORT LaserPointerController : public FastInkPointerController {
   base::ObserverList<LaserPointerObserver> observers_;
 
   std::unique_ptr<ScopedLockedHiddenCursor> scoped_locked_hidden_cursor_;
+
+  base::ScopedObservation<aura::Window, aura::WindowObserver>
+      root_window_observation_{this};
 };
 
 }  // namespace ash

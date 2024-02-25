@@ -60,8 +60,8 @@ ProgressBarDialogView::ProgressBarDialogView(bool is_multiple_files)
   message_label_->SetVerticalAlignment(gfx::ALIGN_TOP);
   AddChildView(message_label_.get());
 
-  progress_bar_ = AddChildView(std::make_unique<views::ProgressBar>(
-      /*preferred_height=*/kProgressBarHeight));
+  progress_bar_ = AddChildView(std::make_unique<views::ProgressBar>());
+  progress_bar_->SetPreferredHeight(kProgressBarHeight);
   progress_bar_->SetValue(0.01);  // set small initial value.
   progress_bar_->SetPreferredSize(
       gfx::Size(kProgressBarWidth, kProgressBarHeight));

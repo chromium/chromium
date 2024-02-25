@@ -3,21 +3,22 @@
 // found in the LICENSE file.
 
 import 'chrome://resources/cr_components/settings_prefs/prefs.js';
-import 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.js';
-import 'chrome://resources/cr_elements/cr_link_row/cr_link_row.js';
-import 'chrome://resources/cr_elements/cr_shared_vars.css.js';
-import 'chrome://resources/cr_elements/icons.html.js';
+import 'chrome://resources/ash/common/cr_elements/cr_icon_button/cr_icon_button.js';
+import 'chrome://resources/ash/common/cr_elements/cr_link_row/cr_link_row.js';
+import 'chrome://resources/ash/common/cr_elements/cr_shared_vars.css.js';
+import 'chrome://resources/ash/common/cr_elements/icons.html.js';
 import 'chrome://resources/polymer/v3_0/iron-icon/iron-icon.js';
 import '../settings_shared.css.js';
 import './storage_external.js';
 
-import {CrLinkRowElement} from 'chrome://resources/cr_elements/cr_link_row/cr_link_row.js';
-import {WebUiListenerMixin} from 'chrome://resources/cr_elements/web_ui_listener_mixin.js';
+import {CrLinkRowElement} from 'chrome://resources/ash/common/cr_elements/cr_link_row/cr_link_row.js';
+import {WebUiListenerMixin} from 'chrome://resources/ash/common/cr_elements/web_ui_listener_mixin.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {isCrostiniSupported} from '../common/load_time_booleans.js';
-import {RouteOriginMixin} from '../route_origin_mixin.js';
+import {isCrostiniSupported, isExternalStorageEnabled} from '../common/load_time_booleans.js';
+import {RouteOriginMixin} from '../common/route_origin_mixin.js';
+import {PrefsState} from '../common/types.js';
 import {Route, Router, routes} from '../router.js';
 
 import {DevicePageBrowserProxy, DevicePageBrowserProxyImpl, StorageSpaceState} from './device_page_browser_proxy.js';
@@ -30,7 +31,7 @@ interface StorageSizeStat {
   spaceState: StorageSpaceState;
 }
 
-interface SettingsStorageElement {
+export interface SettingsStorageElement {
   $: {
     availableLabelArea: HTMLElement,
     browsingDataSize: CrLinkRowElement,
@@ -42,7 +43,7 @@ interface SettingsStorageElement {
 const SettingsStorageElementBase =
     RouteOriginMixin(WebUiListenerMixin(PolymerElement));
 
-class SettingsStorageElement extends SettingsStorageElementBase {
+export class SettingsStorageElement extends SettingsStorageElementBase {
   static get is() {
     return 'settings-storage';
   }
@@ -53,7 +54,10 @@ class SettingsStorageElement extends SettingsStorageElementBase {
 
   static get properties() {
     return {
-      androidEnabled: Boolean,
+      prefs: {
+        type: Object,
+        notify: true,
+      },
 
       showCrostiniStorage_: {
         type: Boolean,
@@ -65,20 +69,17 @@ class SettingsStorageElement extends SettingsStorageElementBase {
         value: true,
       },
 
-      showGoogleDriveSettingsPage_: {
-        type: Boolean,
-        value: () => loadTimeData.getBoolean('showGoogleDriveSettingsPage'),
-      },
-
-      isDriveFsBulkPinningEnabled_: {
-        type: Boolean,
-        value: () => loadTimeData.getBoolean('enableDriveFsBulkPinning'),
-      },
-
       isEphemeralUser_: {
         type: Boolean,
         value() {
           return loadTimeData.getBoolean('isCryptohomeDataEphemeral');
+        },
+      },
+
+      isExternalStorageEnabled_: {
+        type: Boolean,
+        value: () => {
+          return isExternalStorageEnabled();
         },
       },
 
@@ -101,12 +102,12 @@ class SettingsStorageElement extends SettingsStorageElementBase {
     ];
   }
 
+  prefs: PrefsState;
   private browserProxy_: DevicePageBrowserProxy;
   private isEphemeralUser_: boolean;
   private showCrostiniStorage_: boolean;
   private isDriveEnabled_: boolean;
-  private showGoogleDriveSettingsPage_: boolean;
-  private isDriveFsBulkPinningEnabled_: boolean;
+  private isExternalStorageEnabled_: boolean;
   private showOtherUsers_: boolean;
   private sizeStat_: StorageSizeStat;
   private updateTimerId_: number;
@@ -125,7 +126,7 @@ class SettingsStorageElement extends SettingsStorageElementBase {
     this.browserProxy_ = DevicePageBrowserProxyImpl.getInstance();
   }
 
-  override connectedCallback() {
+  override connectedCallback(): void {
     super.connectedCallback();
 
     this.addWebUiListener(
@@ -157,7 +158,7 @@ class SettingsStorageElement extends SettingsStorageElementBase {
     }
   }
 
-  override ready() {
+  override ready(): void {
     super.ready();
 
     const r = routes;
@@ -168,7 +169,7 @@ class SettingsStorageElement extends SettingsStorageElementBase {
     this.addFocusConfig(r.APP_MANAGEMENT, '#appsSize');
   }
 
-  override currentRouteChanged(newRoute: Route, oldRoute?: Route) {
+  override currentRouteChanged(newRoute: Route, oldRoute?: Route): void {
     super.currentRouteChanged(newRoute, oldRoute);
 
     if (newRoute !== this.route) {
@@ -335,9 +336,7 @@ class SettingsStorageElement extends SettingsStorageElementBase {
    * Whether to show the Offline files row or not.
    */
   private shouldShowOfflineFilesRow_(): boolean {
-    return this.isDriveEnabled_ &&
-        (this.isDriveFsBulkPinningEnabled_ ||
-         this.showGoogleDriveSettingsPage_);
+    return this.isDriveEnabled_;
   }
 
   /**
@@ -395,6 +394,10 @@ class SettingsStorageElement extends SettingsStorageElementBase {
       default:
         return '';
     }
+  }
+
+  private roundTo2DecimalPoints_(n: number): string {
+    return n.toFixed(2);
   }
 }
 

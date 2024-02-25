@@ -1,0 +1,63 @@
+{
+  "kind": "calendar#calendarList",
+  "etag": "\"p32gqbiyrr257ya1\"",
+  "nextSyncToken": "vFjLRyv2e1bgx1fBEAzswbbyRrCMgpo2T6Baf47ISpP5",
+  "items": [
+    {
+      "kind": "calendar#calendarListEntry",
+      "etag": "\"3428208519567381\"",
+      "id": "test1@google.com",
+      "summary": "test1@google.com",
+      "description": "Primary Calendar",
+      "timeZone": "America/New_York",
+      "colorId": "14",
+      "backgroundColor": "#9fe1e7",
+      "foregroundColor": "#000000",
+      "selected": true,
+      "accessRole": "reader",
+      "primary": true,
+      "defaultReminders": [],
+      "conferenceProperties": {
+        "allowedConferenceSolutionTypes": [
+          "hangoutsMeet"
+        ]
+      }
+    },
+    {
+      "kind": "calendar#calendarListEntry",
+      "etag": "\"9090908504717641\"",
+      "id": "google.com_zu35dc5syt5k0fddetqqfggb75test@group.calendar.google.com",
+      "summary": "Happy Hour Events",
+      "timeZone": "America/New_York",
+      "colorId": "17",
+      "backgroundColor": "#9a9cff",
+      "foregroundColor": "#000000",
+      "accessRole": "reader",
+      "defaultReminders": [],
+      "conferenceProperties": {
+        "allowedConferenceSolutionTypes": [
+          "hangoutsMeet"
+        ]
+      }
+    },
+    {
+      "kind": "calendar#calendarListEntry",
+      "etag": "\"7777398739068290\"",
+      "id": "google.com_3edk4wi2oio66fu9l9zh19zsw9test@group.calendar.google.com",
+      "summary": "Birthdays",
+      "description": "Displays birthdays, anniversaries, and other event dates.",
+      "timeZone": "America/New_York",
+      "colorId": "13",
+      "backgroundColor": "#92e1c0",
+      "foregroundColor": "#000000",
+      "selected": true,
+      "accessRole": "reader",
+      "defaultReminders": [],
+      "conferenceProperties": {
+        "allowedConferenceSolutionTypes": [
+          "hangoutsMeet"
+        ]
+      }
+    }
+  ]
+}

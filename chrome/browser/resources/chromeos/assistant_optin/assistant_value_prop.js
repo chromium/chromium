@@ -11,7 +11,7 @@
  * Event 'loaded' will be fired when the page has been successfully loaded.
  */
 
-import '//resources/cr_elements/cr_dialog/cr_dialog.js';
+import '//resources/ash/common/cr_elements/cr_dialog/cr_dialog.js';
 import '//resources/polymer/v3_0/iron-icon/iron-icon.js';
 import '../components/dialogs/oobe_adaptive_dialog.js';
 import '../components/buttons/oobe_next_button.js';
@@ -22,12 +22,12 @@ import './assistant_icons.html.js';
 import './setting_zippy.js';
 
 import {loadTimeData} from '//resources/ash/common/load_time_data.m.js';
-import {afterNextRender, html, mixinBehaviors, Polymer, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {afterNextRender, html, mixinBehaviors, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {OobeDialogHostBehavior} from '../components/behaviors/oobe_dialog_host_behavior.js';
-import {OobeI18nBehavior, OobeI18nBehaviorInterface} from '../components/behaviors/oobe_i18n_behavior.js';
+import {OobeI18nBehavior} from '../components/behaviors/oobe_i18n_behavior.js';
 
-import {BrowserProxyImpl} from './browser_proxy.js';
+import {BrowserProxy, BrowserProxyImpl} from './browser_proxy.js';
 import {AssistantNativeIconType, HtmlSanitizer, webviewStripLinksContentScript} from './utils.js';
 
 
@@ -284,7 +284,7 @@ class AssistantValueProp extends AssistantValuePropBase {
    * Handles event when value prop webview cannot be loaded.
    */
   onWebViewErrorOccurred(details) {
-    if (details && details.error == 'net::ERR_ABORTED') {
+    if (details && details.error === 'net::ERR_ABORTED') {
       // Retry triggers net::ERR_ABORTED, so ignore it.
       // TODO(b/232592745): Replace with a state machine to handle aborts
       // gracefully and avoid duplicate reloads.
@@ -325,14 +325,14 @@ class AssistantValueProp extends AssistantValuePropBase {
       return;
     }
     this.headerReceived_ = true;
-    if (details.statusCode == '404') {
-      if (details.url != this.defaultUrl) {
+    if (details.statusCode === 404) {
+      if (details.url !== this.defaultUrl) {
         this.reloadWithDefaultUrl_ = true;
         return;
       } else {
         this.onWebViewErrorOccurred();
       }
-    } else if (details.statusCode != '200') {
+    } else if (details.statusCode !== 200) {
       this.onWebViewErrorOccurred();
     }
   }
@@ -417,8 +417,7 @@ class AssistantValueProp extends AssistantValuePropBase {
 
         const description = document.createElement('div');
         description.innerHTML =
-            this.sanitizer_.sanitizeHtml(data['description']);
-        description.innerHTML += '&ensp;';
+            this.sanitizer_.sanitizeHtml(data['description'] + '&ensp;');
 
         const learnMoreLink = document.createElement('a');
         learnMoreLink.textContent = data['popupLink'];
@@ -535,10 +534,10 @@ class AssistantValueProp extends AssistantValuePropBase {
    */
   showContentForStep_(step) {
     for (const subtitle of this.$['subtitle-container'].children) {
-      subtitle.hidden = subtitle.getAttribute('step') != step;
+      subtitle.hidden = subtitle.getAttribute('step') !== step;
     }
     for (const zippy of this.$['consents-container'].children) {
-      zippy.hidden = zippy.getAttribute('step') != step;
+      zippy.hidden = zippy.getAttribute('step') !== step;
     }
   }
 

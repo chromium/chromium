@@ -1,0 +1,17 @@
+// Copyright 2024 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+// NOTE: This mojom should exist in two places and must be kept in sync:
+//       Chromium: //chromeos/ash/services/federated/public/mojom
+//       Chrome OS: src/platform2/federated/mojom/
+module chromeos.federated.mojom;
+
+[Stable, Extensible]
+enum FederatedExampleTableId {
+  [Default] UNKNOWN = 0,
+  TIMEZONE_CODE = 1,
+  LAUNCHER_QUERY = 2,
+  LAUNCHER_QUERY_V2 = 3,
+  INPUT_AUTOCORRECT = 4,
+};

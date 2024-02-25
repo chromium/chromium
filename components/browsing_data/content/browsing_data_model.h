@@ -11,11 +11,15 @@
 #include "base/containers/enum_set.h"
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ref.h"
+#include "base/memory/weak_ptr.h"
 #include "components/browsing_data/content/browsing_data_quota_helper.h"
 #include "components/browsing_data/content/shared_worker_info.h"
+#include "components/webid/federated_identity_data_model.h"
 #include "content/public/browser/attribution_data_model.h"
 #include "content/public/browser/interest_group_manager.h"
 #include "content/public/browser/private_aggregation_data_model.h"
+#include "content/public/browser/session_storage_usage_info.h"
+#include "net/cookies/canonical_cookie.h"
 #include "net/extras/shared_dictionary/shared_dictionary_isolation_key.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
@@ -31,7 +35,6 @@ class StoragePartition;
 // UI. Exposes a uniform view into browsing data based on the concept of
 // "data owners", which denote which entity the data should be closely
 // associated with in UI surfaces.
-// TODO(crbug.com/1271155): Implementation in progress, should not be used.
 class BrowsingDataModel {
  public:
   // The entity that logically owns a set of data. All browsing data will be
@@ -53,9 +56,10 @@ class BrowsingDataModel {
     kQuotaStorage,
     kSharedDictionary,
     kSharedWorker,
+    kCookie,
 
     kFirstType = kTrustTokens,
-    kLastType = kSharedWorker,
+    kLastType = kCookie,
     kExtendedDelegateRange =
         63,  // This is needed to include delegate values when adding delegate
              // browsing data to the model.
@@ -72,8 +76,11 @@ class BrowsingDataModel {
                         content::InterestGroupManager::InterestGroupDataKey,
                         content::AttributionDataModel::DataKey,
                         content::PrivateAggregationDataModel::DataKey,
+                        content::SessionStorageUsageInfo,
                         net::SharedDictionaryIsolationKey,
-                        browsing_data::SharedWorkerInfo
+                        browsing_data::SharedWorkerInfo,
+                        net::CanonicalCookie,
+                        webid::FederatedIdentityDataModel::DataKey
                         // TODO(crbug.com/1271155): Additional backend keys.
                         >
       DataKey;
@@ -104,6 +111,10 @@ class BrowsingDataModel {
     // Returns true if |origin| is within this browsing data's  owning entity.
     bool Matches(const url::Origin& origin) const;
 
+    // Returns the non-1P SchemefulSite this data is partitioned on. Returns
+    // base::nullopt if the data is not partitioned, or is the 1P partition.
+    std::optional<net::SchemefulSite> GetThirdPartyPartitioningSite() const;
+
     // The logical owner of this browsing data. This is the entity which this
     // information will be most strongly associated with in UX surfaces.
     const raw_ref<const DataOwner, DanglingUntriaged> data_owner;
@@ -122,15 +133,11 @@ class BrowsingDataModel {
                           const DataDetails& data_details);
   };
 
-  // Retrieves the host from the data owner.
-  static const std::string GetHost(const DataOwner& data_owner);
-
   // A delegate to handle non components/ data type retrieval and deletion.
   class Delegate {
    public:
-    //
     struct DelegateEntry {
-      DelegateEntry(DataKey data_key,
+      DelegateEntry(const DataKey& data_key,
                     StorageType storage_type,
                     uint64_t storage_size);
       DelegateEntry(const DelegateEntry& other);
@@ -143,16 +150,39 @@ class BrowsingDataModel {
     // Retrieves all possible data keys with its associated storage size.
     virtual void GetAllDataKeys(
         base::OnceCallback<void(std::vector<DelegateEntry>)> callback) = 0;
+
     // Removes all data that matches the data key.
-    virtual void RemoveDataKey(DataKey data_key,
+    virtual void RemoveDataKey(const DataKey& data_key,
                                StorageTypeSet storage_types,
                                base::OnceClosure callback) = 0;
+
     // Returns the owner of the data identified by the given DataKey and
     // StorageType, or nullopt if the delegate does not manage the entity that
     // owns the given data.
-    virtual absl::optional<DataOwner> GetDataOwner(
-        DataKey data_key,
+    virtual std::optional<DataOwner> GetDataOwner(
+        const DataKey& data_key,
         StorageType storage_type) const = 0;
+
+    // Returns true if storage type is Cookie-like i.e. non kAPI type.
+    virtual std::optional<bool> IsStorageTypeCookieLike(
+        StorageType storage_type) const = 0;
+
+    // Returns whether the delegate considers `storage_type` to be blocked by
+    // third party cookie blocking, utilizing `data_key` to exclude partitioned
+    // data. Returns nullopt if the delegate does not manage the storage type.
+    // This method isn't aware of the context in which the data key is being
+    // accessed and may return false positive in case it was called for a first
+    // party key in a first party context.
+    virtual std::optional<bool> IsBlockedByThirdPartyCookieBlocking(
+        const DataKey& data_key,
+        StorageType storage_type) const = 0;
+
+    // Returns whether cookie deletion for a given `url` is disabled.
+    virtual bool IsCookieDeletionDisabled(const GURL& url) = 0;
+
+    // Get a WeakPtr to the instance.
+    virtual base::WeakPtr<Delegate> AsWeakPtr() = 0;
+
     virtual ~Delegate() = default;
   };
 
@@ -197,6 +227,9 @@ class BrowsingDataModel {
 
   // Returns number of entries within the Model.
   size_t size() const { return browsing_data_entries_.size(); }
+
+  // Retrieves the host from the data owner.
+  static const std::string GetHost(const DataOwner& data_owner);
 
   // Consults supported storage backends to create and populate a Model based
   // on the current state of `browser_context`.
@@ -248,6 +281,24 @@ class BrowsingDataModel {
       const net::SchemefulSite& top_level_site,
       base::OnceClosure completed);
 
+  // Removes data for `data_owner` which is not partitioned, or is the 1P
+  // partition. This supports more granular data deletion needed by UI surfaces.
+  // Virtual to allow an in-memory only fake to be created.
+  virtual void RemoveUnpartitionedBrowsingData(const DataOwner& data_owner,
+                                               base::OnceClosure completed);
+
+  // Returns true if storage type is Cookie-like i.e. non kAPI type.
+  // This can't be static as it requires to consult the delegate.
+  bool IsStorageTypeCookieLike(StorageType storage_type) const;
+
+  // Returns whether the provided `storage_type` is blocked when third party
+  // cookies are blocked, utilizing `data_key` to exclude partitioned data.
+  // This method isn't aware of the context in which the data key is being
+  // accessed and may return false positive in case it was called for a first
+  // party key in a first party context.
+  bool IsBlockedByThirdPartyCookieBlocking(const DataKey& data_key,
+                                           StorageType storage_type) const;
+
  protected:
   friend class BrowsingDataModelTest;
 
@@ -257,12 +308,23 @@ class BrowsingDataModel {
       base::OnceCallback<void(std::unique_ptr<BrowsingDataModel>)>
           complete_callback);
 
+  // Takes a list of `browsing_data_entries` to remove from disk and runs
+  // `completed` callback on completion.
+  virtual void RemoveBrowsingDataEntriesFromDisk(
+      const BrowsingDataModel::DataKeyEntries& browsing_data_entries,
+      base::OnceClosure completed);
+
   // Private as one of the static BuildX functions should be used instead.
   explicit BrowsingDataModel(
       content::StoragePartition* storage_partition,
       std::unique_ptr<Delegate> delegate
       // TODO(crbug.com/1271155): Inject other dependencies.
   );
+
+  void GetAffectedDataKeyEntriesForRemovePartitionedBrowsingData(
+      const DataOwner& data_owner,
+      const net::SchemefulSite& top_level_site,
+      DataKeyEntries& affected_data_key_entries);
 
   // Pulls information from disk and populate the model.
   // Virtual to allow an in-memory only fake to be created.

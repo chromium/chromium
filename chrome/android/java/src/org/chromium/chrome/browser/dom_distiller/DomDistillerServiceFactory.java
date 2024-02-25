@@ -4,9 +4,10 @@
 
 package org.chromium.chrome.browser.dom_distiller;
 
+import org.jni_zero.JNINamespace;
+import org.jni_zero.NativeMethods;
+
 import org.chromium.base.ThreadUtils;
-import org.chromium.base.annotations.JNINamespace;
-import org.chromium.base.annotations.NativeMethods;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileKeyedMap;
 import org.chromium.components.dom_distiller.core.DomDistillerService;
@@ -22,9 +23,7 @@ public class DomDistillerServiceFactory {
     private static final ProfileKeyedMap<DomDistillerService> sServiceMap =
             new ProfileKeyedMap<>(ProfileKeyedMap.NO_REQUIRED_CLEANUP_ACTION);
 
-    /**
-     * Returns Java DomDistillerService for given Profile.
-     */
+    /** Returns Java DomDistillerService for given Profile. */
     public static DomDistillerService getForProfile(Profile profile) {
         ThreadUtils.assertOnUiThread();
         return sServiceMap.getForProfile(

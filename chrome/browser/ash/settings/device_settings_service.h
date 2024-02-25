@@ -227,6 +227,12 @@ class DeviceSettingsService : public SessionManagerClient::Observer {
     return will_establish_consumer_ownership_;
   }
 
+  // Returns if the device is managed according to the device settings.
+  bool IsDeviceManaged() const;
+
+  // Returns if the device policy is loaded and contains the DM token.
+  bool HasDmToken() const;
+
   // Adds an observer.
   void AddObserver(Observer* observer);
   // Removes an observer.
@@ -235,6 +241,7 @@ class DeviceSettingsService : public SessionManagerClient::Observer {
   // SessionManagerClient::Observer:
   void OwnerKeySet(bool success) override;
   void PropertyChangeComplete(bool success) override;
+  void SessionStopping() override;
 
  private:
   friend class OwnerSettingsServiceAsh;
@@ -277,8 +284,7 @@ class DeviceSettingsService : public SessionManagerClient::Observer {
   // Processes pending callbacks from GetOwnershipStatusAsync().
   void RunPendingOwnershipStatusCallbacks();
 
-  raw_ptr<SessionManagerClient, ExperimentalAsh> session_manager_client_ =
-      nullptr;
+  raw_ptr<SessionManagerClient> session_manager_client_ = nullptr;
   scoped_refptr<ownership::OwnerKeyUtil> owner_key_util_;
 
   Status store_status_ = STORE_SUCCESS;
@@ -309,6 +315,9 @@ class DeviceSettingsService : public SessionManagerClient::Observer {
 
   // Whether the device will be establishing consumer ownership.
   bool will_establish_consumer_ownership_ = false;
+
+  // Whether we received the signal that the session is stopping.
+  bool session_stopping_ = false;
 
   std::unique_ptr<policy::off_hours::DeviceOffHoursController>
       device_off_hours_controller_;

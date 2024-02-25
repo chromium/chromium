@@ -27,7 +27,8 @@ ScrollbarLayerImplBase::ScrollbarLayerImplBase(
       scroll_layer_length_(0.f),
       orientation_(orientation),
       is_left_side_vertical_scrollbar_(is_left_side_vertical_scrollbar),
-      vertical_adjust_(0.f) {}
+      vertical_adjust_(0.f),
+      has_find_in_page_tickmarks_(false) {}
 
 ScrollbarLayerImplBase::~ScrollbarLayerImplBase() {
   layer_tree_impl()->UnregisterScrollbar(this);
@@ -37,6 +38,7 @@ void ScrollbarLayerImplBase::PushPropertiesTo(LayerImpl* layer) {
   LayerImpl::PushPropertiesTo(layer);
   DCHECK(layer->IsScrollbarLayer());
   ScrollbarLayerImplBase* scrollbar_layer = ToScrollbarLayer(layer);
+  scrollbar_layer->SetHasFindInPageTickmarks(has_find_in_page_tickmarks_);
   scrollbar_layer->set_is_overlay_scrollbar(is_overlay_scrollbar_);
   scrollbar_layer->SetScrollElementId(scroll_element_id());
 }
@@ -94,7 +96,7 @@ bool ScrollbarLayerImplBase::CanScrollOrientation() const {
   if (!scroll_node)
     return false;
 
-  if (orientation() == ScrollbarOrientation::HORIZONTAL) {
+  if (orientation() == ScrollbarOrientation::kHorizontal) {
     if (!scroll_node->user_scrollable_horizontal)
       return false;
   } else {
@@ -230,7 +232,7 @@ gfx::Rect ScrollbarLayerImplBase::ComputeThumbQuadRectWithThumbThicknessScale(
       thumb_thickness * (1.f - thumb_thickness_scale_factor);
 
   gfx::RectF thumb_rect;
-  if (orientation_ == ScrollbarOrientation::HORIZONTAL) {
+  if (orientation_ == ScrollbarOrientation::kHorizontal) {
     thumb_rect = gfx::RectF(thumb_offset,
                             vertical_adjust_ + thumb_thickness_adjustment,
                             thumb_length,
@@ -248,7 +250,8 @@ gfx::Rect ScrollbarLayerImplBase::ComputeThumbQuadRectWithThumbThicknessScale(
   return gfx::ToEnclosingRect(thumb_rect);
 }
 
-gfx::Rect ScrollbarLayerImplBase::ComputeExpandedThumbQuadRect() const {
+gfx::Rect ScrollbarLayerImplBase::ComputeHitTestableExpandedThumbQuadRect()
+    const {
   DCHECK(is_overlay_scrollbar());
   return ComputeThumbQuadRectWithThumbThicknessScale(1.f);
 }
@@ -287,8 +290,17 @@ ScrollbarLayerImplBase::GetScrollbarAnimator() const {
   return layer_tree_impl()->settings().scrollbar_animator;
 }
 
-bool ScrollbarLayerImplBase::HasFindInPageTickmarks() const {
-  return false;
+float ScrollbarLayerImplBase::GetIdleThicknessScale() const {
+  return layer_tree_impl()->settings().idle_thickness_scale;
+}
+
+void ScrollbarLayerImplBase::SetHasFindInPageTickmarks(
+    bool has_find_in_page_tickmarks) {
+  if (has_find_in_page_tickmarks_ == has_find_in_page_tickmarks) {
+    return;
+  }
+  has_find_in_page_tickmarks_ = has_find_in_page_tickmarks;
+  NoteLayerPropertyChanged();
 }
 
 float ScrollbarLayerImplBase::OverlayScrollbarOpacity() const {
@@ -305,6 +317,10 @@ bool ScrollbarLayerImplBase::JumpOnTrackClick() const {
 
 bool ScrollbarLayerImplBase::IsFluentScrollbarEnabled() const {
   return layer_tree_impl()->settings().enable_fluent_scrollbar;
+}
+
+bool ScrollbarLayerImplBase::IsFluentOverlayScrollbarEnabled() const {
+  return layer_tree_impl()->settings().enable_fluent_overlay_scrollbar;
 }
 
 gfx::Rect ScrollbarLayerImplBase::BackButtonRect() const {
@@ -330,24 +346,24 @@ ScrollbarPart ScrollbarLayerImplBase::IdentifyScrollbarPart(
   const gfx::Point pointer_location(position_in_widget.x(),
                                     position_in_widget.y());
   if (BackButtonRect().Contains(pointer_location))
-    return ScrollbarPart::BACK_BUTTON;
+    return ScrollbarPart::kBackButton;
 
   if (ForwardButtonRect().Contains(pointer_location))
-    return ScrollbarPart::FORWARD_BUTTON;
+    return ScrollbarPart::kForwardButton;
 
   if (ComputeHitTestableThumbQuadRect().Contains(pointer_location))
-    return ScrollbarPart::THUMB;
+    return ScrollbarPart::kThumb;
 
   if (BackTrackRect().Contains(pointer_location))
-    return ScrollbarPart::BACK_TRACK;
+    return ScrollbarPart::kBackTrack;
 
   if (ForwardTrackRect().Contains(pointer_location))
-    return ScrollbarPart::FORWARD_TRACK;
+    return ScrollbarPart::kForwardTrack;
 
   // TODO(arakeri): Once crbug.com/952314 is fixed, add a DCHECK to verify that
   // the point that is passed in is within the TrackRect. Also, please note that
   // hit testing other scrollbar parts is not yet implemented.
-  return ScrollbarPart::NO_PART;
+  return ScrollbarPart::kNoPart;
 }
 
 }  // namespace cc

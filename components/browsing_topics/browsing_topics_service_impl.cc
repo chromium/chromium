@@ -460,8 +460,8 @@ bool BrowsingTopicsServiceImpl::HandleTopicsWebApi(
 
     auto result_topic = blink::mojom::EpochTopic::New();
     result_topic->topic = candidate_topic.topic().value();
-    result_topic->config_version =
-        base::StrCat({"chrome.", base::NumberToString(CurrentConfigVersion())});
+    result_topic->config_version = base::StrCat(
+        {"chrome.", base::NumberToString(candidate_topic.config_version())});
     result_topic->model_version =
         base::NumberToString(candidate_topic.model_version());
     result_topic->taxonomy_version =
@@ -686,7 +686,7 @@ void BrowsingTopicsServiceImpl::OnCalculateBrowsingTopicsCompleted(
         /*min=*/base::Seconds(1), /*max=*/base::Days(24), /*buckets=*/100);
   }
 
-  absl::optional<EpochTopics> maybe_removed_epoch =
+  std::optional<EpochTopics> maybe_removed_epoch =
       browsing_topics_state_.AddEpoch(std::move(epoch_topics));
   if (maybe_removed_epoch.has_value()) {
     site_data_manager_->ExpireDataBefore(

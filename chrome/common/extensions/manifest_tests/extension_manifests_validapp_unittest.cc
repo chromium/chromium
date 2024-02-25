@@ -3,15 +3,15 @@
 // found in the LICENSE file.
 
 #include <memory>
+#include <optional>
 #include <utility>
 
 #include "base/values.h"
 #include "chrome/common/extensions/manifest_handlers/app_launch_info.h"
 #include "chrome/common/extensions/manifest_tests/chrome_manifest_test.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
-typedef ChromeManifestTest ValidAppManifestTest;
+using ValidAppManifestTest = ChromeManifestTest;
 
 TEST_F(ValidAppManifestTest, ValidApp) {
   scoped_refptr<extensions::Extension> extension(
@@ -28,7 +28,7 @@ TEST_F(ValidAppManifestTest, ValidApp) {
 
 TEST_F(ValidAppManifestTest, AllowUnrecognizedPermissions) {
   std::string error;
-  absl::optional<base::Value::Dict> manifest =
+  std::optional<base::Value::Dict> manifest =
       LoadManifest("valid_app.json", &error);
   ASSERT_TRUE(manifest);
   base::Value::List* permissions = manifest->FindList("permissions");

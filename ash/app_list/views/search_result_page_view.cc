@@ -66,8 +66,9 @@ constexpr base::TimeDelta kDecreasingHeightSearchResultsDuration =
 // A container view that ensures the card background and the shadow are painted
 // in the correct order.
 class SearchCardView : public views::View {
+  METADATA_HEADER(SearchCardView, views::View)
+
  public:
-  METADATA_HEADER(SearchCardView);
   explicit SearchCardView(std::unique_ptr<views::View> content_view) {
     SetLayoutManager(std::make_unique<views::FillLayout>());
     AddChildView(std::move(content_view));
@@ -77,7 +78,7 @@ class SearchCardView : public views::View {
   ~SearchCardView() override = default;
 };
 
-BEGIN_METADATA(SearchCardView, views::View)
+BEGIN_METADATA(SearchCardView)
 END_METADATA
 
 }  // namespace
@@ -120,15 +121,15 @@ void SearchResultPageView::InitializeContainers(
   AddChildView(std::make_unique<SearchCardView>(std::move(search_view_ptr)));
 }
 
-const char* SearchResultPageView::GetClassName() const {
-  return "SearchResultPageView";
-}
-
 void SearchResultPageView::VisibilityChanged(View* starting_from,
                                              bool is_visible) {
   auto* notifier_controller = search_view_->search_notifier_controller();
   if (starting_from == this && notifier_controller) {
     notifier_controller->UpdateNotifierVisibility(is_visible);
+    if (search_view_->search_notifier_view() &&
+        !notifier_controller->ShouldShowPrivacyNotice()) {
+      search_view_->RemoveSearchNotifierView();
+    }
   }
 }
 
@@ -167,7 +168,7 @@ void SearchResultPageView::UpdateResultContainersVisibility() {
   AnimateToSearchResultsState(ShouldShowSearchResultView()
                                   ? SearchResultsState::kExpanded
                                   : SearchResultsState::kActive);
-  Layout();
+  DeprecatedLayoutImmediately();
 }
 
 void SearchResultPageView::UpdatePageBoundsForState(
@@ -426,11 +427,13 @@ void SearchResultPageView::OnAnimationStarted(AppListState from_state,
 }
 
 gfx::Size SearchResultPageView::GetPreferredSearchBoxSize() const {
-  raw_ptr<const views::View> iph_view =
-      search_view_->search_box_view()->iph_view();
+  auto* iph_view = search_view_->search_box_view()->GetIphView();
   const int iph_height = iph_view ? iph_view->GetPreferredSize().height() : 0;
 
   return gfx::Size(kWidth, kActiveSearchBoxHeight + iph_height);
 }
+
+BEGIN_METADATA(SearchResultPageView)
+END_METADATA
 
 }  // namespace ash

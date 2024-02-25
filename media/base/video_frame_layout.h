@@ -8,6 +8,7 @@
 #include <stddef.h>
 #include <stdint.h>
 
+#include <optional>
 #include <ostream>
 #include <utility>
 #include <vector>
@@ -15,7 +16,6 @@
 #include "media/base/color_plane_layout.h"
 #include "media/base/media_export.h"
 #include "media/base/video_types.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/native_pixmap_handle.h"
 
@@ -46,19 +46,19 @@ class MEDIA_EXPORT VideoFrameLayout {
   // |modifier| is the additional information of |format|. It will become some
   // value else than gfx::NativePixmapHandle::kNoModifier when the underlying
   // buffer format is different from a standard |format| due to tiling.
-  // The returned absl::optional will be absl::nullopt if the configured values
+  // The returned std::optional will be std::nullopt if the configured values
   // are invalid.
 
   // Create a layout suitable for |format| at |coded_size|. The stride, offsets
   // and size of all planes are set to 0, since that information cannot reliably
   // be infered from the arguments.
-  static absl::optional<VideoFrameLayout> Create(VideoPixelFormat format,
-                                                 const gfx::Size& coded_size);
+  static std::optional<VideoFrameLayout> Create(VideoPixelFormat format,
+                                                const gfx::Size& coded_size);
 
   // Create a layout suitable for |format| at |coded_size|, with the |strides|
   // for each plane specified. The offsets and size of all planes are set to 0.
   // The size of |strides| must be equal to NumPlanes(|format|).
-  static absl::optional<VideoFrameLayout> CreateWithStrides(
+  static std::optional<VideoFrameLayout> CreateWithStrides(
       VideoPixelFormat format,
       const gfx::Size& coded_size,
       std::vector<int32_t> strides,
@@ -68,7 +68,7 @@ class MEDIA_EXPORT VideoFrameLayout {
   // Create a layout suitable for |format| at |coded_size|, with the |planes|
   // fully provided.
   // The size of |planes| must be equal to NumPlanes(|format|).
-  static absl::optional<VideoFrameLayout> CreateWithPlanes(
+  static std::optional<VideoFrameLayout> CreateWithPlanes(
       VideoPixelFormat format,
       const gfx::Size& coded_size,
       std::vector<ColorPlaneLayout> planes,
@@ -78,7 +78,7 @@ class MEDIA_EXPORT VideoFrameLayout {
   // This constructor should be called for situations where the frames using
   // this format are backed by multiple physical buffers, instead of having each
   // plane at different offsets of the same buffer. Currently only used by V4L2.
-  static absl::optional<VideoFrameLayout> CreateMultiPlanar(
+  static std::optional<VideoFrameLayout> CreateMultiPlanar(
       VideoPixelFormat format,
       const gfx::Size& coded_size,
       std::vector<ColorPlaneLayout> planes,

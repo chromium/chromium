@@ -5,20 +5,18 @@
 #ifndef CONTENT_BROWSER_PRELOADING_PREFETCH_PREFETCH_PARAMS_H_
 #define CONTENT_BROWSER_PRELOADING_PREFETCH_PREFETCH_PARAMS_H_
 
+#include <optional>
+#include <string_view>
+
 #include "base/time/time.h"
 #include "content/common/content_export.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/mojom/speculation_rules/speculation_rules.mojom.h"
-
 #include "url/gurl.h"
 
 namespace content {
 
 // The url of the tunnel proxy.
 CONTENT_EXPORT GURL PrefetchProxyHost(const GURL& default_proxy_url);
-
-// The header name used to connect to the tunnel proxy.
-std::string PrefetchProxyHeaderKey();
 
 // This value is included in the |PrefetchProxyHeaderKey| request header.
 // The tunnel proxy will use this to determine what, if any, experimental
@@ -40,7 +38,7 @@ size_t PrefetchServiceMaximumNumberOfConcurrentPrefetches();
 // The maximum number of prefetch requests to start from a page. A return value
 // of nullopt means unlimited. Negative values given by the field trial return
 // nullopt.
-absl::optional<int> PrefetchServiceMaximumNumberOfPrefetchesPerPage();
+std::optional<int> PrefetchServiceMaximumNumberOfPrefetchesPerPage();
 
 // Returns true if an ineligible prefetch request should be put on the network,
 // but not cached, to disguise the presence of cookies (or other criteria). The
@@ -68,9 +66,9 @@ bool PrefetchStartsSpareRenderer();
 // forever.
 base::TimeDelta PrefetchContainerLifetimeInPrefetchService();
 
-// Retrieves a host for which the prefetch proxy should be bypassed for testing
-// purposes.
-CONTENT_EXPORT absl::optional<std::string> PrefetchBypassProxyForHost();
+// Returns if the specified host should have the prefetch proxy bypassed for
+// testing purposes. Currently this is only used for WPT test servers.
+CONTENT_EXPORT bool ShouldPrefetchBypassProxyForTestHost(std::string_view host);
 
 // Whether only prefetched resources with a text/html MIME type should be used.
 // If this is false, there is no MIME type restriction.
@@ -113,19 +111,12 @@ bool PrefetchShouldBlockUntilHead(
 
 // The maximum amount of time to block until the head of a prefetch is received.
 // If the value is zero or less, then a navigation can be blocked indefinitely.
-base::TimeDelta PrefetchBlockUntilHeadTimeout(
+CONTENT_EXPORT base::TimeDelta PrefetchBlockUntilHeadTimeout(
     blink::mojom::SpeculationEagerness prefetch_eagerness);
 
 // Gets the histogram suffix to use for the given eagerness parameter.
 CONTENT_EXPORT std::string GetPrefetchEagernessHistogramSuffix(
     blink::mojom::SpeculationEagerness eagerness);
-
-// Returns whether the client is involved in the Holdback Finch
-// experiment group.
-bool IsContentPrefetchHoldback();
-
-// The maximum retry-after header value that will be persisted.
-base::TimeDelta PrefetchMaximumRetryAfterDelta();
 
 // Returns true if |kPrefetchNewLimits| is enabled.
 bool PrefetchNewLimitsEnabled();
@@ -135,6 +126,13 @@ size_t MaxNumberOfEagerPrefetchesPerPageForPrefetchNewLimits();
 // Returns the max number of non-eager prefetches allowed (only used when
 // PrefetchNewLimits is enabled).
 size_t MaxNumberOfNonEagerPrefetchesPerPageForPrefetchNewLimits();
+
+// Returns true if NIK prefetch scope is enabled. See crbug.com/1502326
+bool PrefetchNIKScopeEnabled();
+
+// Returns true if the early cookie copy in `PrefetchDocumentManager` is
+// skipped. See crbug.com/1503003 for details.
+bool PrefetchDocumentManagerEarlyCookieCopySkipped();
 
 }  // namespace content
 

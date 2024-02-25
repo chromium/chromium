@@ -53,8 +53,7 @@ class PepperFileRefBackend {
   virtual int32_t CanReadWrite() const = 0;
 };
 
-class PepperFileRefHost : public ppapi::host::ResourceHost,
-                          public base::SupportsWeakPtr<PepperFileRefHost> {
+class PepperFileRefHost : public ppapi::host::ResourceHost {
  public:
   PepperFileRefHost(BrowserPpapiHost* host,
                     PP_Instance instance,

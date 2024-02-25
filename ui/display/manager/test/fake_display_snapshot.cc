@@ -74,8 +74,8 @@ std::unique_ptr<DisplayMode> ParseDisplayMode(const std::string& str) {
     return nullptr;
   }
 
-  return std::make_unique<DisplayMode>(gfx::Size(width, height), false,
-                                       static_cast<float>(refresh_rate));
+  return CreateDisplayModePtrForTest({width, height}, false,
+                                     static_cast<float>(refresh_rate));
 }
 
 // Parses a list of alternate display modes, adding each new display mode to
@@ -184,11 +184,10 @@ std::unique_ptr<FakeDisplaySnapshot> Builder::Build() {
       id_, port_display_id_, edid_display_id_, connector_index_, origin_,
       physical_size, type_, base_connector_id_, path_topology_,
       is_aspect_preserving_scaling_, has_overscan_, privacy_screen_state_,
-      has_content_protection_key_, has_color_correction_matrix_,
-      color_correction_in_linear_space_, name_, sys_path_, std::move(modes_),
+      has_content_protection_key_, name_, sys_path_, std::move(modes_),
       current_mode_, native_mode_, product_code_, maximum_cursor_size_,
-      color_space_, bits_per_channel_, hdr_static_metadata_,
-      variable_refresh_rate_state_, vsync_rate_min_, DrmFormatsAndModifiers());
+      color_info_, variable_refresh_rate_state_, vsync_rate_min_,
+      DrmFormatsAndModifiers());
 }
 
 Builder& Builder::SetId(int64_t id) {
@@ -272,12 +271,7 @@ Builder& Builder::SetHasOverscan(bool has_overscan) {
 }
 
 Builder& Builder::SetHasColorCorrectionMatrix(bool val) {
-  has_color_correction_matrix_ = val;
-  return *this;
-}
-
-Builder& Builder::SetColorCorrectionInLinearSpace(bool val) {
-  color_correction_in_linear_space_ = val;
+  color_info_.supports_color_temperature_adjustment = val;
   return *this;
 }
 
@@ -325,18 +319,18 @@ Builder& Builder::SetHasContentProtectionKey(bool has_content_protection_key) {
 }
 
 Builder& Builder::SetColorSpace(const gfx::ColorSpace& color_space) {
-  color_space_ = color_space;
+  color_info_.color_space = color_space;
   return *this;
 }
 
 Builder& Builder::SetBitsPerChannel(uint32_t bits_per_channel) {
-  bits_per_channel_ = bits_per_channel;
+  color_info_.bits_per_channel = bits_per_channel;
   return *this;
 }
 
 Builder& Builder::SetHDRStaticMetadata(
     const gfx::HDRStaticMetadata& hdr_static_metadata) {
-  hdr_static_metadata_ = hdr_static_metadata;
+  color_info_.hdr_static_metadata = hdr_static_metadata;
   return *this;
 }
 
@@ -347,7 +341,7 @@ Builder& Builder::SetVariableRefreshRateState(
 }
 
 Builder& Builder::SetVsyncRateMin(
-    const absl::optional<uint16_t>& vsync_rate_min) {
+    const std::optional<uint16_t>& vsync_rate_min) {
   vsync_rate_min_ = vsync_rate_min;
   return *this;
 }
@@ -359,7 +353,7 @@ const DisplayMode* Builder::AddOrFindDisplayMode(const gfx::Size& size) {
   }
 
   // Not found, insert a mode with the size and return.
-  modes_.push_back(std::make_unique<DisplayMode>(size, false, 60.0f));
+  modes_.push_back(CreateDisplayModePtrForTest(size, false, 60.0f));
   return modes_.back().get();
 }
 
@@ -392,8 +386,6 @@ FakeDisplaySnapshot::FakeDisplaySnapshot(
     bool has_overscan,
     PrivacyScreenState privacy_screen_state,
     bool has_content_protection_key,
-    bool has_color_correction_matrix,
-    bool color_correction_in_linear_space,
     std::string display_name,
     const base::FilePath& sys_path,
     DisplayModeList modes,
@@ -401,11 +393,9 @@ FakeDisplaySnapshot::FakeDisplaySnapshot(
     const DisplayMode* native_mode,
     int64_t product_code,
     const gfx::Size& maximum_cursor_size,
-    const gfx::ColorSpace& color_space,
-    uint32_t bits_per_channel,
-    const gfx::HDRStaticMetadata& hdr_static_metadata,
+    const DisplaySnapshot::ColorInfo& color_info,
     VariableRefreshRateState variable_refresh_rate_state,
-    const absl::optional<uint16_t>& vsync_rate_min,
+    const std::optional<uint16_t>& vsync_rate_min,
     const DrmFormatsAndModifiers& drm_formats_and_modifiers)
     : DisplaySnapshot(display_id,
                       port_display_id,
@@ -420,11 +410,7 @@ FakeDisplaySnapshot::FakeDisplaySnapshot(
                       has_overscan,
                       privacy_screen_state,
                       has_content_protection_key,
-                      has_color_correction_matrix,
-                      color_correction_in_linear_space,
-                      color_space,
-                      bits_per_channel,
-                      hdr_static_metadata,
+                      color_info,
                       display_name,
                       sys_path,
                       std::move(modes),

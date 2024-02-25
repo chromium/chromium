@@ -42,12 +42,10 @@
 
 #include "base/logging.h"
 #include "base/numerics/checked_math.h"
+#include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
 #include "third_party/blink/renderer/platform/graphics/bitmap_image_metrics.h"
 #include "third_party/blink/renderer/platform/image-decoders/exif_reader.h"
-#include "third_party/blink/renderer/platform/instrumentation/histogram.h"
-#include "third_party/blink/renderer/platform/instrumentation/tracing/trace_event.h"
-#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/skia/include/core/SkColorSpace.h"
 #include "third_party/skia/include/private/SkJpegMetadataDecoder.h"
 
@@ -126,128 +124,6 @@ bool SubsamplingSupportedByDecodeToYUV(cc::YUVSubsampling subsampling) {
          subsampling == cc::YUVSubsampling::k420;
 }
 
-// Extracts the JPEG color space of an image for UMA purposes given |info| which
-// is assumed to have gone through a jpeg_read_header(). When the color space is
-// YCbCr, we also extract the chroma subsampling. The caveat is that the
-// extracted color space is really libjpeg_turbo's guess. According to
-// libjpeg.txt, "[t]he JPEG color space, unfortunately, is something of a guess
-// since the JPEG standard proper does not provide a way to record it. In
-// practice most files adhere to the JFIF or Adobe conventions, and the decoder
-// will recognize these correctly."
-blink::BitmapImageMetrics::JpegColorSpace ExtractUMAJpegColorSpace(
-    const jpeg_decompress_struct& info) {
-  switch (info.jpeg_color_space) {
-    case JCS_GRAYSCALE:
-      return blink::BitmapImageMetrics::JpegColorSpace::kGrayscale;
-    case JCS_RGB:
-      return blink::BitmapImageMetrics::JpegColorSpace::kRGB;
-    case JCS_CMYK:
-      return blink::BitmapImageMetrics::JpegColorSpace::kCMYK;
-    case JCS_YCCK:
-      return blink::BitmapImageMetrics::JpegColorSpace::kYCCK;
-    case JCS_YCbCr:
-      switch (YuvSubsampling(info)) {
-        case cc::YUVSubsampling::k444:
-          return blink::BitmapImageMetrics::JpegColorSpace::kYCbCr444;
-        case cc::YUVSubsampling::k422:
-          return blink::BitmapImageMetrics::JpegColorSpace::kYCbCr422;
-        case cc::YUVSubsampling::k411:
-          return blink::BitmapImageMetrics::JpegColorSpace::kYCbCr411;
-        case cc::YUVSubsampling::k440:
-          return blink::BitmapImageMetrics::JpegColorSpace::kYCbCr440;
-        case cc::YUVSubsampling::k420:
-          return blink::BitmapImageMetrics::JpegColorSpace::kYCbCr420;
-        case cc::YUVSubsampling::k410:
-          return blink::BitmapImageMetrics::JpegColorSpace::kYCbCr410;
-        case cc::YUVSubsampling::kUnknown:
-          return blink::BitmapImageMetrics::JpegColorSpace::kYCbCrOther;
-      }
-    default:
-      return blink::BitmapImageMetrics::JpegColorSpace::kUnknown;
-  }
-}
-
-// Choose one of the Blink.DecodedImage.JpegDensity.Count.* histograms based on
-// the image area, and add 1 to the bucket for the bits per pixel in the
-// histogram.
-void UpdateBppHistogram(gfx::Size size, size_t image_size_bytes) {
-#define DEFINE_BPP_HISTOGRAM(var, suffix) \
-  DEFINE_THREAD_SAFE_STATIC_LOCAL(        \
-      blink::CustomCountHistogram, var,   \
-      ("Blink.DecodedImage.JpegDensity.Count." suffix, 1, 1000, 100))
-
-  // From 1 pixel to 1 MP, we have one histogram per 0.1 MP.
-  // From 2 MP to 13 MP, we have one histogram per 1 MP.
-  // Finally, we have one histogram for > 13 MP.
-  DEFINE_BPP_HISTOGRAM(jpeg_density_point_1_mp_histogram, "0.1MP");
-  DEFINE_BPP_HISTOGRAM(jpeg_density_point_2_mp_histogram, "0.2MP");
-  DEFINE_BPP_HISTOGRAM(jpeg_density_point_3_mp_histogram, "0.3MP");
-  DEFINE_BPP_HISTOGRAM(jpeg_density_point_4_mp_histogram, "0.4MP");
-  DEFINE_BPP_HISTOGRAM(jpeg_density_point_5_mp_histogram, "0.5MP");
-  DEFINE_BPP_HISTOGRAM(jpeg_density_point_6_mp_histogram, "0.6MP");
-  DEFINE_BPP_HISTOGRAM(jpeg_density_point_7_mp_histogram, "0.7MP");
-  DEFINE_BPP_HISTOGRAM(jpeg_density_point_8_mp_histogram, "0.8MP");
-  DEFINE_BPP_HISTOGRAM(jpeg_density_point_9_mp_histogram, "0.9MP");
-  static blink::CustomCountHistogram* const density_histogram_small[9] = {
-      &jpeg_density_point_1_mp_histogram, &jpeg_density_point_2_mp_histogram,
-      &jpeg_density_point_3_mp_histogram, &jpeg_density_point_4_mp_histogram,
-      &jpeg_density_point_5_mp_histogram, &jpeg_density_point_6_mp_histogram,
-      &jpeg_density_point_7_mp_histogram, &jpeg_density_point_8_mp_histogram,
-      &jpeg_density_point_9_mp_histogram};
-
-  DEFINE_BPP_HISTOGRAM(jpeg_density_1_mp_histogram, "01MP");
-  DEFINE_BPP_HISTOGRAM(jpeg_density_2_mp_histogram, "02MP");
-  DEFINE_BPP_HISTOGRAM(jpeg_density_3_mp_histogram, "03MP");
-  DEFINE_BPP_HISTOGRAM(jpeg_density_4_mp_histogram, "04MP");
-  DEFINE_BPP_HISTOGRAM(jpeg_density_5_mp_histogram, "05MP");
-  DEFINE_BPP_HISTOGRAM(jpeg_density_6_mp_histogram, "06MP");
-  DEFINE_BPP_HISTOGRAM(jpeg_density_7_mp_histogram, "07MP");
-  DEFINE_BPP_HISTOGRAM(jpeg_density_8_mp_histogram, "08MP");
-  DEFINE_BPP_HISTOGRAM(jpeg_density_9_mp_histogram, "09MP");
-  DEFINE_BPP_HISTOGRAM(jpeg_density_10_mp_histogram, "10MP");
-  DEFINE_BPP_HISTOGRAM(jpeg_density_11_mp_histogram, "11MP");
-  DEFINE_BPP_HISTOGRAM(jpeg_density_12_mp_histogram, "12MP");
-  DEFINE_BPP_HISTOGRAM(jpeg_density_13_mp_histogram, "13MP");
-  static blink::CustomCountHistogram* const density_histogram_big[13] = {
-      &jpeg_density_1_mp_histogram,  &jpeg_density_2_mp_histogram,
-      &jpeg_density_3_mp_histogram,  &jpeg_density_4_mp_histogram,
-      &jpeg_density_5_mp_histogram,  &jpeg_density_6_mp_histogram,
-      &jpeg_density_7_mp_histogram,  &jpeg_density_8_mp_histogram,
-      &jpeg_density_9_mp_histogram,  &jpeg_density_10_mp_histogram,
-      &jpeg_density_11_mp_histogram, &jpeg_density_12_mp_histogram,
-      &jpeg_density_13_mp_histogram};
-
-  DEFINE_BPP_HISTOGRAM(jpeg_density_14plus_mp_histogram, "14+MP");
-
-#undef DEFINE_BPP_HISTOGRAM
-
-  uint64_t image_area = size.Area64();
-  CHECK_NE(image_area, 0u);
-  // The calculation of density_centi_bpp cannot overflow. SetSize() ensures
-  // that image_area won't overflow int32_t. And image_size_bytes must be much
-  // smaller than UINT64_MAX / (100 * 8), which is roughly 2^54, or 16 peta
-  // bytes.
-  base::CheckedNumeric<uint64_t> checked_image_size_bytes = image_size_bytes;
-  base::CheckedNumeric<uint64_t> density_centi_bpp =
-      (checked_image_size_bytes * 100 * 8 + image_area / 2) / image_area;
-
-  blink::CustomCountHistogram* density_histogram;
-  if (image_area <= 900000) {
-    // One histogram per 0.1 MP.
-    int n = (static_cast<int>(image_area) + (100000 - 1)) / 100000;
-    density_histogram = density_histogram_small[n - 1];
-  } else if (image_area <= 13000000) {
-    // One histogram per 1 MP.
-    int n = (static_cast<int>(image_area) + (1000000 - 1)) / 1000000;
-    density_histogram = density_histogram_big[n - 1];
-  } else {
-    density_histogram = &jpeg_density_14plus_mp_histogram;
-  }
-
-  density_histogram->Count(base::saturated_cast<base::Histogram::Sample>(
-      density_centi_bpp.ValueOrDie()));
-}
-
 // Rounds |size| to the smallest multiple of |alignment| that is greater than or
 // equal to |size|.
 // Note that base::bits::Align is not used here because the alignment is not
@@ -281,7 +157,7 @@ struct decoder_error_mgr {
 struct decoder_source_mgr {
   DISALLOW_NEW();
   struct jpeg_source_mgr pub;  // "public" fields for IJG library
-  JPEGImageReader* reader;
+  raw_ptr<JPEGImageReader> reader;
 };
 
 enum jstate {
@@ -428,12 +304,12 @@ class JPEGImageReader final {
     return true;
   }
 
-  void SetData(SegmentReader* data) {
-    if (data_.get() == data) {
+  void SetData(scoped_refptr<SegmentReader> data) {
+    if (data_ == data) {
       return;
     }
 
-    data_ = data;
+    data_ = std::move(data);
 
     // If a restart is needed, the next call to fillBuffer will read from the
     // new SegmentReader.
@@ -802,12 +678,11 @@ class JPEGImageReader final {
 
       case kJpegDone:
         // Finish decompression.
-        BitmapImageMetrics::CountJpegArea(decoder_->Size());
-        BitmapImageMetrics::CountJpegColorSpace(
-            ExtractUMAJpegColorSpace(info_));
         if (info_.jpeg_color_space != JCS_GRAYSCALE &&
             decoder_->IsAllDataReceived()) {
-          UpdateBppHistogram(decoder_->Size(), data_->size());
+          static constexpr char kType[] = "Jpeg";
+          ImageDecoder::UpdateBppHistogram<kType>(decoder_->Size(),
+                                                  data_->size());
         }
         return jpeg_finish_decompress(&info_);
     }
@@ -872,7 +747,7 @@ class JPEGImageReader final {
   }
 
   scoped_refptr<SegmentReader> data_;
-  JPEGImageDecoder* decoder_;
+  raw_ptr<JPEGImageDecoder> decoder_;
 
   // Input reading: True if we need to back up to restart_position_.
   bool needs_restart_;
@@ -978,9 +853,9 @@ bool JPEGImageDecoder::SetSize(unsigned width, unsigned height) {
   return true;
 }
 
-void JPEGImageDecoder::OnSetData(SegmentReader* data) {
+void JPEGImageDecoder::OnSetData(scoped_refptr<SegmentReader> data) {
   if (reader_) {
-    reader_->SetData(data);
+    reader_->SetData(std::move(data));
 
     // Changing YUV decoding mode is not allowed after decompression starts.
     if (reader_->HasStartedDecompression()) {
@@ -995,8 +870,6 @@ void JPEGImageDecoder::OnSetData(SegmentReader* data) {
   allow_decode_to_yuv_ =
       // Incremental YUV decoding is not currently supported (crbug.com/943519).
       IsAllDataReceived() &&
-      // TODO(sashamcintosh): Cleanup. Finch experiment is enabled by default.
-      RuntimeEnabledFeatures::DecodeJpeg420ImagesToYUVEnabled() &&
       // Ensures that the reader is created, the scale numbers are known,
       // the color profile is known, and the subsampling is known.
       IsSizeAvailable() &&
@@ -1396,7 +1269,7 @@ void JPEGImageDecoder::Decode(DecodingMode decoding_mode) {
 
   if (!reader_) {
     reader_ = std::make_unique<JPEGImageReader>(this, offset_);
-    reader_->SetData(data_.get());
+    reader_->SetData(data_);
   }
 
   // If we couldn't decode the image but have received all the data, decoding

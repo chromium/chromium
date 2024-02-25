@@ -27,17 +27,18 @@
 #include "base/strings/stringprintf.h"
 #include "components/back_forward_cache/back_forward_cache_disable.h"
 #include "components/history/core/browser/history_service.h"
+#include "components/safe_browsing/content/browser/async_check_tracker.h"
 #include "components/safe_browsing/content/browser/base_ui_manager.h"
 #include "components/safe_browsing/content/browser/client_report_util.h"
 #include "components/safe_browsing/content/browser/threat_details_cache.h"
 #include "components/safe_browsing/content/browser/threat_details_history.h"
+#include "components/safe_browsing/content/browser/unsafe_resource_util.h"
 #include "components/safe_browsing/content/browser/web_contents_key.h"
 #include "components/safe_browsing/content/browser/web_ui/safe_browsing_ui.h"
 #include "components/safe_browsing/core/browser/db/hit_report.h"
 #include "components/safe_browsing/core/browser/referrer_chain_provider.h"
 #include "components/safe_browsing/core/common/features.h"
 #include "components/safe_browsing/core/common/proto/csd.pb.h"
-#include "components/security_interstitials/content/unsafe_resource_util.h"
 #include "content/public/browser/back_forward_cache.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
@@ -135,26 +136,6 @@ void ClearHttpsResource(ClientSafeBrowsingReportRequest::Resource* resource) {
 std::string GetElementKey(const int frame_tree_node_id,
                           const int element_node_id) {
   return base::StringPrintf("%d-%d", frame_tree_node_id, element_node_id);
-}
-
-using CSBRR = safe_browsing::ClientSafeBrowsingReportRequest;
-CSBRR::SafeBrowsingUrlApiType GetUrlApiTypeForThreatSource(
-    safe_browsing::ThreatSource source) {
-  switch (source) {
-    case safe_browsing::ThreatSource::LOCAL_PVER4:
-      return CSBRR::PVER4_NATIVE;
-    case safe_browsing::ThreatSource::REMOTE:
-      return CSBRR::ANDROID_SAFETYNET;
-    case safe_browsing::ThreatSource::URL_REAL_TIME_CHECK:
-      return CSBRR::REAL_TIME;
-    case safe_browsing::ThreatSource::NATIVE_PVER5_REAL_TIME:
-      return CSBRR::PVER5_NATIVE_REAL_TIME;
-    case safe_browsing::ThreatSource::ANDROID_SAFEBROWSING_REAL_TIME:
-      return CSBRR::ANDROID_SAFEBROWSING_REAL_TIME;
-    case safe_browsing::ThreatSource::UNKNOWN:
-    case safe_browsing::ThreatSource::CLIENT_SIDE_DETECTION:
-      return CSBRR::SAFE_BROWSING_URL_API_TYPE_UNSPECIFIED;
-  }
 }
 
 void TrimElements(const std::set<int> target_ids,
@@ -571,7 +552,7 @@ void ThreatDetails::StartCollection() {
     AddUrl(referrer_url, GURL(), std::string(), nullptr);
   }
 
-  if (!resource_.IsMainPageLoadBlocked()) {
+  if (!AsyncCheckTracker::IsMainPageLoadPending(resource_)) {
     // Get URLs of frames, scripts etc from the DOM.
     // OnReceivedThreatDOMDetails will be called when the renderer replies.
     // TODO(mattm): In theory, if the user proceeds through the warning DOM
@@ -698,7 +679,8 @@ void ThreatDetails::FinishCollection(
     bool did_proceed,
     int num_visit,
     std::unique_ptr<security_interstitials::InterstitialInteractionMap>
-        interstitial_interactions) {
+        interstitial_interactions,
+    std::optional<int64_t> warning_shown_ts) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
   all_done_expected_ = true;
@@ -723,6 +705,7 @@ void ThreatDetails::FinishCollection(
   did_proceed_ = did_proceed;
   num_visits_ = num_visit;
   interstitial_interactions_ = std::move(interstitial_interactions);
+  warning_shown_ts_ = warning_shown_ts;
   std::vector<GURL> urls;
   for (ResourceMap::const_iterator it = resources_.begin();
        it != resources_.end(); ++it) {
@@ -794,7 +777,11 @@ void ThreatDetails::OnCacheCollectionReady() {
   report_->set_complete(cache_result_);
 
   report_->mutable_client_properties()->set_url_api_type(
-      GetUrlApiTypeForThreatSource(resource_.threat_source));
+      client_report_utils::GetUrlApiTypeForThreatSource(
+          resource_.threat_source));
+
+  report_->mutable_client_properties()->set_is_async_check(
+      resource_.is_async_check);
 
   // Fill the referrer chain if applicable.
   if (ShouldFillReferrerChain()) {
@@ -805,6 +792,13 @@ void ThreatDetails::OnCacheCollectionReady() {
   if (ShouldFillInterstitialInteractions()) {
     client_report_utils::FillInterstitialInteractionsHelper(
         report_.get(), interstitial_interactions_.get());
+  }
+
+  if (base::FeatureList::IsEnabled(
+          safe_browsing::kAddWarningShownTSToClientSafeBrowsingReport) &&
+      warning_shown_ts_.has_value()) {
+    // Set the warning shown timestamp.
+    report_->set_warning_shown_timestamp_msec(warning_shown_ts_.value());
   }
 
   // Add report to HaTS survey response if applicable.
@@ -840,9 +834,6 @@ void ThreatDetails::FillReferrerChain(
 }
 
 bool ThreatDetails::ShouldFillInterstitialInteractions() {
-  if (!base::FeatureList::IsEnabled(safe_browsing::kAntiPhishingTelemetry)) {
-    return false;
-  }
   static constexpr auto valid_report_types =
       base::MakeFixedFlatSet<ClientSafeBrowsingReportRequest::ReportType>(
           {ClientSafeBrowsingReportRequest::URL_PHISHING,
@@ -862,6 +853,10 @@ void ThreatDetails::MaybeAttachThreatDetailsAndLaunchSurvey() {
   report->set_url(report_->url());
   report->set_page_url(report_->page_url());
   report->set_referrer_url(report_->referrer_url());
+  if (report_->has_warning_shown_timestamp_msec()) {
+    report->set_warning_shown_timestamp_msec(
+        report_->warning_shown_timestamp_msec());
+  }
   client_report_utils::FillInterstitialInteractionsHelper(
       report.get(), interstitial_interactions_.get());
   ui_manager_->AttachThreatDetailsAndLaunchSurvey(browser_context_,

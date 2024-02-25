@@ -5,10 +5,13 @@
 #include "content/browser/file_system_access/file_system_access_local_path_watcher.h"
 
 #include "base/files/file_path.h"
+#include "base/files/file_path_watcher.h"
 #include "base/task/bind_post_task.h"
 #include "base/task/thread_pool.h"
+#include "content/browser/file_system_access/file_system_access_error.h"
 #include "content/browser/file_system_access/file_system_access_watcher_manager.h"
 #include "storage/browser/file_system/file_system_url.h"
+#include "third_party/blink/public/mojom/file_system_access/file_system_access_error.mojom-shared.h"
 
 namespace content {
 
@@ -32,31 +35,64 @@ scoped_refptr<base::SequencedTaskRunner> CreateFilePathWatcherTaskRunner() {
 
 FileSystemAccessLocalPathWatcher::FileSystemAccessLocalPathWatcher(
     FileSystemAccessWatchScope scope,
+    scoped_refptr<storage::FileSystemContext> file_system_context,
     base::PassKey<FileSystemAccessWatcherManager> /*pass_key*/)
-    : FileSystemAccessChangeSource(std::move(scope)),
+    : FileSystemAccessChangeSource(std::move(scope),
+                                   std::move(file_system_context)),
       watcher_(CreateFilePathWatcherTaskRunner()) {}
 
 FileSystemAccessLocalPathWatcher::~FileSystemAccessLocalPathWatcher() = default;
 
 void FileSystemAccessLocalPathWatcher::Initialize(
-    base::OnceCallback<void(bool)> on_source_initialized) {
+    base::OnceCallback<void(blink::mojom::FileSystemAccessErrorPtr)>
+        on_source_initialized) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  base::FilePathWatcher::Callback on_change_callback =
+  if (scope().IsRecursive() &&
+      !base::FilePathWatcher::RecursiveWatchAvailable()) {
+    std::move(on_source_initialized)
+        .Run(file_system_access_error::FromStatus(
+            blink::mojom::FileSystemAccessStatus::kNotSupportedError));
+    return;
+  }
+
+  base::FilePathWatcher::CallbackWithChangeInfo on_change_callback =
       base::BindRepeating(&FileSystemAccessLocalPathWatcher::OnFilePathChanged,
                           weak_factory_.GetWeakPtr());
-  watcher_.AsyncCall(&base::FilePathWatcher::WatchWithOptions)
+
+  base::FilePathWatcher::WatchOptions watch_options {
+    .type = scope().IsRecursive() ? base::FilePathWatcher::Type::kRecursive
+                                  : base::FilePathWatcher::Type::kNonRecursive,
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
+    // Note: `report_modified_path` is also present on Android
+    // and Fuchsia. Update this switch if support for watching
+    // the local file system is added on those platforms.
+    //
+    // TODO(https://crbug.com/1425601): Report the affected
+    // path on more platforms.
+        .report_modified_path = true,
+#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
+  };
+
+  watcher_.AsyncCall(&base::FilePathWatcher::WatchWithChangeInfo)
       .WithArgs(
-          scope().root_url().path(),
-          // TODO(https://crbug.com/1019297): Support recursive watches.
-          // TODO(https://crbug.com/1019297): Report the affected path.
-          base::FilePathWatcher::WatchOptions{
-              .type = base::FilePathWatcher::Type::kNonRecursive},
+          scope().root_url().path(), std::move(watch_options),
           base::BindPostTaskToCurrentDefault(std::move(on_change_callback)))
-      .Then(std::move(on_source_initialized));
+      .Then(base::BindOnce(
+          [](base::OnceCallback<void(blink::mojom::FileSystemAccessErrorPtr)>
+                 callback,
+             bool result) {
+            std::move(callback).Run(
+                result ? file_system_access_error::Ok()
+                       : file_system_access_error::FromStatus(
+                             blink::mojom::FileSystemAccessStatus::
+                                 kOperationFailed));
+          },
+          std::move(on_source_initialized)));
 }
 
 void FileSystemAccessLocalPathWatcher::OnFilePathChanged(
+    const base::FilePathWatcher::ChangeInfo& change_info,
     const base::FilePath& changed_path,
     bool error) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -73,7 +109,7 @@ void FileSystemAccessLocalPathWatcher::OnFilePathChanged(
     CHECK_EQ(root_path, changed_path);
   }
 
-  NotifyOfChange(relative_path, error);
+  NotifyOfChange(relative_path, error, change_info);
 }
 
 }  // namespace content

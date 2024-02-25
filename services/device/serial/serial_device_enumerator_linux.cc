@@ -7,6 +7,7 @@
 #include <stdint.h>
 
 #include <memory>
+#include <string_view>
 #include <utility>
 #include <vector>
 
@@ -42,7 +43,7 @@ std::vector<SerialDriverInfo> ReadSerialDriverInfo(const base::FilePath& path) {
   for (const auto& line :
        base::SplitStringPiece(tty_drivers, "\n", base::KEEP_WHITESPACE,
                               base::SPLIT_WANT_NONEMPTY)) {
-    std::vector<base::StringPiece> fields = base::SplitStringPiece(
+    std::vector<std::string_view> fields = base::SplitStringPiece(
         line, " ", base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
 
     // The format of each line is:
@@ -58,7 +59,7 @@ std::vector<SerialDriverInfo> ReadSerialDriverInfo(const base::FilePath& path) {
     if (!base::StringToInt(fields[2], &info.major))
       continue;
 
-    std::vector<base::StringPiece> minor_range = base::SplitStringPiece(
+    std::vector<std::string_view> minor_range = base::SplitStringPiece(
         fields[3], "-", base::KEEP_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
     if (minor_range.size() == 1) {
       if (!base::StringToInt(minor_range[0], &info.minor_start))

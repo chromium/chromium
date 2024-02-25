@@ -37,6 +37,7 @@
 #include "third_party/blink/renderer/core/css/css_try_rule.h"
 #include "third_party/blink/renderer/core/css/parser/css_parser.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
+#include "third_party/blink/renderer/core/frame/web_feature.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
@@ -166,8 +167,9 @@ unsigned CSSGroupingRule::insertRule(const ExecutionContext* execution_context,
     return 0;
   } else {
     CSSStyleSheet::RuleMutationScope mutation_scope(this);
-    group_rule_->WrapperInsertRule(index, new_rule);
+    group_rule_->WrapperInsertRule(parentStyleSheet(), index, new_rule);
     child_rule_cssom_wrappers_.insert(index, Member<CSSRule>(nullptr));
+    UseCountForSignalAffected();
     return index;
   }
 }
@@ -187,12 +189,13 @@ void CSSGroupingRule::deleteRule(unsigned index,
 
   CSSStyleSheet::RuleMutationScope mutation_scope(this);
 
-  group_rule_->WrapperRemoveRule(index);
+  group_rule_->WrapperRemoveRule(parentStyleSheet(), index);
 
   if (child_rule_cssom_wrappers_[index]) {
     child_rule_cssom_wrappers_[index]->SetParentRule(nullptr);
   }
   child_rule_cssom_wrappers_.EraseAt(index);
+  UseCountForSignalAffected();
 }
 
 // Returns true if this is a style rule whose selector is & {} and has no
@@ -232,11 +235,12 @@ void CSSGroupingRule::AppendCSSTextForItems(StringBuilder& result) const {
   //    and the first rule is a CSSStyleRule with a single selector
   //    that would serialize to exactly “&”, and that rule has no children:
   unsigned size = length();
-  if (size > 0 && IsImplicitlyInsertedParentRule(Item(0))) {
+  if (size > 0 && IsImplicitlyInsertedParentRule(ItemInternal(0))) {
     // 4.1. Let decls be the result of performing serialize a CSS declaration
     // block on the first rule’s associated declarations.
+    CSSRule* rule = ItemInternal(0);
     String decls =
-        DynamicTo<CSSStyleRule>(Item(0))->GetStyleRule()->Properties().AsText();
+        DynamicTo<CSSStyleRule>(rule)->GetStyleRule()->Properties().AsText();
 
     // 4.2. Let rules be the result of performing serialize a CSS
     //      rule on each rule in the rule’s cssRules list except the first,
@@ -245,7 +249,7 @@ void CSSGroupingRule::AppendCSSTextForItems(StringBuilder& result) const {
     for (unsigned i = 1; i < size; ++i) {
       // Step 4.4.2 for rules.
       rules.Append("\n  ");
-      rules.Append(Item(i)->cssText());
+      rules.Append(ItemInternal(i)->cssText());
     }
 
     // 4.3. If rules is null:
@@ -291,7 +295,7 @@ void CSSGroupingRule::AppendCSSTextForItems(StringBuilder& result) const {
   //   5.3. Append a newline to s, followed by the string "}", i.e., RIGHT CURLY
   //        BRACKET (U+007D)
   for (unsigned i = 0; i < size; ++i) {
-    CSSRule* child = Item(i);
+    CSSRule* child = ItemInternal(i);
     result.Append("  ");
     result.Append(child->cssText());
     result.Append('\n');
@@ -303,7 +307,8 @@ unsigned CSSGroupingRule::length() const {
   return group_rule_->ChildRules().size();
 }
 
-CSSRule* CSSGroupingRule::Item(unsigned index) const {
+CSSRule* CSSGroupingRule::Item(unsigned index,
+                               bool trigger_use_counters) const {
   if (index >= length()) {
     return nullptr;
   }
@@ -312,7 +317,7 @@ CSSRule* CSSGroupingRule::Item(unsigned index) const {
   Member<CSSRule>& rule = child_rule_cssom_wrappers_[index];
   if (!rule) {
     rule = group_rule_->ChildRules()[index]->CreateCSSOMWrapper(
-        index, const_cast<CSSGroupingRule*>(this));
+        index, const_cast<CSSGroupingRule*>(this), trigger_use_counters);
   }
   return rule.Get();
 }
@@ -334,6 +339,12 @@ void CSSGroupingRule::Reattach(StyleRuleBase* rule) {
       child_rule_cssom_wrappers_[i]->Reattach(
           group_rule_->ChildRules()[i].Get());
     }
+  }
+}
+
+void CSSGroupingRule::UseCountForSignalAffected() {
+  if (group_rule_->HasSignalingChildRule()) {
+    CountUse(WebFeature::kCSSRuleWithSignalingChildModified);
   }
 }
 

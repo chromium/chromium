@@ -11,6 +11,7 @@
 #include "chromeos/ash/services/secure_channel/channel_impl.h"
 #include "chromeos/ash/services/secure_channel/client_connection_parameters.h"
 #include "chromeos/ash/services/secure_channel/file_transfer_update_callback.h"
+#include "chromeos/ash/services/secure_channel/public/mojom/nearby_connector.mojom.h"
 #include "chromeos/ash/services/secure_channel/public/mojom/secure_channel.mojom.h"
 #include "chromeos/ash/services/secure_channel/single_client_proxy.h"
 #include "mojo/public/cpp/bindings/remote.h"
@@ -60,6 +61,9 @@ class SingleClientProxyImpl : public SingleClientProxy,
   void HandleReceivedMessage(const std::string& feature,
                              const std::string& payload) override;
   void HandleRemoteDeviceDisconnection() override;
+  void HandleNearbyConnectionStateChanged(
+      mojom::NearbyConnectionStep step,
+      mojom::NearbyConnectionStepResult result) override;
 
   // ChannelImpl::Delegate:
   void OnSendMessageRequested(const std::string& message,
@@ -79,6 +83,8 @@ class SingleClientProxyImpl : public SingleClientProxy,
   std::unique_ptr<ClientConnectionParameters> client_connection_parameters_;
   std::unique_ptr<ChannelImpl> channel_;
   mojo::Remote<mojom::MessageReceiver> message_receiver_remote_;
+  mojo::Remote<mojom::NearbyConnectionStateListener>
+      nearby_connection_state_listener_remote_;
 };
 
 }  // namespace ash::secure_channel

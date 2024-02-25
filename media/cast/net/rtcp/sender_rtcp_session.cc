@@ -92,22 +92,22 @@ void SenderRtcpSession::WillSendFrame(FrameId frame_id) {
   }
 }
 
-bool SenderRtcpSession::IncomingRtcpPacket(const uint8_t* data, size_t length) {
+bool SenderRtcpSession::IncomingRtcpPacket(base::span<const uint8_t> data) {
   // Check if this is a valid RTCP packet.
-  if (!IsRtcpPacket(data, length)) {
+  if (!IsRtcpPacket(data)) {
     VLOG(1) << "Rtcp@" << this << "::IncomingRtcpPacket() -- "
             << "Received an invalid (non-RTCP?) packet.";
     return false;
   }
 
   // Check if this packet is to us.
-  uint32_t ssrc_of_sender = GetSsrcOfSender(data, length);
+  uint32_t ssrc_of_sender = GetSsrcOfSender(data);
   if (ssrc_of_sender != remote_ssrc_) {
     return false;
   }
 
   // Parse this packet.
-  base::BigEndianReader reader(data, length);
+  base::BigEndianReader reader(data);
   if (parser_.Parse(&reader)) {
     if (parser_.has_picture_loss_indicator())
       rtcp_observer_->OnReceivedPli();

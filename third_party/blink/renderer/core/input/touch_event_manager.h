@@ -5,7 +5,8 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_INPUT_TOUCH_EVENT_MANAGER_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_INPUT_TOUCH_EVENT_MANAGER_H_
 
-#include "third_party/abseil-cpp/absl/types/optional.h"
+#include <optional>
+
 #include "third_party/blink/public/common/input/web_coalesced_input_event.h"
 #include "third_party/blink/public/common/input/web_pointer_event.h"
 #include "third_party/blink/public/common/input/web_touch_event.h"
@@ -149,7 +150,7 @@ class CORE_EXPORT TouchEventManager final
   //
   // TODO(https://crbug.com/844493): This seems incomplete code, should be
   // removed.
-  absl::optional<TouchAction> delayed_effective_touch_action_;
+  std::optional<TouchAction> delayed_effective_touch_action_;
 };
 
 }  // namespace blink

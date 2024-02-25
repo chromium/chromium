@@ -6,13 +6,12 @@
 #define UI_VIEWS_CONTROLS_SCROLL_VIEW_H_
 
 #include <memory>
+#include <optional>
 #include <utility>
 
 #include "base/callback_list.h"
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
-#include "base/memory/raw_ptr_exclusion.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/color/color_id.h"
 #include "ui/compositor/layer_type.h"
 #include "ui/views/controls/focus_ring.h"
@@ -50,9 +49,9 @@ enum class OverflowIndicatorAlignment { kLeft, kTop, kRight, kBottom };
 /////////////////////////////////////////////////////////////////////////////
 
 class VIEWS_EXPORT ScrollView : public View, public ScrollBarController {
- public:
-  METADATA_HEADER(ScrollView);
+  METADATA_HEADER(ScrollView, View)
 
+ public:
   // Indicates whether or not scroll view is initialized with layer-scrolling.
   enum class ScrollWithLayers { kDisabled, kEnabled };
 
@@ -133,13 +132,13 @@ class VIEWS_EXPORT ScrollView : public View, public ScrollBarController {
   //   called the background color comes from the theme (and changes if the
   //   theme changes).
   // . By way of setting an explicit color, i.e. SetBackgroundColor(). Use
-  //   absl::nullopt if you don't want any color, but be warned this
+  //   std::nullopt if you don't want any color, but be warned this
   //   produces awful results when layers are used with subpixel rendering.
-  absl::optional<SkColor> GetBackgroundColor() const;
-  void SetBackgroundColor(const absl::optional<SkColor>& color);
+  std::optional<SkColor> GetBackgroundColor() const;
+  void SetBackgroundColor(const std::optional<SkColor>& color);
 
-  absl::optional<ui::ColorId> GetBackgroundThemeColorId() const;
-  void SetBackgroundThemeColorId(const absl::optional<ui::ColorId>& color_id);
+  std::optional<ui::ColorId> GetBackgroundThemeColorId() const;
+  void SetBackgroundThemeColorId(const std::optional<ui::ColorId>& color_id);
 
   // Returns the visible region of the content View.
   gfx::Rect GetVisibleRect() const;
@@ -229,7 +228,7 @@ class VIEWS_EXPORT ScrollView : public View, public ScrollBarController {
   // View overrides:
   gfx::Size CalculatePreferredSize() const override;
   int GetHeightForWidth(int width) const override;
-  void Layout() override;
+  void Layout(PassKey) override;
   bool OnKeyPressed(const ui::KeyEvent& event) override;
   bool OnMouseWheel(const ui::MouseWheelEvent& e) override;
   void OnScrollEvent(ui::ScrollEvent* event) override;
@@ -271,12 +270,12 @@ class VIEWS_EXPORT ScrollView : public View, public ScrollBarController {
   void SetContentsImpl(std::unique_ptr<View> a_view);
   void SetHeaderImpl(std::unique_ptr<View> a_header);
 
-  // Used internally by SetHeaderImpl() and SetContentsImpl() to reset the view.
-  // Sets |member| to |new_view|. If |new_view| is non-null it is added to
-  // |parent|.
-  void SetHeaderOrContents(View* parent,
-                           std::unique_ptr<View> new_view,
-                           View** member);
+  // Used internally by SetHeaderImpl() and SetContentsImpl() to replace a
+  // child. If `old_view` is non-null it is removed as a child and destroyed; if
+  // `new_view` is non-null it is added to a child. Returns `new_view`.
+  View* ReplaceChildView(View* parent,
+                         raw_ptr<View>::DanglingType old_view,
+                         std::unique_ptr<View> new_view);
 
   // Scrolls the minimum amount necessary to make the specified rectangle
   // visible, in the coordinates of the contents view. The specified rectangle
@@ -330,23 +329,23 @@ class VIEWS_EXPORT ScrollView : public View, public ScrollBarController {
 
   // The current contents and its viewport. |contents_| is contained in
   // |contents_viewport_|.
-  // This field is not a raw_ptr<> because it was filtered by the rewriter for:
-  // #addr-of
-  RAW_PTR_EXCLUSION View* contents_ = nullptr;
+  // Can dangle in practice during out-of-order view tree destruction.
+  // TODO(https://crbug.com/1477838): fix that.
+  raw_ptr<View, DisableDanglingPtrDetection> contents_ = nullptr;
   raw_ptr<Viewport> contents_viewport_ = nullptr;
 
   // The current header and its viewport. |header_| is contained in
   // |header_viewport_|.
-  // This field is not a raw_ptr<> because it was filtered by the rewriter for:
-  // #addr-of
-  RAW_PTR_EXCLUSION View* header_ = nullptr;
+  // Can dangle in practice during out-of-order view tree destruction.
+  // TODO(https://crbug.com/1477838): fix that.
+  raw_ptr<View, DisableDanglingPtrDetection> header_ = nullptr;
   raw_ptr<Viewport> header_viewport_ = nullptr;
 
   // Horizontal scrollbar.
-  raw_ptr<ScrollBar, DanglingUntriaged> horiz_sb_;
+  raw_ptr<ScrollBar> horiz_sb_;
 
   // Vertical scrollbar.
-  raw_ptr<ScrollBar, DanglingUntriaged> vert_sb_;
+  raw_ptr<ScrollBar> vert_sb_;
 
   // Corner view.
   std::unique_ptr<View> corner_view_;
@@ -369,8 +368,8 @@ class VIEWS_EXPORT ScrollView : public View, public ScrollBarController {
   int max_height_ = -1;
 
   // See description of SetBackgroundColor() for details.
-  absl::optional<SkColor> background_color_;
-  absl::optional<ui::ColorId> background_color_id_ = ui::kColorDialogBackground;
+  std::optional<SkColor> background_color_;
+  std::optional<ui::ColorId> background_color_id_ = ui::kColorDialogBackground;
 
   // How to handle the case when the contents overflow the viewport.
   ScrollBarMode horizontal_scroll_bar_mode_ = ScrollBarMode::kEnabled;
@@ -417,13 +416,13 @@ VIEW_BUILDER_VIEW_TYPE_PROPERTY(View, Contents)
 VIEW_BUILDER_PROPERTY(ui::LayerType, ContentsLayerType)
 VIEW_BUILDER_VIEW_TYPE_PROPERTY(View, Header)
 VIEW_BUILDER_PROPERTY(bool, AllowKeyboardScrolling)
-VIEW_BUILDER_PROPERTY(absl::optional<ui::ColorId>, BackgroundThemeColorId)
+VIEW_BUILDER_PROPERTY(std::optional<ui::ColorId>, BackgroundThemeColorId)
 VIEW_BUILDER_METHOD(ClipHeightTo, int, int)
 VIEW_BUILDER_PROPERTY(ScrollView::ScrollBarMode, HorizontalScrollBarMode)
 VIEW_BUILDER_PROPERTY(ScrollView::ScrollBarMode, VerticalScrollBarMode)
 VIEW_BUILDER_PROPERTY(bool, TreatAllScrollEventsAsHorizontal)
 VIEW_BUILDER_PROPERTY(bool, DrawOverflowIndicator)
-VIEW_BUILDER_PROPERTY(absl::optional<SkColor>, BackgroundColor)
+VIEW_BUILDER_PROPERTY(std::optional<SkColor>, BackgroundColor)
 VIEW_BUILDER_VIEW_PROPERTY(ScrollBar, HorizontalScrollBar)
 VIEW_BUILDER_VIEW_PROPERTY(ScrollBar, VerticalScrollBar)
 VIEW_BUILDER_PROPERTY(bool, HasFocusIndicator)

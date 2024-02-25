@@ -9,7 +9,6 @@
 #include "chrome/browser/ash/borealis/borealis_app_launcher_impl.h"
 #include "chrome/browser/ash/borealis/borealis_app_uninstaller.h"
 #include "chrome/browser/ash/borealis/borealis_context_manager_impl.h"
-#include "chrome/browser/ash/borealis/borealis_disk_manager_dispatcher.h"
 #include "chrome/browser/ash/borealis/borealis_features.h"
 #include "chrome/browser/ash/borealis/borealis_install_url_handler.h"
 #include "chrome/browser/ash/borealis/borealis_installer_impl.h"
@@ -32,7 +31,6 @@ class BorealisServiceImpl : public BorealisService {
   BorealisAppLauncher& AppLauncher() override;
   BorealisAppUninstaller& AppUninstaller() override;
   BorealisContextManager& ContextManager() override;
-  BorealisDiskManagerDispatcher& DiskManagerDispatcher() override;
   BorealisFeatures& Features() override;
   BorealisInstaller& Installer() override;
   BorealisInstallUrlHandler& InstallUrlHandler() override;
@@ -41,11 +39,10 @@ class BorealisServiceImpl : public BorealisService {
   BorealisWindowManager& WindowManager() override;
   BorealisSurveyHandler& SurveyHandler() override;
 
-  const raw_ptr<Profile, ExperimentalAsh> profile_;
+  const raw_ptr<Profile> profile_;
 
   BorealisAppLauncherImpl app_launcher_;
   BorealisAppUninstaller app_uninstaller_;
-  BorealisDiskManagerDispatcher disk_manager_dispatcher_;
   BorealisContextManagerImpl context_manager_;
   BorealisFeatures features_;
   BorealisInstallerImpl installer_;

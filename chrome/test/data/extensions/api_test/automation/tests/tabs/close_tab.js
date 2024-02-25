@@ -23,7 +23,7 @@ var allTests =
                     button.root === null) {
                   chrome.test.succeed();
                 } else {
-                  window.setTimeout(checkSuccess, 10);
+                  setTimeout(checkSuccess, 10);
                 }
               }
               chrome.tabs.remove(tab.id);

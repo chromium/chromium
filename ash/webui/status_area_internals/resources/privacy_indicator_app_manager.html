@@ -1,0 +1,30 @@
+<!-- Copyright 2023 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file. -->
+
+<style>
+  :host {
+    display: flex;
+    flex: 1 0 100%;
+  }
+
+  #listContainer {
+    flex: 3;
+    height: 40vh;
+  }
+</style>
+
+<div class="column">
+  <cr-button on-click="onAddPrivacyIndicatorsApp">
+    Add Privacy Indicators App
+  </cr-button>
+</div>
+
+<div class="column" id="listContainer">
+  <template id="appListContainer" is="dom-repeat"
+      items="{{appList}}">
+    <privacy-indicator-app appid="{{item}}"
+      on-remove-app="onRemoveApp_">
+    </privacy-indicator-app>
+  </template>
+</div>

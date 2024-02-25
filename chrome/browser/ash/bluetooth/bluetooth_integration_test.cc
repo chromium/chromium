@@ -17,7 +17,8 @@
 #include "base/test/test_switches.h"
 #include "chrome/browser/ui/chrome_pages.h"
 #include "chrome/browser/ui/settings_window_manager_chromeos.h"
-#include "chrome/test/base/chromeos/crosier/interactive_ash_test.h"
+#include "chrome/test/base/chromeos/crosier/annotations.h"
+#include "chrome/test/base/chromeos/crosier/ash_integration_test.h"
 #include "dbus/object_path.h"
 #include "device/bluetooth/dbus/bluetooth_adapter_client.h"
 #include "device/bluetooth/dbus/bluez_dbus_manager.h"
@@ -65,41 +66,35 @@ class BluetoothPowerStateObserver : public ui::test::ObservationStateObserver<
 DEFINE_LOCAL_STATE_IDENTIFIER_VALUE(BluetoothPowerStateObserver,
                                     kBluetoothPowerState);
 DEFINE_LOCAL_CUSTOM_ELEMENT_EVENT_TYPE(kButtonToggled);
-DEFINE_LOCAL_CUSTOM_ELEMENT_EVENT_TYPE(kElementExists);
 
 constexpr char kBluetoothDevicesSubpagePath[] = "bluetoothDevices";
 constexpr char kCheckJsElementIsChecked[] = "(el) => { return el.checked; }";
 constexpr char kCheckJsElementIsNotChecked[] =
     "(el) => { return !el.checked; }";
 
-class BluetoothIntegrationTest : public InteractiveAshTest {
+class BluetoothIntegrationTest : public AshIntegrationTest {
  public:
   BluetoothIntegrationTest() {
     // Use the legacy bluez bluetooth stack.
     feature_list_.InitAndDisableFeature(floss::features::kFlossEnabled);
   }
 
-  // InteractiveAshTest:
+  // AshIntegrationTest:
   void SetUpOnMainThread() override {
-    InteractiveAshTest::SetUpOnMainThread();
+    TEST_REQUIRES(crosier::Requirement::kBluetooth);
+
+    AshIntegrationTest::SetUpOnMainThread();
 
     bluez_dbus_manager_ = BluezDBusManager::Get();
-    if (!bluez_dbus_manager_) {
-      // TODO(crbug.com/1464750): Come up with a better way to skip tests based
-      // on hardware support, similar to Tast hwdep.D(hwdep.Bluetooth()).
-      LOG(WARNING) << "Bluetooth (via bluez) not supported on this device.";
-      GTEST_SKIP();
-    }
+    // The TEST_REQURIES annotation should have already validated that bluetooth
+    // works on this target.
+    ASSERT_TRUE(bluez_dbus_manager_);
 
     // Get the D-Bus property tracker for the first bluetooth adapter.
     adapter_client_ = bluez_dbus_manager_->GetBluetoothAdapterClient();
     ASSERT_TRUE(adapter_client_);
     std::vector<dbus::ObjectPath> adapters = adapter_client_->GetAdapters();
-    // Some VM images have bluez, but no bluetooth adapters.
-    if (adapters.empty()) {
-      LOG(WARNING) << "No bluetooth adapters, skipping test";
-      GTEST_SKIP();
-    }
+    ASSERT_FALSE(adapters.empty());
     properties_ = adapter_client_->GetProperties(adapters[0]);
     ASSERT_TRUE(properties_);
   }
@@ -110,16 +105,7 @@ class BluetoothIntegrationTest : public InteractiveAshTest {
     adapter_client_ = nullptr;
     bluez_dbus_manager_ = nullptr;
 
-    InteractiveAshTest::TearDownOnMainThread();
-  }
-
-  // Waits for an element to exist in the DOM.
-  auto WaitForElementExists(const ui::ElementIdentifier& element_id,
-                            const DeepQuery& query) {
-    StateChange element_exists;
-    element_exists.event = kElementExists;
-    element_exists.where = query;
-    return WaitForStateChange(element_id, element_exists);
+    AshIntegrationTest::TearDownOnMainThread();
   }
 
   // Waits for a toggle element to be toggled (which is represented as "checked"
@@ -135,12 +121,6 @@ class BluetoothIntegrationTest : public InteractiveAshTest {
         is_checked ? kCheckJsElementIsChecked : kCheckJsElementIsNotChecked;
 
     return WaitForStateChange(element_id, toggle_selection_change);
-  }
-
-  // Clicks on an element in the DOM.
-  auto ClickElement(const ui::ElementIdentifier& element_id,
-                    const DeepQuery& element) {
-    return Steps(MoveMouseTo(element_id, element), ClickMouse());
   }
 
  protected:
@@ -255,13 +235,6 @@ IN_PROC_BROWSER_TEST_F(BluetoothIntegrationTest,
       WaitForToggleState(kOsSettingsElementId, kBluetoothToggleQuery, true),
 
       Log("Test complete"));
-
-  // Allow exploring the UI if --test-launcher-interactive is passed.
-  if (base::CommandLine::ForCurrentProcess()->HasSwitch(
-          switches::kTestLauncherInteractive)) {
-    base::RunLoop loop;
-    loop.Run();
-  }
 }
 
 }  // namespace

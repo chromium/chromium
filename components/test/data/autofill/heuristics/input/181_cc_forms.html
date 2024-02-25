@@ -1,0 +1,185 @@
+<html>
+
+<body>
+
+	<h1>MM, YY inputs, no placeholders</h1>
+	<form action="/foo" method="post">
+		Name: <input name="cc-name"><br>
+		Number: <input name="cc-number"><br>
+		Expiration date: <input name="cc-exp-month">/<input name="cc-exp-year"><br>
+		CVC: <input name="cc-cvc"><br>
+		<button type=submit>submit</button>
+	</form>
+	<hr>
+	<h1>MM, YY inputs, with placeholders</h1>
+	<form action="/foo" method="post">
+		Name: <input name="cc-name"><br>
+		Number: <input name="cc-number"><br>
+		Expiration date: <input name="cc-exp-month" placeholder="mm">/<input name="cc-exp-year" placeholder="yy"><br>
+		CVC: <input name="cc-cvc"><br>
+		<button type=submit>submit</button>
+	</form>
+	<hr>
+	<h1>MM, YYYY inputs, with placeholders</h1>
+	<form action="/foo" method="post">
+		Name: <input name="cc-name"><br>
+		Number: <input name="cc-number"><br>
+		Expiration date: <input name="cc-exp-month" placeholder="mm">/<input name="cc-exp-year" placeholder="yyyy"><br>
+		CVC: <input name="cc-cvc"><br>
+		<button type=submit>submit</button>
+	</form>
+	<hr>
+	<h1>MM, YY inputs, with maxlength</h1>
+	<form action="/foo" method="post">
+		Name: <input name="cc-name"><br>
+		Number: <input name="cc-number"><br>
+		Expiration date: <input name="cc-exp-month" maxlength=2>/<input name="cc-exp-year" maxlength=2><br>
+		CVC: <input name="cc-cvc"><br>
+		<button type=submit>submit</button>
+	</form>
+	<hr>
+	<h1>MM, YYYY inputs, with maxlength</h1>
+	<form action="/foo" method="post">
+		Name: <input name="cc-name"><br>
+		Number: <input name="cc-number"><br>
+		Expiration date: <input name="cc-exp-month" maxlength=2>/<input name="cc-exp-year" maxlength=4><br>
+		CVC: <input name="cc-cvc"><br>
+		<button type=submit>submit</button>
+	</form>
+	<hr>
+	<h1>MMYY input, with placeholder</h1>
+	<form action="/foo" method="post">
+		Name: <input name="cc-name"><br>
+		Number: <input name="cc-number"><br>
+		Expiration date: <input name="cc-exp-date" placeholder="mm/yy"><br>
+		CVC: <input name="cc-cvc"><br>
+		<button type=submit>submit</button>
+	</form>
+	<hr>
+	<h1>MMYYYY input, with placeholder</h1>
+	<form action="/foo" method="post">
+		Name: <input name="cc-name"><br>
+		Number: <input name="cc-number"><br>
+		Expiration date: <input name="cc-exp-date" placeholder="mm/yyyy"><br>
+		CVC: <input name="cc-cvc"><br>
+		<button type=submit>submit</button>
+	</form>
+	<hr>
+	<h1>MM, YY selects, year as YY content and value</h1>
+	<form action="/foo" method="post">
+		Name: <input name="cc-name"><br>
+		Number: <input name="cc-number"><br>
+		Expiration date: <select name="cc-exp-month">
+			<option value=1>1</option>
+			<option value=2>2</option>
+			<option value=3>3</option>
+			<option value=4>4</option>
+			<option value=5>5</option>
+			<option value=6>6</option>
+			<option value=7>7</option>
+			<option value=8>8</option>
+			<option value=9>9</option>
+			<option value=10>10</option>
+			<option value=11>11</option>
+			<option value=12>12</option>
+		</select>
+			/
+		<select name="cc-exp-year">
+			<option value=23>23</option>
+			<option value=24>24</option>
+			<option value=25>25</option>
+		</select>
+			<br>
+		CVC: <input name="cc-cvc"><br>
+		<button type=submit>submit</button>
+	</form>
+	<hr>
+	<h1>MM, YY selects, year as YY content and YYYY value</h1>
+	<form action="/foo" method="post">
+		Name: <input name="cc-name"><br>
+		Number: <input name="cc-number"><br>
+		Expiration date: <select name="cc-exp-month">
+			<option value=1>1</option>
+			<option value=2>2</option>
+			<option value=3>3</option>
+			<option value=4>4</option>
+			<option value=5>5</option>
+			<option value=6>6</option>
+			<option value=7>7</option>
+			<option value=8>8</option>
+			<option value=9>9</option>
+			<option value=10>10</option>
+			<option value=11>11</option>
+			<option value=12>12</option>
+		</select>
+			/
+		<select name="cc-exp-year">
+			<option value=2023>23</option>
+			<option value=2024>24</option>
+			<option value=2025>25</option>
+		</select>
+			<br>
+		CVC: <input name="cc-cvc"><br>
+		<button type=submit>submit</button>
+	</form>
+	<hr>
+	<h1>MM, YY selects, year as YYYY content and YY value</h1>
+	<form action="/foo" method="post">
+		Name: <input name="cc-name"><br>
+		Number: <input name="cc-number"><br>
+		Expiration date: <select name="cc-exp-month">
+			<option value=1>1</option>
+			<option value=2>2</option>
+			<option value=3>3</option>
+			<option value=4>4</option>
+			<option value=5>5</option>
+			<option value=6>6</option>
+			<option value=7>7</option>
+			<option value=8>8</option>
+			<option value=9>9</option>
+			<option value=10>10</option>
+			<option value=11>11</option>
+			<option value=12>12</option>
+		</select>
+			/
+		<select name="cc-exp-year">
+			<option value=23>2023</option>
+			<option value=24>2024</option>
+			<option value=25>2025</option>
+		</select>
+			<br>
+		CVC: <input name="cc-cvc"><br>
+		<button type=submit>submit</button>
+	</form>
+	<hr>
+	<h1>MM, YY selects, year as YYYY content and YYYY value</h1>
+	<form action="/foo" method="post">
+		Name: <input name="cc-name"><br>
+		Number: <input name="cc-number"><br>
+		Expiration date: <select name="cc-exp-month">
+			<option value=1>1</option>
+			<option value=2>2</option>
+			<option value=3>3</option>
+			<option value=4>4</option>
+			<option value=5>5</option>
+			<option value=6>6</option>
+			<option value=7>7</option>
+			<option value=8>8</option>
+			<option value=9>9</option>
+			<option value=10>10</option>
+			<option value=11>11</option>
+			<option value=12>12</option>
+		</select>
+			/
+		<select name="cc-exp-year">
+			<option value=2023>2023</option>
+			<option value=2024>2024</option>
+			<option value=2025>2025</option>
+		</select>
+			<br>
+		CVC: <input name="cc-cvc"><br>
+		<button type=submit>submit</button>
+	</form>
+
+</body>
+</html>

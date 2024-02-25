@@ -20,7 +20,6 @@
 #include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
-#include "base/metrics/histogram_macros.h"
 #include "base/process/kill.h"
 #include "base/process/launch.h"
 #include "base/process/process.h"
@@ -75,30 +74,6 @@ std::string MakeDeviceUniqueId(struct udev_device* device) {
   return kVendorModelSerialPrefix + vendor + ":" + model + ":" + serial_short;
 }
 
-// Records GetDeviceInfo result on destruction, to see how often we fail to get
-// device details.
-class ScopedGetDeviceInfoResultRecorder {
- public:
-  ScopedGetDeviceInfoResultRecorder() = default;
-
-  ScopedGetDeviceInfoResultRecorder(const ScopedGetDeviceInfoResultRecorder&) =
-      delete;
-  ScopedGetDeviceInfoResultRecorder& operator=(
-      const ScopedGetDeviceInfoResultRecorder&) = delete;
-
-  ~ScopedGetDeviceInfoResultRecorder() {
-    UMA_HISTOGRAM_BOOLEAN("MediaDeviceNotification.UdevRequestSuccess",
-                          result_);
-  }
-
-  void set_result(bool result) {
-    result_ = result;
-  }
-
- private:
-  bool result_ = false;
-};
-
 // Returns the storage partition size of the device specified by |device_path|.
 // If the requested information is unavailable, returns 0.
 uint64_t GetDeviceStorageSize(const base::FilePath& device_path,
@@ -123,8 +98,6 @@ std::unique_ptr<StorageInfo> GetDeviceInfo(const base::FilePath& device_path,
   DCHECK(!device_path.empty());
 
   std::unique_ptr<StorageInfo> storage_info;
-
-  ScopedGetDeviceInfoResultRecorder results_recorder;
 
   device::ScopedUdevPtr udev_obj(device::udev_new());
   if (!udev_obj.get())
@@ -177,8 +150,6 @@ std::unique_ptr<StorageInfo> GetDeviceInfo(const base::FilePath& device_path,
                ? StorageInfo::REMOVABLE_MASS_STORAGE_WITH_DCIM
                : StorageInfo::REMOVABLE_MASS_STORAGE_NO_DCIM;
   }
-
-  results_recorder.set_result(true);
 
   storage_info = std::make_unique<StorageInfo>(
       StorageInfo::MakeDeviceId(type, unique_id), mount_point.value(),

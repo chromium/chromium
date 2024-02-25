@@ -8,6 +8,7 @@
 
 #include "base/logging.h"
 #include "base/strings/string_util.h"
+#include "base/uuid.h"
 
 namespace remoting {
 
@@ -73,6 +74,27 @@ bool SplitSignalingIdResource(const std::string& full_id,
   }
   if (resource) {
     *resource = full_id.substr(slash_index + 1);
+  }
+  return true;
+}
+
+bool IsValidFtlSignalingId(const std::string& signaling_id) {
+  std::string email;
+  std::string resource;
+  if (!SplitSignalingIdResource(signaling_id, &email, &resource)) {
+    LOG(ERROR) << "Failed to split signaling id: " << signaling_id;
+    return false;
+  }
+  if (!base::StartsWith(resource, kFtlResourcePrefix)) {
+    LOG(ERROR) << "Signaling id resource does not start with a valid prefix: "
+               << resource;
+    return false;
+  }
+  std::string registration_id = resource.substr(sizeof(kFtlResourcePrefix) - 1);
+  if (!base::Uuid::ParseLowercase(registration_id).is_valid()) {
+    LOG(ERROR) << "Signaling id contains an invalid registration id: "
+               << registration_id;
+    return false;
   }
   return true;
 }

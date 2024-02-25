@@ -4,8 +4,9 @@
 
 #include "pdf/pdfium/pdfium_range.h"
 
+#include <string>
+
 #include "base/check_op.h"
-#include "base/containers/cxx20_erase.h"
 #include "base/strings/string_util.h"
 #include "pdf/pdfium/pdfium_api_string_buffer_adapter.h"
 #include "third_party/pdfium/public/fpdf_searchex.h"
@@ -31,11 +32,18 @@ bool IsIgnorableCharacter(char16_t c) {
 }
 
 PDFiumRange::PDFiumRange(PDFiumPage* page, int char_index, int char_count)
-    : page_(page), char_index_(char_index), char_count_(char_count) {
+    : page_unload_preventer_(page),
+      page_(page),
+      char_index_(char_index),
+      char_count_(char_count) {
   DCHECK(page_);
+  // Ensure page load, while `page_unload_preventer_` prevents page unload.
+  // This prevents GetScreenRects() from triggering page loads, which can have
+  // surprising side effects, considering GetScreenRects() is const.
+  [[maybe_unused]] FPDF_TEXTPAGE text_page = page_->GetTextPage();
 #if DCHECK_IS_ON()
   AdjustForBackwardsRange(char_index, char_count);
-  DCHECK_LE(char_count, FPDFText_CountChars(page_->GetTextPage()));
+  DCHECK_LE(char_count, FPDFText_CountChars(text_page));
 #endif
 }
 
@@ -149,7 +157,7 @@ std::u16string PDFiumRange::GetText() const {
         in_bound_text += result[i];
     }
     result = in_bound_text;
-    base::EraseIf(result, IsIgnorableCharacter);
+    std::erase_if(result, IsIgnorableCharacter);
   }
 
   return result;

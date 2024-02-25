@@ -32,9 +32,7 @@ public class DigitalWellbeingClient {
         return Promise.fulfilled(null);
     }
 
-    /**
-     * Notify DW that the user has deleted history for the given fqdns.
-     */
+    /** Notify DW that the user has deleted history for the given fqdns. */
     public Promise<Void> notifyHistoryDeletion(List<String> fqdns) {
         return Promise.fulfilled(null);
     }

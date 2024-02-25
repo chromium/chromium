@@ -7,6 +7,7 @@
 #include <stdint.h>
 
 #include <memory>
+#include <optional>
 #include <utility>
 
 #include "base/files/file_path.h"
@@ -33,7 +34,6 @@
 #include "net/base/ip_endpoint.h"
 #include "net/base/net_errors.h"
 #include "net/base/port_util.h"
-#include "net/cert/pki/extended_key_usage.h"
 #include "net/log/net_log_source.h"
 #include "net/socket/next_proto.h"
 #include "net/socket/ssl_server_socket.h"
@@ -53,7 +53,7 @@
 #include "net/test/revocation_builder.h"
 #include "net/test/test_data_directory.h"
 #include "net/third_party/quiche/src/quiche/spdy/core/spdy_frame_builder.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
+#include "third_party/boringssl/src/pki/extended_key_usage.h"
 #include "url/origin.h"
 
 namespace net::test_server {
@@ -85,8 +85,7 @@ std::unique_ptr<HttpResponse> ServeResponseForSubPaths(
     const std::string& content,
     const HttpRequest& request) {
   if (request.GetURL().path() != expected_path &&
-      !base::StartsWith(request.GetURL().path(), expected_path + "/",
-                        base::CompareCase::SENSITIVE)) {
+      !request.GetURL().path().starts_with(expected_path + "/")) {
     return nullptr;
   }
 
@@ -123,23 +122,23 @@ bool MaybeCreateOCSPResponse(CertBuilder* target,
       return false;
     case OCSPResponseType::kMalformedRequest:
       *out_response = BuildOCSPResponseError(
-          OCSPResponse::ResponseStatus::MALFORMED_REQUEST);
+          bssl::OCSPResponse::ResponseStatus::MALFORMED_REQUEST);
       return true;
     case OCSPResponseType::kInternalError:
-      *out_response =
-          BuildOCSPResponseError(OCSPResponse::ResponseStatus::INTERNAL_ERROR);
+      *out_response = BuildOCSPResponseError(
+          bssl::OCSPResponse::ResponseStatus::INTERNAL_ERROR);
       return true;
     case OCSPResponseType::kTryLater:
       *out_response =
-          BuildOCSPResponseError(OCSPResponse::ResponseStatus::TRY_LATER);
+          BuildOCSPResponseError(bssl::OCSPResponse::ResponseStatus::TRY_LATER);
       return true;
     case OCSPResponseType::kSigRequired:
-      *out_response =
-          BuildOCSPResponseError(OCSPResponse::ResponseStatus::SIG_REQUIRED);
+      *out_response = BuildOCSPResponseError(
+          bssl::OCSPResponse::ResponseStatus::SIG_REQUIRED);
       return true;
     case OCSPResponseType::kUnauthorized:
-      *out_response =
-          BuildOCSPResponseError(OCSPResponse::ResponseStatus::UNAUTHORIZED);
+      *out_response = BuildOCSPResponseError(
+          bssl::OCSPResponse::ResponseStatus::UNAUTHORIZED);
       return true;
     case OCSPResponseType::kInvalidResponse:
       *out_response = "3";
@@ -303,7 +302,7 @@ ScopedTestRoot EmbeddedTestServer::RegisterTestCerts() {
   auto root = ImportCertFromFile(GetRootCertPemPath());
   if (!root)
     return ScopedTestRoot();
-  return ScopedTestRoot(root.get());
+  return ScopedTestRoot(root);
 }
 
 void EmbeddedTestServer::SetConnectionListener(
@@ -318,14 +317,15 @@ EmbeddedTestServerHandle EmbeddedTestServer::StartAndReturnHandle(int port) {
   return result ? EmbeddedTestServerHandle(this) : EmbeddedTestServerHandle();
 }
 
-bool EmbeddedTestServer::Start(int port) {
-  bool success = InitializeAndListen(port);
+bool EmbeddedTestServer::Start(int port, base::StringPiece address) {
+  bool success = InitializeAndListen(port, address);
   if (success)
     StartAcceptingConnections();
   return success;
 }
 
-bool EmbeddedTestServer::InitializeAndListen(int port) {
+bool EmbeddedTestServer::InitializeAndListen(int port,
+                                             base::StringPiece address) {
   DCHECK(!Started());
 
   const int max_tries = 5;
@@ -343,7 +343,7 @@ bool EmbeddedTestServer::InitializeAndListen(int port) {
     listen_socket_ = std::make_unique<TCPServerSocket>(nullptr, NetLogSource());
 
     int result =
-        listen_socket_->ListenWithAddressAndPort("127.0.0.1", port, 10);
+        listen_socket_->ListenWithAddressAndPort(address.data(), port, 10);
     if (result) {
       LOG(ERROR) << "Listen failed: " << ErrorToString(result);
       listen_socket_.reset();
@@ -454,6 +454,10 @@ bool EmbeddedTestServer::GenerateCertAndKey() {
     leaf->SetKeyUsages(cert_config_.key_usages);
   }
 
+  if (!cert_config_.embedded_scts.empty()) {
+    leaf->SetSctConfig(cert_config_.embedded_scts);
+  }
+
   const std::string leaf_serial_text =
       base::NumberToString(leaf->GetSerialNumber());
   const std::string intermediate_serial_text =
@@ -511,12 +515,17 @@ bool EmbeddedTestServer::GenerateCertAndKey() {
     leaf->SetCaIssuersAndOCSPUrls(leaf_ca_issuers_urls, leaf_ocsp_urls);
   }
 
-  if (cert_config_.intermediate == IntermediateType::kByAIA) {
+  if (cert_config_.intermediate == IntermediateType::kByAIA ||
+      cert_config_.intermediate == IntermediateType::kMissing) {
     // Server certificate chain does not include the intermediate.
     x509_cert_ = leaf->GetX509Certificate();
   } else {
     // Server certificate chain will include the intermediate, if there is one.
     x509_cert_ = leaf->GetX509CertificateChain();
+  }
+
+  if (intermediate) {
+    intermediate_ = intermediate->GetX509Certificate();
   }
 
   private_key_ = bssl::UpRef(leaf->GetKey());
@@ -580,6 +589,21 @@ bool EmbeddedTestServer::InitializeSSLServerContext() {
           std::vector<uint8_t>(
               serialized_frame.data(),
               serialized_frame.data() + serialized_frame.size());
+
+      ssl_config_.client_hello_callback_for_testing =
+          base::BindRepeating([](const SSL_CLIENT_HELLO* client_hello) {
+            // Configure the server to use the ALPS codepoint that the client
+            // offered.
+            const uint8_t* unused_extension_bytes;
+            size_t unused_extension_len;
+            int use_alps_new_codepoint = SSL_early_callback_ctx_extension_get(
+                client_hello, TLSEXT_TYPE_application_settings,
+                &unused_extension_bytes, &unused_extension_len);
+            // Make sure we use the right ALPS codepoint.
+            SSL_set_alps_use_new_codepoint(client_hello->ssl,
+                                           use_alps_new_codepoint);
+            return true;
+          });
     }
   }
 
@@ -590,6 +614,7 @@ bool EmbeddedTestServer::InitializeSSLServerContext() {
 
 EmbeddedTestServerHandle
 EmbeddedTestServer::StartAcceptingConnectionsAndReturnHandle() {
+  StartAcceptingConnections();
   return EmbeddedTestServerHandle(this);
 }
 
@@ -680,8 +705,7 @@ void EmbeddedTestServer::HandleRequest(
 
 GURL EmbeddedTestServer::GetURL(base::StringPiece relative_url) const {
   DCHECK(Started()) << "You must start the server first.";
-  DCHECK(base::StartsWith(relative_url, "/", base::CompareCase::SENSITIVE))
-      << relative_url;
+  DCHECK(relative_url.starts_with("/")) << relative_url;
   return base_url_.Resolve(relative_url);
 }
 
@@ -694,7 +718,7 @@ GURL EmbeddedTestServer::GetURL(base::StringPiece hostname,
 }
 
 url::Origin EmbeddedTestServer::GetOrigin(
-    const absl::optional<std::string>& hostname) const {
+    const std::optional<std::string>& hostname) const {
   if (hostname)
     return url::Origin::Create(GetURL(*hostname, "/"));
   return url::Origin::Create(base_url_);
@@ -740,6 +764,13 @@ void EmbeddedTestServer::SetSSLConfig(
 void EmbeddedTestServer::SetSSLConfig(
     const ServerCertificateConfig& cert_config) {
   SetSSLConfigInternal(CERT_AUTO, &cert_config, SSLServerConfig());
+}
+
+void EmbeddedTestServer::SetCertHostnames(std::vector<std::string> hostnames) {
+  ServerCertificateConfig cert_config;
+  cert_config.dns_names = std::move(hostnames);
+  cert_config.ip_addresses = {net::IPAddress::IPv4Localhost()};
+  SetSSLConfig(cert_config);
 }
 
 bool EmbeddedTestServer::ResetSSLConfigOnIOThread(
@@ -810,6 +841,12 @@ scoped_refptr<X509Certificate> EmbeddedTestServer::GetCertificate() {
   return x509_cert_;
 }
 
+scoped_refptr<X509Certificate> EmbeddedTestServer::GetGeneratedIntermediate() {
+  DCHECK(is_using_ssl_);
+  DCHECK(!UsingStaticCert());
+  return intermediate_;
+}
+
 void EmbeddedTestServer::ServeFilesFromDirectory(
     const base::FilePath& directory) {
   RegisterDefaultHandler(base::BindRepeating(&HandleFileRequest, directory));
@@ -818,7 +855,7 @@ void EmbeddedTestServer::ServeFilesFromDirectory(
 void EmbeddedTestServer::ServeFilesFromSourceDirectory(
     base::StringPiece relative) {
   base::FilePath test_data_dir;
-  CHECK(base::PathService::Get(base::DIR_SOURCE_ROOT, &test_data_dir));
+  CHECK(base::PathService::Get(base::DIR_SRC_TEST_DATA_ROOT, &test_data_dir));
   ServeFilesFromDirectory(test_data_dir.AppendASCII(relative));
 }
 
@@ -839,7 +876,7 @@ void EmbeddedTestServer::AddDefaultHandlers() {
 base::FilePath EmbeddedTestServer::GetFullPathFromSourceDirectory(
     const base::FilePath& relative) {
   base::FilePath test_data_dir;
-  CHECK(base::PathService::Get(base::DIR_SOURCE_ROOT, &test_data_dir));
+  CHECK(base::PathService::Get(base::DIR_SRC_TEST_DATA_ROOT, &test_data_dir));
   return test_data_dir.Append(relative);
 }
 

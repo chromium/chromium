@@ -19,9 +19,9 @@ namespace chromeos {
 // each button will either snap primary or snap secondary, depending on the
 // location of the button and the orientation of the device.
 class SplitButtonView : public views::BoxLayoutView {
- public:
-  METADATA_HEADER(SplitButtonView);
+  METADATA_HEADER(SplitButtonView, views::BoxLayoutView)
 
+ public:
   enum class SplitButtonType {
     kHalfButtons,
     kPartialButtons,
@@ -58,8 +58,8 @@ class SplitButtonView : public views::BoxLayoutView {
   // Pointers to the buttons that are owned by the views hierarchy. The names
   // refer to the physical location of the button, which do not change in RTL
   // languages.
-  raw_ptr<SplitButton, ExperimentalAsh> left_top_button_ = nullptr;
-  raw_ptr<SplitButton, ExperimentalAsh> right_bottom_button_ = nullptr;
+  raw_ptr<SplitButton> left_top_button_ = nullptr;
+  raw_ptr<SplitButton> right_bottom_button_ = nullptr;
 
   const SplitButtonType type_;
 

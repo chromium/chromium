@@ -143,7 +143,7 @@ const char kGoogleHomepageURL[] = "https://www.google.com/";
 
 bool HasGoogleSearchQueryParam(base::StringPiece str) {
   url::Component query(0, static_cast<int>(str.length())), key, value;
-  while (url::ExtractQueryKeyValue(str.data(), &query, &key, &value)) {
+  while (url::ExtractQueryKeyValue(str, &query, &key, &value)) {
     base::StringPiece key_str = str.substr(key.begin, key.len);
     if (key_str == "q" || key_str == "as_q" || key_str == "imgurl")
       return true;
@@ -353,8 +353,7 @@ GURL AppendToAsyncQueryParam(const GURL& url,
   url::Component cursor(0, input.size());
   std::string output;
   url::Component key_range, value_range;
-  while (url::ExtractQueryKeyValue(input.data(), &cursor, &key_range,
-                                   &value_range)) {
+  while (url::ExtractQueryKeyValue(input, &cursor, &key_range, &value_range)) {
     const base::StringPiece input_key =
         input.substr(key_range.begin, key_range.len);
     std::string key_value_pair(
@@ -391,7 +390,7 @@ GoogleSearchMode GoogleSearchModeFromUrl(const GURL& url) {
   url::Component query(0, static_cast<int>(url.query_piece().length()));
   url::Component key, value;
   GoogleSearchMode mode = GoogleSearchMode::kUnspecified;
-  while (url::ExtractQueryKeyValue(query_str.data(), &query, &key, &value)) {
+  while (url::ExtractQueryKeyValue(query_str, &query, &key, &value)) {
     base::StringPiece key_str = query_str.substr(key.begin, key.len);
     if (key_str != "tbm") {
       continue;

@@ -46,8 +46,11 @@ public class PageViewObserver extends EmptyTabObserver {
     private Tab mCurrentTab;
     private String mLastFqdn;
 
-    PageViewObserver(Activity activity, ObservableSupplier<Tab> tabSupplier,
-            EventTracker eventTracker, TokenTracker tokenTracker,
+    PageViewObserver(
+            Activity activity,
+            ObservableSupplier<Tab> tabSupplier,
+            EventTracker eventTracker,
+            TokenTracker tokenTracker,
             SuspensionTracker suspensionTracker,
             Supplier<TabContentManager> tabContentManagerSupplier) {
         mActivity = activity;
@@ -126,8 +129,9 @@ public class PageViewObserver extends EmptyTabObserver {
 
         if (isValidProtocol && !isSuspended && !isSameDomain) {
             mLastFqdn = newFqdn;
-            mEventTracker.addWebsiteEvent(new WebsiteEvent(
-                    System.currentTimeMillis(), mLastFqdn, WebsiteEvent.EventType.START));
+            mEventTracker.addWebsiteEvent(
+                    new WebsiteEvent(
+                            System.currentTimeMillis(), mLastFqdn, WebsiteEvent.EventType.START));
             reportToPlatformIfDomainIsTracked("reportUsageStart", mLastFqdn);
         }
     }
@@ -162,8 +166,9 @@ public class PageViewObserver extends EmptyTabObserver {
     }
 
     private void reportStop() {
-        mEventTracker.addWebsiteEvent(new WebsiteEvent(
-                System.currentTimeMillis(), mLastFqdn, WebsiteEvent.EventType.STOP));
+        mEventTracker.addWebsiteEvent(
+                new WebsiteEvent(
+                        System.currentTimeMillis(), mLastFqdn, WebsiteEvent.EventType.STOP));
         reportToPlatformIfDomainIsTracked("reportUsageStop", mLastFqdn);
         mLastFqdn = null;
     }
@@ -183,20 +188,29 @@ public class PageViewObserver extends EmptyTabObserver {
     }
 
     private void reportToPlatformIfDomainIsTracked(String reportMethodName, String fqdn) {
-        mTokenTracker.getTokenForFqdn(fqdn).then((token) -> {
-            if (token == null) return;
-            try (TraceEvent te = TraceEvent.scoped(
-                         "PageViewObserver.reportToPlatformIfDomainIsTracked")) {
-                UsageStatsManager instance =
-                        (UsageStatsManager) mActivity.getSystemService(Context.USAGE_STATS_SERVICE);
-                Method reportMethod = UsageStatsManager.class.getDeclaredMethod(
-                        reportMethodName, Activity.class, String.class);
+        mTokenTracker
+                .getTokenForFqdn(fqdn)
+                .then(
+                        (token) -> {
+                            if (token == null) return;
+                            try (TraceEvent te =
+                                    TraceEvent.scoped(
+                                            "PageViewObserver.reportToPlatformIfDomainIsTracked")) {
+                                UsageStatsManager instance =
+                                        (UsageStatsManager)
+                                                mActivity.getSystemService(
+                                                        Context.USAGE_STATS_SERVICE);
+                                Method reportMethod =
+                                        UsageStatsManager.class.getDeclaredMethod(
+                                                reportMethodName, Activity.class, String.class);
 
-                reportMethod.invoke(instance, mActivity, token);
-            } catch (InvocationTargetException | NoSuchMethodException | IllegalAccessException e) {
-                Log.e(TAG, "Failed to report to platform API", e);
-            }
-        });
+                                reportMethod.invoke(instance, mActivity, token);
+                            } catch (InvocationTargetException
+                                    | NoSuchMethodException
+                                    | IllegalAccessException e) {
+                                Log.e(TAG, "Failed to report to platform API", e);
+                            }
+                        });
     }
 
     private static String getValidFqdnOrEmptyString(GURL url) {

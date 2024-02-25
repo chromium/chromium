@@ -9,10 +9,15 @@
 
 #import "ios/chrome/browser/ui/screen/screen_provider.h"
 
+class ChromeBrowserState;
+
 // The class that provides a list of first run screens.
 @interface FirstRunScreenProvider : ScreenProvider
 
-- (instancetype)init NS_DESIGNATED_INITIALIZER;
+- (instancetype)initForBrowserState:(ChromeBrowserState*)browserState
+    NS_DESIGNATED_INITIALIZER;
+
+- (instancetype)init NS_UNAVAILABLE;
 
 @end
 

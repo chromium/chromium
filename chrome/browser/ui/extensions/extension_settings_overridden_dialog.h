@@ -51,8 +51,8 @@ class ExtensionSettingsOverriddenDialog
     std::u16string dialog_message;
 
     // The icon to display in the dialog, if any.
-    // This field is not a raw_ptr<> because it was filtered by the rewriter
-    // for: #union
+    // RAW_PTR_EXCLUSION: Seems to always point to nullptr (other VectorIncon*
+    // typically point to a global).
     RAW_PTR_EXCLUSION const gfx::VectorIcon* icon = nullptr;
   };
 

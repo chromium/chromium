@@ -12,6 +12,8 @@
 #include "base/check.h"
 #include "base/functional/bind.h"
 #include "base/run_loop.h"
+#include "build/build_config.h"
+#include "chrome/browser/printing/print_job.h"
 #include "chrome/browser/printing/print_job_manager.h"
 #include "chrome/browser/printing/print_view_manager_common.h"
 #include "chrome/browser/printing/printer_query.h"
@@ -21,6 +23,11 @@
 #include "content/public/browser/render_frame_host.h"
 #include "printing/mojom/print.mojom.h"
 #include "printing/print_settings.h"
+
+#if BUILDFLAG(IS_WIN)
+#include "printing/metafile.h"
+#include "printing/print_job_constants.h"
+#endif
 
 namespace printing {
 
@@ -44,6 +51,37 @@ void OnDidUpdatePrintSettings(
 
   std::move(callback).Run(std::move(settings));
 }
+
+class TestPrintJob : public PrintJob {
+ public:
+  explicit TestPrintJob(PrintJobManager* print_job_manager)
+      : PrintJob(print_job_manager) {}
+
+#if BUILDFLAG(IS_WIN)
+  void set_simulate_pdf_conversion_error_on_page_index(uint32_t page_index) {
+    simulate_pdf_conversion_error_on_page_index_ = page_index;
+  }
+#endif
+
+ private:
+  ~TestPrintJob() override = default;
+
+#if BUILDFLAG(IS_WIN)
+  // `PrintJob` overrides:
+  void OnPdfPageConverted(uint32_t page_index,
+                          float scale_factor,
+                          std::unique_ptr<MetafilePlayer> metafile) override {
+    if (simulate_pdf_conversion_error_on_page_index_.has_value() &&
+        page_index == *simulate_pdf_conversion_error_on_page_index_) {
+      // Override the page index to simulate an error.
+      page_index = kInvalidPageIndex;
+    }
+    PrintJob::OnPdfPageConverted(page_index, scale_factor, std::move(metafile));
+  }
+
+  std::optional<uint32_t> simulate_pdf_conversion_error_on_page_index_;
+#endif  // BUILDFLAG(IS_WIN)
+};
 
 }  // namespace
 
@@ -94,7 +132,13 @@ bool TestPrintViewManager::PrintNow(content::RenderFrameHost* rfh) {
 
 scoped_refptr<PrintJob> TestPrintViewManager::CreatePrintJob(
     PrintJobManager* print_job_manager) {
-  auto print_job = PrintViewManager::CreatePrintJob(print_job_manager);
+  auto print_job = base::MakeRefCounted<TestPrintJob>(print_job_manager);
+#if BUILDFLAG(IS_WIN)
+  if (simulate_pdf_conversion_error_on_page_index_.has_value()) {
+    print_job->set_simulate_pdf_conversion_error_on_page_index(
+        *simulate_pdf_conversion_error_on_page_index_);
+  }
+#endif
   if (on_did_create_print_job_) {
     on_did_create_print_job_.Run(print_job.get());
   }

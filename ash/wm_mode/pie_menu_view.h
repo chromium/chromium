@@ -9,6 +9,7 @@
 #include <string>
 #include <vector>
 
+#include "ash/ash_export.h"
 #include "base/containers/flat_map.h"
 #include "base/memory/raw_ptr.h"
 #include "ui/base/metadata/metadata_header_macros.h"
@@ -31,21 +32,28 @@ class PieMenuView;
 // PieSubMenuContainerView:
 
 // Defines a container for buttons representing menu items in a pie menu.
-class PieSubMenuContainerView : public views::View {
- public:
-  METADATA_HEADER(PieSubMenuContainerView);
+class ASH_EXPORT PieSubMenuContainerView : public views::View {
+  METADATA_HEADER(PieSubMenuContainerView, views::View)
 
+ public:
   PieSubMenuContainerView(const PieSubMenuContainerView&) = delete;
   PieSubMenuContainerView& operator=(const PieSubMenuContainerView&) = delete;
   ~PieSubMenuContainerView() override;
+
+  size_t button_count() const { return buttons_.size(); }
 
   // Adds a new menu item button with the given `button_id`,
   // `button_label_text`, and an optional `icon` (if non-null). The `button_id`
   // must be unique among all the IDs of the current existing buttons hosted by
   // parent `PieMenuView` and all its sub menus.
-  void AddMenuButton(int button_id,
-                     const std::u16string& button_label_text,
-                     const gfx::VectorIcon* icon);
+  // Returns a pointer to the newly added button.
+  views::View* AddMenuButton(int button_id,
+                             const std::u16string& button_label_text,
+                             const gfx::VectorIcon* icon);
+
+  // Removes all the currently added buttons in this container. This can be used
+  // to rebuild the contents of this sub menu from scratch.
+  void RemoveAllButtons();
 
  private:
   friend class PieMenuView;
@@ -53,11 +61,11 @@ class PieSubMenuContainerView : public views::View {
   explicit PieSubMenuContainerView(PieMenuView* owner_menu_view);
 
   // The parent owner pie menu that hosts this container. Not null.
-  const raw_ptr<PieMenuView, ExperimentalAsh> owner_menu_view_;
+  const raw_ptr<PieMenuView> owner_menu_view_;
 
   // The buttons on this container, which will be painted as slices of a circle
   // in their same order in this vector.
-  std::vector<PieMenuButton*> buttons_;
+  std::vector<raw_ptr<PieMenuButton, VectorExperimental>> buttons_;
 };
 
 // -----------------------------------------------------------------------------
@@ -68,10 +76,10 @@ class PieSubMenuContainerView : public views::View {
 // the current content of this pie view. A back button is then shown to go back
 // to the previous sub menu in the stack. There is always a main menu container
 // at all times.
-class PieMenuView : public views::View {
- public:
-  METADATA_HEADER(PieMenuView);
+class ASH_EXPORT PieMenuView : public views::View {
+  METADATA_HEADER(PieMenuView, views::View)
 
+ public:
   // Defines an interface for the delegate of this class which will be informed
   // when a button on this pie view is pressed.
   class Delegate {
@@ -97,8 +105,25 @@ class PieMenuView : public views::View {
   // it with that button. A button with `button_id` must exist in this pie menu.
   PieSubMenuContainerView* GetOrAddSubMenuForButton(int button_id);
 
+  // Sets the label of the button whose ID is `button_id` to the given `text`.
+  // A button with `button_id` must exist in this pie menu.
+  void SetButtonLabelText(int button_id, const std::u16string& text);
+
+  // Pops all the sub menus (if any) and shows the main menu.
+  void ReturnToMainMenu();
+
+  // Similar to `GetButtonById()` below but returns the button as a
+  // `views::View`. This prevents the need for exposing the actual type of
+  // `PieMenuButton`.
+  views::View* GetButtonByIdAsView(int button_id) const;
+
+  // Gets the center point in screen coordinates of the contents of the button
+  // whose ID is `button_id`. If no such button is found, an empty point is
+  // returned.
+  gfx::Point GetButtonContentsCenterInScreen(int button_id) const;
+
   // views::View:
-  void Layout() override;
+  void Layout(PassKey) override;
   void AddedToWidget() override;
   void OnThemeChanged() override;
 
@@ -108,6 +133,10 @@ class PieMenuView : public views::View {
   // Called when the given `button` is added on any of the sub menu containers
   // hosted by this view.
   void OnPieMenuButtonAdded(PieMenuButton* button);
+
+  // Called when the given `button` is removed from any of the sub menu
+  // containers hosted by this view.
+  void OnPieMenuButtonRemoved(PieMenuButton* button);
 
   // Called when the given `button` is pressed. This will inform the `delegate_`
   // via the `OnPieMenuButtonPressed()` API.
@@ -126,14 +155,17 @@ class PieMenuView : public views::View {
   // `back_button_` will hide.
   void MaybePopSubMenu();
 
+  // Returns the button whose ID is `button_id` or nullptr if it doesn't exist.
+  PieMenuButton* GetButtonById(int button_id) const;
+
   // The delegate of this view which takes care of handling button presses. Not
   // null.
-  const raw_ptr<Delegate, DanglingUntriaged | ExperimentalAsh> delegate_;
+  const raw_ptr<Delegate, DanglingUntriaged> delegate_;
 
   // The container hosting the buttons on the main menu of this view. When this
   // is visible, `active_sub_menus_stack_` should be empty, and `back_button_`
   // should be hidden.
-  const raw_ptr<PieSubMenuContainerView, ExperimentalAsh> main_menu_container_;
+  const raw_ptr<PieSubMenuContainerView> main_menu_container_;
 
   // Since a button on a sub menu can open another sub menu and so on, we keep
   // a stack of currently active sub menus (other than the main menu), so that
@@ -142,7 +174,7 @@ class PieMenuView : public views::View {
   // `main_menu_container_` shows up and `back_button_` hides.
   std::stack<PieSubMenuContainerView*> active_sub_menus_stack_;
 
-  const raw_ptr<views::ImageButton, ExperimentalAsh> back_button_;
+  const raw_ptr<views::ImageButton> back_button_;
 
   // Maps all the buttons on all sub menu containers of this view by their IDs.
   base::flat_map</*button_id=*/int, PieMenuButton*> buttons_by_id_;

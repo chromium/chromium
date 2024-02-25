@@ -6,6 +6,7 @@
 
 #include <stddef.h>
 
+#include <memory>
 #include <string>
 
 #include "base/strings/string_split.h"
@@ -121,8 +122,9 @@ TEST(NetworkChangeManagerClientTest,
   // Initialize DBus clients and clear services so NetworkHandler thinks we're
   // offline.
   chromeos::PowerManagerClient::InitializeFake();
-  NetworkHandlerTestHelper network_handler_test_helper;
-  network_handler_test_helper.service_test()->ClearServices();
+  std::unique_ptr<NetworkHandlerTestHelper> network_handler_test_helper =
+      std::make_unique<NetworkHandlerTestHelper>();
+  network_handler_test_helper->service_test()->ClearServices();
 
   auto client = std::make_unique<NetworkChangeManagerClient>(
       network_change_notifier.get());
@@ -135,6 +137,7 @@ TEST(NetworkChangeManagerClientTest,
             net::NetworkChangeNotifier::GetConnectionType());
 
   client.reset();
+  network_handler_test_helper.reset();
   chromeos::PowerManagerClient::Shutdown();
 }
 
@@ -152,6 +155,7 @@ class NetworkChangeManagerClientUpdateTest : public testing::Test {
   void SetUp() override {
     network_change_notifier_ = net::NetworkChangeNotifier::CreateIfNeeded();
     chromeos::PowerManagerClient::InitializeFake();
+    network_handler_test_helper_ = std::make_unique<NetworkHandlerTestHelper>();
     proxy_ = std::make_unique<NetworkChangeManagerClient>(
         static_cast<net::NetworkChangeNotifierPassive*>(
             network_change_notifier_.get()));
@@ -159,6 +163,7 @@ class NetworkChangeManagerClientUpdateTest : public testing::Test {
 
   void TearDown() override {
     proxy_.reset();
+    network_handler_test_helper_.reset();
     chromeos::PowerManagerClient::Shutdown();
     network_change_notifier_.reset();
   }
@@ -216,7 +221,7 @@ class NetworkChangeManagerClientUpdateTest : public testing::Test {
 
  private:
   content::BrowserTaskEnvironment task_environment_;
-  NetworkHandlerTestHelper network_handler_test_helper_;
+  std::unique_ptr<NetworkHandlerTestHelper> network_handler_test_helper_;
   NetworkState default_network_;
   std::unique_ptr<net::NetworkChangeNotifier> network_change_notifier_;
   std::unique_ptr<NetworkChangeManagerClient> proxy_;

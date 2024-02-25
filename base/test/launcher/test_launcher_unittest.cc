@@ -6,12 +6,15 @@
 
 #include <stddef.h>
 
+#include <optional>
+
 #include "base/base64.h"
 #include "base/command_line.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
+#include "base/i18n/time_formatting.h"
 #include "base/logging.h"
 #include "base/no_destructor.h"
 #include "base/process/launch.h"
@@ -25,13 +28,11 @@
 #include "base/test/scoped_logging_settings.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_timeouts.h"
-#include "base/time/time_to_iso8601.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "testing/multiprocess_func_list.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base {
 namespace {
@@ -550,6 +551,63 @@ TEST_F(TestLauncherTest, DisablePreTests) {
   EXPECT_TRUE(test_launcher.Run(command_line.get()));
 }
 
+// Test TestLauncher enforce to run tests in the exact positive filter.
+TEST_F(TestLauncherTest, EnforceRunTestsInExactPositiveFilter) {
+  AddMockedTests("Test", {"firstTest", "secondTest", "thirdTest"});
+  SetUpExpectCalls();
+
+  ASSERT_TRUE(dir.CreateUniqueTempDir());
+  FilePath path = dir.GetPath().AppendASCII("test.filter");
+  WriteFile(path, "Test.firstTest\nTest.thirdTest");
+  command_line->AppendSwitchPath("test-launcher-filter-file", path);
+  command_line->AppendSwitch("enforce-exact-positive-filter");
+  command_line->AppendSwitchASCII("test-launcher-total-shards", "2");
+  command_line->AppendSwitchASCII("test-launcher-shard-index", "0");
+
+  // Test.firstTest is in the exact positive filter, so expected to run.
+  // Test.thirdTest is launched in another shard.
+  std::vector<std::string> tests_names = {"Test.firstTest"};
+  EXPECT_CALL(test_launcher, LaunchChildGTestProcess(
+                                 _,
+                                 testing::ElementsAreArray(tests_names.cbegin(),
+                                                           tests_names.cend()),
+                                 _, _))
+      .WillOnce(::testing::DoAll(OnTestResult(&test_launcher, "Test.firstTest",
+                                              TestResult::TEST_SUCCESS)));
+  EXPECT_TRUE(test_launcher.Run(command_line.get()));
+}
+
+// Test TestLauncher should fail if enforce-exact-positive-filter and
+// gtest_filter both presented.
+TEST_F(TestLauncherTest,
+       EnforceRunTestsInExactPositiveFailWithGtestFilterFlag) {
+  command_line->AppendSwitch("enforce-exact-positive-filter");
+  command_line->AppendSwitchASCII("gtest_filter", "Test.firstTest;-Test.*");
+  EXPECT_FALSE(test_launcher.Run(command_line.get()));
+}
+
+// Test TestLauncher should fail if enforce-exact-positive-filter is set
+// with negative test filters.
+TEST_F(TestLauncherTest, EnforceRunTestsInExactPositiveFailWithNegativeFilter) {
+  command_line->AppendSwitch("enforce-exact-positive-filter");
+  ASSERT_TRUE(dir.CreateUniqueTempDir());
+  FilePath path = CreateFilterFile();
+  command_line->AppendSwitchPath("test-launcher-filter-file", path);
+  EXPECT_FALSE(test_launcher.Run(command_line.get()));
+}
+
+// Test TestLauncher should fail if enforce-exact-positive-filter is set
+// with wildcard positive filters.
+TEST_F(TestLauncherTest,
+       EnforceRunTestsInExactPositiveFailWithWildcardPositiveFilter) {
+  command_line->AppendSwitch("enforce-exact-positive-filter");
+  ASSERT_TRUE(dir.CreateUniqueTempDir());
+  FilePath path = dir.GetPath().AppendASCII("test.filter");
+  WriteFile(path, "Test.*");
+  command_line->AppendSwitchPath("test-launcher-filter-file", path);
+  EXPECT_FALSE(test_launcher.Run(command_line.get()));
+}
+
 // Tests fail if they produce too much output.
 TEST_F(TestLauncherTest, ExcessiveOutput) {
   AddMockedTests("Test", {"firstTest"});
@@ -646,8 +704,8 @@ bool ValidateTestResultObject(const Value::Dict& iteration_data,
   result &=
       ValidateKeyValue(*dict, "output_snippet", test_result.output_snippet);
 
-  std::string base64_output_snippet;
-  Base64Encode(test_result.output_snippet, &base64_output_snippet);
+  std::string base64_output_snippet =
+      base::Base64Encode(test_result.output_snippet);
   result &=
       ValidateKeyValue(*dict, "output_snippet_base64", base64_output_snippet);
 
@@ -674,7 +732,7 @@ bool ValidateTestResultObject(const Value::Dict& iteration_data,
 
 // Validate |root| dictionary value contains a list with |values|
 // at |key| value.
-bool ValidateStringList(const absl::optional<Value::Dict>& root,
+bool ValidateStringList(const std::optional<Value::Dict>& root,
                         const std::string& key,
                         std::vector<const char*> values) {
   const Value::List* list = root->FindList(key);
@@ -731,7 +789,7 @@ TEST_F(TestLauncherTest, JsonSummary) {
   EXPECT_TRUE(test_launcher.Run(command_line.get()));
 
   // Validate the resulting JSON file is the expected output.
-  absl::optional<Value::Dict> root = test_launcher_utils::ReadSummary(path);
+  std::optional<Value::Dict> root = test_launcher_utils::ReadSummary(path);
   ASSERT_TRUE(root);
   EXPECT_TRUE(
       ValidateStringList(root, "all_tests",
@@ -782,7 +840,7 @@ TEST_F(TestLauncherTest, JsonSummaryWithDisabledTests) {
   EXPECT_TRUE(test_launcher.Run(command_line.get()));
 
   // Validate the resulting JSON file is the expected output.
-  absl::optional<Value::Dict> root = test_launcher_utils::ReadSummary(path);
+  std::optional<Value::Dict> root = test_launcher_utils::ReadSummary(path);
   ASSERT_TRUE(root);
   Value::Dict* dict = root->FindDict("test_locations");
   ASSERT_TRUE(dict);
@@ -896,16 +954,19 @@ TEST_F(ResultWatcherTest, PollCompletesQuickly) {
   ASSERT_TRUE(AppendToFile(
       result_file,
       StrCat({"    <x-teststart name=\"B\" classname=\"A\" timestamp=\"",
-              TimeToISO8601(Time::Now()).c_str(), "\" />\n",
+              TimeFormatAsIso8601(Time::Now()).c_str(), "\" />\n",
               "    <testcase name=\"B\" status=\"run\" time=\"0.500\" "
               "classname=\"A\" timestamp=\"",
-              TimeToISO8601(Time::Now()).c_str(), "\">\n", "    </testcase>\n",
+              TimeFormatAsIso8601(Time::Now()).c_str(), "\">\n",
+              "    </testcase>\n",
               "    <x-teststart name=\"C\" classname=\"A\" timestamp=\"",
-              TimeToISO8601(Time::Now() + Milliseconds(500)).c_str(), "\" />\n",
+              TimeFormatAsIso8601(Time::Now() + Milliseconds(500)).c_str(),
+              "\" />\n",
               "    <testcase name=\"C\" status=\"run\" time=\"0.500\" "
               "classname=\"A\" timestamp=\"",
-              TimeToISO8601(Time::Now() + Milliseconds(500)).c_str(), "\">\n",
-              "    </testcase>\n", "  </testsuite>\n", "</testsuites>\n"})));
+              TimeFormatAsIso8601(Time::Now() + Milliseconds(500)).c_str(),
+              "\">\n", "    </testcase>\n", "  </testsuite>\n",
+              "</testsuites>\n"})));
 
   MockResultWatcher result_watcher(result_file, 2);
   EXPECT_CALL(result_watcher, WaitWithTimeout(_))
@@ -922,12 +983,15 @@ TEST_F(ResultWatcherTest, PollCompletesQuickly) {
 // Verify that a result watcher repeatedly checks the file for a batch of slow
 // tests. Each test completes in 40s, which is just under the timeout of 45s.
 TEST_F(ResultWatcherTest, PollCompletesSlowly) {
+  SCOPED_TRACE(::testing::Message() << "Start ticks: " << TimeTicks::Now());
+
   ASSERT_TRUE(dir.CreateUniqueTempDir());
   FilePath result_file = CreateResultFile();
+  const Time start = Time::Now();
   ASSERT_TRUE(AppendToFile(
       result_file,
       StrCat({"    <x-teststart name=\"B\" classname=\"A\" timestamp=\"",
-              TimeToISO8601(Time::Now()).c_str(), "\" />\n"})));
+              TimeFormatAsIso8601(start).c_str(), "\" />\n"})));
 
   MockResultWatcher result_watcher(result_file, 10);
   size_t checks = 0;
@@ -943,7 +1007,8 @@ TEST_F(ResultWatcherTest, PollCompletesSlowly) {
                       result_file,
                       StrCat({"    <testcase name=\"B\" status=\"run\" "
                               "time=\"40.000\" classname=\"A\" timestamp=\"",
-                              TimeToISO8601(Time::Now() - Seconds(45)).c_str(),
+                              TimeFormatAsIso8601(Time::Now() - Seconds(45))
+                                  .c_str(),
                               "\">\n", "    </testcase>\n"}));
                   checks++;
                   if (checks == 10) {
@@ -959,13 +1024,13 @@ TEST_F(ResultWatcherTest, PollCompletesSlowly) {
                         result_file,
                         StrCat({"    <x-teststart name=\"B\" classname=\"A\" "
                                 "timestamp=\"",
-                                TimeToISO8601(Time::Now() - Seconds(5)).c_str(),
+                                TimeFormatAsIso8601(Time::Now() - Seconds(5))
+                                    .c_str(),
                                 "\" />\n"}));
                   }
                 }),
                 ReturnPointee(&done)));
 
-  Time start = Time::Now();
   ASSERT_TRUE(result_watcher.PollUntilDone(Seconds(45)));
   // The first check occurs 45s after the batch starts, so the sequence of
   // events looks like:
@@ -987,7 +1052,7 @@ TEST_F(ResultWatcherTest, PollTimeout) {
   ASSERT_TRUE(AppendToFile(
       result_file,
       StrCat({"    <x-teststart name=\"B\" classname=\"A\" timestamp=\"",
-              TimeToISO8601(Time::Now()).c_str(), "\" />\n"})));
+              TimeFormatAsIso8601(Time::Now()).c_str(), "\" />\n"})));
 
   MockResultWatcher result_watcher(result_file, 10);
   EXPECT_CALL(result_watcher, WaitWithTimeout(_))
@@ -1010,10 +1075,10 @@ TEST_F(ResultWatcherTest, RetryIncompleteResultRead) {
   ASSERT_TRUE(AppendToFile(
       result_file,
       StrCat({"    <x-teststart name=\"B\" classname=\"A\" timestamp=\"",
-              TimeToISO8601(Time::Now()).c_str(), "\" />\n",
+              TimeFormatAsIso8601(Time::Now()).c_str(), "\" />\n",
               "    <testcase name=\"B\" status=\"run\" time=\"40.000\" "
               "classname=\"A\" timestamp=\"",
-              TimeToISO8601(Time::Now()).c_str(), "\">\n",
+              TimeFormatAsIso8601(Time::Now()).c_str(), "\">\n",
               "      <summary>"})));
 
   MockResultWatcher result_watcher(result_file, 2);
@@ -1045,15 +1110,16 @@ TEST_F(ResultWatcherTest, PollWithClockJumpBackward) {
   Time time_before_change = Time::Now() + Hours(1);
   ASSERT_TRUE(AppendToFile(
       result_file,
-      StrCat({"    <x-teststart name=\"B\" classname=\"A\" timestamp=\"",
-              TimeToISO8601(time_before_change).c_str(), "\" />\n",
-              "    <testcase name=\"B\" status=\"run\" time=\"0.500\" "
-              "classname=\"A\" timestamp=\"",
-              TimeToISO8601(time_before_change).c_str(), "\">\n",
-              "    </testcase>\n",
-              "    <x-teststart name=\"C\" classname=\"A\" timestamp=\"",
-              TimeToISO8601(time_before_change + Milliseconds(500)).c_str(),
-              "\" />\n"})));
+      StrCat(
+          {"    <x-teststart name=\"B\" classname=\"A\" timestamp=\"",
+           TimeFormatAsIso8601(time_before_change).c_str(), "\" />\n",
+           "    <testcase name=\"B\" status=\"run\" time=\"0.500\" "
+           "classname=\"A\" timestamp=\"",
+           TimeFormatAsIso8601(time_before_change).c_str(), "\">\n",
+           "    </testcase>\n",
+           "    <x-teststart name=\"C\" classname=\"A\" timestamp=\"",
+           TimeFormatAsIso8601(time_before_change + Milliseconds(500)).c_str(),
+           "\" />\n"})));
 
   MockResultWatcher result_watcher(result_file, 2);
   EXPECT_CALL(result_watcher, WaitWithTimeout(_))
@@ -1077,12 +1143,13 @@ TEST_F(ResultWatcherTest, PollWithClockJumpForward) {
   ASSERT_TRUE(AppendToFile(
       result_file,
       StrCat({"    <x-teststart name=\"B\" classname=\"A\" timestamp=\"",
-              TimeToISO8601(Time::Now()).c_str(), "\" />\n",
+              TimeFormatAsIso8601(Time::Now()).c_str(), "\" />\n",
               "    <testcase name=\"B\" status=\"run\" time=\"0.500\" "
               "classname=\"A\" timestamp=\"",
-              TimeToISO8601(Time::Now()).c_str(), "\">\n", "    </testcase>\n",
+              TimeFormatAsIso8601(Time::Now()).c_str(), "\">\n",
+              "    </testcase>\n",
               "    <x-teststart name=\"C\" classname=\"A\" timestamp=\"",
-              TimeToISO8601(Time::Now() + Milliseconds(500)).c_str(),
+              TimeFormatAsIso8601(Time::Now() + Milliseconds(500)).c_str(),
               "\" />\n"})));
   task_environment.AdvanceClock(Hours(1));
 
@@ -1145,7 +1212,7 @@ TEST_F(UnitTestLauncherDelegateTester, RunMockTests) {
   GetAppOutputAndError(command_line, &output);
 
   // Validate the resulting JSON file is the expected output.
-  absl::optional<Value::Dict> root = test_launcher_utils::ReadSummary(path);
+  std::optional<Value::Dict> root = test_launcher_utils::ReadSummary(path);
   ASSERT_TRUE(root);
 
   const Value::Dict* dict = root->FindDict("test_locations");
@@ -1217,6 +1284,67 @@ TEST(ProcessGTestOutputTest, RunMockTests) {
   EXPECT_GT(*test_results[2].timestamp, Time());
 }
 
+// TODO(crbug.com/1498237): Enable the test once GetAppOutputAndError
+// can collect stdout and stderr on Fuchsia.
+#if !BUILDFLAG(IS_FUCHSIA)
+TEST(ProcessGTestOutputTest, FoundTestCaseNotEnforced) {
+  ScopedTempDir dir;
+  ASSERT_TRUE(dir.CreateUniqueTempDir());
+  FilePath path = dir.GetPath().AppendASCII("test.filter");
+  WriteFile(path, "Test.firstTest\nTest.secondTest");
+  CommandLine command_line(CommandLine::ForCurrentProcess()->GetProgram());
+  command_line.AppendSwitchPath("test-launcher-filter-file", path);
+  command_line.AppendSwitch("enforce-exact-positive-filter");
+  std::string output;
+  // Test cases in the filter do not exist, hence test launcher should
+  // fail and print their names.
+  EXPECT_FALSE(GetAppOutputAndError(command_line, &output));
+  // Banner should appear in the output.
+  const char kBanner[] = "Found exact positive filter not enforced:";
+  EXPECT_TRUE(Contains(output, kBanner));
+  std::vector<std::string> lines = base::SplitString(
+      output, "\n", base::KEEP_WHITESPACE, base::SPLIT_WANT_ALL);
+  std::unordered_set<std::string> tests_not_enforced;
+  bool banner_has_printed = false;
+  for (size_t i = 0; i < lines.size(); i++) {
+    if (Contains(lines[i], kBanner)) {
+      // The following two lines should have the test cases not enforced
+      // and the third line for the check failure message.
+      EXPECT_LT(i + 3, lines.size());
+      // Banner should only appear once.
+      EXPECT_FALSE(banner_has_printed);
+      banner_has_printed = true;
+      continue;
+    }
+    if (banner_has_printed && tests_not_enforced.size() < 2) {
+      // Note, gtest prints the error with datetime and file line info
+      // ahead to the test names, e.g. below:
+      // [1030/220237.425678:ERROR:test_launcher.cc(2123)] Test.secondTest
+      // [1030/220237.425682:ERROR:test_launcher.cc(2123)] Test.firstTest
+      std::vector<std::string> line_vec = base::SplitString(
+          lines[i], "]", base::TRIM_WHITESPACE, base::SPLIT_WANT_ALL);
+      ASSERT_EQ(line_vec.size(), 2u);
+      tests_not_enforced.insert(line_vec[1]);
+      continue;
+    }
+    if (banner_has_printed && tests_not_enforced.size() == 2) {
+// For official builds, they discard logs from CHECK failures, hence
+// the test case cannot catch the "Check failed" line.
+#if !defined(OFFICIAL_BUILD) || DCHECK_IS_ON()
+      EXPECT_TRUE(Contains(lines[i],
+                           "Check failed: "
+                           "!found_exact_positive_filter_not_enforced."));
+#endif  // !defined(OFFICIAL_BUILD) || DCHECK_IS_ON()
+      break;
+    }
+  }
+  // The test case printed is not ordered, hence need UnorderedElementsAre
+  // to compare.
+  EXPECT_THAT(tests_not_enforced, testing::UnorderedElementsAre(
+                                      "Test.firstTest", "Test.secondTest"));
+}
+#endif  // !BUILDFLAG(IS_FUCHSIA)
+
 // TODO(crbug.com/1094369): Enable leaked-child checks on other platforms.
 #if BUILDFLAG(IS_FUCHSIA)
 
@@ -1254,7 +1382,7 @@ TEST_F(UnitTestLauncherDelegateTester, LeakedChildProcess) {
   GetAppOutputWithExitCode(command_line, &output, &exit_code);
 
   // Validate that we actually ran a test.
-  absl::optional<Value::Dict> root = test_launcher_utils::ReadSummary(path);
+  std::optional<Value::Dict> root = test_launcher_utils::ReadSummary(path);
   ASSERT_TRUE(root);
 
   Value::Dict* dict = root->FindDict("test_locations");

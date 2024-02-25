@@ -1,0 +1,51 @@
+<style include="cr-shared-style settings-shared">
+  .list-frame {
+    padding-inline-end: 0;
+  }
+
+  .list-frame settings-toggle-button {
+    padding-inline-start: 0;
+  }
+</style>
+
+<settings-toggle-button
+    pref="{{prefs.optimization_guide.model_execution_main_toggle_setting_state}}"
+    numeric-unchecked-values="[[numericUncheckedValues_]]"
+    numeric-checked-value="[[featureOptInStateEnum_.ENABLED]]"
+    label="$i18n{aiPageMainLabel}"
+    sub-label="$i18n{aiPageMainSublabel}">
+</settings-toggle-button>
+
+<iron-collapse opened="[[isExpanded_(
+    prefs.optimization_guide.model_execution_main_toggle_setting_state.value)]]">
+  <div class="list-frame">
+    <settings-toggle-button
+        hidden="[[!showComposeControl_]]"
+        pref="{{prefs.optimization_guide.compose_setting_state}}"
+        numeric-unchecked-values="[[numericUncheckedValues_]]"
+        numeric-checked-value="[[featureOptInStateEnum_.ENABLED]]"
+        label="$i18n{aiComposeLabel}"
+        sub-label="$i18n{aiComposeSublabel}">
+    </settings-toggle-button>
+    <settings-toggle-button
+        class$="[[getTabOrganizationHrCssClass_(showComposeControl_)]]"
+        hidden="[[!showTabOrganizationControl_]]"
+        pref="{{prefs.optimization_guide.tab_organization_setting_state}}"
+        numeric-unchecked-values="[[numericUncheckedValues_]]"
+        numeric-checked-value="[[featureOptInStateEnum_.ENABLED]]"
+        label="$i18n{experimentalAdvancedFeature2Label}"
+        sub-label="$i18n{experimentalAdvancedFeature2Sublabel}">
+    </settings-toggle-button>
+    <settings-toggle-button
+        class$="[[getWallpaperSearchHrCssClass_(
+            showComposeControl_, showTabOrganizationControl_)]]"
+        hidden="[[!showWallpaperSearchControl_]]"
+        pref="{{prefs.optimization_guide.wallpaper_search_setting_state}}"
+        numeric-unchecked-values="[[numericUncheckedValues_]]"
+        numeric-checked-value="[[featureOptInStateEnum_.ENABLED]]"
+        label="$i18n{experimentalAdvancedFeature3Label}"
+        sub-label="$i18n{experimentalAdvancedFeature3Sublabel}">
+    </settings-toggle-button>
+  </div>
+</iron-collapse>
+

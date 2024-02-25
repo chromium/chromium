@@ -77,7 +77,7 @@ class AccessRateLimiter {
   base::TimeDelta counter_;
 
   // Points to a timer clock implementation for keeping track of access times.
-  raw_ptr<const base::TickClock, ExperimentalAsh> tick_clock_;
+  raw_ptr<const base::TickClock> tick_clock_;
 };
 
 }  // namespace extensions

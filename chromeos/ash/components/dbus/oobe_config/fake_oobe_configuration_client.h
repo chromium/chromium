@@ -5,6 +5,8 @@
 #ifndef CHROMEOS_ASH_COMPONENTS_DBUS_OOBE_CONFIG_FAKE_OOBE_CONFIGURATION_CLIENT_H_
 #define CHROMEOS_ASH_COMPONENTS_DBUS_OOBE_CONFIG_FAKE_OOBE_CONFIGURATION_CLIENT_H_
 
+#include <optional>
+
 #include "base/component_export.h"
 #include "chromeos/ash/components/dbus/oobe_config/oobe_configuration_client.h"
 
@@ -27,6 +29,11 @@ class COMPONENT_EXPORT(ASH_DBUS_OOBE_CONFIG) FakeOobeConfigurationClient
 
   // EasyUnlockClient overrides
   void CheckForOobeConfiguration(ConfigurationCallback callback) override;
+
+  void SetConfiguration(const std::string& configuration);
+
+ private:
+  std::optional<std::string> configuration_;
 };
 
 }  // namespace ash

@@ -5,9 +5,10 @@
 #ifndef COMPONENTS_NAMED_MOJO_IPC_SERVER_CONNECTION_INFO_H_
 #define COMPONENTS_NAMED_MOJO_IPC_SERVER_CONNECTION_INFO_H_
 
+#include <optional>
+
 #include "base/process/process_handle.h"
 #include "build/buildflag.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 #if BUILDFLAG(IS_WIN)
 #include "base/win/scoped_handle.h"
@@ -29,7 +30,7 @@ struct ConnectionInfo {
 
   base::ProcessId pid{};
 #if BUILDFLAG(IS_WIN)
-  absl::optional<base::win::ScopedHandle> impersonation_token{};
+  std::optional<base::win::ScopedHandle> impersonation_token{};
 #elif BUILDFLAG(IS_MAC)
   audit_token_t audit_token{};
 #elif BUILDFLAG(IS_LINUX)

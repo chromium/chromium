@@ -9,7 +9,7 @@
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/location.h"
-#include "base/metrics/histogram_macros.h"
+#include "base/rand_util.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
 #include "build/chromeos_buildflags.h"
@@ -29,7 +29,7 @@
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
 #include "chrome/browser/user_education/user_education_service.h"
 #include "chrome/browser/user_education/user_education_service_factory.h"
-#include "chrome/grit/chromium_strings.h"
+#include "chrome/grit/branded_strings.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/feature_engagement/public/feature_constants.h"
 #include "components/user_education/common/feature_promo_controller.h"
@@ -38,7 +38,6 @@
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/base/ui_base_features.h"
-#include "ui/compositor/compositor.h"
 #include "ui/compositor/layer.h"
 #include "ui/gfx/animation/throb_animation.h"
 #include "ui/gfx/canvas.h"
@@ -103,10 +102,9 @@ void BrowserAppMenuButton::ShowMenu(int run_types) {
 
   Browser* browser = toolbar_view_->browser();
 
-  // If the menu was opened while reopen tab in-product help was
-  // showing, we continue the IPH into the menu. Notify the promo
-  // controller we are taking control of the promo.
-  AlertMenuItem alert_item = CloseFeaturePromoAndContinue();
+  // Allow highlighting menu items when the menu was opened while
+  // certain tutorials are running.
+  AlertMenuItem alert_item = GetAlertItemForRunningTutorial();
 
   RunMenu(std::make_unique<AppMenuModel>(
               toolbar_view_, browser, toolbar_view_->app_menu_icon_controller(),
@@ -114,7 +112,7 @@ void BrowserAppMenuButton::ShowMenu(int run_types) {
           browser, run_types);
 }
 
-AlertMenuItem BrowserAppMenuButton::CloseFeaturePromoAndContinue() {
+AlertMenuItem BrowserAppMenuButton::GetAlertItemForRunningTutorial() {
   Browser* browser = toolbar_view_->browser();
   BrowserWindow* browser_window = browser->window();
 
@@ -127,12 +125,6 @@ AlertMenuItem BrowserAppMenuButton::CloseFeaturePromoAndContinue() {
                      kPasswordManagerTutorialId)) {
     return AlertMenuItem::kPasswordManager;
   }
-
-  promo_handle_ = browser_window->CloseFeaturePromoAndContinue(
-      feature_engagement::kIPHHighEfficiencyModeFeature);
-
-  if (promo_handle_.is_valid())
-    return AlertMenuItem::kPerformance;
 
   return AlertMenuItem::kNone;
 }
@@ -206,13 +198,6 @@ SkColor BrowserAppMenuButton::GetForegroundColor(ButtonState state) const {
   return ToolbarButton::GetForegroundColor(state);
 }
 
-void BrowserAppMenuButton::HandleMenuClosed() {
-  // If we were showing a promo in the menu, drop the handle to notify
-  // FeaturePromoController we're done. This is a no-op if we weren't
-  // showing the promo.
-  promo_handle_.Release();
-}
-
 void BrowserAppMenuButton::UpdateTextAndHighlightColor() {
   int tooltip_message_id;
   std::u16string text;
@@ -225,9 +210,12 @@ void BrowserAppMenuButton::UpdateTextAndHighlightColor() {
     (BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX))
     int message_id = IDS_APP_MENU_BUTTON_UPDATE;
     if (base::FeatureList::IsEnabled(features::kUpdateTextOptions)) {
-      if (features::kUpdateTextOptionNumber.Get() == 1) {
+      // Select an update text option randomly. Show this text in all browser
+      // windows.
+      static const int update_text_option = base::RandInt(1, 3);
+      if (update_text_option == 1) {
         message_id = IDS_APP_MENU_BUTTON_UPDATE_ALT1;
-      } else if (features::kUpdateTextOptionNumber.Get() == 2) {
+      } else if (update_text_option == 2) {
         message_id = IDS_APP_MENU_BUTTON_UPDATE_ALT2;
       } else {
         message_id = IDS_APP_MENU_BUTTON_UPDATE_ALT3;
@@ -242,7 +230,7 @@ void BrowserAppMenuButton::UpdateTextAndHighlightColor() {
     text = l10n_util::GetStringUTF16(IDS_APP_MENU_BUTTON_ERROR);
   }
 
-  absl::optional<SkColor> color;
+  std::optional<SkColor> color;
   const auto* const color_provider = GetColorProvider();
   switch (type_and_severity_.severity) {
     case AppMenuIconController::Severity::NONE:
@@ -278,12 +266,12 @@ void BrowserAppMenuButton::UpdateLayoutInsets() {
   }
 }
 
-absl::optional<SkColor> BrowserAppMenuButton::GetHighlightTextColor() const {
+std::optional<SkColor> BrowserAppMenuButton::GetHighlightTextColor() const {
   if (features::IsChromeRefresh2023() && IsLabelPresentAndVisible()) {
     const auto* const color_provider = GetColorProvider();
     return color_provider->GetColor(kColorAppMenuExpandedForegroundDefault);
   }
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 void BrowserAppMenuButton::OnTouchUiChanged() {
@@ -292,24 +280,9 @@ void BrowserAppMenuButton::OnTouchUiChanged() {
 }
 
 void BrowserAppMenuButton::ButtonPressed(const ui::Event& event) {
-  // Registers a callback for logging time from app menu button pressed to menu
-  // shown to the compositor's callback. The callback will only be invoked after
-  // successful presentation of the next frame - app menu.
-  BrowserView::GetBrowserViewForBrowser(toolbar_view_->browser())
-      ->GetWidget()
-      ->GetCompositor()
-      ->RequestSuccessfulPresentationTimeForNextFrame(base::BindOnce(
-          [](base::TimeTicks menu_button_pressed_time,
-             base::TimeTicks presentation_time) {
-            UMA_HISTOGRAM_TIMES(
-                "Chrome.WrenchMenu.MenuButtonPressedToMenuShown",
-                presentation_time - menu_button_pressed_time);
-          },
-          base::TimeTicks::Now()));
-
   ShowMenu(event.IsKeyEvent() ? views::MenuRunner::SHOULD_SHOW_MNEMONICS
                               : views::MenuRunner::NO_FLAGS);
 }
 
-BEGIN_METADATA(BrowserAppMenuButton, AppMenuButton)
+BEGIN_METADATA(BrowserAppMenuButton)
 END_METADATA

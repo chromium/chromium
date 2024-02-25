@@ -226,8 +226,7 @@ void PluginVmDriveImageDownloadService::DownloadActionCallback(
   completion_info.bytes_downloaded = total_bytes_downloaded_;
   std::array<uint8_t, 32> sha256_hash;
   secure_hash_service_->Finish(sha256_hash.data(), sha256_hash.size());
-  completion_info.hash256 =
-      base::HexEncode(sha256_hash.data(), sha256_hash.size());
+  completion_info.hash256 = base::HexEncode(sha256_hash);
   plugin_vm_installer_->OnDownloadCompleted(completion_info);
 }
 

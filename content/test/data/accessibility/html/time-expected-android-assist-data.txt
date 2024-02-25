@@ -1,0 +1,7 @@
+WebView textSize:16.0 style:0 htmlInfo:[{htmlTag="#document"}, {display=""}]
+++View textSize:16.0 style:0 htmlInfo:[{htmlTag="body"}, {display="block"}]
+++++View textSize:16.0 style:0 htmlInfo:[{htmlTag="time"}, {display="inline"}]
+++++++TextView text:"10:00" textSize:16.0 style:0 htmlInfo:[{htmlTag=""}, {display=""}]
+++++TextView text:" " textSize:16.0 style:0 htmlInfo:[{htmlTag=""}, {display=""}]
+++++View textSize:16.0 style:0 htmlInfo:[{htmlTag="time"}, {display="inline"}, {datetime="2015-02-14 20:00"}]
+++++++TextView text:"Valentines day" textSize:16.0 style:0 htmlInfo:[{htmlTag=""}, {display=""}]

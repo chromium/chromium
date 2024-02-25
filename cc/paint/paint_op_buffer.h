@@ -10,6 +10,7 @@
 #include <utility>
 #include <vector>
 
+#include <optional>
 #include "base/bits.h"
 #include "base/check_op.h"
 #include "base/functional/callback.h"
@@ -17,7 +18,6 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/raw_ptr_exclusion.h"
 #include "cc/paint/paint_export.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/skia/include/core/SkM44.h"
 #include "third_party/skia/include/core/SkRefCnt.h"
 
@@ -75,7 +75,7 @@ struct CC_PAINT_EXPORT PlaybackParams {
   CustomDataRasterCallback custom_callback;
   DidDrawOpCallback did_draw_op_callback;
   ConvertOpCallback convert_op_callback;
-  absl::optional<bool> save_layer_alpha_should_preserve_lcd_text;
+  std::optional<bool> save_layer_alpha_should_preserve_lcd_text;
   bool is_analyzing = false;
 };
 
@@ -152,6 +152,10 @@ class CC_PAINT_EXPORT PaintOpBuffer : public SkRefCnt {
     // True if the deserialization is happening on a privileged gpu channel.
     // e.g. in the case of UI.
     bool is_privileged = false;
+    // The HDR headroom to apply when deserializing.
+    // TODO(https://crbug.com/1483235): Move this to playback instead of
+    // deserialization.
+    float hdr_headroom = 1.f;
     raw_ptr<SharedImageProvider> shared_image_provider = nullptr;
   };
 
@@ -340,7 +344,18 @@ class CC_PAINT_EXPORT PaintOpBuffer : public SkRefCnt {
   BufferDataPtr ReallocIfNeededToFit();
 
   // Returns the allocated op.
-  void* AllocatePaintOp(uint16_t aligned_size);
+  void* AllocatePaintOp(uint16_t aligned_size) {
+    DCHECK(is_mutable());
+    if (used_ + aligned_size > reserved_) {
+      return AllocatePaintOpSlowPath(aligned_size);
+    } else {
+      void* op = data_.get() + used_;
+      used_ += aligned_size;
+      op_count_++;
+      return op;
+    }
+  }
+  void* AllocatePaintOpSlowPath(uint16_t aligned_size);
 
   void ResetRetainingBuffer();
 
@@ -358,13 +373,13 @@ class CC_PAINT_EXPORT PaintOpBuffer : public SkRefCnt {
   // required for an MSAA sample count for raster.
   int num_slow_paths_up_to_min_for_MSAA_ = 0;
 
-  bool has_non_aa_paint_ : 1;
-  bool has_discardable_images_ : 1;
-  bool has_draw_ops_ : 1;
-  bool has_draw_text_ops_ : 1;
-  bool has_save_layer_ops_ : 1;
-  bool has_save_layer_alpha_ops_ : 1;
-  bool has_effects_preventing_lcd_text_for_save_layer_alpha_ : 1;
+  bool has_non_aa_paint_ : 1 = false;
+  bool has_discardable_images_ : 1 = false;
+  bool has_draw_ops_ : 1 = false;
+  bool has_draw_text_ops_ : 1 = false;
+  bool has_save_layer_ops_ : 1 = false;
+  bool has_save_layer_alpha_ops_ : 1 = false;
+  bool has_effects_preventing_lcd_text_for_save_layer_alpha_ : 1 = false;
 };
 
 }  // namespace cc

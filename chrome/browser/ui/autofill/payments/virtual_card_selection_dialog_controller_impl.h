@@ -29,8 +29,9 @@ class VirtualCardSelectionDialogControllerImpl
       const VirtualCardSelectionDialogControllerImpl&) = delete;
   ~VirtualCardSelectionDialogControllerImpl() override;
 
-  void ShowDialog(const std::vector<CreditCard*>& candidates,
-                  base::OnceCallback<void(const std::string&)> callback);
+  void ShowDialog(
+      const std::vector<raw_ptr<CreditCard, VectorExperimental>>& candidates,
+      base::OnceCallback<void(const std::string&)> callback);
 
   // VirtualCardSelectionDialogController:
   bool IsOkButtonEnabled() override;
@@ -38,7 +39,8 @@ class VirtualCardSelectionDialogControllerImpl
   std::u16string GetContentExplanation() const override;
   std::u16string GetOkButtonLabel() const override;
   std::u16string GetCancelButtonLabel() const override;
-  const std::vector<CreditCard*>& GetCardList() const override;
+  const std::vector<raw_ptr<CreditCard, VectorExperimental>>& GetCardList()
+      const override;
   void OnCardSelected(const std::string& selected_card_id) override;
   void OnOkButtonClicked() override;
   void OnCancelButtonClicked() override;
@@ -55,7 +57,7 @@ class VirtualCardSelectionDialogControllerImpl
       VirtualCardSelectionDialogControllerImpl>;
 
   // Local copy of all the candidate cards.
-  std::vector<CreditCard*> candidates_;
+  std::vector<raw_ptr<CreditCard, VectorExperimental>> candidates_;
 
   // The identifier of the selected card in the list. When there is more than
   // one card, no card is set to be selected by default.

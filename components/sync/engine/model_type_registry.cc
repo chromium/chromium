@@ -92,10 +92,6 @@ void ModelTypeRegistry::DisconnectDataType(ModelType type) {
   }
 }
 
-void ModelTypeRegistry::SetProxyTabsDatatypeEnabled(bool enabled) {
-  proxy_tabs_datatype_enabled_ = enabled;
-}
-
 ModelTypeSet ModelTypeRegistry::GetConnectedTypes() const {
   ModelTypeSet types;
   for (const std::unique_ptr<ModelTypeWorker>& worker :
@@ -103,10 +99,6 @@ ModelTypeSet ModelTypeRegistry::GetConnectedTypes() const {
     types.Put(worker->GetModelType());
   }
   return types;
-}
-
-bool ModelTypeRegistry::proxy_tabs_datatype_enabled() const {
-  return proxy_tabs_datatype_enabled_;
 }
 
 ModelTypeSet ModelTypeRegistry::GetInitialSyncEndedTypes() const {

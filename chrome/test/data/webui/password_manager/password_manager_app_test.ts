@@ -4,9 +4,9 @@
 
 import 'chrome://password-manager/password_manager.js';
 
-import {OpenWindowProxyImpl, Page, PasswordManagerAppElement, PasswordManagerImpl, Router, UrlParam} from 'chrome://password-manager/password_manager.js';
+import type {PasswordManagerAppElement} from 'chrome://password-manager/password_manager.js';
+import {OpenWindowProxyImpl, Page, PasswordManagerImpl, Router, UrlParam} from 'chrome://password-manager/password_manager.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
-import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 import {TestOpenWindowProxy} from 'chrome://webui-test/test_open_window_proxy.js';
@@ -79,17 +79,16 @@ suite('PasswordManagerAppTest', function() {
 
     const drawerOpened = eventToPromise('cr-drawer-opened', app.$.drawer);
     app.$.drawer.openDrawer();
-    flush();
+    await drawerOpened;
 
     // Validate that dialog is open and menu is shown so it will animate.
     assertTrue(app.$.drawer.open);
     assertTrue(!!app.shadowRoot!.querySelector('#drawerSidebar'));
 
-    await drawerOpened;
     const drawerClosed = eventToPromise('close', app.$.drawer);
     app.$.drawer.cancel();
-
     await drawerClosed;
+
     // Drawer is closed, but menu is still stamped so
     // its contents remain visible as the drawer slides
     // out.
@@ -104,17 +103,16 @@ suite('PasswordManagerAppTest', function() {
 
     const drawerOpened = eventToPromise('cr-drawer-opened', app.$.drawer);
     app.$.drawer.openDrawer();
-    flush();
+    await drawerOpened;
 
     // Validate that dialog is open and menu is shown so it will animate.
     assertTrue(app.$.drawer.open);
     assertTrue(!!app.shadowRoot!.querySelector('#drawerSidebar'));
 
-    await drawerOpened;
     const drawerClosed = eventToPromise('close', app.$.drawer);
     app.setNarrowForTesting(false);
-
     await drawerClosed;
+
     // Drawer is closed, but menu is still stamped so
     // its contents remain visible as the drawer slides
     // out.
@@ -157,7 +155,7 @@ suite('PasswordManagerAppTest', function() {
 
     await flushTasks();
 
-    assertFalse(app.$.removalToast.open);
+    assertFalse(app.$.toast.open);
     const detailsSection =
         app.shadowRoot!.querySelector('password-details-section');
     assertTrue(!!detailsSection);
@@ -170,7 +168,7 @@ suite('PasswordManagerAppTest', function() {
       },
     }));
 
-    assertTrue(app.$.removalToast.open);
+    assertTrue(app.$.toast.open);
     const undoButton =
         app.shadowRoot!.querySelector<HTMLElement>('#undo-removal');
     assertTrue(!!undoButton);
@@ -191,7 +189,7 @@ suite('PasswordManagerAppTest', function() {
 
     await flushTasks();
 
-    assertFalse(app.$.removalToast.open);
+    assertFalse(app.$.toast.open);
     const detailsSection =
         app.shadowRoot!.querySelector('password-details-section');
     assertTrue(!!detailsSection);
@@ -201,13 +199,48 @@ suite('PasswordManagerAppTest', function() {
       composed: true,
     }));
 
-    assertTrue(app.$.removalToast.open);
+    assertTrue(app.$.toast.open);
 
     // The undo button should be hidden for passkeys.
     const undoButton =
         app.shadowRoot!.querySelector<HTMLElement>('#undo-removal');
     assertTrue(!!undoButton);
     assertTrue(undoButton.hidden);
+  });
+
+  test('Test password moved toast', async () => {
+    const testEmail = 'test.user@gmail.com';
+    const group = createCredentialGroup({
+      name: 'test.com',
+      credentials: [
+        createPasswordEntry({id: 0, username: 'test1'}),
+      ],
+    });
+    Router.getInstance().navigateTo(Page.PASSWORD_DETAILS, group);
+
+    await flushTasks();
+
+    assertFalse(app.$.toast.open);
+    const detailsSection =
+        app.shadowRoot!.querySelector('password-details-section');
+    assertTrue(!!detailsSection);
+
+    detailsSection.dispatchEvent(new CustomEvent('password-moved', {
+      bubbles: true,
+      composed: true,
+      detail: {
+        accountEmail: testEmail,
+      },
+    }));
+
+    assertTrue(app.$.toast.open);
+    const undoButton =
+        app.shadowRoot!.querySelector<HTMLElement>('#undo-removal');
+    assertTrue(!!undoButton);
+    assertFalse(isVisible(undoButton));
+    assertTrue(app.$.toast.querySelector<HTMLElement>(
+                              '#removalNotification')!.textContent!.trim()
+                   .includes(testEmail));
   });
 
   test('import can be triggered from empty state', async function() {
@@ -242,4 +275,12 @@ suite('PasswordManagerAppTest', function() {
     assertTrue(!!spinner);
     assertTrue(spinner.active);
   });
+
+  test(
+      'dismiss Safety Hub menu notification for password module',
+      async function() {
+        Router.getInstance().navigateTo(Page.CHECKUP);
+        await passwordManager.whenCalled(
+            'dismissSafetyHubPasswordMenuNotification');
+      });
 });

@@ -16,16 +16,18 @@
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
+#include "components/viz/common/features.h"
 #include "components/viz/common/frame_sinks/begin_frame_source.h"
+#include "components/viz/common/quads/solid_color_draw_quad.h"
 #include "components/viz/service/display/display.h"
 #include "components/viz/service/display/output_surface.h"
 #include "components/viz/service/display_embedder/output_surface_provider.h"
 #include "components/viz/service/display_embedder/vsync_parameter_listener.h"
 #include "components/viz/service/frame_sinks/external_begin_frame_source_mojo.h"
 #include "components/viz/service/frame_sinks/frame_sink_manager_impl.h"
-#include "components/viz/service/frame_sinks/gpu_vsync_begin_frame_source.h"
 #include "components/viz/service/hit_test/hit_test_aggregator.h"
 #include "services/viz/public/mojom/compositing/layer_context.mojom.h"
+#include "ui/base/ozone_buildflags.h"
 #include "ui/gfx/geometry/skia_conversions.h"
 
 #if BUILDFLAG(IS_ANDROID)
@@ -38,8 +40,11 @@
 
 #if BUILDFLAG(IS_MAC)
 #include "base/feature_list.h"
-#include "components/viz/common/features.h"
 #include "components/viz/service/frame_sinks/external_begin_frame_source_mac.h"
+#endif
+
+#if BUILDFLAG(IS_WIN)
+#include "components/viz/service/frame_sinks/external_begin_frame_source_win.h"
 #endif
 
 namespace viz {
@@ -107,13 +112,11 @@ RootCompositorFrameSinkImpl::Create(
   output_surface->SetNeedsSwapSizeNotifications(
       params->send_swap_size_notifications);
 
-// TODO(crbug.com/1052397): Revisit the macro expression once build flag switch
-// of lacros-chrome is complete.
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#if BUILDFLAG(IS_LINUX) && BUILDFLAG(IS_OZONE_X11)
   // For X11, we need notify client about swap completion after resizing, so the
   // client can use it for synchronize with X11 WM.
   output_surface->SetNeedsSwapSizeNotifications(true);
-#endif
+#endif  // BUILDFLAG(IS_LINUX) && BUILDFLAG(IS_OZONE_X11)
 
   // Create some sort of a BeginFrameSource, depending on the platform and
   // |params|.
@@ -146,47 +149,40 @@ RootCompositorFrameSinkImpl::Create(
     external_begin_frame_source =
         std::make_unique<ExternalBeginFrameSourceIOS>(restart_id);
 #else
-    // TODO(b/221220344): Support dynamically choosing the BeginFrameSource per
-    // VRR state changes.
-    if (params->disable_frame_rate_limit ||
-        params->enable_variable_refresh_rate) {
+    if (params->disable_frame_rate_limit) {
       synthetic_begin_frame_source =
           std::make_unique<BackToBackBeginFrameSource>(
               std::make_unique<DelayBasedTimeSource>(
                   base::SingleThreadTaskRunner::GetCurrentDefault().get()));
-    } else if (output_surface->capabilities().supports_gpu_vsync) {
-#if BUILDFLAG(IS_WIN)
-      hw_support_for_multiple_refresh_rates =
-          output_surface->capabilities().supports_dc_layers &&
-          params->set_present_duration_allowed;
-#endif
-      // Vsync updates are required to update the FrameRateDecider with
-      // supported refresh rates.
-#if !BUILDFLAG(IS_APPLE)
-      wants_vsync_updates = true;
-#endif
-      external_begin_frame_source = std::make_unique<GpuVSyncBeginFrameSource>(
-          restart_id, output_surface.get());
     } else {
-      auto time_source = std::make_unique<DelayBasedTimeSource>(
-          base::SingleThreadTaskRunner::GetCurrentDefault().get());
-#if BUILDFLAG(IS_MAC)
+#if BUILDFLAG(IS_WIN)
+      // ExternalBeginFrameSourceWin also uses the D3D11 device used by dcomp.
+      if (output_surface->capabilities().supports_dc_layers) {
+        hw_support_for_multiple_refresh_rates =
+            params->set_present_duration_allowed;
+        // Vsync updates are required to update the FrameRateDecider with
+        // supported refresh rates.
+        wants_vsync_updates = true;
+        external_begin_frame_source =
+            std::make_unique<ExternalBeginFrameSourceWin>(
+                restart_id, base::SingleThreadTaskRunner::GetCurrentDefault());
+      }
+#elif BUILDFLAG(IS_MAC)
       if (base::FeatureList::IsEnabled(
               features::kCVDisplayLinkBeginFrameSource)) {
         external_begin_frame_source =
             std::make_unique<ExternalBeginFrameSourceMac>(
                 restart_id, params->renderer_settings.display_id,
                 output_surface.get());
-      } else {
-        synthetic_begin_frame_source =
-            std::make_unique<DelayBasedBeginFrameSourceMac>(
-                std::move(time_source), restart_id);
       }
-#else
-      synthetic_begin_frame_source =
-          std::make_unique<DelayBasedBeginFrameSource>(std::move(time_source),
-                                                       restart_id);
 #endif
+      if (!external_begin_frame_source) {
+        auto time_source = std::make_unique<DelayBasedTimeSource>(
+            base::SingleThreadTaskRunner::GetCurrentDefault().get());
+        synthetic_begin_frame_source =
+            std::make_unique<DelayBasedBeginFrameSource>(std::move(time_source),
+                                                         restart_id);
+      }
     }
 #endif  // BUILDFLAG(IS_ANDROID)
   }
@@ -217,7 +213,9 @@ RootCompositorFrameSinkImpl::Create(
       display_controller.get(), sii, params->renderer_settings, debug_settings);
 
   auto display = std::make_unique<Display>(
-      frame_sink_manager->shared_bitmap_manager(), params->renderer_settings,
+      frame_sink_manager->shared_bitmap_manager(),
+      output_surface_provider->GetSharedImageManager(),
+      output_surface_provider->GetSyncPointManager(), params->renderer_settings,
       debug_settings, params->frame_sink_id, std::move(display_controller),
       std::move(output_surface), std::move(overlay_processor),
       std::move(scheduler), std::move(task_runner));
@@ -255,6 +253,11 @@ RootCompositorFrameSinkImpl::Create(
         base::BindRepeating(
             &RootCompositorFrameSinkImpl::SetDisplayVSyncParameters,
             base::Unretained(impl.get())));
+  } else if (impl->synthetic_begin_frame_source_) {
+    impl->synthetic_begin_frame_source_->SetUpdateVSyncParametersCallback(
+        base::BindRepeating(
+            &RootCompositorFrameSinkImpl::SetDisplayVSyncParameters,
+            base::Unretained(impl.get())));
   }
 #endif
 
@@ -266,16 +269,75 @@ RootCompositorFrameSinkImpl::~RootCompositorFrameSinkImpl() {
       begin_frame_source());
 }
 
-void RootCompositorFrameSinkImpl::DidEvictSurface(const SurfaceId& surface_id) {
+bool RootCompositorFrameSinkImpl::WillEvictSurface(
+    const SurfaceId& surface_id) {
   const SurfaceId& current_surface_id = display_->CurrentSurfaceId();
   if (!current_surface_id.is_valid())
-    return;
-  DCHECK_EQ(surface_id.frame_sink_id(), surface_id.frame_sink_id());
-  // This matches CompositorFrameSinkSupport's eviction logic.
+    return true;  // Okay to evict immediately.
+  DCHECK_EQ(surface_id.frame_sink_id(), current_surface_id.frame_sink_id());
+  CHECK(!display_->visible());
+  DCHECK(display_->has_scheduler());
+
+  // This matches CompositorFrameSinkSupport's eviction logic, which wil evict
+  // `surface_id` or matching but older ones. Avoid overwriting the contents
+  // of `current_surface_id` if it's newer here by doing the same check.
   if (surface_id.local_surface_id().parent_sequence_number() >=
       current_surface_id.local_surface_id().parent_sequence_number()) {
-    display_->InvalidateCurrentSurfaceId();
+    // Push empty compositor frame to root surface. This is so the resources
+    // can be unreffed from both viz and the OS compositor (if required).
+    CompositorFrame frame;
+
+    auto& metadata = frame.metadata;
+    metadata.frame_token = kInvalidOrLocalFrameToken;
+
+    // The given `surface_id` may be newer than `current_surface_id`, so use the
+    // one we actually have.
+    auto* surface =
+        support_->frame_sink_manager()->surface_manager()->GetSurfaceForId(
+            current_surface_id);
+    CHECK(surface);
+    metadata.device_scale_factor = surface->device_scale_factor();
+    frame.metadata.begin_frame_ack = BeginFrameAck::CreateManualAckWithDamage();
+
+    frame.render_pass_list.push_back(CompositorRenderPass::Create());
+    const std::unique_ptr<CompositorRenderPass>& render_pass =
+        frame.render_pass_list.back();
+
+    const CompositorRenderPassId kRenderPassId{1};
+    auto surface_rect = gfx::Rect(surface->size_in_pixels());
+    DCHECK(!surface_rect.IsEmpty());
+    render_pass->SetNew(kRenderPassId, /*output_rect=*/surface_rect,
+                        /*damage_rect=*/surface_rect, gfx::Transform());
+
+    SharedQuadState* quad_state = render_pass->CreateAndAppendSharedQuadState();
+
+    quad_state->SetAll(gfx::Transform(), /*layer_rect=*/surface_rect,
+                       /*visible_layer_rect=*/surface_rect,
+                       /*filter_info=*/gfx::MaskFilterInfo(),
+                       /*clip=*/std::nullopt,
+                       /*contents_opaque=*/true, /*opacity_f=*/1.f,
+                       /*blend=*/SkBlendMode::kSrcOver, /*sorting_context=*/0,
+                       /*layer_id=*/0u, /*fast_rounded_corner=*/false);
+
+    SolidColorDrawQuad* solid_quad =
+        render_pass->CreateAndAppendDrawQuad<SolidColorDrawQuad>();
+    solid_quad->SetNew(quad_state, surface_rect, surface_rect, SkColors::kBlack,
+                       /*anti_aliasing_off=*/false);
+
+    support_->SubmitCompositorFrameLocally(current_surface_id, std::move(frame),
+                                           display_->settings());
+
+    // Complete the eviction on next draw and swap.
+    to_evict_on_next_draw_and_swap_ = surface_id.local_surface_id();
+    display_->SetVisible(true);
+    display_->ForceImmediateDrawAndSwapIfPossible();
+    // Don't evict immediately.
+    // Delay eviction until the next draw to make sure that the draw is
+    // successful (requires the surface not to be evicted). We need the draw (of
+    // an empty CF) to be successful to push out and free resources.
+    return false;
   }
+  return true;  // Okay to evict immediately.
 }
 
 const SurfaceId& RootCompositorFrameSinkImpl::CurrentSurfaceId() const {
@@ -283,6 +345,9 @@ const SurfaceId& RootCompositorFrameSinkImpl::CurrentSurfaceId() const {
 }
 
 void RootCompositorFrameSinkImpl::SetDisplayVisible(bool visible) {
+  if (visible) {
+    to_evict_on_next_draw_and_swap_ = LocalSurfaceId();
+  }
   display_->SetVisible(visible);
 }
 
@@ -466,10 +531,14 @@ void RootCompositorFrameSinkImpl::SetWantsBeginFrameAcks() {
   support_->SetWantsBeginFrameAcks();
 }
 
+void RootCompositorFrameSinkImpl::SetAutoNeedsBeginFrame() {
+  support_->SetAutoNeedsBeginFrame();
+}
+
 void RootCompositorFrameSinkImpl::SubmitCompositorFrame(
     const LocalSurfaceId& local_surface_id,
     CompositorFrame frame,
-    absl::optional<HitTestRegionList> hit_test_region_list,
+    std::optional<HitTestRegionList> hit_test_region_list,
     uint64_t submit_time) {
   if (support_->last_activated_local_surface_id() != local_surface_id &&
       !support_->IsEvicted(local_surface_id)) {
@@ -497,7 +566,7 @@ void RootCompositorFrameSinkImpl::SubmitCompositorFrame(
 void RootCompositorFrameSinkImpl::SubmitCompositorFrameSync(
     const LocalSurfaceId& local_surface_id,
     CompositorFrame frame,
-    absl::optional<HitTestRegionList> hit_test_region_list,
+    std::optional<HitTestRegionList> hit_test_region_list,
     uint64_t submit_time,
     SubmitCompositorFrameSyncCallback callback) {
   NOTIMPLEMENTED();
@@ -643,14 +712,13 @@ void RootCompositorFrameSinkImpl::DisplayDidCompleteSwapWithSize(
 #if BUILDFLAG(IS_ANDROID)
   if (display_client_ && enable_swap_competion_callback_)
     display_client_->DidCompleteSwapWithSize(pixel_size);
-// TODO(crbug.com/1052397): Revisit the macro expression once build flag switch
-// of lacros-chrome is complete.
-#elif BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#elif BUILDFLAG(IS_LINUX) && BUILDFLAG(IS_OZONE_X11)
   if (display_client_ && pixel_size != last_swap_pixel_size_) {
     last_swap_pixel_size_ = pixel_size;
     display_client_->DidCompleteSwapWithNewSize(last_swap_pixel_size_);
   }
-#else
+#else  // !BUILDFLAG(IS_ANDROID) && !(BUILDFLAG(IS_LINUX) &&
+       // BUILDFLAG(IS_OZONE_X11))
   NOTREACHED();
 #endif
 }
@@ -694,7 +762,23 @@ RootCompositorFrameSinkImpl::GetPreferredFrameIntervalForFrameSinkId(
       ->GetPreferredFrameIntervalForFrameSinkId(id, type);
 }
 
-void RootCompositorFrameSinkImpl::DisplayDidDrawAndSwap() {}
+void RootCompositorFrameSinkImpl::DisplayDidDrawAndSwap() {
+  if (to_evict_on_next_draw_and_swap_.is_valid()) {
+    display_->SetVisible(false);
+    display_->InvalidateCurrentSurfaceId();
+
+    support_->EvictSurface(to_evict_on_next_draw_and_swap_);
+
+    // Trigger garbage collection immediately, otherwise the surface may not be
+    // evicted for a long time (e.g. not before a frame is produced).
+    if (base::FeatureList::IsEnabled(
+            features::kEagerSurfaceGarbageCollection)) {
+      support_->GarbageCollectSurfaces();
+    }
+  }
+
+  to_evict_on_next_draw_and_swap_ = LocalSurfaceId();
+}
 
 BeginFrameSource* RootCompositorFrameSinkImpl::begin_frame_source() {
   if (external_begin_frame_source_)
@@ -703,7 +787,7 @@ BeginFrameSource* RootCompositorFrameSinkImpl::begin_frame_source() {
 }
 
 void RootCompositorFrameSinkImpl::SetMaxVrrInterval(
-    absl::optional<base::TimeDelta> max_vrr_interval) {
+    std::optional<base::TimeDelta> max_vrr_interval) {
   if (synthetic_begin_frame_source_) {
     synthetic_begin_frame_source_->SetMaxVrrInterval(max_vrr_interval);
   }

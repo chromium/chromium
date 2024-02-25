@@ -75,8 +75,7 @@ class KAnonymityTrustTokenGetterTest : public testing::Test {
         base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
             &test_url_loader_factory_));
     profile_ = IdentityTestEnvironmentProfileAdaptor::
-        CreateProfileForIdentityTestEnvironment(
-            builder, signin::AccountConsistencyMethod::kMirror);
+        CreateProfileForIdentityTestEnvironment(builder);
     identity_test_env_adaptor_ =
         std::make_unique<IdentityTestEnvironmentProfileAdaptor>(profile_.get());
     getter_ = std::make_unique<KAnonymityTrustTokenGetter>(
@@ -267,9 +266,9 @@ TEST_F(KAnonymityTrustTokenGetterTest, TryGetNotSignedIn) {
   base::HistogramTester hist;
   base::RunLoop run_loop;
   getter()->TryGetTrustTokenAndKey(
-      base::OnceCallback<void(absl::optional<KeyAndNonUniqueUserId>)>(
+      base::OnceCallback<void(std::optional<KeyAndNonUniqueUserId>)>(
           base::BindLambdaForTesting(
-              [&run_loop](absl::optional<KeyAndNonUniqueUserId> result) {
+              [&run_loop](std::optional<KeyAndNonUniqueUserId> result) {
                 EXPECT_FALSE(result);
                 run_loop.Quit();
               })));
@@ -282,9 +281,9 @@ TEST_F(KAnonymityTrustTokenGetterTest, TryGetAuthTokenFailed) {
   base::HistogramTester hist;
   base::RunLoop run_loop;
   getter()->TryGetTrustTokenAndKey(
-      base::OnceCallback<void(absl::optional<KeyAndNonUniqueUserId>)>(
+      base::OnceCallback<void(std::optional<KeyAndNonUniqueUserId>)>(
           base::BindLambdaForTesting(
-              [&run_loop](absl::optional<KeyAndNonUniqueUserId> result) {
+              [&run_loop](std::optional<KeyAndNonUniqueUserId> result) {
                 EXPECT_FALSE(result);
                 run_loop.Quit();
               })));
@@ -301,9 +300,9 @@ TEST_F(KAnonymityTrustTokenGetterTest, TryGetNonUniqueUserIdFetchFailed) {
   base::HistogramTester hist;
   base::RunLoop run_loop;
   getter()->TryGetTrustTokenAndKey(
-      base::OnceCallback<void(absl::optional<KeyAndNonUniqueUserId>)>(
+      base::OnceCallback<void(std::optional<KeyAndNonUniqueUserId>)>(
           base::BindLambdaForTesting(
-              [&run_loop](absl::optional<KeyAndNonUniqueUserId> result) {
+              [&run_loop](std::optional<KeyAndNonUniqueUserId> result) {
                 EXPECT_FALSE(result);
                 run_loop.Quit();
               })));
@@ -340,10 +339,10 @@ TEST_F(KAnonymityTrustTokenGetterTest,
   for (const auto& response : bad_responses) {
     base::RunLoop run_loop;
     getter()->TryGetTrustTokenAndKey(
-        base::OnceCallback<void(absl::optional<KeyAndNonUniqueUserId>)>(
+        base::OnceCallback<void(std::optional<KeyAndNonUniqueUserId>)>(
             base::BindLambdaForTesting(
                 [&run_loop,
-                 &response](absl::optional<KeyAndNonUniqueUserId> result) {
+                 &response](std::optional<KeyAndNonUniqueUserId> result) {
                   EXPECT_FALSE(result) << response;
                   run_loop.Quit();
                 })));
@@ -372,9 +371,9 @@ TEST_F(KAnonymityTrustTokenGetterTest, TryGetKeyFetchFails) {
   base::HistogramTester hist;
   base::RunLoop run_loop;
   getter()->TryGetTrustTokenAndKey(
-      base::OnceCallback<void(absl::optional<KeyAndNonUniqueUserId>)>(
+      base::OnceCallback<void(std::optional<KeyAndNonUniqueUserId>)>(
           base::BindLambdaForTesting(
-              [&run_loop](absl::optional<KeyAndNonUniqueUserId> result) {
+              [&run_loop](std::optional<KeyAndNonUniqueUserId> result) {
                 EXPECT_FALSE(result);
                 run_loop.Quit();
               })));
@@ -474,10 +473,10 @@ TEST_F(KAnonymityTrustTokenGetterTest,
   for (const auto& response : bad_responses) {
     base::RunLoop run_loop;
     getter()->TryGetTrustTokenAndKey(
-        base::OnceCallback<void(absl::optional<KeyAndNonUniqueUserId>)>(
+        base::OnceCallback<void(std::optional<KeyAndNonUniqueUserId>)>(
             base::BindLambdaForTesting(
                 [&run_loop,
-                 &response](absl::optional<KeyAndNonUniqueUserId> result) {
+                 &response](std::optional<KeyAndNonUniqueUserId> result) {
                   EXPECT_FALSE(result) << response;
                   run_loop.Quit();
                 })));
@@ -506,9 +505,9 @@ TEST_F(KAnonymityTrustTokenGetterTest, TryGetNoToken) {
   base::HistogramTester hist;
   base::RunLoop run_loop;
   getter()->TryGetTrustTokenAndKey(
-      base::OnceCallback<void(absl::optional<KeyAndNonUniqueUserId>)>(
+      base::OnceCallback<void(std::optional<KeyAndNonUniqueUserId>)>(
           base::BindLambdaForTesting(
-              [&run_loop](absl::optional<KeyAndNonUniqueUserId> result) {
+              [&run_loop](std::optional<KeyAndNonUniqueUserId> result) {
                 EXPECT_FALSE(result);
                 run_loop.Quit();
               })));
@@ -534,10 +533,10 @@ TEST_F(KAnonymityTrustTokenGetterTest, TryGetSignedIn) {
   base::RunLoop run_loop;
   base::Time key_expiration = base::Time::Now() + base::Days(1);
   getter()->TryGetTrustTokenAndKey(
-      base::OnceCallback<void(absl::optional<KeyAndNonUniqueUserId>)>(
+      base::OnceCallback<void(std::optional<KeyAndNonUniqueUserId>)>(
           base::BindLambdaForTesting(
               [&run_loop,
-               key_expiration](absl::optional<KeyAndNonUniqueUserId> result) {
+               key_expiration](std::optional<KeyAndNonUniqueUserId> result) {
                 ASSERT_TRUE(result);
                 EXPECT_EQ(2, result->non_unique_user_id);
                 EXPECT_THAT(base::test::ParseJson(result->key_commitment),
@@ -577,10 +576,10 @@ TEST_F(KAnonymityTrustTokenGetterTest, TryGetRepeatedly) {
   int callback_count = 0;
   for (int i = 0; i < 10; i++) {
     getter()->TryGetTrustTokenAndKey(
-        base::OnceCallback<void(absl::optional<KeyAndNonUniqueUserId>)>(
+        base::OnceCallback<void(std::optional<KeyAndNonUniqueUserId>)>(
             base::BindLambdaForTesting(
                 [&callback_count, &run_loop,
-                 i](absl::optional<KeyAndNonUniqueUserId> result) {
+                 i](std::optional<KeyAndNonUniqueUserId> result) {
                   EXPECT_TRUE(result) << "iteration " << i;
                   callback_count++;
                   if (callback_count == 10)
@@ -615,10 +614,10 @@ TEST_F(KAnonymityTrustTokenGetterTest, TryGetFailureDropsAllRequests) {
   int callback_count = 0;
   for (int i = 0; i < 10; i++) {
     getter()->TryGetTrustTokenAndKey(
-        base::OnceCallback<void(absl::optional<KeyAndNonUniqueUserId>)>(
+        base::OnceCallback<void(std::optional<KeyAndNonUniqueUserId>)>(
             base::BindLambdaForTesting(
                 [&callback_count, &run_loop,
-                 i](absl::optional<KeyAndNonUniqueUserId> result) {
+                 i](std::optional<KeyAndNonUniqueUserId> result) {
                   EXPECT_FALSE(result) << "iteration " << i;
                   callback_count++;
                   if (callback_count == 10)
@@ -648,9 +647,9 @@ TEST_F(KAnonymityTrustTokenGetterTest, TokenKeysDontExpire) {
   {
     base::RunLoop run_loop;
     getter()->TryGetTrustTokenAndKey(
-        base::OnceCallback<void(absl::optional<KeyAndNonUniqueUserId>)>(
+        base::OnceCallback<void(std::optional<KeyAndNonUniqueUserId>)>(
             base::BindLambdaForTesting(
-                [&run_loop](absl::optional<KeyAndNonUniqueUserId> result) {
+                [&run_loop](std::optional<KeyAndNonUniqueUserId> result) {
                   ASSERT_TRUE(result);
                   EXPECT_EQ(10, result->non_unique_user_id);
                   run_loop.Quit();
@@ -667,9 +666,9 @@ TEST_F(KAnonymityTrustTokenGetterTest, TokenKeysDontExpire) {
   {
     base::RunLoop run_loop;
     getter()->TryGetTrustTokenAndKey(
-        base::OnceCallback<void(absl::optional<KeyAndNonUniqueUserId>)>(
+        base::OnceCallback<void(std::optional<KeyAndNonUniqueUserId>)>(
             base::BindLambdaForTesting(
-                [&run_loop](absl::optional<KeyAndNonUniqueUserId> result) {
+                [&run_loop](std::optional<KeyAndNonUniqueUserId> result) {
                   ASSERT_TRUE(result);
                   EXPECT_EQ(10, result->non_unique_user_id);
                   run_loop.Quit();
@@ -693,9 +692,9 @@ TEST_F(KAnonymityTrustTokenGetterTest, AuthTokenAlreadyExpired) {
   {
     base::RunLoop run_loop;
     getter()->TryGetTrustTokenAndKey(
-        base::OnceCallback<void(absl::optional<KeyAndNonUniqueUserId>)>(
+        base::OnceCallback<void(std::optional<KeyAndNonUniqueUserId>)>(
             base::BindLambdaForTesting(
-                [&run_loop](absl::optional<KeyAndNonUniqueUserId> result) {
+                [&run_loop](std::optional<KeyAndNonUniqueUserId> result) {
                   ASSERT_TRUE(result);
                   run_loop.Quit();
                 })));
@@ -709,9 +708,9 @@ TEST_F(KAnonymityTrustTokenGetterTest, AuthTokenAlreadyExpired) {
   {
     base::RunLoop run_loop;
     getter()->TryGetTrustTokenAndKey(
-        base::OnceCallback<void(absl::optional<KeyAndNonUniqueUserId>)>(
+        base::OnceCallback<void(std::optional<KeyAndNonUniqueUserId>)>(
             base::BindLambdaForTesting(
-                [&run_loop](absl::optional<KeyAndNonUniqueUserId> result) {
+                [&run_loop](std::optional<KeyAndNonUniqueUserId> result) {
                   ASSERT_TRUE(result);
                   EXPECT_EQ(2, result->non_unique_user_id);
                   run_loop.Quit();
@@ -729,9 +728,9 @@ TEST_F(KAnonymityTrustTokenGetterTest, AuthTokenExpire) {
   {
     base::RunLoop run_loop;
     getter()->TryGetTrustTokenAndKey(
-        base::OnceCallback<void(absl::optional<KeyAndNonUniqueUserId>)>(
+        base::OnceCallback<void(std::optional<KeyAndNonUniqueUserId>)>(
             base::BindLambdaForTesting(
-                [&run_loop](absl::optional<KeyAndNonUniqueUserId> result) {
+                [&run_loop](std::optional<KeyAndNonUniqueUserId> result) {
                   ASSERT_TRUE(result);
                   EXPECT_EQ(2, result->non_unique_user_id);
                   run_loop.Quit();
@@ -748,9 +747,9 @@ TEST_F(KAnonymityTrustTokenGetterTest, AuthTokenExpire) {
   {
     base::RunLoop run_loop;
     getter()->TryGetTrustTokenAndKey(
-        base::OnceCallback<void(absl::optional<KeyAndNonUniqueUserId>)>(
+        base::OnceCallback<void(std::optional<KeyAndNonUniqueUserId>)>(
             base::BindLambdaForTesting(
-                [&run_loop](absl::optional<KeyAndNonUniqueUserId> result) {
+                [&run_loop](std::optional<KeyAndNonUniqueUserId> result) {
                   ASSERT_TRUE(result);
                   EXPECT_EQ(2, result->non_unique_user_id);
                   run_loop.Quit();
@@ -775,9 +774,9 @@ TEST_F(KAnonymityTrustTokenGetterTest, TokenKeysExpire) {
   {
     base::RunLoop run_loop;
     getter()->TryGetTrustTokenAndKey(
-        base::OnceCallback<void(absl::optional<KeyAndNonUniqueUserId>)>(
+        base::OnceCallback<void(std::optional<KeyAndNonUniqueUserId>)>(
             base::BindLambdaForTesting(
-                [&run_loop](absl::optional<KeyAndNonUniqueUserId> result) {
+                [&run_loop](std::optional<KeyAndNonUniqueUserId> result) {
                   ASSERT_TRUE(result);
                   EXPECT_EQ(2, result->non_unique_user_id);
                   run_loop.Quit();
@@ -794,9 +793,9 @@ TEST_F(KAnonymityTrustTokenGetterTest, TokenKeysExpire) {
   {
     base::RunLoop run_loop;
     getter()->TryGetTrustTokenAndKey(
-        base::OnceCallback<void(absl::optional<KeyAndNonUniqueUserId>)>(
+        base::OnceCallback<void(std::optional<KeyAndNonUniqueUserId>)>(
             base::BindLambdaForTesting(
-                [&run_loop](absl::optional<KeyAndNonUniqueUserId> result) {
+                [&run_loop](std::optional<KeyAndNonUniqueUserId> result) {
                   ASSERT_TRUE(result);
                   EXPECT_EQ(3, result->non_unique_user_id);
                   run_loop.Quit();
@@ -821,18 +820,18 @@ TEST_F(KAnonymityTrustTokenGetterTest, RecordTokenLatency) {
   InitializeIdentity(/*signed_on=*/true);
   base::HistogramTester hist;
   getter()->TryGetTrustTokenAndKey(
-      base::OnceCallback<void(absl::optional<KeyAndNonUniqueUserId>)>(
+      base::OnceCallback<void(std::optional<KeyAndNonUniqueUserId>)>(
           base::BindLambdaForTesting(
-              [](absl::optional<KeyAndNonUniqueUserId> result) {
+              [](std::optional<KeyAndNonUniqueUserId> result) {
                 ASSERT_TRUE(result);
                 EXPECT_EQ(2, result->non_unique_user_id);
               })));
   task_environment()->FastForwardBy(base::Seconds(1));
   base::RunLoop run_loop;
   getter()->TryGetTrustTokenAndKey(
-      base::OnceCallback<void(absl::optional<KeyAndNonUniqueUserId>)>(
+      base::OnceCallback<void(std::optional<KeyAndNonUniqueUserId>)>(
           base::BindLambdaForTesting(
-              [&run_loop](absl::optional<KeyAndNonUniqueUserId> result) {
+              [&run_loop](std::optional<KeyAndNonUniqueUserId> result) {
                 ASSERT_TRUE(result);
                 EXPECT_EQ(2, result->non_unique_user_id);
                 run_loop.Quit();
@@ -866,7 +865,7 @@ TEST_F(KAnonymityTrustTokenGetterTest, RecordTokenLatency) {
 TEST_F(KAnonymityTrustTokenGetterTest, HandlesMissingServices) {
   KAnonymityTrustTokenGetter getter(nullptr, nullptr, nullptr, nullptr);
   getter.TryGetTrustTokenAndKey(base::BindLambdaForTesting(
-      [](absl::optional<KeyAndNonUniqueUserId> result) {
+      [](std::optional<KeyAndNonUniqueUserId> result) {
         EXPECT_FALSE(result);
       }));
 }

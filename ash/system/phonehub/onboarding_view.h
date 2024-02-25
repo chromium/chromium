@@ -25,9 +25,9 @@ class OnboardingUiTracker;
 // and set up the Phone feature on this device. Note that this class handles
 // both the main onboarding screen and the dismiss prompt together.
 class ASH_EXPORT OnboardingView : public PhoneHubContentView {
- public:
-  METADATA_HEADER(OnboardingView);
+  METADATA_HEADER(OnboardingView, PhoneHubContentView)
 
+ public:
   class Delegate {
    public:
     virtual void HideStatusHeaderView() = 0;
@@ -58,12 +58,10 @@ class ASH_EXPORT OnboardingView : public PhoneHubContentView {
  private:
   // The view responsible for displaying the onboarding UI contents.
   // Owned by view hierarchy.
-  raw_ptr<PhoneHubInterstitialView, DanglingUntriaged | ExperimentalAsh>
-      main_view_ = nullptr;
+  raw_ptr<PhoneHubInterstitialView, DanglingUntriaged> main_view_ = nullptr;
 
-  raw_ptr<phonehub::OnboardingUiTracker, ExperimentalAsh>
-      onboarding_ui_tracker_ = nullptr;
-  raw_ptr<Delegate, DanglingUntriaged | ExperimentalAsh> delegate_ = nullptr;
+  raw_ptr<phonehub::OnboardingUiTracker> onboarding_ui_tracker_ = nullptr;
+  raw_ptr<Delegate, DanglingUntriaged> delegate_ = nullptr;
 };
 
 }  // namespace ash

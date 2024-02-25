@@ -9,10 +9,10 @@
 
 #include <vector>
 
+#include <optional>
 #include "build/build_config.h"
 #include "printing/backend/mojom/print_backend.mojom-forward.h"
 #include "printing/backend/print_backend.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/geometry/size.h"
 
 namespace printing {
@@ -34,7 +34,7 @@ struct OptionalSampleCapabilities {
   AdvancedCapabilities advanced_capabilities;
 #endif  // BUILDFLAG(IS_CHROMEOS)
 #if BUILDFLAG(IS_WIN)
-  absl::optional<PageOutputQuality> page_output_quality;
+  std::optional<PageOutputQuality> page_output_quality;
 #endif  // BUILDFLAG(IS_WIN)
 };
 
@@ -43,9 +43,12 @@ inline const PrinterSemanticCapsAndDefaults::Paper kPaperA3{
     /*size_um=*/gfx::Size(7016, 9921),
     /*printable_area_um=*/gfx::Rect(0, 0, 7016, 9921)};
 inline const PrinterSemanticCapsAndDefaults::Paper kPaperA4{
-    /*display_name=*/"A4", /*vendor_id=*/"12",
+    /*display_name=*/"A4",
+    /*vendor_id=*/"12",
     /*size_um=*/gfx::Size(4961, 7016),
-    /*printable_area_um=*/gfx::Rect(100, 200, 500, 800)};
+    /*printable_area_um=*/gfx::Rect(100, 200, 500, 800),
+    /*max_height_um=*/0,
+    /*has_borderless_variant=*/true};
 inline const PrinterSemanticCapsAndDefaults::Paper kPaperLetter{
     /*display_name=*/"Letter", /*vendor_id=*/"45",
     /*size_um=*/gfx::Size(5100, 6600),
@@ -113,7 +116,7 @@ inline const PageOutputQualityAttributes kPageOutputQualityAttributes{
     kPageOutputQualityAttribute3};
 inline const PageOutputQuality kPageOutputQuality(
     kPageOutputQualityAttributes,
-    /*default_quality=*/absl::nullopt);
+    /*default_quality=*/std::nullopt);
 inline constexpr char kDefaultQuality[] = "ns000:Draft";
 #endif  // BUILDFLAG(IS_WIN)
 

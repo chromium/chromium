@@ -63,13 +63,12 @@ ChromeHistoryClient::CreateBackendClient() {
       bookmark_model_ ? bookmark_model_->model_loader() : nullptr);
 }
 
-void ChromeHistoryClient::UpdateBookmarkLastUsedTime(
-    const base::Uuid& bookmark_node_uuid,
-    base::Time time) {
+void ChromeHistoryClient::UpdateBookmarkLastUsedTime(int64_t bookmark_node_id,
+                                                     base::Time time) {
   if (!bookmark_model_)
     return;
   const bookmarks::BookmarkNode* node =
-      bookmarks::GetBookmarkNodeByUuid(bookmark_model_, bookmark_node_uuid);
+      GetBookmarkNodeByID(bookmark_model_, bookmark_node_id);
   // This call is async so the BookmarkNode could have already been deleted.
   if (!node)
     return;

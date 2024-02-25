@@ -162,11 +162,11 @@ TEST_F(ScopedJavaRefTest, Conversions) {
     EXPECT_SAME_OBJECT(new_global, str);
     new_global = str;
     EXPECT_SAME_OBJECT(new_local, str);
-    static_assert(!std::is_convertible<ScopedJavaLocalRef<jobject>,
-                                       ScopedJavaGlobalRef<jobject>>::value,
+    static_assert(!std::is_convertible_v<ScopedJavaLocalRef<jobject>,
+                                         ScopedJavaGlobalRef<jobject>>,
                   "");
-    static_assert(!std::is_convertible<ScopedJavaGlobalRef<jobject>,
-                                       ScopedJavaLocalRef<jobject>>::value,
+    static_assert(!std::is_convertible_v<ScopedJavaGlobalRef<jobject>,
+                                         ScopedJavaLocalRef<jobject>>,
                   "");
   }
 
@@ -284,18 +284,18 @@ TEST_F(JavaObjectArrayReaderTest, InputIteratorRequirements) {
   JavaObjectArrayReader<jobject> reader(array_);
   It i = reader.begin();
 
-  EXPECT_TRUE(std::is_copy_constructible<It>::value);
+  EXPECT_TRUE(std::is_copy_constructible_v<It>);
   It copy = i;
   EXPECT_EQ(copy, i);
   EXPECT_EQ(It(i), i);
 
-  EXPECT_TRUE(std::is_copy_assignable<It>::value);
+  EXPECT_TRUE(std::is_copy_assignable_v<It>);
   It assign = reader.end();
   It& assign2 = (assign = i);
   EXPECT_EQ(assign, i);
   EXPECT_EQ(assign2, assign);
 
-  EXPECT_TRUE(std::is_destructible<It>::value);
+  EXPECT_TRUE(std::is_destructible_v<It>);
 
   // Swappable
   It left = reader.begin(), right = reader.end();
@@ -304,8 +304,8 @@ TEST_F(JavaObjectArrayReaderTest, InputIteratorRequirements) {
   EXPECT_EQ(right, reader.begin());
 
   // Basic check that iterator_traits works
-  bool same_type = std::is_same<std::iterator_traits<It>::iterator_category,
-                                std::input_iterator_tag>::value;
+  bool same_type = std::is_same_v<std::iterator_traits<It>::iterator_category,
+                                  std::input_iterator_tag>;
   EXPECT_TRUE(same_type);
 
   // Comparisons

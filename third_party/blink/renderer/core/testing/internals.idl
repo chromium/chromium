@@ -36,11 +36,11 @@ interface Internals {
     // Call this function with the URL of a resource.
     // It returns a promise that resolves with the initial priority
     // of the request, once it has been made.
-    [CallWith=ScriptState] Promise<unsigned long> getInitialResourcePriority(DOMString url, Document document);
+    [CallWith=ScriptState] Promise<long> getInitialResourcePriority(DOMString url, Document document);
 
     // Similar to getInitialResourcePriority, but doesn't query the priority of
     // an already loaded resource.
-    [CallWith=ScriptState] Promise<unsigned long> getInitialResourcePriorityOfNewLoad(DOMString url, Document document);
+    [CallWith=ScriptState] Promise<long> getInitialResourcePriorityOfNewLoad(DOMString url, Document document);
 
     DOMString getResourceHeader(DOMString url, DOMString header, Document document);
 
@@ -57,7 +57,7 @@ interface Internals {
 
     Node effectiveRootScroller(Document document);
 
-    [RaisesException] DOMString shadowRootType(Node root);
+    [RaisesException] DOMString ShadowRootMode(Node root);
     [RaisesException] unsigned long countElementShadow(Node Root);
     DOMString shadowPseudoId(Element element);
     Node treeScopeRootNode(Node node);
@@ -189,8 +189,6 @@ interface Internals {
 
     unsigned long numberOfScrollableAreas(Document document);
 
-    boolean isPageBoxVisible(Document document, long pageNumber);
-
     readonly attribute InternalSettings settings;
     readonly attribute InternalRuntimeFlags runtimeFlags;
     readonly attribute unsigned long workerThreadCount;
@@ -218,8 +216,6 @@ interface Internals {
     sequence<DOMString> allIconURLs(Document document);
     [RaisesException] long numberOfPages(optional double pageWidthInPixels = 800, optional double pageHeightInPixels = 600);
     [RaisesException] DOMString pageProperty(DOMString propertyName, unsigned long pageNumber);
-    [RaisesException] DOMString pageSizeAndMarginsInPixels(unsigned long pageIndex, long width, long height, long marginTop, long marginRight, long marginBottom, long marginLeft);
-
     [RaisesException] float pageScaleFactor();
     [RaisesException] void setPageScaleFactor(float scaleFactor);
     [RaisesException] void setPageScaleFactorLimits(float minScaleFactor, float maxScaleFactor);
@@ -264,6 +260,11 @@ interface Internals {
     // Returns a list of draggable/non-draggable regions in the document.
     [RaisesException] DOMRectList draggableRegions(Document document);
     [RaisesException] DOMRectList nonDraggableRegions(Document document);
+
+    // Overrides default behavior to support the app-region CSS property.
+    // Setting to true enables collection of draggable/non-draggable
+    // app regions.
+    void SetSupportsAppRegion(boolean supports_app_regions);
 
     // Returns a string with information about the mouse cursor used at the specified client location.
     DOMString getCurrentCursorInfo();
@@ -321,11 +322,6 @@ interface Internals {
     void setFocused(boolean focused);
     void setInitialFocus(boolean reverse);
 
-    // When the FocuslessSpatialNavigation feature is enabled, spatial
-    // navigation moves "interest" around a page, rather than focus. This
-    // attribute returns the currently interested element on the page.
-    readonly attribute Element? interestedElement;
-
     // Returns true if page associated with current internals object is
     // active.
     boolean isActivated();
@@ -334,6 +330,7 @@ interface Internals {
     unsigned long canvasFontCacheMaxFonts();
     void forceLoseCanvasContext(HTMLCanvasElement canvas, DOMString contextType);
     void forceLoseCanvasContext(OffscreenCanvas offscreencanvas, DOMString context_type);
+    void disableCanvasAcceleration(HTMLCanvasElement canvas);
 
     DictionaryTest dictionaryTest();
     RecordTest recordTest();
@@ -341,7 +338,6 @@ interface Internals {
     UnionTypesTest unionTypesTest();
     InternalsUkmRecorder initializeUKMRecorder();
     CallbackFunctionTest callbackFunctionTest();
-    [RaisesException] void setScrollChain(ScrollState scrollState, sequence<Element> elements);
 
     DOMString selectedHTMLForClipboard();
     DOMString selectedTextForClipboard();
@@ -360,7 +356,7 @@ interface Internals {
     // Returns a promise that is resolved when |feature| is counted on
     // |document|'s UseCounter. When |feature| was already counted, it's
     // immediately resolved.
-    [CallWith=ScriptState] Promise<boolean> observeUseCounter(Document document, unsigned long feature);
+    [CallWith=ScriptState] Promise<undefined> observeUseCounter(Document document, unsigned long feature);
 
     readonly attribute unsigned long length;
     getter long (unsigned long index);
@@ -452,4 +448,11 @@ interface Internals {
     void setAllowPerChunkTransferring(ReadableStream stream);
 
     void setBackForwardCacheRestorationBufferSize(long maxSize);
+
+    sequence<DOMString> getCreatorScripts(HTMLImageElement img);
+
+    // Wait until predicted LCP is painted. Never called if prediction is
+    // failed. Returns element_locator format string.
+    [CallWith=ScriptState] Promise<DOMString> LCPPrediction(Document document);
+
 };

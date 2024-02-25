@@ -18,11 +18,11 @@
 #include "components/safe_browsing/buildflags.h"
 #include "components/safe_browsing/content/browser/triggers/suspicious_site_trigger.h"
 #include "components/safe_browsing/content/browser/ui_manager.h"
+#include "components/safe_browsing/content/browser/unsafe_resource_util.h"
 #include "components/safe_browsing/core/browser/db/database_manager.h"
 #include "components/safe_browsing/core/browser/db/v4_protocol_manager_util.h"
 #include "components/safe_browsing/core/common/features.h"
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
-#include "components/security_interstitials/content/unsafe_resource_util.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/navigation_entry.h"
@@ -58,12 +58,11 @@ void CreateSafeBrowsingUserInteractionObserver(
     bool is_main_frame,
     scoped_refptr<SafeBrowsingUIManager> ui_manager) {
   content::WebContents* web_contents =
-      security_interstitials::GetWebContentsForResource(resource);
-  // Don't delay the interstitial for prerender pages and portals.
+      unsafe_resource_util::GetWebContentsForResource(resource);
+  // Don't delay the interstitial for prerender pages.
   if (!web_contents ||
       prerender::ChromeNoStatePrefetchContentsDelegate::FromWebContents(
-          web_contents) ||
-      web_contents->IsPortal()) {
+          web_contents)) {
     ui_manager->StartDisplayingBlockingPage(resource);
     return;
   }
@@ -149,7 +148,7 @@ bool UrlCheckerDelegateImpl::ShouldSkipRequestCheck(
     const GURL& original_url,
     int frame_tree_node_id,
     int render_process_id,
-    int render_frame_id,
+    base::optional_ref<const base::UnguessableToken> render_frame_token,
     bool originated_from_service_worker) {
   // Check for whether the URL matches the Safe Browsing allowlist domains
   // (a.k. a prefs::kSafeBrowsingAllowlistDomains).
@@ -179,33 +178,6 @@ SafeBrowsingDatabaseManager* UrlCheckerDelegateImpl::GetDatabaseManager() {
 
 BaseUIManager* UrlCheckerDelegateImpl::GetUIManager() {
   return ui_manager_.get();
-}
-
-void UrlCheckerDelegateImpl::CheckLookupMechanismExperimentEligibility(
-    const security_interstitials::UnsafeResource& resource,
-    base::OnceCallback<void(bool)> callback,
-    scoped_refptr<base::SequencedTaskRunner> callback_task_runner) {
-  // Keep a post task here to avoid possible reentrancy into safe browsing
-  // code if it is running on the UI thread.
-  content::GetUIThreadTaskRunner({})->PostTask(
-      FROM_HERE,
-      base::BindOnce(
-          &SafeBrowsingUIManager::CheckLookupMechanismExperimentEligibility,
-          ui_manager_, resource, std::move(callback), callback_task_runner));
-}
-
-void UrlCheckerDelegateImpl::CheckExperimentEligibilityAndStartBlockingPage(
-    const security_interstitials::UnsafeResource& resource,
-    base::OnceCallback<void(bool)> callback,
-    scoped_refptr<base::SequencedTaskRunner> callback_task_runner) {
-  // Keep a post task here to avoid possible reentrancy into safe browsing
-  // code if it is running on the UI thread.
-  content::GetUIThreadTaskRunner({})->PostTask(
-      FROM_HERE,
-      base::BindOnce(&SafeBrowsingUIManager::
-                         CheckExperimentEligibilityAndStartBlockingPage,
-                     ui_manager_, resource, std::move(callback),
-                     callback_task_runner));
 }
 
 }  // namespace safe_browsing

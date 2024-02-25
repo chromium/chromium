@@ -65,6 +65,9 @@ group("perf_without_chrome") {
 
     # For blink_perf benchmarks.
     "//third_party/blink/perf_tests/",
+    
+    # For Speedometer benchmarks.
+    "//third_party/speedometer/v3.0",
 
     # For smoothness.tough_canvas_cases
     "//chrome/test/data/perf/",

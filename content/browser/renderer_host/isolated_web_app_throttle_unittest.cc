@@ -4,11 +4,15 @@
 
 #include "content/browser/renderer_host/isolated_web_app_throttle.h"
 
+#include <optional>
+
 #include "base/command_line.h"
 #include "base/memory/raw_ptr.h"
 #include "content/browser/renderer_host/frame_tree_node.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/content_browser_client.h"
+#include "content/public/browser/page_navigator.h"
+#include "content/public/browser/site_instance.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/content_client.h"
 #include "content/public/common/content_features.h"
@@ -20,7 +24,6 @@
 #include "content/test/test_render_frame_host.h"
 #include "net/base/net_errors.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/permissions_policy/permissions_policy_declaration.h"
 #include "third_party/blink/public/mojom/permissions_policy/permissions_policy_feature.mojom.h"
 #include "ui/base/page_transition_types.h"
@@ -56,7 +59,7 @@ class IsolatedWebAppContentBrowserClient : public ContentBrowserClient {
       network::mojom::WebSandboxFlags sandbox_flags,
       ui::PageTransition page_transition,
       bool has_user_gesture,
-      const absl::optional<url::Origin>& initiating_origin,
+      const std::optional<url::Origin>& initiating_origin,
       RenderFrameHost* initiator_document,
       mojo::PendingRemote<network::mojom::URLLoaderFactory>* out_factory)
       override {
@@ -69,6 +72,16 @@ class IsolatedWebAppContentBrowserClient : public ContentBrowserClient {
     return external_protocol_call_count_;
   }
 
+  void OpenURL(
+      content::SiteInstance* site_instance,
+      const content::OpenURLParams& params,
+      base::OnceCallback<void(content::WebContents*)> callback) override {
+    open_url_call_count_++;
+    last_page_transition_ = params.transition;
+  }
+
+  unsigned int GetOpenUrlCallCount() const { return open_url_call_count_; }
+
   ui::PageTransition GetLastPageTransition() { return last_page_transition_; }
 
   void ResetExternalProtocolCallCount() {
@@ -76,21 +89,27 @@ class IsolatedWebAppContentBrowserClient : public ContentBrowserClient {
     last_page_transition_ = ui::PageTransition::PAGE_TRANSITION_QUALIFIER_MASK;
   }
 
+  void ResetOpenUrlCallCount() {
+    open_url_call_count_ = 0;
+    last_page_transition_ = ui::PageTransition::PAGE_TRANSITION_QUALIFIER_MASK;
+  }
+
   bool AreIsolatedWebAppsEnabled(BrowserContext*) override { return true; }
 
-  absl::optional<blink::ParsedPermissionsPolicy>
+  std::optional<blink::ParsedPermissionsPolicy>
   GetPermissionsPolicyForIsolatedWebApp(
-      content::BrowserContext* browser_context,
+      WebContents* web_contents,
       const url::Origin& app_origin) override {
     return {{blink::ParsedPermissionsPolicyDeclaration(
         blink::mojom::PermissionsPolicyFeature::kCrossOriginIsolated,
         /*allowed_origins=*/{},
-        /*self_if_matches=*/absl::nullopt,
+        /*self_if_matches=*/std::nullopt,
         /*matches_all_origins=*/true, /*matches_opaque_src=*/false)}};
   }
 
  private:
   unsigned int external_protocol_call_count_ = 0;
+  unsigned int open_url_call_count_ = 0;
   ui::PageTransition last_page_transition_ =
       ui::PageTransition::PAGE_TRANSITION_QUALIFIER_MASK;
 };
@@ -264,7 +283,11 @@ TEST_F(IsolatedWebAppThrottleTest, CancelCrossOriginNavigation) {
 
   auto start_result = simulator->GetLastThrottleCheckResult();
   EXPECT_EQ(NavigationThrottle::CANCEL, start_result.action());
+#if BUILDFLAG(IS_CHROMEOS)
+  EXPECT_EQ(1u, GetBrowserClient().GetOpenUrlCallCount());
+#else
   EXPECT_EQ(1u, GetBrowserClient().GetExternalProtocolCallCount());
+#endif
   EXPECT_TRUE(ui::PageTransitionTypeIncludingQualifiersIs(
       GetBrowserClient().GetLastPageTransition(),
       ui::PageTransition::PAGE_TRANSITION_LINK));
@@ -272,7 +295,11 @@ TEST_F(IsolatedWebAppThrottleTest, CancelCrossOriginNavigation) {
   simulator = StartRendererInitiatedNavigation(main_frame_id(), kNonAppUrl2);
   start_result = simulator->GetLastThrottleCheckResult();
   EXPECT_EQ(NavigationThrottle::CANCEL, start_result.action());
+#if BUILDFLAG(IS_CHROMEOS)
+  EXPECT_EQ(2u, GetBrowserClient().GetOpenUrlCallCount());
+#else
   EXPECT_EQ(2u, GetBrowserClient().GetExternalProtocolCallCount());
+#endif
   EXPECT_TRUE(ui::PageTransitionTypeIncludingQualifiersIs(
       GetBrowserClient().GetLastPageTransition(),
       ui::PageTransition::PAGE_TRANSITION_LINK));
@@ -292,7 +319,11 @@ TEST_F(IsolatedWebAppThrottleTest, BlockRedirectOutOfIsolatedWebApp) {
 
   auto redirect_result = simulator->GetLastThrottleCheckResult();
   EXPECT_EQ(NavigationThrottle::CANCEL, redirect_result.action());
+#if BUILDFLAG(IS_CHROMEOS)
+  EXPECT_EQ(1u, GetBrowserClient().GetOpenUrlCallCount());
+#else
   EXPECT_EQ(1u, GetBrowserClient().GetExternalProtocolCallCount());
+#endif
   EXPECT_TRUE(ui::PageTransitionTypeIncludingQualifiersIs(
       GetBrowserClient().GetLastPageTransition(),
       ui::PageTransition::PAGE_TRANSITION_SERVER_REDIRECT));

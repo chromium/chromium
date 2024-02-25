@@ -26,15 +26,7 @@ shouldBe("new SecurityPolicyViolationEvent('eventType').lineNumber", "0");
 shouldBe("new SecurityPolicyViolationEvent('eventType').columnNumber", "0");
 shouldBe("new SecurityPolicyViolationEvent('eventType').statusCode", "0");
 
-/*
-required  DOMString documentURI;
-required  DOMString violatedDirective;
-required  DOMString effectiveDirective;
-required  DOMString originalPolicy;
-required  SecurityPolicyViolationEventDisposition disposition;
-required  unsigned short statusCode;
-*/
-// This function will add to the init dict any missing required members
+// This function will add to the init dict any missing core members
 function add_required_members(init_dict, deleted_member) {
   ["documentURI", "violatedDirective", "effectiveDirective", "originalPolicy"].forEach(function(member) {
     if (!(member in init_dict)) init_dict[member] = 'bar';
@@ -42,7 +34,7 @@ function add_required_members(init_dict, deleted_member) {
   if (!("statusCode" in init_dict)) init_dict["statusCode"] = 200;
   if (!("disposition" in init_dict)) init_dict["disposition"] = 'enforce';
 
-  // for tests that test the absence of required members
+  // for tests that test the absence of core members
   if (deleted_member != undefined && deleted_member in init_dict) delete init_dict[deleted_member];
 
   return init_dict;
@@ -69,10 +61,11 @@ shouldThrow("new SecurityPolicyViolationEvent('eventType', add_required_members(
     shouldBe("new SecurityPolicyViolationEvent('eventType', add_required_members({ " + member + ": 42 }))." + member, "42");
 });
 
-// Missing required members throw
+// Missing core members should still work.
 ["documentURI", "violatedDirective", "effectiveDirective", "originalPolicy", "statusCode", "disposition"].forEach(function(member) {
-   shouldThrow("new SecurityPolicyViolationEvent('eventType', add_required_members({}, \"" + member + "\"))")
+   shouldNotThrow("new SecurityPolicyViolationEvent('eventType', add_required_members({}, \"" + member + "\"))")
 });
+
 </script>
 </body>
 </html>

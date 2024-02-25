@@ -5,7 +5,7 @@
 #include "chrome/browser/after_startup_task_utils.h"
 #include "chrome/browser/util/jni_headers/AfterStartupTaskUtils_jni.h"
 
-using base::android::JavaParamRef;
+using jni_zero::JavaParamRef;
 
 namespace android {
 

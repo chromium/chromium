@@ -6,13 +6,13 @@
 #define CHROME_BROWSER_UI_VIEWS_LOCATION_BAR_ICON_LABEL_BUBBLE_VIEW_H_
 
 #include <memory>
+#include <optional>
 #include <string>
 
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
 #include "base/time/time.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/skia/include/core/SkPath.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/pointer/touch_ui_controller.h"
@@ -30,17 +30,16 @@ class FontList;
 
 namespace views {
 class AXVirtualView;
-class ImageView;
-}
+}  // namespace views
 
 // View used to draw a bubble, containing an icon and a label. We use this as a
 // base for the classes that handle the location icon (including the EV bubble),
 // tab-to-search UI, and content settings.
 class IconLabelBubbleView : public views::InkDropObserver,
                             public views::LabelButton {
- public:
-  METADATA_HEADER(IconLabelBubbleView);
+  METADATA_HEADER(IconLabelBubbleView, views::LabelButton)
 
+ public:
   static constexpr int kTrailingPaddingPreMd = 2;
 
   class Delegate {
@@ -63,8 +62,9 @@ class IconLabelBubbleView : public views::InkDropObserver,
 
   // A view that draws the separator.
   class SeparatorView : public views::View {
+    METADATA_HEADER(SeparatorView, views::View)
+
    public:
-    METADATA_HEADER(SeparatorView);
     explicit SeparatorView(IconLabelBubbleView* owner);
     SeparatorView(const SeparatorView&) = delete;
     SeparatorView& operator=(const SeparatorView&) = delete;
@@ -97,15 +97,17 @@ class IconLabelBubbleView : public views::InkDropObserver,
 
   // Call to have the icon label paint over a solid background when the label
   // text is shown.
-  void SetPaintLabelOverSolidBackground(bool paint_label_over_solid_backround);
+  void SetPaintLabelOverSolidBackground(bool paint_label_over_solid_background);
 
   void SetLabel(const std::u16string& label);
   void SetLabel(const std::u16string& label,
                 const std::u16string& accessible_name);
   void SetFontList(const gfx::FontList& font_list);
 
-  const views::ImageView* GetImageView() const { return image(); }
-  views::ImageView* GetImageView() { return image(); }
+  const views::View* GetImageContainerView() const {
+    return image_container_view();
+  }
+  views::View* GetImageContainerView() { return image_container_view(); }
 
   // Exposed for testing.
   views::View* separator_view() const { return separator_view_; }
@@ -125,8 +127,14 @@ class IconLabelBubbleView : public views::InkDropObserver,
   // through in the code but is short enough that it is essentially skipped.
   void ReduceAnimationTimeForTesting();
 
+  // Enables tests to reset slide animation to a state where the label is not
+  // showing.
+  void ResetSlideAnimationForTesting() { ResetSlideAnimation(false); }
+
  protected:
   static constexpr int kOpenTimeMS = 150;
+
+  virtual SkColor GetBackgroundColor() const;
 
   // Gets the color for displaying text and/or icons.
   virtual SkColor GetForegroundColor() const;
@@ -162,7 +170,7 @@ class IconLabelBubbleView : public views::InkDropObserver,
 
   // views::LabelButton:
   gfx::Size CalculatePreferredSize() const override;
-  void Layout() override;
+  void Layout(PassKey) override;
   bool OnMousePressed(const ui::MouseEvent& event) override;
   void OnThemeChanged() override;
   bool IsTriggerableEvent(const ui::Event& event) override;
@@ -202,7 +210,7 @@ class IconLabelBubbleView : public views::InkDropObserver,
   // TODO(bruthig): See https://crbug.com/669253. Since the ink drop highlight
   // currently cannot handle host resizes, the highlight needs to be disabled
   // when the animation is running.
-  void AnimateIn(absl::optional<int> string_id);
+  void AnimateIn(std::optional<int> string_id);
 
   // Animates the view out.
   void AnimateOut();
@@ -228,6 +236,12 @@ class IconLabelBubbleView : public views::InkDropObserver,
   // override this method. This may be used when we want to align the label text
   // to the suggestion text, like in the SelectedKeywordView.
   virtual int GetExtraInternalSpacing() const;
+
+  std::optional<ui::ColorId> GetCustomBackgroundColorId();
+  std::optional<ui::ColorId> GetCustomForegroundColorId();
+
+  void SetCustomBackgroundColorId(const ui::ColorId color_id);
+  void SetCustomForegroundColorId(const ui::ColorId color_id);
 
   // Slide animation for label.
   gfx::SlideAnimation slide_animation_{this};
@@ -284,7 +298,7 @@ class IconLabelBubbleView : public views::InkDropObserver,
   // when the label text is showing.
   // TODO(tluk): Remove the opt-in after UX has conslusively decided how icon
   // labels should be painted when the label text is shown.
-  bool paint_label_over_solid_backround_ = false;
+  bool paint_label_over_solid_background_ = false;
 
   // Whether the tonal color should be used when the icon is expanded to show
   // the label.
@@ -298,6 +312,9 @@ class IconLabelBubbleView : public views::InkDropObserver,
       ui::TouchUiController::Get()->RegisterCallback(
           base::BindRepeating(&IconLabelBubbleView::OnTouchUiChanged,
                               base::Unretained(this)));
+
+  std::optional<ui::ColorId> background_color_id_;
+  std::optional<ui::ColorId> foreground_color_id_;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_LOCATION_BAR_ICON_LABEL_BUBBLE_VIEW_H_

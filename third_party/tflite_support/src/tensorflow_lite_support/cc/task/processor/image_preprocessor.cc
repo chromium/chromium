@@ -36,22 +36,20 @@ using ::tflite::task::vision::FrameBuffer;
 /* static */
 tflite::support::StatusOr<std::unique_ptr<ImagePreprocessor>>
 ImagePreprocessor::Create(
-    core::TfLiteEngine* engine,
-    const std::initializer_list<int> input_indices,
+    core::TfLiteEngine* engine, const std::initializer_list<int> input_indices,
     const vision::FrameBufferUtils::ProcessEngine& process_engine) {
-  ASSIGN_OR_RETURN(auto processor,
+  TFLITE_ASSIGN_OR_RETURN(auto processor,
                    Processor::Create<ImagePreprocessor>(
                        /* num_expected_tensors = */ 1, engine, input_indices,
                        /* requires_metadata = */ false));
 
-  RETURN_IF_ERROR(processor->Init(process_engine));
+  TFLITE_RETURN_IF_ERROR(processor->Init(process_engine));
   return processor;
 }
 
 // Returns false if image preprocessing could be skipped, true otherwise.
 bool ImagePreprocessor::IsImagePreprocessingNeeded(
-    const FrameBuffer& frame_buffer,
-    const BoundingBox& roi) {
+    const FrameBuffer& frame_buffer, const BoundingBox& roi) {
   // Is crop required?
   if (roi.origin_x() != 0 || roi.origin_y() != 0 ||
       roi.width() != frame_buffer.dimension().width ||
@@ -74,7 +72,7 @@ absl::Status ImagePreprocessor::Init(
     const vision::FrameBufferUtils::ProcessEngine& process_engine) {
   frame_buffer_utils_ = vision::FrameBufferUtils::Create(process_engine);
 
-  ASSIGN_OR_RETURN(input_specs_, vision::BuildInputImageTensorSpecs(
+  TFLITE_ASSIGN_OR_RETURN(input_specs_, vision::BuildInputImageTensorSpecs(
                                      *engine_->interpreter(),
                                      *engine_->metadata_extractor()));
 
@@ -139,7 +137,7 @@ absl::Status ImagePreprocessor::Preprocess(const FrameBuffer& frame_buffer,
         {preprocessed_plane}, to_buffer_dimension, FrameBuffer::Format::kRGB,
         FrameBuffer::Orientation::kTopLeft);
 
-    RETURN_IF_ERROR(frame_buffer_utils_->Preprocess(
+    TFLITE_RETURN_IF_ERROR(frame_buffer_utils_->Preprocess(
         frame_buffer, roi, preprocessed_frame_buffer.get()));
   } else {
     // Input frame buffer already targets model requirements: skip image
@@ -167,7 +165,7 @@ absl::Status ImagePreprocessor::Preprocess(const FrameBuffer& frame_buffer,
             "and input tensor.");
       }
       // No normalization required: directly populate data.
-      RETURN_IF_ERROR(tflite::task::core::PopulateTensor(
+      TFLITE_RETURN_IF_ERROR(tflite::task::core::PopulateTensor(
           input_data, input_data_byte_size / sizeof(uint8), GetTensor()));
       break;
     case kTfLiteFloat32: {
@@ -179,7 +177,7 @@ absl::Status ImagePreprocessor::Preprocess(const FrameBuffer& frame_buffer,
             "and input tensor.");
       }
       // Normalize and populate.
-      ASSIGN_OR_RETURN(
+      TFLITE_ASSIGN_OR_RETURN(
           float* normalized_input_data,
           tflite::task::core::AssertAndReturnTypedTensor<float>(GetTensor()));
       const tflite::task::vision::NormalizationOptions& normalization_options =

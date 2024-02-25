@@ -33,6 +33,11 @@
 namespace autofill {
 
 namespace {
+
+using profile_ref = base::optional_ref<const AutofillProfile>;
+using ::testing::AllOf;
+using ::testing::Property;
+
 std::unique_ptr<KeyedService> CreateTestSyncService(
     content::BrowserContext* context) {
   return std::make_unique<syncer::TestSyncService>();
@@ -76,7 +81,7 @@ class SaveUpdateAddressProfilePromptControllerTest
 
   // Profile with verified data as it is returned from Java.
   AutofillProfile GetFullProfileWithVerifiedData() {
-    AutofillProfile profile;
+    AutofillProfile profile(AddressCountryCode("US"));
     profile.SetRawInfoWithVerificationStatus(NAME_FULL, u"Mona J. Liza",
                                              VerificationStatus::kUserVerified);
     test::SetProfileInfo(&profile, "", "", "", "email@example.com",
@@ -95,9 +100,11 @@ class SaveUpdateAddressProfilePromptControllerTest
   signin::IdentityTestEnvironment identity_test_env_;
   autofill::TestPersonalDataManager test_personal_data_;
   std::unique_ptr<syncer::TestSyncService> sync_service_;
-  raw_ptr<MockSaveUpdateAddressProfilePromptView> prompt_view_;
-  AutofillProfile profile_;
-  AutofillProfile original_profile_;
+  raw_ptr<MockSaveUpdateAddressProfilePromptView> prompt_view_ = nullptr;
+  AutofillProfile profile_{
+      autofill::i18n_model_definition::kLegacyHierarchyCountryCode};
+  AutofillProfile original_profile_{
+      autofill::i18n_model_definition::kLegacyHierarchyCountryCode};
   bool is_update_;
   base::MockCallback<AutofillClient::AddressProfileSavePromptCallback>
       decision_callback_;
@@ -176,7 +183,7 @@ TEST_F(SaveUpdateAddressProfilePromptControllerTest,
   EXPECT_CALL(
       decision_callback_,
       Run(AutofillClient::SaveAddressProfileOfferUserDecision::kAccepted,
-          profile_));
+          Property(&profile_ref::has_value, false)));
   controller_->OnUserAccepted(env_, mock_caller_);
 }
 
@@ -188,7 +195,7 @@ TEST_F(SaveUpdateAddressProfilePromptControllerTest,
   EXPECT_CALL(
       decision_callback_,
       Run(AutofillClient::SaveAddressProfileOfferUserDecision::kDeclined,
-          profile_));
+          Property(&profile_ref::has_value, false)));
   controller_->OnUserDeclined(env_, mock_caller_);
 }
 
@@ -200,7 +207,7 @@ TEST_F(SaveUpdateAddressProfilePromptControllerTest,
 
   EXPECT_CALL(decision_callback_,
               Run(AutofillClient::SaveAddressProfileOfferUserDecision::kNever,
-                  profile_));
+                  Property(&profile_ref::has_value, false)));
   controller_->OnUserDeclined(env_, mock_caller_);
 }
 
@@ -213,7 +220,8 @@ TEST_F(SaveUpdateAddressProfilePromptControllerTest,
   EXPECT_CALL(
       decision_callback_,
       Run(AutofillClient::SaveAddressProfileOfferUserDecision::kEditAccepted,
-          edited_profile));
+          AllOf(Property(&profile_ref::has_value, true),
+                Property(&profile_ref::value, edited_profile))));
   base::android::ScopedJavaLocalRef<jobject> edited_profile_java =
       edited_profile.CreateJavaObject(
           g_browser_process->GetApplicationLocale());
@@ -239,7 +247,7 @@ TEST_F(SaveUpdateAddressProfilePromptControllerTest,
 
   EXPECT_CALL(decision_callback_,
               Run(AutofillClient::SaveAddressProfileOfferUserDecision::kIgnored,
-                  profile_));
+                  Property(&profile_ref::has_value, false)));
   controller_.reset();
 }
 

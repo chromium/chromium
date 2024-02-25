@@ -11,7 +11,6 @@
 
 #include "ash/constants/ash_switches.h"
 #include "ash/public/ash_interfaces.h"
-#include "ash/public/cpp/tablet_mode.h"
 #include "ash/public/cpp/test/shell_test_api.h"
 #include "base/command_line.h"
 #include "base/functional/bind.h"
@@ -48,6 +47,8 @@
 #include "net/dns/mock_host_resolver.h"
 #include "ui/aura/window.h"
 #include "ui/aura/window_tree_host.h"
+#include "ui/base/metadata/metadata_header_macros.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/compositor/layer.h"
 #include "ui/display/display.h"
 #include "ui/display/display_switches.h"
@@ -96,6 +97,8 @@ void SynchronizeBrowserWithRenderer(content::WebContents* contents) {
 // A test view that will be added as a child to the BrowserView to verify how
 // many times it's laid out while sliding is in progress.
 class LayoutTestView : public views::View {
+  METADATA_HEADER(LayoutTestView, views::View)
+
  public:
   explicit LayoutTestView(BrowserView* parent) {
     DCHECK(parent);
@@ -115,11 +118,14 @@ class LayoutTestView : public views::View {
   }
 
   // views::View:
-  void Layout() override { ++layout_count_; }
+  void Layout(PassKey) override { ++layout_count_; }
 
  private:
   int layout_count_ = 0;
 };
+
+BEGIN_METADATA(LayoutTestView)
+END_METADATA
 
 class TestControllerObserver {
  public:
@@ -254,7 +260,7 @@ class TopControlsShownRatioWaiter : public TestControllerObserver {
     return false;
   }
 
-  raw_ptr<TestController, ExperimentalAsh> controller_;
+  raw_ptr<TestController> controller_;
 
   std::unique_ptr<base::RunLoop> run_loop_;
 
@@ -300,7 +306,7 @@ class GestureScrollInProgressChangeWaiter : public TestControllerObserver {
   }
 
  private:
-  raw_ptr<TestController, ExperimentalAsh> controller_;
+  raw_ptr<TestController> controller_;
 
   std::unique_ptr<base::RunLoop> run_loop_;
 
@@ -347,7 +353,8 @@ class TopControlsSlideControllerTest : public InProcessBrowserTest {
 
     // Add content/test/data so we can use cross_site_iframe_factory.html
     base::FilePath test_data_dir;
-    ASSERT_TRUE(base::PathService::Get(base::DIR_SOURCE_ROOT, &test_data_dir));
+    ASSERT_TRUE(
+        base::PathService::Get(base::DIR_SRC_TEST_DATA_ROOT, &test_data_dir));
     embedded_test_server()->ServeFilesFromDirectory(
         test_data_dir.AppendASCII("chrome/test/data/top_controls_scroll"));
     ASSERT_TRUE(embedded_test_server()->Start());
@@ -381,7 +388,7 @@ class TopControlsSlideControllerTest : public InProcessBrowserTest {
   }
 
   bool GetTabletModeEnabled() const {
-    return ash::TabletMode::Get()->InTabletMode();
+    return display::Screen::GetScreen()->InTabletMode();
   }
 
   void CheckBrowserLayout(BrowserView* browser_view,
@@ -559,7 +566,7 @@ class TopControlsSlideControllerTest : public InProcessBrowserTest {
     return std::move(controller);
   }
 
-  raw_ptr<TestController, ExperimentalAsh> test_controller_ =
+  raw_ptr<TestController, DanglingUntriaged> test_controller_ =
       nullptr;  // Not owned.
 };
 
@@ -681,8 +688,8 @@ IN_PROC_BROWSER_TEST_F(TopControlsSlideControllerTest, TestCtrlL) {
   ui::test::EventGenerator event_generator(browser_window->GetRootWindow(),
                                            browser_window);
   TopControlsShownRatioWaiter waiter(top_controls_slide_controller());
-  event_generator.PressKey(ui::VKEY_L, ui::EF_CONTROL_DOWN);
-  event_generator.ReleaseKey(ui::VKEY_L, ui::EF_CONTROL_DOWN);
+  event_generator.PressAndReleaseKeyAndModifierKeys(ui::VKEY_L,
+                                                    ui::EF_CONTROL_DOWN);
   waiter.WaitForRatio(1.f);
   EXPECT_TRUE(browser_view()->GetLocationBarView()->omnibox_view()->HasFocus());
 }
@@ -907,7 +914,7 @@ class BrowserViewLayoutWaiter : public views::ViewObserver {
   }
 
  private:
-  raw_ptr<BrowserView, ExperimentalAsh> browser_view_;
+  raw_ptr<BrowserView> browser_view_;
 
   bool view_bounds_changed_ = false;
 
@@ -1075,9 +1082,8 @@ IN_PROC_BROWSER_TEST_F(TopControlsSlideControllerTest, MAYBE_TestDropDowns) {
   // `top_controls_shown_ratio_` (which is initialized to 0.f) will be sent to
   // the browser when a new compositor frame gets generated. If this shown ratio
   // value is not ignored, top-chrome will immediately hide, which will result
-  // in a BrowserView's Layout() and the immediate closure of the drop-down
-  // menu.
-  // We verify below that this doesn't happen, the menu remains open, and it's
+  // in a BrowserView layout and the immediate closure of the drop-down menu. We
+  // verify below that this doesn't happen, the menu remains open, and it's
   // possible to select another option in the drop-down menu.
   content::WebContents* contents =
       browser()->tab_strip_model()->GetActiveWebContents();
@@ -1199,7 +1205,7 @@ class IntermediateShownRatioWaiter : public TestControllerObserver {
   }
 
  private:
-  raw_ptr<TestController, ExperimentalAsh> controller_;
+  raw_ptr<TestController> controller_;
 
   std::unique_ptr<base::RunLoop> run_loop_;
 
@@ -1334,8 +1340,7 @@ IN_PROC_BROWSER_TEST_F(TopControlsSlideControllerTest,
         // Trigger the keyboard shrotcut for changing the device scale factor.
         // This should result in a display metric change.
         constexpr int kFlags = ui::EF_CONTROL_DOWN | ui::EF_SHIFT_DOWN;
-        generator->PressKey(ui::VKEY_OEM_PLUS, kFlags);
-        generator->ReleaseKey(ui::VKEY_OEM_PLUS, kFlags);
+        generator->PressAndReleaseKeyAndModifierKeys(ui::VKEY_OEM_PLUS, kFlags);
 
         // Test that as result of the above, sliding has been temporarily
         // disabled, and that the top controls are fully shown.
@@ -1507,8 +1512,7 @@ IN_PROC_BROWSER_TEST_F(TopControlsSlideControllerTest,
     SynchronizeBrowserWithRenderer(active_contents);
   }
   constexpr int kFlags = ui::EF_CONTROL_DOWN;
-  event_generator.PressKey(ui::VKEY_T, kFlags);
-  event_generator.ReleaseKey(ui::VKEY_T, kFlags);
+  event_generator.PressAndReleaseKeyAndModifierKeys(ui::VKEY_T, kFlags);
   event_generator.ReleaseTouch();
   ASSERT_EQ(browser()->tab_strip_model()->count(), 2);
 }

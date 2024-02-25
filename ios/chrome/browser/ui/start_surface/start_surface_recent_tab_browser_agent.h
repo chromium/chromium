@@ -5,6 +5,7 @@
 #ifndef IOS_CHROME_BROWSER_UI_START_SURFACE_START_SURFACE_RECENT_TAB_BROWSER_AGENT_H_
 #define IOS_CHROME_BROWSER_UI_START_SURFACE_START_SURFACE_RECENT_TAB_BROWSER_AGENT_H_
 
+#import "base/memory/raw_ptr.h"
 #import "base/observer_list.h"
 #import "base/scoped_observation.h"
 #import "components/favicon/ios/web_favicon_driver.h"
@@ -83,9 +84,9 @@ class StartSurfaceRecentTabBrowserAgent
   base::ScopedObservation<web::WebState, web::WebStateObserver>
       web_state_observation_{this};
   // The most recent tab managed by this Browser Agent.
-  web::WebState* most_recent_tab_ = nullptr;
+  raw_ptr<web::WebState> most_recent_tab_ = nullptr;
   // Browser.
-  Browser* browser_ = nullptr;
+  raw_ptr<Browser> browser_ = nullptr;
 };
 
 #endif  // IOS_CHROME_BROWSER_UI_START_SURFACE_START_SURFACE_RECENT_TAB_BROWSER_AGENT_H_

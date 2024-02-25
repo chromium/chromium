@@ -8,16 +8,18 @@
 #include <map>
 #include <memory>
 #include <string>
+#include <string_view>
+
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/singleton.h"
-#include "base/strings/string_piece.h"
 #include "base/synchronization/lock.h"
 #include "base/thread_annotations.h"
 #include "base/values.h"
 #include "extensions/common/context_data.h"
 #include "extensions/common/features/feature.h"
 #include "extensions/common/features/feature_provider.h"
+#include "extensions/common/mojom/context_type.mojom-forward.h"
 #include "extensions/common/url_pattern_set.h"
 
 class GURL;
@@ -105,7 +107,7 @@ class ExtensionAPI {
   // FindFeature function and let callers compose if they want.
   Feature::Availability IsAvailable(const std::string& api_full_name,
                                     const Extension* extension,
-                                    Feature::Context context,
+                                    mojom::ContextType context,
                                     const GURL& url,
                                     CheckAliasStatus check_alias,
                                     int context_id,
@@ -119,14 +121,14 @@ class ExtensionAPI {
   //
   bool IsAnyFeatureAvailableToContext(const Feature& api,
                                       const Extension* extension,
-                                      Feature::Context context,
+                                      mojom::ContextType context,
                                       const GURL& url,
                                       CheckAliasStatus check_alias,
                                       int context_id,
                                       const ContextData& context_data);
 
-  // Gets the StringPiece for the schema specified by |api_name|.
-  base::StringPiece GetSchemaStringPiece(const std::string& api_name);
+  // Gets the string_view for the schema specified by |api_name|.
+  std::string_view GetSchemaStringPiece(const std::string& api_name);
 
   // Gets the schema for the extension API with namespace |full_name|.
   // Ownership remains with this object.
@@ -165,16 +167,16 @@ class ExtensionAPI {
   Feature::Availability IsAliasAvailable(const std::string& full_name,
                                          const Feature& feature,
                                          const Extension* extension,
-                                         Feature::Context context,
+                                         mojom::ContextType context,
                                          const GURL& url,
                                          int context_id,
                                          const ContextData& context_data);
 
   // Loads a schema.
-  void LoadSchema(const std::string& name, const base::StringPiece& schema);
+  void LoadSchema(const std::string& name, std::string_view schema);
 
   // Same as GetSchemaStringPiece() but doesn't acquire |lock_|.
-  base::StringPiece GetSchemaStringPieceUnsafe(const std::string& api_name);
+  std::string_view GetSchemaStringPieceUnsafe(const std::string& api_name);
 
   // Same as GetAPINameFromFullName() but doesn't acquire |lock_|.
   std::string GetAPINameFromFullNameUnsafe(const std::string& full_name,
@@ -189,7 +191,7 @@ class ExtensionAPI {
   SchemaMap schemas_ GUARDED_BY(lock_);
 
   // FeatureProviders used for resolving dependencies.
-  typedef std::map<std::string, const FeatureProvider*> FeatureProviderMap;
+  using FeatureProviderMap = std::map<std::string, const FeatureProvider*>;
   FeatureProviderMap dependency_providers_;
 };
 

@@ -12,10 +12,10 @@
 #import "base/time/default_tick_clock.h"
 #import "components/network_time/network_time_tracker.h"
 #import "components/variations/service/variations_service.h"
-#import "ios/chrome/browser/policy/browser_policy_connector_ios.h"
-#import "ios/chrome/browser/policy/configuration_policy_handler_list_factory.h"
-#import "ios/chrome/browser/promos_manager/features.h"
-#import "ios/chrome/browser/promos_manager/mock_promos_manager.h"
+#import "ios/chrome/browser/policy/model/browser_policy_connector_ios.h"
+#import "ios/chrome/browser/policy/model/configuration_policy_handler_list_factory.h"
+#import "ios/chrome/browser/promos_manager/model/features.h"
+#import "ios/chrome/browser/promos_manager/model/mock_promos_manager.h"
 #import "ios/components/security_interstitials/safe_browsing/fake_safe_browsing_service.h"
 #import "ios/public/provider/chrome/browser/push_notification/push_notification_api.h"
 #import "ios/public/provider/chrome/browser/signin/signin_identity_api.h"
@@ -26,7 +26,7 @@
 #import "services/network/test/test_url_loader_factory.h"
 
 TestingApplicationContext::TestingApplicationContext()
-    : application_locale_("en"),
+    : application_locale_("en-US"),
       application_country_("us"),
       local_state_(nullptr),
       chrome_browser_state_manager_(nullptr),
@@ -63,6 +63,7 @@ void TestingApplicationContext::SetLocalState(PrefService* local_state) {
     // components owned by TestingApplicationContext that depends on the local
     // state are also freed.
     network_time_tracker_.reset();
+    push_notification_service_.reset();
   }
   local_state_ = local_state;
 }
@@ -82,6 +83,19 @@ void TestingApplicationContext::SetVariationsService(
     variations::VariationsService* variations_service) {
   DCHECK(thread_checker_.CalledOnValidThread());
   variations_service_ = variations_service;
+}
+
+void TestingApplicationContext::SetSystemIdentityManager(
+    std::unique_ptr<SystemIdentityManager> system_identity_manager) {
+  DCHECK(thread_checker_.CalledOnValidThread());
+  DCHECK(!system_identity_manager_);
+  system_identity_manager_ = std::move(system_identity_manager);
+}
+
+void TestingApplicationContext::SetUpgradeCenter(
+    UpgradeCenter* upgrade_center) {
+  DCHECK(thread_checker_.CalledOnValidThread());
+  upgrade_center_ = upgrade_center;
 }
 
 void TestingApplicationContext::OnAppEnterForeground() {
@@ -179,7 +193,8 @@ TestingApplicationContext::GetNetworkTimeTracker() {
     DCHECK(local_state_);
     network_time_tracker_.reset(new network_time::NetworkTimeTracker(
         base::WrapUnique(new base::DefaultClock),
-        base::WrapUnique(new base::DefaultTickClock), local_state_, nullptr));
+        base::WrapUnique(new base::DefaultTickClock), local_state_, nullptr,
+        std::nullopt));
   }
   return network_time_tracker_.get();
 }
@@ -260,4 +275,9 @@ TestingApplicationContext::GetPushNotificationService() {
   }
 
   return push_notification_service_.get();
+}
+
+UpgradeCenter* TestingApplicationContext::GetUpgradeCenter() {
+  DCHECK(thread_checker_.CalledOnValidThread());
+  return upgrade_center_;
 }

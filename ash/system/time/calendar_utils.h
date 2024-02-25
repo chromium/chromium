@@ -5,12 +5,12 @@
 #ifndef ASH_SYSTEM_TIME_CALENDAR_UTILS_H_
 #define ASH_SYSTEM_TIME_CALENDAR_UTILS_H_
 
+#include <optional>
 #include <set>
 
 #include "ash/ash_export.h"
 #include "base/time/time.h"
 #include "google_apis/calendar/calendar_api_response_types.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/gfx/geometry/insets.h"
 
@@ -32,8 +32,7 @@ constexpr int kMillisecondsPerMinute = 60000;
 
 // The padding in each date cell view.
 constexpr int kDateVerticalPadding = 13;
-constexpr int kDateHorizontalPadding = 14;
-constexpr int kDateHorizontalPaddingJelly = 16;
+constexpr int kDateHorizontalPadding = 16;
 constexpr int kColumnSetPadding = 5;
 
 // The insets for the event list item view.
@@ -42,8 +41,6 @@ constexpr int kEventListItemViewStartEndMargin = 12;
 // The insets within a Date cell.
 const auto kDateCellInsets =
     gfx::Insets::VH(kDateVerticalPadding, kDateHorizontalPadding);
-const auto kDateCellInsetsJelly =
-    gfx::Insets::VH(kDateVerticalPadding, kDateHorizontalPaddingJelly);
 
 // Duration of opacity animation for visibility changes.
 constexpr base::TimeDelta kAnimationDurationForVisibility =
@@ -98,12 +95,16 @@ constexpr int kUpNextBetweenChildSpacing = 8;
 // between the bottom and top of the 'nub'.
 constexpr int kUpNextOverlapInPx = 12;
 
+// Returns if CalendarView is for GlanceablesV2 based on whether the features
+// are enabled.
+bool IsForGlanceablesV2();
+
 // Checks if the `selected_date` is local time today.
 bool IsToday(const base::Time selected_date);
 
 // Checks if the two exploded are in the same day.
-bool IsTheSameDay(absl::optional<base::Time> date_a,
-                  absl::optional<base::Time> date_b);
+bool IsTheSameDay(std::optional<base::Time> date_a,
+                  std::optional<base::Time> date_b);
 
 // Returns the set of months that includes |selected_date| and
 // |num_months_out| before and after.

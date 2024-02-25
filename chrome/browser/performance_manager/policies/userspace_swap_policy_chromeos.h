@@ -91,9 +91,7 @@ class UserspaceSwapPolicy : public GraphOwned,
 
   // We cache the config object since it cannot change, this makes the code
   // easier to read and testing also becomes easier.
-  const raw_ref<const ash::memory::userspace_swap::UserspaceSwapConfig,
-                ExperimentalAsh>
-      config_;
+  const raw_ref<const ash::memory::userspace_swap::UserspaceSwapConfig> config_;
 
   // Keeps track of the last time we walked the graph looking for processes to
   // swap, the frequency we walk the graph is configurable.
@@ -105,7 +103,7 @@ class UserspaceSwapPolicy : public GraphOwned,
   base::TimeTicks last_device_space_check_;
   uint64_t backing_store_available_bytes_ = 0;
 
-  raw_ptr<Graph, ExperimentalAsh> graph_ = nullptr;
+  raw_ptr<Graph> graph_ = nullptr;
 
  private:
   // A helper method which sets the last trim time to the specified time.

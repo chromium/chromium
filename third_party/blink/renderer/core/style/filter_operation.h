@@ -30,6 +30,7 @@
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/style/shadow_data.h"
 #include "third_party/blink/renderer/platform/geometry/length.h"
+#include "third_party/blink/renderer/platform/geometry/length_point.h"
 #include "third_party/blink/renderer/platform/graphics/box_reflection.h"
 #include "third_party/blink/renderer/platform/graphics/color.h"
 #include "third_party/blink/renderer/platform/graphics/filters/fe_component_transfer.h"
@@ -122,6 +123,8 @@ class CORE_EXPORT FilterOperation : public GarbageCollected<FilterOperation> {
   // True if the the value of one pixel can affect the value of another pixel
   // under this operation, such as blur.
   virtual bool MovesPixels() const { return false; }
+  // True if the operation depends on the 'currentcolor' value.
+  virtual bool UsesCurrentColor() const { return false; }
 
   // Maps "forward" to determine which pixels in a destination rect are
   // affected by pixels in the source rect.
@@ -150,6 +153,14 @@ class CORE_EXPORT ReferenceFilterOperation : public FilterOperation {
 
   bool AffectsOpacity() const override { return true; }
   bool MovesPixels() const override { return true; }
+  bool UsesCurrentColor() const override {
+    // This is pessimistic. A reference filter _may_ contain a primitive that
+    // references 'currentcolor'. If `filter_` is set it could be used to
+    // produce a less pessimistic result, but additional pre-processing would
+    // be required since enough information isn't preserved.
+    return true;
+  }
+
   gfx::RectF MapRect(const gfx::RectF&) const override;
 
   const AtomicString& Url() const { return url_; }
@@ -157,7 +168,7 @@ class CORE_EXPORT ReferenceFilterOperation : public FilterOperation {
   Filter* GetFilter() const { return filter_.Get(); }
   void SetFilter(Filter* filter) { filter_ = filter; }
 
-  SVGResource* Resource() const { return resource_; }
+  SVGResource* Resource() const { return resource_.Get(); }
 
   void AddClient(SVGResourceClient&);
   void RemoveClient(SVGResourceClient&);
@@ -302,10 +313,27 @@ struct DowncastTraits<BasicComponentTransferFilterOperation> {
 
 class CORE_EXPORT BlurFilterOperation : public FilterOperation {
  public:
-  explicit BlurFilterOperation(const Length& std_deviation)
-      : FilterOperation(OperationType::kBlur), std_deviation_(std_deviation) {}
+  explicit BlurFilterOperation(const Length& std_deviation_x,
+                               const Length& std_deviation_y)
+      : FilterOperation(OperationType::kBlur),
+        std_deviation_(std_deviation_x, std_deviation_y) {}
 
-  const Length& StdDeviation() const { return std_deviation_; }
+  explicit BlurFilterOperation(const Length& std_deviation)
+      : BlurFilterOperation(std_deviation, std_deviation) {}
+
+  const Length& StdDeviation() const {
+    // CSS only supports isotropic blurs (with matching X and Y), so this
+    // accessor should be safe in CSS-specific code. Canvas filters allow
+    // anisotropic blurs (to match SVG) and so this accessor should not be used
+    // in canvas-filter code.
+    DCHECK_EQ(std_deviation_.X(), std_deviation_.Y())
+        << "use StdDeviationXY() instead";
+    return std_deviation_.X();
+  }
+  const LengthPoint& StdDeviationXY() const {
+    // This accessor is always safe to use.
+    return std_deviation_;
+  }
 
   bool AffectsOpacity() const override { return true; }
   bool MovesPixels() const override { return true; }
@@ -321,7 +349,7 @@ class CORE_EXPORT BlurFilterOperation : public FilterOperation {
   }
 
  private:
-  Length std_deviation_;
+  LengthPoint std_deviation_;
 };
 
 template <>
@@ -340,6 +368,10 @@ class CORE_EXPORT DropShadowFilterOperation : public FilterOperation {
 
   bool AffectsOpacity() const override { return true; }
   bool MovesPixels() const override { return true; }
+  bool UsesCurrentColor() const override {
+    return shadow_.GetColor().IsCurrentColor();
+  }
+
   gfx::RectF MapRect(const gfx::RectF&) const override;
 
   String DebugString() const override {

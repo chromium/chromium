@@ -5,9 +5,11 @@
 import {TestRunner} from 'test_runner';
 import {ElementsTestRunner} from 'elements_test_runner';
 
+import * as Platform from 'devtools/core/platform/platform.js';
+import * as Elements from 'devtools/panels/elements/elements.js';
+
 (async function() {
   TestRunner.addResult(`Verifies that filtering in StylesSidebarPane hides sidebar separators.\n`);
-  await TestRunner.loadLegacyModule('elements');
   await TestRunner.showPanel('elements');
   await TestRunner.loadHTML(`
       <style>
@@ -73,11 +75,11 @@ import {ElementsTestRunner} from 'elements_test_runner';
   ]);
 
   function dumpSidebarSeparators() {
-    var separators = UI.panels.elements.stylesWidget.contentElement.querySelectorAll('.sidebar-separator');
+    var separators = Elements.ElementsPanel.ElementsPanel.instance().stylesWidget.contentElement.querySelectorAll('.sidebar-separator');
     for (var i = 0; i < separators.length; ++i) {
       var separator = separators[i];
       var hidden = separator.classList.contains('hidden');
-      var text = String.sprintf('%s %s', hidden ? '[ HIDDEN ] ' : '[ VISIBLE ]', separator.deepTextContent());
+      var text = Platform.StringUtilities.sprintf('%s %s', hidden ? '[ HIDDEN ] ' : '[ VISIBLE ]', separator.deepTextContent());
       TestRunner.addResult(text);
     }
   }

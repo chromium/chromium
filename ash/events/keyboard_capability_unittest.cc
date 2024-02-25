@@ -115,8 +115,8 @@ ui::KeyboardDevice KeyboardDeviceFromCapabilities(
       device_info.HasKeyEvent(KEY_ASSISTANT)};
 }
 
-absl::optional<uint32_t> GetEvdevKeyCodeForScanCode(const base::ScopedFD& fd,
-                                                    uint32_t scancode) {
+std::optional<uint32_t> GetEvdevKeyCodeForScanCode(const base::ScopedFD& fd,
+                                                   uint32_t scancode) {
   switch (scancode) {
     case CustomTopRowScanCode::kPreviousTrack:
       return KEY_PREVIOUSSONG;
@@ -158,7 +158,7 @@ absl::optional<uint32_t> GetEvdevKeyCodeForScanCode(const base::ScopedFD& fd,
       return KEY_REFRESH;
   }
 
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 class FakeDeviceManager {
@@ -187,8 +187,8 @@ class FakeDeviceManager {
       sysfs_properties[kKbdTopRowPropertyName] = layout;
     }
     fake_udev_.AddFakeDevice(fake_keyboard.name, fake_keyboard.sys_path.value(),
-                             /*subsystem=*/"input", /*devnode=*/absl::nullopt,
-                             /*devtype=*/absl::nullopt,
+                             /*subsystem=*/"input", /*devnode=*/std::nullopt,
+                             /*devtype=*/std::nullopt,
                              std::move(sysfs_attributes),
                              std::move(sysfs_properties));
   }
@@ -219,6 +219,7 @@ class KeyboardCapabilityTest : public NoSessionAshTestBase {
   }
 
   void TearDown() override {
+    fake_keyboard_devices_.clear();
     keyboard_capability_.reset();
     AshTestBase::TearDown();
   }
@@ -234,6 +235,8 @@ class KeyboardCapabilityTest : public NoSessionAshTestBase {
 
     keyboard_capability_->SetKeyboardInfoForTesting(fake_keyboard,
                                                     std::move(keyboard_info));
+    fake_keyboard_devices_.push_back(fake_keyboard);
+    ui::DeviceDataManagerTestApi().SetKeyboardDevices(fake_keyboard_devices_);
 
     return fake_keyboard;
   }
@@ -241,6 +244,7 @@ class KeyboardCapabilityTest : public NoSessionAshTestBase {
  protected:
   std::unique_ptr<ui::KeyboardCapability> keyboard_capability_;
   std::unique_ptr<FakeDeviceManager> fake_keyboard_manager_;
+  std::vector<ui::KeyboardDevice> fake_keyboard_devices_;
 };
 
 TEST_F(KeyboardCapabilityTest, TestIsSixPackKey) {
@@ -346,6 +350,15 @@ TEST_F(KeyboardCapabilityTest, TestHasLauncherButton) {
 
   EXPECT_FALSE(keyboard_capability_->HasLauncherButton(fake_keyboard1));
   EXPECT_TRUE(keyboard_capability_->HasLauncherButton(fake_keyboard2));
+  EXPECT_TRUE(keyboard_capability_->HasLauncherButtonOnAnyKeyboard());
+
+  fake_keyboard_manager_->RemoveAllDevices();
+  // Add an external layout1 keyboard.
+  ui::KeyboardDevice fake_keyboard3(
+      /*id=*/kDeviceId1, /*type=*/ui::InputDeviceType::INPUT_DEVICE_USB,
+      /*name=*/"Keyboard1");
+  fake_keyboard3.sys_path = base::FilePath("path3");
+  fake_keyboard_manager_->AddFakeKeyboard(fake_keyboard3, kKbdTopRowLayout1Tag);
   EXPECT_TRUE(keyboard_capability_->HasLauncherButtonOnAnyKeyboard());
 }
 
@@ -895,7 +908,7 @@ TEST_F(KeyboardCapabilityTest, TopRowLayout1) {
        action_key =
            static_cast<ui::TopRowActionKey>(static_cast<int>(action_key) + 1)) {
     EXPECT_EQ(
-        ui::kLayout1TopRowActionKeys.contains(action_key),
+        base::Contains(ui::kLayout1TopRowActionKeys, action_key),
         keyboard_capability_->HasTopRowActionKey(input_device, action_key))
         << "Action Key: " << static_cast<int>(action_key);
   }
@@ -923,7 +936,7 @@ TEST_F(KeyboardCapabilityTest, TopRowLayout2) {
        action_key =
            static_cast<ui::TopRowActionKey>(static_cast<int>(action_key) + 1)) {
     EXPECT_EQ(
-        ui::kLayout2TopRowActionKeys.contains(action_key),
+        base::Contains(ui::kLayout2TopRowActionKeys, action_key),
         keyboard_capability_->HasTopRowActionKey(input_device, action_key))
         << "Action Key: " << static_cast<int>(action_key);
   }
@@ -957,11 +970,11 @@ TEST_F(KeyboardCapabilityTest, TopRowLayoutWilco) {
        action_key =
            static_cast<ui::TopRowActionKey>(static_cast<int>(action_key) + 1)) {
     EXPECT_EQ(
-        ui::kLayoutWilcoDrallionTopRowActionKeys.contains(action_key),
+        base::Contains(ui::kLayoutWilcoDrallionTopRowActionKeys, action_key),
         keyboard_capability_->HasTopRowActionKey(wilco_device, action_key))
         << "Action Key: " << static_cast<int>(action_key);
     EXPECT_EQ(
-        ui::kLayoutWilcoDrallionTopRowActionKeys.contains(action_key),
+        base::Contains(ui::kLayoutWilcoDrallionTopRowActionKeys, action_key),
         keyboard_capability_->HasTopRowActionKey(drallion_device, action_key))
         << "Action Key: " << static_cast<int>(action_key);
   }
@@ -981,6 +994,18 @@ TEST_F(KeyboardCapabilityTest, TopRowLayoutWilco) {
     expected_fkey =
         static_cast<ui::KeyboardCode>(static_cast<int>(expected_fkey) + 1);
   }
+}
+
+TEST_F(KeyboardCapabilityTest, NullTopRowDescriptor) {
+  ui::KeyboardDevice input_device(kDeviceId1, ui::INPUT_DEVICE_BLUETOOTH,
+                                  "External Keyboard");
+  fake_keyboard_manager_->AddFakeKeyboard(input_device,
+                                          "C0000 C0000 C0000 C0000",
+                                          /*has_custom_top_row=*/true);
+  EXPECT_EQ(ui::KeyboardCapability::DeviceType::
+                kDeviceExternalNullTopRowChromeOsKeyboard,
+            keyboard_capability_->GetDeviceType(input_device));
+  EXPECT_TRUE(keyboard_capability_->HasCapsLockKey(input_device));
 }
 
 class TopRowLayoutCustomTest

@@ -78,9 +78,10 @@ JNI_CertificateViewer_GetCertSHA256FingerprintText(JNIEnv* env) {
 }
 
 static ScopedJavaLocalRef<jstring>
-JNI_CertificateViewer_GetCertSHA1FingerprintText(JNIEnv* env) {
+JNI_CertificateViewer_GetCertSHA256SPKIFingerprintText(JNIEnv* env) {
   return ConvertUTF8ToJavaString(
-      env, l10n_util::GetStringUTF8(IDS_CERT_INFO_SHA1_FINGERPRINT_LABEL));
+      env,
+      l10n_util::GetStringUTF8(IDS_CERT_INFO_SHA256_SPKI_FINGERPRINT_LABEL));
 }
 
 static ScopedJavaLocalRef<jstring> JNI_CertificateViewer_GetCertExtensionText(

@@ -1,0 +1,585 @@
+<!--
+Copyright 2023 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<!--
+
+This file describes the enumerations referenced by entries in histograms.xml for
+this directory. Some enums may instead be listed in the central enums.xml file
+at src/tools/metrics/histograms/enums.xml when multiple files use them.
+
+For best practices on writing enumerations descriptions, see
+https://chromium.googlesource.com/chromium/src.git/+/HEAD/tools/metrics/histograms/README.md#Enum-Histograms
+
+Please follow the instructions in the OWNERS file in this directory to find a
+reviewer. If no OWNERS file exists, please consider signing up at
+go/reviewing-metrics (Googlers only), as all subdirectories are expected to
+have an OWNERS file. As a last resort you can send the CL to
+chromium-metrics-reviews@google.com.
+-->
+
+<histogram-configuration>
+
+<!-- Enum types -->
+
+<enums>
+
+<enum name="AddSupervisionEnrollment">
+  <summary>Tracks the state of the Add Supervision dialog process.</summary>
+  <int value="0" label="Initiated"/>
+  <int value="1" label="Completed"/>
+  <int value="2" label="Signed out"/>
+  <int value="3" label="Closed"/>
+  <int value="4" label="Switched accounts"/>
+</enum>
+
+<enum name="BooleanHasConflict">
+  <int value="0" label="No conflict"/>
+  <int value="1" label="Has conflict"/>
+</enum>
+
+<enum name="FamilyLinkFilteringSubdomainConflictType">
+  <int value="0" label="Only trivial subdomain conflict">
+    Recorded when, for an input host, the matching conflicting entries from the
+    blocklist and the allowlist differ only in the the trivial www subdomain.
+    This result indicates that if trivial subdomain conflicts were not allowed
+    there would be no conflicts for the filtered input host.
+  </int>
+  <int value="1" label="Only other conflict">
+    Recorded when, for an input host, the matching conflicting entries from the
+    blocklist and the allowlist differ in a part other than the trivial www
+    subdomain. This result indicates that if trivial subdomain conflicts were
+    not allowed there would be still the same conflicts for the filtered input
+    host.
+  </int>
+  <int value="2" label="Both trivial subdomain and other conflict">
+    Recorded, when for input host, there are matching conflicting entries from
+    the blocklist and the allowlist that have both trival subdomain conflicts
+    and other conflicts. This result indicates that if trivial subdomain
+    conflicts were not allowed there would be still some conflicts for the
+    filtered input host.
+  </int>
+</enum>
+
+<enum name="FamilyLinkManagedSiteList">
+  <int value="0" label="Empty"/>
+  <int value="1" label="Approved List Only"/>
+  <int value="2" label="Blocked List Only"/>
+  <int value="3" label="Both"/>
+</enum>
+
+<enum name="FamilyLinkUserLocalWebApprovalOutcome">
+  <int value="0" label="Approved by parent">
+    Request to allow visiting a host was approved by the parent i.e. the parent
+    completed the verification flow and selected the (&quot;Approve&quot;
+    button). Available on Android.
+  </int>
+  <int value="1" label="Denied by parent">
+    Request to allow visiting a host was denied by the parent, i.e. the parent
+    completed the verification flow and selected the (&quot;Don't approve&quot;
+    button).
+  </int>
+  <int value="2" label="Parent approval cancelled">
+    The user cancelled the local website parent approval, i.e. the parent
+    navigated away from the approval widget and did not complete the
+    verification flow.
+  </int>
+  <int value="3" label="Verification widget unsupported API call exception">
+    Feature to support parent verification is missing.
+  </int>
+  <int value="7" label="Verification widget unexpected exception">
+    An unexpected exception occured during parent verification.
+  </int>
+</enum>
+
+<enum name="FamilyLinkUserLocalWebApprovalResult">
+  <summary>
+    The result of local web approval request. Reported by the browser once
+    platform specific approval flow finishes and returns the result.
+  </summary>
+  <int value="0" label="Approved">
+    Request was explicitely approved after parent verification.
+  </int>
+  <int value="1" label="Declined">
+    Request was explicitely declined after parent verification.
+  </int>
+  <int value="2" label="Canceled">
+    Request was canceled at any point (before, during or after parent
+    verification).
+  </int>
+  <int value="3" label="Error">An error occured during the request flow.</int>
+</enum>
+
+<enum name="FamilyLinkUserLogSegment">
+  <summary>
+    Filters family link user metrics into categories of interest.
+  </summary>
+  <int value="0" label="Other Not Supervised">
+    None of the users are supervised. This includes signed out users, and where
+    a secondary account is supervised.
+  </int>
+  <int value="1" label="Policy Enabled Supervision">
+    Users under the age of consent automatically have supervision applied to
+    their accounts.
+  </int>
+  <int value="2" label="User Enabled Supervision">
+    Users over the age of consent can opt into supervision.
+  </int>
+  <int value="3" label="Mixed Profile">
+    Profiles with different supervision types were in use during the reporting
+    window.
+  </int>
+</enum>
+
+<enum name="FamilyLinkUserParentAccessWidgetError">
+  <summary>
+    Error that occurs in the parent access widget. ChromeOS only.
+  </summary>
+  <int value="0" label="OAuth2 Error">
+    Error that occurs when OAuth2 token request fails.
+  </int>
+  <int value="1" label="Delegate Not Available">
+    Error that occurs when Delegate is not available in ParentAccessUIHandler.
+    Likely caused by trying to create WebUI without a dialog.
+  </int>
+  <int value="2" label="Decoding Error">
+    Error that occurs when parent access result cannot be decoded from base64.
+  </int>
+  <int value="3" label="Parsing Error">
+    Error that occurs when decoded parent access result cannot be parsed into a
+    proto.
+  </int>
+  <int value="4" label="Unknown Callback">
+    Error that occurs when an unknown type of callback is provided for
+    ParentAccessHandler::OnParentAccessCallback.
+  </int>
+</enum>
+
+<enum name="FamilyLinkUserParentAccessWidgetShowDialogError">
+  <summary>
+    Error that prevents the parent access widget dialog from showing. ChromeOS
+    only.
+  </summary>
+  <int value="0" label="Unknown Error">Unknown error in ParentAccess UI.</int>
+  <int value="1" label="Dialog Already Visible">
+    Error that occurs when ParentAccess UI invoked by non-child user. Indicates
+    a programming error.
+  </int>
+  <int value="2" label="Not a Child User">
+    Error that occurs when ParentAccess UI invoked while instance already
+    visible. Indicates a programming error.
+  </int>
+</enum>
+
+<enum name="FamilyLinkWebFilterType">
+  <int value="0" label="Allow All Sites"/>
+  <int value="1" label="Try To Block Mature Sites"/>
+  <int value="2" label="Only allow Certain Sites"/>
+  <int value="3" label="Mixed web filters on device"/>
+</enum>
+
+<enum name="FamilyUserLogSegment">
+  <summary>Filters family user metrics into categories of interest.</summary>
+  <int value="0" label="Other"/>
+  <int value="1" label="Supervised User"/>
+  <int value="2" label="Supervised Student"/>
+  <int value="3" label="Student at Home"/>
+  <int value="4" label="Regular User"/>
+</enum>
+
+<enum name="LegacySupervisedUserStatus">
+  <int value="0" label="Displayed on login screen"/>
+  <int value="1" label="Hidden on login screen"/>
+  <int value="2" label="Attempted cryptohome deletion"/>
+</enum>
+
+<enum name="ManagedModeBlockingCommand">
+  <int value="0" label="Preview"/>
+  <int value="1" label="Back"/>
+  <int value="2" label="New Tab Page"/>
+  <int value="3" label="Remote Access Request"/>
+  <int value="4" label="Local Access Request"/>
+</enum>
+
+<enum name="ManagedUserURLRequestPermissionSource">
+  <int value="0" label="MAIN_FRAME">Request was made from main frame</int>
+  <int value="1" label="SUB_FRAME">Request was made from subframe</int>
+</enum>
+
+<enum name="NewUserAdded">
+  <int value="0" label="Other user added"/>
+  <int value="1" label="Family Link user added"/>
+  <int value="2" label="Regular user added"/>
+</enum>
+
+<enum name="ParentAccessCodeAction">
+  <summary>Action resulting from parent access code dialog</summary>
+  <int value="0" label="Validation success"/>
+  <int value="1" label="Validation error"/>
+  <int value="2" label="Validation canceled by user"/>
+  <int value="3" label="Get help user action"/>
+</enum>
+
+<enum name="ParentAccessCodeUsage">
+  <summary>Context in which parent access code was used</summary>
+  <int value="0" label="Time limits"/>
+  <int value="1" label="Time change on login screen"/>
+  <int value="2" label="Time change user session"/>
+  <int value="3" label="Timezone change"/>
+  <int value="4" label="Add user"/>
+  <int value="5" label="Reauthentication"/>
+</enum>
+
+<enum name="ParentAccessCodeValidationResult">
+  <summary>Result of the parent access code validation</summary>
+  <int value="0" label="Valid"/>
+  <int value="1" label="Invalid"/>
+  <int value="2" label="No config"/>
+  <int value="3" label="Internal error"/>
+</enum>
+
+<enum name="ParentAccessFlowResult">
+  <int value="0" label="Initial screen"/>
+  <int value="1" label="Parent authentication"/>
+  <int value="2" label="Approval screen"/>
+  <int value="3" label="Access approved"/>
+  <int value="4" label="Access declined"/>
+  <int value="5" label="Error"/>
+  <int value="6" label="Requests Disabled"/>
+</enum>
+
+<enum name="SupervisedUserExtension2">
+  <summary>
+    Tracks the state of a supervised user trying to install an extension.
+  </summary>
+  <int value="0" label="Extension Approval Granted"/>
+  <int value="1" label="Permissions Increase Granted"/>
+  <int value="2" label="Extension Approval Removed"/>
+</enum>
+
+<enum name="SupervisedUserExtensionEnablement">
+  <summary>
+    Tracks supervised user actions to enable or disable extensions.
+  </summary>
+  <int value="0" label="Enabled"/>
+  <int value="1" label="Disabled"/>
+  <int value="2" label="Enable attempt failed"/>
+</enum>
+
+<enum name="SupervisedUserExtensionInstallDialog">
+  <summary>
+    Tracks the actions of a supervised user on the Extension Install Dialog.
+  </summary>
+  <int value="0" label="Opened"/>
+  <int value="1" label="Asked Parent"/>
+  <int value="2" label="Child Canceled"/>
+</enum>
+
+<enum name="SupervisedUserFaviconAvailability">
+  <int value="0" label="Favicon Available"/>
+  <int value="1" label="Favicon Unavailable"/>
+</enum>
+
+<enum name="SupervisedUserFilterTopLevelResult">
+  <int value="0" label="ALLOWED">
+    Records sites that have been allowed explicitly through the allowlist; when
+    SafeSites is enabled and the website is not blocked; and when all sites are
+    enabled through parental settings.
+  </int>
+  <int value="1" label="BLOCKED_SAFESITES">
+    Sites blocked due to the safe sites filtering.
+  </int>
+  <int value="2" label="BLOCKED_MANUAL">
+    Sites blocked due to being on the blocklist. Includes visits to sites on
+    blocklist while &quot;Only allow certain sites&quot; setting is turned on.
+  </int>
+  <int value="3" label="BLOCKED_NOT_IN_ALLOWLIST">
+    Sites that are blocked when &quot;Only allow certain sites&quot; setting is
+    turned on
+  </int>
+</enum>
+
+<enum name="SupervisedUserParentPermissionDialog">
+  <summary>
+    Tracks the actions of a parent on the Parent Permission Dialog.
+  </summary>
+  <int value="0" label="Opened"/>
+  <int value="1" label="Parent Approved"/>
+  <int value="2" label="Parent Canceled"/>
+  <int value="3" label="Failed"/>
+  <int value="4" label="No Parent Error"/>
+</enum>
+
+<enum name="SupervisedUserSafetyFilterResult">
+  <int value="100" label="LINK_ALLOWED">Link; Allowed as safe</int>
+  <int value="101" label="TYPED_ALLOWED">Typed URL; Allowed as safe</int>
+  <int value="102" label="AUTO_BOOKMARK_ALLOWED">Bookmark; Allowed as safe</int>
+  <int value="103" label="AUTO_SUBFRAME_ALLOWED">
+    Subframe navigation; Allowed as safe
+  </int>
+  <int value="104" label="MANUAL_SUBFRAME_ALLOWED">
+    Manual subframe navigation; Allowed as safe
+  </int>
+  <int value="105" label="GENERATED_ALLOWED">
+    Generated from Omnibox; Allowed as safe
+  </int>
+  <int value="106" label="AUTO_TOPLEVEL_ALLOWED">
+    Automatic toplevel navigation; Allowed as safe
+  </int>
+  <int value="107" label="FORM_SUBMIT_ALLOWED">
+    Form submission; Allowed as safe
+  </int>
+  <int value="108" label="RELOAD_ALLOWED">Reload; Allowed as safe</int>
+  <int value="109" label="KEYWORD_ALLOWED">
+    Omnibox keyword; Allowed as safe
+  </int>
+  <int value="110" label="KEYWORD_GENERATED_ALLOWED">
+    URL generated from Omnibox keyword; Allowed as safe
+  </int>
+  <int value="199" label="OTHER_ALLOWED">Other navigation; Allowed as safe</int>
+  <int value="200" label="LINK_ALLOWED_UNKNOWN">
+    Link; Allowed by default (safety state unknown)
+  </int>
+  <int value="201" label="TYPED_ALLOWED_UNKNOWN">
+    Typed URL; Allowed by default (safety state unknown)
+  </int>
+  <int value="202" label="AUTO_BOOKMARK_ALLOWED_UNKNOWN">
+    Bookmark; Allowed by default (safety state unknown)
+  </int>
+  <int value="203" label="AUTO_SUBFRAME_ALLOWED_UNKNOWN">
+    Subframe navigation; Allowed by default (safety state unknown)
+  </int>
+  <int value="204" label="MANUAL_SUBFRAME_ALLOWED_UNKNOWN">
+    Manual subframe navigation; Allowed by default (safety state unknown)
+  </int>
+  <int value="205" label="GENERATED_ALLOWED_UNKNOWN">
+    Generated from Omnibox; Allowed by default (safety state unknown)
+  </int>
+  <int value="206" label="AUTO_TOPLEVEL_ALLOWED_UNKNOWN">
+    Automatic toplevel navigation; Allowed by default (safety state unknown)
+  </int>
+  <int value="207" label="FORM_SUBMIT_ALLOWED_UNKNOWN">
+    Form submission; Allowed by default (safety state unknown)
+  </int>
+  <int value="208" label="RELOAD_ALLOWED_UNKNOWN">
+    Reload; Allowed by default (safety state unknown)
+  </int>
+  <int value="209" label="KEYWORD_ALLOWED_UNKNOWN">
+    Omnibox keyword; Allowed by default (safety state unknown)
+  </int>
+  <int value="210" label="KEYWORD_GENERATED_ALLOWED_UNKNOWN">
+    URL generated from Omnibox keyword; Allowed by default (safety state
+    unknown)
+  </int>
+  <int value="299" label="OTHER_ALLOWED_UNKNOWN">
+    Other navigation; Allowed by default (safety state unknown)
+  </int>
+  <int value="300" label="LINK_BLOCKED_DENYLIST">
+    Link; Blocked by static denylist
+  </int>
+  <int value="301" label="TYPED_BLOCKED_DENYLIST">
+    Typed URL; Blocked by static denylist
+  </int>
+  <int value="302" label="AUTO_BOOKMARK_BLOCKED_DENYLIST">
+    Bookmark; Blocked by static denylist
+  </int>
+  <int value="303" label="AUTO_SUBFRAME_BLOCKED_DENYLIST">
+    Subframe navigation; Blocked by static denylist
+  </int>
+  <int value="304" label="MANUAL_SUBFRAME_BLOCKED_DENYLIST">
+    Manual subframe navigation; Blocked by static denylist
+  </int>
+  <int value="305" label="GENERATED_BLOCKED_DENYLIST">
+    Generated from Omnibox; Blocked by static denylist
+  </int>
+  <int value="306" label="AUTO_TOPLEVEL_BLOCKED_DENYLIST">
+    Automatic toplevel navigation; Blocked by static denylist
+  </int>
+  <int value="307" label="FORM_SUBMIT_BLOCKED_DENYLIST">
+    Form submission; Blocked by static denylist
+  </int>
+  <int value="308" label="RELOAD_BLOCKED_DENYLIST">
+    Reload; Blocked by static denylist
+  </int>
+  <int value="309" label="KEYWORD_BLOCKED_DENYLIST">
+    Omnibox keyword; Blocked by static denylist
+  </int>
+  <int value="310" label="KEYWORD_GENERATED_BLOCKED_DENYLIST">
+    URL generated from Omnibox keyword; Blocked by static denylist
+  </int>
+  <int value="399" label="OTHER_BLOCKED_DENYLIST">
+    Other navigation; Blocked by static denylist
+  </int>
+  <int value="400" label="LINK_BLOCKED_SAFESITES">
+    Link; Blocked by SafeSites
+  </int>
+  <int value="401" label="TYPED_BLOCKED_SAFESITES">
+    Typed URL; Blocked by SafeSites
+  </int>
+  <int value="402" label="AUTO_BOOKMARK_BLOCKED_SAFESITES">
+    Bookmark; Blocked by SafeSites
+  </int>
+  <int value="403" label="AUTO_SUBFRAME_BLOCKED_SAFESITES">
+    Subframe navigation; Blocked by SafeSites
+  </int>
+  <int value="404" label="MANUAL_SUBFRAME_BLOCKED_SAFESITES">
+    Manual subframe navigation; Blocked by SafeSites
+  </int>
+  <int value="405" label="GENERATED_BLOCKED_SAFESITES">
+    Generated from Omnibox; Blocked by SafeSites
+  </int>
+  <int value="406" label="AUTO_TOPLEVEL_BLOCKED_SAFESITES">
+    Automatic toplevel navigation; Blocked by SafeSites
+  </int>
+  <int value="407" label="FORM_SUBMIT_BLOCKED_SAFESITES">
+    Form submission; Blocked by SafeSites
+  </int>
+  <int value="408" label="RELOAD_BLOCKED_SAFESITES">
+    Reload; Blocked by SafeSites
+  </int>
+  <int value="409" label="KEYWORD_BLOCKED_SAFESITES">
+    Omnibox keyword; Blocked by SafeSites
+  </int>
+  <int value="410" label="KEYWORD_GENERATED_BLOCKED_SAFESITES">
+    URL generated from Omnibox keyword; Blocked by SafeSites
+  </int>
+  <int value="499" label="OTHER_BLOCKED_SAFESITES">
+    Other navigation; Blocked by SafeSites
+  </int>
+  <int value="500" label="LINK_BLOCKED_MANUAL">
+    Link; Blocked by manual exception
+  </int>
+  <int value="501" label="TYPED_BLOCKED_MANUAL">
+    Typed URL; Blocked by manual exception
+  </int>
+  <int value="502" label="AUTO_BOOKMARK_BLOCKED_MANUAL">
+    Bookmark; Blocked by manual exception
+  </int>
+  <int value="503" label="AUTO_SUBFRAME_BLOCKED_MANUAL">
+    Subframe navigation; Blocked by manual exception
+  </int>
+  <int value="504" label="MANUAL_SUBFRAME_BLOCKED_MANUAL">
+    Manual subframe navigation; Blocked by manual exception
+  </int>
+  <int value="505" label="GENERATED_BLOCKED_MANUAL">
+    Generated from Omnibox; Blocked by manual exception
+  </int>
+  <int value="506" label="AUTO_TOPLEVEL_BLOCKED_MANUAL">
+    Automatic toplevel navigation; Blocked by manual exception
+  </int>
+  <int value="507" label="FORM_SUBMIT_BLOCKED_MANUAL">
+    Form submission; Blocked by manual exception
+  </int>
+  <int value="508" label="RELOAD_BLOCKED_MANUAL">
+    Reload; Blocked by manual exception
+  </int>
+  <int value="509" label="KEYWORD_BLOCKED_MANUAL">
+    Omnibox keyword; Blocked by manual exception
+  </int>
+  <int value="510" label="KEYWORD_GENERATED_BLOCKED_MANUAL">
+    URL generated from Omnibox keyword; Blocked by manual exception
+  </int>
+  <int value="599" label="OTHER_BLOCKED_MANUAL">
+    Other navigation; Blocked by manual exception
+  </int>
+  <int value="600" label="LINK_BLOCKED_DEFAULT">
+    Link; Blocked by global settings
+  </int>
+  <int value="601" label="TYPED_BLOCKED_DEFAULT">
+    Typed URL; Blocked by global settings
+  </int>
+  <int value="602" label="AUTO_BOOKMARK_BLOCKED_DEFAULT">
+    Bookmark; Blocked by global settings
+  </int>
+  <int value="603" label="AUTO_SUBFRAME_BLOCKED_DEFAULT">
+    Subframe navigation; Blocked by global settings
+  </int>
+  <int value="604" label="MANUAL_SUBFRAME_BLOCKED_DEFAULT">
+    Manual subframe navigation; Blocked by global settings
+  </int>
+  <int value="605" label="GENERATED_BLOCKED_DEFAULT">
+    Generated from Omnibox; Blocked by global settings
+  </int>
+  <int value="606" label="AUTO_TOPLEVEL_BLOCKED_DEFAULT">
+    Automatic toplevel navigation; Blocked by global settings
+  </int>
+  <int value="607" label="FORM_SUBMIT_BLOCKED_DEFAULT">
+    Form submission; Blocked by global settings
+  </int>
+  <int value="608" label="RELOAD_BLOCKED_DEFAULT">
+    Reload; Blocked by global settings
+  </int>
+  <int value="609" label="KEYWORD_BLOCKED_DEFAULT">
+    Omnibox keyword; Blocked by global settings
+  </int>
+  <int value="610" label="KEYWORD_GENERATED_BLOCKED_DEFAULT">
+    URL generated from Omnibox keyword; Blocked by global settings
+  </int>
+  <int value="699" label="OTHER_BLOCKED_DEFAULT">
+    Other navigation; Blocked by global settings
+  </int>
+  <int value="700" label="LINK_ALLOWED_ALLOWLIST">
+    Link; Allowed by allowlist
+  </int>
+  <int value="701" label="TYPED_ALLOWED_ALLOWLIST">
+    Typed URL; Allowed by allowlist
+  </int>
+  <int value="702" label="AUTO_BOOKMARK_ALLOWED_ALLOWLIST">
+    Bookmark; Allowed by allowlist
+  </int>
+  <int value="703" label="AUTO_SUBFRAME_ALLOWED_ALLOWLIST">
+    Subframe navigation; Allowed by allowlist
+  </int>
+  <int value="704" label="MANUAL_SUBFRAME_ALLOWED_ALLOWLIST">
+    Manual subframe navigation; Allowed by allowlist
+  </int>
+  <int value="705" label="GENERATED_ALLOWED_ALLOWLIST">
+    Generated from Omnibox; Allowed by allowlist
+  </int>
+  <int value="706" label="AUTO_TOPLEVEL_ALLOWED_ALLOWLIST">
+    Automatic toplevel navigation; Allowed by allowlist
+  </int>
+  <int value="707" label="FORM_SUBMIT_ALLOWED_ALLOWLIST">
+    Form submission; Allowed by allowlist
+  </int>
+  <int value="708" label="RELOAD_ALLOWED_ALLOWLIST">
+    Reload; Allowed by allowlist
+  </int>
+  <int value="709" label="KEYWORD_ALLOWED_ALLOWLIST">
+    Omnibox keyword; Allowed by allowlist
+  </int>
+  <int value="710" label="KEYWORD_GENERATED_ALLOWED_ALLOWLIST">
+    URL generated from Omnibox keyword; Allowed by allowlist
+  </int>
+  <int value="799" label="OTHER_ALLOWED_ALLOWLIST">
+    Other navigation; Allowed by allowlist
+  </int>
+</enum>
+
+<enum name="SupervisionStatusReportEvent">
+  <summary>Events that trigger status report for supervised accounts</summary>
+  <int value="0" label="APP_INSTALLED"/>
+  <int value="1" label="APP_UPDATED"/>
+  <int value="2" label="SESSION_ACTIVE"/>
+  <int value="3" label="SESSION_LOCKED"/>
+  <int value="4" label="DEVICE_ONLINE"/>
+  <int value="5" label="SUSPEND_DONE"/>
+  <int value="6" label="USAGE_TIME_LIMIT_WARNING"/>
+</enum>
+
+<enum name="TimeLimitPolicyType">
+<!-- App Time Limit does not cover blocked apps. -->
+
+  <int value="0" label="No Time Limit"/>
+  <int value="1" label="Override Time Limit"/>
+  <int value="2" label="Bed Time Limit"/>
+  <int value="3" label="Screen Time Limit"/>
+  <int value="4" label="Web Time Limit"/>
+  <int value="5" label="App Time Limit"/>
+</enum>
+
+</enums>
+
+</histogram-configuration>

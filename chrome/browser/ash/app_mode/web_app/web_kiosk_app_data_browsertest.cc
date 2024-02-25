@@ -47,13 +47,13 @@ const char kStartUrl[] = "https://example.com/start";
 
 base::FilePath GetFullPathToImage(bool valid) {
   base::FilePath test_data_dir;
-  CHECK(base::PathService::Get(base::DIR_SOURCE_ROOT, &test_data_dir));
+  CHECK(base::PathService::Get(base::DIR_SRC_TEST_DATA_ROOT, &test_data_dir));
   return test_data_dir.Append(valid ? kIconPath : kIconBadPath);
 }
 
 void PopulateIcon(web_app::WebAppInstallInfo* web_app_info,
                   const std::string& icon_url_str) {
-  IconsMap icons_map;
+  web_app::IconsMap icons_map;
   const GURL icon_url(icon_url_str);
   std::vector<SkBitmap> bmp = {web_app::CreateSquareIcon(32, SK_ColorWHITE)};
   icons_map.emplace(icon_url, bmp);
@@ -82,10 +82,10 @@ class WebKioskAppDataTest : public InProcessBrowserTest,
 
   void SetCached(bool installed, bool icon_valid = true) {
     const std::string app_key = std::string(kAppKey) + '.' + kAppId;
-    base::Value::Dict app_dict;
-
-    app_dict.SetByDottedPath(app_key + '.' + std::string(kTitleKey), kAppTitle);
-    app_dict.SetByDottedPath(app_key + '.' + std::string(kIconKey),
+    auto app_dict =
+        base::Value::Dict()
+            .SetByDottedPath(app_key + '.' + std::string(kTitleKey), kAppTitle)
+            .SetByDottedPath(app_key + '.' + std::string(kIconKey),
                              GetFullPathToImage(icon_valid).value());
     if (installed) {
       app_dict.SetByDottedPath(app_key + '.' + std::string(kLaunchUrlKey),

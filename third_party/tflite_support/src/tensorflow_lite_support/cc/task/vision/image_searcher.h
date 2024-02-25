@@ -19,10 +19,10 @@ limitations under the License.
 #include <memory>
 #include <vector>
 
-#include "absl/status/status.h"        // from @com_google_absl
+#include "absl/status/status.h"  // from @com_google_absl
 #include "absl/strings/string_view.h"  // from @com_google_absl
 #include "tensorflow/lite/core/api/op_resolver.h"
-#include "tensorflow/lite/core/shims/cc/kernels/register.h"
+#include "tensorflow/lite/kernels/register.h"
 #include "tensorflow_lite_support/cc/port/statusor.h"
 #include "tensorflow_lite_support/cc/task/processor/proto/search_result.pb.h"
 #include "tensorflow_lite_support/cc/task/processor/search_postprocessor.h"
@@ -72,7 +72,7 @@ class ImageSearcher
   CreateFromOptions(
       const ImageSearcherOptions& options,
       std::unique_ptr<tflite::OpResolver> resolver =
-          absl::make_unique<tflite_shims::ops::builtin::BuiltinOpResolver>());
+          absl::make_unique<tflite::ops::builtin::BuiltinOpResolver>());
 
   // Performs embedding extraction on the provided FrameBuffer, followed by
   // nearest-neighbor search in the index.
@@ -93,8 +93,7 @@ class ImageSearcher
   // region of interest. Note that the region of interest is not clamped, so
   // this method will fail if the region is out of bounds of the input image.
   tflite::support::StatusOr<tflite::task::processor::SearchResult> Search(
-      const FrameBuffer& frame_buffer,
-      const BoundingBox& roi);
+      const FrameBuffer& frame_buffer, const BoundingBox& roi);
 
   // Provides access to the opaque user info stored in the index file (if any),
   // in raw binary form. Returns an empty string if the index doesn't contain
@@ -109,8 +108,7 @@ class ImageSearcher
   // perform the nearest-neighbor search in the index.
   tflite::support::StatusOr<tflite::task::processor::SearchResult> Postprocess(
       const std::vector<const TfLiteTensor*>& output_tensors,
-      const FrameBuffer& frame_buffer,
-      const BoundingBox& roi) override;
+      const FrameBuffer& frame_buffer, const BoundingBox& roi) override;
 
   // Initializes the ImageSearcher.
   absl::Status Init(std::unique_ptr<ImageSearcherOptions> options);

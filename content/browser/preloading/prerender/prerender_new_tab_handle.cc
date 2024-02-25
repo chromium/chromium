@@ -6,6 +6,7 @@
 
 #include "base/check_op.h"
 #include "base/notreached.h"
+#include "content/browser/preloading/preloading_attempt_impl.h"
 #include "content/browser/preloading/prerender/prerender_host.h"
 #include "content/browser/preloading/prerender/prerender_host_registry.h"
 #include "content/browser/web_contents/web_contents_impl.h"
@@ -27,7 +28,7 @@ PrerenderNewTabHandle::PrerenderNewTabHandle(
 
   // Create a new WebContents for prerendering in a new tab.
   // TODO(crbug.com/1350676): Pass the same creation parameters as
-  // WebContentsImpl::CreateNewWindow(). Also, set SessionStorageNamespace.
+  // WebContentsImpl::CreateNewWindow().
   web_contents_create_params_.opener_render_process_id =
       initiator_render_frame_host->GetProcess()->GetID();
   web_contents_create_params_.opener_render_frame_id =
@@ -46,9 +47,16 @@ PrerenderNewTabHandle::PrerenderNewTabHandle(
   // The delegate is swapped with a proper one on activation.
   web_contents_delegate_ =
       GetContentClient()->browser()->CreatePrerenderWebContentsDelegate();
+  web_contents_delegate_->PrerenderWebContentsCreated(web_contents_.get());
   web_contents_->SetDelegate(web_contents_delegate_.get());
 
+  // The prerendering WebContents is not visible until activation but should
+  // have a valid initial empty primary page. This condition is important as
+  // WebContentsObservers attached to the prerendering WebContents may assume
+  // there is the primary page and access it during prerendering.
   CHECK_EQ(web_contents_->GetVisibility(), Visibility::HIDDEN);
+  CHECK(web_contents_->GetPrimaryMainFrame());
+  CHECK(web_contents_->GetPrimaryMainFrame()->is_initial_empty_document());
 }
 
 PrerenderNewTabHandle::~PrerenderNewTabHandle() {
@@ -56,10 +64,29 @@ PrerenderNewTabHandle::~PrerenderNewTabHandle() {
     web_contents_->SetDelegate(nullptr);
 }
 
-int PrerenderNewTabHandle::StartPrerendering() {
-  // TODO(crbug.com/1350676): Pass a valid PreloadingAttempt.
+int PrerenderNewTabHandle::StartPrerendering(
+    PreloadingPredictor preloading_predictor) {
+  CHECK(web_contents_);
+  CHECK(attributes_.initiator_web_contents);
+
+  // Create new PreloadingAttempt and pass all the values corresponding to
+  // this prerendering attempt.
+  auto* preloading_data =
+      PreloadingData::GetOrCreateForWebContents(web_contents_.get());
+  PreloadingURLMatchCallback same_url_matcher =
+      PreloadingData::GetSameURLMatcher(attributes_.prerendering_url);
+  ukm::SourceId triggered_primary_page_source_id =
+      attributes_.initiator_web_contents->GetPrimaryMainFrame()
+          ->GetPageUkmSourceId();
+  auto* preloading_attempt =
+      static_cast<PreloadingAttemptImpl*>(preloading_data->AddPreloadingAttempt(
+          preloading_predictor, PreloadingType::kPrerender,
+          std::move(same_url_matcher), triggered_primary_page_source_id));
+  CHECK(attributes_.eagerness.has_value());
+  preloading_attempt->SetSpeculationEagerness(attributes_.eagerness.value());
+
   prerender_host_id_ = GetPrerenderHostRegistry().CreateAndStartHost(
-      attributes_, /*preloading_attempt=*/nullptr);
+      attributes_, preloading_attempt);
   return prerender_host_id_;
 }
 
@@ -112,14 +139,6 @@ PrerenderNewTabHandle::TakeWebContentsIfAvailable(
   CHECK(web_contents_);
   web_contents_->SetDelegate(nullptr);
   return std::move(web_contents_);
-}
-
-PrerenderHost* PrerenderNewTabHandle::GetPrerenderHostForTesting() {
-  PrerenderHostRegistry& registry = GetPrerenderHostRegistry();
-  PrerenderHost* host = registry.FindNonReservedHostById(prerender_host_id_);
-  if (host)
-    return host;
-  return registry.FindReservedHostById(prerender_host_id_);
 }
 
 PrerenderHostRegistry& PrerenderNewTabHandle::GetPrerenderHostRegistry() {

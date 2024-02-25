@@ -35,6 +35,16 @@ namespace blink {
 AXMenuListPopup::AXMenuListPopup(AXObjectCacheImpl& ax_object_cache)
     : AXMockObject(ax_object_cache), active_index_(-1) {}
 
+void AXMenuListPopup::Init(AXObject* parent) {
+  owner_ = parent;
+  AXMockObject::Init(parent);
+}
+
+void AXMenuListPopup::Detach() {
+  owner_ = nullptr;
+  AXMockObject::Detach();
+}
+
 ax::mojom::blink::Role AXMenuListPopup::NativeRoleIgnoringAria() const {
   return ax::mojom::blink::Role::kMenuListPopup;
 }
@@ -60,6 +70,7 @@ bool AXMenuListPopup::ComputeAccessibilityIsIgnored(
     IgnoredReasons* ignored_reasons) const {
   // Base whether the menupopup is ignored on the containing <select>.
   if (parent_) {
+    parent_->UpdateCachedAttributeValuesIfNeeded();
     return parent_->ComputeAccessibilityIsIgnored(ignored_reasons);
   }
 
@@ -72,7 +83,16 @@ AXMenuListOption* AXMenuListPopup::MenuListOptionAXObject(
   DCHECK(IsA<HTMLOptionElement>(*element));
 
   AXObject* ax_object = AXObjectCache().GetOrCreate(element, this);
-  ax_object->SetParent(this);
+  CHECK(ax_object);
+  if (ChildrenNeedToUpdateCachedValues()) {
+    ax_object->InvalidateCachedValues();
+  }
+  // Update cached values preemptively, where we can control the
+  // notify_parent_of_ignored_changes parameter, so that we do not try to notify
+  // a parent of children changes (which would be redundant as we are already
+  // processing children changed on the parent).
+  ax_object->UpdateCachedAttributeValuesIfNeeded(
+      /*notify_parent_of_ignored_changes*/ false);
 
   return DynamicTo<AXMenuListOption>(ax_object);
 }
@@ -114,31 +134,21 @@ void AXMenuListPopup::AddChildren() {
     return;
 
   DCHECK(children_.empty());
-  DCHECK(children_dirty_);
-  children_dirty_ = false;
+  CHECK(NeedsToUpdateChildren());
 
-  if (active_index_ == -1)
+  if (active_index_ == -1) {
     active_index_ = GetSelectedIndex();
+  }
 
   for (auto* const option_element : html_select_element->GetOptionList()) {
-#if DCHECK_IS_ON()
-    AXObject* ax_preexisting = AXObjectCache().Get(option_element);
-    DCHECK(!ax_preexisting ||
-           !ax_preexisting->AccessibilityIsIncludedInTree() ||
-           !ax_preexisting->CachedParentObject() ||
-           ax_preexisting->CachedParentObject() == this)
-        << "\nChild = " << ax_preexisting->ToString(true, true)
-        << "\n  IsAXMenuListOption? " << IsA<AXMenuListOption>(ax_preexisting)
-        << "\nNew parent = " << ToString(true, true)
-        << "\nPreexisting parent = "
-        << ax_preexisting->CachedParentObject()->ToString(true, true);
-#endif
     AXMenuListOption* option = MenuListOptionAXObject(option_element);
+    CHECK_EQ(option->ParentObject(), this);
     if (option && option->AccessibilityIsIncludedInTree()) {
       DCHECK(!option->IsDetached());
       children_.push_back(option);
     }
   }
+  SetNeedsToUpdateChildren(false);
 }
 
 void AXMenuListPopup::DidUpdateActiveOption(int option_index,
@@ -206,6 +216,11 @@ AXObject* AXMenuListPopup::ActiveDescendant() {
   HTMLOptionElement* option = select->item(active_index_);
   DCHECK(option);
   return AXObjectCache().Get(option);
+}
+
+void AXMenuListPopup::Trace(Visitor* visitor) const {
+  visitor->Trace(owner_);
+  AXMockObject::Trace(visitor);
 }
 
 }  // namespace blink

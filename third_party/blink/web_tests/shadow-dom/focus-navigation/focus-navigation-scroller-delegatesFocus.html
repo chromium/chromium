@@ -5,49 +5,54 @@
 <script src='../resources/focus-utils.js'></script>
 
 <style>
-  div.scroll {
-    overflow: auto;
-    width: 20em;
-    height: 5em;
-    display: block;
-  }
+div.scroll {
+  overflow: auto;
+  width: 20em;
+  height: 5em;
+  display: block;
+}
+div.long {
+  width: 40em;
+  height: 40em;
+}
 </style>
 
-<!-- Note: Do not move this test to wpt as it is keyboard focusable scroller
+<!-- Note: Do not move this test to WPT, as "keyboard focusable scrollers"
      does not have standard behavior across browsers. -->
-<p>Tests for moving focus on scrollable element by pressing tab key.</p>
 <button id="start">START</button>
 
-<p>Where host has delegatesFocus false.</p>
 <div id="host-no-delegates-focus" class="scroll">
   <template shadowrootmode="open">
-    <div style="width: 40em"></div>
+    <p>Scroller shadow root has delegatesFocus false.</p>
     <button id="A">BUTTON A</button>
-    <div>Text</div>
+    <slot></slot>
   </template>
+  <div class=long></div>
 </div>
 
 <div id="host-no-delegates-focus-2" class="scroll">
   <template shadowrootmode="open">
-    <div style="width: 40em"></div>
-    <div>Text</div>
+    <p>Scroller shadow root has delegatesFocus false.</p>
+    <slot></slot>
   </template>
+  <div class=long></div>
 </div>
 
-<p>Where host has delegatesFocus true.</p>
 <div id="host-delegates-focus" class="scroll">
   <template shadowrootmode="open" shadowrootdelegatesfocus>
-    <div style="width: 40em"></div>
+    <p>Scroller shadow root has delegatesFocus true.</p>
     <button id="B">BUTTON B</button>
-    <div>Text</div>
+    <slot></slot>
   </template>
+  <div class=long></div>
 </div>
 
 <div id="host-delegates-focus-2" class="scroll">
   <template shadowrootmode="open" shadowrootdelegatesfocus>
-    <div style="width: 40em"></div>
-    <div>Text</div>
+    <p>Scroller shadow root has delegatesFocus true.</p>
+    <slot></slot>
   </template>
+  <div class=long></div>
 </div>
 
 <button id="end">END</button>
@@ -63,9 +68,7 @@
     'end'
   ];
 
-  await assert_focus_navigation_forward(elements);
-  elements.reverse();
-  await assert_focus_navigation_backward(elements);
+  assert_focus_navigation_bidirectional(elements);
 }, 'Should focus on scroller across shadow boundaries depending on delegatesFocus value.');
 
 </script>

@@ -4,6 +4,7 @@
 """Test apps for running tests using xcodebuild."""
 
 import os
+import platform
 import plistlib
 import struct
 import subprocess
@@ -72,16 +73,17 @@ def is_running_rosetta():
     macOS machine. False if it is running as an arm64 binary, or if it is
     running on an Intel machine.
   """
-  translated = subprocess.check_output(
-      ['sysctl', '-i', '-b', 'sysctl.proc_translated'])
-  # "sysctl -b" is expected to return a 4-byte integer response. 1 means the
-  # current process is running under Rosetta, 0 means it is not. On x86_64
-  # machines, this variable does not exist at all, so "-i" is used to return a
-  # 0-byte response instead of throwing an error.
-  if len(translated) != 4:
-    return False
-  return struct.unpack('i', translated)[0] > 0
-
+  if platform.system() == 'Darwin':
+    translated = subprocess.check_output(
+        ['sysctl', '-i', '-b', 'sysctl.proc_translated'])
+    # "sysctl -b" is expected to return a 4-byte integer response. 1 means the
+    # current process is running under Rosetta, 0 means it is not. On x86_64
+    # machines, this variable does not exist at all, so "-i" is used to return a
+    # 0-byte response instead of throwing an error.
+    if len(translated) != 4:
+      return False
+    return struct.unpack('i', translated)[0] > 0
+  return False
 
 class GTestsApp(object):
   """Gtests app to run.
@@ -156,14 +158,12 @@ class GTestsApp(object):
     if not os.path.exists(folder):
       os.makedirs(folder)
     xctestrun = os.path.join(folder, 'run_%d.xctestrun' % int(time.time()))
-    if not os.path.exists(xctestrun):
-      with open(xctestrun, 'w'):
-        pass
     # Creates a dict with data about egtests to run - fill all required fields:
     # egtests_module, egtest_app_path, egtests_xctest_path and
     # filtered tests if filter is specified.
     # Write data in temp xctest run file.
-    plistlib.writePlist(self.fill_xctestrun_node(), xctestrun)
+    with open(xctestrun, "wb") as f:
+      plistlib.dump(self.fill_xctestrun_node(), f)
     return xctestrun
 
   @staticmethod
@@ -247,7 +247,7 @@ class GTestsApp(object):
       })
     return xctestrun_data
 
-  def command(self, out_dir, destination, shards):
+  def command(self, out_dir, destination, clones):
     """Returns the command that launches tests using xcodebuild.
 
     Format of command:
@@ -258,7 +258,7 @@ class GTestsApp(object):
     Args:
       out_dir: (str) An output directory.
       destination: (str) A destination of running simulator.
-      shards: (int) A number of shards.
+      clones: (int) A number of simulator clones to run tests against.
 
     Returns:
       A list of strings forming the command to launch the test.
@@ -271,10 +271,10 @@ class GTestsApp(object):
         self.fill_xctest_run(out_dir), '-destination', destination,
         '-resultBundlePath', out_dir
     ])
-    if shards > 1:
+    if clones > 1:
       cmd.extend([
           '-parallel-testing-enabled', 'YES', '-parallel-testing-worker-count',
-          str(shards)
+          str(clones)
       ])
     return cmd
 
@@ -342,11 +342,16 @@ class EgtestsApp(GTestsApp):
       host_app_path: (str) full path to host app.
       inserted_libs: List of libraries to insert when running the test.
       repeat_count: (int) Number of times to run each test case.
+      record_video_option: (enum) If the arg is not none, then video
+        recording on tests will be enabled. Currently the enum only supports
+        recording on failed tests, but can be extended to support more
+        cases in the future if needed.
 
     Raises:
       AppNotFoundError: If the given app does not exist
     """
     super(EgtestsApp, self).__init__(egtests_app, **kwargs)
+    self.record_video_option = kwargs.get('record_video_option')
 
   def _xctest_path(self):
     """Gets xctest-file from egtests/PlugIns folder.
@@ -381,13 +386,13 @@ class EgtestsApp(GTestsApp):
         libs.append(os.path.join('@executable_path', child))
     return libs
 
-  def command(self, out_dir, destination, shards):
+  def command(self, out_dir, destination, clones):
     """Returns the command that launches tests for EG Tests.
 
     See details in parent class method docstring. This method appends the
     command line switch if test repeat is required.
     """
-    cmd = super(EgtestsApp, self).command(out_dir, destination, shards)
+    cmd = super(EgtestsApp, self).command(out_dir, destination, clones)
     if self.repeat_count > 1:
       if xcode_util.using_xcode_13_or_higher():
         cmd += ['-test-iterations', str(self.repeat_count)]
@@ -413,12 +418,13 @@ class EgtestsApp(GTestsApp):
       module_data['IsUITestBundle'] = True
       module_data['IsXCTRunnerHostedTestBundle'] = True
       module_data['SystemAttachmentLifetime'] = 'keepAlways'
-      # crbug.com/1469507: Xcode 15 now records video by default, but it
-      # seems to impact test performance. We prefer to use our own video
-      # recording feature since it supports xcode-parallelization, and
-      # physical devices. We could consider removing below if native
-      # video recording feature supports more use cases for us.
-      module_data['PreferredScreenCaptureFormat'] = 'screenshots'
+      if self.record_video_option is not None:
+        # Currently the enum only supports recording on failed tests,
+        # but can be extended to support more cases if needed,
+        # such as recording on successful tests.
+        module_data['PreferredScreenCaptureFormat'] = 'video'
+      else:
+        module_data['PreferredScreenCaptureFormat'] = 'screenshots'
       module_data['UITargetAppPath'] = '%s' % self.host_app_path
       module_data['UITargetAppBundleIdentifier'] = get_bundle_id(
           self.host_app_path)

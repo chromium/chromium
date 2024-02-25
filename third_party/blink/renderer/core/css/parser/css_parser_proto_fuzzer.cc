@@ -39,11 +39,8 @@ DEFINE_BINARY_PROTO_FUZZER(const Input& input) {
   blink::CSSParserMode mode = parser_mode_map[input.css_parser_mode()];
   blink::SecureContextMode secure_context_mode =
       secure_context_mode_map[input.secure_context_mode()];
-  const blink::CSSParserContext::SelectorProfile selector_profile =
-      input.is_live_profile() ? blink::CSSParserContext::kLiveProfile
-                              : blink::CSSParserContext::kSnapshotProfile;
   auto* context = blink::MakeGarbageCollected<blink::CSSParserContext>(
-      mode, secure_context_mode, selector_profile);
+      mode, secure_context_mode);
 
   auto* style_sheet =
       blink::MakeGarbageCollected<blink::StyleSheetContents>(context);

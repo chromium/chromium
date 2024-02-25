@@ -4,6 +4,7 @@
 """Module for working with BigQuery results."""
 
 import collections
+import datetime
 import os
 from collections import defaultdict
 from typing import List, Tuple
@@ -64,7 +65,9 @@ class ResultProcessor():
       {
         'test_suite': {
           'test_name': {
-            ('typ', 'tags', 'as', 'tuple'): [ (status, url), (status, url) ],
+            ('typ', 'tags', 'as', 'tuple'):
+            [ (status, url, date, is_slow, typ_expectations),
+              (status, url, date, is_slow, typ_expectations) ],
           },
         },
       }
@@ -76,7 +79,8 @@ class ResultProcessor():
     for r in results:
       build_url = 'http://ci.chromium.org/b/%s' % r.build_id
       aggregated_results[r.suite][r.test][r.tags].append(
-          ct.ResultTupleType(r.status, build_url))
+          ct.ResultTupleType(r.status, build_url, r.date, r.is_slow,
+                             r.typ_expectations))
     return aggregated_results
 
   def _ConvertJsonResultsToResultObjects(self, results: ct.QueryJsonType
@@ -94,13 +98,21 @@ class ResultProcessor():
       suite, test_name = self.GetTestSuiteAndNameFromResultDbName(r['name'])
       build_id = r['id'].split('-')[-1]
       typ_tags = tuple(tag_utils.TagUtils.RemoveIgnoredTags(r['typ_tags']))
+      status = None
+      date = None
+      is_slow = None
+      typ_expectations = None
       if 'status' in r:
-        object_results.append(
-            data_types.Result(suite, test_name, typ_tags, build_id,
-                              r['status']))
-      else:
-        object_results.append(
-            data_types.Result(suite, test_name, typ_tags, build_id))
+        status = r['status']
+      if 'date' in r:
+        date = datetime.date.fromisoformat(r['date'])
+      if 'is_slow' in r:
+        is_slow = r['is_slow']
+      if 'typ_expectations' in r:
+        typ_expectations = r['typ_expectations']
+      object_results.append(
+          data_types.Result(suite, test_name, typ_tags, build_id, status, date,
+                            is_slow, typ_expectations))
     return object_results
 
   def _FilterOutSuppressedResults(self, results: List[data_types.Result]

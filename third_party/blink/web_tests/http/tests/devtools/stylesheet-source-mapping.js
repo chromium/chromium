@@ -6,10 +6,11 @@ import {TestRunner} from 'test_runner';
 import {SourcesTestRunner} from 'sources_test_runner';
 
 import * as SDK from 'devtools/core/sdk/sdk.js';
+import * as Bindings from 'devtools/models/bindings/bindings.js';
+import * as Workspace from 'devtools/models/workspace/workspace.js';
 
 (async function() {
   TestRunner.addResult(`Tests SourceMap and StyleSheetMapping.\n`);
-  await TestRunner.loadLegacyModule('sources');
   await TestRunner.evaluateInPagePromise(`
       function addStyleSheet()
       {
@@ -35,7 +36,7 @@ import * as SDK from 'devtools/core/sdk/sdk.js';
 
   function locationsUpdated() {
     var header = cssModel.styleSheetHeaderForId(styleSheetId);
-    var uiLocation = Bindings.cssWorkspaceBinding.rawLocationToUILocation(new SDK.CSSModel.CSSLocation(header, 2, 3));
+    var uiLocation = Bindings.CSSWorkspaceBinding.CSSWorkspaceBinding.instance().rawLocationToUILocation(new SDK.CSSModel.CSSLocation(header, 2, 3));
     if (uiLocation.uiSourceCode.url().indexOf('.scss') === -1)
       return;
     finalMappedLocation = uiLocation.uiSourceCode.url() + ':' + uiLocation.lineNumber + ':' + uiLocation.columnNumber;
@@ -51,12 +52,12 @@ import * as SDK from 'devtools/core/sdk/sdk.js';
 
   function testAndDumpLocation(uiSourceCode, expectedLine, expectedColumn, line, column) {
     var header = cssModel.styleSheetHeaderForId(styleSheetId);
-    var uiLocation = Bindings.cssWorkspaceBinding.rawLocationToUILocation(new SDK.CSSModel.CSSLocation(header, line, column));
+    var uiLocation = Bindings.CSSWorkspaceBinding.CSSWorkspaceBinding.instance().rawLocationToUILocation(new SDK.CSSModel.CSSLocation(header, line, column));
     TestRunner.assertEquals(
         uiSourceCode, uiLocation.uiSourceCode,
         `Incorrect uiSourceCode, expected ${uiSourceCode.url()}, but got ${
             location.uiSourceCode ? location.uiSourceCode.url() : null}`);
-    var reverseRaw = Bindings.cssWorkspaceBinding.uiLocationToRawLocations(uiLocation)[0];
+    var reverseRaw = Bindings.CSSWorkspaceBinding.CSSWorkspaceBinding.instance().uiLocationToRawLocations(uiLocation)[0];
     TestRunner.addResult(
         `${line}:${column} ${uiLocation.lineNumber}:${uiLocation.columnNumber}` +
         `(expected: ${expectedLine}:${expectedColumn}) -> ${reverseRaw.lineNumber}:${reverseRaw.columnNumber}`);
@@ -64,8 +65,8 @@ import * as SDK from 'devtools/core/sdk/sdk.js';
 
   function scssUISourceCodeAdded(uiSourceCode) {
     TestRunner.addResult('Added SCSS uiSourceCode: ' + uiSourceCode.url());
-    var cssUISourceCode = Workspace.workspace.uiSourceCodeForURL(styleSheetURL);
-    var scssUISourceCode = Workspace.workspace.uiSourceCodeForURL(sourceURL);
+    var cssUISourceCode = Workspace.Workspace.WorkspaceImpl.instance().uiSourceCodeForURL(styleSheetURL);
+    var scssUISourceCode = Workspace.Workspace.WorkspaceImpl.instance().uiSourceCodeForURL(sourceURL);
 
     testAndDumpLocation(cssUISourceCode, 0, 3, 0, 3);
     testAndDumpLocation(scssUISourceCode, 1, 0, 1, 0);

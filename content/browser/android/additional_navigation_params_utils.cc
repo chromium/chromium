@@ -14,8 +14,8 @@ base::android::ScopedJavaLocalRef<jobject> CreateJavaAdditionalNavigationParams(
     JNIEnv* env,
     base::UnguessableToken initiator_frame_token,
     int initiator_process_id,
-    absl::optional<base::UnguessableToken> attribution_src_token,
-    absl::optional<network::AttributionReportingRuntimeFeatures>
+    std::optional<base::UnguessableToken> attribution_src_token,
+    std::optional<network::AttributionReportingRuntimeFeatures>
         runtime_features) {
   return Java_AdditionalNavigationParamsUtils_create(
       env,
@@ -28,12 +28,12 @@ base::android::ScopedJavaLocalRef<jobject> CreateJavaAdditionalNavigationParams(
       runtime_features ? runtime_features->ToEnumBitmask() : 0);
 }
 
-absl::optional<blink::LocalFrameToken>
+std::optional<blink::LocalFrameToken>
 GetInitiatorFrameTokenFromJavaAdditionalNavigationParams(
     JNIEnv* env,
     const base::android::JavaParamRef<jobject>& j_object) {
   if (!j_object) {
-    return absl::nullopt;
+    return std::nullopt;
   }
   auto optional_token =
       base::android::UnguessableTokenAndroid::FromJavaUnguessableToken(
@@ -42,7 +42,7 @@ GetInitiatorFrameTokenFromJavaAdditionalNavigationParams(
   if (optional_token) {
     return blink::LocalFrameToken(optional_token.value());
   }
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 int GetInitiatorProcessIdFromJavaAdditionalNavigationParams(
@@ -55,17 +55,17 @@ int GetInitiatorProcessIdFromJavaAdditionalNavigationParams(
                                                                     j_object);
 }
 
-absl::optional<blink::AttributionSrcToken>
+std::optional<blink::AttributionSrcToken>
 GetAttributionSrcTokenFromJavaAdditionalNavigationParams(
     JNIEnv* env,
     const base::android::JavaParamRef<jobject>& j_object) {
   if (!j_object) {
-    return absl::nullopt;
+    return std::nullopt;
   }
   auto java_token = Java_AdditionalNavigationParamsUtils_getAttributionSrcToken(
       env, j_object);
   if (!java_token) {
-    return absl::nullopt;
+    return std::nullopt;
   }
   auto optional_token =
       base::android::UnguessableTokenAndroid::FromJavaUnguessableToken(
@@ -73,7 +73,7 @@ GetAttributionSrcTokenFromJavaAdditionalNavigationParams(
   if (optional_token) {
     return blink::AttributionSrcToken(optional_token.value());
   }
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 network::AttributionReportingRuntimeFeatures

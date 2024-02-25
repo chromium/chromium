@@ -6,6 +6,7 @@
 
 #include <utility>
 
+#include "base/memory/raw_ptr.h"
 #include "base/test/bind.h"
 #include "ui/base/models/image_model.h"
 #include "ui/gfx/image/image_skia.h"
@@ -15,7 +16,7 @@
 #include "ui/views/view.h"
 #include "ui/views/view_tracker.h"
 
-#if !BUILDFLAG(IS_APPLE)
+#if defined(USE_AURA)
 #include "ui/aura/client/aura_constants.h"
 #endif
 
@@ -128,12 +129,13 @@ class TestWidgetDelegate : public WidgetDelegate {
     base::ranges::copy(accessible_panes_, std::back_inserter(*panes));
   }
 
-  void SetAccessiblePanes(const std::vector<View*>& panes) {
+  void SetAccessiblePanes(
+      const std::vector<raw_ptr<View, VectorExperimental>>& panes) {
     accessible_panes_ = panes;
   }
 
  private:
-  std::vector<View*> accessible_panes_;
+  std::vector<raw_ptr<View, VectorExperimental>> accessible_panes_;
 };
 
 TEST_F(WidgetDelegateTest, RotatePaneFocusFromView) {
@@ -168,7 +170,7 @@ TEST_F(WidgetDelegateTest, RotatePaneFocusFromView) {
   v4->SetFocusBehavior(View::FocusBehavior::ALWAYS);
   pane2->AddChildView(v4);
 
-  std::vector<views::View*> panes;
+  std::vector<raw_ptr<views::View, VectorExperimental>> panes;
   panes.push_back(pane1);
   panes.push_back(pane2);
   delegate.SetAccessiblePanes(panes);
@@ -231,7 +233,6 @@ TEST_F(WidgetDelegateTest, RotatePaneFocusFromView) {
   widget.Close();
 }
 
-#if !BUILDFLAG(IS_APPLE)
 TEST_F(WidgetDelegateTest, SetCanFullscreen) {
   TestWidgetDelegate delegate;
   Widget widget;
@@ -241,21 +242,96 @@ TEST_F(WidgetDelegateTest, SetCanFullscreen) {
   params.ownership = Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET;
   widget.Init(std::move(params));
 
-  auto GetWidgetResizeBehavior = [&]() {
-    return widget.GetNativeWindow()->GetProperty(
-        aura::client::kResizeBehaviorKey);
+  auto CheckCanFullscreen = [&](bool expected) {
+    EXPECT_EQ(delegate.CanFullscreen(), expected);
+
+#if defined(USE_AURA)
+    EXPECT_EQ((widget.GetNativeWindow()->GetProperty(
+                   aura::client::kResizeBehaviorKey) &
+               aura::client::kResizeBehaviorCanFullscreen) > 0,
+              expected);
+#endif
   };
 
-  EXPECT_FALSE(delegate.CanFullscreen());
-  EXPECT_FALSE(GetWidgetResizeBehavior() &
-               aura::client::kResizeBehaviorCanFullscreen);
-
+  CheckCanFullscreen(false);
   delegate.SetCanFullscreen(true);
-  EXPECT_TRUE(delegate.CanFullscreen());
-  EXPECT_TRUE(GetWidgetResizeBehavior() &
-              aura::client::kResizeBehaviorCanFullscreen);
+  CheckCanFullscreen(true);
 }
+
+TEST_F(WidgetDelegateTest, SetCanResize) {
+  TestWidgetDelegate delegate;
+  Widget widget;
+  Widget::InitParams params = CreateParams(Widget::InitParams::TYPE_WINDOW);
+  params.delegate = &delegate;
+  params.bounds = gfx::Rect(0, 0, 1024, 768);
+  params.ownership = Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET;
+  widget.Init(std::move(params));
+
+  auto CheckCanResize = [&](bool expected) {
+    EXPECT_EQ(delegate.CanResize(), expected);
+
+#if defined(USE_AURA)
+    EXPECT_EQ((widget.GetNativeWindow()->GetProperty(
+                   aura::client::kResizeBehaviorKey) &
+               aura::client::kResizeBehaviorCanResize) > 0,
+              expected);
 #endif
+  };
+
+  CheckCanResize(false);
+  delegate.SetCanResize(true);
+  CheckCanResize(true);
+}
+
+TEST_F(WidgetDelegateTest, CanMaximize) {
+  TestWidgetDelegate delegate;
+  Widget widget;
+  Widget::InitParams params = CreateParams(Widget::InitParams::TYPE_WINDOW);
+  params.delegate = &delegate;
+  params.bounds = gfx::Rect(0, 0, 1024, 768);
+  params.ownership = Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET;
+  widget.Init(std::move(params));
+
+  auto CheckCanMaximize = [&](bool expected) {
+    EXPECT_EQ(delegate.CanMaximize(), expected);
+
+#if defined(USE_AURA)
+    EXPECT_EQ((widget.GetNativeWindow()->GetProperty(
+                   aura::client::kResizeBehaviorKey) &
+               aura::client::kResizeBehaviorCanMaximize) > 0,
+              expected);
+#endif
+  };
+
+  CheckCanMaximize(false);
+  delegate.SetCanMaximize(true);
+  CheckCanMaximize(true);
+}
+
+TEST_F(WidgetDelegateTest, CanMinimize) {
+  TestWidgetDelegate delegate;
+  Widget widget;
+  Widget::InitParams params = CreateParams(Widget::InitParams::TYPE_WINDOW);
+  params.delegate = &delegate;
+  params.bounds = gfx::Rect(0, 0, 1024, 768);
+  params.ownership = Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET;
+  widget.Init(std::move(params));
+
+  auto CheckCanMinimize = [&](bool expected) {
+    EXPECT_EQ(delegate.CanMinimize(), expected);
+
+#if defined(USE_AURA)
+    EXPECT_EQ((widget.GetNativeWindow()->GetProperty(
+                   aura::client::kResizeBehaviorKey) &
+               aura::client::kResizeBehaviorCanMinimize) > 0,
+              expected);
+#endif
+  };
+
+  CheckCanMinimize(false);
+  delegate.SetCanMinimize(true);
+  CheckCanMinimize(true);
+}
 
 }  // namespace
 }  // namespace views

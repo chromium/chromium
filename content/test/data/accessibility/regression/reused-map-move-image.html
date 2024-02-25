@@ -1,7 +1,7 @@
 <!--
 @BLINK-ALLOW:focus*
 @AURALINUX-ALLOW:focus*
-@WAIT-FOR:done
+@EXECUTE-AND-WAIT-FOR:moveImage()
 -->
 <!-- Only the first image that uses a given map gets its area children.
 When the image moves, it may no longer be the first image. Therefore, the
@@ -24,11 +24,10 @@ first image that uses that map -->
 </div>
 
 <script>
-  document.addEventListener('DOMContentLoaded', () => {
-    setTimeout(() => {
-      // Move the second image (first image that uses #map) to the end.
-      container.appendChild(document.querySelector('img[usemap="#map"]'));
-      document.title = 'done';
-    }, 250);
-  });
+function moveImage() {
+    // Move the second image (first image that uses #map) to the end.
+    container.appendChild(document.querySelector('img[usemap="#map"]'));
+    document.getElementById('container').innerText = 'done';
+    return 'done';
+}
 </script>

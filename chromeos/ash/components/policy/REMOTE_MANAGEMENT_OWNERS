@@ -1,0 +1,14 @@
+# Prefer chromeos-commercial-remote-management+reviews@ to individual owners.
+# Sending code reviews to the alias allows the owners to distribute code
+# review loads.
+chromeos-commercial-remote-management+reviews@google.com
+
+artyomchen@google.com #{LAST_RESORT_SUGGESTION}
+asumaneev@google.com #{LAST_RESORT_SUGGESTION}
+crisguerrero@chromium.org #{LAST_RESORT_SUGGESTION}
+igorcov@chromium.org #{LAST_RESORT_SUGGESTION}
+janagrill@google.com #{LAST_RESORT_SUGGESTION}
+mpolzer@google.com #{LAST_RESORT_SUGGESTION}
+rbock@google.com #{LAST_RESORT_SUGGESTION}
+sergiyb@chromium.org #{LAST_RESORT_SUGGESTION}
+vsavu@google.com #{LAST_RESORT_SUGGESTION}

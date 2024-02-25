@@ -2,7 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "base/strings/string_piece.h"
+#include <string_view>
+
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
 #include "content/public/browser/network_service_instance.h"
@@ -24,6 +25,7 @@
 #include "net/test/test_doh_server.h"
 #include "services/network/network_service.h"
 #include "services/network/test/test_network_context.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
 
@@ -58,7 +60,7 @@ class DohHttpsProtocolUpgradeBrowserTest : public content::ContentBrowserTest {
 
     // Build a DoH config that points to our one DoH server and pass the config
     // into the network service.
-    absl::optional<net::DnsOverHttpsConfig> doh_config =
+    std::optional<net::DnsOverHttpsConfig> doh_config =
         net::DnsOverHttpsConfig::FromString(doh_server_->GetTemplate());
     ASSERT_TRUE(doh_config.has_value());
     SetTestDohConfig(net::SecureDnsMode::kSecure,
@@ -70,8 +72,8 @@ class DohHttpsProtocolUpgradeBrowserTest : public content::ContentBrowserTest {
 
   // Note that kHttpsOnlyDomain is covered by
   // net::EmbeddedTestServer::CERT_TEST_NAMES.
-  static constexpr base::StringPiece kHttpsOnlyDomain = "a.test";
-  static constexpr base::StringPiece kRegularDomain = "http-ok.example";
+  static constexpr std::string_view kHttpsOnlyDomain = "a.test";
+  static constexpr std::string_view kRegularDomain = "http-ok.example";
 
  private:
   base::test::ScopedFeatureList features_;
@@ -103,9 +105,8 @@ IN_PROC_BROWSER_TEST_F(DohHttpsProtocolUpgradeBrowserTest,
   // A, AAAA, and HTTPS for the initial resolution, and then again after the
   // protocol upgrade. Note that the AAAA query may be disabled based on IPv6
   // connectivity.
-  const int num_queries_served = doh_server_->QueriesServed();
-  EXPECT_TRUE(num_queries_served == 4 || num_queries_served == 6)
-      << "Unexpected number of queries served: " << num_queries_served;
+  EXPECT_THAT(doh_server_->QueriesServedForSubdomains(kHttpsOnlyDomain),
+              testing::AnyOf(4, 6));
 }
 
 IN_PROC_BROWSER_TEST_F(DohHttpsProtocolUpgradeBrowserTest, NoProtocolUpgrade) {
@@ -123,7 +124,6 @@ IN_PROC_BROWSER_TEST_F(DohHttpsProtocolUpgradeBrowserTest, NoProtocolUpgrade) {
   // A, AAAA, and HTTPS for the host resolution. These queries will not be
   // repeated because we do not expect a protocol upgrade. Note that the AAAA
   // query may be disabled based on IPv6 connectivity.
-  const int num_queries_served = doh_server_->QueriesServed();
-  EXPECT_TRUE(num_queries_served == 2 || num_queries_served == 3)
-      << "Unexpected number of queries served: " << num_queries_served;
+  EXPECT_THAT(doh_server_->QueriesServedForSubdomains(kRegularDomain),
+              testing::AnyOf(2, 3));
 }

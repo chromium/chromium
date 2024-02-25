@@ -21,7 +21,7 @@
   host3.querySelector("[slot=a]").style.position = "static";
 
   var root4 = host4.attachShadow({mode:"open"});
-  root4.innerHTML = '<div id="a">A</div><slot></slot>';
+  root4.innerHTML = '<div style="unicode-bidi: normal" id="a">A</div><slot></slot>';
   host4.offsetTop; // Force layout tree generation.
   root4.querySelector("#a").style.display = "inline";
 </script>

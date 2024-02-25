@@ -5,6 +5,8 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_PROFILES_PROFILE_PICKER_DICE_SIGN_IN_PROVIDER_H_
 #define CHROME_BROWSER_UI_VIEWS_PROFILES_PROFILE_PICKER_DICE_SIGN_IN_PROVIDER_H_
 
+#include <optional>
+
 #include "base/files/file_path.h"
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
@@ -14,9 +16,8 @@
 #include "chrome/browser/ui/views/profiles/profile_picker_web_contents_host.h"
 #include "components/signin/public/base/signin_metrics.h"
 #include "content/public/browser/web_contents_delegate.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
-struct CoreAccountId;
+struct CoreAccountInfo;
 class DiceTabHelper;
 class ProfilePickerWebContentsHost;
 
@@ -32,7 +33,7 @@ class ProfilePickerDiceSignInProvider
       public ChromeWebModalDialogManagerDelegate {
  public:
   // The callback returns the newly created profile and a valid WebContents
-  // instance within this profile. If the account ID is empty, sign-in is not
+  // instance within this profile. If the account info is empty, sign-in is not
   // completed there yet. Otherwise, the newly created profile has the account
   // in its `IdentityManager`, but the account may not be set as primary yet.
   // If the flow gets canceled by closing the window, the callback never gets
@@ -41,7 +42,7 @@ class ProfilePickerDiceSignInProvider
   // casing is not needed here.
   using SignedInCallback =
       base::OnceCallback<void(Profile*,
-                              const CoreAccountId&,
+                              const CoreAccountInfo&,
                               std::unique_ptr<content::WebContents>)>;
 
   // Creates a new provider that will render the Gaia sign-in flow in `host` for
@@ -51,7 +52,7 @@ class ProfilePickerDiceSignInProvider
   explicit ProfilePickerDiceSignInProvider(
       ProfilePickerWebContentsHost* host,
       signin_metrics::AccessPoint signin_access_point,
-      absl::optional<base::FilePath> profile_path = absl::nullopt);
+      base::FilePath profile_path = base::FilePath());
   ~ProfilePickerDiceSignInProvider() override;
   ProfilePickerDiceSignInProvider(const ProfilePickerDiceSignInProvider&) =
       delete;
@@ -105,17 +106,16 @@ class ProfilePickerDiceSignInProvider
       base::OnceCallback<void(bool)> switch_finished_callback,
       Profile* new_profile);
 
-  // `account_id` is empty is empty if the signin could not complete and must
-  // continue in a browser (e.g. for SAML).
-  void FinishFlow(const CoreAccountId& account_id);
+  // `account_info` is empty if the signin could not complete and must continue
+  // in a browser (e.g. for SAML).
+  void FinishFlow(const CoreAccountInfo& account_info);
 
   // Callback for the `DiceTabHelper`. Calls `FinishFlow()`.
   void FinishFlowInPicker(Profile* profile,
                           signin_metrics::AccessPoint access_point,
                           signin_metrics::PromoAction promo_action,
-                          signin_metrics::Reason reason,
                           content::WebContents* contents,
-                          const CoreAccountId& account_id);
+                          const CoreAccountInfo& account_info);
 
   void OnSignInContentsFreedUp();
 
@@ -139,9 +139,9 @@ class ProfilePickerDiceSignInProvider
 
   const signin_metrics::AccessPoint signin_access_point_;
 
-  // The path to the profile in which to perform the sign-in. If absent, a new
+  // The path to the profile in which to perform the sign-in. If empty, a new
   // profile will be created.
-  const absl::optional<base::FilePath> profile_path_;
+  const base::FilePath profile_path_;
   // Sign-in callback, valid until it's called.
   SignedInCallback callback_;
 

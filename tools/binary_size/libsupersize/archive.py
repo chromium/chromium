@@ -538,6 +538,10 @@ def _AddContainerArguments(parser, is_top_args=False):
                      help='Custom path to the root source directory.')
   group.add_argument('--output-directory',
                      help='Path to the root build directory.')
+  group.add_argument('--symbols-dir',
+                     default='lib.unstripped',
+                     help='Relative path containing unstripped .so files '
+                     '(for symbols) w.r.t. the output directory.')
   group.add_argument('--no-string-literals',
                      action='store_true',
                      help=('Do not create symbols for string literals '
@@ -547,11 +551,6 @@ def _AddContainerArguments(parser, is_top_args=False):
     group.add_argument('--no-output-directory',
                        action='store_true',
                        help='Do not auto-detect --output-directory.')
-    group.add_argument('--include-padding',
-                       action='store_true',
-                       help='Include a padding field for each symbol, '
-                       'instead of rederiving from consecutive symbols '
-                       'on file load.')
     group.add_argument('--check-data-quality',
                        action='store_true',
                        help='Perform sanity checks to ensure there is no '
@@ -684,8 +683,8 @@ def _DeduceMapPath(elf_path):
   return map_path
 
 
-def _CreateNativeSpecs(*, tentative_output_dir, apk_infolist, elf_path,
-                       map_path, abi_filters, auto_abi_filters,
+def _CreateNativeSpecs(*, tentative_output_dir, symbols_dir, apk_infolist,
+                       elf_path, map_path, abi_filters, auto_abi_filters,
                        track_string_literals, ignore_linker_map, json_config,
                        on_config_error):
   if ignore_linker_map:
@@ -737,7 +736,7 @@ def _CreateNativeSpecs(*, tentative_output_dir, apk_infolist, elf_path,
         # 'crazy.' when there is no longer interest in size comparisons for
         # these pre-N APKs.
         cur_elf_path = os.path.join(
-            tentative_output_dir, 'lib.unstripped',
+            tentative_output_dir, symbols_dir,
             posixpath.basename(apk_so_path.replace('crazy.', '')))
         if os.path.exists(cur_elf_path):
           logging.debug('Detected elf_path=%s', cur_elf_path)
@@ -910,6 +909,7 @@ def _CreateContainerSpecs(apk_file_manager,
     auto_abi_filters = not abi_filters and split_name == 'base'
     abi_filters, native_specs = _CreateNativeSpecs(
         tentative_output_dir=top_args.output_directory,
+        symbols_dir=sub_args.symbols_dir,
         apk_infolist=apk_infolist,
         elf_path=sub_args.elf_file or aux_elf_file,
         map_path=sub_args.map_file or aux_map_file,
@@ -1168,9 +1168,7 @@ def Run(top_args, on_config_error):
                  '\n  '.join(describe.DescribeDict(container.metadata)))
 
   logging.info('Saving result to %s', top_args.size_file)
-  file_format.SaveSizeInfo(size_info,
-                           top_args.size_file,
-                           include_padding=top_args.include_padding)
+  file_format.SaveSizeInfo(size_info, top_args.size_file)
   size_in_mb = os.path.getsize(top_args.size_file) / 1024.0 / 1024.0
   logging.info('Done. File size is %.2fMiB.', size_in_mb)
 

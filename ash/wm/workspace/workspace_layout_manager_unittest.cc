@@ -4,10 +4,11 @@
 
 #include "ash/wm/workspace/workspace_layout_manager.h"
 
+#include <optional>
 #include <string>
 #include <utility>
 
-#include "ash/accessibility/accessibility_controller_impl.h"
+#include "ash/accessibility/accessibility_controller.h"
 #include "ash/accessibility/test_accessibility_controller_client.h"
 #include "ash/app_list/test/app_list_test_helper.h"
 #include "ash/constants/app_types.h"
@@ -34,8 +35,9 @@
 #include "ash/shelf/shelf_layout_manager.h"
 #include "ash/shell.h"
 #include "ash/shell_observer.h"
-#include "ash/system/message_center/ash_message_popup_collection.h"
-#include "ash/system/message_center/message_popup_animation_waiter.h"
+#include "ash/system/notification_center/ash_message_popup_collection.h"
+#include "ash/system/notification_center/message_popup_animation_waiter.h"
+#include "ash/system/notification_center/notification_center_tray.h"
 #include "ash/system/unified/unified_system_tray.h"
 #include "ash/test/ash_test_base.h"
 #include "ash/test/test_window_builder.h"
@@ -63,7 +65,6 @@
 #include "base/run_loop.h"
 #include "base/test/scoped_feature_list.h"
 #include "chromeos/ash/components/audio/sounds.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/aura/client/focus_client.h"
 #include "ui/aura/client/window_parenting_client.h"
@@ -150,6 +151,11 @@ display::ManagedDisplayInfo CreateDisplayInfo(int64_t id, gfx::Rect bounds) {
   display::ManagedDisplayInfo info = display::CreateDisplayInfo(id, bounds);
   info.SetRotation(display::Display::ROTATE_0,
                    display::Display::RotationSource::ACTIVE);
+  // Each display should have at least one native mode.
+  display::ManagedDisplayMode mode(bounds.size(), /*refresh_rate=*/60.f,
+                                   /*is_interlaced=*/true,
+                                   /*native=*/true);
+  info.SetManagedDisplayModes({mode});
   return info;
 }
 
@@ -170,8 +176,7 @@ class ScopedStickyKeyboardEnabler {
   }
 
  private:
-  raw_ptr<AccessibilityControllerImpl, ExperimentalAsh>
-      accessibility_controller_;
+  raw_ptr<AccessibilityController> accessibility_controller_;
   const bool enabled_;
 };
 
@@ -259,7 +264,7 @@ TEST_F(WorkspaceLayoutManagerTest, KeepRestoredWindowInDisplay) {
   EXPECT_GE(window->bounds().y(), 0);
 
   // Minimized -> Normal transition.
-  window->SetBounds(gfx::Rect(-100, -100, 130, 40));
+  window_state->SetBoundsDirectForTesting(gfx::Rect(-100, -100, 130, 40));
   window_state->Minimize();
   EXPECT_FALSE(
       Shell::GetPrimaryRootWindow()->bounds().Intersects(window->bounds()));
@@ -406,7 +411,7 @@ class DontClobberRestoreBoundsWindowObserver : public aura::WindowObserver {
   }
 
  private:
-  raw_ptr<aura::Window, ExperimentalAsh> window_;
+  raw_ptr<aura::Window> window_;
 };
 
 // Creates a window, maximized the window and from within the maximized
@@ -490,7 +495,7 @@ TEST_F(WorkspaceLayoutManagerTest, WindowShouldBeOnScreenWhenAdded) {
   parent->RemoveChild(out_window.get());
   out_window->SetBounds(gfx::Rect(-200, -200, 200, 200));
   // UserHasChangedWindowPositionOrSize flag shouldn't turn off this behavior.
-  WindowState::Get(window.get())->set_bounds_changed_by_user(true);
+  WindowState::Get(window.get())->SetBoundsChangedByUser(true);
   parent->AddChild(out_window.get());
   EXPECT_GT(bounds.width(), out_window->bounds().width() * 0.29);
   EXPECT_GT(bounds.height(), out_window->bounds().height() * 0.29);
@@ -1051,7 +1056,7 @@ TEST_F(WorkspaceLayoutManagerTest,
   message_center::MessageCenter::Get()->AddNotification(
       std::move(notification));
   MessagePopupAnimationWaiter(
-      GetPrimaryUnifiedSystemTray()->GetMessagePopupCollection())
+      GetPrimaryNotificationCenterTray()->popup_collection())
       .Wait();
 
   // PiP window has moved due to the popup notification window.
@@ -1061,11 +1066,46 @@ TEST_F(WorkspaceLayoutManagerTest,
   message_center::MessageCenter::Get()->RemoveNotification(notification_id,
                                                            /*by_user=*/true);
   MessagePopupAnimationWaiter(
-      GetPrimaryUnifiedSystemTray()->GetMessagePopupCollection())
+      GetPrimaryNotificationCenterTray()->popup_collection())
       .Wait();
 
   // Now, the PiP window has returned to its original position.
   EXPECT_EQ(old_bounds, pip_window->GetBoundsInScreen());
+}
+
+// Tests no crash after keyboard bounds change. Regression test for
+// b/325673844.
+TEST_F(WorkspaceLayoutManagerTest,
+       NoCrashAfterKeyboardDisplacingBoundsChanged) {
+  std::unique_ptr<aura::Window> window(CreateTestWindow());
+  WindowState* window_state = WindowState::Get(window.get());
+  const WindowSnapWMEvent snap_left(WM_EVENT_SNAP_PRIMARY);
+  window_state->OnWMEvent(&snap_left);
+  const gfx::Rect bounds_without_vk(window->GetBoundsInScreen());
+
+  // Show the virtual keyboard. Test the bounds are updated.
+  SetVirtualKeyboardEnabled(true);
+  auto* keyboard_controller = keyboard::KeyboardUIController::Get();
+  keyboard_controller->ShowKeyboard(true);
+  EXPECT_TRUE(window_state->IsSnapped());
+  gfx::Rect bounds_with_vk(GetPrimaryDisplay().work_area());
+  bounds_with_vk.set_width(bounds_with_vk.width() / 2);
+  EXPECT_EQ(bounds_with_vk, window->GetBoundsInScreen());
+  EXPECT_NE(bounds_without_vk, bounds_with_vk);
+
+  // Hide the virtual keyboard. Test the bounds are restored to the initial
+  // snapped bounds.
+  keyboard_controller->HideKeyboardByUser();
+  EXPECT_TRUE(window_state->IsSnapped());
+  EXPECT_EQ(bounds_without_vk, window->GetBoundsInScreen());
+
+  // Test that click on the caption button does not crash.
+  const gfx::Rect window_bounds(window->GetBoundsInScreen());
+  const gfx::Point drag_point(window_bounds.CenterPoint().x(),
+                              window_bounds.y() + 10);
+  auto* event_generator = GetEventGenerator();
+  event_generator->set_current_screen_location(drag_point);
+  event_generator->ClickLeftButton();
 }
 
 // Following "Solo" tests were originally written for BaseLayoutManager.
@@ -1199,7 +1239,7 @@ class FocusDuringUnminimizeWindowObserver : public aura::WindowObserver {
   }
 
  private:
-  raw_ptr<aura::Window, ExperimentalAsh> window_;
+  raw_ptr<aura::Window> window_;
   ui::WindowShowState show_state_;
 };
 
@@ -1586,7 +1626,7 @@ class WorkspaceLayoutManagerBackdropTest : public AshTestBase {
   // Turn tablet mode on / off.
   void SetTabletModeEnabled(bool enabled) {
     Shell::Get()->tablet_mode_controller()->SetEnabledForTest(enabled);
-    ASSERT_EQ(enabled, Shell::Get()->tablet_mode_controller()->InTabletMode());
+    ASSERT_EQ(enabled, display::Screen::GetScreen()->InTabletMode());
   }
 
   aura::Window* CreateTestWindowInParent(aura::Window* root_window) {
@@ -1594,7 +1634,8 @@ class WorkspaceLayoutManagerBackdropTest : public AshTestBase {
     window->SetProperty(aura::client::kShowStateKey, ui::SHOW_STATE_NORMAL);
     window->SetType(aura::client::WINDOW_TYPE_NORMAL);
     window->Init(ui::LAYER_TEXTURED);
-    aura::client::ParentWindowWithContext(window, root_window, gfx::Rect());
+    aura::client::ParentWindowWithContext(window, root_window, gfx::Rect(),
+                                          display::kInvalidDisplayId);
     return window;
   }
 
@@ -1634,10 +1675,10 @@ class WorkspaceLayoutManagerBackdropTest : public AshTestBase {
 
  private:
   // The default container.
-  raw_ptr<aura::Window, DanglingUntriaged | ExperimentalAsh> default_container_;
+  raw_ptr<aura::Window, DanglingUntriaged> default_container_;
 };
 
-constexpr absl::optional<Sound> kNoSoundKey = absl::nullopt;
+constexpr std::optional<Sound> kNoSoundKey = std::nullopt;
 
 }  // namespace
 
@@ -1970,7 +2011,7 @@ TEST_F(WorkspaceLayoutManagerBackdropTest,
 TEST_F(WorkspaceLayoutManagerBackdropTest, SpokenFeedbackFullscreenBackground) {
   WorkspaceController* wc = ShellTestApi().workspace_controller();
   WorkspaceControllerTestApi test_helper(wc);
-  AccessibilityControllerImpl* controller =
+  AccessibilityController* controller =
       Shell::Get()->accessibility_controller();
   TestAccessibilityControllerClient client;
 
@@ -2082,8 +2123,7 @@ class WorkspaceLayoutManagerKeyboardTest : public AshTestBase {
  private:
   gfx::Insets restore_work_area_insets_;
   gfx::Rect keyboard_bounds_;
-  raw_ptr<WorkspaceLayoutManager, DanglingUntriaged | ExperimentalAsh>
-      layout_manager_;
+  raw_ptr<WorkspaceLayoutManager, DanglingUntriaged> layout_manager_;
 };
 
 // Tests that when a child window gains focus the top level window containing it
@@ -2248,7 +2288,7 @@ TEST_F(WorkspaceLayoutManagerBackdropTest, BackdropForSplitViewTest) {
   // Test that backdrop window is visible and is the second child in the
   // container. Its bounds should be the same as the container bounds.
   EXPECT_EQ(2U, default_container()->children().size());
-  for (auto* child : default_container()->children()) {
+  for (aura::Window* child : default_container()->children()) {
     EXPECT_TRUE(child->IsVisible());
   }
 
@@ -2266,17 +2306,15 @@ TEST_F(WorkspaceLayoutManagerBackdropTest, BackdropForSplitViewTest) {
   // Snap the window to left. Test that the backdrop window is still visible
   // and is the third child (split view divider as one of the children) in the
   // container. Its bounds should be the same as the snapped window's bounds.
-  split_view_controller()->SnapWindow(
-      window1.get(), SplitViewController::SnapPosition::kPrimary);
+  split_view_controller()->SnapWindow(window1.get(), SnapPosition::kPrimary);
 
-  EXPECT_TRUE(Shell::Get()->overview_controller()->InOverviewSession());
+  EXPECT_TRUE(OverviewController::Get()->InOverviewSession());
   // One of the windows in the default container is the overview
   // no_windows_widget window. Exclude it.
   aura::Window::Windows children = default_container()->children();
   children.erase(std::remove_if(children.begin(), children.end(),
                                 [](aura::Window* window) {
-                                  return window == Shell::Get()
-                                                       ->overview_controller()
+                                  return window == OverviewController::Get()
                                                        ->overview_session()
                                                        ->grid_list()[0]
                                                        ->no_windows_widget()
@@ -2296,11 +2334,15 @@ TEST_F(WorkspaceLayoutManagerBackdropTest, BackdropForSplitViewTest) {
   // visible but is now the fourth window in the container. Its bounds should
   // still be the same as the container bounds.
   std::unique_ptr<aura::Window> window2(CreateWindow(bounds));
-  split_view_controller()->SnapWindow(
-      window2.get(), SplitViewController::SnapPosition::kSecondary);
+  split_view_controller()->SnapWindow(window2.get(), SnapPosition::kSecondary);
+
+  // The split view divider is also a child of the default desk container. Spin
+  // the run loop here so that the post task to close the divider widget when
+  // snapping two windows gets run.
+  base::RunLoop().RunUntilIdle();
 
   EXPECT_EQ(4U, default_container()->children().size());
-  for (auto* child : default_container()->children()) {
+  for (aura::Window* child : default_container()->children()) {
     EXPECT_TRUE(child->IsVisible());
   }
 
@@ -2321,134 +2363,6 @@ TEST_F(WorkspaceLayoutManagerBackdropTest, BackdropForSplitViewTest) {
   EXPECT_EQ(window2.get(), default_container()->children()[2]);
   EXPECT_EQ(default_container()->bounds(),
             default_container()->children()[0]->bounds());
-}
-
-class WorkspaceLayoutManagerSystemUiAreaTest : public AshTestBase {
- public:
-  WorkspaceLayoutManagerSystemUiAreaTest() = default;
-
-  WorkspaceLayoutManagerSystemUiAreaTest(
-      const WorkspaceLayoutManagerSystemUiAreaTest&) = delete;
-  WorkspaceLayoutManagerSystemUiAreaTest& operator=(
-      const WorkspaceLayoutManagerSystemUiAreaTest&) = delete;
-
-  ~WorkspaceLayoutManagerSystemUiAreaTest() override = default;
-
-  // AshTestBase:
-  void SetUp() override {
-    AshTestBase::SetUp();
-    SetVirtualKeyboardEnabled(true);
-
-    window_ = CreateTestWindowInShellWithBounds(gfx::Rect(0, 0, 100, 100));
-    WindowState* window_state = WindowState::Get(window_);
-    auto test_state =
-        std::make_unique<FakeWindowState>(WindowStateType::kNormal);
-    test_state_ = test_state.get();
-    window_state->SetStateObject(std::move(test_state));
-  }
-
-  void TearDown() override {
-    SetVirtualKeyboardEnabled(false);
-    AshTestBase::TearDown();
-  }
-
- protected:
-  aura::Window* window() { return window_; }
-  FakeWindowState* test_state() { return test_state_; }
-
- private:
-  raw_ptr<aura::Window, DanglingUntriaged | ExperimentalAsh> window_ = nullptr;
-  raw_ptr<FakeWindowState, DanglingUntriaged | ExperimentalAsh> test_state_ =
-      nullptr;
-};
-
-// Expect that showing and hiding the unified system tray triggers a system ui
-// area change event.
-TEST_F(WorkspaceLayoutManagerSystemUiAreaTest,
-       SystemUiAreaChangeOnUnifiedSystemTrayVisibilityChange) {
-  auto* unified_system_tray = GetPrimaryUnifiedSystemTray();
-  EXPECT_FALSE(unified_system_tray->IsBubbleShown());
-  EXPECT_EQ(0, test_state()->num_system_ui_area_changes());
-
-  unified_system_tray->ShowBubble();
-  EXPECT_GE(test_state()->num_system_ui_area_changes(), 1);
-  test_state()->reset_num_system_ui_area_changes();
-
-  unified_system_tray->CloseBubble();
-  EXPECT_GE(test_state()->num_system_ui_area_changes(), 1);
-}
-
-// Expect that showing the clamshell bubble launcher triggers as system UI area
-// change event.
-TEST_F(WorkspaceLayoutManagerSystemUiAreaTest,
-       SystemUiAreaChangeOnClamshellLauncherVisibilityChange) {
-  ASSERT_FALSE(Shell::Get()->IsInTabletMode());
-
-  AppListController* app_list_controller = AppListController::Get();
-  app_list_controller->ShowAppList(AppListShowSource::kSearchKey);
-  EXPECT_GE(test_state()->num_system_ui_area_changes(), 1);
-  test_state()->reset_num_system_ui_area_changes();
-
-  app_list_controller->DismissAppList();
-  EXPECT_GE(test_state()->num_system_ui_area_changes(), 1);
-}
-
-// Expect that showing and hiding the keyboard triggers a system ui area
-// change event.
-TEST_F(WorkspaceLayoutManagerSystemUiAreaTest,
-       SystemUiAreaChangeOnVirtualKeyboardVisibilityChange) {
-  auto* keyboard_controller = keyboard::KeyboardUIController::Get();
-  EXPECT_EQ(0, test_state()->num_system_ui_area_changes());
-
-  keyboard_controller->ShowKeyboard(/*lock=*/true);
-  ASSERT_TRUE(keyboard::WaitUntilShown());
-  EXPECT_GE(test_state()->num_system_ui_area_changes(), 1);
-  test_state()->reset_num_system_ui_area_changes();
-
-  keyboard_controller->HideKeyboardExplicitlyBySystem();
-  EXPECT_GE(test_state()->num_system_ui_area_changes(), 1);
-}
-
-// Expect that changing the keyboard bounds triggers a system ui area
-// change event.
-TEST_F(WorkspaceLayoutManagerSystemUiAreaTest,
-       SystemUiAreaChangeOnVirtualKeyboardSizeChange) {
-  auto* keyboard_controller = keyboard::KeyboardUIController::Get();
-  EXPECT_EQ(0, test_state()->num_system_ui_area_changes());
-
-  keyboard_controller->ShowKeyboard(/*lock=*/true);
-  ASSERT_TRUE(keyboard::WaitUntilShown());
-
-  keyboard_controller->SetKeyboardWindowBounds(gfx::Rect(0, 0, 100, 50));
-  EXPECT_GE(test_state()->num_system_ui_area_changes(), 1);
-  test_state()->reset_num_system_ui_area_changes();
-
-  keyboard_controller->SetKeyboardWindowBounds(gfx::Rect(0, 0, 100, 100));
-  EXPECT_GE(test_state()->num_system_ui_area_changes(), 1);
-}
-
-// Expect that changing the keyboard container type triggers a system ui area
-// change event.
-TEST_F(WorkspaceLayoutManagerSystemUiAreaTest,
-       SystemUiAreaChangeOnVirtualKeyboardContainerTypeChange) {
-  auto* keyboard_controller = keyboard::KeyboardUIController::Get();
-  EXPECT_EQ(0, test_state()->num_system_ui_area_changes());
-
-  keyboard_controller->ShowKeyboard(/*lock=*/true);
-  ASSERT_TRUE(keyboard::WaitUntilShown());
-  EXPECT_GE(test_state()->num_system_ui_area_changes(), 1);
-  test_state()->reset_num_system_ui_area_changes();
-
-  keyboard_controller->SetContainerType(keyboard::ContainerType::kFloating,
-                                        gfx::Rect(0, 0, 400, 200),
-                                        base::DoNothing());
-  EXPECT_GE(test_state()->num_system_ui_area_changes(), 1);
-  test_state()->reset_num_system_ui_area_changes();
-
-  keyboard_controller->SetContainerType(keyboard::ContainerType::kFullWidth,
-                                        gfx::Rect(0, 0, 400, 200),
-                                        base::DoNothing());
-  EXPECT_GE(test_state()->num_system_ui_area_changes(), 1);
 }
 
 TEST_F(WorkspaceLayoutManagerBackdropTest,

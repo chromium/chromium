@@ -37,7 +37,7 @@ void VideoFrameMetadata::MergeMetadataFrom(
   MERGE_OPTIONAL_FIELD(capture_update_rect, metadata_source);
   MERGE_OPTIONAL_FIELD(source_size, metadata_source);
   MERGE_OPTIONAL_FIELD(region_capture_rect, metadata_source);
-  MERGE_VALUE_FIELD(crop_version, metadata_source);
+  MERGE_VALUE_FIELD(sub_capture_target_version, metadata_source);
   MERGE_OPTIONAL_FIELD(copy_required, metadata_source);
   MERGE_VALUE_FIELD(end_of_stream, metadata_source);
   MERGE_OPTIONAL_FIELD(frame_duration, metadata_source);
@@ -51,6 +51,7 @@ void VideoFrameMetadata::MergeMetadataFrom(
   MERGE_VALUE_FIELD(dcomp_surface, metadata_source);
   MERGE_VALUE_FIELD(protected_video, metadata_source);
   MERGE_VALUE_FIELD(hw_protected, metadata_source);
+  MERGE_VALUE_FIELD(needs_detiling, metadata_source);
   MERGE_VALUE_FIELD(is_webgpu_compatible, metadata_source);
 #if BUILDFLAG(USE_VAAPI)
   MERGE_OPTIONAL_FIELD(hw_va_protected_session_id, metadata_source);
@@ -70,6 +71,7 @@ void VideoFrameMetadata::MergeMetadataFrom(
   MERGE_OPTIONAL_FIELD(receive_time, metadata_source);
   MERGE_OPTIONAL_FIELD(wallclock_frame_duration, metadata_source);
   MERGE_OPTIONAL_FIELD(maximum_composition_delay_in_frames, metadata_source);
+  MERGE_OPTIONAL_FIELD(frame_sequence, metadata_source);
 
 #undef MERGE_VALUE_FIELD
 #undef MERGE_OPTIONAL_FIELD

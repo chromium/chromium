@@ -1,4 +1,4 @@
-(async function(testRunner) {
+(async function(/** @type {import('test_runner').TestRunner} */ testRunner) {
   const {dp} = await testRunner.startBlank(`Tests that ` +
       `Page.lifecycleEvent is issued after aborted client-side navigation.`);
 

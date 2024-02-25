@@ -4,9 +4,11 @@
 
 #include "third_party/blink/renderer/modules/mediastream/transferred_media_stream_track.h"
 
+#include <cstdint>
 #include <memory>
 
 #include "base/functional/callback_helpers.h"
+#include "build/build_config.h"
 #include "third_party/blink/public/platform/modules/mediastream/web_media_stream_track.h"
 #include "third_party/blink/public/platform/modules/webrtc/webrtc_logging.h"
 #include "third_party/blink/public/web/modules/mediastream/media_stream_video_source.h"
@@ -15,7 +17,6 @@
 #include "third_party/blink/renderer/bindings/modules/v8/v8_long_range.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_media_track_capabilities.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_media_track_constraints.h"
-#include "third_party/blink/renderer/bindings/modules/v8/v8_media_track_frame_stats.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_media_track_settings.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_point_2d.h"
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
@@ -30,6 +31,7 @@
 #include "third_party/blink/renderer/modules/mediastream/media_constraints_impl.h"
 #include "third_party/blink/renderer/modules/mediastream/media_stream.h"
 #include "third_party/blink/renderer/modules/mediastream/media_stream_track.h"
+#include "third_party/blink/renderer/modules/mediastream/media_stream_track_video_stats.h"
 #include "third_party/blink/renderer/modules/mediastream/media_stream_utils.h"
 #include "third_party/blink/renderer/modules/mediastream/media_stream_video_track.h"
 #include "third_party/blink/renderer/modules/mediastream/overconstrained_error.h"
@@ -171,16 +173,12 @@ MediaTrackSettings* TransferredMediaStreamTrack::getSettings() const {
   return MediaTrackSettings::Create();
 }
 
-ScriptPromise TransferredMediaStreamTrack::getFrameStats(
-    ScriptState* script_state) const {
+MediaStreamTrackVideoStats* TransferredMediaStreamTrack::stats() {
   if (track_) {
-    return track_->getFrameStats(script_state);
+    return track_->stats();
   }
   // TODO(https://crbug.com/1288839): return the transferred value.
-  auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
-  ScriptPromise promise = resolver->Promise();
-  resolver->Resolve(MediaTrackFrameStats::Create());
-  return promise;
+  return nullptr;
 }
 
 CaptureHandle* TransferredMediaStreamTrack::getCaptureHandle() const {
@@ -207,7 +205,8 @@ void TransferredMediaStreamTrack::applyConstraints(
     ScriptPromiseResolver* resolver,
     const MediaTrackConstraints* constraints) {
   setter_call_order_.push_back(APPLY_CONSTRAINTS);
-  constraints_list_.push_back(std::make_pair(resolver, constraints));
+  constraints_list_.push_back(
+      MakeGarbageCollected<ConstraintsPair>(resolver, constraints));
 }
 
 void TransferredMediaStreamTrack::SetImplementation(MediaStreamTrack* track) {
@@ -219,7 +218,7 @@ void TransferredMediaStreamTrack::SetImplementation(MediaStreamTrack* track) {
     switch (setter_function) {
       case APPLY_CONSTRAINTS: {
         const auto& entry = constraints_list_.front();
-        track->applyConstraints(entry.first, entry.second);
+        track->applyConstraints(entry->resolver, entry->constraints);
         constraints_list_.pop_front();
         break;
       }
@@ -290,7 +289,7 @@ MediaStreamComponent* TransferredMediaStreamTrack::Component() const {
   if (track_) {
     return track_->Component();
   }
-  return transferred_component_;
+  return transferred_component_.Get();
 }
 
 bool TransferredMediaStreamTrack::Ended() const {
@@ -316,6 +315,23 @@ void TransferredMediaStreamTrack::UnregisterMediaStream(MediaStream* stream) {
   // initialized.
 }
 
+#if !BUILDFLAG(IS_ANDROID)
+void TransferredMediaStreamTrack::SendWheel(
+    double relative_x,
+    double relative_y,
+    int wheel_delta_x,
+    int wheel_delta_y,
+    base::OnceCallback<void(DOMException*)> callback) {
+  NOTREACHED_NORETURN();
+}
+
+void TransferredMediaStreamTrack::SetZoomLevel(
+    int zoom_level,
+    base::OnceCallback<void(DOMException*)> callback) {
+  NOTREACHED_NORETURN();
+}
+#endif
+
 // EventTarget
 const AtomicString& TransferredMediaStreamTrack::InterfaceName() const {
   // TODO(https://crbug.com/1288839): Should TMST have its own interface name?
@@ -323,7 +339,7 @@ const AtomicString& TransferredMediaStreamTrack::InterfaceName() const {
 }
 
 ExecutionContext* TransferredMediaStreamTrack::GetExecutionContext() const {
-  return execution_context_;
+  return execution_context_.Get();
 }
 
 void TransferredMediaStreamTrack::AddedEventListener(
@@ -344,9 +360,12 @@ bool TransferredMediaStreamTrack::HasPendingActivity() const {
 }
 
 std::unique_ptr<AudioSourceProvider>
-TransferredMediaStreamTrack::CreateWebAudioSource(int context_sample_rate) {
+TransferredMediaStreamTrack::CreateWebAudioSource(
+    int context_sample_rate,
+    uint32_t context_buffer_size) {
   if (track_) {
-    return track_->CreateWebAudioSource(context_sample_rate);
+    return track_->CreateWebAudioSource(context_sample_rate,
+                                        context_buffer_size);
   }
   // TODO(https://crbug.com/1288839): Create one based on transferred data?
   return nullptr;
@@ -360,13 +379,13 @@ ImageCapture* TransferredMediaStreamTrack::GetImageCapture() {
   return nullptr;
 }
 
-absl::optional<const MediaStreamDevice> TransferredMediaStreamTrack::device()
+std::optional<const MediaStreamDevice> TransferredMediaStreamTrack::device()
     const {
   if (track_) {
     return track_->device();
   }
   // TODO(https://crbug.com/1288839): Return transferred data
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 void TransferredMediaStreamTrack::BeingTransferred(
@@ -426,7 +445,19 @@ void TransferredMediaStreamTrack::Trace(Visitor* visitor) const {
   visitor->Trace(execution_context_);
   visitor->Trace(event_propagator_);
   visitor->Trace(observers_);
+  visitor->Trace(constraints_list_);
   visitor->Trace(clone_list_);
+}
+
+TransferredMediaStreamTrack::ConstraintsPair::ConstraintsPair(
+    ScriptPromiseResolver* resolver,
+    const MediaTrackConstraints* constraints)
+    : resolver(resolver), constraints(constraints) {}
+
+void TransferredMediaStreamTrack::ConstraintsPair::Trace(
+    Visitor* visitor) const {
+  visitor->Trace(resolver);
+  visitor->Trace(constraints);
 }
 
 }  // namespace blink

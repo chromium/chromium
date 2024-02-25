@@ -12,6 +12,7 @@
 #include "gpu/command_buffer/client/raster_interface.h"
 #include "gpu/command_buffer/client/shared_image_interface.h"
 #include "gpu/command_buffer/common/mailbox_holder.h"
+#include "gpu/command_buffer/common/shared_image_capabilities.h"
 #include "media/base/simple_sync_token_client.h"
 #include "media/base/wait_and_replace_sync_token_client.h"
 #include "media/renderers/video_frame_yuv_converter.h"
@@ -20,6 +21,7 @@
 #include "third_party/skia/include/core/SkColorSpace.h"
 #include "third_party/skia/include/core/SkImage.h"
 #include "third_party/skia/include/gpu/GrDirectContext.h"
+#include "third_party/skia/include/gpu/GrTypes.h"
 #include "third_party/skia/include/gpu/ganesh/SkImageGanesh.h"
 #include "third_party/skia/include/gpu/ganesh/gl/GrGLBackendSurface.h"
 #include "third_party/skia/include/gpu/gl/GrGLTypes.h"
@@ -137,20 +139,20 @@ bool CopyRGBATextureToVideoFrame(viz::RasterContextProvider* provider,
   // calls will fail on the service side with no ability to detect failure on
   // the client side. Check for support here and early out if it's unsupported.
   if (!provider->GrContext() &&
-      !provider->ContextCapabilities().supports_yuv_rgb_conversion) {
+      !provider->ContextCapabilities().supports_rgb_to_yuv_conversion) {
     DVLOG(1) << "RGB->YUV conversion not supported";
     return false;
   }
 
 #if BUILDFLAG(IS_WIN)
   // CopyToGpuMemoryBuffer is only supported for D3D shared images on Windows.
-  if (!provider->ContextCapabilities().shared_image_d3d) {
+  if (!provider->SharedImageInterface()->GetCapabilities().shared_image_d3d) {
     DVLOG(1) << "CopyToGpuMemoryBuffer not supported.";
     return false;
   }
 #endif  // BUILDFLAG(IS_WIN)
 
-  if (provider->ContextCapabilities().supports_yuv_rgb_conversion &&
+  if (provider->ContextCapabilities().supports_rgb_to_yuv_conversion &&
       src_mailbox_holder.mailbox.IsSharedImage()) {
     ri->WaitSyncTokenCHROMIUM(src_mailbox_holder.sync_token.GetConstData());
     if (dst_video_frame->shared_image_format_type() ==
@@ -234,7 +236,7 @@ bool CopyRGBATextureToVideoFrame(viz::RasterContextProvider* provider,
     // Do the blit.
     skia::BlitRGBAToYUVA(scoped_sk_image->sk_image().get(), sk_surface_ptrs,
                          holder.yuva_info());
-    provider->GrContext()->flushAndSubmit(false);
+    provider->GrContext()->flushAndSubmit(GrSyncCpu::kNo);
   }
   ri->Flush();
 

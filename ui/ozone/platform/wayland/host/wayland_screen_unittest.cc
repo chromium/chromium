@@ -1421,7 +1421,8 @@ INSTANTIATE_TEST_SUITE_P(
                                 wl::EnableAuraShellProtocol::kEnabled},
            wl::ServerConfig{
                .enable_aura_shell = wl::EnableAuraShellProtocol::kEnabled,
-               .use_aura_output_manager = true}));
+               .aura_output_manager_protocol =
+                   wl::AuraOutputManagerProtocol::kEnabledV2}));
 
 INSTANTIATE_TEST_SUITE_P(
     XdgVersionStableTest,
@@ -1430,7 +1431,8 @@ INSTANTIATE_TEST_SUITE_P(
                                 wl::EnableAuraShellProtocol::kEnabled},
            wl::ServerConfig{
                .enable_aura_shell = wl::EnableAuraShellProtocol::kEnabled,
-               .use_aura_output_manager = true}));
+               .aura_output_manager_protocol =
+                   wl::AuraOutputManagerProtocol::kEnabledV2}));
 
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 
